@@ -39,7 +39,7 @@
   /* card-only mode for the launcher */
   html.widget,html.widget body{background:transparent}
   html.widget .photo,html.widget .veil,html.widget .grain,html.widget .top-veil,html.widget .bottom-veil,
-  html.widget .dimmer,html.widget #credit,html.widget .top,html.widget .clockwrap,html.widget .bottom{display:none}
+  html.widget .dimmer,html.widget .top,html.widget .clockwrap,html.widget .bottom{display:none}
   html.widget .stage{height:auto;padding:0;display:block;transition:none}
   /* the launcher's cards, up to three: one fills the box; two side by side (the first on the right, as Arabic reads);
      three: two side by side and the third the full width under them. At 1920 a pair is about 560 + 540 px with a 22 px gap. */
@@ -71,12 +71,17 @@
       linear-gradient(180deg,rgba(3,10,7,.62) 0%,rgba(3,10,7,.30) 22%,rgba(3,10,7,.12) 46%,rgba(3,10,7,.42) 74%,rgba(2,6,4,.88) 100%),
       radial-gradient(120% 85% at 22% 34%,rgba(3,14,9,.42) 0%,rgba(3,14,9,0) 58%);
   }
-  /* photo credits live in PHOTO-CREDITS.md on GitHub, not on screen */
+  /* Openverse attributions are shown on the photo and link to the original and licence. */
   #credit{display:none;
-    position:fixed;left:26px;bottom:6px;z-index:4;
-    font-size:10px;letter-spacing:.02em;
-    color:rgba(246,239,224,.30);pointer-events:none;
+    position:fixed;left:26px;bottom:8px;z-index:6;
+    max-width:78vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    font-size:12px;letter-spacing:.02em;line-height:1.4;
+    color:rgba(246,239,224,.78);text-shadow:0 1px 4px rgba(0,0,0,.9);pointer-events:auto;
   }
+  #credit.openverse{display:block}
+  #credit.openverse a{color:inherit;text-decoration:none}
+  #credit.openverse a:hover{text-decoration:underline}
+  html.widget #credit.openverse{display:none}
   .grain{
     position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.05;
     background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='.55'/></svg>");
@@ -2847,10 +2852,26 @@ function pixelShift(){
   if(st) st.style.transform = `translate(${dx}px,${dy}px)`;
 }
 
-// Background photos: the hosted set in photos/ (photos/index.json in the repo). A hosted photo is used only
-// once it has loaded; offline, or if it fails, a bundled one is shown, so the screen is never empty.
+// Daily photo set from Openverse (Wikimedia Commons), selected from broad categories. A cached or bundled photo
+// stays on screen if the API is offline; only a photo that loads replaces it.
 const PHOTO_BASE = 'https://raw.githubusercontent.com/tshi-dev/UrTV/master/photos/';
-let REMOTE_BGS = (()=>{ try{ return JSON.parse(localStorage.getItem('photoIndex') || '[]'); }catch(e){ return []; } })();
+const OPENVERSE_API = 'https://api.openverse.org/v1/images/';
+const OPENVERSE_CACHE = 'openverseDailyPhotos';
+const DAILY_PHOTO_CATEGORIES = [
+  {k:'nature', q:'nature landscape waterfall'},
+  {k:'ocean', q:'ocean coral reef'},
+  {k:'wildlife', q:'wildlife animals'},
+  {k:'city', q:'city skyline architecture'},
+  {k:'islamic-architecture', q:'mosque Islamic architecture'},
+  {k:'art', q:'abstract art painting', category:'digitized_artwork,illustration,photograph'},
+  {k:'science', q:'science laboratory technology'},
+  {k:'space', q:'space galaxy nebula'},
+  {k:'football', q:'football soccer stadium'},
+  {k:'basketball', q:'basketball sport'}
+];
+const STATIC_BGS = (()=>{ try{ const a=JSON.parse(localStorage.getItem('photoIndex') || '[]'); return Array.isArray(a) ? a.filter(p=>p&&p.f) : []; }catch(e){ return []; } })();
+const SAVED_DAILY_BGS = (()=>{ try{ const x=JSON.parse(localStorage.getItem(OPENVERSE_CACHE) || 'null'); return x&&Array.isArray(x.photos) ? x : null; }catch(e){ return null; } })();
+let REMOTE_BGS = SAVED_DAILY_BGS && SAVED_DAILY_BGS.photos.length ? SAVED_DAILY_BGS.photos : STATIC_BGS;
 
 // The owner's own photos: the app answers OWN_BASE N.jpg (1..CONFIG.own) from its own folder, never from the network.
 const OWN_BASE = 'https://own.urtv.invalid/';
@@ -2859,15 +2880,74 @@ const ownPhotos = () => Array.from({length: CONFIG.own}, (_, k) => ({url: OWN_BA
 
 async function loadPhotoIndex(){
   if(OWN_ONLY()) return;   // nothing of ours is shown, so nothing is fetched
+  const today = riyadhDayNumber();
+  if(SAVED_DAILY_BGS && SAVED_DAILY_BGS.day === today && SAVED_DAILY_BGS.photos.length) return;
   try{
-    const r = await fetchT(PHOTO_BASE + 'index.json', 15000);
-    if(!r.ok) return;
-    const list = (await r.json()).filter(p => p && p.f);
-    if(list.length){
+    const results = await Promise.all(DAILY_PHOTO_CATEGORIES.map(openverseCategory));
+    const list = results.filter(Boolean);
+    if(list.length >= 5){
       REMOTE_BGS = list;
-      try{ localStorage.setItem('photoIndex', JSON.stringify(list)); }catch(e){}
+      try{ localStorage.setItem(OPENVERSE_CACHE, JSON.stringify({day:today, photos:list})); }catch(e){}
+      return;
     }
   }catch(e){}
+  if(!REMOTE_BGS.length){
+    try{
+      const r = await fetchT(PHOTO_BASE + 'index.json', 15000);
+      if(!r.ok) return;
+      const list = (await r.json()).filter(p => p && p.f);
+      if(list.length) REMOTE_BGS = list;
+    }catch(e){}
+  }
+}
+
+function openverseImageUrl(item){
+  try{
+    const u = new URL(item.url);
+    if(u.protocol !== 'https:' || u.hostname !== 'upload.wikimedia.org') return '';
+    const prefix = '/wikipedia/commons/';
+    if(!u.pathname.startsWith(prefix)) return '';
+    const rel = u.pathname.slice(prefix.length);
+    if(rel.startsWith('thumb/')) return u.href;
+    const slash = rel.lastIndexOf('/');
+    if(slash < 0) return '';
+    const dirs = rel.slice(0, slash), file = rel.slice(slash + 1);
+    const width = Math.min(1920, Math.floor(Number(item.width) / 16) * 16);
+    if(!width || !file) return '';
+    return `${u.origin}${prefix}thumb/${dirs}/${file}/${width}px-${file}`;
+  }catch(e){ return ''; }
+}
+
+function dailyPhotoPick(items, category){
+  if(!items.length) return null;
+  let h = riyadhDayNumber() | 0;
+  for(const ch of category) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+  return items[(h >>> 0) % items.length];
+}
+
+async function openverseCategory(category){
+  try{
+    const params = new URLSearchParams({
+      q:category.q, source:'wikimedia', size:'large', aspect_ratio:'wide',
+      page_size:'20', mature:'false', filter_dead:'true'
+    });
+    const r = await fetchT(OPENVERSE_API + '?' + params.toString(), 24000);
+    if(!r.ok) return null;
+    const j = await r.json();
+    const licenseOK = new Set(['cc0','pdm','by','by-sa']);
+    const candidates = (j.results || []).filter(x => x && x.id && x.source === 'wikimedia'
+      && licenseOK.has(x.license) && Number(x.width) >= 1920 && Number(x.height) >= 1080
+      && x.url && /^https:\/\//i.test(x.url) && x.foreign_landing_url && x.license_url
+      && /\.jpe?g(?:[?#]|$)/i.test(x.url));
+    const item = dailyPhotoPick(candidates, category.k);
+    if(!item) return null;
+    const url = openverseImageUrl(item);
+    if(!url) return null;
+    const license = item.license === 'cc0' ? 'CC0' : item.license === 'pdm' ? 'Public Domain' :
+      `CC ${item.license.toUpperCase().replace('-', '-')}${item.license_version ? ' ' + item.license_version : ''}`;
+    return {f:url, d:0.94, o:1, t:item.title || 'صورة', c:item.creator || 'مصور غير معروف',
+      s:item.foreign_landing_url, l:item.license_url, v:license, a:item.attribution || ''};
+  }catch(e){ return null; }
 }
 
 let REVEALED = false;
@@ -2891,7 +2971,24 @@ function showBackground(url, b){
   ph.classList.remove('settle'); void ph.offsetWidth; ph.classList.add('settle');
   cardBlurLater(url);
   const cr = document.getElementById('credit');
-  if(cr) cr.textContent = b.c ? 'الصورة: ' + b.c : '';
+  if(cr){
+    cr.replaceChildren(); cr.classList.toggle('openverse', !!(b && b.o));
+    if(b && b.o){
+      const safe = href => { try{ const u=new URL(href); return u.protocol==='https:' ? u.href : ''; }catch(e){ return ''; } };
+      const link = (label, href, title) => {
+        const a=document.createElement('a'), url=safe(href);
+        a.textContent=label; a.title=title || label;
+        if(url){ a.href=url; a.target='_blank'; a.rel='noopener noreferrer'; }
+        else a.removeAttribute('href');
+        return a;
+      };
+      cr.appendChild(link('Openverse (غير معتمد أو موصى به منهم)', 'https://openverse.org'));
+      cr.appendChild(document.createTextNode(' · '));
+      cr.appendChild(link(`${b.t || 'صورة'} — ${b.c || 'مصور غير معروف'}`, b.s, b.a || 'مصدر الصورة'));
+      cr.appendChild(document.createTextNode(' · '));
+      cr.appendChild(link(b.v || 'الرخصة', b.l, b.l));
+    }else cr.textContent = b && b.c ? 'الصورة: ' + b.c : '';
+  }
 }
 
 // ---- card style blur: a copy of the photo behind the card, blurred once per photo, never a live backdrop-filter ----
@@ -2968,9 +3065,9 @@ addEventListener('resize', () => {
   }, 400);
 });
 
-// Every 4 days a new random set of 5 hosted photos (same draw as the launcher: Park-Miller generator seeded
-// by the 4-day period), rotating every CONFIG.photoMinutes (30 unless the owner changed it). Only the photo on screen is downloaded.
-const PHOTO_SET = 5, PHOTO_PERIOD_DAYS = 4;
+// One selection from each daily category; the order is stable all day, and the set changes with the local day.
+// The screen rotates through these images every CONFIG.photoMinutes. Only the photo on screen is downloaded.
+const PHOTO_SET = 10, PHOTO_PERIOD_DAYS = 1;
 function riyadhDayNumber(){
   const p = riyadhParts();
   return Math.floor(Date.UTC(p.y, p.mo - 1, p.d) / 86400000);
@@ -2986,6 +3083,7 @@ function photoSet(n){
   }
   return pick;
 }
+function photoUrl(b){ return b && /^https:\/\//i.test(b.f || '') ? b.f : PHOTO_BASE + (b && b.f || ''); }
 // One of the owner's photos is due. The app answers it from disk, yet on a cold start that can take more than the 1.2 s the page gives
 // a hosted photo, and a photo of ours must not show first (only) or in its place (mix). So it is waited for, up to OWN_WAIT_MS; one that
 // fails gives way to the next of theirs; none loads, or none in time: a bundled one, so the screen is never empty (theirs still replace
@@ -3018,7 +3116,7 @@ function applyBackground(force){
     // what rotates: ours (the hosted set, else the bundled photos once the owner has some), then the owner's; only = theirs alone
     let pool = own;
     if(!only){
-      const ours = set.length ? set.map(b => ({url: PHOTO_BASE + b.f, b})) : own.length ? BGS.map(b => ({url: b.u, b, bundled: true})) : [];
+      const ours = set.length ? set.map(b => ({url: photoUrl(b), b})) : own.length ? BGS.map(b => ({url: b.u, b, bundled: true})) : [];
       pool = ours.concat(own);
     }
     if(!pool.length){ showBackground(local.u, local); return; }
@@ -3034,8 +3132,8 @@ function applyBackground(force){
     img.onload = () => { done = true; clearTimeout(t); showBackground(url, b); };
     img.onerror = () => { clearTimeout(t); fallback(); done = true; };
     img.src = url;
-    // fetch the rest of the set once, quietly, so the app has each one on disk before its turn
-    if(!PREFETCHED && set.length){ PREFETCHED = true; setTimeout(() => set.forEach(x => { new Image().src = PHOTO_BASE + x.f; }), 20000); }
+    // Warm the other category thumbnails quietly so they are ready when their slot comes around.
+    if(!PREFETCHED && set.length){ PREFETCHED = true; setTimeout(() => set.forEach(x => { new Image().src = photoUrl(x); }), 20000); }
   } catch(e) {}
 }
 

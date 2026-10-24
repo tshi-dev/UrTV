@@ -1,6 +1,8 @@
 # Photo credits
 
-The photos are not credited on screen; they are credited here.
+Daily online photos are searched through [Openverse](https://api.openverse.org/v1/) and sourced from Wikimedia Commons. The TV displays the image title, creator, source link, and licence link alongside the photo. The app is not affiliated with or endorsed by Openverse. Openverse notes that users remain responsible for checking source licensing.
+
+The older Unsplash photo set below remains the offline fallback and is credited here.
 
 ## Bundled with the apps (offline fallback)
 

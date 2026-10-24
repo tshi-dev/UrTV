@@ -2,7 +2,7 @@
 
 <h1 align="center">تلفزيونك · UrTV</h1>
 
-<p align="center" dir="rtl">واجهة رئيسية عربية وشاشة توقف سعودية لتلفزيونات Android TV و Google TV، وتسريع آمن للتلفزيون.<br>يركّبها لك مساعد ذكاء اصطناعي بأمر واحد.</p>
+<p align="center" dir="rtl">واجهة رئيسية عربية وشاشة توقف لتلفزيونات Android TV و Google TV، وتسريع آمن للتلفزيون.<br>يركّبها لك مساعد ذكاء اصطناعي بأمر واحد.</p>
 
 <p align="center">An Arabic home screen and a Saudi screensaver for Android TV / Google TV, and a safe speed-up.<br>Your AI agent sets it all up.</p>
 
@@ -90,7 +90,7 @@ screen: [docs/RECREATE-PROMPT.md](docs/RECREATE-PROMPT.md).
 
 | | | |
 |---|---|---|
-| **شاشة تلفزيونك** · screensaver | Clock, Hijri date, prayer times and iqama, Ramadan, your teams' matches, weather, markets, and beside the clock your choice of new episodes, today's prayers, the 5-day forecast, all your teams' games, a stock watchlist, or a verse/hadith of the day, over Saudi landscapes | `urtv-screensaver.apk` |
+| **شاشة تلفزيونك** · screensaver | Clock, Hijri date, prayer times and iqama, Ramadan, your teams' matches, weather, markets, and a daily rotating selection of high-resolution, openly licensed photos across nature, art, cities, science, space and sports, with attribution | `urtv-screensaver.apk` |
 | **تلفزيونك** · home screen | Clean Arabic launcher: favourites row (5–10 apps) arranged in «ترتيب المفضلة», all apps, inputs, Wi-Fi, settings; «المهام» (tasks, by voice too), optional card from the screensaver (off by default). The «تلاوة» pill opens the Quran and the radio, with the adhan at Umm al-Qura times. App names show in Arabic: the name the setup agent gave it on this TV (`optimize/dock.sh names` / `name`), else the app's own Arabic name, else the one in `res/values/app_names.xml`, else its own name | `urtv-home.apk` |
 | **Two free apps** | [TV Bro](https://github.com/truefedex/tv-bro), a web browser for the TV, and [SmartTube](https://github.com/yuliskov/SmartTube), YouTube without ads, from their own releases (skip with `SKIP_EXTRAS=1`) | `optimize/install.sh extras` |
 | **Speed-up** | Telemetry, ads and demos off (reversibly), closed apps frozen, Play Store kept from running in the background, faster animations | `optimize/` |
@@ -159,7 +159,7 @@ dist/tv.html          light page the Android app loads (0.3 MB); the app serves 
 android/app           the screensaver app (sa.urtv.screensaver): DreamService, settings, auto-update
 android/launcher      the home screen (sa.urtv.home); sa.urtv.home.tilawah is «تلاوة»: catalog, player, adhan
 assets/               fonts, bundled photos, Arabic team names, verse and hadith texts
-photos/               the hosted photo set (5 shown per 4 days, rotating every 30 min)
+photos/               offline fallback photo set (daily online categories rotate every 30 min)
 optimize/             TV tools (Python ADB client, no adb binary needed); lists/ says what may be turned off
 docs/                 the agent prompts (setup, recreate), what we learned on real TVs, test plan, photo credits
 .github/              CI: APK builds, checks, data tools (verses, hadith, clubs, photos), README images
@@ -197,7 +197,7 @@ through the screensaver's ConfigProvider (`/tasks`), writes guarded by the signa
 **«صوري»**, your own photos behind the screen (a favourite player, your country, your family): 1 to 10 JPEGs, put on
 the TV only by your agent, `optimize/photos.sh add FILE...`. Each is made ready on the computer first (turned upright by its
 EXIF orientation, shrunk to the TV's screen, at most 1920 px wide, JPEG quality 85, and **all metadata removed**: no location,
-camera or date), so the TV decodes a small picture. `mode mix` (default) lets them join our Saudi photos in the rotation,
+camera or date), so the TV decodes a small picture. `mode mix` (default) lets them join daily Openverse photos in the rotation,
 `mode only` shows only yours, on the screensaver and on the home screen's wallpaper; with none added nothing changes.
 `list`, `del N`, `clear` and `show` (a screenshot of the screensaver with them) are there too, and the screensaver app's
 settings row «صوري» shows the count and the mode and can remove them all.

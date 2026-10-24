@@ -63,7 +63,7 @@ import java.util.Map;
  * Plain framework views only (no AndroidX). Network only for hosted wallpapers and the optional card (HomeCard).
  *
  * Adapted from github.com/mihirgupta0900/tv-home (MIT, see android/launcher/LICENSE-tv-home):
- * Arabic text and digits, Hijri date, Thmanyah fonts, the screensaver's gold palette and Saudi photos,
+ * Arabic text and digits, Hijri date, Thmanyah fonts, the screensaver's gold palette and daily photos,
  * clock on the right, and a pill that opens the screensaver's settings.
  */
 public class MainActivity extends Activity {
@@ -100,12 +100,13 @@ public class MainActivity extends Activity {
     private View glow;
     private ImageView wallBack, wallFront;
     private View gridShade;
+    private TextView wallCredit;
     private String[] wallpapers = new String[0];
     private int wallIndex = -1;
     private long wallChangedAt;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Runnable rotateWallpaper = this::nextWallpaper;
-    static final long WALLPAPER_INTERVAL_MS = 10 * 60 * 1000;
+    static final long WALLPAPER_INTERVAL_MS = 15 * 60 * 1000;
     private TextView greeting, weatherLine, clock, ampm, date, zoneLine, title, appsLabel;
     private Pill wifiPill;   // the network's name shows while it has the focus
     private Greeting greetingLine;
@@ -251,6 +252,19 @@ public class MainActivity extends Activity {
         scrim.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
                 new int[]{0xB3000000, 0x40000000, 0x26000000, 0x8C000000, 0xE6000000}));
         root.addView(scrim, new FrameLayout.LayoutParams(-1, -1));
+        wallCredit = text(10, "sans-serif", 0xCCFFFFFF);
+        wallCredit.setMaxLines(1);
+        wallCredit.setSingleLine(true);
+        wallCredit.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        wallCredit.setShadowLayer(dp(3), 0, dp(1), Color.BLACK);
+        wallCredit.setFocusable(false);
+        wallCredit.setOnClickListener(v -> {
+            Object source = v.getTag();
+            if (source instanceof String && ((String) source).startsWith("https://")) {
+                try { startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse((String) source))); } catch (RuntimeException ignored) { }
+            }
+        });
+        root.addView(wallCredit, lp(-1, dp(24), Gravity.BOTTOM | Gravity.LEFT, dp(26), 0, dp(26), dp(6)));
         gridShade = new View(this);
         gridShade.setBackgroundColor(0xB3000000);
         gridShade.setAlpha(0f);
@@ -1003,40 +1017,47 @@ public class MainActivity extends Activity {
         return v;
     }
 
-    // Hosted photos (photos/index.json in the repo) join the bundled ones. Each is downloaded once into
-    // files/photos and reused; offline or on any failure the next bundled photo is shown instead.
+    // Daily high-resolution photos from Openverse/Wikimedia Commons join the bundled offline set.
     static final String PHOTO_BASE = "https://raw.githubusercontent.com/tshi-dev/UrTV/master/photos/";
     static final long INDEX_MAX_AGE_MS = 24 * 3600 * 1000L;
+    static final String OPENVERSE_API = "https://api.openverse.org/v1/images/";
+    static final String[] PHOTO_QUERIES = {"nature landscape waterfall", "ocean coral reef", "wildlife animals",
+            "city skyline architecture", "mosque Islamic architecture", "abstract art painting",
+            "science laboratory technology", "space galaxy nebula", "football soccer stadium", "basketball sport"};
+    private volatile boolean photoRefreshInFlight;
 
-    static final int PHOTO_SET = 5, PHOTO_PERIOD_DAYS = 4;
-
-    /** This 4-day period's 5 hosted photos: the same Park-Miller draw as photoSet() in the screensaver page. */
-    private String[] remotePhotos() {
-        String s = prefs().getString("photoIndex", "");
-        if (s.isEmpty()) return new String[0];
-        String[] all = s.split(",");
-        java.util.Calendar c = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("Asia/Riyadh"));
-        java.util.Calendar utc = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"));
-        utc.clear();
-        utc.set(c.get(java.util.Calendar.YEAR), c.get(java.util.Calendar.MONTH), c.get(java.util.Calendar.DAY_OF_MONTH));
-        long day = Math.floorDiv(utc.getTimeInMillis(), 86400000L);
-        long seed = (Math.floorDiv(day, PHOTO_PERIOD_DAYS) % 2147483646L) + 1;
-        List<String> pick = new ArrayList<>();
-        for (int guard = 0; pick.size() < Math.min(PHOTO_SET, all.length) && guard < 1000; guard++) {
-            seed = (seed * 48271L) % 2147483647L;
-            String f = all[(int) (seed % all.length)];
-            if (!pick.contains(f)) pick.add(f);
+    static final class Photo {
+        String url, title, creator, license, source;
+        Photo(org.json.JSONObject j) {
+            url = j.optString("url"); title = j.optString("title"); creator = j.optString("creator");
+            license = j.optString("license").toUpperCase(Locale.ROOT); source = j.optString("foreign_landing_url");
         }
-        return pick.toArray(new String[0]);
+        String credit() {
+            String who = creator.isEmpty() ? "" : " — " + creator;
+            String kind = license.isEmpty() ? "" : " · " + ("PDM".equals(license) ? "Public Domain" : "CC0".equals(license) ? "CC0" : "CC " + license);
+            return "Openverse (غير تابع أو معتمد منهم) · " + (title.isEmpty() ? "صورة" : title) + who + kind;
+        }
+    }
+
+    private List<Photo> remotePhotos() {
+        List<Photo> out = new ArrayList<>();
+        try {
+            org.json.JSONArray a = new org.json.JSONArray(prefs().getString("photoIndex", "[]"));
+            for (int i = 0; i < a.length(); i++) out.add(new Photo(a.getJSONObject(i)));
+        } catch (Exception ignored) { }
+        return out;
     }
 
     /** Keep only the current set on disk. */
-    private void pruneCachedPhotos(String[] keep) {
+    private void pruneCachedPhotos(List<Photo> keep) {
         java.io.File[] files = new java.io.File(getFilesDir(), "photos").listFiles();
         if (files == null) return;
-        java.util.Set<String> k = new java.util.HashSet<>(Arrays.asList(keep));
+        java.util.Set<String> k = new java.util.HashSet<>();
+        for (Photo p : keep) k.add(photoFile(p.url));
         for (java.io.File f : files) if (!k.contains(f.getName())) f.delete();
     }
+
+    private static String photoFile(String url) { return Integer.toHexString(url.hashCode()) + ".jpg"; }
 
     /** a photo or the index that failed is not asked for again for this long: not at every rotation of the wallpaper */
     static final long RETRY_MS = 60 * 60 * 1000L;
@@ -1047,29 +1068,74 @@ public class MainActivity extends Activity {
         return at != null && System.currentTimeMillis() - at < RETRY_MS;
     }
 
-    /** Off the main thread: refresh the hosted photo list once a day (after a failure, again in an hour). */
+    /** Off the main thread: fetch one high-resolution CC0/by/by-sa photo per category once a day. */
     private void refreshPhotoIndex() {
-        if (System.currentTimeMillis() - prefs().getLong("photoIndexAt", 0) < INDEX_MAX_AGE_MS) return;
+        Calendar today = Calendar.getInstance(java.util.TimeZone.getTimeZone("Asia/Baghdad"));
+        String todayKey = today.get(Calendar.YEAR) + "-" + today.get(Calendar.DAY_OF_YEAR);
+        if (todayKey.equals(prefs().getString("photoIndexDay", ""))
+                && System.currentTimeMillis() - prefs().getLong("photoIndexAt", 0) < INDEX_MAX_AGE_MS) return;
         if (failedRecently("index.json")) return;
+        if (photoRefreshInFlight) return;
+        photoRefreshInFlight = true;
         try {
-            org.json.JSONArray a = new org.json.JSONArray(new String(download(PHOTO_BASE + "index.json"), "UTF-8"));
-            List<String> names = new ArrayList<>();
-            for (int i = 0; i < a.length(); i++) {
-                String f = a.getJSONObject(i).optString("f");
-                if (f.matches("[A-Za-z0-9_-]+\\.jpg")) names.add(f);
+            java.util.concurrent.ExecutorService pool = java.util.concurrent.Executors.newFixedThreadPool(PHOTO_QUERIES.length);
+            List<java.util.concurrent.Future<org.json.JSONObject>> futures = new ArrayList<>();
+            for (String query : PHOTO_QUERIES) futures.add(pool.submit(() -> fetchCategory(query)));
+            org.json.JSONArray photos = new org.json.JSONArray();
+            for (java.util.concurrent.Future<org.json.JSONObject> future : futures) {
+                try { org.json.JSONObject photo = future.get(20, java.util.concurrent.TimeUnit.SECONDS); if (photo != null) photos.put(photo); }
+                catch (Exception ignored) { future.cancel(true); }
             }
-            if (!names.isEmpty()) prefs().edit()
-                    .putString("photoIndex", android.text.TextUtils.join(",", names))
+            pool.shutdownNow();
+            if (photos.length() >= 5) prefs().edit()
+                    .putString("photoIndex", photos.toString())
+                    .putString("photoIndexDay", todayKey)
                     .putLong("photoIndexAt", System.currentTimeMillis()).apply();
         } catch (Exception ignored) {
             photoFailed.put("index.json", System.currentTimeMillis());
+        } finally {
+            photoRefreshInFlight = false;
         }
+    }
+
+    private org.json.JSONObject fetchCategory(String query) {
+        try {
+            String q = java.net.URLEncoder.encode(query, "UTF-8");
+            String endpoint = OPENVERSE_API + "?q=" + q + "&source=wikimedia&size=large&aspect_ratio=wide&page_size=20&mature=false&filter_dead=true";
+            org.json.JSONObject response = new org.json.JSONObject(new String(download(endpoint), "UTF-8"));
+            org.json.JSONArray results = response.optJSONArray("results");
+            if (results == null) return null;
+            List<org.json.JSONObject> candidates = new ArrayList<>();
+            for (int i = 0; i < results.length(); i++) {
+                org.json.JSONObject item = results.getJSONObject(i);
+                String license = item.optString("license"), original = item.optString("url");
+                if (!"wikimedia".equals(item.optString("source")) || !(license.equals("cc0") || license.equals("pdm") || license.equals("by") || license.equals("by-sa"))
+                        || item.optInt("width") < 1920 || item.optInt("height") < 1080 || !original.startsWith("https://upload.wikimedia.org/wikipedia/commons/")) continue;
+                String path = android.net.Uri.parse(original).getEncodedPath();
+                if (!path.toLowerCase(Locale.ROOT).matches(".*\\.jpe?g$")) continue;
+                String rel = path.substring("/wikipedia/commons/".length());
+                if (rel.startsWith("thumb/")) continue;
+                int slash = rel.lastIndexOf('/');
+                if (slash < 0) continue;
+                String dirs = rel.substring(0, slash), file = rel.substring(slash + 1);
+                int width = Math.min(1920, (item.optInt("width") / 16) * 16);
+                item.put("url", "https://upload.wikimedia.org/wikipedia/commons/thumb/" + dirs + "/" + file + "/" + width + "px-" + file);
+                if (item.has("foreign_landing_url") && item.has("license_url")) candidates.add(item);
+            }
+            if (!candidates.isEmpty()) {
+                Calendar day = Calendar.getInstance(java.util.TimeZone.getTimeZone("Asia/Baghdad"));
+                int seed = day.get(Calendar.YEAR) * 367 + day.get(Calendar.DAY_OF_YEAR) * 31 + query.hashCode();
+                return candidates.get(Math.floorMod(seed, candidates.size()));
+            }
+        } catch (Exception ignored) { }
+        return null;
     }
 
     private static byte[] download(String url) throws java.io.IOException {
         java.net.HttpURLConnection c = (java.net.HttpURLConnection) new java.net.URL(url).openConnection();
         c.setConnectTimeout(10000);
-        c.setReadTimeout(30000);
+        c.setReadTimeout(15000);
+        c.setRequestProperty("User-Agent", "UrTV/3 (Android TV; photo discovery via Openverse)");
         try (java.io.InputStream in = c.getInputStream()) {
             java.io.ByteArrayOutputStream b = new java.io.ByteArrayOutputStream();
             byte[] buf = new byte[16384];
@@ -1130,8 +1196,8 @@ public class MainActivity extends Activity {
         final int ownCount = (Integer) own[0];
         final boolean only = ownCount > 0 && "only".equals(own[1]);
         prefs().edit().putLong("ownRev", (Long) own[2]).apply();
-        final String[] remote = only ? new String[0] : remotePhotos();
-        final int base = only ? 0 : wallpapers.length + remote.length;   // ours come first, then the owner's
+        final List<Photo> remote = only ? new ArrayList<>() : remotePhotos();
+        final int base = only ? 0 : remote.size() + wallpapers.length;   // daily online photos, offline fallbacks, then the owner's
         final int total = only ? ownCount : base + ownCount;
         if (wallIndex < 0) wallIndex = prefs().getInt("wallpaper", -1);
         wallIndex = (wallIndex + 1) % total;
@@ -1140,23 +1206,20 @@ public class MainActivity extends Activity {
         final int idx = wallIndex;
         final String fallback = "wallpapers/" + wallpapers[idx % wallpapers.length];
         new Thread(() -> {
-            if (!only) {   // no network while only the owner's photos show
-                refreshPhotoIndex();
-                pruneCachedPhotos(remotePhotos());
-            }
             Bitmap bm = null;
             if (idx >= base) {
                 final Uri photo = OWN.buildUpon().appendPath(String.valueOf(idx - base + 1)).build();
                 try {
                     bm = decode(() -> getContentResolver().openInputStream(photo));
                 } catch (java.io.IOException | RuntimeException ignored) { }
-            } else if (idx >= wallpapers.length) {
-                java.io.File f = new java.io.File(getFilesDir(), "photos/" + remote[idx - wallpapers.length]);
+            } else if (idx < remote.size()) {
+                Photo photo = remote.get(idx);
+                java.io.File f = new java.io.File(getFilesDir(), "photos/" + photoFile(photo.url));
                 try {
                     if (!f.isFile() && failedRecently(f.getName())) throw new java.io.IOException("failed lately");   // the bundled one meanwhile
                     if (!f.isFile()) {
                         byte[] data;
-                        try { data = download(PHOTO_BASE + f.getName()); }
+                        try { data = download(photo.url); }
                         catch (java.io.IOException e) { photoFailed.put(f.getName(), System.currentTimeMillis()); throw e; }
                         java.io.File dir = f.getParentFile();
                         if (dir.isDirectory() || dir.mkdirs()) {
@@ -1173,13 +1236,17 @@ public class MainActivity extends Activity {
                 catch (java.io.IOException ignored) { }
             }
             Bitmap result = bm;
-            runOnUiThread(() -> showWallpaper(result));
+            final Photo shownPhoto = idx < remote.size() ? remote.get(idx) : null;
+            runOnUiThread(() -> showWallpaper(result, shownPhoto));
         }).start();
+        if (!only) new Thread(() -> { refreshPhotoIndex(); pruneCachedPhotos(remotePhotos()); }).start();
         scheduleWallpaper(WALLPAPER_INTERVAL_MS);
     }
 
-    private void showWallpaper(Bitmap bm) {
+    private void showWallpaper(Bitmap bm, Photo photo) {
         if (bm == null || isDestroyed()) return;
+        wallCredit.setText(photo == null ? "" : photo.credit() + "  ↗");
+        wallCredit.setTag(photo == null ? null : photo.source);
         // Swap roles: the old front becomes the back, the new photo fades in on top.
         final ImageView old = wallFront;
         wallFront = wallBack;
