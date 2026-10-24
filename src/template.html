@@ -595,11 +595,12 @@ const _tzOk = z => { try{ new Intl.DateTimeFormat('en',{timeZone:z}); return tru
 // the cards a slot can show (Prefs.PANELS in the app is the same list); «none» is the absence of one
 const CARD_KINDS = ['shows','prayers','forecast','hourly','prayerrow','matches','verse','wisdom','adhkar','stocks','tasks','year','smart','today'];
 const CONFIG = {
-  city: _Q.get('city') || 'الرياض',
-  latitude: _num('lat', 24.7136),
-  longitude: _num('lon', 46.6753),
-  timezone: _tzOk(_Q.get('tz') || 'Asia/Riyadh') ? (_Q.get('tz') || 'Asia/Riyadh') : 'Asia/Riyadh',
-  prayerMethod: 4,
+  city: _Q.get('city') || 'عجلون',
+  latitude: _num('lat', 32.3333),
+  longitude: _num('lon', 35.7522),
+  timezone: _tzOk(_Q.get('tz') || 'Asia/Amman') ? (_Q.get('tz') || 'Asia/Amman') : 'Asia/Amman',
+  // AlAdhan method 23: Ministry of Awqaf, Islamic Affairs and Holy Places, Jordan.
+  prayerMethod: 23,
   // followed teams in priority order: #teams=id,id,... (up to 20); older builds send team1/team2
   teamIds: (_Q.has('teams') ? _Q.get('teams').split(',')
             : [_Q.has('team1') ? _Q.get('team1') : '136013', _Q.has('team2') ? _Q.get('team2') : '136137'])
@@ -639,8 +640,8 @@ const CONFIG = {
   // the owner's own photos («صوري»): #own=how many (0-10) and #ownmode=mix (join ours, the default) or only
   own: Math.max(0, Math.min(10, Math.floor(_num('own', 0)))),
   ownMode: _Q.get('ownmode') === 'only' ? 'only' : 'mix',
-  // digits everywhere: #digits=hindi (١٢٣, the default) or latin (123); anything else = hindi
-  digits: _Q.get('digits') === 'latin' ? 'latin' : 'hindi',
+  // Display digits everywhere in Latin form (0–9).
+  digits: 'latin',
   // the look of the card beside the clock: #cardstyle=current|dark1|glass1|dark3|glass3 (anything else = current)
   cardStyle: (v => ['dark1','glass1','dark3','glass3'].includes(v) ? v : 'current')(_Q.get('cardstyle')),
   // the markets at the top left: #markets=tasi,spx,btc (up to 4 of tasi aramco spx btc gold silver xrp; anything else = the default)
@@ -810,8 +811,8 @@ function buildPrayers(t){
   });
 }
 
-// Umm al-Qura: Fajr at 18.5°, Maghrib at sunset, Isha 90 min after Maghrib (120 in Ramadan),
-// Asr at shadow factor 1. Same method as Aladhan's method 4, so the offline times match to a minute or two.
+// AlAdhan method 23 (Jordan Ministry): Fajr/Isha at 18°, Maghrib 5 minutes after sunset,
+// and Asr at shadow factor 1. Used when the API is unavailable.
 function computePrayers(){
   const p = riyadhParts(), lat = CONFIG.latitude, lng = CONFIG.longitude;
   const tz = Math.round((Date.UTC(p.y,p.mo-1,p.d,p.h,p.mi,p.s) - Date.now()) / 60000) / 60;
@@ -839,12 +840,13 @@ function computePrayers(){
     return angleTime(a, t, false);
   };
   const adj = h => h + tz - lng/15;
-  const fajr = adj(angleTime(18.5, 5, true)), dhuhr = adj(noon(12)), asr = adj(asrTime(13));
+  const fajr = adj(angleTime(18, 5, true)), dhuhr = adj(noon(12)), asr = adj(asrTime(13));
   const sunrise = adj(angleTime(.833, 6, true));
-  const maghrib = adj(angleTime(.833, 18, false));
-  const isha = maghrib + (hijriMonthNow() === 9 ? 120 : 90)/60;
+  const sunset = adj(angleTime(.833, 18, false));
+  const maghrib = sunset + 5/60;
+  const isha = adj(angleTime(18, 19, false));
   const hm = h => { const m = Math.round(fix(h, 24)*60) % 1440; return pad(Math.floor(m/60)) + ':' + pad(m%60); };
-  // Isha is Maghrib plus its delay and stays an absolute time: past midnight (a late Maghrib at a high latitude) it reads «24:30», not an
+  // Isha stays an absolute time: past midnight (a late Isha at a high latitude) it reads «24:30», not an
   // hour that has already gone today (the rest of the page counts minutes from midnight, so 1470 is after 1439)
   const abs = h => { const m = Math.round(h*60); return pad(Math.floor(m/60)) + ':' + pad(m%60); };
   return {Fajr:hm(fajr), Sunrise:hm(sunrise), Dhuhr:hm(dhuhr), Asr:hm(asr), Maghrib:hm(maghrib), Isha:abs(isha)};
