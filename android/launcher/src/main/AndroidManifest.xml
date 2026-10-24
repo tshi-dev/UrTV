@@ -21,6 +21,8 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <!-- the adhan sets the TV's volume to its own level and puts it back afterwards -->
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <!-- the self-update: installs the APK it downloads (optimize/install.sh allows the appop over ADB) -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <!-- the screensaver (same signing key) asks what is playing, for its «يُتلى الآن» card -->
     <permission
@@ -224,5 +226,9 @@
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
+        <!-- the installer's answer to the self-update (only reached through the app's own PendingIntent) -->
+        <receiver
+            android:name=".UpdateReceiver"
+            android:exported="false" />
     </application>
 </manifest>

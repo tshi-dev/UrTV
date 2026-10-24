@@ -19,6 +19,7 @@ python3 tests/tv_read_only_test.py
 python3 tests/key_home_test.py
 python3 tests/dock_names_test.py
 python3 tests/dock_sleep_test.py
+python3 tests/self_update_test.py
 python3 tests/find_tv_test.py
 python3 tests/wireless_test.py
 python3 tests/precheck_test.py

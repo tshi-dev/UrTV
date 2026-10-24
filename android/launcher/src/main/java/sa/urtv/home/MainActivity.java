@@ -107,9 +107,11 @@ public class MainActivity extends Activity {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Runnable rotateWallpaper = this::nextWallpaper;
     static final long WALLPAPER_INTERVAL_MS = 10 * 60 * 1000;
-    private TextView greeting, weatherLine, clock, ampm, date, zoneLine, title, appsLabel;
+    private TextView greeting, weatherLine, clock, ampm, date, zoneLine, title, appsLabel, updatePill;
     private Pill wifiPill;   // the network's name shows while it has the focus
     private Greeting greetingLine;
+    /** the self-update pill keeps its id: it is added to and removed from the bar while the app runs */
+    private static final int UPDATE_PILL_ID = 0x0A11D0;
     private int glowColor = 0xFF3A3A3A;
     private ValueAnimator glowAnim;
     private int lastFocusedId = View.NO_ID;
@@ -127,6 +129,8 @@ public class MainActivity extends Activity {
             updateClock();
             updateWifi();
             updateNowPlaying();   // the minutes left of its sleep timer
+            SelfUpdater.check(MainActivity.this);
+            updateUpdatePill();
         }
     };
     // «تلاوة» started, paused, changed or stopped a surah or a station (MusicService says so; nothing polls): the «يُتلى الآن» card follows
@@ -170,6 +174,12 @@ public class MainActivity extends Activity {
         registerReceiver(dockChanged, new IntentFilter(Dock.CHANGED));
         registerReceiver(sleepChanged, new IntentFilter(SleepTimer.CHANGED));
         registerReceiver(nowPlayingChanged, new IntentFilter(NowPlaying.CHANGED));
+
+        // the self-update: a newer build downloads in the background, then the pill appears
+        updatePill = (TextView) findViewById(UPDATE_PILL_ID);
+        SelfUpdater.listen(this::updateUpdatePill);
+        SelfUpdater.check(this);
+        updateUpdatePill();
     }
 
     @Override
@@ -183,6 +193,8 @@ public class MainActivity extends Activity {
         updateClock();
         updateWifi();
         updateNowPlaying();
+        updateUpdatePill();
+        SelfUpdater.check(this);
         homeCard.refresh();
         wireFocus();   // the «المهام» card may have come or gone with the settings
         View last = lastFocusedId == View.NO_ID ? null : findViewById(lastFocusedId);
@@ -394,6 +406,14 @@ public class MainActivity extends Activity {
         zoneLine.setSingleLine(true);
         zoneLine.setVisibility(View.GONE);
         left.addView(zoneLine, llp(-2, -2, 0, dp(1), dp(4), 0));
+        // the self-update, hidden until a newer build is on the TV: a gold chip at the foot of the
+        // clock block (the pill row now reaches the greeting, and the weather sits under it)
+        updatePill = updateChip("تحديث جاهز", R.drawable.ic_update);
+        updatePill.setId(UPDATE_PILL_ID);
+        updatePill.setTextColor(0xFFFFD79A);
+        updatePill.setOnClickListener(v -> SelfUpdater.install(this));
+        updatePill.setVisibility(View.GONE);
+        left.addView(updatePill, llp(-2, dp(30), 0, dp(10), 0, 0));
         for (TextView t : new TextView[]{greeting, weatherLine, clock, ampm, date, zoneLine}) t.setShadowLayer(dp(3), 0, dp(1), 0x80000000);
         left.setGravity(Gravity.RIGHT);
         for (TextView t : new TextView[]{greeting, weatherLine, date, zoneLine}) t.setGravity(Gravity.RIGHT);
@@ -450,6 +470,32 @@ public class MainActivity extends Activity {
         }
         nowCard.bind(s);
         nowCard.setVisibility(View.VISIBLE);
+    }
+
+    /** The update chip under the clock: a pill-shaped button with label and icon. */
+    private TextView updateChip(String label, int icon) {
+        TextView p = text(12, "sans-serif-medium", 0xFFFFD79A);
+        p.setText(label);
+        p.setGravity(Gravity.CENTER);
+        Drawable ic = getDrawable(icon).mutate();
+        ic.setBounds(0, 0, dp(16), dp(16));
+        ic.setTint(0xFFFFD79A);
+        p.setCompoundDrawables(null, null, ic, null);
+        p.setCompoundDrawablePadding(dp(8));
+        p.setPadding(dp(14), 0, dp(14), 0);
+        p.setFocusable(true);
+        p.setId(UPDATE_PILL_ID);
+        GradientDrawable bg = new GradientDrawable();
+        bg.setCornerRadius(dp(15));
+        bg.setColor(0x66000000);
+        bg.setStroke(dp(1), 0x33FFFFFF);
+        p.setBackground(bg);
+        p.setOnFocusChangeListener((v, has) -> {
+            bg.setColor(has ? 0xF2FFFFFF : 0x66000000);
+            p.setTextColor(has ? 0xFF111111 : 0xFFFFD79A);
+            ic.setTint(has ? 0xFF111111 : 0xFFFFD79A);
+        });
+        return p;
     }
 
     /** Pill button: its icon only; the one with the focus widens to show its name (see Pill). */
@@ -657,6 +703,14 @@ public class MainActivity extends Activity {
             card.setNextFocusRightId(card.getId());
             card.setNextFocusUpId(pills.get(0).getId());   // a pill's own focus moves this to that pill, see pill()
             card.setNextFocusDownId(dockId != View.NO_ID ? dockId : card.getId());
+        }
+        if (updatePill != null && updatePill.getVisibility() == View.VISIBLE) {
+            // the gold chip is at the foot of the clock block: DOWN from the first pill reaches it
+            updatePill.setNextFocusLeftId(updatePill.getId());
+            updatePill.setNextFocusRightId(updatePill.getId());
+            updatePill.setNextFocusUpId(pills.get(0).getId());
+            updatePill.setNextFocusDownId(pills.get(0).getNextFocusDownId());
+            pills.get(0).setNextFocusDownId(updatePill.getId());
         }
         for (int i = 0; i < d; i++) {
             View c = dockCards.get(i);
@@ -951,6 +1005,32 @@ public class MainActivity extends Activity {
     }
 
     private static String arabicDigits(String s) { return Digits.of(s); }   // the setting's digits (hindi or latin)
+
+    /**
+     * The self-update pill: only there while a newer build is downloading or already on the TV.
+     * Pressing it when it says «تحديث جاهز» is the one press the launcher update takes.
+     */
+    private void updateUpdatePill() {
+        if (updatePill == null) return;
+        SelfUpdater.State state = SelfUpdater.state();
+        boolean show = state == SelfUpdater.State.READY || state == SelfUpdater.State.DOWNLOADING
+                || state == SelfUpdater.State.INSTALLING;
+        if (!show) {
+            if (updatePill.getVisibility() == View.VISIBLE) {
+                updatePill.setVisibility(View.GONE);
+                wireFocus();
+            }
+            return;
+        }
+        String label = state == SelfUpdater.State.DOWNLOADING
+                ? "تحديث " + arabicDigits(String.valueOf(SelfUpdater.progress())) + "٪"
+                : state == SelfUpdater.State.INSTALLING ? "جارٍ التثبيت…" : "تحديث جاهز";
+        updatePill.setText(label);
+        if (updatePill.getVisibility() != View.VISIBLE) {
+            updatePill.setVisibility(View.VISIBLE);
+            wireFocus();
+        }
+    }
 
     /** Connected or not comes from ConnectivityManager: WifiManager hides the network (id -1, "<unknown ssid>")
      *  from apps without location access, which looked like "not connected". The name only when readable. */

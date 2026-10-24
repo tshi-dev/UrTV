@@ -182,6 +182,8 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
   "$PY" -I optimize/tv.py "pm grant sa.urtv.home android.permission.ACCESS_FINE_LOCATION" || true
   # exact alarms for the adhan (Android 12 and newer; older TVs need nothing)
   "$PY" -I optimize/tv.py "appops set sa.urtv.home SCHEDULE_EXACT_ALARM allow" || true
+  # The launcher updates itself: without this it can download a build but Android never lets it install.
+  "$PY" -I optimize/tv.py "appops set sa.urtv.home REQUEST_INSTALL_PACKAGES allow" || true
 
   # The setup wizard (setupwraith) is turned off only when it really answers Home. Disabling it can delete the Wi-Fi network
   # that was saved during the first-run wizard (CleanYourTV's README, github.com/Gathin23/cleanyourtv, MIT: a network saved
