@@ -27,7 +27,8 @@ import java.util.List;
  */
 public class MainActivity extends Activity {
 
-    private static final int TAB_RECITERS = 0, TAB_STATIONS = 1, TAB_ADHAN = 2;
+    public static final String EXTRA_TAB = "open_tab";
+    public static final int TAB_RECITERS = 0, TAB_STATIONS = 1, TAB_ADHAN = 2;
 
     private static final int KIND_RESUME = 0, KIND_RECITER = 1, KIND_STATION = 2,
             KIND_PRAYER = 3, KIND_ADHAN_TOGGLE = 4, KIND_VOICE = 5, KIND_VOLUME = 6, KIND_EXACT = 7;
@@ -117,7 +118,7 @@ public class MainActivity extends Activity {
                 focusList(firstSelectable());
             });
         }
-        selectTab(TAB_RECITERS);
+        selectTab(getIntent().getIntExtra(EXTRA_TAB, TAB_RECITERS));
 
         if (Build.VERSION.SDK_INT >= 33
                 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {

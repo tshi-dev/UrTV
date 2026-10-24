@@ -42,10 +42,9 @@
   html.widget .dimmer,html.widget #credit,html.widget .top,html.widget .clockwrap,html.widget .bottom{display:none}
   html.widget .stage{height:auto;padding:0;display:block;transition:none}
   /* the launcher's cards, up to three: one fills the box; two side by side (the first on the right, as Arabic reads);
-     three: two side by side and the third the full width under them. At 1920 a pair is about 560 + 540 px with a 22 px gap. */
+     with three, the third keeps the same half-width as the first two instead of spanning the whole row. */
   html.widget .mid{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--cg,clamp(8px,2vw,22px));align-items:start}
   html.widget .mid.n2,html.widget .mid.n3{grid-template-columns:minmax(0,560fr) minmax(0,540fr)}
-  html.widget .mid .week.w3{grid-column:1/-1}
   html.widget .week{width:100%}
   html.widget .week.boxes{padding:max(1.7vh,10px) max(1.4vw,14px)}   /* the prayer boxes keep a clear, even distance from the card's edge */
   html,body{
@@ -478,6 +477,7 @@
   .p-prayer.now .big{color:var(--gold-hi);text-shadow:0 0 40px rgba(var(--gold-rgb),.45)}
   .p-prayer.now .label{color:#F1CF8A}
   .live{color:#EE8B70;font-weight:500}
+  .live-minute,.finished-minute{color:#FF6464;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.02em}
   /* the bar before the adhan: slim, at the very top, across the screen; the header starts below it (3.1vh) */
   .adbar{position:fixed;left:0;right:0;top:0;height:2.9vh;min-height:16px;z-index:6;display:flex;align-items:center;justify-content:center;
     background:linear-gradient(90deg,rgba(var(--gold-rgb),0),rgba(var(--gold-rgb),.34) 30%,rgba(var(--gold-rgb),.34) 70%,rgba(var(--gold-rgb),0));
@@ -1003,6 +1003,23 @@ function occasionNow(){
   return val;
 }
 
+// Ramadan stays visible on the home card even when another Hijri occasion comes first.
+let RAMADAN_CACHE = {day:'', val:null};
+function ramadanCountdown(){
+  const day = FMT_DATE.format(new Date());
+  if(RAMADAN_CACHE.day === day) return RAMADAN_CACHE.val;
+  const fmt = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura',{timeZone:CONFIG.timezone,year:'numeric',month:'numeric',day:'numeric'});
+  const read = d => fmt.formatToParts(d).reduce((a,x) => (a[x.type] = +x.value.replace(/[^0-9]/g,''), a), {});
+  let val = null;
+  for(let i=0;i<=400;i++){
+    const h = read(new Date(Date.now() + i*86400000));
+    if(h.month === 9 && h.day === 1){ val = {days:i, year:h.year, active:i === 0}; break; }
+    if(i === 0 && h.month === 9){ val = {days:0, year:h.year, active:true}; break; }
+  }
+  RAMADAN_CACHE = {day, val};
+  return val;
+}
+
 function hijriMonthNow(){
   try{
     return +new Intl.DateTimeFormat('en-u-ca-islamic-umalqura',{timeZone:CONFIG.timezone,month:'numeric'})
@@ -1249,9 +1266,11 @@ function matchWhenShort(d, now, done){
 // the final score of a finished game: «الهلال 2 - 1 النصر» and «النتيجة النهائية · السبت»
 function resultBlock(done){
   const day = FMT_WEEKDAY.format(toDate(done));
+  const home = `<span class="tm">${crestImg(done, 'Home')}${esc(teamAr(done.strHomeTeam, done.idHomeTeam))}</span>`;
+  const away = `<span class="tm">${crestImg(done, 'Away')}${esc(teamAr(done.strAwayTeam, done.idAwayTeam))}</span>`;
   return `<div class="mblock">`
-    + `<div class="big"><span><span class="tm">${esc(teamAr(done.strHomeTeam, done.idHomeTeam))}</span> <span class="sc">${ar(+done.intHomeScore)} - ${ar(+done.intAwayScore)}</span> <span class="tm">${esc(teamAr(done.strAwayTeam, done.idAwayTeam))}</span></span></div>`
-    + `<div class="sub">النتيجة النهائية · ${day}</div></div>`;
+    + `<div class="big"><span>${home} <span class="sc">${ar(+done.intHomeScore)} - ${ar(+done.intAwayScore)}</span> ${away}</span></div>`
+    + `<div class="sub"><span class="finished-minute">٩٠′</span> · ${day}</div></div>`;
 }
 // a game under way or due within the week; '' for any other
 function gameBlock(ev, now, big){
@@ -1265,7 +1284,7 @@ function gameBlock(ev, now, big){
   const live = diff <= 0 && ev.intHomeScore != null && ev.intAwayScore != null;
   // «بعد ٣ أيام» and under it the date and time, small: «السبت ٢٤ أكتوبر · ٩:١٦ م»
   const dateLine = matchWhen(d);
-  const sub = diff > 0 ? `بعد ${shortRemaining(diff)}</div><div class="sub when">${dateLine}` : `<span class="live">مباشر</span> · ${liveStatus(ev, t12)}`;
+  const sub = diff > 0 ? `بعد ${shortRemaining(diff)}</div><div class="sub when">${dateLine}` : liveStatus(ev, t12, now);
   const mid = live ? ` <span class="sc">${ar(+ev.intHomeScore)} - ${ar(+ev.intAwayScore)}</span> ` : ' × ';
   return `<div class="mblock${big ? ' lvb' : ''}">`
        + `<div class="big"><span><span class="tm">${home}</span>${mid}<span class="tm">${away}</span></span></div>`
@@ -1339,12 +1358,14 @@ function leagueShow(now, shown){
   }).filter(Boolean).sort(byRank);
 }
 
-function liveStatus(ev, t12){
+function liveStatus(ev, t12, now = Date.now()){
   const st = (ev.strStatus || '').toUpperCase();
-  if(st === 'HT') return 'استراحة';
-  if(['FT','AET','PEN'].includes(st)) return 'انتهت';
+  if(['FT','AET','PEN','MATCH FINISHED'].includes(st)) return '<span class="finished-minute">٩٠′</span>';
+  if(st === 'HT') return '<span class="live-minute">استراحة</span>';
   const m = parseInt(ev.strProgress, 10);
-  return isNaN(m) || (ev.strSport && ev.strSport !== 'Soccer') ? `بدأت ${t12}` : `الدقيقة ${ar(m)}`;   // minutes are football's
+  const elapsed = Math.max(1, Math.min(90, Math.floor((now - toDate(ev).getTime()) / 60000)));
+  const minute = isNaN(m) ? elapsed : Math.max(1, Math.min(130, m));
+  return `<span class="live-minute">${ar(minute)}′</span>`;
 }
 
 // while a picked team is playing, refresh that event every 2 minutes; so is a game of a followed league (a few at most)
@@ -2112,7 +2133,7 @@ function liveRect(){
 
 let FORECAST = [];
 try{ FORECAST = JSON.parse(localStorage.getItem(LS.forecast) || '[]') || []; }catch(e){}
-const PANEL_TITLE = {today:'يومك', shows:'هذا الأسبوع', prayers:'مواقيت اليوم', forecast:'الأيام القادمة', hourly:'الساعات القادمة', matches:CONFIG.leagues.length ? 'المباريات' : 'مباريات فرقك', tasks:'المهام', year:'السنة'};
+const PANEL_TITLE = {today:'لوحة اليوم', shows:'هذا الأسبوع', prayers:'مواقيت اليوم', forecast:'طقس الأيام القادمة', hourly:'الساعات القادمة', matches:CONFIG.leagues.length ? 'جدول المباريات والنتائج' : 'مباريات فرقك', tasks:'المهام', year:'السنة'};
 const LISTS = ['matches', 'stocks', 'tasks', 'shows'];   // the kinds that page through their rows
 
 // ---- «يومك» (today): the day in one card: the next prayer, the next game of a followed team, the first open task, the next
@@ -2142,22 +2163,24 @@ function todayCard(){
   if(g){
     const live = now >= g.k;
     rows.push(tdRow('المباراة', `<span class="tm">${esc(teamAr(g.ev.strHomeTeam, g.ev.idHomeTeam))}</span> × <span class="tm">${esc(teamAr(g.ev.strAwayTeam, g.ev.idAwayTeam))}</span>`,
-      live ? '<span class="live">مباشر</span>' : 'بعد ' + shortRemaining(g.k - now).split(' و ')[0]));
+      live ? liveStatus(g.ev, '', now) : 'بعد ' + shortRemaining(g.k - now).split(' و ')[0]));
   }
+  const ramadan = ramadanCountdown();
+  if(ramadan) rows.push(tdRow('رمضان', ramadan.active ? 'رمضان مبارك' : 'بعد ' + qty(ramadan.days, UNIT.day), ramadan.active ? 'الشهر الفضيل' : ''));
   if(CONFIG.tasks.length) rows.push(tdRow('المهمة', esc(CONFIG.tasks[0])));
   const oc = occasionNow();
   if(oc){
     const name = oc.o.name + (oc.o.year ? ' ' + ar(oc.hy) : '');
     rows.push(tdRow(oc.today ? 'اليوم' : 'المناسبة القادمة', esc(name), oc.today ? '' : 'بعد ' + qty(oc.days, UNIT.day)));
   }
-  return {title: 'يومك', rows};
+  return {title: 'لوحة اليوم', rows};
 }
 
 // ---- a followed team's game under way, big: its score, the minute and «مباشر» (item 2). The matches card and the bottom slot
 // show it alone, with both crests where there are crests (the launcher's card), until it ends; then they go back to the list.
-function liveWhen(ev){   // «مباشر» and «الدقيقة ٦٧» / «استراحة» / «بدأت ٦:٣٠ م»
+function liveWhen(ev){   // the live minute or halftime, without a redundant «مباشر» label
   const p = hmParts(toDate(ev));
-  return `<span class="live">مباشر</span> · ${liveStatus(ev, ar(fmt12(+p.hour % 24, +p.minute)))}`;
+  return liveStatus(ev, ar(fmt12(+p.hour % 24, +p.minute)));
 }
 const liveScore = ev => ev.intHomeScore != null && ev.intAwayScore != null ? `<span class="sc">${ar(+ev.intHomeScore)} - ${ar(+ev.intAwayScore)}</span>` : '<span class="sc">×</span>';
 function liveRow(ev){   // a row of the card: «الهلال [شعار] ٢ - ١ [شعار] النصر», the crests next to the score
@@ -2587,9 +2610,9 @@ function matchRows(card){
       const d = new Date(t), scored = ev.intHomeScore != null && ev.intAwayScore != null;
       const mid = scored && now >= t ? `<span class="sc">${ar(+ev.intHomeScore)} - ${ar(+ev.intAwayScore)}</span>` : '<span class="x">×</span>';
       const done = finishedRecently(ev, now), upcoming = !done && now < t, pending = r === 0 && !done;
-      const when = done ? 'انتهت'
+      const when = done ? '<span class="finished-minute">٩٠′</span>'
         : pending ? ''   // over with no result yet: no score, no «بعد …»
-        : now >= t ? '<span class="live">مباشر</span>'
+        : now >= t ? liveStatus(ev, '', now)
         : 'بعد ' + shortRemaining(t - now).split(' و ')[0];   // one unit: the date says the rest
       // the date is always there but for a game under way: the day and time of a game to come or one with no result yet, the day of a finished one
       const date = upcoming || pending ? matchWhen(d) : done ? matchDay(d) : '';

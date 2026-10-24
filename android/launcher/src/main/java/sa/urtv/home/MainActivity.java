@@ -40,11 +40,15 @@ import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.text.InputType;
 import sa.urtv.home.tilawah.NowPlaying;
 
 import java.text.SimpleDateFormat;
@@ -99,6 +103,8 @@ public class MainActivity extends Activity {
     private LinearLayout grid;
     private View glow;
     private ImageView wallBack, wallFront;
+    private ImageView weatherPhoto;
+    private TextView weatherPhotoInfo;
     private View gridShade;
     private String[] wallpapers = new String[0];
     private int wallIndex = -1;
@@ -289,6 +295,7 @@ public class MainActivity extends Activity {
         content.addView(hero, new LinearLayout.LayoutParams(-1, screenH));
 
         hero.addView(buildHeader(), lp(-1, -2, Gravity.TOP, dp(48), dp(36), dp(48), 0));
+        buildWeatherPhoto();
         // optional card under the pills, same size as beside the screensaver's clock
         homeCard = new HomeCard(this, hero, lp(dp(461), dp(250), Gravity.LEFT | Gravity.TOP, dp(48), dp(84), 0, 0), this::homeCardBox, new HomeCard.Live() {
             @Override public void focus(View target, boolean has) {   // «المهام» on the card takes the focus like a pill
@@ -399,6 +406,15 @@ public class MainActivity extends Activity {
         header.addView(left, new FrameLayout.LayoutParams(-2, -2, Gravity.RIGHT | Gravity.TOP));
         clockBlock = left;
 
+        LinearLayout searches = new LinearLayout(this);
+        searches.setGravity(Gravity.CENTER_VERTICAL);
+        searches.setOrientation(LinearLayout.HORIZONTAL);
+        searches.setClipChildren(false);
+        searches.setClipToPadding(false);
+        searches.addView(searchBox("بحث Google", false), llp(dp(154), dp(38), dp(5), 0, dp(5), 0));
+        searches.addView(searchBox("تطبيقات Google", true), llp(dp(154), dp(38), dp(5), 0, dp(5), 0));
+        header.addView(searches, new FrameLayout.LayoutParams(-2, dp(42), Gravity.TOP | Gravity.CENTER_HORIZONTAL));
+
         LinearLayout right = new LinearLayout(this);
         right.setGravity(Gravity.CENTER_VERTICAL);
         right.setClipChildren(false);
@@ -410,16 +426,23 @@ public class MainActivity extends Activity {
         wifiPill.setOnClickListener(v -> launch(new Intent(Settings.ACTION_WIFI_SETTINGS)));
         Pill tasks = pill("المهام", R.drawable.ic_mic);   // the list lives in the screensaver app
         tasks.setOnClickListener(v -> launch(new Intent(this, TasksActivity.class)));
-        Pill settings = pill("الإعدادات", R.drawable.ic_settings);
+        Pill settings = pill("إعدادات التلفزيون", R.drawable.ic_settings);
         settings.setOnClickListener(v -> launch(new Intent(Settings.ACTION_SETTINGS)));
-        // the «تلاوة وأذان» pill: the Quran, the radio and the adhan are part of this app, so it opens them right here
-        Pill tilawah = pill("تلاوة وأذان", R.drawable.ic_listen);
-        tilawah.setOnClickListener(v -> launch(new Intent(this, sa.urtv.home.tilawah.MainActivity.class)));
+        Pill reciters = pill("القرّاء", R.drawable.ic_listen);
+        reciters.setOnClickListener(v -> openTilawah(sa.urtv.home.tilawah.MainActivity.TAB_RECITERS));
+        Pill radio = pill("الإذاعة", R.drawable.ic_radio);
+        radio.setOnClickListener(v -> openTilawah(sa.urtv.home.tilawah.MainActivity.TAB_STATIONS));
+        Pill adhan = pill("الأذان", R.drawable.ic_adhan);
+        adhan.setOnClickListener(v -> openTilawah(sa.urtv.home.tilawah.MainActivity.TAB_ADHAN));
         sleepPill = pill("مؤقت النوم", R.drawable.ic_sleep);
         sleepPill.setOnClickListener(v -> showSleep(v));
         List<Pill> row = new ArrayList<>(Arrays.asList(inputs, wifiPill, settings, sleepPill));
         if (isInstalled(SAVER_PKG)) { row.add(tasks); row.add(saver); }
-        if (getResources().getBoolean(R.bool.show_listening)) row.add(tilawah);
+        if (getResources().getBoolean(R.bool.show_listening)) {
+            row.add(reciters);
+            row.add(radio);
+            row.add(adhan);
+        }
         for (Pill p : row) {
             right.addView(p, llp(-2, dp(Pill.HEIGHT), dp(10), 0, 0, 0));
             pills.add(p);
@@ -436,6 +459,126 @@ public class MainActivity extends Activity {
         right.addView(nowCard, 0, llp(-2, dp(Pill.HEIGHT), dp(10), 0, 0, 0));
         header.addView(right, new FrameLayout.LayoutParams(-2, -2, Gravity.LEFT | Gravity.TOP));
         return header;
+    }
+
+    private void openTilawah(int tab) {
+        launch(new Intent(this, sa.urtv.home.tilawah.MainActivity.class)
+                .putExtra(sa.urtv.home.tilawah.MainActivity.EXTRA_TAB, tab));
+    }
+
+    private View searchBox(String hint, boolean apps) {
+        FrameLayout box = new FrameLayout(this);
+        GradientDrawable bg = new GradientDrawable();
+        bg.setColor(0xB822201C);
+        bg.setCornerRadius(dp(19));
+        bg.setStroke(dp(1), 0x66D4AF6A);
+        box.setBackground(bg);
+        box.setFocusable(false);
+
+        EditText input = new EditText(this);
+        input.setSingleLine(true);
+        input.setTextSize(14);
+        input.setTypeface(font("sans-serif-medium"));
+        input.setTextColor(0xFFFFF9EC);
+        input.setHintTextColor(0xCCDED2BC);
+        input.setHint(hint);
+        input.setGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT);
+        input.setPadding(dp(14), 0, dp(38), 0);
+        input.setBackgroundColor(Color.TRANSPARENT);
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        input.setImeOptions(EditorInfo.IME_ACTION_SEARCH | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+        input.setContentDescription(hint);
+        input.setOnEditorActionListener((v, actionId, event) -> {
+            boolean enter = event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
+                    && event.getAction() == KeyEvent.ACTION_DOWN;
+            if (actionId == EditorInfo.IME_ACTION_SEARCH || enter) {
+                runSearch(input, apps);
+                return true;
+            }
+            return false;
+        });
+        input.setOnFocusChangeListener((v, focused) -> {
+            bg.setStroke(dp(focused ? 2 : 1), focused ? 0xFFFFD986 : 0x66D4AF6A);
+            bg.setColor(focused ? 0xE8333029 : 0xB822201C);
+        });
+        box.addView(input, new FrameLayout.LayoutParams(-1, -1));
+        ImageView icon = new ImageView(this);
+        icon.setImageResource(R.drawable.ic_search);
+        icon.setColorFilter(0xFFFFD986);
+        icon.setFocusable(false);
+        FrameLayout.LayoutParams ip = new FrameLayout.LayoutParams(dp(18), dp(18), Gravity.RIGHT | Gravity.CENTER_VERTICAL);
+        ip.rightMargin = dp(12);
+        box.addView(icon, ip);
+        return box;
+    }
+
+    private void runSearch(EditText input, boolean apps) {
+        String query = input.getText().toString().trim();
+        if (query.isEmpty()) return;
+        try {
+            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            if (imm != null) imm.hideSoftInputFromWindow(input.getWindowToken(), 0);
+            String encoded = java.net.URLEncoder.encode(query, "UTF-8");
+            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(apps
+                    ? "market://search?q=" + encoded + "&c=apps"
+                    : "https://www.google.com/search?q=" + encoded));
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            try { startActivity(i); }
+            catch (RuntimeException noMarket) {
+                if (apps) startActivity(new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("https://play.google.com/store/search?q=" + encoded + "&c=apps")));
+                else throw noMarket;
+            }
+        } catch (Exception ignored) {
+            // A browser or Play Store may not be installed; leave the query visible for the next attempt.
+        }
+    }
+
+    private void buildWeatherPhoto() {
+        FrameLayout card = new FrameLayout(this);
+        card.setBackground(roundRect(0x55000000, 0x88D4AF6A, 16));
+        card.setClipToOutline(true);
+        card.setElevation(dp(6));
+        weatherPhoto = new ImageView(this);
+        weatherPhoto.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        weatherPhoto.setImageDrawable(wallFront.getDrawable());
+        card.addView(weatherPhoto, new FrameLayout.LayoutParams(-1, -1));
+        View shade = new View(this);
+        shade.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                new int[]{0x33000000, 0x22000000, 0xE8000000}));
+        card.addView(shade, new FrameLayout.LayoutParams(-1, -1));
+        LinearLayout copy = new LinearLayout(this);
+        copy.setOrientation(LinearLayout.VERTICAL);
+        copy.setGravity(Gravity.BOTTOM | Gravity.RIGHT);
+        copy.setPadding(dp(14), dp(12), dp(14), dp(12));
+        TextView label = text(13, "medium", 0xFFFFD986);
+        label.setText("الطقس الآن");
+        TextView info = text(15, "medium", Color.WHITE);
+        info.setMaxLines(2);
+        info.setGravity(Gravity.RIGHT);
+        info.setText("تتحدّث الحالة عند الاتصال بالإنترنت");
+        info.setShadowLayer(dp(3), 0, dp(1), Color.BLACK);
+        weatherPhotoInfo = info;
+        copy.addView(label, new LinearLayout.LayoutParams(-1, -2));
+        copy.addView(info, llp(-1, -2, 0, dp(4), 0, 0));
+        card.addView(copy, new FrameLayout.LayoutParams(-1, -1));
+        hero.addView(card, lp(dp(300), dp(142), Gravity.RIGHT | Gravity.TOP, 0, dp(238), dp(48), 0));
+        weatherPhoto.setContentDescription("صورة الطقس الآن");
+    }
+
+    private GradientDrawable roundRect(int fill, int stroke, int radius) {
+        GradientDrawable d = new GradientDrawable();
+        d.setColor(fill);
+        d.setCornerRadius(dp(radius));
+        d.setStroke(dp(1), stroke);
+        return d;
+    }
+
+    private void updateWeatherPhoto() {
+        if (weatherPhotoInfo == null || weatherLine == null) return;
+        if (weatherLine.getVisibility() == View.VISIBLE && weatherLine.length() > 0) {
+            weatherPhotoInfo.setText(weatherLine.getText());
+        }
     }
 
     /** Shows or hides the «يُتلى الآن» card by what «تلاوة» is doing: a surah or a station (playing or paused), else nothing. */
@@ -914,6 +1057,7 @@ public class MainActivity extends Activity {
         Calendar now = ClockZone.at(ms, tz);   // the city's time, like the prayer times beside it
         int h = now.get(Calendar.HOUR_OF_DAY);
         greetingLine.update(h, cfg);
+        updateWeatherPhoto();
         int hh = h % 12 == 0 ? 12 : h % 12;   // always 12-hour
         clock.setText(arabicDigits(hh + ":" + String.format(Locale.ROOT, "%02d", now.get(Calendar.MINUTE))));
         ampm.setText(h < 12 ? "ص" : "م");
@@ -1188,6 +1332,7 @@ public class MainActivity extends Activity {
         root.removeView(wallFront);
         root.addView(wallFront, 1, new FrameLayout.LayoutParams(-1, -1));
         wallFront.setImageBitmap(bm);
+        if (weatherPhoto != null) weatherPhoto.setImageBitmap(bm);
         wallFront.setAlpha(0f);
         final ImageView shown = wallFront;
         shown.animate().alpha(1f).setDuration(firstWallpaper ? 600 : 2000).withEndAction(() -> {
