@@ -40,8 +40,8 @@ PAUSE_S = float(os.environ.get("MARKETS_PAUSE", "0.4"))   # between two requests
 CLOSED_REFRESH_MIN = 55   # a closed exchange's last close is confirmed about hourly
 CLOSES_MAX = 30
 
-# Crypto and metals have no exchange hours: asked every run. The page's CoinGecko ids map to Yahoo's pairs.
-ALWAYS_ON = {"GC=F", "SI=F", "BTC-USD", "XRP-USD"}
+# These futures and crypto pairs are checked every run; Yahoo returns their latest available quote outside trading hours too.
+ALWAYS_ON = {"GC=F", "SI=F", "BZ=F", "BTC-USD", "XRP-USD"}
 CG_TO_YAHOO = {"bitcoin": "BTC-USD", "ripple": "XRP-USD"}
 # the most common US tickers people type into «الأسهم»
 COMMON_US = ["AAPL", "MSFT", "GOOGL", "GOOG", "AMZN", "NVDA", "META", "TSLA", "BRK-B", "AVGO", "AMD", "NFLX", "INTC", "ORCL",

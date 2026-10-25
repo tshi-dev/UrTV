@@ -4,7 +4,7 @@ name: Market prices
 # branch data-markets, which the page reads first from raw.githubusercontent.com. Every 15 minutes while an exchange is open
 # (Tadawul Sun-Thu 10:00-15:00 Riyadh = 07:00-12:00 UTC; the US 09:30-16:00 New York time = 13:30-20:00 UTC in summer time,
 # 14:30-21:00 in winter, so the timer covers 13:00-21:00 UTC and the script decides what is open), and every 30 minutes
-# otherwise, for gold, silver, Bitcoin and XRP, which have no hours. GitHub delays timers on busy hours; the data is that much older.
+# otherwise, for gold, silver, Brent, Bitcoin and XRP, which are checked each run. GitHub delays timers on busy hours; the data is that much older.
 # A public repository's standard runners are free; each run takes about a minute: about 2,600 minutes a month (see the report).
 on:
   workflow_dispatch:

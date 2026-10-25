@@ -85,7 +85,7 @@ final class Prefs {
     // markets at the top left (sent to the page as #markets=, up to MAX_MARKETS, in this order of choice; tasi,spx,btc is what it always showed)
     static final String[][] MARKETS = {
         {"tasi", "تاسي"}, {"aramco", "أرامكو"}, {"spx", "S&P 500"}, {"btc", "بيتكوين"},
-        {"gold", "الذهب (الجرام بالريال)"}, {"silver", "الفضة (الجرام بالريال)"}, {"xrp", "ريبل"},
+        {"gold", "الذهب (الجرام بالريال)"}, {"silver", "الفضة (الجرام بالريال)"}, {"oil", "نفط برنت (للبرميل)"}, {"xrp", "ريبل"},
     };
     static final int MAX_MARKETS = 4;
     static final String DEFAULT_MARKETS = "tasi,spx,btc";

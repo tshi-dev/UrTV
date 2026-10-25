@@ -50,7 +50,7 @@ something about the screensaver, the home screen or the TV, find it in the table
 | what the bottom-left shows | الخانة اليسرى | `optimize/saver.sh slot <matches, weather, fasting, countdown, markets, none>` |
 | the next voluntary fast | الصيام | `optimize/saver.sh slot fasting` |
 | days left to a date (a trip, a wedding) | العدّ التنازلي | `optimize/saver.sh countdown <YYYY-MM-DD> '<name>'` and `optimize/saver.sh slot countdown` (`countdown clear` removes it) |
-| markets at the top left | الأسواق | `optimize/saver.sh markets <up to 4 of tasi, aramco, spx, btc, gold, silver, xrp>` |
+| markets at the top left | الأسواق | `optimize/saver.sh markets <up to 4 of tasi, aramco, spx, btc, gold, silver, oil, xrp>` |
 | prices, not just arrows | عرض الأسواق | `optimize/saver.sh mkstyle prices` (`arrows` is the default) |
 | the next occasion, Ramadan, Eid | المناسبة القادمة | always shown in the middle at the bottom; nothing to set |
 | the photo to change more or less often | تبديل الصورة كل | `optimize/saver.sh photos <5, 10, 15, 30, 60>` (minutes) |

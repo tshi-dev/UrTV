@@ -29,7 +29,8 @@ def check(name, ok, detail=""):
 UTC = datetime.timezone.utc
 syms = mp.symbols()
 page = (ROOT / "src/template.html").read_text(encoding="utf-8")
-check("symbols: every market of the page's list", {"^TASI.SR", "2222.SR", "^GSPC", "GC=F", "SI=F", "BTC-USD", "XRP-USD"} <= set(syms), sorted(syms)[:10])
+check("symbols: every market of the page's list", {"^TASI.SR", "2222.SR", "^GSPC", "GC=F", "SI=F", "BZ=F", "BTC-USD", "XRP-USD"} <= set(syms), sorted(syms)[:10])
+check("symbols: Brent oil is refreshed with the market data feed", syms.get("BZ=F") == "always", syms.get("BZ=F"))
 check("symbols: every Tadawul code of the page's table, as CODE.SR",
       all(c + ".SR" in syms for c in re.findall(r"'(\d{4})'\s*:", re.search(r"const TADAWUL = \{(.*?)\n\};", page, re.S).group(1))))
 check("symbols: the common US tickers", {"AAPL", "NVDA", "TSLA"} <= set(syms))

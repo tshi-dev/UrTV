@@ -643,10 +643,10 @@ const CONFIG = {
   digits: _Q.get('digits') === 'latin' ? 'latin' : 'hindi',
   // the look of the card beside the clock: #cardstyle=current|dark1|glass1|dark3|glass3 (anything else = current)
   cardStyle: (v => ['dark1','glass1','dark3','glass3'].includes(v) ? v : 'current')(_Q.get('cardstyle')),
-  // the markets at the top left: #markets=tasi,spx,btc (up to 4 of tasi aramco spx btc gold silver xrp; anything else = the default)
+  // the markets at the top left: #markets=tasi,spx,btc (up to 4 of tasi aramco spx btc gold silver oil xrp; anything else = the default)
   // and #mkstyle=arrows (a ▲/▼ only, the default) or prices (the price and the day's change)
   markets: (l => l.length ? l : ['tasi','spx','btc'])(
-    _list('markets').filter((k, i, a) => ['tasi','aramco','spx','btc','gold','silver','xrp'].includes(k) && a.indexOf(k) === i).slice(0, 4)),
+    _list('markets').filter((k, i, a) => ['tasi','aramco','spx','btc','gold','silver','oil','xrp'].includes(k) && a.indexOf(k) === i).slice(0, 4)),
   mkStyle: _Q.get('mkstyle') === 'prices' ? 'prices' : 'arrows',
   // the national days (23 September, 22 February): #national=auto (the default) or off
   national: _Q.get('national') === 'off' ? 'off' : 'auto',
@@ -1684,6 +1684,7 @@ const MARKETS = {
   btc:    {name:'بيتكوين',  cg:'bitcoin',   dec:0, unit:'$'},
   gold:   {name:'الذهب',    sym:'GC=F',     dec:2, unit:'ر.س', mul:GRAM},
   silver: {name:'الفضة',    sym:'SI=F',     dec:2, unit:'ر.س', mul:GRAM},
+  oil:    {name:'نفط برنت', sym:'BZ=F',     dec:2, unit:'دولار/برميل'},
   xrp:    {name:'ريبل',     cg:'ripple',    dec:2, unit:'$'},
 };
 const CG_YAHOO = {bitcoin:'BTC-USD', ripple:'XRP-USD'};   // the file CI keeps holds crypto under Yahoo's pair
