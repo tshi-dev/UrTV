@@ -68,8 +68,8 @@
   .veil{
     position:fixed;inset:0;z-index:1;
     background:
-      linear-gradient(180deg,rgba(3,10,7,.62) 0%,rgba(3,10,7,.30) 22%,rgba(3,10,7,.12) 46%,rgba(3,10,7,.42) 74%,rgba(2,6,4,.88) 100%),
-      radial-gradient(120% 85% at 22% 34%,rgba(3,14,9,.42) 0%,rgba(3,14,9,0) 58%);
+      linear-gradient(180deg,rgba(3,10,7,.38) 0%,rgba(3,10,7,.22) 22%,rgba(3,10,7,.10) 46%,rgba(3,10,7,.30) 74%,rgba(2,6,4,.58) 100%),
+      radial-gradient(120% 85% at 22% 34%,rgba(3,14,9,.28) 0%,rgba(3,14,9,0) 58%);
   }
   /* photo credits live in PHOTO-CREDITS.md on GitHub, not on screen */
   #credit{display:none;
@@ -83,11 +83,11 @@
   }
   .top-veil{
     position:fixed;left:0;top:0;width:56vw;height:34vh;z-index:3;pointer-events:none;
-    background:radial-gradient(120% 100% at 0% 0%,rgba(2,9,6,.82) 0%,rgba(2,9,6,.42) 45%,rgba(2,9,6,0) 76%);
+    background:radial-gradient(120% 100% at 0% 0%,rgba(2,9,6,.48) 0%,rgba(2,9,6,.24) 45%,rgba(2,9,6,0) 76%);
   }
   .bottom-veil{
     position:fixed;left:0;right:0;bottom:0;height:30vh;z-index:3;pointer-events:none;
-    background:linear-gradient(180deg,rgba(2,7,4,0) 0%,rgba(2,7,4,.55) 42%,rgba(2,6,4,.86) 100%);
+    background:linear-gradient(180deg,rgba(2,7,4,0) 0%,rgba(2,7,4,.36) 42%,rgba(2,6,4,.62) 100%);
   }
 
   .stage{
@@ -112,7 +112,7 @@
   }
   .week .hd{
     display:flex;align-items:center;gap:.7em;margin-bottom:1vh;
-    font-size:calc(clamp(12px,1vw,18px)*var(--z,1));font-weight:500;letter-spacing:.18em;color:var(--gold-2);
+    font-size:calc(clamp(12px,1vw,18px)*var(--z,1));font-weight:500;letter-spacing:normal;color:var(--gold-2);
   }
   .week .hd::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(var(--gold-rgb),.5),transparent)}
   .week ul{list-style:none;display:flex;flex-direction:column;gap:0}
@@ -387,7 +387,7 @@
   }
   .subline{
     margin-top:1.4vh;display:flex;align-items:center;gap:.7em;
-    font-size:clamp(12px,1.02vw,20px);font-weight:300;letter-spacing:.3em;color:#D8CDB6;
+    font-size:clamp(12px,1.02vw,20px);font-weight:300;letter-spacing:normal;color:#D8CDB6;
   }
   .subline .dot{width:5px;height:5px;border-radius:50%;background:var(--gold);opacity:.9}
 
@@ -399,7 +399,7 @@
   }
   .panel{min-width:0}
   .panel .label{
-    font-size:clamp(12px,.98vw,18px);font-weight:500;letter-spacing:.2em;
+    font-size:clamp(12px,.98vw,18px);font-weight:500;letter-spacing:normal;
     color:var(--gold-2);margin-bottom:.8vh;white-space:nowrap;
   }
   .panel .big{
@@ -2827,7 +2827,7 @@ async function loadWeather(){
 function applyNight(){
   const p = riyadhParts();
   const h = p.h + p.mi/60;
-  const MAX = 0.46;
+  const MAX = 0.24;
   let o = 0;
   if(h >= 23 || h < 5)      o = MAX;
   else if(h >= 21)          o = MAX * (h - 21) / 2;
