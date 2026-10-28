@@ -19,3 +19,5 @@ New problems seen in part A:
 
 Numbers vs step 6: screensaver CPU 45% → 0%; MemAvailable 570 → 742-781 MB; SwapFree 84 → 182-257 MB.
 !! lines: none.
+
+Restore after part A: home card none, accessibility services back to the start value (typing service off), the PC's pairing removed («إلغاء») and phone control OFF («توقف التحكم من الجوال لأن آخر جوال انتهت جلسته»), card verse, familydns off, updatechannel unchanged (latest). Part B (owner) still to do.
