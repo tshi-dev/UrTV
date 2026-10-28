@@ -70,6 +70,9 @@ lm, am = read(ROOT / "android/launcher/src/main/AndroidManifest.xml"), read(ROOT
 check("the home app declares READ_GLASS as a signature permission", re.search(r'android:name="sa\.urtv\.home\.READ_GLASS"\s*android:protectionLevel="signature"', lm) is not None)
 check("GlassProvider is behind it", re.search(r'android:name="\.GlassProvider"\s*android:authorities="sa\.urtv\.home\.glass"\s*android:exported="true"\s*android:permission="sa\.urtv\.home\.READ_GLASS"', lm) is not None)
 check("the settings app asks for it", '<uses-permission android:name="sa.urtv.home.READ_GLASS" />' in am)
+decl = lambda m: re.findall(r'<permission\s+android:name="sa\.urtv\.home\.READ_GLASS"\s+android:protectionLevel="(\w+)"\s*/>', m)
+check("…and declares it too, the same (it is installed first: a permission only an app installed later declares is never granted to it)",
+      decl(am) == ["signature"] and decl(lm) == ["signature"], (decl(am), decl(lm)))
 prov = read(HOME / "GlassProvider.java")
 check("the provider only reads: opening for anything but \"r\" is refused, and insert, update and delete throw",
       '!"r".equals(mode)' in prov and "MODE_READ_ONLY" in prov and prov.count("throw new UnsupportedOperationException()") == 3)

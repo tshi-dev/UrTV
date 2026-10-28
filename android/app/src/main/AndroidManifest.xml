@@ -23,7 +23,11 @@
         android:protectionLevel="signature" />
 
     <!-- the launcher says what it is playing, for the screen's «يُتلى الآن» card (same signing key) -->
-    <!-- the glass look: the home's small blurred backdrop for the settings (signature permission, same key) -->
+    <!-- the glass look: the home's small blurred backdrop for the settings (signature permission, same key). Declared here too, the same
+         as in the home app: this app is installed first, and Android grants a permission only from an app that declared it already -->
+    <permission
+        android:name="sa.urtv.home.READ_GLASS"
+        android:protectionLevel="signature" />
     <uses-permission android:name="sa.urtv.home.READ_GLASS" />
     <uses-permission android:name="sa.urtv.home.READ_NOW_PLAYING" />
     <!-- opens the launcher's «حماية العائلة» screen (signature permission, same key) -->
