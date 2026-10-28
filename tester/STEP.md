@@ -16,3 +16,10 @@ Before anything:
 | Z | Restore everything else from the start lines; `optimize/saver.sh updatechannel latest` | — | "restored: yes/no (service left on, as asked)" |
 
 REPORT.md: "step 10", the table, the UrTVRemote/UrTVType/UrTVPhone lines, any `!!` lines. No personal data. Push; tell the owner in Arabic that the test is finished and how many problems there were.
+
+## The owner's own voice recording: a transcript so the team can find each take (owner's request)
+The owner recorded the narration himself (Recording_3.m4a, ~7.7 min: line number, then the line once, twice or three times). The team can't listen; they need a word-by-word transcript with times.
+| # | Do | Right when |
+|---|---|---|
+| T1 | Ask the owner (Arabic) where Recording_3.m4a is on this PC (or to copy it here). Then `python tester/voice/stt.py <path to Recording_3.m4a>` (pull work/tester first). It tries ElevenLabs Speech to Text with his key; if refused it uses faster-whisper (`pip install faster-whisper` first; it downloads the large-v3 model once). Never print the key | tester/voice/owner-transcript.json written; it prints the word count and the engine |
+| T2 | Push ONLY tester/voice/owner-transcript.json to work/tester-report under tester/voice-owner/ (reset to origin/work/tester-report first). Not the recording itself (the supervisor already has it) | pushed |
