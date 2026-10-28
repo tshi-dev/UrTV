@@ -83,34 +83,53 @@ public final class GlassPaint {
 
     /**
      * A focusable card in the glass look: the panel at rest, the solid focus fill while focused ({@link #tile}), and every word and icon
-     * in it in the focus colours then (they take the card's state: duplicateParentState). A word in the sub colour becomes onFocusSub;
-     * an icon tagged {@link #ICON} the accent, then the focus ink.
+     * in it in the focus ink then ({@link #follow}). A word in the sub colour becomes onFocusSub; an icon tagged {@link #ICON} the accent,
+     * then the focus ink.
      */
     public static void card(View card, GlassStyle.Look l, float radiusDp) {
         card.setBackground(tile(card.getContext(), l, radiusDp));
-        if (card instanceof TextView) {
-            TextView t = (TextView) card;
-            int rest = t.getCurrentTextColor();
-            t.setTextColor(focusColors(rest, rest == l.sub ? l.onFocusSub : l.onFocus));
-        } else if (card instanceof ViewGroup) {
-            follow((ViewGroup) card, l);
-        }
+        follow(card, l);
     }
 
-    /** The words and icons under {@code g} take its focus: the focus colours while it has it. */
-    public static void follow(ViewGroup g, GlassStyle.Look l) {
-        for (int i = 0; i < g.getChildCount(); i++) {
-            View v = g.getChildAt(i);
-            v.setDuplicateParentStateEnabled(true);
-            if (v instanceof TextView) {
-                int rest = ((TextView) v).getCurrentTextColor();
-                ((TextView) v).setTextColor(focusColors(rest, rest == l.sub ? l.onFocusSub : l.onFocus));
-            } else if (v instanceof ImageView && ICON.equals(v.getTag())) {   // our own line icons only, never an app's icon
-                ImageView iv = (ImageView) v;
-                if (iv.getDrawable() != null) iv.getDrawable().mutate().setTintList(focusColors(l.accent, l.onFocus));
-            } else if (v instanceof ViewGroup) {
-                follow((ViewGroup) v, l);
+    /**
+     * The words and icons of {@code card} (and the card itself, when it is a word) in the focus ink while it has the focus, their own
+     * colours otherwise. Set from the card's focus listener (it runs first, then the one the screen had), never through
+     * duplicateParentState: on the TV test of 3.147 the rows inside the settings kept their white words on the white fill that way.
+     */
+    public static void follow(View card, GlassStyle.Look l) {
+        final java.util.List<TextView> words = new java.util.ArrayList<>();
+        final java.util.List<int[]> colours = new java.util.ArrayList<>();   // {rest, focused}
+        final java.util.List<ImageView> icons = new java.util.ArrayList<>();
+        collect(card, l, words, colours, icons);
+        View.OnFocusChangeListener had = card.getOnFocusChangeListener();
+        final View.OnFocusChangeListener was = had instanceof Follow ? ((Follow) had).was : had;   // dressed again: the screen's own, once
+        card.setOnFocusChangeListener(new Follow(was) {
+            @Override public void onFocusChange(View v, boolean has) {
+                for (int i = 0; i < words.size(); i++) words.get(i).setTextColor(colours.get(i)[has ? 1 : 0]);
+                for (ImageView iv : icons) if (iv.getDrawable() != null) iv.getDrawable().mutate().setTint(has ? l.onFocus : l.accent);
+                if (was != null) was.onFocusChange(v, has);
             }
+        });
+        for (int i = 0; i < words.size(); i++) words.get(i).setTextColor(colours.get(i)[card.hasFocus() ? 1 : 0]);
+        for (ImageView iv : icons) if (iv.getDrawable() != null) iv.getDrawable().mutate().setTint(card.hasFocus() ? l.onFocus : l.accent);
+    }
+
+    /** our focus listener, keeping the one the screen had */
+    private abstract static class Follow implements View.OnFocusChangeListener {
+        final View.OnFocusChangeListener was;
+        Follow(View.OnFocusChangeListener was) { this.was = was; }
+    }
+
+    private static void collect(View v, GlassStyle.Look l, java.util.List<TextView> words, java.util.List<int[]> colours, java.util.List<ImageView> icons) {
+        if (v instanceof TextView) {
+            int rest = ((TextView) v).getCurrentTextColor();
+            words.add((TextView) v);
+            colours.add(new int[] {rest, rest == l.sub ? l.onFocusSub : l.onFocus});
+        } else if (v instanceof ImageView && ICON.equals(v.getTag())) {   // our own line icons only, never an app's icon
+            icons.add((ImageView) v);
+        } else if (v instanceof ViewGroup) {
+            ViewGroup g = (ViewGroup) v;
+            for (int i = 0; i < g.getChildCount(); i++) collect(g.getChildAt(i), l, words, colours, icons);
         }
     }
 

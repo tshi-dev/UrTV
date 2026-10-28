@@ -41,6 +41,11 @@ decodes = [str(p.relative_to(ROOT)) for p, s in java.items() if re.search(r"Glas
            and p.name not in ("GlassSource.java", "GlassProvider.java")]
 check("one bitmap per process: only GlassSource decodes the backdrop, and keeps it (one static field, read again when the file changes)",
       not decodes and "private static Bitmap cached;" in source and "private static Bitmap cached;" in sourceApp and "if (stamp != cachedStamp)" in source, decodes)
+check("a focused card's words and icons take the focus ink from its focus listener (not duplicateParentState: the TV test of 3.147)",
+      "setDuplicateParentStateEnabled" not in paint and "card.setOnFocusChangeListener(new Follow(was) {" in paint
+      and "words.get(i).setTextColor(colours.get(i)[has ? 1 : 0]);" in paint and "if (was != null) was.onFocusChange(v, has);" in paint)
+late = [str(p.relative_to(ROOT)) for p, s in java.items() if re.search(r"(GlassPaint\.card\(|glassCard\()[^\n]*\n(?:[^\n]*\n){0,6}?[^\n]*setOnFocusChangeListener", s)]
+check("no screen sets a focus listener after GlassPaint.card (it would replace the one that paints the words)", not late, late)
 check("the screens draw that same bitmap, never a copy", "new BitmapDrawable(c.getResources(), backdrop);   // the same bitmap, not a copy" in paint
       and "createBitmap" not in paint and "copy(" not in paint)
 users = sorted(p.name for p, s in java.items() if "GlassSource.page(" in s or "GlassSource.page(" in s.replace("sa.urtv.home.GlassSource.page(", "GlassSource.page("))
@@ -53,6 +58,9 @@ cc = read(HOME / "ControlCenter.java")
 check("«مركز التحكم»: the glass look of now, opaque over the look's solid colour (it sits over the home's photo), glass tiles, the solid focus fill",
       "GlassStyle.Look l = GlassSource.look(act);" in cc and "PANEL = GlassStyle.over(l.dialog, l.base);" in cc and "fill.setColor(f ? FOCUSED : TILE);" in cc
       and "name.setTextColor(f ? ON : TEXT);" in cc and "0xF0242428" not in cc)
+icons = re.findall(r"R\.drawable\.(ic_\w+)", cc)
+square = [i for i in icons if re.search(r'pathData="M0,0h24v24h-24z"|fillColor="#(FF)?000000"', read(ROOT / f"android/launcher/src/main/res/drawable/{i}.xml"))]
+check("«مركز التحكم»: no tile icon has a filled square behind it (tinted, «إعدادات تلفزيونك»'s was a plain white square)", icons and not square, square)
 TIL = HOME / "tilawah"
 for name in ("MainActivity.java", "SurahActivity.java", "PlayerActivity.java", "AdhanActivity.java"):
     t = read(TIL / name)
@@ -97,8 +105,13 @@ light_style = styles.split('name="UrDialogLight"')[1].split("</style>")[0]
 for nm, st, l in (("dark", dark_style, look["DARK"]), ("light", light_style, look["LIGHT"])):
     low = st.lower()
     check(f"the {nm} dialogs' words are GlassStyle's", f'textcolorprimary">{hexrgb(l["text"]).lower()}<' in low and f'textcolorsecondary">{hexrgb(l["sub"]).lower()}<' in low, st)
-check("the dialogs' glass is GlassStyle's (dark and light)", f'#{look["DARK"]["dialog"][2:].upper()}' in read(res / "drawable/glass_dialog.xml").upper()
-      and f'#{look["LIGHT"]["dialog"][2:].upper()}' in read(res / "drawable/glass_dialog_light.xml").upper())
+def over(top, under):
+    t, u = int(top, 16), int(under, 16); a = (t >> 24 & 255) / 255
+    return "#FF%02X%02X%02X" % tuple(int((t >> s & 255) * a + (u >> s & 255) * (1 - a) + 0.5) for s in (16, 8, 0))
+check("the dialogs are opaque: GlassStyle's dialog glass over the look's solid colour (the TV test of 3.147: the rows behind showed through)",
+      over(look["DARK"]["dialog"], look["DARK"]["base"]) in read(res / "drawable/glass_dialog.xml").upper()
+      and over(look["LIGHT"]["dialog"], look["LIGHT"]["base"]) in read(res / "drawable/glass_dialog_light.xml").upper(),
+      (over(look["DARK"]["dialog"], look["DARK"]["base"]), over(look["LIGHT"]["dialog"], look["LIGHT"]["base"])))
 check("the dialogs' focused row is GlassStyle's focus fill and ink (dark and light)", f'#{look["DARK"]["focus"][2:].upper()}' in read(res / "drawable/glass_focus.xml").upper()
       and f'#{look["LIGHT"]["focus"][2:].upper()}' in read(res / "drawable/glass_focus_light.xml").upper()
       and hexrgb(look["DARK"]["onFocus"]) in read(res / "color/glass_item.xml").upper() and hexrgb(look["LIGHT"]["onFocus"]) in read(res / "color/glass_item_light.xml").upper())

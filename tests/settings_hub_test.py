@@ -165,4 +165,10 @@ dock = (ROOT / "android/launcher/src/main/java/sa/urtv/home/DockActivity.java").
 check("«ترتيب المفضلة»: the first app brings the list back to its top, the title over it",
       "View first = cards.isEmpty() ? reset : cards.get(0);" in dock and "if (has) scroll.post(() -> scroll.smoothScrollTo(0, 0));" in dock
       and "if (was != null) was.onFocusChange(v, has);" in dock)
+# the TV test of 3.147: in «الموقع والصلاة», after 5 down and 5 up, the list moved from the left half to the right half and back
+check("the settings' side pane and rows have fixed widths (no weights), worked out once; the rows' width changes only between the categories and a category",
+      "new LinearLayout.LayoutParams(sideWidth, -1)" in st and "new LinearLayout.LayoutParams(width - sideWidth - dp(36), -1)" in st
+      and "0.36f);" not in st and "0.64f));" not in st and "int rowsWidth = screen == null ? pageWidth : pageWidth - sideWidth - dp(36);" in st)
+check("…and the scroll goes up and down only: nothing can move the page sideways", "@Override public void scrollTo(int x, int y) { super.scrollTo(0, y); }" in st
+      and "scroll = new UpDownScroll(this);" in st)
 sys.exit(1 if failed else 0)
