@@ -20,3 +20,9 @@ Version: before 3.148, after "version: 3.149" (install.sh all; «Home is already
 | V1 | /v1/models gave 401 (key cannot list models). eleven_v3 with mp3_44100_192 gave 403: "Output format mp3_44100_192 is only available on the Creator tier and above". Ran with EL_MODEL=eleven_v4 and mp3_44100_128 (only change, local copy): 26/26 ok |
 | V2 | 26 files, none under 5 KB (1.3 MB total); owner listened: "That's good" |
 | V3 | pushed tester/voice/01.mp3 ... 26.mp3 |
+
+## Voice round 3 (N2)
+| # | Result |
+|---|---|
+| N2 | voice 0 (current) + voices 1-4, each on eleven_v4 and eleven_v3 (mp3_44100_128), 2 lines each: 20 files in tester/voice-test/ (voice-<n>-<1|2>.mp3 = v4, voice-<n>-v3-<1|2>.mp3 = v3). All ok |
+| N3 | waiting: v4 files sent to the owner to pick |
