@@ -85,7 +85,7 @@ check("the state tells the page whether the typing service is on (its own field,
 for d in ("docs/FEATURES.md", "docs/SETTINGS.md"):
     t = text(d)
     check(f"{d} says plainly what the service sees and keeps", "الكتابة في التطبيقات الأخرى" in t or "typing into other apps" in t.lower())
-    check(f"{d} names the separate service and how to turn it on", "type-setup" in t and "تلفزيونك: الكتابة من الجوال" in t)
+    check(f"{d} names the separate service and how to turn it on", "type-setup" in t and "تلفزيونك: التحكم والكتابة من الجوال" in t)
 strings = text(res + "values/strings.xml")
 check("the typing service's own description (shown in the TV's accessibility settings) says what it sees and keeps",
       "لا ينظر في الشاشة إلا لحظة وصول نص" in strings and "لا يحفظ ولا يسجّل ولا يرسل" in strings and "ولا في تطبيق مقفول بالرقم السري" in strings)

@@ -37,7 +37,7 @@ const OLD = () => ({
 const NEW = (extra = {}) => Object.assign(OLD(), {
   adhan_live: false, adhan_prayer: '', next_adhan: { prayer: 'العصر', in_seconds: 1234 },
   sleep_timer: { left_seconds: 600, options: [15, 30, 60, 90] }, saver_idle: '10', saver_idle_options: ['1', '2', '5', '10', '15', '30'],
-  keys_everywhere: true, typing_service: true, family: { pin_set: true, kids: false, locked: ['@wifi', 'com.c.three', 'com.x.y'] }, phones: 2
+  keys_everywhere: true, dpad_everywhere: true, typing_service: true, family: { pin_set: true, kids: false, locked: ['@wifi', 'com.c.three', 'com.x.y'] }, phones: 2
 }, extra);
 const APPS = {
   ok: true,
@@ -65,6 +65,7 @@ async function boot({ state = NEW(), w = 360, h = 740, scheme = 'dark', hash = '
     if (p === '/api/pair') return J({ ok: true, id: 'p1' });
     if (p === '/api/pair/status') return route.fulfill({ status: 200, contentType: 'application/json', headers: { 'Set-Cookie': 'urtv=ck1; Path=/' }, body: JSON.stringify({ ok: true, status: 'approved', session: 'SESS1' }) });
     if (c.noSession && p !== '/api/logout') return J({ ok: false, error: 'no_session' }, 401);
+    if (p === '/api/key' && c.keyAnswer) return J(c.keyAnswer);
     if (p === '/api/state') { if (c.stateDelay) await sleep(c.stateDelay); return J(typeof c.state === 'function' ? c.state() : c.state); }
     if (p === '/api/apps') return J(c.apps);
     if (p.startsWith('/api/icon/')) {   // an <img> sends the cookie but not the header: the server wants both
@@ -240,13 +241,13 @@ await T('text other apps', async () => {
     check(`result ${r}: message and the field is cleared`, await until(async () => (await W.p.textContent('#msg')).includes(msg)) && await until(async () => (await W.p.inputValue('#txt')) === ''), await W.p.textContent('#msg'));
     await W.ctx.close();
   }
-  for (const [e, msg] of [['service_off', 'فعّل خدمة "تلفزيونك: الكتابة من الجوال"'], ['refused', 'ما أقدر أكتب في هذا التطبيق'], ['locked', 'مقفول بالرقم السري، افتحه على التلفزيون'], ['password_field', 'ما أكتب في حقل كلمة المرور'], ['failed', 'ما نجحت']]) {
+  for (const [e, msg] of [['service_off', 'فعّل خدمة "تلفزيونك: التحكم والكتابة من الجوال"'], ['refused', 'ما أقدر أكتب في هذا التطبيق'], ['locked', 'مقفول بالرقم السري، افتحه على التلفزيون'], ['password_field', 'ما أكتب في حقل كلمة المرور'], ['failed', 'ما نجحت']]) {
     const W = await boot({ cfg: { textAnswer: { ok: false, error: e } } });
     await W.p.fill('#txt', 'نص'); await W.p.click('#txtSearch');
     check(`error ${e}: message and the text is kept`, await until(async () => (await W.p.textContent('#msg')).includes(msg)) && (await W.p.inputValue('#txt')) === 'نص', await W.p.textContent('#msg'));
     if (e === 'service_off') {
       const n = await W.p.textContent('#svcNote');
-      check('service_off: the permanent note with the path, visible after the toast is gone', n.includes('الإعدادات ← إمكانية الوصول ← تلفزيونك: الكتابة من الجوال') && await W.p.isVisible('#svcNote'));
+      check('service_off: the permanent note with the path, visible after the toast is gone', n.includes('الإعدادات ← إمكانية الوصول ← تلفزيونك: التحكم والكتابة من الجوال') && await W.p.isVisible('#svcNote'));
       await sleep(3800);
       check('the note stays', await W.p.isVisible('#svcNote'));
     }
@@ -261,13 +262,15 @@ await T('text other apps', async () => {
 // ---- the note under the pad
 await T('note', async () => {
   const mk = async extra => { const S = await boot({ state: NEW(extra) }); const r = { shown: await S.p.isVisible('#foreNote'), t: await S.p.textContent('#foreNote'), warn: await S.p.$eval('#foreNote', e => e.classList.contains('warn')) }; await S.ctx.close(); return r; };
-  const own = await mk({}), a = await mk({ foreground: 'other' }), b = await mk({ foreground: 'other', keys_everywhere: false });
+  const own = await mk({}), a = await mk({ foreground: 'other' }), b = await mk({ foreground: 'other', keys_everywhere: false, dpad_everywhere: false });
+  const c = await mk({ foreground: 'other', keys_everywhere: true, dpad_everywhere: false });
   check('no note while our screen is in front', !own.shown);
-  check('other app + keys everywhere: the short note', a.shown && a.t === 'الأسهم تعمل في شاشاتنا؛ الرجوع والرئيسية في كل مكان' && !a.warn, a.t);
-  check('other app, no accessibility: the warning that arrows work only in our screens', b.shown && b.t.includes('أندرويد يسمح لتطبيقنا بإرسال الأسهم') && b.warn, b.t);
+  check('other app + a service on that reaches everything: the short note', a.shown && a.t === 'الأسهم والاختيار والرجوع والرئيسية تعمل في التطبيق الذي أمامك' && !a.warn, a.t);
+  check('other app, service on but the arrows not reaching it (before Android 13, no typing/remote service): Back and Home, and what the arrows need', c.shown && c.t.includes('الرجوع والرئيسية تعمل في كل التطبيقات') && c.t.includes('أندرويد ١٣') && c.t.includes('تلفزيونك: التحكم والكتابة من الجوال') && !c.warn, c.t);
+  check('other app, no service: the warning with the service\'s name and where to turn it on', b.shown && b.t.includes('فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال»') && b.t.includes('إمكانية الوصول') && b.warn, b.t);
   const S = await boot({ state: OLD({ foreground: 'other' }) });
   const o = OLD(); o.foreground = 'other'; S.cfg.state = o; await tab(S, 'now'); await tab(S, 'remote');
-  check('old state with another app in front: the warning', (await S.p.textContent('#foreNote')).includes('أندرويد يسمح لتطبيقنا'));
+  check('old state with another app in front: the warning with the service\'s name', (await S.p.textContent('#foreNote')).includes('فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال»'));
   await S.ctx.close();
 });
 
@@ -554,6 +557,15 @@ await T('cards', async () => {
   D.cfg.setDelay = 0;
   check('the message over the page never takes a tap (a button under it is pressed)', (await D.p.evaluate(() => getComputedStyle(document.getElementById('msg')).pointerEvents)) === 'none');
   await D.ctx.close();
+});
+
+await T('key answers', async () => {
+  for (const [e, msg] of [['other_app_limited', 'ما قدرنا نحرك التركيز'], ['other_app', 'فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال»']]) {
+    const S = await boot({ cfg: { keyAnswer: { ok: false, error: e } } });
+    await S.p.click('[data-k=ok]');
+    check(`key answered ${e}: the toast says what to do`, await until(async () => (await S.p.textContent('#msg')).includes(msg)), await S.p.textContent('#msg'));
+    await S.ctx.close();
+  }
 });
 
 await T('size', async () => {

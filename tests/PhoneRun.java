@@ -747,6 +747,9 @@ public final class PhoneRun {
         e.actions.next = Actions.Result.fail("other_app");
         Reply fail = authed(e, "POST", "/api/key", "{\"key\":\"up\"}", sess);
         check("a key Android doesn't allow is answered with a fixed word, not silence", fail.status == 200 && Boolean.FALSE.equals(fail.json().get("ok")) && "other_app".equals(fail.json().get("error")), fail.body);
+        e.actions.next = Actions.Result.fail("other_app_limited");
+        Reply lim = authed(e, "POST", "/api/key", "{\"key\":\"ok\"}", sess);
+        check("a key the service could not place is answered other_app_limited (the page explains it)", lim.status == 200 && Boolean.FALSE.equals(lim.json().get("ok")) && "other_app_limited".equals(lim.json().get("error")), lim.body);
         e.actions.next = Actions.Result.ok("done");
         check("the endpoints that are not in the list don't exist (reset, uninstall, adb, shell)", authed(e, "POST", "/api/reset", "{}", sess).status == 404 && authed(e, "POST", "/api/uninstall", "{}", sess).status == 404
             && authed(e, "POST", "/api/adb", "{}", sess).status == 404 && authed(e, "POST", "/api/shell", "{\"cmd\":\"id\"}", sess).status == 404, "");

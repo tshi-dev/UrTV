@@ -109,6 +109,7 @@ python3 tests/adhan_keys_test.py
 python3 tests/fav_edit_test.py
 python3 tests/apps_edit_test.py
 python3 tests/remote_keys_test.py
+python3 tests/remote_nav_test.py
 python3 tests/dpad_rtl_test.py
 python3 tests/home_grid_test.py
 python3 tests/spring_test.py

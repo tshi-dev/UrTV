@@ -17,7 +17,7 @@
 #   optimize/dock.sh sleep cancel          stop it
 #   optimize/dock.sh familydns on|off|status|grant   «حماية العائلة (DNS)»: Private DNS to AdGuard Family, checked and undone by optimize/familydns.sh
 #   optimize/dock.sh sleep-setup           turn on the sleep service (an accessibility service, once) so the end turns the screen off
-#   optimize/dock.sh type-setup            turn on the typing service (a second accessibility service, once) so the phone remote can type into other apps
+#   optimize/dock.sh type-setup            turn on the remote-and-typing service (a second accessibility service, once) so the phone remote can press keys and type in other apps
 #   optimize/dock.sh pin set 1234         «الرقابة الأبوية»: the master PIN (4 digits), set or changed from here without the old one; never printed back
 #   optimize/dock.sh pin lock PKG          lock one app (its package, e.g. com.netflix.ninja), a pill (@inputs @wifi @tvsettings @tasks @saver @listen @sleep @center) or @urtv (our settings); `pin unlock PKG` opens it again
 #   optimize/dock.sh pin status            what is set: PIN or not, what is locked, kids mode, wrong tries (never the PIN)
@@ -66,7 +66,7 @@ case "${1:-}:$#" in
     send SLEEP_TV "--ei minutes $minutes" ;;
   sleep-setup:1|type-setup:1)
     # two accessibility services of ours, each turned on on its own (typing is a separate service: it can read the screen to find a text field, the sleep one cannot)
-    if [ "$1" = type-setup ]; then svc="sa.urtv.home/sa.urtv.home.TypeService"; what="the typing service"; done_msg="the typing service is on: the phone remote can type into the text field of the app in front"
+    if [ "$1" = type-setup ]; then svc="sa.urtv.home/sa.urtv.home.TypeService"; what="the typing service"; done_msg="the typing service is on (remote and typing): the phone remote can press the arrows, OK, Back and Home in the app in front and type into its text field"
     else svc="sa.urtv.home/sa.urtv.home.SleepService"; what="the sleep service"; done_msg="the sleep service is on: the end of «مؤقت النوم» turns the screen off"; fi
     cur=$("$PY" -I optimize/tv.py "settings get secure enabled_accessibility_services; settings get secure accessibility_enabled" | tr -d '\r')
     now=$(sed -n 1p <<< "$cur")

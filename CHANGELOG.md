@@ -5,6 +5,7 @@ Newest first. `next` is where changes land first; a release is what was tested t
 ## On `next` (not released yet)
 
 **Phone**
+- The phone remote's arrows, OK, Back and Home work in every app, through our accessibility service («تلفزيونك: التحكم والكتابة من الجوال», renamed from «…: الكتابة من الجوال»; or the sleep timer's service from Android 13): the dpad global actions on Android 13+, a focus move on the window in front before it (OK = a click on the focused node). Our own screens keep their exact key path; the phone page names the service when it is off. A phone key stops a playing adhan first when «إيقاف الأذان بأي زر» is on. Log tag `UrTVRemote`: the key, the route and the answer only.
 - Typing from the phone into other apps: the typing service now declares `typeWindowStateChanged` (read by nobody) so Android tracks the window in front and the field can be found; it also takes the input-focused field first and fields that accept set-text. A fixed-words log (tag `UrTVType`) shows each step.
 - «تحكم من الجوال» is the first row of «الجوال والتحديث», and that tile names it.
 **Fixes from the TV test**

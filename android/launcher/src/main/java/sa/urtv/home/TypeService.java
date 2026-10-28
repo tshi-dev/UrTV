@@ -158,6 +158,64 @@ public class TypeService extends AccessibilityService {
         return "no_activity";
     }
 
+    /**
+     * A phone key into the app in front (arrows, OK, Back, Home): a global action where Android has one (Back and Home always, the arrows and
+     * OK from Android 13), else, before that, a focus move on the window in front: the input-focused (else accessibility-focused) node's
+     * focusSearch, then ACTION_FOCUS; OK is ACTION_CLICK on the focused node or the nearest clickable parent. One of RemoteNav's fixed
+     * words; the log (RemoteTrace) has the key, the route and that word, nothing of the window.
+     */
+    static String press(String key) {
+        TypeService s = running;
+        if (s == null) return RemoteNav.OFF;
+        RemoteNav.Step st = RemoteNav.plan(key, Build.VERSION.SDK_INT, true);
+        String r;
+        switch (st.route) {
+            case GLOBAL: r = s.performGlobalAction(st.code) ? RemoteNav.DONE : RemoteNav.FAILED; break;
+            case FOCUS: r = s.moveFocus(st.code); break;
+            case CLICK: r = s.clickFocused(); break;
+            default: r = RemoteNav.FAILED; break;
+        }
+        RemoteTrace.line(key, st.route, r);
+        return r;
+    }
+
+    private AccessibilityNodeInfo focusedNode(AccessibilityNodeInfo root) {
+        AccessibilityNodeInfo f = root.findFocus(AccessibilityNodeInfo.FOCUS_INPUT);
+        return f != null ? f : root.findFocus(AccessibilityNodeInfo.FOCUS_ACCESSIBILITY);
+    }
+
+    private String moveFocus(int direction) {
+        AccessibilityNodeInfo root = getRootInActiveWindow();
+        if (root == null) return RemoteNav.LIMITED;
+        AccessibilityNodeInfo cur = focusedNode(root);
+        // nothing focused yet: the first focusable thing on screen takes the focus
+        AccessibilityNodeInfo next = cur == null ? firstFocusable(root, new int[] {500}, 0) : cur.focusSearch(direction);
+        return next != null && next.performAction(AccessibilityNodeInfo.ACTION_FOCUS) ? RemoteNav.DONE : RemoteNav.LIMITED;
+    }
+
+    private String clickFocused() {
+        AccessibilityNodeInfo root = getRootInActiveWindow();
+        if (root == null) return RemoteNav.LIMITED;
+        AccessibilityNodeInfo n = focusedNode(root);
+        for (int up = 0; n != null && up < 6; up++, n = n.getParent()) {
+            if (n.isClickable()) return n.performAction(AccessibilityNodeInfo.ACTION_CLICK) ? RemoteNav.DONE : RemoteNav.FAILED;
+        }
+        return RemoteNav.LIMITED;
+    }
+
+    private static AccessibilityNodeInfo firstFocusable(AccessibilityNodeInfo n, int[] budget, int depth) {
+        if (n.isFocusable() && n.isVisibleToUser() && n.isEnabled() && depth > 0) return n;
+        if (depth >= 40) return null;
+        for (int i = 0; i < n.getChildCount() && budget[0] > 0; i++) {
+            AccessibilityNodeInfo c = n.getChild(i);
+            if (c == null) continue;
+            budget[0]--;
+            AccessibilityNodeInfo hit = firstFocusable(c, budget, depth + 1);
+            if (hit != null) return hit;
+        }
+        return null;
+    }
+
     private static String done(String word) {
         log("result=" + word);
         return word;

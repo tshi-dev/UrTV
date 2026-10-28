@@ -114,7 +114,7 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
     <input id="txt" dir="auto" maxlength="120" enterkeyhint="send" placeholder="اكتب هنا (عربي أو إنجليزي)" aria-label="نص للتلفزيون">
     <div class="row" id="modes" role="group" aria-label="طريقة الكتابة"><button data-mode="replace" class="on">استبدال</button><button data-mode="append">إضافة</button></div>
     <div class="row"><button id="txtGo" class="gold">أرسل</button><button id="txtSearch">بحث</button></div>
-    <div id="svcNote" class="note warn hidden"><div>فعّل خدمة "تلفزيونك: الكتابة من الجوال" في إعدادات التلفزيون لتكتب في التطبيقات الأخرى</div><div>الإعدادات ← إمكانية الوصول ← تلفزيونك: الكتابة من الجوال</div></div>
+    <div id="svcNote" class="note warn hidden"><div>فعّل خدمة "تلفزيونك: التحكم والكتابة من الجوال" في إعدادات التلفزيون لتكتب في التطبيقات الأخرى</div><div>الإعدادات ← إمكانية الوصول ← تلفزيونك: التحكم والكتابة من الجوال</div></div>
     <p>يُكتب النص في الحقل النصي المفتوح، ويُضاف مهمةً إذا كانت شاشة «المهام» مفتوحة، وفي التطبيقات الأخرى يُكتب في حقلها بعد تفعيل خدمة إمكانية الوصول. ومن دون الخدمة: أندرويد لا يسمح لتطبيق بالكتابة داخل تطبيق آخر، فيُنسخ النص إلى حافظة التلفزيون.</p>
   </div>
 
@@ -245,7 +245,8 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
   }
 
   var MSG = {
-    other_app: 'تطبيق آخر أمام الشاشة: لا يسمح أندرويد بإرسال هذا الزر إليه. الرئيسية والصوت وتشغيل/إيقاف تعمل دائمًا.',
+    other_app: 'تطبيق آخر أمام الشاشة: فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال» في إعدادات إمكانية الوصول بالتلفزيون لتصله الأزرار. الصوت وتشغيل/إيقاف تعمل دائمًا.',
+    other_app_limited: 'ما قدرنا نحرك التركيز أو نضغط في هذا التطبيق الآن. جرّب «رجوع» أو افتح ما تريد بريموت التلفزيون.',
     private_screen: 'شاشة السماح لا تُحرَّك من الجوال، استعمل ريموت التلفزيون.',
     failed: 'ما نجح الأمر.', refused: 'ما قبل التلفزيون هذه القيمة.', saver_missing: 'حدّث تطبيق «شاشة تلفزيونك» على التلفزيون.', not_saved: 'التلفزيون ما حفظ البطاقات. أعد المحاولة، وإن تكرر حدّث تطبيق «شاشة تلفزيونك».',
     pin_required: 'اكتب الرقم السري أولًا.', pin_wrong: 'الرقم السري غير صحيح.', slow_down: 'مهلًا، طلبات كثيرة.', no_session: 'انتهت الجلسة.',
@@ -269,7 +270,7 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
     conflict: 'يتعارض مع نسخة مثبّتة.', incompatible: 'لا يناسب هذا الجهاز.', record: 'تعذّر حفظ سجل التحديث.'
   };
   var TXT = {   // the words of the text box (the same codes mean other things elsewhere)
-    service_off: 'فعّل خدمة "تلفزيونك: الكتابة من الجوال" في إعدادات التلفزيون لتكتب في التطبيقات الأخرى', refused: 'ما أقدر أكتب في هذا التطبيق', locked: 'التطبيق الأمامي مقفول بالرقم السري، افتحه على التلفزيون أولاً',
+    service_off: 'فعّل خدمة "تلفزيونك: التحكم والكتابة من الجوال" في إعدادات التلفزيون لتكتب في التطبيقات الأخرى', refused: 'ما أقدر أكتب في هذا التطبيق', locked: 'التطبيق الأمامي مقفول بالرقم السري، افتحه على التلفزيون أولاً',
     password_field: 'ما أكتب في حقل كلمة المرور', failed: 'ما نجحت الكتابة.'
   };
   var TOOLS = [['tasks', 'المهام'], ['saver', 'شاشة التوقف'], ['inputs', 'المصادر'], ['settings', 'الإعدادات'], ['listen', 'تلاوة وأذان']];
@@ -443,8 +444,10 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
     var fn = $('foreNote'), fore = s.foreground === 'other';
     fn.classList.toggle('hidden', !fore); fn.classList.toggle('warn', fore && !s.keys_everywhere);
     $('svcNote').classList.toggle('hidden', !(svcOff || (fore && s.typing_service === false)));
-    fn.textContent = s.keys_everywhere ? 'الأسهم تعمل في شاشاتنا؛ الرجوع والرئيسية في كل مكان'
-      : 'يوجد تطبيق آخر أمام الشاشة: أندرويد يسمح لتطبيقنا بإرسال الأسهم والاختيار والرجوع إلى شاشاته هو فقط. الرئيسية والصوت وتشغيل/إيقاف تعمل في كل مكان.';
+    // a service of ours on: Back and Home work in every app; the arrows and OK too from Android 13 (dpad_everywhere), before it with the typing/remote service
+    fn.textContent = s.dpad_everywhere ? 'الأسهم والاختيار والرجوع والرئيسية تعمل في التطبيق الذي أمامك'
+      : s.keys_everywhere ? 'الرجوع والرئيسية تعمل في كل التطبيقات؛ الأسهم والاختيار تحتاج أندرويد ١٣ أو خدمة «تلفزيونك: التحكم والكتابة من الجوال»'
+      : 'يوجد تطبيق آخر أمام الشاشة. فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال» (الإعدادات ← إمكانية الوصول) لتعمل الأسهم والاختيار والرجوع والرئيسية فيه. الصوت وتشغيل/إيقاف تعمل دائمًا.';
     var lab = live ? 'الأذان الآن' + (s.adhan_prayer ? ': ' + s.adhan_prayer : '') : playLabel(s);
     $('now').classList.toggle('hidden', !lab); $('nowT').textContent = lab;
     $('adhanStop1').classList.toggle('hidden', !live); $('adhanStop2').classList.toggle('hidden', !live);

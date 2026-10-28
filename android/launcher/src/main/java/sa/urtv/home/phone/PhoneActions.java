@@ -24,6 +24,8 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
 import sa.urtv.home.PhoneApps;
+import sa.urtv.home.RemoteNav;
+import sa.urtv.home.tilawah.NowPlaying;
 import sa.urtv.home.tilawah.PhoneBridge;
 
 /**
@@ -45,12 +47,18 @@ final class PhoneActions implements Actions {
     // ---- keys
 
     @Override public Result key(String key) {
+        // «إيقاف الأذان بأي زر»: the phone's key stops a playing adhan first and is used up, as the TV's own remote does (volume keys excepted)
+        if (RemoteNav.stopsAdhan(key, NowPlaying.adhanLive(), NowPlaying.adhanStopKey(app))) {
+            NowPlaying.stopAdhan(app);
+            return Result.ok("done");
+        }
         AudioManager audio = (AudioManager) app.getSystemService(Context.AUDIO_SERVICE);
         switch (key) {
             case "vol_up": audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI); return Result.ok("done");
             case "vol_down": audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI); return Result.ok("done");
             case "mute": audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_TOGGLE_MUTE, AudioManager.FLAG_SHOW_UI); return Result.ok("done");
             case "home":
+                if (PhoneApps.keysEverywhere() && RemoteNav.DONE.equals(PhoneApps.pressKey("home"))) return Result.ok("done");   // the service's Home: right from any app
                 try {
                     app.startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                     return Result.ok("done");
@@ -76,9 +84,11 @@ final class PhoneActions implements Actions {
             default: return Result.fail("failed");
         }
         final Activity a = Foreground.current();
-        if (a == null) {   // no screen of ours in front: Android lets an app send keys only to its own windows; Back goes through the accessibility service when it is on
-            if (key.equals("back") && PhoneApps.globalBack()) return Result.ok("done");
-            return Result.fail("other_app");
+        if (a == null) {   // no screen of ours in front: Android lets an app send keys only to its own windows, so one of our accessibility services presses it when it is on
+            String r = PhoneApps.pressKey(key);
+            if (RemoteNav.DONE.equals(r)) return Result.ok("done");
+            if (RemoteNav.LIMITED.equals(r)) return Result.fail("other_app_limited");   // the service is on but the app has nothing to move or click, or this Android needs the other service
+            return Result.fail(RemoteNav.FAILED.equals(r) ? "failed" : "other_app");
         }
         if (a instanceof PrivateScreen) return Result.fail("private_screen");
         main.post(new Runnable() {
@@ -177,6 +187,7 @@ final class PhoneActions implements Actions {
             m.put("saver_idle_options", options);
         }
         m.put("keys_everywhere", PhoneApps.keysEverywhere());
+        m.put("dpad_everywhere", PhoneApps.dpadEverywhere());
         m.put("typing_service", PhoneApps.typingEnabled());
         m.put("family", PhoneApps.family(app));
         m.put("foreground", Foreground.current() != null ? "own" : "other");
