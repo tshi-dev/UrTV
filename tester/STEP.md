@@ -1,27 +1,21 @@
-step: 8
+step: 9
 from: UrTV supervisor
-what: the retest of step 7's problems on apk-next 3.148 or newer. Part A needs NO owner (do it yourself with adb and the PC's Chrome; do not message the owner for it). Part B is the owner's: two rows he must do himself, plus his look at the home and the glass. Follow tester/RULES.md.
+what: the last short test before the release, on apk-next 3.149 or newer: the four looks in «المظهر», YouTube search from the phone page, and «بدون». Part A needs no owner; part B is the owner's look at the four looks. Follow tester/RULES.md.
 
 Before anything:
-- Write down the start lines: `optimize/saver.sh show`, `optimize/dock.sh show`, `adb shell settings get secure enabled_accessibility_services`, `adb shell settings get global private_dns_mode`.
-- Wait until `curl -sL https://github.com/tshi-dev/UrTV/releases/download/apk-next/version.txt` is 3.148 or above. Install with `APK_TAG=apk-next optimize/install.sh all` (as in step 7). Write down the version.
+- Start lines as in step 8. Wait until apk-next version.txt is 3.149 or above; install with `APK_TAG=apk-next optimize/install.sh all`. Write down the version.
 
 | # | Do | Shots (local) | Right when |
 |---|---|---|---|
-| A1 | Home screen right after the install, then after Home again, then after opening and leaving YouTube | home1, home2, home3 | the clock/greeting block at the top, the favourites row under it (NOT over the clock), «أكمل المشاهدة» a normal row under the favourites with cards the size of the favourite tiles, nothing huge |
-| A2 | Our settings (keyevent 83): in «الموقع والصلاة» move onto a row; go 5 down and 5 up; open «طريقة الحساب» | set-row, set-scroll, set-dialog | the focused row's words are dark on the white fill (readable); the list never moves sideways; the dialog is solid (nothing behind shows through) |
-| A3 | Control Center: the «إعدادات تلفزيونك» tile | center-icon | a house icon, not a white square |
-| A4 | Pairing stays awake: settings → «الجوال والتحديث» → «تحكم من الجوال» → تشغيل; touch NOTHING for 90 s (no keep-awake keys from the PC this time); then pair from the PC's Chrome with the code and «سماح» (`input keyevent 23`, after moving to «سماح» if focus is on «رفض») | pair-90s, pair-ok2 | no screensaver during the 90 s; phone control still on; pairing works |
-| A5 | YouTube search from the page: open YouTube on the TV (search screen or home), type «قرآن» in the page's text field, «بحث»; then `adb shell logcat -d -s UrTVType \| tail -20` | yt-search | YouTube's search opens with «قرآن» and results; the log says searched (paste the UrTVType lines; they hold no text) |
-| A6 | Page «الإعدادات»: set the first home card to «الصلاة القادمة», look at the home; set it back to «بدون», look at the home again (no Home press in between) | card-on, card-off | the card appears, then disappears at once |
-| A7 | Turn phone control off, remove the PC's pairing | — | off |
-| A8 | Slowdown numbers again: A1-A2 of step 7 (idle, and after 5x YouTube→Home) | — | still about 0 % for the screensaver app; write the memory numbers |
-| B1 | Owner: look at the home screen and the settings (dark), and say if the glass and the layout are good | — (owner's word) | owner OK |
-| B2 | Owner: «تعديل التطبيقات»: long OK on an app in «كل التطبيقات» → «تعديل التطبيقات»; move one app; hide one (× then «تراجع»); hide one and bring it back from «المخفية»; push one up into the favourites (▲ from the first row); Back. Then put things the way he wants | apps-edit, apps-hidden | every part works; the order stays after Home and back |
-| B3 | Owner: move fast along the favourites and rows, hold an arrow key | — (owner's word) | smooth; held keys don't lag |
-| Z | Restore everything from the start lines (cards, familydns, accessibility services incl. typing, phone control OFF, appearance as the owner had it); `optimize/saver.sh updatechannel latest`; compare `saver.sh show` and `dock.sh show` | — | "restored: yes/no" |
+| A1 | Our settings → «الشاشة الرئيسية»: «المظهر» is the FIRST row. Open «الشكل»: move over the 4 options (زجاجي، فحمي، كحلي، نظيف), shot of each preview; then «الإضاءة» (داكن، فاتح، تلقائي) | look-row, look-glass, look-graphite, look-navy, look-clean, light-pick | first row; each option shows its own preview |
+| A2 | For each look (`optimize/saver.sh look glass|graphite|navy|clean`), dark then light (`saver.sh appearance dark|light`): shots of the settings main menu with a focused tile, a section with a focused row, and the «طريقة الحساب» dialog. End on glass + dark | looks-*.png | every screen readable; the focused item readable; dialogs solid |
+| A3 | Pair the PC's Chrome as in step 8 (keep-awake works now). YouTube search: open YouTube (pick the profile it shows only if it needs no owner choice; otherwise leave it on the profile screen), type «قرآن» in the page, «بحث»; `adb shell logcat -d -s UrTVType \| tail -20` | yt-search2 | YouTube's search opens with «قرآن» (log: search=started) |
+| A4 | Page «الإعدادات»: first card «الصلاة القادمة», save; then «بدون», save. After each: `optimize/saver.sh show \| grep home_panel`, and `adb shell logcat -d -s UrTVPhone \| tail -10`; write what the page showed (any toast) | card-on2, card-off2 | home_panel nextprayer, then none; paste the UrTVPhone lines (counts only) |
+| A5 | Turn phone control off, remove the PC's pairing | — | off |
+| B1 | Owner: open «المظهر», try the four looks and the lighting, and say which he likes; put back what he wants | — (owner's word) | owner OK |
+| Z | Restore everything from the start lines except the look/appearance the owner chose; `optimize/saver.sh updatechannel latest` | — | "restored: yes/no" |
 
-REPORT.md: "step 8", the table, the numbers, the owner's words, any `!!` lines. No personal data. Push after part A and again after part B. After part B, tell the owner in Arabic that the test is finished and how many problems there were. Part B: ask the owner in Arabic, one row at a time, when he says he's ready.
+REPORT.md: "step 9", the table, the owner's words, the UrTVType and UrTVPhone lines, any `!!` lines. No personal data. Push after part A and after part B; then tell the owner in Arabic that the test is finished and how many problems there were.
 
 ## Extra (owner OK'd, no owner needed): the real app icons for the release video
 | # | Do | Right when |
