@@ -78,6 +78,7 @@ async function boot({ state = NEW(), w = 360, h = 740, scheme = 'dark', hash = '
       if (body.pin === undefined) return J({ ok: false, error: 'pin_required' }, 403);
       if (body.pin !== '1234') return J({ ok: false, error: 'pin_wrong' }, 403);
     }
+    if (p === '/api/set' && c.setDelay) await sleep(c.setDelay);
     if (p === '/api/set' && c.pin) {
       if (!body || body.pin === undefined) return J({ ok: false, error: 'pin_required' }, 403);
       if (body.pin !== '1234') return J({ ok: false, error: 'pin_wrong' }, 403);
@@ -543,6 +544,14 @@ await T('cards', async () => {
   D.cfg.stateDelay = 0;
   await D.p.click('#cardsGo'); await sleep(400);
   check('…and the save sends what the selects show (an empty list)', JSON.stringify(posts(D, '/api/set').map(r => r.body).pop()) === '{"home_cards":[]}', JSON.stringify(posts(D, '/api/set').map(r => r.body)));
+  // changed while the save is still on its way to the TV
+  D.cfg.setDelay = 700; shown = ['prayer'];
+  await D.p.locator('#cards select').nth(0).selectOption('weather');
+  await D.p.click('#cardsGo');
+  await D.p.locator('#cards select').nth(0).selectOption({ label: 'بدون' });
+  await sleep(2200);
+  check('a choice made while the save is on its way stays (the select is not redrawn from the TV)', (await D.p.locator('#cards select').nth(0).inputValue()) === '', await D.p.locator('#cards select').nth(0).inputValue());
+  D.cfg.setDelay = 0;
   check('the message over the page never takes a tap (a button under it is pressed)', (await D.p.evaluate(() => getComputedStyle(document.getElementById('msg')).pointerEvents)) === 'none');
   await D.ctx.close();
 });

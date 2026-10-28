@@ -501,6 +501,11 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
   // The cards the person is choosing are not redrawn from the TV's answer while they are being changed (an answer that was on its way when
   // the choice was made would put the old one back, and the save would send that): drawn again once they are saved, or on the next arrival.
   var cardsDirty = false;
+  function chosenCards() {
+    var out = [], sels = $('cards').children;
+    for (var i = 0; i < sels.length; i++) if (sels[i].value && out.indexOf(sels[i].value) < 0) out.push(sels[i].value);
+    return out;
+  }
   function cards(s) {
     if (cardsDirty) return;
     var box = $('cards'); box.textContent = '';
@@ -528,9 +533,9 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
     });
   };
   $('cardsGo').onclick = function () {
-    var out = [], sels = $('cards').children;
-    for (var i = 0; i < sels.length; i++) if (sels[i].value && out.indexOf(sels[i].value) < 0) out.push(sels[i].value);
-    set({ home_cards: out }).then(function () { cardsDirty = false; refresh(); });
+    var out = chosenCards();
+    // saved: the TV's cards are drawn again, unless the person has changed them since the press (then their choice stays)
+    set({ home_cards: out }).then(function () { if (chosenCards().join() === out.join()) cardsDirty = false; refresh(); });
   };
   $('aOn').onchange = function () { set({ adhan_on: this.checked }); };
   $('aOn2').onchange = function () { set({ adhan_on: this.checked }); };
