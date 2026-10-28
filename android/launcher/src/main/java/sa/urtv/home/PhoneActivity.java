@@ -8,6 +8,7 @@ import android.os.Looper;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -81,6 +82,7 @@ public class PhoneActivity extends Activity implements PrivateScreen {
     @Override
     protected void onPause() {
         super.onPause();
+        keepAwake(false);
         main.removeCallbacks(tick);
         PhoneHost.setUi(null);
         // the code is shown only here: leaving with nobody connected turns it off, so nothing keeps listening for a code nobody can see
@@ -92,7 +94,17 @@ public class PhoneActivity extends Activity implements PrivateScreen {
 
     // ---------------------------------------------------------------- screen
 
+    /**
+     * The screensaver must not start while the code is on screen or a phone waits for «سماح / رفض» (it closed this screen and switched phone control off
+     * in the TV test): the window keeps the screen awake while phone control is on and this screen is shown, and never otherwise.
+     */
+    private void keepAwake(boolean on) {
+        if (on) getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        else getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
     private void render() {
+        keepAwake(control.isOn());
         col.removeAllViews();
         shownToken = "";
         col.addView(text("تحكم من الجوال", 26, "Medium", TEXT, Gravity.RIGHT), right(0));

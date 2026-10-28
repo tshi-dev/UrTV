@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -57,6 +58,7 @@ public class UpdateActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);   // the update and install steps must not be cut by the screensaver while this screen is shown
         PhoneUpdater.setVisible(true);
         PhoneUpdater.setListener(new Runnable() {
             @Override public void run() { runOnUiThread(new Runnable() { @Override public void run() { render(); } }); }
@@ -73,6 +75,7 @@ public class UpdateActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         PhoneUpdater.setVisible(false);
         PhoneUpdater.setListener(null);
     }

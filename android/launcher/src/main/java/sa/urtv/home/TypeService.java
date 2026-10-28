@@ -1,6 +1,7 @@
 package sa.urtv.home;
 
 import android.accessibilityservice.AccessibilityService;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
@@ -39,7 +40,7 @@ public class TypeService extends AccessibilityService {
 
     /** The words typeText answers with; the phone gets nothing else of what it saw. */
     static final String TYPED = "typed_other", TYPED_NO_SEARCH = "typed_other_nosearch", OFF = "service_off", LOCKED = "locked", REFUSED = "refused",
-        NO_FIELD = "no_field", PASSWORD = "password_field", FAILED = "failed";
+        NO_FIELD = "no_field", PASSWORD = "password_field", FAILED = "failed", SEARCHED = "searched";
 
     /** One node of the real screen, for TypeInto. A budget keeps a huge tree from holding the call up. */
     private static final class Wrapped implements TypeInto.Node {
@@ -107,7 +108,13 @@ public class TypeService extends AccessibilityService {
         if (picked == null) picked = TypeInto.pick(new Wrapped(root, new int[] {500}, 0));
         r = TypeInto.fieldProblem(picked);
         log(r == TypeInto.Refusal.NO_FIELD ? "field=none" : r == TypeInto.Refusal.PASSWORD_FIELD ? "field=password" : "field=found");
-        if (r == TypeInto.Refusal.NO_FIELD) return done(NO_FIELD);
+        if (r == TypeInto.Refusal.NO_FIELD) {
+            // for the TV test: what the focused node is (its class name only, never its text or id), to see why no field was found
+            AccessibilityNodeInfo f = root.findFocus(AccessibilityNodeInfo.FOCUS_INPUT);
+            if (f == null) f = root.findFocus(AccessibilityNodeInfo.FOCUS_ACCESSIBILITY);
+            log("focus_class=" + AppSearch.safeClass(f == null ? null : f.getClassName()));
+            return done(search(c, pkg, text) ? SEARCHED : NO_FIELD);
+        }
         if (r == TypeInto.Refusal.PASSWORD_FIELD) return done(PASSWORD);
         AccessibilityNodeInfo field = ((Wrapped) picked).info;
         CharSequence now = Build.VERSION.SDK_INT >= 26 && field.isShowingHintText() ? null : field.getText();
@@ -119,6 +126,20 @@ public class TypeService extends AccessibilityService {
         if (!search) return done(TYPED);
         if (Build.VERSION.SDK_INT < 30) return done(TYPED_NO_SEARCH);
         return done(field.performAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_IME_ENTER.getId()) ? TYPED : TYPED_NO_SEARCH);
+    }
+
+    /** The app's own search (YouTube TV): the words go there by Intent.ACTION_SEARCH when the app has no text field to type into. */
+    private static boolean search(Context c, String pkg, String text) {
+        String q = AppSearch.query(text);
+        if (q == null || !AppSearch.supports(pkg)) return false;
+        Intent i = new Intent(Intent.ACTION_SEARCH).setPackage(pkg).putExtra(SearchManager.QUERY, q).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (i.resolveActivity(c.getPackageManager()) == null) return false;
+        try {
+            c.startActivity(i);
+            return true;
+        } catch (RuntimeException e) {
+            return false;
+        }
     }
 
     private static String done(String word) {

@@ -245,7 +245,7 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
     not_found: 'ما وجد التلفزيون هذا التطبيق.',
     typed: 'كُتب النص في الحقل.', task: 'أُضيف النص مهمةً.', copied: 'نُسخ النص إلى حافظة التلفزيون (لا يوجد حقل نصي مفتوح في شاشاتنا).',
     opened: 'فُتح على التلفزيون', pin_on_tv: 'اكتب الرقم السري على التلفزيون', nothing: 'لا يوجد أذان الآن.',
-    typed_other: 'تمت الكتابة في التطبيق', typed_other_nosearch: 'تمت الكتابة، والبحث يحتاج أندرويد ١١ أو أحدث',
+    typed_other: 'تمت الكتابة في التطبيق', searched: 'فتحنا البحث في التطبيق بكلماتك', copied_other: 'التطبيق الذي أمامك ما فيه خانة كتابة نقدر نكتب فيها. نسخنا النص على التلفزيون، والصقه من داخل التطبيق إن أمكن.', typed_other_nosearch: 'تمت الكتابة، والبحث يحتاج أندرويد ١١ أو أحدث',
     saved: 'تم الحفظ.', sent: 'أُرسل.', done: ''
   };
   var UP = {
@@ -553,7 +553,7 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
     var body = { text: t, mode: txtMode }; if (search === true) body.search = true;
     api('/api/text', body).then(function (j) {
       if (j && j.ok) {
-        if (j.result === 'typed_other' || j.result === 'typed_other_nosearch') { svcOff = false; $('svcNote').classList.add('hidden'); }
+        if (j.result === 'typed_other' || j.result === 'typed_other_nosearch' || j.result === 'searched' || j.result === 'copied_other') { svcOff = false; $('svcNote').classList.add('hidden'); }
         say(j); $('txt').value = ''; return;
       }
       var e = j && j.error;   // the text stays: the person can fix the cause and send again

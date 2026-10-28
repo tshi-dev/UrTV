@@ -44,6 +44,11 @@ public final class PhoneApps {
 
     private static boolean listening(Context c) { return c.getResources().getBoolean(R.bool.show_listening); }
 
+    /** The cards of the home screen were saved from the phone: the home in front shows them now (HomeCard.CHANGED). */
+    public static void cardsChanged(Context app) {
+        app.sendBroadcast(new Intent(HomeCard.CHANGED).setPackage(app.getPackageName()));
+    }
+
     /** A package was installed, replaced or removed, or the favourites changed: the next ask looks again. */
     public static synchronized void invalidate() {
         appsCache = null;

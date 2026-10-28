@@ -97,11 +97,12 @@ final class PhoneActions implements Actions {
         // the typing log (tag UrTVType): fixed words and the length only, never the text or a package name
         android.util.Log.i("UrTVType", "text request: mode=" + ("append".equals(mode) ? "append" : "replace") + " search=" + search + " len=" + (text == null ? 0 : text.length()));
         android.util.Log.i("UrTVType", Foreground.current() == null ? "foreground=other" : "foreground=own");
+        final boolean[] otherNoField = {false};
         if (Foreground.current() == null) {   // another app in front: through the accessibility service, when the owner turned it on
             String r = PhoneApps.typeText(app, text, "append".equals(mode), search);
             switch (r) {
-                case "typed_other": case "typed_other_nosearch": return Result.ok(r);
-                case "no_field": break;   // the app has no text field on screen: the text goes to the TV's clipboard, as it always did
+                case "typed_other": case "typed_other_nosearch": case "searched": return Result.ok(r);
+                case "no_field": otherNoField[0] = true; break;   // the app has no text field on screen: the text goes to the TV's clipboard, as it always did
                 default: return Result.fail(r);   // service_off, locked, password_field, failed
             }
         }
@@ -131,7 +132,7 @@ final class PhoneActions implements Actions {
         main.post(job);
         try {
             String r = job.get(2, TimeUnit.SECONDS);
-            return r == null ? Result.fail("failed") : Result.ok(r);
+            return r == null ? Result.fail("failed") : Result.ok(otherNoField[0] && "copied".equals(r) ? "copied_other" : r);
         } catch (Exception e) {
             return Result.fail("failed");
         }
@@ -199,6 +200,7 @@ final class PhoneActions implements Actions {
             if (r == null) return Result.fail("saver_missing");
             if (!r.getBoolean("ok")) return Result.fail(r.getBoolean("idle_denied") ? "needs_permission" : "refused");
             if (city) PhoneBridge.rescheduleAdhan(app);
+            if (v.containsKey("home_cards")) PhoneApps.cardsChanged(app);
         }
         String why = PhoneBridge.adhan(app, v);
         return why == null ? Result.ok("saved") : Result.fail(why);

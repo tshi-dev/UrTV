@@ -32,7 +32,6 @@ public class SetupActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         ScrollView scroll = new ScrollView(this);
         glass(scroll);   // the glass look: the home's photo, small and blurred once, under its veil
         scroll.setVerticalScrollBarEnabled(false);
@@ -90,6 +89,7 @@ public class SetupActivity extends Activity {
     private void goAfterPin(final boolean undoIt) {
         if (running) return;
         running = true;
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);   // only while a run is going (the screensaver would cut it)
         start.setAlpha(.5f);
         undo.setAlpha(.5f);
         log.setText("");
@@ -132,6 +132,7 @@ public class SetupActivity extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override public void run() {
                         running = false;
+                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                         start.setAlpha(1f);
                         undo.setAlpha(1f);
                         status.setText(msg);

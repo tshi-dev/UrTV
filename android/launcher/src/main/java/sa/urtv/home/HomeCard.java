@@ -36,6 +36,9 @@ final class HomeCard {
     private static final String PREFS = "homecard";   // the last settings read from the screensaver
     private static final String FONTS = "https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/";
 
+    /** Sent inside the app when the cards were changed from the phone: the home screen in front follows at once. */
+    static final String CHANGED = "sa.urtv.home.CARDS_CHANGED";
+
     /** The box in pixels, {width, height}, for that many cards; asked again whenever the screen is laid out. */
     interface Sizer { int[] box(int cards); }
 

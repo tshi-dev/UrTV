@@ -17,6 +17,7 @@ import java.util.Set;
 final class RemoteKeys {
     // android.view.KeyEvent's values
     private static final int ACTION_DOWN = 0, ACTION_UP = 1;
+    /** The system itself takes 176 before any app sees it (a TV test: `input keyevent 176` did nothing on our home, 83 worked): kept for the TVs that pass it on. */
     private static final int KEYCODE_SETTINGS = 176;
     /** KEYCODE_NOTIFICATION: the Settings key of the owner's TCL remote reaches the app with this number (UrTVKeys logged it), not 176. */
     private static final int KEYCODE_NOTIFICATION = 83;

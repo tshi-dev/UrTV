@@ -162,6 +162,11 @@ public class MainActivity extends Activity {
         @Override public void onReceive(Context c, Intent i) { PhoneApps.invalidate(); dockApps = loadDock(); buildApps(); }
     };
 
+    // the cards were changed from the phone while the home screen is in front: follow now, not at the next return
+    private final BroadcastReceiver cardsChanged = new BroadcastReceiver() {
+        @Override public void onReceive(Context c, Intent i) { if (resumed) { homeCard.refresh(); wireFocus(); } }
+    };
+
     // ---------------------------------------------------------------- lifecycle
 
     @Override
@@ -194,6 +199,7 @@ public class MainActivity extends Activity {
         pf.addDataScheme("package");
         registerReceiver(packages, pf);
         InternalReceivers.register(this, dockChanged, new IntentFilter(Dock.CHANGED));
+        InternalReceivers.register(this, cardsChanged, new IntentFilter(HomeCard.CHANGED));
         InternalReceivers.register(this, sleepChanged, new IntentFilter(SleepTimer.CHANGED));
         InternalReceivers.register(this, nowPlayingChanged, new IntentFilter(NowPlaying.CHANGED));
     }
@@ -253,6 +259,7 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         unregisterReceiver(packages);
         unregisterReceiver(dockChanged);
+        unregisterReceiver(cardsChanged);
         unregisterReceiver(sleepChanged);
         unregisterReceiver(nowPlayingChanged);
         loader.shutdownNow();
