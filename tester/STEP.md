@@ -22,3 +22,9 @@ REPORT.md: "step 9", the table, the owner's words, the UrTVType and UrTVPhone li
 |---|---|---|
 | X1 | On the home screen, `adb exec-out screencap -p > home-full.png` (keep it LOCAL). Crop ONLY the four app tiles, each on its own, at full resolution: ثمانية, شاهد, YouTube, سين (find them in the favourites or «كل التطبيقات»; move focus away from them first so none has the focus ring). Save as icons/thmanyah.png, icons/shahid.png, icons/youtube.png, icons/seen.png | four clean tiles, nothing else from the screen in them |
 | X2 | Push ONLY those four PNGs to work/tester-report under tester/icons/ (never the full screenshot) | pushed |
+
+## Update from the supervisor (owner's answers, 28 Oct)
+- The owner OK'd pushing the 32 looks photos (demo city, checked for nothing personal) to work/tester-report under tester/looks/, so the supervisor shows them to him. Only those photos; nothing else.
+- IMPORTANT: work/tester-report was REWRITTEN (force-pushed) to take a city name out of its history. Before your next push: `git fetch origin work/tester-report && git reset --hard origin/work/tester-report` in your report checkout (your REPORT.md text is kept there, without the city), then add the photos and push normally.
+- Never name a city in REPORT.md, not even the real one being "put back": write "real city put back".
+- Icons: ثمانية and سين aren't installed, so crop only شاهد and YouTube (if they show) into tester/icons/; skip the others.
