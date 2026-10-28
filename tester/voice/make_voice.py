@@ -3,7 +3,7 @@
 # never print it, never write it to a file.
 import json, os, sys, time, urllib.request
 
-VOICE_ID = "rpGHcNQJvO8dFNNFNj1v"   # the owner's chosen voice (not secret)
+VOICE_ID = os.environ.get("EL_VOICE", "rpGHcNQJvO8dFNNFNj1v")   # the owner's chosen voice (not secret); EL_VOICE=<id> tries another
 # The owner asked for ElevenLabs' newest model. The script asks the account which models it has and takes the newest
 # full (not turbo/flash) one that speaks Arabic: v4, else v3, else multilingual v2. EL_MODEL=<id> forces one.
 PREFER = ["eleven_v4", "eleven_v3", "eleven_multilingual_v2"]
