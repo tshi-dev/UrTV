@@ -32,3 +32,10 @@ Version: before 3.148, after "version: 3.149" (install.sh all; «Home is already
 |---|---|
 | F1 | voice rpGHcNQJvO8dFNNFNj1v, eleven_v4, lines-v3.txt, EL_SPLIT=1: 38 files, none under 5 KB (1.6 MB) |
 | F2 | pushed tester/voice-v3/*.mp3 (38) |
+
+## Adhan (H1-H3)
+| # | Result |
+|---|---|
+| H1 | Wikimedia Commons, Category:Adhan: "Adhan in Istanbul", own work, {{self|cc-zero}}, 50 s city adhan. Only CC0 own-work file in the category (others are CC BY / BY-SA, or PD claimed for a singer) |
+| H2 | downloaded; tester/adhan/SOURCE.md written |
+| H3 | pushed the audio track (copied, not re-encoded) + SOURCE.md; video not pushed (63 MB) |
