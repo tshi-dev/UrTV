@@ -21,11 +21,8 @@ public class SurahActivity extends Activity {
     private GridView grid;
     private long lastMove;   // the last cell move by a held left/right key
 
-    @Override protected void attachBaseContext(Context base) {
-        super.attachBaseContext(Ui.glassContext(base));   // the glass look of now: light (values/) or dark (values-night/)
-    }
-
     @Override protected void onCreate(Bundle state) {
+        setTheme(Ui.theme(this));   // «المظهر»: the look and the light of now, before anything is drawn
         super.onCreate(state);
         sa.urtv.home.Digits.init(this);   // the screensaver's «الأرقام» setting
         cat = Catalog.get(this);

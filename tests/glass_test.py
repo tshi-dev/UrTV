@@ -64,11 +64,12 @@ check("«مركز التحكم»: no tile icon has a filled square behind it (ti
 TIL = HOME / "tilawah"
 for name in ("MainActivity.java", "SurahActivity.java", "PlayerActivity.java", "AdhanActivity.java"):
     t = read(TIL / name)
-    check(f"«تلاوة وأذان» {name}: the glass look of now (its light or dark resources) and the glass page",
-          "super.attachBaseContext(Ui.glassContext(base));" in t and "Ui.glassPage(this, R.id.bg);" in t)
+    check(f"«تلاوة وأذان» {name}: the theme of «المظهر» before anything is drawn, and the glass page",
+          re.search(r"protected void onCreate\(Bundle state\) \{\n        setTheme\(Ui\.theme\(this\)\);", t) is not None and "Ui.glassPage(this, R.id.bg);" in t)
 ui = read(TIL / "Ui.java")
-check("«تلاوة وأذان»: light or dark from «المظهر» (GlassSource.light), not the TV's own night mode; the old photo layer is let go",
-      "sa.urtv.home.GlassSource.light(base)" in ui and "UI_MODE_NIGHT_NO : Configuration.UI_MODE_NIGHT_YES" in ui and "setImageDrawable(null)" in ui)
+check("«تلاوة وأذان»: «الشكل» and «الإضاءة» from GlassSource (glass when anything fails), not the TV's own night mode; the old photo layer is let go",
+      "look = sa.urtv.home.GlassSource.lookName(c); light = sa.urtv.home.GlassSource.light(c);" in ui and 'catch (RuntimeException e) { look = "glass"; light = false; }' in ui
+      and "UI_MODE_NIGHT" not in ui and "setImageDrawable(null)" in ui and not (lres_ := ROOT / "android/launcher/src/main/res/values-night").exists())
 lres = ROOT / "android/launcher/src/main/res"
 greens = [p.name for p in (lres / "drawable").glob("*.xml") if re.search(r"#(2E3F7A5C|1A123A28|4D9C9A5E|33467A52|733F7A5C|661A4630|8C2F6B4C|8C0F2D1F|26DCB86F|40DCB86F|00040E09|E6040E09)", read(p), re.I)]
 check("«تلاوة وأذان»: no drawable keeps the old green glass", not greens, greens)
@@ -116,16 +117,23 @@ check("the dialogs' focused row is GlassStyle's focus fill and ink (dark and lig
       and f'#{look["LIGHT"]["focus"][2:].upper()}' in read(res / "drawable/glass_focus_light.xml").upper()
       and hexrgb(look["DARK"]["onFocus"]) in read(res / "color/glass_item.xml").upper() and hexrgb(look["LIGHT"]["onFocus"]) in read(res / "color/glass_item_light.xml").upper())
 check("the light dialogs keep nothing grey behind them (the frosted glass is checked over the page as it is)", 'backgroundDimAmount">0<' in light_style)
-def colours(path):
-    return {m.group(1): m.group(2).upper() for m in re.finditer(r'<color name="(\w+)">(#[0-9A-Fa-f]+)</color>', read(path))}
-for nm, path, l in (("light", lres / "values/colors.xml", look["LIGHT"]), ("dark", lres / "values-night/colors.xml", look["DARK"])):
-    c = colours(path)
-    want_c = {"bg": hexrgb(l["base"]), "glass_text": hexrgb(l["text"]), "glass_sub": hexrgb(l["sub"]), "glass_accent": hexrgb(l["accent"]), "glass_warn": hexrgb(l["warn"]),
-              "glass_panel": hexargb(l["panel"]), "glass_line": hexargb(l["line"]), "glass_dialog": hexargb(l["dialog"]), "glass_focus": hexargb(l["focus"]),
-              "on_focus": hexrgb(l["onFocus"]), "on_focus_sub": hexrgb(l["onFocusSub"])}
-    check(f"«تلاوة وأذان» {nm}: its colours are GlassStyle's", all(c.get(k) == v for k, v in want_c.items()), {k: (c.get(k), v) for k, v in want_c.items() if c.get(k) != v})
-check("«تلاوة وأذان»: every word is a state list, the focus ink on a focused or selected row (sand, dim, gold, red)",
-      all('android:state_selected="true" android:color="@color/on_focus' in read(lres / f"color/{n}.xml") for n in ("sand", "dim", "gold", "red")))
+every = {}
+for m in re.finditer(r"public static final Look (\w+) = new Look\((.*?)\);", style, re.S):
+    v = [x.strip() for x in m.group(2).replace("\n", " ").split(",")]
+    every[m.group(1)] = dict(zip(keys, v))
+tstyles = read(lres / "values/styles.xml")
+def theme(name):
+    return {m.group(1): m.group(2).upper() for m in re.finditer(r'<item name="(g\w+)">(#[0-9A-Fa-f]+)</item>', tstyles.split(f'<style name="{name}"')[1].split("</style>")[0])}
+for tname, const in (("Glass.Dark", "DARK"), ("Glass.Light", "LIGHT"), ("Graphite.Dark", "GRAPHITE_DARK"), ("Graphite.Light", "GRAPHITE_LIGHT"),
+                     ("Navy.Dark", "NAVY_DARK"), ("Navy.Light", "NAVY_LIGHT"), ("Clean.Dark", "GRAPHITE_DARK"), ("Clean.Light", "CLEAN_LIGHT")):
+    l, c = every[const], theme("Tilawah." + tname)
+    want_c = {"gBg": hexrgb(l["base"]), "gText": hexrgb(l["text"]), "gSub": hexrgb(l["sub"]), "gAccent": hexrgb(l["accent"]), "gWarn": hexrgb(l["warn"]),
+              "gPanel": hexargb(l["panel"]), "gLine": hexargb(l["line"]), "gDialogSolid": over(l["dialog"], l["base"]).replace("#FF", "#"), "gFocus": hexargb(l["focus"]),
+              "gOnFocus": hexrgb(l["onFocus"]), "gOnFocusSub": hexrgb(l["onFocusSub"])}
+    check(f"«تلاوة وأذان» Tilawah.{tname}: its colours are GlassStyle's {const} (the dialog opaque)", all(c.get(k) == v for k, v in want_c.items()),
+          {k: (c.get(k), v) for k, v in want_c.items() if c.get(k) != v})
+check("«تلاوة وأذان»: every word is a state list, the focus ink on a focused or selected row (sand, dim, gold, red), from the theme",
+      all('android:state_selected="true" android:color="?attr/gOnFocus' in read(lres / f"color/{n}.xml") for n in ("sand", "dim", "gold", "red")))
 phone = read(ROOT / "android/launcher/src/main/assets/phone/index.html")
 dark_t = re.search(r":root \{([^}]*)\}", phone).group(1)
 light_t = re.search(r':root\[data-theme="light"\] \{([^}]*)\}', phone).group(1)
@@ -133,6 +141,15 @@ def tok(block, name): return re.search(rf"--{name}:([^;]+);", block).group(1).st
 for nm, block, l in (("dark", dark_t, look["DARK"]), ("light", light_t, look["LIGHT"])):
     check(f"the phone page's {nm} words are GlassStyle's (text, sub, warn, ink)", (tok(block, "text"), tok(block, "dim"), tok(block, "red"), tok(block, "ink"), tok(block, "bg"))
           == (hexrgb(l["text"]), hexrgb(l["sub"]), hexrgb(l["warn"]), hexrgb(l["onFocus"]), hexrgb(l["base"])), block)
+for lk, d, lt in (("graphite", "GRAPHITE_DARK", "GRAPHITE_LIGHT"), ("navy", "NAVY_DARK", "NAVY_LIGHT"), ("clean", "GRAPHITE_DARK", "CLEAN_LIGHT")):
+    for sel, const in ((f':root[data-look="{lk}"] {{', d), (f':root[data-look="{lk}"][data-theme="light"] {{', lt)):
+        block = phone.split(sel)[1].split("}")[0] if sel in phone else ""
+        l = every[const]
+        check(f"the phone page in «{lk}» ({'light' if 'light' in sel else 'dark'}): GlassStyle's {const} words (text, sub, warn, ink, page)",
+              block and (tok(block, "text"), tok(block, "dim"), tok(block, "red"), tok(block, "ink"), tok(block, "bg"))
+              == (hexrgb(l["text"]), hexrgb(l["sub"]), hexrgb(l["warn"]), hexrgb(l["onFocus"]), hexrgb(l["base"])), block)
+check("the phone page takes the TV's look from /api/state (glass_look), and only a known one",
+      "/^(glass|graphite|navy|clean)$/.test(s.glass_look)" in phone and 'm.put("glass_look", look);' in read(HOME / "GlassSource.java"))
 check("the phone page's veil follows the TV's per photo (--vd, --vl) and starts at the strongest", "--va:var(--vd,.95)" in dark_t and "--va:var(--vl,.95)" in light_t)
 
 # ---- for real: contrast over every photo we ship, plain colours, the solid page

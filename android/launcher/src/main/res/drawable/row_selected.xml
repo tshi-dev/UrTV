@@ -1,3 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- the row the remote is on: the solid focus fill (GlassStyle.focus); its words take the focus ink (res/color) -->
-<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle"><solid android:color="@color/glass_focus" /><corners android:radius="14dp" /></shape>
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle"><solid android:color="?attr/gFocus" /><corners android:radius="14dp" /></shape>

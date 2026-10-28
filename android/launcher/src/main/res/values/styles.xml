@@ -6,14 +6,139 @@
         <item name="android:windowAnimationStyle">@android:style/Animation.Activity</item>
     </style>
 
-    <!-- the «تلاوة» screens: the glass look's solid colour under the page (values/ light, values-night/ dark: Ui.glassContext) -->
+    <!-- the «تلاوة وأذان» screens: the glass look's colours as theme attributes (attrs.xml); App is the glass look in the dark, the
+         default; Ui.theme picks the theme of «المظهر» (الشكل and الإضاءة) before a screen is drawn -->
     <style name="App" parent="@android:style/Theme.DeviceDefault.NoActionBar">
-        <item name="android:windowBackground">@color/bg</item>
-        <item name="android:colorBackground">@color/bg</item>
+        <item name="android:windowBackground">?attr/gBg</item>
+        <item name="android:colorBackground">?attr/gBg</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowContentTransitions">true</item>
-        <item name="android:colorAccent">@color/glass_accent</item>
+        <item name="android:colorAccent">?attr/gAccent</item>
+        <item name="gBg">#17181B</item>
+        <item name="gBgFade">#E617181B</item>
+        <item name="gText">#FFFFFF</item>
+        <item name="gSub">#DADCE0</item>
+        <item name="gAccent">#FFFFFF</item>
+        <item name="gWarn">#FFC2B3</item>
+        <item name="gPanel">#6B14161A</item>
+        <item name="gLine">#24FFFFFF</item>
+        <item name="gDialogSolid">#18191C</item>
+        <item name="gFocus">#F2FFFFFF</item>
+        <item name="gOnFocus">#14161A</item>
+        <item name="gOnFocusSub">#3A3E46</item>
+    </style>
+    <style name="Tilawah.Glass.Dark" parent="App">
+        <item name="gBg">#17181B</item>
+        <item name="gBgFade">#E617181B</item>
+        <item name="gText">#FFFFFF</item>
+        <item name="gSub">#DADCE0</item>
+        <item name="gAccent">#FFFFFF</item>
+        <item name="gWarn">#FFC2B3</item>
+        <item name="gPanel">#6B14161A</item>
+        <item name="gLine">#24FFFFFF</item>
+        <item name="gDialogSolid">#18191C</item>
+        <item name="gFocus">#F2FFFFFF</item>
+        <item name="gOnFocus">#14161A</item>
+        <item name="gOnFocusSub">#3A3E46</item>
+    </style>
+    <style name="Tilawah.Glass.Light" parent="App">
+        <item name="gBg">#ECEDEF</item>
+        <item name="gBgFade">#E6ECEDEF</item>
+        <item name="gText">#14161A</item>
+        <item name="gSub">#3A3E46</item>
+        <item name="gAccent">#14161A</item>
+        <item name="gWarn">#8E2A10</item>
+        <item name="gPanel">#9EFFFFFF</item>
+        <item name="gLine">#1F14161A</item>
+        <item name="gDialogSolid">#FCFCFD</item>
+        <item name="gFocus">#F214161A</item>
+        <item name="gOnFocus">#FFFFFF</item>
+        <item name="gOnFocusSub">#DADCE0</item>
+    </style>
+    <style name="Tilawah.Graphite.Dark" parent="App">
+        <item name="gBg">#121314</item>
+        <item name="gBgFade">#E6121314</item>
+        <item name="gText">#F2F0EC</item>
+        <item name="gSub">#B9B6B0</item>
+        <item name="gAccent">#F0A64A</item>
+        <item name="gWarn">#FFB4A0</item>
+        <item name="gPanel">#E6202124</item>
+        <item name="gLine">#14FFFFFF</item>
+        <item name="gDialogSolid">#1E1F22</item>
+        <item name="gFocus">#FFF0A64A</item>
+        <item name="gOnFocus">#1A1206</item>
+        <item name="gOnFocusSub">#3D2A0E</item>
+    </style>
+    <style name="Tilawah.Graphite.Light" parent="App">
+        <item name="gBg">#F3F1EE</item>
+        <item name="gBgFade">#E6F3F1EE</item>
+        <item name="gText">#1C1B1A</item>
+        <item name="gSub">#55514B</item>
+        <item name="gAccent">#8A4F00</item>
+        <item name="gWarn">#8E2A10</item>
+        <item name="gPanel">#F2FFFFFF</item>
+        <item name="gLine">#1F1C1B1A</item>
+        <item name="gDialogSolid">#FFFFFF</item>
+        <item name="gFocus">#FF8A4F00</item>
+        <item name="gOnFocus">#FFFFFF</item>
+        <item name="gOnFocusSub">#F3E2CC</item>
+    </style>
+    <style name="Tilawah.Navy.Dark" parent="App">
+        <item name="gBg">#0B1630</item>
+        <item name="gBgFade">#E60B1630</item>
+        <item name="gText">#F3EEE2</item>
+        <item name="gSub">#B7BFD0</item>
+        <item name="gAccent">#E0BA74</item>
+        <item name="gWarn">#FFC2B3</item>
+        <item name="gPanel">#D9142247</item>
+        <item name="gLine">#1FE0BA74</item>
+        <item name="gDialogSolid">#101D3D</item>
+        <item name="gFocus">#FFE0BA74</item>
+        <item name="gOnFocus">#0B1630</item>
+        <item name="gOnFocusSub">#2A3350</item>
+    </style>
+    <style name="Tilawah.Navy.Light" parent="App">
+        <item name="gBg">#EEF1F7</item>
+        <item name="gBgFade">#E6EEF1F7</item>
+        <item name="gText">#14213D</item>
+        <item name="gSub">#46516B</item>
+        <item name="gAccent">#6E5017</item>
+        <item name="gWarn">#8E2A10</item>
+        <item name="gPanel">#F2FFFFFF</item>
+        <item name="gLine">#1F14213D</item>
+        <item name="gDialogSolid">#FFFFFF</item>
+        <item name="gFocus">#FF14213D</item>
+        <item name="gOnFocus">#FFFFFF</item>
+        <item name="gOnFocusSub">#D5DBE8</item>
+    </style>
+    <style name="Tilawah.Clean.Dark" parent="App">
+        <item name="gBg">#121314</item>
+        <item name="gBgFade">#E6121314</item>
+        <item name="gText">#F2F0EC</item>
+        <item name="gSub">#B9B6B0</item>
+        <item name="gAccent">#F0A64A</item>
+        <item name="gWarn">#FFB4A0</item>
+        <item name="gPanel">#E6202124</item>
+        <item name="gLine">#14FFFFFF</item>
+        <item name="gDialogSolid">#1E1F22</item>
+        <item name="gFocus">#FFF0A64A</item>
+        <item name="gOnFocus">#1A1206</item>
+        <item name="gOnFocusSub">#3D2A0E</item>
+    </style>
+    <style name="Tilawah.Clean.Light" parent="App">
+        <item name="gBg">#ECECE8</item>
+        <item name="gBgFade">#E6ECECE8</item>
+        <item name="gText">#1B1D21</item>
+        <item name="gSub">#50555E</item>
+        <item name="gAccent">#0B5E51</item>
+        <item name="gWarn">#8E2A10</item>
+        <item name="gPanel">#FAFFFFFF</item>
+        <item name="gLine">#1414181E</item>
+        <item name="gDialogSolid">#FFFFFF</item>
+        <item name="gFocus">#FF0B5E51</item>
+        <item name="gOnFocus">#FFFFFF</item>
+        <item name="gOnFocusSub">#CFE6E1</item>
     </style>
 </resources>

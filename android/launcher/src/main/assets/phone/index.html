@@ -11,6 +11,13 @@
    the TV (/api/backdrop), under the veil it needs (--vd/--vl from /api/state); smoked glass dark, frosted white glass light; no blur here */
 :root { --bg:#17181b; --card:rgba(20,22,26,.42); --line:rgba(255,255,255,.14); --gold:#f3f3f3; --gt:#ffffff; --text:#ffffff; --dim:#dadce0; --red:#ffc2b3; --ink:#14161a; --tile:rgba(20,22,26,.42); --bar:#18191c; --veil:#000000; --va:var(--vd,.95); }
 :root[data-theme="light"] { --bg:#ecedef; --card:rgba(255,255,255,.62); --line:rgba(20,22,26,.12); --gold:#202226; --gt:#14161a; --text:#14161a; --dim:#3a3e46; --red:#8e2a10; --ink:#ffffff; --tile:rgba(255,255,255,.62); --bar:#fcfcfd; --veil:#f5f6f8; --va:var(--vl,.95); }
+/* «المظهر ← الشكل» of the TV (glass_look in /api/state): the other three looks, GlassStyle's, dark and light */
+:root[data-look="graphite"] { --bg:#121314; --card:rgba(32,33,36,.9); --line:rgba(255,255,255,.08); --gold:#f0a64a; --gt:#f0a64a; --text:#f2f0ec; --dim:#b9b6b0; --red:#ffb4a0; --ink:#1a1206; --tile:rgba(32,33,36,.9); --bar:#1e1f22; --veil:#121314; --va:var(--vd,.95); }
+:root[data-look="graphite"][data-theme="light"] { --bg:#f3f1ee; --card:rgba(255,255,255,.95); --line:rgba(28,27,26,.12); --gold:#8a4f00; --gt:#8a4f00; --text:#1c1b1a; --dim:#55514b; --red:#8e2a10; --ink:#ffffff; --tile:rgba(255,255,255,.95); --bar:#ffffff; --veil:#f3f1ee; --va:var(--vl,.95); }
+:root[data-look="navy"] { --bg:#0b1630; --card:rgba(20,34,71,.85); --line:rgba(224,186,116,.12); --gold:#e0ba74; --gt:#e0ba74; --text:#f3eee2; --dim:#b7bfd0; --red:#ffc2b3; --ink:#0b1630; --tile:rgba(20,34,71,.85); --bar:#101d3d; --veil:#0b1630; --va:var(--vd,.95); }
+:root[data-look="navy"][data-theme="light"] { --bg:#eef1f7; --card:rgba(255,255,255,.95); --line:rgba(20,33,61,.12); --gold:#14213d; --gt:#6e5017; --text:#14213d; --dim:#46516b; --red:#8e2a10; --ink:#ffffff; --tile:rgba(255,255,255,.95); --bar:#ffffff; --veil:#eef1f7; --va:var(--vl,.95); }
+:root[data-look="clean"] { --bg:#121314; --card:rgba(32,33,36,.9); --line:rgba(255,255,255,.08); --gold:#f0a64a; --gt:#f0a64a; --text:#f2f0ec; --dim:#b9b6b0; --red:#ffb4a0; --ink:#1a1206; --tile:rgba(32,33,36,.9); --bar:#1e1f22; --veil:#121314; --va:var(--vd,.95); }
+:root[data-look="clean"][data-theme="light"] { --bg:#ecece8; --card:rgba(255,255,255,.98); --line:rgba(20,24,30,.08); --gold:#0b5e51; --gt:#0b5e51; --text:#1b1d21; --dim:#50555e; --red:#8e2a10; --ink:#ffffff; --tile:rgba(255,255,255,.98); --bar:#ffffff; --veil:#f4f4f1; --va:var(--vl,.95); }
 * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 html,body { margin:0; color:var(--text); font:16px/1.5 system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif; }
 html { background:var(--bg); }
@@ -214,6 +221,7 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
   var glassStamp = -1;
   function glass(s) {
     var st = document.documentElement.style;
+    if (typeof s.glass_look === 'string' && /^(glass|graphite|navy|clean)$/.test(s.glass_look)) document.documentElement.setAttribute('data-look', s.glass_look);
     if (typeof s.glass_dark === 'number') st.setProperty('--vd', String(s.glass_dark / 1000));
     if (typeof s.glass_light === 'number') st.setProperty('--vl', String(s.glass_light / 1000));
     if (typeof s.glass_stamp !== 'number' || s.glass_stamp === glassStamp) return;

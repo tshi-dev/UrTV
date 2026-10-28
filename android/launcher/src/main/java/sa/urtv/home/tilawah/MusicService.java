@@ -962,7 +962,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
                 .setShowWhen(false)
                 .setCategory(Notification.CATEGORY_TRANSPORT)
                 .setVisibility(Notification.VISIBILITY_PUBLIC)
-                .setColor(getResources().getColor(R.color.gold))
+                .setColor(getResources().getColor(R.color.notify_accent))   // a plain colour: a notification has no theme
                 .addAction(R.drawable.ic_prev, getString(R.string.previous), command(ACTION_PREV))
                 .addAction(playing ? R.drawable.ic_pause : R.drawable.ic_play,
                         getString(R.string.play_pause), command(ACTION_TOGGLE))

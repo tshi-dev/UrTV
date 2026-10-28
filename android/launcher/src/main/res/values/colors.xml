@@ -1,20 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- the «تلاوة وأذان» screens in the glass look, LIGHT (frosted white glass, dark ink): GlassStyle.LIGHT. The dark look is values-night/,
-     picked per screen by Ui.glassContext from «المظهر» (not by the TV's own night mode). tests/glass_test.py checks both against GlassStyle.
-     The words' colours (sand, dim, gold, red) are res/color/ state lists: the focus ink on a focused or selected row. -->
+<!-- the «تلاوة وأذان» screens take their colours from their theme (attrs.xml, styles.xml: one per «المظهر»); only the notification
+     keeps a plain colour of its own (it has no theme) -->
 <resources>
-    <color name="bg">#ECEDEF</color>              <!-- base: the solid page before there is a backdrop -->
-    <color name="bg_fade">#E6ECEDEF</color>       <!-- the player's lower part, toward the solid page -->
-    <color name="glass_text">#14161A</color>
-    <color name="glass_sub">#3A3E46</color>
-    <color name="glass_accent">#14161A</color>
-    <color name="glass_warn">#8E2A10</color>
-    <color name="glass_panel">#9EFFFFFF</color>
-    <color name="glass_line">#1F14161A</color>
-    <color name="glass_dialog">#D9FFFFFF</color>
-    <color name="glass_dialog_solid">#FCFCFD</color>   <!-- the dialog glass over the solid colour: a dialog is opaque -->
-    <color name="glass_focus">#F214161A</color>
-    <color name="on_focus">#FFFFFF</color>
-    <color name="on_focus_sub">#DADCE0</color>
-    <color name="green">#14161A</color>
+    <color name="notify_accent">#DCB86F</color>
 </resources>

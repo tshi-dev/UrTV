@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- a word of the «تلاوة وأذان» screens: @color/glass_sub at rest, the focus ink (@color/on_focus_sub) on a focused or selected row's solid fill -->
+<!-- a word of the «تلاوة وأذان» screens: ?attr/gSub at rest, the focus ink (?attr/gOnFocusSub) on a focused or selected row's solid fill -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_focused="true" android:color="@color/on_focus_sub" />
-    <item android:state_selected="true" android:color="@color/on_focus_sub" />
-    <item android:color="@color/glass_sub" />
+    <item android:state_focused="true" android:color="?attr/gOnFocusSub" />
+    <item android:state_selected="true" android:color="?attr/gOnFocusSub" />
+    <item android:color="?attr/gSub" />
 </selector>

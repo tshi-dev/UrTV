@@ -2,7 +2,6 @@ package sa.urtv.home.tilawah;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.view.View;
 import android.widget.TextView;
@@ -29,19 +28,24 @@ final class Ui {
         view.setTypeface(font(view.getContext(), file));
         view.setText(digits(view.getText().toString()));   // a text written in the layout or the strings has the setting's digits too
         view.setTextSize(sizeSp);
-        view.setTextColor(view.getResources().getColorStateList(color, null));   // res/color: the focus ink on a focused row
+        view.setTextColor(view.getContext().getColorStateList(color));   // res/color, in the screen's theme: the focus ink on a focused row
     }
 
     /**
-     * The glass look of these screens (as all of ours): the light one is values/, the dark one values-night/, chosen here from «المظهر»
-     * (GlassSource.light: automatic follows the home), never from the TV's own night mode. For attachBaseContext.
+     * The theme of «المظهر» for these screens (styles.xml: one per look and light, made from GlassStyle), from «الشكل» and «الإضاءة»
+     * (GlassSource: automatic follows the home). For onCreate, before the screen is drawn.
      */
-    static Context glassContext(Context base) {
-        Configuration c = new Configuration(base.getResources().getConfiguration());
+    static int theme(Context c) {
+        String look;
         boolean light;
-        try { light = sa.urtv.home.GlassSource.light(base); } catch (RuntimeException e) { light = false; }
-        c.uiMode = (c.uiMode & ~Configuration.UI_MODE_NIGHT_MASK) | (light ? Configuration.UI_MODE_NIGHT_NO : Configuration.UI_MODE_NIGHT_YES);
-        return base.createConfigurationContext(c);
+        try { look = sa.urtv.home.GlassSource.lookName(c); light = sa.urtv.home.GlassSource.light(c); }
+        catch (RuntimeException e) { look = "glass"; light = false; }
+        switch (look) {
+            case "graphite": return light ? sa.urtv.home.R.style.Tilawah_Graphite_Light : sa.urtv.home.R.style.Tilawah_Graphite_Dark;
+            case "navy": return light ? sa.urtv.home.R.style.Tilawah_Navy_Light : sa.urtv.home.R.style.Tilawah_Navy_Dark;
+            case "clean": return light ? sa.urtv.home.R.style.Tilawah_Clean_Light : sa.urtv.home.R.style.Tilawah_Clean_Dark;
+            default: return light ? sa.urtv.home.R.style.Tilawah_Glass_Light : sa.urtv.home.R.style.Tilawah_Glass_Dark;
+        }
     }
 
     /** After setContentView: the page is the home's photo blurred once, under its veil (GlassSource.page); the old photo layer goes. */

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- a tab: the solid focus fill while focused, the glass panel with a ring in the accent when it is the chosen one, the panel otherwise -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_focused="true"><shape android:shape="rectangle"><solid android:color="@color/glass_focus" /><corners android:radius="23dp" /></shape></item>
-    <item android:state_selected="true"><shape android:shape="rectangle"><solid android:color="@color/glass_panel" /><stroke android:width="2dp" android:color="@color/glass_accent" /><corners android:radius="23dp" /></shape></item>
-    <item><shape android:shape="rectangle"><solid android:color="@color/glass_panel" /><corners android:radius="23dp" /></shape></item>
+    <item android:state_focused="true"><shape android:shape="rectangle"><solid android:color="?attr/gFocus" /><corners android:radius="23dp" /></shape></item>
+    <item android:state_selected="true"><shape android:shape="rectangle"><solid android:color="?attr/gPanel" /><stroke android:width="2dp" android:color="?attr/gAccent" /><corners android:radius="23dp" /></shape></item>
+    <item><shape android:shape="rectangle"><solid android:color="?attr/gPanel" /><corners android:radius="23dp" /></shape></item>
 </selector>

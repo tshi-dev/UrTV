@@ -4,7 +4,7 @@
     android:viewportWidth="48" android:viewportHeight="48">
     <path
         android:pathData="M31,9 L10,24 L31,39"
-        android:strokeColor="@color/on_focus"
+        android:strokeColor="?attr/gOnFocus"
         android:strokeWidth="4.5"
         android:strokeLineCap="round"
         android:strokeLineJoin="round" />

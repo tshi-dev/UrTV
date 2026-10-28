@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- the surah grid's selector: the solid focus fill under the selected card -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_selected="true"><shape android:shape="rectangle"><solid android:color="@color/glass_focus" /><corners android:radius="14dp" /></shape></item>
-    <item android:state_focused="true"><shape android:shape="rectangle"><solid android:color="@color/glass_focus" /><corners android:radius="14dp" /></shape></item>
+    <item android:state_selected="true"><shape android:shape="rectangle"><solid android:color="?attr/gFocus" /><corners android:radius="14dp" /></shape></item>
+    <item android:state_focused="true"><shape android:shape="rectangle"><solid android:color="?attr/gFocus" /><corners android:radius="14dp" /></shape></item>
     <item android:drawable="@android:color/transparent" />
 </selector>

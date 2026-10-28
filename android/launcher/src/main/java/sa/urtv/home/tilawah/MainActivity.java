@@ -52,11 +52,8 @@ public class MainActivity extends Activity {
         if (intent != null && "adhan".equals(intent.getStringExtra(EXTRA_OPEN))) selectTab(TAB_ADHAN);
     }
 
-    @Override protected void attachBaseContext(Context base) {
-        super.attachBaseContext(Ui.glassContext(base));   // the glass look of now: light (values/) or dark (values-night/)
-    }
-
     @Override protected void onCreate(Bundle state) {
+        setTheme(Ui.theme(this));   // «المظهر»: the look and the light of now, before anything is drawn
         super.onCreate(state);
         sa.urtv.home.Digits.init(this);   // the screensaver's «الأرقام» setting
         setContentView(R.layout.activity_main);
@@ -425,7 +422,7 @@ public class MainActivity extends Activity {
             detail.setText(row.detail);
             name.setTypeface(Ui.font(MainActivity.this, "Thmanyah-Medium.otf"));
             detail.setTypeface(Ui.font(MainActivity.this, "Thmanyah-Light.otf"));
-            name.setTextColor(getResources().getColorStateList(row.next ? R.color.gold : R.color.sand, null));   // the focus ink when selected
+            name.setTextColor(getColorStateList(row.next ? R.color.gold : R.color.sand));   // the focus ink when selected
             return view;
         }
     }

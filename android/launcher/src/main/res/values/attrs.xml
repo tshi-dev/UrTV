@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- the «تلاوة وأذان» screens' colours, one theme per look and light (styles.xml, made from GlassStyle: tests/glass_test.py checks them) -->
+<resources>
+    <attr name="gBg" format="color" />
+    <attr name="gBgFade" format="color" />
+    <attr name="gText" format="color" />
+    <attr name="gSub" format="color" />
+    <attr name="gAccent" format="color" />
+    <attr name="gWarn" format="color" />
+    <attr name="gPanel" format="color" />
+    <attr name="gLine" format="color" />
+    <attr name="gDialogSolid" format="color" />
+    <attr name="gFocus" format="color" />
+    <attr name="gOnFocus" format="color" />
+    <attr name="gOnFocusSub" format="color" />
+</resources>

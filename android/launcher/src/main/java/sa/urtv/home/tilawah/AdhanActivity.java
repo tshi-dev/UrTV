@@ -32,11 +32,8 @@ public class AdhanActivity extends Activity {
     /** 1 when the list starts with the person's own recording, else 0 */
     private int own;
 
-    @Override protected void attachBaseContext(Context base) {
-        super.attachBaseContext(Ui.glassContext(base));   // the glass look of now: light (values/) or dark (values-night/)
-    }
-
     @Override protected void onCreate(Bundle state) {
+        setTheme(Ui.theme(this));   // «المظهر»: the look and the light of now, before anything is drawn
         super.onCreate(state);
         sa.urtv.home.Digits.init(this);   // the screensaver's «الأرقام» setting
         setContentView(R.layout.activity_adhan);
@@ -123,7 +120,7 @@ public class AdhanActivity extends Activity {
                     ? getString(R.string.adhan_chosen, Adhan.place(voice))
                     : Adhan.place(voice));
             detail.setTypeface(Ui.font(AdhanActivity.this, "Thmanyah-Light.otf"));
-            detail.setTextColor(getResources().getColorStateList(chosen ? R.color.gold : R.color.dim, null));   // the focus ink when selected
+            detail.setTextColor(getColorStateList(chosen ? R.color.gold : R.color.dim));   // the focus ink when selected
             return view;
         }
     }

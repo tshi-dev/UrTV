@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- the player's lower part fades toward the look's solid colour, under the controls -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
-    <gradient android:angle="270" android:startColor="@android:color/transparent" android:endColor="@color/bg_fade" />
+    <gradient android:angle="270" android:startColor="@android:color/transparent" android:endColor="?attr/gBgFade" />
 </shape>

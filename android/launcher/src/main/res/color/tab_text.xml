@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- a tab: the focus ink on the focused one's solid fill, the accent on the chosen one, the soft colour on the others -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_focused="true" android:color="@color/on_focus" />
-    <item android:state_selected="true" android:color="@color/glass_accent" />
-    <item android:color="@color/glass_sub" />
+    <item android:state_focused="true" android:color="?attr/gOnFocus" />
+    <item android:state_selected="true" android:color="?attr/gAccent" />
+    <item android:color="?attr/gSub" />
 </selector>
