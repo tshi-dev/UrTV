@@ -68,3 +68,4 @@ The owner wants to try OTHER Saudi/Najdi voices from ElevenLabs' Voice Library.
 |---|---|---|
 | F1 | `EL_VOICE=rpGHcNQJvO8dFNNFNj1v EL_MODEL=eleven_v4 EL_LINES=lines-v3.txt EL_SPLIT=1 EL_OUT=out-v3 python tester/voice/make_voice.py` (pull work/tester first: the script now cuts each line at «…» into parts: 38 files named NN-k.mp3, e.g. 01-1.mp3, 01-2.mp3, 02-1.mp3). Never print the key | 38 files |
 | F2 | Play 3-4 lines to the owner if he is there (optional). Push ONLY out-v3/*.mp3 to work/tester-report under tester/voice-v3/ (reset to origin/work/tester-report first) | pushed |
+- Owner confirmed (28 Oct, evening): make it exactly as F1 says: the parts split at «…» (EL_SPLIT=1), his original voice, eleven_v4. No need to ask him anything first; push the 38 files when done.
