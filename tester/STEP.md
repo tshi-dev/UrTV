@@ -62,3 +62,9 @@ The owner wants to try OTHER Saudi/Najdi voices from ElevenLabs' Voice Library.
 | N2 | For EACH id: `EL_VOICE=<id> EL_MODEL=eleven_v4 EL_LINES=lines-voicetest.txt EL_OUT=out-voice-<n> python tester/voice/make_voice.py` (2 lines: the home line and the prayer line). Also try the same with `EL_MODEL=eleven_v3` for the best one, since v3 sometimes keeps dialect better | 2 files per voice |
 | N3 | Play them to the owner (name them clearly: voice 1, 2, 3…) and ask which one sounds most Najdi. Write in REPORT.md: the chosen voice id, the model (v4 or v3), and the owner's words. Then make all 26 lines of lines-v2.txt with that voice and model (`EL_VOICE=<id> EL_MODEL=<m> EL_LINES=lines-v2.txt EL_OUT=out-v2`), and push ONLY out-v2/*.mp3 to work/tester-report under tester/voice-v2/ | 26 files pushed |
 - N1 is DONE: the owner gave the supervisor these 4 voice IDs: voice 1 = 2bnoa3wtrtcUW41TrSJM, voice 2 = t9akNmCDhz230CEXOYmn, voice 3 = T9KaXxyeFWyP8DFgs9bx, voice 4 = 3GnbqfjaW8xI6hRTVx4Y. Go straight to N2 with these (out-voice-1 … out-voice-4), plus the current voice rpGHcNQJvO8dFNNFNj1v as "voice 0" for comparison. Then N3. Also push the test files (tester/voice-test/voice-<n>-<1|2>.mp3) so the supervisor can keep them.
+
+## Voice, round 4: FINAL (owner picked his original voice and approved the new text with pauses)
+| # | Do | Right when |
+|---|---|---|
+| F1 | `EL_VOICE=rpGHcNQJvO8dFNNFNj1v EL_MODEL=eleven_v4 EL_LINES=lines-v3.txt EL_SPLIT=1 EL_OUT=out-v3 python tester/voice/make_voice.py` (pull work/tester first: the script now cuts each line at «…» into parts: 38 files named NN-k.mp3, e.g. 01-1.mp3, 01-2.mp3, 02-1.mp3). Never print the key | 38 files |
+| F2 | Play 3-4 lines to the owner if he is there (optional). Push ONLY out-v3/*.mp3 to work/tester-report under tester/voice-v3/ (reset to origin/work/tester-report first) | pushed |

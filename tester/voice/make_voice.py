@@ -38,26 +38,33 @@ here = os.path.dirname(os.path.abspath(__file__))
 LINES = os.environ.get("EL_LINES", "lines.txt")   # which text file to read (lines-v2.txt, lines-gtest.txt)
 lines = [l.strip() for l in open(os.path.join(here, LINES), encoding="utf-8") if l.strip()]
 out = os.path.join(here, os.environ.get("EL_OUT", "out")); os.makedirs(out, exist_ok=True)
+# EL_SPLIT=1: each line is cut at «…» into parts, saved as NN-k.mp3, so the video joins them with an exact pause
+jobs = []
+for i, line in enumerate(lines, 1):
+    parts = [p.strip(" ،") for p in line.split("…") if p.strip(" ،")] if os.environ.get("EL_SPLIT") == "1" else [line]
+    for k, part in enumerate(parts, 1):
+        jobs.append((f"{i:02d}-{k}" if len(parts) > 1 or os.environ.get("EL_SPLIT") == "1" else f"{i:02d}", part))
 prev = ""
-for i, text in enumerate(lines, 1):
-    nxt = lines[i] if i < len(lines) else ""
+for n, (name, text) in enumerate(jobs, 1):
+    i = n
+    nxt = jobs[n][1] if n < len(jobs) else ""
     body = {"text": text, "model_id": MODEL, "voice_settings": SETTINGS}
     if not NEW:
         body.update(previous_text=prev, next_text=nxt)   # keeps the tone even from line to line (older models only)
     req = urllib.request.Request(
-        f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}?output_format=mp3_44100_192",
+        f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}?output_format=mp3_44100_128",
         data=json.dumps(body).encode(), method="POST",
         headers={"xi-api-key": key, "Content-Type": "application/json", "Accept": "audio/mpeg"})
     for attempt in range(3):
         try:
             with urllib.request.urlopen(req, timeout=60) as r:
-                open(os.path.join(out, f"{i:02d}.mp3"), "wb").write(r.read())
+                open(os.path.join(out, f"{name}.mp3"), "wb").write(r.read())
             break
         except Exception as e:
-            print(f"line {i}: try {attempt + 1} failed: {type(e).__name__} {getattr(e, 'code', '')}")
+            print(f"{name}: try {attempt + 1} failed: {type(e).__name__} {getattr(e, 'code', '')}")
             time.sleep(3)
     else:
-        sys.exit(f"line {i} failed 3 times")
-    print(f"line {i:02d}/{len(lines)} ok")
+        sys.exit(f"{name} failed 3 times")
+    print(f"{name} ({n}/{len(jobs)}) ok")
     prev = text
-print("done:", len(lines), "files in", out, "with", MODEL)
+print("done:", len(jobs), "files in", out, "with", MODEL)
