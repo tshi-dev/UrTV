@@ -24,3 +24,20 @@ Numbers vs step 6: screensaver CPU 45% → 0%; MemAvailable 570 → 742-781 MB; 
 !! lines: none.
 
 Restore after part A: home card none, accessibility services back to the start value (typing service off), the PC's pairing removed («إلغاء») and phone control OFF («توقف التحكم من الجوال لأن آخر جوال انتهت جلسته»), card verse, familydns off, updatechannel unchanged (latest). Part B (owner) still to do.
+
+step 7, part B (owner asked the agent to do it and send him photos; done over adb)
+
+| # | OK/problem | shots | note |
+|---|---|---|---|
+| B1 | OK / problem | glass-hub, glass-sub, glass-backup, glass-dialog | keyevent 83 opens our settings. Main menu: the focused tile is now readable (dark text on white). Inside «الموقع والصلاة» the focused ROW is still white text on white (unreadable). After 5 down and 5 up the title is visible, but the whole page jumped sideways (list moved from the left half to the right half and back). «طريقة الحساب» dialog is see-through: the rows behind show through its options |
+| B2 | OK | glass-light | light: white frosted tiles, dark text, focused tile dark: readable. Back to dark |
+| B3 | not done | — | «تعديل التطبيقات» not run (would change the owner's apps without him) |
+| B4 | problem | watchnext | still broken: favourites at the top over the clock/greeting, one huge «أكمل المشاهدة» card fills 2/3 of the screen |
+| B5 | OK / check | center-glass, center-settings | nothing cut now; the focused tile is readable; «إعدادات تلفزيونك» opens sa.urtv.screensaver/.SettingsActivity. Its icon is a plain white square (missing icon) |
+| B6 | OK | tilawah-glass, tilawah-surahs | glass look, readable, focused row readable |
+| B7 | not done | — | owner not at the remote |
+| B8 | OK | inputs-cec2 | our «المصادر» pill: AV, HDMI 1-4 each «وضع الاستعداد», «البث التلفزيوني». No CEC device on, so the device-name case was not seen |
+| B9 | OK | pair-pc4 | one page, no scrolling, address and code large |
+| B10 | OK | — | after 5x YouTube→Home: screensaver pid unchanged, CPU 0%, home 1.4%, total 19%; MemAvailable 783 MB, SwapFree 363 MB (step 6: 45% CPU, 570 MB, swap almost full) |
+
+Restored: appearance dark, card verse, home card none, accessibility services start value, phone control off and the PC pairing removed, familydns off, updatechannel latest.
