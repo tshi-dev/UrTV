@@ -46,3 +46,10 @@ The owner wants the narration made with his ElevenLabs account. The key is in hi
 |---|---|---|
 | G1 | ق/g TEST first: `EL_MODEL=eleven_v4 EL_LINES=lines-gtest.txt EL_OUT=out-gtest python tester/voice/make_voice.py` (4 files: 01 = line 3 with ق, 02 = line 3 with گ, 03 = line 19 with ق, 04 = line 19 with گ). Use mp3_44100_128 as before. Play them to the owner (or push them: tester/voice-gtest/01-04.mp3) and ask him in Arabic: «أي نطق أقرب للنجدي: الأول (ق) أو الثاني (گ)؟» | owner picks |
 | G2 | After his pick ONLY: tell the supervisor (REPORT.md "voice: ق" or "voice: گ"); the supervisor sends the final text file. Do not make the 26 lines before that | — |
+
+## A free-to-use adhan for the video (owner's choice, no owner needed)
+| # | Do | Right when |
+|---|---|---|
+| H1 | Find ONE adhan recording whose OWN recordist/uploader marked it CC0 or Public Domain: Wikimedia Commons (category "Adhan", open the file page and read its licence box: only "CC0" or "Public domain" by its author; NOT CC-BY-SA, NOT "PD" claimed for someone else's recording) or freesound.org with the licence filter "Creative Commons 0". Prefer a city/mosque adhan recorded from a distance (outdoor, with space), a full one or at least the first «الله أكبر» phrases, Sunni wording only (no extra phrases) | one file with a clean licence |
+| H2 | Download the original file (wav/flac/ogg/mp3). Write tester/adhan/SOURCE.md: the page URL, title, author, licence exactly as shown, and the download date | done |
+| H3 | Push ONLY that file and SOURCE.md to work/tester-report under tester/adhan/ (reset to origin/work/tester-report first, as before) | pushed |
