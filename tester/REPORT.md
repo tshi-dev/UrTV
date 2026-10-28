@@ -26,3 +26,9 @@ Version: before 3.148, after "version: 3.149" (install.sh all; «Home is already
 |---|---|
 | N2 | voice 0 (current) + voices 1-4, each on eleven_v4 and eleven_v3 (mp3_44100_128), 2 lines each: 20 files in tester/voice-test/ (voice-<n>-<1|2>.mp3 = v4, voice-<n>-v3-<1|2>.mp3 = v3). All ok |
 | N3 | waiting: v4 files sent to the owner to pick |
+
+## Voice round 4 FINAL (F1-F2)
+| # | Result |
+|---|---|
+| F1 | voice rpGHcNQJvO8dFNNFNj1v, eleven_v4, lines-v3.txt, EL_SPLIT=1: 38 files, none under 5 KB (1.6 MB) |
+| F2 | pushed tester/voice-v3/*.mp3 (38) |
