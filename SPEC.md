@@ -1,11 +1,14 @@
 # Design backlog
 
-Looks and ideas the owner chose to do later. Each says what it is, where its mockups are, and what it needs. Nothing here is built.
+Looks and ideas the owner chose to do later. Each says what it is, where its mockups are, and what it needs.
 
-## Themes (after this release)
+## Themes: done in 3.148
+
+The three looks below are now «المظهر ← الشكل» (GlassStyle.GRAPHITE_*, NAVY_*, CLEAN_LIGHT; tests/glass_test.py checks each over
+every photo). Their first mockups stay here for the record.
 
 The glass look (د) is the default of every UrTV screen (`GlassStyle`, `GlassPaint` and `GlassSource` in both apps; `tests/glass_test.py`).
-These three are to become selectable looks later. Mockups at 1920x1080, drawn as pages, not taken on a TV: the settings' first screen,
+Mockups at 1920x1080, drawn as pages, not taken on a TV: the settings' first screen,
 «الموقع والصلاة» with a row focused, and the «طريقة الحساب» picker.
 
 | Look | Mockups | Dark, light and auto |
