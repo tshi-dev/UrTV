@@ -39,3 +39,10 @@ Version: before 3.148, after "version: 3.149" (install.sh all; «Home is already
 | H1 | Wikimedia Commons, Category:Adhan: "Adhan in Istanbul", own work, {{self|cc-zero}}, 50 s city adhan. Only CC0 own-work file in the category (others are CC BY / BY-SA, or PD claimed for a singer) |
 | H2 | downloaded; tester/adhan/SOURCE.md written |
 | H3 | pushed the audio track (copied, not re-encoded) + SOURCE.md; video not pushed (63 MB) |
+
+## Voice FINAL by the owner (replaces voice-v3)
+| # | Result |
+|---|---|
+| O1 | The owner cloned his own voice (ElevenLabs Instant Voice Clone "UrTV owner", id wfj1guOwi64ozn1ggUGY, from his own 7:41 recording) and made the 26 lines himself on the ElevenLabs site with eleven_v4, with his own small wording fixes (e.g. 11 «أي زر تضغط راح يوقفه», 14 «على قد ما نقدر», 18 «راح يطلب رمز») |
+| O2 | Cut at «…» into 38 parts NN-k.mp3 (same names as voice-v3); every part checked by transcription; 18 cut at its real pause |
+| O3 | pushed tester/voice-owner/*.mp3 (38). Owner listened: "That's good". Use these instead of tester/voice-v3/ |
