@@ -77,7 +77,7 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
 .lock { position:absolute; top:4px; inset-inline-end:6px; font-size:14px; }
 .tools { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; }
 .tools button { flex:1 1 30%; }
-#msg { position:fixed; inset-inline:16px; bottom:calc(88px + env(safe-area-inset-bottom)); background:var(--gold); color:var(--ink); border-radius:14px; padding:12px 14px; text-align:center; z-index:9; font-weight:600; }
+#msg { pointer-events:none; position:fixed; inset-inline:16px; bottom:calc(88px + env(safe-area-inset-bottom)); background:var(--gold); color:var(--ink); border-radius:14px; padding:12px 14px; text-align:center; z-index:9; font-weight:600; }
 #dlg { position:fixed; inset:0; z-index:10; background:rgba(0,0,0,.6); display:flex; align-items:flex-end; justify-content:center; }
 #dlg > div { background:var(--bg); border:1px solid var(--line); border-radius:18px 18px 0 0; padding:16px 16px calc(16px + env(safe-area-inset-bottom)); width:100%; max-width:560px; }
 @media (prefers-reduced-motion: reduce) { * { transition:none !important; animation:none !important; scroll-behavior:auto !important; } }
@@ -337,7 +337,7 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
   }
   function leave() {
     glass({ glass_stamp: 0 }); glassStamp = -1;   // signed out: the home's photo goes from the page
-    sess = null; state = null; apps = null; pinVal = ''; icons = {}; iconQ = []; iconWait = {}; svcOff = false; famSeen = false;
+    sess = null; state = null; apps = null; cardsDirty = false; pinVal = ''; icons = {}; iconQ = []; iconWait = {}; svcOff = false; famSeen = false;
     clearInterval(tick); tick = null; stopRep();
     try { sessionStorage.removeItem('urtv'); } catch (e) { }
     show(false);
@@ -498,14 +498,18 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
       if (f && typeof f.pin_set !== 'undefined') famDraw(f);
     });
   }
+  // The cards the person is choosing are not redrawn from the TV's answer while they are being changed (an answer that was on its way when
+  // the choice was made would put the old one back, and the save would send that): drawn again once they are saved, or on the next arrival.
+  var cardsDirty = false;
   function cards(s) {
+    if (cardsDirty) return;
     var box = $('cards'); box.textContent = '';
     var hc = s.home_cards || [];
     for (var i = 0; i < 3; i++) {
       var sel = document.createElement('select'); sel.setAttribute('data-card', i); sel.setAttribute('aria-label', 'بطاقة ' + (i + 1));
       opt(sel, '', 'بدون', !hc[i]);
       (s.panels || []).forEach(function (p) { opt(sel, p.id, p.name, hc[i] === p.id); });
-      sel.style.marginBottom = '8px'; box.appendChild(sel);
+      sel.style.marginBottom = '8px'; sel.onchange = function () { cardsDirty = true; }; box.appendChild(sel);
     }
   }
   function set(b) { return gated('/api/set', b).then(function (j) { say(j); refresh(); return j; }); }
@@ -526,7 +530,7 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
   $('cardsGo').onclick = function () {
     var out = [], sels = $('cards').children;
     for (var i = 0; i < sels.length; i++) if (sels[i].value && out.indexOf(sels[i].value) < 0) out.push(sels[i].value);
-    set({ home_cards: out });
+    set({ home_cards: out }).then(function () { cardsDirty = false; refresh(); });
   };
   $('aOn').onchange = function () { set({ adhan_on: this.checked }); };
   $('aOn2').onchange = function () { set({ adhan_on: this.checked }); };

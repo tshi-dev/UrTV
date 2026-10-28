@@ -8,6 +8,7 @@ Newest first. `next` is where changes land first; a release is what was tested t
 - Typing from the phone into other apps: the typing service now declares `typeWindowStateChanged` (read by nobody) so Android tracks the window in front and the field can be found; it also takes the input-focused field first and fields that accept set-text. A fixed-words log (tag `UrTVType`) shows each step.
 - «تحكم من الجوال» is the first row of «الجوال والتحديث», and that tile names it.
 **Fixes from the TV test**
+- Phone page, «الإعدادات»: the cards being chosen are no longer put back by a TV answer that was still on its way (a «بدون» pressed soon after a save sent the old card again); the message over the page no longer takes taps.
 - The adhkar card with Western digits chosen no longer shows the surahs' Arabic-Indic ayah numbers (the ornament stays empty, as a Western digit would fall outside the circle).
 - The screen stays on (only while shown) on the phone-control pairing screen and its «سماح/رفض» prompt, the update screens and «إعداد تلفزيوني», so the screensaver no longer closes them.
 - Typing from the phone into YouTube TV (no text field to Android) opens YouTube's own search with the words; where an app has none, the phone page says so. The log (`UrTVType`) now adds the focused node's class name when no field is found.

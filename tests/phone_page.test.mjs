@@ -65,7 +65,7 @@ async function boot({ state = NEW(), w = 360, h = 740, scheme = 'dark', hash = '
     if (p === '/api/pair') return J({ ok: true, id: 'p1' });
     if (p === '/api/pair/status') return route.fulfill({ status: 200, contentType: 'application/json', headers: { 'Set-Cookie': 'urtv=ck1; Path=/' }, body: JSON.stringify({ ok: true, status: 'approved', session: 'SESS1' }) });
     if (c.noSession && p !== '/api/logout') return J({ ok: false, error: 'no_session' }, 401);
-    if (p === '/api/state') return J(typeof c.state === 'function' ? c.state() : c.state);
+    if (p === '/api/state') { if (c.stateDelay) await sleep(c.stateDelay); return J(typeof c.state === 'function' ? c.state() : c.state); }
     if (p === '/api/apps') return J(c.apps);
     if (p.startsWith('/api/icon/')) {   // an <img> sends the cookie but not the header: the server wants both
       if (!(hdr.cookie || '').includes('urtv=ck1') || hdr['x-urtv-session'] !== 'SESS1') return J({ ok: false, error: 'no_session' }, 401);
@@ -507,6 +507,44 @@ for (const [w, h] of [[360, 740], [412, 915]]) await T(`layout ${w}`, async () =
   const errs = S.errors.filter(e => !/status of 403/.test(e));   // the stub's pin_required answers
   check(`${w}px: no console errors (CSP violations included)`, errs.length === 0, errs.join(' | '));
   await S.ctx.close();
+});
+
+// ---- the cards: a card, then «بدون» (an empty list): each press of «حفظ البطاقات» sends exactly what the selects show
+await T('cards', async () => {
+  let shown = [];   // what the TV says its cards are
+  const S = await boot({ state: NEW({ home_cards: [] }), cfg: { state: () => NEW({ home_cards: shown.slice() }) } });
+  const { p } = S;
+  await tab(S, 'settings');
+  const sel = i => p.locator('#cards select').nth(i);
+  await sel(0).selectOption('prayer');
+  await p.click('#cardsGo'); await until(() => posts(S, '/api/set').length === 1);
+  check('a card, saved: one POST with that card', JSON.stringify(posts(S, '/api/set').map(r => r.body)) === '[{"home_cards":["prayer"]}]', JSON.stringify(posts(S, '/api/set').map(r => r.body)));
+  shown = ['prayer'];
+  const n = S.reqs.filter(r => r.path === '/api/state').length;
+  await until(() => S.reqs.filter(r => r.path === '/api/state').length > n + 1); await sleep(150);
+  check('the TV\'s answer after the save is drawn (the card is the first one)', (await sel(0).inputValue()) === 'prayer');
+  await sel(0).selectOption({ label: 'بدون' });
+  await p.click('#cardsGo'); await sleep(500);
+  const sets = posts(S, '/api/set').map(r => r.body);
+  check('«بدون», saved ONCE: exactly one more POST, with an empty list', sets.length === 2 && JSON.stringify(sets[1]) === '{"home_cards":[]}', JSON.stringify(sets));
+  await S.ctx.close();
+
+  // the TV's answer to the first save is still on its way when the person changes the card: it must not put the old card back
+  shown = [];
+  const D = await boot({ state: NEW({ home_cards: [] }), cfg: { state: () => NEW({ home_cards: shown.slice() }) } });
+  await tab(D, 'settings');
+  await D.p.locator('#cards select').nth(0).selectOption('prayer');
+  D.cfg.stateDelay = 1200;
+  await D.p.click('#cardsGo'); await until(() => posts(D, '/api/set').length === 1);
+  shown = ['prayer'];
+  await D.p.locator('#cards select').nth(0).selectOption({ label: 'بدون' });
+  await sleep(2000);
+  check('an answer that was on its way does not put the old card back while the person is choosing', (await D.p.locator('#cards select').nth(0).inputValue()) === '', await D.p.locator('#cards select').nth(0).inputValue());
+  D.cfg.stateDelay = 0;
+  await D.p.click('#cardsGo'); await sleep(400);
+  check('…and the save sends what the selects show (an empty list)', JSON.stringify(posts(D, '/api/set').map(r => r.body).pop()) === '{"home_cards":[]}', JSON.stringify(posts(D, '/api/set').map(r => r.body)));
+  check('the message over the page never takes a tap (a button under it is pressed)', (await D.p.evaluate(() => getComputedStyle(document.getElementById('msg')).pointerEvents)) === 'none');
+  await D.ctx.close();
 });
 
 await T('size', async () => {
