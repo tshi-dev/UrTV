@@ -35,8 +35,9 @@ SETTINGS = ({"stability": 0.5, "similarity_boost": 0.75} if NEW
             else {"stability": 0.45, "similarity_boost": 0.75, "style": 0.1, "use_speaker_boost": True})
 print("model:", MODEL)
 here = os.path.dirname(os.path.abspath(__file__))
-lines = [l.strip() for l in open(os.path.join(here, "lines.txt"), encoding="utf-8") if l.strip()]
-out = os.path.join(here, "out"); os.makedirs(out, exist_ok=True)
+LINES = os.environ.get("EL_LINES", "lines.txt")   # which text file to read (lines-v2.txt, lines-gtest.txt)
+lines = [l.strip() for l in open(os.path.join(here, LINES), encoding="utf-8") if l.strip()]
+out = os.path.join(here, os.environ.get("EL_OUT", "out")); os.makedirs(out, exist_ok=True)
 prev = ""
 for i, text in enumerate(lines, 1):
     nxt = lines[i] if i < len(lines) else ""

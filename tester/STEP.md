@@ -40,3 +40,9 @@ The owner wants the narration made with his ElevenLabs account. The key is in hi
 | V1 | `python tester/voice/make_voice.py` (it picks ElevenLabs' newest model with Arabic on the account, v4 if there; write the model name it prints in REPORT.md; if the newest model fails with an error, run again with EL_MODEL=eleven_v3 and say so) from the repo checkout of work/tester (it reads tester/voice/lines.txt, 26 lines). NEVER print, echo, log or commit the key. If it says the key isn't set, open a new terminal; if still empty, tell the owner in Arabic that the key isn't in this terminal | 26 files in tester/voice/out/ (01.mp3 … 26.mp3) |
 | V2 | Listen to 2-3 lines yourself if you can (or check sizes: none under 5 KB). If a line came out empty or broken, run it again | all 26 OK |
 | V3 | Push ONLY tester/voice/out/*.mp3 to work/tester-report under tester/voice/ (fetch and reset to origin/work/tester-report first, as before). Never the key, never anything else | pushed |
+
+## Voice, round 2 (owner's corrected text)
+| # | Do | Right when |
+|---|---|---|
+| G1 | ق/g TEST first: `EL_MODEL=eleven_v4 EL_LINES=lines-gtest.txt EL_OUT=out-gtest python tester/voice/make_voice.py` (4 files: 01 = line 3 with ق, 02 = line 3 with گ, 03 = line 19 with ق, 04 = line 19 with گ). Use mp3_44100_128 as before. Play them to the owner (or push them: tester/voice-gtest/01-04.mp3) and ask him in Arabic: «أي نطق أقرب للنجدي: الأول (ق) أو الثاني (گ)؟» | owner picks |
+| G2 | After his pick ONLY: tell the supervisor (REPORT.md "voice: ق" or "voice: گ"); the supervisor sends the final text file. Do not make the 26 lines before that | — |
