@@ -22,3 +22,9 @@ Before anything:
 | Z | Restore everything from the start lines (cards, familydns, accessibility services incl. typing, phone control OFF, appearance as the owner had it); `optimize/saver.sh updatechannel latest`; compare `saver.sh show` and `dock.sh show` | — | "restored: yes/no" |
 
 REPORT.md: "step 8", the table, the numbers, the owner's words, any `!!` lines. No personal data. Push after part A and again after part B. After part B, tell the owner in Arabic that the test is finished and how many problems there were. Part B: ask the owner in Arabic, one row at a time, when he says he's ready.
+
+## Extra (owner OK'd, no owner needed): the real app icons for the release video
+| # | Do | Right when |
+|---|---|---|
+| X1 | On the home screen, `adb exec-out screencap -p > home-full.png` (keep it LOCAL). Crop ONLY the four app tiles, each on its own, at full resolution: ثمانية, شاهد, YouTube, سين (find them in the favourites or «كل التطبيقات»; move focus away from them first so none has the focus ring). Save as icons/thmanyah.png, icons/shahid.png, icons/youtube.png, icons/seen.png | four clean tiles, nothing else from the screen in them |
+| X2 | Push ONLY those four PNGs to work/tester-report under tester/icons/ (never the full screenshot) | pushed |
