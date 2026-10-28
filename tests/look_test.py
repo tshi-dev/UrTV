@@ -113,4 +113,7 @@ check("every screen of ours takes the look of now: the launcher's and the settin
       and "return GlassStyle.of(lookNow, lightNow);" in main_src)
 check("any look's veil comes from the backdrop's two bounds (not stored once per look); unknown bounds: white and black, the strongest",
       "GlassStyle.scrimAlpha(b[0], b[1], l)" in gsrc and 'prefs(c).getInt("glass_hi", 0xFFFFFFFF), prefs(c).getInt("glass_lo", 0xFF000000)' in gsrc)
+check("a look's preview keeps its own colours: the dialog's dressing (the look of now) skips it, so a focused tile is not ink on ink",
+      "FrameLayout page = new LookPage(this);" in settings and "if (v instanceof LookPage) return;" in settings
+      and settings.index("if (v instanceof LookPage) return;") < settings.index("else if (!(v instanceof EditText)) t.setTextColor(focusColors(look.text, look.onFocus));"))
 sys.exit(1 if failed else 0)

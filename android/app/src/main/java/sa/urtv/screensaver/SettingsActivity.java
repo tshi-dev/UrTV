@@ -1543,9 +1543,14 @@ public class SettingsActivity extends Activity {
         dialog.show();
     }
 
+    /** A preview's page: its words keep the colours of ITS look (dressView leaves it alone; it dresses the dialog in the look of now). */
+    private static final class LookPage extends FrameLayout {
+        LookPage(android.content.Context c) { super(c); }
+    }
+
     /** A small page in a look: its title, two tiles (one focused) and a row, on the backdrop under that look's veil. */
     private View lookPreview(GlassStyle.Look l, boolean half) {
-        FrameLayout page = new FrameLayout(this);
+        FrameLayout page = new LookPage(this);
         page.setBackground(GlassSource.pageIn(this, l));
         page.setClipToOutline(true);
         page.setOutlineProvider(new ViewOutlineProvider() {
@@ -1628,6 +1633,7 @@ public class SettingsActivity extends Activity {
 
     /** Thmanyah on every text under this view, and on the ones that come later (a list makes its rows when it is shown) */
     private void dressView(View v, final boolean raw) {
+        if (v instanceof LookPage) return;   // a preview of a look: its own colours, its own fonts
         if (v instanceof TextView) {
             TextView t = (TextView) v;
             t.setTypeface(font("Thmanyah-Medium"));
