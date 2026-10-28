@@ -28,3 +28,7 @@ REPORT.md: "step 9", the table, the owner's words, the UrTVType and UrTVPhone li
 - IMPORTANT: work/tester-report was REWRITTEN (force-pushed) to take a city name out of its history. Before your next push: `git fetch origin work/tester-report && git reset --hard origin/work/tester-report` in your report checkout (your REPORT.md text is kept there, without the city), then add the photos and push normally.
 - Never name a city in REPORT.md, not even the real one being "put back": write "real city put back".
 - Icons: ثمانية and سين aren't installed, so crop only شاهد and YouTube (if they show) into tester/icons/; skip the others.
+
+## Update 2 (28 Oct, afternoon)
+- B1 is DONE by the owner himself on the TV ("all are good"): do NOT make or push the looks photos.
+- A new build 3.150 is coming (a preview-colour fix). Install it (`APK_TAG=apk-next optimize/install.sh all`) once version.txt shows 3.150, then do A3 (YouTube search), A4 («بدون» with the UrTVPhone lines) and A5, plus X1/X2 for شاهد and YouTube only. Then Z, REPORT.md, push.
