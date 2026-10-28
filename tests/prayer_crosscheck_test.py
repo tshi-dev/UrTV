@@ -88,32 +88,47 @@ if shutil.which("javac"):
             out = run.stdout.decode("utf-8")
             print(out, end="")
             check(cls + " exit code", run.returncode == 0 and "FAIL" not in out, run.stderr.decode("utf-8", "replace")[-300:])
-        # The file as a machine with Morocco's new rule (tzdata 2026c: UTC+0 from 20 September 2026) writes it, against this machine's data:
-        # every such row is re-based and reported as time-zone drift, never as a formula error; one minute more than the drift still fails
-        def as_new_rule(extra=0):
+        # Time-zone drift is tested against whichever rule THIS machine has, so the test does not depend on its tzdata version: the file is
+        # written once for each rule (Morocco's old one: UTC+1 from 20 September 2026; the new one, tzdata 2026c: UTC+0), and the one for the
+        # rule this machine does NOT have must pass with its rows re-based and reported as drift, never as a formula error; the one for the
+        # rule it has must pass with none re-based; and one minute more than the drift still fails either way.
+        stored = (ROOT / "tests/prayer_crosscheck.tsv").read_text(encoding="utf-8").splitlines()   # written with tzdata 2025b: the old rule
+        def as_rule(new_rule, extra=0):
             out = []
-            for l in (ROOT / "tests/prayer_crosscheck.tsv").read_text(encoding="utf-8").splitlines():
+            for l in stored:
                 f = l.split("\t")
                 if not l.startswith("#") and f[0] == "Africa/Casablanca" and f[4] >= "2026-09-20" and f[7] == "60":
-                    ms = [int(t[:2]) * 60 + int(t[3:]) - 60 + extra for t in f[8].split()]
-                    f[7], f[8] = "0", " ".join(f"{m // 60:02d}:{m % 60:02d}" for m in ms)
+                    ms = [int(t[:2]) * 60 + int(t[3:]) - (60 if new_rule else 0) + extra for t in f[8].split()]
+                    if new_rule:
+                        f[7] = "0"
+                    f[8] = " ".join(f"{m // 60:02d}:{m % 60:02d}" for m in ms)
                 out.append("\t".join(f))
             return "\n".join(out) + "\n"
+        def as_new_rule(extra=0):
+            return as_rule(True, extra)
+        moved = sum(1 for a, b in zip(as_new_rule().splitlines(), stored) if a != b)
+        own = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.tilawah.PrayerCrosscheckRun", str(ROOT / "tests/prayer_crosscheck.tsv")], capture_output=True)
+        machine_new = f"{moved} rows re-based" in own.stdout.decode("utf-8")   # the old-rule file is drift here: this machine has the new rule
+        print(f"NOTE time-zone drift test: this machine's Java has Morocco's {'new' if machine_new else 'old'} rule; the file for the {'old' if machine_new else 'new'} rule is the drifted one")
         drifted, wrong = Path(tmp) / "drifted.tsv", Path(tmp) / "wrong.tsv"
-        drifted.write_text(as_new_rule(), encoding="utf-8")
-        wrong.write_text(as_new_rule(extra=2), encoding="utf-8")
-        moved = sum(1 for a, b in zip(as_new_rule().splitlines(), (ROOT / "tests/prayer_crosscheck.tsv").read_text(encoding="utf-8").splitlines()) if a != b)
+        drifted.write_text(as_rule(not machine_new), encoding="utf-8")
+        wrong.write_text(as_rule(not machine_new, extra=2), encoding="utf-8")
+        own_rule = Path(tmp) / "own.tsv"
+        own_rule.write_text(as_rule(machine_new), encoding="utf-8")
         for path, want_ok in ((drifted, True), (wrong, False)):
             run = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.tilawah.PrayerCrosscheckRun", str(path)], capture_output=True)
             out = run.stdout.decode("utf-8")
             if want_ok:
-                check(f"time-zone drift: the file as Morocco's new rule writes it ({moved} rows at UTC+0) passes, its rows re-based and reported as drift",
+                check(f"time-zone drift: the file as the other Morocco rule writes it ({moved} rows) passes, its rows re-based and reported as drift",
                       run.returncode == 0 and f"{moved} rows re-based" in out and "Africa/Casablanca" in out, out[-400:])
             else:
                 check("time-zone drift is not a blind spot: the same rows two minutes further off still fail as a formula error", run.returncode != 0, out[-300:])
+        run = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.tilawah.PrayerCrosscheckRun", str(own_rule)], capture_output=True)
+        out = run.stdout.decode("utf-8")
+        check("the file written with this machine's own Morocco rule passes with no row re-based", run.returncode == 0 and "every row at the offset the file was written with" in out, out[-300:])
         check("the generator check tells the new rule's file apart as drift only",
-              drift_only(as_new_rule(), (ROOT / "tests/prayer_crosscheck.tsv").read_text(encoding="utf-8")) == (moved, {"Africa/Casablanca"})
-              and drift_only(as_new_rule(extra=2), (ROOT / "tests/prayer_crosscheck.tsv").read_text(encoding="utf-8")) is None and moved > 50, str(moved))
+              drift_only(as_new_rule(), "\n".join(stored) + "\n") == (moved, {"Africa/Casablanca"})
+              and drift_only(as_new_rule(extra=2), "\n".join(stored) + "\n") is None and moved > 50, str(moved))
 else:
     print("SKIP launcher crosscheck: no javac here")
 sys.exit(1 if failed else 0)
