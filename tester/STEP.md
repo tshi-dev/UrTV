@@ -37,6 +37,6 @@ REPORT.md: "step 9", the table, the owner's words, the UrTVType and UrTVPhone li
 The owner wants the narration made with his ElevenLabs account. The key is in his Windows environment as ELEVENLABS_API_KEY.
 | # | Do | Right when |
 |---|---|---|
-| V1 | `python tester/voice/make_voice.py` from the repo checkout of work/tester (it reads tester/voice/lines.txt, 26 lines). NEVER print, echo, log or commit the key. If it says the key isn't set, open a new terminal; if still empty, tell the owner in Arabic that the key isn't in this terminal | 26 files in tester/voice/out/ (01.mp3 … 26.mp3) |
+| V1 | `python tester/voice/make_voice.py` (it picks ElevenLabs' newest model with Arabic on the account, v4 if there; write the model name it prints in REPORT.md; if the newest model fails with an error, run again with EL_MODEL=eleven_v3 and say so) from the repo checkout of work/tester (it reads tester/voice/lines.txt, 26 lines). NEVER print, echo, log or commit the key. If it says the key isn't set, open a new terminal; if still empty, tell the owner in Arabic that the key isn't in this terminal | 26 files in tester/voice/out/ (01.mp3 … 26.mp3) |
 | V2 | Listen to 2-3 lines yourself if you can (or check sizes: none under 5 KB). If a line came out empty or broken, run it again | all 26 OK |
 | V3 | Push ONLY tester/voice/out/*.mp3 to work/tester-report under tester/voice/ (fetch and reset to origin/work/tester-report first, as before). Never the key, never anything else | pushed |
