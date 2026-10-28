@@ -28,3 +28,11 @@ The owner recorded the narration himself (Recording_3.m4a, ~7.7 min: line number
 - The transcript of Recording_3 (T1-T2) is NOT needed any more: skip it.
 - Push the EXACT 26-line text the owner used on the ElevenLabs site (with his wording fixes) as tester/voice-owner/lines-final.txt (one line per line, «…» where he paused), so the video's subtitles match his words.
 - Step 10 (R1-R5, Z) is still to do.
+
+## Official app icons for the video and posters (owner: "find online, all need to be good"; no owner needed)
+| # | Do | Right when |
+|---|---|---|
+| I1 | For each app, open its OFFICIAL Google Play page in the PC's browser (or fetch it) and take the store icon at the highest size: the page's `og:image` / the icon's `play-lh.googleusercontent.com/...` URL with `=s512` (or `=w512-h512`) at the end. Apps: **ثمانية** (search Play for "ثمانية" / "Thmanyah", publisher Thmanyah), **شاهد** (Shahid, publisher MBC; package net.mbc.shahid or its TV app), **YouTube** (com.google.android.youtube.tv, or com.google.android.youtube), **سين** (com.incube.seen.tv). If the TV app has a wide TV banner image on its page or in the Play "Android TV" listing, save that too | 4 icons (+ banners if any) |
+| I2 | Check each: square PNG/WebP at least 512×512, the real current logo (not a fan copy, not a screenshot crop with UI around it), no rounded-corner shadow baked in if a clean one exists. Convert WebP to PNG | clean files |
+| I3 | Save as tester/icons/thmanyah.png, shahid.png, youtube.png, seen.png (and *-banner.png if found) + tester/icons/SOURCE.md: for each, the Play page URL, the image URL, the size, and the date | done |
+| I4 | Push ONLY tester/icons/ to work/tester-report (reset to origin/work/tester-report first) | pushed |
