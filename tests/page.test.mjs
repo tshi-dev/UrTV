@@ -4149,8 +4149,10 @@ const CARD_KINDS_TEST = ['shows','prayers','forecast','hourly','prayerrow','next
     return o;
   };
   // these kinds in the cards there are (in place: the data is put in by hand and the network is cut), then what the eye would object to
-  const probe = (p, kinds) => p.evaluate(kinds => {
-    kinds.forEach((k, i) => { CARDS[i].kind = k; CARDS[i].ul.__h = null; });
+  // The adhkar card turns to its next dhikr by a timer (20 s and more): which one stands in it must not depend on how long the page has
+  // lived (a slow machine reached the surahs with their ayah numbers), so each probe starts the card at dhikr number `ai` and stops its timer.
+  const probe = (p, kinds, ai = 0) => p.evaluate(([kinds, ai]) => {
+    kinds.forEach((k, i) => { CARDS[i].kind = k; CARDS[i].ul.__h = null; if (CARDS[i].ad) { clearTimeout(CARDS[i].ad.t); CARDS[i].ad.t = 0; CARDS[i].ad.i = ai; } });
     renderPanel(false);
     const box = e => { const b = e.getBoundingClientRect(); return { l: b.left, r: b.right, t: b.top, b: b.bottom }; };
     const S = document.querySelector('.stage').getBoundingClientRect(), x = v => Math.round(v - S.left);   // where in the stage (it shifts against burn-in)
@@ -4177,7 +4179,7 @@ const CARD_KINDS_TEST = ['shows','prayers','forecast','hourly','prayerrow','next
       kinds: CARDS.map(c => c.eff), cols: cards.map(box).map(b => [x(b.l), x(b.r), Math.round(b.b - b.t)]),
       panels: [...document.querySelectorAll('.bottom .panel')].map(box).map(b => [x(b.l), x(b.r)]),
       stageL: S.left, clock: box(document.querySelector('.clock')), dates: box(document.querySelector('.dates')), markets: box(document.querySelector('.markets')) };
-  }, kinds);
+  }, [kinds, ai]);
   const x0 = (v, r) => Math.round(v - r.stageL);
   const bad = (r, digits) => r.hit.length || r.off.length || r.cut.length || r.dots || (digits === 'latin' ? r.hindi : r.latin.length);
   // a card each, by itself, at every clock size
@@ -4205,6 +4207,15 @@ const CARD_KINDS_TEST = ['shows','prayers','forecast','hourly','prayerrow','next
     }
     check(`second card, ${style}, ${digits}, ${w}x${h}: every kind in the pair fits, the pair is one height over the bottom row's columns`,
       !fails.length && !o.errors.length, fails.slice(0, 3).join(' | ') + o.errors.join('; '));
+    await o.ctx.close();
+  }
+  // every dhikr of the adhkar card, in both digit systems: the surahs' ayah signs carry Arabic-Indic numbers in their text, which Western
+  // digits must not show (the ornament stays empty), and Arabic-Indic digits must not show a Western one
+  for (const digits of ['hindi', 'latin']) {
+    const o = await openSaver(`clocksize=small&panel=adhkar&panel2=verse&digits=${digits}`, 960, 540), fails = [];
+    const n = await o.p.evaluate(() => ADHKAR.length);
+    for (let k = 0; k < n; k++) { const r = await probe(o.p, ['adhkar', 'verse'], k); if (digits === 'latin' ? r.hindi : r.latin.length) fails.push(k + ' ' + JSON.stringify([r.hindi, r.latin])); }
+    check(`adhkar card, ${digits}: none of its ${n} adhkar shows the other digit system`, n > 15 && !fails.length && !o.errors.length, fails.slice(0, 3).join(' | ') + o.errors.join('; '));
     await o.ctx.close();
   }
   // read from the sofa (Look's review): in the pair no text goes below its floor, a row's text 2.1vh and any other line 1.45vh; the

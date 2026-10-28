@@ -3081,7 +3081,10 @@ function adhkarCard(card){
   ad.n = list.length;
   if(!ad.t) ad.t = setTimeout(() => adhkarNext(card), Math.min(60, 20 + .1 * d.text.length) * 1000);
   const dots = Math.min(list.length, 12), on = Math.floor(i * dots / list.length);
-  const text = d.quran ? `<span class="orn">﴿</span><span class="qt">${esc(d.text)}</span><span class="orn">﴾</span>` : esc(d.text);
+  // the ayah-end signs of a surah carry their number inside the ornament in Arabic-Indic digits (the font draws only those inside it);
+  // with Western digits chosen the number goes and the ornament stays empty, rather than a «1» outside the circle
+  const qt = d.quran && LATIN ? d.text.replace(/(\u06DD)[\u0660-\u0669]+/g, '$1') : d.text;
+  const text = d.quran ? `<span class="orn">﴿</span><span class="qt">${esc(qt)}</span><span class="orn">﴾</span>` : esc(d.text);
   const [title, until, icon] = mode ? [...ADHKAR_HEAD[mode], mode] : adhkarNextWindow();
   return {
     title,
