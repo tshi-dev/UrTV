@@ -28,9 +28,11 @@ check("the receiver takes --es appearance dark|light|auto, refuses anything else
       and '"\\nappearance: " + p.appearance()' in recv)
 check("saver.sh appearance, with its help line", 'appearance) set1 appearance "${2:?usage: optimize/saver.sh appearance dark|light|auto}" ;;' in saver
       and "#   optimize/saver.sh appearance auto" in saver)
-check("the settings have a row «المظهر» beside «التحية والطقس»: OK goes on dark → light → auto",
-      'row("المظهر", Prefs.appearanceLabel(prefs.appearance())' in settings and settings.index('row("التحية والطقس"') < settings.index('row("المظهر"')
-      and "Prefs.APPEARANCES[(at + 1) % Prefs.APPEARANCES.length]" in settings)
+home_at = settings.index('header("الشاشة الرئيسية (تلفزيونك)");')
+check("«المظهر» is the first row of «الشاشة الرئيسية»: «الشكل» and «الإضاءة» (dark, light, auto), each chosen in its own list",
+      'row("المظهر", Prefs.lookLabel(prefs.look()) + " · " + Prefs.appearanceLabel(prefs.appearance())' in settings
+      and home_at < settings.index('row("المظهر"') < settings.index("row(HOME_CARD_NAMES[k]") and "prefs.setAppearance(values[pos])" in settings
+      and "prefs.setLook(values[pos])" in settings)
 check("the launcher reads the column; an older screensaver says nothing: dark", 'cur.getColumnIndex("appearance")' in snap and "this.appearance = Look.mode(appearance);" in snap)
 tick = main[main.index("private void updateClock()"):].split("\n    }\n")[0]
 check("the home asks for the look at each minute tick (and on coming back), with the sun when it is automatic",
@@ -92,4 +94,23 @@ for photo in ("grey", "dark"):   # the dark look as it always was, over the phot
     for part, need in (("clock", 4.5), ("title", 4.5), ("gridname", 4.5), ("greeting", 3.0)):
         c = con[("dark", part, photo)]
         check(f"dark look over a {photo} photo: the {part} reads as before (contrast {c:.1f})", c >= need, c)
+# ---- «المظهر ← الشكل»: glass (the default), graphite, navy, clean, for all our screens
+main_src = (ROOT / "android/launcher/src/main/java/sa/urtv/home/MainActivity.java").read_text(encoding="utf-8")
+gs = (ROOT / "android/launcher/src/main/java/sa/urtv/home/GlassStyle.java").read_text(encoding="utf-8")
+gsrc = (ROOT / "android/launcher/src/main/java/sa/urtv/home/GlassSource.java").read_text(encoding="utf-8")
+gsrc_app = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/GlassSource.java").read_text(encoding="utf-8")
+check("the four looks, glass first: an unknown or missing value is glass", 'LOOKS = {"glass", "graphite", "navy", "clean"};' in gs
+      and "for (String k : LOOKS) if (k.equals(raw)) return k;\n        return LOOKS[0];" in gs)
+check("«نظيف» has no dark of its own: its dark is graphite's (the mockup's note)", 'case "clean": return light ? CLEAN_LIGHT : GRAPHITE_DARK;' in gs)
+check("the screensaver keeps it (glass by default), and the provider gives it as a column of its own after the others",
+      'String look() { return GlassStyle.look(sp.getString("look", GlassStyle.LOOKS[0])); }' in prefs and '"watch_next", "look"});' in provider and "p.look()});" in provider)
+check("the receiver takes --es look glass|graphite|navy|clean, refuses anything else, and show says it",
+      'i.getStringExtra("look")' in recv and 'return "error: look is one of "' in recv and "p.setLook(look);" in recv and '"\\nlook: " + p.look()' in recv)
+check("saver.sh look, with its help line", 'look) set1 look "${2:?usage: optimize/saver.sh look glass|graphite|navy|clean}" ;;' in saver and "#   optimize/saver.sh look navy" in saver)
+check("the launcher reads the column; an older screensaver says nothing: glass", 'cur.getColumnIndex("look")' in snap and "this.look = GlassStyle.look(look);" in snap)
+check("every screen of ours takes the look of now: the launcher's and the settings app's GlassSource, the home's own pieces",
+      "return GlassStyle.of(lookName(c), light(c));" in gsrc and "return GlassStyle.of(new Prefs(c).look(), light(c));" in gsrc_app
+      and "return GlassStyle.of(lookNow, lightNow);" in main_src)
+check("any look's veil comes from the backdrop's two bounds (not stored once per look); unknown bounds: white and black, the strongest",
+      "GlassStyle.scrimAlpha(b[0], b[1], l)" in gsrc and 'prefs(c).getInt("glass_hi", 0xFFFFFFFF), prefs(c).getInt("glass_lo", 0xFF000000)' in gsrc)
 sys.exit(1 if failed else 0)

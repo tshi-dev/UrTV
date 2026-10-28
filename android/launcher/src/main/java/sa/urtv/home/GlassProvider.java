@@ -13,7 +13,8 @@ import java.io.FileNotFoundException;
 /**
  * The glass backdrop for the screensaver app's screens (its settings): read only, and only by an app holding
  * sa.urtv.home.READ_GLASS, a signature permission (our two apps share the key): no other app can read the home's photo.
- * content://sa.urtv.home.glass/backdrop: a query gives stamp (0: none yet), the two veils and the look the home shows;
+ * content://sa.urtv.home.glass/backdrop: a query gives stamp (0: none yet), the glass look's two veils, the look the home shows and the
+ * backdrop's bounds (any look's veil comes from them: GlassStyle.scrimAlpha);
  * opening it gives the small PNG (GlassSource.FILE).
  */
 public final class GlassProvider extends ContentProvider {
@@ -25,9 +26,12 @@ public final class GlassProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection, String[] args, String sort) {
         if (!"/backdrop".equals(uri.getPath())) return null;
         File f = GlassSource.file(getContext());
-        MatrixCursor c = new MatrixCursor(new String[] {"stamp", "scrim_dark", "scrim_light", "home_light"});
-        c.addRow(new Object[] {f.isFile() ? f.lastModified() : 0L, GlassSource.scrim(getContext(), false), GlassSource.scrim(getContext(), true),
-                Dock.prefs(getContext()).contains("glass_home_light") ? (Dock.prefs(getContext()).getBoolean("glass_home_light", false) ? 1 : 0) : -1});
+        MatrixCursor c = new MatrixCursor(new String[] {"stamp", "scrim_dark", "scrim_light", "home_light", "glass_hi", "glass_lo"});
+        int[] bounds = GlassSource.bounds(getContext());
+        c.addRow(new Object[] {f.isFile() ? f.lastModified() : 0L,   // the glass look's two veils first, for a settings app from before «الشكل»
+                GlassStyle.scrimAlpha(bounds[0], bounds[1], GlassStyle.DARK), GlassStyle.scrimAlpha(bounds[0], bounds[1], GlassStyle.LIGHT),
+                Dock.prefs(getContext()).contains("glass_home_light") ? (Dock.prefs(getContext()).getBoolean("glass_home_light", false) ? 1 : 0) : -1,
+                bounds[0], bounds[1]});
         return c;
     }
 

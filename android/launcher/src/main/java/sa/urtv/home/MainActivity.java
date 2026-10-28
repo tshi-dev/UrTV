@@ -113,6 +113,7 @@ public class MainActivity extends Activity {
     private View scrim;
     private GradientDrawable dockBand;
     private final List<TextView> gridLabels = new ArrayList<>();
+    private String lookNow = GlassStyle.LOOKS[0];   // «المظهر ← الشكل» as the minute tick last read it (the glass of the home's own pieces)
     private boolean lightNow;   // the look on screen now: dark until a light one is asked for
     private Pill inputsPill;        // «المصادر», for the phone remote's request
     private Pill tilawahPill;       // «تلاوة وأذان»: in the row only while the setting shows it (applyListenPill)
@@ -1395,7 +1396,7 @@ public class MainActivity extends Activity {
      * The glass look of the home's hint line, «تراجع», «المخفية» and its menus, in the look the home shows. They sit over the home's
      * photo as it is (not the blurred backdrop), so their fills are made opaque over the look's solid colour: GlassStyle checks exactly that.
      */
-    private GlassStyle.Look homeGlass() { return GlassStyle.of(lightNow); }
+    private GlassStyle.Look homeGlass() { return GlassStyle.of(lookNow, lightNow); }
 
     private int opaque(int fill) { return GlassStyle.over(fill, homeGlass().base); }
 
@@ -2224,6 +2225,7 @@ public class MainActivity extends Activity {
         Calendar now = ClockZone.at(ms, tz);   // the city's time, like the prayer times beside it
         int h = now.get(Calendar.HOUR_OF_DAY);
         greetingLine.update(h, cfg);
+        lookNow = cfg.look();
         applyLook(Look.light(cfg.appearance(), dayBySun(cfg), h * 60 + now.get(Calendar.MINUTE)));
         boolean h24 = cfg.clock24();   // «ساعة ٢٤»: off (12-hour with the ص or م) unless the owner turned it on
         clock.setText(ClockText.face(h, now.get(Calendar.MINUTE), h24, Digits.latin()));

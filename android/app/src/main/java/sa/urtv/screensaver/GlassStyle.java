@@ -54,6 +54,45 @@ public final class GlassStyle {
 
     public static Look of(boolean light) { return light ? LIGHT : DARK; }
 
+    // ---------------------------------------------------------------- the other looks («المظهر ← الشكل»; the mockups in SPEC.md)
+    // Each keeps the same backdrop under a strong veil of its own colour, so every look reads by the same rules over every photo.
+
+    /** أ · فحمي: charcoal with an amber accent; the focused tile is solid amber */
+    public static final Look GRAPHITE_DARK = new Look(false, 0xFF121314, 0x121314, 0.82f, 0xFFF2F0EC, 0xFFB9B6B0, 0xFFF0A64A, 0xFFFFB4A0,
+            0xE6202124, 0x14FFFFFF, 0xFF1E1F22, 0xFFF0A64A, 0xFF1A1206, 0xFF3D2A0E, 0xF2202124);
+    public static final Look GRAPHITE_LIGHT = new Look(true, 0xFFF3F1EE, 0xF3F1EE, 0.85f, 0xFF1C1B1A, 0xFF55514B, 0xFF8A4F00, 0xFF8E2A10,
+            0xF2FFFFFF, 0x1F1C1B1A, 0xFFFFFFFF, 0xFF8A4F00, 0xFFFFFFFF, 0xFFF3E2CC, 0xF2FFFFFF);
+
+    /** ب · كحلي: the home's night sky, deep navy with gold; the focused tile is solid gold */
+    public static final Look NAVY_DARK = new Look(false, 0xFF0B1630, 0x0B1630, 0.80f, 0xFFF3EEE2, 0xFFB7BFD0, 0xFFE0BA74, 0xFFFFC2B3,
+            0xD9142247, 0x1FE0BA74, 0xFF101D3D, 0xFFE0BA74, 0xFF0B1630, 0xFF2A3350, 0xF2101D3D);
+    public static final Look NAVY_LIGHT = new Look(true, 0xFFEEF1F7, 0xEEF1F7, 0.85f, 0xFF14213D, 0xFF46516B, 0xFF6E5017, 0xFF8E2A10,
+            0xF2FFFFFF, 0x1F14213D, 0xFFFFFFFF, 0xFF14213D, 0xFFFFFFFF, 0xFFD5DBE8, 0xF2FFFFFF);
+
+    /** ج · نظيف: white tiles on soft grey, a deep-teal solid focus; light only: its dark is graphite's (the mockup's note) */
+    public static final Look CLEAN_LIGHT = new Look(true, 0xFFECECE8, 0xF4F4F1, 0.88f, 0xFF1B1D21, 0xFF50555E, 0xFF0B5E51, 0xFF8E2A10,
+            0xFAFFFFFF, 0x1414181E, 0xFFFFFFFF, 0xFF0B5E51, 0xFFFFFFFF, 0xFFCFE6E1, 0xFAFFFFFF);
+
+    /** the looks «المظهر ← الشكل» offers, in its order; the first is the default */
+    public static final String[] LOOKS = {"glass", "graphite", "navy", "clean"};
+    public static final String[] LOOK_NAMES = {"زجاجي", "فحمي", "كحلي", "نظيف"};
+
+    /** A look's key as kept; anything else (an older app, nothing set) is the glass look. */
+    public static String look(String raw) {
+        for (String k : LOOKS) if (k.equals(raw)) return k;
+        return LOOKS[0];
+    }
+
+    /** The colours of a look in the dark or the light. */
+    public static Look of(String look, boolean light) {
+        switch (look(look)) {
+            case "graphite": return light ? GRAPHITE_LIGHT : GRAPHITE_DARK;
+            case "navy": return light ? NAVY_LIGHT : NAVY_DARK;
+            case "clean": return light ? CLEAN_LIGHT : GRAPHITE_DARK;
+            default: return light ? LIGHT : DARK;
+        }
+    }
+
     /** The veil's colour at this strength. */
     static int scrimColor(Look l, float alpha) {
         return (Math.round(Math.max(0f, Math.min(1f, alpha)) * 255) << 24) | (l.scrim & 0xFFFFFF);
@@ -119,11 +158,25 @@ public final class GlassStyle {
      * veil and a panel is never lighter than the first nor darker than the second, so this holds for every pixel of the photo).
      */
     static float scrimAlpha(int[] px, Look l) {
+        int[] b = bounds(px);
+        return scrimAlpha(b[0], b[1], l);
+    }
+
+    /**
+     * The two colours that bound every pixel of the backdrop, {brightest, darkest} channel by channel. Kept with the backdrop (two
+     * numbers), so any look's veil is worked out from them when it is drawn (scrimAlpha(hi, lo, look)), not stored once per look.
+     */
+    static int[] bounds(int[] px) {
         int hi = 0xFF000000, lo = 0xFFFFFFFF;
         for (int p : px) {
             hi = 0xFF000000 | Math.max(hi & 0xFF0000, p & 0xFF0000) | Math.max(hi & 0xFF00, p & 0xFF00) | Math.max(hi & 0xFF, p & 0xFF);
             lo = 0xFF000000 | Math.min(lo & 0xFF0000, p & 0xFF0000) | Math.min(lo & 0xFF00, p & 0xFF00) | Math.min(lo & 0xFF, p & 0xFF);
         }
+        return new int[] {hi, lo};
+    }
+
+    /** The lightest veil for a backdrop bounded by {@code hi} and {@code lo} (bounds), plus MARGIN; the strongest, 0.95, if none reads. */
+    public static float scrimAlpha(int hi, int lo, Look l) {
         for (int step = Math.round(l.scrimMin * 100); step <= 95; step++) {
             float a = step / 100f;
             if (worst(l, a, hi, lo) >= MIN_CONTRAST) return Math.min(0.95f, a + MARGIN);

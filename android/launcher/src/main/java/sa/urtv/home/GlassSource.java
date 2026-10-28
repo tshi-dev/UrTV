@@ -39,9 +39,18 @@ public final class GlassSource {
         return cached;
     }
 
-    /** The veil this backdrop needs in this look (GlassStyle.scrimAlpha, worked out when it was made). */
-    static float scrim(Context c, boolean light) {
-        return prefs(c).getFloat(light ? "glass_scrim_light" : "glass_scrim_dark", 0.95f);
+    /**
+     * The two colours that bound every pixel of the backdrop (GlassStyle.bounds), kept when it was made. Not known (a backdrop from
+     * before «الشكل»): white and black, so every look takes the veil the brightest and the darkest photo would need.
+     */
+    static int[] bounds(Context c) {
+        return new int[] {prefs(c).getInt("glass_hi", 0xFFFFFFFF), prefs(c).getInt("glass_lo", 0xFF000000)};
+    }
+
+    /** The veil this backdrop needs under this look (GlassStyle.scrimAlpha from its bounds: a few contrasts, not a pass over the photo). */
+    static float scrim(Context c, GlassStyle.Look l) {
+        int[] b = bounds(c);
+        return GlassStyle.scrimAlpha(b[0], b[1], l);
     }
 
     /** Light now? «المظهر» as the screensaver keeps it; automatic follows what the home shows (it writes it), else the clock. */
@@ -52,13 +61,16 @@ public final class GlassSource {
         return Look.light(mode, null, now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE));
     }
 
-    public static GlassStyle.Look look(Context c) { return GlassStyle.of(light(c)); }
+    /** «المظهر ← الشكل» as the screensaver keeps it (glass, graphite, navy, clean); unknown or missing: glass. */
+    public static String lookName(Context c) { return GlassStyle.look(ConfigSnapshot.read(c).look()); }
+
+    /** The look of now: «الشكل» in the light or the dark of now. */
+    public static GlassStyle.Look look(Context c) { return GlassStyle.of(lookName(c), light(c)); }
 
     /** A screen's page: the backdrop under its veil, in the look of now. Returns that look, for the screen's own colours. */
     public static GlassStyle.Look page(Activity a, View root) {
-        boolean light = light(a);
-        GlassStyle.Look l = GlassStyle.of(light);
-        root.setBackground(GlassPaint.page(a, backdrop(a), l, scrim(a, light)));
+        GlassStyle.Look l = look(a);
+        root.setBackground(GlassPaint.page(a, backdrop(a), l, scrim(a, l)));
         return l;
     }
 
@@ -73,14 +85,29 @@ public final class GlassSource {
         }
     }
 
-    /** For the phone page (/api/state): the backdrop's stamp (0: none) and the two veils, in thousandths (the JSON has whole numbers only). */
+    /**
+     * For the phone page (/api/state): the backdrop's stamp (0: none), «الشكل», and the veils of that look in the dark and the light, in
+     * thousandths (the JSON has whole numbers only).
+     */
     public static java.util.Map<String, Object> phoneState(Context c) {
         java.util.Map<String, Object> m = new java.util.LinkedHashMap<>();
         File f = file(c);
+        String look = lookName(c);
         m.put("glass_stamp", f.isFile() ? f.lastModified() : 0L);
-        m.put("glass_dark", (long) Math.round(scrim(c, false) * 1000));
-        m.put("glass_light", (long) Math.round(scrim(c, true) * 1000));
+        m.put("glass_look", look);
+        m.put("glass_dark", (long) Math.round(scrim(c, GlassStyle.of(look, false)) * 1000));
+        m.put("glass_light", (long) Math.round(scrim(c, GlassStyle.of(look, true)) * 1000));
         return m;
+    }
+
+    /** Two colours channel by channel: the brighter (or the darker) of each channel. */
+    private static int channels(int a, int b, boolean brighter) {
+        int out = 0xFF000000;
+        for (int shift : new int[] {16, 8, 0}) {
+            int x = (a >> shift) & 255, y = (b >> shift) & 255;
+            out |= (brighter ? Math.max(x, y) : Math.min(x, y)) << shift;
+        }
+        return out;
     }
 
     /** The home tells the other screens which look it shows («تلقائي» follows it). */
@@ -104,18 +131,18 @@ public final class GlassSource {
             small.getPixels(px, 0, GlassStyle.W * 2, 0, 0, GlassStyle.W * 2, GlassStyle.H * 2);
             if (small != photo) small.recycle();
             int[] blurred = GlassStyle.blur(GlassStyle.downscale(px, GlassStyle.W * 2, GlassStyle.H * 2), GlassStyle.W, GlassStyle.H);
-            float dark = GlassStyle.scrimAlpha(blurred, GlassStyle.DARK), light = GlassStyle.scrimAlpha(blurred, GlassStyle.LIGHT);
+            int[] b = GlassStyle.bounds(blurred);
             Bitmap out = Bitmap.createBitmap(blurred, GlassStyle.W, GlassStyle.H, Bitmap.Config.ARGB_8888);
             File dir = f.getParentFile();
             if (!dir.isDirectory() && !dir.mkdirs()) return;
             File tmp = new File(dir, "backdrop.tmp");
             try (FileOutputStream o = new FileOutputStream(tmp)) { out.compress(Bitmap.CompressFormat.PNG, 100, o); }
             out.recycle();
-            // while the file changes a reader may get either photo: the stronger veil of the two first, then this photo's own
-            p.edit().putFloat("glass_scrim_dark", Math.max(dark, p.getFloat("glass_scrim_dark", 0f)))
-                    .putFloat("glass_scrim_light", Math.max(light, p.getFloat("glass_scrim_light", 0f))).commit();
+            // while the file changes a reader may get either photo: bounds that hold both first (the stronger veil), then this photo's own
+            int[] was = bounds(c);
+            p.edit().putInt("glass_hi", channels(b[0], was[0], true)).putInt("glass_lo", channels(b[1], was[1], false)).commit();
             if (!tmp.renameTo(f)) { tmp.delete(); return; }
-            p.edit().putString("glass_key", key).putFloat("glass_scrim_dark", dark).putFloat("glass_scrim_light", light).commit();
+            p.edit().putString("glass_key", key).putInt("glass_hi", b[0]).putInt("glass_lo", b[1]).commit();
         } catch (java.io.IOException | RuntimeException ignored) {
             // no backdrop this time: the screens keep the last one, or the solid colour
         }

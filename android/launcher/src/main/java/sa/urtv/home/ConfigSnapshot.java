@@ -20,9 +20,11 @@ final class ConfigSnapshot {
     final boolean watchNextOn;
     /** «المظهر»: auto, light or dark (Look.mode); an older screensaver does not say: dark, as the home always was */
     private final String appearance;
+    private final String look;   // «المظهر ← الشكل» (GlassStyle.look): an older screensaver says nothing: glass
 
     private ConfigSnapshot(String fragment, boolean greetingOn, boolean adhanBarOn, boolean listenPillOn, boolean updateBellOn, String appearance,
-            boolean watchNextOn) {
+            boolean watchNextOn, String look) {
+        this.look = GlassStyle.look(look);
         this.watchNextOn = watchNextOn;
         this.fragment = fragment;
         this.greetingOn = greetingOn;
@@ -33,6 +35,7 @@ final class ConfigSnapshot {
     }
 
     String appearance() { return appearance; }
+    String look() { return look; }
 
     /**
      * One home-screen return reads this four times (the clock, the row of pills, the cards, the digits), each a cross-process query that starts
@@ -54,7 +57,7 @@ final class ConfigSnapshot {
     private static ConfigSnapshot query(Context c) {
         String fragment = null;
         boolean greeting = true, bar = true, listenPill = true, updateBell = true, watchNext = true;
-        String appearance = null;
+        String appearance = null, look = null;
         try (Cursor cur = c.getContentResolver().query(URI, null, null, null, null)) {
             if (cur != null && cur.moveToFirst()) {
                 fragment = cur.getString(0);
@@ -70,11 +73,13 @@ final class ConfigSnapshot {
                 if (w >= 0 && "0".equals(cur.getString(w))) watchNext = false;
                 int a = cur.getColumnIndex("appearance");
                 if (a >= 0) appearance = cur.getString(a);
+                int k = cur.getColumnIndex("look");
+                if (k >= 0) look = cur.getString(k);
             }
         } catch (RuntimeException ignored) {
             // the screensaver is missing or signed with another key: the defaults (Riyadh, on)
         }
-        return new ConfigSnapshot(fragment, greeting, bar, listenPill, updateBell, appearance, watchNext);
+        return new ConfigSnapshot(fragment, greeting, bar, listenPill, updateBell, appearance, watchNext, look);
     }
 
     /** {city, zone id}; null when the screensaver gave nothing: the TV's own zone then */

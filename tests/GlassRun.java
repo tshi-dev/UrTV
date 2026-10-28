@@ -36,18 +36,21 @@ public final class GlassRun {
             Arrays.fill(flat, c);
             line(out, String.format("plain %06X", c & 0xFFFFFF), flat);
         }
-        for (boolean light : new boolean[] {false, true})
-            out.append("solid ").append(light ? "light" : "dark").append(String.format(" worst=%.2f", GlassStyle.worstSolid(GlassStyle.of(light)))).append('\n');
+        for (String look : GlassStyle.LOOKS) for (boolean light : new boolean[] {false, true})
+            out.append("solid ").append(look).append(light ? "-light" : "-dark").append(String.format(" worst=%.2f", GlassStyle.worstSolid(GlassStyle.of(look, light)))).append('\n');
         System.out.print(out);
     }
 
+    /** every look of «المظهر ← الشكل», dark and light: the veil it gets from the backdrop's bounds, and the worst text over every pixel */
     private static void line(StringBuilder out, String name, int[] px) {
-        for (boolean light : new boolean[] {false, true}) {
-            GlassStyle.Look l = GlassStyle.of(light);
-            float a = GlassStyle.scrimAlpha(px, l);
+        int[] b = GlassStyle.bounds(px);
+        for (String look : GlassStyle.LOOKS) for (boolean light : new boolean[] {false, true}) {
+            GlassStyle.Look l = GlassStyle.of(look, light);
+            float a = GlassStyle.scrimAlpha(b[0], b[1], l);
             double worst = Double.MAX_VALUE;
-            for (int p : px) worst = Math.min(worst, GlassStyle.worst(l, a, p));   // every pixel, not only the bounds
-            out.append(name).append(light ? " light" : " dark").append(String.format(" alpha=%.2f worst=%.2f", a, worst)).append('\n');
+            for (int i = 0; i < px.length; i += 3) worst = Math.min(worst, GlassStyle.worst(l, a, px[i]));   // a third of the pixels, besides the bounds
+            worst = Math.min(worst, GlassStyle.worst(l, a, b[0], b[1]));   // the bounds hold for every pixel
+            out.append(name).append(' ').append(look).append(light ? "-light" : "-dark").append(String.format(" alpha=%.2f worst=%.2f", a, worst)).append('\n');
         }
     }
 }

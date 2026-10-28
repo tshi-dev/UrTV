@@ -23,7 +23,9 @@ final class GlassSource {
 
     private static Bitmap cached;            // the one bitmap of this process
     private static long cachedStamp = -1;
-    private static float scrimDark = 0.95f, scrimLight = 0.95f;
+    private static float scrimDark = 0.95f, scrimLight = 0.95f;   // the glass look's, from an older home app without the bounds
+    private static int hi = 0xFFFFFFFF, lo = 0xFF000000;            // the backdrop's bounds (GlassStyle.bounds): any look's veil comes from them
+    private static boolean bounded;
     private static int homeLight = -1;      // what the home shows: 1 light, 0 dark, -1 not known
 
     /** The home's answer: the stamp of its backdrop and the veils (one small query); the bitmap read again only when the stamp moved. */
@@ -35,6 +37,9 @@ final class GlassSource {
                 scrimDark = q.getFloat(1);
                 scrimLight = q.getFloat(2);
                 homeLight = q.getInt(3);
+                int h = q.getColumnIndex("glass_hi"), l = q.getColumnIndex("glass_lo");
+                bounded = h >= 0 && l >= 0;
+                if (bounded) { hi = q.getInt(h); lo = q.getInt(l); }
             }
         } catch (RuntimeException e) {   // no home app, an older one without the provider, or no permission
             stamp = 0;
@@ -64,15 +69,30 @@ final class GlassSource {
     /** A screen's page: the backdrop under its veil, in the look of now. Returns that look, for the screen's own colours. */
     static GlassStyle.Look page(Activity a, View root) {
         refresh(a);
-        boolean light = light(a);
-        GlassStyle.Look l = GlassStyle.of(light);
+        GlassStyle.Look l = look(a);
         Bitmap bm;
         float scrim;
-        synchronized (GlassSource.class) { bm = cached; scrim = light ? scrimLight : scrimDark; }
+        synchronized (GlassSource.class) {
+            bm = cached;
+            // the veil this look needs over this backdrop; an older home app gives only the glass look's two, any other look the strongest
+            scrim = bounded ? GlassStyle.scrimAlpha(hi, lo, l) : l == GlassStyle.DARK ? scrimDark : l == GlassStyle.LIGHT ? scrimLight : 0.95f;
+        }
         root.setBackground(GlassPaint.page(a, bm, l, scrim));
         return l;
     }
 
-    /** The look of now, for a dialog or a row drawn after the page. */
-    static GlassStyle.Look look(Context c) { return GlassStyle.of(light(c)); }
+    /** A page in another look, for the previews of «المظهر»: the same one bitmap under the veil that look needs (no copy). */
+    static android.graphics.drawable.Drawable pageIn(Context c, GlassStyle.Look l) {
+        refresh(c);
+        Bitmap bm;
+        float scrim;
+        synchronized (GlassSource.class) {
+            bm = cached;
+            scrim = bounded ? GlassStyle.scrimAlpha(hi, lo, l) : l == GlassStyle.DARK ? scrimDark : l == GlassStyle.LIGHT ? scrimLight : 0.95f;
+        }
+        return GlassPaint.page(c, bm, l, scrim);
+    }
+
+    /** The look of now: «المظهر ← الشكل» (Prefs.look, glass when unknown) in the light or the dark of now. */
+    static GlassStyle.Look look(Context c) { return GlassStyle.of(new Prefs(c).look(), light(c)); }
 }

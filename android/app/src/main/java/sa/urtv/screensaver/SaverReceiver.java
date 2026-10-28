@@ -20,7 +20,7 @@ import java.util.Locale;
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.CITIES
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET
  *       [--es city 'الرس'] [--es lat 25.86 --es lon 43.49 --es tz Asia/Kuwait]   (tz is needed for a place that is not in the list) [--es teams '136013:Al-Hilal,150643:Al-Zulfi']
- *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
+ *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
  *       [--es sunrise on|off] [--es prayerbar on|off] [--es wxmore on|off] [--es months default|levant] [--es genres Drama,Comedy] [--es langs English]
  *       [--es photos 30] [--es idle 10] [--es digits hindi|latin] [--es hijrioffset -2..2] [--es clock24 on|off]
  *       [--es cardstyle current|dark1|glass1|dark3|glass3] [--es national auto|off]
@@ -43,7 +43,8 @@ import java.util.Locale;
  * PHOTOS = «صوري», the owner's own photos (Own, up to 10; optimize/photos.sh): "add" keeps the photo the shell just wrote
  * through ConfigProvider (.../own-in), or, with path, one in /data/local/tmp/urtv-own/ (only where the app may read it);
  * mode = mix (they join ours, as always) or only.
- * appearance = «المظهر» of the home screen: dark (the default), light, or auto (light from sunrise until Maghrib in the city).
+ * appearance = «المظهر ← الإضاءة» of the home screen: dark (the default), light, or auto (light from sunrise until Maghrib in the city).
+ * look = «المظهر ← الشكل» of all our screens: glass (the default), graphite, navy or clean.
  * listenpill = the «تلاوة وأذان» button on the home screen (on, the default, or off: only the button goes, the adhan and the Quran stay).
  * watchnext = «أكمل المشاهدة» under the home screen's favourites (on, the default, or off); it needs the home app's TV listings permission.
  * updatebell = the «جرس التحديثات» on the home screen (on, the default, or off: only the bell goes; it shows only while the Play Store has updates waiting).
@@ -238,6 +239,9 @@ public class SaverReceiver extends BroadcastReceiver {
         String appearance = i.getStringExtra("appearance");
         if (appearance != null && !Arrays.asList(Prefs.APPEARANCES).contains(appearance))
             return "error: appearance is one of " + Prefs.join(Arrays.asList(Prefs.APPEARANCES), " ");
+        String look = i.getStringExtra("look");
+        if (look != null && !Arrays.asList(GlassStyle.LOOKS).contains(look))
+            return "error: look is one of " + Prefs.join(Arrays.asList(GlassStyle.LOOKS), " ");
         String rating = i.getStringExtra("minrating");
         if (rating != null && !Arrays.asList(Prefs.MIN_RATINGS).contains(rating))
             return "error: minrating is one of " + Prefs.join(Arrays.asList(Prefs.MIN_RATINGS), " ");
@@ -336,6 +340,7 @@ public class SaverReceiver extends BroadcastReceiver {
         if (updateBell != null) p.setUpdateBell("on".equals(updateBell));
         if (watchNext != null) p.setWatchNext("on".equals(watchNext));
         if (appearance != null) p.setAppearance(appearance);
+        if (look != null) p.setLook(look);
         if (adhanBar != null) p.setAdhanBar("on".equals(adhanBar));
         if (updateChannel != null && !updateChannel.equals(p.updateChannel())) {   // another release now: the number shown as the newest is read again
             p.setUpdateChannel(updateChannel);
@@ -473,6 +478,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nupdatebell: " + (p.updateBell() ? "on" : "off")
             + "\nwatchnext: " + (p.watchNext() ? "on" : "off")
             + "\nappearance: " + p.appearance()
+            + "\nlook: " + p.look()
             + "\nadhanbar: " + (p.adhanBar() ? "on" : "off")
             + "\nupdatechannel: " + p.updateChannel()
             + "\nyearstrip: " + (p.yearStrip() ? "on" : "off")

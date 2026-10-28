@@ -295,6 +295,9 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { pickCardStyle(); } });
 
         header("الشاشة الرئيسية (تلفزيونك)");
+        // «المظهر», the first row: «الشكل» (glass, graphite, navy, clean) and «الإضاءة» (dark, light, auto), each picked with a live preview
+        row("المظهر", Prefs.lookLabel(prefs.look()) + " · " + Prefs.appearanceLabel(prefs.appearance()), R.drawable.ic_eye,
+            new Runnable() { public void run() { pickLook(); } });
         // up to three cards left of the clock; each place takes any card, or «بدون» (the ones after it move up)
         for (int k = 0; k < Prefs.HOME_CARDS; k++) {
             final int place = k;
@@ -303,11 +306,6 @@ public class SettingsActivity extends Activity {
         }
         row("التحية والطقس", prefs.greeting() ? "تعمل" : "متوقفة", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setGreeting(!prefs.greeting()); render(); } });
-        // «المظهر»: OK goes on to the next, داكن → فاتح → تلقائي (the home takes it at its next minute)
-        row("المظهر", Prefs.appearanceLabel(prefs.appearance()), R.drawable.ic_eye,
-            new Runnable() { public void run() {
-                int at = java.util.Arrays.asList(Prefs.APPEARANCES).indexOf(prefs.appearance());
-                prefs.setAppearance(Prefs.APPEARANCES[(at + 1) % Prefs.APPEARANCES.length]); render(); } });
         // the adhan's settings (on or off, the voice, the Fajr voice, short, any key stops it, the volume): the same screen as the player's adhan tab,
         // opened through the home (behind its family lock), so they are reachable with the «تلاوة وأذان» button hidden too
         row("الأذان", "تشغيله وصوته وصوت الفجر والمختصر والإيقاف بأي زر والمستوى", R.drawable.ic_settings,
@@ -1466,6 +1464,136 @@ public class SettingsActivity extends Activity {
 
     static android.content.res.ColorStateList focusColors(int rest, int focused) { return GlassPaint.focusColors(rest, focused); }
 
+    // ---------- «المظهر»: «الشكل» and «الإضاءة», each with a live preview ----------
+
+    /** «المظهر»: which of the two to choose; each opens its own list, the focused choice drawn beside it. */
+    private void pickLook() {
+        new Dlg(this).setTitle("المظهر")
+            .setItems(new String[] {"الشكل: " + Prefs.lookLabel(prefs.look()), "الإضاءة: " + Prefs.appearanceLabel(prefs.appearance())},
+                (d, i) -> pickLookPart(i == 0))
+            .show();
+    }
+
+    /**
+     * «الشكل» (shape) or «الإضاءة»: the list, and beside it a small page in the focused choice, drawn live from its palette over the one
+     * backdrop (GlassSource.pageIn: no image of its own, nothing stored); OK keeps it and every screen of ours takes it.
+     */
+    private void pickLookPart(final boolean shape) {
+        final String[] values = shape ? GlassStyle.LOOKS : Prefs.APPEARANCES;
+        final String[] labels = new String[values.length];
+        for (int i = 0; i < values.length; i++) labels[i] = shape ? GlassStyle.LOOK_NAMES[i] : Prefs.appearanceLabel(values[i]).split(" · ")[0];
+        final String current = shape ? prefs.look() : prefs.appearance();
+        final LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.HORIZONTAL);
+        box.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        box.setPadding(dp(12), dp(4), dp(12), dp(4));
+        final android.widget.ListView lv = new android.widget.ListView(this);
+        lv.setDividerHeight(0);
+        lv.setSelector(GlassPaint.fill(this, look.focus, 12, 0));
+        lv.setAdapter(new android.widget.ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, labels) {
+            @Override public View getView(int i, View old, android.view.ViewGroup parent) {
+                TextView t = (TextView) super.getView(i, old, parent);
+                t.setTypeface(font("Thmanyah-Medium"));
+                t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+                t.setTextColor(focusColors(look.text, look.onFocus));
+                t.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
+                return t;
+            }
+        });
+        box.addView(lv, new LinearLayout.LayoutParams(dp(170), dp(260)));
+        final FrameLayout stage = new FrameLayout(this);
+        LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(dp(360), dp(203));
+        sp.setMarginStart(dp(16));
+        sp.gravity = Gravity.CENTER_VERTICAL;
+        box.addView(stage, sp);
+        final Runnable show = () -> {
+            int i = Math.max(0, lv.getSelectedItemPosition());
+            stage.removeAllViews();
+            String sh = shape ? values[i] : prefs.look();
+            if (!shape && "auto".equals(values[i])) {   // automatic: the dark and the light side by side
+                LinearLayout two = new LinearLayout(this);
+                two.addView(lookPreview(GlassStyle.of(sh, false), true), new LinearLayout.LayoutParams(0, -1, 1f));
+                two.addView(lookPreview(GlassStyle.of(sh, true), true), new LinearLayout.LayoutParams(0, -1, 1f));
+                stage.addView(two, new FrameLayout.LayoutParams(-1, -1));
+            } else {
+                boolean light = shape ? look.light : "light".equals(values[i]);
+                stage.addView(lookPreview(GlassStyle.of(sh, light), false), new FrameLayout.LayoutParams(-1, -1));
+            }
+        };
+        lv.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override public void onItemSelected(android.widget.AdapterView<?> p, View v, int pos, long id) { show.run(); }
+            @Override public void onNothingSelected(android.widget.AdapterView<?> p) { }
+        });
+        final AlertDialog dialog = new Dlg(this).setTitle(shape ? "المظهر: الشكل" : "المظهر: الإضاءة").setView(box)
+            .setNegativeButton("إلغاء", null).create();
+        lv.setOnItemClickListener((p, v, pos, id) -> {
+            if (shape) prefs.setLook(values[pos]); else prefs.setAppearance(values[pos]);
+            dialog.dismiss();
+            look = GlassSource.page(this, root);   // this screen at once; the home and the others as they come up
+            hint.setTextColor(look.sub);
+            render();
+        });
+        dialog.setOnShowListener(x -> {
+            dress(dialog);
+            int at = Math.max(0, java.util.Arrays.asList(values).indexOf(current));
+            lv.requestFocus();
+            lv.setSelection(at);
+            show.run();
+        });
+        dialog.show();
+    }
+
+    /** A small page in a look: its title, two tiles (one focused) and a row, on the backdrop under that look's veil. */
+    private View lookPreview(GlassStyle.Look l, boolean half) {
+        FrameLayout page = new FrameLayout(this);
+        page.setBackground(GlassSource.pageIn(this, l));
+        page.setClipToOutline(true);
+        page.setOutlineProvider(new ViewOutlineProvider() {
+            @Override public void getOutline(View v, Outline o) { o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), dp(14)); }
+        });
+        LinearLayout col = new LinearLayout(this);
+        col.setOrientation(LinearLayout.VERTICAL);
+        col.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        col.setPadding(dp(14), dp(12), dp(14), dp(12));
+        TextView title = new TextView(this);
+        title.setText(half ? (l.light ? "فاتح" : "داكن") : "الإعدادات");
+        title.setTextColor(l.text);
+        title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+        title.setTypeface(font("ThmanyahDisplay-Bold"));
+        col.addView(title);
+        LinearLayout tiles = new LinearLayout(this);
+        tiles.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        for (int k = 0; k < (half ? 1 : 2); k++) {
+            TextView t = new TextView(this);
+            t.setText(k == 0 ? "الموقع" : "الأذان");
+            t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+            t.setTypeface(font("Thmanyah-Medium"));
+            t.setGravity(Gravity.CENTER);
+            t.setTextColor(k == 0 ? l.onFocus : l.text);
+            t.setBackground(k == 0 ? GlassPaint.fill(this, l.focus, 10, 0) : GlassPaint.panel(this, l, 10));
+            LinearLayout.LayoutParams tp = new LinearLayout.LayoutParams(0, dp(48), 1f);
+            if (k == 0) tp.setMarginEnd(dp(8));
+            tiles.addView(t, tp);
+        }
+        col.addView(tiles, llp(-1, -2, dp(8)));
+        TextView row = new TextView(this);
+        row.setText("المدينة · الرياض");
+        row.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
+        row.setTypeface(font("Thmanyah-Regular"));
+        row.setTextColor(l.sub);
+        row.setPadding(dp(10), dp(6), dp(10), dp(6));
+        row.setBackground(GlassPaint.panel(this, l, 8));
+        col.addView(row, llp(-1, -2, dp(8)));
+        page.addView(col, new FrameLayout.LayoutParams(-1, -1));
+        return page;
+    }
+
+    private LinearLayout.LayoutParams llp(int w, int h, int top) {
+        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(w, h);
+        p.topMargin = top;
+        return p;
+    }
+
     /** the dialogs of this screen: the glass theme (styles.xml), and Thmanyah on every word of them once they show */
     private static final class Dlg extends AlertDialog.Builder {
         private final SettingsActivity owner;
@@ -1484,13 +1612,29 @@ public class SettingsActivity extends Activity {
 
     void dress(AlertDialog d) { dress(d, false); }
 
-    void dress(AlertDialog d, boolean raw) { if (d.getWindow() != null) dressView(d.getWindow().getDecorView(), raw); }
+    void dress(AlertDialog d, boolean raw) {
+        if (d.getWindow() == null) return;
+        // the look of now on top of the dark or light theme: its dialog glass laid over its solid colour (opaque), its words, its focus
+        d.getWindow().setBackgroundDrawable(GlassPaint.fill(this, GlassStyle.over(look.dialog, look.base), 22, look.line));
+        if (d.getListView() != null) {
+            android.graphics.drawable.StateListDrawable sel = new android.graphics.drawable.StateListDrawable();
+            sel.addState(new int[] {android.R.attr.state_focused}, GlassPaint.fill(this, look.focus, 12, 0));
+            sel.addState(new int[] {android.R.attr.state_pressed}, GlassPaint.fill(this, look.focus, 12, 0));
+            sel.addState(new int[] {}, new android.graphics.drawable.ColorDrawable(0));
+            d.getListView().setSelector(sel);
+        }
+        dressView(d.getWindow().getDecorView(), raw);
+    }
 
     /** Thmanyah on every text under this view, and on the ones that come later (a list makes its rows when it is shown) */
     private void dressView(View v, final boolean raw) {
         if (v instanceof TextView) {
             TextView t = (TextView) v;
             t.setTypeface(font("Thmanyah-Medium"));
+            if (v instanceof android.widget.Button) t.setTextColor(focusColors(look.accent, look.accent));
+            else if (!(v instanceof EditText)) t.setTextColor(focusColors(look.text, look.onFocus));   // the focus ink on a focused row
+            else t.setTextColor(look.text);
+            if (v instanceof android.widget.CheckedTextView) ((android.widget.CheckedTextView) v).setCheckMarkTintList(focusColors(look.accent, look.onFocus));
             if (!raw && !(v instanceof EditText)) {   // the numbers of the dialogs follow the «الأرقام» setting too
                 String was = t.getText().toString(), now = conv(was);
                 if (!now.equals(was)) t.setText(now);

@@ -56,8 +56,8 @@ recv = read(ROOT / "android/app/src/main/java/sa/urtv/screensaver/SaverReceiver.
 snap = read(HOME / "ConfigSnapshot.java")
 saver = read(ROOT / "optimize/saver.sh")
 check("the setting: on by default, in the provider after the other columns, --es watchnext on|off, saver.sh watchnext, show",
-      'boolean watchNext() { return sp.getBoolean("watchNext", true); }' in prefs_s and '"update_bell", "watch_next"});' in provider
-      and 'p.watchNext() ? "1" : "0"});' in provider and 'i.getStringExtra("watchnext")' in recv and '"\\nwatchnext: "' in recv
+      'boolean watchNext() { return sp.getBoolean("watchNext", true); }' in prefs_s and '"update_bell", "watch_next"' in provider
+      and 'p.watchNext() ? "1" : "0"' in provider and 'i.getStringExtra("watchnext")' in recv and '"\\nwatchnext: "' in recv
       and 'watchnext) set1 watchnext' in saver)
 check("the home reads it (an older screensaver says nothing: on) and shows no row when it is off", 'cur.getColumnIndex("watch_next")' in snap
       and "if (!TvRows.allowed(this) || !ConfigSnapshot.read(this).watchNextOn) {" in load)

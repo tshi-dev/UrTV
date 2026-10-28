@@ -146,14 +146,17 @@ with tempfile.TemporaryDirectory() as tmp:
 lines = [l for l in out.split("\n") if l]
 photos = [l for l in lines if l.startswith("photo ")]
 shipped = len(list((ROOT / "assets/backgrounds").glob("*.jpg"))) + len([p for p in (ROOT / "photos").iterdir() if p.suffix.lower() in (".jpg", ".jpeg", ".png", ".webp")])
-check("every photo we ship was read, in both looks", len(photos) == 2 * shipped and not any(l.startswith("skip") for l in lines), (len(photos), shipped))
+LOOKS = re.search(r'LOOKS = \{([^}]*)\}', style).group(1).replace('"', "").replace(" ", "").split(",")
+check(f"every photo we ship was read, in every look ({', '.join(LOOKS)}), dark and light", len(photos) == 2 * len(LOOKS) * shipped and not any(l.startswith("skip") for l in lines), (len(photos), shipped))
 def worst(l): return float(l.rsplit("worst=", 1)[1])
 bad = [l for l in lines if "worst=" in l and worst(l) < 4.5]
 check("every text of both looks reads at 4.5:1 or more over every pixel of every photo we ship (the veil it gets)", not [l for l in bad if l.startswith("photo")], bad[:8])
 check("…and over plain white, black, grey, red, blue and yellow: an owner's own photo reads too", not [l for l in bad if l.startswith("plain")], bad[:8])
-check("…and on the solid page, before there is a backdrop", not [l for l in bad if l.startswith("solid")] and len([l for l in lines if l.startswith("solid")]) == 2, bad)
+check("…and on the solid page, before there is a backdrop", not [l for l in bad if l.startswith("solid")] and len([l for l in lines if l.startswith("solid")]) == 2 * len(LOOKS), bad)
 alphas = [float(re.search(r"alpha=([\d.]+)", l).group(1)) for l in photos]
 check("the veil is never past 0.95 (some of the photo always shows)", max(alphas) <= 0.95, max(alphas))
-print("veil per photo: dark", min(a for l, a in zip(photos, alphas) if " dark " in l), "to", max(a for l, a in zip(photos, alphas) if " dark " in l),
-      "· light", min(a for l, a in zip(photos, alphas) if " light " in l), "to", max(a for l, a in zip(photos, alphas) if " light " in l))
+for k in LOOKS:
+    for light in ("dark", "light"):
+        a = [x for l, x in zip(photos, alphas) if f" {k}-{light} " in l]
+        print(f"veil per photo, {k} {light}: {min(a)} to {max(a)}")
 sys.exit(1 if failed else 0)
