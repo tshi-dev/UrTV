@@ -23,3 +23,8 @@ The owner recorded the narration himself (Recording_3.m4a, ~7.7 min: line number
 |---|---|---|
 | T1 | Ask the owner (Arabic) where Recording_3.m4a is on this PC (or to copy it here). Then `python tester/voice/stt.py <path to Recording_3.m4a>` (pull work/tester first). It tries ElevenLabs Speech to Text with his key; if refused it uses faster-whisper (`pip install faster-whisper` first; it downloads the large-v3 model once). Never print the key | tester/voice/owner-transcript.json written; it prints the word count and the engine |
 | T2 | Push ONLY tester/voice/owner-transcript.json to work/tester-report under tester/voice-owner/ (reset to origin/work/tester-report first). Not the recording itself (the supervisor already has it) | pushed |
+
+## Update (29 Oct): the owner's cloned-voice parts are the final voice
+- The transcript of Recording_3 (T1-T2) is NOT needed any more: skip it.
+- Push the EXACT 26-line text the owner used on the ElevenLabs site (with his wording fixes) as tester/voice-owner/lines-final.txt (one line per line, «…» where he paused), so the video's subtitles match his words.
+- Step 10 (R1-R5, Z) is still to do.
