@@ -403,7 +403,7 @@ public class MainActivity extends Activity {
         tvRowsBox.setOrientation(LinearLayout.VERTICAL);
         tvRowsBox.setClipChildren(false);
         tvRowsBox.setClipToPadding(false);
-        tvRowsBox.setPadding(dp(20), 0, dp(20), 0);
+        tvRowsBox.setPadding(dp(20), 0, dp(20), 0);   // the dock band's own padding: its cells are the favourites' cells, a card a tile's size
         bottom.addView(tvRowsBox, new LinearLayout.LayoutParams(-1, -2));
 
         appsLabel = text(11, "sans-serif-medium", 0x99FFFFFF);
@@ -802,6 +802,7 @@ public class MainActivity extends Activity {
         if (entranceDue) { entranceDue = false; playEntrance(); }
         applyPendingFocus();
         beginPendingEdit();
+        if (!tvShown.isEmpty() && tvCells != dockCards.size()) showTvRows(tvShown);   // the favourites came (or changed): the row's cells follow
         addGridRows(rest, 0, gen);
     }
 
@@ -1117,6 +1118,7 @@ public class MainActivity extends Activity {
     private static final long TV_PICTURES_MS = 8000;   // the pictures of one visit; what is not there by then keeps its title
     private String tvShownSig = "";
     private List<TvRows.Row> tvShown = new ArrayList<>();
+    private int tvCells;   // the cells «أكمل المشاهدة» was cut into (the favourites' count then): built again when that changes
     private final java.util.Map<TvRows.Item, ImageView> tvPics = new java.util.HashMap<>();
     private final java.util.Map<TvRows.Item, TextView> tvPlain = new java.util.HashMap<>();
     private final java.util.Set<TvRows.Item> tvPictured = new java.util.HashSet<>();
@@ -1195,7 +1197,8 @@ public class MainActivity extends Activity {
         tvRowsBox.removeAllViews();
         tvCards.clear();
         tvNames.clear();
-        int n = Math.max(1, dockCards.size());
+        int n = TvRowsPick.cells(dockCards.size(), MIN_DOCK);   // never one cell: see TvRowsPick.cells
+        tvCells = n;
         for (TvRows.Row r : rows) {
             TextView name = text(11, "sans-serif-medium", lightNow ? Look.LIGHT_LOOK.gold : GOLD);
             name.setShadowLayer(dp(3), 0, dp(1), Look.of(lightNow).shadow);   // a halo in the light look, as the clock's lines

@@ -41,6 +41,13 @@ public class SettingsActivity extends Activity {
     private Prefs prefs;
     private LinearLayout list;
     private ScrollView scroll;
+    private int sideWidth, pageWidth;   // px, fixed in onCreate: the side pane and the whole page
+
+    /** The settings' scroll: up and down only; nothing can move the page sideways (scrollTo keeps x at 0). */
+    static final class UpDownScroll extends ScrollView {
+        UpDownScroll(android.content.Context c) { super(c); }
+        @Override public void scrollTo(int x, int y) { super.scrollTo(0, y); }
+    }
     private String pendingFocus;   // the row to focus once the window has the focus back (a dialog was still open when the list was rebuilt)
     // the first screen is the categories (SettingsHub); a tile opens its rows, Back goes back to that tile
     private String screen;           // null: the categories; else the category whose rows are shown
@@ -75,8 +82,9 @@ public class SettingsActivity extends Activity {
         root = new FrameLayout(this);
         root.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         look = GlassSource.page(this, root);
-        scroll = new ScrollView(this);
+        scroll = new UpDownScroll(this);
         scroll.setVerticalScrollBarEnabled(false);
+        scroll.setHorizontalScrollBarEnabled(false);
         FrameLayout frame = new FrameLayout(this);
         list = new LinearLayout(this);
         list.setOrientation(LinearLayout.VERTICAL);
@@ -92,10 +100,14 @@ public class SettingsActivity extends Activity {
         side.setOrientation(LinearLayout.VERTICAL);
         side.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         side.setPadding(dp(8), dp(48), dp(8), dp(16));
-        LinearLayout.LayoutParams sideLp = new LinearLayout.LayoutParams(0, -1, 0.36f);
+        // fixed widths, worked out once (no weights): the side and the rows never move sideways (the TV test of 3.147: after 5 down and
+        // 5 up the list went from the left half to the right half and back); the rows' width changes only between the categories and a category
+        sideWidth = Math.round(width * 0.36f) - dp(36);
+        pageWidth = width;
+        LinearLayout.LayoutParams sideLp = new LinearLayout.LayoutParams(sideWidth, -1);
         sideLp.setMarginEnd(dp(36));
         panes.addView(side, sideLp);
-        panes.addView(scroll, new LinearLayout.LayoutParams(0, -1, 0.64f));
+        panes.addView(scroll, new LinearLayout.LayoutParams(width - sideWidth - dp(36), -1));
         LinearLayout column = new LinearLayout(this);
         column.setOrientation(LinearLayout.VERTICAL);
         LinearLayout.LayoutParams panesLp = new LinearLayout.LayoutParams(width, 0, 1f);
@@ -369,6 +381,11 @@ public class SettingsActivity extends Activity {
     private void sidePane() {
         side.removeAllViews();
         side.setVisibility(screen == null ? View.GONE : View.VISIBLE);
+        int rowsWidth = screen == null ? pageWidth : pageWidth - sideWidth - dp(36);   // the categories: the whole width; a category: beside the side
+        if (scroll.getLayoutParams() != null && scroll.getLayoutParams().width != rowsWidth) {
+            scroll.getLayoutParams().width = rowsWidth;
+            scroll.requestLayout();
+        }
         if (screen == null) return;
         int at = SettingsHub.index(screen);
         final ImageView ic = new ImageView(this);

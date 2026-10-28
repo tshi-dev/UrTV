@@ -32,7 +32,7 @@ check("the row sits in the first screen, right under the favourites, inside the 
       and main.index("bottom.addView(dockRow") < main.index("bottom.addView(tvRowsBox") and "tvRowsBox.setPadding(dp(20), 0, dp(20), 0);" in main
       and "dockRow.setPadding(dp(20), dp(22), dp(20), dp(22));" in main)
 check("no card is cut: no horizontal scroll, at most as many cards as favourites, each a favourite's width (rowCell, the dock's own rule)",
-      "HorizontalScrollView" not in main and "int n = Math.max(1, dockCards.size());" in show and "line.addView(box, rowCell(i, n, -2));" in show
+      "HorizontalScrollView" not in main and "int n = TvRowsPick.cells(dockCards.size(), MIN_DOCK);" in show and "line.addView(box, rowCell(i, n, -2));" in show
       and "int shown = Math.min(n, r.items.size());" in show and "line.addView(new View(this), rowCell(i, n, 1));" in show)
 check("tight: the name 14 dp under the favourites and 10 dp over its cards, one row only", "tvRowsBox.addView(name, llp(-2, -2, 0, dp(14), 0, dp(10)));" in show
       and "TvRows.Row row = new Row();" not in show)
@@ -131,6 +131,20 @@ check("a very tall picture is bounded by its height too (1000×30000: 1/64, then
 check("a small picture is taken as it is; a picture with no size is none", r["sample_small"] == "1 320" and r["sample_none"] == "0 0", (r["sample_small"], r["sample_none"]))
 check("a content:// picture only from the publishing app's own provider", (r["provider_own"], r["provider_other"], r["provider_none"]) == ("true", "false", "false"))
 check("the rows' signature tells the same rows from changed ones", r["sig_same"] == "true" and r["sig_diff"] == "false", (r["sig_same"], r["sig_diff"]))
+# ---- the TV test of 3.147: one huge card filled two thirds of the screen and pushed the favourites up over the clock
+check("«أكمل المشاهدة» is never one cell: before the favourites are on screen it is cut as the least of them (5), then as they are",
+      r["cells_before"] == "5" and r["cells_after"] == "7", (r["cells_before"], r["cells_after"]))
+check("at 960x540 dp a card is a favourite tile's size: 148.8x83.7 dp with 5 favourites, 64.4x36.2 with 10 (one cell would be 824x463.5)",
+      r["card_5"] == "148.8x83.7" and r["card_10"] == "64.4x36.2" and r["card_1"] == "824.0x463.5", (r["card_5"], r["card_10"], r["card_1"]))
+check("…cut like the favourites (the dock band's 20 dp padding, rowCell) and built again when their number changes",
+      "tvRowsBox.setPadding(dp(20), 0, dp(20), 0);" in main and "dockRow.setPadding(dp(20), dp(22), dp(20), dp(22));" in main
+      and "if (!tvShown.isEmpty() && tvCells != dockCards.size()) showTvRows(tvShown);" in main)
+# the first screen at 960x540 dp with the row (the tallest case, 5 favourites): estimated as the home lays it out (sp ~ dp x 1.2 for a line)
+card5 = float(r["card_5"].split("x")[1])
+header = 36 + (15 * 1.2 + 4) + (12 * 1.2 + 5) + (58 * 1.25 - 2) + (14 * 1.2 - 2)        # top, greeting, weather, clock, date
+bottom = 30 + (11 * 1.2 + 24 + card5 * 1.12) + (22 + card5 * 1.12 + 22) + (34 * 1.2 + 14)  # margin, row (label, focused card), dock band, title
+check(f"at 960x540 dp the favourites and the row stay under the clock: the clock block ends at ~{header:.0f} dp, the favourites' block starts at ~{540 - bottom:.0f} dp",
+      540 - bottom > header + 8, (header, 540 - bottom))
 check("how far in: a fraction up to 1, unknown without a position or a length",
       r["progress_half"] == "0.5" and r["progress_over"] == "1.0" and r["progress_unknown"] == "-1.0 -1.0", (r["progress_half"], r["progress_over"], r["progress_unknown"]))
 sys.exit(1 if failed else 0)

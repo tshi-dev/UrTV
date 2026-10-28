@@ -18,6 +18,19 @@ final class TvRowsPick {
     static final int WATCH_NEXT_TYPE_CONTINUE = 0, WATCH_NEXT_TYPE_NEXT = 1;
 
     /** A Watch Next entry shown in «أكمل المشاهدة»: continue or next episode, browsable, from an app that is on the TV. */
+    /**
+     * How many cells «أكمل المشاهدة» is cut into: as many as the favourites, so a card is a favourite tile's size. Before the favourites are
+     * on screen (both load in the background, the row may come first) the least the favourites can be, never one cell: one cell was the
+     * whole screen's width, a 16:9 card two thirds of the screen tall, the favourites pushed up over the clock (the TV test of 3.147).
+     */
+    static int cells(int favourites, int least) { return favourites > 0 ? favourites : least; }
+
+    /** The width of one of {@code n} cells on a screen {@code screenW} wide (dp): its two sides off, 20 dp between two cells (rowCell). */
+    static float cellWidth(float screenW, float side, int n) { return (screenW - 2 * side - (n - 1) * 20f) / n; }
+
+    /** A card's height (dp): 16:9 of its cell (AspectFrame). */
+    static float cardHeight(float cellW) { return cellW * 9f / 16f; }
+
     static boolean watchNextShown(int type, boolean browsable, boolean appThere) {
         return (type == WATCH_NEXT_TYPE_CONTINUE || type == WATCH_NEXT_TYPE_NEXT) && browsable && appThere;
     }

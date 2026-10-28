@@ -10,6 +10,7 @@
     <color name="glass_panel">#6B14161A</color>
     <color name="glass_line">#24FFFFFF</color>
     <color name="glass_dialog">#B318191D</color>
+    <color name="glass_dialog_solid">#18191C</color>
     <color name="glass_focus">#F2FFFFFF</color>
     <color name="on_focus">#14161A</color>
     <color name="on_focus_sub">#3A3E46</color>
