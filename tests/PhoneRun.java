@@ -59,7 +59,7 @@ public final class PhoneRun {
             m.put("foreground", "own");
             return m;
         }
-        @Override public Result set(Map<String, Object> v) { calls.add("set:" + v.keySet()); return Result.ok("saved"); }
+        @Override public Result set(Map<String, Object> v) { calls.add("set:" + v.keySet()); if (v.containsKey("home_cards")) calls.add("cards:" + v.get("home_cards")); return Result.ok("saved"); }
         @Override public Result quran(Map<String, Object> v) { calls.add("quran:" + v.get("op")); return Result.ok("sent"); }
         @Override public List<String> cities(String q) { calls.add("cities"); return new ArrayList<String>(Arrays.asList("الرياض")); }
         @Override public Map<String, Object> apps() {
@@ -303,6 +303,16 @@ public final class PhoneRun {
         boolean setOk = true;
         for (String body : new String[] {"{\"sleep_minutes\":0}", "{\"sleep_minutes\":15}", "{\"sleep_minutes\":90}", "{\"saver_idle\":1}", "{\"saver_idle\":30}"}) setOk &= authed(e, "POST", "/api/set", body, sess).status == 200;
         check("v2: set takes the sleep minutes (0 cancels) and the idle minutes of the lists", setOk && e.actions.calls.size() == 5, e.actions.calls.toString());
+        e.actions.calls.clear();
+        // the owner's TV test (fix7/8): a card, then «بدون» (an empty list) and «لا شيء» (none): each reaches the actions as it was sent
+        e.now[0] += 6_000;
+        boolean cardsOk = authed(e, "POST", "/api/set", "{\"home_cards\":[\"nextprayer\"]}", sess).status == 200;
+        e.now[0] += 6_000;
+        cardsOk &= authed(e, "POST", "/api/set", "{\"home_cards\":[]}", sess).status == 200;
+        e.now[0] += 6_000;
+        cardsOk &= authed(e, "POST", "/api/set", "{\"home_cards\":[\"none\"]}", sess).status == 200;
+        check("v2: set takes a card, then an empty list, then none: all three reach the actions", cardsOk
+            && e.actions.calls.equals(Arrays.asList("set:[home_cards]", "cards:[nextprayer]", "set:[home_cards]", "cards:[]", "set:[home_cards]", "cards:[none]")), e.actions.calls.toString());
         e.actions.calls.clear();
         e.now[0] += 6_000;
         check("v2: text takes a mode (append or replace) and search (a boolean), passed on as asked",

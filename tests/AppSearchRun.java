@@ -22,6 +22,10 @@ public final class AppSearchRun {
         check("no node is 'none'", "none".equals(AppSearch.safeClass(null)) && "none".equals(AppSearch.safeClass("")));
         check("anything else in a name is hidden", "a?b?c".equals(AppSearch.safeClass("a b/c")) && "??".equals(AppSearch.safeClass("اب")));
         check("a class name is cut at 80", AppSearch.safeClass(long1).length() == 80);
+        // the owner's TV log of step 8 (YouTube's profile picker in front, the page sent «قرآن» with search): the search is for YouTube TV, whatever the field
+        check("the logged case: YouTube TV in front, 4 letters of text: it is searched", AppSearch.supports("com.google.android.youtube.tv") && "قرآن".equals(AppSearch.query("قرآن")));
+        check("the web link carries the words percent-encoded", "https://www.youtube.com/results?search_query=%D9%82%D8%B1%D8%A2%D9%86".equals(AppSearch.webUrl("قرآن"))
+            && "https://www.youtube.com/results?search_query=a%20b%26c".equals(AppSearch.webUrl("a b&c")));
         System.out.println(failed == 0 ? "ALL PASS" : "FAILED " + failed);
         if (failed != 0) System.exit(1);
     }

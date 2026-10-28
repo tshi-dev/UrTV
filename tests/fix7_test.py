@@ -53,7 +53,7 @@ check("no other screen of the launcher keeps the screen awake", not others, othe
 # 3. the cards saved from the phone reach the home that is in front
 act = text(HOME + "phone/PhoneActions.java")
 ma = text(HOME + "MainActivity.java")
-check("a saved set of cards (empty list = «بدون» too) sends the home a message", re.search(r'containsKey\("home_cards"\)\) PhoneApps\.cardsChanged\(app\)', act)
+check("a saved set of cards (empty list = «بدون» too) sends the home a message", "PhoneApps.cardsChanged(app);" in act
       and 'extras.putString("home_panel", cards.length() == 0 ? "none" : cards.toString())' in act)
 check("the home follows it at once when it is in front, with its own (not exported) receiver",
       "InternalReceivers.register(this, cardsChanged, new IntentFilter(HomeCard.CHANGED))" in ma and "if (resumed) { homeCard.refresh(); wireFocus(); }" in ma
@@ -64,14 +64,20 @@ check("the receiver takes none / an empty list as «no cards»", 'if (h.isEmpty(
 
 # 2. typing where the app has no field
 ts = text(HOME + "TypeService.java")
-check("no field in YouTube TV: its own search by ACTION_SEARCH with the words, package-bound, only when the app resolves it",
-      "new Intent(Intent.ACTION_SEARCH).setPackage(pkg).putExtra(SearchManager.QUERY, q)" in ts and "AppSearch.supports(pkg)" in ts and "resolveActivity" in ts
-      and 'return done(search(c, pkg, text) ? SEARCHED : NO_FIELD);' in ts)
+check("YouTube TV in front: its own search first, on any screen and whatever the field, by ACTION_SEARCH then its web link, both bound to the package",
+      "if (AppSearch.supports(pkg)) {" in ts and "new Intent(Intent.ACTION_SEARCH).setPackage(pkg).putExtra(SearchManager.QUERY, q)" in ts
+      and "new Intent(Intent.ACTION_VIEW, Uri.parse(AppSearch.webUrl(q))).setPackage(pkg)" in ts and ts.index("AppSearch.supports(pkg)") < ts.index("root.findFocus(AccessibilityNodeInfo.FOCUS_INPUT)")
+      and 'return done(SEARCHED)' in ts)
+check("the search does not ask resolveActivity (Android 11+ package visibility made it always null): it starts the intent and goes to the next way on a refusal",
+      "resolveActivity" not in ts[ts.index("private static String search("):ts.index("private static String done(")] and "catch (RuntimeException e)" in ts and 'log("search=" + how);' in ts)
 check("when there is no field only the focused node's class name (AppSearch.safeClass) is logged", 'log("focus_class=" + AppSearch.safeClass(f == null ? null : f.getClassName()));' in ts)
-check("the search comes after the lock checks (never into a locked app)", ts.index("TypeInto.allowed(") < ts.index("search(c, pkg, text)"))
+check("the search comes after the lock checks (never into a locked app)", ts.index("TypeInto.allowed(") < ts.index("AppSearch.supports(pkg)"))
 page = text(HOME.replace("java/sa/urtv/home/", "assets/phone/") + "index.html")
 check("the phone page explains «searched» and «no field in the app in front»", "searched: '" in page and "copied_other: '" in page and "j.result === 'copied_other'" in page)
 check("copied_other is what the phone says when another app was in front and nothing could be typed", '"copied_other"' in act and "otherNoField[0] && \"copied\".equals(r)" in act)
+
+check("the cards save is asked back of the screensaver: what it holds is what was sent, else the page is told «not_saved»",
+      'saver("phone_state", null, null)' in act and 'Result.fail("not_saved")' in act and '"home_cards sent="' in act and "not_saved: '" in page)
 
 # 4. the Settings key
 rk = text(HOME + "RemoteKeys.java")

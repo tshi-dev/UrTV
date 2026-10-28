@@ -10,7 +10,8 @@ Newest first. `next` is where changes land first; a release is what was tested t
 **Fixes from the TV test**
 - The screen stays on (only while shown) on the phone-control pairing screen and its «سماح/رفض» prompt, the update screens and «إعداد تلفزيوني», so the screensaver no longer closes them.
 - Typing from the phone into YouTube TV (no text field to Android) opens YouTube's own search with the words; where an app has none, the phone page says so. The log (`UrTVType`) now adds the focused node's class name when no field is found.
-- Cards saved from the phone (setting the first one back to «بدون» too) reach the home screen in front at once.
+- Cards saved from the phone (setting the first one back to «بدون» too) reach the home screen in front at once; the TV now asks the screensaver what it holds after the save and tells the phone if it is not what was sent.
+- Typing into YouTube TV: its search opens first, on any of its screens (the first version asked Android if the app could be reached, which Android 11+ answers «no» for other apps).
 - «حماية العائلة (DNS)»: the first check waits for Private DNS and retries a fresh name (up to 40 s), so a working TV is no longer turned down.
 - The adhkar card shows a dhikr at night too (the evening ones when there is no night verse), never only a start time.
 

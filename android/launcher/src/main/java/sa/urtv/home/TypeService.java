@@ -5,6 +5,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -98,6 +99,12 @@ public class TypeService extends AccessibilityService {
         if (r == TypeInto.Refusal.SERVICE_OFF) return done(OFF);
         if (r == TypeInto.Refusal.LOCKED) return done(LOCKED);
         if (r == TypeInto.Refusal.REFUSED) return done(REFUSED);
+        // YouTube TV's own search first, on any of its screens (its search box is not an editable node to Android): the words go there by intent
+        if (AppSearch.supports(pkg)) {
+            String how = search(c, pkg, text);
+            log("search=" + how);
+            if ("started".equals(how)) return done(SEARCHED);
+        }
         // the field that has the input focus first (Android knows it even for a box the tree walk would not call editable), else the walk
         TypeInto.Node picked = null;
         AccessibilityNodeInfo focus = root.findFocus(AccessibilityNodeInfo.FOCUS_INPUT);
@@ -113,7 +120,7 @@ public class TypeService extends AccessibilityService {
             AccessibilityNodeInfo f = root.findFocus(AccessibilityNodeInfo.FOCUS_INPUT);
             if (f == null) f = root.findFocus(AccessibilityNodeInfo.FOCUS_ACCESSIBILITY);
             log("focus_class=" + AppSearch.safeClass(f == null ? null : f.getClassName()));
-            return done(search(c, pkg, text) ? SEARCHED : NO_FIELD);
+            return done(NO_FIELD);
         }
         if (r == TypeInto.Refusal.PASSWORD_FIELD) return done(PASSWORD);
         AccessibilityNodeInfo field = ((Wrapped) picked).info;
@@ -128,18 +135,27 @@ public class TypeService extends AccessibilityService {
         return done(field.performAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_IME_ENTER.getId()) ? TYPED : TYPED_NO_SEARCH);
     }
 
-    /** The app's own search (YouTube TV): the words go there by Intent.ACTION_SEARCH when the app has no text field to type into. */
-    private static boolean search(Context c, String pkg, String text) {
+    /**
+     * The app's own search (YouTube TV): the words go there by Intent.ACTION_SEARCH, else by its web search link, bound to the app's package. No
+     * package query first: Android 11+ hides other apps from it without a manifest query, and the answer would always be "none". One fixed word:
+     * started, no_query, or no_activity.
+     */
+    private static String search(Context c, String pkg, String text) {
         String q = AppSearch.query(text);
-        if (q == null || !AppSearch.supports(pkg)) return false;
-        Intent i = new Intent(Intent.ACTION_SEARCH).setPackage(pkg).putExtra(SearchManager.QUERY, q).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        if (i.resolveActivity(c.getPackageManager()) == null) return false;
-        try {
-            c.startActivity(i);
-            return true;
-        } catch (RuntimeException e) {
-            return false;
+        if (q == null) return "no_query";
+        Intent[] tries = {
+            new Intent(Intent.ACTION_SEARCH).setPackage(pkg).putExtra(SearchManager.QUERY, q),
+            new Intent(Intent.ACTION_VIEW, Uri.parse(AppSearch.webUrl(q))).setPackage(pkg)
+        };
+        for (Intent i : tries) {
+            try {
+                c.startActivity(i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                return "started";
+            } catch (RuntimeException e) {
+                // ActivityNotFoundException or a refusal: the next way
+            }
         }
+        return "no_activity";
     }
 
     private static String done(String word) {

@@ -27,6 +27,15 @@ final class AppSearch {
         return q.isEmpty() ? null : q;
     }
 
+    /** The web search link YouTube TV opens as its own search (the words percent-encoded, spaces as %20). */
+    static String webUrl(String query) {
+        try {
+            return "https://www.youtube.com/results?search_query=" + java.net.URLEncoder.encode(query, "UTF-8").replace("+", "%20");
+        } catch (java.io.UnsupportedEncodingException e) {
+            return "https://www.youtube.com/results";
+        }
+    }
+
     /** A view's class name as the log may carry it (never its text or id): letters, digits, dot, dollar and underscore only, at most 80; "none" for no node. */
     static String safeClass(CharSequence name) {
         if (name == null || name.length() == 0) return "none";

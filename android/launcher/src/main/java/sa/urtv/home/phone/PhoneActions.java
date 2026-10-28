@@ -200,7 +200,17 @@ final class PhoneActions implements Actions {
             if (r == null) return Result.fail("saver_missing");
             if (!r.getBoolean("ok")) return Result.fail(r.getBoolean("idle_denied") ? "needs_permission" : "refused");
             if (city) PhoneBridge.rescheduleAdhan(app);
-            if (v.containsKey("home_cards")) PhoneApps.cardsChanged(app);
+            if (v.containsKey("home_cards")) {
+                // asked again of the screensaver: what it holds now is what was sent (fixed words in the log, never a card name)
+                List<String> want = new ArrayList<>();
+                for (Object x : (List<?>) v.get("home_cards")) if (!"none".equals(x)) want.add((String) x);
+                Bundle now = saver("phone_state", null, null);
+                List<String> got = now == null ? null : now.getStringArrayList("home_cards");
+                boolean same = got != null && got.equals(want);
+                android.util.Log.i("UrTVPhone", "home_cards sent=" + want.size() + " saved=" + (got == null ? -1 : got.size()) + " same=" + same);
+                if (!same) return Result.fail("not_saved");
+                PhoneApps.cardsChanged(app);
+            }
         }
         String why = PhoneBridge.adhan(app, v);
         return why == null ? Result.ok("saved") : Result.fail(why);
