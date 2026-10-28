@@ -46,3 +46,23 @@ Version: before 3.148, after "version: 3.149" (install.sh all; «Home is already
 | O1 | The owner cloned his own voice (ElevenLabs Instant Voice Clone "UrTV owner", id wfj1guOwi64ozn1ggUGY, from his own 7:41 recording) and made the 26 lines himself on the ElevenLabs site with eleven_v4, with his own small wording fixes (e.g. 11 «أي زر تضغط راح يوقفه», 14 «على قد ما نقدر», 18 «راح يطلب رمز») |
 | O2 | Cut at «…» into 38 parts NN-k.mp3 (same names as voice-v3); every part checked by transcription; 18 cut at its real pause |
 | O3 | pushed tester/voice-owner/*.mp3 (38). Owner listened: "That's good". Use these instead of tester/voice-v3/ |
+
+## step 10 (apk-next 3.152): R1-R3, R5, Z done; R4 left for daytime
+Version: home 3.152, screensaver 3.152 (install.sh all; no new !! line).
+Typing service: the owner ran `optimize/dock.sh type-setup` himself; TypeService now in enabled_accessibility_services. Left ON as asked.
+
+| # | OK/problem | shots | note |
+|---|---|---|---|
+| R1 YouTube | problem (small) | remote-yt…yt6 | On YouTube's profile picker the page's OK and ▶ log `route=global result=done` but nothing moves or opens. Inside YouTube: ▶ moves the focus, OK opens the video, Back returns, Home goes to our home: OK |
+| R1 TV settings | OK | remote-settings | ▼▼ moves the focus two rows; Back leaves; Home OK |
+| R1 Shahid | OK | remote-shahid2-3 | ▼ and ▲ move the focus on Shahid's first screen; Home OK |
+| R1 log | — | — | `UrTVRemote: key=ok/right/down/back/home route=global result=done` (no content). Before the service was on, the page keys did nothing in other apps (expected) |
+| R2 | OK | yt-search3 | `text request: mode=replace search=true len=4` / `foreground=other` / `service=on` / `root=present` / `search=started` / `result=searched`; YouTube shows the results for «قرآن» |
+| R3 | OK (fixed) | — | «الصلاة القادمة»+save: `home_cards sent=1 saved=1 same=true`, home_panel nextprayer. «بدون»+save ONCE: `home_cards sent=0 saved=0 same=true`, home_panel none on the FIRST press |
+| R4 | not done | — | it plays the adhan aloud at night; the owner asked to keep the volume at 0. To do in daytime (needs a new pairing) |
+| R5 | OK | p10-r5b | «إيقاف التحكم من الجوال»: back to «تشغيل», the PC's pairing gone; service still on |
+| Z | restored: yes (service left on, as asked) | — | home_panel none, glass + dark, updatechannel latest; TV sound muted (owner's wish) |
+| note 1 | to look at | — | when YouTube opened, the TCL system killed sa.urtv.screensaver and then refused the home app starting its ConfigProvider: `TclAppBoot … calleeComponent='sa.urtv.screensaver/.ConfigProvider' … isAllow='false', reason='callee_does't_have_OP_ASSOC_START_permission'` and `Failed to find provider info for sa.urtv.screensaver.config` (repeated) |
+| note 2 | OK | remote-shahid0 | the screensaver came on ~50 s after the last key while Shahid loaded (45 s setting); one ▼ from the page closed it |
+
+Problems: 1 small (page keys don't act on YouTube's profile picker) + note 1. R4 left.
