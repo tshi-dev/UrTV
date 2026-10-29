@@ -174,3 +174,12 @@ Note: the redirect is a 301 to go.aftvnews.com and then a JavaScript redirect (n
 | Z | restored: yes | nothing changed on the TV: Home `sa.urtv.home/.MainActivity`, disabled 22 = start list, screensaver `.ScreenDream`, screen_off_timeout 45000, adb_enabled 1, updatechannel latest, sound muted. Still open: accessibility off since the 160 self-update |
 
 Problems in step 14: 1 blocker (invalid adb key → no prompt) + the self-update side effects (a11y off, sound on).
+
+## PRIORITY: the TV's own update turns accessibility off (owner's words: "report it")
+Owner: when he tried the phone remote at home (before the self-updates) it moved inside apps and typed into YouTube. That matches step 10 (3.152, service on: YouTube search «قرآن» worked, the pad moved inside apps).
+What breaks it, seen TWICE: right after «تحديث تلفزيوني» installs a new build (157 → 159, then 159 → 160), Android sets `accessibility_enabled=0` and binds no service (`Bound services:{}`): our «التحكم والكتابة من الجوال» AND the owner's Key Mapper stop. The phone page still answers (`/api/key` 200) but nothing happens on the TV.
+- `dock.sh type-setup` puts `accessibility_enabled=1` back, but nothing binds until a reboot.
+- After `adb reboot` ours came back; Key Mapper did not.
+- Now: ours bound («تلفزيونك: إطفاء الشاشة», «تلفزيونك: التحكم والكتابة من الجوال»); Key Mapper shows «On» in Android's Accessibility screen (listed TWICE there) but is NOT bound; the owner is toggling it off/on.
+- Same moment, the TV un-mutes (Muted: false) after each self-update.
+Expected: a self-update must leave accessibility (ours and the owner's other services) and the mute exactly as they were. Every user on auto-update loses the phone remote/typing (and their own a11y apps) after each update until a reboot.
