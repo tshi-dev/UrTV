@@ -71,6 +71,30 @@ final class ClockZone {
     static String calendar(String tz, String pm) {
         if ("jafari".equals(pm)) return "الحساب الجعفري";
         if ("gulf".equals(pm)) return "حساب الخليج";
+        if (pm != null) switch (pm) {
+            case "1": return "جامعة العلوم الإسلامية بكراتشي";
+            case "2": return "الجمعية الإسلامية لأمريكا الشمالية";
+            case "3": return "رابطة العالم الإسلامي";
+            case "4": return "";
+            case "5": return "حساب الهيئة المصرية";
+            case "8": return "حساب الخليج";
+            case "9": return "حساب الكويت";
+            case "10": return "حساب قطر";
+            case "11": return "المجلس الإسلامي السنغافوري";
+            case "12": return "اتحاد المنظمات الإسلامية في فرنسا";
+            case "13": return "رئاسة الشؤون الدينية التركية";
+            case "14": return "الإدارة الدينية لمسلمي روسيا";
+            case "15": return "لجنة رصد الهلال العالمية";
+            case "16": return "حساب الإمارات";
+            case "17": return "إدارة التنمية الإسلامية الماليزية";
+            case "18": return "حساب تونس";
+            case "19": return "حساب الجزائر";
+            case "20": return "وزارة الشؤون الدينية الإندونيسية";
+            case "21": return "حساب المغرب";
+            case "23": return "حساب الأردن";
+            case "100": return "حساب عُمان";
+            default: break;
+        }
         if (tz == null) return "";
         switch (tz) {
             case "Asia/Kuwait": return "حساب الكويت";

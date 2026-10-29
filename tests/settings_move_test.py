@@ -66,6 +66,7 @@ if "SaverReceiver" in cmd and cmd.endswith(".GET"):
         "markets: " + ("" if s["mkbar"] == "on" else "off ") + ",".join(s["markets"]), f"clocksize: {s['clocksize']}",
         f"mkstyle: {s['mkstyle']}", "stocks: 2222", "slot: matches", "countdown: none", "idle: 10", "genres: ", "langs: ", "events: ",
         "leagues: ", "autoupdate: on", "pin: 4321", "wifi: HomeNet", "tasks: buy milk", "updatechannel: " + s.get("updatechannel", "stable")]
+        + ([f"country: {s['country']}"] if "country" in s else [])
         + ([] if st.get("old_app") else [f"panel2: {s['panel2']}", f"sunrise: {s['sunrise']}", f"prayerbar: {s['prayerbar']}",
                                           f"wxmore: {s['wxmore']}", f"months: {s['months']}"])))
 if "SaverReceiver" in cmd and re.search(r"screensaver\.SET( |$)", cmd):
@@ -556,6 +557,25 @@ check("the Hijri range is the app's", f"MAX = {sm.HIJRI_MAX};" in hij, "")
 voices = (ROOT / "android/launcher/src/main/java/sa/urtv/home/tilawah/AdhanVoices.java").read_text(encoding="utf-8")
 check("adhan voices: count and the Fajr ones are the launcher's", f"COUNT = {sm.ADHAN_VOICES};" in voices
       and "FAJR = {" + ", ".join(map(str, sm.ADHAN_FAJR_VOICES)) + "}" in voices, "")
+
+# Country is optional for old files/apps, but mandatory to preserve a new explicit selection.
+world_state = copy.deepcopy(BASE)
+world_state['saver']['country'] = 'SA'
+world_tv = Tv('world-country', world_state)
+world_export = json.loads(settings_of(world_tv))
+check('export retains the city country when the app reports it', world_export['city']['country'] == 'SA', world_export['city'])
+world_export['city']['country'] = 'FR'
+rc, out, err = world_tv.run('import', write('world-country.json', world_export), '--yes')
+check('changing only the country is applied and verified', rc == 0 and world_tv.data()['saver']['country'] == 'FR' and any("--es country 'FR'" in command for command in world_tv.writes()), (rc, out, err))
+rc, out, err = world_tv.run('import', str(world_tv.before), '--yes')
+check('the before-file restores the original country', rc == 0 and world_tv.data()['saver']['country'] == 'SA', (rc, out, err))
+old_world_tv = Tv('old-world-country', BASE)
+rc, out, err = old_world_tv.run('import', write('world-on-old.json', world_export), '--yes')
+check('explicit countries are refused by an older app that cannot report them', rc != 0 and 'city.country' in out + err and not old_world_tv.writes(), (rc, out, err))
+before_world_writes = len(world_tv.writes())
+world_export['city']['country'] = 'invalid'
+rc, out, err = world_tv.run('import', write('world-bad-country.json', world_export), '--yes')
+check('malformed country codes are rejected before any write', rc != 0 and 'city.country' in out + err and len(world_tv.writes()) == before_world_writes, (rc, out, err))
 
 print("\nall settings move checks passed" if not failed else f"\n{failed} failed")
 sys.exit(1 if failed else 0)

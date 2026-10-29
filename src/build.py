@@ -218,7 +218,7 @@ def data_uri(path, mime):
 
 def js_json(value):
     """json.dumps for a <script>: a "</script>" inside a text would end it, "<\\/" is the same string in JSON."""
-    return json.dumps(value, ensure_ascii=False).replace("</", "<\\/")
+    return json.dumps(value, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
 
 
 ADHKAR_MAX_WORDS = 70   # a longer dhikr does not fit the card beside the clock

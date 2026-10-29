@@ -1,0 +1,2 @@
+geonamescache==3.0.2
+Babel==2.18.0

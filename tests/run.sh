@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 # Every check in one go: static checks, then the screen in a real browser. See tests/check.py and page.test.mjs.
-#   pip install fonttools brotli pillow && npm install --no-save playwright@1.56.1 && npx playwright install chromium
+#   pip install fonttools brotli pillow -r .github/tools/cities-world/requirements.txt && npm install --no-save playwright@1.56.1 && npx playwright install chromium
 set -euo pipefail
 cd "$(dirname "$0")/.."
 python3 tests/check.py
 python3 tests/tilawah_test.py
 python3 tests/prayer_math_test.py
 python3 tests/prayer_crosscheck_test.py
+python3 tests/prayer_crosscheck_world_test.py
 python3 tests/hijri_crosscheck_test.py
 python3 tests/prayer_method_test.py
 python3 tests/place_choice_test.py
@@ -60,6 +61,7 @@ python3 tests/find_team_test.py
 python3 tests/team_search_test.py
 python3 tests/team_ids_test.py
 python3 tests/city_match_test.py
+python3 tests/cities_world_test.py
 python3 tests/cities_md_test.py
 python3 tests/home_card_test.py
 python3 tests/perf_idle_test.py
@@ -148,6 +150,7 @@ python3 tests/parental_wiring_test.py
 python3 tests/dock_pin_test.py
 python3 tests/tvports_test.py   # BETA LG/Samsung packages: manifests, files, sizes (docs/LG-SAMSUNG.md)
 node tests/prayer_crosscheck_page.mjs
+node tests/prayer_crosscheck_world_page.mjs
 node tests/hijri_crosscheck_page.mjs
 node tests/page.test.mjs
 node tests/phone_page.test.mjs

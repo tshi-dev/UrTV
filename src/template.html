@@ -756,10 +756,11 @@ const CONFIG = {
 // an older launcher sends the one card as #panel=). Each kind once, in order.
 // the prayer calculation (Aladhan's id; 100 = Oman's ministry, ours): #pm=jafari or #pm=gulf everywhere, else the country's by the zone, else Umm al-Qura 4; PrayerMath.methodFor
 // (launcher) and PrayerMethod (app) say the same, tests/prayer_method_test.py compares them
+const RESOLVED_METHOD = [1,2,3,4,5,8,9,10,11,12,13,14,15,16,17,18,19,20,21,23,100].includes(+_Q.get('pm')) ? +_Q.get('pm') : null;
 CONFIG.prayerMethod = _Q.get('pm') === 'jafari' ? 0 : _Q.get('pm') === 'gulf' ? 8
-  : ({'Asia/Kuwait':9, 'Asia/Qatar':10, 'Asia/Dubai':16, 'Asia/Bahrain':8, 'Asia/Muscat':100, 'Africa/Cairo':5, 'Asia/Amman':23, 'Asia/Damascus':5, 'Asia/Beirut':5, 'Asia/Gaza':5, 'Asia/Hebron':5, 'Asia/Jerusalem':5, 'Africa/Casablanca':21, 'Africa/El_Aaiun':21, 'Africa/Algiers':19, 'Africa/Tunis':18})[CONFIG.timezone] || 4;
+  : RESOLVED_METHOD !== null ? RESOLVED_METHOD : ({'Asia/Kuwait':9, 'Asia/Qatar':10, 'Asia/Dubai':16, 'Asia/Bahrain':8, 'Asia/Muscat':100, 'Africa/Cairo':5, 'Asia/Amman':23, 'Asia/Damascus':5, 'Asia/Beirut':5, 'Asia/Gaza':5, 'Asia/Hebron':5, 'Asia/Jerusalem':5, 'Africa/Casablanca':21, 'Africa/El_Aaiun':21, 'Africa/Algiers':19, 'Africa/Tunis':18})[CONFIG.timezone] || 4;
 // the calculation's name under the clock, none for Umm al-Qura (ClockZone.calendar says the same on the home screen)
-const CAL_LABEL = {0:'الحساب الجعفري', 8:'حساب الخليج', 100:'حساب عُمان', 9:'حساب الكويت', 10:'حساب قطر', 16:'حساب الإمارات', 5:'حساب الهيئة المصرية', 23:'حساب الأردن', 21:'حساب المغرب', 19:'حساب الجزائر', 18:'حساب تونس'};
+const CAL_LABEL = {1:'جامعة العلوم الإسلامية بكراتشي',2:'الجمعية الإسلامية لأمريكا الشمالية',3:'رابطة العالم الإسلامي',11:'المجلس الإسلامي السنغافوري',12:'اتحاد المنظمات الإسلامية في فرنسا',13:'رئاسة الشؤون الدينية التركية',14:'الإدارة الدينية لمسلمي روسيا',15:'لجنة رصد الهلال العالمية',17:'إدارة التنمية الإسلامية الماليزية',20:'وزارة الشؤون الدينية الإندونيسية',0:'الحساب الجعفري', 8:'حساب الخليج', 100:'حساب عُمان', 9:'حساب الكويت', 10:'حساب قطر', 16:'حساب الإمارات', 5:'حساب الهيئة المصرية', 23:'حساب الأردن', 21:'حساب المغرب', 19:'حساب الجزائر', 18:'حساب تونس'};
 const clockSubText = () => 'بتوقيت ' + CONFIG.city + (CAL_LABEL[CONFIG.prayerMethod] ? ' · ' + CAL_LABEL[CONFIG.prayerMethod] : '');
 // «بطاقة ثانية» (#panel2=): a second card beside the small clock only; with a larger clock, on the launcher, without a first card,
 // or when it is the first card again or the next prayer (the bottom-right panel says it already), there is none
@@ -917,7 +918,7 @@ const PRAYER_KEYS = ['Fajr','Dhuhr','Asr','Maghrib','Isha'];
 const PRAYER_NAMES = {Fajr:'الفجر',Dhuhr:'الظهر',Asr:'العصر',Maghrib:'المغرب',Isha:'العشاء'};
 let PRAYERS = [];
 
-let DAY_TIMES = null;
+let DAY_TIMES = null, BASE_DAY_TIMES = null, BASE_PRAYERS = [], NIGHT_PRAYERS = [], NIGHT_STATE = null, BASE_DAY = '';
 // «تعديل وقت الصلاة»: the five prayers moved by their minutes (CONFIG.prayerAdj); everything on the page that shows or acts on a prayer
 // time reads PRAYERS and DAY_TIMES, so this is the one place. The sunrise stays. A time past midnight (an Isha at «24:10») stays absolute.
 function adjustedTimes(t){
@@ -946,6 +947,7 @@ function checkedTimings(j, want){
   for(const k of PRAYER_KEYS){ if(!(out[k] = clockText(t[k]))) return null; }
   out.Sunrise = clockText(t.Sunrise) || undefined;
   const mins = k => { const [h, mi] = out[k].split(':').map(Number); return h * 60 + mi; };
+  if(Math.abs(CONFIG.latitude) > 48 && mins('Maghrib') < mins('Asr')) out.Maghrib = pad(Math.floor((mins('Maghrib')+1440)/60))+':'+pad(mins('Maghrib')%60);
   if(mins('Isha') < mins('Maghrib')) out.Isha = pad(Math.floor((mins('Isha') + 1440) / 60)) + ':' + pad(mins('Isha') % 60);
   // the times of one day come in this order; an answer that has them otherwise is not used
   for(let i = 1; i < PRAYER_KEYS.length; i++) if(mins(PRAYER_KEYS[i]) <= mins(PRAYER_KEYS[i - 1])) return null;
@@ -959,13 +961,50 @@ function buildPrayers(t){
     if(!m || +m[2] > 59) throw new Error('prayer time ' + k);
     return {key:k, name:PRAYER_NAMES[k], h:+m[1], mi:+m[2]};
   });
-  DAY_TIMES = t;
-  PRAYERS = list;
+  DAY_TIMES = BASE_DAY_TIMES = t;
+  PRAYERS = BASE_PRAYERS = list;
+  const p = riyadhParts();
+  BASE_DAY = p.y+'-'+p.mo+'-'+p.d;
+  NIGHT_PRAYERS = []; NIGHT_STATE = null;
+  if(Math.abs(CONFIG.latitude) > 48){
+    const yesterday = new Date(Date.UTC(p.y,p.mo-1,p.d-1));
+    const prev = adjustedTimes(computePrayers({y:yesterday.getUTCFullYear(),mo:yesterday.getUTCMonth()+1,d:yesterday.getUTCDate()}));
+    NIGHT_PRAYERS = PRAYER_KEYS.map(key => {
+      const [h,mi] = prev[key].split(':').map(Number);
+      return {key,name:PRAYER_NAMES[key],h:h-24,mi};
+    }).filter(x => x.h >= 0);
+    nightPrayers();
+  }
+}
+// Keep last night's after-midnight prayers on a cold start and across a date change.
+// The five-row cards remain five rows: a pending civil-day event replaces its next-night copy.
+function nightPrayers(){
+  if(Math.abs(CONFIG.latitude) <= 48 || !BASE_DAY_TIMES) return;
+  const p = riyadhParts(), day = p.y+'-'+p.mo+'-'+p.d;
+  if(day !== BASE_DAY){ buildPrayers(computePrayers()); return; }
+  const mins = p.h*60+p.mi+p.s/60;
+  const carry = NIGHT_PRAYERS.filter(x => mins < x.h*60+x.mi+(CONFIG.iqama[x.key] || 0));
+  const state = carry.map(x => x.key).join(',');
+  if(state === NIGHT_STATE) return;
+  NIGHT_STATE = state;
+  PRAYERS = BASE_PRAYERS.map(x => carry.find(c => c.key === x.key) || x).sort((a,b) => a.h*60+a.mi-b.h*60-b.mi);
+  DAY_TIMES = Object.assign({},BASE_DAY_TIMES);
+  carry.forEach(x => { DAY_TIMES[x.key] = pad(x.h)+':'+pad(x.mi); });
 }
 
 // By Aladhan's id, as PrayerMath.METHODS in the launcher: Fajr/Isha angles, or Isha minutes after Maghrib (+30 in Ramadan for 4 alone), the
 // Maghrib angle, minutes added to sunrise/Dhuhr/Asr/Maghrib. Sources: aladhan.com/calculation-methods, Batoul Apps adhan (Dubai margins)
 const PRAYER_METHODS = {
+  1: {fajr:18, isha:18, ishaMin:0, maghrib:.833, tune:[0,0,0,0]},
+  2: {fajr:15, isha:15, ishaMin:0, maghrib:.833, tune:[0,0,0,0]},
+  3: {fajr:18, isha:17, ishaMin:0, maghrib:.833, tune:[0,0,0,0]},
+  11: {fajr:20, isha:18, ishaMin:0, maghrib:.833, tune:[0,0,0,0]},
+  12: {fajr:12, isha:12, ishaMin:0, maghrib:.833, tune:[0,0,0,0]},
+  13: {fajr:18, isha:17, ishaMin:0, maghrib:.833, tune:[-7,5,4,7]},
+  14: {fajr:16, isha:15, ishaMin:0, maghrib:.833, tune:[0,0,0,0]},
+  15: {fajr:0, isha:0, ishaMin:0, maghrib:.833, tune:[0,0,0,0]}, // seasonal twilight below
+  17: {fajr:20, isha:18, ishaMin:0, maghrib:.833, tune:[0,0,0,0]},
+  20: {fajr:20, isha:18, ishaMin:0, maghrib:.833, tune:[0,0,0,0]},
   0:  {fajr:16,   isha:14,   ishaMin:0,  maghrib:4,    tune:[0,0,0,0]},      // Ja'fari (Leva, Qum)
   4:  {fajr:18.5, isha:0,    ishaMin:90, maghrib:.833, tune:[0,0,0,0]},      // Umm al-Qura
   8:  {fajr:19.5, isha:0,    ishaMin:90, maghrib:.833, tune:[0,0,0,0]},      // Gulf (Bahrain; Oman by #pm=gulf)
@@ -980,8 +1019,9 @@ const PRAYER_METHODS = {
   // 100 is ours (Aladhan has none): Oman's ministry, fitted to its 2026 timetable (PrayerMath.java says more)
   100: {fajr:18, isha:18, ishaMin:0, maghrib:.833, tune:[0,5,5,5]},
 };
-function computePrayers(){
-  const p = riyadhParts(), lat = CONFIG.latitude, lng = CONFIG.longitude;
+function computePrayers(forDay){
+  const p = forDay || riyadhParts(), lng = CONFIG.longitude;
+  let lat = CONFIG.latitude;
   const M = PRAYER_METHODS[CONFIG.prayerMethod] || PRAYER_METHODS[4];
   const noonUtc = Date.UTC(p.y,p.mo-1,p.d,12), tz = tzOffsetMs(noonUtc - tzOffsetMs(noonUtc)) / 3600000;   // the city's offset at its local noon (a change of clocks the same day does not move the whole day)
   const rad = d => d*Math.PI/180, deg = r => r*180/Math.PI;
@@ -999,7 +1039,7 @@ function computePrayers(){
   const angleTime = (angle, t, ccw) => {
     const d = sun(t/24).decl, n = noon(t);
     const c = (-Math.sin(rad(angle)) - Math.sin(rad(d))*Math.sin(rad(lat))) / (Math.cos(rad(d))*Math.cos(rad(lat)));
-    const T = deg(Math.acos(Math.max(-1, Math.min(1, c))))/15;
+    const T = deg(Math.acos(c))/15;
     return n + (ccw ? -T : T);
   };
   const asrTime = t => {
@@ -1007,19 +1047,43 @@ function computePrayers(){
     const a = -deg(Math.atan(1/(1 + Math.tan(rad(Math.abs(lat - d))))));
     return angleTime(a, t, false);
   };
-  const adj = h => h + tz - lng/15;
-  const fajr = adj(angleTime(M.fajr, 5, true)), dhuhr = adj(noon(12)), asr = adj(asrTime(13));
-  const sunrise = adj(angleTime(.833, 6, true));
-  const maghrib = adj(angleTime(M.maghrib, 18, false));
+  const noonShift = 24*Math.floor((noon(12)+tz-lng/15)/24);
+  const adj = h => h + tz - lng/15 - noonShift;
+  // Polar day/night: same longitude and zone, 48-degree surrogate for this day.
+  if(!isFinite(angleTime(.833,6,true)) || !isFinite(angleTime(.833,18,false))) lat = Math.sign(lat)*48;
+  let fajr = adj(angleTime(M.fajr,5,true)), isha = adj(angleTime(M.isha,18,false));
+  const dhuhr = adj(noon(12)), asr = adj(asrTime(13));
+  const sunrise = adj(angleTime(.833,6,true)), sunset = adj(angleTime(.833,18,false));
+  const maghrib = adj(angleTime(M.maghrib,18,false)), night = fix(sunrise-sunset,24);
+  // Moonsighting general shafaq: latitude/season equations (adhan-js, MIT).
+  const seasonal = morning => {
+    const leap = p.y%4 === 0 && (p.y%100 !== 0 || p.y%400 === 0), x = Math.abs(lat)/55;
+    const day = Math.floor((Date.UTC(p.y,p.mo-1,p.d)-Date.UTC(p.y,0,0))/86400000);
+    const days = fix(day+(lat >= 0 ? 10 : -(leap ? 173 : 172)),leap ? 366 : 365);
+    const a = 75+(morning ? 28.65 : 25.60)*x, b = 75+(morning ? 19.44 : 2.05)*x;
+    const c = 75+(morning ? 32.74 : -9.21)*x, d = 75+(morning ? 48.10 : 6.14)*x;
+    const ends = [91,137,183,229,275,366], values = [a,b,c,d,c,b,a];
+    let start = 0;
+    for(let i=0;i<6;i++){
+      if(days < ends[i]) return (values[i]+(values[i+1]-values[i])*(days-start)/(i === 5 ? 91 : ends[i]-start))/60;
+      start = ends[i];
+    }
+    return a/60;
+  };
+  const moon = CONFIG.prayerMethod === 15;
+  const dawn = moon ? seasonal(true) : night*M.fajr/60;
+  const dusk = moon ? seasonal(false) : night*M.isha/60;
+  if(moon || !isFinite(fajr) || sunrise-fajr > dawn) fajr = sunrise-dawn;
+  if(moon || !isFinite(isha) || isha-sunset > dusk) isha = sunset+dusk;
   const hm = h => { const m = Math.round(fix(h, 24)*60) % 1440; return pad(Math.floor(m/60)) + ':' + pad(m%60); };
   // Isha stays absolute: past midnight it reads «24:30»
   const abs = m => pad(Math.floor(m/60)) + ':' + pad(m%60);
   const [tSun, tDhr, tAsr, tMag] = M.tune;
   const magM = Math.round(maghrib*60) + tMag;
   const ishaM = M.ishaMin ? magM + M.ishaMin + (CONFIG.prayerMethod === 4 && hijriMonthNow(true) === 9 ? 30 : 0)
-                          : Math.max(magM, Math.round(adj(angleTime(M.isha, 18, false))*60));
+                          : Math.max(magM, Math.round(isha*60));
   const at = (h, d) => hm(h + d/60);
-  return {Fajr:hm(fajr), Sunrise:at(sunrise, tSun), Dhuhr:at(dhuhr, tDhr), Asr:at(asr, tAsr), Maghrib:at(maghrib, tMag), Isha:abs(ishaM)};
+  return {Fajr:hm(fajr), Sunrise:at(sunrise, tSun), Dhuhr:at(dhuhr, tDhr), Asr:at(asr, tAsr), Maghrib:abs(magM), Isha:abs(ishaM)};
 }
 
 let PRAYERS_DAY = '';   // DD-MM-YYYY|api or |calc: the day and source of the times
@@ -1027,7 +1091,7 @@ async function loadPrayers(){
   const p = riyadhParts(), want = `${pad(p.d)}-${pad(p.mo)}-${p.y}`;
   const url = `https://api.aladhan.com/v1/timings/${want}`
             + `?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}`
-            + `&method=${CONFIG.prayerMethod}&timezonestring=${encodeURIComponent(CONFIG.timezone)}`;
+            + `&method=${CONFIG.prayerMethod}&latitudeAdjustmentMethod=3&timezonestring=${encodeURIComponent(CONFIG.timezone)}`;
   try{
     if(CONFIG.prayerMethod >= 100) throw 0;   // not an Aladhan method: computed only
     const r = await fetchT(url, 12000);
@@ -1120,6 +1184,7 @@ function tickAdhanBar(){
 }
 
 function tickPrayer(){
+  nightPrayers();
   tickAdhanBar();
   const elL=document.getElementById('prayer-label'),
         elN=document.getElementById('prayer-name'),

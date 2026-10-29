@@ -126,7 +126,22 @@ final class Prefs {
     void setCity(String name, String lat, String lon) { setCity(name, lat, lon, ""); }
     /** tz: the place's own time zone, "" for a built-in city or when only the TV's is known (see cityTz) */
     void setCity(String name, String lat, String lon, String tz) {
-        sp.edit().putString("cityName", name).putString("cityLat", lat).putString("cityLon", lon).putString("cityTz", tz).apply();
+        setCity(name, lat, lon, tz, "");
+    }
+    void setCity(String name, String lat, String lon, String tz, String country) {
+        String[] builtin = Cities.find(name, lat, lon);
+        String code = country == null ? "" : country.trim().toUpperCase(java.util.Locale.ROOT);
+        if (code.isEmpty()) code = builtin != null ? Cities.country(builtin) : Location.codeOf(tz);
+        sp.edit().putString("cityName", name).putString("cityLat", lat).putString("cityLon", lon)
+            .putString("cityTz", tz).putString("cityCountry", code).apply();
+    }
+
+    /** Also migrates pre-world built-in cities without guessing from a shared time zone. */
+    String cityCountry() {
+        String code = sp.getString("cityCountry", "");
+        if (!code.isEmpty()) return code;
+        String[] c = city(), builtin = Cities.find(c[0], c[1], c[2]);
+        return builtin != null ? Cities.country(builtin) : Location.codeOf(cityTz());
     }
 
     /** The time zone the page shows: Asia/Riyadh for a built-in Saudi city, the country's own for a Gulf one; a place of your own gets the one given
@@ -141,7 +156,7 @@ final class Prefs {
         return java.util.TimeZone.getDefault().getID();
     }
 
-    /** «طريقة الحساب» (default auto = the country's own): PrayerMethod.AUTO, GULF or JAFARI; sent as #pm=gulf / #pm=jafari only for those. */
+    /** «طريقة الحساب»: auto resolves the saved country to a numeric #pm; explicit legacy choices retain their existing values. */
     String prayerMethod() { String v = sp.getString("prayerMethod", "auto"); return PrayerMethod.JAFARI.equals(v) ? PrayerMethod.JAFARI : PrayerMethod.GULF.equals(v) ? PrayerMethod.GULF : PrayerMethod.AUTO; }
     void setPrayerMethod(String v) { sp.edit().putString("prayerMethod", v).apply(); }
 
@@ -488,7 +503,7 @@ final class Prefs {
             + (sunrise() ? "&sunrise=1" : "") + (prayerBar() ? "&prayerbar=1" : "") + (wxMore() ? "&wxmore=1" : "")
             + ("levant".equals(months()) ? "&months=levant" : "")
             + PrayerAdj.fragment(prayerAdjOn(), prayerAdj())
-            + PrayerMethod.fragment(prayerMethod())
+            + PrayerMethod.fragment(prayerMethod(), cityCountry(), cityTz())
             + HijriOffset.fragment(hijriOffset())
             + "&national=" + national()
             + "&markets=" + join(markets(), ",")

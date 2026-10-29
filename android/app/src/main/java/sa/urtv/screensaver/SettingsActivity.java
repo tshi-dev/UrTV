@@ -230,10 +230,10 @@ public class SettingsActivity extends Activity {
 
         // the place, then how its times are worked out, then the minutes of one's own mosque; the line under them says which is which
         header("الموقع");
-        row("الدولة", Location.countryLabel(prefs.cityTz()), R.drawable.ic_place, new Runnable() { public void run() { pickCountry(); } });
+        row("الدولة", Location.countryLabel(prefs.cityCountry(), prefs.cityTz()), R.drawable.ic_place, new Runnable() { public void run() { pickCountry(); } });
         row("المدينة", prefs.city()[0], R.drawable.ic_place, new Runnable() { public void run() { pickCity(); } });
 
-        row("طريقة الحساب", PrayerMethod.label(prefs.prayerMethod(), prefs.cityTz()), R.drawable.ic_place,
+        row("طريقة الحساب", PrayerMethod.label(prefs.prayerMethod(), prefs.cityCountry(), prefs.cityTz()), R.drawable.ic_place,
             new Runnable() { public void run() { pickPrayerMethod(); } });
         row("تعديل وقت الصلاة", prefs.prayerAdjOn() ? "يعمل · لكل صلاة دقائقها، من −٢٠ إلى +٢٠ (الشروق لا يتغيّر)" : "متوقف · الأوقات كما تُحسب", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPrayerAdjOn(!prefs.prayerAdjOn()); render(); } });
@@ -455,7 +455,7 @@ public class SettingsActivity extends Activity {
     /** What is set now in a category, on one line under its name. */
     private String hubSummary(String cat) {
         switch (cat) {
-            case SettingsHub.PLACE: return prefs.city()[0] + " · " + PrayerMethod.label(prefs.prayerMethod(), prefs.cityTz());
+            case SettingsHub.PLACE: return prefs.city()[0] + " · " + PrayerMethod.label(prefs.prayerMethod(), prefs.cityCountry(), prefs.cityTz());
             case SettingsHub.ADHAN: return "صوته ومستواه · التنبيه قبل الأذان " + (prefs.adhanBar() ? "يعمل" : "متوقف");
             case SettingsHub.SAVER: return (Prefs.idleMs(this) <= 0 ? "يبدأ وقت ما يحدده التلفاز" : "تبدأ بعد " + idleLabel()) + " · " + Prefs.panelLabel(prefs.panel());
             case SettingsHub.HOME: {
@@ -563,7 +563,7 @@ public class SettingsActivity extends Activity {
         String[] labels = new String[Location.COUNTRIES.length];
         for (int i = 0; i < labels.length; i++) labels[i] = Location.COUNTRIES[i][1];
         new Dlg(this).setTitle("الدولة")
-            .setSingleChoiceItems(labels, Location.countryOf(prefs.cityTz()), (d, i) -> { d.dismiss(); pickCity(i); })
+            .setSingleChoiceItems(labels, Location.countryOf(prefs.cityCountry(), prefs.cityTz()), (d, i) -> { d.dismiss(); pickCity(i); })
             .show();
     }
 
@@ -585,12 +585,12 @@ public class SettingsActivity extends Activity {
         String[] names = new String[r.cities.length];
         int sel = -1;
         for (int i = 0; i < names.length; i++) {
-            names[i] = r.cities[i][0];
-            if (names[i].equals(prefs.city()[0])) sel = i;
+            names[i] = Cities.display(r.cities[i]);
+            if (r.cities[i][0].equals(prefs.city()[0]) && r.cities[i][1].equals(prefs.city()[1]) && r.cities[i][2].equals(prefs.city()[2])) sel = i;
         }
         AlertDialog.Builder b = new Dlg(this).setTitle(r.name)
             .setSingleChoiceItems(names, sel, (d, i) -> {
-                prefs.setCity(r.cities[i][0], r.cities[i][1], r.cities[i][2]);   // the zone follows from the list (Prefs.cityTz)
+                prefs.setCity(r.cities[i][0], r.cities[i][1], r.cities[i][2], CityMatch.zone(r.cities[i]), r.country);
                 d.dismiss();
                 render();
             });
@@ -598,9 +598,8 @@ public class SettingsActivity extends Activity {
         b.show();
     }
 
-    // any place in Saudi Arabia, the other Gulf states, Egypt, the Levant and North Africa (PrayerMethod.SEARCH_COUNTRIES), or in the one
-    // country picked, from Open-Meteo's GeoNames search (it takes one country at a time, so without a country the hundred best matches of
-    // the world are asked for and those countries' kept)
+    // Any searchable country, or the one country picked, from Open-Meteo's GeoNames search.
+    // Without a country filter, ask for the world's hundred best matches; PS keeps its checked list.
     private void searchCity(final int country) {
         ask("اسم المدينة أو القرية", q -> fetch("https://geocoding-api.open-meteo.com/v1/search?count=100&language=ar&name="
             + Uri.encode(q) + (country < 0 ? "" : "&countryCode=" + Location.COUNTRIES[country][0]), json -> {
@@ -609,10 +608,11 @@ public class SettingsActivity extends Activity {
                     if (PrayerMethod.searchable(all.getJSONObject(k).optString("country_code"))) a.put(all.getJSONObject(k));
                 if (a.length() == 0) { toast("لا توجد نتائج"); return; }
                 final int n = a.length();
-                final String[] names = new String[n], lats = new String[n], lons = new String[n], zones = new String[n], rows = new String[n];
+                final String[] names = new String[n], lats = new String[n], lons = new String[n], zones = new String[n], countries = new String[n], rows = new String[n];
                 for (int i = 0; i < n; i++) {
                     JSONObject c = a.getJSONObject(i);
                     names[i] = c.optString("name");
+                    countries[i] = c.optString("country_code");
                     lats[i] = String.valueOf(c.optDouble("latitude"));
                     lons[i] = String.valueOf(c.optDouble("longitude"));
                     zones[i] = c.optString("timezone", "");   // the place's own; empty: the TV's (Prefs.cityTz)
@@ -621,7 +621,7 @@ public class SettingsActivity extends Activity {
                     rows[i] = names[i] + (region.isEmpty() ? "" : "  ·  " + region) + (land.isEmpty() ? "" : "  ·  " + land);
                 }
                 new Dlg(this).setTitle("اختر المكان")
-                    .setItems(rows, (d, i) -> { prefs.setCity(names[i], lats[i], lons[i], zones[i]); render(); }).show();
+                    .setItems(rows, (d, i) -> { prefs.setCity(names[i], lats[i], lons[i], zones[i], countries[i]); render(); }).show();
             }));
     }
 
@@ -1281,7 +1281,7 @@ public class SettingsActivity extends Activity {
 
     private void pickPrayerMethod() {
         final String[] values = {PrayerMethod.AUTO, PrayerMethod.GULF, PrayerMethod.JAFARI};
-        String[] labels = {PrayerMethod.label(PrayerMethod.AUTO, prefs.cityTz()), PrayerMethod.label(PrayerMethod.GULF, prefs.cityTz()), PrayerMethod.label(PrayerMethod.JAFARI, prefs.cityTz())};
+        String[] labels = {PrayerMethod.label(PrayerMethod.AUTO, prefs.cityCountry(), prefs.cityTz()), PrayerMethod.label(PrayerMethod.GULF, prefs.cityCountry(), prefs.cityTz()), PrayerMethod.label(PrayerMethod.JAFARI, prefs.cityCountry(), prefs.cityTz())};
         new Dlg(this).raw().setTitle("طريقة الحساب")
             .setSingleChoiceItems(labels, PrayerMethod.JAFARI.equals(prefs.prayerMethod()) ? 2 : PrayerMethod.GULF.equals(prefs.prayerMethod()) ? 1 : 0,
                 (d, i) -> { prefs.setPrayerMethod(values[i]); d.dismiss(); render(); })
