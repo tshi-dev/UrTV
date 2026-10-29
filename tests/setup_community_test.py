@@ -147,10 +147,14 @@ p, rc, out, res, jout = case(inst, homes=f"com.google.android.apps.tv.launcherx/
 check("step: an app that answers HOME on this TV is never turned off (both)", p.same() and home_pkg not in p.tv("java")["off"].split() and res == "DONE", (p.diff(), out))
 p, rc, out, res, jout = case(inst, NO_HOMES="yes")
 check("step: the TV does not say which app is its home: nothing turned off (community.sh exits 1, the app's step failed)", rc == 1 and res == "FAILED" and p.changes("java") == [] and p.changes("sh") == [], (rc, res, p.diff()))
-# offline: community.sh does not apply; the app (as asked) skips the check and says so
+# offline: neither applies anything (the third-party list is not applied without its one safety rating); the app says so, and the run goes on
 p, rc, out, res, jout = case(inst, offline=True)
-check("step offline: community.sh applies nothing («!!»); the app skips UAD-ng's check, says so, and applies the list with its own filters",
-      "!! community list not applied" in out and p.changes("sh") == [] and res == "DONE" and "تجاوزناه" in jout and plain[2] in p.tv("java")["off"].split(), (out, jout))
+check("step offline: community.sh and the app both apply NOTHING; the app's step is «تُرك» with «ما قدرنا نتأكد من القائمة بدون إنترنت», and records it for the report",
+      "!! community list not applied" in out and p.changes("sh") == [] == p.changes("java") and res == "SKIPPED" and "تُرك: ما قدرنا نتأكد من القائمة بدون إنترنت" in jout
+      and (p.file("java", "community-offline.txt") or "").strip() == "تُرك: ما قدرنا نتأكد من القائمة بدون إنترنت" and p.file("java", "community-applied.txt") is None, (out, jout))
+check("community.sh's comment says what it does offline (nothing applied)", "offline (the check cannot run) NOTHING from the community list is applied" in (ROOT / "optimize/community.sh").read_text())
+rsrc = (setup_parity.SETUP / "SetupReport.java").read_text(encoding="utf-8")
+check("the report says it too, as a «!! » line of share.py's allowlist", '"!! community list: " + SetupCommunity.OFFLINE_SAID' in rsrc)
 # our own lists know this TV (3 TCL packages of ours): no community list
 p, rc, out, res, jout = case(inst + ["com.tcl.bi", "com.tcl.logkit", "com.tcl.usercenter"])
 check("step: a TV our own lists know (3 of their TCL packages) gets no community list (both)", p.changes("java") == [] == p.changes("sh") and res == "DONE", (p.diff(), out))

@@ -55,6 +55,8 @@ PERSONAL = [r"(?<![\d.])(?:\d{1,3}\.){3}\d{1,3}(?![\d.])", r"(?i)serial", r"(?i)
 for name, text in (("restart", rep), ("no restart", rep_now)):
     hits = [p for p in PERSONAL if re.search(p, text)]
     check(f"the report holds no city, team, address, serial, Wi-Fi name, e-mail or path ({name})", not hits, hits)
+off_line = "Checks:\n!! community list: تُرك: ما قدرنا نتأكد من القائمة بدون إنترنت\n"
+check("the offline community line passes share.py's restrict() and scrub() as it is", share.scrub(share.restrict(off_line)) == off_line, share.scrub(share.restrict(off_line)))
 check("the engine never reads the city or the team for it (no settings of the person's in SetupReport)", not re.search(r"(?i)city|team|club|wifi|serial|ssid", src.split("final class SetupReport")[1]), "")
 
 # the link: share.py's PAGE + "#" + urllib.parse.quote(report)

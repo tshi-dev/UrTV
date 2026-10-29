@@ -223,6 +223,8 @@ final class SetupReport {
             for (String pk : SetupLists.KEEP) if (disabled.contains(pk) && !java.util.Arrays.asList(OFF_BY_DESIGN).contains(pk) && !before.contains(pk)) prot.add(pk);
             if (!prot.isEmpty()) out.add("!! protected but off: " + String.join(", ", prot));
         }
+        String offline = store.get(SetupCommunity.OFFLINE);
+        if (offline != null && !offline.trim().isEmpty()) out.add("!! community list: " + SetupCommunity.OFFLINE_SAID);
         return out;
     }
 }

@@ -17,10 +17,13 @@ import java.util.regex.Pattern;
  * before us (not ours: the undo would turn it on). What owners often want (community-ask.txt: an updater, voice, casting, a player) stays ON and
  * becomes a yes/no question (SetupRunner.questions / answer). What is turned off is journaled BEFORE the commands, in community-applied.txt and in the
  * ledger disabled-by-us.txt, and the undo turns it back on. UAD-ng's rating: a package rated Unsafe is never turned off; when the rating cannot be
- * fetched (no internet) the check is skipped and the screen says so. Plain Java.
+ * fetched (no internet) NOTHING of the list is applied, as community.sh does, and the screen and the report say so. Plain Java.
  */
 final class SetupCommunity {
     static final String APPLIED = "community-applied.txt", ASK = "community-ask.txt", NAME = "community-name.txt", LEDGER = "disabled-by-us.txt";
+    /** Written when the list was left unapplied because UAD-ng's rating could not be fetched: the report says so. */
+    static final String OFFLINE = "community-offline.txt";
+    static final String OFFLINE_SAID = "تُرك: ما قدرنا نتأكد من القائمة بدون إنترنت";
     static final String UAD = "https://raw.githubusercontent.com/Universal-Debloater-Alliance/universal-android-debloater-next-generation/main/resources/assets/uad_lists.json";
     static final int UAD_MAX = 8 * 1024 * 1024;
     static final Pattern HOME_LINE = Pattern.compile("^[ \\t]*([A-Za-z0-9_.]*)/.*$", Pattern.MULTILINE);
@@ -92,7 +95,14 @@ final class SetupCommunity {
         // already off before we came: not ours
         List<String> todo = new ArrayList<>();
         for (String p : pkgs) if (!disabled.contains(p)) todo.add(p);
-        if (!todo.isEmpty()) todo = withoutUnsafe(todo);
+        store.put(OFFLINE, "");
+        if (!todo.isEmpty()) {
+            todo = withoutUnsafe(todo);
+            if (todo == null) {   // as community.sh: the third-party list is the least vetted, so without its one safety rating nothing of it is applied
+                store.put(OFFLINE, OFFLINE_SAID + "\n");
+                return skipped("قائمة المجتمع " + OFFLINE_SAID + " (فحص «UAD-ng» للتطبيقات غير الآمنة يحتاج الإنترنت). ما أوقفنا شيئاً منها؛ بقية الإعداد تكمل.");
+            }
+        }
         String base = choice.meta.name;
         store.put(NAME, base + "\n");
         if (todo.isEmpty()) return done("قائمة المجتمع لطراز تلفزيونك: لا شيء فيها نوقفه على هذا التلفزيون.");
@@ -105,13 +115,10 @@ final class SetupCommunity {
         return done("أوقفنا " + off + " تطبيقاً من قائمة المجتمع لطراز تلفزيونك (CleanYourTV)" + (off < todo.size() ? "؛ " + (todo.size() - off) + " رفض التلفزيون إيقافها." : "."));
     }
 
-    /** Never what UAD-ng rates Unsafe; when its list cannot be fetched the check is skipped, and said. */
+    /** Never what UAD-ng rates Unsafe; null when its list cannot be fetched (then nothing of the community list is applied). */
     private List<String> withoutUnsafe(List<String> todo) {
         Map<String, String> rated = CommunityMatch.removals(fetch == null ? null : fetch.text(UAD, UAD_MAX));
-        if (rated == null) {
-            out.line("فحص «UAD-ng» للتطبيقات غير الآمنة لم يعمل (لا إنترنت)، فتجاوزناه: طبّقنا القائمة بفلاترها فقط.");
-            return todo;
-        }
+        if (rated == null) return null;
         List<String> keep = new ArrayList<>(), unsafe = new ArrayList<>();
         for (String p : todo) ("Unsafe".equals(rated.get(p)) ? unsafe : keep).add(p);
         if (!unsafe.isEmpty()) out.line("تركنا شغّالاً ما يصنّفه «UAD-ng» غير آمن: " + String.join(" ", unsafe));
