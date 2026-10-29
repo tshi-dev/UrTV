@@ -195,3 +195,6 @@ So the earlier "Key Mapper not bound after reboot" is TCL's block, not our updat
 - Open: step 14 S1–S7 blocked by the setup app's invalid adb key (`Invalid base64 key`, no prompt).
 
 Problems found today: self-update turns a11y off + un-mutes (priority); setup app adb key invalid (blocker); «بدون» needs two presses again; pairing stops when the screensaver comes; small texts («8 ساعة», «1 دقيقة» for 45 s); one long swipe jumps 5 tiles.
+
+## REQUEST to the supervisor (owner's words: «اطلب من السبرفايزر الابديت اللي عنده اول»)
+Step 15 needs apk-next build 164 or newer; apk-next version.txt still says 3.163 (apk-latest 3.157). The owner asks you to publish your newest update to apk-next first. The tester waits for version.txt ≥ 3.164, then starts step 15 when the owner says «ابدأ الخطوة 15».
