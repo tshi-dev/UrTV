@@ -72,6 +72,16 @@ numbered release `v4.0.<build>` («UrTV 4.0 (build N)»); the older `v3.N` ones 
 - «تحكم من الجوال»: a much better page (a swipe pad, volume, an Arabic text field, the favourites with their real icons, what plays, the sleep timer and screensaver, a read-only family card) and the endpoints behind it; locked apps ask for the PIN on the TV; Back works over other apps with the accessibility service.
 - For testing only: `optimize/saver.sh updatechannel next` makes «تحديث تلفزيوني» read the apk-next build (the CI now publishes its `version.txt`); `tests/android_compile.sh` compiles both apps against API 34 (SKIP when offline) and runs in `tests/run.sh`. It also fails on a source that uses a class hidden in the public SDK (`tests/hidden_api_scan.py`; that is what broke the release build once), and uses the real public `android.jar` when the Android SDK is installed.
 
+**Thanks (GitHub handles, with the issue or pull request number):**
+- Brent oil in the markets bar: hak151617-sys (#39).
+- The 24-hour clock «ساعة ٢٤»: saadabdelhafid-cyber (#41).
+- The Jordan prayer method: alaaalquda-hub (#34). Egypt's method and cities are in too.
+- The fix for the older WebView (66) that stopped the page's JavaScript: ayhankaraalitr-eng posted it first (#21), ckpb4fjvs7-ops sent the same fix again (#43), and omarghxd-art reported the problem (#19).
+- The sunrise after Fajr, the bar of the time between two prayers and the humidity and wind: beeshooo2010-jpg (#28).
+- The audio-focus fix (the Quran and the adhan no longer stutter or fight other sound): itsAbdulelah (#35); the TV updating itself, earlier: itsAbdulelah (#10).
+- The PIN and kids mode («حماية العائلة»): AbdullahCg (#40).
+- Club crests: samiharthy (#30).
+
 ## 23 October 2026 (51b9680)
 
 Release: everything tested on `next` up to that day became the release.
