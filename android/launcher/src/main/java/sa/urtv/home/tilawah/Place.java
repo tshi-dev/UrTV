@@ -34,7 +34,6 @@ final class Place {
     }
 
     private static final PlaceMemory MEMORY = new PlaceMemory();
-    private static final java.util.concurrent.atomic.AtomicLong TICKETS = new java.util.concurrent.atomic.AtomicLong();
 
     private static PlaceMemory.Store store(final Context c) {
         return new PlaceMemory.Store() {
@@ -44,7 +43,7 @@ final class Place {
     }
 
     static Place get(Context c) {
-        long ticket = TICKETS.incrementAndGet();   // taken before the read starts: a read started later wins over this one
+        long ticket = PlaceTicket.next();   // taken before the read starts: a read started later wins over this one
         String fresh = null;
         try (Cursor cur = c.getContentResolver().query(CONFIG, null, null, null, null)) {
             if (cur != null && cur.moveToFirst()) fresh = cur.getString(0);
@@ -55,12 +54,11 @@ final class Place {
     }
 
     /**
-     * From a settings fragment the caller has just read (one read for a whole tick); null = the read failed or only an old copy of it was
-     * left (ConfigSnapshot.placeFragment): the last good place, the bundled one only if none was ever read.
+     * From a settings fragment the caller read earlier (one read for a whole tick) and the ticket taken BEFORE that read started
+     * (ConfigSnapshot.placeTicket: a cached copy keeps its own, so it cannot beat a newer read); null fragment = the read failed or only an
+     * old copy of it was left (ConfigSnapshot.placeFragment): the last good place, the bundled one only if none was ever read.
      */
-    static Place get(Context c, String fragment) { return get(c, fragment, TICKETS.incrementAndGet()); }
-
-    private static Place get(Context c, String fragment, long ticket) {
+    static Place get(Context c, String fragment, long ticket) {
         PlaceChoice.Pick pick = MEMORY.resolve(store(c), fragment, ticket);
         if (MEMORY.streakStarted(PlaceFragment.parse(fragment) == null, pick.remembered))
             android.util.Log.i("UrTVAdhan", "place read failed: the last good place is used");

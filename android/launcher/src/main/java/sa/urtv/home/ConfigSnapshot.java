@@ -23,10 +23,13 @@ final class ConfigSnapshot {
     private final String look;   // «المظهر ← الشكل» (GlassStyle.look): an older screensaver says nothing: glass
     /** an old copy, handed out because a read failed: fine to show, never to be taken for an answer (see placeFragment) */
     final boolean stale;
+    /** taken before the read that made this began (PlaceTicket): a cached or old copy keeps it, so it never beats a newer read as the place */
+    private final long placeTicket;
 
     private ConfigSnapshot(String fragment, boolean greetingOn, boolean adhanBarOn, boolean listenPillOn, boolean updateBellOn, String appearance,
-            boolean watchNextOn, String look, boolean stale) {
+            boolean watchNextOn, String look, boolean stale, long placeTicket) {
         this.stale = stale;
+        this.placeTicket = placeTicket;
         this.look = GlassStyle.look(look);
         this.watchNextOn = watchNextOn;
         this.fragment = fragment;
@@ -38,13 +41,16 @@ final class ConfigSnapshot {
     }
 
     /** The same values, marked as an old copy. */
-    ConfigSnapshot asStale() { return new ConfigSnapshot(fragment, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, true); }
+    ConfigSnapshot asStale() { return new ConfigSnapshot(fragment, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, true, placeTicket); }
 
     /**
      * The settings fragment for the PRAYER PLACE (Place, the adhan alarm, the day parts): null when this is an old copy, so that only a real
      * answer of the screensaver can become the remembered place or move the alarm. Display values (zone, digits, clock) may use the old copy.
      */
     String placeFragment() { return stale ? null : fragment; }
+
+    /** The ticket to give with placeFragment() (Place, DayParts.now, AdhanSync.onConfig). */
+    long placeTicket() { return placeTicket; }
 
     String appearance() { return appearance; }
     String look() { return look; }
@@ -75,6 +81,7 @@ final class ConfigSnapshot {
     }
 
     private static ConfigSnapshot query(Context c) {
+        long ticket = sa.urtv.home.tilawah.PlaceTicket.next();   // before the provider is asked
         String fragment = null;
         boolean greeting = true, bar = true, listenPill = true, updateBell = true, watchNext = true;
         String appearance = null, look = null;
@@ -99,7 +106,7 @@ final class ConfigSnapshot {
         } catch (RuntimeException ignored) {
             // the screensaver is missing or signed with another key: the defaults (Riyadh, on)
         }
-        return new ConfigSnapshot(fragment, greeting, bar, listenPill, updateBell, appearance, watchNext, look, false);
+        return new ConfigSnapshot(fragment, greeting, bar, listenPill, updateBell, appearance, watchNext, look, false, ticket);
     }
 
     /** {city, zone id}; null when the screensaver gave nothing: the TV's own zone then */

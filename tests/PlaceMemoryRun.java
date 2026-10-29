@@ -32,7 +32,7 @@ public final class PlaceMemoryRun {
     static final class Device {
         final FakeStore store;
         PlaceMemory mem = new PlaceMemory();
-        final LastGood<String> snapshot = new LastGood<>();
+        final LastGood<Object[]> snapshot = new LastGood<>();   // {fragment, the ticket taken before that read began}
         boolean providerUp = true;
         String providerFragment;
         String recorded = "";        // sched_identity
@@ -66,21 +66,28 @@ public final class PlaceMemoryRun {
         /** AdhanSync.reschedule (the shell, the phone) and every other schedule(c): the place read now */
         void scheduleNow() { schedule(placeGet()); }
 
-        /** AdhanSync.onConfig(c, fragment) */
-        void onConfig(String fragment) {
-            PlaceChoice.Pick p = mem.resolve(store, fragment, ++ticket);
+        /** AdhanSync.onConfig(c, fragment, ticket) */
+        void onConfig(String fragment, long withTicket) {
+            PlaceChoice.Pick p = mem.resolve(store, fragment, withTicket);
             if (fragment == null) return;
             if (SchedIdentity.due(recorded, identity(p))) schedule(p);
         }
 
-        /** the home's minute tick: ConfigSnapshot.read, then placeFragment() (null for an old copy) into onConfig; `passStale` is the bug */
-        void tick(boolean passStale) {
-            now += 10_000;
-            LastGood.Read<String> r = snapshot.read(now, 3000, () -> answer());
-            String fragment = r.value;
+        /**
+         * the home's tick `afterMs` later: ConfigSnapshot.read (the ticket is taken before the provider is asked; a cached copy keeps its own),
+         * then placeFragment() (null for an old copy) and placeTicket() into onConfig. `passStale` is the first review's bug, `freshTicket` the second's
+         * (a new ticket taken when the snapshot is USED).
+         */
+        void tick(long afterMs, boolean passStale, boolean freshTicket) {
+            now += afterMs;
+            LastGood.Read<Object[]> r = snapshot.read(now, 3000, () -> { long t = ++ticket; String a = answer(); return a == null ? null : new Object[] {a, t}; });
+            String fragment = r.value == null ? null : (String) r.value[0];
+            long snapTicket = r.value == null ? ++ticket : (Long) r.value[1];
             if (r.stale && !passStale) fragment = null;
-            onConfig(fragment);
+            onConfig(fragment, freshTicket ? ++ticket : snapTicket);
         }
+
+        void tick(boolean passStale) { tick(10_000, passStale, false); }
     }
 
     public static void main(String[] args) {
@@ -113,13 +120,36 @@ public final class PlaceMemoryRun {
         check("a failed tick after the owner's new city leaves the alarm for Kuwait (an old Cairo copy is not taken for an answer)",
             d.scheduledTimes.equals(kuwaitTimes) && d.recorded.equals(kuwaitIdentity) && KUWAIT.equals(d.store.saved));
         Device broken = new Device(new FakeStore());
-        broken.providerFragment = CAIRO; broken.tick(true);
+        broken.providerFragment = CAIRO; broken.tick(10_000, true, true);
         broken.providerFragment = KUWAIT; broken.scheduleNow();
-        broken.providerUp = false; broken.tick(true);
-        check("(the same with the old copy passed on as an answer: the alarm goes back to Cairo and the place is overwritten: what the review found)", !broken.scheduledTimes.equals(kuwaitTimes) && CAIRO.equals(broken.store.saved));
+        broken.providerUp = false; broken.tick(10_000, true, true);
+        check("(the same with the old copy passed on as an answer under a new ticket, as ddff335 did: the alarm goes back to Cairo and the place is overwritten: what the first review found)", !broken.scheduledTimes.equals(kuwaitTimes) && CAIRO.equals(broken.store.saved));
         d.providerUp = true;
         d.tick(false);
         check("when the screensaver answers again nothing moves for the same city", d.scheduledTimes.equals(kuwaitTimes) && KUWAIT.equals(d.store.saved));
+
+        // 1b (second review): a CACHED good snapshot (inside the share window, not stale) must not beat a newer read made by the phone's save
+        for (boolean bug : new boolean[] {false, true}) {
+            Device c = new Device(new FakeStore());
+            c.providerFragment = CAIRO;
+            c.tick(0, false, false);                         // t=0: the home reads Cairo (cached for 3 s); alarm and place Cairo
+            c.now += 1000;
+            c.providerFragment = KUWAIT;
+            c.scheduleNow();                                 // t=1 s: the owner sets Kuwait from the phone: reschedule reads Kuwait (a newer ticket)
+            String kuwait = c.scheduledTimes;
+            c.providerUp = false;
+            c.tick(1000, false, bug);                        // t=2 s: the home gets the cached Cairo (inside the window, not stale)
+            c.tick(10_000, false, bug);                      // then reads keep failing
+            if (!bug) check("a cached good snapshot does not beat a newer read: after the owner's Kuwait the alarm and the place stay Kuwait", c.scheduledTimes.equals(kuwait) && KUWAIT.equals(c.store.saved) && !kuwait.equals(cairoTimes));
+            else check("(the same with a new ticket taken when the cached copy is used: the alarm goes back to Cairo and the place is overwritten: what the second review found)", !c.scheduledTimes.equals(kuwait) && CAIRO.equals(c.store.saved));
+        }
+        Device between = new Device(new FakeStore());
+        between.providerFragment = CAIRO;
+        LastGood.Read<Object[]> early = between.snapshot.read(0, 3000, () -> new Object[] {CAIRO, ++between.ticket});   // ConfigSnapshot.read: ticket 1
+        between.providerFragment = KUWAIT;
+        between.scheduleNow();                                                                                          // the phone's save in between: ticket 2
+        between.onConfig((String) early.value[0], (Long) early.value[1]);                                                // then onConfig with what was read before it
+        check("a save by the phone between the snapshot's read and onConfig is not undone by it", KUWAIT.equals(between.store.saved) && between.recorded.equals(Device.identity(PlaceChoice.pick(KUWAIT, null))));
 
         // 2 (review, medium): an upgrade or a boot with no good read yet
         FakeStore empty = new FakeStore();

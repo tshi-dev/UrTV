@@ -13,10 +13,10 @@ public final class AdhanSync {
 
     /**
      * Sets the alarm again when the place, zone, adjustments or method in this fragment are not the ones it was last set from. The fragment is
-     * null when the read failed or only an old copy of it is left: then the alarm stays as it was set and the remembered place serves the rest.
+     * null when the read failed or only an old copy of it is left (the ticket is the one taken before that read began): then the alarm stays as it was set and the remembered place serves the rest.
      */
-    public static void onConfig(Context c, String fragment) {
-        Place p = Place.get(c, fragment);   // a null fragment: the last good place
+    public static void onConfig(Context c, String fragment, long ticket) {
+        Place p = Place.get(c, fragment, ticket);   // a null fragment: the last good place
         PrayerTimes.refreshIfDue(c, p);   // Aladhan's times for today, once the TV is online: the home screen agrees with the page
         Adhan.prefetchIfSkipped(c);   // a recording skipped in standby comes now; nothing is asked when none was skipped
         if (fragment == null) return;   // a failed read says nothing about the alarm

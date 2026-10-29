@@ -25,8 +25,8 @@ public final class DayParts {
 
     public static DayParts now(Context c) { return now(c, Place.get(c)); }
 
-    /** From the screensaver's settings fragment the caller has read already (null: it is missing): one read per tick. */
-    public static DayParts now(Context c, String fragment) { return now(c, Place.get(c, fragment)); }
+    /** From the screensaver's settings fragment the caller has read already (null: it is missing or old): one read per tick; `ticket` as taken before that read (PlaceTicket). */
+    public static DayParts now(Context c, String fragment, long ticket) { return now(c, Place.get(c, fragment, ticket)); }
 
     private static String sunriseKey, sunriseClock;   // tomorrow's sunrise, worked out once a day
 

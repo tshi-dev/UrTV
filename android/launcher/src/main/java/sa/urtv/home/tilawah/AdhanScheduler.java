@@ -26,7 +26,7 @@ final class AdhanScheduler {
     static void schedule(Context c) { schedule(c, Place.get(c)); }
 
     /** The alarm for the next adhan of this place (the caller read it once, so what it was judged by is what the alarm is set for). */
-    static void schedule(Context c, Place place) {
+    static synchronized void schedule(Context c, Place place) {   // one at a time: two threads cannot interleave the identity and the alarm
         AlarmManager am = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
         if (am == null) return;
         // the one place the identity is written, for every schedule from anywhere: what the alarm is REALLY set from (AdhanSync compares with it)
