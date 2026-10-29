@@ -285,6 +285,15 @@ final class PhoneActions implements Actions {
 
     @Override public Map<String, Object> family() { return PhoneApps.family(app); }
 
+    @Override public Result restoreHome() {
+        if (!sa.urtv.home.setup.RestoreHome.debuggingOn(app)) return Result.fail("debug_off");
+        if (sa.urtv.home.setup.RestoreHome.running(app)) return Result.ok("running");
+        new Thread(new Runnable() {
+            @Override public void run() { sa.urtv.home.setup.RestoreHome.run(app, null); }   // the TV's own prompt is answered with its remote
+        }, "phone-restore-home").start();
+        return Result.ok("started");
+    }
+
     @Override public Map<String, Object> update(String op) {
         return "install".equals(op) ? PhoneUpdater.install(app, true) : PhoneUpdater.checkVersion(app);   // «افحص التحديث» reads version.txt only; the files come with «ثبّت»
     }

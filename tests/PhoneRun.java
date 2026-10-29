@@ -80,6 +80,7 @@ public final class PhoneRun {
         @Override public byte[] icon(String pkg) { calls.add("icon:" + pkg); return pkg.equals("com.example.video") ? new byte[] {(byte) 0x89, 'P', 'N', 'G', 13, 10, 26, 10} : null; }
         @Override public Result launch(String target) { calls.add("launch:" + target); return target.equals("@tasks") ? Result.ok("pin_on_tv") : Result.ok("opened"); }
         @Override public Result adhanStop() { calls.add("adhan_stop"); return Result.ok("done"); }
+        @Override public Result restoreHome() { calls.add("restore_home"); return Result.ok("started"); }
         @Override public Result doOp(String op) { calls.add("do:" + op); return Result.ok("done"); }
         @Override public Map<String, Object> family() {
             calls.add("family");
@@ -291,6 +292,12 @@ public final class PhoneRun {
         for (String op : new String[] {"reboot", "reset", "shell", "uninstall", "kids", "unlock", ""}) badDo &= authed(e, "POST", "/api/do", "{\"op\":\"" + op + "\"}", sess).status == 400;
         badDo &= authed(e, "POST", "/api/do", "{}", sess).status == 400 && authed(e, "POST", "/api/do", "{\"op\":\"screensaver\",\"x\":1}", sess).status == 400;
         check("v2: do takes screensaver and sleep_cancel only; adhan_stop no extra keys", badDo && e.actions.calls.isEmpty(), e.actions.calls.toString());
+        boolean badRestore = authed(e, "POST", "/api/restore_home", "{\"x\":1}", sess).status == 400 && authed(e, "POST", "/api/restore_home", "{\"pin\":\"12\"}", sess).status == 400
+            && authed(e, "POST", "/api/restore_home", "{\"op\":\"reset\"}", sess).status == 400 && authed(e, "GET", "/api/restore_home", null, sess).status == 404;
+        check("restore_home: only an empty body or a 4-digit PIN; nothing else, no GET, and nothing reached the TV code", badRestore && e.actions.calls.isEmpty(), e.actions.calls.toString());
+        Reply rh = authed(e, "POST", "/api/restore_home", "{}", sess);
+        check("restore_home: with no family PIN set it starts the undo on the TV and says so", rh.status == 200 && "started".equals(rh.json().get("result")) && e.actions.calls.equals(Arrays.asList("restore_home")), rh.body);
+        e.actions.calls.clear();
 
         e.now[0] += 6_000;
         boolean keysOk = true;
@@ -351,6 +358,12 @@ public final class PhoneRun {
         Reply scBad = authed(e, "POST", "/api/do", "{\"op\":\"sleep_cancel\",\"pin\":\"9999\"}", sess);
         check("v2: with a PIN set, cancelling the sleep timer asks for it (a child's phone cannot undo a bedtime timer) and nothing was done without it",
             sc.status == 403 && "pin_required".equals(sc.json().get("error")) && scBad.status == 403 && "pin_wrong".equals(scBad.json().get("error")) && e.actions.calls.isEmpty(), sc.body + scBad.body);
+        Reply rhNo = authed(e, "POST", "/api/restore_home", "{}", sess);
+        Reply rhBad = authed(e, "POST", "/api/restore_home", "{\"pin\":\"9999\"}", sess);
+        check("restore_home: with a family PIN set it is refused without it and with a wrong one, and nothing was started",
+            rhNo.status == 403 && "pin_required".equals(rhNo.json().get("error")) && rhBad.status == 403 && "pin_wrong".equals(rhBad.json().get("error")) && e.actions.calls.isEmpty(), rhNo.body + rhBad.body);
+        check("restore_home: the right PIN starts it", authed(e, "POST", "/api/restore_home", "{\"pin\":\"1234\"}", sess).status == 200 && e.actions.calls.equals(Arrays.asList("restore_home")), e.actions.calls.toString());
+        e.actions.calls.clear();
         check("v2: the right PIN lets the cancel through and the PIN goes no further", authed(e, "POST", "/api/do", "{\"op\":\"sleep_cancel\",\"pin\":\"1234\"}", sess).status == 200 && e.actions.calls.equals(Arrays.asList("do:sleep_cancel")), e.actions.calls.toString());
         e.actions.calls.clear();
         check("v2: the screensaver stays open to the phone (it only opens a screen; a locked saver asks on the TV)", authed(e, "POST", "/api/do", "{\"op\":\"screensaver\",\"pin\":\"12345\"}", sess).status == 400

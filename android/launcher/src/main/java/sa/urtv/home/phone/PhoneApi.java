@@ -80,6 +80,7 @@ final class PhoneApi implements PhoneServer.Handler {
             case "/api/adhan_stop": endpoint = "adhanstop"; break;
             case "/api/do": endpoint = "do"; break;
             case "/api/logout": endpoint = "logout"; break;
+            case "/api/restore_home": endpoint = "restorehome"; break;
             default: return json(404, err("not_found"));
         }
         Schema.Clean c = body(endpoint, r);
@@ -88,7 +89,8 @@ final class PhoneApi implements PhoneServer.Handler {
 
         // cancelling the sleep timer is a change like the others: a child's phone must not undo a parent's bedtime timer (the screensaver, which only opens a screen, is not)
         boolean protectedChange = endpoint.equals("set") || (endpoint.equals("update") && "install".equals(v.get("op")))
-            || (endpoint.equals("do") && "sleep_cancel".equals(v.get("op")));
+            || (endpoint.equals("do") && "sleep_cancel".equals(v.get("op")))
+            || endpoint.equals("restorehome");   // «رجّع واجهة التلفزيون الأصلية» undoes the setup: never without the family PIN when one is set
         PinGate gate = control.pinGate();
         if (protectedChange && gate.required()) {
             Object given = v.get("pin");
@@ -107,6 +109,7 @@ final class PhoneApi implements PhoneServer.Handler {
             case "set": return result(a.set(v));
             case "launch": return result(a.launch((String) v.get("target")));
             case "adhanstop": return result(a.adhanStop());
+            case "restorehome": return result(a.restoreHome());
             case "do": return result(a.doOp((String) v.get("op")));
             case "quran": return result(a.quran(v));
             case "cities": {
@@ -287,7 +290,7 @@ final class PhoneApi implements PhoneServer.Handler {
     /** For tests: the endpoints that need a session. */
     static List<String> sessionPaths() {
         List<String> l = new ArrayList<>();
-        for (String p : new String[] {"/api/state", "/api/key", "/api/text", "/api/set", "/api/quran", "/api/cities", "/api/update", "/api/launch", "/api/adhan_stop", "/api/do", "/api/apps", "/api/family", "/api/icon/com.example.app", "/api/backdrop", "/api/logout"}) l.add(p);
+        for (String p : new String[] {"/api/state", "/api/key", "/api/text", "/api/set", "/api/quran", "/api/cities", "/api/update", "/api/launch", "/api/adhan_stop", "/api/do", "/api/apps", "/api/family", "/api/icon/com.example.app", "/api/backdrop", "/api/logout", "/api/restore_home"}) l.add(p);
         return l;
     }
 }

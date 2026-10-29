@@ -59,6 +59,13 @@ public interface Actions {
     /** The family lock, read only: pin_set, kids, locked. Never the PIN. */
     Map<String, Object> family();
 
+    /**
+     * «رجّع واجهة التلفزيون الأصلية» (docs/IF-BROKEN.md): the setup's own undo (setup.RestoreHome, the same as «تراجع» in «إعداد تلفزيوني») starts on
+     * the TV: ok with "started" (the TV may ask «السماح بتصحيح USB؟», answered with its remote) or "running" (one is going already); fail with
+     * "debug_off" when USB debugging is off.
+     */
+    Result restoreHome();
+
     /** «تحديث تلفزيونك»: op check or install; a map with a status word the page explains. */
     Map<String, Object> update(String op);
 }

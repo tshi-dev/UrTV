@@ -100,6 +100,12 @@ public final class Schema {
                 return c;
             }
             case "logout": return only(body);
+            case "restorehome": {   // «رجّع واجهة التلفزيون الأصلية»: nothing but the PIN
+                Clean c = only(body, "pin");
+                if (!c.ok()) return c;
+                if (!pin(body)) return no("bad pin");
+                return c;
+            }
             default: return no("unknown endpoint");
         }
     }
