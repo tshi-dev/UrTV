@@ -198,3 +198,21 @@ Problems found today: self-update turns a11y off + un-mutes (priority); setup ap
 
 ## REQUEST to the supervisor (owner's words: «اطلب من السبرفايزر الابديت اللي عنده اول»)
 Step 15 needs apk-next build 164 or newer; apk-next version.txt still says 3.163 (apk-latest 3.157). The owner asks you to publish your newest update to apk-next first. The tester waits for version.txt ≥ 3.164, then starts step 15 when the owner says «ابدأ الخطوة 15».
+
+## step 15 (build 163) — part 1
+Start (build 160): `accessibility_enabled=0` and nothing bound AGAIN (no update since last night: it went off by itself overnight); `AUTO_START: ignore` for sa.urtv.home; `APP_AUTO_START` unknown op on this TV; muted. The owner ran `dock.sh type-setup`, tester rebooted → ours bound.
+Note: one extra reboot happened (the tester's `tv.py reboot` kept retrying over a dropped connection and fired twice). Not the app.
+
+| # | OK/problem | note |
+|---|---|---|
+| F1 | PROBLEM | self-update 160 → 163 OK (both versionName=4.0 versionCode=163). 30 s and 60 s after: NO UrTVA11y line, `accessibility_enabled=0`, nothing bound. Cause: TCL blocked the heal: `TclAppBoot … calleeComponent='sa.urtv.home/.A11yHeal' bootType='broadcast' broadcastAction='android.intent.action.MY_PACKAGE_REPLACED' isAllow='false' reason='callee_does't_have_OP_ASSOC_START_permission'`. Also blocked at the same time: `.tilawah.AdhanReceiver` (MY_PACKAGE_REPLACED — the adhan is not rescheduled after an update!), `.phone.PhoneInstallReceiver`, and `bind_service` for `.TypeService` and `.SleepService`. When our home came to the front (Home): `UrTVA11y: check start: listed=true switch=0 running=false -> heal` / `healed start: switch=1 list kept=true` → `accessibility_enabled=1`, but `Bound services:{}` stays empty (TCL forbids the bind) |
+| F2 | PROBLEM | `dock.sh type-setup` by the owner → still nothing bound. Only a reboot binds ours. Key Mapper is never bound (TCL forbid bind service, shown yesterday) |
+| F3 | data | the update did NOT unmute (Muted: true after F1). Each reboot DID unmute (twice today: Muted false after boot). TV's behaviour |
+| F4–F7 | not yet | need the PC paired (owner's code) |
+| F8 | not confirmed | in YouTube, `input keyevent 176` (KEYCODE_SETTINGS) did nothing and logged no UrTVType line; the owner pressed a key on an IR-remote phone app, nothing opened and no key was logged. Needs the real remote |
+| F9 | MISSING | no «نظام الساعة» row anywhere in «شاشة التوقف» on 163 (rows: معاينة، الأرقام، الشروق بعد الفجر، شريط الوقت بين الصلاتين، … الرطوبة والرياح، أسماء الأشهر الميلادية، شريط السنة، المناسبات الوطنية، حجم الساعة، … شكل البطاقة، تبديل الصورة كل، صوري، بدء شاشة التوقف بعد ٤٥ ثانية). saver.sh shows `clock24: off` |
+| F11 | MISSING | «مركز التحكم» on 163 has 8 tiles (مؤقت النوم، أطفئ الآن، الشبكة، اختبار السرعة، مخرج الصوت، شاشة التوقف، إعدادات تلفزيونك، الإعدادات): no «انعكاس الشاشة» |
+| F10, F12 | not yet | — |
+| Z | restored: yes | updatechannel latest; real city exact; home_panel none; 45 s; disabled 22; muted; ours bound |
+
+It looks like the new batch (24 h row, mirroring tile, maybe the Settings key) is NOT in build 163. Please publish the build that has it (164+) and I continue F4–F12.
