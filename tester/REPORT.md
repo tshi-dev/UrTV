@@ -107,3 +107,15 @@ Start: both apps versionName=3.153 versionCode=153; updatechannel latest → set
 | Z | restored: yes | — | updatechannel latest, home_panel none, glass + dark; service on; sound muted. Note: `saver.sh show` now says «(newest: 4.0 (build 142))» for the latest channel — build 142 is the old 3.142, but it is named 4.0 |
 
 Problems: 1 (T3) + 1 small text (U4 brackets/order) + notes: blank «إعداد تلفزيوني» tile (T1), YouTube shown right after the update (U2), old build 142 named «4.0» in saver.sh (Z).
+
+## step 13 (TV's own update build 155 → 156, «4.0» alone)
+Start: `version: 4.0 (build 155) (newest: 4.0 (build 142))`, updatechannel latest → next. No new !! line.
+
+| # | OK/problem | shots | note |
+|---|---|---|---|
+| V1 | OK + note | v1-found, v1-b, v1-after | «تحقق من التحديث» found it; Android's two screens (شاشة تلفزيونك, then تلفزيونك): ◀ + OK = Update; both installed. Same note as step 12: right after, YouTube (the last app) was in front, not our home |
+| V2 | OK | — | sa.urtv.home `versionCode=156` `versionName=4.0`; sa.urtv.screensaver `versionCode=156` `versionName=4.0`; saver.sh: «version: 4.0 (build 156) (newest: 4.0 (build 156), on the next channel)» |
+| V3 | OK | v3-tile, v3-update, v3-check | «الإصدار المثبّت 4.0»; after «تحقق من التحديث»: «تلفزيونك محدّث: 4.0»; tile «الجوال والتحديث»: «الإصدار الحالي: ٤٫٠». No «بناء», no double brackets, no 3.1xx |
+| Z | restored: yes (+ note) | — | updatechannel latest, home_panel none, glass + dark; service on; sound muted. saver.sh first line on latest is now just «version: 4.0 (build 156)»: the newest on latest is NOT shown at all (neither «3.142» nor «4.0 (build 142)»). If it should say «3.142», that's a small one |
+
+Problems: 0 (the step 12 text problem is fixed). Notes: YouTube in front right after the self-update; the newest on latest not shown in saver.sh.
