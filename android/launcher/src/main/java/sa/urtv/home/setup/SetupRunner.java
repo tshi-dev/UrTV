@@ -19,7 +19,7 @@ import java.util.Map;
  * a cut: it is reported as cut, and the person presses «ابدأ» for it. Plain Java (no Android) so tests/SetupRunnerRun.java runs it on a JVM.
  */
 final class SetupRunner {
-    enum Kind { SETUP, UNDO, FULL }
+    enum Kind { SETUP, UNDO, FULL, ANSWERS }
     enum State { PENDING, RUNNING, DONE, SKIPPED, FAILED }
     enum Start { STARTED, BUSY, NOTHING }
 
@@ -50,6 +50,7 @@ final class SetupRunner {
     /** What the person chose for a full run. */
     static final class Options {
         boolean extras = true;    // TV Bro and SmartTube (the owner's choice: on unless the person unticks them)
+        Map<String, Boolean> answers = new LinkedHashMap<>();   // ANSWERS: the person's yes/no to the community list's questions
     }
 
     /** One connection to the TV with an engine on it (SetupSession on the TV, a fake in the tests). */
@@ -69,6 +70,10 @@ final class SetupRunner {
         void finished();
         void sleep(int ms) throws IOException;
         long now();
+        /** A file of the app's assets (setup/community.txt), null when it is not there. */
+        String asset(String name);
+        /** A text from the internet (UAD-ng's ratings), null when it cannot be fetched. */
+        String fetch(String url, int maxBytes);
     }
 
     /** One step of a plan: what it runs, and whether it may run a second time after it was cut off (a restart, a killed process). */
@@ -128,6 +133,10 @@ final class SetupRunner {
             p.add(new Def("undo", true, c -> c.engine.undo()));
             return p;
         }
+        if (k == Kind.ANSWERS) {
+            p.add(new Def("answers", true, c -> community(c).answer(c.options.answers)));
+            return p;
+        }
         if (k == Kind.FULL) return fullPlan();
         p.add(new Def("precheck", true, c -> c.engine.precheck()));
         p.add(new Def("grants", true, c -> c.engine.grants()));
@@ -148,11 +157,25 @@ final class SetupRunner {
         p.add(new Def("keep", true, c -> new SetupPrep(c.shell, c.store, c.out).keep()));
         p.add(new Def("grants", true, c -> c.engine.grants()));
         p.add(new Def("safe", true, c -> c.engine.debloat()));
+        p.add(new Def("community", true, c -> community(c).apply()));
         p.add(new Def("tweaks", true, c -> new SetupTweaks(c.shell, c.store, c.out).apply()));
         p.add(new Def("screensaver", true, c -> c.engine.screensaver()));
         p.add(new Def("autostart", true, c -> new SetupPrep(c.shell, c.store, c.out).autostart()));
         p.add(new Def("home", false, c -> c.engine.home()));
         return p;
+    }
+
+    static SetupCommunity community(Context c) { return new SetupCommunity(c.shell, c.store, c.out, c.host.asset("setup/community.txt"), c.host::fetch); }
+
+    /** What the community list left on and asks the person about: [package, the question in Arabic]. */
+    static List<String[]> questions(SetupEngine.Store store) { return SetupCommunity.questions(store); }
+
+    /** The person's answers to those questions, through the same one-run-at-a-time rule (BUSY while a run goes). */
+    Start answer(Map<String, Boolean> answers, Host host) {
+        Options o = new Options();
+        o.extras = false;
+        if (answers != null) o.answers.putAll(answers);
+        return start(Kind.ANSWERS, o, host);
     }
 
     /** The steps that stop the run when they did not finish: nothing has been changed before them. */
@@ -163,7 +186,7 @@ final class SetupRunner {
     synchronized boolean running() { return running; }
     synchronized Kind kind() { return kind; }
     synchronized End end() { return end; }
-    synchronized Options options() { Options o = new Options(); o.extras = options.extras; return o; }
+    synchronized Options options() { Options o = new Options(); o.extras = options.extras; o.answers.putAll(options.answers); return o; }
 
     synchronized List<Step> steps() {
         List<Step> out = new ArrayList<>();
@@ -405,6 +428,10 @@ final class SetupRunner {
 
     /** The sentence at the end, exactly the one the setup screen always showed. */
     static End endOf(Kind k, List<Step> steps) {
+        if (k == Kind.ANSWERS) {
+            boolean ok = !steps.isEmpty() && steps.get(0).state == State.DONE;
+            return new End(ok ? steps.get(0).reason : "ما تمّت الأجوبة (التفاصيل فوق).", !ok);
+        }
         if (k == Kind.UNDO) {
             boolean ok = !steps.isEmpty() && steps.get(0).state == State.DONE;
             return new End(ok ? "تم الرجوع. أطفئ «تصحيح USB» من خيارات المطوّر، واختر «إلغاء تراخيص تصحيح USB» لتنظيف التلفزيون." : "انتهى الرجوع مع ملاحظات (فوق).", false);

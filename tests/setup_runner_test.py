@@ -43,7 +43,7 @@ with tempfile.TemporaryDirectory() as tmp:
     check("the pure classes and the runner's harness compile", r.returncode == 0, r.stderr)
     if r.returncode:
         sys.exit(1)
-    run = subprocess.run(["java", "-cp", tmp, "sa.urtv.home.setup.SetupRunnerRun"], capture_output=True, text=True, timeout=300, encoding="utf-8")
+    run = subprocess.run(["java", "-Dassets=" + str(ROOT / "android/launcher/src/main/assets"), "-cp", tmp, "sa.urtv.home.setup.SetupRunnerRun"], capture_output=True, text=True, timeout=300, encoding="utf-8")
     got = {l.split()[0]: l for l in run.stdout.splitlines() if l.strip()}
     if run.returncode:
         print(run.stderr[-2000:])
@@ -75,6 +75,8 @@ check("R10: the TV does not come back after the restart: ten minutes of tries, t
 check("R11: a pointer older than a day is not resumed", got.get("R11") == "R11 false false", got.get("R11"))
 check("R13: a full run then the undo, both through the runner, on a TCL: all done, tweaks and auto-start were on, the TV is as it was, the journals retired",
       got.get("R13") == "R13 true during=0.5/45/allow same=true undo:DONE journal=true done=true auto=true", got.get("R13"))
+check("R14: the community questions, and the answers through the runner: «yes» turned off, «no» left on, both leave the questions",
+      got.get("R14") == "R14 2 true STARTED answers:DONE off=true/false left=[] false", got.get("R14"))
 skipped_rest = ",".join(f"{i}:" + ("DONE" if i == "precheck" else "FAILED" if i == "backup" else "SKIPPED") for i in PLAN)
 check("R12: the backup is the full run's gate: a nearly empty package list saves nothing and nothing after it runs (not one change), «توقّفنا قبل أي تغيير.»",
       got.get("R12") == f"R12 {skipped_rest} backup=null changes=0 true توقّفنا قبل أي تغيير.", got.get("R12"))

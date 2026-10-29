@@ -34,6 +34,12 @@ public class SetupRunnerRun {
         public void finished() { finished++; }
         public void sleep(int ms) { sleeps++; }
         public long now() { return 1_000_000L + sleeps; }
+        String uad;                 // what the internet gives for UAD-ng's list (null: offline)
+        public String asset(String name) {
+            try { return new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(System.getProperty("assets"), name)), java.nio.charset.StandardCharsets.UTF_8); }
+            catch (IOException | RuntimeException e) { return null; }
+        }
+        public String fetch(String url, int maxBytes) { return uad; }
     }
 
     static String states(SetupRunner r) {
@@ -153,6 +159,16 @@ public class SetupRunnerRun {
         r13.start(SetupRunner.Kind.UNDO, new SetupRunner.Options(), h13);
         line("R13 " + states13.equals(FULLDONE(r13)) + " during=" + during13 + " same=" + (SetupEngineRun.snapshot(t13) + "|" + t13.bucket).equals(before13) + " " + states(r13)
             + " journal=" + m13.get("tweaks-journal.txt").isEmpty() + " done=" + !m13.get("tweaks-journal.done").isEmpty() + " auto=" + m13.get("autostart-before.txt").isEmpty());
+        // 14. the community questions and the answers through the runner (one run at a time)
+        SetupEngineRun.FakeTv t14 = SetupEngineRun.tv(); t14.installed.add("com.example.voiceassistant"); t14.installed.add("com.example.updater");
+        SetupEngineRun.Mem m14 = new SetupEngineRun.Mem(); Host h14 = new Host(t14, m14);
+        m14.put("community-ask.txt", "com.example.voiceassistant\ncom.example.updater\n");
+        List<String[]> qs = SetupRunner.questions(m14);
+        java.util.Map<String, Boolean> ans = new java.util.LinkedHashMap<>(); ans.put("com.example.voiceassistant", true); ans.put("com.example.updater", false);
+        SetupRunner r14 = new SetupRunner();
+        SetupRunner.Start s14 = r14.answer(ans, h14);
+        line("R14 " + qs.size() + " " + qs.get(0)[1].startsWith("نوقف «com.example.voiceassistant»؟") + " " + s14 + " " + states(r14) + " off=" + t14.off.contains("com.example.voiceassistant")
+            + "/" + t14.off.contains("com.example.updater") + " left=[" + m14.get("community-ask.txt").trim() + "] " + r14.end().bad);
         line("R12 " + states(r12) + " backup=" + m12.get("backup.txt") + " changes=" + (t12.count("pm disable-user") + t12.count("settings put") + t12.count("cmd role add") + t12.count("appops set") + t12.count("pm grant") + t12.count("pm enable"))
             + " " + r12.end().bad + " " + r12.end().text);
     }

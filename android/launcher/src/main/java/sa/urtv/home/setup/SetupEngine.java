@@ -495,8 +495,9 @@ final class SetupEngine {
         } else {
             problems.add("ما عرفنا الشاشة الرئيسية الأصلية، فاضغط زر الرئيسية؛ وإن لم يفتح شيء فاختر الشاشة من إعدادات التلفزيون (التطبيقات، التطبيقات الافتراضية).");
         }
-        // the apps our run turned off
+        // the apps our run turned off: the ledger, and the community list's own record (optimize/reset.sh hands community-applied.txt to restore.sh)
         List<String> ledger = ledgerNames(store.get("disabled-by-us.txt"));
+        for (String p : ledgerNames(store.get("community-applied.txt"))) if (!ledger.contains(p)) ledger.add(p);
         for (String p : ledger) sh.run("pm enable " + p);
         Set<String> off = packages("pm list packages -d");
         if (off == null) {
@@ -510,6 +511,11 @@ final class SetupEngine {
             StringBuilder b = new StringBuilder();
             for (String p : keep) b.append(p).append('\n');
             store.put("disabled-by-us.txt", b.toString());
+            if (store.get("community-applied.txt") != null) {
+                StringBuilder cb = new StringBuilder();
+                for (String p : ledgerNames(store.get("community-applied.txt"))) if (keep.contains(p)) cb.append(p).append('\n');
+                store.put("community-applied.txt", cb.toString());
+            }
             if (!keep.isEmpty()) problems.add(keep.size() + " تطبيقاً لم يقبل التلفزيون تشغيله؛ جرّب «تراجع» مرة ثانية.");
         }
         // the protected features (optimize/reset.sh runs optimize/keep.sh here): only ever turned on; its own lines say what it found. Only after a
