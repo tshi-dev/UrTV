@@ -426,6 +426,7 @@ final class SetupRunner {
                 try {
                     r = d.body.run(c);
                 } catch (Restarting e) {
+                    if (k == Kind.FULL) stamp(host, "stopped " + d.id + " (the TV restarts for the measurement)");
                     throw e;
                 } catch (IOException | RuntimeException e) {
                     if (k == Kind.FULL) stamp(host, "stopped " + d.id + " (" + (e instanceof IOException ? "the connection" : "an error") + ")");
