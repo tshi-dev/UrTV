@@ -154,3 +154,13 @@ To continue: the owner at the TV to press «السماح دائماً» at each 
 ## step 14 — closed for now (owner away)
 The owner is away and said to skip everything that needs him at the TV: S1–S7 (each «ابدأ» needs him to accept «السماح بتصحيح USB؟», and pressing «ابدأ» from adb was refused on the tester's side) and side task D (he logs into aftv.news himself).
 | Z | restored: yes | updatechannel latest; Home holder `sa.urtv.home/.MainActivity` (same as start); disabled packages 22 → 22 (identical list); screensaver `sa.urtv.screensaver/.ScreenDream` (same); `adb_enabled=1` (untouched); real city exact; home_panel none; glass + dark; sound muted. Open: accessibility is OFF since the 160 self-update (`accessibility_enabled=0`, nothing bound) — the owner's Key Mapper and our typing do not work until the owner fixes it (last time a reboot after `dock.sh type-setup` brought ours back, not Key Mapper) |
+
+## side task D (Downloader short codes)
+The shortener needs no account (go.aftvnews.com has no login; anyone can submit, and submitted URLs are public). The owner submitted the two URLs himself.
+
+| # | code | short URL | redirect check |
+|---|---|---|---|
+| D1 | **9378345** | aftv.news/9378345 | `curl -sI https://aftv.news/9378345` → `Location: https://go.aftvnews.com/9378345`; that page (200, HTML) does `window.location = "https://github.com/tshi-dev/UrTV/releases/download/apk-latest/urtv-home.apk"` — exact |
+| D2 | **2927902** | aftv.news/2927902 | → `https://go.aftvnews.com/2927902`; `window.location = "https://github.com/tshi-dev/UrTV/releases/download/apk-latest/urtv-screensaver.apk"` — exact |
+
+Note: the redirect is a 301 to go.aftvnews.com and then a JavaScript redirect (not an HTTP Location to GitHub). Downloader resolves codes itself; not tested in Downloader on the TV.
