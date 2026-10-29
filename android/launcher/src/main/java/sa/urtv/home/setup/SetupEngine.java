@@ -471,7 +471,10 @@ final class SetupEngine {
 
     // ---- the undo (optimize/restore.sh) ---------------------------------------------------------------------------------------------
 
-    /** The home first (never leave the TV without one), then the apps in the ledger, the screensaver and the appops as they were. */
+    /**
+     * In optimize/reset.sh's order: the home first (never leave the TV without one), then the apps in the ledger, the protected features (keep.sh),
+     * the screensaver and the appops as they were, TCL's auto-start, and the speed tweaks last.
+     */
     Result undo() throws IOException {
         List<String> problems = new ArrayList<>();
         String stock = journal("stock");
@@ -509,6 +512,10 @@ final class SetupEngine {
             store.put("disabled-by-us.txt", b.toString());
             if (!keep.isEmpty()) problems.add(keep.size() + " تطبيقاً لم يقبل التلفزيون تشغيله؛ جرّب «تراجع» مرة ثانية.");
         }
+        // the protected features (optimize/reset.sh runs optimize/keep.sh here): only ever turned on; its own lines say what it found. Only after a
+        // full setup (it saved backup.txt): the TV button's own setup never touched them, and its undo stays what it was
+        String backup = store.get(SetupPrep.BACKUP);
+        if (backup != null && !backup.isEmpty()) new SetupPrep(sh, store, out).keep();
         // the screensaver as the TV had it (null: it was never set)
         String before = store.get("screensaver-before.txt");
         if (before != null && !before.trim().isEmpty()) {
@@ -531,6 +538,10 @@ final class SetupEngine {
         }
         String mode = store.get("install-appop.txt");
         if (mode != null && mode.trim().matches("allow|ignore|deny|default|foreground")) sh.run("appops set " + SELF + " REQUEST_INSTALL_PACKAGES " + mode.trim());
+        // TCL's auto-start, back to what each op had (autostart-before.txt)
+        new SetupPrep(sh, store, out).autostartUndo();
+        // the tweaks last, as optimize/reset.sh does: exactly what the TV had (tweaks-journal.txt); nothing when the app never changed one
+        if (new SetupTweaks(sh, store, out).restore().status != Status.DONE) problems.add("لم يقبل التلفزيون إرجاع بعض إعدادات السرعة؛ اضغط «تراجع» مرة ثانية.");
         if (!problems.isEmpty()) return failed(String.join(" ", problems));
         return done("رجّعنا تلفزيونك كما كان. تطبيق تلفزيونك يبقى مثبتاً؛ تقدر تحذفه من إعدادات التلفزيون (التطبيقات).");
     }

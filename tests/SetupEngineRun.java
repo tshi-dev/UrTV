@@ -24,6 +24,9 @@ public class SetupEngineRun {
         boolean silent, dashFailsMarker, wizardAnswersHome, wizardOwnsWifi, nokia, refuseSwitch, noRoleManager, emptyResolve;
         boolean roleRejected, homeRejected, ignoreRoleBack, appopRefused;
         String exactAlarm = "default";
+        String maker = "Google", adbPort = "5555", bucket = "10";
+        boolean autoStartOps;
+        long dfTotal = 16777216, dfAvail = 12582912;
         final List<String> log = new ArrayList<>();
 
         String home() {
@@ -47,6 +50,45 @@ public class SetupEngineRun {
         }
 
         String answer(String c) {
+            if (!c.endsWith("; echo END_OF_LIST") && c.contains("; ")) {   // a line of several commands (the backup's, autostart's): each one's answer in turn
+                StringBuilder b = new StringBuilder();
+                for (String part : c.split("; ")) b.append(answer(part));
+                return b.toString();
+            }
+            c = c.replace(" 2> /dev/null", "").replace(" 2>&1", "");
+            if (c.startsWith("echo '")) return c.substring(6, c.lastIndexOf('\'')) + "\n";
+            if (c.equals("true") || c.equals("appops write-settings") || c.startsWith("pm trim-caches")) return "";
+            if (c.startsWith("dumpsys activity settings")) return "";
+            if (c.startsWith("getprop ro.product.model")) return "Test TV\n";
+            if (c.startsWith("getprop ro.product.manufacturer") || c.startsWith("getprop ro.product.brand")) return maker + "\n";
+            if (c.startsWith("getprop ro.product.device")) return "testdevice\n";
+            if (c.startsWith("getprop ro.build.version.release")) return "14\n";
+            if (c.startsWith("getprop ro.build.type")) return "user\n";
+            if (c.startsWith("getprop persist.adb.tcp.port")) return adbPort + "\n";
+            if (c.startsWith("device_config get activity_manager ")) return settings.getOrDefault("dc/" + c.substring(c.lastIndexOf(' ') + 1), "null") + "\n";
+            if (c.startsWith("device_config put activity_manager ")) { String[] w = c.split(" "); settings.put("dc/" + w[3], w[4]); return ""; }
+            if (c.startsWith("device_config delete activity_manager ")) { settings.remove("dc/" + c.substring(c.lastIndexOf(' ') + 1)); return ""; }
+            if (c.startsWith("am get-standby-bucket ")) return bucket + "\n";
+            if (c.startsWith("am set-standby-bucket ")) { String b = c.substring(c.lastIndexOf(' ') + 1); bucket = b.equals("restricted") ? "45" : b.equals("rare") ? "40" : b.equals("active") ? "10" : bucket; return ""; }
+            if (c.startsWith("appops get com.android.vending ")) { String op = c.substring(c.lastIndexOf(' ') + 1); return appops.containsKey("ps/" + op) ? op + ": " + appops.get("ps/" + op) + "\n" : "No operations.\n"; }
+            if (c.startsWith("cmd appops set com.android.vending ")) { String[] w = c.split(" "); if (w[5].equals("default")) appops.remove("ps/" + w[4]); else appops.put("ps/" + w[4], w[5]); return ""; }
+            if (c.matches("(cmd )?appops (get|set) sa\\.urtv\\.[a-z]+ (APP_)?AUTO_START.*")) {
+                String[] w = c.replaceFirst("^cmd ", "").split(" ");
+                if (!autoStartOps) return "Error: Unknown operation string: " + w[3] + "\n";
+                if (w[1].equals("set")) { appops.put(w[2] + "/" + w[3], w[4]); return ""; }
+                return appops.containsKey(w[2] + "/" + w[3]) ? w[3] + ": " + appops.get(w[2] + "/" + w[3]) + "\n" : "No operations.\n";
+            }
+            if (c.startsWith("df -k /data")) return "/dev/block/dm-5 " + dfTotal + " 1 " + dfAvail + " 25% /data\n";
+            if (c.equals("pm list packages") || c.equals("pm list packages -d")) {
+                String a = answer(c + "; echo END_OF_LIST");
+                return a.endsWith("END_OF_LIST\n") ? a.substring(0, a.length() - "END_OF_LIST\n".length()) : a;
+            }
+            if (c.matches("pm list packages [A-Za-z0-9_.]+")) {
+                String q = c.substring(c.lastIndexOf(' ') + 1);
+                StringBuilder b = new StringBuilder();
+                for (String p : installed) if (p.contains(q)) b.append("package:").append(p).append('\n');
+                return b.toString();
+            }
             if (c.startsWith("getprop ro.build.version.sdk")) return sdk + "\n";
             if (c.equals("pm list features")) return "feature:android.hardware.touchscreen\nfeature:android.software.leanback\n";
             if (c.equals("pm list packages; echo END_OF_LIST")) {

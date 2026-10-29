@@ -137,16 +137,26 @@ final class SetupRunner {
         return p;
     }
 
-    /** The whole setup, in optimize/run.sh's order. */
+    /**
+     * The whole setup, in optimize/run.sh's order, with TCL's auto-start before the home switch. The precheck and the backup are gates: when either
+     * did not finish, nothing after them runs (run.sh stops there too).
+     */
     static List<Def> fullPlan() {
         List<Def> p = new ArrayList<>();
         p.add(new Def("precheck", true, c -> c.engine.precheck()));
+        p.add(new Def("backup", true, c -> new SetupPrep(c.shell, c.store, c.out).backup()));
+        p.add(new Def("keep", true, c -> new SetupPrep(c.shell, c.store, c.out).keep()));
         p.add(new Def("grants", true, c -> c.engine.grants()));
         p.add(new Def("safe", true, c -> c.engine.debloat()));
+        p.add(new Def("tweaks", true, c -> new SetupTweaks(c.shell, c.store, c.out).apply()));
         p.add(new Def("screensaver", true, c -> c.engine.screensaver()));
+        p.add(new Def("autostart", true, c -> new SetupPrep(c.shell, c.store, c.out).autostart()));
         p.add(new Def("home", false, c -> c.engine.home()));
         return p;
     }
+
+    /** The steps that stop the run when they did not finish: nothing has been changed before them. */
+    static boolean gate(String id) { return id.equals("precheck") || id.equals("backup"); }
 
     // ---- reading (any thread) ---------------------------------------------------------------------------------------------------
 
@@ -348,12 +358,9 @@ final class SetupRunner {
                     writeState(host.store(), o, d.id, "done");
                     continue;
                 }
-                if (k == Kind.SETUP || k == Kind.FULL) {
-                    Step pre = step("precheck");
-                    if (pre != null && pre.state != State.PENDING && pre.state != State.DONE) {
-                        set(d.id, State.SKIPPED, "توقّفنا قبل أي تغيير.", host);
-                        continue;
-                    }
+                if (stopped()) {
+                    set(d.id, State.SKIPPED, "توقّفنا قبل أي تغيير.", host);
+                    continue;
                 }
                 if (k == Kind.FULL) writeState(host.store(), o, d.id, "started");
                 set(d.id, State.RUNNING, "", host);
@@ -365,6 +372,12 @@ final class SetupRunner {
             s.close();
         }
         return endOf(k, steps());
+    }
+
+    /** A gate (the precheck, the backup) ran and did not finish: the rest is skipped. */
+    private synchronized boolean stopped() {
+        for (Step s : steps) if (gate(s.id) && s.state != State.PENDING && s.state != State.RUNNING && s.state != State.DONE) return true;
+        return false;
     }
 
     /** After a restart a home switch that was cut off is put back by the boot path first (SetupRecovery): the run waits for it, ten minutes at most. */
@@ -398,7 +411,7 @@ final class SetupRunner {
         }
         int failed = 0, skipped = 0;
         for (Step s : steps) {
-            if (s.id.equals("precheck")) {
+            if (gate(s.id)) {
                 if (s.state != State.DONE) return new End("توقّفنا قبل أي تغيير.", true);
                 continue;
             }

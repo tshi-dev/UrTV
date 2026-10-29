@@ -44,7 +44,14 @@ public class SetupRunnerRun {
 
     static void line(String s) { System.out.println(s); }
 
+    static String FULLDONE(SetupRunner r) {
+        StringBuilder b = new StringBuilder();
+        for (String id : SetupRunner.ids(SetupRunner.plan(SetupRunner.Kind.FULL))) b.append(b.length() == 0 ? "" : ",").append(id).append(":DONE");
+        return b.toString();
+    }
+
     public static void main(String[] a) throws Exception {
+        line("PLAN " + String.join(",", SetupRunner.ids(SetupRunner.plan(SetupRunner.Kind.FULL))));
         // 1. the TV's button on a healthy TV: the five steps, in order, done; the end is the screen's old sentence; the key is let go once
         SetupRunner r = new SetupRunner();
         SetupEngineRun.FakeTv t = SetupEngineRun.tv(); SetupEngineRun.Mem m = new SetupEngineRun.Mem(); Host h = new Host(t, m);
@@ -129,5 +136,24 @@ public class SetupRunnerRun {
         SetupEngineRun.Mem m11 = new SetupEngineRun.Mem();
         m11.put(SetupRunner.STATE_FILE, "kind=FULL\nextras=1\nat=safe\nphase=started\ntime=" + (System.currentTimeMillis() - 25L * 3600_000L) + "\nawait=restart\n");
         line("R11 " + SetupRunner.resumable(m11) + " " + SetupRunner.awaitingRestart(m11));
+        // 12. the backup is the gate of the full run: a package list that came back nearly empty saves nothing, and nothing after it runs
+        SetupEngineRun.FakeTv t12 = SetupEngineRun.tv(); t12.installed.clear(); t12.installed.add("sa.urtv.home");
+        SetupEngineRun.Mem m12 = new SetupEngineRun.Mem(); Host h12 = new Host(t12, m12);
+        SetupRunner r12 = new SetupRunner();
+        r12.start(SetupRunner.Kind.FULL, new SetupRunner.Options(), h12);
+        // 13. the full run on a TCL, then the undo through the runner: the TV is as it was (tweaks, auto-start, apps, home, screensaver), the journals retired
+        SetupEngineRun.FakeTv t13 = SetupEngineRun.tv(); t13.maker = "TCL"; t13.autoStartOps = true;
+        t13.settings.put("global/window_animation_scale", "1.0"); t13.settings.put("global/transition_animation_scale", "1.0"); t13.settings.put("global/animator_duration_scale", "1.0");
+        String before13 = SetupEngineRun.snapshot(t13) + "|" + t13.bucket;
+        SetupEngineRun.Mem m13 = new SetupEngineRun.Mem(); Host h13 = new Host(t13, m13);
+        SetupRunner r13 = new SetupRunner();
+        r13.start(SetupRunner.Kind.FULL, new SetupRunner.Options(), h13);
+        String during13 = t13.settings.get("global/window_animation_scale") + "/" + t13.bucket + "/" + t13.appops.get("sa.urtv.home/AUTO_START");
+        String states13 = states(r13);
+        r13.start(SetupRunner.Kind.UNDO, new SetupRunner.Options(), h13);
+        line("R13 " + states13.equals(FULLDONE(r13)) + " during=" + during13 + " same=" + (SetupEngineRun.snapshot(t13) + "|" + t13.bucket).equals(before13) + " " + states(r13)
+            + " journal=" + m13.get("tweaks-journal.txt").isEmpty() + " done=" + !m13.get("tweaks-journal.done").isEmpty() + " auto=" + m13.get("autostart-before.txt").isEmpty());
+        line("R12 " + states(r12) + " backup=" + m12.get("backup.txt") + " changes=" + (t12.count("pm disable-user") + t12.count("settings put") + t12.count("cmd role add") + t12.count("appops set") + t12.count("pm grant") + t12.count("pm enable"))
+            + " " + r12.end().bad + " " + r12.end().text);
     }
 }

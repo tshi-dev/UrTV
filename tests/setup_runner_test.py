@@ -49,6 +49,10 @@ with tempfile.TemporaryDirectory() as tmp:
         print(run.stderr[-2000:])
 
 FIVE = "precheck:DONE,grants:DONE,safe:DONE,screensaver:DONE,home:DONE"
+PLAN = (got.get("PLAN") or "PLAN ").split(" ", 1)[1].split(",")
+FULL_DONE = ",".join(f"{i}:DONE" for i in PLAN)
+check("the full plan: run.sh's order, the precheck and the backup first, TCL's auto-start before the home switch",
+      PLAN[:3] == ["precheck", "backup", "keep"] and PLAN.index("autostart") < PLAN.index("home") and PLAN.index("safe") < PLAN.index("tweaks"), PLAN)
 check("R1: the TV's button runs its five steps in order, all done; the run is over; the key is let go once; the screen is told of changes",
       got.get("R1") == f"R1 STARTED {FIVE} running=false finished=1 bad=false listened=true", got.get("R1"))
 check("R1: the end is the setup screen's own sentence", (got.get("R1end") or "").startswith("R1end انتهى الإعداد. اضغط زر الرئيسية في الريموت."), got.get("R1end"))
@@ -62,11 +66,16 @@ check("R4: a TV that answers nothing: the precheck fails, the rest is skipped, n
 check("R5: debugging off / the prompt refused: the screen's old sentences, in red, the key let go, not running", got.get("R5") == "R5 true 1 true true running=false", got.get("R5"))
 check("R6: the undo is one step through the same runner, with its old sentence", got.get("R6") == "R6 undo:DONE com.google.android.apps.tv.launcherx true", got.get("R6"))
 check("R7: a full run cut in the middle of the home switch: after the restart the switch is NOT run again (said as failed), the pointer is cleared at the end",
-      got.get("R7") == "R7 true STARTED precheck:DONE,grants:DONE,safe:DONE,screensaver:DONE,home:FAILED roleAdds=0 disables=0 extras=false cleared=true resumableAfter=false opens=1", got.get("R7"))
+      got.get("R7") == "R7 true STARTED " + FULL_DONE.replace("home:DONE", "home:FAILED") + " roleAdds=0 disables=0 extras=false cleared=true resumableAfter=false opens=1", got.get("R7"))
 check("R8: a full run cut in the middle of the safe list runs that step again (its ledger was written first): the same ledger, done",
-      got.get("R8") == f"R8 {FIVE} sameLedger=true", got.get("R8"))
+      got.get("R8") == f"R8 {FULL_DONE} sameLedger=true", got.get("R8"))
 check("R9: a resumed run waits while the home switch is still «switching» (the boot path puts the stock home back first)", (got.get("R9") or "").startswith("R9 waited=true"), got.get("R9"))
 check("R10: the TV does not come back after the restart: ten minutes of tries, then said in red; the pointer stays for «ابدأ», nothing resumes by itself",
       got.get("R10") == "R10 opens=40 true true kept=true auto=false", got.get("R10"))
 check("R11: a pointer older than a day is not resumed", got.get("R11") == "R11 false false", got.get("R11"))
+check("R13: a full run then the undo, both through the runner, on a TCL: all done, tweaks and auto-start were on, the TV is as it was, the journals retired",
+      got.get("R13") == "R13 true during=0.5/45/allow same=true undo:DONE journal=true done=true auto=true", got.get("R13"))
+skipped_rest = ",".join(f"{i}:" + ("DONE" if i == "precheck" else "FAILED" if i == "backup" else "SKIPPED") for i in PLAN)
+check("R12: the backup is the full run's gate: a nearly empty package list saves nothing and nothing after it runs (not one change), «توقّفنا قبل أي تغيير.»",
+      got.get("R12") == f"R12 {skipped_rest} backup=null changes=0 true توقّفنا قبل أي تغيير.", got.get("R12"))
 sys.exit(1 if failed else 0)

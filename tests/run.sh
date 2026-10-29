@@ -27,6 +27,7 @@ python3 tests/phone_userland_test.py
 python3 tests/adb_client_test.py
 python3 tests/setup_engine_test.py
 python3 tests/setup_runner_test.py
+python3 tests/setup_prep_test.py
 python3 tests/type_test.py
 python3 tests/reboot_test.py
 python3 tests/tv_identity_test.py
