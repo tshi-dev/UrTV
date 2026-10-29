@@ -535,6 +535,8 @@ Only after everything above, undo included, and nowhere earlier: your last messa
 If I say yes, write the report first and send nothing: your name and model as the agent; my words if I wrote any (as I wrote them, minus
 anything personal); and your own notes: what failed or was slow, how long it cost and what fixed it, in two to five
 plain lines, with no names, addresses or paths:
+Before I write my words for the author, say this to me in Arabic (one sentence): «لا تكتب في كلامك أسماء ولا أرقام هواتف أو عناوين ولا اسم شبكة الواي فاي؛ نحذف ما نعرفه تلقائيًا لكن الأسلم ألا يُكتب أصلًا. اسم شبكة الواي فاي» stays out of the report because the report is only for the author.
+
 ```
 optimize/share.sh --preview --agent "<you and your model>" --owner "<my words, or leave it out>" "<your notes>"
 ```

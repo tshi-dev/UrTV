@@ -180,6 +180,22 @@ free = share.scrub(share.restrict("UrTV problem report, 2026-01-01, UrTV abc\n\n
                                   "From the owner:\nكتبت لهم علىsara.owner@example.org وما ردوا\n"))
 free_ok = "example.person" not in free and "sara.owner" not in free and "<email>" in free and "كتبت لهم" in free
 print("share: " + ("an email in the free text is scrubbed, also glued to Arabic" if free_ok else f"WRONG free-text email {free!r}"))
-_extra = not (not net_leaks and own and allowed and send_ok and free_ok)
+# the IP rule keeps firmware and version strings and removes real addresses; the Wi-Fi rule leaves our scripts' own lines alone and takes names from free text
+ip_ok_words = ("V816.0.6.0.X", "TVOS-01.12.01.12", "6.0.1.2.3", "SDK 34")
+ver_line = "!! Home: firmware V816.0.6.0.X, build TVOS-01.12.01.12, WebView 6.0.1.2.3, SDK 34"
+ver_out = share.scrub(ver_line)
+ip_line = f"!! no answer from {v4} and {v4}:5555, then {'.'.join(['10', '0', '0', '8'])}."
+ip_out = share.scrub(ip_line)
+ip_ok = all(w in ver_out for w in ip_ok_words[:3]) and v4 not in ip_out and "10.0.0.8" not in ip_out and ip_out.count("<ip>") == 3 and "<ip>" not in ver_out
+print("share: " + ("the IP rule keeps version strings and firmware names, removes addresses" if ip_ok else f"WRONG ip {ver_out!r} {ip_out!r}"))
+own_line = "!! The setup wizard answers Home, but the TV did not say who owns its saved Wi-Fi network: left on (network: unknown)"
+report = "UrTV problem report, 2026-01-01, UrTV abc\n\n" + own_line + "\n!! TV couldn't find HomeNetExample 5G and then could not find the TV\n!! Couldn't connect to \"Example Home\"\n\nNotes from the agent:\nwifi network: HomeNetFree and Wi-Fi: OtherNet\n\nFrom the owner:\nشبكتي network = MyOwnNet\n"
+out_report = share.scrub(share.restrict(report))
+wifi_ok = (own_line in out_report and "HomeNetExample" not in out_report and "Example Home" not in out_report and "could not find the TV" in out_report
+           and "HomeNetFree" not in out_report and "OtherNet" not in out_report and "MyOwnNet" not in out_report)
+print("share: " + ("our scripts' own lines keep their words; a Wi-Fi name is taken from free text and after couldn't find / connect to" if wifi_ok else f"WRONG wifi {out_report!r}"))
+ask_ok = "اسم شبكة الواي فاي" in (Path(share.__file__).read_text(encoding="utf-8")) and "اسم شبكة الواي فاي" in (Path(share.__file__).resolve().parent.parent / "docs/SETUP-PROMPT.md").read_text(encoding="utf-8")
+print("share: " + ("the share step asks, in Arabic, not to write names, numbers or Wi-Fi names" if ask_ok else "WRONG: the Arabic sentence is missing"))
+_extra = not (not net_leaks and own and allowed and send_ok and free_ok and ip_ok and wifi_ok and ask_ok)
 if _extra: sys.exit(1)
 sys.exit(1 if leaks or not counts or not alarm or not ok or bad_win or not versions_ok else 0)
