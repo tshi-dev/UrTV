@@ -91,3 +91,19 @@ Version: home 3.153, screensaver 3.153 (install.sh all; no !! line). Typing serv
 | Z | restored: yes | real city, home_panel none, glass + dark, updatechannel latest; service left on; TV sound muted (owner's wish) |
 
 Problems: 0 new. P3 not testable from adb; the TCL block did not happen on its own in P2.
+
+## step 12 (TV's own update 3.153 → build 155 «4.0»)
+Start: both apps versionName=3.153 versionCode=153; updatechannel latest → set to next. No new !! line in this step.
+
+| # | OK/problem | shots | note |
+|---|---|---|---|
+| U1 | OK | u1-update, u1-found | «تحديث تلفزيوني» on 3.153: «الإصدار المثبّت 3.153» → «تحقق من التحديث» → «تحديث جديد 3.155 · اضغط للتحديث» (the old 3.153 app shows the machine number; expected) |
+| U2 | OK + note | u2-a…u2-d | two Android screens «Do you want to update this app?»: first «شاشة تلفزيونك», then «تلفزيونك»; focus starts on Cancel, ◀ + OK = Update. Both installed. Note: right after the home app was replaced the TV showed YouTube's profile picker (the last app), not our home; Home brought our home back, and our home is still the default HOME |
+| U3 | OK | — | `saver.sh show`: «version: 4.0 (build 155)». sa.urtv.home `versionCode=155` `versionName=4.0`; sa.urtv.screensaver `versionCode=155` `versionName=4.0` |
+| U4 | problem (small, text) | u4-tiles, u4-update, u4-check | tile «الجوال والتحديث»: «الإصدار الحالي: ٤٫٠ (بناء ١٥٥)» OK. Update screen: «الإصدار المثبّت» line shows as «(بناء 155) 4.0» (in RTL the build comes before 4.0); after «تحقق من التحديث»: «تلفزيونك محدّث ((بناء 155) 4.0)» — double brackets and the same order. «محدّث» OK; no 3.1xx anywhere a person reads |
+| T1 | OK + note | t3-apps | `query-activities … LEANBACK_LAUNCHER`: `sa.urtv.home.HomeTile` label «تلفزيونك», icon and banner set; the banner is visible (in t3-apps). Also listed: `sa.urtv.home.setup.SetupActivity` «إعداد تلفزيوني» with `icon=0x0 banner=0x0` → a second, blank tile in the TV's apps list (intended?). No screenshot of the stock launcher's apps row (no adb intent opens it) |
+| T2 | OK | t2-tile, t2-back | `am start -n sa.urtv.home/.HomeTile` → our home (existing task brought to front); Home and Back keep our home |
+| T3 | PROBLEM | t3-apps | our own «كل التطبيقات» (scroll down on the home) LISTS the «تلفزيونك UrTV» tile (last row) — it should not |
+| Z | restored: yes | — | updatechannel latest, home_panel none, glass + dark; service on; sound muted. Note: `saver.sh show` now says «(newest: 4.0 (build 142))» for the latest channel — build 142 is the old 3.142, but it is named 4.0 |
+
+Problems: 1 (T3) + 1 small text (U4 brackets/order) + notes: blank «إعداد تلفزيوني» tile (T1), YouTube shown right after the update (U2), old build 142 named «4.0» in saver.sh (Z).
