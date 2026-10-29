@@ -43,6 +43,10 @@ with tempfile.TemporaryDirectory() as tmp:
     check("the person says no: an error that says the permission was not accepted", (got.get("deny") or "").startswith("deny debugging permission was not accepted"), got.get("deny"))
     check("debugging off (nothing listens): an error that says so", got.get("closed") == "closed true", got.get("closed"))
     check("a command the TV refuses is an error, not an empty answer", (got.get("refused") or "").startswith("refused ADB refused the command"), got.get("refused"))
+    check("exec: an APK streamed to `cmd package install -S`: every byte arrives, in pieces of the TV's message size (4096 here), the answer is read, the connection goes on",
+          got.get("exec") == "exec Success true 4096 4096 true 0", got.get("exec"))
+    check("exec: the TV closes the stream half way: an error that carries what it said", got.get("execEarly") == "execEarly true", got.get("execEarly"))
+    check("exec: a file shorter than its size is an error, never a half install", got.get("execShort") == "execShort the file ended before its size", got.get("execShort"))
     check("Android 8 to 10 (the first connection hangs): a new connection that only signs gets in, and the command runs",
           got.get("legacy") == "legacy true true 0 true", got.get("legacy"))
 sys.exit(1 if failed else 0)

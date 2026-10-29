@@ -69,6 +69,8 @@ final class AdbClient implements Closeable {
     private final DataInputStream in;
     private final OutputStream out;
     private int nextLocalId = 1;
+    /** The most data one message may carry, as the TV said in its CNXN (older adbd: 4096); a stream is cut in pieces of this size. */
+    private int maxPayload = 4096;
 
     private AdbClient(Socket socket) throws IOException {
         this.socket = socket;
@@ -108,6 +110,7 @@ final class AdbClient implements Closeable {
                 }
                 if (m.command == CNXN) {
                     s.setSoTimeout(20_000);
+                    adb.payload(m.arg1);
                     return adb;
                 }
                 if (m.command == STLS) throw new IOException("the TV asked for TLS (wireless debugging); use USB debugging");
@@ -166,12 +169,66 @@ final class AdbClient implements Closeable {
             }
             if (m.command == CNXN) {
                 s.setSoTimeout(20_000);
+                adb.payload(m.arg1);
                 return adb;
             }
         } catch (IOException | RuntimeException ignored) {
         }
         try { s.close(); } catch (IOException ignored) { }
         return null;
+    }
+
+    private void payload(int theirs) { maxPayload = theirs <= 0 ? 4096 : Math.min(theirs, MAX_DATA); }
+
+    int maxPayload() { return maxPayload; }
+
+    /**
+     * Runs a command through the `exec:` service with {@code size} bytes of {@code data} as its standard input, and returns what it printed: how
+     * `adb install` hands an APK to `cmd package install -S <size>` without a file on the TV. The bytes go in pieces of the TV's message size, each
+     * one only after the TV acknowledged the last (ADB's flow control); a stream that ends early, or a TV that closes it, is an error.
+     */
+    String exec(String command, java.io.InputStream data, long size) throws IOException {
+        int local = nextLocalId++;
+        send(OPEN, local, 0, ("exec:" + command + "\0").getBytes(StandardCharsets.UTF_8));
+        int remote = 0;
+        ByteArrayOutputStream result = new ByteArrayOutputStream();
+        while (remote == 0) {
+            Message m = read();
+            if (m.arg1 != local) continue;
+            if (m.command == OKAY) remote = m.arg0;
+            else if (m.command == CLSE) throw new IOException("ADB refused the command");
+        }
+        byte[] buf = new byte[maxPayload];
+        long sent = 0;
+        while (sent < size) {
+            int want = (int) Math.min(buf.length, size - sent), got = 0;
+            while (got < want) {
+                int n = data.read(buf, got, want - got);
+                if (n < 0) throw new IOException("the file ended before its size");
+                got += n;
+            }
+            send(WRTE, local, remote, got == buf.length ? buf : java.util.Arrays.copyOf(buf, got));
+            sent += got;
+            boolean acked = false;
+            while (!acked) {   // the TV's OKAY for this piece; it may also say something meanwhile
+                Message m = read();
+                if (m.arg1 != local) continue;
+                if (m.command == OKAY) acked = true;
+                else if (m.command == WRTE) { collect(result, m); send(OKAY, local, m.arg0, null); }
+                else if (m.command == CLSE) { send(CLSE, local, m.arg0, null); throw new IOException("the TV closed the stream after " + sent + " bytes: " + result.toString("UTF-8").trim()); }
+            }
+        }
+        while (true) {   // its answer, until it closes
+            Message m = read();
+            if (m.arg1 != local) continue;
+            if (m.command == WRTE) { collect(result, m); send(OKAY, local, m.arg0, null); }
+            else if (m.command == CLSE) { send(CLSE, local, m.arg0, null); return result.toString("UTF-8"); }
+        }
+    }
+
+    private static void collect(ByteArrayOutputStream result, Message m) throws IOException {
+        result.write(m.data);
+        if (result.size() > MAX_OUTPUT) throw new IOException("the command printed too much");
     }
 
     /** Sets how long one read may wait for the TV (a slow `pm` command). */

@@ -26,6 +26,17 @@ public class SetupRunnerRun {
             return new SetupRunner.Session() {
                 public SetupEngine engine() { return e; }
                 public SetupEngine.Shell shell() { return tv; }
+                public String exec(String command, java.io.InputStream data, long size) throws IOException {
+                    execs.add(command);
+                    long n = 0;
+                    byte[] buf = new byte[4096];
+                    int r;
+                    while (n < size && (r = data.read(buf, 0, (int) Math.min(buf.length, size - n))) > 0) n += r;
+                    if (n != size) return "Failure [short]\n";
+                    String pkg = new String(lastApk, java.nio.charset.StandardCharsets.UTF_8);
+                    tv.installed.add(pkg);
+                    return "Success\n";
+                }
                 public void close() { }
             };
         }
@@ -39,7 +50,29 @@ public class SetupRunnerRun {
             try { return new String(java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(System.getProperty("assets"), name)), java.nio.charset.StandardCharsets.UTF_8); }
             catch (IOException | RuntimeException e) { return null; }
         }
-        public String fetch(String url, int maxBytes) { return uad; }
+        public String fetch(String url, int maxBytes) {
+            if (url.startsWith("https://api.github.com/repos/truefedex/tv-bro/")) return "{\"assets\": [{\"name\": \"x\", \"browser_download_url\": \"https://github.com/truefedex/tv-bro/releases/download/v2.0.1/tvbro-2.0.1-generic-geckoExcluded.apk\"}, {\"browser_download_url\": \"https://github.com/truefedex/tv-bro/releases/download/v2.0.1/tvbro-2.0.1-generic-geckoIncluded.apk\"}]}";
+            if (url.startsWith("https://api.github.com/repos/yuliskov/SmartTube/")) return "{\"assets\": [{\"browser_download_url\": \"https://github.com/yuliskov/SmartTube/releases/download/29.1/SmartTube_stable_29.1_armeabi-v7a.apk\"}, {\"browser_download_url\": \"https://github.com/yuliskov/SmartTube/releases/download/29.1/SmartTube_stable_29.1_arm64-v8a.apk\"}]}";
+            return uad;
+        }
+        final List<String> execs = new ArrayList<>(), downloads = new ArrayList<>();
+        byte[] lastApk = new byte[0];
+        String selfSig = "ab".repeat(32), apkSig = "ab".repeat(32);
+        public SetupInstall.Apks apks() {
+            return new SetupInstall.Apks() {
+                public SetupInstall.Apk download(String url) {
+                    downloads.add(url);
+                    String pkg = url.endsWith("urtv-screensaver.apk") ? "sa.urtv.screensaver" : url.contains("tv-bro") ? "com.phlox.tvwebbrowser" : url.contains("SmartTube") ? "org.smarttube.stable" : "x";
+                    final byte[] bytes = pkg.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+                    return new SetupInstall.Apk(pkg, 200, new java.util.HashSet<>(java.util.Collections.singleton(pkg.startsWith("sa.") ? apkSig : "cd".repeat(32))), bytes.length,
+                        () -> { lastApk = bytes; return new java.io.ByteArrayInputStream(bytes); }, () -> { });
+                }
+                public java.util.Set<String> selfSigners() { return new java.util.HashSet<>(java.util.Collections.singleton(selfSig)); }
+                public long installedCode(String pkg) { return tv.installed.contains(pkg) ? 100 : -1; }
+                public java.util.Set<String> installedSigners(String pkg) { return selfSigners(); }
+            };
+        }
+        public String appVersion() { return "4.0 (build 151)"; }
     }
 
     static String states(SetupRunner r) {
@@ -169,6 +202,61 @@ public class SetupRunnerRun {
         SetupRunner.Start s14 = r14.answer(ans, h14);
         line("R14 " + qs.size() + " " + qs.get(0)[1].startsWith("نوقف «com.example.voiceassistant»؟") + " " + s14 + " " + states(r14) + " off=" + t14.off.contains("com.example.voiceassistant")
             + "/" + t14.off.contains("com.example.updater") + " left=[" + m14.get("community-ask.txt").trim() + "] " + r14.end().bad);
+        // 15. the accurate measurement: a restart before and after, the run resumed after each boot (the runner of a new process each time)
+        SetupEngineRun.FakeTv t15 = SetupEngineRun.tv(); t15.installed.remove("sa.urtv.screensaver"); t15.adbPort = "5555";
+        SetupEngineRun.Mem m15 = new SetupEngineRun.Mem(); Host h15 = new Host(t15, m15);
+        SetupRunner r15 = new SetupRunner();
+        r15.start(SetupRunner.Kind.FULL, new SetupRunner.Options(), h15);
+        String first15 = r15.end() == null ? "null" : r15.end().text;
+        boolean await = SetupRunner.awaitingRestart(m15);
+        int rb1 = t15.reboots;
+        String phase = m15.get("measure-phase.txt").split(" ")[0];
+        t15.bootId = "boot-2";
+        SetupRunner r15b = new SetupRunner();
+        r15b.resume(h15);
+        String second15 = r15b.end() == null ? "null" : r15b.end().text;
+        int rb2 = t15.reboots;
+        t15.bootId = "boot-3";
+        SetupRunner r15c = new SetupRunner();
+        r15c.resume(h15);
+        line("R15 first=" + first15 + " await=" + await + " reboots=" + rb1 + " phase=" + phase + " second=" + second15 + " reboots=" + rb2 + " third=" + states(r15c) + " reboots=" + t15.reboots
+            + " kinds=[" + m15.get("measure-kinds.txt").trim().replace("\n", "|") + "] rows=" + (m15.get("summary.md").contains("| before |") && m15.get("summary.md").contains("| after |")));
+        line("R15i " + h15.downloads + " " + h15.execs + " installedByUs=" + SetupEngine.ledgerNames(m15.get("installed-by-us.txt")) + " saver=" + t15.settings.get("secure/screensaver_components")
+            + " timeout=" + (t15.log.contains("settings put system screen_off_timeout 1800000") ? "1800000" : "?") + "->" + (t15.log.contains("settings delete system screen_off_timeout") ? "back" : "?"));
+        line("R15t timeoutFile=[" + m15.get("screen-off-timeout.txt").trim() + "] value=" + t15.settings.getOrDefault("system/screen_off_timeout", "null") + " awaitAfter=" + SetupRunner.awaitingRestart(m15));
+        java.nio.file.Files.write(java.nio.file.Paths.get(System.getProperty("out"), "report.md"), m15.get("report.md").getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        // 19. the undo of that run removes what it installed
+        SetupRunner r19 = new SetupRunner();
+        r19.start(SetupRunner.Kind.UNDO, new SetupRunner.Options(), h15);
+        line("R19 " + states(r19) + " saver=" + t15.installed.contains("sa.urtv.screensaver") + " tvbro=" + t15.installed.contains("com.phlox.tvwebbrowser") + " smarttube="
+            + t15.installed.contains("org.smarttube.stable") + " home=" + t15.installed.contains("sa.urtv.home") + " record=[" + m15.get("installed-by-us.txt").trim() + "]");
+        // 16. adb would not be on 5555 after a restart: no restart, readings at once
+        SetupEngineRun.FakeTv t16 = SetupEngineRun.tv(); SetupEngineRun.Mem m16 = new SetupEngineRun.Mem(); Host h16 = new Host(t16, m16);
+        SetupRunner r16 = new SetupRunner();
+        r16.start(SetupRunner.Kind.FULL, new SetupRunner.Options(), h16);
+        line("R16 " + states(r16) + " reboots=" + t16.reboots + " kinds=[" + m16.get("measure-kinds.txt").trim().replace("\n", "|") + "]");
+        java.nio.file.Files.write(java.nio.file.Paths.get(System.getProperty("out"), "report-now.md"), m16.get("report.md").getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        // 17. the TV ignored the restart: resumed on the same boot, it is not asked again
+        SetupEngineRun.FakeTv t17 = SetupEngineRun.tv(); t17.adbPort = "5555"; SetupEngineRun.Mem m17 = new SetupEngineRun.Mem(); Host h17 = new Host(t17, m17);
+        new SetupRunner().start(SetupRunner.Kind.FULL, new SetupRunner.Options(), h17);
+        t17.adbPort = "";   // (so the reading after the setup does not restart either)
+        SetupRunner r17 = new SetupRunner();
+        r17.resume(h17);
+        line("R17 reboots=" + t17.reboots + " kinds=[" + m17.get("measure-kinds.txt").trim().split("\n")[0] + "] beforeDone=" + states(r17).contains("before:DONE"));
+        // 18. a fresh install signed with another key is refused
+        SetupEngineRun.FakeTv t18 = SetupEngineRun.tv(); t18.installed.remove("sa.urtv.screensaver"); SetupEngineRun.Mem m18 = new SetupEngineRun.Mem(); Host h18 = new Host(t18, m18);
+        h18.apkSig = "ef".repeat(32);
+        SetupRunner r18 = new SetupRunner();
+        r18.start(SetupRunner.Kind.FULL, new SetupRunner.Options(), h18);
+        String st18 = states(r18);
+        line("R18 " + st18.substring(st18.indexOf("install-saver:"), st18.indexOf(",", st18.indexOf("install-saver:"))) + " saverInstalled=" + t18.installed.contains("sa.urtv.screensaver") + " recorded=" + SetupEngine.ledgerNames(m18.get("installed-by-us.txt")).contains("sa.urtv.screensaver"));
+        // 20. no extras
+        SetupEngineRun.FakeTv t20 = SetupEngineRun.tv(); t20.installed.remove("sa.urtv.screensaver"); SetupEngineRun.Mem m20 = new SetupEngineRun.Mem(); Host h20 = new Host(t20, m20);
+        SetupRunner.Options o20 = new SetupRunner.Options(); o20.extras = false;
+        SetupRunner r20 = new SetupRunner();
+        r20.start(SetupRunner.Kind.FULL, o20, h20);
+        String st20 = states(r20);
+        line("R20 " + st20.substring(st20.indexOf("extras:"), st20.indexOf(",", st20.indexOf("extras:"))) + " downloads=" + h20.downloads.size());
         line("R12 " + states(r12) + " backup=" + m12.get("backup.txt") + " changes=" + (t12.count("pm disable-user") + t12.count("settings put") + t12.count("cmd role add") + t12.count("appops set") + t12.count("pm grant") + t12.count("pm enable"))
             + " " + r12.end().bad + " " + r12.end().text);
     }

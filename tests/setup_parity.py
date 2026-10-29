@@ -10,7 +10,7 @@ SETUP = ROOT / "android/launcher/src/main/java/sa/urtv/home/setup"
 STUB = ROOT / "tests/fixtures/setup-faketv.sh"
 ASSETS = ROOT / "android/launcher/src/main/assets"
 CLS = Path(tempfile.mkdtemp())
-SCRIPTS = ("tweaks.sh", "backup.sh", "keep.sh", "autostart.sh", "community.sh", "community.py", "disable.sh", "offlist.py", "settle.sh")
+SCRIPTS = ("tweaks.sh", "backup.sh", "keep.sh", "autostart.sh", "community.sh", "community.py", "disable.sh", "offlist.py", "settle.sh", "measure.sh", "start-saver.sh", "power.sh")
 
 
 def compile_java(check):
@@ -18,7 +18,7 @@ def compile_java(check):
     if not shutil.which("javac"):
         print("SKIP the parity tests: no javac on this machine")
         return False
-    pure = [p for p in sorted(SETUP.glob("*.java")) if "import android." not in p.read_text(encoding="utf-8")]
+    pure = [p for p in sorted(SETUP.glob("*.java")) if "import android." not in p.read_text(encoding="utf-8")] + [SETUP.parent / "phone/UpdateRules.java"]   # (read only: its rule for updates)
     r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", str(CLS), *map(str, pure), str(ROOT / "tests/SetupParityRun.java"), str(ROOT / "tests/CommunityRun.java")],
                        capture_output=True, text=True)
     check("the pure classes and the parity harness compile", r.returncode == 0, r.stderr)

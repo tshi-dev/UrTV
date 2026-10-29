@@ -473,7 +473,7 @@ final class SetupEngine {
 
     /**
      * In optimize/reset.sh's order: the home first (never leave the TV without one), then the apps in the ledger, the protected features (keep.sh),
-     * the screensaver and the appops as they were, TCL's auto-start, and the speed tweaks last.
+     * the screensaver and the appops as they were, TCL's auto-start, the apps the setup installed (and nothing else), and the speed tweaks last.
      */
     Result undo() throws IOException {
         List<String> problems = new ArrayList<>();
@@ -546,6 +546,10 @@ final class SetupEngine {
         if (mode != null && mode.trim().matches("allow|ignore|deny|default|foreground")) sh.run("appops set " + SELF + " REQUEST_INSTALL_PACKAGES " + mode.trim());
         // TCL's auto-start, back to what each op had (autostart-before.txt)
         new SetupPrep(sh, store, out).autostartUndo();
+        // the screensaver timeout a measurement stretched (a run cut while it was), and what this setup installed (installed-by-us.txt): only that is removed
+        new SetupMeasure(sh, store, out, sleeper).putTimeoutBack();
+        List<String> stay = new SetupInstall(sh, null, null, store, out, sleeper).undo();
+        if (!stay.isEmpty()) problems.add("لم يقبل التلفزيون إزالة ما ثبّته الإعداد (" + String.join(" ", stay) + ")؛ اضغط «تراجع» مرة ثانية.");
         // the tweaks last, as optimize/reset.sh does: exactly what the TV had (tweaks-journal.txt); nothing when the app never changed one
         if (new SetupTweaks(sh, store, out).restore().status != Status.DONE) problems.add("لم يقبل التلفزيون إرجاع بعض إعدادات السرعة؛ اضغط «تراجع» مرة ثانية.");
         if (!problems.isEmpty()) return failed(String.join(" ", problems));

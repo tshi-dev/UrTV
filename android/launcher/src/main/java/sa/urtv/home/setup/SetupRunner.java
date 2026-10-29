@@ -57,6 +57,8 @@ final class SetupRunner {
     interface Session extends Closeable {
         SetupEngine engine();
         SetupEngine.Shell shell();
+        /** `exec:` with a stream: an APK's bytes to `cmd package install -S` (AdbClient.exec). */
+        String exec(String command, java.io.InputStream data, long size) throws IOException;
         @Override void close();
     }
 
@@ -72,8 +74,12 @@ final class SetupRunner {
         long now();
         /** A file of the app's assets (setup/community.txt), null when it is not there. */
         String asset(String name);
-        /** A text from the internet (UAD-ng's ratings), null when it cannot be fetched. */
+        /** A text from the internet (UAD-ng's ratings, a GitHub release list), null when it cannot be fetched. */
         String fetch(String url, int maxBytes);
+        /** Downloads and reads APKs; knows this app's signer and the installed apps (PackageManager on the TV). */
+        SetupInstall.Apks apks();
+        /** This app's version as the screen says it («4.0 (build 151)»). */
+        String appVersion();
     }
 
     /** One step of a plan: what it runs, and whether it may run a second time after it was cut off (a restart, a killed process). */
@@ -89,6 +95,7 @@ final class SetupRunner {
     /** What a step gets: the engine, the shell, the store, the options, and the run's own lines. */
     static final class Context {
         final SetupEngine engine;
+        Session session;
         final SetupEngine.Shell shell;
         final SetupEngine.Store store;
         final Options options;
@@ -155,15 +162,39 @@ final class SetupRunner {
         p.add(new Def("precheck", true, c -> c.engine.precheck()));
         p.add(new Def("backup", true, c -> new SetupPrep(c.shell, c.store, c.out).backup()));
         p.add(new Def("keep", true, c -> new SetupPrep(c.shell, c.store, c.out).keep()));
+        p.add(new Def("before", true, c -> measure(c).measure("before", !switching(c.store))));
         p.add(new Def("grants", true, c -> c.engine.grants()));
         p.add(new Def("safe", true, c -> c.engine.debloat()));
         p.add(new Def("community", true, c -> community(c).apply()));
         p.add(new Def("tweaks", true, c -> new SetupTweaks(c.shell, c.store, c.out).apply()));
+        p.add(new Def("install-saver", true, c -> install(c).screensaver()));
         p.add(new Def("screensaver", true, c -> c.engine.screensaver()));
+        p.add(new Def("extras", true, c -> install(c).extras(c.options.extras, c.host)));
         p.add(new Def("autostart", true, c -> new SetupPrep(c.shell, c.store, c.out).autostart()));
         p.add(new Def("home", false, c -> c.engine.home()));
+        p.add(new Def("after", true, c -> measure(c).measure("after", !switching(c.store))));
+        p.add(new Def("report", true, c -> report(c)));
         return p;
     }
+
+    static SetupMeasure measure(Context c) { return new SetupMeasure(c.shell, c.store, c.out, c.host::sleep); }
+
+    static SetupInstall install(Context c) { return new SetupInstall(c.shell, c.session::exec, c.host.apks(), c.store, c.out, c.host::sleep); }
+
+    /** A home switch still waiting for its safety switch: the TV is not restarted then (the boot path would have to undo it first). */
+    static boolean switching(SetupEngine.Store store) {
+        String j = store.get("home-switch.json");
+        return j != null && j.contains("\"state\": \"switching\"");
+    }
+
+    static SetupEngine.Result report(Context c) throws IOException {
+        String text = new SetupReport(c.shell, c.store).build(c.host.appVersion(), c.host.now());
+        return new SetupEngine.Result(SetupEngine.Status.DONE, shareUrl(text) != null ? "كتبنا تقرير الإعداد (بلا أي معلومة شخصية)؛ تقدر ترسله للمطوّر من رمز QR إن أردت."
+            : "كتبنا تقرير الإعداد (بلا أي معلومة شخصية).");
+    }
+
+    /** The link of the done screen's QR code (share.sh's docs/share page with the report), null without a report or when it is too long. */
+    static String shareUrl(String report) { return report == null || report.isEmpty() ? null : SetupReport.shareUrl(report); }
 
     static SetupCommunity community(Context c) { return new SetupCommunity(c.shell, c.store, c.out, c.host.asset("setup/community.txt"), c.host::fetch); }
 
@@ -257,6 +288,9 @@ final class SetupRunner {
         }
         changed();
         final Options opts = options();
+        if (k == Kind.FULL) {
+            try { host.store().put(SetupReport.STEPS, ""); } catch (IOException ignored) { }
+        }
         host.spawn(() -> run(k, opts, host, null));
         return Start.STARTED;
     }
@@ -370,6 +404,7 @@ final class SetupRunner {
         try {
             if (resumeAt != null) waitForHome(host);
             Context c = new Context(s.engine(), s.shell(), host.store(), o, out, this, host);
+            c.session = s;
             for (Def d : plan(k)) {
                 Step cur = step(d.id);
                 if (cur == null || cur.state != State.PENDING) continue;    // finished before a restart (runner.txt)
@@ -385,16 +420,31 @@ final class SetupRunner {
                     set(d.id, State.SKIPPED, "توقّفنا قبل أي تغيير.", host);
                     continue;
                 }
-                if (k == Kind.FULL) writeState(host.store(), o, d.id, "started");
+                if (k == Kind.FULL) { writeState(host.store(), o, d.id, "started"); stamp(host, "start " + d.id); }
                 set(d.id, State.RUNNING, "", host);
-                SetupEngine.Result r = d.body.run(c);
+                SetupEngine.Result r;
+                try {
+                    r = d.body.run(c);
+                } catch (Restarting e) {
+                    throw e;
+                } catch (IOException | RuntimeException e) {
+                    if (k == Kind.FULL) stamp(host, "stopped " + d.id + " (" + (e instanceof IOException ? "the connection" : "an error") + ")");
+                    throw e;
+                }
                 set(d.id, r.status == SetupEngine.Status.DONE ? State.DONE : r.status == SetupEngine.Status.SKIPPED ? State.SKIPPED : State.FAILED, r.message, host);
-                if (k == Kind.FULL) writeState(host.store(), o, d.id, "done");
+                if (k == Kind.FULL) { writeState(host.store(), o, d.id, "done"); stamp(host, "done " + d.id); }
             }
         } finally {
             s.close();
         }
         return endOf(k, steps());
+    }
+
+    /** run.sh's steps.log: when each step started, ended or stopped (the report turns it into how long each took). A new full run starts it afresh. */
+    private static void stamp(Host host, String what) throws IOException {
+        String old = host.store().get(SetupReport.STEPS);
+        String line = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.ROOT).format(new java.util.Date(host.now())) + " " + what + "\n";
+        host.store().put(SetupReport.STEPS, (old == null ? "" : old) + line);
     }
 
     /** A gate (the precheck, the backup) ran and did not finish: the rest is skipped. */

@@ -87,7 +87,27 @@ cmd() {
              esac ;;
   esac
 }
-dumpsys() { case "$1" in activity) [ "${2:-}" = settings ] && echo "  max_cached_processes=1024" ;; esac; }
+dumpsys() {
+  case "$1" in
+    activity) if [ "${2:-}" = settings ]; then echo "  max_cached_processes=1024"; else echo "  topResumedActivity=ActivityRecord{1a2b u0 com.google.android.apps.tv.launcherx/.home.HomeActivity t3}"; fi ;;
+    dreams) echo "  mCurrentDream=null" ;;
+    meminfo) if [ -n "${2:-}" ]; then echo "                   Pss  Private"; echo "        TOTAL    51200    40000"; return 0; fi
+             printf 'Total PSS by process:
+    180,000K: system (pid 900)
+     90,000K: com.google.android.apps.tv.launcherx (pid 1500 / activities)
+
+Total RAM: 2,030,000K (status normal)
+ Free RAM:   830,000K
+ Used RAM: 1,100,000K
+ Lost RAM:    90,000K
+' ;;
+  esac
+}
+# what measure.sh and the app read: the TV's own /proc/meminfo, processes, CPU and boot (files of the fake TV, not this computer's)
+grep() { if [ "${!#}" = /proc/meminfo ]; then command grep "${@:1:$#-1}" "$S/meminfo"; else command grep "$@"; fi; }
+cat() { if [ "${1:-}" = /proc/sys/kernel/random/boot_id ]; then echo "${BOOT_ID:-boot-1}"; else command cat "$@"; fi; }
+ps() { seq 1 "${PROCS:-300}"; }
+top() { echo "Tasks: 300 total"; echo "400%cpu  10%user   0%nice   8%sys 350%idle   0%iow"; }
 df() { echo "Filesystem 1K-blocks Used Available Use% Mounted on"; echo "/dev/block/dm-5 ${DF_TOTAL:-16777216} 4194304 ${DF_AVAIL:-12582912} 25% /data"; }
 sync() { :; }
 input() { :; }

@@ -24,7 +24,9 @@ public class SetupEngineRun {
         boolean silent, dashFailsMarker, wizardAnswersHome, wizardOwnsWifi, nokia, refuseSwitch, noRoleManager, emptyResolve;
         boolean roleRejected, homeRejected, ignoreRoleBack, appopRefused;
         String exactAlarm = "default";
-        String maker = "Google", adbPort = "5555", bucket = "10";
+        String maker = "Google", adbPort = "", bucket = "10", bootId = "boot-1";
+        int reboots;
+        long memAvailKb = 1024000;
         boolean autoStartOps;
         long dfTotal = 16777216, dfAvail = 12582912;
         final List<String> log = new ArrayList<>();
@@ -89,6 +91,21 @@ public class SetupEngineRun {
                 for (String p : installed) if (p.contains(q)) b.append("package:").append(p).append('\n');
                 return b.toString();
             }
+            if (c.equals("cat /proc/sys/kernel/random/boot_id")) return bootId + "\n";
+            if (c.equals("reboot")) { reboots++; return ""; }
+            if (c.equals("sync") || c.startsWith("input keyevent")) return "";
+            if (c.startsWith("grep -E 'MemTotal")) return "MemTotal:        2048000 kB\nMemAvailable:     " + memAvailKb + " kB\nSwapTotal:        512000 kB\nSwapFree:         500000 kB\n";
+            if (c.startsWith("dumpsys meminfo")) return "Total RAM: 2,048,000K\nFree RAM: 900,000K\n";
+            if (c.startsWith("ps -A")) return "312\n";
+            if (c.startsWith("top -b")) return "Tasks: 300 total\n400%cpu  10%user   0%nice  10%sys 380%idle\n";
+            if (c.startsWith("pm list packages -d | wc -l")) return off.size() + "\n";
+            if (c.startsWith("dumpsys package ")) {
+                String p = c.split(" ")[2];
+                return installed.contains(p) ? "    versionCode=151 minSdk=26 targetSdk=30\n    versionName=4.0\n" : "";
+            }
+            if (c.startsWith("pm uninstall ")) { String p = c.substring(c.lastIndexOf(' ') + 1); installed.remove(p); off.remove(p); return "Success\n"; }
+            if (c.startsWith("getprop ro.product.cpu.abi")) return "arm64-v8a,armeabi-v7a,armeabi\n";
+            if (c.startsWith("getprop ro.build.display.id")) return "TEST.1234\n";
             if (c.startsWith("getprop ro.build.version.sdk")) return sdk + "\n";
             if (c.equals("pm list features")) return "feature:android.hardware.touchscreen\nfeature:android.software.leanback\n";
             if (c.equals("pm list packages; echo END_OF_LIST")) {

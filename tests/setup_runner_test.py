@@ -31,19 +31,20 @@ check("a run lives in a foreground service (it outlives the screen), not exporte
       and "startForeground(" in service and "startForegroundService" in service)
 check("the TV's start resumes a full run only when it restarted the TV on purpose, and the ADB key stays only then",
       "SetupRunner.awaitingRestart(new FileStore(app))" in boot and "SetupRunner.get().resume(" in boot and "SetupRunner.awaitingRestart(new FileStore(c))" in session)
-check("the step pointer is written BEFORE a step runs", runner.index('writeState(host.store(), o, d.id, "started")') < runner.index("SetupEngine.Result r = d.body.run(c);"))
+check("the step pointer is written BEFORE a step runs", runner.index('writeState(host.store(), o, d.id, "started")') < runner.index("r = d.body.run(c);"))
 check("the home switch is the one step never run again by itself after a cut", '"home", false' in runner and runner.count(", false, c ->") == 2)
 
 if not shutil.which("javac"):
     print("SKIP the runner on a JVM: no javac on this machine")
     sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
-    pure = [p for p in sorted(SETUP.glob("*.java")) if "import android." not in p.read_text(encoding="utf-8")]
+    pure = [p for p in sorted(SETUP.glob("*.java")) if "import android." not in p.read_text(encoding="utf-8")] + [SETUP.parent / "phone/UpdateRules.java"]   # (read only: its rule for updates)
     r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, *map(str, pure), str(ROOT / "tests/SetupEngineRun.java"), str(ROOT / "tests/SetupRunnerRun.java")], capture_output=True, text=True)
     check("the pure classes and the runner's harness compile", r.returncode == 0, r.stderr)
     if r.returncode:
         sys.exit(1)
-    run = subprocess.run(["java", "-Dassets=" + str(ROOT / "android/launcher/src/main/assets"), "-cp", tmp, "sa.urtv.home.setup.SetupRunnerRun"], capture_output=True, text=True, timeout=300, encoding="utf-8")
+    OUT = Path(tempfile.mkdtemp())
+    run = subprocess.run(["java", "-Dassets=" + str(ROOT / "android/launcher/src/main/assets"), "-Dout=" + str(OUT), "-cp", tmp, "sa.urtv.home.setup.SetupRunnerRun"], capture_output=True, text=True, timeout=300, encoding="utf-8")
     got = {l.split()[0]: l for l in run.stdout.splitlines() if l.strip()}
     if run.returncode:
         print(run.stderr[-2000:])
@@ -66,7 +67,7 @@ check("R4: a TV that answers nothing: the precheck fails, the rest is skipped, n
 check("R5: debugging off / the prompt refused: the screen's old sentences, in red, the key let go, not running", got.get("R5") == "R5 true 1 true true running=false", got.get("R5"))
 check("R6: the undo is one step through the same runner, with its old sentence", got.get("R6") == "R6 undo:DONE com.google.android.apps.tv.launcherx true", got.get("R6"))
 check("R7: a full run cut in the middle of the home switch: after the restart the switch is NOT run again (said as failed), the pointer is cleared at the end",
-      got.get("R7") == "R7 true STARTED " + FULL_DONE.replace("home:DONE", "home:FAILED") + " roleAdds=0 disables=0 extras=false cleared=true resumableAfter=false opens=1", got.get("R7"))
+      got.get("R7") == "R7 true STARTED " + FULL_DONE.replace("home:DONE", "home:FAILED").replace("extras:DONE", "extras:SKIPPED") + " roleAdds=0 disables=0 extras=false cleared=true resumableAfter=false opens=1", got.get("R7"))
 check("R8: a full run cut in the middle of the safe list runs that step again (its ledger was written first): the same ledger, done",
       got.get("R8") == f"R8 {FULL_DONE} sameLedger=true", got.get("R8"))
 check("R9: a resumed run waits while the home switch is still «switching» (the boot path puts the stock home back first)", (got.get("R9") or "").startswith("R9 waited=true"), got.get("R9"))
@@ -77,6 +78,23 @@ check("R13: a full run then the undo, both through the runner, on a TCL: all don
       got.get("R13") == "R13 true during=0.5/45/allow same=true undo:DONE journal=true done=true auto=true", got.get("R13"))
 check("R14: the community questions, and the answers through the runner: «yes» turned off, «no» left on, both leave the questions",
       got.get("R14") == "R14 2 true STARTED answers:DONE off=true/false left=[] false", got.get("R14"))
+check("R15: the full run with the accurate measurement: it restarts the TV before, stops, and goes on after the boot by itself; again after; never twice for one reading",
+      got.get("R15") == f"R15 first=null await=true reboots=1 phase=before second=null reboots=2 third={FULL_DONE} reboots=2 kinds=[before restart|after restart] rows=true", got.get("R15"))
+check("R15: the screensaver was downloaded from apk-latest and streamed to `cmd package install -S`, then made the screensaver; TV Bro and SmartTube (the TV's processor's build) too",
+      got.get("R15i") == "R15i [https://github.com/tshi-dev/UrTV/releases/download/apk-latest/urtv-screensaver.apk, https://github.com/truefedex/tv-bro/releases/download/v2.0.1/tvbro-2.0.1-generic-geckoExcluded.apk, "
+      "https://github.com/yuliskov/SmartTube/releases/download/29.1/SmartTube_stable_29.1_arm64-v8a.apk] [cmd package install -r -S 19, cmd package install -r -S 22, cmd package install -r -S 20] "
+      "installedByUs=[sa.urtv.screensaver, com.phlox.tvwebbrowser, org.smarttube.stable] saver=sa.urtv.screensaver/.ScreenDream timeout=1800000->back", got.get("R15i"))
+check("R15: the screensaver timeout was stretched for the reading and put back exactly; the ADB key would stay only while it waits for the restart",
+      (got.get("R15t") or "") == "R15t timeoutFile=[] value=null awaitAfter=false", got.get("R15t"))
+check("R16: a TV whose adb would not come back on 5555 after a restart: no restart at all, both readings «بدون إعادة تشغيل», the run in one go",
+      got.get("R16") == f"R16 {FULL_DONE} reboots=0 kinds=[before now|after now]", got.get("R16"))
+check("R17: the TV ignored the restart (the same boot after the resume): it is NOT asked again; the reading is taken without one",
+      got.get("R17") == "R17 reboots=1 kinds=[before now] beforeDone=true", got.get("R17"))
+check("R18: a fresh install is refused unless the APK is signed with this app's own key; nothing is installed or recorded then",
+      got.get("R18") == "R18 install-saver:FAILED saverInstalled=false recorded=false", got.get("R18"))
+check("R19: the undo after the full run removes exactly what the setup installed (the screensaver, TV Bro, SmartTube), never this app",
+      got.get("R19") == "R19 undo:DONE saver=false tvbro=false smarttube=false home=true record=[]", got.get("R19"))
+check("R20: «no extras» (the person unticked them): skipped, nothing downloaded for them", got.get("R20") == "R20 extras:SKIPPED downloads=1", got.get("R20"))
 skipped_rest = ",".join(f"{i}:" + ("DONE" if i == "precheck" else "FAILED" if i == "backup" else "SKIPPED") for i in PLAN)
 check("R12: the backup is the full run's gate: a nearly empty package list saves nothing and nothing after it runs (not one change), «توقّفنا قبل أي تغيير.»",
       got.get("R12") == f"R12 {skipped_rest} backup=null changes=0 true توقّفنا قبل أي تغيير.", got.get("R12"))

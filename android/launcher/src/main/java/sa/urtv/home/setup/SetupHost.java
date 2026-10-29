@@ -19,6 +19,7 @@ final class SetupHost implements SetupRunner.Host {
         return new SetupRunner.Session() {
             @Override public SetupEngine engine() { return s.engine; }
             @Override public SetupEngine.Shell shell() { return s.adb::run; }
+            @Override public String exec(String command, java.io.InputStream data, long size) throws IOException { return s.adb.exec(command, data, size); }
             @Override public void close() { s.close(); }
         };
     }
@@ -34,6 +35,10 @@ final class SetupHost implements SetupRunner.Host {
     }
 
     @Override public long now() { return System.currentTimeMillis(); }
+
+    @Override public SetupInstall.Apks apks() { return new SetupApks(app); }
+
+    @Override public String appVersion() { return sa.urtv.home.BuildConfig.MARKETING + " (build " + sa.urtv.home.BuildConfig.VERSION_CODE + ")"; }
 
     @Override public String asset(String name) {
         try (java.io.InputStream in = app.getAssets().open(name)) {

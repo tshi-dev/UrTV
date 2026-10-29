@@ -23,7 +23,7 @@ if not shutil.which("javac"):
     sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
     # (the Android-facing classes of the folder are compiled by tests/android_compile.sh; here only the pure ones)
-    pure = [p for p in sorted(SETUP.glob("*.java")) if "import android." not in p.read_text(encoding="utf-8")]
+    pure = [p for p in sorted(SETUP.glob("*.java")) if "import android." not in p.read_text(encoding="utf-8")] + [SETUP.parent / "phone/UpdateRules.java"]   # (read only: its rule for updates)
     r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, *map(str, pure), str(ROOT / "tests/SetupEngineRun.java")], capture_output=True, text=True)
     check("the pure classes compile", r.returncode == 0, r.stderr)
     if r.returncode:

@@ -63,6 +63,7 @@ public class SetupParityRun {
             case "autostart": r = new SetupPrep(tv, store, out).autostart(); break;
             case "autostart-undo": new SetupPrep(tv, store, out).autostartUndo(); r = new SetupEngine.Result(SetupEngine.Status.DONE, ""); break;
             case "community": r = community(tv, store, out).apply(); break;
+            case "measure-before": r = new SetupMeasure(tv, store, out, ms -> { }).measure("before", true); break;
             case "answers": {
                 java.util.Map<String, Boolean> ans = new java.util.LinkedHashMap<>();
                 for (String kv : System.getenv("ANSWERS").split(",")) if (!kv.isEmpty()) ans.put(kv.substring(0, kv.indexOf('=')), kv.endsWith("=yes"));
