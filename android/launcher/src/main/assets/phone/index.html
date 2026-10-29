@@ -9,8 +9,8 @@
 <style>
 /* GlassStyle's words (tests/glass_test.py) over the home's photo, blurred once on the TV (/api/backdrop), under its veil (--vd/--vl); no blur here.
    The default look is the 4.0 mockups': smoked glass on green-black and gold, or white on paper */
-:root { --bg:#17181b; --card:rgba(30,33,39,.86); --line:rgba(255,255,255,.09); --gold:#d6af6b; --gt:#e2c084; --text:#ffffff; --dim:#dadce0; --red:#ffc2b3; --ink:#14161a; --tile:rgba(255,255,255,.07); --bar:#15191a; --veil:#070e0b; --glow:rgba(214,175,107,.16); --on:#4cc38a; --va:var(--vd,.95); }
-:root[data-theme="light"] { --bg:#ecedef; --card:rgba(255,255,255,.9); --line:rgba(80,60,20,.13); --gold:#8d6220; --gt:#7a5418; --text:#14161a; --dim:#3a3e46; --red:#8e2a10; --ink:#ffffff; --tile:rgba(141,98,32,.1); --bar:#fdfbf7; --veil:#f4f0e8; --glow:rgba(169,120,44,.12); --on:#23824f; --va:var(--vl,.95); }
+:root { --bg:#17181b; --card:rgba(30,33,39,.86); --line:rgba(255,255,255,.09); --gold:#d6af6b; --gt:#e2c084; --text:#ffffff; --dim:#dadce0; --red:#ffc2b3; --ink:#14161a; --tile:rgba(255,255,255,.07); --bar:#15191a; --veil:#070e0b; --glow:rgba(214,175,107,.16); --on:#4cc38a; --off:rgba(255,255,255,.2); --va:var(--vd,.95); }
+:root[data-theme="light"] { --bg:#ecedef; --card:rgba(255,255,255,.9); --line:rgba(80,60,20,.13); --gold:#8d6220; --gt:#7a5418; --text:#14161a; --dim:#3a3e46; --red:#8e2a10; --ink:#ffffff; --tile:rgba(141,98,32,.1); --bar:#fdfbf7; --veil:#f4f0e8; --glow:rgba(169,120,44,.12); --on:#23824f; --sw:#2e9e62; --off:rgba(60,60,67,.2); --va:var(--vl,.95); }
 /* «المظهر ← الشكل» of the TV (glass_look in /api/state): the other three looks, GlassStyle's, dark and light */
 :root[data-look="graphite"] { --bg:#121314; --card:rgba(32,33,36,.9); --line:rgba(255,255,255,.08); --gold:#f0a64a; --gt:#f0a64a; --text:#f2f0ec; --dim:#b9b6b0; --red:#ffb4a0; --ink:#1a1206; --tile:rgba(32,33,36,.9); --bar:#1e1f22; --veil:#121314; --va:var(--vd,.95); }
 :root[data-look="graphite"][data-theme="light"] { --bg:#f3f1ee; --card:rgba(255,255,255,.95); --line:rgba(28,27,26,.12); --gold:#8a4f00; --gt:#8a4f00; --text:#1c1b1a; --dim:#55514b; --red:#8e2a10; --ink:#ffffff; --tile:rgba(255,255,255,.95); --bar:#ffffff; --veil:#f3f1ee; --va:var(--vl,.95); }
@@ -44,11 +44,13 @@ button.red{color:var(--red);border-color:var(--red);background:none}
 .wide{width:100%;margin:8px 0}
 input,select{width:100%;min-height:52px}
 select{appearance:none;-webkit-appearance:none;padding-left:34px;background:var(--tile) linear-gradient(135deg,transparent 50%,var(--dim) 50%) 14px 50%/7px 7px no-repeat}
-input[type=checkbox]{appearance:none;-webkit-appearance:none;width:60px;height:48px;min-height:48px;flex:0 0 60px;padding:0;margin:0;border:0;background:none;position:relative}
-input[type=checkbox]::before{content:"";position:absolute;inset:9px 0;border-radius:15px;background:var(--tile);border:1px solid var(--line)}
-input[type=checkbox]::after{content:"";position:absolute;top:12px;inset-inline-start:3px;width:24px;height:24px;border-radius:50%;background:var(--dim);transition:inset-inline-start .15s}
-input[type=checkbox]:checked::before{background:var(--on);border-color:var(--on)}
-input[type=checkbox]:checked::after{inset-inline-start:33px;background:#fff}
+/* the on/off switch of the mockups: a 52x32 pill, a 26 px white knob; on = green, the knob at the end (the left, RTL); the box itself stays 48 px tall */
+input[type=checkbox]{appearance:none;-webkit-appearance:none;width:56px;height:48px;min-height:48px;flex:0 0 56px;padding:0;margin:0;border:0;border-radius:18px;background:none;position:relative;cursor:pointer}
+input[type=checkbox]::before{content:"";position:absolute;top:8px;inset-inline-start:2px;width:52px;height:32px;border-radius:16px;background:var(--off);box-shadow:inset 0 0 0 1px var(--line);transition:background-color .15s}
+input[type=checkbox]::after{content:"";position:absolute;top:11px;inset-inline-start:5px;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3),0 1px 1px rgba(0,0,0,.12);transition:inset-inline-start .15s}
+input[type=checkbox]:checked::before{background:var(--sw,var(--on));box-shadow:none}
+input[type=checkbox]:checked::after{inset-inline-start:25px}
+input[type=checkbox]:disabled{opacity:.45;cursor:default}
 input[type=range]{padding:0;border:0;background:none;accent-color:var(--gold)}
 .row{display:flex;gap:10px;margin:10px 0}
 .row > *{flex:1 1 0;min-width:0}
@@ -133,7 +135,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 #qToggle[data-op=resume] svg{display:none}
 #qToggle[data-op=resume]::after{content:"";margin-left:6px;border-style:solid;border-width:13px 0 13px 21px;border-color:transparent transparent transparent currentColor}
 .ad{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
-.tg{display:flex;flex-direction:column;align-items:center;font-size:14px;color:var(--dim);text-align:center}
+.tg{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:14px;color:var(--dim);text-align:center}
 .lg{margin-top:calc(40px + env(safe-area-inset-top));text-align:center;padding:26px 18px}
 .lg .ic{margin:0 auto 8px;width:60px;height:60px;border-radius:18px}
 #code{text-align:center;font-size:24px;letter-spacing:4px;margin:14px 0 4px}
@@ -141,7 +143,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 #dlg{position:fixed;inset:0;z-index:10;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center}
 #dlg > div{background:var(--bar);border:1px solid var(--line);border-radius:24px 24px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));width:100%;max-width:560px}
 @media (max-width:370px){.tile{width:54px;height:54px}.tools .tile{width:46px;height:46px}#pad{height:270px}}
-@media (prefers-reduced-motion: reduce){*{transition:none !important;animation:none !important;scroll-behavior:auto !important} }
+@media (prefers-reduced-motion: reduce){*,::before,::after{transition:none !important;animation:none !important;scroll-behavior:auto !important} }
 </style>
 </head>
 <body class="login">

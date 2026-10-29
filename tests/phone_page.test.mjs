@@ -600,6 +600,55 @@ for (const fonts of ['stub', 'missing']) await T(`fonts ${fonts}`, async () => {
   await S.ctx.close();
 });
 
+// ---- the on/off switches: the mockups' pill (52x32, a 26 px white knob, green when on with the knob on the left, RTL); still the real checkboxes
+for (const scheme of ['dark', 'light']) await T(`switches ${scheme}`, async () => {
+  const tv = { short: false };   // what the TV says; the page draws the switches from it
+  const S = await boot({ w: 390, h: 844, scheme, state: () => NEW({ adhan: { on: true, voice: 1, fajr_voice: 2, short: tv.short, stopkey: true, volume: 60 } }) });
+  const { p } = S;
+  await tab(S, 'settings');
+  if (scheme === 'light') await p.click('#theme');
+  await sleep(500);   // the colours' own 150 ms change
+  const look = id => p.evaluate(id => {
+    const e = document.getElementById(id), b = e.getBoundingClientRect(), tr = getComputedStyle(e, '::before'), kn = getComputedStyle(e, '::after');
+    const kl = parseFloat(kn.left), kw = parseFloat(kn.width), tl = parseFloat(tr.left), tw = parseFloat(tr.width);
+    return { type: e.type, checked: e.checked, w: b.width, h: b.height, tw, th: parseFloat(tr.height), tr: tr.borderTopLeftRadius, kw, kh: parseFloat(kn.height), kbg: kn.backgroundColor, ksh: kn.boxShadow,
+      tbg: tr.backgroundColor, knobLeft: kl + kw / 2 < tl + tw / 2, ttr: kn.transitionDuration, lab: e.closest('label') && Math.abs((e.closest('label').querySelector('span') || e).getBoundingClientRect().top + (e.closest('label').querySelector('span') || e).getBoundingClientRect().height / 2 - (b.top + b.height / 2)) };
+  }, id);
+  const theme = await p.evaluate(() => document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
+  check(`switches ${scheme}: the page is in that look`, theme === scheme, theme);
+  const on = await look('aOn'), off = await look('aShort'), stop = await look('aStop');
+  const green = theme === 'light' ? 'rgb(46, 158, 98)' : 'rgb(76, 195, 138)';
+  check(`switches ${theme}: still real checkboxes, ids kept, the tap target at least 48 px`, [on, off, stop].every(x => x.type === 'checkbox' && x.w >= 48 && x.h >= 48) && on.checked && !off.checked, JSON.stringify([on, off]));
+  check(`switches ${theme}: a 52x32 pill with a 26 px white knob and a soft shadow`, [on, off].every(x => x.tw === 52 && x.th === 32 && x.tr === '16px' && x.kw === 26 && x.kh === 26 && x.kbg === 'rgb(255, 255, 255)' && /rgba\(0, 0, 0/.test(x.ksh)), JSON.stringify(on));
+  check(`switches ${theme}: on is the mockup's green with the knob on the left; off is neutral with the knob on the right`,
+    on.tbg === green && on.knobLeft && !off.knobLeft && off.tbg !== green && /rgba\((255, 255, 255|60, 60, 67), 0\.2\)/.test(off.tbg), JSON.stringify({ on: on.tbg, off: off.tbg, onL: on.knobLeft, offL: off.knobLeft }));
+  check(`switches ${theme}: the label is centred on the switch, the same in every row`, [on, off, stop].every(x => x.lab !== null && x.lab <= 2), JSON.stringify([on.lab, off.lab, stop.lab]));
+  check(`switches ${theme}: the knob slides in 150 ms`, on.ttr === '0.15s', on.ttr);
+  const sets = posts(S, '/api/set').length;
+  await p.locator('#aShort').click();
+  const sent = await until(() => posts(S, '/api/set').length > sets && posts(S, '/api/set').pop().body.adhan_short === true);
+  tv.short = true; await sleep(1200);
+  const tapped = await look('aShort');
+  check(`switches ${theme}: a tap sends the change, and the switch turns on with the knob on the left`, sent && tapped.checked && tapped.knobLeft && tapped.tbg === green, JSON.stringify(tapped) + JSON.stringify(posts(S, '/api/set').map(r => r.body)));
+  await p.focus('#aShort'); await p.keyboard.press('Tab');
+  const ring = await p.evaluate(() => { const e = document.activeElement, cs = getComputedStyle(e); return e.id + ' ' + cs.outlineStyle + ' ' + cs.outlineWidth; });
+  check(`switches ${theme}: a keyboard focus ring`, ring === 'aStop solid 3px', ring);
+  check(`switches ${theme}: a disabled switch is dimmed`, await p.evaluate(() => { const e = document.getElementById('aStop'); e.disabled = true; const o = getComputedStyle(e).opacity; e.disabled = false; return o === '0.45'; }));
+  await tab(S, 'now'); await sleep(300);
+  const N = await look('aOn2');
+  check(`switches ${theme}: the «الأذان يعمل» switch is the same pill`, N.tw === 52 && N.th === 32 && N.kw === 26 && N.h >= 48 && N.knobLeft && N.tbg === green, JSON.stringify(N));
+  check(`switches ${theme}: no console errors`, S.errors.filter(e => !/status of 403/.test(e)).length === 0, S.errors.join(' | '));
+  await S.ctx.close();
+});
+await T('switches reduced motion', async () => {
+  const S = await boot({ w: 390, h: 844 });
+  await S.p.emulateMedia({ reducedMotion: 'reduce' });
+  await tab(S, 'settings');
+  const d = await S.p.evaluate(() => [getComputedStyle(document.getElementById('aOn'), '::after').transitionDuration, getComputedStyle(document.getElementById('aOn'), '::before').transitionDuration]);
+  check('switches: no motion when the phone asks for reduced motion', d.every(x => x === '0s'), d.join());
+  await S.ctx.close();
+});
+
 await T('size', async () => {
   check('the page is under 64 KB', Buffer.byteLength(HTML) < 64 * 1024, Buffer.byteLength(HTML));
   check('no inline handler attributes, one nonce\'d script, no external address', !/\son[a-z]+\s*=/.test(HTML.replace(/<script[\s\S]*<\/script>/, '')) && (HTML.match(/<script/g) || []).length === 1 && HTML.includes('<script nonce="__NONCE__">') && !/https?:\/\/(?!github)/.test(HTML));
