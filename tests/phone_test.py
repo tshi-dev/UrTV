@@ -80,7 +80,21 @@ check("the settings screen of the screensaver opens it like «ترتيب الت�
 # ---- the phone page
 page = text(LAUNCHER / "assets/phone/index.html")
 check("the page is Arabic, right to left and made for a phone", 'lang="ar" dir="rtl"' in page and 'name="viewport"' in page, "")
-check("the page loads nothing from outside (no http(s) address, no src/href to elsewhere, no import)", not re.search(r"https?://|//cdn|@import|<link|<img|src=|url\(", page), re.findall(r"https?://\S+", page))
+api = text(PHONE / "PhoneApi.java")
+font_urls = re.findall(r"url\(([^)]*)\)", page)
+allowed = re.search(r"FONTS = java\.util\.Arrays\.asList\(([^)]*)\)", api)
+allowed = re.findall(r'"([^"]+)"', allowed.group(1)) if allowed else []
+check("the page loads nothing from outside (no http(s) address, no src/href to elsewhere, no import); its only url() are the TV's own fonts",
+      not re.search(r"https?://|//cdn|@import|<link|<img|src=", page) and font_urls and all(u.startswith("/fonts/") for u in font_urls), re.findall(r"https?://\S+", page) + font_urls)
+check("the page's fonts are exactly the server's allow-list (PhoneApi.FONTS), Thmanyah first in the stack with the phone's own font after it, shown at once (swap)",
+      sorted(u[len("/fonts/"):] for u in font_urls) == sorted(allowed) == ["Thmanyah-Medium.woff2", "Thmanyah-Regular.woff2"]
+      and page.count("@font-face") == 2 and page.count("font-display:swap") == 2
+      and "font:16px/1.45 'Thmanyah',system-ui,-apple-system,\"Segoe UI\",Tahoma,sans-serif" in page, (font_urls, allowed))
+check("the font route is answered before the session check, read from the APK's fonts/ (where copyWeb puts the woff2) and only for an allowed name",
+      api.index('startsWith("/fonts/")') < api.index("String secret = session(r);") and "if (!FONTS.contains(name)) return json(404" in api
+      and "\"font/woff2\"" in api and "font-src 'self'" in api and '"fonts/" + name' in text(PHONE / "PhoneHost.java")
+      and "if (!PhoneApi.FONTS.contains(name)) return null;" in text(PHONE / "PhoneHost.java")
+      and "from('../../assets/fonts') { include '*.woff2'; into 'fonts' }" in text(ROOT / "android/launcher/build.gradle"), "")
 check("the page builds no HTML from data (no innerHTML, outerHTML, insertAdjacentHTML, document.write, eval, new Function)",
       not re.search(r"innerHTML|outerHTML|insertAdjacentHTML|document\.write|\beval\(|new Function|setTimeout\(\s*['\"]", page), "")
 check("the page's one script carries the nonce the server fills in", page.count("<script") == 1 and '<script nonce="__NONCE__">' in page, "")

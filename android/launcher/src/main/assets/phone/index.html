@@ -19,7 +19,10 @@
 :root[data-look="clean"] { --bg:#121314; --card:rgba(32,33,36,.9); --line:rgba(255,255,255,.08); --gold:#f0a64a; --gt:#f0a64a; --text:#f2f0ec; --dim:#b9b6b0; --red:#ffb4a0; --ink:#1a1206; --tile:rgba(32,33,36,.9); --bar:#1e1f22; --veil:#121314; --va:var(--vd,.95); }
 :root[data-look="clean"][data-theme="light"] { --bg:#ecece8; --card:rgba(255,255,255,.98); --line:rgba(20,24,30,.08); --gold:#0b5e51; --gt:#0b5e51; --text:#1b1d21; --dim:#50555e; --red:#8e2a10; --ink:#ffffff; --tile:rgba(255,255,255,.98); --bar:#ffffff; --veil:#f4f4f1; --va:var(--vl,.95); }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;color:var(--text);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif}
+/* the TV's Arabic font, from the TV itself (PhoneApi.FONTS); without it (a build without the private fonts) the phone's own, as before */
+@font-face{font-family:'Thmanyah';font-weight:400;font-display:swap;src:url(/fonts/Thmanyah-Regular.woff2) format("woff2")}
+@font-face{font-family:'Thmanyah';font-weight:500 900;font-display:swap;src:url(/fonts/Thmanyah-Medium.woff2) format("woff2")}
+html,body{margin:0;color:var(--text);font:16px/1.45 'Thmanyah',system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif}
 html{background:var(--bg)}
 #glassbg,#glassveil{position:fixed;inset:0;z-index:-1;pointer-events:none}
 #glassbg{background:var(--bg)}

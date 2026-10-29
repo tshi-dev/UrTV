@@ -98,12 +98,17 @@ public final class PhoneRun {
         PhoneControl ctl;
         int port;
         String origin;
+        final List<String> fontsAsked = new ArrayList<>();
     }
 
     static Env env(Predicate<InetAddress> clientOk) {
         final Env e = new Env();
         e.ctl = new PhoneControl(e.binder, new PhoneControl.Clock() { @Override public long now() { return e.now[0]; } }, e.actions,
-            new PhoneControl.Page() { @Override public String html() { return "<html><script nonce=\"__NONCE__\">1</script></html>"; } }, clientOk, new SecureRandom());
+            new PhoneControl.Page() {
+                @Override public String html() { return "<html><script nonce=\"__NONCE__\">1</script></html>"; }
+                // the stand-in APK has Regular but not Medium (a build without one), and would hand out anything it was asked for: the allow-list is PhoneApi's
+                @Override public byte[] font(String name) { e.fontsAsked.add(name); return name.equals("Thmanyah-Medium.woff2") ? null : ("wOF2" + name).getBytes(StandardCharsets.UTF_8); }
+            }, clientOk, new SecureRandom());
         return e;
     }
 
@@ -696,6 +701,30 @@ public final class PhoneRun {
         check("a request with a repeated Host header is refused (smuggling)", raw(e.port, ("GET /p HTTP/1.1\r\nHost: 127.0.0.1:" + e.port + "\r\nHost: evil.example\r\n\r\n").getBytes(StandardCharsets.ISO_8859_1)).status == 400, "");
         check("chunked bodies are refused", raw(e.port, ("POST /api/pair HTTP/1.1\r\nHost: 127.0.0.1:" + e.port + "\r\nTransfer-Encoding: chunked\r\n\r\n0\r\n\r\n").getBytes(StandardCharsets.ISO_8859_1)).status == 400, "");
         check("a body over 4096 bytes is refused", send(e, "POST", "/api/pair", "{\"code\":\"" + "1".repeat(5000) + "\"}").status == 413, "");
+        String policy = csp + ";";
+        check("the CSP lets the page load fonts from the TV only (font-src 'self'), and nothing else got wider",
+            policy.contains("font-src 'self';") && policy.contains("default-src 'none';") && policy.contains("connect-src 'self';") && policy.contains("img-src 'self' data:;")
+            && policy.contains("style-src 'unsafe-inline';") && !policy.matches(".*font-src[^;]*(data:|\\*|http|blob:).*") && !policy.contains("unsafe-eval")
+            && policy.split("font-src", -1).length == 2, csp);
+        Reply font = send(e, "GET", "/fonts/Thmanyah-Regular.woff2", null);
+        check("a font of the page is served without a session: font/woff2, kept long, nosniff, same origin only", font.status == 200 && "font/woff2".equals(font.header("Content-Type"))
+            && "public, max-age=31536000".equals(font.header("Cache-Control")) && "nosniff".equals(font.header("X-Content-Type-Options"))
+            && "same-origin".equals(font.header("Cross-Origin-Resource-Policy")) && font.body.equals("wOF2Thmanyah-Regular.woff2") && font.header("Set-Cookie") == null, font.head);
+        Reply absent = send(e, "GET", "/fonts/Thmanyah-Medium.woff2", null);
+        check("an allowed font the APK does not carry is a 404", absent.status == 404 && "not_found".equals(absent.json().get("error")), absent.head);
+        e.fontsAsked.clear();
+        boolean fontsRefused = true;
+        for (String bad : new String[] {"/fonts/../phone/index.html", "/fonts/..%2fphone%2findex.html", "/fonts/%2e%2e/web/tv.html", "/fonts/Thmanyah-Light.woff2", "/fonts/ThmanyahDisplay-Bold.woff2",
+                "/fonts/UthmanicHafs-v30.woff2", "/fonts/thmanyah-regular.woff2", "/fonts/Thmanyah-Regular.woff2/", "/fonts/Thmanyah-Regular.woff2%00", "/fonts/", "/fonts//Thmanyah-Regular.woff2",
+                "/fonts/./Thmanyah-Regular.woff2", "/fonts/Medium.woff2", "/fonts/../../AndroidManifest.xml", "/fonts/Thmanyah-Regular.otf"}) {
+            Reply r = send(e, "GET", bad, null);
+            if (r.status != 404) { fontsRefused = false; System.out.println("  " + bad + " -> " + r.status); }
+        }
+        check("the font route serves only the allow-listed names: ../, another asset, another font or case is a 404, and the assets are never even asked",
+            fontsRefused && e.fontsAsked.isEmpty() && send(e, "GET", "/fonts/Thmanyah-Regular.woff2?x", null).status == 404 && send(e, "GET", "/fonts\\Thmanyah-Regular.woff2", null).status == 404, e.fontsAsked.toString());
+        check("a POST to a font is refused", send(e, "POST", "/fonts/Thmanyah-Regular.woff2", "{}").status == 405, "");
+        check("the font route checks the Host like the page (DNS rebinding)", send(e, "GET", "/fonts/Thmanyah-Regular.woff2", null, "Host", "evil.example:" + e.port).status == 403, "");
+        check("the allow-list is exactly the page's two Thmanyah weights", PhoneApi.FONTS.equals(Arrays.asList("Thmanyah-Regular.woff2", "Thmanyah-Medium.woff2")), PhoneApi.FONTS.toString());
         check("nothing answers without a session", send(e, "GET", "/api/state", null).status == 401 && send(e, "POST", "/api/key", "{\"key\":\"up\"}").status == 401, "");
         e.ctl.stop("owner");
 

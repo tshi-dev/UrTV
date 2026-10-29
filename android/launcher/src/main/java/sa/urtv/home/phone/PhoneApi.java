@@ -15,6 +15,8 @@ import java.util.Map;
 final class PhoneApi implements PhoneServer.Handler {
     static final String COOKIE = "urtv", HEADER = "x-urtv-session";
     private static final String JSON = "application/json; charset=utf-8";
+    /** The page's fonts (Thmanyah, as on the TV's screens), served from the APK's assets/fonts; nothing else from there is ever served. */
+    static final List<String> FONTS = java.util.Arrays.asList("Thmanyah-Regular.woff2", "Thmanyah-Medium.woff2");
 
     private final PhoneControl control;
     private final String ip;
@@ -35,6 +37,8 @@ final class PhoneApi implements PhoneServer.Handler {
         if (!post && !r.method.equals("GET")) return json(405, err("method"));
 
         if (r.path.equals("/p") || r.path.equals("/")) return post ? json(405, err("method")) : page();
+        // the fonts are no secret, and CSS asks for them without the X-UrTV-Session header: no session, like the page itself
+        if (r.path.startsWith("/fonts/")) return post ? json(405, err("method")) : font(r.path.substring("/fonts/".length()));
 
         if (post) {
             if (!Guard.originOk(r.header("origin"), ip, port) || !Guard.fetchSiteOk(r.header("sec-fetch-site"))) return json(403, err("bad_origin"));
@@ -192,6 +196,17 @@ final class PhoneApi implements PhoneServer.Handler {
         return resp;
     }
 
+    /** One of the page's fonts, by its exact allow-listed name (no path, no other asset); 404 for any other name, or when the APK has none. */
+    private PhoneServer.Response font(String name) {
+        if (!FONTS.contains(name)) return json(404, err("not_found"));
+        byte[] woff2 = control.page().font(name);
+        if (woff2 == null) return json(404, err("not_found"));
+        PhoneServer.Response resp = new PhoneServer.Response(200, "font/woff2", woff2);
+        headers(resp);
+        resp.headers.put("Cache-Control", "public, max-age=31536000");
+        return resp;
+    }
+
     private static PhoneServer.Response ok(Map<String, Object> body) {
         Map<String, Object> out = ok();
         out.putAll(body);
@@ -231,7 +246,7 @@ final class PhoneApi implements PhoneServer.Handler {
         String html = control.page().html().replace("__NONCE__", n.toString());
         PhoneServer.Response resp = new PhoneServer.Response(200, "text/html; charset=utf-8", html.getBytes(StandardCharsets.UTF_8));
         resp.headers.put("Content-Security-Policy", "default-src 'none'; script-src 'nonce-" + n + "'; style-src 'unsafe-inline'; "
-            + "connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'");
+            + "connect-src 'self'; img-src 'self' data:; font-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'");
         headers(resp);
         return resp;
     }

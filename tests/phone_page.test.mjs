@@ -1,5 +1,6 @@
 // The phone remote page («تحكم من الجوال») in a real browser, offline. The page is served from the repo, every /api/* answer is a stub
-// that records what the page sent. Both the full state (new fields) and a state with only the old fields.
+// that records what the page sent. The TV's fonts (/fonts/, PhoneApi.FONTS) are a stand-in: a tiny real woff2 from the repo, or a 404 as in a
+// build without the private Thmanyah files. Both the full state (new fields) and a state with only the old fields.
 //
 //   CHROMIUM=/path/to/chromium node tests/phone_page.test.mjs
 import { chromium } from 'playwright';
@@ -12,7 +13,9 @@ const HTML = readFileSync(path.join(ROOT, 'android/launcher/src/main/assets/phon
 const ORIGIN = 'http://tv.test';
 const PAGE = ORIGIN + '/phone/';
 const NONCE = 'n0nce123';
-const CSP = `default-src 'none'; script-src 'nonce-${NONCE}'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:`;
+const CSP = `default-src 'none'; script-src 'nonce-${NONCE}'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'`;   // PhoneApi's
+const FONTS = ['Thmanyah-Regular.woff2', 'Thmanyah-Medium.woff2'];   // PhoneApi.FONTS
+const WOFF2 = readFileSync(path.join(ROOT, 'assets/fonts/NotoNaskhArabic-Marks.woff2'));   // 2 KB, OFL: stands in for Thmanyah
 const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
 const KEYS = ['up', 'down', 'left', 'right', 'ok', 'back', 'home', 'vol_up', 'vol_down', 'mute', 'play_pause'];
 const TOKEN = 'a1b2c3d4e5f60718293a4b5c6d7e8f90';
@@ -50,10 +53,15 @@ const browser = await chromium.launch(process.env.CHROMIUM ? { executablePath: p
 // A phone with the page open; every request is kept. cfg changes what the stub answers.
 async function boot({ state = NEW(), w = 360, h = 740, scheme = 'dark', hash = '', login = true, cfg = {} } = {}) {
   const ctx = await browser.newContext({ viewport: { width: w, height: h }, colorScheme: scheme, hasTouch: false });
-  const reqs = [], foreign = [], errors = [];
-  const c = { state, pin: false, noSession: false, apps: APPS, update: null, ...cfg };
+  const reqs = [], foreign = [], errors = [], fonts = [];
+  const c = { state, pin: false, noSession: false, apps: APPS, update: null, fonts: 'stub', ...cfg };
   await ctx.route('**/*', async route => {
     const rq = route.request(), u = new URL(rq.url());
+    if (u.origin === ORIGIN && u.pathname.startsWith('/fonts/') && FONTS.includes(u.pathname.slice(7)) && !u.search) {
+      fonts.push(u.pathname.slice(7));
+      return c.fonts === 'stub' ? route.fulfill({ status: 200, contentType: 'font/woff2', headers: { 'Cache-Control': 'public, max-age=31536000' }, body: WOFF2 })
+        : route.fulfill({ status: 404, contentType: 'application/json', body: '{"ok":false,"error":"not_found"}' });
+    }
     if (u.origin !== ORIGIN || (u.pathname !== '/phone/' && !u.pathname.startsWith('/api/'))) { foreign.push(rq.url()); return route.abort(); }
     if (u.pathname === '/phone/') return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', headers: { 'Content-Security-Policy': CSP }, body: HTML.replace('__NONCE__', NONCE) });
     let body = null; try { body = rq.postData() ? JSON.parse(rq.postData()) : null; } catch (e) { body = '?bad'; }
@@ -98,9 +106,10 @@ async function boot({ state = NEW(), w = 360, h = 740, scheme = 'dark', hash = '
   });
   const p = await ctx.newPage();
   p.on('pageerror', e => errors.push('pageerror: ' + e.message));
-  p.on('console', m => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
+  p.on('console', m => { if (m.type() === 'error') errors.push('console: ' + m.text() + ' @' + (m.location().url || '')); });
+  await p.addInitScript(() => document.addEventListener('securitypolicyviolation', e => console.error('CSP: ' + e.violatedDirective + ' ' + e.blockedURI)));
   await p.goto(PAGE + (hash ? '#' + hash : ''));
-  const S = { ctx, p, reqs, foreign, errors, cfg: c };
+  const S = { ctx, p, reqs, foreign, errors, fonts, cfg: c };
   if (login) {
     await p.fill('#code', '123456'); await p.click('#codeGo');
     await p.waitForSelector('#app:not(.hidden)', { timeout: 6000 });
@@ -566,6 +575,29 @@ await T('key answers', async () => {
     check(`key answered ${e}: the toast says what to do`, await until(async () => (await S.p.textContent('#msg')).includes(msg)), await S.p.textContent('#msg'));
     await S.ctx.close();
   }
+});
+
+// ---- the TV's font: Thmanyah from the TV itself, the phone's own font when the TV has none
+for (const fonts of ['stub', 'missing']) await T(`fonts ${fonts}`, async () => {
+  const S = await boot({ w: 390, h: 844, cfg: { fonts } });
+  const { p } = S;
+  await tab(S, 'now'); await tab(S, 'remote');
+  await p.evaluate(() => document.fonts.ready);
+  const st = await p.evaluate(() => ({ fam: getComputedStyle(document.body).fontFamily, btn: getComputedStyle(document.querySelector('#bar button')).fontFamily,
+    faces: [...document.fonts].map(f => f.family.replace(/["']/g, '') + ' ' + f.weight + ' ' + f.display + ' ' + f.status) }));
+  check(`fonts ${fonts}: the stack is Thmanyah, then the phone's own font as before (buttons inherit it)`,
+    st.fam.replace(/["']/g, '') === 'Thmanyah, system-ui, -apple-system, Segoe UI, Tahoma, sans-serif' && st.btn === st.fam, st.fam + ' | ' + st.btn);
+  check(`fonts ${fonts}: two faces, Regular 400 and Medium for 500 and up, both swap`, JSON.stringify(st.faces.map(f => f.split(' ').slice(0, -1).join(' ')))
+    === JSON.stringify(['Thmanyah 400 swap', 'Thmanyah 500 900 swap']), st.faces.join());
+  check(`fonts ${fonts}: only the allow-listed files are asked, from the TV, each at most once`, S.fonts.length >= 1 && S.fonts.every(f => FONTS.includes(f)) && new Set(S.fonts).size === S.fonts.length && S.foreign.length === 0, S.fonts.join() + ' ' + S.foreign.join());
+  check(`fonts ${fonts}: ${fonts === 'stub' ? 'the faces load' : 'a 404 leaves the faces unloaded and the page works on the phone\'s own font'}`,
+    st.faces.filter(f => / (loaded|error)$/.test(f)).every(f => f.endsWith(fonts === 'stub' ? 'loaded' : 'error')) && st.faces.some(f => f.endsWith(fonts === 'stub' ? 'loaded' : 'error'))
+    && await vis(S, '[data-k=ok]') && (await p.evaluate(() => document.querySelector('[data-k=ok]').getBoundingClientRect().height)) >= 48, st.faces.join());
+  await p.click('[data-k=ok]');
+  check(`fonts ${fonts}: the remote still works`, await until(() => keysSent(S).includes('ok')), keysSent(S).join());
+  const errs = S.errors.filter(e => !(fonts === 'missing' && /status of 404/.test(e) && /\/fonts\/Thmanyah-(Regular|Medium)\.woff2$/.test(e)));
+  check(`fonts ${fonts}: no console, page or CSP errors${fonts === 'missing' ? ' (but the fonts\' own 404)' : ''}`, errs.length === 0, errs.join(' | '));
+  await S.ctx.close();
 });
 
 await T('size', async () => {
