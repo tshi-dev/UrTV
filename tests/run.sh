@@ -60,6 +60,7 @@ python3 tests/find_team_test.py
 python3 tests/team_search_test.py
 python3 tests/team_ids_test.py
 python3 tests/city_match_test.py
+python3 tests/cities_md_test.py
 python3 tests/home_card_test.py
 python3 tests/perf_idle_test.py
 python3 tests/league_fixtures_test.py
