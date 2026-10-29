@@ -18,7 +18,7 @@ apply_line() {
   case "$1 $2" in
     "settings put"|"device_config put") refused "$4" || echo "$5" > "$S/$4" ;;
     "settings delete"|"device_config delete") refused "$4" || rm -f "$S/$4" ;;
-    "am set-standby-bucket") refused standby_bucket || num "$4" > "$S/standby_bucket" ;;
+    "am set-standby-bucket") if [ "$4" = restricted ] && [ "${SDK:-34}" -lt 30 ] 2> /dev/null; then echo "Bad bucket: restricted" >> "$T/errors"; else refused standby_bucket || num "$4" > "$S/standby_bucket"; fi ;;
     "cmd appops") refused "$5" || { [ "$6" = default ] && rm -f "$S/op_$5" || echo "$6" > "$S/op_$5"; } ;;
   esac
 }
@@ -26,7 +26,8 @@ case "$1" in
   --batch) while read -r l; do echo "$l" >> "$T/batch"; apply_line "$l"; done ;;
   "settings get global "*) k=${1##* }; case " $FAILREAD " in *" $k "*) exit 1 ;; esac; case " $EMPTYREAD " in *" $k "*) exit 0 ;; esac
                            f="$S/$k"; [ -f "$f" ] && cat "$f" || echo null ;;
-  "device_config get activity_manager "*) f="$S/${1##* }"; [ -f "$f" ] && cat "$f" || echo null ;;
+  "device_config get activity_manager "*) [ "${SDK:-34}" -ge 29 ] 2> /dev/null || { echo "/system/bin/sh: device_config: not found"; exit 127; }; f="$S/${1##* }"; [ -f "$f" ] && cat "$f" || echo null ;;
+  "getprop ro.build.version.sdk") echo "${SDK-34}" ;;
   "am get-standby-bucket "*) [ "$UNREADABLE" = yes ] && exit 0; [ -f "$S/standby_bucket" ] && cat "$S/standby_bucket" || echo 10 ;;
   "appops get "*) [ "$UNREADABLE" = yes ] && exit 0; op=${1##* }; [ -f "$S/op_$op" ] && echo "$op: $(cat "$S/op_$op")" || echo "No operations." ;;
   "getprop ro.build.type") case "$TESTBUILD" in yes) echo userdebug ;; keys) echo user ;; *) echo user ;; esac ;;
@@ -48,8 +49,8 @@ class Tv:
         (self.t / "tv").mkdir()
         for k, v in settings.items():
             (self.t / "tv" / k).write_text(v + "\n")
-    def run(self, mode, refuse="", unreadable="", failread="", emptyread="", testbuild=""):
-        env = dict(os.environ, T=str(self.t), PY=str(self.t / "py"), REFUSE=refuse, UNREADABLE=unreadable, FAILREAD=failread, EMPTYREAD=emptyread, TESTBUILD=testbuild)
+    def run(self, mode, refuse="", unreadable="", failread="", emptyread="", testbuild="", sdk="34"):
+        env = dict(os.environ, T=str(self.t), PY=str(self.t / "py"), REFUSE=refuse, UNREADABLE=unreadable, FAILREAD=failread, EMPTYREAD=emptyread, TESTBUILD=testbuild, SDK=sdk)
         r = subprocess.run(["bash", str(self.tree / "optimize" / "tweaks.sh"), mode], env=env, capture_output=True, text=True, cwd=self.tree)
         return r.returncode, r.stdout + r.stderr
     def get(self, k):
@@ -186,4 +187,21 @@ tv = Tv(window_animation_scale="1.0", transition_animation_scale="1.0", animator
 rc, out = tv.run("apply", refuse="standby_bucket", testbuild="keys")
 check("test-keys alone (shipped TVs often have it) is not a test build: the !! line stays", "!! standby_bucket: this TV did not take the value" in out, out)
 check("a normal build still gets the !! line", "!! standby_bucket: this TV did not take the value" in out, out)
+
+# ---- the Android a TV runs: device_config is Android 10 (SDK 29) and newer; standby buckets Android 9 (28) and newer, «restricted» Android 11 (30) and newer
+def batch_of(tv): return (tv.t / "batch").read_text() if (tv.t / "batch").exists() else ""
+for sdk, want_dc, want_bucket in (("28", False, "40"), ("29", True, "40"), ("30", True, "45"), ("34", True, "45")):
+    tv = Tv(); rc, out = tv.run("apply", sdk=sdk); b = batch_of(tv); j = tv.journal() or ""
+    check(f"SDK {sdk}: device_config {'is used' if want_dc else 'is never called'}; the standby bucket is {'restricted' if want_bucket == '45' else 'rare'}; no !! line, no refused bucket",
+          rc == 0 and ("device_config" in b) == want_dc and tv.get("standby_bucket") == want_bucket and "!!" not in out and not (tv.t / "errors").exists(), f"{rc} {out} {b}")
+    if not want_dc:
+        check(f"SDK {sdk}: the journal says what was skipped and why", "skipped_max_cached_processes=" in j and "max_cached_processes=" not in j.replace("skipped_max_cached_processes=", ""), j)
+    rc, out = tv.run("restore", sdk=sdk); b2 = batch_of(tv)
+    check(f"SDK {sdk}: restore puts back the bucket and the others and never calls device_config below SDK 29", rc == 0 and "!!" not in out and (want_dc or "device_config" not in b2), f"{rc} {out}")
+tv = Tv(); rc, out = tv.run("apply", sdk="27"); b = batch_of(tv)
+check("SDK 27: no standby bucket at all (Android 8 has none), no device_config", rc == 0 and "set-standby-bucket" not in b and "device_config" not in b and "!!" not in out and "skipped_standby_bucket=" in (tv.journal() or ""), f"{rc} {out} {b}")
+tv = Tv(); rc, out = tv.run("apply", sdk=""); b = batch_of(tv)
+check("an SDK the TV did not say: device_config and the standby bucket are left alone (never «restricted»), the rest goes on", rc == 0 and "device_config" not in b and "set-standby-bucket" not in b and "restricted" not in b and "window_animation_scale" in b, f"{rc} {out} {b}")
+tv = Tv(); rc, out = tv.run("apply", sdk="28"); rc, out = tv.run("status", sdk="28")
+check("status on an old Android lists the keys it handles without a device_config question", rc == 0 and "max_cached_processes" not in out and "!!" not in out, out)
 sys.exit(1 if failed else 0)

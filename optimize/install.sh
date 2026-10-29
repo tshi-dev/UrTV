@@ -337,7 +337,7 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
         case "$(wifi_owner)" in
           owned) WIZARD_KEPT=yes; echo "The setup wizard answers Home and owns the saved Wi-Fi network: it is left on (the network stays), and the switch goes on without turning it off." ;;
           other) wraith=listed ;;
-          *) echo "The setup wizard answers Home, but the TV did not say who owns its saved Wi-Fi: the wizard is left on, so the network is not lost." ;;   # (not a «keeps its own home»: if Home does not open ours, the message says to run again)
+          *) WIZARD_KEPT=yes; echo "The setup wizard answers Home, but the TV did not say who owns its saved Wi-Fi: the wizard is left on, so the network is not lost." ;;   # (if Home then does not open ours, this TV keeps its own home: one plain result, rc 6)
         esac
       fi
       # 2. Arm the safety switch on the TV: it restores the stock home in 300 s unless we confirm (slow ADB needs time).
@@ -527,15 +527,13 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
        echo "!! Could not tell which app is this TV's own home screen (the Google TV and Android TV launchers are not installed, and no single other app answers Home), so the home switch was not made and nothing was changed: the stock home could not be put back if the switch failed. UrTV works as an app and as the screensaver."
        mkdir -p "${URTV_RUN_DIR:-optimize/run}"
        echo "Home switch: skipped, could not tell which app is this TV's own home screen" > "${URTV_RUN_DIR:-optimize/run}/home-skipped.txt" ;;
-    6) home_skipped=1
-       echo "Home switch skipped: this TV keeps its own home screen. Its setup wizard must stay on to keep the saved Wi-Fi password, and Home still goes to the stock home ($DIAG). UrTV works as an app and as the screensaver; the stock home is back as it was. This is not an error, and trying again will not change it."
+    2|6) home_skipped=1   # every way a TV keeps its own home ends here: ONE plain result that is not an error, so nobody runs the launcher again and again
+       if [ "$WIZARD_KEPT" = yes ]; then why="Its setup wizard must stay on to keep the saved Wi-Fi password, and Home still goes to the stock home"
+       else why="Home did not open the new launcher after the role and the home activity were asked twice (some firmware pins Home to its own launcher)"; fi
+       echo "Home switch skipped: this TV keeps its own home screen. $why ($DIAG). UrTV works as an app and as the screensaver; the stock home is back as it was. This is not an error, and trying again will not change it."
+       echo "للشخص: تلفزيونك ما صار الشاشة الرئيسية في هذا التلفزيون، لكنه يشتغل من أيقونة «تلفزيونك» في صف التطبيقات."
        mkdir -p "${URTV_RUN_DIR:-optimize/run}"
-       echo "Home switch: skipped, this TV keeps its own home screen (the setup wizard must stay on to keep the Wi-Fi password)" > "${URTV_RUN_DIR:-optimize/run}/home-skipped.txt" ;;
-    2) echo "!! Home did not open the new launcher. The stock home was put back. ($DIAG)"
-       echo "   The role and the home activity were asked twice. Run the same command once more (a TV sometimes takes it at the second run); if the same line comes again, this TV keeps its own home: continue with SKIP_LAUNCHER=1 optimize/run.sh (UrTV works as an app and the screensaver)."
-       echo "   Some TCL firmware pins Home to the stock launcher; on those sets keep the stock home."
-       echo "   If the line above said the setup wizard owns the Wi-Fi, keep the stock home too: never turn the wizard off by hand."
-       exit 1 ;;
+       echo "Home switch: skipped, this TV keeps its own home screen (open UrTV from its «تلفزيونك» tile in the apps row)" > "${URTV_RUN_DIR:-optimize/run}/home-skipped.txt" ;;
     *) echo "!! The safety switch put the stock home back (ADB was too slow). Nothing is broken: run the same command again."
        exit 1 ;;
   esac

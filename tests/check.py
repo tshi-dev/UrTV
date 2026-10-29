@@ -414,7 +414,9 @@ texts = [f for f in tracked() if f.suffix in {".md", ".py", ".sh", ".java", ".xm
 ip = re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b")
 allowed_ip = {"0.0.0.0", "127.0.0.1"}
 # the network check and its simulation hold only address ranges and made-up addresses, never someone's network
-network_code = {ROOT / "optimize/find-tv.py", ROOT / "tests/find_tv_test.py", ROOT / "optimize/wireless.py", ROOT / "tests/wireless_test.py"}
+network_code = {ROOT / "optimize/find-tv.py", ROOT / "tests/find_tv_test.py", ROOT / "optimize/wireless.py", ROOT / "tests/wireless_test.py",
+                # the report's privacy filter and its test: version strings that look like addresses, and made-up addresses it must remove
+                ROOT / "optimize/share.py", ROOT / "tests/share_test.py"}
 found = []
 for f in texts:
     if f.name.endswith(".html") or f.parent.name == "photos" or f == Path(__file__).resolve():   # not this scan

@@ -190,5 +190,22 @@ committed = [l.split()[0] for f in (ROOT / "optimize/lists/community").glob("*.t
 core = [re.compile("^(" + l.strip() + ")$") for l in (ROOT / "optimize/lists/core.txt").read_text().splitlines() if l.strip() and not l.startswith("#")]
 check("core: none of our own lists names a core package", not [p for f in ("tcl-safe.txt", "tcl-optional.txt") for p in
       [l.split()[0] for l in (ROOT / "optimize/lists" / f).read_text().splitlines() if l.strip() and not l.startswith("#")] if any(c.match(p) for c in core)])
+# the ask list catches a firmware update service by its usual names (a community list turned off com.xiaomi.mitv.updateservice on one TV)
+ask_file = ROOT / "optimize/lists/community-ask.txt"
+pats = [l for l in ask_file.read_text(encoding="utf-8").splitlines() if l and not l.startswith("#") and not l[0].isspace()]
+import re as _re
+def asked(pkg): return any(_re.search(p, pkg) for p in pats)
+check("community-ask.txt catches com.xiaomi.mitv.updateservice and the other usual update-service names",
+      all(asked(x) for x in ("com.xiaomi.mitv.updateservice", "com.vendor.tv.update", "com.vendor.updater", "com.vendor.ota", "com.vendor.systemupdate", "com.vendor.fota.service")), "")
+check("... and not the ordinary packages around them", not any(asked(x) for x in ("com.vendor.tv.updatecheck.ads", "com.vendor.ads", "com.android.providers.contacts", "com.vendor.tv.launcher")), [x for x in ("com.vendor.tv.updatecheck.ads", "com.vendor.ads", "com.vendor.tv.launcher") if asked(x)])
+
+# core.txt never lets these go (a Haier boot loop; Clean Your TV's CORE_RE), as whole names
+core_res = [l for l in (ROOT / "optimize/lists/core.txt").read_text(encoding="utf-8").splitlines() if l and not l.startswith("#")]
+def is_core(pkg): return any(_re.fullmatch(r, pkg) for r in core_res)
+check("core.txt protects com.cltv.mal, com.mediatek.tis, com.mediatek.tv.service, com.mediatek.tv.agent, android.ext.services and android.ext.shared",
+      all(is_core(x) for x in ("com.cltv.mal", "com.mediatek.tis", "com.mediatek.tv.service", "com.mediatek.tv.agent", "android.ext.services", "android.ext.shared")), [x for x in ("com.cltv.mal", "com.mediatek.tis", "com.mediatek.tv.service", "com.mediatek.tv.agent", "android.ext.services", "android.ext.shared") if not is_core(x)])
+check("... only those names, not the packages that merely start the same way", not any(is_core(x) for x in ("com.mediatek.tv.ads", "com.mediatek.tisx", "android.ext.servicesx", "com.cltv.mal.ads", "com.mediatek.logger")), "")
+check("... and the comment credits Clean Your TV", "Clean Your TV" in (ROOT / "optimize/lists/core.txt").read_text(encoding="utf-8"), "")
+
 print("\nall community checks passed" if not failed else f"\n{failed} failed")
 sys.exit(1 if failed else 0)

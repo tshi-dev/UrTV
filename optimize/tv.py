@@ -625,6 +625,9 @@ def main():
         return
     if a[:1] == ["--is-placeholder"]:   # exit 0 when the value is not an id (run.sh uses the same list)
         sys.exit(0 if is_placeholder(a[1] if len(a) > 1 else "") else 1)
+    if a == ["--transport"]:   # how this TV is reached: «wireless» (Wireless debugging: TLS and pairing, the port changes on a restart) or «adb» (plain network adb, port 5555)
+        print("wireless" if "TV_PORT" not in os.environ and wireless.state_for(HOST) else "adb")
+        return
     if a == ["--id"]:   # the TV's unique id for run.sh: the serial, else aid:<android id>, else nothing (read-only)
         tv = TV()
         ident = parse_identity(tv.shell(IDENT_CMD))

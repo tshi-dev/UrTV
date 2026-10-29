@@ -92,12 +92,30 @@ QUOTED = r"""(?:"[^"\r\n]*"|'[^'\r\n]*'|\u201c[^\u201d\r\n]*\u201d|\u00ab[^\u00b
 
 
 def scrub(text):   # in case a note or an output carries something personal
+    """The net over a whole report. Lines the scripts build (a `!! ` line before the free-text headings) keep their ordinary words: only a Wi-Fi name that is
+    marked as one (ssid=…, a quoted name after Wi-Fi / network, «connected to X», «couldn't find X») goes there. The free text (the agent's notes and the
+    owner's words, and any line that is not a script's) gets the whole Wi-Fi rule, an unquoted `network: x` included."""
+    out, free = [], False
+    for line in text.split("\n"):
+        if line.strip() in FREE_HEADINGS:
+            free = True
+        out.append(_scrub_line(line, scripted=not free and bool(FREE_LINE.match(line))))
+    return "\n".join(out)
+
+
+# «couldn't find X» / «could not connect to X»: X is a network name when it is quoted, or a bare word that is not one of the ordinary things a script says it could not reach
+COULD_NOT = re.compile(rf"(?i)\b(?:couldn'?t|could not|can'?t|cannot|unable to|failed to)\s+(?:find|connect to|join|reach)\s+(?:{QUOTED}|(?!(?:the|a|an|any|your|this|that|it|its|to|adb|tv|github|internet|network|wi-?fi|server|device|host|port|home|<)\b)[^\s,;:.)<]+(?:\s+[A-Za-z0-9][\w-]*)?)")
+
+
+def _scrub_line(text, scripted=False):
     # a link keeps its address but not what follows ?, # or a user:password@ (tokens, sessions, keys)
     text = re.sub(r"(?i)(https?://)[^/\s@]+@", r"\1", text)
     text = re.sub(r"(?i)(https?://[^\s?#]*)[?#]\S*", r"\1", text)
     text = re.sub(r"(?i)([?&](?:token|key|apikey|api_key|secret|auth|sig|session|password|pass|code)=)[^&\s]*", r"\1<x>", text)
-    # lookarounds, not \b: Arabic prefixes stick to the next word («على192.168.1.5», «فيC:\Users»)
-    text = re.sub(r"(?<![\d.])\d{1,3}(\.\d{1,3}){3}(:\d+)?(?!\d)", "<ip>", text)
+    # an IPv4 address: four numbers of 0 to 255, on their own. Not inside a word or a version string (V816.0.6.0.X, TVOS-01.12.01.12, 6.0.1.2.3):
+    # lookarounds, not \b, so that Arabic prefixes stick to the next word («على192.168.1.5», «فيC:\Users») and still match
+    octet = r"(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)"
+    text = re.sub(rf"(?<![A-Za-z0-9_.-]){octet}(?:\.{octet}){{3}}(:\d+)?(?![0-9A-Za-z_-])(?!\.\d)", "<ip>", text)
     hexg = r"[0-9A-Fa-f]{1,4}"
     text = re.sub(rf"(?<![0-9A-Fa-f:])\[?(?:(?:{hexg}:){{7}}{hexg}|(?:{hexg}:){{0,6}}[0-9A-Fa-f]{{0,4}}::(?:{hexg}:){{0,6}}[0-9A-Fa-f]{{0,4}})"
                   r"(?:%[\w.-]+)?\]?(?![0-9A-Za-z_:])", "<ip>", text)
@@ -105,11 +123,16 @@ def scrub(text):   # in case a note or an output carries something personal
     # the user folder may hold spaces ("Ann Lee") or any script: it runs to the next separator or the end of the line
     text = re.sub(r"(?i)(?<![A-Za-z])[A-Z]:[\\/]+(Users|Documents and Settings)[\\/]+[^\\/\r\n]+", "<home>", text)
     text = re.sub(r"(?i)(/c)?/Users/[^/\r\n]+|/home/[^/\r\n]+", "<home>", text)
-    # a Wi-Fi name: after ssid / Wi-Fi / network with = or : or in quotes, and after «connected to» on a !! line
-    text = re.sub(rf"(?i)\b({WIFI_KEY})(\s*[=:]\s*)({QUOTED}|[^\s,;)]+)", r"\1\2<wifi>", text)
-    text = re.sub(rf"(?i)\b({WIFI_KEY}\s+){QUOTED}", r"\1<wifi>", text)
-    text = "\n".join(re.sub(r"(?i)\b(connected to|joined|associated with|connecting to)\s+(?!the\b|a\b|<).*$", r"\1 <wifi>", l)
-                     if "!!" in l else l for l in text.split("\n"))
+    # a Wi-Fi name. ssid / wlan with = or : always; the plainer words (Wi-Fi, network, الشبكة) with = or : only in free text, since the scripts' own lines say
+    # «network: left on»; in quotes after any of them; and after «connected to» / «couldn't find» on a !! line
+    strong = r"(?:ssid|wlan)"
+    text = re.sub(rf"(?i)\b({strong})(\s*[=:]\s*)({QUOTED}|[^\s,;)]+)", r"\1\2<wifi>", text)
+    if not scripted:
+        text = re.sub(rf"(?i)\b({WIFI_KEY})(\s*[=:]\s*)({QUOTED}|[^\s,;)]+)", r"\1\2<wifi>", text)
+    text = re.sub(rf"(?i)\b({WIFI_KEY})(\s*[=:]\s*|\s+)({QUOTED})", r"\1\2<wifi>", text)
+    if "!!" in text:
+        text = re.sub(r"(?i)\b(connected to|joined|associated with|connecting to)\s+(?!the\b|a\b|<).*$", r"\1 <wifi>", text)
+    text = COULD_NOT.sub(lambda m: re.sub(r"(find|connect to|join|reach)\s+.*$", r"\1 <wifi>", m.group(0), flags=re.I), text)
     # an email, a serial (also inside the ADB mDNS name adb-<serial>-xxx) and the usual tokens
     text = re.sub(r"[^\s@<>()\[\]\"']+@[^\s@<>()\[\]\"']+\.\w+", "<email>", text)
     text = re.sub(r"(?i)\badb-[A-Za-z0-9]+(?=-)", "adb-<serial>", text)
@@ -365,6 +388,7 @@ def main():
     print(f"Saved in {OUT.relative_to(RUN.parent.parent)}.")
     if args.preview:
         print("NOT sent. This is exactly what optimize/share.sh --send would send.")
+        print("للمالك: لا تكتب في كلامك أسماء ولا أرقام هواتف أو عناوين ولا اسم شبكة الواي فاي؛ نحذف ما نعرفه تلقائيًا لكن الأسلم ألا يُكتب أصلًا.")
         return
     deliver(text)
 

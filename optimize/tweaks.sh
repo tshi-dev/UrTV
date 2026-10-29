@@ -23,6 +23,13 @@ PY="${PY:-optimize/venv/bin/python}"
 CACHED="${CACHED_LIMIT:-}"
 JOURNAL="${URTV_RUN_DIR:-optimize/run}/tweaks-journal.txt"
 KEYS="window_animation_scale transition_animation_scale animator_duration_scale cached_apps_freezer max_cached_processes"
+# What this Android has: `device_config` is Android 10 (SDK 29) and newer, `am set-standby-bucket` is Android 9 (SDK 28) and newer, and the «restricted» bucket
+# is Android 11 (SDK 30) and newer (Android 9 and 10 take «rare»). An SDK the TV did not say counts as «too old to be sure»: those two settings are left alone.
+SDK=$("$PY" -I optimize/tv.py "getprop ro.build.version.sdk" 2> /dev/null | tr -dc '0-9') || SDK=""
+SDK_SAY=${SDK:-unknown}; SDK=${SDK:-0}
+SKIPPED=()   # "key: why", written to the journal so the record says what was not touched and why
+if [ "$SDK" -lt 29 ]; then KEYS=${KEYS/ max_cached_processes/}; SKIPPED+=("max_cached_processes: device_config needs Android 10 (this TV is SDK $SDK_SAY)"); fi
+BUCKET=restricted; [ "$SDK" -ge 30 ] || BUCKET=rare
 getcmd() { case "$1" in max_cached_processes) echo "device_config get activity_manager $1" ;; *) echo "settings get global $1" ;; esac; }
 putcmd() {   # key value: a value that was not set (null) is deleted
   case "$1" in
@@ -51,6 +58,8 @@ original() {   # key tv|ps: what the journal has; an «unknown» one is read aga
 # appops by mode; «default» when the TV has none set). A firmware that does not say gets «unknown» and today's values on restore.
 PS=com.android.vending
 PSKEYS="standby_bucket appop_RUN_IN_BACKGROUND appop_RUN_ANY_IN_BACKGROUND"
+if [ "$SDK" -lt 28 ]; then PSKEYS=${PSKEYS/standby_bucket /}; SKIPPED+=("standby_bucket: standby buckets need Android 9 (this TV is SDK $SDK_SAY)"); fi
+has_key() { case " $KEYS $PSKEYS " in *" $1 "*) return 0 ;; esac; return 1; }
 bucket_name() { case "$1" in 5) echo exempted ;; 10) echo active ;; 20) echo working_set ;; 30) echo frequent ;; 40) echo rare ;; 45) echo restricted ;; 50) echo never ;; *) echo unknown ;; esac; }
 psget() {
   local o
@@ -99,7 +108,8 @@ if [ "$1" = apply ]; then
     mkdir -p "$(dirname "$JOURNAL")"; rm -f "$JOURNAL_DONE"
     { echo "# what the TV had before optimize/tweaks.sh apply (null: it was not set; unknown: it could not be read, so it was not changed); optimize/tweaks.sh restore puts exactly this back"
       for k in $KEYS; do echo "$k=$(tvget "$k")"; done
-      for k in $PSKEYS; do echo "$k=$(psget "$k")"; done; } > "$JOURNAL.tmp" && mv "$JOURNAL.tmp" "$JOURNAL"
+      for k in $PSKEYS; do echo "$k=$(psget "$k")"; done
+      for sk in "${SKIPPED[@]+"${SKIPPED[@]}"}"; do echo "skipped_${sk%%:*}=${sk#*: }"; done; } > "$JOURNAL.tmp" && mv "$JOURNAL.tmp" "$JOURNAL"
   fi
   change() {   # key value: only a setting whose original is known (recorded) is changed
     local o; o=$(original "$1" tv)
@@ -108,18 +118,22 @@ if [ "$1" = apply ]; then
   }
   # the Play Store's bucket and appops follow the same rule as the other settings: what the TV had must be known (nothing to put back
   # otherwise), so an unreadable one is left alone with a !! line
-  o=$(original standby_bucket ps)
-  case "$o" in
-    exempted) echo "The Play Store is exempted from standby on this TV: its standby bucket is left as it is" ;;
-    unknown) echo "!! standby_bucket: could not read what this TV has for the Play Store, so it is left as it is (nothing to put back)" ;;
-    *) cmds+=("$(psput standby_bucket restricted)"); pswant+=("standby_bucket=restricted") ;;
-  esac
+  if has_key standby_bucket; then
+    o=$(original standby_bucket ps)
+    case "$o" in
+      exempted) echo "The Play Store is exempted from standby on this TV: its standby bucket is left as it is" ;;
+      unknown) echo "!! standby_bucket: could not read what this TV has for the Play Store, so it is left as it is (nothing to put back)" ;;
+      *) cmds+=("$(psput standby_bucket "$BUCKET")"); pswant+=("standby_bucket=$BUCKET") ;;
+    esac
+  else echo "Play Store standby bucket: left alone (Android 9 is the first with standby buckets; this TV is SDK $SDK_SAY)"; fi
   for op in RUN_IN_BACKGROUND RUN_ANY_IN_BACKGROUND; do
     if [ "$(original "appop_$op" ps)" = unknown ]; then echo "!! appop_$op: could not read what this TV has for the Play Store, so it is left as it is (nothing to put back)"
     else cmds+=("$(psput "appop_$op" deny)"); pswant+=("appop_$op=deny"); fi
   done
   for k in window_animation_scale transition_animation_scale animator_duration_scale; do change "$k" "$v"; done
-  if [ -n "$CACHED" ]; then   # opt-in only (see above); never raise the limit: low-RAM sets may sit below it
+  if ! has_key max_cached_processes; then
+    echo "Closed apps kept in memory: left alone (device_config needs Android 10; this TV is SDK $SDK_SAY)"
+  elif [ -n "$CACHED" ]; then   # opt-in only (see above); never raise the limit: low-RAM sets may sit below it
     now=$("$PY" -I optimize/tv.py "dumpsys activity settings 2> /dev/null | grep -m1 max_cached_processes" | tr -dc '0-9')
     if [ -n "$now" ] && [ "$now" -gt "$CACHED" ]; then
       change max_cached_processes "$CACHED"
@@ -164,9 +178,11 @@ elif [ -f "$JOURNAL_DONE" ]; then
   echo "The tweaks were already put back (optimize/run/tweaks-journal.done): nothing to do."
   exit 0
 else
-  cmds+=("$(psput standby_bucket active)" "$(psput appop_RUN_IN_BACKGROUND allow)" "$(psput appop_RUN_ANY_IN_BACKGROUND allow)")
+  ! has_key standby_bucket || cmds+=("$(psput standby_bucket active)")
+  cmds+=("$(psput appop_RUN_IN_BACKGROUND allow)" "$(psput appop_RUN_ANY_IN_BACKGROUND allow)")
   for k in window_animation_scale transition_animation_scale animator_duration_scale; do cmds+=("$(putcmd "$k" "$v")"); done
-  cmds+=("$(putcmd max_cached_processes null)" "$(putcmd cached_apps_freezer device_default)")
+  ! has_key max_cached_processes || cmds+=("$(putcmd max_cached_processes null)")
+  cmds+=("$(putcmd cached_apps_freezer device_default)")
   echo "No journal of the tweaks: Android's defaults."
 fi
 printf '%s\n' "${cmds[@]}" | "$PY" -I optimize/tv.py --batch > /dev/null

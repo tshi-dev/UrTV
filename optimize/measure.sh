@@ -37,6 +37,15 @@ if [ "$mode" = --screensaver ]; then
   echo "screensaver running; reading in 60 s…"
   sleep "${SAVER_S:-60}"
 else
+  # Wireless debugging (TLS, pairing) gets a NEW port when the TV restarts, so the connection is lost and the tools cannot find the TV again (37 reports ended with
+  # «TV did not come back within 5 min», mostly Android 14): there, measure without the restart and say so. Anything but a plain «adb» answer counts as wireless.
+  if [ "$mode" != --now ]; then
+    transport=$(tv --transport 2> /dev/null | tail -n 1) || transport=wireless
+    if [ "$transport" != adb ]; then
+      echo "This TV is connected by Wireless debugging (its port changes when it restarts), so it is not restarted: $label is measured now, without the restart and the 3-minute wait. The reading can be a little higher than after a restart."
+      mode=--now
+    fi
+  fi
   if [ "$mode" != --now ]; then
     optimize/settle.sh wait 2> /dev/null || true   # a restart before Android has written the package state can lose what was disabled
     tv --reboot
