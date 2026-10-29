@@ -137,3 +137,16 @@ Shots kept locally (text only). Chrome would not go narrower than 500 px without
 | L6 | could not | 360 not reachable; at 500: `scrollWidth 485 < innerWidth 500`, nothing outside the screen |
 
 Restored: real city exactly, home_panel none; phone control off, the PC's pairing gone; sound muted.
+
+## step 14 (setup without a computer) — started, paused
+Start lines: Home holder `sa.urtv.home/.MainActivity`; `adb_enabled=1`; `service.adb.tcp.port=5555` (persist.adb.tcp.port empty) → 5555 is there, so S0 goes on; Android 14; disabled packages 22 (list kept locally); screensaver `sa.urtv.screensaver/.ScreenDream`.
+Update from the TV 159 → 160 OK (versionName=4.0, versionCode=160 both).
+
+| # | OK/problem | note |
+|---|---|---|
+| self-update side effect | PROBLEM (reproduced) | right after the 159 → 160 self-update, again `accessibility_enabled=0` and no bound accessibility service, and the TV unmuted (`Muted: false`). Same as after 157 → 159. Muted again by the tester; a11y left (needs the owner; a reboot brought ours back last time) |
+| S0 | OK | «إعداد تلفزيوني» lists 5 steps in order (check device; permissions; «نوقف 25 تطبيقاً من قائمة التطبيقات الآمنة … ونسجّل ما أوقفناه»; screensaver if WebView is enough; make our home Home with a 5-minute safety switch) + how to turn USB debugging on, and «ابدأ» / «تراجع (يرجّع التلفزيون كما كان)» |
+| S1–S7 | waiting | every «ابدأ» makes the TV ask «السماح بتصحيح USB؟»; accepting it grants a debugging key, a security permission the tester leaves to the owner, who is not at the TV now. One DPAD_CENTER on «ابدأ» did nothing visible (no prompt, no change). Nothing on the TV changed: Home holder, disabled list and screensaver identical to the start |
+| S8 | unknown | PIN state not shown by `dock.sh show`; none set by the tester |
+
+To continue: the owner at the TV to press «السماح دائماً» at each prompt (S1, S2, S5, S6, S7).
