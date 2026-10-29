@@ -15,7 +15,7 @@ Path 1 needs no other device at all, so it is also the answer for an iPad that c
 1. **Debugging on.** Settings → About → press OK on **Build** seven times; then **Developer options** → **USB debugging** on. (Only the TV's own
    adb is used: nothing listens on the network.)
 2. **Install the two apps with the TV's Downloader app** (the free one from the TV's store; allow it «install unknown apps» when it asks). In
-   Downloader type these two addresses, one after the other, and install each:
+   Downloader type these two codes, one after the other, and install each: **2927902** (the screensaver) and **9378345** (the home app). They are short links (aftv.news) to these two addresses, which also work typed in full:
    - `https://github.com/tshi-dev/UrTV/releases/download/apk-latest/urtv-screensaver.apk`
    - `https://github.com/tshi-dev/UrTV/releases/download/apk-latest/urtv-home.apk`
 
@@ -55,7 +55,7 @@ If the app is closed in the middle of the home switch, opening «إعداد تل
 |---|---|
 | «تصحيح USB مطفأ» / «debugging is off» | turn USB debugging on (step 1) and press «ابدأ» again |
 | the TV never shows the prompt | the TV may only offer **Wireless debugging** (some Android 11+ sets): use path 2 or 3 or a computer; they pair that way |
-| «لم تُقبل رسالة …» | press «ابدأ» again and answer the prompt within three minutes |
+| «لم تُقبل رسالة …» | press «ابدأ» again and answer the prompt within three minutes. **If the prompt never appeared:** restart the TV, then open «إعداد تلفزيوني», press «ابدأ» and stay at the TV: it appears within seconds. (A prompt left unanswered, e.g. under the screensaver, makes the TV skip every later one until it restarts: «prompt currently pending, skipping» in adbd's log.) |
 | a step is «تُركت» (skipped) | the line above says why (WebView too old: update «Android System WebView» in the Play Store, then «ابدأ» again) |
 | the TV did not come back to the stock home | it will, after 5 minutes by itself; or press «تراجع» |
 
