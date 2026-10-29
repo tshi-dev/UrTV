@@ -35,6 +35,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install fonttools brotli pillow
+      - run: pip install fonttools brotli pillow -r .github/tools/cities-world/requirements.txt
       - run: npm install --no-save playwright@1.56.1 && npx playwright install --with-deps chromium
       - run: tests/run.sh

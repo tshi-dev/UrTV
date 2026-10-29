@@ -1,0 +1,3248 @@
+{
+  "source": "https://aladhan.com/calculation-methods",
+  "retrieved": "2026-10-29",
+  "latitudeAdjustmentMethod": 3,
+  "school": 0,
+  "rows": [
+    {
+      "country": "TR",
+      "name_en": "Istanbul",
+      "name_ar": "إسطنبول",
+      "lat": 41.0138,
+      "lon": 28.9497,
+      "tz": "Europe/Istanbul",
+      "method": 13,
+      "date": "20-03-2026",
+      "url": "https://api.aladhan.com/v1/timings/20-03-2026?latitude=41.0138&longitude=28.9497&method=13&timezonestring=Europe%2FIstanbul&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "05:36",
+        "Sunrise": "07:01",
+        "Dhuhr": "13:17",
+        "Asr": "16:40",
+        "Sunset": "19:23",
+        "Maghrib": "19:23",
+        "Isha": "20:43",
+        "Imsak": "05:26",
+        "Midnight": "01:12",
+        "Firstthird": "23:13",
+        "Lastthird": "03:11"
+      },
+      "meta": {
+        "latitude": 41.0138,
+        "longitude": 28.9497,
+        "timezone": "Europe/Istanbul",
+        "method": {
+          "id": 13,
+          "name": "Diyanet İşleri Başkanlığı, Turkey (experimental)",
+          "params": {
+            "Fajr": 18,
+            "Isha": 17
+          },
+          "location": {
+            "latitude": 39.9333635,
+            "longitude": 32.8597419
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": -7,
+          "Dhuhr": 5,
+          "Asr": 4,
+          "Maghrib": 7,
+          "Sunset": 7,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "TR",
+      "name_en": "Istanbul",
+      "name_ar": "إسطنبول",
+      "lat": 41.0138,
+      "lon": 28.9497,
+      "tz": "Europe/Istanbul",
+      "method": 13,
+      "date": "21-06-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-06-2026?latitude=41.0138&longitude=28.9497&method=13&timezonestring=Europe%2FIstanbul&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "03:24",
+        "Sunrise": "05:25",
+        "Dhuhr": "13:11",
+        "Asr": "17:11",
+        "Sunset": "20:47",
+        "Maghrib": "20:47",
+        "Isha": "22:38",
+        "Imsak": "03:14",
+        "Midnight": "01:06",
+        "Firstthird": "23:37",
+        "Lastthird": "02:35"
+      },
+      "meta": {
+        "latitude": 41.0138,
+        "longitude": 28.9497,
+        "timezone": "Europe/Istanbul",
+        "method": {
+          "id": 13,
+          "name": "Diyanet İşleri Başkanlığı, Turkey (experimental)",
+          "params": {
+            "Fajr": 18,
+            "Isha": 17
+          },
+          "location": {
+            "latitude": 39.9333635,
+            "longitude": 32.8597419
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": -7,
+          "Dhuhr": 5,
+          "Asr": 4,
+          "Maghrib": 7,
+          "Sunset": 7,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "TR",
+      "name_en": "Istanbul",
+      "name_ar": "إسطنبول",
+      "lat": 41.0138,
+      "lon": 28.9497,
+      "tz": "Europe/Istanbul",
+      "method": 13,
+      "date": "21-12-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-12-2026?latitude=41.0138&longitude=28.9497&method=13&timezonestring=Europe%2FIstanbul&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "06:46",
+        "Sunrise": "08:19",
+        "Dhuhr": "13:07",
+        "Asr": "15:25",
+        "Sunset": "17:46",
+        "Maghrib": "17:46",
+        "Isha": "19:13",
+        "Imsak": "06:36",
+        "Midnight": "01:02",
+        "Firstthird": "22:34",
+        "Lastthird": "03:30"
+      },
+      "meta": {
+        "latitude": 41.0138,
+        "longitude": 28.9497,
+        "timezone": "Europe/Istanbul",
+        "method": {
+          "id": 13,
+          "name": "Diyanet İşleri Başkanlığı, Turkey (experimental)",
+          "params": {
+            "Fajr": 18,
+            "Isha": 17
+          },
+          "location": {
+            "latitude": 39.9333635,
+            "longitude": 32.8597419
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": -7,
+          "Dhuhr": 5,
+          "Asr": 4,
+          "Maghrib": 7,
+          "Sunset": 7,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "PK",
+      "name_en": "Karachi",
+      "name_ar": "كراتشي",
+      "lat": 24.8608,
+      "lon": 67.0104,
+      "tz": "Asia/Karachi",
+      "method": 1,
+      "date": "20-03-2026",
+      "url": "https://api.aladhan.com/v1/timings/20-03-2026?latitude=24.8608&longitude=67.0104&method=1&timezonestring=Asia%2FKarachi&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "05:20",
+        "Sunrise": "06:36",
+        "Dhuhr": "12:39",
+        "Asr": "16:05",
+        "Sunset": "18:43",
+        "Maghrib": "18:43",
+        "Isha": "19:59",
+        "Imsak": "05:10",
+        "Midnight": "00:40",
+        "Firstthird": "22:41",
+        "Lastthird": "02:39"
+      },
+      "meta": {
+        "latitude": 24.8608,
+        "longitude": 67.0104,
+        "timezone": "Asia/Karachi",
+        "method": {
+          "id": 1,
+          "name": "University of Islamic Sciences, Karachi",
+          "params": {
+            "Fajr": 18,
+            "Isha": 18
+          },
+          "location": {
+            "latitude": 24.8614622,
+            "longitude": 67.0099388
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "PK",
+      "name_en": "Karachi",
+      "name_ar": "كراتشي",
+      "lat": 24.8608,
+      "lon": 67.0104,
+      "tz": "Asia/Karachi",
+      "method": 1,
+      "date": "21-06-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-06-2026?latitude=24.8608&longitude=67.0104&method=1&timezonestring=Asia%2FKarachi&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "04:14",
+        "Sunrise": "05:43",
+        "Dhuhr": "12:34",
+        "Asr": "15:55",
+        "Sunset": "19:24",
+        "Maghrib": "19:24",
+        "Isha": "20:53",
+        "Imsak": "04:04",
+        "Midnight": "00:34",
+        "Firstthird": "22:51",
+        "Lastthird": "02:17"
+      },
+      "meta": {
+        "latitude": 24.8608,
+        "longitude": 67.0104,
+        "timezone": "Asia/Karachi",
+        "method": {
+          "id": 1,
+          "name": "University of Islamic Sciences, Karachi",
+          "params": {
+            "Fajr": 18,
+            "Isha": 18
+          },
+          "location": {
+            "latitude": 24.8614622,
+            "longitude": 67.0099388
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "PK",
+      "name_en": "Karachi",
+      "name_ar": "كراتشي",
+      "lat": 24.8608,
+      "lon": 67.0104,
+      "tz": "Asia/Karachi",
+      "method": 1,
+      "date": "21-12-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-12-2026?latitude=24.8608&longitude=67.0104&method=1&timezonestring=Asia%2FKarachi&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "05:51",
+        "Sunrise": "07:12",
+        "Dhuhr": "12:30",
+        "Asr": "15:28",
+        "Sunset": "17:48",
+        "Maghrib": "17:48",
+        "Isha": "19:09",
+        "Imsak": "05:41",
+        "Midnight": "00:30",
+        "Firstthird": "22:16",
+        "Lastthird": "02:44"
+      },
+      "meta": {
+        "latitude": 24.8608,
+        "longitude": 67.0104,
+        "timezone": "Asia/Karachi",
+        "method": {
+          "id": 1,
+          "name": "University of Islamic Sciences, Karachi",
+          "params": {
+            "Fajr": 18,
+            "Isha": 18
+          },
+          "location": {
+            "latitude": 24.8614622,
+            "longitude": 67.0099388
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "ID",
+      "name_en": "Jakarta",
+      "name_ar": "جاكرتا",
+      "lat": -6.2146,
+      "lon": 106.8451,
+      "tz": "Asia/Jakarta",
+      "method": 20,
+      "date": "20-03-2026",
+      "url": "https://api.aladhan.com/v1/timings/20-03-2026?latitude=-6.2146&longitude=106.8451&method=20&timezonestring=Asia%2FJakarta&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "04:40",
+        "Sunrise": "05:57",
+        "Dhuhr": "12:00",
+        "Asr": "15:11",
+        "Sunset": "18:03",
+        "Maghrib": "18:03",
+        "Isha": "19:13",
+        "Imsak": "04:30",
+        "Midnight": "00:00",
+        "Firstthird": "22:01",
+        "Lastthird": "01:59"
+      },
+      "meta": {
+        "latitude": -6.2146,
+        "longitude": 106.8451,
+        "timezone": "Asia/Jakarta",
+        "method": {
+          "id": 20,
+          "name": "Kementerian Agama Republik Indonesia",
+          "params": {
+            "Fajr": 20,
+            "Isha": 18
+          },
+          "location": {
+            "latitude": -6.2087634,
+            "longitude": 106.845599
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "ID",
+      "name_en": "Jakarta",
+      "name_ar": "جاكرتا",
+      "lat": -6.2146,
+      "lon": 106.8451,
+      "tz": "Asia/Jakarta",
+      "method": 20,
+      "date": "21-06-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-06-2026?latitude=-6.2146&longitude=106.8451&method=20&timezonestring=Asia%2FJakarta&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "04:38",
+        "Sunrise": "06:01",
+        "Dhuhr": "11:54",
+        "Asr": "15:16",
+        "Sunset": "17:47",
+        "Maghrib": "17:47",
+        "Isha": "19:02",
+        "Imsak": "04:28",
+        "Midnight": "23:54",
+        "Firstthird": "21:52",
+        "Lastthird": "01:57"
+      },
+      "meta": {
+        "latitude": -6.2146,
+        "longitude": 106.8451,
+        "timezone": "Asia/Jakarta",
+        "method": {
+          "id": 20,
+          "name": "Kementerian Agama Republik Indonesia",
+          "params": {
+            "Fajr": 20,
+            "Isha": 18
+          },
+          "location": {
+            "latitude": -6.2087634,
+            "longitude": 106.845599
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "ID",
+      "name_en": "Jakarta",
+      "name_ar": "جاكرتا",
+      "lat": -6.2146,
+      "lon": 106.8451,
+      "tz": "Asia/Jakarta",
+      "method": 20,
+      "date": "21-12-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-12-2026?latitude=-6.2146&longitude=106.8451&method=20&timezonestring=Asia%2FJakarta&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "04:11",
+        "Sunrise": "05:36",
+        "Dhuhr": "11:51",
+        "Asr": "15:18",
+        "Sunset": "18:05",
+        "Maghrib": "18:05",
+        "Isha": "19:21",
+        "Imsak": "04:01",
+        "Midnight": "23:51",
+        "Firstthird": "21:55",
+        "Lastthird": "01:46"
+      },
+      "meta": {
+        "latitude": -6.2146,
+        "longitude": 106.8451,
+        "timezone": "Asia/Jakarta",
+        "method": {
+          "id": 20,
+          "name": "Kementerian Agama Republik Indonesia",
+          "params": {
+            "Fajr": 20,
+            "Isha": 18
+          },
+          "location": {
+            "latitude": -6.2087634,
+            "longitude": 106.845599
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "MY",
+      "name_en": "Kuala Lumpur",
+      "name_ar": "كوالالمبور",
+      "lat": 3.1412,
+      "lon": 101.6865,
+      "tz": "Asia/Kuala_Lumpur",
+      "method": 17,
+      "date": "20-03-2026",
+      "url": "https://api.aladhan.com/v1/timings/20-03-2026?latitude=3.1412&longitude=101.6865&method=17&timezonestring=Asia%2FKuala_Lumpur&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "06:01",
+        "Sunrise": "07:18",
+        "Dhuhr": "13:21",
+        "Asr": "16:26",
+        "Sunset": "19:24",
+        "Maghrib": "19:24",
+        "Isha": "20:33",
+        "Imsak": "05:51",
+        "Midnight": "01:21",
+        "Firstthird": "23:22",
+        "Lastthird": "03:20"
+      },
+      "meta": {
+        "latitude": 3.1412,
+        "longitude": 101.6865,
+        "timezone": "Asia/Kuala_Lumpur",
+        "method": {
+          "id": 17,
+          "name": "Jabatan Kemajuan Islam Malaysia (JAKIM)",
+          "params": {
+            "Fajr": 20,
+            "Isha": 18
+          },
+          "location": {
+            "latitude": 3.139003,
+            "longitude": 101.686855
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "MY",
+      "name_en": "Kuala Lumpur",
+      "name_ar": "كوالالمبور",
+      "lat": 3.1412,
+      "lon": 101.6865,
+      "tz": "Asia/Kuala_Lumpur",
+      "method": 17,
+      "date": "21-06-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-06-2026?latitude=3.1412&longitude=101.6865&method=17&timezonestring=Asia%2FKuala_Lumpur&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "05:41",
+        "Sunrise": "07:06",
+        "Dhuhr": "13:15",
+        "Asr": "16:42",
+        "Sunset": "19:24",
+        "Maghrib": "19:24",
+        "Isha": "20:40",
+        "Imsak": "05:31",
+        "Midnight": "01:15",
+        "Firstthird": "23:18",
+        "Lastthird": "03:12"
+      },
+      "meta": {
+        "latitude": 3.1412,
+        "longitude": 101.6865,
+        "timezone": "Asia/Kuala_Lumpur",
+        "method": {
+          "id": 17,
+          "name": "Jabatan Kemajuan Islam Malaysia (JAKIM)",
+          "params": {
+            "Fajr": 20,
+            "Isha": 18
+          },
+          "location": {
+            "latitude": 3.139003,
+            "longitude": 101.686855
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "MY",
+      "name_en": "Kuala Lumpur",
+      "name_ar": "كوالالمبور",
+      "lat": 3.1412,
+      "lon": 101.6865,
+      "tz": "Asia/Kuala_Lumpur",
+      "method": 17,
+      "date": "21-12-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-12-2026?latitude=3.1412&longitude=101.6865&method=17&timezonestring=Asia%2FKuala_Lumpur&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "05:49",
+        "Sunrise": "07:13",
+        "Dhuhr": "13:11",
+        "Asr": "16:35",
+        "Sunset": "19:09",
+        "Maghrib": "19:09",
+        "Isha": "20:24",
+        "Imsak": "05:39",
+        "Midnight": "01:11",
+        "Firstthird": "23:11",
+        "Lastthird": "03:12"
+      },
+      "meta": {
+        "latitude": 3.1412,
+        "longitude": 101.6865,
+        "timezone": "Asia/Kuala_Lumpur",
+        "method": {
+          "id": 17,
+          "name": "Jabatan Kemajuan Islam Malaysia (JAKIM)",
+          "params": {
+            "Fajr": 20,
+            "Isha": 18
+          },
+          "location": {
+            "latitude": 3.139003,
+            "longitude": 101.686855
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "SG",
+      "name_en": "Singapore",
+      "name_ar": "سنغافورة",
+      "lat": 1.2897,
+      "lon": 103.8501,
+      "tz": "Asia/Singapore",
+      "method": 11,
+      "date": "20-03-2026",
+      "url": "https://api.aladhan.com/v1/timings/20-03-2026?latitude=1.2897&longitude=103.8501&method=11&timezonestring=Asia%2FSingapore&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "05:52",
+        "Sunrise": "07:09",
+        "Dhuhr": "13:12",
+        "Asr": "16:14",
+        "Sunset": "19:15",
+        "Maghrib": "19:15",
+        "Isha": "20:24",
+        "Imsak": "05:42",
+        "Midnight": "01:12",
+        "Firstthird": "23:13",
+        "Lastthird": "03:11"
+      },
+      "meta": {
+        "latitude": 1.2897,
+        "longitude": 103.8501,
+        "timezone": "Asia/Singapore",
+        "method": {
+          "id": 11,
+          "name": "Majlis Ugama Islam Singapura, Singapore",
+          "params": {
+            "Fajr": 20,
+            "Isha": 18
+          },
+          "location": {
+            "latitude": 1.352083,
+            "longitude": 103.819836
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "SG",
+      "name_en": "Singapore",
+      "name_ar": "سنغافورة",
+      "lat": 1.2897,
+      "lon": 103.8501,
+      "tz": "Asia/Singapore",
+      "method": 11,
+      "date": "21-06-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-06-2026?latitude=1.2897&longitude=103.8501&method=11&timezonestring=Asia%2FSingapore&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "05:36",
+        "Sunrise": "07:00",
+        "Dhuhr": "13:06",
+        "Asr": "16:33",
+        "Sunset": "19:12",
+        "Maghrib": "19:12",
+        "Isha": "20:28",
+        "Imsak": "05:26",
+        "Midnight": "01:06",
+        "Firstthird": "23:08",
+        "Lastthird": "03:04"
+      },
+      "meta": {
+        "latitude": 1.2897,
+        "longitude": 103.8501,
+        "timezone": "Asia/Singapore",
+        "method": {
+          "id": 11,
+          "name": "Majlis Ugama Islam Singapura, Singapore",
+          "params": {
+            "Fajr": 20,
+            "Isha": 18
+          },
+          "location": {
+            "latitude": 1.352083,
+            "longitude": 103.819836
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "SG",
+      "name_en": "Singapore",
+      "name_ar": "سنغافورة",
+      "lat": 1.2897,
+      "lon": 103.8501,
+      "tz": "Asia/Singapore",
+      "method": 11,
+      "date": "21-12-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-12-2026?latitude=1.2897&longitude=103.8501&method=11&timezonestring=Asia%2FSingapore&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "05:37",
+        "Sunrise": "07:01",
+        "Dhuhr": "13:03",
+        "Asr": "16:28",
+        "Sunset": "19:04",
+        "Maghrib": "19:04",
+        "Isha": "20:19",
+        "Imsak": "05:27",
+        "Midnight": "01:03",
+        "Firstthird": "23:03",
+        "Lastthird": "03:02"
+      },
+      "meta": {
+        "latitude": 1.2897,
+        "longitude": 103.8501,
+        "timezone": "Asia/Singapore",
+        "method": {
+          "id": 11,
+          "name": "Majlis Ugama Islam Singapura, Singapore",
+          "params": {
+            "Fajr": 20,
+            "Isha": 18
+          },
+          "location": {
+            "latitude": 1.352083,
+            "longitude": 103.819836
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "FR",
+      "name_en": "Paris",
+      "name_ar": "باريس",
+      "lat": 48.8534,
+      "lon": 2.3488,
+      "tz": "Europe/Paris",
+      "method": 12,
+      "date": "20-03-2026",
+      "url": "https://api.aladhan.com/v1/timings/20-03-2026?latitude=48.8534&longitude=2.3488&method=12&timezonestring=Europe%2FParis&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "05:45",
+        "Sunrise": "06:54",
+        "Dhuhr": "12:58",
+        "Asr": "16:17",
+        "Sunset": "19:03",
+        "Maghrib": "19:03",
+        "Isha": "20:12",
+        "Imsak": "05:35",
+        "Midnight": "00:59",
+        "Firstthird": "23:00",
+        "Lastthird": "02:57"
+      },
+      "meta": {
+        "latitude": 48.8534,
+        "longitude": 2.3488,
+        "timezone": "Europe/Paris",
+        "method": {
+          "id": 12,
+          "name": "Union Organization Islamic de France",
+          "params": {
+            "Fajr": 12,
+            "Isha": 12
+          },
+          "location": {
+            "latitude": 48.856614,
+            "longitude": 2.3522219
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "FR",
+      "name_en": "Paris",
+      "name_ar": "باريس",
+      "lat": 48.8534,
+      "lon": 2.3488,
+      "tz": "Europe/Paris",
+      "method": 12,
+      "date": "21-06-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-06-2026?latitude=48.8534&longitude=2.3488&method=12&timezonestring=Europe%2FParis&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "04:13",
+        "Sunrise": "05:47",
+        "Dhuhr": "13:52",
+        "Asr": "18:10",
+        "Sunset": "21:58",
+        "Maghrib": "21:58",
+        "Isha": "23:32",
+        "Imsak": "04:03",
+        "Midnight": "01:52",
+        "Firstthird": "00:34",
+        "Lastthird": "03:11"
+      },
+      "meta": {
+        "latitude": 48.8534,
+        "longitude": 2.3488,
+        "timezone": "Europe/Paris",
+        "method": {
+          "id": 12,
+          "name": "Union Organization Islamic de France",
+          "params": {
+            "Fajr": 12,
+            "Isha": 12
+          },
+          "location": {
+            "latitude": 48.856614,
+            "longitude": 2.3522219
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "FR",
+      "name_en": "Paris",
+      "name_ar": "باريس",
+      "lat": 48.8534,
+      "lon": 2.3488,
+      "tz": "Europe/Paris",
+      "method": 12,
+      "date": "21-12-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-12-2026?latitude=48.8534&longitude=2.3488&method=12&timezonestring=Europe%2FParis&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "07:23",
+        "Sunrise": "08:41",
+        "Dhuhr": "12:49",
+        "Asr": "14:39",
+        "Sunset": "16:56",
+        "Maghrib": "16:56",
+        "Isha": "18:14",
+        "Imsak": "07:13",
+        "Midnight": "00:49",
+        "Firstthird": "22:11",
+        "Lastthird": "03:26"
+      },
+      "meta": {
+        "latitude": 48.8534,
+        "longitude": 2.3488,
+        "timezone": "Europe/Paris",
+        "method": {
+          "id": 12,
+          "name": "Union Organization Islamic de France",
+          "params": {
+            "Fajr": 12,
+            "Isha": 12
+          },
+          "location": {
+            "latitude": 48.856614,
+            "longitude": 2.3522219
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "US",
+      "name_en": "New York City",
+      "name_ar": "نيويورك",
+      "lat": 40.7143,
+      "lon": -74.006,
+      "tz": "America/New_York",
+      "method": 2,
+      "date": "20-03-2026",
+      "url": "https://api.aladhan.com/v1/timings/20-03-2026?latitude=40.7143&longitude=-74.006&method=2&timezonestring=America%2FNew_York&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "05:44",
+        "Sunrise": "06:59",
+        "Dhuhr": "13:03",
+        "Asr": "16:28",
+        "Sunset": "19:08",
+        "Maghrib": "19:08",
+        "Isha": "20:24",
+        "Imsak": "05:34",
+        "Midnight": "01:04",
+        "Firstthird": "23:05",
+        "Lastthird": "03:02"
+      },
+      "meta": {
+        "latitude": 40.7143,
+        "longitude": -74.006,
+        "timezone": "America/New_York",
+        "method": {
+          "id": 2,
+          "name": "Islamic Society of North America (ISNA)",
+          "params": {
+            "Fajr": 15,
+            "Isha": 15
+          },
+          "location": {
+            "latitude": 39.70421229999999,
+            "longitude": -86.39943869999999
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "US",
+      "name_en": "New York City",
+      "name_ar": "نيويورك",
+      "lat": 40.7143,
+      "lon": -74.006,
+      "tz": "America/New_York",
+      "method": 2,
+      "date": "21-06-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-06-2026?latitude=40.7143&longitude=-74.006&method=2&timezonestring=America%2FNew_York&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "03:45",
+        "Sunrise": "05:25",
+        "Dhuhr": "12:58",
+        "Asr": "16:58",
+        "Sunset": "20:31",
+        "Maghrib": "20:31",
+        "Isha": "22:11",
+        "Imsak": "03:35",
+        "Midnight": "00:58",
+        "Firstthird": "23:29",
+        "Lastthird": "02:27"
+      },
+      "meta": {
+        "latitude": 40.7143,
+        "longitude": -74.006,
+        "timezone": "America/New_York",
+        "method": {
+          "id": 2,
+          "name": "Islamic Society of North America (ISNA)",
+          "params": {
+            "Fajr": 15,
+            "Isha": 15
+          },
+          "location": {
+            "latitude": 39.70421229999999,
+            "longitude": -86.39943869999999
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "US",
+      "name_en": "New York City",
+      "name_ar": "نيويورك",
+      "lat": 40.7143,
+      "lon": -74.006,
+      "tz": "America/New_York",
+      "method": 2,
+      "date": "21-12-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-12-2026?latitude=40.7143&longitude=-74.006&method=2&timezonestring=America%2FNew_York&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "05:54",
+        "Sunrise": "07:17",
+        "Dhuhr": "11:54",
+        "Asr": "14:14",
+        "Sunset": "16:32",
+        "Maghrib": "16:32",
+        "Isha": "17:54",
+        "Imsak": "05:44",
+        "Midnight": "23:54",
+        "Firstthird": "21:27",
+        "Lastthird": "02:22"
+      },
+      "meta": {
+        "latitude": 40.7143,
+        "longitude": -74.006,
+        "timezone": "America/New_York",
+        "method": {
+          "id": 2,
+          "name": "Islamic Society of North America (ISNA)",
+          "params": {
+            "Fajr": 15,
+            "Isha": 15
+          },
+          "location": {
+            "latitude": 39.70421229999999,
+            "longitude": -86.39943869999999
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "RU",
+      "name_en": "Moscow",
+      "name_ar": "موسكو",
+      "lat": 55.752,
+      "lon": 37.6178,
+      "tz": "Europe/Moscow",
+      "method": 14,
+      "date": "20-03-2026",
+      "url": "https://api.aladhan.com/v1/timings/20-03-2026?latitude=55.752&longitude=37.6178&method=14&timezonestring=Europe%2FMoscow&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "04:41",
+        "Sunrise": "06:32",
+        "Dhuhr": "12:37",
+        "Asr": "15:48",
+        "Sunset": "18:43",
+        "Maghrib": "18:43",
+        "Isha": "20:27",
+        "Imsak": "04:31",
+        "Midnight": "00:38",
+        "Firstthird": "22:39",
+        "Lastthird": "02:36"
+      },
+      "meta": {
+        "latitude": 55.752,
+        "longitude": 37.6178,
+        "timezone": "Europe/Moscow",
+        "method": {
+          "id": 14,
+          "name": "Spiritual Administration of Muslims of Russia",
+          "params": {
+            "Fajr": 16,
+            "Isha": 15
+          },
+          "location": {
+            "latitude": 54.73479099999999,
+            "longitude": 55.9578555
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "RU",
+      "name_en": "Moscow",
+      "name_ar": "موسكو",
+      "lat": 55.752,
+      "lon": 37.6178,
+      "tz": "Europe/Moscow",
+      "method": 14,
+      "date": "21-06-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-06-2026?latitude=55.752&longitude=37.6178&method=14&timezonestring=Europe%2FMoscow&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "02:02",
+        "Sunrise": "03:45",
+        "Dhuhr": "12:31",
+        "Asr": "17:03",
+        "Sunset": "21:18",
+        "Maghrib": "21:18",
+        "Isha": "22:55",
+        "Imsak": "01:52",
+        "Midnight": "00:31",
+        "Firstthird": "23:27",
+        "Lastthird": "01:36"
+      },
+      "meta": {
+        "latitude": 55.752,
+        "longitude": 37.6178,
+        "timezone": "Europe/Moscow",
+        "method": {
+          "id": 14,
+          "name": "Spiritual Administration of Muslims of Russia",
+          "params": {
+            "Fajr": 16,
+            "Isha": 15
+          },
+          "location": {
+            "latitude": 54.73479099999999,
+            "longitude": 55.9578555
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "RU",
+      "name_en": "Moscow",
+      "name_ar": "موسكو",
+      "lat": 55.752,
+      "lon": 37.6178,
+      "tz": "Europe/Moscow",
+      "method": 14,
+      "date": "21-12-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-12-2026?latitude=55.752&longitude=37.6178&method=14&timezonestring=Europe%2FMoscow&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "06:51",
+        "Sunrise": "08:57",
+        "Dhuhr": "12:28",
+        "Asr": "13:45",
+        "Sunset": "15:58",
+        "Maghrib": "15:58",
+        "Isha": "17:57",
+        "Imsak": "06:41",
+        "Midnight": "00:28",
+        "Firstthird": "21:38",
+        "Lastthird": "03:17"
+      },
+      "meta": {
+        "latitude": 55.752,
+        "longitude": 37.6178,
+        "timezone": "Europe/Moscow",
+        "method": {
+          "id": 14,
+          "name": "Spiritual Administration of Muslims of Russia",
+          "params": {
+            "Fajr": 16,
+            "Isha": 15
+          },
+          "location": {
+            "latitude": 54.73479099999999,
+            "longitude": 55.9578555
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "GB",
+      "name_en": "London",
+      "name_ar": "لندن",
+      "lat": 51.5085,
+      "lon": -0.1257,
+      "tz": "Europe/London",
+      "method": 15,
+      "date": "20-03-2026",
+      "url": "https://api.aladhan.com/v1/timings/20-03-2026?latitude=51.5085&longitude=-0.1257&method=15&timezonestring=Europe%2FLondon&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "04:30",
+        "Sunrise": "06:03",
+        "Dhuhr": "12:08",
+        "Asr": "15:24",
+        "Sunset": "18:14",
+        "Maghrib": "18:14",
+        "Isha": "19:31",
+        "Imsak": "04:20",
+        "Midnight": "00:08",
+        "Firstthird": "22:10",
+        "Lastthird": "02:07"
+      },
+      "meta": {
+        "latitude": 51.5085,
+        "longitude": -0.1257,
+        "timezone": "Europe/London",
+        "method": {
+          "id": 15,
+          "name": "Moonsighting Committee Worldwide (Moonsighting.com)",
+          "params": {
+            "shafaq": "general"
+          }
+        },
+        "latitudeAdjustmentMethod": "NONE",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "GB",
+      "name_en": "London",
+      "name_ar": "لندن",
+      "lat": 51.5085,
+      "lon": -0.1257,
+      "tz": "Europe/London",
+      "method": 15,
+      "date": "21-06-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-06-2026?latitude=51.5085&longitude=-0.1257&method=15&timezonestring=Europe%2FLondon&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "02:43",
+        "Sunrise": "04:43",
+        "Dhuhr": "13:02",
+        "Asr": "17:25",
+        "Sunset": "21:22",
+        "Maghrib": "21:22",
+        "Isha": "22:42",
+        "Imsak": "02:33",
+        "Midnight": "01:02",
+        "Firstthird": "23:49",
+        "Lastthird": "02:16"
+      },
+      "meta": {
+        "latitude": 51.5085,
+        "longitude": -0.1257,
+        "timezone": "Europe/London",
+        "method": {
+          "id": 15,
+          "name": "Moonsighting Committee Worldwide (Moonsighting.com)",
+          "params": {
+            "shafaq": "general"
+          }
+        },
+        "latitudeAdjustmentMethod": "NONE",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "GB",
+      "name_en": "London",
+      "name_ar": "لندن",
+      "lat": 51.5085,
+      "lon": -0.1257,
+      "tz": "Europe/London",
+      "method": 15,
+      "date": "21-12-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-12-2026?latitude=51.5085&longitude=-0.1257&method=15&timezonestring=Europe%2FLondon&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "06:22",
+        "Sunrise": "08:04",
+        "Dhuhr": "11:59",
+        "Asr": "13:38",
+        "Sunset": "15:53",
+        "Maghrib": "15:53",
+        "Isha": "17:32",
+        "Imsak": "06:12",
+        "Midnight": "23:59",
+        "Firstthird": "21:17",
+        "Lastthird": "02:40"
+      },
+      "meta": {
+        "latitude": 51.5085,
+        "longitude": -0.1257,
+        "timezone": "Europe/London",
+        "method": {
+          "id": 15,
+          "name": "Moonsighting Committee Worldwide (Moonsighting.com)",
+          "params": {
+            "shafaq": "general"
+          }
+        },
+        "latitudeAdjustmentMethod": "NONE",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "ZA",
+      "name_en": "Cape Town",
+      "name_ar": "كيب تاون",
+      "lat": -33.9258,
+      "lon": 18.4232,
+      "tz": "Africa/Johannesburg",
+      "method": 3,
+      "date": "20-03-2026",
+      "url": "https://api.aladhan.com/v1/timings/20-03-2026?latitude=-33.9258&longitude=18.4232&method=3&timezonestring=Africa%2FJohannesburg&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "05:26",
+        "Sunrise": "06:49",
+        "Dhuhr": "12:54",
+        "Asr": "16:22",
+        "Sunset": "18:58",
+        "Maghrib": "18:58",
+        "Isha": "20:16",
+        "Imsak": "05:16",
+        "Midnight": "00:54",
+        "Firstthird": "22:55",
+        "Lastthird": "02:52"
+      },
+      "meta": {
+        "latitude": -33.9258,
+        "longitude": 18.4232,
+        "timezone": "Africa/Johannesburg",
+        "method": {
+          "id": 3,
+          "name": "Muslim World League",
+          "params": {
+            "Fajr": 18,
+            "Isha": 17
+          },
+          "location": {
+            "latitude": 51.5194682,
+            "longitude": -0.1360365
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "ZA",
+      "name_en": "Cape Town",
+      "name_ar": "كيب تاون",
+      "lat": -33.9258,
+      "lon": 18.4232,
+      "tz": "Africa/Johannesburg",
+      "method": 3,
+      "date": "21-06-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-06-2026?latitude=-33.9258&longitude=18.4232&method=3&timezonestring=Africa%2FJohannesburg&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "06:22",
+        "Sunrise": "07:51",
+        "Dhuhr": "12:48",
+        "Asr": "15:27",
+        "Sunset": "17:45",
+        "Maghrib": "17:45",
+        "Isha": "19:09",
+        "Imsak": "06:12",
+        "Midnight": "00:48",
+        "Firstthird": "22:27",
+        "Lastthird": "03:09"
+      },
+      "meta": {
+        "latitude": -33.9258,
+        "longitude": 18.4232,
+        "timezone": "Africa/Johannesburg",
+        "method": {
+          "id": 3,
+          "name": "Muslim World League",
+          "params": {
+            "Fajr": 18,
+            "Isha": 17
+          },
+          "location": {
+            "latitude": 51.5194682,
+            "longitude": -0.1360365
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "ZA",
+      "name_en": "Cape Town",
+      "name_ar": "كيب تاون",
+      "lat": -33.9258,
+      "lon": 18.4232,
+      "tz": "Africa/Johannesburg",
+      "method": 3,
+      "date": "21-12-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-12-2026?latitude=-33.9258&longitude=18.4232&method=3&timezonestring=Africa%2FJohannesburg&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "03:47",
+        "Sunrise": "05:32",
+        "Dhuhr": "12:44",
+        "Asr": "16:29",
+        "Sunset": "19:57",
+        "Maghrib": "19:57",
+        "Isha": "21:34",
+        "Imsak": "03:37",
+        "Midnight": "00:44",
+        "Firstthird": "23:09",
+        "Lastthird": "02:20"
+      },
+      "meta": {
+        "latitude": -33.9258,
+        "longitude": 18.4232,
+        "timezone": "Africa/Johannesburg",
+        "method": {
+          "id": 3,
+          "name": "Muslim World League",
+          "params": {
+            "Fajr": 18,
+            "Isha": 17
+          },
+          "location": {
+            "latitude": 51.5194682,
+            "longitude": -0.1360365
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "IR",
+      "name_en": "Tehran",
+      "name_ar": "طهران",
+      "lat": 35.6944,
+      "lon": 51.4215,
+      "tz": "Asia/Tehran",
+      "method": 3,
+      "date": "20-03-2026",
+      "url": "https://api.aladhan.com/v1/timings/20-03-2026?latitude=35.6944&longitude=51.4215&method=3&timezonestring=Asia%2FTehran&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "04:43",
+        "Sunrise": "06:08",
+        "Dhuhr": "12:12",
+        "Asr": "15:38",
+        "Sunset": "18:16",
+        "Maghrib": "18:16",
+        "Isha": "19:36",
+        "Imsak": "04:33",
+        "Midnight": "00:12",
+        "Firstthird": "22:13",
+        "Lastthird": "02:11"
+      },
+      "meta": {
+        "latitude": 35.6944,
+        "longitude": 51.4215,
+        "timezone": "Asia/Tehran",
+        "method": {
+          "id": 3,
+          "name": "Muslim World League",
+          "params": {
+            "Fajr": 18,
+            "Isha": 17
+          },
+          "location": {
+            "latitude": 51.5194682,
+            "longitude": -0.1360365
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "IR",
+      "name_en": "Tehran",
+      "name_ar": "طهران",
+      "lat": 35.6944,
+      "lon": 51.4215,
+      "tz": "Asia/Tehran",
+      "method": 3,
+      "date": "21-06-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-06-2026?latitude=35.6944&longitude=51.4215&method=3&timezonestring=Asia%2FTehran&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "03:00",
+        "Sunrise": "04:49",
+        "Dhuhr": "12:06",
+        "Asr": "15:55",
+        "Sunset": "19:23",
+        "Maghrib": "19:23",
+        "Isha": "21:05",
+        "Imsak": "02:50",
+        "Midnight": "00:06",
+        "Firstthird": "22:32",
+        "Lastthird": "01:40"
+      },
+      "meta": {
+        "latitude": 35.6944,
+        "longitude": 51.4215,
+        "timezone": "Asia/Tehran",
+        "method": {
+          "id": 3,
+          "name": "Muslim World League",
+          "params": {
+            "Fajr": 18,
+            "Isha": 17
+          },
+          "location": {
+            "latitude": 51.5194682,
+            "longitude": -0.1360365
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "IR",
+      "name_en": "Tehran",
+      "name_ar": "طهران",
+      "lat": 35.6944,
+      "lon": 51.4215,
+      "tz": "Asia/Tehran",
+      "method": 3,
+      "date": "21-12-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-12-2026?latitude=35.6944&longitude=51.4215&method=3&timezonestring=Asia%2FTehran&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "05:38",
+        "Sunrise": "07:10",
+        "Dhuhr": "12:02",
+        "Asr": "14:37",
+        "Sunset": "16:55",
+        "Maghrib": "16:55",
+        "Isha": "18:21",
+        "Imsak": "05:28",
+        "Midnight": "00:02",
+        "Firstthird": "21:40",
+        "Lastthird": "02:25"
+      },
+      "meta": {
+        "latitude": 35.6944,
+        "longitude": 51.4215,
+        "timezone": "Asia/Tehran",
+        "method": {
+          "id": 3,
+          "name": "Muslim World League",
+          "params": {
+            "Fajr": 18,
+            "Isha": 17
+          },
+          "location": {
+            "latitude": 51.5194682,
+            "longitude": -0.1360365
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "NO",
+      "name_en": "Oslo",
+      "name_ar": "أوسلو",
+      "lat": 59.9127,
+      "lon": 10.7461,
+      "tz": "Europe/Oslo",
+      "method": 3,
+      "date": "20-03-2026",
+      "url": "https://api.aladhan.com/v1/timings/20-03-2026?latitude=59.9127&longitude=10.7461&method=3&timezonestring=Europe%2FOslo&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "03:54",
+        "Sunrise": "06:19",
+        "Dhuhr": "12:24",
+        "Asr": "15:29",
+        "Sunset": "18:31",
+        "Maghrib": "18:31",
+        "Isha": "20:47",
+        "Imsak": "03:44",
+        "Midnight": "00:25",
+        "Firstthird": "22:27",
+        "Lastthird": "02:23"
+      },
+      "meta": {
+        "latitude": 59.9127,
+        "longitude": 10.7461,
+        "timezone": "Europe/Oslo",
+        "method": {
+          "id": 3,
+          "name": "Muslim World League",
+          "params": {
+            "Fajr": 18,
+            "Isha": 17
+          },
+          "location": {
+            "latitude": 51.5194682,
+            "longitude": -0.1360365
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "NO",
+      "name_en": "Oslo",
+      "name_ar": "أوسلو",
+      "lat": 59.9127,
+      "lon": 10.7461,
+      "tz": "Europe/Oslo",
+      "method": 3,
+      "date": "21-06-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-06-2026?latitude=59.9127&longitude=10.7461&method=3&timezonestring=Europe%2FOslo&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "02:21",
+        "Sunrise": "03:54",
+        "Dhuhr": "13:19",
+        "Asr": "18:00",
+        "Sunset": "22:44",
+        "Maghrib": "22:44",
+        "Isha": "00:12",
+        "Imsak": "02:11",
+        "Midnight": "01:19",
+        "Firstthird": "00:27",
+        "Lastthird": "02:10"
+      },
+      "meta": {
+        "latitude": 59.9127,
+        "longitude": 10.7461,
+        "timezone": "Europe/Oslo",
+        "method": {
+          "id": 3,
+          "name": "Muslim World League",
+          "params": {
+            "Fajr": 18,
+            "Isha": 17
+          },
+          "location": {
+            "latitude": 51.5194682,
+            "longitude": -0.1360365
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "NO",
+      "name_en": "Oslo",
+      "name_ar": "أوسلو",
+      "lat": 59.9127,
+      "lon": 10.7461,
+      "tz": "Europe/Oslo",
+      "method": 3,
+      "date": "21-12-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-12-2026?latitude=59.9127&longitude=10.7461&method=3&timezonestring=Europe%2FOslo&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "06:32",
+        "Sunrise": "09:18",
+        "Dhuhr": "12:15",
+        "Asr": "13:07",
+        "Sunset": "15:12",
+        "Maghrib": "15:12",
+        "Isha": "17:49",
+        "Imsak": "06:22",
+        "Midnight": "00:15",
+        "Firstthird": "21:14",
+        "Lastthird": "03:16"
+      },
+      "meta": {
+        "latitude": 59.9127,
+        "longitude": 10.7461,
+        "timezone": "Europe/Oslo",
+        "method": {
+          "id": 3,
+          "name": "Muslim World League",
+          "params": {
+            "Fajr": 18,
+            "Isha": 17
+          },
+          "location": {
+            "latitude": 51.5194682,
+            "longitude": -0.1360365
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "CA",
+      "name_en": "Ottawa",
+      "name_ar": "أوتاوا",
+      "lat": 45.4112,
+      "lon": -75.6981,
+      "tz": "America/Toronto",
+      "method": 2,
+      "date": "20-03-2026",
+      "url": "https://api.aladhan.com/v1/timings/20-03-2026?latitude=45.4112&longitude=-75.6981&method=2&timezonestring=America%2FToronto&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "05:44",
+        "Sunrise": "07:06",
+        "Dhuhr": "13:10",
+        "Asr": "16:33",
+        "Sunset": "19:15",
+        "Maghrib": "19:15",
+        "Isha": "20:37",
+        "Imsak": "05:34",
+        "Midnight": "01:11",
+        "Firstthird": "23:12",
+        "Lastthird": "03:09"
+      },
+      "meta": {
+        "latitude": 45.4112,
+        "longitude": -75.6981,
+        "timezone": "America/Toronto",
+        "method": {
+          "id": 2,
+          "name": "Islamic Society of North America (ISNA)",
+          "params": {
+            "Fajr": 15,
+            "Isha": 15
+          },
+          "location": {
+            "latitude": 39.70421229999999,
+            "longitude": -86.39943869999999
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "CA",
+      "name_en": "Ottawa",
+      "name_ar": "أوتاوا",
+      "lat": 45.4112,
+      "lon": -75.6981,
+      "tz": "America/Toronto",
+      "method": 2,
+      "date": "21-06-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-06-2026?latitude=45.4112&longitude=-75.6981&method=2&timezonestring=America%2FToronto&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "03:15",
+        "Sunrise": "05:14",
+        "Dhuhr": "13:05",
+        "Asr": "17:15",
+        "Sunset": "20:55",
+        "Maghrib": "20:55",
+        "Isha": "22:54",
+        "Imsak": "03:05",
+        "Midnight": "01:05",
+        "Firstthird": "23:41",
+        "Lastthird": "02:28"
+      },
+      "meta": {
+        "latitude": 45.4112,
+        "longitude": -75.6981,
+        "timezone": "America/Toronto",
+        "method": {
+          "id": 2,
+          "name": "Islamic Society of North America (ISNA)",
+          "params": {
+            "Fajr": 15,
+            "Isha": 15
+          },
+          "location": {
+            "latitude": 39.70421229999999,
+            "longitude": -86.39943869999999
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "CA",
+      "name_en": "Ottawa",
+      "name_ar": "أوتاوا",
+      "lat": 45.4112,
+      "lon": -75.6981,
+      "tz": "America/Toronto",
+      "method": 2,
+      "date": "21-12-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-12-2026?latitude=45.4112&longitude=-75.6981&method=2&timezonestring=America%2FToronto&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "06:10",
+        "Sunrise": "07:39",
+        "Dhuhr": "12:01",
+        "Asr": "14:05",
+        "Sunset": "16:22",
+        "Maghrib": "16:22",
+        "Isha": "17:52",
+        "Imsak": "06:00",
+        "Midnight": "00:01",
+        "Firstthird": "21:28",
+        "Lastthird": "02:34"
+      },
+      "meta": {
+        "latitude": 45.4112,
+        "longitude": -75.6981,
+        "timezone": "America/Toronto",
+        "method": {
+          "id": 2,
+          "name": "Islamic Society of North America (ISNA)",
+          "params": {
+            "Fajr": 15,
+            "Isha": 15
+          },
+          "location": {
+            "latitude": 39.70421229999999,
+            "longitude": -86.39943869999999
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "CN",
+      "name_en": "Beijing",
+      "name_ar": "بكين",
+      "lat": 39.9075,
+      "lon": 116.3972,
+      "tz": "Asia/Shanghai",
+      "method": 3,
+      "date": "20-03-2026",
+      "url": "https://api.aladhan.com/v1/timings/20-03-2026?latitude=39.9075&longitude=116.3972&method=3&timezonestring=Asia%2FShanghai&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "04:48",
+        "Sunrise": "06:19",
+        "Dhuhr": "12:22",
+        "Asr": "15:46",
+        "Sunset": "18:26",
+        "Maghrib": "18:26",
+        "Isha": "19:51",
+        "Imsak": "04:38",
+        "Midnight": "00:22",
+        "Firstthird": "22:24",
+        "Lastthird": "02:21"
+      },
+      "meta": {
+        "latitude": 39.9075,
+        "longitude": 116.3972,
+        "timezone": "Asia/Shanghai",
+        "method": {
+          "id": 3,
+          "name": "Muslim World League",
+          "params": {
+            "Fajr": 18,
+            "Isha": 17
+          },
+          "location": {
+            "latitude": 51.5194682,
+            "longitude": -0.1360365
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "CN",
+      "name_en": "Beijing",
+      "name_ar": "بكين",
+      "lat": 39.9075,
+      "lon": 116.3972,
+      "tz": "Asia/Shanghai",
+      "method": 3,
+      "date": "21-06-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-06-2026?latitude=39.9075&longitude=116.3972&method=3&timezonestring=Asia%2FShanghai&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "02:43",
+        "Sunrise": "04:46",
+        "Dhuhr": "12:16",
+        "Asr": "16:15",
+        "Sunset": "19:46",
+        "Maghrib": "19:46",
+        "Isha": "21:41",
+        "Imsak": "02:33",
+        "Midnight": "00:16",
+        "Firstthird": "22:46",
+        "Lastthird": "01:46"
+      },
+      "meta": {
+        "latitude": 39.9075,
+        "longitude": 116.3972,
+        "timezone": "Asia/Shanghai",
+        "method": {
+          "id": 3,
+          "name": "Muslim World League",
+          "params": {
+            "Fajr": 18,
+            "Isha": 17
+          },
+          "location": {
+            "latitude": 51.5194682,
+            "longitude": -0.1360365
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "CN",
+      "name_en": "Beijing",
+      "name_ar": "بكين",
+      "lat": 39.9075,
+      "lon": 116.3972,
+      "tz": "Asia/Shanghai",
+      "method": 3,
+      "date": "21-12-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-12-2026?latitude=39.9075&longitude=116.3972&method=3&timezonestring=Asia%2FShanghai&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "05:55",
+        "Sunrise": "07:32",
+        "Dhuhr": "12:12",
+        "Asr": "14:35",
+        "Sunset": "16:52",
+        "Maghrib": "16:52",
+        "Isha": "18:25",
+        "Imsak": "05:45",
+        "Midnight": "00:12",
+        "Firstthird": "21:46",
+        "Lastthird": "02:39"
+      },
+      "meta": {
+        "latitude": 39.9075,
+        "longitude": 116.3972,
+        "timezone": "Asia/Shanghai",
+        "method": {
+          "id": 3,
+          "name": "Muslim World League",
+          "params": {
+            "Fajr": 18,
+            "Isha": 17
+          },
+          "location": {
+            "latitude": 51.5194682,
+            "longitude": -0.1360365
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "GB",
+      "name_en": "Glasgow",
+      "name_ar": "غلاسكو",
+      "lat": 55.8651,
+      "lon": -4.2576,
+      "tz": "Europe/London",
+      "method": 15,
+      "date": "20-03-2026",
+      "url": "https://api.aladhan.com/v1/timings/20-03-2026?latitude=55.8651&longitude=-4.2576&method=15&timezonestring=Europe%2FLondon&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "04:44",
+        "Sunrise": "06:19",
+        "Dhuhr": "12:24",
+        "Asr": "15:36",
+        "Sunset": "18:31",
+        "Maghrib": "18:31",
+        "Isha": "19:49",
+        "Imsak": "04:34",
+        "Midnight": "00:25",
+        "Firstthird": "22:27",
+        "Lastthird": "02:23"
+      },
+      "meta": {
+        "latitude": 55.8651,
+        "longitude": -4.2576,
+        "timezone": "Europe/London",
+        "method": {
+          "id": 15,
+          "name": "Moonsighting Committee Worldwide (Moonsighting.com)",
+          "params": {
+            "shafaq": "general"
+          }
+        },
+        "latitudeAdjustmentMethod": "NONE",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "GB",
+      "name_en": "Glasgow",
+      "name_ar": "غلاسكو",
+      "lat": 55.8651,
+      "lon": -4.2576,
+      "tz": "Europe/London",
+      "method": 15,
+      "date": "21-06-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-06-2026?latitude=55.8651&longitude=-4.2576&method=15&timezonestring=Europe%2FLondon&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "02:27",
+        "Sunrise": "04:31",
+        "Dhuhr": "13:19",
+        "Asr": "17:51",
+        "Sunset": "22:06",
+        "Maghrib": "22:06",
+        "Isha": "23:27",
+        "Imsak": "02:17",
+        "Midnight": "01:19",
+        "Firstthird": "00:15",
+        "Lastthird": "02:23"
+      },
+      "meta": {
+        "latitude": 55.8651,
+        "longitude": -4.2576,
+        "timezone": "Europe/London",
+        "method": {
+          "id": 15,
+          "name": "Moonsighting Committee Worldwide (Moonsighting.com)",
+          "params": {
+            "shafaq": "general"
+          }
+        },
+        "latitudeAdjustmentMethod": "NONE",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "GB",
+      "name_en": "Glasgow",
+      "name_ar": "غلاسكو",
+      "lat": 55.8651,
+      "lon": -4.2576,
+      "tz": "Europe/London",
+      "method": 15,
+      "date": "21-12-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-12-2026?latitude=55.8651&longitude=-4.2576&method=15&timezonestring=Europe%2FLondon&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "07:02",
+        "Sunrise": "08:46",
+        "Dhuhr": "12:15",
+        "Asr": "13:32",
+        "Sunset": "15:45",
+        "Maghrib": "15:45",
+        "Isha": "17:26",
+        "Imsak": "06:52",
+        "Midnight": "00:15",
+        "Firstthird": "21:25",
+        "Lastthird": "03:05"
+      },
+      "meta": {
+        "latitude": 55.8651,
+        "longitude": -4.2576,
+        "timezone": "Europe/London",
+        "method": {
+          "id": 15,
+          "name": "Moonsighting Committee Worldwide (Moonsighting.com)",
+          "params": {
+            "shafaq": "general"
+          }
+        },
+        "latitudeAdjustmentMethod": "NONE",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "IS",
+      "name_en": "Reykjavík",
+      "name_ar": "ريكيافيك",
+      "lat": 64.1355,
+      "lon": -21.8954,
+      "tz": "Atlantic/Reykjavik",
+      "method": 3,
+      "date": "20-03-2026",
+      "url": "https://api.aladhan.com/v1/timings/20-03-2026?latitude=64.1355&longitude=-21.8954&method=3&timezonestring=Atlantic%2FReykjavik&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "04:36",
+        "Sunrise": "07:28",
+        "Dhuhr": "13:35",
+        "Asr": "16:32",
+        "Sunset": "19:43",
+        "Maghrib": "19:43",
+        "Isha": "22:24",
+        "Imsak": "04:26",
+        "Midnight": "01:36",
+        "Firstthird": "23:38",
+        "Lastthird": "03:33"
+      },
+      "meta": {
+        "latitude": 64.1355,
+        "longitude": -21.8954,
+        "timezone": "Atlantic/Reykjavik",
+        "method": {
+          "id": 3,
+          "name": "Muslim World League",
+          "params": {
+            "Fajr": 18,
+            "Isha": 17
+          },
+          "location": {
+            "latitude": 51.5194682,
+            "longitude": -0.1360365
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "IS",
+      "name_en": "Reykjavík",
+      "name_ar": "ريكيافيك",
+      "lat": 64.1355,
+      "lon": -21.8954,
+      "tz": "Atlantic/Reykjavik",
+      "method": 3,
+      "date": "21-06-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-06-2026?latitude=64.1355&longitude=-21.8954&method=3&timezonestring=Atlantic%2FReykjavik&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "02:04",
+        "Sunrise": "02:55",
+        "Dhuhr": "13:29",
+        "Asr": "18:22",
+        "Sunset": "00:03",
+        "Maghrib": "00:03",
+        "Isha": "00:52",
+        "Imsak": "01:54",
+        "Midnight": "01:29",
+        "Firstthird": "01:01",
+        "Lastthird": "01:58"
+      },
+      "meta": {
+        "latitude": 64.1355,
+        "longitude": -21.8954,
+        "timezone": "Atlantic/Reykjavik",
+        "method": {
+          "id": 3,
+          "name": "Muslim World League",
+          "params": {
+            "Fajr": 18,
+            "Isha": 17
+          },
+          "location": {
+            "latitude": 51.5194682,
+            "longitude": -0.1360365
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "IS",
+      "name_en": "Reykjavík",
+      "name_ar": "ريكيافيك",
+      "lat": 64.1355,
+      "lon": -21.8954,
+      "tz": "Atlantic/Reykjavik",
+      "method": 3,
+      "date": "21-12-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-12-2026?latitude=64.1355&longitude=-21.8954&method=3&timezonestring=Atlantic%2FReykjavik&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "07:54",
+        "Sunrise": "11:22",
+        "Dhuhr": "13:26",
+        "Asr": "13:47",
+        "Sunset": "15:30",
+        "Maghrib": "15:30",
+        "Isha": "18:48",
+        "Imsak": "07:44",
+        "Midnight": "01:26",
+        "Firstthird": "22:07",
+        "Lastthird": "04:44"
+      },
+      "meta": {
+        "latitude": 64.1355,
+        "longitude": -21.8954,
+        "timezone": "Atlantic/Reykjavik",
+        "method": {
+          "id": 3,
+          "name": "Muslim World League",
+          "params": {
+            "Fajr": 18,
+            "Isha": 17
+          },
+          "location": {
+            "latitude": 51.5194682,
+            "longitude": -0.1360365
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "GL",
+      "name_en": "Nuuk",
+      "name_ar": "نوك",
+      "lat": 64.1835,
+      "lon": -51.7216,
+      "tz": "America/Nuuk",
+      "method": 3,
+      "date": "20-03-2026",
+      "url": "https://api.aladhan.com/v1/timings/20-03-2026?latitude=64.1835&longitude=-51.7216&method=3&timezonestring=America%2FNuuk&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "04:35",
+        "Sunrise": "07:27",
+        "Dhuhr": "13:34",
+        "Asr": "16:31",
+        "Sunset": "19:43",
+        "Maghrib": "19:43",
+        "Isha": "22:24",
+        "Imsak": "04:25",
+        "Midnight": "01:35",
+        "Firstthird": "23:38",
+        "Lastthird": "03:33"
+      },
+      "meta": {
+        "latitude": 64.1835,
+        "longitude": -51.7216,
+        "timezone": "America/Nuuk",
+        "method": {
+          "id": 3,
+          "name": "Muslim World League",
+          "params": {
+            "Fajr": 18,
+            "Isha": 17
+          },
+          "location": {
+            "latitude": 51.5194682,
+            "longitude": -0.1360365
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "GL",
+      "name_en": "Nuuk",
+      "name_ar": "نوك",
+      "lat": 64.1835,
+      "lon": -51.7216,
+      "tz": "America/Nuuk",
+      "method": 3,
+      "date": "21-06-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-06-2026?latitude=64.1835&longitude=-51.7216&method=3&timezonestring=America%2FNuuk&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "03:03",
+        "Sunrise": "03:53",
+        "Dhuhr": "14:29",
+        "Asr": "19:22",
+        "Sunset": "01:04",
+        "Maghrib": "01:04",
+        "Isha": "01:52",
+        "Imsak": "02:53",
+        "Midnight": "02:29",
+        "Firstthird": "02:00",
+        "Lastthird": "02:57"
+      },
+      "meta": {
+        "latitude": 64.1835,
+        "longitude": -51.7216,
+        "timezone": "America/Nuuk",
+        "method": {
+          "id": 3,
+          "name": "Muslim World League",
+          "params": {
+            "Fajr": 18,
+            "Isha": 17
+          },
+          "location": {
+            "latitude": 51.5194682,
+            "longitude": -0.1360365
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "GL",
+      "name_en": "Nuuk",
+      "name_ar": "نوك",
+      "lat": 64.1835,
+      "lon": -51.7216,
+      "tz": "America/Nuuk",
+      "method": 3,
+      "date": "21-12-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-12-2026?latitude=64.1835&longitude=-51.7216&method=3&timezonestring=America%2FNuuk&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "07:53",
+        "Sunrise": "11:22",
+        "Dhuhr": "13:25",
+        "Asr": "13:46",
+        "Sunset": "15:28",
+        "Maghrib": "15:28",
+        "Isha": "18:47",
+        "Imsak": "07:43",
+        "Midnight": "01:25",
+        "Firstthird": "22:06",
+        "Lastthird": "04:44"
+      },
+      "meta": {
+        "latitude": 64.1835,
+        "longitude": -51.7216,
+        "timezone": "America/Nuuk",
+        "method": {
+          "id": 3,
+          "name": "Muslim World League",
+          "params": {
+            "Fajr": 18,
+            "Isha": 17
+          },
+          "location": {
+            "latitude": 51.5194682,
+            "longitude": -0.1360365
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "WS",
+      "name_en": "Apia",
+      "name_ar": "أبيا",
+      "lat": -13.8333,
+      "lon": -171.7667,
+      "tz": "Pacific/Apia",
+      "method": 3,
+      "date": "20-03-2026",
+      "url": "https://api.aladhan.com/v1/timings/20-03-2026?latitude=-13.8333&longitude=-171.7667&method=3&timezonestring=Pacific%2FApia&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "05:20",
+        "Sunrise": "06:31",
+        "Dhuhr": "12:34",
+        "Asr": "15:54",
+        "Sunset": "18:38",
+        "Maghrib": "18:38",
+        "Isha": "19:44",
+        "Imsak": "05:10",
+        "Midnight": "00:34",
+        "Firstthird": "22:35",
+        "Lastthird": "02:33"
+      },
+      "meta": {
+        "latitude": -13.8333,
+        "longitude": -171.7667,
+        "timezone": "Pacific/Apia",
+        "method": {
+          "id": 3,
+          "name": "Muslim World League",
+          "params": {
+            "Fajr": 18,
+            "Isha": 17
+          },
+          "location": {
+            "latitude": 51.5194682,
+            "longitude": -0.1360365
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "WS",
+      "name_en": "Apia",
+      "name_ar": "أبيا",
+      "lat": -13.8333,
+      "lon": -171.7667,
+      "tz": "Pacific/Apia",
+      "method": 3,
+      "date": "21-06-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-06-2026?latitude=-13.8333&longitude=-171.7667&method=3&timezonestring=Pacific%2FApia&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "05:33",
+        "Sunrise": "06:50",
+        "Dhuhr": "12:29",
+        "Asr": "15:43",
+        "Sunset": "18:08",
+        "Maghrib": "18:08",
+        "Isha": "19:20",
+        "Imsak": "05:23",
+        "Midnight": "00:29",
+        "Firstthird": "22:22",
+        "Lastthird": "02:36"
+      },
+      "meta": {
+        "latitude": -13.8333,
+        "longitude": -171.7667,
+        "timezone": "Pacific/Apia",
+        "method": {
+          "id": 3,
+          "name": "Muslim World League",
+          "params": {
+            "Fajr": 18,
+            "Isha": 17
+          },
+          "location": {
+            "latitude": 51.5194682,
+            "longitude": -0.1360365
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "WS",
+      "name_en": "Apia",
+      "name_ar": "أبيا",
+      "lat": -13.8333,
+      "lon": -171.7667,
+      "tz": "Pacific/Apia",
+      "method": 3,
+      "date": "21-12-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-12-2026?latitude=-13.8333&longitude=-171.7667&method=3&timezonestring=Pacific%2FApia&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "04:37",
+        "Sunrise": "05:57",
+        "Dhuhr": "12:25",
+        "Asr": "15:51",
+        "Sunset": "18:54",
+        "Maghrib": "18:54",
+        "Isha": "20:09",
+        "Imsak": "04:27",
+        "Midnight": "00:25",
+        "Firstthird": "22:35",
+        "Lastthird": "02:16"
+      },
+      "meta": {
+        "latitude": -13.8333,
+        "longitude": -171.7667,
+        "timezone": "Pacific/Apia",
+        "method": {
+          "id": 3,
+          "name": "Muslim World League",
+          "params": {
+            "Fajr": 18,
+            "Isha": 17
+          },
+          "location": {
+            "latitude": 51.5194682,
+            "longitude": -0.1360365
+          }
+        },
+        "latitudeAdjustmentMethod": "ANGLE_BASED",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "KY",
+      "name_en": "George Town",
+      "name_ar": "جورج تاون",
+      "lat": 19.2866,
+      "lon": -81.3744,
+      "tz": "America/Cayman",
+      "method": 15,
+      "date": "20-03-2026",
+      "url": "https://api.aladhan.com/v1/timings/20-03-2026?latitude=19.2866&longitude=-81.3744&method=15&timezonestring=America%2FCayman&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "05:08",
+        "Sunrise": "06:30",
+        "Dhuhr": "12:33",
+        "Asr": "15:56",
+        "Sunset": "18:37",
+        "Maghrib": "18:37",
+        "Isha": "19:53",
+        "Imsak": "04:58",
+        "Midnight": "00:33",
+        "Firstthird": "22:34",
+        "Lastthird": "02:32"
+      },
+      "meta": {
+        "latitude": 19.2866,
+        "longitude": -81.3744,
+        "timezone": "America/Cayman",
+        "method": {
+          "id": 15,
+          "name": "Moonsighting Committee Worldwide (Moonsighting.com)",
+          "params": {
+            "shafaq": "general"
+          }
+        },
+        "latitudeAdjustmentMethod": "NONE",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "KY",
+      "name_en": "George Town",
+      "name_ar": "جورج تاون",
+      "lat": 19.2866,
+      "lon": -81.3744,
+      "tz": "America/Cayman",
+      "method": 15,
+      "date": "21-06-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-06-2026?latitude=19.2866&longitude=-81.3744&method=15&timezonestring=America%2FCayman&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "04:17",
+        "Sunrise": "05:49",
+        "Dhuhr": "12:27",
+        "Asr": "15:49",
+        "Sunset": "19:06",
+        "Maghrib": "19:06",
+        "Isha": "20:23",
+        "Imsak": "04:07",
+        "Midnight": "00:27",
+        "Firstthird": "22:40",
+        "Lastthird": "02:14"
+      },
+      "meta": {
+        "latitude": 19.2866,
+        "longitude": -81.3744,
+        "timezone": "America/Cayman",
+        "method": {
+          "id": 15,
+          "name": "Moonsighting Committee Worldwide (Moonsighting.com)",
+          "params": {
+            "shafaq": "general"
+          }
+        },
+        "latitudeAdjustmentMethod": "NONE",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "KY",
+      "name_en": "George Town",
+      "name_ar": "جورج تاون",
+      "lat": 19.2866,
+      "lon": -81.3744,
+      "tz": "America/Cayman",
+      "method": 15,
+      "date": "21-12-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-12-2026?latitude=19.2866&longitude=-81.3744&method=15&timezonestring=America%2FCayman&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "05:30",
+        "Sunrise": "06:55",
+        "Dhuhr": "12:24",
+        "Asr": "15:31",
+        "Sunset": "17:53",
+        "Maghrib": "17:53",
+        "Isha": "19:17",
+        "Imsak": "05:20",
+        "Midnight": "00:24",
+        "Firstthird": "22:13",
+        "Lastthird": "02:34"
+      },
+      "meta": {
+        "latitude": 19.2866,
+        "longitude": -81.3744,
+        "timezone": "America/Cayman",
+        "method": {
+          "id": 15,
+          "name": "Moonsighting Committee Worldwide (Moonsighting.com)",
+          "params": {
+            "shafaq": "general"
+          }
+        },
+        "latitudeAdjustmentMethod": "NONE",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "FK",
+      "name_en": "Stanley",
+      "name_ar": "ستانلي",
+      "lat": -51.6938,
+      "lon": -57.857,
+      "tz": "Atlantic/Stanley",
+      "method": 15,
+      "date": "20-03-2026",
+      "url": "https://api.aladhan.com/v1/timings/20-03-2026?latitude=-51.6938&longitude=-57.857&method=15&timezonestring=Atlantic%2FStanley&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "05:19",
+        "Sunrise": "06:53",
+        "Dhuhr": "12:59",
+        "Asr": "16:17",
+        "Sunset": "19:04",
+        "Maghrib": "19:04",
+        "Isha": "20:20",
+        "Imsak": "05:09",
+        "Midnight": "00:58",
+        "Firstthird": "23:00",
+        "Lastthird": "02:57"
+      },
+      "meta": {
+        "latitude": -51.6938,
+        "longitude": -57.857,
+        "timezone": "Atlantic/Stanley",
+        "method": {
+          "id": 15,
+          "name": "Moonsighting Committee Worldwide (Moonsighting.com)",
+          "params": {
+            "shafaq": "general"
+          }
+        },
+        "latitudeAdjustmentMethod": "NONE",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "FK",
+      "name_en": "Stanley",
+      "name_ar": "ستانلي",
+      "lat": -51.6938,
+      "lon": -57.857,
+      "tz": "Atlantic/Stanley",
+      "method": 15,
+      "date": "21-06-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-06-2026?latitude=-51.6938&longitude=-57.857&method=15&timezonestring=Atlantic%2FStanley&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "07:17",
+        "Sunrise": "08:59",
+        "Dhuhr": "12:53",
+        "Asr": "14:31",
+        "Sunset": "16:47",
+        "Maghrib": "16:47",
+        "Isha": "18:26",
+        "Imsak": "07:07",
+        "Midnight": "00:53",
+        "Firstthird": "22:11",
+        "Lastthird": "03:35"
+      },
+      "meta": {
+        "latitude": -51.6938,
+        "longitude": -57.857,
+        "timezone": "Atlantic/Stanley",
+        "method": {
+          "id": 15,
+          "name": "Moonsighting Committee Worldwide (Moonsighting.com)",
+          "params": {
+            "shafaq": "general"
+          }
+        },
+        "latitudeAdjustmentMethod": "NONE",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    },
+    {
+      "country": "FK",
+      "name_en": "Stanley",
+      "name_ar": "ستانلي",
+      "lat": -51.6938,
+      "lon": -57.857,
+      "tz": "Atlantic/Stanley",
+      "method": 15,
+      "date": "21-12-2026",
+      "url": "https://api.aladhan.com/v1/timings/21-12-2026?latitude=-51.6938&longitude=-57.857&method=15&timezonestring=Atlantic%2FStanley&latitudeAdjustmentMethod=3&school=0",
+      "timings": {
+        "Fajr": "02:29",
+        "Sunrise": "04:29",
+        "Dhuhr": "12:50",
+        "Asr": "17:13",
+        "Sunset": "21:10",
+        "Maghrib": "21:10",
+        "Isha": "22:30",
+        "Imsak": "02:19",
+        "Midnight": "00:50",
+        "Firstthird": "23:36",
+        "Lastthird": "02:03"
+      },
+      "meta": {
+        "latitude": -51.6938,
+        "longitude": -57.857,
+        "timezone": "Atlantic/Stanley",
+        "method": {
+          "id": 15,
+          "name": "Moonsighting Committee Worldwide (Moonsighting.com)",
+          "params": {
+            "shafaq": "general"
+          }
+        },
+        "latitudeAdjustmentMethod": "NONE",
+        "midnightMode": "STANDARD",
+        "school": "STANDARD",
+        "offset": {
+          "Imsak": 0,
+          "Fajr": 0,
+          "Sunrise": 0,
+          "Dhuhr": 0,
+          "Asr": 0,
+          "Maghrib": 0,
+          "Sunset": 0,
+          "Isha": 0,
+          "Midnight": 0
+        }
+      }
+    }
+  ]
+}

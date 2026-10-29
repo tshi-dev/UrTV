@@ -21,7 +21,7 @@ public final class PrayerMethodRun {
                 PrayerMethod.searchable("SA") && PrayerMethod.searchable("bh") && PrayerMethod.searchable("KW") && PrayerMethod.searchable("QA")
                 && PrayerMethod.searchable("AE") && PrayerMethod.searchable("OM") && PrayerMethod.searchable("EG") && PrayerMethod.searchable("jo") && PrayerMethod.searchable("SY")
                 && PrayerMethod.searchable("LB") && PrayerMethod.searchable("MA") && PrayerMethod.searchable("DZ") && PrayerMethod.searchable("TN") && !PrayerMethod.searchable("PS")
-                && !PrayerMethod.searchable("IL") && !PrayerMethod.searchable("LY") && !PrayerMethod.searchable("") && !PrayerMethod.searchable(null), "");
+                && PrayerMethod.searchable("IL") && PrayerMethod.searchable("LY") && PrayerMethod.searchable("US") && PrayerMethod.searchable("NO") && !PrayerMethod.searchable("") && !PrayerMethod.searchable(null), "");
         check("label: auto names the country's calculation by the zone; the Ja'fari names itself",
                 PrayerMethod.label("auto", "Asia/Riyadh").equals("تلقائي · أم القرى") && PrayerMethod.label("auto", "Asia/Kuwait").equals("تلقائي · الكويت")
                 && PrayerMethod.label("auto", "Asia/Qatar").equals("تلقائي · قطر") && PrayerMethod.label("auto", "Asia/Dubai").equals("تلقائي · الإمارات")
@@ -45,6 +45,7 @@ public final class PrayerMethodRun {
         java.util.Set<String> ids = new java.util.HashSet<>(java.util.Arrays.asList(java.util.TimeZone.getAvailableIDs()));
         for (Cities.Region r : Cities.REGIONS) {
             for (String[] c : r.cities) {
+                if (c.length > 4) continue; // world rows are checked against the reviewed data by cities_world_test.py
                 check("city " + c[0] + ": a name nobody else has", names.add(c[0]), c[0]);
                 boolean saudi = c.length == 3;
                 double lat = Double.parseDouble(c[1]), lon = Double.parseDouble(c[2]);
@@ -76,7 +77,7 @@ public final class PrayerMethodRun {
         check("country: by the city's zone; a place of one's own elsewhere says so", Location.countryLabel("Asia/Riyadh").equals("السعودية")
                 && Location.countryLabel("Asia/Bahrain").equals("البحرين") && Location.countryLabel("Africa/Cairo").equals("مصر")
                 && Location.countryLabel("Asia/Gaza").equals("فلسطين") && Location.countryLabel("Asia/Hebron").equals("فلسطين")
-                && Location.countryLabel("Africa/El_Aaiun").equals("المغرب") && Location.countryLabel("Europe/London").equals("مكان من اختيارك"), "");
+                && Location.countryLabel("Africa/El_Aaiun").equals("المغرب") && Location.countryLabel("Europe/London").equals("المملكة المتحدة"), "");
         check("country: Egypt, Palestine and Tunisia are each one region of their own", Location.regions(6).length == 1 && Location.regions(6)[0].name.equals("مصر")
                 && Location.regions(10).length == 1 && Location.regions(10)[0].name.equals("فلسطين") && Location.regions(13)[0].name.equals("تونس"), "");
         int searchable = 0;
@@ -87,7 +88,7 @@ public final class PrayerMethodRun {
         for (int i = 0; i < Location.COUNTRIES.length; i++)
             for (int k = 2; k < Location.COUNTRIES[i].length; k++)
                 check("country " + Location.COUNTRIES[i][1] + ": its zone " + Location.COUNTRIES[i][k] + " has the country's calculation",
-                        i == 0 ? "أم القرى".equals(PrayerMethod.authority(Location.COUNTRIES[i][k])) : !"أم القرى".equals(PrayerMethod.authority(Location.COUNTRIES[i][k])), "");
+                        i == 0 ? "أم القرى".equals(PrayerMethod.authority(Location.COUNTRIES[i][0], Location.COUNTRIES[i][k])) : !"أم القرى".equals(PrayerMethod.authority(Location.COUNTRIES[i][0], Location.COUNTRIES[i][k])), "");
         // the first-run note: while the city was never set, the first three starts
         check("note: due on the first three starts while no city was set, never once one was",
                 Location.noteDue(true, false, 0) && Location.noteDue(true, false, 2) && !Location.noteDue(true, false, 3) && !Location.noteDue(true, true, 0), "");

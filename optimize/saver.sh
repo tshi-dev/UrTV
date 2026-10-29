@@ -161,14 +161,15 @@ case "${1:-}" in
   cities) send CITIES ;;
   update) send UPDATE ;;
   city)
-    [ $# -eq 2 ] || [ $# -eq 4 ] || [ $# -eq 5 ] || { echo "usage: optimize/saver.sh city NAME [LAT LON [TIMEZONE]]"; exit 1; }
+    [ $# -eq 2 ] || [ $# -eq 4 ] || [ $# -eq 5 ] || [ $# -eq 6 ] || { echo "usage: optimize/saver.sh city NAME [LAT LON [TIMEZONE [COUNTRY]]]"; exit 1; }
     v=$(quote "$2") || exit 1
     extra="--es city $v"
     if [ $# -ge 4 ]; then
       v=$(quote "$3") || exit 1; w=$(quote "$4") || exit 1
       extra="$extra --es lat $v --es lon $w"
     fi
-    if [ $# -eq 5 ]; then v=$(quote "$5") || exit 1; extra="$extra --es tz $v"; fi
+    if [ $# -ge 5 ]; then v=$(quote "$5") || exit 1; extra="$extra --es tz $v"; fi
+    if [ $# -eq 6 ]; then v=$(quote "$6") || exit 1; extra="$extra --es country $v"; fi
     send SET "$extra" ;;
   teams)
     shift

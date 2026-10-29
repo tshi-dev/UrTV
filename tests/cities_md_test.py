@@ -27,6 +27,9 @@ doc = (ROOT / "docs/CITIES.md").read_text(encoding="utf-8") if (ROOT / "docs/CIT
 check("docs/CITIES.md is up to date (run: python3 .github/tools/cities_md.py)", doc == md.render(), "out of date")
 missing = [c for c in cities if c not in doc]
 check("every built-in city is named in docs/CITIES.md", not missing, ", ".join(missing[:10]))
+world = md.world_regions()
+check("every world country is documented in app order with its calculation", len(world) == 230 and all(doc.index('## ' + a[0] + ' (') < doc.index('## ' + b[0] + ' (') for a, b in zip(world, world[1:])) and all(md.method_names()[method] in doc for _, _, method, _ in world), "world country order/method")
+check("all 3307 world cities are documented in both languages", sum(len(cities) for _, _, _, cities in world) == 3307 and all(c[0] + ' · ' + c[4] in doc for _, _, _, cities in world for c in cities), "world names")
 table, default = md.authorities()
 check("the calculations are read from PrayerMethod.authority (Umm al-Qura by default, Oman's ministry for Muscat)",
       default == "أم القرى" and table.get("Asia/Muscat", "").startswith("وزارة الأوقاف"), f"{default} {table}")
