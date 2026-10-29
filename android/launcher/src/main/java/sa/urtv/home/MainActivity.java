@@ -106,6 +106,7 @@ public class MainActivity extends Activity {
     private int wallIndex = -1;
     private long wallChangedAt;
     private final Handler handler = new Handler(Looper.getMainLooper());
+    private boolean redirected;   // the crash-loop guard opened «الوضع الآمن» from onCreate: this screen was never built
     private final Runnable rotateWallpaper = this::nextWallpaper;
     static final long WALLPAPER_INTERVAL_MS = 10 * 60 * 1000;
     private TextView greeting, weatherLine, clock, ampm, date, zoneLine, title, appsLabel;
@@ -173,6 +174,9 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        // the crash-loop guard first, before anything that could be what crashes: a loop opens «الوضع الآمن» instead (its own process)
+        if (sa.urtv.home.safe.CrashGuard.redirect(this, getIntent())) { redirected = true; return; }
+        sa.urtv.home.safe.CrashGuard.arm(this);   // from here a crash or a hang of this screen is counted
         FamilyDnsAndroid.status(this);   // first use in this process: undoes a Family DNS check that a crash cut short
         sa.urtv.home.setup.SetupHook.atHomeStart(this);   // a home switch that was cut off is put back (it never throws)
         Digits.init(this);   // the screensaver's «الأرقام» setting, for every number this screen writes
@@ -203,12 +207,14 @@ public class MainActivity extends Activity {
         InternalReceivers.register(this, cardsChanged, new IntentFilter(HomeCard.CHANGED));
         InternalReceivers.register(this, sleepChanged, new IntentFilter(SleepTimer.CHANGED));
         InternalReceivers.register(this, nowPlayingChanged, new IntentFilter(NowPlaying.CHANGED));
+        sa.urtv.home.safe.CrashGuard.started(this, handler);   // the crash and hang recorders; a stable minute clears the count
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         resumed = true;
+        sa.urtv.home.safe.CrashGuard.resumed(true);
         A11yHeal.onStart(this);   // once per process: our accessibility service listed but not bound after an update (see A11yHeal)
         Parental.SESSION.clear();   // the home screen is in front again: an app opened with the PIN asks again next time
         if (control != null) control.forgetLast();   // «مركز التحكم» opens on its first tile again
@@ -246,6 +252,7 @@ public class MainActivity extends Activity {
     protected void onPause() {
         super.onPause();
         resumed = false;   // a slow photo check that answers now must not start the 10-minute rotation again
+        sa.urtv.home.safe.CrashGuard.resumed(false);   // the hang recorder rests while another app is in front
         remoteKeys.reset();   // a shortcut key opened an app: its release went there, not here
         PinPrompt.dismiss(this);
         if (edit != null) leaveEdit();   // another screen came up: what was arranged is saved
@@ -259,6 +266,8 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        if (redirected) { super.onDestroy(); return; }   // it finished in onCreate (crash loop): nothing was registered
+        sa.urtv.home.safe.CrashGuard.destroyed();
         unregisterReceiver(packages);
         unregisterReceiver(dockChanged);
         unregisterReceiver(cardsChanged);
@@ -274,6 +283,7 @@ public class MainActivity extends Activity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
+        if (sa.urtv.home.safe.CrashGuard.redirect(this, intent)) return;   // a loop while this screen is still up: «الوضع الآمن»
         Parental.SESSION.clear();
         if (edit != null) leaveEdit();   // Home while editing: the order so far is kept
         if (appsEdit != null) leaveAppsEdit();

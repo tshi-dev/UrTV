@@ -60,8 +60,10 @@ check("its one filter is MAIN + LEANBACK_LAUNCHER and nothing else (no HOME, so 
       filters(al) == [(["android.intent.action.MAIN"], ["LEANBACK_LAUNCHER"])], filters(al))
 main = [a for a in app.findall("activity") if a.get(A + "name") == ".MainActivity"][0]
 check("MainActivity keeps its one HOME + DEFAULT filter and gained no launcher category", filters(main) == [(["android.intent.action.MAIN"], ["DEFAULT", "HOME"])], filters(main))
+home_owners = sorted(a.get(A + "name") for a in app.findall("activity") + app.findall("activity-alias") if any("HOME" in cats for _, cats in filters(a)))
 homes = [c for c in root.iter("category") if c.get(A + "name") == "android.intent.category.HOME" and c in [x for f in root.iter("intent-filter") for x in f]]
-check("HOME is declared once in the manifest (the queries block is a query, not a filter)", len(homes) == 1, len(homes))
+check("HOME is declared twice in the manifest: MainActivity and, at a lower priority, «الوضع الآمن» (the queries block is a query, not a filter; never the tile)",
+      len(homes) == 2 and home_owners == [".MainActivity", ".safe.SafeActivity"], (len(homes), home_owners))
 others = sorted(a.get(A + "name") for a in app.findall("activity") if any("LEANBACK_LAUNCHER" in cats or "LAUNCHER" in cats for _, cats in filters(a)))
 check("the other launcher entries are as they were: the setup screen only", others == [".setup.SetupActivity"], others)
 check("the banner art exists", (ROOT / "android/launcher/src/main/res/drawable-xhdpi/banner.png").is_file())

@@ -110,9 +110,31 @@
             </intent-filter>
         </activity>
 
+        <!-- «الوضع الآمن»: a second, small Home of ours for when the home screen above keeps crashing or hanging (docs/IF-BROKEN.md). Its own process,
+             so a crash of the home screen cannot take it down; no WebView, no network. Its HOME filter has a LOWER priority than MainActivity's
+             (0): Android picks MainActivity whenever both answer, and never shows a chooser between them (equal priorities would). The crash-loop
+             guard (safe/CrashGuard) opens it; Home that reaches it with nothing wrong is passed on to MainActivity. -->
+        <activity
+            android:name=".safe.SafeActivity"
+            android:process=":safe"
+            android:exported="true"
+            android:label="الوضع الآمن"
+            android:launchMode="singleTask"
+            android:taskAffinity="sa.urtv.home.safe"
+            android:stateNotNeeded="true"
+            android:excludeFromRecents="true"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Material.NoActionBar">
+            <intent-filter android:priority="-10">
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <!-- «تلفزيونك»: a tile for the TV's own home screen (the apps row of Google TV), for the one in four setups that keeps the stock home
              (setupwraith / launcherx): without it UrTV's home could not be opened at all. It opens the same MainActivity by component, with no
-             HOME category, so it never changes which home is the default (the HOME entry above is the only one) and cannot loop with the HOME
+             HOME category, so it never changes which home is the default (MainActivity's HOME entry is the one; «الوضع الآمن» above only answers at a lower priority) and cannot loop with the HOME
              intent; MainActivity says Back leaves it when it is not the default home. Our own «كل التطبيقات» skips our package (Dock.scan). -->
         <activity-alias
             android:name=".HomeTile"
