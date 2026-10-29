@@ -14,4 +14,12 @@ final class AdhanVolume {
         if (level >= 0 && current != level) return -1;
         return saved;
     }
+
+    /**
+     * The TV was muted when the adhan came (the owner's TCL test: muted before, unmuted after): the adhan is heard, and the TV is muted again
+     * when its volume goes back. Not when the person changed the volume during the adhan (restoreTo -1): then they chose to hear it.
+     */
+    static boolean muteAgain(boolean wasMuted, int restoreTo) {
+        return wasMuted && restoreTo >= 0;
+    }
 }
