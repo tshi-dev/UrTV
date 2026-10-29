@@ -37,7 +37,7 @@ Side task D (any time, the owner logs in himself): Downloader short codes on aft
 
 ---
 step: 15 (do it when the owner says «ابدأ الخطوة 15»; it can come before the rest of step 14)
-what: confirm the fixes from the 159 test on the newest apk-next (build 161 or newer: «Accessibility after the app's own update…» and the rest). TV sound 0 the whole time.
+what: confirm the fixes from the 159 test AND the new batch (Settings key, 24-hour row, leagues save, mirroring tile, world cities) on the newest apk-next (build 164 or newer: «Accessibility after the app's own update…» and the rest). TV sound 0 the whole time.
 - Start lines; `adb shell settings get secure enabled_accessibility_services`, `settings get secure accessibility_enabled`, `dumpsys accessibility | grep -A5 "Bound services"`, `appops get sa.urtv.home AUTO_START`, `appops get sa.urtv.home APP_AUTO_START`, `dumpsys audio | grep -i -E "muted|master"`. The owner first turns Key Mapper and our services back on if they are off (a restart, or `optimize/dock.sh type-setup`).
 
 | # | Do | Right when |
@@ -49,6 +49,11 @@ what: confirm the fixes from the 159 test on the newest apk-next (build 161 or n
 | F5 | Phone control on, the code shown, wait past the 45 s screensaver delay, wake the TV | the code screen and the page address still work. Then Home with nobody paired: control stops |
 | F6 | «إعداد تلفزيوني»: one OK on «ابدأ» | it starts («جارٍ الإعداد…»); then DENY the USB prompt (no key given). Nothing changes |
 | F7 | Phone page (paired from the PC's Chrome): one swipe on the pad; «بدون» + «حفظ البطاقات» once; the next-adhan wording; the screensaver delay shown; the text field with the keyboard open | one swipe = one tile; saved on the first press; «8 ساعات» style counting; «45 ثانية»; the field above the tab bar |
+| F8 | Settings key outside our home: `adb logcat -c`, open any other app or input (HDMI if a source is connected, else YouTube), press the remote's Settings key; `logcat -d -s UrTVType` | the TV's settings open (`settings key=open`); arrows/OK/Back/volume act as before with no UrTVType line for them; on our home the key still opens OUR settings |
+| F9 | Screensaver settings → «نظام الساعة» → «٢٤ ساعة»; check the screensaver preview, the home clock (within a minute) and «تلاوة وأذان»; then back to «١٢ ساعة» | 24-hour everywhere, then ص/م back |
+| F10 | «الدوريات كاملة»: ▼ to the end, ▼ again reaches «حفظ»; tick one league, «حفظ»; reopen and untick it, «حفظ» | «حفظ» visible and reachable; saved; put back exactly |
+| F11 | Home → «مركز التحكم» | «انعكاس الشاشة» tile with its line; all tiles inside the screen; OK opens the TV's mirroring app; Back returns |
+| F12 | Cities: settings → «الموقع والصلاة» → «الدولة»: scroll the list; pick «تركيا» → a city shows «إسطنبول · Istanbul» style names; then search «London» in «المدينة» (do NOT save); then put the real city back exactly | the long country list scrolls fine; names in both languages; no «إسرائيل» and no «الصحراء الغربية» anywhere in the country list; real city restored |
 | Z | Phone control off, the pairing removed; updatechannel latest; restore everything from the start lines; sound 0 | "restored: yes/no" |
 
 REPORT.md: "step 15", the table, the UrTVA11y lines, any `!!`. Push; tell the owner in Arabic.
