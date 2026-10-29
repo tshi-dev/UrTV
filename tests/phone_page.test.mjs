@@ -649,6 +649,27 @@ await T('switches reduced motion', async () => {
   await S.ctx.close();
 });
 
+// ---- the TV test of 159: one swipe moved the home's focus 5 tiles. One swipe is one step, however long; the finger held after it repeats
+await T('swipe one step', async () => {
+  const S = await boot();
+  const { p } = S;
+  const box = await p.locator('#pad').boundingBox(), cx = box.x + box.width / 2, cy = box.y + box.height / 2;
+  S.reqs.length = 0;
+  await p.mouse.move(cx + 40, cy + 30); await p.mouse.down();   // off «اختيار» and the edge arrows
+  for (let i = 1; i <= 20; i++) { await p.mouse.move(cx + 40 - 10 * i, cy + 30 + (i % 3)); await sleep(8); }   // a long, quick swipe left (200 px, about 0.2 s)
+  await p.mouse.up(); await sleep(700);
+  check('one long swipe left sends ONE left', keysSent(S).join() === 'left', keysSent(S).join());
+  S.reqs.length = 0;
+  await p.mouse.move(cx, cy); await p.mouse.down();
+  for (let i = 1; i <= 6; i++) await p.mouse.move(cx, cy - 10 * i);
+  await sleep(1100); await p.mouse.up(); const n = keysSent(S).length; await sleep(400);
+  check('a swipe up held on the pad repeats up, and stops on release', n >= 3 && keysSent(S).every(k => k === 'up') && keysSent(S).length === n, keysSent(S).join());
+  S.reqs.length = 0;
+  await p.mouse.move(cx, cy); await p.mouse.down(); await p.mouse.move(cx + 25, cy); await p.mouse.up(); await sleep(300);
+  check('a small slip of the finger (25 px) is not an arrow step', !keysSent(S).some(k => k !== 'ok'), keysSent(S).join());
+  await S.ctx.close();
+});
+
 // ---- the TV test of 159: «بدون» needed two presses. A TV answer that comes while a card's picker is open must not replace that select:
 // the choice made in the picker is the one the first press of «حفظ البطاقات» sends
 await T('cards: picker open during a refresh', async () => {

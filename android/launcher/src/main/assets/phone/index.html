@@ -825,11 +825,11 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     ps = { x: e.clientX, y: e.clientY, t: Date.now(), moved: false };
   });
   pad.addEventListener('pointermove', function (e) {
-    if (!ps) return;
+    if (!ps || ps.moved) return;   // one swipe = one step, however long; the finger held after it repeats that step
     var dx = e.clientX - ps.x, dy = e.clientY - ps.y;
-    if (Math.max(Math.abs(dx), Math.abs(dy)) < 30) return;
+    if (Math.max(Math.abs(dx), Math.abs(dy)) < 40) return;
     var d = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
-    ps.moved = true; ps.x = e.clientX; ps.y = e.clientY;
+    ps.moved = true;
     press(d); holdRep(d);
   });
   function padEnd(e) { stopRep(); if (ps && !ps.moved && e.type === 'pointerup' && Date.now() - ps.t < 400) press('ok'); ps = null; }
