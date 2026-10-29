@@ -38,6 +38,8 @@ Navigate with the remote, or `adb shell input keyevent DPAD_DOWN|DPAD_UP|DPAD_CE
 | A8 | الفرق المتابعة → «تصفح الدوريات…» → دوري روشن → pick «النصر» | Toast «تمت متابعة النصر» right away (no network needed), row shows «النصر» |
 | A9 | الفرق المتابعة → «بحث عن أي فريق أو منتخب…» → `Real Madrid`, then `الاهلي`, `العربي`, `atletico` | Results at once: «ريال مدريد»; the Saudi «الأهلي» first, then «الأهلي المصري»; the Saudi «العربي» before «العربي القطري»; «أتلتيكو مدريد». Pick one → row shows its Arabic name |
 | A10 | الفرق المتابعة → دوري يلو | Every club of the league, «الزلفي» among them |
+| A10b | «المباريات والأسواق» › «الدوريات كاملة»: ▼ through the whole list, tick two leagues, ▼ on the last league, then OK on «حفظ» | The list is shorter than the screen and scrolls; «حفظ» and «إلغاء» are visible under it the whole time; ▼ on the last league puts the focus on «حفظ», ▲ from a button goes back to the list; after «حفظ» the row lists the two leagues |
+| A10c | «الدوريات كاملة» again: untick one, then press Back (not «حفظ»); open it again, tick one, then «إلغاء» | Back saves like «حفظ» (the row now has one league); «إلغاء» leaves without saving (still one). The same in «الفرق المتابعة», «التصنيفات», «اللغات», «رياضات أخرى», «الأسواق» and «مسلسلات مختارة»: buttons on screen, ▼ from the last row to «حفظ», Back saves |
 | A11 | التصنيفات → tick دراما + كوميديا → حفظ | Row lists both |
 | A12 | اللغات → tick الإنجليزية → حفظ | Row shows it |
 | A13 | مسلسلات مختارة → «إضافة مسلسل» → `The Last of Us` → pick | Toast «تمت إضافة …», row lists the show (English title) |

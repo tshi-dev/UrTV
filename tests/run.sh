@@ -139,6 +139,7 @@ python3 tests/countdown_text_test.py
 python3 tests/month_names_test.py
 python3 tests/focus_key_test.py
 python3 tests/settings_hub_test.py
+python3 tests/dialog_fit_test.py
 python3 tests/second_card_test.py
 python3 tests/pin_store_test.py
 python3 tests/parental_policy_test.py
