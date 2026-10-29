@@ -1,33 +1,22 @@
-step: 10
+step: 11
 from: UrTV supervisor
-what: the last TV check before the release, on apk-next 3.152 or newer: the phone remote in every app, typing into YouTube's search, «بدون» on the first press. Follow tester/RULES.md. No owner needed for any row (the owner OK'd: the tester turns the accessibility service on with ADB and LEAVES IT ON afterwards).
+what: the adhan-time fix on apk-next 3.153 or newer (the TCL "app start" block must never move the adhan to Riyadh's times), the daytime adhan row left from step 10, and the two leftovers (the owner's exact narration text; the official icons). Follow tester/RULES.md. No owner needed except where it says.
 
 Before anything:
-- Start lines as before. Wait until apk-next version.txt is 3.152 or above; install with `APK_TAG=apk-next optimize/install.sh all`. Write down the version.
-- `optimize/dock.sh type-setup` (turns on our service; the owner OK'd it and wants it left on). Then `adb shell settings get secure enabled_accessibility_services` must include sa.urtv.home.
+- Start lines as before (include `optimize/music.sh adhan` output: the next adhan line). Wait until apk-next version.txt is 3.153 or above; install with `APK_TAG=apk-next optimize/install.sh all`. Write down the version.
 
-| # | Do | Shots (local) | Right when |
-|---|---|---|---|
-| R1 | Pair the PC's Chrome (as in step 8/9). Open YouTube on the TV. From the page's «الريموت»: ▲ ▼ ◀ ▶ a few times, OK on a video, Back, Home. Then the same in the TV's own settings app and in Shahid if installed. `adb shell logcat -d -s UrTVRemote \| tail -20` | remote-yt, remote-settings | the focus moves in YouTube and the settings; OK opens; Back/Home work; log shows the global actions (no content) |
-| R2 | YouTube search from the page: type «قرآن», «بحث». `adb shell logcat -d -s UrTVType \| tail -20` | yt-search3 | YouTube's search opens with «قرآن» (search=started) |
-| R3 | Page «الإعدادات»: first card «الصلاة القادمة», «حفظ البطاقات»; then «بدون», «حفظ البطاقات» ONCE. After each: `optimize/saver.sh show \| grep home_panel` and `adb shell logcat -d -s UrTVPhone \| tail -5` | card-on3, card-off3 | nextprayer, then none on the FIRST press |
-| R4 | Adhan + phone key: `optimize/music.sh adhan now` while YouTube is in front; press ▼ on the page, then the page's «أوقف الأذان الآن» | — | the adhan plays as before and ▼ doesn't break it; «أوقف الأذان الآن» stops it |
-| R5 | Phone control off, remove the PC's pairing. Leave the accessibility service ON (owner's wish) | — | off; service still on |
-| Z | Restore everything else from the start lines; `optimize/saver.sh updatechannel latest` | — | "restored: yes/no (service left on, as asked)" |
-
-REPORT.md: "step 10", the table, the UrTVRemote/UrTVType/UrTVPhone lines, any `!!` lines. No personal data. Push; tell the owner in Arabic that the test is finished and how many problems there were.
-
-## The owner's own voice recording: a transcript so the team can find each take (owner's request)
-The owner recorded the narration himself (Recording_3.m4a, ~7.7 min: line number, then the line once, twice or three times). The team can't listen; they need a word-by-word transcript with times.
 | # | Do | Right when |
 |---|---|---|
-| T1 | Ask the owner (Arabic) where Recording_3.m4a is on this PC (or to copy it here). Then `python tester/voice/stt.py <path to Recording_3.m4a>` (pull work/tester first). It tries ElevenLabs Speech to Text with his key; if refused it uses faster-whisper (`pip install faster-whisper` first; it downloads the large-v3 model once). Never print the key | tester/voice/owner-transcript.json written; it prints the word count and the engine |
-| T2 | Push ONLY tester/voice/owner-transcript.json to work/tester-report under tester/voice-owner/ (reset to origin/work/tester-report first). Not the recording itself (the supervisor already has it) | pushed |
+| P1 | Set a DEMO city that is not Riyadh: `optimize/saver.sh city 'الكويت'` (write down the real one to put back; never name it in REPORT.md). Wait 1 min on the home. `optimize/music.sh adhan` → note the next adhan time (Kuwait's) | the next time is Kuwait's, not Riyadh's |
+| P2 | Simulate the TCL block: `adb shell am force-stop sa.urtv.screensaver`, then open YouTube (`adb shell monkey -p com.google.android.youtube.tv 1`), wait 2 min; `adb shell logcat -d \| grep -E 'TclAppBoot.*ConfigProvider\|UrTVAdhan' \| tail -10`; `optimize/music.sh adhan` again | the next time is STILL Kuwait's; if the block happened, one `UrTVAdhan: place read failed: the last good place is used` line |
+| P3 | `adb shell am broadcast -a android.intent.action.TIME_SET` (a clock-change reschedule) while YouTube is still in front; `optimize/music.sh adhan` | still Kuwait's time |
+| P4 | Press Home, wait 1 min; `optimize/music.sh adhan` | still Kuwait's time |
+| P5 | Put the REAL city back: `optimize/saver.sh city '<the real one>'`; wait 1 min; `optimize/music.sh adhan` | the next time follows the real city again |
+| R4 | DAYTIME ONLY, the owner's volume rule allows it: pair the PC's Chrome, `optimize/music.sh adhan now` with YouTube in front, press ▼ on the page, then «أوقف الأذان الآن»; then phone control off and the PC's pairing removed | the adhan plays; ▼ doesn't break it; the button stops it |
+| L1 | Push the owner's EXACT final narration text as tester/voice-owner/lines-final.txt (ask him in Arabic if you don't have it) | pushed |
+| Z | Restore everything from the start lines; `optimize/saver.sh updatechannel latest` | "restored: yes/no" |
 
-## Update (29 Oct): the owner's cloned-voice parts are the final voice
-- The transcript of Recording_3 (T1-T2) is NOT needed any more: skip it.
-- Push the EXACT 26-line text the owner used on the ElevenLabs site (with his wording fixes) as tester/voice-owner/lines-final.txt (one line per line, «…» where he paused), so the video's subtitles match his words.
-- Step 10 (R1-R5, Z) is still to do.
+REPORT.md: "step 11", the table with the next-adhan times written as "Kuwait time ok / Riyadh time WRONG" (no real city named), the UrTVAdhan/TclAppBoot lines, any `!!` lines. Push; tell the owner in Arabic that the test is finished and how many problems there were.
 
 ## Official app icons for the video and posters (owner: "find online, all need to be good"; no owner needed)
 | # | Do | Right when |
