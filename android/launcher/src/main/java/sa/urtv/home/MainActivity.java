@@ -2188,7 +2188,7 @@ public class MainActivity extends Activity {
     private Boolean dayBySun(ConfigSnapshot cfg) {
         if (!Look.AUTO.equals(cfg.appearance())) return null;   // only the automatic look asks
         try {
-            return "الغروب".equals(sa.urtv.home.tilawah.DayParts.now(this, cfg.fragment).sunLabel);   // «الغروب» is next: the sun is up
+            return "الغروب".equals(sa.urtv.home.tilawah.DayParts.now(this, cfg.placeFragment()).sunLabel);   // «الغروب» is next: the sun is up
         } catch (RuntimeException e) {
             return null;
         }
@@ -2264,7 +2264,7 @@ public class MainActivity extends Activity {
         applyListenPill(cfg.listenPillOn);
         applyUpdateBell(cfg.updateBellOn);   // [updates bell]
         applyCenterPill();   // kids mode may have been turned on or off
-        sa.urtv.home.tilawah.AdhanSync.onConfig(this, cfg.fragment);   // «تعديل وقت الصلاة» changed on the TV: the alarm follows
+        sa.urtv.home.tilawah.AdhanSync.onConfig(this, cfg.placeFragment());   // «تعديل وقت الصلاة» changed on the TV: the alarm follows
         updateSleepPill();
     }
 

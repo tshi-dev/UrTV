@@ -21,55 +21,58 @@ final class Place {
     /** the calculation (PrayerMath.Method id): the settings' {@code pm=jafari}, else the city's country's, told by its zone */
     final int method;
 
-    private Place(double lat, double lng, String tz, int[] adj, String pm) {
-        this.lat = lat; this.lng = lng; this.tz = tz; this.adj = adj; this.method = PrayerMath.methodFor(tz, pm);
+    /** the values of res/values/config.xml (nothing was ever read): the alarm set from it is marked in the identity, so any real place differs */
+    final boolean bundled;
+
+    private Place(double lat, double lng, String tz, int[] adj, String pm, boolean bundled) {
+        this.lat = lat; this.lng = lng; this.tz = tz; this.adj = adj; this.method = PrayerMath.methodFor(tz, pm); this.bundled = bundled;
     }
 
-    /** The last good fragment (what the screensaver said last), kept in memory and in this app's preferences. */
-    private static String lastGood;
-    private static boolean failing;   // a read failed and is not yet well again: the log says it once per streak
+    /** What an alarm set from this place is recorded as (AdhanScheduler.schedule): "" for the bundled place, else the place, adjustments and method. */
+    String identity() {
+        return SchedIdentity.of(bundled, PrayerMath.identity(lat, lng, tz, PrayerAdjust.text(adj), method));
+    }
+
+    private static final PlaceMemory MEMORY = new PlaceMemory();
+    private static final java.util.concurrent.atomic.AtomicLong TICKETS = new java.util.concurrent.atomic.AtomicLong();
+
+    private static PlaceMemory.Store store(final Context c) {
+        return new PlaceMemory.Store() {
+            @Override public String load() { return c.getSharedPreferences("place", Context.MODE_PRIVATE).getString("fragment", null); }
+            @Override public void save(String fragment) { c.getSharedPreferences("place", Context.MODE_PRIVATE).edit().putString("fragment", fragment).apply(); }
+        };
+    }
 
     static Place get(Context c) {
+        long ticket = TICKETS.incrementAndGet();   // taken before the read starts: a read started later wins over this one
         String fresh = null;
         try (Cursor cur = c.getContentResolver().query(CONFIG, null, null, null, null)) {
             if (cur != null && cur.moveToFirst()) fresh = cur.getString(0);
         } catch (RuntimeException ignored) {
             // screensaver app missing, signed with another key, or the TV will not start it from the background: the last good place
         }
-        return get(c, fresh);
+        return get(c, fresh, ticket);
     }
 
-    /** From a settings fragment the caller has already read (one read for a whole tick); null = the read failed: the last good place, the bundled one only if none was ever read. */
-    static Place get(Context c, String fragment) {
-        PlaceChoice.Pick pick = PlaceChoice.pick(fragment, remembered(c));
+    /**
+     * From a settings fragment the caller has just read (one read for a whole tick); null = the read failed or only an old copy of it was
+     * left (ConfigSnapshot.placeFragment): the last good place, the bundled one only if none was ever read.
+     */
+    static Place get(Context c, String fragment) { return get(c, fragment, TICKETS.incrementAndGet()); }
+
+    private static Place get(Context c, String fragment, long ticket) {
+        PlaceChoice.Pick pick = MEMORY.resolve(store(c), fragment, ticket);
+        if (MEMORY.streakStarted(PlaceFragment.parse(fragment) == null, pick.remembered))
+            android.util.Log.i("UrTVAdhan", "place read failed: the last good place is used");
         if (pick.fragment == null) return bundled(c);
-        if (!pick.remembered) remember(c, pick.fragment);
-        note(pick.remembered);
         PlaceFragment f = PlaceFragment.parse(pick.fragment);
-        return new Place(f.lat, f.lng, f.tz, f.adj, f.pm);
-    }
-
-    private static synchronized String remembered(Context c) {
-        if (lastGood == null) lastGood = c.getSharedPreferences("place", Context.MODE_PRIVATE).getString("fragment", null);
-        return lastGood;
-    }
-
-    private static synchronized void remember(Context c, String fragment) {
-        if (fragment.equals(lastGood)) return;
-        lastGood = fragment;
-        c.getSharedPreferences("place", Context.MODE_PRIVATE).edit().putString("fragment", fragment).apply();
-    }
-
-    /** One line (tag UrTVAdhan, no place) when a read failed and the last good place is used, once per streak of failures. */
-    private static synchronized void note(boolean usedRemembered) {
-        if (usedRemembered && !failing) android.util.Log.i("UrTVAdhan", "place read failed: the last good place is used");
-        failing = usedRemembered;
+        return new Place(f.lat, f.lng, f.tz, f.adj, f.pm, false);
     }
 
     private static Place bundled(Context c) {
         return new Place(number(c.getString(R.string.latitude), 24.6877),
                 number(c.getString(R.string.longitude), 46.7219),
-                orDefault(c.getString(R.string.timezone), "Asia/Riyadh"), new int[PrayerAdjust.COUNT], null);
+                orDefault(c.getString(R.string.timezone), "Asia/Riyadh"), new int[PrayerAdjust.COUNT], null, true);
     }
 
     private static double number(String s, double fallback) {

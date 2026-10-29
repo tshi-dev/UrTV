@@ -24,10 +24,10 @@ final class AdhanBar {
         try {
             if (NowPlaying.adhanLive()) {
                 boolean friday = false;
-                try { friday = DayParts.now(c, snap.fragment).friday; } catch (RuntimeException ignored) { }
+                try { friday = DayParts.now(c, snap.placeFragment()).friday; } catch (RuntimeException ignored) { }
                 return AdhanBarText.playing(NowPlaying.adhanPrayer(), friday, NowPlaying.adhanStopKey(c));
             }
-            DayParts d = DayParts.now(c, snap.fragment);
+            DayParts d = DayParts.now(c, snap.placeFragment());
             return AdhanBarText.text(System.currentTimeMillis(), new long[]{d.fajr, d.dhuhr, d.asr, d.maghrib, d.isha}, d.friday, snap.latin());
         } catch (RuntimeException e) {
             return null;

@@ -21,9 +21,12 @@ final class ConfigSnapshot {
     /** «المظهر»: auto, light or dark (Look.mode); an older screensaver does not say: dark, as the home always was */
     private final String appearance;
     private final String look;   // «المظهر ← الشكل» (GlassStyle.look): an older screensaver says nothing: glass
+    /** an old copy, handed out because a read failed: fine to show, never to be taken for an answer (see placeFragment) */
+    final boolean stale;
 
     private ConfigSnapshot(String fragment, boolean greetingOn, boolean adhanBarOn, boolean listenPillOn, boolean updateBellOn, String appearance,
-            boolean watchNextOn, String look) {
+            boolean watchNextOn, String look, boolean stale) {
+        this.stale = stale;
         this.look = GlassStyle.look(look);
         this.watchNextOn = watchNextOn;
         this.fragment = fragment;
@@ -34,6 +37,15 @@ final class ConfigSnapshot {
         this.appearance = Look.mode(appearance);
     }
 
+    /** The same values, marked as an old copy. */
+    ConfigSnapshot asStale() { return new ConfigSnapshot(fragment, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, true); }
+
+    /**
+     * The settings fragment for the PRAYER PLACE (Place, the adhan alarm, the day parts): null when this is an old copy, so that only a real
+     * answer of the screensaver can become the remembered place or move the alarm. Display values (zone, digits, clock) may use the old copy.
+     */
+    String placeFragment() { return stale ? null : fragment; }
+
     String appearance() { return appearance; }
     String look() { return look; }
 
@@ -43,17 +55,23 @@ final class ConfigSnapshot {
      * saved a moment ago reaches the screen at the next tick or return, as before.
      */
     static final long SHARE_MS = 3000;
-    private static ConfigSnapshot last;
-    private static long lastAt;
 
-    static synchronized ConfigSnapshot read(Context c) {
-        long now = android.os.SystemClock.elapsedRealtime();
-        if (last != null && now - lastAt >= 0 && now - lastAt < SHARE_MS) return last;
-        ConfigSnapshot s = query(c);
-        if (s.fragment != null) { last = s; lastAt = now; return s; }
-        // no answer (the screensaver was killed and the TV will not start it from the background, or it is missing): the last good values stay
-        // on the screen, not the defaults (dark, glass, the TV's own zone); the next call asks again, so the real ones return as soon as it answers
-        return last != null ? last : s;
+    private static final LastGood<ConfigSnapshot> LAST = new LastGood<>();
+
+    static ConfigSnapshot read(final Context c) {
+        final ConfigSnapshot[] none = {null};
+        LastGood.Read<ConfigSnapshot> r = LAST.read(android.os.SystemClock.elapsedRealtime(), SHARE_MS, new LastGood.Query<ConfigSnapshot>() {
+            @Override public ConfigSnapshot ask() {
+                ConfigSnapshot s = query(c);
+                if (s.fragment != null) return s;
+                none[0] = s;   // the defaults, for when there is nothing older either
+                return null;
+            }
+        });
+        // no answer: the last good values stay on the screen (marked old), not the defaults; the next call asks again, so the real ones
+        // return as soon as the screensaver answers; with no older copy at all, the defaults as before
+        if (r.value == null) return none[0] != null ? none[0] : query(c);
+        return r.stale ? r.value.asStale() : r.value;
     }
 
     private static ConfigSnapshot query(Context c) {
@@ -81,7 +99,7 @@ final class ConfigSnapshot {
         } catch (RuntimeException ignored) {
             // the screensaver is missing or signed with another key: the defaults (Riyadh, on)
         }
-        return new ConfigSnapshot(fragment, greeting, bar, listenPill, updateBell, appearance, watchNext, look);
+        return new ConfigSnapshot(fragment, greeting, bar, listenPill, updateBell, appearance, watchNext, look, false);
     }
 
     /** {city, zone id}; null when the screensaver gave nothing: the TV's own zone then */

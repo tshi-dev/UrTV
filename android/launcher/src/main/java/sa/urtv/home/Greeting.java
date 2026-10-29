@@ -55,7 +55,7 @@ final class Greeting {
             return;
         }
         DayParts d = null;
-        try { d = DayParts.now(context, snap.fragment); } catch (RuntimeException ignored) { }
+        try { d = DayParts.now(context, snap.placeFragment()); } catch (RuntimeException ignored) { }
         greeting.setText(d == null ? (hour < 4 ? "تصبح على خير" : hour < 12 ? "صباح الخير" : "مساء الخير")
                 : GreetingText.greeting(GreetingText.part(System.currentTimeMillis(), d.fajr, d.dhuhr, d.asr, d.isha)));
 

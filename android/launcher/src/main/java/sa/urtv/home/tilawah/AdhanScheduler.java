@@ -29,6 +29,8 @@ final class AdhanScheduler {
     static void schedule(Context c, Place place) {
         AlarmManager am = (AlarmManager) c.getSystemService(Context.ALARM_SERVICE);
         if (am == null) return;
+        // the one place the identity is written, for every schedule from anywhere: what the alarm is REALLY set from (AdhanSync compares with it)
+        c.getSharedPreferences("tilawah", Context.MODE_PRIVATE).edit().putString("sched_identity", place.identity()).apply();
         cancelLegacy(c, am);
         if (!new Prefs(c).adhanOn()) { am.cancel(pending(c, 0, -1)); return; }
         // the replacement first, then the swap: an alarm is never cancelled for nothing, and a prayer that is due in the next seconds is

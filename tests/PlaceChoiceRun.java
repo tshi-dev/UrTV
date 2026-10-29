@@ -36,7 +36,7 @@ public final class PlaceChoiceRun {
         Object[] after = place(failedRead);
         check("a fresh read is used and is not the remembered one", !PlaceChoice.pick(CAIRO, KUWAIT).remembered && CAIRO.equals(PlaceChoice.pick(CAIRO, KUWAIT).fragment));
         check("a failed read uses the last good place, said to be the remembered one", failedRead.remembered && CAIRO.equals(failedRead.fragment));
-        check("a failed read never changes the scheduled times for a place that is not the bundled one (Cairo, with its own adjustment)", Arrays.equals(good, after));
+        check("the remembered place makes the same times as the fresh one (Cairo with its own adjustment); that a failed read never moves the alarm is PlaceMemoryRun's device", Arrays.equals(good, after));
         Object[] kuwait = place(PlaceChoice.pick(KUWAIT, null)), kuwaitFailed = place(PlaceChoice.pick(null, KUWAIT));
         check("the same for Kuwait", Arrays.equals(kuwait, kuwaitFailed));
         Object[] riyadh = place(PlaceChoice.pick(RIYADH, null));
