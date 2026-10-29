@@ -75,6 +75,11 @@
         <intent>
             <action android:name="android.speech.action.RECOGNIZE_SPEECH" />
         </intent>
+        <!-- the remote's Settings key outside our home (TypeService, SettingsKey.TV_SETTINGS_ACTIONS): on Android 11+ the TV's settings
+             screen must be visible, or resolveActivity finds nothing and the family lock cannot name its package -->
+        <intent>
+            <action android:name="android.settings.SETTINGS" />
+        </intent>
         <package android:name="com.tcl.tv" />
         <package android:name="com.tcl.suspension" />
         <package android:name="sa.urtv.screensaver" />
@@ -276,7 +281,8 @@
         </service>
 
         <!-- The phone remote's typing into other apps: a second accessibility service, on only when the owner turns it on (or
-             optimize/dock.sh type-setup). It reads no event (it only asks Android for window changes, to know which app is in front) and looks at the screen only when a phone sends text: see TypeService. -->
+             optimize/dock.sh type-setup). It reads no event (it only asks Android for window changes, to know which app is in front) and looks at the screen only when a phone sends text: see TypeService.
+             It also answers the remote's Settings key while another app is in front (SettingsKey): no other key is kept or logged. -->
         <service
             android:name=".TypeService"
             android:exported="true"

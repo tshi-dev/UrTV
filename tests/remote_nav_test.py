@@ -92,8 +92,11 @@ man = text("android/launcher/src/main/AndroidManifest.xml")
 check("no permission was added (the launcher declares the same ones)", man.count("<uses-permission") == 18)
 for xml in ("android/launcher/src/main/res/xml/type_service.xml", "android/launcher/src/main/res/xml/sleep_service.xml"):
     x = re.sub(r"<!--.*?-->", "", text(xml), flags=re.S)
-    check(f"{Path(xml).name}: no gestures, no key-event filter, no interactive windows, no touch exploration",
-          not re.search(r"canPerformGestures|canRequestFilterKeyEvents|flagRequestFilterKeyEvents|flagRetrieveInteractiveWindows|canRequestTouchExplorationMode|canTakeScreenshot|accessibilityEventTypes=\"[^\"]*(Content|Text|Click|Focus)", x), x)
+    # the typing service may ASK for key events (the Settings key outside our home, SettingsKey: tests/settings_key_test.py); the flag is set
+    # at run time only, never in the xml, and the sleep service may not even ask
+    keyfilter = "flagRequestFilterKeyEvents" if xml.endswith("type_service.xml") else "canRequestFilterKeyEvents|flagRequestFilterKeyEvents"
+    check(f"{Path(xml).name}: no gestures, no key-event filter set in the xml, no interactive windows, no touch exploration",
+          not re.search(r"canPerformGestures|" + keyfilter + r"|flagRetrieveInteractiveWindows|canRequestTouchExplorationMode|canTakeScreenshot|accessibilityEventTypes=\"[^\"]*(Content|Text|Click|Focus)", x), x)
 check("the typing service still declares one event type", len(re.findall(r'accessibilityEventTypes="typeWindowStateChanged"', text("android/launcher/src/main/res/xml/type_service.xml"))) == 1)
 strings = text("android/launcher/src/main/res/values/strings.xml")
 check("the typing service is now «تلفزيونك: التحكم والكتابة من الجوال» and its description says arrows, OK, Back and Home",
