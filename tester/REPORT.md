@@ -150,3 +150,7 @@ Update from the TV 159 → 160 OK (versionName=4.0, versionCode=160 both).
 | S8 | unknown | PIN state not shown by `dock.sh show`; none set by the tester |
 
 To continue: the owner at the TV to press «السماح دائماً» at each prompt (S1, S2, S5, S6, S7).
+
+## step 14 — closed for now (owner away)
+The owner is away and said to skip everything that needs him at the TV: S1–S7 (each «ابدأ» needs him to accept «السماح بتصحيح USB؟», and pressing «ابدأ» from adb was refused on the tester's side) and side task D (he logs into aftv.news himself).
+| Z | restored: yes | updatechannel latest; Home holder `sa.urtv.home/.MainActivity` (same as start); disabled packages 22 → 22 (identical list); screensaver `sa.urtv.screensaver/.ScreenDream` (same); `adb_enabled=1` (untouched); real city exact; home_panel none; glass + dark; sound muted. Open: accessibility is OFF since the 160 self-update (`accessibility_enabled=0`, nothing bound) — the owner's Key Mapper and our typing do not work until the owner fixes it (last time a reboot after `dock.sh type-setup` brought ours back, not Key Mapper) |
