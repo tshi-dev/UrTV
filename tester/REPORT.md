@@ -74,3 +74,20 @@ Problems: 1 small (page keys don't act on YouTube's profile picker) + note 1. R4
 | R5 again | OK | p10-r5d | phone control off again, the PC's pairing gone; service still on |
 
 Step 10 total: 1 small problem (page keys don't act on YouTube's profile picker) + note 1 (TCL blocks the screensaver ConfigProvider after YouTube opens). If ▼ should NOT stop the adhan when it comes from the phone page, that is a second one: owner/supervisor to decide.
+
+## step 11 (apk-next 3.153)
+Version: home 3.153, screensaver 3.153 (install.sh all; no !! line). Typing service still on.
+
+| # | OK/problem | note |
+|---|---|---|
+| P1 | OK | demo city Kuwait, 1 min on the home: next adhan = Kuwait time ok |
+| P2 | OK | `am force-stop sa.urtv.screensaver` + YouTube in front, 2 min: Kuwait time ok. The TCL block did NOT happen this time (no `TclAppBoot…ConfigProvider` line, no `UrTVAdhan` line), so the "last good place" path was not exercised. The screensaver started again by itself later |
+| P3 | could not run | `am broadcast -a android.intent.action.TIME_SET` from adb is refused: `java.lang.SecurityException: Permission Denial: not allowed to send broadcast android.intent.action.TIME_SET from pid=…, uid=2000`. The tester did not change the TV clock (system setting). Kuwait time ok after it |
+| P4 | OK | Home, 1 min: Kuwait time ok |
+| P5 | OK | real city put back exactly as the start line, 1 min: the next adhan follows the real city again |
+| R4 | done in step 10 | daytime: plays; ▼ from the page stops it (any-key-stop is on); «أوقف الأذان الآن» stops it; phone control off and pairing removed after |
+| L1 | pushed | tester/voice-owner/lines-final.txt: the owner's exact text from his ElevenLabs history (newest generation of each line = the audio in voice-owner/). 26 lines. In his text lines 4 and 9 have no «…» and line 12 has «. ..» but is one part. Part boundaries: 01 «شوفوا», 04 «على طول», 07 «مثل», 09 «وأخَفّ», 10 «فيه», 11 «أي», 15 «صار», 17 «بزِرٍّ», 18 «راح», 20 «يتنقّل», 24 «والرجوع», 26 «ركِّب» |
+| I1-I4 | pushed | tester/icons/ (see its SOURCE.md) |
+| Z | restored: yes | real city, home_panel none, glass + dark, updatechannel latest; service left on; TV sound muted (owner's wish) |
+
+Problems: 0 new. P3 not testable from adb; the TCL block did not happen on its own in P2.
