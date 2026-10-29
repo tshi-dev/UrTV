@@ -1,5 +1,6 @@
 // The phone remote page («تحكم من الجوال») in a real browser, offline. The page is served from the repo, every /api/* answer is a stub
-// that records what the page sent. Both the full state (new fields) and a state with only the old fields.
+// that records what the page sent. The TV's fonts (/fonts/, PhoneApi.FONTS) are a stand-in: a tiny real woff2 from the repo, or a 404 as in a
+// build without the private Thmanyah files. Both the full state (new fields) and a state with only the old fields.
 //
 //   CHROMIUM=/path/to/chromium node tests/phone_page.test.mjs
 import { chromium } from 'playwright';
@@ -12,7 +13,9 @@ const HTML = readFileSync(path.join(ROOT, 'android/launcher/src/main/assets/phon
 const ORIGIN = 'http://tv.test';
 const PAGE = ORIGIN + '/phone/';
 const NONCE = 'n0nce123';
-const CSP = `default-src 'none'; script-src 'nonce-${NONCE}'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:`;
+const CSP = `default-src 'none'; script-src 'nonce-${NONCE}'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'`;   // PhoneApi's
+const FONTS = ['Thmanyah-Regular.woff2', 'Thmanyah-Medium.woff2'];   // PhoneApi.FONTS
+const WOFF2 = readFileSync(path.join(ROOT, 'assets/fonts/NotoNaskhArabic-Marks.woff2'));   // 2 KB, OFL: stands in for Thmanyah
 const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
 const KEYS = ['up', 'down', 'left', 'right', 'ok', 'back', 'home', 'vol_up', 'vol_down', 'mute', 'play_pause'];
 const TOKEN = 'a1b2c3d4e5f60718293a4b5c6d7e8f90';
@@ -50,10 +53,15 @@ const browser = await chromium.launch(process.env.CHROMIUM ? { executablePath: p
 // A phone with the page open; every request is kept. cfg changes what the stub answers.
 async function boot({ state = NEW(), w = 360, h = 740, scheme = 'dark', hash = '', login = true, cfg = {} } = {}) {
   const ctx = await browser.newContext({ viewport: { width: w, height: h }, colorScheme: scheme, hasTouch: false });
-  const reqs = [], foreign = [], errors = [];
-  const c = { state, pin: false, noSession: false, apps: APPS, update: null, ...cfg };
+  const reqs = [], foreign = [], errors = [], fonts = [];
+  const c = { state, pin: false, noSession: false, apps: APPS, update: null, fonts: 'stub', ...cfg };
   await ctx.route('**/*', async route => {
     const rq = route.request(), u = new URL(rq.url());
+    if (u.origin === ORIGIN && u.pathname.startsWith('/fonts/') && FONTS.includes(u.pathname.slice(7)) && !u.search) {
+      fonts.push(u.pathname.slice(7));
+      return c.fonts === 'stub' ? route.fulfill({ status: 200, contentType: 'font/woff2', headers: { 'Cache-Control': 'public, max-age=31536000' }, body: WOFF2 })
+        : route.fulfill({ status: 404, contentType: 'application/json', body: '{"ok":false,"error":"not_found"}' });
+    }
     if (u.origin !== ORIGIN || (u.pathname !== '/phone/' && !u.pathname.startsWith('/api/'))) { foreign.push(rq.url()); return route.abort(); }
     if (u.pathname === '/phone/') return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', headers: { 'Content-Security-Policy': CSP }, body: HTML.replace('__NONCE__', NONCE) });
     let body = null; try { body = rq.postData() ? JSON.parse(rq.postData()) : null; } catch (e) { body = '?bad'; }
@@ -98,9 +106,10 @@ async function boot({ state = NEW(), w = 360, h = 740, scheme = 'dark', hash = '
   });
   const p = await ctx.newPage();
   p.on('pageerror', e => errors.push('pageerror: ' + e.message));
-  p.on('console', m => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
+  p.on('console', m => { if (m.type() === 'error') errors.push('console: ' + m.text() + ' @' + (m.location().url || '')); });
+  await p.addInitScript(() => document.addEventListener('securitypolicyviolation', e => console.error('CSP: ' + e.violatedDirective + ' ' + e.blockedURI)));
   await p.goto(PAGE + (hash ? '#' + hash : ''));
-  const S = { ctx, p, reqs, foreign, errors, cfg: c };
+  const S = { ctx, p, reqs, foreign, errors, fonts, cfg: c };
   if (login) {
     await p.fill('#code', '123456'); await p.click('#codeGo');
     await p.waitForSelector('#app:not(.hidden)', { timeout: 6000 });
@@ -158,7 +167,7 @@ for (const [label, st] of [['new state', NEW()], ['old state', OLD()]]) await T(
   if (label === 'new state') {
     check('the settings tab reads GET /api/family', S.reqs.some(r => r.method === 'GET' && r.path === '/api/family'));
     const f = await p.textContent('#famCard');
-    check('family card is read-only and says: مفعّلة / يعمل / locked count', f.includes('الرقابة الأبوية: مفعّلة') && f.includes('وضع الأطفال: متوقف') && f.includes('2 تطبيقًا') && f.includes('1 من أزرار'), f);
+    check('family card is read-only and says: مفعّلة / يعمل / locked count', f.includes('الرقابة الأبوية: مفعّلة') && f.includes('وضع الأطفال: متوقف') && f.includes('تطبيقين و') && f.includes('1 من أزرار'), f);
     check('connected phones count', (await p.textContent('#phones')).includes('2'));
   }
   const text = (await p.evaluate(() => document.body.innerText + document.body.innerHTML.replace(/<script[\s\S]*<\/script>/, ''))).toLowerCase();
@@ -564,6 +573,170 @@ await T('key answers', async () => {
     const S = await boot({ cfg: { keyAnswer: { ok: false, error: e } } });
     await S.p.click('[data-k=ok]');
     check(`key answered ${e}: the toast says what to do`, await until(async () => (await S.p.textContent('#msg')).includes(msg)), await S.p.textContent('#msg'));
+    await S.ctx.close();
+  }
+});
+
+// ---- the TV's font: Thmanyah from the TV itself, the phone's own font when the TV has none
+for (const fonts of ['stub', 'missing']) await T(`fonts ${fonts}`, async () => {
+  const S = await boot({ w: 390, h: 844, cfg: { fonts } });
+  const { p } = S;
+  await tab(S, 'now'); await tab(S, 'remote');
+  await p.evaluate(() => document.fonts.ready);
+  const st = await p.evaluate(() => ({ fam: getComputedStyle(document.body).fontFamily, btn: getComputedStyle(document.querySelector('#bar button')).fontFamily,
+    faces: [...document.fonts].map(f => f.family.replace(/["']/g, '') + ' ' + f.weight + ' ' + f.display + ' ' + f.status) }));
+  check(`fonts ${fonts}: the stack is Thmanyah, then the phone's own font as before (buttons inherit it)`,
+    st.fam.replace(/["']/g, '') === 'Thmanyah, system-ui, -apple-system, Segoe UI, Tahoma, sans-serif' && st.btn === st.fam, st.fam + ' | ' + st.btn);
+  check(`fonts ${fonts}: two faces, Regular 400 and Medium for 500 and up, both swap`, JSON.stringify(st.faces.map(f => f.split(' ').slice(0, -1).join(' ')))
+    === JSON.stringify(['Thmanyah 400 swap', 'Thmanyah 500 900 swap']), st.faces.join());
+  check(`fonts ${fonts}: only the allow-listed files are asked, from the TV, each at most once`, S.fonts.length >= 1 && S.fonts.every(f => FONTS.includes(f)) && new Set(S.fonts).size === S.fonts.length && S.foreign.length === 0, S.fonts.join() + ' ' + S.foreign.join());
+  check(`fonts ${fonts}: ${fonts === 'stub' ? 'the faces load' : 'a 404 leaves the faces unloaded and the page works on the phone\'s own font'}`,
+    st.faces.filter(f => / (loaded|error)$/.test(f)).every(f => f.endsWith(fonts === 'stub' ? 'loaded' : 'error')) && st.faces.some(f => f.endsWith(fonts === 'stub' ? 'loaded' : 'error'))
+    && await vis(S, '[data-k=ok]') && (await p.evaluate(() => document.querySelector('[data-k=ok]').getBoundingClientRect().height)) >= 48, st.faces.join());
+  await p.click('[data-k=ok]');
+  check(`fonts ${fonts}: the remote still works`, await until(() => keysSent(S).includes('ok')), keysSent(S).join());
+  const errs = S.errors.filter(e => !(fonts === 'missing' && /status of 404/.test(e) && /\/fonts\/Thmanyah-(Regular|Medium)\.woff2$/.test(e)));
+  check(`fonts ${fonts}: no console, page or CSP errors${fonts === 'missing' ? ' (but the fonts\' own 404)' : ''}`, errs.length === 0, errs.join(' | '));
+  await S.ctx.close();
+});
+
+// ---- the on/off switches: the mockups' pill (52x32, a 26 px white knob, green when on with the knob on the left, RTL); still the real checkboxes
+for (const scheme of ['dark', 'light']) await T(`switches ${scheme}`, async () => {
+  const tv = { short: false };   // what the TV says; the page draws the switches from it
+  const S = await boot({ w: 390, h: 844, scheme, state: () => NEW({ adhan: { on: true, voice: 1, fajr_voice: 2, short: tv.short, stopkey: true, volume: 60 } }) });
+  const { p } = S;
+  await tab(S, 'settings');
+  if (scheme === 'light') await p.click('#theme');
+  await sleep(500);   // the colours' own 150 ms change
+  const look = id => p.evaluate(id => {
+    const e = document.getElementById(id), b = e.getBoundingClientRect(), tr = getComputedStyle(e, '::before'), kn = getComputedStyle(e, '::after');
+    const kl = parseFloat(kn.left), kw = parseFloat(kn.width), tl = parseFloat(tr.left), tw = parseFloat(tr.width);
+    return { type: e.type, checked: e.checked, w: b.width, h: b.height, tw, th: parseFloat(tr.height), tr: tr.borderTopLeftRadius, kw, kh: parseFloat(kn.height), kbg: kn.backgroundColor, ksh: kn.boxShadow,
+      tbg: tr.backgroundColor, knobLeft: kl + kw / 2 < tl + tw / 2, ttr: kn.transitionDuration, lab: e.closest('label') && Math.abs((e.closest('label').querySelector('span') || e).getBoundingClientRect().top + (e.closest('label').querySelector('span') || e).getBoundingClientRect().height / 2 - (b.top + b.height / 2)) };
+  }, id);
+  const theme = await p.evaluate(() => document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
+  check(`switches ${scheme}: the page is in that look`, theme === scheme, theme);
+  const on = await look('aOn'), off = await look('aShort'), stop = await look('aStop');
+  const green = theme === 'light' ? 'rgb(46, 158, 98)' : 'rgb(76, 195, 138)';
+  check(`switches ${theme}: still real checkboxes, ids kept, the tap target at least 48 px`, [on, off, stop].every(x => x.type === 'checkbox' && x.w >= 48 && x.h >= 48) && on.checked && !off.checked, JSON.stringify([on, off]));
+  check(`switches ${theme}: a 52x32 pill with a 26 px white knob and a soft shadow`, [on, off].every(x => x.tw === 52 && x.th === 32 && x.tr === '16px' && x.kw === 26 && x.kh === 26 && x.kbg === 'rgb(255, 255, 255)' && /rgba\(0, 0, 0/.test(x.ksh)), JSON.stringify(on));
+  check(`switches ${theme}: on is the mockup's green with the knob on the left; off is neutral with the knob on the right`,
+    on.tbg === green && on.knobLeft && !off.knobLeft && off.tbg !== green && /rgba\((255, 255, 255|60, 60, 67), 0\.2\)/.test(off.tbg), JSON.stringify({ on: on.tbg, off: off.tbg, onL: on.knobLeft, offL: off.knobLeft }));
+  check(`switches ${theme}: the label is centred on the switch, the same in every row`, [on, off, stop].every(x => x.lab !== null && x.lab <= 2), JSON.stringify([on.lab, off.lab, stop.lab]));
+  check(`switches ${theme}: the knob slides in 150 ms`, on.ttr === '0.15s', on.ttr);
+  const sets = posts(S, '/api/set').length;
+  await p.locator('#aShort').click();
+  const sent = await until(() => posts(S, '/api/set').length > sets && posts(S, '/api/set').pop().body.adhan_short === true);
+  tv.short = true; await sleep(1200);
+  const tapped = await look('aShort');
+  check(`switches ${theme}: a tap sends the change, and the switch turns on with the knob on the left`, sent && tapped.checked && tapped.knobLeft && tapped.tbg === green, JSON.stringify(tapped) + JSON.stringify(posts(S, '/api/set').map(r => r.body)));
+  await p.focus('#aShort'); await p.keyboard.press('Tab');
+  const ring = await p.evaluate(() => { const e = document.activeElement, cs = getComputedStyle(e); return e.id + ' ' + cs.outlineStyle + ' ' + cs.outlineWidth; });
+  check(`switches ${theme}: a keyboard focus ring`, ring === 'aStop solid 3px', ring);
+  check(`switches ${theme}: a disabled switch is dimmed`, await p.evaluate(() => { const e = document.getElementById('aStop'); e.disabled = true; const o = getComputedStyle(e).opacity; e.disabled = false; return o === '0.45'; }));
+  await tab(S, 'now'); await sleep(300);
+  const N = await look('aOn2');
+  check(`switches ${theme}: the «الأذان يعمل» switch is the same pill`, N.tw === 52 && N.th === 32 && N.kw === 26 && N.h >= 48 && N.knobLeft && N.tbg === green, JSON.stringify(N));
+  check(`switches ${theme}: no console errors`, S.errors.filter(e => !/status of 403/.test(e)).length === 0, S.errors.join(' | '));
+  await S.ctx.close();
+});
+await T('switches reduced motion', async () => {
+  const S = await boot({ w: 390, h: 844 });
+  await S.p.emulateMedia({ reducedMotion: 'reduce' });
+  await tab(S, 'settings');
+  const d = await S.p.evaluate(() => [getComputedStyle(document.getElementById('aOn'), '::after').transitionDuration, getComputedStyle(document.getElementById('aOn'), '::before').transitionDuration]);
+  check('switches: no motion when the phone asks for reduced motion', d.every(x => x === '0s'), d.join());
+  await S.ctx.close();
+});
+
+// ---- the TV test of 159: one swipe moved the home's focus 5 tiles. One swipe is one step, however long; the finger held after it repeats
+await T('swipe one step', async () => {
+  const S = await boot();
+  const { p } = S;
+  const box = await p.locator('#pad').boundingBox(), cx = box.x + box.width / 2, cy = box.y + box.height / 2;
+  S.reqs.length = 0;
+  await p.mouse.move(cx + 40, cy + 30); await p.mouse.down();   // off «اختيار» and the edge arrows
+  for (let i = 1; i <= 20; i++) { await p.mouse.move(cx + 40 - 10 * i, cy + 30 + (i % 3)); await sleep(8); }   // a long, quick swipe left (200 px, about 0.2 s)
+  await p.mouse.up(); await sleep(700);
+  check('one long swipe left sends ONE left', keysSent(S).join() === 'left', keysSent(S).join());
+  S.reqs.length = 0;
+  await p.mouse.move(cx, cy); await p.mouse.down();
+  for (let i = 1; i <= 6; i++) await p.mouse.move(cx, cy - 10 * i);
+  await sleep(1100); await p.mouse.up(); const n = keysSent(S).length; await sleep(400);
+  check('a swipe up held on the pad repeats up, and stops on release', n >= 3 && keysSent(S).every(k => k === 'up') && keysSent(S).length === n, keysSent(S).join());
+  S.reqs.length = 0;
+  await p.mouse.move(cx, cy); await p.mouse.down(); await p.mouse.move(cx + 25, cy); await p.mouse.up(); await sleep(300);
+  check('a small slip of the finger (25 px) is not an arrow step', !keysSent(S).some(k => k !== 'ok'), keysSent(S).join());
+  await S.ctx.close();
+});
+
+// ---- the TV test of 159: «بدون» needed two presses. A TV answer that comes while a card's picker is open must not replace that select:
+// the choice made in the picker is the one the first press of «حفظ البطاقات» sends
+await T('cards: picker open during a refresh', async () => {
+  let shown = [];
+  const S = await boot({ state: NEW({ home_cards: [] }), cfg: { state: () => NEW({ home_cards: shown.slice() }) } });
+  const { p } = S;
+  await tab(S, 'settings');
+  await p.locator('#cards select').nth(0).selectOption('prayer');
+  await p.click('#cardsGo'); await until(() => posts(S, '/api/set').length === 1);
+  shown = ['prayer'];
+  const n = S.reqs.filter(r => r.path === '/api/state').length;
+  await until(() => S.reqs.filter(r => r.path === '/api/state').length > n + 1); await sleep(150);
+  const picker = await p.$('#cards select');   // the person opens the first card's picker…
+  await picker.focus();
+  await p.evaluate(() => document.getElementById('hSet').onclick());   // …and a full answer from the TV arrives meanwhile
+  await sleep(300);
+  await picker.selectOption('');   // «بدون» chosen in that picker
+  check('the select under the open picker is still the one on the page', await picker.evaluate(e => e.isConnected));
+  await p.click('#cardsGo'); await sleep(500);
+  const sets = posts(S, '/api/set').map(r => r.body);
+  check('«بدون» after «الصلاة»: the FIRST press sends exactly one POST with an empty list', sets.length === 2 && JSON.stringify(sets[1]) === '{"home_cards":[]}', JSON.stringify(sets));
+  await S.ctx.close();
+});
+
+// ---- the TV test of 159: Arabic counting, the TV's real screensaver delay, our accessibility service stopped after an update, the text field
+await T('counting and the delay', async () => {
+  const S = await boot({ state: NEW({ next_adhan: { prayer: 'العصر', in_seconds: 8 * 3600 + 56 * 60 + 5 }, saver_idle: '0', saver_idle_s: '45', seconds_left: 120 }) });
+  const { p } = S;
+  await tab(S, 'now');
+  const na = await p.textContent('#nextA');
+  check('the next adhan: «بعد 8 ساعات و 56 دقيقة»', na.includes('بعد 8 ساعات و 56 دقيقة'), na);
+  check('the session left: «بقي دقيقتين»', (await p.textContent('#left')) === 'بقي دقيقتين', await p.textContent('#left'));
+  const sel = await p.$$eval('#saverIdle option', os => os.map(o => [o.value, o.textContent, o.selected]));
+  check('a 45 s delay is shown as the current choice «45 ثانية», the minutes after it', JSON.stringify(sel[0]) === '["","45 ثانية",true]' && sel.length === 7, JSON.stringify(sel));
+  check('the minutes counted right: دقيقة, دقيقتين, 5 دقائق, 10 دقائق, 15 دقيقة', sel.slice(1).map(o => o[1]).join('|') === 'دقيقة|دقيقتين|5 دقائق|10 دقائق|15 دقيقة|30 دقيقة', sel.map(o => o[1]).join('|'));
+  check('the sleep timer chips: 15 دقيقة … 90 دقيقة', (await p.textContent('#sleepOpts')).includes('15 دقيقة'));
+  const before = posts(S, '/api/set').length;
+  await p.selectOption('#saverIdle', '2'); await until(() => posts(S, '/api/set').length > before);
+  check('choosing a minute still saves it', JSON.stringify(posts(S, '/api/set').pop().body) === '{"saver_idle":2}');
+  await S.ctx.close();
+  const Q = await boot({ state: NEW({ next_adhan: { prayer: 'المغرب', in_seconds: 3600 + 120 }, saver_idle: '10' }) });
+  await tab(Q, 'now');
+  check('«بعد ساعة و دقيقتين»', (await Q.p.textContent('#nextA')).includes('بعد ساعة و دقيقتين'), await Q.p.textContent('#nextA'));
+  check('a whole-minute delay: no extra choice, the TV\'s one chosen', (await Q.p.inputValue('#saverIdle')) === '10' && (await Q.p.$$('#saverIdle option')).length === 6);
+  await Q.ctx.close();
+});
+await T('a11y stuck', async () => {
+  const S = await boot({ state: NEW({ foreground: 'other', a11y_stuck: true, keys_everywhere: false, dpad_everywhere: false, typing_service: false }), cfg: { keyAnswer: { ok: false, error: 'a11y_stuck' } } });
+  const { p } = S;
+  check('the note says control of other apps is stopped, not «turn it on»', (await p.textContent('#foreNote')).startsWith('التحكم في التطبيقات الثانية متوقف: ') && !(await p.isVisible('#svcNote')), await p.textContent('#foreNote'));
+  await p.click('[data-k=up]');
+  check('a key answered a11y_stuck: the toast says so', await until(async () => (await p.textContent('#msg')).startsWith('التحكم في التطبيقات الثانية متوقف: ')), await p.textContent('#msg'));
+  S.cfg.textAnswer = { ok: false, error: 'a11y_stuck' };
+  await p.fill('#txt', 'abc'); await p.click('#txtGo');
+  check('a text answered a11y_stuck: the toast says so', await until(async () => (await p.textContent('#msg')).startsWith('التحكم في التطبيقات الثانية متوقف: ')), await p.textContent('#msg'));
+  await S.ctx.close();
+});
+await T('text field above the bar', async () => {
+  for (const [w, h] of [[360, 640], [390, 844]]) {
+    const S = await boot({ w, h });
+    const { p } = S;
+    await p.focus('#txt'); await sleep(200);
+    const [fb, bt] = await p.evaluate(() => [document.getElementById('txt').getBoundingClientRect().bottom, document.getElementById('bar').getBoundingClientRect().top]);
+    check(`${w}x${h}: the focused text field is scrolled above the tab bar`, fb <= bt, `${fb} > ${bt}`);
+    await p.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    const [lb, bt2] = await p.evaluate(() => [document.querySelector('#t-remote > details').getBoundingClientRect().bottom, document.getElementById('bar').getBoundingClientRect().top]);
+    check(`${w}x${h}: scrolled to the end, the last of the remote tab is above the tab bar`, lb <= bt2, `${lb} > ${bt2}`);
     await S.ctx.close();
   }
 });

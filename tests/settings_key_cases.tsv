@@ -1,0 +1,51 @@
+# kind, then: key: keyCode action(0 down,1 up) repeat front(home|other) stockHome(on|off) | filter: front stockHome | stock: packages; then expected, note
+reset						-	
+key	83	0	0	home	off	OUR_SETTINGS	our home in front: the Settings key (83, TCL) opens OUR settings (the home's own path)
+key	83	1	0	home	off	HOME_EAT	its release is the home's
+key	176	0	0	home	off	OUR_SETTINGS	176 on our home: our settings too
+key	176	1	0	home	off	HOME_EAT	its release
+reset						-	
+key	83	0	0	other	off	TV_SETTINGS	another app in front (HDMI): 83 opens the TV's settings
+key	83	0	1	other	off	EAT	its repeats are consumed
+key	83	0	5	other	off	EAT	more repeats
+key	83	1	0	other	off	EAT	its release is consumed
+key	83	1	0	other	off	PASS	a second release is not ours any more
+key	176	0	0	other	off	TV_SETTINGS	176 in another app: the TV's settings
+key	176	1	0	other	off	EAT	its release
+key	83	0	0	other	off	TV_SETTINGS	a new press is a new press
+key	83	0	0	other	off	TV_SETTINGS	even with the release lost (it went to the settings window)
+key	83	1	0	other	off	EAT	that release
+reset						-	
+key	20	0	0	other	off	PASS	D-pad down in another app: untouched
+key	23	0	0	other	off	PASS	OK: untouched
+key	23	1	0	other	off	PASS	its release
+key	4	0	0	other	off	PASS	Back: untouched
+key	3	0	0	other	off	PASS	Home: untouched
+key	24	0	0	other	off	PASS	volume up: untouched
+key	7	0	0	other	off	PASS	a digit: untouched
+key	190	0	0	other	off	PASS	the YouTube key: untouched
+key	82	0	0	other	off	PASS	Menu: untouched
+key	84	0	0	other	off	PASS	82/84 around 83: untouched
+key	0	0	0	other	off	PASS	an unknown key (the star): untouched
+key	20	0	0	home	off	PASS	D-pad on our home: the home's own
+reset						-	
+key	83	0	0	other	on	PASS	a stock home is enabled: its receiver answers the key, we do not
+key	83	1	0	other	on	PASS	and its release
+key	176	0	0	other	on	PASS	176 too
+key	83	0	1	other	off	PASS	a repeat with no press that acted: not ours
+key	83	1	0	other	off	PASS	a release with no press that acted: not ours
+reset						-	
+key	83	0	0	other	off	TV_SETTINGS	pressed in another app
+key	83	1	0	home	off	EAT	released after our home came up: still eaten (the press acted)
+key	83	0	0	home	off	OUR_SETTINGS	then on our home: our settings
+filter	other	off				on	another app, no stock home: the service asks for keys
+filter	home	off				off	our home in front: no key goes through the service
+filter	other	on				off	a stock home is enabled: no key goes through the service
+filter	home	on				off	both
+stock	com.google.android.apps.tv.launcherx,sa.urtv.home					yes	Google TV's home enabled
+stock	com.google.android.tvlauncher					yes	Android TV's home
+stock	sa.urtv.home					no	only ours
+stock	sa.urtv.home,com.google.android.tungsten.setupwraith					no	the setup wizard kept for its Wi-Fi is not a stock home
+stock	com.android.tv.settings,com.android.settings,sa.urtv.home					no	the settings apps' fallback homes
+stock	com.tcl.launcher.example,sa.urtv.home					yes	another maker's home
+stock						no	nothing

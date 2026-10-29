@@ -61,7 +61,8 @@ public class SetupActivity extends Activity {
         log = text("", 13, "Regular", DIM);
         col.addView(log, right(0));
         setContentView(scroll);
-        start.requestFocus();
+        // «ابدأ» has the focus once the screen is laid out (asked before that, the TV's first OK only put the focus on it: nothing happened)
+        start.post(new Runnable() { @Override public void run() { start.requestFocus(); } });
         if (SetupRecovery.pending(this) && SetupRecovery.gaveUp(this)) {
             status.setText(SetupRecovery.GAVE_UP_NOTICE + ": اضغط «تراجع».");
         } else if (SetupRecovery.pending(this)) {
@@ -94,6 +95,8 @@ public class SetupActivity extends Activity {
         undo.setAlpha(.5f);
         log.setText("");
         status.setText(undoIt ? "جارٍ الرجوع…" : "جارٍ الإعداد… لا تطفئ التلفزيون.");
+        // the answer to the press is in sight even when the plan above pushes it under the screen's edge
+        status.post(new Runnable() { @Override public void run() { status.requestRectangleOnScreen(new android.graphics.Rect(0, 0, status.getWidth(), status.getHeight())); } });
         new Thread(new Runnable() {
             @Override public void run() {
                 String end;
@@ -146,7 +149,7 @@ public class SetupActivity extends Activity {
     private static String friendly(String m) {
         if (m == null) return "انقطع الاتصال بالتلفزيون. إن كنت في منتصف تبديل الشاشة الرئيسية فسترجع الأصلية وحدها بعد 5 دقائق. جرّب مرة ثانية.";
         if (m.startsWith("debugging is off")) return "تصحيح USB مطفأ في التلفزيون. فعّله (خيارات المطوّر ← تصحيح USB) ثم اضغط «ابدأ».";
-        if (m.contains("permission was not accepted")) return "لم تُقبل رسالة «السماح بتصحيح USB؟». اضغط «ابدأ» وافتح الرسالة بالريموت واختر «السماح دائماً».";
+        if (m.contains("permission was not accepted")) return "لم تُقبل رسالة «السماح بتصحيح USB؟». إذا ما ظهرت الرسالة أصلاً: أعد تشغيل التلفزيون، ثم افتح «إعداد تلفزيوني» واضغط «ابدأ» وخلك عند التلفزيون، تطلع خلال ثواني. واختر «السماح دائماً».";   // a prompt left unanswered (e.g. under the screensaver) blocks every later one until adbd restarts: TV test, 30 Oct
         if (m.contains("TLS")) return "هذا التلفزيون يطلب التصحيح اللاسلكي؛ استخدم «تصحيح USB» العادي.";
         return "انقطع الاتصال بالتلفزيون. إن كنت في منتصف تبديل الشاشة الرئيسية فسترجع الأصلية وحدها بعد 5 دقائق. جرّب مرة ثانية.";
     }

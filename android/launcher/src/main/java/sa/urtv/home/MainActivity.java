@@ -188,6 +188,7 @@ public class MainActivity extends Activity {
         if (b == null && (getIntent().getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) == 0) {
             openRequested(getIntent());
             phoneRequested(getIntent());   // the phone remote's «افتح»
+            settingsKeyRequested(getIntent());   // the Settings key outside the home, when the TV's settings need the PIN
         }
         wantEdit = getIntent() != null && getIntent().getBooleanExtra(EXTRA_EDIT, false);   // the settings' «تعديل المفضلة»
         if (b == null) appsRequested(getIntent());   // the settings' «ترتيب كل التطبيقات» (not again after a restore)
@@ -209,6 +210,8 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
         resumed = true;
+        TypeService.homeFront(true);   // the Settings key is ours here (RemoteKeys): the service stops asking for keys
+        A11yHeal.onStart(this);   // once per process: our accessibility service listed but not bound after an update (see A11yHeal)
         Parental.SESSION.clear();   // the home screen is in front again: an app opened with the PIN asks again next time
         if (control != null) control.forgetLast();   // «مركز التحكم» opens on its first tile again
         bellForce = true;   // [updates bell]
@@ -245,6 +248,7 @@ public class MainActivity extends Activity {
     protected void onPause() {
         super.onPause();
         resumed = false;   // a slow photo check that answers now must not start the 10-minute rotation again
+        TypeService.homeFront(false);   // another app is coming to the front: the service answers the Settings key there (SettingsKey)
         remoteKeys.reset();   // a shortcut key opened an app: its release went there, not here
         PinPrompt.dismiss(this);
         if (edit != null) leaveEdit();   // another screen came up: what was arranged is saved
@@ -284,6 +288,7 @@ public class MainActivity extends Activity {
         if (appsRequested(intent)) return;   // the settings' «ترتيب كل التطبيقات»
         openRequested(intent);   // the screensaver's «الأذان» row (open=adhan)
         phoneRequested(intent);   // the phone remote opened an app that asks for the PIN, or one of the pills
+        settingsKeyRequested(intent);   // the Settings key outside the home, when the TV's settings need the PIN
         // Home pressed while already home: jump back to the first dock app.
         if (inputsPopup != null) inputsPopup.dismiss();
         if (control != null) { control.dismiss(); control.forgetLast(); }
@@ -579,6 +584,16 @@ public class MainActivity extends Activity {
                 }
             }
         });
+    }
+
+    /** TypeService.openTvSettings: the remote's Settings key was pressed in another app and the TV's settings are behind the PIN: asked here. */
+    static final String EXTRA_SETTINGS_KEY = "sa.urtv.home.SETTINGS_KEY";
+
+    private void settingsKeyRequested(Intent i) {
+        if (i == null || !i.getBooleanExtra(EXTRA_SETTINGS_KEY, false)) return;
+        i.removeExtra(EXTRA_SETTINGS_KEY);
+        final Intent tv = TypeService.tvSettingsIntent(this);
+        handler.post(() -> launchGuarded(ParentalPolicy.REMOTE_SETTINGS, tv, "إعدادات التلفزيون"));
     }
 
     /** The button is wanted: the screensaver's setting says shown, and this build has the listening part at all. */

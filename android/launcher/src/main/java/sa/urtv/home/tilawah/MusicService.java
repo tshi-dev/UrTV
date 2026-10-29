@@ -465,7 +465,12 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         if (audio == null) return;
         int max = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         if (savedVolume < 0) {   // the TV's own, put back at the end (also after a restart of the player: on disk)
+            // a muted TV: Android says 0 for a muted stream, so it is unmuted first (the adhan would unmute it anyway) to read the real level,
+            // and muted again at the end; before, the end put the level back to 0 and the TV stayed silent at 0 even after an unmute
+            boolean muted = audio.isStreamMute(AudioManager.STREAM_MUSIC);
+            if (muted) audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, 0);
             savedVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+            prefs.setSavedTvMuted(muted);
             prefs.setSavedTvVolume(savedVolume);
         }
         int want = Math.round(max * prefs.adhanVolume() / 100f);
@@ -481,7 +486,9 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             int level = adhanLevel >= 0 ? adhanLevel : prefs.adhanLevel();
             int to = AdhanVolume.restore(savedVolume, level, audio.getStreamVolume(AudioManager.STREAM_MUSIC));
             if (to >= 0) audio.setStreamVolume(AudioManager.STREAM_MUSIC, to, 0);   // else the person turned it themselves: it stays
+            if (AdhanVolume.muteAgain(prefs.savedTvMuted(), to)) audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0);
         }
+        prefs.setSavedTvMuted(false);
         savedVolume = -1;
         adhanLevel = -1;
         prefs.setSavedTvVolume(-1);

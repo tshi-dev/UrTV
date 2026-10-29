@@ -36,6 +36,9 @@ final class Prefs {
     /** The TV's own volume while an adhan plays, kept on disk so it comes back even if the player was stopped mid-adhan (-1: none). */
     int savedTvVolume() { return sp.getInt("tv_volume_saved", -1); }
     void setSavedTvVolume(int v) { sp.edit().putInt("tv_volume_saved", v).commit(); }
+    /** the TV was muted when the adhan raised its volume: muted again at the end */
+    boolean savedTvMuted() { return sp.getBoolean("tv_volume_saved_muted", false); }
+    void setSavedTvMuted(boolean v) { sp.edit().putBoolean("tv_volume_saved_muted", v).commit(); }
     /** The level the adhan set the volume to (-1: not known), so a volume the person changed during the adhan is left alone afterwards. */
     int adhanLevel() { return sp.getInt("tv_volume_adhan_level", -1); }
     void setAdhanLevel(int v) { sp.edit().putInt("tv_volume_adhan_level", v).commit(); }

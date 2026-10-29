@@ -36,36 +36,52 @@ final class ControlLayout {
 
     private static int px(float dp, float density) { return Math.round(dp * density); }
 
-    /** screenW and screenH in pixels, density = pixels per dp, n = how many tiles. 4 columns when they fit, else 3, else 2. */
+    /**
+     * More than this many tiles («انعكاس الشاشة» made a ninth) may go five to a row: on a short screen two rows of five still read where
+     * three rows of four would not fit. Eight tiles or fewer are laid out exactly as before.
+     */
+    static final int FIVE_AFTER = 8;
+
+    /** the column counts tried, in order: 4, then 5 for more than FIVE_AFTER tiles, then 3, then 2 */
+    static int[] columns(int n) { return n > FIVE_AFTER ? new int[] {4, 5, 3, 2} : new int[] {4, 3, 2}; }
+
+    /** screenW and screenH in pixels, density = pixels per dp, n = how many tiles. 4 columns when they fit, else (more than 8 tiles) 5, else 3, else 2. */
     static Plan plan(int screenW, int screenH, float density, int n) {
         if (density <= 0) density = 1;
         if (n < 1) n = 1;
         float wDp = screenW / density, hDp = screenH / density;
         float availW = wDp * MAX_W - SIDE_PAD, availH = hDp * MAX_H - CHROME;
         Plan first = null, valid = null;
-        for (int cols = 4; cols >= 2; cols--) {
+        for (int cols : columns(n)) {
             int rows = (n + cols - 1) / cols, c = Math.min(cols, n);
             float w = Math.min(TILE_W, (availW - GAP * (c - 1)) / c);
             float h = Math.min(TILE_H, (availH - GAP * (rows - 1)) / rows);
             boolean fits = w >= MIN_W && h >= MIN_H;
             boolean comfy = w >= COMFY_W && h >= COMFY_H;
-            Plan p = build(cols, rows, c, w, h, density, !comfy);
+            Plan p = build(cols, rows, c, w, h, density, !comfy, screenW);
             if (fits && comfy) return p;
             if (fits && valid == null) valid = p;
             if (first == null) first = p;
         }
         if (valid != null) return valid;
-        // nothing reaches the least: the smallest tiles on the fewest rows, the caller scrolls the rest
-        int rows = (n + 3) / 4, c = Math.min(4, n);
+        // nothing reaches the least: the smallest tiles on the fewest rows (the most columns tried), the caller scrolls the rest
+        int most = n > FIVE_AFTER ? 5 : 4;
+        int rows = (n + most - 1) / most, c = Math.min(most, n);
         float w = Math.max(MIN_W * 0.75f, Math.min(TILE_W, (availW - GAP * (c - 1)) / c));
         float h = Math.max(MIN_H * 0.7f, Math.min(TILE_H, (availH - GAP * (rows - 1)) / rows));
-        return build(4, rows, c, w, h, density, true);
+        return build(most, rows, c, w, h, density, true, screenW);
     }
 
-    private static Plan build(int cols, int rows, int c, float wDp, float hDp, float density, boolean compact) {
+    private static Plan build(int cols, int rows, int c, float wDp, float hDp, float density, boolean compact, int screenW) {
         int tw = px(wDp, density), th = px(hDp, density);
         boolean tiny = hDp < MIN_H;
         int panelW = tw * c + px(GAP, density) * (c - 1) + px(SIDE_PAD, density);
+        // each tile rounded up by half a pixel adds up on a row of five: never past MAX_W of the screen by more than a pixel
+        int over = panelW - ((int) Math.ceil(screenW * MAX_W) + 1);
+        if (over > 0) {
+            tw -= (over + c - 1) / c;
+            panelW = tw * c + px(GAP, density) * (c - 1) + px(SIDE_PAD, density);
+        }
         int rowsH = th * rows + px(GAP, density) * (rows - 1);
         int panelH = rowsH + px(CHROME, density);
         return new Plan(cols, rows, tw, th, panelW, panelH, compact, tiny);

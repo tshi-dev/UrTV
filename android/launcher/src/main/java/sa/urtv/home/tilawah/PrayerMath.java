@@ -25,7 +25,7 @@ final class PrayerMath {
      * (the safety margins some authorities publish). Sources: Aladhan's list (aladhan.com/calculation-methods, api.aladhan.com/v1/methods)
      * and, for the Dubai margins, the Batoul Apps adhan library's METHODS.md:
      *   0  Shia Ithna-Ashari, Leva Institute, Qum: Fajr 16°, Isha 14°, Maghrib when the sun is 4° below the horizon
-     *   4  Umm al-Qura (Saudi Arabia, and the default everywhere else, as ever): Fajr 18.5°, Isha 90 minutes after Maghrib, 120 in Ramadan
+     *   4  Umm al-Qura (Saudi Arabia; also the fallback for old fragments without a resolved country): Fajr 18.5°, Isha 90 minutes after Maghrib, 120 in Ramadan
      *   8  Gulf Region (Bahrain, Oman): Fajr 19.5°, Isha 90 minutes after Maghrib
      *   9  Kuwait: Fajr 18°, Isha 17.5°
      *  10  Qatar: Fajr 18°, Isha 90 minutes after Maghrib
@@ -63,6 +63,8 @@ final class PrayerMath {
     static final int JAFARI = 0, UMM_AL_QURA = 4, GULF = 8, KUWAIT = 9, QATAR = 10, DUBAI = 16, EGYPT = 5, JORDAN = 23, MOROCCO = 21, ALGERIA = 19, TUNISIA = 18;
     /** our own id for Oman's ministry: Aladhan has none, so ids from here up are never sent to it (see {@link #aladhanKnows}) */
     static final int OMAN = 100;
+    static final int KARACHI = 1, ISNA = 2, MWL = 3, SINGAPORE = 11, FRANCE_UOIF = 12,
+            DIYANET = 13, RUSSIA = 14, MOONSIGHTING = 15, JAKIM = 17, KEMENAG = 20;
     private static final Method[] METHODS = {
         new Method(JAFARI, 16, 14, 0, 4),
         new Method(UMM_AL_QURA, 18.5, 0, 90, .833),
@@ -76,6 +78,16 @@ final class PrayerMath {
         new Method(ALGERIA, 18, 17, 0, .833),
         new Method(TUNISIA, 18, 18, 0, .833),
         new Method(OMAN, 18, 18, 0, .833, 0, 5, 5, 5),
+        new Method(KARACHI, 18, 18, 0, .833),
+        new Method(ISNA, 15, 15, 0, .833),
+        new Method(MWL, 18, 17, 0, .833),
+        new Method(SINGAPORE, 20, 18, 0, .833),
+        new Method(FRANCE_UOIF, 12, 12, 0, .833),
+        new Method(DIYANET, 18, 17, 0, .833, -7, 5, 4, 7),
+        new Method(RUSSIA, 16, 15, 0, .833),
+        new Method(MOONSIGHTING, 0, 0, 0, .833), // seasonal twilight below, not a fixed-angle method
+        new Method(JAKIM, 20, 18, 0, .833),
+        new Method(KEMENAG, 20, 18, 0, .833),
     };
 
     /** Does Aladhan have this method under this id? Ours (OMAN) it has not: the times are computed here only. */
@@ -87,13 +99,19 @@ final class PrayerMath {
     }
 
     /**
-     * The method of a place: the Ja'fari when the settings say {@code pm=jafari}, else the country's own, told by the city's time zone
-     * (Kuwait, Qatar, UAE; Bahrain the Gulf one, Oman its ministry's), else Umm al-Qura. The page (CONFIG.prayerMethod) and the app (PrayerMethod) say
-     * the same; tests/prayer_method_test.py compares the three.
+     * The method of a place: an explicit legacy preference or the validated numeric country method sent by the screensaver.
+     * Old fragments without that id retain their zone-based behavior. The page (CONFIG.prayerMethod) and the app (PrayerMethod)
+     * say the same; tests/prayer_method_test.py compares the three.
      */
     static int methodFor(String tz, String pm) {
         if ("jafari".equals(pm)) return JAFARI;
         if ("gulf".equals(pm)) return GULF;   // «الخليج» chosen by hand, for Oman or anywhere
+        // The screensaver resolves the city's country and sends its numeric id.
+        // Validate against METHODS, including id 0 only as the existing explicit choice.
+        if (pm != null && pm.matches("[0-9]{1,3}")) {
+            int id = Integer.parseInt(pm);
+            for (Method m : METHODS) if (m.id == id && id != JAFARI) return id;
+        }
         if (tz == null) return UMM_AL_QURA;
         switch (tz) {
             case "Asia/Kuwait": return KUWAIT;
@@ -154,23 +172,46 @@ final class PrayerMath {
         utc.set(y, mo - 1, d, 0, 0, 0);
         double jd0 = utc.getTimeInMillis() / 86400000.0 + 2440587.5 - lng / 360.0;
         double tzHours = zone.getOffset(day0 + 12 * 3600_000L) / 3600000.0;
+        // Across the date line (e.g. Samoa), solar noon still belongs to this
+        // local day. Preserve later night rollover relative to that noon.
+        tzHours -= 24 * Math.floor(adj(noon(jd0, 12), tzHours, lng) / 24);
 
-        double fajr = adj(angleTime(jd0, lat, m.fajr, 5, true), tzHours, lng);
-        double sunrise = adj(angleTime(jd0, lat, .833, 6, true), tzHours, lng);
+        // Polar day/night has no sunrise/sunset to divide. Use 48 degrees on
+        // that day at the same longitude/zone, then divide that surrogate night.
+        double calcLat = lat;
+        if (Double.isNaN(angleTime(jd0, lat, .833, 6, true)) || Double.isNaN(angleTime(jd0, lat, .833, 18, false)))
+            calcLat = Math.copySign(48, lat);
+
+        double fajr = adj(angleTime(jd0, calcLat, m.fajr, 5, true), tzHours, lng);
+        double sunrise = adj(angleTime(jd0, calcLat, .833, 6, true), tzHours, lng);
         double dhuhr = adj(noon(jd0, 12), tzHours, lng);
-        double asr = adj(asrTime(jd0, lat, 13), tzHours, lng);
-        double maghrib = adj(angleTime(jd0, lat, m.maghrib, 18, false), tzHours, lng);
+        double asr = adj(asrTime(jd0, calcLat, 13), tzHours, lng);
+        double sunset = adj(angleTime(jd0, calcLat, .833, 18, false), tzHours, lng);
+        double maghrib = adj(angleTime(jd0, calcLat, m.maghrib, 18, false), tzHours, lng);
+        double night = fix(sunrise - sunset, 24);
+        double isha = adj(angleTime(jd0, calcLat, m.isha, 18, false), tzHours, lng);
+        if (m.id == MOONSIGHTING) {
+            double dawn = seasonal(calcLat, utc.get(Calendar.DAY_OF_YEAR), y, true) / 60;
+            double dusk = seasonal(calcLat, utc.get(Calendar.DAY_OF_YEAR), y, false) / 60;
+            // Aladhan method 15 reports latitudeAdjustmentMethod NONE:
+            // use the seasonal equations directly, including above 55 degrees.
+            fajr = sunrise - dawn;
+            isha = sunset + dusk;
+        } else {
+            double dawn = night * m.fajr / 60, dusk = night * m.isha / 60;
+            if (Double.isNaN(fajr) || sunrise - fajr > dawn) fajr = sunrise - dawn;
+            if (Double.isNaN(isha) || isha - sunset > dusk) isha = sunset + dusk;
+        }
 
         int[] minutes = new int[6];
         minutes[FAJR] = minutesOfDay(fajr);
         minutes[SUNRISE] = minutesOfDay(sunrise) + m.tune[0];
         minutes[DHUHR] = minutesOfDay(dhuhr) + m.tune[1];
         minutes[ASR] = minutesOfDay(asr) + m.tune[2];
-        minutes[MAGHRIB] = minutesOfDay(maghrib) + m.tune[3];
+        minutes[MAGHRIB] = (int) Math.round(maghrib * 60) + m.tune[3];
         if (m.ishaIsDelay()) {
             minutes[ISHA] = minutes[MAGHRIB] + (int) (ishaDelayMillis(ramadan, m.id) / 60_000L);
         } else {
-            double isha = adj(angleTime(jd0, lat, m.isha, 18, false), tzHours, lng);
             minutes[ISHA] = Math.max(minutes[MAGHRIB], (int) Math.round(isha * 60));   // absolute, like the delay: never wrapped to the morning
         }
         long[] at = new long[6];
@@ -186,6 +227,14 @@ final class PrayerMath {
     static int firstAfter(long[] at, int[] order, long after) {
         for (int i : order) if (at[i] > after) return i;
         return -1;
+    }
+
+    /** Aladhan clocks wrap at midnight. A summer sunset may itself be on day 1. */
+    static int[] orderedClockMinutes(int[] clocks, boolean lateSunset) {
+        int[] out = clocks.clone();
+        if (lateSunset && out[MAGHRIB] < out[ASR]) out[MAGHRIB] += 1440;
+        if (out[ISHA] < out[MAGHRIB]) out[ISHA] += 1440;
+        return out;
     }
 
     /** What the adhan alarm was set for, to tell when it must be set again: the place, its zone, the minutes added and the method. */
@@ -234,8 +283,30 @@ final class PrayerMath {
         double n = noon(jd0, t);
         double cosT = (-Math.sin(angle * RAD) - Math.sin(decl * RAD) * Math.sin(lat * RAD))
                 / (Math.cos(decl * RAD) * Math.cos(lat * RAD));
-        double T = Math.acos(Math.max(-1, Math.min(1, cosT))) / RAD / 15;
+        double T = Math.acos(cosT) / RAD / 15; // unreachable twilight stays NaN until the high-latitude rule
         return n + (before ? -T : T);
+    }
+
+    /** Moonsighting Committee's general shafaq, latitude/season interpolation.
+     * Equations: moonsighting.com/how-we.html; Batoul Apps adhan-js Astronomical
+     * (MIT). Aladhan method 15 uses these without adhan's extra safety margins. */
+    private static double seasonal(double lat, int day, int year, boolean morning) {
+        boolean leap = year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
+        int length = leap ? 366 : 365;
+        double x = Math.abs(lat) / 55;
+        double a = 75 + (morning ? 28.65 : 25.60) * x;
+        double b = 75 + (morning ? 19.44 : 2.05) * x;
+        double c = 75 + (morning ? 32.74 : -9.21) * x;
+        double d = 75 + (morning ? 48.10 : 6.14) * x;
+        double days = fix(day + (lat >= 0 ? 10 : -(leap ? 173 : 172)), length);
+        double[] ends = {91, 137, 183, 229, 275, 366};
+        double[] values = {a, b, c, d, c, b, a};
+        double start = 0;
+        for (int i = 0; i < ends.length; i++) {
+            if (days < ends[i]) return values[i] + (values[i + 1] - values[i]) * (days - start) / (i == 5 ? 91 : ends[i] - start);
+            start = ends[i];
+        }
+        return a;
     }
 
     private static double asrTime(double jd0, double lat, double t) {

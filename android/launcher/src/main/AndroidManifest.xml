@@ -75,9 +75,20 @@
         <intent>
             <action android:name="android.speech.action.RECOGNIZE_SPEECH" />
         </intent>
+        <!-- the remote's Settings key outside our home (TypeService, SettingsKey.TV_SETTINGS_ACTIONS): on Android 11+ the TV's settings
+             screen must be visible, or resolveActivity finds nothing and the family lock cannot name its package -->
+        <intent>
+            <action android:name="android.settings.SETTINGS" />
+        </intent>
         <package android:name="com.tcl.tv" />
         <package android:name="com.tcl.suspension" />
         <package android:name="sa.urtv.screensaver" />
+        <!-- «انعكاس الشاشة» in «مركز التحكم»: the TVs' mirroring apps (ControlText.MIRROR_APPS), seen even when one has no launcher entry -->
+        <package android:name="com.tcl.miracast" />
+        <package android:name="com.softwinner.miracastReceiver" />
+        <package android:name="com.homwee.mmp.screenshare" />
+        <package android:name="com.xiaomi.mitv.smartshare" />
+        <package android:name="com.mediatek.wfd" />
         <!-- the stock Google homes (Dock.GOOGLE_HOMES): so getPackageInfo sees a disabled one on Android 11+ -->
         <package android:name="com.google.android.apps.tv.launcherx" />
         <package android:name="com.google.android.tvlauncher" />
@@ -270,7 +281,8 @@
         </service>
 
         <!-- The phone remote's typing into other apps: a second accessibility service, on only when the owner turns it on (or
-             optimize/dock.sh type-setup). It reads no event (it only asks Android for window changes, to know which app is in front) and looks at the screen only when a phone sends text: see TypeService. -->
+             optimize/dock.sh type-setup). It reads no event (it only asks Android for window changes, to know which app is in front) and looks at the screen only when a phone sends text: see TypeService.
+             It also answers the remote's Settings key while another app is in front (SettingsKey): no other key is kept or logged. -->
         <service
             android:name=".TypeService"
             android:exported="true"
@@ -385,6 +397,17 @@
                 <action android:name="android.intent.action.TIME_SET" />
                 <action android:name="android.intent.action.TIMEZONE_CHANGED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- our accessibility services after an update of this app or a boot: listed but not bound, or the switch off, is healed (A11yHeal); DUMP = only the system sends these -->
+        <receiver
+            android:name=".A11yHeal"
+            android:exported="true"
+            android:permission="android.permission.DUMP">
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 

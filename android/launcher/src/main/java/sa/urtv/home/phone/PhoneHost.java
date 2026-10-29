@@ -18,6 +18,7 @@ public final class PhoneHost {
     private static PhoneControl control;
     private static Runnable ui;
     private static String pageText;
+    private static final java.util.Map<String, byte[]> fontBytes = new java.util.HashMap<>();
 
     private PhoneHost() { }
 
@@ -28,6 +29,7 @@ public final class PhoneHost {
                 @Override public long now() { return System.currentTimeMillis(); }
             }, new PhoneActions(app), new PhoneControl.Page() {
                 @Override public String html() { return page(app); }
+                @Override public byte[] font(String name) { return fontAsset(app, name); }
             }, new java.util.function.Predicate<java.net.InetAddress>() {
                 @Override public boolean test(java.net.InetAddress a) { return Guard.privateClient(a); }
             }, new SecureRandom());
@@ -54,21 +56,33 @@ public final class PhoneHost {
 
     private static synchronized String page(Context c) {
         if (pageText == null) {
-            try {
-                InputStream in = c.getAssets().open("phone/index.html");
-                try {
-                    ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    byte[] buf = new byte[8192];
-                    int n;
-                    while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
-                    pageText = new String(out.toByteArray(), StandardCharsets.UTF_8);
-                } finally {
-                    in.close();
-                }
-            } catch (java.io.IOException e) {
-                pageText = "<!doctype html><title>x</title>";
-            }
+            byte[] b = asset(c, "phone/index.html");
+            pageText = b == null ? "<!doctype html><title>x</title>" : new String(b, StandardCharsets.UTF_8);
         }
         return pageText;
+    }
+
+    /** A font the APK carries (CI puts Thmanyah in assets/fonts; a local build has none), read once; null when it is not there or not allowed. */
+    private static synchronized byte[] fontAsset(Context c, String name) {
+        if (!PhoneApi.FONTS.contains(name)) return null;
+        if (!fontBytes.containsKey(name)) fontBytes.put(name, asset(c, "fonts/" + name));   // a missing one is remembered too: the assets never change
+        return fontBytes.get(name);
+    }
+
+    private static byte[] asset(Context c, String path) {
+        try {
+            InputStream in = c.getAssets().open(path);
+            try {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                byte[] buf = new byte[8192];
+                int n;
+                while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
+                return out.toByteArray();
+            } finally {
+                in.close();
+            }
+        } catch (java.io.IOException e) {
+            return null;
+        }
     }
 }

@@ -70,6 +70,33 @@ check("RTL: the panel's own direction is set, and the tiles walk right to left w
       "LAYOUT_DIRECTION_RTL" in center and "setNextFocusRightId(col == 0" in center and "setNextFocusLeftId(" in center)
 check("focus goes back to the pill when it closes, and a tile has it when it opens", "anchor.requestFocus()" in center and "focusFirst.requestFocus()" in center)
 
+# ---- «انعكاس الشاشة»: the TV's own mirroring app, only when one is installed
+mirror_block = text[text.index("static final String[] MIRROR_APPS = {"):text.index("};", text.index("static final String[] MIRROR_APPS = {"))]
+mirror_apps = re.findall(r'"([A-Za-z0-9_.]+)"', mirror_block)
+lists = "\n".join(p.read_text(encoding="utf-8") for p in (ROOT / "optimize/lists").rglob("*.txt"))
+check("the mirroring apps: TCL's com.tcl.miracast first (keep.txt keeps it on, names-ar.txt names it), a short list",
+      mirror_apps[:1] == ["com.tcl.miracast"] and 2 <= len(mirror_apps) <= 6 and len(set(mirror_apps)) == len(mirror_apps)
+      and "com.tcl.miracast" in (ROOT / "optimize/lists/keep.txt").read_text(encoding="utf-8")
+      and "com.tcl.miracast" in (ROOT / "optimize/lists/names-ar.txt").read_text(encoding="utf-8"), mirror_apps)
+check("…every one of them is a package our lists name (none made up)", all(re.search(r"(?m)^" + re.escape(p) + r"\b", lists) for p in mirror_apps),
+      [p for p in mirror_apps if not re.search(r"(?m)^" + re.escape(p) + r"\b", lists)])
+check("…and every one is in the manifest's <queries>, so Android 11+ shows it to the home",
+      all(f'<package android:name="{p}" />' in manifest.split("<queries>")[1].split("</queries>")[0] for p in mirror_apps))
+check("the tile is there only when the TV can open one of them (an app missing, disabled or with no screen gives no tile)",
+      "final Intent mirror = mirrorIntent();" in center and "if (mirror != null)" in center
+      and "ControlText.mirrorApp(p -> launchIntent(pm, p) != null)" in center
+      and "pm.getLeanbackLaunchIntentForPackage(pkg)" in center and "pm.getLaunchIntentForPackage(pkg)" in center)
+check("its name «انعكاس الشاشة», its one line «من الجوال: شارك الشاشة واختر التلفزيون», its own icon",
+      'MIRROR = "انعكاس الشاشة"' in text and 'MIRROR_HINT = "من الجوال: شارك الشاشة واختر التلفزيون"' in text
+      and 'tile("mirror", ControlText.MIRROR, ControlText.MIRROR_HINT, R.drawable.ic_cast,' in center
+      and (ROOT / "android/launcher/src/main/res/drawable/ic_cast.xml").exists())
+check("OK opens it through the host, locked as that app's own tile is (ParentalPolicy.TILE: the app's package)",
+      "host.launchGuarded(ParentalPolicy.TILE, mirror, ControlText.MIRROR)" in center and "case TILE:" in policy)
+check("the tile comes after «مخرج الصوت» and before the screensaver's, so the panel's first tiles stay where they were",
+      center.index('tile("sound"') < center.index('tile("mirror"') < center.index('tile("saver"'))
+check("nine tiles may go five to a row; eight or fewer are laid out as before", "static final int FIVE_AFTER = 8;" in src("ControlLayout.java")
+      and "for (int cols : columns(n))" in src("ControlLayout.java"))
+
 # ---- no traffic before OK
 check("the only network code is the speed test's, and it is started by the tile's OK on a worker thread",
       "new SpeedTest()" in center and "HttpURLConnection" not in center and "new Thread(" in center.split("private void speedTest")[1]
@@ -110,6 +137,7 @@ with tempfile.TemporaryDirectory() as tmp:
         cols, rows, tw, th, pw, ph = (int(x) for x in g.split()[:6])
         check(f"layout {W}x{H} @{d}: {n} tiles in {cols}x{rows}, the panel inside the screen",
               cols * rows >= n and pw <= W * 0.82 + 1 and ph <= H * 0.90 + 1 and th >= 54 * d - 1, g)
+    check("the layout cases cover nine tiles («انعكاس الشاشة») on 1080p, 720p and 540p", {(c[1], c[2]) for c in cases if c[0] == "layout" and c[4] == "9"} >= {("1920", "1080"), ("1280", "720"), ("960", "540")})
     check("every case answered", len(got) > len(cases), (len(got), len(cases)))
     r = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.SpeedTestRun"], capture_output=True, text=True)
     for l in r.stdout.splitlines():

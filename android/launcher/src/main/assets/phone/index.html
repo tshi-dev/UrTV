@@ -7,10 +7,10 @@
 <meta name="color-scheme" content="dark light">
 <title>تحكم من الجوال</title>
 <style>
-/* the glass look (GlassStyle: the same colours on the TV; tests/glass_test.py checks them): the home's photo, small and blurred once on
-   the TV (/api/backdrop), under the veil it needs (--vd/--vl from /api/state); smoked glass dark, frosted white glass light; no blur here */
-:root { --bg:#17181b; --card:rgba(20,22,26,.42); --line:rgba(255,255,255,.14); --gold:#f3f3f3; --gt:#ffffff; --text:#ffffff; --dim:#dadce0; --red:#ffc2b3; --ink:#14161a; --tile:rgba(20,22,26,.42); --bar:#18191c; --veil:#000000; --va:var(--vd,.95); }
-:root[data-theme="light"] { --bg:#ecedef; --card:rgba(255,255,255,.62); --line:rgba(20,22,26,.12); --gold:#202226; --gt:#14161a; --text:#14161a; --dim:#3a3e46; --red:#8e2a10; --ink:#ffffff; --tile:rgba(255,255,255,.62); --bar:#fcfcfd; --veil:#f5f6f8; --va:var(--vl,.95); }
+/* GlassStyle's words (tests/glass_test.py) over the home's photo, blurred once on the TV (/api/backdrop), under its veil (--vd/--vl); no blur here.
+   The default look is the 4.0 mockups': smoked glass on green-black and gold, or white on paper */
+:root { --bg:#17181b; --card:rgba(30,33,39,.86); --line:rgba(255,255,255,.09); --gold:#d6af6b; --gt:#e2c084; --text:#ffffff; --dim:#dadce0; --red:#ffc2b3; --ink:#14161a; --tile:rgba(255,255,255,.07); --bar:#15191a; --veil:#070e0b; --glow:rgba(214,175,107,.16); --on:#4cc38a; --off:rgba(255,255,255,.2); --va:var(--vd,.95); }
+:root[data-theme="light"] { --bg:#ecedef; --card:rgba(255,255,255,.9); --line:rgba(80,60,20,.13); --gold:#8d6220; --gt:#7a5418; --text:#14161a; --dim:#3a3e46; --red:#8e2a10; --ink:#ffffff; --tile:rgba(141,98,32,.1); --bar:#fdfbf7; --veil:#f4f0e8; --glow:rgba(169,120,44,.12); --on:#23824f; --sw:#2e9e62; --off:rgba(60,60,67,.2); --va:var(--vl,.95); }
 /* «المظهر ← الشكل» of the TV (glass_look in /api/state): the other three looks, GlassStyle's, dark and light */
 :root[data-look="graphite"] { --bg:#121314; --card:rgba(32,33,36,.9); --line:rgba(255,255,255,.08); --gold:#f0a64a; --gt:#f0a64a; --text:#f2f0ec; --dim:#b9b6b0; --red:#ffb4a0; --ink:#1a1206; --tile:rgba(32,33,36,.9); --bar:#1e1f22; --veil:#121314; --va:var(--vd,.95); }
 :root[data-look="graphite"][data-theme="light"] { --bg:#f3f1ee; --card:rgba(255,255,255,.95); --line:rgba(28,27,26,.12); --gold:#8a4f00; --gt:#8a4f00; --text:#1c1b1a; --dim:#55514b; --red:#8e2a10; --ink:#ffffff; --tile:rgba(255,255,255,.95); --bar:#ffffff; --veil:#f3f1ee; --va:var(--vl,.95); }
@@ -18,187 +18,291 @@
 :root[data-look="navy"][data-theme="light"] { --bg:#eef1f7; --card:rgba(255,255,255,.95); --line:rgba(20,33,61,.12); --gold:#14213d; --gt:#6e5017; --text:#14213d; --dim:#46516b; --red:#8e2a10; --ink:#ffffff; --tile:rgba(255,255,255,.95); --bar:#ffffff; --veil:#eef1f7; --va:var(--vl,.95); }
 :root[data-look="clean"] { --bg:#121314; --card:rgba(32,33,36,.9); --line:rgba(255,255,255,.08); --gold:#f0a64a; --gt:#f0a64a; --text:#f2f0ec; --dim:#b9b6b0; --red:#ffb4a0; --ink:#1a1206; --tile:rgba(32,33,36,.9); --bar:#1e1f22; --veil:#121314; --va:var(--vd,.95); }
 :root[data-look="clean"][data-theme="light"] { --bg:#ecece8; --card:rgba(255,255,255,.98); --line:rgba(20,24,30,.08); --gold:#0b5e51; --gt:#0b5e51; --text:#1b1d21; --dim:#50555e; --red:#8e2a10; --ink:#ffffff; --tile:rgba(255,255,255,.98); --bar:#ffffff; --veil:#f4f4f1; --va:var(--vl,.95); }
-* { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-html,body { margin:0; color:var(--text); font:16px/1.5 system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif; }
-html { background:var(--bg); }
-#glassbg,#glassveil { position:fixed; inset:0; z-index:-1; pointer-events:none; }
-#glassbg { background:var(--bg); }
-#glassbg img { width:100%; height:100%; object-fit:cover; display:block; }
-#glassveil { background:var(--veil); opacity:var(--va); }
-body { max-width:560px; margin:0 auto; padding:0 16px calc(84px + env(safe-area-inset-bottom)); overflow-x:hidden; }
-body.login { padding-bottom:24px; }
-h1 { font-size:22px; margin:14px 0 6px; }
-h2 { font-size:17px; margin:20px 0 8px; color:var(--gt); }
-p { margin:6px 0; color:var(--dim); font-size:14px; }
-.hidden { display:none !important; }
-button,select,input,textarea { font:inherit; color:var(--text); background:var(--card); border:1px solid var(--line); border-radius:14px; padding:10px 12px; max-width:100%; }
-button { cursor:pointer; min-height:52px; min-width:52px; touch-action:manipulation; }
-button:active { background:var(--gold); color:var(--ink); }
-button:focus-visible,input:focus-visible,select:focus-visible { outline:3px solid var(--gt); outline-offset:2px; }
-button.gold { background:var(--gold); color:var(--ink); border-color:var(--gold); font-weight:700; }
-button.red { color:var(--red); border-color:var(--red); }
-input,select { width:100%; min-height:52px; }
-input[type=checkbox] { appearance:none; -webkit-appearance:none; width:60px; min-height:52px; height:52px; flex:0 0 60px; border-radius:26px; position:relative; padding:0; background:var(--tile); }
-input[type=checkbox]::before { content:""; position:absolute; top:10px; inset-inline-start:8px; width:30px; height:30px; border-radius:50%; background:var(--dim); transition:inset-inline-start .15s; }
-input[type=checkbox]:checked { background:var(--gold); border-color:var(--gold); }
-input[type=checkbox]:checked::before { inset-inline-start:24px; background:var(--ink); }
-input[type=range] { padding:0; border:0; background:none; }
-.row { display:flex; gap:10px; margin:10px 0; }
-.row > * { flex:1 1 0; min-width:0; }
-.card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:12px 14px; margin:12px 0; }
-.card h2 { margin-top:2px; }
-.note { border:1px solid var(--line); border-radius:12px; padding:8px 12px; margin:10px 0; background:var(--card); font-size:14px; }
-.warn { border-color:var(--red); color:var(--red); }
-.sw { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:8px 0; min-height:52px; }
-.list button { display:block; width:100%; text-align:right; margin:6px 0; }
-header.top { position:sticky; top:0; z-index:4; background:var(--bg); display:flex; align-items:center; gap:10px; padding:calc(8px + env(safe-area-inset-top)) 0 8px; border-bottom:1px solid var(--line); }
-header.top .ttl { flex:1; min-width:0; font-weight:700; }
-header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--dim); }
-.dot { display:inline-block; width:10px; height:10px; border-radius:50%; background:#3ecf7a; margin-inline-end:6px; }
-#theme { flex:0 0 52px; padding:0; font-size:20px; }
-#bar { position:fixed; bottom:0; inset-inline:0; z-index:5; background:var(--bar); border-top:1px solid var(--line); display:flex; padding:6px 8px calc(6px + env(safe-area-inset-bottom)); gap:6px; max-width:560px; margin:0 auto; }
-#bar button { flex:1 1 0; min-height:56px; border:0; background:none; font-size:14px; padding:4px 2px; border-radius:12px; color:var(--dim); line-height:1.3; }
-#bar button svg { display:block; width:26px; height:26px; margin:0 auto 3px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
-#bar button.on svg { stroke-width:2; }
-#bar button.on { background:var(--gold); color:var(--ink); font-weight:700; }
-#modes button.on { background:var(--gold); color:var(--ink); border-color:var(--gold); font-weight:700; }
-#now { display:flex; align-items:center; gap:10px; margin:12px 0; }
-#now .t { flex:1; min-width:0; overflow-wrap:anywhere; }
-#now button { flex:0 0 auto; }
-#pad { height:190px; margin:12px 0; border:2px dashed var(--line); border-radius:24px; background:var(--card); display:flex; align-items:center; justify-content:center; text-align:center; color:var(--dim); font-size:14px; touch-action:none; user-select:none; -webkit-user-select:none; }
-.dp { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; direction:ltr; margin:10px 0; }
-.dp button { min-height:60px; font-size:22px; }
-.vol { display:flex; gap:10px; margin:10px 0; }
-.vol button { flex:1 1 0; min-height:60px; font-size:20px; }
-.grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:10px 0; }
-.app { display:flex; flex-direction:column; align-items:center; gap:6px; padding:10px 4px; min-height:104px; position:relative; font-size:14px; line-height:1.3; overflow-wrap:anywhere; text-align:center; }
-.tile { width:52px; height:52px; border-radius:14px; background:var(--tile); display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:700; position:relative; overflow:hidden; color:var(--gt); }
-.tile img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-.lock { position:absolute; top:4px; inset-inline-end:6px; font-size:14px; }
-.tools { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; }
-.tools button { flex:1 1 30%; }
-#msg { pointer-events:none; position:fixed; inset-inline:16px; bottom:calc(88px + env(safe-area-inset-bottom)); background:var(--gold); color:var(--ink); border-radius:14px; padding:12px 14px; text-align:center; z-index:9; font-weight:600; }
-#dlg { position:fixed; inset:0; z-index:10; background:rgba(0,0,0,.6); display:flex; align-items:flex-end; justify-content:center; }
-#dlg > div { background:var(--bg); border:1px solid var(--line); border-radius:18px 18px 0 0; padding:16px 16px calc(16px + env(safe-area-inset-bottom)); width:100%; max-width:560px; }
-@media (prefers-reduced-motion: reduce) { * { transition:none !important; animation:none !important; scroll-behavior:auto !important; } }
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+/* the TV's Arabic font, served by the TV (PhoneApi.FONTS); without it the phone's own */
+@font-face{font-family:'Thmanyah';font-weight:400;font-display:swap;src:url(/fonts/Thmanyah-Regular.woff2) format("woff2")}
+@font-face{font-family:'Thmanyah';font-weight:500 900;font-display:swap;src:url(/fonts/Thmanyah-Medium.woff2) format("woff2")}
+html,body{margin:0;color:var(--text);font:16px/1.45 'Thmanyah',system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif}
+html{background:var(--bg)}
+#glassbg,#glassveil{position:fixed;inset:0;z-index:-1;pointer-events:none}
+#glassbg{background:var(--bg)}
+#glassbg img{width:100%;height:100%;object-fit:cover;display:block}
+#glassveil{background:radial-gradient(100% 45% at 50% 0,var(--glow),transparent),var(--veil);opacity:var(--va)}
+html{scroll-padding-bottom:calc(88px + env(safe-area-inset-bottom))}
+#t-remote{padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+body{max-width:560px;margin:0 auto;padding:0 16px calc(96px + env(safe-area-inset-bottom));overflow-x:hidden}
+body.login{padding-bottom:24px}
+h1{font-size:24px;margin:8px 0 6px}
+h2{font-size:18px;margin:0 0 4px;color:var(--text)}
+p{margin:6px 0;color:var(--dim);font-size:14px}
+.hidden{display:none !important}
+svg{width:24px;height:24px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+button,select,input{font:inherit;color:var(--text);background:var(--tile);border:1px solid var(--line);border-radius:16px;padding:10px 12px;max-width:100%}
+button{cursor:pointer;min-height:52px;min-width:52px;touch-action:manipulation;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+button:active{background:var(--gold);color:var(--ink)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+button.gold{background:var(--gold);color:var(--ink);border-color:var(--gold);font-weight:700}
+button.red{color:var(--red);border-color:var(--red);background:none}
+.wide{width:100%;margin:8px 0}
+input,select{width:100%;min-height:52px}
+select{appearance:none;-webkit-appearance:none;padding-left:34px;background:var(--tile) linear-gradient(135deg,transparent 50%,var(--dim) 50%) 14px 50%/7px 7px no-repeat}
+/* the mockups' switch: a 52x32 pill, a 26 px white knob; on = green, knob on the left (RTL); the box stays 48 px */
+input[type=checkbox]{appearance:none;-webkit-appearance:none;width:56px;height:48px;min-height:48px;flex:0 0 56px;padding:0;margin:0;border:0;border-radius:18px;background:none;position:relative;cursor:pointer}
+input[type=checkbox]::before{content:"";position:absolute;top:8px;inset-inline-start:2px;width:52px;height:32px;border-radius:16px;background:var(--off);box-shadow:inset 0 0 0 1px var(--line);transition:background-color .15s}
+input[type=checkbox]::after{content:"";position:absolute;top:11px;inset-inline-start:5px;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3),0 1px 1px rgba(0,0,0,.12);transition:inset-inline-start .15s}
+input[type=checkbox]:checked::before{background:var(--sw,var(--on));box-shadow:none}
+input[type=checkbox]:checked::after{inset-inline-start:25px}
+input[type=checkbox]:disabled{opacity:.45;cursor:default}
+input[type=range]{padding:0;border:0;background:none;accent-color:var(--gold)}
+.row{display:flex;gap:10px;margin:10px 0}
+.row > *{flex:1 1 0;min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;margin:12px 0}
+.note{border:1px solid var(--line);border-radius:16px;padding:10px 12px;margin:10px 0;background:var(--card);font-size:14px}
+.warn{border-color:var(--red);color:var(--red)}
+.sw{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 0;min-height:52px}
+.list button{display:flex;width:100%;justify-content:flex-start;margin:6px 0}
+.k{font-size:14px;color:var(--dim);font-weight:400;margin:0}
+.gl{color:var(--gt)}
+.big{display:block;font-size:24px;font-weight:800;line-height:1.3}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.ic{width:46px;height:46px;border-radius:15px;background:var(--tile);color:var(--gold);display:flex;align-items:center;justify-content:center;flex:none;padding:0;border:0}
+.ch{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.ch h2,.ch p{margin:0}
+.hd{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:20px 4px 0}
+.hd h2{margin:0}
+.h{font-size:24px}
+.lnk{background:none;border:0;color:var(--gt);font-size:15px;min-height:48px;padding:0 6px}
+.rnd{width:56px;height:56px;padding:0;border-radius:50%}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.chips button{flex:1 1 0;min-height:48px;border-radius:24px;padding:6px 10px;white-space:nowrap;font-size:15px}
+details{margin:8px 4px;color:var(--dim);font-size:14px}
+summary{min-height:44px;display:flex;align-items:center;cursor:pointer}
+header.top{display:flex;align-items:center;gap:12px;margin:calc(12px + env(safe-area-inset-top)) 0 12px;padding:10px;border-radius:22px;background:var(--card);border:1px solid var(--line)}
+header.top .ttl{flex:1;min-width:0;font-weight:700}
+header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
+.con{color:var(--on);font-weight:400;margin-inline-start:6px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--on);margin-inline-end:5px}
+#hSet{background:var(--tile);color:var(--text);width:52px;height:52px}
+#bar{position:fixed;bottom:0;inset-inline:0;z-index:5;background:var(--bar);border-top:1px solid var(--line);display:flex;padding:6px 8px calc(8px + env(safe-area-inset-bottom));gap:4px;max-width:560px;margin:0 auto}
+#bar button{flex:1 1 0;flex-direction:column;gap:3px;min-height:58px;border:0;background:none;font-size:14px;padding:4px 2px;border-radius:14px;color:var(--dim);line-height:1.3}
+#bar button svg { width:26px; height:26px; stroke-width:1.7; }
+#bar button.on { color:var(--gold); font-weight:700; }
+#modes{display:flex;flex:2 1 0;gap:3px;padding:3px;border-radius:19px;background:var(--card);border:1px solid var(--line)}
+#modes button{flex:1 1 0;border:0;background:none;min-height:48px;border-radius:16px}
+#modes button.on{background:var(--gold);color:var(--ink);border-color:var(--gold);font-weight:700}
+#now{display:flex;align-items:center;gap:12px;padding:12px 18px 12px 12px;position:relative;background:linear-gradient(var(--glow),var(--glow)),var(--card);box-shadow:inset 0 0 0 1px var(--glow)}
+#now::before{content:"";position:absolute;inset-inline-start:10px;top:16px;bottom:16px;width:4px;border-radius:4px;background:var(--gold)}
+#now .t{flex:1;min-width:0;overflow-wrap:anywhere;padding-inline-start:8px}
+#nowT{display:block;font-size:17px}
+#now button{flex:0 0 auto}
+#pad{position:relative;height:290px;margin:12px 0;border-radius:28px;border:1px solid var(--line);background:radial-gradient(closest-side,var(--glow),transparent),var(--card);touch-action:none;user-select:none;-webkit-user-select:none}
+#pad button{position:absolute;background:none;border:0;color:var(--dim)}
+#pad [data-k=up]{top:6px;left:calc(50% - 26px)}
+#pad [data-k=down]{bottom:34px;left:calc(50% - 26px);transform:rotate(180deg)}
+#pad [data-k=left]{left:4px;top:calc(50% - 26px);transform:rotate(-90deg)}
+#pad [data-k=right]{right:4px;top:calc(50% - 26px);transform:rotate(90deg)}
+#pad #padOk{inset:0;margin:auto;width:124px;height:124px;border-radius:50%;background:var(--gold);color:var(--ink);font-size:26px;font-weight:800;box-shadow:0 0 0 8px var(--glow),0 6px 40px var(--glow)}
+#pad .hint{position:absolute;bottom:10px;inset-inline:14px;text-align:center;font-size:14px;color:var(--dim);pointer-events:none}
+.keys{display:flex;gap:10px;margin:12px 0}
+.keys button{flex:1 1 0;flex-direction:column;gap:2px;min-height:70px;border-radius:22px;background:var(--card);white-space:nowrap;padding:8px 4px}
+.vol{display:flex;margin:12px 0;padding:4px;border-radius:28px;background:var(--card);border:1px solid var(--line)}
+.vol button{flex:1 1 0;min-height:60px;border:0;background:none;border-radius:24px;white-space:nowrap;padding:6px}
+.vol button + button{border-inline-start:1px solid var(--line);border-radius:0}
+.tx{display:flex;align-items:center;gap:8px;margin:12px 0 0;padding:8px;border-radius:24px;background:var(--card);border:1px solid var(--line)}
+.tx input{flex:1;min-width:0;border:0;background:none}
+.tx > span{display:flex;color:var(--dim);padding-inline-start:6px}
+#txtGo{width:58px;border-radius:16px}
+.srch{position:relative;margin:4px 0 0}
+.srch svg{position:absolute;top:14px;inset-inline-start:16px;color:var(--dim)}
+.srch input{padding-inline-start:50px;border-radius:22px;background:var(--card)}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 6px;padding:14px 8px}
+.grid p{grid-column:1/-1;text-align:center}
+.app{flex-direction:column;justify-content:flex-start;gap:6px;padding:2px 0;min-height:96px;min-width:0;position:relative;font-size:14px;line-height:1.3;overflow-wrap:anywhere;text-align:center;border:0;background:none}
+.tile{width:60px;height:60px;border-radius:17px;background:var(--tile);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;position:relative;overflow:hidden;color:var(--gold);flex:none}
+.tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.tools .tile{background:var(--gold);color:var(--ink)}
+.tools{grid-template-columns:repeat(5,minmax(0,1fr))}
+.tools .tile{width:50px;height:50px;border-radius:15px}
+.lock{position:absolute;top:-4px;inset-inline-end:0;width:28px;height:28px;border-radius:50%;background:var(--bar);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:14px}
+.np{background:linear-gradient(var(--glow),transparent 55%),var(--card)}
+.np .lbl{display:flex;align-items:center;gap:8px;margin:0 0 4px}
+.np .lbl::before{content:"";width:4px;height:18px;border-radius:3px;background:var(--gold)}
+.pb{height:6px;border-radius:3px;background:var(--tile);margin:14px 0 4px;overflow:hidden}
+.pb i{display:block;height:100%;width:0;background:var(--gold);border-radius:3px}
+.pt{display:flex;justify-content:space-between;font-size:14px;color:var(--dim)}
+.ctl{display:flex;align-items:center;justify-content:center;gap:16px;margin:14px 0}
+.ctl .rnd:not(.gold){background:var(--tile);border:0}
+#qToggle{width:76px;height:76px}
+#qToggle svg{width:30px;height:30px;stroke-width:3}
+#qToggle[data-op=resume] svg{display:none}
+#qToggle[data-op=resume]::after{content:"";margin-left:6px;border-style:solid;border-width:13px 0 13px 21px;border-color:transparent transparent transparent currentColor}
+.ad{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.tg{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:14px;color:var(--dim);text-align:center}
+.lg{margin-top:calc(40px + env(safe-area-inset-top));text-align:center;padding:26px 18px}
+.lg .ic{margin:0 auto 8px;width:60px;height:60px;border-radius:18px}
+#code{text-align:center;font-size:24px;letter-spacing:4px;margin:14px 0 4px}
+#msg{pointer-events:none;position:fixed;inset-inline:16px;bottom:calc(92px + env(safe-area-inset-bottom));background:var(--bar);color:var(--text);border:1px solid var(--gold);border-radius:18px;padding:12px 14px;text-align:center;z-index:9;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.3)}
+#dlg{position:fixed;inset:0;z-index:10;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center}
+#dlg > div{background:var(--bar);border:1px solid var(--line);border-radius:24px 24px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));width:100%;max-width:560px}
+@media (max-width:370px){.tile{width:54px;height:54px}.tools .tile{width:46px;height:46px}#pad{height:270px}}
+@media (prefers-reduced-motion: reduce){*,::before,::after{transition:none !important;animation:none !important;scroll-behavior:auto !important} }
 </style>
 </head>
 <body class="login">
 <div id="glassbg" aria-hidden="true"></div><div id="glassveil" aria-hidden="true"></div>
 
 <section id="login">
-  <h1>تحكم من الجوال</h1>
-  <p id="loginInfo">افتح هذه الصفحة بمسح الرمز الظاهر على التلفزيون، أو اكتب الرمز المكوّن من ٦ أرقام الظاهر تحت العنوان.</p>
-  <input id="code" inputmode="numeric" autocomplete="off" maxlength="7" placeholder="الرمز (٦ أرقام)" dir="ltr" aria-label="الرمز">
-  <div class="row"><button id="codeGo" class="gold">اتصال</button></div>
-  <p id="loginState" role="status"></p>
+<div class="card lg">
+<span class="ic" data-i="tv"></span>
+<h1>تحكم من الجوال</h1>
+<p id="loginInfo">افتح هذه الصفحة بمسح الرمز الظاهر على التلفزيون، أو اكتب الرمز المكوّن من ٦ أرقام الظاهر تحت العنوان.</p>
+<input id="code" inputmode="numeric" autocomplete="off" maxlength="7" placeholder="الرمز (٦ أرقام)" dir="ltr" aria-label="الرمز">
+<button id="codeGo" class="gold wide">اتصال</button>
+<p id="loginState" role="status"></p>
+</div>
 </section>
 
 <section id="app" class="hidden">
-  <header class="top">
-    <div class="ttl">التلفزيون<span class="sub"><span class="dot"></span>متصل · <span id="left"></span></span></div>
-    <button id="theme" aria-label="المظهر">◐</button>
-  </header>
+<header class="top">
+<span class="ic" data-i="tv"></span>
+<div class="ttl">التلفزيون<span class="con"><span class="dot"></span>متصل</span><span class="sub" id="left"></span></div>
+<button id="hSet" class="ic" data-i="settings" aria-label="الإعدادات"></button>
+</header>
 
-  <div id="t-remote">
-    <div id="now" class="card hidden"><div class="t" id="nowT"></div><button id="adhanStop1" class="gold hidden">أوقف الأذان الآن</button></div>
-    <div id="pad" aria-label="لوحة اللمس">اسحب للتحريك · المس للاختيار · أبقِ الإصبع للتكرار</div>
-    <div id="foreNote" class="note hidden"></div>
-    <div class="dp">
-      <span></span><button data-k="up" data-rep="1" aria-label="أعلى">▲</button><span></span>
-      <button data-k="left" data-rep="1" aria-label="يسار">◀</button><button class="gold" data-k="ok" aria-label="اختيار">اختيار</button><button data-k="right" data-rep="1" aria-label="يمين">▶</button>
-      <span></span><button data-k="down" data-rep="1" aria-label="أسفل">▼</button><span></span>
-    </div>
-    <div class="row"><button data-k="back">رجوع</button><button data-k="home">الرئيسية</button><button data-k="play_pause">تشغيل / إيقاف</button></div>
-    <div class="vol"><button data-k="vol_down" data-rep="1" aria-label="خفض الصوت">صوت −</button><button data-k="mute" aria-label="كتم">🔇 كتم</button><button data-k="vol_up" data-rep="1" aria-label="رفع الصوت">صوت +</button></div>
-    <input id="txt" dir="auto" maxlength="120" enterkeyhint="send" placeholder="اكتب هنا (عربي أو إنجليزي)" aria-label="نص للتلفزيون">
-    <div class="row" id="modes" role="group" aria-label="طريقة الكتابة"><button data-mode="replace" class="on">استبدال</button><button data-mode="append">إضافة</button></div>
-    <div class="row"><button id="txtGo" class="gold">أرسل</button><button id="txtSearch">بحث</button></div>
-    <div id="svcNote" class="note warn hidden"><div>فعّل خدمة "تلفزيونك: التحكم والكتابة من الجوال" في إعدادات التلفزيون لتكتب في التطبيقات الأخرى</div><div>الإعدادات ← إمكانية الوصول ← تلفزيونك: التحكم والكتابة من الجوال</div></div>
-    <p>يُكتب النص في الحقل النصي المفتوح، ويُضاف مهمةً إذا كانت شاشة «المهام» مفتوحة، وفي التطبيقات الأخرى يُكتب في حقلها بعد تفعيل خدمة إمكانية الوصول. ومن دون الخدمة: أندرويد لا يسمح لتطبيق بالكتابة داخل تطبيق آخر، فيُنسخ النص إلى حافظة التلفزيون.</p>
-  </div>
+<div id="t-remote">
+<div id="now" class="card hidden"><div class="t"><b id="nowT"></b><span id="nowS" class="k"></span></div><button id="nowTog" class="gold rnd hidden" data-i="pause" aria-label="إيقاف مؤقت"></button><button id="adhanStop1" class="gold hidden">أوقف الأذان الآن</button></div>
+<div id="pad" aria-label="لوحة اللمس">
+<button data-k="up" data-rep="1" aria-label="أعلى" data-i="chev"></button>
+<button data-k="left" data-rep="1" aria-label="يسار" data-i="chev"></button>
+<button id="padOk" data-k="ok" aria-label="اختيار">اختيار</button>
+<button data-k="right" data-rep="1" aria-label="يمين" data-i="chev"></button>
+<button data-k="down" data-rep="1" aria-label="أسفل" data-i="chev"></button>
+<span class="hint">اسحب للتحريك · المس للاختيار · أبقِ الإصبع للتكرار</span>
+</div>
+<div id="foreNote" class="note hidden"></div>
+<div class="keys"><button data-k="back" data-i="back">رجوع</button><button data-k="home" data-i="home">الرئيسية</button><button data-k="play_pause" data-i="now">تشغيل/إيقاف</button></div>
+<div class="vol"><button data-k="vol_up" data-rep="1" aria-label="رفع الصوت" data-i="volu">صوت +</button><button data-k="mute" aria-label="كتم" data-i="mute">كتم</button><button data-k="vol_down" data-rep="1" aria-label="خفض الصوت" data-i="vold">صوت −</button></div>
+<div class="tx"><span data-i="kbd"></span><input id="txt" dir="auto" maxlength="120" enterkeyhint="send" placeholder="اكتب على التلفزيون…" aria-label="نص للتلفزيون"><button id="txtGo" class="gold" data-i="send"><span class="sr">أرسل</span></button></div>
+<div class="row"><div id="modes" role="group" aria-label="طريقة الكتابة"><button data-mode="replace" class="on">استبدال</button><button data-mode="append">إضافة</button></div><button id="txtSearch" data-i="search">بحث</button></div>
+<div id="svcNote" class="note warn hidden"><div>فعّل خدمة "تلفزيونك: التحكم والكتابة من الجوال" في إعدادات التلفزيون لتكتب في التطبيقات الأخرى</div><div>الإعدادات ← إمكانية الوصول ← تلفزيونك: التحكم والكتابة من الجوال</div></div>
+<details><summary>أين يُكتب النص؟</summary><p>يُكتب النص في الحقل النصي المفتوح، ويُضاف مهمةً إذا كانت شاشة «المهام» مفتوحة، وفي التطبيقات الأخرى يُكتب في حقلها بعد تفعيل خدمة إمكانية الوصول. ومن دون الخدمة: أندرويد لا يسمح لتطبيق بالكتابة داخل تطبيق آخر، فيُنسخ النص إلى حافظة التلفزيون.</p></details>
+</div>
 
-  <div id="t-apps" class="hidden">
-    <h2>التطبيقات</h2>
-    <input id="appQ" type="search" placeholder="ابحث عن تطبيق" maxlength="30" aria-label="بحث">
-    <p id="appsNote"></p>
-    <div id="grid" class="grid"></div>
-    <h2>أدوات تلفزيونك</h2>
-    <div id="tools" class="tools"></div>
-  </div>
+<div id="t-apps" class="hidden">
+<div class="srch"><span data-i="search"></span><input id="appQ" type="search" placeholder="ابحث في تطبيقات التلفزيون" maxlength="30" aria-label="بحث"></div>
+<p id="appsNote"></p>
+<div class="hd"><h2>المفضلة</h2><span class="k">بنفس ترتيب التلفزيون</span></div>
+<div id="grid" class="grid card"></div>
+<div class="hd"><h2>من تلفزيونك</h2></div>
+<div id="tools" class="grid card tools"></div>
+<p>المقفل بالرقم السري يطلب الرقم السري على التلفزيون نفسه.</p>
+</div>
 
-  <div id="t-now" class="hidden">
-    <div class="card">
-      <h2>التلاوة</h2>
-      <p id="playerNow"></p>
-      <button id="adhanStop2" class="gold hidden" style="width:100%">أوقف الأذان الآن</button>
-      <div class="row"><button data-q="prev">السابقة</button><button id="qToggle">إيقاف مؤقت</button><button data-q="next">التالية</button><button data-q="stop" class="red">إيقاف</button></div>
-      <p>القارئ</p><select id="qRec" aria-label="القارئ"></select>
-      <p>السورة</p><select id="qSurah" aria-label="السورة"></select>
-      <div class="row"><button id="qPlay" class="gold">تشغيل</button></div>
-      <p>مؤقت النوم للتلاوة</p><select id="qSleep" aria-label="مؤقت النوم للتلاوة"><option value="0">بدون</option><option value="15">١٥ دقيقة</option><option value="30">٣٠ دقيقة</option><option value="60">٦٠ دقيقة</option><option value="90">٩٠ دقيقة</option></select>
-    </div>
-    <div class="card">
-      <h2>الأذان القادم</h2>
-      <p id="nextA"></p>
-      <label class="sw"><span>الأذان في أوقات الصلاة</span><input type="checkbox" id="aOn2"></label>
-    </div>
-    <div class="card hidden" id="saverCard">
-      <h2>شاشة التوقف</h2>
-      <button id="saverGo" class="gold" style="width:100%">شغّل شاشة التوقف الآن</button>
-      <p>تبدأ تلقائيًا بعد</p><select id="saverIdle" aria-label="مدة الخمول"></select>
-    </div>
-    <div class="card hidden" id="sleepCard">
-      <h2>مؤقت النوم</h2>
-      <p id="sleepNow"></p>
-      <div id="sleepOpts" class="row" style="flex-wrap:wrap"></div>
-      <button id="sleepCancel" class="red hidden" style="width:100%">إلغاء</button>
-    </div>
-  </div>
+<div id="t-now" class="hidden">
+<div class="card np">
+<p id="npL" class="gl lbl">التلاوة</p>
+<span id="npT" class="big"></span>
+<p id="playerNow"></p>
+<div id="prog" class="hidden"><div class="pb"><i id="progI"></i></div><div class="pt"><span id="posT"></span><span id="durT"></span></div></div>
+<div class="ctl"><button data-q="prev" class="rnd" data-i="prev"><span class="sr">السابقة</span></button><button id="qToggle" class="gold rnd" data-i="pause"><span class="sr" id="qTogT">إيقاف مؤقت</span></button><button data-q="next" class="rnd" data-i="next"><span class="sr">التالية</span></button><button data-q="stop" class="rnd red" data-i="stop"><span class="sr">إيقاف</span></button></div>
+<h2>القارئ والسورة</h2>
+<div class="row"><select id="qRec" aria-label="القارئ"></select><select id="qSurah" aria-label="السورة"></select></div>
+<button id="qPlay" class="gold wide">تشغيل</button>
+<p>مؤقت النوم للتلاوة</p><select id="qSleep" aria-label="مؤقت النوم للتلاوة"><option value="0">بدون</option><option value="15">١٥ دقيقة</option><option value="30">٣٠ دقيقة</option><option value="60">٦٠ دقيقة</option><option value="90">٩٠ دقيقة</option></select>
+</div>
+<div class="card">
+<div class="ad"><div><h2 class="k">الأذان القادم</h2><div id="nextA"></div></div><label class="tg"><input type="checkbox" id="aOn2">الأذان يعمل</label></div>
+<button id="adhanStop2" class="gold wide hidden" data-i="bell">أوقف الأذان الآن</button>
+</div>
+<div class="card hidden" id="saverCard">
+<div class="ch"><span class="ic" data-i="moon"></span><h2>شاشة التوقف</h2></div>
+<button id="saverGo" class="gold wide">شغّل شاشة التوقف الآن</button>
+<p>تبدأ تلقائيًا بعد</p><select id="saverIdle" aria-label="مدة الخمول"></select>
+</div>
+<div class="card hidden" id="sleepCard">
+<div class="ch"><span class="ic" data-i="timer"></span><div><h2>مؤقت النوم</h2><p id="sleepNow"></p></div></div>
+<div id="sleepOpts" class="chips"></div>
+<button id="sleepCancel" class="red wide hidden">إلغاء</button>
+</div>
+</div>
 
-  <div id="t-settings" class="hidden">
-    <h2>المدينة</h2>
-    <p id="cityNow"></p>
-    <div class="row"><input id="cityQ" placeholder="ابحث عن مدينة" maxlength="30" aria-label="مدينة"><button id="cityGo" style="flex:0 0 90px">بحث</button></div>
-    <div id="cityRes" class="list"></div>
-    <h2>بطاقات الشاشة الرئيسية</h2>
-    <div id="cards"></div>
-    <div class="row"><button id="cardsGo" class="gold">حفظ البطاقات</button></div>
-    <h2>الأذان</h2>
-    <label class="sw"><span>الأذان في أوقات الصلاة</span><input type="checkbox" id="aOn"></label>
-    <p>المؤذن (لغير الفجر)</p><select id="aVoice" aria-label="المؤذن"></select>
-    <p>مؤذن الفجر</p><select id="aFajr" aria-label="مؤذن الفجر"></select>
-    <label class="sw"><span>أذان مختصر</span><input type="checkbox" id="aShort"></label>
-    <label class="sw"><span>إيقاف الأذان بأي زر</span><input type="checkbox" id="aStop"></label>
-    <p>مستوى صوت الأذان: <b id="aVolN"></b></p><input type="range" id="aVol" min="10" max="100" step="5" aria-label="مستوى صوت الأذان">
-    <h2>تحديث تلفزيونك</h2>
-    <p>يتحقق التلفزيون من أحدث نسخة من مشروعنا وينزّلها ويتأكد أنها موقّعة بنفس توقيع التطبيق المثبّت. إذا نجح كل ذلك تضغط «ثبّت» فيفتح شاشة التثبيت من أندرويد على التلفزيون، وتؤكد أنت بالريموت. لا يُثبَّت شيء بدون تأكيدك.</p>
-    <div class="row"><button id="upCheck" class="gold">افحص التحديث</button><button id="upGo" class="hidden">ثبّت</button></div>
-    <p id="upState"></p>
-    <div class="card hidden" id="famCard">
-      <h2>الرقابة الأبوية</h2>
-      <p id="famPin"></p><p id="famKids"></p><p id="famLocked"></p>
-      <p>للعرض فقط. التغيير من التلفزيون نفسه.</p>
-    </div>
-    <p id="ver"></p>
-    <p id="phones"></p>
-    <div class="row"><button id="out" class="red">قطع الاتصال</button></div>
-  </div>
+<div id="t-settings" class="hidden">
+<div class="hd"><h2 class="h">إعدادات سريعة</h2><button id="theme" class="lnk">الوضع الفاتح</button></div>
+<div class="card">
+<div class="ch"><span class="ic" data-i="pin"></span><div><h2>المدينة</h2><p id="cityNow"></p></div></div>
+<div class="row"><input id="cityQ" placeholder="ابحث عن مدينة" maxlength="30" aria-label="مدينة"><button id="cityGo" style="flex:0 0 90px">بحث</button></div>
+<div id="cityRes" class="list"></div>
+</div>
+<div class="card">
+<div class="ch"><span class="ic" data-i="cards"></span><h2>بطاقات الشاشة الرئيسية</h2></div>
+<div id="cards"></div>
+<button id="cardsGo" class="gold wide">حفظ البطاقات</button>
+</div>
+<div class="card">
+<div class="ch"><span class="ic" data-i="bell"></span><h2>الأذان</h2></div>
+<label class="sw"><span>الأذان في أوقات الصلاة</span><input type="checkbox" id="aOn"></label>
+<p>المؤذن (لغير الفجر)</p><select id="aVoice" aria-label="المؤذن"></select>
+<p>مؤذن الفجر</p><select id="aFajr" aria-label="مؤذن الفجر"></select>
+<label class="sw"><span>أذان مختصر</span><input type="checkbox" id="aShort"></label>
+<label class="sw"><span>إيقاف الأذان بأي زر</span><input type="checkbox" id="aStop"></label>
+<p>مستوى صوت الأذان: <b id="aVolN"></b></p><input type="range" id="aVol" min="10" max="100" step="5" aria-label="مستوى صوت الأذان">
+</div>
+<div class="card">
+<div class="ch"><span class="ic" data-i="sync"></span><h2>تحديث تلفزيونك</h2></div>
+<p>يتحقق التلفزيون من أحدث نسخة من مشروعنا وينزّلها ويتأكد أنها موقّعة بنفس توقيع التطبيق المثبّت. إذا نجح كل ذلك تضغط «ثبّت» فيفتح شاشة التثبيت من أندرويد على التلفزيون، وتؤكد أنت بالريموت. لا يُثبَّت شيء بدون تأكيدك.</p>
+<div class="row"><button id="upCheck" class="gold">افحص التحديث</button><button id="upGo" class="hidden">ثبّت</button></div>
+<p id="upState"></p>
+<p id="ver"></p>
+</div>
+<div class="card hidden" id="famCard">
+<div class="ch"><span class="ic" data-i="lock"></span><h2>الرقابة الأبوية</h2></div>
+<p id="famPin"></p><p id="famKids"></p><p id="famLocked"></p>
+<p>للعرض فقط. التغيير من التلفزيون نفسه.</p>
+</div>
+<div class="card">
+<div class="ch"><span class="ic" data-i="tv"></span><div><h2>الجوالات المتصلة</h2><p id="phones"></p></div></div>
+<button id="out" class="red wide">قطع الاتصال</button>
+</div>
+</div>
 
-  <nav id="bar" aria-label="الأقسام"></nav>
-  <svg id="ico" class="hidden" viewBox="0 0 24 24" aria-hidden="true">
-    <g id="ico-remote"><rect x="7.5" y="2.5" width="9" height="19" rx="4.5"/><circle cx="12" cy="8" r="2.2"/><path d="M10 13.5h4M10 16.5h4"/></g>
-    <g id="ico-apps"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></g>
-    <g id="ico-now"><path d="M5 8.5v7l5.5-3.5z"/><path d="M14 9a4 4 0 0 1 0 6M16.5 6.5a7.5 7.5 0 0 1 0 11"/></g>
-    <g id="ico-settings"><path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="17" r="2"/></g>
-  </svg>
+<nav id="bar" aria-label="الأقسام"></nav>
+<svg id="ico" class="hidden" viewBox="0 0 24 24" aria-hidden="true">
+<g id="ico-remote"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3" fill="currentColor"/></g>
+<g id="ico-apps"><path d="M4 4h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 10h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 16h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4z" fill="currentColor" stroke-width="1"/></g>
+<g id="ico-now"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></g>
+<g id="ico-settings"><path d="M4 7h9M17 7h3M4 12h3M11 12h9M4 17h11M19 17h1"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="17" r="2"/></g>
+<g id="ico-tv"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M9 20.5h6"/></g>
+<g id="ico-chev"><path d="M6.5 14.5L12 9l5.5 5.5" stroke-width="2.2"/></g>
+<g id="ico-back"><path d="M4 12h15M13.5 6l6 6-6 6" stroke-width="2.2"/></g>
+<g id="ico-home"><path d="M3.5 11.5L12 4l8.5 7.5H18V20h-4v-5h-4v5H6v-8.5z" fill="currentColor"/></g>
+<g id="ico-volu"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" fill="currentColor"/><path d="M15.5 9.5a3.5 3.5 0 0 1 0 5M18 7a7 7 0 0 1 0 10"/></g>
+<g id="ico-vold"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" fill="currentColor"/><path d="M15.5 9.5a3.5 3.5 0 0 1 0 5"/></g>
+<g id="ico-mute"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" fill="currentColor"/><path d="M15.5 9.5l5 5M20.5 9.5l-5 5"/></g>
+<g id="ico-kbd"><rect x="2.5" y="6.5" width="19" height="11" rx="2"/><path d="M6 10h.5M9 10h.5M12 10h.5M15 10h.5M18 10h.5M7.5 14h9"/></g>
+<g id="ico-send"><path d="M20 4.5L3.5 12 20 19.5l-4-7.5z" fill="currentColor"/></g>
+<g id="ico-search"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></g>
+<g id="ico-pause"><path d="M8.5 6v12M15.5 6v12" stroke-width="3"/></g>
+<g id="ico-prev"><path d="M6.5 5.5v13"/><path d="M18.5 5.5v13L9 12z" fill="currentColor"/></g>
+<g id="ico-next"><path d="M17.5 5.5v13"/><path d="M5.5 5.5v13L15 12z" fill="currentColor"/></g>
+<g id="ico-stop"><rect x="6.5" y="6.5" width="11" height="11" rx="2" fill="currentColor"/></g>
+<g id="ico-bell"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15zM10 20.5h4" fill="currentColor"/></g>
+<g id="ico-moon"><path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10z" fill="currentColor"/></g>
+<g id="ico-timer"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 9.5v4l2.5 2M9.5 2.5h5"/></g>
+<g id="ico-pin" stroke-width="2"><path d="M12 21.5s-7-6.5-7-11.5a7 7 0 0 1 14 0c0 5-7 11.5-7 11.5z"/><circle cx="12" cy="10" r="2.5"/></g>
+<g id="ico-cards" fill="currentColor"><rect x="4" y="4" width="7" height="9" rx="1.5"/><rect x="13" y="4" width="7" height="5" rx="1.5"/><rect x="13" y="11" width="7" height="9" rx="1.5"/><rect x="4" y="15" width="7" height="5" rx="1.5"/></g>
+<g id="ico-sync"><path d="M19.5 12a7.5 7.5 0 0 1-13 5.1M4.5 12a7.5 7.5 0 0 1 13-5.1M17.5 3v4h-4M6.5 21v-4h4" stroke-width="2"/></g>
+<g id="ico-lock"><rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="currentColor"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" stroke-width="2"/></g>
+<g id="ico-tasks"><path d="M10 7h10M10 12h10M10 17h10M4 7l1.3 1.3L7.5 6M4 12l1.3 1.3 2.2-2.3M4 17l1.3 1.3 2.2-2.3"/></g>
+<g id="ico-inputs"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 12h10M10 9l3 3-3 3"/></g>
+<g id="ico-listen"><path d="M12 6.5C10 5 7 4.5 3.5 5v13c3.5-.5 6.5 0 8.5 1.5 2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5zM12 6.5v13"/></g>
+</svg>
 </section>
 
 <div id="msg" class="hidden" role="status"></div>
 <div id="dlg" class="hidden" role="dialog" aria-modal="true" aria-label="الرقم السري"><div>
-  <p id="dlgT">اكتب الرقم السري.</p>
-  <input id="pin" type="password" inputmode="numeric" maxlength="8" dir="ltr" placeholder="الرقم السري" aria-label="الرقم السري" autocomplete="off">
-  <div class="row"><button id="pinOk" class="gold">تأكيد</button><button id="pinNo">إلغاء</button></div>
+<p id="dlgT">اكتب الرقم السري.</p>
+<input id="pin" type="password" inputmode="numeric" maxlength="8" dir="ltr" placeholder="الرقم السري" aria-label="الرقم السري" autocomplete="off">
+<div class="row"><button id="pinOk" class="gold">تأكيد</button><button id="pinNo">إلغاء</button></div>
 </div></div>
 
 <script nonce="__NONCE__">
@@ -209,16 +313,19 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
   function el(t, c, x) { var e = document.createElement(t); if (c) e.className = c; if (x !== undefined) e.textContent = x; return e; }
   try { sess = sessionStorage.getItem('urtv'); } catch (e) { sess = null; }
 
-  // ---- theme: dark on every screen by default (whatever the phone is set to); the ◐ button switches ALL screens together and the phone remembers it
-  function theme(t) { if (t) document.documentElement.setAttribute('data-theme', t); }
-  try { theme(localStorage.getItem('urtvTheme')); } catch (e) { }
+  // ---- theme: dark by default; the button switches every screen, the phone remembers it
+  function theme(t) {
+    if (t) document.documentElement.setAttribute('data-theme', t);
+    $('theme').textContent = document.documentElement.getAttribute('data-theme') === 'light' ? 'الوضع الداكن' : 'الوضع الفاتح';
+  }
+  try { theme(localStorage.getItem('urtvTheme')); } catch (e) { theme(); }
   $('theme').onclick = function () {
     var dark = document.documentElement.getAttribute('data-theme') !== 'light';
     var n = dark ? 'light' : 'dark'; theme(n);
     try { localStorage.setItem('urtvTheme', n); } catch (e) { }
   };
 
-  // ---- the glass look: the home's photo, small and blurred once on the TV, under the veil it needs (the TV works it out per photo)
+  // ---- the glass look: the home's photo, blurred once on the TV, under its veil
   var glassStamp = -1;
   function glass(s) {
     var st = document.documentElement.style;
@@ -245,7 +352,9 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
     }).catch(function () { glassStamp = -1; });
   }
 
+  var STK = 'التحكم في التطبيقات الثانية متوقف: خدمة «تلفزيونك» مفعّلة لكن التلفزيون أوقفها بعد التحديث. أعد تشغيل التلفزيون مرة.';
   var MSG = {
+    a11y_stuck: STK,
     other_app: 'تطبيق آخر أمام الشاشة: فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال» في إعدادات إمكانية الوصول بالتلفزيون لتصله الأزرار. الصوت وتشغيل/إيقاف تعمل دائمًا.',
     other_app_limited: 'ما قدرنا نحرك التركيز أو نضغط في هذا التطبيق الآن. جرّب «رجوع» أو افتح ما تريد بريموت التلفزيون.',
     private_screen: 'شاشة السماح لا تُحرَّك من الجوال، استعمل ريموت التلفزيون.',
@@ -282,11 +391,15 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
     clearTimeout(toast.t); toast.t = setTimeout(function () { m.classList.add('hidden'); }, 3500);
   }
   function digits(s) { return String(s).replace(/[٠-٩]/g, function (d) { return d.charCodeAt(0) - 0x660; }).replace(/[۰-۹]/g, function (d) { return d.charCodeAt(0) - 0x6f0; }); }
+  function mmss(x) { x = Math.max(0, Math.floor(x)); return Math.floor(x / 60) + ':' + ('0' + x % 60).slice(-2); }
+  // Arabic counting: ساعة, ساعتين, 3 to 10 ساعات, 11 and more ساعة (or w[3]); the same for دقيقة, ثانية, تطبيق
+  var HR = ['ساعة', 'ساعتين', 'ساعات'], MN = ['دقيقة', 'دقيقتين', 'دقائق'];
+  function nn(n, w) { var r = n % 100; return n === 1 ? w[0] : n === 2 ? w[1] : n + ' ' + (r > 2 && r < 11 ? w[2] : w[3] || w[0]); }
   function dur(sec) {
     sec = Math.max(0, Math.round(sec));
     if (sec < 60) return 'أقل من دقيقة';
     var h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60);
-    return (h ? h + ' ساعة' + (m ? ' و ' : '') : '') + (m ? m + ' دقيقة' : '');
+    return (h ? nn(h, HR) + (m ? ' و ' : '') : '') + (m ? nn(m, MN) : '');
   }
 
   function api(path, body) {
@@ -376,10 +489,7 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
   };
 
   // ---- the app: four tabs
-  // the tabs' icons: our own, one line drawing each in the text's colour (no emoji: a phone draws those in its own colours and style),
-  // so the dark and the light look and the gold «on» tab all take them as they are
-  // the tabs' icons: our own line drawings in the page (#ico, under the bar), one style in the text's colour (no emoji: a phone draws
-  // those in its own colours), so the dark and the light look and the gold «on» tab all take them; a copy of one for each tab
+  // the icons: our line drawings (#ico) in the text's colour, no emoji; a copy of one each
   function icon(name) {
     var s = $('ico').cloneNode(false);
     s.removeAttribute('id'); s.removeAttribute('class');
@@ -388,6 +498,8 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
     s.appendChild(g);
     return s;
   }
+  document.querySelectorAll('[data-i]').forEach(function (e) { e.insertBefore(icon(e.getAttribute('data-i')), e.firstChild); });
+  $('hSet').onclick = function () { tab('settings'); };
   var TABS = [['remote', 'الريموت'], ['apps', 'التطبيقات'], ['now', 'يعمل الآن'], ['settings', 'الإعدادات']];
   function tab(name) {
     curTab = name;
@@ -431,7 +543,7 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
   function playLabel(s) {
     var p = s.player || {};
     if (!p.playing || p.source === 'none') return '';
-    if (p.source === 'radio') return 'الإذاعة تعمل';
+    if (p.source === 'radio') return 'إذاعة القرآن الكريم';
     if (p.source === 'adhan') return 'الأذان يُرفع';
     var n = p.surah && s.surahs ? s.surahs[p.surah - 1] : '', r = recName(s, p.reciter);
     return (n ? 'سورة ' + n : 'تلاوة') + (r ? ' · ' + r : '');
@@ -441,23 +553,34 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
     glass(s);
     var live = !!s.adhan_live, p = s.player || {};
     var secs = typeof s.seconds_left === 'number' ? s.seconds_left : 0;
-    $('left').textContent = 'بقي ' + Math.max(1, Math.round(secs / 60)) + ' دقيقة';
+    $('left').textContent = 'بقي ' + nn(Math.max(1, Math.round(secs / 60)), MN);
     var fn = $('foreNote'), fore = s.foreground === 'other';
-    fn.classList.toggle('hidden', !fore); fn.classList.toggle('warn', fore && !s.keys_everywhere);
-    $('svcNote').classList.toggle('hidden', !(svcOff || (fore && s.typing_service === false)));
-    // a service of ours on: Back and Home work in every app; the arrows and OK too from Android 13 (dpad_everywhere), before it with the typing/remote service
-    fn.textContent = s.dpad_everywhere ? 'الأسهم والاختيار والرجوع والرئيسية تعمل في التطبيق الذي أمامك'
+    fn.classList.toggle('hidden', !fore); fn.classList.toggle('warn', fore && (!s.keys_everywhere || !!s.a11y_stuck));
+    $('svcNote').classList.toggle('hidden', !!s.a11y_stuck || !(svcOff || (fore && s.typing_service === false)));
+    fn.textContent = s.a11y_stuck ? STK : s.dpad_everywhere ? 'الأسهم والاختيار والرجوع والرئيسية تعمل في التطبيق الذي أمامك'
       : s.keys_everywhere ? 'الرجوع والرئيسية تعمل في كل التطبيقات؛ الأسهم والاختيار تحتاج أندرويد ١٣ أو خدمة «تلفزيونك: التحكم والكتابة من الجوال»'
       : 'يوجد تطبيق آخر أمام الشاشة. فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال» (الإعدادات ← إمكانية الوصول) لتعمل الأسهم والاختيار والرجوع والرئيسية فيه. الصوت وتشغيل/إيقاف تعمل دائمًا.';
     var lab = live ? 'الأذان الآن' + (s.adhan_prayer ? ': ' + s.adhan_prayer : '') : playLabel(s);
     $('now').classList.toggle('hidden', !lab); $('nowT').textContent = lab;
+    $('nowS').textContent = live ? 'على التلفزيون الآن' : p.source === 'radio' ? 'بث مباشر' : 'يُتلى الآن على التلفزيون';
+    $('nowTog').classList.toggle('hidden', live || !lab);
     $('adhanStop1').classList.toggle('hidden', !live); $('adhanStop2').classList.toggle('hidden', !live);
-    var np = $('playerNow');
-    np.textContent = live ? lab : playLabel(s) ? playLabel(s) + ' (يعمل)' : p.surah ? 'متوقف مؤقتًا: سورة ' + (s.surahs && s.surahs[p.surah - 1] || '') : 'لا شيء يُشغَّل.';
-    $('qToggle').textContent = p.playing ? 'إيقاف مؤقت' : 'استئناف';
+    var pl = playLabel(s), sur = p.surah && s.surahs ? s.surahs[p.surah - 1] : '', rn = p.source === 'surah' ? recName(s, p.reciter) : '';
+    $('npL').textContent = live ? 'الأذان' : pl ? 'يُتلى الآن على التلفزيون' : 'التلاوة';
+    $('npT').textContent = live ? lab : p.source === 'radio' && pl ? pl : sur ? 'سورة ' + sur : 'لا شيء يُشغَّل';
+    $('playerNow').textContent = live ? 'على التلفزيون الآن' : pl ? (rn ? rn + ' · ' : '') + 'يعمل' : sur ? 'متوقف مؤقتًا' : 'اختر القارئ والسورة ثم «تشغيل».';
+    var hasP = typeof p.position_s === 'number' && p.duration_s > 0;
+    $('prog').classList.toggle('hidden', !hasP);
+    if (hasP) { $('progI').style.width = Math.min(100, 100 * p.position_s / p.duration_s) + '%'; $('posT').textContent = mmss(p.position_s); $('durT').textContent = mmss(p.duration_s); }
+    $('qTogT').textContent = p.playing ? 'إيقاف مؤقت' : 'استئناف';
     $('qToggle').setAttribute('data-op', p.playing ? 'pause' : 'resume');
     var na = s.next_adhan;
-    $('nextA').textContent = na && na.prayer ? 'الأذان القادم: ' + na.prayer + (typeof na.in_seconds === 'number' ? ' بعد ' + dur(na.in_seconds) : '') : 'موعد الأذان القادم غير معروف الآن.';
+    var nx = $('nextA'); nx.textContent = na && na.prayer ? '' : 'موعد الأذان القادم غير معروف الآن.';
+    if (na && na.prayer) {
+      var at = typeof na.in_seconds === 'number' ? new Date(Date.now() + na.in_seconds * 1000) : null;
+      nx.appendChild(el('span', 'big', na.prayer + (at ? ' ' + at.toLocaleTimeString('ar-u-nu-latn', { hour: 'numeric', minute: '2-digit' }) : '')));
+      if (at) nx.appendChild(el('span', 'gl', 'بعد ' + dur(na.in_seconds)));
+    }
     var st = s.sleep_timer;
     $('sleepCard').classList.toggle('hidden', !st);
     if (st) {
@@ -482,11 +605,12 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
     fill($('qRec'), s.reciters || [], p.reciter);
     var sur = $('qSurah'); if (!sur.children.length) (s.surahs || []).forEach(function (n, i) { opt(sur, String(i + 1), (i + 1) + '. ' + n, false); });
     if (p.surah) sur.value = String(p.surah);
-    var si = $('saverIdle'); si.textContent = '';
-    (s.saver_idle_options || []).forEach(function (m) { opt(si, String(m), m + ' دقيقة', String(m) === String(s.saver_idle)); });
+    var si = $('saverIdle'), io = (s.saver_idle_options || []).map(String), sec = s.saver_idle_s != null ? +s.saver_idle_s : s.saver_idle * 60; si.textContent = '';
+    if (sec >= 0 && io.indexOf(String(sec / 60)) < 0) opt(si, '', sec < 60 ? (sec ? nn(sec, ['ثانية', 'ثانيتين', 'ثوانٍ']) : 'أقل من دقيقة') : nn(Math.round(sec / 60), MN), true);
+    io.forEach(function (m) { opt(si, m, nn(+m, MN), +m * 60 === sec); });
     var so = $('sleepOpts'); so.textContent = '';
     ((st && st.options) || [15, 30, 60, 90]).forEach(function (m) {
-      var b = el('button', '', m + ' دقيقة'); b.onclick = function () { set({ sleep_minutes: m }); }; so.appendChild(b);
+      var b = el('button', '', nn(m, MN)); b.onclick = function () { set({ sleep_minutes: m }); }; so.appendChild(b);
     });
   }
   var famSeen = false;
@@ -495,7 +619,7 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
     var a = 0, pills = 0; (fam.locked || []).forEach(function (x) { if (String(x).charAt(0) === '@') pills++; else a++; });
     $('famPin').textContent = 'الرقابة الأبوية: ' + (fam.pin_set ? 'مفعّلة' : 'غير مفعّلة');
     $('famKids').textContent = 'وضع الأطفال: ' + (fam.kids ? 'يعمل' : 'متوقف');
-    $('famLocked').textContent = 'المقفل: ' + a + ' تطبيقًا و ' + pills + ' من أزرار التلفزيون';
+    $('famLocked').textContent = 'المقفل: ' + nn(a, ['تطبيق', 'تطبيقين', 'تطبيقات', 'تطبيقًا']) + ' و ' + pills + ' من أزرار التلفزيون';
   }
   function loadFamily() {
     api('/api/family').then(function (j) {
@@ -503,8 +627,7 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
       if (f && typeof f.pin_set !== 'undefined') famDraw(f);
     });
   }
-  // The cards the person is choosing are not redrawn from the TV's answer while they are being changed (an answer that was on its way when
-  // the choice was made would put the old one back, and the save would send that): drawn again once they are saved, or on the next arrival.
+  // The cards being chosen are not redrawn from a TV answer still on its way (it would put the old one back and the save would send that).
   var cardsDirty = false;
   function chosenCards() {
     var out = [], sels = $('cards').children;
@@ -512,15 +635,18 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
     return out;
   }
   function cards(s) {
-    if (cardsDirty) return;
-    var box = $('cards'); box.textContent = '';
-    var hc = s.home_cards || [];
-    for (var i = 0; i < 3; i++) {
-      var sel = document.createElement('select'); sel.setAttribute('data-card', i); sel.setAttribute('aria-label', 'بطاقة ' + (i + 1));
-      opt(sel, '', 'بدون', !hc[i]);
-      (s.panels || []).forEach(function (p) { opt(sel, p.id, p.name, hc[i] === p.id); });
-      sel.style.marginBottom = '8px'; sel.onchange = function () { cardsDirty = true; }; box.appendChild(sel);
+    var box = $('cards'), hc = s.home_cards || [], k = JSON.stringify(s.panels || []);
+    if (box.getAttribute('data-p') !== k) {   // built once per list of cards: a select is never replaced while its picker may be open
+      box.textContent = ''; box.setAttribute('data-p', k); cardsDirty = false;
+      for (var i = 0; i < 3; i++) {
+        var sel = document.createElement('select'); sel.setAttribute('data-card', i); sel.setAttribute('aria-label', 'بطاقة ' + (i + 1));
+        opt(sel, '', 'بدون', false);
+        (s.panels || []).forEach(function (p) { opt(sel, p.id, p.name, false); });
+        sel.style.marginBottom = '8px'; sel.onchange = function () { cardsDirty = true; }; box.appendChild(sel);
+      }
     }
+    if (cardsDirty || box.contains(document.activeElement)) return;
+    for (var j = 0; j < 3; j++) { var c = box.children[j]; c.value = hc[j] || ''; if (c.selectedIndex < 0) c.value = ''; }
   }
   function set(b) { return gated('/api/set', b).then(function (j) { say(j); refresh(); return j; }); }
 
@@ -539,7 +665,7 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
   };
   $('cardsGo').onclick = function () {
     var out = chosenCards();
-    // saved: the TV's cards are drawn again, unless the person has changed them since the press (then their choice stays)
+    // saved: the TV's cards are drawn again, unless changed since the press
     set({ home_cards: out }).then(function () { if (chosenCards().join() === out.join()) cardsDirty = false; refresh(); });
   };
   $('aOn').onchange = function () { set({ adhan_on: this.checked }); };
@@ -550,7 +676,7 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
   $('aFajr').onchange = function () { set({ adhan_fajr_voice: parseInt(this.value, 10) }); };
   $('aVol').oninput = function () { $('aVolN').textContent = this.value + '٪'; };
   $('aVol').onchange = function () { set({ adhan_volume: parseInt(this.value, 10) }); };
-  $('saverIdle').onchange = function () { set({ saver_idle: parseInt(this.value, 10) }); };
+  $('saverIdle').onchange = function () { if (this.value) set({ saver_idle: parseInt(this.value, 10) }); };
   $('sleepCancel').onclick = function () { gated('/api/do', { op: 'sleep_cancel' }).then(function (j) { say(j); refresh(); }); };
   $('saverGo').onclick = function () { api('/api/do', { op: 'screensaver' }).then(function (j) { say(j); }); };
   function stopAdhan() { api('/api/adhan_stop', {}).then(function (j) { say(j); setTimeout(refresh, 800); }); }
@@ -561,6 +687,7 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
   function q(op) { api('/api/quran', { op: op }).then(function (j) { say(j); setTimeout(refresh, 800); }); }
   document.querySelectorAll('[data-q]').forEach(function (b) { b.onclick = function () { q(b.getAttribute('data-q')); }; });
   $('qToggle').onclick = function () { q(this.getAttribute('data-op') || 'pause'); };
+  $('nowTog').onclick = function () { q('pause'); };
   $('qSleep').onchange = function () { api('/api/quran', { op: 'sleep', minutes: parseInt(this.value, 10) }).then(function (j) { say(j); }); };
 
   // ---- the text
@@ -589,7 +716,7 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
 
   // ---- the apps
   function iconUrl(pkg) { return '/api/icon/' + encodeURIComponent(pkg); }
-  // An image element cannot send the session header, so each icon is fetched like any call, read as a blob and shown as a data: address.
+  // an image element cannot send the session header: each icon is fetched, read as a blob, shown as data:
   var icons = {}, iconQ = [], iconRun = 0, iconWait = {};
   function iconGet(pkg, done) {
     if (pkg in icons) { done(icons[pkg]); return; }
@@ -653,7 +780,9 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
     var box = $('tools'); box.textContent = '';
     var by = {}; (list || []).forEach(function (t) { by[t.id] = t; });
     TOOLS.forEach(function (t) {
-      var x = by[t[0]] || {}, b = el('button', '', (x.locked ? '🔒 ' : '') + (x.name || t[1]));
+      var x = by[t[0]] || {}, b = el('button', 'app'), tl = el('span', 'tile');
+      tl.appendChild(icon(t[0] === 'saver' ? 'moon' : t[0] === 'settings' ? 'settings' : t[0]));
+      b.appendChild(tl); b.appendChild(document.createTextNode((x.locked ? '🔒 ' : '') + (x.name || t[1])));
       b.setAttribute('data-tool', t[0]); b.onclick = function () { launch('@' + t[0]); };
       box.appendChild(b);
     });
@@ -676,29 +805,33 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
 
   // ---- the remote: a press sends one key; a held arrow or volume key repeats; the pad: swipe = arrow, tap = OK
   function press(k) {
+    try { if (navigator.vibrate && navigator.userActivation && navigator.userActivation.isActive) navigator.vibrate(k === 'ok' ? 30 : 12); } catch (e) { }
     api('/api/key', { key: k }).then(function (j) { if (!j.ok) { toast(MSG[j.error] || MSG.failed); stopRep(); } });
   }
   function stopRep() { if (repTimer) { clearTimeout(repTimer); clearInterval(repTimer); repTimer = null; } }
   function holdRep(k) { stopRep(); repTimer = setTimeout(function () { repTimer = setInterval(function () { press(k); }, 160); }, 450); }
   document.querySelectorAll('[data-k]').forEach(function (b) {
     var k = b.getAttribute('data-k'), rep = b.getAttribute('data-rep');
-    b.addEventListener('pointerdown', function (e) { e.preventDefault(); press(k); stopRep(); if (rep) holdRep(k); });
-    ['pointerup', 'pointerleave', 'pointercancel'].forEach(function (ev) { b.addEventListener(ev, stopRep); });
     b.addEventListener('contextmenu', function (e) { e.preventDefault(); });
     b.addEventListener('keydown', function (e) { if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) { e.preventDefault(); press(k); } });   // keyboard users
+    if (b.id === 'padOk') return;   // «اختيار» in the pad: the pad's tap sends it
+    b.addEventListener('pointerdown', function (e) { e.preventDefault(); press(k); stopRep(); if (rep) holdRep(k); });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(function (ev) { b.addEventListener(ev, stopRep); });
   });
   var pad = $('pad'), ps = null;
   pad.addEventListener('pointerdown', function (e) {
+    var t = e.target.closest && e.target.closest('[data-k]');
+    if (t && t.id !== 'padOk') return;   // an arrow on the pad's edge presses by itself
     e.preventDefault();
     try { pad.setPointerCapture(e.pointerId); } catch (x) { }
     ps = { x: e.clientX, y: e.clientY, t: Date.now(), moved: false };
   });
   pad.addEventListener('pointermove', function (e) {
-    if (!ps) return;
+    if (!ps || ps.moved) return;   // one swipe = one step, however long; the finger held after it repeats that step
     var dx = e.clientX - ps.x, dy = e.clientY - ps.y;
-    if (Math.max(Math.abs(dx), Math.abs(dy)) < 30) return;
+    if (Math.max(Math.abs(dx), Math.abs(dy)) < 40) return;
     var d = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
-    ps.moved = true; ps.x = e.clientX; ps.y = e.clientY;
+    ps.moved = true;
     press(d); holdRep(d);
   });
   function padEnd(e) { stopRep(); if (ps && !ps.moved && e.type === 'pointerup' && Date.now() - ps.t < 400) press('ok'); ps = null; }

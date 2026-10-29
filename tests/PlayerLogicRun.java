@@ -97,6 +97,8 @@ public final class PlayerLogicRun {
         check("volume: left alone when the person changed it during the adhan", AdhanVolume.restore(12, 6, 9) == -1);
         check("volume: nothing saved, nothing to restore", AdhanVolume.restore(-1, 6, 6) == -1);
         check("volume: the adhan's level unknown (the player restarted): put back", AdhanVolume.restore(12, -1, 6) == 12);
+        check("volume: a TV muted before the adhan is muted again when its volume goes back", AdhanVolume.muteAgain(true, 12) && !AdhanVolume.muteAgain(false, 12));
+        check("volume: not muted again when the person turned the volume during the adhan", !AdhanVolume.muteAgain(true, -1));
 
         // ---- what a failure says
         check("fault codes", PlayerFault.code(1, -1004).equals("io") && PlayerFault.code(1, -110).equals("timeout")

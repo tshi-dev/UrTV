@@ -3,6 +3,7 @@
 and the three places that turn a zone into a method (the app's labels, the launcher's PrayerMath.methodFor, the page's CONFIG.prayerMethod) kept
 equal. Needs javac; without it the JVM part is skipped.   Run: python3 tests/prayer_method_test.py"""
 import re
+import json
 import shutil
 import subprocess
 import sys
@@ -19,11 +20,11 @@ def check(name, ok, detail=""):
     failed += not ok
 
 
-EXPECTED_METHODS = 12   # Ja'fari, Umm al-Qura, the four Gulf ones, Egypt, Jordan, Morocco, Algeria, Tunisia, and Oman's ministry (100, ours: Aladhan has none)
+EXPECTED_METHODS = 22   # Ja'fari, Umm al-Qura, the four Gulf ones, Egypt, Jordan, Morocco, Algeria, Tunisia, and Oman's ministry (100, ours: Aladhan has none)
 EXPECTED_ZONES = 16   # the zones that have a method of their own: the Gulf's five, Cairo, Amman, Damascus, Beirut, Gaza, Hebron, Jerusalem (hand-entered), Casablanca, El_Aaiun (hand-entered), Algiers, Tunis
 # the page: CONFIG.prayerMethod = pm=jafari ? 0 : ({'Asia/Kuwait':9, ...})[zone] || 4
 tpl = (ROOT / "src/template.html").read_text(encoding="utf-8")
-m = re.search(r"CONFIG\.prayerMethod = _Q\.get\('pm'\) === 'jafari' \? 0 : _Q\.get\('pm'\) === 'gulf' \? 8\s*:\s*\(\{([^}]*)\}\)\[CONFIG\.timezone\] \|\| 4;", tpl)
+m = re.search(r"CONFIG\.prayerMethod = _Q\.get\('pm'\) === 'jafari' \? 0 : _Q\.get\('pm'\) === 'gulf' \? 8\s*:\s*RESOLVED_METHOD !== null \? RESOLVED_METHOD : \(\{([^}]*)\}\)\[CONFIG\.timezone\] \|\| 4;", tpl)
 check("page: CONFIG.prayerMethod is worked out from #pm= and the zone", bool(m))
 page = {z: int(i) for z, i in re.findall(r"'([A-Za-z_/]+)':\s*(\d+)", m.group(1))} if m else {}
 
@@ -32,7 +33,7 @@ pm_src = (ROOT / "android/launcher/src/main/java/sa/urtv/home/tilawah/PrayerMath
 body = pm_src[pm_src.index("static int methodFor"):]
 body = body[:body.index("\n    }\n")]
 launcher = {}
-ids = {n: int(v) for n, v in re.findall(r"(\w+) = (\d+)", re.search(r"static final int JAFARI = [^;]*;", pm_src).group(0) + re.search(r"static final int OMAN = \d+;", pm_src).group(0))}   # the launcher's names for the ids
+ids = {n: int(v) for n, v in re.findall(r"(\w+) = (\d+)", pm_src)}
 for labels, const in re.findall(r"((?:case \"[A-Za-z_/]+\": )+)return ([A-Z_]+);", body):
     for z in re.findall(r'"([A-Za-z_/]+)"', labels):
         launcher[z] = ids[const]
@@ -69,6 +70,13 @@ jl = {}
 for mid, fa, ia, im, mg, tune in re.findall(r"new Method\((\w+), ([\d.]+), ([\d.]+), (\d+), ([\d.]+)((?:, -?\d+)*)\)", pm_src):
     jl[ids[mid]] = (float(fa), float(ia), int(im), float(mg), tuple(int(x) for x in tune.replace(" ", "").split(",") if x) or (0, 0, 0, 0))
 check("page and launcher have the same methods with the same angles, delays and margins", len(jv) == EXPECTED_METHODS and jv == jl, f"{jv}\n{jl}")
+registry = json.loads((ROOT / 'tests/prayer_method_registry.json').read_text(encoding='utf-8'))['methods']
+check('new angles agree with Aladhan’s published method registry', all(
+    mid['id'] in jv and jv[mid['id']][:2] == (float(mid['params']['Fajr']), float(mid['params']['Isha']))
+    for name, mid in registry.items() if name != 'MOONSIGHTING'))
+check('Moonsighting is seasonal general shafaq; Diyanet includes its published offsets', registry['MOONSIGHTING']['params'] == {'shafaq': 'general'} and jv[13][4] == (-7, 5, 4, 7))
+fixtures = json.loads((ROOT / 'tests/prayer_crosscheck_world.json').read_text(encoding='utf-8'))['rows']
+check('Diyanet margins agree with published response metadata', all(tuple(r['meta']['offset'][k] for k in ('Sunrise', 'Dhuhr', 'Asr', 'Maghrib')) == jv[r['method']][4] for r in fixtures))
 
 # the first-run note: one gate (Location.noteDue, with the fresh-install test), counted only when the dream itself starts
 app = ROOT / "android/app/src/main/java/sa/urtv/screensaver"

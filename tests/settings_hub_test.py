@@ -73,7 +73,8 @@ check("6 to 8 categories, each with a name, in order", 6 <= len(cats) <= 8 and [
 check("every category has rows of its own (no empty tile)", all(by.get(c[0].split(" ")[1]) for c in cats), {c[0]: len(by.get(c[0].split(" ")[1], [])) for c in cats})
 want = {"الأذان": "adhan", "تنبيه قبل الأذان": "adhan", "أسماء المصادر": "apps", "ترتيب التطبيقات المفضلة": "apps", "تعديل المفضلة": "apps",
         "تحديث تلفزيوني": "phone", "تحكم من الجوال": "phone", "حماية العائلة": "family", "الدولة": "place", "المدينة": "place",
-        "طريقة الحساب": "place", "زر تلاوة وأذان": "home", "البطاقة الأولى": "home", "معاينة الشاشة": "saver", "بطاقة ثانية": "saver"}
+        "طريقة الحساب": "place", "زر تلاوة وأذان": "home", "البطاقة الأولى": "home", "معاينة الشاشة": "saver", "بطاقة ثانية": "saver",
+        "نظام الساعة": "saver", "حجم الساعة": "saver"}
 got = {r[0]: r[1] for r in row_out[:-1]}
 check("the adhan rows in «الأذان», the inputs and favourites in «التطبيقات والمفضلة», «تحديث تلفزيوني» in «الجوال والتحديث» (two steps)",
       all(got.get(k) == v for k, v in want.items()), {k: got.get(k) for k, v in want.items() if got.get(k) != v})

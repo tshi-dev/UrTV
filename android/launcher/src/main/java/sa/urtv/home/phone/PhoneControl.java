@@ -21,8 +21,11 @@ public final class PhoneControl {
 
     public interface Listener { void changed(); }
 
-    /** The page to serve; the text carries __NONCE__ where the script's nonce goes. */
-    public interface Page { String html(); }
+    /** The page to serve; the text carries __NONCE__ where the script's nonce goes. font() gives one of PhoneApi.FONTS, or null when the APK has none. */
+    public interface Page {
+        String html();
+        byte[] font(String name);
+    }
 
     public enum Start { OK, NO_WIFI, FAILED, ALREADY_ON }
 

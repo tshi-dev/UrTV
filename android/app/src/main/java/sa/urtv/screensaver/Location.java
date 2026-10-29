@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * The settings' «الموقع» group without Android, so tests/PrayerMethodRun.java runs it: the country (a filter for the city list and
- * the search, told by the city's zone, never saved on its own) and the first-run note while the city is still the install's Riyadh.
+ * the search, retained with the city) and the first-run note while the city is still the install's Riyadh.
  */
 final class Location {
     /**
@@ -13,23 +13,30 @@ final class Location {
      * Cities.java gives its cities; Palestine has two, and Morocco's search may answer Africa/El_Aaiun). The city search
      * (PrayerMethod.SEARCH_COUNTRIES) takes all of them but Palestine (see there); tests/PrayerMethodRun.java keeps the two lists in step.
      */
-    static final String[][] COUNTRIES = {
-        {"SA", "السعودية", "Asia/Riyadh"}, {"BH", "البحرين", "Asia/Bahrain"}, {"KW", "الكويت", "Asia/Kuwait"},
-        {"QA", "قطر", "Asia/Qatar"}, {"AE", "الإمارات", "Asia/Dubai"}, {"OM", "سلطنة عُمان", "Asia/Muscat"},
-        {"EG", "مصر", "Africa/Cairo"}, {"JO", "الأردن", "Asia/Amman"}, {"SY", "سوريا", "Asia/Damascus"},
-        {"LB", "لبنان", "Asia/Beirut"}, {"PS", "فلسطين", "Asia/Hebron", "Asia/Gaza"},
-        {"MA", "المغرب", "Africa/Casablanca", "Africa/El_Aaiun"}, {"DZ", "الجزائر", "Africa/Algiers"}, {"TN", "تونس", "Africa/Tunis"},
-    };
+    static final String[][] COUNTRIES = Cities.countries();
     /** the screensaver's first starts that show the note */
     static final int NOTE_STARTS = 3;
     static final String HELP = "المدينة تحدد الوقت والطقس؛ طريقة الحساب تحدد مواقيت الصلاة";
 
     private Location() { }
 
-    /** The country of a city's zone, as an index of COUNTRIES; -1 for a place of one's own elsewhere. */
+    /** Legacy migration only: first country using this zone; new selections retain their own country code. */
     static int countryOf(String tz) {
         for (int i = 0; i < COUNTRIES.length; i++) if (inCountry(i, tz)) return i;
         return -1;
+    }
+
+    static int countryOf(String code, String tz) {
+        if (code != null && !code.isEmpty()) {
+            for (int i = 0; i < COUNTRIES.length; i++) if (COUNTRIES[i][0].equals(code)) return i;
+            return -1;
+        }
+        return countryOf(tz);
+    }
+
+    static String codeOf(String tz) {
+        int i = countryOf(tz);
+        return i < 0 ? "" : COUNTRIES[i][0];
     }
 
     private static boolean inCountry(int country, String tz) {
@@ -41,16 +48,19 @@ final class Location {
     static boolean searchable(int country) { return PrayerMethod.searchable(COUNTRIES[country][0]); }
 
     static String countryLabel(String tz) {
-        int i = countryOf(tz);
+        return countryLabel("", tz);
+    }
+
+    static String countryLabel(String code, String tz) {
+        int i = countryOf(code, tz);
         return i < 0 ? "مكان من اختيارك" : COUNTRIES[i][1];
     }
 
-    /** The regions of the city list in that country: Saudi Arabia's thirteen, or the one region that is the country (by its first city's zone). */
+    /** Filter by country identity, including countries sharing a time zone. */
     static Cities.Region[] regions(int country) {
         List<Cities.Region> out = new ArrayList<>();
         for (Cities.Region r : Cities.REGIONS) {
-            String tz = r.cities.length == 0 ? "" : r.cities[0].length > 3 ? r.cities[0][3] : "Asia/Riyadh";
-            if (inCountry(country, tz)) out.add(r);
+            if (r.country.equals(COUNTRIES[country][0])) out.add(r);
         }
         return out.toArray(new Cities.Region[0]);
     }
