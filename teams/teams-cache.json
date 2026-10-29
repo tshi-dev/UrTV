@@ -1,0 +1,6297 @@
+{
+"leagues": {
+"Saudi-Arabian Pro League": "4668",
+"Saudi First Division League": "5627",
+"English Premier League": "4328",
+"Spanish La Liga": "4335",
+"Italian Serie A": "4332",
+"German Bundesliga": "4331",
+"French Ligue 1": "4334",
+"Portuguese Primeira Liga": "4344",
+"Dutch Eredivisie": "4337",
+"Turkish Super Lig": "4339",
+"Egyptian Premier League": "4829",
+"UAE Pro League": "4678",
+"Qatar Stars League": "4663",
+"American Major League Soccer": "4346",
+"NBA": "4387",
+"NFL": "4391"
+},
+"national": {
+"Saudi Arabia": [
+"136137",
+"Saudi Arabia"
+],
+"United Arab Emirates": [
+"140163",
+"United Arab Emirates"
+],
+"Qatar": [
+"136472",
+"Qatar"
+],
+"Kuwait": [
+"140144",
+"Kuwait"
+],
+"Bahrain": [
+"140149",
+"Bahrain"
+],
+"Oman": [
+"140155",
+"Oman"
+],
+"Iraq": [
+"140148",
+"Iraq"
+],
+"Jordan": [
+"140145",
+"Jordan"
+],
+"Syria": [
+"140032",
+"Syria"
+],
+"Lebanon": [
+"140166",
+"Lebanon"
+],
+"Palestine": [
+"140154",
+"Palestine"
+],
+"Yemen": [
+"140153",
+"Yemen"
+],
+"Egypt": [
+"136138",
+"Egypt"
+],
+"Morocco": [
+"136139",
+"Morocco"
+],
+"Algeria": [
+"134516",
+"Algeria"
+],
+"Tunisia": [
+"136142",
+"Tunisia"
+],
+"Libya": [
+"136489",
+"Libya"
+],
+"Sudan": [
+"136495",
+"Sudan"
+],
+"Iran": [
+"134511",
+"Iran"
+],
+"Japan": [
+"134503",
+"Japan"
+],
+"South Korea": [
+"134517",
+"South Korea"
+],
+"Australia": [
+"134500",
+"Australia"
+],
+"China": [
+"134579",
+"China"
+],
+"Uzbekistan": [
+"140151",
+"Uzbekistan"
+],
+"Brazil": [
+"134496",
+"Brazil"
+],
+"Argentina": [
+"134509",
+"Argentina"
+],
+"France": [
+"133913",
+"France"
+],
+"England": [
+"133914",
+"England"
+],
+"Spain": [
+"133909",
+"Spain"
+],
+"Germany": [
+"133907",
+"Germany"
+],
+"Italy": [
+"133910",
+"Italy"
+],
+"Portugal": [
+"133908",
+"Portugal"
+],
+"Netherlands": [
+"133905",
+"Netherlands"
+],
+"Belgium": [
+"134515",
+"Belgium"
+],
+"Croatia": [
+"133912",
+"Croatia"
+],
+"United States": [
+"134514",
+"USA"
+],
+"Mexico": [
+"134497",
+"Mexico"
+],
+"Uruguay": [
+"134504",
+"Uruguay"
+],
+"Colombia": [
+"134501",
+"Colombia"
+],
+"Senegal": [
+"136143",
+"Senegal"
+],
+"Nigeria": [
+"134512",
+"Nigeria"
+],
+"Cameroon": [
+"134498",
+"Cameroon"
+],
+"Turkey": [
+"135985",
+"Turkey"
+]
+},
+"teams": {
+"133599": {
+"en": "Wolverhampton Wanderers",
+"checked": "",
+"lookup": {
+"name": "Wolverhampton Wanderers",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"وولفرهامبتون واندررز",
+"وولفرهامبتون واندررز",
+"Wolverhampton Wanderers F.C.",
+"name"
+],
+"arFrom": "curated"
+},
+"133600": {
+"en": "Fulham",
+"checked": "",
+"lookup": {
+"name": "Fulham",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي فولهام",
+"نادي فولهام",
+"Fulham F.C.",
+"name"
+],
+"arFrom": "curated"
+},
+"133601": {
+"en": "Aston Villa",
+"checked": "",
+"lookup": {
+"name": "Aston Villa",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"أستون فيلا",
+"أستون فيلا",
+"Aston Villa F.C.",
+"name"
+],
+"arFrom": "curated"
+},
+"133602": {
+"en": "Liverpool",
+"checked": "",
+"lookup": {
+"name": "Liverpool",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي ليفربول",
+"نادي ليفربول",
+"Liverpool F.C.",
+"name"
+],
+"arFrom": "curated"
+},
+"133603": {
+"en": "Sunderland",
+"checked": "",
+"lookup": {
+"name": "Sunderland",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي سندرلاند",
+"نادي سندرلاند",
+"Sunderland A.F.C.",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133604": {
+"en": "Arsenal",
+"checked": "",
+"lookup": {
+"name": "Arsenal",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي آرسنال",
+"نادي أرسنال",
+"Arsenal F.C.",
+"name"
+],
+"arFrom": "curated"
+},
+"133610": {
+"en": "Chelsea",
+"checked": "",
+"lookup": {
+"name": "Chelsea",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي تشيلسي",
+"نادي تشيلسي",
+"Chelsea F.C.",
+"name"
+],
+"arFrom": "curated"
+},
+"133612": {
+"en": "Manchester United",
+"checked": "",
+"lookup": {
+"name": "Manchester United",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"مانشستر يونايتد",
+"مانشستر يونايتد",
+"Manchester United F.C.",
+"name"
+],
+"arFrom": "curated"
+},
+"133613": {
+"en": "Manchester City",
+"checked": "",
+"lookup": {
+"name": "Manchester City",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"مانشستر سيتي",
+"مانشستر سيتي",
+"Manchester City F.C.",
+"name"
+],
+"arFrom": "curated"
+},
+"133615": {
+"en": "Everton",
+"checked": "",
+"lookup": {
+"name": "Everton",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي إيفرتون",
+"نادي إيفرتون",
+"Everton F.C.",
+"name"
+],
+"arFrom": "curated"
+},
+"133616": {
+"en": "Tottenham Hotspur",
+"checked": "",
+"lookup": {
+"name": "Tottenham Hotspur",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"توتنهام هوتسبير",
+"توتنهام هوتسبير",
+"Tottenham Hotspur F.C.",
+"name"
+],
+"arFrom": "curated"
+},
+"133617": {
+"en": "Hull City",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Hull City",
+"alt": [
+"Hull City Association Football Club",
+"HCAFC"
+],
+"country": "England",
+"gender": "Male"
+},
+"wd": [
+"هال سيتي",
+"هال سيتي",
+"Hull City A.F.C.",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133619": {
+"en": "Brighton and Hove Albion",
+"checked": "",
+"lookup": {
+"name": "Brighton and Hove Albion",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"برايتون أند هوف ألبيون",
+"برايتون أند هوف ألبيون",
+"Brighton & Hove Albion F.C.",
+"name"
+],
+"arFrom": "curated"
+},
+"133622": {
+"en": "Ipswich Town",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Ipswich Town",
+"alt": [
+"Ipswich Town Football Club"
+],
+"country": "England",
+"gender": "Male"
+},
+"wd": [
+"إيبسويتش تاون",
+"إيبسويتش تاون",
+"Ipswich Town F.C.",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133623": {
+"en": "Burnley",
+"checked": "",
+"lookup": {
+"name": "Burnley",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي بيرنلي",
+"نادي بيرنلي",
+"Burnley F.C.",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133625": {
+"en": "Coventry City",
+"checked": "",
+"lookup": {
+"name": "Coventry City",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"كوفنتري سيتي",
+"كوفنتري سيتي",
+"Coventry City F.C.",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133632": {
+"en": "Crystal Palace",
+"checked": "",
+"lookup": {
+"name": "Crystal Palace",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"كريستال بالاس",
+"كريستال بالاس",
+"Crystal Palace F.C.",
+"name"
+],
+"arFrom": "curated"
+},
+"133635": {
+"en": "Leeds United",
+"checked": "",
+"lookup": {
+"name": "Leeds United",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"ليدز يونايتد",
+"ليدز يونايتد",
+"Leeds United F.C.",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133636": {
+"en": "West Ham United",
+"checked": "",
+"lookup": {
+"name": "West Ham United",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"وست هام يونايتد",
+"وست هام يونايتد",
+"West Ham United F.C.",
+"name"
+],
+"arFrom": "curated"
+},
+"133650": {
+"en": "Borussia Dortmund",
+"checked": "",
+"lookup": {
+"name": "Borussia Dortmund",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133651": {
+"en": "Hamburg",
+"checked": "",
+"lookup": {
+"name": "Hamburg",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي هامبورغ",
+"نادي هامبورغ",
+"Hamburger SV",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133652": {
+"en": "FC Augsburg",
+"checked": "",
+"lookup": {
+"name": "FC Augsburg",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي آوغسبورغ",
+"نادي آوغسبورغ",
+"FC Augsburg",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133653": {
+"en": "Freiburg",
+"checked": "",
+"lookup": {
+"name": "Freiburg",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133654": {
+"en": "FC Köln",
+"checked": "",
+"lookup": {
+"name": "FC Köln",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي كولن",
+"نادي كولن",
+"1. FC Köln",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133655": {
+"en": "Wolfsburg",
+"checked": "",
+"lookup": {
+"name": "Wolfsburg",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي فولفسبورغ",
+"نادي فولفسبورغ",
+"VfL Wolfsburg",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133657": {
+"en": "Hoffenheim",
+"checked": "",
+"lookup": {
+"name": "Hoffenheim",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133660": {
+"en": "Stuttgart",
+"checked": "",
+"lookup": {
+"name": "Stuttgart",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133661": {
+"en": "Schalke 04",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Schalke 04",
+"alt": [
+"FC Schalke 04",
+"S04"
+],
+"country": "Germany",
+"gender": "Male"
+},
+"wd": [
+"شالكه 04",
+"شالكه 04",
+"Schalke 04",
+"name"
+],
+"arFrom": "curated"
+},
+"133662": {
+"en": "Werder Bremen",
+"checked": "",
+"lookup": {
+"name": "Werder Bremen",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"فيردر بريمن",
+"فيردر بريمن",
+"SV Werder Bremen",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133664": {
+"en": "Bayern Munich",
+"checked": "",
+"lookup": {
+"name": "Bayern Munich",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"بايرن ميونخ",
+"بايرن ميونخ",
+"FC Bayern Munich",
+"name"
+],
+"arFrom": "curated"
+},
+"133665": {
+"en": "Mainz",
+"checked": "",
+"lookup": {
+"name": "Mainz",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"ماينتس 05",
+"ماينتس 05",
+"1. FSV Mainz 05",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133666": {
+"en": "Bayer Leverkusen",
+"checked": "",
+"lookup": {
+"name": "Bayer Leverkusen",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"باير 04 ليفركوزن",
+"باير 04 ليفركوزن",
+"Bayer 04 Leverkusen",
+"name"
+],
+"arFrom": "curated"
+},
+"133667": {
+"en": "AC Milan",
+"checked": "",
+"lookup": {
+"name": "AC Milan",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"إيه سي ميلان",
+"إيه سي ميلان",
+"AC Milan",
+"name"
+],
+"arFrom": "curated"
+},
+"133668": {
+"en": "Lazio",
+"checked": "",
+"lookup": {
+"name": "Lazio",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي لاتسيو",
+"نادي لاتسيو",
+"SS Lazio",
+"name"
+],
+"arFrom": "curated"
+},
+"133670": {
+"en": "Napoli",
+"checked": "",
+"lookup": {
+"name": "Napoli",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي نابولي",
+"نادي نابولي",
+"SSC Napoli",
+"name"
+],
+"arFrom": "curated"
+},
+"133674": {
+"en": "Fiorentina",
+"checked": "",
+"lookup": {
+"name": "Fiorentina",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي فيورنتينا",
+"فيورنتينا",
+"ACF Fiorentina",
+"name"
+],
+"arFrom": "curated"
+},
+"133675": {
+"en": "Genoa",
+"checked": "",
+"lookup": {
+"name": "Genoa",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133676": {
+"en": "Juventus",
+"checked": "",
+"lookup": {
+"name": "Juventus",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"يوفنتوس",
+"يوفنتوس",
+"Juventus FC",
+"name"
+],
+"arFrom": "curated"
+},
+"133678": {
+"en": "Lecce",
+"checked": "",
+"lookup": {
+"name": "Lecce",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133679": {
+"en": "Udinese",
+"checked": "",
+"lookup": {
+"name": "Udinese",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي أودينيزي",
+"نادي أودينيزي",
+"Udinese Calcio",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133681": {
+"en": "Inter Milan",
+"checked": "",
+"lookup": {
+"name": "Inter Milan",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي إنتر ميلان",
+"إنتر ميلان",
+"Inter Milan",
+"name"
+],
+"arFrom": "curated"
+},
+"133682": {
+"en": "Roma",
+"checked": "",
+"lookup": {
+"name": "Roma",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي روما",
+"نادي روما",
+"AS Roma",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133687": {
+"en": "Torino",
+"checked": "",
+"lookup": {
+"name": "Torino",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي تورينو",
+"نادي تورينو",
+"Torino FC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133701": {
+"en": "Sassuolo",
+"checked": "",
+"lookup": {
+"name": "Sassuolo",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133703": {
+"en": "Toulouse",
+"checked": "",
+"lookup": {
+"name": "Toulouse",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي تولوز",
+"نادي تولوز",
+"Toulouse FC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133704": {
+"en": "Brest",
+"checked": "",
+"lookup": {
+"name": "Brest",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133707": {
+"en": "Marseille",
+"checked": "",
+"lookup": {
+"name": "Marseille",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133711": {
+"en": "Lille",
+"checked": "",
+"lookup": {
+"name": "Lille",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133712": {
+"en": "Nice",
+"checked": "",
+"lookup": {
+"name": "Nice",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133713": {
+"en": "Lyon",
+"checked": "",
+"lookup": {
+"name": "Lyon",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"أولمبيك ليون",
+"أولمبيك ليون",
+"Olympique Lyonnais",
+"name"
+],
+"arFrom": "curated"
+},
+"133714": {
+"en": "Paris Saint-Germain",
+"checked": "2026-10-29",
+"lookup": {
+"name": "Paris Saint-Germain",
+"alt": [
+"Paris Saint-Germain Football Club",
+"PSG",
+"Paris Saint Germain",
+"Paris St Germain",
+"Paris SG"
+],
+"country": "France",
+"gender": "Male"
+},
+"wd": [
+"باريس سان جيرمان",
+"باريس سان جيرمان",
+"Paris Saint-Germain FC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133715": {
+"en": "Lorient",
+"checked": "",
+"lookup": {
+"name": "Lorient",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي لوريان",
+"نادي لوريون",
+"F.C. Lorient",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133719": {
+"en": "Rennes",
+"checked": "",
+"lookup": {
+"name": "Rennes",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133720": {
+"en": "Nottingham Forest",
+"checked": "",
+"lookup": {
+"name": "Nottingham Forest",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نوتينغهام فورست",
+"نوتينغهام فورست",
+"Nottingham Forest F.C.",
+"name"
+],
+"arFrom": "curated"
+},
+"133722": {
+"en": "Real Betis",
+"checked": "",
+"lookup": {
+"name": "Real Betis",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"ريال بيتيس",
+"ريال بيتيس",
+"Real Betis Balompié",
+"name"
+],
+"arFrom": "curated"
+},
+"133724": {
+"en": "Real Sociedad",
+"checked": "",
+"lookup": {
+"name": "Real Sociedad",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"ريال سوسيداد",
+"ريال سوسيداد",
+"Real Sociedad",
+"name"
+],
+"arFrom": "curated"
+},
+"133725": {
+"en": "Valencia",
+"checked": "",
+"lookup": {
+"name": "Valencia",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي فالنسيا",
+"نادي فالنسيا",
+"Valencia CF",
+"name"
+],
+"arFrom": "curated"
+},
+"133726": {
+"en": "Racing de Santander",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Racing de Santander",
+"alt": [
+"Real Racing Club de Santander",
+"Racing Santander"
+],
+"country": "Spain",
+"gender": "Male"
+},
+"wd": [
+"راسينغ سانتاندير",
+"راسينغ سانتاندير",
+"Racing de Santander",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133727": {
+"en": "Athletic Bilbao",
+"checked": "",
+"lookup": {
+"name": "Athletic Bilbao",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"أثلتيك بلباو",
+"أثلتيك بلباو",
+"Athletic Club",
+"name"
+],
+"arFrom": "curated"
+},
+"133728": {
+"en": "Rayo Vallecano",
+"checked": "",
+"lookup": {
+"name": "Rayo Vallecano",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"رايو فايكانو",
+"رايو فايكانو",
+"Rayo Vallecano",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133729": {
+"en": "Atlético Madrid",
+"checked": "",
+"lookup": {
+"name": "Atlético Madrid",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"أتلتيكو مدريد",
+"أتلتيكو مدريد",
+"Atlético Madrid",
+"name"
+],
+"arFrom": "curated"
+},
+"133730": {
+"en": "Osasuna",
+"checked": "",
+"lookup": {
+"name": "Osasuna",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"أوساسونا",
+"أوساسونا",
+"Club Atlético Osasuna",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133731": {
+"en": "Getafe",
+"checked": "",
+"lookup": {
+"name": "Getafe",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي خيتافي",
+"نادي خيتافي",
+"Getafe CF",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133732": {
+"en": "Levante",
+"checked": "",
+"lookup": {
+"name": "Levante",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"ليفانتي اف سي",
+"",
+"Levante FC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133733": {
+"en": "Mallorca",
+"checked": "",
+"lookup": {
+"name": "Mallorca",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133734": {
+"en": "Espanyol",
+"checked": "",
+"lookup": {
+"name": "Espanyol",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "translit"
+},
+"133735": {
+"en": "Sevilla",
+"checked": "",
+"lookup": {
+"name": "Sevilla",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي إشبيلية",
+"نادي إشبيلية",
+"Sevilla FC",
+"name"
+],
+"arFrom": "curated"
+},
+"133736": {
+"en": "Málaga",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Málaga",
+"alt": [
+"Málaga Club de Fútbol"
+],
+"country": "Spain",
+"gender": "Male"
+},
+"wd": [
+"نادي ملقا",
+"نادي مالقة",
+"Málaga CF",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133738": {
+"en": "Real Madrid",
+"checked": "",
+"lookup": {
+"name": "Real Madrid",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"ريال مدريد",
+"ريال مدريد",
+"Real Madrid Club de Fútbol",
+"name"
+],
+"arFrom": "curated"
+},
+"133739": {
+"en": "Barcelona",
+"checked": "",
+"lookup": {
+"name": "Barcelona",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي برشلونة",
+"نادي برشلونة",
+"FC Barcelona",
+"name"
+],
+"arFrom": "curated"
+},
+"133740": {
+"en": "Villarreal",
+"checked": "",
+"lookup": {
+"name": "Villarreal",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي فياريال",
+"نادي فياريال",
+"Villarreal CF",
+"name"
+],
+"arFrom": "curated"
+},
+"133757": {
+"en": "Excelsior",
+"checked": "",
+"lookup": {
+"name": "Excelsior",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133758": {
+"en": "Feyenoord",
+"checked": "",
+"lookup": {
+"name": "Feyenoord",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"فاينورد",
+"فاينورد",
+"Feyenoord Rotterdam",
+"name"
+],
+"arFrom": "curated"
+},
+"133759": {
+"en": "Heerenveen",
+"checked": "",
+"lookup": {
+"name": "Heerenveen",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133760": {
+"en": "NEC Nijmegen",
+"checked": "",
+"lookup": {
+"name": "NEC Nijmegen",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"إن إي سي نيميخن",
+"إن إي سي نيميخن",
+"N.E.C.",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133762": {
+"en": "Groningen",
+"checked": "",
+"lookup": {
+"name": "Groningen",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133764": {
+"en": "Utrecht",
+"checked": "",
+"lookup": {
+"name": "Utrecht",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي أوترخت",
+"نادي أوترخت",
+"FC Utrecht",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133766": {
+"en": "Heracles Almelo",
+"checked": "",
+"lookup": {
+"name": "Heracles Almelo",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"هيراكليس ألميلو",
+"هيراكليس ألميلو",
+"Heracles Almelo",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133767": {
+"en": "AZ Alkmaar",
+"checked": "",
+"lookup": {
+"name": "AZ Alkmaar",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"إي زد ألكمار",
+"إيه زد ألكمار",
+"AZ Alkmaar",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133768": {
+"en": "PSV Eindhoven",
+"checked": "",
+"lookup": {
+"name": "PSV Eindhoven",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133769": {
+"en": "ADO Den Haag",
+"checked": "2026-10-20",
+"lookup": {
+"name": "ADO Den Haag",
+"alt": [
+"Den Haag"
+],
+"country": "The Netherlands",
+"gender": "Male"
+},
+"wd": [
+"أدو دين هاغ",
+"أدو دين هاغ",
+"ADO Den Haag",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133772": {
+"en": "Ajax",
+"checked": "",
+"lookup": {
+"name": "Ajax",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"أياكس أمستردام",
+"أياكس أمستردام",
+"AFC Ajax",
+"name"
+],
+"arFrom": "curated"
+},
+"133773": {
+"en": "NAC Breda",
+"checked": "",
+"lookup": {
+"name": "NAC Breda",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"ناك بريدا",
+"ناك بريدا",
+"NAC Breda",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133774": {
+"en": "Twente",
+"checked": "",
+"lookup": {
+"name": "Twente",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"تفينتي أنشخيدة",
+"تفينتي",
+"FC Twente",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133794": {
+"en": "Beşiktaş",
+"checked": "",
+"lookup": {
+"name": "Beşiktaş",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133796": {
+"en": "Trabzonspor",
+"checked": "",
+"lookup": {
+"name": "Trabzonspor",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي طرابزون سبور",
+"طرابزون سبور",
+"Trabzonspor",
+"name"
+],
+"arFrom": "curated"
+},
+"133797": {
+"en": "Samsunspor",
+"checked": "",
+"lookup": {
+"name": "Samsunspor",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"سامسون سبور",
+"سامسون سبور",
+"Samsunspor FC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133798": {
+"en": "Gençlerbirliği",
+"checked": "",
+"lookup": {
+"name": "Gençlerbirliği",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"غنتشلربيرليغي",
+"غنتشلربيرليغي",
+"Gençlerbirliği S.K.",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133799": {
+"en": "Antalyaspor",
+"checked": "",
+"lookup": {
+"name": "Antalyaspor",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"أنطاليا سبور",
+"أنطاليا سبور",
+"Antalyaspor",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133802": {
+"en": "Kayserispor",
+"checked": "",
+"lookup": {
+"name": "Kayserispor",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"قيصرية سبور",
+"قيصرية سبور",
+"Kayserispor",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133804": {
+"en": "Galatasaray",
+"checked": "",
+"lookup": {
+"name": "Galatasaray",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"غلطة سراي",
+"غلطة سراي",
+"Galatasaray S.K.",
+"name"
+],
+"arFrom": "curated"
+},
+"133807": {
+"en": "Fenerbahçe",
+"checked": "",
+"lookup": {
+"name": "Fenerbahçe",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي فنار باغجه",
+"نادي فنار باغجه",
+"Fenerbahçe Istanbul",
+"name"
+],
+"arFrom": "curated"
+},
+"133813": {
+"en": "St Pauli",
+"checked": "",
+"lookup": {
+"name": "St Pauli",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "translit"
+},
+"133814": {
+"en": "Eintracht Frankfurt",
+"checked": "",
+"lookup": {
+"name": "Eintracht Frankfurt",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133816": {
+"en": "Deportivo de A Coruña",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Deportivo de A Coruña",
+"alt": [
+"Real Club Deportivo de A Coruña",
+"Deportivo de La Coruña",
+"Deportivo da Coruña",
+"Deportivo La Coruña",
+"Deportivo A Coruña"
+],
+"country": "Spain",
+"gender": "Male"
+},
+"wd": [
+"ديبورتيفو لاكورونيا",
+"ديبورتيفو لاكورونيا",
+"Deportivo de A Coruña",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133818": {
+"en": "Frosinone",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Frosinone",
+"alt": [],
+"country": "Italy",
+"gender": "Male"
+},
+"wd": [
+"نادي فروزينوني",
+"نادي فروسينوني",
+"Frosinone Calcio",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133822": {
+"en": "Lens",
+"checked": "",
+"lookup": {
+"name": "Lens",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133823": {
+"en": "Monaco",
+"checked": "",
+"lookup": {
+"name": "Monaco",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133827": {
+"en": "Willem II",
+"checked": "",
+"lookup": {
+"name": "Willem II",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"فلم 2 تيلبورخ",
+"فيلم 2 تيلبورخ",
+"Willem II",
+"name"
+],
+"arFrom": "curated"
+},
+"133834": {
+"en": "Kasımpaşa",
+"checked": "",
+"lookup": {
+"name": "Kasımpaşa",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي قاسم باشا",
+"نادي قاسم باشا",
+"Kasımpaşa S.K.",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133835": {
+"en": "Konyaspor",
+"checked": "",
+"lookup": {
+"name": "Konyaspor",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133848": {
+"en": "Le Mans",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Le Mans",
+"alt": [
+"Le Mans Football Club"
+],
+"country": "France",
+"gender": "Male"
+},
+"wd": [
+"نادي لومان",
+"نادي لومان",
+"Le Mans F.C.",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133859": {
+"en": "Pisa",
+"checked": "",
+"lookup": {
+"name": "Pisa",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي بيزا",
+"نادي بيزا",
+"Pisa SC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133861": {
+"en": "Nantes",
+"checked": "",
+"lookup": {
+"name": "Nantes",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133862": {
+"en": "Le Havre",
+"checked": "",
+"lookup": {
+"name": "Le Havre",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133866": {
+"en": "Sparta Rotterdam",
+"checked": "",
+"lookup": {
+"name": "Sparta Rotterdam",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"سبارتا روتردام",
+"سبارتا روتردام",
+"Sparta Rotterdam",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133867": {
+"en": "FC Volendam",
+"checked": "",
+"lookup": {
+"name": "FC Volendam",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي فولندام",
+"نادي فولندام",
+"FC Volendam",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133870": {
+"en": "Kocaelispor",
+"checked": "",
+"lookup": {
+"name": "Kocaelispor",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"كوجالي سبور",
+"كوجالي سبور",
+"Kocaelispor",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133882": {
+"en": "Strasbourg",
+"checked": "",
+"lookup": {
+"name": "Strasbourg",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133883": {
+"en": "Metz",
+"checked": "",
+"lookup": {
+"name": "Metz",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي متز",
+"نادي ميتز",
+"FC Metz",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133885": {
+"en": "Rizespor",
+"checked": "",
+"lookup": {
+"name": "Rizespor",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133905": {
+"en": "Netherlands",
+"checked": "",
+"lookup": {
+"name": "Netherlands",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133907": {
+"en": "Germany",
+"checked": "",
+"lookup": {
+"name": "Germany",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133908": {
+"en": "Portugal",
+"checked": "",
+"lookup": {
+"name": "Portugal",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133909": {
+"en": "Spain",
+"checked": "",
+"lookup": {
+"name": "Spain",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133910": {
+"en": "Italy",
+"checked": "",
+"lookup": {
+"name": "Italy",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133912": {
+"en": "Croatia",
+"checked": "",
+"lookup": {
+"name": "Croatia",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133913": {
+"en": "France",
+"checked": "",
+"lookup": {
+"name": "France",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133914": {
+"en": "England",
+"checked": "",
+"lookup": {
+"name": "England",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"133936": {
+"en": "PEC Zwolle",
+"checked": "",
+"lookup": {
+"name": "PEC Zwolle",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"بي إي سي زفوله",
+"بي إي سي زفوله",
+"PEC Zwolle",
+"name"
+],
+"arFrom": "wikidata"
+},
+"133937": {
+"en": "Celta Vigo",
+"checked": "",
+"lookup": {
+"name": "Celta Vigo",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"سيلتا فيغو",
+"سيلتا فيغو",
+"RC Celta de Vigo",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134023": {
+"en": "Marítimo",
+"checked": "",
+"lookup": {
+"name": "Marítimo",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي ماريتيمو",
+"نادي ماريتيمو",
+"C.S. Marítimo",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134098": {
+"en": "Braga",
+"checked": "",
+"lookup": {
+"name": "Braga",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"سبورتينغ براغا",
+"سبورتينغ براغا",
+"S.C. Braga",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134106": {
+"en": "Estoril Praia",
+"checked": "",
+"lookup": {
+"name": "Estoril Praia",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134107": {
+"en": "Rio Ave",
+"checked": "",
+"lookup": {
+"name": "Rio Ave",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي ريو أفي",
+"نادي ريو أفي",
+"Rio Ave F.C.",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134108": {
+"en": "Benfica",
+"checked": "",
+"lookup": {
+"name": "Benfica",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي بنفيكا",
+"نادي بنفيكا",
+"S.L. Benfica",
+"name"
+],
+"arFrom": "curated"
+},
+"134109": {
+"en": "Nacional de Madeira",
+"checked": "",
+"lookup": {
+"name": "Nacional de Madeira",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"ناسيونال ماديرا",
+"ناسيونال ماديرا",
+"C.D. Nacional",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134112": {
+"en": "Moreirense",
+"checked": "",
+"lookup": {
+"name": "Moreirense",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"موريرينسي",
+"موريرينسي",
+"Moreirense F.C.",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134113": {
+"en": "Gil Vicente",
+"checked": "",
+"lookup": {
+"name": "Gil Vicente",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي جل فيسنتي",
+"نادي جل فيسنتي",
+"Gil Vicente F.C.",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134114": {
+"en": "FC Porto",
+"checked": "",
+"lookup": {
+"name": "FC Porto",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي بورتو",
+"نادي بورتو",
+"FC Porto",
+"name"
+],
+"arFrom": "curated"
+},
+"134115": {
+"en": "Vitória de Guimarães",
+"checked": "",
+"lookup": {
+"name": "Vitória de Guimarães",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"فيتوريا غيماريش",
+"فيتوريا غيمارايش",
+"Vitória S.C.",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134142": {
+"en": "Philadelphia Union",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Philadelphia Union",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": [
+"فيلادلفيا يونيون",
+"فيلادلفيا يونيون",
+"Philadelphia Union",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134143": {
+"en": "Sporting Kansas City",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Sporting Kansas City",
+"alt": [
+"Sporting KC",
+"Kansas City Wizards"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": [
+"سبورتينغ كانساس سيتي",
+"سبورتينغ كانساس سيتي",
+"Sporting Kansas City",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134144": {
+"en": "Houston Dynamo",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Houston Dynamo",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": [
+"هيوستن دينامو",
+"هيوستن دينامو",
+"Houston Dynamo FC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134145": {
+"en": "DC United",
+"checked": "",
+"lookup": {
+"name": "DC United",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"دي.سي. يونايتد",
+"دي.سي. يونايتد",
+"D.C. United",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134146": {
+"en": "FC Dallas",
+"checked": "2026-10-20",
+"lookup": {
+"name": "FC Dallas",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": [
+"نادي دالاس",
+"نادي دالاس",
+"FC Dallas",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134147": {
+"en": "Vancouver Whitecaps",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Vancouver Whitecaps",
+"alt": [],
+"country": "Canada",
+"gender": "Male"
+},
+"wd": [
+"فانكوفر وايتكابس",
+"فانكوفر وايتكابس",
+"Vancouver Whitecaps FC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134148": {
+"en": "Toronto FC",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Toronto FC",
+"alt": [],
+"country": "Canada",
+"gender": "Male"
+},
+"wd": [
+"نادي تورنتو",
+"نادي تورنتو",
+"Toronto FC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134149": {
+"en": "Seattle Sounders FC",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Seattle Sounders",
+"alt": [
+"Seattle Sounders FC"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": [
+"سياتل ساوندرز",
+"سياتل ساوندرز",
+"Seattle Sounders FC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134150": {
+"en": "CF Montréal",
+"checked": "2026-10-20",
+"lookup": {
+"name": "CF Montréal",
+"alt": [
+"Montreal Impact",
+"Club de Foot Montreal"
+],
+"country": "Canada",
+"gender": "Male"
+},
+"wd": [
+"كلوب دو فوت مونتريال",
+"نادي مونتريال",
+"CF Montréal",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134152": {
+"en": "Columbus Crew",
+"checked": "",
+"lookup": {
+"name": "Columbus Crew",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"كولومبوس كرو",
+"كولومبوس كرو",
+"Columbus Crew",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134153": {
+"en": "LA Galaxy",
+"checked": "2026-10-20",
+"lookup": {
+"name": "LA Galaxy",
+"alt": [
+"Los Angeles Galaxy"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": [
+"لوس أنجلوس غلاكسي",
+"لوس أنجلوس غلاكسي",
+"LA Galaxy",
+"name"
+],
+"arFrom": "curated"
+},
+"134154": {
+"en": "Chicago Fire",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Chicago Fire",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": [
+"شيكاغو فاير",
+"شيكاغو فاير",
+"Chicago Fire FC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134155": {
+"en": "Portland Timbers",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Portland Timbers",
+"alt": [
+"PTFC"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": [
+"بورتلاند تيمبرز",
+"بورتلاند تيمبرز",
+"Portland Timbers",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134156": {
+"en": "New York Red Bulls",
+"checked": "2026-10-20",
+"lookup": {
+"name": "New York Red Bulls",
+"alt": [
+"New Jersey Red Bulls"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": [
+"نيويورك ريد بولز",
+"نيويورك ريد بولز",
+"Red Bull New York",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134157": {
+"en": "San Jose Earthquakes",
+"checked": "2026-10-20",
+"lookup": {
+"name": "San Jose Earthquakes",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": [
+"سان خوسيه إيرثكويكس",
+"سان خوسيه إيرثكويكس",
+"San Jose Earthquakes",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134158": {
+"en": "Real Salt Lake",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Real Salt Lake",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": [
+"ريال سالت ليك",
+"ريال سالت ليك",
+"Real Salt Lake",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134159": {
+"en": "New England Revolution",
+"checked": "2026-10-20",
+"lookup": {
+"name": "New England Revolution",
+"alt": [
+"New England Revolution"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": [
+"نيو إنجلاند ريفولوشن",
+"نيو إنغلاند ريفولوشن",
+"New England Revolution",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134221": {
+"en": "Deportivo Alavés",
+"checked": "",
+"lookup": {
+"name": "Deportivo Alavés",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"ديبورتيفو ألافيس",
+"ديبورتيفو ألافيس",
+"Deportivo Alavés",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134224": {
+"en": "Cremonese",
+"checked": "",
+"lookup": {
+"name": "Cremonese",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134234": {
+"en": "Venezia",
+"checked": "",
+"lookup": {
+"name": "Venezia",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي فينيتسيا",
+"نادي فينيزيا",
+"Venezia F.C.",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134243": {
+"en": "Como",
+"checked": "",
+"lookup": {
+"name": "Como",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي كومو",
+"كومو 1907",
+"Como 1907",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134264": {
+"en": "Fortuna Sittard",
+"checked": "",
+"lookup": {
+"name": "Fortuna Sittard",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"فورتونا سيتارد",
+"فورتونا سيتارد",
+"Fortuna Sittard",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134270": {
+"en": "Monza",
+"checked": "",
+"lookup": {
+"name": "Monza",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي مونزا",
+"نادي مونزا",
+"AC Monza",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134272": {
+"en": "Erzurumspor",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Erzurumspor",
+"alt": [
+"Büyükşehir Belediye Erzurumspor",
+"BB Erzurumspor"
+],
+"country": "Turkey",
+"gender": "Male"
+},
+"wd": [
+"أرضروم سبور",
+"",
+"Erzurumspor",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134301": {
+"en": "Bournemouth",
+"checked": "",
+"lookup": {
+"name": "Bournemouth",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"",
+"",
+"Bournemouth F.C.",
+"name"
+],
+"arFrom": "curated"
+},
+"134303": {
+"en": "Cambuur",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Cambuur",
+"alt": [
+"SC Cambuur-Leeuwarden",
+"Sportclub Cambuur-Leeuwarden"
+],
+"country": "The Netherlands",
+"gender": "Male"
+},
+"wd": [
+"نادي كامبور",
+"نادي كامبور",
+"SC Cambuur",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134304": {
+"en": "Go Ahead Eagles",
+"checked": "",
+"lookup": {
+"name": "Go Ahead Eagles",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"غو أهد إيغلز",
+"غو أهد إيغلز",
+"Go Ahead Eagles",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134355": {
+"en": "Brentford",
+"checked": "",
+"lookup": {
+"name": "Brentford",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي برينتفورد",
+"نادي برينتفورد",
+"Brentford F.C.",
+"name"
+],
+"arFrom": "curated"
+},
+"134384": {
+"en": "Elche",
+"checked": "",
+"lookup": {
+"name": "Elche",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي إلتشي",
+"نادي إلتشي",
+"Elche CF",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134387": {
+"en": "Arouca",
+"checked": "",
+"lookup": {
+"name": "Arouca",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"أروكا دا سيلفا",
+"أروكا دا سيلفا",
+"Arouca",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134496": {
+"en": "Brazil",
+"checked": "",
+"lookup": {
+"name": "Brazil",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134497": {
+"en": "Mexico",
+"checked": "",
+"lookup": {
+"name": "Mexico",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134498": {
+"en": "Cameroon",
+"checked": "",
+"lookup": {
+"name": "Cameroon",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134500": {
+"en": "Australia",
+"checked": "",
+"lookup": {
+"name": "Australia",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134501": {
+"en": "Colombia",
+"checked": "",
+"lookup": {
+"name": "Colombia",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134503": {
+"en": "Japan",
+"checked": "",
+"lookup": {
+"name": "Japan",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134504": {
+"en": "Uruguay",
+"checked": "",
+"lookup": {
+"name": "Uruguay",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134509": {
+"en": "Argentina",
+"checked": "",
+"lookup": {
+"name": "Argentina",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134511": {
+"en": "Iran",
+"checked": "",
+"lookup": {
+"name": "Iran",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134512": {
+"en": "Nigeria",
+"checked": "",
+"lookup": {
+"name": "Nigeria",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134514": {
+"en": "USA",
+"checked": "2026-10-20",
+"lookup": {
+"name": "USA",
+"alt": [
+"Estados Unidos",
+"USMNT",
+"United States of America",
+"الولايات المتحدة",
+"Vereinigte Staaten",
+"ארצות הברית",
+"Stany Zjednoczone",
+"Соединённые Штаты Америки",
+"США",
+"美国",
+"United States"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134515": {
+"en": "Belgium",
+"checked": "",
+"lookup": {
+"name": "Belgium",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134516": {
+"en": "Algeria",
+"checked": "",
+"lookup": {
+"name": "Algeria",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134517": {
+"en": "South Korea",
+"checked": "",
+"lookup": {
+"name": "South Korea",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134551": {
+"en": "Paderborn",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Paderborn",
+"alt": [
+"Sport-Club Paderborn 07 e.V.",
+"SC Paderborn 07"
+],
+"country": "Germany",
+"gender": "Male"
+},
+"wd": [
+"بادربورن 07",
+"بادربورن 07",
+"SC Paderborn 07",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134579": {
+"en": "China",
+"checked": "",
+"lookup": {
+"name": "China",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134589": {
+"en": "İstanbul Başakşehir",
+"checked": "",
+"lookup": {
+"name": "İstanbul Başakşehir",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي إسطنبول بشاق شهر",
+"نادي إسطنبول بشاق شهر",
+"İstanbul Başakşehir F.K.",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134630": {
+"en": "New York City FC",
+"checked": "2026-10-20",
+"lookup": {
+"name": "New York City FC",
+"alt": [
+"New York City",
+"New York City Football Club",
+"NYCFC"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": [
+"نادي نيويورك سيتي",
+"نادي نيويورك سيتي",
+"New York City FC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134690": {
+"en": "Union Berlin",
+"checked": "",
+"lookup": {
+"name": "Union Berlin",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"يونيون برلين",
+"يونيون برلين",
+"1. FC Union Berlin",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134695": {
+"en": "RB Leipzig",
+"checked": "",
+"lookup": {
+"name": "RB Leipzig",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"آر بي لايبزيغ",
+"آر بي لايبزيغ",
+"RB Leipzig",
+"name"
+],
+"arFrom": "curated"
+},
+"134696": {
+"en": "FC Heidenheim",
+"checked": "",
+"lookup": {
+"name": "FC Heidenheim",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي هايدنهايم",
+"نادي هايدنهايم",
+"1. FC Heidenheim 1846",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134700": {
+"en": "Girona",
+"checked": "",
+"lookup": {
+"name": "Girona",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي جيرونا",
+"نادي جيرونا",
+"Girona FC",
+"name"
+],
+"arFrom": "curated"
+},
+"134709": {
+"en": "Angers",
+"checked": "",
+"lookup": {
+"name": "Angers",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134777": {
+"en": "Newcastle United",
+"checked": "",
+"lookup": {
+"name": "Newcastle United",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نيوكاسل يونايتد",
+"نيوكاسل يونايتد",
+"Newcastle United F.C.",
+"name"
+],
+"arFrom": "curated"
+},
+"134779": {
+"en": "Borussia Mönchengladbach",
+"checked": "",
+"lookup": {
+"name": "Borussia Mönchengladbach",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"بوروسيا مونشنغلادباخ",
+"بوروسيا مونشنغلادباخ",
+"Borussia Mönchengladbach",
+"name"
+],
+"arFrom": "curated"
+},
+"134781": {
+"en": "Bologna",
+"checked": "",
+"lookup": {
+"name": "Bologna",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي بولونيا 1909",
+"نادي بولونيا",
+"Bologna F.C. 1909",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134782": {
+"en": "Atalanta",
+"checked": "",
+"lookup": {
+"name": "Atalanta",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134783": {
+"en": "Cagliari",
+"checked": "",
+"lookup": {
+"name": "Cagliari",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي كلياري",
+"نادي كلياري",
+"Cagliari Calcio",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134784": {
+"en": "Hellas Verona",
+"checked": "",
+"lookup": {
+"name": "Hellas Verona",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"إيلاس فيرونا",
+"هيلاس فيرونا",
+"Hellas Verona FC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134788": {
+"en": "Auxerre",
+"checked": "",
+"lookup": {
+"name": "Auxerre",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134789": {
+"en": "Troyes",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Troyes",
+"alt": [
+"ESTAC Troyes",
+"Espérance Sportive Troyes Aube Champagne"
+],
+"country": "France",
+"gender": "Male"
+},
+"wd": [
+"نادي تروا",
+"نادي تروا",
+"ES Troyes AC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134794": {
+"en": "Colorado Rapids",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Colorado Rapids",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": [
+"كولورادو رابيدز",
+"كولورادو رابيدز",
+"Colorado Rapids",
+"name"
+],
+"arFrom": "wikidata"
+},
+"134860": {
+"en": "Boston Celtics",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Boston Celtics",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134861": {
+"en": "Brooklyn Nets",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Brooklyn Nets",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134862": {
+"en": "New York Knicks",
+"checked": "2026-10-23",
+"lookup": {
+"name": "New York Knicks",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134863": {
+"en": "Philadelphia 76ers",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Philadelphia 76ers",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134864": {
+"en": "Toronto Raptors",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Toronto Raptors",
+"alt": [],
+"country": "Canada",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134865": {
+"en": "Golden State Warriors",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Golden State Warriors",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134866": {
+"en": "Los Angeles Clippers",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Los Angeles Clippers",
+"alt": [
+"LA Clippers"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134867": {
+"en": "Los Angeles Lakers",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Los Angeles Lakers",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134868": {
+"en": "Phoenix Suns",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Phoenix Suns",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134869": {
+"en": "Sacramento Kings",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Sacramento Kings",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134870": {
+"en": "Chicago Bulls",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Chicago Bulls",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134871": {
+"en": "Cleveland Cavaliers",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Cleveland Cavaliers",
+"alt": [
+"Cavs"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134872": {
+"en": "Detroit Pistons",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Detroit Pistons",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134873": {
+"en": "Indiana Pacers",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Indiana Pacers",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134874": {
+"en": "Milwaukee Bucks",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Milwaukee Bucks",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134875": {
+"en": "Dallas Mavericks",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Dallas Mavericks",
+"alt": [
+"Mavs"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134876": {
+"en": "Houston Rockets",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Houston Rockets",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134877": {
+"en": "Memphis Grizzlies",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Memphis Grizzlies",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134878": {
+"en": "New Orleans Pelicans",
+"checked": "2026-10-23",
+"lookup": {
+"name": "New Orleans Pelicans",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134879": {
+"en": "San Antonio Spurs",
+"checked": "2026-10-23",
+"lookup": {
+"name": "San Antonio Spurs",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134880": {
+"en": "Atlanta Hawks",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Atlanta Hawks",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134881": {
+"en": "Charlotte Hornets",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Charlotte Hornets",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134882": {
+"en": "Miami Heat",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Miami Heat",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134883": {
+"en": "Orlando Magic",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Orlando Magic",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134884": {
+"en": "Washington Wizards",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Washington Wizards",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134885": {
+"en": "Denver Nuggets",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Denver Nuggets",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134886": {
+"en": "Minnesota Timberwolves",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Minnesota Timberwolves",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134887": {
+"en": "Oklahoma City Thunder",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Oklahoma City Thunder",
+"alt": [
+"OKC Thunder"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134888": {
+"en": "Portland Trail Blazers",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Portland Trail Blazers",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134889": {
+"en": "Utah Jazz",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Utah Jazz",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134918": {
+"en": "Buffalo Bills",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Buffalo Bills",
+"alt": [
+"Bills"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134919": {
+"en": "Miami Dolphins",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Miami Dolphins",
+"alt": [
+"Dolphins"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134920": {
+"en": "New England Patriots",
+"checked": "2026-10-23",
+"lookup": {
+"name": "New England Patriots",
+"alt": [
+"Patriots"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134921": {
+"en": "New York Jets",
+"checked": "2026-10-23",
+"lookup": {
+"name": "New York Jets",
+"alt": [
+"Jets"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134922": {
+"en": "Baltimore Ravens",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Baltimore Ravens",
+"alt": [
+"Ravens"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134923": {
+"en": "Cincinnati Bengals",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Cincinnati Bengals",
+"alt": [
+"Bengals"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134924": {
+"en": "Cleveland Browns",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Cleveland Browns",
+"alt": [
+"Browns"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134925": {
+"en": "Pittsburgh Steelers",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Pittsburgh Steelers",
+"alt": [
+"Steelers"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134926": {
+"en": "Houston Texans",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Houston Texans",
+"alt": [
+"Texans"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134927": {
+"en": "Indianapolis Colts",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Indianapolis Colts",
+"alt": [
+"Colts"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134928": {
+"en": "Jacksonville Jaguars",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Jacksonville Jaguars",
+"alt": [
+"Jaguars"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134929": {
+"en": "Tennessee Titans",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Tennessee Titans",
+"alt": [
+"Titans"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134930": {
+"en": "Denver Broncos",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Denver Broncos",
+"alt": [
+"Broncos"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134931": {
+"en": "Kansas City Chiefs",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Kansas City Chiefs",
+"alt": [
+"Chiefs"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134932": {
+"en": "Las Vegas Raiders",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Las Vegas Raiders",
+"alt": [
+"Raiders"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134934": {
+"en": "Dallas Cowboys",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Dallas Cowboys",
+"alt": [
+"Cowboys"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134935": {
+"en": "New York Giants",
+"checked": "2026-10-23",
+"lookup": {
+"name": "New York Giants",
+"alt": [
+"Giants"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134936": {
+"en": "Philadelphia Eagles",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Philadelphia Eagles",
+"alt": [
+"Eagles"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134937": {
+"en": "Washington Commanders",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Washington Commanders",
+"alt": [
+"Commanders"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134938": {
+"en": "Chicago Bears",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Chicago Bears",
+"alt": [
+"Bears"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134939": {
+"en": "Detroit Lions",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Detroit Lions",
+"alt": [
+"Lions"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134940": {
+"en": "Green Bay Packers",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Green Bay Packers",
+"alt": [
+"Packers"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134941": {
+"en": "Minnesota Vikings",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Minnesota Vikings",
+"alt": [
+"Vikings"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134942": {
+"en": "Atlanta Falcons",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Atlanta Falcons",
+"alt": [
+"Falcons"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134943": {
+"en": "Carolina Panthers",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Carolina Panthers",
+"alt": [
+"Panthers"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134944": {
+"en": "New Orleans Saints",
+"checked": "2026-10-23",
+"lookup": {
+"name": "New Orleans Saints",
+"alt": [
+"Saints"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134945": {
+"en": "Tampa Bay Buccaneers",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Tampa Bay Buccaneers",
+"alt": [
+"Buccaneers"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134946": {
+"en": "Arizona Cardinals",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Arizona Cardinals",
+"alt": [
+"Cardinals"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134948": {
+"en": "San Francisco 49ers",
+"checked": "2026-10-23",
+"lookup": {
+"name": "San Francisco 49ers",
+"alt": [
+"49ers"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"134949": {
+"en": "Seattle Seahawks",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Seattle Seahawks",
+"alt": [
+"Seahawks"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"135292": {
+"en": "Orlando City",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Orlando City",
+"alt": [
+"Orlando City SC"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": [
+"أورلاندو سيتي",
+"أورلاندو سيتي",
+"Orlando City SC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"135455": {
+"en": "Real Oviedo",
+"checked": "",
+"lookup": {
+"name": "Real Oviedo",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"ريال أوفييدو",
+"ريال أوفييدو",
+"Real Oviedo",
+"name"
+],
+"arFrom": "wikidata"
+},
+"135465": {
+"en": "Paris FC",
+"checked": "",
+"lookup": {
+"name": "Paris FC",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"باريس إف سي",
+"باريس إف سي",
+"Paris FC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"135502": {
+"en": "Tondela",
+"checked": "",
+"lookup": {
+"name": "Tondela",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"135676": {
+"en": "Alanyaspor",
+"checked": "",
+"lookup": {
+"name": "Alanyaspor",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"ألانيا سبور",
+"ألانيا سبور",
+"Alanyaspor",
+"name"
+],
+"arFrom": "wikidata"
+},
+"135708": {
+"en": "Sporting CP",
+"checked": "",
+"lookup": {
+"name": "Sporting CP",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"135728": {
+"en": "Parma",
+"checked": "",
+"lookup": {
+"name": "Parma",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي بارما",
+"نادي بارما",
+"Parma Calcio 1913",
+"name"
+],
+"arFrom": "wikidata"
+},
+"135851": {
+"en": "Atlanta United",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Atlanta United",
+"alt": [
+"Atlanta Utd"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": [
+"أتلانتا يونايتد",
+"أتلانتا يونايتد",
+"Atlanta United FC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"135852": {
+"en": "Minnesota United",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Minnesota United",
+"alt": [
+"Minnesota Stars FC"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": [
+"منيسوتا يونايتد",
+"منيسوتا يونايتد",
+"Minnesota United FC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"135891": {
+"en": "Göztepe",
+"checked": "",
+"lookup": {
+"name": "Göztepe",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"135907": {
+"en": "Los Angeles Rams",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Los Angeles Rams",
+"alt": [
+"Rams"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"135908": {
+"en": "Los Angeles Chargers",
+"checked": "2026-10-23",
+"lookup": {
+"name": "Los Angeles Chargers",
+"alt": [
+"Chargers"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"135946": {
+"en": "Al-Arabi",
+"checked": "",
+"lookup": {
+"name": "Al-Arabi",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"135985": {
+"en": "Turkey",
+"checked": "",
+"lookup": {
+"name": "Turkey",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"136011": {
+"en": "Al-Fateh",
+"checked": "",
+"lookup": {
+"name": "Al-Fateh",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي الفتح السعودي",
+"نادي الفتح (السعودية)",
+"Al Fateh SC",
+"name"
+],
+"arFrom": "curated"
+},
+"136012": {
+"en": "Al-Taawoun",
+"checked": "",
+"lookup": {
+"name": "Al-Taawoun",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"136013": {
+"en": "Al-Hilal",
+"checked": "",
+"lookup": {
+"name": "Al-Hilal",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي الهلال",
+"نادي الهلال (السعودية)",
+"Al Hilal SFC",
+"name"
+],
+"arFrom": "curated"
+},
+"136014": {
+"en": "Al-Fayha",
+"checked": "",
+"lookup": {
+"name": "Al-Fayha",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"136015": {
+"en": "Al-Qadsiah",
+"checked": "",
+"lookup": {
+"name": "Al-Qadsiah",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي القادسية (السعودية)",
+"نادي القادسية (السعودية)",
+"Al Qadsiah FC",
+"name"
+],
+"arFrom": "curated"
+},
+"136016": {
+"en": "Al-Raed",
+"checked": "",
+"lookup": {
+"name": "Al-Raed",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي الرائد",
+"نادي الرائد",
+"Al-Raed FC",
+"name"
+],
+"arFrom": "curated"
+},
+"136017": {
+"en": "Al-Ettifaq",
+"checked": "",
+"lookup": {
+"name": "Al-Ettifaq",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي الاتفاق",
+"نادي الاتفاق",
+"Al-Ettifaq FC",
+"name"
+],
+"arFrom": "curated"
+},
+"136018": {
+"en": "Al-Ittihad",
+"checked": "",
+"lookup": {
+"name": "Al-Ittihad",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"136019": {
+"en": "Al-Batin",
+"checked": "",
+"lookup": {
+"name": "Al-Batin",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي الباطن",
+"نادي الباطن",
+"Al-Batin",
+"name"
+],
+"arFrom": "curated"
+},
+"136020": {
+"en": "Al-Shabab",
+"checked": "",
+"lookup": {
+"name": "Al-Shabab",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي الشباب السعودي",
+"نادي الشباب (السعودية)",
+"Al-Shabab Football Club",
+"name"
+],
+"arFrom": "curated"
+},
+"136021": {
+"en": "Al-Faisaly",
+"checked": "",
+"lookup": {
+"name": "Al-Faisaly",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي الفيصلي لكرة القدم",
+"النادي الفيصلي (السعودية)",
+"Al-Faisaly FC",
+"name"
+],
+"arFrom": "curated"
+},
+"136022": {
+"en": "Al-Nassr",
+"checked": "",
+"lookup": {
+"name": "Al-Nassr",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي النصر السعودي",
+"نادي النصر (السعودية)",
+"Al-Nassr",
+"name"
+],
+"arFrom": "curated"
+},
+"136050": {
+"en": "Los Angeles FC",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Los Angeles FC",
+"alt": [
+"LAFC"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": [
+"نادي لوس أنجلوس",
+"نادي لوس أنجلوس",
+"Los Angeles FC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"136137": {
+"en": "Saudi Arabia",
+"checked": "",
+"lookup": {
+"name": "Saudi Arabia",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"136138": {
+"en": "Egypt",
+"checked": "",
+"lookup": {
+"name": "Egypt",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"136139": {
+"en": "Morocco",
+"checked": "",
+"lookup": {
+"name": "Morocco",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"136142": {
+"en": "Tunisia",
+"checked": "",
+"lookup": {
+"name": "Tunisia",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"136143": {
+"en": "Senegal",
+"checked": "",
+"lookup": {
+"name": "Senegal",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"136192": {
+"en": "Santa Clara",
+"checked": "",
+"lookup": {
+"name": "Santa Clara",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي سانتا كلارا",
+"نادي سانتا كلارا",
+"C.D. Santa Clara",
+"name"
+],
+"arFrom": "wikidata"
+},
+"136199": {
+"en": "Al-Wehda",
+"checked": "",
+"lookup": {
+"name": "Al-Wehda",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي الوحدة السعودي",
+"نادي الوحدة (السعودية)",
+"Al Wehda FC",
+"name"
+],
+"arFrom": "curated"
+},
+"136200": {
+"en": "Al-Hazem",
+"checked": "",
+"lookup": {
+"name": "Al-Hazem",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي الحزم",
+"نادي الحزم",
+"Al Hazem SC",
+"name"
+],
+"arFrom": "curated"
+},
+"136472": {
+"en": "Qatar",
+"checked": "",
+"lookup": {
+"name": "Qatar",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"136489": {
+"en": "Libya",
+"checked": "",
+"lookup": {
+"name": "Libya",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"136495": {
+"en": "Sudan",
+"checked": "",
+"lookup": {
+"name": "Sudan",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"136688": {
+"en": "FC Cincinnati",
+"checked": "",
+"lookup": {
+"name": "FC Cincinnati",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي سينسيناتي",
+"نادي سينسيناتي",
+"FC Cincinnati",
+"name"
+],
+"arFrom": "wikidata"
+},
+"136854": {
+"en": "Famalicao",
+"checked": "",
+"lookup": {
+"name": "Famalicao",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي فاماليكاو",
+"نادي فاماليكاو",
+"FC Famalicão",
+"name"
+],
+"arFrom": "wikidata"
+},
+"137648": {
+"en": "Al-Sadd",
+"checked": "",
+"lookup": {
+"name": "Al-Sadd",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"137679": {
+"en": "Al-Duhail",
+"checked": "",
+"lookup": {
+"name": "Al-Duhail",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"137699": {
+"en": "Inter Miami",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Inter Miami",
+"alt": [
+"Inter Miami CF",
+"Club Internacional de Fútbol Miami"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": [
+"إنتر ميامي",
+"إنتر ميامي",
+"Inter Miami CF",
+"name"
+],
+"arFrom": "curated"
+},
+"137700": {
+"en": "Nashville SC",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Nashville SC",
+"alt": [],
+"country": "United States",
+"gender": "Male"
+},
+"wd": [
+"نادي ناشفيل أس سي",
+"ناشفيل إس سي",
+"Nashville SC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"137721": {
+"en": "Al-Ahli",
+"checked": "",
+"lookup": {
+"name": "Al-Ahli",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"النادي الأهلي",
+"النادي الأهلي (السعودية)",
+"Al Ahli FC",
+"name"
+],
+"arFrom": "curated"
+},
+"137828": {
+"en": "Shabab Al-Ahli Dubai",
+"checked": "",
+"lookup": {
+"name": "Shabab Al-Ahli Dubai",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي شباب الأهلي",
+"نادي شباب الأهلي",
+"Shabab AlAhli Dubai Club",
+"name"
+],
+"arFrom": "wikidata"
+},
+"137829": {
+"en": "Sharjah",
+"checked": "",
+"lookup": {
+"name": "Sharjah",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي الشارقة",
+"نادي الشارقة",
+"Sharjah FC",
+"name"
+],
+"arFrom": "curated"
+},
+"137830": {
+"en": "Al Jazira",
+"checked": "",
+"lookup": {
+"name": "Al Jazira",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي الجزيرة",
+"نادي الجزيرة (الإمارات)",
+"Al Jazira Club",
+"name"
+],
+"arFrom": "curated"
+},
+"137831": {
+"en": "Al Nasr",
+"checked": "",
+"lookup": {
+"name": "Al Nasr",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"137832": {
+"en": "Al Ain",
+"checked": "",
+"lookup": {
+"name": "Al Ain",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي العين",
+"نادي العين",
+"Al Ain FC",
+"name"
+],
+"arFrom": "curated"
+},
+"137834": {
+"en": "Al Dhafra",
+"checked": "",
+"lookup": {
+"name": "Al Dhafra",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي الظفرة",
+"نادي الظفرة",
+"Al Dhafra Club",
+"name"
+],
+"arFrom": "wikidata"
+},
+"137835": {
+"en": "Al Wasl",
+"checked": "",
+"lookup": {
+"name": "Al Wasl",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي الوصل",
+"نادي الوصل",
+"Al Wasl FC",
+"name"
+],
+"arFrom": "curated"
+},
+"137836": {
+"en": "Al Wahda",
+"checked": "",
+"lookup": {
+"name": "Al Wahda",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي الوحدة الإماراتي",
+"نادي الوحدة (الإمارات)",
+"Al-Wahda S.C.C.",
+"name"
+],
+"arFrom": "curated"
+},
+"137837": {
+"en": "Ittihad Kalba",
+"checked": "",
+"lookup": {
+"name": "Ittihad Kalba",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي كلباء",
+"نادي كلباء",
+"Kalba FC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"137838": {
+"en": "Ajman",
+"checked": "",
+"lookup": {
+"name": "Ajman",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"137839": {
+"en": "Baniyas",
+"checked": "",
+"lookup": {
+"name": "Baniyas",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي بني ياس",
+"نادي بني ياس",
+"Baniyas SC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"137841": {
+"en": "Hatta",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Hatta",
+"alt": [
+"Hatta Club"
+],
+"country": "United Arab Emirates",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"137842": {
+"en": "Khorfakkan",
+"checked": "",
+"lookup": {
+"name": "Khorfakkan",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"137852": {
+"en": "Damac",
+"checked": "",
+"lookup": {
+"name": "Damac",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"ضمك",
+"نادي ضمك",
+"Damac Club",
+"name"
+],
+"arFrom": "curated"
+},
+"137854": {
+"en": "Al-Adalah",
+"checked": "",
+"lookup": {
+"name": "Al-Adalah",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"137855": {
+"en": "Abha",
+"checked": "",
+"lookup": {
+"name": "Abha",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"137994": {
+"en": "Al-Wakrah",
+"checked": "",
+"lookup": {
+"name": "Al-Wakrah",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي الوكرة",
+"نادي الوكرة",
+"Al-Wakrah Sports Club",
+"name"
+],
+"arFrom": "wikidata"
+},
+"137995": {
+"en": "Qatar SC",
+"checked": "",
+"lookup": {
+"name": "Qatar SC",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"138004": {
+"en": "SC Telstar",
+"checked": "",
+"lookup": {
+"name": "SC Telstar",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي تلستار",
+"نادي تلستار",
+"SC Telstar",
+"name"
+],
+"arFrom": "wikidata"
+},
+"138029": {
+"en": "Al-Gharafa",
+"checked": "",
+"lookup": {
+"name": "Al-Gharafa",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"138030": {
+"en": "Al-Shahaniya",
+"checked": "",
+"lookup": {
+"name": "Al-Shahaniya",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"138035": {
+"en": "Al-Sailiya",
+"checked": "",
+"lookup": {
+"name": "Al-Sailiya",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي السيلية",
+"نادي السيلية",
+"Al-Sailiya Sports Club",
+"name"
+],
+"arFrom": "wikidata"
+},
+"138049": {
+"en": "Al-Ahli Doha",
+"checked": "",
+"lookup": {
+"name": "Al-Ahli Doha",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"138050": {
+"en": "Al-Rayyan",
+"checked": "",
+"lookup": {
+"name": "Al-Rayyan",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي الريان",
+"نادي الريان",
+"Al-Rayyan",
+"name"
+],
+"arFrom": "curated"
+},
+"138052": {
+"en": "Umm-Salal",
+"checked": "",
+"lookup": {
+"name": "Umm-Salal",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي أم صلال",
+"نادي أم صلال",
+"Umm Salal SC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"138092": {
+"en": "Gaziantep",
+"checked": "",
+"lookup": {
+"name": "Gaziantep",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"138411": {
+"en": "Elversberg",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Elversberg",
+"alt": [
+"SpVgg 07 Elversberg",
+"SV Elversberg"
+],
+"country": "Germany",
+"gender": "Male"
+},
+"wd": [
+"نادي إلفرسبيرغ",
+"نادي إلفرسبيرغ",
+"SV Elversberg",
+"name"
+],
+"arFrom": "wikidata"
+},
+"138856": {
+"en": "Académico de Viseu",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Académico de Viseu",
+"alt": [
+"Académico de Viseu Futebol Clube"
+],
+"country": "Portugal",
+"gender": "Male"
+},
+"wd": [
+"أكادميكو دي بازو",
+"أكاديميكو فيزيو إف سي",
+"Académico de Viseu FC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"138864": {
+"en": "Casa Pia",
+"checked": "",
+"lookup": {
+"name": "Casa Pia",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي كاسا بيا",
+"نادي كاسا بيا",
+"Casa Pia A.C.",
+"name"
+],
+"arFrom": "wikidata"
+},
+"138951": {
+"en": "Çorum",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Çorum",
+"alt": [
+"Çorum Futbol Kulübü",
+"Yeni Çorumspor"
+],
+"country": "Turkey",
+"gender": "Male"
+},
+"wd": [
+"",
+"",
+"Çorum FK",
+"name"
+],
+"arFrom": "curated"
+},
+"138959": {
+"en": "Amed",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Amed",
+"alt": [
+"Amed Spor Kulubu",
+"Amedspor"
+],
+"country": "Turkey",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"138977": {
+"en": "Eyüpspor",
+"checked": "",
+"lookup": {
+"name": "Eyüpspor",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"أيوب سبور",
+"أيوب سبور",
+"Eyüpspor",
+"name"
+],
+"arFrom": "wikidata"
+},
+"138983": {
+"en": "Fatih Karagümrük",
+"checked": "",
+"lookup": {
+"name": "Fatih Karagümrük",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"فاتح قرەجمرك",
+"نادي فاتح قره جمرك",
+"Fatih Karagümrük S.K.",
+"name"
+],
+"arFrom": "wikidata"
+},
+"138995": {
+"en": "Al Ahly",
+"checked": "",
+"lookup": {
+"name": "Al Ahly",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"النادي الأهلي المصري",
+"النادي الأهلي (مصر)",
+"Al Ahly SC",
+"name"
+],
+"arFrom": "curated"
+},
+"138997": {
+"en": "Zamalek",
+"checked": "",
+"lookup": {
+"name": "Zamalek",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"139080": {
+"en": "Al-Khaleej",
+"checked": "",
+"lookup": {
+"name": "Al-Khaleej",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"139837": {
+"en": "Al-Mokawloon al-Arab",
+"checked": "",
+"lookup": {
+"name": "Al-Mokawloon al-Arab",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"139838": {
+"en": "Pyramids",
+"checked": "",
+"lookup": {
+"name": "Pyramids",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي بيراميدز",
+"نادي بيراميدز",
+"Pyramids FC",
+"name"
+],
+"arFrom": "curated"
+},
+"139839": {
+"en": "Al Ittihad Alexandria",
+"checked": "",
+"lookup": {
+"name": "Al Ittihad Alexandria",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي الاتحاد السكندري",
+"الاتحاد السكندري",
+"Al Ittihad Alexandria Club",
+"name"
+],
+"arFrom": "wikidata"
+},
+"139840": {
+"en": "Smouha",
+"checked": "",
+"lookup": {
+"name": "Smouha",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"139841": {
+"en": "ENPPI",
+"checked": "",
+"lookup": {
+"name": "ENPPI",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي إنبي",
+"نادي إنبي",
+"ENPPI SC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"139843": {
+"en": "Ismaily",
+"checked": "",
+"lookup": {
+"name": "Ismaily",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"النادي الإسماعيلي",
+"النادي الإسماعيلي",
+"Ismaily SC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"139844": {
+"en": "Al Masry",
+"checked": "",
+"lookup": {
+"name": "Al Masry",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"النادي المصري",
+"النادي المصري",
+"Al Masry SC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"139845": {
+"en": "El Gouna",
+"checked": "",
+"lookup": {
+"name": "El Gouna",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي الجونة",
+"نادي الجونة",
+"El Gouna FC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"139846": {
+"en": "Haras El Hodoud",
+"checked": "",
+"lookup": {
+"name": "Haras El Hodoud",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي حرس الحدود",
+"نادي حرس الحدود",
+"Haras El-Hodood SC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"139848": {
+"en": "Tala'ea El Gaish",
+"checked": "",
+"lookup": {
+"name": "Tala'ea El Gaish",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"139850": {
+"en": "Wadi Degla",
+"checked": "",
+"lookup": {
+"name": "Wadi Degla",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي وادي دجلة",
+"نادي وادي دجلة",
+"Wadi Degla SC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"139852": {
+"en": "ZED",
+"checked": "",
+"lookup": {
+"name": "ZED",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي زد",
+"نادي زد",
+"ZED FC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"140008": {
+"en": "Estrela Amadora",
+"checked": "",
+"lookup": {
+"name": "Estrela Amadora",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي إستريلا دا أمادورا",
+"نادي إستريلا دا أمادورا",
+"C.F. Estrela da Amadora",
+"name"
+],
+"arFrom": "wikidata"
+},
+"140032": {
+"en": "Syria",
+"checked": "",
+"lookup": {
+"name": "Syria",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"140078": {
+"en": "Charlotte FC",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Charlotte FC",
+"alt": [
+"Charlotte Football Club"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": [
+"نادي تشارلوت",
+"نادي شارلوت",
+"Charlotte FC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"140079": {
+"en": "Austin FC",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Austin FC",
+"alt": [
+"Austin"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": [
+"نادي أوستن",
+"نادي أوستن",
+"Austin FC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"140144": {
+"en": "Kuwait",
+"checked": "",
+"lookup": {
+"name": "Kuwait",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"140145": {
+"en": "Jordan",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Jordan",
+"alt": [
+"الأردن",
+"Jordanien",
+"ירדן",
+"Jordania",
+"Иордания",
+"约旦"
+],
+"country": "Jordan",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"140148": {
+"en": "Iraq",
+"checked": "",
+"lookup": {
+"name": "Iraq",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"140149": {
+"en": "Bahrain",
+"checked": "",
+"lookup": {
+"name": "Bahrain",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"140151": {
+"en": "Uzbekistan",
+"checked": "",
+"lookup": {
+"name": "Uzbekistan",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"140153": {
+"en": "Yemen",
+"checked": "",
+"lookup": {
+"name": "Yemen",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"140154": {
+"en": "Palestine",
+"checked": "",
+"lookup": {
+"name": "Palestine",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"140155": {
+"en": "Oman",
+"checked": "",
+"lookup": {
+"name": "Oman",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"140163": {
+"en": "United Arab Emirates",
+"checked": "",
+"lookup": {
+"name": "United Arab Emirates",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"140166": {
+"en": "Lebanon",
+"checked": "",
+"lookup": {
+"name": "Lebanon",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"140794": {
+"en": "Ghazl El Mahalla",
+"checked": "",
+"lookup": {
+"name": "Ghazl El Mahalla",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي غزل المحلة",
+"نادي غزل المحلة",
+"Ghazl El Mahalla SC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"140795": {
+"en": "Ceramica Cleopatra",
+"checked": "",
+"lookup": {
+"name": "Ceramica Cleopatra",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي سيراميكا كيلوباترا",
+"نادي سيراميكا كليوباترا",
+"Ceramica Cleopatra FC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"140796": {
+"en": "National Bank of Egypt",
+"checked": "",
+"lookup": {
+"name": "National Bank of Egypt",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"141174": {
+"en": "Al-Shamal",
+"checked": "",
+"lookup": {
+"name": "Al-Shamal",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي الشمال",
+"نادي الشمال",
+"Al-Shamal Sports Club",
+"name"
+],
+"arFrom": "wikidata"
+},
+"143173": {
+"en": "Al-Tai",
+"checked": "",
+"lookup": {
+"name": "Al-Tai",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي الطائي",
+"نادي الطائي",
+"Al-Tai FC",
+"name"
+],
+"arFrom": "curated"
+},
+"143704": {
+"en": "Alverca",
+"checked": "",
+"lookup": {
+"name": "Alverca",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"ألفيركا",
+"ألفيركا",
+"F.C. Alverca",
+"name"
+],
+"arFrom": "wikidata"
+},
+"144159": {
+"en": "Pharco",
+"checked": "",
+"lookup": {
+"name": "Pharco",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي فاركو",
+"نادي فاركو",
+"Pharco FC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"144160": {
+"en": "Modern Sport",
+"checked": "",
+"lookup": {
+"name": "Modern Sport",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي مودرن سبورت",
+"نادي مودرن سبورت",
+"Modern SC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"146536": {
+"en": "Dibba Al-Fujairah",
+"checked": "",
+"lookup": {
+"name": "Dibba Al-Fujairah",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"146537": {
+"en": "Al Bataeh",
+"checked": "",
+"lookup": {
+"name": "Al Bataeh",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"147062": {
+"en": "St. Louis City SC",
+"checked": "2026-10-20",
+"lookup": {
+"name": "St. Louis City SC",
+"alt": [
+"St. Louis City Soccer Club",
+"St Louis City Soccer Club",
+"SLCSC",
+"STL CITY SC"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": [
+"نادي سانت لويس أس سي",
+"سانت لويس سيتي",
+"St. Louis City SC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"147444": {
+"en": "Al-Okhdood",
+"checked": "",
+"lookup": {
+"name": "Al-Okhdood",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"147445": {
+"en": "Al-Riyadh",
+"checked": "",
+"lookup": {
+"name": "Al-Riyadh",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي الرياض",
+"نادي الرياض",
+"Al-Riyadh SC",
+"name"
+],
+"arFrom": "curated"
+},
+"147479": {
+"en": "AVS",
+"checked": "",
+"lookup": {
+"name": "AVS",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"149111": {
+"en": "Al-Orobah",
+"checked": "",
+"lookup": {
+"name": "Al-Orobah",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي العروبة",
+"نادي العروبة (السعودية)",
+"Al-Orobah F.C.",
+"name"
+],
+"arFrom": "curated"
+},
+"149112": {
+"en": "Al-Kholood",
+"checked": "",
+"lookup": {
+"name": "Al-Kholood",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"الخلود",
+"نادي الخلود",
+"Al-Kholood",
+"name"
+],
+"arFrom": "curated"
+},
+"149410": {
+"en": "Petrojet",
+"checked": "",
+"lookup": {
+"name": "Petrojet",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"150091": {
+"en": "Al-Jabalain",
+"checked": "",
+"lookup": {
+"name": "Al-Jabalain",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي الجبلين",
+"نادي الجبلين",
+"Al Jabalain",
+"name"
+],
+"arFrom": "curated"
+},
+"150261": {
+"en": "San Diego FC",
+"checked": "2026-10-20",
+"lookup": {
+"name": "San Diego FC",
+"alt": [
+"San Diego Football Club"
+],
+"country": "United States",
+"gender": "Male"
+},
+"wd": [
+"نادي سان دييغو",
+"نادي سان دييغو",
+"San Diego FC",
+"name"
+],
+"arFrom": "wikidata"
+},
+"150637": {
+"en": "Neom",
+"checked": "",
+"lookup": {
+"name": "Neom",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي نيوم",
+"نادي نيوم",
+"Neom SC",
+"name"
+],
+"arFrom": "curated"
+},
+"150638": {
+"en": "Al-Najma Unaizah",
+"checked": "",
+"lookup": {
+"name": "Al-Najma Unaizah",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"150639": {
+"en": "Al-Arabi Al-Saudi",
+"checked": "",
+"lookup": {
+"name": "Al-Arabi Al-Saudi",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"150640": {
+"en": "Al-Bukiryah",
+"checked": "",
+"lookup": {
+"name": "Al-Bukiryah",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي البكيرية",
+"نادي البكيرية",
+"Al-Bukiryah FC",
+"name"
+],
+"arFrom": "curated"
+},
+"150641": {
+"en": "Jeddah Club",
+"checked": "",
+"lookup": {
+"name": "Jeddah Club",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي جدة",
+"نادي جدة",
+"Jeddah Club",
+"name"
+],
+"arFrom": "curated"
+},
+"150643": {
+"en": "Al-Zulfi",
+"checked": "",
+"lookup": {
+"name": "Al-Zulfi",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي الزلفي",
+"نادي الزلفي",
+"Al-Zulfi FC",
+"name"
+],
+"arFrom": "curated"
+},
+"150644": {
+"en": "Al-Jandal",
+"checked": "",
+"lookup": {
+"name": "Al-Jandal",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي الجندل",
+"نادي الجندل",
+"Al Jandal Club",
+"name"
+],
+"arFrom": "curated"
+},
+"150645": {
+"en": "Al-Jubail",
+"checked": "",
+"lookup": {
+"name": "Al-Jubail",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"152473": {
+"en": "Al-Ula",
+"checked": "",
+"lookup": {
+"name": "Al-Ula",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي العُلا",
+"نادي العلا",
+"Al-Ula Club",
+"name"
+],
+"arFrom": "curated"
+},
+"152917": {
+"en": "Al-Diriyah",
+"checked": "",
+"lookup": {
+"name": "Al-Diriyah",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي الدرعية",
+"نادي الدرعية",
+"Al-Diriyah Club",
+"name"
+],
+"arFrom": "curated"
+},
+"152918": {
+"en": "Al-Anwar",
+"checked": "",
+"lookup": {
+"name": "Al-Anwar",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": null,
+"arFrom": "curated"
+},
+"153475": {
+"en": "Kahrabaa Ismailia",
+"checked": "",
+"lookup": {
+"name": "Kahrabaa Ismailia",
+"alt": [],
+"country": "",
+"gender": ""
+},
+"wd": [
+"نادي كهرباء الإسماعيلية",
+"نادي كهرباء الإسماعيلية",
+"Kahrbaa Ismailia",
+"name"
+],
+"arFrom": "wikidata"
+},
+"155255": {
+"en": "Lusail",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Lusail",
+"alt": [
+"Lusail Sports Club",
+"نادي لوسيل الرياضي"
+],
+"country": "Qatar",
+"gender": "Male"
+},
+"wd": [
+"نادي لوسيل",
+"نادي لوسيل",
+"Lusail Sports Club",
+"name"
+],
+"arFrom": "wikidata"
+},
+"156157": {
+"en": "United FC Dubai",
+"checked": "2026-10-20",
+"lookup": {
+"name": "United FC Dubai",
+"alt": [
+"United Football Club",
+"نادي يونايتد لكرة القدم"
+],
+"country": "United Arab Emirates",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "thesportsdb"
+},
+"156329": {
+"en": "Al-Saqer",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Al-Saqer",
+"alt": [
+"Al-Saqer Football Club",
+"نادي الصقر"
+],
+"country": "Saudi Arabia",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "curated"
+},
+"156330": {
+"en": "Hajer",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Hajer",
+"alt": [
+"Hajer Football Club",
+"نادي هجر"
+],
+"country": "Saudi Arabia",
+"gender": "Male"
+},
+"wd": [
+"نادي هجر",
+"نادي هجر",
+"Hajer Club",
+"name"
+],
+"arFrom": "curated"
+},
+"156331": {
+"en": "Al-Jeel",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Al-Jeel",
+"alt": [
+"Al-Jeel Club",
+"نادي الجيل"
+],
+"country": "Saudi Arabia",
+"gender": "Male"
+},
+"wd": [
+"نادي الجيل",
+"نادي الجيل",
+"Al-Jeel",
+"name"
+],
+"arFrom": "curated"
+},
+"156494": {
+"en": "El Qanah",
+"checked": "2026-10-20",
+"lookup": {
+"name": "El Qanah",
+"alt": [
+"El Qanah Football Club",
+"نادى القناة الرياضي"
+],
+"country": "Egypt",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "thesportsdb"
+},
+"156495": {
+"en": "Asyut Petroleum",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Asyut Petroleum",
+"alt": [
+"Asyut Petroleum Sports Club",
+"نادي بترول أسيوط الرياضي",
+"Petrol Asyout"
+],
+"country": "Egypt",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "thesportsdb"
+},
+"156496": {
+"en": "Abou Qir Fertilizers",
+"checked": "2026-10-20",
+"lookup": {
+"name": "Abou Qir Fertilizers",
+"alt": [
+"Abu Qir Fertilizers Sports Club",
+"نادي أبو قير للأسمدة الرياضي",
+"Abu Qir Semad"
+],
+"country": "Egypt",
+"gender": "Male"
+},
+"wd": null,
+"arFrom": "thesportsdb"
+}
+}
+}

@@ -1,0 +1,563 @@
+{
+ "date": "2026-10-29",
+ "full run": false,
+ "problems": [],
+ "requests": {
+  "per part": {
+   "Saudi-Arabian Pro League": {
+    "thesportsdb": 4,
+    "rate limited (429)": 0,
+    "minutes": 0.4
+   },
+   "Saudi First Division League": {
+    "thesportsdb": 4,
+    "rate limited (429)": 0,
+    "minutes": 0.3
+   },
+   "English Premier League": {
+    "thesportsdb": 4,
+    "rate limited (429)": 0,
+    "minutes": 0.3
+   },
+   "Spanish La Liga": {
+    "thesportsdb": 4,
+    "rate limited (429)": 0,
+    "minutes": 0.3
+   },
+   "Italian Serie A": {
+    "thesportsdb": 4,
+    "rate limited (429)": 0,
+    "minutes": 0.3
+   },
+   "German Bundesliga": {
+    "thesportsdb": 4,
+    "rate limited (429)": 0,
+    "minutes": 0.3
+   },
+   "French Ligue 1": {
+    "thesportsdb": 6,
+    "rate limited (429)": 0,
+    "minutes": 0.4
+   },
+   "Portuguese Primeira Liga": {
+    "thesportsdb": 4,
+    "rate limited (429)": 0,
+    "minutes": 0.3
+   },
+   "Dutch Eredivisie": {
+    "thesportsdb": 4,
+    "rate limited (429)": 0,
+    "minutes": 0.3
+   },
+   "Turkish Super Lig": {
+    "thesportsdb": 4,
+    "rate limited (429)": 0,
+    "minutes": 0.3
+   },
+   "Egyptian Premier League": {
+    "thesportsdb": 4,
+    "rate limited (429)": 0,
+    "minutes": 0.3
+   },
+   "UAE Pro League": {
+    "thesportsdb": 4,
+    "rate limited (429)": 0,
+    "minutes": 0.3
+   },
+   "Qatar Stars League": {
+    "thesportsdb": 4,
+    "rate limited (429)": 0,
+    "minutes": 0.3
+   },
+   "American Major League Soccer": {
+    "thesportsdb": 4,
+    "rate limited (429)": 0,
+    "minutes": 0.3
+   },
+   "NBA": {
+    "thesportsdb": 19,
+    "rate limited (429)": 1,
+    "minutes": 3.3
+   },
+   "NFL": {
+    "thesportsdb": 7,
+    "rate limited (429)": 0,
+    "minutes": 0.5
+   },
+   "National teams": {
+    "thesportsdb": 0,
+    "rate limited (429)": 0,
+    "minutes": 0.0
+   },
+   "Events": {
+    "thesportsdb": 32,
+    "rate limited (429)": 2,
+    "minutes": 6.2
+   }
+  },
+  "thesportsdb": 116,
+  "wikidata and wikipedia": 9,
+  "slowest part, minutes": 6.2,
+  "wall minutes": 6.6
+ },
+ "clubs per league": {
+  "Saudi-Arabian Pro League": {
+   "clubs": 21,
+   "seasons": {
+    "2026-2027": 18,
+    "2025-2026": 18
+   },
+   "last and next rounds": 4
+  },
+  "Saudi First Division League": {
+   "clubs": 24,
+   "seasons": {
+    "2026-2027": 18,
+    "2025-2026": 18
+   },
+   "last and next rounds": 4
+  },
+  "English Premier League": {
+   "clubs": 23,
+   "seasons": {
+    "2026-2027": 20,
+    "2025-2026": 20
+   },
+   "last and next rounds": 4
+  },
+  "Spanish La Liga": {
+   "clubs": 23,
+   "seasons": {
+    "2026-2027": 20,
+    "2025-2026": 20
+   },
+   "last and next rounds": 4
+  },
+  "Italian Serie A": {
+   "clubs": 23,
+   "seasons": {
+    "2026-2027": 20,
+    "2025-2026": 20
+   },
+   "last and next rounds": 4
+  },
+  "German Bundesliga": {
+   "clubs": 21,
+   "seasons": {
+    "2026-2027": 18,
+    "2025-2026": 18
+   },
+   "last and next rounds": 4
+  },
+  "French Ligue 1": {
+   "clubs": 20,
+   "seasons": {
+    "2026-2027": 18,
+    "2025-2026": 18
+   },
+   "last and next rounds": 4
+  },
+  "Portuguese Primeira Liga": {
+   "clubs": 20,
+   "seasons": {
+    "2026-2027": 18,
+    "2025-2026": 18
+   },
+   "last and next rounds": 4
+  },
+  "Dutch Eredivisie": {
+   "clubs": 21,
+   "seasons": {
+    "2026-2027": 18,
+    "2025-2026": 18
+   },
+   "last and next rounds": 4
+  },
+  "Turkish Super Lig": {
+   "clubs": 21,
+   "seasons": {
+    "2026-2027": 18,
+    "2025-2026": 18
+   },
+   "last and next rounds": 3
+  },
+  "Egyptian Premier League": {
+   "clubs": 24,
+   "seasons": {
+    "2026-2027": 20,
+    "2025-2026": 21
+   },
+   "last and next rounds": 4
+  },
+  "UAE Pro League": {
+   "clubs": 16,
+   "seasons": {
+    "2026-2027": 14,
+    "2025-2026": 14
+   },
+   "last and next rounds": 4
+  },
+  "Qatar Stars League": {
+   "clubs": 13,
+   "seasons": {
+    "2026-2027": 12,
+    "2025-2026": 12
+   },
+   "last and next rounds": 4
+  },
+  "American Major League Soccer": {
+   "clubs": 30,
+   "seasons": {
+    "2026": 30,
+    "2025": 30
+   },
+   "last and next rounds": 4
+  },
+  "NBA": {
+   "clubs": 30,
+   "seasons": {
+    "2026-2027": 28,
+    "2025-2026": 22
+   },
+   "last and next rounds": 4,
+   "ids looked up next to the found ones": 8,
+   "league team lists": 10
+  },
+  "NFL": {
+   "clubs": 32,
+   "seasons": {
+    "2026": 31,
+    "2025": 28
+   },
+   "last and next rounds": 4,
+   "ids looked up next to the found ones": 0,
+   "league team lists": 10
+  }
+ },
+ "national teams found in their matches": [],
+ "national teams not found": [],
+ "id checks": {
+  "checked before": 404,
+  "same team": 1,
+  "another name": [],
+  "no answer": []
+ },
+ "wikidata": {
+  "ids on several or unlike items": [],
+  "looked up before": 396,
+  "TheSportsDB property found by name": false,
+  "TheSportsDB property": [],
+  "matched by id": 0,
+  "matched by a search of clubs": 0,
+  "matched by a search of items": 0,
+  "matched by name": 1
+ },
+ "names told apart": [
+  "135946 Al-Arabi: العربي -> العربي القطري",
+  "137995 Qatar SC: قطر -> نادي قطر"
+ ],
+ "ids checked with": {
+  "Saudi-Arabian Pro League": "nothing new to check",
+  "Saudi First Division League": "nothing new to check",
+  "English Premier League": "nothing new to check",
+  "Spanish La Liga": "nothing new to check",
+  "Italian Serie A": "nothing new to check",
+  "German Bundesliga": "nothing new to check",
+  "French Ligue 1": "lookupteam.php",
+  "Portuguese Primeira Liga": "nothing new to check",
+  "Dutch Eredivisie": "nothing new to check",
+  "Turkish Super Lig": "nothing new to check",
+  "Egyptian Premier League": "nothing new to check",
+  "UAE Pro League": "nothing new to check",
+  "Qatar Stars League": "nothing new to check",
+  "American Major League Soccer": "nothing new to check",
+  "NBA": "nothing new to check",
+  "NFL": "nothing new to check",
+  "National teams": "nothing new to check",
+  "Events": "nothing new to check"
+ },
+ "found in their own matches": {
+  "NBA": [
+   "NBA 2026-2027: 134883 Orlando Magic",
+   "NBA 2026-2027: 134876 Houston Rockets",
+   "NBA 2026-2027: 134875 Dallas Mavericks",
+   "NBA 2026-2027: 134870 Chicago Bulls",
+   "NBA 2026-2027: 134879 San Antonio Spurs"
+  ],
+  "NFL": [
+   "NFL 2026: 134924 Cleveland Browns",
+   "NFL 2026: 134949 Seattle Seahawks"
+  ]
+ },
+ "events": {
+  "all_leagues.php gave": 10,
+  "lookupleague.php": {
+   "4370": [
+    "Formula 1",
+    "Motorsport"
+   ],
+   "4443": [
+    "UFC",
+    "Fighting"
+   ],
+   "4444": [
+    "WWE",
+    "Fighting"
+   ],
+   "4445": [
+    "Boxing",
+    "Fighting"
+   ],
+   "4446": [
+    "United Rugby Championship",
+    "Rugby"
+   ],
+   "4447": [
+    "Dakar Rally",
+    "Motorsport"
+   ],
+   "4448": [
+    "ROH",
+    "Fighting"
+   ],
+   "4449": [
+    "NJPW",
+    "Fighting"
+   ],
+   "4450": [
+    "WCW",
+    "Fighting"
+   ],
+   "4464": [
+    "ATP World Tour",
+    "Tennis"
+   ],
+   "4465": [
+    "UCI World Tour",
+    "Cycling"
+   ],
+   "4466": [
+    "Electric GT Championship",
+    "Motorsport"
+   ],
+   "4467": [
+    "Bellator",
+    "Fighting"
+   ],
+   "4468": [
+    "AMA Supercross Championship",
+    "Motorsport"
+   ],
+   "4517": [
+    "WTA Tour",
+    "Tennis"
+   ],
+   "4518": [
+    "_Defunct Basketball Teams",
+    "Basketball"
+   ],
+   "4519": [
+    "_Defunct Soccer Teams",
+    "Soccer"
+   ],
+   "4520": [
+    "Moroccan Championship",
+    "Soccer"
+   ]
+  },
+  "leagues that look like events": [
+   {
+    "id": "4370",
+    "name": "Formula 1",
+    "sport": "Motorsport"
+   },
+   {
+    "id": "4443",
+    "name": "UFC",
+    "sport": "Fighting"
+   },
+   {
+    "id": "4445",
+    "name": "Boxing",
+    "sport": "Fighting"
+   },
+   {
+    "id": "4464",
+    "name": "ATP World Tour",
+    "sport": "Tennis"
+   },
+   {
+    "id": "4517",
+    "name": "WTA Tour",
+    "sport": "Tennis"
+   }
+  ],
+  "f1": [
+   {
+    "id": "4370",
+    "name": "Formula 1",
+    "sport": "Motorsport",
+    "upcoming": 1,
+    "past": 1,
+    "next": [
+     {
+      "strEvent": "Mexico City Grand Prix Practice 1",
+      "strLeague": "Formula 1",
+      "dateEvent": "2026-10-30",
+      "strTime": "18:30:00",
+      "strTimestamp": "2026-10-30T18:30:00",
+      "strVenue": "Autódromo Hermanos Rodríguez",
+      "strCity": "Mexico City",
+      "strCountry": "Mexico",
+      "strSeason": "2026",
+      "intRound": "19"
+     }
+    ],
+    "last": [
+     {
+      "strEvent": "United States Grand Prix",
+      "strLeague": "Formula 1",
+      "dateEvent": "2026-10-25",
+      "strTime": "20:00:00",
+      "strTimestamp": "2026-10-25T20:00:00",
+      "strVenue": "Circuit of the Americas",
+      "strCity": "Austin, TX",
+      "strCountry": "United States",
+      "strStatus": "FT",
+      "strSeason": "2026",
+      "intRound": "18"
+     }
+    ]
+   }
+  ],
+  "ufc": [
+   {
+    "id": "4443",
+    "name": "UFC",
+    "sport": "Fighting",
+    "upcoming": 1,
+    "past": 1,
+    "next": [
+     {
+      "strEvent": "UFC Fight Night 292 Moicano vs Nolan",
+      "strLeague": "UFC",
+      "dateEvent": "2026-10-31",
+      "strTime": "00:00:00",
+      "strTimestamp": "2026-10-31T00:00:00",
+      "strVenue": "Meta Apex",
+      "strCity": "Enterprise, Nevada",
+      "strCountry": "United States",
+      "strSeason": "2026",
+      "intRound": "53"
+     }
+    ],
+    "last": [
+     {
+      "strEvent": "UFC 333 Volkanovski vs Evloev",
+      "strLeague": "UFC",
+      "dateEvent": "2026-10-24",
+      "strTime": "16:00:00",
+      "strTimestamp": "2026-10-24T16:00:00",
+      "strVenue": "Etihad Arena",
+      "strCity": "Abu Dhabi",
+      "strCountry": "United Arab Emirates",
+      "strStatus": "FT",
+      "strSeason": "2026",
+      "intRound": "52"
+     }
+    ]
+   }
+  ],
+  "boxing": [
+   {
+    "id": "4445",
+    "name": "Boxing",
+    "sport": "Fighting",
+    "upcoming": 1,
+    "past": 1,
+    "next": [
+     {
+      "strEvent": "Canelo Álvarez vs Christian Mbilli",
+      "strLeague": "Boxing",
+      "dateEvent": "2026-10-31",
+      "strTime": "15:00:00",
+      "strTimestamp": "2026-10-31T15:00:00",
+      "strCity": "Riyadh",
+      "strCountry": "Saudi Arabia",
+      "strSeason": "2026",
+      "intRound": "111"
+     }
+    ],
+    "last": [
+     {
+      "strEvent": "Emanuel Navarrete vs O'Shaquie Foster",
+      "strLeague": "Boxing",
+      "dateEvent": "2026-10-24",
+      "strTime": "22:30:00",
+      "strTimestamp": "2026-10-24T22:30:00",
+      "strVenue": "Frost Bank Center",
+      "strCity": "San Antonio, Texas",
+      "strCountry": "United States",
+      "strStatus": "FT",
+      "strSeason": "2026",
+      "intRound": "110"
+     }
+    ]
+   }
+  ],
+  "tennis": [
+   {
+    "id": "4464",
+    "name": "ATP World Tour",
+    "sport": "Tennis",
+    "upcoming": 0,
+    "past": 1,
+    "next": [],
+    "last": [
+     {
+      "strEvent": "Lyon Open Fritz vs Musetti",
+      "strLeague": "ATP World Tour",
+      "dateEvent": "2026-10-25",
+      "strTime": "00:00:00",
+      "strTimestamp": "2026-10-25T00:00:00",
+      "strCity": "Lyon",
+      "strCountry": "France",
+      "strSeason": "2026",
+      "intRound": "54"
+     }
+    ]
+   },
+   {
+    "id": "4517",
+    "name": "WTA Tour",
+    "sport": "Tennis",
+    "upcoming": 0,
+    "past": 1,
+    "next": [],
+    "last": [
+     {
+      "strEvent": "Japan Open Krueger vs Siniakova",
+      "strLeague": "WTA Tour",
+      "dateEvent": "2026-10-25",
+      "strTime": "00:00:00",
+      "strTimestamp": "2026-10-25T00:00:00",
+      "strCity": "Osaka",
+      "strCountry": "Japan",
+      "strSeason": "2026",
+      "intRound": "49"
+     }
+    ]
+   },
+   "skipped: no ATP/WTA league with upcoming events on the free API"
+  ],
+  "saudi basketball": "no Saudi basketball league on TheSportsDB"
+ },
+ "Arabic names from": {
+  "curated": 258,
+  "wikidata": 135,
+  "thesportsdb": 4,
+  "translit": 2,
+  "missing": 0
+ },
+ "teams": 399
+}
