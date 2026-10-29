@@ -37,6 +37,8 @@ code, out = run(old, answer="")
 check("install: the TV does not answer: the report stays as it was", code == 0 and out == old, repr(out))
 code, out = run(old, what="extras")
 check("install extras: the report is not touched", code == 0 and out == old, repr(out))
+code, out = run(old, answer="4.0.151")   # the release named 4.0: versionName is one word with the build
+check("install: a 4.0.<build> versionName is written as it is", code == 0 and out == old.replace("screensaver 3.89, home 3.89", "screensaver 4.0.151, home 4.0.151"), repr(out))
 code, out = run(None)
 check("install: no report, nothing to do and no error", code == 0)
 sys.exit(1 if failed else 0)

@@ -87,7 +87,7 @@ Redo the whole setup with one command, settings kept.
 
 **Safe:** nothing is uninstalled; AirPlay, Chromecast and voice are never touched; a 5-minute safety switch puts the
 stock home back if ours doesn't come up. The apps are built and signed by GitHub Actions from this repo (version
-3.N = the build number). The full prompt: [docs/SETUP-PROMPT.md](docs/SETUP-PROMPT.md). To build a different
+4.0, build N: `VERSION` names it, the build number is the Actions run). The full prompt: [docs/SETUP-PROMPT.md](docs/SETUP-PROMPT.md). To build a different
 screen: [docs/RECREATE-PROMPT.md](docs/RECREATE-PROMPT.md).
 
 ## What you get
@@ -101,8 +101,8 @@ screen: [docs/RECREATE-PROMPT.md](docs/RECREATE-PROMPT.md).
 
 **Download the apps yourself:** [releases/apk-latest](https://github.com/tshi-dev/UrTV/releases/tag/apk-latest)
 (install with `adb install`; the agent route above also sets everything up).
-Every build is also kept as a numbered release (`v3.N`, the screensaver and home version), to go back
-to one: `APK_TAG=v3.N optimize/install.sh all`.
+Every build is also kept as a numbered release (`v4.0.N`: the version and the build; the older ones are `v3.N`), to go back
+to one: `APK_TAG=v4.0.N optimize/install.sh all`.
 
 The home screen carries «تلاوة وأذان»: forty reciters (114 surahs each), live Quran radio, and the five daily
 adhans at Umm al-Qura times with a choice of 21 recordings.
@@ -173,8 +173,8 @@ tests/run.sh          every check: build, data, fonts, scripts, private data, «
 ```
 
 A push to `master` builds both APKs in GitHub Actions, once `tests/run.sh` has passed in the same run, and publishes them
-to `apk-latest` (with a `version.txt`, the number the settings screen shows as the newest) and a numbered `v3.N`
-release; a push to `next` publishes `apk-next` instead (a test build, no wait for the checks). `tests/run.sh` runs on `master`, `next`,
+to `apk-latest` (with a `version.txt`, always `3.<build>`: the build the settings screen shows as the newest, and what every app since 3.142
+reads) and a numbered `v4.0.N` release (the name comes from the `VERSION` file); a push to `next` publishes `apk-next` instead (a test build, no wait for the checks). `tests/run.sh` runs on `master`, `next`,
 `content` and pull requests. Local Android build (needs the SDK): `python3 src/build.py && gradle -p android assembleRelease`
 (signed with the debug key; the release key lives only in the repository's secrets).
 

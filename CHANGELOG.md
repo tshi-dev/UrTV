@@ -2,7 +2,13 @@
 
 Newest first. `next` is where changes land first; a release is what was tested there.
 
-## On `next` (not released yet)
+## 4.0 (on `next`, not released yet)
+
+**Version 4.0:** the release has a name now, the `VERSION` file at the root («4.0»). The apps' `versionName` is `4.0.<build>` (one word, as the
+optimize scripts print it), the `versionCode` is still the GitHub run number, so every build installs over the last; the screens show «4.0 (بناء 151)»
+(settings «الإصدار», «تحديث تلفزيوني», the phone page, `saver.sh show`). Updates are untouched: `version.txt` is still exactly `3.<build>` (an installed
+3.142 reads it as before and still sees the update), and the apps compare by build, never by name. Master builds publish `apk-latest` as before and a
+numbered release `v4.0.<build>` («UrTV 4.0 (build N)»); the older `v3.N` ones stay.
 
 **Phone**
 - The phone remote's arrows, OK, Back and Home work in every app, through our accessibility service («تلفزيونك: التحكم والكتابة من الجوال», renamed from «…: الكتابة من الجوال»; or the sleep timer's service from Android 13): the dpad global actions on Android 13+, a focus move on the window in front before it (OK = a click on the focused node). Our own screens keep their exact key path; the phone page names the service when it is off. A phone key stops a playing adhan first when «إيقاف الأذان بأي زر» is on. Log tag `UrTVRemote`: the key, the route and the answer only.

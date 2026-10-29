@@ -467,7 +467,9 @@ public class SaverReceiver extends BroadcastReceiver {
     private static String describe(Context c, Prefs p) {
         String[] city = p.city();
         String latest = p.latestVersion();   // what Updater last saw on the release of the current channel
-        return "version: " + BuildConfig.VERSION_NAME + (latest != null ? " (newest: " + latest + ("next".equals(p.updateChannel()) ? ", on the next channel" : "") + ")" : "")
+        int newest = Versions.buildOf(latest);
+        return "version: " + Versions.displayEn(BuildConfig.MARKETING, BuildConfig.VERSION_CODE)
+            + (newest >= 0 ? " (newest: " + Versions.displayEn(BuildConfig.MARKETING, newest) + ("next".equals(p.updateChannel()) ? ", on the next channel" : "") + ")" : "")
             + "\ncity: " + city[0] + " (" + city[1] + ", " + city[2] + ")"
             + "\ntimezone: " + p.cityTz()
             + "\nteams: " + Prefs.join(p.teams(), ", ")

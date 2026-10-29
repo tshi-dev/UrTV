@@ -180,6 +180,7 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
       <p id="famPin"></p><p id="famKids"></p><p id="famLocked"></p>
       <p>للعرض فقط. التغيير من التلفزيون نفسه.</p>
     </div>
+    <p id="ver"></p>
     <p id="phones"></p>
     <div class="row"><button id="out" class="red">قطع الاتصال</button></div>
   </div>
@@ -466,6 +467,7 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
     }
     $('saverCard').classList.toggle('hidden', !s.saver_idle_options);
     if (s.family) famDraw(s.family); else if (!famSeen) $('famCard').classList.add('hidden');
+    $('ver').textContent = s.version ? 'إصدار تلفزيونك: ' + s.version : '';   // «4.0 (بناء 151)», as the TV words it; an older TV app does not say
     $('phones').textContent = typeof s.phones === 'number' ? 'الجوالات المتصلة: ' + s.phones : '';
     upText(s.update);
     if (!full) return;
@@ -664,7 +666,7 @@ header.top .sub { display:block; font-weight:400; font-size:14px; color:var(--di
     var t = UP[u.status] || '';
     if (u.status === 'error' && u.reason) t += ' ' + (UPWHY[u.reason] || '');
     if (u.status === 'error') { var w = UPWHY[u.why] || UPWHY[u.detail]; if (w && w !== UPWHY[u.reason]) t += ' ' + w; }   // the specific word: storage, installer, download…
-    if ((u.status === 'available' || u.status === 'found') && u.build) t += ' (الإصدار ' + u.build + ')';
+    if ((u.status === 'available' || u.status === 'found') && u.build) t += ' (' + (u.version || 'الإصدار ' + u.build) + ')';
     $('upState').textContent = t;
     $('upGo').classList.toggle('hidden', u.status !== 'available' && u.status !== 'found');
   }

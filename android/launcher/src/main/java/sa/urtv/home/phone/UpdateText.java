@@ -32,6 +32,6 @@ public final class UpdateText {
 
     public static String failedStep(String stepLabel) { return "الخطوة: " + stepLabel; }
 
-    /** "3.51" from the build number, the way the apps name their versions (versionName "3.N"). */
-    public static String versionOf(int build) { return "3." + build; }
+    /** «4.0 (بناء 151)»: the marketing name (the VERSION file) and the build number, the way the apps name their versions. */
+    public static String versionOf(String marketing, int build) { return marketing + " (بناء " + build + ")"; }
 }

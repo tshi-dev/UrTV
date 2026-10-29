@@ -3,7 +3,7 @@ name: Build APKs
 on:
   push:
     branches: [master, next]   # next: a test build in apk-next, before anything reaches apk-latest
-    paths: ['src/**', 'assets/**', 'android/**', '.github/workflows/android.yml']
+    paths: ['src/**', 'assets/**', 'android/**', 'VERSION', '.github/workflows/android.yml']
   workflow_dispatch:
 
 permissions:
@@ -36,6 +36,14 @@ jobs:
           mkdir -p android/launcher/src/main/assets/fonts
           cp .fonts-private/android/*.otf android/launcher/src/main/assets/fonts/
           rm -rf .fonts-private
+
+      # the name people read (VERSION at the repository root, «4.0»): the release names and bodies use it; the apps read the same file in Gradle
+      - name: Version
+        id: ver
+        run: |
+          name=$(tr -d '[:space:]' < VERSION)
+          echo "$name" | grep -Eq '^[0-9]+\.[0-9]+$' || { echo "::error::VERSION must be like 4.0 (major.minor)"; exit 1; }
+          echo "name=$name" >> "$GITHUB_OUTPUT"
 
       - name: Build the page
         run: python3 src/build.py
@@ -71,7 +79,7 @@ jobs:
         run: |
           cp android/app/build/outputs/apk/release/app-release.apk urtv-screensaver.apk
           cp android/launcher/build/outputs/apk/release/launcher-release.apk urtv-home.apk
-          echo "3.${{ github.run_number }}" > version.txt   # the installed app reads the newest version from here: /releases/latest ends in apk-latest, not in a number
+          echo "3.${{ github.run_number }}" > version.txt   # EXACTLY "3.<run>": every app that ever shipped (3.142 and after) reads the newest build from here, whatever the apps are called now; /releases/latest ends in apk-latest, not in a number
 
       # apksigner, not keytool: the home APK has no v1 (JAR) signature, so keytool sees no signer in it
       - name: Which key signed them
@@ -95,7 +103,7 @@ jobs:
         with:
           tag_name: apk-latest
           name: Latest APKs
-          body: "Both apps at version 3.${{ github.run_number }}, built from ${{ github.sha }}"
+          body: "Both apps at version ${{ steps.ver.outputs.name }} (build ${{ github.run_number }}), built from ${{ github.sha }}"
           fail_on_unmatched_files: true   # a name that matches nothing (a typo) must stop the publish, not publish without it
           files: |
             urtv-screensaver.apk
@@ -103,14 +111,14 @@ jobs:
             version.txt
           make_latest: true
 
-      # and every build kept under its own number, the apps' version: APK_TAG=v3.N optimize/install.sh all
+      # and every build kept under its own number, the version and the build: APK_TAG=v4.0.N optimize/install.sh all (the older ones are v3.N)
       - name: Publish to the numbered release
         if: github.ref_name == 'master'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v3.${{ github.run_number }}
-          name: UrTV 3.${{ github.run_number }}
-          body: "Both apps at version 3.${{ github.run_number }}, built from ${{ github.sha }}"
+          tag_name: v${{ steps.ver.outputs.name }}.${{ github.run_number }}
+          name: UrTV ${{ steps.ver.outputs.name }} (build ${{ github.run_number }})
+          body: "Both apps at version ${{ steps.ver.outputs.name }} (build ${{ github.run_number }}), built from ${{ github.sha }}"
           fail_on_unmatched_files: true   # a name that matches nothing (a typo) must stop the publish, not publish without it
           files: |
             urtv-screensaver.apk
@@ -125,7 +133,7 @@ jobs:
         with:
           tag_name: apk-next
           name: Test build from next
-          body: "Both apps at version 3.${{ github.run_number }}, built from next at ${{ github.sha }}. For testing only."
+          body: "Both apps at version ${{ steps.ver.outputs.name }} (build ${{ github.run_number }}), built from next at ${{ github.sha }}. For testing only."
           fail_on_unmatched_files: true   # a name that matches nothing (a typo) must stop the publish, not publish without it
           files: |
             urtv-screensaver.apk

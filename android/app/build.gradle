@@ -10,10 +10,13 @@ android {
         applicationId 'sa.urtv.screensaver'
         minSdk 21
         targetSdk 34
-        // CI passes its run number so every build installs over the previous one; 3.x since the new signing key,
-        // the same number as the home app and as the release (v3.N)
+        // CI passes its run number so every build installs over the previous one: the versionCode, the same number as the home app and
+        // as the release. The name people read is the repository's VERSION file (the marketing version) and the build: versionName
+        // "4.0.123" (no spaces: the optimize scripts print and compare it as one word), BuildConfig.MARKETING "4.0"; the apps find
+        // their build in VERSION_CODE, never by taking versionName apart.
         versionCode((System.getenv('GITHUB_RUN_NUMBER') ?: '1') as int)
-        versionName "3.${System.getenv('GITHUB_RUN_NUMBER') ?: '0'}"
+        versionName "${file('../../VERSION').text.trim()}.${System.getenv('GITHUB_RUN_NUMBER') ?: '0'}"
+        buildConfigField "String", "MARKETING", "\"${file('../../VERSION').text.trim()}\""
         // the branch the page, fonts and photos are fetched from: CI passes the one it builds, a local build follows master
         buildConfigField "String", "BRANCH", "\"${System.getenv('URTV_BRANCH') ?: 'master'}\""
     }

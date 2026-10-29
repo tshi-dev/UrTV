@@ -100,7 +100,7 @@ public class UpdateActivity extends Activity {
 
     private View renderRecord() {
         if (result.kind == UpdateRecords.Kind.SUCCESS) {
-            col.addView(text(UpdateText.done(UpdateText.versionOf(result.target)), 22, "Medium", GOLD, Gravity.RIGHT), right(dp(18)));
+            col.addView(text(UpdateText.done(UpdateText.versionOf(BuildConfig.MARKETING, result.target)), 22, "Medium", GOLD, Gravity.RIGHT), right(dp(18)));
         } else {
             col.addView(text(UpdateText.NOT_DONE, 22, "Medium", RED, Gravity.RIGHT), right(dp(6)));
             col.addView(text(UpdateText.failedStep(UpdateOrder.label(result.step)), 15, "Regular", DIM, Gravity.RIGHT), right(dp(14)));
@@ -115,7 +115,7 @@ public class UpdateActivity extends Activity {
         String why = st.containsKey("reason") ? (String) st.get("reason") : "";
         String detail = st.containsKey("detail") ? (String) st.get("detail") : "";
         Object b = st.get("build");
-        String newest = UpdateText.versionOf(b == null ? 0 : ((Long) b).intValue());
+        String newest = UpdateText.versionOf(BuildConfig.MARKETING, b == null ? 0 : ((Long) b).intValue());
         switch (s) {
             case "checking":
                 col.addView(text(UpdateText.WORKING, 18, "Medium", GOLD, Gravity.RIGHT), right(dp(8)));

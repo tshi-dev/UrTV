@@ -64,7 +64,7 @@ for mod, pkg, srcdir in (('launcher', 'sa.urtv.home', 'android/launcher/src/main
     d = f'{w}/stub_{mod}/' + pkg.replace('.', '/')
     os.makedirs(d, exist_ok=True)
     open(d + '/R.java', 'w').write('\n'.join(out))
-    open(d + '/BuildConfig.java', 'w').write(f'package {pkg};\npublic final class BuildConfig {{ public static final String VERSION_NAME="x"; public static final int VERSION_CODE=1; public static final boolean DEBUG=false; public static final String BRANCH="master"; public static final String APPLICATION_ID="{pkg}"; }}')
+    open(d + '/BuildConfig.java', 'w').write(f'package {pkg};\npublic final class BuildConfig {{ public static final String VERSION_NAME="x"; public static final String MARKETING="4.0"; public static final int VERSION_CODE=1; public static final boolean DEBUG=false; public static final String BRANCH="master"; public static final String APPLICATION_ID="{pkg}"; }}')
 PY
 bad=0
 for m in launcher app; do

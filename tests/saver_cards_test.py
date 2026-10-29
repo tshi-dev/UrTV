@@ -21,7 +21,7 @@ if not (shutil.which("javac") and shutil.which("java") and jar and Path(jar).is_
 tmp = tempfile.mkdtemp()
 stub = Path(tmp) / "src/sa/urtv/screensaver"
 stub.mkdir(parents=True)
-(stub / "BuildConfig.java").write_text('package sa.urtv.screensaver; public class BuildConfig { public static final String VERSION_NAME = "t", BRANCH = "x"; public static final int VERSION_CODE = 1; }')
+(stub / "BuildConfig.java").write_text('package sa.urtv.screensaver; public class BuildConfig { public static final String VERSION_NAME = "t", MARKETING = "4.0", BRANCH = "x"; public static final int VERSION_CODE = 1; }')
 shutil.copy(ROOT / "tests/SaverCardsRun.java", stub / "SaverCardsRun.java")
 r = subprocess.run(["javac", "-nowarn", "-encoding", "UTF-8", "-cp", jar, "-d", tmp + "/out", "-sourcepath", f"{ROOT}/android/app/src/main/java:{tmp}/src", str(stub / "SaverCardsRun.java")], capture_output=True, text=True)
 if r.returncode:

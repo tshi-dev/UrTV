@@ -12,7 +12,12 @@ android {
         targetSdk 30   // Android 11 TVs only show the Wi-Fi name to apps targeting 30 with location granted
         // the same version as the screensaver (see android/app/build.gradle)
         versionCode((System.getenv('GITHUB_RUN_NUMBER') ?: '1') as int)
-        versionName "3.${System.getenv('GITHUB_RUN_NUMBER') ?: '0'}"
+        versionName "${file('../../VERSION').text.trim()}.${System.getenv('GITHUB_RUN_NUMBER') ?: '0'}"
+        buildConfigField "String", "MARKETING", "\"${file('../../VERSION').text.trim()}\""
+    }
+
+    buildFeatures {
+        buildConfig true   // off by default since AGP 8: MARKETING is read by the update screen and the phone page
     }
 
     signingConfigs {

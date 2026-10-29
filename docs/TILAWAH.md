@@ -207,7 +207,7 @@ python3 tests/tilawah_test.py
 ```
 
 CI builds the home app with the screensaver, renames it to `urtv-home.apk`, and publishes it to
-`apk-latest` and the numbered `v3.N` releases. The release key comes from the repository's
+`apk-latest` and the numbered `v4.0.N` releases. The release key comes from the repository's
 `ANDROID_KEYSTORE` secret; a local build without it uses the debug key.
 
 ## Known limits

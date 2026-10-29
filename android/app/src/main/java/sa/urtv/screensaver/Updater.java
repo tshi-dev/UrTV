@@ -191,13 +191,12 @@ final class Updater {
 
     /** The three lines under the settings: this app's version, the newest release, and how to update. */
     static String[] versionLines(Context c) {
-        String mine = BuildConfig.VERSION_NAME;
-        String latest = new Prefs(c).latestVersion();
-        Integer newer = Versions.compare(latest, mine);   // major first, then minor: 4.0 is newer than 3.12
-        String available = latest == null || Versions.parse(latest) == null ? "لم يُفحص بعد"
-            : newer == null || newer <= 0 ? "لا يوجد أحدث" : arabic(latest);
+        int mine = BuildConfig.VERSION_CODE;   // the build; the name is the VERSION file's («4.0»), never taken apart
+        int newest = Versions.buildOf(new Prefs(c).latestVersion());   // version.txt is "3.<build>": the build is what grows
+        String available = newest < 0 ? "لم يُفحص بعد"
+            : newest <= mine ? "لا يوجد أحدث" : arabic(Versions.display(BuildConfig.MARKETING, newest));
         return new String[] {
-            "الإصدار الحالي: " + arabic(mine),
+            "الإصدار الحالي: " + arabic(Versions.display(BuildConfig.MARKETING, mine)),
             "الإصدار المتاح: " + available,
             "طريقة التحديث: اطلب من مساعد الذكاء الاصطناعي «حدّث تلفزيوني»، وإعداداتك كلها تبقى.",
         };

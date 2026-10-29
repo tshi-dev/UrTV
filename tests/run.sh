@@ -72,6 +72,7 @@ python3 tests/saver_reload_test.py
 python3 tests/listen_pill_test.py
 python3 tests/updates_bell_test.py
 python3 tests/versions_test.py
+python3 tests/version_name_test.py
 python3 tests/channel_test.py
 python3 tests/app_fixes_test.py
 python3 tests/keep_test.py

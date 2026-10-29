@@ -162,7 +162,7 @@ public final class UpdateRun {
         check("and the repository address under it", "github.com/tshi-dev/UrTV".equals(UpdateText.REPO), "");
         check("the screen's name and button", "تحديث تلفزيوني".equals(UpdateText.TITLE) && "تحقق من التحديث".equals(UpdateText.CHECK), "");
         check("the installed version line carries the version", bare(UpdateText.installed("3.51")).endsWith("3.51"), "");
-        check("the build number gives the app's version name (3.N)", "3.51".equals(UpdateText.versionOf(51)), "");
+        check("the build number gives the version the screens show: the name and the build, «4.0 (بناء 51)»", "4.0 (بناء 51)".equals(UpdateText.versionOf("4.0", 51)), "");
 
         // ---- failures after version.txt are never «no connection»
         check("version.txt: no network is «OFFLINE», and only that", UpdateFlow.versionRead(false, 0, -1).result == UpdateFlow.Result.OFFLINE

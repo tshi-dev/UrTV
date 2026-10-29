@@ -18,7 +18,7 @@ body = prefs[prefs.index("static List<Task> parseTasks"):prefs.index("private vo
 check("Prefs.tasks: one entry that is not a task is skipped, inside the loop", body.index("try {", body.index("for (int k")) < body.index("out.add(new Task(") and "catch (JSONException bad)" in body)
 check("Prefs.tasks: parsed by a static method that takes the JSON", "parseTasks(sp.getString(\"tasks\"" in prefs)
 updater = text(APP / "Updater.java")
-check("Updater compares (major, minor), not the minor alone", "Versions.compare(latest, mine)" in updater and "minor(" not in updater)
+check("Updater compares by BUILD (version.txt's \"3.<build>\" against the app's versionCode), never the name: 4.0 builds only grow by build", "Versions.buildOf(new Prefs(c).latestVersion())" in updater and "int mine = BuildConfig.VERSION_CODE;" in updater and "newest <= mine" in updater and "Versions.compare(latest, mine)" not in updater)
 cache = text(APP / "PhotoCache.java")
 check("PhotoCache: a photo that is served is touched, so the prune keeps the ones in use", "f.setLastModified(System.currentTimeMillis())" in cache
       and cache.index("setLastModified") < cache.index("return f;"))

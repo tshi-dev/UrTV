@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import sa.urtv.home.BuildConfig;
+
 /**
  * «تحديث تلفزيوني», the one engine: the TV's own screen (UpdateActivity) and the phone page's button call the same code. check: reads
  * version.txt of the apk-latest release (the one optimize/install.sh uses; the apk-next test release when an agent set `saver.sh updatechannel next`, see UpdateChannel) and decides (UpdateFlow); when there is a newer version and the
@@ -66,7 +68,7 @@ public final class PhoneUpdater {
         if (!shown[1].isEmpty()) m.put("reason", shown[1]);
         if (!detail.isEmpty()) m.put("detail", detail);
         if (!why.isEmpty()) m.put("why", why);
-        if (build > 0) m.put("build", (long) build);
+        if (build > 0) { m.put("build", (long) build); m.put("version", UpdateText.versionOf(BuildConfig.MARKETING, build)); }
         return m;
     }
 
@@ -417,15 +419,8 @@ public final class PhoneUpdater {
         }
     }
 
-    /** The version name of this app ("3.51"), for the screen. */
-    public static String installedName(Context c) {
-        try {
-            String n = c.getPackageManager().getPackageInfo(c.getPackageName(), 0).versionName;
-            return n == null ? "" : n;
-        } catch (PackageManager.NameNotFoundException e) {
-            return "";
-        }
-    }
+    /** The version of this app as the screen and the phone page name it: «4.0 (بناء 151)» (the build is the versionCode, the name the VERSION file's). */
+    public static String installedName(Context c) { return UpdateText.versionOf(BuildConfig.MARKETING, BuildConfig.VERSION_CODE); }
 
     /** The lowest build among our apps that are installed: the TV is up to date only when all of them are. */
     private static long lowestInstalled(Context c) {
