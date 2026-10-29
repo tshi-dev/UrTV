@@ -66,3 +66,11 @@ Typing service: the owner ran `optimize/dock.sh type-setup` himself; TypeService
 | note 2 | OK | remote-shahid0 | the screensaver came on ~50 s after the last key while Shahid loaded (45 s setting); one ▼ from the page closed it |
 
 Problems: 1 small (page keys don't act on YouTube's profile picker) + note 1. R4 left.
+
+## step 10, R4 (daytime) — step 10 finished
+| # | OK/problem | shots | note |
+|---|---|---|---|
+| R4 | OK (by design) | r4-adhan | New pairing; YouTube in front; `optimize/music.sh adhan now` → "Adhan playing", our MediaPlayer `state:started` (still playing after 15 s with no key). ▼ from the page STOPS the adhan (playing: 0) — matches «إيقاف الأذان بأي زر» being on; no UrTVRemote line is logged for that ▼ (the key is used to stop the adhan). Started again → page «أوقف الأذان الآن» → stopped. TV sound stayed muted (owner's wish), so checked by playback state, not by ear |
+| R5 again | OK | p10-r5d | phone control off again, the PC's pairing gone; service still on |
+
+Step 10 total: 1 small problem (page keys don't act on YouTube's profile picker) + note 1 (TCL blocks the screensaver ConfigProvider after YouTube opens). If ▼ should NOT stop the adhan when it comes from the phone page, that is a second one: owner/supervisor to decide.
