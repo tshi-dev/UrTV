@@ -9,6 +9,7 @@ python3 tests/prayer_math_test.py
 python3 tests/prayer_crosscheck_test.py
 python3 tests/hijri_crosscheck_test.py
 python3 tests/prayer_method_test.py
+python3 tests/place_choice_test.py
 python3 tests/prayer_adj_test.py
 python3 tests/hijri_offset_test.py
 python3 tests/saver_hijri_test.py

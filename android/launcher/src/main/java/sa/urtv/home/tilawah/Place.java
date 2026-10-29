@@ -5,11 +5,11 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import sa.urtv.home.R;
-import java.net.URLDecoder;
 
 /**
  * Where the TV is, for the prayer times: the city picked in the screensaver (its ConfigProvider,
- * same signing key) and, when that app is missing or older, values in res/values/config.xml.
+ * same signing key); when a read fails, the last good one this app kept (the TV may refuse to start the screensaver from the background);
+ * values in res/values/config.xml only when that app is missing or older and nothing was ever read.
  */
 final class Place {
     static final Uri CONFIG = Uri.parse("content://sa.urtv.screensaver.config");
@@ -25,48 +25,51 @@ final class Place {
         this.lat = lat; this.lng = lng; this.tz = tz; this.adj = adj; this.method = PrayerMath.methodFor(tz, pm);
     }
 
+    /** The last good fragment (what the screensaver said last), kept in memory and in this app's preferences. */
+    private static String lastGood;
+    private static boolean failing;   // a read failed and is not yet well again: the log says it once per streak
+
     static Place get(Context c) {
+        String fresh = null;
         try (Cursor cur = c.getContentResolver().query(CONFIG, null, null, null, null)) {
-            if (cur != null && cur.moveToFirst() && cur.getString(0) != null) {
-                Place p = fromFragment(cur.getString(0));
-                if (p != null) return p;
-            }
+            if (cur != null && cur.moveToFirst()) fresh = cur.getString(0);
         } catch (RuntimeException ignored) {
-            // screensaver app missing or signed with another key: fall back to the bundled values
+            // screensaver app missing, signed with another key, or the TV will not start it from the background: the last good place
         }
-        return bundled(c);
+        return get(c, fresh);
     }
 
-    /** From a settings fragment the caller has already read (one read for a whole tick); null = the screensaver gave none. */
+    /** From a settings fragment the caller has already read (one read for a whole tick); null = the read failed: the last good place, the bundled one only if none was ever read. */
     static Place get(Context c, String fragment) {
-        Place p = fragment == null ? null : fromFragment(fragment);
-        return p != null ? p : bundled(c);
+        PlaceChoice.Pick pick = PlaceChoice.pick(fragment, remembered(c));
+        if (pick.fragment == null) return bundled(c);
+        if (!pick.remembered) remember(c, pick.fragment);
+        note(pick.remembered);
+        PlaceFragment f = PlaceFragment.parse(pick.fragment);
+        return new Place(f.lat, f.lng, f.tz, f.adj, f.pm);
+    }
+
+    private static synchronized String remembered(Context c) {
+        if (lastGood == null) lastGood = c.getSharedPreferences("place", Context.MODE_PRIVATE).getString("fragment", null);
+        return lastGood;
+    }
+
+    private static synchronized void remember(Context c, String fragment) {
+        if (fragment.equals(lastGood)) return;
+        lastGood = fragment;
+        c.getSharedPreferences("place", Context.MODE_PRIVATE).edit().putString("fragment", fragment).apply();
+    }
+
+    /** One line (tag UrTVAdhan, no place) when a read failed and the last good place is used, once per streak of failures. */
+    private static synchronized void note(boolean usedRemembered) {
+        if (usedRemembered && !failing) android.util.Log.i("UrTVAdhan", "place read failed: the last good place is used");
+        failing = usedRemembered;
     }
 
     private static Place bundled(Context c) {
         return new Place(number(c.getString(R.string.latitude), 24.6877),
                 number(c.getString(R.string.longitude), 46.7219),
                 orDefault(c.getString(R.string.timezone), "Asia/Riyadh"), new int[PrayerAdjust.COUNT], null);
-    }
-
-    /** "city=..&lat=24.7&lon=46.7&tz=Asia%2FRiyadh&..." — the same fragment the page reads. */
-    private static Place fromFragment(String fragment) {
-        try {
-            String lat = null, lon = null, tz = null, pm = null;
-            for (String part : fragment.split("&")) {
-                int eq = part.indexOf('=');
-                if (eq < 0) continue;
-                String key = part.substring(0, eq), value = URLDecoder.decode(part.substring(eq + 1), "UTF-8");
-                if ("lat".equals(key)) lat = value;
-                else if ("lon".equals(key)) lon = value;
-                else if ("tz".equals(key)) tz = value;
-                else if ("pm".equals(key)) pm = value;
-            }
-            if (lat == null || lon == null) return null;
-            return new Place(number(lat, 24.6877), number(lon, 46.7219), orDefault(tz, "Asia/Riyadh"), PrayerAdjust.fromFragment(fragment), pm);
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     private static double number(String s, double fallback) {

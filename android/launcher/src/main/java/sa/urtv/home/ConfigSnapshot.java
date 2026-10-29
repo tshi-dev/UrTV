@@ -50,8 +50,10 @@ final class ConfigSnapshot {
         long now = android.os.SystemClock.elapsedRealtime();
         if (last != null && now - lastAt >= 0 && now - lastAt < SHARE_MS) return last;
         ConfigSnapshot s = query(c);
-        if (s.fragment != null) { last = s; lastAt = now; }   // an answer only: a missing screensaver is asked again
-        return s;
+        if (s.fragment != null) { last = s; lastAt = now; return s; }
+        // no answer (the screensaver was killed and the TV will not start it from the background, or it is missing): the last good values stay
+        // on the screen, not the defaults (dark, glass, the TV's own zone); the next call asks again, so the real ones return as soon as it answers
+        return last != null ? last : s;
     }
 
     private static ConfigSnapshot query(Context c) {

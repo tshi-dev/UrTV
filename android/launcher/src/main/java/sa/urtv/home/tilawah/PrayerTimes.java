@@ -113,11 +113,15 @@ final class PrayerTimes {
     static Next next(Context c) { return next(c, 30_000); }
 
     /** The next prayer the adhan alarm is for: one still due even a second from now, so a refresh just before it keeps it. */
-    static Next nextAlarm(Context c) { return next(c, 0); }
+    static Next nextAlarm(Context c) { return next(c, 0, Place.get(c)); }
 
-    private static Next next(Context c, long aheadMs) {
+    /** The same for a place the caller already has (the alarm is set from the very place it was judged by). */
+    static Next nextAlarm(Context c, Place place) { return next(c, 0, place); }
+
+    private static Next next(Context c, long aheadMs) { return next(c, aheadMs, Place.get(c)); }
+
+    private static Next next(Context c, long aheadMs, Place place) {
         long now = System.currentTimeMillis();
-        Place place = Place.get(c);
         Calendar day = Calendar.getInstance(TimeZone.getTimeZone(place.tz), Locale.US);
         for (int d = 0; d < 3; d++) {
             PrayerTimes t = d == 0 ? today(c, place) : of(day, place);
