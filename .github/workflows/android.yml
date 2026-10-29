@@ -111,13 +111,13 @@ jobs:
             version.txt
           make_latest: true
 
-      # and every build kept under its own number, the version and the build: APK_TAG=v4.0.N optimize/install.sh all (the older ones are v3.N)
+      # and every build kept under its own tag (v4.0.N: the version and the build, only in the URL; the release is titled «UrTV 4.0», the build is in the body): APK_TAG=v4.0.N optimize/install.sh all (the older ones are v3.N)
       - name: Publish to the numbered release
         if: github.ref_name == 'master'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.ver.outputs.name }}.${{ github.run_number }}
-          name: UrTV ${{ steps.ver.outputs.name }} (build ${{ github.run_number }})
+          name: UrTV ${{ steps.ver.outputs.name }}
           body: "Both apps at version ${{ steps.ver.outputs.name }} (build ${{ github.run_number }}), built from ${{ github.sha }}"
           fail_on_unmatched_files: true   # a name that matches nothing (a typo) must stop the publish, not publish without it
           files: |

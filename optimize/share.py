@@ -209,20 +209,21 @@ def computer():
 
 
 def live_versions():
-    """The two apps' versionName as the TV says it now, «Versions: screensaver 3.124, home 3.124»; None when the TV does not
-    answer (then report.md's line, written at the last setup, is all there is)."""
+    """The two apps as the TV says them now, «Versions: screensaver 4.0 (build 151), home 4.0 (build 151)» (versionName, and the build from
+    versionCode); None when the TV does not answer (then report.md's line, written at the last setup, is all there is)."""
     tv_py = Path(__file__).resolve().parent / "tv.py"
     found = []
     for package in ("sa.urtv.screensaver", "sa.urtv.home"):
         try:
-            out = subprocess.run([sys.executable, "-I", str(tv_py), f"dumpsys package {package} 2> /dev/null | grep versionName | sed -n 1p"],
+            out = subprocess.run([sys.executable, "-I", str(tv_py), f"dumpsys package {package} 2> /dev/null | grep -e versionName -e versionCode= | sed -n 1,2p"],
                                  capture_output=True, text=True, timeout=60, env={**os.environ, "TV_TRIES": "1"})
         except Exception:  # noqa: BLE001
             return None
         m = re.search(r"versionName=(\S+)", out.stdout) if out.returncode == 0 else None
         if not m:
             return None
-        found.append(m.group(1))
+        code = re.search(r"versionCode=(\d+)", out.stdout)
+        found.append(m.group(1) + (f" (build {code.group(1)})" if code else ""))
     return f"Versions: screensaver {found[0]}, home {found[1]}"
 
 

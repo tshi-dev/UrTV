@@ -552,8 +552,17 @@ fi
 # and share.sh agree. (Only when the report exists; no report, nothing to correct.)
 if [ "$what" != extras ] && [ -f "${URTV_RUN_DIR:-optimize/run}/report.md" ]; then
   rep="${URTV_RUN_DIR:-optimize/run}/report.md"
-  vs=$("$PY" -I optimize/tv.py "dumpsys package sa.urtv.screensaver 2> /dev/null | grep versionName | sed -n 1p" 2> /dev/null | sed 's/.*=//' | tr -d '\r ') || vs=""
-  vh=$("$PY" -I optimize/tv.py "dumpsys package sa.urtv.home 2> /dev/null | grep versionName | sed -n 1p" 2> /dev/null | sed 's/.*=//' | tr -d '\r ') || vh=""
+  # the name (4.0) and, from versionCode, the build: «4.0 (build 151)» (the report must say which build a TV runs)
+  appver() {
+    local o n b
+    o=$("$PY" -I optimize/tv.py "dumpsys package $1 2> /dev/null | grep -e versionName -e versionCode= | sed -n 1,2p" 2> /dev/null | tr -d '\r') || o=""
+    n=$(sed -n 's/.*versionName=//p' <<< "$o" | sed -n 1p | tr -d ' ')
+    b=$(sed -n 's/.*versionCode=\([0-9][0-9]*\).*/\1/p' <<< "$o" | sed -n 1p)
+    [ -z "$n" ] || n="$n${b:+ (build $b)}"
+    printf '%s' "$n"
+  }
+  vs=$(appver sa.urtv.screensaver) || vs=""
+  vh=$(appver sa.urtv.home) || vh=""
   if [ -n "$vs$vh" ]; then
     line="Versions: screensaver ${vs:-none}, home ${vh:-none}"
     if grep -q '^Versions:' "$rep"; then

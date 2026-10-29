@@ -11,11 +11,11 @@ android {
         minSdk 21
         targetSdk 34
         // CI passes its run number so every build installs over the previous one: the versionCode, the same number as the home app and
-        // as the release. The name people read is the repository's VERSION file (the marketing version) and the build: versionName
-        // "4.0.123" (no spaces: the optimize scripts print and compare it as one word), BuildConfig.MARKETING "4.0"; the apps find
-        // their build in VERSION_CODE, never by taking versionName apart.
+        // as the release. The name people read is the repository's VERSION file («4.0», what Android's app info shows) and nothing else:
+        // versionName "4.0", BuildConfig.MARKETING "4.0"; the build is the versionCode, which the apps and the optimize scripts read
+        // (the screens say «4.0 (بناء 123)»), never by taking versionName apart.
         versionCode((System.getenv('GITHUB_RUN_NUMBER') ?: '1') as int)
-        versionName "${file('../../VERSION').text.trim()}.${System.getenv('GITHUB_RUN_NUMBER') ?: '0'}"
+        versionName file('../../VERSION').text.trim()
         buildConfigField "String", "MARKETING", "\"${file('../../VERSION').text.trim()}\""
         // the branch the page, fonts and photos are fetched from: CI passes the one it builds, a local build follows master
         buildConfigField "String", "BRANCH", "\"${System.getenv('URTV_BRANCH') ?: 'master'}\""

@@ -18,6 +18,15 @@ PY="${PY:-optimize/venv/bin/python}"
 RUN=optimize/run
 mkdir -p "$RUN"
 tv() { "$PY" -I optimize/tv.py "$@"; }
+# an app's version as the report says it: the name (4.0) and, from versionCode, the build: «4.0 (build 151)»
+appver() {
+  local o n b
+  o=$(tv "dumpsys package $1 2> /dev/null | grep -e versionName -e versionCode= | sed -n 1,2p" | tr -d '\r')
+  n=$(sed -n 's/.*versionName=//p' <<< "$o" | sed -n 1p | tr -d ' ')
+  b=$(sed -n 's/.*versionCode=\([0-9][0-9]*\).*/\1/p' <<< "$o" | sed -n 1p)
+  [ -z "$n" ] || n="$n${b:+ (build $b)}"
+  printf '%s' "$n"
+}
 
 # One run at a time: a second one would take the first for another TV and redo everything. The lock is a file with
 # the PID of the run; a PID that is gone means it died, and the lock is taken over.
@@ -135,7 +144,7 @@ report() {
   optimize/autostart.sh check 2> /dev/null || true   # TCL: «Auto-start (TCL): …» or a !! line
   [ ! -f "$RUN/home-skipped.txt" ] || cat "$RUN/home-skipped.txt"   # a TV that won't let its home be switched (Nokia Streaming Box 8000)
   echo "Screensaver: $(tv "settings get secure screensaver_components")"
-  echo "Versions: screensaver $(tv "dumpsys package sa.urtv.screensaver 2> /dev/null | grep versionName | sed -n 1p" | sed 's/.*=//'), home $(tv "dumpsys package sa.urtv.home 2> /dev/null | grep versionName | sed -n 1p" | sed 's/.*=//')"
+  echo "Versions: screensaver $(appver sa.urtv.screensaver), home $(appver sa.urtv.home)"
   echo "Extras: TV Bro $([ -n "$(tv "pm list packages com.phlox.tvwebbrowser")" ] && echo yes || echo no), SmartTube $([ -n "$(tv "pm list packages org.smarttube.stable")" ] && echo yes || echo no)"
   local picks
   picks=$(grep -cvE '^[[:space:]]*(#|$)' optimize/lists/mine.txt 2>/dev/null || true)
