@@ -1,27 +1,20 @@
-step: 11
+step: 12
 from: UrTV supervisor
-what: the adhan-time fix on apk-next 3.153 or newer (the TCL "app start" block must never move the adhan to Riyadh's times), the daytime adhan row left from step 10, and the two leftovers (the owner's exact narration text; the official icons). Follow tester/RULES.md. No owner needed except where it says.
+what: the LAST check before the 4.0 release, on the newest apk-next (build 3.154+ in version.txt, named «4.0» on screen): the update from the installed 3.153 to the build named 4.0 must work, the version shows as 4.0 everywhere, and the new «تلفزيونك» tile. Follow tester/RULES.md. No owner needed.
 
 Before anything:
-- Start lines as before (include `optimize/music.sh adhan` output: the next adhan line). Wait until apk-next version.txt is 3.153 or above; install with `APK_TAG=apk-next optimize/install.sh all`. Write down the version.
+- Start lines as before. Do NOT install the new build with install.sh: this step tests the TV's own update. `optimize/saver.sh updatechannel next`.
+- Wait until `curl -sL https://github.com/tshi-dev/UrTV/releases/download/apk-next/version.txt` is above 3.153 (it still says "3.<build>": that is right, it is machine-only).
 
 | # | Do | Right when |
 |---|---|---|
-| P1 | Set a DEMO city that is not Riyadh: `optimize/saver.sh city 'الكويت'` (write down the real one to put back; never name it in REPORT.md). Wait 1 min on the home. `optimize/music.sh adhan` → note the next adhan time (Kuwait's) | the next time is Kuwait's, not Riyadh's |
-| P2 | Simulate the TCL block: `adb shell am force-stop sa.urtv.screensaver`, then open YouTube (`adb shell monkey -p com.google.android.youtube.tv 1`), wait 2 min; `adb shell logcat -d \| grep -E 'TclAppBoot.*ConfigProvider\|UrTVAdhan' \| tail -10`; `optimize/music.sh adhan` again | the next time is STILL Kuwait's; if the block happened, one `UrTVAdhan: place read failed: the last good place is used` line |
-| P3 | `adb shell am broadcast -a android.intent.action.TIME_SET` (a clock-change reschedule) while YouTube is still in front; `optimize/music.sh adhan` | still Kuwait's time |
-| P4 | Press Home, wait 1 min; `optimize/music.sh adhan` | still Kuwait's time |
-| P5 | Put the REAL city back: `optimize/saver.sh city '<the real one>'`; wait 1 min; `optimize/music.sh adhan` | the next time follows the real city again |
-| R4 | DAYTIME ONLY, the owner's volume rule allows it: pair the PC's Chrome, `optimize/music.sh adhan now` with YouTube in front, press ▼ on the page, then «أوقف الأذان الآن»; then phone control off and the PC's pairing removed | the adhan plays; ▼ doesn't break it; the button stops it |
-| L1 | Push the owner's EXACT final narration text as tester/voice-owner/lines-final.txt (ask him in Arabic if you don't have it) | pushed |
-| Z | Restore everything from the start lines; `optimize/saver.sh updatechannel latest` | "restored: yes/no" |
+| U1 | On the TV (keys over adb are fine): settings → «الجوال والتحديث» → «تحديث تلفزيوني» → افحص | it finds the new version (the 3.153 apps must see it as newer) |
+| U2 | ثبّت; confirm Android's install screen(s) with `input keyevent` | both apps install |
+| U3 | `optimize/saver.sh show` first line; `adb shell dumpsys package sa.urtv.home \| grep -E 'versionName\|versionCode'` and the same for sa.urtv.screensaver | versionName=4.0 for both; versionCode = the new build; saver.sh shows «4.0 (build N)» |
+| U4 | Settings «الإصدار» / «تحديث تلفزيوني» screen, and «افحص» again | «4.0 (بناء N)», «محدّث»; no "3.1xx" anywhere a person reads |
+| T1 | The «تلفزيونك» tile: open the TV's own apps list (Android's, not ours: `adb shell am start -a android.intent.action.MAIN -c android.intent.category.LEANBACK_LAUNCHER` won't show it; use the stock launcher's Apps row or `adb shell cmd package query-activities -a android.intent.action.MAIN -c android.intent.category.LEANBACK_LAUNCHER \| grep -A2 sa.urtv.home`). Screenshot of the tile if visible | the tile «تلفزيونك» is listed, with our banner |
+| T2 | Start it: `adb shell am start -n sa.urtv.home/.HomeTile` (or OK on the tile); Home; Back | our home opens; Home and Back behave normally (our home is the default on this TV, so Back stays) |
+| T3 | Our own «كل التطبيقات» | our app is not listed in it |
+| Z | `optimize/saver.sh updatechannel latest`; restore everything from the start lines | "restored: yes/no" |
 
-REPORT.md: "step 11", the table with the next-adhan times written as "Kuwait time ok / Riyadh time WRONG" (no real city named), the UrTVAdhan/TclAppBoot lines, any `!!` lines. Push; tell the owner in Arabic that the test is finished and how many problems there were.
-
-## Official app icons for the video and posters (owner: "find online, all need to be good"; no owner needed)
-| # | Do | Right when |
-|---|---|---|
-| I1 | For each app, open its OFFICIAL Google Play page in the PC's browser (or fetch it) and take the store icon at the highest size: the page's `og:image` / the icon's `play-lh.googleusercontent.com/...` URL with `=s512` (or `=w512-h512`) at the end. Apps: **ثمانية** (search Play for "ثمانية" / "Thmanyah", publisher Thmanyah), **شاهد** (Shahid, publisher MBC; package net.mbc.shahid or its TV app), **YouTube** (com.google.android.youtube.tv, or com.google.android.youtube), **سين** (com.incube.seen.tv). If the TV app has a wide TV banner image on its page or in the Play "Android TV" listing, save that too | 4 icons (+ banners if any) |
-| I2 | Check each: square PNG/WebP at least 512×512, the real current logo (not a fan copy, not a screenshot crop with UI around it), no rounded-corner shadow baked in if a clean one exists. Convert WebP to PNG | clean files |
-| I3 | Save as tester/icons/thmanyah.png, shahid.png, youtube.png, seen.png (and *-banner.png if found) + tester/icons/SOURCE.md: for each, the Play page URL, the image URL, the size, and the date | done |
-| I4 | Push ONLY tester/icons/ to work/tester-report (reset to origin/work/tester-report first) | pushed |
+REPORT.md: "step 12", the table, the versionName/versionCode lines, any `!!`. Push; tell the owner in Arabic that the last check is done and how many problems there were.
