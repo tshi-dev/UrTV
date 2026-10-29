@@ -649,6 +649,30 @@ await T('switches reduced motion', async () => {
   await S.ctx.close();
 });
 
+// ---- the TV test of 159: «بدون» needed two presses. A TV answer that comes while a card's picker is open must not replace that select:
+// the choice made in the picker is the one the first press of «حفظ البطاقات» sends
+await T('cards: picker open during a refresh', async () => {
+  let shown = [];
+  const S = await boot({ state: NEW({ home_cards: [] }), cfg: { state: () => NEW({ home_cards: shown.slice() }) } });
+  const { p } = S;
+  await tab(S, 'settings');
+  await p.locator('#cards select').nth(0).selectOption('prayer');
+  await p.click('#cardsGo'); await until(() => posts(S, '/api/set').length === 1);
+  shown = ['prayer'];
+  const n = S.reqs.filter(r => r.path === '/api/state').length;
+  await until(() => S.reqs.filter(r => r.path === '/api/state').length > n + 1); await sleep(150);
+  const picker = await p.$('#cards select');   // the person opens the first card's picker…
+  await picker.focus();
+  await p.evaluate(() => document.getElementById('hSet').onclick());   // …and a full answer from the TV arrives meanwhile
+  await sleep(300);
+  await picker.selectOption('');   // «بدون» chosen in that picker
+  check('the select under the open picker is still the one on the page', await picker.evaluate(e => e.isConnected));
+  await p.click('#cardsGo'); await sleep(500);
+  const sets = posts(S, '/api/set').map(r => r.body);
+  check('«بدون» after «الصلاة»: the FIRST press sends exactly one POST with an empty list', sets.length === 2 && JSON.stringify(sets[1]) === '{"home_cards":[]}', JSON.stringify(sets));
+  await S.ctx.close();
+});
+
 // ---- the TV test of 159: Arabic counting, the TV's real screensaver delay, our accessibility service stopped after an update, the text field
 await T('counting and the delay', async () => {
   const S = await boot({ state: NEW({ next_adhan: { prayer: 'العصر', in_seconds: 8 * 3600 + 56 * 60 + 5 }, saver_idle: '0', saver_idle_s: '45', seconds_left: 120 }) });

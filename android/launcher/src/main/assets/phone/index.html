@@ -633,15 +633,18 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     return out;
   }
   function cards(s) {
-    if (cardsDirty) return;
-    var box = $('cards'); box.textContent = '';
-    var hc = s.home_cards || [];
-    for (var i = 0; i < 3; i++) {
-      var sel = document.createElement('select'); sel.setAttribute('data-card', i); sel.setAttribute('aria-label', 'بطاقة ' + (i + 1));
-      opt(sel, '', 'بدون', !hc[i]);
-      (s.panels || []).forEach(function (p) { opt(sel, p.id, p.name, hc[i] === p.id); });
-      sel.style.marginBottom = '8px'; sel.onchange = function () { cardsDirty = true; }; box.appendChild(sel);
+    var box = $('cards'), hc = s.home_cards || [], k = JSON.stringify(s.panels || []);
+    if (box.getAttribute('data-p') !== k) {   // built once per list of cards: a select is never replaced while its picker may be open
+      box.textContent = ''; box.setAttribute('data-p', k); cardsDirty = false;
+      for (var i = 0; i < 3; i++) {
+        var sel = document.createElement('select'); sel.setAttribute('data-card', i); sel.setAttribute('aria-label', 'بطاقة ' + (i + 1));
+        opt(sel, '', 'بدون', false);
+        (s.panels || []).forEach(function (p) { opt(sel, p.id, p.name, false); });
+        sel.style.marginBottom = '8px'; sel.onchange = function () { cardsDirty = true; }; box.appendChild(sel);
+      }
     }
+    if (cardsDirty || box.contains(document.activeElement)) return;
+    for (var j = 0; j < 3; j++) { var c = box.children[j]; c.value = hc[j] || ''; if (c.selectedIndex < 0) c.value = ''; }
   }
   function set(b) { return gated('/api/set', b).then(function (j) { say(j); refresh(); return j; }); }
 
