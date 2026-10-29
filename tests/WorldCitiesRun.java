@@ -12,7 +12,7 @@ public final class WorldCitiesRun {
                 matched++;
             }
         }
-        if (matched != 6614) throw new AssertionError("world name coverage");
+        if (matched != 6610) throw new AssertionError("world name coverage");
         System.out.println("MATCHED\t" + matched);
         for (Cities.Region r : Cities.REGIONS) for (String[] c : r.cities)
             System.out.println("CITY\t" + r.country + "\t" + c[0] + "\t" + c[1] + "\t" + c[2] + "\t"
@@ -22,6 +22,6 @@ public final class WorldCitiesRun {
                 + PrayerMethod.fragment("auto", c[0], c[2]) + "\t" + PrayerMethod.authority(c[0], c[2]));
         // Brussels is shared by several countries. An explicit country wins.
         if (PrayerMethod.methodId("FR", "Europe/Brussels") != 12 || PrayerMethod.methodId("IR", "Asia/Tehran") != 3
-                || !PrayerMethod.searchable("BQ") || PrayerMethod.searchable("PS")) throw new AssertionError("country choice");
+                || !PrayerMethod.searchable("BQ") || PrayerMethod.searchable("PS") || PrayerMethod.searchable("IL") || PrayerMethod.searchable("EH")) throw new AssertionError("country choice");
     }
 }

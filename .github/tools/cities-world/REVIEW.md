@@ -384,3 +384,7 @@ Checked includes the new capitals. Fixed counts changes to existing names only. 
 |---|---|---:|
 | LK / Sri Jayewardenepura Kotte | سري جاياواردنابورا كوتي | 1238992 |
 | PW / Ngerulmud | نغيرولمود | 8063361 |
+
+## After the review
+
+The owner's rule: the app never lists «إسرائيل» as a country (Palestine has its own checked list), and Western Sahara is not a separate country (its cities are Morocco's). `merge.py` drops IL and EH (one row each), and the test checks the data, the list, the page and CITIES.md.

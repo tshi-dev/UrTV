@@ -5,7 +5,7 @@ The reviewed list is integrated into the app. The following files describe the o
 - `build.py`: GeoNames (the geonamescache package) → `cities-world.json` (1,379 cities with an Arabic name from GeoNames). The order: Arab countries first, then by number of Muslims (approximate, for ordering only).
 - `check-result.json`: per-region model check: name fixes, added names, and the calculation method for each country.
 - `names-result.json`: Arabic names for the 1,958 cities that had none (a small model, with a light check).
-- `merge.py` → `cities-merged.json`: originally 3,305 cities; after review, 3,307 cities, each with `name_ar` + `name_en`, `lat`/`lon`/`tz`/`population`/`capital`/`order` and `method`.
+- `merge.py` → `cities-merged.json`: originally 3,305 cities; after review, 3,307 cities, then 3,305 (Israel and Western Sahara are never listed: the owner's rule), each with `name_ar` + `name_en`, `lat`/`lon`/`tz`/`population`/`capital`/`order` and `method`.
 - Many original small-city names were model transliterations. Their review and remaining uncertainties are recorded in `REVIEW.md`.
 
 ## Reviewed app data

@@ -12,6 +12,8 @@ from babel import Locale
 from geonamescache import GeonamesCache
 HERE = Path(__file__).resolve().parent
 
+EXCLUDED = {'IL', 'EH'}
+
 def read(name):
     return json.loads((HERE / name).read_text(encoding='utf-8'))
 
@@ -109,6 +111,9 @@ def build():
         if not arabic(row['name_ar']) or not arabic(row['country_ar']): raise ValueError(f'non-Arabic name: {key}')
     unused = overrides.keys() - used
     if unused: raise ValueError(f'unused overrides: {sorted(unused)}')
+    # never in the app (the owner's rule): no «إسرائيل» (Palestine has its own checked list), and Western Sahara's cities are Morocco's
+    result = [r for r in result if r['country'] not in EXCLUDED]
+    present = [cc for cc in present if cc not in EXCLUDED]
     for cc in present:
         if not any(r['country'] == cc and r['capital'] for r in result): raise ValueError(f'missing capital: {cc}')
     result.sort(key=lambda r: (r['order'], -r['population'], r['geonameid']))

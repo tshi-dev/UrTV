@@ -846,9 +846,6 @@ final class Cities {
         new Region("بيلاروس", "BY", 3, unpack("BY", new String[] {
             "مينسك|53.9002|27.5665|Europe/Minsk|Minsk\nغوميل|52.4345|30.9754|Europe/Minsk|Homyel'"
         })),
-        new Region("إسرائيل", "IL", 3, unpack("IL", new String[] {
-            "القدس|31.7690|35.2163|Asia/Jerusalem|Jerusalem"
-        })),
         new Region("النمسا", "AT", 3, unpack("AT", new String[] {
             "فيينا|48.2085|16.3721|Europe/Vienna|Vienna"
         })),
@@ -1058,9 +1055,6 @@ final class Cities {
         })),
         new Region("بولينيزيا الفرنسية", "PF", 12, unpack("PF", new String[] {
             "بابيتي|-17.5347|-149.5684|Pacific/Tahiti|Papeete"
-        })),
-        new Region("الصحراء الغربية", "EH", 21, unpack("EH", new String[] {
-            "العيون|27.1418|-13.1880|Africa/El_Aaiun|Laayoune"
         })),
         new Region("ساو تومي وبرينسيبي", "ST", 3, unpack("ST", new String[] {
             "ساو تومي|0.3376|6.7299|Africa/Sao_Tome|São Tomé"

@@ -44366,20 +44366,6 @@
 "method": "MWL"
 },
 {
-"country": "IL",
-"country_ar": "إسرائيل",
-"name_ar": "القدس",
-"name_en": "Jerusalem",
-"lat": 31.769,
-"lon": 35.2163,
-"tz": "Asia/Jerusalem",
-"population": 971800,
-"capital": true,
-"geonameid": 281184,
-"order": 101,
-"method": "MWL"
-},
-{
 "country": "AT",
 "country_ar": "النمسا",
 "name_ar": "فيينا",
@@ -45470,20 +45456,6 @@
 "geonameid": 4033936,
 "order": 171,
 "method": "FRANCE_UOIF"
-},
-{
-"country": "EH",
-"country_ar": "الصحراء الغربية",
-"name_ar": "العيون",
-"name_en": "Laayoune",
-"lat": 27.1418,
-"lon": -13.188,
-"tz": "Africa/El_Aaiun",
-"population": 196331,
-"capital": true,
-"geonameid": 2462881,
-"order": 172,
-"method": "MOROCCO"
 },
 {
 "country": "ST",

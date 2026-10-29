@@ -31,7 +31,7 @@ CASES = [
     ("London", ["لندن"]), ("Moscow", ["موسكو"]), ("Jakarta", ["جاكرتا"]),
     ("São Paulo", ["ساو باولو"]), ("Sao Paulo", ["ساو باولو"]),
     ("PK|Karachi", ["كراتشي"]), ("GB|London", ["لندن"]),
-    ("IL|Jerusalem", ["القدس"]), ("PS|القدس", ["القدس"]),
+    ("IL|Jerusalem", []), ("PS|القدس", ["القدس"]),
     ("ZZ|London", []),
     ("", []), ("ر", []), ("zzz", []), ("مدينة", ["المدينة"]),         # None: only that it finds several
 ]
@@ -67,7 +67,7 @@ with tempfile.TemporaryDirectory() as tmp:
         for q, want in [("الرياض", "Asia/Riyadh"), ("مكة", "Asia/Riyadh"), ("الدوحة", "Asia/Qatar"), ("المنامة", "Asia/Bahrain"), ("مدينة الكويت", "Asia/Kuwait"),
                         ("الكويت", "Asia/Kuwait"), ("دبي", "Asia/Dubai"), ("مسقط", "Asia/Muscat"), ("القاهرة", "Africa/Cairo"), ("عمان", "Asia/Amman"), ("دمشق", "Asia/Damascus"), ("بيروت", "Asia/Beirut"),
                         ("غزة", "Asia/Gaza"), ("القدس", "Asia/Hebron"), ("الرباط", "Africa/Casablanca"), ("وهران", "Africa/Algiers"), ("تونس", "Africa/Tunis"),
-                        ("Istanbul", "Europe/Istanbul"), ("London", "Europe/London"), ("Moscow", "Europe/Moscow"), ("Jakarta", "Asia/Jakarta"), ("IL|Jerusalem", "Asia/Jerusalem"), ("PS|القدس", "Asia/Hebron"), ("zzz", "-"), ("رأس", "-")]:
+                        ("Istanbul", "Europe/Istanbul"), ("London", "Europe/London"), ("Moscow", "Europe/Moscow"), ("Jakarta", "Asia/Jakarta"), ("PS|القدس", "Asia/Hebron"), ("zzz", "-"), ("رأس", "-")]:
             check(f"zone of {q!r} is {want}", zones[queries.index(q)] == want if q in queries else False, zones[queries.index(q)] if q in queries else "not queried")
         for (q, want), hit in zip(CASES, got):
             ok = len(hit) > 1 if want is None else hit == want

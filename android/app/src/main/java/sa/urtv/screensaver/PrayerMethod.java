@@ -11,7 +11,7 @@ final class PrayerMethod {
     static final String AUTO = "auto", JAFARI = "jafari", GULF = "gulf";
     /**
      * The app's listed countries offered by the search. Search results from any valid country code are accepted.
-     * Palestine ("PS") is left out on purpose: GeoNames may put a place of East Jerusalem or Bethlehem in Asia/Jerusalem, Israel's zone, which
+     * Palestine ("PS") is left out on purpose: GeoNames may put a place of East Jerusalem or Bethlehem in Asia/Jerusalem, which
      * would silently get Umm al-Qura; the cities of the list carry Asia/Hebron or Asia/Gaza and do get the right one.
      */
     static final String[] SEARCH_COUNTRIES = searchCountries();
@@ -49,7 +49,8 @@ final class PrayerMethod {
     static boolean searchable(String countryCode) {
         // All Open-Meteo countries. PS retains its checked Hebron/Gaza list:
         // the service may misassign Palestinian places to Asia/Jerusalem.
-        return countryCode != null && countryCode.matches("[A-Za-z]{2}") && !"PS".equalsIgnoreCase(countryCode);
+        return countryCode != null && countryCode.matches("[A-Za-z]{2}") && !"PS".equalsIgnoreCase(countryCode)
+            && !"IL".equalsIgnoreCase(countryCode) && !"EH".equalsIgnoreCase(countryCode);   // never offered: no «إسرائيل», and Western Sahara is Morocco's
     }
 
     /** The country's calculation as the settings row names it, by the city's zone. */

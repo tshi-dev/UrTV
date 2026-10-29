@@ -21,7 +21,7 @@ public final class PrayerMethodRun {
                 PrayerMethod.searchable("SA") && PrayerMethod.searchable("bh") && PrayerMethod.searchable("KW") && PrayerMethod.searchable("QA")
                 && PrayerMethod.searchable("AE") && PrayerMethod.searchable("OM") && PrayerMethod.searchable("EG") && PrayerMethod.searchable("jo") && PrayerMethod.searchable("SY")
                 && PrayerMethod.searchable("LB") && PrayerMethod.searchable("MA") && PrayerMethod.searchable("DZ") && PrayerMethod.searchable("TN") && !PrayerMethod.searchable("PS")
-                && PrayerMethod.searchable("IL") && PrayerMethod.searchable("LY") && PrayerMethod.searchable("US") && PrayerMethod.searchable("NO") && !PrayerMethod.searchable("") && !PrayerMethod.searchable(null), "");
+                && !PrayerMethod.searchable("IL") && !PrayerMethod.searchable("il") && !PrayerMethod.searchable("EH") && PrayerMethod.searchable("LY") && PrayerMethod.searchable("US") && PrayerMethod.searchable("NO") && !PrayerMethod.searchable("") && !PrayerMethod.searchable(null), "");
         check("label: auto names the country's calculation by the zone; the Ja'fari names itself",
                 PrayerMethod.label("auto", "Asia/Riyadh").equals("تلقائي · أم القرى") && PrayerMethod.label("auto", "Asia/Kuwait").equals("تلقائي · الكويت")
                 && PrayerMethod.label("auto", "Asia/Qatar").equals("تلقائي · قطر") && PrayerMethod.label("auto", "Asia/Dubai").equals("تلقائي · الإمارات")
