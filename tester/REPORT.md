@@ -119,3 +119,21 @@ Start: `version: 4.0 (build 155) (newest: 4.0 (build 142))`, updatechannel lates
 | Z | restored: yes (+ note) | — | updatechannel latest, home_panel none, glass + dark; service on; sound muted. saver.sh first line on latest is now just «version: 4.0 (build 156)»: the newest on latest is NOT shown at all (neither «3.142» nor «4.0 (build 142)»). If it should say «3.142», that's a small one |
 
 Problems: 0 (the step 12 text problem is fixed). Notes: YouTube in front right after the self-update; the newest on latest not shown in saver.sh.
+
+## phone page, new look (the first step-14 text, done before step 14 was replaced) — partial, build 159
+Update from the TV 157 → 159 OK (both versionName=4.0, versionCode=159). Note: «تحديث جديد 4.0» shown next to «الإصدار المثبّت 4.0» (same name for old and new).
+Shots kept locally (text only). Chrome would not go narrower than 500 px without DevTools, so everything was seen at 500 wide, not 390/360.
+
+| # | OK/problem | note |
+|---|---|---|
+| A11y after self-update | PROBLEM (big) | after the TV updated itself to 159, `accessibility_enabled=0` and `Bound services:{}`: no accessibility service ran (ours and the owner's Key Mapper), so the page's keys and typing did nothing (page got `/api/key` 200, nothing on the TV). The owner re-ran `optimize/dock.sh type-setup` → `accessibility_enabled=1` but still nothing bound; only after `adb reboot` were ours bound («تلفزيونك: إطفاء الشاشة», «تلفزيونك: التحكم والكتابة من الجوال»). Key Mapper still NOT bound after the reboot. SleepService is now in the enabled list (it was not before) |
+| Sound | PROBLEM | after the self-update (and again after the reboot) the TV was no longer muted (`Muted: false`); a recitation started from the page played aloud ~8 s before the tester muted it |
+| Pairing vs screensaver | PROBLEM (back) | while waiting for the code the screensaver came on and phone control switched itself OFF (page address dead, «تشغيل» shown again): the step-7 problem fixed in 3.148 is back |
+| L1 | OK | dark and light: header «التلفزيون · متصل», gold round «اختيار», rounded رجوع/الرئيسية/تشغيل, volume row, field with gold send, «استبدال/إضافة», «بحث». The field is half under the tab bar until you scroll; it scrolls fine |
+| L2 | partly | a swipe left on the pad moved the focus left on our home (left is left), but ONE swipe jumped 5 tiles. Tap, hold, Back, Home not done before the step changed |
+| L3 | not done | — |
+| L4 | OK + notes | play, pause, resume, next, stop all act on the TV. The recitation sleep timer is a dropdown, not chips. Next-adhan card says «بعد 8 ساعة و 56 دقيقة» (should be «ساعات»). «تبدأ تلقائيًا بعد» shows «1 دقيقة» while the TV's screensaver is 45 s (45 s is not in the list) |
+| L5 | PROBLEM (back) | card «الصلاة القادمة» saved on the first press (`home_cards sent=1 saved=1`); back to «بدون»: the first press sent NO `/api/set` (home_panel stayed nextprayer), the second press saved (`sent=0 saved=0`). The city search shows a result (not chosen) |
+| L6 | could not | 360 not reachable; at 500: `scrollWidth 485 < innerWidth 500`, nothing outside the screen |
+
+Restored: real city exactly, home_panel none; phone control off, the PC's pairing gone; sound muted.
