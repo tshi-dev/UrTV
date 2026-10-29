@@ -183,3 +183,15 @@ What breaks it, seen TWICE: right after «تحديث تلفزيوني» installs
 - Now: ours bound («تلفزيونك: إطفاء الشاشة», «تلفزيونك: التحكم والكتابة من الجوال»); Key Mapper shows «On» in Android's Accessibility screen (listed TWICE there) but is NOT bound; the owner is toggling it off/on.
 - Same moment, the TV un-mutes (Muted: false) after each self-update.
 Expected: a self-update must leave accessibility (ours and the owner's other services) and the mute exactly as they were. Every user on auto-update loses the phone remote/typing (and their own a11y apps) after each update until a reboot.
+
+## follow-up: Key Mapper and the TCL app-start block
+The owner toggled Key Mapper in Android's Accessibility (Enable off → on, «Use Key Mapper?» → OK) with his phone's IR remote. It is back in `enabled_accessibility_services` but still NOT bound. Cause in logcat: `W ActivityManager: [TclAppBoot]:forbid bind service ComponentInfo{io.github.sds100.keymapper/...MyAccessibilityService}` (callerPkgName='android'). TCL's auto-start manager blocks the system from binding a third-party accessibility service; ours bind (allowed), Key Mapper does not. Opening Key Mapper by hand starts its process but the service still is not bound. Key Mapper itself has NO key maps («Create a key map!») and shows «Your phone killed Key Mapper…» and «Disable battery optimization»; the owner chose to leave it as it is.
+So the earlier "Key Mapper not bound after reboot" is TCL's block, not our update. Our a11y loss after each self-update (`accessibility_enabled=0`) is still ours to fix (see PRIORITY above).
+
+## state now (end of day)
+- Build 160 («4.0») on both apps, updatechannel latest.
+- Accessibility: ours bound («تلفزيونك: إطفاء الشاشة», «تلفزيونك: التحكم والكتابة من الجوال»): phone remote and typing work again. Key Mapper enabled but blocked by TCL (owner: leave it).
+- Home `sa.urtv.home/.MainActivity`; disabled 22 (start list); screensaver `.ScreenDream`, 45 s; real city; home_panel none; glass + dark; sound muted; phone control off; no PC pairing.
+- Open: step 14 S1–S7 blocked by the setup app's invalid adb key (`Invalid base64 key`, no prompt).
+
+Problems found today: self-update turns a11y off + un-mutes (priority); setup app adb key invalid (blocker); «بدون» needs two presses again; pairing stops when the screensaver comes; small texts («8 ساعة», «1 دقيقة» for 45 s); one long swipe jumps 5 tiles.
