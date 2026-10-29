@@ -649,6 +649,17 @@ await T('switches reduced motion', async () => {
   await S.ctx.close();
 });
 
+await T('a11y stuck', async () => {
+  const S = await boot({ state: NEW({ foreground: 'other', a11y_stuck: true, keys_everywhere: false, dpad_everywhere: false, typing_service: false }), cfg: { keyAnswer: { ok: false, error: 'a11y_stuck' } } });
+  const { p } = S;
+  check('the note says control of other apps is stopped, not «turn it on»', (await p.textContent('#foreNote')).startsWith('التحكم في التطبيقات الثانية متوقف: ') && !(await p.isVisible('#svcNote')), await p.textContent('#foreNote'));
+  await p.click('[data-k=up]');
+  check('a key answered a11y_stuck: the toast says so', await until(async () => (await p.textContent('#msg')).startsWith('التحكم في التطبيقات الثانية متوقف: ')), await p.textContent('#msg'));
+  S.cfg.textAnswer = { ok: false, error: 'a11y_stuck' };
+  await p.fill('#txt', 'abc'); await p.click('#txtGo');
+  check('a text answered a11y_stuck: the toast says so', await until(async () => (await p.textContent('#msg')).startsWith('التحكم في التطبيقات الثانية متوقف: ')), await p.textContent('#msg'));
+  await S.ctx.close();
+});
 await T('size', async () => {
   check('the page is under 64 KB', Buffer.byteLength(HTML) < 64 * 1024, Buffer.byteLength(HTML));
   check('no inline handler attributes, one nonce\'d script, no external address', !/\son[a-z]+\s*=/.test(HTML.replace(/<script[\s\S]*<\/script>/, '')) && (HTML.match(/<script/g) || []).length === 1 && HTML.includes('<script nonce="__NONCE__">') && !/https?:\/\/(?!github)/.test(HTML));

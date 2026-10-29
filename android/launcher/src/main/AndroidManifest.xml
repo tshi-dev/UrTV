@@ -388,6 +388,17 @@
             </intent-filter>
         </receiver>
 
+        <!-- our accessibility services after an update of this app or a boot: listed but not bound, or the switch off, is healed (A11yHeal); DUMP = only the system sends these -->
+        <receiver
+            android:name=".A11yHeal"
+            android:exported="true"
+            android:permission="android.permission.DUMP">
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
         <!-- the sleep timer does not survive a restart: the saved end is forgotten at boot -->
         <receiver
             android:name=".SleepBootReceiver"

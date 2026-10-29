@@ -89,6 +89,7 @@ final class PhoneActions implements Actions {
             String r = PhoneApps.pressKey(key);
             if (RemoteNav.DONE.equals(r)) return Result.ok("done");
             if (RemoteNav.LIMITED.equals(r)) return Result.fail("other_app_limited");   // the service is on but the app has nothing to move or click, or this Android needs the other service
+            if (!RemoteNav.FAILED.equals(r) && sa.urtv.home.A11yHeal.stuck(app)) return Result.fail("a11y_stuck");   // on in the TV's list but not running (after an update): say so, not «turn it on»
             return Result.fail(RemoteNav.FAILED.equals(r) ? "failed" : "other_app");
         }
         if (a instanceof PrivateScreen) return Result.fail("private_screen");
@@ -114,7 +115,8 @@ final class PhoneActions implements Actions {
             switch (r) {
                 case "typed_other": case "typed_other_nosearch": case "searched": return Result.ok(r);
                 case "no_field": otherNoField[0] = true; break;   // the app has no text field on screen: the text goes to the TV's clipboard, as it always did
-                default: return Result.fail(r);   // service_off, locked, password_field, failed
+                case "service_off": return Result.fail(sa.urtv.home.A11yHeal.stuck(app) ? "a11y_stuck" : r);
+                default: return Result.fail(r);   // locked, password_field, failed
             }
         }
         FutureTask<String> job = new FutureTask<>(new java.util.concurrent.Callable<String>() {
@@ -191,6 +193,7 @@ final class PhoneActions implements Actions {
         m.put("keys_everywhere", PhoneApps.keysEverywhere());
         m.put("dpad_everywhere", PhoneApps.dpadEverywhere());
         m.put("typing_service", PhoneApps.typingEnabled());
+        m.put("a11y_stuck", sa.urtv.home.A11yHeal.stuck(app));   // listed as on, but Android runs none of it: the page says control of other apps is stopped
         m.put("family", PhoneApps.family(app));
         m.put("foreground", Foreground.current() != null ? "own" : "other");
         m.put("update", PhoneUpdater.status());

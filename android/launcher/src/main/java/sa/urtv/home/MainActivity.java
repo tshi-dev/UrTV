@@ -209,6 +209,7 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
         resumed = true;
+        A11yHeal.onStart(this);   // once per process: our accessibility service listed but not bound after an update (see A11yHeal)
         Parental.SESSION.clear();   // the home screen is in front again: an app opened with the PIN asks again next time
         if (control != null) control.forgetLast();   // «مركز التحكم» opens on its first tile again
         bellForce = true;   // [updates bell]

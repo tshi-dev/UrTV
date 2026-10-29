@@ -19,7 +19,7 @@
 :root[data-look="clean"] { --bg:#121314; --card:rgba(32,33,36,.9); --line:rgba(255,255,255,.08); --gold:#f0a64a; --gt:#f0a64a; --text:#f2f0ec; --dim:#b9b6b0; --red:#ffb4a0; --ink:#1a1206; --tile:rgba(32,33,36,.9); --bar:#1e1f22; --veil:#121314; --va:var(--vd,.95); }
 :root[data-look="clean"][data-theme="light"] { --bg:#ecece8; --card:rgba(255,255,255,.98); --line:rgba(20,24,30,.08); --gold:#0b5e51; --gt:#0b5e51; --text:#1b1d21; --dim:#50555e; --red:#8e2a10; --ink:#ffffff; --tile:rgba(255,255,255,.98); --bar:#ffffff; --veil:#f4f4f1; --va:var(--vl,.95); }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-/* the TV's Arabic font, from the TV itself (PhoneApi.FONTS); without it (a build without the private fonts) the phone's own, as before */
+/* the TV's Arabic font, served by the TV (PhoneApi.FONTS); without it the phone's own */
 @font-face{font-family:'Thmanyah';font-weight:400;font-display:swap;src:url(/fonts/Thmanyah-Regular.woff2) format("woff2")}
 @font-face{font-family:'Thmanyah';font-weight:500 900;font-display:swap;src:url(/fonts/Thmanyah-Medium.woff2) format("woff2")}
 html,body{margin:0;color:var(--text);font:16px/1.45 'Thmanyah',system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif}
@@ -44,7 +44,7 @@ button.red{color:var(--red);border-color:var(--red);background:none}
 .wide{width:100%;margin:8px 0}
 input,select{width:100%;min-height:52px}
 select{appearance:none;-webkit-appearance:none;padding-left:34px;background:var(--tile) linear-gradient(135deg,transparent 50%,var(--dim) 50%) 14px 50%/7px 7px no-repeat}
-/* the on/off switch of the mockups: a 52x32 pill, a 26 px white knob; on = green, the knob at the end (the left, RTL); the box itself stays 48 px tall */
+/* the mockups' switch: a 52x32 pill, a 26 px white knob; on = green, knob on the left (RTL); the box stays 48 px */
 input[type=checkbox]{appearance:none;-webkit-appearance:none;width:56px;height:48px;min-height:48px;flex:0 0 56px;padding:0;margin:0;border:0;border-radius:18px;background:none;position:relative;cursor:pointer}
 input[type=checkbox]::before{content:"";position:absolute;top:8px;inset-inline-start:2px;width:52px;height:32px;border-radius:16px;background:var(--off);box-shadow:inset 0 0 0 1px var(--line);transition:background-color .15s}
 input[type=checkbox]::after{content:"";position:absolute;top:11px;inset-inline-start:5px;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3),0 1px 1px rgba(0,0,0,.12);transition:inset-inline-start .15s}
@@ -311,7 +311,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
   function el(t, c, x) { var e = document.createElement(t); if (c) e.className = c; if (x !== undefined) e.textContent = x; return e; }
   try { sess = sessionStorage.getItem('urtv'); } catch (e) { sess = null; }
 
-  // ---- theme: dark on every screen by default (whatever the phone is set to); the ◐ button switches ALL screens together and the phone remembers it
+  // ---- theme: dark by default; the button switches every screen, the phone remembers it
   function theme(t) {
     if (t) document.documentElement.setAttribute('data-theme', t);
     $('theme').textContent = document.documentElement.getAttribute('data-theme') === 'light' ? 'الوضع الداكن' : 'الوضع الفاتح';
@@ -323,7 +323,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     try { localStorage.setItem('urtvTheme', n); } catch (e) { }
   };
 
-  // ---- the glass look: the home's photo, small and blurred once on the TV, under the veil it needs (the TV works it out per photo)
+  // ---- the glass look: the home's photo, blurred once on the TV, under its veil
   var glassStamp = -1;
   function glass(s) {
     var st = document.documentElement.style;
@@ -350,7 +350,9 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     }).catch(function () { glassStamp = -1; });
   }
 
+  var STK = 'التحكم في التطبيقات الثانية متوقف: خدمة «تلفزيونك» مفعّلة لكن التلفزيون أوقفها بعد التحديث. أعد تشغيل التلفزيون مرة.';
   var MSG = {
+    a11y_stuck: STK,
     other_app: 'تطبيق آخر أمام الشاشة: فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال» في إعدادات إمكانية الوصول بالتلفزيون لتصله الأزرار. الصوت وتشغيل/إيقاف تعمل دائمًا.',
     other_app_limited: 'ما قدرنا نحرك التركيز أو نضغط في هذا التطبيق الآن. جرّب «رجوع» أو افتح ما تريد بريموت التلفزيون.',
     private_screen: 'شاشة السماح لا تُحرَّك من الجوال، استعمل ريموت التلفزيون.',
@@ -482,8 +484,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
   };
 
   // ---- the app: four tabs
-  // the tabs' icons: our own line drawings in the page (#ico, under the bar), one style in the text's colour (no emoji: a phone draws
-  // those in its own colours), so the dark and the light look and the gold «on» tab all take them; a copy of one for each tab
+  // the icons: our line drawings (#ico) in the text's colour, no emoji; a copy of one each
   function icon(name) {
     var s = $('ico').cloneNode(false);
     s.removeAttribute('id'); s.removeAttribute('class');
@@ -549,10 +550,9 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     var secs = typeof s.seconds_left === 'number' ? s.seconds_left : 0;
     $('left').textContent = 'بقي ' + Math.max(1, Math.round(secs / 60)) + ' دقيقة';
     var fn = $('foreNote'), fore = s.foreground === 'other';
-    fn.classList.toggle('hidden', !fore); fn.classList.toggle('warn', fore && !s.keys_everywhere);
-    $('svcNote').classList.toggle('hidden', !(svcOff || (fore && s.typing_service === false)));
-    // a service of ours on: Back and Home work in every app; the arrows and OK too from Android 13 (dpad_everywhere), before it with the typing/remote service
-    fn.textContent = s.dpad_everywhere ? 'الأسهم والاختيار والرجوع والرئيسية تعمل في التطبيق الذي أمامك'
+    fn.classList.toggle('hidden', !fore); fn.classList.toggle('warn', fore && (!s.keys_everywhere || !!s.a11y_stuck));
+    $('svcNote').classList.toggle('hidden', !!s.a11y_stuck || !(svcOff || (fore && s.typing_service === false)));
+    fn.textContent = s.a11y_stuck ? STK : s.dpad_everywhere ? 'الأسهم والاختيار والرجوع والرئيسية تعمل في التطبيق الذي أمامك'
       : s.keys_everywhere ? 'الرجوع والرئيسية تعمل في كل التطبيقات؛ الأسهم والاختيار تحتاج أندرويد ١٣ أو خدمة «تلفزيونك: التحكم والكتابة من الجوال»'
       : 'يوجد تطبيق آخر أمام الشاشة. فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال» (الإعدادات ← إمكانية الوصول) لتعمل الأسهم والاختيار والرجوع والرئيسية فيه. الصوت وتشغيل/إيقاف تعمل دائمًا.';
     var lab = live ? 'الأذان الآن' + (s.adhan_prayer ? ': ' + s.adhan_prayer : '') : playLabel(s);
@@ -621,8 +621,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
       if (f && typeof f.pin_set !== 'undefined') famDraw(f);
     });
   }
-  // The cards the person is choosing are not redrawn from the TV's answer while they are being changed (an answer that was on its way when
-  // the choice was made would put the old one back, and the save would send that): drawn again once they are saved, or on the next arrival.
+  // The cards being chosen are not redrawn from a TV answer still on its way (it would put the old one back and the save would send that).
   var cardsDirty = false;
   function chosenCards() {
     var out = [], sels = $('cards').children;
@@ -657,7 +656,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
   };
   $('cardsGo').onclick = function () {
     var out = chosenCards();
-    // saved: the TV's cards are drawn again, unless the person has changed them since the press (then their choice stays)
+    // saved: the TV's cards are drawn again, unless changed since the press
     set({ home_cards: out }).then(function () { if (chosenCards().join() === out.join()) cardsDirty = false; refresh(); });
   };
   $('aOn').onchange = function () { set({ adhan_on: this.checked }); };
@@ -708,7 +707,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 
   // ---- the apps
   function iconUrl(pkg) { return '/api/icon/' + encodeURIComponent(pkg); }
-  // An image element cannot send the session header, so each icon is fetched like any call, read as a blob and shown as a data: address.
+  // an image element cannot send the session header: each icon is fetched, read as a blob, shown as data:
   var icons = {}, iconQ = [], iconRun = 0, iconWait = {};
   function iconGet(pkg, done) {
     if (pkg in icons) { done(icons[pkg]); return; }
