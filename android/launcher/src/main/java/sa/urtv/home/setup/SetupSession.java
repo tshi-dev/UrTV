@@ -33,9 +33,9 @@ final class SetupSession implements Closeable {
 
     /**
      * The ADB key is a standing credential once «السماح دائماً» was accepted: it is deleted when nothing is pending (no home switch waiting for its
-     * safety switch). The next run makes a new key and the TV asks again.
+     * safety switch, no full run waiting for the TV to come back from a restart). The next run makes a new key and the TV asks again.
      */
     static void deleteKeyIfFinished(Context c) {
-        if (!SetupRecovery.pending(c)) AdbKeys.delete(c);
+        if (!SetupRecovery.pending(c) && !SetupRunner.awaitingRestart(new FileStore(c))) AdbKeys.delete(c);
     }
 }

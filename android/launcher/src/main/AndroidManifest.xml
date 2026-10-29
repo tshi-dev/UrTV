@@ -146,6 +146,8 @@
             </intent-filter>
         </activity>
 
+        <!-- a setup run holds the process while it goes (it outlives the setup screen); not exported, it stops itself at the end -->
+        <service android:name=".setup.SetupService" android:exported="false" />
         <!-- the in-app safety switch of the home switch: puts the stock home back after 5 minutes unless it was confirmed (ours only) -->
         <receiver android:name=".setup.SetupRevertReceiver" android:exported="false" />
         <!-- the TV started again in the middle of a home switch: the safety switch comes back and the stock home is put back (only the system sends this) -->

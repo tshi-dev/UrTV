@@ -120,11 +120,17 @@ check("the ADB client says the truth about port 5555 (adbd listens on the LAN; a
 check("the safety switch survives a restart: a BOOT_COMPLETED receiver (system only) re-arms it from the saved deadline and tries at once; the setup screen does the same at its start",
       ".setup.SetupBootReceiver" in manifest and "BOOT_COMPLETED" in manifest[manifest.index(".setup.SetupBootReceiver"):][:500] and "SetupRecovery.rearmFromDisk" in act_src and "SetupRecovery.attempt" in act_src, "")
 check("the buttons ask for the family PIN when one is set, and ignore touches through another window", "SetupGate.guard" in act_src and act_src.count("setFilterTouchesWhenObscured(true)") >= 2, "")
-check("the ADB key is deleted when the job is finished (setup done, or undone) and nothing is pending", "deleteKeyIfFinished" in act_src and "AdbKeys.delete" in (SETUP / "SetupSession.java").read_text(encoding="utf-8"), "")
+runner_src = (SETUP / "SetupRunner.java").read_text(encoding="utf-8")
+host_src = (SETUP / "SetupHost.java").read_text(encoding="utf-8")
+check("the ADB key is deleted when the job is finished (setup done, or undone) and nothing is pending (the runner's host, after every end)",
+      "SetupSession.deleteKeyIfFinished(app)" in host_src and "AdbKeys.delete" in (SETUP / "SetupSession.java").read_text(encoding="utf-8"), "")
 main_src = (ROOT / "android/launcher/src/main/java/sa/urtv/home/MainActivity.java").read_text(encoding="utf-8")
 hook_src = (SETUP / "SetupHook.java").read_text(encoding="utf-8")
 check("the home screen re-arms a cut-off switch at its start with ONE call that never throws (a Force-stop, then Home)", main_src.count("SetupHook.atHomeStart(this)") == 1 and "catch (RuntimeException ignored)" in hook_src and "rearmFromDisk" in hook_src and "SetupRecovery.attempt" in hook_src, "")
-check("the key is deleted after EVERY end of a run (it refuses by itself while a switch is pending)", "deleteKeyIfFinished(SetupActivity.this)" in act_src and "if (finished)" not in act_src, "")
+fin = runner_src[runner_src.index("private void run(Kind k"):runner_src.index("private End runSteps")]
+check("the key is deleted after EVERY end of a run (it refuses by itself while a switch is pending): host.finished() after the try, outside every catch",
+      "host.finished()" in fin and fin.index("host.finished()") > fin.rindex("catch (RuntimeException ex)") and "if (finished)" not in fin
+      and "SetupRunner.awaitingRestart" in (SETUP / "SetupSession.java").read_text(encoding="utf-8"), "")
 check("after the automatic attempts run out the person is told at every start (the home and the setup screen)", "GAVE_UP_NOTICE" in hook_src and "GAVE_UP_NOTICE" in act_src, "")
 check("the setup screen is not in the home screen's own app grid (Dock.catalogue skips this package)", "p.equals(c.getPackageName())" in (ROOT / "android/launcher/src/main/java/sa/urtv/home/Dock.java").read_text(encoding="utf-8"), "")
 check("the engine runs only fixed commands: none is built from text the TV sent, except package names that matched [A-Za-z0-9_.]+",
