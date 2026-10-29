@@ -27,6 +27,15 @@ public class SetupActivity extends Activity {
     private sa.urtv.home.GlassStyle.Look look;
 
     private TextView log, status, start, undo;
+
+    /** «لو صار شي»: the steps of docs/IF-BROKEN.md, very short, on the done screen */
+    static final String IF_BROKEN = "لو صار شي:\n"
+        + "• الشاشة سوداء أو الرئيسية ما تفتح: انتظر 5 دقائق (مفتاح الأمان يرجّع الشاشة الأصلية وحده). وإذا صارت الرئيسية تتوقف كل مرة، فزر الرئيسية يفتح «الوضع الآمن».\n"
+        + "• الريموت ما يستجيب: افصل التلفزيون من الكهرباء 30 ثانية ثم شغّله.\n"
+        + "• من «الوضع الآمن» أو من هنا: «رجّع واجهة التلفزيون الأصلية» / «تراجع» (يحتاج «تصحيح USB»).\n"
+        + "• من كمبيوتر: optimize/restore-home.sh\n"
+        + "• آخر حل: إعادة ضبط المصنع (تمسح كل التطبيقات والحسابات والإعدادات).\n"
+        + "• للإبلاغ: «أرسل تقرير المشكلة» في «الوضع الآمن»، أو github.com/tshi-dev/UrTV/issues";
     private volatile boolean running;
 
     @Override
@@ -101,35 +110,39 @@ public class SetupActivity extends Activity {
             @Override public void run() {
                 String end;
                 int color = GOLD;
-                try (SetupSession s = SetupSession.open(SetupActivity.this, 180_000, new AdbClient.Approval() {
+                if (undoIt) {
+                    // the one undo, shared with «الوضع الآمن» and the phone page (RestoreHome)
+                    RestoreHome.Outcome o = RestoreHome.run(SetupActivity.this, new RestoreHome.Lines() {
+                        @Override public void line(String t) { SetupActivity.this.line(t); }
+                        @Override public void waiting() { SetupActivity.this.line("التلفزيون يسأل «السماح بتصحيح USB؟»: اختر «السماح دائماً» بالريموت."); }
+                    });
+                    end = o.message;
+                    if (!o.ok && !o.message.startsWith("انتهى الرجوع")) color = RED;   // it did not run (a finished undo with notes stays gold, as before)
+                } else try (SetupSession s = SetupSession.open(SetupActivity.this, 180_000, new AdbClient.Approval() {
                     @Override public void waiting() { line("التلفزيون يسأل «السماح بتصحيح USB؟»: اختر «السماح دائماً» بالريموت."); }
                 }, new SetupEngine.Out() { @Override public void line(String t) { SetupActivity.this.line(t); } })) {
                     SetupEngine e = s.engine;
-                    if (undoIt) {
-                        boolean ok = e.undo().status == SetupEngine.Status.DONE;
-                        end = ok ? "تم الرجوع. أطفئ «تصحيح USB» من خيارات المطوّر، واختر «إلغاء تراخيص تصحيح USB» لتنظيف التلفزيون." : "انتهى الرجوع مع ملاحظات (فوق).";
+                    SetupEngine.Result pre = e.precheck();
+                    if (pre.status != SetupEngine.Status.DONE) {
+                        end = "توقّفنا قبل أي تغيير.";
+                        color = RED;
                     } else {
-                        SetupEngine.Result pre = e.precheck();
-                        if (pre.status != SetupEngine.Status.DONE) {
-                            end = "توقّفنا قبل أي تغيير.";
-                            color = RED;
-                        } else {
-                            int failed = 0, skipped = 0;
-                            SetupEngine.Result[] rs = {e.grants(), e.debloat(), e.screensaver(), e.home()};
-                            for (SetupEngine.Result r : rs) { if (r.status == SetupEngine.Status.FAILED) failed++; else if (r.status == SetupEngine.Status.SKIPPED) skipped++; }
-                            end = failed == 0 && skipped == 0 ? "انتهى الإعداد. اضغط زر الرئيسية في الريموت. ثم أطفئ «تصحيح USB» من خيارات المطوّر واختر «إلغاء تراخيص تصحيح USB» إن لم تحتجهما (التراجع من هنا يحتاجهما)."
-                                : "انتهى الإعداد مع " + failed + " خطوة لم تتم و" + skipped + " تُركت (التفاصيل فوق). «تراجع» يرجّع كل شيء.";
-                            if (failed > 0) color = RED;
-                        }
+                        int failed = 0, skipped = 0;
+                        SetupEngine.Result[] rs = {e.grants(), e.debloat(), e.screensaver(), e.home()};
+                        for (SetupEngine.Result r : rs) { if (r.status == SetupEngine.Status.FAILED) failed++; else if (r.status == SetupEngine.Status.SKIPPED) skipped++; }
+                        end = failed == 0 && skipped == 0 ? "انتهى الإعداد. اضغط زر الرئيسية في الريموت. ثم أطفئ «تصحيح USB» من خيارات المطوّر واختر «إلغاء تراخيص تصحيح USB» إن لم تحتجهما (التراجع من هنا يحتاجهما)."
+                            : "انتهى الإعداد مع " + failed + " خطوة لم تتم و" + skipped + " تُركت (التفاصيل فوق). «تراجع» يرجّع كل شيء.";
+                        if (failed > 0) color = RED;
+                        end += "\n\n" + IF_BROKEN;   // the done screen: what to do if something goes wrong later (docs/IF-BROKEN.md, short)
                     }
                 } catch (IOException ex) {
-                    end = friendly(ex.getMessage());
+                    end = RestoreHome.friendly(ex.getMessage());
                     color = RED;
                 } catch (RuntimeException ex) {
                     end = "حدث خطأ غير متوقع، ما غيّرنا شيئاً بعده. جرّب «تراجع» ثم أعد.";
                     color = RED;
                 }
-                SetupSession.deleteKeyIfFinished(SetupActivity.this);   // after EVERY end (done, failed, skipped, error): the key is a standing credential; it stays only while a switch is pending
+                if (!undoIt) SetupSession.deleteKeyIfFinished(SetupActivity.this);   // after EVERY end (done, failed, skipped, error): the key is a standing credential; it stays only while a switch is pending (RestoreHome does it for the undo)
                 final String msg = end;
                 final int c = color;
                 runOnUiThread(new Runnable() {
@@ -144,14 +157,6 @@ public class SetupActivity extends Activity {
                 });
             }
         }, "setup-run").start();
-    }
-
-    private static String friendly(String m) {
-        if (m == null) return "انقطع الاتصال بالتلفزيون. إن كنت في منتصف تبديل الشاشة الرئيسية فسترجع الأصلية وحدها بعد 5 دقائق. جرّب مرة ثانية.";
-        if (m.startsWith("debugging is off")) return "تصحيح USB مطفأ في التلفزيون. فعّله (خيارات المطوّر ← تصحيح USB) ثم اضغط «ابدأ».";
-        if (m.contains("permission was not accepted")) return "لم تُقبل رسالة «السماح بتصحيح USB؟». اضغط «ابدأ» وافتح الرسالة بالريموت واختر «السماح دائماً».";
-        if (m.contains("TLS")) return "هذا التلفزيون يطلب التصحيح اللاسلكي؛ استخدم «تصحيح USB» العادي.";
-        return "انقطع الاتصال بالتلفزيون. إن كنت في منتصف تبديل الشاشة الرئيسية فسترجع الأصلية وحدها بعد 5 دقائق. جرّب مرة ثانية.";
     }
 
     private void line(final String t) {
