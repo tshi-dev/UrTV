@@ -31,5 +31,6 @@ check("a picker's live preview (a running WebView) is let go when the settings s
       re.search(r"onStop\(\)\s*\{[^}]*previewOff\.run\(\)", settings) is not None and re.search(r"onStart\(\)[^}]*previewOn\.run\(\)", settings) is not None
       and "previewOff = previewOn = null" in settings)
 check("the home screen's reads of the screensaver's settings within a few seconds share one answer (a return reads it four times), and a missing screensaver is asked again",
-      "SHARE_MS" in snap and "static synchronized ConfigSnapshot read" in snap and "s.fragment != null" in snap)
+      "SHARE_MS" in snap and "LAST.read(android.os.SystemClock.elapsedRealtime(), SHARE_MS," in snap and "s.fragment != null" in snap
+      and "now - lastAt < shareMs" in (HOME / "LastGood.java").read_text())
 sys.exit(1 if failed else 0)
