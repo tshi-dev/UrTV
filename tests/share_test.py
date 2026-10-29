@@ -184,7 +184,7 @@ print("share: " + ("an email in the free text is scrubbed, also glued to Arabic"
 ip_ok_words = ("V816.0.6.0.X", "TVOS-01.12.01.12", "6.0.1.2.3", "SDK 34")
 ver_line = "!! Home: firmware V816.0.6.0.X, build TVOS-01.12.01.12, WebView 6.0.1.2.3, SDK 34"
 ver_out = share.scrub(ver_line)
-ip_line = f"!! no answer from {v4} and {v4}:5555, then {'.'.join(['10', '0', '0', '8'])}."
+ip_line = f"!! no answer from {v4} and {v4}:5555, then 10.0.0.8."
 ip_out = share.scrub(ip_line)
 ip_ok = all(w in ver_out for w in ip_ok_words[:3]) and v4 not in ip_out and "10.0.0.8" not in ip_out and ip_out.count("<ip>") == 3 and "<ip>" not in ver_out
 print("share: " + ("the IP rule keeps version strings and firmware names, removes addresses" if ip_ok else f"WRONG ip {ver_out!r} {ip_out!r}"))
