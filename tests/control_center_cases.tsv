@@ -42,3 +42,18 @@ layout	960	540	2.0	8	4 2 164 133 788 486 true true	540p at density 2 (480x270 dp
 layout	1920	1080	2.0	7	4 2 340 232 1492 684 false false	7 tiles (no screensaver app)
 layout	1920	1080	2.0	9	4 3 340 232 1492 936 false false	9 tiles
 layout	600	700	1.0	8	3 3 145 116 491 468 false false	a narrow tall screen: 3 columns
+layout	1920	1080	1.0	9	4 3 170 116 746 468 false false	9 tiles («انعكاس الشاشة») at density 1
+layout	1920	1080	1.5	9	4 3 255 174 1119 702 false false	9 tiles, 1080p at 1.5
+layout	1920	1080	3.0	9	5 2 269 321 1573 972 true false	9 tiles on 640x360 dp: five to a row, two rows, the line under the name kept
+layout	1280	720	1.333	9	4 3 227 155 995 624 false false	9 tiles, 720p at tvdpi
+layout	1280	720	2.0	9	5 2 179 214 1047 648 true false	9 tiles, 720p at density 2 (640x360 dp): five to a row
+layout	960	540	2.0	9	5 2 127 133 787 486 true true	9 tiles on 480x270 dp: two rows of five, inside the screen
+layout	3840	2160	4.0	9	4 3 680 464 2984 1872 false false	9 tiles, 4K at density 4
+layout	600	700	1.0	9	3 3 145 116 491 468 false false	9 tiles on a narrow tall screen: 3 columns
+mirror	com.tcl.miracast				com.tcl.miracast	a TCL: its own «عرض الشاشة»
+mirror	com.mediatek.wfd,com.tcl.miracast				com.tcl.miracast	TCL's first, whatever else is there
+mirror	com.homwee.mmp.screenshare				com.homwee.mmp.screenshare	a CHiQ / Homwee board
+mirror	com.xiaomi.mitv.smartshare,com.mediatek.wfd				com.xiaomi.mitv.smartshare	Xiaomi's before MediaTek's
+mirror	com.softwinner.miracastReceiver				com.softwinner.miracastReceiver	an Allwinner projector
+mirror	com.google.android.apps.mediashell,com.tcl.airplay2				none	Google Cast and AirPlay are not mirroring apps to open: no tile
+mirror					none	nothing installed: no tile

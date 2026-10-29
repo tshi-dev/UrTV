@@ -12,6 +12,32 @@ final class ControlText {
     /** The panel's name: on the pill, over the panel, and in the family lock's list. */
     static final String NAME = "مركز التحكم";
 
+    /**
+     * «انعكاس الشاشة»: the TV's own screen-mirroring (Miracast) receiver, which our cleaning keeps on (optimize/lists/keep.txt) but people
+     * cannot find, and which our home may hide. The packages are the ones our lists name (keep.txt and names-ar.txt: com.tcl.miracast; the
+     * community lists of the TVs that have them: Allwinner projectors, Homwee/CHiQ, Xiaomi, MediaTek), in this order; the tile opens the
+     * first one installed that has a screen to open, and is not there when none does. Each one is in the manifest's <queries> too.
+     */
+    static final String[] MIRROR_APPS = {
+        "com.tcl.miracast",                  // TCL: «عرض الشاشة (Miracast)», names-ar.txt, keep.txt
+        "com.softwinner.miracastReceiver",   // Allwinner (projectors such as the HY300 Pro)
+        "com.homwee.mmp.screenshare",        // Homwee boards (CHiQ, RCA, Aiwa, OK)
+        "com.xiaomi.mitv.smartshare",        // Xiaomi Mi TV
+        "com.mediatek.wfd",                  // MediaTek's Wi-Fi Display (Miracast) receiver
+    };
+    static final String MIRROR = "انعكاس الشاشة";
+    /** the one line under the tile's name: what the person does on the phone */
+    static final String MIRROR_HINT = "من الجوال: شارك الشاشة واختر التلفزيون";
+
+    /** Whether this TV can open a package (it is installed, enabled, and has a screen to open). */
+    interface Opens { boolean opens(String pkg); }
+
+    /** The mirroring app the tile opens: the first of MIRROR_APPS this TV can open, or null (then there is no tile). */
+    static String mirrorApp(Opens tv) {
+        for (String p : MIRROR_APPS) if (tv.opens(p)) return p;
+        return null;
+    }
+
     /** Mbps for the person: one decimal below 100, whole above; «٫» is the decimal mark (Digits.of turns it into «.» for latin digits) */
     static String mbps(double v) {
         if (Double.isNaN(v) || Double.isInfinite(v) || v < 0) v = 0;

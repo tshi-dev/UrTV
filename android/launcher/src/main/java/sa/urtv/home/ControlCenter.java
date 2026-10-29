@@ -29,7 +29,7 @@ import java.util.List;
 
 /**
  * «مركز التحكم»: the panel the home screen's round pill opens: the sleep timer, turn the TV off now, the network, the speed
- * test, the sound output, the screensaver, our own settings and the TV's settings, as big tiles you walk with the D-pad (OK acts, Back closes, the focus goes
+ * test, the sound output, screen mirroring (when the TV has a mirroring app), the screensaver, our own settings and the TV's settings, as big tiles you walk with the D-pad (OK acts, Back closes, the focus goes
  * back to the pill). Opening it is behind the family lock's «@center»; the tiles that open something keep their own locks (the sleep
  * timer's, the Wi-Fi's, the screensaver's, our settings' «@urtv», the TV's settings') through the host.
  *
@@ -100,6 +100,11 @@ final class ControlCenter {
         test.action = () -> speedTest(test);
         tiles.add(test);
         tiles.add(tile("sound", "مخرج الصوت", outputLine(), R.drawable.ic_sound, () -> { dismiss(); host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, soundIntent(), "إعدادات الصوت"); }));
+        // «انعكاس الشاشة»: the TV's own mirroring app (ControlText.MIRROR_APPS), only when one is installed; locked as that app's own tile is
+        final Intent mirror = mirrorIntent();
+        if (mirror != null)
+            tiles.add(tile("mirror", ControlText.MIRROR, ControlText.MIRROR_HINT, R.drawable.ic_cast,
+                    () -> { dismiss(); host.launchGuarded(ParentalPolicy.TILE, mirror, ControlText.MIRROR); }));
         if (host.saverInstalled()) {
             Tile saver = tile("saver", "شاشة التوقف", "مطوّلًا: الإعدادات", R.drawable.ic_screensaver, () -> { dismiss(); host.openSaver(); });
             saver.setOnLongClickListener(v -> { dismiss(); host.openSaverSettings(); return true; });
@@ -312,6 +317,23 @@ final class ControlCenter {
             return ControlText.outputs(types, products);
         } catch (RuntimeException e) {
             return ControlText.outputs(new int[0], null);
+        }
+    }
+
+    /** the first mirroring app this TV can open (ControlText.mirrorApp), as the intent that opens it; null when there is none */
+    private Intent mirrorIntent() {
+        android.content.pm.PackageManager pm = act.getPackageManager();
+        String pkg = ControlText.mirrorApp(p -> launchIntent(pm, p) != null);
+        return pkg == null ? null : launchIntent(pm, pkg);
+    }
+
+    /** the app's TV screen, else its phone one (a mirroring receiver often has only that); null when it is missing, disabled or has none */
+    private static Intent launchIntent(android.content.pm.PackageManager pm, String pkg) {
+        try {
+            Intent i = pm.getLeanbackLaunchIntentForPackage(pkg);
+            return i != null ? i : pm.getLaunchIntentForPackage(pkg);
+        } catch (RuntimeException e) {
+            return null;
         }
     }
 

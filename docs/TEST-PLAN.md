@@ -156,6 +156,10 @@ Use the TV's clock or wait for the real moment; take a screenshot at each.
 | L12 | `optimize/saver.sh tasks add 'اشتري خبز'`, then press Home and the «المهام» pill | The pill is there; the list shows «اشتري خبز» with a gold dot; OK on it → «تم: اشتري خبز», it turns to ✓ |
 | L13 | In «المهام» press «تكلّم» and say «أضف مهمة موعد الطبيب» (a TV with a speech recognizer) | «أضيف «موعد الطبيب»؟» with نعم / لا; «لا» changes nothing, «نعم» adds it. Then «خلصت الطبيب» and «احذف الطبيب» each ask first |
 | L14 | Same on a TV with no recognizer | No «تكلّم» button; «الإدخال الصوتي غير متاح في هذا التلفزيون» once; OK and «حذف» still work |
+| L15 | On a TCL (com.tcl.miracast on): Home › «مركز التحكم» | A tile «انعكاس الشاشة» after «مخرج الصوت», its line «من الجوال: شارك الشاشة واختر التلفزيون»; all tiles inside the screen (nine: four to a row on 1080p, three rows; five to a row on a 640x360 dp screen), the D-pad reaches every one, ▼ from the second row reaches the last tile |
+| L16 | OK on «انعكاس الشاشة»; then on an Android phone: «Smart View» / «عرض الشاشة» / «Screen cast», choose the TV | TCL's screen-mirroring app opens and waits; the phone's screen shows on the TV. Back to the home: the focus on the pill |
+| L17 | On a TV with none of those apps (a Chromecast with Google TV, a Sony), or any TV where `optimize/venv/bin/python -I optimize/tv.py pm list packages -e` lists none of com.tcl.miracast, com.softwinner.miracastReceiver, com.homwee.mmp.screenshare, com.xiaomi.mitv.smartshare, com.mediatek.wfd: Home › «مركز التحكم» | No «انعكاس الشاشة» tile; the eight tiles as before, in the same places |
+| L18 | `optimize/dock.sh pin lock com.tcl.miracast` (PIN set), then OK on «انعكاس الشاشة» | The PIN is asked, as on that app's own tile; `pin unlock` to undo |
 | L5 | `optimize/dock.sh apps`, then `optimize/dock.sh set <3 packages from that list>`, then `optimize/dock.sh show` | Home screen redraws at once with those three first, topped up to 5; `show` lists them |
 | L6 | `optimize/dock.sh set com.not.installed` | `error: none of these apps are on this TV's home screen`; row unchanged |
 | L7 | `optimize/dock.sh reset` | Row back to the defaults |
