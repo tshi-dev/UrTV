@@ -85,6 +85,7 @@ public class ConfigProvider extends ContentProvider {
                 out.putStringArrayList("panels", codes);
                 out.putStringArrayList("panel_names", names);
                 out.putString("idle", String.valueOf(Prefs.idleMs(c) / 60000));
+                out.putString("idle_s", String.valueOf(Prefs.idleMs(c) / 1000));   // the real delay: 45 s is not a whole minute ("idle" says 0)
                 return out;
             }
             case "phone_set": {

@@ -390,11 +390,14 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
   }
   function digits(s) { return String(s).replace(/[٠-٩]/g, function (d) { return d.charCodeAt(0) - 0x660; }).replace(/[۰-۹]/g, function (d) { return d.charCodeAt(0) - 0x6f0; }); }
   function mmss(x) { x = Math.max(0, Math.floor(x)); return Math.floor(x / 60) + ':' + ('0' + x % 60).slice(-2); }
+  // Arabic counting: ساعة, ساعتين, 3 to 10 ساعات, 11 and more ساعة (or w[3]); the same for دقيقة, ثانية, تطبيق
+  var HR = ['ساعة', 'ساعتين', 'ساعات'], MN = ['دقيقة', 'دقيقتين', 'دقائق'];
+  function nn(n, w) { var r = n % 100; return n === 1 ? w[0] : n === 2 ? w[1] : n + ' ' + (r > 2 && r < 11 ? w[2] : w[3] || w[0]); }
   function dur(sec) {
     sec = Math.max(0, Math.round(sec));
     if (sec < 60) return 'أقل من دقيقة';
     var h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60);
-    return (h ? h + ' ساعة' + (m ? ' و ' : '') : '') + (m ? m + ' دقيقة' : '');
+    return (h ? nn(h, HR) + (m ? ' و ' : '') : '') + (m ? nn(m, MN) : '');
   }
 
   function api(path, body) {
@@ -548,7 +551,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     glass(s);
     var live = !!s.adhan_live, p = s.player || {};
     var secs = typeof s.seconds_left === 'number' ? s.seconds_left : 0;
-    $('left').textContent = 'بقي ' + Math.max(1, Math.round(secs / 60)) + ' دقيقة';
+    $('left').textContent = 'بقي ' + nn(Math.max(1, Math.round(secs / 60)), MN);
     var fn = $('foreNote'), fore = s.foreground === 'other';
     fn.classList.toggle('hidden', !fore); fn.classList.toggle('warn', fore && (!s.keys_everywhere || !!s.a11y_stuck));
     $('svcNote').classList.toggle('hidden', !!s.a11y_stuck || !(svcOff || (fore && s.typing_service === false)));
@@ -600,11 +603,12 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     fill($('qRec'), s.reciters || [], p.reciter);
     var sur = $('qSurah'); if (!sur.children.length) (s.surahs || []).forEach(function (n, i) { opt(sur, String(i + 1), (i + 1) + '. ' + n, false); });
     if (p.surah) sur.value = String(p.surah);
-    var si = $('saverIdle'); si.textContent = '';
-    (s.saver_idle_options || []).forEach(function (m) { opt(si, String(m), m + ' دقيقة', String(m) === String(s.saver_idle)); });
+    var si = $('saverIdle'), io = (s.saver_idle_options || []).map(String), sec = s.saver_idle_s != null ? +s.saver_idle_s : s.saver_idle * 60; si.textContent = '';
+    if (sec >= 0 && io.indexOf(String(sec / 60)) < 0) opt(si, '', sec < 60 ? (sec ? nn(sec, ['ثانية', 'ثانيتين', 'ثوانٍ']) : 'أقل من دقيقة') : nn(Math.round(sec / 60), MN), true);
+    io.forEach(function (m) { opt(si, m, nn(+m, MN), +m * 60 === sec); });
     var so = $('sleepOpts'); so.textContent = '';
     ((st && st.options) || [15, 30, 60, 90]).forEach(function (m) {
-      var b = el('button', '', m + ' دقيقة'); b.onclick = function () { set({ sleep_minutes: m }); }; so.appendChild(b);
+      var b = el('button', '', nn(m, MN)); b.onclick = function () { set({ sleep_minutes: m }); }; so.appendChild(b);
     });
   }
   var famSeen = false;
@@ -613,7 +617,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     var a = 0, pills = 0; (fam.locked || []).forEach(function (x) { if (String(x).charAt(0) === '@') pills++; else a++; });
     $('famPin').textContent = 'الرقابة الأبوية: ' + (fam.pin_set ? 'مفعّلة' : 'غير مفعّلة');
     $('famKids').textContent = 'وضع الأطفال: ' + (fam.kids ? 'يعمل' : 'متوقف');
-    $('famLocked').textContent = 'المقفل: ' + a + ' تطبيقًا و ' + pills + ' من أزرار التلفزيون';
+    $('famLocked').textContent = 'المقفل: ' + nn(a, ['تطبيق', 'تطبيقين', 'تطبيقات', 'تطبيقًا']) + ' و ' + pills + ' من أزرار التلفزيون';
   }
   function loadFamily() {
     api('/api/family').then(function (j) {
@@ -667,7 +671,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
   $('aFajr').onchange = function () { set({ adhan_fajr_voice: parseInt(this.value, 10) }); };
   $('aVol').oninput = function () { $('aVolN').textContent = this.value + '٪'; };
   $('aVol').onchange = function () { set({ adhan_volume: parseInt(this.value, 10) }); };
-  $('saverIdle').onchange = function () { set({ saver_idle: parseInt(this.value, 10) }); };
+  $('saverIdle').onchange = function () { if (this.value) set({ saver_idle: parseInt(this.value, 10) }); };
   $('sleepCancel').onclick = function () { gated('/api/do', { op: 'sleep_cancel' }).then(function (j) { say(j); refresh(); }); };
   $('saverGo').onclick = function () { api('/api/do', { op: 'screensaver' }).then(function (j) { say(j); }); };
   function stopAdhan() { api('/api/adhan_stop', {}).then(function (j) { say(j); setTimeout(refresh, 800); }); }

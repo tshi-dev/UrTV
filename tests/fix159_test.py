@@ -49,5 +49,10 @@ check("2. nothing else unmutes: only the adhan (MusicService) and the phone's ow
 vol = [p.name for p in (ROOT / "android").rglob("*.java") if "setStreamVolume(" in p.read_text(encoding="utf-8")]
 check("2. only the adhan sets the volume", vol == ["MusicService.java"], vol)
 
+cp = text("android/app/src/main/java/sa/urtv/screensaver/ConfigProvider.java")
+act = text(HOME + "phone/PhoneActions.java")
+check("7. the TV's screensaver delay goes to the phone in seconds too (45 s is not a whole minute)",
+      'out.putString("idle_s", String.valueOf(Prefs.idleMs(c) / 1000));' in cp and 'm.put("saver_idle_s", b.getString("idle_s"));' in act)
+
 print("\n" + (f"{failed} failed" if failed else "fix 159: all passed"))
 raise SystemExit(1 if failed else 0)

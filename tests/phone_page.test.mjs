@@ -167,7 +167,7 @@ for (const [label, st] of [['new state', NEW()], ['old state', OLD()]]) await T(
   if (label === 'new state') {
     check('the settings tab reads GET /api/family', S.reqs.some(r => r.method === 'GET' && r.path === '/api/family'));
     const f = await p.textContent('#famCard');
-    check('family card is read-only and says: مفعّلة / يعمل / locked count', f.includes('الرقابة الأبوية: مفعّلة') && f.includes('وضع الأطفال: متوقف') && f.includes('2 تطبيقًا') && f.includes('1 من أزرار'), f);
+    check('family card is read-only and says: مفعّلة / يعمل / locked count', f.includes('الرقابة الأبوية: مفعّلة') && f.includes('وضع الأطفال: متوقف') && f.includes('تطبيقين و') && f.includes('1 من أزرار'), f);
     check('connected phones count', (await p.textContent('#phones')).includes('2'));
   }
   const text = (await p.evaluate(() => document.body.innerText + document.body.innerHTML.replace(/<script[\s\S]*<\/script>/, ''))).toLowerCase();
@@ -649,6 +649,28 @@ await T('switches reduced motion', async () => {
   await S.ctx.close();
 });
 
+// ---- the TV test of 159: Arabic counting, the TV's real screensaver delay, our accessibility service stopped after an update, the text field
+await T('counting and the delay', async () => {
+  const S = await boot({ state: NEW({ next_adhan: { prayer: 'العصر', in_seconds: 8 * 3600 + 56 * 60 + 5 }, saver_idle: '0', saver_idle_s: '45', seconds_left: 120 }) });
+  const { p } = S;
+  await tab(S, 'now');
+  const na = await p.textContent('#nextA');
+  check('the next adhan: «بعد 8 ساعات و 56 دقيقة»', na.includes('بعد 8 ساعات و 56 دقيقة'), na);
+  check('the session left: «بقي دقيقتين»', (await p.textContent('#left')) === 'بقي دقيقتين', await p.textContent('#left'));
+  const sel = await p.$$eval('#saverIdle option', os => os.map(o => [o.value, o.textContent, o.selected]));
+  check('a 45 s delay is shown as the current choice «45 ثانية», the minutes after it', JSON.stringify(sel[0]) === '["","45 ثانية",true]' && sel.length === 7, JSON.stringify(sel));
+  check('the minutes counted right: دقيقة, دقيقتين, 5 دقائق, 10 دقائق, 15 دقيقة', sel.slice(1).map(o => o[1]).join('|') === 'دقيقة|دقيقتين|5 دقائق|10 دقائق|15 دقيقة|30 دقيقة', sel.map(o => o[1]).join('|'));
+  check('the sleep timer chips: 15 دقيقة … 90 دقيقة', (await p.textContent('#sleepOpts')).includes('15 دقيقة'));
+  const before = posts(S, '/api/set').length;
+  await p.selectOption('#saverIdle', '2'); await until(() => posts(S, '/api/set').length > before);
+  check('choosing a minute still saves it', JSON.stringify(posts(S, '/api/set').pop().body) === '{"saver_idle":2}');
+  await S.ctx.close();
+  const Q = await boot({ state: NEW({ next_adhan: { prayer: 'المغرب', in_seconds: 3600 + 120 }, saver_idle: '10' }) });
+  await tab(Q, 'now');
+  check('«بعد ساعة و دقيقتين»', (await Q.p.textContent('#nextA')).includes('بعد ساعة و دقيقتين'), await Q.p.textContent('#nextA'));
+  check('a whole-minute delay: no extra choice, the TV\'s one chosen', (await Q.p.inputValue('#saverIdle')) === '10' && (await Q.p.$$('#saverIdle option')).length === 6);
+  await Q.ctx.close();
+});
 await T('a11y stuck', async () => {
   const S = await boot({ state: NEW({ foreground: 'other', a11y_stuck: true, keys_everywhere: false, dpad_everywhere: false, typing_service: false }), cfg: { keyAnswer: { ok: false, error: 'a11y_stuck' } } });
   const { p } = S;

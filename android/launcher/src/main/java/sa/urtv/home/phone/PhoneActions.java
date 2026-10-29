@@ -185,6 +185,7 @@ final class PhoneActions implements Actions {
         m.putAll(sa.urtv.home.GlassSource.phoneState(app));   // the glass look: which backdrop, and the veils it needs (thousandths)
         if (b != null && b.getString("idle") != null) {
             m.put("saver_idle", b.getString("idle"));
+            if (b.getString("idle_s") != null) m.put("saver_idle_s", b.getString("idle_s"));   // the TV's own delay in seconds (45 s on the owner's TCL): the page shows it as the current choice
             List<Object> options = new ArrayList<>();
             for (int minutes : Schema.SAVER_IDLE) options.add(String.valueOf(minutes));
             m.put("saver_idle_options", options);
