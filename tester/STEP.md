@@ -37,7 +37,7 @@ Side task D (any time, the owner logs in himself): Downloader short codes on aft
 
 ---
 step: 15 (do it when the owner says «ابدأ الخطوة 15»; it can come before the rest of step 14)
-what: confirm the fixes from the 159 test AND the new batch (Settings key, 24-hour row, leagues save, mirroring tile, world cities) on the newest apk-next (build 164 or newer: «Accessibility after the app's own update…» and the rest). TV sound 0 the whole time.
+what: confirm the fixes from the 159 test AND the new batch (Settings key, 24-hour row, leagues save, mirroring tile, world cities) on the newest apk-next (build 163 or newer: «Accessibility after the app's own update…» and the rest). TV sound 0 the whole time.
 - Start lines; `adb shell settings get secure enabled_accessibility_services`, `settings get secure accessibility_enabled`, `dumpsys accessibility | grep -A5 "Bound services"`, `appops get sa.urtv.home AUTO_START`, `appops get sa.urtv.home APP_AUTO_START`, `dumpsys audio | grep -i -E "muted|master"`. The owner first turns Key Mapper and our services back on if they are off (a restart, or `optimize/dock.sh type-setup`).
 
 | # | Do | Right when |
