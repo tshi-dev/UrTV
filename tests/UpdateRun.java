@@ -153,7 +153,7 @@ public final class UpdateRun {
         // ---- what the owner reads
         check("up to date: «تلفزيونك محدّث (3.N)»", "تلفزيونك محدّث (3.52)".equals(bare(UpdateText.upToDate("3.52"))), bare(UpdateText.upToDate("3.52")));
         check("no network: «ما فيه اتصال بالإنترنت»", "ما فيه اتصال بالإنترنت".equals(UpdateText.OFFLINE), "");
-        check("available: «تحديث جديد 3.N · اضغط للتحديث»", "تحديث جديد 3.52 · اضغط للتحديث".equals(bare(UpdateText.available(UpdateText.versionOf(52)))), "");
+        check("available: «تحديث جديد 4.0 (بناء N) · اضغط للتحديث»", "تحديث جديد 4.0 (بناء 52) · اضغط للتحديث".equals(bare(UpdateText.available(UpdateText.versionOf("4.0", 52)))), "");
         check("done: «تم التحديث ✓ 3.N»", "تم التحديث ✓ 3.52".equals(bare(UpdateText.done("3.52"))), "");
         check("not completed: «ما اكتمل التحديث», and the step", "ما اكتمل التحديث".equals(UpdateText.NOT_DONE) && UpdateText.failedStep(UpdateOrder.label(UpdateOrder.LAUNCHER)).contains("الواجهة")
             && !UpdateOrder.label(UpdateOrder.SAVER).equals(UpdateOrder.label(UpdateOrder.LAUNCHER)), "");
