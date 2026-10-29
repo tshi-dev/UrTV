@@ -41,8 +41,8 @@ check("on the phone, the code box takes the space of «123 456» too (7 characte
 check("the four tabs have their own drawn icons (remote, apps, now, settings) in the page's markup, no emoji or text glyphs",
       all(f'<g id="ico-{k}">' in page for k in ("remote", "apps", "now", "settings")) and "🎮" not in page
       and not re.search(r"\\['(remote|apps|now|settings)', '[^']+', '", page))
-check("…drawn in the text's colour, so the dark and the light look and the gold «on» tab all take them",
-      "#bar button svg {" in page and "stroke:currentColor;" in page and "fill:none;" in page and "#bar button.on { background:var(--gold); color:var(--ink);" in page)
+check("…drawn in the text's colour, so the dark and the light look and the gold «on» tab all take them (4.0 look: the «on» tab's word and drawing in gold)",
+      "#bar button svg {" in page and "stroke:currentColor;" in page and "fill:none;" in page and "#bar button.on { color:var(--gold);" in page)
 check("…copied into each tab from the page's own drawings (cloneNode; no HTML built from text, no address)",
       "var g = $('ico-' + name).cloneNode(true);" in page and "b.appendChild(icon(t[0]));" in page and "innerHTML" not in page and "w3.org" not in page)
 sys.exit(1 if failed else 0)
