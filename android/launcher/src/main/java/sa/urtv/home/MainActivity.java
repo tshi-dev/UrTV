@@ -294,7 +294,16 @@ public class MainActivity extends Activity {
     @Override
     public void onBackPressed() {
         // Home has nowhere to go back to; Back from the grid returns to the dock.
-        if (scroll.getScrollY() > 0 && !dockCards.isEmpty()) dockCards.get(0).requestFocus();
+        boolean scrolled = scroll.getScrollY() > 0 && !dockCards.isEmpty();
+        if (scrolled) dockCards.get(0).requestFocus();
+        // opened from its tile while the TV keeps its own home: Back at the top leaves, to the home that opened it
+        else if (HomeBack.leaves(isDefaultHome(), false)) finish();
+    }
+
+    /** Is this app the home the TV goes to on Home? (Not when the stock home is kept and this was opened from its tile.) */
+    private boolean isDefaultHome() {
+        ResolveInfo ri = getPackageManager().resolveActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), PackageManager.MATCH_DEFAULT_ONLY);
+        return HomeBack.isDefaultHome(ri == null || ri.activityInfo == null ? null : ri.activityInfo.packageName, getPackageName());
     }
 
     // ---------------------------------------------------------------- layout

@@ -110,6 +110,23 @@
             </intent-filter>
         </activity>
 
+        <!-- «تلفزيونك»: a tile for the TV's own home screen (the apps row of Google TV), for the one in four setups that keeps the stock home
+             (setupwraith / launcherx): without it UrTV's home could not be opened at all. It opens the same MainActivity by component, with no
+             HOME category, so it never changes which home is the default (the HOME entry above is the only one) and cannot loop with the HOME
+             intent; MainActivity says Back leaves it when it is not the default home. Our own «كل التطبيقات» skips our package (Dock.scan). -->
+        <activity-alias
+            android:name=".HomeTile"
+            android:targetActivity=".MainActivity"
+            android:exported="true"
+            android:label="تلفزيونك"
+            android:icon="@mipmap/ic_launcher"
+            android:banner="@drawable/banner">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
         <!-- «إعداد تلفزيوني»: the setup done by the TV itself over its own local adb, no computer. A launcher entry of its own (apps row), so it is there
              right after the APK is installed with the TV's Downloader app, before this app is Home. Nothing outside the app can start the run: the
              buttons are on this screen. -->
