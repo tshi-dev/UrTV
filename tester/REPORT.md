@@ -164,3 +164,13 @@ The shortener needs no account (go.aftvnews.com has no login; anyone can submit,
 | D2 | **2927902** | aftv.news/2927902 | → `https://go.aftvnews.com/2927902`; `window.location = "https://github.com/tshi-dev/UrTV/releases/download/apk-latest/urtv-screensaver.apk"` — exact |
 
 Note: the redirect is a 301 to go.aftvnews.com and then a JavaScript redirect (not an HTTP Location to GitHub). Downloader resolves codes itself; not tested in Downloader on the TV.
+
+## step 14, S1 — the owner pressed «ابدأ» with an IR remote app on his phone
+| # | OK/problem | note |
+|---|---|---|
+| S1 | PROBLEM (blocker) | «ابدأ» starts: «جارٍ الإعداد… لا تطفئ التلفزيون.» + «• التلفزيون يسأل «السماح بتصحيح USB؟»: اختر «السماح دائماً» بالريموت.» But the TV NEVER shows the prompt. adbd log, 1 s after «ابدأ»: `E adbd : Invalid base64 key` → `prompting user to authorize key` → `adbd_auth: sending prompt with id 170` → nothing on screen (only sa.urtv.home in the window list) → 3 min later `ADB disconnect`. The app then shows «لم تُقبل رسالة «السماح بتصحيح USB؟». اضغط «ابدأ» وافتح الرسالة بالريموت واختر «السماح دائماً».» The key the app sends is not valid base64 for adbd, so Android has nothing to show. Port 5555 is on (`service.adb.tcp.port=5555`). S2–S7 cannot run until this is fixed |
+| note | — | the first two OK presses only closed the screensaver (45 s idle) before reaching «ابدأ»; the tester set idle to 30 min for the test and put it back to 45 s after |
+| S8 | skipped | no PIN set by the tester |
+| Z | restored: yes | nothing changed on the TV: Home `sa.urtv.home/.MainActivity`, disabled 22 = start list, screensaver `.ScreenDream`, screen_off_timeout 45000, adb_enabled 1, updatechannel latest, sound muted. Still open: accessibility off since the 160 self-update |
+
+Problems in step 14: 1 blocker (invalid adb key → no prompt) + the self-update side effects (a11y off, sound on).
