@@ -272,6 +272,9 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { pickNational(); } });
         row("حجم الساعة", Prefs.clockSizeLabel(prefs.clockSize()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickClockSize(); } });
+        // «نظام الساعة»: 12 or 24 hours, the same setting as `saver.sh clock24`; the page (screensaver and the home's cards) and the home's clock follow it
+        row("نظام الساعة", ClockSetting.label(prefs.clock24()), R.drawable.ic_eye,
+            new Runnable() { public void run() { pickClock24(); } });
         row("الخانة اليسرى", Prefs.slotLabel(prefs.slot()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickSlot(); } });
         if ("countdown".equals(prefs.slot()) || !prefs.countdownDate().isEmpty())
@@ -1212,6 +1215,14 @@ public class SettingsActivity extends Activity {
         }
         new Dlg(this).setTitle("حجم الساعة")
             .setSingleChoiceItems(labels, sel, (d, i) -> { prefs.setClockSize(Prefs.CLOCK_SIZES[i][0]); d.dismiss(); render(); })
+            .show();
+    }
+
+    /** «نظام الساعة»: «١٢ ساعة» (with ص and م, the default) or «٢٤ ساعة»; the screensaver's page reads it when it starts, the home at its next tick */
+    private void pickClock24() {
+        new Dlg(this).setTitle("نظام الساعة")
+            .setSingleChoiceItems(ClockSetting.CHOICES, ClockSetting.choice(prefs.clock24()),
+                (d, i) -> { prefs.setClock24(ClockSetting.fromChoice(i)); d.dismiss(); render(); })
             .show();
     }
 
