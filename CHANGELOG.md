@@ -37,6 +37,9 @@ numbered release tagged `v4.0.<build>` (only the URL shows it; the title is «Ur
 - «أذان من ملفي»: the person's own adhan; the old one stays until the new one is in.
 
 **Home screen and screensaver**
+- Settings › «شاشة التوقف» › «نظام الساعة»: «١٢ ساعة» or «٢٤ ساعة», the same setting as `saver.sh clock24`; the screensaver, the home's clock and cards and «تلاوة وأذان» follow it.
+- The lists of choices with «حفظ» in the settings («الدوريات كاملة», «الفرق المتابعة», «التصنيفات», «اللغات», «رياضات أخرى», «الأسواق», «مسلسلات مختارة») keep «حفظ» on the screen: the list scrolls in a capped height, ▼ on its last row reaches «حفظ», and Back saves too (a user could not save «الدوريات كاملة» on a TV).
+- «مركز التحكم» has «انعكاس الشاشة» when the TV has a screen-mirroring app (TCL's «عرض الشاشة» first), with «من الجوال: شارك الشاشة واختر التلفزيون» under it; with nine tiles the panel may go five to a row.
 - Network only while the home is in front and the display is on (weather, hosted photos, Aladhan's times, adhan recordings, the update check); the adhan itself is unchanged. The audit is `docs/NETWORK.md`.
 - The «المصادر» list shows the name an HDMI-CEC device gives itself (console, box) instead of «HDMI 2», and « · وضع الاستعداد» when the input is in standby; your own name still wins; `dock.sh input-names` shows both.
 - «جرس التحديثات»: a bell in the home screen's top row that shows only on evidence of waiting Play Store updates (none can be read with normal permissions yet, so it stays out of sight), a setting and `saver.sh updatebell`.
