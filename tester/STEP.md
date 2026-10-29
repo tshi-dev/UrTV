@@ -34,3 +34,21 @@ Side task D (any time, the owner logs in himself): Downloader short codes on aft
   - D2 `https://github.com/tshi-dev/UrTV/releases/download/apk-latest/urtv-screensaver.apk`
 - Check each code: open `https://aftv.news/<code>` and it must redirect to the exact URL above (curl -sI shows the Location).
 - REPORT.md: "side task D", the two codes and the redirect check. The codes are public, so they're fine in the report; nothing about the account.
+
+---
+step: 15 (do it when the owner says «ابدأ الخطوة 15»; it can come before the rest of step 14)
+what: confirm the fixes from the 159 test on the newest apk-next (build 161 or newer: «Accessibility after the app's own update…» and the rest). TV sound 0 the whole time.
+- Start lines; `adb shell settings get secure enabled_accessibility_services`, `settings get secure accessibility_enabled`, `dumpsys accessibility | grep -A5 "Bound services"`, `appops get sa.urtv.home AUTO_START`, `appops get sa.urtv.home APP_AUTO_START`, `dumpsys audio | grep -i -E "muted|master"`. The owner first turns Key Mapper and our services back on if they are off (a restart, or `optimize/dock.sh type-setup`).
+
+| # | Do | Right when |
+|---|---|---|
+| F1 | Mute the TV. Update from the TV («تحديث تلفزيوني») to the newest build. About 15 s after the install: `logcat -d -s UrTVA11y`, accessibility_enabled, Bound services, appops again | a "heal" line then "healed"; accessibility_enabled=1; ours bound (say whether Key Mapper is bound too) |
+| F2 | Only if F1 did not bind ours: `optimize/dock.sh type-setup` | it says the same list was written again, and ours binds. The phone page, if opened before that, says «التحكم في التطبيقات الثانية متوقف: …» |
+| F3 | Mute check: after F1, `dumpsys audio`; then mute, `adb reboot`, check again | write down whether the update and the reboot unmuted (that part is the TV's, not ours) |
+| F4 | Adhan on a muted TV: mute, `optimize/music.sh adhan now`, stop it from the page («أوقف الأذان الآن») | after it the TV is muted again; unmute shows the old level, not 0 |
+| F5 | Phone control on, the code shown, wait past the 45 s screensaver delay, wake the TV | the code screen and the page address still work. Then Home with nobody paired: control stops |
+| F6 | «إعداد تلفزيوني»: one OK on «ابدأ» | it starts («جارٍ الإعداد…»); then DENY the USB prompt (no key given). Nothing changes |
+| F7 | Phone page (paired from the PC's Chrome): one swipe on the pad; «بدون» + «حفظ البطاقات» once; the next-adhan wording; the screensaver delay shown; the text field with the keyboard open | one swipe = one tile; saved on the first press; «8 ساعات» style counting; «45 ثانية»; the field above the tab bar |
+| Z | Phone control off, the pairing removed; updatechannel latest; restore everything from the start lines; sound 0 | "restored: yes/no" |
+
+REPORT.md: "step 15", the table, the UrTVA11y lines, any `!!`. Push; tell the owner in Arabic.
