@@ -36,7 +36,7 @@ tvapps=$(apps LEANBACK_LAUNCHER)
 others=$(apps LAUNCHER)
 homes=$(apps HOME)
 echo "TV apps (LEANBACK_LAUNCHER): $(grep -c . <<< "$tvapps")"
-echo "Only an ordinary launcher activity (UrTV's home screen lists these too since 3.68):"
+echo "Only an ordinary launcher activity (UrTV's home screen lists these too since build 68):"
 comm -13 <(echo "$tvapps") <(echo "$others") | sed 's/^/   /'
 echo "Home screens (HOME):"
 echo "$homes" | sed 's/^/   /'

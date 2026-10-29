@@ -6,8 +6,8 @@ Newest first. `next` is where changes land first; a release is what was tested t
 
 **Version 4.0:** the release has a name now, the `VERSION` file at the root («4.0»). The apps' `versionName` is `4.0.<build>` (one word, as the
 optimize scripts print it), the `versionCode` is still the GitHub run number, so every build installs over the last; the screens show «4.0 (بناء 151)»
-(settings «الإصدار», «تحديث تلفزيوني», the phone page, `saver.sh show`). Updates are untouched: `version.txt` is still exactly `3.<build>` (an installed
-3.142 reads it as before and still sees the update), and the apps compare by build, never by name. Master builds publish `apk-latest` as before and a
+(settings «الإصدار», «تحديث تلفزيوني», the phone page, `saver.sh show`). Updates are untouched: `version.txt` is still exactly `3.<build>` (an app installed
+before 4.0 (build 142 and later) reads it as before and still sees the update), and the apps compare by build, never by name. Master builds publish `apk-latest` as before and a
 numbered release `v4.0.<build>` («UrTV 4.0 (build N)»); the older `v3.N` ones stay.
 
 **Phone**
@@ -39,7 +39,7 @@ numbered release `v4.0.<build>` («UrTV 4.0 (build N)»); the older `v3.N` ones 
 - «تعديل المفضلة»: press a favourite to pick it up and move it along the row, × to remove it with «تراجع»; «ترتيب التطبيقات المفضلة» is now in the settings only.
 - The glass look (د) on every screen of ours: settings, tasks, phone control and pairing, parental and the PIN, update, «إعداد تلفزيوني», «مركز التحكم», Family protection, the «تلاوة وأذان» screens and the phone page. Smoked glass in dark, frosted white in light, over the home's photo blurred once per photo (no live blur); each photo gets the veil its texts need to read.
 - «المظهر» is the first row of the home screen's settings: «الشكل» (زجاجي، فحمي، كحلي، نظيف) for every screen of ours, and «الإضاءة» (داكن، فاتح، تلقائي), each choice previewed live before it is picked; `saver.sh look`.
-- From the TV test of 3.147: «أكمل المشاهدة» is a row of favourite-sized cards under the favourites again (it could come before them and fill the screen); a focused row in the settings has dark ink on its white fill; the settings never move sideways; the pickers are opaque; the «إعدادات تلفزيونك» tile has its icon.
+- From the TV test (build 147): «أكمل المشاهدة» is a row of favourite-sized cards under the favourites again (it could come before them and fill the screen); a focused row in the settings has dark ink on its white fill; the settings never move sideways; the pickers are opaque; the «إعدادات تلفزيونك» tile has its icon.
 - «تعديل التطبيقات»: «كل التطبيقات» in your own order (pick up and move across the grid), × to hide an app with «تراجع», «المخفية» to bring one back, ▲ from the first row into the favourites; «ترتيب كل التطبيقات» in the settings, with «رجوع للترتيب الأصلي». Not in kids mode, and neither is «تعديل المفضلة» now.
 - Prayer times as boxes, new pills (icons only, the name shows on focus), glass panels, softer glow on the focused app.
 - «يُتلى الآن» card while تلاوة plays; the screen is now «تلاوة وأذان».

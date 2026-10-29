@@ -173,8 +173,8 @@ tests/run.sh          every check: build, data, fonts, scripts, private data, «
 ```
 
 A push to `master` builds both APKs in GitHub Actions, once `tests/run.sh` has passed in the same run, and publishes them
-to `apk-latest` (with a `version.txt`, always `3.<build>`: the build the settings screen shows as the newest, and what every app since 3.142
-reads) and a numbered `v4.0.N` release (the name comes from the `VERSION` file); a push to `next` publishes `apk-next` instead (a test build, no wait for the checks). `tests/run.sh` runs on `master`, `next`,
+to `apk-latest` (with a `version.txt`, always `3.<build>`: the build the settings screen shows as the newest, and what every app built from 142 on
+reads; machine-only, people see «4.0») and a numbered `v4.0.N` release (the name comes from the `VERSION` file); a push to `next` publishes `apk-next` instead (a test build, no wait for the checks). `tests/run.sh` runs on `master`, `next`,
 `content` and pull requests. Local Android build (needs the SDK): `python3 src/build.py && gradle -p android assembleRelease`
 (signed with the debug key; the release key lives only in the repository's secrets).
 
