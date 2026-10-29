@@ -39,7 +39,7 @@ check("the home asks for the look at each minute tick (and on coming back), with
       "applyLook(Look.light(cfg.appearance(), dayBySun(cfg), h * 60 + now.get(Calendar.MINUTE)));" in tick)
 sun = main[main.index("private Boolean dayBySun(ConfigSnapshot cfg)"):].split("\n    }\n")[0]
 check("the sun is up while «الغروب» is next (the prayer times' DayParts, as the greeting's line); unknown: null, the clock's 6:00–18:30",
-      '"الغروب".equals(sa.urtv.home.tilawah.DayParts.now(this, cfg.fragment).sunLabel)' in sun and "return null;" in sun
+      '"الغروب".equals(sa.urtv.home.tilawah.DayParts.now(this, cfg.placeFragment()).sunLabel)' in sun and "return null;" in sun
       and "if (!Look.AUTO.equals(cfg.appearance())) return null;" in sun)
 apply = main[main.index("private void applyLook(boolean light)"):].split("\n    }\n")[0]
 check("the look is applied only when it changes; the home is built in the dark look and starts there (dark is exactly as it was)",
