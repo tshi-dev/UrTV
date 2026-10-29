@@ -103,7 +103,10 @@ check("the page takes the token out of the address bar at once", "history.replac
 api = text(PHONE / "PhoneApi.java")
 served = set(re.findall(r'case "(/api/[a-z_/]+)"', api)) | {"/api/state"} | ({"/api/icon/"} if 'startsWith("/api/icon/")' in api else set())
 used = set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", page))
-check("every call of the page is an endpoint the server has, and the reverse", used == served, (used ^ served))
+# the one endpoint with no button on the page (index.html is at its 64 KB limit): «رجّع واجهة التلفزيون الأصلية», documented in docs/IF-BROKEN.md
+API_ONLY = {"/api/restore_home"}
+check("every call of the page is an endpoint the server has, and the reverse (but the API-only one)", used == served - API_ONLY and API_ONLY <= served, (used ^ (served - API_ONLY)))
+check("the API-only endpoint is in docs/IF-BROKEN.md, with its PIN", all(p in text(ROOT / "docs/IF-BROKEN.md") for p in API_ONLY) and '"pin"' in text(ROOT / "docs/IF-BROKEN.md"), "")
 check("the page says plainly what it cannot do: keys to other apps, and text outside our screens",
       "فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال»" in page and "تحتاج أندرويد ١٣" in page and "يُكتب في حقلها بعد تفعيل خدمة إمكانية الوصول" in page and "/api/text" in page, "")
 check("the page has no reset, uninstall, ADB or PIN-changing control", not re.search(r"reset|uninstall|adb|إعادة ضبط|حذف التطبيق", page, re.I), "")

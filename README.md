@@ -27,6 +27,8 @@
 <sub>ويندوز: ركّب Git وPython أول (`winget install --source winget Git.Git Python.Python.3.12`). Gemini CLI مجاني وناس قالوا يشتغل؛ ما جرّبناه.</sub>
 
 > **ما عندك كمبيوتر؟** تقدر تجهّز التلفزيون من **التلفزيون نفسه** (حمّل التطبيقين بتطبيق Downloader وافتح «إعداد تلفزيوني»)، أو من **جوال أندرويد** (Termux) أو **آيفون/آيباد** (iSH). التفاصيل: [`docs/PHONE-SETUP.md`](docs/PHONE-SETUP.md).
+>
+> **إذا خرب شي** (شاشة سوداء، الرئيسية ما تفتح، الريموت ما يستجيب): [`docs/IF-BROKEN.md`](docs/IF-BROKEN.md)، خطوة بخطوة.
 
 ### ③ الصق هذا
 
@@ -65,6 +67,8 @@ Settings → About → press OK on **Build** 7 times. Then go to **Developer opt
 <sub>Windows: install Git and Python first (`winget install --source winget Git.Git Python.Python.3.12`). Gemini CLI is free and reported to work; not tested by us.</sub>
 
 > **No computer?** Set the TV up from **the TV itself** (install the two apps with the Downloader app and open «إعداد تلفزيوني»), from an **Android phone** (Termux) or from an **iPhone/iPad** (iSH). Details: [`docs/PHONE-SETUP.md`](docs/PHONE-SETUP.md).
+>
+> **If something breaks** (a black screen, Home does not open, the remote does nothing): [`docs/IF-BROKEN.md`](docs/IF-BROKEN.md) (Arabic, step by step).
 
 ### ③ Paste this
 

@@ -10,6 +10,8 @@ Three ways, from the easiest. Pick by what the person has.
 
 Path 1 needs no other device at all, so it is also the answer for an iPad that cannot run path 3.
 
+**If something breaks** afterwards (a black screen, Home does not open, the remote does nothing): [`IF-BROKEN.md`](IF-BROKEN.md), step by step in Arabic.
+
 ## 1. The TV alone («إعداد تلفزيوني»)
 
 1. **Debugging on.** Settings → About → press OK on **Build** seven times; then **Developer options** → **USB debugging** on. (Only the TV's own
@@ -58,6 +60,57 @@ If the app is closed in the middle of the home switch, opening «إعداد تل
 | «لم تُقبل رسالة …» | press «ابدأ» again and answer the prompt within three minutes |
 | a step is «تُركت» (skipped) | the line above says why (WebView too old: update «Android System WebView» in the Play Store, then «ابدأ» again) |
 | the TV did not come back to the stock home | it will, after 5 minutes by itself; or press «تراجع» |
+| the home screen keeps stopping or hanging later | Home opens «الوضع الآمن» (below, and [`IF-BROKEN.md`](IF-BROKEN.md)) |
+
+### If something breaks later: the safe mode
+
+The step-by-step for the person is [`IF-BROKEN.md`](IF-BROKEN.md) (Arabic); the done screen of «إعداد تلفزيوني» shows the same steps, very short, as «لو صار شي».
+After the switch our home is the only Home, so a home screen that crashes or hangs could leave a person with no computer stuck. What covers it:
+
+- **«الوضع الآمن»** (`safe/SafeActivity`): a second, small Home of the same app, in **its own process** (`android:process=":safe"`), with no WebView, no network,
+  no photo and no font file. Big buttons: «افتح الشاشة الرئيسية من جديد», «كل التطبيقات» (a plain list of every launchable app), «إعدادات التلفزيون»,
+  «رجّع واجهة التلفزيون الأصلية» (the very undo of «تراجع», `setup/RestoreHome`, behind the family PIN; with USB debugging off it says how to turn it on
+  with the remote) and «أرسل تقرير المشكلة» (a QR code of a few lines for `docs/share/`, the page `optimize/share.sh` uses; nothing is sent until «أرسل» there).
+  Its HOME filter has priority **-10**, MainActivity's 0.
+- **The crash-loop guard** (`safe/CrashLoop`, `safe/CrashGuard`): the home's process writes each crash (its uncaught-exception handler) and each hang
+  (a watchdog: the screen's thread silent 8 s while it is in front) to `files/safe/crash-loop.txt`; on Android 11+ the next start also reads the system's
+  exit reasons for ANRs and native crashes. **3 in 2 minutes** is a loop: the next Home press (MainActivity's first line) opens «الوضع الآمن» instead, which
+  says what happened; the third crash itself opens it too. A start that stays up a minute with no new trouble clears it, and so does
+  «افتح الشاشة الرئيسية من جديد».
+- **The phone:** `POST /api/restore_home` (body `{}`, or `{"pin": "…"}` when a family PIN is set: it is always PIN-protected then) starts the same undo.
+  The page has no button for it yet: `index.html` is within 300 bytes of its 64 KB limit.
+
+**What Android does when the default home crashes** (from the AOSP source, not seen on a TV): it does **not** fall back to the next HOME candidate.
+Every Home press resolves to the preferred (or highest-priority) activity again, so a crashing home is started again: a loop with the
+«… keeps stopping» dialog. When a non-system home crashes twice within 60 s (`AppErrors`, `MIN_CRASH_INTERVAL`), Android clears that package's
+preferred HOME activities; Home is then resolved afresh, and **with two HOME activities at the same priority it shows a chooser**. Ours differ
+(0 and -10), so MainActivity wins again with no chooser: that is why the safe one is lower, and why our own guard, not Android, opens it. (On Android 10+
+the HOME role stays with our package; Settings' FallbackHome, priority -1000, only answers before the first unlock.) A priority above 0 is clamped to 0
+for an app that is not a system app; a negative one is kept.
+
+**TCL** ([`OPTIMIZE.md`](OPTIMIZE.md)): the firmware starts its stock launcher by name on every Home press while it is enabled, and ours only becomes
+Home with `launcherx` and `setupwraith` disabled; `set-home-activity` and the role report success and change nothing there. Unknown until a TV test:
+which of our two HOME activities its `startDockOrHome` picks. Either way works: «الوضع الآمن» passes a Home press on to MainActivity at once when nothing is wrong.
+
+**Limits:** a crash before MainActivity's first line (loading its class) is not counted; a hang is counted only while the home is in front; ANRs and native
+crashes are counted from Android 11 (the exit reasons).
+
+**The TV test it needs** (the owner's TCL; nothing here has run on a TV):
+
+| # | Do | Expect |
+|---|---|---|
+| SM1 | After installing this version and the setup: `adb shell cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME` and `… resolve-activity --brief -c android.intent.category.HOME -a android.intent.action.MAIN` | both of ours are listed; Home resolves to `sa.urtv.home/.MainActivity`; Home on the remote opens the home screen, never «الوضع الآمن», and no chooser |
+| SM2 | `adb shell am crash sa.urtv.home` once, then Home | the home screen comes back as usual (one crash is not a loop) |
+| SM3 | `am crash sa.urtv.home` three times within 2 minutes, pressing Home after each | after the third, «الوضع الآمن» with «الشاشة الرئيسية توقفت فجأة 3 مرات متتالية…»; **write down** whether Android showed a chooser or a «keeps stopping» dialog, and what Home did between the crashes |
+| SM4 | In «الوضع الآمن»: `adb shell ps -A \| grep sa.urtv.home`; then crash the main process only: `adb shell am crash <pid of sa.urtv.home>` | two processes, `sa.urtv.home` and `sa.urtv.home:safe`; «الوضع الآمن» stays on screen |
+| SM5 | Home on the remote while in «الوضع الآمن» | «الوضع الآمن» again (the loop is remembered) |
+| SM6 | «افتح الشاشة الرئيسية من جديد», wait over a minute, then SM2 | the home screen opens; one crash after the stable minute does not open «الوضع الآمن» |
+| SM7 | «كل التطبيقات», open YouTube; «إعدادات التلفزيون» | the list has every app (not ours), by name; each opens |
+| SM8 | «رجّع واجهة التلفزيون الأصلية» with USB debugging **off**, then **on** | off: the steps with the remote, nothing changed; on: the TV asks «السماح بتصحيح USB؟», then «تم الرجوع» and Home opens Google TV (as «تراجع», item 6 of the TV test below) |
+| SM9 | The same with a family PIN set | it asks for the PIN first |
+| SM10 | «أرسل تقرير المشكلة», scan the QR code with a phone | the docs/share page with 4–5 lines (no name, no address); nothing sent before «أرسل» |
+| SM11 | The done screen of «إعداد تلفزيوني» | «لو صار شي» with the six short lines |
+| SM12 | Not testable on a release build: a **hang** (8 s) three times | (left to a debug build; the counter itself is tested on a JVM: `tests/safe_mode_test.py`) |
 
 ## 2. An Android phone: Termux
 

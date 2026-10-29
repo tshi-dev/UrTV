@@ -76,6 +76,7 @@ python3 tests/updates_bell_test.py
 python3 tests/versions_test.py
 python3 tests/version_name_test.py
 python3 tests/home_tile_test.py
+python3 tests/safe_mode_test.py   # «الوضع الآمن» and the crash-loop guard (docs/IF-BROKEN.md)
 python3 tests/channel_test.py
 python3 tests/app_fixes_test.py
 python3 tests/keep_test.py
