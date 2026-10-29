@@ -6,3 +6,8 @@ android
 com\.android\.(systemui|settings|shell|phone|packageinstaller|permissioncontroller|externalstorage|inputdevices|keychain|certinstaller|defcontainer|mtp|storagemanager|location\.fused|bluetooth|nfc|server\..*|networkstack.*|tethering|wifi\..*|ext\..*|modulemetadata|providers\..*)
 com\.google\.android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata|overlay\..*|networkstack.*|gms|gsf|tv\.settings|tvsettings)
 .*webview.*
+# Added after a Haier boot loop: the MediaTek TV stack and the Android extension services (the names of Clean Your TV's CORE_RE,
+# github.com/Gathin23/cleanyourtv, MIT: optimize/lists/community/LICENSE-CleanYourTV.txt covers the lists)
+com\.cltv\.mal
+com\.mediatek\.(tis|tv\.service|tv\.agent)
+android\.ext\.(services|shared)

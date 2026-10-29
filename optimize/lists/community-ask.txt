@@ -4,6 +4,8 @@
 # an update service: the TV would stop getting its system or app updates
 (^|\.)(updater|ota|fota|systemupdate|swupdate|otaupdate|upgrade)(\.|$)
 updater
+# a firmware or app update service by any of its usual names (a Xiaomi TV's com.xiaomi.mitv.updateservice was turned off by a community list)
+(^|\.)update(service|r)?(\.|$)
 # voice and assistants
 voice
 assistant
