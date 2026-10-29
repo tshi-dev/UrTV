@@ -28,6 +28,8 @@ html{background:var(--bg)}
 #glassbg{background:var(--bg)}
 #glassbg img{width:100%;height:100%;object-fit:cover;display:block}
 #glassveil{background:radial-gradient(100% 45% at 50% 0,var(--glow),transparent),var(--veil);opacity:var(--va)}
+html{scroll-padding-bottom:calc(88px + env(safe-area-inset-bottom))}
+#t-remote{padding-bottom:calc(16px + env(safe-area-inset-bottom))}
 body{max-width:560px;margin:0 auto;padding:0 16px calc(96px + env(safe-area-inset-bottom));overflow-x:hidden}
 body.login{padding-bottom:24px}
 h1{font-size:24px;margin:8px 0 6px}

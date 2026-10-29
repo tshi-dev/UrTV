@@ -727,6 +727,20 @@ await T('a11y stuck', async () => {
   check('a text answered a11y_stuck: the toast says so', await until(async () => (await p.textContent('#msg')).startsWith('التحكم في التطبيقات الثانية متوقف: ')), await p.textContent('#msg'));
   await S.ctx.close();
 });
+await T('text field above the bar', async () => {
+  for (const [w, h] of [[360, 640], [390, 844]]) {
+    const S = await boot({ w, h });
+    const { p } = S;
+    await p.focus('#txt'); await sleep(200);
+    const [fb, bt] = await p.evaluate(() => [document.getElementById('txt').getBoundingClientRect().bottom, document.getElementById('bar').getBoundingClientRect().top]);
+    check(`${w}x${h}: the focused text field is scrolled above the tab bar`, fb <= bt, `${fb} > ${bt}`);
+    await p.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    const [lb, bt2] = await p.evaluate(() => [document.querySelector('#t-remote > details').getBoundingClientRect().bottom, document.getElementById('bar').getBoundingClientRect().top]);
+    check(`${w}x${h}: scrolled to the end, the last of the remote tab is above the tab bar`, lb <= bt2, `${lb} > ${bt2}`);
+    await S.ctx.close();
+  }
+});
+
 await T('size', async () => {
   check('the page is under 64 KB', Buffer.byteLength(HTML) < 64 * 1024, Buffer.byteLength(HTML));
   check('no inline handler attributes, one nonce\'d script, no external address', !/\son[a-z]+\s*=/.test(HTML.replace(/<script[\s\S]*<\/script>/, '')) && (HTML.match(/<script/g) || []).length === 1 && HTML.includes('<script nonce="__NONCE__">') && !/https?:\/\/(?!github)/.test(HTML));
