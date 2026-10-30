@@ -2,7 +2,11 @@
 
 Newest first. `next` is where changes land first; a release is what was tested there.
 
-## 4.0 (on `next`, not released yet)
+## 4.1
+
+The fixes for what broke after updating to 4.0: on TCL the phone remote stopped working inside other apps and the adhan was not rescheduled after an update (TCL's ASSOC_START op: `optimize/autostart.sh` now allows it; TVs already set up get it from the agent with «حدّث تلفزيوني»); a muted TV stayed at volume 0 after the adhan; the Settings key did nothing on HDMI; the screensaver cut phone pairing. Also in it: the new phone page, «نظام الساعة» 12/24, «حفظ» in long lists, «انعكاس الشاشة», and 3,679 cities in 242 countries and territories.
+
+## 4.0
 
 **Version 4.0:** the release has a name now, the `VERSION` file at the root («4.0»). The apps' `versionName` is exactly `4.0` (what Android's app info shows), the `versionCode` is still the GitHub run number, so every build installs over the last; the screens show «4.0» (the build only in the reports)
 (settings «الإصدار», «تحديث تلفزيوني», the phone page, `saver.sh show`). Updates are untouched: `version.txt` is still exactly `3.<build>` (an app installed
