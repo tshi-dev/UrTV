@@ -3301,6 +3301,47 @@ async function loadPhotoIndex(){
   }catch(e){}
 }
 
+// A daily, licensed pool from Wikimedia Commons; thumbnails are fetched only when selected.
+const COMMONS_GROUPS = [
+  {name:'space', query:'space nebula galaxy astronomy'},
+  {name:'art', query:'painting artwork landscape'},
+  {name:'nature', query:'nature landscape forest mountains'},
+  {name:'animals', query:'animals wildlife'},
+  {name:'anime', query:'anime landscape'},
+  {name:'anime-naruto', query:'Naruto'},
+  {name:'anime-one-piece', query:'One Piece'},
+  {name:'anime-ghibli', query:'Studio Ghibli'}
+];
+const COMMONS_CACHE = (()=>{ try{const x=JSON.parse(localStorage.getItem('commonsPhotoIndex3')||'{}');return x.day===riyadhDayNumber()?x:{day:-1,groups:{}};}catch(e){return{day:-1,groups:{}};} })();
+let COMMONS_BGS = COMMONS_CACHE.groups, COMMONS_DAY = COMMONS_CACHE.day, COMMONS_ATTEMPT = 0;
+async function loadCommonsPhotos(){
+  const day=riyadhDayNumber();
+  if(COMMONS_DAY===day && Object.keys(COMMONS_BGS).length) return;
+  if(Date.now()-COMMONS_ATTEMPT<15*60*1000) return;
+  COMMONS_ATTEMPT=Date.now();
+  try{
+    const values=await Promise.all(COMMONS_GROUPS.map(async group=>{
+      const url='https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrlimit=24'
+        +'&gsrsearch='+encodeURIComponent(group.query)+'&gsrsort=random&prop=imageinfo&iiprop=url%7Cextmetadata%7Csize&iiextmetadatafilter=Artist%7CCredit%7CLicenseShortName&iiurlwidth=3840&format=json&origin=*';
+      const r=await fetchT(url,12000); if(!r.ok) return [group.name,[]];
+      const j=await r.json(), pages=Object.values(j.query?.pages||{});
+      const clean=s=>String(s||'').replace(/<[^>]*>/g,' ').replace(/&amp;/g,'&').replace(/&#39;/g,"'").replace(/&quot;/g,'"').replace(/\s+/g,' ').trim();
+      const list=pages.map(p=>{
+        const i=p.imageinfo?.[0], m=i?.extmetadata||{};
+        const text=[p.title,m.Artist?.value,m.Credit?.value,m.ImageDescription?.value,m.ObjectName?.value].map(clean).join(' ');
+        if(/\b(cosplay|cosplayer|cosplaying|convention|con cosplay|costume party)\b/i.test(text)) return null;
+        const ratio=i?.width&&i?.height?i.width/i.height:0;
+        const highRes=i?.width>=1920&&i?.height>=1080&&ratio>=1.5&&ratio<=2.05;
+        return highRes&&i?.thumburl&&m.LicenseShortName?.value&&i.descriptionurl?.startsWith('https://commons.wikimedia.org/')
+          ?{u:i.thumburl,c:clean(m.Artist?.value||m.Credit?.value),license:clean(m.LicenseShortName.value),page:i.descriptionurl,d:.82,source:'commons'}:null;
+      }).filter(x=>x&&x.u);
+      return [group.name,list];
+    }));
+    const groups=Object.fromEntries(values.filter(([,list])=>list.length));
+    if(Object.keys(groups).length){COMMONS_BGS=groups;COMMONS_DAY=day;try{localStorage.setItem('commonsPhotoIndex3',JSON.stringify({day,groups}));}catch(e){}}
+  }catch(e){}
+}
+
 let REVEALED = false;
 function reveal(){
   if(REVEALED) return;
@@ -3322,7 +3363,14 @@ function showBackground(url, b){
   ph.classList.remove('settle'); void ph.offsetWidth; ph.classList.add('settle');
   cardBlurLater(url);
   const cr = document.getElementById('credit');
-  if(cr) cr.textContent = b.c ? 'الصورة: ' + b.c : '';
+  if(cr){
+    cr.replaceChildren();
+    if(b.source === 'commons' && b.page){
+      cr.style.display='block'; cr.append(document.createTextNode('الصورة: '));
+      const a=document.createElement('a'); a.href=b.page; a.target='_blank'; a.rel='noreferrer';
+      a.textContent=[b.c,b.license,'Wikimedia Commons'].filter(Boolean).join(' · '); cr.append(a);
+    } else { cr.style.display=b.c?'block':'none'; if(b.c) cr.textContent='الصورة: '+b.c; }
+  }
 }
 
 // ---- card style blur: a copy of the photo behind the card, blurred once per photo, never a live backdrop-filter ----
@@ -3448,12 +3496,14 @@ function applyBackground(force){
     BG_SLOT = slot; BG_TURN++;   // a photo of theirs still on its way for an earlier turn is dropped
     const only = OWN_ONLY(), own = ownPhotos();
     const set = !only && REMOTE_BGS.length ? photoSet(REMOTE_BGS.length).map(k => REMOTE_BGS[k]) : [];
+    const commons = only ? [] : COMMONS_GROUPS.flatMap(g => COMMONS_BGS[g.name] || []).map(b => ({url:b.u,b}));
     const local = BGS[slot % BGS.length];
     // what rotates: ours (the hosted set, else the bundled photos once the owner has some), then the owner's; only = theirs alone
     let pool = own;
     if(!only){
-      const ours = set.length ? set.map(b => ({url: PHOTO_BASE + b.f, b})) : own.length ? BGS.map(b => ({url: b.u, b, bundled: true})) : [];
-      pool = ours.concat(own);
+      const ours = set.map(b => ({url: PHOTO_BASE + b.f, b}));
+      const bundled = !ours.length && !commons.length && own.length ? BGS.map(b => ({url: b.u, b, bundled: true})) : [];
+      pool = ours.concat(commons, bundled, own);
     }
     if(!pool.length){ showBackground(local.u, local); return; }
     const pick = pool[slot % pool.length], url = pick.url, b = pick.b;
@@ -3605,6 +3655,7 @@ function boot(){
   document.title = 'شاشة تلفزيونك';
   applyBackground(true);
   loadPhotoIndex().then(() => applyBackground(true));
+  loadCommonsPhotos().then(() => applyBackground(true));
   setInterval(() => applyBackground(false), 60*1000);
   tickClock(); tickDates(); tickOccasion(); renderSlot();
   loadMarkets();
@@ -3637,7 +3688,7 @@ function boot(){
     const d = FMT_DATE.format(new Date());
     if(d !== lastDay){
       lastDay = d; tickDates(); tickOccasion(); renderPanel(false);
-      later(() => { loadPhotoIndex().then(() => applyBackground(true)); loadPrayers(); if(NEEDS_MATCHES) loadMatches(); if(USES('shows')) loadWeek(); loadWeather(); });   // each TV at its own minute
+      later(() => { loadPhotoIndex().then(() => applyBackground(true)); loadCommonsPhotos().then(() => applyBackground(true)); loadPrayers(); if(NEEDS_MATCHES) loadMatches(); if(USES('shows')) loadWeek(); loadWeather(); });   // each TV at its own minute
     }
   }, 60*1000);
 }
