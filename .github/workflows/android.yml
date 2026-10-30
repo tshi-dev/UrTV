@@ -4,6 +4,7 @@ on:
   push:
     branches: [master, next]   # next: a test build in apk-next, before anything reaches apk-latest
     paths: ['src/**', 'assets/**', 'android/**', 'VERSION', '.github/workflows/android.yml']
+    # a release whose last commit touches none of these builds nothing (4.1's first try): its merge then needs a change here or in VERSION
   workflow_dispatch:
 
 permissions:
