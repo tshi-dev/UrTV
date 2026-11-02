@@ -65,7 +65,7 @@ adhan_rows = til.split("KIND_ADHAN_TOGGLE, getString(R.string.adhan_auto)")[1].s
 check("that tab has everything: on or off, the voice, the Fajr voice, short, any key stops it, the volume",
       all(k in til for k in ("KIND_ADHAN_TOGGLE", "KIND_VOICE", "KIND_FAJR_VOICE", "KIND_SHORT", "KIND_STOPKEY", "KIND_VOLUME")), "")
 check("hidden: the settings' «الأذان» opens the same screen on its adhan tab, through the home, behind the same family lock",
-      "openAdhanSettings(); } });" in settings and 'launchGuarded(ParentalPolicy.PILL_LISTEN, adhanSettingsIntent(), "إعدادات الأذان")' in main)
+      "openAdhanSettings(); } });" in settings and 'launchGuarded(ParentalPolicy.PILL_LISTEN, adhanSettingsIntent(), S.t("إعدادات الأذان"))' in main)
 check("adhanSettingsIntent opens it on the adhan tab", 'putExtra(sa.urtv.home.tilawah.MainActivity.EXTRA_OPEN, "adhan")' in main)
 req = main.split("private void openRequested(Intent i) {")[1].split("\n    }\n")[0]
 check("the home opens the adhan settings when asked with open=adhan, behind the family lock (shown or hidden button), and forgets the request",

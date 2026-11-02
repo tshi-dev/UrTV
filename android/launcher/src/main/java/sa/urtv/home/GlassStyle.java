@@ -82,9 +82,10 @@ public final class GlassStyle {
 
     /**
      * د · رملي (docs/UX-REVIEW.md): white cards on sand, hairline borders, and a calm focus: a soft green fill with a DGA green line
-     * round it (sa-flag 600 #1B8354 in the light, 400 #54C08A in the dark) instead of a solid block. The photo shows more under a lighter veil.
+     * round it (sa-flag 600 #1B8354 in the light, 400 #54C08A in the dark) instead of a solid block; green words in the light are a darker flag green,
+     * #166A45, as 600 reads at 4.3:1 on sand, under MIN_CONTRAST. The photo shows more under a lighter veil.
      */
-    public static final Look SAND_LIGHT = new Look(true, 0xFFF6F4EF, 0xF6F4EF, 0.55f, 0xFF1B1F1D, 0xFF545A57, 0xFF1B8354, 0xFF8E2A10,
+    public static final Look SAND_LIGHT = new Look(true, 0xFFF6F4EF, 0xF6F4EF, 0.55f, 0xFF1B1F1D, 0xFF545A57, 0xFF166A45, 0xFF8E2A10,
             0xE6FFFFFF, 0xFFE3DFD5, 0xFFFFFFFF, 0xFFEEF6F1, 0xFF1B1F1D, 0xFF3F4A44, 0xF2FFFFFF, 0xFF1B8354);
     public static final Look SAND_DARK = new Look(false, 0xFF151A17, 0x151A17, 0.80f, 0xFFF2F1EC, 0xFFB8BDB9, 0xFF54C08A, 0xFFFFB4A0,
             0xE61E2420, 0x1AFFFFFF, 0xFF1E2420, 0xFF1F3A2C, 0xFFF2F1EC, 0xFFC9D6CE, 0xF21E2420, 0xFF54C08A);
