@@ -19,6 +19,8 @@ import java.util.TimeZone;
 final class MarketData {
     /** the page's MARKET_URL (src/template.html): the same file */
     static final String URL = "https://raw.githubusercontent.com/tshi-dev/UrTV/data-markets/markets/markets.json";
+    /** a year of daily closes per symbol (CI, once a day; «أسبوع / شهر / سنة»): a file of its own, so only a TV that opens this page downloads it */
+    static final String DAILY_URL = "https://raw.githubusercontent.com/tshi-dev/UrTV/data-markets/markets/daily.json";
     /** the riyal's peg to the dollar: fixed by the central bank, not fetched */
     static final double PEG = 3.75;
     /** grams in a troy ounce: gold and silver are quoted per ounce in dollars */
@@ -89,13 +91,36 @@ final class MarketData {
                 Map<?, ?> x = (Map<?, ?>) e.getValue();
                 double p = num(x.get("p"));
                 if (Double.isNaN(p) || p <= 0) continue;
-                out.put((String) e.getKey(), new Quote(p, num(x.get("v")), numbers(x.get("c")), time(x.get("t")), num(x.get("vol")), num(x.get("yh")), num(x.get("yl")),
-                        numbers(x.get("d")), day(x.get("df")), day(x.get("dl"))));
+                out.put((String) e.getKey(), new Quote(p, num(x.get("v")), numbers(x.get("c")), time(x.get("t")), num(x.get("vol")), num(x.get("yh")), num(x.get("yl"))));
             }
             return new MarketData(time(m.get("updated")), out);
         } catch (RuntimeException e) {
             return null;
         }
+    }
+
+    /** These quotes with the year's daily closes of CI's daily file (null or not that file: as they are). */
+    MarketData withDaily(String dailyJson) {
+        if (dailyJson == null) return this;
+        Map<?, ?> days;
+        try {
+            Object root = new Reader(dailyJson).read();
+            if (!(root instanceof Map) || !(((Map<?, ?>) root).get("daily") instanceof Map)) return this;
+            days = (Map<?, ?>) ((Map<?, ?>) root).get("daily");
+        } catch (RuntimeException e) {
+            return this;
+        }
+        Map<String, Quote> out = new LinkedHashMap<>();
+        for (Map.Entry<String, Quote> e : quotes.entrySet()) {
+            Quote q = e.getValue();
+            Object x = days.get(e.getKey());
+            if (x instanceof Map) {
+                Map<?, ?> m = (Map<?, ?>) x;
+                q = new Quote(q.p, q.v, q.c, q.t, q.vol, q.yh, q.yl, numbers(m.get("d")), day(m.get("df")), day(m.get("dl")));
+            }
+            out.put(e.getKey(), q);
+        }
+        return new MarketData(updated, out);
     }
 
     private static double num(Object o) { return o instanceof Double ? (Double) o : Double.NaN; }

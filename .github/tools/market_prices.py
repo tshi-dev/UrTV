@@ -14,8 +14,10 @@ Out: markets/markets.json = {"updated", "quotes": {SYMBOL: {"p": price, "v": the
 closes, at most 30], "t": when this price was last confirmed, and when Yahoo's answer has them: "vol": the day's volume,
 "yh"/"yl": the 52-week high and low}}} and markets/report.json. The last three cost nothing: they are in the same answer's
 meta (the home's «الأسواق» page shows them; docs/PROPOSALS-NOV2.md §6), and a quote without them is as before.
-Once a day, a second request per symbol (DAILY: a year of daily closes) adds "d": [the closes, oldest first], "df"/"dl": the
-first and last day (YYYY-MM-DD) and "dt": when they were fetched; the page's «أسبوع / شهر / سنة» come from them. Crypto has none. A symbol that fails this
+Once a day, a second request per symbol (DAILY: a year of daily closes) writes markets/daily.json = {"updated", "daily":
+{SYMBOL: {"d": [the closes, oldest first], "df"/"dl": the first and last day (YYYY-MM-DD), "dt": when they were fetched}}},
+for the home's «الأسواق» page («أسبوع / شهر / سنة»). A file of its own: every TV's page downloads markets.json every 15 minutes
+and stays about 20 kB; only a TV that opens the markets page downloads the year (about 140 kB), once a day. Crypto has none. A symbol that fails this
 time keeps its previous quote and its old "t" (MARKETS_PREV is a directory holding the last file), so the page sees
 how old it is. Which symbols a run asks for depends on the clock (due()): the open exchanges and the 24-hour assets
 every run, the closed ones about hourly.
@@ -43,6 +45,7 @@ CHART = "https://query1.finance.yahoo.com/v8/finance/chart/{}?interval=15m&range
 DAILY = "https://query1.finance.yahoo.com/v8/finance/chart/{}?interval=1d&range=1y"
 DAILY_EVERY_H = 20   # the daily closes are asked again after this many hours: once a day
 DAILY_KEYS = ("d", "df", "dl", "dt")
+QUOTE_MAX_BYTES = 32 * 1024   # markets.json, downloaded by every TV every 15 minutes: the year never goes in it
 PAUSE_S = float(os.environ.get("MARKETS_PAUSE", "0.4"))   # between two requests
 CLOSED_REFRESH_MIN = 55   # a closed exchange's last close is confirmed about hourly
 CLOSES_MAX = 30
@@ -175,7 +178,14 @@ def main(argv):
             prev = json.loads((PREV / "markets.json").read_text(encoding="utf-8")).get("quotes", {})
         except ValueError:
             prev = {}
-    quotes = dict(prev)
+    quotes = {sym: {k: v for k, v in q.items() if k not in DAILY_KEYS} for sym, q in prev.items()}   # an older file may still carry a year
+    days, days_updated = {}, None
+    if PREV and (PREV / "daily.json").exists():
+        try:
+            old = json.loads((PREV / "daily.json").read_text(encoding="utf-8"))
+            days, days_updated = old.get("daily", {}), old.get("updated")
+        except ValueError:
+            days = {}
     report = {"asked": 0, "ok": 0, "failed": [], "notfound": [], "skipped": 0, "stopped": ""}
     asked = 0
     for sym, kind in symbols().items():
@@ -199,16 +209,13 @@ def main(argv):
                 break
             continue
         if q:
-            for k in DAILY_KEYS:   # the year's line is asked once a day, not with each quote: keep it
-                if k in (prev.get(sym) or {}):
-                    q[k] = prev[sym][k]
             quotes[sym] = q
             report["ok"] += 1
     # the year's daily closes, once a day per symbol (a second request each); a failure keeps the old line
     report.update({"daily_asked": 0, "daily_ok": 0, "daily_failed": 0})
     if not report["stopped"]:
         for sym in list(quotes):
-            if not daily_due(sym, quotes[sym], now, everything):
+            if not daily_due(sym, days.get(sym), now, everything):
                 continue
             time.sleep(PAUSE_S)
             report["daily_asked"] += 1
@@ -220,8 +227,9 @@ def main(argv):
                     break
                 continue
             if d:
-                quotes[sym].update(d)
+                days[sym] = d
                 report["daily_ok"] += 1
+    days = {sym: d for sym, d in days.items() if sym in quotes}   # a symbol that left the list leaves the year too
     OUT.mkdir(parents=True, exist_ok=True)
     # "updated" moves only when something was confirmed: the page trusts a file for 3 hours from it
     updated = now.isoformat(timespec="seconds") if report["ok"] else None
@@ -231,6 +239,9 @@ def main(argv):
         except ValueError:
             pass
     (OUT / "markets.json").write_text(json.dumps({"updated": updated, "quotes": quotes}, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    if report["daily_ok"] or days:
+        (OUT / "daily.json").write_text(json.dumps({"updated": now.isoformat(timespec="seconds") if report["daily_ok"] else days_updated, "daily": days},
+                                                   ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     (OUT / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=1), encoding="utf-8")
     print(json.dumps(report, ensure_ascii=False))
     gh = os.environ.get("GITHUB_OUTPUT")

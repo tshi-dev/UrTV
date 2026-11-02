@@ -102,16 +102,48 @@ check("daily: 2 decimals under 1000", mp.small(26.1049) == 26.1 and mp.small(337
 check("daily: once a day (20 hours), never for crypto", mp.daily_due("2222.SR", {}, RUN) and not mp.daily_due("2222.SR", {"dt": (RUN - datetime.timedelta(hours=3)).isoformat()}, RUN)
       and mp.daily_due("2222.SR", {"dt": (RUN - datetime.timedelta(hours=21)).isoformat()}, RUN) and not mp.daily_due("BTC-USD", {}, RUN, True))
 mp.fetch_json = saved_fetch
-# the size every TV downloads: each symbol with a year of daily points, as rounded
-year_q = {"p": 26.1, "v": 25.92, "c": [26.04] * 30, "t": RUN.isoformat(timespec="seconds"), "vol": 14200000.0, "yh": 28.9, "yl": 23.2,
-          "d": [mp.small(20 + i / 37) for i in range(250)], "df": "2025-11-03", "dl": "2026-11-02", "dt": RUN.isoformat(timespec="seconds")}
-size = len(json.dumps({"updated": "x", "quotes": {s: year_q for s in mp.symbols()}}, separators=(",", ":")))
-check(f"the file with a year's daily line for every symbol stays under 200 kB ({size // 1024} kB)", size < 200 * 1024, size)
 check("run: the one that failed keeps its old quote and its old time", q["NVDA"] == {"p": 100.0, "v": 99.0, "c": [99, 100], "t": "2026-10-22T10:00:00+00:00"}, q.get("NVDA"))
 check("run: the 404 symbol is left out", "MSFT" not in q and "MSFT" in rep["notfound"], rep)
 check("run: Tadawul symbols are closed and not asked (none had a quote yet, so they are asked once)", "2222.SR" in q, list(q)[:5])
 check("run: the file says when it was confirmed", got["updated"] == RUN.isoformat(timespec="seconds"), got["updated"])
 check("run: the file is small", len(json.dumps(got)) < 60000, len(json.dumps(got)))
+
+# the year goes to daily.json, never to the 15-minute file: a run where every daily request answers, from an older file that still had a year in it
+legacy = tempfile.mkdtemp()
+(Path(legacy) / "markets.json").write_text(json.dumps({"updated": "2026-10-22T10:00:00+00:00", "quotes": {
+    "2222.SR": {"p": 26.0, "v": 25.9, "c": [26.0], "t": "2026-10-22T10:00:00+00:00", "d": [1, 2], "df": "2025-11-03", "dl": "2025-11-04", "dt": "x"}}}))
+out_d = tempfile.mkdtemp()
+mp.OUT, mp.PREV = Path(out_d), Path(legacy)
+year_closes = lambda n: [round(20 + i / 37 + (i % 7) / 13, 4) for i in range(n)]
+def fake_year(url):
+    if "interval=1d" in url:
+        big = "%5ETASI" in url or "GSPC" in url
+        return {"chart": {"result": [{"meta": {}, "timestamp": [day0 + i * 86400 for i in range(250)],
+                                      "indicators": {"quote": [{"close": [9000 + v * 10 if big else v for v in year_closes(250)]}]}}]}}
+    return {"chart": {"result": [{"meta": {"regularMarketPrice": 26.1, "chartPreviousClose": 25.92, "regularMarketVolume": 14200000, "fiftyTwoWeekHigh": 28.9,
+                                           "fiftyTwoWeekLow": 23.2}, "indicators": {"quote": [{"close": year_closes(100)}]}}]}}
+mp.fetch_json = fake_year
+mp.main(["--all"])
+mp.fetch_json = saved_fetch
+quotes_text = (Path(out_d) / "markets.json").read_text()
+daily_file = json.loads((Path(out_d) / "daily.json").read_text())
+check("split: the 15-minute file carries no year (an older file's year is dropped), the daily file has it",
+      '"d":' not in quotes_text and '"df"' not in quotes_text and len(daily_file["daily"]["2222.SR"]["d"]) == 250 and "BTC-USD" not in daily_file["daily"]
+      and daily_file["updated"] == RUN.isoformat(timespec="seconds"), list(daily_file["daily"])[:3])
+check(f"split: the 15-minute file every TV downloads stays small ({len(quotes_text.encode()) // 1024} kB, at most {mp.QUOTE_MAX_BYTES // 1024} kB)",
+      len(quotes_text.encode()) <= mp.QUOTE_MAX_BYTES, len(quotes_text.encode()))
+check(f"split: the daily file, fetched only by the markets page once a day, under 200 kB ({len(json.dumps(daily_file, separators=(',', ':'))) // 1024} kB)",
+      len(json.dumps(daily_file, separators=(",", ":"))) < 200 * 1024)
+# the next run, the same day: the year is not asked again and is kept
+out_e = tempfile.mkdtemp()
+mp.OUT, mp.PREV = Path(out_e), Path(out_d)
+asked_daily = []
+mp.fetch_json = lambda url: (asked_daily.append(url), fake_year(url))[1] if "interval=1d" in url else fake_year(url)
+mp.main([])
+mp.fetch_json = saved_fetch
+kept = json.loads((Path(out_e) / "daily.json").read_text())
+check("split: later the same day the year is not asked again, and is kept as it was", not asked_daily and kept["daily"] == daily_file["daily"], len(asked_daily))
+mp.OUT, mp.PREV = Path(OUT), Path(PREV)
 
 # a run in which everything fails: nothing new, the old file stays as it was
 (Path(PREV) / "markets.json").write_text((Path(OUT) / "markets.json").read_text())

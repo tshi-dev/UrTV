@@ -79,10 +79,16 @@ public final class MarketsRun {
         // 30 daily closes 100..129 from 2026-10-01 to 2026-11-01; today's price 131 confirmed on 2026-11-02 (after the line's last day)
         StringBuilder d = new StringBuilder();
         for (int i = 0; i < 30; i++) d.append(i == 0 ? "" : ",").append(100 + i);
-        String f = "{\"quotes\":{\"2222.SR\":{\"p\":131,\"v\":129,\"c\":[130,131],\"t\":\"2026-11-02T12:00:00+00:00\",\"d\":[" + d
-            + "],\"df\":\"2026-10-01\",\"dl\":\"2026-11-01\"},\"1120.SR\":{\"p\":60,\"v\":59,\"c\":[59,60],\"t\":\"2026-11-01T12:00:00+00:00\",\"d\":[" + d
-            + "],\"df\":\"2026-10-01\",\"dl\":\"2026-11-01\"},\"7010.SR\":{\"p\":41.5,\"v\":41,\"c\":[41,41.5],\"t\":\"2026-11-02T12:00:00+00:00\"}}}";
-        MarketData m = MarketData.parse(f);
+        String f = "{\"quotes\":{\"2222.SR\":{\"p\":131,\"v\":129,\"c\":[130,131],\"t\":\"2026-11-02T12:00:00+00:00\"},"
+            + "\"1120.SR\":{\"p\":60,\"v\":59,\"c\":[59,60],\"t\":\"2026-11-01T12:00:00+00:00\"},\"7010.SR\":{\"p\":41.5,\"v\":41,\"c\":[41,41.5],\"t\":\"2026-11-02T12:00:00+00:00\"}}}";
+        String daily = "{\"updated\":\"2026-11-02T03:00:00+00:00\",\"daily\":{\"2222.SR\":{\"d\":[" + d + "],\"df\":\"2026-10-01\",\"dl\":\"2026-11-01\"},"
+            + "\"1120.SR\":{\"d\":[" + d + "],\"df\":\"2026-10-01\",\"dl\":\"2026-11-01\"},\"GONE.SR\":{\"d\":[1,2]}}}";
+        check("ranges: the 15-minute file alone has no year (none of its quotes has ranges)", !MarketData.hasRanges(MarketData.parse(f).of("2222")), "");
+        check("ranges: not the daily file -> the quotes as they are", MarketData.parse(f).withDaily("<html>").of("2222").d.length == 0
+            && MarketData.parse(f).withDaily(null).of("2222").d.length == 0, "");
+        MarketData m = MarketData.parse(f).withDaily(daily);
+        check("ranges: the daily file adds the year to the quotes it names, and nothing for one that is not in the 15-minute file",
+            m.quotes.size() == 3 && !m.quotes.containsKey("GONE.SR") && near(m.of("2222").p, 131), m.quotes.keySet());
         MarketData.Quote q = m.of("2222");
         check("ranges: the year's daily closes and their first and last day are read", q.d.length == 30 && q.df == MarketData.day("2026-10-01") && q.dl == MarketData.day("2026-11-01"), q.d.length);
         MarketData.Range today = MarketData.range(q, MarketData.TODAY);
