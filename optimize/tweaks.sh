@@ -3,7 +3,6 @@
 #   optimize/tweaks.sh apply     - animations at half length
 #                                - Play Store kept from running in the background (it stays installed and opens
 #                                  normally; on one set its idle CPU fell 31% -> 6%)
-#                                - closed apps frozen while cached (no CPU in the background)
 #                                - app caches trimmed, only when the free storage is low (under 1 GB or 10%): the
 #                                  caches (thumbnails, app data to load) are useful while there is room
 #   optimize/tweaks.sh restore   back to the values the TV had before (the journal optimize/run/tweaks-journal.txt, written
@@ -23,6 +22,9 @@ PY="${PY:-optimize/venv/bin/python}"
 CACHED="${CACHED_LIMIT:-}"
 JOURNAL="${URTV_RUN_DIR:-optimize/run}/tweaks-journal.txt"
 KEYS="window_animation_scale transition_animation_scale animator_duration_scale cached_apps_freezer max_cached_processes"
+# cached_apps_freezer is no longer set (one report linked it to apps hanging after standby; Android 14 has it on anyway, on 11-13 it is experimental):
+# apply leaves it at the TV's own value and does not record it. It stays in KEYS for restore and status, so a TV an older run set to «enabled»
+# (its journal has the line) gets its original back, by restore and by the next apply.
 # What this Android has: `device_config` is Android 10 (SDK 29) and newer, `am set-standby-bucket` is Android 9 (SDK 28) and newer, and the «restricted» bucket
 # is Android 11 (SDK 30) and newer (Android 9 and 10 take «rare»). An SDK the TV did not say counts as «too old to be sure»: those two settings are left alone.
 SDK=$("$PY" -I optimize/tv.py "getprop ro.build.version.sdk" 2> /dev/null | tr -dc '0-9') || SDK=""
@@ -30,6 +32,7 @@ SDK_SAY=${SDK:-unknown}; SDK=${SDK:-0}
 SKIPPED=()   # "key: why", written to the journal so the record says what was not touched and why
 if [ "$SDK" -lt 29 ]; then KEYS=${KEYS/ max_cached_processes/}; SKIPPED+=("max_cached_processes: device_config needs Android 10 (this TV is SDK $SDK_SAY)"); fi
 BUCKET=restricted; [ "$SDK" -ge 30 ] || BUCKET=rare
+AKEYS=" $KEYS "; AKEYS=${AKEYS/ cached_apps_freezer / }; AKEYS=$(echo $AKEYS)   # what apply records and sets (after the SDK trimming above)
 getcmd() { case "$1" in max_cached_processes) echo "device_config get activity_manager $1" ;; *) echo "settings get global $1" ;; esac; }
 putcmd() {   # key value: a value that was not set (null) is deleted
   case "$1" in
@@ -97,7 +100,7 @@ case "${1:?usage: optimize/tweaks.sh apply|restore|status}" in
       else echo "Tweaks: none recorded (nothing was changed by optimize/tweaks.sh apply)"; fi
       exit 0
     fi
-    for k in $KEYS; do echo "- tweak $k: was $(jget "$k"), now $(tvget "$k")"; done
+    for k in $KEYS; do [ "$k" != cached_apps_freezer ] || [ -n "$(jget "$k")" ] || continue; echo "- tweak $k: was $(jget "$k"), now $(tvget "$k")"; done
     for k in $PSKEYS; do echo "- tweak $k: was $(jget "$k"), now $(psget "$k")"; done
     exit 0 ;;
   *) echo "usage: optimize/tweaks.sh apply|restore|status"; exit 1 ;;
@@ -110,7 +113,7 @@ if [ "$1" = apply ]; then
   if [ ! -f "$JOURNAL" ]; then
     mkdir -p "$(dirname "$JOURNAL")"; rm -f "$JOURNAL_DONE"
     { echo "# what the TV had before optimize/tweaks.sh apply (null: it was not set; unknown: it could not be read, so it was not changed); optimize/tweaks.sh restore puts exactly this back"
-      for k in $KEYS; do echo "$k=$(tvget "$k")"; done
+      for k in $AKEYS; do echo "$k=$(tvget "$k")"; done
       for k in $PSKEYS; do echo "$k=$(psget "$k")"; done
       for sk in "${SKIPPED[@]+"${SKIPPED[@]}"}"; do echo "skipped_${sk%%:*}=${sk#*: }"; done; } > "$JOURNAL.tmp" && mv "$JOURNAL.tmp" "$JOURNAL"
   fi
@@ -147,7 +150,9 @@ if [ "$1" = apply ]; then
   else
     change max_cached_processes null   # Android's own limit (undoes an older run; the journal has the original)
   fi
-  change cached_apps_freezer enabled
+  # a TV an older run set (its journal has the freezer's original): put that back now; a TV that never had it set is not touched
+  o=$(jget cached_apps_freezer)
+  if [[ "$o" =~ ^(null|[A-Za-z0-9_.-]+)$ ]] && [ "$o" != unknown ]; then cmds+=("$(putcmd cached_apps_freezer "$o")"); want+=("cached_apps_freezer=$o"); fi
   # trimming throws away every app's cache (thumbnails, things apps would load again): only worth it when storage is short
   space=$("$PY" -I optimize/tv.py "df -k /data 2> /dev/null | tail -n 1" | tr -d '\r' | awk '{print $2, $4}') || space=""
   read -r total avail <<< "$space" || true
@@ -164,7 +169,8 @@ if [ "$1" = apply ]; then
 elif [ -f "$JOURNAL" ]; then
   for k in $KEYS; do
     o=$(jget "$k")
-    if [ "$o" = unknown ] || [ -z "$o" ]; then echo "!! $k: what the TV had was not recorded (it could not be read), so it is left as it is"
+    if [ "$k" = cached_apps_freezer ] && [ -z "$o" ]; then :   # not set by this version (no line in the journal): nothing to put back
+    elif [ "$o" = unknown ] || [ -z "$o" ]; then echo "!! $k: what the TV had was not recorded (it could not be read), so it is left as it is"
     elif [[ "$o" =~ ^(null|[A-Za-z0-9_.-]+)$ ]]; then cmds+=("$(putcmd "$k" "$o")"); want+=("$k=$o")
     else echo "!! $k: the recorded value is not one this script puts back; left as it is"; fi
   done
@@ -201,5 +207,5 @@ for kv in "${pswant[@]+"${pswant[@]}"}"; do   # the standby bucket is the system
   fi
 done
 if [ "$1" = restore ] && [ -f "$JOURNAL" ] && [ "$bad" = 0 ]; then mv -f "$JOURNAL" "$JOURNAL_DONE"; fi   # kept when the TV refused something
-if [ "$1" = apply ]; then echo "Animation scale $v, Play Store background: $bg, cached-app freezer: on"
+if [ "$1" = apply ]; then echo "Animation scale $v, Play Store background: $bg"
 else echo "Tweaks undone, Play Store background: $bg"; fi
