@@ -169,7 +169,7 @@ public class MainActivity extends Activity {
 
     // the cards were changed from the phone while the home screen is in front: follow now, not at the next return
     private final BroadcastReceiver cardsChanged = new BroadcastReceiver() {
-        @Override public void onReceive(Context c, Intent i) { if (resumed) { homeCard.refresh(); footballHeader(); wireFocus(); } }
+        @Override public void onReceive(Context c, Intent i) { if (resumed) { homeCard.refresh(); wireFocus(); } }
     };
 
     // ---------------------------------------------------------------- lifecycle
@@ -229,7 +229,6 @@ public class MainActivity extends Activity {
         updateClock();
         updateNowPlaying();
         homeCard.refresh();
-        footballHeader();   // «الواجهة» may have changed while the settings were in front
         readAnimationScale();
         loadTvRows();   // what one watched since: «أكمل المشاهدة» moves on
         showUpdateResult();
@@ -1104,6 +1103,7 @@ public class MainActivity extends Activity {
 
     /** Explicit D-pad targets: one row per press, ends of rows and of the top bar don't wrap. */
     private void wireFocus() {
+        footballHeader();   // the home card was just made again (or not): «الواجهة» may have changed with it
         int d = dockCards.size(), g = gridCards.size();
         // the «المهام» card, when it is among the home cards, is a stop between the pills and the dock
         View card = homeCard == null ? null : homeCard.live();
@@ -2491,6 +2491,7 @@ public class MainActivity extends Activity {
 
     /** The football home: the weather has its own card and the clock sits higher, so the greeting and its weather line are not shown. */
     private void footballHeader() {
+        if (greeting == null) return;
         boolean football = homeCard != null && homeCard.isFootball();
         greeting.setVisibility(football ? View.GONE : View.VISIBLE);
         if (football) weatherLine.setVisibility(View.GONE);
