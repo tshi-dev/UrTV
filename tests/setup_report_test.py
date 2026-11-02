@@ -23,7 +23,8 @@ java_allowed = "".join(re.findall(r'"((?:[^"\\]|\\.)*)"', java_allowed)).encode(
 check("the allowlist is share.py's ALLOWED_LINE, to the letter", java_allowed == share.ALLOWED_LINE.pattern, (java_allowed, share.ALLOWED_LINE.pattern))
 check("the page is share.py's PAGE", f'PAGE = "{share.PAGE}"' in src)
 docs = (ROOT / "docs/share/index.html").read_text(encoding="utf-8")
-check("docs/share/ reads the report from the # (decodeURIComponent of location.hash)", "decodeURIComponent(location.hash.slice(1))" in docs)
+check("docs/share/ reads the report from the #: packed («z.», raw deflate, base64url) or, from older apps, quoted",
+      "unpack(location.hash.slice(1))" in docs and 'new DecompressionStream("deflate-raw")' in docs and "decodeURIComponent(hash)" in docs)
 
 if not shutil.which("javac"):
     print("SKIP the report on a JVM: no javac")
@@ -65,14 +66,30 @@ for f in (OUT / "report.md", tricky):
     t = f.read_text(encoding="utf-8")
     check(f"the quoting is Python's urllib.parse.quote ({f.name})", jr("quote", f) == urllib.parse.quote(t), (jr("quote", f)[:200], urllib.parse.quote(t)[:200]))
 url = jr("url", OUT / "report.md")
-check("the link is share.py's: PAGE + # + the quoted report, short enough for a QR code", url == share.PAGE + "#" + urllib.parse.quote(rep) and len(url.encode()) <= 2953, (url[:120], len(url)))
-check("docs/share/ gets the very report back from that link", urllib.parse.unquote(urllib.parse.urlsplit(url).fragment) == rep)
+legacy = share.PAGE + "#" + urllib.parse.quote(rep)
+frag = urllib.parse.urlsplit(url).fragment if url != "null" else ""
+check("the link is share.py's: PAGE + # + the packed report (share.link), short enough for a QR code", url == share.link(rep) and frag.startswith("z.")
+      and len(url.encode()) <= 2953, (url[:120], len(url)))
+check("the packed link is far shorter than the quoted one (tester step 18: the QR code was too big and dense)", len(url) * 2 < len(legacy), (len(url), len(legacy)))
+check("share.py gets the very report back from that link", share.unpack(frag) == rep)
+check("share.py's own link round-trips (Arabic, tabs, signs)", share.unpack(urllib.parse.urlsplit(share.link(tricky.read_text(encoding="utf-8"))).fragment) == tricky.read_text(encoding="utf-8"))
+import shutil as _sh
+if _sh.which("node"):
+    js = re.search(r"(function unpack\(hash\) \{.*?\n  \})", docs, re.S).group(1)
+    prog = js + "\nconst h = process.argv.slice(1);\nPromise.all(h.map(unpack)).then(r => process.stdout.write(JSON.stringify(r)));"
+    import json as _json
+    r = subprocess.run(["node", "-e", prog, frag, urllib.parse.urlsplit(legacy).fragment], capture_output=True, text=True, timeout=60)
+    back = _json.loads(r.stdout) if r.returncode == 0 and r.stdout else None
+    check("docs/share/'s own unpack() gets the very report back: from the packed link and from an older app's quoted one", back == [rep, rep], (r.stderr[-300:], back and [b[:60] for b in back]))
+else:
+    print("SKIP node is not installed: the page's unpack()")
 try:
     import segno
-    check("share.py's QR code (segno, error level L) holds this link", segno.make(url, error="l").version <= 40)
+    check("share.py's QR code (segno, error level L) holds this link, and is smaller than the quoted link's", segno.make(url, error="l").version < segno.make(legacy, error="l").version)
 except ImportError:
     print("SKIP segno is not installed: the QR check")
-big = OUT / "big.txt"; big.write_text("x" * 4000)
+import hashlib as _hl
+big = OUT / "big.txt"; big.write_text("".join(_hl.sha256(str(i).encode()).hexdigest() for i in range(150)))   # 9600 characters that do not pack
 check("a report too long for a QR code gives no link (share.py says the same)", jr("url", big) == "null")
 
 # share.py's steps() and memory() on the same files

@@ -12,6 +12,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import sa.urtv.home.Digits;
+import sa.urtv.home.Dir;
+import sa.urtv.home.S;
 import sa.urtv.home.DigitsText;
 import sa.urtv.home.SetupGate;
 import sa.urtv.home.phone.QrCode;
@@ -42,7 +44,12 @@ public class SetupActivity extends Activity {
     private boolean extras = true;
     private String mode = "";
     private final List<TextView> stepViews = new ArrayList<>();
-    private static SetupRunner.End dismissed;   // a done screen the person closed with «تم»: the start screen again
+    private static SetupRunner.End dismissed;
+    /** the done screen's QR code: a multiple of 8 dp (the packed report needs a small code, tester step 18) */
+    static final int QR_DP = 224;   // a done screen the person closed with «تم»: the start screen again
+
+    /** «اللغة» (docs/ENGLISH.md): the done screen's own words in English when it is set (i18n/en/setup.tsv) */
+    @Override protected void attachBaseContext(android.content.Context b) { super.attachBaseContext(S.wrap(b)); }
 
     @Override
     protected void onCreate(Bundle b) {
@@ -55,7 +62,7 @@ public class SetupActivity extends Activity {
         col.setOrientation(LinearLayout.VERTICAL);
         col.setPadding(dp(120), dp(36), dp(120), dp(48));
         scroll.addView(col);
-        col.addView(text("إعداد تلفزيوني", 26, "Medium", TEXT), right(dp(10)));
+        col.addView(text(S.t("إعداد تلفزيوني"), 26, "Medium", TEXT), right(dp(10)));
         body = new LinearLayout(this);
         body.setOrientation(LinearLayout.VERTICAL);
         col.addView(body, right(0));
@@ -213,9 +220,17 @@ public class SetupActivity extends Activity {
         say("", GOLD);
     }
 
+    /** The ends SetupRunner.endOf says in fixed words, marked for the table (the done screen shows them with S.tv; tests/tester_fixes_test.py). */
+    static final String[] ENDS = {
+        S.n("تم الرجوع. أطفئ «تصحيح USB» من خيارات المطوّر، واختر «إلغاء تراخيص تصحيح USB» لتنظيف التلفزيون."),
+        S.n("انتهى الرجوع مع ملاحظات (فوق)."),
+        S.n("توقّفنا قبل أي تغيير."),
+        S.n("انتهى الإعداد. اضغط زر الرئيسية في الريموت. ثم أطفئ «تصحيح USB» من خيارات المطوّر واختر «إلغاء تراخيص تصحيح USB» إن لم تحتجهما (التراجع من هنا يحتاجهما)."),
+    };
+
     private void buildDone(SetupRunner r) {
         final SetupRunner.End e = r.end();
-        say(e.text, e.bad ? RED : GOLD);
+        say(S.tv(e.text), e.bad ? RED : GOLD);
         if (r.kind() == SetupRunner.Kind.FULL) {
             for (SetupRunner.Step s : r.steps()) {
                 TextView t = text("", 14, "Regular", DIM);
@@ -225,35 +240,52 @@ public class SetupActivity extends Activity {
             mode = "progress";   // the step lines are drawn the same way, once
             updateProgress(r);
             mode = "done";
-            say(e.text, e.bad ? RED : GOLD);
+            say(S.tv(e.text), e.bad ? RED : GOLD);
             String report = new FileStore(this).get(SetupReport.FILE);
             String url = report == null || report.isEmpty() ? null : SetupRunner.shareUrl(report);
             if (url != null) {
                 try {
+                    // the owner: «too big and dense». The packed report (SetupReport.pack) needs a far smaller code; it sits centred in a white
+                    // card (its quiet zone, 16 dp around the four white modules of the code itself), the caption under it, on the 8 dp grid
                     QrView qr = new QrView(this);
                     qr.setCode(QrCode.encodeLarge(url));
-                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(300), dp(300));
-                    lp.gravity = Gravity.RIGHT;
-                    lp.topMargin = dp(14);
-                    lp.bottomMargin = dp(6);
-                    body.addView(qr, lp);
-                    add(text("امسح الرمز بجوالك لترى تقرير الإعداد وترسله للمطوّر إن أردت (بلا أي معلومة شخصية).", 13, "Regular", DIM), dp(14));
+                    LinearLayout card = new LinearLayout(this);
+                    card.setOrientation(LinearLayout.VERTICAL);
+                    card.setGravity(Gravity.CENTER_HORIZONTAL);
+                    card.setPadding(dp(16), dp(16), dp(16), dp(16));
+                    android.graphics.drawable.GradientDrawable white = new android.graphics.drawable.GradientDrawable();
+                    white.setColor(0xFFFFFFFF);
+                    white.setCornerRadius(dp(16));
+                    card.setBackground(white);
+                    card.addView(qr, new LinearLayout.LayoutParams(dp(QR_DP), dp(QR_DP)));
+                    LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    cp.gravity = Gravity.CENTER_HORIZONTAL;
+                    cp.topMargin = dp(16);
+                    body.addView(card, cp);
+                    TextView caption = text(S.t("امسح الرمز بجوالك لترى تقرير الإعداد وترسله للمطوّر إن أردت (بلا أي معلومة شخصية)."), 13, "Regular", DIM);
+                    caption.setGravity(Gravity.CENTER_HORIZONTAL);
+                    caption.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                    LinearLayout.LayoutParams tp = new LinearLayout.LayoutParams(dp(QR_DP + 32 + 96), LinearLayout.LayoutParams.WRAP_CONTENT);
+                    tp.gravity = Gravity.CENTER_HORIZONTAL;
+                    tp.topMargin = dp(8);
+                    tp.bottomMargin = dp(16);
+                    body.addView(caption, tp);
                 } catch (IllegalArgumentException ignored) { }
             }
         }
-        add(text("بعد الإعداد أطفئ التصحيح:", 15, "Medium", TEXT), dp(4));
-        add(text(digits("1. الإعدادات ← تفضيلات الجهاز ← خيارات المطوّر."), 14, "Regular", TEXT), dp(2));
-        add(text(digits("2. اختر «إلغاء تراخيص تصحيح USB»."), 14, "Regular", TEXT), dp(2));
-        add(text(digits("3. أطفئ «تصحيح USB». («تراجع» من هنا يحتاجه مفعّلاً.)"), 14, "Regular", TEXT), dp(12));
-        add(text("لو صار شي:", 15, "Medium", TEXT), dp(4));
-        add(text(digits("• الشاشة الرئيسية ما فتحت تلفزيونك: انتظر 5 دقائق ترجع الأصلية وحدها، أو اضغط «تراجع»."), 14, "Regular", TEXT), dp(2));
-        add(text("• تطبيق تحتاجه صار موقوفاً: «تراجع» يرجّع كل ما أوقفناه.", 14, "Regular", TEXT), dp(2));
-        add(text("• انقطع الواي فاي: اتصل به من إعدادات التلفزيون ← الشبكة.", 14, "Regular", TEXT), dp(2));
-        add(text("• تبي التلفزيون كما كان: فعّل «تصحيح USB» واضغط «تراجع».", 14, "Regular", TEXT), dp(12));
-        undo = button("تراجع (يرجّع التلفزيون كما كان)");
+        add(text(S.t("بعد الإعداد أطفئ التصحيح:"), 15, "Medium", TEXT), dp(4));
+        add(text(digits(S.t("1. الإعدادات ← تفضيلات الجهاز ← خيارات المطوّر.")), 14, "Regular", TEXT), dp(2));
+        add(text(digits(S.t("2. اختر «إلغاء تراخيص تصحيح USB».")), 14, "Regular", TEXT), dp(2));
+        add(text(digits(S.t("3. أطفئ «تصحيح USB». («تراجع» من هنا يحتاجه مفعّلاً.)")), 14, "Regular", TEXT), dp(12));
+        add(text(S.t("لو صار شي:"), 15, "Medium", TEXT), dp(4));
+        add(text(digits(S.t("• الشاشة الرئيسية ما فتحت تلفزيونك: انتظر 5 دقائق ترجع الأصلية وحدها، أو اضغط «تراجع».")), 14, "Regular", TEXT), dp(2));
+        add(text(S.t("• تطبيق تحتاجه صار موقوفاً: «تراجع» يرجّع كل ما أوقفناه."), 14, "Regular", TEXT), dp(2));
+        add(text(S.t("• انقطع الواي فاي: اتصل به من إعدادات التلفزيون ← الشبكة."), 14, "Regular", TEXT), dp(2));
+        add(text(S.t("• تبي التلفزيون كما كان: فعّل «تصحيح USB» واضغط «تراجع»."), 14, "Regular", TEXT), dp(12));
+        undo = button(S.t("تراجع (يرجّع التلفزيون كما كان)"));
         undo.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(true); } });
         add(undo, dp(10));
-        final TextView ok = button("تم");
+        final TextView ok = button(S.t("تم"));
         ok.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 dismissed = e;
@@ -345,7 +377,8 @@ public class SetupActivity extends Activity {
         t.setText(s);
         t.setTextSize(TypedValue.COMPLEX_UNIT_SP, sp);
         t.setTextColor(color);
-        t.setGravity(Gravity.RIGHT);
+        t.setGravity(Dir.start());   // right in Arabic, left in English («اللغة»)
+        t.setTextDirection(Dir.text());
         try { t.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/Thmanyah-" + weight + ".otf")); }
         catch (RuntimeException ignored) { }
         return t;

@@ -66,9 +66,30 @@ final class SetupReport {
         return b.toString();
     }
 
-    /** The link share.py's QR code carries: the page, then the report after the #. Null when it is too long for a QR code. */
+    /** What marks a packed report after the # (docs/share/index.html unpacks it; a plain quoted report starts with «UrTV»). */
+    static final String PACKED = "z.";
+
+    /** The report, deflated (raw, level 9) and in base64url without padding: share.py's pack(), and a QR code about a third the size. */
+    static String pack(String text) {
+        java.util.zip.Deflater d = new java.util.zip.Deflater(java.util.zip.Deflater.BEST_COMPRESSION, true);
+        try {
+            d.setInput(text.getBytes(StandardCharsets.UTF_8));
+            d.finish();
+            java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+            byte[] buf = new byte[4096];
+            while (!d.finished()) out.write(buf, 0, d.deflate(buf));
+            return java.util.Base64.getUrlEncoder().withoutPadding().encodeToString(out.toByteArray());
+        } finally {
+            d.end();
+        }
+    }
+
+    /**
+     * The link share.py's QR code carries: the page, then the packed report after the # (tester step 18: the quoted one made a QR code too big
+     * and dense to scan easily). Null when it is too long for a QR code.
+     */
     static String shareUrl(String report) {
-        String url = PAGE + "#" + quote(report);
+        String url = PAGE + "#" + PACKED + pack(report);
         return url.getBytes(StandardCharsets.UTF_8).length <= QR_MAX_BYTES ? url : null;
     }
 

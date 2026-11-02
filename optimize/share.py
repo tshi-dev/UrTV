@@ -20,6 +20,7 @@ the agent never opens a GitHub issue, comment or pull request for the owner.
 --send sends that file as it is. Without either, it writes and sends in one go (older instructions).
 """
 import argparse
+import base64
 import datetime
 import os
 import platform
@@ -29,6 +30,7 @@ import subprocess
 import sys
 import urllib.parse
 import urllib.request
+import zlib
 from pathlib import Path
 
 for stream in (sys.stdout, sys.stderr):   # Windows writes pipes in its own code page
@@ -44,6 +46,7 @@ FORM_ID = "1FAIpQLSfDJFfy1NgiB-ZMXoBI29n_KTdYnGadn1-iOqXJOxaQJEr-ZQ"   # from th
 FORM_FIELD = "1457112794"   # the question's number: entry.<FORM_FIELD>=… in the form's pre-filled link
 # Without the form, or offline: the QR code opens this page (docs/share/, GitHub Pages) with the summary after the #
 PAGE = "https://tshi-dev.github.io/UrTV/share/"
+PACKED = "z."   # a packed text after the # (pack()); docs/share/ still reads a plain quoted one
 
 
 # --- what a report may contain -------------------------------------------------------------------------------------
@@ -399,9 +402,28 @@ def deliver(text):
         print("Sent to the author. Thank you!")
         return
     # not sent from here (no internet?): a QR code carries it to the phone, whose page sends it
-    if qr(PAGE + "#" + urllib.parse.quote(text)):
+    if qr(link(text)):
         print(f"QR code: {QR.relative_to(RUN.parent.parent)}" + (" (open on this screen)" if show(QR) else ""))
         print("Scan it with the phone's camera: a page opens with this text and a button that sends it.")
+
+
+def pack(text):
+    """The text deflated (raw, level 9) in base64url without padding: the app's SetupReport.pack(); docs/share/ unpacks it."""
+    c = zlib.compressobj(9, zlib.DEFLATED, -15)
+    return base64.urlsafe_b64encode(c.compress(text.encode("utf-8")) + c.flush()).decode("ascii").rstrip("=")
+
+
+def unpack(fragment):
+    """The text back from a packed fragment («z.» and the rest), as docs/share/ reads it; None when it is not one."""
+    if not fragment.startswith(PACKED):
+        return None
+    data = fragment[len(PACKED):]
+    return zlib.decompress(base64.urlsafe_b64decode(data + "=" * (-len(data) % 4)), -15).decode("utf-8")
+
+
+def link(text):
+    """What the QR code carries: the page, then the packed text after the # (a third of the quoted text's size)."""
+    return PAGE + "#" + PACKED + pack(text)
 
 
 def send(text):

@@ -43,13 +43,26 @@
   // the author's Google Form: its id, and its one question's (the same in optimize/share.py)
   var FORM_ID = "1FAIpQLSfDJFfy1NgiB-ZMXoBI29n_KTdYnGadn1-iOqXJOxaQJEr-ZQ", FORM_FIELD = "1457112794";
   var text = "";
-  try { text = decodeURIComponent(location.hash.slice(1)); } catch (e) {}
-  if (text) {
-    document.getElementById("text").textContent = text;
-    document.getElementById("ready").hidden = false;
-  } else {
-    document.getElementById("none").hidden = false;
+  // the # holds the text packed («z.» + raw deflate in base64url: the app's SetupReport.pack, share.py's pack) or, from older apps, quoted
+  function unpack(hash) {
+    if (hash.indexOf("z.") !== 0) return Promise.resolve(decodeURIComponent(hash));
+    var b64 = hash.slice(2).replace(/-/g, "+").replace(/_/g, "/");
+    while (b64.length % 4) b64 += "=";
+    var bin = atob(b64), bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    var stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+    return new Response(stream).text();
   }
+  function show(t) {
+    text = t || "";
+    if (text) {
+      document.getElementById("text").textContent = text;
+      document.getElementById("ready").hidden = false;
+    } else {
+      document.getElementById("none").hidden = false;
+    }
+  }
+  try { unpack(location.hash.slice(1)).then(show, function () { show(""); }); } catch (e) { show(""); }
   document.getElementById("send").addEventListener("click", function () {
     var button = this, done = document.getElementById("done");
     button.disabled = true;

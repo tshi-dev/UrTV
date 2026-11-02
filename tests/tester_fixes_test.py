@@ -50,4 +50,36 @@ fresh = (lambda at, now: eval(m.group(1).replace("&&", "and").replace("FRESH_MS"
 check("B6: fresh(): within the window yes, before it, after it and with no record no", fresh is not None and fresh(1000, 1000 + 60_000)
       and not fresh(1000, 1000 + 1_800_001) and not fresh(0, 5) and not fresh(5000, 1000))
 
+# C10: the done screen's QR code: the packed report, centred in a white card (16 dp), the caption under it, the 8 dp grid
+act = text(HOME / "setup/SetupActivity.java")
+done = act[act.index("private void buildDone("):act.index("// ---- the buttons")]
+qrdp = re.search(r"static final int QR_DP = (\d+);", act)
+check("C10: the QR code is a multiple of 8 dp and smaller than the old 300", qrdp is not None and int(qrdp.group(1)) % 8 == 0 and int(qrdp.group(1)) < 300, qrdp and qrdp.group(1))
+check("C10: centred, in a white card with 16 dp around it, the caption centred under it", "card.setPadding(dp(16), dp(16), dp(16), dp(16));" in done
+      and "white.setColor(0xFFFFFFFF);" in done and done.count("Gravity.CENTER_HORIZONTAL") >= 3 and "Gravity.RIGHT" not in done
+      and done.index("body.addView(card, cp);") < done.index("body.addView(caption, tp);"))
+margins = [int(x) for x in re.findall(r"(?:topMargin|bottomMargin) = dp\((\d+)\)", done[done.index("QrView qr"):done.index("body.addView(caption, tp);")])]
+check("C10: its spacing is on the 8 dp grid", margins and all(m % 8 == 0 for m in margins), margins)
+qv = text(HOME / "phone/QrView.java")
+check("C10: QrView draws whole pixels per module, centred, with the four-module quiet zone", "Math.floor(side / (float) n)" in qv and "code.size + 8" in qv and "(getWidth() - cell * n) / 2f" in qv)
+rep = text(HOME / "setup/SetupReport.java")
+check("C10: the link carries the packed report (raw deflate, base64url, «z.»)", 'PAGE + "#" + PACKED + pack(report)' in rep and "new java.util.zip.Deflater(java.util.zip.Deflater.BEST_COMPRESSION, true)" in rep
+      and "getUrlEncoder().withoutPadding()" in rep and 'PACKED = "z."' in rep)
+
+# E17: the setup's done screen in English
+sys.path.insert(0, str(ROOT / "tests"))
+setup_tsv = dict(l.split("\t", 1) for l in text(ROOT / "i18n/en/setup.tsv").splitlines() if l and not l.startswith("#"))
+home_tsv = dict(l.split("\t", 1) for l in text(ROOT / "i18n/en/home.tsv").splitlines() if l and not l.startswith("#"))
+fixed = re.findall(r'(?:text|button)\((?:digits\()?S\.t\("([^"]+)"\)', done)
+check("E17: the done screen's 13 fixed lines go through S.t (none left as a bare Arabic literal)", len(fixed) == 12 and 'add(text("' not in done and 'button("' not in done, (len(fixed), fixed))
+check("E17: every one has its English in i18n/en/setup.tsv (the title in home.tsv)", all(f in setup_tsv for f in fixed) and "إعداد تلفزيوني" in home_tsv
+      and 'text(S.t("إعداد تلفزيوني")' in act, [f for f in fixed if f not in setup_tsv])
+runner = text(HOME / "setup/SetupRunner.java")
+endof = runner[runner.index("static End endOf("):runner.index("A cut connection said")]
+ends = re.findall(r'S\.n\("([^"]+)"\)', act[act.index("static final String[] ENDS"):act.index("private void buildDone(")])
+fixed_ends = [e for e in re.findall(r'"([^"]*[\u0600-\u06FF][^"]*)"', endof) if "(" not in e or e.endswith(")") or "." in e]
+check("E17: the run's fixed end sentences are marked (ENDS) and shown with S.tv", all(e in endof for e in ends) and len(ends) == 4 and "say(S.tv(e.text)" in done
+      and all(e in setup_tsv for e in ends))
+check("E17: the screen follows «اللغة»: S.wrap, and text starts on the right in Arabic, on the left in English", "super.attachBaseContext(S.wrap(b))" in act and "t.setGravity(Dir.start());" in act)
+
 sys.exit(1 if failed else 0)
