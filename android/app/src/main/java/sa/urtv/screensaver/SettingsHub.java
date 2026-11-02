@@ -21,7 +21,7 @@ final class SettingsHub {
         {CONTENT, "المباريات والأسواق", "ما تعرضه البطاقات: فرقك ودورياتك، والأسواق، والمسلسلات، والأسهم."},
         {APPS, "التطبيقات والمفضلة", "ترتيب التطبيقات المفضلة وتعديلها، وترتيب كل التطبيقات، وأسماء مصادر التلفزيون مثل PS5."},
         {FAMILY, "العائلة", "حماية العائلة على الشبكة: تفعيلها أو إيقافها، ويرجع الإعداد القديم تلقائياً."},
-        {PHONE, "الجوال والتحديث", "التحكم من الجوال، وتحديث تلفزيوني، وتحديث الشاشة، والإصدار."},
+        {PHONE, "الجوال والتحديث", "التحكم من الجوال، وتحديث تلفزيوني، وتحديث صفحة شاشة التوقف، والإصدار."},
     };
 
     /** each row of SettingsActivity by its FocusKey.key (the name without its numbers), and its category */
@@ -42,7 +42,7 @@ final class SettingsHub {
         {"حماية العائلة", FAMILY},
         {"التصنيفات", CONTENT}, {"اللغات", CONTENT}, {"مسلسلات مختارة", CONTENT}, {"أقل تقييم", CONTENT}, {"قائمة الأسهم", CONTENT},
         {"تبديل الصورة كل", SAVER}, {"صوري", SAVER}, {"بدء شاشة التوقف بعد", SAVER},
-        {"التحديث التلقائي للصفحة", PHONE}, {"تحديث الشاشة الآن", PHONE},
+        {"التحديث التلقائي للصفحة", PHONE}, {"تحديث صفحة شاشة التوقف", PHONE},
     };
 
     /** each group header and the category it belongs to: shown only there, above that category's rows of the group */
