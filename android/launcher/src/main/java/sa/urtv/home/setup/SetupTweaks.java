@@ -7,8 +7,9 @@ import java.util.List;
 
 /**
  * The speed and memory tweaks of optimize/tweaks.sh, ported line by line, with the same journal (tweaks-journal.txt, and tweaks-journal.done once it
- * was put back): animations at half length, the Play Store kept from running in the background, closed apps frozen while cached, app caches trimmed
- * only when storage is low. What the TV had is recorded BEFORE anything is changed; only the word «null» the TV prints means «not set», an empty or
+ * was put back): animations at half length, the Play Store kept from running in the background, app caches trimmed only when storage is low. The
+ * cached-app freezer is no longer set (tweaks.sh, 4.2: one report linked it to apps hanging after standby): apply leaves it and does not record it,
+ * but a TV an older run set gets its original back. The Play Store's standby bucket is set on Android 11 and newer only (on 9 and 10 it did not hold). What the TV had is recorded BEFORE anything is changed; only the word «null» the TV prints means «not set», an empty or
  * failed read is «unknown» and is never written as null (a restore would delete the TV's real value), and a setting whose original is unknown is not
  * changed. Every value is read back. device_config needs Android 10 (SDK 29), standby buckets Android 9 (28), the «restricted» bucket Android 11 (30).
  * CACHED_LIMIT is not offered here (tweaks.sh keeps it opt-in). The screen's lines are in Arabic; the commands and the journal are the script's, to
@@ -34,13 +35,23 @@ final class SetupTweaks {
         this.out = out;
     }
 
-    private void init() throws IOException {
+    /** apply: what apply records and sets; restore: everything a journal may hold. */
+    private void init(boolean apply) throws IOException {
         String s = tv.text("getprop ro.build.version.sdk").replaceAll("[^0-9]", "");
         sdkSay = s.isEmpty() ? "unknown" : s;
         try { sdk = s.isEmpty() ? 0 : Integer.parseInt(s); } catch (NumberFormatException e) { sdk = 0; }
         if (sdk < 29) { keys.remove("max_cached_processes"); skipped.add("max_cached_processes: device_config needs Android 10 (this TV is SDK " + sdkSay + ")"); }
         bucket = sdk >= 30 ? "restricted" : "rare";
         if (sdk < 28) { psKeys.remove("standby_bucket"); skipped.add("standby_bucket: standby buckets need Android 9 (this TV is SDK " + sdkSay + ")"); }
+        // Android 9 and 10: not asked for a bucket at all (only apply; a restore still puts back a bucket an older run recorded)
+        if (apply && sdk < 30 && sdk >= 28) { psKeys.remove("standby_bucket"); skipped.add("standby_bucket: the Play Store's standby bucket is only set on Android 11 and newer (this TV is SDK " + sdkSay + ")"); }
+    }
+
+    /** The keys apply records and sets: the freezer is no longer one of them. */
+    private List<String> applyKeys() {
+        List<String> a = new ArrayList<>(keys);
+        a.remove("cached_apps_freezer");
+        return a;
     }
 
     private boolean hasKey(String k) { return keys.contains(k) || psKeys.contains(k); }
@@ -133,11 +144,11 @@ final class SetupTweaks {
     // ---- apply ----------------------------------------------------------------------------------------------------------------------
 
     SetupEngine.Result apply() throws IOException {
-        init();
+        init(true);
         List<String> cmds = new ArrayList<>(), want = new ArrayList<>(), psWant = new ArrayList<>();
         if (!present(store.get(JOURNAL))) {   // the first apply records what the TV had; a later one keeps that record
             StringBuilder b = new StringBuilder(HEADER).append('\n');
-            for (String k : keys) b.append(k).append('=').append(tvget(k)).append('\n');
+            for (String k : applyKeys()) b.append(k).append('=').append(tvget(k)).append('\n');
             for (String k : psKeys) b.append(k).append('=').append(psget(k)).append('\n');
             for (String sk : skipped) b.append("skipped_").append(sk, 0, sk.indexOf(':')).append('=').append(sk.substring(sk.indexOf(": ") + 2)).append('\n');
             store.put(JOURNAL_DONE, "");
@@ -149,7 +160,7 @@ final class SetupTweaks {
             else if (o.equals("unknown")) out.line("لم يقل التلفزيون وضع الاستعداد لمتجر Play، فتركناه كما هو (لا شيء نرجعه).");
             else { cmds.add(psput("standby_bucket", bucket)); psWant.add("standby_bucket=" + bucket); }
         } else {
-            out.line("وضع الاستعداد لمتجر Play: تركناه (يحتاج أندرويد 9 أو أحدث، وهذا التلفزيون SDK " + sdkSay + ").");
+            out.line("وضع الاستعداد لمتجر Play: تركناه (نضبطه على أندرويد 11 أو أحدث فقط، وهذا التلفزيون SDK " + sdkSay + ").");
         }
         for (String op : new String[] {"RUN_IN_BACKGROUND", "RUN_ANY_IN_BACKGROUND"}) {
             if (original("appop_" + op, true).equals("unknown")) out.line("لم يقل التلفزيون إذن متجر Play بالعمل في الخلفية (" + op + ")، فتركناه كما هو (لا شيء نرجعه).");
@@ -158,7 +169,9 @@ final class SetupTweaks {
         for (String k : new String[] {"window_animation_scale", "transition_animation_scale", "animator_duration_scale"}) change(k, "0.5", cmds, want);
         if (!hasKey("max_cached_processes")) out.line("عدد التطبيقات المغلقة في الذاكرة: تركناه (يحتاج أندرويد 10، وهذا التلفزيون SDK " + sdkSay + ").");
         else change("max_cached_processes", "null", cmds, want);   // Android's own limit (undoes an older run; the journal has the original)
-        change("cached_apps_freezer", "enabled", cmds, want);
+        // the freezer: a TV an older run set (its journal has the original) gets that back now; a TV that never had it set is not touched
+        String fz = jget("cached_apps_freezer");
+        if (fz.matches("null|[A-Za-z0-9_.-]+") && !fz.equals("unknown")) { cmds.add(putcmd("cached_apps_freezer", fz)); want.add("cached_apps_freezer=" + fz); }
         // trimming throws away every app's cache: only worth it when storage is short (under 1 GB, or under 10%)
         String[] w = tv.tail1("df -k /data 2> /dev/null | tail -n 1").trim().split("\\s+");
         String total = w.length > 1 ? w[1] : "", avail = w.length > 3 ? w[3] : "";
@@ -176,7 +189,7 @@ final class SetupTweaks {
         for (String c : cmds) tv.run(c);
         boolean bad = readBack(want, psWant);
         if (bad) return new SetupEngine.Result(SetupEngine.Status.FAILED, "سرّعنا التلفزيون، لكنه لم يقبل بعض القيم (التفاصيل فوق). «تراجع» يرجع ما تغيّر.");
-        return new SetupEngine.Result(SetupEngine.Status.DONE, "سرّعنا التلفزيون: حركات أقصر، ومتجر Play لا يعمل في الخلفية، والتطبيقات المغلقة مجمّدة. «تراجع» يرجعها كما كانت.");
+        return new SetupEngine.Result(SetupEngine.Status.DONE, "سرّعنا التلفزيون: حركات أقصر، ومتجر Play لا يعمل في الخلفية. «تراجع» يرجعها كما كانت.");
     }
 
     private void change(String k, String v, List<String> cmds, List<String> want) throws IOException {
@@ -210,16 +223,18 @@ final class SetupTweaks {
      */
     SetupEngine.Result restore() throws IOException {
         if (!present(store.get(JOURNAL))) return new SetupEngine.Result(SetupEngine.Status.DONE, "");
-        init();
+        init(false);
         List<String> cmds = new ArrayList<>(), want = new ArrayList<>(), psWant = new ArrayList<>();
         for (String k : keys) {
             String o = jget(k);
+            if (k.equals("cached_apps_freezer") && o.isEmpty()) continue;   // not set by this version (no line in the journal): nothing to put back
             if (o.equals("unknown") || o.isEmpty()) out.line("لم نسجّل قيمة " + k + " الأصلية (لم يقلها التلفزيون)، فتركناها كما هي.");
             else if (o.matches("null|[A-Za-z0-9_.-]+")) { cmds.add(putcmd(k, o)); want.add(k + "=" + o); }
             else out.line("القيمة المسجّلة لـ " + k + " ليست مما نرجعه، فتركناها كما هي.");
         }
         for (String k : psKeys) {
             String o = jget(k);
+            if (k.equals("standby_bucket") && o.isEmpty() && !jget("skipped_standby_bucket").isEmpty()) continue;   // apply never touched it (Android 9 and 10)
             if (o.equals("exempted")) continue;
             if (o.matches("[a-z_]+") && !o.equals("unknown")) { cmds.add(psput(k, o)); psWant.add(k + "=" + o); }
             else out.line("لم نسجّل قيمة " + k + " الأصلية (لم يقلها التلفزيون)، فتركناها كما هي.");

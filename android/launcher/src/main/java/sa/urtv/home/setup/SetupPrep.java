@@ -8,7 +8,8 @@ import java.util.Set;
 
 /**
  * Three steps of optimize/run.sh, ported: the backup (optimize/backup.sh and run.sh's check of it), the protected features turned back on
- * (optimize/keep.sh) and TCL's auto-start app-op for our two apps (optimize/autostart.sh), with its undo. Plain Java; the parity test runs the
+ * (optimize/keep.sh) and TCL's auto-start app-ops for our two apps (optimize/autostart.sh: AUTO_START or APP_AUTO_START, and ASSOC_START, then
+ * `appops write-settings`), with its undo. Plain Java; the parity test runs the
  * scripts and these against the same fake TV (tests/setup_prep_test.py).
  */
 final class SetupPrep {
@@ -26,6 +27,8 @@ final class SetupPrep {
     /** keep.sh: in keep.txt, but the home switch's own (install.sh launcher deals with them). */
     static final String[] HOME_OWN = {"com.google.android.apps.tv.launcherx", "com.google.android.tvlauncher", "com.google.android.tungsten.setupwraith", "com.tcl.keycustomfunctionservice"};
     static final String[] OURS = {SetupEngine.SELF, SetupEngine.SAVER};
+    /** TCL's auto-start ops (autostart.sh): AUTO_START on G08 builds, APP_AUTO_START on G10, ASSOC_START (receivers, bindings) on Android 14. */
+    static final String[] OPS = {"AUTO_START", "APP_AUTO_START", "ASSOC_START"};
 
     private final SetupTv tv;
     private final SetupEngine.Store store;
@@ -73,7 +76,7 @@ final class SetupPrep {
         List<String> answers = new ArrayList<>();
         for (String l : BACKUP_LINES) answers.add(tv.text(l));
         String text = backupText(answers);
-        if (!usable(text)) return failed("قائمة تطبيقات التلفزيون رجعت فاضية (أو شبه فاضية) ونحن نحفظ حالته، فما غيّرنا شيئاً. اضغط «ابدأ» مرة ثانية.");
+        if (!usable(text)) return failed("قائمة تطبيقات التلفزيون رجعت فاضية (أو شبه فاضية) ونحن نحفظ حالته، فما غيّرنا شيئاً. اضغط «جهّز كل شي» مرة ثانية.");
         store.put(BACKUP, text);
         return done("حفظنا حالة التلفزيون الحالية (التطبيقات، الشاشة الرئيسية، شاشة التوقف، السرعة) قبل أي تغيير.");
     }
@@ -96,17 +99,17 @@ final class SetupPrep {
 
     SetupEngine.Result keep() throws IOException {
         Set<String> listed = disabled();
-        if (listed == null) return failed("لم يقل التلفزيون أي التطبيقات موقوفة، فما فحصنا الميزات المحمية. اضغط «ابدأ» مرة ثانية.");
+        if (listed == null) return failed("لم يقل التلفزيون أي التطبيقات موقوفة، فما فحصنا الميزات المحمية. اضغط «جهّز كل شي» مرة ثانية.");
         List<String> off = new ArrayList<>();
         for (String p : listed) if (has(SetupLists.KEEP, p) && !has(HOME_OWN, p)) off.add(p);
         if (off.isEmpty()) return done("الميزات المحمية (البث، الصوت، الريموت، المتجر…) كلها شغّالة.");
         for (String p : off) tv.run("pm enable " + p);
         List<String> still = stillOff(off);
-        if (still == null) return failed("لم يقل التلفزيون أي التطبيقات موقوفة بعد تشغيلها، فما تأكدنا من الميزات المحمية. اضغط «ابدأ» مرة ثانية.");
+        if (still == null) return failed("لم يقل التلفزيون أي التطبيقات موقوفة بعد تشغيلها، فما تأكدنا من الميزات المحمية. اضغط «جهّز كل شي» مرة ثانية.");
         if (!still.isEmpty()) {   // a second try, the way Android 9 sets want it
             for (String p : still) tv.run("pm enable --user 0 " + p);
             still = stillOff(off);
-            if (still == null) return failed("لم يقل التلفزيون أي التطبيقات موقوفة بعد تشغيلها، فما تأكدنا من الميزات المحمية. اضغط «ابدأ» مرة ثانية.");
+            if (still == null) return failed("لم يقل التلفزيون أي التطبيقات موقوفة بعد تشغيلها، فما تأكدنا من الميزات المحمية. اضغط «جهّز كل شي» مرة ثانية.");
         }
         if (!still.isEmpty()) {
             // what the TV itself keeps off (off before UrTV, per the backup) is not ours; with no backup nothing shows that
@@ -156,6 +159,14 @@ final class SetupPrep {
         return low.contains("no operations") ? "default" : "unknown";
     }
 
+    /** autostart.sh's assoc(): TCL's second op (ASSOC_START): allow, ignore…, or none when this build has no such op. */
+    String assoc(String pkg) throws IOException {
+        String o = tv.text("appops get " + pkg + " ASSOC_START 2>&1");
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("(?m)^ASSOC_START: ([a-z_]*)").matcher(o);
+        String got = m.find() ? m.group(1) : "";
+        return got.isEmpty() ? "none" : got;
+    }
+
     /** autostart.sh's state(): the first op that has a mode; none, or unknown when the TV said nothing about either. */
     String state(String pkg) throws IOException {
         boolean silent = false;
@@ -169,7 +180,10 @@ final class SetupPrep {
         return silent ? "unknown" : "none";
     }
 
-    /** Allowed for sa.urtv.home and sa.urtv.screensaver on a TCL, before the home switch; what they had is journaled first (once) for the undo. */
+    /**
+     * Allowed for sa.urtv.home and sa.urtv.screensaver on a TCL, before the home switch; what they had is journaled first (once) for the undo. On the
+     * owner's TCL (Android 14) TclAppBoot also checks ASSOC_START: without it our receivers were blocked after an update (the adhan, A11yHeal).
+     */
     SetupEngine.Result autostart() throws IOException {
         if (!isTcl()) return done("ليس تلفزيون TCL: لا حاجة لإذن التشغيل التلقائي.");
         List<String> present = new ArrayList<>();
@@ -177,22 +191,24 @@ final class SetupPrep {
         String saved = store.get(AUTOSTART);
         if (saved == null || saved.isEmpty()) {
             StringBuilder b = new StringBuilder();
-            for (String p : present) for (String op : new String[] {"AUTO_START", "APP_AUTO_START"}) b.append(p).append(' ').append(op).append(' ').append(opMode(p, op)).append('\n');
+            for (String p : present) for (String op : OPS) b.append(p).append(' ').append(op).append(' ').append(opMode(p, op)).append('\n');
             if (b.length() > 0) store.put(AUTOSTART, b.toString());
         }
         for (String p : present) {
             tv.run("appops set " + p + " AUTO_START allow 2> /dev/null; appops set " + p + " APP_AUTO_START allow 2> /dev/null; cmd appops set " + p
-                + " AUTO_START allow 2> /dev/null; cmd appops set " + p + " APP_AUTO_START allow 2> /dev/null; appops write-settings 2> /dev/null; true");
+                + " AUTO_START allow 2> /dev/null; cmd appops set " + p + " APP_AUTO_START allow 2> /dev/null; appops set " + p + " ASSOC_START allow 2> /dev/null; cmd appops set " + p
+                + " ASSOC_START allow 2> /dev/null; appops write-settings 2> /dev/null; true");
         }
         String line = "", bad = "", silent = "";
         for (String p : present) {
-            String st = state(p);
+            String st = state(p), as = assoc(p);
+            if (!as.equals("allow") && !as.equals("none") && !st.equals("unknown")) st = st + "/assoc-" + as;   // either op left at ignore blocks the app
             line += (line.isEmpty() ? "" : ", ") + p + " " + st;
             if (st.equals("allow") || st.equals("none")) continue;
             if (st.equals("unknown")) silent += " " + p; else bad += " " + p + "(" + st + ")";
         }
         if (line.isEmpty()) return done("تطبيقاتنا غير مثبّتة بعد، فلا إذن تشغيل تلقائي نعطيه.");
-        if (!silent.isEmpty() && bad.isEmpty()) return failed("لم يقل التلفزيون إن كان يسمح لتطبيقاتنا بالعمل عند التشغيل؛ بعد إعادة التشغيل قد لا يعمل الأذان. اضغط «ابدأ» مرة ثانية.");
+        if (!silent.isEmpty() && bad.isEmpty()) return failed("لم يقل التلفزيون إن كان يسمح لتطبيقاتنا بالعمل عند التشغيل؛ بعد إعادة التشغيل قد لا يعمل الأذان. اضغط «جهّز كل شي» مرة ثانية.");
         if (!bad.isEmpty()) return failed("لم يسمح التلفزيون لتطبيقاتنا بالعمل عند التشغيل؛ بعد إعادة التشغيل قد لا يعمل الأذان ولا مؤقت النوم.");
         return done("سمح التلفزيون لتطبيقاتنا بالعمل عند التشغيل (الأذان ومؤقت النوم بعد إعادة التشغيل).");
     }
@@ -204,7 +220,7 @@ final class SetupPrep {
         boolean any = false;
         for (String l : saved.split("\n")) {
             String[] w = l.trim().split(" ");
-            if (w.length != 3 || !SetupEngine.PKG.matcher(w[0]).matches() || !w[1].matches("AUTO_START|APP_AUTO_START") || !w[2].matches("allow|ignore|deny|default|foreground")) continue;
+            if (w.length != 3 || !SetupEngine.PKG.matcher(w[0]).matches() || !w[1].matches("AUTO_START|APP_AUTO_START|ASSOC_START") || !w[2].matches("allow|ignore|deny|default|foreground")) continue;
             tv.run("appops set " + w[0] + " " + w[1] + " " + w[2] + " 2> /dev/null");
             any = true;
         }
