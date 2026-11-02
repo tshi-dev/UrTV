@@ -275,3 +275,28 @@ Problems: 3 (T1 focus on mic; W3 install.sh launcher downgrade `!!`; the update 
 | Z | restored: yes | verse day, photos 30, occasion on, nightdim on, taskspill on, backsaver off, slot matches, panel verse, home_panel none — all = start; packages 177; Home `sa.urtv.home/.MainActivity`; muted |
 
 Problems: 2 (V1 no build number; H6 long press opens the TV's settings) + S7 cut line.
+
+## step 18 (from scratch: «جهّز كل شي»), build 174 («4.2»)
+Owner was not at the TV; every key and prompt by the tester over adb (the owner gave permission for everything).
+
+| # | OK/problem | note |
+|---|---|---|
+| 1 | OK | `settings.json` valid, `"schema":1`, 20 keys; all lists saved locally. Photos: 0 of 10 (mode mix); own adhan: none. Disabled 22; Home `sa.urtv.home/.MainActivity`; screensaver `sa.urtv.screensaver/.ScreenDream`; AUTO_START/ASSOC_START allow for both apps; `APP_AUTO_START` unknown op on this TV |
+| 2 | OK | `reset.sh` (run with the original run folder, so it had backup.txt / home-switch.json / grants-journal.txt): no `!!`; «removed sa.urtv.home», «removed sa.urtv.screensaver»; stock home in front and HOME role `launcherx`; screensaver `null`; our packages 0; **disabled 22 → 0** |
+| 3 | OK | apk-next home: `pm install` Success; versionName 4.2, versionCode 174; screensaver not installed |
+| 4 | PROBLEM → 4b | first «جهّز كل شي»: `adbd: E Invalid base64 key` → `sending prompt` → no prompt on screen; after 20 s the screen said «ما ظهرت الرسالة؟ أعد تشغيل التلفزيون…» (good wording). `UrTVSetup: waiting for the debugging prompt: screensaver held back` |
+| 4b | OK after 1 restart | `tv.py --reboot` once → «جهّز كل شي» → «Allow USB debugging?» shown; focus on the checkbox → 23 → ticked (screencap); ▼ went to Cancel, ◀ to Allow → 23. `UrTVSetup: debugging prompt answered or given up: screensaver free`. The reboot unmuted the TV (muted again) |
+| 5 | OK | plan: «١٠» lines, «نوقف ١٨ تطبيقاً من القائمة الآمنة», «بدون إعادة تشغيل في هذا التلفزيون», «TV Bro و SmartTube مثبّتان من قبل: نتركهما»; disabled still 0 before «ابدأ» |
+| 6 | OK + PROBLEM | run ended by itself in ~1 min (report: precheck 0:42, backup 0:01, keep 0:00, before 0:15, grants 0:00, safe 0:09, community 0:00, tweaks 0:03, install-saver 0:08, screensaver 0:01, extras 0:00, autostart 0:02, home 0:09, after 0:13). Every line ✓: فحص التلفزيون، نسخة احتياطية، الميزات المحمية، قياس الذاكرة قبل، أذونات تلفزيونك، القائمة الآمنة، قائمة المجتمع، تسريع التلفزيون، تثبيت شاشة التوقف، تفعيل شاشة التوقف، TV Bro و SmartTube، التشغيل التلقائي، الشاشة الرئيسية، قياس الذاكرة بعد، التقرير. No restart. **Our screensaver showed from ~125 s after «ابدأ»** (at 20 s the stock home was in front, at 49 s our home): that is after the run's end (1 min), so probably not during the run; the watcher could not see the done screen because our home came to the front at the end |
+| 7 | no pause | the wizard did not own the network; Wi-Fi stayed connected |
+| 8 | OK | done screen: steps, QR, «امسح الرمز بجوالك…», «بعد الإعداد أطفئ التصحيح» (3 steps), «لو صار شي» (4 lines), «تراجع», «تم», «انتهى الإعداد…», «قِسنا الذاكرة بعد الإعداد: ٩٩٤ ميغابايت فاضية». QR read with zxing-cpp (OpenCV could not: very dense, 2238 chars): `https://tshi-dev.github.io/UrTV/share/#…` (page 200). The report in it has NO personal data (TV model, firmware, steps, memory, package lists of what was turned off) |
+| 9 | OK | Home `sa.urtv.home/.MainActivity`; screensaver `.ScreenDream`; AUTO_START and ASSOC_START allow for both; TV Bro and SmartTube installed; tweaks: animations 0.5, Play Store RUN_IN_BACKGROUND deny, standby exempted; adhan off (1 alarm of ours). **Disabled 21 = 0 + 18 (plan) + 3 from the home switch** (all «system app»: the stock home, the setup wizard, TCL's own home) |
+| 10 | OK | screensaver from the run: 4.1 (168) → apk-next `pm install -r` Success → 4.2 (174); component unchanged |
+| 11 | OK + 2 notes | «تراجع»: prompt again did not show (`Invalid base64 key`) → 2nd restart → prompt (a new key fingerprint) → ticked, Allow. After: stock home, screensaver `null`, disabled 0 (= row 2). Note: the undo left `sa.urtv.screensaver` installed (the 2nd plan said «نحدّث شاشة التوقف إن وُجدت نسخة أحدث»). Note: the 2nd «جهّز كل شي» did NOT ask at all: the key from the undo was still authorized (the doc says the key is deleted after setup/undo). 2nd run: all 15 ✓, same home/screensaver/appops, disabled 21 identical to the 1st run |
+| 12 | OK | import preview showed 2 (markets style, markets list), applied with `--yes`. Then by command: `watchnext off`, `yearstrip on`, `updatechannel next` (as row 1), dock order (`dock.sh set` with spaces), the 6 locked apps (`pin lock`, no PIN set), family DNS on. `saver.sh show` = row 1; tasks = row 1; adhan = row 1 (off). Differences left: `com.tcl.guard` was disabled before (an older list) and the new setup leaves it on (on purpose: not in tcl-safe); accessibility switch 0 and only Key Mapper in the list (our TypeService was removed with the uninstall) |
+
+Restarts for the prompt: 2 (one for «جهّز كل شي», one for «تراجع»). Lost and accepted: the PIN (there was none to lose except the locked list, restored), photos (0), own adhan (none), phone pairings.
+
+**Owner's request about the QR (his words, Arabic):** the QR design is «too fage» (too big and dense) — please make it better, centred, and use the new design skills he gave the supervisor.
+
+Problems: 3 (the setup app's adb key invalid the first time on each press until a restart; the 2nd run kept an authorized key; the screensaver not removed by «تراجع») + the owner's QR design request.
