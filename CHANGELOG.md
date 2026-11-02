@@ -11,6 +11,13 @@ Newest first. `next` is where changes land first; a release is what was tested t
 - **The recitation and the adhan at a normal level**: the recordings are quiet next to TV sound, and the player played them at unity gain.
   It now lifts them by +6 dB inside its own audio session (LoudnessEnhancer: a gain with a limiter, so no clipping). The TV's volume, its
   mute and the adhan's own level (never above the person's choice) are not touched; a TV without the effect plays as before.
+- **US stocks' change as an amount** («تغيّر الأسهم الأمريكية», `optimize/saver.sh stkchg amount`): the stocks card shows a US stock's
+  change as an amount (▲ 2.25) instead of a percentage; the default stays the percentage, Saudi codes always keep it, and the page's
+  link only gets `&stkchg=amount` when it is chosen.
+- **optimize/measure.sh with a run folder whose path has spaces** (macOS «Application Support»): every `$RUN` path is quoted
+  (tests/measure_space_test.py runs it with such a folder).
+- **LG and Samsung (BETA): «تعديل الفجر» … «تعديل العشاء»**: each prayer moved by whole minutes (−20 to +20) in the TV's settings screen,
+  as in the Android app; the page's times, countdown and adhan move with it. The list scrolls to keep the chosen row in sight.
 - **Arabic letters joined everywhere**: the last letter-spacing on Arabic text is gone (the adhan bar, the «يوم» unit, the score, the
   phone code's Arabic placeholder, «يُتلى الآن» in the player); only Latin or digit-only text keeps it (tests/arabic_spacing_test.py).
 - **The home's cards on the newest page**: the launcher always opened the page of its own build, while the screensaver downloads the

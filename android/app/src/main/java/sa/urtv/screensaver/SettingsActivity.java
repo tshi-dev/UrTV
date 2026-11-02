@@ -393,6 +393,8 @@ public class SettingsActivity extends Activity {
         header("الأسهم");
         row("قائمة الأسهم (" + arabicNum(prefs.stocks().size()) + "/" + arabicNum(Prefs.MAX_STOCKS) + ")", stocksLabel(),
             R.drawable.ic_star, new Runnable() { public void run() { askStocks(); } });
+        row("تغيّر الأسهم الأمريكية", labelOf(Prefs.STK_CHG, prefs.stkChg()), R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setStkChg("amount".equals(prefs.stkChg()) ? "pct" : "amount"); render(); } });
         }
 
         header("التوقيت");

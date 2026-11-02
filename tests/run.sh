@@ -50,6 +50,7 @@ python3 tests/restore_scripts_test.py
 python3 tests/power_fixes_test.py
 python3 tests/settle_test.py
 python3 tests/measure_transport_test.py
+python3 tests/measure_space_test.py   # measure.sh with a run folder whose path has spaces (macOS Application Support)
 python3 tests/restore_complete_test.py
 python3 tests/reset_restore_rc_test.py
 python3 tests/failclosed_test.py

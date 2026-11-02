@@ -847,6 +847,18 @@ const stkRows = p => p.evaluate(() => ({ hd: document.getElementById('week-hd').
   check('stocks: no Latin digits in the card', !/[0-9]/.test(await p.evaluate(() => document.getElementById('week-list').textContent)));
   await ctx.close();
 }
+// «تغيّر الأسهم الأمريكية»: #stkchg=amount shows a US stock's change as an amount; a Saudi code keeps its percentage
+for (const [hash, aapl] of [['panel=stocks&stocks=2222,AAPL&stkchg=amount', '▲ ٢٫٢٥'], ['panel=stocks&stocks=2222,AAPL', '▲ ٠٫٩١٪']]) {
+  const state = {};
+  const { p, ctx, errors } = await open('tv.html', hash, { net: stockNet(state) });
+  await p.evaluate(at('2026-10-22T08:00:00Z'));
+  await p.waitForTimeout(800);
+  await p.evaluate('renderPanel(false)');
+  const r = await stkRows(p);
+  check(`stocks (${hash.includes('amount') ? 'amount' : 'percentage, the default'}): AAPL «${aapl}», أرامكو keeps «▲ ١٫١٥٪»`,
+    !errors.length && r.rows[0].chg === '▲ ١٫١٥٪' && r.rows[1].chg === aapl && r.rows[1].up, JSON.stringify(r.rows) + errors.join('; '));
+  await ctx.close();
+}
 for (const [market, mk] of [['open', 'panel=stocks&stocks=2222'], ['closed', 'panel=verse&stocks=2222']]) {
   const seen = [];
   const { ctx } = await open('tv.html', mk, { net: stockNet({}, seen) });
