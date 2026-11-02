@@ -81,7 +81,19 @@ final class Prefs {
 
     /** «أذان مختصر»: the adhan stops after its first minute with a short fade (not the few seconds of a preview). Off until it is turned on. */
     boolean adhanShort() { return sp.getBoolean("adhan_short", false); }
-    void setAdhanShort(boolean on) { sp.edit().putBoolean("adhan_short", on).apply(); }
+    void setAdhanShort(boolean on) {
+        SharedPreferences.Editor e = sp.edit().putBoolean("adhan_short", on);
+        if (on) e.putBoolean("adhan_takbir", false);   // one length at a time
+        e.apply();
+    }
+
+    /** «تكبير فقط»: the third length, next to «أذان مختصر»: only the opening takbir plays, then a fade (not a preview). Off until it is turned on; it turns «أذان مختصر» off and the other way round. */
+    boolean adhanTakbir() { return sp.getBoolean("adhan_takbir", false); }
+    void setAdhanTakbir(boolean on) {
+        SharedPreferences.Editor e = sp.edit().putBoolean("adhan_takbir", on);
+        if (on) e.putBoolean("adhan_short", false);
+        e.apply();
+    }
 
     /** «الأذان على شاشة التوقف فقط»: the adhan plays only over the screensaver or our home; another app or an input in front gets none. Off until it is turned on. */
     boolean adhanSaverOnly() { return sp.getBoolean("adhan_saver_only", false); }

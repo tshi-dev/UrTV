@@ -17,7 +17,35 @@ final class AdhanVoices {
     /** «أذان مختصر»: the adhan stops after this long, the last FADE_MS of it a fade to silence */
     static final long SHORT_MS = 60_000, FADE_MS = 3_000;
 
+    /** the adhan's length: all of it, «أذان مختصر» (its first minute) or «تكبير فقط» (the opening takbir) */
+    static final int FULL = 0, SHORT = 1, TAKBIR = 2;
+    /**
+     * «تكبير فقط»: the adhan stops after the opening «الله أكبر…» with a FADE_MS fade. The recordings open alike (four takbirs, about 12 to 15 seconds), so
+     * one time serves them all until a recording is measured; takbirMs(voice) is where a recording gets its own.
+     */
+    static final long TAKBIR_MS = 14_000, TAKBIR_FADE_MS = 2_000;
+
     private AdhanVoices() { }
+
+    /** the length the two switches ask for: the takbir wins if both are somehow on (the screen and the agent turn the other off, so it does not happen) */
+    static int length(boolean takbir, boolean shortOn) { return takbir ? TAKBIR : shortOn ? SHORT : FULL; }
+
+    /** where the adhan is cut, in ms from its start; 0 for the whole adhan */
+    static long cutMs(int length, int voice) { return length == TAKBIR ? takbirMs(voice) : length == SHORT ? SHORT_MS : 0; }
+
+    /** how long the fade at the end of the cut is */
+    static long fadeMs(int length) { return length == TAKBIR ? TAKBIR_FADE_MS : FADE_MS; }
+
+    /** the end of the opening takbir of this recording (0 is the person's own); the same for every recording so far */
+    static long takbirMs(int voice) { return TAKBIR_MS; }
+
+    /** the player's volume 0..1 at this moment of an adhan cut at cutMs: full, then down to nothing over the last fadeMs */
+    static float gain(long elapsedMs, long cutMs, long fadeMs) {
+        if (elapsedMs >= cutMs) return 0f;
+        long fadeStart = cutMs - fadeMs;
+        if (elapsedMs <= fadeStart) return 1f;
+        return (cutMs - elapsedMs) / (float) fadeMs;
+    }
 
     static boolean valid(int voice) { return voice >= 1 && voice <= COUNT; }
 
@@ -56,10 +84,5 @@ final class AdhanVoices {
     }
 
     /** the player's volume 0..1 at this moment of a short adhan: full, then down to nothing over the last FADE_MS */
-    static float shortGain(long elapsedMs) {
-        if (elapsedMs >= SHORT_MS) return 0f;
-        long fadeStart = SHORT_MS - FADE_MS;
-        if (elapsedMs <= fadeStart) return 1f;
-        return (SHORT_MS - elapsedMs) / (float) FADE_MS;
-    }
+    static float shortGain(long elapsedMs) { return gain(elapsedMs, SHORT_MS, FADE_MS); }
 }

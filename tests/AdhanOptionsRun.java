@@ -21,6 +21,21 @@ public final class AdhanOptionsRun {
                 && AdhanPlan.note(AdhanPlan.HOME, true, false).equals("front=home play=1 notice=0")
                 && AdhanPlan.note(AdhanPlan.UNKNOWN, true, false).equals("front=unknown play=1 notice=0") && AdhanPlan.note(AdhanPlan.DREAM, true, true).equals("front=dream play=1 notice=1"));
 
+        // ---- «تكبير فقط»
+        check("length: none is the whole adhan", AdhanVoices.length(false, false) == AdhanVoices.FULL && AdhanVoices.cutMs(AdhanVoices.FULL, 1) == 0);
+        check("length: short is its first minute", AdhanVoices.length(false, true) == AdhanVoices.SHORT && AdhanVoices.cutMs(AdhanVoices.SHORT, 1) == 60_000 && AdhanVoices.fadeMs(AdhanVoices.SHORT) == 3_000);
+        check("length: takbir wins over short", AdhanVoices.length(true, true) == AdhanVoices.TAKBIR && AdhanVoices.length(true, false) == AdhanVoices.TAKBIR);
+        boolean same = true;
+        for (int v = 0; v <= AdhanVoices.COUNT; v++) same &= AdhanVoices.cutMs(AdhanVoices.TAKBIR, v) == 14_000;
+        check("takbir: cut at 14 s for every recording and the person's own, with a 2 s fade", same && AdhanVoices.fadeMs(AdhanVoices.TAKBIR) == 2_000);
+        check("takbir: inside the 12 to 15 seconds asked, and the fade shorter than the cut", AdhanVoices.TAKBIR_MS >= 12_000 && AdhanVoices.TAKBIR_MS <= 15_000 && AdhanVoices.TAKBIR_FADE_MS < AdhanVoices.TAKBIR_MS);
+        check("takbir: full volume for 12 seconds, half at 13, nothing at 14", AdhanVoices.gain(0, 14_000, 2_000) == 1f && AdhanVoices.gain(12_000, 14_000, 2_000) == 1f
+                && Math.abs(AdhanVoices.gain(13_000, 14_000, 2_000) - 0.5f) < 0.001f && AdhanVoices.gain(14_000, 14_000, 2_000) == 0f && AdhanVoices.gain(20_000, 14_000, 2_000) == 0f);
+        boolean falling = true; float last = 1f;
+        for (long t = 0; t <= 15_000; t += 250) { float x = AdhanVoices.gain(t, 14_000, 2_000); if (x > last) falling = false; last = x; }
+        check("takbir: the volume only goes down", falling);
+        check("short is the same as before (shortGain is gain at 60 s / 3 s)", AdhanVoices.shortGain(58_500) == AdhanVoices.gain(58_500, 60_000, 3_000) && AdhanVoices.shortGain(57_000) == 1f && AdhanVoices.shortGain(60_000) == 0f);
+
         // ---- «تنبيه عند الأذان»
         check("notice: the words name the prayer", AdhanNoticeText.text(3).equals("حان وقت صلاة العصر") && AdhanNoticeText.text(0).equals("حان وقت صلاة الفجر")
                 && AdhanNoticeText.text(2).equals("حان وقت صلاة الظهر") && AdhanNoticeText.text(4).equals("حان وقت صلاة المغرب") && AdhanNoticeText.text(5).equals("حان وقت صلاة العشاء"));

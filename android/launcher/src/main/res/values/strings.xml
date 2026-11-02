@@ -48,6 +48,7 @@
     <string name="adhan_short">أذان مختصر</string>
     <string name="adhan_short_on">مفعّل  •  يتوقف بعد دقيقة</string>
     <string name="adhan_short_off">متوقف  •  الأذان كاملًا</string>
+    <string name="adhan_takbir">تكبير فقط</string>
     <string name="adhan_stopkey">إيقاف الأذان بأي زر</string>
     <string name="adhan_stopkey_on">مفعّل  •  أي زر يوقف الأذان (ما عدا الصوت والطاقة)</string>
     <string name="adhan_stopkey_off">متوقف  •  «اختيار» على شريط الأذان يوقفه</string>

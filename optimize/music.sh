@@ -13,6 +13,7 @@
 #   optimize/music.sh adhan voice 3        which recording plays at Dhuhr, Asr, Maghrib and Isha (1-21, but the four Fajr ones are for Fajr only)
 #   optimize/music.sh adhan fajr-voice 10  «مؤذن الفجر»: the recording for Fajr (own = your own recording); default 10, «فجر الحرم المكي»
 #   optimize/music.sh adhan short on|off   «أذان مختصر»: the adhan stops after its first minute with a 3-second fade (off by default)
+#   optimize/music.sh adhan takbir on|off   «تكبير فقط» (off by default): only the opening takbir plays (about 14 seconds), with a 2-second fade; turns short off
 #   optimize/music.sh adhan stopkey on|off   «إيقاف الأذان بأي زر» (ON by default): while the adhan plays, the first key press on the home screen or the
 #                                          screensaver stops it and is consumed (it does not also open the focused app or move the focus); the
 #                                          volume keys and Power are left alone, Home, Back, OK, the arrows, numbers and media keys all stop it.
@@ -116,6 +117,7 @@ Usage: optimize/music.sh <command> [arguments]
   adhan short on | off
   adhan saver-only on | off   the adhan plays only over the screensaver or our home (default off)
   adhan notice on | off   a 5-second notice with the prayer's name at its time (default off)
+  adhan takbir on | off   only the opening takbir plays, then a fade (default off; turns short off)
   adhan stopkey on | off  any key stops the adhan while it plays (default on; off: only OK on the adhan bar)
   adhan stop              stop the adhan that is playing
   adhan volume <10-100>
@@ -208,7 +210,7 @@ PY
         out=$(tv "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.GET_PLAYER")
         data=$(printf '%s\n' "$out" | sed -n 's/.*data="\(.*\)"/\1/p' | tail -n 1)
         [ -n "$data" ] || { echo "No status from sa.urtv.home. Is the app installed and the TV reachable?" >&2; exit 1; }
-        printf '%s\n' "$data" | tr '|' '\n' | grep -E '^(adhan=|voice=|fajr_voice=|adhan_short=|adhan_stopkey=|adhan_saver_only=|adhan_notice=|adhan_alarm_last=|adhan_live=|adhan_volume=|adhan_exact=|adhan_next|adhan_last|source=|playing=)'
+        printf '%s\n' "$data" | tr '|' '\n' | grep -E '^(adhan=|voice=|fajr_voice=|adhan_short=|adhan_takbir=|adhan_stopkey=|adhan_saver_only=|adhan_notice=|adhan_alarm_last=|adhan_live=|adhan_volume=|adhan_exact=|adhan_next|adhan_last|source=|playing=)'
         own=$(printf '%s\n' "$data" | tr '|' '\n' | sed -n 's/^own_bytes=//p')
         if [ "${own:-0}" -gt 0 ] 2> /dev/null; then
           echo "own=$((own / 1024)) KB (your own recording; adhan voice own uses it, adhan own-clear removes it)"
@@ -268,6 +270,12 @@ PY
         case "$2" in on) flag=true;; off) flag=false;; *) usage;; esac
         tv "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.ADHAN_SHORT --ez on $flag" > /dev/null
         if [ "$flag" = true ]; then echo "Short adhan on: it stops after its first minute."; else echo "Short adhan off: the whole adhan plays."; fi
+        ;;
+      takbir)
+        [ $# -eq 2 ] || usage
+        case "$2" in on) flag=true;; off) flag=false;; *) usage;; esac
+        tv "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.ADHAN_TAKBIR --ez on $flag" > /dev/null
+        if [ "$flag" = true ]; then echo "Takbir only on: just the opening takbir plays, then a fade (short adhan is off)."; else echo "Takbir only off."; fi
         ;;
       stopkey)
         [ $# -eq 2 ] || usage

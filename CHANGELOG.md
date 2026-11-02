@@ -7,6 +7,7 @@ Newest first. `next` is where changes land first; a release is what was tested t
 Four options for the adhan, each a switch in «تلاوة وأذان» ← الأذان and each off until it is turned on. The adhan itself stays off by default.
 - «الأذان على شاشة التوقف فقط» (#49): the adhan plays only over the screensaver or our home screen; another app or an input in front gets none. `optimize/music.sh adhan saver-only on|off`.
 - «تنبيه عند الأذان»: a calm text notice for 5 seconds at the prayer's time, «حان وقت صلاة العصر», over whatever is in front, even when the adhan is off or skipped. A system toast (no permission). `optimize/music.sh adhan notice on|off`; the status says what the last alarm did (`adhan_alarm_last=`).
+- «تكبير فقط»: a third length next to «أذان مختصر». Only the opening takbir plays (cut at 14 seconds, a 2-second fade), the same time for every recording. `optimize/music.sh adhan takbir on|off`.
 
 ## 4.1
 

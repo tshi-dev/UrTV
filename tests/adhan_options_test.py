@@ -55,14 +55,26 @@ check("the switch re-sets the alarm (screen and agent)", tmain.split("row.kind =
       and music.split('"sa.urtv.home.ADHAN_NOTICE"')[1].split("return;")[0].count("AdhanScheduler.schedule(context)") == 1)
 check("the agent command is declared and in music.sh", '"sa.urtv.home.ADHAN_NOTICE"' in manifest and "notice)" in music_sh and "adhan_notice=" in music)
 
+# ---- «تكبير فقط»
+svc = text(T / "MusicService.java")
+check("takbir is off until it is turned on", 'getBoolean("adhan_takbir", false)' in prefs)
+check("takbir and short switch each other off, in Prefs (so the screen, the agent and the phone all do)",
+      'if (on) e.putBoolean("adhan_takbir", false);' in prefs and 'if (on) e.putBoolean("adhan_short", false);' in prefs)
+check("the service cuts by the length chosen, for a real adhan only, through the same tick as the short one",
+      "AdhanVoices.length(prefs.adhanTakbir(), prefs.adhanShort()) : AdhanVoices.FULL" in svc and "AdhanVoices.gain(elapsed, adhanCutMs, adhanFadeMs)" in svc
+      and "adhanCutMs - adhanFadeMs" in svc and "adhanShortNow" not in svc)
+check("every end of an adhan clears the cut", svc.count("adhanCutMs = 0;") >= 3)
+check("the tab has the row with one plain label", "KIND_TAKBIR" in tmain and '<string name="adhan_takbir">تكبير فقط</string>' in strings)
+check("the agent command is declared and in music.sh", '"sa.urtv.home.ADHAN_TAKBIR"' in manifest and "takbir)" in music_sh and "adhan_takbir=" in music)
+
 if not shutil.which("javac"):
     print("SKIP adhan options: no javac here")
     sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
-    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp] + [str(T / n) for n in ("AdhanPlan.java", "AdhanNoticeText.java")] + [str(ROOT / "tests/AdhanOptionsRun.java")], check=True, capture_output=True)
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp] + [str(T / n) for n in ("AdhanPlan.java", "AdhanNoticeText.java", "AdhanVoices.java")] + [str(ROOT / "tests/AdhanOptionsRun.java")], check=True, capture_output=True)
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.tilawah.AdhanOptionsRun"], check=True, capture_output=True).stdout.decode("utf-8")
 rows = [l.split("\t") for l in out.split("\n") if l]
 for name, res in rows:
     check(name, res == "ok")
-check("every check ran", len(rows) >= 16, len(rows))
+check("every check ran", len(rows) >= 24, len(rows))
 sys.exit(1 if failed else 0)

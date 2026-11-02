@@ -12,6 +12,7 @@ import android.content.Intent;
  *   VOICE --ei voice 1..21 (a recording of ours, not a Fajr one) or 0 (the person's own, when there is one): the other prayers' muezzin
  *   FAJR_VOICE --ei voice 1..21 or 0: «مؤذن الفجر», the one for Fajr (the four Fajr recordings and the normal ones)
  *   ADHAN_SHORT --ez on true|false: «أذان مختصر»
+ *   ADHAN_TAKBIR --ez on true|false: «تكبير فقط» (turns «أذان مختصر» off)
  *   ADHAN_STOPKEY --ez on true|false: «إيقاف الأذان بأي زر»
  *   ADHAN_SAVERONLY --ez on true|false: «الأذان على شاشة التوقف فقط»
  *   ADHAN_NOTICE --ez on true|false: «تنبيه عند الأذان»
@@ -60,6 +61,10 @@ public class MusicReceiver extends BroadcastReceiver {
             case "sa.urtv.home.ADHAN_SHORT":   // optimize/music.sh adhan short on|off
                 prefs.setAdhanShort(intent.getBooleanExtra("on", false));
                 setResultData("saved\nshort=" + (prefs.adhanShort() ? "on" : "off"));
+                return;
+            case "sa.urtv.home.ADHAN_TAKBIR":   // optimize/music.sh adhan takbir on|off
+                prefs.setAdhanTakbir(intent.getBooleanExtra("on", false));
+                setResultData("saved\ntakbir=" + (prefs.adhanTakbir() ? "on" : "off") + "\nshort=" + (prefs.adhanShort() ? "on" : "off"));
                 return;
             case "sa.urtv.home.ADHAN_STOPKEY":   // optimize/music.sh adhan stopkey on|off
                 prefs.setAdhanStopKey(intent.getBooleanExtra("on", false));
@@ -200,6 +205,7 @@ public class MusicReceiver extends BroadcastReceiver {
                 + "|voice=" + (prefs.playVoice(context) == Prefs.OWN ? "own" : String.valueOf(prefs.voice()))
                 + "|fajr_voice=" + (prefs.playFajrVoice(context) == Prefs.OWN ? "own" : String.valueOf(prefs.fajrVoice()))
                 + "|adhan_short=" + (prefs.adhanShort() ? "on" : "off")
+                + "|adhan_takbir=" + (prefs.adhanTakbir() ? "on" : "off")
                 + "|adhan_stopkey=" + (prefs.adhanStopKey() ? "on" : "off")
                 + "|adhan_saver_only=" + (prefs.adhanSaverOnly() ? "on" : "off")
                 + "|adhan_notice=" + (prefs.adhanNotice() ? "on" : "off")
