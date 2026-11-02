@@ -145,7 +145,7 @@ final class SetupInstall {
         Apk apk = apks.download(url);
         if (apk == null) {
             if (installed) return skipped("ما قدرنا ننزّل آخر نسخة من شاشة التوقف (الإنترنت؟)، فبقيت النسخة المثبّتة.");
-            return failed("ما قدرنا ننزّل شاشة التوقف (الإنترنت؟). تأكد من الاتصال ثم اضغط «ابدأ» مرة ثانية.");
+            return failed("ما قدرنا ننزّل شاشة التوقف (الإنترنت؟). تأكد من الاتصال ثم اضغط «جهّز كل شي» مرة ثانية.");
         }
         try {
             if (installed) {

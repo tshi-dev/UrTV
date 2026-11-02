@@ -36,6 +36,17 @@ final class SetupHost implements SetupRunner.Host {
 
     @Override public long now() { return System.currentTimeMillis(); }
 
+    @Override public void later(final int ms, final Runnable r) {
+        Thread t = new Thread(new Runnable() {
+            @Override public void run() {
+                try { Thread.sleep(ms); } catch (InterruptedException e) { return; }
+                r.run();
+            }
+        }, "setup-later");
+        t.setDaemon(true);
+        t.start();
+    }
+
     @Override public SetupInstall.Apks apks() { return new SetupApks(app); }
 
     @Override public String appVersion() { return sa.urtv.home.BuildConfig.MARKETING + " (build " + sa.urtv.home.BuildConfig.VERSION_CODE + ")"; }

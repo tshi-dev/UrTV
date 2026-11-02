@@ -31,7 +31,7 @@ if not shutil.which("javac"):
 SETUP = ROOT / "android/launcher/src/main/java/sa/urtv/home/setup"
 CLS = Path(tempfile.mkdtemp()); OUT = Path(tempfile.mkdtemp())
 pure = [p for p in sorted(SETUP.glob("*.java")) if "import android." not in p.read_text(encoding="utf-8")] + [SETUP.parent / "phone/UpdateRules.java"]
-r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", str(CLS), *map(str, pure), *(str(ROOT / "tests" / f) for f in ("SetupEngineRun.java", "SetupRunnerRun.java", "ReportRun.java"))], capture_output=True, text=True)
+r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", str(CLS), *map(str, pure), *(str(ROOT / "tests" / f) for f in ("SetupEngineRun.java", "SetupRunnerRun.java", "AdbClientRun.java", "ReportRun.java"))], capture_output=True, text=True)
 check("it compiles", r.returncode == 0, r.stderr)
 if r.returncode:
     sys.exit(1)

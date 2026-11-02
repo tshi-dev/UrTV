@@ -4,60 +4,100 @@ Three ways, from the easiest. Pick by what the person has.
 
 | | What they have | What runs the setup | What it does |
 |---|---|---|---|
-| **1. The TV alone** | the TV (and its remote), nothing else | the home app **on the TV**, over the TV's own local ADB | a careful subset: checks, grants, the safe list, the screensaver, the home switch; one-button undo |
+| **1. The TV alone** | the TV (and its remote), nothing else | the home app **on the TV**, over the TV's own local ADB | the whole setup from one button, «جهّز كل شي»: everything `optimize/run.sh` does but the photos and sending the report; one-button undo |
 | **2. An Android phone** | an Android phone on the same Wi-Fi | **Termux** on the phone: the very same `optimize/` scripts | everything a computer does |
 | **3. An iPhone or iPad** | an iPhone/iPad on the same Wi-Fi | **iSH** (an Alpine shell app): the same scripts | everything a computer does, slowly; see «what we could not test» |
 
 Path 1 needs no other device at all, so it is also the answer for an iPad that cannot run path 3.
 
-## 1. The TV alone («إعداد تلفزيوني»)
+## 1. The TV alone («إعداد تلفزيوني» ← «جهّز كل شي»)
 
-1. **Debugging on.** Settings → About → press OK on **Build** seven times; then **Developer options** → **USB debugging** on. (Only the TV's own
-   adb is used: nothing listens on the network.)
-2. **Install the two apps with the TV's Downloader app** (the free one from the TV's store; allow it «install unknown apps» when it asks). In
-   Downloader type these two codes, one after the other, and install each: **2927902** (the screensaver) and **9378345** (the home app). They are short links (aftv.news) to these two addresses, which also work typed in full:
-   - `https://github.com/tshi-dev/UrTV/releases/download/apk-latest/urtv-screensaver.apk`
-   - `https://github.com/tshi-dev/UrTV/releases/download/apk-latest/urtv-home.apk`
+1. **Debugging on.** Settings → Device Preferences → About → press OK on **Build** seven times; then **Developer options** → **USB debugging** on. (Only the TV's own
+   adb is used: this app opens no port of its own.)
+2. **Install ONE app with the TV's Downloader app** (the free one from the TV's store; allow it «install unknown apps» when it asks). In Downloader type
+   **9378345** and install it: that is the home app, `urtv-home.apk`. The setup downloads the screensaver by itself. The code is a short link (aftv.news) to
+   `https://github.com/tshi-dev/UrTV/releases/download/apk-latest/urtv-home.apk`, which also works typed in full.
+   - Fallback only, if the TV cannot reach GitHub during the setup: **2927902** is the screensaver (`urtv-screensaver.apk`), installed by hand the same way.
+   - Both are built and signed by GitHub Actions: the same pair `optimize/install.sh` installs. Never use an APK built anywhere else: it could not update later,
+     and the setup refuses a screensaver that is not signed with the home app's own key.
+3. **Open «إعداد تلفزيوني»** from the TV's apps row and press **«جهّز كل شي»**.
+4. The TV asks **«السماح بتصحيح USB؟»** (Allow USB debugging?). Choose **«السماح دائماً»** (Always allow) with the remote, once. Stay at the TV: if the question
+   does not appear within 20 seconds the screen says «ما ظهرت الرسالة؟ أعد تشغيل التلفزيون وافتح «إعداد تلفزيوني» واضغط «جهّز كل شي» وخلك عند التلفزيون».
+5. **The plan.** Before anything is changed, the screen shows what it will do on this TV, with its real counts (for example «نوقف ٢٢ تطبيقاً من القائمة
+   الآمنة»), and one box, ticked: «ثبّت أيضاً TV Bro (متصفح) و SmartTube (يوتيوب بلا إعلانات)». Untick it to skip them. Press **«ابدأ»** (or «إلغاء»: nothing changes;
+   with no answer for ten minutes it ends by itself, nothing changed).
+6. **Wait**, 10 to 20 minutes. One line per step: ✓ done, – تُرك (skipped, with why), ✕ not done (with why). The TV **restarts twice** by itself (the memory is
+   measured before and after, like the computer path) and the run goes on by itself after each restart; open «إعداد تلفزيوني» again to watch it.
+7. **Only on some TCL and Google TV sets** (the TV's setup wizard owns the saved Wi-Fi): before the home switch the screen asks to forget the Wi-Fi network in the
+   TV's Settings ← الشبكة and join it again with the same password, then **«كمّل»**. «كمّل» without doing it is fine too: the switch then goes on with the wizard left on.
+8. **Done.** The screen shows the report as a **QR code** (it opens `docs/share`, the same page as `optimize/share.sh`, with nothing personal in it: the person
+   sends it from the phone if they want), how to turn debugging off, «لو صار شي», and «تراجع».
 
-   (They are built and signed by GitHub Actions: this is the same pair `optimize/install.sh` installs. Never use an APK built anywhere else: it could not update later.)
-3. **Open «إعداد تلفزيوني»** from the TV's apps row. The screen shows exactly what it will do, in order. Press **«ابدأ»**.
-4. The TV asks **«السماح بتصحيح USB؟»** (Allow USB debugging?). Choose **«السماح دائماً»** (Always allow) with the remote, once.
-5. Wait: a few minutes, with lines on the screen. When it says it is done, press Home on the remote.
+**What it does, in this order** (the same lists and rules as `optimize/run.sh` from a computer; the lists are generated from `optimize/lists`):
 
-**What it does**, with the very same lists and rules as `optimize/run.sh` from a computer (the lists are generated from `optimize/lists`):
+| step | what |
+|---|---|
+| precheck | the device is an Android TV and answers; an empty or missing answer is never «fine», and then **nothing is changed** |
+| (plan) | reads what it would change (read only) and waits for «ابدأ» |
+| backup | `backup.txt`, the TV as it came (`optimize/backup.sh`'s file); refused, and nothing changed, if the TV's package list came back empty |
+| keep | protected features turned back on (`optimize/keep.sh`) |
+| measure before | `optimize/measure.sh`'s reading after a restart; a TV whose adb would not come back on 5555 after a restart is read without one, and the report says so |
+| grants | location for the city, exact alarms for the adhan, «install unknown apps» for the TV's own update |
+| safe list | `tcl-safe.txt` (telemetry, ads, promos): only what is installed and on, never `keep.txt` or Android's core (`core.txt`); written to the ledger `disabled-by-us.txt` before the commands |
+| community | the CleanYourTV list for exactly this model, with `optimize/community.sh`'s filters and UAD-ng's «Unsafe» rating. **Offline: nothing of it is applied** («تُرك») |
+| tweaks | `optimize/tweaks.sh` with its journal: animations at half length, the Play Store kept from the background (its standby bucket on Android 11+ only); caches trimmed only when storage is low |
+| screensaver | downloaded from `apk-latest`, installed only when its signer is this app's own (a fresh install) or the installed one's (an update), streamed to `cmd package install -S` (no file on the TV); then set if WebView is 80 or newer |
+| extras | TV Bro and SmartTube from their own GitHub releases (the TV's processor's build), unless unticked; one that fails never holds the setup up |
+| auto-start | on a TCL: AUTO_START / APP_AUTO_START and ASSOC_START allowed for both apps, then `appops write-settings` (`optimize/autostart.sh`); after the screensaver is installed, so it covers it too |
+| home | Home becomes the home app, with `install.sh`'s guards (below) |
+| measure after | the second reading |
+| report | `report.md` in `share.py`'s form and allowlist; the done screen's QR code |
 
-- checks the device is an Android TV and that it answers; an empty or missing answer is never taken as «fine», and then **nothing is changed**;
-- gives the home app the permissions it needs (location for the city, exact alarms for the adhan, «install unknown apps» for the TV's own update);
-- turns off the **safe list** (`tcl-safe.txt`: telemetry, ads, promos): only what is installed and was not already off, never anything in `keep.txt` or Android's own core
-  (`core.txt`); what it turned off is written to a **ledger** (`disabled-by-us.txt`, the same file name as on a computer);
-- turns on the **screensaver** if it is installed and the TV's WebView is 80 or newer; otherwise it leaves the TV's own and says why;
-- makes the home app **Home**, with the same guards as `install.sh`: it will not touch the setup wizard when that owns the saved Wi-Fi, it records who held Home
-  before in a **journal** (`home-switch.json`, the same fields), and a **safety switch** (an alarm inside the app) puts the stock home back after 5 minutes unless the new home
-  is confirmed on screen.
+**The home switch** follows `optimize/install.sh launcher`. It records who held Home before in a **journal** (`home-switch.json`, the same fields, and a last `step` field
+written before each step acts: armed, switch or wizard_off / wifi_check / home_start / stock_off, verify). A **safety switch** (an alarm inside the app) is set and checked
+**before** anything is changed and puts the stock home back after 5 minutes unless the new home is confirmed on screen. When the setup wizard owns the saved Wi-Fi the
+person is asked once (step 7). If the network then moved to the TV's Settings, the switch goes in the **safe order**: the wizard off first while the stock home is still
+Home; the Wi-Fi read again (still connected, no saved network fewer; read only, no name kept); our home started and confirmed in front; only then the stock home off and
+the HOME role ours. A changed Wi-Fi, or our home not coming up in front, puts the wizard and the stock home back (checked) and the stock home is never turned off.
+If the network did not move, the wizard stays on (it would take the network with it).
 
-**The safety switch** is an alarm inside the app, set (and checked) **before** anything is changed: if the alarm cannot be set, the home switch does not start. Its deadline is also saved on disk. If the TV restarts or the app is
-force-stopped in the middle, the TV's start (a boot receiver) and the setup screen set it again and try to put the stock home back; each try sets the next one first (after 30 s, then 1, 2, 4, 8 and 10 minutes), and the journal
-says «restored» only once Home is **confirmed** to be the stock home. On Android 12 and newer without the exact-alarm permission the alarm can be minutes late, and the screen says so.
+**The safety switch's deadline** is also saved on disk. If the TV restarts or the app is force-stopped in the middle, the TV's start (a boot receiver) and the setup
+screen set it again and try to put the stock home back; each try sets the next one first (after 30 s, then 1, 2, 4, 8 and 10 minutes), and the journal says «restored»
+only once Home is **confirmed** to be the stock home. On Android 12 and newer without the exact-alarm permission the alarm can be minutes late, and the screen says so.
+A run cut off in the middle says what is true: with a home switch pending, the stock home comes back by itself within 5 minutes; without one, Home was not touched.
 
-**With a family PIN set**, «ابدأ» and «تراجع» ask for it first. The screen is also kept out of the home screen's own apps grid.
+**While a run goes** our screensaver does not start (it asks the home app and steps aside), and the home app holds the screen on: a USB-debugging prompt sent while
+the screensaver showed stayed pending until the TV restarted (a tester's diagnosis), and a TCL ignored the screen's keep-on flag.
 
-**The ADB key.** While USB debugging is on, adbd listens on TCP 5555 on the whole Wi-Fi, not only on the TV: another device there can make the TV show the "Allow USB debugging?" prompt, but it cannot get in unless
-someone accepts it. «السماح دائماً» makes this app's key a standing credential, so the app **deletes its key** when the setup (or the undo) has finished and no safety switch is pending; a later run asks again.
-On the done screen the app says to turn **USB debugging off** (Developer options) and to use **«إلغاء تراخيص تصحيح USB»** (Revoke USB debugging authorizations) if the person does not need them. «تراجع» from the app needs debugging on again.
+**With a family PIN set**, «جهّز كل شي», «كمّل» and «تراجع» ask for it first. The screen is also kept out of the home screen's own apps grid.
 
-**«تراجع»** (Undo) is one button: it puts the stock home and the HOME role back first, then turns the ledger's apps on again, the screensaver as the TV had it, and the permissions as they were. It follows `optimize/restore.sh`.
-If the app is closed in the middle of the home switch, opening «إعداد تلفزيوني» again says so, and «تراجع» finishes the job.
+**The ADB key.** While USB debugging is on, adbd listens on TCP 5555 on the whole Wi-Fi, not only on the TV: another device there can make the TV show the "Allow USB
+debugging?" prompt, but it cannot get in unless someone accepts it. «السماح دائماً» makes this app's key a standing credential, so the app **deletes its key** when the
+run has ended and nothing waits (no safety switch pending, no restart of the measurement, no «كمّل» for the Wi-Fi); a later run asks again. The done screen says to turn
+**USB debugging off** and to use **«إلغاء تراخيص تصحيح USB»** (Revoke USB debugging authorizations). «تراجع» from the app needs debugging on again.
 
-**What it leaves to a computer or a phone** (paths 2 and 3, or a computer): TV Bro and SmartTube, the speed tweaks, the community lists for other brands,
-حماية العائلة (DNS), the measurements and the report. Nothing is lost by starting here: the computer path can follow later (`optimize/run.sh`).
+**«تراجع»** (Undo) is one button, in `optimize/reset.sh`'s order: the stock home and the HOME role first, then the ledger's apps (and the community list's), the protected
+features, the screensaver as the TV had it, the permissions, TCL's auto-start ops, the screensaver timeout, what the setup installed (the screensaver, TV Bro, SmartTube;
+never this app), and the speed tweaks last. If the app is closed in the middle of the home switch, opening «إعداد تلفزيوني» again says so, and «تراجع» finishes the job.
+
+**What it cannot do** (a computer or a phone, paths 2 and 3, can):
+
+- **The person's own photos** for the screensaver (`optimize/photos.sh`): they are on a computer or phone, not on the TV.
+- **Sending the report by itself**: it is shown as a QR code; the person sends it from their phone if they want (`optimize/share.sh` sends it from a computer).
+- **TVs that only have «Wireless debugging»** (some Android 11+ sets, no «USB debugging» on port 5555): the app cannot pair with them. The first pairing needs a phone
+  (path 2: `adb pair` in Termux, then `adb tcpip 5555`) or a computer; after that the TV-alone path works until the TV restarts.
+- `CACHED_LIMIT` and حماية العائلة (DNS) stay on the computer path.
 
 | It says | Do |
 |---|---|
-| «تصحيح USB مطفأ» / «debugging is off» | turn USB debugging on (step 1) and press «ابدأ» again |
-| the TV never shows the prompt | the TV may only offer **Wireless debugging** (some Android 11+ sets): use path 2 or 3 or a computer; they pair that way |
-| «لم تُقبل رسالة …» | press «ابدأ» again and answer the prompt within three minutes. **If the prompt never appeared:** restart the TV, then open «إعداد تلفزيوني», press «ابدأ» and stay at the TV: it appears within seconds. (A prompt left unanswered, e.g. under the screensaver, makes the TV skip every later one until it restarts: «prompt currently pending, skipping» in adbd's log.) |
-| a step is «تُركت» (skipped) | the line above says why (WebView too old: update «Android System WebView» in the Play Store, then «ابدأ» again) |
+| «تصحيح USB مطفأ» / «debugging is off» | turn USB debugging on (step 1) and press «جهّز كل شي» again |
+| «ما ظهرت الرسالة؟ …» (after 20 s) | restart the TV, open «إعداد تلفزيوني», press «جهّز كل شي» and stay at the TV: the prompt appears within seconds. (A prompt left unanswered, e.g. under the screensaver, makes the TV skip every later one until it restarts: «prompt currently pending, skipping» in adbd's log.) |
+| the TV never shows the prompt, even after a restart | the TV may only offer **Wireless debugging**: see «What it cannot do» |
+| «لم تُقبل رسالة …» | press «جهّز كل شي» again and answer the prompt within three minutes |
+| a step is «تُرك» (skipped) | its line says why (no internet for the community list; WebView too old: update «Android System WebView» in the Play Store, then «جهّز كل شي» again) |
+| «قبل تبديل الشاشة الرئيسية: شبكة الواي فاي …» | step 7; «كمّل» either way |
 | the TV did not come back to the stock home | it will, after 5 minutes by itself; or press «تراجع» |
+| the TV restarted and the screen is gone | the run goes on by itself; open «إعداد تلفزيوني» to watch it |
 
 ## 2. An Android phone: Termux
 
@@ -108,13 +148,6 @@ optimize/run.sh
   that iSH uses (if `apk` cannot find it, `optimize/setup.sh` stops with a clear line, and the answer is path 1); `android-tools` (the `adb` program, needed only for Wireless-debugging pairing) may be missing for iSH.
 - **If something does not work on iSH, use path 1:** it needs no other device at all, and the TV does the work itself.
 
-### The TV test this path still needs (nothing here has run on a real TV)
+### The TV test this path still needs
 
-1. A first run with «السماح دائماً»: the prompt appears once; all five steps; Home is ours; the journal/ledger files exist in the app's folder.
-2. A second run: the TV asks again (the key was deleted after run 1: check that, and that the old authorization can be revoked), then «تلفزيونك هو الشاشة الرئيسية أصلاً» or a clean repeat.
-3. **Deny** the prompt: «لم تُقبل رسالة …», nothing changed.
-4. **USB debugging off**: «تصحيح USB مطفأ», nothing changed.
-5. The safety switch: start the home switch and **restart the TV** in the middle; then again with **Force-stop** of the app in the middle. In both, the stock home must come back by itself, and the journal must say «restored».
-6. «تراجع» after a good run: everything as before (stock home, apps, screensaver, permissions).
-7. With a family PIN set: both buttons ask for it.
-
+See the work branch's report (work/phone-setup): a from-scratch run on a TCL after `optimize/reset.sh`, with only `urtv-home.apk` installed.

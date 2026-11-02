@@ -31,6 +31,9 @@ public class AdbClientRun {
         final AtomicInteger prompts = new AtomicInteger(), connections = new AtomicInteger();
         final List<String> commands = new CopyOnWriteArrayList<>();
         volatile boolean refuseShell, closeEarly;
+        /** A whole fake TV behind this adbd (SetupRunnerRun's end-to-end run): its answer and exit code for each shell command, and what an install delivered. */
+        volatile java.util.function.Function<String, AdbClient.Result> tv;
+        volatile java.util.function.Consumer<byte[]> installed;
         volatile int maxData = AdbClient.MAX_DATA, biggestPiece;
         final java.io.ByteArrayOutputStream received = new java.io.ByteArrayOutputStream();
 
@@ -164,11 +167,13 @@ public class AdbClientRun {
             long size = sm.find() ? Long.parseLong(sm.group(1)) : 0;
             out.write(frame(AdbClient.OKAY, remote, local, null)); out.flush();
             long got = 0;
+            java.io.ByteArrayOutputStream mine = new java.io.ByteArrayOutputStream();
             while (got < size) {
                 AdbClient.Message w = read(in);
                 if (w.command != AdbClient.WRTE) continue;
                 biggestPiece = Math.max(biggestPiece, w.data.length);
                 received.write(w.data);
+                mine.write(w.data);
                 got += w.data.length;
                 if (closeEarly && got >= size / 2) {
                     out.write(frame(AdbClient.WRTE, remote, local, "Failure [INSTALL_FAILED_INSUFFICIENT_STORAGE]\n".getBytes(StandardCharsets.UTF_8)));
@@ -177,6 +182,7 @@ public class AdbClientRun {
                 }
                 out.write(frame(AdbClient.OKAY, remote, local, null)); out.flush();
             }
+            if (installed != null) installed.accept(mine.toByteArray());
             out.write(frame(AdbClient.WRTE, remote, local, ("Success\n").getBytes(StandardCharsets.UTF_8))); out.flush();
             read(in);   // the client's OKAY
             out.write(frame(AdbClient.CLSE, remote, local, null)); out.flush();
@@ -185,6 +191,13 @@ public class AdbClientRun {
 
         /** The text of a command: «echo hello» and friends; a trailing «echo URTV_RC=$?» gets the code of the line before it. */
         String answer(String cmd) {
+            if (tv != null) {
+                int k = cmd.lastIndexOf("\necho URTV_RC=$?");
+                AdbClient.Result r = tv.apply(k < 0 ? cmd : cmd.substring(0, k));
+                String o = r.output;
+                if (k < 0) return o;
+                return o + (o.isEmpty() || o.endsWith("\n") ? "" : "\n") + "URTV_RC=" + r.code + "\n";
+            }
             String rc = "";
             int i = cmd.lastIndexOf("\necho URTV_RC=$?");
             String body = cmd;

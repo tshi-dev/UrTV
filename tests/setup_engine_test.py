@@ -107,10 +107,13 @@ elif a[0].startswith("pm list packages"):
 
 # the home journal's field names: the app writes the ones optimize/home-journal.sh reads
 hj = (ROOT / "optimize/home-journal.sh").read_text(encoding="utf-8")
-sh_fields = re.findall(r'"([a-z_]+)": "', hj[hj.index("jwrite()"):hj.index("jstate()")])[:8]
+sh_fields = re.findall(r'"([a-z_]+)": "', hj[hj.index("jwrite()"):hj.index("jstate()")])
 src_ = (SETUP / "SetupEngine.java").read_text(encoding="utf-8")
-app_fields = re.findall(r'\\"([a-z_]+)\\": \\"', src_[src_.index("private void journalWrite"):src_.index("private void journalState")])
-check("PARITY: the journal fields of the app are the shell's, in the same order", app_fields == sh_fields == ["nonce", "state", "stock", "role_holder_before", "wizard_before", "stock_before", "safety_switch", "written"], (app_fields, sh_fields))
+app_fields = re.findall(r'\\"([a-z_]+)\\": \\"', src_[src_.index("private void journalWrite"):src_.index("void journalStep")])
+check("PARITY: the journal fields of the app are the shell's, in the same order, «step» last (home-journal.sh's jstep)",
+      app_fields == sh_fields == ["nonce", "state", "stock", "role_holder_before", "wizard_before", "stock_before", "safety_switch", "written", "step"], (app_fields, sh_fields))
+jstep = src_[src_.index("void journalStep"):src_.index("void journalStep") + 600]
+check("PARITY: the app writes the step the way jstep does (the line «step», before the step acts)", '"(?m)^  \\"step\\": \\"[^\\"]*\\""' in jstep, jstep)
 engine_src = (SETUP / "SetupEngine.java").read_text(encoding="utf-8")
 adb_src = (SETUP / "AdbClient.java").read_text(encoding="utf-8")
 act_src = (SETUP / "SetupActivity.java").read_text(encoding="utf-8")
@@ -119,7 +122,10 @@ check("the ADB client and the engine are package-private (nothing outside the se
 check("the ADB client says the truth about port 5555 (adbd listens on the LAN; a device there can raise the prompt, not get in)", "listens on TCP 5555 on the whole LAN" in adb_src and "cannot get in unless the person accepts" in adb_src, "")
 check("the safety switch survives a restart: a BOOT_COMPLETED receiver (system only) re-arms it from the saved deadline and tries at once; the setup screen does the same at its start",
       ".setup.SetupBootReceiver" in manifest and "BOOT_COMPLETED" in manifest[manifest.index(".setup.SetupBootReceiver"):][:500] and "SetupRecovery.rearmFromDisk" in act_src and "SetupRecovery.attempt" in act_src, "")
-check("the buttons ask for the family PIN when one is set, and ignore touches through another window", "SetupGate.guard" in act_src and act_src.count("setFilterTouchesWhenObscured(true)") >= 2, "")
+btn = act_src[act_src.index("private TextView button("):]
+btn = btn[:btn.index("\n    }\n")]
+check("the buttons ask for the family PIN when one is set, and ignore touches through another window (every button is made by button(), which sets it)",
+      "SetupGate.guard" in act_src and "setFilterTouchesWhenObscured(true)" in btn and act_src.count("setFocusable(true)") == 1 and "setFocusable(true)" in btn, "")
 runner_src = (SETUP / "SetupRunner.java").read_text(encoding="utf-8")
 host_src = (SETUP / "SetupHost.java").read_text(encoding="utf-8")
 check("the ADB key is deleted when the job is finished (setup done, or undone) and nothing is pending (the runner's host, after every end)",
@@ -130,7 +136,7 @@ check("the home screen re-arms a cut-off switch at its start with ONE call that 
 fin = runner_src[runner_src.index("private void run(Kind k"):runner_src.index("private End runSteps")]
 check("the key is deleted after EVERY end of a run (it refuses by itself while a switch is pending): host.finished() after the try, outside every catch",
       "host.finished()" in fin and fin.index("host.finished()") > fin.rindex("catch (RuntimeException ex)") and "if (finished)" not in fin
-      and "SetupRunner.awaitingRestart" in (SETUP / "SetupSession.java").read_text(encoding="utf-8"), "")
+      and "SetupRunner.awaiting(new FileStore(c))" in (SETUP / "SetupSession.java").read_text(encoding="utf-8"), "")
 check("after the automatic attempts run out the person is told at every start (the home and the setup screen)", "GAVE_UP_NOTICE" in hook_src and "GAVE_UP_NOTICE" in act_src, "")
 check("the setup screen is not in the home screen's own app grid (Dock.catalogue skips this package)", "p.equals(c.getPackageName())" in (ROOT / "android/launcher/src/main/java/sa/urtv/home/Dock.java").read_text(encoding="utf-8"), "")
 check("the engine runs only fixed commands: none is built from text the TV sent, except package names that matched [A-Za-z0-9_.]+",

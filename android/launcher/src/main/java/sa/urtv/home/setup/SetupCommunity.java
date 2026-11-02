@@ -69,7 +69,7 @@ final class SetupCommunity {
 
     SetupEngine.Result apply() throws IOException {
         Set<String> installed = tv.packages("pm list packages"), disabled = tv.packages("pm list packages -d");
-        if (installed == null || disabled == null) return failed("لم يقل التلفزيون أي التطبيقات عنده وأيها موقوف، فما طبّقنا قائمة المجتمع. اضغط «ابدأ» مرة ثانية.");
+        if (installed == null || disabled == null) return failed("لم يقل التلفزيون أي التطبيقات عنده وأيها موقوف، فما طبّقنا قائمة المجتمع. اضغط «جهّز كل شي» مرة ثانية.");
         CommunityMatch.Lists lists = CommunityMatch.parse(asset);
         if (lists.metas.isEmpty()) return skipped("قوائم المجتمع ليست في هذه النسخة من التطبيق، فما طبّقنا شيئاً منها.");
         // our lists know a TV when several of their TCL packages are on it (the Google ones are on every Android TV)
@@ -81,7 +81,7 @@ final class SetupCommunity {
         CommunityMatch.Choice choice = CommunityMatch.choose(props, lists.metas);
         if (choice.meta == null) return done("ما وجدنا قائمة مجتمع لطراز تلفزيونك بالضبط، فما أوقفنا شيئاً منها (" + why(choice.why) + ").");
         Set<String> homes = homes(tv.text("cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME 2> /dev/null"));
-        if (homes.isEmpty()) return failed("لم يقل التلفزيون أي تطبيق شاشته الرئيسية، فما أوقفنا شيئاً من قائمة المجتمع. اضغط «ابدأ» مرة ثانية.");
+        if (homes.isEmpty()) return failed("لم يقل التلفزيون أي تطبيق شاشته الرئيسية، فما أوقفنا شيئاً من قائمة المجتمع. اضغط «جهّز كل شي» مرة ثانية.");
         List<String> pkgs = new ArrayList<>();
         for (String p : CommunityMatch.packages(choice.meta, Arrays.asList(SetupLists.KEEP), homes, installed)) if (!CommunityMatch.core(p)) pkgs.add(p);
         // what owners often want: left on, and asked

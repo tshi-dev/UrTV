@@ -38,6 +38,22 @@ final class NowPlayingBridge {
         return o;
     }
 
+    /**
+     * «إعداد تلفزيوني» is running a setup in the launcher (its TV prompt, its steps): the dream steps aside then (ScreenDream). False when the
+     * launcher does not say (an older launcher, or not installed): the screensaver works as always.
+     */
+    static boolean setupRunning(Context c) {
+        Cursor cur = null;
+        try {
+            cur = c.getApplicationContext().getContentResolver().query(Uri.parse("content://sa.urtv.home.nowplaying/setup"), null, null, null, null);
+            return cur != null && cur.getColumnIndex("running") >= 0 && cur.moveToFirst() && cur.getInt(cur.getColumnIndex("running")) == 1;
+        } catch (Exception ignored) {
+            return false;
+        } finally {
+            if (cur != null) try { cur.close(); } catch (Exception ignored) { }
+        }
+    }
+
     /** Ends the adhan that is playing in the launcher (it checks our signature, and stops only an adhan). */
     static void stopAdhan(Context c) {
         try {

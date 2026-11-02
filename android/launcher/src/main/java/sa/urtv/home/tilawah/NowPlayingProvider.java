@@ -13,6 +13,7 @@ import android.os.Bundle;
  * anything else (nothing on, paused, the adhan). Read-only; only the screensaver, signed with the same key, may ask (the manifest's
  * READ_NOW_PLAYING). Also ".../adhan": one row (prayer, any_key) while an adhan for a prayer plays, which the screensaver's bar shows; and
  * call("stop_adhan"), which ends that adhan (the same permission is checked; a key press on the screensaver is the only caller). The screensaver asks when it starts and then once a minute, so nothing is pushed from here.
+ * And ".../setup": one row (running) while «إعداد تلفزيوني» runs a setup (SetupHold): the screensaver steps aside then.
  */
 public class NowPlayingProvider extends ContentProvider {
     @Override public boolean onCreate() { return true; }
@@ -20,6 +21,11 @@ public class NowPlayingProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] args, String order) {
         if (getContext() == null) return new MatrixCursor(new String[]{"playing", "title", "who"});
+        if (uri != null && "setup".equals(uri.getLastPathSegment())) {
+            MatrixCursor h = new MatrixCursor(new String[]{"running"});
+            if (sa.urtv.home.setup.SetupHold.on()) h.addRow(new Object[]{1});
+            return h;
+        }
         if (uri != null && "adhan".equals(uri.getLastPathSegment())) {
             MatrixCursor a = new MatrixCursor(new String[]{"prayer", "any_key"});
             if (MusicService.adhanLive()) a.addRow(new Object[]{MusicService.adhanPrayer(), new Prefs(getContext()).adhanStopKey() ? 1 : 0});

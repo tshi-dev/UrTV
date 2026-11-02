@@ -1,7 +1,9 @@
-"""SetupRunner (android/launcher/.../setup/SetupRunner.java): the one setup run of the process, used by the TV's own button and later by the phone.
-One run at a time, a step model with reasons, a bounded ring of numbered lines («the lines since n»), the TV button's five steps and sentences
-unchanged, and a full run that resumes from its step pointer after a restart without running a step that is not safe to repeat. On a plain JVM
-against the fake TV of tests/SetupEngineRun.java; no Android, no TV.
+"""SetupRunner (android/launcher/.../setup/SetupRunner.java): the one setup run of the process, used by the TV's own button «جهّز كل شي» and later by
+the phone. One run at a time, a step model with reasons, a bounded ring of numbered lines («the lines since n»), ONE way to set up (the full run: the
+old five-step «ابدأ» is gone), the start screen's plan with the TV's real counts and nothing changed before «ابدأ», the prompt's 20 s notice, the pause
+for the Wi-Fi when the setup wizard owns it and the safe order after it, a TV with only the home app set up end to end, the undo after a full run,
+and a full run that resumes from its step pointer after a restart without running a step that is not safe to repeat. On a plain JVM against the fake
+TV of tests/SetupEngineRun.java, and once end to end over the real ADB client and the fake adbd of tests/AdbClientRun.java; no Android, no TV.
 
     python3 tests/setup_runner_test.py
 """
@@ -26,20 +28,41 @@ check("the runner is plain Java (no Android): the tests run it on a JVM", "impor
 check("the setup screen only starts and reads through the runner: no session, no engine step, no thread of its own for a run",
       "SetupRunner.get().start(" in act and "SetupSession.open" not in act and not re.search(r"\.(precheck|grants|debloat|screensaver|home|undo)\(\)", act)
       and '"setup-run"' not in act)
-check("the screen keeps the PIN gate and the buttons' guard against overlays", "SetupGate.guard" in act and act.count("setFilterTouchesWhenObscured(true)") >= 2)
+btn = act[act.index("private TextView button("):]
+btn = btn[:btn.index("\n    }\n")]
+check("the screen keeps the PIN gate and the buttons' guard against overlays (every button comes from button(), which sets it)",
+      "SetupGate.guard" in act and "setFilterTouchesWhenObscured(true)" in btn and act.count("setFocusable(true)") == 1)
+check("one way to set up: the screen starts only the full run or the undo (the old five-step run is gone from the runner too)",
+      "SetupRunner.Kind.FULL" in act and "Kind.SETUP" not in act and "SETUP" not in runner[runner.index("enum Kind"):runner.index("enum State")] and "SetupEngine.plan()" not in act)
+check("the screen: «جهّز كل شي», the plan with «ابدأ» and «إلغاء», the extras box on by default, «كمّل» for the Wi-Fi, the QR of the report, «تراجع»",
+      all(w in act for w in ('button("جهّز كل شي")', 'button("ابدأ")', 'button("إلغاء")', 'button("كمّل")', "private boolean extras = true;", "QrCode.encodeLarge(url)",
+                             '"تراجع (يرجّع التلفزيون كما كان)"', "SetupRunner.get().confirm(extras)", "SetupRunner.get().cancel()", "SetupRunner.PROMPT_LATE", "SetupRunner.WIFI_ASK_TEXT")))
+check("the progress screen: one line per step, ✓ done, – تُرك, ✕ not done", all(w in act for w in ('mark = "✓"', 'mark = "–"', '" (تُرك)"', 'mark = "✕"')))
+check("the counts follow the person's digits setting (the screens' DigitsText)", "DigitsText.convert(s, Digits.latin())" in act)
+check("the 20 s notice is the owner's wording", 'PROMPT_LATE = "ما ظهرت الرسالة؟ أعد تشغيل التلفزيون وافتح «إعداد تلفزيوني» واضغط «جهّز كل شي» وخلك عند التلفزيون"' in runner)
 check("a run lives in a foreground service (it outlives the screen), not exported", 'android:name=".setup.SetupService" android:exported="false"' in manifest
       and "startForeground(" in service and "startForegroundService" in service)
-check("the TV's start resumes a full run only when it restarted the TV on purpose, and the ADB key stays only then",
-      "SetupRunner.awaitingRestart(new FileStore(app))" in boot and "SetupRunner.get().resume(" in boot and "SetupRunner.awaitingRestart(new FileStore(c))" in session)
+check("the TV's start resumes a full run only when it restarted the TV on purpose; the ADB key stays only while a run waits (the restart, or «كمّل» after the Wi-Fi)",
+      "SetupRunner.awaitingRestart(new FileStore(app))" in boot and "SetupRunner.get().resume(" in boot and "SetupRunner.awaiting(new FileStore(c))" in session
+      and "awaitingWifi" not in boot)
+hold = (SETUP / "SetupHold.java").read_text(encoding="utf-8")
+npp = (SETUP.parent / "tilawah/NowPlayingProvider.java").read_text(encoding="utf-8")
+dream = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/ScreenDream.java").read_text(encoding="utf-8")
+bridge = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/NowPlayingBridge.java").read_text(encoding="utf-8")
+check("our screensaver steps aside while a run goes: the launcher says so (same-key provider, memory only), the dream wakes up (Android 10+) or ends",
+      "return SetupRunner.get().running();" in hold and '"setup".equals(uri.getLastPathSegment())' in npp and "SetupHold.on()" in npp
+      and "content://sa.urtv.home.nowplaying/setup" in bridge and "if (!NowPlayingBridge.setupRunning(this)) return;" in dream and "wakeUp(); else finish();" in dream)
+check("…and the service holds the screen on while a run goes (a TCL ignored the window's flag), let go at the end",
+      "SCREEN_BRIGHT_WAKE_LOCK" in service and "hold(true);" in service and "hold(false);" in service)
 check("the step pointer is written BEFORE a step runs", runner.index('writeState(host.store(), o, d.id, "started")') < runner.index("r = d.body.run(c);"))
-check("the home switch is the one step never run again by itself after a cut", '"home", false' in runner and runner.count(", false, c ->") == 2)
+check("the home switch is the one step never run again by itself after a cut", '"home", false' in runner and runner.count(", false, c ->") == 1)
 
 if not shutil.which("javac"):
     print("SKIP the runner on a JVM: no javac on this machine")
     sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
     pure = [p for p in sorted(SETUP.glob("*.java")) if "import android." not in p.read_text(encoding="utf-8")] + [SETUP.parent / "phone/UpdateRules.java"]   # (read only: its rule for updates)
-    r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, *map(str, pure), str(ROOT / "tests/SetupEngineRun.java"), str(ROOT / "tests/SetupRunnerRun.java")], capture_output=True, text=True)
+    r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, *map(str, pure), str(ROOT / "tests/SetupEngineRun.java"), str(ROOT / "tests/SetupRunnerRun.java"), str(ROOT / "tests/AdbClientRun.java")], capture_output=True, text=True)
     check("the pure classes and the runner's harness compile", r.returncode == 0, r.stderr)
     if r.returncode:
         sys.exit(1)
@@ -49,21 +72,21 @@ with tempfile.TemporaryDirectory() as tmp:
     if run.returncode:
         print(run.stderr[-2000:])
 
-FIVE = "precheck:DONE,grants:DONE,safe:DONE,screensaver:DONE,home:DONE"
 PLAN = (got.get("PLAN") or "PLAN ").split(" ", 1)[1].split(",")
 FULL_DONE = ",".join(f"{i}:DONE" for i in PLAN)
-check("the full plan: run.sh's order, the precheck and the backup first, TCL's auto-start before the home switch",
-      PLAN[:3] == ["precheck", "backup", "keep"] and PLAN.index("autostart") < PLAN.index("home") and PLAN.index("safe") < PLAN.index("tweaks"), PLAN)
-check("R1: the TV's button runs its five steps in order, all done; the run is over; the key is let go once; the screen is told of changes",
-      got.get("R1") == f"R1 STARTED {FIVE} running=false finished=1 bad=false listened=true", got.get("R1"))
+check("the full plan, in the owner's order: precheck, backup, keep, measure, the safe list, community, tweaks, the screensaver, the extras, auto-start "
+      "(after the screensaver is installed: it only covers apps on the TV), the home switch, measure, report",
+      PLAN == ["precheck", "backup", "keep", "before", "grants", "safe", "community", "tweaks", "install-saver", "screensaver", "extras", "autostart", "home", "after", "report"], PLAN)
+check("R1: «جهّز كل شي» on a healthy TV: every step in order, all done; the run is over; the key is let go once; the screen is told of changes",
+      got.get("R1") == f"R1 STARTED {FULL_DONE} running=false finished=1 bad=false listened=true", got.get("R1"))
 check("R1: the end is the setup screen's own sentence", (got.get("R1end") or "").startswith("R1end انتهى الإعداد. اضغط زر الرئيسية في الريموت."), got.get("R1end"))
-check("R1: numbered lines, in order, «since n» gives the ones after n; the prompt line comes first; the button's run leaves no resume pointer",
-      got.get("R1lines") == "R1lines true true true 0 prompt=true" and got.get("R1nostate") == "R1nostate null", (got.get("R1lines"), got.get("R1nostate")))
+check("R1: numbered lines, in order, «since n» gives the ones after n; the prompt line comes first; a finished run leaves no resume pointer",
+      got.get("R1lines") == "R1lines true true true 0 prompt=true" and got.get("R1nostate") == "R1nostate ", (got.get("R1lines"), got.get("R1nostate")))
 check("R2: a second start (undo, or the full run) while one runs is BUSY and is not queued; once it ends a new one starts",
-      got.get("R2") == "R2 STARTED BUSY BUSY queued=1 kind=SETUP after=STARTED", got.get("R2"))
+      got.get("R2") == "R2 STARTED BUSY BUSY queued=1 kind=FULL after=STARTED", got.get("R2"))
 check("R3: the ring keeps the newest 400 lines with their numbers", got.get("R3") == "R3 400 51 l50 450 3", got.get("R3"))
 check("R4: a TV that answers nothing: the precheck fails, the rest is skipped, not one change, «توقّفنا قبل أي تغيير.» in red",
-      got.get("R4") == "R4 precheck:FAILED,grants:SKIPPED,safe:SKIPPED,screensaver:SKIPPED,home:SKIPPED changes=0 bad=true توقّفنا قبل أي تغيير.", got.get("R4"))
+      got.get("R4") == "R4 " + ",".join(f"{i}:" + ("FAILED" if i == "precheck" else "SKIPPED") for i in PLAN) + " changes=0 bad=true توقّفنا قبل أي تغيير.", got.get("R4"))
 check("R5: debugging off / the prompt refused: the screen's old sentences, in red, the key let go, not running", got.get("R5") == "R5 true 1 true true running=false", got.get("R5"))
 check("R6: the undo is one step through the same runner, with its old sentence", got.get("R6") == "R6 undo:DONE com.google.android.apps.tv.launcherx true", got.get("R6"))
 check("R7: a full run cut in the middle of the home switch: after the restart the switch is NOT run again (said as failed), the pointer is cleared at the end",
@@ -95,6 +118,28 @@ check("R18: a fresh install is refused unless the APK is signed with this app's 
 check("R19: the undo after the full run removes exactly what the setup installed (the screensaver, TV Bro, SmartTube), never this app",
       got.get("R19") == "R19 undo:DONE saver=false tvbro=false smarttube=false home=true record=[]", got.get("R19"))
 check("R20: «no extras» (the person unticked them): skipped, nothing downloaded for them", got.get("R20") == "R20 extras:SKIPPED downloads=1", got.get("R20"))
+check("R21: the start screen: after the precheck the run reads this TV (the safe list's real count, the screensaver missing) with not one change, waits for «ابدأ», then runs it all",
+      got.get("R21") == "R21 plan=true safe=true saver=false homeOurs=false wifiAsk=false changesBefore=0 asked=true line=true saverLine=true true", got.get("R21"))
+check("R22: «إلغاء», or no answer for ten minutes (1200 waits of 0.5 s): the run ends, not one change, nothing to resume, the key let go, not in red",
+      got.get("R22") == "R22 true changes=0/0 end=true/true bad=false waited=1200 resumable=false finished=11", got.get("R22"))
+check("R23: the prompt gets no answer: after 20 s the owner's notice («ما ظهرت الرسالة؟ …»), then the «not accepted» sentence with the restart advice; nothing changed",
+      got.get("R23") == "R23 late=true said=true end=true bad=true lateAfter=false changes=0 holds=false", got.get("R23"))
+check("R23b: our screensaver is held off exactly while a run goes (from the prompt on), and free again after it", got.get("R23b") == "R23b false true false", got.get("R23b"))
+check("R24: the setup wizard owns the saved Wi-Fi: the run pauses before the home switch (every step before it done, nothing of the switch done), asks once, keeps the key; no boot resume",
+      got.get("R24") == "R24 wifi=true bad=false ask=true home=home:PENDING beforeHomeDone=true roleAdds=0 stockOff=false wizardOff=false asked=true await=true keyKept=true autoBoot=false", got.get("R24"))
+check("R25: the network moved (forgotten and joined again): «كمّل» resumes at the switch in the safe order: wizard off, Wi-Fi read, our home in front, then the stock home off and the role; "
+      "the journal names each step before it acts; not asked again; the key let go",
+      got.get("R25") == "R25 STARTED true order=true steps=[armed, wizard_off, wifi_check, home_start, stock_off, verify] journal=done home=sa.urtv.home/.MainActivity askCleared=true wifi=true/2 asks=0 keyLetGo=true", got.get("R25"))
+check("R26: safe order, the Wi-Fi went with the wizard: everything put back (wizard on, the stock home never off, Home checked), «restored», said, never this order again",
+      got.get("R26") == "R26 home=home:FAILED stockEverOff=false wizardOn=true roleBack=com.google.android.apps.tv.launcherx journal=restored steps=[armed, wizard_off, wifi_check] never=true disarmed=true said=1", got.get("R26"))
+check("R27: safe order, our home not in front when started: put back, the stock home never off, «تُرك» (not an error)",
+      got.get("R27") == "R27 home=home:SKIPPED stockEverOff=false wizardOn=true journal=restored steps=[armed, wizard_off, wifi_check, home_start]", got.get("R27"))
+check("R28: the network was not moved («كمّل» anyway): not asked again, the switch as before with the wizard left on", got.get("R28") == "R28 went-on wizardEverOff=false steps=[armed, switch, verify] said=1 true", got.get("R28"))
+check("R29: a TCL with only the home app: every step in the plan's order, the screensaver from apk-latest installed and set, auto-start (and ASSOC_START) for both apps, our Home; "
+      "then the undo: the TV as it was, what the run installed removed, this app kept",
+      got.get("R29") == "R29 true order=true during=true/sa.urtv.screensaver/.ScreenDream/allow/allow/sa.urtv.home/.MainActivity downloads=true undo:DONE same=true home=com.google.android.apps.tv.launcherx/.home.HomeActivity self=true", got.get("R29"))
+check("R30: end to end over the real ADB client and the fake adbd: «السماح دائماً» once, the full run (three APKs streamed), Home ours; the undo on a new connection with no second prompt",
+      got.get("R30") == "R30 true true/sa.urtv.screensaver/.ScreenDream/sa.urtv.home/.MainActivity execs=3 prompts=1/1 undo:DONE same=true shellCmds=true", got.get("R30"))
 skipped_rest = ",".join(f"{i}:" + ("DONE" if i == "precheck" else "FAILED" if i == "backup" else "SKIPPED") for i in PLAN)
 check("R12: the backup is the full run's gate: a nearly empty package list saves nothing and nothing after it runs (not one change), «توقّفنا قبل أي تغيير.»",
       got.get("R12") == f"R12 {skipped_rest} backup=null changes=0 true توقّفنا قبل أي تغيير.", got.get("R12"))
