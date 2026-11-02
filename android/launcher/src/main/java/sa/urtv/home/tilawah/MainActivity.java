@@ -17,6 +17,9 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.ImageView;
+
+import sa.urtv.home.OnOff;
 
 import sa.urtv.home.R;
 import java.util.ArrayList;
@@ -306,6 +309,16 @@ public class MainActivity extends Activity {
         lastSelected = view;
     }
 
+    /** The green of an on row (OnOff.green, the DGA greens): the one that reads on the panel at rest, the one that reads on the focus fill when selected. */
+    private android.content.res.ColorStateList onGreens() {
+        android.util.TypedValue t = new android.util.TypedValue();
+        int text = getTheme().resolveAttribute(R.attr.gText, t, true) ? t.data : 0xFFFFFFFF;
+        int focus = getTheme().resolveAttribute(R.attr.gFocus, t, true) ? t.data : 0xFFFFFFFF;
+        int rest = OnOff.green(text) == OnOff.GREEN_ON_LIGHT ? OnOff.GREEN_ON_DARK : OnOff.GREEN_ON_LIGHT;   // light words: a dark panel
+        int on = OnOff.green(focus);
+        return new android.content.res.ColorStateList(new int[][] {{android.R.attr.state_focused}, {android.R.attr.state_selected}, {}}, new int[] {on, on, rest});
+    }
+
     private void resetRow(View view) {
         view.setBackgroundResource(R.drawable.row_bg);
         view.setSelected(false);
@@ -402,15 +415,10 @@ public class MainActivity extends Activity {
                 // «البث المباشر من الحرم»: a link out to the broadcaster's own page, only once its official link is filled in (HaramLive)
                 if (HaramLive.shown(HaramLive.URL)) rows.add(new Row(false, KIND_LINK, getString(R.string.haram_live), getString(R.string.haram_live_detail), -1));
             } else {
-                // the adhan section: today's times with the next one marked, then the switch and the muezzin
+                // the adhan section: the switch first (the settings' «الأذان» button lands on it: OK, OK turns it on), then today's times
+                // with the next one marked, then the muezzin and the rest
                 PrayerTimes times = PrayerTimes.today(MainActivity.this);
                 PrayerTimes.Next next = PrayerTimes.next(MainActivity.this);
-                for (int prayer : PrayerTimes.PRAYERS) {
-                    boolean isNext = next != null && next.index == prayer;
-                    String detail = PrayerTimes.clockText(times.clock[prayer]);
-                    if (isNext) detail += "  •  " + PrayerTimes.remaining(next.at - System.currentTimeMillis());
-                    rows.add(new Row(false, KIND_PRAYER, PrayerTimes.NAMES[prayer], detail, prayer, isNext));
-                }
                 String toggle = prefs.adhanOn() ? getString(R.string.adhan_on) : getString(R.string.adhan_off);
                 if (prefs.adhanOn() && next != null) {
                     toggle += "  •  " + next.name() + " " + PrayerTimes.remaining(next.at - System.currentTimeMillis());
@@ -418,6 +426,12 @@ public class MainActivity extends Activity {
                 rows.add(new Row(false, KIND_ADHAN_TOGGLE, getString(R.string.adhan_auto), toggle, -1));
                 if (prefs.adhanOn() && !AdhanScheduler.exactAllowed(MainActivity.this)) {   // the alarm may be minutes late
                     rows.add(new Row(false, KIND_EXACT, getString(R.string.adhan_exact_title), getString(R.string.adhan_exact_detail), -1));
+                }
+                for (int prayer : PrayerTimes.PRAYERS) {
+                    boolean isNext = next != null && next.index == prayer;
+                    String detail = PrayerTimes.clockText(times.clock[prayer]);
+                    if (isNext) detail += "  •  " + PrayerTimes.remaining(next.at - System.currentTimeMillis());
+                    rows.add(new Row(false, KIND_PRAYER, PrayerTimes.NAMES[prayer], detail, prayer, isNext));
                 }
                 rows.add(new Row(false, KIND_VOICE, getString(R.string.adhan_voice), Adhan.label(prefs.playVoice(MainActivity.this)), -1));
                 rows.add(new Row(false, KIND_FAJR_VOICE, getString(R.string.adhan_fajr_voice), Adhan.label(prefs.playFajrVoice(MainActivity.this)), -1));
@@ -466,6 +480,17 @@ public class MainActivity extends Activity {
             name.setTypeface(Ui.font(MainActivity.this, "Thmanyah-Medium.otf"));
             detail.setTypeface(Ui.font(MainActivity.this, "Thmanyah-Light.otf"));
             name.setTextColor(getColorStateList(row.next ? R.color.gold : R.color.sand));   // the focus ink when selected
+            // an on/off row (OnOff: its detail starts «مفعّل» or «متوقف»): the three green triangles at its start while on, its line in green
+            int state = OnOff.state(row.detail);
+            ImageView mark = view.findViewById(R.id.mark);
+            if (mark != null) mark.setVisibility(state == 1 ? View.VISIBLE : View.INVISIBLE);
+            if (state == 1) {
+                android.content.res.ColorStateList green = onGreens();
+                detail.setTextColor(green);
+                if (mark != null) mark.setImageTintList(green);
+            } else {
+                detail.setTextColor(getColorStateList(R.color.dim));
+            }
             return view;
         }
     }

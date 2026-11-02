@@ -1,27 +1,42 @@
 package sa.urtv.screensaver;
 
 /**
- * The settings start small (the owner's ask): a first screen of eight categories, each a big tile with its current value, and each
- * opening its own rows. SettingsActivity.render builds every row as before; this says which category each one is in, by its FocusKey.
- * A row missing from {@link #ROWS} goes with the category of its group's header, so none is ever lost; tests/settings_hub_test.py
- * fails on such a row all the same (every row is named here). Plain Java: tests/SettingsHubRun.java runs it.
+ * The settings start small (the owner's ask, the 4.0 prototype in notes/settings-proto): a first screen of big buttons, «الأذان» wide on top
+ * and the rest two to a row from the right. A button opens its rows, or a screen of more buttons («البطاقات», «المزيد»), or does one thing
+ * at once (a DIRECT one: «الأذان» opens the adhan's page, whose first row is its switch). SettingsActivity.render builds every row as before;
+ * this says where each one is, by its FocusKey. A row missing from {@link #ROWS} goes with the category of its group's header, so none is
+ * ever lost; tests/settings_hub_test.py fails on such a row all the same (every row is named here). Plain Java: tests/SettingsHubRun.java runs it.
  */
 final class SettingsHub {
     private SettingsHub() { }
 
-    static final String PLACE = "place", ADHAN = "adhan", SAVER = "saver", HOME = "home", CONTENT = "content", APPS = "apps",
-            FAMILY = "family", PHONE = "phone";
+    static final String ADHAN = "adhan", PLACE = "place", CLOCK = "clock", LISTEN = "listen", CARDS = "cards", LOOK = "look", CONTROL = "control",
+            PHONE = "phone", UPDATE = "update", REPORT = "report", MORE = "more",
+            SAVER = "saver", HOME = "home",                                 // in «البطاقات»
+            CONTENT = "content", APPS = "apps", SHOWS = "shows", FAMILY = "family";   // in «المزيد»
 
-    /** key, name, the line under its title on its own screen: the first screen in this order, two to a row from the right */
+    /**
+     * key, name, the line under its title on its own screen, the screen its button is on (null: the first), and the row a DIRECT button runs
+     * ("" when it opens a screen). In this order on each screen; the first one of the first screen is the wide one.
+     */
     static final String[][] CATEGORIES = {
-        {PLACE, "الموقع والصلاة", "مدينتك تحدد الوقت والطقس، وطريقة الحساب تحدد مواقيت الصلاة."},
-        {ADHAN, "الأذان", "الأذان في وقته: تشغيله وصوته ومستواه، والتنبيه قبله على الشاشة."},
-        {SAVER, "شاشة التوقف", "ما يظهر على شاشة التوقف: الساعة والبطاقة بجانبها، والأرقام، والصور، ومتى تبدأ."},
-        {HOME, "الشاشة الرئيسية", "بطاقات الشاشة الرئيسية الثلاث، والتحية والطقس، وزر تلاوة وأذان."},
-        {CONTENT, "المباريات والأسواق", "ما تعرضه البطاقات: فرقك ودورياتك، والأسواق، والمسلسلات، والأسهم."},
-        {APPS, "التطبيقات والمفضلة", "ترتيب التطبيقات المفضلة وتعديلها، وترتيب كل التطبيقات، وأسماء مصادر التلفزيون مثل PS5."},
-        {FAMILY, "العائلة", "حماية العائلة على الشبكة: تفعيلها أو إيقافها، ويرجع الإعداد القديم تلقائياً."},
-        {PHONE, "الجوال والتحديث", "التحكم من الجوال، وتحديث تلفزيوني، وتحديث صفحة شاشة التوقف، والإصدار."},
+        {ADHAN, "الأذان", "", null, "الأذان"},
+        {PLACE, "الموقع والصلاة", "مدينتك تحدد الوقت والطقس، وطريقة الحساب تحدد مواقيت الصلاة.", null, ""},
+        {CLOCK, "الساعة والأرقام", "نظام الساعة ١٢ أو ٢٤، والأرقام عربية أو إنجليزية، وأسماء الأشهر الميلادية.", null, ""},
+        {LISTEN, "تلاوة وأذان", "شاشة التلاوة والأذان، وزرها في الشاشة الرئيسية.", null, ""},
+        {CARDS, "البطاقات", "ما يظهر على شاشة التوقف وعلى الشاشة الرئيسية.", null, ""},
+        {LOOK, "المظهر", "", null, "المظهر"},
+        {CONTROL, "مركز التحكم", "", null, "مركز التحكم"},
+        {PHONE, "التحكم من الجوال", "", null, "تحكم من الجوال"},
+        {UPDATE, "تحديث تلفزيوني", "تحديث التطبيقين وإصدارهما، وتحديث صفحة شاشة التوقف.", null, ""},
+        {REPORT, "أرسل تقرير", "", null, "أرسل تقرير"},
+        {MORE, "المزيد", "المباريات والأسواق، والتطبيقات والمفضلة، وجديد المسلسلات، وحماية العائلة.", null, ""},
+        {SAVER, "شاشة التوقف", "ما يظهر على شاشة التوقف: الساعة والبطاقة بجانبها، والصور، ومتى تبدأ.", CARDS, ""},
+        {HOME, "الشاشة الرئيسية", "بطاقات الشاشة الرئيسية الثلاث، والتحية والطقس، والأزرار.", CARDS, ""},
+        {CONTENT, "المباريات والأسواق", "ما تعرضه البطاقات: فرقك ودورياتك، والأسواق، والأسهم.", MORE, ""},
+        {APPS, "التطبيقات والمفضلة", "ترتيب التطبيقات المفضلة وتعديلها، وترتيب كل التطبيقات، وأسماء مصادر التلفزيون مثل PS5.", MORE, ""},
+        {SHOWS, "جديد المسلسلات", "ما تعرضه بطاقة المسلسلات: التصنيفات واللغات والمسلسلات المختارة.", MORE, ""},
+        {FAMILY, "حماية العائلة", "", MORE, "حماية العائلة"},
     };
 
     /** each row of SettingsActivity by its FocusKey.key (the name without its numbers), and its category */
@@ -29,26 +44,27 @@ final class SettingsHub {
         {"معاينة الشاشة", SAVER},
         {"الدولة", PLACE}, {"المدينة", PLACE}, {"طريقة الحساب", PLACE}, {"تعديل وقت الصلاة", PLACE},
         {"الفرق المتابعة", CONTENT}, {"الدوريات كاملة", CONTENT}, {"رياضات أخرى", CONTENT},
-        {"الأرقام", SAVER}, {"تنبيه قبل الأذان", ADHAN}, {"الشروق بعد الفجر", SAVER}, {"شريط الوقت بين الصلاتين", SAVER},
-        {"الرطوبة والرياح", SAVER}, {"أسماء الأشهر الميلادية", SAVER}, {"شريط السنة تحت الساعة", SAVER}, {"المناسبات الوطنية", SAVER}, {"المناسبة القادمة", SAVER}, {"تعتيم الليل", SAVER},
-        {"حجم الساعة", SAVER}, {"نظام الساعة", SAVER}, {"الخانة اليسرى", SAVER}, {"العدّ التنازلي", SAVER},
+        {"الأرقام", CLOCK}, {"تنبيه قبل الأذان", SAVER}, {"الشروق بعد الفجر", SAVER}, {"شريط الوقت بين الصلاتين", SAVER},
+        {"الرطوبة والرياح", SAVER}, {"أسماء الأشهر الميلادية", CLOCK}, {"شريط السنة تحت الساعة", SAVER}, {"المناسبات الوطنية", SAVER}, {"المناسبة القادمة", SAVER}, {"تعتيم الليل", SAVER},
+        {"حجم الساعة", SAVER}, {"نظام الساعة", CLOCK}, {"الخانة اليسرى", SAVER}, {"العدّ التنازلي", SAVER},
         {"شريط الأسواق", CONTENT}, {"الأسواق", CONTENT}, {"عرض الأسواق", CONTENT},
         {"المحتوى", SAVER}, {"بطاقة ثانية", SAVER}, {"شكل البطاقة", SAVER}, {"تبديل الآية والحديث", SAVER},
-        {"البطاقة الأولى", HOME}, {"البطاقة الثانية", HOME}, {"البطاقة الثالثة", HOME}, {"التحية والطقس", HOME}, {"المظهر", HOME}, {"زر تلاوة وأذان", HOME}, {"زر المهام", HOME}, {"الرجوع يفتح شاشة التوقف", HOME},
+        {"البطاقة الأولى", HOME}, {"البطاقة الثانية", HOME}, {"البطاقة الثالثة", HOME}, {"التحية والطقس", HOME}, {"المظهر", LOOK},
+        {"افتح تلاوة وأذان", LISTEN}, {"زر تلاوة وأذان", LISTEN}, {"زر المهام", HOME}, {"الرجوع يفتح شاشة التوقف", HOME},
         {"أكمل المشاهدة", HOME}, {"جرس التحديثات", HOME},
         {"الأذان", ADHAN},
         {"ترتيب التطبيقات المفضلة", APPS}, {"أسماء المصادر", APPS}, {"تعديل المفضلة", APPS}, {"ترتيب كل التطبيقات", APPS},
-        {"تحديث تلفزيوني", PHONE}, {"تحكم من الجوال", PHONE},
+        {"تحديث تلفزيوني", UPDATE}, {"تحكم من الجوال", PHONE}, {"مركز التحكم", CONTROL}, {"أرسل تقرير", REPORT},
         {"حماية العائلة", FAMILY},
-        {"التصنيفات", CONTENT}, {"اللغات", CONTENT}, {"مسلسلات مختارة", CONTENT}, {"أقل تقييم", CONTENT}, {"قائمة الأسهم", CONTENT},
+        {"التصنيفات", SHOWS}, {"اللغات", SHOWS}, {"مسلسلات مختارة", SHOWS}, {"أقل تقييم", SHOWS}, {"قائمة الأسهم", CONTENT},
         {"تبديل الصورة كل", SAVER}, {"صوري", SAVER}, {"بدء شاشة التوقف بعد", SAVER},
-        {"التحديث التلقائي للصفحة", PHONE}, {"تحديث صفحة شاشة التوقف", PHONE},
+        {"التحديث التلقائي للصفحة", UPDATE}, {"تحديث صفحة شاشة التوقف", UPDATE},
     };
 
     /** each group header and the category it belongs to: shown only there, above that category's rows of the group */
     static final String[][] HEADERS = {
         {"الموقع", PLACE}, {"المباريات", CONTENT}, {"العرض", SAVER}, {"الأسواق (أعلى اليسار)", CONTENT}, {"بجانب الساعة", SAVER},
-        {"الشاشة الرئيسية (تلفزيونك)", HOME}, {"جديد المسلسلات", CONTENT}, {"الأسهم", CONTENT}, {"التوقيت", SAVER}, {"التطبيق", PHONE},
+        {"الشاشة الرئيسية (تلفزيونك)", HOME}, {"جديد المسلسلات", SHOWS}, {"الأسهم", CONTENT}, {"التوقيت", SAVER}, {"التطبيق", UPDATE},
     };
 
     /** The category of a row (its FocusKey.key); one not named goes with its group's ({@code group}, a header's category), else «شاشة التوقف». */
@@ -63,28 +79,73 @@ final class SettingsHub {
         return null;
     }
 
+    private static String[] find(String category) {
+        for (String[] c : CATEGORIES) if (c[0].equals(category)) return c;
+        return null;
+    }
+
     /** A category's name, null for none. */
     static String name(String category) {
-        for (String[] c : CATEGORIES) if (c[0].equals(category)) return c[1];
-        return null;
+        String[] c = find(category);
+        return c == null ? null : c[1];
     }
 
     /** The line under a category's title on its own screen, "" for none. */
     static String about(String category) {
-        for (String[] c : CATEGORIES) if (c[0].equals(category)) return c[2];
-        return "";
+        String[] c = find(category);
+        return c == null ? "" : c[2];
     }
 
-    /** Where a category's tile is on the first screen, -1 for none. */
+    /** The screen a category's button is on: null for the first screen (and for none). */
+    static String parent(String category) {
+        String[] c = find(category);
+        return c == null ? null : c[3];
+    }
+
+    /** The row a DIRECT button runs at once, null for a button that opens a screen. */
+    static String direct(String category) {
+        String[] c = find(category);
+        return c == null || c[4].isEmpty() ? null : c[4];
+    }
+
+    /** A screen of buttons (the first, «البطاقات», «المزيد»): a category some others are in. */
+    static boolean hasTiles(String category) {
+        if (category == null) return true;
+        for (String[] c : CATEGORIES) if (category.equals(c[3])) return true;
+        return false;
+    }
+
+    /** The buttons of a screen (null: the first one), in order. */
+    static String[] tiles(String screen) {
+        java.util.List<String> out = new java.util.ArrayList<>();
+        for (String[] c : CATEGORIES) if (screen == null ? c[3] == null : screen.equals(c[3])) out.add(c[0]);
+        return out.toArray(new String[0]);
+    }
+
+    /** Where a category's button is on its screen, -1 for none. */
     static int index(String category) {
-        for (int i = 0; i < CATEGORIES.length; i++) if (CATEGORIES[i][0].equals(category)) return i;
+        String[] on = tiles(parent(category));
+        for (int i = 0; i < on.length; i++) if (on[i].equals(category)) return i;
         return -1;
     }
 
+    /** The first screen's first button is wide, alone on its line; the other screens have none. */
+    static boolean wide(String screen) { return screen == null; }
+
     /**
-     * The D-pad on the first screen, two tiles to a row, the first on the right (an Arabic screen): the tile a key goes to from tile
-     * {@code i} of {@code n}, or {@code i} itself at an edge (nothing wraps). dir: 0 up, 1 down, 2 left, 3 right.
+     * The D-pad on a screen of buttons, two to a row, the first on the right (an Arabic screen); with {@code wide} the first button is alone
+     * on the top line: the button a key goes to from button {@code i} of {@code n}, or {@code i} itself at an edge (nothing wraps).
+     * dir: 0 up, 1 down, 2 left, 3 right.
      */
+    static int next(int i, int n, int dir, boolean wide) {
+        if (!wide) return next(i, n, dir);
+        if (i == 0) return dir == 1 && n > 1 ? 1 : 0;              // the wide one: down to the right one under it
+        int j = next(i - 1, n - 1, dir);                         // the pairs under it, counted from 0
+        if (dir == 0 && i - 1 < 2) return 0;                     // up from the first pair: the wide one
+        return j + 1;
+    }
+
+    /** {@link #next(int, int, int, boolean)} without a wide button. */
     static int next(int i, int n, int dir) {
         int col = i % 2;
         switch (dir) {

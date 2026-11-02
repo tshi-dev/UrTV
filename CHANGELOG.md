@@ -4,6 +4,16 @@ Newest first. `next` is where changes land first; a release is what was tested t
 
 ## 4.2 (on `next`)
 
+- **The new settings screen** (work/settings-v2, the owner's choices in notes/settings-proto): big buttons, «الأذان» wide on top with its state
+  under it; OK opens the home's adhan page on its switch (now its first row), so OK, OK turns it on or off, behind the family lock as before.
+  Then «الموقع والصلاة», «الساعة والأرقام» (new: 12/24 hours, digits, month names together), «تلاوة وأذان», «البطاقات» («شاشة التوقف» and
+  «الشاشة الرئيسية»), «المظهر», «مركز التحكم» (the home's panel, behind its pill's lock), «التحكم من الجوال», «تحديث تلفزيوني» (the apps'
+  and the page's updates together), «أرسل تقرير» (new: the home's QR code to docs/share with the versions, Android and WebView only) and
+  «المزيد» (matches and markets, apps and favourites, new shows, «حماية العائلة»). Every row is still there (SettingsHub.ROWS); the
+  commands are unchanged. On/off rows have no switch any more (choice I): three DGA-green triangles at the row's start and the state word
+  in green while on, in both apps' settings, the adhan page, the family lock and the phone page (whose iOS-style pill is gone, and the page
+  is 113 bytes smaller). The home answers the screensaver's new read-only .../adhan_on.
+
 - **Version 4.2** on `next`: the `VERSION` file says 4.2, so test builds from `next` show «4.2» (the apps' `versionName`; the build is still the run number and `version.txt` is still `3.<build>`).
 
 - **«إعداد تلفزيوني»: the whole setup from the TV alone, one button «جهّز كل شي»** (work/phone-setup). Only the home app is installed (one Downloader code, 9378345); the run downloads the screensaver from `apk-latest`, installs it only when it is signed with the home app's own key, and does what `optimize/run.sh` does in its order: backup, keep, the measurement before and after (with restarts, resumed by itself), grants, the safe list, the community list (offline: left), the tweaks, the screensaver, TV Bro and SmartTube (on, one box to skip them), TCL's auto-start with ASSOC_START and `appops write-settings`, the home switch, the report as a QR code for `docs/share`. Nothing is changed before the plan with this TV's real counts is shown and «ابدأ» is pressed. The home switch follows `install.sh`: the Wi-Fi question once when the setup wizard owns the network, then the safe order (wizard off, Wi-Fi read, our home in front, only then the stock home off), the wizard put back on any failure, the journal's `step` before each step. While a run goes our screensaver steps aside and the screen is held on; a prompt with no answer in 20 s gets «ما ظهرت الرسالة؟ أعد تشغيل التلفزيون…». The old five-step «ابدأ» is gone (one way). The QR encoder now also makes level-L codes up to version 40. `docs/PHONE-SETUP.md` says what it cannot do.

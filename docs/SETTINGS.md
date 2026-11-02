@@ -28,10 +28,13 @@ something about the screensaver, the home screen or the TV, find it in the table
 - `optimize/saver.sh`, `optimize/dock.sh` and `optimize/music.sh` with no arguments list every option.
   Names and texts go in single quotes; no apostrophes inside them.
 
-The settings screen (for telling the person where a row is) opens on eight category tiles, two to a row from the right, each with
-its current value: «الموقع والصلاة», «الأذان», «شاشة التوقف», «الشاشة الرئيسية», «المباريات والأسواق», «التطبيقات والمفضلة»,
-«العائلة», «الجوال والتحديث». OK opens one, Back returns to its tile. Which row is in which tile: `SettingsHub.ROWS` in the
-screensaver app, and the list in docs/FEATURES.md. «تحديث تلفزيوني» is in «الجوال والتحديث». The commands below are unchanged.
+The settings screen (for telling the person where a row is) opens on big buttons: «الأذان» wide on top (its state under it; OK opens the
+adhan's page with its switch first, so OK, OK turns it on or off), then two to a row from the right: «الموقع والصلاة», «الساعة والأرقام»
+(12/24 hours, digits, month names), «تلاوة وأذان», «البطاقات» (its two buttons «شاشة التوقف» and «الشاشة الرئيسية»), «المظهر», «مركز التحكم»,
+«التحكم من الجوال», «تحديث تلفزيوني» (the apps' update, the page's update and auto-update), «أرسل تقرير» (a QR code to the share page with
+the versions only), «المزيد» («المباريات والأسواق», «التطبيقات والمفضلة», «جديد المسلسلات», «حماية العائلة»). OK opens one (or does it at
+once), Back returns to the button it came from. Which row is where: `SettingsHub.ROWS` in the screensaver app, and the list in
+docs/FEATURES.md. An on/off row has no switch: three green triangles at its start and its word in green while it is on. The commands below are unchanged.
 
 ## The screensaver «شاشة تلفزيونك»
 

@@ -117,7 +117,7 @@ public class ParentalActivity extends Activity {
             on -> Parental.setLocked(this, ParentalPolicy.OWN_SETTINGS, on))), rowParams());
         list.addView(text("يقفل ترتيب المفضلة وقائمة الضغطة الطويلة على التطبيقات.", 12, "Regular", DIM), right(dp(8)));
         kidsRow = rows.size();
-        list.addView(row("وضع الأطفال", null, button(s.kids ? "مفعّل" : "متوقف", v -> kids())), rowParams());
+        list.addView(row("وضع الأطفال", null, state(s.kids, v -> kids())), rowParams());
         list.addView(text("يُظهر في الشاشة الرئيسية التطبيقات المعلَّمة «يظهر للأطفال» فقط، والخروج منه يحتاج الرمز.", 12, "Regular", DIM), right(dp(8)));
 
         list.addView(header("الأزرار في الأعلى"));
@@ -194,6 +194,13 @@ public class ParentalActivity extends Activity {
         return t;
     }
 
+    /** An on/off cell that opens its own question (kids mode asks for the PIN first): «مفعّل» or «متوقف», drawn as every on/off one. */
+    private View state(boolean on, View.OnClickListener click) {
+        TextView t = cell(on ? OnOff.ON_WORD : OnOff.OFF_WORD, on);
+        t.setOnClickListener(click);
+        return t;
+    }
+
     private View button(String label, View.OnClickListener click) {
         TextView t = cell(label, false);
         t.setOnClickListener(click);
@@ -215,11 +222,20 @@ public class ParentalActivity extends Activity {
 
     private void paint(TextView t, boolean on, boolean focused) {
         t.setTag(on);
-        // focused: the solid focus fill; on: the panel with a ring in the accent; off: the panel
+        // focused: the solid focus fill, else the panel; on: as every on/off one (OnOff): the three green triangles at its start and its
+        // words in the green that reads on what is under them; off: plain words
         GradientDrawable bg = focused ? GlassPaint.fill(this, look.focus, 14, 0) : GlassPaint.panel(this, look, 14);
-        if (!focused && on) bg.setStroke(dp(2), look.accent);
         t.setBackground(bg);
-        t.setTextColor(focused ? INK : on ? GOLD : TEXT);
+        int green = OnOff.green(focused ? look.focus : look.light ? 0xFFFFFFFF : 0xFF000000);
+        Drawable mark = null;
+        if (on) {
+            mark = getDrawable(R.drawable.ic_on).mutate();
+            mark.setTint(green);
+            mark.setBounds(0, 0, dp(7), dp(22));
+        }
+        t.setCompoundDrawables(null, null, mark, null);   // on the right: where an Arabic word starts
+        t.setCompoundDrawablePadding(dp(8));
+        t.setTextColor(on ? green : focused ? INK : TEXT);
     }
 
     /** [cells…] [ name  icon ], right-aligned by hand as in «ترتيب المفضلة». */

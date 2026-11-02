@@ -236,6 +236,14 @@
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Material.NoActionBar" />
 
+        <!-- «أرسل تقرير» of the screensaver's settings: a few lines (the versions, Android, WebView) and a QR code to docs/share; nothing personal, nothing sent from here -->
+        <activity
+            android:name=".ReportActivity"
+            android:exported="true"
+            android:label="أرسل تقرير"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Material.NoActionBar" />
+
         <!-- the installer's answer for «تحديث تلفزيونك» (only reached through the app's own PendingIntent) -->
         <receiver
             android:name=".phone.PhoneInstallReceiver"

@@ -15,6 +15,8 @@ import android.os.Bundle;
  * ".../setup_hold": one row (held 1 or 0), 1 while «إعداد تلفزيوني» waits for the TV's debugging prompt (SaverHold), which the screensaver
  * asks when it starts and then ends at once; and call("stop_adhan"), which ends that adhan (the same permission is checked; a key press on the screensaver is the only caller). The screensaver asks when it starts and then once a minute, so nothing is pushed from here.
  * And ".../setup": one row (running) while «إعداد تلفزيوني» runs a setup (SetupHold): the screensaver steps aside then.
+ * And ".../adhan_on": one row (on 1 or 0), the adhan's switch, which the screensaver's settings show on their «الأذان» button. Nothing here
+ * changes it: that button opens the adhan's page through the home, behind its family lock.
  */
 public class NowPlayingProvider extends ContentProvider {
     @Override public boolean onCreate() { return true; }
@@ -31,6 +33,11 @@ public class NowPlayingProvider extends ContentProvider {
             MatrixCursor h = new MatrixCursor(new String[]{"running"});
             if (sa.urtv.home.setup.SetupHold.on()) h.addRow(new Object[]{1});
             return h;
+        }
+        if (uri != null && "adhan_on".equals(uri.getLastPathSegment())) {   // the settings' «الأذان» button shows the switch's state (read only)
+            MatrixCursor a = new MatrixCursor(new String[]{"on"});
+            a.addRow(new Object[]{new Prefs(getContext()).adhanOn() ? 1 : 0});
+            return a;
         }
         if (uri != null && "adhan".equals(uri.getLastPathSegment())) {
             MatrixCursor a = new MatrixCursor(new String[]{"prayer", "any_key"});

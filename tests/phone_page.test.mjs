@@ -600,43 +600,46 @@ for (const fonts of ['stub', 'missing']) await T(`fonts ${fonts}`, async () => {
   await S.ctx.close();
 });
 
-// ---- the on/off switches: the mockups' pill (52x32, a 26 px white knob, green when on with the knob on the left, RTL); still the real checkboxes
+// ---- on/off: the owner's choice I (notes/settings-proto/v5-toggle-I.png): no switch; on = three DGA-green triangles and «مفعّل» in green,
+// off = «متوقف» in the dim colour and no triangles; still the real checkboxes, 48 px to tap
 for (const scheme of ['dark', 'light']) await T(`switches ${scheme}`, async () => {
   const tv = { short: false };   // what the TV says; the page draws the switches from it
   const S = await boot({ w: 390, h: 844, scheme, state: () => NEW({ adhan: { on: true, voice: 1, fajr_voice: 2, short: tv.short, stopkey: true, volume: 60 } }) });
   const { p } = S;
   await tab(S, 'settings');
   if (scheme === 'light') await p.click('#theme');
-  await sleep(500);   // the colours' own 150 ms change
+  await sleep(300);
   const look = id => p.evaluate(id => {
-    const e = document.getElementById(id), b = e.getBoundingClientRect(), tr = getComputedStyle(e, '::before'), kn = getComputedStyle(e, '::after');
-    const kl = parseFloat(kn.left), kw = parseFloat(kn.width), tl = parseFloat(tr.left), tw = parseFloat(tr.width);
-    return { type: e.type, checked: e.checked, w: b.width, h: b.height, tw, th: parseFloat(tr.height), tr: tr.borderTopLeftRadius, kw, kh: parseFloat(kn.height), kbg: kn.backgroundColor, ksh: kn.boxShadow,
-      tbg: tr.backgroundColor, knobLeft: kl + kw / 2 < tl + tw / 2, ttr: kn.transitionDuration, lab: e.closest('label') && Math.abs((e.closest('label').querySelector('span') || e).getBoundingClientRect().top + (e.closest('label').querySelector('span') || e).getBoundingClientRect().height / 2 - (b.top + b.height / 2)) };
+    const e = document.getElementById(id), b = e.getBoundingClientRect(), mk = getComputedStyle(e, '::before'), wd = getComputedStyle(e, '::after');
+    const sp = e.closest('label') && (e.closest('label').querySelector('span') || e).getBoundingClientRect();
+    return { type: e.type, checked: e.checked, w: b.width, h: b.height, mark: mk.visibility, mw: parseFloat(mk.width), mh: parseFloat(mk.height), mbg: mk.backgroundColor,
+      clip: mk.clipPath, word: wd.content, wc: wd.color, ww: wd.fontWeight, radius: getComputedStyle(e).borderTopLeftRadius,
+      lab: sp ? Math.abs(sp.top + sp.height / 2 - (b.top + b.height / 2)) : null };
   }, id);
   const theme = await p.evaluate(() => document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark');
   check(`switches ${scheme}: the page is in that look`, theme === scheme, theme);
   const on = await look('aOn'), off = await look('aShort'), stop = await look('aStop');
-  const green = theme === 'light' ? 'rgb(46, 158, 98)' : 'rgb(76, 195, 138)';
+  const green = theme === 'light' ? 'rgb(27, 131, 84)' : 'rgb(84, 192, 138)';   // DGA sa-flag 600 on light, 400 on dark
   check(`switches ${theme}: still real checkboxes, ids kept, the tap target at least 48 px`, [on, off, stop].every(x => x.type === 'checkbox' && x.w >= 48 && x.h >= 48) && on.checked && !off.checked, JSON.stringify([on, off]));
-  check(`switches ${theme}: a 52x32 pill with a 26 px white knob and a soft shadow`, [on, off].every(x => x.tw === 52 && x.th === 32 && x.tr === '16px' && x.kw === 26 && x.kh === 26 && x.kbg === 'rgb(255, 255, 255)' && /rgba\(0, 0, 0/.test(x.ksh)), JSON.stringify(on));
-  check(`switches ${theme}: on is the mockup's green with the knob on the left; off is neutral with the knob on the right`,
-    on.tbg === green && on.knobLeft && !off.knobLeft && off.tbg !== green && /rgba\((255, 255, 255|60, 60, 67), 0\.2\)/.test(off.tbg), JSON.stringify({ on: on.tbg, off: off.tbg, onL: on.knobLeft, offL: off.knobLeft }));
-  check(`switches ${theme}: the label is centred on the switch, the same in every row`, [on, off, stop].every(x => x.lab !== null && x.lab <= 2), JSON.stringify([on.lab, off.lab, stop.lab]));
-  check(`switches ${theme}: the knob slides in 150 ms`, on.ttr === '0.15s', on.ttr);
+  check(`switches ${theme}: on = the three triangles (a 10x30 saw in the DGA green) and «مفعّل» in that green`,
+    on.mark === 'visible' && on.mw === 10 && on.mh === 30 && on.mbg === green && /polygon/.test(on.clip) && on.word === '"مفعّل"' && on.wc === green, JSON.stringify(on));
+  check(`switches ${theme}: off = «متوقف», not green, and no triangles`, off.mark === 'hidden' && off.word === '"متوقف"' && off.wc !== green, JSON.stringify(off));
+  check(`switches ${theme}: no pill and no knob: nothing rounded, no track`, [on, off].every(x => x.radius === '0px'), JSON.stringify([on.radius, off.radius]));
+  check(`switches ${theme}: the label is centred on it, the same in every row`, [on, off, stop].every(x => x.lab !== null && x.lab <= 2), JSON.stringify([on.lab, off.lab, stop.lab]));
   const sets = posts(S, '/api/set').length;
   await p.locator('#aShort').click();
   const sent = await until(() => posts(S, '/api/set').length > sets && posts(S, '/api/set').pop().body.adhan_short === true);
   tv.short = true; await sleep(1200);
   const tapped = await look('aShort');
-  check(`switches ${theme}: a tap sends the change, and the switch turns on with the knob on the left`, sent && tapped.checked && tapped.knobLeft && tapped.tbg === green, JSON.stringify(tapped) + JSON.stringify(posts(S, '/api/set').map(r => r.body)));
+  check(`switches ${theme}: a tap sends the change, and it turns on: the triangles and «مفعّل»`, sent && tapped.checked && tapped.mark === 'visible' && tapped.word === '"مفعّل"',
+    JSON.stringify(tapped) + JSON.stringify(posts(S, '/api/set').map(r => r.body)));
   await p.focus('#aShort'); await p.keyboard.press('Tab');
   const ring = await p.evaluate(() => { const e = document.activeElement, cs = getComputedStyle(e); return e.id + ' ' + cs.outlineStyle + ' ' + cs.outlineWidth; });
   check(`switches ${theme}: a keyboard focus ring`, ring === 'aStop solid 3px', ring);
-  check(`switches ${theme}: a disabled switch is dimmed`, await p.evaluate(() => { const e = document.getElementById('aStop'); e.disabled = true; const o = getComputedStyle(e).opacity; e.disabled = false; return o === '0.45'; }));
+  check(`switches ${theme}: a disabled one is dimmed`, await p.evaluate(() => { const e = document.getElementById('aStop'); e.disabled = true; const o = getComputedStyle(e).opacity; e.disabled = false; return o === '0.45'; }));
   await tab(S, 'now'); await sleep(300);
   const N = await look('aOn2');
-  check(`switches ${theme}: the «الأذان يعمل» switch is the same pill`, N.tw === 52 && N.th === 32 && N.kw === 26 && N.h >= 48 && N.knobLeft && N.tbg === green, JSON.stringify(N));
+  check(`switches ${theme}: the «الأذان يعمل» one is the same`, N.h >= 48 && N.mark === 'visible' && N.word === '"مفعّل"' && N.wc === green, JSON.stringify(N));
   check(`switches ${theme}: no console errors`, S.errors.filter(e => !/status of 403/.test(e)).length === 0, S.errors.join(' | '));
   await S.ctx.close();
 });
