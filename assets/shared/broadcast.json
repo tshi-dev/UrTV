@@ -1,0 +1,5 @@
+{
+ "about": "Who holds a competition's MENA rights, shown as a plain text mark on «مباريات اليوم» (docs/PROPOSALS-NOV2.md §1). A row is shown only when confidence is high, whole is true (the holder shows every game), verified holds the date its source was opened and read, and its season has not ended (until); anything else shows nothing. Every row needs its source link. Checked by .github/tools/broadcast_check.py (tests/check.py runs it): a row past its season fails. The candidate rows of the proposal are not here: none could be opened and checked yet.",
+ "fields": {"idLeague": "TheSportsDB idLeague", "competition": "English name", "ar": "the mark", "en": "the mark in English", "detail_ar": "the line in a game's card", "detail_en": "the same in English", "from": "first season, 2025-26 or 2026", "until": "last season, 2030-31 or 2026", "source": "https link", "confidence": "high, medium or low", "whole": "true when the holder shows every game", "verified": "YYYY-MM-DD the source was read"},
+ "rows": []
+}

@@ -249,6 +249,8 @@ public class SettingsActivity extends Activity {
         if (on(SettingsHub.PLACE)) line(Location.HELP, look.sub, 0);
 
         header("المباريات");
+        // «المباريات»: the home app's page of the games (docs/PROPOSALS-NOV2.md §1), the days and the leagues, the followed teams first
+        row("مباريات اليوم", "الأيام والدوريات، وفرقك أولاً", R.drawable.ic_trophy, new Runnable() { public void run() { openMatches(); } });
         row("الفرق المتابعة (" + arabicNum(prefs.teams().size()) + "/" + arabicNum(Prefs.MAX_TEAMS) + ")", teamsLabel(),
             R.drawable.ic_trophy, new Runnable() { public void run() { manageTeams(); } });
 
@@ -1745,9 +1747,33 @@ public class SettingsActivity extends Activity {
     /** «المظهر»: which of the two to choose; each opens its own list, the focused choice drawn beside it. */
     private void pickLook() {
         new Dlg(this).setTitle("المظهر")
-            .setItems(new String[] {"الشكل: " + Prefs.lookLabel(prefs.look()), "الإضاءة: " + Prefs.appearanceLabel(prefs.appearance())},
-                (d, i) -> pickLookPart(i == 0))
+            .setItems(new String[] {"الشكل: " + Prefs.lookLabel(prefs.look()), "الإضاءة: " + Prefs.appearanceLabel(prefs.appearance()),
+                    "الواجهة: " + Prefs.homeLayoutLabel(prefs.homeLayout())},
+                (d, i) -> { if (i == 2) pickHomeLayout(); else pickLookPart(i == 0); })
             .show();
+    }
+
+    /** «الواجهة»: the home's layout, «العادية» (the default) or «كرة القدم» (the weather, the prayers and today's games over the same favourites bar). */
+    private void pickHomeLayout() {
+        final String[] labels = new String[Prefs.HOME_LAYOUTS.length];
+        for (int i = 0; i < labels.length; i++) labels[i] = Prefs.HOME_LAYOUT_NAMES[i];
+        new Dlg(this).setTitle("المظهر: الواجهة")
+            .setSingleChoiceItems(labels, java.util.Arrays.asList(Prefs.HOME_LAYOUTS).indexOf(prefs.homeLayout()), (d, i) -> {
+                prefs.setHomeLayout(Prefs.HOME_LAYOUTS[i]);
+                d.dismiss();
+                render();
+            })
+            .setNegativeButton("إلغاء", null)
+            .show();
+    }
+
+    /** «مباريات اليوم» lives in the home app (the page of the games, docs/PROPOSALS-NOV2.md §1). */
+    private void openMatches() {
+        try {
+            startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.MatchesActivity"));
+        } catch (RuntimeException e) {
+            toast("حدّث الواجهة الرئيسية «تلفزيونك» أو ثبّتها أولاً");
+        }
     }
 
     /**

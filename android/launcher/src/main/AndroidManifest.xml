@@ -200,6 +200,15 @@
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Material.NoActionBar" />
 
+        <!-- «المباريات»: the page of the games (docs/PROPOSALS-NOV2.md §1), from the football home and from the screensaver's settings
+             («المزيد ← مباريات اليوم»); exported only for that, as DockActivity -->
+        <activity
+            android:name=".MatchesActivity"
+            android:exported="true"
+            android:label="المباريات"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Material.NoActionBar" />
+
         <!-- «أكمل المشاهدة»: the one question for the TV's Watch Next list; opened from the screensaver's settings row, behind its PIN like DockActivity -->
         <activity
             android:name=".WatchNextActivity"

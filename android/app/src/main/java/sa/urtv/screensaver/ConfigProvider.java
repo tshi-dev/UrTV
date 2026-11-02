@@ -70,8 +70,8 @@ public class ConfigProvider extends ContentProvider {
         }
         // home_panel: the first card alone (what an older launcher reads); home_panels: all of them, "a,b,c" or "none"
         List<String> cards = p.homePanels();
-        MatrixCursor c = new MatrixCursor(new String[] {"fragment", "home_panel", "greeting", "home_panels", "adhan_bar", "listen_pill", "update_channel", "appearance", "update_bell", "watch_next", "look"});
-        c.addRow(new Object[] {p.fragment(), cards.isEmpty() ? "none" : cards.get(0), p.greeting() ? "1" : "0", p.homePanel(), p.adhanBar() ? "1" : "0", p.listenPill() ? "1" : "0", p.updateChannel(), p.appearance(), p.updateBell() ? "1" : "0", p.watchNext() ? "1" : "0", p.look()});
+        MatrixCursor c = new MatrixCursor(new String[] {"fragment", "home_panel", "greeting", "home_panels", "adhan_bar", "listen_pill", "update_channel", "appearance", "update_bell", "watch_next", "look", "home_layout"});
+        c.addRow(new Object[] {p.fragment(), cards.isEmpty() ? "none" : cards.get(0), p.greeting() ? "1" : "0", p.homePanel(), p.adhanBar() ? "1" : "0", p.listenPill() ? "1" : "0", p.updateChannel(), p.appearance(), p.updateBell() ? "1" : "0", p.watchNext() ? "1" : "0", p.look(), p.homeLayout()});
         return c;
     }
 
@@ -106,6 +106,17 @@ public class ConfigProvider extends ContentProvider {
                 String r = SaverReceiver.set(c, p, i);
                 out.putBoolean("ok", r.startsWith("saved"));
                 out.putBoolean("idle_denied", r.startsWith("error: idle not allowed"));
+                return out;
+            }
+            case "phone_follow": {   // «تابع» on «مباريات اليوم» (the launcher's MatchesActivity): arg "id:EnglishName", as saver.sh teams takes it
+                String[] kv = arg == null ? new String[0] : arg.split(":", 2);
+                boolean ok = kv.length == 2 && kv[0].matches("\\d{1,9}");
+                if (ok) {
+                    TeamSearch.Team known = Teams.byId(c, kv[0]);
+                    String name = known != null && !known.ar.isEmpty() ? known.ar : kv[1].trim().isEmpty() ? "#" + kv[0] : Arabic.team(c, kv[1].trim());
+                    ok = p.addTeam(kv[0], name);
+                }
+                out.putBoolean("ok", ok);
                 return out;
             }
             case "phone_cities": {

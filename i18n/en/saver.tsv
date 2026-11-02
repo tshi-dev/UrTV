@@ -257,6 +257,7 @@
 # ---- the look
 الشكل: %s	Style: %s
 الإضاءة: %s	Brightness: %s
+الواجهة: %s	Home layout: %s
 المظهر: الشكل	Appearance: Style
 المظهر: الإضاءة	Appearance: Brightness
 المدينة · الرياض	City · Riyadh
@@ -468,3 +469,9 @@
 صورنا · %s مجموعة	Our photos · %s packs
 %s ج.ب	%s GB
 %s م.ب	%s MB
+# ---- «الواجهة» (the football home) and «مباريات اليوم» (docs/PROPOSALS-NOV2.md §1)
+المظهر: الواجهة	Appearance: Home layout
+العادية	Classic
+كرة القدم	Football
+مباريات اليوم	Today’s matches
+الأيام والدوريات، وفرقك أولاً	Days and leagues, your teams first

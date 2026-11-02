@@ -58,6 +58,15 @@ final class HomeCard {
     private final Live live;
     private final RenderGuard guard = new RenderGuard();
     private boolean resumed;
+    /**
+     * «المظهر ← الواجهة» is «كرة القدم» (docs/PROPOSALS-NOV2.md §1): the page shows the football home's three widgets instead of the cards,
+     * from the screen's top to above the favourites' tray, and FootballFocus puts a focus target over each. Nothing else changes.
+     */
+    private boolean football;
+    private FootballFocus.Host footballHost;
+    private FootballFocus footballFocus;
+    /** the cards' own place, put back when the home leaves the football layout */
+    private final int gravity0, left0, top0, right0;
 
     HomeCard(Activity activity, ViewGroup parent, FrameLayout.LayoutParams params, Sizer sizer, Live live) {
         this.activity = activity;
@@ -65,7 +74,20 @@ final class HomeCard {
         this.params = params;
         this.sizer = sizer;
         this.live = live;
+        gravity0 = params.gravity; left0 = params.leftMargin; top0 = params.topMargin; right0 = params.rightMargin;
     }
+
+    /** What the home does with the football layout's widgets (set once, before the first refresh). */
+    void football(FootballFocus.Host host) { footballHost = host; }
+
+    /** The football layout is on (the page in the WebView shows its widgets). */
+    boolean isFootball() { return web != null && footballFocus != null; }
+
+    /** A football widget's focus target ("wx", "pr", "mt"), null when the layout is off. */
+    View footballTarget(String key) { return footballFocus == null ? null : footballFocus.target(key); }
+
+    /** The home's look changed: the widgets' glass follows (the cards keep theirs). */
+    void light(boolean on) { if (footballFocus != null) footballFocus.light(on); }
 
     /** The focus target over the «المهام» card, or null when it is not among the cards. */
     View live() { return target; }
@@ -73,6 +95,7 @@ final class HomeCard {
     /** The screen was laid out again (the dock's names, the clock's width): the box may have to move. */
     void fit() {
         if (web == null) return;
+        if (footballFocus != null) { footballFocus.fit(); return; }   // the widgets' box is the screen's width, always: only where they start moves
         int[] b = sizer.box(cards);
         if (b[0] == params.width && b[1] == params.height) return;
         params.width = b[0];
@@ -105,6 +128,7 @@ final class HomeCard {
     void destroy() {
         if (web == null) return;
         if (target != null) { parent.removeView(target); target = null; targetParams = null; }
+        if (footballFocus != null) { footballFocus.remove(); footballFocus = null; }
         parent.removeView(web);
         web.destroy();
         web = null;
@@ -112,24 +136,29 @@ final class HomeCard {
     }
 
     private String readUrl() {
-        String frag = null, panel = null;
+        String frag = null, panel = null, layout = null;
         try (Cursor c = activity.getContentResolver().query(CONFIG, null, null, null, null)) {
             if (c != null && c.moveToFirst()) {
                 frag = c.getString(0);
                 panel = c.getString(1);
                 int all = c.getColumnIndex("home_panels");   // "a,b,c": every card; an older screensaver has only the first
                 if (all >= 0 && c.getString(all) != null) panel = c.getString(all);
+                int l = c.getColumnIndex("home_layout");   // «المظهر ← الواجهة»; an older screensaver says nothing: classic
+                layout = l >= 0 && c.getString(l) != null ? c.getString(l) : "classic";
             }
         } catch (RuntimeException e) {
             // the screensaver's settings are out of reach
         }
         SharedPreferences sp = activity.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         if (frag != null && panel != null) {   // remember what was read, for when it can't be read
-            sp.edit().putString("frag", frag).putString("panel", panel).apply();
+            sp.edit().putString("frag", frag).putString("panel", panel).putString("layout", layout).apply();
         }
+        if (layout == null) layout = sp.getString("layout", "classic");
         // Unreadable settings (the screensaver is missing, too old, or signed with another key, e.g. reinstalled
         // before this app): keep the last cards chosen, «بدون» included. Only with nothing remembered, the prayers.
         String[] choice = HomeCardChoice.pick(frag, panel, sp.getString("frag", null), sp.getString("panel", null));
+        football = "football".equals(layout) && footballHost != null && choice != null;
+        if (football) { cards = 0; tasks = false; return HomePage.fresh(activity, HomeCardChoice.footballUrl(choice)); }
         cards = HomeCardChoice.count(choice);
         tasks = HomeCardChoice.hasTasks(choice);
         return HomePage.fresh(activity, HomeCardChoice.liveUrl(choice));   // the screensaver's newer page when it has one
@@ -160,6 +189,11 @@ final class HomeCard {
             // the page asks GitHub for its fonts; answer from the APK
             @Override
             public void onPageFinished(WebView v, String u) {
+                if (footballFocus != null) {   // the widgets are laid out once the page is: where they start, the look, the targets
+                    footballFocus.fit();
+                    v.postDelayed(() -> { if (footballFocus != null) footballFocus.fit(); }, 1500);
+                    return;
+                }
                 if (target == null) return;
                 // the page has laid its cards out; they may still be filling (fonts, the first rows): ask again a little later
                 v.postDelayed(HomeCard.this::placeTarget, 300);
@@ -193,10 +227,20 @@ final class HomeCard {
         // The page sizes its text to the screen; the TV's font size setting (Android scales WebView text by it) made
         // it larger than its boxes, so the left column spilled off screen and moved as the clock and the matches changed.
         s.setTextZoom(100);
-        int[] b = sizer.box(cards);
-        params.width = b[0];
-        params.height = b[1];
+        if (football) {   // the screen's width, from its top to the open row's end (FootballFocus.HEIGHT_1080 at 1080p)
+            android.util.DisplayMetrics dm = activity.getResources().getDisplayMetrics();
+            params.gravity = android.view.Gravity.TOP | Dir.start();   // the screen's whole width: either side is the same
+            params.leftMargin = params.topMargin = params.rightMargin = 0;
+            params.width = dm.widthPixels;
+            params.height = Math.round(FootballFocus.HEIGHT_1080 * dm.heightPixels / 1080f);
+        } else {
+            params.gravity = gravity0; params.leftMargin = left0; params.topMargin = top0; params.rightMargin = right0;
+            int[] b = sizer.box(cards);
+            params.width = b[0];
+            params.height = b[1];
+        }
         parent.addView(web, params);
+        if (football) footballFocus = new FootballFocus(activity, parent, web, params, footballHost);
         if (tasks) addTarget();
         url = u;
         web.loadUrl(u);

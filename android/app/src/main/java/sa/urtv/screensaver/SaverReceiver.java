@@ -20,7 +20,7 @@ import java.util.Locale;
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.CITIES
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET
  *       [--es city 'الرس'] [--es lat 25.86 --es lon 43.49 --es tz Asia/Kuwait]   (tz is needed for a place that is not in the list) [--es teams '136013:Al-Hilal,150643:Al-Zulfi']
- *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
+ *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es homelayout classic|football] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
  *       [--es sunrise on|off] [--es prayerbar on|off] [--es wxmore on|off] [--es months default|levant] [--es verse day|3] [--es versekind both|verse|hadith] [--es seconds on|off] [--es backexit press|hold|three] [--es occasion on|off] [--es nightdim on|off] [--es taskspill on|off] [--es backsaver on|off] [--es genres Drama,Comedy] [--es langs English]
  *       [--es photos 30] [--es idle 10] [--es digits hindi|latin] [--es hijrioffset -2..2] [--es clock24 on|off] [--es lang ar|en]
  *       [--es cardstyle current|dark1|glass1|dark3|glass3] [--es national auto|off]
@@ -269,6 +269,9 @@ public class SaverReceiver extends BroadcastReceiver {
         String look = i.getStringExtra("look");
         if (look != null && !Arrays.asList(GlassStyle.LOOKS).contains(look))
             return "error: look is one of " + Prefs.join(Arrays.asList(GlassStyle.LOOKS), " ");
+        String homeLayout = i.getStringExtra("homelayout");
+        if (homeLayout != null && !Arrays.asList(Prefs.HOME_LAYOUTS).contains(homeLayout))
+            return "error: homelayout is one of " + Prefs.join(Arrays.asList(Prefs.HOME_LAYOUTS), " ");
         String rating = i.getStringExtra("minrating");
         if (rating != null && !Arrays.asList(Prefs.MIN_RATINGS).contains(rating))
             return "error: minrating is one of " + Prefs.join(Arrays.asList(Prefs.MIN_RATINGS), " ");
@@ -374,6 +377,7 @@ public class SaverReceiver extends BroadcastReceiver {
         if (watchNext != null) p.setWatchNext("on".equals(watchNext));
         if (appearance != null) p.setAppearance(appearance);
         if (look != null) p.setLook(look);
+        if (homeLayout != null) p.setHomeLayout(homeLayout);
         if (adhanBar != null) p.setAdhanBar("on".equals(adhanBar));
         if (updateChannel != null && !updateChannel.equals(p.updateChannel())) {   // another release now: the number shown as the newest is read again
             p.setUpdateChannel(updateChannel);
@@ -546,6 +550,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nwatchnext: " + (p.watchNext() ? "on" : "off")
             + "\nappearance: " + p.appearance()
             + "\nlook: " + p.look()
+            + "\nhomelayout: " + p.homeLayout()
             + "\nadhanbar: " + (p.adhanBar() ? "on" : "off")
             + "\nupdatechannel: " + p.updateChannel()
             + "\nyearstrip: " + (p.yearStrip() ? "on" : "off")

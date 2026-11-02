@@ -462,6 +462,8 @@ def fill(html, clubs, english_page):
         html = html.replace("__TEAMS_SHORT__", js_json(us_short(clubs)))
     # leagues of Formula 1, UFC, boxing and tennis, found by CI (.github/tools/team_ids.py); {} until a run delivers them
     html = html.replace("__EVENTS__", js_json(json.loads((ROOT / "assets/shared/events.json").read_text(encoding="utf-8"))))
+    # «مباريات اليوم»'s marks: the rows only (the page shows a row while it is high, whole, verified and in season; broadcast_check.py)
+    html = html.replace("__BROADCAST__", js_json(json.loads((ROOT / "assets/shared/broadcast.json").read_text(encoding="utf-8"))["rows"]))
     html = html.replace("__VERSES__", js_json(verses_for_screen()))
     html = html.replace("__HADITH__", js_json(hadith_for_screen()))   # checked by CI
     html = html.replace("__ADHKAR__", js_json(adhkar_for_screen()))   # checked by CI

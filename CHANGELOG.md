@@ -5,6 +5,19 @@ Newest first. `next` is where changes land first; a release is what was tested t
 ## 4.2 (on `next`)
 
 - **«المهام» with a time** (docs/PROPOSALS-NOV2.md §4): a task may have a due time, «قبلها بـ» 0, 10, 30 or 60 minutes, a repeat (daily, weekly), an optional soft chime (off by default) and where it shows. At the time a silent white card shows over the screensaver (the page) and the home (ReminderCard), dismissed with OK: «تم» or «ذكّرني بعد ١٠ دقائق»; over another app a 5-second notice; it waits for the adhan. The alarm is the adhan's kind (ReminderScheduler/ReminderReceiver) and comes back after a reboot. Set on the TV («ذكّرني» beside a task), on the phone page (a date and a time beside the text box) and `saver.sh tasks add '<text>' --at '2026-11-05 17:00' --before 30`. Tests: tests/reminders_test.py, tests/reminder_page.test.mjs.
+- **The football home** (docs/PROPOSALS-NOV2.md §1; a choice, not the default): Settings ← «المظهر» ← «الواجهة» ← «كرة القدم»
+  (`saver.sh homelayout football`; `classic` is the home as it always was). Over the photo, under the clock, three glass cards: «الطقس»
+  (city, temperature, feels-like, humidity, wind), «أوقات الصلاة» (the next one lit, its time left) and «مباريات اليوم» (the followed teams
+  first, then the followed leagues, the Saudi Pro League when none is followed; a game that meets a prayer says which in amber). The
+  favourites bar is the same as everywhere; while the focus is on the games they open into a row of cards (◀ ▶) and the tray moves 40 px
+  down (`lowerTray`), back before a tile lifts. The page draws the cards (#football=1, HomeCard's WebView); FootballFocus puts a focus
+  target over each. **«المباريات»** (MatchesActivity, #matchpage=1): OK on a game, or Settings ← المزيد ← المباريات والأسواق ← «مباريات
+  اليوم». The days (yesterday to five ahead), the leagues with «فرقك» first and their counts, the live minute and score, the prayer clash
+  notes; OK on a game opens its card: the round, the venue (league_fixtures.py now keeps `strVenue`), the channel, «مع الصلاة» (the
+  prayers around it on a line, one sentence), «ذكّرني قبلها بربع ساعة» (a task for now: MatchReminder is the hook) and «تابع». **Broadcast
+  marks:** assets/shared/broadcast.json, a plain text mark per league shown only for a high-confidence, whole, verified row in season;
+  .github/tools/broadcast_check.py (run by tests/check.py) fails a row with no source or seasons, or past its last season. No row yet: none
+  of the proposal's sources could be opened from here. tests/football_test.py, tests/football_page.test.mjs; the page's budget is 730 KB.
 - Three owners' options, each off by default (nothing changes until chosen): «الآية والحديث» (`saver.sh versekind both|verse|hadith`: the verse card with verses only or hadith only), «إظهار الثواني» (`saver.sh seconds on|off`: the seconds on the screensaver's clock, small, in fixed-width boxes so nothing moves each second, in every clock size) and «الخروج من تلفزيونك» (`saver.sh backexit press|hold|three`: where the TV keeps its own home, our home leaves only on a long Back or three Backs, with a short hint the first time a Back is ignored). tests/user_options_test.py and page tests.
 - **The favourites bar** (docs/PROPOSALS-NOV2.md §1, FavBar.java): one glass tray, the same on every look and layout, x 120 to 1800 and
   218 high, 54 px above the screen's bottom; five 304×170 tiles 24 apart, the first on the right, more scroll inside the tray and never

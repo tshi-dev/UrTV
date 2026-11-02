@@ -863,6 +863,12 @@ final class Prefs {
     /** «جرس التحديثات» on the home screen: on by default (it shows only on evidence of waiting updates, so it cannot hurt) */
     boolean updateBell() { return sp.getBoolean("updateBell", true); }
     /** «أكمل المشاهدة» under the home screen's favourites (default on; it shows only once the home app may read the TV's Watch Next list). */
+    /** «المظهر ← الواجهة»: the home's layout, classic (the default, the home as it always was) or football (docs/PROPOSALS-NOV2.md §1) */
+    static final String[] HOME_LAYOUTS = {"classic", "football"};
+    static final String[] HOME_LAYOUT_NAMES = {"العادية", "كرة القدم"};
+    String homeLayout() { String v = sp.getString("homeLayout", HOME_LAYOUTS[0]); return java.util.Arrays.asList(HOME_LAYOUTS).contains(v) ? v : HOME_LAYOUTS[0]; }
+    void setHomeLayout(String v) { if (java.util.Arrays.asList(HOME_LAYOUTS).contains(v)) sp.edit().putString("homeLayout", v).apply(); }
+    static String homeLayoutLabel(String v) { int i = java.util.Arrays.asList(HOME_LAYOUTS).indexOf(v); return HOME_LAYOUT_NAMES[Math.max(0, i)]; }
     boolean watchNext() { return sp.getBoolean("watchNext", true); }
     void setWatchNext(boolean v) { sp.edit().putBoolean("watchNext", v).apply(); }
     void setUpdateBell(boolean v) { sp.edit().putBoolean("updateBell", v).apply(); }

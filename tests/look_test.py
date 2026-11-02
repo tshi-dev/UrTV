@@ -111,7 +111,7 @@ check("the five looks, glass first: an unknown or missing value is glass", 'LOOK
       and "for (String k : LOOKS) if (k.equals(raw)) return k;\n        return LOOKS[0];" in gs)
 check("«نظيف» has no dark of its own: its dark is graphite's (the mockup's note)", 'case "clean": return light ? CLEAN_LIGHT : GRAPHITE_DARK;' in gs)
 check("the screensaver keeps it (glass by default), and the provider gives it as a column of its own after the others",
-      'String look() { return GlassStyle.look(sp.getString("look", GlassStyle.LOOKS[0])); }' in prefs and '"watch_next", "look"});' in provider and "p.look()});" in provider)
+      'String look() { return GlassStyle.look(sp.getString("look", GlassStyle.LOOKS[0])); }' in prefs and '"watch_next", "look"' in provider and "p.watchNext() ? \"1\" : \"0\", p.look()" in provider)
 check("the receiver takes --es look glass|graphite|navy|clean, refuses anything else, and show says it",
       'i.getStringExtra("look")' in recv and 'return "error: look is one of "' in recv and "p.setLook(look);" in recv and '"\\nlook: " + p.look()' in recv)
 check("saver.sh look, with its help line", 'look) set1 look "${2:?usage: optimize/saver.sh look glass|graphite|navy|clean|sand}" ;;' in saver and "#   optimize/saver.sh look navy" in saver)

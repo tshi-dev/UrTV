@@ -56,6 +56,22 @@ final class HomeCardChoice {
         return base(choice[0]) + frag + "&panel=" + choice[1].split(",")[0] + "&home_panel=" + choice[1] + "&widget=1";
     }
 
+    /**
+     * The football home's widgets (docs/PROPOSALS-NOV2.md §1): the weather, the prayers and today's games, on the settings' fragment without
+     * its card choice; null when nothing is known (the classic home then, as before).
+     */
+    static String footballUrl(String[] choice) {
+        if (choice == null) return null;
+        String frag = choice[0].replaceAll("(^|&)(panel|week)=[^&]*", "");
+        return base(choice[0]) + frag + "&widget=1&football=1";
+    }
+
+    /** «المباريات», the page of the games, on that fragment; event opens one game's card at once (null or "" for none). */
+    static String matchesUrl(String frag, String event) {
+        String f = frag == null ? "" : frag.replaceAll("(^|&)(panel|week|widget|home_panel)=[^&]*", "");
+        return base(frag) + f + "&matchpage=1" + (event != null && event.matches("\\d{1,12}") ? "&event=" + event : "");
+    }
+
     /** The page for the language the settings fragment says (as Tr.fromFragment): BASE for Arabic, as always. */
     static String base(String frag) {
         if (frag != null) for (String kv : frag.split("&")) if (kv.equals("lang=en")) return BASE_EN;

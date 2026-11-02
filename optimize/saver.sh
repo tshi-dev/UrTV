@@ -26,6 +26,7 @@
 #                                                  off removes only the bell
 #   optimize/saver.sh appearance auto              home screen: «المظهر ← الإضاءة», dark (default), light, or auto (light from sunrise until Maghrib in the city)
 #   optimize/saver.sh look navy                    all our screens: «المظهر ← الشكل», glass (default), graphite, navy, clean, or sand
+#   optimize/saver.sh homelayout football         the home screen's layout («المظهر ← الواجهة»): classic (default) or football (weather, prayers, today's games)
 #   optimize/saver.sh adhanbar off                 the slim bar before the adhan (last 10 minutes, then until the iqama) on the screensaver and the home screen: on (default) or off
 #   optimize/saver.sh updatechannel next          TESTING ONLY (agents; no screen shows it): «تحديث تلفزيوني» reads the version and the APKs from the apk-next release instead
 #                                                  of apk-latest: next or latest (default). Same signature, newer-version and permission checks. Put it back to latest after
@@ -209,6 +210,7 @@ case "${1:-}" in
   watchnext) set1 watchnext "${2:?usage: optimize/saver.sh watchnext on|off}" ;;
   appearance) set1 appearance "${2:?usage: optimize/saver.sh appearance dark|light|auto}" ;;
   look) set1 look "${2:?usage: optimize/saver.sh look glass|graphite|navy|clean|sand}" ;;
+  homelayout) set1 homelayout "${2:?usage: optimize/saver.sh homelayout classic|football}" ;;
   adhanbar) set1 adhanbar "${2:?usage: optimize/saver.sh adhanbar on|off}" ;;
   updatechannel) set1 updatechannel "${2:?usage: optimize/saver.sh updatechannel next|latest   (testing only)}" ;;
   yearstrip)set1 yearstrip "${2:?usage: optimize/saver.sh yearstrip on|off}" ;;

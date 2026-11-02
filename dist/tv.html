@@ -578,6 +578,148 @@
     .p-match{grid-column:1/-1;text-align:right}
     .mrow{align-items:flex-start}
   }
+  /* ---- the football home (#football=1, docs/PROPOSALS-NOV2.md §1): 1080p lengths × --u; the cards end by y 572, the open row by 824 */
+  html.fb .stage{display:none}
+  html.fb{--fi:#fff;--fs:rgba(255,255,255,.74);--fgr:#8FE0B4;--fam:#F5C26B;--fbg:rgba(14,16,18,.44);--fln:rgba(255,255,255,.22);--fhl:rgba(255,255,255,.12);--fring:#8FE0B4}
+  html.fb.fb-light{--fi:#1B1F1D;--fs:#4B514D;--fgr:#1B8354;--fam:#8A5600;--fbg:rgba(255,255,255,.80);--fln:rgba(255,255,255,.9);--fhl:rgba(27,31,29,.06);--fring:#1B8354}
+  #fb{position:fixed;inset:0;color:var(--fi);font-size:calc(var(--u)*28);--k:min(1,calc((528 - var(--ft,216)) / 312))}
+  #fb h3{position:absolute;inset-inline:0;top:calc(var(--u)*-44);height:calc(var(--u)*36);display:flex;align-items:baseline;justify-content:space-between;gap:calc(var(--u)*16);
+    font-weight:500;font-size:calc(var(--u)*30);line-height:1.2;text-shadow:0 1px 6px rgba(0,0,0,.35);white-space:nowrap}
+  html.fb-light #fb h3{text-shadow:none}
+  #fb .fbn{font-weight:400;font-size:calc(var(--u)*22);color:var(--fs);overflow:hidden;text-overflow:ellipsis}
+  .fbw,#fb-row{position:absolute}
+  .fbw{top:calc(var(--u)*(var(--ft,216) + 44));height:calc(var(--u)*(572 - 44 - var(--ft,216)))}
+  #fb-mt{inset-inline-start:calc(var(--u)*120);width:calc(var(--u)*830)}
+  #fb-pr{inset-inline-start:calc(var(--u)*974);width:calc(var(--u)*420)}
+  #fb-wx{inset-inline-start:calc(var(--u)*1418);width:calc(var(--u)*382)}
+  .fbc{height:100%;background:var(--fbg);border:1px solid var(--fln);border-radius:calc(var(--u)*28);box-shadow:inset 0 1px 0 var(--fhl),0 20px 50px rgba(0,0,0,.18);
+    padding:calc(var(--u)*24);overflow:hidden;transition:box-shadow .15s ease-out}
+  .fbw.f .fbc{box-shadow:inset 0 0 0 calc(var(--u)*3) var(--fring),0 18px 36px rgba(0,0,0,.36)}
+  #fb svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+  .fg{display:inline-flex;font-size:calc(var(--u)*26)}
+  .fnone{display:flex;height:100%;align-items:center;justify-content:center;color:var(--fs);text-align:center}
+  /* weather */
+  #fb-wx-c{display:flex;flex-direction:column;justify-content:space-between}
+  .fwc{display:flex;align-items:center;gap:calc(var(--u)*8);font-size:calc(var(--u)*28*var(--k));color:var(--fs)}
+  .fwm{display:flex;align-items:center;justify-content:space-between;gap:calc(var(--u)*16)}
+  .fwi{font-size:calc(var(--u)*84*var(--k));color:var(--fam);display:flex}
+  .fwt{display:flex;flex-direction:column;align-items:flex-end;min-width:0}
+  .fwt b{font-weight:300;font-size:calc(var(--u)*84*var(--k));line-height:1}
+  .fwt i{font-style:normal;font-size:calc(var(--u)*26*var(--k));color:var(--fs);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .fws{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(var(--u)*8);border-top:1px solid var(--fln);padding-top:calc(var(--u)*16*var(--k))}
+  .fws span{display:flex;flex-direction:column;align-items:center;gap:calc(var(--u)*4);min-width:0}
+  .fws i{font-style:normal;font-size:calc(var(--u)*22*var(--k));color:var(--fs);white-space:nowrap}
+  .fws b{font-weight:500;font-size:calc(var(--u)*24*var(--k));white-space:nowrap}
+  /* prayers */
+  #fb-pr-c{display:flex;flex-direction:column;justify-content:space-between;padding:calc(var(--u)*16)}
+  .fpl{list-style:none;display:flex;flex-direction:column;gap:calc(var(--u)*4*var(--k))}
+  .fpl li{display:flex;align-items:center;gap:calc(var(--u)*16);height:calc(var(--u)*46*var(--k));padding-inline:calc(var(--u)*16);border-radius:calc(var(--u)*14);font-size:calc(var(--u)*28*var(--k))}
+  .fpl li b{font-weight:500;flex:1}
+  .fpl li.nx{background:var(--fhl);color:var(--fgr)}
+  .fpi{display:flex;font-size:calc(var(--u)*26*var(--k));opacity:.9}
+  .fpn{text-align:center;color:var(--fgr);font-size:calc(var(--u)*24*var(--k))}
+  /* the games, three lines */
+  #fb-mt-c{padding-block:calc(var(--u)*8)}
+  #fb-mt-c ul{list-style:none;display:flex;flex-direction:column;height:100%}
+  .fln{flex:1;display:flex;align-items:center;gap:calc(var(--u)*16);min-height:0}
+  .fln + .fln{border-top:1px solid var(--fln)}
+  .ftm{display:flex;align-items:center;gap:calc(var(--u)*12);min-width:0;font-weight:500}
+  .ftm .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ftm.me{color:var(--fgr)}
+  #fb .cr,#mp .cr,.ftm .crgap{width:calc(var(--u)*40);height:calc(var(--u)*40);object-fit:contain;flex:none;display:inline-block}
+  .fln .ftm{flex:0 1 calc(var(--u)*230)}
+  .fx{font-style:normal;color:var(--fs);flex:none;font-size:.8em}
+  .fsc{flex:none;font-weight:700}
+  .fnote{color:var(--fam);font-size:calc(var(--u)*22);white-space:nowrap;margin-inline-start:auto}
+  .fwhen{flex:none;font-size:calc(var(--u)*26);white-space:nowrap}
+  .flv{color:var(--fgr)}
+  /* open: the row of cards, under the prayers, above the tray (which moves 40 px down) */
+  #fb-row{inset-inline:calc(var(--u)*120);top:calc(var(--u)*640);height:calc(var(--u)*184);visibility:hidden;opacity:0;transition:opacity .25s ease-in-out}
+  html.fb-open #fb-row{visibility:visible;opacity:1}
+  html.fb-open #fb-mt{visibility:hidden}
+  .fbv{height:100%;overflow:hidden;-webkit-mask-image:linear-gradient(to left,#000 88%,transparent);mask-image:linear-gradient(to left,#000 88%,transparent)}
+  html[dir=ltr] .fbv{-webkit-mask-image:linear-gradient(to right,#000 88%,transparent);mask-image:linear-gradient(to right,#000 88%,transparent)}
+  .fbr{display:flex;gap:calc(var(--u)*24);height:100%;transition:transform .25s ease-in-out}
+  .fcd{flex:none;width:calc(var(--u)*300);height:100%;background:var(--fbg);border:1px solid var(--fln);border-radius:calc(var(--u)*24);padding:calc(var(--u)*16);
+    display:flex;flex-direction:column;justify-content:space-between;font-size:calc(var(--u)*24)}
+  .fcd.sel{box-shadow:inset 0 0 0 calc(var(--u)*3) var(--fring),0 18px 36px rgba(0,0,0,.36)}
+  .fct{display:flex;justify-content:space-between;align-items:center;gap:calc(var(--u)*8);color:var(--fs);font-size:calc(var(--u)*20);white-space:nowrap}
+  .fct span:first-child{overflow:hidden;text-overflow:ellipsis}
+  .fcm{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:calc(var(--u)*8)}
+  .fcm .ftm{flex-direction:column;gap:calc(var(--u)*4);font-size:calc(var(--u)*24)}
+  .fcm .ftm .nm{max-width:100%}
+  .fcw{text-align:center;font-size:calc(var(--u)*24)}
+  .fmk{flex:none;font-size:calc(var(--u)*18);font-weight:500;padding:calc(var(--u)*2) calc(var(--u)*8);border:1px solid currentColor;border-radius:calc(var(--u)*6);opacity:.85;white-space:nowrap}
+
+  /* ---- «المباريات» (#matchpage=1): the light look, sand paper and white cards, a green ring for the focus */
+  html.mpage .stage,html.mpage .photo,html.mpage .veil,html.mpage .grain,html.mpage .top-veil,html.mpage .bottom-veil,html.mpage .dimmer,html.mpage #credit,html.mpage .adbar{display:none}
+  html.mpage,html.mpage body{background:#F4F2EC}
+  #mp,#mp-detail{--fi:#1B1F1D;--fs:#5E635F;--fgr:#1B8354;--fam:#8A5600;--fring:#1B8354;--fln:#E4E1D8;--fbg:#fff}
+  #mp{position:fixed;inset:0;padding:calc(var(--u)*64) calc(var(--u)*120) calc(var(--u)*56);color:var(--fi);display:flex;flex-direction:column;font-size:calc(var(--u)*28)}
+  #mp header{display:flex;justify-content:space-between;align-items:baseline}
+  #mp h1{font-size:calc(var(--u)*64);font-weight:700}
+  #mp-age{color:var(--fs);font-size:calc(var(--u)*24)}
+  #mp-days{list-style:none;display:flex;gap:calc(var(--u)*8);border-bottom:1px solid var(--fln);margin-top:calc(var(--u)*24)}
+  #mp-days li{padding:calc(var(--u)*16) calc(var(--u)*24);color:var(--fs);border-bottom:calc(var(--u)*4) solid transparent;border-radius:calc(var(--u)*12) calc(var(--u)*12) 0 0;white-space:nowrap}
+  #mp-days li.on{color:var(--fgr);font-weight:700;border-bottom-color:var(--fgr)}
+  #mp-days li.f{box-shadow:inset 0 0 0 calc(var(--u)*3) var(--fring)}
+  .mpb{flex:1;min-height:0;display:flex;gap:calc(var(--u)*32);margin-top:calc(var(--u)*32)}
+  #mp-side{list-style:none;flex:none;width:calc(var(--u)*360);align-self:flex-start;background:var(--fbg);border:1px solid var(--fln);border-radius:calc(var(--u)*24);padding:calc(var(--u)*16)}
+  #mp-side:empty{display:none}
+  #mp-side li{display:flex;justify-content:space-between;align-items:center;gap:calc(var(--u)*16);padding:calc(var(--u)*16);border-radius:calc(var(--u)*14)}
+  #mp-side li span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #mp-side li i{font-style:normal;color:var(--fs);font-size:calc(var(--u)*22)}
+  #mp-side li.on span{color:var(--fgr);font-weight:700}
+  #mp-side li.f{box-shadow:inset 0 0 0 calc(var(--u)*3) var(--fring)}
+  #mp-list{flex:1;min-width:0;overflow-y:auto;scrollbar-width:none;padding:calc(var(--u)*4)}
+  #mp-list::-webkit-scrollbar{display:none}
+  #mp-list h2{font-size:calc(var(--u)*30);font-weight:700;margin:0 0 calc(var(--u)*16)}
+  #mp-list section + section{margin-top:calc(var(--u)*32)}
+  #mp-list ul{list-style:none;background:var(--fbg);border:1px solid var(--fln);border-radius:calc(var(--u)*24);padding:calc(var(--u)*8)}
+  .mpg{display:flex;align-items:center;gap:calc(var(--u)*24);min-height:calc(var(--u)*84);padding:0 calc(var(--u)*24);border-radius:calc(var(--u)*16)}
+  .mpg + .mpg{border-top:1px solid var(--fln)}
+  .mpg.f{box-shadow:inset 0 0 0 calc(var(--u)*3) var(--fring);background:#EEF6F1}
+  .mpw{flex:none;width:calc(var(--u)*170);color:var(--fs);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mpg .ftm{flex:0 1 calc(var(--u)*280)}
+  #mp .fnote{font-size:calc(var(--u)*22)}
+  #mp .fmk{opacity:1;color:var(--fs);border-color:var(--fln);background:#fff}
+  #mp .fnone{min-height:calc(var(--u)*240)}
+  /* a game's card over the page */
+  #mp-detail{position:fixed;inset:0;background:rgba(244,242,236,.72);display:flex;align-items:center;justify-content:center;color:var(--fi);font-size:calc(var(--u)*28)}
+  #mp-detail[hidden]{display:none}
+  .mdx{width:calc(var(--u)*1320);background:#F7F6F1;border:1px solid var(--fln);border-radius:calc(var(--u)*32);padding:calc(var(--u)*48) calc(var(--u)*56);box-shadow:0 30px 80px rgba(40,36,24,.18)}
+  .mdh{display:flex;justify-content:space-between;align-items:center;color:var(--fs);font-size:calc(var(--u)*26)}
+  .mdm{display:flex;justify-content:center;align-items:center;gap:calc(var(--u)*80);margin:calc(var(--u)*24) 0}
+  .mdt{display:flex;flex-direction:column;align-items:center;gap:calc(var(--u)*16);width:calc(var(--u)*300)}
+  .mdt b{font-size:calc(var(--u)*40);font-weight:700;text-align:center}
+  .mdc{width:calc(var(--u)*112);height:calc(var(--u)*112);object-fit:contain}
+  .mdk{display:flex;flex-direction:column;align-items:center;gap:calc(var(--u)*8)}
+  .mdk b{font-size:calc(var(--u)*72);font-weight:700;white-space:nowrap}
+  .mdk i{font-style:normal;color:var(--fs)}
+  .mdr{list-style:none;background:#fff;border:1px solid var(--fln);border-radius:calc(var(--u)*24)}
+  .mdr li{display:flex;justify-content:space-between;align-items:center;gap:calc(var(--u)*24);padding:calc(var(--u)*24) calc(var(--u)*32)}
+  .mdr li + li{border-top:1px solid var(--fln)}
+  .mdr li > span{font-weight:700}
+  .mdr li > i{font-style:normal;color:var(--fs);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mdr li.mdp{flex-direction:column;align-items:stretch}
+  .mdr li.mdp > div{display:flex;justify-content:space-between;gap:calc(var(--u)*24)}
+  .mdr li.mdp > div span{font-weight:700}
+  .mds{font-style:normal;color:var(--fgr)}
+  .mpline{position:relative;height:calc(var(--u)*72);margin:calc(var(--u)*24) calc(var(--u)*8) 0;border-top:calc(var(--u)*2) solid var(--fln)}
+  .mpbar{position:absolute;top:calc(var(--u)*-8);height:calc(var(--u)*14);border-radius:calc(var(--u)*7);background:var(--fgr)}
+  .mpk{position:absolute;top:calc(var(--u)*-14);transform:translateX(50%);display:flex;flex-direction:column;align-items:center}
+  html[dir=ltr] .mpk,html[dir=ltr] .mpgl{transform:translateX(-50%)}
+  .mpk i{width:calc(var(--u)*2);height:calc(var(--u)*24);background:var(--fi);opacity:.6}
+  .mpk b,.mpgl{font-weight:400;font-size:calc(var(--u)*22);color:var(--fs);white-space:nowrap;margin-top:calc(var(--u)*8)}
+  .mpgl{position:absolute;top:calc(var(--u)*16);color:var(--fgr);transform:translateX(50%)}
+  .mdb{display:flex;gap:calc(var(--u)*24);margin-top:calc(var(--u)*32)}
+  .mdb button{flex:1;display:flex;align-items:center;justify-content:center;gap:calc(var(--u)*12);font:inherit;color:var(--fi);background:#fff;border:1px solid var(--fln);
+    border-radius:calc(var(--u)*16);padding:calc(var(--u)*24);outline:none}
+  .mdb button.pri{background:#21915F;color:#fff;border-color:#21915F}
+  .mdb button.f{box-shadow:0 0 0 calc(var(--u)*3) #F7F6F1,0 0 0 calc(var(--u)*6) var(--fring)}
+  .mdb svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.8}
+  .mdb .fg{font-size:1em}
+  .mdn{min-height:calc(var(--u)*36);margin-top:calc(var(--u)*16);text-align:center;color:var(--fgr);font-size:calc(var(--u)*24)}
 </style>
 </head>
 <body>
@@ -794,7 +936,13 @@ const CONFIG = {
   cityNote: _Q.get('citynote') === '1' && _Q.get('widget') !== '1',
   // #widget=1: only the cards, on a transparent page (the launcher's home screen shows them)
   widget: _Q.get('widget') === '1',
+  // #football=1 (with #widget=1): the launcher's football home, the weather, the prayers and today's games (docs/PROPOSALS-NOV2.md §1);
+  // #matchpage=1: «المباريات», the launcher's page of the games (#event= opens one game's card). Neither is ever the screensaver.
+  football: _Q.get('football') === '1' && _Q.get('widget') === '1',
+  matchPage: _Q.get('matchpage') === '1',
 };
+// the football home and «المباريات» show a league even when none is followed: the Saudi Pro League's file (no request to the sports server)
+if((CONFIG.football || CONFIG.matchPage) && !CONFIG.leagues.length) CONFIG.leagues = ['Saudi-Arabian Pro League'];
 // The cards on this page: the screensaver's one (#panel=); the launcher's up to three (#home_panel=a,b,c, none or empty = no card;
 // an older launcher sends the one card as #panel=). Each kind once, in order.
 // the prayer calculation (Aladhan's id; 100 = Oman's ministry, ours): #pm=jafari or #pm=gulf everywhere, else the country's by the zone, else Umm al-Qura 4; PrayerMath.methodFor
@@ -815,7 +963,7 @@ CONFIG.panel = CONFIG.cards[0] || 'none';   // the first one, for what only need
 // does a card on this page need that kind's data? The smart card reads what the matches, the adhkar, the prayers and the hours load;
 // «يومك» what the prayers, the matches and the tasks do
 const USES_OF = {smart:['matches','adhkar','prayers','prayerrow','hourly'], today:['prayers','matches','tasks'], nextprayer:['prayers']};
-const USES = k => CONFIG.cards.some(c => c === k || (USES_OF[c] || []).includes(k));
+const USES = k => ((CONFIG.football || CONFIG.matchPage) && (k === 'matches' || k === 'prayers')) || CONFIG.cards.some(c => c === k || (USES_OF[c] || []).includes(k));
 
 // The panels' snapshot is keyed by the link without the settings that only change how things look (the card's style and place, the clock's
 // size, the strips, the photo timing): changing one of those offline must not lose the games already on screen. What changes the words or
@@ -2667,6 +2815,8 @@ function renderPanel(animate, ...kinds){
     renderCard(c, animate);
   }
   fitCards();
+  if(CONFIG.football) fbRender();   // the football home and «المباريات» redraw with the cards' data
+  if(CONFIG.matchPage) mpRender();
 }
 
 function renderCard(card, animate, keepSize){
@@ -3702,8 +3852,419 @@ function nowPlayingTick(){
   FIT_STEPS.concat([.64, .56]).find(k => { line.style.fontSize = k === 1 ? '' : k + 'em'; return card.getBoundingClientRect().width <= innerWidth * .42; });
 }
 
+// ---------- the football home (#widget=1&football=1) and «المباريات» (#matchpage=1): docs/PROPOSALS-NOV2.md §1 ----------
+// No request of their own but the weather's: the games are the ones the matches card loads (the followed teams, the followed leagues'
+// files on data-leagues, the Saudi Pro League's when none is followed), the prayers are computed or Aladhan's, as everywhere on the page.
+// The launcher owns the focus (FootballFocus.java): it calls fbTop(), fbLight(), fbFocus(), fbMove(), fbPick() and reads fbRects().
+const FB_W = {
+  weather:'الطقس', prayers:'أوقات الصلاة', today:'مباريات اليوم', title:'المباريات', yours:'فرقك', none:'لا مباريات اليوم',
+  feels:'المحسوسة', hum:'الرطوبة', wind:'الرياح', kmh:'%s كم/س', pct:'٪%s', live:'مباشر', ended:'انتهت', vs:'×',
+  yesterday:'أمس', tday:'اليوم', tomorrow:'غدًا', g1:'مباراة واحدة', g2:'مباراتان', gFew:'%s مباريات', gMany:'%s مباراة',
+  allOn:'كلها على %s', round:'%s، الجولة %s', venue:'الملعب', channel:'القناة', withPrayer:'مع الصلاة', game:'المباراة',
+  remind:'ذكّرني قبلها بربع ساعة', reminded:'أُضيفت إلى المهام', follow:'تابع %s', followed:'تتابع %s', failed:'ما قدرنا، جرّب مرة ثانية',
+  startsAfter:'تبدأ بعد %s %s', startsBefore:'تبدأ قبل %s %s', adhanAt:'أذان %s في الدقيقة %s منها', ago:'قبل %s', nextIn:'%s بعد %s',
+  h1:'بساعة', h2:'بساعتين', hFew:'ب%s ساعات', hMany:'ب%s ساعة', m1:'بدقيقة', m2:'بدقيقتين', mFew:'ب%s دقائق', mMany:'ب%s دقيقة',
+  am1:'ودقيقة', am2:'ودقيقتين', amFew:'و%s دقائق', amMany:'و%s دقيقة', taskText:'مباراة %s، تبدأ %s',
+};
+const fw = (s, ...a) => { let i = 0; return String(s).replace(/%(\d)\$s|%s|%%/g, (m, n) => m === '%%' ? '%' : String(n ? a[+n - 1] : a[i++])); };
+const FB_EN = document.documentElement.lang === 'en';
+// the leagues of Prefs.LEAGUES by TheSportsDB's id (.github/tools/teams-cache.json), with the short name the page shows
+const FB_LEAGUES = {'4668':'دوري روشن', '5627':'دوري يلو', '4328':'الدوري الإنجليزي', '4335':'الدوري الإسباني', '4332':'الدوري الإيطالي',
+  '4331':'الدوري الألماني', '4334':'الدوري الفرنسي', '4344':'الدوري البرتغالي', '4337':'الدوري الهولندي', '4339':'الدوري التركي',
+  '4829':'الدوري المصري', '4678':'الدوري الإماراتي', '4663':'الدوري القطري', '4346':'الدوري الأمريكي', '4387':'NBA', '4391':'NFL'};
+const FB_LEAGUE_ORDER = Object.keys(FB_LEAGUES);
+const leagueName = ev => FB_LEAGUES[String(ev.idLeague || '')] || String(ev.strLeague || '');
+// «مباريات اليوم»'s marks (assets/shared/broadcast.json): plain text, never a logo; a row counts only while it is high, whole (every game),
+// verified and in season, so an unknown, doubtful or partial holder shows nothing (a wrong channel is worse than none)
+const BROADCAST = [];
+function seasonBound(s, end){   // «2027-28»: 1 August 2027 to 31 July 2028; «2026»: the calendar year; NaN when unreadable
+  const m = /^(\d{4})(?:-(\d{2}))?$/.exec(String(s || ''));
+  if(!m) return NaN;
+  const y = +m[1];
+  return m[2] ? (end ? Date.UTC(y + 1, 6, 31, 23, 59) : Date.UTC(y, 7, 1)) : (end ? Date.UTC(y, 11, 31, 23, 59) : Date.UTC(y, 0, 1));
+}
+function markOf(ev, now = Date.now()){
+  const r = (Array.isArray(BROADCAST) ? BROADCAST : []).find(x => x && String(x.idLeague) === String(ev.idLeague || '') && x.confidence === 'high'
+    && x.whole === true && /^\d{4}-\d{2}-\d{2}$/.test(x.verified || '') && /^https:\/\//.test(x.source || '')
+    && now >= seasonBound(x.from, false) && now <= seasonBound(x.until, true));
+  return r ? {mark: FB_EN ? r.en : r.ar, detail: (FB_EN ? r.detail_en : r.detail_ar) || (FB_EN ? r.en : r.ar)} : null;
+}
+const FB_DUR = 110 * 60000;   // a football game with its half-time
+const fbKick = ev => toDate(ev).getTime();
+const fbFollowed = id => CONFIG.teamIds.includes(String(id || ''));
+const fbMine = ev => fbFollowed(ev.idHomeTeam) || fbFollowed(ev.idAwayTeam);
+const fbDone = (ev, now) => FINAL.includes((ev.strStatus || '').toUpperCase()) || now >= fbKick(ev) + durMs(ev);
+const fbLive = (ev, now) => now >= fbKick(ev) && !fbDone(ev, now);
+const fbScored = ev => ev.intHomeScore != null && ev.intAwayScore != null && ev.intHomeScore !== '' && ev.intAwayScore !== '';
+function fbGames(){
+  return matchEvents().filter(ev => ev && ev.idEvent && !isNaN(fbKick(ev)) && !CALLED_OFF.test(ev.strStatus || ''))
+    .sort((a, b) => (fbMine(b) - fbMine(a)) || fbKick(a) - fbKick(b));
+}
+const fbDayOf = ms => cityToday(ms);
+const fbDayAdd = (day, n) => new Date(Date.parse(day + 'T12:00:00Z') + n * DAY_MS).toISOString().slice(0, 10);
+function fbCount(n){ return fw(n === 1 ? FB_W.g1 : n === 2 ? FB_W.g2 : n <= 10 ? FB_W.gFew : FB_W.gMany, ar(n)); }
+function fbClock(ms){ const p = hmParts(new Date(ms)); return fmtTime(+p.hour % 24, +p.minute); }
+// the five prayers of a city day, each with its moment: today's as the page has them, another day's computed the same way
+function fbPrayers(day){
+  const [y, mo, d] = day.split('-').map(Number);
+  let t = day === cityToday() && BASE_DAY_TIMES ? BASE_DAY_TIMES : null;
+  if(!t) try{ t = adjustedTimes(computePrayers({y, mo, d})); }catch(e){ return []; }
+  const friday = new Date(Date.UTC(y, mo - 1, d, 12)).getUTCDay() === 5;
+  return PRAYER_KEYS.map(k => {
+    const m = /^(\d{1,2}):(\d{2})/.exec(String(t[k] || ''));
+    if(!m) return null;
+    const local = Date.UTC(y, mo - 1, d, +m[1], +m[2]);
+    return {key: k, name: k === 'Dhuhr' && friday ? 'الجمعة' : PRAYER_NAMES[k], h: +m[1], mi: +m[2], at: local - tzOffsetMs(local - tzOffsetMs(local))};
+  }).filter(Boolean);
+}
+// a prayer called while the game is on (from 10 minutes before the kick-off to its end): the amber note «المغرب ٥:١٧»
+function fbClash(ev){
+  const k = fbKick(ev);
+  return fbPrayers(fbDayOf(k)).find(p => p.at >= k - 10 * 60000 && p.at <= k + FB_DUR) || null;
+}
+const fbNote = p => p ? p.name + ' ' + fmtTime(p.h, p.mi) : '';
+function fbDur(min, lead){   // «بساعة و١٣ دقيقة»
+  const h = Math.floor(min / 60), m = min % 60;
+  const hs = h ? fw(h === 1 ? FB_W.h1 : h === 2 ? FB_W.h2 : h <= 10 ? FB_W.hFew : FB_W.hMany, ar(h)) : '';
+  const ms = !m ? '' : h ? fw(m === 1 ? FB_W.am1 : m === 2 ? FB_W.am2 : m <= 10 ? FB_W.amFew : FB_W.amMany, ar(m))
+    : fw(m === 1 ? FB_W.m1 : m === 2 ? FB_W.m2 : m <= 10 ? FB_W.mFew : FB_W.mMany, ar(m));
+  return [hs, ms].filter(Boolean).join(' ') || (lead || '');
+}
+// one sentence placing the game against the prayers: «تبدأ بعد العشاء بساعة و١٣ دقيقة», or the adhan that falls in it
+function fbSentence(ev){
+  const k = fbKick(ev), list = fbPrayers(fbDayOf(k)), c = fbClash(ev);
+  if(c && c.at >= k) return fw(FB_W.adhanAt, c.name, ar(Math.max(1, Math.round((c.at - k) / 60000))));
+  const before = list.filter(p => p.at <= k).pop();
+  if(before) return fw(FB_W.startsAfter, before.name, fbDur(Math.round((k - before.at) / 60000)));
+  const after = list[0];
+  return after ? fw(FB_W.startsBefore, after.name, fbDur(Math.round((after.at - k) / 60000))) : '';
+}
+const fbStatus = (ev, now) => fbLive(ev, now) ? liveStatus(ev, fbClock(fbKick(ev))) : '';
+const fbMid = (ev, now) => (fbLive(ev, now) || fbDone(ev, now)) && fbScored(ev)
+  ? `<b class="fsc">${ar(+ev.intHomeScore)} - ${ar(+ev.intAwayScore)}</b>` : `<i class="fx">${FB_W.vs}</i>`;
+const fbTeam = (ev, side) => {
+  const id = ev['id' + side + 'Team'];
+  return `<span class="ftm${fbFollowed(id) ? ' me' : ''}">${crestImg(ev, side) || '<span class="crgap"></span>'}<span class="nm">${esc(teamAr(ev['str' + side + 'Team'], id))}</span></span>`;
+};
+const fbMarkChip = ev => { const m = markOf(ev); return m ? `<span class="fmk">${esc(m.mark)}</span>` : ''; };
+const fbRound = ev => leagueName(ev) && ev.intRound ? fw(FB_W.round, leagueName(ev), ar(ev.intRound)) : leagueName(ev);
+// the day a game is on, said the short way: «اليوم», «غدًا», «الخميس»
+function fbDayWord(day){
+  const t = cityToday();
+  if(day === t) return FB_W.tday;
+  if(day === fbDayAdd(t, 1)) return FB_W.tomorrow;
+  if(day === fbDayAdd(t, -1)) return FB_W.yesterday;
+  return FMT_WEEKDAY.format(new Date(day + 'T12:00:00Z'));
+}
+
+// ---- the football home: three glass cards over the photo, the games opening into a row while they have the focus
+const FB = {top: 216, focus: '', open: false, at: 0, light: false, list: [], wx: null};
+try{ FB.wx = JSON.parse(localStorage.getItem('fbWx') || 'null'); }catch(e){}
+const FB_ICON = {Fajr:WX_SVG.part, Dhuhr:WX_SVG.sun, Asr:WX_SVG.part, Maghrib:WX_SVG.partnight, Isha:WX_SVG.moon};
+const FB_GLYPH = {
+  pin:'<svg viewBox="0 0 24 24"><path d="M12 21s-6.5-6.2-6.5-11a6.5 6.5 0 0 1 13 0C18.5 14.8 12 21 12 21z"/><circle cx="12" cy="10" r="2.3"/></svg>',
+  temp:'<svg viewBox="0 0 24 24"><path d="M10 13.5V5a2 2 0 0 1 4 0v8.5a4 4 0 1 1-4 0z"/></svg>',
+  drop:'<svg viewBox="0 0 24 24"><path d="M12 3.5s-5.5 6.3-5.5 10.2a5.5 5.5 0 0 0 11 0C17.5 9.8 12 3.5 12 3.5z"/></svg>',
+  wind:'<svg viewBox="0 0 24 24"><path d="M3 9h11a3 3 0 1 0-3-3M3 13h15a3 3 0 1 1-3 3M3 17h7"/></svg>',
+  bell:'<svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"/></svg>',
+};
+const fbGlyph = k => `<span class="fg">${FB_GLYPH[k]}</span>`;
+function fbHome(now){   // today's games, the followed teams' first; with none today, the next day that has games
+  const all = fbGames(), today = cityToday(now);
+  let list = all.filter(ev => fbDayOf(fbKick(ev)) === today);
+  if(!list.length){
+    const next = all.filter(ev => fbKick(ev) > now).sort((a, b) => fbKick(a) - fbKick(b))[0];
+    if(next){ const d = fbDayOf(fbKick(next)); list = all.filter(ev => fbDayOf(fbKick(ev)) === d); }
+  }
+  return list;
+}
+function fbWhen(ev, now){   // the time column: the minute of a live game (green), «انتهت», else the kick-off («الخميس ٨:٠٠ م» on another day)
+  if(fbLive(ev, now)) return `<span class="flv">${fbStatus(ev, now)}</span>`;
+  if(fbDone(ev, now)) return FB_W.ended;
+  const d = fbDayOf(fbKick(ev));
+  return (d === cityToday(now) ? '' : fbDayWord(d) + ' ') + fbClock(fbKick(ev));
+}
+function fbWeatherHtml(){
+  const w = FB.wx, fresh = w && Date.now() - w.at < 3 * 3600000;
+  const v = (x, f) => fresh && typeof x === 'number' ? f(Math.round(x)) : '—';
+  return `<div class="fwc">${fbGlyph('pin')}<span>${esc(CONFIG.city)}</span></div>`
+    + `<div class="fwm"><span class="fwi">${fresh ? wxIcon(w.code, !w.day) : ''}</span><span class="fwt"><b>${v(w && w.temp, x => ar(x) + '°')}</b><i>${fresh ? esc(WX_CODES[w.code] || '') : ''}</i></span></div>`
+    + `<div class="fws"><span>${fbGlyph('temp')}<i>${FB_W.feels}</i><b>${v(w && w.feels, x => ar(x) + '°')}</b></span>`
+    + `<span>${fbGlyph('drop')}<i>${FB_W.hum}</i><b>${v(w && w.hum, x => fw(FB_W.pct, ar(x)))}</b></span>`
+    + `<span>${fbGlyph('wind')}<i>${FB_W.wind}</i><b>${v(w && w.wind, x => fw(FB_W.kmh, ar(x)))}</b></span></div>`;
+}
+function fbPrayersHtml(){
+  if(!PRAYERS.length) return '<div class="fnone">—</div>';
+  const p = riyadhParts(), mins = p.h * 60 + p.mi + p.s / 60;
+  let next = PRAYERS.findIndex(x => x.h * 60 + x.mi > mins), tomorrow = false;
+  if(next < 0){ next = 0; tomorrow = true; }
+  const n = PRAYERS[next], left = n.h * 60 + n.mi + (tomorrow ? 1440 : 0) - mins;
+  return '<ul class="fpl">' + PRAYERS.map((x, i) => `<li${i === next ? ' class="nx"' : ''}><span class="fpi">${FB_ICON[x.key] || ''}</span>`
+    + `<b>${prayerName(x)}</b><span class="fpt">${fmtTime(x.h, x.mi)}</span></li>`).join('') + '</ul>'
+    + `<div class="fpn">${fw(FB_W.nextIn, prayerName(n), shortHM(Math.max(0, Math.round(left * 60))))}</div>`;
+}
+function fbLine(ev, now){
+  const c = fbClash(ev);
+  return `<li class="fln">${fbTeam(ev, 'Home')}${fbMid(ev, now)}${fbTeam(ev, 'Away')}<span class="fnote">${c ? esc(fbNote(c)) : ''}</span><span class="fwhen">${fbWhen(ev, now)}</span></li>`;
+}
+function fbCard(ev, now, i){
+  return `<div class="fcd${i === FB.at ? ' sel' : ''}" data-i="${i}"><div class="fct"><span>${esc(fbRound(ev))}</span>${fbMarkChip(ev)}</div>`
+    + `<div class="fcm">${fbTeam(ev, 'Home')}${fbMid(ev, now)}${fbTeam(ev, 'Away')}</div><div class="fcw">${fbWhen(ev, now)}</div></div>`;
+}
+function fbAllOn(list){   // «كلها على ثمانية» when every game has the same mark
+  const m = list.map(ev => (markOf(ev) || {}).mark);
+  return m.length && m[0] && m.every(x => x === m[0]) ? ' · ' + fw(FB_W.allOn, m[0]) : '';
+}
+function fbRender(){
+  const root = document.getElementById('fb');
+  if(!root) return;
+  const now = Date.now(), list = FB.list = fbHome(now);
+  FB.at = Math.max(0, Math.min(FB.at, list.length - 1));
+  setHTML(document.getElementById('fb-wx-c'), fbWeatherHtml());
+  setHTML(document.getElementById('fb-pr-c'), fbPrayersHtml());
+  const count = list.length ? 'TheSportsDB · ' + fbCount(list.length) : '';
+  setText(document.getElementById('fb-mt-n'), count);
+  setText(document.getElementById('fb-row-n'), list.length ? fbCount(list.length) + fbAllOn(list) : '');
+  setHTML(document.getElementById('fb-mt-c'), list.length ? '<ul>' + list.slice(0, 3).map(ev => fbLine(ev, now)).join('') + '</ul>'
+    : `<div class="fnone">${MATCHES_LOADED ? FB_W.none : matchesEmptyText()}</div>`);
+  setHTML(document.getElementById('fb-row-c'), list.length ? list.map((ev, i) => fbCard(ev, now, i)).join('') : `<div class="fnone">${FB_W.none}</div>`);
+  fillCrests(root);
+  fbScroll();
+}
+function fbScroll(){   // the chosen card in view: the row moves by whole cards, the first one at the row's start
+  const row = document.getElementById('fb-row-c'), card = row && row.children[FB.at];
+  if(!card) return;
+  row.querySelectorAll('.fcd').forEach(c => c.classList.toggle('sel', +c.dataset.i === FB.at && FB.open));
+  const step = card.getBoundingClientRect().width + 24 * FB_U(), view = row.parentElement.getBoundingClientRect().width;
+  const fit = Math.max(1, Math.floor((view + 24 * FB_U()) / step));
+  const first = Math.max(0, FB.at - fit + 1);
+  row.style.transform = `translateX(${(Dir_rtl() ? 1 : -1) * first * step}px)`;
+}
+const Dir_rtl = () => document.documentElement.dir !== 'ltr';
+const FB_U = () => innerWidth / 1920;
+function fbLayout(){
+  document.documentElement.style.setProperty('--u', FB_U() + 'px');
+  document.documentElement.style.setProperty('--ft', FB.top + '');
+}
+// called by the launcher
+function fbTop(t){ FB.top = Math.max(150, Math.min(320, +t || 216)); fbLayout(); }
+function fbLight(on){ FB.light = !!on; document.documentElement.classList.toggle('fb-light', FB.light); }
+function fbFocus(which){
+  FB.focus = ['wx', 'pr', 'mt'].includes(which) ? which : '';
+  const open = FB.focus === 'mt';
+  if(open && !FB.open) FB.at = 0;
+  FB.open = open;
+  document.documentElement.classList.toggle('fb-open', open);
+  ['wx', 'pr', 'mt'].forEach(k => document.getElementById('fb-' + k).classList.toggle('f', FB.focus === k));
+  fbScroll();
+  return fbRects();
+}
+function fbMove(d){   // +1: the next game in reading order; false at either end (the launcher keeps the focus where it is)
+  if(!FB.open) return false;
+  const to = FB.at + (d > 0 ? 1 : -1);
+  if(to < 0 || to >= FB.list.length) return false;
+  FB.at = to;
+  fbScroll();
+  return true;
+}
+const fbPick = () => FB.open && FB.list[FB.at] ? String(FB.list[FB.at].idEvent) : '';
+function fbRects(){   // "wx:l,t,w,h;pr:…;mt:…" in CSS px, the matches' the open row's while it is open
+  const r = id => { const b = document.getElementById(id).getBoundingClientRect(); return [b.left, b.top, b.width, b.height].map(v => v.toFixed(1)).join(','); };
+  return `wx:${r('fb-wx')};pr:${r('fb-pr')};mt:${r(FB.open ? 'fb-row' : 'fb-mt')}`;
+}
+const loadFbWeather = guarded('fbwx', async function(){
+  const q = `latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}&timezone=${encodeURIComponent(CONFIG.timezone)}`;
+  try{
+    const r = await fetchT(`https://api.open-meteo.com/v1/forecast?${q}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code,is_day`, 12000);
+    if(!r.ok) return;
+    const c = (await r.json()).current || {};
+    if(typeof c.temperature_2m !== 'number') return;
+    FB.wx = {at: Date.now(), temp: c.temperature_2m, feels: c.apparent_temperature, hum: c.relative_humidity_2m, wind: c.wind_speed_10m, code: c.weather_code, day: c.is_day !== 0};
+    try{ localStorage.setItem('fbWx', JSON.stringify(FB.wx)); }catch(e){}
+    fbRender();
+  }catch(e){}
+});
+function bootFootball(){
+  document.documentElement.classList.add('widget', 'fb');
+  document.body.insertAdjacentHTML('beforeend', '<div id="fb">'
+    + `<section class="fbw" id="fb-wx"><h3>${FB_W.weather}</h3><div class="fbc" id="fb-wx-c"></div></section>`
+    + `<section class="fbw" id="fb-pr"><h3>${FB_W.prayers}</h3><div class="fbc" id="fb-pr-c"></div></section>`
+    + `<section class="fbw" id="fb-mt"><h3>${FB_W.today}<span class="fbn" id="fb-mt-n"></span></h3><div class="fbc" id="fb-mt-c"></div></section>`
+    + `<section id="fb-row"><h3>${FB_W.today}<span class="fbn" id="fb-row-n"></span></h3><div class="fbv"><div class="fbr" id="fb-row-c"></div></div></section></div>`);
+  fbLayout();
+  addEventListener('resize', () => { fbLayout(); fbScroll(); });
+  fbRender();
+  loadPrayers(); periodic(loadPrayers, 6 * 3600 * 1000);
+  loadFbWeather(); periodic(loadFbWeather, 30 * 60 * 1000);
+  loadMatches(); periodic(loadMatches, 30 * 60 * 1000); periodic(loadLive, 2 * 60000);
+  setInterval(fbRender, 15000);
+  if(document.fonts) document.fonts.ready.then(fbScroll);
+  reveal();
+}
+
+// ---- «المباريات»: a page of its own on the light look; the days, the leagues, the followed teams first, a game's card over it
+const MP = {day: '', zone: 'rows', d: 1, l: 0, r: 0, detail: null, btn: 0, rows: [], leagues: [], days: [], note: ''};
+function mpGroups(){   // [{key, name, games}] of the chosen day: «فرقك», then each league in Prefs.LEAGUES' order
+  const games = fbGames().filter(ev => fbDayOf(fbKick(ev)) === MP.day), mine = games.filter(fbMine);
+  const by = {};
+  games.forEach(ev => { const k = String(ev.idLeague || ev.strLeague || ''); (by[k] = by[k] || []).push(ev); });
+  const keys = Object.keys(by).sort((a, b) => (FB_LEAGUE_ORDER.indexOf(a) + 1 || 99) - (FB_LEAGUE_ORDER.indexOf(b) + 1 || 99));
+  const out = mine.length ? [{key: 'mine', name: FB_W.yours, games: mine, count: mine.length}] : [];
+  keys.forEach(k => {
+    const rest = by[k].filter(ev => !fbMine(ev)).sort((a, b) => fbKick(a) - fbKick(b));
+    if(rest.length) out.push({key: k, name: fbRound(rest[0]), side: leagueName(rest[0]) || fbRound(rest[0]), games: rest, count: by[k].length});
+  });
+  return out;
+}
+function mpRow(ev, now, i){
+  const c = fbClash(ev);
+  return `<li class="mpg${i === MP.r && MP.zone === 'rows' && !MP.detail ? ' f' : ''}" data-r="${i}"><span class="mpw">${fbLive(ev, now) || fbDone(ev, now) ? fbWhen(ev, now) : fbClock(fbKick(ev))}</span>`
+    + `${fbTeam(ev, 'Home')}${fbMid(ev, now)}${fbTeam(ev, 'Away')}<span class="fnote">${c ? esc(fbNote(c)) : ''}</span>${fbMarkChip(ev)}</li>`;
+}
+function mpAge(){
+  const at = Math.max(MATCH_OK_AT || 0, ...Object.values(LEAGUE_DATA).map(d => Date.parse(d && d.updated) || 0));
+  if(!at) return 'TheSportsDB';
+  const m = Math.round((Date.now() - at) / 60000);
+  return 'TheSportsDB · ' + (m < 60 ? fw(FB_W.ago, qty(Math.max(1, m), UNIT.min)) : fmtAgo(at));
+}
+function mpRender(){
+  if(!document.getElementById('mp')) return;
+  const now = Date.now(), t = cityToday(now);
+  MP.days = [-1, 0, 1, 2, 3, 4, 5].map(n => fbDayAdd(t, n));
+  if(!MP.day) MP.day = t;
+  const groups = mpGroups();
+  MP.rows = []; groups.forEach(g => g.games.forEach(ev => MP.rows.push(ev)));
+  MP.leagues = groups;
+  MP.r = Math.max(0, Math.min(MP.r, MP.rows.length - 1));
+  MP.l = Math.max(0, Math.min(MP.l, groups.length - 1));
+  setText(document.getElementById('mp-age'), mpAge());
+  setHTML(document.getElementById('mp-days'), MP.days.map((d, i) => {
+    const word = i < 3 ? fbDayWord(d) : FMT_WEEKDAY.format(new Date(d + 'T12:00:00Z')) + ' ' + ar(+d.slice(8));
+    return `<li class="${d === MP.day ? 'on' : ''}${(MP.zone === 'days' || !MP.rows.length) && i === MP.d ? ' f' : ''}">${word}</li>`;
+  }).join(''));
+  setHTML(document.getElementById('mp-side'), groups.length ? groups.map((g, i) =>
+    `<li class="${i === MP.l ? 'on' : ''}${MP.zone === 'leagues' && i === MP.l ? ' f' : ''}"><span>${esc(g.side || g.name)}</span><i>${ar(g.count)}</i></li>`).join('') : '');
+  let n = 0;
+  setHTML(document.getElementById('mp-list'), groups.length ? groups.map(g => `<section data-g="${esc(g.key)}"><h2>${esc(g.name)}</h2><ul>`
+    + g.games.map(ev => mpRow(ev, now, n++)).join('') + '</ul></section>').join('')
+    : `<div class="fnone">${MATCHES_LOADED ? FB_W.none : matchesEmptyText()}</div>`);
+  fillCrests(document.getElementById('mp'));
+  const f = MP.zone === 'leagues' ? document.querySelectorAll('#mp-list section')[MP.l] : document.querySelector('#mp-list li.f');
+  if(f) f.scrollIntoView({block: MP.zone === 'leagues' ? 'start' : 'nearest'});
+  if(MP.detail) mpDetailRender();
+}
+function mpLine(ev){   // «مع الصلاة»: the prayers around the game on one line, the game a green bar on it
+  const k = fbKick(ev), list = fbPrayers(fbDayOf(k));
+  const before = list.filter(p => p.at <= k && p.at > k - 4 * 3600000);
+  const from = Math.min(k - 30 * 60000, ...(before.length ? [before[0].at - 10 * 60000] : [])), to = k + FB_DUR + 60 * 60000;
+  const pos = ms => ((ms - from) / (to - from) * 100).toFixed(2) + '%';
+  const marks = list.filter(p => p.at >= from && p.at <= to).map(p =>
+    `<span class="mpk" style="inset-inline-start:${pos(p.at)}"><i></i><b>${esc(p.name)} ${fmtTime(p.h, p.mi)}</b></span>`).join('');
+  return `<div class="mpline"><span class="mpbar" style="inset-inline-start:${pos(k)};width:${((FB_DUR) / (to - from) * 100).toFixed(2)}%"></span>${marks}`
+    + `<span class="mpgl" style="inset-inline-start:${pos(k)}">${FB_W.game} ${fbClock(k)} – ${fbClock(k + FB_DUR)}</span></div>`;
+}
+function mpButtons(ev, now){
+  const out = [];
+  if(fbKick(ev) - 15 * 60000 > now) out.push({k: 'remind', t: FB_W.remind, icon: true});
+  const team = ['Home', 'Away'].find(s => !fbFollowed(ev['id' + s + 'Team']));
+  if(team) out.push({k: 'follow', side: team, t: fw(FB_W.follow, teamAr(ev['str' + team + 'Team'], ev['id' + team + 'Team']))});
+  return out;
+}
+function mpDetailRender(){
+  const ev = MP.detail, now = Date.now(), m = markOf(ev), k = fbKick(ev);
+  const big = side => { const c = crestOf(ev, side); return `<div class="mdt">${c ? `<img class="mdc" src="${esc(c.u)}" alt="">` : '<span class="mdc"></span>'}<b>${esc(teamAr(ev['str' + side + 'Team'], ev['id' + side + 'Team']))}</b></div>`; };
+  const mid = (fbLive(ev, now) || fbDone(ev, now)) && fbScored(ev) ? `<b>${ar(+ev.intHomeScore)} - ${ar(+ev.intAwayScore)}</b><i>${fbWhen(ev, now)}</i>`
+    : `<b>${fbClock(k)}</b><i>${fbDayWord(fbDayOf(k))}</i>`;
+  const rows = [ev.strVenue ? `<li><span>${FB_W.venue}</span><i>${esc(ev.strVenue)}</i></li>` : '', m ? `<li><span>${FB_W.channel}</span><i>${esc(m.detail)}</i></li>` : '',
+    `<li class="mdp"><div><span>${FB_W.withPrayer}</span><i class="mds">${esc(fbSentence(ev))}</i></div>${mpLine(ev)}</li>`].join('');
+  const btns = mpButtons(ev, now);
+  MP.btn = Math.max(0, Math.min(MP.btn, btns.length - 1));
+  setHTML(document.getElementById('mp-detail'), `<div class="mdx"><div class="mdh"><span>${esc(fbRound(ev))}</span>${fbMarkChip(ev)}</div>`
+    + `<div class="mdm">${big('Home')}<div class="mdk">${mid}</div>${big('Away')}</div><ul class="mdr">${rows}</ul>`
+    + `<div class="mdb">${btns.map((b, i) => `<button class="${i === 0 ? 'pri' : ''}${i === MP.btn ? ' f' : ''}" data-k="${b.k}">${b.icon ? fbGlyph('bell') : ''}<span>${esc(b.t)}</span></button>`).join('')}</div>`
+    + `<div class="mdn" id="mp-note">${esc(MP.note)}</div></div>`);
+  document.getElementById('mp-detail').hidden = false;
+}
+function mpOpen(ev){ MP.detail = ev; MP.btn = 0; MP.note = ''; mpDetailRender(); }
+function mpBack(){   // the launcher's Back: closes the card first; 'out' when there is nothing to close
+  if(!MP.detail) return 'out';
+  MP.detail = null; document.getElementById('mp-detail').hidden = true; mpRender();
+  return 'closed';
+}
+function mpAct(){
+  const ev = MP.detail, b = mpButtons(ev, Date.now())[MP.btn];
+  if(!b) return;
+  const host = window.UrtvMatches;
+  let ok = false;
+  try{
+    if(b.k === 'remind') ok = !!(host && host.remind(fw(FB_W.taskText, teamAr(ev.strHomeTeam, ev.idHomeTeam) + ' × ' + teamAr(ev.strAwayTeam, ev.idAwayTeam),
+      fbDayWord(fbDayOf(fbKick(ev))) + ' ' + fbClock(fbKick(ev))), fbKick(ev) - 15 * 60000));
+    else{
+      const id = String(ev['id' + b.side + 'Team']);
+      ok = !!(host && host.follow(id, String(ev['str' + b.side + 'Team'] || '')));
+      if(ok && !CONFIG.teamIds.includes(id)) CONFIG.teamIds.push(id);
+    }
+  }catch(e){ ok = false; }
+  MP.note = ok ? (b.k === 'remind' ? FB_W.reminded : fw(FB_W.followed, teamAr(ev['str' + b.side + 'Team'], ev['id' + b.side + 'Team']))) : FB_W.failed;
+  mpDetailRender();
+}
+// the remote: ◀ ▶ ▲ ▼ OK and Back as the WebView hands them over; ◀ is «forward» in Arabic (the next day, the list beside the leagues)
+function mpKey(e){
+  const fwd = Dir_rtl() ? 'ArrowLeft' : 'ArrowRight', back = Dir_rtl() ? 'ArrowRight' : 'ArrowLeft', k = e.key;
+  const ok = k === 'Enter' || k === ' ';
+  if(MP.detail){
+    const n = mpButtons(MP.detail, Date.now()).length;
+    if(k === fwd) MP.btn = Math.min(n - 1, MP.btn + 1); else if(k === back) MP.btn = Math.max(0, MP.btn - 1);
+    else if(ok) return mpAct(), e.preventDefault();
+    else if(k === 'Escape' || k === 'Backspace') mpBack();
+    else return;
+    e.preventDefault(); return mpDetailRender();
+  }
+  if(MP.zone !== 'days' && !MP.rows.length) MP.zone = 'days';   // a day with no game: the days are where the focus is
+  if(MP.zone === 'days'){
+    if(k === fwd) MP.d = Math.min(MP.days.length - 1, MP.d + 1); else if(k === back) MP.d = Math.max(0, MP.d - 1);
+    else if(k === 'ArrowDown') MP.zone = MP.rows.length ? 'rows' : MP.leagues.length ? 'leagues' : 'days';
+    else if(!ok) return;
+    if(k === fwd || k === back || ok){ MP.day = MP.days[MP.d]; MP.r = 0; MP.l = 0; }
+  } else if(MP.zone === 'leagues'){
+    if(k === 'ArrowDown') MP.l = Math.min(MP.leagues.length - 1, MP.l + 1);
+    else if(k === 'ArrowUp'){ if(MP.l) MP.l--; else MP.zone = 'days'; }
+    else if(k === fwd || ok){ if(MP.rows.length) MP.zone = 'rows'; }
+    else return;
+    if(MP.zone === 'leagues' || k === fwd || ok){ let n = 0; for(let i = 0; i < MP.l; i++) n += MP.leagues[i].games.length; MP.r = n; }
+  } else {
+    if(k === 'ArrowDown') MP.r = Math.min(MP.rows.length - 1, MP.r + 1);
+    else if(k === 'ArrowUp'){ if(MP.r) MP.r--; else MP.zone = 'days'; }
+    else if(k === back){ if(MP.leagues.length) MP.zone = 'leagues'; }
+    else if(ok){ if(MP.rows[MP.r]) mpOpen(MP.rows[MP.r]); e.preventDefault(); return; }
+    else return;
+    let n = 0; MP.leagues.forEach((g, i) => { if(MP.r >= n) MP.l = i; n += g.games.length; });
+  }
+  e.preventDefault();
+  mpRender();
+}
+function bootMatchPage(){
+  document.documentElement.classList.add('mpage');
+  document.body.insertAdjacentHTML('beforeend', `<div id="mp"><header><h1>${FB_W.title}</h1><span id="mp-age"></span></header>`
+    + '<ul id="mp-days"></ul><div class="mpb"><ul id="mp-side"></ul><div id="mp-list"></div></div></div><div id="mp-detail" hidden></div>');
+  document.documentElement.style.setProperty('--u', (innerWidth / 1920) + 'px');
+  addEventListener('resize', () => document.documentElement.style.setProperty('--u', (innerWidth / 1920) + 'px'));
+  addEventListener('keydown', mpKey);
+  const want = _Q.get('event');   // OK on a game of the home: its card opens at once
+  mpRender();
+  const openWanted = () => { if(want && !MP.detail){ const ev = fbGames().find(x => String(x.idEvent) === want); if(ev){ MP.day = fbDayOf(fbKick(ev)); mpRender(); MP.r = MP.rows.indexOf(ev); mpOpen(ev); } } };
+  openWanted();
+  loadPrayers();
+  loadMatches().then(() => { mpRender(); openWanted(); });
+  periodic(loadLive, 2 * 60000);
+  setInterval(mpRender, 30000);
+  reveal();
+}
+
 function boot(){
   pruneStorage();
+  if(CONFIG.matchPage){ bootMatchPage(); return; }
+  if(CONFIG.football){ bootFootball(); return; }
   if(CONFIG.widget){ bootWidget(); return; }
   buildCards();
   if(document.fonts) document.fonts.ready.then(() => {   // widths change once the fonts are in
