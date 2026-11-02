@@ -44,7 +44,8 @@ MIGRATIONS = {}
 # into the file.
 # TODO(parental PIN, branch work/parental): the PIN must NEVER be added here, and must never be exported by any other way.
 ALLOWED_TOP = ("schema", "city", "digits", "prayer", "hijri_offset", "clock24", "clock_size", "card_style", "cards",
-               "greeting", "listen_pill", "update_bell", "markets", "teams", "adhan", "sunrise", "prayerbar", "wxmore", "months")
+               "greeting", "listen_pill", "update_bell", "markets", "teams", "adhan", "sunrise", "prayerbar", "wxmore", "months",
+               "lang")
 # NEVER here: the hidden update-channel switch (updatechannel) and the parental PIN. tests/settings_move_test.py checks both.
 
 # The same lists the apps validate (android/app/src/main/java/sa/urtv/screensaver/Prefs.java; tests/settings_move_test.py
@@ -55,6 +56,7 @@ CARD_STYLES = ("current", "dark1", "glass1", "dark3", "glass3")
 CLOCK_SIZES = ("large", "medium", "small")
 MK_STYLES = ("arrows", "prices")
 MONTHS = ("default", "levant")
+LANGS = ("ar", "en")   # «اللغة» (Tr.java: ar, the default, or en)
 SWITCHES = ("greeting", "sunrise", "prayerbar", "wxmore")   # on/off switches the TV reports as «on» / «off»
 MARKETS = ("tasi", "aramco", "spx", "btc", "gold", "silver", "oil", "xrp")
 MAX_MARKETS = 4
@@ -159,6 +161,8 @@ def read_tv(keep_own=False):
             s[k] = g[k] == "on"
     if g.get("months") in MONTHS:
         s["months"] = g["months"]
+    if g.get("lang") in LANGS:   # an older screensaver does not say: absent, never guessed
+        s["lang"] = g["lang"]
     if g.get("listenpill") in ("on", "off"):   # an older screensaver does not say; the key is then left out of the file
         s["listen_pill"] = g["listenpill"] == "on"
     if g.get("updatebell") in ("on", "off"):   # likewise
@@ -249,7 +253,8 @@ def flat(s):
         out["city"] = (c["name"], float(c["lat"]), float(c["lon"]), c["tz"])
         if "country" in c:
             out["city"] += (c["country"],)
-    for k in ("digits", "clock24", "clock_size", "card_style", "greeting", "listen_pill", "update_bell", "hijri_offset", "sunrise", "prayerbar", "wxmore", "months"):
+    for k in ("digits", "clock24", "clock_size", "card_style", "greeting", "listen_pill", "update_bell", "hijri_offset", "sunrise", "prayerbar", "wxmore", "months",
+              "lang"):
         if k in s:
             out[k] = s[k]
     for k, v in s.get("prayer", {}).items():
@@ -427,6 +432,8 @@ def validate(d):
             out[key] = d[key]
     if "months" in d and choice(d["months"], MONTHS, "months", errs):
         out["months"] = d["months"]
+    if "lang" in d and choice(d["lang"], LANGS, "lang", errs):
+        out["lang"] = d["lang"]
     for key in ("clock24", "greeting", "listen_pill", "update_bell", "sunrise", "prayerbar", "wxmore"):
         if key in d:
             n = len(errs)
@@ -638,6 +645,8 @@ def ops(values, names):
             es(p, flag(v))
         elif p == "months":
             es("months", v)
+        elif p == "lang":
+            es("lang", v)
         elif p == "cards.panel2":
             es("panel2", v)
         elif p == "listen_pill":

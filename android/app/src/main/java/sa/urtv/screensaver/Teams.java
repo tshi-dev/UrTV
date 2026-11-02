@@ -66,10 +66,10 @@ final class Teams {
         synchronized (Teams.class) { return BY_ID.get(id); }
     }
 
-    /** The name to show: Arabic, with the English one beside a mere transliteration. */
+    /** The name to show: Arabic, with the English one beside a mere transliteration; with «اللغة» English, the English name. */
     static String label(Context c, TeamSearch.Team t) {
         all(c);
-        if (t.ar.isEmpty()) return t.en;
+        if (t.ar.isEmpty() || (S.en() && !t.en.isEmpty())) return t.en;
         synchronized (Teams.class) { return TRANSLIT.contains(t.id) ? t.ar + "  ·  " + t.en : t.ar; }
     }
 

@@ -40,9 +40,9 @@ check("the source has the settings' rows and headers (the test reads what it sho
 check("no row is made outside render, adjRow and the home cards' loop (so the scan above sees them all)",
       len(re.findall(r"(?<!View )\brow\((?!\))", st)) == len(re.findall(r'\brow\(("|HOME_CARD_NAMES\[k\]|PrayerAdj\.label\()', st)), "a row( call with another first argument")
 
-cat_names = dict(re.findall(r'\{(ADHAN|PLACE|CLOCK|LISTEN|CARDS|LOOK|CONTROL|PHONE|UPDATE|REPORT|MORE|SAVER|HOME|CONTENT|APPS|SHOWS|FAMILY), "([^"]+)"', hub))
+cat_names = dict(re.findall(r'\{(ADHAN|PLACE|CLOCK|LISTEN|CARDS|LOOK|CONTROL|PHONE|UPDATE|REPORT|MORE|SAVER|HOME|CONTENT|APPS|SHOWS|FAMILY|LANG), "([^"]+)"', hub))
 rows_block = hub[hub.index("static final String[][] ROWS"):hub.index("static final String[][] HEADERS")]
-mapped = re.findall(r'\{"([^"]+)", (ADHAN|PLACE|CLOCK|LISTEN|CARDS|LOOK|CONTROL|PHONE|UPDATE|REPORT|MORE|SAVER|HOME|CONTENT|APPS|SHOWS|FAMILY)\}', rows_block)
+mapped = re.findall(r'\{"([^"]+)", (ADHAN|PLACE|CLOCK|LISTEN|CARDS|LOOK|CONTROL|PHONE|UPDATE|REPORT|MORE|SAVER|HOME|CONTENT|APPS|SHOWS|FAMILY|LANG)\}', rows_block)
 
 if not shutil.which("javac"):
     print("SKIP settings hub: no javac here")
@@ -75,15 +75,17 @@ first = sorted([k for k, v in C.items() if v["parent"] == "-"], key=lambda k: C[
 check("the first screen: «الأذان» first (the wide one), then the buttons of the prototype in its order",
       [C[k]["name"] for k in first] == ["الأذان", "الموقع والصلاة", "الساعة والأرقام", "تلاوة وأذان", "البطاقات", "المظهر", "مركز التحكم",
                                        "التحكم من الجوال", "تحديث تلفزيوني", "أرسل تقرير", "المزيد"], [C[k]["name"] for k in first])
-check("«البطاقات» holds «شاشة التوقف» and «الشاشة الرئيسية»; «المزيد» the matches and markets, the apps, the shows and «حماية العائلة»",
+check("«البطاقات» holds «شاشة التوقف» and «الشاشة الرئيسية»; «المزيد» the matches and markets, the apps, the shows, «حماية العائلة» (and «اللغة» once LANG_TILE is on)",
       sorted((C[k]["index"], C[k]["name"]) for k in C if C[k]["parent"] == "cards") == [(0, "شاشة التوقف"), (1, "الشاشة الرئيسية")]
-      and [C[k]["name"] for k in sorted((k for k in C if C[k]["parent"] == "more"), key=lambda k: C[k]["index"])]
-      == ["المباريات والأسواق", "التطبيقات والمفضلة", "جديد المسلسلات", "حماية العائلة"], {k: (v["parent"], v["index"]) for k, v in C.items()})
+      and [C[k]["name"] for k in sorted((k for k in C if C[k]["parent"] == "more" and C[k]["index"] >= 0), key=lambda k: C[k]["index"])]
+      == ["المباريات والأسواق", "التطبيقات والمفضلة", "جديد المسلسلات", "حماية العائلة"] + (["اللغة"] if "static final boolean LANG_TILE = true;" in hub else []),
+      {k: (v["parent"], v["index"]) for k, v in C.items()})
 check("only the first screen, «البطاقات» and «المزيد» are screens of buttons, and nothing is deeper than that",
       {k for k, v in C.items() if v["tiles"]} == {"cards", "more"} and all(C[v["parent"]]["parent"] == "-" for v in C.values() if v["parent"] != "-"))
 direct = {k: v["direct"] for k, v in C.items() if v["direct"] != "-"}
-check("the buttons that do one thing at once, each by its one row: «الأذان», «المظهر», «مركز التحكم», «التحكم من الجوال», «أرسل تقرير», «حماية العائلة»",
-      direct == {"adhan": "الأذان", "look": "المظهر", "control": "مركز التحكم", "phone": "تحكم من الجوال", "report": "أرسل تقرير", "family": "حماية العائلة"}
+check("the buttons that do one thing at once, each by its one row: «الأذان», «المظهر», «مركز التحكم», «التحكم من الجوال», «أرسل تقرير», «حماية العائلة», «اللغة»",
+      direct == {"adhan": "الأذان", "look": "المظهر", "control": "مركز التحكم", "phone": "تحكم من الجوال", "report": "أرسل تقرير", "family": "حماية العائلة",
+                 "lang": "اللغة"}
       and all(by.get(k) == [r] for k, r in direct.items()), {k: (r, by.get(k)) for k, r in direct.items()})
 check("every other category has rows of its own (no empty screen), a screen of buttons none",
       all(by.get(k) for k, v in C.items() if not v["tiles"] and k not in direct) and not any(by.get(k) for k, v in C.items() if v["tiles"]),
@@ -130,9 +132,10 @@ check("the wide «الأذان»: DOWN goes to the right one under it, the other
       and all(nxt[("-", 0, n0, d)] == 0 for d in (0, 2, 3)))
 check("an odd last button, alone on its row: DOWN and LEFT stay on it", nxt[("-", 6, 7, 1)] == 6 and nxt[("-", 6, 7, 2)] == 6)
 hubfn = st[st.index("    private void hub(String want, int wasIndex) {"):].split("\n    }\n")[0]
-check("the buttons are wired with SettingsHub.next for all four keys (the wide one known), in rows laid out right to left",
-      all(f"t.setNextFocus{d}Id(tiles.get(SettingsHub.next(i, tiles.size(), {k}, wide)).getId());" in hubfn for d, k in (("Up", 0), ("Down", 1), ("Left", 2), ("Right", 3)))
-      and "line.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);" in hubfn and "final boolean wide = SettingsHub.wide(screen);" in hubfn
+check("the buttons are wired with SettingsHub.next for all four keys (the wide one known), in rows laid out right to left (Dir: left to right in English, the sides swapped)",
+      all(f"t.setNextFocus{d}Id(tiles.get(SettingsHub.next(i, tiles.size(), {k}, wide)).getId());" in hubfn for d, k in (("Up", 0), ("Down", 1), ("Left", "left"), ("Right", "right")))
+      and "final int left = Dir.rtl() ? 2 : 3, right = Dir.rtl() ? 3 : 2;" in hubfn
+      and "line.setLayoutDirection(Dir.layout());" in hubfn and "final boolean wide = SettingsHub.wide(screen);" in hubfn
       and "boolean alone = wide && i == 0;" in hubfn)
 icons = st[st.index("private static int hubIcon(String cat)"):].split("\n    }\n")[0]
 summ = st[st.index("private String hubSummary(String cat)"):].split("\n    }\n")[0]
@@ -158,9 +161,9 @@ check("each category's screen comes back on its row last focused (the first row 
 side = st[st.index("private void sidePane()"):].split("\n    }\n")[0]
 check("a category's screen: its title and its line on the right (the side pane, first in the RTL panes), the rows on the left; no side on the first screen",
       "side.setVisibility(tiles ? View.GONE : View.VISIBLE);" in side and "SettingsHub.name(screen)" in side and "SettingsHub.about(screen)" in side
-      and st.index("panes.addView(side, sideLp);") < st.index("panes.addView(scroll,") and "panes.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);" in st
+      and st.index("panes.addView(side, sideLp);") < st.index("panes.addView(scroll,") and "panes.setLayoutDirection(Dir.layout());" in st
       and "if (tiles) list.addView(head);" in render)
-abouts = dict(re.findall(r'\{(ADHAN|PLACE|CLOCK|LISTEN|CARDS|LOOK|CONTROL|PHONE|UPDATE|REPORT|MORE|SAVER|HOME|CONTENT|APPS|SHOWS|FAMILY), "[^"]+", "([^"]*)"', hub))
+abouts = dict(re.findall(r'\{(ADHAN|PLACE|CLOCK|LISTEN|CARDS|LOOK|CONTROL|PHONE|UPDATE|REPORT|MORE|SAVER|HOME|CONTENT|APPS|SHOWS|FAMILY|LANG), "[^"]+", "([^"]*)"', hub))
 check("every category with a screen of its own has its line for it (a DIRECT one has none)",
       all(len(abouts[k.upper()]) > 20 for k in C if k not in direct) and all(abouts[k.upper()] == "" for k in direct), abouts)
 check("a button opens its category from the top", "entering = true;" in st[st.index("private void open(String category)"):].split("\n    }\n")[0])
