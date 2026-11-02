@@ -74,6 +74,21 @@ app's preview of the same page and `measure.sh` writes «not measured»). Times 
 | xangshi XS97 | not reported | not reported | not reported | not reported | – | not reported |
 | SHARP AQUOS | not reported | not reported | not reported | not reported | – | not reported |
 
+## When the setup wizard owns the Wi-Fi (TCL G08/G10/G14, Google TV sets)
+
+On many TCL sets (G08, G10, G14; Android 12–14) and other Google TV sets (a G7max), the Wi-Fi network was saved during the
+first-run wizard, so `dumpsys wifi` names the wizard (`cname=…setupwraith`) as its creator. Turning the wizard off would
+delete the network, and with the wizard on, Home mostly stays with the stock home: the home switch used to end in «Home
+switch skipped». Seen on a TCL G08 (Android 14, AU02 firmware): forgetting the network and joining it again in the TV's
+Settings moved the creator to `com.android.tv.settings` at once (`android.uid.system` after a restart), the TV stayed on
+Wi-Fi, and the switch in the order wizard → Wi-Fi check → new home in front → stock home off held Home, Wi-Fi and the
+disabled packages through three restarts (the order is CleanYourTV's, MIT).
+
+So `install.sh launcher` now pauses once (`Home switch paused`, exit 5) and asks the person to forget the network and join it
+again; after «كمّل» it reads the owner again and switches in that order if the network moved, or as before if it did not.
+Read only, on any set: `optimize/venv/bin/python -I optimize/tv.py "dumpsys wifi" | grep -o 'cname=[^ ]*' | sort | uniq -c`
+says who owns the saved networks (no names are printed).
+
 ## The remote's shortcut keys
 
 After the home switch the stock launcher is switched off, and the remote's shortcut keys (Settings, YouTube, Netflix, the star)
