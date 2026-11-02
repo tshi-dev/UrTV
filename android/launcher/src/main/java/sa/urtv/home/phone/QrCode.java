@@ -3,9 +3,10 @@ package sa.urtv.home.phone;
 import java.nio.charset.StandardCharsets;
 
 /**
- * A QR code encoder, written for this app (nothing is copied from another library): byte mode, versions 1 to 10, error correction level M,
- * the mask with the lowest penalty. Enough for the pairing address, which is about 65 characters (version 5 at level M, 37 modules wide).
- * No Android in it; QrView draws the modules.
+ * A QR code encoder, written for this app (nothing is copied from another library): byte mode, the mask with the lowest penalty. encode():
+ * versions 1 to 10, error correction level M, enough for the pairing address, which is about 65 characters (version 5 at level M, 37 modules
+ * wide). encodeLarge(): versions 1 to 40 at level L, for the setup report's link (share.py's segno makes the same kind, 2953 bytes at most).
+ * The block tables are the QR standard's (ISO/IEC 18004, table 9). No Android in it; QrView draws the modules.
  */
 public final class QrCode {
     public static final int MAX_VERSION = 10;
@@ -13,12 +14,21 @@ public final class QrCode {
     public final int version, size, mask;
     private final boolean[][] dark;
 
-    // per version 1..10, level M: error-correction codewords per block, and the number of blocks
-    private static final int[] EC_PER_BLOCK = {10, 16, 26, 18, 24, 16, 18, 22, 22, 26};
-    private static final int[] BLOCKS = {1, 1, 1, 2, 2, 4, 4, 4, 5, 5};
+    public static final int MAX_VERSION_LARGE = 40;
+    static final int M = 0, L = 1;   // the levels this encoder makes (format bits 00 and 01)
 
-    private QrCode(int version, boolean[][] dark, int mask) {
+    // per version 1..40: error-correction codewords per block, and the number of blocks; level M, then level L
+    private static final int[][] EC_PER_BLOCK = {
+        {10, 16, 26, 18, 24, 16, 18, 22, 22, 26, 30, 22, 22, 24, 24, 28, 28, 26, 26, 26, 26, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28},
+        {7, 10, 15, 20, 26, 18, 20, 24, 30, 18, 20, 24, 26, 30, 22, 24, 28, 30, 28, 28, 28, 28, 30, 30, 26, 28, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30}};
+    private static final int[][] BLOCKS = {
+        {1, 1, 1, 2, 2, 4, 4, 4, 5, 5, 5, 8, 9, 9, 10, 10, 11, 13, 14, 16, 17, 17, 18, 20, 21, 23, 25, 26, 28, 29, 31, 33, 35, 37, 38, 40, 43, 45, 47, 49},
+        {1, 1, 1, 1, 1, 2, 2, 2, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 7, 8, 8, 9, 9, 10, 12, 12, 12, 13, 14, 15, 16, 17, 18, 19, 19, 20, 21, 22, 24, 25}};
+    private final int level;
+
+    private QrCode(int version, boolean[][] dark, int mask, int level) {
         this.version = version;
+        this.level = level;
         this.dark = dark;
         this.size = dark.length;
         this.mask = mask;
@@ -26,13 +36,21 @@ public final class QrCode {
 
     public boolean dark(int x, int y) { return x >= 0 && y >= 0 && x < size && y < size && dark[y][x]; }
 
-    /** The text as UTF-8 in the smallest version that holds it. */
-    public static QrCode encode(String text) {
+    /** The text as UTF-8 in the smallest version that holds it (level M, version 10 at most). */
+    public static QrCode encode(String text) { return encode(text, M, MAX_VERSION); }
+
+    /** The text as UTF-8 in the smallest version that holds it, level L, up to version 40 (2953 bytes): a long link, e.g. the setup report's. */
+    public static QrCode encodeLarge(String text) { return encode(text, L, MAX_VERSION_LARGE); }
+
+    /** The format bits' value for this code (its level and its mask). */
+    public int formatBits() { return formatValue(level, mask); }
+
+    private static QrCode encode(String text, int level, int max) {
         byte[] data = text.getBytes(StandardCharsets.UTF_8);
-        for (int v = 1; v <= MAX_VERSION; v++) {
-            if (4 + (v < 10 ? 8 : 16) + data.length * 8 <= dataCodewords(v) * 8) return build(data, v);
+        for (int v = 1; v <= max; v++) {
+            if (4 + (v < 10 ? 8 : 16) + data.length * 8 <= dataCodewords(v, level) * 8) return build(data, v, level);
         }
-        throw new IllegalArgumentException("too long for a QR code of version " + MAX_VERSION);
+        throw new IllegalArgumentException("too long for a QR code of version " + max);
     }
 
     private static int rawModules(int v) {
@@ -45,12 +63,12 @@ public final class QrCode {
         return r;
     }
 
-    private static int dataCodewords(int v) {
-        return rawModules(v) / 8 - EC_PER_BLOCK[v - 1] * BLOCKS[v - 1];
+    private static int dataCodewords(int v, int level) {
+        return rawModules(v) / 8 - EC_PER_BLOCK[level][v - 1] * BLOCKS[level][v - 1];
     }
 
-    private static QrCode build(byte[] data, int v) {
-        int cap = dataCodewords(v);
+    private static QrCode build(byte[] data, int v, int level) {
+        int cap = dataCodewords(v, level);
         // the bits: mode 0100, the count, the bytes, up to four zeros, padding to a byte, then 0xEC 0x11 ...
         BitBuffer bb = new BitBuffer();
         bb.add(4, 4);
@@ -61,7 +79,7 @@ public final class QrCode {
         for (int pad = 0xEC; bb.len < cap * 8; pad ^= 0xEC ^ 0x11) bb.add(pad, 8);
         byte[] codewords = new byte[cap];
         for (int i = 0; i < cap; i++) codewords[i] = (byte) bb.bytes(i);
-        byte[] all = interleave(codewords, v);
+        byte[] all = interleave(codewords, v, level);
 
         int size = v * 4 + 17;
         boolean[][] fn = new boolean[size][size];
@@ -72,18 +90,18 @@ public final class QrCode {
         long bestScore = Long.MAX_VALUE;
         for (int m = 0; m < 8; m++) {
             applyMask(mod, fn, m, size);
-            formatBits(mod, fn, m, size);
+            formatBits(mod, fn, level, m, size);
             long score = penalty(mod, size);
             if (score < bestScore) { bestScore = score; best = m; }
             applyMask(mod, fn, m, size);   // XOR again: undone
         }
         applyMask(mod, fn, best, size);
-        formatBits(mod, fn, best, size);
-        return new QrCode(v, mod, best);
+        formatBits(mod, fn, level, best, size);
+        return new QrCode(v, mod, best, level);
     }
 
     private static final class BitBuffer {
-        final boolean[] bits = new boolean[4096];
+        final boolean[] bits = new boolean[3706 * 8];   // version 40's codewords
         int len;
         void add(int value, int n) {
             for (int i = n - 1; i >= 0; i--) bits[len++] = ((value >>> i) & 1) != 0;
@@ -97,8 +115,8 @@ public final class QrCode {
 
     // ---- error correction
 
-    private static byte[] interleave(byte[] data, int v) {
-        int blocks = BLOCKS[v - 1], ecLen = EC_PER_BLOCK[v - 1];
+    private static byte[] interleave(byte[] data, int v, int level) {
+        int blocks = BLOCKS[level][v - 1], ecLen = EC_PER_BLOCK[level][v - 1];
         int raw = rawModules(v) / 8;
         int shortBlocks = blocks - raw % blocks, shortLen = raw / blocks - ecLen;
         byte[][] dataBlocks = new byte[blocks][];
@@ -162,7 +180,7 @@ public final class QrCode {
     private static int[] alignment(int v, int size) {
         if (v == 1) return new int[0];
         int n = v / 7 + 2;
-        int step = (v * 4 + n * 2 + 1) / (n * 2 - 2) * 2;
+        int step = v == 32 ? 26 : (v * 4 + n * 2 + 1) / (n * 2 - 2) * 2;   // version 32 is the standard's one exception
         int[] p = new int[n];
         p[0] = 6;
         for (int i = n - 1, pos = size - 7; i >= 1; i--, pos -= step) p[i] = pos;
@@ -248,15 +266,18 @@ public final class QrCode {
     }
 
     /** The 15 format bits: level M (00), the mask, a BCH code, XORed with 101010000010010. */
-    static int formatValue(int m) {
-        int data = m;
+    static int formatValue(int m) { return formatValue(M, m); }
+
+    /** The same for a level: M (00) or L (01). */
+    static int formatValue(int level, int m) {
+        int data = (level == L ? 1 : 0) << 3 | m;
         int rem = data;
         for (int i = 0; i < 10; i++) rem = (rem << 1) ^ ((rem >>> 9) * 0x537);
         return (data << 10 | rem) ^ 0x5412;
     }
 
-    private static void formatBits(boolean[][] mod, boolean[][] fn, int m, int size) {
-        int bits = formatValue(m);
+    private static void formatBits(boolean[][] mod, boolean[][] fn, int level, int m, int size) {
+        int bits = formatValue(level, m);
         for (int i = 0; i <= 5; i++) mod[i][8] = bit(bits, i);
         mod[7][8] = bit(bits, 6);
         mod[8][8] = bit(bits, 7);
