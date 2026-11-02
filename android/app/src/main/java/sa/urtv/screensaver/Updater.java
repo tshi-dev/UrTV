@@ -242,7 +242,7 @@ final class Updater {
         String available = newest < 0 ? "لم يُفحص بعد"
             : newest <= mine ? "لا يوجد أحدث" : arabic(Versions.display(BuildConfig.MARKETING, newest));
         return new String[] {
-            "الإصدار الحالي: " + arabic(Versions.display(BuildConfig.MARKETING, mine)),
+            "الإصدار الحالي: " + arabic(Versions.withBuild(BuildConfig.MARKETING, mine)),   // «٤٫٢ (١٧٤)»: the name, then the build
             "الإصدار المتاح: " + available,
             "طريقة التحديث: اطلب من مساعد الذكاء الاصطناعي «حدّث تلفزيوني»، وإعداداتك كلها تبقى.",
         };

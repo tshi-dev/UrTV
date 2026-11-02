@@ -2113,7 +2113,7 @@ public class SettingsActivity extends Activity {
             val.setTextColor(look.sub);
             val.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
             val.setTypeface(font("Thmanyah-Regular"));
-            val.setSingleLine(true);
+            val.setMaxLines(2);   // a long line wraps to a second one instead of being cut with «..» (tester S7); only a third is cut
             val.setEllipsize(android.text.TextUtils.TruncateAt.END);
             texts.addView(val);
         }

@@ -32,8 +32,8 @@ check("MainActivity: the card sits between the pills and the dock: pills down ->
       "p.setNextFocusDownId(card != null ? card.getId()" in main and "card.setNextFocusDownId(dockId" in main
       and "int topId = card != null ? card.getId() : pills.get(0).getId();" in main and "card.setNextFocusUpId(v.getId())" in main)
 check("MainActivity: the order is re-wired when the settings bring the card or take it away", "wireFocus();   // the «المهام» card may have come or gone" in main)
-check("TasksActivity: from the card the first render focuses «🎤 تكلّم», later ones the list as before",
-      'EXTRA_MIC = "mic"' in tasks and "if (micFirst && mic.getVisibility() == View.VISIBLE) f = mic;" in tasks and "micFirst = false;" in tasks)
+check("TasksActivity: the first render focuses the text field (tester T1: not «🎤 تكلّم»), later ones the list as before",
+      "private boolean fieldFirst = true;" in tasks and "if (fieldFirst) f = field;" in tasks and "fieldFirst = false;" in tasks and "f = mic" not in tasks)
 check("TasksActivity: the mic still starts the voice adding on OK", 'mic = pill(S.t("🎤 تكلّم"), GOLD, v -> listen());' in tasks)
 check("the «المهام» pill still opens the list as it did (no mic-first)", 'tasks.setOnClickListener(v -> launchGuarded(ParentalPolicy.PILL_TASKS, new Intent(this, TasksActivity.class), "المهام"))' in main)   # through the family lock; still no mic extra
 sys.exit(1 if failed else 0)
