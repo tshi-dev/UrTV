@@ -54,7 +54,13 @@ check("tv-en.html: the transliteration and the Arabic team tables are not used (
       "const teamAr = (s, id) => String(s || '').trim();" in en and "const TEAM_AR = {};" in en and "const TEAM_BY_ID = {};" in en)
 check("tv-en.html: Latin digits unless #digits=hindi", "digits: _Q.get('digits') === 'hindi' ? 'hindi' : 'latin'," in en
       and "digits: _Q.get('digits') === 'latin' ? 'latin' : 'hindi'," in ar and "const AR = ['\\u0660'," in en)
-check("tv-en.html: the Hijri months transliterated, the Gregorian ones in English", all(m in en for m in build.HIJRI_EN) and "'en-GB-u-ca-gregory-nu-'" in en)
+check("tv-en.html: the Hijri months transliterated, the Gregorian ones in English", all(m in en for m in build.HIJRI_EN) and "const EN_MONTHS = ['January'," in en)
+# Intl's words differ between ICU versions («Monday, 2 November» or «Monday 2 November»), so between WebViews: the English page takes only
+# numbers from Intl (and the shared code's numeric en-GB formatters, FMT_ALL and FMT_HM), and writes the names itself
+words_intl = [m.group(0) for m in re.finditer(r"new Intl\.DateTimeFormat\((?:GREG|'en-GB'|'en-US')[^;]*?(?:weekday|month:'long'|month:'short')[^;]*", en)
+              if "weekday:'short'}).format(new Date()) === 'Fri'" not in m.group(0) and "America/New_York" not in m.group(0)]
+check("tv-en.html: no day or month name from Intl (fixed English names, the same on every WebView)",
+      not words_intl and "new Intl.DateTimeFormat(GREG" not in en and "'en-GB',{timeZone: CONFIG.timezone, weekday" not in en, words_intl[:3])
 
 # ---- the generator's own rules
 check("every piece of EN_CODE is in the template the times it says (else the build stops)", all(text("src/template.html").count(a) == n for a, _, n in build.EN_CODE))

@@ -809,7 +809,24 @@ const LS = {
 
 // every number on the screen goes through ar() or a formatter built on NU, so CONFIG.digits decides them all
 const LATIN = CONFIG.digits === 'latin', NU = LATIN ? 'latn' : 'arab';
-const GREG = 'en-GB-u-ca-gregory-nu-' + NU;
+const GREG = 'en-u-ca-gregory-nu-latn';
+const EN_DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const EN_MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const EN_YMD = {};
+function enDay(d, tz){   // {y, m, d, wd} of the day d is in, in that zone (the numbers only from Intl)
+  tz = tz || 'UTC';
+  const f = EN_YMD[tz] || (EN_YMD[tz] = new Intl.DateTimeFormat('en-US', {timeZone: tz, year:'numeric', month:'numeric', day:'numeric'}));
+  const p = f.formatToParts(d).reduce((a, x) => (a[x.type] = x.value, a), {});
+  const y = parseInt(p.year, 10), m = parseInt(p.month, 10), dd = parseInt(p.day, 10);
+  return {y, m, d: dd, wd: new Date(Date.UTC(y, m - 1, dd)).getUTCDay()};
+}
+function enDate(d, o){
+  const p = enDay(d, o.timeZone);
+  const wd = o.weekday === 'short' ? EN_DAYS[p.wd].slice(0, 3) : o.weekday ? EN_DAYS[p.wd] : '';
+  const dm = o.day ? ar(p.d) + (o.month ? ' ' + EN_MONTHS[p.m - 1] : '') : o.month ? EN_MONTHS[p.m - 1] : '';
+  const date = [dm, o.year ? ar(p.y) : ''].filter(Boolean).join(' ');
+  return wd && date ? wd + (o.year ? ', ' : ' ') + date : wd || date;
+}
 const HIJRI_EN = ["Muharram","Safar","Rabi al-Awwal","Rabi al-Thani","Jumada al-Awwal","Jumada al-Thani","Rajab","Shaban","Ramadan","Shawwal","Dhul Qadah","Dhul Hijjah"];
 const AR = ['\u0660','\u0661','\u0662','\u0663','\u0664','\u0665','\u0666','\u0667','\u0668','\u0669'];
 const ar = s => LATIN ? String(s) : String(s).replace(/[0-9]/g, d => AR[+d]);
@@ -829,9 +846,9 @@ const LEVANT_MONTHS = {'January':'January', 'February':'February', 'March':'Marc
   'July':'July', 'August':'August', 'September':'September', 'October':'October', 'November':'November', 'December':'December'};
 const LEVANT_RE = new RegExp(Object.keys(LEVANT_MONTHS).join('|'), 'g');
 const gm = s => CONFIG.months === 'levant' ? String(s).replace(LEVANT_RE, m => LEVANT_MONTHS[m]) : s;
-const gregFmt = opts => { const f = new Intl.DateTimeFormat(GREG, opts); return {format: d => gm(f.format(d))}; };   // a Gregorian date with a month name
+const gregFmt = opts => ({format: d => enDate(d, opts)});   // a Gregorian date with a month name
 const FMT_DAY_MONTH = gregFmt({timeZone:CONFIG.timezone,weekday:'long',day:'numeric',month:'long'});   // «السبت ٢٤ أكتوبر»
-const FMT_WEEKDAY = new Intl.DateTimeFormat(GREG,{timeZone:CONFIG.timezone,weekday:'long'});
+const FMT_WEEKDAY = gregFmt({timeZone:CONFIG.timezone,weekday:'long'});
 const hmParts = d => FMT_HM.formatToParts(d).reduce((a,x)=>(a[x.type]=x.value,a),{});
 function riyadhParts(d = new Date()){
   const f = FMT_ALL.formatToParts(d).reduce((a,p)=>(a[p.type]=p.value,a),{});
@@ -911,7 +928,7 @@ function tickDates(){
   try{
     const hp = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn',{timeZone: CONFIG.timezone, day:'numeric', month:'numeric', year:'numeric'})
       .formatToParts(hijriAt(now)).reduce((a, x) => (a[x.type] = x.value, a), {});
-    const wd = new Intl.DateTimeFormat('en-GB',{timeZone: CONFIG.timezone, weekday:'long'}).format(now);
+    const wd = EN_DAYS[enDay(now, CONFIG.timezone).wd];
     const hm = HIJRI_EN[parseInt(hp.month, 10) - 1];
     if(hm) setText(document.getElementById('hijri'), wd + ', ' + ar(parseInt(hp.day, 10)) + ' ' + hm + ' ' + ar(parseInt(hp.year, 10)) + ' AH');
   }catch(e){}
@@ -2092,7 +2109,7 @@ function slotNow(){
 }
 const slotBlock = (big, sub, when) => `<div class="mblock"><div class="big"><span>${big}</span></div>`
   + (sub ? `<div class="sub${when ? ' when' : ''}">${sub}</div>` : '') + '</div>';
-const dayName = d => new Intl.DateTimeFormat(GREG, {timeZone:'UTC', weekday:'long'}).format(d);
+const dayName = d => enDate(d, {timeZone:'UTC', weekday:'long'});
 
 // the HTML for a slot; null = nothing to say, keep what was shown last
 function slotHTML(s){
@@ -2389,7 +2406,7 @@ function renderWeekPage(card, animate){
     rows.push(WEEK_POOL[(start + i) % WEEK_POOL.length]);
   }
   setHTML(ul, rows.map(o=>{
-    const dt = o.date ? new Intl.DateTimeFormat(GREG,{timeZone:CONFIG.timezone,weekday:'short'}).format(new Date(o.date+'T12:00:00Z')) : '';
+    const dt = o.date ? enDate(new Date(o.date+'T12:00:00Z'), {timeZone:CONFIG.timezone, weekday:'short'}) : '';
     return `<li><span>${esc(o.name)}</span>`
          + (o.ep?`<span class="ep">${ar(o.ep)}</span>`:'')
          + (o.rating ? `<span class="rt">${ar(o.rating.toFixed(1)).replace('.', LATIN ? '.' : '.')}</span>` : '')
@@ -2793,7 +2810,7 @@ function forecastRows(){
   if(!days.some(d => d.date === today)) return [];
   return days.map(d => {
     const day = d.date === today ? 'Today' : d.date === tomorrow ? 'Tomorrow'
-      : new Intl.DateTimeFormat(GREG, {timeZone:'UTC', weekday:'long'}).format(new Date(d.date + 'T12:00:00Z'));
+      : enDate(new Date(d.date + 'T12:00:00Z'), {timeZone:'UTC', weekday:'long'});
     return `<li><span>${day}</span><span class="ep">${WX_CODES[d.code] || ''}</span>`
          + `<span class="dt">${ar(Math.round(d.hi))}° / ${ar(Math.round(d.lo))}°</span></li>`;
   });

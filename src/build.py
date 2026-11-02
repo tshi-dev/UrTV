@@ -285,7 +285,36 @@ HIJRI_EN = ["Muharram", "Safar", "Rabi al-Awwal", "Rabi al-Thani", "Jumada al-Aw
 EN_CODE = [
     # Latin digits unless Arabic-Indic ones are asked for; the dates and numbers in English
     ("digits: _Q.get('digits') === 'latin' ? 'latin' : 'hindi',", "digits: _Q.get('digits') === 'hindi' ? 'hindi' : 'latin',", 1),
-    ("const GREG = 'ar-SA-u-ca-gregory-nu-' + NU;", "const GREG = 'en-GB-u-ca-gregory-nu-' + NU;", 1),
+    # the Gregorian words from fixed English names, never from Intl's en-GB (its commas and order differ between ICU versions, so between
+    # WebViews): Intl gives only the numbers of the day in the zone. «Monday, 2 November 2026», «Monday 2 November», «2 November», «Mon»
+    ("const GREG = 'ar-SA-u-ca-gregory-nu-' + NU;", """const GREG = 'en-u-ca-gregory-nu-latn';
+const EN_DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const EN_MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const EN_YMD = {};
+function enDay(d, tz){   // {y, m, d, wd} of the day d is in, in that zone (the numbers only from Intl)
+  tz = tz || 'UTC';
+  const f = EN_YMD[tz] || (EN_YMD[tz] = new Intl.DateTimeFormat('en-US', {timeZone: tz, year:'numeric', month:'numeric', day:'numeric'}));
+  const p = f.formatToParts(d).reduce((a, x) => (a[x.type] = x.value, a), {});
+  const y = parseInt(p.year, 10), m = parseInt(p.month, 10), dd = parseInt(p.day, 10);
+  return {y, m, d: dd, wd: new Date(Date.UTC(y, m - 1, dd)).getUTCDay()};
+}
+function enDate(d, o){
+  const p = enDay(d, o.timeZone);
+  const wd = o.weekday === 'short' ? EN_DAYS[p.wd].slice(0, 3) : o.weekday ? EN_DAYS[p.wd] : '';
+  const dm = o.day ? ar(p.d) + (o.month ? ' ' + EN_MONTHS[p.m - 1] : '') : o.month ? EN_MONTHS[p.m - 1] : '';
+  const date = [dm, o.year ? ar(p.y) : ''].filter(Boolean).join(' ');
+  return wd && date ? wd + (o.year ? ', ' : ' ') + date : wd || date;
+}""", 1),
+    ("const gregFmt = opts => { const f = new Intl.DateTimeFormat(GREG, opts); return {format: d => gm(f.format(d))}; };",
+     "const gregFmt = opts => ({format: d => enDate(d, opts)});", 1),
+    ("const FMT_WEEKDAY = new Intl.DateTimeFormat(GREG,{timeZone:CONFIG.timezone,weekday:'long'});",
+     "const FMT_WEEKDAY = gregFmt({timeZone:CONFIG.timezone,weekday:'long'});", 1),
+    ("const dayName = d => new Intl.DateTimeFormat(GREG, {timeZone:'UTC', weekday:'long'}).format(d);",
+     "const dayName = d => enDate(d, {timeZone:'UTC', weekday:'long'});", 1),
+    ("new Intl.DateTimeFormat(GREG,{timeZone:CONFIG.timezone,weekday:'short'}).format(new Date(o.date+'T12:00:00Z'))",
+     "enDate(new Date(o.date+'T12:00:00Z'), {timeZone:CONFIG.timezone, weekday:'short'})", 1),
+    ("new Intl.DateTimeFormat(GREG, {timeZone:'UTC', weekday:'long'}).format(new Date(d.date + 'T12:00:00Z'))",
+     "enDate(new Date(d.date + 'T12:00:00Z'), {timeZone:'UTC', weekday:'long'})", 1),
     ("new Intl.NumberFormat('ar-SA-u-nu-' + NU,", "new Intl.NumberFormat('en-US-u-nu-' + NU,", 1),
     ("const arDigits = s => String(s).replace(/[0-9]/g, d => AR[+d]);", "const arDigits = s => ar(s);", 1),
     # #digits=hindi still gives Arabic-Indic digits (the table makes ٠…٩ of the code 0…9: here they are not literals it sees)
@@ -304,7 +333,7 @@ EN_CODE = [
     setText(document.getElementById('hijri'), h + ' هـ');""",
      """    const hp = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn',{timeZone: CONFIG.timezone, day:'numeric', month:'numeric', year:'numeric'})
       .formatToParts(hijriAt(now)).reduce((a, x) => (a[x.type] = x.value, a), {});
-    const wd = new Intl.DateTimeFormat('en-GB',{timeZone: CONFIG.timezone, weekday:'long'}).format(now);
+    const wd = EN_DAYS[enDay(now, CONFIG.timezone).wd];
     const hm = HIJRI_EN[parseInt(hp.month, 10) - 1];
     if(hm) setText(document.getElementById('hijri'), wd + ', ' + ar(parseInt(hp.day, 10)) + ' ' + hm + ' ' + ar(parseInt(hp.year, 10)) + ' AH');""", 1),
     ("if(nat) setText(nl, nat.name + ' ' + ar(nat.n) + nat.unit);", "if(nat) setText(nl, nat.name + ' · ' + ar(nat.n) + ' years');", 1),

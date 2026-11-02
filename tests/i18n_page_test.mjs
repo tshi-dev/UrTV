@@ -102,6 +102,17 @@ const ARABIC = /[؀-ۿ]/g;
   await ctx.close();
 }
 
+// ---- the date words are the page's own names, not Intl's (whose commas differ between WebViews): the occasion, a countdown, the forecast
+{
+  const { p, ctx, errors } = await open('tv-en.html', 'panel=forecast&slot=countdown&cd=2026-12-25');
+  const r = await p.evaluate(() => [document.getElementById('occ-sub').textContent, document.querySelector('.p-match').innerText,
+    [...document.querySelectorAll('.week li span:first-child')].map(x => x.textContent).join('|')]);
+  check('the dates written by the page: «Monday 8 February · expected», «25 December», «Today|Tomorrow|Wednesday|Thursday|Friday»',
+    !errors.length && r[0] === 'Monday 8 February · expected' && /25 December/.test(r[1]) && r[2] === 'Today|Tomorrow|Wednesday|Thursday|Friday',
+    JSON.stringify(r) + errors.join('; '));
+  await ctx.close();
+}
+
 // ---- #digits=hindi still gives Arabic-Indic digits on the English page
 {
   const { p, ctx, errors } = await open('tv-en.html', 'city=Riyadh&digits=hindi&panel=prayers');
