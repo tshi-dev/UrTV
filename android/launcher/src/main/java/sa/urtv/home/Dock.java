@@ -31,6 +31,15 @@ final class Dock {
     /** «الرجوع يفتح شاشة التوقف»: Back on our home starts the screensaver (HomeBack.startsSaver). Off until it is turned on (`dock.sh backsaver on`). */
     static boolean backSaver(Context c) { return prefs(c).getBoolean("back_saver", false); }
     static void setBackSaver(Context c, boolean on) { prefs(c).edit().putBoolean("back_saver", on).apply(); }
+    /**
+     * The row in the screensaver's settings (ConfigSnapshot.backSaver; null = no real answer): when it changes, the switch above takes its
+     * value. Only on a change, so `dock.sh backsaver` (which sends both) and an older screensaver that says nothing leave it as set.
+     */
+    static void followBackSaver(Context c, Boolean tv) {
+        SharedPreferences p = prefs(c);
+        if (!HomeBack.rowChanged(p.getBoolean("back_saver_tv", false), tv)) return;
+        p.edit().putBoolean("back_saver", tv).putBoolean("back_saver_tv", tv).apply();
+    }
 
     /** Saved order, or the defaults from config.xml; may name apps that are no longer installed. */
     static List<String> saved(Context c) {

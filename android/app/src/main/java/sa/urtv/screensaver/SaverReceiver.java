@@ -21,7 +21,7 @@ import java.util.Locale;
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET
  *       [--es city 'الرس'] [--es lat 25.86 --es lon 43.49 --es tz Asia/Kuwait]   (tz is needed for a place that is not in the list) [--es teams '136013:Al-Hilal,150643:Al-Zulfi']
  *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
- *       [--es sunrise on|off] [--es prayerbar on|off] [--es wxmore on|off] [--es months default|levant] [--es verse day|3] [--es occasion on|off] [--es nightdim on|off] [--es taskspill on|off] [--es genres Drama,Comedy] [--es langs English]
+ *       [--es sunrise on|off] [--es prayerbar on|off] [--es wxmore on|off] [--es months default|levant] [--es verse day|3] [--es occasion on|off] [--es nightdim on|off] [--es taskspill on|off] [--es backsaver on|off] [--es genres Drama,Comedy] [--es langs English]
  *       [--es photos 30] [--es idle 10] [--es digits hindi|latin] [--es hijrioffset -2..2] [--es clock24 on|off]
  *       [--es cardstyle current|dark1|glass1|dark3|glass3] [--es national auto|off]
  *       [--es markets tasi,gold,btc] [--es mkstyle arrows|prices] [--es mkbar on|off] [--es clocksize large|medium|small] [--es stocks 2222,1120,AAPL]
@@ -54,6 +54,8 @@ import java.util.Locale;
  * months = default («أكتوبر») or levant («تشرين الأول»), the Gregorian month's names on both screens.
  * occasion, nightdim, taskspill = on (the default, as always) or off: «المناسبة القادمة» at the bottom middle of the screensaver (the
  * countdown to Ramadan and the feasts), «تعتيم الليل» (the screensaver darker at night), the «المهام» button on the home screen.
+ * backsaver = on or off (the default): «الرجوع يفتح شاشة التوقف», Back on our home starts the screensaver; the home follows it when it
+ * changes (optimize/dock.sh backsaver sends it beside the home's own switch, so the row says what the home does).
  * verse = day (the default: a verse one day, a hadith the next) or 3 (a new one every 3 minutes): the verse-or-hadith card (QuoteEvery).
  * slot = what the bottom-left slot shows (Prefs.SLOTS). countdown = the date (YYYY-MM-DD) slot=countdown counts down to, or
  * "clear"; cdname = its name (up to 40 characters).
@@ -233,7 +235,8 @@ public class SaverReceiver extends BroadcastReceiver {
         String months = i.getStringExtra("months");
         if (months != null && !"default".equals(months) && !"levant".equals(months)) return "error: months is one of default levant";
         String occasion = i.getStringExtra("occasion"), nightDim = i.getStringExtra("nightdim"), tasksPill = i.getStringExtra("taskspill");
-        for (String[] x : new String[][] {{"occasion", occasion}, {"nightdim", nightDim}, {"taskspill", tasksPill}})
+        String backSaver = i.getStringExtra("backsaver");
+        for (String[] x : new String[][] {{"occasion", occasion}, {"nightdim", nightDim}, {"taskspill", tasksPill}, {"backsaver", backSaver}})
             if (x[1] != null && !"on".equals(x[1]) && !"off".equals(x[1])) return "error: " + x[0] + " is one of on off";
         String verse = i.getStringExtra("verse");
         if (verse != null && !QuoteEvery.valid(verse)) return "error: verse is one of day 3";
@@ -368,6 +371,7 @@ public class SaverReceiver extends BroadcastReceiver {
         if (occasion != null) p.setOccasion("on".equals(occasion));
         if (nightDim != null) p.setNightDim("on".equals(nightDim));
         if (tasksPill != null) p.setTasksPill("on".equals(tasksPill));
+        if (backSaver != null) p.setBackSaver("on".equals(backSaver));
         if (prayerMethod != null) p.setPrayerMethod(PrayerMethod.parse(prayerMethod));
         if (adj != null) p.setPrayerAdj(adj);
         if (hijriOffset != null) p.setHijriOffset(hijriOffset);
@@ -505,6 +509,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nsunrise: " + (p.sunrise() ? "on" : "off") + "\nprayerbar: " + (p.prayerBar() ? "on" : "off")
             + "\nwxmore: " + (p.wxMore() ? "on" : "off") + "\nmonths: " + p.months() + "\nverse: " + p.quoteEvery()
             + "\noccasion: " + (p.occasion() ? "on" : "off") + "\nnightdim: " + (p.nightDim() ? "on" : "off") + "\ntaskspill: " + (p.tasksPill() ? "on" : "off")
+            + "\nbacksaver: " + (p.backSaver() ? "on" : "off")
             + "\nprayermethod: " + p.prayerMethod()
             + "\nprayeradj: " + (p.prayerAdjOn() ? "on" : "off") + " " + PrayerAdj.describe(p.prayerAdj())
             + "\nhijrioffset: " + HijriOffset.describe(p.hijriOffset())

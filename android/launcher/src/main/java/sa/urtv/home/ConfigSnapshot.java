@@ -118,5 +118,11 @@ final class ConfigSnapshot {
     /** «زر المهام»: «&taskspill=0» is in the fragment only while the button is hidden; an older screensaver (or none) says nothing: shown */
     boolean tasksPillOn() { return fragment == null || !(fragment.contains("&taskspill=0") || fragment.startsWith("taskspill=0")); }
 
+    /**
+     * «الرجوع يفتح شاشة التوقف» on the screensaver's settings: «&backsaver=1» only while on. null when there is no real answer (an old copy,
+     * or no screensaver), so nothing is moved on a guess; Dock.followBackSaver moves the home's switch only when this one changes.
+     */
+    Boolean backSaver() { return stale || fragment == null ? null : (fragment.contains("&backsaver=1") || fragment.startsWith("backsaver=1")); }
+
     boolean latin() { return fragment != null && (fragment.contains("&digits=latin") || fragment.startsWith("digits=latin")); }
 }

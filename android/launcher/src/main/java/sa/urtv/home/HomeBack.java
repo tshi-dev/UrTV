@@ -23,6 +23,15 @@ final class HomeBack {
         return on && defaultHome && !gridScrolled && saverThere;
     }
 
+    /**
+     * The row «الرجوع يفتح شاشة التوقف» in the screensaver's settings ({@code row}; null = no real answer: an old copy, no screensaver) against
+     * the value of it the home last took ({@code taken}, false before any): the home's switch follows the row only when the row changed, so
+     * `dock.sh backsaver` and an older screensaver that says nothing leave the switch as it was set.
+     */
+    static boolean rowChanged(boolean taken, Boolean row) {
+        return row != null && row != taken;
+    }
+
     /** Is this app the one Home resolves to? {@code resolvedPackage} is the package of the activity the HOME intent resolves to (null: none, or a chooser). */
     static boolean isDefaultHome(String resolvedPackage, String ownPackage) {
         return resolvedPackage != null && resolvedPackage.equals(ownPackage);

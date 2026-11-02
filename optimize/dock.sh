@@ -15,7 +15,7 @@
 #   optimize/dock.sh sleep 30              «مؤقت النوم» for the whole TV: 15 30 60 90, or any 1 to 600 minutes; then the TV goes to sleep
 #   optimize/dock.sh sleep                 how the timer stands: minutes left, and what its end will do
 #   optimize/dock.sh sleep cancel          stop it
-#   optimize/dock.sh backsaver on|off        «الرجوع يفتح شاشة التوقف»: Back on our home starts the screensaver (off by default); no argument says how it stands
+#   optimize/dock.sh backsaver on|off        «الرجوع يفتح شاشة التوقف»: Back on our home starts the screensaver (off by default; the TV row in «الشاشة الرئيسية» is set too); no argument says how it stands
 #   optimize/dock.sh familydns on|off|status|grant   «حماية العائلة (DNS)»: Private DNS to AdGuard Family, checked and undone by optimize/familydns.sh
 #   optimize/dock.sh sleep-setup           turn on the sleep service (an accessibility service, once) so the end turns the screen off
 #   optimize/dock.sh type-setup            turn on the remote-and-typing service (a second accessibility service, once) so the phone remote can press keys and type in other apps
@@ -59,7 +59,8 @@ case "${1:-}:$#" in
     send SET_DOCK "--es apps $(IFS=,; echo "$*")" ;;
   backsaver:1) send BACK_SAVER "--es mode status" ;;
   backsaver:2)
-    case "$2" in on|off) send BACK_SAVER "--es mode $2" ;; *) echo "usage: optimize/dock.sh backsaver [on|off]"; exit 1 ;; esac ;;
+    # the home's switch, then the same on the screensaver's row (its settings show it; the home follows that row only when it changes)
+    case "$2" in on|off) send BACK_SAVER "--es mode $2"; "$PY" -I optimize/tv.py "am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET --es backsaver $2" > /dev/null 2>&1 || true ;; *) echo "usage: optimize/dock.sh backsaver [on|off]"; exit 1 ;; esac ;;
   sleep:1) send SLEEP_TV ;;
   sleep:2)
     case "$2" in

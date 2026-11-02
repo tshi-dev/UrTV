@@ -46,7 +46,8 @@ def run(*args):
 A = "am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.BACK_SAVER"
 for v in ("on", "off"):
     rc, out, sent = run("backsaver", v)
-    check(f"dock.sh backsaver {v}: one broadcast with the mode", rc == 0 and sent == [A + " --es mode " + v], (rc, sent))
+    check(f"dock.sh backsaver {v}: the home's switch, then the same on the screensaver's row",
+          rc == 0 and sent == [A + " --es mode " + v, "am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET --es backsaver " + v], (rc, sent))
 rc, out, sent = run("backsaver")
 check("dock.sh backsaver: no argument asks how it stands", rc == 0 and sent == [A + " --es mode status"] and "back-saver: on" in out, (rc, sent))
 for bad in ("yes", "on; reboot", ""):

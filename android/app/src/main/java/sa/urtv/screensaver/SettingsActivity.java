@@ -328,6 +328,9 @@ public class SettingsActivity extends Activity {
         // hiding removes only the button: the list stays in the «المهام» card and on the phone
         row("زر المهام", prefs.tasksPill() ? "ظاهر" : "مخفي  •  المهام تبقى في بطاقة «المهام» ومن الجوال", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setTasksPill(!prefs.tasksPill()); render(); } });
+        // Back on our home (nothing to go back to) starts the screensaver; the home takes it on its next tick or return (Dock.followBackSaver)
+        row("الرجوع يفتح شاشة التوقف", prefs.backSaver() ? "مفعّل" : "متوقف", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setBackSaver(!prefs.backSaver()); render(); } });
         // the bell shows only while the Play Store has updates waiting (the home screen asks on return, at most every 6 hours)
         row("جرس التحديثات", prefs.updateBell() ? "ظاهر عند وجود تحديثات للتطبيقات" : "مخفي", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setUpdateBell(!prefs.updateBell()); render(); } });

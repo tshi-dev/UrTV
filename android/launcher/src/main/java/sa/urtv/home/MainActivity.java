@@ -2404,6 +2404,7 @@ public class MainActivity extends Activity {
         updateAdhanBar(cfg);
         applyListenPill(cfg.listenPillOn);
         applyTasksPill(cfg.tasksPillOn());
+        Dock.followBackSaver(this, cfg.backSaver());   // «الرجوع يفتح شاشة التوقف» changed in the screensaver's settings: read at the next Back
         applyUpdateBell(cfg.updateBellOn);   // [updates bell]
         applyCenterPill();   // kids mode may have been turned on or off
         sa.urtv.home.tilawah.AdhanSync.onConfig(this, cfg.placeFragment(), cfg.placeTicket());   // «تعديل وقت الصلاة» changed on the TV: the alarm follows

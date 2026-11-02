@@ -447,6 +447,13 @@ final class Prefs {
     boolean tasksPill() { return sp.getBoolean("tasksPill", true); }
     void setTasksPill(boolean v) { sp.edit().putBoolean("tasksPill", v).apply(); }
 
+    /**
+     * «الرجوع يفتح شاشة التوقف» (off by default): Back on our home starts the screensaver. The home keeps its own switch (Dock.back_saver,
+     * the one `dock.sh backsaver` sets) and moves it when this one changes (Dock.followBackSaver); #backsaver=1 only while on.
+     */
+    boolean backSaver() { return sp.getBoolean("backSaver", false); }
+    void setBackSaver(boolean v) { sp.edit().putBoolean("backSaver", v).apply(); }
+
     /** «تبديل الآية والحديث»: the verse-or-hadith card once a day (default, as always) or every 3 minutes (QuoteEvery); #versemin=3 only then. */
     String quoteEvery() { return QuoteEvery.read(sp.getString("quoteEvery", QuoteEvery.DAY)); }
     void setQuoteEvery(String v) { sp.edit().putString("quoteEvery", QuoteEvery.read(v)).apply(); }
@@ -533,6 +540,7 @@ final class Prefs {
             + ClockSetting.fragment(clock24())
             + QuoteEvery.fragment(quoteEvery())
             + (occasion() ? "" : "&occasion=0") + (nightDim() ? "" : "&nightdim=0") + (tasksPill() ? "" : "&taskspill=0")
+            + (backSaver() ? "&backsaver=1" : "")
             + "&cardstyle=" + cardStyle()
             + "&adhanbar=" + (adhanBar() ? "1" : "0")
             + "&yearstrip=" + (yearStrip() ? "1" : "0")
