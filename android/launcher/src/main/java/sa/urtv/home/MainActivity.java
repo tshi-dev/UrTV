@@ -1316,7 +1316,7 @@ public class MainActivity extends Activity {
         tvRowsBox.removeAllViews();
         tvCards.clear();
         tvNames.clear();
-        int n = TvRowsPick.cells(dockCards.size(), MIN_DOCK);   // never one cell: see TvRowsPick.cells
+        int n = Math.min(FavBar.SHOWN, TvRowsPick.cells(dockCards.size(), MIN_DOCK));   // never one cell (TvRowsPick.cells); at most the five a tray shows: no scroll here, no card cut
         tvCells = n;
         for (TvRows.Row r : rows) {
             TextView name = text(11, "sans-serif-medium", lightNow || "sand".equals(lookNow) ? palette().gold : GOLD);

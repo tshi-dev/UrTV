@@ -29,11 +29,12 @@ check("the row's name is ours whatever the apps call it (Arabic, or English with
 show = fn(main, "private void showTvRows(List<TvRows.Row> rows)")
 check("the row sits in the first screen, right under the favourites, inside the same band padding (not under it, below the clock's screen)",
       "bottom.addView(tvRowsBox, new LinearLayout.LayoutParams(-1, -2));" in main and "content.addView(tvRowsBox" not in main
-      and main.index("bottom.addView(dockRow") < main.index("bottom.addView(tvRowsBox") and "tvRowsBox.setPadding(dp(20), 0, dp(20), 0);" in main
-      and "dockRow.setPadding(dp(20), dp(22), dp(20), dp(22));" in main)
-check("no card is cut: no horizontal scroll, at most as many cards as favourites, each a favourite's width (rowCell, the dock's own rule)",
-      "HorizontalScrollView" not in main and "int n = TvRowsPick.cells(dockCards.size(), MIN_DOCK);" in show and "line.addView(box, rowCell(i, n, -2));" in show
-      and "int shown = Math.min(n, r.items.size());" in show and "line.addView(new View(this), rowCell(i, n, 1));" in show)
+      and main.index("bottom.addView(tray") < main.index("bottom.addView(tvRowsBox")
+      and "tvRowsBox.setPadding(bar(FavBar.PAD_SIDE), 0, bar(FavBar.PAD_SIDE), 0);" in main
+      and "dockRow.setPadding(bar(FavBar.PAD_SIDE), bar(FavBar.PAD_TOP), bar(FavBar.PAD_SIDE), bar(FavBar.PAD_TOP));" in main)
+check("no card is cut: no horizontal scroll, at most as many cards as favourites, at most the five a tray shows, each a favourite tile (FavBar)",
+      "HorizontalScrollView" not in show and "int n = Math.min(FavBar.SHOWN, TvRowsPick.cells(dockCards.size(), MIN_DOCK));" in show and "line.addView(box, dockCell(i, n));" in show
+      and "int shown = Math.min(n, r.items.size());" in show and "line.addView(new View(this), dockCell(i, n));" in show)
 check("tight: the name 14 dp under the favourites and 10 dp over its cards, one row only", "tvRowsBox.addView(name, llp(-2, -2, 0, dp(14), 0, dp(10)));" in show
       and "TvRows.Row row = new Row();" not in show)
 card = fn(main, "private View tvCard(TvRows.Item it)")
@@ -136,8 +137,8 @@ check("«أكمل المشاهدة» is never one cell: before the favourites ar
       r["cells_before"] == "5" and r["cells_after"] == "7", (r["cells_before"], r["cells_after"]))
 check("at 960x540 dp a card is a favourite tile's size: 148.8x83.7 dp with 5 favourites, 64.4x36.2 with 10 (one cell would be 824x463.5)",
       r["card_5"] == "148.8x83.7" and r["card_10"] == "64.4x36.2" and r["card_1"] == "824.0x463.5", (r["card_5"], r["card_10"], r["card_1"]))
-check("…cut like the favourites (the dock band's 20 dp padding, rowCell) and built again when their number changes",
-      "tvRowsBox.setPadding(dp(20), 0, dp(20), 0);" in main and "dockRow.setPadding(dp(20), dp(22), dp(20), dp(22));" in main
+check("…cut like the favourites (the tray's padding, FavBar's cell) and built again when their number changes",
+      "tvRowsBox.setPadding(bar(FavBar.PAD_SIDE), 0, bar(FavBar.PAD_SIDE), 0);" in main
       and "if (!tvShown.isEmpty() && tvCells != dockCards.size()) showTvRows(tvShown);" in main)
 # the first screen at 960x540 dp with the row (the tallest case, 5 favourites): estimated as the home lays it out (sp ~ dp x 1.2 for a line)
 card5 = float(r["card_5"].split("x")[1])

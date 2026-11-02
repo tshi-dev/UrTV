@@ -27,8 +27,8 @@ check("THIRD_PARTY_NOTICES.md has both MIT notices in full",
 check("the page never jumps by smoothScrollTo any more: every scroll of the home glides (glideTo)", "smoothScrollTo" not in main and main.count("glideTo(") >= 8)
 check("no card's size is animated by animate() any more (the spring and an animator would fight over it)",
       not re.search(r"(card|v)\.animate\(\)\.scaleX", main), re.findall(r".*\.animate\(\)\.scaleX.*", main))
-check("the focus (1.12 in the dock, 1.1 in the grid) and the lifted card (1.25) take their size from scaleTo",
-      "scaleTo(v, s);" in main and "scaleTo(card, 1.25f);" in main and "scaleTo(card, s);" in main)
+check("the focus (FavBar's 1.08 in the bar, 1.1 in the grid) and the lifted card (FavBar's 1.12 in the bar, 1.25 in the grid) take their size from scaleTo",
+      "scaleTo(v, s);" in main and "scaleTo(card, fav ? FavBar.LIFTED_SCALE : 1.25f);" in main and "scaleTo(card, s);" in main)
 drv = main[main.index("private void doMotion(long now)"):].split("\n    }\n")[0]
 check("one frame callback steps every spring, a slow frame capped at 50 ms, and stops once all have settled",
       "Math.min(0.05f, (now - motionNanos) / 1e9f)" in drv and "if (moving) android.view.Choreographer.getInstance().postFrameCallback(motionFrame);" in drv
