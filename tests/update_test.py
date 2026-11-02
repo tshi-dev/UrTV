@@ -33,7 +33,7 @@ if not shutil.which("javac"):
 else:
     pure = ["UpdateFlow", "UpdateOrder", "UpdateRecords", "UpdateText", "UpdateRules"]
     with tempfile.TemporaryDirectory() as tmp:
-        subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp] + [str(PHONE / f"{n}.java") for n in pure] + [str(ROOT / "tests/UpdateRun.java")], check=True)
+        subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java")] + [str(PHONE / f"{n}.java") for n in pure] + [str(ROOT / "tests/UpdateRun.java")], check=True)
         run = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.phone.UpdateRun"], capture_output=True)
     out = run.stdout.decode("utf-8")
     print(out, end="")

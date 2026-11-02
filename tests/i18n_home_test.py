@@ -115,6 +115,18 @@ cat = (HOME / "tilawah/Catalog.java").read_text(encoding="utf-8")
 check("a station is still found by its Arabic name (the computer's and the saved choice's key) whatever «اللغة» shows",
       "st.key = s.getString(\"name\");" in cat and "stations.get(i).key.equals(name)" in cat)
 
+upd_words = []
+for f in ("phone/UpdateText.java", "phone/UpdateOrder.java"):
+    upd_words += [tr.java_unescape(m.group(1)) for m in LIT.finditer(tr.strip_comments((HOME / f).read_text(encoding="utf-8")))
+                  if ARABIC.search(tr.java_unescape(m.group(1))) and len(tr.java_unescape(m.group(1))) > 2]
+upd = (HOME / "UpdateActivity.java").read_text(encoding="utf-8")
+marked = [ar for _, ar in tr.java_literals(upd.split("UPDATE_WORDS = {")[1].split("};")[0])] if "UPDATE_WORDS = {" in upd else []
+check(f"UpdateActivity marks every one of UpdateText's and UpdateOrder's {len(upd_words)} words (plain Java: they say them through Tr and the screen's S.tv)",
+      sorted(marked) == sorted(upd_words), sorted(set(upd_words) ^ set(marked))[:5])
+bridge = (HOME / "tilawah/PhoneBridge.java").read_text(encoding="utf-8")
+check("the phone page gets the prayers' names in «اللغة» (the surahs, reciters and muezzins come from Catalog and Adhan, English with English)",
+      'm.put("prayer", sa.urtv.home.S.tv(n.name()));' in bridge and "sa.urtv.home.S.tv(PrayerTimes.NAMES[p])" in bridge and "sa.urtv.home.S.init(c);" in bridge)
+
 # ---- 4. the Quran's names
 Q = ROOT / "android/launcher/src/main/assets/quran"
 latin = re.compile(r"^[A-Za-z][A-Za-z' ,.-]*[A-Za-z0-9]$")

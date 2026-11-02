@@ -341,3 +341,22 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 بتوقيت %s	Time in %s
 المدينة	the city
 تحجب المواقع غير المناسبة للعائلة على كل التلفزيون. قبل التفعيل نتأكد أن الخدمة تشتغل، وإذا وقف الإنترنت نرجّع الإعداد القديم تلقائياً.	Blocks sites not suitable for the family on the whole TV. Before turning it on we check that the service works, and if the internet stops we bring back the old setting by itself.
+تحقق من التحديث	Check for updates
+ما فيه اتصال بالإنترنت	No internet connection
+التحديث من التلفزيون ما يشتغل على هذا الجهاز.\nاطلب من مساعد الذكاء الاصطناعي على جهازك:\nحدّث تلفزيوني	Updating from the TV doesn’t work on this device.\nAsk the AI assistant on your computer:\nUpdate my TV
+لازم تسمح لتطبيق تلفزيونك بتثبيت التحديثات.	Allow the UrTV app to install updates.
+فتح شاشة السماح	Open the permission screen
+جارٍ التحقق…	Checking…
+جارٍ تنزيل التحديث والتحقق منه…	Downloading and checking the update…
+أكّد التثبيت على شاشة أندرويد بالريموت.	Confirm the install on Android’s screen with the remote.
+اعرض شاشة التثبيت	Show the install screen
+ما اكتمل التحديث	The update didn’t finish
+ألغيت التثبيت.	You cancelled the install.
+الإصدار المثبّت %s	Installed version %s
+تلفزيونك محدّث: %s	UrTV is up to date: %s
+تحديث جديد %s · اضغط للتحديث	New update %s · press to update
+تم التحديث ✓ %s	Updated ✓ %s
+الخطوة: %s	Step: %s
+تحديث تطبيق الحافظة	Updating the screensaver app
+تحديث الواجهة الرئيسية	Updating the home screen
+التحقق من الملفات	Checking the files
