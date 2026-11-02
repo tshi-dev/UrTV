@@ -49,3 +49,8 @@ Each PNG is two adhan screens stacked: top with «الأذان» focused and on,
 - **A, check square:** a 50 px square, empty when off, filled green with a white check when on.
 - **B, the word:** «مفعّل» in white with a thick green underline, «متوقف» in grey with none.
 - **C, two-part bar:** «مفعّل | متوقف» side by side, the current half filled (green for on, white or dark for off).
+
+## v4: three more toggle options (`v4-toggle-D/E/F.png`, open `proto.html#adhan:D:1` etc.; same stacked format as v3)
+- **D, status light:** a dot after the title; filled green with a glow when on, a hollow ring when off.
+- **E, flat TV switch:** a thin straight track with a square knob; green knob at the start when on, grey knob at the end when off.
+- **F, the icon is the state:** each toggle row has its own icon, solid green when on, grey with a slash when off; a second line says «مفعّل» or «متوقف». The other rows keep an empty icon slot so names line up.

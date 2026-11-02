@@ -44,6 +44,22 @@ h1{position:absolute;right:0;top:56px;font:58px TD;line-height:1.2}
 .sg b.a{background:#fff;color:var(--ink)}.sg b.a.g{background:#2FB872;color:#fff}
 .fo .sg{border-color:rgba(20,22,26,.35)}.fo .sg b{color:var(--inksub)}
 .fo .sg b.a{background:var(--ink);color:#fff}.fo .sg b.a.g{background:#1E8A53;color:#fff}
+/* v4: D status light, E flat TV switch, F the icon is the state */
+.dt{display:inline-block;width:22px;height:22px;border-radius:50%;margin-right:22px;vertical-align:middle;position:relative;top:-3px;border:3px solid rgba(255,255,255,.75)}
+.dt.on{background:#3DDC84;border-color:#3DDC84;box-shadow:0 0 16px 4px rgba(61,220,132,.65)}
+.fo .dt{border-color:var(--inksub)}.fo .dt.on{background:#1E8A53;border-color:#1E8A53;box-shadow:0 0 14px 3px rgba(30,138,83,.55)}
+.ts{flex:none;position:relative;width:100px;height:32px}
+.ts::before{content:"";position:absolute;left:4px;right:4px;top:12px;height:8px;border-radius:1px;background:rgba(255,255,255,.35)}
+.ts::after{content:"";position:absolute;top:0;right:0;width:32px;height:32px;border-radius:4px;background:#C9CCD1}
+.ts.on::before{background:rgba(61,220,132,.55)}.ts.on::after{right:auto;left:0;background:#3DDC84}
+.fo .ts::before{background:rgba(20,22,26,.25)}.fo .ts::after{background:#6B7078}
+.fo .ts.on::before{background:rgba(30,138,83,.45)}.fo .ts.on::after{background:#1E8A53}
+.ri{flex:none;width:44px;height:44px;fill:none;stroke:var(--sub);stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;opacity:.8}
+.ri.on{stroke:#3DDC84;fill:#3DDC84;opacity:1}.ri.on .k{fill:none;stroke:#14161A}.ri.sp{visibility:hidden}
+.fo .ri{stroke:var(--inksub)}.fo .ri.on{stroke:#1E8A53;fill:#1E8A53}
+.row .nm small{display:block;font:26px TR;color:var(--sub);line-height:1.1}
+.row.fo .nm small{color:var(--inksub)}
+.row .nm small.on{color:#3DDC84}.row.fo .nm small.on{color:#1E8A53}
 </style></head><body>
 <div class="f"><div class="bg"></div><div class="veil"></div><div class="wrap" id="w"></div></div>
 <script>
@@ -89,12 +105,22 @@ const tg=on=>T=='A'?`<div class="ck${on?' on':''}"><svg viewBox="0 0 24 24"><pat
   :T=='B'?`<div class="wd${on?' on':''}">${on?'مفعّل':'متوقف'}</div>`
   :T=='C'?`<div class="sg"><b class="${on?'a g':''}">مفعّل</b><b class="${on?'':'a'}">متوقف</b></div>`
   :`<div class="sw ${on?'on':''}" style="width:84px;height:46px"></div>`;
+const RI={'الأذان':'<path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path class="k" d="M10 21h4"/>',
+ 'أذان مختصر':'<path d="M4 6l7 6-7 6z"/><path d="M13 6l7 6-7 6z"/>',
+ 'إيقاف الأذان بأي زر':'<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><circle class="k" cx="12" cy="8" r="2"/>',
+ 'تنبيه قبل الأذان':'<circle cx="12" cy="13" r="8"/><path class="k" d="M12 9v4l2.5 1.5"/>'};
 const list=(title,R)=>{
   const rows=R.map((r,i)=>{const o=r[1];let e='';
-    if(o.sw!==undefined)e=tg(o.sw);
+    let nm=r[0],pre='';
+    if(o.sw!==undefined){
+      if(T=='D')nm+=`<i class="dt${o.sw?' on':''}"></i>`;
+      else if(T=='E')e=`<div class="ts${o.sw?' on':''}"></div>`;
+      else if(T=='F'){pre=`<svg class="ri${o.sw?' on':''}" viewBox="0 0 24 24">${RI[r[0]]}${o.sw?'':'<path d="M3.5 3.5l17 17" style="stroke-width:2"/>'}</svg>`;nm+=`<small class="${o.sw?'on':''}">${o.sw?'مفعّل':'متوقف'}</small>`;}
+      else e=tg(o.sw);}
     else if(o.bar)e=`<div class="bar"><i style="width:${o.bar}%"></i></div><div class="val">٦٠٪</div>`;
     else if(o.v)e=`<div class="val">${o.v}</div>`;
-    return `<div class="row${i==0?' fo':''}" style="top:${16+i*86}px"><div class="nm">${r[0]}</div>${e}</div>`;}).join('');
+    if(T=='F'&&o.sw===undefined)pre='<svg class="ri sp" viewBox="0 0 24 24"></svg>';
+    return `<div class="row${i==0?' fo':''}" style="top:${16+i*86}px">${pre}<div class="nm">${nm}</div>${e}</div>`;}).join('');
   return `<h1>${title}</h1><div class="list" style="height:${32+R.length*86-2}px">${rows}</div>`;
 };
 S.adhan=()=>list('الأذان',[['الأذان',{sw:+X}],['المؤذن',{v:'مؤذن ٣'}],['مؤذن الفجر',{v:'فجر الحرم المكي'}],['مستوى الصوت',{bar:60}],['أذان مختصر',{sw:0}],['إيقاف الأذان بأي زر',{sw:1}],['تنبيه قبل الأذان',{sw:1}],['أذان من ملفي',{v:'لا يوجد'}],['جرّب الصوت',{}]]);
