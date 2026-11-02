@@ -76,6 +76,62 @@ tray and never slides, so B is out, and the «خيارات» tile is gone. The f
 | No «خيارات» tile | the app options open from a long OK, as today, until a visible way is chosen that keeps the bar unchanged |
 | Widgets above | everything else on the home must end by y 740, so the name has room above the tray |
 
+**The tray may move down a little, and only for a widget** (`notes/proposals/football-home-final-widgetfocus.png`).
+- When focus enters the matches widget, the widget opens into a row of game cards that scrolls right to left with ◀ ▶.
+  To make room, the tray moves down 40 px in 250 ms with ease-in-out. It looks exactly the same, and its tiles move with it.
+- The app name above the tray is hidden while focus is outside the bar.
+- When focus comes back down to the apps, the tray returns to y 804 in the same 250 ms before the tile lifts, and the
+  widget closes back to its three lines.
+- Nothing moves while focus stays on the apps, or while it moves between the other widgets (weather and prayers need no
+  extra room).
+- At 844 the tray's bottom is at 1066, still on the screen. 40 px is the most it ever moves.
+
+### The «المباريات» page
+
+It opens with OK on the matches widget, and from Settings › المزيد › المباريات. It is a page of its own on the light look:
+- `notes/proposals/matches-page.png`:
+  - **Days** across the top: أمس، اليوم، غدًا, then the next four days. The chosen day is green with a 4 px green bar
+    under it.
+  - **Leagues** down the right side, each with its game count. «فرقك» comes first.
+  - **The followed team first**, under «فرقك». A live game shows «مباشر ٦٧′» in green and the score.
+  - **The rest by league and round.** Each row: time, home team with crest, × or score, away team with crest, a note
+    when the game clashes with a prayer (amber), and the broadcaster's mark.
+  - The source and its age sit beside the title.
+- `notes/proposals/matches-page-detail.png`: OK on a game opens its card over the page. It shows:
+  - the league and round;
+  - big crests and the kick-off time;
+  - the venue and the broadcaster;
+  - «مع الصلاة»: a line from Maghrib to 11 pm with the prayers marked and the game drawn as a green bar, and one
+    sentence («تبدأ بعد العشاء بساعة و١٣ دقيقة»);
+  - «ذكّرني قبلها بربع ساعة», which makes a reminder from item 4, and «تابع الأهلي».
+- **Data:**
+  - Venue (`strVenue`) is in TheSportsDB's events; `league_fixtures.py` must add it to `KEEP`.
+  - The page reads the same `data-leagues` files as the home, so it adds no new requests.
+  - Days beyond the coming week are out of scope (the files hold 7 days ahead and 36 hours back).
+
+### Broadcast marks
+
+**Decision: keep a small table of our own for each league and season, and show the rights holder, not a channel per game.**
+- **The Saudi Pro League:**
+  - Thmanyah (SRMG) holds exclusive MENA rights from 2025-26 to 2030-31. That covers the Pro League, the King's Cup, the
+    Super Cup and the First Division (sportbusiness.com, 14 June 2025; argaam.com).
+  - SSC lost the league and closed on 5 October 2025.
+  - Thmanyah shows games free on thmanyah 1, 2 and 3. When more than three overlap, the rest are in the Thmanyah app.
+  - So every Saudi Pro League game says «ثمانية», and the detail card says «ثمانية، أو تطبيق ثمانية».
+- **The table:** `assets/shared/broadcast.json`, as `{league: {season: {"ar": "ثمانية", "en": "Thmanyah"}}}`. Each
+  league's entry is checked once a season, with the source link in the file. A league missing from it shows no mark,
+  never a guess.
+- **TheSportsDB has TV endpoints**, `lookuptv.php?id=` and `eventstv.php?d=`.
+  - On the free key they are reported to return about one row a day.
+  - No Saudi channels were found for the Saudi Pro League.
+  - Too thin to rely on; worth a second look with a Patreon key.
+- **API-Football has no TV data.**
+- **Commercial sources:** Sportmonks and SoccersAPI sell TV data, but they cost money and are not needed while one holder
+  has the whole league.
+- **The marks in the PNGs** are plain text in a small rectangle, not the broadcasters' logos. On the TV it would be the
+  same: text, never a trademark.
+- **The «SSC» app tile** in the bar mockups is replaced by «ثمانية», since SSC closed.
+
 The «⋮ خيارات» tile proposed in `UX-REVIEW.md` (problem 2) is overruled by this decision. The app box from that review
 still opens from a long OK on the app.
 
