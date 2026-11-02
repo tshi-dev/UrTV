@@ -7,6 +7,9 @@
 #                                  github.com/truefedex/tv-bro) and SmartTube (YouTube without ads,
 #                                  github.com/yuliskov/SmartTube), the build that fits the TV's processor
 #   optimize/install.sh all        both (saver, launcher)
+# launcher can stop once with exit 5 and an Arabic line for the person, BEFORE anything is changed: the TV's setup wizard owns
+# the saved Wi-Fi network (it would be deleted with the wizard). The person forgets the network and joins it again in the TV's
+# Settings, says «كمّل», and the same command (or optimize/run.sh) reads the owner again and goes on (see «wifi-ask» below).
 # An APK signed with another key cannot replace the installed one: this script stops with a !! line and never uninstalls
 # by itself (that deletes the app's settings); the agent asks the person first.
 set -euo pipefail
@@ -258,32 +261,6 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
   fi
   echo "Stock home: ${STOCK:-not found}"
 
-  # 1. The new home must be installed and working BEFORE anything is disabled.
-  push_install urtv-home.apk sa.urtv.home
-  "$PY" -I optimize/tv.py "pm grant sa.urtv.home android.permission.ACCESS_FINE_LOCATION" || true
-  # exact alarms for the adhan (Android 12 and newer; older TVs need nothing)
-  # (this operation exists from Android 12, SDK 31; older Android prints «Unknown operation string» and needs nothing)
-  sdk=$("$PY" -I optimize/tv.py "getprop ro.build.version.sdk" 2> /dev/null | tr -dc '0-9' || true)
-  if [ "${sdk:-0}" -ge 31 ]; then "$PY" -I optimize/tv.py "appops set sa.urtv.home SCHEDULE_EXACT_ALARM allow" || true; fi
-  # «تحديث تلفزيوني» (the TV's own update) hands the new apps to Android's install screen, which needs «install unknown apps» for the home app:
-  # given ahead of time so the owner isn't sent to a settings screen first. The mode it had is kept, once (a second run must not take our own
-  # «allow» for the original), and optimize/reset.sh puts back exactly that. It is given only over Android's default: an explicit choice
-  # stays. If the TV doesn't answer, nothing is changed: the TV's update screen asks for the permission itself when it is needed.
-  appop_file="${URTV_RUN_DIR:-optimize/run}/install-appop.txt"   # APPOP-BEGIN
-  if [ ! -s "$appop_file" ]; then
-    appop_now=$("$PY" -I optimize/tv.py "appops get sa.urtv.home REQUEST_INSTALL_PACKAGES" 2>/dev/null | tr -d '\r' || true)
-    appop_mode=$(sed -nE 's/^REQUEST_INSTALL_PACKAGES: *(allow|ignore|deny|default|foreground).*/\1/p' <<< "$appop_now" | head -n 1)
-    if [ -z "$appop_mode" ] && grep -q "No operations" <<< "$appop_now"; then appop_mode=default; fi   # never set: Android's own default
-    if [ -n "$appop_mode" ]; then
-      mkdir -p "$(dirname "$appop_file")"
-      printf '%s\n' "$appop_mode" > "$appop_file"
-    fi
-  fi
-  # only Android's own default is replaced: an «ignore», «deny» or «foreground» the owner (or the firmware) chose stays as it is
-  if [ -s "$appop_file" ] && [ "$(tr -d '\r\n ' < "$appop_file")" = default ]; then
-    "$PY" -I optimize/tv.py "appops set sa.urtv.home REQUEST_INSTALL_PACKAGES allow" || true
-  fi   # APPOP-END
-
   # The setup wizard (setupwraith) is turned off only when it really answers Home. Disabling it can delete the Wi-Fi network
   # that was saved during the first-run wizard (CleanYourTV's README, github.com/Gathin23/cleanyourtv, MIT: a network saved
   # then belongs to the wizard, and Android removes an app's saved networks when it is disabled; two TCL sets lost their
@@ -310,7 +287,86 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
     return 1
   }
 
+  # 0. The wizard owns the saved Wi-Fi (TCL G08/G10/G14, Google TV sets): the network was saved during the first-run wizard, so
+  #    the wizard cannot go without it, and Home mostly stays with the stock home. Forgetting the network and joining it again in
+  #    the TV's Settings moves it to the Settings app (cname com.android.tv.settings, android.uid.system after a restart; seen on a
+  #    TCL G08, Android 14, AU02, which stayed on Wi-Fi and kept Home through three restarts). So the switch stops ONCE, before
+  #    anything is changed (nothing installed either), and the person is asked to do that; the next run reads the owner again
+  #    («wifi-ask.txt» says it was asked: never twice) and goes on: in the safe order if the network moved, as before if it did not.
+  #    Only the person touches the Wi-Fi, in the TV's own Settings: this script never forgets, deletes or changes a network.
+  ASKF="${URTV_RUN_DIR:-optimize/run}/wifi-ask.txt"
+  if [ -n "$STOCK" ] && [ ! -s "$ASKF" ]; then
+    res=$("$PY" -I optimize/tv.py "cmd package resolve-activity --brief -c android.intent.category.HOME -a android.intent.action.MAIN" 2> /dev/null) || res=""
+    if [ -n "$res" ] && ! grep -q sa.urtv.home <<< "$res" && wraith_answers_home && [ "$(wifi_owner)" = owned ]; then
+      mkdir -p "$(dirname "$ASKF")"
+      echo "asked $(date '+%Y-%m-%d %H:%M:%S')" > "$ASKF"
+      echo "Home switch paused, nothing was changed: this TV's setup wizard (setupwraith) owns the saved Wi-Fi network, so it cannot be turned off without deleting the network, and with it on Home mostly stays with the stock home. The person can move the network to the TV's Settings: forget it and join it again. Not an error."
+      echo "للشخص: انسَ شبكة الواي فاي من إعدادات التلفزيون ← الشبكة، وارجع اتصل فيها بنفس كلمة المرور (خلّها قدامك قبل)، وبعدها قل لي «كمّل»."
+      echo "After «كمّل»: the same command again (optimize/run.sh, or optimize/install.sh launcher). If the TV does not answer then, optimize/find-tv.sh first (its address may have changed). If the person does not want to, the same command too: it does not ask again, and goes on as before."
+      exit 5
+    fi
+  fi
+
+  # 1. The new home must be installed and working BEFORE anything is disabled.
+  push_install urtv-home.apk sa.urtv.home
+  "$PY" -I optimize/tv.py "pm grant sa.urtv.home android.permission.ACCESS_FINE_LOCATION" || true
+  # exact alarms for the adhan (Android 12 and newer; older TVs need nothing)
+  # (this operation exists from Android 12, SDK 31; older Android prints «Unknown operation string» and needs nothing)
+  sdk=$("$PY" -I optimize/tv.py "getprop ro.build.version.sdk" 2> /dev/null | tr -dc '0-9' || true)
+  if [ "${sdk:-0}" -ge 31 ]; then "$PY" -I optimize/tv.py "appops set sa.urtv.home SCHEDULE_EXACT_ALARM allow" || true; fi
+  # «تحديث تلفزيوني» (the TV's own update) hands the new apps to Android's install screen, which needs «install unknown apps» for the home app:
+  # given ahead of time so the owner isn't sent to a settings screen first. The mode it had is kept, once (a second run must not take our own
+  # «allow» for the original), and optimize/reset.sh puts back exactly that. It is given only over Android's default: an explicit choice
+  # stays. If the TV doesn't answer, nothing is changed: the TV's update screen asks for the permission itself when it is needed.
+  appop_file="${URTV_RUN_DIR:-optimize/run}/install-appop.txt"   # APPOP-BEGIN
+  if [ ! -s "$appop_file" ]; then
+    appop_now=$("$PY" -I optimize/tv.py "appops get sa.urtv.home REQUEST_INSTALL_PACKAGES" 2>/dev/null | tr -d '\r' || true)
+    appop_mode=$(sed -nE 's/^REQUEST_INSTALL_PACKAGES: *(allow|ignore|deny|default|foreground).*/\1/p' <<< "$appop_now" | head -n 1)
+    if [ -z "$appop_mode" ] && grep -q "No operations" <<< "$appop_now"; then appop_mode=default; fi   # never set: Android's own default
+    if [ -n "$appop_mode" ]; then
+      mkdir -p "$(dirname "$appop_file")"
+      printf '%s\n' "$appop_mode" > "$appop_file"
+    fi
+  fi
+  # only Android's own default is replaced: an «ignore», «deny» or «foreground» the owner (or the firmware) chose stays as it is
+  if [ -s "$appop_file" ] && [ "$(tr -d '\r\n ' < "$appop_file")" = default ]; then
+    "$PY" -I optimize/tv.py "appops set sa.urtv.home REQUEST_INSTALL_PACKAGES allow" || true
+  fi   # APPOP-END
+
   WIZARD_KEPT=no   # yes: the switch went on with the setup wizard left on (it owns the Wi-Fi, or the TV did not say who does)
+  SAFE_ORDER=no     # yes: the network moved off the wizard after the person was asked: the wizard goes first (see switch_home)
+  SAFE_STAGE=       # the step of the safe order in progress (an ADB drop before the stock home went off is undone, not retried)
+  WIFI_BEFORE=; WIFI_NOW=
+  # The TV's Wi-Fi, read only: «<connected> <saved>», connected yes|no|unknown, saved = how many networks are saved, or unknown.
+  # No network name is kept or printed. Returns 1 when the TV did not answer.
+  wifi_state() {
+    local o st ls c n
+    o=$("$PY" -I optimize/tv.py "cmd wifi status 2> /dev/null; echo W_END; cmd wifi list-networks 2> /dev/null; echo L_END" 2> /dev/null | tr -d '\r') || return 1
+    grep -qx L_END <<< "$o" || return 1
+    st=$(awk '/^W_END$/{exit} {print}' <<< "$o"); ls=$(awk '/^W_END$/{s=1; next} /^L_END$/{exit} s' <<< "$o")
+    if grep -qi 'is connected to' <<< "$st"; then c=yes
+    elif grep -qiE 'not connected|disconnected|wifi is disabled' <<< "$st"; then c=no
+    else c=unknown; fi
+    if grep -qi 'Network Id' <<< "$ls"; then n=$(grep -cE '^[[:space:]]*[0-9]+[[:space:]]' <<< "$ls" || true)
+    elif grep -qi 'No networks' <<< "$ls"; then n=0
+    else n=unknown; fi
+    echo "$c $n"
+  }
+  wifi_say() { local c n; read -r c n <<< "$1"; if [ -z "$c" ]; then echo "no answer"; else echo "connected $c, saved networks $n"; fi; }
+  # $1 before, $2 now: 0 when the Wi-Fi is as it was (still connected if it was, no saved network fewer, at least one)
+  wifi_same() {
+    local c0 n0 c1 n1
+    read -r c0 n0 <<< "$1"; read -r c1 n1 <<< "$2"
+    [ "$c0" != yes ] || [ "$c1" = yes ] || return 1
+    [[ "$n1" =~ ^[0-9]+$ ]] && [[ "$n0" =~ ^[0-9]+$ ]] && [ "$n1" -ge "$n0" ] && [ "$n1" -ge 1 ]
+  }
+  # put the stock home and the wizard back while the stock home is still on (a safe-order step before stock_off stopped)
+  safe_putback() {
+    printf '%s\n' "pm enable $WRAITH" "pm enable ${STOCK%%/*}" \
+      "cmd role add-role-holder --user 0 android.app.role.HOME ${STOCK%%/*}" "cmd package set-home-activity --user 0 $STOCK" \
+      "touch /data/local/tmp/home_ok.$NONCE" "input keyevent KEYCODE_HOME" | "$PY" -I optimize/tv.py --batch > /dev/null || return 1
+    jstate restored
+  }
   DIAG=
   home_diag() {   # why Home does not open ours: who holds the role, what Home resolves to, what is on screen after Home
     local holders res top
@@ -325,18 +381,32 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
   # Steps 2-4 as one function, so an ADB drop in the middle (TCL G08: Wi-Fi fell during the batch) can be retried.
   # "verify" as $1: only step 4 (the switch is armed already and the batch may have run).
   # Returns 0: the new home is on screen and the switch is disarmed; 1: tv.py failed (connection lost);
-  # 2: Home did not open the new launcher; 3: the safety switch fired first.
+  # 2: Home did not open the new launcher; 3: the safety switch fired first; (safe order) 11: the Wi-Fi was not the same
+  # after the wizard went off; 12: the new home did not come up in front (both put back, the wizard on, the stock home never off).
   switch_home() {
-    local top res stepout ours=no _ wraith=no cmds alive disabled
+    local top res stepout ours=no _ wraith=no cmds alive disabled wok now front
     if [ "${1:-}" != verify ]; then
+      SAFE_ORDER=no; SAFE_STAGE=
       # before anything is changed: does the wizard answer Home, and can it go without taking the Wi-Fi with it?
       if wraith_answers_home; then
         # owned: the switch goes on with the wizard left on (the HOME role and set-home-activity choose ours, and the
-        # check below and the safety switch catch a TV where it still wins). Stopping here blocked 13 of 39 setups on
-        # 51b9680, and forgetting the network did not help on half of them.
+        # check below and the safety switch catch a TV where it still wins). Stopping for good here blocked 13 of 39 setups on
+        # 51b9680; now the person is asked once (step 0 above) and this run goes on either way.
         case "$(wifi_owner)" in
-          owned) WIZARD_KEPT=yes; echo "The setup wizard answers Home and owns the saved Wi-Fi network: it is left on (the network stays), and the switch goes on without turning it off." ;;
-          other) wraith=listed ;;
+          owned) WIZARD_KEPT=yes
+                 if [ -s "$ASKF" ]; then echo "The saved Wi-Fi network still belongs to the setup wizard (it was not forgotten and joined again in the TV's Settings): the wizard stays on, and the switch goes on without turning it off, as before."
+                 else echo "The setup wizard answers Home and owns the saved Wi-Fi network: it is left on (the network stays), and the switch goes on without turning it off."; fi ;;
+          other) wraith=listed
+                 # the network moved off the wizard after the person was asked: the safe order (below), if the Wi-Fi can be read
+                 if [ -s "$ASKF" ] && ! grep -q wifi-changed "$ASKF"; then
+                   WIFI_BEFORE=$(wifi_state) || WIFI_BEFORE=""
+                   if wifi_same "$WIFI_BEFORE" "$WIFI_BEFORE" && [ "${WIFI_BEFORE%% *}" != unknown ]; then
+                     SAFE_ORDER=yes
+                     echo "The saved Wi-Fi network no longer belongs to the setup wizard: the wizard goes first, then the Wi-Fi is checked, then the new home is started, and only then is the stock home turned off."
+                   else
+                     echo "The saved Wi-Fi network no longer belongs to the setup wizard, but the TV did not say what its Wi-Fi is now: switching the usual way."
+                   fi
+                 fi ;;
           *) WIZARD_KEPT=yes; echo "The setup wizard answers Home, but the TV did not say who owns its saved Wi-Fi: the wizard is left on, so the network is not lost." ;;   # (if Home then does not open ours, this TV keeps its own home: one plain result, rc 6)
         esac
       fi
@@ -392,13 +462,59 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
 
       # 3. Switch: the HOME role (Android 10+; the classic set-home-activity for older sets and as a backup), then
       #    the setup app off, then the stock home (this order avoided the black screen).
-      cmds=("cmd role add-role-holder --user 0 android.app.role.HOME sa.urtv.home"
-            "cmd package set-home-activity --user 0 sa.urtv.home/.MainActivity")
-      [ "$wraith" != listed ] || cmds+=("pm disable-user --user 0 $WRAITH")
-      cmds+=("pm disable-user --user 0 ${STOCK%%/*}"
-             "cmd package set-home-activity --user 0 sa.urtv.home/.MainActivity"
-             "am force-stop com.android.tv.settings"
-             "input keyevent KEYCODE_HOME")
+      if [ "$SAFE_ORDER" = yes ]; then
+        # The safe order (the one that held on a TCL G08 through three restarts; CleanYourTV, github.com/Gathin23/cleanyourtv, MIT):
+        # a. the wizard off first, while the stock home still answers Home;
+        SAFE_STAGE=wizard_off; jstep wizard_off
+        "$PY" -I optimize/tv.py "pm disable-user --user 0 $WRAITH" > /dev/null || return 1
+        optimize/settle.sh mark 2> /dev/null || true
+        # b. the Wi-Fi still connected and the network still saved (read only; a few tries: Android removes a network in a few seconds);
+        SAFE_STAGE=wifi_check; jstep wifi_check
+        wok=no; now=""
+        for _ in 1 2 3 4; do
+          sleep 5
+          now=$(wifi_state) || return 1
+          if wifi_same "$WIFI_BEFORE" "$now"; then wok=yes; break; fi
+        done
+        if [ "$wok" != yes ]; then
+          safe_putback || return 1
+          echo "wifi-changed $(date '+%Y-%m-%d %H:%M:%S')" >> "$ASKF"   # the next run keeps the wizard on (as before), never this order again
+          WIFI_NOW=$now
+          return 11
+        fi
+        # c. the new home started and confirmed in front («Status: ok» and on screen), the stock home still on;
+        SAFE_STAGE=home_start; jstep home_start
+        res=$("$PY" -I optimize/tv.py "am start -W -a android.intent.action.MAIN -c android.intent.category.HOME -n sa.urtv.home/.MainActivity") || return 1
+        front=no
+        if grep -qF 'Status: ok' <<< "$res" && ! grep -qi '^Error' <<< "$res"; then
+          for _ in 1 2 3; do
+            sleep 3
+            top=$("$PY" -I optimize/tv.py "dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity|mFocusedApp'") || return 1
+            if grep -q sa.urtv.home <<< "$top"; then front=yes; break; fi
+          done
+        fi
+        if [ "$front" != yes ]; then
+          DIAG="am start: $(tr -d '\r' <<< "$res" | grep -iE 'Status|Error' | head -n 2 | tr '\n' ' ')"
+          safe_putback || return 1
+          return 12
+        fi
+        # d. only then the stock home off, and the HOME role and the home activity ours.
+        SAFE_STAGE=stock_off; jstep stock_off
+        cmds=("pm disable-user --user 0 ${STOCK%%/*}"
+              "cmd role add-role-holder --user 0 android.app.role.HOME sa.urtv.home"
+              "cmd package set-home-activity --user 0 sa.urtv.home/.MainActivity"
+              "am force-stop com.android.tv.settings"
+              "input keyevent KEYCODE_HOME")
+      else
+        jstep switch
+        cmds=("cmd role add-role-holder --user 0 android.app.role.HOME sa.urtv.home"
+              "cmd package set-home-activity --user 0 sa.urtv.home/.MainActivity")
+        [ "$wraith" != listed ] || cmds+=("pm disable-user --user 0 $WRAITH")
+        cmds+=("pm disable-user --user 0 ${STOCK%%/*}"
+               "cmd package set-home-activity --user 0 sa.urtv.home/.MainActivity"
+               "am force-stop com.android.tv.settings"
+               "input keyevent KEYCODE_HOME")
+      fi
       stepout=$(printf '%s\n' "${cmds[@]}" | "$PY" -I optimize/tv.py --batch) || return 1
       optimize/settle.sh mark 2> /dev/null || true   # packages were disabled: Android writes the state ~10 s later
       printf '%s\n' "$stepout"
@@ -414,6 +530,7 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
       fi
     fi
     # 4. Verify Home really opens the new launcher (a few tries: a slow TV), then disarm the switch.
+    jstep verify
     for _ in 1 2 3; do
       sleep 6
       top=$("$PY" -I optimize/tv.py "dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity'") || return 1
@@ -498,9 +615,21 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
     done
     if [ "$back" = no ]; then
       echo "!! The TV did not come back within 10 minutes. Check it is on and on Wi-Fi: the safety switch restores the stock home."
+      case "$SAFE_STAGE" in wizard_off|wifi_check)
+        echo "   It stopped answering just after the setup wizard was turned off. If the TV is off its Wi-Fi, ask the person, in Arabic, to open the TV's Settings ← الشبكة, pick the network and type the password; never touch the Wi-Fi yourself. optimize/find-tv.sh if the address changed." ;;
+      esac
       echo "   Then run the same command again."
       exit 1
     fi
+    case "$SAFE_STAGE" in wizard_off|wifi_check|home_start)
+      # the safe order is never picked up half way: the wizard and the stock home go back as they were, and the next run starts it again
+      if jrestore; then
+        echo "!! ADB dropped during the safe order of the home switch (at «$SAFE_STAGE», before the stock home was turned off): the setup wizard and the stock home were put back as they were. Check with the person that the TV is still on Wi-Fi, then run the same command again."
+      else
+        echo "!! ADB dropped during the safe order of the home switch (at «$SAFE_STAGE») and the put-back did not go through: run optimize/restore-home.sh when the TV answers."
+      fi
+      exit 1 ;;
+    esac
     res=$("$PY" -I optimize/tv.py "cmd package resolve-activity --brief -c android.intent.category.HOME -a android.intent.action.MAIN" 2> /dev/null) || res=""
     rc=0
     if grep -q sa.urtv.home <<< "$res"; then
@@ -513,7 +642,15 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
   fi
   home_skipped=0
   case "$rc" in
-    0) ;;
+    0) rm -f "$ASKF"
+       [ "$SAFE_ORDER" != yes ] || echo "The setup wizard is off and the Wi-Fi stayed connected with its network saved (checked after the wizard went off, before the stock home did)." ;;
+    11) echo "!! The Wi-Fi was not the same after the setup wizard was turned off (before: $(wifi_say "$WIFI_BEFORE"); after: $(wifi_say "$WIFI_NOW")), so the home switch was stopped: the wizard is on again and the stock home is as it was. Ask the person, in Arabic, whether the TV is still on Wi-Fi; if not, they join it again in the TV's Settings ← الشبكة (never touch the Wi-Fi yourself). The next run keeps the wizard on, as before. Report it: optimize/share.sh --preview --problem."
+        exit 1 ;;
+    12) home_skipped=1
+        echo "Home switch skipped: the new home did not come up in front when it was started ($DIAG), so the stock home was never turned off; the setup wizard is on again and the stock home is as it was. UrTV works as an app and as the screensaver. This is not an error, and trying again will not change it."
+        echo "للشخص: تلفزيونك ما صار الشاشة الرئيسية في هذا التلفزيون، لكنه يشتغل من أيقونة «تلفزيونك» في صف التطبيقات."
+        mkdir -p "${URTV_RUN_DIR:-optimize/run}"
+        echo "Home switch: skipped, the new home did not start in front (open UrTV from its «تلفزيونك» tile in the apps row)" > "${URTV_RUN_DIR:-optimize/run}/home-skipped.txt" ;;
     4) home_skipped=1
        echo "Home switch skipped: this TV refuses to turn its own home screen off («This command is illegal», seen on a Nokia Streaming Box 8000). It keeps its own home; the stock home is back as it was. The screensaver and the rest of the setup work without it."
        mkdir -p "${URTV_RUN_DIR:-optimize/run}"

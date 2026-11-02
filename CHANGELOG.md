@@ -2,6 +2,10 @@
 
 Newest first. `next` is where changes land first; a release is what was tested there.
 
+## 4.2 (on `next`)
+
+- **Home switch when the setup wizard owns the Wi-Fi** (TCL G08/G10/G14 on Android 12–14, Google TV sets such as a G7max: the most common reason the home switch was skipped). `optimize/install.sh launcher` no longer just goes on with the wizard kept and ends in «Home switch skipped»: before anything is changed it pauses once (exit 5, `run.sh: paused at launcher`) with an Arabic line for the person: forget the Wi-Fi network in the TV's Settings ← الشبكة and join it again with the same password, then say «كمّل». The next run reads the network's owner again. If it moved off the wizard (seen on a TCL G08, Android 14: it moves to the Settings app at once), the switch goes in the safe order: the wizard off first while the stock home is still Home, the Wi-Fi checked read-only (still connected, no saved network fewer), our home started and confirmed in front, and only then the stock home off and the HOME role ours (the order from CleanYourTV, MIT). A Wi-Fi that changed, or our home not coming up, puts the wizard and the stock home back at once. If the network did not move, it is as before (the wizard stays on; if Home stays with the stock home, one plain line and the «تلفزيونك» tile). It never asks twice, and never forgets, deletes or changes a network itself. The journal (`home-switch.json`) now names each step before it acts.
+
 ## 4.1
 
 The fixes for what broke after updating to 4.0: on TCL the phone remote stopped working inside other apps and the adhan was not rescheduled after an update (TCL's ASSOC_START op: `optimize/autostart.sh` now allows it; TVs already set up get it from the agent with «حدّث تلفزيوني»); a muted TV stayed at volume 0 after the adhan; the Settings key did nothing on HDMI; the screensaver cut phone pairing. Also in it: the new phone page, «نظام الساعة» 12/24, «حفظ» in long lists, «انعكاس الشاشة», and 3,679 cities in 242 countries and territories.

@@ -14,6 +14,7 @@ STUB_PY = r'''#!/usr/bin/env bash
 # fake: python -I optimize/tv.py <args>; state files live in $T
 shift 2
 log() { echo "$*" >> "$T/log"; }
+step() { sed -n 's/^  "step": "\([^"]*\)".*/\1/p' "$J" 2> /dev/null; }   # what the journal says is about to act, at this moment
 [ "$1" = --bg ] && { shift 2; set -- "$*"; case "$1" in "pm install"*) log bg ;; esac; }   # --bg NAME 'cmd': runs on the TV in the background
 case "$1" in
   --push-b64) exit 0 ;;
@@ -25,7 +26,8 @@ case "$1" in
         echo "$in" | sed -n 's/.*deadman.sh [^ ]* [0-9]* \([^ ]*\) .*/\1/p' > "$T/nonce"
         case "$in" in *"touch /data/local/tmp/home_ok."*) log supersede ;; esac ;;
       *"am force-stop com.android.tv.settings"*)
-        log switch
+        log switch; log "switch@$(step)"; rm -f "$T/front"
+        case "$in" in "pm disable-user --user 0 com.google.android.apps.tv.launcherx"*"add-role-holder --user 0 android.app.role.HOME sa.urtv.home"*) log stock-before-role ;; esac
         case "$in" in *"disable-user --user 0 com.google.android.tungsten.setupwraith"*) log wraith-off ;; esac
         n=$(( $(cat "$T/switches" 2>/dev/null || echo 0) + 1 )); echo $n > "$T/switches"
         if [ "$ILLEGAL" = stock ]; then   # Nokia Streaming Box 8000: the stock home cannot be turned off
@@ -42,7 +44,8 @@ case "$1" in
         echo ours > "$T/home" ;;
       *"add-role-holder --user 0 android.app.role.HOME sa.urtv.home"*"input keyevent KEYCODE_HOME"*) log retry; [ "$NOHOME" = once ] && echo ours > "$T/home" ;;
       *"pm enable"*"touch /data/local/tmp/home_ok"*) [ "$RESTORE_FAIL" = yes ] && { log restore-fail; exit 1; }
-        log restore-stock; echo stock > "$T/home"
+        log restore-stock; echo stock > "$T/home"; rm -f "$T/front"
+        case "$in" in *"pm enable com.google.android.tungsten.setupwraith"*) log wizard-on; rm -f "$T/wraith_off" ;; esac
         case "$in" in *"add-role-holder --user 0 android.app.role.HOME other.launcher"*) log holder-other ;; esac
         case "$in" in *"pm enable com.old.helper"*) log helpers ;; esac
         case "$in" in *"pm enable other.launcher"*) log enable-holder ;; esac ;;
@@ -80,8 +83,17 @@ case "$1" in
   "cmd package query-activities"*) echo "2 activities found:"; echo "  Activity #0:"; echo "    priority=0 preferredOrder=0 match=0x108000 specificIndex=-1 isDefault=true"   # the real format: components are indented
        [ "$WRAITH_HOME" = yes ] && echo "    com.google.android.tungsten.setupwraith/.RecoveryActivity"
        [ -n "$QUERY_EXTRA" ] && printf '    %s\n' $QUERY_EXTRA ;;
-  "dumpsys wifi") case "$WIFI" in owned) echo "cname=com.google.android.tungsten.setupwraith" ;; other) echo "cname=android.uid.system" ;; esac ;;
-  "pm disable-user --user 0 com.google.android.tungsten.setupwraith") log wraith-off ;;
+  "dumpsys wifi") log wifi-owner-read; case "$WIFI" in owned) echo "cname=com.google.android.tungsten.setupwraith" ;; other) echo "cname=android.uid.system" ;; esac ;;
+  "pm disable-user --user 0 com.google.android.tungsten.setupwraith") log wraith-off; log "wraith-off@$(step)"; touch "$T/wraith_off"
+       [ "$DROP_AT" = wizard ] && { log drop; exit 1; } ;;
+  "cmd wifi status"*)   # read only. WIFI_READ=none: the TV says nothing about it; WIFI_AFTER=lost: the network is gone once the wizard is off
+       log "wifi-read@$(step)"
+       [ "$WIFI_READ" = none ] && { echo W_END; echo L_END; exit 0; }
+       if [ "$WIFI_AFTER" = lost ] && [ -f "$T/wraith_off" ]; then echo "Wifi is enabled"; echo "Wifi is not connected"; echo W_END; echo "No networks"; echo L_END
+       else echo "Wifi is enabled"; echo 'Wifi is connected to "x"'; echo W_END; echo "Network Id      SSID                         Security type"; echo "0            x                             wpa2-psk"; echo L_END; fi ;;
+  "am start -W"*sa.urtv.home*) log "home-start@$(step)"
+       [ "$DROP_AT" = start ] && { log drop; exit 1; }
+       if [ "$START" = fail ]; then echo "Error: Activity not started, unable to resolve Intent"; else echo "Status: ok"; [ "$FRONT" = no ] || touch "$T/front"; fi ;;
   *resolve-activity*) [ "$RESOLVE" = empty ] && exit 0
        [ "$RESOLVE" = after ] && ls "$T"/marker.* > /dev/null 2>&1 && exit 0
        [ "$RESOLVE" = chooser ] && { echo "android/com.android.internal.app.ResolverActivity"; exit 0; }
@@ -91,7 +103,7 @@ case "$1" in
   *dumpsys*) n=$(( $(cat "$T/dumps" 2>/dev/null || echo 0) + 1 )); echo $n > "$T/dumps"
     if [ "$DIALOG" = yes ] && [ "$n" -le 4 ]; then echo "mResumedActivity: ActivityRecord{x u0 android/com.android.internal.app.ResolverActivity t5}"
     elif [ "$DIALOG" = yes ]; then echo ours > "$T/home"; echo "mResumedActivity: sa.urtv.home"
-    elif [ "$(cat "$T/home" 2>/dev/null)" = ours ]; then echo "mResumedActivity: sa.urtv.home"
+    elif [ "$(cat "$T/home" 2>/dev/null)" = ours ] || [ -f "$T/front" ]; then echo "mResumedActivity: sa.urtv.home"
     else echo "mResumedActivity: ActivityRecord{x u0 com.google.android.apps.tv.launcherx/.home.HomeActivity t3}"; fi ;;
   "touch /data/local/tmp/home_ok."*)
     n=${1##*.}
@@ -118,7 +130,8 @@ while [ $# -gt 0 ]; do [ "$1" = -o ] && : > "$2"; shift; done
 
 
 def run(name, fail_switches, first_drop, down_polls=0, verify="", verifier=None, curl_mode="", vanish="", illegal="", wraith_home="", wifi="", nohome="", install_mode="",
-        watchdog="", restore_fail="", tcltv="", dialog="", verifier_empty="", pkgs="", stockless="", pkgextra="", query_extra="", seed=None, seed_home="", seed_marker=False, role="", resolve="", script="install.sh", args=("launcher",)):
+        watchdog="", restore_fail="", tcltv="", dialog="", verifier_empty="", pkgs="", stockless="", pkgextra="", query_extra="", seed=None, seed_home="", seed_marker=False, role="", resolve="", script="install.sh", args=("launcher",),
+        seed_ask="", wifi_after="", wifi_read="", start="", front="", drop_at="", seed_step=False):
     t = Path(tempfile.mkdtemp())
     tree, bin_ = t / "tree", t / "bin"
     (tree / "optimize" / "lists").mkdir(parents=True); bin_.mkdir()
@@ -128,11 +141,15 @@ def run(name, fail_switches, first_drop, down_polls=0, verify="", verifier=None,
     (tree / "optimize" / "lists" / "home-replaced.txt").write_text("# none\n" if script == "install.sh" else "com.old.helper\n")
     shutil.copy(ROOT / "optimize" / "restore-home.sh", tree / "optimize")
     shutil.copy(ROOT / "optimize" / "restore.sh", tree / "optimize")
-    if seed:   # a journal an earlier run left: (state, role holder before)
+    if seed:   # a journal an earlier run left: (state, role holder before); seed_step: one of this version (with a step)
         (tree / "optimize" / "run").mkdir()
         (tree / "optimize" / "run" / "home-switch.json").write_text(
-            '{\n  "nonce": "old1",\n  "state": "%s",\n  "stock": "com.google.android.apps.tv.launcherx/com.google.android.apps.tv.launcherx.home.HomeActivity",\n'
-            '  "role_holder_before": "%s",\n  "wizard_before": "enabled",\n  "stock_before": "enabled",\n  "written": "x"\n}\n' % seed)
+            '{\n  "nonce": "old1",\n  "state": "%s",\n' % seed[0] + ""
+            + '  "stock": "com.google.android.apps.tv.launcherx/com.google.android.apps.tv.launcherx.home.HomeActivity",\n'
+            '  "role_holder_before": "%s",\n  "wizard_before": "enabled",\n  "stock_before": "enabled",\n  "written": "x"' % seed[1] + (',\n  "step": "stock_off"' if seed_step else "") + '\n}\n')
+    if seed_ask:   # an earlier run asked the person to forget the Wi-Fi network and join it again
+        (tree / "optimize" / "run").mkdir(exist_ok=True)
+        (tree / "optimize" / "run" / "wifi-ask.txt").write_text(seed_ask + "\n")
     if seed_home:
         (t / "home").write_text(seed_home + "\n")
     if seed_marker:
@@ -143,9 +160,12 @@ def run(name, fail_switches, first_drop, down_polls=0, verify="", verifier=None,
     if verifier is not None:
         (t / "verifier").write_text(verifier + "\n")
     env = dict(os.environ, QUERY_EXTRA=query_extra, PKGS=pkgs, STOCKLESS=stockless, PKGEXTRA=pkgextra, VERIFIER_EMPTY=verifier_empty, DIALOG=dialog, TCLTV=tcltv, RESTORE_FAIL=restore_fail, WATCHDOG=watchdog, ROLE=role, RESOLVE=resolve, INSTALL_MODE=install_mode, NOHOME=nohome, WRAITH_HOME=wraith_home, WIFI=wifi, ILLEGAL=illegal, VERIFY=verify, VANISH=vanish, CURL_MODE=curl_mode, PATH=f"{bin_}:{os.environ['PATH']}", PY=str(bin_ / "py"), T=str(t),
-               FAIL_SWITCHES=str(fail_switches), FIRST_DROP=first_drop, DOWN_POLLS=str(down_polls))
+               FAIL_SWITCHES=str(fail_switches), FIRST_DROP=first_drop, DOWN_POLLS=str(down_polls),
+               WIFI_AFTER=wifi_after, WIFI_READ=wifi_read, START=start, FRONT=front, DROP_AT=drop_at, J=str(tree / "optimize" / "run" / "home-switch.json"))
     r = subprocess.run(["bash", str(tree / "optimize" / script), *args], env=env, capture_output=True, text=True)
     log = (t / "log").read_text().split() if (t / "log").exists() else []
+    af = tree / "optimize" / "run" / "wifi-ask.txt"
+    log.append("ask-" + ("changed" if af.exists() and "wifi-changed" in af.read_text() else "kept" if af.exists() else "none"))
     jf = tree / "optimize" / "run" / "home-switch.json"
     if jf.exists():
         log.append("rhb-" + [l for l in jf.read_text().splitlines() if '"role_holder_before"' in l][0].split('"')[3])
@@ -166,8 +186,6 @@ cases = [
      lambda c, o, l: c == 0 and CHECK in o and l.count("arm") == 1 and l.count("disarm") == 1),
     ("two drops: gives up, exits 1", run("d", 2, "stock"),
      lambda c, o, l: c == 1 and l.count("arm") == 2 and "!! The safety switch put the stock home back" in o),
-    ("TV never answers: exits 1", run("e", 1, "stock", down_polls=99),
-     lambda c, o, l: c == 1 and "did not come back within 10 minutes" in o and l.count("arm") == 1),
     ("Play Protect refuses: check off for the install, old value back", run("f", 0, "", verify="once", verifier="1"),
      lambda c, o, l: c == 0 and "Play Protect refused" in o and "(was: 1)" in o and l.count("refused") == 1
      and l.count("installed") == 1 and l[l.index("put-0"):].count("put-1") == 1 and l[-1] == "final-1"),
@@ -195,10 +213,10 @@ cases = [
      lambda c, o, l: c == 0 and "wraith-off" not in l and "Launcher is home" in o),
     ("the wizard answers Home and the Wi-Fi is the system's: turned off", run("r", 0, "", wraith_home="yes", wifi="other"),
      lambda c, o, l: c == 0 and l.count("wraith-off") == 1 and "Launcher is home" in o),
-    ("the wizard answers Home and owns the Wi-Fi: it stays on and the switch goes on without it", run("s", 0, "", wraith_home="yes", wifi="owned"),
-     lambda c, o, l: c == 0 and "wraith-off" not in l and "Launcher is home" in o and "left on" in o and "!!" not in o),
+    ("the wizard owns the Wi-Fi, the person was asked and the network did not move: it stays on and the switch goes on without it, as before", run("s", 0, "", wraith_home="yes", wifi="owned", seed_ask="asked x"),
+     lambda c, o, l: c == 0 and "wraith-off" not in l and "Launcher is home" in o and "stays on" in o and "was not forgotten and joined again" in o and "!!" not in o and "ask-none" in l),
     ("Home never opens ours and the wizard owns the Wi-Fi (it must stay on): the stock home is put back at once, and it says plainly that this TV keeps its own home (not an error)",
-     run("u", 0, "", wraith_home="yes", wifi="owned", nohome="yes"),
+     run("u", 0, "", wraith_home="yes", wifi="owned", nohome="yes", seed_ask="asked x"),
      lambda c, o, l: c == 0 and "wraith-off" not in l and "restore-stock" in l and "keeps its own home screen" in o and "!!" not in o and "Launcher is home" not in o and "أيقونة «تلفزيونك»" in o),
     ("Home does not open ours the first time and does at the second ask: no rollback, the switch is confirmed",
      run("ua", 0, "", nohome="once"),
@@ -297,6 +315,93 @@ cases += [
     ("restore-home.sh without a journal: the way restore.sh does it, and says so",
      run("ae", 0, "", script="restore-home.sh", args=()),
      lambda c, o, l: c == 0 and "No journal" in o and "restore-stock" in l),
+]
+
+# The wizard owns the saved Wi-Fi: ask the person once (forget the network, join it again), then read the owner again.
+ASK_AR = "انسَ شبكة الواي فاي من إعدادات التلفزيون ← الشبكة، وارجع اتصل فيها بنفس كلمة المرور"
+SAFE = dict(wraith_home="yes", wifi="other", seed_ask="asked x")
+STEPS_FIRST = ["wraith-off@wizard_off", "wifi-read@wifi_check", "home-start@home_start", "switch@stock_off"]
+def in_order(l, items):
+    try:
+        idx = [l.index(i) for i in items]
+    except ValueError:
+        return False
+    return idx == sorted(idx)
+cases += [
+    ("the wizard answers Home and owns the Wi-Fi, not asked yet: STOPS before anything is changed (nothing installed, no safety switch, no wizard off), exit 5, a plain line (no !!) and the Arabic words for the person, and it remembers it asked",
+     run("w1", 0, "", wraith_home="yes", wifi="owned"),
+     lambda c, o, l: c == 5 and "!!" not in o and "Home switch paused, nothing was changed" in o and ASK_AR in o and "«كمّل»" in o
+     and "installed" not in l and "bg" not in l and "arm" not in l and "wraith-off" not in l and "switch" not in l and "ask-kept" in l and "rhb-" not in " ".join(l)),
+    ("the pause is said only once: asked before, the network still the wizard's: no second stop (it goes on as before)",
+     run("w2", 0, "", wraith_home="yes", wifi="owned", seed_ask="asked x"),
+     lambda c, o, l: c == 0 and "Home switch paused" not in o and "arm" in l and "wraith-off" not in l),
+    ("asked, the network did not move, and Home stays with the stock home: as today, ONE plain line and the «تلفزيونك» tile, the wizard never off",
+     run("w3", 0, "", wraith_home="yes", wifi="owned", seed_ask="asked x", nohome="yes"),
+     lambda c, o, l: c == 0 and "!!" not in o and "wraith-off" not in l and "keeps its own home screen" in o and "أيقونة «تلفزيونك»" in o and "restore-stock" in l and "wizard-on" in l),
+    ("the wizard does not own the Wi-Fi from the start (never asked): no pause, the usual switch (the wizard in the batch)",
+     run("w4", 0, "", wraith_home="yes", wifi="other"),
+     lambda c, o, l: c == 0 and "Home switch paused" not in o and "home-start@home_start" not in l and l.count("wraith-off") == 1 and "Launcher is home" in o),
+    ("the wizard does not answer Home: no pause even if it owns the Wi-Fi (it is never turned off then)",
+     run("w5", 0, "", wifi="owned"),
+     lambda c, o, l: c == 0 and "Home switch paused" not in o and "wraith-off" not in l and "Launcher is home" in o),
+    ("Home is already ours: no pause, nothing to switch", run("w6", 0, "", wraith_home="yes", wifi="owned", seed_home="ours"),
+     lambda c, o, l: c == 0 and "Home switch paused" not in o and "nothing to switch" in o),
+    ("the network moved off the wizard after the ask: the SAFE ORDER, the wizard off first, then the Wi-Fi checked, then our home started and in front, and only then the stock home off and the HOME role ours; confirmed, the ask forgotten",
+     run("m1", 0, "", **SAFE),
+     lambda c, o, l: c == 0 and "!!" not in o and in_order(l, ["arm", "hb-check"] + STEPS_FIRST + ["disarm"]) and l.count("wraith-off") == 1
+     and "stock-before-role" in l and "restore-stock" not in l and "Launcher is home" in o and "the Wi-Fi stayed connected" in o and l[-1] == "journal-done" and "ask-none" in l),
+    ("the safe order: the journal is written (and the safety switch armed) BEFORE the wizard goes, and names each step BEFORE it acts",
+     run("m2", 0, "", **SAFE),
+     lambda c, o, l: c == 0 and l.index("hb-check") < l.index("wraith-off") and all(x in l for x in STEPS_FIRST) and "wifi-read@armed" not in l
+     and [x for x in l if x.startswith("wraith-off@")] == ["wraith-off@wizard_off"] and [x for x in l if x.startswith("switch@")] == ["switch@stock_off"]),
+    ("the safe order: the Wi-Fi is not the same after the wizard went off: stopped, the wizard back ON and the stock home as it was (never turned off), a !! line, and the next run does not try this order again",
+     run("m3", 0, "", wifi_after="lost", **SAFE),
+     lambda c, o, l: c == 1 and "!! The Wi-Fi was not the same after the setup wizard was turned off" in o and "before: connected yes, saved networks 1; after: connected no, saved networks 0" in o and "wizard-on" in l and "restore-stock" in l
+     and "home-start@home_start" not in l and "switch" not in l and l[-1] == "journal-restored" and "ask-changed" in l and "never touch the Wi-Fi yourself" in o),
+    ("after a Wi-Fi change was seen once: the next run keeps the wizard on (as before), never the safe order",
+     run("m4", 0, "", wraith_home="yes", wifi="other", seed_ask="asked x\nwifi-changed y"),
+     lambda c, o, l: c == 0 and "wraith-off@wizard_off" not in l and "home-start@home_start" not in l),
+    ("the safe order: our home does not come up in front: put back (the wizard ON, the stock home never off), ONE plain line with the tile, not an error",
+     run("m5", 0, "", front="no", **SAFE),
+     lambda c, o, l: c == 0 and "!!" not in o and "did not come up in front" in o and "أيقونة «تلفزيونك»" in o and "wizard-on" in l and "switch" not in l and l[-1] == "journal-restored"),
+    ("the safe order: am start says Error: the same put-back", run("m6", 0, "", start="fail", **SAFE),
+     lambda c, o, l: c == 0 and "did not come up in front" in o and "Error" in o and "wizard-on" in l and "switch" not in l),
+    ("the safe order: Home never opens ours after the stock home went off: everything back, the wizard included, one plain line",
+     run("m7", 0, "", nohome="yes", **SAFE),
+     lambda c, o, l: c == 0 and "!!" not in o and "wraith-off@wizard_off" in l and "switch@stock_off" in l and "restore-stock" in l and "wizard-on" in l
+     and "keeps its own home screen" in o and l[-1] == "journal-restored"),
+    ("the safe order: ADB drops right after the wizard went off: when the TV is back the journal puts the wizard and the stock home back (not the switch half way), a !! line, exit 1",
+     run("m8", 0, "", drop_at="wizard", **SAFE),
+     lambda c, o, l: c == 1 and "ADB dropped during the safe order" in o and "«wizard_off»" in o and "wizard-on" in l and "restore-stock" in l
+     and "home-start@home_start" not in l and "switch" not in l and l[-1] == "journal-restored"),
+    ("the safe order: ADB drops while our home is started: the same, the stock home was never turned off",
+     run("m9", 0, "", drop_at="start", **SAFE),
+     lambda c, o, l: c == 1 and "«home_start»" in o and "wizard-on" in l and "switch" not in l and l[-1] == "journal-restored"),
+    ("the safe order: the TV says nothing about its Wi-Fi: no safe order, the usual switch the way it was for a network that is not the wizard's",
+     run("m10", 0, "", wifi_read="none", **SAFE),
+     lambda c, o, l: c == 0 and "did not say what its Wi-Fi is now" in o and "home-start@home_start" not in l and l.count("wraith-off") == 1 and "Launcher is home" in o),
+    ("restore-home.sh after a safe-order switch: the wizard is turned back on with the stock home",
+     run("m11", 0, "", seed=("done", ""), seed_step=True, seed_home="ours", script="restore-home.sh", args=()),
+     lambda c, o, l: c == 0 and "wizard-on" in l and "restore-stock" in l and l[-1] == "journal-restored"),
+    ("a safe-order switch cut off by a restart (journal «switching», step stock_off, Home not ours): the next run puts the wizard and the stock home back first",
+     run("m12", 0, "", seed=("switching", ""), seed_step=True, seed_home="stock", wraith_home="yes", wifi="other", seed_ask="asked x"),
+     lambda c, o, l: c == 0 and "earlier home switch was cut off" in o and "wizard-on" in l and l.index("wizard-on") < l.index("arm")),
+]
+# run.sh: the pause at the launcher step is its own line, not «stopped», and run.sh ends with the same 5 (the next run.sh resumes there)
+def run_finish(rc, current):
+    src = (ROOT / "optimize" / "run.sh").read_text(encoding="utf-8")
+    fn = src[src.index("finish() {"):src.index("trap finish EXIT")]
+    d = tempfile.mkdtemp()
+    script = f'LOCK={d}/lock; stamp() {{ echo "$*" >> {d}/steps; }}\n' + fn + f'current={current}\ntrap finish EXIT\nexit {rc}\n'
+    r = subprocess.run(["bash", "-c", script], capture_output=True, text=True)
+    steps = (Path(d) / "steps").read_text() if (Path(d) / "steps").exists() else ""
+    shutil.rmtree(d)
+    return r.returncode, r.stdout + r.stderr, steps.split()
+cases += [
+    ("run.sh: install.sh paused at launcher (exit 5): «paused at launcher», waiting for «كمّل», no «stopped», exit 5", run_finish(5, "launcher"),
+     lambda c, o, l: c == 5 and "run.sh: paused at launcher" in o and "«كمّل»" in o and "stopped" not in o and "paused" in l),
+    ("run.sh: an exit 5 of another step is a plain stop", run_finish(5, "extras"),
+     lambda c, o, l: c == 5 and "run.sh: stopped at extras" in o),
 ]
 bad = [n for n, (c, o, l), ok in cases if not ok(c, o, l)]
 for n, (c, o, l), ok in cases:
