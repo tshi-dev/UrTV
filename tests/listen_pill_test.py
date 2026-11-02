@@ -70,7 +70,12 @@ check("hidden: the app menu also has «إعدادات الأذان», the same s
 check("adhanSettingsIntent opens it on the adhan tab", 'putExtra(sa.urtv.home.tilawah.MainActivity.EXTRA_OPEN, "adhan")' in main)
 req = main.split("private void openRequested(Intent i) {")[1].split("\n    }\n")[0]
 check("the home opens the adhan settings when asked with open=adhan, behind the family lock (shown or hidden button), and forgets the request",
-      '"adhan".equals(i.getStringExtra("open"))' in req and 'i.removeExtra("open")' in req and "launchGuarded(ParentalPolicy.PILL_LISTEN, adhanSettingsIntent()" in req, req)
+      'String what = i == null ? null : i.getStringExtra("open");' in req and 'case "adhan":' in req and 'i.removeExtra("open")' in req
+      and req.index('i.removeExtra("open")') < req.index("switch (what)") and "launchGuarded(ParentalPolicy.PILL_LISTEN, adhanSettingsIntent()" in req.split('case "adhan":')[1].split("break;")[0], req)
+check("open=listen opens «تلاوة وأذان» behind the same lock as its button, open=center the panel behind its pill's lock (none in kids mode)",
+      'launchGuarded(ParentalPolicy.PILL_LISTEN, new Intent(this, sa.urtv.home.tilawah.MainActivity.class)' in req.split('case "listen":')[1].split("break;")[0]
+      and "guarded(ParentalPolicy.PILL_CENTER, null, ControlText.NAME, () -> control.open(centerPill))" in req.split('case "center":')[1].split("break;")[0]
+      and "!Parental.state(this).kids" in req.split('case "center":')[1].split("break;")[0], req)
 check("it asks on create and on a new intent (the home is singleTask)", "openRequested(getIntent());" in main and "openRequested(intent);" in main.split("protected void onNewIntent(Intent intent) {")[1].split("\n    }\n")[0])
 row2 = settings.split('row("الأذان"')[1].split("});")[0]
 check("the screensaver's settings have an «الأذان» row that brings the home up with open=adhan (the lock applies there, not here)",

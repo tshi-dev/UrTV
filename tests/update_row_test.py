@@ -21,8 +21,8 @@ check("the page's update row is «تحديث صفحة شاشة التوقف» an
 check("its line says the page only and points to «تحديث تلفزيوني» for the two apps",
       row and "فقط" in row.group(2) and "لتحديث التطبيقين: «تحديث تلفزيوني»" in row.group(2), row and row.group(2))
 check("«تحديث تلفزيوني» says it updates the two apps", 'row("تحديث تلفزيوني", "تحديث التطبيقين: ' in render)
-check("both rows sit in the same category («الجوال والتحديث»), so «في نفس القسم» is true",
-      '{"تحديث تلفزيوني", PHONE}' in hub and '{"تحديث صفحة شاشة التوقف", PHONE}' in hub)
+check("both rows sit in the same category («تحديث تلفزيوني»), so «في نفس القسم» is true",
+      '{"تحديث تلفزيوني", UPDATE}' in hub and '{"تحديث صفحة شاشة التوقف", UPDATE}' in hub)
 check("the version lines still show under it", "if (last.getParent() == list) note(last, Updater.versionLines(this));" in render)
 old = [str(p.relative_to(ROOT)) for p in list((ROOT / "android").rglob("*.java")) + [ROOT / "README.md", ROOT / "docs/TEST-PLAN.md"]
        if "تحديث الشاشة الآن" in text(p)]

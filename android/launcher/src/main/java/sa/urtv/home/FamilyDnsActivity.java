@@ -99,6 +99,7 @@ public class FamilyDnsActivity extends Activity {
         }
         if (!new FamilyDnsAndroid(this).canWriteSecure()) {
             state.setText("يحتاج تفعيل من الكمبيوتر");
+            onState(false);
             button.setText("غير متاح");
             button.setAlpha(.5f);
             message.setText("اطلب من وكيلك تشغيل: optimize/dock.sh familydns grant");
@@ -107,6 +108,7 @@ public class FamilyDnsActivity extends Activity {
         button.setAlpha(1f);
         if (FamilyDnsAndroid.busy()) {   // a check takes up to about 40 seconds
             state.setText("جارٍ الفحص…");
+            onState(false);
             button.setText("انتظر");
             message.setText("");
             handler.postDelayed(poll, 1000);
@@ -115,12 +117,14 @@ public class FamilyDnsActivity extends Activity {
         FamilyDns.Status s = FamilyDnsAndroid.status(this);
         if (s.state == FamilyDns.State.ON && "other".equals(s.by)) {
             state.setText("مفعّلة من الكمبيوتر، أوقفها من هناك");
+            onState(true);
             button.setText("غير متاح");
             button.setAlpha(.5f);
             message.setText(last);
             return;
         }
         state.setText("الحالة: " + FamilyDns.arabic(s));
+        onState(s.state == FamilyDns.State.ON);
         button.setText(s.state == FamilyDns.State.ON ? "إيقاف الحماية" : "تفعيل الحماية");
         message.setText(last);
     }
@@ -143,6 +147,20 @@ public class FamilyDnsActivity extends Activity {
     }
 
     private int dp(float v) { return Math.round(v * getResources().getDisplayMetrics().density); }
+
+    /** The state line drawn as every on/off one (OnOff): on, the three green triangles at its start and the line in green; else in the accent, as before. */
+    private void onState(boolean on) {
+        android.graphics.drawable.Drawable mark = null;
+        int green = OnOff.green(look.light ? 0xFFFFFFFF : 0xFF000000);
+        if (on) {
+            mark = getDrawable(R.drawable.ic_on).mutate();
+            mark.setTint(green);
+            mark.setBounds(0, 0, dp(7), dp(22));
+        }
+        state.setCompoundDrawables(null, null, mark, null);   // on the right: where an Arabic line starts (this page is not laid out RTL)
+        state.setCompoundDrawablePadding(dp(10));
+        state.setTextColor(on ? green : GOLD);
+    }
 
     /** The glass look on this page (GlassSource: the home's photo under its veil, or the look's solid colour), and this screen's colours from it. */
     private void glass(View page) {

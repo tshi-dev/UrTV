@@ -556,11 +556,27 @@ public class MainActivity extends Activity {
     /**
      * The screensaver's settings row «الأذان» brings the home to the front with open=adhan: the adhan settings open from here, behind the same
      * family lock as the «تلاوة وأذان» button (it asks for the PIN when that is locked), whether the button is shown or hidden.
+     * The same way: open=listen («تلاوة وأذان» itself) and open=center («مركز التحكم», behind its pill's lock). An unknown word does nothing.
      */
     private void openRequested(Intent i) {
-        if (i == null || !"adhan".equals(i.getStringExtra("open"))) return;
+        String what = i == null ? null : i.getStringExtra("open");
+        if (what == null) return;
         i.removeExtra("open");
-        if (getResources().getBoolean(R.bool.show_listening)) handler.post(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, adhanSettingsIntent(), "إعدادات الأذان"));
+        switch (what) {
+            case "adhan":
+                if (getResources().getBoolean(R.bool.show_listening)) handler.post(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, adhanSettingsIntent(), "إعدادات الأذان"));
+                break;
+            case "listen":   // the settings' «تلاوة وأذان» ← «افتح تلاوة وأذان»: the same as the button
+                if (getResources().getBoolean(R.bool.show_listening))
+                    handler.post(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, new Intent(this, sa.urtv.home.tilawah.MainActivity.class), "تلاوة وأذان"));
+                break;
+            case "center":   // the settings' «مركز التحكم» button: the panel, behind the same lock as its pill; the focus goes back to the pill
+                if (control != null && centerPill != null && !Parental.state(this).kids)   // kids mode has no pill, so no panel either
+                    handler.post(() -> guarded(ParentalPolicy.PILL_CENTER, null, ControlText.NAME, () -> control.open(centerPill)));
+                break;
+            default:
+                break;
+        }
     }
 
     /**
