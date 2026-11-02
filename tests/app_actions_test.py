@@ -54,6 +54,11 @@ check("OK on a row or an icon closes the box, then acts", "v.setOnClickListener(
 check("the box is the app's width as it shows focused, above it (under it when there is no room), the look's colours and focus",
       "int w = Math.round(card.getWidth() * scale)" in opts and "GlassPaint.focused(a, l, GlassStyle.over(l.focus, dialog), RADIUS)" in opts
       and "GlassStyle.over(l.dialog, l.base)" in opts)
+import re as _re
+g = {k: int(v) for k, v in _re.findall(r"(PAD|GAP|BUTTON_H|RADIUS|BOX_RADIUS|ICON|ABOVE) = (\d+)", opts.split("static final int", 1)[1].split(";", 1)[0].replace("static final int", ""))}
+check("spacing (the owner's rule): the box's padding is at least 16 px at 1080p (8 dp), its gaps on the 8 px scale (4 dp steps), each row 12 dp in from its edge, the box's corner its buttons' plus its padding",
+      g.get("PAD", 0) >= 8 and g.get("GAP", 0) % 4 == 0 and g.get("ABOVE", 0) % 4 == 0 and g.get("BOX_RADIUS") == g.get("RADIUS", 0) + g.get("PAD", 0)
+      and "r.setPadding(px(12, d), 0, px(12, d), 0);" in opts, g)
 check("the other menus (the «المخفية» list) have no row", "showMenu(hiddenCard, labels, actions);" in main and "Collections.<View>emptyList()" in main)
 check("the icons are there (Material, Apache 2.0)", all((ROOT / f"android/launcher/src/main/res/drawable/{n}.xml").exists()
       for n in ("ic_info", "ic_move", "ic_hide", "ic_lock", "ic_star", "ic_star_filled")))

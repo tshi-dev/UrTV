@@ -18,6 +18,8 @@ check("on: the card says it is on and what is locked, with «التطبيقات 
       'card(S.t("الرقابة الأبوية مفعّلة"), Digits.of(ParentalText.summary(' in act and 'button(S.t("غيّر الرمز"), v -> choosePin(true))' in act
       and 'button(S.t("التطبيقات المقفلة"), v -> focusAfter(appsRow, 1))' in act)
 check("the two buttons are one row of the D-pad, wired like every row", "rows.add(new View[] {second, first});" in act and act.count("wire();") >= 2)
+check("spacing (the owner's rule): the card's text is 24 dp in from its sides and 20 dp from its top and bottom, 12 dp to the buttons; a button's word 14 dp from its sides",
+      "c.setPadding(dp(24), dp(20), dp(24), dp(20));" in act and "p.bottomMargin = dp(12);" in act and "t.setPadding(dp(14), dp(8), dp(14), dp(8));" in act)
 if not shutil.which("javac"):
     print("SKIP parental text: no javac here")
     sys.exit(1 if failed else 0)
