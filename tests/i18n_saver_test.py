@@ -146,6 +146,7 @@ CASES = [  # what the screen builds, and its English (the digits are turned afte
     ("حتى ٥ دوريات", "Up to ٥ leagues"),
     ("اختر من سوق إلى ٤ أسواق", "Pick 1 to ٤ markets"),
     ("رمز غير صالح: XYZ!", "Invalid code: XYZ!"),
+    ("الأسهم: Aramco 2222, Al Rajhi 1120", "Stocks: Aramco 2222, Al Rajhi 1120"),
     ("رحلة (٣١ ديسمبر ٢٠٢٦)", "رحلة (٣١ December ٢٠٢٦)"),
     ("تبدأ بعد ٥ دقائق · آية أو حديث اليوم", "Starts after ٥ min · Verse or hadith of the day"),
     ("جديد المسلسلات، مواقيت الصلاة اليوم", "New episodes, Today’s prayer times"),

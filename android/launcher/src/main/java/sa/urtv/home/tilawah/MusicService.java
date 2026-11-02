@@ -15,6 +15,7 @@ import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.media.MediaMetadata;
 import android.media.MediaPlayer;
+import android.media.audiofx.LoudnessEnhancer;
 import android.media.session.MediaSession;
 import android.media.session.PlaybackState;
 import android.net.wifi.WifiManager;
@@ -82,6 +83,8 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     private Catalog cat;
     private Prefs prefs;
     private MediaPlayer player;
+    /** the player's own gain with a limiter (Loudness): the recordings are quiet next to TV sound; null where the TV has no such effect */
+    private LoudnessEnhancer louder;
     private MediaSession session;
     private AudioManager audio;
     private WifiManager.WifiLock wifi;
@@ -514,6 +517,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         player.setAudioAttributes(MEDIA_ATTRS);   // minSdk 26; USAGE_MEDIA is STREAM_MUSIC, the stream the adhan's own volume (adhanVolumeUp) sets
         player.setWakeMode(this, PowerManager.PARTIAL_WAKE_LOCK);
         player.setVolume(1f, 1f);
+        louder = lift(player.getAudioSessionId(), Loudness.targetMb(source));
         player.setOnPreparedListener(mp -> {
             if (!wish.current(gen)) return;   // an older player's: this one has been replaced or stopped
             prepared = true;
@@ -776,12 +780,34 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
 
     private void releasePlayer() {
         resetSeekBurst();
+        if (louder != null) {
+            try { louder.release(); } catch (RuntimeException ignored) {}
+            louder = null;
+        }
         if (player != null) {
             try { player.reset(); } catch (Exception ignored) {}
             try { player.release(); } catch (Exception ignored) {}
             player = null;
         }
         releaseWifi();
+    }
+
+    /**
+     * The gain inside our player only (Loudness says why and how much): the TV's volume, its mute and the adhan's own level are not
+     * touched. A TV without the effect, or one that refuses it, plays as before (null).
+     */
+    private static LoudnessEnhancer lift(int session, int mb) {
+        if (mb <= 0) return null;
+        LoudnessEnhancer e = null;
+        try {
+            e = new LoudnessEnhancer(session);
+            e.setTargetGain(mb);
+            e.setEnabled(true);
+            return e;
+        } catch (RuntimeException | UnsatisfiedLinkError err) {
+            if (e != null) { try { e.release(); } catch (RuntimeException ignored) {} }
+            return null;
+        }
     }
 
     private void save() {

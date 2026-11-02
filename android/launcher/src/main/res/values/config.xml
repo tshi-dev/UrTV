@@ -25,12 +25,12 @@
         <item>com.tcl.dashboard</item>
     </string-array>
 
-    <!-- The TV's Live TV / tuner app, listed last in the Inputs menu. Empty to leave it out.
-         Common ones: com.tcl.tv (TCL), com.mediatek.wwtv.tvcenter (Xiaomi, many MediaTek sets),
-         com.google.android.tv (Google Live Channels), com.sony.dtv.tvx (Sony). -->
+    <!-- The TV's Live TV / tuner app, listed last in the Inputs menu, tried first. When the TV does not have it, the first
+         one of TvVendor.LIVE_TV it has is used (TCL, CultraView, MediaTek/Xiaomi, MStar, Sony, Philips, Google Live Channels). -->
     <string name="live_tv_package" translatable="false">com.tcl.tv</string>
 
-    <!-- The manufacturer's own source picker, used if switching to an input directly fails. -->
+    <!-- The manufacturer's own source picker, used if switching to an input directly fails; tried first, then TvVendor.PICKERS
+         (a package, or package/.Activity such as com.cultraview.setting/.SourceActivity). -->
     <string name="input_picker_package" translatable="false">com.tcl.suspension</string>
 
     <!-- Tiles per row in the grid. -->

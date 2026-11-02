@@ -4,6 +4,17 @@ Newest first. `next` is where changes land first; a release is what was tested t
 
 ## 4.2 (on `next`)
 
+- **«المصادر» on CultraView and other non-TCL TVs** (work/user-fixes): the live TV app and the source picker are no longer TCL's only. The
+  home app finds them on the TV each time the menu opens (TvVendor: the configured TCL ones first, then CultraView's `com.cultraview.livetv`
+  and `com.cultraview.setting/.SourceActivity`, MediaTek's tvcenter (Xiaomi, Hisense, Haier), MStar's (Skyworth), Sony, Philips, Google Live
+  Channels). An HDMI input tries the standard passthrough link, then each live TV app the TV has, then the picker, then the TV's settings.
+- **The recitation and the adhan at a normal level**: the recordings are quiet next to TV sound, and the player played them at unity gain.
+  It now lifts them by +6 dB inside its own audio session (LoudnessEnhancer: a gain with a limiter, so no clipping). The TV's volume, its
+  mute and the adhan's own level (never above the person's choice) are not touched; a TV without the effect plays as before.
+- **«قائمة الأسهم» takes a company's name too**: a Tadawul code (2222, also ٢٢٢٢ in Arabic digits, which was refused before), a name
+  (أرامكو, مصرف الراجحي, بنك الرياض, Aramco) or a US ticker; a name is turned into its code and a short message says what it was taken as
+  («الأسهم: أرامكو 2222»), and the row shows the company beside each code.
+
 - **The new settings screen** (work/settings-v2, the owner's choices in notes/settings-proto): big buttons, «الأذان» wide on top with its state
   under it; OK opens the home's adhan page on its switch (now its first row), so OK, OK turns it on or off, behind the family lock as before.
   Then «الموقع والصلاة», «الساعة والأرقام» (new: 12/24 hours, digits, month names together), «تلاوة وأذان», «البطاقات» («شاشة التوقف» and

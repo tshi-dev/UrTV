@@ -57,6 +57,7 @@ python3 tests/dock_names_test.py
 python3 tests/dock_input_names_test.py
 python3 tests/input_names_test.py
 python3 tests/input_display_test.py
+python3 tests/tv_vendor_test.py   # «المصادر» on any TV: the live TV app and source picker found on the TV (TCL, CultraView, MediaTek…)
 python3 tests/dock_sleep_test.py
 python3 tests/find_tv_test.py
 python3 tests/wireless_test.py
@@ -73,6 +74,7 @@ python3 tests/home_card_test.py
 python3 tests/perf_idle_test.py
 python3 tests/league_fixtures_test.py
 python3 tests/market_prices_test.py
+python3 tests/stocks_search_test.py   # «قائمة الأسهم»: a Tadawul code, ٢٢٢٢ or a company name, and the match shown
 python3 tests/adhkar_tool_test.py
 python3 tests/saver_tasks_test.py
 python3 tests/saver_quote_test.py
@@ -110,6 +112,7 @@ python3 tests/music_adhan_own_test.py
 python3 tests/own_adhan_test.py
 python3 tests/own_adhan_keep_test.py
 python3 tests/player_logic_test.py
+python3 tests/loudness_test.py   # the recitation and the adhan lifted inside the player (LoudnessEnhancer), never the TV volume or mute
 python3 tests/seek_burst_test.py
 python3 tests/pill_text_test.py
 python3 tests/control_center_test.py
