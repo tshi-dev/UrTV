@@ -90,3 +90,37 @@ what: confirm the 4.2 batch on `next` (the adhan options, the text field in «ا
 | Z | All four adhan options as they were at the start; the prayer minutes back exactly; the adhan on/off as at the start; the test task gone; `optimize/saver.sh updatechannel latest`; the disabled-apps list and Home holder as at the start; sound 0 | "restored: yes/no" with the Home holder line and the disabled-apps count before and after |
 
 REPORT.md: "step 16", the build, the table, the `adhan_alarm_last=` values (front/play/notice/saver only, never a prayer time), the UrTVKeys key numbers, the W1 counts, any `!!`. No personal data: no city, prayer times, task text beyond «تجربة», Wi-Fi names, IPs or serials. Push; tell the owner in Arabic that it is done and how many problems there were.
+
+---
+step: 17 (do it when the owner says «ابدأ الخطوة 17»)
+what: confirm the home batch and the screensaver batch on `next` (version 4.2) on the newest apk-next: build 170 or newer (`version.txt` 3.170). Follow tester/RULES.md. TV sound stays at 0 the whole time. Nothing is uninstalled, nothing is forgotten; every setting goes back to its start value at the end.
+- Start lines, plus: `optimize/saver.sh show` (write down `verse`, `photos`, `occasion`, `nightdim`, `taskspill`, `backsaver`, `slot`/content of the card beside the clock), `optimize/dock.sh backsaver` (on/off), `adb shell pm list packages | wc -l` (count only), and who holds Home (`adb shell cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME`).
+- `optimize/saver.sh updatechannel next`; update from the TV («تحديث تلفزيوني») to the newest apk-next.
+
+| # | Do | Right when |
+|---|---|---|
+| V1 | Settings ← «الجوال والتحديث» ← the version lines | «4.2» and the build number |
+| H1 | Our home: long OK on an installed store app (not ours, not a system app) | under the menu's last item two small buttons «تفاصيل التطبيق» and «حذف التطبيق» |
+| H2 | «تفاصيل التطبيق» | the TV's app-info page of that app opens; Back returns |
+| H3 | Long OK again ← «حذف التطبيق» | Android's own uninstall question appears; choose **Cancel** (never OK); the app is still there (package count the same) |
+| H4 | Long OK on a system app and on «شاشة تلفزيونك» | no «حذف التطبيق» for them |
+| H5 | Look at the app menu items («تحديث تلفزيوني», «تلاوة وأذان», «الرقابة الأبوية»), «كل المصادر» in the inputs list, and in the screensaver settings «بحث عن مدينة أو قرية», «تصفح الدوريات», «بحث عن أي فريق أو منتخب» | no trailing «…» on any of them |
+| H6 | The remote's Settings key on our home: a short press; then hold it about 1 s | short: the TV's own settings; long: OUR settings. `adb logcat -d -s UrTVKeys` shows the key |
+| H7 | «مركز التحكم» (the round button at the top) ← tile «البلوتوث» | the TV's remotes-and-accessories screen opens; Back returns. Pair or forget nothing |
+| H8 | Settings ← «الشاشة الرئيسية» | «الرجوع يفتح شاشة التوقف» right after «زر المهام», reading «متوقف» (unless the start line said on) |
+| H9 | Turn it to «مفعّل»; Home; wait for the home (up to a minute); Back on the home | the screensaver starts; `optimize/dock.sh backsaver` says `back-saver: on`; Back or Home leaves the screensaver |
+| H10 | In the apps grid (scrolled down) press Back | the focus goes to the favourites first; no screensaver |
+| H11 | Turn the row to «متوقف»; Home; wait a minute; Back on the home | nothing starts; `dock.sh backsaver` says off |
+| H12 | `optimize/dock.sh backsaver on`, then open Settings ← «الشاشة الرئيسية» | the row reads «مفعّل»; then `optimize/dock.sh backsaver off` and the row reads «متوقف» |
+| H13 | (only if «السماح بتصحيح USB؟» shows up by itself during this step; never force it) | the screensaver does not cover the prompt; `adb logcat -d -s UrTVSaver UrTVSetup` says why |
+| S1 | Card beside the clock = the verse card; Settings ← «بجانب الساعة» ← «تبديل الآية والحديث» ← «كل ٣ دقائق»; screensaver preview for 7 minutes | the card changes about every 3 minutes, «آية كريمة» then «حديث شريف» |
+| S2 | Settings ← «تبديل الصورة كل» | «دقيقة واحدة» is offered; «٣٠ ثانية» only on a TV with 2 GB. `optimize/saver.sh photos 30s`: accepted, or refused with the MB the TV has (write that line) |
+| S3 | Photos every 1 minute (or 30 s), screensaver preview for 3 minutes | the photo changes on time |
+| S4 | «العرض» ← «المناسبة القادمة» off; preview | the bottom middle is empty; nothing else moved |
+| S5 | «العرض» ← «تعتيم الليل» off | the row reads off; `saver.sh show` says `nightdim: off` |
+| S6 | «الشاشة الرئيسية» ← «زر المهام» مخفي; back home (up to a minute) | the «المهام» button is gone from the top row; the «المهام» card still works |
+| S7 | Settings ← «الجوال والتحديث» | «تحديث صفحة شاشة التوقف» (not «تحديث الشاشة الآن»), its line points to «تحديث تلفزيوني», which says «تحديث التطبيقين»; OK on the page row gives «تم التحديث» or «الصفحة محدثة» |
+| S8 | «تلاوة وأذان» ← الإذاعات | NO row «البث المباشر من الحرم» (its link is still empty, so it must not show) |
+| Z | Back to the start values: `verse`, `photos`, `occasion`, `nightdim`, `taskspill`, the card beside the clock, `dock.sh backsaver`; `optimize/saver.sh updatechannel latest`; package count and Home holder as at the start; sound 0 | "restored: yes/no" with the before/after values of each |
+
+REPORT.md: "step 17", the build, the table, the UrTVKeys key numbers, the S2 line (MB only), any `!!`. No personal data: no city, prayer times, app names beyond «store app»/«system app», Wi-Fi names, IPs or serials. Push; tell the owner in Arabic that it is done and how many problems there were.
