@@ -31,7 +31,9 @@ Path 1 needs no other device at all, so it is also the answer for an iPad that c
 7. **Only on some TCL and Google TV sets** (the TV's setup wizard owns the saved Wi-Fi): before the home switch the screen asks to forget the Wi-Fi network in the
    TV's Settings ← الشبكة and join it again with the same password, then **«كمّل»**. «كمّل» without doing it is fine too: the switch then goes on with the wizard left on.
 8. **Done.** The screen shows the report as a **QR code** (it opens `docs/share`, the same page as `optimize/share.sh`, with nothing personal in it: the person
-   sends it from the phone if they want), how to turn debugging off, «لو صار شي», and «تراجع».
+   sends it from the phone if they want), how to turn debugging off, «لو صار شي», and «تراجع». The report rides after the `#` packed (`z.` and the
+   raw-deflated text in base64url, a third of the quoted text), so the code is small and easy to scan; it sits centred in a white card with its caption
+   under it. `docs/share` still reads a link from an older app (the quoted text).
 
 **What it does, in this order** (the same lists and rules as `optimize/run.sh` from a computer; the lists are generated from `optimize/lists`):
 
@@ -73,7 +75,11 @@ the screensaver showed stayed pending until the TV restarted (a tester's diagnos
 
 **The ADB key.** While USB debugging is on, adbd listens on TCP 5555 on the whole Wi-Fi, not only on the TV: another device there can make the TV show the "Allow USB
 debugging?" prompt, but it cannot get in unless someone accepts it. «السماح دائماً» makes this app's key a standing credential, so the app **deletes its key** when the
-run has ended and nothing waits (no safety switch pending, no restart of the measurement, no «كمّل» for the Wi-Fi); a later run asks again. The done screen says to turn
+run has ended and nothing waits (no safety switch pending, no restart of the measurement, no «كمّل» for the Wi-Fi), and again before a fresh run or an
+undo starts (a key a run kept while something waited goes then); a later run asks again (log tag `UrTVSetup`: «adb key: deleted» or «kept (…)»). The
+TV's own record of the key (`/data/misc/adb/adb_keys`) belongs to the system and cannot be edited over adb's shell, so the authorization itself goes
+only with «إلغاء تراخيص تصحيح USB»; without the app's private half it opens nothing. adbd's log line «Invalid base64 key» before «sending prompt» is
+about a line of that file (an empty one at its end), not this app's key, which is AOSP's format byte for byte (`tests/adb_client_test.py`). The done screen says to turn
 **USB debugging off** and to use **«إلغاء تراخيص تصحيح USB»** (Revoke USB debugging authorizations). «تراجع» from the app needs debugging on again.
 
 **«تراجع»** (Undo) is one button, in `optimize/reset.sh`'s order: the stock home and the HOME role first, then the ledger's apps (and the community list's), the protected
