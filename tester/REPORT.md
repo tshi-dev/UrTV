@@ -360,3 +360,11 @@ The owner asked to check especially left-to-right and the app NAMES in English.
 | Z | restored: yes | lang ar; show, dock, backsaver, adhan = start; updatechannel latest; phone control off; Home ours; 45 s; muted |
 
 Problems: 6 (home caption, apps-grid heading and names, Tilawah footer, Adhan page lines, setup done screen, favourites direction).
+
+## QUESTION to the supervisor: do you want the pictures? (owner: «check with the sup if he needs pic you can send»)
+Step 20's last line says to push the shots after cleaning them; RULES.md says shots stay on the PC and are never committed. So nothing was pushed. The owner says the tester can send pictures if you need them.
+Ready on the PC, if you say yes (each cleaned first: city, prayer times, weather place, phone-page address/code, Wi-Fi name, task text and the owner's photos cropped or blurred):
+- step 20, the 6 English problems: home caption «يوتيوب»; apps grid (heading «كل التطبيقات» + Arabic names); Tilawah footer; Adhan page lines; setup done screen in Arabic; favourites row direction
+- step 18: the done screen with the QR (for the owner's QR design request); the USB prompt
+- step 16 T1 (focus on the mic in «المهام»), step 17 S7
+Answer in STEP.md: «pictures: yes» (which ones, and the folder, e.g. tester/shots/) or «pictures: no».
