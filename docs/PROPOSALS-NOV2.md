@@ -345,3 +345,66 @@ needs one new optional field, `due`, and an exact alarm. Old lists and `saver.sh
 - It needs appops grants over adb.
 
 **Does it do anything better than us?** Only the Quran-on-screensaver idea.
+
+## 6. The «الأسواق» page
+
+It opens with OK on the markets card or widget, and from Settings › المزيد › المباريات والأسواق. Like the matches page,
+it is a screen of its own.
+
+**Mockups:**
+- `notes/proposals/markets-page.png`: the dark look, glass over the home photo blurred once.
+- `notes/proposals/markets-page-light.png`: the light look.
+- `notes/proposals/markets-page-detail.png`: OK on a stock.
+
+**What the page shows:**
+- **Top:** the market's state and the last update. TASI with the change in points and %, and today's line against
+  yesterday's close (dashed). Gold per gram in riyals and per ounce in dollars, silver per gram, and Brent. The currencies
+  against the riyal.
+- **Below:**
+  - «قائمتك»: the stocks from Settings › الأسهم, Saudi codes and US tickers.
+  - «الأكثر ارتفاعًا» and «الأكثر انخفاضًا».
+  - Up is green and down is red, in the Saudi convention.
+- **The detail card:** name, code, price, the change, today's line every 15 minutes against yesterday's close, the day's
+  range and the 52-week range with a marker, and «أزل من قائمتك» / «أظهره في شريط الأسواق».
+- **No prayer line:** Tadawul trades from 10:00 to 15:00 straight through Dhuhr. A prayer line would add nothing, so it
+  is left out.
+
+**The numbers in the PNGs:**
+- **Real:** the prices, changes and lines come from the real `data-markets/markets.json` of 2 November 2026 (after the
+  close).
+- **Fixed pegs, not fetched:** the currencies — 3.75 SAR to the dollar, and the AED, QAR and BHD pegs to the dollar.
+- **Illustrative:** only the 52-week range of Aramco, because it is not in our data yet.
+
+### What our data has, and what it does not
+
+**We have today** (`.github/tools/market_prices.py`, CI, every few minutes while a market is open, into the `data-markets` branch):
+- **Fields:** for each symbol, the price, the close before and the day's 15-minute closes (up to 30).
+- **Symbols:**
+  - TASI, the 30 largest Tadawul companies (`TADAWUL`), the S&P 500 and about 50 common US tickers;
+  - gold, silver and Brent (futures), bitcoin and XRP;
+  - any other code the person adds, which the page asks for itself.
+- **Already shown:** the day's change in % or in amount for each row; that setting already exists.
+- **Market state:** open or closed comes from the clock (`due()` already knows Tadawul's hours).
+
+**Missing but cheap, from the same answer:** Yahoo's chart answer already carries `regularMarketDayHigh`/`Low` and
+`fiftyTwoWeekHigh`/`Low` in its `meta`. `market_prices.py` would keep four more fields, with no new request. This was
+not checked live: the dev container cannot reach Yahoo.
+
+**Missing, needs work:**
+- **Gainers and losers of the whole market:** today we have only the 30 largest companies, so the page says
+  «أكبر ٣٠ شركة». Covering all of Tadawul (about 250 symbols) would add about 220 requests a run. Ranking the 30 is honest
+  and enough.
+- **Currencies:** we fetch none today.
+  - The Gulf currencies and the dollar are fixed pegs: they need no source and never change.
+  - The euro, the pound and others come from the ECB's daily reference rates, which are free, official and allowed for
+    reuse. They are in euros, so CI works out each against the riyal through the dollar (×3.75). They are daily, not
+    live, and the page says «سعر اليوم».
+- **A longer chart (a month, a year):** one more request per watched symbol (`range=1y&interval=1d`). It is possible,
+  but it is not in the mockup.
+
+**Not available, and not shown:** live tick-by-tick prices, order books, volumes by trader and company news. These are
+Tadawul's paid data products.
+
+**The source's terms:** prices come from Yahoo's chart endpoint, as they do today. It is undocumented and Yahoo's terms
+cover personal use. This is a risk already accepted in the code; the page adds no new source except the ECB. If it has
+to be replaced, Saudi Exchange sells delayed data feeds, and no free official API exists.
