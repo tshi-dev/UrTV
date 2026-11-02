@@ -17,6 +17,8 @@
 #                                          screensaver stops it and is consumed (it does not also open the focused app or move the focus); the
 #                                          volume keys and Power are left alone, Home, Back, OK, the arrows, numbers and media keys all stop it.
 #                                          Off: only OK on the adhan bar stops it. Inside other apps no key is caught. Only that adhan ends
+#   optimize/music.sh adhan saver-only on|off   «الأذان على شاشة التوقف فقط» (off by default): the adhan plays only while the screensaver shows or our home is in front;
+#                                          another app or an input in front gets none (the alarm is still judged once, and never made up)
 #   optimize/music.sh adhan stop           stop the adhan that is playing (nothing else)
 #   optimize/music.sh adhan volume 60      the adhan's own volume, 10-100 (percent of the TV's maximum)
 #   optimize/music.sh adhan add FILE       the person's own recording as the adhan («أذان من ملفي»): made small here (mono AAC, about
@@ -110,6 +112,7 @@ Usage: optimize/music.sh <command> [arguments]
   adhan voice <1-21 | own>   (not the Fajr recordings 10, 13, 17, 20)
   adhan fajr-voice <1-21 | own>
   adhan short on | off
+  adhan saver-only on | off   the adhan plays only over the screensaver or our home (default off)
   adhan stopkey on | off  any key stops the adhan while it plays (default on; off: only OK on the adhan bar)
   adhan stop              stop the adhan that is playing
   adhan volume <10-100>
@@ -202,7 +205,7 @@ PY
         out=$(tv "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.GET_PLAYER")
         data=$(printf '%s\n' "$out" | sed -n 's/.*data="\(.*\)"/\1/p' | tail -n 1)
         [ -n "$data" ] || { echo "No status from sa.urtv.home. Is the app installed and the TV reachable?" >&2; exit 1; }
-        printf '%s\n' "$data" | tr '|' '\n' | grep -E '^(adhan=|voice=|fajr_voice=|adhan_short=|adhan_stopkey=|adhan_live=|adhan_volume=|adhan_exact=|adhan_next|adhan_last|source=|playing=)'
+        printf '%s\n' "$data" | tr '|' '\n' | grep -E '^(adhan=|voice=|fajr_voice=|adhan_short=|adhan_stopkey=|adhan_saver_only=|adhan_live=|adhan_volume=|adhan_exact=|adhan_next|adhan_last|source=|playing=)'
         own=$(printf '%s\n' "$data" | tr '|' '\n' | sed -n 's/^own_bytes=//p')
         if [ "${own:-0}" -gt 0 ] 2> /dev/null; then
           echo "own=$((own / 1024)) KB (your own recording; adhan voice own uses it, adhan own-clear removes it)"
@@ -268,6 +271,12 @@ PY
         case "$2" in on) flag=true;; off) flag=false;; *) usage;; esac
         tv "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.ADHAN_STOPKEY --ez on $flag" > /dev/null
         if [ "$flag" = true ]; then echo "Any key stops the adhan while it plays, on the home screen and the screensaver (the volume keys and Power are left alone)."; else echo "Only OK on the adhan bar stops the adhan."; fi
+        ;;
+      saver-only)
+        [ $# -eq 2 ] || usage
+        case "$2" in on) flag=true;; off) flag=false;; *) usage;; esac
+        tv "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.ADHAN_SAVERONLY --ez on $flag" > /dev/null
+        if [ "$flag" = true ]; then echo "Saver-only on: the adhan plays only over the screensaver or our home screen."; else echo "Saver-only off: the adhan plays whatever is in front."; fi
         ;;
       stop)
         [ $# -eq 1 ] || usage

@@ -33,7 +33,7 @@ public class MainActivity extends Activity {
     private static final int TAB_RECITERS = 0, TAB_STATIONS = 1, TAB_ADHAN = 2;
 
     private static final int KIND_RESUME = 0, KIND_RECITER = 1, KIND_STATION = 2,
-            KIND_PRAYER = 3, KIND_ADHAN_TOGGLE = 4, KIND_VOICE = 5, KIND_VOLUME = 6, KIND_EXACT = 7, KIND_FAJR_VOICE = 8, KIND_SHORT = 9, KIND_STOPKEY = 10;
+            KIND_PRAYER = 3, KIND_ADHAN_TOGGLE = 4, KIND_VOICE = 5, KIND_VOLUME = 6, KIND_EXACT = 7, KIND_FAJR_VOICE = 8, KIND_SHORT = 9, KIND_STOPKEY = 10, KIND_SAVER_ONLY = 11;
 
     private Catalog cat;
     private Prefs prefs;
@@ -118,6 +118,10 @@ public class MainActivity extends Activity {
                 focusList(list.getSelectedItemPosition());
             } else if (row.kind == KIND_STOPKEY) {
                 prefs.setAdhanStopKey(!prefs.adhanStopKey());
+                adapter.rebuild();
+                focusList(list.getSelectedItemPosition());
+            } else if (row.kind == KIND_SAVER_ONLY) {
+                prefs.setAdhanSaverOnly(!prefs.adhanSaverOnly());
                 adapter.rebuild();
                 focusList(list.getSelectedItemPosition());
             } else if (row.kind == KIND_EXACT) {
@@ -390,6 +394,8 @@ public class MainActivity extends Activity {
                         getString(prefs.adhanShort() ? R.string.adhan_short_on : R.string.adhan_short_off), -1));
                 rows.add(new Row(false, KIND_STOPKEY, getString(R.string.adhan_stopkey),
                         getString(prefs.adhanStopKey() ? R.string.adhan_stopkey_on : R.string.adhan_stopkey_off), -1));
+                rows.add(new Row(false, KIND_SAVER_ONLY, getString(R.string.adhan_saver_only),
+                        getString(prefs.adhanSaverOnly() ? R.string.adhan_on : R.string.adhan_off), -1));
                 rows.add(new Row(false, KIND_VOLUME, getString(R.string.adhan_volume),
                         volumeText(prefs.adhanVolume()), -1));
             }

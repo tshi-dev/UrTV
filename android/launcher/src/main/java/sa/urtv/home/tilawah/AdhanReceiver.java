@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.PowerManager;
+import android.util.Log;
 
 /**
  * Plays the adhan when its alarm goes off — pausing a surah that is playing and resuming it after —
@@ -34,7 +35,12 @@ public class AdhanReceiver extends BroadcastReceiver {
         if (prefs.adhanOn() && screenOn(context) && !alreadyPlayed(prefs, due, now)) {
             if (due > 0) prefs.setLastDue(due); else prefs.setLastAlarmAt(now);
             int prayer = intent.getIntExtra(AdhanScheduler.EXTRA_PRAYER, -1);   // an alarm of an older version has none: the usual voice
-            MusicService.adhan(context, prefs.playVoiceFor(context, prayer == PrayerTimes.FAJR), null, 0, prayer);
+            int front = AdhanFront.now(context);
+            if (AdhanPlan.mayPlay(prefs.adhanSaverOnly(), front)) {
+                MusicService.adhan(context, prefs.playVoiceFor(context, prayer == PrayerTimes.FAJR), null, 0, prayer);
+            } else {
+                Log.i("UrTVAdhan", "adhan skipped: another app is in front (saver-only is on)");
+            }
         }
         AdhanScheduler.schedule(context);
         PrayerTimes.refresh(context, null);

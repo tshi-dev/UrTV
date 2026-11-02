@@ -83,6 +83,10 @@ final class Prefs {
     boolean adhanShort() { return sp.getBoolean("adhan_short", false); }
     void setAdhanShort(boolean on) { sp.edit().putBoolean("adhan_short", on).apply(); }
 
+    /** «الأذان على شاشة التوقف فقط»: the adhan plays only over the screensaver or our home; another app or an input in front gets none. Off until it is turned on. */
+    boolean adhanSaverOnly() { return sp.getBoolean("adhan_saver_only", false); }
+    void setAdhanSaverOnly(boolean on) { sp.edit().putBoolean("adhan_saver_only", on).apply(); }
+
     /** «إيقاف الأذان بأي زر»: while the adhan plays, any key stops it (once) and is consumed; ON by default (the owner's decision), off only when someone turns it off. The screensaver asks for it. */
     boolean adhanStopKey() { return sp.getBoolean("adhan_stopkey", true); }
     void setAdhanStopKey(boolean on) { sp.edit().putBoolean("adhan_stopkey", on).apply(); }

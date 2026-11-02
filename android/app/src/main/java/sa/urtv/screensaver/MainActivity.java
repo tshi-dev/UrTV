@@ -69,6 +69,18 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        Showing.enter();   // the home's «الأذان على شاشة التوقف فقط»: the preview counts as the screensaver
+    }
+
+    @Override
+    protected void onStop() {
+        Showing.leave();
+        super.onStop();
+    }
+
+    @Override
     protected void onDestroy() {
         alive = false;
         try { unregisterReceiver(changed); } catch (IllegalArgumentException ignored) { }

@@ -174,6 +174,14 @@ check("stopkey off", rc == 0 and sent == [STOPKEY + "--ez on false"], (out, sent
 for bad in ("yes", "", "on off"):
     rc, out, sent, ff = run("adhan", "stopkey", bad) if bad else run("adhan", "stopkey")
     check(f"stopkey {bad!r}: refused, nothing sent", rc != 0 and not sent, (out, sent))
+SAVERONLY = "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.ADHAN_SAVERONLY "
+rc, out, sent, ff = run("adhan", "saver-only", "on")
+check("saver-only on", rc == 0 and sent == [SAVERONLY + "--ez on true"] and "screensaver" in out, (out, sent))
+rc, out, sent, ff = run("adhan", "saver-only", "off")
+check("saver-only off", rc == 0 and sent == [SAVERONLY + "--ez on false"], (out, sent))
+for bad in ("yes", "", "on off"):
+    rc, out, sent, ff = run("adhan", "saver-only", bad) if bad else run("adhan", "saver-only")
+    check(f"saver-only {bad!r}: refused, nothing sent", rc != 0 and not sent, (out, sent))
 rc, out, sent, ff = run("adhan", "stop")
 check("adhan stop sends STOP_ADHAN only", rc == 0 and sent == ["am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.STOP_ADHAN"], (out, sent))
 
