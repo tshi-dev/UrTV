@@ -216,3 +216,33 @@ Note: one extra reboot happened (the tester's `tv.py reboot` kept retrying over 
 | Z | restored: yes | updatechannel latest; real city exact; home_panel none; 45 s; disabled 22; muted; ours bound |
 
 It looks like the new batch (24 h row, mirroring tile, maybe the Settings key) is NOT in build 163. Please publish the build that has it (164+) and I continue F4–F12.
+
+## step 16 (build 174, «4.2»)
+Scripts run from a detached worktree of origin/next (the local `next` is 211 behind/ahead after the remote was rewritten; it was not touched).
+Before: the TV had updated itself to 4.1 (168) on latest; `accessibility_enabled=0`. Update from the TV («تحديث تلفزيوني», next) 168 → 174: both versionName=4.2 versionCode=174. This update UNMUTED the TV (Muted: false; muted again at once). After it: `UrTVA11y: check replaced: listed=false switch=0 running=true -> not_listed` (the heal now runs on MY_PACKAGE_REPLACED, but our TypeService is no longer in enabled_accessibility_services at all, so nothing to heal) — needs `dock.sh type-setup` by the owner.
+Alarms: the next real prayer was hours away and prayeradj is ±20 min, so each alarm used a DEMO city (Moroccan cities whose Maghrib/Isha was 5–25 min ahead: Fès, Meknès, Tanger, Kénitra, Rabat, Casablanca) + prayeradj; the real city put back exactly, prayeradj off, all minutes 0.
+
+| # | OK/problem | adhan_alarm_last / note |
+|---|---|---|
+| A1 | OK | `front=other play=0 notice=0 saver=0`; `UrTVAdhan: adhan skipped: another app is in front (saver-only is on)` |
+| A2 | OK | screensaver showing: `front=dream play=1`; our home: `front=home play=1` (stopped by a key: stop-key on) |
+| A3 | OK | adhan OFF, notice on: home idle (screensaver came): `front=dream play=0 notice=1`; app: `front=other play=0 notice=1`, `UrTVAdhan: notice shown: …`. Not seen on screen (the 5 s window was missed). HDMI not tested (no source checked) |
+| A4 | OK | short on, then takbir on → `adhan_takbir=on`, `adhan_short=off`. UI row not looked at |
+| A5 | OK | `adhan now`: playing at 14 s, stopped at 17 s. Voice-preview part not checked (sound 0) |
+| A6 | OK | home: `front=home saver=1` (screensaver started); app: `front=other saver=0` (nothing started) |
+| A7 | OK | all four off: `adhan_saver_only=off adhan_notice=off adhan_takbir=off adhan_saver_at=off`; adhan off (as at start) |
+| T1 | PROBLEM | on opening «المهام» the focus is on «🎤 تكلّم», NOT the text field. OK on the field opens the TV keyboard; its action key shows ✓ (no «إضافة» label). `input text test` came out «فثسف» (the TV keyboard was on the Arabic layout: adb text goes through it); key 66 added it and emptied the field |
+| T2 | OK | «اكتب المهمة أولاً» (toast); nothing added |
+| T3 | OK | field ↔ «إضافة» ↔ «تكلّم» all reachable with focus |
+| T4 | OK | `am start -a android.speech.action.RECOGNIZE_SPEECH` from adb opens nothing; the in-app «تكلّم» opens Google speech (Arabic SA) and listens («Try again» with no voice). Test task deleted (asks «نعم») |
+| K1 | OK (injected) | 4062 → Netflix, 4065 → YouTube, 4099 → Prime Video; `UrTVKeys: key=4062 / 4065 / 4099 scan=0` |
+| K2 | CONFLICT (injected) | on our home 4077 and 83 open the TV's settings (`com.android.tv.settings/.MainSettings`), not ours; `UrTVKeys: key=4077 / key=83`. Step 16 expects ours; step 17 H6 says a short press = TV settings — which is right? |
+| K3 | OK | `tweaks.sh apply`: no `!!`; `cached_apps_freezer=enabled` before and after |
+| K4 | OK | screensaver Arabic lines and card labels joined |
+| K5 | OK | disabled list identical to the start (22); no `com.android.sdksandbox` |
+| W1 | — | `4 cname=android.uid.system:1000` |
+| W2 | OK | Wifi enabled, connected; `list-networks` rows: 2 |
+| W3 | PROBLEM | `optimize/install.sh launcher` (default tag) tried to install apk-latest's home over 174: `!! Install of urtv-home.apk failed: Failure [INSTALL_FAILED_VERSION_DOWNGRADE: … 168 is older than current 174]`. With `APK_TAG=apk-next`: «nothing to switch», no `!!` |
+| Z | restored: yes | adhan options and on/off as at start; prayeradj off, all 0; real city exact; tasks as at start; disabled 22 = start; Home `sa.urtv.home/.MainActivity`; muted. updatechannel left on next for steps 17–20 (latest at the end) |
+
+Problems: 3 (T1 focus on mic; W3 install.sh launcher downgrade `!!`; the update unmutes + our a11y entry is gone) + K2 needs your answer.
