@@ -4,6 +4,8 @@ Newest first. `next` is where changes land first; a release is what was tested t
 
 ## 4.2 (on `next`)
 
+- The app's long-press menu on our home (a user's request): under its last item a row of two small buttons, «تفاصيل التطبيق» (Android's app-details screen for that app) and «حذف التطبيق» (Android's own uninstall, which asks to confirm; not shown for a system app or our two apps). None in kids mode; both behind the family lock (`MENU_APP`: «قفل الإعدادات», the TV's settings' lock and the app's own). No «إيقاف إجباري»: a normal app cannot force-stop another, and the TV's details screen cannot be opened on its «فرض الإيقاف», so it would only have been the same screen again. The launcher now declares `REQUEST_DELETE_PACKAGES` (a normal permission; without it Android 9+ drops the uninstall request).
+
 Four options for the adhan, each a switch in «تلاوة وأذان» ← الأذان and each off until it is turned on. The adhan itself stays off by default.
 - «الأذان على شاشة التوقف فقط» (#49): the adhan plays only over the screensaver or our home screen; another app or an input in front gets none. `optimize/music.sh adhan saver-only on|off`.
 - «تنبيه عند الأذان»: a calm text notice for 5 seconds at the prayer's time, «حان وقت صلاة العصر», over whatever is in front, even when the adhan is off or skipped. A system toast (no permission). `optimize/music.sh adhan notice on|off`; the status says what the last alarm did (`adhan_alarm_last=`).

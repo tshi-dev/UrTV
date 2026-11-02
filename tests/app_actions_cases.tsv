@@ -1,0 +1,9 @@
+# buttons: package, system (0/1), kids mode (0/1), expected (right to left), note
+buttons	com.netflix.ninja	0	0	DETAILS,DELETE	an app the person installed: details and remove
+buttons	com.google.android.youtube.tv	1	0	DETAILS	a system app (or an update of one): details only, never remove
+buttons	sa.urtv.home	0	0	DETAILS	our home is never offered for removal
+buttons	sa.urtv.screensaver	0	0	DETAILS	nor our screensaver
+buttons	com.netflix.ninja	0	1	-	kids mode edits nothing: no buttons
+buttons	com.google.android.youtube.tv	1	1	-	kids mode, a system app: none
+buttons		0	0	-	no package (the «المخفية» tile): none
+buttons	sa.urtv.homeX	0	0	DETAILS,DELETE	only our exact two packages are kept back
