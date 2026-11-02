@@ -8,6 +8,7 @@ Newest first. `next` is where changes land first; a release is what was tested t
 - Setup on Android 9 and 10 (SDK below 30): `optimize/tweaks.sh` no longer sets the Play Store's standby bucket (6 of 7 Android 9 reports still ended "with problems" because the TV kept `active`). It is skipped with one journal line (`skipped_standby_bucket`), no `!!`. Undo still puts back a bucket an older run recorded.
 - Setup no longer turns the cached-apps freezer on (`cached_apps_freezer`): one report linked it to apps hanging after standby, and Android 14 has it on by itself. The Play Store background tweak stays. A TV an older run already set gets its own value back from `optimize/tweaks.sh restore`, from the next apply, and from `reset.sh`.
 - Screensaver: the Arabic line under the clock («بتوقيت الرياض») and the card labels («الصلاة القادمة», «المباريات») no longer have letter-spacing: Chromium breaks the joining of Arabic letters when it is not 0, so the letters were cut apart on some TVs.
+- Never disabled: `com.android.sdksandbox` is now in the core list (`optimize/lists/core.txt`), beside `com.android.location.fused` (already there; a Clean Your TV report of a boot loop on a TCL). The app's copy of the lists (`SetupLists.java`) is regenerated.
 
 ## 4.1
 
