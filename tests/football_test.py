@@ -51,7 +51,7 @@ check("the focus: ▼ from a widget is the tray, ▲ from the tray the games, �
       and "if (fMt != null && fPr != null && fWx != null) topId = fMt.getId();" in main and "card = fPr;" in main)
 check("the football home hides the greeting (the weather has its card) and its glass follows the light", "private void footballHeader()" in main
       and "greeting.setVisibility(football ? View.GONE : View.VISIBLE);" in main and "if (homeCard != null) homeCard.light(light);" in main)
-check("OK on the games opens «المباريات» on the chosen game", "putExtra(MatchesActivity.EXTRA_EVENT, eventId)" in main
+check("OK on the games opens «المباريات» on the chosen game", "guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t(\"المباريات\"), () -> launch(games));" in main
       and 'js("typeof fbPick===\'function\'?fbPick():\'\'", id -> host.open(MT, unquote(id)));' in ff)
 check("«المباريات»: the page's own mode, Back closes a game's card first, its WebView pauses and resumes like HomeCard's",
       "HomeCardChoice.matchesUrl(cfg.fragment, event)" in ma and "mpBack()" in ma and 'if (!"closed".equals(FootballFocus.unquote(v))) finish();' in ma

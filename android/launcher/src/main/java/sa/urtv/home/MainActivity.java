@@ -408,8 +408,8 @@ public class MainActivity extends Activity {
             }
             @Override public void open(String which, String eventId) {
                 if (FootballFocus.MT.equals(which)) {
-                    try { startActivity(new Intent(MainActivity.this, MatchesActivity.class).putExtra(MatchesActivity.EXTRA_EVENT, eventId)); }
-                    catch (RuntimeException ignored) { }
+                    Intent games = new Intent(MainActivity.this, MatchesActivity.class).putExtra(MatchesActivity.EXTRA_EVENT, eventId);
+                    guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t("المباريات"), () -> launch(games));   // our own page: no app of the lists
                 } else if (FootballFocus.PR.equals(which)) {
                     if (getResources().getBoolean(R.bool.show_listening)) launchGuarded(ParentalPolicy.PILL_LISTEN, adhanSettingsIntent(), S.t("إعدادات الأذان"));
                 } else openOurSettings(false);
