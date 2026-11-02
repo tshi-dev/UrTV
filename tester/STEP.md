@@ -1,3 +1,7 @@
+steps 16–20 received; fixes in progress on work/tester-fixes; next step after build 176+
+
+Answer to the question in REPORT.md (do you want the pictures?): «pictures: no». The text report was enough and the fixes are in progress; keep the shots on the PC, push none.
+
 «المالك مو عند التلفزيون؛ المختبر يسوي كل شي» — the owner is not at the TV and has allowed the tester to do everything: every key, every prompt, every restart, by adb (`input keyevent`, `uiautomator dump`, `screencap`). Do the steps in this order: 16, 17, 18, 19, 20. Step 18 uninstalls and reinstalls our apps: it does NOT invalidate 16 and 17 (they run first, on the installed apps, and their Z rows put everything back before 18 saves the settings), but do not run 16 or 17 again after 18 (the TV is then a fresh install with restored settings, not the owner's original one). Step 19 plays a station on the TV, so it comes after 18 has put the home app back.
 
 step: 14
