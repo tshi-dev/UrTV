@@ -4,6 +4,7 @@ Newest first. `next` is where changes land first; a release is what was tested t
 
 ## 4.2 (on `next`)
 
+- No trailing «…» on menu items: the app menu's «تحديث تلفزيوني», «تلاوة وأذان», «إعدادات الأذان», «الرقابة الأبوية», «كل المصادر» in the inputs list, and in the screensaver's settings lists «بحث عن مدينة أو قرية», «تصفح الدوريات», «بحث عن أي فريق أو منتخب» (only the dots there). A text that is still working («جارٍ التحقق…») keeps them.
 - The app's long-press menu on our home (a user's request): under its last item a row of two small buttons, «تفاصيل التطبيق» (Android's app-details screen for that app) and «حذف التطبيق» (Android's own uninstall, which asks to confirm; not shown for a system app or our two apps). None in kids mode; both behind the family lock (`MENU_APP`: «قفل الإعدادات», the TV's settings' lock and the app's own). No «إيقاف إجباري»: a normal app cannot force-stop another, and the TV's details screen cannot be opened on its «فرض الإيقاف», so it would only have been the same screen again. The launcher now declares `REQUEST_DELETE_PACKAGES` (a normal permission; without it Android 9+ drops the uninstall request).
 
 Four options for the adhan, each a switch in «تلاوة وأذان» ← الأذان and each off until it is turned on. The adhan itself stays off by default.

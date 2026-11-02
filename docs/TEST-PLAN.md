@@ -30,13 +30,13 @@ Navigate with the remote, or `adb shell input keyevent DPAD_DOWN|DPAD_UP|DPAD_CE
 | A1b | ◀▶▲▼ on the tiles, then OK on «الجوال والتحديث», then Back | ▶ goes to the right tile of a pair, ◀ to the left one, ▲▼ a row; nothing wraps. OK opens it: its name and line on the right, its rows on the left from the top (first row focused, «تحديث تلفزيوني» among them); Back returns to the categories with the focus on «الجوال والتحديث»; OK again comes back on the row last focused; Back twice leaves |
 | A2 | Open every tile and move through every row with D-pad | Every row focusable and highlighted; nothing unreachable; each row is in exactly one tile (the list in FEATURES.md) |
 | A2b | In «الموقع والصلاة», change «طريقة الحساب» | The focus stays on that row after the change, as before |
-| A3 | المدينة → open | First item «بحث عن مدينة أو قرية…», then 13 regions with counts |
+| A3 | المدينة → open | First item «بحث عن مدينة أو قرية», then 13 regions with counts |
 | A4 | Region «منطقة الرياض» → pick «الخرج» | Dialog closes, row shows «المدينة: الخرج» |
 | A5 | المدينة → search → type `ابها` or `Abha` | Results list from the internet; pick one → row updates |
 | A6 | المدينة → search → type `zzzzqq` | Toast «لا توجد نتائج» |
-| A7 | الفرق المتابعة → «تصفح الدوريات…» → each league one by one, and «المنتخبات» | Each opens at once, even offline, with every club of the last two seasons in Arabic (MLS: 30). **Record any league that is short or shows «لا توجد نتائج»** |
-| A8 | الفرق المتابعة → «تصفح الدوريات…» → دوري روشن → pick «النصر» | Toast «تمت متابعة النصر» right away (no network needed), row shows «النصر» |
-| A9 | الفرق المتابعة → «بحث عن أي فريق أو منتخب…» → `Real Madrid`, then `الاهلي`, `العربي`, `atletico` | Results at once: «ريال مدريد»; the Saudi «الأهلي» first, then «الأهلي المصري»; the Saudi «العربي» before «العربي القطري»; «أتلتيكو مدريد». Pick one → row shows its Arabic name |
+| A7 | الفرق المتابعة → «تصفح الدوريات» → each league one by one, and «المنتخبات» | Each opens at once, even offline, with every club of the last two seasons in Arabic (MLS: 30). **Record any league that is short or shows «لا توجد نتائج»** |
+| A8 | الفرق المتابعة → «تصفح الدوريات» → دوري روشن → pick «النصر» | Toast «تمت متابعة النصر» right away (no network needed), row shows «النصر» |
+| A9 | الفرق المتابعة → «بحث عن أي فريق أو منتخب» → `Real Madrid`, then `الاهلي`, `العربي`, `atletico` | Results at once: «ريال مدريد»; the Saudi «الأهلي» first, then «الأهلي المصري»; the Saudi «العربي» before «العربي القطري»; «أتلتيكو مدريد». Pick one → row shows its Arabic name |
 | A10 | الفرق المتابعة → دوري يلو | Every club of the league, «الزلفي» among them |
 | A10b | «المباريات والأسواق» › «الدوريات كاملة»: ▼ through the whole list, tick two leagues, ▼ on the last league, then OK on «حفظ» | The list is shorter than the screen and scrolls; «حفظ» and «إلغاء» are visible under it the whole time; ▼ on the last league puts the focus on «حفظ», ▲ from a button goes back to the list; after «حفظ» the row lists the two leagues |
 | A10c | «الدوريات كاملة» again: untick one, then press Back (not «حفظ»); open it again, tick one, then «إلغاء» | Back saves like «حفظ» (the row now has one league); «إلغاء» leaves without saving (still one). The same in «الفرق المتابعة», «التصنيفات», «اللغات», «رياضات أخرى», «الأسواق» and «مسلسلات مختارة»: buttons on screen, ▼ from the last row to «حفظ», Back saves |

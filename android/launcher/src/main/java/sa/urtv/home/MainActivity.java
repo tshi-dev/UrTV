@@ -2048,7 +2048,7 @@ public class MainActivity extends Activity {
             labels.add("تعديل التطبيقات");
             actions.add(() -> beginAppsEdit(pkg));
         }
-        labels.add("تحديث تلفزيوني…");
+        labels.add("تحديث تلفزيوني");
         actions.add(() -> launchGuarded(ParentalPolicy.MENU_UPDATE, new Intent(this, UpdateActivity.class), "تحديث تلفزيوني"));
         if (inDock) {
             if (dock.size() > MIN_DOCK) {
@@ -2072,12 +2072,12 @@ public class MainActivity extends Activity {
             buildApps();
         });
         if (listenPillHidden()) {   // the button is hidden: the player (and the adhan's settings in it) opens from here, behind the same lock
-            labels.add("تلاوة وأذان…");
+            labels.add("تلاوة وأذان");
             actions.add(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, new Intent(this, sa.urtv.home.tilawah.MainActivity.class), "تلاوة وأذان"));
-            labels.add("إعدادات الأذان…");   // the same screen, on its «الأذان» tab: on or off, the voices, short, any key, the volume
+            labels.add("إعدادات الأذان");   // the same screen, on its «الأذان» tab: on or off, the voices, short, any key, the volume
             actions.add(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, adhanSettingsIntent(), "إعدادات الأذان"));
         }
-        labels.add("الرقابة الأبوية…");
+        labels.add("الرقابة الأبوية");
         actions.add(() -> launchGuarded(ParentalPolicy.PARENTAL_SCREEN, new Intent(this, ParentalActivity.class), "الرقابة الأبوية"));
         showMenu(anchor, labels, actions, appButtons(pkg, kids));
     }
@@ -2215,7 +2215,7 @@ public class MainActivity extends Activity {
             rows.add(inputRow(InputLabels.rowLabel(this, t, given), () -> openPassthroughInput(t)));   // + the CEC device's name and its standby mark
         }
         if (isInstalled(liveTvPkg)) rows.add(inputRow("البث التلفزيوني", () -> guarded(ParentalPolicy.INPUT_LIVE_TV, liveTvPkg, "البث التلفزيوني", () -> openPackage(liveTvPkg))));
-        if (inputs.isEmpty() && isInstalled(inputPickerPkg)) rows.add(inputRow("كل المصادر…", () -> guarded(ParentalPolicy.INPUT_PICKER, inputPickerPkg, "كل المصادر", () -> openPackage(inputPickerPkg))));
+        if (inputs.isEmpty() && isInstalled(inputPickerPkg)) rows.add(inputRow("كل المصادر", () -> guarded(ParentalPolicy.INPUT_PICKER, inputPickerPkg, "كل المصادر", () -> openPackage(inputPickerPkg))));
 
         if (rows.isEmpty()) rows.add(inputRow("الإعدادات", () -> launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون")));
         for (TextView r : rows) {
