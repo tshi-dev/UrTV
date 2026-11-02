@@ -21,4 +21,10 @@ final class AdhanPlan {
      * the adhan plays: a missed adhan is worse than a heard one.
      */
     static boolean mayPlay(boolean saverOnly, int front) { return !saverOnly || front != OTHER; }
+
+    /** what `music.sh adhan` says about the last alarm, so a tester with the sound at 0 can judge by state: «front=other play=0 notice=1» */
+    static String note(int front, boolean play, boolean notice) {
+        return "front=" + (front == HOME ? "home" : front == DREAM ? "dream" : front == OTHER ? "other" : "unknown")
+                + " play=" + (play ? 1 : 0) + " notice=" + (notice ? 1 : 0);
+    }
 }

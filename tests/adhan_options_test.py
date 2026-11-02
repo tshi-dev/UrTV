@@ -39,14 +39,30 @@ check("the agent command is declared and answered", '"sa.urtv.home.ADHAN_SAVERON
 music_sh = text(ROOT / "optimize/music.sh")
 check("music.sh has adhan saver-only and shows it in the state", "saver-only)" in music_sh and "adhan_saver_only=" in music_sh)
 
+# ---- «تنبيه عند الأذان»
+notice = text(T / "AdhanNotice.java")
+sched = text(T / "AdhanScheduler.java")
+check("notice is off until it is turned on", 'getBoolean("adhan_notice", false)' in prefs)
+check("the alarm is set for the notice alone (adhan off), and cancelled only when neither is wanted",
+      "boolean alarmWanted() { return adhanOn() || adhanNotice(); }" in prefs and "alarmWanted()" in sched and sched.count("adhanOn()") == 1)
+check("the adhan itself still needs its own switch: the notice never plays it", "boolean play = prefs.adhanOn() && AdhanPlan.mayPlay(" in receiver)
+check("the notice is shown whether the adhan plays or not, when the option is on", "if (notice) AdhanNotice.show(context, prayer);" in receiver and "boolean notice = prefs.adhanNotice();" in receiver)
+check("the notice is a text toast (no permission, no focus), never throws, logs", "Toast.makeText(" in notice and "catch (RuntimeException" in notice and "UrTVAdhan" in notice)
+check("no overlay permission was added for it", "SYSTEM_ALERT_WINDOW" not in manifest and "TYPE_APPLICATION_OVERLAY" not in notice)
+check("the last alarm is written down for the status", "setLastAlarmNote(AdhanPlan.note(" in receiver and "adhan_alarm_last=" in music)
+check("the tab has the row with one plain label", "KIND_NOTICE" in tmain and '<string name="adhan_notice">تنبيه عند الأذان</string>' in strings)
+check("the switch re-sets the alarm (screen and agent)", tmain.split("row.kind == KIND_NOTICE")[1].split("KIND_EXACT")[0].count("AdhanScheduler.schedule(this)") == 1
+      and music.split('"sa.urtv.home.ADHAN_NOTICE"')[1].split("return;")[0].count("AdhanScheduler.schedule(context)") == 1)
+check("the agent command is declared and in music.sh", '"sa.urtv.home.ADHAN_NOTICE"' in manifest and "notice)" in music_sh and "adhan_notice=" in music)
+
 if not shutil.which("javac"):
     print("SKIP adhan options: no javac here")
     sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
-    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp] + [str(T / n) for n in ("AdhanPlan.java",)] + [str(ROOT / "tests/AdhanOptionsRun.java")], check=True, capture_output=True)
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp] + [str(T / n) for n in ("AdhanPlan.java", "AdhanNoticeText.java")] + [str(ROOT / "tests/AdhanOptionsRun.java")], check=True, capture_output=True)
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.tilawah.AdhanOptionsRun"], check=True, capture_output=True).stdout.decode("utf-8")
 rows = [l.split("\t") for l in out.split("\n") if l]
 for name, res in rows:
     check(name, res == "ok")
-check("every check ran", len(rows) >= 12, len(rows))
+check("every check ran", len(rows) >= 16, len(rows))
 sys.exit(1 if failed else 0)

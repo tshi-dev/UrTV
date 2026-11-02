@@ -17,6 +17,15 @@ public final class AdhanOptionsRun {
         check("saver-only on: plays over our home", AdhanPlan.mayPlay(true, AdhanPlan.HOME));
         check("saver-only on: plays over the screensaver", AdhanPlan.mayPlay(true, AdhanPlan.DREAM));
         check("saver-only on: another app or an input in front gets none", !AdhanPlan.mayPlay(true, AdhanPlan.OTHER));
+        check("note: says what the last alarm did", AdhanPlan.note(AdhanPlan.OTHER, false, true).equals("front=other play=0 notice=1")
+                && AdhanPlan.note(AdhanPlan.HOME, true, false).equals("front=home play=1 notice=0")
+                && AdhanPlan.note(AdhanPlan.UNKNOWN, true, false).equals("front=unknown play=1 notice=0") && AdhanPlan.note(AdhanPlan.DREAM, true, true).equals("front=dream play=1 notice=1"));
+
+        // ---- «تنبيه عند الأذان»
+        check("notice: the words name the prayer", AdhanNoticeText.text(3).equals("حان وقت صلاة العصر") && AdhanNoticeText.text(0).equals("حان وقت صلاة الفجر")
+                && AdhanNoticeText.text(2).equals("حان وقت صلاة الظهر") && AdhanNoticeText.text(4).equals("حان وقت صلاة المغرب") && AdhanNoticeText.text(5).equals("حان وقت صلاة العشاء"));
+        check("notice: no prayer, or the sunrise, is just «الصلاة»", AdhanNoticeText.text(-1).equals("حان وقت الصلاة") && AdhanNoticeText.text(1).equals("حان وقت الصلاة") && AdhanNoticeText.text(9).equals("حان وقت الصلاة"));
+        check("notice: 5 seconds, the first toast shorter than that", AdhanNoticeText.SHOW_MS == 5_000 && AdhanNoticeText.FIRST_MS > 0 && AdhanNoticeText.FIRST_MS < AdhanNoticeText.SHOW_MS);
         check("saver-only on: when it cannot be known, it plays (a missed adhan is worse)", AdhanPlan.mayPlay(true, AdhanPlan.UNKNOWN));
     }
 }

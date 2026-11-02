@@ -87,6 +87,18 @@ final class Prefs {
     boolean adhanSaverOnly() { return sp.getBoolean("adhan_saver_only", false); }
     void setAdhanSaverOnly(boolean on) { sp.edit().putBoolean("adhan_saver_only", on).apply(); }
 
+    /** «تنبيه عند الأذان»: a 5-second notice with the prayer's name when its time comes, whether or not the adhan plays. Off until it is turned on. */
+    boolean adhanNotice() { return sp.getBoolean("adhan_notice", false); }
+    void setAdhanNotice(boolean on) { sp.edit().putBoolean("adhan_notice", on).apply(); }
+
+    /** The alarm goes off for the adhan or for any option that acts at the prayer's time (the notice). */
+    boolean alarmWanted() { return adhanOn() || adhanNotice(); }
+
+    /** What the last alarm did (AdhanPlan.note) and when, for `music.sh adhan`: a tester with the sound at 0 reads this. */
+    String lastAlarmNote() { return sp.getString("adhan_alarm_note", ""); }
+    long lastAlarmNoteAt() { return sp.getLong("adhan_alarm_note_at", 0); }
+    void setLastAlarmNote(String note, long at) { sp.edit().putString("adhan_alarm_note", note).putLong("adhan_alarm_note_at", at).apply(); }
+
     /** «إيقاف الأذان بأي زر»: while the adhan plays, any key stops it (once) and is consumed; ON by default (the owner's decision), off only when someone turns it off. The screensaver asks for it. */
     boolean adhanStopKey() { return sp.getBoolean("adhan_stopkey", true); }
     void setAdhanStopKey(boolean on) { sp.edit().putBoolean("adhan_stopkey", on).apply(); }

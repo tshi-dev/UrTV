@@ -7,7 +7,7 @@ import android.os.PowerManager;
 import android.util.Log;
 
 /**
- * Plays the adhan when its alarm goes off — pausing a surah that is playing and resuming it after —
+ * Plays the adhan when its alarm goes off (and shows «تنبيه عند الأذان» when that is on, with the adhan on or not) — pausing a surah that is playing and resuming it after —
  * and sets the next alarm again after a reboot, a clock change or an update.
  *
  * The adhan only starts while the TV is on: an alarm that arrives in standby is skipped, and none is
@@ -32,15 +32,16 @@ public class AdhanReceiver extends BroadcastReceiver {
 
         long now = System.currentTimeMillis();
         long due = intent.getLongExtra(AdhanScheduler.EXTRA_DUE, 0);
-        if (prefs.adhanOn() && screenOn(context) && !alreadyPlayed(prefs, due, now)) {
+        if (prefs.alarmWanted() && screenOn(context) && !alreadyPlayed(prefs, due, now)) {
             if (due > 0) prefs.setLastDue(due); else prefs.setLastAlarmAt(now);
             int prayer = intent.getIntExtra(AdhanScheduler.EXTRA_PRAYER, -1);   // an alarm of an older version has none: the usual voice
             int front = AdhanFront.now(context);
-            if (AdhanPlan.mayPlay(prefs.adhanSaverOnly(), front)) {
-                MusicService.adhan(context, prefs.playVoiceFor(context, prayer == PrayerTimes.FAJR), null, 0, prayer);
-            } else {
-                Log.i("UrTVAdhan", "adhan skipped: another app is in front (saver-only is on)");
-            }
+            boolean play = prefs.adhanOn() && AdhanPlan.mayPlay(prefs.adhanSaverOnly(), front);
+            boolean notice = prefs.adhanNotice();
+            if (play) MusicService.adhan(context, prefs.playVoiceFor(context, prayer == PrayerTimes.FAJR), null, 0, prayer);
+            else if (prefs.adhanOn()) Log.i("UrTVAdhan", "adhan skipped: another app is in front (saver-only is on)");
+            if (notice) AdhanNotice.show(context, prayer);
+            prefs.setLastAlarmNote(AdhanPlan.note(front, play, notice), now);
         }
         AdhanScheduler.schedule(context);
         PrayerTimes.refresh(context, null);

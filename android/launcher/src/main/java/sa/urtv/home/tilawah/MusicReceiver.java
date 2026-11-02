@@ -14,6 +14,7 @@ import android.content.Intent;
  *   ADHAN_SHORT --ez on true|false: «أذان مختصر»
  *   ADHAN_STOPKEY --ez on true|false: «إيقاف الأذان بأي زر»
  *   ADHAN_SAVERONLY --ez on true|false: «الأذان على شاشة التوقف فقط»
+ *   ADHAN_NOTICE --ez on true|false: «تنبيه عند الأذان»
  *   STOP_ADHAN: stop the adhan that is playing (nothing else)
  */
 public class MusicReceiver extends BroadcastReceiver {
@@ -67,6 +68,11 @@ public class MusicReceiver extends BroadcastReceiver {
             case "sa.urtv.home.ADHAN_SAVERONLY":   // optimize/music.sh adhan saver-only on|off
                 prefs.setAdhanSaverOnly(intent.getBooleanExtra("on", false));
                 setResultData("saved\nsaver_only=" + (prefs.adhanSaverOnly() ? "on" : "off"));
+                return;
+            case "sa.urtv.home.ADHAN_NOTICE":   // optimize/music.sh adhan notice on|off
+                prefs.setAdhanNotice(intent.getBooleanExtra("on", false));
+                AdhanScheduler.schedule(context);   // the alarm is wanted for the notice alone, too
+                setResultData("saved\nnotice=" + (prefs.adhanNotice() ? "on" : "off"));
                 return;
             case "sa.urtv.home.ADHAN_OWN":
                 setResultData(own(context, prefs, intent));
@@ -196,6 +202,8 @@ public class MusicReceiver extends BroadcastReceiver {
                 + "|adhan_short=" + (prefs.adhanShort() ? "on" : "off")
                 + "|adhan_stopkey=" + (prefs.adhanStopKey() ? "on" : "off")
                 + "|adhan_saver_only=" + (prefs.adhanSaverOnly() ? "on" : "off")
+                + "|adhan_notice=" + (prefs.adhanNotice() ? "on" : "off")
+                + "|adhan_alarm_last=" + prefs.lastAlarmNoteAt() + (prefs.lastAlarmNote().isEmpty() ? "" : " " + prefs.lastAlarmNote().replace('|', '/'))
                 + "|adhan_live=" + (MusicService.adhanLive() ? 1 : 0)
                 + "|adhan_volume=" + prefs.adhanVolume()
                 + "|adhan_exact=" + (AdhanScheduler.exactAllowed(context) ? 1 : 0)
