@@ -54,13 +54,13 @@ check("up into the favourites: at their end, never past Dock.MAX", "if (!row.con
 check("full favourites say so", 'case AppsEdit.FAVOURITES_FULL:' in main and 'S.t("المفضلة ممتلئة (%s' in main)
 
 # ---- entering, leaving, keys
-check("the long-press menu of an app of «كل التطبيقات» has «تعديل التطبيقات» (not in kids mode)",
-      'if (!inDock && !kids) {\n            labels.add(S.t("تعديل التطبيقات"));\n            actions.add(() -> beginAppsEdit(pkg));' in main)
+check("«انقل» in the options of an app of «كل التطبيقات» starts «تعديل التطبيقات» on it (a favourite: «تعديل المفضلة»); not in kids mode",
+      "if (!kids) {\n            o.move = () -> { if (inDock) beginEdit(pkg); else beginAppsEdit(pkg); };" in main)
 check("the mode asks the settings' lock first, as «تعديل المفضلة» (ParentalPolicy.MENU_ARRANGE, «قفل الإعدادات»); kids mode never starts it",
       re.search(r'private void beginAppsEdit\(String pkg\) \{\s*if \(kidsNoEdit\(\)\) return;\s*guarded\(ParentalPolicy\.MENU_ARRANGE, null, S\.t\("تعديل التطبيقات"\), \(\) -> startAppsEdit\(pkg\)\);', main) is not None)
 check("startAppsEdit is reached only through beginAppsEdit", len(re.findall(r"startAppsEdit\(", main)) == 2)
 check("kids mode: no «تعديل المفضلة» either (it saved a row of the allowed apps only), the same rule (AppsEdit.allowed)",
-      'if (inDock && !kids) {\n            labels.add(S.t("تعديل المفضلة"));' in main and "if (AppsEdit.allowed(Parental.state(this).kids)) return false;" in main)
+      "if (!kids) {\n            o.move = " in main and "if (AppsEdit.allowed(Parental.state(this).kids)) return false;" in main)
 check("one mode at a time", "if (edit != null || appsEdit != null || dockCards.isEmpty()) return;" in main and "if (appsEdit != null || edit != null) return;" in main)
 check("the mode starts once the whole grid is built (addGridRows ran to its end)", "if (!gridDone) { wantAppsEdit = true; return; }" in main
       and "gridDone = true;\n        beginPendingAppsEdit();" in main)

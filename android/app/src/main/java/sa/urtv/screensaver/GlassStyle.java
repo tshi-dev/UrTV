@@ -35,12 +35,19 @@ public final class GlassStyle {
         public final int dialog;      // a dialog's own fill
         public final int focus, onFocus, onFocusSub;   // the focused tile: a solid fill and its text
         public final int hint;        // the hint line's pill
+        /** a line drawn round the focused tile, over its fill; 0: none (the solid fill alone shows the focus, as every look before «رملي») */
+        public final int ring;
 
         Look(boolean light, int base, int scrim, float scrimMin, int text, int sub, int accent, int warn, int panel, int line, int dialog,
              int focus, int onFocus, int onFocusSub, int hint) {
+            this(light, base, scrim, scrimMin, text, sub, accent, warn, panel, line, dialog, focus, onFocus, onFocusSub, hint, 0);
+        }
+
+        Look(boolean light, int base, int scrim, float scrimMin, int text, int sub, int accent, int warn, int panel, int line, int dialog,
+             int focus, int onFocus, int onFocusSub, int hint, int ring) {
             this.light = light; this.base = base; this.scrim = scrim; this.scrimMin = scrimMin; this.text = text; this.sub = sub;
             this.accent = accent; this.warn = warn; this.panel = panel; this.line = line; this.dialog = dialog; this.focus = focus;
-            this.onFocus = onFocus; this.onFocusSub = onFocusSub; this.hint = hint;
+            this.onFocus = onFocus; this.onFocusSub = onFocusSub; this.hint = hint; this.ring = ring;
         }
     }
 
@@ -73,9 +80,19 @@ public final class GlassStyle {
     public static final Look CLEAN_LIGHT = new Look(true, 0xFFECECE8, 0xF4F4F1, 0.88f, 0xFF1B1D21, 0xFF50555E, 0xFF0B5E51, 0xFF8E2A10,
             0xFAFFFFFF, 0x1414181E, 0xFFFFFFFF, 0xFF0B5E51, 0xFFFFFFFF, 0xFFCFE6E1, 0xFAFFFFFF);
 
+    /**
+     * د · رملي (docs/UX-REVIEW.md): white cards on sand, hairline borders, and a calm focus: a soft green fill with a DGA green line
+     * round it (sa-flag 600 #1B8354 in the light, 400 #54C08A in the dark) instead of a solid block; green words in the light are a darker flag green,
+     * #166A45, as 600 reads at 4.3:1 on sand, under MIN_CONTRAST. The photo shows more under a lighter veil.
+     */
+    public static final Look SAND_LIGHT = new Look(true, 0xFFF6F4EF, 0xF6F4EF, 0.55f, 0xFF1B1F1D, 0xFF545A57, 0xFF166A45, 0xFF8E2A10,
+            0xE6FFFFFF, 0xFFE3DFD5, 0xFFFFFFFF, 0xFFEEF6F1, 0xFF1B1F1D, 0xFF3F4A44, 0xF2FFFFFF, 0xFF1B8354);
+    public static final Look SAND_DARK = new Look(false, 0xFF151A17, 0x151A17, 0.80f, 0xFFF2F1EC, 0xFFB8BDB9, 0xFF54C08A, 0xFFFFB4A0,
+            0xE61E2420, 0x1AFFFFFF, 0xFF1E2420, 0xFF1F3A2C, 0xFFF2F1EC, 0xFFC9D6CE, 0xF21E2420, 0xFF54C08A);
+
     /** the looks «المظهر ← الشكل» offers, in its order; the first is the default */
-    public static final String[] LOOKS = {"glass", "graphite", "navy", "clean"};
-    public static final String[] LOOK_NAMES = {"زجاجي", "فحمي", "كحلي", "نظيف"};
+    public static final String[] LOOKS = {"glass", "graphite", "navy", "clean", "sand"};
+    public static final String[] LOOK_NAMES = {"زجاجي", "فحمي", "كحلي", "نظيف", "رملي"};
 
     /** A look's key as kept; anything else (an older app, nothing set) is the glass look. */
     public static String look(String raw) {
@@ -89,6 +106,7 @@ public final class GlassStyle {
             case "graphite": return light ? GRAPHITE_LIGHT : GRAPHITE_DARK;
             case "navy": return light ? NAVY_LIGHT : NAVY_DARK;
             case "clean": return light ? CLEAN_LIGHT : GRAPHITE_DARK;
+            case "sand": return light ? SAND_LIGHT : SAND_DARK;
             default: return light ? LIGHT : DARK;
         }
     }

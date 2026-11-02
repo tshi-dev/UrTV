@@ -51,6 +51,22 @@ final class Look {
 
     static Palette of(boolean light) { return light ? LIGHT_LOOK : DARK_LOOK; }
 
+    /**
+     * «رملي» (GlassStyle's sand look, docs/UX-REVIEW.md): in the light the photo shows at the top and fades into sand toward the apps, with
+     * ink for the words and the darker flag green (#166A45) where the other looks have gold; in the dark the home as it always was, its
+     * gold turned flag green (400, #54C08A).
+     */
+    static final Palette SAND_LIGHT = new Palette(0xFF1B1F1D, 0xFF1B1F1D, 0xFF3F4A44, 0xFF166A45, 0x66FFFFFF, 0x80FFFFFF,
+            new int[]{0xD9F6F4EF, 0x66F6F4EF, 0x40F6F4EF, 0xB8F6F4EF, 0xF2F6F4EF}, 0xE6F6F4EF, 0xB8FFFFFF, 0xD9FFFFFF);
+    static final Palette SAND_DARK = new Palette(0xFFFFFDF6, 0xFFFFFFFF, 0xFFC9D0CB, 0xFF54C08A, 0x80000000, 0x66000000,
+            new int[]{0xB3000000, 0x40000000, 0x26000000, 0x8C000000, 0xE6000000}, 0xB3000000, 0x24FFFFFF, 0x47FFFFFF);
+
+    /** The palette of «المظهر ← الشكل» (a GlassStyle look key) in the dark or the light: «رملي» its own, every other look the home's two. */
+    static Palette of(String look, boolean light) {
+        if ("sand".equals(look)) return light ? SAND_LIGHT : SAND_DARK;
+        return of(light);
+    }
+
     /** A colour laid over another (both ARGB; the result is opaque when the one under it is). */
     static int over(int top, int under) {
         float a = (top >>> 24) / 255f;

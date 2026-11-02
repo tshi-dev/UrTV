@@ -24,7 +24,7 @@
 تحديث التطبيقين وإصدارهما، وتحديث صفحة شاشة التوقف.	Update both apps, see their versions, and update the screensaver page.
 أرسل تقرير	Send a report
 المزيد	More
-المباريات والأسواق، والتطبيقات والمفضلة، وجديد المسلسلات، وحماية العائلة.	Matches and markets, apps and favorites, new episodes, and family protection.
+المباريات والأسواق، والتطبيقات والمفضلة، وجديد المسلسلات، والرقابة الأبوية، وتصفية المواقع.	Matches and markets, apps and favorites, new episodes, parental controls, and the site filter.
 شاشة التوقف	Screensaver
 ما يظهر على شاشة التوقف: الساعة والبطاقة بجانبها، والصور، ومتى تبدأ.	What the screensaver shows: the clock and its card, the photos, and when it starts.
 الشاشة الرئيسية	Home screen
@@ -35,7 +35,15 @@
 ترتيب التطبيقات المفضلة وتعديلها، وترتيب كل التطبيقات، وأسماء مصادر التلفزيون مثل PS5.	Order and edit your favorites, arrange all apps, and rename TV inputs like PS5.
 جديد المسلسلات	New episodes
 ما تعرضه بطاقة المسلسلات: التصنيفات واللغات والمسلسلات المختارة.	What the shows card shows: genres, languages, and picked shows.
-حماية العائلة	Family protection
+الرقابة الأبوية	Parental controls
+الرمز والتطبيقات المقفلة	The PIN and the locked apps
+قفل التطبيقات	Lock apps
+اختر التطبيقات التي تطلب الرمز	Choose the apps that ask for the PIN
+تفاصيل التطبيقات	App details
+قائمة التلفزيون: التخزين والأذونات والحذف	The TV’s list: storage, permissions, uninstall
+ما قدرنا نفتح قائمة التطبيقات في التلفزيون	Couldn’t open the TV’s app list
+رمز يقفل التطبيقات والإعدادات، ووضع الأطفال	A PIN that locks apps and settings, and kids mode
+تصفية المواقع	Site filter
 اللغة	Language
 # ---- the tiles' summaries
 تشغيله وصوته ومؤذن الفجر	On/off, voice, Fajr muezzin
@@ -105,7 +113,7 @@
 افتح تلاوة وأذان	Open Quran and Adhan
 القرآن والإذاعات ومواقيت الأذان	Quran, radio, and adhan times
 زر تلاوة وأذان	Quran and Adhan button
-مخفي  •  الأذان والتلاوة تعمل، وتفتح الشاشة من قائمة التطبيق (اختيار مطوّلة) أو من بطاقة «يُتلى الآن»	Hidden  •  Adhan and Quran still play; open the screen from the app menu (hold OK) or the Now Playing card
+مخفي  •  الأذان والتلاوة تعمل، وتفتح الشاشة من «افتح تلاوة وأذان» هنا أو من بطاقة «يُتلى الآن»	Hidden  •  Adhan and Quran still play; open the screen from “Open Quran and Adhan” here or the Now Playing card
 زر المهام	Tasks button
 مخفي  •  المهام تبقى في بطاقة «المهام» ومن الجوال	Hidden  •  Tasks stay in the Tasks card and on the phone
 الرجوع يفتح شاشة التوقف	Back starts screensaver
@@ -199,7 +207,7 @@
 تمت إضافة %s	Added %s
 جارٍ جلب الاسم بالعربية…	Getting the Arabic name…
 # ---- the home app's screens
-ما قدرنا نفتح حماية العائلة: حدّث الواجهة الرئيسية «تلفزيونك»	Couldn’t open Family Protection: update the “Your TV” home app
+ما قدرنا نفتح تصفية المواقع: حدّث الواجهة الرئيسية «تلفزيونك»	Couldn’t open the site filter: update the “Your TV” home app
 ثبّت الواجهة الرئيسية «تلفزيونك» أولاً	Install the “Your TV” home app first
 حدّث الواجهة الرئيسية «تلفزيونك» أو ثبّتها أولاً	Update or install the “Your TV” home app first
 تعديل التطبيقات	Edit apps
@@ -256,6 +264,7 @@
 فحمي	Graphite
 كحلي	Navy
 نظيف	Clean
+رملي	Sand
 # ---- prayer times
 يسار + · يمين − · موافق للتصفير	Right + · Left − · OK to reset
 الفجر %s د	Fajr %s min

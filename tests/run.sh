@@ -167,6 +167,8 @@ python3 tests/month_names_test.py
 python3 tests/focus_key_test.py
 python3 tests/settings_hub_test.py
 python3 tests/on_off_test.py   # on/off rows: the owner's choice I (green triangles and word), both apps
+python3 tests/parental_text_test.py   # «الرقابة الأبوية»: the card and its two buttons, the count of locked apps (docs/UX-REVIEW.md)
+python3 tests/fav_bar_test.py   # the favourites bar: the tray, five tiles, the focus inside it, the one 40 px move (docs/PROPOSALS-NOV2.md §1)
 python3 tests/settings_report_test.py   # «أرسل تقرير»: share.py's allowlist, nothing personal
 python3 tests/dialog_fit_test.py
 python3 tests/second_card_test.py

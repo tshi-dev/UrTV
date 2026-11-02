@@ -13,7 +13,7 @@ final class SettingsHub {
     static final String ADHAN = "adhan", PLACE = "place", CLOCK = "clock", LISTEN = "listen", CARDS = "cards", LOOK = "look", CONTROL = "control",
             PHONE = "phone", UPDATE = "update", REPORT = "report", MORE = "more",
             SAVER = "saver", HOME = "home",                                 // in «البطاقات»
-            CONTENT = "content", APPS = "apps", SHOWS = "shows", FAMILY = "family", LANG = "lang";   // in «المزيد»
+            CONTENT = "content", APPS = "apps", SHOWS = "shows", FAMILY = "family", PARENTAL = "parental", LANG = "lang";   // in «المزيد»
 
     /**
      * key, name, the line under its title on its own screen, the screen its button is on (null: the first), and the row a DIRECT button runs
@@ -30,13 +30,14 @@ final class SettingsHub {
         {PHONE, "التحكم من الجوال", "", null, "تحكم من الجوال"},
         {UPDATE, "تحديث تلفزيوني", "تحديث التطبيقين وإصدارهما، وتحديث صفحة شاشة التوقف.", null, ""},
         {REPORT, "أرسل تقرير", "", null, "أرسل تقرير"},
-        {MORE, "المزيد", "المباريات والأسواق، والتطبيقات والمفضلة، وجديد المسلسلات، وحماية العائلة.", null, ""},
+        {MORE, "المزيد", "المباريات والأسواق، والتطبيقات والمفضلة، وجديد المسلسلات، والرقابة الأبوية، وتصفية المواقع.", null, ""},
         {SAVER, "شاشة التوقف", "ما يظهر على شاشة التوقف: الساعة والبطاقة بجانبها، والصور، ومتى تبدأ.", CARDS, ""},
         {HOME, "الشاشة الرئيسية", "بطاقات الشاشة الرئيسية الثلاث، والتحية والطقس، والأزرار.", CARDS, ""},
         {CONTENT, "المباريات والأسواق", "ما تعرضه البطاقات: فرقك ودورياتك، والأسواق، والأسهم.", MORE, ""},
         {APPS, "التطبيقات والمفضلة", "ترتيب التطبيقات المفضلة وتعديلها، وترتيب كل التطبيقات، وأسماء مصادر التلفزيون مثل PS5.", MORE, ""},
         {SHOWS, "جديد المسلسلات", "ما تعرضه بطاقة المسلسلات: التصنيفات واللغات والمسلسلات المختارة.", MORE, ""},
-        {FAMILY, "حماية العائلة", "", MORE, "حماية العائلة"},
+        {PARENTAL, "الرقابة الأبوية", "", MORE, "الرقابة الأبوية"},
+        {FAMILY, "تصفية المواقع", "", MORE, "تصفية المواقع"},
         {LANG, "اللغة", "", MORE, "اللغة"},
     };
 
@@ -60,9 +61,9 @@ final class SettingsHub {
         {"افتح تلاوة وأذان", LISTEN}, {"زر تلاوة وأذان", LISTEN}, {"زر المهام", HOME}, {"الرجوع يفتح شاشة التوقف", HOME},
         {"أكمل المشاهدة", HOME}, {"جرس التحديثات", HOME},
         {"الأذان", ADHAN},
-        {"ترتيب التطبيقات المفضلة", APPS}, {"أسماء المصادر", APPS}, {"تعديل المفضلة", APPS}, {"ترتيب كل التطبيقات", APPS},
+        {"ترتيب التطبيقات المفضلة", APPS}, {"أسماء المصادر", APPS}, {"تعديل المفضلة", APPS}, {"ترتيب كل التطبيقات", APPS}, {"قفل التطبيقات", APPS}, {"تفاصيل التطبيقات", APPS},
         {"تحديث تلفزيوني", UPDATE}, {"تحكم من الجوال", PHONE}, {"مركز التحكم", CONTROL}, {"أرسل تقرير", REPORT},
-        {"حماية العائلة", FAMILY}, {"اللغة", LANG},
+        {"الرقابة الأبوية", PARENTAL}, {"تصفية المواقع", FAMILY}, {"اللغة", LANG},
         {"التصنيفات", SHOWS}, {"اللغات", SHOWS}, {"مسلسلات مختارة", SHOWS}, {"أقل تقييم", SHOWS}, {"قائمة الأسهم", CONTENT}, {"تغيّر الأسهم الأمريكية", CONTENT},
         {"تبديل الصورة كل", SAVER}, {"صوري", SAVER}, {"بدء شاشة التوقف بعد", SAVER},
         {"التحديث التلقائي للصفحة", UPDATE}, {"تحديث صفحة شاشة التوقف", UPDATE},

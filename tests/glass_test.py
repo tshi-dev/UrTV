@@ -125,7 +125,8 @@ tstyles = read(lres / "values/styles.xml")
 def theme(name):
     return {m.group(1): m.group(2).upper() for m in re.finditer(r'<item name="(g\w+)">(#[0-9A-Fa-f]+)</item>', tstyles.split(f'<style name="{name}"')[1].split("</style>")[0])}
 for tname, const in (("Glass.Dark", "DARK"), ("Glass.Light", "LIGHT"), ("Graphite.Dark", "GRAPHITE_DARK"), ("Graphite.Light", "GRAPHITE_LIGHT"),
-                     ("Navy.Dark", "NAVY_DARK"), ("Navy.Light", "NAVY_LIGHT"), ("Clean.Dark", "GRAPHITE_DARK"), ("Clean.Light", "CLEAN_LIGHT")):
+                     ("Navy.Dark", "NAVY_DARK"), ("Navy.Light", "NAVY_LIGHT"), ("Clean.Dark", "GRAPHITE_DARK"), ("Clean.Light", "CLEAN_LIGHT"),
+                     ("Sand.Dark", "SAND_DARK"), ("Sand.Light", "SAND_LIGHT")):
     l, c = every[const], theme("Tilawah." + tname)
     want_c = {"gBg": hexrgb(l["base"]), "gText": hexrgb(l["text"]), "gSub": hexrgb(l["sub"]), "gAccent": hexrgb(l["accent"]), "gWarn": hexrgb(l["warn"]),
               "gPanel": hexargb(l["panel"]), "gLine": hexargb(l["line"]), "gDialogSolid": over(l["dialog"], l["base"]).replace("#FF", "#"), "gFocus": hexargb(l["focus"]),

@@ -14,12 +14,12 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 /**
- * «حماية العائلة (DNS)»: one switch, with the remote. On sets Android's Private DNS to AdGuard Family after checking the service can
+ * «تصفية المواقع (DNS)»: one switch, with the remote. On sets Android's Private DNS to AdGuard Family after checking the service can
  * be reached. The old setting goes back by itself only during the 20-second check after switching on (if Private DNS does not
  * validate or the internet stops); after that the person turns it off from the row, and it works offline (see FamilyDns). Without
  * the permission the switch says «يحتاج تفعيل من الكمبيوتر» and does nothing; on Android below 9 (API 28) it says it is unsupported;
  * when Private DNS already points at our host without our record (set from the computer) the switch does nothing either.
- * Exported, but guarded by the signature permission sa.urtv.home.FAMILY_DNS (the screensaver has the same key). Opened from the screensaver's settings (الشاشة الرئيسية ← حماية العائلة)
+ * Exported, but guarded by the signature permission sa.urtv.home.FAMILY_DNS (the screensaver has the same key). Opened from the screensaver's settings (الشاشة الرئيسية ← تصفية المواقع)
  * or `optimize/dock.sh familydns`. (Not `am start` from the shell: the shell lacks the permission.) The page polls once a second only while a check is running and the screen is
  * in front.
  */
@@ -48,7 +48,7 @@ public class FamilyDnsActivity extends Activity {
         col.setPadding(0, dp(36), 0, dp(48));
         frame.addView(col, new FrameLayout.LayoutParams(dp(600), -2, Gravity.CENTER_HORIZONTAL));
 
-        col.addView(text(S.t("حماية العائلة (DNS)"), 26, "Medium", TEXT), right(0));
+        col.addView(text(S.t("تصفية المواقع (DNS)"), 26, "Medium", TEXT), right(0));
         col.addView(text(S.t("تحجب المواقع غير المناسبة للعائلة على كل التلفزيون. قبل التفعيل نتأكد أن الخدمة تشتغل، وإذا وقف الإنترنت نرجّع الإعداد القديم تلقائياً."), 14, "Regular", DIM), right(dp(14)));
         state = text("", 17, "Medium", GOLD);
         col.addView(state, right(dp(18)));

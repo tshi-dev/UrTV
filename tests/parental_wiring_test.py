@@ -56,8 +56,8 @@ used = "".join(src(f.name) for f in HOME.glob("*.java") if f.name not in ("Paren
 check("every launch path ParentalPolicy knows is used by a screen", all(f"ParentalPolicy.{n}" in used for n in names), [n for n in names if f"ParentalPolicy.{n}" not in used])
 check("the lock list the settings screen shows is the pills ParentalPolicy knows", "for (String pill : ParentalPolicy.PILLS)" in src("ParentalActivity.java"))
 check("«قفل الإعدادات»: the arrange screen asks for itself too (it is opened from the screensaver's settings as well)", "ARRANGE_SCREEN" in src("DockActivity.java"))
-check("«تحديث تلفزيوني»: the menu entry is behind the family lock, and so is the install button of its own screen (the phone's install asks in PhoneApi)",
-      "launchGuarded(ParentalPolicy.MENU_UPDATE, new Intent(this, UpdateActivity.class)" in src("MainActivity.java")
+check("«تحديث تلفزيوني»: no longer in the app's options (it is in the settings); its own screen asks for the family lock, and so does its install button (the phone's install asks in PhoneApi)",
+      "MENU_UPDATE" not in src("MainActivity.java")
       and "Parental.guard(UpdateActivity.this" in src("UpdateActivity.java") and "ParentalPolicy.UPDATE_SCREEN" in src("UpdateActivity.java"))
 check("the settings screen asks for the PIN itself, before anything shows", "screen.setVisibility(View.INVISIBLE)" in src("ParentalActivity.java") and "PARENTAL_SCREEN" in src("ParentalActivity.java"))
 check("what was opened with the PIN is forgotten when the home screen comes back (onResume and onNewIntent)",
