@@ -1,4 +1,4 @@
-**«⛔ WAIT — don't start anything yet. The supervisor will replace this line with «✅ GO — build N» when the build is ready and fully tested.»**
+«✅ GO — build 178»
 
 **1. Ask the owner for the PIN recovery code RIGHT NOW, before waiting for anything. Hold it in chat memory only, never in a file, log, commit, script or screenshot. If he doesn't answer, carry on without it, and report step 21 as "no code given".**
 
