@@ -33,7 +33,7 @@ public class MainActivity extends Activity {
     private static final int TAB_RECITERS = 0, TAB_STATIONS = 1, TAB_ADHAN = 2;
 
     private static final int KIND_RESUME = 0, KIND_RECITER = 1, KIND_STATION = 2,
-            KIND_PRAYER = 3, KIND_ADHAN_TOGGLE = 4, KIND_VOICE = 5, KIND_VOLUME = 6, KIND_EXACT = 7, KIND_FAJR_VOICE = 8, KIND_SHORT = 9, KIND_STOPKEY = 10, KIND_SAVER_ONLY = 11, KIND_NOTICE = 12, KIND_TAKBIR = 13;
+            KIND_PRAYER = 3, KIND_ADHAN_TOGGLE = 4, KIND_VOICE = 5, KIND_VOLUME = 6, KIND_EXACT = 7, KIND_FAJR_VOICE = 8, KIND_SHORT = 9, KIND_STOPKEY = 10, KIND_SAVER_ONLY = 11, KIND_NOTICE = 12, KIND_TAKBIR = 13, KIND_SAVER_AT = 14;
 
     private Catalog cat;
     private Prefs prefs;
@@ -131,6 +131,11 @@ public class MainActivity extends Activity {
             } else if (row.kind == KIND_NOTICE) {
                 prefs.setAdhanNotice(!prefs.adhanNotice());
                 AdhanScheduler.schedule(this);   // the alarm is wanted for the notice alone, too
+                adapter.rebuild();
+                focusList(list.getSelectedItemPosition());
+            } else if (row.kind == KIND_SAVER_AT) {
+                prefs.setAdhanSaverAt(!prefs.adhanSaverAt());
+                AdhanScheduler.schedule(this);   // the alarm is wanted for the screensaver alone, too
                 adapter.rebuild();
                 focusList(list.getSelectedItemPosition());
             } else if (row.kind == KIND_EXACT) {
@@ -409,6 +414,8 @@ public class MainActivity extends Activity {
                         getString(prefs.adhanSaverOnly() ? R.string.adhan_on : R.string.adhan_off), -1));
                 rows.add(new Row(false, KIND_NOTICE, getString(R.string.adhan_notice),
                         getString(prefs.adhanNotice() ? R.string.adhan_on : R.string.adhan_off), -1));
+                rows.add(new Row(false, KIND_SAVER_AT, getString(R.string.adhan_saver_at),
+                        getString(prefs.adhanSaverAt() ? R.string.adhan_on : R.string.adhan_off), -1));
                 rows.add(new Row(false, KIND_VOLUME, getString(R.string.adhan_volume),
                         volumeText(prefs.adhanVolume()), -1));
             }

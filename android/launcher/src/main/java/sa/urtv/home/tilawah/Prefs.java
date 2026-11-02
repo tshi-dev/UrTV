@@ -104,7 +104,11 @@ final class Prefs {
     void setAdhanNotice(boolean on) { sp.edit().putBoolean("adhan_notice", on).apply(); }
 
     /** The alarm goes off for the adhan or for any option that acts at the prayer's time (the notice). */
-    boolean alarmWanted() { return adhanOn() || adhanNotice(); }
+    boolean alarmWanted() { return adhanOn() || adhanNotice() || adhanSaverAt(); }
+
+    /** «شاشة التوقف وقت الأذان»: at the prayer's time the screensaver starts, if our home is in front (never over another app). Off until it is turned on. */
+    boolean adhanSaverAt() { return sp.getBoolean("adhan_saver_at", false); }
+    void setAdhanSaverAt(boolean on) { sp.edit().putBoolean("adhan_saver_at", on).apply(); }
 
     /** What the last alarm did (AdhanPlan.note) and when, for `music.sh adhan`: a tester with the sound at 0 reads this. */
     String lastAlarmNote() { return sp.getString("adhan_alarm_note", ""); }

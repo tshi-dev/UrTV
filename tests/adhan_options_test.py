@@ -44,14 +44,14 @@ notice = text(T / "AdhanNotice.java")
 sched = text(T / "AdhanScheduler.java")
 check("notice is off until it is turned on", 'getBoolean("adhan_notice", false)' in prefs)
 check("the alarm is set for the notice alone (adhan off), and cancelled only when neither is wanted",
-      "boolean alarmWanted() { return adhanOn() || adhanNotice(); }" in prefs and "alarmWanted()" in sched and sched.count("adhanOn()") == 1)
+      "boolean alarmWanted() { return adhanOn() || adhanNotice() || adhanSaverAt(); }" in prefs and "alarmWanted()" in sched and sched.count("adhanOn()") == 1)
 check("the adhan itself still needs its own switch: the notice never plays it", "boolean play = prefs.adhanOn() && AdhanPlan.mayPlay(" in receiver)
 check("the notice is shown whether the adhan plays or not, when the option is on", "if (notice) AdhanNotice.show(context, prayer);" in receiver and "boolean notice = prefs.adhanNotice();" in receiver)
 check("the notice is a text toast (no permission, no focus), never throws, logs", "Toast.makeText(" in notice and "catch (RuntimeException" in notice and "UrTVAdhan" in notice)
 check("no overlay permission was added for it", "SYSTEM_ALERT_WINDOW" not in manifest and "TYPE_APPLICATION_OVERLAY" not in notice)
 check("the last alarm is written down for the status", "setLastAlarmNote(AdhanPlan.note(" in receiver and "adhan_alarm_last=" in music)
 check("the tab has the row with one plain label", "KIND_NOTICE" in tmain and '<string name="adhan_notice">تنبيه عند الأذان</string>' in strings)
-check("the switch re-sets the alarm (screen and agent)", tmain.split("row.kind == KIND_NOTICE")[1].split("KIND_EXACT")[0].count("AdhanScheduler.schedule(this)") == 1
+check("the switch re-sets the alarm (screen and agent)", tmain.split("row.kind == KIND_NOTICE")[1].split("KIND_SAVER_AT")[0].count("AdhanScheduler.schedule(this)") == 1
       and music.split('"sa.urtv.home.ADHAN_NOTICE"')[1].split("return;")[0].count("AdhanScheduler.schedule(context)") == 1)
 check("the agent command is declared and in music.sh", '"sa.urtv.home.ADHAN_NOTICE"' in manifest and "notice)" in music_sh and "adhan_notice=" in music)
 
@@ -67,6 +67,23 @@ check("every end of an adhan clears the cut", svc.count("adhanCutMs = 0;") >= 3)
 check("the tab has the row with one plain label", "KIND_TAKBIR" in tmain and '<string name="adhan_takbir">تكبير فقط</string>' in strings)
 check("the agent command is declared and in music.sh", '"sa.urtv.home.ADHAN_TAKBIR"' in manifest and "takbir)" in music_sh and "adhan_takbir=" in music)
 
+# ---- «شاشة التوقف وقت الأذان»
+saver = text(T / "AdhanSaver.java")
+check("saver-at is off until it is turned on", 'getBoolean("adhan_saver_at", false)' in prefs)
+check("the alarm is set for it alone", "adhanOn() || adhanNotice() || adhanSaverAt()" in prefs)
+check("the screensaver starts only through AdhanPlan.startSaver (our home in front), after the adhan and the notice",
+      "AdhanPlan.startSaver(prefs.adhanSaverAt(), front) && AdhanSaver.start(context)" in receiver and receiver.index("AdhanNotice.show") < receiver.index("AdhanSaver.start"))
+check("the front is read once, before anything starts (the saver itself would change it)", receiver.count("AdhanFront.now(context)") == 1 and receiver.index("AdhanFront.now(context)") < receiver.index("MusicService.adhan("))
+check("it starts the screensaver app's preview the way the home's button does, with no new permission and never throws",
+      'PKG + ".MainActivity"' in saver and "FLAG_ACTIVITY_CLEAR_TASK" in saver and "catch (RuntimeException" in saver and "resolveActivity" in saver and "SYSTEM_ALERT_WINDOW" not in manifest)
+check("the tab has the row with one plain label", "KIND_SAVER_AT" in tmain and '<string name="adhan_saver_at">شاشة التوقف وقت الأذان</string>' in strings)
+check("the switch re-sets the alarm (screen and agent)", tmain.split("row.kind == KIND_SAVER_AT")[1].split("KIND_EXACT")[0].count("AdhanScheduler.schedule(this)") == 1
+      and music.split('"sa.urtv.home.ADHAN_SAVERAT"')[1].split("return;")[0].count("AdhanScheduler.schedule(context)") == 1)
+check("the agent command is declared and in music.sh", '"sa.urtv.home.ADHAN_SAVERAT"' in manifest and "saver-at)" in music_sh and "adhan_saver_at=" in music)
+for key in ("adhan_saver_only", "adhan_notice", "adhan_takbir", "adhan_saver_at"):
+    check(f"{key} is off by default and nothing in Prefs turns it on by itself", f'getBoolean("{key}", false)' in prefs)
+check("the adhan itself is still off by default", 'getBoolean("adhan_on", false)' in prefs)
+
 if not shutil.which("javac"):
     print("SKIP adhan options: no javac here")
     sys.exit(1 if failed else 0)
@@ -76,5 +93,5 @@ with tempfile.TemporaryDirectory() as tmp:
 rows = [l.split("\t") for l in out.split("\n") if l]
 for name, res in rows:
     check(name, res == "ok")
-check("every check ran", len(rows) >= 24, len(rows))
+check("every check ran", len(rows) >= 29, len(rows))
 sys.exit(1 if failed else 0)

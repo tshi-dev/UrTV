@@ -17,9 +17,9 @@ public final class AdhanOptionsRun {
         check("saver-only on: plays over our home", AdhanPlan.mayPlay(true, AdhanPlan.HOME));
         check("saver-only on: plays over the screensaver", AdhanPlan.mayPlay(true, AdhanPlan.DREAM));
         check("saver-only on: another app or an input in front gets none", !AdhanPlan.mayPlay(true, AdhanPlan.OTHER));
-        check("note: says what the last alarm did", AdhanPlan.note(AdhanPlan.OTHER, false, true).equals("front=other play=0 notice=1")
-                && AdhanPlan.note(AdhanPlan.HOME, true, false).equals("front=home play=1 notice=0")
-                && AdhanPlan.note(AdhanPlan.UNKNOWN, true, false).equals("front=unknown play=1 notice=0") && AdhanPlan.note(AdhanPlan.DREAM, true, true).equals("front=dream play=1 notice=1"));
+        check("note: says what the last alarm did", AdhanPlan.note(AdhanPlan.OTHER, false, true, false).equals("front=other play=0 notice=1 saver=0")
+                && AdhanPlan.note(AdhanPlan.HOME, true, false, true).equals("front=home play=1 notice=0 saver=1")
+                && AdhanPlan.note(AdhanPlan.UNKNOWN, true, false, false).equals("front=unknown play=1 notice=0 saver=0") && AdhanPlan.note(AdhanPlan.DREAM, true, true, false).equals("front=dream play=1 notice=1 saver=0"));
 
         // ---- «تكبير فقط»
         check("length: none is the whole adhan", AdhanVoices.length(false, false) == AdhanVoices.FULL && AdhanVoices.cutMs(AdhanVoices.FULL, 1) == 0);
@@ -35,6 +35,13 @@ public final class AdhanOptionsRun {
         for (long t = 0; t <= 15_000; t += 250) { float x = AdhanVoices.gain(t, 14_000, 2_000); if (x > last) falling = false; last = x; }
         check("takbir: the volume only goes down", falling);
         check("short is the same as before (shortGain is gain at 60 s / 3 s)", AdhanVoices.shortGain(58_500) == AdhanVoices.gain(58_500, 60_000, 3_000) && AdhanVoices.shortGain(57_000) == 1f && AdhanVoices.shortGain(60_000) == 0f);
+
+        // ---- «شاشة التوقف وقت الأذان»
+        check("saver-at off: never starts, whatever is in front", !AdhanPlan.startSaver(false, AdhanPlan.HOME) && !AdhanPlan.startSaver(false, AdhanPlan.OTHER));
+        check("saver-at on: starts when our home is in front", AdhanPlan.startSaver(true, AdhanPlan.HOME));
+        check("saver-at on: never over another app or an input", !AdhanPlan.startSaver(true, AdhanPlan.OTHER));
+        check("saver-at on: not when it is showing already", !AdhanPlan.startSaver(true, AdhanPlan.DREAM));
+        check("saver-at on: not when it cannot be known what is in front", !AdhanPlan.startSaver(true, AdhanPlan.UNKNOWN));
 
         // ---- «تنبيه عند الأذان»
         check("notice: the words name the prayer", AdhanNoticeText.text(3).equals("حان وقت صلاة العصر") && AdhanNoticeText.text(0).equals("حان وقت صلاة الفجر")

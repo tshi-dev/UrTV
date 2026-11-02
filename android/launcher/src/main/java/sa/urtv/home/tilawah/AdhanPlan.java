@@ -22,9 +22,15 @@ final class AdhanPlan {
      */
     static boolean mayPlay(boolean saverOnly, int front) { return !saverOnly || front != OTHER; }
 
-    /** what `music.sh adhan` says about the last alarm, so a tester with the sound at 0 can judge by state: «front=other play=0 notice=1» */
-    static String note(int front, boolean play, boolean notice) {
+    /**
+     * «شاشة التوقف وقت الأذان»: the screensaver starts only when our home is in front. Over the screensaver it is already there, and over
+     * another app, an input or when it cannot be known it is never started (it would cover what someone is watching).
+     */
+    static boolean startSaver(boolean saverAt, int front) { return saverAt && front == HOME; }
+
+    /** what `music.sh adhan` says about the last alarm, so a tester with the sound at 0 can judge by state: «front=other play=0 notice=1 saver=0» */
+    static String note(int front, boolean play, boolean notice, boolean saver) {
         return "front=" + (front == HOME ? "home" : front == DREAM ? "dream" : front == OTHER ? "other" : "unknown")
-                + " play=" + (play ? 1 : 0) + " notice=" + (notice ? 1 : 0);
+                + " play=" + (play ? 1 : 0) + " notice=" + (notice ? 1 : 0) + " saver=" + (saver ? 1 : 0);
     }
 }

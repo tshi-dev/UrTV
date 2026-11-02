@@ -361,6 +361,7 @@
                 <action android:name="sa.urtv.home.ADHAN_STOPKEY" />
                 <action android:name="sa.urtv.home.ADHAN_SAVERONLY" />
                 <action android:name="sa.urtv.home.ADHAN_NOTICE" />
+                <action android:name="sa.urtv.home.ADHAN_SAVERAT" />
                 <action android:name="sa.urtv.home.STOP_ADHAN" />
                 <action android:name="sa.urtv.home.ADHAN_OWN" />
             </intent-filter>

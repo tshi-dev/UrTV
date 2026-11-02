@@ -54,6 +54,7 @@
     <string name="adhan_stopkey_off">متوقف  •  «اختيار» على شريط الأذان يوقفه</string>
     <string name="adhan_saver_only">الأذان على شاشة التوقف فقط</string>
     <string name="adhan_notice">تنبيه عند الأذان</string>
+    <string name="adhan_saver_at">شاشة التوقف وقت الأذان</string>
     <string name="adhan_volume">صوت الأذان</string>
     <string name="adhan_exact_title">قد يتأخر الأذان دقائق</string>
     <string name="adhan_exact_detail">فعّل المنبّهات الدقيقة  •  اختيار يفتح الإعداد</string>

@@ -22,6 +22,8 @@
 #                                          another app or an input in front gets none (the alarm is still judged once, and never made up)
 #   optimize/music.sh adhan notice on|off  «تنبيه عند الأذان» (off by default): a 5-second notice «حان وقت صلاة العصر» at the prayer's time, shown even when the adhan
 #                                          is off or skipped (saver-only); the status says what the last alarm did: adhan_alarm_last=
+#   optimize/music.sh adhan saver-at on|off   «شاشة التوقف وقت الأذان» (off by default): at the prayer's time the screensaver starts, but only when our home is in
+#                                          front (idle), never over another app or an input; the status's adhan_alarm_last= says saver=1 when it did
 #   optimize/music.sh adhan stop           stop the adhan that is playing (nothing else)
 #   optimize/music.sh adhan volume 60      the adhan's own volume, 10-100 (percent of the TV's maximum)
 #   optimize/music.sh adhan add FILE       the person's own recording as the adhan («أذان من ملفي»): made small here (mono AAC, about
@@ -116,6 +118,7 @@ Usage: optimize/music.sh <command> [arguments]
   adhan fajr-voice <1-21 | own>
   adhan short on | off
   adhan saver-only on | off   the adhan plays only over the screensaver or our home (default off)
+  adhan saver-at on | off   the screensaver starts at the prayer's time when our home is in front (default off)
   adhan notice on | off   a 5-second notice with the prayer's name at its time (default off)
   adhan takbir on | off   only the opening takbir plays, then a fade (default off; turns short off)
   adhan stopkey on | off  any key stops the adhan while it plays (default on; off: only OK on the adhan bar)
@@ -210,7 +213,7 @@ PY
         out=$(tv "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.GET_PLAYER")
         data=$(printf '%s\n' "$out" | sed -n 's/.*data="\(.*\)"/\1/p' | tail -n 1)
         [ -n "$data" ] || { echo "No status from sa.urtv.home. Is the app installed and the TV reachable?" >&2; exit 1; }
-        printf '%s\n' "$data" | tr '|' '\n' | grep -E '^(adhan=|voice=|fajr_voice=|adhan_short=|adhan_takbir=|adhan_stopkey=|adhan_saver_only=|adhan_notice=|adhan_alarm_last=|adhan_live=|adhan_volume=|adhan_exact=|adhan_next|adhan_last|source=|playing=)'
+        printf '%s\n' "$data" | tr '|' '\n' | grep -E '^(adhan=|voice=|fajr_voice=|adhan_short=|adhan_takbir=|adhan_stopkey=|adhan_saver_only=|adhan_saver_at=|adhan_notice=|adhan_alarm_last=|adhan_live=|adhan_volume=|adhan_exact=|adhan_next|adhan_last|source=|playing=)'
         own=$(printf '%s\n' "$data" | tr '|' '\n' | sed -n 's/^own_bytes=//p')
         if [ "${own:-0}" -gt 0 ] 2> /dev/null; then
           echo "own=$((own / 1024)) KB (your own recording; adhan voice own uses it, adhan own-clear removes it)"
@@ -288,6 +291,12 @@ PY
         case "$2" in on) flag=true;; off) flag=false;; *) usage;; esac
         tv "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.ADHAN_SAVERONLY --ez on $flag" > /dev/null
         if [ "$flag" = true ]; then echo "Saver-only on: the adhan plays only over the screensaver or our home screen."; else echo "Saver-only off: the adhan plays whatever is in front."; fi
+        ;;
+      saver-at)
+        [ $# -eq 2 ] || usage
+        case "$2" in on) flag=true;; off) flag=false;; *) usage;; esac
+        tv "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.ADHAN_SAVERAT --ez on $flag" > /dev/null
+        if [ "$flag" = true ]; then echo "Screensaver at the adhan on: it starts at each prayer's time, only when our home screen is in front."; else echo "Screensaver at the adhan off."; fi
         ;;
       notice)
         [ $# -eq 2 ] || usage
