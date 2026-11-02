@@ -124,17 +124,8 @@ final class Stocks {
         return n == null ? code : n + " " + code;
     }
 
-    /** Arabic-Indic and Persian digits as 0-9 (Java's \d is ASCII only). */
-    static String ascii(String s) {
-        StringBuilder b = new StringBuilder(s.length());
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            if (c >= '٠' && c <= '٩') c = (char) ('0' + c - '٠');
-            else if (c >= '۰' && c <= '۹') c = (char) ('0' + c - '۰');
-            b.append(c);
-        }
-        return b.toString();
-    }
+    /** Arabic-Indic digits as 0-9 (Java's \d is ASCII only), by DigitsText as every digit of this app. */
+    static String ascii(String s) { return DigitsText.convert(s, true); }
 
     private static boolean hasArabic(String s) {
         for (int i = 0; i < s.length(); i++) if (s.charAt(i) >= '؀' && s.charAt(i) <= 'ۿ') return true;

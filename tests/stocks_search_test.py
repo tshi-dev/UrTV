@@ -84,7 +84,7 @@ with tempfile.TemporaryDirectory() as tmp:
         " o.append(Stocks.label(\"2222\", false)).append('|').append(Stocks.label(\"2222\", true)).append('|').append(Stocks.label(\"AAPL\", false)).append('\\n');"
         " System.out.write(o.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8)); System.out.flush(); } }", encoding="utf-8")
     (d / "in.txt").write_text("\n".join(c for c, _ in CASES) + "\n", encoding="utf-8")
-    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(APP / "Stocks.java"), str(d / "Prefs.java"), str(d / "StocksRun.java")], check=True, capture_output=True)
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(APP / "Stocks.java"), str(APP / "DigitsText.java"), str(d / "Prefs.java"), str(d / "StocksRun.java")], check=True, capture_output=True)
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.screensaver.StocksRun", str(d / "in.txt")], check=True, capture_output=True).stdout.decode("utf-8").split("\n")
 for (typed, want), got in zip(CASES, out):
     check(f"typed {typed!r}", got == want, f"{got!r} != {want!r}")
