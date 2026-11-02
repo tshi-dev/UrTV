@@ -246,3 +246,32 @@ Alarms: the next real prayer was hours away and prayeradj is ±20 min, so each a
 | Z | restored: yes | adhan options and on/off as at start; prayeradj off, all 0; real city exact; tasks as at start; disabled 22 = start; Home `sa.urtv.home/.MainActivity`; muted. updatechannel left on next for steps 17–20 (latest at the end) |
 
 Problems: 3 (T1 focus on mic; W3 install.sh launcher downgrade `!!`; the update unmutes + our a11y entry is gone) + K2 needs your answer.
+
+## step 17 (build 174, «4.2»; same install as step 16)
+| # | OK/problem | note |
+|---|---|---|
+| V1 | PROBLEM (small) | «الإصدار الحالي: ٤٫٢» / «الإصدار المتاح: لا يوجد أحدث» — the build number is not shown (the step expects «4.2 and the build») |
+| H1 | OK | store app, long OK: under the menu «تفاصيل التطبيق» and «حذف التطبيق» |
+| H2 | OK | the TV's app-info page (`AppManagementActivity`); Back returns |
+| H3 | OK | Android's «Do you want to uninstall this app?» (focus starts on OK); BACK pressed, not OK; app still there, packages 177 = 177 |
+| H4 | OK | system app and «شاشة تلفزيونك»: only «تفاصيل التطبيق», no «حذف التطبيق» |
+| H5 | partly | app menu («تعديل التطبيقات، تحديث تلفزيوني، إضافة إلى المفضلة، إعادة المفضلة الافتراضية، الرقابة الأبوية»): no trailing «…». «كل المصادر» and the three search rows not opened |
+| H6 | PROBLEM (injected) | short 4077 → the TV's settings (OK). `input keyevent --longpress 4077` → the TV's settings too, not ours. `--duration 1000` is not supported by this TV's `input` (it sent key=0 and key=1000, then 4077). UrTVKeys: `key=4077 scan=0`. Needs the real remote's long press |
+| H7 | OK | «البلوتوث · الريموت والملحقات» → `AddAccessoryActivity` («Searching for accessories…»); Back returns; nothing paired |
+| H8 | OK | «الرجوع يفتح شاشة التوقف» right after «زر المهام» |
+| H9 | OK | one OK → «مفعّل»; Back on our home → screensaver; Back on it → home; `dock.sh backsaver` = on |
+| H10 | OK | Back in the apps grid → focus to the favourites, no screensaver |
+| H11 | OK | off: Back on the home → nothing; `back-saver: off` |
+| H12 | OK | `dock.sh backsaver on` → row «مفعّل»; off → «متوقف» |
+| H13 | n/a | no USB prompt came |
+| S1 | OK | `verse 3`: card title by minute: 1 حديث, 2–4 آية, 5–7 حديث (changes about every 3 min) |
+| S2 | OK | `photos 30s` accepted on this TV (MemTotal 2451284 kB); `photos 1` accepted. The settings row's choices were not opened |
+| S3 | OK | photos every minute: 8 one-minute shots, 8 different pictures |
+| S4 | OK | `occasion off`: bottom middle empty; prayer and matches unmoved |
+| S5 | OK | `nightdim off` → `nightdim: off` (row not opened) |
+| S6 | OK | `taskspill off`: the «المهام» button is gone from the top row |
+| S7 | OK + small | «تحديث صفحة شاشة التوقف», its line points to «تحديث تلفزيوني» (cut with «..» on screen); «تحديث تلفزيوني» reads «تحديث التطبيقين…». OK on the page row: toast «جارٍ التحقق…», then no «تم التحديث»/«الصفحة محدثة» seen within 3 s |
+| S8 | OK | «الإذاعات»: no «البث المباشر من الحرم» row |
+| Z | restored: yes | verse day, photos 30, occasion on, nightdim on, taskspill on, backsaver off, slot matches, panel verse, home_panel none — all = start; packages 177; Home `sa.urtv.home/.MainActivity`; muted |
+
+Problems: 2 (V1 no build number; H6 long press opens the TV's settings) + S7 cut line.
