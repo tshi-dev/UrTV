@@ -19,33 +19,33 @@ def src(n): return (HOME / n).read_text(encoding="utf-8")
 main, acts, policy = src("MainActivity.java"), src("AppActions.java"), src("ParentalPolicy.java")
 man = (ROOT / "android/launcher/src/main/AndroidManifest.xml").read_text(encoding="utf-8")
 menu = main.split("private void showAppMenuNow(")[1].split("\n    }\n")[0]
-buttons = main.split("private List<View> appButtons(")[1].split("\n    }\n")[0]
-show = main.split("private void showMenu(View anchor, List<String> labels, List<Runnable> actions, List<View> buttons) {")[1].split("\n    }\n")[0]
+opts = src("AppOptions.java")
 
 check("AppActions has no Android in it", "import android" not in acts)
 check("the two names, in Arabic, and no «إيقاف إجباري» anywhere in the home", 'DETAILS = S.n("تفاصيل التطبيق"), DELETE = S.n("حذف التطبيق")' in acts
       and "إيقاف إجباري" not in main + acts.split("*/", 1)[1] and "forceStop" not in main)
-check("the row goes under the last item of the app menu («الرقابة الأبوية»)", menu.rstrip().endswith("showMenu(anchor, labels, actions, appButtons(pkg, kids));")
-      and menu.index('"الرقابة الأبوية') < menu.index("appButtons(pkg, kids)"))
-check("«تفاصيل التطبيق» is Android's app-details screen for that package",
-      "new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts(\"package\", pkg, null))" in buttons)
-check("«حذف التطبيق» is Android's own ACTION_DELETE (the system asks to confirm; nothing removed by us, no silent uninstall)",
-      "new Intent(Intent.ACTION_DELETE, Uri.fromParts(\"package\", pkg, null))" in buttons and "PackageInstaller" not in main and "uninstall(" not in main)
-check("both open through the family lock (MENU_APP: «قفل الإعدادات», the TV's settings' lock and the app's own), never straight",
-      buttons.count("guarded(ParentalPolicy.MENU_APP, pkg,") == 2 and "startActivity" not in buttons)
+# the app's options (docs/UX-REVIEW.md, v5): «انقل», «أخفِ», «اقفل», then ★ and ⓘ; the app's uninstall is on ⓘ's screen (Android's own)
+check("the options are AppOptions' box: the three rows, then ★ (in or out of the favourites) and ⓘ", "AppOptions.show(this, anchor," in menu
+      and all(f"o.{k} = " in menu for k in ("move", "hide", "lock", "favourite", "info")))
+check("ⓘ is Android's app-details screen for that package (its uninstall asks to confirm there; nothing removed by us)",
+      "new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts(\"package\", pkg, null))" in menu
+      and "PackageInstaller" not in main and "uninstall(" not in main)
+check("ⓘ opens through the family lock (MENU_APP: «قفل الإعدادات», the TV's settings' lock and the app's own), never straight",
+      "guarded(ParentalPolicy.MENU_APP, pkg, AppActions.DETAILS, () -> launch(details))" in menu and "startActivity" not in menu)
 check("MENU_APP asks about @urtv and @tvsettings", "case MENU_APP:" in policy and "t.add(OWN_SETTINGS);\n                t.add(TV_SETTINGS);" in policy.split("case MENU_APP:")[1][:400])
-check("a system app (or an update of one) is told by its flags, and one that cannot be read is treated as system",
-      "FLAG_SYSTEM | android.content.pm.ApplicationInfo.FLAG_UPDATED_SYSTEM_APP" in main and "return true;   // not known: not offered" in main)
-check("the manifest declares REQUEST_DELETE_PACKAGES (Android 9+ drops ACTION_DELETE without it)", 'android.permission.REQUEST_DELETE_PACKAGES' in man)
-check("D-pad: ▼ from the last item reaches the first button, ▲ from a button goes back, ◀ ▶ walk the row right to left (English: left to right), no wrap",
-      "buttons.get(0).getId()" in show and "b.setNextFocusUpId(last.getId());" in show and "b.setNextFocusDownId(b.getId());" in show
-      and "int before = buttons.get(Math.max(0, k - 1)).getId(), after = buttons.get(Math.min(buttons.size() - 1, k + 1)).getId();" in show
-      and "b.setNextFocusRightId(Dir.rtl() ? before : after);" in show and "b.setNextFocusLeftId(Dir.rtl() ? after : before);" in show
-      and "row.setLayoutDirection(Dir.layout());" in show)
-check("OK on a button closes the menu, then acts (like the items)", "b.setOnClickListener(v -> { pw.dismiss(); ((Runnable) v.getTag()).run(); });" in show)
-check("the popup moves up by the row's height, so it still sits above the tile", "- extra, Gravity.START)" in show)
+check("kids mode moves and hides nothing (the lock, ★ and ⓘ stay, behind the lock)", "if (!kids) {\n            o.move = " in menu)
+check("the whole box opens behind the family lock's MENU, from «⋮ خيارات» and from a long OK", "guarded(ParentalPolicy.MENU, null, S.t(\"قائمة التطبيق\"), () -> showAppMenuNow(anchor, pkg, inDock));" in main
+      and "this::beginPickOptions" in main and "card.setOnLongClickListener(v -> { if (pickingOptions) endPickOptions(); showAppMenu(v, app.pkg, inDock); return true; });" in main)
+check("D-pad: ▲ ▼ walk the rows to the icon row, ◀ ▶ only between ★ and ⓘ (★ at the start: the right in Arabic), no wrap",
+      "star.setNextFocusLeftId(Dir.rtl() ? info.getId() : star.getId());" in opts and "info.setNextFocusRightId(Dir.rtl() ? star.getId() : info.getId());" in opts
+      and "v.setNextFocusLeftId(v.getId()); v.setNextFocusRightId(v.getId());" in opts)
+check("OK on a row or an icon closes the box, then acts", "v.setOnClickListener(x -> { if (pw[0] != null) pw[0].dismiss(); if (action != null) action.run(); });" in opts)
+check("the box is the app's width as it shows focused, above it (under it when there is no room), the look's colours and focus",
+      "int w = Math.round(card.getWidth() * scale)" in opts and "GlassPaint.focused(a, l, GlassStyle.over(l.focus, dialog), RADIUS)" in opts
+      and "GlassStyle.over(l.dialog, l.base)" in opts)
 check("the other menus (the «المخفية» list) have no row", "showMenu(hiddenCard, labels, actions);" in main and "Collections.<View>emptyList()" in main)
-check("the two icons are there (Material, Apache 2.0)", all((ROOT / f"android/launcher/src/main/res/drawable/{n}.xml").exists() for n in ("ic_info", "ic_delete")))
+check("the icons are there (Material, Apache 2.0)", all((ROOT / f"android/launcher/src/main/res/drawable/{n}.xml").exists()
+      for n in ("ic_info", "ic_move", "ic_hide", "ic_lock", "ic_star", "ic_star_filled", "ic_more")))
 if not shutil.which("javac"):
     print("SKIP app actions: no javac here")
     sys.exit(1 if failed else 0)

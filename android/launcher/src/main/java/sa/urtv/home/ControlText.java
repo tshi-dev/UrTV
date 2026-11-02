@@ -169,6 +169,6 @@ final class ControlText {
     // ---- «أطفئ الآن»
 
     /** What the panel says before it does the fallback, when the sleep service is off (shown for {@link #NOTICE_MS}). */
-    static final String SLEEP_OFF_NOTICE = S.n("خدمة الإطفاء مو شغّالة: نوقف الصوت ونشغّل شاشة التوقف. لإطفاء الشاشة فعّلها: اضغط مطوّلًا على «أطفئ الآن»");
+    static final String SLEEP_OFF_NOTICE = S.n("خدمة الإطفاء مو شغّالة: نوقف الصوت ونشغّل شاشة التوقف. لإطفاء الشاشة فعّلها من «مؤقت النوم»");
     static final long NOTICE_MS = 2200;
 }

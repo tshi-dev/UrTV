@@ -75,16 +75,16 @@ first = sorted([k for k, v in C.items() if v["parent"] == "-"], key=lambda k: C[
 check("the first screen: «الأذان» first (the wide one), then the buttons of the prototype in its order",
       [C[k]["name"] for k in first] == ["الأذان", "الموقع والصلاة", "الساعة والأرقام", "تلاوة وأذان", "البطاقات", "المظهر", "مركز التحكم",
                                        "التحكم من الجوال", "تحديث تلفزيوني", "أرسل تقرير", "المزيد"], [C[k]["name"] for k in first])
-check("«البطاقات» holds «شاشة التوقف» and «الشاشة الرئيسية»; «المزيد» the matches and markets, the apps, the shows, «حماية العائلة» (and «اللغة» once LANG_TILE is on)",
+check("«البطاقات» holds «شاشة التوقف» and «الشاشة الرئيسية»; «المزيد» the matches and markets, the apps, the shows, «الرقابة الأبوية», «تصفية المواقع» (and «اللغة» once LANG_TILE is on)",
       sorted((C[k]["index"], C[k]["name"]) for k in C if C[k]["parent"] == "cards") == [(0, "شاشة التوقف"), (1, "الشاشة الرئيسية")]
       and [C[k]["name"] for k in sorted((k for k in C if C[k]["parent"] == "more" and C[k]["index"] >= 0), key=lambda k: C[k]["index"])]
-      == ["المباريات والأسواق", "التطبيقات والمفضلة", "جديد المسلسلات", "حماية العائلة"] + (["اللغة"] if "static final boolean LANG_TILE = true;" in hub else []),
+      == ["المباريات والأسواق", "التطبيقات والمفضلة", "جديد المسلسلات", "الرقابة الأبوية", "تصفية المواقع"] + (["اللغة"] if "static final boolean LANG_TILE = true;" in hub else []),
       {k: (v["parent"], v["index"]) for k, v in C.items()})
 check("only the first screen, «البطاقات» and «المزيد» are screens of buttons, and nothing is deeper than that",
       {k for k, v in C.items() if v["tiles"]} == {"cards", "more"} and all(C[v["parent"]]["parent"] == "-" for v in C.values() if v["parent"] != "-"))
 direct = {k: v["direct"] for k, v in C.items() if v["direct"] != "-"}
-check("the buttons that do one thing at once, each by its one row: «الأذان», «المظهر», «مركز التحكم», «التحكم من الجوال», «أرسل تقرير», «حماية العائلة», «اللغة»",
-      direct == {"adhan": "الأذان", "look": "المظهر", "control": "مركز التحكم", "phone": "تحكم من الجوال", "report": "أرسل تقرير", "family": "حماية العائلة",
+check("the buttons that do one thing at once, each by its one row: «الأذان», «المظهر», «مركز التحكم», «التحكم من الجوال», «أرسل تقرير», «الرقابة الأبوية», «تصفية المواقع», «اللغة»",
+      direct == {"adhan": "الأذان", "look": "المظهر", "control": "مركز التحكم", "phone": "تحكم من الجوال", "report": "أرسل تقرير", "parental": "الرقابة الأبوية", "family": "تصفية المواقع",
                  "lang": "اللغة"}
       and all(by.get(k) == [r] for k, r in direct.items()), {k: (r, by.get(k)) for k, r in direct.items()})
 check("every other category has rows of its own (no empty screen), a screen of buttons none",
@@ -92,7 +92,7 @@ check("every other category has rows of its own (no empty screen), a screen of b
       {k: len(by.get(k, [])) for k in C})
 want = {"الأذان": "adhan", "تنبيه قبل الأذان": "saver", "أسماء المصادر": "apps", "ترتيب التطبيقات المفضلة": "apps", "تعديل المفضلة": "apps",
         "تحديث تلفزيوني": "update", "تحديث صفحة شاشة التوقف": "update", "التحديث التلقائي للصفحة": "update", "تحكم من الجوال": "phone",
-        "حماية العائلة": "family", "الدولة": "place", "المدينة": "place", "طريقة الحساب": "place", "زر تلاوة وأذان": "listen",
+        "تصفية المواقع": "family", "الدولة": "place", "المدينة": "place", "طريقة الحساب": "place", "زر تلاوة وأذان": "listen",
         "افتح تلاوة وأذان": "listen", "البطاقة الأولى": "home", "معاينة الشاشة": "saver", "بطاقة ثانية": "saver", "نظام الساعة": "clock",
         "الأرقام": "clock", "أسماء الأشهر الميلادية": "clock", "حجم الساعة": "saver", "المظهر": "look", "التصنيفات": "shows", "قائمة الأسهم": "content"}
 got = {r[0]: r[1] for r in row_out[:-1]}

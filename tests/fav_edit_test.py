@@ -45,8 +45,8 @@ check("the row changing under the mode (an app installed, dock.sh) ends it witho
 check("another screen coming up (onPause) or Home leaves the mode, saving", main.split("protected void onPause()")[1].split("\n    }\n")[0].count("leaveEdit()") == 1 and "if (edit != null) leaveEdit();   // Home while editing" in main)
 # the old arrange screen: from the settings only
 check("the long-press menu no longer opens the old arrange screen", "DockActivity" not in main)
-check("the long-press menu has «تعديل المفضلة» for a favourite and not «ترتيب المفضلة…»",
-      '"تعديل المفضلة"' in main.split("private void showAppMenuNow")[1].split("showMenu(anchor")[0] and "ترتيب المفضلة…" not in main)
+check("the app's options: «انقل» on a favourite is «تعديل المفضلة», and no «ترتيب المفضلة…»",
+      "beginEdit(pkg)" in main.split("private void showAppMenuNow")[1].split("AppOptions.show(")[0] and "ترتيب المفضلة…" not in main)
 others = [p.name for p in HOME.glob("*.java") if p.name not in ("DockActivity.java",) and re.search(r"\bDockActivity\b", src(p).replace("`am start -n sa.urtv.home/.DockActivity`", ""))]
 check("no launcher code starts DockActivity (only the manifest and the settings reach it)", not [n for n in others if re.search(r"DockActivity\.class|\.DockActivity\"", src(HOME / n))], others)
 check("the settings' «ترتيب التطبيقات المفضلة» opens the old arrange screen", "sa.urtv.home.DockActivity" in settings and 'row("ترتيب التطبيقات المفضلة"' in settings)
@@ -57,8 +57,8 @@ d = main[main.index("public boolean dispatchKeyEvent"):]
 check("keys: the adhan rule first, then the remote's shortcut keys (one that acts ends the edit, saved), then «تعديل المفضلة»",
       d.index("if (adhanTakes(e)) return true;") < d.index("remoteKeys.decide(") < d.index("if (edit != null && editKey(e)) return true;")
       and "if (edit != null) leaveEdit();   // a shortcut key" in d)
-check("the long-press menu: «تعديل المفضلة» on a favourite, and no «ترتيب المفضلة…» (that list is the settings' only)",
-      'labels.add(S.t("تعديل المفضلة"))' in main and "ترتيب المفضلة…" not in main)
+check("the app's options: «انقل» on a favourite starts «تعديل المفضلة», and no «ترتيب المفضلة…» (that list is the settings' only)",
+      "o.move = () -> { if (inDock) beginEdit(pkg); else beginAppsEdit(pkg); };" in main and "ترتيب المفضلة…" not in main)
 # ---- «تراجع» from the TV test: UP from the tile row did not reach the chip and the seconds ran out. The keys are the mode's own (editKey),
 # and under them Android's own focus search is wired so that no key that reaches the views can leave the row or miss the chip
 fn = lambda name: main.split(name)[1].split("\n    }\n")[0]

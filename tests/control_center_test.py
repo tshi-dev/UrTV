@@ -38,11 +38,11 @@ check("the sound output opens an intent that resolves, falling back to the TV's 
 check("the sleep timer's tile and «أطفئ الآن» end the same way (SleepTimer.turnOff: the service, else sound off and the screensaver)",
       "SleepTimer.turnOff(act)" in center and "static String turnOff(Context c)" in src("SleepTimer.java") and "String done = turnOff(c);" in src("SleepTimer.java")
       and "SleepService.sleepNow()" in src("SleepTimer.java").split("static String turnOff")[1])
-check("«أطفئ الآن» with the service off shows the notice first, then does the fallback after a moment (not if the panel closed meanwhile); a long OK opens the service's screen behind the sleep lock",
+check("«أطفئ الآن» with the service off shows the notice first, then does the fallback after a moment (not if the panel closed meanwhile); a long OK (a shortcut) opens the service's screen behind the sleep lock; the notice points to «مؤقت النوم», whose menu has the visible row",
       "SleepService.enabled()" in center and "ParentalPolicy.SLEEP_ACCESSIBILITY" in center and "title.setText(S.tv(ControlText.SLEEP_OFF_NOTICE))" in center
       and center.index("ControlText.SLEEP_OFF_NOTICE") < center.index("SleepTimer.turnOff(act);", center.index("ui.postDelayed")) and "ui.postDelayed(" in center
       and "if (!showing()) return;" in center.split("ui.postDelayed(")[1].split("ControlText.NOTICE_MS")[0] and "ui.removeCallbacksAndMessages(null)" in center
-      and "مو شغّالة" in text and "اضغط مطوّلًا" in text)
+      and "مو شغّالة" in text and "«مؤقت النوم»" in text)
 check("«إعدادات تلفزيونك» opens our settings (the screensaver app's SettingsActivity) through «قفل الإعدادات» (@urtv), the tile only when that app is there",
       "host.openOurSettings()" in center and "ParentalPolicy.OUR_SETTINGS, null" in main and 'SAVER_PKG + ".SettingsActivity"' in main
       and "case OUR_SETTINGS:" in policy and "t.add(OWN_SETTINGS)" in policy.split("case OUR_SETTINGS:")[1][:200]
@@ -107,8 +107,9 @@ check("the tile is there only when one resolves, opens it behind the TV's settin
       and "host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, bluetooth, ControlText.BLUETOOTH)" in center
       and 'BLUETOOTH = S.n("البلوتوث")' in text and 'BLUETOOTH_HINT = S.n("الريموت والملحقات")' in text
       and (ROOT / "android/launcher/src/main/res/drawable/ic_bluetooth.xml").exists())
-check("it comes after «انعكاس الشاشة» and before the screensaver's tile, so the first tiles stay where they were",
-      center.index('tile("mirror"') < center.index('tile("bluetooth"') < center.index('tile("saver"'))
+check("Wi-Fi and Bluetooth side by side, first (docs/UX-REVIEW.md): the network tile, then Bluetooth, then the rest",
+      center.index('tile("net"') < center.index('tile("bluetooth"') < center.index('tile("sound"') < center.index('tile("speed"')
+      < center.index('tile("sleep"') < center.index('tile("off"') < center.index('tile("mirror"') < center.index('tile("saver"'))
 check("at most ten tiles: sleep, off, network, speed, sound, mirroring, Bluetooth, screensaver, ours, the TV's settings",
       len(re.findall(r'tile\("[a-z]+"', center)) == 10, re.findall(r'tile\("[a-z]+"', center))
 check("nine tiles may go five to a row; eight or fewer are laid out as before", "static final int FIVE_AFTER = 8;" in src("ControlLayout.java")

@@ -89,9 +89,31 @@ final class Pill extends LinearLayout {
         anim.start();
     }
 
+    /**
+     * «رملي» (a look with a focus line, GlassStyle.Look.ring): a rounded rectangle, not a circle, on the look's panel with its hairline,
+     * the icon in the look's green; focused, the look's soft fill with the green line round it. Any other look: the smoked circles as ever.
+     */
+    void look(GlassStyle.Look l) {
+        GlassStyle.Look was = sand;
+        sand = l != null && l.ring != 0 ? l : null;
+        if (was == sand) return;
+        bg.setCornerRadius(dp(sand != null ? 10 : HEIGHT / 2f));
+        paint();
+    }
+
+    private GlassStyle.Look sand;
+
     private void paint() {
         boolean f = hasFocus();
+        if (sand != null) {
+            bg.setColor(f ? sand.focus : sand.panel);
+            bg.setStroke(f ? dp(2) : dp(1), f ? sand.ring : sand.line);
+            name.setTextColor(f ? sand.onFocus : sand.text);
+            glyph.setTint(accent ? sand.accent : sand.ring);
+            return;
+        }
         bg.setColor(f ? 0xF2FFFFFF : 0x66000000);
+        bg.setStroke(dp(1), 0x33FFFFFF);
         name.setTextColor(f ? FOCUSED : ON);
         glyph.setTint(f ? FOCUSED : accent ? GOLD : ON);
     }

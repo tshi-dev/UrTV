@@ -334,7 +334,7 @@ public class SettingsActivity extends Activity {
         row("افتح تلاوة وأذان", "القرآن والإذاعات ومواقيت الأذان", R.drawable.ic_play,
             new Runnable() { public void run() { openHome("listen"); } });
         // hiding removes only the button; the help line says where the screen opens from then
-        row("زر تلاوة وأذان", prefs.listenPill() ? "ظاهر" : "مخفي  •  الأذان والتلاوة تعمل، وتفتح الشاشة من قائمة التطبيق (اختيار مطوّلة) أو من بطاقة «يُتلى الآن»", R.drawable.ic_eye,
+        row("زر تلاوة وأذان", prefs.listenPill() ? "ظاهر" : "مخفي  •  الأذان والتلاوة تعمل، وتفتح الشاشة من «افتح تلاوة وأذان» هنا أو من بطاقة «يُتلى الآن»", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setListenPill(!prefs.listenPill()); render(); } });
         // hiding removes only the button: the list stays in the «المهام» card and on the phone
         row("زر المهام", prefs.tasksPill() ? "ظاهر" : "مخفي  •  المهام تبقى في بطاقة «المهام» ومن الجوال", R.drawable.ic_eye,
@@ -373,7 +373,10 @@ public class SettingsActivity extends Activity {
         row("أرسل تقرير", "رمز QR يفتح صفحة الإرسال في جوالك", R.drawable.ic_settings,
             new Runnable() { public void run() { openReport(); } });
 
-        row("حماية العائلة", "تفعيل أو إيقاف، ويرجع الإعداد القديم تلقائياً", R.drawable.ic_eye,
+        // «الرقابة الأبوية» (docs/UX-REVIEW.md): the home's own page (the PIN, the locked apps, kids mode); it asks for the PIN itself
+        row("الرقابة الأبوية", "رمز يقفل التطبيقات والإعدادات، ووضع الأطفال", R.drawable.ic_lock,
+            new Runnable() { public void run() { openParental(); } });
+        row("تصفية المواقع", "تفعيل أو إيقاف، ويرجع الإعداد القديم تلقائياً", R.drawable.ic_eye,
             new Runnable() { public void run() { openFamilyDns(); } });
         // «اللغة» (docs/ENGLISH.md): العربية, the default, or English; a button of «المزيد» that opens its two choices at once
         row("اللغة", langLabel(), R.drawable.ic_language, new Runnable() { public void run() { pickLang(); } });
@@ -475,6 +478,7 @@ public class SettingsActivity extends Activity {
             case SettingsHub.CONTENT: return R.drawable.ic_trophy;
             case SettingsHub.APPS: return R.drawable.ic_star;
             case SettingsHub.SHOWS: return R.drawable.ic_play;
+            case SettingsHub.PARENTAL: return R.drawable.ic_lock;
             case SettingsHub.FAMILY: return R.drawable.ic_shield;
             case SettingsHub.LANG: return R.drawable.ic_language;
             default: return R.drawable.ic_settings;
@@ -547,6 +551,7 @@ public class SettingsActivity extends Activity {
             case SettingsHub.CONTENT: return "الفرق " + arabicNum(prefs.teams().size()) + " · الأسواق " + (prefs.marketsOn() ? arabicNum(prefs.markets().size()) : "مخفية");
             case SettingsHub.APPS: return "ترتيب المفضلة وتعديلها، وأسماء المصادر";
             case SettingsHub.SHOWS: return labels(Prefs.GENRES, prefs.list("genres"), "الكل");
+            case SettingsHub.PARENTAL: return "الرمز والتطبيقات المقفلة";
             case SettingsHub.FAMILY: return "تفعيل أو إيقاف";
             case SettingsHub.LANG: return langLabel();
             default: return "";
@@ -979,7 +984,7 @@ public class SettingsActivity extends Activity {
         }));
     }
 
-    /** «حماية العائلة (DNS)» lives in the launcher too: it holds the permission to write the Private DNS setting. */
+    /** «تصفية المواقع (DNS)» lives in the launcher too: it holds the permission to write the Private DNS setting. */
     private void openFamilyDns() {
         try {
             startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.FamilyDnsActivity"));
@@ -987,7 +992,16 @@ public class SettingsActivity extends Activity {
             boolean installed = true;
             try { getPackageManager().getPackageInfo("sa.urtv.home", 0); }
             catch (android.content.pm.PackageManager.NameNotFoundException gone) { installed = false; }
-            toast(installed ? "ما قدرنا نفتح حماية العائلة: حدّث الواجهة الرئيسية «تلفزيونك»" : "ثبّت الواجهة الرئيسية «تلفزيونك» أولاً");
+            toast(installed ? "ما قدرنا نفتح تصفية المواقع: حدّث الواجهة الرئيسية «تلفزيونك»" : "ثبّت الواجهة الرئيسية «تلفزيونك» أولاً");
+        } catch (RuntimeException e) {
+            toast("ثبّت الواجهة الرئيسية «تلفزيونك» أولاً");
+        }
+    }
+
+    /** «الرقابة الأبوية» lives in the launcher (it keeps the PIN); its page asks for the PIN itself once one is set. */
+    private void openParental() {
+        try {
+            startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.ParentalActivity"));
         } catch (RuntimeException e) {
             toast("ثبّت الواجهة الرئيسية «تلفزيونك» أولاً");
         }
@@ -1166,7 +1180,7 @@ public class SettingsActivity extends Activity {
         box.setPadding(dp(12), dp(4), dp(12), dp(4));
         final android.widget.ListView lv = new android.widget.ListView(this);
         lv.setDividerHeight(0);
-        lv.setSelector(GlassPaint.fill(this, look.focus, 12, 0));
+        lv.setSelector(GlassPaint.focused(this, look, 12));
         lv.setAdapter(new android.widget.BaseAdapter() {
             @Override public int getCount() { return values.length; }
             @Override public Object getItem(int i) { return values[i]; }
@@ -1696,7 +1710,7 @@ public class SettingsActivity extends Activity {
         box.setPadding(dp(12), dp(4), dp(12), dp(4));
         final android.widget.ListView lv = new android.widget.ListView(this);
         lv.setDividerHeight(0);
-        lv.setSelector(GlassPaint.fill(this, look.focus, 12, 0));
+        lv.setSelector(GlassPaint.focused(this, look, 12));
         lv.setAdapter(new android.widget.ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, labels) {
             @Override public View getView(int i, View old, android.view.ViewGroup parent) {
                 TextView t = (TextView) super.getView(i, old, parent);
@@ -1782,7 +1796,7 @@ public class SettingsActivity extends Activity {
             t.setTypeface(font("Thmanyah-Medium"));
             t.setGravity(Gravity.CENTER);
             t.setTextColor(k == 0 ? l.onFocus : l.text);
-            t.setBackground(k == 0 ? GlassPaint.fill(this, l.focus, 10, 0) : GlassPaint.panel(this, l, 10));
+            t.setBackground(k == 0 ? GlassPaint.focused(this, l, 10) : GlassPaint.panel(this, l, 10));
             LinearLayout.LayoutParams tp = new LinearLayout.LayoutParams(0, dp(48), 1f);
             if (k == 0) tp.setMarginEnd(dp(8));
             tiles.addView(t, tp);
@@ -1886,8 +1900,8 @@ public class SettingsActivity extends Activity {
         d.getWindow().setBackgroundDrawable(GlassPaint.fill(this, GlassStyle.over(look.dialog, look.base), 22, look.line));
         if (d.getListView() != null) {
             android.graphics.drawable.StateListDrawable sel = new android.graphics.drawable.StateListDrawable();
-            sel.addState(new int[] {android.R.attr.state_focused}, GlassPaint.fill(this, look.focus, 12, 0));
-            sel.addState(new int[] {android.R.attr.state_pressed}, GlassPaint.fill(this, look.focus, 12, 0));
+            sel.addState(new int[] {android.R.attr.state_focused}, GlassPaint.focused(this, look, 12));
+            sel.addState(new int[] {android.R.attr.state_pressed}, GlassPaint.focused(this, look, 12));
             sel.addState(new int[] {}, new android.graphics.drawable.ColorDrawable(0));
             d.getListView().setSelector(sel);
         }

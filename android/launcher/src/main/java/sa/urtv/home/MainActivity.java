@@ -263,6 +263,8 @@ public class MainActivity extends Activity {
         unregisterReceiver(tick);
         if (inputsPopup != null) inputsPopup.dismiss();
         if (control != null) control.dismiss();   // its speed test stops with it
+        if (appOptions != null) { appOptions.dismiss(); appOptions = null; }
+        if (pickingOptions) endPickOptions();
         homeCard.pause();
     }
 
@@ -304,6 +306,7 @@ public class MainActivity extends Activity {
 
     @Override
     public void onBackPressed() {
+        if (pickingOptions) { endPickOptions(); if (optionsTile != null) optionsTile.requestFocus(); return; }   // «⋮ خيارات»: Back leaves the pick
         // Home has nowhere to go back to; Back from the grid returns to the dock.
         boolean scrolled = scroll.getScrollY() > 0 && !dockCards.isEmpty();
         if (scrolled) dockCards.get(0).requestFocus();
@@ -868,6 +871,7 @@ public class MainActivity extends Activity {
             View tile = tile(dock.get(i), true);
             dockRow.addView(tile, rowCell(i, dock.size(), -2));
         }
+        placeOptionsTile();
         appsLabel.setVisibility(rest.isEmpty() ? View.GONE : View.VISIBLE);
         wireFocus();
         if (!dock.isEmpty()) { title.setText(dock.get(0).label); setGlow(dock.get(0).color); }
@@ -1000,10 +1004,11 @@ public class MainActivity extends Activity {
             if (lightNow) label.setTextColor(Look.LIGHT_LOOK.ink);
         }
 
-        card.setOnClickListener(v -> guarded(inDock ? ParentalPolicy.TILE : ParentalPolicy.GRID, app.pkg, app.label, () -> launch(new Intent(Intent.ACTION_MAIN)
+        card.setOnClickListener(v -> { if (pickingOptions) { endPickOptions(); showAppMenu(v, app.pkg, inDock); return; }
+            guarded(inDock ? ParentalPolicy.TILE : ParentalPolicy.GRID, app.pkg, app.label, () -> launch(new Intent(Intent.ACTION_MAIN)
                 .addCategory(app.category)
                 .setComponent(app.component)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED))));
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED))); });
         card.setOnFocusChangeListener((v, has) -> {
             float s = has ? (inDock ? 1.12f : 1.1f) : 1f;
             scaleTo(v, s);   // a spring: a held arrow keeps its speed from card to card
@@ -1025,8 +1030,8 @@ public class MainActivity extends Activity {
             }
         });
 
-        // Long-press OK: add to / remove from / reorder the dock, right from the remote.
-        card.setOnLongClickListener(v -> { showAppMenu(v, app.pkg, inDock); return true; });
+        // a long OK: the app's options, a shortcut to what «⋮ خيارات» at the end of the favourites opens (AppOptions)
+        card.setOnLongClickListener(v -> { if (pickingOptions) endPickOptions(); showAppMenu(v, app.pkg, inDock); return true; });
         cardByPkg.put(app.pkg, card);
 
         (inDock ? dockCards : gridCards).add(card);
@@ -1479,7 +1484,7 @@ public class MainActivity extends Activity {
     private android.graphics.drawable.StateListDrawable opaqueTile(float radiusDp) {
         GlassStyle.Look l = homeGlass();
         android.graphics.drawable.StateListDrawable s = new android.graphics.drawable.StateListDrawable();
-        s.addState(new int[] {android.R.attr.state_focused}, GlassPaint.fill(this, GlassStyle.over(l.focus, opaque(l.dialog)), radiusDp, 0));
+        s.addState(new int[] {android.R.attr.state_focused}, GlassPaint.focused(this, l, GlassStyle.over(l.focus, opaque(l.dialog)), radiusDp));
         s.addState(new int[] {}, GlassPaint.fill(this, opaque(l.dialog), radiusDp, l.line));
         return s;
     }
@@ -1595,6 +1600,7 @@ public class MainActivity extends Activity {
             TextView x = xByCard.get(c);
             if (x != null) { x.setVisibility(View.GONE); x.setFocusable(false); }
         }
+        placeOptionsTile();
         wireFocus();   // the row's own ways again (up to the pills, down to the apps)
         if (!dockCards.isEmpty()) dockCards.get(Math.min(focus, dockCards.size() - 1)).requestFocus();
         for (View c : dockCards) liftCard(c, false);
@@ -1691,6 +1697,7 @@ public class MainActivity extends Activity {
             dockRow.addView(box, rowCell(i, order.size(), -2));
             dockCards.add(card);
         }
+        placeOptionsTile();
         wireFocus();
     }
 
@@ -1826,6 +1833,7 @@ public class MainActivity extends Activity {
         }
         if (appsLifted != null) liftCard(appsLifted, false, 1.1f);
         appsLifted = null;
+        placeOptionsTile();
         wireFocus();   // the grid's own ways again
         View f = focusPkg == null ? null : cardByPkg.get(focusPkg);
         if (f != null && gridCards.contains(f)) f.requestFocus();
@@ -1889,7 +1897,8 @@ public class MainActivity extends Activity {
         if (oldBox != null && oldBox.getParent() instanceof ViewGroup) ((ViewGroup) oldBox.getParent()).removeView(oldBox);
         gridCards.remove(card);
         dockRow.addView(tile(app, true));   // tile() puts it in dockCards and cardByPkg
-        for (int i = 0; i < dockRow.getChildCount(); i++) dockRow.getChildAt(i).setLayoutParams(rowCell(i, dockRow.getChildCount(), -2));
+        for (int i = 0; i < dockCards.size(); i++) ((View) dockCards.get(i).getParent()).setLayoutParams(rowCell(i, dockCards.size(), -2));
+        placeOptionsTile();
         Toast.makeText(this, S.t("أُضيف إلى المفضلة: %s", app.label), Toast.LENGTH_SHORT).show();
     }
 
@@ -2081,55 +2090,135 @@ public class MainActivity extends Activity {
         guarded(ParentalPolicy.MENU, null, S.t("قائمة التطبيق"), () -> showAppMenuNow(anchor, pkg, inDock));
     }
 
+    /**
+     * The app's options (AppOptions, docs/UX-REVIEW.md): «انقل», «أخفِ», «اقفل», then ★ (in or out of the favourites) and ⓘ (the app's
+     * details). What the old long-press menu also had lives where it can be seen: «تعديل المفضلة» and «تعديل التطبيقات» are «انقل»,
+     * the update, «تلاوة وأذان» and the adhan are in the settings, the default favourites in «ترتيب المفضلة», the family lock in
+     * «إعدادات تلفزيونك» ← المزيد and in «مركز التحكم». Kids mode moves and hides nothing (kidsNoEdit).
+     */
     private void showAppMenuNow(View anchor, String pkg, boolean inDock) {
-        List<String> dock = new ArrayList<>();
-        // The dock as shown, including apps added automatically to reach MIN_DOCK.
-        for (View c : dockCards) for (Map.Entry<String, View> e : cardByPkg.entrySet()) if (e.getValue() == c) dock.add(e.getKey());
+        List<String> dock = dockPackages();
         int i = dock.indexOf(pkg);
-        List<String> labels = new ArrayList<>();
-        List<Runnable> actions = new ArrayList<>();
-        boolean kids = Parental.state(this).kids;   // kids mode edits nothing (kidsNoEdit)
-        if (inDock && !kids) {
-            labels.add(S.t("تعديل المفضلة"));
-            actions.add(() -> beginEdit(pkg));
+        boolean kids = Parental.state(this).kids;
+        AppOptions.Spec o = new AppOptions.Spec();
+        if (!kids) {
+            o.move = () -> { if (inDock) beginEdit(pkg); else beginAppsEdit(pkg); };
+            o.hide = () -> {
+                if (inDock && dock.size() <= MIN_DOCK) { toast(S.t("المفضلة لا تقل عن %s", arabicDigits(String.valueOf(MIN_DOCK)))); return; }
+                if (inDock) { dock.remove(pkg); saveDock(dock, dock.isEmpty() ? null : dock.get(Math.max(0, i - 1))); }
+                Dock.hideOrShow(this, Collections.singletonList(pkg), true);   // back from «تعديل التطبيقات» ← «المخفية»
+                toast(S.t("أُخفي، ويرجع من «تعديل التطبيقات»"));
+            };
         }
-        if (!inDock && !kids) {
-            labels.add(S.t("تعديل التطبيقات"));
-            actions.add(() -> beginAppsEdit(pkg));
-        }
-        labels.add(S.t("تحديث تلفزيوني"));
-        actions.add(() -> launchGuarded(ParentalPolicy.MENU_UPDATE, new Intent(this, UpdateActivity.class), "تحديث تلفزيوني"));
-        if (inDock) {
-            if (dock.size() > MIN_DOCK) {
-                labels.add(S.t("إزالة من المفضلة"));
-                actions.add(() -> { dock.remove(pkg); saveDock(dock, dock.get(Math.max(0, i - 1))); });
-            } else {
-                labels.add(S.t("المفضلة لا تقل عن %s", arabicDigits(String.valueOf(MIN_DOCK))));
-                actions.add(() -> { });
+        ParentalPolicy.State family = Parental.state(this);
+        o.locked = family.locked.contains(pkg);
+        o.lock = () -> {
+            if (!Parental.state(this).pinSet) {   // no PIN yet: the family lock's own page sets one first
+                launchGuarded(ParentalPolicy.PARENTAL_SCREEN, new Intent(this, ParentalActivity.class), "الرقابة الأبوية");
+                return;
             }
-        } else if (dock.size() < MAX_DOCK) {
-            labels.add(S.t("إضافة إلى المفضلة"));
-            actions.add(() -> { dock.add(pkg); saveDock(dock, pkg); });
-        } else {
-            labels.add(S.t("المفضلة ممتلئة (%s)", MAX_DOCK));
-            actions.add(() -> { });
-        }
-        labels.add(S.t("إعادة المفضلة الافتراضية"));
-        actions.add(() -> {
-            prefs().edit().remove("dock").apply();
-            dockApps = getResources().getStringArray(R.array.dock_apps);
-            buildApps();
-        });
-        if (listenPillHidden()) {   // the button is hidden: the player (and the adhan's settings in it) opens from here, behind the same lock
-            labels.add(S.t("تلاوة وأذان"));
-            actions.add(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, new Intent(this, sa.urtv.home.tilawah.MainActivity.class), "تلاوة وأذان"));
-            labels.add(S.t("إعدادات الأذان"));   // the same screen, on its «الأذان» tab: on or off, the voices, short, any key, the volume
-            actions.add(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, adhanSettingsIntent(), "إعدادات الأذان"));
-        }
-        labels.add(S.t("الرقابة الأبوية"));
-        actions.add(() -> launchGuarded(ParentalPolicy.PARENTAL_SCREEN, new Intent(this, ParentalActivity.class), "الرقابة الأبوية"));
-        showMenu(anchor, labels, actions, appButtons(pkg, kids));
+            boolean now = Parental.state(this).locked.contains(pkg);
+            Parental.confirm(this, this::adhanTakes, S.t("الرقابة الأبوية"), () -> {
+                Parental.setLocked(this, pkg, !now);
+                toast(now ? S.t("فُتح القفل") : S.t("قُفل، ويطلب الرمز"));
+            }, null);
+        };
+        o.favouriteNow = inDock;
+        o.favourite = () -> {
+            if (inDock) {
+                if (dock.size() <= MIN_DOCK) { toast(S.t("المفضلة لا تقل عن %s", arabicDigits(String.valueOf(MIN_DOCK)))); return; }
+                dock.remove(pkg);
+                saveDock(dock, dock.get(Math.max(0, i - 1)));
+            } else if (dock.size() >= MAX_DOCK) {
+                toast(S.t("المفضلة ممتلئة (%s)", MAX_DOCK));
+            } else {
+                dock.add(pkg);
+                saveDock(dock, pkg);
+            }
+        };
+        Intent details = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", pkg, null));
+        o.info = () -> guarded(ParentalPolicy.MENU_APP, pkg, AppActions.DETAILS, () -> launch(details));   // its uninstall is there too
+        if (appOptions != null) appOptions.dismiss();
+        appOptions = AppOptions.show(this, anchor, inDock ? 1.12f : 1.1f, homeGlass(), font("sans-serif-medium"), o);
     }
+
+    // ---- «⋮ خيارات»: the visible way to an app's options (docs/UX-REVIEW.md); a long OK on an app is the shortcut to the same box
+
+    /** the ⋮ tile at the end of the favourites (not one of dockCards: the row's walk reaches it, the favourites' logic never counts it) */
+    private View optionsTile;
+    /** OK on «⋮ خيارات» was pressed: the next app chosen with OK shows its options instead of opening; Back or a shortcut key ends it */
+    private boolean pickingOptions;
+
+    /** At the end of the favourites while no mode edits them (a mode rebuilds the row; it comes back when the mode ends). */
+    private void placeOptionsTile() {
+        if (optionsTile == null) {
+            FrameLayout box = new FrameLayout(this);
+            box.setClipChildren(false);
+            LinearLayout t = new LinearLayout(this);
+            t.setOrientation(LinearLayout.VERTICAL);
+            t.setGravity(Gravity.CENTER);
+            t.setId(View.generateViewId());
+            t.setFocusable(true);
+            t.setClickable(true);
+            t.setContentDescription(S.tv(OPTIONS));
+            ImageView dots = new ImageView(this);
+            dots.setImageDrawable(getDrawable(R.drawable.ic_more).mutate());
+            dots.setTag(GlassPaint.ICON);
+            t.addView(dots, new LinearLayout.LayoutParams(dp(20), dp(20)));
+            TextView name = text(11, "sans-serif-medium", homeGlass().text);
+            name.setText(S.tv(OPTIONS));
+            name.setSingleLine(true);
+            t.addView(name, llp(-2, -2, 0, dp(4), 0, 0));
+            t.setOnClickListener(v -> guarded(ParentalPolicy.MENU, null, S.t("قائمة التطبيق"), this::beginPickOptions));
+            t.setOnFocusChangeListener((v, has) -> { paintOptionsTile(); scaleTo(v, has ? 1.08f : 1f); });
+            box.addView(t, new FrameLayout.LayoutParams(-1, -1));
+            optionsTile = t;
+        }
+        View box = (View) optionsTile.getParent();
+        if (box.getParent() instanceof ViewGroup) ((ViewGroup) box.getParent()).removeView(box);
+        if (edit != null || appsEdit != null || dockCards.isEmpty()) return;
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(64), -1);
+        lp.setMarginStart(dp(14));
+        dockRow.addView(box, lp);
+        paintOptionsTile();
+        View last = dockCards.get(dockCards.size() - 1);
+        optionsTile.setNextFocusUpId(last.getNextFocusUpId());
+        optionsTile.setNextFocusDownId(last.getNextFocusDownId() == last.getId() ? optionsTile.getId() : last.getNextFocusDownId());
+    }
+
+    /** the ⋮ tile in the look of now: the panel at rest, the look's focus (with its line, «رملي») while focused */
+    private void paintOptionsTile() {
+        if (optionsTile == null) return;
+        GlassStyle.Look l = homeGlass();
+        boolean f = optionsTile.isFocused();
+        optionsTile.setBackground(f ? GlassPaint.focused(this, l, GlassStyle.over(l.focus, opaque(l.dialog)), 10)
+                : GlassPaint.fill(this, opaque(l.dialog), 10, l.line));
+        int ink = f ? l.onFocus : l.text;
+        ViewGroup g = (ViewGroup) optionsTile;
+        ((ImageView) g.getChildAt(0)).getDrawable().setTint(f && l.ring != 0 ? l.ring : ink);
+        ((TextView) g.getChildAt(1)).setTextColor(ink);
+    }
+
+    /** «⋮ خيارات», its name, and the line at the top while the next OK picks an app */
+    static final String OPTIONS = S.n("خيارات"), PICK_HINT = S.n("اختر التطبيق ثم اضغط اختيار · رجوع للإلغاء");
+
+    private void beginPickOptions() {
+        pickingOptions = true;
+        paintEditChrome();
+        editHint.setText(S.tv(PICK_HINT));
+        editHint.setVisibility(View.VISIBLE);
+        if (!dockCards.isEmpty()) dockCards.get(dockCards.size() - 1).requestFocus();   // the app next to it: ◀ ▶ ▼ to the one wanted
+    }
+
+    private void endPickOptions() {
+        pickingOptions = false;
+        if (edit == null && appsEdit == null) editHint.setVisibility(View.GONE);
+    }
+
+    /** the app's options while they show (closed when the home goes) */
+    private PopupWindow appOptions;
+
+    private void toast(String text) { Toast.makeText(this, text, Toast.LENGTH_SHORT).show(); }
 
     /** Small focusable popup in the same style as the Inputs menu. */
     private void showMenu(View anchor, List<String> labels, List<Runnable> actions) {
@@ -2190,61 +2279,6 @@ public class MainActivity extends Activity {
     /** dp: the height of a button in the app menu's bottom row (an icon over a short name) */
     private static final int APP_BUTTON_H = 56;
 
-    /**
-     * The app menu's bottom row (AppActions): «تفاصيل التطبيق» opens Android's app-details screen for the app, «حذف التطبيق» Android's
-     * own uninstall, which asks to confirm (not for a system app or ours). Both behind the family lock's MENU_APP, as every item above
-     * is behind its own; none in kids mode.
-     */
-    private List<View> appButtons(String pkg, boolean kids) {
-        List<View> out = new ArrayList<>();
-        for (int kind : AppActions.buttons(pkg, isSystemApp(pkg), kids)) {
-            if (kind == AppActions.OPEN_DETAILS) {
-                Intent i = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", pkg, null));
-                out.add(appButton(AppActions.DETAILS, R.drawable.ic_info, () -> guarded(ParentalPolicy.MENU_APP, pkg, AppActions.DETAILS, () -> launch(i))));
-            } else if (kind == AppActions.OPEN_DELETE) {
-                Intent i = new Intent(Intent.ACTION_DELETE, Uri.fromParts("package", pkg, null));
-                out.add(appButton(AppActions.DELETE, R.drawable.ic_delete, () -> guarded(ParentalPolicy.MENU_APP, pkg, AppActions.DELETE, () -> launch(i))));
-            }
-        }
-        return out;
-    }
-
-    /** a system app, or an update of one (what the TV came with): never offered for removal */
-    private boolean isSystemApp(String pkg) {
-        try {
-            int f = getPackageManager().getApplicationInfo(pkg, 0).flags;
-            return (f & (android.content.pm.ApplicationInfo.FLAG_SYSTEM | android.content.pm.ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0;
-        } catch (PackageManager.NameNotFoundException | RuntimeException e) {
-            return true;   // not known: not offered
-        }
-    }
-
-    /** a small button: the icon over its name, in the glass look (the panel at rest, the focus fill and its ink while focused) */
-    private View appButton(String label, int icon, Runnable action) {
-        LinearLayout b = new LinearLayout(this);
-        b.setOrientation(LinearLayout.VERTICAL);
-        b.setGravity(Gravity.CENTER);
-        b.setFocusable(true);
-        b.setClickable(true);
-        b.setId(View.generateViewId());
-        b.setTag(action);
-        b.setContentDescription(S.tv(label));
-        b.setPadding(dp(4), dp(6), dp(4), dp(6));
-        ImageView glyph = new ImageView(this);
-        glyph.setImageDrawable(getDrawable(icon).mutate());
-        glyph.setTag(GlassPaint.ICON);
-        b.addView(glyph, new LinearLayout.LayoutParams(dp(22), dp(22)));
-        TextView name = text(11, "sans-serif-medium", homeGlass().text);
-        name.setText(S.tv(label));
-        name.setSingleLine(true);
-        name.setEllipsize(android.text.TextUtils.TruncateAt.END);
-        name.setGravity(Gravity.CENTER);
-        LinearLayout.LayoutParams nlp = new LinearLayout.LayoutParams(-1, -2);
-        nlp.topMargin = dp(4);
-        b.addView(name, nlp);
-        GlassPaint.card(b, homeGlass(), 10);
-        return b;
-    }
 
     private void showInputs(View anchor, int path) {
         guarded(path, null, "المصادر", () -> showInputsNow(anchor));
@@ -2390,6 +2424,9 @@ public class MainActivity extends Activity {
         greetingLine.update(h, cfg);
         lookNow = cfg.look();
         applyLook(Look.light(cfg.appearance(), dayBySun(cfg), h * 60 + now.get(Calendar.MINUTE)));
+        GlassStyle.Look glassNow = homeGlass();
+        for (Pill p : new Pill[] {inputsPill, tasksPill, tilawahPill, centerPill, bellPill}) if (p != null) p.look(glassNow);   // «رملي»: its own buttons
+        paintOptionsTile();
         boolean h24 = cfg.clock24();   // «ساعة ٢٤»: off (12-hour with the ص or م) unless the owner turned it on
         clock.setText(ClockText.face(h, now.get(Calendar.MINUTE), h24, Digits.latin()));
         ampm.setText(ClockText.suffix(h, h24));
@@ -2971,6 +3008,7 @@ public class MainActivity extends Activity {
                 RemoteKeys.opensApp(e.getKeyCode()) ? remoteInstalled() : Collections.<String>emptySet());
         if (key.kind != RemoteKeys.PASS) {
             if (key.kind != RemoteKeys.EAT) {
+                if (pickingOptions) endPickOptions();   // «⋮ خيارات»: a shortcut key ends the pick
                 if (edit != null) leaveEdit();   // a shortcut key in «تعديل المفضلة»: what was arranged is saved, as with Home, then the key acts
                 if (appsEdit != null) leaveAppsEdit();   // and in «تعديل التطبيقات»
                 openRemoteKey(key);

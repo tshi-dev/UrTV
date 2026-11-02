@@ -4,6 +4,16 @@ Newest first. `next` is where changes land first; a release is what was tested t
 
 ## 4.2 (on `next`)
 
+- **The UX review, done** (docs/UX-REVIEW.md on work/ux-review; work/ux-impl). **The app's options:** «⋮ خيارات» at the end of the
+  favourites (OK, then the app) or a long OK on the app (a shortcut to the same box) shows a small box right above the app, its width,
+  no title: «انقل», «أخفِ», «اقفل», then ★ (in or out of the favourites) and ⓘ (Android's app details, where its uninstall is). The old
+  long-press menu's other items have their visible places (the update, «تلاوة وأذان» and the adhan in the settings, the default favourites
+  in «ترتيب المفضلة»). **«مركز التحكم»:** Wi-Fi and Bluetooth first, side by side; no tile asks for a long OK any more (the screensaver's
+  line says «ابدأها الآن»; the sleep service is turned on from «مؤقت النوم», as its notice now says). **«الرقابة الأبوية»:** a button in
+  Settings ← المزيد, and its page starts with a card and two buttons («فعّل الرقابة الأبوية» / «ما الذي يُقفل؟», then «التطبيقات المقفلة» /
+  «غيّر الرمز»). The DNS filter is «تصفية المواقع» (was «حماية العائلة», a name too close to the lock). **A fifth look, «رملي»** (`sand`):
+  white cards on sand, hairlines, and a calm focus: a soft green fill with a DGA green line round it (GlassStyle.Look.ring) in every screen
+  and on the home's top buttons (rounded rectangles in this look). The default look is unchanged (glass); every look keeps its colours.
 - **The new settings screen** (work/settings-v2, the owner's choices in notes/settings-proto): big buttons, «الأذان» wide on top with its state
   under it; OK opens the home's adhan page on its switch (now its first row), so OK, OK turns it on or off, behind the family lock as before.
   Then «الموقع والصلاة», «الساعة والأرقام» (new: 12/24 hours, digits, month names together), «تلاوة وأذان», «البطاقات» («شاشة التوقف» and

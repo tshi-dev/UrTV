@@ -42,6 +42,18 @@ public final class GlassPaint {
         return d;
     }
 
+    /** The focused tile or row: the look's focus fill, with its line round it when the look has one (GlassStyle.Look.ring, «رملي»). */
+    public static GradientDrawable focused(Context c, GlassStyle.Look l, float radiusDp) {
+        return focused(c, l, l.focus, radiusDp);
+    }
+
+    /** The same over a fill of the caller's own (a focus colour laid over a dialog): the line is the look's ring, 3 dp, when it has one. */
+    public static GradientDrawable focused(Context c, GlassStyle.Look l, int fill, float radiusDp) {
+        GradientDrawable d = fill(c, fill, radiusDp, 0);
+        if (l.ring != 0) d.setStroke(Math.max(2, dp(c, 3)), l.ring);
+        return d;
+    }
+
     /** A panel: a list of rows, a tile at rest. */
     public static GradientDrawable panel(Context c, GlassStyle.Look l, float radiusDp) {
         return fill(c, l.panel, radiusDp, l.line);
@@ -50,7 +62,7 @@ public final class GlassPaint {
     /** A tile or a row: the panel at rest, the solid focus fill while it has the focus. */
     public static Drawable tile(Context c, GlassStyle.Look l, float radiusDp) {
         StateListDrawable s = new StateListDrawable();
-        s.addState(new int[] {android.R.attr.state_focused}, fill(c, l.focus, radiusDp, 0));
+        s.addState(new int[] {android.R.attr.state_focused}, focused(c, l, radiusDp));
         s.addState(new int[] {}, panel(c, l, radiusDp));
         return s;
     }
@@ -58,7 +70,7 @@ public final class GlassPaint {
     /** A row inside a panel: nothing at rest (the panel is under it), the focus fill while focused. */
     public static Drawable row(Context c, GlassStyle.Look l, float radiusDp) {
         StateListDrawable s = new StateListDrawable();
-        s.addState(new int[] {android.R.attr.state_focused}, fill(c, l.focus, radiusDp, 0));
+        s.addState(new int[] {android.R.attr.state_focused}, focused(c, l, radiusDp));
         s.addState(new int[] {}, new ColorDrawable(0));
         return s;
     }

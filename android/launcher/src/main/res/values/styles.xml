@@ -141,4 +141,32 @@
         <item name="gOnFocus">#FFFFFF</item>
         <item name="gOnFocusSub">#CFE6E1</item>
     </style>
+    <style name="Tilawah.Sand.Dark" parent="App">
+        <item name="gBg">#151A17</item>
+        <item name="gBgFade">#E6151A17</item>
+        <item name="gText">#F2F1EC</item>
+        <item name="gSub">#B8BDB9</item>
+        <item name="gAccent">#54C08A</item>
+        <item name="gWarn">#FFB4A0</item>
+        <item name="gPanel">#E61E2420</item>
+        <item name="gLine">#1AFFFFFF</item>
+        <item name="gDialogSolid">#1E2420</item>
+        <item name="gFocus">#FF1F3A2C</item>
+        <item name="gOnFocus">#F2F1EC</item>
+        <item name="gOnFocusSub">#C9D6CE</item>
+    </style>
+    <style name="Tilawah.Sand.Light" parent="App">
+        <item name="gBg">#F6F4EF</item>
+        <item name="gBgFade">#E6F6F4EF</item>
+        <item name="gText">#1B1F1D</item>
+        <item name="gSub">#545A57</item>
+        <item name="gAccent">#1B8354</item>
+        <item name="gWarn">#8E2A10</item>
+        <item name="gPanel">#E6FFFFFF</item>
+        <item name="gLine">#FFE3DFD5</item>
+        <item name="gDialogSolid">#FFFFFF</item>
+        <item name="gFocus">#FFEEF6F1</item>
+        <item name="gOnFocus">#1B1F1D</item>
+        <item name="gOnFocusSub">#3F4A44</item>
+    </style>
 </resources>
