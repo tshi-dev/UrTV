@@ -11,27 +11,43 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import sa.urtv.home.Digits;
+import sa.urtv.home.DigitsText;
 import sa.urtv.home.SetupGate;
+import sa.urtv.home.phone.QrCode;
+import sa.urtv.home.phone.QrView;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * «إعداد تلفزيوني»: the setup, done by the TV itself with no computer. It shows exactly what it will do (SetupEngine.plan), and «ابدأ» runs it over
- * the TV's own local ADB: the person accepts the TV's "Allow USB debugging?" once. «تراجع» undoes it with the same ledger and journal rules as
- * optimize/restore.sh. Opened from the apps row (a second launcher entry of this app), so it is there right after the APK is installed with
- * the TV's Downloader app. Nothing here logs a network name, a serial or an address.
+ * «إعداد تلفزيوني»: the whole setup, done by the TV itself with no computer, from ONE button, «جهّز كل شي». The run is SetupRunner's full run (one at a
+ * time, on a thread that outlives this screen); this screen only starts it and shows it, in five states:
+ *   start: «جهّز كل شي» and «تراجع». The TV asks «السماح بتصحيح USB؟» once; with no answer in 20 s the screen says how to clear a stuck prompt.
+ *   plan: after the precheck (read only), what the run will do on THIS TV with its real counts, the box for TV Bro and SmartTube (on), «ابدأ».
+ *         Nothing is changed before «ابدأ».
+ *   progress: one line per step: ✓ done, – تُرك, ✕ not done (with why).
+ *   wifi: the TV's setup wizard owns the saved Wi-Fi: forget the network and join it again, then «كمّل» (the run goes on at the home switch).
+ *   done: the report's QR code (docs/share, the person sends it if they want), how to turn debugging off, «لو صار شي», «تراجع».
+ * «تراجع» undoes it with the same ledger and journal rules as optimize/restore.sh. Opened from the apps row (a second launcher entry of this app),
+ * so it is there right after the APK is installed with the TV's Downloader app. Nothing here logs a network name, a serial or an address.
  */
 public class SetupActivity extends Activity {
     private int GOLD, INK, TEXT, DIM, RED;   // from the glass look (glass(), before anything is drawn)
     private sa.urtv.home.GlassStyle.Look look;
 
-    private TextView log, status, start, undo;
-    private volatile boolean running;
+    private LinearLayout body;
+    private TextView status, detail, start, undo;
+    private boolean running;     // a run is shown as going (this screen's thread only)
+    private boolean extras = true;
+    private String mode = "";
+    private final List<TextView> stepViews = new ArrayList<>();
+    private static SetupRunner.End dismissed;   // a done screen the person closed with «تم»: the start screen again
 
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        Digits.init(this);
         ScrollView scroll = new ScrollView(this);
         glass(scroll);   // the glass look: the home's photo, small and blurred once, under its veil
         scroll.setVerticalScrollBarEnabled(false);
@@ -39,47 +55,216 @@ public class SetupActivity extends Activity {
         col.setOrientation(LinearLayout.VERTICAL);
         col.setPadding(dp(120), dp(36), dp(120), dp(48));
         scroll.addView(col);
-
-        col.addView(text("إعداد تلفزيوني", 26, "Medium", TEXT), right(0));
-        col.addView(text("يجهّز التلفزيون نفسه، بدون كمبيوتر. هذا ما سيفعله بالترتيب:", 14, "Regular", DIM), right(dp(10)));
-        List<String> plan = SetupEngine.plan();
-        for (int i = 0; i < plan.size(); i++) col.addView(text((i + 1) + ". " + plan.get(i), 14, "Regular", TEXT), right(dp(6)));
-        col.addView(text("قبل البدء: فعّل «تصحيح USB» (الإعدادات ← تفضيلات الجهاز ← حول ← اضغط «Build» سبع مرات ← خيارات المطوّر ← تصحيح USB). "
-            + "عند الضغط على «ابدأ» سيسألك التلفزيون «السماح بتصحيح USB؟»: اختر «السماح دائماً».", 13, "Regular", GOLD), right(dp(14)));
-
-        start = button("ابدأ", TEXT);
-        start.setFilterTouchesWhenObscured(true);   // another window over this screen cannot press the buttons
-        start.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(false); } });
-        col.addView(start, right(dp(10)));
-        undo = button("تراجع (يرجّع التلفزيون كما كان)", TEXT);
-        undo.setFilterTouchesWhenObscured(true);
-        undo.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(true); } });
-        col.addView(undo, right(dp(14)));
-
+        col.addView(text("إعداد تلفزيوني", 26, "Medium", TEXT), right(dp(10)));
+        body = new LinearLayout(this);
+        body.setOrientation(LinearLayout.VERTICAL);
+        col.addView(body, right(0));
         status = text("", 16, "Medium", GOLD);
-        col.addView(status, right(dp(8)));
-        log = text("", 13, "Regular", DIM);
-        col.addView(log, right(0));
+        col.addView(status, right(dp(6)));
+        detail = text("", 13, "Regular", DIM);
+        col.addView(detail, right(0));
         setContentView(scroll);
-        // «ابدأ» has the focus once the screen is laid out (asked before that, the TV's first OK only put the focus on it: nothing happened)
-        start.post(new Runnable() { @Override public void run() { start.requestFocus(); } });
+        show();
         if (SetupRecovery.pending(this) && SetupRecovery.gaveUp(this)) {
-            status.setText(SetupRecovery.GAVE_UP_NOTICE + ": اضغط «تراجع».");
-        } else if (SetupRecovery.pending(this)) {
+            say(SetupRecovery.GAVE_UP_NOTICE + ": اضغط «تراجع».", RED);
+        } else if (SetupRecovery.pending(this) && !SetupRunner.get().running()) {
             // a home switch was cut off (the app was closed, the TV restarted): the safety switch is set again from its saved deadline, and one attempt is made now
-            status.setText("بدأ تبديل سابق للشاشة الرئيسية ولم يكتمل. نحاول إرجاع الشاشة الأصلية الآن؛ إن لم تظهر وحدها فاضغط «تراجع».");
+            say("بدأ تبديل سابق للشاشة الرئيسية ولم يكتمل. نحاول إرجاع الشاشة الأصلية الآن؛ إن لم تظهر وحدها فاضغط «تراجع».", GOLD);
             SetupRecovery.rearmFromDisk(this);
             new Thread(new Runnable() {
                 @Override public void run() {
                     SetupEngine.Result r = SetupRecovery.attempt(SetupActivity.this, new SetupEngine.Out() { @Override public void line(String t) { SetupActivity.this.line(t); } });
                     if (r != null) {
                         final String m = r.message;
-                        runOnUiThread(new Runnable() { @Override public void run() { status.setText(m); } });
+                        runOnUiThread(new Runnable() { @Override public void run() { say(m, GOLD); } });
                     }
                 }
             }, "setup-recover").start();
         }
     }
+
+    // ---- what the screen shows ----------------------------------------------------------------------------------------------------
+
+    /** The state the runner is in decides the screen; it is built again only when that state changes, otherwise its lines are updated. */
+    private void show() {
+        SetupRunner r = SetupRunner.get();
+        String want = decide(r);
+        if (!want.equals(mode)) {
+            mode = want;
+            body.removeAllViews();
+            stepViews.clear();
+            detail.setText("");
+            if (want.equals("plan")) buildPlan(r);
+            else if (want.equals("progress")) buildProgress(r);
+            else if (want.equals("wifi")) buildWifi();
+            else if (want.equals("done")) buildDone(r);
+            else buildStart(r);
+        }
+        if (mode.equals("progress")) updateProgress(r);
+        busy(r.running());
+    }
+
+    private String decide(SetupRunner r) {
+        if (r.running()) return r.awaitingConfirm() ? "plan" : "progress";
+        SetupRunner.End e = r.end();
+        if ((e != null && e.wifi) || (e == null && SetupRunner.awaitingWifi(new FileStore(this)))) return "wifi";
+        if (e == null || e == dismissed || SetupRunner.NOT_STARTED.equals(e.text)) return "start";
+        if (r.kind() == SetupRunner.Kind.FULL && !ran(r)) return "start";   // it ended before any step (the prompt, the connection): said on the start screen
+        return "done";
+    }
+
+    /** True when a step of the full run ran (the precheck at least). */
+    private static boolean ran(SetupRunner r) {
+        for (SetupRunner.Step s : r.steps()) if (s.state != SetupRunner.State.PENDING) return true;
+        return false;
+    }
+
+    private void buildStart(SetupRunner r) {
+        add(text("يجهّز التلفزيون نفسه، بدون كمبيوتر ولا جوال. اضغط «جهّز كل شي»: يسألك التلفزيون مرة واحدة «السماح بتصحيح USB؟»، "
+            + "ثم نعرض عليك ما سنفعله بالضبط قبل أي تغيير.", 15, "Regular", TEXT), dp(10));
+        add(text("قبل البدء: فعّل «تصحيح USB» (الإعدادات ← تفضيلات الجهاز ← حول ← اضغط «Build» سبع مرات ← خيارات المطوّر ← تصحيح USB). "
+            + "وخلك عند التلفزيون: لما تطلع الرسالة اختر «السماح دائماً».", 13, "Regular", GOLD), dp(14));
+        if (SetupRunner.resumable(new FileStore(this))) add(text("إعداد سابق ما اكتمل: «جهّز كل شي» يكمله من حيث توقف.", 14, "Regular", TEXT), dp(10));
+        start = button("جهّز كل شي");
+        start.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(false); } });
+        add(start, dp(10));
+        undo = button("تراجع (يرجّع التلفزيون كما كان)");
+        undo.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(true); } });
+        add(undo, dp(14));
+        // «جهّز كل شي» has the focus once the screen is laid out (asked before that, the TV's first OK only put the focus on it: nothing happened)
+        start.post(new Runnable() { @Override public void run() { start.requestFocus(); } });
+        SetupRunner.End e = r.end();
+        if (e != null && e != dismissed) say(e.text, e.bad ? RED : GOLD);
+        else say("", GOLD);
+    }
+
+    private void buildPlan(SetupRunner r) {
+        SetupRunner.Preview p = r.preview();
+        if (p == null) p = new SetupRunner.Preview();
+        add(text("هذا ما سنفعله في تلفزيونك، بالترتيب. ما تغيّر شيء بعد:", 15, "Medium", TEXT), dp(8));
+        List<String> plan = SetupRunner.planLines(p);
+        for (int i = 0; i < plan.size(); i++) add(text(digits((i + 1) + ". " + plan.get(i)), 14, "Regular", TEXT), dp(6));
+        final boolean already = p.tvbro && p.smarttube;
+        final TextView box = button("");
+        final String words = SetupRunner.extrasLine(p);
+        box.setText(already ? words : (extras ? "☑ " : "☐ ") + words);
+        box.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (already) return;
+                extras = !extras;
+                box.setText((extras ? "☑ " : "☐ ") + words);
+            }
+        });
+        add(box, dp(12));
+        final TextView begin = button("ابدأ");
+        begin.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { SetupRunner.get().confirm(extras); } });
+        add(begin, dp(10));
+        TextView no = button("إلغاء");
+        no.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { SetupRunner.get().cancel(); } });
+        add(no, dp(10));
+        begin.post(new Runnable() { @Override public void run() { begin.requestFocus(); } });
+        say("", GOLD);
+    }
+
+    private void buildProgress(SetupRunner r) {
+        add(text(r.kind() == SetupRunner.Kind.UNDO ? "نرجّع التلفزيون كما كان:" : "الإعداد يعمل. لا تطفئ التلفزيون، وقد يُعاد تشغيله وحده ويكمل.", 15, "Medium", TEXT), dp(10));
+        for (SetupRunner.Step s : r.steps()) {
+            TextView t = text("", 15, "Regular", DIM);
+            stepViews.add(t);
+            add(t, dp(4));
+        }
+    }
+
+    private void updateProgress(SetupRunner r) {
+        List<SetupRunner.Step> steps = r.steps();
+        for (int i = 0; i < steps.size() && i < stepViews.size(); i++) {
+            SetupRunner.Step s = steps.get(i);
+            String mark, tail = "";
+            int color;
+            switch (s.state) {
+                case DONE: mark = "✓"; color = TEXT; break;
+                case SKIPPED: mark = "–"; color = DIM; tail = " (تُرك)" + why(s.reason); break;
+                case FAILED: mark = "✕"; color = RED; tail = why(s.reason); break;
+                case RUNNING: mark = "…"; color = GOLD; break;
+                default: mark = "·"; color = DIM; break;
+            }
+            stepViews.get(i).setText(digits(mark + " " + SetupRunner.label(s.id) + tail));
+            stepViews.get(i).setTextColor(color);
+        }
+        if (r.promptLate()) say(SetupRunner.PROMPT_LATE, RED);
+        else if (r.promptWaiting()) say(SetupRunner.PROMPT_LINE, GOLD);
+        else say(r.kind() == SetupRunner.Kind.UNDO ? "جارٍ الرجوع…" : "جارٍ الإعداد… لا تطفئ التلفزيون.", GOLD);
+        List<SetupRunner.Line> lines = r.linesSince(Math.max(0, r.lastSeq() - 1));
+        detail.setText(lines.isEmpty() ? "" : digits(lines.get(lines.size() - 1).text));
+    }
+
+    private static String why(String reason) { return reason == null || reason.isEmpty() ? "" : " — " + reason; }
+
+    private void buildWifi() {
+        add(text("خطوة منك قبل الشاشة الرئيسية", 18, "Medium", TEXT), dp(8));
+        add(text(SetupRunner.WIFI_ASK_TEXT, 15, "Regular", TEXT), dp(14));
+        final TextView more = button("كمّل");
+        more.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(false); } });
+        add(more, dp(10));
+        undo = button("تراجع (يرجّع التلفزيون كما كان)");
+        undo.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(true); } });
+        add(undo, dp(14));
+        more.post(new Runnable() { @Override public void run() { more.requestFocus(); } });
+        say("", GOLD);
+    }
+
+    private void buildDone(SetupRunner r) {
+        final SetupRunner.End e = r.end();
+        say(e.text, e.bad ? RED : GOLD);
+        if (r.kind() == SetupRunner.Kind.FULL) {
+            for (SetupRunner.Step s : r.steps()) {
+                TextView t = text("", 14, "Regular", DIM);
+                stepViews.add(t);
+                add(t, dp(3));
+            }
+            mode = "progress";   // the step lines are drawn the same way, once
+            updateProgress(r);
+            mode = "done";
+            say(e.text, e.bad ? RED : GOLD);
+            String report = new FileStore(this).get(SetupReport.FILE);
+            String url = report == null || report.isEmpty() ? null : SetupRunner.shareUrl(report);
+            if (url != null) {
+                try {
+                    QrView qr = new QrView(this);
+                    qr.setCode(QrCode.encodeLarge(url));
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(300), dp(300));
+                    lp.gravity = Gravity.RIGHT;
+                    lp.topMargin = dp(14);
+                    lp.bottomMargin = dp(6);
+                    body.addView(qr, lp);
+                    add(text("امسح الرمز بجوالك لترى تقرير الإعداد وترسله للمطوّر إن أردت (بلا أي معلومة شخصية).", 13, "Regular", DIM), dp(14));
+                } catch (IllegalArgumentException ignored) { }
+            }
+        }
+        add(text("بعد الإعداد أطفئ التصحيح:", 15, "Medium", TEXT), dp(4));
+        add(text(digits("1. الإعدادات ← تفضيلات الجهاز ← خيارات المطوّر."), 14, "Regular", TEXT), dp(2));
+        add(text(digits("2. اختر «إلغاء تراخيص تصحيح USB»."), 14, "Regular", TEXT), dp(2));
+        add(text(digits("3. أطفئ «تصحيح USB». («تراجع» من هنا يحتاجه مفعّلاً.)"), 14, "Regular", TEXT), dp(12));
+        add(text("لو صار شي:", 15, "Medium", TEXT), dp(4));
+        add(text(digits("• الشاشة الرئيسية ما فتحت تلفزيونك: انتظر 5 دقائق ترجع الأصلية وحدها، أو اضغط «تراجع»."), 14, "Regular", TEXT), dp(2));
+        add(text("• تطبيق تحتاجه صار موقوفاً: «تراجع» يرجّع كل ما أوقفناه.", 14, "Regular", TEXT), dp(2));
+        add(text("• انقطع الواي فاي: اتصل به من إعدادات التلفزيون ← الشبكة.", 14, "Regular", TEXT), dp(2));
+        add(text("• تبي التلفزيون كما كان: فعّل «تصحيح USB» واضغط «تراجع».", 14, "Regular", TEXT), dp(12));
+        undo = button("تراجع (يرجّع التلفزيون كما كان)");
+        undo.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(true); } });
+        add(undo, dp(10));
+        final TextView ok = button("تم");
+        ok.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                dismissed = e;
+                show();
+            }
+        });
+        add(ok, dp(10));
+        ok.post(new Runnable() { @Override public void run() { ok.requestFocus(); } });
+    }
+
+    // ---- the buttons --------------------------------------------------------------------------------------------------------------
 
     private void go(final boolean undoIt) {
         if (running) return;
@@ -89,88 +274,68 @@ public class SetupActivity extends Activity {
 
     private void goAfterPin(final boolean undoIt) {
         if (running) return;
-        running = true;
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);   // only while a run is going (the screensaver would cut it)
-        start.setAlpha(.5f);
-        undo.setAlpha(.5f);
-        log.setText("");
-        status.setText(undoIt ? "جارٍ الرجوع…" : "جارٍ الإعداد… لا تطفئ التلفزيون.");
+        // the run itself is the runner's (one at a time, on a thread that outlives this screen): this screen starts it and shows what it says
+        SetupRunner.Options o = new SetupRunner.Options();
+        o.extras = extras;
+        SetupRunner.Start s = SetupRunner.get().start(undoIt ? SetupRunner.Kind.UNDO : SetupRunner.Kind.FULL, o, new SetupHost(this));
+        if (s != SetupRunner.Start.STARTED) {
+            say("يعمل إعداد آخر الآن؛ انتظر حتى ينتهي.", GOLD);
+            return;
+        }
+        dismissed = null;
+        show();
+    }
+
+    /** While a run is going: the screen stays on (the screensaver would cut it; SetupService also holds it, and our screensaver steps aside). */
+    private void busy(boolean on) {
+        if (on && !running) {
+            running = true;
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);   // only while a run is going (the screensaver would cut it)
+        } else if (!on && running) {
+            running = false;
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+    }
+
+    private void say(String t, int color) {
+        status.setText(digits(t));
+        status.setTextColor(color);
         // the answer to the press is in sight even when the plan above pushes it under the screen's edge
-        status.post(new Runnable() { @Override public void run() { status.requestRectangleOnScreen(new android.graphics.Rect(0, 0, status.getWidth(), status.getHeight())); } });
-        new Thread(new Runnable() {
-            @Override public void run() {
-                String end;
-                int color = GOLD;
-                try (SetupSession s = SetupSession.open(SetupActivity.this, 180_000, new AdbClient.Approval() {
-                    @Override public void waiting() {
-                        SaverHold.begin(SetupActivity.this);   // no screensaver over the prompt: one sent under it stays stuck until a restart
-                        line("التلفزيون يسأل «السماح بتصحيح USB؟»: اختر «السماح دائماً» بالريموت.");
-                    }
-                }, new SetupEngine.Out() { @Override public void line(String t) { SetupActivity.this.line(t); } })) {
-                    SaverHold.end();   // answered: the screensaver is free again (the run itself keeps the screen on as before)
-                    SetupEngine e = s.engine;
-                    if (undoIt) {
-                        boolean ok = e.undo().status == SetupEngine.Status.DONE;
-                        end = ok ? "تم الرجوع. أطفئ «تصحيح USB» من خيارات المطوّر، واختر «إلغاء تراخيص تصحيح USB» لتنظيف التلفزيون." : "انتهى الرجوع مع ملاحظات (فوق).";
-                    } else {
-                        SetupEngine.Result pre = e.precheck();
-                        if (pre.status != SetupEngine.Status.DONE) {
-                            end = "توقّفنا قبل أي تغيير.";
-                            color = RED;
-                        } else {
-                            int failed = 0, skipped = 0;
-                            SetupEngine.Result[] rs = {e.grants(), e.debloat(), e.screensaver(), e.home()};
-                            for (SetupEngine.Result r : rs) { if (r.status == SetupEngine.Status.FAILED) failed++; else if (r.status == SetupEngine.Status.SKIPPED) skipped++; }
-                            end = failed == 0 && skipped == 0 ? "انتهى الإعداد. اضغط زر الرئيسية في الريموت. ثم أطفئ «تصحيح USB» من خيارات المطوّر واختر «إلغاء تراخيص تصحيح USB» إن لم تحتجهما (التراجع من هنا يحتاجهما)."
-                                : "انتهى الإعداد مع " + failed + " خطوة لم تتم و" + skipped + " تُركت (التفاصيل فوق). «تراجع» يرجّع كل شيء.";
-                            if (failed > 0) color = RED;
-                        }
-                    }
-                } catch (IOException ex) {
-                    end = friendly(ex.getMessage());
-                    color = RED;
-                } catch (RuntimeException ex) {
-                    end = "حدث خطأ غير متوقع، ما غيّرنا شيئاً بعده. جرّب «تراجع» ثم أعد.";
-                    color = RED;
-                } finally {
-                    SaverHold.end();   // a wait that gave up or failed frees the screensaver too
-                }
-                SetupSession.deleteKeyIfFinished(SetupActivity.this);   // after EVERY end (done, failed, skipped, error): the key is a standing credential; it stays only while a switch is pending
-                final String msg = end;
-                final int c = color;
-                runOnUiThread(new Runnable() {
-                    @Override public void run() {
-                        running = false;
-                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                        start.setAlpha(1f);
-                        undo.setAlpha(1f);
-                        status.setText(msg);
-                        status.setTextColor(c);
-                    }
-                });
-            }
-        }, "setup-run").start();
+        if (!t.isEmpty()) status.post(new Runnable() { @Override public void run() { status.requestRectangleOnScreen(new android.graphics.Rect(0, 0, status.getWidth(), status.getHeight())); } });
     }
 
-    private static String friendly(String m) {
-        if (m == null) return "انقطع الاتصال بالتلفزيون. إن كنت في منتصف تبديل الشاشة الرئيسية فسترجع الأصلية وحدها بعد 5 دقائق. جرّب مرة ثانية.";
-        if (m.startsWith("debugging is off")) return "تصحيح USB مطفأ في التلفزيون. فعّله (خيارات المطوّر ← تصحيح USB) ثم اضغط «ابدأ».";
-        if (m.contains("permission was not accepted")) return "لم تُقبل رسالة «السماح بتصحيح USB؟». إذا ما ظهرت الرسالة أصلاً: أعد تشغيل التلفزيون، ثم افتح «إعداد تلفزيوني» واضغط «ابدأ» وخلك عند التلفزيون، تطلع خلال ثواني. واختر «السماح دائماً».";   // a prompt left unanswered (e.g. under the screensaver) blocks every later one until adbd restarts: TV test, 30 Oct
-        if (m.contains("TLS")) return "هذا التلفزيون يطلب التصحيح اللاسلكي؛ استخدم «تصحيح USB» العادي.";
-        return "انقطع الاتصال بالتلفزيون. إن كنت في منتصف تبديل الشاشة الرئيسية فسترجع الأصلية وحدها بعد 5 دقائق. جرّب مرة ثانية.";
+    @Override protected void onResume() {
+        super.onResume();
+        SetupRunner.get().setListener(new Runnable() {
+            @Override public void run() { runOnUiThread(new Runnable() { @Override public void run() { show(); } }); }
+        });
+        show();   // a run started before this screen was opened (or while it was closed) is shown as it is now
     }
 
+    @Override protected void onPause() {
+        SetupRunner.get().setListener(null);
+        super.onPause();
+    }
+
+    /** A line of the recovery attempt at the start of this screen (not a run: the runner's lines are shown by show()). */
     private void line(final String t) {
-        runOnUiThread(new Runnable() { @Override public void run() { log.append("• " + t + "\n"); } });
+        runOnUiThread(new Runnable() { @Override public void run() { detail.setText(digits(t)); } });
     }
 
-    /** a button in the glass look: the panel, the solid focus fill and its ink while focused */
-    private TextView button(String label, int fg) {
-        TextView t = text(label, 18, "Medium", fg);
+    // ---- views --------------------------------------------------------------------------------------------------------------------
+
+    private String digits(String s) { return DigitsText.convert(s, Digits.latin()); }
+
+    private void add(View v, int bottom) { body.addView(v, right(bottom)); }
+
+    /** a button in the glass look: the panel, the solid focus fill and its ink while focused; another window over this screen cannot press it */
+    private TextView button(String label) {
+        TextView t = text(label, 18, "Medium", TEXT);
         t.setGravity(Gravity.CENTER);
         t.setPadding(dp(16), dp(14), dp(16), dp(14));
         t.setFocusable(true);
         t.setClickable(true);
+        t.setFilterTouchesWhenObscured(true);
         sa.urtv.home.GlassPaint.card(t, look, 14);
         return t;
     }

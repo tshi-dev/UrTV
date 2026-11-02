@@ -8,7 +8,7 @@ package sa.urtv.home.setup;
 public final class SaverHoldRule {
     private SaverHoldRule() { }
 
-    /** ms: the setup's wait for the answer (180 s, SetupActivity) and a minute more; past it the screensaver is free again */
+    /** ms: the setup's wait for the answer (180 s, SetupRunner) and a minute more; past it the screensaver is free again */
     public static final long MAX_MS = 240_000;
 
     /** since: when the wait began (0 = no wait); now: the clock (the same one). A clock that went back counts as no wait. */

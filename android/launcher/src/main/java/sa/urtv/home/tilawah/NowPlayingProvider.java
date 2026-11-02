@@ -14,6 +14,7 @@ import android.os.Bundle;
  * READ_NOW_PLAYING). Also ".../adhan": one row (prayer, any_key) while an adhan for a prayer plays, which the screensaver's bar shows; and
  * ".../setup_hold": one row (held 1 or 0), 1 while «إعداد تلفزيوني» waits for the TV's debugging prompt (SaverHold), which the screensaver
  * asks when it starts and then ends at once; and call("stop_adhan"), which ends that adhan (the same permission is checked; a key press on the screensaver is the only caller). The screensaver asks when it starts and then once a minute, so nothing is pushed from here.
+ * And ".../setup": one row (running) while «إعداد تلفزيوني» runs a setup (SetupHold): the screensaver steps aside then.
  */
 public class NowPlayingProvider extends ContentProvider {
     @Override public boolean onCreate() { return true; }
@@ -24,6 +25,11 @@ public class NowPlayingProvider extends ContentProvider {
         if (uri != null && "setup_hold".equals(uri.getLastPathSegment())) {   // «إعداد تلفزيوني» waits for «السماح بتصحيح USB؟»: no screensaver over it
             MatrixCursor h = new MatrixCursor(new String[]{"held"});
             h.addRow(new Object[]{sa.urtv.home.setup.SaverHold.held() ? 1 : 0});
+            return h;
+        }
+        if (uri != null && "setup".equals(uri.getLastPathSegment())) {
+            MatrixCursor h = new MatrixCursor(new String[]{"running"});
+            if (sa.urtv.home.setup.SetupHold.on()) h.addRow(new Object[]{1});
             return h;
         }
         if (uri != null && "adhan".equals(uri.getLastPathSegment())) {

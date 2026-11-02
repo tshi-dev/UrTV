@@ -24,6 +24,15 @@ public class SetupEngineRun {
         boolean silent, dashFailsMarker, wizardAnswersHome, wizardOwnsWifi, nokia, refuseSwitch, noRoleManager, emptyResolve;
         boolean roleRejected, homeRejected, ignoreRoleBack, appopRefused;
         String exactAlarm = "default";
+        String maker = "Google", adbPort = "", bucket = "10", bootId = "boot-1";
+        int reboots;
+        long memAvailKb = 1024000;
+        boolean autoStartOps;
+        // the Wi-Fi (read only by the setup): connected, how many networks are saved; lost when the wizard goes off (wifiGoesWithWizard)
+        boolean wifiConnected = true, wifiGoesWithWizard, homeNotInFront, wifiSilent;
+        int savedNetworks = 1;
+        String top;                 // what `am start` put in front (null: what Home shows)
+        long dfTotal = 16777216, dfAvail = 12582912;
         final List<String> log = new ArrayList<>();
 
         String home() {
@@ -47,6 +56,61 @@ public class SetupEngineRun {
         }
 
         String answer(String c) {
+            if (!c.endsWith("; echo END_OF_LIST") && c.contains("; ")) {   // a line of several commands (the backup's, autostart's): each one's answer in turn
+                StringBuilder b = new StringBuilder();
+                for (String part : c.split("; ")) b.append(answer(part));
+                return b.toString();
+            }
+            c = c.replace(" 2> /dev/null", "").replace(" 2>&1", "");
+            if (c.startsWith("echo '")) return c.substring(6, c.lastIndexOf('\'')) + "\n";
+            if (c.equals("true") || c.equals("appops write-settings") || c.startsWith("pm trim-caches")) return "";
+            if (c.startsWith("dumpsys activity settings")) return "";
+            if (c.startsWith("getprop ro.product.model")) return "Test TV\n";
+            if (c.startsWith("getprop ro.product.manufacturer") || c.startsWith("getprop ro.product.brand")) return maker + "\n";
+            if (c.startsWith("getprop ro.product.device")) return "testdevice\n";
+            if (c.startsWith("getprop ro.build.version.release")) return "14\n";
+            if (c.startsWith("getprop ro.build.type")) return "user\n";
+            if (c.startsWith("getprop persist.adb.tcp.port")) return adbPort + "\n";
+            if (c.startsWith("device_config get activity_manager ")) return settings.getOrDefault("dc/" + c.substring(c.lastIndexOf(' ') + 1), "null") + "\n";
+            if (c.startsWith("device_config put activity_manager ")) { String[] w = c.split(" "); settings.put("dc/" + w[3], w[4]); return ""; }
+            if (c.startsWith("device_config delete activity_manager ")) { settings.remove("dc/" + c.substring(c.lastIndexOf(' ') + 1)); return ""; }
+            if (c.startsWith("am get-standby-bucket ")) return bucket + "\n";
+            if (c.startsWith("am set-standby-bucket ")) { String b = c.substring(c.lastIndexOf(' ') + 1); bucket = b.equals("restricted") ? "45" : b.equals("rare") ? "40" : b.equals("active") ? "10" : bucket; return ""; }
+            if (c.startsWith("appops get com.android.vending ")) { String op = c.substring(c.lastIndexOf(' ') + 1); return appops.containsKey("ps/" + op) ? op + ": " + appops.get("ps/" + op) + "\n" : "No operations.\n"; }
+            if (c.startsWith("cmd appops set com.android.vending ")) { String[] w = c.split(" "); if (w[5].equals("default")) appops.remove("ps/" + w[4]); else appops.put("ps/" + w[4], w[5]); return ""; }
+            if (c.matches("(cmd )?appops (get|set) sa\\.urtv\\.[a-z]+ ((APP_)?AUTO_START|ASSOC_START).*")) {
+                String[] w = c.replaceFirst("^cmd ", "").split(" ");
+                if (!autoStartOps) return "Error: Unknown operation string: " + w[3] + "\n";
+                if (w[1].equals("set")) { appops.put(w[2] + "/" + w[3], w[4]); return ""; }
+                return appops.containsKey(w[2] + "/" + w[3]) ? w[3] + ": " + appops.get(w[2] + "/" + w[3]) + "\n" : "No operations.\n";
+            }
+            if (c.startsWith("df -k /data")) return "/dev/block/dm-5 " + dfTotal + " 1 " + dfAvail + " 25% /data\n";
+            if (c.equals("pm list packages") || c.equals("pm list packages -d")) {
+                String a = answer(c + "; echo END_OF_LIST");
+                return a.endsWith("END_OF_LIST\n") ? a.substring(0, a.length() - "END_OF_LIST\n".length()) : a;
+            }
+            if (c.matches("pm list packages [A-Za-z0-9_.]+")) {
+                String q = c.substring(c.lastIndexOf(' ') + 1);
+                StringBuilder b = new StringBuilder();
+                for (String p : installed) if (p.contains(q)) b.append("package:").append(p).append('\n');
+                return b.toString();
+            }
+            if (c.equals("cat /proc/sys/kernel/random/boot_id")) return bootId + "\n";
+            if (c.equals("reboot")) { reboots++; return ""; }
+            if (c.equals("sync")) return "";
+            if (c.startsWith("input keyevent")) { top = null; return ""; }
+            if (c.startsWith("grep -E 'MemTotal")) return "MemTotal:        2048000 kB\nMemAvailable:     " + memAvailKb + " kB\nSwapTotal:        512000 kB\nSwapFree:         500000 kB\n";
+            if (c.startsWith("dumpsys meminfo")) return "Total RAM: 2,048,000K\nFree RAM: 900,000K\n";
+            if (c.startsWith("ps -A")) return "312\n";
+            if (c.startsWith("top -b")) return "Tasks: 300 total\n400%cpu  10%user   0%nice  10%sys 380%idle\n";
+            if (c.startsWith("pm list packages -d | wc -l")) return off.size() + "\n";
+            if (c.startsWith("dumpsys package ")) {
+                String p = c.split(" ")[2];
+                return installed.contains(p) ? "    versionCode=151 minSdk=26 targetSdk=30\n    versionName=4.0\n" : "";
+            }
+            if (c.startsWith("pm uninstall ")) { String p = c.substring(c.lastIndexOf(' ') + 1); installed.remove(p); off.remove(p); return "Success\n"; }
+            if (c.startsWith("getprop ro.product.cpu.abi")) return "arm64-v8a,armeabi-v7a,armeabi\n";
+            if (c.startsWith("getprop ro.build.display.id")) return "TEST.1234\n";
             if (c.startsWith("getprop ro.build.version.sdk")) return sdk + "\n";
             if (c.equals("pm list features")) return "feature:android.hardware.touchscreen\nfeature:android.software.leanback\n";
             if (c.equals("pm list packages; echo END_OF_LIST")) {
@@ -63,6 +127,7 @@ public class SetupEngineRun {
                 String p = c.substring(c.lastIndexOf(' ') + 1);
                 if (nokia && p.equals(stockPkg)) return "java.lang.SecurityException: This command is illegal\n";
                 if (installed.contains(p) && !p.equals("sa.urtv.home")) off.add(p);
+                if (p.equals("com.google.android.tungsten.setupwraith") && wifiGoesWithWizard) { savedNetworks = 0; wifiConnected = false; }   // Android removes the wizard's networks
                 return "Package " + p + " new state: disabled-user\n";
             }
             if (c.startsWith("pm enable ")) { String p = c.substring(c.lastIndexOf(' ') + 1); off.remove(p); return "Package " + p + " new state: enabled\n"; }
@@ -87,8 +152,22 @@ public class SetupEngineRun {
             if (c.startsWith("cmd package resolve-activity")) return home() + "\n";
             if (c.startsWith("cmd package query-activities")) return "2 activities found:\n  Activity #0:\n    priority=0\n    " + stockPkg + "/.home.HomeActivity\n"
                 + (wizardAnswersHome ? "  Activity #1:\n    com.google.android.tungsten.setupwraith/.RecoveryActivity\n" : "");
+            if (c.equals("cmd wifi status")) return wifiSilent ? "" : wifiConnected ? "Wifi is enabled\nWifi is connected to \"net\"\n" : "Wifi is enabled\nWifi is not connected\n";
+            if (c.equals("cmd wifi list-networks")) {
+                if (wifiSilent) return "";
+                if (savedNetworks == 0) return "No networks\n";
+                StringBuilder b = new StringBuilder("Network Id      SSID                         Security type\n");
+                for (int i = 0; i < savedNetworks; i++) b.append(i).append("            net").append(i).append("                         wpa2-psk\n");
+                return b.toString();
+            }
+            if (c.equals("echo W_END")) return "W_END\n";
+            if (c.equals("echo L_END")) return wifiSilent ? "" : "L_END\n";
+            if (c.startsWith("am start -W")) {
+                if (!homeNotInFront) top = "sa.urtv.home/.MainActivity";
+                return "Starting: Intent { act=android.intent.action.MAIN }\nStatus: ok\nLaunchState: COLD\n";
+            }
             if (c.startsWith("dumpsys wifi")) return wizardOwnsWifi ? "  cname=com.google.android.tungsten.setupwraith\n" : "  cname=android.uid.system\n";
-            if (c.startsWith("dumpsys activity")) return "  mResumedActivity: ActivityRecord{abc u0 " + home() + " t5}\n";
+            if (c.startsWith("dumpsys activity")) return "  mResumedActivity: ActivityRecord{abc u0 " + (top != null ? top : home()) + " t5}\n";
             if (c.startsWith("input keyevent") || c.startsWith("am force-stop") || c.startsWith("cmd notification")) return "";
             return "unknown command: " + c + "\n";
         }
@@ -96,7 +175,7 @@ public class SetupEngineRun {
         int count(String prefix) { int n = 0; for (String l : log) if (l.startsWith(prefix)) n++; return n; }
     }
 
-    static final class Mem implements SetupEngine.Store {
+    static class Mem implements SetupEngine.Store {
         final Map<String, String> files = new HashMap<>();
         public String get(String name) { return files.get(name); }
         public void put(String name, String text) { files.put(name, text); }

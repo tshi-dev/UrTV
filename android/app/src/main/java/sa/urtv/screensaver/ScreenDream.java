@@ -57,6 +57,18 @@ public class ScreenDream extends DreamService {
         return super.dispatchKeyEvent(e);
     }
 
+    /**
+     * While «إعداد تلفزيوني» runs a setup the dream steps aside at once: a USB-debugging prompt sent while the screensaver showed stayed pending until
+     * the TV restarted (tester's diagnosis, 30 Oct), and a TCL ignores the setup screen's keep-the-screen-on flag. wakeUp (Android 10+) brings the
+     * screen back to what was under the dream (the setup screen), not to sleep; older TVs end the dream.
+     */
+    @Override
+    public void onDreamingStarted() {
+        super.onDreamingStarted();
+        if (!NowPlayingBridge.setupRunning(this)) return;
+        if (android.os.Build.VERSION.SDK_INT >= 29) wakeUp(); else finish();
+    }
+
     /** start: the dream starting (counted for the first-run note), not a renderer's re-creation */
     private void show(boolean start) {
         web = ScreenView.create(this, this::gone, start);
