@@ -54,6 +54,8 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
     private final List<Boolean> dones = new ArrayList<>();
     /** each task's own id, which stays with it when the list moves or two tasks say the same (0: an older screensaver app that gives none) */
     private final List<Long> ids = new ArrayList<>();
+    /** each task's appointment (epoch ms, 0 = no reminder); empty when the screensaver app is older than reminders */
+    private final List<Long> dues = new ArrayList<>();
     private LinearLayout list, confirm;
     private TextView status, question;
     private View mic, yes, no, addBtn;
@@ -165,17 +167,35 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
         texts.clear();
         dones.clear();
         ids.clear();
+        dues.clear();
         try (Cursor c = getContentResolver().query(TASKS, null, null, null, null)) {
             if (c == null) return false;
             while (c.moveToNext()) {
                 texts.add(c.getString(1));
                 dones.add(c.getInt(2) != 0);
                 ids.add(c.getColumnCount() > 4 ? c.getLong(4) : 0L);
+                dues.add(c.getColumnCount() > 5 ? c.getLong(5) : 0L);
             }
             return true;
         } catch (RuntimeException e) {
             return false;
         }
+    }
+
+    /** «٥:٠٠ م» of an appointment, with the day when it is not today (the city's clock) */
+    private String reminderWhen(long due) {
+        java.util.TimeZone tz = java.util.TimeZone.getDefault();
+        try {
+            String[] z = ConfigSnapshot.read(this).cityZone();
+            if (z != null) tz = java.util.TimeZone.getTimeZone(ClockZone.valid(z[1]));
+        } catch (RuntimeException ignored) { }
+        java.util.Calendar c = java.util.Calendar.getInstance(tz), n = java.util.Calendar.getInstance(tz);
+        c.setTimeInMillis(due);
+        String time = ClockText.time(c.get(java.util.Calendar.HOUR_OF_DAY), c.get(java.util.Calendar.MINUTE), Digits.clock24(), Digits.latin());
+        if (c.get(java.util.Calendar.YEAR) == n.get(java.util.Calendar.YEAR) && c.get(java.util.Calendar.DAY_OF_YEAR) == n.get(java.util.Calendar.DAY_OF_YEAR)) return time;
+        java.text.SimpleDateFormat f = new java.text.SimpleDateFormat("EEEE d MMMM", S.lang().equals(Tr.EN) ? java.util.Locale.ENGLISH : new java.util.Locale("ar"));
+        f.setTimeZone(tz);
+        return DigitsText.convert(f.format(new java.util.Date(due)), Digits.latin()) + "  " + time;
     }
 
     private void render(int focus) {
@@ -191,7 +211,15 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
             LinearLayout r = new LinearLayout(this);
             View del = pill(S.t("حذف"), look.warn, v -> ask(S.t("أحذف «%s»؟", t), () -> delete(t, id)));
             r.addView(del, new LinearLayout.LayoutParams(dp(84), -1));
-            View card = card((done ? "✓  " : "●  ") + t, done, v -> {
+            final long due = i < dues.size() ? dues.get(i) : 0L;
+            View bell = null;
+            if (!done && id > 0 && dues.size() == texts.size()) {   // «ذكّرني»: this task's reminder page (the screensaver app must know reminders)
+                bell = pill(S.t("ذكّرني"), GOLD, v -> startActivity(new Intent(this, TaskReminderActivity.class).putExtra(TaskReminderActivity.EXTRA_ID, id)));
+                LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(dp(96), -1);
+                bp.setMarginStart(dp(8));
+                r.addView(bell, bp);
+            }
+            View card = card((done ? "✓  " : "●  ") + t + (due > 0 && !done ? "   🔔 " + reminderWhen(due) : ""), done, v -> {
                 if (done) toast(S.t("هذي المهمة منجزة"));
                 else markDone(t, id);
             });
@@ -200,6 +228,10 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
             r.addView(card, cp);
             if (Dir.rtl()) card.setNextFocusLeftId(del.getId()); else card.setNextFocusRightId(del.getId());
             if (Dir.rtl()) del.setNextFocusRightId(card.getId()); else del.setNextFocusLeftId(card.getId());
+            if (bell != null) {   // the row from the card outwards: the card, «ذكّرني», «حذف»
+                if (Dir.rtl()) { card.setNextFocusLeftId(bell.getId()); bell.setNextFocusRightId(card.getId()); bell.setNextFocusLeftId(del.getId()); del.setNextFocusRightId(bell.getId()); }
+                else { card.setNextFocusRightId(bell.getId()); bell.setNextFocusLeftId(card.getId()); bell.setNextFocusRightId(del.getId()); del.setNextFocusLeftId(bell.getId()); }
+            }
             list.addView(r, rowParams());
             if (first == null) first = card;
             if (i == focus) wanted = card;
@@ -267,6 +299,7 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
     private boolean write(Change c) {
         try {
             boolean ok = c.run();
+            ReminderScheduler.schedule(this);   // a task done or deleted may have been the next reminder
             render(0);
             return ok;
         } catch (RuntimeException e) {   // SecurityException: not the same signing key; or the app is gone

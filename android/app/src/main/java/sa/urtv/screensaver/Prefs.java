@@ -589,8 +589,9 @@ final class Prefs {
             + "&slot=" + slot()
             + "&cd=" + countdownDate()
             + "&cdname=" + Uri.encode(countdownName())
-            + openTasksParam()
-            + ownParam();
+            + openTasksParam() + remindersParam()
+            + ownParam()
+            + packsParam();
     }
 
     /** The city's name for the page and the home: as saved, or with «اللغة» English the built-in city's English name (Places; a place of one's own keeps its name) */
@@ -604,6 +605,19 @@ final class Prefs {
     private String ownParam() {
         int n = Own.count(ctx);
         return n == 0 ? "" : "&own=" + n + "&ownmode=" + Own.mode(ctx);
+    }
+
+    /** «صور شاشة التوقف»: the packs that are on (ids), and whether our own set («صورنا», on by default) is. Sent as #packs=id:count,... and #ours=0 only when set, so the fragment is as before. */
+    java.util.Set<String> packsOn() { return PhotoPacks.parseOn(sp.getString("packsOn", "")); }
+    void setPacksOn(java.util.Set<String> v) { sp.edit().putString("packsOn", PhotoPacks.joinOn(v)).apply(); }
+    boolean oursOn() { return sp.getBoolean("oursOn", true); }
+    void setOursOn(boolean v) { sp.edit().putBoolean("oursOn", v).apply(); }
+
+    private String packsParam() {
+        java.util.Map<String, Integer> have = PackStore.installed(ctx);
+        // «صورنا» off counts only while a pack that is on is on the TV: a pack deleted meanwhile brings ours back (nothing is left blank)
+        boolean ours = oursOn() || !PhotoPacks.mayTurnOursOff(packsOn(), have);
+        return PhotoPacks.fragment(packsOn(), have) + (ours ? "" : "&ours=0");
     }
 
     String ownMode() { return sp.getString("ownMode", Own.MIX); }
@@ -626,10 +640,12 @@ final class Prefs {
     List<Task> tasks() {
         synchronized (TASKS_LOCK) {
             List<Task> v = parseTasks(sp.getString("tasks", "[]"));
-            if (TaskList.needsIds(v)) {
-                v = TaskList.withIds(v, sp.getLong("taskSeq", 0));
-                setTasks(v);
-            }
+            long now = System.currentTimeMillis();
+            boolean ids = TaskList.needsIds(v);
+            if (ids) v = TaskList.withIds(v, sp.getLong("taskSeq", 0));
+            boolean roll = Reminders.needsRoll(v, now);   // a repeating reminder nobody answered moves to its next time
+            if (roll) v = Reminders.roll(v, now);
+            if (ids || roll) setTasks(v);
             return v;
         }
     }
@@ -642,7 +658,9 @@ final class Prefs {
             for (int k = 0; k < a.length(); k++) {
                 try {
                     JSONObject o = a.getJSONObject(k);
-                    out.add(new Task(o.getString("t"), o.optBoolean("done"), o.optLong("at"), o.optLong("id")));
+                    out.add(new Task(o.getString("t"), o.optBoolean("done"), o.optLong("at"), o.optLong("id"), Math.max(0, o.optLong("due")),
+                        Reminders.beforeOf(o.optInt("bf")), Math.max(0, Math.min(2, o.optInt("rp"))), o.optBoolean("snd"), Math.max(0, Math.min(2, o.optInt("wh"))),
+                        Math.max(0, o.optLong("sn"))));
                 } catch (JSONException bad) {
                     // one entry that is not a task is skipped; the others are kept (the list is saved back whole)
                 }
@@ -656,7 +674,12 @@ final class Prefs {
     private void setTasks(List<Task> v) {
         JSONArray a = new JSONArray();
         try {
-            for (Task t : v) a.put(new JSONObject().put("t", t.text).put("done", t.done).put("at", t.at).put("id", t.id));
+            for (Task t : v) {
+                JSONObject o = new JSONObject().put("t", t.text).put("done", t.done).put("at", t.at).put("id", t.id);
+                if (t.due > 0) o.put("due", t.due).put("bf", t.before).put("rp", t.repeat).put("snd", t.sound).put("wh", t.where);   // a task with no reminder is saved as it always was
+                if (t.snooze > 0) o.put("sn", t.snooze);
+                a.put(o);
+            }
         } catch (JSONException ignored) { }
         sp.edit().putString("tasks", a.toString()).putLong("taskSeq", TaskList.lastId(v, sp.getLong("taskSeq", 0))).apply();
     }
@@ -681,6 +704,40 @@ final class Prefs {
         }
     }
 
+    /** null when added; otherwise why not. A reminder is a task with its due time (epoch ms), the minutes before it, repeat 0/1/2, a chime and where it shows. */
+    String addReminder(String raw, long due, int before, int repeat, boolean sound, int where) {
+        String text = cleanTask(raw);
+        if (text.isEmpty()) return "the task is empty";
+        synchronized (TASKS_LOCK) {
+            List<Task> v = tasks();
+            List<Task> out = TaskList.addReminder(v, text, System.currentTimeMillis(), TaskList.lastId(v, sp.getLong("taskSeq", 0)) + 1, MAX_TASKS,
+                due, Reminders.beforeOf(before), Math.max(0, Math.min(2, repeat)), sound, Math.max(0, Math.min(2, where)));
+            if (out == null) return "at most " + MAX_TASKS + " tasks; finish or delete one first";
+            setTasks(out);
+            return null;
+        }
+    }
+
+    /** this task's reminder is set (due 0 takes it off); false when it is gone */
+    boolean remindTaskId(long id, long due, int before, int repeat, boolean sound, int where) {
+        synchronized (TASKS_LOCK) {
+            List<Task> out = TaskList.remind(tasks(), id, Math.max(0, due), Reminders.beforeOf(before), Math.max(0, Math.min(2, repeat)), sound, Math.max(0, Math.min(2, where)));
+            if (out == null) return false;
+            setTasks(out);
+            return true;
+        }
+    }
+
+    /** the card for this task comes again in `minutes`; false when it is gone */
+    boolean snoozeTaskId(long id, int minutes) {
+        synchronized (TASKS_LOCK) {
+            List<Task> out = TaskList.snooze(tasks(), id, System.currentTimeMillis() + Math.max(1, minutes) * Reminders.MINUTE);
+            if (out == null) return false;
+            setTasks(out);
+            return true;
+        }
+    }
+
     /** n counts from 1 (what `list` shows); false when there is no such task */
     boolean doneTask(int n) {
         synchronized (TASKS_LOCK) {
@@ -699,7 +756,7 @@ final class Prefs {
     /** the task with this id is marked done; false when it is gone */
     boolean doneTaskId(long id) {
         synchronized (TASKS_LOCK) {
-            List<Task> out = TaskList.markDone(tasks(), id);
+            List<Task> out = TaskList.markDone(tasks(), id, System.currentTimeMillis());   // a repeating reminder is done for this time only
             if (out == null) return false;
             setTasks(out);
             return true;
@@ -724,6 +781,18 @@ final class Prefs {
         List<String> open = new ArrayList<>();
         for (Task t : tasks()) if (!t.done) open.add(t.text);
         return open.isEmpty() ? "" : "&tasks=" + Uri.encode(join(open, "\n"));
+    }
+
+    /**
+     * "&rem=" and the open reminders for the page's card, one per line, URL-encoded: id|card time|appointment|repeat|chime|where|text (epoch
+     * milliseconds). The page shows the card by its own clock, so a reminder set while a screen is up reaches it on the next load (the screen
+     * starts over when the settings change); nothing when there are none.
+     */
+    private String remindersParam() {
+        List<String> lines = new ArrayList<>();
+        for (Task t : tasks())
+            if (Reminders.has(t) && t.where != 2) lines.add(t.id + "|" + Reminders.fireAt(t) + "|" + t.due + "|" + t.repeat + "|" + (t.sound ? 1 : 0) + "|" + t.where + "|" + t.text.replace('|', ' '));
+        return lines.isEmpty() ? "" : "&rem=" + Uri.encode(join(lines, "\n"));
     }
 
     /** The cards on the launcher's home screen: up to HOME_CARDS of PANELS, none until the user picks one. */

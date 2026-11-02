@@ -545,6 +545,20 @@
     color:var(--gold-hi);font-size:clamp(11px,1.1vw,21px);font-weight:500;letter-spacing:0;white-space:nowrap;pointer-events:none}
   .adbar[hidden]{display:none}
   html.widget .adbar{display:none}
+  /* the reminder card («المهام» with a time): white, over the photo, top start; dismissed with OK; never over the launcher's widget cards */
+  .rm{position:fixed;left:6.25vw;top:11.1vh;width:39.6vw;min-width:320px;z-index:7;box-sizing:border-box;padding:clamp(16px,1.7vw,32px);
+    background:rgba(255,253,250,.97);color:#1C2420;border-radius:.9em;box-shadow:0 1.6vh 4vh rgba(0,0,0,.34);font-size:clamp(14px,1.5vw,29px)}
+  .rm[hidden],html.widget .rm{display:none}
+  .rm-hd{display:flex;align-items:center;gap:clamp(16px,1.25vw,24px)}
+  .rm-ic{flex:0 0 auto;width:2.6em;height:2.6em;border-radius:.6em;background:#E6F3EC;color:#1F8A5B;display:flex;align-items:center;justify-content:center}
+  .rm-ic svg,.rm-b svg{width:1.3em;height:1.3em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .rm-tx{min-width:0;flex:1}
+  .rm-t{font-size:1.35em;font-weight:600;line-height:1.35;overflow-wrap:anywhere}
+  .rm-s{color:#5A645F;font-size:.95em;margin-top:.15em}
+  .rm-bt{display:flex;gap:clamp(8px,.83vw,16px);margin-top:clamp(16px,1.25vw,24px)}
+  .rm-b{flex:1;display:flex;align-items:center;justify-content:center;gap:.5em;font:inherit;font-weight:500;color:#1C2420;background:#fff;border:2px solid #D8DDD9;border-radius:.6em;padding:.7em .6em;cursor:pointer}
+  .rm-b.on{outline:3px solid #1F8A5B;outline-offset:2px}
+  .rm-b.go{background:#23996B;border-color:#23996B;color:#fff}
   .dimmer{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:30;transition:opacity 6s linear}
   .stage{transition:transform 3s ease}
   .sc{color:var(--gold-3);letter-spacing:0}
@@ -575,6 +589,10 @@
 <div class="bottom-veil"></div>
 <div class="dimmer" id="dimmer"></div>
 <div class="adbar" id="adbar" hidden></div>
+<div class="rm" id="rm" role="alertdialog" aria-labelledby="rm-t" hidden>
+  <div class="rm-hd"><span class="rm-ic"><svg viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15zM10 21h4"/></svg></span><div class="rm-tx"><div class="rm-t" id="rm-t"></div><div class="rm-s" id="rm-s"></div></div></div>
+  <div class="rm-bt"><button class="rm-b go on" id="rm-ok" type="button"><span>تم</span><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button><button class="rm-b" id="rm-sz" type="button"></button></div>
+</div>
 
 <main class="stage">
 
@@ -704,6 +722,10 @@ const CONFIG = {
   // the owner's own photos («صوري»): #own=how many (0-10) and #ownmode=mix (join ours, the default) or only
   own: Math.max(0, Math.min(10, Math.floor(_num('own', 0)))),
   ownMode: _Q.get('ownmode') === 'only' ? 'only' : 'mix',
+  // the photo packs («صور شاشة التوقف»): #packs=id:count,id:count (downloaded and on; the screensaver app alone answers them, so only there)
+  // and #ours=0 when our own set is off (the app sends that only while a pack gives the screen something else)
+  packs: window.UrtvNative ? (_Q.get('packs') || '').split(',').map(x => x.split(':')).filter(x => /^[a-z][a-z0-9-]{1,30}$/.test(x[0]) && +x[1] >= 1).map(x => [x[0], Math.min(200, Math.floor(+x[1]))]).slice(0, 12) : [],
+  ours: _Q.get('ours') !== '0',
   // digits everywhere: #digits=hindi (١٢٣, the default) or latin (123); anything else = hindi
   digits: _Q.get('digits') === 'latin' ? 'latin' : 'hindi',
   // «ساعة ٢٤»: #clock=24 shows every time of day as 24-hour (١٩:٣٠); anything else, or nothing, is the 12-hour clock (٧:٣٠ م)
@@ -794,7 +816,7 @@ const USES = k => CONFIG.cards.some(c => c === k || (USES_OF[c] || []).includes(
 // The panels' snapshot is keyed by the link without the settings that only change how things look (the card's style and place, the clock's
 // size, the strips, the photo timing): changing one of those offline must not lose the games already on screen. What changes the words or
 // the markup inside the saved panels (the teams, leagues, digits, slot, markets, their style and switch…) stays in the key.
-const SNAP_LOOK = ['citynote', 'cardstyle', 'panel', 'panel2', 'week', 'clocksize', 'adhanbar', 'yearstrip', 'national', 'photos', 'adj', 'own', 'ownmode', 'gap'];
+const SNAP_LOOK = ['citynote', 'cardstyle', 'panel', 'panel2', 'week', 'clocksize', 'adhanbar', 'yearstrip', 'national', 'photos', 'adj', 'own', 'ownmode', 'packs', 'ours', 'gap'];
 function snapLink(){
   return location.hash.replace(/^#/, '').split('&').filter(kv => kv && !SNAP_LOOK.includes(kv.split('=')[0])).join('&');
 }
@@ -1205,6 +1227,72 @@ function tickAdhanBar(){
   bar.hidden = !t;
   if(t) setText(bar, t);
 }
+
+// ---- «المهام» with a time: the card at the time asked («قبلها بـ» minutes ahead of the appointment, then «الآن» at it). The app gives the open
+// reminders as #rem= (one per line: id|card time|appointment|repeat|chime|where|text, epoch milliseconds); the page shows the card by its own clock.
+// «تم» marks the task done and «ذكّرني بعد ١٠ دقائق» asks again then, both through window.UrtvNative (the screensaver app; without it the card only goes
+// away); any other key puts the card away until the appointment changes. It waits while the adhan plays. The app takes the keys while the card is up
+// (reminderKey) so the first press goes to the card and the screensaver stays.
+const REM_GRACE = 30*60000, REM_SNOOZE = 10;
+const REMS = (_Q.get('rem') || '').split('\n').map(l => {
+  const p = l.split('|');
+  return p.length < 7 ? null : {id: +p[0], fire: +p[1], due: +p[2], snd: p[4] === '1', text: p.slice(6).join('|').trim().slice(0, 60), shut: false, chimed: false};
+}).filter(r => r && r.id > 0 && isFinite(r.fire) && isFinite(r.due) && r.text).slice(0, 12);
+let REM_NOW = null, REM_FOCUS = 0;
+function remNative(fn, ...a){ try{ if(window.UrtvNative && window.UrtvNative[fn]) window.UrtvNative[fn](...a); }catch(e){} }
+function remCurrent(now){
+  if(CONFIG.widget || ADHAN_LIVE) return null;
+  return REMS.filter(r => !r.shut && r.fire <= now && now < Math.max(r.due, r.fire) + REM_GRACE).sort((a, b) => a.due - b.due)[0] || null;
+}
+function remSub(r, now){
+  const hm = FMT_HM.format(new Date(r.due)).split(':');
+  const at = 'الساعة ' + fmtTime(+hm[0], +hm[1]);
+  return now >= r.due ? at + '، الآن' : at + '، بعد ' + humanRemaining(Math.max(60, Math.ceil((r.due - now) / 60000) * 60));
+}
+function remFocus(k){
+  REM_FOCUS = k;
+  document.getElementById('rm-ok').classList.toggle('on', k === 0);
+  document.getElementById('rm-sz').classList.toggle('on', k === 1);
+}
+function remDraw(){
+  const now = Date.now(), r = remCurrent(now), card = document.getElementById('rm');
+  if(!card) return;
+  if(!r){ if(REM_NOW){ REM_NOW = null; card.hidden = true; remNative('reminderShown', false); } return; }
+  if(!REM_NOW || REM_NOW.id !== r.id){
+    REM_NOW = r; remFocus(0);
+    setText(document.getElementById('rm-t'), r.text);
+    setText(document.getElementById('rm-sz'), 'ذكّرني بعد ' + ar(REM_SNOOZE) + ' دقائق');
+    card.hidden = false;
+    remNative('reminderShown', true);
+    if(r.snd && !r.chimed){ r.chimed = true; remNative('reminderChime'); }
+  }
+  setText(document.getElementById('rm-s'), remSub(r, now));
+}
+function remAct(k){   // k: 0 «تم», 1 snooze
+  const r = REM_NOW;
+  if(!r) return;
+  if(k === 0){ r.shut = true; remNative('reminderDone', r.id); }
+  else { r.fire = Date.now() + REM_SNOOZE*60000; remNative('reminderSnooze', r.id, REM_SNOOZE); }
+  remDraw();
+}
+// a key, from the app (the screensaver) or the browser: ok / move / any other puts the card away
+function reminderKey(k){
+  if(!REM_NOW) return false;
+  if(k === 'ok') remAct(REM_FOCUS);
+  else if(k === 'move') remFocus(1 - REM_FOCUS);
+  else { REM_NOW.shut = true; remDraw(); }
+  return true;
+}
+window.reminderKey = reminderKey;
+document.addEventListener('keydown', e => {
+  if(!REM_NOW || e.altKey || e.ctrlKey || e.metaKey) return;
+  const k = e.key === 'Enter' || e.key === ' ' ? 'ok' : e.key === 'ArrowLeft' || e.key === 'ArrowRight' ? 'move' : 'away';
+  if(['Shift','Control','Alt','Meta','CapsLock','Dead'].includes(e.key)) return;
+  e.preventDefault(); e.stopImmediatePropagation();
+  reminderKey(k);
+}, true);
+document.getElementById('rm-ok').onclick = () => remAct(0);
+document.getElementById('rm-sz').onclick = () => remAct(1);
 
 function tickPrayer(){
   nightPrayers();
@@ -3316,7 +3404,17 @@ const OWN_BASE = 'https://own.urtv.invalid/';
 const OWN_ONLY = () => CONFIG.own > 0 && CONFIG.ownMode === 'only';
 const ownPhotos = () => Array.from({length: CONFIG.own}, (_, k) => ({url: OWN_BASE + (k + 1) + '.jpg', b: {}}));   // no credit: they are not ours
 
+// The downloaded packs: the app answers PACK_BASE ID/N.jpg (1..count) and ID/credits.json from its own folder. Each photo carries its credit
+// (author · licence) once the pack's credits arrive; one that has not yet is shown without it.
+const PACK_BASE = 'https://packs.urtv.invalid/';
+const PACK_CREDITS = {};
+const packPhotos = () => CONFIG.packs.reduce((all, [id, n]) => all.concat(Array.from({length: n}, (_, k) => ({url: PACK_BASE + id + '/' + (k + 1) + '.jpg', b: {get c(){ return (PACK_CREDITS[id] || {})[k + 1] || ''; }}}))), []);
+function loadPackCredits(){
+  CONFIG.packs.forEach(([id]) => { fetchT(PACK_BASE + id + '/credits.json', 8000).then(r => r.ok ? r.json() : {}).then(j => { PACK_CREDITS[id] = j || {}; }).catch(() => {}); });
+}
+
 async function loadPhotoIndex(){
+  loadPackCredits();
   if(OWN_ONLY()) return;   // nothing of ours is shown, so nothing is fetched
   try{
     const r = await fetchT(PHOTO_BASE + 'index.json', 15000);
@@ -3474,18 +3572,18 @@ function applyBackground(force){
     const slot = riyadhDayNumber() * (86400 / slotSec) + Math.floor((p.h * 3600 + p.mi * 60 + (p.s || 0)) / slotSec);
     if(slot === BG_SLOT && !force) return;
     BG_SLOT = slot; BG_TURN++;   // a photo of theirs still on its way for an earlier turn is dropped
-    const only = OWN_ONLY(), own = ownPhotos();
+    const only = OWN_ONLY(), own = ownPhotos(), packs = only ? [] : packPhotos(), mine = own.concat(packs);   // theirs: their own photos, then the packs'
     const set = !only && REMOTE_BGS.length ? photoSet(REMOTE_BGS.length).map(k => REMOTE_BGS[k]) : [];
     const local = BGS[slot % BGS.length];
     // what rotates: ours (the hosted set, else the bundled photos once the owner has some), then the owner's; only = theirs alone
     let pool = own;
     if(!only){
-      const ours = set.length ? set.map(b => ({url: PHOTO_BASE + b.f, b})) : own.length ? BGS.map(b => ({url: b.u, b, bundled: true})) : [];
-      pool = ours.concat(own);
+      const ours = !CONFIG.ours ? [] : set.length ? set.map(b => ({url: PHOTO_BASE + b.f, b})) : mine.length ? BGS.map(b => ({url: b.u, b, bundled: true})) : [];
+      pool = ours.concat(mine);
     }
     if(!pool.length){ showBackground(local.u, local); return; }
     const pick = pool[slot % pool.length], url = pick.url, b = pick.b;
-    if(own.includes(pick)){ showOwn(pick, own, local); return; }
+    if(mine.includes(pick)){ showOwn(pick, mine, local); return; }
     if(pick.bundled){ showBackground(url, b); return; }
     // First photo: wait briefly for the hosted one (the app serves it from disk at once) so the screen
     // doesn't flash a bundled photo first; slow network → bundled one, swapped when the hosted one arrives.
@@ -3656,6 +3754,7 @@ function boot(){
   nowPlayingTick();
   setInterval(nowPlayingTick, 60*1000);
   setInterval(adhanLiveTick, 3000);
+  if(REMS.length){ remDraw(); setInterval(remDraw, 1000); }
   if(CONFIG.seconds){   // the seconds turn on the second, not a drifting interval's moment (one could be shown twice or skipped)
     const onSecond = () => { tickClock(); setTimeout(onSecond, 1000 - Date.now() % 1000 + 15); };
     setTimeout(onSecond, 1000 - Date.now() % 1000 + 15);

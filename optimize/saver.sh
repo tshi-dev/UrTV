@@ -68,6 +68,8 @@
 #   optimize/saver.sh stkchg amount                a US stock's change as an amount (pct = a percentage, the default); Saudi codes keep the %
 #   optimize/saver.sh tasks list                   «المهام» kept on the TV; N = the number list shows
 #   optimize/saver.sh tasks add 'نص'               (up to 12, 60 characters each)  |  done N  |  del N  |  clear
+#   optimize/saver.sh tasks add 'نص' --at '2026-11-05 17:00' [--before 30] [--repeat daily|weekly] [--sound on] [--where saver|home]
+#                                                  a reminder: a silent card at that time (the TV's city time), 0/10/30/60 minutes before; OK dismisses it
 #   optimize/saver.sh slot fasting                 the bottom-left slot: matches (default; the weather when no team is followed)
 #                                                  weather fasting countdown markets none
 #   optimize/saver.sh countdown 2026-12-01 'رحلة الصيف'    the date and name slot=countdown counts down to ("clear" removes it)
@@ -274,9 +276,30 @@ case "${1:-}" in
     case "${2:-}" in
       list)  send TASKS "--es op list" ;;
       clear) send TASKS "--es op clear" ;;
-      add)   [ $# -eq 3 ] || { echo "usage: optimize/saver.sh tasks add 'نص'"; exit 1; }
+      add)   [ $# -ge 3 ] || { echo "usage: optimize/saver.sh tasks add 'نص' [--at 'YYYY-MM-DD HH:MM' [--before 0|10|30|60] [--repeat daily|weekly] [--sound on] [--where saver|home]]"; exit 1; }
              text=$(quote "$3") || exit 1   # refuse before anything is sent
-             send TASKS "--es op add --es text $text" ;;
+             extra=""; shift 3
+             while [ $# -gt 0 ]; do
+               [ $# -ge 2 ] || { echo "usage: optimize/saver.sh tasks add 'نص' --at 'YYYY-MM-DD HH:MM' [--before 30] [--repeat daily|weekly] [--sound on] [--where saver|home]   ($1 needs a value)"; exit 1; }
+               case "$1" in
+                 --at)     [[ "$2" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}[\ T][0-9]{2}:[0-9]{2}$ ]] || { echo "usage: --at 'YYYY-MM-DD HH:MM' (the TV's city time, e.g. '2026-11-05 17:00')"; exit 1; }
+                           extra="$extra --es at $(quote "$2")" ;;
+                 --before) [[ "$2" =~ ^(0|10|30|60)$ ]] || { echo "usage: --before 0, 10, 30 or 60 (minutes)"; exit 1; }
+                           extra="$extra --ei before $2" ;;
+                 --repeat) [[ "$2" =~ ^(no|daily|weekly)$ ]] || { echo "usage: --repeat no, daily or weekly"; exit 1; }
+                           extra="$extra --es repeat $2" ;;
+                 --sound)  [[ "$2" =~ ^(on|off)$ ]] || { echo "usage: --sound on or off"; exit 1; }
+                           extra="$extra --es sound $2" ;;
+                 --where)  [[ "$2" =~ ^(saver|home|both)$ ]] || { echo "usage: --where saver, home or both"; exit 1; }
+                           extra="$extra --es where $2" ;;
+                 *) echo "usage: optimize/saver.sh tasks add 'نص' [--at ... --before ... --repeat ... --sound ... --where ...]   (unknown: $1)"; exit 1 ;;
+               esac
+               shift 2
+             done
+             [[ "$extra" == *"--es at "* || -z "$extra" ]] || { echo "usage: --before, --repeat, --sound and --where need --at 'YYYY-MM-DD HH:MM'"; exit 1; }
+             send TASKS "--es op add --es text $text$extra" || exit 1
+             # the home's alarm for the next reminder follows the tasks (the receiver ignores it when there is none)
+             [ -z "$extra" ] || "$PY" -I optimize/tv.py "am broadcast -n sa.urtv.home/.ReminderReceiver -a sa.urtv.home.REMINDER_RESCHEDULE" > /dev/null 2>&1 || true ;;
       done|del)
              [[ "${3:-}" =~ ^[0-9]+$ ]] || { echo "usage: optimize/saver.sh tasks $2 N   (N from 'tasks list')"; exit 1; }
              send TASKS "--es op $2 --ei n $3" ;;

@@ -14,6 +14,7 @@ public class ScreenDream extends DreamService {
     private final RenderGuard guard = new RenderGuard();
     private boolean attached;
     private final AdhanKeys adhanKeys = new AdhanKeys();
+    private final ReminderKeys reminderKeys = new ReminderKeys();
     /** settings were saved while this dream is on (an agent's `saver.sh city`): start the page over with them, not at the next dream */
     private final BroadcastReceiver changed = new BroadcastReceiver() {
         @Override public void onReceive(Context c, Intent i) {
@@ -54,6 +55,12 @@ public class ScreenDream extends DreamService {
         int d = adhanKeys.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), live, new Prefs(this).adhanBar(), true, live && adhan.optBoolean("any"));
         if (d == AdhanKeys.STOP) NowPlayingBridge.stopAdhan(this);
         if (d != AdhanKeys.PASS) return true;
+        int r = reminderKeys.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), NowPlayingBridge.reminderCard());
+        if (r != ReminderKeys.PASS) {   // a reminder's card is up: the first press is the card's, the screensaver stays
+            if (r != ReminderKeys.EAT && web != null)
+                web.evaluateJavascript("window.reminderKey&&reminderKey('" + (r == ReminderKeys.OK ? "ok" : r == ReminderKeys.MOVE ? "move" : "away") + "')", null);
+            return true;
+        }
         return super.dispatchKeyEvent(e);
     }
 
@@ -87,6 +94,7 @@ public class ScreenDream extends DreamService {
 
     @Override
     public void onDetachedFromWindow() {
+        NowPlayingBridge.clearCard();
         if (attached) Showing.leave();
         attached = false;
         try { unregisterReceiver(changed); } catch (IllegalArgumentException ignored) { }

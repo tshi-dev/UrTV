@@ -26,6 +26,9 @@ public interface Actions {
      */
     Result text(String text, String mode, boolean search);
 
+    /** The text as a new task with a reminder at `due` (epoch ms, > 0): «task», or a failure. An implementation that knows no reminders refuses. */
+    default Result text(String text, String mode, boolean search, long due) { return text(text, mode, search); }
+
     /** What the page shows: settings and player state. Nothing secret. */
     Map<String, Object> state();
 

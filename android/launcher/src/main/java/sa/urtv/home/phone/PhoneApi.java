@@ -103,7 +103,9 @@ final class PhoneApi implements PhoneServer.Handler {
         Actions a = control.actions();
         switch (endpoint) {
             case "key": return result(a.key((String) v.get("key")));
-            case "text": return result(a.text((String) v.get("text"), (String) v.get("mode"), Boolean.TRUE.equals(v.get("search"))));
+            case "text":
+                if (v.get("due") instanceof Long) return result(a.text((String) v.get("text"), (String) v.get("mode"), false, (Long) v.get("due")));
+                return result(a.text((String) v.get("text"), (String) v.get("mode"), Boolean.TRUE.equals(v.get("search"))));
             case "set": return result(a.set(v));
             case "launch": return result(a.launch((String) v.get("target")));
             case "adhanstop": return result(a.adhanStop());

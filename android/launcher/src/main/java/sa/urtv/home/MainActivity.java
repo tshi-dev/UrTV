@@ -141,6 +141,10 @@ public class MainActivity extends Activity {
     private ControlCenter control;   // the panel it opens
     private TextView adhanBar;   // «أذان المغرب بعد ٨ دقائق», over the top edge; while the adhan plays «أذان المغرب · أي زر يوقف الأذان»
     private final AdhanKeys adhanKeys = new AdhanKeys();
+    private ReminderCard reminder;   // the card of a task with a time, over the home; the alarm (ReminderReceiver) and a return to the home bring it
+    private final BroadcastReceiver reminderDue = new BroadcastReceiver() {
+        @Override public void onReceive(Context c, Intent i) { if (reminder != null && resumed) reminder.refresh(); }
+    };
     private View clockBlock, bottomBlock;   // the greeting, clock and date; the app title and the dock under it
 
     private final BroadcastReceiver tick = new BroadcastReceiver() {
@@ -210,6 +214,7 @@ public class MainActivity extends Activity {
         InternalReceivers.register(this, cardsChanged, new IntentFilter(HomeCard.CHANGED));
         InternalReceivers.register(this, sleepChanged, new IntentFilter(SleepTimer.CHANGED));
         InternalReceivers.register(this, nowPlayingChanged, new IntentFilter(NowPlaying.CHANGED));
+        InternalReceivers.register(this, reminderDue, new IntentFilter(ReminderReceiver.SHOW));
     }
 
     @Override
@@ -231,6 +236,7 @@ public class MainActivity extends Activity {
         updateClock();
         updateNowPlaying();
         homeCard.refresh();
+        if (reminder != null) { reminder.refresh(); ReminderScheduler.schedule(this); }   // a card that came due while another app was in front; the alarm follows the tasks
         readAnimationScale();
         loadTvRows();   // what one watched since: «أكمل المشاهدة» moves on
         showUpdateResult();
@@ -268,6 +274,7 @@ public class MainActivity extends Activity {
         if (control != null) control.dismiss();   // its speed test stops with it
         if (appOptions != null) { appOptions.dismiss(); appOptions = null; }
         homeCard.pause();
+        if (reminder != null) reminder.hide();
     }
 
     @Override
@@ -277,6 +284,7 @@ public class MainActivity extends Activity {
         unregisterReceiver(cardsChanged);
         unregisterReceiver(sleepChanged);
         unregisterReceiver(nowPlayingChanged);
+        unregisterReceiver(reminderDue);
         loader.shutdownNow();
         tvLoader.shutdownNow();
         homeCard.destroy();
@@ -470,6 +478,7 @@ public class MainActivity extends Activity {
         grid.setClipChildren(false);
         grid.setClipToPadding(false);
         content.addView(grid, llp(-1, -2, dp(68), 0, dp(68), dp(160)));
+        reminder = new ReminderCard(this, root);   // «المهام» with a time: its card is the topmost view
         return root;
     }
 
@@ -3069,6 +3078,7 @@ public class MainActivity extends Activity {
     public boolean dispatchKeyEvent(KeyEvent e) {
         // while the adhan plays: OK on its bar stops it, and with «إيقاف الأذان بأي زر» any key does; that press is consumed whole
         if (adhanTakes(e)) return true;
+        if (reminder != null && reminder.key(e)) return true;   // a reminder's card is up: the first press is the card's
         // the remote's shortcut keys (YouTube, Netflix, Settings, the star): with the stock launcher off nothing else answers them
         if (e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0)
             android.util.Log.d("UrTVKeys", "key=" + e.getKeyCode() + " scan=" + e.getScanCode());   // for the TV test: does the shortcut key reach the home screen at all? (codes only)

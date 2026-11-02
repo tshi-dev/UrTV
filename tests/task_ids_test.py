@@ -27,7 +27,7 @@ if not shutil.which("javac"):
     print("SKIP task list: no javac here")
     sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
-    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(APP / "Task.java"), str(APP / "TaskList.java"), str(ROOT / "tests/TaskListRun.java")], check=True)
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(APP / "Task.java"), str(APP / "TaskList.java"), str(APP / "Reminders.java"), str(ROOT / "tests/TaskListRun.java")], check=True)
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.screensaver.TaskListRun"], check=True, capture_output=True).stdout.decode("utf-8")
 rows = [l.split("\t") for l in out.split("\n") if l]
 for name, res in rows:

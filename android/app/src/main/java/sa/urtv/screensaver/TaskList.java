@@ -32,7 +32,7 @@ final class TaskList {
                 id = ++next;
                 seen.add(id);
             }
-            out.add(new Task(t.text, t.done, t.at, id));
+            out.add(t.with(t.text, t.done, id));
         }
         return out;
     }
@@ -42,6 +42,47 @@ final class TaskList {
         long last = seq;
         for (Task t : v) last = Math.max(last, t.id);
         return last;
+    }
+
+    /** The list with a new open task, with its reminder, at the end; the same rules as add. */
+    static List<Task> addReminder(List<Task> v, String text, long now, long id, int max, long due, int before, int repeat, boolean sound, int where) {
+        List<Task> out = add(v, text, now, id, max);
+        if (out == null) return null;
+        Task t = out.get(out.size() - 1);
+        out.set(out.size() - 1, t.remind(due, before, repeat, sound, where));
+        return out;
+    }
+
+    /** The list with that task's reminder set (due 0 takes it off); null when there is no such task */
+    static List<Task> remind(List<Task> v, long id, long due, int before, int repeat, boolean sound, int where) {
+        int k = indexOf(v, id);
+        if (k < 0) return null;
+        List<Task> out = new ArrayList<>(v);
+        out.set(k, v.get(k).remind(due, before, repeat, sound, where));
+        return out;
+    }
+
+    /** The list with that task's card asked again at `until` (0 = no snooze); null when there is no such task */
+    static List<Task> snooze(List<Task> v, long id, long until) {
+        int k = indexOf(v, id);
+        if (k < 0) return null;
+        List<Task> out = new ArrayList<>(v);
+        out.set(k, v.get(k).snoozed(until));
+        return out;
+    }
+
+    /**
+     * Done at `now`: a repeating reminder is done for this time only (it moves to the next one and stays open), any other task is marked
+     * done. null when there is no such task.
+     */
+    static List<Task> markDone(List<Task> v, long id, long now) {
+        int k = indexOf(v, id);
+        if (k < 0) return null;
+        Task t = v.get(k);
+        if (!Reminders.has(t) || t.repeat == Reminders.NO) return markDone(v, id);
+        List<Task> out = new ArrayList<>(v);
+        out.set(k, t.remind(Reminders.advance(t.due, t.repeat, Math.max(now, t.due)), t.before, t.repeat, t.sound, t.where));
+        return out;
     }
 
     /** The list with a new open task at the end; done tasks make room, oldest first. null when it is full of open ones. */
@@ -69,7 +110,7 @@ final class TaskList {
         if (k < 0) return null;
         List<Task> out = new ArrayList<>(v);
         Task t = v.get(k);
-        out.set(k, new Task(t.text, true, t.at, t.id));
+        out.set(k, t.with(t.text, true, t.id).snoozed(0));
         return out;
     }
 
