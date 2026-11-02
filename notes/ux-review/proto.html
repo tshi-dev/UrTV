@@ -196,6 +196,15 @@ S.apps2=()=>{
     ${R.map((r,i)=>`<div style="display:flex;align-items:center;gap:18px;height:84px;padding:0 22px;border-radius:12px;font:32px TM;${i==0?'background:var(--tint);outline:3px solid var(--green);outline-offset:-3px':''}">${ic(r[0],'i" style="width:36px;height:36px;color:var(--green)')}${r[1]}</div>`).join('')}
    </div>`;
 };
+S.apps3=()=>{
+  // v3 (owner): a fourth option; in the all-apps row, where the app may not be a favourite, it reads «أضف للمفضلة»
+  // v2 (owner): a small light box just above the focused app, three options one under another, no title; the row stays uncovered.
+  // OK on the app opens it, so «افتح» is not in the box; favourites, app info and uninstall live in Settings › المزيد › التطبيقات والمفضلة.
+  const R=[['move','انقل'],['hide','أخفِ'],['lock','اقفل'],['star','أزل من المفضلة']];
+  return home(0,false,true)+`<div class="box" style="position:absolute;right:120px;top:${770-28-4*84-24}px;width:380px;background:#fff;border:1.5px solid var(--line);border-radius:18px;padding:12px;box-shadow:0 14px 40px rgba(40,40,30,.14)">
+    ${R.map((r,i)=>`<div style="display:flex;align-items:center;gap:18px;height:84px;padding:0 22px;border-radius:12px;font:32px TM;${i==0?'background:var(--tint);outline:3px solid var(--green);outline-offset:-3px':''}">${ic(r[0],'i" style="width:36px;height:36px;color:var(--green)')}${r[1]}</div>`).join('')}
+   </div>`;
+};
 S.settings=()=>{
   const C=[['pin','الموقع والصلاة','الرياض، أم القرى'],['clock','الساعة والأرقام','١٢ ساعة، أرقام عربية'],
     ['book','تلاوة وأذان','مشاري العفاسي'],['cards','البطاقات','شاشة التوقف والشاشة الرئيسية'],
