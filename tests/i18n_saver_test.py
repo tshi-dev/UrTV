@@ -140,14 +140,14 @@ CASES = [  # what the screen builds, and its English (the digits are turned afte
     ("الإصدار الحالي: ٤٫٣", "Current version: ٤٫٣"),
     ("المدينة: الرياض. لتغييرها: الإعدادات ثم الموقع", "City: Riyadh. To change it: Settings, then Location"),
     ("منطقة الرياض  (32)", "Riyadh Region (32)"),
-    ("5 دقائق", "5 minutes"),
-    ("١٥ دقيقة", "١٥ minutes"),
-    ("45 ثانية", "45 seconds"),
+    ("5 دقائق", "5 min"),
+    ("١٥ دقيقة", "15 min"),   # an entry of its own (the phone page's option) wins over «%s دقيقة»
+    ("45 ثانية", "45 sec"),
     ("حتى ٥ دوريات", "Up to ٥ leagues"),
     ("اختر من سوق إلى ٤ أسواق", "Pick 1 to ٤ markets"),
     ("رمز غير صالح: XYZ!", "Invalid code: XYZ!"),
     ("رحلة (٣١ ديسمبر ٢٠٢٦)", "رحلة (٣١ December ٢٠٢٦)"),
-    ("تبدأ بعد ٥ دقائق · آية أو حديث اليوم", "Starts after ٥ minutes · Verse or hadith of the day"),
+    ("تبدأ بعد ٥ دقائق · آية أو حديث اليوم", "Starts after ٥ min · Verse or hadith of the day"),
     ("جديد المسلسلات، مواقيت الصلاة اليوم", "New episodes, Today’s prayer times"),
     ("الشكل: زجاجي", "Style: Glass"),
     ("الإضاءة: تلقائي · فاتح من الشروق إلى المغرب، وداكن بعده", "Brightness: Auto · Light from sunrise to Maghrib, dark after"),
@@ -205,8 +205,8 @@ else:
     check("…and no English place name has an Arabic letter", not arabic, arabic[:5])
 
 # ---- 5. «اللغة»
-check("«اللغة»'s button is off until the home app is in English (phase 3): one constant, and tiles() leaves it out while it is off",
-      "static final boolean LANG_TILE = false;" in hub and "&& (LANG_TILE || !LANG.equals(c[0]))) out.add(c[0]);" in hub)
+check("«اللغة»'s button behind one constant (off until the home app is in English, on at integration), and tiles() leaves it out while it is off",
+      re.search(r"static final boolean LANG_TILE = (true|false);", hub) is not None and "&& (LANG_TILE || !LANG.equals(c[0]))) out.add(c[0]);" in hub)
 check("«اللغة»: a button of «المزيد» that opens its choices at once (DIRECT), named in ROWS",
       '{LANG, "اللغة", "", MORE, "اللغة"},' in hub and '{"اللغة", LANG}' in hub and 'LANG = "lang"' in hub)
 check("«اللغة»: its row, icon and what it says on its button (English beside العربية, to be found)",

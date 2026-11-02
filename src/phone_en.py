@@ -71,6 +71,13 @@ EN_CODE = [
     ("$('left').textContent = 'بقي ' + nn(Math.max(1, Math.round(secs / 60)), MN);",
      "$('left').textContent = nn(Math.max(1, Math.round(secs / 60)), MN) + ' left';", 1),
     ("toLocaleTimeString('ar-u-nu-latn',", "toLocaleTimeString('en-US',", 1),
+    # one Arabic word, two English ones: the table has the settings' meaning (Off, Turn on, On), the player here has its own
+    ('data-i="stop"><span class="sr">إيقاف</span>', 'data-i="stop"><span class="sr">Stop</span>', 1),
+    ('<button id="qPlay" class="gold wide">تشغيل</button>', '<button id="qPlay" class="gold wide">Play</button>', 1),
+    ("pl ? (rn ? rn + ' · ' : '') + 'يعمل'", "pl ? (rn ? rn + ' · ' : '') + 'Playing'", 1),
+    # «Maghrib adhan now», as the bar and the page say a prayer's adhan
+    ("var lab = live ? 'الأذان الآن' + (s.adhan_prayer ? ': ' + s.adhan_prayer : '') : playLabel(s);",
+     "var lab = live ? (s.adhan_prayer ? s.adhan_prayer + ' adhan now' : 'Adhan now') : playLabel(s);", 1),
     # «يعمل» is «Playing» on the player and «On» for kids mode
     ("'وضع الأطفال: ' + (fam.kids ? 'يعمل' : 'متوقف')", "'Kids mode: ' + (fam.kids ? 'On' : 'Off')", 1),
     # «Locked: 2 apps, 1 TV button»
@@ -86,13 +93,18 @@ def english(ar_html, table=None):
     has no entry."""
     html = ar_html
     link = LINK_AR[0][1] in html
-    for old, new, times in EN_CODE + [(o, n, t if link else 0) for o, n, t in LINK_EN]:
+    for old, new, times in EN_CODE:
         if html.count(old) != times:
             raise SystemExit(f"src/phone_en.py EN_CODE: found {html.count(old)} times, not {times}: {old[:80]!r}")
         html = html.replace(old, new)
     table = tr.load() if table is None else table
     out, left = tr.translate(html, table)
-    left = [a for a in left if a != "العربية"]   # the link back to Arabic says it in Arabic
+    # the link back after the table: it says «العربية» in Arabic, which the table (saver.tsv: the language's name) would make «Arabic»
+    for old, new, times in LINK_EN:
+        times = times if link else 0
+        if out.count(old) != times:
+            raise SystemExit(f"src/phone_en.py LINK_EN: found {out.count(old)} times, not {times}: {old[:80]!r}")
+        out = out.replace(old, new)
     if left:
         raise SystemExit("i18n/en/phone.tsv has no entry for: " + " | ".join(left[:10]))
     return out

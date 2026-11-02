@@ -84,12 +84,12 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 تحديثات التطبيقات	App updates
 متجر Play	Play Store
 إعدادات التلفزيون	TV settings
-تحديث تلفزيوني	Update UrTV
+تحديث تلفزيوني	Update Your TV
 تراجع	Undo
 تعديل المفضلة	Edit favorites
 ما فيه تعديل في وضع الأطفال	No editing in kids mode
 المفضلة لا تقل عن %s تطبيقات	Favorites need at least %s apps
-ترتيب كل التطبيقات	Order of all apps
+ترتيب كل التطبيقات	Arrange all apps
 رجع ترتيب «كل التطبيقات» للأصل (حسب الاسم)	“All apps” is back in its first order (by name)
 تعديل التطبيقات	Edit apps
 كل تطبيقاتك في المفضلة	All your apps are in Favorites
@@ -107,7 +107,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 كل المصادر	All inputs
 الإعدادات	Settings
 إلغاء	Cancel
-إعدادات تلفزيونك	UrTV settings
+إعدادات تلفزيونك	Your TV settings
 لإطفاء الشاشة: فعّل «%s»	To turn the screen off, enable “%s”
 أدخل الرمز	Enter PIN
 هذا مقفل بالرمز الأبوي	This is locked with the parental PIN
@@ -166,14 +166,14 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 ما لقيت مهمة تطابق «%s»	No task matches “%s”
 أكثر من مهمة تطابق «%s»، قل جزءاً أوضح	More than one task matches “%s”, say a clearer part
 ما فهمت. قل: أضف مهمة … أو خلصت … أو احذف …	Didn’t catch that. Say, in Arabic: add a task, done or delete
-قفل عائلي على ما تفتحه شاشة تلفزيونك الرئيسية، وليس قفلاً كاملاً للتلفزيون.	A family lock on what the UrTV home screen opens, not a lock on the whole TV.
+قفل عائلي على ما تفتحه شاشة تلفزيونك الرئيسية، وليس قفلاً كاملاً للتلفزيون.	A family lock on what the Your TV home screen opens, not a lock on the whole TV.
 الرمز الرئيسي: غير معيّن	Main PIN: not set
 تعيين الرمز	Set PIN
 بدون رمز لا يُقفل شيء، والشاشة الرئيسية كما هي.	Without a PIN nothing is locked, and the home screen stays as it is.
 الرمز الرئيسي	Main PIN
 تغيير	Change
 إيقاف الرقابة الأبوية	Turn off parental controls
-إيقاف	Stop
+إيقاف	Off
 أُوقفت الرقابة الأبوية	Parental controls are off
 قفل الإعدادات	Lock settings
 مقفل	Locked
@@ -243,8 +243,8 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 الإعداد تغيّر من مكان آخر، تركناه كما هو	The setting was changed elsewhere, so it was left as it is
 ما قدرنا نرجّع الإعداد القديم، جرّب مرة ثانية	Couldn’t bring back the old setting, try again
 غير معروفة	unknown
-مفعّلة	on
-متوقفة	off
+مفعّلة	On
+متوقفة	Off
 حماية العائلة (DNS)	Family protection (DNS)
 يرجع الإعداد القديم تلقائياً فقط أثناء الفحص (٢٠ ثانية). بعدها توقفها من هنا، وتشتغل بدون إنترنت.	The old setting comes back by itself only during the check (20 seconds). After that you turn it off here, and it works without internet.
 غير متاح	Not available
@@ -257,7 +257,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 تفعيل الحماية	Turn protection on
 الرياض	Riyadh
 يُتلى الآن، %s، %s	Now playing, %s, %s
-إعداد تلفزيوني	UrTV setup
+إعداد تلفزيوني	Your TV setup
 تحت المفضلة: ما وقفته في نصه والحلقة الجاية، من تطبيقاتك. تحتاج الواجهة إذن قراءة هذه القائمة من التلفزيون مرة واحدة، ولا يُرسل شيء خارج التلفزيون.	Under your favorites: what you stopped halfway and the next episode, from your apps. The home needs the TV’s permission to read this list once, and nothing leaves the TV.
 السماح	Allow
 سورة %s	Surah %s
@@ -299,9 +299,9 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 انقطع البث، جارٍ إعادة المحاولة…	The stream dropped, trying again…
 سيتوقف الصوت بهدوء	The sound will fade out
 إيقاف المؤقت	Turn off the timer
-٣٠ دقيقة	30 minutes
-٦٠ دقيقة	60 minutes
-٩٠ دقيقة	90 minutes
+٣٠ دقيقة	30 min
+٦٠ دقيقة	60 min
+٩٠ دقيقة	90 min
 إيقاف التشغيل الآن	Stop now
 يتوقف بعد %1$s دقيقة	Stops in %1$s min
 يمين/يسار بين الأقسام  •  اختيار للفتح  •  رجوع للواجهة	Left/right: sections  •  OK: open  •  Back: home
@@ -311,9 +311,9 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 تشغيل أو إيقاف	Play or pause
 السابق	Previous
 التالي	Next
-تلفزيونك: إطفاء الشاشة	UrTV: screen off
+تلفزيونك: إطفاء الشاشة	Your TV: screen off
 يطفئ شاشة التلفزيون عند انتهاء «مؤقت النوم»، ويضغط «رجوع» و«الرئيسية» (وفي أندرويد ١٣ وما فوق الأسهم والاختيار) عندما ترسل جوالك ذلك. لا يقرأ شيئًا من الشاشة ولا يسجّل ما تكتب، وهذا كل ما يفعله.	Turns the TV’s screen off when the sleep timer ends, and presses Back and Home (and on Android 13 and up the arrows and OK) when your phone sends them. It reads nothing on the screen and records nothing you type; that is all it does.
-تلفزيونك: التحكم والكتابة من الجوال	UrTV: phone control and typing
+تلفزيونك: التحكم والكتابة من الجوال	Your TV: phone control and typing
 يضغط الأسهم والاختيار والرجوع والرئيسية التي ترسلها من جوالك داخل التطبيق الذي أمامك على التلفزيون، ويكتب النص الذي ترسله في حقل النص فيه. يطلب من أندرويد خبر تغيّر النافذة فقط ليعرف أي تطبيق أمامك ولا يقرأ منه شيئاً، ولا ينظر في الشاشة إلا لحظة وصول نص أو زر من جوالك (ليجد الحقل أو ليحرّك التركيز قبل أندرويد ١٣)، ولا يحفظ ولا يسجّل ولا يرسل لجوالك أي شيء مما يراه، ولا يكتب في حقل كلمة مرور ولا في تطبيق مقفول بالرقم السري. وحين تكون خارج الشاشة الرئيسية (رسيفر على HDMI مثلاً) يجعل زر الإعدادات في الريموت يفتح إعدادات التلفزيون، ويترك كل زر غيره كما هو دون أن يقرأه أو يسجّله.	Presses the arrows, OK, Back and Home you send from your phone inside the app in front of you on the TV, and types the text you send into its text field. It asks Android only to be told when the window changes, to know which app is in front, and reads nothing from it; it looks at the screen only the moment a text or a button arrives from your phone (to find the field, or to move the focus before Android 13), and keeps, records or sends your phone nothing it sees. It never types into a password field or into an app locked with the PIN. Outside the home screen (a receiver on HDMI, say) it makes the remote’s settings button open the TV’s settings, and leaves every other button as it is, without reading or recording it.
 التشغيل	Playback
 الأذان التلقائي	Automatic adhan
@@ -327,7 +327,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 مفعّل  •  يتوقف بعد دقيقة	On  •  stops after a minute
 متوقف  •  الأذان كاملًا	Off  •  the whole adhan
 تكبير فقط	Takbir only
-إيقاف الأذان بأي زر	Stop the adhan with any button
+إيقاف الأذان بأي زر	Any button stops the adhan
 مفعّل  •  أي زر يوقف الأذان (ما عدا الصوت والطاقة)	On  •  any button stops it (not volume or power)
 متوقف  •  «اختيار» على شريط الأذان يوقفه	Off  •  OK on the adhan bar stops it
 الأذان على شاشة التوقف فقط	Adhan on the screensaver only
@@ -339,12 +339,12 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 %1$s  •  الصوت المختار	%1$s  •  chosen voice
 اختيار يجرّب ١٢ ثانية ويحفظ الاختيار  •  التسجيلات: أرشيف الإنترنت، ملكية عامة  •  رجوع	OK plays 12 seconds and keeps the choice  •  Recordings: Internet Archive, public domain  •  Back
 بتوقيت %s	Time in %s
-المدينة	the city
+المدينة	City
 تحجب المواقع غير المناسبة للعائلة على كل التلفزيون. قبل التفعيل نتأكد أن الخدمة تشتغل، وإذا وقف الإنترنت نرجّع الإعداد القديم تلقائياً.	Blocks sites not suitable for the family on the whole TV. Before turning it on we check that the service works, and if the internet stops we bring back the old setting by itself.
 تحقق من التحديث	Check for updates
 ما فيه اتصال بالإنترنت	No internet connection
-التحديث من التلفزيون ما يشتغل على هذا الجهاز.\nاطلب من مساعد الذكاء الاصطناعي على جهازك:\nحدّث تلفزيوني	Updating from the TV doesn’t work on this device.\nAsk the AI assistant on your computer:\nUpdate my TV
-لازم تسمح لتطبيق تلفزيونك بتثبيت التحديثات.	Allow the UrTV app to install updates.
+التحديث من التلفزيون ما يشتغل على هذا الجهاز.\nاطلب من مساعد الذكاء الاصطناعي على جهازك:\nحدّث تلفزيوني	Updating from the TV doesn’t work on this device.\nAsk the AI assistant on your computer:\nUpdate Your TV
+لازم تسمح لتطبيق تلفزيونك بتثبيت التحديثات.	Allow the Your TV app to install updates.
 فتح شاشة السماح	Open the permission screen
 جارٍ التحقق…	Checking…
 جارٍ تنزيل التحديث والتحقق منه…	Downloading and checking the update…
@@ -353,7 +353,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 ما اكتمل التحديث	The update didn’t finish
 ألغيت التثبيت.	You cancelled the install.
 الإصدار المثبّت %s	Installed version %s
-تلفزيونك محدّث: %s	UrTV is up to date: %s
+تلفزيونك محدّث: %s	Your TV is up to date: %s
 تحديث جديد %s · اضغط للتحديث	New update %s · press to update
 تم التحديث ✓ %s	Updated ✓ %s
 الخطوة: %s	Step: %s

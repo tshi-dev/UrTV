@@ -18,9 +18,9 @@
 البطاقات	Cards
 ما يظهر على شاشة التوقف وعلى الشاشة الرئيسية.	What shows on the screensaver and the home screen.
 المظهر	Appearance
-مركز التحكم	Control center
+مركز التحكم	Control Center
 التحكم من الجوال	Phone control
-تحديث تلفزيوني	Update my TV
+تحديث تلفزيوني	Update Your TV
 تحديث التطبيقين وإصدارهما، وتحديث صفحة شاشة التوقف.	Update both apps, see their versions, and update the screensaver page.
 أرسل تقرير	Send a report
 المزيد	More
@@ -102,9 +102,9 @@
 التحية والطقس	Greeting & weather
 الأذان	Adhan
 تشغيله وصوته وصوت الفجر والمختصر والإيقاف بأي زر والمستوى	On/off, voice, Fajr voice, short adhan, stop with any key, volume
-افتح تلاوة وأذان	Open Quran & Adhan
+افتح تلاوة وأذان	Open Quran and Adhan
 القرآن والإذاعات ومواقيت الأذان	Quran, radio, and adhan times
-زر تلاوة وأذان	Quran & Adhan button
+زر تلاوة وأذان	Quran and Adhan button
 مخفي  •  الأذان والتلاوة تعمل، وتفتح الشاشة من قائمة التطبيق (اختيار مطوّلة) أو من بطاقة «يُتلى الآن»	Hidden  •  Adhan and Quran still play; open the screen from the app menu (hold OK) or the Now Playing card
 زر المهام	Tasks button
 مخفي  •  المهام تبقى في بطاقة «المهام» ومن الجوال	Hidden  •  Tasks stay in the Tasks card and on the phone
@@ -141,7 +141,7 @@
 التحديث التلقائي للصفحة	Auto-update the page
 يعمل · عند بدء الشاشة، كل ٦ ساعات	On · When the screensaver starts, every 6 hours
 تحديث صفحة شاشة التوقف	Update screensaver page
-ينزّل أحدث صفحة للشاشة فقط · لتحديث التطبيقين: «تحديث تلفزيوني» في نفس القسم	Gets the latest page only · To update the apps: “Update my TV” in this section
+ينزّل أحدث صفحة للشاشة فقط · لتحديث التطبيقين: «تحديث تلفزيوني» في نفس القسم	Gets the latest page only · To update the apps: “Update Your TV” in this section
 البطاقة الأولى	First card
 البطاقة الثانية	Second card
 البطاقة الثالثة	Third card
@@ -229,11 +229,11 @@
 حذف	Delete
 غيّرها من إعدادات التلفاز، أو بأمر من مساعدك	Change it in the TV’s settings, or ask your assistant
 يحدده التلفاز	Set by the TV
-%s ثانية	%s seconds
+%s ثانية	%s sec
 دقيقة واحدة	1 minute
 دقيقتان	2 minutes
-%s دقائق	%s minutes
-%s دقيقة	%s minutes
+%s دقائق	%s min
+%s دقيقة	%s min
 ٣٠ ثانية	30 seconds
 جارٍ التحقق…	Checking…
 جارٍ البحث…	Searching…

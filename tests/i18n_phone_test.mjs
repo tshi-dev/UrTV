@@ -91,7 +91,7 @@ await T('english page', async () => {
   check('index.en.html: <html lang="en" dir="ltr">, read left to right', await p.evaluate(() => document.documentElement.lang === 'en' && document.dir === 'ltr' && getComputedStyle(document.body).direction === 'ltr'));
   const lw = await words(S);
   check('the login screen: no Arabic', !lw.some(x => AR.test(x)), lw.filter(x => AR.test(x)).slice(0, 4).join(' | '));
-  check('the login screen in English', (await p.textContent('h1')) === 'Phone remote' && (await p.getAttribute('#code', 'placeholder')) === 'Code (6 digits)');
+  check('the login screen in English', (await p.textContent('h1')) === 'Phone control' && (await p.getAttribute('#code', 'placeholder')) === 'Code (6 digits)');
   await p.click('#codeGo'); await sleep(100);
   check('a short code: «The code has 6 digits.»', (await p.textContent('#loginState')) === 'The code has 6 digits.', await p.textContent('#loginState'));
   await login(S);
@@ -106,12 +106,12 @@ await T('english page', async () => {
   check('the playing card: «Nothing playing», «Pick a reciter and a surah, then Play.»', (await p.textContent('#npT')) === 'Nothing playing' && (await p.textContent('#playerNow')) === 'Pick a reciter and a surah, then Play.');
   check('the screensaver delay in English minutes', (await p.$$eval('#saverIdle option', o => o.map(x => x.textContent))).join() === '1 min,2 min,5 min,10 min');
   await tab(S, 'apps');
-  check('the pills: the page\'s English names, not the TV\'s Arabic ones', (await p.$$eval('#tools [data-tool]', b => b.map(x => x.textContent.trim()))).join() === 'Tasks,Screensaver,Inputs,🔒 Settings,Quran and adhan',
+  check('the pills: the page\'s English names, not the TV\'s Arabic ones', (await p.$$eval('#tools [data-tool]', b => b.map(x => x.textContent.trim()))).join() === 'Tasks,Screensaver,Inputs,🔒 Settings,Quran and Adhan',
     (await p.$$eval('#tools [data-tool]', b => b.map(x => x.textContent.trim()))).join());
   await tab(S, 'settings');
   check('parental controls: «On», «Kids mode: Off», «Locked: 2 apps, 1 TV button»', (await p.textContent('#famPin')) === 'Parental controls: On' && (await p.textContent('#famKids')) === 'Kids mode: Off'
     && (await p.textContent('#famLocked')) === 'Locked: 2 apps, 1 TV button', await p.textContent('#famLocked'));
-  check('the update: «An update is available. Press Install … (4.1)», «UrTV version: 4.0»', (await p.textContent('#upState')).endsWith('(4.1)') && (await p.textContent('#ver')) === 'UrTV version: 4.0', await p.textContent('#upState'));
+  check('the update: «An update is available. Press Install … (4.1)», «Your TV version: 4.0»', (await p.textContent('#upState')).endsWith('(4.1)') && (await p.textContent('#ver')) === 'Your TV version: 4.0', await p.textContent('#upState'));
   check('on/off reads «On»/«Off»', (await p.evaluate(() => getComputedStyle(document.querySelector('#aOn'), '::after').content)) === '"On"');
   check('no script error', !S.errors.length, S.errors.join(' | '));
   await S.ctx.close();
