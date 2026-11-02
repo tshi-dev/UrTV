@@ -25,7 +25,8 @@ final class PrayerTimes {
     static final int FAJR = 0, SUNRISE = 1, DHUHR = 2, ASR = 3, MAGHRIB = 4, ISHA = 5;
     /** the five the TV shows and plays the adhan for — sunrise is not a prayer */
     static final int[] PRAYERS = {FAJR, DHUHR, ASR, MAGHRIB, ISHA};
-    static final String[] NAMES = {"الفجر", "الشروق", "الظهر", "العصر", "المغرب", "العشاء"};
+    static final String[] NAMES = {sa.urtv.home.S.n("الفجر"), sa.urtv.home.S.n("الشروق"), sa.urtv.home.S.n("الظهر"), sa.urtv.home.S.n("العصر"),
+            sa.urtv.home.S.n("المغرب"), sa.urtv.home.S.n("العشاء")};   // our Arabic words: a screen says them with S.tv
     private static final String[] KEYS = {"Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"};
 
     final long[] at = new long[6];
@@ -146,17 +147,19 @@ final class PrayerTimes {
         long h = minutes / 60, m = minutes % 60;
         String out = null;
         if (h > 0) out = hours((int) h);
-        if (m > 0) out = out == null ? minutes((int) m) : out + " و" + minutes((int) m);
-        return out == null ? "الآن" : "بعد " + out;
+        if (m > 0) out = out == null ? minutes((int) m) : sa.urtv.home.S.t("%s و%s", out, minutes((int) m));
+        return out == null ? sa.urtv.home.S.t("الآن") : sa.urtv.home.S.t("بعد %s", out);
     }
 
     private static String hours(int n) {
+        if (sa.urtv.home.S.en()) return Ui.arabic(n) + (n == 1 ? " hour" : " hours");   // English counts by itself: «1 hour», «2 hours»
         if (n == 1) return "ساعة";
         if (n == 2) return "ساعتين";
         return Ui.arabic(n) + (n >= 3 && n <= 10 ? " ساعات" : " ساعة");
     }
 
     private static String minutes(int n) {
+        if (sa.urtv.home.S.en()) return Ui.arabic(n) + " min";   // «1 min», «15 min», as the page
         if (n == 1) return "دقيقة";
         if (n == 2) return "دقيقتين";
         return Ui.arabic(n) + (n >= 3 && n <= 10 ? " دقائق" : " دقيقة");

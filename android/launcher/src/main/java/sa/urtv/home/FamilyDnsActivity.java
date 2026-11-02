@@ -24,6 +24,9 @@ import android.widget.TextView;
  * in front.
  */
 public class FamilyDnsActivity extends Activity {
+    /** «اللغة» (docs/ENGLISH.md): with Arabic the context itself, with English an English one */
+    @Override protected void attachBaseContext(android.content.Context b) { super.attachBaseContext(S.wrap(b)); }
+
     private int GOLD, INK, TEXT, DIM;   // from the glass look (glass(), before anything is drawn)
     private GlassStyle.Look look;
 
@@ -45,9 +48,8 @@ public class FamilyDnsActivity extends Activity {
         col.setPadding(0, dp(36), 0, dp(48));
         frame.addView(col, new FrameLayout.LayoutParams(dp(600), -2, Gravity.CENTER_HORIZONTAL));
 
-        col.addView(text("حماية العائلة (DNS)", 26, "Medium", TEXT), right(0));
-        col.addView(text("تحجب المواقع غير المناسبة للعائلة على كل التلفزيون. قبل التفعيل نتأكد أن الخدمة تشتغل، وإذا وقف الإنترنت "
-            + "نرجّع الإعداد القديم تلقائياً.", 14, "Regular", DIM), right(dp(14)));
+        col.addView(text(S.t("حماية العائلة (DNS)"), 26, "Medium", TEXT), right(0));
+        col.addView(text(S.t("تحجب المواقع غير المناسبة للعائلة على كل التلفزيون. قبل التفعيل نتأكد أن الخدمة تشتغل، وإذا وقف الإنترنت نرجّع الإعداد القديم تلقائياً."), 14, "Regular", DIM), right(dp(14)));
         state = text("", 17, "Medium", GOLD);
         col.addView(state, right(dp(18)));
 
@@ -62,7 +64,7 @@ public class FamilyDnsActivity extends Activity {
 
         message = text("", 14, "Regular", DIM);
         col.addView(message, right(dp(10)));
-        hint = text("يرجع الإعداد القديم تلقائياً فقط أثناء الفحص (٢٠ ثانية). بعدها توقفها من هنا، وتشتغل بدون إنترنت.", 13, "Regular", DIM);
+        hint = text(S.t("يرجع الإعداد القديم تلقائياً فقط أثناء الفحص (٢٠ ثانية). بعدها توقفها من هنا، وتشتغل بدون إنترنت."), 13, "Regular", DIM);
         col.addView(hint, right(0));
         setContentView(scroll);
         button.requestFocus();
@@ -82,7 +84,7 @@ public class FamilyDnsActivity extends Activity {
         final boolean enable = now.state != FamilyDns.State.ON;
         FamilyDnsAndroid.run(this, enable, new FamilyDnsAndroid.Done() {
             public void done(final FamilyDns.Result r) {
-                runOnUiThread(new Runnable() { public void run() { last = FamilyDns.arabic(r); refresh(); } });
+                runOnUiThread(new Runnable() { public void run() { last = S.tv(FamilyDns.arabic(r)); refresh(); } });
             }
         });
         refresh();
@@ -91,41 +93,41 @@ public class FamilyDnsActivity extends Activity {
     private void refresh() {
         handler.removeCallbacks(poll);
         if (!FamilyDnsAndroid.supported(this)) {
-            state.setText("غير مدعومة في هذا التلفزيون (أندرويد قديم)");
-            button.setText("غير متاح");
+            state.setText(S.t("غير مدعومة في هذا التلفزيون (أندرويد قديم)"));
+            button.setText(S.t("غير متاح"));
             button.setAlpha(.5f);
             message.setText("");
             return;
         }
         if (!new FamilyDnsAndroid(this).canWriteSecure()) {
-            state.setText("يحتاج تفعيل من الكمبيوتر");
+            state.setText(S.t("يحتاج تفعيل من الكمبيوتر"));
             onState(false);
-            button.setText("غير متاح");
+            button.setText(S.t("غير متاح"));
             button.setAlpha(.5f);
-            message.setText("اطلب من وكيلك تشغيل: optimize/dock.sh familydns grant");
+            message.setText(S.t("اطلب من وكيلك تشغيل: optimize/dock.sh familydns grant"));
             return;
         }
         button.setAlpha(1f);
         if (FamilyDnsAndroid.busy()) {   // a check takes up to about 40 seconds
-            state.setText("جارٍ الفحص…");
+            state.setText(S.t("جارٍ الفحص…"));
             onState(false);
-            button.setText("انتظر");
+            button.setText(S.t("انتظر"));
             message.setText("");
             handler.postDelayed(poll, 1000);
             return;
         }
         FamilyDns.Status s = FamilyDnsAndroid.status(this);
         if (s.state == FamilyDns.State.ON && "other".equals(s.by)) {
-            state.setText("مفعّلة من الكمبيوتر، أوقفها من هناك");
+            state.setText(S.t("مفعّلة من الكمبيوتر، أوقفها من هناك"));
             onState(true);
-            button.setText("غير متاح");
+            button.setText(S.t("غير متاح"));
             button.setAlpha(.5f);
             message.setText(last);
             return;
         }
-        state.setText("الحالة: " + FamilyDns.arabic(s));
+        state.setText(S.t("الحالة: %s", S.tv(FamilyDns.arabic(s))));
         onState(s.state == FamilyDns.State.ON);
-        button.setText(s.state == FamilyDns.State.ON ? "إيقاف الحماية" : "تفعيل الحماية");
+        button.setText(s.state == FamilyDns.State.ON ? S.t("إيقاف الحماية") : S.t("تفعيل الحماية"));
         message.setText(last);
     }
 
@@ -134,7 +136,7 @@ public class FamilyDnsActivity extends Activity {
         t.setText(s);
         t.setTextSize(TypedValue.COMPLEX_UNIT_SP, sp);
         t.setTextColor(color);
-        t.setGravity(Gravity.RIGHT);
+        t.setGravity(Dir.start());
         try { t.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/Thmanyah-" + weight + ".otf")); }
         catch (RuntimeException ignored) { }
         return t;
@@ -157,7 +159,8 @@ public class FamilyDnsActivity extends Activity {
             mark.setTint(green);
             mark.setBounds(0, 0, dp(7), dp(22));
         }
-        state.setCompoundDrawables(null, null, mark, null);   // on the right: where an Arabic line starts (this page is not laid out RTL)
+        if (Dir.rtl()) state.setCompoundDrawables(null, null, mark, null);   // on the right: where an Arabic line starts (this page is not laid out RTL)
+        else state.setCompoundDrawables(mark, null, null, null);   // English: on the left, where its line starts
         state.setCompoundDrawablePadding(dp(10));
         state.setTextColor(on ? green : GOLD);
     }

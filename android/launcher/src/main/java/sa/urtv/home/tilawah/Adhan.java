@@ -98,15 +98,48 @@ final class Adhan {
             "https://archive.org/download/azaan-of-world-mosques_202608/Maldive%20Islands.mp3",
     };
 
+    /**
+     * The same in English (data, not the table: docs/ENGLISH.md rule 2), shown when «اللغة» is English. The names as the recordings' own
+     * file names and the usual Latin spellings write them; the places in English.
+     */
+    private static final String[] NAMES_EN = {
+            "Abdulmalik Al-Mulla",
+            "Abdulrahman Khashoggi",
+            "Abdulaziz Bukhari",
+            "Abdulmuttalib Najdi",
+            "Sami Diwali",
+            "Majed Hakim",
+            "Muhammad Majed Hakim",
+            "Naji Qazzaz",
+            "Masjid al-Haram",
+            "Fajr at Masjid al-Haram",
+            "Masjid al-Haram 2",
+            "Al-Aqsa Mosque",
+            "Cairo adhan",
+            "Cairo adhan 2",
+            "Egypt adhan",
+            "Ajman adhan",
+            "Umm Al Quwain adhan",
+            "Oman adhan",
+            "Tunisia adhan",
+            "Malaysia adhan",
+            "Maldives adhan",
+    };
+
+    private static final String[] PLACES_EN = {
+            "Makkah", "Makkah", "Makkah", "Makkah", "Makkah", "Makkah", "Makkah", "Al-Quds", "Makkah", "Makkah", "Makkah", "Al-Quds",
+            "Egypt", "Egypt", "Egypt", "UAE", "UAE", "Oman", "Tunisia", "Malaysia", "Maldives",
+    };
+
     private Adhan() {}
 
     static String url(int voice) { return URLS[clamp(voice) - 1]; }
 
     /** The muezzin, e.g. «فاروق حضراوي». */
-    static String name(int voice) { return voice == Prefs.OWN ? OwnAdhanText.NAME : NAMES[clamp(voice) - 1]; }
+    static String name(int voice) { return voice == Prefs.OWN ? sa.urtv.home.S.tv(OwnAdhanText.NAME) : (sa.urtv.home.S.en() ? NAMES_EN : NAMES)[clamp(voice) - 1]; }
 
     /** Where it was recorded, e.g. «الحرم المكي». */
-    static String place(int voice) { return voice == Prefs.OWN ? OwnAdhanText.PLACE : PLACES[clamp(voice) - 1]; }
+    static String place(int voice) { return voice == Prefs.OWN ? sa.urtv.home.S.tv(OwnAdhanText.PLACE) : (sa.urtv.home.S.en() ? PLACES_EN : PLACES)[clamp(voice) - 1]; }
 
     /** Both, for the row that opens this list: «فاروق حضراوي — الحرم المكي». */
     static String label(int voice) { return name(voice) + " — " + place(voice); }

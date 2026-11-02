@@ -20,10 +20,10 @@ public final class Report {
     /** the longest link phone.QrCode.encodeLarge holds (version 40, level L, byte mode), as share.py's segno */
     public static final int MAX_BYTES = 2953;
 
-    public static final String TITLE = "أرسل تقرير";
-    public static final String HOW = "امسح الرمز بكاميرا الجوال: تفتح صفحة فيها هذا التقرير، ولا يوصلنا شيء إلا إذا ضغطت «أرسل» فيها. اكتب فيها المشكلة بكلماتك.";
-    public static final String WHAT = "ما في التقرير:";
-    public static final String BACK = "رجوع للإعدادات";
+    public static final String TITLE = S.n("أرسل تقرير");
+    public static final String HOW = S.n("امسح الرمز بكاميرا الجوال: تفتح صفحة فيها هذا التقرير، ولا يوصلنا شيء إلا إذا ضغطت «أرسل» فيها. اكتب فيها المشكلة بكلماتك.");
+    public static final String WHAT = S.n("ما في التقرير:");
+    public static final String BACK = S.n("رجوع للإعدادات");
 
     /** The report's lines: the apps' versions, the TV's Android and its WebView. */
     public static List<String> lines(String home, String saver, String release, int sdk, String webView) {

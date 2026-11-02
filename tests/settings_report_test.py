@@ -30,7 +30,7 @@ if not shutil.which("javac"):
     print("SKIP report: no javac here")
     sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
-    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "Report.java"), str(ROOT / "tests/SettingsReportRun.java")], check=True, capture_output=True)
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "tests/i18n_home_stub/S.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java"), str(HOME / "Report.java"), str(ROOT / "tests/SettingsReportRun.java")], check=True, capture_output=True)
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.SettingsReportRun"], check=True, capture_output=True).stdout.decode("utf-8").split("\n")
 lines = out[:4]
 url = next(l[4:] for l in out if l.startswith("url "))

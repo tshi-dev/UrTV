@@ -14,7 +14,7 @@ import java.util.List;
 final class AppActions {
     private AppActions() {}
 
-    static final String DETAILS = "تفاصيل التطبيق", DELETE = "حذف التطبيق";
+    static final String DETAILS = S.n("تفاصيل التطبيق"), DELETE = S.n("حذف التطبيق");
     /** the two buttons by what they do */
     static final int OPEN_DETAILS = 1, OPEN_DELETE = 2;
     /** our own two apps: the home and the screensaver are never offered for removal from the home itself */

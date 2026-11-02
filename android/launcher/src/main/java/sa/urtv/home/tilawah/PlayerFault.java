@@ -27,14 +27,14 @@ final class PlayerFault {
         switch (code(what, extra)) {
             case "io":
             case "timeout":
-                return radio ? "تعذّر الاتصال بالبث، تحقق من الإنترنت" : "تعذّر تحميل السورة، تحقق من الإنترنت";
+                return radio ? sa.urtv.home.S.t("تعذّر الاتصال بالبث، تحقق من الإنترنت") : sa.urtv.home.S.t("تعذّر تحميل السورة، تحقق من الإنترنت");
             case "malformed":
             case "unsupported":
-                return radio ? "صيغة البث غير مدعومة" : "ملف السورة غير صالح";
+                return radio ? sa.urtv.home.S.t("صيغة البث غير مدعومة") : sa.urtv.home.S.t("ملف السورة غير صالح");
             case "server_died":
-                return "توقف المشغّل";
+                return sa.urtv.home.S.t("توقف المشغّل");
             default:
-                return radio ? "تعذّر تشغيل البث" : "تعذّر تشغيل السورة";
+                return radio ? sa.urtv.home.S.t("تعذّر تشغيل البث") : sa.urtv.home.S.t("تعذّر تشغيل السورة");
         }
     }
 }

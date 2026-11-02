@@ -25,7 +25,7 @@ load = fn(main, "private void loadTvRows()")
 check("only the TV's Watch Next list is read: no apps' rows, no chooser of rows (ChannelsActivity is gone)",
       "PreviewPrograms" not in rows and "TvContract.Channels" not in rows and "arrange" not in rows and "arrange" not in pick
       and not (HOME / "ChannelsActivity.java").exists() and "ChannelsActivity" not in manifest and "ChannelsActivity" not in settings)
-check("the row's name is Arabic whatever the apps call it", "name.setText(TvRowsPick.WATCH_NEXT_TITLE);" in main and 'WATCH_NEXT_TITLE = "أكمل المشاهدة"' in pick)
+check("the row's name is ours whatever the apps call it (Arabic, or English with «اللغة»)", "name.setText(S.tv(TvRowsPick.WATCH_NEXT_TITLE));" in main and 'WATCH_NEXT_TITLE = S.n("أكمل المشاهدة")' in pick)
 show = fn(main, "private void showTvRows(List<TvRows.Row> rows)")
 check("the row sits in the first screen, right under the favourites, inside the same band padding (not under it, below the clock's screen)",
       "bottom.addView(tvRowsBox, new LinearLayout.LayoutParams(-1, -2));" in main and "content.addView(tvRowsBox" not in main
@@ -46,7 +46,7 @@ check("▼ from the favourites goes to the row; ▲ from the first apps row come
       "c.setNextFocusDownId(!tvCards.isEmpty() ? tvCards.get(0).get(" in wire and "lastTv != null ? lastTv.get(Math.min(col, lastTv.size() - 1)).getId()" in wire
       and ": d > 0 ? dockCards.get(Math.min(i, d - 1)).getId() : topId);" in wire)
 check("the card's picture: its title on a plain card until it comes; how far in as a gold line from the right",
-      "tvPics.put(it, img);" in card and "plain.setText(it.title);" in card and "Gravity.BOTTOM | Gravity.RIGHT" in card and "it.progress" in card)
+      "tvPics.put(it, img);" in card and "plain.setText(it.title);" in card and "Gravity.BOTTOM | Dir.start()" in card and "it.progress" in card)
 
 # ---- the setting: on/off
 prefs_s, provider, recv, snap = (read(ROOT / "android/app/src/main/java/sa/urtv/screensaver" / n) for n in ("Prefs.java", "ConfigProvider.java", "SaverReceiver.java")), None, None, None
@@ -72,7 +72,7 @@ check("the launcher declares the TV listings permissions", '<uses-permission and
       and '<uses-permission android:name="com.android.providers.tv.permission.READ_EPG_DATA" />' in manifest)
 check("without the permission nothing is read and the home has no row, as before", "if (!allowed(c)) return out;" in fn(rows, "static List<Row> load(Context c)"))
 check("the permission is asked only in WatchNextActivity, by the owner pressing «السماح» (never by the home on its own); allowed already, it closes",
-      'card("السماح", v -> requestPermissions(new String[]{TvRows.PERMISSION, TvRows.EPG}, ASK))' in screen and "requestPermissions" not in main
+      'card(S.t("السماح"), v -> requestPermissions(new String[]{TvRows.PERMISSION, TvRows.EPG}, ASK))' in screen and "requestPermissions" not in main
       and "if (TvRows.allowed(this)) { finish(); return; }" in screen and 'android:name=".WatchNextActivity"' in manifest)
 check("…behind «قفل الإعدادات» like «ترتيب المفضلة»", "ParentalPolicy.targets(ParentalPolicy.ARRANGE_SCREEN, null)" in screen and "Parental.guard(this" in screen)
 check("a card opens only into the app that published it (TvRowsPick.linkAllowed), a plain link pinned to it (setPackage); else that app itself",
@@ -112,7 +112,7 @@ if not shutil.which("javac"):
     print("SKIP tv rows: no javac here")
     sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
-    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "TvRowsPick.java"), str(HOME / "DigitsText.java"), str(ROOT / "tests/TvRowsRun.java")], check=True)
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "tests/i18n_home_stub/S.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java"), str(HOME / "TvRowsPick.java"), str(HOME / "DigitsText.java"), str(ROOT / "tests/TvRowsRun.java")], check=True)
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.TvRowsRun"], check=True, capture_output=True).stdout.decode("utf-8")
 r = dict(l.split(" = ", 1) for l in out.split("\n") if " = " in l)
 check("«أكمل المشاهدة» is called so", r["watchnext_title"] == "أكمل المشاهدة", r["watchnext_title"])
@@ -149,7 +149,7 @@ check("how far in: a fraction up to 1, unknown without a position or a length",
       r["progress_half"] == "0.5" and r["progress_over"] == "1.0" and r["progress_unknown"] == "-1.0 -1.0", (r["progress_half"], r["progress_over"], r["progress_unknown"]))
 sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
-    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "TvRowsPick.java"), str(HOME / "DigitsText.java"), str(ROOT / "tests/TvRowsRun.java")], check=True)
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "tests/i18n_home_stub/S.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java"), str(HOME / "TvRowsPick.java"), str(HOME / "DigitsText.java"), str(ROOT / "tests/TvRowsRun.java")], check=True)
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.TvRowsRun"], check=True, capture_output=True).stdout.decode("utf-8")
 r = dict(l.split(" = ", 1) for l in out.split("\n") if " = " in l)
 check("«أكمل المشاهدة» is called so", r["watchnext_title"] == "أكمل المشاهدة", r["watchnext_title"])

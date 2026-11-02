@@ -23,7 +23,7 @@ fn = lambda text, name: text.split(name)[1].split("\n    }\n")[0]
 
 # ---- the model
 check("AppsEdit has no Android in it (the test runs it without the SDK)", "import android" not in edit)
-check("the hint line, in the style of «تعديل المفضلة»", 'HINT = "اختر تطبيقًا لتحريكه · × للإخفاء · ارفعه للمفضلة · رجوع للإنهاء"' in edit)
+check("the hint line, in the style of «تعديل المفضلة»", 'HINT = S.n("اختر تطبيقًا لتحريكه · × للإخفاء · ارفعه للمفضلة · رجوع للإنهاء")' in edit)
 check("«تراجع» lasts as long as in «تعديل المفضلة» (FavEdit.UNDO_MS)", "undoUntil = now + FavEdit.UNDO_MS;" in edit)
 
 # ---- the order «كل التطبيقات» shows
@@ -51,16 +51,16 @@ check("one save and one broadcast when the mode ends: the order (only when an ap
 check("nothing changed: nothing saved", "if (!e.changed()) return;" in fn(main, "private void leaveAppsEdit()"))
 check("up into the favourites: at their end, never past Dock.MAX", "if (!row.contains(p) && row.size() < MAX_DOCK) row.add(p);" in fn(main, "private void leaveAppsEdit()")
       and "new AppsEdit(order, new ArrayList<>(hiddenFound.keySet()), cols, dockCards.size(), MAX_DOCK," in main)
-check("full favourites say so", 'case AppsEdit.FAVOURITES_FULL:' in main and '"المفضلة ممتلئة ("' in main)
+check("full favourites say so", 'case AppsEdit.FAVOURITES_FULL:' in main and 'S.t("المفضلة ممتلئة (%s' in main)
 
 # ---- entering, leaving, keys
 check("the long-press menu of an app of «كل التطبيقات» has «تعديل التطبيقات» (not in kids mode)",
-      'if (!inDock && !kids) {\n            labels.add("تعديل التطبيقات");\n            actions.add(() -> beginAppsEdit(pkg));' in main)
+      'if (!inDock && !kids) {\n            labels.add(S.t("تعديل التطبيقات"));\n            actions.add(() -> beginAppsEdit(pkg));' in main)
 check("the mode asks the settings' lock first, as «تعديل المفضلة» (ParentalPolicy.MENU_ARRANGE, «قفل الإعدادات»); kids mode never starts it",
-      re.search(r'private void beginAppsEdit\(String pkg\) \{\s*if \(kidsNoEdit\(\)\) return;\s*guarded\(ParentalPolicy\.MENU_ARRANGE, null, "تعديل التطبيقات", \(\) -> startAppsEdit\(pkg\)\);', main) is not None)
+      re.search(r'private void beginAppsEdit\(String pkg\) \{\s*if \(kidsNoEdit\(\)\) return;\s*guarded\(ParentalPolicy\.MENU_ARRANGE, null, S\.t\("تعديل التطبيقات"\), \(\) -> startAppsEdit\(pkg\)\);', main) is not None)
 check("startAppsEdit is reached only through beginAppsEdit", len(re.findall(r"startAppsEdit\(", main)) == 2)
 check("kids mode: no «تعديل المفضلة» either (it saved a row of the allowed apps only), the same rule (AppsEdit.allowed)",
-      'if (inDock && !kids) {\n            labels.add("تعديل المفضلة");' in main and "if (AppsEdit.allowed(Parental.state(this).kids)) return false;" in main)
+      'if (inDock && !kids) {\n            labels.add(S.t("تعديل المفضلة"));' in main and "if (AppsEdit.allowed(Parental.state(this).kids)) return false;" in main)
 check("one mode at a time", "if (edit != null || appsEdit != null || dockCards.isEmpty()) return;" in main and "if (appsEdit != null || edit != null) return;" in main)
 check("the mode starts once the whole grid is built (addGridRows ran to its end)", "if (!gridDone) { wantAppsEdit = true; return; }" in main
       and "gridDone = true;\n        beginPendingAppsEdit();" in main)
@@ -84,7 +84,7 @@ check("Settings → «التطبيقات والمفضلة» has «ترتيب ك�
 check("…which ask the home screen with the extras it reads", '.putExtra(reset ? "reset_apps_order" : "edit_apps", true)' in settings
       and 'EXTRA_EDIT_APPS = "edit_apps", EXTRA_RESET_APPS = "reset_apps_order"' in main)
 check("…and «رجوع للترتيب الأصلي» asks the settings' lock too, and nothing in kids mode",
-      'if (kidsNoEdit()) return true;\n            guarded(ParentalPolicy.MENU_ARRANGE, null, "ترتيب كل التطبيقات"' in main)
+      'if (kidsNoEdit()) return true;\n            guarded(ParentalPolicy.MENU_ARRANGE, null, S.t("ترتيب كل التطبيقات")' in main)
 move = src(ROOT / "optimize/settings_move.py")
 check("settings_move does not move the favourites, so neither the order nor the hidden list (documented)",
       "dock" not in move.split("ALLOWED_TOP")[1].split(")")[0] and "apps_order" not in move)
@@ -96,7 +96,7 @@ if not shutil.which("javac"):
     sys.exit(1 if failed else 0)
 cases = [l.split("\t") for l in src(ROOT / "tests/apps_edit_cases.tsv").split("\n") if l and not l.startswith("#")]
 with tempfile.TemporaryDirectory() as tmp:
-    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "AppsEdit.java"), str(HOME / "FavEdit.java"), str(HOME / "ParentalPolicy.java"),
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "tests/i18n_home_stub/S.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java"), str(HOME / "AppsEdit.java"), str(HOME / "FavEdit.java"), str(HOME / "ParentalPolicy.java"),
                     str(HOME / "AdhanKeys.java"), str(ROOT / "tests/AppsEditRun.java")], check=True)
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.AppsEditRun", str(ROOT / "tests/apps_edit_cases.tsv")],
                          check=True, capture_output=True).stdout.decode("utf-8").split("\n")

@@ -88,7 +88,7 @@ if not shutil.which("javac"):
     print("SKIP adhan options: no javac here")
     sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
-    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp] + [str(T / n) for n in ("AdhanPlan.java", "AdhanNoticeText.java", "AdhanVoices.java")] + [str(ROOT / "tests/AdhanOptionsRun.java")], check=True, capture_output=True)
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "tests/i18n_home_stub/S.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java")] + [str(T / n) for n in ("AdhanPlan.java", "AdhanNoticeText.java", "AdhanVoices.java")] + [str(ROOT / "tests/AdhanOptionsRun.java")], check=True, capture_output=True)
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.tilawah.AdhanOptionsRun"], check=True, capture_output=True).stdout.decode("utf-8")
 rows = [l.split("\t") for l in out.split("\n") if l]
 for name, res in rows:

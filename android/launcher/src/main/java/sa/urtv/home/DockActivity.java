@@ -27,6 +27,9 @@ import java.util.Map;
  * screen's own way is «تعديل المفضلة», see FavEdit), or `am start -n sa.urtv.home/.DockActivity`.
  */
 public class DockActivity extends Activity {
+    /** «اللغة» (docs/ENGLISH.md): with Arabic the context itself, with English an English one */
+    @Override protected void attachBaseContext(android.content.Context b) { super.attachBaseContext(S.wrap(b)); }
+
     private int GOLD, INK, TEXT, DIM;   // from the glass look (glass(), before anything is drawn)
     private GlassStyle.Look look;
 
@@ -58,15 +61,17 @@ public class DockActivity extends Activity {
         col.setPadding(0, dp(36), 0, dp(48));
         frame.addView(col, new FrameLayout.LayoutParams(dp(600), -2, Gravity.CENTER_HORIZONTAL));
 
-        col.addView(text("ترتيب المفضلة", 26, "Medium", TEXT), right(0));
-        col.addView(text("اختيار على تطبيق لتحريكه بالأسهم (أعلى/أسفل) ثم اختيار لتثبيته. من " + ar(Dock.MIN) + " إلى "
-            + ar(Dock.MAX) + " تطبيقات.", 14, "Regular", DIM), right(dp(6)));
+        col.addView(text(S.t("ترتيب المفضلة"), 26, "Medium", TEXT), right(0));
+        col.addView(text(S.t("اختيار على تطبيق لتحريكه بالأسهم (أعلى/أسفل) ثم اختيار لتثبيته. من %s إلى %s تطبيقات.", ar(Dock.MIN),
+            ar(Dock.MAX)), 14, "Regular", DIM), right(dp(6)));
         count = text("", 13, "Medium", GOLD);
         col.addView(count, right(dp(24)));
         list = new LinearLayout(this);
         list.setOrientation(LinearLayout.VERTICAL);
         col.addView(list, new LinearLayout.LayoutParams(-1, -2));
-        scroll.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);   // the D-pad ids of these rows are left-to-right: pinned, so a TV set to Arabic does not mirror the rows under them
+        // the D-pad ids of these rows are left-to-right: pinned, so a TV set to Arabic does not mirror the rows under them. English is the
+        // mirror of the Arabic screen: the same rows laid out right to left, their margins at the start and their ◀▶ ids swapped
+        scroll.setLayoutDirection(Dir.layout(!Dir.rtl()));
         setContentView(scroll);
         screen = scroll;
         render(0);
@@ -107,26 +112,26 @@ public class DockActivity extends Activity {
         list.removeAllViews();
         cards.clear();
         removes.clear();
-        count.setText("المفضلة " + ar(row.size()) + " من " + ar(Dock.MAX));
+        count.setText(S.t("المفضلة %s من %s", ar(row.size()), ar(Dock.MAX)));
         for (int i = 0; i < row.size(); i++) list.addView(favouriteRow(i), rowParams());
 
         List<String> others = new ArrayList<>(apps.keySet());
         others.removeAll(row);
         Collections.sort(others, (x, y) -> apps.get(x).compareToIgnoreCase(apps.get(y)));
         if (!others.isEmpty()) {
-            TextView h = text("إضافة تطبيق", 13, "Medium", GOLD);
+            TextView h = text(S.t("إضافة تطبيق"), 13, "Medium", GOLD);
             LinearLayout.LayoutParams hp = right(0);
             hp.topMargin = dp(22);
             hp.bottomMargin = dp(8);
             list.addView(h, hp);
             for (String p : others) list.addView(card(p, "+", false, v -> add(p)), rowParams());
         }
-        View reset = card(null, "الترتيب الافتراضي", false, v -> {
+        View reset = card(null, S.t("الترتيب الافتراضي"), false, v -> {
             Dock.reset(this);
             row.clear();
             row.addAll(Dock.shown(this, apps));
             render(0);
-            toast("رجعت المفضلة للترتيب الافتراضي");
+            toast(S.t("رجعت المفضلة للترتيب الافتراضي"));
         });
         LinearLayout.LayoutParams rp = rowParams();
         rp.topMargin = dp(22);
@@ -151,30 +156,30 @@ public class DockActivity extends Activity {
         f.post(f::requestFocus);
     }
 
-    /** [إزالة] [  label  icon  n ] — right-aligned by hand. */
+    /** [إزالة] [  label  icon  n ] — right-aligned by hand (English: the screen is mirrored, [ n  icon  label  ] [إزالة]). */
     private View favouriteRow(final int i) {
         LinearLayout r = new LinearLayout(this);
         r.setOrientation(LinearLayout.HORIZONTAL);
-        TextView remove = (TextView) pill("إزالة", v -> remove(i));
+        TextView remove = (TextView) pill(S.t("إزالة"), v -> remove(i));
         r.addView(remove, new LinearLayout.LayoutParams(dp(84), -1));
         View c = card(row.get(i), ar(i + 1), i == moving, v -> {
             if (moving == i) drop(); else { moving = i; render(i); }
         });
         LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(0, -2, 1f);
-        cp.leftMargin = dp(10);
+        cp.setMarginStart(dp(10));
         r.addView(c, cp);
-        c.setNextFocusLeftId(remove.getId());
-        remove.setNextFocusRightId(c.getId());
+        if (Dir.rtl()) c.setNextFocusLeftId(remove.getId()); else c.setNextFocusRightId(remove.getId());
+        if (Dir.rtl()) remove.setNextFocusRightId(c.getId()); else remove.setNextFocusLeftId(c.getId());
         cards.add(c);
         removes.add(remove);
         return r;
     }
 
-    /** A row card: badge (number or +) on the right, then the icon and name; pkg null = a text button. */
+    /** A row card: badge (number or +) on the right (the left in English), then the icon and name; pkg null = a text button. */
     private View card(String pkg, String badge, boolean lifted, View.OnClickListener click) {
         LinearLayout c = new LinearLayout(this);
         c.setOrientation(LinearLayout.HORIZONTAL);
-        c.setGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT);
+        c.setGravity(Gravity.CENTER_VERTICAL | Dir.start());
         c.setPadding(dp(16), dp(10), dp(16), dp(10));
         c.setFocusable(true);
         c.setClickable(true);
@@ -193,8 +198,8 @@ public class DockActivity extends Activity {
                 ic.setImageDrawable(d);
             } catch (Exception ignored) { }
             LinearLayout.LayoutParams ip = new LinearLayout.LayoutParams(dp(30), dp(30));
-            ip.leftMargin = dp(12);
-            ip.rightMargin = dp(12);
+            ip.setMarginStart(dp(12));   // the same on both sides
+            ip.setMarginEnd(dp(12));
             c.addView(ic, ip);
             TextView n = text(badge, 15, "Medium", GOLD);
             n.setMinWidth(dp(22));
@@ -227,18 +232,18 @@ public class DockActivity extends Activity {
     // ---------------------------------------------------------------- actions
 
     private void remove(int i) {
-        if (row.size() <= Dock.MIN) { toast("المفضلة لا تقل عن " + ar(Dock.MIN) + " تطبيقات"); return; }
+        if (row.size() <= Dock.MIN) { toast(S.t("المفضلة لا تقل عن %s تطبيقات", ar(Dock.MIN))); return; }
         row.remove(i);
         Dock.save(this, row);
         render(Math.min(i, row.size() - 1));
     }
 
     private void add(String pkg) {
-        if (row.size() >= Dock.MAX) { toast("المفضلة ممتلئة (" + ar(Dock.MAX) + ")"); return; }
+        if (row.size() >= Dock.MAX) { toast(S.t("المفضلة ممتلئة (%s)", ar(Dock.MAX))); return; }
         row.add(pkg);
         Dock.save(this, row);
         render(row.size() - 1);
-        toast("أُضيف " + apps.get(pkg));
+        toast(S.t("أُضيف %s", apps.get(pkg)));
     }
 
     private void drop() {
@@ -273,10 +278,10 @@ public class DockActivity extends Activity {
 
     private TextView text(String s, float sp, String weight, int color) {
         TextView t = new TextView(this);
-        t.setText(s);
+        t.setText(S.tv(s));   // the screen's words given as Arabic are said in «اللغة»; one already said stays
         t.setTextSize(TypedValue.COMPLEX_UNIT_SP, sp);
         t.setTextColor(color);
-        t.setGravity(Gravity.RIGHT);
+        t.setGravity(Dir.start());
         try { t.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/Thmanyah-" + weight + ".otf")); }
         catch (RuntimeException ignored) { }
         return t;

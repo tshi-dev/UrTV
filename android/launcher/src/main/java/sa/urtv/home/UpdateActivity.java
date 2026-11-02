@@ -29,6 +29,9 @@ import sa.urtv.home.phone.UpdateText;
  * sa.urtv.home.OPEN_UPDATE, so `am start` from a shell is refused).
  */
 public class UpdateActivity extends Activity {
+    /** «اللغة» (docs/ENGLISH.md): with Arabic the context itself, with English an English one */
+    @Override protected void attachBaseContext(android.content.Context b) { super.attachBaseContext(S.wrap(b)); }
+
     private int GOLD, INK, TEXT, DIM, RED;   // from the glass look (glass(), before anything is drawn)
     private GlassStyle.Look look;
 
@@ -84,8 +87,8 @@ public class UpdateActivity extends Activity {
 
     private void render() {
         col.removeAllViews();
-        col.addView(text(UpdateText.TITLE, 26, "Medium", TEXT, Gravity.RIGHT), right(0));
-        col.addView(text(UpdateText.installed(PhoneUpdater.installedName(this)), 16, "Regular", DIM, Gravity.RIGHT), right(dp(22)));
+        col.addView(text(UpdateText.TITLE, 26, "Medium", TEXT, Dir.start()), right(0));
+        col.addView(text(UpdateText.installed(PhoneUpdater.installedName(this)), 16, "Regular", DIM, Dir.start()), right(dp(22)));
         View focus;
         if (result != null) {
             focus = renderRecord();
@@ -100,10 +103,10 @@ public class UpdateActivity extends Activity {
 
     private View renderRecord() {
         if (result.kind == UpdateRecords.Kind.SUCCESS) {
-            col.addView(text(UpdateText.done(UpdateText.versionOf(BuildConfig.MARKETING, result.target)), 22, "Medium", GOLD, Gravity.RIGHT), right(dp(18)));
+            col.addView(text(UpdateText.done(UpdateText.versionOf(BuildConfig.MARKETING, result.target)), 22, "Medium", GOLD, Dir.start()), right(dp(18)));
         } else {
-            col.addView(text(UpdateText.NOT_DONE, 22, "Medium", RED, Gravity.RIGHT), right(dp(6)));
-            col.addView(text(UpdateText.failedStep(UpdateOrder.label(result.step)), 15, "Regular", DIM, Gravity.RIGHT), right(dp(14)));
+            col.addView(text(UpdateText.NOT_DONE, 22, "Medium", RED, Dir.start()), right(dp(6)));
+            col.addView(text(UpdateText.failedStep(UpdateOrder.label(result.step)), 15, "Regular", DIM, Dir.start()), right(dp(14)));
             aiMessage();
         }
         return checkButton();
@@ -118,13 +121,13 @@ public class UpdateActivity extends Activity {
         String newest = UpdateText.versionOf(BuildConfig.MARKETING, b == null ? 0 : ((Long) b).intValue());
         switch (s) {
             case "checking":
-                col.addView(text(UpdateText.WORKING, 18, "Medium", GOLD, Gravity.RIGHT), right(dp(8)));
+                col.addView(text(UpdateText.WORKING, 18, "Medium", GOLD, Dir.start()), right(dp(8)));
                 return null;
             case "downloading":
-                col.addView(text(UpdateText.DOWNLOADING, 18, "Medium", GOLD, Gravity.RIGHT), right(dp(8)));
+                col.addView(text(UpdateText.DOWNLOADING, 18, "Medium", GOLD, Dir.start()), right(dp(8)));
                 return null;
             case "uptodate":
-                col.addView(text(UpdateText.upToDate(PhoneUpdater.installedName(this)), 20, "Medium", GOLD, Gravity.RIGHT), right(dp(16)));
+                col.addView(text(UpdateText.upToDate(PhoneUpdater.installedName(this)), 20, "Medium", GOLD, Dir.start()), right(dp(16)));
                 return checkButton();
             case "found":       // the phone page only read version.txt: pressing downloads, checks, then installs
             case "available":
@@ -138,8 +141,8 @@ public class UpdateActivity extends Activity {
                     }
                 }, 60);
             case "waiting_owner":
-                col.addView(text(UpdateText.CONFIRM, 20, "Medium", GOLD, Gravity.RIGHT), right(dp(6)));
-                if (!detail.isEmpty()) col.addView(text(UpdateOrder.label(detail), 15, "Regular", DIM, Gravity.RIGHT), right(dp(14)));
+                col.addView(text(UpdateText.CONFIRM, 20, "Medium", GOLD, Dir.start()), right(dp(6)));
+                if (!detail.isEmpty()) col.addView(text(UpdateOrder.label(detail), 15, "Regular", DIM, Dir.start()), right(dp(14)));
                 if (PhoneUpdater.confirmWaiting()) {
                     getWindow().getDecorView().post(new Runnable() { @Override public void run() { if (PhoneUpdater.confirmWaiting()) PhoneUpdater.showConfirm(UpdateActivity.this); } });
                 }
@@ -150,7 +153,7 @@ public class UpdateActivity extends Activity {
                 }
                 return null;
             case "done":
-                col.addView(text(UpdateText.done(newest), 22, "Medium", GOLD, Gravity.RIGHT), right(dp(16)));
+                col.addView(text(UpdateText.done(newest), 22, "Medium", GOLD, Dir.start()), right(dp(16)));
                 return null;
             case "error":
                 return renderError(why, detail);
@@ -162,10 +165,10 @@ public class UpdateActivity extends Activity {
     private View renderError(String why, String detail) {
         switch (why) {
             case "offline":
-                col.addView(text(UpdateText.OFFLINE, 20, "Medium", RED, Gravity.RIGHT), right(dp(16)));
+                col.addView(text(UpdateText.OFFLINE, 20, "Medium", RED, Dir.start()), right(dp(16)));
                 return checkButton();
             case "need_permission":
-                col.addView(text(UpdateText.NEED_PERMISSION, 18, "Medium", TEXT, Gravity.RIGHT), right(dp(14)));
+                col.addView(text(UpdateText.NEED_PERMISSION, 18, "Medium", TEXT, Dir.start()), right(dp(14)));
                 return button(UpdateText.OPEN_PERMISSION, GOLD, new View.OnClickListener() {
                     @Override public void onClick(View v) {
                         if (PhoneUpdater.openPermissionScreen(UpdateActivity.this)) askedPermission = true;
@@ -173,12 +176,12 @@ public class UpdateActivity extends Activity {
                     }
                 }, 52);
             case "declined":
-                col.addView(text(UpdateText.NOT_DONE, 22, "Medium", RED, Gravity.RIGHT), right(dp(6)));
-                col.addView(text(UpdateText.DECLINED, 15, "Regular", DIM, Gravity.RIGHT), right(dp(16)));
+                col.addView(text(UpdateText.NOT_DONE, 22, "Medium", RED, Dir.start()), right(dp(6)));
+                col.addView(text(UpdateText.DECLINED, 15, "Regular", DIM, Dir.start()), right(dp(16)));
                 return checkButton();
             case "failed":
-                col.addView(text(UpdateText.NOT_DONE, 22, "Medium", RED, Gravity.RIGHT), right(dp(6)));
-                col.addView(text(UpdateText.failedStep(UpdateOrder.label(detail)), 15, "Regular", DIM, Gravity.RIGHT), right(dp(14)));
+                col.addView(text(UpdateText.NOT_DONE, 22, "Medium", RED, Dir.start()), right(dp(6)));
+                col.addView(text(UpdateText.failedStep(UpdateOrder.label(detail)), 15, "Regular", DIM, Dir.start()), right(dp(14)));
                 aiMessage();
                 return checkButton();
             default:   // "cannot", and anything this screen doesn't know: the same message
@@ -189,8 +192,8 @@ public class UpdateActivity extends Activity {
 
     /** The message that sends the owner to their AI assistant, with the repository address small under it. */
     private void aiMessage() {
-        col.addView(text(UpdateText.AI_MESSAGE, 20, "Medium", TEXT, Gravity.RIGHT), right(dp(8)));
-        TextView repo = text("⁦" + UpdateText.REPO + "⁩", 12, "Regular", DIM, Gravity.RIGHT);
+        col.addView(text(UpdateText.AI_MESSAGE, 20, "Medium", TEXT, Dir.start()), right(dp(8)));
+        TextView repo = text("⁦" + UpdateText.REPO + "⁩", 12, "Regular", DIM, Dir.start());
         col.addView(repo, right(dp(18)));
     }
 

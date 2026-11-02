@@ -18,6 +18,7 @@ final class AdhanNotice {
     /** Shows it now; the main thread (the alarm's receiver). Never throws: a TV that shows no toast loses the notice, not the adhan. */
     static void show(Context c, int prayer) {
         final Context app = c.getApplicationContext();
+        sa.urtv.home.S.init(app);   // «اللغة»: the notice's words
         final String text = AdhanNoticeText.text(prayer);
         try {
             final Handler h = new Handler(Looper.getMainLooper());

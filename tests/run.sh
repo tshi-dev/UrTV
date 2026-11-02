@@ -176,6 +176,7 @@ python3 tests/i18n_page_test.py   # dist/tv-en.html: built beside tv.html (byte 
 node tests/i18n_page_test.mjs   # dist/tv-en.html in a browser: left to right, no Arabic in its own words on any card
 #
 # English phase 3 (the home app): its new tests go right under this line
+python3 tests/i18n_home_test.py   # the home's words: none left behind, Arabic byte for byte (tests/i18n_home_cases.tsv), English with no Arabic, Dir, the Quran's names
 #
 # English phase 4 (the phone page): its new tests go right under this line
 #

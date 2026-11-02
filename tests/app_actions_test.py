@@ -23,7 +23,7 @@ buttons = main.split("private List<View> appButtons(")[1].split("\n    }\n")[0]
 show = main.split("private void showMenu(View anchor, List<String> labels, List<Runnable> actions, List<View> buttons) {")[1].split("\n    }\n")[0]
 
 check("AppActions has no Android in it", "import android" not in acts)
-check("the two names, in Arabic, and no «إيقاف إجباري» anywhere in the home", 'DETAILS = "تفاصيل التطبيق", DELETE = "حذف التطبيق"' in acts
+check("the two names, in Arabic, and no «إيقاف إجباري» anywhere in the home", 'DETAILS = S.n("تفاصيل التطبيق"), DELETE = S.n("حذف التطبيق")' in acts
       and "إيقاف إجباري" not in main + acts.split("*/", 1)[1] and "forceStop" not in main)
 check("the row goes under the last item of the app menu («الرقابة الأبوية»)", menu.rstrip().endswith("showMenu(anchor, labels, actions, appButtons(pkg, kids));")
       and menu.index('"الرقابة الأبوية') < menu.index("appButtons(pkg, kids)"))
@@ -37,10 +37,11 @@ check("MENU_APP asks about @urtv and @tvsettings", "case MENU_APP:" in policy an
 check("a system app (or an update of one) is told by its flags, and one that cannot be read is treated as system",
       "FLAG_SYSTEM | android.content.pm.ApplicationInfo.FLAG_UPDATED_SYSTEM_APP" in main and "return true;   // not known: not offered" in main)
 check("the manifest declares REQUEST_DELETE_PACKAGES (Android 9+ drops ACTION_DELETE without it)", 'android.permission.REQUEST_DELETE_PACKAGES' in man)
-check("D-pad: ▼ from the last item reaches the first button, ▲ from a button goes back, ◀ ▶ walk the row right to left, no wrap",
+check("D-pad: ▼ from the last item reaches the first button, ▲ from a button goes back, ◀ ▶ walk the row right to left (English: left to right), no wrap",
       "buttons.get(0).getId()" in show and "b.setNextFocusUpId(last.getId());" in show and "b.setNextFocusDownId(b.getId());" in show
-      and "setNextFocusRightId(buttons.get(Math.max(0, k - 1)).getId())" in show and "setNextFocusLeftId(buttons.get(Math.min(buttons.size() - 1, k + 1)).getId())" in show
-      and "row.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);" in show)
+      and "int before = buttons.get(Math.max(0, k - 1)).getId(), after = buttons.get(Math.min(buttons.size() - 1, k + 1)).getId();" in show
+      and "b.setNextFocusRightId(Dir.rtl() ? before : after);" in show and "b.setNextFocusLeftId(Dir.rtl() ? after : before);" in show
+      and "row.setLayoutDirection(Dir.layout());" in show)
 check("OK on a button closes the menu, then acts (like the items)", "b.setOnClickListener(v -> { pw.dismiss(); ((Runnable) v.getTag()).run(); });" in show)
 check("the popup moves up by the row's height, so it still sits above the tile", "- extra, Gravity.START)" in show)
 check("the other menus (the «المخفية» list) have no row", "showMenu(hiddenCard, labels, actions);" in main and "Collections.<View>emptyList()" in main)
@@ -50,7 +51,7 @@ if not shutil.which("javac"):
     sys.exit(1 if failed else 0)
 cases = [l.split("\t") for l in (ROOT / "tests/app_actions_cases.tsv").read_text(encoding="utf-8").split("\n") if l and not l.startswith("#")]
 with tempfile.TemporaryDirectory() as tmp:
-    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "AppActions.java"), str(ROOT / "tests/AppActionsRun.java")], check=True)
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "tests/i18n_home_stub/S.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java"), str(HOME / "AppActions.java"), str(ROOT / "tests/AppActionsRun.java")], check=True)
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.AppActionsRun", str(ROOT / "tests/app_actions_cases.tsv")],
                          check=True, capture_output=True).stdout.decode("utf-8").split("\n")
 for c, g in zip(cases, out):

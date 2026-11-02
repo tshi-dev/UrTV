@@ -8,12 +8,12 @@ final class AdhanNoticeText {
     /** the notice stays 5 seconds: a long toast (3.5 s) and then a short one, cut at 5 s */
     static final long SHOW_MS = 5_000, FIRST_MS = 3_500;
 
-    private static final String[] NAMES = {"الفجر", null, "الظهر", "العصر", "المغرب", "العشاء"};
+    private static final String[] NAMES = {sa.urtv.home.S.n("الفجر"), null, sa.urtv.home.S.n("الظهر"), sa.urtv.home.S.n("العصر"), sa.urtv.home.S.n("المغرب"), sa.urtv.home.S.n("العشاء")};
 
     private AdhanNoticeText() { }
 
     static String text(int prayer) {
         String name = prayer >= 0 && prayer < NAMES.length ? NAMES[prayer] : null;
-        return name == null ? "حان وقت الصلاة" : "حان وقت صلاة " + name;
+        return name == null ? sa.urtv.home.S.t("حان وقت الصلاة") : sa.urtv.home.S.t("حان وقت صلاة %s", sa.urtv.home.S.tv(name));
     }
 }

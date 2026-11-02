@@ -69,6 +69,9 @@ import java.util.Set;
  * clock on the right, and a pill that starts the screensaver (a long OK opens its settings).
  */
 public class MainActivity extends Activity {
+    /** «اللغة» (docs/ENGLISH.md): with Arabic the context itself, with English an English one */
+    @Override protected void attachBaseContext(android.content.Context b) { super.attachBaseContext(S.wrap(b)); }
+
 
     // Dock, hidden apps, Live TV and grid width come from res/values/config.xml.
     private String[] dockApps;
@@ -323,7 +326,7 @@ public class MainActivity extends Activity {
         root.setBackgroundColor(Color.BLACK);
         // The home is built in code, so it inherits no direction from the window: set it here and
         // the pills, the favourites and the app rows all read from right to left.
-        root.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        root.setLayoutDirection(Dir.layout());
 
         // Wallpaper: two stacked layers so a new photo can crossfade in over the old one.
         wallBack = wallpaperLayer();
@@ -381,12 +384,12 @@ public class MainActivity extends Activity {
 
         hero.addView(buildHeader(), lp(-1, -2, Gravity.TOP, dp(48), dp(36), dp(48), 0));
         // optional card under the pills, same size as beside the screensaver's clock
-        homeCard = new HomeCard(this, hero, lp(dp(461), dp(250), Gravity.LEFT | Gravity.TOP, dp(48), dp(84), 0, 0), this::homeCardBox, new HomeCard.Live() {
+        homeCard = new HomeCard(this, hero, lp(dp(461), dp(250), Dir.end() | Gravity.TOP, Dir.rtl() ? dp(48) : 0, dp(84), Dir.rtl() ? 0 : dp(48), 0), this::homeCardBox, new HomeCard.Live() {
             @Override public void focus(View target, boolean has) {   // «المهام» on the card takes the focus like a pill
                 if (has) { lastFocusedId = target.getId(); glideTo(0); fadeGlow(1f); }
             }
             @Override public void open() {   // OK: the list, with the focus on «🎤 تكلّم» so one more OK starts the voice adding
-                launchGuarded(ParentalPolicy.CARD_TASKS, new Intent(MainActivity.this, TasksActivity.class).putExtra(TasksActivity.EXTRA_MIC, true), "المهام");
+                launchGuarded(ParentalPolicy.CARD_TASKS, new Intent(MainActivity.this, TasksActivity.class).putExtra(TasksActivity.EXTRA_MIC, true), S.t("المهام"));
             }
         });
         hero.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> homeCard.fit());
@@ -427,7 +430,7 @@ public class MainActivity extends Activity {
         bottom.addView(tvRowsBox, new LinearLayout.LayoutParams(-1, -2));
 
         appsLabel = text(11, "sans-serif-medium", 0x99FFFFFF);
-        appsLabel.setText("كل التطبيقات");
+        appsLabel.setText(S.t("كل التطبيقات"));
         appsLabel.setTextColor(GOLD);
         content.addView(appsLabel, llp(-2, -2, dp(68), dp(8), dp(68), dp(18)));   // inset like the grid on both sides: in RTL it starts over the first tile
 
@@ -449,6 +452,8 @@ public class MainActivity extends Activity {
         android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
         int clockLeft = 0, titleTop = 0, dockTop = 0, wide = 0;
         if (clockBlock != null && clockBlock.getWidth() > 0) clockLeft = ((View) clockBlock.getParent()).getLeft() + clockBlock.getLeft();
+        // English: the clock is at the left and the card at the right, so the same gap measured from the right edge
+        if (!Dir.rtl() && clockBlock != null && clockBlock.getWidth() > 0) clockLeft = dm.widthPixels - ((View) clockBlock.getParent()).getLeft() - clockBlock.getRight();
         if (bottomBlock != null && bottomBlock.getHeight() > 0 && dockRow != null) {
             titleTop = bottomBlock.getTop();
             dockTop = titleTop + dockRow.getTop();
@@ -463,15 +468,15 @@ public class MainActivity extends Activity {
 
         LinearLayout left = new LinearLayout(this);
         left.setOrientation(LinearLayout.VERTICAL);
-        // Top right, stacked tight: greeting, clock, date. Gravity.RIGHT, not END: for Arabic text END is the left.
+        // Top right (top left in English), stacked tight: greeting, clock, date. Dir.start(), not START: the views' own direction is not always ours.
         greeting = text(15, "medium", GOLD);
         greeting.setSingleLine(true);
-        left.addView(greeting, llp(-2, -2, 0, 0, dp(4), 0));
+        left.addView(greeting, sideLlp(-2, -2, dp(4), 0, 0, 0));
         // under it: the weather of the city and the next sunrise or sunset (shown only when the greeting is on and there is an answer)
         weatherLine = text(12, "regular", 0xFFC6BBA4);
         weatherLine.setMaxLines(2);
         weatherLine.setVisibility(View.GONE);
-        left.addView(weatherLine, llp(-2, -2, 0, dp(1), dp(4), 0));
+        left.addView(weatherLine, sideLlp(-2, -2, dp(4), dp(1), 0, 0));
         greetingLine = new Greeting(this, greeting, weatherLine, () -> resumed);
 
         LinearLayout clockRow = new LinearLayout(this);
@@ -482,34 +487,34 @@ public class MainActivity extends Activity {
         ampm = text(16, "medium", GOLD);
         // the row reads from the right: the time first, then the ص or the م on its left
         clockRow.addView(clock);
-        clockRow.addView(ampm, llp(-2, -2, 0, dp(6), dp(8), 0));
+        clockRow.addView(ampm, sideLlp(-2, -2, dp(8), dp(6), 0, 0));
         left.addView(clockRow, llp(-2, -2, 0, dp(-2), 0, 0));
 
         date = text(14, "regular", 0xFFC6BBA4);
         date.setSingleLine(true);
-        left.addView(date, llp(-2, -2, 0, dp(-6), dp(4), 0));   // the display font leaves a deep gap under its digits
+        left.addView(date, sideLlp(-2, -2, dp(4), dp(-6), 0, 0));   // the display font leaves a deep gap under its digits
         // «بتوقيت دبي» (with «· حساب الخليج» when the calculation is not Umm al-Qura), when the city's clock is not the TV's or the
         // calculation is not Umm al-Qura: ClockZone.showLine
         zoneLine = text(12, "regular", GOLD);
         zoneLine.setSingleLine(true);
         zoneLine.setVisibility(View.GONE);
-        left.addView(zoneLine, llp(-2, -2, 0, dp(1), dp(4), 0));
+        left.addView(zoneLine, sideLlp(-2, -2, dp(4), dp(1), 0, 0));
         for (TextView t : new TextView[]{greeting, weatherLine, clock, ampm, date, zoneLine}) t.setShadowLayer(dp(3), 0, dp(1), 0x80000000);
-        left.setGravity(Gravity.RIGHT);
-        for (TextView t : new TextView[]{greeting, weatherLine, date, zoneLine}) t.setGravity(Gravity.RIGHT);
-        header.addView(left, new FrameLayout.LayoutParams(-2, -2, Gravity.RIGHT | Gravity.TOP));
+        left.setGravity(Dir.start());
+        for (TextView t : new TextView[]{greeting, weatherLine, date, zoneLine}) t.setGravity(Dir.start());
+        header.addView(left, new FrameLayout.LayoutParams(-2, -2, Dir.start() | Gravity.TOP));
         clockBlock = left;
 
         LinearLayout right = new LinearLayout(this);
         right.setGravity(Gravity.CENTER_VERTICAL);
         right.setClipChildren(false);
-        Pill inputs = pill("المصادر", R.drawable.ic_input);
+        Pill inputs = pill(S.t("المصادر"), R.drawable.ic_input);
         inputsPill = inputs;
         inputs.setOnClickListener(v -> showInputs(v, ParentalPolicy.PILL_INPUTS));
-        Pill tasks = pill("المهام", R.drawable.ic_mic);   // the list lives in the screensaver app
+        Pill tasks = pill(S.t("المهام"), R.drawable.ic_mic);   // the list lives in the screensaver app
         tasks.setOnClickListener(v -> launchGuarded(ParentalPolicy.PILL_TASKS, new Intent(this, TasksActivity.class), "المهام"));
         // the «تلاوة وأذان» pill: the Quran, the radio and the adhan are part of this app, so it opens them right here
-        Pill tilawah = pill("تلاوة وأذان", R.drawable.ic_listen);
+        Pill tilawah = pill(S.t("تلاوة وأذان"), R.drawable.ic_listen);
         tilawah.setOnClickListener(v -> launchGuarded(ParentalPolicy.PILL_LISTEN, new Intent(this, sa.urtv.home.tilawah.MainActivity.class), "تلاوة وأذان"));
         // ---- «مركز التحكم» (ControlCenter): the sleep timer, the screensaver, the network and the TV's settings pills went into its panel
         control = new ControlCenter(this, controlHost());
@@ -523,12 +528,12 @@ public class MainActivity extends Activity {
         tilawahPill = tilawah;
         pillRow = right;
         // [updates bell] built here, put in the row by applyUpdateBell only while it has a reason to be there
-        bellPill = pill("تحديثات التطبيقات", R.drawable.ic_bell);
-        bellPill.setOnClickListener(v -> guarded(ParentalPolicy.PILL_UPDATES, UpdatesBell.PLAY_STORE, "متجر Play", this::openUpdates));
+        bellPill = pill(S.t("تحديثات التطبيقات"), R.drawable.ic_bell);
+        bellPill.setOnClickListener(v -> guarded(ParentalPolicy.PILL_UPDATES, UpdatesBell.PLAY_STORE, S.t("متجر Play"), this::openUpdates));
         // [/updates bell]
         if (listenPillWanted(ConfigSnapshot.read(this).listenPillOn)) row.add(tilawah);   // «زر تلاوة وأذان»: hidden in the screensaver's settings, it is simply not in the row
         for (Pill p : row) {
-            right.addView(p, llp(-2, dp(Pill.HEIGHT), dp(10), 0, 0, 0));
+            right.addView(p, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(10), 0));
             pills.add(p);
         }
         // «يُتلى الآن»: the first child of the row, so it sits at its right end and the pills keep their places when it comes
@@ -543,8 +548,8 @@ public class MainActivity extends Activity {
         // taller than a pill by 10 dp, hung 5 dp over the row's top and bottom: the row stays Pill.HEIGHT, so the pills do not move; it
         // reaches from 31 to 75 dp down, clear of the adhan bar (to 26) and the cards (from 84)
         int hang = dp((NowCard.HEIGHT - Pill.HEIGHT) / 2f);
-        right.addView(nowCard, 0, llp(-2, dp(NowCard.HEIGHT), dp(10), -hang, 0, -hang));
-        header.addView(right, new FrameLayout.LayoutParams(-2, -2, Gravity.LEFT | Gravity.TOP));
+        right.addView(nowCard, 0, sideLlp(-2, dp(NowCard.HEIGHT), 0, -hang, dp(10), -hang));
+        header.addView(right, new FrameLayout.LayoutParams(-2, -2, Dir.end() | Gravity.TOP));
         return header;
     }
 
@@ -595,7 +600,7 @@ public class MainActivity extends Activity {
                 case "@tasks": launchGuarded(ParentalPolicy.PILL_TASKS, new Intent(this, TasksActivity.class), "المهام"); break;
                 case "@saver": guarded(ParentalPolicy.PILL_SAVER, SAVER_PKG, "شاشة التوقف", this::startSaver); break;
                 case "@inputs": if (inputsPill != null) showInputs(inputsPill, ParentalPolicy.PILL_INPUTS); break;
-                case "@settings": launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون"); break;
+                case "@settings": launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), S.t("إعدادات التلفزيون")); break;
                 case "@listen":
                     if (getResources().getBoolean(R.bool.show_listening)) launchGuarded(ParentalPolicy.PILL_LISTEN, new Intent(this, sa.urtv.home.tilawah.MainActivity.class), "تلاوة وأذان");
                     break;
@@ -636,7 +641,7 @@ public class MainActivity extends Activity {
         boolean want = listenPillWanted(setting), has = tilawahPill.getParent() == pillRow;
         if (want == has) return;
         if (want) {
-            pillRow.addView(tilawahPill, llp(-2, dp(Pill.HEIGHT), dp(10), 0, 0, 0));
+            pillRow.addView(tilawahPill, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(10), 0));
             pills.add(tilawahPill);
         } else {
             boolean hadFocus = tilawahPill.hasFocus();
@@ -660,7 +665,7 @@ public class MainActivity extends Activity {
         boolean want = setting && isInstalled(SAVER_PKG);
         if (want == has) return;
         if (want) {
-            pillRow.addView(tasksPill, pillRow.indexOfChild(inputsPill) + 1, llp(-2, dp(Pill.HEIGHT), dp(10), 0, 0, 0));
+            pillRow.addView(tasksPill, pillRow.indexOfChild(inputsPill) + 1, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(10), 0));
             pills.add(pills.indexOf(inputsPill) + 1, tasksPill);
         } else {
             boolean hadFocus = tasksPill.hasFocus();
@@ -688,7 +693,7 @@ public class MainActivity extends Activity {
         boolean want = UpdatesBell.shown(setting, family.kids, usable, e), has = bellPill.getParent() == pillRow;
         if (want == has) return;
         if (want) {
-            pillRow.addView(bellPill, llp(-2, dp(Pill.HEIGHT), dp(10), 0, 0, 0));
+            pillRow.addView(bellPill, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(10), 0));
             pills.add(bellPill);
         } else {
             boolean hadFocus = bellPill.hasFocus();
@@ -715,7 +720,7 @@ public class MainActivity extends Activity {
         if (want) {
             int at = pills.contains(tilawahPill) ? pills.indexOf(tilawahPill) : pills.size();
             pills.add(at, centerPill);
-            pillRow.addView(centerPill, at + 1, llp(-2, dp(Pill.HEIGHT), dp(10), 0, 0, 0));   // child 0 is «يُتلى الآن»
+            pillRow.addView(centerPill, at + 1, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(10), 0));   // child 0 is «يُتلى الآن»
         } else {
             control.dismiss();
             boolean hadFocus = centerPill.hasFocus();
@@ -744,7 +749,7 @@ public class MainActivity extends Activity {
             @Override public void openSaver() { guarded(ParentalPolicy.PILL_SAVER, SAVER_PKG, "شاشة التوقف", MainActivity.this::startSaver); }   // OK starts it, as optimize/start-saver.sh --preview does
             @Override public void openSaverSettings() { guarded(ParentalPolicy.PILL_SAVER_SETTINGS, SAVER_PKG, "شاشة التوقف", () -> openPackage(SAVER_PKG)); }   // a long OK: its settings
             @Override public void openOurSettings() { MainActivity.this.openOurSettings(false); }
-            @Override public void openSleep(View anchor) { guarded(ParentalPolicy.PILL_SLEEP, null, "مؤقت النوم", () -> showSleep(anchor)); }
+            @Override public void openSleep(View anchor) { guarded(ParentalPolicy.PILL_SLEEP, null, S.t("مؤقت النوم"), () -> showSleep(anchor)); }
             @Override public boolean saverInstalled() { return isInstalled(SAVER_PKG); }
             @Override public Typeface font(String family) { return MainActivity.this.font(family); }
         };
@@ -1273,7 +1278,7 @@ public class MainActivity extends Activity {
         for (TvRows.Row r : rows) {
             TextView name = text(11, "sans-serif-medium", lightNow ? Look.LIGHT_LOOK.gold : GOLD);
             name.setShadowLayer(dp(3), 0, dp(1), Look.of(lightNow).shadow);   // a halo in the light look, as the clock's lines
-            name.setText(TvRowsPick.WATCH_NEXT_TITLE);   // Arabic, whatever the apps call it
+            name.setText(S.tv(TvRowsPick.WATCH_NEXT_TITLE));   // our words, whatever the apps call it
             tvNames.add(name);
             tvRowsBox.addView(name, llp(-2, -2, 0, dp(14), 0, dp(10)));
             LinearLayout line = new LinearLayout(this);
@@ -1336,7 +1341,7 @@ public class MainActivity extends Activity {
             View track = new View(this);
             track.setBackgroundColor(0x66000000);
             card.addView(track, new FrameLayout.LayoutParams(-1, dp(4), Gravity.BOTTOM));
-            FrameLayout.LayoutParams fp = new FrameLayout.LayoutParams(-1, dp(4), Gravity.BOTTOM | Gravity.RIGHT);
+            FrameLayout.LayoutParams fp = new FrameLayout.LayoutParams(-1, dp(4), Gravity.BOTTOM | Dir.start());
             View fill = new View(this);
             fill.setBackgroundColor(GOLD);
             card.addView(fill, fp);
@@ -1398,7 +1403,7 @@ public class MainActivity extends Activity {
             if (sa.urtv.home.phone.PhoneUpdater.confirmKnown()) return;   // an install confirm is still pending: the record stays unread until it is answered
             long mine = sa.urtv.home.phone.PhoneUpdater.installedCode(this, getPackageName());
             if (sa.urtv.home.phone.UpdateRecords.peek(new sa.urtv.home.phone.UpdateStore(this), mine).kind != sa.urtv.home.phone.UpdateRecords.Kind.NONE) {
-                launchGuarded(ParentalPolicy.UPDATE_SCREEN, new Intent(this, UpdateActivity.class), "تحديث تلفزيوني");   // the result of an update: behind «قفل الإعدادات» like the rest of the screen
+                launchGuarded(ParentalPolicy.UPDATE_SCREEN, new Intent(this, UpdateActivity.class), S.t("تحديث تلفزيوني"));   // the result of an update: behind «قفل الإعدادات» like the rest of the screen
             }
         } catch (RuntimeException ignored) { }
     }
@@ -1431,7 +1436,7 @@ public class MainActivity extends Activity {
 
     private void buildEditViews(FrameLayout root) {
         editHint = text(13, "sans-serif-medium", 0xFFFFFFFF);
-        editHint.setText(FavEdit.HINT);
+        editHint.setText(S.tv(FavEdit.HINT));
         editHint.setSingleLine(true);
         editHint.setGravity(Gravity.CENTER);
         editHint.setPadding(dp(18), dp(6), dp(18), dp(6));
@@ -1440,7 +1445,7 @@ public class MainActivity extends Activity {
 
         undoChip = undoChipView();
         undoChip.setOnClickListener(v -> { if (edit != null) applyEdit(edit.undo(SystemClock.uptimeMillis())); });
-        root.addView(undoChip, lp(-2, -2, Gravity.BOTTOM | Gravity.LEFT, dp(68), 0, 0, dp(150)));
+        root.addView(undoChip, lp(-2, -2, Gravity.BOTTOM | Dir.end(), Dir.rtl() ? dp(68) : 0, 0, Dir.rtl() ? 0 : dp(68), dp(150)));
 
         appsUndoChip = undoChipView();   // «تعديل التطبيقات»: under the hint line, UP from the grid's first row
         appsUndoChip.setOnClickListener(v -> { if (appsEdit != null) applyAppsEdit(appsEdit.undo(SystemClock.uptimeMillis())); });
@@ -1450,7 +1455,7 @@ public class MainActivity extends Activity {
     /** «تراجع»: a gold chip, filled while it has the focus. */
     private TextView undoChipView() {
         TextView chip = text(14, "sans-serif-medium", 0xFFFFFFFF);
-        chip.setText("تراجع");
+        chip.setText(S.t("تراجع"));
         chip.setGravity(Gravity.CENTER);
         chip.setPadding(dp(22), dp(8), dp(22), dp(8));
         chip.setFocusable(true);
@@ -1525,7 +1530,7 @@ public class MainActivity extends Activity {
     /** «تعديل المفضلة» from the long-press menu (on the app that was pressed) or from the settings (pkg null). The family lock asks first. */
     private void beginEdit(String pkg) {
         if (kidsNoEdit()) return;
-        guarded(ParentalPolicy.MENU_ARRANGE, null, "تعديل المفضلة", () -> startEdit(pkg));
+        guarded(ParentalPolicy.MENU_ARRANGE, null, S.t("تعديل المفضلة"), () -> startEdit(pkg));
     }
 
     /**
@@ -1534,7 +1539,7 @@ public class MainActivity extends Activity {
      */
     private boolean kidsNoEdit() {
         if (AppsEdit.allowed(Parental.state(this).kids)) return false;
-        Toast.makeText(this, "ما فيه تعديل في وضع الأطفال", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, S.t("ما فيه تعديل في وضع الأطفال"), Toast.LENGTH_SHORT).show();
         return true;
     }
 
@@ -1555,7 +1560,7 @@ public class MainActivity extends Activity {
         }
         edit = new FavEdit(row, MIN_DOCK, Math.max(0, focus));
         glideTo(0);
-        editHint.setText(FavEdit.HINT);
+        editHint.setText(S.tv(FavEdit.HINT));
         paintEditChrome();
         editHint.setVisibility(View.VISIBLE);
         paintEdit();
@@ -1630,7 +1635,7 @@ public class MainActivity extends Activity {
                 leaveEdit();
                 return;
             case FavEdit.TOO_FEW:
-                Toast.makeText(this, "المفضلة لا تقل عن " + arabicDigits(String.valueOf(MIN_DOCK)) + " تطبيقات", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, S.t("المفضلة لا تقل عن %s تطبيقات", arabicDigits(String.valueOf(MIN_DOCK))), Toast.LENGTH_SHORT).show();
                 break;
             case FavEdit.REMOVED:
                 handler.removeCallbacks(undoExpiry);
@@ -1731,9 +1736,9 @@ public class MainActivity extends Activity {
         if (i == null) return false;
         if (i.getBooleanExtra(EXTRA_RESET_APPS, false)) {
             if (kidsNoEdit()) return true;
-            guarded(ParentalPolicy.MENU_ARRANGE, null, "ترتيب كل التطبيقات", () -> {
+            guarded(ParentalPolicy.MENU_ARRANGE, null, S.t("ترتيب كل التطبيقات"), () -> {
                 Dock.resetAppsOrder(this);   // its broadcast builds the grid again, by name
-                Toast.makeText(this, "رجع ترتيب «كل التطبيقات» للأصل (حسب الاسم)", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, S.t("رجع ترتيب «كل التطبيقات» للأصل (حسب الاسم)"), Toast.LENGTH_SHORT).show();
             });
             return true;
         }
@@ -1746,7 +1751,7 @@ public class MainActivity extends Activity {
     /** «تعديل التطبيقات» from the long-press menu (on the app that was pressed) or from the settings (pkg null). The family lock asks first. */
     private void beginAppsEdit(String pkg) {
         if (kidsNoEdit()) return;
-        guarded(ParentalPolicy.MENU_ARRANGE, null, "تعديل التطبيقات", () -> startAppsEdit(pkg));
+        guarded(ParentalPolicy.MENU_ARRANGE, null, S.t("تعديل التطبيقات"), () -> startAppsEdit(pkg));
     }
 
     /** From the settings: once the whole grid is on screen. */
@@ -1770,7 +1775,7 @@ public class MainActivity extends Activity {
         hiddenFound.clear();
         for (ResolveInfo ri : Dock.hiddenApps(this)) hiddenFound.put(ri.activityInfo.packageName, ri);
         if (order.isEmpty() && hiddenFound.isEmpty()) {
-            Toast.makeText(this, "كل تطبيقاتك في المفضلة", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, S.t("كل تطبيقاتك في المفضلة"), Toast.LENGTH_SHORT).show();
             return;
         }
         int focus = pkg != null ? order.indexOf(pkg) : -1;
@@ -1779,7 +1784,7 @@ public class MainActivity extends Activity {
             for (int i = 0; i < gridCards.size(); i++) if (gridCards.get(i) == f) focus = i;
         }
         appsEdit = new AppsEdit(order, new ArrayList<>(hiddenFound.keySet()), cols, dockCards.size(), MAX_DOCK, Math.max(0, focus));
-        editHint.setText(AppsEdit.HINT);
+        editHint.setText(S.tv(AppsEdit.HINT));
         paintEditChrome();
         editHint.setVisibility(View.VISIBLE);
         paintAppsEdit();
@@ -1860,7 +1865,7 @@ public class MainActivity extends Activity {
                 handler.postDelayed(appsUndoExpiry, FavEdit.UNDO_MS + 50);
                 break;
             case AppsEdit.FAVOURITES_FULL:
-                Toast.makeText(this, "المفضلة ممتلئة (" + arabicDigits(String.valueOf(MAX_DOCK)) + " تطبيقات): احذف واحدًا منها بـ«تعديل المفضلة» أولاً", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, S.t("المفضلة ممتلئة (%s تطبيقات): احذف واحدًا منها بـ«تعديل المفضلة» أولاً", arabicDigits(String.valueOf(MAX_DOCK))), Toast.LENGTH_LONG).show();
                 break;
             case AppsEdit.TO_FAVOURITES: {
                 List<String> to = e.toFavourites();
@@ -1885,7 +1890,7 @@ public class MainActivity extends Activity {
         gridCards.remove(card);
         dockRow.addView(tile(app, true));   // tile() puts it in dockCards and cardByPkg
         for (int i = 0; i < dockRow.getChildCount(); i++) dockRow.getChildAt(i).setLayoutParams(rowCell(i, dockRow.getChildCount(), -2));
-        Toast.makeText(this, "أُضيف إلى المفضلة: " + app.label, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, S.t("أُضيف إلى المفضلة: %s", app.label), Toast.LENGTH_SHORT).show();
     }
 
     /** «المخفية»: the hidden apps by name; one chosen comes back where the saved grid will show it. */
@@ -2041,7 +2046,7 @@ public class MainActivity extends Activity {
         hiddenCount = text(26, "sans-serif-medium", Color.WHITE);
         hiddenCount.setGravity(Gravity.CENTER);
         TextView name = text(13, "sans-serif-medium", 0xCCFFFFFF);
-        name.setText(AppsEdit.HIDDEN_TITLE);
+        name.setText(S.tv(AppsEdit.HIDDEN_TITLE));
         name.setGravity(Gravity.CENTER);
         in.addView(hiddenCount);
         in.addView(name);
@@ -2073,7 +2078,7 @@ public class MainActivity extends Activity {
     }
 
     private void showAppMenu(View anchor, String pkg, boolean inDock) {
-        guarded(ParentalPolicy.MENU, null, "قائمة التطبيق", () -> showAppMenuNow(anchor, pkg, inDock));
+        guarded(ParentalPolicy.MENU, null, S.t("قائمة التطبيق"), () -> showAppMenuNow(anchor, pkg, inDock));
     }
 
     private void showAppMenuNow(View anchor, String pkg, boolean inDock) {
@@ -2085,43 +2090,43 @@ public class MainActivity extends Activity {
         List<Runnable> actions = new ArrayList<>();
         boolean kids = Parental.state(this).kids;   // kids mode edits nothing (kidsNoEdit)
         if (inDock && !kids) {
-            labels.add("تعديل المفضلة");
+            labels.add(S.t("تعديل المفضلة"));
             actions.add(() -> beginEdit(pkg));
         }
         if (!inDock && !kids) {
-            labels.add("تعديل التطبيقات");
+            labels.add(S.t("تعديل التطبيقات"));
             actions.add(() -> beginAppsEdit(pkg));
         }
-        labels.add("تحديث تلفزيوني");
+        labels.add(S.t("تحديث تلفزيوني"));
         actions.add(() -> launchGuarded(ParentalPolicy.MENU_UPDATE, new Intent(this, UpdateActivity.class), "تحديث تلفزيوني"));
         if (inDock) {
             if (dock.size() > MIN_DOCK) {
-                labels.add("إزالة من المفضلة");
+                labels.add(S.t("إزالة من المفضلة"));
                 actions.add(() -> { dock.remove(pkg); saveDock(dock, dock.get(Math.max(0, i - 1))); });
             } else {
-                labels.add("المفضلة لا تقل عن " + arabicDigits(String.valueOf(MIN_DOCK)));
+                labels.add(S.t("المفضلة لا تقل عن %s", arabicDigits(String.valueOf(MIN_DOCK))));
                 actions.add(() -> { });
             }
         } else if (dock.size() < MAX_DOCK) {
-            labels.add("إضافة إلى المفضلة");
+            labels.add(S.t("إضافة إلى المفضلة"));
             actions.add(() -> { dock.add(pkg); saveDock(dock, pkg); });
         } else {
-            labels.add("المفضلة ممتلئة (" + MAX_DOCK + ")");
+            labels.add(S.t("المفضلة ممتلئة (%s)", MAX_DOCK));
             actions.add(() -> { });
         }
-        labels.add("إعادة المفضلة الافتراضية");
+        labels.add(S.t("إعادة المفضلة الافتراضية"));
         actions.add(() -> {
             prefs().edit().remove("dock").apply();
             dockApps = getResources().getStringArray(R.array.dock_apps);
             buildApps();
         });
         if (listenPillHidden()) {   // the button is hidden: the player (and the adhan's settings in it) opens from here, behind the same lock
-            labels.add("تلاوة وأذان");
+            labels.add(S.t("تلاوة وأذان"));
             actions.add(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, new Intent(this, sa.urtv.home.tilawah.MainActivity.class), "تلاوة وأذان"));
-            labels.add("إعدادات الأذان");   // the same screen, on its «الأذان» tab: on or off, the voices, short, any key, the volume
+            labels.add(S.t("إعدادات الأذان"));   // the same screen, on its «الأذان» tab: on or off, the voices, short, any key, the volume
             actions.add(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, adhanSettingsIntent(), "إعدادات الأذان"));
         }
-        labels.add("الرقابة الأبوية");
+        labels.add(S.t("الرقابة الأبوية"));
         actions.add(() -> launchGuarded(ParentalPolicy.PARENTAL_SCREEN, new Intent(this, ParentalActivity.class), "الرقابة الأبوية"));
         showMenu(anchor, labels, actions, appButtons(pkg, kids));
     }
@@ -2141,7 +2146,7 @@ public class MainActivity extends Activity {
         List<TextView> rows = new ArrayList<>();
         for (int k = 0; k < labels.size(); k++) rows.add(inputRow(labels.get(k), actions.get(k)));
         for (TextView r : rows) {
-            r.setGravity(Gravity.CENTER_VERTICAL | Gravity.END);
+            r.setGravity(Gravity.CENTER_VERTICAL | (Dir.rtl() ? Gravity.END : Gravity.LEFT));   // Arabic as it always was; English from the left
             r.setOnClickListener(v -> { pw.dismiss(); ((Runnable) v.getTag()).run(); });
             list.addView(r, new LinearLayout.LayoutParams(-1, dp(36)));
         }
@@ -2155,17 +2160,18 @@ public class MainActivity extends Activity {
         }
         int extra = 0;
         if (!buttons.isEmpty()) {
-            // side by side, the first on the right (the popup's window has no direction of its own); ▲ goes back to the last item
+            // side by side, the first at the start, the right in Arabic (the popup's window has no direction of its own); ▲ goes back to the last item
             LinearLayout row = new LinearLayout(this);
             row.setOrientation(LinearLayout.HORIZONTAL);
-            row.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+            row.setLayoutDirection(Dir.layout());
             for (int k = 0; k < buttons.size(); k++) {
                 View b = buttons.get(k);
                 b.setOnClickListener(v -> { pw.dismiss(); ((Runnable) v.getTag()).run(); });
                 b.setNextFocusUpId(last.getId());
                 b.setNextFocusDownId(b.getId());
-                b.setNextFocusRightId(buttons.get(Math.max(0, k - 1)).getId());   // right to left: the one before is on the right
-                b.setNextFocusLeftId(buttons.get(Math.min(buttons.size() - 1, k + 1)).getId());
+                int before = buttons.get(Math.max(0, k - 1)).getId(), after = buttons.get(Math.min(buttons.size() - 1, k + 1)).getId();
+                b.setNextFocusRightId(Dir.rtl() ? before : after);   // right to left: the one before is on the right; English the other way
+                b.setNextFocusLeftId(Dir.rtl() ? after : before);
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, dp(APP_BUTTON_H), 1f);
                 if (k > 0) lp.setMarginStart(dp(6));
                 row.addView(b, lp);
@@ -2222,14 +2228,14 @@ public class MainActivity extends Activity {
         b.setClickable(true);
         b.setId(View.generateViewId());
         b.setTag(action);
-        b.setContentDescription(label);
+        b.setContentDescription(S.tv(label));
         b.setPadding(dp(4), dp(6), dp(4), dp(6));
         ImageView glyph = new ImageView(this);
         glyph.setImageDrawable(getDrawable(icon).mutate());
         glyph.setTag(GlassPaint.ICON);
         b.addView(glyph, new LinearLayout.LayoutParams(dp(22), dp(22)));
         TextView name = text(11, "sans-serif-medium", homeGlass().text);
-        name.setText(label);
+        name.setText(S.tv(label));
         name.setSingleLine(true);
         name.setEllipsize(android.text.TextUtils.TruncateAt.END);
         name.setGravity(Gravity.CENTER);
@@ -2258,10 +2264,10 @@ public class MainActivity extends Activity {
         for (TvInputInfo t : inputs) {
             rows.add(inputRow(InputLabels.rowLabel(this, t, given), () -> openPassthroughInput(t)));   // + the CEC device's name and its standby mark
         }
-        if (isInstalled(liveTvPkg)) rows.add(inputRow("البث التلفزيوني", () -> guarded(ParentalPolicy.INPUT_LIVE_TV, liveTvPkg, "البث التلفزيوني", () -> openPackage(liveTvPkg))));
-        if (inputs.isEmpty() && isInstalled(inputPickerPkg)) rows.add(inputRow("كل المصادر", () -> guarded(ParentalPolicy.INPUT_PICKER, inputPickerPkg, "كل المصادر", () -> openPackage(inputPickerPkg))));
+        if (isInstalled(liveTvPkg)) rows.add(inputRow(S.t("البث التلفزيوني"), () -> guarded(ParentalPolicy.INPUT_LIVE_TV, liveTvPkg, "البث التلفزيوني", () -> openPackage(liveTvPkg))));
+        if (inputs.isEmpty() && isInstalled(inputPickerPkg)) rows.add(inputRow(S.t("كل المصادر"), () -> guarded(ParentalPolicy.INPUT_PICKER, inputPickerPkg, "كل المصادر", () -> openPackage(inputPickerPkg))));
 
-        if (rows.isEmpty()) rows.add(inputRow("الإعدادات", () -> launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون")));
+        if (rows.isEmpty()) rows.add(inputRow(S.t("الإعدادات"), () -> launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون")));
         for (TextView r : rows) {
             r.setOnClickListener(v -> { pw.dismiss(); ((Runnable) v.getTag()).run(); });
             list.addView(r, new LinearLayout.LayoutParams(-1, dp(36)));
@@ -2289,10 +2295,10 @@ public class MainActivity extends Activity {
         list.setBackground(GlassPaint.fill(this, opaque(homeGlass().dialog), 16, homeGlass().line));   // the glass of a dialog
         PopupWindow pw = new PopupWindow(list, dp(220), -2, true);
         List<TextView> rows = new ArrayList<>();
-        for (int m : SleepTimer.MINUTES) rows.add(inputRow(arabicDigits(String.valueOf(m)) + " دقيقة", () -> SleepTimer.start(this, m)));
-        if (SleepTimer.minutesLeft(this) > 0) rows.add(inputRow("إلغاء", () -> SleepTimer.start(this, 0)));
+        for (int m : SleepTimer.MINUTES) rows.add(inputRow(S.t("%s دقيقة", arabicDigits(String.valueOf(m))), () -> SleepTimer.start(this, m)));
+        if (SleepTimer.minutesLeft(this) > 0) rows.add(inputRow(S.t("إلغاء"), () -> SleepTimer.start(this, 0)));
         if (!SleepService.enabled()) {   // without it the end only stops the sound and brings the screensaver: say so, and where to turn it on
-            rows.add(inputRow("لإطفاء الشاشة: فعّل «تلفزيونك: إطفاء الشاشة»", () -> launchGuarded(ParentalPolicy.SLEEP_ACCESSIBILITY, new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS), "إعدادات التلفزيون")));
+            rows.add(inputRow(S.t("لإطفاء الشاشة: فعّل «%s»", getString(R.string.sleep_service_label)), () -> launchGuarded(ParentalPolicy.SLEEP_ACCESSIBILITY, new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS), "إعدادات التلفزيون")));
         }
         for (TextView r : rows) {
             r.setOnClickListener(v -> { pw.dismiss(); ((Runnable) v.getTag()).run(); });
@@ -2417,6 +2423,7 @@ public class MainActivity extends Activity {
         } catch (Exception ignored) { }
         String greg = MonthNames.of(gregFormat.format(now.getTime()), MonthNames.levant(cfg.fragment));   // «تشرين الأول» when chosen
         date.setText(arabicDigits(hijri.isEmpty() ? greg : hijri + "  –  " + greg));
+        if (S.en()) date.setText(arabicDigits(englishDate(now, tz, HijriShift.fromFragment(cfg.fragment))));   // the same line in English (MonthNames.hijriEn)
         updateAdhanBar(cfg);
         applyListenPill(cfg.listenPillOn);
         applyTasksPill(cfg.tasksPillOn());
@@ -2437,6 +2444,29 @@ public class MainActivity extends Activity {
     }
 
     private static String arabicDigits(String s) { return Digits.of(s); }   // the setting's digits (hindi or latin)
+
+    /**
+     * The date line in English, as the English page writes it: «Monday, 22 Jumada al-Awwal 1448 AH  –  2 November». The Hijri day comes
+     * from the TV's Umm al-Qura calendar, moved by «فرق التاريخ الهجري» as the Arabic line; without that calendar, the Gregorian day alone.
+     */
+    private static String englishDate(Calendar now, String tz, int shift) {
+        java.util.TimeZone zone = java.util.TimeZone.getTimeZone(tz);
+        SimpleDateFormat greg = new SimpleDateFormat("d MMMM", Locale.ENGLISH), day = new SimpleDateFormat("EEEE", Locale.ENGLISH);
+        greg.setTimeZone(zone);
+        day.setTimeZone(zone);
+        String g = greg.format(now.getTime());
+        try {
+            android.icu.util.Calendar h = android.icu.util.Calendar.getInstance(android.icu.util.TimeZone.getTimeZone(tz),
+                    new android.icu.util.ULocale("en@calendar=islamic-umalqura"));
+            if (!"islamic-umalqura".equals(h.getType())) return g;
+            h.setTime(shift == 0 ? now.getTime() : HijriShift.date(now, shift));
+            String hijri = MonthNames.hijriEn(day.format(now.getTime()), h.get(android.icu.util.Calendar.DAY_OF_MONTH),
+                    h.get(android.icu.util.Calendar.MONTH), h.get(android.icu.util.Calendar.YEAR));
+            return hijri.isEmpty() ? g : hijri + "  –  " + g;
+        } catch (RuntimeException e) {
+            return g;
+        }
+    }
 
     // ---------------------------------------------------------------- glow
 
@@ -2853,7 +2883,7 @@ public class MainActivity extends Activity {
     private void openOurSettings(boolean orTvSettings) {
         Intent i = new Intent(Intent.ACTION_MAIN).setComponent(new ComponentName(SAVER_PKG, SAVER_PKG + ".SettingsActivity"));
         if (getPackageManager().resolveActivity(i, 0) != null) {
-            guarded(ParentalPolicy.OUR_SETTINGS, null, "إعدادات تلفزيونك", () -> launch(i));
+            guarded(ParentalPolicy.OUR_SETTINGS, null, S.t("إعدادات تلفزيونك"), () -> launch(i));
         } else if (orTvSettings) {
             launchGuarded(ParentalPolicy.REMOTE_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون");
         }
@@ -2906,6 +2936,11 @@ public class MainActivity extends Activity {
         LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(w, h);
         p.setMargins(l, t, r, b);
         return p;
+    }
+
+    /** llp with the side margins by reading order: start is the right in Arabic (exactly llp(w, h, end, t, start, b)), the left in English */
+    private static LinearLayout.LayoutParams sideLlp(int w, int h, int start, int t, int end, int b) {
+        return Dir.rtl() ? llp(w, h, end, t, start, b) : llp(w, h, start, t, end, b);
     }
 
     private static int withAlpha(int c, float a) {
@@ -3054,8 +3089,8 @@ public class MainActivity extends Activity {
         if (row == null) return false;
         int index = row.indexOfChild(item);
         if (index < 0) return false;
-        // the row reads from the right, so the item before the focused one is the one on the right
-        int next = right ? index - 1 : index + 1;
+        // the row reads from the right in Arabic, so the item before the focused one is the one on the right; in English the left
+        int next = right == Dir.rtl() ? index - 1 : index + 1;
         if (next < 0 || next >= row.getChildCount()) return true;   // the edge of the row: stay put
         View target = row.getChildAt(next);
         if (target == null || target.getVisibility() != View.VISIBLE) return true;

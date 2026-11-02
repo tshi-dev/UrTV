@@ -8,7 +8,8 @@ import java.util.Map;
 
 /**
  * The name shown for an app: the one the owner's agent gave it on this TV (optimize/dock.sh name), else its own if it
- * has Arabic letters, else the Arabic one from res/values/app_names.xml, else its own.
+ * has Arabic letters, else the Arabic one from res/values/app_names.xml, else its own. With «اللغة» English the app's own name comes
+ * before the Arabic list (YouTube, not يوتيوب); a name the owner's agent gave stays theirs.
  */
 final class AppNames {
     static final int MAX_LEN = 30;
@@ -24,7 +25,7 @@ final class AppNames {
         String set = given.get(ri.activityInfo.packageName);
         if (set != null) return set;
         String own = String.valueOf(ri.loadLabel(c.getPackageManager()));
-        if (hasArabic(own)) return own;
+        if (hasArabic(own) || S.en()) return own;
         String ar = table(c).get(ri.activityInfo.packageName);
         return ar != null ? ar : own;
     }
@@ -33,7 +34,8 @@ final class AppNames {
     static String source(Context c, ResolveInfo ri, Map<String, String> given) {
         if (given.containsKey(ri.activityInfo.packageName)) return "agent";
         String own = String.valueOf(ri.loadLabel(c.getPackageManager()));
-        return !hasArabic(own) && table(c).containsKey(ri.activityInfo.packageName) ? "table" : "own";
+        S.init(c);
+        return !hasArabic(own) && !S.en() && table(c).containsKey(ri.activityInfo.packageName) ? "table" : "own";
     }
 
     /** Names set on this TV, kept as "pkg|name" lines in the home screen's preferences. */

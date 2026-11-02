@@ -25,6 +25,9 @@ import sa.urtv.home.phone.QrView;
  * them. Nothing is sent from the TV: the owner sends it from the phone if they want. Back closes it.
  */
 public class ReportActivity extends Activity {
+    /** «اللغة» (docs/ENGLISH.md): with Arabic the context itself, with English an English one */
+    @Override protected void attachBaseContext(android.content.Context b) { super.attachBaseContext(S.wrap(b)); }
+
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
@@ -36,23 +39,23 @@ public class ReportActivity extends Activity {
         scroll.addView(frame);
         LinearLayout row = new LinearLayout(this);
         row.setOrientation(LinearLayout.HORIZONTAL);
-        row.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        row.setLayoutDirection(Dir.layout());
         row.setPadding(0, dp(48), 0, dp(48));
         frame.addView(row, new FrameLayout.LayoutParams(dp(820), -2, Gravity.CENTER_HORIZONTAL));
 
         LinearLayout col = new LinearLayout(this);
         col.setOrientation(LinearLayout.VERTICAL);
-        col.addView(text(Report.TITLE, 30, "Medium", look.text), lp(dp(14)));
-        col.addView(text(Report.HOW, 17, "Regular", look.sub), lp(dp(22)));
+        col.addView(text(S.tv(Report.TITLE), 30, "Medium", look.text), lp(dp(14)));
+        col.addView(text(S.tv(Report.HOW), 17, "Regular", look.sub), lp(dp(22)));
         long saver = PhoneUpdater.installedCode(this, "sa.urtv.screensaver");   // the build of each app, written as everywhere (UpdateText.versionOf)
         List<String> lines = Report.lines(PhoneUpdater.installedName(this), saver < 0 ? null : UpdateText.versionOf(BuildConfig.MARKETING, (int) saver),
                 Build.VERSION.RELEASE, Build.VERSION.SDK_INT, webView());
-        col.addView(text(Report.WHAT, 16, "Medium", look.accent), lp(dp(6)));
+        col.addView(text(S.tv(Report.WHAT), 16, "Medium", look.accent), lp(dp(6)));
         TextView shown = text(String.join("\n", lines), 15, "Regular", look.sub);
         shown.setTextDirection(View.TEXT_DIRECTION_LTR);   // the report's own lines are English, as share.py writes them
         shown.setGravity(Gravity.START);
         col.addView(shown, lp(dp(24)));
-        TextView back = text(Report.BACK, 18, "Medium", look.text);
+        TextView back = text(S.tv(Report.BACK), 18, "Medium", look.text);
         back.setFocusable(true);
         back.setClickable(true);
         back.setPadding(dp(22), dp(12), dp(22), dp(12));

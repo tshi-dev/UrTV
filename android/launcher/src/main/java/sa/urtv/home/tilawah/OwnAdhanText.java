@@ -6,8 +6,8 @@ package sa.urtv.home.tilawah;
  */
 final class OwnAdhanText {
     /** «أذان من ملفي»: the row in the voice list and the name shown while it plays. */
-    static final String NAME = "أذان من ملفي";
-    static final String PLACE = "تسجيلك على هذا التلفزيون فقط";
+    static final String NAME = sa.urtv.home.S.n("أذان من ملفي");
+    static final String PLACE = sa.urtv.home.S.n("تسجيلك على هذا التلفزيون فقط");
 
     /** 5 minutes of 48 kbps mono AAC is 1.8 MB; the TV keeps nothing larger than this. */
     static final long MAX_BYTES = 3L << 20;

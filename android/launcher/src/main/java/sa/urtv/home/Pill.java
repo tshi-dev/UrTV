@@ -57,10 +57,10 @@ final class Pill extends LinearLayout {
         name.setIncludeFontPadding(false);
         name.setTypeface(face);
         name.setSingleLine(true);
-        name.setGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT);
+        name.setGravity(Gravity.CENTER_VERTICAL | Dir.start());
         clip = new FrameLayout(c);
         clip.setClipChildren(true);
-        clip.addView(name, new FrameLayout.LayoutParams(-2, -1, Gravity.RIGHT));   // wider than its window: the start of the name shows first
+        clip.addView(name, new FrameLayout.LayoutParams(-2, -1, Dir.start()));   // wider than its window: the start of the name shows first
         addView(clip, new LayoutParams(0, -1));
 
         setLabel(label);
@@ -69,6 +69,7 @@ final class Pill extends LinearLayout {
 
     /** the full name (the focused pill shows it); the sleep and network pills change theirs */
     void setLabel(String text) {
+        text = S.tv(text);   // a name given as our Arabic words (ControlText.NAME) is said in «اللغة»; one already said stays
         label = text;
         setContentDescription(text);
         apply();

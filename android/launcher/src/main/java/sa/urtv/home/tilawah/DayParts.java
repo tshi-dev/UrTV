@@ -35,9 +35,9 @@ public final class DayParts {
         long now = System.currentTimeMillis();
         String label, clock;
         if (now < t.at[PrayerTimes.SUNRISE]) {            // before dawn: today's sunrise is next
-            label = "الشروق"; clock = t.clock[PrayerTimes.SUNRISE];
+            label = sa.urtv.home.S.n("الشروق"); clock = t.clock[PrayerTimes.SUNRISE];   // the Arabic word, kept as it is (MainActivity compares it): the screen says it with S.tv
         } else if (now < t.at[PrayerTimes.MAGHRIB]) {
-            label = "الغروب"; clock = t.clock[PrayerTimes.MAGHRIB];
+            label = sa.urtv.home.S.n("الغروب"); clock = t.clock[PrayerTimes.MAGHRIB];
         } else {                                          // after sunset: tomorrow's sunrise
             Calendar tomorrow = Calendar.getInstance(TimeZone.getTimeZone(place.tz), Locale.US);
             tomorrow.add(Calendar.DAY_OF_MONTH, 1);

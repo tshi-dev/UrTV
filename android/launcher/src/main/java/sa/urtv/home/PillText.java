@@ -11,19 +11,19 @@ final class PillText {
     static String shown(String label, boolean focused) { return focused ? label : ""; }
 
     /** the screensaver pill's name: OK starts the screensaver, a long OK opens its settings, and the focused pill says so */
-    static final String SAVER = "شاشة التوقف · مطوّلًا: الإعدادات";
+    static final String SAVER = S.n("شاشة التوقف · مطوّلًا: الإعدادات");
 
     /** «مؤقت النوم», or with the minutes left while the timer runs: «مؤقت النوم ٢٣ د» */
     static String sleep(int minutesLeft) {
-        return minutesLeft <= 0 ? "مؤقت النوم" : "مؤقت النوم " + digits(String.valueOf(minutesLeft)) + " د";
+        return minutesLeft <= 0 ? S.t("مؤقت النوم") : S.t("مؤقت النوم %s د", digits(String.valueOf(minutesLeft)));
     }
 
     /** the network pill's name: the cable, the Wi-Fi network by name when it can be read (else «واي فاي»), or «غير متصل» */
     static String network(boolean wired, boolean wifi, String ssid) {
-        if (wired) return "شبكة سلكية";
-        if (!wifi) return "غير متصل";
+        if (wired) return S.t("شبكة سلكية");
+        if (!wifi) return S.t("غير متصل");
         String s = ssid == null ? "" : ssid.replace("\"", "");
-        return s.isEmpty() || s.contains("unknown ssid") ? "واي فاي" : s;
+        return s.isEmpty() || s.contains("unknown ssid") ? S.t("واي فاي") : s;
     }
 
     /** 0-9 as ٠-٩, the digits the whole home screen uses */

@@ -30,4 +30,14 @@ final class MonthNames {
         for (String[] m : VARIANTS) text = text.replace(m[0], m[1]);
         return text;
     }
+
+    /** The Hijri months in English, transliterated: the English page's HIJRI_EN (src/build.py), so the two date lines agree. */
+    static final String[] HIJRI_EN = {"Muharram", "Safar", "Rabi al-Awwal", "Rabi al-Thani", "Jumada al-Awwal", "Jumada al-Thani",
+            "Rajab", "Shaban", "Ramadan", "Shawwal", "Dhul Qadah", "Dhul Hijjah"};
+
+    /** «Monday, 22 Jumada al-Awwal 1448 AH» from the weekday's name and the Hijri day, month (0 for Muharram) and year; "" for no such month. */
+    static String hijriEn(String weekday, int day, int month, int year) {
+        if (month < 0 || month >= HIJRI_EN.length) return "";
+        return weekday + ", " + day + " " + HIJRI_EN[month] + " " + year + " AH";
+    }
 }

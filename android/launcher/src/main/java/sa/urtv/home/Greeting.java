@@ -50,13 +50,13 @@ final class Greeting {
     void update(int hour, ConfigSnapshot snap) {
         Config s = Config.of(snap);
         if (!s.on) {
-            greeting.setText(hour < 4 ? "تصبح على خير" : hour < 12 ? "صباح الخير" : "مساء الخير");
+            greeting.setText(hour < 4 ? S.t("تصبح على خير") : hour < 12 ? S.t("صباح الخير") : S.t("مساء الخير"));
             weather.setVisibility(android.view.View.GONE);
             return;
         }
         DayParts d = null;
         try { d = DayParts.now(context, snap.placeFragment(), snap.placeTicket()); } catch (RuntimeException ignored) { }
-        greeting.setText(d == null ? (hour < 4 ? "تصبح على خير" : hour < 12 ? "صباح الخير" : "مساء الخير")
+        greeting.setText(d == null ? (hour < 4 ? S.t("تصبح على خير") : hour < 12 ? S.t("صباح الخير") : S.t("مساء الخير"))
                 : GreetingText.greeting(GreetingText.part(System.currentTimeMillis(), d.fajr, d.dhuhr, d.asr, d.isha)));
 
         SharedPreferences sp = prefs();
@@ -64,7 +64,7 @@ final class Greeting {
         boolean sameCity = s.lat.equals(sp.getString("lat", "")) && s.lon.equals(sp.getString("lon", ""));
         if (sameCity && sp.contains("code") && System.currentTimeMillis() - at < STALE_MS && d != null) {
             String line = GreetingText.weather(sp.getInt("code", -1), GreetingText.seenDust(sp.getFloat("dust", 0), sp.getFloat("vis", -1)), s.city, sp.getFloat("temp", 0), s.latin)
-                    + "\n" + GreetingText.sun(d.sunLabel, d.sunClock, s.latin, s.clock24);
+                    + "\n" + GreetingText.sun(S.tv(d.sunLabel), d.sunClock, s.latin, s.clock24);   // «الشروق» / «الغروب»: DayParts keeps the Arabic (MainActivity compares it)
             weather.setText(line);
             weather.setVisibility(android.view.View.VISIBLE);
         } else {
@@ -151,7 +151,7 @@ final class Greeting {
     /** The screensaver's settings this line needs. */
     private static final class Config {
         boolean on = true;   // an older screensaver does not say: on, the default
-        String city = "الرياض", lat = "24.6877", lon = "46.7219", tz = "Asia/Riyadh";
+        String city = S.t("الرياض"), lat = "24.6877", lon = "46.7219", tz = "Asia/Riyadh";
         boolean latin, clock24;
 
         static Config of(ConfigSnapshot snap) {

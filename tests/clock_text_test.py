@@ -16,7 +16,7 @@ cases = [l.split("\t") for l in (ROOT / "tests/clock_text_cases.tsv").read_text(
          if l and not l.startswith("#")]
 home = ROOT / "android/launcher/src/main/java/sa/urtv/home"
 with tempfile.TemporaryDirectory() as tmp:
-    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(home / "ClockText.java"), str(home / "GreetingText.java"),
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "tests/i18n_home_stub/S.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java"), str(home / "ClockText.java"), str(home / "GreetingText.java"),
                     str(home / "DigitsText.java"), str(ROOT / "tests/ClockTextRun.java")], check=True)
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.ClockTextRun",
                           str(ROOT / "tests/clock_text_cases.tsv")], check=True, capture_output=True).stdout
