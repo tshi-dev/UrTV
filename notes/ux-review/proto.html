@@ -122,7 +122,7 @@ const val=on=>`<div class="val${on?' on':''}">${on?'مفعّل':'متوقف'}</d
 const A=[['YouTube','#E62117'],['شاهد','#1F1F1F'],['Netflix','#0B0B0B'],['TOD','#5B2BC4'],['المتصفح','#2F6FDB']];
 
 // the home, light: photo on top, sand wash below, white cards, hairline borders; the top buttons are rectangles, not capsules
-const home=(focusApp=0,opts=false)=>{
+const home=(focusApp=0,opts=false,noName=false)=>{
   const acts=[['input','المصادر'],['tasks','المهام'],['control','مركز التحكم'],['listen','تلاوة وأذان']];
   const apps=A.map((a,i)=>`<div class="app${i==focusApp&&!opts?' fo':''}" style="background:${a[1]}">${a[0]}</div>`).join('')
     +`<div class="more">${ic('dots')}<span>خيارات</span></div>`;
@@ -131,7 +131,7 @@ const home=(focusApp=0,opts=false)=>{
   <div class="acts">${acts.map((a,i)=>`<div class="act${focusApp<0&&i==2?' fo':''}">${ic(a[0])}${a[1]}</div>`).join('')}</div>
   <div class="pray"><h3>مواقيت اليوم<span>العشاء بعد ٢٤ دقيقة</span></h3>
    ${[['الفجر','٤:٥٢ ص'],['الظهر','١١:٤٦ ص'],['العصر','٢:٥١ م'],['المغرب','٥:١٨ م'],['العشاء','٦:٤٨ م']].map((p,i)=>`<div class="pr${i==4?' nx':''}"><b>${p[0]}</b>${p[1]}</div>`).join('')}</div>
-  <div class="appname">${A[Math.max(0,focusApp)][0]}</div>
+  ${noName?'':`<div class="appname">${A[Math.max(0,focusApp)][0]}</div>`}
   <div class="shelf">${apps}</div>`;
 };
 const S={};
@@ -188,6 +188,14 @@ S.apps=()=>{
    </div>`;
 };
 
+S.apps2=()=>{
+  // v2 (owner): a small light box just above the focused app, three options one under another, no title; the row stays uncovered.
+  // OK on the app opens it, so «افتح» is not in the box; favourites, app info and uninstall live in Settings › المزيد › التطبيقات والمفضلة.
+  const R=[['move','انقل'],['hide','أخفِ'],['lock','اقفل']];
+  return home(0,false,true)+`<div class="box" style="position:absolute;right:120px;top:${770-28-3*84-24}px;width:300px;background:#fff;border:1.5px solid var(--line);border-radius:18px;padding:12px;box-shadow:0 14px 40px rgba(40,40,30,.14)">
+    ${R.map((r,i)=>`<div style="display:flex;align-items:center;gap:18px;height:84px;padding:0 22px;border-radius:12px;font:32px TM;${i==0?'background:var(--tint);outline:3px solid var(--green);outline-offset:-3px':''}">${ic(r[0],'i" style="width:36px;height:36px;color:var(--green)')}${r[1]}</div>`).join('')}
+   </div>`;
+};
 S.settings=()=>{
   const C=[['pin','الموقع والصلاة','الرياض، أم القرى'],['clock','الساعة والأرقام','١٢ ساعة، أرقام عربية'],
     ['book','تلاوة وأذان','مشاري العفاسي'],['cards','البطاقات','شاشة التوقف والشاشة الرئيسية'],
