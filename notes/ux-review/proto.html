@@ -205,6 +205,21 @@ S.apps3=()=>{
     ${R.map((r,i)=>`<div style="display:flex;align-items:center;gap:18px;height:84px;padding:0 22px;border-radius:12px;font:32px TM;${i==0?'background:var(--tint);outline:3px solid var(--green);outline-offset:-3px':''}">${ic(r[0],'i" style="width:36px;height:36px;color:var(--green)')}${r[1]}</div>`).join('')}
    </div>`;
 };
+S.apps4=(fav=1,fo='star')=>{
+  // v4 (owner): انقل، أخفِ، اقفل as text rows; one bottom row of two icon buttons: ★ (filled = a favourite, OK removes it;
+  // outline = not one, OK adds it), and ⓘ to its left (app info). #apps4 = favourite, focus on ★; #apps4off = not a favourite, focus on ⓘ.
+  const R=[['move','انقل'],['hide','أخفِ'],['lock','اقفل']];
+  const row=(r,f)=>`<div style="display:flex;align-items:center;gap:18px;height:84px;padding:0 22px;border-radius:12px;font:32px TM;${f?'background:var(--tint);outline:3px solid var(--green);outline-offset:-3px':''}">${ic(r[0],'i" style="width:36px;height:36px;color:var(--green)')}${r[1]}</div>`;
+  const ib=(svg,f)=>`<div style="width:110px;height:78px;border-radius:12px;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--line);${f?'background:var(--tint);outline:3px solid var(--green);outline-offset:2px;border-color:transparent':''}">${svg}</div>`;
+  const star=`<svg viewBox="0 0 24 24" style="width:42px;height:42px;stroke:var(--green);stroke-width:1.7;stroke-linejoin:round;fill:${fav?'var(--green)':'none'}">${P.star}</svg>`;
+  const info=`<svg class="i" viewBox="0 0 24 24" style="width:42px;height:42px;color:var(--green)">${P.info}</svg>`;
+  const h=3*84+12+78+24;
+  return home(0,false,true)+`<div style="position:absolute;right:120px;top:${770-28-h}px;width:300px;background:#fff;border:1.5px solid var(--line);border-radius:18px;padding:12px;box-shadow:0 14px 40px rgba(40,40,30,.14)">
+    ${R.map(r=>row(r,0)).join('')}
+    <div style="display:flex;gap:16px;padding:12px 10px 0;border-top:1.5px solid var(--line);margin-top:0">${ib(star,fo=='star')}${ib(info,fo=='info')}</div>
+   </div>`;
+};
+S.apps4off=()=>S.apps4(0,'info');
 S.settings=()=>{
   const C=[['pin','الموقع والصلاة','الرياض، أم القرى'],['clock','الساعة والأرقام','١٢ ساعة، أرقام عربية'],
     ['book','تلاوة وأذان','مشاري العفاسي'],['cards','البطاقات','شاشة التوقف والشاشة الرئيسية'],
