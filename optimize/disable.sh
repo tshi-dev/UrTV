@@ -69,7 +69,7 @@ fi
 GUARD='s=$(getprop ro.build.version.sdk); for p in @PKGS@; do d=$(dumpsys package $p 2>/dev/null); case "$d" in *"hung system process"*) echo "HUNG $p";; *"requested permissions:"*) printf "%s\n" "$d" | sed -n -E "/requested permissions:/,/(install|runtime) permissions:|User [0-9]+:/p" | grep -q TV_INPUT_HARDWARE && echo "INPUT $p";; *"grantedPermissions:"*) printf "%s\n" "$d" | sed -n -E "/grantedPermissions:/,/(install|runtime) permissions:|User [0-9]+:/p" | grep -q TV_INPUT_HARDWARE && echo "INPUT $p";; *"Package [$p]"*) [ "${s:-0}" -ge 23 ] 2>/dev/null || echo "NOCHK $p";; *"Unable to find"*) ;; *) echo "NOCHK $p";; esac; printf "%s\n" "$d" | grep -qE "android\.media\.tv\.TvInputService|android\.view\.InputMethod" && echo "INPUT $p"; done; echo END_OF_LIST'
 rm -f "$RUN/inputs-left.txt"   # what the guard left on in this run (community.sh does not count them as applied)
 if [ -n "$intended" ]; then
-  raw=$("$PY" -I optimize/tv.py "${GUARD/@PKGS@/$(paste -sd' ' <<< "$intended")}" 2> /dev/null | tr -d '\r') || raw=""
+  raw=$("$PY" -I optimize/tv.py "${GUARD/@PKGS@/$(paste -sd' ' - <<< "$intended")}" 2> /dev/null | tr -d '\r') || raw=""
   if ! grep -qx END_OF_LIST <<< "$raw"; then
     echo "!! disable.sh: the TV did not say which of these packages drive its HDMI inputs or keyboard, so NOTHING was turned off. Run the same command again." >&2
     exit 1
