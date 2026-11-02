@@ -92,8 +92,16 @@
         <intent>
             <action android:name="android.settings.SETTINGS" />
         </intent>
+        <!-- «المصادر»: the TVs' live TV apps and source pickers (TvVendor.LIVE_TV, TvVendor.PICKERS), found on the TV when the menu opens -->
         <package android:name="com.tcl.tv" />
         <package android:name="com.tcl.suspension" />
+        <package android:name="com.cultraview.livetv" />
+        <package android:name="com.cultraview.setting" />
+        <package android:name="com.mediatek.wwtv.tvcenter" />
+        <package android:name="com.mstar.tv.tvplayer.ui" />
+        <package android:name="com.sony.dtv.tvx" />
+        <package android:name="org.droidtv.playtv" />
+        <package android:name="com.google.android.tv" />
         <package android:name="sa.urtv.screensaver" />
         <!-- «انعكاس الشاشة» in «مركز التحكم»: the TVs' mirroring apps (ControlText.MIRROR_APPS), seen even when one has no launcher entry -->
         <package android:name="com.tcl.miracast" />

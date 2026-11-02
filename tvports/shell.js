@@ -49,13 +49,15 @@
   var DEFAULTS = {
     region: 0, city: 'الرياض', lat: 24.6877, lon: 46.7219, tz: 'Asia/Riyadh',
     pm: 'auto', panel: 'verse', clocksize: 'large', clock24: false, digits: 'hindi',
-    adhan: false, voice: 1, fajrVoice: 10, volume: 70, adhanbar: true
+    adhan: false, voice: 1, fajrVoice: 10, volume: 70, adhanbar: true,
+    adj: [0, 0, 0, 0, 0]   // «تعديل وقت الصلاة»: minutes added to الفجر الظهر العصر المغرب العشاء, each −20..20, as the Android app's
   };
   // the settings that change the page (it is reloaded when the screen closes); the adhan's act at once
-  var PAGE_KEYS = ['city', 'pm', 'panel', 'clocksize', 'clock24', 'digits', 'adhanbar'];
+  var PAGE_KEYS = ['city', 'pm', 'panel', 'clocksize', 'clock24', 'digits', 'adhanbar', 'adj'];
   // the page's own settings these replace; any other # setting a caller passes stays (the tests pass &gap=0)
-  var MANAGED = ['city', 'lat', 'lon', 'tz', 'pm', 'panel', 'clocksize', 'clock', 'digits', 'adhanbar', 'teams'];
+  var MANAGED = ['city', 'lat', 'lon', 'tz', 'pm', 'panel', 'clocksize', 'clock', 'digits', 'adhanbar', 'teams', 'adj'];
 
+  var ADJ_MAX = 20, ADJ_NAMES = ['الفجر', 'الظهر', 'العصر', 'المغرب', 'العشاء'];
   function readSettings() {
     var s = {}, k, saved = null;
     try { saved = JSON.parse(localStorage.getItem(KEY_SETTINGS) || 'null'); } catch (e) { saved = null; }
@@ -78,6 +80,8 @@
     if (fajr.length && fajr.indexOf(s.fajrVoice) < 0) s.fajrVoice = fajr[0];
     if (typeof s.tz !== 'string' || !/^[A-Za-z_]+\/[A-Za-z_\-]+$/.test(s.tz)) { s.tz = DEFAULTS.tz; }
     if (typeof s.city !== 'string' || !s.city || s.city.length > 40) s.city = DEFAULTS.city;
+    var adj = Array.isArray(s.adj) && s.adj.length === 5 ? s.adj : [0, 0, 0, 0, 0];
+    s.adj = adj.map(function (v) { v = Math.round(+v); return isFinite(v) ? Math.max(-ADJ_MAX, Math.min(ADJ_MAX, v)) : 0; });
     return s;
   }
   var S = readSettings();
@@ -93,6 +97,7 @@
     if (s.digits === 'latin') add('digits', 'latin');
     if (s.pm === 'jafari') add('pm', 'jafari');
     if (!s.adhanbar) add('adhanbar', '0');
+    if (s.adj.some(function (v) { return v !== 0; })) add('adj', s.adj.join(','));   // the page's own #adj (CONFIG.prayerAdj); none while all are 0
     add('teams', '');   // no followed clubs here: the team picker is the Android app's
     var old = String(oldHash || '').replace(/^#/, '').split('&');
     for (var i = 0; i < old.length; i++) {
@@ -203,6 +208,7 @@
       }, page: true },
     { id: 'pm', label: 'طريقة الحساب', show: function () { return S.pm === 'jafari' ? 'الجعفري' : 'تلقائي (حسب بلد المدينة)'; },
       change: function () { S.pm = S.pm === 'jafari' ? 'auto' : 'jafari'; }, page: true },
+    adjRow(0), adjRow(1), adjRow(2), adjRow(3), adjRow(4),
     { id: 'panel', label: 'البطاقة بجانب الساعة', show: function () { return DATA.cards[indexOfBy(DATA.cards, 'id', S.panel)].name; },
       change: function (d) { S.panel = DATA.cards[cycle(DATA.cards, indexOfBy(DATA.cards, 'id', S.panel), d)].id; }, page: true },
     { id: 'clocksize', label: 'حجم الساعة', show: function () { return CLOCK_SIZES[indexOfBy2(CLOCK_SIZES, S.clocksize)][1]; },
@@ -225,6 +231,13 @@
       action: function () { if (live) stopAdhan(); else playAdhan(2); } },
     { id: 'close', label: 'حفظ وإغلاق', show: function () { return ''; }, action: function () { closePanel(); } }
   ];
+  // «تعديل وقت الصلاة» for one prayer: the left key adds a minute, the right key takes one away (−20..+20); the page moves the time,
+  // its countdown and the adhan with it
+  function adjRow(i) {
+    return { id: 'adj' + i, label: 'تعديل ' + ADJ_NAMES[i],
+      show: function () { var v = S.adj[i]; return (v > 0 ? '+' : v < 0 ? '−' : '') + arNum(Math.abs(v)) + ' د'; },
+      change: function (d) { S.adj[i] = Math.max(-ADJ_MAX, Math.min(ADJ_MAX, S.adj[i] + d)); }, page: true };
+  }
   function indexOfBy2(pairs, v) { for (var i = 0; i < pairs.length; i++) if (pairs[i][0] === v) return i; return 0; }
   function voiceName(n, list) { var i = indexOfBy(list, 'n', n); return list.length ? list[i].name : ''; }
 
@@ -239,6 +252,8 @@
     }
     html += '<div class="h">↑ ↓ تنقّل · ← → تغيير · OK تنفيذ · رجوع: حفظ وإغلاق</div>';
     panel.innerHTML = html;
+    var on = panel.querySelector('.r.on');   // more rows than the screen holds: the chosen one is kept in sight
+    if (on && on.scrollIntoView) on.scrollIntoView({ block: 'nearest' });
   }
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function openPanel() {
@@ -250,7 +265,7 @@
     var st = document.createElement('style');
     st.id = 'urtv-tv-settings-css';
     st.textContent =
-      '#urtv-tv-settings{position:fixed;z-index:99999;top:50%;left:50%;transform:translate(-50%,-50%);width:52vw;max-height:94vh;overflow:hidden;' +
+      '#urtv-tv-settings{position:fixed;z-index:99999;top:50%;left:50%;transform:translate(-50%,-50%);width:52vw;max-height:94vh;overflow-y:auto;' +
       'background:rgba(8,14,11,.94);border:.2vh solid rgba(214,177,92,.55);border-radius:1.6vh;padding:2vh 2.4vw;color:#fff;' +
       'font:400 2.5vh/1.2 Thmanyah,"Noto Naskh Arabic","Noto Sans Arabic",Tahoma,sans-serif;box-shadow:0 2vh 8vh rgba(0,0,0,.6)}' +
       '#urtv-tv-settings .t{font-size:3.4vh;font-weight:500;text-align:center;margin-bottom:1.4vh;color:#e6c56e}' +

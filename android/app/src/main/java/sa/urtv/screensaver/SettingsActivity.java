@@ -402,6 +402,8 @@ public class SettingsActivity extends Activity {
         header("الأسهم");
         row("قائمة الأسهم (" + arabicNum(prefs.stocks().size()) + "/" + arabicNum(Prefs.MAX_STOCKS) + ")", stocksLabel(),
             R.drawable.ic_star, new Runnable() { public void run() { askStocks(); } });
+        row("تغيّر الأسهم الأمريكية", labelOf(Prefs.STK_CHG, prefs.stkChg()), R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setStkChg("amount".equals(prefs.stkChg()) ? "pct" : "amount"); render(); } });
         }
 
         header("التوقيت");
@@ -1350,28 +1352,33 @@ public class SettingsActivity extends Activity {
             .show();
     }
 
-    private String stocksLabel() { return Prefs.join(prefs.stocks(), "، "); }
+    private String stocksLabel() {
+        List<String> out = new ArrayList<>();
+        for (String k : prefs.stocks()) out.add(Stocks.label(k, S.en()));   // «أرامكو 2222»: the code and the company it is
+        return Prefs.join(out, S.en() ? ", " : "، ");
+    }
 
-    /** Codes (2222 = أرامكو) and US tickers (AAPL), separated by spaces or commas. */
+    /** Codes (2222 = أرامكو, also ٢٢٢٢), company names (الراجحي) and US tickers (AAPL), separated by spaces or commas (Stocks). */
     private void askStocks() {
         final EditText in = new EditText(this);
         in.setHint(Words.of("مثال: \u20662222 1120 AAPL NVDA\u2069"));
         in.setText(Prefs.join(prefs.stocks(), " "));
         in.setSingleLine(true);
         in.setInputType(InputType.TYPE_CLASS_TEXT);
-        new Dlg(this).setTitle("قائمة الأسهم (رمز تداول من ٤ أرقام أو رمز أمريكي، حتى " + arabicNum(Prefs.MAX_STOCKS) + ")")
+        new Dlg(this).setTitle("قائمة الأسهم (رمز تداول من ٤ أرقام أو اسم الشركة أو رمز أمريكي، حتى " + arabicNum(Prefs.MAX_STOCKS) + ")")
             .setView(in)
             .setPositiveButton("حفظ", (d, w) -> {
-                List<String> v = new ArrayList<>();
-                for (String s : in.getText().toString().split("[\\s,،]+")) {
-                    s = s.trim().toUpperCase(java.util.Locale.ROOT);
-                    if (s.isEmpty()) continue;
-                    if (!s.matches(Prefs.STOCK_PATTERN)) { toast("رمز غير صالح: " + s); return; }
-                    if (!v.contains(s)) v.add(s);
-                }
+                Stocks.Parsed got = Stocks.parse(in.getText().toString());
+                if (got.bad != null) { toast("رمز غير صالح: " + got.bad); return; }
+                List<String> v = got.codes;
                 if (v.isEmpty() || v.size() > Prefs.MAX_STOCKS) {
                     toast("أدخل من رمز إلى " + arabicNum(Prefs.MAX_STOCKS) + " رموز");
                     return;
+                }
+                if (!got.matched.isEmpty()) {   // a name or ٢٢٢٢ was typed: say what it was taken as
+                    List<String> shown = new ArrayList<>();
+                    for (String k : got.matched) shown.add(Stocks.label(k, S.en()));
+                    toast("الأسهم: " + Prefs.join(shown, S.en() ? ", " : "، "));
                 }
                 prefs.setStocks(v);
                 render();

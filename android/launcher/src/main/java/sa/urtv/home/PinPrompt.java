@@ -37,12 +37,24 @@ final class PinPrompt {
         if (d != null && d.isShowing() && d.getOwnerActivity() == a) d.dismiss();
     }
 
+    /** A quiet look at the first four digits (PinKeys): answers on the UI thread whether they are the PIN, counting nothing. */
+    interface Probe {
+        void look(String four, Consumer<Boolean> answer);
+    }
+
+    /** How long the keys must stop before a longer entry (PinRecovery) is given up. */
+    private static final long QUIET_MS = 1600;
+
     static Dialog ask(Activity a, String title, String hint, Before before, Consumer<String> done, Runnable cancelled) {
+        return ask(a, title, hint, before, 4, null, done, cancelled);
+    }
+
+    /** longest: 4, or up to 8 with a probe (a build with a recovery code); the screen is the same either way. */
+    static Dialog ask(Activity a, String title, String hint, Before before, int longest, Probe probe, Consumer<String> done, Runnable cancelled) {
         Dialog dialog = new Dialog(a, android.R.style.Theme_Material_NoActionBar);
         dialog.setOwnerActivity(a);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        StringBuilder pin = new StringBuilder();
-        boolean[] submitted = {false};
+        PinKeys pin = new PinKeys(probe == null ? 4 : longest);
         LinearLayout root = new LinearLayout(a);
         root.setOrientation(LinearLayout.HORIZONTAL);
         root.setGravity(Gravity.CENTER_VERTICAL);
@@ -76,28 +88,41 @@ final class PinPrompt {
         info.addView(PinUi.text(a, S.t("يُفتح تلقائياً بعد الرقم الرابع\nاستخدم أرقام الريموت أو الأسهم"), 16, PinUi.MUTED), new LinearLayout.LayoutParams(-1, -2));
         Runnable redraw = () -> {
             StringBuilder dots = new StringBuilder();
-            for (int i = 0; i < 4; i++) dots.append(i > 0 ? " " : "").append(i < pin.length() ? '●' : '○');
+            for (int i = 0; i < 4; i++) dots.append(i > 0 ? " " : "").append(i < pin.shown() ? '●' : '○');
             masked.setText(dots);
         };
-        Consumer<String> add = value -> {
-            if (submitted[0] || pin.length() >= 4 || !dialog.isShowing()) return;
-            pin.append(value);
-            redraw.run();
-            if (pin.length() == 4) {
-                submitted[0] = true;
-                String code = pin.toString();
-                // finish with the remote's key before the window is replaced
-                root.post(() -> {
-                    if (dialog.isShowing() && !a.isFinishing()) {
-                        pin.setLength(0);
-                        dialog.dismiss();
-                        done.accept(code);
+        Runnable submit = () -> {
+            String code = pin.code();
+            // finish with the remote's key before the window is replaced
+            root.post(() -> {
+                if (dialog.isShowing() && !a.isFinishing()) {
+                    pin.wipe();
+                    dialog.dismiss();
+                    done.accept(code);
+                }
+            });
+        };
+        Consumer<Integer> act = new Consumer<Integer>() {
+            @Override public void accept(Integer what) {
+                if (what == PinKeys.SUBMIT) submit.run();
+                else if (what == PinKeys.PROBE || what == PinKeys.WAIT) {
+                    int at = pin.gen();
+                    root.postDelayed(() -> { if (dialog.isShowing()) accept(pin.idle(at)); }, QUIET_MS);
+                    if (what == PinKeys.PROBE) {
+                        String four = pin.code();
+                        probe.look(four, isPin -> { if (dialog.isShowing()) accept(pin.answer(four, isPin)); });
                     }
-                });
+                }
             }
         };
+        Consumer<String> add = value -> {
+            if (!dialog.isShowing()) return;
+            int what = pin.digit(value.charAt(0));
+            redraw.run();
+            act.accept(what);
+        };
         Runnable erase = () -> {
-            if (pin.length() > 0) pin.deleteCharAt(pin.length() - 1);
+            act.accept(pin.erase());
             redraw.run();
         };
         List<Button> keys = new ArrayList<>();
@@ -121,7 +146,7 @@ final class PinPrompt {
                 b.setOnClickListener(v -> {
                     if ("حذف".equals(key)) erase.run();
                     else if ("مسح".equals(key)) {
-                        pin.setLength(0);
+                        pin.clear();
                         redraw.run();
                     } else add.accept(key);
                 });
@@ -157,7 +182,7 @@ final class PinPrompt {
             if (key == KeyEvent.KEYCODE_DEL || key == KeyEvent.KEYCODE_FORWARD_DEL || key == KeyEvent.KEYCODE_CLEAR) {
                 if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
                     if (key == KeyEvent.KEYCODE_CLEAR) {
-                        pin.setLength(0);
+                        pin.clear();
                         redraw.run();
                     } else erase.run();
                 }
@@ -166,7 +191,7 @@ final class PinPrompt {
             return false;
         });
         dialog.setOnDismissListener(d -> {
-            pin.setLength(0);
+            pin.wipe();
             if (visible.get() == dialog) visible.clear();
         });
         dialog.setOnCancelListener(d -> cancelled.run());   // Back, or «إلغاء»

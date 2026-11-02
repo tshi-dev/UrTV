@@ -92,6 +92,8 @@ final class Prefs {
 
     // how the markets are shown (#mkstyle=; arrows is what it always showed)
     static final String[][] MK_STYLES = {{"arrows", "الاتجاه فقط ▲▼"}, {"prices", "السعر والنسبة"}};
+    // how the stocks card shows a US stock's change (#stkchg=amount; the percentage is what it always showed). Saudi codes keep the %.
+    static final String[][] STK_CHG = {{"pct", "بالنسبة ٪"}, {"amount", "بالمبلغ"}};
     // the size of the screensaver's clock (sent as #clocksize=; large is what it always was)
     static final String[][] CLOCK_SIZES = {{"large", "كبيرة"}, {"medium", "متوسطة"}, {"small", "صغيرة"}};
     // what the bottom-left slot shows (sent to the page as #slot=; matches is what it always showed)
@@ -351,6 +353,8 @@ final class Prefs {
         return CLOCK_SIZES[0][1];
     }
 
+    String stkChg() { return "amount".equals(sp.getString("stkChg", "pct")) ? "amount" : "pct"; }
+    void setStkChg(String v) { sp.edit().putString("stkChg", v).apply(); }
     String mkStyle() { return sp.getString("mkStyle", "arrows"); }
     void setMkStyle(String v) { sp.edit().putString("mkStyle", v).apply(); }
 
@@ -566,6 +570,7 @@ final class Prefs {
             + "&mkbar=" + (marketsOn() ? "on" : "off")
             + "&clocksize=" + clockSize()
             + "&stocks=" + join(stocks(), ",")
+            + ("amount".equals(stkChg()) ? "&stkchg=amount" : "")   // only when chosen: the link is what it was otherwise
             + "&slot=" + slot()
             + "&cd=" + countdownDate()
             + "&cdname=" + Uri.encode(countdownName())

@@ -149,6 +149,53 @@ for (const platform of ['webos', 'tizen']) {
     await ctx.close();
   }
 
+  // ---- «تعديل وقت الصلاة»: a minute off a prayer (a user's Fajr is a minute earlier), and the page's times move with it
+  {
+    const { p, ctx, errors } = await open(platform, { hash: '#gap=0' });
+    const fajr = () => p.evaluate(() => { const x = PRAYERS.find(q => q.key === 'Fajr'); return x.h * 60 + x.mi; });
+    const isha = () => p.evaluate(() => { const x = PRAYERS.find(q => q.key === 'Isha'); return x.h * 60 + x.mi; });
+    const fajr0 = await fajr(), isha0 = await isha();
+    await key(p, 13);
+    const goRow = async label => { for (let i = 0; i < 30 && (await text(p, '.r.on .l')) !== label; i++) await key(p, 40); return (await text(p, '.r.on .l')) === label; };
+    check(L('a row for each prayer: تعديل الفجر … تعديل العشاء'), await p.evaluate(() =>
+      ['الفجر', 'الظهر', 'العصر', 'المغرب', 'العشاء'].every(n => [...document.querySelectorAll('#urtv-tv-settings .l')].some(e => e.textContent === 'تعديل ' + n))));
+    check(L('تعديل الفجر is at 0 by default'), await goRow('تعديل الفجر') && (await text(p, '.r.on .v')).includes('٠ د'), await text(p, '.r.on .v'));
+    await key(p, 39);   // right: a minute less
+    check(L('Right takes a minute off: −١ د'), (await text(p, '.r.on .v')).includes('−١ د'), await text(p, '.r.on .v'));
+    for (let i = 0; i < 25; i++) await key(p, 39);
+    check(L('it stops at −٢٠'), (await text(p, '.r.on .v')).includes('−٢٠ د'), await text(p, '.r.on .v'));
+    for (let i = 0; i < 19; i++) await key(p, 37);   // back to −1
+    check(L('Left adds a minute back (−١)'), (await text(p, '.r.on .v')).includes('−١ د'), await text(p, '.r.on .v'));
+    check(L('the others stay at 0 and the setting is kept'), JSON.stringify((await p.evaluate(() => UrtvTV.settings())).adj) === '[-1,0,0,0,0]',
+      JSON.stringify(await p.evaluate(() => UrtvTV.settings())));
+    check(L('تعديل العشاء: +2'), await goRow('تعديل العشاء') && (await key(p, 37), await key(p, 37), (await text(p, '.r.on .v')).includes('+٢ د')), await text(p, '.r.on .v'));
+    await goRow('حفظ وإغلاق');
+    const box = await p.evaluate(() => { const r = document.querySelector('#urtv-tv-settings .r.on').getBoundingClientRect(), b = document.getElementById('urtv-tv-settings').getBoundingClientRect();
+      return { in: r.top >= b.top && r.bottom <= b.bottom, fits: b.top >= 0 && b.bottom <= 1080 }; });
+    check(L('the longer list still fits the screen and keeps the chosen row in sight'), box.in && box.fits, JSON.stringify(box));
+    const nav = p.waitForNavigation({ timeout: 8000 }).catch(() => null);
+    await key(p, back);
+    await nav;
+    await p.waitForFunction(() => document.documentElement.classList.contains('ready'), null, { timeout: 8000 }).catch(() => errors.push('never revealed (adj)'));
+    const hash = await p.evaluate(() => location.hash);
+    check(L('the page starts again with adj=-1,0,0,0,2 in its link'), /(^|[#&])adj=-1%2C0%2C0%2C0%2C2(&|$)|(^|[#&])adj=-1,0,0,0,2(&|$)/.test(hash), hash);
+    const fajr1 = await fajr(), isha1 = await isha();
+    check(L('the page\'s Fajr is a minute earlier and its Isha two minutes later'), fajr1 === fajr0 - 1 && isha1 === isha0 + 2, `${fajr0}->${fajr1}, ${isha0}->${isha1}`);
+    check(L('no script error'), errors.length === 0, errors.join(' | '));
+    await ctx.close();
+  }
+  {   // all back to 0: nothing in the link (the page as it was)
+    const { p, ctx } = await open(platform, { hash: '#gap=0', settings: { adj: [0, 0, 0, 0, 0] } });
+    check(L('with every offset at 0 the link has no adj'), !/adj=/.test(await p.evaluate(() => location.hash)), await p.evaluate(() => location.hash));
+    await ctx.close();
+  }
+  {   // a broken saved value is no adjustment
+    const { p, ctx } = await open(platform, { hash: '#gap=0', settings: { adj: [99, 'x', 0] } });
+    check(L('a saved value that is not five minutes is no adjustment'), JSON.stringify((await p.evaluate(() => UrtvTV.settings())).adj) === '[0,0,0,0,0]',
+      JSON.stringify(await p.evaluate(() => UrtvTV.settings())));
+    await ctx.close();
+  }
+
   // ---- a city of another country: its coordinates and zone reach the page
   {
     const { p, ctx } = await open(platform, { hash: '#gap=0' });

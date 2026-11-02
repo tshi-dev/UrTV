@@ -53,7 +53,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:letterSpacing="0.18"
+            android:letterSpacing="0"
             android:text="@string/now_playing"
             android:textColor="@color/gold"
             android:textSize="15sp" />

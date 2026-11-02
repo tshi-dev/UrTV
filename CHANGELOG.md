@@ -23,6 +23,30 @@ Newest first. `next` is where changes land first; a release is what was tested t
   «غيّر الرمز»). The DNS filter is «تصفية المواقع» (was «حماية العائلة», a name too close to the lock). **A fifth look, «رملي»** (`sand`):
   white cards on sand, hairlines, and a calm focus: a soft green fill with a DGA green line round it (GlassStyle.Look.ring) in every screen
   and on the home's top buttons (rounded rectangles in this look). The default look is unchanged (glass); every look keeps its colours.
+- **«المصادر» on CultraView and other non-TCL TVs** (work/user-fixes): the live TV app and the source picker are no longer TCL's only. The
+  home app finds them on the TV each time the menu opens (TvVendor: the configured TCL ones first, then CultraView's `com.cultraview.livetv`
+  and `com.cultraview.setting/.SourceActivity`, MediaTek's tvcenter (Xiaomi, Hisense, Haier), MStar's (Skyworth), Sony, Philips, Google Live
+  Channels). An HDMI input tries the standard passthrough link, then each live TV app the TV has, then the picker, then the TV's settings.
+- **The recitation and the adhan at a normal level**: the recordings are quiet next to TV sound, and the player played them at unity gain.
+  It now lifts them by +6 dB inside its own audio session (LoudnessEnhancer: a gain with a limiter, so no clipping). The TV's volume, its
+  mute and the adhan's own level (never above the person's choice) are not touched; a TV without the effect plays as before.
+- **US stocks' change as an amount** («تغيّر الأسهم الأمريكية», `optimize/saver.sh stkchg amount`): the stocks card shows a US stock's
+  change as an amount (▲ 2.25) instead of a percentage; the default stays the percentage, Saudi codes always keep it, and the page's
+  link only gets `&stkchg=amount` when it is chosen.
+- **optimize/measure.sh with a run folder whose path has spaces** (macOS «Application Support»): every `$RUN` path is quoted
+  (tests/measure_space_test.py runs it with such a folder).
+- **LG and Samsung (BETA): «تعديل الفجر» … «تعديل العشاء»**: each prayer moved by whole minutes (−20 to +20) in the TV's settings screen,
+  as in the Android app; the page's times, countdown and adhan move with it. The list scrolls to keep the chosen row in sight.
+- **Arabic letters joined everywhere**: the last letter-spacing on Arabic text is gone (the adhan bar, the «يوم» unit, the score, the
+  phone code's Arabic placeholder, «يُتلى الآن» in the player); only Latin or digit-only text keeps it (tests/arabic_spacing_test.py).
+- **The home's cards on the newest page**: the launcher always opened the page of its own build, while the screensaver downloads the
+  newest one, so page fixes (the markets' requests among them) never reached the home and its stocks card stayed stale. The screensaver
+  now shares its downloaded page (ConfigProvider .../page/, read-only, only when newer than its own and with its automatic update on) and
+  the home opens a copy of it when its build stamp is newer than the launcher's own page; otherwise its own page as before.
+- **«قائمة الأسهم» takes a company's name too**: a Tadawul code (2222, also ٢٢٢٢ in Arabic digits, which was refused before), a name
+  (أرامكو, مصرف الراجحي, بنك الرياض, Aramco) or a US ticker; a name is turned into its code and a short message says what it was taken as
+  («الأسهم: أرامكو 2222»), and the row shows the company beside each code.
+
 - **The new settings screen** (work/settings-v2, the owner's choices in notes/settings-proto): big buttons, «الأذان» wide on top with its state
   under it; OK opens the home's adhan page on its switch (now its first row), so OK, OK turns it on or off, behind the family lock as before.
   Then «الموقع والصلاة», «الساعة والأرقام» (new: 12/24 hours, digits, month names together), «تلاوة وأذان», «البطاقات» («شاشة التوقف» and

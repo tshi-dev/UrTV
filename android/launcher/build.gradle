@@ -2,6 +2,16 @@ plugins {
     id 'com.android.application'
 }
 
+// «1:rounds:salt:hash» (PinCrypto's form) or ''; anything else stops the build, so a mistyped secret never ships a code that cannot work
+def pinRecoveryRecord() {
+    def local = rootProject.file('pin-recovery.local')
+    def r = (System.getenv('URTV_PIN_RECOVERY') ?: (local.exists() ? local.text : '')).trim()
+    if (r && !(r ==~ /1:[0-9]{5,7}:[0-9a-f]{32}:[0-9a-f]{64}/)) {
+        throw new GradleException('the PIN recovery record is not «1:rounds:salt:hash»: make it with .github/tools/make_pin_recovery.py')
+    }
+    return r
+}
+
 android {
     namespace 'sa.urtv.home'
     compileSdk 34
@@ -14,6 +24,9 @@ android {
         versionCode((System.getenv('GITHUB_RUN_NUMBER') ?: '1') as int)
         versionName file('../../VERSION').text.trim()
         buildConfigField "String", "MARKETING", "\"${file('../../VERSION').text.trim()}\""
+        // the PIN recovery code's salted PBKDF2 record, never the code (AGENTS.md, «PIN recovery»): from URTV_PIN_RECOVERY (CI: the
+        // PIN_RECOVERY_RECORD secret) or the untracked android/pin-recovery.local; neither = no recovery code in this build
+        buildConfigField "String", "PIN_RECOVERY", "\"${pinRecoveryRecord()}\""
     }
 
     buildFeatures {

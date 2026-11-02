@@ -473,7 +473,7 @@
   .p-mid .num{font-size:1.3em;line-height:1}
   .p-mid .txt{display:inline-block;max-width:100%;white-space:normal;font-size:.5em;line-height:1.3}
   .panel .sub .note{font-size:.9em;color:#A79C85;margin-top:.2vh}
-  .p-mid .unit{font-size:.46em;font-weight:500;color:var(--gold-2);letter-spacing:.02em;display:inline;vertical-align:.5em}
+  .p-mid .unit{font-size:.46em;font-weight:500;color:var(--gold-2);letter-spacing:0;display:inline;vertical-align:.5em}
   .p-match{text-align:left}
   .p-match .big{justify-content:flex-end}
   .p-match .sub{white-space:normal;line-height:1.4;max-width:100%;font-size:clamp(11px,.88vw,17px)}
@@ -538,12 +538,12 @@
   /* the bar before the adhan: slim, at the very top, across the screen; the header starts below it (3.1vh) */
   .adbar{position:fixed;left:0;right:0;top:0;height:2.9vh;min-height:16px;z-index:6;display:flex;align-items:center;justify-content:center;
     background:linear-gradient(90deg,rgba(var(--gold-rgb),0),rgba(var(--gold-rgb),.34) 30%,rgba(var(--gold-rgb),.34) 70%,rgba(var(--gold-rgb),0));
-    color:var(--gold-hi);font-size:clamp(11px,1.1vw,21px);font-weight:500;letter-spacing:.04em;white-space:nowrap;pointer-events:none}
+    color:var(--gold-hi);font-size:clamp(11px,1.1vw,21px);font-weight:500;letter-spacing:0;white-space:nowrap;pointer-events:none}
   .adbar[hidden]{display:none}
   html.widget .adbar{display:none}
   .dimmer{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:30;transition:opacity 6s linear}
   .stage{transition:transform 3s ease}
-  .sc{color:var(--gold-3);letter-spacing:.02em}
+  .sc{color:var(--gold-3);letter-spacing:0}
 
   /* #slot=none: the left panel is gone and the other two mirror each other: the prayer at the right edge, the occasion at the left edge,
      the same width, each text on its outer edge and the same lines (label, big line, small line) at the same heights */
@@ -713,6 +713,8 @@ const CONFIG = {
   markets: (l => l.length ? l : ['tasi','spx','btc'])(
     _list('markets').filter((k, i, a) => ['tasi','aramco','spx','btc','gold','silver','oil','xrp'].includes(k) && a.indexOf(k) === i).slice(0, 4)),
   mkStyle: _Q.get('mkstyle') === 'prices' ? 'prices' : 'arrows',
+  // «تغيّر الأسهم الأمريكية»: #stkchg=amount shows a US stock's change as an amount (▲ 2.25) instead of a percentage; Saudi ones keep the %
+  stkChg: _Q.get('stkchg') === 'amount' ? 'amount' : 'pct',
   // #mkbar=off hides the markets line at the top (the weather stays); the list above is kept and no request is made for it
   mkBar: _Q.get('mkbar') !== 'off',
   // the national days (23 September, 22 February): #national=auto (the default) or off
@@ -3033,7 +3035,8 @@ function stocksCard(){
     const cls = up === null ? '' : up ? 'up' : 'down';
     return `<li class="stk${staleMark(d) ? ' old' : ''}"><span class="nm">${esc(stockName(k))}${mixed && !marketOpen(isSA(k)) ? '<span class="cl">مغلق</span>' : ''}</span>`
       + (up === null ? '' : spark(d.c, up)) + `<span class="px">${num(d.p, 2)}</span>`
-      + (pct === null ? '' : `<span class="chg ${cls}">${pct >= 0 ? '▲' : '▼'} ${num(Math.abs(pct), 2)}${LATIN ? '%' : '٪'}</span>`) + '</li>';
+      + (pct === null ? '' : `<span class="chg ${cls}">${pct >= 0 ? '▲' : '▼'} ${CONFIG.stkChg === 'amount' && !isSA(k)
+          ? num(Math.abs(d.p - v), 2) : num(Math.abs(pct), 2) + (LATIN ? '%' : '٪')}</span>`) + '</li>';
   });
   const note = [allClosed ? 'السوق مغلق' : '', stale.length ? staleMark(stale[0]) : ''].filter(Boolean).join(' · ');   // the oldest price that is not current
   return {hd: '<span>الأسهم</span>' + (note ? `<span class="until">${note}</span>` : ''), rows};
