@@ -40,6 +40,22 @@ cover every day of the round, or a paid key (see 2).
 **A-light** (`notes/proposals/football-home-light.png`) is the same grid on the approved light look: the photo on top
 fades into sand, the cards are white, and the next prayer has the green ring. The cards stay readable on any photo.
 
+**The owner's question: can it leave the favourites bar alone, or move it only while the widgets are in use?** Both
+are drawn.
+- **A** (`notes/proposals/football-home-A.png`): our normal favourites row, exactly as on the regular home. It has the same
+  262×170 tiles, the same place, the «خيارات» tile, and the app's name above the row when an app has focus. The widgets fit
+  above it. On the left are the weather and the prayers. On the right are the clock, then today's games as three lines in
+  one glass card («٦ مباريات»; OK opens the league view with all of them). The image shows focus on the first game.
+- **B** (`notes/proposals/football-home-B-widgets.png` and `notes/proposals/football-home-B-apps.png`):
+  - When focus goes up into the widgets, the row slides down in 200 ms with ease-out. Only its top 56 px stay on screen,
+    and the games grow into full cards.
+  - When focus comes down to the apps, the row slides back up and the screen is A again.
+  - Moving between apps never moves the row.
+- **Recommendation for a D-pad: A.** The apps row is where most presses go, and in A it never moves. Every ▼ from the
+  widgets lands in the same place, and nothing slides under the person's eye. That matters most for the older relatives,
+  who find the TV by where things sit. B is a fair second choice if the owner wants the big match cards, because it moves
+  only when focus crosses between the widgets and the apps.
+
 **The first reference, on the light look** (an earlier pass, kept in `proto.html` as `#football`): a prayer strip and
 four match cards with a live score.
 
