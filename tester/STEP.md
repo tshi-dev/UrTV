@@ -1,3 +1,5 @@
+**«⛔ WAIT — don't start anything yet. The supervisor will replace this line with «✅ GO — build N» when the build is ready and fully tested.»**
+
 **FIRST, before any other step of this run: ask the owner in your chat on the PC for the PIN recovery code (step 21). He gives it once, then he is asleep: run everything without him (the other steps, step 22 included, then step 21 LAST with the code you hold). NEVER write the code into any file, report, commit, log, screenshot, script or saved shell history (the repo is public): keep it only in this chat's memory, and use it only inside the one `adb shell input text` command of step 21 row 2. If the owner does not answer, skip step 21, run the rest, and report «step 21: no code given».**
 
 steps 16–20 received; fixes in progress on work/tester-fixes; next step after build 176+
