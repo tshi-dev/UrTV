@@ -88,9 +88,9 @@ instead.
 | 5. Setup on the TV (later, not now) | `i18n/en/setup.tsv` | `android/launcher/.../setup/**`, the «للشخص» rule in `docs/SETUP-PROMPT.md`. Not started until 1–4 are in. |
 
 **Left for phase 1** (found in phase 2; the page is ready for both):
-- [ ] Digits: `Prefs.fragment()` always sends `&digits=` (`hindi` by default), so an English TV shows ١٢٣ on the page. With «اللغة» English and
+- [x] Digits: `Prefs.fragment()` always sends `&digits=` (`hindi` by default), so an English TV shows ١٢٣ on the page. With «اللغة» English and
   «الأرقام» never chosen, `Prefs.digits()` should default to `latin`. `tv-en.html` already reads a missing `#digits=` as Latin.
-- [ ] The city: the page shows `#city=` as it comes (the Arabic name). With «اللغة» English, `Prefs.fragment()` should send the city's English
+- [x] The city: the page shows `#city=` as it comes (the Arabic name). With «اللغة» English, `Prefs.fragment()` should send the city's English
   name (`Cities` world entries have one; check the Gulf entries that have only Arabic).
 
 Shared, owned by none of the phases: `i18n/tr.py`, both `Tr.java`, `S.java`, `Dir.java`, `tests/i18n_test.py`, `tests/TrRun.java`,

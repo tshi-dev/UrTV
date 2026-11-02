@@ -40,6 +40,12 @@ final class SettingsHub {
         {LANG, "اللغة", "", MORE, "اللغة"},
     };
 
+    /**
+     * «اللغة»'s button in «المزيد»: off until the home app's screens are in English too (docs/ENGLISH.md, phase 3); turned on at integration.
+     * Off, the button is not shown and nothing else changes (its row is made but on no screen; `optimize/saver.sh lang` sets it all the same).
+     */
+    static final boolean LANG_TILE = false;
+
     /** each row of SettingsActivity by its FocusKey.key (the name without its numbers), and its category */
     static final String[][] ROWS = {
         {"معاينة الشاشة", SAVER},
@@ -119,7 +125,7 @@ final class SettingsHub {
     /** The buttons of a screen (null: the first one), in order. */
     static String[] tiles(String screen) {
         java.util.List<String> out = new java.util.ArrayList<>();
-        for (String[] c : CATEGORIES) if (screen == null ? c[3] == null : screen.equals(c[3])) out.add(c[0]);
+        for (String[] c : CATEGORIES) if ((screen == null ? c[3] == null : screen.equals(c[3])) && (LANG_TILE || !LANG.equals(c[0]))) out.add(c[0]);
         return out.toArray(new String[0]);
     }
 

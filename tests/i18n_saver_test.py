@@ -195,6 +195,8 @@ else:
     bad = [f"{p}: {g!r} (want {w!r})" for (p, w), g in zip(PLACES, got[k:k + len(PLACES)]) if g != w]
     check("Places: countries by code, built-in cities by their place (Algiers, not the country), a place of one's own has none", not bad, bad)
     k += len(PLACES)
+    nocity = next(g for (p, _), g in zip(PLACES, got[k - len(PLACES):k]) if p == "cities")
+    check("every built-in city has a non-empty English name (the world list's own, else Places)", nocity == "", nocity[:200])
     nocountry = [c for c, g in zip(sorted(codes), got[k:k + len(codes)]) if g == "null" or AR.search(g)]
     check(f"every country of the list has its English name ({len(codes)})", not nocountry, nocountry)
     regions = got[k + len(codes)].split("|")
@@ -203,6 +205,8 @@ else:
     check("…and no English place name has an Arabic letter", not arabic, arabic[:5])
 
 # ---- 5. «اللغة»
+check("«اللغة»'s button is off until the home app is in English (phase 3): one constant, and tiles() leaves it out while it is off",
+      "static final boolean LANG_TILE = false;" in hub and "&& (LANG_TILE || !LANG.equals(c[0]))) out.add(c[0]);" in hub)
 check("«اللغة»: a button of «المزيد» that opens its choices at once (DIRECT), named in ROWS",
       '{LANG, "اللغة", "", MORE, "اللغة"},' in hub and '{"اللغة", LANG}' in hub and 'LANG = "lang"' in hub)
 check("«اللغة»: its row, icon and what it says on its button (English beside العربية, to be found)",

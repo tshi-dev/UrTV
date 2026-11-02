@@ -75,10 +75,11 @@ first = sorted([k for k, v in C.items() if v["parent"] == "-"], key=lambda k: C[
 check("the first screen: «الأذان» first (the wide one), then the buttons of the prototype in its order",
       [C[k]["name"] for k in first] == ["الأذان", "الموقع والصلاة", "الساعة والأرقام", "تلاوة وأذان", "البطاقات", "المظهر", "مركز التحكم",
                                        "التحكم من الجوال", "تحديث تلفزيوني", "أرسل تقرير", "المزيد"], [C[k]["name"] for k in first])
-check("«البطاقات» holds «شاشة التوقف» and «الشاشة الرئيسية»; «المزيد» the matches and markets, the apps, the shows, «حماية العائلة» and «اللغة»",
+check("«البطاقات» holds «شاشة التوقف» and «الشاشة الرئيسية»; «المزيد» the matches and markets, the apps, the shows, «حماية العائلة» (and «اللغة» once LANG_TILE is on)",
       sorted((C[k]["index"], C[k]["name"]) for k in C if C[k]["parent"] == "cards") == [(0, "شاشة التوقف"), (1, "الشاشة الرئيسية")]
-      and [C[k]["name"] for k in sorted((k for k in C if C[k]["parent"] == "more"), key=lambda k: C[k]["index"])]
-      == ["المباريات والأسواق", "التطبيقات والمفضلة", "جديد المسلسلات", "حماية العائلة", "اللغة"], {k: (v["parent"], v["index"]) for k, v in C.items()})
+      and [C[k]["name"] for k in sorted((k for k in C if C[k]["parent"] == "more" and C[k]["index"] >= 0), key=lambda k: C[k]["index"])]
+      == ["المباريات والأسواق", "التطبيقات والمفضلة", "جديد المسلسلات", "حماية العائلة"] + (["اللغة"] if "static final boolean LANG_TILE = true;" in hub else []),
+      {k: (v["parent"], v["index"]) for k, v in C.items()})
 check("only the first screen, «البطاقات» and «المزيد» are screens of buttons, and nothing is deeper than that",
       {k for k, v in C.items() if v["tiles"]} == {"cards", "more"} and all(C[v["parent"]]["parent"] == "-" for v in C.values() if v["parent"] != "-"))
 direct = {k: v["direct"] for k, v in C.items() if v["direct"] != "-"}
