@@ -220,6 +220,27 @@ S.apps4=(fav=1,fo='star')=>{
    </div>`;
 };
 S.apps4off=()=>S.apps4(0,'info');
+S.apps5=(fav=1,fo='move')=>{
+  // v5 (owner): the box is the focused tile's width, edges on the tile's edges, 24 px above it. One grid on an 8 px scale:
+  // padding 16, gap 8, every button 72 tall with radius 12 (the box 28 = 12 + 16). Rows: icon column 32, then the text.
+  // Bottom: two equal half-width icon buttons, ★ (filled = a favourite) and ⓘ. Focus is the same everywhere: green 3 px inside, soft green fill.
+  const tileW=262*1.04, tileR=120-(tileW-262)/2, tileTop=770-170*.02;
+  const B='height:72px;border-radius:12px;display:flex;align-items:center;';
+  const F=k=>k==fo?'background:var(--tint);box-shadow:inset 0 0 0 3px var(--green);':'';
+  const icc=k=>k==fo?'var(--green)':'#6B706D';
+  const row=(k,t)=>`<div style="${B}gap:16px;padding:0 24px;${F(k)}"><svg viewBox="0 0 24 24" style="flex:none;width:32px;height:32px;fill:none;stroke:${icc(k)};stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round">${P[k]}</svg><span style="font:30px TM;color:var(--ink)">${t}</span></div>`;
+  const ib=(k,svg)=>`<div style="${B}justify-content:center;${F(k)||'background:var(--paper);'}">${svg}</div>`;
+  const star=`<svg viewBox="0 0 24 24" style="width:34px;height:34px;stroke:${fav?'var(--green)':icc('star')};stroke-width:1.6;stroke-linejoin:round;fill:${fav?'var(--green)':'none'}">${P.star}</svg>`;
+  const info=`<svg viewBox="0 0 24 24" style="width:34px;height:34px;fill:none;stroke:${icc('info')};stroke-width:1.6;stroke-linecap:round">${P.info.replace(/fill="currentColor"/,'fill="'+icc('info')+'" stroke="none"')}</svg>`;
+  const h=16*2+4*72+3*8;
+  return home(0,false,true)+`<div style="position:absolute;right:${tileR}px;top:${tileTop-24-h}px;width:${tileW}px;height:${h}px;padding:16px;display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:72px;gap:8px;background:rgba(255,255,255,.97);border:1px solid rgba(227,223,213,.9);border-radius:28px;box-shadow:0 24px 56px rgba(40,36,24,.16),0 2px 6px rgba(40,36,24,.06)">
+    <div style="grid-column:1/3">${row('move','انقل')}</div>
+    <div style="grid-column:1/3">${row('hide','أخفِ')}</div>
+    <div style="grid-column:1/3">${row('lock','اقفل')}</div>
+    ${ib('star',star)}${ib('info',info)}
+   </div>`;
+};
+S.apps5off=()=>S.apps5(0,'info');
 S.settings=()=>{
   const C=[['pin','الموقع والصلاة','الرياض، أم القرى'],['clock','الساعة والأرقام','١٢ ساعة، أرقام عربية'],
     ['book','تلاوة وأذان','مشاري العفاسي'],['cards','البطاقات','شاشة التوقف والشاشة الرئيسية'],
