@@ -54,3 +54,9 @@ Each PNG is two adhan screens stacked: top with «الأذان» focused and on,
 - **D, status light:** a dot after the title; filled green with a glow when on, a hollow ring when off.
 - **E, flat TV switch:** a thin straight track with a square knob; green knob at the start when on, grey knob at the end when off.
 - **F, the icon is the state:** each toggle row has its own icon, solid green when on, grey with a slash when off; a second line says «مفعّل» or «متوقف». The other rows keep an empty icon slot so names line up.
+
+## v5, Saudi feel (`v5-toggle-G/H/I.png`, open `proto.html#adhan:G:1` etc.; same stacked format)
+Sources: the DGA design.dga.gov.sa site was blocked from here (proxy 403), so the colours come from DGA's own package `@platformscode/core` 0.0.53 on npm: sa-flag green 600 #1B8354 (primary, used on the light focused row), 500 #25935F (fills), 400 #54C08A (text on dark); gold 600 #DBA102 is there too, left unused. DGA's own switch is the usual rounded one, so its colours are used here, not its shape. The Tawakkalna/Nafath/Absher look (flag green on plain cards) and the Sadu/Najdi geometry are from general knowledge, not fetched.
+- **G, Najdi diamond:** a square turned 45°, solid flag green with a small white diamond inside when on, a hollow grey diamond when off; the word «مفعّل/متوقف» beside it.
+- **H, Sadu band:** a band of six triangles like a Sadu weaving strip, solid flag green when on, thin grey outlines when off; the word beside it.
+- **I, Sadu edge:** three stacked triangles (the Sadu "teeth") at the start of the row next to the name, shown only when on; the value says «مفعّل» in green or «متوقف» in grey.

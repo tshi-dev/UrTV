@@ -60,6 +60,19 @@ h1{position:absolute;right:0;top:56px;font:58px TD;line-height:1.2}
 .row .nm small{display:block;font:26px TR;color:var(--sub);line-height:1.1}
 .row.fo .nm small{color:var(--inksub)}
 .row .nm small.on{color:#3DDC84}.row.fo .nm small.on{color:#1E8A53}
+/* v5, Saudi: DGA «منصات» sa-flag greens (#1B8354 600, #25935F 500, #54C08A 400), Najdi diamond, Sadu triangle band */
+.dm{flex:none;display:flex;align-items:center;gap:20px;font:30px TM;color:var(--sub)}
+.dm i{width:34px;height:34px;transform:rotate(45deg);border:3px solid rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center}
+.dm.on{color:#54C08A}.dm.on i{background:#25935F;border-color:#25935F}
+.dm.on i::after{content:"";width:10px;height:10px;background:#fff}
+.fo .dm{color:var(--inksub)}.fo .dm i{border-color:var(--inksub)}
+.fo .dm.on{color:#1B8354}.fo .dm.on i{background:#1B8354;border-color:#1B8354}
+.sd{flex:none;display:flex;align-items:center;gap:20px;font:30px TM;color:var(--sub)}
+.sd svg{width:150px;height:30px}
+.sd.on{color:#54C08A}.fo .sd{color:var(--inksub)}.fo .sd.on{color:#1B8354}
+.tri{flex:none;width:18px;height:54px;fill:#25935F;visibility:hidden}.tri.on{visibility:visible}.fo .tri{fill:#1B8354}
+.stv{font:32px TM;color:var(--sub)}.stv.on{color:#54C08A}
+.fo .stv{color:var(--inksub)}.fo .stv.on{color:#1B8354}
 </style></head><body>
 <div class="f"><div class="bg"></div><div class="veil"></div><div class="wrap" id="w"></div></div>
 <script>
@@ -109,18 +122,25 @@ const RI={'الأذان':'<path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path 
  'أذان مختصر':'<path d="M4 6l7 6-7 6z"/><path d="M13 6l7 6-7 6z"/>',
  'إيقاف الأذان بأي زر':'<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><circle class="k" cx="12" cy="8" r="2"/>',
  'تنبيه قبل الأذان':'<circle cx="12" cy="13" r="8"/><path class="k" d="M12 9v4l2.5 1.5"/>'};
+// Sadu band: a row of triangles; filled green when on, a thin grey outline when off
+const sadu=on=>{const fo='';let t='';for(let k=0;k<6;k++){const x=k*25;t+=`<path d="M${x+1} 28L${x+12.5} 3L${x+24} 28z"/>`;}
+  return `<svg viewBox="0 0 150 30" style="fill:${on?'#25935F':'none'};stroke:${on?'#25935F':'currentColor'};stroke-width:2;stroke-linejoin:round${on?'':';opacity:.7'}">${t}</svg>`;};
 const list=(title,R)=>{
   const rows=R.map((r,i)=>{const o=r[1];let e='';
-    let nm=r[0],pre='';
+    let nm=r[0],pre='',cls='';
     if(o.sw!==undefined){
       if(T=='D')nm+=`<i class="dt${o.sw?' on':''}"></i>`;
+      else if(T=='G')e=`<div class="dm${o.sw?' on':''}">${o.sw?'مفعّل':'متوقف'}<i></i></div>`;
+      else if(T=='H')e=`<div class="sd${o.sw?' on':''}">${o.sw?'مفعّل':'متوقف'}${sadu(o.sw)}</div>`;
+      else if(T=='I'){e=`<div class="stv${o.sw?' on':''}">${o.sw?'مفعّل':'متوقف'}</div>`;pre=`<svg class="tri${o.sw?' on':''}" viewBox="0 0 18 54"><path d="M18 0L4 9L18 18zM18 18L4 27L18 36zM18 36L4 45L18 54z"/></svg>`;}
       else if(T=='E')e=`<div class="ts${o.sw?' on':''}"></div>`;
       else if(T=='F'){pre=`<svg class="ri${o.sw?' on':''}" viewBox="0 0 24 24">${RI[r[0]]}${o.sw?'':'<path d="M3.5 3.5l17 17" style="stroke-width:2"/>'}</svg>`;nm+=`<small class="${o.sw?'on':''}">${o.sw?'مفعّل':'متوقف'}</small>`;}
       else e=tg(o.sw);}
     else if(o.bar)e=`<div class="bar"><i style="width:${o.bar}%"></i></div><div class="val">٦٠٪</div>`;
     else if(o.v)e=`<div class="val">${o.v}</div>`;
+    if(T=='I'&&o.sw===undefined)pre='<svg class="tri" viewBox="0 0 18 54"></svg>';
     if(T=='F'&&o.sw===undefined)pre='<svg class="ri sp" viewBox="0 0 24 24"></svg>';
-    return `<div class="row${i==0?' fo':''}" style="top:${16+i*86}px">${pre}<div class="nm">${nm}</div>${e}</div>`;}).join('');
+    return `<div class="row${i==0?' fo':''}${cls}" style="top:${16+i*86}px">${pre}<div class="nm">${nm}</div>${e}</div>`;}).join('');
   return `<h1>${title}</h1><div class="list" style="height:${32+R.length*86-2}px">${rows}</div>`;
 };
 S.adhan=()=>list('الأذان',[['الأذان',{sw:+X}],['المؤذن',{v:'مؤذن ٣'}],['مؤذن الفجر',{v:'فجر الحرم المكي'}],['مستوى الصوت',{bar:60}],['أذان مختصر',{sw:0}],['إيقاف الأذان بأي زر',{sw:1}],['تنبيه قبل الأذان',{sw:1}],['أذان من ملفي',{v:'لا يوجد'}],['جرّب الصوت',{}]]);
