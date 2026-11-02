@@ -448,3 +448,76 @@ watched stocks.
 the data to build a data feed. Our CI file served to every TV looks like that. The page adds no new Yahoo use beyond a few
 more fields. For a public release, the clean route is a licensed delayed feed from Saudi Exchange. That is the owner's
 call.
+
+## 7. «محفظتي»: a portfolio on the markets page
+
+A fourth tab, between «قائمتي» and «الأخبار». The quantities and costs in the mockups are made up; the prices are the real
+`data-markets` of 2 November.
+
+**Mockups:**
+- `notes/proposals/markets-portfolio.png`: dark.
+- `notes/proposals/markets-portfolio-light.png`: light.
+- `notes/proposals/markets-portfolio-hidden.png`: amounts hidden.
+- `notes/proposals/markets-portfolio-add-tv.png`: the number pad on the TV.
+- `notes/proposals/markets-portfolio-add-phone.png`: the phone page, 390×844.
+
+**The tab:**
+- **Totals:** the total value in riyals, the total gain or loss (SAR and %), and today's (SAR and %).
+- **Allocation:** a bar by stock, with a legend in %. A bar reads better than a donut from the couch.
+- **One row per holding:**
+  - name and code;
+  - quantity and average cost;
+  - price and market value;
+  - gain or loss in SAR and %;
+  - today's change in SAR.
+- **US holdings:** in dollars, marked «بالدولار». The totals convert them at the 3.75 peg, which is a fixed rate, not a
+  fetched one.
+- **Two buttons on the tab row:** «أخفِ المبالغ» and «أضف سهمًا». OK on a row opens the stock card from §6, with «عدّل» and
+  «احذف» added.
+
+**Adding and editing:**
+- **On the phone page (the main way):**
+  - Search by name or code. The list is the 30 Tadawul names we know, plus any 4-digit code or US ticker, checked against
+    the price file.
+  - Then «متوسط واحد» (quantity and average cost), or «عدة عمليات شراء»: one line per buy, and the page shows the
+    weighted average.
+  - It stores the buys too, so the average can be edited later.
+  - «احفظ في التلفزيون» sends it over the existing pairing (`phone/Pairing.java`, LAN only). The phone keeps nothing
+    after saving.
+- **On the TV:** the stock, then a large number pad for the quantity and the cost, with «أسهل من الجوال», which shows the
+  pairing QR.
+- **Sales:** not in the first version. Editing the quantity covers it.
+
+**Privacy, and how it is enforced:**
+
+The holdings stay on this TV only.
+- They live in the home app's private storage (SharedPreferences, `MODE_PRIVATE`). Android backup is already off in both
+  apps (`allowBackup="false"`).
+- They are never in a URL. The page gets them from a JavaScript interface on demand, not in `#…` query keys, because the
+  URL can end up in diagnostics and screenshots.
+- They are never in `ConfigProvider`, so `saver.sh show`, the agent's tools and the other app cannot read them.
+- No command reads them: there is no `saver.sh portfolio`, by design, just as with «المهام».
+
+**What can never carry them, each with a test:**
+- **`optimize/share.py` (share.sh reports):** a line must match `ALLOWED_LINE` and passes through `scrub()`. A test adds a
+  holding to a fake TV state and checks that the report has no number from it.
+- **«أرسل تقرير» on the TV (`Report.java`):** fixed fields only (versions, Android, WebView).
+  `tests/settings_report_test.py` already checks them against share.py. A test also checks that no portfolio key name
+  appears in `Report.java`.
+- **Settings export and import (`optimize/settings_move.py`):** `ALLOWED_TOP` is an allow-list, and «portfolio» is not in
+  it. A test checks that an import file with a `portfolio` key is refused, and that the export never contains one, as
+  for the tasks.
+- **The phone page:** it can only write holdings and read the list while editing on the paired phone. No phone endpoint
+  sends them anywhere else. A test checks that the phone API gives the holdings only to a paired phone, and only during
+  an edit.
+
+**Guests:**
+- «أخفِ المبالغ» (`markets-portfolio-hidden.png`) shows the percentages and prices, and replaces quantities and amounts
+  with «••••». It stays hidden until shown again.
+- If a parental PIN exists, a switch «اقفل محفظتي» asks for it before the tab opens. It reuses `Parental`/`PinPrompt`,
+  the same PIN with the same wrong-try waits. Without a PIN, the switch says «ضع رقمًا سريًا من الرقابة الأبوية أولًا».
+
+**Wiping them:**
+- «احذف المحفظة» in the tab's own settings, with a confirmation.
+- `pin reset` and uninstalling the app also remove them.
+- Moving to a new TV does not carry them; they are typed again from the phone. That is the price of never exporting them.

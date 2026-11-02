@@ -537,5 +537,75 @@ const STOCK=(T,light)=>{const q=MK2['2222.SR'],c=chg(q);const lo=Math.min(...q.c
   ${[['٣:٢٠ م، اليوم','أرامكو السعودية تعلن نتائجها المالية للربع الثالث'],['٢٨ أكتوبر','أرامكو السعودية تعلن موعد الإعلان عن نتائج الربع الثالث']].map((a,i)=>`<div style="display:flex;gap:24px;align-items:center;height:68px;${i?`border-top:1px solid ${T.line}`:''}"><span style="width:200px;font:22px TR;color:${T.mute}">${a[0]}</span><span style="flex:1;font:26px TM;color:${T.ink}">${a[1]}</span></div>`).join('')}
   <div style="display:flex;gap:24px;margin-top:24px"><div class="btn fo" style="flex:1;${light?'':'background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.3);outline-color:#8FE0B4'}">أزل من قائمتي</div><div class="btn" style="flex:1;${light?'':'background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.3)'}">أظهره في شريط الأسواق</div></div></div>`;};
 S.m1=()=>TAB1(false);S.m1l=()=>TAB1(true);S.m2=()=>TAB2(false,0);S.m2d=()=>TAB2(false,1);S.m3=()=>TAB3(false);S.m3l=()=>TAB3(true);S.m2l=()=>TAB2(true,0);
+
+// ---- «محفظتي»: holdings, kept only on this TV. Quantities and costs are illustrative; prices are data-markets of 2 Nov.
+const HOLD=[['أرامكو','2222','2222.SR',500,27.40],['الراجحي','1120','1120.SR',120,52.10],['stc','7010','7010.SR',200,43.80],['سابك','2010','2010.SR',60,58.20],['Apple','AAPL','AAPL',10,245.00,1],['NVIDIA','NVDA','NVDA',15,120.50,1]];
+const PCOL=['#25935F','#8FCBA9','#C9A227','#9C7A4E','#5B8DBE','#B9C6D3'];
+const FRAME4=(light,T,hide)=>FRAME(light,9,T).replace(/<div class="abs" style="right:120px;left:120px;top:140px[\s\S]*$/,'')+`
+ <div class="abs" style="right:120px;left:120px;top:140px;height:72px;display:flex;gap:8px;border-bottom:1.5px solid ${T.line}">
+  ${['السوق','قائمتي','محفظتي','الأخبار'].map((t,i)=>`<div style="padding:0 32px;display:flex;align-items:center;font:30px ${i==2?'TD':'TM'};color:${i==2?T.acc:T.sub};${i==2?`box-shadow:inset 0 -4px 0 ${T.acc}`:''}">${t}</div>`).join('')}
+  <div style="flex:1"></div>
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;padding:0 24px;border-radius:14px;border:1.5px solid ${T.line};font:24px TM;color:${T.sub}">${ic(hide?'eye':'eyeoff',28)}${hide?'أظهر المبالغ':'أخفِ المبالغ'}</div>
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;padding:0 24px;border-radius:14px;border:1.5px solid ${T.line};font:24px TM;color:${T.sub}">${ic('plus',28)}أضف سهمًا</div></div>`;
+P.eye='<path d="M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12s-3.5 6.5-9.5 6.5S2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/>';
+P.eyeoff='<path d="M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12s-3.5 6.5-9.5 6.5S2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/><path d="M4 4l16 16"/>';
+P.plus='<path d="M12 5v14M5 12h14"/>';
+P.lockS='<rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>';
+const PORT=(light,hide,pad)=>{const T=THEME(light);const C=v=>v>=0?T.up:T.dn;const sg=v=>(v>=0?'+':'−');
+ const rows=HOLD.map(h=>{const q=MK2[h[2]];const fx=h[5]?3.75:1;const val=h[3]*q.p,cost=h[3]*h[4],gl=val-cost,day=h[3]*(q.p-q.v);
+  return {h,q,val,cost,gl,glp:gl/cost*100,day,sar:val*fx,glS:gl*fx,dayS:day*fx}});
+ const tot=rows.reduce((a,r)=>a+r.sar,0),tcost=rows.reduce((a,r)=>a+r.cost*(r.h[5]?3.75:1),0),tgl=tot-tcost,tday=rows.reduce((a,r)=>a+r.dayS,0),tprev=tot-tday;
+ const M=(v,d=2,u='')=>hide?'••••':`<bdi dir="ltr">${v<0?'−':''}${NF(Math.abs(v),d)}</bdi>${u}`;
+ const S2=(v,d=2)=>hide?'••••':`<bdi dir="ltr">${sg(v)}${NF(Math.abs(v),d)}</bdi>`;
+ const PC=v=>`<bdi dir="ltr">${sg(v)}${NF(Math.abs(v),2)}٪</bdi>`;
+ const cols=[['السهم','flex:1'],['الكمية','width:120px'],['متوسط التكلفة','width:170px'],['السعر','width:140px'],['القيمة','width:190px'],['الربح','width:200px'],['اليوم','width:150px']];
+ const cell=(i,html,st='')=>`<div style="${cols[i][1]};${i?'text-align:left;':''}${st}">${html}</div>`;
+ return `${FRAME4(light,T,hide)}
+ <div style="${BOX(T,'right:120px;left:120px;top:244px;height:232px;padding:24px 32px')}">
+  <div style="display:flex;gap:48px">
+   <div style="flex:1.3"><div style="font:24px TR;color:${T.sub}">القيمة الإجمالية</div><div style="font:56px TD;color:${T.ink};line-height:1.25">${M(tot,2)}<span style="font:26px TR;color:${T.sub};margin-right:12px">ر.س</span></div></div>
+   <div style="flex:1"><div style="font:24px TR;color:${T.sub}">الربح الكلي</div><div style="font:40px TD;color:${C(tgl)};line-height:1.5">${S2(tgl)}<span style="font:28px TM;margin-right:12px">${PC(tgl/tcost*100)}</span></div></div>
+   <div style="flex:1"><div style="font:24px TR;color:${T.sub}">اليوم</div><div style="font:40px TD;color:${C(tday)};line-height:1.5">${S2(tday)}<span style="font:28px TM;margin-right:12px">${PC(tday/tprev*100)}</span></div></div></div>
+  <div style="display:flex;height:16px;border-radius:8px;overflow:hidden;gap:3px;margin-top:16px">${rows.map((r,i)=>`<div style="flex:${r.sar};background:${PCOL[i]}"></div>`).join('')}</div>
+  <div style="display:flex;gap:32px;margin-top:12px;font:21px TR;color:${T.sub}">${rows.map((r,i)=>`<span style="display:flex;align-items:center;gap:8px"><span style="width:14px;height:14px;border-radius:3px;background:${PCOL[i]}"></span>${r.h[0]} ${NF(r.sar/tot*100,0)}٪</span>`).join('')}</div></div>
+ <div style="${BOX(T,'right:120px;left:120px;top:500px;height:516px;padding:16px')}">
+  <div style="display:flex;gap:24px;align-items:center;height:48px;padding:0 24px;font:21px TR;color:${T.mute}">${cols.map((c,i)=>cell(i,c[0])).join('')}</div>
+  ${rows.map((r,i)=>`<div style="display:flex;gap:24px;align-items:center;height:64px;padding:0 24px;border-radius:14px;${i==0&&!pad?T.fo:`border-top:1px solid ${T.line}`}">
+   ${cell(0,`<div style="font:27px TM;color:${T.ink};line-height:1.2">${r.h[0]}</div><div style="font:19px TR;color:${T.mute};line-height:1.2">${r.h[1]}${r.h[5]?' · بالدولار':''}</div>`)}
+   ${cell(1,`<span style="font:26px TM;color:${T.ink}">${hide?'••':NF(r.h[3],0)}</span>`)}
+   ${cell(2,`<span style="font:26px TR;color:${T.sub}">${M(r.h[4])}</span>`)}
+   ${cell(3,`<span style="font:26px TM;color:${T.ink}">${NF(r.q.p,2)}</span>`)}
+   ${cell(4,`<span style="font:26px TM;color:${T.ink}">${M(r.val,2)}${r.h[5]&&!hide?'<span style="font:20px TR;color:'+T.mute+';margin-right:6px">$</span>':''}</span>`)}
+   ${cell(5,`<div style="font:23px TM;color:${C(r.gl)};line-height:1.2">${S2(r.gl)}</div><div style="font:20px TM;color:${C(r.gl)};line-height:1.2">${PC(r.glp)}</div>`)}
+   ${cell(6,`<span style="font:24px TM;color:${C(r.day)}">${hide?PC(r.day/(r.val-r.day)*100):S2(r.day)}</span>`)}</div>`).join('')}
+  <div style="position:absolute;right:40px;left:40px;bottom:20px;display:flex;justify-content:space-between;font:20px TR;color:${T.mute}"><span>${ic('lockS',20)} تبقى في هذا التلفزيون فقط، ولا تُرسل في أي تقرير ولا تنتقل مع الإعدادات</span><span>الأسهم الأمريكية بالدولار، والمجموع بالريال على سعر الربط ٣٫٧٥</span></div></div>
+ ${pad?PAD(T,light):''}`;};
+// on the TV: a number pad for anyone who prefers it (the phone is easier)
+const PAD=(T,light)=>{const k=['١','٢','٣','٤','٥','٦','٧','٨','٩','٫','٠','⌫'];
+ return `<div class="abs" style="inset:0;background:${light?'rgba(246,244,239,.82)':'rgba(10,8,6,.58)'}"></div>
+ <div class="abs" style="right:480px;left:480px;top:120px;height:840px;border-radius:28px;padding:40px 48px;${light?'background:var(--paper);border:1.5px solid var(--line)':'background:rgba(36,28,22,.95);border:1px solid rgba(255,255,255,.2)'}">
+  <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:40px TD;color:${T.ink}">الراجحي</span><span style="font:24px TR;color:${T.mute}">١١٢٠ · ر.س</span></div>
+  <div style="display:flex;gap:24px;margin-top:24px">
+   <div style="flex:1;padding:16px 24px;border-radius:16px;${T.fo}"><div style="font:22px TR;color:${T.sub}">الكمية</div><div style="font:44px TD;color:${T.ink}">١٢٠<span style="display:inline-block;width:3px;height:40px;background:${T.acc};margin-right:6px;vertical-align:middle"></span></div></div>
+   <div style="flex:1;padding:16px 24px;border-radius:16px;border:1.5px solid ${T.line}"><div style="font:22px TR;color:${T.sub}">متوسط التكلفة</div><div style="font:44px TD;color:${T.ink}">٥٢٫١٠</div></div></div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:32px">${k.map((x,i)=>`<div style="height:96px;border-radius:16px;display:flex;align-items:center;justify-content:center;font:40px TM;color:${T.ink};${i==4?`outline:3px solid ${T.acc};outline-offset:-3px;`:''}border:1.5px solid ${T.line}">${x}</div>`).join('')}</div>
+  <div style="display:flex;gap:24px;margin-top:32px"><div class="btn pri" style="flex:1">احفظ</div><div class="btn" style="flex:1;${light?'':'background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.3)'}">أسهل من الجوال</div></div></div>`;};
+// the phone page, 390x844: pick the stock, then quantity and cost; several buys give a weighted average
+S.phoneadd=()=>`<div class="abs" style="left:0;top:0;width:390px;height:844px;background:var(--paper);direction:rtl;padding:56px 20px 24px;overflow:hidden">
+  <div style="font:26px TD">أضف إلى محفظتي</div>
+  <div style="margin-top:16px;border:1.5px solid var(--green);border-radius:12px;height:52px;display:flex;align-items:center;gap:8px;padding:0 16px;font:18px TM;background:#fff"><svg class="s" viewBox="0 0 24 24" style="width:20px;height:20px;color:var(--mute)"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>الراج<span style="width:2px;height:22px;background:var(--green)"></span></div>
+  <div class="card" style="margin-top:8px;border-radius:14px;overflow:hidden">
+   <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--tint)"><span style="font:18px TM;color:var(--green)">الراجحي</span><span style="font:15px TR;color:var(--mute)">١١٢٠ · ٦٠٫١٥ ر.س</span></div>
+   <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-top:1.5px solid var(--line)"><span style="font:18px TM">بنك الراجحي ريت</span><span style="font:15px TR;color:var(--mute)">٤٣٤٠</span></div></div>
+  <div style="display:flex;margin-top:24px;border:1.5px solid var(--line);border-radius:12px;overflow:hidden;font:16px TM">
+   <div style="flex:1;text-align:center;padding:12px 0;color:var(--sub)">متوسط واحد</div><div style="flex:1;text-align:center;padding:12px 0;background:var(--tint);color:var(--green);box-shadow:inset 0 0 0 2px var(--green);border-radius:10px">عدة عمليات شراء</div></div>
+  <div class="card" style="margin-top:16px;border-radius:14px;padding:4px 16px">
+   <div style="display:flex;font:14px TR;color:var(--mute);padding:8px 0"><span style="flex:1">الكمية</span><span style="flex:1">السعر</span><span style="width:24px"></span></div>
+   ${[['٨٠','٥٠٫٩٠'],['٤٠','٥٤٫٥٠']].map(b=>`<div style="display:flex;gap:8px;align-items:center;padding:8px 0;border-top:1.5px solid var(--line)"><span style="flex:1;font:18px TM;border:1.5px solid var(--line);border-radius:10px;padding:8px 12px">${b[0]}</span><span style="flex:1;font:18px TM;border:1.5px solid var(--line);border-radius:10px;padding:8px 12px">${b[1]}</span><span style="width:24px;text-align:center;color:var(--mute);font:20px TR">×</span></div>`).join('')}
+   <div style="padding:12px 0;border-top:1.5px solid var(--line);font:16px TM;color:var(--green)">+ عملية أخرى</div></div>
+  <div style="display:flex;justify-content:space-between;margin-top:16px;padding:16px;border-radius:14px;background:#fff;border:1.5px solid var(--line)"><div><div style="font:14px TR;color:var(--sub)">المجموع</div><div style="font:20px TD">١٢٠ سهمًا</div></div><div style="text-align:left"><div style="font:14px TR;color:var(--sub)">المتوسط المحسوب</div><div style="font:20px TD">٥٢٫١٠ ر.س</div></div></div>
+  <div style="margin-top:20px;background:var(--fill);color:#fff;border-radius:12px;height:52px;display:flex;align-items:center;justify-content:center;font:18px TM">احفظ في التلفزيون</div>
+  <div style="margin-top:16px;font:14px TR;color:var(--sub);line-height:1.6;display:flex;gap:8px"><svg class="s" viewBox="0 0 24 24" style="flex:none;width:18px;height:18px;color:var(--green)">${P.lockS}</svg>تُحفظ في التلفزيون فقط، ولا تبقى في الجوال بعد الحفظ. لا تُرسل في أي تقرير ولا تنتقل مع الإعدادات.</div></div>`;
+S.port=()=>PORT(false,0,0);S.portl=()=>PORT(true,0,0);S.porth=()=>PORT(false,1,0);S.portpad=()=>PORT(false,0,1);
 document.getElementById('f').innerHTML=S[(location.hash||'#football').slice(1)]();
 </script></body></html>
