@@ -50,7 +50,7 @@ final class ControlCenter {
 
     // the glass look the home shows (GlassSource.look, when the panel opens): the panel opaque over the look's solid colour (it sits over the
     // home's photo as it is), the tiles a glass panel on it, the focused one the solid focus fill; GlassStyle checks each of them
-    private int PANEL, LINE, FOCUSED, TILE, TEXT, SUB, ON, ON_SUB, ACCENT;
+    private int PANEL, LINE, FOCUSED, TILE, TEXT, SUB, ON, ON_SUB, ACCENT, RING;
 
     private final Activity act;
     private final Host host;
@@ -80,11 +80,24 @@ final class ControlCenter {
         if (showing()) return;
         GlassStyle.Look l = GlassSource.look(act);   // the look of now, before any tile is made
         PANEL = GlassStyle.over(l.dialog, l.base); LINE = l.line; FOCUSED = l.focus; TILE = l.panel; TEXT = l.text; SUB = l.sub;
-        ON = l.onFocus; ON_SUB = l.onFocusSub; ACCENT = l.accent;
+        ON = l.onFocus; ON_SUB = l.onFocusSub; ACCENT = l.accent; RING = l.ring;
         List<Tile> tiles = new ArrayList<>();
 
+        // the order (docs/UX-REVIEW.md): Wi-Fi and Bluetooth side by side first, then the sound, the speed test, the sleep timer, «أطفئ الآن», mirroring
+        Tile net = tile("net", S.t("الشبكة"), "", R.drawable.ic_wifi, () -> { dismiss(); host.launchGuarded(ParentalPolicy.PILL_WIFI, new Intent(Settings.ACTION_WIFI_SETTINGS), "واي فاي"); });
+        networkLines(net);
+        tiles.add(net);
+        // «البلوتوث»: the TV's remotes-and-accessories screen, only when an action for it resolves; locked as the TV's settings are
+        final Intent bluetooth = bluetoothIntent();
+        if (bluetooth != null)
+            tiles.add(tile("bluetooth", ControlText.BLUETOOTH, ControlText.BLUETOOTH_HINT, R.drawable.ic_bluetooth,
+                    () -> { dismiss(); host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, bluetooth, ControlText.BLUETOOTH); }));
+        tiles.add(tile("sound", S.t("مخرج الصوت"), outputLine(), R.drawable.ic_sound, () -> { dismiss(); host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, soundIntent(), S.t("إعدادات الصوت")); }));
+        Tile test = tile("speed", S.t("اختبار السرعة"), S.t("اضغط اختيار للبدء"), R.drawable.ic_speed, null);
+        test.action = () -> speedTest(test);
+        tiles.add(test);
         tiles.add(tile("sleep", S.t("مؤقت النوم"), sleepLine(), R.drawable.ic_sleep, () -> { dismiss(); host.openSleep(anchor); }));
-        Tile off = tile("off", S.t("أطفئ الآن"), SleepService.enabled() ? S.t("تُطفأ الشاشة فورًا") : S.t("الخدمة مطفأة: تظهر شاشة التوقف بدل الإطفاء. مطوّلًا: تفعيلها"),
+        Tile off = tile("off", S.t("أطفئ الآن"), SleepService.enabled() ? S.t("تُطفأ الشاشة فورًا") : S.t("الخدمة مطفأة: تظهر شاشة التوقف بدل الإطفاء"),
                 R.drawable.ic_power, null);
         off.action = () -> turnOffNow();
         off.setOnLongClickListener(v -> {   // a long OK: where the sleep service is turned on, behind the same lock as the sleep timer's own line
@@ -93,26 +106,14 @@ final class ControlCenter {
             return true;
         });
         tiles.add(off);
-        Tile net = tile("net", S.t("الشبكة"), "", R.drawable.ic_wifi, () -> { dismiss(); host.launchGuarded(ParentalPolicy.PILL_WIFI, new Intent(Settings.ACTION_WIFI_SETTINGS), "واي فاي"); });
-        networkLines(net);
-        tiles.add(net);
-        Tile test = tile("speed", S.t("اختبار السرعة"), S.t("اضغط اختيار للبدء"), R.drawable.ic_speed, null);
-        test.action = () -> speedTest(test);
-        tiles.add(test);
-        tiles.add(tile("sound", S.t("مخرج الصوت"), outputLine(), R.drawable.ic_sound, () -> { dismiss(); host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, soundIntent(), S.t("إعدادات الصوت")); }));
         // «انعكاس الشاشة»: the TV's own mirroring app (ControlText.MIRROR_APPS), only when one is installed; locked as that app's own tile is
         final Intent mirror = mirrorIntent();
         if (mirror != null)
             tiles.add(tile("mirror", ControlText.MIRROR, ControlText.MIRROR_HINT, R.drawable.ic_cast,
                     () -> { dismiss(); host.launchGuarded(ParentalPolicy.TILE, mirror, ControlText.MIRROR); }));
-        // «البلوتوث»: the TV's remotes-and-accessories screen, only when an action for it resolves; locked as the TV's settings are
-        final Intent bluetooth = bluetoothIntent();
-        if (bluetooth != null)
-            tiles.add(tile("bluetooth", ControlText.BLUETOOTH, ControlText.BLUETOOTH_HINT, R.drawable.ic_bluetooth,
-                    () -> { dismiss(); host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, bluetooth, ControlText.BLUETOOTH); }));
         if (host.saverInstalled()) {
-            Tile saver = tile("saver", S.t("شاشة التوقف"), S.t("مطوّلًا: الإعدادات"), R.drawable.ic_screensaver, () -> { dismiss(); host.openSaver(); });
-            saver.setOnLongClickListener(v -> { dismiss(); host.openSaverSettings(); return true; });
+            Tile saver = tile("saver", S.t("شاشة التوقف"), S.t("ابدأها الآن"), R.drawable.ic_screensaver, () -> { dismiss(); host.openSaver(); });
+            saver.setOnLongClickListener(v -> { dismiss(); host.openSaverSettings(); return true; });   // a shortcut: its settings are in «إعدادات تلفزيونك» ← البطاقات
             tiles.add(saver);
             tiles.add(tile("ours", S.t("إعدادات تلفزيونك"), S.t("الأذان والمفضلة والمظهر"), R.drawable.ic_home, () -> { dismiss(); host.openOurSettings(); }));
         }
@@ -276,6 +277,7 @@ final class ControlCenter {
         private void paint() {
             boolean f = hasFocus();
             fill.setColor(f ? FOCUSED : TILE);
+            if (RING != 0) fill.setStroke(f ? dp(3) : Math.max(1, dp(1)), f ? RING : LINE);   // «رملي»: a calm focus, a green line round a soft fill
             name.setTextColor(f ? ON : TEXT);
             value.setTextColor(f ? ON_SUB : SUB);
             glyph.getDrawable().setTint(f ? ON : TEXT);

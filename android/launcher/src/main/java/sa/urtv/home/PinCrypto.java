@@ -25,14 +25,23 @@ final class PinCrypto {
         return "1:" + ROUNDS + ":" + hex(salt) + ":" + hex(derive(pin, salt, ROUNDS));
     }
 
-    static boolean verify(String pin, String record) {
-        if (!valid(pin) || record == null) return false;
+    static boolean verify(String pin, String record) { return valid(pin) && matches(pin, record); }
+
+    /** True when the record is one this class reads (its form only; nothing is derived). */
+    static boolean wellFormed(String record) {
+        if (record == null) return false;
+        String[] p = record.split(":", -1);
+        if (p.length != 4 || !"1".equals(p[0]) || !p[2].matches("[0-9a-f]{32}") || !p[3].matches("[0-9a-f]{64}") || !p[1].matches("[0-9]{1,7}")) return false;
+        int rounds = Integer.parseInt(p[1]);
+        return rounds >= MIN_ROUNDS && rounds <= MAX_ROUNDS;
+    }
+
+    /** Any digits against a record (PinRecovery's longer code uses the same record form); constant-time compare. */
+    static boolean matches(String digits, String record) {
+        if (digits == null || !digits.matches("[0-9]{1,16}") || !wellFormed(record)) return false;
         try {
             String[] p = record.split(":");
-            if (p.length != 4 || !"1".equals(p[0])) return false;
-            int rounds = Integer.parseInt(p[1]);
-            if (rounds < MIN_ROUNDS || rounds > MAX_ROUNDS || p[2].length() != 32 || p[3].length() != 64) return false;
-            return MessageDigest.isEqual(unhex(p[3]), derive(pin, unhex(p[2]), rounds));
+            return MessageDigest.isEqual(unhex(p[3]), derive(digits, unhex(p[2]), Integer.parseInt(p[1])));
         } catch (RuntimeException e) {
             return false;
         }

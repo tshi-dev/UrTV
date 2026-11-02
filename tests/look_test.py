@@ -43,20 +43,20 @@ check("the sun is up while «الغروب» is next (the prayer times' DayParts,
       and "if (!Look.AUTO.equals(cfg.appearance())) return null;" in sun)
 apply = main[main.index("private void applyLook(boolean light)"):].split("\n    }\n")[0]
 check("the look is applied only when it changes; the home is built in the dark look and starts there (dark is exactly as it was)",
-      "if (light == lightNow) return;" in apply and "private boolean lightNow;" in main)
+      "if (light == lightNow && lookNow.equals(paletteLook)) return;" in apply and "private boolean lightNow;" in main)
 for part in ("clock.setTextColor(p.text)", "title.setTextColor(p.ink)", "t.setTextColor(p.soft)", "t.setTextColor(p.gold)", "t.setShadowLayer(dp(3), 0, dp(1), p.shadow)",
              "for (TextView t : gridLabels) t.setTextColor(p.ink);", "scrim.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, p.scrim));",
-             "gridShade.setBackgroundColor(p.shade);", "dockBand.setColor(p.band);"):
+             "gridShade.setBackgroundColor(p.shade);", "dockBand.setColor(light ? FavBar.FILL_LIGHT : FavBar.FILL_DARK);"):
     check(f"the light and dark looks recolour: {part}", part in apply)
 check("a grid name made while the light look is on is made in it, and the list is emptied when the grid is built again",
-      "if (lightNow) label.setTextColor(Look.LIGHT_LOOK.ink);" in main and "gridCards.clear();\n        gridLabels.clear();" in main)
+      "if (lightNow || \"sand\".equals(lookNow)) label.setTextColor(palette().ink);" in main and "gridCards.clear();\n        gridLabels.clear();" in main)
 ints = lambda s: [int(x, 16) for x in re.findall(r"0x([0-9A-F]{8})", s)]
 scrim_src = re.search(r"scrim\.setBackground\(new GradientDrawable\(GradientDrawable\.Orientation\.TOP_BOTTOM,\s*new int\[\]\{([^}]*)\}\)\);", main).group(1)
 dark = re.search(r"DARK_LOOK = new Palette\(([^;]*)\);", look, re.S).group(1)
-check("the dark look's colours are the home's own (the scrim, the clock, the date, the gold, the shadow, the shade, the dock band)",
+check("the dark look's colours are the home's own (the scrim, the clock, the date, the gold, the shadow, the shade); the tray is FavBar's, the same on every look",
       ints(scrim_src) == ints(dark)[6:11] and ints(dark)[0] == 0xFFFFFDF6 and ints(dark)[2] == 0xFFC6BBA4 and "static final int GOLD = 0xFFD6AF6B;" in main
       and ints(dark)[3] == 0xFFD6AF6B and "0x80000000" in main and "gridShade.setBackgroundColor(0xB3000000);" in main
-      and "band.setColor(0x1FFFFFFF);" in main and "band.setStroke(dp(1), 0x14FFFFFF);" in main, (ints(scrim_src), ints(dark)))
+      and "band.setColor(FavBar.FILL_DARK);" in main and "band.setStroke(Math.max(1, bar(1)), FavBar.LINE_DARK);" in main, (ints(scrim_src), ints(dark)))
 notices = read(ROOT / "THIRD_PARTY_NOTICES.md")
 check("talkies is credited (THIRD_PARTY_NOTICES.md and Look)", "Copyright (c) 2026 TechPP" in notices and "talkies" in look and "THIRD_PARTY_NOTICES.md" in look)
 check("documented: SETTINGS.md and FEATURES.md", "optimize/saver.sh appearance auto" in read(ROOT / "docs/SETTINGS.md") and "**المظهر:**" in read(ROOT / "docs/FEATURES.md"))
@@ -90,6 +90,14 @@ for photo in ("grey", "bright"):   # the rows' names and the soft lines on the t
 for photo in ("grey", "dark", "bright"):
     c = con[("light", "rownamegrid", photo)]
     check(f"light look, a row's name over the grid's shade (a row has the focus) on a {photo} photo: contrast {c:.1f}, at least 4.5", c >= 4.5, c)
+for photo in ("grey", "dark", "bright"):   # «رملي» in the light: the same bar as the home's light look
+    for part, need in (("clock", 4.5), ("date", 4.5), ("title", 4.5), ("gridname", 4.5), ("greeting", 3.0), ("rownamegrid", 4.5)):
+        c = con[("sandlight", part, photo)]
+        check(f"«رملي» light over a {photo} photo: the {part} reads (contrast {c:.1f}, at least {need})", c >= need, c)
+for photo in ("grey", "dark"):   # «رملي» in the dark: the dark home with green for gold
+    for part, need in (("clock", 4.5), ("title", 4.5), ("gridname", 4.5), ("greeting", 3.0)):
+        c = con[("sanddark", part, photo)]
+        check(f"«رملي» dark over a {photo} photo: the {part} reads (contrast {c:.1f}, at least {need})", c >= need, c)
 for photo in ("grey", "dark"):   # the dark look as it always was, over the photos it was made for
     for part, need in (("clock", 4.5), ("title", 4.5), ("gridname", 4.5), ("greeting", 3.0)):
         c = con[("dark", part, photo)]
@@ -99,14 +107,14 @@ main_src = (ROOT / "android/launcher/src/main/java/sa/urtv/home/MainActivity.jav
 gs = (ROOT / "android/launcher/src/main/java/sa/urtv/home/GlassStyle.java").read_text(encoding="utf-8")
 gsrc = (ROOT / "android/launcher/src/main/java/sa/urtv/home/GlassSource.java").read_text(encoding="utf-8")
 gsrc_app = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/GlassSource.java").read_text(encoding="utf-8")
-check("the four looks, glass first: an unknown or missing value is glass", 'LOOKS = {"glass", "graphite", "navy", "clean"};' in gs
+check("the five looks, glass first: an unknown or missing value is glass", 'LOOKS = {"glass", "graphite", "navy", "clean", "sand"};' in gs
       and "for (String k : LOOKS) if (k.equals(raw)) return k;\n        return LOOKS[0];" in gs)
 check("«نظيف» has no dark of its own: its dark is graphite's (the mockup's note)", 'case "clean": return light ? CLEAN_LIGHT : GRAPHITE_DARK;' in gs)
 check("the screensaver keeps it (glass by default), and the provider gives it as a column of its own after the others",
       'String look() { return GlassStyle.look(sp.getString("look", GlassStyle.LOOKS[0])); }' in prefs and '"watch_next", "look"});' in provider and "p.look()});" in provider)
 check("the receiver takes --es look glass|graphite|navy|clean, refuses anything else, and show says it",
       'i.getStringExtra("look")' in recv and 'return "error: look is one of "' in recv and "p.setLook(look);" in recv and '"\\nlook: " + p.look()' in recv)
-check("saver.sh look, with its help line", 'look) set1 look "${2:?usage: optimize/saver.sh look glass|graphite|navy|clean}" ;;' in saver and "#   optimize/saver.sh look navy" in saver)
+check("saver.sh look, with its help line", 'look) set1 look "${2:?usage: optimize/saver.sh look glass|graphite|navy|clean|sand}" ;;' in saver and "#   optimize/saver.sh look navy" in saver)
 check("the launcher reads the column; an older screensaver says nothing: glass", 'cur.getColumnIndex("look")' in snap and "this.look = GlassStyle.look(look);" in snap)
 check("every screen of ours takes the look of now: the launcher's and the settings app's GlassSource, the home's own pieces",
       "return GlassStyle.of(lookName(c), light(c));" in gsrc and "return GlassStyle.of(new Prefs(c).look(), light(c));" in gsrc_app

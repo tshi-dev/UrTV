@@ -341,7 +341,7 @@ public class SettingsActivity extends Activity {
         row("افتح تلاوة وأذان", "القرآن والإذاعات ومواقيت الأذان", R.drawable.ic_play,
             new Runnable() { public void run() { openHome("listen"); } });
         // hiding removes only the button; the help line says where the screen opens from then
-        row("زر تلاوة وأذان", prefs.listenPill() ? "ظاهر" : "مخفي  •  الأذان والتلاوة تعمل، وتفتح الشاشة من قائمة التطبيق (اختيار مطوّلة) أو من بطاقة «يُتلى الآن»", R.drawable.ic_eye,
+        row("زر تلاوة وأذان", prefs.listenPill() ? "ظاهر" : "مخفي  •  الأذان والتلاوة تعمل، وتفتح الشاشة من «افتح تلاوة وأذان» هنا أو من بطاقة «يُتلى الآن»", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setListenPill(!prefs.listenPill()); render(); } });
         // hiding removes only the button: the list stays in the «المهام» card and on the phone
         row("زر المهام", prefs.tasksPill() ? "ظاهر" : "مخفي  •  المهام تبقى في بطاقة «المهام» ومن الجوال", R.drawable.ic_eye,
@@ -375,6 +375,12 @@ public class SettingsActivity extends Activity {
         // «كل التطبيقات»: the home screen's «تعديل التطبيقات», or the order by name again (what is hidden stays hidden)
         row("ترتيب كل التطبيقات", "تحريكها وإخفاؤها على الشاشة الرئيسية، أو الرجوع للترتيب الأصلي", R.drawable.ic_star,
             new Runnable() { public void run() { pickAppsOrder(); } });
+        // what an app's options box does (a long OK or Menu on the app, docs/UX-REVIEW.md) is here too: move, hide and the favourites
+        // above, the locks and the app's details here
+        row("قفل التطبيقات", "اختر التطبيقات التي تطلب الرمز", R.drawable.ic_lock,
+            new Runnable() { public void run() { openParental(); } });
+        row("تفاصيل التطبيقات", "قائمة التلفزيون: التخزين والأذونات والحذف", R.drawable.ic_settings,
+            new Runnable() { public void run() { openAppDetails(); } });
         row("تحديث تلفزيوني", "تحديث التطبيقين: يعرض الإصدار ويتحقق من التحديث", R.drawable.ic_sync,
             new Runnable() { public void run() { openUpdate(); } });
         // two buttons of the first screen that do one thing (SettingsHub.direct): the home's «مركز التحكم», and the report's QR code
@@ -383,7 +389,10 @@ public class SettingsActivity extends Activity {
         row("أرسل تقرير", "رمز QR يفتح صفحة الإرسال في جوالك", R.drawable.ic_settings,
             new Runnable() { public void run() { openReport(); } });
 
-        row("حماية العائلة", "تفعيل أو إيقاف، ويرجع الإعداد القديم تلقائياً", R.drawable.ic_eye,
+        // «الرقابة الأبوية» (docs/UX-REVIEW.md): the home's own page (the PIN, the locked apps, kids mode); it asks for the PIN itself
+        row("الرقابة الأبوية", "رمز يقفل التطبيقات والإعدادات، ووضع الأطفال", R.drawable.ic_lock,
+            new Runnable() { public void run() { openParental(); } });
+        row("تصفية المواقع", "تفعيل أو إيقاف، ويرجع الإعداد القديم تلقائياً", R.drawable.ic_eye,
             new Runnable() { public void run() { openFamilyDns(); } });
         // «اللغة» (docs/ENGLISH.md): العربية, the default, or English; a button of «المزيد» that opens its two choices at once
         row("اللغة", langLabel(), R.drawable.ic_language, new Runnable() { public void run() { pickLang(); } });
@@ -403,6 +412,8 @@ public class SettingsActivity extends Activity {
         header("الأسهم");
         row("قائمة الأسهم (" + arabicNum(prefs.stocks().size()) + "/" + arabicNum(Prefs.MAX_STOCKS) + ")", stocksLabel(),
             R.drawable.ic_star, new Runnable() { public void run() { askStocks(); } });
+        row("تغيّر الأسهم الأمريكية", labelOf(Prefs.STK_CHG, prefs.stkChg()), R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setStkChg("amount".equals(prefs.stkChg()) ? "pct" : "amount"); render(); } });
         }
 
         header("التوقيت");
@@ -485,6 +496,7 @@ public class SettingsActivity extends Activity {
             case SettingsHub.CONTENT: return R.drawable.ic_trophy;
             case SettingsHub.APPS: return R.drawable.ic_star;
             case SettingsHub.SHOWS: return R.drawable.ic_play;
+            case SettingsHub.PARENTAL: return R.drawable.ic_lock;
             case SettingsHub.FAMILY: return R.drawable.ic_shield;
             case SettingsHub.LANG: return R.drawable.ic_language;
             default: return R.drawable.ic_settings;
@@ -557,6 +569,7 @@ public class SettingsActivity extends Activity {
             case SettingsHub.CONTENT: return "الفرق " + arabicNum(prefs.teams().size()) + " · الأسواق " + (prefs.marketsOn() ? arabicNum(prefs.markets().size()) : "مخفية");
             case SettingsHub.APPS: return "ترتيب المفضلة وتعديلها، وأسماء المصادر";
             case SettingsHub.SHOWS: return labels(Prefs.GENRES, prefs.list("genres"), "الكل");
+            case SettingsHub.PARENTAL: return "الرمز والتطبيقات المقفلة";
             case SettingsHub.FAMILY: return "تفعيل أو إيقاف";
             case SettingsHub.LANG: return langLabel();
             default: return "";
@@ -989,7 +1002,7 @@ public class SettingsActivity extends Activity {
         }));
     }
 
-    /** «حماية العائلة (DNS)» lives in the launcher too: it holds the permission to write the Private DNS setting. */
+    /** «تصفية المواقع (DNS)» lives in the launcher too: it holds the permission to write the Private DNS setting. */
     private void openFamilyDns() {
         try {
             startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.FamilyDnsActivity"));
@@ -997,10 +1010,27 @@ public class SettingsActivity extends Activity {
             boolean installed = true;
             try { getPackageManager().getPackageInfo("sa.urtv.home", 0); }
             catch (android.content.pm.PackageManager.NameNotFoundException gone) { installed = false; }
-            toast(installed ? "ما قدرنا نفتح حماية العائلة: حدّث الواجهة الرئيسية «تلفزيونك»" : "ثبّت الواجهة الرئيسية «تلفزيونك» أولاً");
+            toast(installed ? "ما قدرنا نفتح تصفية المواقع: حدّث الواجهة الرئيسية «تلفزيونك»" : "ثبّت الواجهة الرئيسية «تلفزيونك» أولاً");
         } catch (RuntimeException e) {
             toast("ثبّت الواجهة الرئيسية «تلفزيونك» أولاً");
         }
+    }
+
+    /** «الرقابة الأبوية» lives in the launcher (it keeps the PIN); its page asks for the PIN itself once one is set. */
+    private void openParental() {
+        try {
+            startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.ParentalActivity"));
+        } catch (RuntimeException e) {
+            toast("ثبّت الواجهة الرئيسية «تلفزيونك» أولاً");
+        }
+    }
+
+    /** «تفاصيل التطبيقات»: Android's own list of apps, where each app's details and its uninstall are. */
+    private void openAppDetails() {
+        for (String action : new String[] {android.provider.Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS, android.provider.Settings.ACTION_APPLICATION_SETTINGS}) {
+            try { startActivity(new Intent(action)); return; } catch (RuntimeException ignored) { }
+        }
+        toast("ما قدرنا نفتح قائمة التطبيقات في التلفزيون");
     }
 
     /** «ترتيب المفضلة» lives in the launcher (it owns the row). */
@@ -1176,7 +1206,7 @@ public class SettingsActivity extends Activity {
         box.setPadding(dp(12), dp(4), dp(12), dp(4));
         final android.widget.ListView lv = new android.widget.ListView(this);
         lv.setDividerHeight(0);
-        lv.setSelector(GlassPaint.fill(this, look.focus, 12, 0));
+        lv.setSelector(GlassPaint.focused(this, look, 12));
         lv.setAdapter(new android.widget.BaseAdapter() {
             @Override public int getCount() { return values.length; }
             @Override public Object getItem(int i) { return values[i]; }
@@ -1332,28 +1362,33 @@ public class SettingsActivity extends Activity {
             .show();
     }
 
-    private String stocksLabel() { return Prefs.join(prefs.stocks(), "، "); }
+    private String stocksLabel() {
+        List<String> out = new ArrayList<>();
+        for (String k : prefs.stocks()) out.add(Stocks.label(k, S.en()));   // «أرامكو 2222»: the code and the company it is
+        return Prefs.join(out, S.en() ? ", " : "، ");
+    }
 
-    /** Codes (2222 = أرامكو) and US tickers (AAPL), separated by spaces or commas. */
+    /** Codes (2222 = أرامكو, also ٢٢٢٢), company names (الراجحي) and US tickers (AAPL), separated by spaces or commas (Stocks). */
     private void askStocks() {
         final EditText in = new EditText(this);
         in.setHint(Words.of("مثال: \u20662222 1120 AAPL NVDA\u2069"));
         in.setText(Prefs.join(prefs.stocks(), " "));
         in.setSingleLine(true);
         in.setInputType(InputType.TYPE_CLASS_TEXT);
-        new Dlg(this).setTitle("قائمة الأسهم (رمز تداول من ٤ أرقام أو رمز أمريكي، حتى " + arabicNum(Prefs.MAX_STOCKS) + ")")
+        new Dlg(this).setTitle("قائمة الأسهم (رمز تداول من ٤ أرقام أو اسم الشركة أو رمز أمريكي، حتى " + arabicNum(Prefs.MAX_STOCKS) + ")")
             .setView(in)
             .setPositiveButton("حفظ", (d, w) -> {
-                List<String> v = new ArrayList<>();
-                for (String s : in.getText().toString().split("[\\s,،]+")) {
-                    s = s.trim().toUpperCase(java.util.Locale.ROOT);
-                    if (s.isEmpty()) continue;
-                    if (!s.matches(Prefs.STOCK_PATTERN)) { toast("رمز غير صالح: " + s); return; }
-                    if (!v.contains(s)) v.add(s);
-                }
+                Stocks.Parsed got = Stocks.parse(in.getText().toString());
+                if (got.bad != null) { toast("رمز غير صالح: " + got.bad); return; }
+                List<String> v = got.codes;
                 if (v.isEmpty() || v.size() > Prefs.MAX_STOCKS) {
                     toast("أدخل من رمز إلى " + arabicNum(Prefs.MAX_STOCKS) + " رموز");
                     return;
+                }
+                if (!got.matched.isEmpty()) {   // a name or ٢٢٢٢ was typed: say what it was taken as
+                    List<String> shown = new ArrayList<>();
+                    for (String k : got.matched) shown.add(Stocks.label(k, S.en()));
+                    toast("الأسهم: " + Prefs.join(shown, S.en() ? ", " : "، "));
                 }
                 prefs.setStocks(v);
                 render();
@@ -1720,7 +1755,7 @@ public class SettingsActivity extends Activity {
         box.setPadding(dp(12), dp(4), dp(12), dp(4));
         final android.widget.ListView lv = new android.widget.ListView(this);
         lv.setDividerHeight(0);
-        lv.setSelector(GlassPaint.fill(this, look.focus, 12, 0));
+        lv.setSelector(GlassPaint.focused(this, look, 12));
         lv.setAdapter(new android.widget.ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, labels) {
             @Override public View getView(int i, View old, android.view.ViewGroup parent) {
                 TextView t = (TextView) super.getView(i, old, parent);
@@ -1806,7 +1841,7 @@ public class SettingsActivity extends Activity {
             t.setTypeface(font("Thmanyah-Medium"));
             t.setGravity(Gravity.CENTER);
             t.setTextColor(k == 0 ? l.onFocus : l.text);
-            t.setBackground(k == 0 ? GlassPaint.fill(this, l.focus, 10, 0) : GlassPaint.panel(this, l, 10));
+            t.setBackground(k == 0 ? GlassPaint.focused(this, l, 10) : GlassPaint.panel(this, l, 10));
             LinearLayout.LayoutParams tp = new LinearLayout.LayoutParams(0, dp(48), 1f);
             if (k == 0) tp.setMarginEnd(dp(8));
             tiles.addView(t, tp);
@@ -1910,8 +1945,8 @@ public class SettingsActivity extends Activity {
         d.getWindow().setBackgroundDrawable(GlassPaint.fill(this, GlassStyle.over(look.dialog, look.base), 22, look.line));
         if (d.getListView() != null) {
             android.graphics.drawable.StateListDrawable sel = new android.graphics.drawable.StateListDrawable();
-            sel.addState(new int[] {android.R.attr.state_focused}, GlassPaint.fill(this, look.focus, 12, 0));
-            sel.addState(new int[] {android.R.attr.state_pressed}, GlassPaint.fill(this, look.focus, 12, 0));
+            sel.addState(new int[] {android.R.attr.state_focused}, GlassPaint.focused(this, look, 12));
+            sel.addState(new int[] {android.R.attr.state_pressed}, GlassPaint.focused(this, look, 12));
             sel.addState(new int[] {}, new android.graphics.drawable.ColorDrawable(0));
             d.getListView().setSelector(sel);
         }

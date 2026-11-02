@@ -106,30 +106,41 @@ public class ParentalActivity extends Activity {
         rows.clear();
         ParentalPolicy.State s = Parental.state(this);
 
+        // the card and its two buttons (docs/UX-REVIEW.md): off, «فعّل الرقابة الأبوية» and «ما الذي يُقفل؟»; on, «التطبيقات المقفلة» and «غيّر الرمز»
         if (!s.pinSet) {
-            list.addView(row(S.t("الرمز الرئيسي: غير معيّن"), null, button(S.t("تعيين الرمز"), v -> choosePin(false))), rowParams());
-            list.addView(text(S.t("بدون رمز لا يُقفل شيء، والشاشة الرئيسية كما هي."), 13, "Regular", DIM), right(dp(8)));
-            focusAfter(focusRow, focusCell);
+            list.addView(card(S.t("الرقابة الأبوية متوقفة"), S.t("ضع رمزًا من أربعة أرقام، ثم اختر ما يُقفل. بدون رمز لا يُقفل شيء، والشاشة الرئيسية كما هي.")), cardParams());
+            View what = button(S.t("ما الذي يُقفل؟"), v -> explain());
+            View start = primary(button(S.t("فعّل الرقابة الأبوية"), v -> choosePin(false)));
+            list.addView(buttons(what, start), rowParams());
+            explainAt = list.getChildCount();
+            wire();
+            focusAfter(focusRow, focusRow == 0 && focusCell == 0 ? 1 : focusCell);
             return;
         }
-        list.addView(row(S.t("الرمز الرئيسي"), null, button(S.t("تغيير"), v -> choosePin(true))), rowParams());
+        int lockedApps = 0;
+        for (String pkg : apps.keySet()) if (s.locked.contains(pkg)) lockedApps++;
+        list.addView(card(S.t("الرقابة الأبوية مفعّلة"), Digits.of(ParentalText.summary(lockedApps, s.locked.contains(ParentalPolicy.OWN_SETTINGS), s.kids))), cardParams());
+        View pin = button(S.t("غيّر الرمز"), v -> choosePin(true));
+        View locked = button(S.t("التطبيقات المقفلة"), v -> focusAfter(appsRow, 1));
+        list.addView(buttons(pin, locked), rowParams());
+        list.addView(row(S.t("قفل الإعدادات"), null, toggle(s.locked.contains(ParentalPolicy.OWN_SETTINGS), S.t("مقفل"), S.t("مفتوح"),
+            on -> Parental.setLocked(this, ParentalPolicy.OWN_SETTINGS, on))), rowParams());
+        list.addView(text(S.t("يقفل إعدادات تلفزيونك، وخيارات التطبيقات، وترتيب المفضلة."), 12, "Regular", DIM), right(dp(8)));
+        kidsRow = rows.size();
+        list.addView(row(S.t("وضع الأطفال"), null, state(s.kids, v -> kids())), rowParams());
+        list.addView(text(S.t("يُظهر في الشاشة الرئيسية التطبيقات المعلَّمة «يظهر للأطفال» فقط، والخروج منه يحتاج الرمز."), 12, "Regular", DIM), right(dp(8)));
         list.addView(row(S.t("إيقاف الرقابة الأبوية"), null, button(S.t("إيقاف"), v -> Parental.confirm(this, adhan, "إيقاف الرقابة الأبوية", () -> {
             Parental.turnOff(this);
             toast(S.t("أُوقفت الرقابة الأبوية"));
             render(0, 0);
         }, () -> { }))), rowParams());
-        list.addView(row(S.t("قفل الإعدادات"), null, toggle(s.locked.contains(ParentalPolicy.OWN_SETTINGS), S.t("مقفل"), S.t("مفتوح"),
-            on -> Parental.setLocked(this, ParentalPolicy.OWN_SETTINGS, on))), rowParams());
-        list.addView(text(S.t("يقفل ترتيب المفضلة وقائمة الضغطة الطويلة على التطبيقات."), 12, "Regular", DIM), right(dp(8)));
-        kidsRow = rows.size();
-        list.addView(row(S.t("وضع الأطفال"), null, state(s.kids, v -> kids())), rowParams());
-        list.addView(text(S.t("يُظهر في الشاشة الرئيسية التطبيقات المعلَّمة «يظهر للأطفال» فقط، والخروج منه يحتاج الرمز."), 12, "Regular", DIM), right(dp(8)));
 
         list.addView(header(S.t("الأزرار في الأعلى")));
         for (String pill : ParentalPolicy.PILLS) {
             list.addView(row(pillName(pill), null, toggle(s.locked.contains(pill), S.t("مقفل"), S.t("مفتوح"), on -> Parental.setLocked(this, pill, on))), rowParams());
         }
         list.addView(header(S.t("التطبيقات")));
+        appsRow = rows.size();
         for (Map.Entry<String, String> e : apps.entrySet()) {
             String pkg = e.getKey();
             list.addView(row(e.getValue(), pkg,
@@ -137,7 +148,7 @@ public class ParentalActivity extends Activity {
                 toggle(s.locked.contains(pkg), S.t("مقفل"), S.t("مفتوح"), on -> Parental.setLocked(this, pkg, on))), rowParams());
         }
         wire();
-        focusAfter(focusRow, focusCell);
+        focusAfter(focusRow, focusRow == 0 && focusCell == 0 ? 1 : focusCell);   // the card's first button: the one at the start (the right in Arabic)
     }
 
     private static String pillName(String pill) {
@@ -229,7 +240,7 @@ public class ParentalActivity extends Activity {
         t.setTag(on);
         // focused: the solid focus fill, else the panel; on: as every on/off one (OnOff): the three green triangles at its start and its
         // words in the green that reads on what is under them; off: plain words
-        GradientDrawable bg = focused ? GlassPaint.fill(this, look.focus, 14, 0) : GlassPaint.panel(this, look, 14);
+        GradientDrawable bg = focused ? GlassPaint.focused(this, look, 14) : GlassPaint.panel(this, look, 14);
         t.setBackground(bg);
         int green = OnOff.green(focused ? look.focus : look.light ? 0xFFFFFFFF : 0xFF000000);
         Drawable mark = null;
@@ -270,6 +281,62 @@ public class ParentalActivity extends Activity {
         }
         rows.add(cells);
         return r;
+    }
+
+    private int appsRow, explainAt;
+
+    /** The card at the top: what the lock is now, in a title and one line under it, on the look's panel. */
+    private View card(String title, String line) {
+        LinearLayout c = new LinearLayout(this);
+        c.setOrientation(LinearLayout.VERTICAL);
+        c.setPadding(dp(24), dp(20), dp(24), dp(20));
+        c.setBackground(GlassPaint.panel(this, look, 16));
+        c.addView(text(title, 20, "Medium", TEXT), right(dp(6)));
+        c.addView(text(line, 14, "Regular", DIM), right(0));
+        return c;
+    }
+
+    private LinearLayout.LayoutParams cardParams() {
+        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(-1, -2);
+        p.bottomMargin = dp(12);
+        return p;
+    }
+
+    /** Two buttons under the card, side by side at the start (the right in Arabic): [second] [first], the first one focused. */
+    private View buttons(View second, View first) {
+        LinearLayout r = new LinearLayout(this);
+        r.setOrientation(LinearLayout.HORIZONTAL);
+        r.setGravity(Gravity.CENTER_VERTICAL | Dir.start());
+        r.addView(new View(this), new LinearLayout.LayoutParams(0, 1, 1f));
+        for (View c : new View[] {second, first}) {
+            LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(dp(200), dp(44));
+            p.setMarginStart(dp(10));
+            r.addView(c, p);
+        }
+        rows.add(new View[] {second, first});
+        return r;
+    }
+
+    /** The button that starts the lock: the look's accent filled at rest (the focus look while focused, as every other). */
+    private View primary(View b) {
+        TextView t = (TextView) b;
+        t.setOnFocusChangeListener((v, has) -> paintPrimary(t, has));
+        paintPrimary(t, false);
+        return t;
+    }
+
+    private void paintPrimary(TextView t, boolean focused) {
+        if (focused) { paint(t, false, true); return; }
+        t.setBackground(GlassPaint.fill(this, look.accent, 14, 0));
+        t.setCompoundDrawables(null, null, null, null);
+        t.setTextColor(GlassStyle.contrast(0xFFFFFFFF, look.accent) >= GlassStyle.contrast(0xFF000000, look.accent) ? 0xFFFFFFFF : 0xFF14161A);
+    }
+
+    /** «ما الذي يُقفل؟»: the long answer under the buttons, once (OK again hides it). */
+    private void explain() {
+        if (list.getChildCount() > explainAt) { list.removeViewAt(explainAt); return; }
+        list.addView(text(S.t("التطبيقات التي تختارها، وإعدادات تلفزيونك وخيارات التطبيقات، والأزرار في الأعلى إن أردت، ووضع الأطفال الذي لا يُظهر إلا ما تسمح به. التلفزيون نفسه يبقى كما هو."),
+                14, "Regular", DIM), explainAt, right(dp(8)));
     }
 
     private TextView header(String label) {

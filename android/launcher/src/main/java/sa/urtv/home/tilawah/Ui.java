@@ -44,6 +44,7 @@ final class Ui {
             case "graphite": return light ? sa.urtv.home.R.style.Tilawah_Graphite_Light : sa.urtv.home.R.style.Tilawah_Graphite_Dark;
             case "navy": return light ? sa.urtv.home.R.style.Tilawah_Navy_Light : sa.urtv.home.R.style.Tilawah_Navy_Dark;
             case "clean": return light ? sa.urtv.home.R.style.Tilawah_Clean_Light : sa.urtv.home.R.style.Tilawah_Clean_Dark;
+            case "sand": return light ? sa.urtv.home.R.style.Tilawah_Sand_Light : sa.urtv.home.R.style.Tilawah_Sand_Dark;
             default: return light ? sa.urtv.home.R.style.Tilawah_Glass_Light : sa.urtv.home.R.style.Tilawah_Glass_Dark;
         }
     }

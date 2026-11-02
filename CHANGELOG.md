@@ -5,6 +5,48 @@ Newest first. `next` is where changes land first; a release is what was tested t
 ## 4.2 (on `next`)
 
 - Three owners' options, each off by default (nothing changes until chosen): «الآية والحديث» (`saver.sh versekind both|verse|hadith`: the verse card with verses only or hadith only), «إظهار الثواني» (`saver.sh seconds on|off`: the seconds on the screensaver's clock, small, in fixed-width boxes so nothing moves each second, in every clock size) and «الخروج من تلفزيونك» (`saver.sh backexit press|hold|three`: where the TV keeps its own home, our home leaves only on a long Back or three Backs, with a short hint the first time a Back is ignored). tests/user_options_test.py and page tests.
+- **The favourites bar** (docs/PROPOSALS-NOV2.md §1, FavBar.java): one glass tray, the same on every look and layout, x 120 to 1800 and
+  218 high, 54 px above the screen's bottom; five 304×170 tiles 24 apart, the first on the right, more scroll inside the tray and never
+  leave it. The focused tile lifts 6 px and grows 1.08 in 150 ms with a 3 px green ring (DGA green on light, #8FE0B4 over a photo); the
+  app's name sits centred over it and hides when the focus leaves the bar. The only move is 40 px down for a widget that opens into a
+  scrolling row (`lowerTray`, for the football home's matches; nothing calls it yet). «أكمل المشاهدة» is its own row below the first
+  screen (the owner's choice): ▼ from the tray slides the home up to it, ▲ slides it back; the tray stays at y 808 either way. **«رملي» on the home itself:** with that look the
+  home's own veil, words and labels are sand, ink and flag green in the light and green for gold in the dark (Look.SAND_LIGHT/SAND_DARK,
+  checked for contrast like the other two).
+- **The UX review, done** (docs/UX-REVIEW.md on work/ux-review; work/ux-impl). **The app's options:** a long OK on the app, or the remote's
+  Menu key on it, shows a small box right above the app, its width, no title (a quiet «اضغط مطوّلاً للخيارات» beside a favourite's name
+  the first six times): «انقل», «أخفِ», «اقفل», then ★ (in or out of the favourites) and ⓘ (Android's app details, where its uninstall is). The old
+  long-press menu's other items have their visible places (the update, «تلاوة وأذان» and the adhan in the settings, the default favourites
+  in «ترتيب المفضلة»), and everything in the box is also in Settings ← المزيد ← التطبيقات والمفضلة (new rows «قفل التطبيقات» and
+  «تفاصيل التطبيقات»), so nothing is long-press-only. **«مركز التحكم»:** Wi-Fi and Bluetooth first, side by side; no tile asks for a long OK any more (the screensaver's
+  line says «ابدأها الآن»; the sleep service is turned on from «مؤقت النوم», as its notice now says). **«الرقابة الأبوية»:** a button in
+  Settings ← المزيد, and its page starts with a card and two buttons («فعّل الرقابة الأبوية» / «ما الذي يُقفل؟», then «التطبيقات المقفلة» /
+  «غيّر الرمز»). The DNS filter is «تصفية المواقع» (was «حماية العائلة», a name too close to the lock). **A fifth look, «رملي»** (`sand`):
+  white cards on sand, hairlines, and a calm focus: a soft green fill with a DGA green line round it (GlassStyle.Look.ring) in every screen
+  and on the home's top buttons (rounded rectangles in this look). The default look is unchanged (glass); every look keeps its colours.
+- **«المصادر» on CultraView and other non-TCL TVs** (work/user-fixes): the live TV app and the source picker are no longer TCL's only. The
+  home app finds them on the TV each time the menu opens (TvVendor: the configured TCL ones first, then CultraView's `com.cultraview.livetv`
+  and `com.cultraview.setting/.SourceActivity`, MediaTek's tvcenter (Xiaomi, Hisense, Haier), MStar's (Skyworth), Sony, Philips, Google Live
+  Channels). An HDMI input tries the standard passthrough link, then each live TV app the TV has, then the picker, then the TV's settings.
+- **The recitation and the adhan at a normal level**: the recordings are quiet next to TV sound, and the player played them at unity gain.
+  It now lifts them by +6 dB inside its own audio session (LoudnessEnhancer: a gain with a limiter, so no clipping). The TV's volume, its
+  mute and the adhan's own level (never above the person's choice) are not touched; a TV without the effect plays as before.
+- **US stocks' change as an amount** («تغيّر الأسهم الأمريكية», `optimize/saver.sh stkchg amount`): the stocks card shows a US stock's
+  change as an amount (▲ 2.25) instead of a percentage; the default stays the percentage, Saudi codes always keep it, and the page's
+  link only gets `&stkchg=amount` when it is chosen.
+- **optimize/measure.sh with a run folder whose path has spaces** (macOS «Application Support»): every `$RUN` path is quoted
+  (tests/measure_space_test.py runs it with such a folder).
+- **LG and Samsung (BETA): «تعديل الفجر» … «تعديل العشاء»**: each prayer moved by whole minutes (−20 to +20) in the TV's settings screen,
+  as in the Android app; the page's times, countdown and adhan move with it. The list scrolls to keep the chosen row in sight.
+- **Arabic letters joined everywhere**: the last letter-spacing on Arabic text is gone (the adhan bar, the «يوم» unit, the score, the
+  phone code's Arabic placeholder, «يُتلى الآن» in the player); only Latin or digit-only text keeps it (tests/arabic_spacing_test.py).
+- **The home's cards on the newest page**: the launcher always opened the page of its own build, while the screensaver downloads the
+  newest one, so page fixes (the markets' requests among them) never reached the home and its stocks card stayed stale. The screensaver
+  now shares its downloaded page (ConfigProvider .../page/, read-only, only when newer than its own and with its automatic update on) and
+  the home opens a copy of it when its build stamp is newer than the launcher's own page; otherwise its own page as before.
+- **«قائمة الأسهم» takes a company's name too**: a Tadawul code (2222, also ٢٢٢٢ in Arabic digits, which was refused before), a name
+  (أرامكو, مصرف الراجحي, بنك الرياض, Aramco) or a US ticker; a name is turned into its code and a short message says what it was taken as
+  («الأسهم: أرامكو 2222»), and the row shows the company beside each code.
 
 - **The new settings screen** (work/settings-v2, the owner's choices in notes/settings-proto): big buttons, «الأذان» wide on top with its state
   under it; OK opens the home's adhan page on its switch (now its first row), so OK, OK turns it on or off, behind the family lock as before.

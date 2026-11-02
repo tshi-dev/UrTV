@@ -74,6 +74,7 @@ jobs:
         env:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           URTV_BRANCH: ${{ github.ref_name }}   # the screensaver fetches its page from the branch it was built from
+          URTV_PIN_RECOVERY: ${{ secrets.PIN_RECOVERY_RECORD }}   # the PIN recovery code's salted record, never the code; unset = none (AGENTS.md)
         run: gradle -p android assembleRelease --no-daemon
 
       - name: Rename

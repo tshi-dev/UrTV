@@ -207,7 +207,7 @@ public class DockActivity extends Activity {
             c.addView(n, new LinearLayout.LayoutParams(-2, -2));
         }
         if (lifted) {   // picked up: the solid focus fill all the time, its words in the focus ink
-            c.setBackground(GlassPaint.fill(this, look.focus, 14, 0));
+            c.setBackground(GlassPaint.focused(this, look, 14));
             name.setTextColor(INK);
             if (pkg != null) ((TextView) c.getChildAt(c.getChildCount() - 1)).setTextColor(INK);
         } else {

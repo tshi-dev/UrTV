@@ -20,7 +20,7 @@
 HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 لا يُعرف	Unknown
 ، 	, 
-خدمة الإطفاء مو شغّالة: نوقف الصوت ونشغّل شاشة التوقف. لإطفاء الشاشة فعّلها: اضغط مطوّلًا على «أطفئ الآن»	The sleep service is off: muting and showing the screensaver instead. To turn the screen off, turn it on: hold OK on “Turn off now”
+خدمة الإطفاء مو شغّالة: نوقف الصوت ونشغّل شاشة التوقف. لإطفاء الشاشة فعّلها من «مؤقت النوم»	The sleep service is off: muting and showing the screensaver instead. To turn the screen off, turn it on in “Sleep timer”
 شاشة التوقف · مطوّلًا: الإعدادات	Screensaver · hold OK: settings
 مؤقت النوم	Sleep timer
 مؤقت النوم %s د	Sleep timer %s min
@@ -96,12 +96,8 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 المفضلة ممتلئة (%s تطبيقات): احذف واحدًا منها بـ«تعديل المفضلة» أولاً	Favorites are full (%s apps): remove one with “Edit favorites” first
 أُضيف إلى المفضلة: %s	Added to Favorites: %s
 قائمة التطبيق	App menu
-إزالة من المفضلة	Remove from Favorites
 المفضلة لا تقل عن %s	At least %s favorites
-إضافة إلى المفضلة	Add to Favorites
 المفضلة ممتلئة (%s)	Favorites are full (%s)
-إعادة المفضلة الافتراضية	Reset favorites
-إعدادات الأذان	Adhan settings
 الرقابة الأبوية	Parental controls
 البث التلفزيوني	Live TV
 كل المصادر	All inputs
@@ -126,14 +122,14 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 حذف	Delete
 أطفئ الآن	Turn off now
 تُطفأ الشاشة فورًا	The screen turns off at once
-الخدمة مطفأة: تظهر شاشة التوقف بدل الإطفاء. مطوّلًا: تفعيلها	The service is off: the screensaver shows instead. Hold OK to turn it on
+الخدمة مطفأة: تظهر شاشة التوقف بدل الإطفاء	The service is off: the screensaver shows instead
 الشبكة	Network
 اختبار السرعة	Speed test
 اضغط اختيار للبدء	Press OK to start
 مخرج الصوت	Sound output
 إعدادات الصوت	Sound settings
 شاشة التوقف	Screensaver
-مطوّلًا: الإعدادات	Hold OK: settings
+ابدأها الآن	Start it now
 الأذان والمفضلة والمظهر	Adhan, favorites, look
 يعمل: باقي %s د	On: %s min left
 ١٥ إلى ٩٠ دقيقة	15 to 90 minutes
@@ -167,18 +163,12 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 أكثر من مهمة تطابق «%s»، قل جزءاً أوضح	More than one task matches “%s”, say a clearer part
 ما فهمت. قل: أضف مهمة … أو خلصت … أو احذف …	Didn’t catch that. Say, in Arabic: add a task, done or delete
 قفل عائلي على ما تفتحه شاشة تلفزيونك الرئيسية، وليس قفلاً كاملاً للتلفزيون.	A family lock on what the Your TV home screen opens, not a lock on the whole TV.
-الرمز الرئيسي: غير معيّن	Main PIN: not set
-تعيين الرمز	Set PIN
-بدون رمز لا يُقفل شيء، والشاشة الرئيسية كما هي.	Without a PIN nothing is locked, and the home screen stays as it is.
-الرمز الرئيسي	Main PIN
-تغيير	Change
 إيقاف الرقابة الأبوية	Turn off parental controls
 إيقاف	Off
 أُوقفت الرقابة الأبوية	Parental controls are off
 قفل الإعدادات	Lock settings
 مقفل	Locked
 مفتوح	Open
-يقفل ترتيب المفضلة وقائمة الضغطة الطويلة على التطبيقات.	Locks arranging favorites and the apps’ long-press menu.
 وضع الأطفال	Kids mode
 يُظهر في الشاشة الرئيسية التطبيقات المعلَّمة «يظهر للأطفال» فقط، والخروج منه يحتاج الرمز.	The home screen shows only the apps marked “Shown to kids”, and leaving kids mode needs the PIN.
 الأزرار في الأعلى	Buttons at the top
@@ -229,7 +219,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 توقف التحكم من الجوال لأن الرمز أُدخل خطأ خمس مرات.	Phone control stopped: the code was entered wrong five times.
 توقف التحكم من الجوال لأن آخر جوال انتهت جلسته.	Phone control stopped: the last phone’s session ended.
 توقف التحكم من الجوال لأنه لم يتصل أي جوال.	Phone control stopped: no phone connected.
-حماية العائلة مفعّلة	Family protection is on
+تصفية المواقع مفعّلة	Site filter is on
 الحماية شغّالة من قبل بإعداد ثاني، ما غيّرنا شي	Protection was already on with another setting, nothing changed
 يحتاج تفعيل من الكمبيوتر	Needs to be enabled from the computer
 ما قدرنا نوصل لخدمة الحماية، ما تغيّر شي	Couldn’t reach the protection service, nothing changed
@@ -237,15 +227,15 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 ما قدرنا نحفظ الإعداد القديم، ما تغيّر شي	Couldn’t save the old setting, nothing changed
 الإعداد ما انحفظ فرجّعنا القديم	The setting didn’t stick, so the old one is back
 الإنترنت وقف فرجّعنا الإعداد القديم	The internet stopped, so the old setting is back
-حماية العائلة متوقفة، رجع الإعداد القديم	Family protection is off, the old setting is back
-حماية العائلة متوقفة	Family protection is off
+تصفية المواقع متوقفة، رجع الإعداد القديم	Site filter is off, the old setting is back
+تصفية المواقع متوقفة	Site filter is off
 غير مدعومة في هذا التلفزيون (أندرويد قديم)	Not supported on this TV (old Android)
 الإعداد تغيّر من مكان آخر، تركناه كما هو	The setting was changed elsewhere, so it was left as it is
 ما قدرنا نرجّع الإعداد القديم، جرّب مرة ثانية	Couldn’t bring back the old setting, try again
 غير معروفة	unknown
 مفعّلة	On
 متوقفة	Off
-حماية العائلة (DNS)	Family protection (DNS)
+تصفية المواقع (DNS)	Site filter (DNS)
 يرجع الإعداد القديم تلقائياً فقط أثناء الفحص (٢٠ ثانية). بعدها توقفها من هنا، وتشتغل بدون إنترنت.	The old setting comes back by itself only during the check (20 seconds). After that you turn it off here, and it works without internet.
 غير متاح	Not available
 اطلب من وكيلك تشغيل: optimize/dock.sh familydns grant	Ask your agent to run: optimize/dock.sh familydns grant
@@ -360,5 +350,35 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 تحديث تطبيق الحافظة	Updating the screensaver app
 تحديث الواجهة الرئيسية	Updating the home screen
 التحقق من الملفات	Checking the files
+انقل	Move
+أخفِ	Hide
+اقفل	Lock
+افتح القفل	Unlock
+أضف للمفضلة	Add to favorites
+أزل من المفضلة	Remove from favorites
+أُخفي، ويرجع من «تعديل التطبيقات»	Hidden. Bring it back from “Edit apps”
+فُتح القفل	Unlocked
+قُفل، ويطلب الرمز	Locked: it asks for the PIN
+الرقابة الأبوية متوقفة	Parental controls are off
+ضع رمزًا من أربعة أرقام، ثم اختر ما يُقفل. بدون رمز لا يُقفل شيء، والشاشة الرئيسية كما هي.	Set a four-digit PIN, then choose what to lock. Without a PIN nothing is locked and the home screen stays as it is.
+ما الذي يُقفل؟	What gets locked?
+فعّل الرقابة الأبوية	Turn on parental controls
+الرقابة الأبوية مفعّلة	Parental controls are on
+غيّر الرمز	Change the PIN
+التطبيقات المقفلة	Locked apps
+يقفل إعدادات تلفزيونك، وخيارات التطبيقات، وترتيب المفضلة.	Locks Your TV’s settings, the app options, and the favorites order.
+التطبيقات التي تختارها، وإعدادات تلفزيونك وخيارات التطبيقات، والأزرار في الأعلى إن أردت، ووضع الأطفال الذي لا يُظهر إلا ما تسمح به. التلفزيون نفسه يبقى كما هو.	The apps you choose, Your TV’s settings and the app options, the buttons at the top if you like, and kids mode, which shows only what you allow. The TV itself stays as it is.
+لا تطبيق مقفل	No app locked
+تطبيق واحد مقفل	One app locked
+تطبيقان مقفلان	Two apps locked
+%s تطبيقات مقفلة	%s apps locked
+%s تطبيقًا مقفلًا	%s apps locked
+%s، %s، %s.	%s, %s, %s.
+والإعدادات مقفلة	settings locked
+والإعدادات مفتوحة	settings open
+ووضع الأطفال مفعّل	kids mode on
+ووضع الأطفال متوقف	kids mode off
+اضغط مطوّلاً للخيارات	Hold OK for options
+إعدادات الأذان	Adhan settings
 للخروج من تلفزيونك اضغط رجوع ثلاث مرات	To leave Your TV, press Back three times
 للخروج من تلفزيونك اضغط رجوع مطوّلًا	To leave Your TV, hold Back

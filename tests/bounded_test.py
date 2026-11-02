@@ -49,7 +49,7 @@ check("home wallpaper: a result older than the last request is dropped (a genera
       "final int gen = ++wallGen" in wall and "if (gen == wallGen) showWallpaper(bm)" in home)
 check("home apps: names, art and colours load on one background thread; the grid is added in batches, the dock first",
       "loader.execute(" in home and "private List<App> loadApps(" in home and "addGridRows(rest, to, gen)" in home
-      and home.index("dockRow.addView(tile, rowCell(i, dock.size(), -2));") < home.index("addGridRows(rest, 0, gen)") and "BATCH_ROWS" in home)
+      and home.index("dockRow.addView(tile, dockCell(i, dock.size()));") < home.index("addGridRows(rest, 0, gen)") and "BATCH_ROWS" in home)
 cache = same("app/src/main/java/sa/urtv/screensaver/PhotoCache.java")
 check("screensaver: hosted photos are capped, checked and kept within the size budget", "Bounded.IMAGE_MAX" in cache and "validImage(" in cache and "Bounded.fitting(" in cache and "Bounded.CACHE_MAX" in cache)
 check("screensaver: the club search and the name lookup read through the cap",

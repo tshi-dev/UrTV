@@ -15,7 +15,7 @@ control.net.wifi	إشارة ممتازة
 control.out.speaker	سماعات التلفزيون
 control.out.two	بلوتوث: JBL Flip، HDMI ARC (مضخم أو ساوند بار)، سماعة بسلك
 control.out.none	لا يُعرف
-control.sleepoff	خدمة الإطفاء مو شغّالة: نوقف الصوت ونشغّل شاشة التوقف. لإطفاء الشاشة فعّلها: اضغط مطوّلًا على «أطفئ الآن»
+control.sleepoff	خدمة الإطفاء مو شغّالة: نوقف الصوت ونشغّل شاشة التوقف. لإطفاء الشاشة فعّلها من «مؤقت النوم»
 pill.saver	شاشة التوقف · مطوّلًا: الإعدادات
 pill.sleep	مؤقت النوم / مؤقت النوم ٢٣ د
 pill.net	شبكة سلكية / غير متصل / واي فاي / Home
@@ -46,7 +46,7 @@ bar.minutes	1 دقيقة / دقيقتين / 3 دقائق / 4 دقائق / 5 دق
 zone	بتوقيت Dubai / بتوقيت المدينة · حساب الخليج / بتوقيت Cairo · الحساب الجعفري
 tvrows	أكمل المشاهدة / الموسم 2 · الحلقة 1 · Netflix
 input	HDMI 1 · وضع الاستعداد
-familydns.ENABLED	حماية العائلة مفعّلة
+familydns.ENABLED	تصفية المواقع مفعّلة
 familydns.ALREADY_ON_BY_OTHER	الحماية شغّالة من قبل بإعداد ثاني، ما غيّرنا شي
 familydns.NEEDS_GRANT	يحتاج تفعيل من الكمبيوتر
 familydns.NO_ROUTE	ما قدرنا نوصل لخدمة الحماية، ما تغيّر شي
@@ -54,8 +54,8 @@ familydns.UNREADABLE_VALUE	ما قدرنا نقرأ إعداد التلفزيو�
 familydns.NOT_RECORDED	ما قدرنا نحفظ الإعداد القديم، ما تغيّر شي
 familydns.NOT_TAKEN	الإعداد ما انحفظ فرجّعنا القديم
 familydns.REVERTED	الإنترنت وقف فرجّعنا الإعداد القديم
-familydns.RESTORED	حماية العائلة متوقفة، رجع الإعداد القديم
-familydns.NOTHING_TO_RESTORE	حماية العائلة متوقفة
+familydns.RESTORED	تصفية المواقع متوقفة، رجع الإعداد القديم
+familydns.NOTHING_TO_RESTORE	تصفية المواقع متوقفة
 familydns.RESTORE_FAILED	ما قدرنا نرجّع الإعداد القديم، جرّب مرة ثانية
 familydns.UNSUPPORTED	غير مدعومة في هذا التلفزيون (أندرويد قديم)
 familydns.CHANGED_BY_SOMEONE_ELSE	الإعداد تغيّر من مكان آخر، تركناه كما هو

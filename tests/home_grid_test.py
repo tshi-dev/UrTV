@@ -18,15 +18,16 @@ def check(name, ok, detail=""):
 cell = main[main.index("private LinearLayout.LayoutParams rowCell(int i, int n, int height)"):].split("\n    }\n")[0]
 check("one rule for a row's cells: start and end margins, 10 dp each side between two cells, none at the row's ends",
       "p.setMarginStart(i == 0 ? 0 : dp(10));" in cell and "p.setMarginEnd(i == n - 1 ? 0 : dp(10));" in cell and "setMargins(" not in cell)
-check("the dock, the dock rebuilt in «تعديل المفضلة», the grid and the last row's padding all use it",
-      "dockRow.addView(tile, rowCell(i, dock.size(), -2));" in main and "dockRow.addView(box, rowCell(i, order.size(), -2));" in main
+check("the grid and its last row's padding use it; the favourites (and the row rebuilt in «تعديل المفضلة») take the bar's own cell (FavBar)",
+      "dockRow.addView(tile, dockCell(i, dock.size()));" in main and "dockRow.addView(box, dockCell(i, order.size()));" in main
       and "row.addView(tile, rowCell(i % cols, cols, -2));" in main and "row.addView(new View(this), rowCell(i, cols, 1));" in main)
 check("no row cell is placed with left and right margins any more (they put the outer gap inside in RTL)",
       not re.search(r"setMargins\(i (%|==)", main), re.findall(r".*setMargins\(i.*", main))
 check("«كل التطبيقات» is inset like the grid on both sides (68 dp), the grid 68 dp too",
       "content.addView(appsLabel, llp(-2, -2, dp(68), dp(8), dp(68), dp(18)));" in main and "content.addView(grid, llp(-1, -2, dp(68), 0, dp(68), dp(160)));" in main)
-check("the dock band: 48 dp in from the screen and 20 dp of padding, so its first tile is 68 dp in too",
-      "hero.addView(bottom, lp(-1, -2, Gravity.BOTTOM, dp(48), 0, dp(48), dp(30)));" in main and "dockRow.setPadding(dp(20), dp(22), dp(20), dp(22));" in main)
+check("the favourites' tray (FavBar): 120 in from the screen's sides and 54 from its bottom, 32 of padding beside the tiles and 24 above and under",
+      "hero.addView(bottom, lp(-1, -2, Gravity.BOTTOM, bar(FavBar.SIDE), 0, bar(FavBar.SIDE), bar(FavBar.BOTTOM)));" in main
+      and "dockRow.setPadding(bar(FavBar.PAD_SIDE), bar(FavBar.PAD_TOP), bar(FavBar.PAD_SIDE), bar(FavBar.PAD_TOP));" in main)
 check("the home is right to left whatever the TV's language (the English TV too); «اللغة» English is left to right (Dir)", "root.setLayoutDirection(Dir.layout());" in main
       and main.count("setLayoutDirection(View.LAYOUT_DIRECTION_LTR)") == 0)
 cols = int(re.search(r'<integer name="columns">(\d+)</integer>', (ROOT / "android/launcher/src/main/res/values/config.xml").read_text(encoding="utf-8")).group(1))

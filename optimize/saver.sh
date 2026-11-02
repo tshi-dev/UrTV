@@ -25,7 +25,7 @@
 #   optimize/saver.sh updatebell off               home screen: the «جرس التحديثات» bell: on (default) or off. It shows only while the Play Store has app updates waiting;
 #                                                  off removes only the bell
 #   optimize/saver.sh appearance auto              home screen: «المظهر ← الإضاءة», dark (default), light, or auto (light from sunrise until Maghrib in the city)
-#   optimize/saver.sh look navy                    all our screens: «المظهر ← الشكل», glass (default), graphite, navy, or clean
+#   optimize/saver.sh look navy                    all our screens: «المظهر ← الشكل», glass (default), graphite, navy, clean, or sand
 #   optimize/saver.sh adhanbar off                 the slim bar before the adhan (last 10 minutes, then until the iqama) on the screensaver and the home screen: on (default) or off
 #   optimize/saver.sh updatechannel next          TESTING ONLY (agents; no screen shows it): «تحديث تلفزيوني» reads the version and the APKs from the apk-next release instead
 #                                                  of apk-latest: next or latest (default). Same signature, newer-version and permission checks. Put it back to latest after
@@ -65,6 +65,7 @@
 #   optimize/saver.sh clocksize medium             the screensaver's clock: large (default) medium small
 #   optimize/saver.sh mkstyle prices               markets: arrows (▲▼ only, default) or prices (price and day's change)
 #   optimize/saver.sh stocks 2222 1120 AAPL        watchlist of the stocks card (card stocks): up to 8 Tadawul codes (4 digits) or US tickers
+#   optimize/saver.sh stkchg amount                a US stock's change as an amount (pct = a percentage, the default); Saudi codes keep the %
 #   optimize/saver.sh tasks list                   «المهام» kept on the TV; N = the number list shows
 #   optimize/saver.sh tasks add 'نص'               (up to 12, 60 characters each)  |  done N  |  del N  |  clear
 #   optimize/saver.sh slot fasting                 the bottom-left slot: matches (default; the weather when no team is followed)
@@ -205,7 +206,7 @@ case "${1:-}" in
   updatebell) set1 updatebell "${2:?usage: optimize/saver.sh updatebell on|off}" ;;
   watchnext) set1 watchnext "${2:?usage: optimize/saver.sh watchnext on|off}" ;;
   appearance) set1 appearance "${2:?usage: optimize/saver.sh appearance dark|light|auto}" ;;
-  look) set1 look "${2:?usage: optimize/saver.sh look glass|graphite|navy|clean}" ;;
+  look) set1 look "${2:?usage: optimize/saver.sh look glass|graphite|navy|clean|sand}" ;;
   adhanbar) set1 adhanbar "${2:?usage: optimize/saver.sh adhanbar on|off}" ;;
   updatechannel) set1 updatechannel "${2:?usage: optimize/saver.sh updatechannel next|latest   (testing only)}" ;;
   yearstrip)set1 yearstrip "${2:?usage: optimize/saver.sh yearstrip on|off}" ;;
@@ -236,6 +237,7 @@ case "${1:-}" in
               *) set1 markets "$2" && set1 mkbar on > /dev/null ;;   # choosing markets shows the line
             esac ;;
   clocksize)set1 clocksize "${2:?usage: optimize/saver.sh clocksize large|medium|small}" ;;
+  stkchg)   set1 stkchg "${2:?usage: optimize/saver.sh stkchg pct|amount}" ;;
   mkstyle)  set1 mkstyle "${2:?usage: optimize/saver.sh mkstyle prices}" ;;
   stocks)
     shift

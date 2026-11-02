@@ -19,7 +19,7 @@ tv() { "$PY" -I optimize/tv.py "$@"; }
 
 # "before" is the baseline: a re-run (run.sh resumed after an interruption) keeps the first one
 case "$label" in before*)
-  if grep -q "^| $label |" $RUN/summary.md 2> /dev/null; then
+  if grep -q "^| $label |" "$RUN/summary.md" 2> /dev/null; then
     echo "$label was measured already: keeping the first reading."; exit 0
   fi ;;
 esac
@@ -28,8 +28,8 @@ if [ "$mode" = --screensaver ]; then
   tv "input keyevent KEYCODE_HOME" > /dev/null
   if ! optimize/start-saver.sh > /dev/null; then   # some Android 14 sets don't let ADB start it: nothing to measure
     echo "Android didn't start the screensaver from ADB on this TV: $label not measured." | tee "$out"
-    if [ -f $RUN/summary.md ]; then
-      echo "| $label | not measured (Android didn't start the screensaver from ADB) | | | | |" >> $RUN/summary.md
+    if [ -f "$RUN/summary.md" ]; then
+      echo "| $label | not measured (Android didn't start the screensaver from ADB) | | | | |" >> "$RUN/summary.md"
     fi
     tv "input keyevent KEYCODE_HOME" > /dev/null
     exit 0
@@ -100,12 +100,12 @@ disabled=$(sed -n '/== disabled packages/{n;n;p;}' "$out" | tr -dc '0-9')
 if [ "$avail" -eq 0 ] || [ "$total" -eq 0 ] || [ "$avail" -gt "$total" ]; then   # a TV whose meminfo we misread (one said 292396 MB free of 1683)
   avail="not measured (memory read failed)"; total=
 fi
-[ -f $RUN/summary.md ] || printf '| state | free RAM (MB%s) | swap used (MB) | processes | CPU idle | disabled packages |\n|---|---|---|---|---|---|\n' "${total:+ of $total}" > $RUN/summary.md
-if [ -f $RUN/summary.md ] && grep -q "^| $label |" $RUN/summary.md; then   # a repeated reading replaces its row
-  grep -v "^| $label |" $RUN/summary.md > $RUN/summary.md.tmp || true
-  mv $RUN/summary.md.tmp $RUN/summary.md
+[ -f "$RUN/summary.md" ] || printf '| state | free RAM (MB%s) | swap used (MB) | processes | CPU idle | disabled packages |\n|---|---|---|---|---|---|\n' "${total:+ of $total}" > "$RUN/summary.md"
+if [ -f "$RUN/summary.md" ] && grep -q "^| $label |" "$RUN/summary.md"; then   # a repeated reading replaces its row
+  grep -v "^| $label |" "$RUN/summary.md" > "$RUN/summary.md.tmp" || true
+  mv "$RUN/summary.md.tmp" "$RUN/summary.md"
 fi
-printf '| %s | %s | %s | %s | %s | %s |\n' "$label" "$avail" "$swap" "$procs" "${idle:+$idle%}" "$disabled" | tee -a $RUN/summary.md
+printf '| %s | %s | %s | %s | %s | %s |\n' "$label" "$avail" "$swap" "$procs" "${idle:+$idle%}" "$disabled" | tee -a "$RUN/summary.md"
 # our two apps' own memory (TOTAL PSS, MB), one line under the table; the table's columns stay as they are
 ours() { local v; v=$(sed -nE "s/^$1:[[:space:]]*TOTAL( PSS:)?[[:space:]]*([0-9]+).*/\2/p" "$out" | head -1); if [ -n "$v" ]; then echo "$(( v / 1024 )) MB"; else echo "not running"; fi; }
 echo "tweaks at this reading: $(sed -n '/^== tweaks/,/^== our apps/p' "$out" | grep = | tr -d '\r' | paste -sd' ' -)"

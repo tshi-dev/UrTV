@@ -40,7 +40,7 @@ check("MainActivity: OK on the screensaver tile starts the screensaver (the prev
       and 'guarded(ParentalPolicy.PILL_SAVER_SETTINGS, SAVER_PKG, "شاشة التوقف", () -> openPackage(SAVER_PKG))' in main
       and 'SAVER_PKG + ".MainActivity"' in main and "FLAG_ACTIVITY_CLEAR_TASK" in main.split("private void startSaver", 1)[1].split("}", 1)[0])
 center = (HOME / "ControlCenter.java").read_text(encoding="utf-8")
-check("ControlCenter: the screensaver tile says a long OK opens the settings, OK starts it", "host.openSaver()" in center and "host.openSaverSettings()" in center and '"مطوّلًا: الإعدادات"' in center)
+check("ControlCenter: OK on the screensaver tile starts it and its line says so; a long OK is only a shortcut to the settings (also in «إعدادات تلفزيونك»)", "host.openSaver()" in center and "host.openSaverSettings()" in center and '"ابدأها الآن"' in center and "مطوّلًا" not in center)
 
 if not shutil.which("javac"):
     print("SKIP pill text: no javac here")

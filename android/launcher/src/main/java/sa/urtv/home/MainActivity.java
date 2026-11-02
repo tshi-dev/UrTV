@@ -181,13 +181,13 @@ public class MainActivity extends Activity {
         sa.urtv.home.setup.SetupHook.atHomeStart(this);   // a home switch that was cut off is put back (it never throws)
         Digits.init(this);   // the screensaver's «الأرقام» setting, for every number this screen writes
         dockApps = loadDock();
-        liveTvPkg = getString(R.string.live_tv_package);
-        inputPickerPkg = getString(R.string.input_picker_package);
+        findTvApps();
         cols = getResources().getInteger(R.integer.columns);
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         setContentView(buildUi());
+        getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((was, now) -> placeName());   // FavBar: the name only in the bar
         // started by the screensaver's «الأذان» row; not again after a restore (the system hands back the same intent)
         if (b == null && (getIntent().getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) == 0) {
             openRequested(getIntent());
@@ -264,6 +264,7 @@ public class MainActivity extends Activity {
         unregisterReceiver(tick);
         if (inputsPopup != null) inputsPopup.dismiss();
         if (control != null) control.dismiss();   // its speed test stops with it
+        if (appOptions != null) { appOptions.dismiss(); appOptions = null; }
         homeCard.pause();
     }
 
@@ -399,36 +400,62 @@ public class MainActivity extends Activity {
         bottom.setOrientation(LinearLayout.VERTICAL);
         bottom.setClipChildren(false);
         bottom.setClipToPadding(false);
-        hero.addView(bottom, lp(-1, -2, Gravity.BOTTOM, dp(48), 0, dp(48), dp(30)));
+        hero.addView(bottom, lp(-1, -2, Gravity.BOTTOM, bar(FavBar.SIDE), 0, bar(FavBar.SIDE), bar(FavBar.BOTTOM)));   // the tray's place (FavBar)
         bottomBlock = bottom;
 
-        title = text(34, "sans-serif-light", Color.WHITE);
+        title = text(34, "sans-serif-medium", Color.WHITE);
+        title.setTextSize(TypedValue.COMPLEX_UNIT_PX, bar(FavBar.NAME_PX));   // FavBar: 30 px at 1080p, scaled by the screen's height
         title.setShadowLayer(dp(18), 0, 0, 0x66000000);
         title.setSingleLine(true);
-        bottom.addView(title, new LinearLayout.LayoutParams(-2, -2));
-        ((LinearLayout.LayoutParams) title.getLayoutParams()).setMargins(dp(8), 0, 0, dp(14));
+        // the favourite's name, and beside it the quiet hint for the first few times (optionsHint): «اضغط مطوّلاً للخيارات»
+        LinearLayout titleRow = new LinearLayout(this);
+        titleRow.setOrientation(LinearLayout.HORIZONTAL);
+        titleRow.setGravity(Gravity.BOTTOM);
+        titleRow.addView(title, new LinearLayout.LayoutParams(-2, -2));
+        optionsHint = text(14, "sans-serif", Color.WHITE);
+        optionsHint.setText(S.tv(OPTIONS_HINT));
+        optionsHint.setSingleLine(true);
+        optionsHint.setAlpha(0f);
+        optionsHint.setShadowLayer(dp(3), 0, dp(1), 0x66000000);
+        LinearLayout.LayoutParams hp = new LinearLayout.LayoutParams(-2, -2);
+        hp.setMarginStart(dp(16));
+        hp.bottomMargin = dp(8);
+        titleRow.addView(optionsHint, hp);
+        bottom.addView(titleRow, new LinearLayout.LayoutParams(-2, -2));
+        ((LinearLayout.LayoutParams) titleRow.getLayoutParams()).setMargins(0, 0, 0, bar(FavBar.NAME_GAP));
+        nameRow = titleRow;
+        titleRow.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> placeName());   // a new name, a new width: centred again
 
+        // the favourites bar (docs/PROPOSALS-NOV2.md §1, FavBar): a tray 218 high, the same on every look and layout; five 304×170 tiles
+        // show, the first on the right, and more scroll inside it; the row never leaves it
         dockRow = new LinearLayout(this);
         dockRow.setOrientation(LinearLayout.HORIZONTAL);
-        dockRow.setGravity(Gravity.CENTER);
+        dockRow.setGravity(Gravity.CENTER_VERTICAL | Dir.start());
         dockRow.setClipChildren(false);
         dockRow.setClipToPadding(false);
-        dockRow.setPadding(dp(20), dp(22), dp(20), dp(22));
+        dockRow.setPadding(bar(FavBar.PAD_SIDE), bar(FavBar.PAD_TOP), bar(FavBar.PAD_SIDE), bar(FavBar.PAD_TOP));
         GradientDrawable band = dockBand = new GradientDrawable();
-        band.setCornerRadius(dp(26));
-        band.setColor(0x1FFFFFFF);
-        band.setStroke(dp(1), 0x14FFFFFF);
-        dockRow.setBackground(band);
-        bottom.addView(dockRow, new LinearLayout.LayoutParams(-1, -2));
+        band.setCornerRadius(bar(FavBar.RADIUS));
+        band.setColor(FavBar.FILL_DARK);
+        band.setStroke(Math.max(1, bar(1)), FavBar.LINE_DARK);
+        tray = new android.widget.HorizontalScrollView(this);
+        tray.setHorizontalScrollBarEnabled(false);
+        tray.setFillViewport(true);
+        tray.setClipToPadding(true);   // a tile scrolled half out is cut at the tray's edge, never drawn over the photo
+        tray.setBackground(band);
+        tray.addView(dockRow, new FrameLayout.LayoutParams(-2, -1));
+        tray.setOnScrollChangeListener((v, x, y, ox, oy) -> placeName());
+        bottom.addView(tray, new LinearLayout.LayoutParams(-1, bar(FavBar.TRAY_H)));
 
-        // «أكمل المشاهدة»: one row right under the favourites, in the first screen with the clock and the photo (empty until it is
-        // allowed and has something); the dock band's padding, so its cards sit exactly under the favourites
+        // «أكمل المشاهدة»: its own row below the first screen (the owner: the tray never moves for it), ▼ from the tray scrolls the home up
+        // to it and ▲ brings the tray back; the tray's sides and padding, so its cards sit exactly under the favourites' cells
         tvRowsBox = new LinearLayout(this);
         tvRowsBox.setOrientation(LinearLayout.VERTICAL);
         tvRowsBox.setClipChildren(false);
         tvRowsBox.setClipToPadding(false);
-        tvRowsBox.setPadding(dp(20), 0, dp(20), 0);   // the dock band's own padding: its cells are the favourites' cells, a card a tile's size
-        bottom.addView(tvRowsBox, new LinearLayout.LayoutParams(-1, -2));
+        tvRowsBox.setPadding(bar(FavBar.PAD_SIDE), 0, bar(FavBar.PAD_SIDE), 0);   // the tray's own padding: its cells are the favourites' cells, a card a tile's size
+
+        content.addView(tvRowsBox, llp(-1, -2, bar(FavBar.SIDE), 0, bar(FavBar.SIDE), 0));
 
         appsLabel = text(11, "sans-serif-medium", 0x99FFFFFF);
         appsLabel.setText(S.t("كل التطبيقات"));
@@ -457,7 +484,7 @@ public class MainActivity extends Activity {
         if (!Dir.rtl() && clockBlock != null && clockBlock.getWidth() > 0) clockLeft = dm.widthPixels - ((View) clockBlock.getParent()).getLeft() - clockBlock.getRight();
         if (bottomBlock != null && bottomBlock.getHeight() > 0 && dockRow != null) {
             titleTop = bottomBlock.getTop();
-            dockTop = titleTop + dockRow.getTop();
+            dockTop = titleTop + tray.getTop();   // the tray's top (FavBar): the cards above end before it
             for (View c : dockCards) wide = Math.max(wide, Math.round(title.getPaint().measureText(((App) c.getTag()).label)));
         }
         return CardBox.box(cards, dm.widthPixels, dm.heightPixels, dm.density, clockLeft, titleTop, dockTop, wide);
@@ -570,7 +597,7 @@ public class MainActivity extends Activity {
         i.removeExtra("open");
         switch (what) {
             case "adhan":
-                if (getResources().getBoolean(R.bool.show_listening)) handler.post(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, adhanSettingsIntent(), "إعدادات الأذان"));
+                if (getResources().getBoolean(R.bool.show_listening)) handler.post(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, adhanSettingsIntent(), S.t("إعدادات الأذان")));
                 break;
             case "listen":   // the settings' «تلاوة وأذان» ← «افتح تلاوة وأذان»: the same as the button
                 if (getResources().getBoolean(R.bool.show_listening))
@@ -867,7 +894,7 @@ public class MainActivity extends Activity {
 
         for (int i = 0; i < dock.size(); i++) {
             View tile = tile(dock.get(i), true);
-            dockRow.addView(tile, rowCell(i, dock.size(), -2));
+            dockRow.addView(tile, dockCell(i, dock.size()));
         }
         appsLabel.setVisibility(rest.isEmpty() ? View.GONE : View.VISIBLE);
         wireFocus();
@@ -928,6 +955,17 @@ public class MainActivity extends Activity {
      * row's two ends. Start and end, not left and right: the home is right to left, so the first cell's edge is the row's right edge,
      * under the start of «كل التطبيقات» (left and right margins put the outer gap inside and the row a step off, the owner's photo).
      */
+    /** A favourite's cell (FavBar): 304 wide (its 16:9 banner 170 high), 24 between two, none at the row's two ends. */
+    private LinearLayout.LayoutParams dockCell(int i, int n) {
+        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(FavBar.tileW(getResources().getDisplayMetrics().heightPixels), -2);
+        p.setMarginStart(i == 0 ? 0 : bar(FavBar.GAP) / 2);
+        p.setMarginEnd(i == n - 1 ? 0 : bar(FavBar.GAP) - bar(FavBar.GAP) / 2);
+        return p;
+    }
+
+    /** a length of FavBar's 1080p spec on this screen (scaled by its height, so 720p is two thirds) */
+    private int bar(float px1080) { return FavBar.px(px1080, getResources().getDisplayMetrics().heightPixels); }
+
     private LinearLayout.LayoutParams rowCell(int i, int n, int height) {
         LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(0, height, 1f);
         p.setMarginStart(i == 0 ? 0 : dp(10));
@@ -958,7 +996,7 @@ public class MainActivity extends Activity {
         card.setClipToOutline(true);
         card.setOutlineProvider(new ViewOutlineProvider() {
             @Override public void getOutline(View v, Outline o) {
-                o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), dp(10));
+                o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), inDock ? bar(FavBar.TILE_RADIUS) : dp(10));
             }
         });
         GradientDrawable bg = new GradientDrawable();
@@ -978,8 +1016,8 @@ public class MainActivity extends Activity {
 
         // Focus ring and sheen, drawn above the art.
         GradientDrawable ring = new GradientDrawable();
-        ring.setCornerRadius(dp(10));
-        ring.setStroke(dp(2), 0xE6FFFFFF);
+        ring.setCornerRadius(inDock ? bar(FavBar.TILE_RADIUS) : dp(10));
+        ring.setStroke(inDock ? bar(FavBar.RING) : dp(2), inDock ? FavBar.ring(lightNow) : 0xE6FFFFFF);
         ring.setOrientation(GradientDrawable.Orientation.TL_BR);
         ring.setColors(new int[]{0x26FFFFFF, 0x00FFFFFF, 0x00FFFFFF});
         View shine = new View(this);
@@ -998,7 +1036,7 @@ public class MainActivity extends Activity {
         if (!inDock) {
             box.addView(label, llp(-1, -2, 0, dp(10), 0, 0));
             gridLabels.add(label);
-            if (lightNow) label.setTextColor(Look.LIGHT_LOOK.ink);
+            if (lightNow || "sand".equals(lookNow)) label.setTextColor(palette().ink);
         }
 
         card.setOnClickListener(v -> guarded(inDock ? ParentalPolicy.TILE : ParentalPolicy.GRID, app.pkg, app.label, () -> launch(new Intent(Intent.ACTION_MAIN)
@@ -1006,15 +1044,20 @@ public class MainActivity extends Activity {
                 .setComponent(app.component)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED))));
         card.setOnFocusChangeListener((v, has) -> {
-            float s = has ? (inDock ? 1.12f : 1.1f) : 1f;
+            float s = has ? (inDock ? FavBar.FOCUS_SCALE : 1.1f) : 1f;
             scaleTo(v, s);   // a spring: a held arrow keeps its speed from card to card
-            v.animate().translationZ(has ? dp(GlowLook.LIFT_DP) : 0).setInterpolator(new DecelerateInterpolator()).setDuration(has ? 320 : 200).start();
+            if (inDock) v.animate().translationY(has ? -bar(FavBar.LIFT) : 0).translationZ(has ? dp(GlowLook.LIFT_DP) : 0)
+                    .setInterpolator(new DecelerateInterpolator()).setDuration(FavBar.MS).start();
+            else v.animate().translationZ(has ? dp(GlowLook.LIFT_DP) : 0).setInterpolator(new DecelerateInterpolator()).setDuration(has ? 320 : 200).start();
             shine.animate().alpha(has ? 1f : 0f).setDuration(160).start();
             label.animate().alpha(has ? 1f : 0f).translationY(has ? dp(4) : 0).setDuration(200).start();
             if (!has) return;
             lastFocusedId = v.getId();
+            optionsHint(inDock);
             if (inDock) {
+                nameCard = v;
                 title.setText(app.label);
+                placeName();
                 title.animate().alpha(1f).setDuration(200).start();
                 animateGlow(app.color);
                 fadeGlow(1f);
@@ -1026,8 +1069,8 @@ public class MainActivity extends Activity {
             }
         });
 
-        // Long-press OK: add to / remove from / reorder the dock, right from the remote.
-        card.setOnLongClickListener(v -> { showAppMenu(v, app.pkg, inDock); return true; });
+        // a long OK (or the remote's Menu key, dispatchKeyEvent): the app's options (AppOptions); each of them is in the settings too
+        card.setOnLongClickListener(v -> { optionsHintUsed(); showAppMenu(v, app.pkg, inDock); return true; });
         cardByPkg.put(app.pkg, card);
 
         (inDock ? dockCards : gridCards).add(card);
@@ -1274,11 +1317,11 @@ public class MainActivity extends Activity {
         tvRowsBox.removeAllViews();
         tvCards.clear();
         tvNames.clear();
-        int n = TvRowsPick.cells(dockCards.size(), MIN_DOCK);   // never one cell: see TvRowsPick.cells
+        int n = Math.min(FavBar.SHOWN, TvRowsPick.cells(dockCards.size(), MIN_DOCK));   // never one cell (TvRowsPick.cells); at most the five a tray shows: no scroll here, no card cut
         tvCells = n;
         for (TvRows.Row r : rows) {
-            TextView name = text(11, "sans-serif-medium", lightNow ? Look.LIGHT_LOOK.gold : GOLD);
-            name.setShadowLayer(dp(3), 0, dp(1), Look.of(lightNow).shadow);   // a halo in the light look, as the clock's lines
+            TextView name = text(11, "sans-serif-medium", lightNow || "sand".equals(lookNow) ? palette().gold : GOLD);
+            name.setShadowLayer(dp(3), 0, dp(1), palette().shadow);   // a halo in the light look, as the clock's lines
             name.setText(S.tv(TvRowsPick.WATCH_NEXT_TITLE));   // our words, whatever the apps call it
             tvNames.add(name);
             tvRowsBox.addView(name, llp(-2, -2, 0, dp(14), 0, dp(10)));
@@ -1290,10 +1333,10 @@ public class MainActivity extends Activity {
             int shown = Math.min(n, r.items.size());
             for (int i = 0; i < shown; i++) {
                 View box = tvCard(r.items.get(i));
-                line.addView(box, rowCell(i, n, -2));
+                line.addView(box, dockCell(i, n));
                 cards.add(((ViewGroup) box).getChildAt(0));
             }
-            for (int i = shown; i < n; i++) line.addView(new View(this), rowCell(i, n, 1));   // fewer cards: still a favourite's width each
+            for (int i = shown; i < n; i++) line.addView(new View(this), dockCell(i, n));   // fewer cards: still a favourite's width each
             tvRowsBox.addView(line, new LinearLayout.LayoutParams(-1, -2));
             tvCards.add(cards);
         }
@@ -1366,12 +1409,20 @@ public class MainActivity extends Activity {
             shine.animate().alpha(has ? 1f : 0f).setDuration(160).start();
             if (!has) return;
             lastFocusedId = v.getId();
-            title.setText(it.meta.isEmpty() ? it.title : it.title + "  ·  " + it.meta);
-            title.animate().alpha(1f).setDuration(200).start();
             fadeGlow(1f);
-            glideTo(0);   // the first screen stays: the clock and the photo
+            View line = (View) box.getParent();
+            int at = tvRowsBox.indexOfChild(line) / 2;   // the box holds each row's name, then its cards
+            if (at >= 0 && at < tvNames.size()) tvNames.get(at).setText(S.tv(TvRowsPick.WATCH_NEXT_TITLE) + "  ·  " + (it.meta.isEmpty() ? it.title : it.title + "  ·  " + it.meta));
+            scrollToTvRow(line);   // below the first screen: the home slides up to the row; ▲ to the tray slides it back (glideTo(0))
         });
         return box;
+    }
+
+    /** «أكمل المشاهدة» below the first screen: the row (its name over it) a little above the screen's middle. */
+    private void scrollToTvRow(View line) {
+        int y = tvRowsBox.getTop() + line.getTop();
+        int max = Math.max(0, content.getHeight() - scroll.getHeight());
+        glideTo(Math.max(0, Math.min(y - (int) (getResources().getDisplayMetrics().heightPixels * 0.42f), max)));
     }
 
     private void scrollToRow(View tileBox) {
@@ -1379,9 +1430,8 @@ public class MainActivity extends Activity {
         int y = grid.getTop() + row.getTop();
         int screenH = getResources().getDisplayMetrics().heightPixels;
         // First grid row: slide the dock band up to the top edge; later rows centre on screen.
-        View band = (View) dockRow.getParent();
-        int target = grid.indexOfChild(row) == 0
-                ? hero.getTop() + band.getTop() + dockRow.getTop() - dp(22)
+        int target = grid.indexOfChild(row) == 0 && tvCards.isEmpty()
+                ? hero.getTop() + bottomBlock.getTop() + tray.getTop()   // the tray at the top edge
                 : y - (int) (screenH * 0.42f);
         int max = Math.max(0, content.getHeight() - scroll.getHeight());
         glideTo(Math.max(0, Math.min(target, max)));
@@ -1480,7 +1530,7 @@ public class MainActivity extends Activity {
     private android.graphics.drawable.StateListDrawable opaqueTile(float radiusDp) {
         GlassStyle.Look l = homeGlass();
         android.graphics.drawable.StateListDrawable s = new android.graphics.drawable.StateListDrawable();
-        s.addState(new int[] {android.R.attr.state_focused}, GlassPaint.fill(this, GlassStyle.over(l.focus, opaque(l.dialog)), radiusDp, 0));
+        s.addState(new int[] {android.R.attr.state_focused}, GlassPaint.focused(this, l, GlassStyle.over(l.focus, opaque(l.dialog)), radiusDp));
         s.addState(new int[] {}, GlassPaint.fill(this, opaque(l.dialog), radiusDp, l.line));
         return s;
     }
@@ -1657,7 +1707,7 @@ public class MainActivity extends Activity {
         syncRow(e.row());
         boolean chip = e.undoAvailable(now);
         if (chip) {
-            int dockTop = bottomBlock.getTop() + dockRow.getTop();
+            int dockTop = bottomBlock.getTop() + tray.getTop();
             FrameLayout.LayoutParams p = (FrameLayout.LayoutParams) undoChip.getLayoutParams();
             p.bottomMargin = Math.max(dp(8), getResources().getDisplayMetrics().heightPixels - dockTop + dp(8));
             undoChip.setLayoutParams(p);
@@ -1689,28 +1739,29 @@ public class MainActivity extends Activity {
             if (card == null) continue;
             View box = (View) card.getParent();
             if (box.getParent() instanceof ViewGroup) ((ViewGroup) box.getParent()).removeView(box);
-            dockRow.addView(box, rowCell(i, order.size(), -2));
+            dockRow.addView(box, dockCell(i, order.size()));
             dockCards.add(card);
         }
         wireFocus();
     }
 
     /** Picked up: bigger, a gold outline and a little off the row. Dropped: as any tile. */
-    private void liftCard(View card, boolean lifted) { liftCard(card, lifted, 1.12f); }
+    private void liftCard(View card, boolean lifted) { liftCard(card, lifted, FavBar.FOCUS_SCALE); }
 
     private void liftCard(View card, boolean lifted, float focusScale) {
         GradientDrawable ring = ringByCard.get(card);
         View shine = shineByCard.get(card);
-        if (ring != null) ring.setStroke(dp(lifted ? 4 : 2), lifted ? GOLD : 0xE6FFFFFF);
+        boolean fav = dockCards.contains(card);
+        if (ring != null) ring.setStroke(lifted ? dp(4) : fav ? bar(FavBar.RING) : dp(2), lifted ? GOLD : fav ? FavBar.ring(lightNow) : 0xE6FFFFFF);
         if (shine != null && lifted) shine.setAlpha(1f);
         if (lifted) {
-            scaleTo(card, 1.25f);
-            card.animate().translationY(-dp(10)).translationZ(dp(GlowLook.LIFT_DP)).setDuration(160).start();
+            scaleTo(card, fav ? FavBar.LIFTED_SCALE : 1.25f);   // a favourite stays inside its tray
+            card.animate().translationY(fav ? -bar(FavBar.LIFT) : -dp(10)).translationZ(dp(GlowLook.LIFT_DP)).setDuration(160).start();
         } else {
             boolean has = card.isFocused();
             float s = has ? focusScale : 1f;
             scaleTo(card, s);
-            card.animate().translationY(0).translationZ(has ? dp(GlowLook.LIFT_DP) : 0).setDuration(160).start();
+            card.animate().translationY(has && fav ? -bar(FavBar.LIFT) : 0).translationZ(has ? dp(GlowLook.LIFT_DP) : 0).setDuration(160).start();
             if (shine != null) shine.setAlpha(has ? 1f : 0f);
         }
     }
@@ -1890,7 +1941,7 @@ public class MainActivity extends Activity {
         if (oldBox != null && oldBox.getParent() instanceof ViewGroup) ((ViewGroup) oldBox.getParent()).removeView(oldBox);
         gridCards.remove(card);
         dockRow.addView(tile(app, true));   // tile() puts it in dockCards and cardByPkg
-        for (int i = 0; i < dockRow.getChildCount(); i++) dockRow.getChildAt(i).setLayoutParams(rowCell(i, dockRow.getChildCount(), -2));
+        for (int i = 0; i < dockRow.getChildCount(); i++) dockRow.getChildAt(i).setLayoutParams(dockCell(i, dockRow.getChildCount()));
         Toast.makeText(this, S.t("أُضيف إلى المفضلة: %s", app.label), Toast.LENGTH_SHORT).show();
     }
 
@@ -2082,55 +2133,118 @@ public class MainActivity extends Activity {
         guarded(ParentalPolicy.MENU, null, S.t("قائمة التطبيق"), () -> showAppMenuNow(anchor, pkg, inDock));
     }
 
+    /**
+     * The app's options (AppOptions, docs/UX-REVIEW.md): «انقل», «أخفِ», «اقفل», then ★ (in or out of the favourites) and ⓘ (the app's
+     * details). What the old long-press menu also had lives where it can be seen: «تعديل المفضلة» and «تعديل التطبيقات» are «انقل»,
+     * the update, «تلاوة وأذان» and the adhan are in the settings, the default favourites in «ترتيب المفضلة», the family lock in
+     * «إعدادات تلفزيونك» ← المزيد and in «مركز التحكم». Kids mode moves and hides nothing (kidsNoEdit).
+     */
     private void showAppMenuNow(View anchor, String pkg, boolean inDock) {
-        List<String> dock = new ArrayList<>();
-        // The dock as shown, including apps added automatically to reach MIN_DOCK.
-        for (View c : dockCards) for (Map.Entry<String, View> e : cardByPkg.entrySet()) if (e.getValue() == c) dock.add(e.getKey());
+        List<String> dock = dockPackages();
         int i = dock.indexOf(pkg);
-        List<String> labels = new ArrayList<>();
-        List<Runnable> actions = new ArrayList<>();
-        boolean kids = Parental.state(this).kids;   // kids mode edits nothing (kidsNoEdit)
-        if (inDock && !kids) {
-            labels.add(S.t("تعديل المفضلة"));
-            actions.add(() -> beginEdit(pkg));
+        boolean kids = Parental.state(this).kids;
+        AppOptions.Spec o = new AppOptions.Spec();
+        if (!kids) {
+            o.move = () -> { if (inDock) beginEdit(pkg); else beginAppsEdit(pkg); };
+            o.hide = () -> {
+                if (inDock && dock.size() <= MIN_DOCK) { toast(S.t("المفضلة لا تقل عن %s", arabicDigits(String.valueOf(MIN_DOCK)))); return; }
+                if (inDock) { dock.remove(pkg); saveDock(dock, dock.isEmpty() ? null : dock.get(Math.max(0, i - 1))); }
+                Dock.hideOrShow(this, Collections.singletonList(pkg), true);   // back from «تعديل التطبيقات» ← «المخفية»
+                toast(S.t("أُخفي، ويرجع من «تعديل التطبيقات»"));
+            };
         }
-        if (!inDock && !kids) {
-            labels.add(S.t("تعديل التطبيقات"));
-            actions.add(() -> beginAppsEdit(pkg));
-        }
-        labels.add(S.t("تحديث تلفزيوني"));
-        actions.add(() -> launchGuarded(ParentalPolicy.MENU_UPDATE, new Intent(this, UpdateActivity.class), "تحديث تلفزيوني"));
-        if (inDock) {
-            if (dock.size() > MIN_DOCK) {
-                labels.add(S.t("إزالة من المفضلة"));
-                actions.add(() -> { dock.remove(pkg); saveDock(dock, dock.get(Math.max(0, i - 1))); });
-            } else {
-                labels.add(S.t("المفضلة لا تقل عن %s", arabicDigits(String.valueOf(MIN_DOCK))));
-                actions.add(() -> { });
+        ParentalPolicy.State family = Parental.state(this);
+        o.locked = family.locked.contains(pkg);
+        o.lock = () -> {
+            if (!Parental.state(this).pinSet) {   // no PIN yet: the family lock's own page sets one first
+                launchGuarded(ParentalPolicy.PARENTAL_SCREEN, new Intent(this, ParentalActivity.class), "الرقابة الأبوية");
+                return;
             }
-        } else if (dock.size() < MAX_DOCK) {
-            labels.add(S.t("إضافة إلى المفضلة"));
-            actions.add(() -> { dock.add(pkg); saveDock(dock, pkg); });
-        } else {
-            labels.add(S.t("المفضلة ممتلئة (%s)", MAX_DOCK));
-            actions.add(() -> { });
-        }
-        labels.add(S.t("إعادة المفضلة الافتراضية"));
-        actions.add(() -> {
-            prefs().edit().remove("dock").apply();
-            dockApps = getResources().getStringArray(R.array.dock_apps);
-            buildApps();
-        });
-        if (listenPillHidden()) {   // the button is hidden: the player (and the adhan's settings in it) opens from here, behind the same lock
-            labels.add(S.t("تلاوة وأذان"));
-            actions.add(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, new Intent(this, sa.urtv.home.tilawah.MainActivity.class), "تلاوة وأذان"));
-            labels.add(S.t("إعدادات الأذان"));   // the same screen, on its «الأذان» tab: on or off, the voices, short, any key, the volume
-            actions.add(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, adhanSettingsIntent(), "إعدادات الأذان"));
-        }
-        labels.add(S.t("الرقابة الأبوية"));
-        actions.add(() -> launchGuarded(ParentalPolicy.PARENTAL_SCREEN, new Intent(this, ParentalActivity.class), "الرقابة الأبوية"));
-        showMenu(anchor, labels, actions, appButtons(pkg, kids));
+            boolean now = Parental.state(this).locked.contains(pkg);
+            Parental.confirm(this, this::adhanTakes, S.t("الرقابة الأبوية"), () -> {
+                Parental.setLocked(this, pkg, !now);
+                toast(now ? S.t("فُتح القفل") : S.t("قُفل، ويطلب الرمز"));
+            }, null);
+        };
+        o.favouriteNow = inDock;
+        o.favourite = () -> {
+            if (inDock) {
+                if (dock.size() <= MIN_DOCK) { toast(S.t("المفضلة لا تقل عن %s", arabicDigits(String.valueOf(MIN_DOCK)))); return; }
+                dock.remove(pkg);
+                saveDock(dock, dock.get(Math.max(0, i - 1)));
+            } else if (dock.size() >= MAX_DOCK) {
+                toast(S.t("المفضلة ممتلئة (%s)", MAX_DOCK));
+            } else {
+                dock.add(pkg);
+                saveDock(dock, pkg);
+            }
+        };
+        Intent details = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", pkg, null));
+        o.info = () -> guarded(ParentalPolicy.MENU_APP, pkg, AppActions.DETAILS, () -> launch(details));   // its uninstall is there too
+        if (appOptions != null) appOptions.dismiss();
+        appOptions = AppOptions.show(this, anchor, inDock ? 1.12f : 1.1f, homeGlass(), font("sans-serif-medium"), o);
     }
+
+    // ---- the hint beside a favourite's name: «اضغط مطوّلاً للخيارات», the first few times only (OPTIONS_HINT_TIMES), never after the box was opened
+
+    /** how many times the hint shows at most, a favourite focused each time */
+    static final int OPTIONS_HINT_TIMES = 6;
+    /** the hint's line beside the name (built with the title) */
+    private TextView optionsHint;
+    static final String OPTIONS_HINT = S.n("اضغط مطوّلاً للخيارات");
+
+    /** the hint for this focus: shown while it has times left, counted once per favourite that takes the focus */
+    private void optionsHint(boolean show) {
+        if (optionsHint == null) return;
+        int seen = prefs().getInt("options_hint", 0);
+        boolean on = show && seen < OPTIONS_HINT_TIMES && edit == null && appsEdit == null;
+        if (on) prefs().edit().putInt("options_hint", seen + 1).apply();
+        optionsHint.setTextColor(palette().soft);
+        optionsHint.animate().alpha(on ? 0.85f : 0f).setDuration(200).start();
+    }
+
+    /** the box was opened: the hint has done its job */
+    private void optionsHintUsed() {
+        prefs().edit().putInt("options_hint", OPTIONS_HINT_TIMES).apply();
+        if (optionsHint != null) optionsHint.animate().alpha(0f).setDuration(150).start();
+    }
+
+    // ---- the favourites bar (FavBar): its tray, the name over the focused tile, and the one move it may make
+
+    private android.widget.HorizontalScrollView tray;
+    private View nameRow, nameCard;
+    private boolean trayLowered;
+
+    /** The name (and the hint beside it) centred over the focused favourite, as it scrolls too; hidden when the focus is not in the bar. */
+    private void placeName() {
+        if (nameRow == null || nameRow.getWidth() == 0) return;
+        View f = getCurrentFocus();
+        boolean inBar = f != null && dockCards.contains(f) && edit == null;
+        nameRow.animate().alpha(inBar ? 1f : 0f).setDuration(FavBar.MS).start();
+        if (!inBar || nameCard == null) return;
+        int[] c = new int[2], p = new int[2];
+        nameCard.getLocationInWindow(c);
+        ((View) nameRow.getParent()).getLocationInWindow(p);
+        float cardCentre = c[0] + nameCard.getWidth() * nameCard.getScaleX() / 2f;   // the scale is from the centre: the centre stays
+        nameRow.setTranslationX(FavBar.nameX(cardCentre - p[0], nameRow.getLeft(), nameRow.getWidth(), ((View) nameRow.getParent()).getWidth()));
+    }
+
+    /**
+     * The one move the tray makes (FavBar.WIDGET_DROP): 40 px down while the focus is in a widget that opens into a scrolling row (the
+     * matches widget of the football home, docs/PROPOSALS-NOV2.md §1), back before a tile lifts. Nothing calls it with true until that
+     * widget is on the home; the tray looks the same either way.
+     */
+    void lowerTray(boolean down) {
+        if (tray == null || down == trayLowered) return;
+        trayLowered = down;
+        tray.animate().translationY(down ? bar(FavBar.WIDGET_DROP) : 0).setInterpolator(new android.view.animation.AccelerateDecelerateInterpolator())
+                .setDuration(FavBar.DROP_MS).start();
+    }
+
+    /** the app's options while they show (closed when the home goes) */
+    private PopupWindow appOptions;
+
+    private void toast(String text) { Toast.makeText(this, text, Toast.LENGTH_SHORT).show(); }
 
     /** Small focusable popup in the same style as the Inputs menu. */
     private void showMenu(View anchor, List<String> labels, List<Runnable> actions) {
@@ -2191,61 +2305,6 @@ public class MainActivity extends Activity {
     /** dp: the height of a button in the app menu's bottom row (an icon over a short name) */
     private static final int APP_BUTTON_H = 56;
 
-    /**
-     * The app menu's bottom row (AppActions): «تفاصيل التطبيق» opens Android's app-details screen for the app, «حذف التطبيق» Android's
-     * own uninstall, which asks to confirm (not for a system app or ours). Both behind the family lock's MENU_APP, as every item above
-     * is behind its own; none in kids mode.
-     */
-    private List<View> appButtons(String pkg, boolean kids) {
-        List<View> out = new ArrayList<>();
-        for (int kind : AppActions.buttons(pkg, isSystemApp(pkg), kids)) {
-            if (kind == AppActions.OPEN_DETAILS) {
-                Intent i = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", pkg, null));
-                out.add(appButton(AppActions.DETAILS, R.drawable.ic_info, () -> guarded(ParentalPolicy.MENU_APP, pkg, AppActions.DETAILS, () -> launch(i))));
-            } else if (kind == AppActions.OPEN_DELETE) {
-                Intent i = new Intent(Intent.ACTION_DELETE, Uri.fromParts("package", pkg, null));
-                out.add(appButton(AppActions.DELETE, R.drawable.ic_delete, () -> guarded(ParentalPolicy.MENU_APP, pkg, AppActions.DELETE, () -> launch(i))));
-            }
-        }
-        return out;
-    }
-
-    /** a system app, or an update of one (what the TV came with): never offered for removal */
-    private boolean isSystemApp(String pkg) {
-        try {
-            int f = getPackageManager().getApplicationInfo(pkg, 0).flags;
-            return (f & (android.content.pm.ApplicationInfo.FLAG_SYSTEM | android.content.pm.ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0;
-        } catch (PackageManager.NameNotFoundException | RuntimeException e) {
-            return true;   // not known: not offered
-        }
-    }
-
-    /** a small button: the icon over its name, in the glass look (the panel at rest, the focus fill and its ink while focused) */
-    private View appButton(String label, int icon, Runnable action) {
-        LinearLayout b = new LinearLayout(this);
-        b.setOrientation(LinearLayout.VERTICAL);
-        b.setGravity(Gravity.CENTER);
-        b.setFocusable(true);
-        b.setClickable(true);
-        b.setId(View.generateViewId());
-        b.setTag(action);
-        b.setContentDescription(S.tv(label));
-        b.setPadding(dp(4), dp(6), dp(4), dp(6));
-        ImageView glyph = new ImageView(this);
-        glyph.setImageDrawable(getDrawable(icon).mutate());
-        glyph.setTag(GlassPaint.ICON);
-        b.addView(glyph, new LinearLayout.LayoutParams(dp(22), dp(22)));
-        TextView name = text(11, "sans-serif-medium", homeGlass().text);
-        name.setText(S.tv(label));
-        name.setSingleLine(true);
-        name.setEllipsize(android.text.TextUtils.TruncateAt.END);
-        name.setGravity(Gravity.CENTER);
-        LinearLayout.LayoutParams nlp = new LinearLayout.LayoutParams(-1, -2);
-        nlp.topMargin = dp(4);
-        b.addView(name, nlp);
-        GlassPaint.card(b, homeGlass(), 10);
-        return b;
-    }
 
     private void showInputs(View anchor, int path) {
         guarded(path, null, "المصادر", () -> showInputsNow(anchor));
@@ -2260,13 +2319,14 @@ public class MainActivity extends Activity {
         PopupWindow pw = new PopupWindow(list, dp(200), -2, true);
         List<TextView> rows = new ArrayList<>();
 
+        findTvApps();   // asked again each time: the TV's own apps can arrive with an update
         List<TvInputInfo> inputs = InputLabels.reported(this);   // in the TV's own names' order, so a name the owner gave moves nothing
         Map<String, String> given = InputLabels.given(this);
         for (TvInputInfo t : inputs) {
             rows.add(inputRow(InputLabels.rowLabel(this, t, given), () -> openPassthroughInput(t)));   // + the CEC device's name and its standby mark
         }
-        if (isInstalled(liveTvPkg)) rows.add(inputRow(S.t("البث التلفزيوني"), () -> guarded(ParentalPolicy.INPUT_LIVE_TV, liveTvPkg, "البث التلفزيوني", () -> openPackage(liveTvPkg))));
-        if (inputs.isEmpty() && isInstalled(inputPickerPkg)) rows.add(inputRow(S.t("كل المصادر"), () -> guarded(ParentalPolicy.INPUT_PICKER, inputPickerPkg, "كل المصادر", () -> openPackage(inputPickerPkg))));
+        if (liveTvPkg != null) rows.add(inputRow(S.t("البث التلفزيوني"), () -> guarded(ParentalPolicy.INPUT_LIVE_TV, TvVendor.pkg(liveTvPkg), "البث التلفزيوني", () -> openPackage(liveTvPkg))));
+        if (inputs.isEmpty() && inputPickerPkg != null) rows.add(inputRow(S.t("كل المصادر"), () -> guarded(ParentalPolicy.INPUT_PICKER, TvVendor.pkg(inputPickerPkg), "كل المصادر", () -> openPackage(inputPickerPkg))));
 
         if (rows.isEmpty()) rows.add(inputRow(S.t("الإعدادات"), () -> launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون")));
         for (TextView r : rows) {
@@ -2359,11 +2419,17 @@ public class MainActivity extends Activity {
     }
 
     /** The home in the light or the dark look; nothing is touched while the look stays the same. */
+    /** the home's own colours now: the light or the dark, and «رملي»'s own pair when that look is chosen (Look.of) */
+    private Look.Palette palette() { return Look.of(lookNow, lightNow); }
+    /** the look applyLook last painted (a change of look repaints even when the light stays) */
+    private String paletteLook = "";
+
     private void applyLook(boolean light) {
         GlassSource.setHomeLight(this, light);   // «تلقائي» on the other screens follows the home (kept only when it changes)
-        if (light == lightNow) return;
+        if (light == lightNow && lookNow.equals(paletteLook)) return;
         lightNow = light;
-        Look.Palette p = Look.of(light);
+        paletteLook = lookNow;
+        Look.Palette p = palette();
         clock.setTextColor(p.text);
         title.setTextColor(p.ink);
         title.setShadowLayer(dp(18), 0, 0, p.titleShadow);
@@ -2374,8 +2440,9 @@ public class MainActivity extends Activity {
         for (TextView t : tvNames) { t.setTextColor(p.gold); t.setShadowLayer(dp(3), 0, dp(1), p.shadow); }
         scrim.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, p.scrim));
         gridShade.setBackgroundColor(p.shade);
-        dockBand.setColor(p.band);
-        dockBand.setStroke(dp(1), p.bandStroke);
+        dockBand.setColor(light ? FavBar.FILL_LIGHT : FavBar.FILL_DARK);   // FavBar: the same tray on every look
+        dockBand.setStroke(Math.max(1, bar(1)), light ? FavBar.LINE_LIGHT : FavBar.LINE_DARK);
+        for (View c : dockCards) { GradientDrawable r = ringByCard.get(c); if (r != null) r.setStroke(bar(FavBar.RING), FavBar.ring(light)); }
     }
 
     private void updateClock() {
@@ -2391,6 +2458,8 @@ public class MainActivity extends Activity {
         greetingLine.update(h, cfg);
         lookNow = cfg.look();
         applyLook(Look.light(cfg.appearance(), dayBySun(cfg), h * 60 + now.get(Calendar.MINUTE)));
+        GlassStyle.Look glassNow = homeGlass();
+        for (Pill p : new Pill[] {inputsPill, tasksPill, tilawahPill, centerPill, bellPill}) if (p != null) p.look(glassNow);   // «رملي»: its own buttons
         boolean h24 = cfg.clock24();   // «ساعة ٢٤»: off (12-hour with the ص or م) unless the owner turned it on
         clock.setText(ClockText.face(h, now.get(Calendar.MINUTE), h24, Digits.latin()));
         ampm.setText(ClockText.suffix(h, h24));
@@ -2806,28 +2875,49 @@ public class MainActivity extends Activity {
      *  TvContract passthrough URI only resolves when a Live-TV app registers
      *  it as implicit; some vendor TV apps (TCL's com.tcl.tv/.TVActivity on
      *  this hardware) handle it only when the intent names the component
-     *  explicitly. Try the implicit intent first, then every candidate
-     *  activity in the configured live_tv_package, then fall back to the
-     *  input picker package. */
+     *  explicitly. Try the implicit intent first, then every VIEW activity of
+     *  each live TV app this TV has (TvVendor: TCL, CultraView, MediaTek…),
+     *  then the TV's own source picker, then its live TV app, then Settings. */
     private void openPassthroughInput(TvInputInfo t) {
-        Intent base = new Intent(Intent.ACTION_VIEW, TvContract.buildChannelUriForPassthroughInput(t.getId()));
+        Uri uri = TvContract.buildChannelUriForPassthroughInput(t.getId());
+        Intent base = new Intent(Intent.ACTION_VIEW, uri);
         base.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         if (launch(base)) return;
-        if (liveTvPkg != null && !liveTvPkg.isEmpty() && isInstalled(liveTvPkg)) {
+        for (String live : TvVendor.usable(getString(R.string.live_tv_package), TvVendor.LIVE_TV, c -> isInstalled(TvVendor.pkg(c)))) {
             // Query every activity in the Live-TV package that advertises VIEW
-            // and try each with the URI, newest APIs first.
-            Intent probe = new Intent(Intent.ACTION_VIEW).setPackage(liveTvPkg);
+            // and try each with the URI.
+            Intent probe = new Intent(Intent.ACTION_VIEW).setPackage(TvVendor.pkg(live));
             List<ResolveInfo> handlers = getPackageManager().queryIntentActivities(probe,
                     PackageManager.MATCH_DEFAULT_ONLY);
             for (ResolveInfo ri : handlers) {
-                Intent explicit = new Intent(Intent.ACTION_VIEW,
-                        TvContract.buildChannelUriForPassthroughInput(t.getId()));
+                Intent explicit = new Intent(Intent.ACTION_VIEW, uri);
                 explicit.setClassName(ri.activityInfo.packageName, ri.activityInfo.name);
                 explicit.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 if (launch(explicit)) return;
             }
         }
-        guarded(ParentalPolicy.INPUT_PICKER, inputPickerPkg, "كل المصادر", () -> openPackage(inputPickerPkg));
+        String fallback = inputPickerPkg != null ? inputPickerPkg : liveTvPkg;
+        if (fallback != null) {
+            guarded(ParentalPolicy.INPUT_PICKER, TvVendor.pkg(fallback), "كل المصادر", () -> openPackage(fallback));
+        } else {
+            launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون");
+        }
+    }
+
+    /** This TV's live TV app and source picker (TvVendor): the configured one if the TV has it, else the first known one it has; null for none. */
+    private void findTvApps() {
+        liveTvPkg = TvVendor.first(getString(R.string.live_tv_package), TvVendor.LIVE_TV, this::canOpen);
+        inputPickerPkg = TvVendor.first(getString(R.string.input_picker_package), TvVendor.PICKERS, this::canOpen);
+    }
+
+    /** Can this candidate (a package, or package/activity) be opened on this TV? */
+    private boolean canOpen(String candidate) {
+        String pkg = TvVendor.pkg(candidate), cls = TvVendor.cls(candidate);
+        if (!isInstalled(pkg)) return false;
+        PackageManager pm = getPackageManager();
+        if (cls != null) return pm.resolveActivity(new Intent().setClassName(pkg, cls), 0) != null;
+        return pm.getLeanbackLaunchIntentForPackage(pkg) != null || pm.getLaunchIntentForPackage(pkg) != null
+                || !pm.queryIntentActivities(new Intent(Intent.ACTION_VIEW).setPackage(pkg), PackageManager.MATCH_DEFAULT_ONLY).isEmpty();
     }
 
     // ---------------------------------------------------------------- the family lock (Parental)
@@ -2871,7 +2961,13 @@ public class MainActivity extends Activity {
         }
     }
 
+    /** Opens an app by its launcher entry; "package/activity" (TvVendor) opens that activity. */
     private void openPackage(String pkg) {
+        String cls = TvVendor.cls(pkg);
+        if (cls != null) {
+            launch(new Intent(Intent.ACTION_MAIN).setClassName(TvVendor.pkg(pkg), cls));
+            return;
+        }
         Intent i = getPackageManager().getLeanbackLaunchIntentForPackage(pkg);
         if (i == null) i = getPackageManager().getLaunchIntentForPackage(pkg);
         if (i != null) launch(i);
@@ -2980,7 +3076,14 @@ public class MainActivity extends Activity {
         }
         if (edit != null && editKey(e)) return true;   // «تعديل المفضلة»: every key but the volume and power ones is ours
         if (appsEdit != null && appsEditKey(e)) return true;   // «تعديل التطبيقات»: the same
-        // Menu key on the remote opens the Inputs dropdown.
+        // the Menu key on an app: its options (the long OK's box); anywhere else the Inputs dropdown, as before
+        if (e.getKeyCode() == KeyEvent.KEYCODE_MENU && e.getAction() == KeyEvent.ACTION_UP && edit == null && appsEdit == null
+                && getCurrentFocus() != null && getCurrentFocus().getTag() instanceof App) {
+            View f = getCurrentFocus();
+            optionsHintUsed();
+            showAppMenu(f, ((App) f.getTag()).pkg, dockCards.contains(f));
+            return true;
+        }
         if (e.getKeyCode() == KeyEvent.KEYCODE_MENU && e.getAction() == KeyEvent.ACTION_UP && !pills.isEmpty()) {
             showInputs(pills.get(0), ParentalPolicy.MENU_KEY);
             return true;
