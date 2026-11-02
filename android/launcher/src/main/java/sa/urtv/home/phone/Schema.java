@@ -62,8 +62,10 @@ public final class Schema {
                 return c;
             }
             case "text": {
-                Clean c = only(body, "text", "mode", "search");
+                Clean c = only(body, "text", "mode", "search", "due");
                 if (!c.ok()) return c;
+                // due: a reminder's appointment (epoch milliseconds), from the new-task form: this year or the next
+                if (body.containsKey("due") && !(body.get("due") instanceof Long && (Long) body.get("due") > 1_700_000_000_000L && (Long) body.get("due") < 4_000_000_000_000L)) return no("bad due");
                 if (!plainText(body.get("text"), MAX_TEXT, true)) return no("bad text");
                 if (body.containsKey("mode") && !"append".equals(body.get("mode")) && !"replace".equals(body.get("mode"))) return no("bad mode");
                 if (body.containsKey("search") && !(body.get("search") instanceof Boolean)) return no("bad search");

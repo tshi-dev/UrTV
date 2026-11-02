@@ -85,6 +85,35 @@ final class NowPlayingBridge {
         return o.optBoolean("live") ? o.toString() : "";
     }
 
+    /** true while the reminder's card is on the screen: ScreenDream then gives the keys to it (ReminderKeys) */
+    private static volatile boolean card;
+
+    static boolean reminderCard() { return card; }
+
+    /** the screen is gone: no card is up any more */
+    static void clearCard() { card = false; }
+
+    @JavascriptInterface
+    public void reminderShown(boolean on) { card = on; }
+
+    /** «تم» on the card: that task is done (a repeating reminder moves to its next time) */
+    @JavascriptInterface
+    public void reminderDone(long id) { new Prefs(app).doneTaskId(id); }
+
+    /** «ذكّرني بعد ١٠ دقائق» */
+    @JavascriptInterface
+    public void reminderSnooze(long id, int minutes) { new Prefs(app).snoozeTaskId(id, minutes); }
+
+    /** the soft chime of «صوت خفيف»: one short two-note tone at a low volume, no file and no permission */
+    @JavascriptInterface
+    public void reminderChime() {
+        try {
+            final android.media.ToneGenerator g = new android.media.ToneGenerator(android.media.AudioManager.STREAM_NOTIFICATION, 35);
+            g.startTone(android.media.ToneGenerator.TONE_PROP_ACK, 400);
+            new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(g::release, 900);
+        } catch (RuntimeException ignored) { }
+    }
+
     @JavascriptInterface
     public String nowPlaying() {
         Cursor c = null;

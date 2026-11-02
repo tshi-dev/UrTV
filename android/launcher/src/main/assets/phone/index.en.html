@@ -7,11 +7,9 @@
 <meta name="color-scheme" content="dark light">
 <title>Phone control</title>
 <style>
-/* GlassStyle's words (tests/glass_test.py) over the home's photo, blurred once on the TV (/api/backdrop), under its veil (--vd/--vl); no blur here.
-   The default look is the 4.0 mockups': smoked glass on green-black and gold, or white on paper */
+/* GlassStyle's words (tests/glass_test.py) over the TV's blurred photo (/api/backdrop) and its veil (--vd/--vl) */
 :root { --bg:#17181b; --card:rgba(30,33,39,.86); --line:rgba(255,255,255,.09); --gold:#d6af6b; --gt:#e2c084; --text:#ffffff; --dim:#dadce0; --red:#ffc2b3; --ink:#14161a; --tile:rgba(255,255,255,.07); --bar:#15191a; --veil:#070e0b; --glow:rgba(214,175,107,.16); --on:#54c08a; --y:"On"; --n:"Off"; --va:var(--vd,.95); }
 :root[data-theme="light"] { --bg:#ecedef; --card:rgba(255,255,255,.9); --line:rgba(80,60,20,.13); --gold:#8d6220; --gt:#7a5418; --text:#14161a; --dim:#3a3e46; --red:#8e2a10; --ink:#ffffff; --tile:rgba(141,98,32,.1); --bar:#fdfbf7; --veil:#f4f0e8; --glow:rgba(169,120,44,.12); --on:#1b8354; --va:var(--vl,.95); }
-/* «المظهر ← الشكل» of the TV (glass_look in /api/state): the other three looks, GlassStyle's, dark and light */
 :root[data-look="graphite"] { --bg:#121314; --card:rgba(32,33,36,.9); --line:rgba(255,255,255,.08); --gold:#f0a64a; --gt:#f0a64a; --text:#f2f0ec; --dim:#b9b6b0; --red:#ffb4a0; --ink:#1a1206; --tile:rgba(32,33,36,.9); --bar:#1e1f22; --veil:#121314; --va:var(--vd,.95); }
 :root[data-look="graphite"][data-theme="light"] { --bg:#f3f1ee; --card:rgba(255,255,255,.95); --line:rgba(28,27,26,.12); --gold:#8a4f00; --gt:#8a4f00; --text:#1c1b1a; --dim:#55514b; --red:#8e2a10; --ink:#ffffff; --tile:rgba(255,255,255,.95); --bar:#ffffff; --veil:#f3f1ee; --va:var(--vl,.95); }
 :root[data-look="navy"] { --bg:#0b1630; --card:rgba(20,34,71,.85); --line:rgba(224,186,116,.12); --gold:#e0ba74; --gt:#e0ba74; --text:#f3eee2; --dim:#b7bfd0; --red:#ffc2b3; --ink:#0b1630; --tile:rgba(20,34,71,.85); --bar:#101d3d; --veil:#0b1630; --va:var(--vd,.95); }
@@ -19,7 +17,6 @@
 :root[data-look="clean"] { --bg:#121314; --card:rgba(32,33,36,.9); --line:rgba(255,255,255,.08); --gold:#f0a64a; --gt:#f0a64a; --text:#f2f0ec; --dim:#b9b6b0; --red:#ffb4a0; --ink:#1a1206; --tile:rgba(32,33,36,.9); --bar:#1e1f22; --veil:#121314; --va:var(--vd,.95); }
 :root[data-look="clean"][data-theme="light"] { --bg:#ecece8; --card:rgba(255,255,255,.98); --line:rgba(20,24,30,.08); --gold:#0b5e51; --gt:#0b5e51; --text:#1b1d21; --dim:#50555e; --red:#8e2a10; --ink:#ffffff; --tile:rgba(255,255,255,.98); --bar:#ffffff; --veil:#f4f4f1; --va:var(--vl,.95); }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-/* the TV's Arabic font, served by the TV (PhoneApi.FONTS); without it the phone's own */
 @font-face{font-family:'Thmanyah';font-weight:400;font-display:swap;src:url(/fonts/Thmanyah-Regular.woff2) format("woff2")}
 @font-face{font-family:'Thmanyah';font-weight:500 900;font-display:swap;src:url(/fonts/Thmanyah-Medium.woff2) format("woff2")}
 html,body{margin:0;color:var(--text);font:16px/1.45 'Thmanyah',system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif}
@@ -185,6 +182,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 <div class="keys"><button data-k="back" data-i="back">Back</button><button data-k="home" data-i="home">Home</button><button data-k="play_pause" data-i="now">Play/Pause</button></div>
 <div class="vol"><button data-k="vol_up" data-rep="1" aria-label="Volume up" data-i="volu">Vol +</button><button data-k="mute" aria-label="Mute" data-i="mute">Mute</button><button data-k="vol_down" data-rep="1" aria-label="Volume down" data-i="vold">Vol −</button></div>
 <div class="tx"><span data-i="kbd"></span><input id="txt" dir="auto" maxlength="120" enterkeyhint="send" placeholder="Type on the TV…" aria-label="Text for the TV"><button id="txtGo" class="gold" data-i="send"><span class="sr">Send</span></button></div>
+<div class="row"><input id="dd" type="date" aria-label="Task day"><input id="tt" type="time" aria-label="Task time"></div>
 <div class="row"><div id="modes" role="group" aria-label="Typing mode"><button data-mode="replace" class="on">Replace</button><button data-mode="append">Add</button></div><button id="txtSearch" data-i="search">Search</button></div>
 <div id="svcNote" class="note warn hidden"><div>To type in other apps, turn on the “Your TV: phone control and typing” service in the TV’s settings</div><div>Settings → Accessibility → Your TV: phone control and typing</div></div>
 <details><summary>Where does the text go?</summary><p>It goes into the open text field, or becomes a task when Tasks is open. In other apps it goes into their field once the accessibility service is on. Without it, Android doesn’t let one app type into another, so the text is copied to the TV’s clipboard.</p></details>
@@ -704,10 +702,12 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
   function sendText(search) {
     var t = $('txt').value; if (!t.trim()) return;
     var body = { text: t, mode: txtMode }; if (search === true) body.search = true;
+    var due = $('dd').value && $('tt').value ? new Date($('dd').value + 'T' + $('tt').value).getTime() : 0;
+    if (due > Date.now()) body = { text: t, due: due };
     api('/api/text', body).then(function (j) {
       if (j && j.ok) {
         if (j.result === 'typed_other' || j.result === 'typed_other_nosearch' || j.result === 'searched' || j.result === 'copied_other') { svcOff = false; $('svcNote').classList.add('hidden'); }
-        say(j); $('txt').value = ''; return;
+        say(j); $('txt').value = $('dd').value = $('tt').value = ''; return;
       }
       var e = j && j.error;   // the text stays: the person can fix the cause and send again
       if (e === 'service_off') { svcOff = true; $('svcNote').classList.remove('hidden'); }

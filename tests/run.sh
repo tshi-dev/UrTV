@@ -121,6 +121,7 @@ python3 tests/seek_burst_test.py
 python3 tests/pill_text_test.py
 python3 tests/control_center_test.py
 python3 tests/tasks_card_test.py
+python3 tests/reminders_test.py   # «المهام» with a time: the alarm, the cards, the keys, saver.sh, the phone's date and time (the page's card: reminder_page.test.mjs)
 python3 tests/now_playing_test.py
 python3 tests/digits_text_test.py
 python3 tests/page_stamp_test.py
@@ -199,4 +200,5 @@ node tests/prayer_crosscheck_world_page.mjs
 node tests/hijri_crosscheck_page.mjs
 node tests/page.test.mjs
 node tests/phone_page.test.mjs
+node tests/reminder_page.test.mjs   # the screensaver's reminder card: its time, «الآن», «تم», the snooze, the keys, the adhan, English
 node tests/tvports_page.test.mjs   # the packaged page with simulated webOS and Tizen keys

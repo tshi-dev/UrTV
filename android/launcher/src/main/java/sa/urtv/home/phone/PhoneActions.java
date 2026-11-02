@@ -105,6 +105,22 @@ final class PhoneActions implements Actions {
 
     // ---- text
 
+    /** A task with a time, from the phone's new-task form: added to «المهام» through the screensaver app, whatever is on the TV's screen; «task» or «failed» (full list, empty text, an older screensaver app). */
+    @Override public Result text(String text, String mode, boolean search, long due) {
+        android.util.Log.i("UrTVType", "reminder request: len=" + (text == null ? 0 : text.length()));
+        android.content.ContentValues v = new android.content.ContentValues();
+        v.put("t", text);
+        v.put("due", due);
+        v.put("bf", 0);
+        try {
+            boolean ok = app.getContentResolver().insert(android.net.Uri.parse("content://sa.urtv.screensaver.config/tasks"), v) != null;
+            if (ok) sa.urtv.home.ReminderScheduler.schedule(app);
+            return ok ? Result.ok("task") : Result.fail("failed");
+        } catch (RuntimeException e) {
+            return Result.fail("failed");
+        }
+    }
+
     @Override public Result text(final String text, String mode, boolean search) {
         // the typing log (tag UrTVType): fixed words and the length only, never the text or a package name
         android.util.Log.i("UrTVType", "text request: mode=" + ("append".equals(mode) ? "append" : "replace") + " search=" + search + " len=" + (text == null ? 0 : text.length()));

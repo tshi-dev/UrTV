@@ -17,6 +17,14 @@ public final class AdhanFront {
     /** the home screen came to the front (true) or left it (false) */
     public static void home(boolean inFront) { home = inFront; }
 
+    /** for the reminders: what is in front, as AT_HOME, AT_SAVER or AT_OTHER (an input, another app, standby or not known) */
+    public static final int AT_HOME = 0, AT_SAVER = 1, AT_OTHER = 2;
+
+    public static int whereNow(Context c) {
+        int f = now(c);
+        return f == AdhanPlan.HOME ? AT_HOME : f == AdhanPlan.DREAM ? AT_SAVER : AT_OTHER;
+    }
+
     /** AdhanPlan.HOME, DREAM, OTHER or UNKNOWN */
     static int now(Context c) { return AdhanPlan.front(home, dreaming(c)); }
 

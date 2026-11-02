@@ -3,6 +3,7 @@ package sa.urtv.screensaver;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
@@ -22,7 +23,10 @@ import java.util.List;
  * «المهام»: content://sa.urtv.screensaver.config/tasks lists the tasks (i from 1, t, done, at). The launcher
  * may also change them, which needs WRITE_TASKS (signature, same key as READ_CONFIG):
  *   insert  ContentValues t = the text               -> .../tasks/N, or null when refused (empty, full)
- *   update  ContentValues id = ID (or i = N)         -> 1 when that task is marked done
+ *           with due (epoch ms), bf (minutes before: 0 10 30 60), rp (repeat 0 no 1 daily 2 weekly), snd (chime 0/1), wh (0 both, 1 screensaver, 2 home): a reminder
+ *   update  ContentValues id = ID (or i = N)         -> 1 when that task is marked done (a repeating reminder moves to its next time)
+ *           id with due (0 = none) bf rp snd wh      -> 1 when that task's reminder is set;  id with snooze = minutes -> 1 when its card is asked again then
+ *   query   also due, bf, rp, snd, wh, sn (the snooze time) after id; an older launcher reads the first five
  *   delete  .../tasks/id/ID (or .../tasks/N)         -> 1 when that task is gone
  * N is the place in the list, which moves when the list does; id is the task's own and stays (the screens use it, `list` shows N).
  *
@@ -56,11 +60,11 @@ public class ConfigProvider extends ContentProvider {
             return o;
         }
         if (isTasks(uri)) {
-            MatrixCursor t = new MatrixCursor(new String[] {"i", "t", "done", "at", "id"});
+            MatrixCursor t = new MatrixCursor(new String[] {"i", "t", "done", "at", "id", "due", "bf", "rp", "snd", "wh", "sn"});
             List<Task> all = p.tasks();
             for (int k = 0; k < all.size(); k++) {
                 Task x = all.get(k);
-                t.addRow(new Object[] {k + 1, x.text, x.done ? 1 : 0, x.at, x.id});
+                t.addRow(new Object[] {k + 1, x.text, x.done ? 1 : 0, x.at, x.id, x.due, x.before, x.repeat, x.sound ? 1 : 0, x.where, x.snooze});
             }
             return t;
         }
@@ -160,11 +164,25 @@ public class ConfigProvider extends ContentProvider {
         return uri != null && uri.getPathSegments().size() >= 1 && "tasks".equals(uri.getPathSegments().get(0));
     }
 
+    private static int intOf(ContentValues v, String k) {
+        Integer n = v.getAsInteger(k);
+        return n == null ? 0 : n;
+    }
+
+    /** a screen that is up (the dream, the home) starts over with the reminders as they are now */
+    private void changed() {
+        getContext().sendBroadcast(new Intent(Prefs.CHANGED).setPackage(getContext().getPackageName()));
+    }
+
     @Override
     public Uri insert(Uri uri, ContentValues v) {
         if (!isTasks(uri) || v == null) return null;
         Prefs p = new Prefs(getContext());
-        if (p.addTask(v.getAsString("t")) != null) return null;
+        Long due = v.getAsLong("due");
+        if (due != null && due > 0) {   // with a reminder: the time, «قبلها بـ» minutes, repeat 0/1/2, chime 0/1, where 0/1/2
+            if (p.addReminder(v.getAsString("t"), due, intOf(v, "bf"), intOf(v, "rp"), intOf(v, "snd") == 1, intOf(v, "wh")) != null) return null;
+            changed();
+        } else if (p.addTask(v.getAsString("t")) != null) return null;
         return Uri.withAppendedPath(uri, String.valueOf(p.tasks().size()));
     }
 
@@ -185,7 +203,22 @@ public class ConfigProvider extends ContentProvider {
     public int update(Uri uri, ContentValues v, String s, String[] a) {
         if (!isTasks(uri) || v == null) return 0;
         Prefs p = new Prefs(getContext());
-        if (v.getAsLong("id") != null) return p.doneTaskId(v.getAsLong("id")) ? 1 : 0;
+        Long id = v.getAsLong("id");
+        if (id != null && v.getAsLong("due") != null) {   // «ذكّرني» of one task: the reminder is set (due 0 takes it off)
+            boolean ok = p.remindTaskId(id, v.getAsLong("due"), intOf(v, "bf"), intOf(v, "rp"), intOf(v, "snd") == 1, intOf(v, "wh"));
+            if (ok) changed();
+            return ok ? 1 : 0;
+        }
+        if (id != null && v.getAsInteger("snooze") != null) {   // «ذكّرني بعد ١٠ دقائق»
+            boolean ok = p.snoozeTaskId(id, v.getAsInteger("snooze"));
+            if (ok) changed();
+            return ok ? 1 : 0;
+        }
+        if (id != null) {
+            boolean ok = p.doneTaskId(id);
+            if (ok) changed();
+            return ok ? 1 : 0;
+        }
         if (v.getAsInteger("i") == null) return 0;
         return p.doneTask(v.getAsInteger("i")) ? 1 : 0;
     }

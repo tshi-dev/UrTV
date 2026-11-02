@@ -112,7 +112,7 @@ public class SaverReceiver extends BroadcastReceiver {
                 setResultData(set(c, p, i));
                 return;
             case "sa.urtv.screensaver.TASKS":
-                setResultData(tasks(p, i));
+                setResultData(tasks(c, p, i));
                 return;
             case "sa.urtv.screensaver.PHOTOS":
                 setResultData(photos(c, p, i));
@@ -424,13 +424,23 @@ public class SaverReceiver extends BroadcastReceiver {
     }
 
     /** «المهام»: n is the number list shows (from 1, done ones included). */
-    private static String tasks(Prefs p, Intent i) {
+    private static String tasks(Context c, Prefs p, Intent i) {
         String op = String.valueOf(i.getStringExtra("op"));
         switch (op) {
             case "list":
                 return listing(p);
             case "add": {
-                String why = p.addTask(i.getStringExtra("text"));
+                String at = i.getStringExtra("at");
+                String why;
+                if (at == null) why = p.addTask(i.getStringExtra("text"));
+                else {
+                    long due = Reminders.parse(at, java.util.TimeZone.getTimeZone(p.cityTz()));   // the date and time in the TV's own city
+                    if (due < 0) return "error: --at is a date and time like 2026-11-05 17:00";
+                    int before = i.getIntExtra("before", 0), where = "saver".equals(i.getStringExtra("where")) ? 1 : "home".equals(i.getStringExtra("where")) ? 2 : 0;
+                    if (before != Reminders.beforeOf(before)) return "error: --before is 0, 10, 30 or 60 minutes";
+                    why = p.addReminder(i.getStringExtra("text"), due, before, Reminders.repeatOf(i.getStringExtra("repeat")), "on".equals(i.getStringExtra("sound")), where);
+                    if (why == null) c.sendBroadcast(new Intent(Prefs.CHANGED).setPackage(c.getPackageName()));   // a screen that is up starts over with it
+                }
                 return why != null ? "error: " + why : "saved\n" + listing(p);
             }
             case "done":
@@ -498,12 +508,23 @@ public class SaverReceiver extends BroadcastReceiver {
         return b.toString();
     }
 
+    /** " @ 2026-11-05 17:00 (30 min before, daily, chime)" for a task with a reminder, nothing for one without */
+    private static String reminderNote(Task t, java.util.TimeZone tz) {
+        if (t.due <= 0) return "";
+        List<String> more = new ArrayList<>();
+        if (t.before > 0) more.add(t.before + " min before");
+        if (t.repeat != Reminders.NO) more.add(Reminders.repeatName(t.repeat));
+        if (t.sound) more.add("chime");
+        return " @ " + Reminders.format(t.due, tz) + (more.isEmpty() ? "" : " (" + Prefs.join(more, ", ") + ")");
+    }
+
     private static String listing(Prefs p) {
+        java.util.TimeZone tz = java.util.TimeZone.getTimeZone(p.cityTz());
         List<Task> all = p.tasks();
         if (all.isEmpty()) return "no tasks";
         StringBuilder b = new StringBuilder();
         for (int k = 0; k < all.size(); k++)
-            b.append(k + 1).append(all.get(k).done ? ". [done] " : ". ").append(all.get(k).text).append('\n');
+            b.append(k + 1).append(all.get(k).done ? ". [done] " : ". ").append(all.get(k).text).append(reminderNote(all.get(k), tz)).append('\n');
         return b.toString().trim();
     }
 
