@@ -184,6 +184,9 @@ eng, left = tr.translate(sample, {"حفظ": "Save", "بقي %s دقيقة": "%s 
 check("the hook: whole literals and text nodes, <html> to en/ltr, a template with ${} left alone, the missing ones listed",
       eng == '<html lang="en" dir="ltr"><b>Save</b> <i> %s min left </i><script>x(\'Save\'); y("غير مترجم"); // the page’s \'Text\'\nz(`مرحبا ${n}`); w = a>b ? \'Yes\' : 0;</script>'
       and left == ["غير مترجم"], (eng, left))
+eng, left = tr.translate('<input aria-label="بحث"><b data-x="نعم">نص</b><i title="حفظ" >x</i>', {"بحث": "Search", "نعم": "Yes", "نص": "Text", "حفظ": "Save"})
+check("the hook: an attribute that ends its tag (aria-label=\"…\">) is a whole literal too, with or without a space before «>»",
+      eng == '<input aria-label="Search"><b data-x="Yes">Text</b><i title="Save" >x</i>' and not left, (eng, left))
 check("«=» keeps a word Arabic", tr.load(_eq_dir()) == {"الهلال": "الهلال"})
 _mixed = tempfile.mkdtemp()
 Path(_mixed, "a.tsv").write_text("الهلال\t=\nحفظ\tحفظ\nنعم\tYes نعم\nتم\tDone\n", encoding="utf-8")

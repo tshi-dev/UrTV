@@ -161,6 +161,13 @@ final class PhoneActions implements Actions {
         }
     }
 
+    /** «اللغة» as the screensaver holds it now (no cached copy: the page asked right after its link was pressed has the new one); the home's
+     *  kept value when the screensaver does not answer. Each page load asks (PhoneHost). */
+    String lang() {
+        Bundle b = saver("phone_state", null, null);
+        return b == null ? sa.urtv.home.S.lang() : sa.urtv.home.Tr.norm(b.getString("lang"));
+    }
+
     @Override public Map<String, Object> state() {
         Map<String, Object> m = new LinkedHashMap<>();
         Bundle b = saver("phone_state", null, null);
