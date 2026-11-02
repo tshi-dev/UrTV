@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>UrTV UX review prototypes</title>
+<style>
+/* Theme «نهار نجد» (Najd Daylight), made with theme-factory's own-theme step: sand paper, white cards, hairline borders,
+   DGA sa-flag green 600 #1B8354 for focus and «on», 500 #25935F for fills. Font: IBM Plex Sans Arabic stands in for Thmanyah (private). */
+@font-face{font-family:TR;src:url("fonts/plex-400.ttf")}
+@font-face{font-family:TM;src:url("fonts/plex-500.ttf")}
+@font-face{font-family:TD;src:url("fonts/plex-700.ttf")}
+:root{
+  --paper:#F6F4EF;      /* page */
+  --card:#FFFFFF;       /* surfaces */
+  --line:#E3DFD5;       /* hairline borders */
+  --ink:#1B1F1D;        /* titles */
+  --sub:#5E6461;        /* second lines */
+  --mute:#8D918E;       /* off values */
+  --green:#1B8354;      /* DGA 600: focus ring, «on» text */
+  --fill:#25935F;       /* DGA 500: Sadu triangles, filled button */
+  --tint:#EEF6F1;       /* focused surface */
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden;background:var(--paper);color:var(--ink);font-family:TR}
+.f{position:relative;width:1920px;height:1080px;overflow:hidden;background:var(--paper)}
+svg.i{flex:none;width:44px;height:44px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+h1{position:absolute;right:120px;top:64px;font:56px TD;line-height:1.2}
+/* cards and focus: a white card on sand; focus = green 3px ring on a pale green tint, no dark fill, no glow */
+.card{position:absolute;background:var(--card);border:1.5px solid var(--line);border-radius:22px;display:flex;align-items:center;gap:26px;padding:0 36px}
+.card .ic{color:var(--green)}
+.card.fo{background:var(--tint);border:3px solid var(--green);padding:0 34.5px}
+.tx{flex:1;min-width:0}
+.nm{font:38px TM;line-height:1.3}
+.sb{font:27px TR;color:var(--sub);margin-top:2px;line-height:1.3}
+.sb.on{color:var(--green)}
+/* toggle I: three Sadu triangles at the start of the name, only when on; the value says مفعّل in green or متوقف in grey */
+.tri{flex:none;width:18px;height:54px;fill:var(--fill);visibility:hidden}.tri.on{visibility:visible}
+.val{font:30px TM;color:var(--mute)}.val.on{color:var(--green)}.val.plain{color:var(--sub);font-family:TR}
+/* buttons: rounded rectangles (12px), never capsules */
+.btn{display:flex;align-items:center;justify-content:center;gap:14px;height:76px;padding:0 40px;border-radius:14px;font:32px TM;border:2px solid var(--line);background:var(--card);color:var(--ink)}
+.btn.pri{background:var(--fill);border-color:var(--fill);color:#fff}
+.btn.fo{outline:3px solid var(--green);outline-offset:5px}
+.btn svg{width:34px;height:34px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.row{display:flex;align-items:center;gap:20px;height:86px;padding:0 30px;border-radius:16px}
+.row+.row{border-top:1.5px solid var(--line);border-radius:0}
+.row .nm{flex:1;font:34px TM}
+.row.fo{background:var(--tint);outline:3px solid var(--green);outline-offset:-3px;border-radius:16px;border-top-color:transparent}
+.row.fo+.row{border-top-color:transparent}
+.row.dz .nm{color:#A3361F}
+/* home */
+.photo{position:absolute;inset:0;background:url("../../photos/XDtzu1D2P8c.jpg") center/cover}
+.wash{position:absolute;inset:0;background:linear-gradient(180deg,rgba(246,244,239,.0) 30%,rgba(246,244,239,.55) 62%,rgba(246,244,239,.92) 100%)}
+.clock{position:absolute;right:120px;top:60px;text-align:right;color:#fff;text-shadow:0 2px 18px rgba(0,0,0,.35)}
+.clock .g{font:34px TM}.clock .t{font:150px TD;line-height:1.05;letter-spacing:-2px}.clock .t small{font:44px TM;margin-right:10px}
+.clock .d{font:30px TR;opacity:.95}
+.acts{position:absolute;left:120px;top:72px;display:flex;gap:14px;direction:rtl}
+.act{display:flex;align-items:center;gap:12px;height:64px;padding:0 24px;border-radius:14px;background:rgba(255,255,255,.86);border:1.5px solid rgba(255,255,255,.9);font:27px TM;color:var(--ink)}
+.act svg{width:30px;height:30px;fill:none;stroke:var(--green);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.act.fo{background:#fff;outline:3px solid var(--green);outline-offset:3px}
+.pray{position:absolute;left:120px;top:176px;width:560px;background:rgba(255,255,255,.88);border:1.5px solid rgba(255,255,255,.95);border-radius:22px;padding:22px 32px}
+.pray h3{font:30px TM;margin-bottom:8px;display:flex;justify-content:space-between}.pray h3 span{font:26px TR;color:var(--green)}
+.pr{display:flex;justify-content:space-between;font:28px TR;padding:9px 0;border-top:1.5px solid var(--line);color:var(--sub)}
+.pr b{font-weight:normal;font-family:TM;color:var(--ink)}
+.pr.nx{color:var(--green)}.pr.nx b{color:var(--green)}
+.appname{position:absolute;right:120px;top:640px;font:52px TD;color:var(--ink)}
+.shelf{position:absolute;left:120px;right:120px;top:730px;height:250px;display:flex;gap:30px;align-items:center;direction:rtl}
+.app{flex:none;width:262px;height:170px;border-radius:20px;display:flex;align-items:center;justify-content:center;font:40px TD;color:#fff;border:1.5px solid rgba(0,0,0,.06)}
+.app.fo{outline:4px solid var(--green);outline-offset:6px;transform:scale(1.04)}
+.more{flex:none;width:120px;height:170px;border-radius:20px;background:rgba(255,255,255,.9);border:1.5px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font:24px TM;color:var(--sub)}
+.more svg{width:44px;height:44px;fill:var(--ink);stroke:none}
+.rowlabel{position:absolute;right:120px;top:990px;font:28px TM;color:var(--sub)}
+/* overlay panels */
+.dim{position:absolute;inset:0;background:rgba(246,244,239,.72)}
+.panel{position:absolute;background:var(--paper);border:1.5px solid var(--line);border-radius:28px;box-shadow:0 30px 80px rgba(40,40,30,.16)}
+.panel h2{font:44px TD;margin-bottom:28px}
+.tile{position:relative;align-items:flex-start;background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:26px 28px;display:flex;flex-direction:column;gap:10px;height:190px}
+.tile .ic{color:var(--green);width:46px;height:46px}
+.tile .nm{font:32px TM}.tile .sb{font:24px TR}
+.tile.fo{background:var(--tint);border:3px solid var(--green);padding:24.5px 26.5px}
+.pair{position:absolute;border-radius:24px;border:1.5px dashed transparent}
+.tri-sm{position:absolute;top:28px;left:28px;width:12px;height:36px;fill:var(--fill)}
+</style></head><body>
+<div class="f" id="f"></div>
+<script>
+const P={
+ bell:'<path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 21h4"/>',
+ pin:'<path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>',
+ book:'<path d="M12 6c-2-1.5-5-2-8-2v14c3 0 6 .5 8 2 2-1.5 5-2 8-2V4c-3 0-6 .5-8 2z"/><path d="M12 6v14"/>',
+ cards:'<rect x="3.5" y="4.5" width="7" height="6.5" rx="1.5"/><rect x="13.5" y="4.5" width="7" height="6.5" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="6" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="6" rx="1.5"/>',
+ look:'<circle cx="12" cy="12" r="8.5"/><path d="M12 3.5v17"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/>',
+ control:'<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>',
+ phone:'<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>',
+ update:'<path d="M20 11a8 8 0 0 0-14.5-4.5L4 8"/><path d="M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.5 4.5L20 16"/><path d="M20 20v-4h-4"/>',
+ shield:'<path d="M12 3l7.5 3v5.5c0 4.5-3.2 8-7.5 9.5-4.3-1.5-7.5-5-7.5-9.5V6z"/>',
+ shieldok:'<path d="M12 3l7.5 3v5.5c0 4.5-3.2 8-7.5 9.5-4.3-1.5-7.5-5-7.5-9.5V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+ more:'<circle cx="5.5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18.5" cy="12" r="1.2"/>',
+ clock:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3 2"/>',
+ report:'<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/>',
+ wifi:'<path d="M2.5 9a14 14 0 0 1 19 0"/><path d="M5.5 12.5a9.5 9.5 0 0 1 13 0"/><path d="M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19" r=".9" fill="currentColor"/>',
+ bt:'<path d="M7 7l10 10-5 4V3l5 4L7 17"/>',
+ sound:'<path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6"/><path d="M18 6.5a7.5 7.5 0 0 1 0 11"/>',
+ speed:'<path d="M4 17a8 8 0 1 1 16 0"/><path d="M12 17l4-5"/>',
+ sleep:'<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/>',
+ power:'<path d="M12 3.5v8"/><path d="M7 6.5a7.5 7.5 0 1 0 10 0"/>',
+ cast:'<path d="M3.5 8V6a1.5 1.5 0 0 1 1.5-1.5h14A1.5 1.5 0 0 1 20.5 6v12a1.5 1.5 0 0 1-1.5 1.5h-5"/><path d="M3.5 12a8 8 0 0 1 7.5 7.5"/><path d="M3.5 15.5a4.5 4.5 0 0 1 4 4"/><circle cx="4" cy="19.5" r=".8" fill="currentColor"/>',
+ saver:'<rect x="3" y="4.5" width="18" height="12" rx="1.5"/><path d="M9 20h6"/><path d="M12 16.5V20"/>',
+ home:'<path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/>',
+ gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7"/>',
+ input:'<rect x="3.5" y="5" width="17" height="14" rx="1.5"/><path d="M3.5 12h9"/><path d="M9.5 9l3 3-3 3"/>',
+ tasks:'<path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/>',
+ lock:'<rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>',
+ key:'<circle cx="8" cy="15" r="4"/><path d="M11 12l8.5-8.5M16.5 6.5l2 2M14.5 8.5l2 2"/>',
+ kids:'<circle cx="12" cy="8" r="3.5"/><path d="M5.5 20.5a6.5 6.5 0 0 1 13 0"/>',
+ info:'<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5"/><circle cx="12" cy="7.8" r=".9" fill="currentColor"/>',
+ move:'<path d="M4 12h16"/><path d="M8 8l-4 4 4 4"/><path d="M16 8l4 4-4 4"/>',
+ star:'<path d="M12 4l2.4 5 5.4.6-4 3.7 1.1 5.4L12 16l-4.9 2.7 1.1-5.4-4-3.7 5.4-.6z"/>',
+ hide:'<path d="M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><circle cx="12" cy="12" r="2.6"/><path d="M4 4l16 16"/>',
+ open:'<path d="M8 5l11 7-11 7z"/>',
+ trash:'<path d="M4.5 7h15"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l1 13h9l1-13"/>',
+ listen:'<path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/>',
+ dots:'<circle cx="12" cy="5.5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="18.5" r="1.8"/>'};
+const ic=(k,c='i')=>`<svg class="${c}" viewBox="0 0 24 24">${P[k]}</svg>`;
+const tri=on=>`<svg class="tri${on?' on':''}" viewBox="0 0 18 54"><path d="M18 0L4 9L18 18zM18 18L4 27L18 36zM18 36L4 45L18 54z"/></svg>`;
+const val=on=>`<div class="val${on?' on':''}">${on?'مفعّل':'متوقف'}</div>`;
+const A=[['YouTube','#E62117'],['شاهد','#1F1F1F'],['Netflix','#0B0B0B'],['TOD','#5B2BC4'],['المتصفح','#2F6FDB']];
+
+// the home, light: photo on top, sand wash below, white cards, hairline borders; the top buttons are rectangles, not capsules
+const home=(focusApp=0,opts=false)=>{
+  const acts=[['input','المصادر'],['tasks','المهام'],['control','مركز التحكم'],['listen','تلاوة وأذان']];
+  const apps=A.map((a,i)=>`<div class="app${i==focusApp&&!opts?' fo':''}" style="background:${a[1]}">${a[0]}</div>`).join('')
+    +`<div class="more">${ic('dots')}<span>خيارات</span></div>`;
+  return `<div class="photo"></div><div class="wash"></div>
+  <div class="clock"><div class="g">مساء الخير</div><div class="t">٧:٤٢<small>م</small></div><div class="d">الأحد، ١١ جمادى الأولى ١٤٤٨ هـ، ٢ نوفمبر</div></div>
+  <div class="acts">${acts.map((a,i)=>`<div class="act${focusApp<0&&i==2?' fo':''}">${ic(a[0])}${a[1]}</div>`).join('')}</div>
+  <div class="pray"><h3>مواقيت اليوم<span>العشاء بعد ٢٤ دقيقة</span></h3>
+   ${[['الفجر','٤:٥٢ ص'],['الظهر','١١:٤٦ ص'],['العصر','٢:٥١ م'],['المغرب','٥:١٨ م'],['العشاء','٦:٤٨ م']].map((p,i)=>`<div class="pr${i==4?' nx':''}"><b>${p[0]}</b>${p[1]}</div>`).join('')}</div>
+  <div class="appname">${A[Math.max(0,focusApp)][0]}</div>
+  <div class="shelf">${apps}</div>`;
+};
+const S={};
+S.home=()=>home(0);
+
+S.cc=()=>{
+  // Wi-Fi and Bluetooth side by side at the start; no tile needs a long press; the second line says what OK does
+  const T=[['wifi','واي فاي','متصل، إشارة قوية',1],['bt','البلوتوث','الريموت والسماعات'],['sound','مخرج الصوت','سماعات التلفزيون'],['speed','اختبار السرعة','اضغط للبدء'],
+    ['sleep','مؤقت النوم','متوقف'],['power','أطفئ الآن','تُطفأ الشاشة فورًا'],['cast','انعكاس الشاشة','من جوالك'],['saver','شاشة التوقف','ابدأها الآن'],
+    ['home','إعدادات تلفزيونك','الأذان والمفضلة والمظهر'],['gear','إعدادات التلفزيون','الصورة واللغة والمزيد']];
+  const W=1360,cols=4,g=22,tw=(W-72-g*3)/4;
+  const tiles=T.map((t,i)=>`<div class="tile${t[3]?' fo':''}" style="position:absolute;right:${36+(i%cols)*(tw+g)}px;top:${126+Math.floor(i/cols)*(190+g)}px;width:${tw}px">${ic(t[0],'i ic')}<div class="nm">${t[1]}</div><div class="sb">${t[2]}</div></div>`).join('');
+  return home(-1)+`<div class="dim"></div><div class="panel" style="left:${(1920-W)/2}px;top:150px;width:${W}px;height:${126+3*190+2*g+40}px">
+   <h2 style="position:absolute;right:36px;top:34px">مركز التحكم</h2>${tiles}</div>`;
+};
+
+const page=(title,body)=>`<h1>${title}</h1>${body}`;
+S.parentalOff=()=>page('الرقابة الأبوية',`
+  <div class="card" style="right:120px;left:120px;top:200px;height:340px;flex-direction:column;align-items:flex-start;justify-content:center;gap:22px;padding:0 70px">
+   <div style="display:flex;align-items:center;gap:26px">${ic('shield','i ic" style="width:72px;height:72px;color:var(--green)')}<div class="nm" style="font:46px TD">الرقابة الأبوية متوقفة</div></div>
+   <div class="sb" style="font:32px TR;max-width:1300px;line-height:1.55">ضع رمزًا من أربعة أرقام، ثم اختر ما يُقفل: تطبيقات بعينها، أو الإعدادات، أو وضع الأطفال الذي لا يُظهر إلا ما تسمح به. التلفزيون نفسه يبقى كما هو.</div>
+  </div>
+  <div style="position:absolute;right:120px;top:580px;display:flex;gap:28px">
+   <div class="btn pri fo">${ic('lock','')}فعّل الرقابة الأبوية</div>
+   <div class="btn">${ic('info','')}ما الذي يُقفل؟</div>
+  </div>
+  <div style="position:absolute;right:120px;top:710px;font:28px TR;color:var(--sub)">ثلاث خطوات: الرمز، ثم التطبيقات، ثم وضع الأطفال إن أردته.</div>`);
+S.parentalOn=()=>page('الرقابة الأبوية',`
+  <div class="card" style="right:120px;left:120px;top:200px;height:250px;flex-direction:column;align-items:flex-start;justify-content:center;gap:18px;padding:0 70px">
+   <div style="display:flex;align-items:center;gap:26px">${ic('shieldok','i ic" style="width:72px;height:72px;color:var(--green)')}<div class="nm" style="font:46px TD">الرقابة الأبوية مفعّلة</div></div>
+   <div class="sb" style="font:32px TR">٣ تطبيقات مقفلة، والإعدادات مقفلة، ووضع الأطفال متوقف.</div>
+  </div>
+  <div style="position:absolute;right:120px;top:490px;display:flex;gap:28px">
+   <div class="btn fo">${ic('lock','')}التطبيقات المقفلة</div>
+   <div class="btn">${ic('key','')}غيّر الرمز</div>
+  </div>
+  <div class="card" style="right:120px;left:120px;top:630px;height:auto;display:block;padding:8px 14px">
+   <div class="row">${tri(0)}<div class="nm">وضع الأطفال</div>${val(0)}</div>
+   <div class="row">${tri(1)}<div class="nm">قفل الإعدادات</div>${val(1)}</div>
+   <div class="row dz"><svg class="tri" viewBox="0 0 18 54"></svg><div class="nm">أوقف الرقابة الأبوية</div><div class="val plain">يطلب الرمز</div></div>
+  </div>`);
+
+S.apps=()=>{
+  // ▼ from a focused app reaches «⋮ خيارات» under it; OK opens this sheet for that app. A long OK still opens the same sheet.
+  const R=[['open','افتح'],['move','انقل في الصف'],['star','أزل من المفضلة'],['hide','أخفِ من الشاشة الرئيسية'],['lock','اقفله للأطفال'],['info','تفاصيل التطبيق']];
+  return home(0,true)+`<div class="dim" style="background:rgba(246,244,239,.55)"></div>
+   <div style="position:absolute;right:120px;top:930px;display:flex;align-items:center;gap:12px;height:64px;padding:0 24px;border-radius:14px;background:#fff;border:1.5px solid var(--line);font:27px TM;color:var(--ink)">${ic('dots','i" style="width:30px;height:30px;stroke:none;fill:var(--ink)')}خيارات YouTube</div>
+   <div class="panel" style="left:120px;top:110px;width:760px;padding:40px 36px">
+    <h2 style="display:flex;align-items:center;gap:22px"><span style="width:76px;height:52px;border-radius:12px;background:#E62117;display:inline-block"></span>YouTube</h2>
+    <div class="card" style="position:relative;display:block;padding:8px 10px">
+     ${R.map((r,i)=>`<div class="row${i==1?' fo':''}">${ic(r[0],'i" style="width:38px;height:38px;color:var(--green)')}<div class="nm">${r[1]}</div>${i==1?'<div class="val plain">بالأسهم، ثم اختيار</div>':''}</div>`).join('')}
+    </div>
+    <div style="font:26px TR;color:var(--sub);margin-top:24px">تعديل كل التطبيقات معًا: الإعدادات، ثم التطبيقات والمفضلة.</div>
+   </div>`;
+};
+
+S.settings=()=>{
+  const C=[['pin','الموقع والصلاة','الرياض، أم القرى'],['clock','الساعة والأرقام','١٢ ساعة، أرقام عربية'],
+    ['book','تلاوة وأذان','مشاري العفاسي'],['cards','البطاقات','شاشة التوقف والشاشة الرئيسية'],
+    ['look','المظهر','نهار، تلقائي'],['control','مركز التحكم','واي فاي، البلوتوث، النوم'],
+    ['phone','التحكم من الجوال','متوقف'],['update','تحديث تلفزيوني','محدّث'],
+    ['report','أرسل تقرير','آخر تقرير: أمس'],['more','المزيد','الرقابة الأبوية، المباريات والأسواق']];
+  const top=196,h=124,step=146,w=(1680-36)/2;
+  const c=(col,row,k,n,s,fo,end='',wide)=>`<div class="card${fo?' fo':''}" style="right:${120+col*(w+36)}px;top:${top+row*step}px;width:${wide?1680:w}px;height:${h}px">${ic(k,'i ic')}<div class="tx"><div class="nm">${n}</div>${s?`<div class="sb">${s}</div>`:''}</div>${end}</div>`;
+  return page('الإعدادات',
+    `<div class="card fo" style="right:120px;top:${top}px;width:1680px;height:${h}px">${tri(1)}${ic('bell','i ic')}<div class="tx"><div class="nm">الأذان</div><div class="sb">مؤذن ٣، الفجر من الحرم المكي</div></div>${val(1)}</div>`
+    +C.map((x,i)=>c(i%2,1+Math.floor(i/2),x[0],x[1],x[2],0)).join(''));
+};
+document.getElementById('f').innerHTML=S[(location.hash||'#home').slice(1)]();
+</script></body></html>
