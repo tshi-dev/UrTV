@@ -269,6 +269,7 @@
         <activity
             android:name=".TasksActivity"
             android:exported="true"
+            android:windowSoftInputMode="stateHidden"
             android:label="المهام"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Material.NoActionBar" />
