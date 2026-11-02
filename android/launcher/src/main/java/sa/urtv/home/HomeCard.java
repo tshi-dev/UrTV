@@ -132,7 +132,7 @@ final class HomeCard {
         String[] choice = HomeCardChoice.pick(frag, panel, sp.getString("frag", null), sp.getString("panel", null));
         cards = HomeCardChoice.count(choice);
         tasks = HomeCardChoice.hasTasks(choice);
-        return HomeCardChoice.liveUrl(choice);
+        return HomePage.fresh(activity, HomeCardChoice.liveUrl(choice));   // the screensaver's newer page when it has one
     }
 
     @SuppressLint("SetJavaScriptEnabled")

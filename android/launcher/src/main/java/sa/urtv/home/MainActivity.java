@@ -181,8 +181,7 @@ public class MainActivity extends Activity {
         sa.urtv.home.setup.SetupHook.atHomeStart(this);   // a home switch that was cut off is put back (it never throws)
         Digits.init(this);   // the screensaver's «الأرقام» setting, for every number this screen writes
         dockApps = loadDock();
-        liveTvPkg = getString(R.string.live_tv_package);
-        inputPickerPkg = getString(R.string.input_picker_package);
+        findTvApps();
         cols = getResources().getInteger(R.integer.columns);
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
@@ -2259,13 +2258,14 @@ public class MainActivity extends Activity {
         PopupWindow pw = new PopupWindow(list, dp(200), -2, true);
         List<TextView> rows = new ArrayList<>();
 
+        findTvApps();   // asked again each time: the TV's own apps can arrive with an update
         List<TvInputInfo> inputs = InputLabels.reported(this);   // in the TV's own names' order, so a name the owner gave moves nothing
         Map<String, String> given = InputLabels.given(this);
         for (TvInputInfo t : inputs) {
             rows.add(inputRow(InputLabels.rowLabel(this, t, given), () -> openPassthroughInput(t)));   // + the CEC device's name and its standby mark
         }
-        if (isInstalled(liveTvPkg)) rows.add(inputRow(S.t("البث التلفزيوني"), () -> guarded(ParentalPolicy.INPUT_LIVE_TV, liveTvPkg, "البث التلفزيوني", () -> openPackage(liveTvPkg))));
-        if (inputs.isEmpty() && isInstalled(inputPickerPkg)) rows.add(inputRow(S.t("كل المصادر"), () -> guarded(ParentalPolicy.INPUT_PICKER, inputPickerPkg, "كل المصادر", () -> openPackage(inputPickerPkg))));
+        if (liveTvPkg != null) rows.add(inputRow(S.t("البث التلفزيوني"), () -> guarded(ParentalPolicy.INPUT_LIVE_TV, TvVendor.pkg(liveTvPkg), "البث التلفزيوني", () -> openPackage(liveTvPkg))));
+        if (inputs.isEmpty() && inputPickerPkg != null) rows.add(inputRow(S.t("كل المصادر"), () -> guarded(ParentalPolicy.INPUT_PICKER, TvVendor.pkg(inputPickerPkg), "كل المصادر", () -> openPackage(inputPickerPkg))));
 
         if (rows.isEmpty()) rows.add(inputRow(S.t("الإعدادات"), () -> launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون")));
         for (TextView r : rows) {
@@ -2805,28 +2805,49 @@ public class MainActivity extends Activity {
      *  TvContract passthrough URI only resolves when a Live-TV app registers
      *  it as implicit; some vendor TV apps (TCL's com.tcl.tv/.TVActivity on
      *  this hardware) handle it only when the intent names the component
-     *  explicitly. Try the implicit intent first, then every candidate
-     *  activity in the configured live_tv_package, then fall back to the
-     *  input picker package. */
+     *  explicitly. Try the implicit intent first, then every VIEW activity of
+     *  each live TV app this TV has (TvVendor: TCL, CultraView, MediaTek…),
+     *  then the TV's own source picker, then its live TV app, then Settings. */
     private void openPassthroughInput(TvInputInfo t) {
-        Intent base = new Intent(Intent.ACTION_VIEW, TvContract.buildChannelUriForPassthroughInput(t.getId()));
+        Uri uri = TvContract.buildChannelUriForPassthroughInput(t.getId());
+        Intent base = new Intent(Intent.ACTION_VIEW, uri);
         base.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         if (launch(base)) return;
-        if (liveTvPkg != null && !liveTvPkg.isEmpty() && isInstalled(liveTvPkg)) {
+        for (String live : TvVendor.usable(getString(R.string.live_tv_package), TvVendor.LIVE_TV, c -> isInstalled(TvVendor.pkg(c)))) {
             // Query every activity in the Live-TV package that advertises VIEW
-            // and try each with the URI, newest APIs first.
-            Intent probe = new Intent(Intent.ACTION_VIEW).setPackage(liveTvPkg);
+            // and try each with the URI.
+            Intent probe = new Intent(Intent.ACTION_VIEW).setPackage(TvVendor.pkg(live));
             List<ResolveInfo> handlers = getPackageManager().queryIntentActivities(probe,
                     PackageManager.MATCH_DEFAULT_ONLY);
             for (ResolveInfo ri : handlers) {
-                Intent explicit = new Intent(Intent.ACTION_VIEW,
-                        TvContract.buildChannelUriForPassthroughInput(t.getId()));
+                Intent explicit = new Intent(Intent.ACTION_VIEW, uri);
                 explicit.setClassName(ri.activityInfo.packageName, ri.activityInfo.name);
                 explicit.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 if (launch(explicit)) return;
             }
         }
-        guarded(ParentalPolicy.INPUT_PICKER, inputPickerPkg, "كل المصادر", () -> openPackage(inputPickerPkg));
+        String fallback = inputPickerPkg != null ? inputPickerPkg : liveTvPkg;
+        if (fallback != null) {
+            guarded(ParentalPolicy.INPUT_PICKER, TvVendor.pkg(fallback), "كل المصادر", () -> openPackage(fallback));
+        } else {
+            launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون");
+        }
+    }
+
+    /** This TV's live TV app and source picker (TvVendor): the configured one if the TV has it, else the first known one it has; null for none. */
+    private void findTvApps() {
+        liveTvPkg = TvVendor.first(getString(R.string.live_tv_package), TvVendor.LIVE_TV, this::canOpen);
+        inputPickerPkg = TvVendor.first(getString(R.string.input_picker_package), TvVendor.PICKERS, this::canOpen);
+    }
+
+    /** Can this candidate (a package, or package/activity) be opened on this TV? */
+    private boolean canOpen(String candidate) {
+        String pkg = TvVendor.pkg(candidate), cls = TvVendor.cls(candidate);
+        if (!isInstalled(pkg)) return false;
+        PackageManager pm = getPackageManager();
+        if (cls != null) return pm.resolveActivity(new Intent().setClassName(pkg, cls), 0) != null;
+        return pm.getLeanbackLaunchIntentForPackage(pkg) != null || pm.getLaunchIntentForPackage(pkg) != null
+                || !pm.queryIntentActivities(new Intent(Intent.ACTION_VIEW).setPackage(pkg), PackageManager.MATCH_DEFAULT_ONLY).isEmpty();
     }
 
     // ---------------------------------------------------------------- the family lock (Parental)
@@ -2870,7 +2891,13 @@ public class MainActivity extends Activity {
         }
     }
 
+    /** Opens an app by its launcher entry; "package/activity" (TvVendor) opens that activity. */
     private void openPackage(String pkg) {
+        String cls = TvVendor.cls(pkg);
+        if (cls != null) {
+            launch(new Intent(Intent.ACTION_MAIN).setClassName(TvVendor.pkg(pkg), cls));
+            return;
+        }
         Intent i = getPackageManager().getLeanbackLaunchIntentForPackage(pkg);
         if (i == null) i = getPackageManager().getLaunchIntentForPackage(pkg);
         if (i != null) launch(i);

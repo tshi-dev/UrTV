@@ -141,6 +141,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 .lg{margin-top:calc(40px + env(safe-area-inset-top));text-align:center;padding:26px 18px}
 .lg .ic{margin:0 auto 8px;width:60px;height:60px;border-radius:18px}
 #code{text-align:center;font-size:24px;letter-spacing:4px;margin:14px 0 4px}
+#code::placeholder{letter-spacing:0}
 #msg{pointer-events:none;position:fixed;inset-inline:16px;bottom:calc(92px + env(safe-area-inset-bottom));background:var(--bar);color:var(--text);border:1px solid var(--gold);border-radius:18px;padding:12px 14px;text-align:center;z-index:9;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.3)}
 #dlg{position:fixed;inset:0;z-index:10;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center}
 #dlg > div{background:var(--bar);border:1px solid var(--line);border-radius:24px 24px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));width:100%;max-width:560px}

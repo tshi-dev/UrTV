@@ -62,6 +62,7 @@
 #   optimize/saver.sh clocksize medium             the screensaver's clock: large (default) medium small
 #   optimize/saver.sh mkstyle prices               markets: arrows (▲▼ only, default) or prices (price and day's change)
 #   optimize/saver.sh stocks 2222 1120 AAPL        watchlist of the stocks card (card stocks): up to 8 Tadawul codes (4 digits) or US tickers
+#   optimize/saver.sh stkchg amount                a US stock's change as an amount (pct = a percentage, the default); Saudi codes keep the %
 #   optimize/saver.sh tasks list                   «المهام» kept on the TV; N = the number list shows
 #   optimize/saver.sh tasks add 'نص'               (up to 12, 60 characters each)  |  done N  |  del N  |  clear
 #   optimize/saver.sh slot fasting                 the bottom-left slot: matches (default; the weather when no team is followed)
@@ -230,6 +231,7 @@ case "${1:-}" in
               *) set1 markets "$2" && set1 mkbar on > /dev/null ;;   # choosing markets shows the line
             esac ;;
   clocksize)set1 clocksize "${2:?usage: optimize/saver.sh clocksize large|medium|small}" ;;
+  stkchg)   set1 stkchg "${2:?usage: optimize/saver.sh stkchg pct|amount}" ;;
   mkstyle)  set1 mkstyle "${2:?usage: optimize/saver.sh mkstyle prices}" ;;
   stocks)
     shift
