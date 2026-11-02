@@ -128,6 +128,73 @@ It opens with OK on the matches widget, and from Settings › المزيد › �
 - **API-Football has no TV data.**
 - **Commercial sources:** Sportmonks and SoccersAPI sell TV data, but they cost money and are not needed while one holder
   has the whole league.
+### Rights holders for every competition we show (MENA, 2026-27)
+
+**What we show today:**
+- the 16 leagues of `Prefs.LEAGUES`;
+- every game of a followed club or national team, in any competition (UEFA, AFC, the King's Cup, cups, qualifiers);
+- F1, UFC and boxing (`Prefs.EVENTS`).
+
+A game's competition is its TheSportsDB `idLeague`, so the table is keyed by league id and covers cup games too.
+
+**How sure this is:** every row comes from web search snippets of 2 November 2026, not from articles opened and read. CI
+could not reach the sites, and neither could this session. Each row must be opened and checked before it goes into
+`broadcast.json`.
+
+**The marks' names:**
+- beIN shows as «beIN».
+- Thmanyah shows as «ثمانية».
+- MBC shows as «شاهد».
+- STARZPLAY shows as «STARZPLAY».
+- Dubai Sports shows as «دبي الرياضية».
+- AD Sports shows as «أبوظبي الرياضية».
+- Al Kass shows as «الكأس».
+- ON Sport shows as «أون سبورت».
+- DAZN shows as «DAZN».
+- Apple TV shows as «Apple TV».
+
+| Competition | Holder, MENA 2026-27 | Split rights, notes | Source | Confidence | Mark |
+|---|---|---|---|---|---|
+| Saudi Pro League (Roshn) | Thmanyah (SRMG), exclusive 2025-26 to 2030-31 | thmanyah 1/2/3 free, the overflow in the Thmanyah app | [sportbusiness](https://www.sportbusiness.com/news/srmgs-thmanyah-nets-spl-exclusivity-to-2031/) | high | ثمانية |
+| Saudi First Division (Yelo) | Thmanyah | Same deal | [sportcal](https://www.sportcal.com/media/srmgs-thmanyah-secures-exclusive-saudi-league-rights-until-2031/) | high | ثمانية |
+| King's Cup, Saudi Super Cup | Thmanyah | Same deal, to 2031 | [bridgemena](https://bridgemena.com/?p=13448) | high | ثمانية |
+| Premier League | beIN, to 2027-28 | All 380 games, streamed on TOD | [beIN](https://www.beinsports.com/en-mena/football/premier-league/articles-video/bein-media-group-extends-exclusive-broadcast-rights-of-the-premier-league-across-mena-until-2028-2025-06-17) | high | beIN |
+| La Liga | beIN, to 2027-28 | All games. In Iraq it is shared with 1001. | [laliga.com](https://www.laliga.com/en-US/news/bein-extends-exclusive-laliga-broadcast-rights-across-34-markets-in-mena-and-apac) | high | beIN |
+| Serie A | STARZPLAY (with Abu Dhabi Media), 2025-26 to 2027-28 | Kuwait's Shasha also bought rights in 16 MENA countries; the overlap is unclear | [sportcal](https://www.sportcal.com/news/starzplay-retains-serie-a-rights-exclusively-in-mena-until-2028/) | medium | none until checked |
+| Bundesliga | MBC Group, 2025-26 to 2027-28 | Every game on Shahid; 3 a week free on MBC Action. Was beIN to 2025. | [insideworldfootball](https://www.insideworldfootball.com/2025/08/22/bundesliga-agrees-groundbreaking-broadcast-deal-mbc-group/) | high | شاهد |
+| Ligue 1 | beIN, 2024-25 to 2028-29 | All games | [qatar-tribune](https://www.qatar-tribune.com/article/248406/sports/european-football-returns-to-bein-sports-for-2026-27-season) | high | beIN |
+| Primeira Liga (Portugal) | No MENA buyer found | Sold country by country until a central sale in 2028-29 | [advanced-television](https://www.advanced-television.com/2026/08/20/dazn-livemode-expand-portugal-football-rights-deals/) | low | none |
+| Eredivisie | Dubai Sports, 2025-26 to 2027-28 | Reported free-to-air | [eredivisie.com](https://eredivisie.com/news/dubaisports-broadcast-across-mena/) | high | دبي الرياضية |
+| Turkish Süper Lig | beIN / TOD | **Top games only**: a game beIN does not list has no holder | [beIN](https://www.beinsports.com/en-mena/football/articles-video/european-football-returns-to-bein-sports-for-the-2026-27-season-2026-08-11) | medium | none (only some games) |
+| Egyptian Premier League | ON Sport (Egypt), 2024-27 | Some games free-to-air; no MENA-wide holder found | [africasoccer](https://africasoccer.com/pyramids-vs-smouha-tv-channel-live-stream-and-kick-off-time-for-egyptian-league-decider/) | medium | none (Egypt only) |
+| UAE Pro League (ADNOC) | Abu Dhabi Sports and Dubai Sports, shared | Extended for three seasons; exact dates not found | [broadcastprome](https://broadcastprome.com/news/adm-and-dmi-extend-uae-pro-league-tv-partnership) | medium | none until checked |
+| Qatar Stars League | Al Kass, host broadcaster and only holder | — | [qsl.qa](https://qsl.qa/en/news/al-kass-sports-channels-become-host-broadcaster-jetour-league) | high | الكأس |
+| MLS (2026) | Apple TV, worldwide | Inside the Apple TV subscription since 2026 | [apple.com](https://www.apple.com/newsroom/2025/11/major-league-soccer-is-coming-to-apple-tv-starting-in-2026/) | high | Apple TV |
+| NBA | beIN, renewed Nov 2025 | Up to 9 games a week plus the playoffs and Finals; the rest only on League Pass | [nba.com](https://pr.nba.com/nba-and-bein-media-group-announce-multiyear-partnership-extension-in-the-middle-east-and-north-africa) | high | none (only some games) |
+| NFL | DAZN (NFL Game Pass), worldwide from 2023 | No MENA TV deal found | [nfl.com](https://www.nfl.com/news/nfl-dazn-enter-long-term-agreement-delivering-game-pass-international-beginning-) | medium | DAZN |
+| UEFA Champions, Europa and Conference League | beIN, 2024-27 cycle | All games, 24 markets | [beIN](https://www.beinsports.com/en-mena/football/articles-video/bein-media-group-extends-rights-deal-in-mena-and-asia-to-broadcast-uefa-club-competitions-until-2027-2025-04-28) | high | beIN |
+| AFC Champions League Elite and other AFC club competitions | beIN, 2025-28 | Exclusive in 17 countries **including Saudi Arabia**; not Thmanyah | [qatar-tribune](https://www.qatar-tribune.com/article/193564/sports/bein-reveals-mena-wide-broadcast-plans-for-asian-football) | high | beIN |
+| AFC Asian Cup 2027 (Saudi Arabia, 7 Jan – 5 Feb 2027) | beIN | Same AFC deal | same as above | high | beIN |
+| World Cup 2026 and its qualifiers | Over (beIN had it) | Nothing left in 2026-27 | [wego](https://blog.wego.com/where-to-watch-the-fifa-world-cup-in-saudi-arabia/) | high | — |
+| Arab Cup, friendlies, other national-team games | Not known | Each game is sold on its own | — | low | none |
+| Formula 1 | beIN, 2024–2033 | Not MBC, whose free-to-air deal ended in 2023 | [beIN](https://www.beinsports.com/en-mena/motorsports/motorsports-formula-1/articles/bein-media-group-secures-exclusive-10-year-broadcast-partnership-with-formula-1-across-25-countries-in-mena-and-t%C3%BCrkiye-2024-02-28) | high | beIN |
+| UFC | STARZPLAY, from April 2024 | End date unknown | [broadcastprome](https://www.broadcastprome.com/news/ufc-and-starzplay-forge-exclusive-broadcast-partnership-for-mena-region/) | medium | none until checked |
+| Boxing (Riyadh Season, The Ring) | DAZN | Co-exclusive in MENA; the other holder was not found | [sportcal](https://www.sportcal.com/media/dazn-in-major-multi-year-partnership-with-riyadh-season/) | medium | none (co-exclusive) |
+
+**Rules for the mark:**
+- **Unknown holder:** no holder, low confidence or an unchecked row shows nothing. The screen never guesses, and never
+  says «غير متاح».
+- **Holder with only some games:** a league whose holder shows only some games (Süper Lig top games, NBA 9 a week) shows
+  nothing, because the free data cannot tell which games are covered. A wrong channel is worse than none.
+- **One holder for every game:** shows the mark on every game.
+- **A free channel on the side:** Bundesliga's 3 games a week on MBC Action, and thmanyah 1/2/3 for the Saudi league. The
+  per-game mark stays the holder's. The free channel is named only in the detail card, when it is known for that game.
+- **Each row carries its contract's end:** `"until": "2027-28"`. A row past its end is dropped automatically, so a stale
+  mark never outlives the deal.
+- **CI warns before deals lapse:** it opens an issue in the month before a season starts, listing the rows that need
+  checking.
+- **Checks:** `tests/check.py` fails when a row has no source link or no end season.
+
 - **The marks in the PNGs** are plain text in a small rectangle, not the broadcasters' logos. On the TV it would be the
   same: text, never a trademark.
 - **The «SSC» app tile** in the bar mockups is replaced by «ثمانية», since SSC closed.
