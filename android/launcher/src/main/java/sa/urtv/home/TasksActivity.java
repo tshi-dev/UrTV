@@ -225,12 +225,11 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
             LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(0, -2, 1f);
             cp.setMarginStart(dp(10));
             r.addView(card, cp);
-            View beside = bell != null ? bell : del;   // the row from the card outwards: the card, «ذكّرني», «حذف»
-            if (Dir.rtl()) card.setNextFocusLeftId(beside.getId()); else card.setNextFocusRightId(beside.getId());
-            if (Dir.rtl()) beside.setNextFocusRightId(card.getId()); else beside.setNextFocusLeftId(card.getId());
-            if (bell != null) {
-                if (Dir.rtl()) { bell.setNextFocusLeftId(del.getId()); del.setNextFocusRightId(bell.getId()); }
-                else { bell.setNextFocusRightId(del.getId()); del.setNextFocusLeftId(bell.getId()); }
+            if (Dir.rtl()) card.setNextFocusLeftId(del.getId()); else card.setNextFocusRightId(del.getId());
+            if (Dir.rtl()) del.setNextFocusRightId(card.getId()); else del.setNextFocusLeftId(card.getId());
+            if (bell != null) {   // the row from the card outwards: the card, «ذكّرني», «حذف»
+                if (Dir.rtl()) { card.setNextFocusLeftId(bell.getId()); bell.setNextFocusRightId(card.getId()); bell.setNextFocusLeftId(del.getId()); del.setNextFocusRightId(bell.getId()); }
+                else { card.setNextFocusRightId(bell.getId()); bell.setNextFocusLeftId(card.getId()); bell.setNextFocusRightId(del.getId()); del.setNextFocusLeftId(bell.getId()); }
             }
             list.addView(r, rowParams());
             if (first == null) first = card;

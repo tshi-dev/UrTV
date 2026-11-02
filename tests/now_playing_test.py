@@ -80,7 +80,7 @@ check("screen card: the provider needs a signature permission only the screensav
       and 'android:authorities="sa.urtv.home.nowplaying"' in manifest_h and 'android:readPermission="sa.urtv.home.READ_NOW_PLAYING"' in manifest_h
       and 'uses-permission android:name="sa.urtv.home.READ_NOW_PLAYING"' in manifest_s)
 check("screen card: the page gets two read-only calls, window.UrtvNative.nowPlaying() and adhan() (the adhan bar), on the screen only (not on the settings' previews); errors give an empty answer",
-      '@JavascriptInterface' in bridge and bridge.count("@JavascriptInterface") == 2 and "public String adhan()" in bridge and "catch (Exception ignored)" in bridge
+      '@JavascriptInterface' in bridge and bridge.count("@JavascriptInterface") == 6   # nowPlaying, adhan, and the reminder card's four (tests/reminders_test.py) and "public String adhan()" in bridge and "catch (Exception ignored)" in bridge
       and 'if (screen) w.addJavascriptInterface(new NowPlayingBridge(c), "UrtvNative")' in screenview)
 check("screen card: the page asks once at the start and then once a minute, no faster",
       "nowPlayingTick();\n  setInterval(nowPlayingTick, 60*1000);" in (ROOT / "src/template.html").read_text(encoding="utf-8"))

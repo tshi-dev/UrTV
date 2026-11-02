@@ -68,7 +68,7 @@ check("both phone pages stay under 64 KB", len(ar.encode()) < 64 * 1024 and len(
 schema = text(HOME / "phone/Schema.java")
 check("the phone's /api/text takes a due time only as a plausible number", '"text", "mode", "search", "due"' in schema and 'bad due' in schema)
 pa = text(HOME / "phone/PhoneActions.java")
-check("a task with a time from the phone goes to the screensaver's list whatever is on the TV, then the alarm follows", "reminder request" in pa and "ReminderScheduler.schedule(app)" in pa)
+check("a task with a time from the phone goes to the screensaver's list whatever is on the TV, then the alarm follows", "app.getContentResolver().insert(" in pa and "ReminderScheduler.schedule(app)" in pa)
 
 # ---- the logic
 if not shutil.which("javac"):

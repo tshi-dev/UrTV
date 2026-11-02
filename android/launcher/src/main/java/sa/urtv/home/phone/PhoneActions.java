@@ -107,7 +107,6 @@ final class PhoneActions implements Actions {
 
     /** A task with a time, from the phone's new-task form: added to «المهام» through the screensaver app, whatever is on the TV's screen; «task» or «failed» (full list, empty text, an older screensaver app). */
     @Override public Result text(String text, String mode, boolean search, long due) {
-        android.util.Log.i("UrTVType", "reminder request: len=" + (text == null ? 0 : text.length()));
         android.content.ContentValues v = new android.content.ContentValues();
         v.put("t", text);
         v.put("due", due);
