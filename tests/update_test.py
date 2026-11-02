@@ -33,7 +33,7 @@ if not shutil.which("javac"):
 else:
     pure = ["UpdateFlow", "UpdateOrder", "UpdateRecords", "UpdateText", "UpdateRules"]
     with tempfile.TemporaryDirectory() as tmp:
-        subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp] + [str(PHONE / f"{n}.java") for n in pure] + [str(ROOT / "tests/UpdateRun.java")], check=True)
+        subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java")] + [str(PHONE / f"{n}.java") for n in pure] + [str(ROOT / "tests/UpdateRun.java")], check=True)
         run = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.phone.UpdateRun"], capture_output=True)
     out = run.stdout.decode("utf-8")
     print(out, end="")
@@ -87,7 +87,7 @@ check("the screen reads the record once at its start (take) and an update runnin
       "UpdateRecords.take(" in act and "isBusy()" in text(JAVA / "MainActivity.java"), "")
 main = text(JAVA / "MainActivity.java")
 check("the launcher opens the screen on start only when a record exists (peek), and has the row in its menu",
-      "showUpdateResult();" in main and "UpdateRecords.peek(" in main and 'labels.add("تحديث تلفزيوني")' in main and "UpdateActivity.class" in main, "")
+      "showUpdateResult();" in main and "UpdateRecords.peek(" in main and 'labels.add(S.t("تحديث تلفزيوني"))' in main and "UpdateActivity.class" in main, "")
 saver = text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsActivity.java")
 check("the screensaver app's settings have a row that opens it, the way «ترتيب التطبيقات المفضلة» opens the launcher",
       'row("تحديث تلفزيوني"' in saver and 'setClassName("sa.urtv.home", "sa.urtv.home.UpdateActivity")' in saver and "openUpdate();" in saver, "")

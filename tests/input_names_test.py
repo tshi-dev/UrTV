@@ -46,7 +46,7 @@ check("screen: asks for the PIN itself, with «قفل الإعدادات» (the 
 check("screen: a dialog or the PIN keypad is dismissed when the screen pauses", "PinPrompt.dismiss(this)" in act and "editor.dismiss()" in act)
 check("screen: lists only the inputs the TV reports now", "InputLabels.reported(this)" in act)
 check("screen: the name is cleaned by InputNames.clean before it is kept; a name that can't be kept leaves the box open",
-      "InputNames.clean(in.getText().toString())" in act and "setPositiveButton(\"حفظ\", null)" in act)
+      "InputNames.clean(in.getText().toString())" in act and "setPositiveButton(S.t(\"حفظ\"), null)" in act)
 check("screen: a Latin name keeps its order in the Arabic row (first-strong text direction)", "TEXT_DIRECTION_FIRST_STRONG" in act)
 check("screen: Arabic copy says «اختيار», not «OK»", "OK" not in re.sub(r"[A-Za-z]+\.", "", " ".join(re.findall(r'"[^"]*[؀-ۿ][^"]*"', act))))
 m = re.search(r'<activity\s+android:name="\.InputNamesActivity"(.*?)/>', manifest, re.S)

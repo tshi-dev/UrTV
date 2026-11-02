@@ -207,7 +207,7 @@ final class HomeCard {
         target = new View(activity);
         target.setId(View.generateViewId());
         target.setFocusable(true);
-        target.setContentDescription("المهام");
+        target.setContentDescription(S.t("المهام"));
         target.setOnFocusChangeListener((v, has) -> {
             if (web != null) web.evaluateJavascript("setLiveFocus(" + has + ")", null);
             if (has) placeTarget();   // exactly over the card while it is the one in front
@@ -228,7 +228,9 @@ final class HomeCard {
                 if (r.length != 4) return;
                 try {
                     float d = activity.getResources().getDisplayMetrics().density;   // the page's px are dp
-                    targetParams.leftMargin = params.leftMargin + Math.round(Float.parseFloat(r[0]) * d);
+                    if (Dir.rtl()) targetParams.leftMargin = params.leftMargin + Math.round(Float.parseFloat(r[0]) * d);
+                    else targetParams.rightMargin = params.rightMargin + params.width   // English: the card hangs from the right (Dir.end())
+                            - Math.round(Float.parseFloat(r[0]) * d) - Math.max(1, Math.round(Float.parseFloat(r[2]) * d));
                     targetParams.topMargin = params.topMargin + Math.round(Float.parseFloat(r[1]) * d);
                     targetParams.width = Math.max(1, Math.round(Float.parseFloat(r[2]) * d));
                     targetParams.height = Math.max(1, Math.round(Float.parseFloat(r[3]) * d));

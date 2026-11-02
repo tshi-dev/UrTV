@@ -250,6 +250,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
 
     @Override public void onCreate() {
         super.onCreate();
+        sa.urtv.home.S.init(this);   // «اللغة»: the notification's and the card's words
         cat = Catalog.get(this);
         prefs = new Prefs(this);
         audio = (AudioManager) getSystemService(AUDIO_SERVICE);
@@ -326,7 +327,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     private void playSurahById(String id, int n, int startAt) {
         int index = id == null ? -1 : cat.reciterIndex(id);
         if (index < 0) {
-            error = getString(R.string.no_connection);
+            error = Ui.str(this, R.string.no_connection);
             updateSession();
             updateNotification();
             return;
@@ -541,7 +542,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
                 finishAdhan();   // nobody gave the sound: the TV's volume comes back and what was paused goes on
                 return;
             } else {
-                error = "الصوت مشغول";
+                error = sa.urtv.home.S.t("الصوت مشغول");
             }
             updateSession();
             updateNotification();
@@ -610,7 +611,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         }
         if (failed != null && retries < 2) {
             retries++;
-            error = getString(R.string.retrying);
+            error = Ui.str(this, R.string.retrying);
             updateSession();
             updateNotification();
             final int gen = wish.currentGeneration();
@@ -883,22 +884,22 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     private void updateSession() {
         announce();
         if (session == null) return;
-        String title = "تلاوة", artist = "";
+        String title = sa.urtv.home.S.t("تلاوة"), artist = "";
         if (source == Prefs.SOURCE_SURAH && reciter >= 0 && reciter < cat.reciters.size()) {
-            title = "سورة " + cat.surahName(surah);
+            title = sa.urtv.home.S.t("سورة %s", cat.surahName(surah));
             artist = cat.reciters.get(reciter).name;
         } else if (source == Prefs.SOURCE_RADIO && station >= 0 && station < cat.stations.size()) {
             title = cat.stations.get(station).name;
-            artist = getString(R.string.live);
+            artist = Ui.str(this, R.string.live);
         } else if (source == Prefs.SOURCE_ADHAN) {
-            title = getString(R.string.adhan);
+            title = Ui.str(this, R.string.adhan);
             artist = adhanName != null ? adhanName : "";
         }
         MediaMetadata.Builder meta = new MediaMetadata.Builder()
                 .putString(MediaMetadata.METADATA_KEY_TITLE, title)
                 .putString(MediaMetadata.METADATA_KEY_ARTIST, artist)
                 .putString(MediaMetadata.METADATA_KEY_ALBUM,
-                        source == Prefs.SOURCE_ADHAN ? getString(R.string.adhan) : "القرآن الكريم");
+                        source == Prefs.SOURCE_ADHAN ? Ui.str(this, R.string.adhan) : sa.urtv.home.S.t("القرآن الكريم"));
         if (source == Prefs.SOURCE_SURAH && duration > 0) {
             meta.putLong(MediaMetadata.METADATA_KEY_DURATION, duration);
         }
@@ -924,7 +925,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
 
     private void createChannel() {
         if (Build.VERSION.SDK_INT < 26) return;
-        NotificationChannel channel = new NotificationChannel(CHANNEL, getString(R.string.channel_name),
+        NotificationChannel channel = new NotificationChannel(CHANNEL, Ui.str(this, R.string.channel_name),
                 NotificationManager.IMPORTANCE_LOW);
         channel.setShowBadge(false);
         channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
@@ -942,19 +943,19 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     }
 
     private Notification buildNotification() {
-        String title = "تلاوة", text = "";
+        String title = sa.urtv.home.S.t("تلاوة"), text = "";
         if (source == Prefs.SOURCE_SURAH && reciter >= 0 && reciter < cat.reciters.size()) {
-            title = "سورة " + cat.surahName(surah);
+            title = sa.urtv.home.S.t("سورة %s", cat.surahName(surah));
             text = cat.reciters.get(reciter).name;
         } else if (source == Prefs.SOURCE_RADIO && station >= 0 && station < cat.stations.size()) {
             title = cat.stations.get(station).name;
-            text = getString(R.string.live);
+            text = Ui.str(this, R.string.live);
         } else if (source == Prefs.SOURCE_ADHAN) {
-            title = getString(R.string.adhan);
+            title = Ui.str(this, R.string.adhan);
             text = adhanName != null ? adhanName : "";
         }
         if (error != null) text = error;
-        else if (buffering) text = getString(R.string.buffering);
+        else if (buffering) text = Ui.str(this, R.string.buffering);
 
         Intent open = new Intent(this, PlayerActivity.class)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -972,11 +973,11 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
                 .setCategory(Notification.CATEGORY_TRANSPORT)
                 .setVisibility(Notification.VISIBILITY_PUBLIC)
                 .setColor(getResources().getColor(R.color.notify_accent))   // a plain colour: a notification has no theme
-                .addAction(R.drawable.ic_prev, getString(R.string.previous), command(ACTION_PREV))
+                .addAction(R.drawable.ic_prev, Ui.str(this, R.string.previous), command(ACTION_PREV))
                 .addAction(playing ? R.drawable.ic_pause : R.drawable.ic_play,
-                        getString(R.string.play_pause), command(ACTION_TOGGLE))
-                .addAction(R.drawable.ic_next, getString(R.string.next), command(ACTION_NEXT))
-                .addAction(R.drawable.ic_stop, getString(R.string.stop), command(ACTION_STOP));
+                        Ui.str(this, R.string.play_pause), command(ACTION_TOGGLE))
+                .addAction(R.drawable.ic_next, Ui.str(this, R.string.next), command(ACTION_NEXT))
+                .addAction(R.drawable.ic_stop, Ui.str(this, R.string.stop), command(ACTION_STOP));
         if (Build.VERSION.SDK_INT >= 21) {
             builder.setStyle(new Notification.MediaStyle()
                     .setMediaSession(session.getSessionToken())

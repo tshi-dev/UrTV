@@ -27,7 +27,7 @@ check("«كل التطبيقات» is inset like the grid on both sides (68 dp),
       "content.addView(appsLabel, llp(-2, -2, dp(68), dp(8), dp(68), dp(18)));" in main and "content.addView(grid, llp(-1, -2, dp(68), 0, dp(68), dp(160)));" in main)
 check("the dock band: 48 dp in from the screen and 20 dp of padding, so its first tile is 68 dp in too",
       "hero.addView(bottom, lp(-1, -2, Gravity.BOTTOM, dp(48), 0, dp(48), dp(30)));" in main and "dockRow.setPadding(dp(20), dp(22), dp(20), dp(22));" in main)
-check("the home is right to left whatever the TV's language (the English TV too)", "root.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);" in main
+check("the home is right to left whatever the TV's language (the English TV too); «اللغة» English is left to right (Dir)", "root.setLayoutDirection(Dir.layout());" in main
       and main.count("setLayoutDirection(View.LAYOUT_DIRECTION_LTR)") == 0)
 cols = int(re.search(r'<integer name="columns">(\d+)</integer>', (ROOT / "android/launcher/src/main/res/values/config.xml").read_text(encoding="utf-8")).group(1))
 

@@ -169,7 +169,8 @@ final class Parental {
             cancelled.run();
             return;
         }
-        PinPrompt.ask(a, "أدخل الرمز", name == null || name.isEmpty() ? "هذا مقفل بالرمز الأبوي" : "«" + name + "» مقفل بالرمز الأبوي", before, code ->
+        // name: a screen's or an app's name; the screens pass their Arabic words (S.tv says them in «اللغة»), an app its own label
+        PinPrompt.ask(a, S.t("أدخل الرمز"), name == null || name.isEmpty() ? S.t("هذا مقفل بالرمز الأبوي") : S.t("«%s» مقفل بالرمز الأبوي", S.tv(name)), before, code ->
                 WORK.execute(() -> {
                     PinStore.Result r = pin(a).verify(code, System.currentTimeMillis());
                     a.runOnUiThread(() -> {
@@ -181,7 +182,7 @@ final class Parental {
                             toast(a, tooMany(r.waitMs));
                             cancelled.run();
                         } else {
-                            toast(a, "الرمز غير صحيح" + (r.triesLeft > 0 && r.triesLeft < PinStore.TRIES ? "، بقي " + Digits.of(String.valueOf(r.triesLeft)) + " محاولات" : ""));
+                            toast(a, r.triesLeft > 0 && r.triesLeft < PinStore.TRIES ? S.t("الرمز غير صحيح، بقي %s محاولات", Digits.of(String.valueOf(r.triesLeft))) : S.t("الرمز غير صحيح"));
                             ask(a, before, name, targets, allowed, cancelled);
                         }
                     });
@@ -190,10 +191,10 @@ final class Parental {
 
     /** A new PIN, typed twice. */
     static void choose(Activity a, PinPrompt.Before before, Runnable saved, Runnable cancelled) {
-        PinPrompt.ask(a, "رمز جديد", "اختر رمزاً من أربعة أرقام", before, first ->
-                PinPrompt.ask(a, "تأكيد الرمز", "أعد إدخال الرمز نفسه", before, second -> {
+        PinPrompt.ask(a, S.t("رمز جديد"), S.t("اختر رمزاً من أربعة أرقام"), before, first ->
+                PinPrompt.ask(a, S.t("تأكيد الرمز"), S.t("أعد إدخال الرمز نفسه"), before, second -> {
                     if (!first.equals(second)) {
-                        toast(a, "الرمزان غير متطابقين، لم يتغير شيء");
+                        toast(a, S.t("الرمزان غير متطابقين، لم يتغير شيء"));
                         cancelled.run();
                         return;
                     }
@@ -211,8 +212,8 @@ final class Parental {
     /** Wrong or too many: «انتظر دقيقة». */
     static String tooMany(long waitMs) {
         long s = (waitMs + 999) / 1000;
-        String t = s >= 60 ? Digits.of(String.valueOf((s + 59) / 60)) + " دقيقة" : Digits.of(String.valueOf(s)) + " ثانية";
-        return "محاولات كثيرة، انتظر " + t;
+        String t = s >= 60 ? S.t("%s دقيقة", Digits.of(String.valueOf((s + 59) / 60))) : S.t("%s ثانية", Digits.of(String.valueOf(s)));
+        return S.t("محاولات كثيرة، انتظر %s", t);
     }
 
     static void toast(Context c, String s) { Toast.makeText(c, s, Toast.LENGTH_LONG).show(); }

@@ -42,7 +42,7 @@ check("only the owner's button can turn it on: PhoneHost.turnOn is called from P
 act = text(JAVA / "PhoneActivity.java")
 on_create = act.split("protected void onCreate")[1].split("protected void onResume")[0]
 check("opening the screen starts nothing (no turnOn or start in onCreate)", "turnOn" not in on_create and ".start(" not in on_create, "")
-click = re.search(r'button\("تشغيل".*?\}\s*\}\);', act, re.S)
+click = re.search(r'button\(S\.t\("تشغيل"\).*?\}\s*\}\);', act, re.S)
 check("«تشغيل» is a button the owner presses with the remote", bool(click) and "turnOn()" in click.group(0), "")
 others = [f.name for f in all_java if re.search(r"PhoneHost\.|\bPhoneControl\b", text(f)) and "/phone/" not in str(f) and f.name not in ("PhoneActivity.java",)]
 check("no other screen, receiver or boot code touches the phone control", others == [], others)

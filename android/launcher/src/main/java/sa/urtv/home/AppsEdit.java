@@ -14,10 +14,10 @@ import java.util.List;
  */
 final class AppsEdit {
     /** the line at the top of the screen while the mode is on */
-    static final String HINT = "اختر تطبيقًا لتحريكه · × للإخفاء · ارفعه للمفضلة · رجوع للإنهاء";
+    static final String HINT = S.n("اختر تطبيقًا لتحريكه · × للإخفاء · ارفعه للمفضلة · رجوع للإنهاء");
 
     /** «المخفية»: the last place of the grid while something is hidden */
-    static final String HIDDEN_TITLE = "المخفية";
+    static final String HIDDEN_TITLE = S.n("المخفية");
 
     /** what a key did, for the screen to redraw */
     static final int NOTHING = 0, FOCUS = 1, PICKED = 2, MOVED = 3, DROPPED = 4, CANCELLED = 5, HIDDEN = 6, UNDONE = 7, EXIT = 8,

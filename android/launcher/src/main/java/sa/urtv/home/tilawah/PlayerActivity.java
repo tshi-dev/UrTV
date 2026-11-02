@@ -22,6 +22,9 @@ import sa.urtv.home.R;
 
 /** Now playing. The whole screen is the control surface: OK, arrows, down for the sleep timer. */
 public class PlayerActivity extends Activity {
+    /** «اللغة» (docs/ENGLISH.md): with Arabic the context itself, with English an English one */
+    @Override protected void attachBaseContext(android.content.Context b) { super.attachBaseContext(sa.urtv.home.S.wrap(b)); }
+
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private Catalog cat;
@@ -45,6 +48,7 @@ public class PlayerActivity extends Activity {
         sa.urtv.home.Digits.init(this);   // the screensaver's «الأرقام» setting
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_player);
+        Ui.localize(this);   // «اللغة»: English reads left to right, the layout's words in English
         Ui.glassPage(this, R.id.bg);   // the glass page
         cat = Catalog.get(this);
         openedAt = SystemClock.elapsedRealtime();
@@ -96,7 +100,7 @@ public class PlayerActivity extends Activity {
         // an adhan is not a track: no skipping and no seeking, only stop/play and the sleep timer
         prev.setVisibility(adhan ? View.GONE : View.VISIBLE);
         next.setVisibility(adhan ? View.GONE : View.VISIBLE);
-        hint.setText(adhan ? R.string.hint_adhan : R.string.hint_player);
+        hint.setText(Ui.str(this, adhan ? R.string.hint_adhan : R.string.hint_player));
         if (radio) {
             int index = MusicService.currentStation();
             if (index >= 0 && index < cat.stations.size()) title.setText(cat.stations.get(index).name);
@@ -105,16 +109,16 @@ public class PlayerActivity extends Activity {
             live.setVisibility(View.VISIBLE);
             progressBlock.setVisibility(View.GONE);
         } else if (source == Prefs.SOURCE_ADHAN) {
-            title.setText(R.string.adhan);
+            title.setText(Ui.str(this, R.string.adhan));
             artist.setText(MusicService.adhanName() != null ? MusicService.adhanName() : "");
             kind.setVisibility(View.GONE);
             live.setVisibility(View.GONE);
             progressBlock.setVisibility(View.GONE);
         } else {
-            title.setText("سورة " + cat.surahName(MusicService.currentSurah()));
+            title.setText(sa.urtv.home.S.t("سورة %s", cat.surahName(MusicService.currentSurah())));
             int index = MusicService.reciterIndex();
             if (index >= 0 && index < cat.reciters.size()) artist.setText(cat.reciters.get(index).name);
-            kind.setText(R.string.now_playing);
+            kind.setText(Ui.str(this, R.string.now_playing));
             kind.setVisibility(View.VISIBLE);
             live.setVisibility(View.GONE);
             progressBlock.setVisibility(View.VISIBLE);
@@ -128,12 +132,12 @@ public class PlayerActivity extends Activity {
 
         String error = MusicService.currentError();
         if (error != null) artist.setText(error);
-        else if (MusicService.isBuffering()) artist.setText(R.string.buffering);
+        else if (MusicService.isBuffering()) artist.setText(Ui.str(this, R.string.buffering));
         play.setImageResource(MusicService.isPlaying() ? R.drawable.ic_pause : R.drawable.ic_play);
 
         long left = MusicService.sleepAt() - System.currentTimeMillis();
         if (left > 0) {
-            sleepInfo.setText(getString(R.string.sleep_left, Ui.arabic((int) Math.ceil(left / 60000.0))));
+            sleepInfo.setText(Ui.str(this, R.string.sleep_left, Ui.arabic((int) Math.ceil(left / 60000.0))));
             sleepInfo.setVisibility(View.VISIBLE);
         } else {
             sleepInfo.setVisibility(View.GONE);
@@ -191,6 +195,7 @@ public class PlayerActivity extends Activity {
         final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_sleep);
+        Ui.say(dialog.findViewById(android.R.id.content));   // «اللغة»: the dialog's words
 
         Window window = dialog.getWindow();
         if (window != null) {
@@ -206,8 +211,8 @@ public class PlayerActivity extends Activity {
 
         LinearLayout items = dialog.findViewById(R.id.sleep_items);
         final String[] labels = {
-                Ui.digits(getString(R.string.sleep_30)), Ui.digits(getString(R.string.sleep_60)), Ui.digits(getString(R.string.sleep_90)),
-                getString(R.string.sleep_off), getString(R.string.stop_now)
+                Ui.digits(Ui.str(this, R.string.sleep_30)), Ui.digits(Ui.str(this, R.string.sleep_60)), Ui.digits(Ui.str(this, R.string.sleep_90)),
+                Ui.str(this, R.string.sleep_off), Ui.str(this, R.string.stop_now)
         };
         for (int i = 0; i < labels.length; i++) {
             TextView row = (TextView) getLayoutInflater().inflate(R.layout.item_sleep, items, false);
@@ -235,7 +240,7 @@ public class PlayerActivity extends Activity {
             case 2: {
                 int minutes = new int[]{30, 60, 90}[which];
                 MusicService.sleep(this, minutes);
-                Toast.makeText(this, getString(R.string.sleep_left, Ui.arabic(minutes)),
+                Toast.makeText(this, Ui.str(this, R.string.sleep_left, Ui.arabic(minutes)),
                         Toast.LENGTH_SHORT).show();
                 break;
             }

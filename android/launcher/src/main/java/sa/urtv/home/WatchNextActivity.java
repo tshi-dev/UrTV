@@ -16,6 +16,9 @@ import android.widget.TextView;
  * allowed already, or once it is. Behind «قفل الإعدادات» like «ترتيب المفضلة». `am start -n sa.urtv.home/.WatchNextActivity`.
  */
 public class WatchNextActivity extends Activity {
+    /** «اللغة» (docs/ENGLISH.md): with Arabic the context itself, with English an English one */
+    @Override protected void attachBaseContext(android.content.Context b) { super.attachBaseContext(S.wrap(b)); }
+
     private int GOLD, TEXT, DIM;   // from the glass look (glass(), before anything is drawn)
     private GlassStyle.Look look;
     private static final int ASK = 7;
@@ -31,11 +34,10 @@ public class WatchNextActivity extends Activity {
         glass(root);   // the glass look: the home's photo, small and blurred once, under its veil
         LinearLayout col = new LinearLayout(this);
         col.setOrientation(LinearLayout.VERTICAL);
-        col.addView(text("أكمل المشاهدة", 28, "Medium", TEXT), right(dp(10)));
-        col.addView(text("تحت المفضلة: ما وقفته في نصه والحلقة الجاية، من تطبيقاتك. تحتاج الواجهة إذن قراءة هذه القائمة من التلفزيون مرة "
-            + "واحدة، ولا يُرسل شيء خارج التلفزيون.", 15, "Regular", DIM), right(dp(26)));
-        allow = card("السماح", v -> requestPermissions(new String[]{TvRows.PERMISSION, TvRows.EPG}, ASK));
-        col.addView(allow, new LinearLayout.LayoutParams(dp(220), -2, Gravity.RIGHT));
+        col.addView(text(S.t("أكمل المشاهدة"), 28, "Medium", TEXT), right(dp(10)));
+        col.addView(text(S.t("تحت المفضلة: ما وقفته في نصه والحلقة الجاية، من تطبيقاتك. تحتاج الواجهة إذن قراءة هذه القائمة من التلفزيون مرة واحدة، ولا يُرسل شيء خارج التلفزيون."), 15, "Regular", DIM), right(dp(26)));
+        allow = card(S.t("السماح"), v -> requestPermissions(new String[]{TvRows.PERMISSION, TvRows.EPG}, ASK));
+        col.addView(allow, new LinearLayout.LayoutParams(dp(220), -2, Dir.start()));
         root.addView(col, new FrameLayout.LayoutParams(dp(640), -2, Gravity.CENTER));
         setContentView(root);
         screen = root;
@@ -89,7 +91,7 @@ public class WatchNextActivity extends Activity {
         t.setText(s);
         t.setTextSize(TypedValue.COMPLEX_UNIT_SP, sp);
         t.setTextColor(color);
-        t.setGravity(Gravity.RIGHT);
+        t.setGravity(Dir.start());
         try { t.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/Thmanyah-" + weight + ".otf")); }
         catch (RuntimeException ignored) { }
         return t;

@@ -56,7 +56,7 @@ final class PinPrompt {
         root.addView(keypad, new LinearLayout.LayoutParams(0, -2, 1.1f));
         LinearLayout info = new LinearLayout(a);
         info.setOrientation(LinearLayout.VERTICAL);
-        info.setGravity(Gravity.RIGHT);
+        info.setGravity(Dir.start());
         LinearLayout.LayoutParams infoLp = new LinearLayout.LayoutParams(0, -2, 1f);
         infoLp.leftMargin = dp(a, 32);
         root.addView(info, infoLp);
@@ -73,7 +73,7 @@ final class PinPrompt {
         mp.topMargin = dp(a, 24);
         mp.bottomMargin = dp(a, 20);
         info.addView(masked, mp);
-        info.addView(PinUi.text(a, "يُفتح تلقائياً بعد الرقم الرابع\nاستخدم أرقام الريموت أو الأسهم", 16, PinUi.MUTED), new LinearLayout.LayoutParams(-1, -2));
+        info.addView(PinUi.text(a, S.t("يُفتح تلقائياً بعد الرقم الرابع\nاستخدم أرقام الريموت أو الأسهم"), 16, PinUi.MUTED), new LinearLayout.LayoutParams(-1, -2));
         Runnable redraw = () -> {
             StringBuilder dots = new StringBuilder();
             for (int i = 0; i < 4; i++) dots.append(i > 0 ? " " : "").append(i < pin.length() ? '●' : '○');
@@ -101,7 +101,7 @@ final class PinPrompt {
             redraw.run();
         };
         List<Button> keys = new ArrayList<>();
-        String[] labels = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "مسح", "0", "حذف"};
+        String[] labels = {"1", "2", "3", "4", "5", "6", "7", "8", "9", S.n("مسح"), "0", S.n("حذف")};
         for (int r = 0; r < 4; r++) {
             LinearLayout row = new LinearLayout(a);
             row.setOrientation(LinearLayout.HORIZONTAL);
@@ -112,7 +112,7 @@ final class PinPrompt {
             keypad.addView(row, rowLp);
             for (int c = 0; c < 3; c++) {
                 String key = labels[r * 3 + c];
-                Button b = PinUi.button(a, key);
+                Button b = PinUi.button(a, S.tv(key));
                 if (r == 3 && c != 1) b.setTextSize(17);
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, -1, 1f);
                 if (c > 0) lp.leftMargin = dp(a, 12);
@@ -127,7 +127,7 @@ final class PinPrompt {
                 });
             }
         }
-        Button cancel = PinUi.button(a, "إلغاء");
+        Button cancel = PinUi.button(a, S.t("إلغاء"));
         LinearLayout.LayoutParams ap = new LinearLayout.LayoutParams(-1, dp(a, 48));
         ap.topMargin = dp(a, 20);
         keypad.addView(cancel, ap);

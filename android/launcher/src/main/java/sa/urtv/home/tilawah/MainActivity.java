@@ -30,6 +30,9 @@ import java.util.List;
  * reciters, the live stations and the adhan (today's times, the switch and the muezzin).
  */
 public class MainActivity extends Activity {
+    /** «اللغة» (docs/ENGLISH.md): with Arabic the context itself, with English an English one */
+    @Override protected void attachBaseContext(android.content.Context b) { super.attachBaseContext(sa.urtv.home.S.wrap(b)); }
+
 
     /** opens the screen on its «الأذان» tab: the adhan's settings from the home's app menu and from the screensaver's settings (value "adhan") */
     public static final String EXTRA_OPEN = "open";
@@ -60,6 +63,7 @@ public class MainActivity extends Activity {
         super.onCreate(state);
         sa.urtv.home.Digits.init(this);   // the screensaver's «الأرقام» setting
         setContentView(R.layout.activity_main);
+        Ui.localize(this);   // «اللغة»: English reads left to right, the layout's words in English
         Ui.glassPage(this, R.id.bg);   // the glass page
         cat = Catalog.get(this);
         prefs = new Prefs(this);
@@ -211,7 +215,7 @@ public class MainActivity extends Activity {
         try {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(HaramLive.URL)).addCategory(Intent.CATEGORY_BROWSABLE));
         } catch (android.content.ActivityNotFoundException | SecurityException e) {
-            android.widget.Toast.makeText(this, getString(R.string.haram_live_none), android.widget.Toast.LENGTH_LONG).show();
+            android.widget.Toast.makeText(this, Ui.str(this, R.string.haram_live_none), android.widget.Toast.LENGTH_LONG).show();
         }
     }
 
@@ -260,16 +264,16 @@ public class MainActivity extends Activity {
     }
 
     @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // on «صوت الأذان» left/right are the volume: left louder, right quieter (the bar fills from the right, like the page)
+        // on «صوت الأذان» left/right are the volume: left louder, right quieter (the bar fills from the right, like the page); English mirrored
         if ((keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) && list.hasFocus()
                 && tab == TAB_ADHAN && selectedKind() == KIND_VOLUME) {
-            changeVolume(keyCode == KeyEvent.KEYCODE_DPAD_LEFT ? 10 : -10);
+            changeVolume(keyCode == sa.urtv.home.Dir.forwardKey() ? 10 : -10);
             return true;
         }
         // left/right walk the tab bar from anywhere on the screen: the sections are one key apart
         if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-            // RTL: the first tab sits on the right, so right is «previous»
-            int delta = keyCode == KeyEvent.KEYCODE_DPAD_RIGHT ? -1 : 1;
+            // RTL: the first tab sits on the right, so right is «previous» (English: left)
+            int delta = keyCode == sa.urtv.home.Dir.backKey() ? -1 : 1;
             int next = Math.max(TAB_RECITERS, Math.min(TAB_ADHAN, tab + delta));
             if (next == tab) return true;
             boolean fromTabs = tabs.hasFocus();
@@ -395,14 +399,14 @@ public class MainActivity extends Activity {
                     int index = cat.reciterIndex(prefs.reciter());
                     if (index >= 0) {
                         rows.add(new Row(false, KIND_RESUME, getString(R.string.continue_listening),
-                                getString(R.string.continue_detail,
+                                Ui.str(MainActivity.this, R.string.continue_detail,
                                         cat.surahName(prefs.surah()), cat.reciters.get(index).name), index));
                     }
                 }
                 for (int i = 0; i < cat.reciters.size(); i++) {
                     Catalog.Reciter reciter = cat.reciters.get(i);
                     rows.add(new Row(false, KIND_RECITER, reciter.name,
-                            getString(R.string.surah_count, Ui.arabic(reciter.surahs)), i));
+                            Ui.str(MainActivity.this, R.string.surah_count, Ui.arabic(reciter.surahs)), i));
                 }
             } else if (tab == TAB_STATIONS) {
                 if (prefs.source() == Prefs.SOURCE_RADIO && prefs.station() < cat.stations.size()) {
@@ -421,7 +425,7 @@ public class MainActivity extends Activity {
                 PrayerTimes.Next next = PrayerTimes.next(MainActivity.this);
                 String toggle = prefs.adhanOn() ? getString(R.string.adhan_on) : getString(R.string.adhan_off);
                 if (prefs.adhanOn() && next != null) {
-                    toggle += "  •  " + next.name() + " " + PrayerTimes.remaining(next.at - System.currentTimeMillis());
+                    toggle += "  •  " + sa.urtv.home.S.tv(next.name()) + " " + PrayerTimes.remaining(next.at - System.currentTimeMillis());
                 }
                 rows.add(new Row(false, KIND_ADHAN_TOGGLE, getString(R.string.adhan_auto), toggle, -1));
                 if (prefs.adhanOn() && !AdhanScheduler.exactAllowed(MainActivity.this)) {   // the alarm may be minutes late
@@ -467,7 +471,7 @@ public class MainActivity extends Activity {
             if (row.header) {
                 TextView header = (TextView) (convertView != null ? convertView
                         : inflater.inflate(R.layout.item_header, parent, false));
-                header.setText(row.title);
+                header.setText(Ui.line(row.title));
                 header.setTypeface(Ui.font(MainActivity.this, "Thmanyah-Medium.otf"));
                 return header;
             }
@@ -475,8 +479,8 @@ public class MainActivity extends Activity {
             resetRow(view);
             TextView name = view.findViewById(R.id.name);
             TextView detail = view.findViewById(R.id.detail);
-            name.setText(row.title);
-            detail.setText(row.detail);
+            name.setText(Ui.line(row.title));   // the rows keep our Arabic words (OnOff reads them below); the screen says them in «اللغة»
+            detail.setText(Ui.line(row.detail));
             name.setTypeface(Ui.font(MainActivity.this, "Thmanyah-Medium.otf"));
             detail.setTypeface(Ui.font(MainActivity.this, "Thmanyah-Light.otf"));
             name.setTextColor(getColorStateList(row.next ? R.color.gold : R.color.sand));   // the focus ink when selected

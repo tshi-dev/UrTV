@@ -15,6 +15,9 @@ import sa.urtv.home.R;
 
 /** The 114 surahs of one reciter, six columns, made for the remote's arrows. */
 public class SurahActivity extends Activity {
+    /** «اللغة» (docs/ENGLISH.md): with Arabic the context itself, with English an English one */
+    @Override protected void attachBaseContext(android.content.Context b) { super.attachBaseContext(sa.urtv.home.S.wrap(b)); }
+
 
     private Catalog cat;
     private Catalog.Reciter reciter;
@@ -30,13 +33,14 @@ public class SurahActivity extends Activity {
         if (index < 0 || index >= cat.reciters.size()) { finish(); return; }
         reciter = cat.reciters.get(index);
         setContentView(R.layout.activity_surah);
+        Ui.localize(this);   // «اللغة»: English reads left to right, the layout's words in English
         Ui.glassPage(this, R.id.bg);   // the glass page
 
         TextView name = findViewById(R.id.reciter);
         name.setText(reciter.name);
         Ui.text(name, "ThmanyahDisplay-Bold.otf", 36, R.color.sand);
         TextView count = findViewById(R.id.count);
-        count.setText(getString(R.string.surah_count, Ui.arabic(reciter.surahs)));
+        count.setText(Ui.str(this, R.string.surah_count, Ui.arabic(reciter.surahs)));
         Ui.text(count, "Thmanyah-Regular.otf", 14, R.color.dim);
         Ui.text((TextView) findViewById(R.id.choose), "Thmanyah-Regular.otf", 16, R.color.gold);
         Ui.text((TextView) findViewById(R.id.hint), "Thmanyah-Regular.otf", 14, R.color.dim);
@@ -87,8 +91,9 @@ public class SurahActivity extends Activity {
         int child = grid.indexOfChild(focused);
         if (child < 0) return false;
         int position = grid.getFirstVisiblePosition() + child;
-        // the first cell of the grid sits on the right, so the cell before is the one on the right
-        int next = CellWalk.next(position, grid.getCount(), right);
+        // the first cell of the grid sits on the right, so the cell before is the one on the right (English: on the left, so the walk
+        // goes the other way: CellWalk counts for a grid that reads from the right)
+        int next = CellWalk.next(position, grid.getCount(), right == sa.urtv.home.Dir.rtl());
         if (next == CellWalk.NONE) return false;
         View cell = grid.getChildAt(next - grid.getFirstVisiblePosition());
         if (cell == null) {

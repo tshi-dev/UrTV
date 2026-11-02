@@ -11,7 +11,7 @@ final class TvRowsPick {
     private TvRowsPick() { }
 
     static final String WATCH_NEXT = "watchnext";
-    static final String WATCH_NEXT_TITLE = "أكمل المشاهدة";
+    static final String WATCH_NEXT_TITLE = S.n("أكمل المشاهدة");
 
     // android.media.tv.TvContract.WatchNextPrograms' types: what one is in the middle of (0), its next episode (1); a new
     // season (2) and a watchlist (3) are the app's promotion, not something watched
@@ -38,8 +38,8 @@ final class TvRowsPick {
     /** The line under a card: «الموسم ٢ · الحلقة ١ · Netflix», or the episode's own name, or the description; digits as the setting says. */
     static String meta(String season, String episode, String episodeTitle, String title, String description, String app, boolean latin) {
         StringBuilder m = new StringBuilder();
-        if (!blank(season)) m.append("الموسم ").append(DigitsText.convert(season.trim(), latin));
-        if (!blank(episode)) m.append(m.length() > 0 ? " · " : "").append("الحلقة ").append(DigitsText.convert(episode.trim(), latin));
+        if (!blank(season)) m.append(S.t("الموسم %s", DigitsText.convert(season.trim(), latin)));
+        if (!blank(episode)) m.append(m.length() > 0 ? " · " : "").append(S.t("الحلقة %s", DigitsText.convert(episode.trim(), latin)));
         if (m.length() == 0 && !blank(episodeTitle) && !episodeTitle.trim().equals(title == null ? "" : title.trim())) m.append(episodeTitle.trim());
         if (m.length() == 0 && !blank(description)) m.append(description.trim());
         if (!blank(app)) m.append(m.length() > 0 ? " · " : "").append(app.trim());

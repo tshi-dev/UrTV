@@ -10,7 +10,7 @@ public final class SetupGate {
     private SetupGate() { }
 
     public static void guard(Activity a, Runnable allowed, Runnable cancelled) {
-        if (Parental.pin(a).isSet()) Parental.confirm(a, Parental.adhanFirst(a), "إعداد تلفزيوني", allowed, cancelled);
+        if (Parental.pin(a).isSet()) Parental.confirm(a, Parental.adhanFirst(a), S.t("إعداد تلفزيوني"), allowed, cancelled);
         else allowed.run();
     }
 }

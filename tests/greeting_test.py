@@ -14,7 +14,7 @@ if not shutil.which("javac"):
 cases = [l.split("\t") for l in (ROOT / "tests/greeting_cases.tsv").read_text(encoding="utf-8").split("\n")
          if l and not l.startswith("#")]
 with tempfile.TemporaryDirectory() as tmp:
-    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp,
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "tests/i18n_home_stub/S.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java"),
                     str(ROOT / "android/launcher/src/main/java/sa/urtv/home/GreetingText.java"),
                     str(ROOT / "android/launcher/src/main/java/sa/urtv/home/DigitsText.java"),
                     str(ROOT / "android/launcher/src/main/java/sa/urtv/home/ClockText.java"),

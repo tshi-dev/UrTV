@@ -29,7 +29,7 @@ check("app: months=levant goes in the fragment only when chosen (the default fra
 
 if shutil.which("javac"):
     with tempfile.TemporaryDirectory() as tmp:
-        subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "MonthNames.java"), str(ROOT / "tests/MonthNamesRun.java")], check=True, capture_output=True)
+        subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "tests/i18n_home_stub/S.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java"), str(HOME / "MonthNames.java"), str(ROOT / "tests/MonthNamesRun.java")], check=True, capture_output=True)
         run = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.MonthNamesRun"], capture_output=True)
     out = run.stdout.decode("utf-8")
     print("".join(l + "\n" for l in out.splitlines() if not l.startswith("TABLE")), end="")

@@ -76,7 +76,7 @@ final class NowCard extends LinearLayout {
         t.setEllipsize(TextUtils.TruncateAt.END);
         t.setIncludeFontPadding(false);
         t.setMaxWidth(Math.round(LINE_MAX * d));   // the row stays clear of the greeting block at the right (see MainActivity)
-        t.setGravity(Gravity.RIGHT);
+        t.setGravity(Dir.start());
         return t;
     }
 
@@ -86,7 +86,7 @@ final class NowCard extends LinearLayout {
         title.setText(Digits.of(s.title));
         subText = Digits.of(s.sub);
         hintText = Digits.of(s.hint);
-        setContentDescription(Digits.of("يُتلى الآن، " + s.title + "، " + s.sub));
+        setContentDescription(Digits.of(S.t("يُتلى الآن، %s، %s", s.title, s.sub)));
         paint(hasFocus());
     }
 

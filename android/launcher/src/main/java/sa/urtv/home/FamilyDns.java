@@ -228,27 +228,27 @@ public final class FamilyDns {
     private boolean put(String key, String v) { return v == null ? p.deleteGlobal(key) : p.putGlobal(key, v); }
     private static boolean same(String a, String b) { return a == null ? b == null : a.equals(b); }
 
-    /** Plain Arabic for the person (the settings row). */
+    /** Plain Arabic for the person (the settings row); the screen says it in «اللغة» with S.tv (the words are marked for the table). */
     public static String arabic(Result r) {
         switch (r) {
-            case ENABLED: return "حماية العائلة مفعّلة";
-            case ALREADY_ON_BY_OTHER: return "الحماية شغّالة من قبل بإعداد ثاني، ما غيّرنا شي";
-            case NEEDS_GRANT: return "يحتاج تفعيل من الكمبيوتر";
-            case NO_ROUTE: return "ما قدرنا نوصل لخدمة الحماية، ما تغيّر شي";
-            case UNREADABLE_VALUE: return "ما قدرنا نقرأ إعداد التلفزيون الحالي، ما تغيّر شي";
-            case NOT_RECORDED: return "ما قدرنا نحفظ الإعداد القديم، ما تغيّر شي";
-            case NOT_TAKEN: return "الإعداد ما انحفظ فرجّعنا القديم";
-            case REVERTED: return "الإنترنت وقف فرجّعنا الإعداد القديم";
-            case RESTORED: return "حماية العائلة متوقفة، رجع الإعداد القديم";
-            case NOTHING_TO_RESTORE: return "حماية العائلة متوقفة";
-            case UNSUPPORTED: return "غير مدعومة في هذا التلفزيون (أندرويد قديم)";
-            case CHANGED_BY_SOMEONE_ELSE: return "الإعداد تغيّر من مكان آخر، تركناه كما هو";
-            default: return "ما قدرنا نرجّع الإعداد القديم، جرّب مرة ثانية";
+            case ENABLED: return S.t("حماية العائلة مفعّلة");
+            case ALREADY_ON_BY_OTHER: return S.t("الحماية شغّالة من قبل بإعداد ثاني، ما غيّرنا شي");
+            case NEEDS_GRANT: return S.t("يحتاج تفعيل من الكمبيوتر");
+            case NO_ROUTE: return S.t("ما قدرنا نوصل لخدمة الحماية، ما تغيّر شي");
+            case UNREADABLE_VALUE: return S.t("ما قدرنا نقرأ إعداد التلفزيون الحالي، ما تغيّر شي");
+            case NOT_RECORDED: return S.t("ما قدرنا نحفظ الإعداد القديم، ما تغيّر شي");
+            case NOT_TAKEN: return S.t("الإعداد ما انحفظ فرجّعنا القديم");
+            case REVERTED: return S.t("الإنترنت وقف فرجّعنا الإعداد القديم");
+            case RESTORED: return S.t("حماية العائلة متوقفة، رجع الإعداد القديم");
+            case NOTHING_TO_RESTORE: return S.t("حماية العائلة متوقفة");
+            case UNSUPPORTED: return S.t("غير مدعومة في هذا التلفزيون (أندرويد قديم)");
+            case CHANGED_BY_SOMEONE_ELSE: return S.t("الإعداد تغيّر من مكان آخر، تركناه كما هو");
+            default: return S.t("ما قدرنا نرجّع الإعداد القديم، جرّب مرة ثانية");
         }
     }
 
     public static String arabic(Status s) {
-        if (s.state == State.UNKNOWN) return "غير معروفة";
-        return s.state == State.ON ? "مفعّلة" : "متوقفة";
+        if (s.state == State.UNKNOWN) return S.n("غير معروفة");
+        return s.state == State.ON ? S.n("مفعّلة") : S.n("متوقفة");
     }
 }

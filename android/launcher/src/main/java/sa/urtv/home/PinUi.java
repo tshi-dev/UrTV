@@ -29,7 +29,7 @@ final class PinUi {
     }
     static TextView text(Context c,String value,int size,int color){
         TextView t=new TextView(c);t.setText(value);t.setTextSize(size);t.setTextColor(color);
-        t.setGravity(Gravity.RIGHT);t.setTextDirection(View.TEXT_DIRECTION_FIRST_STRONG);
+        t.setGravity(Dir.start());t.setTextDirection(View.TEXT_DIRECTION_FIRST_STRONG);
         try{t.setTypeface(Typeface.createFromAsset(c.getAssets(),"fonts/"+(size>=25?"ThmanyahDisplay-Bold":"Thmanyah-Regular")+".otf"));}
         catch(RuntimeException ignored){t.setTypeface(Typeface.create("sans-serif",Typeface.NORMAL));}return t;
     }

@@ -65,7 +65,7 @@ if not shutil.which("javac"):
     print("SKIP player logic: no javac here")
     sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
-    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp] + [str(T / n) for n in ("PlayIntent.java", "AdhanVoices.java", "AdhanVolume.java", "PlayerFault.java", "SeekPace.java")]
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "tests/i18n_home_stub/S.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java")] + [str(T / n) for n in ("PlayIntent.java", "AdhanVoices.java", "AdhanVolume.java", "PlayerFault.java", "SeekPace.java")]
                    + [str(ROOT / "tests/PlayerLogicRun.java")], check=True, capture_output=True)
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.tilawah.PlayerLogicRun"], check=True, capture_output=True).stdout.decode("utf-8")
 rows = [l.split("\t") for l in out.split("\n") if l]
