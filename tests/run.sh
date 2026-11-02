@@ -72,6 +72,7 @@ python3 tests/saver_tasks_test.py
 python3 tests/saver_quote_test.py
 python3 tests/quote_every_test.py
 python3 tests/photo_interval_test.py
+python3 tests/hide_parts_test.py
 python3 tests/settings_move_test.py
 python3 tests/saver_off_test.py
 python3 tests/saver_reload_test.py

@@ -434,6 +434,19 @@ final class Prefs {
     void setMonths(String v) { sp.edit().putString("months", "levant".equals(v) ? "levant" : "default").apply(); }
     static String monthsLabel(String v) { return "levant".equals(v) ? "كانون الثاني، شباط، آذار…" : "يناير، فبراير، مارس…"; }
 
+    /**
+     * Three parts of the screens that can be hidden, each shown by default as it always was, and sent only when hidden so the fragment is
+     * otherwise as it was: «المناسبة القادمة» at the bottom middle of the screensaver (the countdown to Ramadan and the feasts, the iftar and
+     * suhoor in Ramadan; #occasion=0), «تعتيم الليل» (the screensaver darkens from 21:00, most from 23:00 to 05:00; #nightdim=0) and the
+     * «المهام» button on the home screen (#taskspill=0: the home reads it, the page ignores it).
+     */
+    boolean occasion() { return sp.getBoolean("occasion", true); }
+    void setOccasion(boolean v) { sp.edit().putBoolean("occasion", v).apply(); }
+    boolean nightDim() { return sp.getBoolean("nightDim", true); }
+    void setNightDim(boolean v) { sp.edit().putBoolean("nightDim", v).apply(); }
+    boolean tasksPill() { return sp.getBoolean("tasksPill", true); }
+    void setTasksPill(boolean v) { sp.edit().putBoolean("tasksPill", v).apply(); }
+
     /** «تبديل الآية والحديث»: the verse-or-hadith card once a day (default, as always) or every 3 minutes (QuoteEvery); #versemin=3 only then. */
     String quoteEvery() { return QuoteEvery.read(sp.getString("quoteEvery", QuoteEvery.DAY)); }
     void setQuoteEvery(String v) { sp.edit().putString("quoteEvery", QuoteEvery.read(v)).apply(); }
@@ -519,6 +532,7 @@ final class Prefs {
             + "&digits=" + digits()
             + ClockSetting.fragment(clock24())
             + QuoteEvery.fragment(quoteEvery())
+            + (occasion() ? "" : "&occasion=0") + (nightDim() ? "" : "&nightdim=0") + (tasksPill() ? "" : "&taskspill=0")
             + "&cardstyle=" + cardStyle()
             + "&adhanbar=" + (adhanBar() ? "1" : "0")
             + "&yearstrip=" + (yearStrip() ? "1" : "0")

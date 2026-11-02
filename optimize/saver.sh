@@ -34,6 +34,10 @@
 #   optimize/saver.sh prayerbar on                 a thin bar under the prayer panel, how far it is from the last prayer to the next: on or off (default)
 #   optimize/saver.sh wxmore on                    the humidity and the wind under the city at the top left: on or off (default)
 #   optimize/saver.sh months levant                the Gregorian month's names on both screens: default (يناير…) or levant (كانون الثاني…)
+#   optimize/saver.sh occasion off                 «المناسبة القادمة» at the bottom middle of the screensaver (the countdown to Ramadan and the feasts, the iftar and
+#                                                  suhoor in Ramadan): on (default) or off (the place stays empty)
+#   optimize/saver.sh nightdim off                 «تعتيم الليل», the screensaver darker at night (from 21:00, most 23:00-05:00, normal at 07:00): on (default) or off
+#   optimize/saver.sh taskspill off                home screen: the «المهام» button: on (default) or off. Off removes only the button: the tasks stay, in the «المهام» card and on the phone
 #   optimize/saver.sh verse 3                      the verse-or-hadith card (card verse): day (default: a verse one day, a hadith the next) or 3 (a new one every 3 minutes)
 #   optimize/saver.sh genres Drama,Comedy          episodes card: Drama Comedy Action Crime Thriller Mystery
 #                                                  Science-Fiction Fantasy Adventure Romance Family History Horror
@@ -204,6 +208,9 @@ case "${1:-}" in
   prayerbar)set1 prayerbar "${2:?usage: optimize/saver.sh prayerbar on|off}" ;;
   wxmore)   set1 wxmore "${2:?usage: optimize/saver.sh wxmore on|off}" ;;
   months)   set1 months "${2:?usage: optimize/saver.sh months default|levant}" ;;
+  occasion) set1 occasion "${2:?usage: optimize/saver.sh occasion on|off}" ;;
+  nightdim) set1 nightdim "${2:?usage: optimize/saver.sh nightdim on|off}" ;;
+  taskspill) set1 taskspill "${2:?usage: optimize/saver.sh taskspill on|off}" ;;
   verse)    set1 verse "${2:?usage: optimize/saver.sh verse day|3}" ;;
   genres)   set1 genres "${2-}" ;;
   # no value at all is a question, not a change: it used to clear them (`""` still means none)

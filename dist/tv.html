@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261102074203">
+<meta name="urtv-build" content="20261102074427">
 <title>شاشة تلفزيونك</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -548,6 +548,7 @@
   /* #slot=none: the left panel is gone and the other two mirror each other: the prayer at the right edge, the occasion at the left edge,
      the same width, each text on its outer edge and the same lines (label, big line, small line) at the same heights */
   html.slot-none .p-match{display:none}
+  html.occ-off .p-mid{visibility:hidden}   /* #occasion=0: the occasion's place stays empty, so the prayer and the slot keep theirs */
   html.slot-none .bottom{grid-template-columns:1fr 1fr}
   html.slot-none .p-mid,html.slot-none .p-mid .big{text-align:left}
   html.slot-none .p-mid .big{line-height:1.1}
@@ -727,6 +728,10 @@ const CONFIG = {
   // #cd=YYYY-MM-DD&cdname=...: the date and name for slot=countdown (a bad date = none)
   cd: (v => /^\d{4}-\d{2}-\d{2}$/.test(v) && !isNaN(Date.parse(v + 'T00:00:00Z')) && new Date(v + 'T00:00:00Z').toISOString().slice(0, 10) === v ? v : '')(_Q.get('cd') || ''),
   cdName: (_Q.get('cdname') || '').trim().slice(0, 40),
+  // shown as always unless hidden in the settings: #occasion=0 empties «المناسبة القادمة» (bottom middle: Ramadan, the feasts, iftar and
+  // suhoor; the place stays, so nothing else moves) and #nightdim=0 keeps the night as bright as the day (no dimmer)
+  occasion: _Q.get('occasion') !== '0',
+  nightDim: _Q.get('nightdim') !== '0',
   // «تبديل الآية والحديث»: #versemin=3 a new verse or hadith every 3 minutes (a verse, then a hadith); anything else = one a day as always
   verseMin: _Q.get('versemin') === '3' ? 3 : 0,
   // «التفسير الميسر» under the verse of the day: #tafsir=1 (anything else = off)
@@ -3264,6 +3269,7 @@ function dustWord(pm, vis){
 
 // night dimming: transparent by day, dark after 21:00 and before 07:00
 function applyNight(){
+  if(!CONFIG.nightDim){ const el = document.getElementById('dimmer'); if(el && el.style.opacity !== '0') el.style.opacity = '0'; return; }   // #nightdim=0
   const p = riyadhParts();
   const h = p.h + p.mi/60;
   const MAX = 0.46;
@@ -3591,6 +3597,7 @@ function boot(){
     renderPanel(false, 'matches');
   });
   if(CONFIG.slot === 'none') document.documentElement.classList.add('slot-none');
+  if(!CONFIG.occasion) document.documentElement.classList.add('occ-off');
   if(!SLOT_MATCHES) document.getElementById('match-row').textContent = '';   // not «لا شيء هذا الأسبوع»: that is the matches slot's
   if(CONFIG.cardStyle !== 'current') document.documentElement.classList.add('cs-' + CONFIG.cardStyle);
   if(CONFIG.clockSize !== 'large') document.documentElement.classList.add('ck-' + CONFIG.clockSize);

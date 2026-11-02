@@ -424,6 +424,28 @@ for (const [hash, latin] of [['', false], ['digits=hindi', false], ['digits=lati
   await ctx.close();
 }
 
+// ---- «المناسبة القادمة» hidden (#occasion=0: its place stays, empty, nothing else moves) and «تعتيم الليل» off (#nightdim=0: no dimmer
+// at midnight); anything else is shown and dimmed as always
+{
+  const base = {};
+  for (const [hash, occ, dim] of [['', true, true], ['occasion=0', false, true], ['nightdim=0', true, false], ['occasion=0&nightdim=0', false, false],
+                                   ['occasion=no&nightdim=1', true, true]]) {
+    const { p, ctx, errors } = await open('tv.html', hash, { now: '2026-10-23T21:00:00Z' });   // midnight in Riyadh: the darkest
+    const r = await p.evaluate(() => {
+      applyNight();
+      const mid = document.querySelector('.p-mid'), box = q => document.querySelector(q).getBoundingClientRect();
+      return { vis: getComputedStyle(mid).visibility, w: Math.round(box('.p-mid').width), op: +document.getElementById('dimmer').style.opacity,
+               prayer: Math.round(box('.p-prayer').left), slot: Math.round(box('.p-match').left), cfg: [CONFIG.occasion, CONFIG.nightDim] };
+    });
+    if (!hash) Object.assign(base, r);
+    const ok = r.vis === (occ ? 'visible' : 'hidden') && r.w > 0 && (dim ? r.op > 0.4 : r.op === 0) && r.prayer === base.prayer && r.slot === base.slot
+      && r.cfg[0] === occ && r.cfg[1] === dim;
+    check(`link #${hash || '(empty)'} → occasion ${occ ? 'shown' : 'hidden, its place kept'}, night dimming ${dim ? 'on' : 'off'}`,
+      !errors.length && ok, JSON.stringify([r, base]) + errors.join('; '));
+    await ctx.close();
+  }
+}
+
 // ---- «المناسبة القادمة»: each occasion counts down, then shows its own day (dates as Umm al-Qura gives them)
 {
   const { p, ctx, errors } = await open('tv.html', 'panel=verse');
