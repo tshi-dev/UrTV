@@ -15,7 +15,9 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import sa.urtv.home.phone.PhoneUpdater;
 import sa.urtv.home.phone.QrCode;
+import sa.urtv.home.phone.UpdateText;
 import sa.urtv.home.phone.QrView;
 
 /**
@@ -42,7 +44,9 @@ public class ReportActivity extends Activity {
         col.setOrientation(LinearLayout.VERTICAL);
         col.addView(text(Report.TITLE, 30, "Medium", look.text), lp(dp(14)));
         col.addView(text(Report.HOW, 17, "Regular", look.sub), lp(dp(22)));
-        List<String> lines = Report.lines(version(getPackageName()), version("sa.urtv.screensaver"), Build.VERSION.RELEASE, Build.VERSION.SDK_INT, webView());
+        long saver = PhoneUpdater.installedCode(this, "sa.urtv.screensaver");   // the build of each app, written as everywhere (UpdateText.versionOf)
+        List<String> lines = Report.lines(PhoneUpdater.installedName(this), saver < 0 ? null : UpdateText.versionOf(BuildConfig.MARKETING, (int) saver),
+                Build.VERSION.RELEASE, Build.VERSION.SDK_INT, webView());
         col.addView(text(Report.WHAT, 16, "Medium", look.accent), lp(dp(6)));
         TextView shown = text(String.join("\n", lines), 15, "Regular", look.sub);
         shown.setTextDirection(View.TEXT_DIRECTION_LTR);   // the report's own lines are English, as share.py writes them
@@ -70,19 +74,11 @@ public class ReportActivity extends Activity {
         back.post(back::requestFocus);
     }
 
-    private String version(String pkg) {
-        try {
-            PackageInfo p = getPackageManager().getPackageInfo(pkg, 0);
-            return p.versionName;
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     private static String webView() {
         try {
             PackageInfo p = android.webkit.WebView.getCurrentWebViewPackage();
-            return p == null ? null : p.versionName;
+            if (p == null) return null;   // its build number (no versionName is read anywhere: tests/version_name_test.py)
+            return String.valueOf(Build.VERSION.SDK_INT >= 28 ? p.getLongVersionCode() : (long) p.versionCode);
         } catch (RuntimeException e) {
             return null;
         }
