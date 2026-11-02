@@ -28,6 +28,14 @@ public final class A11yListRun {
         check("nothing to do when listed, on and running", A11yList.decide(true, "1", true, true).equals(A11yList.OK));
         check("never when our service is not in the list (the owner turned it off: we do not turn it on)", A11yList.decide(false, "0", false, true).equals(A11yList.NOT_LISTED));
         check("never without WRITE_SECURE_SETTINGS", A11yList.decide(true, "0", false, false).equals(A11yList.NO_PERMISSION));
+        check("after our update: our entry the list had before the install and lost is the one to add back (tester: not_listed after 168 -> 174)",
+            A11yList.ownLost(list, km, type, sleep).equals(Arrays.asList(type)));
+        check("after our update: never another app's entry, never one the owner had removed before the update, nothing when nothing was lost",
+            A11yList.ownLost(km, "", type, sleep).isEmpty() && A11yList.ownLost(list, list, type, sleep).isEmpty() && A11yList.ownLost(null, null, type).isEmpty()
+            && A11yList.ownLost(km + ":" + type, type, type, sleep).isEmpty());
+        check("added back at the end, the others exactly as written; an entry already there is not doubled",
+            A11yList.with(km, Arrays.asList(type)).equals(km + ":" + type) && A11yList.with("", Arrays.asList(type)).equals(type)
+            && A11yList.with(null, Arrays.asList(type)).equals(type) && A11yList.with(km + ":sa.urtv.home/.TypeService", Arrays.asList(type)).equals(km + ":sa.urtv.home/.TypeService"));
         System.out.println(failed == 0 ? "ALL PASS" : "FAILED " + failed);
         System.exit(failed == 0 ? 0 : 1);
     }

@@ -312,6 +312,7 @@ public final class PhoneUpdater {
             @Override public void run() {
                 try {
                     if (found && !downloadAndVerify(app, true)) return;   // stopped on an error, which is already on the screen
+                    sa.urtv.home.UpdateCarry.before(app);   // the mute and our accessibility entry, put back after the replace if it loses them
                     installNext(app);
                 } catch (Exception e) {
                     Log.w(TAG, "install failed: " + e);
