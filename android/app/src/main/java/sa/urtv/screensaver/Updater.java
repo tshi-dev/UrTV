@@ -27,9 +27,51 @@ final class Updater {
 
     static File pageFile(Context c) { return new File(c.getFilesDir(), "web/tv.html"); }
 
+    /**
+     * «اللغة» (docs/ENGLISH.md): each language has its own page, Tr.pageName(lang), the same name in dist/, in the APK's assets and in web/
+     * (tv.html, Arabic, exactly as before; tv-en.html), each with its own stamp and its own ETag.
+     */
+    static String pageUrl(String lang) { return Tr.AR.equals(Tr.norm(lang)) ? URL_PAGE : PhotoCache.REPO + "dist/" + Tr.pageName(lang); }
+    static File pageFile(Context c, String lang) { return Tr.AR.equals(Tr.norm(lang)) ? pageFile(c) : new File(c.getFilesDir(), "web/" + Tr.pageName(lang)); }
+    private static String etagKey(String lang) { return Tr.AR.equals(Tr.norm(lang)) ? "etag" : "etag:" + Tr.pageName(lang); }
+    /**
+     * Each page is checked on its own clock: "lastCheck" + this ("" for Arabic, the key as always). A TV switched to English asks for
+     * tv-en.html at the next screensaver start, not six hours after the last Arabic check.
+     */
+    static String checkSuffix(String lang) { return Tr.AR.equals(Tr.norm(lang)) ? "" : ":" + Tr.pageName(lang); }
+
     /** the build stamp of the page the app carries ("" if it cannot be read) */
     static String assetStamp(Context c) {
         try { return PageStamp.read(c.getAssets().open("tv.html")); } catch (Exception e) { return ""; }
+    }
+
+    /** the same for a language's page ("" when the APK has none: an APK built without the English page) */
+    static String assetStamp(Context c, String lang) {
+        if (Tr.AR.equals(Tr.norm(lang))) return assetStamp(c);
+        try { return PageStamp.read(c.getAssets().open(Tr.pageName(lang))); } catch (Exception e) { return ""; }
+    }
+
+    /** does the APK carry this language's page? */
+    static boolean hasAsset(Context c, String lang) {
+        if (Tr.AR.equals(Tr.norm(lang))) return true;
+        try { c.getAssets().open(Tr.pageName(lang)).close(); return true; } catch (Exception e) { return false; }
+    }
+
+    /**
+     * The page the screensaver loads for «اللغة» (Prefs.pageBase): the language's downloaded copy when its stamp is newer than the APK's
+     * own, else the APK's own. English with neither (an APK without tv-en.html, nothing downloaded yet) is the Arabic page, chosen the
+     * same way. Arabic is exactly what it always was.
+     */
+    static String pageBase(Context c, String lang, boolean autoUpdate) {
+        if (!Tr.AR.equals(Tr.norm(lang))) {
+            File remote = pageFile(c, lang);
+            if (autoUpdate && remote.isFile()) {
+                try { if (PageStamp.newer(fileStamp(remote), assetStamp(c, lang))) return android.net.Uri.fromFile(remote).toString(); }
+                catch (Exception ignored) { }
+            }
+            if (hasAsset(c, lang)) return "file:///android_asset/" + Tr.pageName(lang);
+        }
+        return null;   // Arabic: Prefs.pageBase's own lines, unchanged
     }
 
     /** the build stamp of a downloaded page file */
@@ -48,7 +90,7 @@ final class Updater {
         Prefs prefs = new Prefs(app);
         if (!prefs.autoUpdate()) return;
         if (!displayOn(app)) return;   // standby: not now; the next screensaver start asks (lastCheck is not touched)
-        if (System.currentTimeMillis() - prefs.raw().getLong("lastCheck", 0) < INTERVAL_MS) return;
+        if (System.currentTimeMillis() - prefs.raw().getLong("lastCheck" + checkSuffix(prefs.lang()), 0) < INTERVAL_MS) return;
         if (!DUE_RUNNING.compareAndSet(false, true)) return;
         new Thread(new Runnable() {
             @Override public void run() {
@@ -83,20 +125,23 @@ final class Updater {
         SharedPreferences sp = prefs.raw();
         if (!prefs.autoUpdate() && !force) return OFF;
         long now = System.currentTimeMillis();
-        if (!force && now - sp.getLong("lastCheck", 0) < INTERVAL_MS) return RECENT;
+        String lang = prefs.lang();   // the page of the language the TV shows (Tr.pageName): tv.html as always, or tv-en.html
+        if (!force && now - sp.getLong("lastCheck" + checkSuffix(lang), 0) < INTERVAL_MS) return RECENT;
 
-        File out = pageFile(c);
+        File out = pageFile(c, lang);
         new File(out.getParentFile(), "urtv.html").delete();   // the old, heavier page
         HttpURLConnection con = null;
         try {
-            con = (HttpURLConnection) new URL(URL_PAGE).openConnection();
+            con = (HttpURLConnection) new URL(pageUrl(lang)).openConnection();
             con.setConnectTimeout(15000);
             con.setReadTimeout(30000);
-            String etag = sp.getString("etag", null);
+            String etag = sp.getString(etagKey(lang), null);
             if (etag != null && out.isFile()) con.setRequestProperty("If-None-Match", etag);
             int code = con.getResponseCode();
-            sp.edit().putLong("lastCheck", now).apply();
+            sp.edit().putLong("lastCheck" + checkSuffix(lang), now).apply();
             if (code == HttpURLConnection.HTTP_NOT_MODIFIED) return "الصفحة محدثة";
+            // no English page published yet (before it reaches master): the APK's own is used, which is no failure to show
+            if (code == HttpURLConnection.HTTP_NOT_FOUND && !Tr.AR.equals(lang)) return "الصفحة محدثة";
             if (code != HttpURLConnection.HTTP_OK) return "تعذر التحديث (" + code + ")";
 
             byte[] body = readAll(con.getInputStream());
@@ -105,7 +150,8 @@ final class Updater {
             // never swap in a truncated or wrong file
             if (body.length < 30_000 || !head.contains("<html") || !tail.contains("</html>")) return "ملف التحديث غير صالح";
             // a copy older than the page the app carries (a CDN serves old ones for minutes) is not kept, whatever its file time will be
-            if (PageStamp.newer(assetStamp(c), PageStamp.of(head))) return "الصفحة المرفقة أحدث من المنزّلة";
+            boolean older = Tr.AR.equals(lang) ? PageStamp.newer(assetStamp(c), PageStamp.of(head)) : PageStamp.newer(assetStamp(c, lang), PageStamp.of(head));
+            if (older) return "الصفحة المرفقة أحدث من المنزّلة";
 
             File dir = out.getParentFile();
             if (!dir.isDirectory() && !dir.mkdirs()) return "تعذر الحفظ";
@@ -113,7 +159,7 @@ final class Updater {
             FileOutputStream fo = new FileOutputStream(tmp);
             try { fo.write(body); } finally { fo.close(); }
             if (!tmp.renameTo(out)) return "تعذر الحفظ";
-            sp.edit().putString("etag", con.getHeaderField("ETag")).apply();
+            sp.edit().putString(etagKey(lang), con.getHeaderField("ETag")).apply();
             return "تم التحديث";
         } catch (Exception e) {
             return "لا يوجد اتصال";

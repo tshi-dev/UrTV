@@ -1,0 +1,2 @@
+# Phase 3: the home app (android/launcher) but its setup/ and phone/ screens
+# arabic<TAB>english, one per line, as docs/ENGLISH.md says. tests/i18n_test.py checks every entry.

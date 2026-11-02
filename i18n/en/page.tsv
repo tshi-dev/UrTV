@@ -1,0 +1,411 @@
+# Phase 2: the page (src/template.html → dist/tv-en.html)
+# arabic<TAB>english, one per line, as docs/ENGLISH.md says. tests/i18n_test.py checks every entry.
+# In the order the page has them. The English page's own code (what a table cannot say: plurals, word order, the Hijri months, the
+# Arabic-Indic digits of #digits=hindi, team names as the data has them) is src/build.py EN_CODE; the entries of the code it replaces
+# (the digits, the tables that write English names in Arabic letters) are there for completeness and never reach the page.
+شاشة تلفزيونك	Your TV Screen
+الرياض	Riyadh
+تاسي	TASI
+بيتكوين	Bitcoin
+بتوقيت الرياض	Time in Riyadh
+هذا الأسبوع	This week
+جارٍ التحميل…	Loading…
+الصلاة القادمة	Next prayer
+رمضان ١٤٤٨	Ramadan 1448
+المباريات	Matches
+يُتلى الآن	Now playing
+جامعة العلوم الإسلامية بكراتشي	University of Islamic Sciences, Karachi
+الجمعية الإسلامية لأمريكا الشمالية	ISNA
+رابطة العالم الإسلامي	Muslim World League
+المجلس الإسلامي السنغافوري	MUIS Singapore
+اتحاد المنظمات الإسلامية في فرنسا	UOIF France
+رئاسة الشؤون الدينية التركية	Diyanet Turkey
+الإدارة الدينية لمسلمي روسيا	Spiritual Administration of Muslims of Russia
+لجنة رصد الهلال العالمية	Moonsighting Committee
+إدارة التنمية الإسلامية الماليزية	JAKIM Malaysia
+وزارة الشؤون الدينية الإندونيسية	Kemenag Indonesia
+الحساب الجعفري	Jafari method
+حساب الخليج	Gulf method
+حساب عُمان	Oman method
+حساب الكويت	Kuwait method
+حساب قطر	Qatar method
+حساب الإمارات	UAE method
+حساب الهيئة المصرية	Egyptian method
+حساب الأردن	Jordan method
+حساب المغرب	Morocco method
+حساب الجزائر	Algeria method
+حساب تونس	Tunisia method
+بتوقيت\u0020	Time in\u0020
+٠	0
+١	1
+٢	2
+٣	3
+٤	4
+٥	5
+٦	6
+٧	7
+٨	8
+٩	9
+يناير	January
+كانون الثاني	January
+فبراير	February
+شباط	February
+مارس	March
+آذار	March
+أبريل	April
+نيسان	April
+مايو	May
+أيار	May
+يونيو	June
+حزيران	June
+يوليو	July
+تموز	July
+أغسطس	August
+آب	August
+سبتمبر	September
+أيلول	September
+أكتوبر	October
+تشرين الأول	October
+نوفمبر	November
+تشرين الثاني	November
+ديسمبر	December
+كانون الأول	December
+٧:٣٠	7:30
+م	PM
+١٩:٣٠	19:30
+ص	AM
+اليوم الوطني السعودي	Saudi National Day
+اليوم الوطني	National Day
+يوم التأسيس	Founding Day
+\u0020عامًا	\u0020years
+\u0020هـ	\u0020AH
+الفجر	Fajr
+الظهر	Dhuhr
+العصر	Asr
+المغرب	Maghrib
+العشاء	Isha
+يوم	days
+يومين	2 days
+أيام	days
+ساعة	hour
+ساعتين	2 hours
+ساعات	hours
+دقيقة	min
+دقيقتين	2 min
+دقائق	min
+\u0020و\u0020	,\u0020
+الجمعة	Jumuah
+أذان\u0020	Adhan\u0020
+الأذان	Adhan
+أي زر يوقف الأذان	Any button stops the adhan
+اختيار: إيقاف الأذان	OK stops the adhan
+\u0020بعد\u0020	\u0020in\u0020
+إقامة\u0020	Iqama\u0020
+حان الآن	Time for
+الشروق	Sunrise
+الآن	Now
+رمضان	Ramadan
+رمضان مبارك	Ramadan Mubarak
+عيد الفطر	Eid al-Fitr
+عيد مبارك	Eid Mubarak
+عشر ذي الحجة	Ten days of Dhul Hijjah
+اليوم أول أيام العشر	The ten days begin today
+يوم عرفة	Day of Arafah
+اليوم يوم عرفة	Today is the Day of Arafah
+عيد الأضحى	Eid al-Adha
+رأس السنة الهجرية	Islamic New Year
+اليوم رأس السنة الهجرية	Islamic New Year today
+عاشوراء	Ashura
+اليوم عاشوراء	Today is Ashura
+ويُستحب صيام التاسع	Fasting the 9th is also recommended
+متوقّع	expected
+كل عام والوطن بخير	Happy holiday, Saudi Arabia
+الإمساك	Imsak
+الإفطار	Iftar
+،	,
+آخر تحديث\u0020	Updated\u0020
+ذا	the
+أوف	of
+آند	and
+إيه	A
+إن	in
+أون	on
+تو	to
+أس	us
+يونايتد	United
+سيتي	City
+ريال	Real
+كلوب	Club
+سبورتنغ	Sporting
+سانت	Saint
+بي	B
+سي	C
+دي	D
+إي	E
+إف	F
+جي	G
+إتش	H
+آي	I
+جيه	J
+كيه	K
+إل	L
+إم	M
+أو	O
+كيو	Q
+آر	R
+إس	S
+تي	T
+يو	U
+في	V
+دبليو	W
+إكس	X
+واي	Y
+زد	Z
+ش	sh
+خ	kh
+ث	th
+ذ	dh
+غ	gh
+تش	ch
+ف	f
+ك	k
+كو	qu
+و	o
+ي	i
+ا	a
+ب	b
+د	d
+ج	j
+ه	h
+ل	l
+ن	n
+ق	q
+ر	r
+س	s
+ت	t
+كس	x
+ز	z
+أ	a
+إ	e
+ال	al-
+مباشر	Live
+استراحة	Half-time
+انتهت	Final
+ملاكمة	Boxing
+السعودية	Saudi Arabia
+البحرين	Bahrain
+قطر	Qatar
+الإمارات	UAE
+أستراليا	Australia
+اليابان	Japan
+الصين	China
+الولايات المتحدة	USA
+إيطاليا	Italy
+موناكو	Monaco
+كندا	Canada
+إسبانيا	Spain
+النمسا	Austria
+بريطانيا	Britain
+المجر	Hungary
+بلجيكا	Belgium
+هولندا	Netherlands
+أذربيجان	Azerbaijan
+سنغافورة	Singapore
+المكسيك	Mexico
+البرازيل	Brazil
+فرنسا	France
+ألمانيا	Germany
+البرتغال	Portugal
+تركيا	Turkey
+روسيا	Russia
+كوريا الجنوبية	South Korea
+ماليزيا	Malaysia
+الهند	India
+الأرجنتين	Argentina
+مصر	Egypt
+ميامي	Miami
+إميليا رومانيا	Emilia Romagna
+مدينة المكسيك	Mexico City
+ساو باولو	Sao Paulo
+لاس فيغاس	Las Vegas
+أبوظبي	Abu Dhabi
+ستيريا	Styria
+الذكرى السبعين	70th Anniversary
+آيفل	Eifel
+تأهل السبرنت	Sprint Qualifying
+السبرنت	Sprint
+التأهل	Qualifying
+السباق	Race
+التجارب الحرة\u0020	Practice\u0020
+جائزة\u0020	Grand Prix\u0020
+\u0020الكبرى	\u0020Grand Prix
+\u0020فايت نايت	\u0020Fight Night
+اليوم	Today
+لا مباريات هذا الأسبوع	No matches this week
+تعذّر التحديث	Update failed
+مانشستر سيتي	Manchester City
+السيتي	Man City
+مانشستر يونايتد	Manchester United
+اليونايتد	Man United
+ريال مدريد	Real Madrid
+الريال	Real
+أتلتيكو مدريد	Atlético Madrid
+أتلتيكو	Atletico
+باريس سان جيرمان	Paris SG
+باريس	PSG
+بايرن ميونخ	Bayern Munich
+بايرن	Bayern
+بوروسيا دورتموند	Borussia Dortmund
+دورتموند	Dortmund
+بوروسيا مونشنغلادباخ	Borussia Mönchengladbach
+مونشنغلادباخ	Gladbach
+باير ليفركوزن	Bayer Leverkusen
+ليفركوزن	Leverkusen
+آينتراخت فرانكفورت	Eintracht Frankfurt
+فرانكفورت	Frankfurt
+نوتنغهام فورست	Nottingham Forest
+فورست	Forest
+كريستال بالاس	Crystal Palace
+بالاس	Palace
+وولفرهامبتون	Wolverhampton Wanderers
+وولفز	Wolves
+سبورتينغ لشبونة	Sporting CP
+سبورتينغ	Sporting
+لوس أنجلوس جالاكسي	LA Galaxy
+جالاكسي	Galaxy
+البنك الأهلي المصري	National Bank of Egypt
+البنك الأهلي	NBE
+أرامكو	Aramco
+ر.س	SAR
+الذهب	Gold
+الفضة	Silver
+نفط برنت	Brent
+دولار/برميل	$/bbl
+ريبل	XRP
+الطقس	Weather
+الصيام	Fasting
+عدّ تنازلي	Countdown
+الأسواق	Markets
+صيام رمضان	Ramadan fast
+تاسوعاء	Tasua
+الأيام البيض	The White Days
+صيام الإثنين	Monday fast
+صيام الخميس	Thursday fast
+ست من شوال	Six days of Shawwal
+غدًا	Tomorrow
+بعد يومين	In 2 days
+بعد\u0020	In\u0020
+\u0020أيام	\u0020days
+\u0020يومًا	\u0020days
+اليوم\u0020	Today\u0020
+\u0020من رمضان	\u0020of Ramadan
+٪	%
+غير محدّث	Out of date
+لا جديد هذا الأسبوع	Nothing new this week
+٫	.
+يومك	Your day
+مواقيت اليوم	Prayer times
+الأيام القادمة	Coming days
+الساعات القادمة	Coming hours
+مباريات فرقك	Your teams
+المهام	Tasks
+السنة	Year
+المباراة	Match
+المهمة	Task
+المناسبة القادمة	Next occasion
+لا مهام اليوم	No tasks today
+لا تتوفر بيانات الآن	No data right now
+غداً	Tomorrow
+\u0020س	\u0020h
+\u0020د	\u0020m
+الراجحي	Al Rajhi
+الأهلي	SNB
+سابك	SABIC
+معادن	Maaden
+أكوا	ACWA
+كهرباء السعودية	SEC
+الإنماء	Alinma
+ساب	SAB
+بنك الرياض	Riyad Bank
+السعودي الفرنسي	BSF
+البلاد	Albilad
+الجزيرة	AlJazira
+العربي	ANB
+المراعي	Almarai
+بترورابغ	Petro Rabigh
+سبكيم	Sipchem
+سافكو	SAFCO
+ينساب	Yansab
+كيان	Kayan
+الحبيب	Al Habib
+جرير	Jarir
+موبايلي	Mobily
+زين	Zain
+علم	Elm
+البحري	Bahri
+سيرا	Seera
+التعاونية	Tawuniya
+دار الأركان	Dar Al Arkan
+مغلق	Closed
+السوق مغلق	Market closed
+الأسهم	Stocks
+آية كريمة	A verse
+آية اليوم	Verse of the day
+حديث شريف	A hadith
+حديث اليوم	Hadith of the day
+حكمة اليوم	Saying of the day
+مرة واحدة	Once
+مرتان	Twice
+ثلاث مرات	Three times
+أربع مرات	Four times
+سبع مرات	Seven times
+عشر مرات	Ten times
+ثلاثاً وثلاثين مرة	33 times
+مئة مرة	100 times
+أذكار الصباح	Morning adhkar
+حتى الظهر	until Dhuhr
+أذكار المساء	Evening adhkar
+حتى المغرب	until Maghrib
+الآيتان من آخر سورة البقرة	The last two verses of al-Baqarah
+حتى الفجر	until Fajr
+أذكار الصباح والمساء	Morning and evening adhkar
+في أوقاتها، من الفجر ومن العصر	In their times, from Fajr and from Asr
+مع العصر\u0020	At Asr\u0020
+بعد العشاء\u0020	After Isha\u0020
+\u0020مرة	\u0020times
+صافي	Clear
+صافي غالباً	Mostly clear
+غائم جزئياً	Partly cloudy
+غائم	Cloudy
+ضباب	Fog
+ضباب متجمد	Freezing fog
+رذاذ	Drizzle
+رذاذ كثيف	Heavy drizzle
+رذاذ متجمد	Freezing drizzle
+مطر خفيف	Light rain
+مطر	Rain
+مطر غزير	Heavy rain
+مطر متجمد	Freezing rain
+ثلج خفيف	Light snow
+ثلج	Snow
+ثلج كثيف	Heavy snow
+حبيبات ثلج	Snow grains
+زخات خفيفة	Light showers
+زخات مطر	Rain showers
+زخات غزيرة	Heavy showers
+زخات ثلج	Snow showers
+عواصف رعدية	Thunderstorms
+عواصف مصحوبة ببرد	Thunderstorms with hail
+عواصف قوية	Severe thunderstorms
+قبل\u0020	Ago\u0020
+رطوبة\u0020	Humidity\u0020
+رياح\u0020	Wind\u0020
+\u0020كم/س	\u0020km/h
+،\u0020	,\u0020
+غبار كثيف	Heavy dust
+غبار	Dust
+الصورة:\u0020	Photo:\u0020
+سورة الكهف	Surah al-Kahf
+ماهر المعيقلي	Maher al-Muaiqly
+المدينة:\u0020	City:\u0020
+. لتغييرها: الإعدادات ثم الموقع	. To change it: Settings, then Location

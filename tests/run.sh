@@ -168,6 +168,17 @@ python3 tests/pin_store_test.py
 python3 tests/parental_policy_test.py
 python3 tests/parental_wiring_test.py
 python3 tests/dock_pin_test.py
+python3 tests/i18n_test.py   # «اللغة»: the translation table, its completeness, Arabic byte for byte (docs/ENGLISH.md)
+# English phase 1 (the screensaver app): its new tests go right under this line
+#
+# English phase 2 (the page): its new tests go right under this line
+python3 tests/i18n_page_test.py   # dist/tv-en.html: built beside tv.html (byte for byte), current, under budget; the app and the home card pick it
+node tests/i18n_page_test.mjs   # dist/tv-en.html in a browser: left to right, no Arabic in its own words on any card
+#
+# English phase 3 (the home app): its new tests go right under this line
+#
+# English phase 4 (the phone page): its new tests go right under this line
+#
 python3 tests/tvports_test.py   # BETA LG/Samsung packages: manifests, files, sizes (docs/LG-SAMSUNG.md)
 node tests/prayer_crosscheck_page.mjs
 node tests/prayer_crosscheck_world_page.mjs
