@@ -1,2 +1,215 @@
-# Phase 4: the phone page and the home's phone/ code
+# Phase 4: the phone page (android/launcher/src/main/assets/phone/index.html → index.en.html, src/phone_en.py)
 # arabic<TAB>english, one per line, as docs/ENGLISH.md says. tests/i18n_test.py checks every entry.
+# In the order the page has them. «تلفزيونك» is UrTV, «شاشة تلفزيونك» the Your TV Screen app (as page.tsv); the accessibility service, whose
+# Android label stays Arabic, is «the UrTV phone control service». The counts are English in src/phone_en.py (nn: [one, two, few] → one
+# or few); what the hook cannot see or a table cannot say (word order, the left-to-right style, the language link) is its EN_CODE: the
+# entries of the code it replaces («بقي », «وضع الأطفال: ») are here for completeness and never reach the page.
+تحكم من الجوال	Phone remote
+مفعّل	On
+متوقف	Off
+افتح هذه الصفحة بمسح الرمز الظاهر على التلفزيون، أو اكتب الرمز المكوّن من ٦ أرقام الظاهر تحت العنوان.	Scan the QR code on the TV, or type the 6-digit code shown under the address.
+الرمز (٦ أرقام)	Code (6 digits)
+اتصال	Connect
+التلفزيون	TV
+متصل	Connected
+أوقف الأذان الآن	Stop the adhan
+أعلى	Up
+يسار	Left
+اختيار	OK
+يمين	Right
+أسفل	Down
+اسحب للتحريك · المس للاختيار · أبقِ الإصبع للتكرار	Swipe to move · Tap to select · Hold to repeat
+رجوع	Back
+الرئيسية	Home
+تشغيل/إيقاف	Play/Pause
+رفع الصوت	Volume up
+صوت +	Vol +
+كتم	Mute
+خفض الصوت	Volume down
+صوت −	Vol −
+اكتب على التلفزيون…	Type on the TV…
+أرسل	Send
+استبدال	Replace
+إضافة	Add
+بحث	Search
+فعّل خدمة "تلفزيونك: التحكم والكتابة من الجوال" في إعدادات التلفزيون لتكتب في التطبيقات الأخرى	To type in other apps, turn on the UrTV phone control service in the TV’s settings
+الإعدادات ← إمكانية الوصول ← تلفزيونك: التحكم والكتابة من الجوال	Settings → Accessibility → UrTV phone control
+أين يُكتب النص؟	Where does the text go?
+يُكتب النص في الحقل النصي المفتوح، ويُضاف مهمةً إذا كانت شاشة «المهام» مفتوحة، وفي التطبيقات الأخرى يُكتب في حقلها بعد تفعيل خدمة إمكانية الوصول. ومن دون الخدمة: أندرويد لا يسمح لتطبيق بالكتابة داخل تطبيق آخر، فيُنسخ النص إلى حافظة التلفزيون.	It goes into the open text field, or becomes a task when Tasks is open. In other apps it goes into their field once the accessibility service is on. Without it, Android doesn’t let one app type into another, so the text is copied to the TV’s clipboard.
+ابحث في تطبيقات التلفزيون	Search TV apps
+المفضلة	Favorites
+بنفس ترتيب التلفزيون	Same order as the TV
+من تلفزيونك	From UrTV
+المقفل بالرقم السري يطلب الرقم السري على التلفزيون نفسه.	Locked apps ask for the PIN on the TV itself.
+التلاوة	Recitation
+السابقة	Previous
+إيقاف مؤقت	Pause
+التالية	Next
+إيقاف	Stop
+القارئ والسورة	Reciter and surah
+تشغيل	Play
+مؤقت النوم للتلاوة	Recitation sleep timer
+بدون	None
+١٥ دقيقة	15 min
+٣٠ دقيقة	30 min
+٦٠ دقيقة	60 min
+٩٠ دقيقة	90 min
+الأذان القادم	Next adhan
+الأذان يعمل	Adhan on
+شاشة التوقف	Screensaver
+شغّل شاشة التوقف الآن	Start the screensaver
+تبدأ تلقائيًا بعد	Starts by itself after
+مؤقت النوم	Sleep timer
+إلغاء	Cancel
+إعدادات سريعة	Quick settings
+الوضع الفاتح	Light mode
+المدينة	City
+ابحث عن مدينة	Search for a city
+بطاقات الشاشة الرئيسية	Home screen cards
+حفظ البطاقات	Save cards
+الأذان	Adhan
+الأذان في أوقات الصلاة	Adhan at prayer times
+مؤذن الفجر	Fajr muezzin
+أذان مختصر	Short adhan
+إيقاف الأذان بأي زر	Any button stops the adhan
+مستوى صوت الأذان:	Adhan volume:
+تحديث تلفزيونك	Update UrTV
+يتحقق التلفزيون من أحدث نسخة من مشروعنا وينزّلها ويتأكد أنها موقّعة بنفس توقيع التطبيق المثبّت. إذا نجح كل ذلك تضغط «ثبّت» فيفتح شاشة التثبيت من أندرويد على التلفزيون، وتؤكد أنت بالريموت. لا يُثبَّت شيء بدون تأكيدك.	The TV fetches our latest version and checks that it is signed with the same key as the installed app. If all is well, press Install: Android’s install screen opens on the TV, and you confirm with the remote. Nothing is installed without your OK.
+افحص التحديث	Check for updates
+ثبّت	Install
+الرقابة الأبوية	Parental controls
+للعرض فقط. التغيير من التلفزيون نفسه.	View only. Change these on the TV itself.
+الجوالات المتصلة	Connected phones
+قطع الاتصال	Disconnect
+اكتب الرقم السري.	Enter the PIN.
+الرقم السري	PIN
+تأكيد	Confirm
+الوضع الداكن	Dark mode
+التحكم في التطبيقات الثانية متوقف: خدمة «تلفزيونك» مفعّلة لكن التلفزيون أوقفها بعد التحديث. أعد تشغيل التلفزيون مرة.	Control of other apps is stopped: the UrTV service is on, but the TV stopped it after the update. Restart the TV once.
+تطبيق آخر أمام الشاشة: فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال» في إعدادات إمكانية الوصول بالتلفزيون لتصله الأزرار. الصوت وتشغيل/إيقاف تعمل دائمًا.	Another app is on screen: turn on the UrTV phone control service in the TV’s accessibility settings so the buttons reach it. Volume and Play/Pause always work.
+ما قدرنا نحرك التركيز أو نضغط في هذا التطبيق الآن. جرّب «رجوع» أو افتح ما تريد بريموت التلفزيون.	We couldn’t move or press in this app just now. Try Back, or use the TV remote.
+شاشة السماح لا تُحرَّك من الجوال، استعمل ريموت التلفزيون.	The permission screen can’t be used from the phone. Use the TV remote.
+ما نجح الأمر.	That didn’t work.
+ما قبل التلفزيون هذه القيمة.	The TV didn’t accept this value.
+حدّث تطبيق «شاشة تلفزيونك» على التلفزيون.	Update the Your TV Screen app on the TV.
+التلفزيون ما حفظ البطاقات. أعد المحاولة، وإن تكرر حدّث تطبيق «شاشة تلفزيونك».	The TV didn’t save the cards. Try again, and if it happens again, update the Your TV Screen app.
+اكتب الرقم السري أولًا.	Enter the PIN first.
+الرقم السري غير صحيح.	Wrong PIN.
+مهلًا، طلبات كثيرة.	Slow down: too many requests.
+انتهت الجلسة.	Session ended.
+طلب غير مقبول.	Request not accepted.
+هناك طلب آخر ينتظر موافقة التلفزيون.	Another request is waiting for the TV.
+الرمز غير صحيح أو منتهٍ.	Wrong or expired code.
+توقف التحكم لكثرة المحاولات الخاطئة.	Control stopped after too many wrong tries.
+ما وجد التلفزيون هذا التطبيق.	The TV couldn’t find this app.
+كُتب النص في الحقل.	Typed into the field.
+أُضيف النص مهمةً.	Added as a task.
+نُسخ النص إلى حافظة التلفزيون (لا يوجد حقل نصي مفتوح في شاشاتنا).	Copied to the TV’s clipboard (no text field is open on our screens).
+فُتح على التلفزيون	Opened on the TV
+اكتب الرقم السري على التلفزيون	Enter the PIN on the TV
+لا يوجد أذان الآن.	No adhan is playing.
+تمت الكتابة في التطبيق	Typed in the app
+فتحنا البحث في التطبيق بكلماتك	Searched the app for your words
+التطبيق الذي أمامك ما فيه خانة كتابة نقدر نكتب فيها. نسخنا النص على التلفزيون، والصقه من داخل التطبيق إن أمكن.	This app has no field we can type in. We copied the text on the TV: paste it in the app if you can.
+تمت الكتابة، والبحث يحتاج أندرويد ١١ أو أحدث	Typed. Search needs Android 11 or later
+تم الحفظ.	Saved.
+أُرسل.	Sent.
+جارٍ الفحص…	Checking…
+تلفزيونك محدّث.	UrTV is up to date.
+يوجد تحديث جديد.	An update is available.
+يوجد تحديث جديد. اضغط «ثبّت» لينزّله التلفزيون ويتحقق منه.	An update is available. Press Install and the TV downloads and checks it.
+جارٍ التنزيل والتحقق من التوقيع…	Downloading and checking the signature…
+أكّد التثبيت على التلفزيون بالريموت.	Confirm the install on the TV with the remote.
+اكتمل التحديث.	Update complete.
+تعذّر التحديث.	Update failed.
+لا يوجد اتصال بالإنترنت أو الملف غير متاح.	No internet, or the file isn’t available.
+رُفض: توقيع الملف يختلف عن التطبيق المثبّت.	Refused: the file’s signature differs from the installed app’s.
+رُفض: الملف ليس للتطبيق المطلوب.	Refused: the file is for another app.
+رُفض: الملف أو التطبيق بلا توقيع يمكن مقارنته.	Refused: the file or the app has no signature to compare.
+رُفض: تعذّرت قراءة الملف.	Refused: the file can’t be read.
+اسمح لتطبيق تلفزيونك بالتثبيت من إعدادات التلفزيون ثم أعد المحاولة.	Allow UrTV to install apps in the TV’s settings, then try again.
+التحديث من التلفزيون ما يشتغل على هذا الجهاز. اطلب من مساعد الذكاء الاصطناعي على جهازك: حدّث تلفزيوني (github.com/tshi-dev/UrTV)	Updating from the TV doesn’t work on this device. Ask the AI assistant on your computer: update my TV (github.com/tshi-dev/UrTV)
+ما اكتمل التحديث. اطلب من مساعد الذكاء الاصطناعي على جهازك: حدّث تلفزيوني (github.com/tshi-dev/UrTV)	The update didn’t finish. Ask the AI assistant on your computer: update my TV (github.com/tshi-dev/UrTV)
+ألغيت التثبيت على التلفزيون.	You cancelled the install on the TV.
+رفض مثبّت أندرويد الملف.	Android’s installer refused the file.
+لا توجد مساحة كافية.	Not enough storage.
+تعذّر تنزيل ملف التحديث.	Couldn’t download the update file.
+حدث خطأ غير متوقع أثناء التحديث.	Something went wrong during the update.
+التلفزيون غير متصل بالواي فاي أو الإيثرنت.	The TV isn’t on Wi-Fi or Ethernet.
+نظام التلفزيون يمنع التثبيت.	The TV’s system blocks installs.
+يتعارض مع نسخة مثبّتة.	It conflicts with an installed version.
+لا يناسب هذا الجهاز.	Not compatible with this device.
+تعذّر حفظ سجل التحديث.	Couldn’t save the update record.
+تلفزيونك: التحكم والكتابة من الجوال	UrTV phone control
+ما أقدر أكتب في هذا التطبيق	Can’t type in this app
+التطبيق الأمامي مقفول بالرقم السري، افتحه على التلفزيون أولاً	The app on screen is PIN-locked. Unlock it on the TV first
+ما أكتب في حقل كلمة المرور	Won’t type into a password field
+ما نجحت الكتابة.	Typing didn’t work.
+المهام	Tasks
+المصادر	Inputs
+الإعدادات	Settings
+تلاوة وأذان	Quran and adhan
+ساعة	hour
+ساعتين	2 hours
+ساعات	hours
+دقيقة	min
+دقيقتين	2 min
+دقائق	min
+أقل من دقيقة	under a minute
+\u0020و\u0020	,\u0020
+انتهت الجلسة. امسح الرمز من جديد.	Session ended. Scan the code again.
+جارٍ الاتصال…	Connecting…
+بانتظار موافقة التلفزيون: اضغط «سماح» بالريموت.	Waiting for the TV: press Allow on the remote.
+انتهت المهلة.	Timed out.
+رفض التلفزيون الطلب.	The TV said no.
+عدد الجوالات المتصلة وصل حدّه.	Too many phones are connected.
+انتهى الطلب.	The request expired.
+الرمز ٦ أرقام.	The code has 6 digits.
+الريموت	Remote
+التطبيقات	Apps
+يعمل الآن	Now playing
+إذاعة القرآن الكريم	Quran Radio
+الأذان يُرفع	Adhan playing
+سورة\u0020	Surah\u0020
+تلاوة	Recitation
+بقي\u0020	Time left:\u0020
+الأسهم والاختيار والرجوع والرئيسية تعمل في التطبيق الذي أمامك	Arrows, OK, Back and Home work in the app on screen
+الرجوع والرئيسية تعمل في كل التطبيقات؛ الأسهم والاختيار تحتاج أندرويد ١٣ أو خدمة «تلفزيونك: التحكم والكتابة من الجوال»	Back and Home work in every app. Arrows and OK need Android 13 or the UrTV phone control service
+يوجد تطبيق آخر أمام الشاشة. فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال» (الإعدادات ← إمكانية الوصول) لتعمل الأسهم والاختيار والرجوع والرئيسية فيه. الصوت وتشغيل/إيقاف تعمل دائمًا.	Another app is on screen. Turn on the UrTV phone control service (Settings → Accessibility) to use the arrows, OK, Back and Home in it. Volume and Play/Pause always work.
+الأذان الآن	Adhan now
+على التلفزيون الآن	On the TV now
+بث مباشر	Live
+يُتلى الآن على التلفزيون	Playing on the TV
+لا شيء يُشغَّل	Nothing playing
+يعمل	Playing
+متوقف مؤقتًا	Paused
+اختر القارئ والسورة ثم «تشغيل».	Pick a reciter and a surah, then Play.
+استئناف	Resume
+موعد الأذان القادم غير معروف الآن.	The next adhan time isn’t known yet.
+بعد\u0020	In\u0020
+ينتهي بعد\u0020	Ends in\u0020
+المؤقت متوقف.	The timer is off.
+إصدار تلفزيونك:\u0020	UrTV version:\u0020
+الجوالات المتصلة:\u0020	Connected phones:\u0020
+المدينة الحالية:\u0020	Current city:\u0020
+إعدادات المدينة غير متاحة: حدّث تطبيق «شاشة تلفزيونك».	City settings aren’t available: update the Your TV Screen app.
+٪	%
+ثانية	second
+ثانيتين	2 seconds
+ثوانٍ	seconds
+الرقابة الأبوية:\u0020	Parental controls:\u0020
+وضع الأطفال:\u0020	Kids mode:\u0020
+مفعّلة	On
+غير مفعّلة	Off
+المقفل:\u0020	Locked:\u0020
+تطبيق	app
+تطبيقين	2 apps
+تطبيقات	apps
+تطبيقًا	apps
+\u0020من أزرار التلفزيون	\u0020TV buttons
+بطاقة\u0020	Card\u0020
+لا توجد نتيجة.	No results.
+حدّث تطبيق «تلفزيونك» على التلفزيون لتظهر التطبيقات هنا.	Update UrTV on the TV to see the apps here.
+مقفل بالرقم السري	PIN-locked
+الإصدار\u0020	build\u0020
+تم الخروج.	Signed out.
