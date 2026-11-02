@@ -21,16 +21,30 @@ TV they would be TheSportsDB's badges, which the matches card already shows.
 script already works around the cap by asking for each day on its own. A full round needs either that workaround to
 cover every day of the round, or a paid key (see 2).
 
-**A: the reference, in our style** (`notes/proposals/football-home.png`). From the top:
-- The four top buttons as rectangles, the big clock, and the date with the weather glyph.
-- One prayer strip with all six times. The next prayer has the green ring and «بعد ٢٤ دقيقة».
-- «مباريات اليوم»: four cards for the followed teams first, then the Saudi Pro League. Each card has the league and the round,
-  the two crests with × between them, and the time. A live game shows its score and «الدقيقة ٦٧» in green, and the
-  followed club's name is green.
-- The apps row.
+**A: the owner's second reference, glass over a sky photo** (`notes/proposals/football-home.png`). From the top:
+- **Clock and dates:** a big thin clock, a hairline divider, then the day in bold with the Hijri and Gregorian dates
+  under it.
+- **Top buttons:** our four, as square glass icon buttons.
+- **Two glass cards under their section titles:**
+  - «الطقس»: the city, a sun glyph, the temperature, the sky, and feels-like, humidity and wind.
+  - «أوقات الصلاة»: five rows with icons. The next prayer is a lighter band, with «الظهر بعد ٤ س و٣٣ د» under it.
+- **«مباريات اليوم»:** the followed teams first, then the Saudi Pro League. The source and its time are on the left
+  (TheSportsDB, not 365Scores; see 2). Each card has the league and round, two crests with ×, and the kick-off time.
+- **«Even better»:**
+  - A game that clashes with a prayer says so in amber: «٥:١٠ م · المغرب ٥:١٧».
+  - The followed club is green.
+  - More games are shown by a sixth card fading at the edge, not by a chevron arrow.
+- **«المفضلة»:** the focused app's name beside the title, and a glass tray of six big tiles. On the TV these are the
+  apps' own banners.
 
-OK on a card opens the league view the page already has (`#leagues=`). With no game today, the row shows the next
-round's games with their day.
+**A-light** (`notes/proposals/football-home-light.png`) is the same grid on the approved light look: the photo on top
+fades into sand, the cards are white, and the next prayer has the green ring. The cards stay readable on any photo.
+
+**The first reference, on the light look** (an earlier pass, kept in `proto.html` as `#football`): a prayer strip and
+four match cards with a live score.
+
+On every version, OK on a card opens the league view the page already has (`#leagues=`). With no game today, the row
+shows the next round's games with their day.
 
 **B: «or even better»** (`notes/proposals/football-home-v2.png`):
 - The followed team's next game is the large card. It has a countdown, and one line that places the game against the

@@ -3,10 +3,12 @@
 <style>
 /* The approved lighter look (notes/ux-review on work/ux-review): theme «نهار نجد», sand paper, white cards, hairline borders,
    DGA green #1B8354 for focus and «on», the Sadu triangles for «on». Font: IBM Plex Sans Arabic stands in for Thmanyah (private).
-   fonts/ is not committed: put plex-400/500/700.woff2 there (e.g. from @fontsource/ibm-plex-sans-arabic) to render. */
+   fonts/ is not committed: put plex-200/400/500/700.woff2 and plex-latin-*.woff2 there (e.g. from @fontsource/ibm-plex-sans-arabic) to render. */
 @font-face{font-family:TR;src:url("fonts/plex-400.woff2")}
 @font-face{font-family:TM;src:url("fonts/plex-500.woff2")}
 @font-face{font-family:TD;src:url("fonts/plex-700.woff2")}
+@font-face{font-family:TL;src:url("fonts/plex-200.woff2")}
+@font-face{font-family:TL;src:url("fonts/plex-latin-200.woff2");unicode-range:U+0000-00FF}
 @font-face{font-family:TR;src:url("fonts/plex-latin-400.woff2");unicode-range:U+0000-00FF}
 @font-face{font-family:TM;src:url("fonts/plex-latin-500.woff2");unicode-range:U+0000-00FF}
 @font-face{font-family:TD;src:url("fonts/plex-latin-700.woff2");unicode-range:U+0000-00FF}
@@ -204,5 +206,62 @@ S.reminderset=()=>`<div style="position:absolute;right:120px;top:64px;font:56px 
     <div style="margin-top:16px;background:var(--fill);color:#fff;border-radius:12px;height:58px;display:flex;align-items:center;justify-content:center;font:24px TM">أضف</div></div>
    <div style="font:19px TR;color:var(--sub);margin-top:18px;line-height:1.5">تُرسل للتلفزيون فقط، ولا تحفظ في أي مكان ثاني.</div>
   </div></div>`;
+
+// ---- the second reference: glass cards over a sky photo (football-home.png), and the same grid on the light look
+P.wifi='<path d="M2.5 9a14 14 0 0 1 19 0"/><path d="M5.5 12.5a9.5 9.5 0 0 1 13 0"/><path d="M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19" r=".9" fill="currentColor"/>';
+P.pin='<path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>';
+P.dawn='<path d="M4 17h16"/><path d="M7.5 17a4.5 4.5 0 0 1 9 0"/><path d="M12 6v3M5.6 9.6l1.6 1.6M18.4 9.6l-1.6 1.6"/><path d="M4 20.5h16"/>';
+P.noon='<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/>';
+P.asr='<circle cx="9" cy="10" r="3.5"/><path d="M14 18H6.5a3 3 0 0 1 0-6"/><path d="M14 18h3.5a3.5 3.5 0 0 0 0-7 5 5 0 0 0-9.3 1.2"/>';
+P.dusk='<path d="M4 16h16"/><path d="M7.5 16a4.5 4.5 0 0 1 9 0"/><path d="M12 5v4M9.5 7.5L12 10l2.5-2.5"/><path d="M4 19.5h16"/>';
+P.drop='<path d="M12 3.5s6 6.6 6 10.5a6 6 0 0 1-12 0c0-3.9 6-10.5 6-10.5z"/>';
+P.wind='<path d="M3 9h11a3 3 0 1 0-3-3"/><path d="M3 14h15a3 3 0 1 1-3 3"/><path d="M3 19h7"/>';
+P.therm='<path d="M10 14.5V5a2 2 0 0 1 4 0v9.5a4 4 0 1 1-4 0z"/><path d="M12 9v7"/>';
+const G=(light)=>light?{card:'rgba(255,255,255,.9)',bd:'1.5px solid var(--line)',ink:'var(--ink)',sub:'var(--sub)',band:'var(--tint)',nx:'var(--green)',sh:'0 10px 30px rgba(40,36,24,.08)'}
+ :{card:'rgba(28,22,18,.34)',bd:'1px solid rgba(255,255,255,.22)',ink:'#fff',sub:'rgba(255,255,255,.78)',band:'rgba(255,255,255,.16)',nx:'#8FE0B4',sh:'0 18px 44px rgba(0,0,0,.18)'};
+const glass=(g,st)=>`position:absolute;background:${g.card};border:${g.bd};border-radius:24px;backdrop-filter:blur(26px) saturate(1.2);box-shadow:${g.sh};${st}`;
+const H2=(light)=>{const g=G(light);const W='color:'+g.ink;
+ const prs=[['dawn','الفجر','٤:٥٤ ص'],['noon','الظهر','١١:٤٦ ص'],['asr','العصر','٢:٥١ م'],['dusk','المغرب','٥:١٧ م'],['moon','العشاء','٦:٤٧ م']];
+ const games=[
+  {h:'الهلال',a:'الاتفاق',t:'٥:١٠ م',n:'المغرب ٥:١٧',mine:1},
+  {h:'الأهلي',a:'التعاون',t:'٨:٠٠ م'},
+  {h:'الفتح',a:'الرياض',t:'٨:٠٠ م'},
+  {h:'النصر',a:'القادسية',t:'٩:٠٠ م'},
+  {h:'الاتحاد',a:'الشباب',t:'٩:٠٠ م'},
+  {h:'ضمك',a:'الخليج',t:'٩:٣٠ م'}];
+ const cw=300,gap=20;
+ const card=(m,i)=>`<div style="${glass(g,`top:0;right:${i*(cw+gap)}px;width:${cw}px;height:212px;padding:16px 20px;display:flex;flex-direction:column;justify-content:space-between`)}">
+   <div style="display:flex;justify-content:space-between;font:22px TR;color:${g.sub}"><span>دوري روشن</span><span>الجولة ١٣</span></div>
+   <div style="display:flex;align-items:center;justify-content:space-between">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:110px">${crest(m.h,56)}<span style="font:24px TM;color:${m.mine?g.nx:g.ink};white-space:nowrap">${m.h}</span></div>
+    <span style="font:30px TL;color:${g.sub}">×</span>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:110px">${crest(m.a,56)}<span style="font:24px TM;${W};white-space:nowrap">${m.a}</span></div></div>
+   <div style="text-align:center;font:28px TM;${W}">${m.t}${m.n?`<span style="font:21px TR;color:${light?'#A15C07':'#FFD27A'};margin-right:10px">${m.n}</span>`:''}</div></div>`;
+ const apps=[['YouTube','#fff','#E62117'],['شاهد','#fff','#1F1F1F'],['Netflix','#0B0B0B','#E50914'],['TOD','#5B2BC4','#fff'],['SSC','#0A6A4F','#fff'],['قرآن','#fff','#1B8354']];
+ return `${light?`<div class="photo" style="background-image:url(../../photos/-RlktmDy3Ec.jpg);height:560px;bottom:auto"></div><div class="abs" style="left:0;right:0;top:300px;height:262px;background:linear-gradient(180deg,rgba(246,244,239,0),var(--paper))"></div>`
+   :`<div class="photo" style="background-image:url(../../photos/-RlktmDy3Ec.jpg)"></div><div class="abs" style="inset:0;background:linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,0) 30%,rgba(0,0,0,.28) 100%)"></div>`}
+ <div class="abs" style="right:120px;top:40px;display:flex;align-items:center;gap:36px;color:${light?'#fff':'#fff'};text-shadow:0 2px 20px rgba(0,0,0,.25)">
+  <div style="font:200px TL;line-height:1;letter-spacing:-4px">٧:١٣<small style="font:46px TR;margin-right:12px;letter-spacing:0">ص</small></div>
+  <div style="width:2px;height:150px;background:rgba(255,255,255,.55)"></div>
+  <div><div style="font:48px TD">الأربعاء</div><div style="font:28px TR;margin-top:6px">١٣ جمادى الأولى ١٤٤٨ هـ</div><div style="font:28px TR">٤ نوفمبر ٢٠٢٦</div></div></div>
+ <div class="abs" style="left:120px;top:60px;display:flex;gap:16px;direction:ltr">${['input','tasks','control','listen'].reverse().map(k=>`<div style="${glass(g,'position:relative;width:76px;height:76px;border-radius:18px;display:flex;align-items:center;justify-content:center')}">${ic(k,34,'color:'+(light?'var(--green)':'#fff'))}</div>`).join('')}</div>
+ <div class="abs" style="left:120px;top:168px;width:400px;font:26px TM;${light?'color:#fff;text-shadow:0 1px 10px rgba(0,0,0,.3)':W}">الطقس</div>
+ <div style="${glass(g,'left:120px;top:210px;width:400px;height:356px;padding:24px 28px')}">
+  <div style="display:flex;align-items:center;gap:8px;font:26px TR;color:${g.sub}">${ic('pin',26)}الرياض</div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px">${ic('noon',96,'color:#F2B33D;stroke-width:1.4')}<div style="text-align:left"><div style="font:84px TL;line-height:1;${W}">٢٨°</div><div style="font:26px TR;color:${g.sub};margin-top:6px">سماء صافية</div></div></div>
+  <div style="display:flex;justify-content:space-between;margin-top:32px;padding-top:18px;border-top:1px solid ${light?'var(--line)':'rgba(255,255,255,.2)'};font:22px TR;color:${g.sub}">
+   ${[['therm','المحسوسة','٣٠°'],['drop','الرطوبة','١٨٪'],['wind','الرياح','١٢ كم/س']].map(x=>`<div style="display:flex;flex-direction:column;align-items:center;gap:4px">${ic(x[0],26)}<span>${x[1]}</span><b style="font:24px TM;${W}">${x[2]}</b></div>`).join('')}</div></div>
+ <div class="abs" style="left:544px;width:440px;top:168px;font:26px TM;${light?'color:#fff;text-shadow:0 1px 10px rgba(0,0,0,.3)':W}">أوقات الصلاة</div>
+ <div style="${glass(g,'left:544px;top:210px;width:440px;height:356px;padding:16px 16px')}">
+  ${prs.map((p,i)=>`<div style="display:flex;align-items:center;gap:16px;height:54px;padding:0 16px;border-radius:14px;${i==1?`background:${g.band};${light?'box-shadow:inset 0 0 0 2px var(--green);':''}`:''}color:${i==1?g.nx:g.ink}">${ic(p[0],28)}<span style="flex:1;font:27px ${i==1?'TD':'TM'}">${p[1]}</span><span style="font:27px ${i==1?'TM':'TR'}">${p[2]}</span></div>`).join('')}
+  <div style="text-align:center;font:25px TR;color:${g.nx};margin-top:12px">الظهر بعد ٤ س و٣٣ د</div></div>
+ <div class="abs" style="right:120px;top:600px;font:32px TD;${light?'color:var(--ink)':W}">مباريات اليوم</div>
+ <div class="abs" style="left:120px;top:608px;font:24px TR;color:${light?'var(--sub)':g.sub}">فرقك أولًا، ثم دوري روشن · TheSportsDB، ٧:١٠ ص</div>
+ <div class="abs" style="right:120px;left:0;top:656px;height:212px;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent 40px,#000 200px)">${games.map(card).join('')}</div>
+ <div class="abs" style="right:120px;top:892px;font:28px TM;${light?'color:var(--ink)':W}">المفضلة<span style="font:28px TR;color:${light?'var(--sub)':g.sub};margin-right:18px">YouTube</span></div>
+ <div style="${glass(g,'right:96px;left:96px;top:936px;height:136px;padding:14px 24px;display:flex;gap:22px;direction:rtl;border-radius:26px 26px 0 0;border-bottom:none')}">
+  ${apps.map((a,i)=>`<div style="flex:1;border-radius:16px;background:${a[1]};color:${a[2]};display:flex;align-items:center;justify-content:center;font:34px TD;${i==0?'outline:3px solid '+(light?'var(--green)':'#8FE0B4')+';outline-offset:4px':''};border:1px solid rgba(0,0,0,.06)">${a[0]}</div>`).join('')}</div>`;};
+S.home2=()=>H2(false);
+S.home2light=()=>H2(true);
 document.getElementById('f').innerHTML=S[(location.hash||'#football').slice(1)]();
 </script></body></html>
