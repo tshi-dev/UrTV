@@ -12,7 +12,8 @@ import android.os.Bundle;
  * What the screensaver's «يُتلى الآن» card asks: one row (playing, title, who) while a surah or a station is playing, no row for
  * anything else (nothing on, paused, the adhan). Read-only; only the screensaver, signed with the same key, may ask (the manifest's
  * READ_NOW_PLAYING). Also ".../adhan": one row (prayer, any_key) while an adhan for a prayer plays, which the screensaver's bar shows; and
- * call("stop_adhan"), which ends that adhan (the same permission is checked; a key press on the screensaver is the only caller). The screensaver asks when it starts and then once a minute, so nothing is pushed from here.
+ * ".../setup_hold": one row (held 1 or 0), 1 while «إعداد تلفزيوني» waits for the TV's debugging prompt (SaverHold), which the screensaver
+ * asks when it starts and then ends at once; and call("stop_adhan"), which ends that adhan (the same permission is checked; a key press on the screensaver is the only caller). The screensaver asks when it starts and then once a minute, so nothing is pushed from here.
  */
 public class NowPlayingProvider extends ContentProvider {
     @Override public boolean onCreate() { return true; }
@@ -20,6 +21,11 @@ public class NowPlayingProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] args, String order) {
         if (getContext() == null) return new MatrixCursor(new String[]{"playing", "title", "who"});
+        if (uri != null && "setup_hold".equals(uri.getLastPathSegment())) {   // «إعداد تلفزيوني» waits for «السماح بتصحيح USB؟»: no screensaver over it
+            MatrixCursor h = new MatrixCursor(new String[]{"held"});
+            h.addRow(new Object[]{sa.urtv.home.setup.SaverHold.held() ? 1 : 0});
+            return h;
+        }
         if (uri != null && "adhan".equals(uri.getLastPathSegment())) {
             MatrixCursor a = new MatrixCursor(new String[]{"prayer", "any_key"});
             if (MusicService.adhanLive()) a.addRow(new Object[]{MusicService.adhanPrayer(), new Prefs(getContext()).adhanStopKey() ? 1 : 0});

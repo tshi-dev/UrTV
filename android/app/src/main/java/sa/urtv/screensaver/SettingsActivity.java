@@ -574,7 +574,7 @@ public class SettingsActivity extends Activity {
         final Cities.Region[] regions = country < 0 ? Cities.REGIONS : Location.regions(country);
         if (country > 0 && regions.length == 1) { pickCityIn(regions[0], country); return; }   // any other country is one region: its cities
         String[] labels = new String[regions.length + 1];
-        labels[0] = "بحث عن مدينة أو قرية…";
+        labels[0] = "بحث عن مدينة أو قرية";
         for (int i = 0; i < regions.length; i++) labels[i + 1] = regions[i].name + "  (" + regions[i].cities.length + ")";
         new Dlg(this).setTitle(country < 0 ? "المنطقة" : Location.COUNTRIES[country][1])
             .setItems(labels, (d, i) -> { if (i == 0) searchCity(country); else pickCityIn(regions[i - 1], country); })
@@ -654,8 +654,8 @@ public class SettingsActivity extends Activity {
         for (String[] t : Prefs.TEAM_PRESETS) opts.add(t);
         String[] labels = new String[opts.size() + 2];
         for (int i = 0; i < opts.size(); i++) labels[i] = opts.get(i)[1];
-        labels[opts.size()] = "تصفح الدوريات…";
-        labels[opts.size() + 1] = "بحث عن أي فريق أو منتخب…";
+        labels[opts.size()] = "تصفح الدوريات";
+        labels[opts.size() + 1] = "بحث عن أي فريق أو منتخب";
         new Dlg(this).setTitle("إضافة فريق")
             .setItems(labels, (d, i) -> {
                 if (i < opts.size()) addTeam(opts.get(i)[0], opts.get(i)[1]);

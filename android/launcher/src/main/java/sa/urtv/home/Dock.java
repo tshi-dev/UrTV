@@ -28,6 +28,10 @@ final class Dock {
         return c.getSharedPreferences("MainActivity", Context.MODE_PRIVATE);
     }
 
+    /** «الرجوع يفتح شاشة التوقف»: Back on our home starts the screensaver (HomeBack.startsSaver). Off until it is turned on (`dock.sh backsaver on`). */
+    static boolean backSaver(Context c) { return prefs(c).getBoolean("back_saver", false); }
+    static void setBackSaver(Context c, boolean on) { prefs(c).edit().putBoolean("back_saver", on).apply(); }
+
     /** Saved order, or the defaults from config.xml; may name apps that are no longer installed. */
     static List<String> saved(Context c) {
         String s = prefs(c).getString("dock", null);

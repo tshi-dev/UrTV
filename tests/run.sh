@@ -27,6 +27,7 @@ python3 tests/setup_phone_test.py
 python3 tests/phone_userland_test.py
 python3 tests/adb_client_test.py
 python3 tests/setup_engine_test.py
+python3 tests/saver_hold_test.py
 python3 tests/type_test.py
 python3 tests/reboot_test.py
 python3 tests/tv_identity_test.py
@@ -78,6 +79,7 @@ python3 tests/updates_bell_test.py
 python3 tests/versions_test.py
 python3 tests/version_name_test.py
 python3 tests/home_tile_test.py
+python3 tests/back_saver_test.py
 python3 tests/channel_test.py
 python3 tests/app_fixes_test.py
 python3 tests/keep_test.py
@@ -117,6 +119,8 @@ python3 tests/adhan_keys_test.py
 python3 tests/adhan_options_test.py
 python3 tests/fav_edit_test.py
 python3 tests/apps_edit_test.py
+python3 tests/app_actions_test.py
+python3 tests/menu_dots_test.py
 python3 tests/remote_keys_test.py
 python3 tests/settings_key_test.py
 python3 tests/remote_nav_test.py

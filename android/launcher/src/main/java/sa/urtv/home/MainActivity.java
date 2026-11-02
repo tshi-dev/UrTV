@@ -305,6 +305,8 @@ public class MainActivity extends Activity {
         if (scrolled) dockCards.get(0).requestFocus();
         // opened from its tile while the TV keeps its own home: Back at the top leaves, to the home that opened it
         else if (HomeBack.leaves(isDefaultHome(), false)) finish();
+        // «الرجوع يفتح شاشة التوقف» (off by default): nothing to go back to, so the screensaver, behind its own lock as on its pill
+        else if (HomeBack.startsSaver(Dock.backSaver(this), true, false, isInstalled(SAVER_PKG))) guarded(ParentalPolicy.PILL_SAVER, SAVER_PKG, "شاشة التوقف", this::startSaver);
     }
 
     /** Is this app the home the TV goes to on Home? (Not when the stock home is kept and this was opened from its tile.) */
@@ -2048,7 +2050,7 @@ public class MainActivity extends Activity {
             labels.add("تعديل التطبيقات");
             actions.add(() -> beginAppsEdit(pkg));
         }
-        labels.add("تحديث تلفزيوني…");
+        labels.add("تحديث تلفزيوني");
         actions.add(() -> launchGuarded(ParentalPolicy.MENU_UPDATE, new Intent(this, UpdateActivity.class), "تحديث تلفزيوني"));
         if (inDock) {
             if (dock.size() > MIN_DOCK) {
@@ -2072,18 +2074,23 @@ public class MainActivity extends Activity {
             buildApps();
         });
         if (listenPillHidden()) {   // the button is hidden: the player (and the adhan's settings in it) opens from here, behind the same lock
-            labels.add("تلاوة وأذان…");
+            labels.add("تلاوة وأذان");
             actions.add(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, new Intent(this, sa.urtv.home.tilawah.MainActivity.class), "تلاوة وأذان"));
-            labels.add("إعدادات الأذان…");   // the same screen, on its «الأذان» tab: on or off, the voices, short, any key, the volume
+            labels.add("إعدادات الأذان");   // the same screen, on its «الأذان» tab: on or off, the voices, short, any key, the volume
             actions.add(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, adhanSettingsIntent(), "إعدادات الأذان"));
         }
-        labels.add("الرقابة الأبوية…");
+        labels.add("الرقابة الأبوية");
         actions.add(() -> launchGuarded(ParentalPolicy.PARENTAL_SCREEN, new Intent(this, ParentalActivity.class), "الرقابة الأبوية"));
-        showMenu(anchor, labels, actions);
+        showMenu(anchor, labels, actions, appButtons(pkg, kids));
     }
 
     /** Small focusable popup in the same style as the Inputs menu. */
     private void showMenu(View anchor, List<String> labels, List<Runnable> actions) {
+        showMenu(anchor, labels, actions, Collections.<View>emptyList());
+    }
+
+    /** The same, with a row of small buttons under the last item (the app menu's «تفاصيل التطبيق» and «حذف التطبيق»), none for other menus. */
+    private void showMenu(View anchor, List<String> labels, List<Runnable> actions, List<View> buttons) {
         LinearLayout list = new LinearLayout(this);
         list.setOrientation(LinearLayout.VERTICAL);
         list.setPadding(dp(8), dp(8), dp(8), dp(8));
@@ -2096,17 +2103,99 @@ public class MainActivity extends Activity {
             r.setOnClickListener(v -> { pw.dismiss(); ((Runnable) v.getTag()).run(); });
             list.addView(r, new LinearLayout.LayoutParams(-1, dp(36)));
         }
+        View last = rows.get(rows.size() - 1);
         for (int k = 0; k < rows.size(); k++) {
             TextView r = rows.get(k);
             r.setNextFocusUpId(rows.get(Math.max(0, k - 1)).getId());
-            r.setNextFocusDownId(rows.get(Math.min(rows.size() - 1, k + 1)).getId());
+            r.setNextFocusDownId(k == rows.size() - 1 && !buttons.isEmpty() ? buttons.get(0).getId() : rows.get(Math.min(rows.size() - 1, k + 1)).getId());
             r.setNextFocusLeftId(r.getId());
             r.setNextFocusRightId(r.getId());
         }
+        int extra = 0;
+        if (!buttons.isEmpty()) {
+            // side by side, the first on the right (the popup's window has no direction of its own); ▲ goes back to the last item
+            LinearLayout row = new LinearLayout(this);
+            row.setOrientation(LinearLayout.HORIZONTAL);
+            row.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+            for (int k = 0; k < buttons.size(); k++) {
+                View b = buttons.get(k);
+                b.setOnClickListener(v -> { pw.dismiss(); ((Runnable) v.getTag()).run(); });
+                b.setNextFocusUpId(last.getId());
+                b.setNextFocusDownId(b.getId());
+                b.setNextFocusRightId(buttons.get(Math.max(0, k - 1)).getId());   // right to left: the one before is on the right
+                b.setNextFocusLeftId(buttons.get(Math.min(buttons.size() - 1, k + 1)).getId());
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, dp(APP_BUTTON_H), 1f);
+                if (k > 0) lp.setMarginStart(dp(6));
+                row.addView(b, lp);
+            }
+            LinearLayout.LayoutParams rlp = new LinearLayout.LayoutParams(-1, -2);
+            rlp.topMargin = dp(6);
+            list.addView(row, rlp);
+            extra = dp(APP_BUTTON_H) + dp(6);
+        }
         pw.setOutsideTouchable(true);
         pw.setElevation(dp(16));
-        pw.showAsDropDown(anchor, 0, -anchor.getHeight() - dp(8) * (rows.size() + 2) - dp(36) * rows.size(), Gravity.START);
+        pw.showAsDropDown(anchor, 0, -anchor.getHeight() - dp(8) * (rows.size() + 2) - dp(36) * rows.size() - extra, Gravity.START);
         rows.get(0).requestFocus();
+    }
+
+    /** dp: the height of a button in the app menu's bottom row (an icon over a short name) */
+    private static final int APP_BUTTON_H = 56;
+
+    /**
+     * The app menu's bottom row (AppActions): «تفاصيل التطبيق» opens Android's app-details screen for the app, «حذف التطبيق» Android's
+     * own uninstall, which asks to confirm (not for a system app or ours). Both behind the family lock's MENU_APP, as every item above
+     * is behind its own; none in kids mode.
+     */
+    private List<View> appButtons(String pkg, boolean kids) {
+        List<View> out = new ArrayList<>();
+        for (int kind : AppActions.buttons(pkg, isSystemApp(pkg), kids)) {
+            if (kind == AppActions.OPEN_DETAILS) {
+                Intent i = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", pkg, null));
+                out.add(appButton(AppActions.DETAILS, R.drawable.ic_info, () -> guarded(ParentalPolicy.MENU_APP, pkg, AppActions.DETAILS, () -> launch(i))));
+            } else if (kind == AppActions.OPEN_DELETE) {
+                Intent i = new Intent(Intent.ACTION_DELETE, Uri.fromParts("package", pkg, null));
+                out.add(appButton(AppActions.DELETE, R.drawable.ic_delete, () -> guarded(ParentalPolicy.MENU_APP, pkg, AppActions.DELETE, () -> launch(i))));
+            }
+        }
+        return out;
+    }
+
+    /** a system app, or an update of one (what the TV came with): never offered for removal */
+    private boolean isSystemApp(String pkg) {
+        try {
+            int f = getPackageManager().getApplicationInfo(pkg, 0).flags;
+            return (f & (android.content.pm.ApplicationInfo.FLAG_SYSTEM | android.content.pm.ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0;
+        } catch (PackageManager.NameNotFoundException | RuntimeException e) {
+            return true;   // not known: not offered
+        }
+    }
+
+    /** a small button: the icon over its name, in the glass look (the panel at rest, the focus fill and its ink while focused) */
+    private View appButton(String label, int icon, Runnable action) {
+        LinearLayout b = new LinearLayout(this);
+        b.setOrientation(LinearLayout.VERTICAL);
+        b.setGravity(Gravity.CENTER);
+        b.setFocusable(true);
+        b.setClickable(true);
+        b.setId(View.generateViewId());
+        b.setTag(action);
+        b.setContentDescription(label);
+        b.setPadding(dp(4), dp(6), dp(4), dp(6));
+        ImageView glyph = new ImageView(this);
+        glyph.setImageDrawable(getDrawable(icon).mutate());
+        glyph.setTag(GlassPaint.ICON);
+        b.addView(glyph, new LinearLayout.LayoutParams(dp(22), dp(22)));
+        TextView name = text(11, "sans-serif-medium", homeGlass().text);
+        name.setText(label);
+        name.setSingleLine(true);
+        name.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        name.setGravity(Gravity.CENTER);
+        LinearLayout.LayoutParams nlp = new LinearLayout.LayoutParams(-1, -2);
+        nlp.topMargin = dp(4);
+        b.addView(name, nlp);
+        GlassPaint.card(b, homeGlass(), 10);
+        return b;
     }
 
     private void showInputs(View anchor, int path) {
@@ -2128,7 +2217,7 @@ public class MainActivity extends Activity {
             rows.add(inputRow(InputLabels.rowLabel(this, t, given), () -> openPassthroughInput(t)));   // + the CEC device's name and its standby mark
         }
         if (isInstalled(liveTvPkg)) rows.add(inputRow("البث التلفزيوني", () -> guarded(ParentalPolicy.INPUT_LIVE_TV, liveTvPkg, "البث التلفزيوني", () -> openPackage(liveTvPkg))));
-        if (inputs.isEmpty() && isInstalled(inputPickerPkg)) rows.add(inputRow("كل المصادر…", () -> guarded(ParentalPolicy.INPUT_PICKER, inputPickerPkg, "كل المصادر", () -> openPackage(inputPickerPkg))));
+        if (inputs.isEmpty() && isInstalled(inputPickerPkg)) rows.add(inputRow("كل المصادر", () -> guarded(ParentalPolicy.INPUT_PICKER, inputPickerPkg, "كل المصادر", () -> openPackage(inputPickerPkg))));
 
         if (rows.isEmpty()) rows.add(inputRow("الإعدادات", () -> launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون")));
         for (TextView r : rows) {
@@ -2799,7 +2888,7 @@ public class MainActivity extends Activity {
         // the remote's shortcut keys (YouTube, Netflix, Settings, the star): with the stock launcher off nothing else answers them
         if (e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0)
             android.util.Log.d("UrTVKeys", "key=" + e.getKeyCode() + " scan=" + e.getScanCode());   // for the TV test: does the shortcut key reach the home screen at all? (codes only)
-        RemoteKeys.Decision key = remoteKeys.decide(e.getKeyCode(), e.getScanCode(), e.getAction(), e.getRepeatCount(),
+        RemoteKeys.Decision key = remoteKeys.decide(e.getKeyCode(), e.getScanCode(), e.getAction(), e.getRepeatCount(), e.getEventTime() - e.getDownTime(),
                 RemoteKeys.opensApp(e.getKeyCode()) ? remoteInstalled() : Collections.<String>emptySet());
         if (key.kind != RemoteKeys.PASS) {
             if (key.kind != RemoteKeys.EAT) {
@@ -2867,10 +2956,10 @@ public class MainActivity extends Activity {
             case RemoteKeys.OPEN_APP:
                 guarded(ParentalPolicy.REMOTE_APP, key.pkg, labelOf(key.pkg), () -> openPackage(key.pkg));
                 break;
-            case RemoteKeys.OPEN_OUR_SETTINGS:   // the Settings key opens OUR settings; the TV's own stay on the «الإعدادات» pill and tile
+            case RemoteKeys.OPEN_OUR_SETTINGS:   // a long press of the Settings key: OUR settings (the TV's own if our app is missing)
                 openOurSettings(true);
                 break;
-            case RemoteKeys.OPEN_SETTINGS:
+            case RemoteKeys.OPEN_SETTINGS:   // a short press of the Settings key: the TV's own settings, behind @tvsettings
                 launchGuarded(ParentalPolicy.REMOTE_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون");
                 break;
             case RemoteKeys.OPEN_INPUTS:

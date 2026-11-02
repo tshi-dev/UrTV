@@ -1,4 +1,4 @@
-# key: kind, keyCode, scanCode, action (0 down, 1 up), repeat, installed (YouTube,Netflix), expected, note
+# key: kind, keyCode, scanCode, action (0 down, 1 up), repeat, installed (YouTube,Netflix), expected, note, held ms (the event's time minus its down time; 0 when left out)
 reset							-
 key	190	0	0	0	YouTube,Netflix	APP:com.google.android.youtube.tv	BUTTON_3 opens YouTube
 key	190	0	0	3	YouTube,Netflix	EAT	its repeats are consumed
@@ -18,9 +18,23 @@ reset							-
 key	190	0	0	0		PASS	nothing installed: nothing
 key	191	0	0	0		PASS	nothing installed: nothing
 reset							-
-key	176	0	0	0		OUR_SETTINGS	the settings key needs no app and opens OUR settings
-key	176	0	0	1		EAT	repeat consumed
-key	176	0	1	0		EAT	release consumed
+key	176	0	0	0		EAT	the Settings key's press waits: short or long is not known yet	0
+key	176	0	1	0		TV_SETTINGS	released at once (a short press): the TV's own settings	120
+key	176	0	1	0		PASS	a second release is nobody's	0
+reset						-	
+key	176	0	0	0		EAT	press	0
+key	176	0	0	1		EAT	an early repeat (300 ms): still waiting	300
+key	176	0	0	2		OUR_SETTINGS	held 500 ms: a long press opens OUR settings at once	500
+key	176	0	0	3		EAT	its later repeats are consumed	550
+key	176	0	1	0		EAT	and its release	900
+reset						-	
+key	176	0	0	0		EAT	a remote that sends no repeats: the press	0
+key	176	0	1	0		OUR_SETTINGS	released after 800 ms: a long press, OUR settings	800
+reset						-	
+key	176	0	0	0		EAT	the Settings key is down	0
+key	23	0	0	0		PASS	another key meanwhile is not eaten	0
+key	176	0	1	0		TV_SETTINGS	the Settings key's short release still opens the TV's settings	200
+key	176	0	1	0		PASS	a release with no press before it	0
 reset							-
 key	0	578	0	0		INPUTS	star key as scan code 578 with no keycode
 key	0	578	0	1		EAT	repeat consumed
@@ -62,17 +76,21 @@ key	190	0	0	0	YouTube,Netflix	APP:com.google.android.youtube.tv	its release was 
 key	190	0	0	2	YouTube,Netflix	EAT	and its repeats are still consumed
 key	190	0	1	0	YouTube,Netflix	EAT	and its release too
 reset							-
-key	176	0	0	0	YouTube,Netflix	OUR_SETTINGS	Settings opens our settings
-key	176	0	0	0	YouTube,Netflix	OUR_SETTINGS	a lost release: the next press works at once
+key	176	0	0	0	YouTube,Netflix	EAT	Settings: the press waits	0
+key	176	0	0	0	YouTube,Netflix	EAT	its release was lost: the next press is a new press, waiting again	0
+key	176	0	1	0	YouTube,Netflix	TV_SETTINGS	and its short release opens the TV's settings	100
 key	0	578	0	0	YouTube,Netflix	INPUTS	the star key (scan code) opens the inputs
 key	0	578	0	0	YouTube,Netflix	INPUTS	a lost release: the next press works at once
-key	83	0	0	0		OUR_SETTINGS	a TCL remote's Settings key arrives as KEYCODE_NOTIFICATION (83) and opens our settings
-key	83	0	0	1		EAT	its repeat is consumed
-key	83	0	1	0		EAT	its release is consumed
+key	83	0	0	0		EAT	a TCL remote's Settings key arrives as KEYCODE_NOTIFICATION (83): the press waits	0
+key	83	0	0	1		EAT	an early repeat is consumed	200
+key	83	0	1	0		TV_SETTINGS	a short press: the TV's own settings	250
 key	83	0	1	0		PASS	a release with no press before it goes on as it did
 key	83	0	0	1		PASS	a repeat with no press before it does not act
-key	83	0	0	0	YouTube,Netflix	OUR_SETTINGS	with the apps installed it is the same
-key	83	0	0	0		OUR_SETTINGS	a lost release: the next press works at once
+key	83	0	0	0	YouTube,Netflix	EAT	with the apps installed it is the same: the press waits	0
+key	83	0	0	1	YouTube,Netflix	OUR_SETTINGS	held 600 ms: OUR settings	600
+key	83	0	1	0	YouTube,Netflix	EAT	its release is consumed	700
+key	83	0	0	0		EAT	a new press waits again	0
+key	83	0	1	0		TV_SETTINGS	short: the TV's settings	90
 # TCL vendor keys (>= 1000): same rules as 190/191
 key	4062	0	0	0	YouTube,Netflix,Prime	APP:com.netflix.ninja	TCL Netflix key (4062) opens Netflix
 key	4062	0	0	2	YouTube,Netflix,Prime	EAT	its repeats are consumed
@@ -90,8 +108,11 @@ key	4065	0	0	0	Netflix,Prime	PASS	YouTube not installed: 4065 passed on
 key	4099	0	0	0	YouTube,Netflix	PASS	Prime Video not installed: 4099 passed on
 key	4099	0	0	0		PASS	nothing installed: 4099 passed on
 reset							-
-key	4077	0	0	0		OUR_SETTINGS	TCL G05 Settings key (4077) opens OUR settings
-key	4077	0	0	1		EAT	repeat consumed
-key	4077	0	1	0		EAT	release consumed
+key	4077	0	0	0		EAT	TCL G05 Settings key (4077): the press waits	0
+key	4077	0	1	0		TV_SETTINGS	a short press: the TV's settings	150
+reset						-	
+key	4077	0	0	0		EAT	press	0
+key	4077	0	0	1		OUR_SETTINGS	held 520 ms: OUR settings	520
+key	4077	0	1	0		EAT	release consumed	600
 reset							-
 key	190	0	0	0	Prime	PASS	Prime Video alone: the Google TV YouTube key still passes

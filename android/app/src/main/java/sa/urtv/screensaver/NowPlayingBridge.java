@@ -38,6 +38,23 @@ final class NowPlayingBridge {
         return o;
     }
 
+    /**
+     * The launcher's «إعداد تلفزيوني» is waiting for the TV's «السماح بتصحيح USB؟» (a prompt sent under the screensaver stays stuck until a
+     * restart): the screensaver ends at once while this is true. False when the launcher does not say (an older one, not installed, refused).
+     */
+    static boolean setupWaiting(Context c) {
+        Cursor cur = null;
+        try {
+            cur = c.getApplicationContext().getContentResolver().query(Uri.parse("content://sa.urtv.home.nowplaying/setup_hold"), null, null, null, null);
+            if (cur == null || cur.getColumnIndex("held") < 0 || !cur.moveToFirst()) return false;   // an older launcher answers with another row
+            return cur.getInt(cur.getColumnIndex("held")) == 1;
+        } catch (Exception e) {
+            return false;
+        } finally {
+            if (cur != null) try { cur.close(); } catch (Exception ignored) { }
+        }
+    }
+
     /** Ends the adhan that is playing in the launcher (it checks our signature, and stops only an adhan). */
     static void stopAdhan(Context c) {
         try {

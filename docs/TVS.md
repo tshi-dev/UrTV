@@ -123,7 +123,7 @@ Honest notes:
   The code stays (it costs nothing and acts only on these keys); **verify on the TV** whether the key reaches `dispatchKeyEvent` at all:
   `adb logcat -s UrTVKeys` prints `key=<keycode> scan=<scancode>` for every first press that reaches our home. Inside other apps only the
   Settings key is ours (below, «The Settings key outside our home»); YouTube, Netflix and the star are not seen there.
-- If after this change the Settings key still opens Android's own settings, the TV took the key before our home saw it (no `UrTVKeys` line with `key=83` or `key=176` appears while the key is pressed on our home): then nothing in the app can change it; use the «إعدادات تلفزيونك» tile of «مركز التحكم» instead.
+- A short press of the Settings key on our home opens the TV's own settings on purpose; a long press opens ours. If a long press still opens Android's own settings, the TV took the key before our home saw it (no `UrTVKeys` line with `key=83` or `key=176` appears while the key is pressed on our home): then nothing in the app can change it; use the «إعدادات تلفزيونك» tile of «مركز التحكم» instead.
 - Nothing here is checked on a real TV yet: each row needs one press on each of the six models.
 
 ### The Settings key outside our home
@@ -135,7 +135,7 @@ off. The stock launcher stays off (the owner's decision: speed); our accessibili
 
 | In front | Settings key (176, or 83 on a TCL) | Any other key |
 |---|---|---|
-| our home | the home's own path (RemoteKeys): **our** settings, as before | the home's own; the service does not even ask for keys then |
+| our home | the home's own path (RemoteKeys): a short press the TV's own settings (`@tvsettings`), a long press (500 ms) **our** settings (`@urtv`) | the home's own; the service does not even ask for keys then |
 | another app (HDMI, Live TV, Netflix, our settings app, the screensaver) | the TV's settings (`SettingsKey.TV_SETTINGS_ACTIONS`: `android.settings.SETTINGS` for now), behind `@tvsettings` (with the PIN wanted the home comes up and asks it); its repeats and release are consumed | passed on at once, untouched, not kept, not logged |
 | anything, while a stock home is enabled (a TV that kept it) | left to the TV (its own receiver answers it) | untouched; the service does not ask for keys |
 

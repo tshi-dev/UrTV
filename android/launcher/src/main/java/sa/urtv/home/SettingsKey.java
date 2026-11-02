@@ -7,7 +7,7 @@ package sa.urtv.home;
  * the app in front does; this says what it does with it:
  *
  * - any other key: PASS, at once, before anything is looked at or remembered (the service logs nothing about it);
- * - our home is in front: PASS, the home's own key path (RemoteKeys) opens OUR settings as before;
+ * - our home is in front: PASS, the home's own key path (RemoteKeys) answers it (a short press the TV's settings, a long one OUR settings);
  * - the TV's stock home is enabled (a TV that kept it, or a later «receiver mode»): PASS, the stock receiver answers the key as the TV meant;
  * - otherwise the press (DOWN, first, not a repeat) opens the TV's settings ({@link #TV_SETTINGS_ACTIONS}); its repeats and release are
  *   consumed, so the app in front never gets half a key.

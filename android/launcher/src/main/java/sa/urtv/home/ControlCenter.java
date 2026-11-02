@@ -29,7 +29,7 @@ import java.util.List;
 
 /**
  * «مركز التحكم»: the panel the home screen's round pill opens: the sleep timer, turn the TV off now, the network, the speed
- * test, the sound output, screen mirroring (when the TV has a mirroring app), the screensaver, our own settings and the TV's settings, as big tiles you walk with the D-pad (OK acts, Back closes, the focus goes
+ * test, the sound output, screen mirroring (when the TV has a mirroring app), Bluetooth (when the TV's accessories screen opens), the screensaver, our own settings and the TV's settings, as big tiles you walk with the D-pad (OK acts, Back closes, the focus goes
  * back to the pill). Opening it is behind the family lock's «@center»; the tiles that open something keep their own locks (the sleep
  * timer's, the Wi-Fi's, the screensaver's, our settings' «@urtv», the TV's settings') through the host.
  *
@@ -105,6 +105,11 @@ final class ControlCenter {
         if (mirror != null)
             tiles.add(tile("mirror", ControlText.MIRROR, ControlText.MIRROR_HINT, R.drawable.ic_cast,
                     () -> { dismiss(); host.launchGuarded(ParentalPolicy.TILE, mirror, ControlText.MIRROR); }));
+        // «البلوتوث»: the TV's remotes-and-accessories screen, only when an action for it resolves; locked as the TV's settings are
+        final Intent bluetooth = bluetoothIntent();
+        if (bluetooth != null)
+            tiles.add(tile("bluetooth", ControlText.BLUETOOTH, ControlText.BLUETOOTH_HINT, R.drawable.ic_bluetooth,
+                    () -> { dismiss(); host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, bluetooth, ControlText.BLUETOOTH); }));
         if (host.saverInstalled()) {
             Tile saver = tile("saver", "شاشة التوقف", "مطوّلًا: الإعدادات", R.drawable.ic_screensaver, () -> { dismiss(); host.openSaver(); });
             saver.setOnLongClickListener(v -> { dismiss(); host.openSaverSettings(); return true; });
@@ -335,6 +340,15 @@ final class ControlCenter {
         } catch (RuntimeException e) {
             return null;
         }
+    }
+
+    /** the first Bluetooth / accessories screen this TV can open (ControlText.bluetoothAction), or null when none resolves */
+    private Intent bluetoothIntent() {
+        android.content.pm.PackageManager pm = act.getPackageManager();
+        String action = ControlText.bluetoothAction(a -> {
+            try { return pm.resolveActivity(new Intent(a), 0) != null; } catch (RuntimeException e) { return false; }
+        });
+        return action == null ? null : new Intent(action);
     }
 
     /** the sound settings if this TV has them (the public action), else the TV's settings: never an intent that does not resolve */

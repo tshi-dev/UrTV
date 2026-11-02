@@ -32,6 +32,8 @@
     <uses-permission android:name="sa.urtv.screensaver.PHONE_SETTINGS" />
     <!-- «تحديث تلفزيونك» from the phone: hands the APKs it downloaded to Android's own install screen, where the owner confirms -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <!-- «حذف التطبيق» in the app menu: hands the app to Android's own uninstall, which asks the person to confirm (a normal permission) -->
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
 
     <!-- the screensaver (same signing key) asks what is playing, for its «يُتلى الآن» card -->
     <permission
@@ -80,6 +82,13 @@
         </intent>
         <!-- the remote's Settings key outside our home (TypeService, SettingsKey.TV_SETTINGS_ACTIONS): on Android 11+ the TV's settings
              screen must be visible, or resolveActivity finds nothing and the family lock cannot name its package -->
+        <!-- «البلوتوث» in «مركز التحكم» (ControlText.BLUETOOTH_ACTIONS): the tile is there only when one of these resolves -->
+        <intent>
+            <action android:name="android.settings.BLUETOOTH_SETTINGS" />
+        </intent>
+        <intent>
+            <action android:name="com.google.android.intent.action.CONNECT_INPUT" />
+        </intent>
         <intent>
             <action android:name="android.settings.SETTINGS" />
         </intent>
@@ -260,6 +269,7 @@
                 <action android:name="sa.urtv.home.HIDE" />
                 <action android:name="sa.urtv.home.SHOW" />
                 <action android:name="sa.urtv.home.FAMILY_DNS" />
+                <action android:name="sa.urtv.home.BACK_SAVER" />
                 <action android:name="sa.urtv.home.PIN_SET" />
                 <action android:name="sa.urtv.home.PIN_LOCK" />
                 <action android:name="sa.urtv.home.PIN_UNLOCK" />

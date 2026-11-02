@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """The remote's Settings key OUTSIDE our home (SettingsKey.java, TypeService, tests/settings_key_cases.tsv): on a TCL the key's handler lives in
 the stock launcher, which our setup turns off, so on HDMI the key did nothing. Our accessibility service TypeService (already on for the phone
-remote) answers it there: our home in front -> the home's own path, OUR settings; another app -> the TV's settings; any other key -> passed on
+remote) answers it there: our home in front -> the home's own path (a short press the TV's settings, a long one OUR settings); another app -> the TV's settings; any other key -> passed on
 untouched. Then the wiring and the privacy rules, read from the source: the service only ASKS for key events in its xml (the flag is set at run
 time, only while the home is not in front and no stock home is enabled), logs fixed words only, and opens through the family lock.
 Run: python3 tests/settings_key_test.py"""
@@ -43,7 +43,7 @@ check("the xml comment says why, and that an enabled service keeps its place on 
 check("the service is still declared once, with its xml, behind BIND_ACCESSIBILITY_SERVICE",
       man.count('android:name=".TypeService"') == 1 and "@xml/type_service" in man
       and 'android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"' in man.split('android:name=".TypeService"')[1][:300])
-check("no new permission for this (the launcher declares the same ones)", man.count("<uses-permission") == 18)
+check("no new permission for this (the launcher declares the same ones)", man.count("<uses-permission") == 19)   # 19 since REQUEST_DELETE_PACKAGES («حذف التطبيق» in the app menu)
 check("the TV's accessibility settings tell the person about the Settings key", "زر الإعدادات في الريموت يفتح إعدادات التلفزيون" in text("android/launcher/src/main/res/values/strings.xml"))
 
 # the service
@@ -71,7 +71,7 @@ check("the home tells the service when it comes to the front and when it leaves"
       and "TypeService.homeFront(false);" in main.split("protected void onPause() {")[1].split("\n    }\n")[0])
 check("a stock home is found by an ordinary HOME query (enabled packages only)", "queryIntentActivities(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), 0)" in ts
       and "SettingsKey.stockHomeOn(pkgs, c.getPackageName())" in ts)
-check("our home's own Settings key path is unchanged (RemoteKeys -> OUR settings)", "case RemoteKeys.OPEN_OUR_SETTINGS:" in main)
+check("our home's own Settings key path stays the home's (RemoteKeys: a long press OUR settings, a short one the TV's)", "case RemoteKeys.OPEN_OUR_SETTINGS:" in main and "case RemoteKeys.OPEN_SETTINGS:" in main)
 
 # docs
 feat, sett, tvs = text("docs/FEATURES.md"), text("docs/SETTINGS.md"), text("docs/TVS.md")
