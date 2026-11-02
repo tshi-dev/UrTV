@@ -288,6 +288,9 @@ public class SettingsActivity extends Activity {
         // «نظام الساعة»: 12 or 24 hours, the same setting as `saver.sh clock24`; the page (screensaver and the home's cards) and the home's clock follow it
         row("نظام الساعة", ClockSetting.label(prefs.clock24()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickClock24(); } });
+        // «إظهار الثواني» (off by default): the seconds on the screensaver's clock, small beside the minutes
+        row("إظهار الثواني", prefs.seconds() ? "يعمل" : "متوقف", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setSeconds(!prefs.seconds()); render(); } });
         row("الخانة اليسرى", Prefs.slotLabel(prefs.slot()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickSlot(); } });
         if ("countdown".equals(prefs.slot()) || !prefs.countdownDate().isEmpty())
@@ -313,6 +316,10 @@ public class SettingsActivity extends Activity {
         if ("verse".equals(prefs.panel()) || "verse".equals(prefs.panel2()) || prefs.homePanels().contains("verse"))
             row("تبديل الآية والحديث", QuoteEvery.label(prefs.quoteEvery()), R.drawable.ic_sync,
                 new Runnable() { public void run() { pickQuoteEvery(); } });
+        // «الآية والحديث»: both (the default), verses only or hadith only; shown with the row above
+        if ("verse".equals(prefs.panel()) || "verse".equals(prefs.panel2()) || prefs.homePanels().contains("verse"))
+            row("الآية والحديث", VerseKind.label(prefs.verseKind()), R.drawable.ic_eye,
+                new Runnable() { public void run() { pickVerseKind(); } });
 
         header("الشاشة الرئيسية (تلفزيونك)");
         // «المظهر», the first row: «الشكل» (glass, graphite, navy, clean) and «الإضاءة» (dark, light, auto), each picked with a live preview
@@ -342,6 +349,9 @@ public class SettingsActivity extends Activity {
         // Back on our home (nothing to go back to) starts the screensaver; the home takes it on its next tick or return (Dock.followBackSaver)
         row("الرجوع يفتح شاشة التوقف", prefs.backSaver() ? "مفعّل" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setBackSaver(!prefs.backSaver()); render(); } });
+        // «الخروج من تلفزيونك»: only where the TV keeps its own home (ours opened from its tile); one Back as always, a long Back or three
+        row("الخروج من تلفزيونك", HomeExit.label(prefs.homeExit()), R.drawable.ic_eye,
+            new Runnable() { public void run() { pickHomeExit(); } });
         // the bell shows only while the Play Store has updates waiting (the home screen asks on return, at most every 6 hours)
         row("جرس التحديثات", prefs.updateBell() ? "ظاهر عند وجود تحديثات للتطبيقات" : "مخفي", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setUpdateBell(!prefs.updateBell()); render(); } });
@@ -1423,6 +1433,20 @@ public class SettingsActivity extends Activity {
         new Dlg(this).setTitle("تبديل الآية والحديث")
             .setSingleChoiceItems(QuoteEvery.CHOICES, QuoteEvery.choice(prefs.quoteEvery()),
                 (d, i) -> { prefs.setQuoteEvery(QuoteEvery.fromChoice(i)); d.dismiss(); render(); })
+            .show();
+    }
+
+    private void pickVerseKind() {
+        new Dlg(this).setTitle("الآية والحديث")
+            .setSingleChoiceItems(VerseKind.CHOICES, VerseKind.choice(prefs.verseKind()),
+                (d, i) -> { prefs.setVerseKind(VerseKind.fromChoice(i)); d.dismiss(); render(); })
+            .show();
+    }
+
+    private void pickHomeExit() {
+        new Dlg(this).setTitle("الخروج من تلفزيونك")
+            .setSingleChoiceItems(HomeExit.CHOICES, HomeExit.choice(prefs.homeExit()),
+                (d, i) -> { prefs.setHomeExit(HomeExit.fromChoice(i)); d.dismiss(); render(); })
             .show();
     }
 

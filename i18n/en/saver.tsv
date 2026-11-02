@@ -94,6 +94,7 @@
 المناسبات الوطنية	National days
 حجم الساعة	Clock size
 نظام الساعة	Clock format
+إظهار الثواني	Show seconds
 الخانة اليسرى	Left panel
 العدّ التنازلي	Countdown
 الأسواق (أعلى اليسار)	Markets (top left)
@@ -106,6 +107,7 @@
 بطاقة ثانية	Second card
 شكل البطاقة	Card style
 تبديل الآية والحديث	Verse & hadith change
+الآية والحديث	Verse or hadith
 الشاشة الرئيسية (تلفزيونك)	Home screen (Your TV)
 التحية والطقس	Greeting & weather
 الأذان	Adhan
@@ -117,6 +119,7 @@
 زر المهام	Tasks button
 مخفي  •  المهام تبقى في بطاقة «المهام» ومن الجوال	Hidden  •  Tasks stay in the Tasks card and on the phone
 الرجوع يفتح شاشة التوقف	Back starts screensaver
+الخروج من تلفزيونك	Leaving Your TV
 جرس التحديثات	Updates bell
 ظاهر عند وجود تحديثات للتطبيقات	Shown when app updates are waiting
 ترتيب التطبيقات المفضلة	Order favorites
@@ -302,6 +305,12 @@
 عربية 123	Western (123)
 كل يوم	Every day
 كل ٣ دقائق	Every 3 minutes
+آية وحديث	Verse and hadith
+آية فقط	Verse only
+حديث فقط	Hadith only
+ضغطة رجوع	One Back press
+ضغطة رجوع مطوّلة	Hold Back
+ثلاث ضغطات رجوع	Three Back presses
 كانون الثاني، شباط، آذار…	Levantine (Kanun al-Thani, Shubat…)
 يناير، فبراير، مارس…	Standard (January, February…)
 %s يناير %s	%s January %s

@@ -4,6 +4,7 @@ Newest first. `next` is where changes land first; a release is what was tested t
 
 ## 4.2 (on `next`)
 
+- Three owners' options, each off by default (nothing changes until chosen): «الآية والحديث» (`saver.sh versekind both|verse|hadith`: the verse card with verses only or hadith only), «إظهار الثواني» (`saver.sh seconds on|off`: the seconds on the screensaver's clock, small, in fixed-width boxes so nothing moves each second, in every clock size) and «الخروج من تلفزيونك» (`saver.sh backexit press|hold|three`: where the TV keeps its own home, our home leaves only on a long Back or three Backs, with a short hint the first time a Back is ignored). tests/user_options_test.py and page tests.
 - **The favourites bar** (docs/PROPOSALS-NOV2.md §1, FavBar.java): one glass tray, the same on every look and layout, x 120 to 1800 and
   218 high, 54 px above the screen's bottom; five 304×170 tiles 24 apart, the first on the right, more scroll inside the tray and never
   leave it. The focused tile lifts 6 px and grows 1.08 in 150 ms with a 3 px green ring (DGA green on light, #8FE0B4 over a photo); the
