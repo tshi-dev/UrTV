@@ -9,7 +9,7 @@ import java.util.Set;
 
 /** For tests/remote_keys_test.py: RemoteKeys on tests/remote_keys_cases.tsv, one answer line per case line.
  *  "reset": a new RemoteKeys (it remembers the key that acted until its release). "key": kind keyCode scanCode action repeat installed
- *  (comma list of YouTube, Netflix, Prime, or empty), answered PASS, EAT, APP:package, SETTINGS or INPUTS. */
+ *  (comma list of YouTube, Netflix, Prime, or empty), expected, note, held ms (optional); answered PASS, EAT, APP:package, OUR_SETTINGS, TV_SETTINGS or INPUTS. */
 public final class RemoteKeysRun {
     public static void main(String[] args) throws IOException {
         StringBuilder out = new StringBuilder();
@@ -24,7 +24,8 @@ public final class RemoteKeysRun {
                 if (n.equals("Netflix")) installed.add(RemoteKeys.NETFLIX);
                 if (n.equals("Prime")) installed.add(RemoteKeys.PRIME);
             }
-            RemoteKeys.Decision d = keys.decide(Integer.parseInt(f[1]), Integer.parseInt(f[2]), Integer.parseInt(f[3]), Integer.parseInt(f[4]), installed);
+            long held = f.length > 8 && !f[8].isEmpty() ? Long.parseLong(f[8]) : 0;
+            RemoteKeys.Decision d = keys.decide(Integer.parseInt(f[1]), Integer.parseInt(f[2]), Integer.parseInt(f[3]), Integer.parseInt(f[4]), held, installed);
             String r;
             switch (d.kind) {
                 case RemoteKeys.EAT: r = "EAT"; break;

@@ -81,7 +81,7 @@ check("the cards save is asked back of the screensaver: what it holds is what wa
 
 # 4. the Settings key
 rk = text(HOME + "RemoteKeys.java")
-check("176 and 83 both open our settings; 176 is kept for TVs that pass it on", "case KEYCODE_SETTINGS:\n            case KEYCODE_NOTIFICATION:\n            case TCL_SETTINGS: return new Decision(OPEN_OUR_SETTINGS, null);" in rk
+check("176 and 83 are both the Settings key (a long press opens our settings, a short one the TV's); 176 is kept for TVs that pass it on", "return keyCode == KEYCODE_SETTINGS || keyCode == KEYCODE_NOTIFICATION || keyCode == TCL_SETTINGS;" in rk
       and "The system itself takes 176" in rk)
 
 print("ALL PASS" if not failed else f"{failed} FAILED")

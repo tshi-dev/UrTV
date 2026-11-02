@@ -2886,7 +2886,7 @@ public class MainActivity extends Activity {
         // the remote's shortcut keys (YouTube, Netflix, Settings, the star): with the stock launcher off nothing else answers them
         if (e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0)
             android.util.Log.d("UrTVKeys", "key=" + e.getKeyCode() + " scan=" + e.getScanCode());   // for the TV test: does the shortcut key reach the home screen at all? (codes only)
-        RemoteKeys.Decision key = remoteKeys.decide(e.getKeyCode(), e.getScanCode(), e.getAction(), e.getRepeatCount(),
+        RemoteKeys.Decision key = remoteKeys.decide(e.getKeyCode(), e.getScanCode(), e.getAction(), e.getRepeatCount(), e.getEventTime() - e.getDownTime(),
                 RemoteKeys.opensApp(e.getKeyCode()) ? remoteInstalled() : Collections.<String>emptySet());
         if (key.kind != RemoteKeys.PASS) {
             if (key.kind != RemoteKeys.EAT) {
@@ -2954,10 +2954,10 @@ public class MainActivity extends Activity {
             case RemoteKeys.OPEN_APP:
                 guarded(ParentalPolicy.REMOTE_APP, key.pkg, labelOf(key.pkg), () -> openPackage(key.pkg));
                 break;
-            case RemoteKeys.OPEN_OUR_SETTINGS:   // the Settings key opens OUR settings; the TV's own stay on the «الإعدادات» pill and tile
+            case RemoteKeys.OPEN_OUR_SETTINGS:   // a long press of the Settings key: OUR settings (the TV's own if our app is missing)
                 openOurSettings(true);
                 break;
-            case RemoteKeys.OPEN_SETTINGS:
+            case RemoteKeys.OPEN_SETTINGS:   // a short press of the Settings key: the TV's own settings, behind @tvsettings
                 launchGuarded(ParentalPolicy.REMOTE_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون");
                 break;
             case RemoteKeys.OPEN_INPUTS:
