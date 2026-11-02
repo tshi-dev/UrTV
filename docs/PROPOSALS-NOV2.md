@@ -348,63 +348,103 @@ needs one new optional field, `due`, and an exact alarm. Old lists and `saver.sh
 
 ## 6. The «الأسواق» page
 
-It opens with OK on the markets card or widget, and from Settings › المزيد › المباريات والأسواق. Like the matches page,
-it is a screen of its own.
+It opens with OK on the markets card or widget, and from Settings › المزيد › المباريات والأسواق. A screen of its own,
+with three tabs so each stays readable from the couch: **السوق**, **قائمتي** and **الأخبار**.
 
-**Mockups:**
-- `notes/proposals/markets-page.png`: the dark look, glass over the home photo blurred once.
-- `notes/proposals/markets-page-light.png`: the light look.
-- `notes/proposals/markets-page-detail.png`: OK on a stock.
+**Mockups** (all in `notes/proposals/`):
+- `markets-page.png`: the «السوق» tab, dark glass over the home photo blurred once.
+- `markets-page-light.png`: the same tab on the light look.
+- `markets-page-watchlist.png`: the «قائمتي» tab.
+- `markets-page-news.png`: the «الأخبار» tab.
+- `markets-page-detail.png`: OK on a stock.
 
-**What the page shows:**
-- **Top:** the market's state and the last update. TASI with the change in points and %, and today's line against
-  yesterday's close (dashed). Gold per gram in riyals and per ounce in dollars, silver per gram, and Brent. The currencies
-  against the riyal.
-- **Below:**
-  - «قائمتك»: the stocks from Settings › الأسهم, Saudi codes and US tickers.
-  - «الأكثر ارتفاعًا» and «الأكثر انخفاضًا».
-  - Up is green and down is red, in the Saudi convention.
-- **The detail card:** name, code, price, the change, today's line every 15 minutes against yesterday's close, the day's
-  range and the 52-week range with a marker, and «أزل من قائمتك» / «أظهره في شريط الأسواق».
-- **No prayer line:** Tadawul trades from 10:00 to 15:00 straight through Dhuhr. A prayer line would add nothing, so it
-  is left out.
+**How to read the mockups:**
+- A card or cell with a **dashed border** needs a source we do not have: one that is paid, needs permission, or is not
+  fetched yet. Its numbers or headlines are illustrative.
+- On the TV, such a card is **not shown** until its source exists. Everything with a solid border uses data we already
+  have, or public facts.
+- The prices, changes and lines are the real `data-markets/markets.json` of 2 November 2026, after the close.
 
-**The numbers in the PNGs:**
-- **Real:** the prices, changes and lines come from the real `data-markets/markets.json` of 2 November 2026 (after the
-  close).
-- **Fixed pegs, not fetched:** the currencies — 3.75 SAR to the dollar, and the AED, QAR and BHD pegs to the dollar.
-- **Illustrative:** only the 52-week range of Aramco, because it is not in our data yet.
+**Header, on every tab:**
+- the market's state with a countdown («تداول مغلق · يفتح بعد ١١ س و١٥ د، الثلاثاء ١٠:٠٠ ص»);
+- the last update, with «أسعار متأخرة».
 
-### What our data has, and what it does not
+Tadawul's hours are public facts: continuous trading 10:00–15:00, Sunday to Thursday, then the closing auction to 15:10.
+Ramadan hours differ and come from Tadawul's yearly notice.
 
-**We have today** (`.github/tools/market_prices.py`, CI, every few minutes while a market is open, into the `data-markets` branch):
-- **Fields:** for each symbol, the price, the close before and the day's 15-minute closes (up to 30).
-- **Symbols:**
-  - TASI, the 30 largest Tadawul companies (`TADAWUL`), the S&P 500 and about 50 common US tickers;
-  - gold, silver and Brent (futures), bitcoin and XRP;
-  - any other code the person adds, which the page asks for itself.
-- **Already shown:** the day's change in % or in amount for each row; that setting already exists.
-- **Market state:** open or closed comes from the clock (`due()` already knows Tadawul's hours).
+**«السوق»:**
+- **TASI:** value, change in points and %, and a large intraday line against yesterday's close. Range tabs
+  اليوم / أسبوع / شهر / سنة; «اليوم» is what we have today.
+- **«اتجاه السوق»:** rising, unchanged and falling as a bar with counts, plus the session bar. The counts are computed
+  from the 30 companies we fetch, and say so: 19 up and 11 down on 2 November.
+- **«القطاعات»** (dashed):
+  - Tadawul's sector indices have no free source: no Yahoo symbol was found, and Investing and TradingView do not allow
+    reuse.
+  - It needs Saudi Exchange's paid market data.
+- **«الأكثر ارتفاعًا وانخفاضًا»:** the top 3 and bottom 3 of the 30 (real).
+- **«الأكثر نشاطًا»** (dashed): the volume field (`regularMarketVolume`) is in the Yahoo answer we already get, so it
+  costs no request. It covers only the 30 companies, under Yahoo's terms (below).
+- **Turnover in riyals:** no free source, so it is not shown at all.
 
-**Missing but cheap, from the same answer:** Yahoo's chart answer already carries `regularMarketDayHigh`/`Low` and
-`fiftyTwoWeekHigh`/`Low` in its `meta`. `market_prices.py` would keep four more fields, with no new request. This was
-not checked live: the dev container cannot reach Yahoo.
+**«قائمتي»:**
+- Each watched stock: name, code, its own day line (a sparkline), price and change.
+- Gold (per gram and per ounce), silver and Brent, each with a sparkline.
+- **Currencies:** only fixed pegs against the riyal (dollar, dirham, Qatari riyal, Bahraini dinar), which need no source.
+  The euro and others would come once a day from the ECB's free reference rates, worked out through the dollar.
+- **Dividend dates are left out:**
+  - Argaam's dividend pages need written permission.
+  - The exchange's financial calendar has no feed and no reuse permission.
 
-**Missing, needs work:**
-- **Gainers and losers of the whole market:** today we have only the 30 largest companies, so the page says
-  «أكبر ٣٠ شركة». Covering all of Tadawul (about 250 symbols) would add about 220 requests a run. Ranking the 30 is honest
-  and enough.
-- **Currencies:** we fetch none today.
-  - The Gulf currencies and the dollar are fixed pegs: they need no source and never change.
-  - The euro, the pound and others come from the ECB's daily reference rates, which are free, official and allowed for
-    reuse. They are in euros, so CI works out each against the riyal through the dollar (×3.75). They are daily, not
-    live, and the page says «سعر اليوم».
-- **A longer chart (a month, a year):** one more request per watched symbol (`range=1y&interval=1d`). It is possible,
-  but it is not in the mockup.
+**«الأخبار»** (dashed):
+- **The design:** headlines only, newest first, with the source and the time. A side list filters: الكل، قائمتي، إعلانات
+  تداول، هيئة السوق المالية، واس. OK shows a QR to read the item on the phone, on its own site; the TV never shows
+  article text.
+- **The sources, none usable today:**
+  - **Argaam:** its terms require prior written authorisation, and no RSS was found.
+  - **Saudi Exchange announcements:** no feed was found, and the site says Tadawul owns the content.
+  - **Mubasher:** no RSS terms were found.
+  - **CMA:** announcements by email only.
+  - **SPA:** no RSS URL or reuse terms were found for news. Its photo platform is CC BY-SA, which does not prove the news
+    is.
+- **So the tab stays off until a source agrees in writing.** The step is an email to SPA and to Saudi Exchange
+  (csc@saudiexchange.sa) asking whether a headline plus a link may be shown.
 
-**Not available, and not shown:** live tick-by-tick prices, order books, volumes by trader and company news. These are
-Tadawul's paid data products.
+**The stock card** (OK on any stock):
+- name, code, price, the change, and a large chart with the same range tabs;
+- the day's open and range (real, from the 15-minute closes);
+- the 52-week range, volume and last dividend (dashed: the first two are in Yahoo's answer but not kept yet; dividends
+  have no free source);
+- the company's own announcements (dashed: needs Tadawul's permission);
+- «أزل من قائمتي» and «أظهره في شريط الأسواق».
 
-**The source's terms:** prices come from Yahoo's chart endpoint, as they do today. It is undocumented and Yahoo's terms
-cover personal use. This is a risk already accepted in the code; the page adds no new source except the ECB. If it has
-to be replaced, Saudi Exchange sells delayed data feeds, and no free official API exists.
+There is no prayer line, because Tadawul trades straight through Dhuhr.
+
+### Data: what we have, what is cheap, what is paid
+
+**Yahoo already gives us** (`.github/tools/market_prices.py` in CI, `data-markets`):
+- price, previous close and the 15-minute closes;
+- for TASI, the 30 largest companies, the S&P 500, about 50 US tickers, gold, silver, Brent, bitcoin and XRP.
+
+**Cheap: the same answer, kept fields.** Day high and low, 52-week high and low, and volume, from `meta`. These were not
+verified live, because Yahoo is blocked here.
+
+**Cheap: one more request per symbol.** Week, month and year charts (`range=1y&interval=1d`), only for TASI and the
+watched stocks.
+
+**Free, other source:**
+- ECB daily reference rates for the euro, the pound and others.
+- Tadawul's hours (public facts).
+
+**Paid or needs permission, not shown:**
+- sector indices;
+- breadth and turnover of the whole market;
+- most active across the whole market;
+- dividend calendars;
+- Argaam headlines;
+- Tadawul announcements;
+- live ticks and order books.
+
+**Yahoo's terms are a real risk, already in the code today:** the licence is personal and revocable, and it forbids using
+the data to build a data feed. Our CI file served to every TV looks like that. The page adds no new Yahoo use beyond a few
+more fields. For a public release, the clean route is a licensed delayed feed from Saudi Exchange. That is the owner's
+call.
