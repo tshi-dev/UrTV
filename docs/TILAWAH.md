@@ -143,6 +143,10 @@ optimize/music.sh adhan off | on
 optimize/music.sh adhan voice 7            # the recording used at Dhuhr, Asr, Maghrib and Isha (not the Fajr ones: 10 13 17 20)
 optimize/music.sh adhan fajr-voice 10      # «مؤذن الفجر»: Fajr's own muezzin (default 10)
 optimize/music.sh adhan short on|off       # «أذان مختصر»: stops after the first minute, 3-second fade
+optimize/music.sh adhan takbir on|off      # «تكبير فقط»: only the opening takbir (14 s, 2-second fade); turns short off
+optimize/music.sh adhan saver-only on|off  # «الأذان على شاشة التوقف فقط»: plays only over the screensaver or our home
+optimize/music.sh adhan notice on|off      # «تنبيه عند الأذان»: a 5-second «حان وقت صلاة …» at the prayer's time
+optimize/music.sh adhan saver-at on|off    # «شاشة التوقف وقت الأذان»: starts the screensaver at the prayer's time if our home is in front
 optimize/music.sh adhan stopkey on|off     # «إيقاف الأذان بأي زر»: ON by default, any key stops the adhan (volume keys and Power excepted); off: only OK on the adhan bar
 optimize/music.sh adhan stop               # stop the adhan that is playing
 optimize/music.sh adhan volume 60          # its own volume, 10-100
