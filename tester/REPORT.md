@@ -300,3 +300,40 @@ Restarts for the prompt: 2 (one for «جهّز كل شي», one for «تراجع
 **Owner's request about the QR (his words, Arabic):** the QR design is «too fage» (too big and dense) — please make it better, centred, and use the new design skills he gave the supervisor.
 
 Problems: 3 (the setup app's adb key invalid the first time on each press until a restart; the 2nd run kept an authorized key; the screensaver not removed by «تراجع») + the owner's QR design request.
+
+## step 19 (streams check)
+Lists taken from origin/next (d93485c): 11 live stations, 40 reciters, 21 adhan recordings. No Cairo/Kuwait station; no new stream URL found by the grep.
+
+### R1 live stations (from the PC)
+HEAD often lies on these servers, so each was also read 3 × 5 s with redirects followed (bytes in 5 s; > 20000 = streams).
+| # | HEAD chain / type | ffprobe | 3 × 5 s reads (status:bytes) |
+|---|---|---|---|
+| L1 radiojar SBA | HEAD 404 (GET: 302 → `http://n0x.radiojar.com/…` plain HTTP) | mp3 / mp3 | 200:112954 200:116070 200:117381 |
+| L2 shatri | 200 audio/mpeg | 5XX once | 200:319031 200:318500 200:327223 |
+| L3 sudais | 500 audio/mpeg | mp3 | 200:319031 200:323127 200:302440 |
+| L4 shuraim | 200 audio/mpeg | mp3 | 200:323127 200:323127 200:319031 |
+| L5 maher | 200 audio/mpeg | 5XX once | 200:318452 200:305344 200:314096 |
+| L6 alafasi | 500 text/html | mp3 | 200:314093 200:327212 **500:177** |
+| L7 ghamdi | 200 audio/mpeg | 5XX once | 200:314080 200:319031 200:314372 |
+| L8 dosari | 200 audio/mpeg | mp3 | 200:327223 200:323127 200:327223 |
+| L9 abdulbasit | 200 text/html | 5XX once | 200:313965 **500:177 500:177** |
+| L10 minshawi | 200 audio/mpeg | mp3 | 200:323127 200:314935 200:289316 |
+| L11 ajmy | 200 text/html | mp3 | 200:221282 200:302440 200:317849 |
+All 11 stream from the PC, but backup.qurango.net answers 500 (177 bytes) at random (L6 1/3, L9 2/3, and single 5XX in HEAD/ffprobe for L2, L3, L5, L7) — a retry is needed in the app.
+
+### R2 reciters: 40/40 HEAD 200 audio/mpeg (`…/001.mp3`); ffprobe on the first 3: mp3 + cover image. No failure.
+### R3 adhan: 21/21 HEAD 200 audio (after archive.org's redirect). (The grep also caught a code comment `https://archive.org/details/…). The file is kept…` — not a recording.)
+
+### R4 on the TV (sound muted the whole time)
+- L1 «إذاعة القرآن الكريم - السعودية»: **PROBLEM**. After 30 s: `playing=0 … station_name=إذاعة القرآن الكريم - السعودية … errors=0 last_error= buffering=1` (never starts). Log: `MediaPlayer: setDataSource1 (https://stream.radiojar.com/0tpy1h0kxtzuv)`, `MediaPlayer: getDns: current system don't support uniplayer`, then nothing. Likely cause: radiojar redirects https → **plain http** (`302 http://n05.radiojar.com/…`); Android's MediaPlayer does not follow an https→http redirect (and cleartext may be blocked). No «cannot play» line was shown.
+- For comparison L4 (qurango): `playing=1 station_name=سعود الشريم buffering=0 errors=0` within 20 s.
+
+### R5 HaramLive candidates (report only; HaramLive.java untouched)
+| which | page | stream | why official | allowed host | live now |
+|---|---|---|---|---|---|
+| Makkah (قناة القرآن الكريم) | https://www.youtube.com/@SaudiQuranTv/live | YouTube live (today `watch?v=eC4LfEVxvKg`; the `/live` URL follows the current one) | linked from https://www.sba.sa/ footer «القنوات التلفزيونية» | youtube.com ✓ | `isLiveNow: true` |
+| Madinah (قناة السنة النبوية) | https://www.youtube.com/@SaudiSunnahTv/live | YouTube live (today `watch?v=Rs7St51oDDc`) | same sba.sa footer | youtube.com ✓ | `isLiveNow: true` |
+No `.m3u8` found: www.aloula.sa did not resolve (DNS) from the fetcher; sba.sa links its platform as https://aloula.sba.sa/ (200, needs JavaScript; not on the allowed list as `aloula.sba.sa`). The 30-minute re-check of a token was not needed (no m3u8). Use the channel's `/live` URL rather than a video id (the id changes).
+
+Z: music stopped; sound muted; nothing else changed. restored: yes.
+Streams failed: 1 on the TV (L1); qurango intermittent 500.
