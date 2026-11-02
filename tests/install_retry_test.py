@@ -95,11 +95,14 @@ case "$1" in
        [ "$DROP_AT" = start ] && { log drop; exit 1; }
        if [ "$START" = fail ]; then echo "Error: Activity not started, unable to resolve Intent"; else echo "Status: ok"; [ "$FRONT" = no ] || touch "$T/front"; fi ;;
   *resolve-activity*) [ "$RESOLVE" = empty ] && exit 0
+       [ "$RESOLVE" = late ] && [ "$(cat "$T/switches" 2>/dev/null || echo 0)" -ge 2 ] && exit 0   # the TV says nothing once the switch gave up
+       [ "$RESOLVE" = fired ] && ls "$T"/marker.* > /dev/null 2>&1 && { echo "com.google.android.apps.tv.launcherx/.home.HomeActivity"; exit 0; }   # the safety switch fired first
        [ "$RESOLVE" = after ] && ls "$T"/marker.* > /dev/null 2>&1 && exit 0
        [ "$RESOLVE" = chooser ] && { echo "android/com.android.internal.app.ResolverActivity"; exit 0; }
        [ "$RESOLVE" = stockpkg ] && ! ls "$T"/marker.* > /dev/null 2>&1 && { echo "com.google.android.apps.tv.launcherx/.home.HomeActivity"; exit 0; }
        [ "$(cat "$T/home" 2>/dev/null)" = ours ] && echo sa.urtv.home/.MainActivity || echo stock/.Home ;;
   "cmd role get-role-holders"*) echo "$ROLE" ;;
+  "pm list packages -d; echo D_END") [ "$DISABLED" = none ] && exit 0; [ "$DISABLED" = stock ] && echo "package:com.google.android.apps.tv.launcherx"; echo D_END ;;
   *dumpsys*) n=$(( $(cat "$T/dumps" 2>/dev/null || echo 0) + 1 )); echo $n > "$T/dumps"
     if [ "$DIALOG" = yes ] && [ "$n" -le 4 ]; then echo "mResumedActivity: ActivityRecord{x u0 android/com.android.internal.app.ResolverActivity t5}"
     elif [ "$DIALOG" = yes ]; then echo ours > "$T/home"; echo "mResumedActivity: sa.urtv.home"
@@ -131,7 +134,7 @@ while [ $# -gt 0 ]; do [ "$1" = -o ] && : > "$2"; shift; done
 
 def run(name, fail_switches, first_drop, down_polls=0, verify="", verifier=None, curl_mode="", vanish="", illegal="", wraith_home="", wifi="", nohome="", install_mode="",
         watchdog="", restore_fail="", tcltv="", dialog="", verifier_empty="", pkgs="", stockless="", pkgextra="", query_extra="", seed=None, seed_home="", seed_marker=False, role="", resolve="", script="install.sh", args=("launcher",),
-        seed_ask="", wifi_after="", wifi_read="", start="", front="", drop_at="", seed_step=False):
+        seed_ask="", wifi_after="", wifi_read="", start="", front="", drop_at="", seed_step=False, disabled=""):
     t = Path(tempfile.mkdtemp())
     tree, bin_ = t / "tree", t / "bin"
     (tree / "optimize" / "lists").mkdir(parents=True); bin_.mkdir()
@@ -161,7 +164,7 @@ def run(name, fail_switches, first_drop, down_polls=0, verify="", verifier=None,
         (t / "verifier").write_text(verifier + "\n")
     env = dict(os.environ, QUERY_EXTRA=query_extra, PKGS=pkgs, STOCKLESS=stockless, PKGEXTRA=pkgextra, VERIFIER_EMPTY=verifier_empty, DIALOG=dialog, TCLTV=tcltv, RESTORE_FAIL=restore_fail, WATCHDOG=watchdog, ROLE=role, RESOLVE=resolve, INSTALL_MODE=install_mode, NOHOME=nohome, WRAITH_HOME=wraith_home, WIFI=wifi, ILLEGAL=illegal, VERIFY=verify, VANISH=vanish, CURL_MODE=curl_mode, PATH=f"{bin_}:{os.environ['PATH']}", PY=str(bin_ / "py"), T=str(t),
                FAIL_SWITCHES=str(fail_switches), FIRST_DROP=first_drop, DOWN_POLLS=str(down_polls),
-               WIFI_AFTER=wifi_after, WIFI_READ=wifi_read, START=start, FRONT=front, DROP_AT=drop_at, J=str(tree / "optimize" / "run" / "home-switch.json"))
+               WIFI_AFTER=wifi_after, WIFI_READ=wifi_read, START=start, FRONT=front, DROP_AT=drop_at, DISABLED=disabled, J=str(tree / "optimize" / "run" / "home-switch.json"))
     r = subprocess.run(["bash", str(tree / "optimize" / script), *args], env=env, capture_output=True, text=True)
     log = (t / "log").read_text().split() if (t / "log").exists() else []
     af = tree / "optimize" / "run" / "wifi-ask.txt"
@@ -184,8 +187,16 @@ cases = [
      lambda c, o, l: c == 0 and AGAIN in o and l.count("arm") == 2 and l.count("drop") == 1 and "Launcher is home" in o),
     ("drop, new home already set: only verify", run("c", 1, "ours"),
      lambda c, o, l: c == 0 and CHECK in o and l.count("arm") == 1 and l.count("disarm") == 1),
-    ("two drops: gives up, exits 1", run("d", 2, "stock"),
-     lambda c, o, l: c == 1 and l.count("arm") == 2 and "!! The safety switch put the stock home back" in o),
+    ("two drops, the stock home answers Home and is enabled, the journal still «switching»: «the stock home is back», NOT «the safety switch put it back»", run("d", 2, "stock", resolve="stockpkg"),
+     lambda c, o, l: c == 1 and l.count("arm") == 2 and "The stock home is back: Home answers with com.google.android.apps.tv.launcherx and it is enabled" in o and "safety switch put" not in o),
+    ("two drops, the stock home still DISABLED (the 4.1 report): never «put back»; it says the stock home is off and to run restore-home.sh", run("d2", 2, "stock", disabled="stock", resolve="stockpkg"),
+     lambda c, o, l: c == 1 and "safety switch put" not in o and "stock home is back" not in o and "still turned OFF" in o and "optimize/restore-home.sh" in o),
+    ("two drops and then the TV says nothing about its packages or Home: no claim, it says what is unknown", run("d4", 2, "stock", disabled="none", resolve="late"),
+     lambda c, o, l: c == 1 and "safety switch put" not in o and "did not say enough" in o and "the stock home: unknown" in o and "Home: no answer" in o),
+    ("the safety switch fired first (code 3): the stock home answers Home, is enabled, the journal says restored: then, and only then, «the safety switch put the stock home back»", run("d5", 0, "", resolve="fired"),
+     lambda c, o, l: c == 1 and "!! The safety switch put the stock home back (ADB was too slow): Home answers with com.google.android.apps.tv.launcherx, it is enabled, and the journal says restored" in o),
+    ("code 3 but the stock home is still disabled: not «put back»", run("d6", 0, "", resolve="fired", disabled="stock"),
+     lambda c, o, l: c == 1 and "safety switch put" not in o and "still turned OFF" in o),
     ("Play Protect refuses: check off for the install, old value back", run("f", 0, "", verify="once", verifier="1"),
      lambda c, o, l: c == 0 and "Play Protect refused" in o and "(was: 1)" in o and l.count("refused") == 1
      and l.count("installed") == 1 and l[l.index("put-0"):].count("put-1") == 1 and l[-1] == "final-1"),
@@ -397,6 +408,26 @@ def run_finish(rc, current):
     steps = (Path(d) / "steps").read_text() if (Path(d) / "steps").exists() else ""
     shutil.rmtree(d)
     return r.returncode, r.stdout + r.stderr, steps.split()
+# home_stop_line on its own (Home answering with ours cannot be reached through a whole run of the stub)
+def stop_line(resolve_ans, disabled_ans, state):
+    src = (ROOT / "optimize" / "install.sh").read_text(encoding="utf-8")
+    fn = src[src.index("  home_stop_line() {"):src.index("  rc=0; if [ \"$already\" = yes ]")]
+    d = Path(tempfile.mkdtemp())
+    (d / "py").write_text('#!/bin/sh\nshift 2\ncase "$1" in *resolve-activity*) printf "%b" "$RA" ;; "pm list packages -d"*) printf "%b" "$DA" ;; esac\n'); (d / "py").chmod(0o755)
+    script = f'PY={d}/py; STOCK=com.google.android.apps.tv.launcherx/x.Home; jget() {{ echo "{state}"; }}\n' + fn + 'home_stop_line 1\n'
+    r = subprocess.run(["bash", "-c", script], capture_output=True, text=True, env=dict(os.environ, RA=resolve_ans, DA=disabled_ans))
+    shutil.rmtree(d)
+    return r.returncode, r.stdout + r.stderr, []
+cases += [
+    ("the stop line: Home answers with ours: says so and to run again, no «put back»", stop_line("sa.urtv.home/.MainActivity\\n", "package:com.google.android.apps.tv.launcherx\\nD_END\\n", "switching"),
+     lambda c, o, l: "Home answers with the new launcher now" in o and "the stock home is disabled" in o and "safety switch put" not in o and "is back" not in o),
+    ("the stop line: stock home answers and is enabled but the journal is «switching»: «is back», not «the safety switch put it back»", stop_line("com.google.android.apps.tv.launcherx/x.Home\\n", "D_END\\n", "switching"),
+     lambda c, o, l: "The stock home is back" in o and "safety switch put" not in o),
+    ("the stop line: all three agree: «the safety switch put the stock home back»", stop_line("com.google.android.apps.tv.launcherx/x.Home\\n", "D_END\\n", "restored"),
+     lambda c, o, l: "!! The safety switch put the stock home back" in o),
+    ("the stop line: journal restored and Home the stock's, but it is disabled: not «put back»", stop_line("com.google.android.apps.tv.launcherx/x.Home\\n", "package:com.google.android.apps.tv.launcherx\\nD_END\\n", "restored"),
+     lambda c, o, l: "safety switch put" not in o and "still turned OFF" in o),
+]
 cases += [
     ("run.sh: install.sh paused at launcher (exit 5): «paused at launcher», waiting for «كمّل», no «stopped», exit 5", run_finish(5, "launcher"),
      lambda c, o, l: c == 5 and "run.sh: paused at launcher" in o and "«كمّل»" in o and "stopped" not in o and "paused" in l),

@@ -601,6 +601,29 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
     already=yes
     echo "Home is already the new launcher: nothing to switch, so no safety switch is started."
   fi
+  # The switch ended another way than the cases below name (3: the safety switch fired first; or ADB dropped twice): the line is
+  # worded from what is TRUE now, never assumed: who answers Home, whether the stock home is enabled, and the journal. «The safety
+  # switch put the stock home back» only when Home answers with the stock home, it is enabled, and the journal says restored
+  # (on 4.1 the old fixed line was printed while launcherx stayed disabled).
+  home_stop_line() {
+    local code=$1 res dis st spkg=${STOCK%%/*} stk=unknown who
+    res=$("$PY" -I optimize/tv.py "cmd package resolve-activity --brief -c android.intent.category.HOME -a android.intent.action.MAIN" 2> /dev/null | tr -d '\r' | grep -E '^[A-Za-z0-9_.]+/' | tail -n 1) || res=""
+    if dis=$("$PY" -I optimize/tv.py "pm list packages -d; echo D_END" 2> /dev/null | tr -d '\r') && grep -qx D_END <<< "$dis"; then
+      if grep -qx "package:$spkg" <<< "$dis"; then stk=disabled; else stk=enabled; fi
+    fi
+    st=$(jget state); who=${res%%/*}
+    if [ -n "$spkg" ] && [ "$who" = "$spkg" ] && [ "$stk" = enabled ] && [ "$st" = restored ]; then
+      echo "!! The safety switch put the stock home back (ADB was too slow): Home answers with $spkg, it is enabled, and the journal says restored. Nothing is broken: run the same command again."
+    elif [ "$who" = sa.urtv.home ]; then
+      echo "!! The home switch did not finish its check (code $code), but Home answers with the new launcher now (the stock home is $stk, the journal says ${st:-nothing}). Run the same command again: it checks the switch and stops the safety switch."
+    elif [ "$stk" = disabled ]; then
+      echo "!! The home switch stopped half way (code $code): the stock home $spkg is still turned OFF and Home answers with ${res:-nothing} (the journal says ${st:-nothing}). Run optimize/restore-home.sh now (the TV on and on Wi-Fi), then the same command again."
+    elif [ -n "$spkg" ] && [ "$who" = "$spkg" ] && [ "$stk" = enabled ]; then
+      echo "!! The home switch stopped (code $code). The stock home is back: Home answers with $spkg and it is enabled (the journal says ${st:-nothing}). Nothing is broken: run the same command again."
+    else
+      echo "!! The home switch stopped (code $code) and the TV did not say enough to tell where Home is (Home: ${res:-no answer}; the stock home: $stk; the journal: ${st:-nothing}). Wait 5 minutes (a safety switch running on the TV puts the stock home back), press Home on the remote; if it is not the new launcher or the stock home, run optimize/restore-home.sh, then the same command again."
+    fi
+  }
   rc=0; if [ "$already" = yes ]; then :; elif [ "$stock_unreadable" = yes ]; then rc=8; elif [ -z "$STOCK" ]; then rc=7; else switch_home || rc=$?; fi
   if [ "$rc" = 1 ]; then   # ADB dropped: wait for the TV, see what Home is now, and go on or start the switch again
     back=no; last_hint=""
@@ -671,7 +694,7 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
        echo "للشخص: تلفزيونك ما صار الشاشة الرئيسية في هذا التلفزيون، لكنه يشتغل من أيقونة «تلفزيونك» في صف التطبيقات."
        mkdir -p "${URTV_RUN_DIR:-optimize/run}"
        echo "Home switch: skipped, this TV keeps its own home screen (open UrTV from its «تلفزيونك» tile in the apps row)" > "${URTV_RUN_DIR:-optimize/run}/home-skipped.txt" ;;
-    *) echo "!! The safety switch put the stock home back (ADB was too slow). Nothing is broken: run the same command again."
+    *) home_stop_line "$rc"   # 3 (the safety switch fired first) and anything unexpected: said from what the TV shows now
        exit 1 ;;
   esac
   if [ "$home_skipped" = 0 ]; then
