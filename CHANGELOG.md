@@ -11,6 +11,12 @@ Newest first. `next` is where changes land first; a release is what was tested t
 - **The recitation and the adhan at a normal level**: the recordings are quiet next to TV sound, and the player played them at unity gain.
   It now lifts them by +6 dB inside its own audio session (LoudnessEnhancer: a gain with a limiter, so no clipping). The TV's volume, its
   mute and the adhan's own level (never above the person's choice) are not touched; a TV without the effect plays as before.
+- **Arabic letters joined everywhere**: the last letter-spacing on Arabic text is gone (the adhan bar, the «يوم» unit, the score, the
+  phone code's Arabic placeholder, «يُتلى الآن» in the player); only Latin or digit-only text keeps it (tests/arabic_spacing_test.py).
+- **The home's cards on the newest page**: the launcher always opened the page of its own build, while the screensaver downloads the
+  newest one, so page fixes (the markets' requests among them) never reached the home and its stocks card stayed stale. The screensaver
+  now shares its downloaded page (ConfigProvider .../page/, read-only, only when newer than its own and with its automatic update on) and
+  the home opens a copy of it when its build stamp is newer than the launcher's own page; otherwise its own page as before.
 - **«قائمة الأسهم» takes a company's name too**: a Tadawul code (2222, also ٢٢٢٢ in Arabic digits, which was refused before), a name
   (أرامكو, مصرف الراجحي, بنك الرياض, Aramco) or a US ticker; a name is turned into its code and a short message says what it was taken as
   («الأسهم: أرامكو 2222»), and the row shows the company beside each code.

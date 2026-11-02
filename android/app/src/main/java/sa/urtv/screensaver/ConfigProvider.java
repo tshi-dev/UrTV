@@ -129,6 +129,11 @@ public class ConfigProvider extends ContentProvider {
             if (n < 1 || n > Own.count(c)) throw new FileNotFoundException();
             return ParcelFileDescriptor.open(Own.file(c, n), ParcelFileDescriptor.MODE_READ_ONLY);
         }
+        if (seg.size() == 2 && "page".equals(seg.get(0)) && "r".equals(mode)) {   // the home card's page (the launcher's HomePage)
+            File f = sharedPage(c, seg.get(1));
+            if (f == null) throw new FileNotFoundException();
+            return ParcelFileDescriptor.open(f, ParcelFileDescriptor.MODE_READ_ONLY);
+        }
         if (seg.size() == 1 && "own-in".equals(seg.get(0)) && mode.contains("w") && !mode.contains("a")) {
             File dir = Own.dir(c);
             if (!dir.isDirectory() && !dir.mkdirs()) throw new FileNotFoundException();
@@ -136,6 +141,19 @@ public class ConfigProvider extends ContentProvider {
                 | ParcelFileDescriptor.MODE_CREATE | ParcelFileDescriptor.MODE_TRUNCATE);
         }
         throw new FileNotFoundException();
+    }
+
+    /**
+     * .../page/tv.html (or tv-en.html): the page this app downloaded (Updater), only when it is newer than the one in this APK and the
+     * owner left the automatic update on: the launcher's own copy never gets the page's fixes otherwise (its stocks card stayed stale
+     * while this one was fresh). null: nothing newer to share, the launcher keeps its own.
+     */
+    static File sharedPage(Context c, String name) {
+        String lang = "tv-en.html".equals(name) ? Tr.EN : "tv.html".equals(name) ? Tr.AR : null;
+        if (lang == null || !new Prefs(c).autoUpdate()) return null;
+        File f = Updater.pageFile(c, lang);
+        if (!f.isFile() || !PageStamp.newer(Updater.fileStamp(f), Updater.assetStamp(c, lang))) return null;
+        return f;
     }
 
     private static boolean isTasks(Uri uri) {

@@ -4,6 +4,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 python3 tests/check.py
+python3 tests/arabic_spacing_test.py   # Arabic letters stay joined: no letter-spacing on anything that can hold Arabic
 python3 tests/tilawah_test.py
 python3 tests/prayer_math_test.py
 python3 tests/prayer_crosscheck_test.py
@@ -71,6 +72,7 @@ python3 tests/city_match_test.py
 python3 tests/cities_world_test.py
 python3 tests/cities_md_test.py
 python3 tests/home_card_test.py
+python3 tests/home_page_test.py   # the home's cards on the screensaver's newer page (its stocks stayed stale on the APK's own)
 python3 tests/perf_idle_test.py
 python3 tests/league_fixtures_test.py
 python3 tests/market_prices_test.py
