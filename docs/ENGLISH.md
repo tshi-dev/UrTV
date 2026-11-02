@@ -87,6 +87,12 @@ instead.
 | **4. Phone page** (`index.en.html`) | `i18n/en/phone.tsv` | a new generator `src/phone_en.py` (writes `android/launcher/src/main/assets/phone/index.en.html` with `tr.translate`; committed, and a test checks it is current); that file; `android/launcher/src/main/java/sa/urtv/home/phone/**` (`PhoneHost.page()` serves `Tr.phonePageName(S.lang())`, the Arabic file when the English one is missing; `UpdateText` and the other phone words); the «English / العربية» link, which goes in **only** through the generator (the Arabic `index.html` has 253 bytes left of its 64 KB); `tests/phone_page.test.mjs` cases for the English file; new tests `tests/i18n_phone_*` |
 | 5. Setup on the TV (later, not now) | `i18n/en/setup.tsv` | `android/launcher/.../setup/**`, the «للشخص» rule in `docs/SETUP-PROMPT.md`. Not started until 1–4 are in. |
 
+**Left for phase 1** (found in phase 2; the page is ready for both):
+- [ ] Digits: `Prefs.fragment()` always sends `&digits=` (`hindi` by default), so an English TV shows ١٢٣ on the page. With «اللغة» English and
+  «الأرقام» never chosen, `Prefs.digits()` should default to `latin`. `tv-en.html` already reads a missing `#digits=` as Latin.
+- [ ] The city: the page shows `#city=` as it comes (the Arabic name). With «اللغة» English, `Prefs.fragment()` should send the city's English
+  name (`Cities` world entries have one; check the Gulf entries that have only Arabic).
+
 Shared, owned by none of the phases: `i18n/tr.py`, both `Tr.java`, `S.java`, `Dir.java`, `tests/i18n_test.py`, `tests/TrRun.java`,
 `docs/ENGLISH.md`, `CHANGELOG.md`, `VERSION`. `Prefs.java` is shared between 1 (labels) and 2 (`pageBase()` only): keep to your part.
 

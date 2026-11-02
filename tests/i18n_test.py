@@ -58,8 +58,26 @@ for f in (ROOT / "i18n/en").glob("*.tsv"):
     check(f"{f.name}: UTF-8, LF line ends, no BOM, ends with a line break", not raw.startswith(b"\xef\xbb\xbf") and b"\r" not in raw and raw.endswith(b"\n"))
 bad_ph = [ar for ar, en in table.items() if tr.placeholders(ar) != tr.placeholders(en)]
 check("every entry has the same placeholders in both languages (%s, %1$s…)", not bad_ph, bad_ph[:5])
-untranslated = [ar for ar, en in table.items() if re.search(r"[\u0600-\u06ff]", en)]
-check("no English side has Arabic letters", not untranslated, untranslated[:5])
+
+
+def kept_arabic(directory=ROOT / "i18n/en"):
+    """The Arabic of the entries written «=» (docs/ENGLISH.md rule 6: this one stays Arabic, as a verse or a club's name)."""
+    kept = set()
+    for f in Path(directory).glob("*.tsv"):
+        for line in f.read_text(encoding="utf-8").split("\n"):
+            parts = line.rstrip("\r").split("\t")
+            if not line.startswith("#") and len(parts) == 2 and parts[1] == "=":
+                kept.add(tr.unescape(parts[0]))
+    return kept
+
+
+def untranslated_of(tab, kept):
+    """Entries whose English has Arabic letters but for the «=» ones, which keep the Arabic on purpose."""
+    return [ar for ar, en in tab.items() if re.search(r"[\u0600-\u06ff]", en) and ar not in kept]
+
+
+untranslated = untranslated_of(table, kept_arabic())
+check("no English side has Arabic letters (but an entry written «=», which keeps the Arabic on purpose)", not untranslated, untranslated[:5])
 
 def _try(f):
     """True when f raises tr.Bad"""
@@ -167,6 +185,10 @@ check("the hook: whole literals and text nodes, <html> to en/ltr, a template wit
       eng == '<html lang="en" dir="ltr"><b>Save</b> <i> %s min left </i><script>x(\'Save\'); y("غير مترجم"); // the page’s \'Text\'\nz(`مرحبا ${n}`); w = a>b ? \'Yes\' : 0;</script>'
       and left == ["غير مترجم"], (eng, left))
 check("«=» keeps a word Arabic", tr.load(_eq_dir()) == {"الهلال": "الهلال"})
+_mixed = tempfile.mkdtemp()
+Path(_mixed, "a.tsv").write_text("الهلال\t=\nحفظ\tحفظ\nنعم\tYes نعم\nتم\tDone\n", encoding="utf-8")
+check("«=» counts as kept Arabic for the «no Arabic on the English side» check; Arabic written out on the English side still fails it",
+      kept_arabic(_mixed) == {"الهلال"} and sorted(untranslated_of(tr.load(_mixed), kept_arabic(_mixed))) == sorted(["حفظ", "نعم"]))
 
 prefs = text(APP / "Prefs.java")
 check("Prefs: «اللغة» is a pref, ar by default, normalised; setting it tells S",

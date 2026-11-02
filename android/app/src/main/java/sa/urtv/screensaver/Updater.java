@@ -34,6 +34,11 @@ final class Updater {
     static String pageUrl(String lang) { return Tr.AR.equals(Tr.norm(lang)) ? URL_PAGE : PhotoCache.REPO + "dist/" + Tr.pageName(lang); }
     static File pageFile(Context c, String lang) { return Tr.AR.equals(Tr.norm(lang)) ? pageFile(c) : new File(c.getFilesDir(), "web/" + Tr.pageName(lang)); }
     private static String etagKey(String lang) { return Tr.AR.equals(Tr.norm(lang)) ? "etag" : "etag:" + Tr.pageName(lang); }
+    /**
+     * Each page is checked on its own clock: "lastCheck" + this ("" for Arabic, the key as always). A TV switched to English asks for
+     * tv-en.html at the next screensaver start, not six hours after the last Arabic check.
+     */
+    static String checkSuffix(String lang) { return Tr.AR.equals(Tr.norm(lang)) ? "" : ":" + Tr.pageName(lang); }
 
     /** the build stamp of the page the app carries ("" if it cannot be read) */
     static String assetStamp(Context c) {
@@ -85,7 +90,7 @@ final class Updater {
         Prefs prefs = new Prefs(app);
         if (!prefs.autoUpdate()) return;
         if (!displayOn(app)) return;   // standby: not now; the next screensaver start asks (lastCheck is not touched)
-        if (System.currentTimeMillis() - prefs.raw().getLong("lastCheck", 0) < INTERVAL_MS) return;
+        if (System.currentTimeMillis() - prefs.raw().getLong("lastCheck" + checkSuffix(prefs.lang()), 0) < INTERVAL_MS) return;
         if (!DUE_RUNNING.compareAndSet(false, true)) return;
         new Thread(new Runnable() {
             @Override public void run() {
@@ -120,9 +125,9 @@ final class Updater {
         SharedPreferences sp = prefs.raw();
         if (!prefs.autoUpdate() && !force) return OFF;
         long now = System.currentTimeMillis();
-        if (!force && now - sp.getLong("lastCheck", 0) < INTERVAL_MS) return RECENT;
-
         String lang = prefs.lang();   // the page of the language the TV shows (Tr.pageName): tv.html as always, or tv-en.html
+        if (!force && now - sp.getLong("lastCheck" + checkSuffix(lang), 0) < INTERVAL_MS) return RECENT;
+
         File out = pageFile(c, lang);
         new File(out.getParentFile(), "urtv.html").delete();   // the old, heavier page
         HttpURLConnection con = null;
@@ -133,8 +138,10 @@ final class Updater {
             String etag = sp.getString(etagKey(lang), null);
             if (etag != null && out.isFile()) con.setRequestProperty("If-None-Match", etag);
             int code = con.getResponseCode();
-            sp.edit().putLong("lastCheck", now).apply();
+            sp.edit().putLong("lastCheck" + checkSuffix(lang), now).apply();
             if (code == HttpURLConnection.HTTP_NOT_MODIFIED) return "الصفحة محدثة";
+            // no English page published yet (before it reaches master): the APK's own is used, which is no failure to show
+            if (code == HttpURLConnection.HTTP_NOT_FOUND && !Tr.AR.equals(lang)) return "الصفحة محدثة";
             if (code != HttpURLConnection.HTTP_OK) return "تعذر التحديث (" + code + ")";
 
             byte[] body = readAll(con.getInputStream());
