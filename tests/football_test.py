@@ -48,7 +48,7 @@ check("the games' focus drops the tray 40 px (lowerTray), a favourite's focus br
       and "if (inDock && has) lowerTray(false);" in main and ".setStartDelay(wait)" in main)
 check("the focus: ▼ from a widget is the tray, ▲ from the tray the games, ▲ from the games the prayers, the buttons down to the prayers",
       "v.setNextFocusDownId(dockId != View.NO_ID ? dockId : v.getId());" in main and "fMt.setNextFocusUpId(fPr.getId());" in main
-      and "int topId = fMt != null && fPr != null && fWx != null ? fMt.getId()" in main and "card = fPr;" in main)
+      and "if (fMt != null && fPr != null && fWx != null) topId = fMt.getId();" in main and "card = fPr;" in main)
 check("the football home hides the greeting (the weather has its card) and its glass follows the light", "private void footballHeader()" in main
       and "greeting.setVisibility(football ? View.GONE : View.VISIBLE);" in main and "if (homeCard != null) homeCard.light(light);" in main)
 check("OK on the games opens «المباريات» on the chosen game", "putExtra(MatchesActivity.EXTRA_EVENT, eventId)" in main

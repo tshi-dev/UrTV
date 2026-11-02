@@ -1132,7 +1132,8 @@ public class MainActivity extends Activity {
             p.setNextFocusUpId(p.getId());
             p.setNextFocusDownId(card != null ? card.getId() : dockId != View.NO_ID ? dockId : p.getId());
         }
-        int topId = fMt != null && fPr != null && fWx != null ? fMt.getId() : card != null ? card.getId() : pills.get(0).getId();
+        int topId = card != null ? card.getId() : pills.get(0).getId();
+        if (fMt != null && fPr != null && fWx != null) topId = fMt.getId();   // the football home: ▲ from the tray is the games
         if (nowCard != null) {   // the «يُتلى الآن» card: down to the cards or the dock, left and up to the pills (right: the end of the row)
             nowCard.setNextFocusLeftId(pills.get(0).getId());
             nowCard.setNextFocusUpId(pills.get(0).getId());
