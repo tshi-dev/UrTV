@@ -29,7 +29,26 @@ final class ControlText {
     /** the one line under the tile's name: what the person does on the phone */
     static final String MIRROR_HINT = "من الجوال: شارك الشاشة واختر التلفزيون";
 
-    /** Whether this TV can open a package (it is installed, enabled, and has a screen to open). */
+    /**
+     * «البلوتوث»: the TV's own screen for remotes and Bluetooth accessories, tried in this order: Android's Bluetooth settings action, then
+     * Android TV's «add an accessory» action (its pairing search). The tile opens the first one the TV can open and is not there when
+     * none can. Each one is in the manifest's <queries>, so Android 11+ shows the screen to the home.
+     */
+    static final String[] BLUETOOTH_ACTIONS = {
+        "android.settings.BLUETOOTH_SETTINGS",
+        "com.google.android.intent.action.CONNECT_INPUT",
+    };
+    static final String BLUETOOTH = "البلوتوث";
+    /** the one line under the tile's name */
+    static final String BLUETOOTH_HINT = "الريموت والملحقات";
+
+    /** The action the tile opens: the first of BLUETOOTH_ACTIONS this TV can open, or null (then there is no tile). */
+    static String bluetoothAction(Opens tv) {
+        for (String a : BLUETOOTH_ACTIONS) if (tv.opens(a)) return a;
+        return null;
+    }
+
+    /** Whether this TV can open a package (it is installed, enabled, and has a screen to open), or an action (the Bluetooth tile). */
     interface Opens { boolean opens(String pkg); }
 
     /** The mirroring app the tile opens: the first of MIRROR_APPS this TV can open, or null (then there is no tile). */

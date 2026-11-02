@@ -94,6 +94,22 @@ check("OK opens it through the host, locked as that app's own tile is (ParentalP
       "host.launchGuarded(ParentalPolicy.TILE, mirror, ControlText.MIRROR)" in center and "case TILE:" in policy)
 check("the tile comes after «مخرج الصوت» and before the screensaver's, so the panel's first tiles stay where they were",
       center.index('tile("sound"') < center.index('tile("mirror"') < center.index('tile("saver"'))
+# ---- «البلوتوث»: the TV's remotes-and-accessories screen, only when one of its actions resolves
+bt_block = text[text.index("static final String[] BLUETOOTH_ACTIONS = {"):text.index("};", text.index("static final String[] BLUETOOTH_ACTIONS = {"))]
+check("the Bluetooth actions, in order: Android's BLUETOOTH_SETTINGS, then Android TV's accessories action",
+      re.findall(r'"([A-Za-z0-9_.]+)"', bt_block) == ["android.settings.BLUETOOTH_SETTINGS", "com.google.android.intent.action.CONNECT_INPUT"], bt_block)
+check("…each one in the manifest's <queries> (Android 11+ resolves only what it may see)",
+      all(f'<action android:name="{a}" />' in manifest.split("<queries>")[1].split("</queries>")[0] for a in ("android.settings.BLUETOOTH_SETTINGS", "com.google.android.intent.action.CONNECT_INPUT")))
+check("the tile is there only when one resolves, opens it behind the TV's settings' lock, and has its own icon",
+      "final Intent bluetooth = bluetoothIntent();" in center and "if (bluetooth != null)" in center
+      and "pm.resolveActivity(new Intent(a), 0) != null" in center
+      and "host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, bluetooth, ControlText.BLUETOOTH)" in center
+      and 'BLUETOOTH = "البلوتوث"' in text and 'BLUETOOTH_HINT = "الريموت والملحقات"' in text
+      and (ROOT / "android/launcher/src/main/res/drawable/ic_bluetooth.xml").exists())
+check("it comes after «انعكاس الشاشة» and before the screensaver's tile, so the first tiles stay where they were",
+      center.index('tile("mirror"') < center.index('tile("bluetooth"') < center.index('tile("saver"'))
+check("at most ten tiles: sleep, off, network, speed, sound, mirroring, Bluetooth, screensaver, ours, the TV's settings",
+      len(re.findall(r'tile\("[a-z]+"', center)) == 10, re.findall(r'tile\("[a-z]+"', center))
 check("nine tiles may go five to a row; eight or fewer are laid out as before", "static final int FIVE_AFTER = 8;" in src("ControlLayout.java")
       and "for (int cols : columns(n))" in src("ControlLayout.java"))
 
@@ -138,6 +154,7 @@ with tempfile.TemporaryDirectory() as tmp:
         check(f"layout {W}x{H} @{d}: {n} tiles in {cols}x{rows}, the panel inside the screen",
               cols * rows >= n and pw <= W * 0.82 + 1 and ph <= H * 0.90 + 1 and th >= 54 * d - 1, g)
     check("the layout cases cover nine tiles («انعكاس الشاشة») on 1080p, 720p and 540p", {(c[1], c[2]) for c in cases if c[0] == "layout" and c[4] == "9"} >= {("1920", "1080"), ("1280", "720"), ("960", "540")})
+    check("…and ten tiles («البلوتوث» too) on 1080p, 720p and 540p", {(c[1], c[2]) for c in cases if c[0] == "layout" and c[4] == "10"} >= {("1920", "1080"), ("1280", "720"), ("960", "540")})
     check("every case answered", len(got) > len(cases), (len(got), len(cases)))
     r = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.SpeedTestRun"], capture_output=True, text=True)
     for l in r.stdout.splitlines():

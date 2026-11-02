@@ -13,6 +13,7 @@ import java.nio.file.Paths;
  *   output     TYPE,TYPE,... [NAME|NAME|...] -> the sound output tile's line (the names are the products the devices report, one per type)
  *   layout     W H DENSITY N               -> "cols rows tileW tileH panelW panelH compact tiny" of the panel's tiles on that screen
  *   mirror     PKG,PKG,...                 -> the mirroring app «انعكاس الشاشة» opens when the TV can open those packages, or "none"
+ *   bluetooth  ACTION,ACTION,...           -> the action «البلوتوث» opens when the TV can open those actions, or "none"
  */
 public final class ControlTextRun {
     public static void main(String[] args) throws IOException {
@@ -41,6 +42,12 @@ public final class ControlTextRun {
                     final java.util.Set<String> has = new java.util.HashSet<>(java.util.Arrays.asList(f[1].split(",")));
                     String app = ControlText.mirrorApp(has::contains);
                     out.append(app == null ? "none" : app);
+                    break;
+                }
+                case "bluetooth": {
+                    final java.util.Set<String> has = new java.util.HashSet<>(java.util.Arrays.asList(f[1].split(",")));
+                    String a = ControlText.bluetoothAction(has::contains);
+                    out.append(a == null ? "none" : a);
                     break;
                 }
                 default: {   // layout

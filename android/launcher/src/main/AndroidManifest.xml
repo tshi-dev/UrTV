@@ -82,6 +82,13 @@
         </intent>
         <!-- the remote's Settings key outside our home (TypeService, SettingsKey.TV_SETTINGS_ACTIONS): on Android 11+ the TV's settings
              screen must be visible, or resolveActivity finds nothing and the family lock cannot name its package -->
+        <!-- «البلوتوث» in «مركز التحكم» (ControlText.BLUETOOTH_ACTIONS): the tile is there only when one of these resolves -->
+        <intent>
+            <action android:name="android.settings.BLUETOOTH_SETTINGS" />
+        </intent>
+        <intent>
+            <action android:name="com.google.android.intent.action.CONNECT_INPUT" />
+        </intent>
         <intent>
             <action android:name="android.settings.SETTINGS" />
         </intent>
