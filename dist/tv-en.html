@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261102223421">
+<meta name="urtv-build" content="20261102223524">
 <title>Your TV Screen</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -3869,7 +3869,7 @@ const FB_W = {
   feels:'Feels like', hum:'Humidity', wind:'Wind', kmh:'%s km/h', pct:'%s%%', live:'Live', ended:'Final', vs:'×',
   yesterday:'Yesterday', tday:'Today', tomorrow:'Tomorrow', g1:'1 match', g2:'2 matches', gFew:'%s matches', gMany:'%s matches',
   allOn:'all on %s', round:'%s, round %s', venue:'Venue', channel:'Channel', withPrayer:'With the prayers', game:'Match',
-  remind:'Remind me 15 min before', reminded:'Added to your tasks', follow:'Follow %s', followed:'Following %s', failed:'That didn’t work, try again',
+  remind:'Remind me 30 min before', reminded:'Added to your tasks', follow:'Follow %s', followed:'Following %s', failed:'That didn’t work, try again',
   startsAfter:'Starts %2$s after %1$s', startsBefore:'Starts %2$s before %1$s', adhanAt:'The %s adhan comes in its minute %s', ago:'%s ago', nextIn:'%s in %s',
   h1:'1 hour', h2:'2 hours', hFew:'%s hours', hMany:'%s hours', m1:'1 min', m2:'2 min', mFew:'%s min', mMany:'%s min',
   am1:'1 min', am2:'2 min', amFew:'%s min', amMany:'%s min', taskText:'Match %s, starts %s',
@@ -4173,7 +4173,7 @@ function mpLine(ev){   // «مع الصلاة»: the prayers around the game on 
 }
 function mpButtons(ev, now){
   const out = [];
-  if(fbKick(ev) - 15 * 60000 > now) out.push({k: 'remind', t: FB_W.remind, icon: true});
+  if(fbKick(ev) - 30 * 60000 > now) out.push({k: 'remind', t: FB_W.remind, icon: true});
   const team = ['Home', 'Away'].find(s => !fbFollowed(ev['id' + s + 'Team']));
   if(team) out.push({k: 'follow', side: team, t: fw(FB_W.follow, teamAr(ev['str' + team + 'Team'], ev['id' + team + 'Team']))});
   return out;
@@ -4206,7 +4206,7 @@ function mpAct(){
   let ok = false;
   try{
     if(b.k === 'remind') ok = !!(host && host.remind(fw(FB_W.taskText, teamAr(ev.strHomeTeam, ev.idHomeTeam) + ' × ' + teamAr(ev.strAwayTeam, ev.idAwayTeam),
-      fbDayWord(fbDayOf(fbKick(ev))) + ' ' + fbClock(fbKick(ev))), fbKick(ev) - 15 * 60000));
+      fbDayWord(fbDayOf(fbKick(ev))) + ' ' + fbClock(fbKick(ev))), fbKick(ev)));   // the kick-off: the app reminds 30 minutes ahead
     else{
       const id = String(ev['id' + b.side + 'Team']);
       ok = !!(host && host.follow(id, String(ev['str' + b.side + 'Team'] || '')));

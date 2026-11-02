@@ -14,7 +14,7 @@ Newest first. `next` is where changes land first; a release is what was tested t
   target over each. **«المباريات»** (MatchesActivity, #matchpage=1): OK on a game, or Settings ← المزيد ← المباريات والأسواق ← «مباريات
   اليوم». The days (yesterday to five ahead), the leagues with «فرقك» first and their counts, the live minute and score, the prayer clash
   notes; OK on a game opens its card: the round, the venue (league_fixtures.py now keeps `strVenue`), the channel, «مع الصلاة» (the
-  prayers around it on a line, one sentence), «ذكّرني قبلها بربع ساعة» (a task for now: MatchReminder is the hook) and «تابع». **Broadcast
+  prayers around it on a line, one sentence), «ذكّرني قبلها بنصف ساعة» (a task with a reminder at kick-off, «قبلها بـ» 30, silent) and «تابع». **Broadcast
   marks:** assets/shared/broadcast.json, a plain text mark per league shown only for a high-confidence, whole, verified row in season;
   .github/tools/broadcast_check.py (run by tests/check.py) fails a row with no source or seasons, or past its last season. No row yet: none
   of the proposal's sources could be opened from here. tests/football_test.py, tests/football_page.test.mjs; the page's budget is 740 KB.

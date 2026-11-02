@@ -3858,7 +3858,7 @@ const FB_W = {
   feels:'المحسوسة', hum:'الرطوبة', wind:'الرياح', kmh:'%s كم/س', pct:'٪%s', live:'مباشر', ended:'انتهت', vs:'×',
   yesterday:'أمس', tday:'اليوم', tomorrow:'غدًا', g1:'مباراة واحدة', g2:'مباراتان', gFew:'%s مباريات', gMany:'%s مباراة',
   allOn:'كلها على %s', round:'%s، الجولة %s', venue:'الملعب', channel:'القناة', withPrayer:'مع الصلاة', game:'المباراة',
-  remind:'ذكّرني قبلها بربع ساعة', reminded:'أُضيفت إلى المهام', follow:'تابع %s', followed:'تتابع %s', failed:'ما قدرنا، جرّب مرة ثانية',
+  remind:'ذكّرني قبلها بنصف ساعة', reminded:'أُضيفت إلى المهام', follow:'تابع %s', followed:'تتابع %s', failed:'ما قدرنا، جرّب مرة ثانية',
   startsAfter:'تبدأ بعد %s %s', startsBefore:'تبدأ قبل %s %s', adhanAt:'أذان %s في الدقيقة %s منها', ago:'قبل %s', nextIn:'%s بعد %s',
   h1:'بساعة', h2:'بساعتين', hFew:'ب%s ساعات', hMany:'ب%s ساعة', m1:'بدقيقة', m2:'بدقيقتين', mFew:'ب%s دقائق', mMany:'ب%s دقيقة',
   am1:'ودقيقة', am2:'ودقيقتين', amFew:'و%s دقائق', amMany:'و%s دقيقة', taskText:'مباراة %s، تبدأ %s',
@@ -4162,7 +4162,7 @@ function mpLine(ev){   // «مع الصلاة»: the prayers around the game on 
 }
 function mpButtons(ev, now){
   const out = [];
-  if(fbKick(ev) - 15 * 60000 > now) out.push({k: 'remind', t: FB_W.remind, icon: true});
+  if(fbKick(ev) - 30 * 60000 > now) out.push({k: 'remind', t: FB_W.remind, icon: true});
   const team = ['Home', 'Away'].find(s => !fbFollowed(ev['id' + s + 'Team']));
   if(team) out.push({k: 'follow', side: team, t: fw(FB_W.follow, teamAr(ev['str' + team + 'Team'], ev['id' + team + 'Team']))});
   return out;
@@ -4195,7 +4195,7 @@ function mpAct(){
   let ok = false;
   try{
     if(b.k === 'remind') ok = !!(host && host.remind(fw(FB_W.taskText, teamAr(ev.strHomeTeam, ev.idHomeTeam) + ' × ' + teamAr(ev.strAwayTeam, ev.idAwayTeam),
-      fbDayWord(fbDayOf(fbKick(ev))) + ' ' + fbClock(fbKick(ev))), fbKick(ev) - 15 * 60000));
+      fbDayWord(fbDayOf(fbKick(ev))) + ' ' + fbClock(fbKick(ev))), fbKick(ev)));   // the kick-off: the app reminds 30 minutes ahead
     else{
       const id = String(ev['id' + b.side + 'Team']);
       ok = !!(host && host.follow(id, String(ev['str' + b.side + 'Team'] || '')));

@@ -59,6 +59,10 @@ check("«المباريات»: the page's own mode, Back closes a game's card fi
 check("what the page may ask: a task (the reminder's hook, MatchReminder) and a followed club, nothing else",
       ma.count("@JavascriptInterface") == 2 and "public boolean remind(String text, double at)" in ma and "public boolean follow(String id, String name)" in ma
       and 'if (id == null || !id.matches("\\\\d{1,9}")) return false;' in ma and "static boolean add(Context c, String text, long at)" in ma)
+check("«ذكّرني قبلها»: a task with a reminder at kick-off, «قبلها بـ» 30, silent (ReminderPlan.forMatch, tests/ReminderHomeRun.java), the alarm set again",
+      "long[] r = ReminderPlan.forMatch(at);" in ma and 'v.put("due", r[0]);' in ma and 'v.put("bf", (int) r[1]);' in ma and 'v.put("snd", (int) r[3]);' in ma
+      and "if (ok) ReminderScheduler.schedule(c);" in ma
+      and "static final int MATCH_BEFORE = 30;" in read(HOME / "ReminderPlan.java") and "return new long[] {kickoff, MATCH_BEFORE, 0, 0, 0};" in read(HOME / "ReminderPlan.java"))
 check("the tray still makes only the one move", main.count("tray.animate()") == 1)
 
 # league_fixtures.py keeps the venue for the game's card

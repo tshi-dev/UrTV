@@ -143,12 +143,12 @@ for (const [why, rows] of [['the shipped table', null], ['medium confidence', [{
   const card = await p.textContent('#mp-detail');
   check('matches page: OK opens the game\'s card: the round, the venue, the channel, the prayers', /دوري روشن، الجولة ١٣/.test(card) && /King Abdullah Sports City/.test(card)
     && /ثمانية، أو تطبيق ثمانية/.test(card) && /مع الصلاة/.test(card) && /تبدأ بعد العشاء/.test(card), card);
-  check('matches page: the card\'s two buttons: remind and follow', await p.$$eval('.mdb button', b => b.length === 2 && /ذكّرني قبلها بربع ساعة/.test(b[0].textContent) && /تابع الأهلي/.test(b[1].textContent)));
+  check('matches page: the card\'s two buttons: remind and follow', await p.$$eval('.mdb button', b => b.length === 2 && /ذكّرني قبلها بنصف ساعة/.test(b[0].textContent) && /تابع الأهلي/.test(b[1].textContent)));
   check('matches page: the game a green bar on the prayers\' line, the prayers marked', await p.$$eval('.mpline .mpk', k => k.length >= 1) && (await p.$$('.mpbar')).length === 1);
   await p.evaluate(() => { window.UrtvMatches = { remind: (t, at) => (window.__rem = [t, at], true), follow: (id, n) => (window.__fol = [id, n], true) }; });
   await p.keyboard.press('Enter');
   const rem = await p.evaluate(() => window.__rem);
-  check('matches page: «ذكّرني» hands the launcher a task 15 minutes before the kick-off', rem && /الأهلي × التعاون/.test(rem[0]) && rem[1] === Date.parse('2026-11-04T17:00:00Z') - 900000, JSON.stringify(rem));
+  check('matches page: «ذكّرني» hands the launcher the task and the kick-off itself (the app reminds 30 minutes ahead)', rem && /الأهلي × التعاون/.test(rem[0]) && rem[1] === Date.parse('2026-11-04T17:00:00Z'), JSON.stringify(rem));
   await p.keyboard.press('ArrowLeft');
   await p.keyboard.press('Enter');
   check('matches page: «تابع» hands it the club\'s id and name', JSON.stringify(await p.evaluate(() => window.__fol)) === '["137721","Al-Ahli"]');

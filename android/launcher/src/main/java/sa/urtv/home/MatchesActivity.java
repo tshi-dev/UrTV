@@ -23,8 +23,8 @@ import java.util.Collections;
  * from the settings («المزيد ← مباريات اليوم»). It is the screensaver's page in its #matchpage=1 mode, on the light look: the days, the
  * leagues with «فرقك» first, a game's card with its venue, its channel and its place among the prayers. The page has the focus and the keys;
  * Back closes a game's card before it leaves. Two things it asks of the app (window.UrtvMatches):
- *  - remind: «ذكّرني قبلها بربع ساعة» adds a task (the screensaver's «المهام», as `saver.sh tasks add` does) with the game and its time.
- *    MatchReminder is the one place to change when reminders of their own come (the hook stays: text and the moment to remind).
+ *  - remind: «ذكّرني قبلها بنصف ساعة» adds a task (the screensaver's «المهام») with the game and its time, and a reminder: due at kick-off,
+ *    «قبلها بـ» 30, silent (MatchReminder, as `saver.sh tasks add '<text>' --at '…' --before 30` does).
  *  - follow: «تابع» adds the club to the followed teams (the screensaver's provider, phone_follow: the same list as «الفرق المتابعة»).
  *
  * <p>A second WebView of this app beside HomeCard's: pauseTimers()/resumeTimers() are process-wide, so this one resumes them in onResume and
@@ -127,17 +127,26 @@ public class MatchesActivity extends Activity {
         }
     }
 
-    /** «ذكّرني قبلها»: today a task with the game and its time (the tasks of «المهام»); the place a reminder of its own will take. */
+    /** «ذكّرني قبلها»: a task with the game and its time, its reminder at kick-off with «قبلها بـ» 30 and no sound (ReminderPlan.forMatch);
+     *  an older screensaver app with no reminders keeps the plain task. */
     static final class MatchReminder {
         private MatchReminder() { }
 
         static boolean add(Context c, String text, long at) {
             String t = text == null ? "" : text.trim();
-            if (t.isEmpty() || t.length() > 120) return false;
+            long[] r = ReminderPlan.forMatch(at);
+            if (t.isEmpty() || t.length() > 120 || r == null) return false;
             ContentValues v = new ContentValues();
             v.put("t", t);
+            v.put("due", r[0]);
+            v.put("bf", (int) r[1]);
+            v.put("rp", (int) r[2]);
+            v.put("snd", (int) r[3]);
+            v.put("wh", (int) r[4]);
             try {
-                return c.getContentResolver().insert(TASKS, v) != null;
+                boolean ok = c.getContentResolver().insert(TASKS, v) != null;
+                if (ok) ReminderScheduler.schedule(c);   // the home's card and the alarm, as a task with a time from the phone
+                return ok;
             } catch (RuntimeException e) {
                 return false;
             }

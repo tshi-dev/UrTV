@@ -30,6 +30,13 @@ public final class ReminderHomeRun {
         check("the same card has the same key, a snoozed one another", ReminderPlan.key(v.get(0)).equals(ReminderPlan.key(row(1, due, 30, 0, 0, false))) && !ReminderPlan.key(v.get(0)).equals(ReminderPlan.key(row(1, due, 30, 0, due - 5 * M, false))));
         check("minutes left, rounded up, never under one", ReminderPlan.minutesLeft(v.get(0), due - 30 * M) == 30 && ReminderPlan.minutesLeft(v.get(0), due - 29 * M - 1) == 30 && ReminderPlan.minutesLeft(v.get(0), due - 10_000) == 1);
 
+        long[] m = ReminderPlan.forMatch(due);
+        check("a game's «ذكّرني قبلها»: due at kick-off, 30 minutes before, no repeat, silent, the screensaver and the home",
+                m != null && m[0] == due && m[1] == 30 && m[2] == 0 && m[3] == 0 && m[4] == 0);
+        ReminderPlan.Row game = new ReminderPlan.Row(9, "x", false, m[0], (int) m[1], m[3] == 1, (int) m[4], 0);
+        check("a game's card comes half an hour before its kick-off, on the home too", game.fireAt() == due - 30 * M && game.open());
+        check("a game with no kick-off time gets no reminder", ReminderPlan.forMatch(0) == null && ReminderPlan.forMatch(-1) == null);
+
         ReminderEdit e = new ReminderEdit(0, 0, 0, false, 0);
         long now = due;
         check("a task with no reminder starts off", !e.on && e.savedDue() == 0);

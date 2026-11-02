@@ -30,6 +30,16 @@ final class ReminderPlan {
         boolean open() { return !done && due > 0 && where != 1; }
     }
 
+    /** «ذكّرني قبلها» on a game in «المباريات»: its «قبلها بـ», one of the 0 10 30 60 a task may have */
+    static final int MATCH_BEFORE = 30;
+
+    /** the reminder a game gets (MatchesActivity.MatchReminder): {due, before, repeat, sound, where} = kick-off, 30, none, silent, the screensaver
+     *  and the home; null for a kick-off that is not a time */
+    static long[] forMatch(long kickoff) {
+        if (kickoff <= 0) return null;
+        return new long[] {kickoff, MATCH_BEFORE, 0, 0, 0};
+    }
+
     /** the first moment after `now` a card is due over every open reminder the home shows; 0 when there is none */
     static long next(List<Row> v, long now) {
         long best = 0;
