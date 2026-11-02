@@ -25,7 +25,7 @@ AR_FILE, EN_FILE = PHONE / "index.html", PHONE / "index.en.html"
 # a press sets the TV's language (the same /api/set, PIN and all), and the TV then serves the page in it.
 # LINK: off until the English screens of phases 1 and 3 are in (a press switches the whole TV); then True, and run this file again. Off, both
 # files are without it and index.html is exactly what it was. tests/i18n_phone_test.mjs tries the link on the pages with it either way.
-LINK = False
+LINK = True
 LINK_AR = [   # (anchor, what goes right after it) or, when the anchor starts a line, right before it
     ('<button id="theme" class="lnk">الوضع الفاتح</button>', '<button id="lang" class="lnk hidden" lang="en">English</button>'),
     ("    cards(s);\n", "    $('lang').classList.toggle('hidden', !s.lang);\n"),

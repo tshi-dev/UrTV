@@ -44,7 +44,7 @@ final class SettingsHub {
      * «اللغة»'s button in «المزيد»: off until the home app's screens are in English too (docs/ENGLISH.md, phase 3); turned on at integration.
      * Off, the button is not shown and nothing else changes (its row is made but on no screen; `optimize/saver.sh lang` sets it all the same).
      */
-    static final boolean LANG_TILE = false;
+    static final boolean LANG_TILE = true;
 
     /** each row of SettingsActivity by its FocusKey.key (the name without its numbers), and its category */
     static final String[][] ROWS = {
