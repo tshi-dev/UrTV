@@ -1,7 +1,7 @@
 # UrTV community list: kalley-r10g
 # Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
 # MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
-# Source: examples/kalley-r10g/debloat.txt at commit 6cad2be3a130a84494c3ea9b805accac6e5013e8, taken 2026-10-23.
+# Source: examples/kalley-r10g/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
 # Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
 # match-brand: KALLEY
 # match-model: R10G
@@ -12,6 +12,12 @@ com.google.android.videos
 com.google.android.youtube.tvmusic
 com.seraphic.media.tv.interactive.app
 com.amazon.amazonvideo.livingroom
+com.realtek.leanbacklauncher.partnercustomizer
+com.apps.wifihotspot
+com.android.tv.feedbackconsent
+com.android.adservices.api
+com.android.federatedcompute.services
+com.android.ondevicepersonalization.services
 com.realtek.kara
 com.realtek.karaoke.userguide
 com.apple.atve.androidtv.appletv
@@ -21,5 +27,5 @@ com.jio.web.androidtv
 com.cbs.ca
 net.froemling.bombsquad
 com.yodo1.crossyroad
-com.google.android.apps.tv.launcherx
-com.google.android.tungsten.setupwraith
+com.mercadolibre.android.mplay_tv
+com.iqiyi.i18n.tv

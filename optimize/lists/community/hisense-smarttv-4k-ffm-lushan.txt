@@ -1,7 +1,7 @@
 # UrTV community list: hisense-smarttv-4k-ffm-lushan
 # Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
 # MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
-# Source: examples/hisense-smarttv-4k-ffm-lushan/debloat.txt at commit 6cad2be3a130a84494c3ea9b805accac6e5013e8, taken 2026-10-23.
+# Source: examples/hisense-smarttv-4k-ffm-lushan/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
 # Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
 # match-brand: HISENSE
 # match-model: HIS9603 SMARTTV4KFFM
@@ -15,6 +15,9 @@ com.hisense.odinbrowser
 com.google.android.youtube.tvmusic
 com.google.android.play.games
 com.vt.hishow
+com.haystack.android
+net.vidaatv.hisense.android.tv
+com.vidaa.oemtabcontentprovider
 com.vt.storemode
 com.vt.fte
 com.amazon.amazonvideo.livingroom
@@ -22,5 +25,9 @@ com.iqiyi.i18n.tv
 com.mercadolibre.android.mplay_tv
 com.wbd.stream
 com.vt.alexa
+com.google.android.videos
+com.tubitv
+tv.pluto.android
+com.roku.web.trc
 com.vt.tv.protector
 com.google.android.tungsten.setupwraith

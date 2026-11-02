@@ -1,0 +1,36 @@
+# UrTV community list: tcl-75p635
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/tcl-75p635/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: TCL
+# match-model: 75P635 G074KGBNF TCLEURTD51AS1
+# match-device: G07
+
+com.google.android.tungsten.setupwraith
+com.tcl.guard
+com.tcl.waterfall.overseas
+com.tcl.partnercustomizer
+com.tcl.esticker
+com.tcl.channelplus
+com.tcl.messagebox
+com.tcl.notereminder
+com.tcl.dashboard
+com.tcl.usercenter
+com.tcl.tv.tclhome_passive
+com.tcl.gallery
+com.tcl.suspension
+com.tcl.t_solo
+com.tcl.keyhelp
+com.tcl.ui_mediaCenter
+com.tcl.android.webview
+com.tcl.useragreement
+com.tcl.MultiScreenInteraction_TV
+com.tcl.assistant
+android.autoinstalls.config.google.gtvpai
+com.google.android.feedback
+com.google.android.videos
+com.google.android.syncadapters.calendar
+com.google.android.marvin.talkback
+de.sky.online
+com.google.android.play.games

@@ -1,0 +1,26 @@
+# UrTV community list: jvc-lt55mb508
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/jvc-lt55mb508/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: JVC
+# match-model: LT55MB508 MTCMSD6886SA
+# match-device: 
+
+tv.anoki.acr.controller
+com.google.android.partnersetup
+com.google.android.feedback
+android.autoinstalls.config.JVC
+com.google.android.syncadapters.calendar
+com.google.android.tvrecommendations
+com.google.android.youtube.tvmusic
+com.google.android.play.games
+com.google.android.videos
+com.spotify.tv.android
+com.ted.android.tv
+com.foxnews.android
+br.tv.horizonte.android.premierefc
+com.google.android.katniss
+com.google.android.apps.mediashell
+com.google.android.backdrop
+com.mediatek.wwtv.mediaplayer

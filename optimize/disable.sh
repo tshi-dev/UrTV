@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # Disable every package in a debloat list (one pm call per shell command; chained pm calls can stop early).
 # Packages are disabled for user 0, never uninstalled. Undo with optimize/restore.sh <same list>.
-# Refuses anything in optimize/lists/keep.txt, and Android's own core (optimize/lists/core.txt), with no override.
+# Refuses anything in optimize/lists/keep.txt, Android's own core (optimize/lists/core.txt) and the TV's inputs and keyboards
+# (optimize/lists/inputs.txt), with no override. And asks the TV itself, in one round trip, which of the packages drive its HDMI, AV or tuner
+# inputs or are a keyboard (TV_INPUT_HARDWARE asked for, a TvInputService or an input method served: Clean Your TV's input-driver guard,
+# github.com/Gathin23/cleanyourtv, MIT): those stay on, and so does one whose answer cannot be read (fail closed).
 # Usage: optimize/disable.sh optimize/lists/tcl-safe.txt
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -19,6 +22,12 @@ core=$(printf '%s\n' "$pkgs" | grep -Ef <(grep -vE '^[[:space:]]*(#|$)' optimize
 if [ -n "$core" ]; then
   echo "Refusing: these are Android's own core, and a TV may not start again without them (optimize/lists/core.txt):"
   printf '%s\n' "$core" | sed 's/^/  /'
+  exit 1
+fi
+inputs=$(printf '%s\n' "$pkgs" | grep -Ef <(grep -vE '^[[:space:]]*(#|$)' optimize/lists/inputs.txt | awk '{print $1}' | sed 's/.*/^(&)$/') || true)
+if [ -n "$inputs" ]; then
+  echo "Refusing: these are the TV's inputs (HDMI, AV, sources, the tuner) or a keyboard; disabled, a port can stay black for good (optimize/lists/inputs.txt):"
+  printf '%s\n' "$inputs" | sed 's/^/  /'
   exit 1
 fi
 # what the person asked to keep on (optimize/keep.sh restore) stays on, also on a later `run.sh again`
@@ -51,6 +60,35 @@ else
   # without these two lists a restore could not be exact (a package the TV itself had off would be turned ON): nothing is turned off, and it can be run again
   echo "!! disable.sh: the TV did not say which packages it has or which were already off, so NOTHING was turned off (a restore could not be exact). Run the same command again." >&2
   exit 1
+fi
+# The TV's own answer: a package that asks for TV_INPUT_HARDWARE (its own «requested permissions» block, not a shared user's), or serves
+# android.media.tv.TvInputService or an input method, stays on whatever its name. From Android 6 (SDK 23) a readable dump with no permission block
+# asks for nothing, so it passes; an older one, or a dump that cannot be read, stays on (NOCHK). «hung system process» is Android's watchdog
+# switching every dump off: nothing is turned off then, and a restart clears it. The same command is sent by the setup on the TV
+# (InputGuard.java; tests/input_guard_test.py keeps them equal).
+GUARD='s=$(getprop ro.build.version.sdk); for p in @PKGS@; do d=$(dumpsys package $p 2>/dev/null); case "$d" in *"hung system process"*) echo "HUNG $p";; *"requested permissions:"*) printf "%s\n" "$d" | sed -n -E "/requested permissions:/,/(install|runtime) permissions:|User [0-9]+:/p" | grep -q TV_INPUT_HARDWARE && echo "INPUT $p";; *"grantedPermissions:"*) printf "%s\n" "$d" | sed -n -E "/grantedPermissions:/,/(install|runtime) permissions:|User [0-9]+:/p" | grep -q TV_INPUT_HARDWARE && echo "INPUT $p";; *"Package [$p]"*) [ "${s:-0}" -ge 23 ] 2>/dev/null || echo "NOCHK $p";; *"Unable to find"*) ;; *) echo "NOCHK $p";; esac; printf "%s\n" "$d" | grep -qE "android\.media\.tv\.TvInputService|android\.view\.InputMethod" && echo "INPUT $p"; done; echo END_OF_LIST'
+rm -f "$RUN/inputs-left.txt"   # what the guard left on in this run (community.sh does not count them as applied)
+if [ -n "$intended" ]; then
+  raw=$("$PY" -I optimize/tv.py "${GUARD/@PKGS@/$(paste -sd' ' - <<< "$intended")}" 2> /dev/null | tr -d '\r') || raw=""
+  if ! grep -qx END_OF_LIST <<< "$raw"; then
+    echo "!! disable.sh: the TV did not say which of these packages drive its HDMI inputs or keyboard, so NOTHING was turned off. Run the same command again." >&2
+    exit 1
+  fi
+  if grep -q '^HUNG ' <<< "$raw"; then
+    echo "!! disable.sh: the TV answers «Service dumps disabled due to hung system process», so it cannot say which packages drive its HDMI inputs; NOTHING was turned off. Restart the TV (optimize/venv/bin/python -I optimize/tv.py --reboot), then run the same command again." >&2
+    exit 1
+  fi
+  held=$(sed -n -E 's/^INPUT ([A-Za-z0-9_.]+)$/\1/p' <<< "$raw" | sort -u)
+  unread=$(sed -n -E 's/^NOCHK ([A-Za-z0-9_.]+)$/\1/p' <<< "$raw" | sort -u)
+  [ -z "$held" ] || echo "Left on, the TV says they drive its HDMI/AV/tuner inputs or are a keyboard: $(paste -sd' ' - <<< "$held")" >&2
+  [ -z "$unread" ] || echo "Left on, the TV's answer about them cannot be read (an input driver must not be guessed): $(paste -sd' ' - <<< "$unread")" >&2
+  if [ -n "$held$unread" ]; then
+    out=$(printf '%s\n%s\n' "$held" "$unread")
+    grep -E '^[A-Za-z0-9_.]+$' <<< "$out" | sort -u > "$RUN/inputs-left.txt" || true
+    pkgs=$(printf '%s\n' "$pkgs" | awk 'NR==FNR { if ($0 != "") s[$0] = 1; next } !($0 in s)' <(printf '%s\n' "$out") -)
+    intended=$(printf '%s\n' "$intended" | awk 'NR==FNR { if ($0 != "") s[$0] = 1; next } !($0 in s)' <(printf '%s\n' "$out") -)
+    [ -n "$pkgs" ] || exit 0
+  fi
 fi
 prev=""; [ ! -f "$LEDGER" ] || prev=$(cat "$LEDGER")
 remember() { { printf '%s\n' "$prev"; printf '%s\n' "$1"; } | { grep -E '^[A-Za-z0-9_.]+$' || true; } | sort -u > "$LEDGER.tmp" && mv "$LEDGER.tmp" "$LEDGER"; }

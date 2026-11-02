@@ -1,13 +1,14 @@
 # UrTV community list: oneplus-tv-dubai
 # Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
 # MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
-# Source: examples/oneplus-tv-dubai/debloat.txt at commit 6cad2be3a130a84494c3ea9b805accac6e5013e8, taken 2026-10-23.
+# Source: examples/oneplus-tv-dubai/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
 # Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
 # match-brand: ONEPLUS
 # match-model: TV
 # match-device: 
 
 com.google.android.feedback
+com.heytap.tv.remotediagnosing
 com.heytap.olink
 oneplus.smarthome
 com.heytap.tv.assistant.oneplus
@@ -15,5 +16,8 @@ com.heytap.tv.btspeaker
 com.heytap.tv.filebrowser
 com.oneplus.tv.launcher
 com.tcl.browser
+com.jio.web.androidtv
+com.oneplus.tv.userguide
+com.google.android.play.games
 com.google.android.tvlauncher
 com.google.android.tvrecommendations

@@ -1,0 +1,32 @@
+# UrTV community list: hy320
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/hy320/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: HY320
+# match-model: PROJECTOR
+# match-device: 
+
+com.jiumao.screen.systemadplayer
+com.smart.tv.launcher
+com.ht1.launcher
+com.master.apps
+com.master.tv.market
+com.overseas.store.appstore
+com.android.mgstv
+com.fb
+com.define.shellservice
+com.jm.jmlauncher
+com.android.printspooler
+com.android.wallpaperbackup
+com.android.camera2
+com.android.hotspot2.osulogin
+com.android.soundpicker
+com.android.htmlviewer
+com.spocky.projengmenu
+com.droidlogic.videoplayer
+com.droidlogic.imageplayer
+com.android.chrome
+com.google.android.youtube.tvmusic
+com.amazon.avod.thirdpartyclient
+org.videolan.vlc

@@ -1,0 +1,23 @@
+# UrTV community list: seleco-tv39020hda9smart
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/seleco-tv39020hda9smart/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: SELECO
+# match-model: 13AT204V10PAS TV39020HDA9SMART39
+# match-device: 
+
+com.zeasn.deviceportal.asdprovider.toptech
+android.autoinstalls.config.realtek.device
+com.zeasn.services.general
+cn.zeasn.toptech.rtk2851.vstoresubclient
+com.atmaca.atmretailmode
+com.android.printspooler
+com.android.camera2
+com.android.wallpaper.livepicker
+com.android.chrome
+com.rtk.mediabrowser
+com.netflix.mediaclient
+com.google.android.katniss
+com.rtk.android.miracast
+cn.zeasn.launcher.vstoresubclient.toptech

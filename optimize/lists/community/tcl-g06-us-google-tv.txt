@@ -1,0 +1,30 @@
+# UrTV community list: tcl-g06-us-google-tv
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/tcl-g06-us-google-tv/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: TCL
+# match-model: G062KUS SMARTTV
+# match-device: G06
+
+com.tcl.esticker
+com.tcl.partnercustomizer
+com.tcl.messagebox
+com.tcl.dashboard
+com.tcl.useragreement
+com.tcl.guard
+com.tcl.copydatatotv
+com.google.android.partnersetup
+com.google.android.feedback
+com.google.android.onetimeinitializer
+com.google.android.syncadapters.calendar
+com.google.android.apps.nbu.smartconnect.tv
+android.autoinstalls.config.google.gtvpai
+com.tcl.channelplus
+com.tcl.tv.tclchannel
+com.tcl.tv.plus
+com.google.android.videos
+com.google.android.play.games
+com.google.android.marvin.talkback
+com.tcl.t_solo
+com.google.android.tungsten.setupwraith

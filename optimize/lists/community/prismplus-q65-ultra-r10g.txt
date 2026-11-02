@@ -1,7 +1,7 @@
 # UrTV community list: prismplus-q65-ultra-r10g
 # Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
 # MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
-# Source: examples/prismplus-q65-ultra-r10g/debloat.txt at commit 6cad2be3a130a84494c3ea9b805accac6e5013e8, taken 2026-10-23.
+# Source: examples/prismplus-q65-ultra-r10g/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
 # Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
 # match-brand: PRISM PRISMPLUS
 # match-model: PRISMQ65ULTRA2026QLED4KAIGOOGLETV
@@ -17,6 +17,10 @@ com.apps.wifihotspot
 com.mk.tv.meeting.service
 com.apps.esticker3
 com.android.printspooler
+com.android.tv.feedbackconsent
+com.android.adservices.api
+com.android.federatedcompute.services
+com.android.ondevicepersonalization.services
 com.realtek.dtmb
 com.realtek.tv.isdb
 com.realtek.tv.atsc
@@ -27,3 +31,4 @@ com.apps.puresound
 com.apps.usbmediaplayer
 com.wbd.stream
 com.google.android.apps.tv.launcherx
+com.google.android.tungsten.setupwraith

@@ -94,7 +94,7 @@ final class SetupEngine {
             if (!PKG.matcher(p).matches() || contains(SetupLists.KEEP, p)) continue;
             boolean core = false;
             for (String re : SetupLists.CORE) if (p.matches(re)) { core = true; break; }
-            if (!core && !out.contains(p)) out.add(p);
+            if (!core && !CommunityMatch.input(p) && !out.contains(p)) out.add(p);
         }
         return out;
     }
@@ -217,6 +217,16 @@ final class SetupEngine {
         }
         List<String> intended = new ArrayList<>();
         for (String p : pkgs) if (installed.contains(p) && !wasOff.contains(p)) intended.add(p);
+        if (!intended.isEmpty()) {   // disable.sh's input guard: what the TV says drives an HDMI input or is a keyboard stays on
+            InputGuard.Answer a = InputGuard.parse(text(InputGuard.command(intended)));
+            if (a == null) return failed("لم يقل التلفزيون أي التطبيقات تشغّل مداخل HDMI أو لوحة المفاتيح، فما أوقفنا شيئاً. جرّب مرة ثانية.");
+            if (a.hung) return failed("التلفزيون أوقف تقارير النظام (hung system process)، فما عرفنا أي التطبيقات تشغّل مداخل HDMI، وما أوقفنا شيئاً. أعد تشغيل التلفزيون ثم جرّب مرة ثانية.");
+            if (!a.left().isEmpty()) {
+                out.line("تركنا شغّالاً ما يشغّل مداخل التلفزيون (HDMI، الموالف) أو لوحة المفاتيح: " + String.join(" ", a.left()));
+                pkgs = InputGuard.without(pkgs, a.left());
+                intended = InputGuard.without(intended, a.left());
+            }
+        }
         List<String> prev = ledgerNames(store.get("disabled-by-us.txt"));
         remember(prev, intended);    // written BEFORE the commands: a run that dies half way is still undone by the undo
         for (String p : pkgs) sh.run("pm disable-user --user 0 " + p);

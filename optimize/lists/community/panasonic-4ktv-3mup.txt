@@ -1,0 +1,29 @@
+# UrTV community list: panasonic-4ktv-3mup
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/panasonic-4ktv-3mup/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: PANASONIC
+# match-model: 4KTV3MUP
+# match-device: 
+
+com.android.tv.feedbackconsent
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+com.apps.mk.wd
+android.autoinstalls.config.scbc.device
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
+com.apps.wifihotspot
+com.android.dreams.basic
+com.android.htmlviewer
+com.android.backupconfirm
+com.android.sharedstoragebackup
+com.android.wallpaperbackup
+com.android.providers.calendar
+com.disney.disneyplus
+com.chocolabs.app.chocotv.tv
+tv.twitch.android.app
+jp.or.nhk.nhkworld.tv
+com.apps.usbmediaplayer

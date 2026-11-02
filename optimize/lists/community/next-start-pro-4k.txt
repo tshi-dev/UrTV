@@ -1,0 +1,33 @@
+# UrTV community list: next-start-pro-4k
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/next-start-pro-4k/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: NEXT
+# match-model: HPR314NEXT STARTPRO4KTVBOX
+# match-device: RMQ
+
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+com.google.android.apps.tv.launcherx
+com.google.android.tungsten.setupwraith
+com.google.android.apps.tv.dreamx
+com.android.printspooler
+com.android.cameraextensions
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
+com.android.dreams.basic
+com.android.dynsystem
+com.android.hotspot2.osulogin
+com.android.nearby.halfsheet
+com.oem.qa
+com.sdt.producttest
+com.next.iptv
+com.next.roket
+com.jettv.player
+com.google.android.youtube.tvmusic
+com.google.android.play.games
+com.google.android.marvin.talkback
+com.google.android.tts

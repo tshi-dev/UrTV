@@ -1,0 +1,33 @@
+# UrTV community list: grundig-50gfu7850b
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/grundig-50gfu7850b/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: GRUNDIG
+# match-model: 50GFU7850B504KANDROIDTV
+# match-device: SINCHON
+
+tv.anoki.acr.controller
+com.cltv.fast
+com.google.android.feedback
+com.google.android.partnersetup
+android.autoinstalls.config.arcelik.an
+com.mstar.android.tv.disclaimercustomization
+com.google.android.syncadapters.calendar
+com.google.android.onetimeinitializer
+com.android.printspooler
+com.arcelik.tv.rctest
+com.arcelik.smartremoteservice
+com.android.providers.calendar
+com.android.providers.contacts
+com.android.providers.userdictionary
+com.android.wallpaperbackup
+com.android.se
+com.google.android.play.games
+com.google.android.youtube.tvmusic
+com.google.android.tts
+com.google.android.katniss
+com.google.android.leanbacklauncher.partnercustomizer
+com.google.android.tvlauncher
+com.google.android.tvrecommendations
+com.google.android.backdrop

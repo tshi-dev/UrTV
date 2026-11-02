@@ -1,0 +1,41 @@
+# UrTV community list: tcl-g06-google-tv-indonesia
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/tcl-g06-google-tv-indonesia/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: TCL
+# match-model: 40SMARTTV
+# match-device: G06
+
+com.tcl.esticker
+com.tcl.partnercustomizer
+com.tcl.messagebox
+com.tcl.waterfall.overseas
+com.tcl.dashboard
+com.tcl.useragreement
+com.tcl.usercenter
+com.tcl.guard
+com.tcl.hotelmenu
+com.tcl.smartalexa
+com.tcl.copydatatotv
+com.tcl.t_solo
+com.google.android.partnersetup
+com.google.android.feedback
+com.google.android.onetimeinitializer
+com.google.android.syncadapters.calendar
+com.google.android.apps.nbu.smartconnect.tv
+android.autoinstalls.config.google.gtvpai
+com.google.android.videos
+com.google.android.play.games
+com.google.android.youtube.tvmusic
+com.tcl.browser
+com.tcl.ui_mediaCenter
+com.amazon.amazonvideo.livingroom
+com.tencent.qqlivei18n
+com.ottplay.ottplay
+com.alphainventor.filemanager
+com.google.android.apps.mediashell
+com.google.android.marvin.talkback
+com.google.android.katniss
+com.google.android.tv.assistant
+com.tcl.micmanager

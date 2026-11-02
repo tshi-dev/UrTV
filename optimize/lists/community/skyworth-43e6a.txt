@@ -1,0 +1,46 @@
+# UrTV community list: skyworth-43e6a
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/skyworth-43e6a/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: SKYWORTH
+# match-model: 43E6A
+# match-device: 
+
+com.google.android.tvrecommendations
+com.google.android.leanbacklauncher.recommendations
+com.google.android.leanbacklauncher.partnercustomizer
+com.google.android.feedback
+com.google.android.tv.bugreportsender
+com.smartdevice.demonow
+com.skyworth.emanual
+com.mediatek.dmagent
+com.mediatek.agent
+com.google.android.tvtutorials
+com.google.android.backdrop
+com.google.android.sss
+com.google.android.youtube.tv
+com.google.android.videos
+com.google.android.music
+com.google.android.play.games
+com.mediatek.partner.netflix
+com.mediatek.wwtv.mediaplayer
+com.google.android.apps.mediashell
+com.google.android.katniss
+com.google.android.speech.pumpkin
+com.google.android.tts
+com.google.android.tv.remote.service
+com.google.android.backuptransport
+com.google.android.syncadapters.calendar
+com.google.android.syncadapters.contacts
+com.google.android.partnersetup
+com.android.providers.calendar
+com.android.dreams.basic
+com.android.printspooler
+com.android.gallery3d
+com.google.android.marvin.talkback
+com.google.android.apps.inputmethod.hindi
+com.google.android.apps.inputmethod.zhuyin
+com.google.android.inputmethod.japanese
+com.google.android.inputmethod.korean
+com.google.android.inputmethod.pinyin

@@ -1,0 +1,30 @@
+# UrTV community list: sharp-4t-c43dl1
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/sharp-4t-c43dl1/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: SHARP
+# match-model: AQUOS4TC43DL1 AQUOSTVJ212 TCVE2UJ
+# match-device: 
+
+jp.co.sharp.av.android.analyticsservice
+jp.co.sharp.av.android.storedemoapplication
+android.autoinstalls.config.sharp.av
+com.google.android.feedback
+com.google.android.partnersetup
+jp.co.sharp.av.android.cocorovision
+jp.co.sharp.av.android.chranking
+jp.co.sharp.av.android.aquoscity
+jp.co.sharp.av.android.living_camera_app
+com.google.android.play.games
+com.google.android.backdrop
+com.google.android.katniss
+com.google.android.apps.mediashell
+jp.co.sharp.av.android.tvremote
+com.google.android.tv.remote.service
+jp.co.sharp.av.android.cocoroguide
+jp.co.sharp.av.android.dlna.homenetwork
+com.google.android.tvrecommendations
+jp.paravi.androidtv
+jp.unext.cocorovideo
+com.google.android.videos

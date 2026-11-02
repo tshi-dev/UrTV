@@ -1,0 +1,19 @@
+# UrTV community list: strong-leap-s3
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/strong-leap-s3/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: STRONG
+# match-model: LEAPS3BOX
+# match-device: YDA
+
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+com.oem.qa
+com.sdt.producttest
+com.amlogic.voicesubtitle
+com.android.tv.feedbackconsent
+com.google.android.play.games
+com.google.android.tungsten.setupwraith
+com.google.android.apps.tv.launcherx

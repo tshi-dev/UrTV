@@ -1,0 +1,19 @@
+# UrTV community list: sony-kd-55x7500-cn
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/sony-kd-55x7500-cn/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: SONY
+# match-model: KD55X7500
+# match-device: 
+
+com.sony.dtv.sonyselect
+com.sony.dtv.discovery
+com.sony.dtv.bivlinfo
+com.google.android.tvrecommendations
+com.sony.dtv.demomode
+com.sony.dtv.demosupport
+com.sony.dtv.multiscreendemo
+com.sony.dtv.sonybugreportsys
+com.sony.dtv.da.service
+com.qterics.da.product

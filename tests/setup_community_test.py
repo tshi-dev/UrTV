@@ -147,6 +147,18 @@ p, rc, out, res, jout = case(inst, homes=f"com.google.android.apps.tv.launcherx/
 check("step: an app that answers HOME on this TV is never turned off (both)", p.same() and home_pkg not in p.tv("java")["off"].split() and res == "DONE", (p.diff(), out))
 p, rc, out, res, jout = case(inst, NO_HOMES="yes")
 check("step: the TV does not say which app is its home: nothing turned off (community.sh exits 1, the app's step failed)", rc == 1 and res == "FAILED" and p.changes("java") == [] and p.changes("sh") == [], (rc, res, p.diff()))
+# disable.sh's input guard (InputGuard.java): what the TV says drives an HDMI input or is a keyboard, or whose answer cannot be read, stays on
+p, rc, out, res, jout = case(inst, INPUT_PKGS=plain[2], IME_PKGS=plain[3])
+check("step: a package that asks for TV_INPUT_HARDWARE or serves an input method stays on, on both sides, and is not recorded as applied",
+      rc == 0 and res == "DONE" and p.same() and plain[2] not in p.tv("java")["off"].split() and plain[3] not in p.tv("java")["off"].split()
+      and plain[2] not in (p.file("sh", "community-applied.txt") or "").split() and plain[3] not in (p.file("java", "community-applied.txt") or "").split()
+      and set((p.file("sh", "community-applied.txt") or "").split()) == set((p.file("java", "community-applied.txt") or "").split()), (p.diff(), out, jout))
+p, rc, out, res, jout = case(inst, NOCHK_PKGS=plain[2])
+check("step: a package whose dump cannot be read stays on (fail closed), on both sides", rc == 0 and p.same() and plain[2] not in p.tv("java")["off"].split(), (p.diff(), out))
+for knob in ("DUMP_HUNG", "SILENT_DUMP"):
+    p, rc, out, res, jout = case(inst, **{knob: "yes"})
+    check(f"step ({knob}): the TV cannot say which packages drive its inputs: NOTHING turned off on either side (a !! line, the app's step failed)",
+          rc != 0 and "!! disable.sh" in out and res == "FAILED" and p.changes("sh") == [] == p.changes("java"), (rc, res, out, p.diff()))
 # offline: neither applies anything (the third-party list is not applied without its one safety rating); the app says so, and the run goes on
 p, rc, out, res, jout = case(inst, offline=True)
 check("step offline: community.sh and the app both apply NOTHING; the app's step is «تُرك» with «ما قدرنا نتأكد من القائمة بدون إنترنت», and records it for the report",

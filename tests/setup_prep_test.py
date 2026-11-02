@@ -52,6 +52,34 @@ tweaks_case("(the Play Store's bucket and appops cannot be read: left alone)", f
 tweaks_case("(the TV refuses an animation value)", files=anim, REFUSE="window_animation_scale")
 tweaks_case("(a test build keeps its own bucket)", files=anim, REFUSE="standby_bucket", BUILD_TYPE="userdebug")
 p = tweaks_case("(an animation the TV does not say: never recorded as null, not changed)", files=anim, EMPTYREAD="transition_animation_scale")
+# our two apps compiled ahead of time (cmd package compile -m speed-profile, Android 7 and newer), journaled, undone with --reset
+OURS = ["sa.urtv.home", "sa.urtv.screensaver"]
+p = Pair(files=anim)
+p.shell("tweaks.sh", "apply"); p.java("tweaks-apply")
+j = p.file("java", "tweaks-journal.txt") or ""
+check("compile: apply compiles both our apps from their profile, the same commands from the script and the app, and journals each",
+      all(f"cmd package compile -m speed-profile -f {o}" in p.changes("sh") for o in OURS) and p.same()
+      and all(f"compiled_{o}=speed-profile" in j.splitlines() for o in OURS) and j == p.file("sh", "tweaks-journal.txt"), (p.diff(), j))
+p.shell("tweaks.sh", "restore"); p.java("tweaks-restore")
+check("compile: the undo puts both back to «as installed» (--reset), the same from the script and the app",
+      all(f"cmd package compile --reset {o}" in p.changes("java") for o in OURS) and p.same(), p.diff())
+p = Pair(packages=[x for x in PKGS if x != "sa.urtv.screensaver"], files=anim)
+p.shell("tweaks.sh", "apply"); p.java("tweaks-apply")
+check("compile: an app that is not on the TV is not compiled nor journaled",
+      not any("sa.urtv.screensaver" in c for c in p.changes("sh")) and p.same() and "compiled_sa.urtv.screensaver" not in (p.file("java", "tweaks-journal.txt") or ""), p.diff())
+p = Pair(files=anim, COMPILE_FAIL="yes")
+rc, out = p.shell("tweaks.sh", "apply"); res, jout = p.java("tweaks-apply")
+check("compile: a TV that refuses it: said, not journaled, never a failure of the step (Android compiles later by itself)",
+      res == "DONE" and rc == 0 and "!!" not in out and "was not compiled ahead of time" in out and p.same()
+      and "compiled_" not in (p.file("java", "tweaks-journal.txt") or "") and p.file("sh", "tweaks-journal.txt") == p.file("java", "tweaks-journal.txt"), (res, out, p.diff()))
+p.shell("tweaks.sh", "restore"); p.java("tweaks-restore")
+check("compile: nothing was compiled, so the undo resets nothing", not any("--reset" in c for c in p.changes("sh") + p.changes("java")), p.diff())
+p = Pair(files=anim, SDK=23)
+p.shell("tweaks.sh", "apply"); p.java("tweaks-apply")
+check("compile: Android 6 (SDK 23) has no cmd package compile: not sent, and the journal says why (skipped_compile)",
+      not any("compile" in c for c in p.changes("sh") + p.changes("java")) and p.same()
+      and "skipped_compile=cmd package compile needs Android 7 (this TV is SDK 23)" in (p.file("java", "tweaks-journal.txt") or "").splitlines()
+      and p.file("sh", "tweaks-journal.txt") == p.file("java", "tweaks-journal.txt"), (p.diff(), p.file("java", "tweaks-journal.txt")))
 # a second apply keeps the first record
 p = Pair(files=anim)
 p.shell("tweaks.sh", "apply"); p.java("tweaks-apply")

@@ -3,7 +3,7 @@
 # (as `$PY -I optimize/tv.py <command>` and `--batch`) and the app's Java steps (tests/SetupParityRun.java, one command per call) talk to this one
 # TV, so their effects can be compared. The TV's commands are shell functions over files in $T/tv; a command line is run with eval, so
 # `a; b`, `2> /dev/null`, `| grep` and `echo` work as on the TV. Every change is written to $T/changes, one line each.
-#   env: T (the folder), SDK (34), MAKER (TCL), RCMODE=1 (exit with the command's own code: the Java side reads it as AdbClient.run does)
+#   env: T (the folder), SDK (34), COMPILE_FAIL=yes (cmd package compile fails), MAKER (TCL), RCMODE=1 (exit with the command's own code: the Java side reads it as AdbClient.run does)
 shift 2   # -I optimize/tv.py
 S="$T/tv"; mkdir -p "$S"
 change() { echo "$*" >> "$T/changes"; }
@@ -83,12 +83,26 @@ cmd() {
     appops) shift; appops "$@" ;;
     package) case "$2" in
                resolve-activity) echo "priority=0 preferredOrder=0 match=0x108000 specificIndex=-1 isDefault=false"; echo "${HOME_NOW:-com.google.android.apps.tv.launcherx/.home.HomeActivity}" ;;
+               compile) change "cmd package ${*:2}"; if [ "${COMPILE_FAIL:-}" = yes ]; then echo "Failure: dex2oat failed"; else echo Success; fi ;;
                query-activities) [ "${NO_HOMES:-}" = yes ] && return 0; printf '%s\n' ${HOMES:-com.google.android.apps.tv.launcherx/.home.HomeActivity} | sed 's/^/    /' ;;
              esac ;;
   esac
 }
+# `dumpsys package <p>` for disable.sh's input guard: INPUT_PKGS ask for TV_INPUT_HARDWARE, IME_PKGS serve an input method, NOCHK_PKGS have a dump
+# with no «Package [p]» section, DUMP_HUNG=yes is Android's watchdog
+dumpsys_package() {
+  local p=$1
+  [ "${DUMP_HUNG:-}" = yes ] && { echo "Service dumps disabled due to hung system process"; return 0; }
+  case " ${NOCHK_PKGS:-} " in *" $p "*) echo "Dexopt state:"; return 0 ;; esac
+  pkgs | command grep -qxF "$p" || { echo "Unable to find package: $p"; return 0; }
+  case " ${IME_PKGS:-} " in *" $p "*) printf 'Service Resolver Table:\n  Non-Data Actions:\n      android.view.InputMethod:\n        1a2b %s/.Ime filter 3c4d\n' "$p" ;; esac
+  printf 'Packages:\n  Package [%s] (5e6f):\n    requested permissions:\n      android.permission.INTERNET\n' "$p"
+  case " ${INPUT_PKGS:-} " in *" $p "*) echo "      android.permission.TV_INPUT_HARDWARE" ;; esac
+  printf '    install permissions:\n      android.permission.INTERNET: granted=true\n    User 0: ceDataInode=1 installed=true\n'
+}
 dumpsys() {
   case "$1" in
+    package) dumpsys_package "$2" ;;
     activity) if [ "${2:-}" = settings ]; then echo "  max_cached_processes=1024"; else echo "  topResumedActivity=ActivityRecord{1a2b u0 com.google.android.apps.tv.launcherx/.home.HomeActivity t3}"; fi ;;
     dreams) echo "  mCurrentDream=null" ;;
     meminfo) if [ -n "${2:-}" ]; then echo "                   Pss  Private"; echo "        TOTAL    51200    40000"; return 0; fi
@@ -122,6 +136,8 @@ if [ "${1:-}" = --batch ]; then
 fi
 # a TV that drops the answer about its disabled apps (nothing at all comes back, not even the end marker)
 if [ "${SILENT_OFF:-}" = yes ] && [[ "$1" == *"pm list packages -d"* ]]; then echo; exit 0; fi
+# a TV that drops the answer of the input guard (no end marker)
+if [ "${SILENT_DUMP:-}" = yes ] && [[ "$1" == *"dumpsys package"* ]]; then echo; exit 0; fi
 out=$(eval "$1" 2>&1); rc=$?
 printf '%s\n' "$out"
 [ "${RCMODE:-}" = 1 ] && exit "$rc"

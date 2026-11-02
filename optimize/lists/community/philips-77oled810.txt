@@ -1,0 +1,33 @@
+# UrTV community list: philips-77oled810
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/philips-77oled810/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: PHILIPS
+# match-model: 77OLED81012
+# match-device: 
+
+org.droidtv.candeebug
+org.droidtv.gel
+org.droidtv.tv.frameworklogger
+com.google.android.feedback
+tv.samba.ssm
+com.tpv.nftgallery
+com.google.android.partnersetup
+com.google.android.onetimeinitializer
+com.google.android.play.games
+org.droidtv.amazonalexa
+com.phorus.playfi.tv
+com.phorus.playfi.softap
+org.droidtv.ipcontrol
+io.mimi.sdk.service
+org.droidtv.astrahdplus
+org.droidtv.m7opapp
+org.droidtv.control4app
+org.droidtv.control4adapterservice
+org.droidtv.control4sddp
+org.droidtv.control4UcService
+org.droidtv.matter
+com.google.android.syncadapters.calendar
+com.google.android.tungsten.setupwraith
+org.droidtv.oemtabprovider

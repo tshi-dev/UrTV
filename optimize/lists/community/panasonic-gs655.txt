@@ -1,0 +1,26 @@
+# UrTV community list: panasonic-gs655
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/panasonic-gs655/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: PANASONIC
+# match-model: GS655
+# match-device: 
+
+android.autoinstalls.config.skyworth
+fusion.android.tv.demo
+com.smartdevice.common.demonow
+com.mstar.android.tv.disclaimercustomization
+com.Smartdevice.emanual
+com.mediatek.testpq
+com.google.android.feedback
+com.google.android.apps.nbu.smartconnect.tv
+com.google.android.tvrecommendations
+com.google.android.leanbacklauncher.recommendations
+com.google.android.leanbacklauncher.partnercustomizer
+com.google.android.tv.bugreportsender
+com.google.android.play.games
+com.google.android.katniss
+com.google.android.apps.mediashell
+com.google.android.backdrop
+com.google.android.tvlauncher

@@ -1,0 +1,29 @@
+# UrTV community list: tcl-tc8000-ay30a2
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/tcl-tc8000-ay30a2/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: TCL
+# match-model: TC8000AY30A2CHINESEMARKETTCL
+# match-device: 
+
+com.tcl.bootadservice
+com.tcl.bi
+com.tcl.logkit
+com.tcl.c2dm.client
+android.autoinstalls.config.tcl.device
+com.tcl.recognize.service
+com.tcl.ffkaraoke
+com.audiocn.karaoke.micmanager
+com.tcl.ffeducation
+com.tcl.playskill
+com.tcl.appreciate.art
+com.tcl.browser
+com.tcl.common.weather
+com.tcl.wholenetsearch
+com.tcl.useragreement
+com.tcl.gamebar
+com.tcl.repairguide
+com.tcl.vod
+com.tcl.tliveplay
+com.tcl.weixin

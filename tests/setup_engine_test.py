@@ -90,6 +90,8 @@ if a[0] == "--batch":
         if w[:3] == ["pm", "disable-user", "--user"] and w[4] in [s.lstrip("-") for s in st]:
             st = [("-" + s.lstrip("-")) if s.lstrip("-") == w[4] else s for s in st]
     open(os.environ["STATE"], "w").write("\\n".join(st) + "\\n")
+elif "dumpsys package" in a[0]:   # disable.sh's input guard: no input driver here
+    print("END_OF_LIST")
 elif a[0].startswith("pm list packages -d"):
     print("".join("package:%s\\n" % s[1:] for s in st if s.startswith("-")) + "END_OF_LIST")
 elif a[0].startswith("pm list packages"):

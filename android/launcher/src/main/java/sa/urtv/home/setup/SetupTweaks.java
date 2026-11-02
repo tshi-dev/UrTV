@@ -7,7 +7,8 @@ import java.util.List;
 
 /**
  * The speed and memory tweaks of optimize/tweaks.sh, ported line by line, with the same journal (tweaks-journal.txt, and tweaks-journal.done once it
- * was put back): animations at half length, the Play Store kept from running in the background, app caches trimmed only when storage is low. The
+ * was put back): animations at half length, the Play Store kept from running in the background, app caches trimmed only when storage is low, our two
+ * apps compiled ahead of time from their profile (Android 7 and newer; undone with --reset). The
  * cached-app freezer is no longer set (tweaks.sh, 4.2: one report linked it to apps hanging after standby): apply leaves it and does not record it,
  * but a TV an older run set gets its original back. The Play Store's standby bucket is set on Android 11 and newer only (on 9 and 10 it did not hold). What the TV had is recorded BEFORE anything is changed; only the word «null» the TV prints means «not set», an empty or
  * failed read is «unknown» and is never written as null (a restore would delete the TV's real value), and a setting whose original is unknown is not
@@ -45,6 +46,35 @@ final class SetupTweaks {
         if (sdk < 28) { psKeys.remove("standby_bucket"); skipped.add("standby_bucket: standby buckets need Android 9 (this TV is SDK " + sdkSay + ")"); }
         // Android 9 and 10: not asked for a bucket at all (only apply; a restore still puts back a bucket an older run recorded)
         if (apply && sdk < 30 && sdk >= 28) { psKeys.remove("standby_bucket"); skipped.add("standby_bucket: the Play Store's standby bucket is only set on Android 11 and newer (this TV is SDK " + sdkSay + ")"); }
+        if (sdk < 24) skipped.add("compile: cmd package compile needs Android 7 (this TV is SDK " + sdkSay + ")");
+    }
+
+    /** Our two apps, compiled ahead of time from their profile by apply (journaled as compiled_<package>), back to «as installed» by restore. */
+    static final String[] OURS = {"sa.urtv.home", "sa.urtv.screensaver"};
+
+    /**
+     * tweaks.sh's compile step (Android 7 / SDK 24 and newer): a sideloaded app runs on the JIT until Android's idle job compiles it. Only an app on
+     * the TV, and only a «Success» is journaled; anything else is said and left to Android (nothing to put back). Never a failure of the step.
+     */
+    private void compileOurs() throws IOException {
+        if (sdk < 24) { out.line("تطبيقاتنا: ما جهّزناها مسبقاً (يحتاج أندرويد 7، وهذا التلفزيون SDK " + sdkSay + ")."); return; }
+        for (String p : OURS) {
+            if (!tv.installed(p)) continue;
+            String r = tv.text("cmd package compile -m speed-profile -f " + p + " 2>&1");
+            boolean ok = false;
+            for (String l : r.split("\n")) if (l.equals("Success")) ok = true;
+            if (ok) { jset("compiled_" + p, "speed-profile"); out.line("جهّزنا " + p + " مسبقاً ليفتح أسرع."); }
+            else out.line("ما جهّزنا " + p + " مسبقاً (التلفزيون لم يقبل)؛ أندرويد يجهّزه لاحقاً بنفسه.");
+        }
+    }
+
+    /** The undo of compileOurs: back to how it was installed. */
+    private void resetOurs() throws IOException {
+        for (String p : OURS) {
+            if (jget("compiled_" + p).isEmpty()) continue;
+            tv.text("cmd package compile --reset " + p + " 2>&1");
+            out.line("أرجعنا " + p + " كما ثُبّت.");
+        }
     }
 
     /** The keys apply records and sets: the freezer is no longer one of them. */
@@ -188,6 +218,7 @@ final class SetupTweaks {
         }
         for (String c : cmds) tv.run(c);
         boolean bad = readBack(want, psWant);
+        compileOurs();
         if (bad) return new SetupEngine.Result(SetupEngine.Status.FAILED, "سرّعنا التلفزيون، لكنه لم يقبل بعض القيم (التفاصيل فوق). «تراجع» يرجع ما تغيّر.");
         return new SetupEngine.Result(SetupEngine.Status.DONE, "سرّعنا التلفزيون: حركات أقصر، ومتجر Play لا يعمل في الخلفية. «تراجع» يرجعها كما كانت.");
     }
@@ -242,6 +273,7 @@ final class SetupTweaks {
         out.line("نرجع إعدادات السرعة كما كانت في التلفزيون.");
         for (String c : cmds) tv.run(c);
         boolean bad = readBack(want, psWant);
+        resetOurs();
         if (!bad) {
             store.put(JOURNAL_DONE, store.get(JOURNAL));
             store.put(JOURNAL, "");

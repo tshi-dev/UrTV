@@ -1,0 +1,22 @@
+# UrTV community list: jvc-uk-4k-sadang
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/jvc-uk-4k-sadang/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: JVC
+# match-model: LT58CA810 MTCMSD6886UK
+# match-device: 
+
+com.google.android.feedback
+com.google.android.apps.nbu.smartconnect.tv
+com.google.android.syncadapters.calendar
+com.android.printspooler
+com.google.android.play.games
+com.google.android.youtube.tvmusic
+com.google.android.videos
+com.google.android.apps.mediashell
+com.mediatek.tv.freeviewplay
+com.google.android.tvlauncher
+com.google.android.tvrecommendations
+android.autoinstalls.config.JVC
+com.google.android.partnersetup

@@ -1,0 +1,14 @@
+# UrTV community list: sharp-85hp5465e
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/sharp-85hp5465e/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: SHARP
+# match-model: 85HP5465E
+# match-device: MANIATIKA
+
+tv.anoki.acr.anokiacroptin
+com.mediatek.tv.launcher.partner
+com.mediatek.tv.retaildemo
+com.google.android.tungsten.setupwraith
+com.google.android.apps.tv.launcherx

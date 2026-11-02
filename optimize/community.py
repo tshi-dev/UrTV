@@ -31,8 +31,8 @@ DIR = os.path.join(HERE, "lists", "community")
 GENERIC_MODELS = {"SMARTTV", "ANDROIDTV", "GOOGLETV", "TV", "ATV", "TVBOX", "ANDROIDTVBOX", "GENERIC", "ANDROID", "UNKNOWN",
                   "SMARTTV4K", "ANDROIDTV4K", "LEDTV", "LCDTV", "SMARTLEDTV", "TELEVISION"}
 GENERIC_DEVICES = {"TV", "ATV", "GTV", "DEVICE", "GENERIC", "ANDROID", "UNKNOWN", "TVBOX", "BOX"}
-# what a home switch of ours must never find in a list: launchers, setup wizards, the provisioning app
-NOT_FOR_US = re.compile(r"(launcher|tvhome|setupwraith|setupwizard|provision|\.home$|\.setup$)", re.I)
+# what a home switch of ours must never find in a list: launchers, setup wizards (and the first-run «oobe»), the provisioning app
+NOT_FOR_US = re.compile(r"(launcher|tvhome|setupwraith|setupwizard|wizard|oobe|provision|\.home$|\.setup$)", re.I)
 
 
 def norm(s):

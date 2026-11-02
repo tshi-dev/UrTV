@@ -39,6 +39,7 @@ case "$1" in
     [ "$INSTALLED_FAILS" = yes ] && exit 1
     echo package:android; printf 'package:%s\\n' $INSTALLED; echo END_OF_LIST ;;
   "pm list packages "*) echo "package:${1##* }" ;;
+  *"dumpsys package"*) echo END_OF_LIST ;;   # disable.sh's input guard: no input driver here
 esac
 exit 0
 ''')

@@ -1,0 +1,21 @@
+# UrTV community list: bell-fibe-tv-vip7802
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/bell-fibe-tv-vip7802/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: BELL
+# match-model: FIBETV VIP7802 VIP7802BELL
+# match-device: 
+
+com.commscope.report.bell
+com.commscope.report.companion.bell
+com.commscope.notification.bell.merlin
+com.arris.notificationlistener.bell
+com.arris.bugreport
+com.arris.android.stb.fti
+com.arris.quickactions
+com.google.android.play.games
+com.google.android.videos
+com.google.android.youtube.tvmusic
+com.google.android.feedback
+com.google.android.tvrecommendations
