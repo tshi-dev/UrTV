@@ -169,7 +169,7 @@ public class MainActivity extends Activity {
 
     // the cards were changed from the phone while the home screen is in front: follow now, not at the next return
     private final BroadcastReceiver cardsChanged = new BroadcastReceiver() {
-        @Override public void onReceive(Context c, Intent i) { if (resumed) { homeCard.refresh(); wireFocus(); } }
+        @Override public void onReceive(Context c, Intent i) { if (resumed) { homeCard.refresh(); footballHeader(); wireFocus(); } }
     };
 
     // ---------------------------------------------------------------- lifecycle
@@ -229,6 +229,7 @@ public class MainActivity extends Activity {
         updateClock();
         updateNowPlaying();
         homeCard.refresh();
+        footballHeader();   // «الواجهة» may have changed while the settings were in front
         readAnimationScale();
         loadTvRows();   // what one watched since: «أكمل المشاهدة» moves on
         showUpdateResult();
@@ -392,6 +393,27 @@ public class MainActivity extends Activity {
             }
             @Override public void open() {   // OK: the list, with the focus on «🎤 تكلّم» so one more OK starts the voice adding
                 launchGuarded(ParentalPolicy.CARD_TASKS, new Intent(MainActivity.this, TasksActivity.class).putExtra(TasksActivity.EXTRA_MIC, true), S.t("المهام"));
+            }
+        });
+        homeCard.football(new FootballFocus.Host() {   // «المظهر ← الواجهة ← كرة القدم» (docs/PROPOSALS-NOV2.md §1)
+            @Override public int headerBottom() {
+                View head = clockBlock == null ? null : (View) clockBlock.getParent();
+                if (head == null || head.getHeight() == 0) return bar(192);
+                return head.getTop() + Math.max(clockBlock.getBottom(), pillRow == null ? 0 : pillRow.getBottom()) + bar(24);
+            }
+            @Override public boolean light() { return lightNow; }
+            @Override public void focus(View target, String which, boolean has) {
+                if (!has) return;
+                lastFocusedId = target.getId(); glideTo(0); fadeGlow(1f);
+                lowerTray(FootballFocus.MT.equals(which));   // the games open into a row: the tray makes room, the other widgets need none
+            }
+            @Override public void open(String which, String eventId) {
+                if (FootballFocus.MT.equals(which)) {
+                    try { startActivity(new Intent(MainActivity.this, MatchesActivity.class).putExtra(MatchesActivity.EXTRA_EVENT, eventId)); }
+                    catch (RuntimeException ignored) { }
+                } else if (FootballFocus.PR.equals(which)) {
+                    if (getResources().getBoolean(R.bool.show_listening)) launchGuarded(ParentalPolicy.PILL_LISTEN, adhanSettingsIntent(), S.t("إعدادات الأذان"));
+                } else openOurSettings(false);
             }
         });
         hero.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> homeCard.fit());
@@ -1045,9 +1067,12 @@ public class MainActivity extends Activity {
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED))));
         card.setOnFocusChangeListener((v, has) -> {
             float s = has ? (inDock ? FavBar.FOCUS_SCALE : 1.1f) : 1f;
-            scaleTo(v, s);   // a spring: a held arrow keeps its speed from card to card
+            // from the games of the football home: the tray goes back to y 808 first, then the tile lifts (FavBar.DROP_MS)
+            long wait = inDock && has && trayLowered ? FavBar.DROP_MS : 0;
+            if (inDock && has) lowerTray(false);
+            if (wait > 0) v.postDelayed(() -> { if (v.hasFocus()) scaleTo(v, s); }, wait); else scaleTo(v, s);   // a spring: a held arrow keeps its speed from card to card
             if (inDock) v.animate().translationY(has ? -bar(FavBar.LIFT) : 0).translationZ(has ? dp(GlowLook.LIFT_DP) : 0)
-                    .setInterpolator(new DecelerateInterpolator()).setDuration(FavBar.MS).start();
+                    .setInterpolator(new DecelerateInterpolator()).setStartDelay(wait).setDuration(FavBar.MS).start();
             else v.animate().translationZ(has ? dp(GlowLook.LIFT_DP) : 0).setInterpolator(new DecelerateInterpolator()).setDuration(has ? 320 : 200).start();
             shine.animate().alpha(has ? 1f : 0f).setDuration(160).start();
             label.animate().alpha(has ? 1f : 0f).translationY(has ? dp(4) : 0).setDuration(200).start();
@@ -1083,6 +1108,23 @@ public class MainActivity extends Activity {
         // the «المهام» card, when it is among the home cards, is a stop between the pills and the dock
         View card = homeCard == null ? null : homeCard.live();
         int dockId = d > 0 ? dockCards.get(Math.min(d - 1, d / 2)).getId() : View.NO_ID;
+        // the football home (FootballFocus): the games at the start side, then the prayers, then the weather; ▼ from any of them is the tray,
+        // ▲ from the tray the games, ▲ from the open row of games the prayers, ▲ from those two the buttons
+        View fMt = homeCard == null ? null : homeCard.footballTarget(FootballFocus.MT);
+        View fPr = homeCard == null ? null : homeCard.footballTarget(FootballFocus.PR);
+        View fWx = homeCard == null ? null : homeCard.footballTarget(FootballFocus.WX);
+        if (fMt != null && fPr != null && fWx != null) {
+            View[] order = {fMt, fPr, fWx};   // from the start side (the right in Arabic)
+            for (int i = 0; i < order.length; i++) {
+                View v = order[i], toStart = i > 0 ? order[i - 1] : v, toEnd = i < order.length - 1 ? order[i + 1] : v;
+                v.setNextFocusRightId((Dir.rtl() ? toStart : toEnd).getId());
+                v.setNextFocusLeftId((Dir.rtl() ? toEnd : toStart).getId());
+                v.setNextFocusUpId(pills.get(0).getId());
+                v.setNextFocusDownId(dockId != View.NO_ID ? dockId : v.getId());
+            }
+            fMt.setNextFocusUpId(fPr.getId());
+            card = fPr;   // the buttons and «يُتلى الآن» go down to the prayers; below, the tray goes up to the games
+        }
         for (int i = 0; i < pills.size(); i++) {
             View p = pills.get(i);
             p.setNextFocusLeftId(i == 0 ? p.getId() : pills.get(i - 1).getId());
@@ -1090,14 +1132,14 @@ public class MainActivity extends Activity {
             p.setNextFocusUpId(p.getId());
             p.setNextFocusDownId(card != null ? card.getId() : dockId != View.NO_ID ? dockId : p.getId());
         }
-        int topId = card != null ? card.getId() : pills.get(0).getId();
+        int topId = fMt != null && fPr != null && fWx != null ? fMt.getId() : card != null ? card.getId() : pills.get(0).getId();
         if (nowCard != null) {   // the «يُتلى الآن» card: down to the cards or the dock, left and up to the pills (right: the end of the row)
             nowCard.setNextFocusLeftId(pills.get(0).getId());
             nowCard.setNextFocusUpId(pills.get(0).getId());
             nowCard.setNextFocusRightId(nowCard.getId());
             nowCard.setNextFocusDownId(card != null ? card.getId() : dockId != View.NO_ID ? dockId : nowCard.getId());
         }
-        if (card != null) {
+        if (card != null && card != fPr) {
             card.setNextFocusLeftId(card.getId());   // nothing beside it to move to: stay on it
             card.setNextFocusRightId(card.getId());
             card.setNextFocusUpId(pills.get(0).getId());   // a pill's own focus moves this to that pill, see pill()
@@ -2231,8 +2273,8 @@ public class MainActivity extends Activity {
 
     /**
      * The one move the tray makes (FavBar.WIDGET_DROP): 40 px down while the focus is in a widget that opens into a scrolling row (the
-     * matches widget of the football home, docs/PROPOSALS-NOV2.md §1), back before a tile lifts. Nothing calls it with true until that
-     * widget is on the home; the tray looks the same either way.
+     * matches widget of the football home, docs/PROPOSALS-NOV2.md §1, FootballFocus), back before a tile lifts. The tray looks the same
+     * either way.
      */
     void lowerTray(boolean down) {
         if (tray == null || down == trayLowered) return;
@@ -2443,6 +2485,14 @@ public class MainActivity extends Activity {
         dockBand.setColor(light ? FavBar.FILL_LIGHT : FavBar.FILL_DARK);   // FavBar: the same tray on every look
         dockBand.setStroke(Math.max(1, bar(1)), light ? FavBar.LINE_LIGHT : FavBar.LINE_DARK);
         for (View c : dockCards) { GradientDrawable r = ringByCard.get(c); if (r != null) r.setStroke(bar(FavBar.RING), FavBar.ring(light)); }
+        if (homeCard != null) homeCard.light(light);   // the football home's widgets: the same light or dark glass
+    }
+
+    /** The football home: the weather has its own card and the clock sits higher, so the greeting and its weather line are not shown. */
+    private void footballHeader() {
+        boolean football = homeCard != null && homeCard.isFootball();
+        greeting.setVisibility(football ? View.GONE : View.VISIBLE);
+        if (football) weatherLine.setVisibility(View.GONE);
     }
 
     private void updateClock() {
@@ -2456,6 +2506,7 @@ public class MainActivity extends Activity {
         Calendar now = ClockZone.at(ms, tz);   // the city's time, like the prayer times beside it
         int h = now.get(Calendar.HOUR_OF_DAY);
         greetingLine.update(h, cfg);
+        footballHeader();
         lookNow = cfg.look();
         applyLook(Look.light(cfg.appearance(), dayBySun(cfg), h * 60 + now.get(Calendar.MINUTE)));
         GlassStyle.Look glassNow = homeGlass();

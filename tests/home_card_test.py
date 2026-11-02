@@ -37,8 +37,13 @@ CASES = [
 launcher = list((ROOT / "android/launcher/src/main/java").rglob("*.java"))
 makers = [p.name for p in launcher if "new WebView(" in p.read_text(encoding="utf-8")]
 timers = [p.name for p in launcher if "pauseTimers" in p.read_text(encoding="utf-8").replace("pauseTimers()/resumeTimers()", "")]
-card_ok = makers == ["HomeCard.java"] and timers == ["HomeCard.java"]
-print(("PASS " if card_ok else "FAIL ") + "the launcher has exactly one WebView (HomeCard), the only place that calls the process-wide pauseTimers()/resumeTimers()"
+# «المباريات» (MatchesActivity, docs/PROPOSALS-NOV2.md §1) is the second: never in front with the home, it resumes the timers in its onResume
+# and pauses them in its onPause, so whichever of the two comes in front last leaves them running
+ma = (ROOT / "android/launcher/src/main/java/sa/urtv/home/MatchesActivity.java").read_text(encoding="utf-8")
+ma_ok = ("protected void onResume() {\n        super.onResume();\n        if (web != null) { web.onResume(); web.resumeTimers(); }" in ma
+         and "protected void onPause() {\n        super.onPause();\n        if (web != null) { web.onPause(); web.pauseTimers(); }" in ma)
+card_ok = sorted(makers) == ["HomeCard.java", "MatchesActivity.java"] and sorted(timers) == ["HomeCard.java", "MatchesActivity.java"] and ma_ok
+print(("PASS " if card_ok else "FAIL ") + "the launcher's WebViews are HomeCard's and «المباريات»'s, each pausing the process-wide timers when it goes and resuming them when it comes"
       + ("" if card_ok else f"  -> WebViews: {makers}, pauseTimers in: {timers}; revisit HomeCard.pause()/refresh() before adding another"))
 
 javac, java = shutil.which("javac"), shutil.which("java")

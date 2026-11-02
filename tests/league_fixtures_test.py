@@ -56,6 +56,8 @@ check("pick: the window, this league's, this season's, once each, soonest first"
 check("pick: only the fields the page reads", all(set(e) <= set(lf.KEEP) for e in got) and "strThumb" not in got[0], got[0])
 check("pick: both clubs' badge addresses and ids are kept (the crests of the launcher's card)",
       all(e.get(k) for e in got for k in ("strHomeTeamBadge", "strAwayTeamBadge", "idHomeTeam", "idAwayTeam")), got[0])
+check("pick: the venue is kept («مباريات اليوم» shows where a game is played)",
+      lf.pick([ev(1, "A", "B", 3, strVenue="King Abdullah Sports City")], "4668", NOW)[0].get("strVenue") == "King Abdullah Sports City")
 check("pick: an event of no league id is taken as this league's", [e["idEvent"] for e in lf.pick([{**ev(1, "A", "B", 3), "idLeague": None}], "4668", NOW)] == ["1"])
 check("days(): the last 36 hours to a week ahead, 9 days", len(lf.days(NOW)) == 9 and lf.days(NOW)[0] == "2026-10-22" and lf.days(NOW)[-1] == "2026-10-30", lf.days(NOW))
 

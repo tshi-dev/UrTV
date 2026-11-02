@@ -257,6 +257,7 @@
 # ---- the look
 الشكل: %s	Style: %s
 الإضاءة: %s	Brightness: %s
+الواجهة: %s	Home layout: %s
 المظهر: الشكل	Appearance: Style
 المظهر: الإضاءة	Appearance: Brightness
 المدينة · الرياض	City · Riyadh
@@ -441,3 +442,9 @@
 طريقة التحديث: اطلب من مساعد الذكاء الاصطناعي «حدّث تلفزيوني»، وإعداداتك كلها تبقى.	To update: ask your AI assistant to “update my TV”; all your settings stay.
 # ---- the app's name (res/values/strings.xml; the system shows the Arabic label)
 شاشة تلفزيونك	Your TV Screen
+# ---- «الواجهة» (the football home) and «مباريات اليوم» (docs/PROPOSALS-NOV2.md §1)
+المظهر: الواجهة	Appearance: Home layout
+العادية	Classic
+كرة القدم	Football
+مباريات اليوم	Today’s matches
+الأيام والدوريات، وفرقك أولاً	Days and leagues, your teams first
