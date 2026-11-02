@@ -1,6 +1,10 @@
 **«⛔ WAIT — don't start anything yet. The supervisor will replace this line with «✅ GO — build N» when the build is ready and fully tested.»**
 
-**FIRST, before any other step of this run: ask the owner in your chat on the PC for the PIN recovery code (step 21). He gives it once, then he is asleep: run everything without him (the other steps, step 22 included, then step 21 LAST with the code you hold). NEVER write the code into any file, report, commit, log, screenshot, script or saved shell history (the repo is public): keep it only in this chat's memory, and use it only inside the one `adb shell input text` command of step 21 row 2. If the owner does not answer, skip step 21, run the rest, and report «step 21: no code given».**
+**1. Ask the owner for the PIN recovery code RIGHT NOW, before waiting for anything. Hold it in chat memory only, never in a file, log, commit, script or screenshot. If he doesn't answer, carry on without it, and report step 21 as "no code given".**
+
+**2. Then WAIT for the GO line. Every 5 minutes, run `git fetch origin work/tester` and read the first line of `origin/work/tester:tester/STEP.md` (`git show origin/work/tester:tester/STEP.md | head -1`). Don't start until it reads «✅ GO — build N». Then make sure the TV has build N or newer from apk-next, and run the steps in order: 16–20, then 22, then 21 last.**
+
+**3. Keep the TV MUTED the whole time: check the mute before each step and after every restart, update or install, and mute again at once if it isn't.**
 
 steps 16–20 received; fixes in progress on work/tester-fixes; next step after build 176+
 
