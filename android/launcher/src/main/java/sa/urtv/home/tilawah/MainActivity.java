@@ -33,7 +33,7 @@ public class MainActivity extends Activity {
     private static final int TAB_RECITERS = 0, TAB_STATIONS = 1, TAB_ADHAN = 2;
 
     private static final int KIND_RESUME = 0, KIND_RECITER = 1, KIND_STATION = 2,
-            KIND_PRAYER = 3, KIND_ADHAN_TOGGLE = 4, KIND_VOICE = 5, KIND_VOLUME = 6, KIND_EXACT = 7, KIND_FAJR_VOICE = 8, KIND_SHORT = 9, KIND_STOPKEY = 10, KIND_SAVER_ONLY = 11, KIND_NOTICE = 12, KIND_TAKBIR = 13, KIND_SAVER_AT = 14;
+            KIND_PRAYER = 3, KIND_ADHAN_TOGGLE = 4, KIND_VOICE = 5, KIND_VOLUME = 6, KIND_EXACT = 7, KIND_FAJR_VOICE = 8, KIND_SHORT = 9, KIND_STOPKEY = 10, KIND_SAVER_ONLY = 11, KIND_NOTICE = 12, KIND_TAKBIR = 13, KIND_SAVER_AT = 14, KIND_LINK = 15;
 
     private Catalog cat;
     private Prefs prefs;
@@ -138,6 +138,8 @@ public class MainActivity extends Activity {
                 AdhanScheduler.schedule(this);   // the alarm is wanted for the screensaver alone, too
                 adapter.rebuild();
                 focusList(list.getSelectedItemPosition());
+            } else if (row.kind == KIND_LINK) {
+                openHaramLive();
             } else if (row.kind == KIND_EXACT) {
                 openExactAlarmSettings();
             }   // «صوت الأذان» is set with left/right (changeVolume); OK on it does nothing
@@ -194,6 +196,19 @@ public class MainActivity extends Activity {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus && list != null) {
             focusList(Math.max(0, list.getSelectedItemPosition()));
+        }
+    }
+
+    /**
+     * The broadcaster's live page in its own app or the browser (ACTION_VIEW): nothing plays here. A TV with nothing to open it says so; the
+     * player and the radio are not touched.
+     */
+    private void openHaramLive() {
+        if (!HaramLive.shown(HaramLive.URL)) return;
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(HaramLive.URL)).addCategory(Intent.CATEGORY_BROWSABLE));
+        } catch (android.content.ActivityNotFoundException | SecurityException e) {
+            android.widget.Toast.makeText(this, getString(R.string.haram_live_none), android.widget.Toast.LENGTH_LONG).show();
         }
     }
 
@@ -384,6 +399,8 @@ public class MainActivity extends Activity {
                 for (int i = 0; i < cat.stations.size(); i++) {
                     rows.add(new Row(false, KIND_STATION, cat.stations.get(i).name, getString(R.string.live), i));
                 }
+                // «البث المباشر من الحرم»: a link out to the broadcaster's own page, only once its official link is filled in (HaramLive)
+                if (HaramLive.shown(HaramLive.URL)) rows.add(new Row(false, KIND_LINK, getString(R.string.haram_live), getString(R.string.haram_live_detail), -1));
             } else {
                 // the adhan section: today's times with the next one marked, then the switch and the muezzin
                 PrayerTimes times = PrayerTimes.today(MainActivity.this);
