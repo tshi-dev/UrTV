@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>UrTV proposals, Nov 2</title>
+<style>
+/* The approved lighter look (notes/ux-review on work/ux-review): theme «نهار نجد», sand paper, white cards, hairline borders,
+   DGA green #1B8354 for focus and «on», the Sadu triangles for «on». Font: IBM Plex Sans Arabic stands in for Thmanyah (private).
+   fonts/ is not committed: put plex-400/500/700.woff2 there (e.g. from @fontsource/ibm-plex-sans-arabic) to render. */
+@font-face{font-family:TR;src:url("fonts/plex-400.woff2")}
+@font-face{font-family:TM;src:url("fonts/plex-500.woff2")}
+@font-face{font-family:TD;src:url("fonts/plex-700.woff2")}
+@font-face{font-family:TR;src:url("fonts/plex-latin-400.woff2");unicode-range:U+0000-00FF}
+@font-face{font-family:TM;src:url("fonts/plex-latin-500.woff2");unicode-range:U+0000-00FF}
+@font-face{font-family:TD;src:url("fonts/plex-latin-700.woff2");unicode-range:U+0000-00FF}
+:root{--paper:#F6F4EF;--card:#FFFFFF;--line:#E3DFD5;--ink:#1B1F1D;--sub:#5E6461;--mute:#8D918E;--green:#1B8354;--fill:#25935F;--tint:#EEF6F1}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden;background:var(--paper);color:var(--ink);font-family:TR}
+.f{position:relative;width:1920px;height:1080px;overflow:hidden;background:var(--paper)}
+svg.s{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.abs{position:absolute}
+/* home chrome, as in ux-light-home.png */
+.photo{position:absolute;inset:0;background-size:cover;background-position:center}
+.acts{position:absolute;left:120px;top:72px;display:flex;gap:14px;direction:rtl}
+.act{display:flex;align-items:center;gap:12px;height:64px;padding:0 24px;border-radius:14px;background:rgba(255,255,255,.9);border:1.5px solid var(--line);font:27px TM}
+.act svg{width:30px;height:30px;color:var(--green)}
+.clock{position:absolute;right:120px;top:52px;text-align:right}
+.clock .t{font:150px TD;line-height:1.02;letter-spacing:-2px}.clock .t small{font:44px TM;margin-right:10px}
+.clock .d{font:30px TR;color:var(--sub);display:flex;gap:22px;align-items:center;justify-content:flex-start;direction:rtl}
+.wx{display:flex;align-items:center;gap:10px;font:30px TM;color:var(--ink)}.wx svg{width:44px;height:44px;color:#C98A1B}
+/* prayer strip */
+.strip{position:absolute;right:120px;left:120px;display:flex;background:var(--card);border:1.5px solid var(--line);border-radius:22px;overflow:hidden}
+.strip .p{flex:1;height:124px;padding:16px 30px;display:flex;flex-direction:column;gap:0;border-left:1.5px solid var(--line)}
+.strip .p:last-child{border-left:none}
+.strip .p b{font:30px TM;font-weight:normal}.strip .p span{font:30px TR;color:var(--sub)}
+.strip .p.nx{background:var(--tint);box-shadow:inset 0 0 0 3px var(--green);border-left-color:transparent}
+.strip .p.nx b,.strip .p.nx span{color:var(--green)}
+.strip .p .in{position:absolute;font:24px TR;color:var(--green);margin-top:52px;margin-right:110px}
+/* section title */
+.h{position:absolute;right:120px;font:34px TD}
+.hs{position:absolute;left:120px;font:26px TR;color:var(--sub)}
+/* match cards */
+.mrow{position:absolute;right:120px;left:120px;display:flex;gap:24px;direction:rtl}
+.m{flex:1;height:262px;background:var(--card);border:1.5px solid var(--line);border-radius:22px;padding:20px 26px;display:flex;flex-direction:column;justify-content:space-between}
+.m.fo{background:var(--tint);border:3px solid var(--green);padding:18.5px 24.5px}
+.m .lg{font:23px TR;color:var(--sub);display:flex;justify-content:space-between}
+.m .vs{display:flex;align-items:center;justify-content:space-between}
+.m .tm{display:flex;flex-direction:column;align-items:center;gap:8px;width:130px}
+.m .tm i{font:26px TM;font-style:normal;white-space:nowrap}
+.m .tm i.mine{color:var(--green)}
+.m .x{font:34px TR;color:var(--mute)}
+.m .sc{font:46px TD;white-space:nowrap}
+.m .when{font:30px TM;text-align:center}
+.m .when.live{color:var(--green)}
+.m .note{font:22px TR;color:var(--sub);text-align:center;margin-top:-6px}
+/* apps */
+.shelf{position:absolute;left:120px;right:120px;display:flex;gap:26px;direction:rtl}
+.app{flex:none;width:226px;height:140px;border-radius:18px;display:flex;align-items:center;justify-content:center;font:36px TD;color:#fff}
+.more{flex:none;width:110px;height:140px;border-radius:18px;background:#fff;border:1.5px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font:22px TM;color:var(--sub)}
+/* generic */
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:22px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:12px;height:76px;padding:0 36px;border-radius:14px;font:30px TM;border:2px solid var(--line);background:var(--card);color:var(--ink)}
+.btn.pri{background:var(--fill);border-color:var(--fill);color:#fff}
+.btn.fo{outline:3px solid var(--green);outline-offset:5px}
+.tri{flex:none;width:16px;height:48px;fill:var(--fill)}
+.row{display:flex;align-items:center;gap:20px;height:84px;padding:0 28px}
+.row+.row{border-top:1.5px solid var(--line)}
+.row .nm{flex:1;font:32px TM}.row .v{font:28px TR;color:var(--sub)}.row .v.on{color:var(--green);font-family:TM}
+.row.fo{background:var(--tint);outline:3px solid var(--green);outline-offset:-3px;border-radius:16px}
+.row.fo+.row{border-top-color:transparent}
+</style></head><body>
+<div class="f" id="f"></div>
+<script>
+const P={
+ input:'<rect x="3.5" y="5" width="17" height="14" rx="1.5"/><path d="M3.5 12h9"/><path d="M9.5 9l3 3-3 3"/>',
+ tasks:'<path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/>',
+ control:'<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>',
+ listen:'<path d="M4 10v4M8 7v10M12 4v16M16 7v10M20 10v4"/>',
+ ball:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5l3.6 2.6-1.4 4.3H9.8l-1.4-4.3z"/><path d="M12 7.5V3.5M15.6 10.1l3.9-1.3M14.2 14.4l2.4 3.4M9.8 14.4l-2.4 3.4M8.4 10.1l-3.9-1.3"/>',
+ sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/>',
+ moon:'<path d="M19.5 14.5A8 8 0 1 1 9.5 4.5a6.5 6.5 0 0 0 10 10z"/>',
+ bell:'<path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 21h4"/>',
+ clock:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3 2"/>',
+ check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+ down:'<path d="M12 4v12"/><path d="M7 11l5 5 5-5"/><path d="M5 20h14"/>',
+ dots:'<circle cx="12" cy="5.5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="18.5" r="1.8"/>',
+ mic:'<rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5v3"/>',
+ repeat:'<path d="M4 10V8.5A2.5 2.5 0 0 1 6.5 6H19l-3-3M20 14v1.5a2.5 2.5 0 0 1-2.5 2.5H5l3 3"/>',
+ phone:'<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>'};
+const ic=(k,w=30,st='')=>`<svg class="s" viewBox="0 0 24 24" style="width:${w}px;height:${w}px;${st}">${P[k]}</svg>`;
+const tri=()=>`<svg class="tri" viewBox="0 0 18 54"><path d="M18 0L4 9L18 18zM18 18L4 27L18 36zM18 36L4 45L18 54z"/></svg>`;
+// a stand-in crest: the real card shows TheSportsDB's badge (strHomeTeamBadge). Two club colours and the first letter.
+const C={'الهلال':['#1D4E9E','#fff'],'النصر':['#F2C21B','#1C3F8C'],'الأهلي':['#0E7A3D','#fff'],'الاتحاد':['#F4C400','#111'],
+ 'التعاون':['#F2B705','#1B1B1B'],'الفتح':['#1C6F3A','#E9F2EC'],'الرياض':['#B3262D','#fff'],'الفيصلي':['#8E1B2C','#fff'],
+ 'الدرعية':['#2A2F6B','#fff'],'الشباب':['#FFFFFF','#111'],'الاتفاق':['#1B7F4B','#D7262F'],'القادسية':['#B0192E','#F4D35E'],
+ 'ضمك':['#7A2B2B','#fff'],'الخليج':['#2E7D32','#F9D648']};
+const crest=(n,sz=84)=>{const [a,b]=C[n]||['#888','#fff'];return `<svg viewBox="0 0 40 46" style="width:${sz}px;height:${sz*46/40}px">
+ <path d="M20 1.5L37 6.5v15c0 11-7.6 19-17 23C10.6 40.5 3 32.5 3 21.5v-15z" fill="${a}" stroke="rgba(0,0,0,.18)" stroke-width="1"/>
+ <path d="M3 21.5h34" stroke="${b}" stroke-width="2.4" opacity=".55"/>
+ <text x="20" y="27" text-anchor="middle" font-family="TD" font-size="17" fill="${b}">${n.replace('ال','')[0]}</text></svg>`};
+const acts=[['input','المصادر'],['tasks','المهام'],['control','مركز التحكم'],['listen','تلاوة وأذان']];
+const A=[['YouTube','#E62117'],['شاهد','#1F1F1F'],['TOD','#5B2BC4'],['SSC','#0A6A4F'],['Netflix','#0B0B0B']];
+const head=(d='الخميس، ١٤ جمادى الأولى ١٤٤٨ هـ، ٥ نوفمبر',t='٧:٤٢',ampm='م',wx=['moon','٢٤°'])=>`
+ <div class="acts">${acts.map(a=>`<div class="act">${ic(a[0])}${a[1]}</div>`).join('')}</div>
+ <div class="clock"><div class="t">${t}<small>${ampm}</small></div>
+  <div class="d"><span>${d}</span><span class="wx">${ic(wx[0],44)}${wx[1]}</span></div></div>`;
+const PR=[['الفجر','٤:٥٢ ص'],['الشروق','٦:٠٩ ص'],['الظهر','١١:٤٦ ص'],['العصر','٢:٥١ م'],['المغرب','٥:١٨ م'],['العشاء','٦:٤٨ م']];
+const strip=(y,nx=5,inT='بعد ٢٤ دقيقة')=>`<div class="strip" style="top:${y}px">${PR.map((p,i)=>`<div class="p${i==nx?' nx':''}"><b>${p[0]}${i==nx?`<em style="font:24px TR;font-style:normal;margin-right:14px">${inT}</em>`:''}</b><span>${p[1]}</span></div>`).join('')}</div>`;
+const shelf=(y)=>`<div class="shelf" style="top:${y}px">${A.map(a=>`<div class="app" style="background:${a[1]}">${a[0]}</div>`).join('')}<div class="more">${ic('dots',40,'fill:var(--ink);stroke:none')}<span>خيارات</span></div></div>`;
+const mcard=(m,fo)=>`<div class="m${fo?' fo':''}">
+  <div class="lg"><span>${m.lg}</span><span>${m.rd}</span></div>
+  <div class="vs"><div class="tm">${crest(m.h,68)}<i class="${m.mine==m.h?'mine':''}">${m.h}</i></div>
+   ${m.sc?`<div class="sc">${m.sc}</div>`:`<div class="x">×</div>`}
+   <div class="tm">${crest(m.a,68)}<i class="${m.mine==m.a?'mine':''}">${m.a}</i></div></div>
+  <div class="when${m.live?' live':''}">${m.when}</div></div>`;
+const S={};
+// A: the reference, in our look. Sand page, big clock, date and weather, prayer strip, today's games, the apps.
+S.football=()=>`${head()}${strip(300)}
+ <div class="h" style="top:468px">مباريات اليوم</div><div class="hs" style="top:478px">فرقك ودوري روشن</div>
+ <div class="mrow" style="top:530px">${[
+  {lg:'دوري روشن',rd:'الجولة ١٣',h:'الهلال',a:'الاتفاق',sc:'٢ - ١',when:'الدقيقة ٦٧',live:1,mine:'الهلال'},
+  {lg:'دوري روشن',rd:'الجولة ١٣',h:'الأهلي',a:'التعاون',when:'٨:٠٠ م'},
+  {lg:'دوري روشن',rd:'الجولة ١٣',h:'الفتح',a:'الرياض',when:'٨:٠٠ م'},
+  {lg:'دوري روشن',rd:'الجولة ١٣',h:'النصر',a:'القادسية',when:'٩:٠٠ م'}].map((m,i)=>mcard(m,i==0)).join('')}</div>
+ ${shelf(850)}`;
+// B: «or even better»: your team first, the games placed against the prayers, the table.
+S.football2=()=>{
+ const rows=[[1,'الهلال',12,31],[2,'النصر',12,28],[3,'الاتحاد',12,26],[4,'الأهلي',12,24],[5,'القادسية',12,22]];
+ return `${head()}${strip(300)}
+ <div class="card abs" style="right:120px;top:466px;width:1010px;height:340px;padding:28px 36px;background:var(--tint);border:3px solid var(--green)">
+  <div style="display:flex;justify-content:space-between;font:26px TR;color:var(--sub)"><span style="font:30px TD;color:var(--ink)">مباراة فريقك</span><span>دوري روشن، الجولة ١٣</span></div>
+  <div style="display:flex;align-items:center;justify-content:center;gap:60px;margin-top:18px">
+   <div style="display:flex;flex-direction:column;align-items:center;gap:6px">${crest('الهلال',104)}<span style="font:32px TM;color:var(--green)">الهلال</span></div>
+   <div style="text-align:center"><div style="font:64px TD">٩:٠٠ م</div><div style="font:26px TR;color:var(--sub)">بعد ساعة و١٨ دقيقة</div></div>
+   <div style="display:flex;flex-direction:column;align-items:center;gap:6px">${crest('النصر',104)}<span style="font:32px TM">النصر</span></div></div>
+  <div style="position:absolute;bottom:24px;right:36px;left:36px;display:flex;align-items:center;gap:12px;font:25px TR;color:var(--green)">${ic('clock',30)}تبدأ بعد العشاء بساعتين، والتذكير قبلها بربع ساعة</div></div>
+ <div class="card abs" style="left:120px;top:466px;width:646px;height:340px;padding:20px 30px">
+  <div style="display:flex;justify-content:space-between;font:30px TD;margin-bottom:6px"><span>الترتيب</span><span style="font:24px TR;color:var(--sub)">لعب · نقاط</span></div>
+  ${rows.map(r=>`<div style="display:flex;align-items:center;gap:14px;height:52px;border-top:1.5px solid var(--line);font:26px TR;${r[1]=='الهلال'?'color:var(--green);font-family:TM':''}">
+   <span style="width:28px;color:var(--mute)">${'١٢٣٤٥'[r[0]-1]}</span>${crest(r[1],30)}<span style="flex:1">${r[1]}</span><span style="width:60px;color:var(--sub)">${'١٢'}</span><span style="width:50px;text-align:left;font-family:TM">${String(r[3]).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d])}</span></div>`).join('')}</div>
+ ${shelf(850)}`;};
+
+// photo packs: Settings › البطاقات › شاشة التوقف › الصور
+S.packs=()=>{
+ const packs=[
+  {n:'مدن سعودية',c:'٤٠ صورة · ٥٢ م.ب',src:'ويكيميديا كومنز',bg:'url(../../photos/f5ZB0LHwi0s.jpg)',st:'on'},
+  {n:'طبيعة',c:'٦٠ صورة · ٧٨ م.ب',src:'ويكيميديا كومنز، ناسا',bg:'url(../../photos/IU-gFwAyazs.jpg)',st:'on'},
+  {n:'الفضاء',c:'٤٠ صورة · ٤٦ م.ب',src:'ناسا، ملكية عامة',bg:'radial-gradient(circle at 30% 40%,#3b4a8a 0,#141b3a 35%,#05070f 75%)',st:'dl',space:1},
+  {n:'عواصم العالم',c:'٥٠ صورة · ٦٤ م.ب',src:'ويكيميديا كومنز',bg:'linear-gradient(180deg,#9CC3E4 0,#E8D9C0 70%,#D9C4A0 100%)',st:'dl',city:1},
+  {n:'لوحات فنية',c:'٤٠ صورة · ٥٠ م.ب',src:'متحف المتروبوليتان، رايكس',bg:'linear-gradient(135deg,#5b6b4a,#c9b37a 45%,#8a5a3a)',st:'dl',art:1},
+  {n:'صورنا',c:'٨٦ صورة · مع التطبيق',src:'Unsplash',bg:'url(../../photos/XDtzu1D2P8c.jpg)',st:'on'}];
+ const stars=Array.from({length:70},(_,i)=>`<circle cx="${(i*73)%400}" cy="${(i*37)%220}" r="${i%7?0.8:1.6}" fill="#fff" opacity="${.4+(i%5)/8}"/>`).join('');
+ const sky=`<svg viewBox="0 0 400 220" style="position:absolute;inset:0;width:100%;height:100%" preserveAspectRatio="xMidYMax slice"><path d="M0 220V150h30v-30h20v30h25V95h18v-20h6v20h18v55h20v-40h30v40h22V60l8-14 8 14v90h24v-35h34v35h20v-60h26v60h30v-30h28v30h33v70z" fill="#5d6b78" opacity=".85"/></svg>`;
+ const art=`<div style="position:absolute;inset:22px 70px;border:10px solid #b08a4a;box-shadow:inset 0 0 0 3px #6b4e22;background:linear-gradient(160deg,#6f8f6a,#d8c48a 50%,#9a6a3c);"></div>`;
+ const w=(1680-2*30)/3,h=350;
+ const card=(p,i)=>{const fo=i==2,col=i%3,row=Math.floor(i/3);
+  return `<div class="abs" style="right:${120+col*(w+30)}px;top:${196+row*(h+26)}px;width:${w}px;height:${h}px;border-radius:22px;background:#fff;border:${fo?'3px solid var(--green)':'1.5px solid var(--line)'};overflow:hidden;${fo?'background:var(--tint)':''}">
+   <div style="position:relative;height:190px;background:${p.bg} center/cover">${p.space?`<svg viewBox="0 0 400 220" style="position:absolute;inset:0;width:100%;height:100%">${stars}<circle cx="300" cy="150" r="46" fill="#c46b3a"/><circle cx="300" cy="150" r="46" fill="url(#g)"/><defs><radialGradient id="g" cx=".35" cy=".35"><stop offset="0" stop-color="#ffd9a0" stop-opacity=".7"/><stop offset="1" stop-color="#000" stop-opacity=".45"/></radialGradient></defs></svg>`:''}${p.city?sky:''}${p.art?art:''}</div>
+   <div style="padding:18px 26px;display:flex;align-items:flex-start;gap:16px">
+    ${p.st=='on'?tri():''}
+    <div style="flex:1"><div style="font:34px TM">${p.n}</div><div style="font:24px TR;color:var(--sub);margin-top:2px">${p.c}</div><div style="font:22px TR;color:var(--mute)">${p.src}</div></div>
+    ${p.st=='on'?`<div style="font:28px TM;color:var(--green)">مفعّل</div>`:`<div style="display:flex;align-items:center;gap:8px;font:28px TM;color:${fo?'var(--green)':'var(--sub)'}">${ic('down',30)}نزّل</div>`}
+   </div></div>`};
+ return `<div style="position:absolute;right:120px;top:64px;font:56px TD">صور شاشة التوقف</div>
+ <div style="position:absolute;right:120px;top:140px;font:28px TR;color:var(--sub)">اختر مجموعة أو أكثر. تنزل مرة وحدة وتبقى في التلفزيون، والصور تتبدّل بينها.</div>
+ ${packs.map(card).join('')}
+ <div class="abs" style="right:120px;left:120px;top:960px;display:flex;justify-content:space-between;align-items:center;font:26px TR;color:var(--sub)">
+  <span>بلا أشخاص، وكل صورة بمصدرها ورخصتها في «حقوق الصور»</span><span>المساحة الفاضية: ٢٫١ ج.ب</span></div>`;};
+
+// reminder over the screensaver: no sound by default, the first key goes to the card, not out of the screensaver
+S.reminder=()=>`<div class="photo" style="background-image:url(../../photos/9hWJs7iblh8.jpg)"></div>
+ <div class="abs" style="inset:0;background:linear-gradient(90deg,rgba(0,0,0,.0) 40%,rgba(0,0,0,.35) 100%)"></div>
+ <div class="abs" style="right:120px;top:640px;color:#fff;text-shadow:0 2px 18px rgba(0,0,0,.4)"><div style="font:170px TD;line-height:1">٤:٣٠<small style="font:48px TM;margin-right:10px">م</small></div>
+  <div style="font:32px TR">الخميس، ١٤ جمادى الأولى ١٤٤٨ هـ، ٥ نوفمبر</div><div style="font:32px TM;margin-top:8px">المغرب ٥:١٨ م، بعد ٤٨ دقيقة</div></div>
+ <div class="card abs" style="left:120px;top:120px;width:760px;padding:34px 40px;background:rgba(255,255,255,.97);box-shadow:0 24px 56px rgba(0,0,0,.22);border-radius:28px">
+  <div style="display:flex;gap:22px;align-items:flex-start">
+   <div style="flex:none;width:72px;height:72px;border-radius:18px;background:var(--tint);display:flex;align-items:center;justify-content:center;color:var(--green)">${ic('bell',42)}</div>
+   <div style="flex:1"><div style="font:42px TD;line-height:1.25">موعد طبيب الأسنان</div>
+    <div style="font:30px TR;color:var(--sub);margin-top:6px">الساعة ٥:٠٠ م، بعد ٣٠ دقيقة</div></div></div>
+  <div style="display:flex;gap:18px;margin-top:34px"><div class="btn pri fo" style="flex:1">${ic('check',32)}تم</div><div class="btn" style="flex:1.4">${ic('clock',32)}ذكّرني بعد ١٠ دقائق</div></div>
+ </div>`;
+
+// setting it: the task's own page on the TV, and the phone page beside it
+S.reminderset=()=>`<div style="position:absolute;right:120px;top:64px;font:56px TD">مهمة</div>
+ <div class="card abs" style="right:120px;top:170px;width:1000px;overflow:hidden">
+  <div class="row"><span class="nm">موعد طبيب الأسنان</span><span class="v">${ic('mic',30,'color:var(--green)')}</span></div>
+  <div class="row fo">${tri()}<span class="nm">ذكّرني</span><span class="v on">مفعّل</span></div>
+  <div class="row"><span class="nm">اليوم</span><span class="v">الخميس ٥ نوفمبر</span></div>
+  <div class="row"><span class="nm">الساعة</span><span class="v">٥:٠٠ م</span></div>
+  <div class="row"><span class="nm">قبلها بـ</span><span class="v">٣٠ دقيقة</span></div>
+  <div class="row"><span class="nm">يتكرر</span><span class="v">لا</span></div>
+  <div class="row"><span class="nm">صوت خفيف</span><span class="v">متوقف</span></div>
+  <div class="row"><span class="nm">أين يظهر</span><span class="v">شاشة التوقف والرئيسية</span></div></div>
+ <div class="abs" style="right:120px;top:880px;width:1000px;font:26px TR;color:var(--sub);line-height:1.5">يظهر فوق شاشة التوقف والشاشة الرئيسية بلا صوت. داخل نتفليكس ويوتيوب يظهر سطر قصير ٥ ثوانٍ ولا يأخذ التحديد.</div>
+ <div class="abs" style="left:150px;top:90px;width:430px;height:900px;border-radius:56px;background:#1B1F1D;padding:16px">
+  <div style="width:100%;height:100%;border-radius:42px;background:var(--paper);overflow:hidden;padding:56px 26px 20px">
+   <div style="font:34px TD">المهام</div>
+   <div class="card" style="margin-top:22px;padding:6px 0;border-radius:18px">
+    ${[['اشتري خبز',''],['موعد طبيب الأسنان','الخميس ٥:٠٠ م'],['اتصل بالسبّاك','']].map((t,i)=>`<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;${i?'border-top:1.5px solid var(--line)':''}">
+     <div style="flex:1"><div style="font:24px TM">${t[0]}</div>${t[1]?`<div style="font:19px TR;color:var(--green);display:flex;gap:6px;align-items:center">${ic('bell',20)}${t[1]}</div>`:''}</div></div>`).join('')}</div>
+   <div class="card" style="margin-top:22px;padding:18px 20px;border-radius:18px">
+    <div style="font:22px TR;color:var(--sub)">مهمة جديدة</div>
+    <div style="font:24px TM;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:8px">موعد طبيب الأسنان</div>
+    <div style="display:flex;gap:10px;margin-top:12px">
+     <div style="flex:1;font:22px TM;border:2px solid var(--green);color:var(--green);border-radius:12px;padding:10px 12px;display:flex;gap:6px;align-items:center">${ic('bell',22)}٥ نوفمبر</div>
+     <div style="flex:1;font:22px TM;border:2px solid var(--green);color:var(--green);border-radius:12px;padding:10px 12px">٥:٠٠ م</div></div>
+    <div style="margin-top:16px;background:var(--fill);color:#fff;border-radius:12px;height:58px;display:flex;align-items:center;justify-content:center;font:24px TM">أضف</div></div>
+   <div style="font:19px TR;color:var(--sub);margin-top:18px;line-height:1.5">تُرسل للتلفزيون فقط، ولا تحفظ في أي مكان ثاني.</div>
+  </div></div>`;
+document.getElementById('f').innerHTML=S[(location.hash||'#football').slice(1)]();
+</script></body></html>
