@@ -54,26 +54,32 @@ const P={
  report:'<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/>',
  play:'<path d="M8 5l11 7-11 7z"/>'};
 const ic=k=>`<svg viewBox="0 0 24 24">${P[k]}</svg>`;
-const card=(col,row,k,name,sub,fo,end='',cols=2)=>{const w=(1680-40*(cols-1))/cols;return `<div class="card${fo?' fo':''}" style="right:${col*(w+40)}px;top:${200+row*164}px;width:${w}px">${ic(k)}<div class="tx"><div class="nm">${name}</div>${sub?`<div class="sb">${sub}</div>`:''}</div>${end}</div>`;};
+const G={top:200,h:140,step:164};
+const card=(col,row,k,name,sub,fo,end='',cols=2,span=1)=>{const w=(1680-40*(cols-1))/cols*span+40*(span-1);return `<div class="card${fo?' fo':''}" style="right:${col*((1680-40*(cols-1))/cols+40)}px;top:${G.top+row*G.step}px;width:${w}px;height:${G.h}px">${ic(k)}<div class="tx"><div class="nm">${name}</div>${sub?`<div class="sb">${sub}</div>`:''}</div>${end}</div>`;};
 const S={};
 S.main=()=>{
-  const C=[['bell','الأذان','متوقف',1,'<div class="sw"></div>'],['pin','الموقع والصلاة','مكة المكرمة · أم القرى'],
+  // v2: «الأذان» is one wide card on top; OK opens its page, whose first row is the switch.
+  // «الساعة والأرقام» joins the main screen next to «الموقع والصلاة».
+  G.h=124;G.step=140;
+  const C=[['pin','الموقع والصلاة','مكة المكرمة · أم القرى'],['clock','الساعة والأرقام','١٢ ساعة · أرقام عربية'],
     ['book','تلاوة وأذان','مشاري العفاسي'],['cards','البطاقات','شاشة التوقف · الشاشة الرئيسية'],
     ['look','المظهر','زجاجي · تلقائي'],['control','مركز التحكم',''],
     ['phone','التحكم من الجوال','متوقف'],['update','تحديث تلفزيوني','4.0 · محدّث'],
     ['report','أرسل تقرير','آخر تقرير: أمس'],['more','المزيد','']];
-  return '<h1>الإعدادات</h1>'+C.map((c,i)=>card(i%2,Math.floor(i/2),c[0],c[1],c[2],c[3],c[4]||'')).join('');
+  return '<h1>الإعدادات</h1>'+card(0,0,'bell','الأذان','متوقف',1,'<div class="sw"></div>',2,2)
+    +C.map((c,i)=>card(i%2,1+Math.floor(i/2),c[0],c[1],c[2],c[3],c[4]||'')).join('');
 };
 S.cards=()=>'<h1>البطاقات</h1>'+card(0,0,'saver','شاشة التوقف','آية اليوم · ساعة كبيرة',1)+card(1,0,'home','الشاشة الرئيسية','الصلاة · الطقس · آية اليوم');
-S.more=()=>'<h1>المزيد</h1>'+[['trend','المباريات والأسواق','فريقان · ٣ أسواق',1],['apps','التطبيقات والمفضلة','٨ في المفضلة'],['clock','الساعة والأرقام','١٢ ساعة · ١٢٣'],['play','جديد المسلسلات','الكل'],['shield','حماية العائلة','متوقفة']].map((c,i)=>card(i%2,Math.floor(i/2),c[0],c[1],c[2],c[3])).join('');
-S.adhan=()=>{
-  const R=[['الأذان',{sw:1}],['المؤذن',{v:'مؤذن ٣'}],['مؤذن الفجر',{v:'فجر الحرم المكي'}],['مستوى الصوت',{bar:60}],['أذان مختصر',{sw:0}],['إيقاف الأذان بأي زر',{sw:1}],['تنبيه قبل الأذان',{sw:1}],['أذان من ملفي',{v:'لا يوجد'}],['جرّب الصوت',{}]];
+S.more=()=>'<h1>المزيد</h1>'+[['trend','المباريات والأسواق','فريقان، ٣ أسواق',1],['apps','التطبيقات والمفضلة','٨ في المفضلة'],['play','جديد المسلسلات','الكل'],['shield','حماية العائلة','متوقفة']].map((c,i)=>card(i%2,Math.floor(i/2),c[0],c[1],c[2],c[3])).join('');
+const list=(title,R)=>{
   const rows=R.map((r,i)=>{const o=r[1];let e='';
     if(o.sw!==undefined)e=`<div class="sw ${o.sw?'on':''}" style="width:84px;height:46px"></div>`;
     else if(o.bar)e=`<div class="bar"><i style="width:${o.bar}%"></i></div><div class="val">٦٠٪</div>`;
     else if(o.v)e=`<div class="val">${o.v}</div>`;
     return `<div class="row${i==0?' fo':''}" style="top:${16+i*86}px"><div class="nm">${r[0]}</div>${e}</div>`;}).join('');
-  return `<h1>الأذان</h1><div class="list" style="height:${32+R.length*86-2}px">${rows}</div>`;
+  return `<h1>${title}</h1><div class="list" style="height:${32+R.length*86-2}px">${rows}</div>`;
 };
+S.adhan=()=>list('الأذان',[['الأذان',{sw:0}],['المؤذن',{v:'مؤذن ٣'}],['مؤذن الفجر',{v:'فجر الحرم المكي'}],['مستوى الصوت',{bar:60}],['أذان مختصر',{sw:0}],['إيقاف الأذان بأي زر',{sw:1}],['تنبيه قبل الأذان',{sw:1}],['أذان من ملفي',{v:'لا يوجد'}],['جرّب الصوت',{}]]);
+S.clock=()=>list('الساعة والأرقام',[['نظام الساعة',{v:'١٢ ساعة'}],['الأرقام',{v:'عربية'}],['أسماء الأشهر الميلادية',{v:'يناير، فبراير'}],['تعديل التاريخ الهجري',{v:'٠ يوم'}]]);
 document.getElementById('w').innerHTML=S[(location.hash||'#main').slice(1)]();
 </script></body></html>
