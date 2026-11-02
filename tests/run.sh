@@ -170,6 +170,7 @@ python3 tests/parental_wiring_test.py
 python3 tests/dock_pin_test.py
 python3 tests/i18n_test.py   # «اللغة»: the translation table, its completeness, Arabic byte for byte (docs/ENGLISH.md)
 # English phase 1 (the screensaver app): its new tests go right under this line
+python3 tests/i18n_saver_test.py   # the settings in English (Words, WordMatch, Places), Arabic as it was, «اللغة» in «المزيد»
 #
 # English phase 2 (the page): its new tests go right under this line
 python3 tests/i18n_page_test.py   # dist/tv-en.html: built beside tv.html (byte for byte), current, under budget; the app and the home card pick it

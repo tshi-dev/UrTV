@@ -55,8 +55,8 @@
 #   optimize/saver.sh hijrioffset -1               the Hijri date moved by whole days, -2..2 (default 0 = Umm al-Qura as it is): where the month
 #                                                  starts by moon sighting (Egypt, Jordan, the Levant, Morocco); the page and the home screen both follow
 #   optimize/saver.sh clock24 on                   every time of day as 24-hour (١٩:٣٠) instead of 12-hour (٧:٣٠ م): on | off (default off)
-#   optimize/saver.sh lang ar                      «اللغة»: ar (default) | en. The English screens are still being made (docs/ENGLISH.md):
-#                                                  until docs/SETTINGS.md lists it, en changes nothing a person sees; do not offer it
+#   optimize/saver.sh lang en                      «اللغة»: ar (default) | en: the screensaver page and its settings in English, left to right
+#                                                  (the home screen and the phone page are still Arabic: docs/SETTINGS.md says when to offer it)
 #   optimize/saver.sh markets tasi,gold,btc        top left, up to 4 in order: tasi aramco spx btc gold silver oil xrp (default tasi,spx,btc)
 #   optimize/saver.sh markets off                  hide the markets line at the top (only the weather stays; the list is kept and nothing is fetched for it); `markets on` brings it back
 #   optimize/saver.sh clocksize medium             the screensaver's clock: large (default) medium small

@@ -58,9 +58,14 @@ public class SettingsActivity extends Activity {
     private LinearLayout side;       // a category's screen: its title and its line on the right, the rows on the left (hidden on the first)
     private final java.util.Map<String, String> lastRow = new java.util.HashMap<>();   // each category's row last focused, for the way back in
 
-    /** Arabic locale for this screen, so every dialog title, list and button is laid out right-to-left. */
+    /**
+     * Arabic locale for this screen, so every dialog title, list and button is laid out right-to-left. With «اللغة» English (S.wrap) an
+     * English one instead, left to right; with Arabic, the default, S.wrap gives base back and the screen is set up as it always was.
+     */
     @Override
     protected void attachBaseContext(android.content.Context base) {
+        android.content.Context en = S.wrap(base);
+        if (S.en()) { super.attachBaseContext(en); return; }
         android.content.res.Configuration c = new android.content.res.Configuration(base.getResources().getConfiguration());
         c.setLocale(new java.util.Locale("ar"));
         c.setLayoutDirection(new java.util.Locale("ar"));
@@ -77,10 +82,11 @@ public class SettingsActivity extends Activity {
         getWindow().setWindowAnimations(0);
         overridePendingTransition(0, 0);
         prefs = new Prefs(this);
+        if (getIntent().hasExtra("hubAt")) { screen = getIntent().getStringExtra("screen"); hubAt = getIntent().getStringExtra("hubAt"); }   // pickLang: back on its button
         UpdateJob.schedule(this);
         // the glass look of all our screens: the home's photo, small and blurred once (GlassSource), under its veil; glass tiles and rows
         root = new FrameLayout(this);
-        root.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        root.setLayoutDirection(Dir.layout());
         look = GlassSource.page(this, root);
         scroll = new UpDownScroll(this);
         scroll.setVerticalScrollBarEnabled(false);
@@ -88,17 +94,17 @@ public class SettingsActivity extends Activity {
         FrameLayout frame = new FrameLayout(this);
         list = new LinearLayout(this);
         list.setOrientation(LinearLayout.VERTICAL);
-        list.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        list.setLayoutDirection(Dir.layout());
         list.setPadding(dp(8), dp(40), dp(8), dp(16));
         int width = Math.min(getResources().getDisplayMetrics().widthPixels - dp(144), dp(1100));
         frame.addView(list, new FrameLayout.LayoutParams(-1, -2));
         scroll.addView(frame);
         LinearLayout panes = new LinearLayout(this);   // right to left: the side (a category's title), then the rows
         panes.setOrientation(LinearLayout.HORIZONTAL);
-        panes.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        panes.setLayoutDirection(Dir.layout());
         side = new LinearLayout(this);
         side.setOrientation(LinearLayout.VERTICAL);
-        side.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        side.setLayoutDirection(Dir.layout());
         side.setPadding(dp(8), dp(48), dp(8), dp(16));
         // fixed widths, worked out once (no weights): the side and the rows never move sideways (the TV test of 3.147: after 5 down and
         // 5 up the list went from the left half to the right half and back); the rows' width changes only between the categories and a category
@@ -199,9 +205,9 @@ public class SettingsActivity extends Activity {
         entering = false;
         groupCat = null;
         pendingHeader = null;
-        hint.setText(screen == null ? "الأسهم بين الأقسام  •  اختيار لفتح القسم  •  رجوع للخروج"
+        hint.setText(Words.of(screen == null ? "الأسهم بين الأقسام  •  اختيار لفتح القسم  •  رجوع للخروج"
             : tiles ? "الأسهم بين الأقسام  •  اختيار لفتح القسم  •  رجوع"
-            : "أعلى/أسفل بين الصفوف  •  اختيار لفتح الصف  •  رجوع للأقسام");
+            : "أعلى/أسفل بين الصفوف  •  اختيار لفتح الصف  •  رجوع للأقسام"));
         list.removeAllViews();
         sidePane();
         LinearLayout head = new LinearLayout(this);
@@ -209,13 +215,13 @@ public class SettingsActivity extends Activity {
         head.setGravity(Gravity.CENTER_VERTICAL);
         head.setPadding(0, 0, 0, dp(14));
         TextView title = new TextView(this);
-        title.setText("تلفزيونك");
+        title.setText(Words.of("تلفزيونك"));
         title.setTextColor(look.text);
         title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 44);
         title.setTypeface(font("ThmanyahDisplay-Bold"));
         head.addView(title);
         TextView sub = new TextView(this);
-        sub.setText(screen == null ? "الإعدادات" : SettingsHub.name(screen));
+        sub.setText(Words.of(screen == null ? "الإعدادات" : SettingsHub.name(screen)));
         sub.setTextColor(look.sub);
         sub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
         sub.setTypeface(font("Thmanyah-Regular"));
@@ -224,7 +230,7 @@ public class SettingsActivity extends Activity {
         head.addView(sub, sp0);
         if (tiles) list.addView(head);   // a category's screen has its title on the side instead
         if (screen == null || on(SettingsHub.PLACE))   // on the categories and on «الموقع والصلاة»
-            if (prefs.cityNoteDue()) line(Location.note(prefs.city()[0]), look.accent, dp(14));   // still the install's Riyadh: say where to change it
+            if (prefs.cityNoteDue()) line(Location.note(Words.city(prefs.city())), look.accent, dp(14));   // still the install's Riyadh: say where to change it
         actions.clear();
 
         row("معاينة الشاشة", "شاهد الشاشة الآن", R.drawable.ic_play, new Runnable() { public void run() {
@@ -233,7 +239,7 @@ public class SettingsActivity extends Activity {
         // the place, then how its times are worked out, then the minutes of one's own mosque; the line under them says which is which
         header("الموقع");
         row("الدولة", Location.countryLabel(prefs.cityCountry(), prefs.cityTz()), R.drawable.ic_place, new Runnable() { public void run() { pickCountry(); } });
-        row("المدينة", prefs.city()[0], R.drawable.ic_place, new Runnable() { public void run() { pickCity(); } });
+        row("المدينة", Words.city(prefs.city()), R.drawable.ic_place, new Runnable() { public void run() { pickCity(); } });
 
         row("طريقة الحساب", PrayerMethod.label(prefs.prayerMethod(), prefs.cityCountry(), prefs.cityTz()), R.drawable.ic_place,
             new Runnable() { public void run() { pickPrayerMethod(); } });
@@ -369,6 +375,8 @@ public class SettingsActivity extends Activity {
 
         row("حماية العائلة", "تفعيل أو إيقاف، ويرجع الإعداد القديم تلقائياً", R.drawable.ic_eye,
             new Runnable() { public void run() { openFamilyDns(); } });
+        // «اللغة» (docs/ENGLISH.md): العربية, the default, or English; a button of «المزيد» that opens its two choices at once
+        row("اللغة", langLabel(), R.drawable.ic_language, new Runnable() { public void run() { pickLang(); } });
 
         if (on(SettingsHub.SHOWS) || "shows".equals(prefs.panel()) || prefs.homePanels().contains("shows")) {   // only matter for the shows card; always on its own screen
         header("جديد المسلسلات");
@@ -437,10 +445,10 @@ public class SettingsActivity extends Activity {
         a.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
         a.setTypeface(font("Thmanyah-Regular"));
         a.setLineSpacing(dp(4), 1f);
-        a.setTextDirection(View.TEXT_DIRECTION_RTL);
+        a.setTextDirection(Dir.text());
         side.addView(a);
         TextView up = new TextView(this);
-        up.setText(SettingsHub.parent(screen) == null ? "رجوع إلى الأقسام" : "رجوع إلى " + SettingsHub.name(SettingsHub.parent(screen)));   // words, not «‹›» (mirrored or not by the renderer)
+        up.setText(Words.of(SettingsHub.parent(screen) == null ? "رجوع إلى الأقسام" : "رجوع إلى " + SettingsHub.name(SettingsHub.parent(screen))));   // words, not «‹›» (mirrored or not by the renderer)
         up.setTextColor(look.sub);
         up.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         up.setTypeface(font("Thmanyah-Regular"));
@@ -468,6 +476,7 @@ public class SettingsActivity extends Activity {
             case SettingsHub.APPS: return R.drawable.ic_star;
             case SettingsHub.SHOWS: return R.drawable.ic_play;
             case SettingsHub.FAMILY: return R.drawable.ic_shield;
+            case SettingsHub.LANG: return R.drawable.ic_language;
             default: return R.drawable.ic_settings;
         }
     }
@@ -487,7 +496,7 @@ public class SettingsActivity extends Activity {
             if (alone || inLine == 0) {
                 line = new LinearLayout(this);
                 line.setOrientation(LinearLayout.HORIZONTAL);
-                line.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+                line.setLayoutDirection(Dir.layout());
                 list.addView(line, new LinearLayout.LayoutParams(-1, -2));
             }
             final String cat = cats[i];
@@ -500,12 +509,14 @@ public class SettingsActivity extends Activity {
             inLine = alone ? 0 : (inLine + 1) % 2;
         }
         if (inLine == 1) line.addView(new View(this), new LinearLayout.LayoutParams(0, 0, 1f));   // a last button alone keeps its width
+        // SettingsHub.next counts the rows from the right (2 left, 3 right); an English screen runs from the left: the two sides swap
+        final int left = Dir.rtl() ? 2 : 3, right = Dir.rtl() ? 3 : 2;
         for (int i = 0; i < tiles.size(); i++) {   // explicit ways (SettingsHub.next): nothing wraps, and right is right in the RTL rows
             View t = tiles.get(i);
             t.setNextFocusUpId(tiles.get(SettingsHub.next(i, tiles.size(), 0, wide)).getId());
             t.setNextFocusDownId(tiles.get(SettingsHub.next(i, tiles.size(), 1, wide)).getId());
-            t.setNextFocusLeftId(tiles.get(SettingsHub.next(i, tiles.size(), 2, wide)).getId());
-            t.setNextFocusRightId(tiles.get(SettingsHub.next(i, tiles.size(), 3, wide)).getId());
+            t.setNextFocusLeftId(tiles.get(SettingsHub.next(i, tiles.size(), left, wide)).getId());
+            t.setNextFocusRightId(tiles.get(SettingsHub.next(i, tiles.size(), right, wide)).getId());
         }
         restoreFocus(want, wasIndex, 0);
     }
@@ -517,7 +528,7 @@ public class SettingsActivity extends Activity {
                 Boolean on = homeAdhanOn();   // the home's switch; null when the home cannot say (not installed, or older)
                 return on == null ? "تشغيله وصوته ومؤذن الفجر" : on ? OnOff.ON_WORD : OnOff.OFF_WORD;
             }
-            case SettingsHub.PLACE: return prefs.city()[0] + " · " + PrayerMethod.label(prefs.prayerMethod(), prefs.cityCountry(), prefs.cityTz());
+            case SettingsHub.PLACE: return Words.city(prefs.city()) + " · " + PrayerMethod.label(prefs.prayerMethod(), prefs.cityCountry(), prefs.cityTz());
             case SettingsHub.CLOCK: return ClockSetting.label(prefs.clock24()) + " · " + Prefs.digitsLabel(prefs.digits());
             case SettingsHub.LISTEN: return "زرها " + (prefs.listenPill() ? "ظاهر" : "مخفي");
             case SettingsHub.CARDS: return "شاشة التوقف · الشاشة الرئيسية";
@@ -537,6 +548,7 @@ public class SettingsActivity extends Activity {
             case SettingsHub.APPS: return "ترتيب المفضلة وتعديلها، وأسماء المصادر";
             case SettingsHub.SHOWS: return labels(Prefs.GENRES, prefs.list("genres"), "الكل");
             case SettingsHub.FAMILY: return "تفعيل أو إيقاف";
+            case SettingsHub.LANG: return langLabel();
             default: return "";
         }
     }
@@ -566,7 +578,7 @@ public class SettingsActivity extends Activity {
     private View tile(final String cat, String name, int icon, String summary) {
         final LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.HORIZONTAL);
-        card.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        card.setLayoutDirection(Dir.layout());
         card.setGravity(Gravity.CENTER_VERTICAL);
         card.setPadding(dp(16), dp(18), dp(26), dp(18));
         card.setFocusable(true);
@@ -600,7 +612,7 @@ public class SettingsActivity extends Activity {
             v.setTypeface(font("Thmanyah-Regular"));
             v.setSingleLine(true);
             v.setEllipsize(android.text.TextUtils.TruncateAt.END);
-            v.setTextDirection(View.TEXT_DIRECTION_RTL);
+            v.setTextDirection(Dir.text());
             texts.addView(v);
         }
         LinearLayout.LayoutParams tp = new LinearLayout.LayoutParams(0, -2, 1f);
@@ -715,7 +727,7 @@ public class SettingsActivity extends Activity {
         String[] names = new String[r.cities.length];
         int sel = -1;
         for (int i = 0; i < names.length; i++) {
-            names[i] = Cities.display(r.cities[i]);
+            names[i] = Words.display(r.cities[i]);
             if (r.cities[i][0].equals(prefs.city()[0]) && r.cities[i][1].equals(prefs.city()[1]) && r.cities[i][2].equals(prefs.city()[2])) sel = i;
         }
         AlertDialog.Builder b = new Dlg(this).setTitle(r.name)
@@ -731,7 +743,7 @@ public class SettingsActivity extends Activity {
     // Any searchable country, or the one country picked, from Open-Meteo's GeoNames search.
     // Without a country filter, ask for the world's hundred best matches; PS keeps its checked list.
     private void searchCity(final int country) {
-        ask("اسم المدينة أو القرية", q -> fetch("https://geocoding-api.open-meteo.com/v1/search?count=100&language=ar&name="
+        ask("اسم المدينة أو القرية", q -> fetch("https://geocoding-api.open-meteo.com/v1/search?count=100&language=" + (S.en() ? "en" : "ar") + "&name="
             + Uri.encode(q) + (country < 0 ? "" : "&countryCode=" + Location.COUNTRIES[country][0]), json -> {
                 JSONArray all = new JSONObject(json).optJSONArray("results"), a = new JSONArray();
                 for (int k = 0; all != null && k < all.length() && a.length() < 20; k++)
@@ -760,7 +772,7 @@ public class SettingsActivity extends Activity {
         final List<String> cur = prefs.teams();
         String[] labels = new String[cur.size()];
         final boolean[] keep = new boolean[cur.size()];
-        for (int i = 0; i < cur.size(); i++) { labels[i] = cur.get(i).split("\\|", 2)[1]; keep[i] = true; }
+        for (int i = 0; i < cur.size(); i++) { labels[i] = teamName(cur.get(i)); keep[i] = true; }
         AlertDialog.Builder b = new Dlg(this).multi(() -> {
                 List<String> v = new ArrayList<>();
                 for (int i = 0; i < cur.size(); i++) if (keep[i]) v.add(cur.get(i));
@@ -783,7 +795,7 @@ public class SettingsActivity extends Activity {
         final List<String[]> opts = new ArrayList<>();
         for (String[] t : Prefs.TEAM_PRESETS) opts.add(t);
         String[] labels = new String[opts.size() + 2];
-        for (int i = 0; i < opts.size(); i++) labels[i] = opts.get(i)[1];
+        for (int i = 0; i < opts.size(); i++) labels[i] = teamName(opts.get(i)[0] + "|" + opts.get(i)[1]);
         labels[opts.size()] = "تصفح الدوريات";
         labels[opts.size() + 1] = "بحث عن أي فريق أو منتخب";
         new Dlg(this).setTitle("إضافة فريق")
@@ -1150,7 +1162,7 @@ public class SettingsActivity extends Activity {
         final int previewW = 480, viewH = 300, pad = 22;   // dp: the page is laid out in a box like the home screen's, 480 wide
         final LinearLayout box = new LinearLayout(this);
         box.setOrientation(LinearLayout.HORIZONTAL);
-        box.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        box.setLayoutDirection(Dir.layout());
         box.setPadding(dp(12), dp(4), dp(12), dp(4));
         final android.widget.ListView lv = new android.widget.ListView(this);
         lv.setDividerHeight(0);
@@ -1315,7 +1327,7 @@ public class SettingsActivity extends Activity {
     /** Codes (2222 = أرامكو) and US tickers (AAPL), separated by spaces or commas. */
     private void askStocks() {
         final EditText in = new EditText(this);
-        in.setHint("مثال: \u20662222 1120 AAPL NVDA\u2069");
+        in.setHint(Words.of("مثال: \u20662222 1120 AAPL NVDA\u2069"));
         in.setText(Prefs.join(prefs.stocks(), " "));
         in.setSingleLine(true);
         in.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -1423,6 +1435,27 @@ public class SettingsActivity extends Activity {
             .setMessage(countdownLabel())
             .setPositiveButton("مسح", (d, w) -> { prefs.setCountdown("", ""); render(); })
             .setNegativeButton("إلغاء", null).show();
+    }
+
+    /** «اللغة» as its row and button say it: the language in use, in its own words; with Arabic, English beside it to be found */
+    private String langLabel() { return Tr.EN.equals(prefs.lang()) ? "English" : "العربية · English"; }
+
+    /**
+     * «اللغة»: العربية or English, each in its own language. The choice is kept (Prefs.setLang: the page and the home follow it at their
+     * next start), and this screen is made again in it at once, on the same button.
+     */
+    private void pickLang() {
+        final String[] values = {Tr.AR, Tr.EN};
+        new Dlg(this).raw().own().setTitle(S.en() ? "Language · اللغة" : "اللغة · Language")
+            .setSingleChoiceItems(new String[] {"العربية", "English"}, Tr.EN.equals(prefs.lang()) ? 1 : 0, (d, i) -> {
+                d.dismiss();
+                if (values[i].equals(prefs.lang())) return;
+                prefs.setLang(values[i]);
+                // the screen again in the new language (its direction and words are set when it starts), on the same button
+                startActivity(new Intent(this, SettingsActivity.class).putExtra("screen", screen).putExtra("hubAt", SettingsHub.LANG));
+                finish();
+            })
+            .show();
     }
 
     private void pickDigits() {
@@ -1574,25 +1607,33 @@ public class SettingsActivity extends Activity {
 
     private static String leagueAr(String en) {
         for (String[] l : Prefs.LEAGUES) if (l[0].equalsIgnoreCase(en)) return l[1];
-        return Arabic.translit(en);
+        return S.en() ? en : Arabic.translit(en);   // English: the league's own name, not a transliteration of it
     }
 
     private static String labelOf(String[][] options, String key) {
         for (String[] o : options) if (o[0].equalsIgnoreCase(key)) return o[1];
-        return Arabic.translit(key);
+        return S.en() ? key : Arabic.translit(key);
     }
 
     private String teamsLabel() {
         List<String> names = new ArrayList<>();
-        for (String t : prefs.teams()) names.add(t.split("\\|", 2)[1]);
+        for (String t : prefs.teams()) names.add(teamName(t));
         return names.isEmpty() ? "لا شيء" : Prefs.join(names, "، ");
+    }
+
+    /** A followed team ("id|Arabic name") as shown: its Arabic name, or with «اللغة» English the English one of our list (data, not the table). */
+    private String teamName(String saved) {
+        String[] p = saved.split("\\|", 2);
+        if (!S.en() || p.length < 2) return p.length < 2 ? saved : p[1];
+        TeamSearch.Team t = Teams.byId(this, p[0]);
+        return t != null && !t.en.isEmpty() ? t.en : p[1];
     }
 
     /** the «الأرقام» setting as this screen draws it (read at every render): every number and label goes through conv() */
     private static volatile boolean latinDigits;
     private boolean noConv;   // the «الأرقام» row itself says «هندية ١٢٣» and «عربية 123»: both stay as they are
 
-    private static String conv(String s) { return DigitsText.convert(s, latinDigits); }
+    private static String conv(String s) { s = Words.of(s); return DigitsText.convert(s, latinDigits); }   // «اللغة» first (Words: the text itself in Arabic)
 
     private static String arabicNum(int n) { return conv(String.valueOf(n)); }
 
@@ -1647,11 +1688,11 @@ public class SettingsActivity extends Activity {
     private void pickLookPart(final boolean shape) {
         final String[] values = shape ? GlassStyle.LOOKS : Prefs.APPEARANCES;
         final String[] labels = new String[values.length];
-        for (int i = 0; i < values.length; i++) labels[i] = shape ? GlassStyle.LOOK_NAMES[i] : Prefs.appearanceLabel(values[i]).split(" · ")[0];
+        for (int i = 0; i < values.length; i++) labels[i] = Words.of(shape ? GlassStyle.LOOK_NAMES[i] : Prefs.appearanceLabel(values[i]).split(" · ")[0]);
         final String current = shape ? prefs.look() : prefs.appearance();
         final LinearLayout box = new LinearLayout(this);
         box.setOrientation(LinearLayout.HORIZONTAL);
-        box.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        box.setLayoutDirection(Dir.layout());
         box.setPadding(dp(12), dp(4), dp(12), dp(4));
         final android.widget.ListView lv = new android.widget.ListView(this);
         lv.setDividerHeight(0);
@@ -1724,19 +1765,19 @@ public class SettingsActivity extends Activity {
         });
         LinearLayout col = new LinearLayout(this);
         col.setOrientation(LinearLayout.VERTICAL);
-        col.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        col.setLayoutDirection(Dir.layout());
         col.setPadding(dp(14), dp(12), dp(14), dp(12));
         TextView title = new TextView(this);
-        title.setText(half ? (l.light ? "فاتح" : "داكن") : "الإعدادات");
+        title.setText(Words.of(half ? (l.light ? "فاتح" : "داكن") : "الإعدادات"));
         title.setTextColor(l.text);
         title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         title.setTypeface(font("ThmanyahDisplay-Bold"));
         col.addView(title);
         LinearLayout tiles = new LinearLayout(this);
-        tiles.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        tiles.setLayoutDirection(Dir.layout());
         for (int k = 0; k < (half ? 1 : 2); k++) {
             TextView t = new TextView(this);
-            t.setText(k == 0 ? "الموقع" : "الأذان");
+            t.setText(Words.of(k == 0 ? "الموقع" : "الأذان"));
             t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
             t.setTypeface(font("Thmanyah-Medium"));
             t.setGravity(Gravity.CENTER);
@@ -1748,7 +1789,7 @@ public class SettingsActivity extends Activity {
         }
         col.addView(tiles, llp(-1, -2, dp(8)));
         TextView row = new TextView(this);
-        row.setText("المدينة · الرياض");
+        row.setText(Words.of("المدينة · الرياض"));
         row.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
         row.setTypeface(font("Thmanyah-Regular"));
         row.setTextColor(l.sub);
@@ -1766,13 +1807,15 @@ public class SettingsActivity extends Activity {
     }
 
     /** the dialogs of this screen: the glass theme (styles.xml), and Thmanyah on every word of them once they show */
-    private static final class Dlg extends AlertDialog.Builder {
+    private static final class Dlg extends WordsBuilder {   // its words in «اللغة» (WordsBuilder)
         private final SettingsActivity owner;
         private boolean raw;   // its words keep their own digits (the «الأرقام» picker shows both kinds)
 
         Dlg(SettingsActivity a) { super(a, a.look.light ? R.style.UrDialogLight : R.style.UrDialog); owner = a; }   // the glass of now
 
         Dlg raw() { raw = true; return this; }
+
+        @Override Dlg own() { super.own(); return this; }
 
         private Runnable save;   // multi(): a list of choices with «حفظ»
 
@@ -1918,7 +1961,7 @@ public class SettingsActivity extends Activity {
         t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         t.setTypeface(font("Thmanyah-Regular"));
         t.setGravity(Gravity.START);
-        t.setTextDirection(View.TEXT_DIRECTION_RTL);
+        t.setTextDirection(Dir.text());
         t.setPadding(dp(10), dp(8), dp(10), bottom);
         list.addView(t);
     }
@@ -1932,7 +1975,7 @@ public class SettingsActivity extends Activity {
         t.setTypeface(font("Thmanyah-Regular"));   // a version line has digits and Latin letters: Thmanyah has them
         t.setLineSpacing(dp(4), 1f);
         t.setGravity(Gravity.START);
-        t.setTextDirection(View.TEXT_DIRECTION_RTL);
+        t.setTextDirection(Dir.text());
         t.setPadding(dp(6), dp(18), dp(6), dp(24));
         list.addView(t);
         final View.OnFocusChangeListener was = last.getOnFocusChangeListener();
@@ -1946,7 +1989,7 @@ public class SettingsActivity extends Activity {
 
     /**
      * One prayer of «تعديل وقت الصلاة»: «الفجر +٢ د». Left adds a minute and right takes one off (the reading direction of an Arabic
-     * screen runs leftwards), from −20 to +20; OK puts it back to zero. The text changes where it is, so the focus and the scroll stay.
+     * screen runs leftwards; an English one rightwards: Dir.forwardKey), from −20 to +20; OK puts it back to zero. The text changes where it is, so the focus and the scroll stay.
      */
     private void adjRow(final int k) {
         final View card = row(PrayerAdj.label(k, prefs.prayerAdj()[k]), "يسار + · يمين − · موافق للتصفير", R.drawable.ic_eye, null);
@@ -1954,7 +1997,7 @@ public class SettingsActivity extends Activity {
         final Runnable show = new Runnable() { public void run() { name.setText(conv(PrayerAdj.label(k, prefs.prayerAdj()[k]))); } };
         card.setOnClickListener(v -> { int[] a = prefs.prayerAdj(); a[k] = 0; prefs.setPrayerAdj(a); show.run(); });
         card.setOnKeyListener((v, code, ev) -> {
-            int d = code == android.view.KeyEvent.KEYCODE_DPAD_LEFT ? 1 : code == android.view.KeyEvent.KEYCODE_DPAD_RIGHT ? -1 : 0;
+            int d = code == Dir.forwardKey() ? 1 : code == Dir.backKey() ? -1 : 0;
             if (d == 0) return false;
             if (ev.getAction() == android.view.KeyEvent.ACTION_DOWN) {
                 int[] a = prefs.prayerAdj();
@@ -1974,7 +2017,7 @@ public class SettingsActivity extends Activity {
         final LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.HORIZONTAL);
         card.setGravity(Gravity.CENTER_VERTICAL);
-        card.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        card.setLayoutDirection(Dir.layout());
         card.setPadding(dp(24), dp(14), dp(20), dp(14));
         card.setFocusable(true);
         card.setClickable(true);
@@ -1998,14 +2041,14 @@ public class SettingsActivity extends Activity {
         texts.setOrientation(LinearLayout.VERTICAL);
         final TextView name = new TextView(this);
         name.setTag("name");   // adjRow changes it in place
-        name.setText(noConv ? label : conv(label));
+        name.setText(noConv ? Words.of(label) : conv(label));
         name.setTextColor(look.text);
         name.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
         name.setTypeface(font("Thmanyah-Medium"));
         name.setSingleLine(true);
         texts.addView(name);
         final TextView val = new TextView(this);
-        final String shown = value == null ? "" : noConv ? value : conv(value);
+        final String shown = value == null ? "" : noConv ? Words.of(value) : conv(value);
         if (value != null) {
             val.setText(shown);
             val.setTextColor(look.sub);
@@ -2046,7 +2089,7 @@ public class SettingsActivity extends Activity {
 
     private void ask(String hint, final Text then) {
         final EditText in = new EditText(this);
-        in.setHint(hint);
+        in.setHint(Words.of(hint));
         in.setSingleLine(true);
         in.setInputType(InputType.TYPE_CLASS_TEXT);
         new Dlg(this).setTitle("بحث").setView(in)

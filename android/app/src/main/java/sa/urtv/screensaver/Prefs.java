@@ -308,7 +308,8 @@ final class Prefs {
     String lang() { return Tr.norm(sp.getString("lang", Tr.AR)); }
     void setLang(String v) { sp.edit().putString("lang", Tr.norm(v)).apply(); S.set(v); }
 
-    String digits() { return sp.getString("digits", "hindi"); }
+    /** «الأرقام»: hindi (١٢٣, the default) or latin; with «اللغة» English and the digits never chosen, latin (123) */
+    String digits() { return sp.getString("digits", Tr.EN.equals(lang()) ? "latin" : "hindi"); }
     void setDigits(String v) { sp.edit().putString("digits", v).apply(); }
 
     static String digitsLabel(String v) {
@@ -532,7 +533,7 @@ final class Prefs {
         String[] city = city();
         List<String> ids = new ArrayList<>();
         for (String s : shows()) ids.add(s.split("\\|", 2)[0]);
-        return "city=" + Uri.encode(city[0]) + "&lat=" + city[1] + "&lon=" + city[2]
+        return "city=" + Uri.encode(pageCity(city)) + "&lat=" + city[1] + "&lon=" + city[2]
             + "&tz=" + Uri.encode(cityTz())
             + "&teams=" + join(teamIds(), ",")
             + "&events=" + join(list("events"), ",")
@@ -570,6 +571,13 @@ final class Prefs {
             + "&cdname=" + Uri.encode(countdownName())
             + openTasksParam()
             + ownParam();
+    }
+
+    /** The city's name for the page and the home: as saved, or with «اللغة» English the built-in city's English name (Places; a place of one's own keeps its name) */
+    private String pageCity(String[] city) {
+        if (!Tr.EN.equals(lang())) return city[0];
+        String en = Places.city(city[0], city[1], city[2]);
+        return en != null ? en : city[0];
     }
 
     /** The owner's own photos: how many and mix/only; nothing at all while there are none, so the page is as before. */

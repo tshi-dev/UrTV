@@ -13,7 +13,7 @@ final class SettingsHub {
     static final String ADHAN = "adhan", PLACE = "place", CLOCK = "clock", LISTEN = "listen", CARDS = "cards", LOOK = "look", CONTROL = "control",
             PHONE = "phone", UPDATE = "update", REPORT = "report", MORE = "more",
             SAVER = "saver", HOME = "home",                                 // in «البطاقات»
-            CONTENT = "content", APPS = "apps", SHOWS = "shows", FAMILY = "family";   // in «المزيد»
+            CONTENT = "content", APPS = "apps", SHOWS = "shows", FAMILY = "family", LANG = "lang";   // in «المزيد»
 
     /**
      * key, name, the line under its title on its own screen, the screen its button is on (null: the first), and the row a DIRECT button runs
@@ -37,6 +37,7 @@ final class SettingsHub {
         {APPS, "التطبيقات والمفضلة", "ترتيب التطبيقات المفضلة وتعديلها، وترتيب كل التطبيقات، وأسماء مصادر التلفزيون مثل PS5.", MORE, ""},
         {SHOWS, "جديد المسلسلات", "ما تعرضه بطاقة المسلسلات: التصنيفات واللغات والمسلسلات المختارة.", MORE, ""},
         {FAMILY, "حماية العائلة", "", MORE, "حماية العائلة"},
+        {LANG, "اللغة", "", MORE, "اللغة"},
     };
 
     /** each row of SettingsActivity by its FocusKey.key (the name without its numbers), and its category */
@@ -55,7 +56,7 @@ final class SettingsHub {
         {"الأذان", ADHAN},
         {"ترتيب التطبيقات المفضلة", APPS}, {"أسماء المصادر", APPS}, {"تعديل المفضلة", APPS}, {"ترتيب كل التطبيقات", APPS},
         {"تحديث تلفزيوني", UPDATE}, {"تحكم من الجوال", PHONE}, {"مركز التحكم", CONTROL}, {"أرسل تقرير", REPORT},
-        {"حماية العائلة", FAMILY},
+        {"حماية العائلة", FAMILY}, {"اللغة", LANG},
         {"التصنيفات", SHOWS}, {"اللغات", SHOWS}, {"مسلسلات مختارة", SHOWS}, {"أقل تقييم", SHOWS}, {"قائمة الأسهم", CONTENT},
         {"تبديل الصورة كل", SAVER}, {"صوري", SAVER}, {"بدء شاشة التوقف بعد", SAVER},
         {"التحديث التلقائي للصفحة", UPDATE}, {"تحديث صفحة شاشة التوقف", UPDATE},

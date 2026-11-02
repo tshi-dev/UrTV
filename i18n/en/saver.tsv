@@ -1,2 +1,421 @@
 # Phase 1: the screensaver app (android/app): settings, hub, labels
 # arabic<TAB>english, one per line, as docs/ENGLISH.md says. tests/i18n_test.py checks every entry.
+# ---- the settings screen: hints, titles
+الأسهم بين الأقسام  •  اختيار لفتح القسم  •  رجوع للخروج	Arrows to move  •  OK to open  •  Back to exit
+الأسهم بين الأقسام  •  اختيار لفتح القسم  •  رجوع	Arrows to move  •  OK to open  •  Back
+أعلى/أسفل بين الصفوف  •  اختيار لفتح الصف  •  رجوع للأقسام	Up/Down to move  •  OK to open  •  Back to sections
+تلفزيونك	Your TV
+الإعدادات	Settings
+رجوع إلى الأقسام	Back to sections
+رجوع إلى %s	Back to %s
+# ---- the categories (SettingsHub)
+الموقع والصلاة	Location & prayer
+مدينتك تحدد الوقت والطقس، وطريقة الحساب تحدد مواقيت الصلاة.	Your city sets the time and weather; the calculation method sets the prayer times.
+الساعة والأرقام	Clock & digits
+نظام الساعة ١٢ أو ٢٤، والأرقام عربية أو إنجليزية، وأسماء الأشهر الميلادية.	12- or 24-hour clock, digit style, and Gregorian month names.
+تلاوة وأذان	Quran and Adhan
+شاشة التلاوة والأذان، وزرها في الشاشة الرئيسية.	The Quran and Adhan screen, and its button on the home screen.
+البطاقات	Cards
+ما يظهر على شاشة التوقف وعلى الشاشة الرئيسية.	What shows on the screensaver and the home screen.
+المظهر	Appearance
+مركز التحكم	Control center
+التحكم من الجوال	Phone control
+تحديث تلفزيوني	Update my TV
+تحديث التطبيقين وإصدارهما، وتحديث صفحة شاشة التوقف.	Update both apps, see their versions, and update the screensaver page.
+أرسل تقرير	Send a report
+المزيد	More
+المباريات والأسواق، والتطبيقات والمفضلة، وجديد المسلسلات، وحماية العائلة.	Matches and markets, apps and favorites, new episodes, and family protection.
+شاشة التوقف	Screensaver
+ما يظهر على شاشة التوقف: الساعة والبطاقة بجانبها، والصور، ومتى تبدأ.	What the screensaver shows: the clock and its card, the photos, and when it starts.
+الشاشة الرئيسية	Home screen
+بطاقات الشاشة الرئيسية الثلاث، والتحية والطقس، والأزرار.	The home screen’s three cards, the greeting and weather, and its buttons.
+المباريات والأسواق	Matches & markets
+ما تعرضه البطاقات: فرقك ودورياتك، والأسواق، والأسهم.	What the cards show: your teams and leagues, markets, and stocks.
+التطبيقات والمفضلة	Apps & favorites
+ترتيب التطبيقات المفضلة وتعديلها، وترتيب كل التطبيقات، وأسماء مصادر التلفزيون مثل PS5.	Order and edit your favorites, arrange all apps, and rename TV inputs like PS5.
+جديد المسلسلات	New episodes
+ما تعرضه بطاقة المسلسلات: التصنيفات واللغات والمسلسلات المختارة.	What the shows card shows: genres, languages, and picked shows.
+حماية العائلة	Family protection
+اللغة	Language
+# ---- the tiles' summaries
+تشغيله وصوته ومؤذن الفجر	On/off, voice, Fajr muezzin
+زرها %s	Button: %s
+شاشة التوقف · الشاشة الرئيسية	Screensaver · Home screen
+مؤقت النوم والشبكة والصوت	Sleep timer, network, sound
+تشغيله وإيقافه وربط جوال	Turn on/off, pair a phone
+يبدأ وقت ما يحدده التلفاز	Starts when the TV says
+تبدأ بعد %s	Starts after %s
+بدون بطاقات · التحية والطقس	No cards · Greeting and weather
+الفرق %s	Teams: %s
+الأسواق %s	Markets: %s
+ترتيب المفضلة وتعديلها، وأسماء المصادر	Favorites order and edits, input names
+تفعيل أو إيقاف	Turn on or off
+# ---- the rows
+معاينة الشاشة	Preview
+شاهد الشاشة الآن	See the screensaver now
+الموقع	Location
+الدولة	Country
+المدينة	City
+طريقة الحساب	Calculation method
+تعديل وقت الصلاة	Adjust prayer times
+يعمل · لكل صلاة دقائقها، من −٢٠ إلى +٢٠ (الشروق لا يتغيّر)	On · Minutes per prayer, −20 to +20 (sunrise stays)
+متوقف · الأوقات كما تُحسب	Off · Times as calculated
+المباريات	Matches
+الفرق المتابعة	Followed teams
+الدوريات كاملة	Whole leagues
+رياضات أخرى	Other sports
+بدون اختيار = بدون	none picked = none
+العرض	Display
+الأرقام	Digits
+تنبيه قبل الأذان	Adhan alert
+يعمل · شريط في أعلى الشاشة آخر ١٠ دقائق، ثم حتى الإقامة	On · A bar at the top for the last 10 minutes, then until iqama
+الشروق بعد الفجر	Sunrise after Fajr
+يعمل · بعد إقامة الفجر: كم باقي على الشروق، ثم نصف ساعة بعده	On · After Fajr iqama: time left to sunrise, then half an hour after
+شريط الوقت بين الصلاتين	Prayer progress bar
+يعمل · خط رفيع تحت الصلاة القادمة يمتلئ حتى وقتها	On · A thin line under the next prayer fills until its time
+الرطوبة والرياح	Humidity & wind
+يعمل · تحت المدينة أعلى اليسار	On · Under the city, top left
+أسماء الأشهر الميلادية	Gregorian month names
+شريط السنة تحت الساعة	Year strip under the clock
+يعمل · نقاط السنة تحت الساعة، واليوم يلمع	On · A dot for each day under the clock, today glowing
+المناسبة القادمة	Next occasion
+ظاهرة · أسفل الشاشة في الوسط: كم باقي على رمضان والأعياد، والإفطار والإمساك في رمضان	Shown · Bottom center: days to Ramadan and Eid, and iftar and suhoor in Ramadan
+تعتيم الليل	Night dimming
+يعمل · تغمق الشاشة من ٩ مساءً، وأغمق من ١١ إلى ٥ الفجر، وترجع ٧ الصباح	On · Dims from 9 pm, darkest 11 pm to 5 am, back at 7 am
+متوقف · نفس الإضاءة طول الليل	Off · Same brightness all night
+المناسبات الوطنية	National days
+حجم الساعة	Clock size
+نظام الساعة	Clock format
+الخانة اليسرى	Left panel
+العدّ التنازلي	Countdown
+الأسواق (أعلى اليسار)	Markets (top left)
+شريط الأسواق	Markets bar
+مخفي · يبقى طقس اليوم فقط	Hidden · Today’s weather only
+الأسواق	Markets
+عرض الأسواق	Markets style
+بجانب الساعة	Beside the clock
+المحتوى	Content
+بطاقة ثانية	Second card
+شكل البطاقة	Card style
+تبديل الآية والحديث	Verse & hadith change
+الشاشة الرئيسية (تلفزيونك)	Home screen (Your TV)
+التحية والطقس	Greeting & weather
+الأذان	Adhan
+تشغيله وصوته وصوت الفجر والمختصر والإيقاف بأي زر والمستوى	On/off, voice, Fajr voice, short adhan, stop with any key, volume
+افتح تلاوة وأذان	Open Quran & Adhan
+القرآن والإذاعات ومواقيت الأذان	Quran, radio, and adhan times
+زر تلاوة وأذان	Quran & Adhan button
+مخفي  •  الأذان والتلاوة تعمل، وتفتح الشاشة من قائمة التطبيق (اختيار مطوّلة) أو من بطاقة «يُتلى الآن»	Hidden  •  Adhan and Quran still play; open the screen from the app menu (hold OK) or the Now Playing card
+زر المهام	Tasks button
+مخفي  •  المهام تبقى في بطاقة «المهام» ومن الجوال	Hidden  •  Tasks stay in the Tasks card and on the phone
+الرجوع يفتح شاشة التوقف	Back starts screensaver
+جرس التحديثات	Updates bell
+ظاهر عند وجود تحديثات للتطبيقات	Shown when app updates are waiting
+ترتيب التطبيقات المفضلة	Order favorites
+قائمة ترتّب فيها المفضلة بالأسهم	Arrange your favorites with the arrows
+أكمل المشاهدة	Continue watching
+أسماء المصادر	Input names
+غيّر اسم كل مصدر، مثل PS5	Rename each input, like PS5
+تعديل المفضلة	Edit favorites
+تحريك التطبيقات على الشاشة الرئيسية وحذفها	Move and remove apps on the home screen
+تحكم من الجوال	Phone control
+تشغيله وإيقافه وربط جوال، وفي الشاشة حالته الآن	Turn on/off and pair a phone; the screen shows its state
+ترتيب كل التطبيقات	Arrange all apps
+تحريكها وإخفاؤها على الشاشة الرئيسية، أو الرجوع للترتيب الأصلي	Move or hide them on the home screen, or restore the original order
+تحديث التطبيقين: يعرض الإصدار ويتحقق من التحديث	Update both apps: shows the version and checks for updates
+مؤقت النوم والشبكة والصوت وإعدادات التلفزيون	Sleep timer, network, sound, and TV settings
+رمز QR يفتح صفحة الإرسال في جوالك	A QR code opens the report page on your phone
+تفعيل أو إيقاف، ويرجع الإعداد القديم تلقائياً	Turn on or off; the old setting comes back by itself
+التصنيفات	Genres
+الكل	All
+اللغات	Languages
+مسلسلات مختارة	Picked shows
+أقل تقييم	Minimum rating
+بدون حد	No minimum
+قائمة الأسهم	Stock list
+التوقيت	Timing
+تبديل الصورة كل	Change photo every
+صوري	My photos
+بدء شاشة التوقف بعد	Start screensaver after
+التطبيق	App
+التحديث التلقائي للصفحة	Auto-update the page
+يعمل · عند بدء الشاشة، كل ٦ ساعات	On · When the screensaver starts, every 6 hours
+تحديث صفحة شاشة التوقف	Update screensaver page
+ينزّل أحدث صفحة للشاشة فقط · لتحديث التطبيقين: «تحديث تلفزيوني» في نفس القسم	Gets the latest page only · To update the apps: “Update my TV” in this section
+البطاقة الأولى	First card
+البطاقة الثانية	Second card
+البطاقة الثالثة	Third card
+يعمل · ما وقفته في نصه، تحت المفضلة	On · What you stopped halfway, under the favorites
+يعمل · يحتاج السماح مرة واحدة: اختيار	On · Needs your OK once: press OK
+لا شيء	None
+بدون	None
+# ---- on and off (OnOff)
+يعمل	On
+تعمل	On
+مفعّل	On
+مفعّلة	On
+ظاهر	Shown
+ظاهرة	Shown
+متوقف	Off
+متوقفة	Off
+مخفي	Hidden
+مخفية	Hidden
+# ---- the place pickers
+بحث عن مدينة أو قرية	Search for a city or town
+المنطقة	Region
+بحث	Search
+اسم المدينة أو القرية	City or town name
+لا توجد نتائج	No results
+اختر المكان	Choose the place
+مكان من اختيارك	Your own place
+المدينة تحدد الوقت والطقس؛ طريقة الحساب تحدد مواقيت الصلاة	The city sets the time and weather; the method sets the prayer times
+المدينة: %s. لتغييرها: الإعدادات ثم الموقع	City: %s. To change it: Settings, then Location
+# ---- teams, leagues, shows
+لا توجد فرق متابعة	No followed teams
+الفرق المتابعة (ألغِ التحديد للحذف)	Followed teams (untick to remove)
+إضافة فريق	Add a team
+تمت متابعة %s	Following %s
+الحد الأعلى ٢٠ فريقاً	20 teams at most
+متابَع مسبقاً	Already followed
+تصفح الدوريات	Browse leagues
+بحث عن أي فريق أو منتخب	Search any club or national team
+المنتخبات	National teams
+الدوري	League
+تعذّر تحميل القائمة، جرّب البحث عن الفريق	Couldn’t load the list. Try searching for the team
+اسم الفريق بالعربية أو الإنجليزية (مثل الهلال أو ⁦Real Madrid⁩)	Team name in English or Arabic (like Real Madrid)
+اختر الفريق	Choose the team
+لا توجد نتائج، جرّب اسم الفريق بالإنجليزية	No results. Try the team’s English name
+منتخب	National team
+تعذّر تحميل هذا الدوري، جرّب البحث عن الفريق	Couldn’t load this league. Try searching for the team
+بدون اختيار = الكل	none picked = all
+الدوريات كاملة (حتى %s، بدون اختيار = بدون)	Whole leagues (up to %s, none picked = none)
+حتى %s دوريات	Up to %s leagues
+لا توجد مسلسلات مختارة	No picked shows
+المسلسلات المختارة (ألغِ التحديد للحذف)	Picked shows (untick to remove)
+إضافة مسلسل	Add a show
+اسم المسلسل	Show name
+اختر المسلسل	Choose the show
+مضاف مسبقاً	Already added
+تمت إضافة %s	Added %s
+جارٍ جلب الاسم بالعربية…	Getting the Arabic name…
+# ---- the home app's screens
+ما قدرنا نفتح حماية العائلة: حدّث الواجهة الرئيسية «تلفزيونك»	Couldn’t open Family Protection: update the “Your TV” home app
+ثبّت الواجهة الرئيسية «تلفزيونك» أولاً	Install the “Your TV” home app first
+حدّث الواجهة الرئيسية «تلفزيونك» أو ثبّتها أولاً	Update or install the “Your TV” home app first
+تعديل التطبيقات	Edit apps
+رجوع للترتيب الأصلي	Restore the original order
+حدّث التطبيقين «شاشة تلفزيونك» و«تلفزيونك»: واحد منهم أقدم من الثاني	Update both apps, “Your TV Screen” and “Your TV”: one is older than the other
+# ---- cards
+بطاقة واحدة بجانب الساعة	One card beside the clock
+إلغاء	Cancel
+حفظ	Save
+اختر من سوق إلى %s أسواق	Pick 1 to %s markets
+الأسواق (حتى %s)	Markets (up to %s)
+مثال: ⁦2222 1120 AAPL NVDA⁩	Example: 2222 1120 AAPL NVDA
+قائمة الأسهم (رمز تداول من ٤ أرقام أو رمز أمريكي، حتى %s)	Stock list (4-digit Tadawul code or US ticker, up to %s)
+رمز غير صالح: %s	Invalid code: %s
+أدخل من رمز إلى %s رموز	Enter 1 to %s codes
+لم يُحدَّد	Not set
+لم يُحدَّد تاريخ. يحدده المساعد على الكمبيوتر.	No date set. Your assistant sets it from the computer.
+حسنًا	OK
+مسح	Clear
+# ---- photos and timing
+لا توجد صور · يضيفها مساعدك الذكي	No photos · Your AI assistant adds them
+صوري فقط	My photos only
+تُضاف إلى صور التطبيق	Mixed with the app’s photos
+اطلب من مساعدك الذكي إضافة صورك (حتى ١٠)	Ask your AI assistant to add your photos (up to 10)
+حذف كل صوري	Delete all my photos
+حذف كل صوري؟	Delete all my photos?
+حذف	Delete
+غيّرها من إعدادات التلفاز، أو بأمر من مساعدك	Change it in the TV’s settings, or ask your assistant
+يحدده التلفاز	Set by the TV
+%s ثانية	%s seconds
+دقيقة واحدة	1 minute
+دقيقتان	2 minutes
+%s دقائق	%s minutes
+%s دقيقة	%s minutes
+٣٠ ثانية	30 seconds
+جارٍ التحقق…	Checking…
+جارٍ البحث…	Searching…
+لا يوجد اتصال	No connection
+تعذرت قراءة النتائج	Couldn’t read the results
+# ---- the look
+الشكل: %s	Style: %s
+الإضاءة: %s	Brightness: %s
+المظهر: الشكل	Appearance: Style
+المظهر: الإضاءة	Appearance: Brightness
+المدينة · الرياض	City · Riyadh
+فاتح	Light
+داكن	Dark
+تلقائي · فاتح من الشروق إلى المغرب، وداكن بعده	Auto · Light from sunrise to Maghrib, dark after
+زجاجي	Glass
+فحمي	Graphite
+كحلي	Navy
+نظيف	Clean
+# ---- prayer times
+يسار + · يمين − · موافق للتصفير	Right + · Left − · OK to reset
+الفجر %s د	Fajr %s min
+الظهر %s د	Dhuhr %s min
+العصر %s د	Asr %s min
+المغرب %s د	Maghrib %s min
+العشاء %s د	Isha %s min
+تلقائي	Auto
+أم القرى	Umm al-Qura
+الكويت	Kuwait
+قطر	Qatar
+الإمارات	UAE
+الخليج	Gulf
+وزارة الأوقاف والشؤون الدينية العُمانية	Oman Ministry of Awqaf and Religious Affairs
+الهيئة المصرية للمساحة	Egyptian General Authority of Survey
+وزارة الأوقاف الأردنية	Jordan Ministry of Awqaf
+وزارة الأوقاف المغربية	Morocco Ministry of Habous
+وزارة الشؤون الدينية الجزائرية	Algeria Ministry of Religious Affairs
+وزارة الشؤون الدينية التونسية	Tunisia Ministry of Religious Affairs
+جعفري · معهد ليفا، قم	Jafari · Leva Institute, Qum
+جامعة العلوم الإسلامية بكراتشي	University of Islamic Sciences, Karachi
+الجمعية الإسلامية لأمريكا الشمالية	ISNA
+رابطة العالم الإسلامي	Muslim World League
+المجلس الإسلامي السنغافوري	MUIS Singapore
+اتحاد المنظمات الإسلامية في فرنسا	UOIF France
+رئاسة الشؤون الدينية التركية	Diyanet Turkey
+الإدارة الدينية لمسلمي روسيا	Spiritual Administration of Muslims of Russia
+لجنة رصد الهلال العالمية	Moonsighting Committee
+إدارة التنمية الإسلامية الماليزية	JAKIM Malaysia
+وزارة الشؤون الدينية الإندونيسية	Kemenag Indonesia
+# ---- the clock and digits
+١٢ ساعة	12-hour
+٢٤ ساعة	24-hour
+هندية ١٢٣	Arabic-Indic
+عربية 123	Western (123)
+كل يوم	Every day
+كل ٣ دقائق	Every 3 minutes
+كانون الثاني، شباط، آذار…	Levantine (Kanun al-Thani, Shubat…)
+يناير، فبراير، مارس…	Standard (January, February…)
+%s يناير %s	%s January %s
+%s فبراير %s	%s February %s
+%s مارس %s	%s March %s
+%s أبريل %s	%s April %s
+%s مايو %s	%s May %s
+%s يونيو %s	%s June %s
+%s يوليو %s	%s July %s
+%s أغسطس %s	%s August %s
+%s سبتمبر %s	%s September %s
+%s أكتوبر %s	%s October %s
+%s نوفمبر %s	%s November %s
+%s ديسمبر %s	%s December %s
+# ---- Prefs labels
+دوري روشن السعودي	Saudi Pro League
+دوري يلو (الدرجة الأولى)	Saudi First Division (Yelo)
+الدوري الإنجليزي	Premier League
+الدوري الإسباني	La Liga
+الدوري الإيطالي	Serie A
+الدوري الألماني	Bundesliga
+الدوري الفرنسي	Ligue 1
+الدوري البرتغالي	Primeira Liga
+الدوري الهولندي	Eredivisie
+الدوري التركي	Süper Lig
+الدوري المصري	Egyptian Premier League
+الدوري الإماراتي	UAE Pro League
+الدوري القطري	Qatar Stars League
+الدوري الأمريكي	MLS
+دوري كرة السلة الأمريكي (NBA)	NBA
+دوري كرة القدم الأمريكية (NFL)	NFL
+فورمولا 1	Formula 1
+الملاكمة	Boxing
+دراما	Drama
+كوميديا	Comedy
+أكشن	Action
+جريمة	Crime
+إثارة	Thriller
+غموض	Mystery
+خيال علمي	Sci-Fi
+فانتازيا	Fantasy
+مغامرة	Adventure
+رومانسي	Romance
+عائلي	Family
+تاريخي	History
+رعب	Horror
+أنمي	Anime
+وثائقي	Documentary
+رياضة	Sports
+الإنجليزية	English
+العربية	Arabic
+الكورية	Korean
+اليابانية	Japanese
+التركية	Turkish
+الإسبانية	Spanish
+الفرنسية	French
+الهندية	Hindi
+الألمانية	German
+إيقاف	Off
+الحالية	Current
+داكنة	Dark
+زجاجية	Glass
+داكنة بإطار	Dark, framed
+زجاجية بإطار	Glass, framed
+تاسي	TASI
+أرامكو	Aramco
+بيتكوين	Bitcoin
+الذهب (الجرام بالريال)	Gold (SAR per gram)
+الفضة (الجرام بالريال)	Silver (SAR per gram)
+نفط برنت (للبرميل)	Brent oil (per barrel)
+ريبل	XRP
+الاتجاه فقط ▲▼	Direction only ▲▼
+السعر والنسبة	Price and change
+كبيرة	Large
+متوسطة	Medium
+صغيرة	Small
+الطقس	Weather
+الصيام	Fasting
+عدّ تنازلي	Countdown
+مواقيت الصلاة اليوم	Today’s prayer times
+طقس الأيام القادمة	Daily forecast
+طقس الساعات القادمة	Hourly forecast
+الصلوات في صف	Prayers in a row
+الصلاة القادمة	Next prayer
+مباريات فرقك القادمة	Your teams’ matches
+آية أو حديث اليوم	Verse or hadith of the day
+حكمة اليوم	Saying of the day
+أذكار الصباح والمساء	Morning and evening adhkar
+الأسهم	Stocks
+المهام	Tasks
+السنة	Year
+البطاقة الذكية	Smart card
+يومك	Your day
+حلقات هذا الأسبوع	This week’s episodes
+الست أوقات، والجاية مميّزة	All six times, the next one highlighted
+خمسة أيام	Five days
+الست ساعات الجاية بالساعة والأيقونة والحرارة، وقمر بعد الغروب	The next six hours with icon and temperature, a moon after sunset
+الخمس صلوات في صف واحد، والجاية مضيئة	The five prayers in one row, the next one lit
+سطر واحد: الصلاة الجاية ووقتها وكم باقي لها	One line: the next prayer, its time, and time left
+مباريات الأسبوع ونتائج آخر يوم لفرقك، وكل مباراة بسطر واحد	This week’s matches and the latest results for your teams, one line each
+آية يوم، وحديث صحيح من الكتب الستة اليوم اللي بعده، ومعه مصدره	A verse one day, an authentic hadith from the Six Books the next, with its source
+مثل أو قول عربي معروف مع مصدره	A well-known Arabic proverb or saying with its source
+من الفجر للظهر أذكار الصباح، ومن العصر للمغرب أذكار المساء	Morning adhkar from Fajr to Dhuhr, evening adhkar from Asr to Maghrib
+أسهمك بالسعر والتغيّر	Your stocks with price and change
+قائمة مهامك	Your task list
+٣٦٥ نقطة، الأيام اللي راحت تولّع من الغامق للذهبي	365 dots; the days gone glow from dark to gold
+تختار لك البطاقة المناسبة للوقت	Picks the right card for the time of day
+الصلاة القادمة ووقتها، والمباراة القادمة لفرقك، وأول مهمة مفتوحة، والمناسبة القادمة وكم يوم باقي	Next prayer and its time, your teams’ next match, your first open task, and the next occasion with days left
+بدون بطاقة	No card
+البطاقة كما كانت، بخلفية داكنة شفافة	The original card, on a see-through dark background
+داكنة بزوايا مدوّرة وخط ذهبي على جهة الساعة	Dark with round corners and a gold line on the clock side
+زجاجية ضبابية فوق الصورة	Frosted glass over the photo
+داكنة بإطار ذهبي داخلي ومعيّن على الحافتين	Dark with an inner gold frame and a diamond on each edge
+زجاجية بإطار ذهبي داخلي ومعيّن على الحافتين	Glass with an inner gold frame and a diamond on each edge
+# ---- the page update (Updater's words, shown in this app's toasts and lines)
+التحديث التلقائي متوقف	Auto-update is off
+تم الفحص مؤخراً	Checked recently
+الصفحة محدثة	The page is up to date
+تعذر التحديث	Update failed
+ملف التحديث غير صالح	The update file is not valid
+الصفحة المرفقة أحدث من المنزّلة	The built-in page is newer than the download
+تعذر الحفظ	Couldn’t save
+تم التحديث	Updated
+لم يُفحص بعد	Not checked yet
+لا يوجد أحدث	None newer
+الإصدار الحالي: %s	Current version: %s
+الإصدار المتاح: %s	Available version: %s
+طريقة التحديث: اطلب من مساعد الذكاء الاصطناعي «حدّث تلفزيوني»، وإعداداتك كلها تبقى.	To update: ask your AI assistant to “update my TV”; all your settings stay.
+# ---- the app's name (res/values/strings.xml; the system shows the Arabic label)
+شاشة تلفزيونك	Your TV Screen
