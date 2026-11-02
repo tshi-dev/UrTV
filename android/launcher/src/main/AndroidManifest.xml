@@ -75,6 +75,9 @@
         <intent>
             <action android:name="android.speech.action.RECOGNIZE_SPEECH" />
         </intent>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
         <!-- the remote's Settings key outside our home (TypeService, SettingsKey.TV_SETTINGS_ACTIONS): on Android 11+ the TV's settings
              screen must be visible, or resolveActivity finds nothing and the family lock cannot name its package -->
         <intent>

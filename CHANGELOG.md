@@ -10,6 +10,9 @@ Four options for the adhan, each a switch in «تلاوة وأذان» ← ال�
 - «تكبير فقط»: a third length next to «أذان مختصر». Only the opening takbir plays (cut at 14 seconds, a 2-second fade), the same time for every recording. `optimize/music.sh adhan takbir on|off`.
 - «شاشة التوقف وقت الأذان»: at the prayer's time the screensaver starts so the clock and prayer screen show, only when our home is in front, never over another app. `optimize/music.sh adhan saver-at on|off`.
 
+- «المهام» (issue #48): a text field with «إضافة» inside the screen, so a task can be added on a Google TV where the system's speech window gives nothing (its search box never reaches our app). The field takes the TV keyboard's own mic (Gboard, Leanback), its action key is «إضافة» (not search) and Enter adds; the D-pad reaches it with the usual gold focus. It is the same add as `optimize/saver.sh tasks add` (up to 12 tasks, 60 characters), Arabic and right to left.
+- «🎤 تكلّم» is shown only when the TV has a speech recognizer (`SpeechRecognizer.isRecognitionAvailable` or an activity for the speech intent; the manifest now lets Android 11 show us recognizer services); a speech window that opens and closes at once with nothing hides the button for that visit. No dead button.
+
 ## 4.1
 
 The fixes for what broke after updating to 4.0: on TCL the phone remote stopped working inside other apps and the adhan was not rescheduled after an update (TCL's ASSOC_START op: `optimize/autostart.sh` now allows it; TVs already set up get it from the agent with «حدّث تلفزيوني»); a muted TV stayed at volume 0 after the adhan; the Settings key did nothing on HDMI; the screensaver cut phone pairing. Also in it: the new phone page, «نظام الساعة» 12/24, «حفظ» in long lists, «انعكاس الشاشة», and 3,679 cities in 242 countries and territories.
