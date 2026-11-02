@@ -22,6 +22,8 @@ final class SettingsKey {
     static final int KEYCODE_SETTINGS = 176;
     /** KEYCODE_NOTIFICATION: what a TCL remote's Settings key arrives as (the owner's TCL, UrTVKeys log; see docs/TVS.md) */
     static final int KEYCODE_NOTIFICATION = 83;
+    /** the Settings key of a TCL G05 remote (a vendor keycode: it may reach only the window in front, never this service; kept in step with RemoteKeys) */
+    static final int KEYCODE_TCL_SETTINGS = 4077;
 
     /** the key goes on as it would have */
     static final int PASS = 0;
@@ -49,7 +51,7 @@ final class SettingsKey {
     private int heldCode;
 
     static boolean isSettingsKey(int keyCode) {
-        return keyCode == KEYCODE_SETTINGS || keyCode == KEYCODE_NOTIFICATION;
+        return keyCode == KEYCODE_SETTINGS || keyCode == KEYCODE_NOTIFICATION || keyCode == KEYCODE_TCL_SETTINGS;
     }
 
     int decide(int keyCode, int action, int repeat, boolean homeFront, boolean stockHome) {

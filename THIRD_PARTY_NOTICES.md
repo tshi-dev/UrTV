@@ -140,3 +140,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+## Clean Your TV (remote keys, protected packages)
+
+The home also answers TCL's vendor remote keys (4062, 4065, 4099) from the idea in Clean Your TV commit e525f084 (vendor keys of 1000 and up
+reach only the window in front, so the home must handle them), and `com.android.sdksandbox` / `com.android.location.fused` are never disabled
+after its commits bf505124 and f5c37c36. Clean Your TV (https://github.com/Gathin23/cleanyourtv) is MIT licensed; its license text is in
+`optimize/lists/community/LICENSE-CleanYourTV.txt`.

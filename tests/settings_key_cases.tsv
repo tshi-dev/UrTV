@@ -49,3 +49,9 @@ stock	sa.urtv.home,com.google.android.tungsten.setupwraith					no	the setup wiza
 stock	com.android.tv.settings,com.android.settings,sa.urtv.home					no	the settings apps' fallback homes
 stock	com.tcl.launcher.example,sa.urtv.home					yes	another maker's home
 stock						no	nothing
+reset						-	
+key	4077	0	0	other	off	TV_SETTINGS	TCL G05 vendor Settings key (4077) in another app: the TV's settings
+key	4077	0	1	other	off	EAT	its repeats are consumed
+key	4077	1	0	other	off	EAT	its release is consumed
+key	4077	0	0	home	off	OUR_SETTINGS	on our home: our settings, as 83 and 176
+key	4062	0	0	other	off	PASS	a TCL app key (4062) is not the Settings key: untouched

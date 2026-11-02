@@ -207,5 +207,9 @@ check("core.txt protects com.cltv.mal, com.mediatek.tis, com.mediatek.tv.service
 check("... only those names, not the packages that merely start the same way", not any(is_core(x) for x in ("com.mediatek.tv.ads", "com.mediatek.tisx", "android.ext.servicesx", "com.cltv.mal.ads", "com.mediatek.logger")), "")
 check("... and the comment credits Clean Your TV", "Clean Your TV" in (ROOT / "optimize/lists/core.txt").read_text(encoding="utf-8"), "")
 
+# the Privacy Sandbox runtime and the fused location provider (Clean Your TV bf505124, f5c37c36: the latter boot-looped a TCL S5400A)
+check("core.txt protects com.android.sdksandbox and com.android.location.fused (whole names only)",
+      is_core("com.android.sdksandbox") and is_core("com.android.location.fused") and not is_core("com.android.sdksandboxx") and not is_core("com.vendor.sdksandbox"), "")
+
 print("\nall community checks passed" if not failed else f"\n{failed} failed")
 sys.exit(1 if failed else 0)

@@ -74,7 +74,7 @@ final class SetupLists {
     /** never turned off: Android's own core, regular expressions matched against the whole name (optimize/lists/core.txt) */
     static final String[] CORE = {
         "android",
-        "com\\.android\\.(systemui|settings|shell|phone|packageinstaller|permissioncontroller|externalstorage|inputdevices|keychain|certinstaller|defcontainer|mtp|storagemanager|location\\.fused|bluetooth|nfc|server\\..*|networkstack.*|tethering|wifi\\..*|ext\\..*|modulemetadata|providers\\..*)",
+        "com\\.android\\.(systemui|settings|shell|phone|packageinstaller|permissioncontroller|externalstorage|inputdevices|keychain|certinstaller|defcontainer|mtp|storagemanager|location\\.fused|sdksandbox|bluetooth|nfc|server\\..*|networkstack.*|tethering|wifi\\..*|ext\\..*|modulemetadata|providers\\..*)",
         "com\\.google\\.android\\.(permissioncontroller|packageinstaller|ext\\.services|ext\\.shared|modulemetadata|overlay\\..*|networkstack.*|gms|gsf|tv\\.settings|tvsettings)",
         ".*webview.*",
         "com\\.cltv\\.mal",

@@ -28,6 +28,8 @@ man = text("android/launcher/src/main/AndroidManifest.xml")
 check("SettingsKey has no Android in it (key numbers written out)", "import android" not in sk and "KeyEvent." not in re.sub(r"//.*|/\*.*?\*/", "", sk, flags=re.S))
 check("SettingsKey: the same two key numbers as the home's RemoteKeys (176 and TCL's 83)",
       "KEYCODE_SETTINGS = 176" in sk and "KEYCODE_NOTIFICATION = 83" in sk and "KEYCODE_SETTINGS = 176" in text("android/launcher/src/main/java/sa/urtv/home/RemoteKeys.java"))
+check("SettingsKey: TCL G05's vendor Settings key 4077 is in both SettingsKey and RemoteKeys",
+      "KEYCODE_TCL_SETTINGS = 4077" in sk and "TCL_SETTINGS = 4077" in text("android/launcher/src/main/java/sa/urtv/home/RemoteKeys.java"))
 dec = sk.split("int decide(")[1].split("\n    }\n")[0]
 check("any other key is passed on first, before anything is remembered", dec.split("\n")[1].strip() == "if (!isSettingsKey(keyCode)) return PASS;   // every other key: untouched, nothing remembered", dec[:200])
 acts = re.findall(r'"([a-z.]+\.[A-Z_]+|android\.[a-z.]+)"', sk.split("TV_SETTINGS_ACTIONS = {")[1].split("};")[0])
