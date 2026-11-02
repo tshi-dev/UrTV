@@ -109,19 +109,19 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     private int savedVolume = -1;
     /** the level the adhan set the volume to, so a volume the person changed meanwhile is left alone (-1: not known) */
     private int adhanLevel = -1;
-    /** the adhan on is cut to its first minute (the option is on and it is not a preview) */
-    private boolean adhanShortNow;
+    /** where the adhan on is cut, in ms from its start, and how long the fade at the end is; 0: not cut («أذان مختصر» or «تكبير فقط» is on and it is not a preview) */
+    private long adhanCutMs, adhanFadeMs;
     private int pausedSource = Prefs.SOURCE_NONE, pausedReciter = -1, pausedSurah = 1, pausedStation = -1, pausedPosition;
     private final Runnable previewStop = new Runnable() {
         @Override public void run() { if (source == Prefs.SOURCE_ADHAN) finishAdhan(); }
     };
-    /** «أذان مختصر»: the last seconds of its first minute are a fade, then it ends like any adhan */
+    /** «أذان مختصر» and «تكبير فقط»: the last seconds before the cut are a fade, then it ends like any adhan */
     private final Runnable shortTick = new Runnable() {
         @Override public void run() {
-            if (source != Prefs.SOURCE_ADHAN || !adhanShortNow) return;
+            if (source != Prefs.SOURCE_ADHAN || adhanCutMs <= 0) return;
             long elapsed = SystemClock.elapsedRealtime() - shortStart;
-            if (elapsed >= AdhanVoices.SHORT_MS) { finishAdhan(); return; }
-            float gain = AdhanVoices.shortGain(elapsed);
+            if (elapsed >= adhanCutMs) { finishAdhan(); return; }
+            float gain = AdhanVoices.gain(elapsed, adhanCutMs, adhanFadeMs);
             if (player != null) { try { player.setVolume(gain, gain); } catch (IllegalStateException ignored) { } }
             handler.postDelayed(this, 250);
         }
@@ -382,7 +382,9 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         }
         final boolean gone = wanted == Prefs.OWN && !OwnAdhan.exists(this);   // the recording was removed: a numbered voice
         final int voice = gone ? prefs.voice() : wanted;
-        adhanShortNow = previewSeconds == 0 && prefs.adhanShort();
+        int length = previewSeconds == 0 ? AdhanVoices.length(prefs.adhanTakbir(), prefs.adhanShort()) : AdhanVoices.FULL;
+        adhanCutMs = AdhanVoices.cutMs(length, voice);
+        adhanFadeMs = AdhanVoices.fadeMs(length);
         if (gone) name = null;
         adhanVolumeUp();
         boolean comeBack = prepareAdhanPause();   // false when an adhan was already on
@@ -433,7 +435,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         if (source != Prefs.SOURCE_ADHAN) return;
         handler.removeCallbacks(previewStop);
         handler.removeCallbacks(shortTick);
-        adhanShortNow = false;
+        adhanCutMs = 0;
         adhanVolumeBack();
         resumeAfterAdhan = false;
         adhanName = null; adhanLive = false; adhanPrayer = -1;
@@ -443,7 +445,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     private void finishAdhan() {
         handler.removeCallbacks(previewStop);
         handler.removeCallbacks(shortTick);
-        adhanShortNow = false;
+        adhanCutMs = 0;
         adhanVolumeBack();
         boolean resume = resumeAfterAdhan;
         resumeAfterAdhan = false;
@@ -465,7 +467,12 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         if (audio == null) return;
         int max = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         if (savedVolume < 0) {   // the TV's own, put back at the end (also after a restart of the player: on disk)
+            // a muted TV: Android says 0 for a muted stream, so it is unmuted first (the adhan would unmute it anyway) to read the real level,
+            // and muted again at the end; before, the end put the level back to 0 and the TV stayed silent at 0 even after an unmute
+            boolean muted = audio.isStreamMute(AudioManager.STREAM_MUSIC);
+            if (muted) audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, 0);
             savedVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+            prefs.setSavedTvMuted(muted);
             prefs.setSavedTvVolume(savedVolume);
         }
         int want = Math.round(max * prefs.adhanVolume() / 100f);
@@ -481,7 +488,9 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             int level = adhanLevel >= 0 ? adhanLevel : prefs.adhanLevel();
             int to = AdhanVolume.restore(savedVolume, level, audio.getStreamVolume(AudioManager.STREAM_MUSIC));
             if (to >= 0) audio.setStreamVolume(AudioManager.STREAM_MUSIC, to, 0);   // else the person turned it themselves: it stays
+            if (AdhanVolume.muteAgain(prefs.savedTvMuted(), to)) audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0);
         }
+        prefs.setSavedTvMuted(false);
         savedVolume = -1;
         adhanLevel = -1;
         prefs.setSavedTvVolume(-1);
@@ -523,10 +532,10 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
                 mp.start();
                 playing = true;
                 playbackStarted();
-                if (source == Prefs.SOURCE_ADHAN && adhanShortNow) {
+                if (source == Prefs.SOURCE_ADHAN && adhanCutMs > 0) {
                     shortStart = SystemClock.elapsedRealtime();
                     handler.removeCallbacks(shortTick);
-                    handler.postDelayed(shortTick, AdhanVoices.SHORT_MS - AdhanVoices.FADE_MS);
+                    handler.postDelayed(shortTick, adhanCutMs - adhanFadeMs);
                 }
             } else if (source == Prefs.SOURCE_ADHAN) {
                 finishAdhan();   // nobody gave the sound: the TV's volume comes back and what was paused goes on
@@ -736,7 +745,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         adhanVolumeBack();
         resumeAfterAdhan = false;
         wish.stop();
-        adhanShortNow = false;
+        adhanCutMs = 0;
         handler.removeCallbacks(previewStop);
         handler.removeCallbacks(shortTick);
         releasePlayer();

@@ -16,8 +16,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 /**
- * Prayer times for the TV: the calculation of the city's country (Umm al-Qura for Saudi Arabia, and for anywhere outside the Gulf;
- * see PrayerMath.Method) or the Ja'fari one when the settings ask, the same numbers the screensaver's page computes and the ones
+ * Prayer times for the TV: the calculation resolved from the city's country (see PrayerMath.Method), or an existing explicit
+ * preference when the settings ask, the same numbers the screensaver's page computes and the ones
  * Aladhan gives for that method. Everything is computed on the TV with no network; once a day the times are quietly replaced by
  * Aladhan's. Where a method fixes Isha as a delay after Maghrib (Umm al-Qura: 90 minutes, 120 in Ramadan) Isha stays ours.
  */
@@ -34,6 +34,7 @@ final class PrayerTimes {
     private String tz = "Asia/Riyadh";
     private int year, month, day, method = PrayerMath.UMM_AL_QURA;
     private boolean ramadan;
+    private boolean highLatitude;
     /** «تعديل وقت الصلاة»: minutes added to PRAYERS[k] (PrayerAdjust); the sunrise is never moved */
     private int[] adj = new int[PrayerAdjust.COUNT];
 
@@ -63,6 +64,7 @@ final class PrayerTimes {
         t.tz = place.tz;
         t.ramadan = ramadan;
         t.method = place.method;
+        t.highLatitude = Math.abs(place.lat) > 48;
         t.year = local.get(Calendar.YEAR);
         t.month = local.get(Calendar.MONTH) + 1;
         t.day = local.get(Calendar.DAY_OF_MONTH);
@@ -123,8 +125,14 @@ final class PrayerTimes {
     private static Next next(Context c, long aheadMs, Place place) {
         long now = System.currentTimeMillis();
         Calendar day = Calendar.getInstance(TimeZone.getTimeZone(place.tz), Locale.US);
-        for (int d = 0; d < 3; d++) {
+        int firstDay = Math.abs(place.lat) > 48 ? -1 : 0;
+        day.add(Calendar.DAY_OF_MONTH, firstDay);
+        for (int d = firstDay; d < 3; d++) {
             PrayerTimes t = d == 0 ? today(c, place) : of(day, place);
+            if (d == -1) {
+                String saved = prefs(c).getString(key(day, place), null);
+                if (saved != null) t.apply(saved);
+            }
             int i = PrayerMath.firstAfter(t.at, PRAYERS, now + aheadMs);
             if (i >= 0) return new Next(i, t.at[i], t.clock[i]);
             day.add(Calendar.DAY_OF_MONTH, 1);
@@ -199,7 +207,7 @@ final class PrayerTimes {
         try {
             String url = "https://api.aladhan.com/v1/timings/" + PrayerMath.aladhanDate(day.getTimeInMillis(), place.tz)
                     + "?latitude=" + place.lat + "&longitude=" + place.lng
-                    + "&method=" + place.method + "&timezonestring=" + URLEncoder.encode(place.tz, "UTF-8");
+                    + "&latitudeAdjustmentMethod=3&method=" + place.method + "&timezonestring=" + URLEncoder.encode(place.tz, "UTF-8");
             HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
             con.setConnectTimeout(6000);
             con.setReadTimeout(8000);
@@ -246,13 +254,15 @@ final class PrayerTimes {
         int count = delay ? MAGHRIB + 1 : ISHA + 1;
         if (values.length < count) return;
         long[] parsed = new long[6];
+        int[] minutes = new int[6];
         for (int i = 0; i < count; i++) {
             int[] hm = PrayerMath.parseClock(values[i]);
             if (hm == null) return;   // not a time: keep the computed ones
-            parsed[i] = PrayerMath.wall(year, month, day, hm[0] * 60 + hm[1], tz);
+            minutes[i] = hm[0] * 60 + hm[1];
         }
+        minutes = PrayerMath.orderedClockMinutes(minutes, highLatitude);
+        for (int i = 0; i < count; i++) parsed[i] = PrayerMath.wall(year, month, day, minutes[i], tz);
         if (delay) parsed[ISHA] = parsed[MAGHRIB] + PrayerMath.ishaDelayMillis(ramadan, method);
-        else if (parsed[ISHA] < parsed[MAGHRIB]) parsed[ISHA] += 24 * 3600_000L;   // «00:10»: after midnight, the next day's
         for (int i = 0; i <= ISHA; i++) set(i, parsed[i]);
         shift();   // Aladhan's times are the raw ones: the person's minutes go on top of them
     }

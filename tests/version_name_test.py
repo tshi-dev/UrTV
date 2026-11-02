@@ -77,7 +77,8 @@ check("a change of VERSION alone starts a build", "'VERSION'" in wf.split("paths
 check("the old v3.N tag form is gone from the workflow (new builds are v<name>.<run>)", "v3.${{" not in wf)
 # docs
 cl = text("CHANGELOG.md")
-check("the CHANGELOG's section for this release is 4.0", re.search(r"^## 4\.0 ", cl, re.M) is not None and "version.txt` is still exactly `3.<build>`" in cl)
+check("the CHANGELOG has a section for this release (the VERSION file's name) and 4.0's names the version.txt rule",
+      re.search(r"^## " + re.escape(ver.strip()) + r"\b", cl, re.M) is not None and re.search(r"^## 4\.0\b", cl, re.M) is not None and "version.txt` is still exactly `3.<build>`" in cl)
 check("the README names the release v4.0.N and says version.txt stays 3.<build>", "v4.0.N" in text("README.md") and "`3.<build>`" in text("README.md"))
 # the screens
 page = text("android/launcher/src/main/assets/phone/index.html")

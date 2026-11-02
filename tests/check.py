@@ -46,6 +46,13 @@ for page, limit in (("urtv.html", 4_000_000), ("tv.html", 680_000)):   # tv.html
     left = sorted(set(re.findall(r"__[A-Z][A-Z_]+__", html)))
     check(f"{page}: every build token replaced", not left, left)
     check(f"{page}: size under {limit // 1000} KB", len(html.encode()) < limit, len(html.encode()))
+# Chromium breaks the joining of Arabic letters when letter-spacing is not 0, so the Arabic text under the clock (the subline, the panel and week labels) has none
+tv_page = (ROOT / "dist" / "tv.html").read_text(encoding="utf-8")
+def rule_of(selector):
+    m = re.search(re.escape(selector) + r"\{([^}]*)\}", tv_page)
+    return m.group(1) if m else ""
+cut = [sel for sel in (".subline", ".panel .label", ".week .hd") if re.search(r"letter-spacing:\s*[.0-9]*[1-9]", rule_of(sel))]
+check("Arabic text under the clock (.subline, .panel .label, .week .hd) has no letter-spacing: it cuts the letters apart", not cut and all(rule_of(s) for s in (".subline", ".panel .label", ".week .hd")), cut)
 # the build stamp is the time of the newest commit of the sources: a build before the commit carries the one before, so it is left out here
 unstamp = lambda b: re.sub(rb'(<meta name="urtv-build" content=")\d{14}', rb"\1", b)
 stale = [n for n, b in before.items() if unstamp((ROOT / "dist" / n).read_bytes()) != unstamp(b)]

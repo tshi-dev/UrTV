@@ -167,7 +167,7 @@ for (const [label, st] of [['new state', NEW()], ['old state', OLD()]]) await T(
   if (label === 'new state') {
     check('the settings tab reads GET /api/family', S.reqs.some(r => r.method === 'GET' && r.path === '/api/family'));
     const f = await p.textContent('#famCard');
-    check('family card is read-only and says: مفعّلة / يعمل / locked count', f.includes('الرقابة الأبوية: مفعّلة') && f.includes('وضع الأطفال: متوقف') && f.includes('2 تطبيقًا') && f.includes('1 من أزرار'), f);
+    check('family card is read-only and says: مفعّلة / يعمل / locked count', f.includes('الرقابة الأبوية: مفعّلة') && f.includes('وضع الأطفال: متوقف') && f.includes('تطبيقين و') && f.includes('1 من أزرار'), f);
     check('connected phones count', (await p.textContent('#phones')).includes('2'));
   }
   const text = (await p.evaluate(() => document.body.innerText + document.body.innerHTML.replace(/<script[\s\S]*<\/script>/, ''))).toLowerCase();
@@ -647,6 +647,98 @@ await T('switches reduced motion', async () => {
   const d = await S.p.evaluate(() => [getComputedStyle(document.getElementById('aOn'), '::after').transitionDuration, getComputedStyle(document.getElementById('aOn'), '::before').transitionDuration]);
   check('switches: no motion when the phone asks for reduced motion', d.every(x => x === '0s'), d.join());
   await S.ctx.close();
+});
+
+// ---- the TV test of 159: one swipe moved the home's focus 5 tiles. One swipe is one step, however long; the finger held after it repeats
+await T('swipe one step', async () => {
+  const S = await boot();
+  const { p } = S;
+  const box = await p.locator('#pad').boundingBox(), cx = box.x + box.width / 2, cy = box.y + box.height / 2;
+  S.reqs.length = 0;
+  await p.mouse.move(cx + 40, cy + 30); await p.mouse.down();   // off «اختيار» and the edge arrows
+  for (let i = 1; i <= 20; i++) { await p.mouse.move(cx + 40 - 10 * i, cy + 30 + (i % 3)); await sleep(8); }   // a long, quick swipe left (200 px, about 0.2 s)
+  await p.mouse.up(); await sleep(700);
+  check('one long swipe left sends ONE left', keysSent(S).join() === 'left', keysSent(S).join());
+  S.reqs.length = 0;
+  await p.mouse.move(cx, cy); await p.mouse.down();
+  for (let i = 1; i <= 6; i++) await p.mouse.move(cx, cy - 10 * i);
+  await sleep(1100); await p.mouse.up(); const n = keysSent(S).length; await sleep(400);
+  check('a swipe up held on the pad repeats up, and stops on release', n >= 3 && keysSent(S).every(k => k === 'up') && keysSent(S).length === n, keysSent(S).join());
+  S.reqs.length = 0;
+  await p.mouse.move(cx, cy); await p.mouse.down(); await p.mouse.move(cx + 25, cy); await p.mouse.up(); await sleep(300);
+  check('a small slip of the finger (25 px) is not an arrow step', !keysSent(S).some(k => k !== 'ok'), keysSent(S).join());
+  await S.ctx.close();
+});
+
+// ---- the TV test of 159: «بدون» needed two presses. A TV answer that comes while a card's picker is open must not replace that select:
+// the choice made in the picker is the one the first press of «حفظ البطاقات» sends
+await T('cards: picker open during a refresh', async () => {
+  let shown = [];
+  const S = await boot({ state: NEW({ home_cards: [] }), cfg: { state: () => NEW({ home_cards: shown.slice() }) } });
+  const { p } = S;
+  await tab(S, 'settings');
+  await p.locator('#cards select').nth(0).selectOption('prayer');
+  await p.click('#cardsGo'); await until(() => posts(S, '/api/set').length === 1);
+  shown = ['prayer'];
+  const n = S.reqs.filter(r => r.path === '/api/state').length;
+  await until(() => S.reqs.filter(r => r.path === '/api/state').length > n + 1); await sleep(150);
+  const picker = await p.$('#cards select');   // the person opens the first card's picker…
+  await picker.focus();
+  await p.evaluate(() => document.getElementById('hSet').onclick());   // …and a full answer from the TV arrives meanwhile
+  await sleep(300);
+  await picker.selectOption('');   // «بدون» chosen in that picker
+  check('the select under the open picker is still the one on the page', await picker.evaluate(e => e.isConnected));
+  await p.click('#cardsGo'); await sleep(500);
+  const sets = posts(S, '/api/set').map(r => r.body);
+  check('«بدون» after «الصلاة»: the FIRST press sends exactly one POST with an empty list', sets.length === 2 && JSON.stringify(sets[1]) === '{"home_cards":[]}', JSON.stringify(sets));
+  await S.ctx.close();
+});
+
+// ---- the TV test of 159: Arabic counting, the TV's real screensaver delay, our accessibility service stopped after an update, the text field
+await T('counting and the delay', async () => {
+  const S = await boot({ state: NEW({ next_adhan: { prayer: 'العصر', in_seconds: 8 * 3600 + 56 * 60 + 5 }, saver_idle: '0', saver_idle_s: '45', seconds_left: 120 }) });
+  const { p } = S;
+  await tab(S, 'now');
+  const na = await p.textContent('#nextA');
+  check('the next adhan: «بعد 8 ساعات و 56 دقيقة»', na.includes('بعد 8 ساعات و 56 دقيقة'), na);
+  check('the session left: «بقي دقيقتين»', (await p.textContent('#left')) === 'بقي دقيقتين', await p.textContent('#left'));
+  const sel = await p.$$eval('#saverIdle option', os => os.map(o => [o.value, o.textContent, o.selected]));
+  check('a 45 s delay is shown as the current choice «45 ثانية», the minutes after it', JSON.stringify(sel[0]) === '["","45 ثانية",true]' && sel.length === 7, JSON.stringify(sel));
+  check('the minutes counted right: دقيقة, دقيقتين, 5 دقائق, 10 دقائق, 15 دقيقة', sel.slice(1).map(o => o[1]).join('|') === 'دقيقة|دقيقتين|5 دقائق|10 دقائق|15 دقيقة|30 دقيقة', sel.map(o => o[1]).join('|'));
+  check('the sleep timer chips: 15 دقيقة … 90 دقيقة', (await p.textContent('#sleepOpts')).includes('15 دقيقة'));
+  const before = posts(S, '/api/set').length;
+  await p.selectOption('#saverIdle', '2'); await until(() => posts(S, '/api/set').length > before);
+  check('choosing a minute still saves it', JSON.stringify(posts(S, '/api/set').pop().body) === '{"saver_idle":2}');
+  await S.ctx.close();
+  const Q = await boot({ state: NEW({ next_adhan: { prayer: 'المغرب', in_seconds: 3600 + 120 }, saver_idle: '10' }) });
+  await tab(Q, 'now');
+  check('«بعد ساعة و دقيقتين»', (await Q.p.textContent('#nextA')).includes('بعد ساعة و دقيقتين'), await Q.p.textContent('#nextA'));
+  check('a whole-minute delay: no extra choice, the TV\'s one chosen', (await Q.p.inputValue('#saverIdle')) === '10' && (await Q.p.$$('#saverIdle option')).length === 6);
+  await Q.ctx.close();
+});
+await T('a11y stuck', async () => {
+  const S = await boot({ state: NEW({ foreground: 'other', a11y_stuck: true, keys_everywhere: false, dpad_everywhere: false, typing_service: false }), cfg: { keyAnswer: { ok: false, error: 'a11y_stuck' } } });
+  const { p } = S;
+  check('the note says control of other apps is stopped, not «turn it on»', (await p.textContent('#foreNote')).startsWith('التحكم في التطبيقات الثانية متوقف: ') && !(await p.isVisible('#svcNote')), await p.textContent('#foreNote'));
+  await p.click('[data-k=up]');
+  check('a key answered a11y_stuck: the toast says so', await until(async () => (await p.textContent('#msg')).startsWith('التحكم في التطبيقات الثانية متوقف: ')), await p.textContent('#msg'));
+  S.cfg.textAnswer = { ok: false, error: 'a11y_stuck' };
+  await p.fill('#txt', 'abc'); await p.click('#txtGo');
+  check('a text answered a11y_stuck: the toast says so', await until(async () => (await p.textContent('#msg')).startsWith('التحكم في التطبيقات الثانية متوقف: ')), await p.textContent('#msg'));
+  await S.ctx.close();
+});
+await T('text field above the bar', async () => {
+  for (const [w, h] of [[360, 640], [390, 844]]) {
+    const S = await boot({ w, h });
+    const { p } = S;
+    await p.focus('#txt'); await sleep(200);
+    const [fb, bt] = await p.evaluate(() => [document.getElementById('txt').getBoundingClientRect().bottom, document.getElementById('bar').getBoundingClientRect().top]);
+    check(`${w}x${h}: the focused text field is scrolled above the tab bar`, fb <= bt, `${fb} > ${bt}`);
+    await p.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    const [lb, bt2] = await p.evaluate(() => [document.querySelector('#t-remote > details').getBoundingClientRect().bottom, document.getElementById('bar').getBoundingClientRect().top]);
+    check(`${w}x${h}: scrolled to the end, the last of the remote tab is above the tab bar`, lb <= bt2, `${lb} > ${bt2}`);
+    await S.ctx.close();
+  }
 });
 
 await T('size', async () => {

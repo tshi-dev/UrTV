@@ -62,7 +62,8 @@ public class SetupActivity extends Activity {
         log = text("", 13, "Regular", DIM);
         col.addView(log, right(0));
         setContentView(scroll);
-        start.requestFocus();
+        // «ابدأ» has the focus once the screen is laid out (asked before that, the TV's first OK only put the focus on it: nothing happened)
+        start.post(new Runnable() { @Override public void run() { start.requestFocus(); } });
         if (SetupRecovery.pending(this) && SetupRecovery.gaveUp(this)) {
             status.setText(SetupRecovery.GAVE_UP_NOTICE + ": اضغط «تراجع».");
         } else if (SetupRecovery.pending(this) && !SetupRunner.get().running()) {
@@ -127,6 +128,8 @@ public class SetupActivity extends Activity {
             undo.setAlpha(.5f);
             status.setTextColor(GOLD);
             status.setText(undoIt ? "جارٍ الرجوع…" : "جارٍ الإعداد… لا تطفئ التلفزيون.");
+            // the answer to the press is in sight even when the plan above pushes it under the screen's edge
+            status.post(new Runnable() { @Override public void run() { status.requestRectangleOnScreen(new android.graphics.Rect(0, 0, status.getWidth(), status.getHeight())); } });
         } else {
             running = false;
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);

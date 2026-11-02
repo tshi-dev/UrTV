@@ -74,6 +74,21 @@ app's preview of the same page and `measure.sh` writes «not measured»). Times 
 | xangshi XS97 | not reported | not reported | not reported | not reported | – | not reported |
 | SHARP AQUOS | not reported | not reported | not reported | not reported | – | not reported |
 
+## When the setup wizard owns the Wi-Fi (TCL G08/G10/G14, Google TV sets)
+
+On many TCL sets (G08, G10, G14; Android 12–14) and other Google TV sets (a G7max), the Wi-Fi network was saved during the
+first-run wizard, so `dumpsys wifi` names the wizard (`cname=…setupwraith`) as its creator. Turning the wizard off would
+delete the network, and with the wizard on, Home mostly stays with the stock home: the home switch used to end in «Home
+switch skipped». Seen on a TCL G08 (Android 14, AU02 firmware): forgetting the network and joining it again in the TV's
+Settings moved the creator to `com.android.tv.settings` at once (`android.uid.system` after a restart), the TV stayed on
+Wi-Fi, and the switch in the order wizard → Wi-Fi check → new home in front → stock home off held Home, Wi-Fi and the
+disabled packages through three restarts (the order is CleanYourTV's, MIT).
+
+So `install.sh launcher` now pauses once (`Home switch paused`, exit 5) and asks the person to forget the network and join it
+again; after «كمّل» it reads the owner again and switches in that order if the network moved, or as before if it did not.
+Read only, on any set: `optimize/venv/bin/python -I optimize/tv.py "dumpsys wifi" | grep -o 'cname=[^ ]*' | sort | uniq -c`
+says who owns the saved networks (no names are printed).
+
 ## The remote's shortcut keys
 
 After the home switch the stock launcher is switched off, and the remote's shortcut keys (Settings, YouTube, Netflix, the star)
@@ -86,6 +101,8 @@ which is off with it. Our home now answers these keys **while it is in front**:
 |---|---|---|---|---|
 | YouTube | `KEYCODE_BUTTON_3` (190) | opens `com.google.android.youtube.tv`, only if installed | the six reports above | key number from the report and Android's reference; needs a TV |
 | Netflix | `KEYCODE_BUTTON_4` (191) | opens `com.netflix.ninja`, only if installed | the six reports above | same; needs a TV |
+| TCL Netflix / YouTube / Prime Video | vendor keycodes 4062 / 4065 / 4099 (1000 and up: they reach only the window in front, so the home answers them) | open `com.netflix.ninja` / `com.google.android.youtube.tv` / `com.amazon.amazonvideo.livingroom`, only if installed; otherwise the key is passed on | the 2 Nov reports (`UrTVKeys`: `key=4065`) | key numbers from the reports; needs a TCL |
+| TCL Settings (G05) | vendor keycode 4077 | opens **our** settings, like 176 and 83 | the 2 Nov report (`UrTVKeys`: `key=4077`) | needs a TCL G05 |
 | Settings | `KEYCODE_SETTINGS` (176), and on a TCL (seen on the owner's, build 144) `KEYCODE_NOTIFICATION` (83) | opens **our** settings (the screensaver app's `SettingsActivity`, the same screen as the «إعدادات تلفزيونك» tile of «مركز التحكم»), behind «قفل الإعدادات» (`@urtv`); without that app it falls back to the TV's own settings (behind `@tvsettings`). The TV's own settings stay on the «الإعدادات» pill and tile | the six reports above; the TCL's own log line (`UrTVKeys`) said 83; the step-6 test of 3.145 found the key opened Android's own settings (`com.android.tv.settings`), which was the old rule, not a missed key | 176 is Android's reference number; 83 is what a TCL sends. The YouTube and Netflix keys never reach the app there (the system takes them first: they open, our log shows nothing) |
 | Star | Linux `KEY_JOURNAL`, scan code 0x242 (578); Android's generic key map has no name for it, so the keycode may be `KEYCODE_UNKNOWN` (0) | what the Menu key does: the «المصادر» list (our choice: the star is the nearest thing to Menu) | TCL G08 | scan code from the report and the Linux headers; the keycode is not known, so the scan code is matched; needs a TV |
 
@@ -104,11 +121,68 @@ Honest notes:
   **before** the key is dispatched, and consumes the keys listed in `global_keys` even when the receiver it names is disabled. So on a TV that
   lists these keys in `global_keys` the key is probably taken **before our home sees it**, and the handling in our home does nothing there.
   The code stays (it costs nothing and acts only on these keys); **verify on the TV** whether the key reaches `dispatchKeyEvent` at all:
-  `adb logcat -s UrTVKeys` prints `key=<keycode> scan=<scancode>` for every first press that reaches our home. Inside other apps nothing
-  of ours sees these keys either way; only the accessibility key filter (the separate branch `work/khalid-settingskey`) could see keys in
-  other apps (it sees them before the window manager does); this change does not depend on it and leaves it as it is.
+  `adb logcat -s UrTVKeys` prints `key=<keycode> scan=<scancode>` for every first press that reaches our home. Inside other apps only the
+  Settings key is ours (below, «The Settings key outside our home»); YouTube, Netflix and the star are not seen there.
 - If after this change the Settings key still opens Android's own settings, the TV took the key before our home saw it (no `UrTVKeys` line with `key=83` or `key=176` appears while the key is pressed on our home): then nothing in the app can change it; use the «إعدادات تلفزيونك» tile of «مركز التحكم» instead.
 - Nothing here is checked on a real TV yet: each row needs one press on each of the six models.
+
+### The Settings key outside our home
+
+The report: on a TCL with a receiver on HDMI, the Settings key did nothing, so the picture mode («توفير الطاقة» → قياسي، رياضة، حيوي),
+which the TV keeps per input, could not be changed. The key's handler is a receiver inside the stock launcher, which the home switch turns
+off. The stock launcher stays off (the owner's decision: speed); our accessibility service `TypeService` («تلفزيونك: التحكم والكتابة من
+الجوال», already on for the phone remote on many TVs) answers the key instead (`SettingsKey.java`, tests/settings_key_test.py):
+
+| In front | Settings key (176, or 83 on a TCL) | Any other key |
+|---|---|---|
+| our home | the home's own path (RemoteKeys): **our** settings, as before | the home's own; the service does not even ask for keys then |
+| another app (HDMI, Live TV, Netflix, our settings app, the screensaver) | the TV's settings (`SettingsKey.TV_SETTINGS_ACTIONS`: `android.settings.SETTINGS` for now), behind `@tvsettings` (with the PIN wanted the home comes up and asks it); its repeats and release are consumed | passed on at once, untouched, not kept, not logged |
+| anything, while a stock home is enabled (a TV that kept it) | left to the TV (its own receiver answers it) | untouched; the service does not ask for keys |
+
+How: `type_service.xml` declares `canRequestFilterKeyEvents` (the right to ask); `TypeService` sets `FLAG_REQUEST_FILTER_KEY_EVENTS` with
+`setServiceInfo` only while our home is not resumed and no stock home answers HOME, and clears it when the home comes back. While it is
+set every key passes through `onKeyEvent`, which returns at once for anything but 176/83; the TV's settings open after the key is
+answered (posted), so the TV never waits on us. Log (tag `UrTVType`): `settings key=watch|off|open|pin|failed`, fixed words only.
+
+Updating a TV where the service is already on: the enabled list (`enabled_accessibility_services`) names the component only, and Android
+re-reads the service's xml when the package is replaced, so the new capability comes with the update; **no one turns the service on
+again** (only touch exploration has a grant list of its own; the consent dialog with its capability list is shown only when the service is
+turned on in the TV's settings). What the update does need is the rebind Android sometimes skips after replacing a package: `A11yHeal`
+(with `WRITE_SECURE_SETTINGS`, granted with Family DNS) or the next restart. Where the service was never on: `optimize/dock.sh type-setup`
+once, or the person in the TV's accessibility settings.
+
+What is not known yet (needs the TV): whether a TCL lets the accessibility filter see 83 while `com.tcl.tv` / the HDMI input is in front
+(a key the system consumes before apps is never given to the filter: Android passes only keys meant for the user); whether the TV's
+settings opened over HDMI change that input's picture mode. A known intent for the TV's own picture / quick settings of the input in front
+is not in our lists (TCL's `com.tcl.settings.SHOW_WINDOW` service in VERIFY-2026-10.md is known for «Audio Only» only, and is not used
+for anything else here): to look on the TV, `cmd package query-activities --brief -a android.intent.action.MAIN com.tcl.settings` and
+`dumpsys package com.tcl.settings | grep -iE 'picture|quick'`. A found action goes in front of `SettingsKey.TV_SETTINGS_ACTIONS` (one
+line) and in the manifest's `<queries>`.
+
+### «وضع الرسيفر» (the stock launcher kept on): design only, not built
+
+The owner's fallback, for a TV where the key above cannot work: an opt-in setting (off by default) that keeps the stock launcher enabled
+so its receiver answers the Settings key, while our home stays Home, the stock launcher's background work is reduced, and its home window
+is sent to ours. Studied, and not built now, because on a TCL the middle part cannot hold:
+
+- **Our home cannot stay Home with `launcherx` enabled on a TCL.** «Why Home can't simply be changed on a TCL» (docs/OPTIMIZE.md): the
+  HOME role, `set-home-activity` and the picker all report success and change nothing; the firmware starts `launcherx` by name on every
+  Home press and at boot (`startDockOrHome`, `TclBootAppManager`). Enabling it is the same as `optimize/restore-home.sh`.
+- **Keeping only its receiver is not possible from ADB.** Turning off just the stock launcher's home activity (`pm disable
+  <pkg>/<activity>`) is refused to the shell for any app that is not a test build (Android's PackageManager:
+  «Shell cannot change component state for …»; the shell may only switch whole packages). The app itself cannot change another app's components at all.
+- **"Its home window redirected to ours"** would need `TypeService` to read the package of every window change (today it reads none) and
+  start our home each time Google TV's comes up: Google TV loads first on every Home press (the slowness the owner wants to avoid), with a
+  risk of a loop against the firmware's own `startDockOrHome`.
+- What the agent could do safely: the standby bucket (`am set-standby-bucket com.google.android.apps.tv.launcherx restricted`, recorded and
+  restored like the Play Store's in tweaks.sh); an app that is Home is still made active by every Home press, so it saves little.
+
+What exists today for such a TV, with its honest cost: `optimize/restore-home.sh` (the stock home back, with the journal) turns «receiver
+mode» on, and Home then opens Google TV (ours from its «تلفزيونك» tile); `optimize/install.sh launcher` switches back. If it is wanted as
+a setting later: `optimize/dock.sh receiver-mode on|off`, written on top of `home-journal.sh` (`jwrite`/`jrestore`, the same journal and
+exact restore as the home switch, plus the bucket line), the setting row only showing the state and the command, because enabling or
+disabling a package needs the shell (the TV's own local ADB of «إعداد تلفزيوني» could run it). First on the TV: with `launcherx` enabled and
+ours holding the HOME role, does Home open ours on this firmware at all? If not, the mode is the stock home and nothing more.
 
 ## D-pad direction on the home screen and its rows
 

@@ -12,7 +12,11 @@ import android.content.Intent;
  *   VOICE --ei voice 1..21 (a recording of ours, not a Fajr one) or 0 (the person's own, when there is one): the other prayers' muezzin
  *   FAJR_VOICE --ei voice 1..21 or 0: «مؤذن الفجر», the one for Fajr (the four Fajr recordings and the normal ones)
  *   ADHAN_SHORT --ez on true|false: «أذان مختصر»
+ *   ADHAN_TAKBIR --ez on true|false: «تكبير فقط» (turns «أذان مختصر» off)
  *   ADHAN_STOPKEY --ez on true|false: «إيقاف الأذان بأي زر»
+ *   ADHAN_SAVERONLY --ez on true|false: «الأذان على شاشة التوقف فقط»
+ *   ADHAN_NOTICE --ez on true|false: «تنبيه عند الأذان»
+ *   ADHAN_SAVERAT --ez on true|false: «شاشة التوقف وقت الأذان»
  *   STOP_ADHAN: stop the adhan that is playing (nothing else)
  */
 public class MusicReceiver extends BroadcastReceiver {
@@ -59,9 +63,27 @@ public class MusicReceiver extends BroadcastReceiver {
                 prefs.setAdhanShort(intent.getBooleanExtra("on", false));
                 setResultData("saved\nshort=" + (prefs.adhanShort() ? "on" : "off"));
                 return;
+            case "sa.urtv.home.ADHAN_TAKBIR":   // optimize/music.sh adhan takbir on|off
+                prefs.setAdhanTakbir(intent.getBooleanExtra("on", false));
+                setResultData("saved\ntakbir=" + (prefs.adhanTakbir() ? "on" : "off") + "\nshort=" + (prefs.adhanShort() ? "on" : "off"));
+                return;
             case "sa.urtv.home.ADHAN_STOPKEY":   // optimize/music.sh adhan stopkey on|off
                 prefs.setAdhanStopKey(intent.getBooleanExtra("on", false));
                 setResultData("saved\nstopkey=" + (prefs.adhanStopKey() ? "on" : "off"));
+                return;
+            case "sa.urtv.home.ADHAN_SAVERONLY":   // optimize/music.sh adhan saver-only on|off
+                prefs.setAdhanSaverOnly(intent.getBooleanExtra("on", false));
+                setResultData("saved\nsaver_only=" + (prefs.adhanSaverOnly() ? "on" : "off"));
+                return;
+            case "sa.urtv.home.ADHAN_NOTICE":   // optimize/music.sh adhan notice on|off
+                prefs.setAdhanNotice(intent.getBooleanExtra("on", false));
+                AdhanScheduler.schedule(context);   // the alarm is wanted for the notice alone, too
+                setResultData("saved\nnotice=" + (prefs.adhanNotice() ? "on" : "off"));
+                return;
+            case "sa.urtv.home.ADHAN_SAVERAT":   // optimize/music.sh adhan saver-at on|off
+                prefs.setAdhanSaverAt(intent.getBooleanExtra("on", false));
+                AdhanScheduler.schedule(context);   // the alarm is wanted for the screensaver alone, too
+                setResultData("saved\nsaver_at=" + (prefs.adhanSaverAt() ? "on" : "off"));
                 return;
             case "sa.urtv.home.ADHAN_OWN":
                 setResultData(own(context, prefs, intent));
@@ -189,7 +211,12 @@ public class MusicReceiver extends BroadcastReceiver {
                 + "|voice=" + (prefs.playVoice(context) == Prefs.OWN ? "own" : String.valueOf(prefs.voice()))
                 + "|fajr_voice=" + (prefs.playFajrVoice(context) == Prefs.OWN ? "own" : String.valueOf(prefs.fajrVoice()))
                 + "|adhan_short=" + (prefs.adhanShort() ? "on" : "off")
+                + "|adhan_takbir=" + (prefs.adhanTakbir() ? "on" : "off")
                 + "|adhan_stopkey=" + (prefs.adhanStopKey() ? "on" : "off")
+                + "|adhan_saver_only=" + (prefs.adhanSaverOnly() ? "on" : "off")
+                + "|adhan_saver_at=" + (prefs.adhanSaverAt() ? "on" : "off")
+                + "|adhan_notice=" + (prefs.adhanNotice() ? "on" : "off")
+                + "|adhan_alarm_last=" + prefs.lastAlarmNoteAt() + (prefs.lastAlarmNote().isEmpty() ? "" : " " + prefs.lastAlarmNote().replace('|', '/'))
                 + "|adhan_live=" + (MusicService.adhanLive() ? 1 : 0)
                 + "|adhan_volume=" + prefs.adhanVolume()
                 + "|adhan_exact=" + (AdhanScheduler.exactAllowed(context) ? 1 : 0)

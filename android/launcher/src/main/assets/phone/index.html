@@ -19,7 +19,7 @@
 :root[data-look="clean"] { --bg:#121314; --card:rgba(32,33,36,.9); --line:rgba(255,255,255,.08); --gold:#f0a64a; --gt:#f0a64a; --text:#f2f0ec; --dim:#b9b6b0; --red:#ffb4a0; --ink:#1a1206; --tile:rgba(32,33,36,.9); --bar:#1e1f22; --veil:#121314; --va:var(--vd,.95); }
 :root[data-look="clean"][data-theme="light"] { --bg:#ecece8; --card:rgba(255,255,255,.98); --line:rgba(20,24,30,.08); --gold:#0b5e51; --gt:#0b5e51; --text:#1b1d21; --dim:#50555e; --red:#8e2a10; --ink:#ffffff; --tile:rgba(255,255,255,.98); --bar:#ffffff; --veil:#f4f4f1; --va:var(--vl,.95); }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-/* the TV's Arabic font, from the TV itself (PhoneApi.FONTS); without it (a build without the private fonts) the phone's own, as before */
+/* the TV's Arabic font, served by the TV (PhoneApi.FONTS); without it the phone's own */
 @font-face{font-family:'Thmanyah';font-weight:400;font-display:swap;src:url(/fonts/Thmanyah-Regular.woff2) format("woff2")}
 @font-face{font-family:'Thmanyah';font-weight:500 900;font-display:swap;src:url(/fonts/Thmanyah-Medium.woff2) format("woff2")}
 html,body{margin:0;color:var(--text);font:16px/1.45 'Thmanyah',system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif}
@@ -28,6 +28,8 @@ html{background:var(--bg)}
 #glassbg{background:var(--bg)}
 #glassbg img{width:100%;height:100%;object-fit:cover;display:block}
 #glassveil{background:radial-gradient(100% 45% at 50% 0,var(--glow),transparent),var(--veil);opacity:var(--va)}
+html{scroll-padding-bottom:calc(88px + env(safe-area-inset-bottom))}
+#t-remote{padding-bottom:calc(16px + env(safe-area-inset-bottom))}
 body{max-width:560px;margin:0 auto;padding:0 16px calc(96px + env(safe-area-inset-bottom));overflow-x:hidden}
 body.login{padding-bottom:24px}
 h1{font-size:24px;margin:8px 0 6px}
@@ -44,7 +46,7 @@ button.red{color:var(--red);border-color:var(--red);background:none}
 .wide{width:100%;margin:8px 0}
 input,select{width:100%;min-height:52px}
 select{appearance:none;-webkit-appearance:none;padding-left:34px;background:var(--tile) linear-gradient(135deg,transparent 50%,var(--dim) 50%) 14px 50%/7px 7px no-repeat}
-/* the on/off switch of the mockups: a 52x32 pill, a 26 px white knob; on = green, the knob at the end (the left, RTL); the box itself stays 48 px tall */
+/* the mockups' switch: a 52x32 pill, a 26 px white knob; on = green, knob on the left (RTL); the box stays 48 px */
 input[type=checkbox]{appearance:none;-webkit-appearance:none;width:56px;height:48px;min-height:48px;flex:0 0 56px;padding:0;margin:0;border:0;border-radius:18px;background:none;position:relative;cursor:pointer}
 input[type=checkbox]::before{content:"";position:absolute;top:8px;inset-inline-start:2px;width:52px;height:32px;border-radius:16px;background:var(--off);box-shadow:inset 0 0 0 1px var(--line);transition:background-color .15s}
 input[type=checkbox]::after{content:"";position:absolute;top:11px;inset-inline-start:5px;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3),0 1px 1px rgba(0,0,0,.12);transition:inset-inline-start .15s}
@@ -311,7 +313,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
   function el(t, c, x) { var e = document.createElement(t); if (c) e.className = c; if (x !== undefined) e.textContent = x; return e; }
   try { sess = sessionStorage.getItem('urtv'); } catch (e) { sess = null; }
 
-  // ---- theme: dark on every screen by default (whatever the phone is set to); the ◐ button switches ALL screens together and the phone remembers it
+  // ---- theme: dark by default; the button switches every screen, the phone remembers it
   function theme(t) {
     if (t) document.documentElement.setAttribute('data-theme', t);
     $('theme').textContent = document.documentElement.getAttribute('data-theme') === 'light' ? 'الوضع الداكن' : 'الوضع الفاتح';
@@ -323,7 +325,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     try { localStorage.setItem('urtvTheme', n); } catch (e) { }
   };
 
-  // ---- the glass look: the home's photo, small and blurred once on the TV, under the veil it needs (the TV works it out per photo)
+  // ---- the glass look: the home's photo, blurred once on the TV, under its veil
   var glassStamp = -1;
   function glass(s) {
     var st = document.documentElement.style;
@@ -350,7 +352,9 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     }).catch(function () { glassStamp = -1; });
   }
 
+  var STK = 'التحكم في التطبيقات الثانية متوقف: خدمة «تلفزيونك» مفعّلة لكن التلفزيون أوقفها بعد التحديث. أعد تشغيل التلفزيون مرة.';
   var MSG = {
+    a11y_stuck: STK,
     other_app: 'تطبيق آخر أمام الشاشة: فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال» في إعدادات إمكانية الوصول بالتلفزيون لتصله الأزرار. الصوت وتشغيل/إيقاف تعمل دائمًا.',
     other_app_limited: 'ما قدرنا نحرك التركيز أو نضغط في هذا التطبيق الآن. جرّب «رجوع» أو افتح ما تريد بريموت التلفزيون.',
     private_screen: 'شاشة السماح لا تُحرَّك من الجوال، استعمل ريموت التلفزيون.',
@@ -388,11 +392,14 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
   }
   function digits(s) { return String(s).replace(/[٠-٩]/g, function (d) { return d.charCodeAt(0) - 0x660; }).replace(/[۰-۹]/g, function (d) { return d.charCodeAt(0) - 0x6f0; }); }
   function mmss(x) { x = Math.max(0, Math.floor(x)); return Math.floor(x / 60) + ':' + ('0' + x % 60).slice(-2); }
+  // Arabic counting: ساعة, ساعتين, 3 to 10 ساعات, 11 and more ساعة (or w[3]); the same for دقيقة, ثانية, تطبيق
+  var HR = ['ساعة', 'ساعتين', 'ساعات'], MN = ['دقيقة', 'دقيقتين', 'دقائق'];
+  function nn(n, w) { var r = n % 100; return n === 1 ? w[0] : n === 2 ? w[1] : n + ' ' + (r > 2 && r < 11 ? w[2] : w[3] || w[0]); }
   function dur(sec) {
     sec = Math.max(0, Math.round(sec));
     if (sec < 60) return 'أقل من دقيقة';
     var h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60);
-    return (h ? h + ' ساعة' + (m ? ' و ' : '') : '') + (m ? m + ' دقيقة' : '');
+    return (h ? nn(h, HR) + (m ? ' و ' : '') : '') + (m ? nn(m, MN) : '');
   }
 
   function api(path, body) {
@@ -482,8 +489,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
   };
 
   // ---- the app: four tabs
-  // the tabs' icons: our own line drawings in the page (#ico, under the bar), one style in the text's colour (no emoji: a phone draws
-  // those in its own colours), so the dark and the light look and the gold «on» tab all take them; a copy of one for each tab
+  // the icons: our line drawings (#ico) in the text's colour, no emoji; a copy of one each
   function icon(name) {
     var s = $('ico').cloneNode(false);
     s.removeAttribute('id'); s.removeAttribute('class');
@@ -547,12 +553,11 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     glass(s);
     var live = !!s.adhan_live, p = s.player || {};
     var secs = typeof s.seconds_left === 'number' ? s.seconds_left : 0;
-    $('left').textContent = 'بقي ' + Math.max(1, Math.round(secs / 60)) + ' دقيقة';
+    $('left').textContent = 'بقي ' + nn(Math.max(1, Math.round(secs / 60)), MN);
     var fn = $('foreNote'), fore = s.foreground === 'other';
-    fn.classList.toggle('hidden', !fore); fn.classList.toggle('warn', fore && !s.keys_everywhere);
-    $('svcNote').classList.toggle('hidden', !(svcOff || (fore && s.typing_service === false)));
-    // a service of ours on: Back and Home work in every app; the arrows and OK too from Android 13 (dpad_everywhere), before it with the typing/remote service
-    fn.textContent = s.dpad_everywhere ? 'الأسهم والاختيار والرجوع والرئيسية تعمل في التطبيق الذي أمامك'
+    fn.classList.toggle('hidden', !fore); fn.classList.toggle('warn', fore && (!s.keys_everywhere || !!s.a11y_stuck));
+    $('svcNote').classList.toggle('hidden', !!s.a11y_stuck || !(svcOff || (fore && s.typing_service === false)));
+    fn.textContent = s.a11y_stuck ? STK : s.dpad_everywhere ? 'الأسهم والاختيار والرجوع والرئيسية تعمل في التطبيق الذي أمامك'
       : s.keys_everywhere ? 'الرجوع والرئيسية تعمل في كل التطبيقات؛ الأسهم والاختيار تحتاج أندرويد ١٣ أو خدمة «تلفزيونك: التحكم والكتابة من الجوال»'
       : 'يوجد تطبيق آخر أمام الشاشة. فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال» (الإعدادات ← إمكانية الوصول) لتعمل الأسهم والاختيار والرجوع والرئيسية فيه. الصوت وتشغيل/إيقاف تعمل دائمًا.';
     var lab = live ? 'الأذان الآن' + (s.adhan_prayer ? ': ' + s.adhan_prayer : '') : playLabel(s);
@@ -600,11 +605,12 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     fill($('qRec'), s.reciters || [], p.reciter);
     var sur = $('qSurah'); if (!sur.children.length) (s.surahs || []).forEach(function (n, i) { opt(sur, String(i + 1), (i + 1) + '. ' + n, false); });
     if (p.surah) sur.value = String(p.surah);
-    var si = $('saverIdle'); si.textContent = '';
-    (s.saver_idle_options || []).forEach(function (m) { opt(si, String(m), m + ' دقيقة', String(m) === String(s.saver_idle)); });
+    var si = $('saverIdle'), io = (s.saver_idle_options || []).map(String), sec = s.saver_idle_s != null ? +s.saver_idle_s : s.saver_idle * 60; si.textContent = '';
+    if (sec >= 0 && io.indexOf(String(sec / 60)) < 0) opt(si, '', sec < 60 ? (sec ? nn(sec, ['ثانية', 'ثانيتين', 'ثوانٍ']) : 'أقل من دقيقة') : nn(Math.round(sec / 60), MN), true);
+    io.forEach(function (m) { opt(si, m, nn(+m, MN), +m * 60 === sec); });
     var so = $('sleepOpts'); so.textContent = '';
     ((st && st.options) || [15, 30, 60, 90]).forEach(function (m) {
-      var b = el('button', '', m + ' دقيقة'); b.onclick = function () { set({ sleep_minutes: m }); }; so.appendChild(b);
+      var b = el('button', '', nn(m, MN)); b.onclick = function () { set({ sleep_minutes: m }); }; so.appendChild(b);
     });
   }
   var famSeen = false;
@@ -613,7 +619,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     var a = 0, pills = 0; (fam.locked || []).forEach(function (x) { if (String(x).charAt(0) === '@') pills++; else a++; });
     $('famPin').textContent = 'الرقابة الأبوية: ' + (fam.pin_set ? 'مفعّلة' : 'غير مفعّلة');
     $('famKids').textContent = 'وضع الأطفال: ' + (fam.kids ? 'يعمل' : 'متوقف');
-    $('famLocked').textContent = 'المقفل: ' + a + ' تطبيقًا و ' + pills + ' من أزرار التلفزيون';
+    $('famLocked').textContent = 'المقفل: ' + nn(a, ['تطبيق', 'تطبيقين', 'تطبيقات', 'تطبيقًا']) + ' و ' + pills + ' من أزرار التلفزيون';
   }
   function loadFamily() {
     api('/api/family').then(function (j) {
@@ -621,8 +627,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
       if (f && typeof f.pin_set !== 'undefined') famDraw(f);
     });
   }
-  // The cards the person is choosing are not redrawn from the TV's answer while they are being changed (an answer that was on its way when
-  // the choice was made would put the old one back, and the save would send that): drawn again once they are saved, or on the next arrival.
+  // The cards being chosen are not redrawn from a TV answer still on its way (it would put the old one back and the save would send that).
   var cardsDirty = false;
   function chosenCards() {
     var out = [], sels = $('cards').children;
@@ -630,15 +635,18 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     return out;
   }
   function cards(s) {
-    if (cardsDirty) return;
-    var box = $('cards'); box.textContent = '';
-    var hc = s.home_cards || [];
-    for (var i = 0; i < 3; i++) {
-      var sel = document.createElement('select'); sel.setAttribute('data-card', i); sel.setAttribute('aria-label', 'بطاقة ' + (i + 1));
-      opt(sel, '', 'بدون', !hc[i]);
-      (s.panels || []).forEach(function (p) { opt(sel, p.id, p.name, hc[i] === p.id); });
-      sel.style.marginBottom = '8px'; sel.onchange = function () { cardsDirty = true; }; box.appendChild(sel);
+    var box = $('cards'), hc = s.home_cards || [], k = JSON.stringify(s.panels || []);
+    if (box.getAttribute('data-p') !== k) {   // built once per list of cards: a select is never replaced while its picker may be open
+      box.textContent = ''; box.setAttribute('data-p', k); cardsDirty = false;
+      for (var i = 0; i < 3; i++) {
+        var sel = document.createElement('select'); sel.setAttribute('data-card', i); sel.setAttribute('aria-label', 'بطاقة ' + (i + 1));
+        opt(sel, '', 'بدون', false);
+        (s.panels || []).forEach(function (p) { opt(sel, p.id, p.name, false); });
+        sel.style.marginBottom = '8px'; sel.onchange = function () { cardsDirty = true; }; box.appendChild(sel);
+      }
     }
+    if (cardsDirty || box.contains(document.activeElement)) return;
+    for (var j = 0; j < 3; j++) { var c = box.children[j]; c.value = hc[j] || ''; if (c.selectedIndex < 0) c.value = ''; }
   }
   function set(b) { return gated('/api/set', b).then(function (j) { say(j); refresh(); return j; }); }
 
@@ -657,7 +665,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
   };
   $('cardsGo').onclick = function () {
     var out = chosenCards();
-    // saved: the TV's cards are drawn again, unless the person has changed them since the press (then their choice stays)
+    // saved: the TV's cards are drawn again, unless changed since the press
     set({ home_cards: out }).then(function () { if (chosenCards().join() === out.join()) cardsDirty = false; refresh(); });
   };
   $('aOn').onchange = function () { set({ adhan_on: this.checked }); };
@@ -668,7 +676,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
   $('aFajr').onchange = function () { set({ adhan_fajr_voice: parseInt(this.value, 10) }); };
   $('aVol').oninput = function () { $('aVolN').textContent = this.value + '٪'; };
   $('aVol').onchange = function () { set({ adhan_volume: parseInt(this.value, 10) }); };
-  $('saverIdle').onchange = function () { set({ saver_idle: parseInt(this.value, 10) }); };
+  $('saverIdle').onchange = function () { if (this.value) set({ saver_idle: parseInt(this.value, 10) }); };
   $('sleepCancel').onclick = function () { gated('/api/do', { op: 'sleep_cancel' }).then(function (j) { say(j); refresh(); }); };
   $('saverGo').onclick = function () { api('/api/do', { op: 'screensaver' }).then(function (j) { say(j); }); };
   function stopAdhan() { api('/api/adhan_stop', {}).then(function (j) { say(j); setTimeout(refresh, 800); }); }
@@ -708,7 +716,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 
   // ---- the apps
   function iconUrl(pkg) { return '/api/icon/' + encodeURIComponent(pkg); }
-  // An image element cannot send the session header, so each icon is fetched like any call, read as a blob and shown as a data: address.
+  // an image element cannot send the session header: each icon is fetched, read as a blob, shown as data:
   var icons = {}, iconQ = [], iconRun = 0, iconWait = {};
   function iconGet(pkg, done) {
     if (pkg in icons) { done(icons[pkg]); return; }
@@ -819,11 +827,11 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     ps = { x: e.clientX, y: e.clientY, t: Date.now(), moved: false };
   });
   pad.addEventListener('pointermove', function (e) {
-    if (!ps) return;
+    if (!ps || ps.moved) return;   // one swipe = one step, however long; the finger held after it repeats that step
     var dx = e.clientX - ps.x, dy = e.clientY - ps.y;
-    if (Math.max(Math.abs(dx), Math.abs(dy)) < 30) return;
+    if (Math.max(Math.abs(dx), Math.abs(dy)) < 40) return;
     var d = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
-    ps.moved = true; ps.x = e.clientX; ps.y = e.clientY;
+    ps.moved = true;
     press(d); holdRep(d);
   });
   function padEnd(e) { stopRep(); if (ps && !ps.moved && e.type === 'pointerup' && Date.now() - ps.t < 400) press('ok'); ps = null; }

@@ -53,6 +53,7 @@ finish() {
   [ "$(cat "$LOCK" 2> /dev/null || true)" = "$$" ] && rm -f "$LOCK"
   if [ "$rc" -eq 0 ]; then echo "run.sh: done"
   elif [ "$rc" -eq 3 ] && [ "$current" = precheck ]; then stamp "stopped $current (not an Android TV)"; echo "run.sh: stopped at precheck: this device is not an Android TV, nothing was changed (see above)"
+  elif [ "$rc" -eq 5 ] && [ "$current" = launcher ]; then stamp "paused $current (waiting for the person: the Wi-Fi network)"; echo "run.sh: paused at launcher, nothing was changed there: waiting for the person to forget the Wi-Fi network and join it again (the Arabic line above). When they say «كمّل», run the same command again."
   else stamp "stopped $current (exit $rc)"; echo "run.sh: stopped at $current, run the same command again"; fi
   exit "$rc"
 }
@@ -238,7 +239,7 @@ if [ -n "$tv_id" ] && [ "$saved_id" != "$tv_id" ]; then
   else
     [ -z "$saved_id" ] || echo "A different TV than the last run: starting from the first step."
     # what the last TV had is not this TV's (its backup, tweaks and home switch journals)
-    rm -f "$RUN/backup.txt" "$RUN/tweaks-journal.txt" "$RUN/family-dns-journal.txt" "$RUN/family-dns-journal.done" "$RUN/grants-journal.txt" "$RUN/disabled-by-us.txt" "$RUN/.package-change" "$RUN/community-applied.txt" "$RUN/community-ask.txt" "$RUN/tweaks-journal.done" "$RUN/home-switch.json" "$RUN/accessibility-before.txt" "$RUN/.screen-off-timeout"
+    rm -f "$RUN/backup.txt" "$RUN/tweaks-journal.txt" "$RUN/family-dns-journal.txt" "$RUN/family-dns-journal.done" "$RUN/grants-journal.txt" "$RUN/disabled-by-us.txt" "$RUN/.package-change" "$RUN/community-applied.txt" "$RUN/community-ask.txt" "$RUN/tweaks-journal.done" "$RUN/home-switch.json" "$RUN/wifi-ask.txt" "$RUN/accessibility-before.txt" "$RUN/.screen-off-timeout"
   fi
   echo "$tv_id" > "$RUN/.tv"
 fi

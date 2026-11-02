@@ -40,6 +40,7 @@ public class PhoneActivity extends Activity implements PrivateScreen {
     private LinearLayout col;
     private TextView countdown;
     private String shownToken = "";
+    private boolean left;   // the person left this screen (Home, another app): not the screensaver coming over it
     private final Handler main = new Handler(Looper.getMainLooper());
     private final Runnable tick = new Runnable() {
         @Override public void run() {
@@ -72,6 +73,7 @@ public class PhoneActivity extends Activity implements PrivateScreen {
     @Override
     protected void onResume() {
         super.onResume();
+        left = false;
         PhoneHost.setUi(new Runnable() {
             @Override public void run() { runOnUiThread(new Runnable() { @Override public void run() { render(); } }); }
         });
@@ -85,11 +87,21 @@ public class PhoneActivity extends Activity implements PrivateScreen {
         keepAwake(false);
         main.removeCallbacks(tick);
         PhoneHost.setUi(null);
-        // the code is shown only here: leaving with nobody connected turns it off, so nothing keeps listening for a code nobody can see
-        if (control.isOn() && control.phones().isEmpty()) {
+        // the code is shown only here: leaving with nobody connected turns it off, so nothing keeps listening for a code nobody can see.
+        // The screensaver coming over it is not leaving (the TV test of 159: it came while a phone was pairing and switched control off): Android
+        // starts the dream without the user-leaving hint, so control stays on and the code is there again on the way back; the «unused» stop
+        // after 15 minutes still applies.
+        if (control.isOn() && control.phones().isEmpty() && (left || isFinishing())) {
             control.withdrawOffer();
             control.stop("owner");
         }
+    }
+
+    /** Home, or another app started over this screen by the person: Android's user-leaving hint (never for the screensaver). */
+    @Override
+    protected void onUserLeaveHint() {
+        super.onUserLeaveHint();
+        left = true;
     }
 
     // ---------------------------------------------------------------- screen

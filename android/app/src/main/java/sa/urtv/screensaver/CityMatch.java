@@ -11,6 +11,21 @@ import java.util.List;
 final class CityMatch {
     private CityMatch() {}
 
+    private static final class Entry {
+        final String[] city;
+        final String ar, en, country;
+        Entry(String[] city, String country) {
+            this.city = city; this.country = country;
+            ar = key(city[0]); en = city.length > 4 ? key(city[4]) : "";
+        }
+    }
+    private static final List<Entry> ENTRIES = entries();
+    private static List<Entry> entries() {
+        List<Entry> out = new ArrayList<>();
+        for (Cities.Region r : Cities.REGIONS) for (String[] c : r.cities) out.add(new Entry(c, r.country));
+        return out;
+    }
+
     private static String key(String name) {
         StringBuilder b = new StringBuilder();
         for (String w : TeamSearch.normalize(name)) b.append(b.length() > 0 ? " " : "").append(w);
@@ -34,16 +49,26 @@ final class CityMatch {
 
     /** The built-in cities that the typed name stands for: none, one, or several (the caller lists them). */
     static List<String[]> find(String typed) {
+        String country = "";
+        if (typed != null && typed.length() > 3 && typed.charAt(2) == '|') {
+            country = typed.substring(0, 2).toUpperCase(java.util.Locale.ROOT);
+            typed = typed.substring(3);
+        }
         String q = key(typed);
         List<String[]> out = new ArrayList<>();
         if (q.length() < 2) return out;
-        for (int tier = 0; tier < 3 && out.isEmpty(); tier++) {
-            for (Cities.Region r : Cities.REGIONS) {
-                for (String[] city : r.cities) {
-                    String k = key(city[0]);
-                    boolean hit = tier == 0 ? k.equals(q) : tier == 1 ? k.startsWith(q) : k.contains(q);
-                    if (hit && !out.contains(city)) out.add(city);
-                }
+        // Existing exact Arabic names retain their original meaning after an update.
+        if (country.isEmpty()) for (Entry e : ENTRIES)
+            if (e.city.length < 5 && e.ar.equals(q)) { out.add(e.city); return out; }
+        // Exact world names work directly; old short forms keep their meaning
+        // before trying partial matches in the much larger worldwide list.
+        for (int phase = 0; phase < 5 && out.isEmpty(); phase++) {
+            int tier = phase == 0 ? 0 : phase == 1 || phase == 3 ? 1 : 2;
+            for (Entry e : ENTRIES) {
+                if (!country.isEmpty() && !country.equals(e.country)) continue;
+                if (phase > 0 && (e.city.length < 5) != (phase < 3)) continue;
+                boolean hit = tier == 0 ? e.ar.equals(q) || e.en.equals(q) : tier == 1 ? e.ar.startsWith(q) || e.en.startsWith(q) : e.ar.contains(q) || e.en.contains(q);
+                if (hit) out.add(e.city);
             }
         }
         return out;

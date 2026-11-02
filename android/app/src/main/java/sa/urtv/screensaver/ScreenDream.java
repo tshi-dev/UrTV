@@ -32,6 +32,7 @@ public class ScreenDream extends DreamService {
         setFullscreen(true);
         setScreenBright(true);
         attached = true;
+        Showing.enter();
         show(true);
         InternalReceivers.register(this, changed, new IntentFilter(Prefs.CHANGED));
     }
@@ -69,6 +70,7 @@ public class ScreenDream extends DreamService {
 
     @Override
     public void onDetachedFromWindow() {
+        if (attached) Showing.leave();
         attached = false;
         try { unregisterReceiver(changed); } catch (IllegalArgumentException ignored) { }
         ScreenView.release(web);

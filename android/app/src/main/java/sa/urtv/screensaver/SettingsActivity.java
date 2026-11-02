@@ -230,10 +230,10 @@ public class SettingsActivity extends Activity {
 
         // the place, then how its times are worked out, then the minutes of one's own mosque; the line under them says which is which
         header("الموقع");
-        row("الدولة", Location.countryLabel(prefs.cityTz()), R.drawable.ic_place, new Runnable() { public void run() { pickCountry(); } });
+        row("الدولة", Location.countryLabel(prefs.cityCountry(), prefs.cityTz()), R.drawable.ic_place, new Runnable() { public void run() { pickCountry(); } });
         row("المدينة", prefs.city()[0], R.drawable.ic_place, new Runnable() { public void run() { pickCity(); } });
 
-        row("طريقة الحساب", PrayerMethod.label(prefs.prayerMethod(), prefs.cityTz()), R.drawable.ic_place,
+        row("طريقة الحساب", PrayerMethod.label(prefs.prayerMethod(), prefs.cityCountry(), prefs.cityTz()), R.drawable.ic_place,
             new Runnable() { public void run() { pickPrayerMethod(); } });
         row("تعديل وقت الصلاة", prefs.prayerAdjOn() ? "يعمل · لكل صلاة دقائقها، من −٢٠ إلى +٢٠ (الشروق لا يتغيّر)" : "متوقف · الأوقات كما تُحسب", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPrayerAdjOn(!prefs.prayerAdjOn()); render(); } });
@@ -272,6 +272,9 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { pickNational(); } });
         row("حجم الساعة", Prefs.clockSizeLabel(prefs.clockSize()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickClockSize(); } });
+        // «نظام الساعة»: 12 or 24 hours, the same setting as `saver.sh clock24`; the page (screensaver and the home's cards) and the home's clock follow it
+        row("نظام الساعة", ClockSetting.label(prefs.clock24()), R.drawable.ic_eye,
+            new Runnable() { public void run() { pickClock24(); } });
         row("الخانة اليسرى", Prefs.slotLabel(prefs.slot()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickSlot(); } });
         if ("countdown".equals(prefs.slot()) || !prefs.countdownDate().isEmpty())
@@ -452,7 +455,7 @@ public class SettingsActivity extends Activity {
     /** What is set now in a category, on one line under its name. */
     private String hubSummary(String cat) {
         switch (cat) {
-            case SettingsHub.PLACE: return prefs.city()[0] + " · " + PrayerMethod.label(prefs.prayerMethod(), prefs.cityTz());
+            case SettingsHub.PLACE: return prefs.city()[0] + " · " + PrayerMethod.label(prefs.prayerMethod(), prefs.cityCountry(), prefs.cityTz());
             case SettingsHub.ADHAN: return "صوته ومستواه · التنبيه قبل الأذان " + (prefs.adhanBar() ? "يعمل" : "متوقف");
             case SettingsHub.SAVER: return (Prefs.idleMs(this) <= 0 ? "يبدأ وقت ما يحدده التلفاز" : "تبدأ بعد " + idleLabel()) + " · " + Prefs.panelLabel(prefs.panel());
             case SettingsHub.HOME: {
@@ -560,7 +563,7 @@ public class SettingsActivity extends Activity {
         String[] labels = new String[Location.COUNTRIES.length];
         for (int i = 0; i < labels.length; i++) labels[i] = Location.COUNTRIES[i][1];
         new Dlg(this).setTitle("الدولة")
-            .setSingleChoiceItems(labels, Location.countryOf(prefs.cityTz()), (d, i) -> { d.dismiss(); pickCity(i); })
+            .setSingleChoiceItems(labels, Location.countryOf(prefs.cityCountry(), prefs.cityTz()), (d, i) -> { d.dismiss(); pickCity(i); })
             .show();
     }
 
@@ -582,12 +585,12 @@ public class SettingsActivity extends Activity {
         String[] names = new String[r.cities.length];
         int sel = -1;
         for (int i = 0; i < names.length; i++) {
-            names[i] = r.cities[i][0];
-            if (names[i].equals(prefs.city()[0])) sel = i;
+            names[i] = Cities.display(r.cities[i]);
+            if (r.cities[i][0].equals(prefs.city()[0]) && r.cities[i][1].equals(prefs.city()[1]) && r.cities[i][2].equals(prefs.city()[2])) sel = i;
         }
         AlertDialog.Builder b = new Dlg(this).setTitle(r.name)
             .setSingleChoiceItems(names, sel, (d, i) -> {
-                prefs.setCity(r.cities[i][0], r.cities[i][1], r.cities[i][2]);   // the zone follows from the list (Prefs.cityTz)
+                prefs.setCity(r.cities[i][0], r.cities[i][1], r.cities[i][2], CityMatch.zone(r.cities[i]), r.country);
                 d.dismiss();
                 render();
             });
@@ -595,9 +598,8 @@ public class SettingsActivity extends Activity {
         b.show();
     }
 
-    // any place in Saudi Arabia, the other Gulf states, Egypt, the Levant and North Africa (PrayerMethod.SEARCH_COUNTRIES), or in the one
-    // country picked, from Open-Meteo's GeoNames search (it takes one country at a time, so without a country the hundred best matches of
-    // the world are asked for and those countries' kept)
+    // Any searchable country, or the one country picked, from Open-Meteo's GeoNames search.
+    // Without a country filter, ask for the world's hundred best matches; PS keeps its checked list.
     private void searchCity(final int country) {
         ask("اسم المدينة أو القرية", q -> fetch("https://geocoding-api.open-meteo.com/v1/search?count=100&language=ar&name="
             + Uri.encode(q) + (country < 0 ? "" : "&countryCode=" + Location.COUNTRIES[country][0]), json -> {
@@ -606,10 +608,11 @@ public class SettingsActivity extends Activity {
                     if (PrayerMethod.searchable(all.getJSONObject(k).optString("country_code"))) a.put(all.getJSONObject(k));
                 if (a.length() == 0) { toast("لا توجد نتائج"); return; }
                 final int n = a.length();
-                final String[] names = new String[n], lats = new String[n], lons = new String[n], zones = new String[n], rows = new String[n];
+                final String[] names = new String[n], lats = new String[n], lons = new String[n], zones = new String[n], countries = new String[n], rows = new String[n];
                 for (int i = 0; i < n; i++) {
                     JSONObject c = a.getJSONObject(i);
                     names[i] = c.optString("name");
+                    countries[i] = c.optString("country_code");
                     lats[i] = String.valueOf(c.optDouble("latitude"));
                     lons[i] = String.valueOf(c.optDouble("longitude"));
                     zones[i] = c.optString("timezone", "");   // the place's own; empty: the TV's (Prefs.cityTz)
@@ -618,7 +621,7 @@ public class SettingsActivity extends Activity {
                     rows[i] = names[i] + (region.isEmpty() ? "" : "  ·  " + region) + (land.isEmpty() ? "" : "  ·  " + land);
                 }
                 new Dlg(this).setTitle("اختر المكان")
-                    .setItems(rows, (d, i) -> { prefs.setCity(names[i], lats[i], lons[i], zones[i]); render(); }).show();
+                    .setItems(rows, (d, i) -> { prefs.setCity(names[i], lats[i], lons[i], zones[i], countries[i]); render(); }).show();
             }));
     }
 
@@ -628,15 +631,13 @@ public class SettingsActivity extends Activity {
         String[] labels = new String[cur.size()];
         final boolean[] keep = new boolean[cur.size()];
         for (int i = 0; i < cur.size(); i++) { labels[i] = cur.get(i).split("\\|", 2)[1]; keep[i] = true; }
-        AlertDialog.Builder b = new Dlg(this)
-            .setTitle(cur.isEmpty() ? "لا توجد فرق متابعة" : "الفرق المتابعة (ألغِ التحديد للحذف)")
-            .setPositiveButton("حفظ", (d, w) -> {
+        AlertDialog.Builder b = new Dlg(this).multi(() -> {
                 List<String> v = new ArrayList<>();
                 for (int i = 0; i < cur.size(); i++) if (keep[i]) v.add(cur.get(i));
                 prefs.setList("teams", v);
                 render();
             })
-            .setNegativeButton("إلغاء", null);
+            .setTitle(cur.isEmpty() ? "لا توجد فرق متابعة" : "الفرق المتابعة (ألغِ التحديد للحذف)");
         if (cur.size() < Prefs.MAX_TEAMS) b.setNeutralButton("إضافة فريق", (d, w) -> pickTeam(0));
         if (!cur.isEmpty()) b.setMultiChoiceItems(labels, keep, (d, i, checked) -> keep[i] = checked);
         b.show();
@@ -751,15 +752,15 @@ public class SettingsActivity extends Activity {
         String[] labels = new String[options.length];
         final boolean[] on = new boolean[options.length];
         for (int i = 0; i < options.length; i++) { labels[i] = options[i][1]; on[i] = cur.contains(options[i][0]); }
-        new Dlg(this).setTitle(title + " (" + hint + ")")
-            .setMultiChoiceItems(labels, on, (d, i, checked) -> on[i] = checked)
-            .setPositiveButton("حفظ", (d, w) -> {
+        new Dlg(this).multi(() -> {
                 List<String> v = new ArrayList<>();
                 for (int i = 0; i < options.length; i++) if (on[i]) v.add(options[i][0]);
                 prefs.setList(key, v);
                 render();
             })
-            .setNegativeButton("إلغاء", null).show();
+            .setTitle(title + " (" + hint + ")")
+            .setMultiChoiceItems(labels, on, (d, i, checked) -> on[i] = checked)
+            .show();
     }
 
     /** Whole leagues: every game of every club in them is shown, up to Prefs.MAX_LEAGUES leagues. */
@@ -774,7 +775,12 @@ public class SettingsActivity extends Activity {
         final String[] labels = new String[Prefs.LEAGUES.length];
         final boolean[] on = new boolean[Prefs.LEAGUES.length];
         for (int i = 0; i < labels.length; i++) { labels[i] = Prefs.LEAGUES[i][1]; on[i] = cur.contains(Prefs.LEAGUES[i][0]); }
-        new Dlg(this)
+        new Dlg(this).multi(() -> {   // «حفظ», and Back too: the list is long, the buttons under it (DialogFit)
+                List<String> v = new ArrayList<>();
+                for (int i = 0; i < on.length; i++) if (on[i]) v.add(Prefs.LEAGUES[i][0]);
+                prefs.setList("leagues", v);
+                render();
+            })
             .setTitle("الدوريات كاملة (حتى " + arabicNum(Prefs.MAX_LEAGUES) + "، بدون اختيار = بدون)")
             .setMultiChoiceItems(labels, on, (d, i, checked) -> {
                 int n = 0;
@@ -785,13 +791,7 @@ public class SettingsActivity extends Activity {
                     toast("حتى " + arabicNum(Prefs.MAX_LEAGUES) + " دوريات");
                 }
             })
-            .setPositiveButton("حفظ", (d, w) -> {
-                List<String> v = new ArrayList<>();
-                for (int i = 0; i < on.length; i++) if (on[i]) v.add(Prefs.LEAGUES[i][0]);
-                prefs.setList("leagues", v);
-                render();
-            })
-            .setNegativeButton("إلغاء", null).show();
+            .show();
     }
 
     private void manageShows() {
@@ -799,16 +799,14 @@ public class SettingsActivity extends Activity {
         String[] labels = new String[cur.size()];
         final boolean[] keep = new boolean[cur.size()];
         for (int i = 0; i < cur.size(); i++) { labels[i] = cur.get(i).split("\\|", 2)[1]; keep[i] = true; }
-        AlertDialog.Builder b = new Dlg(this)
-            .setTitle(cur.isEmpty() ? "لا توجد مسلسلات مختارة" : "المسلسلات المختارة (ألغِ التحديد للحذف)")
-            .setPositiveButton("حفظ", (d, w) -> {
+        AlertDialog.Builder b = new Dlg(this).multi(() -> {
                 List<String> v = new ArrayList<>();
                 for (int i = 0; i < cur.size(); i++) if (keep[i]) v.add(cur.get(i));
                 prefs.setList("shows", v);
                 render();
             })
-            .setNeutralButton("إضافة مسلسل", (d, w) -> searchShow())
-            .setNegativeButton("إلغاء", null);
+            .setTitle(cur.isEmpty() ? "لا توجد مسلسلات مختارة" : "المسلسلات المختارة (ألغِ التحديد للحذف)")
+            .setNeutralButton("إضافة مسلسل", (d, w) -> searchShow());
         if (!cur.isEmpty()) b.setMultiChoiceItems(labels, keep, (d, i, checked) -> keep[i] = checked);
         b.show();
     }
@@ -1145,9 +1143,7 @@ public class SettingsActivity extends Activity {
         String[] labels = new String[Prefs.MARKETS.length];
         final boolean[] on = new boolean[Prefs.MARKETS.length];
         for (int i = 0; i < labels.length; i++) { labels[i] = Prefs.MARKETS[i][1]; on[i] = cur.contains(Prefs.MARKETS[i][0]); }
-        new Dlg(this).setTitle("الأسواق (حتى " + arabicNum(Prefs.MAX_MARKETS) + ")")
-            .setMultiChoiceItems(labels, on, (d, i, checked) -> on[i] = checked)
-            .setPositiveButton("حفظ", (d, w) -> {
+        new Dlg(this).multi(() -> {
                 List<String> v = new ArrayList<>();
                 for (int i = 0; i < on.length; i++) if (on[i]) v.add(Prefs.MARKETS[i][0]);
                 if (v.isEmpty() || v.size() > Prefs.MAX_MARKETS) {
@@ -1158,7 +1154,9 @@ public class SettingsActivity extends Activity {
                 prefs.setMarketsOn(true);
                 render();
             })
-            .setNegativeButton("إلغاء", null).show();
+            .setTitle("الأسواق (حتى " + arabicNum(Prefs.MAX_MARKETS) + ")")
+            .setMultiChoiceItems(labels, on, (d, i, checked) -> on[i] = checked)
+            .show();
     }
 
     private String stocksLabel() { return Prefs.join(prefs.stocks(), "، "); }
@@ -1212,6 +1210,14 @@ public class SettingsActivity extends Activity {
         }
         new Dlg(this).setTitle("حجم الساعة")
             .setSingleChoiceItems(labels, sel, (d, i) -> { prefs.setClockSize(Prefs.CLOCK_SIZES[i][0]); d.dismiss(); render(); })
+            .show();
+    }
+
+    /** «نظام الساعة»: «١٢ ساعة» (with ص and م, the default) or «٢٤ ساعة»; the screensaver's page reads it when it starts, the home at its next tick */
+    private void pickClock24() {
+        new Dlg(this).setTitle("نظام الساعة")
+            .setSingleChoiceItems(ClockSetting.CHOICES, ClockSetting.choice(prefs.clock24()),
+                (d, i) -> { prefs.setClock24(ClockSetting.fromChoice(i)); d.dismiss(); render(); })
             .show();
     }
 
@@ -1275,7 +1281,7 @@ public class SettingsActivity extends Activity {
 
     private void pickPrayerMethod() {
         final String[] values = {PrayerMethod.AUTO, PrayerMethod.GULF, PrayerMethod.JAFARI};
-        String[] labels = {PrayerMethod.label(PrayerMethod.AUTO, prefs.cityTz()), PrayerMethod.label(PrayerMethod.GULF, prefs.cityTz()), PrayerMethod.label(PrayerMethod.JAFARI, prefs.cityTz())};
+        String[] labels = {PrayerMethod.label(PrayerMethod.AUTO, prefs.cityCountry(), prefs.cityTz()), PrayerMethod.label(PrayerMethod.GULF, prefs.cityCountry(), prefs.cityTz()), PrayerMethod.label(PrayerMethod.JAFARI, prefs.cityCountry(), prefs.cityTz())};
         new Dlg(this).raw().setTitle("طريقة الحساب")
             .setSingleChoiceItems(labels, PrayerMethod.JAFARI.equals(prefs.prayerMethod()) ? 2 : PrayerMethod.GULF.equals(prefs.prayerMethod()) ? 1 : 0,
                 (d, i) -> { prefs.setPrayerMethod(values[i]); d.dismiss(); render(); })
@@ -1608,14 +1614,68 @@ public class SettingsActivity extends Activity {
 
         Dlg raw() { raw = true; return this; }
 
+        private Runnable save;   // multi(): a list of choices with «حفظ»
+
+        /**
+         * A list of choices with «حفظ» and «إلغاء» (a user could not save «الدوريات كاملة»: on a TV the long list pushed the buttons off the
+         * screen): the list gets a height that leaves the buttons on screen, DOWN on its last row goes to «حفظ», and Back saves as «حفظ»
+         * does; only «إلغاء» leaves without saving (DialogFit, fitList). Called first, before the title and the items.
+         */
+        Dlg multi(final Runnable onSave) {
+            save = onSave;
+            setPositiveButton("حفظ", (d, w) -> onSave.run());
+            setNegativeButton("إلغاء", null);
+            setOnCancelListener(d -> onSave.run());   // Back (a button's own press dismisses, it does not cancel)
+            return this;
+        }
+
         @Override public AlertDialog create() {
             final AlertDialog d = super.create();
-            d.setOnShowListener(x -> owner.dress(d, raw));
+            d.setOnShowListener(x -> {
+                owner.dress(d, raw);
+                if (save != null) owner.fitList(d);
+            });
             return d;
         }
     }
 
     void dress(AlertDialog d) { dress(d, false); }
+
+    /** Dlg.multi: the list leaves room for the title and the buttons (DialogFit.listHeight), and DOWN on its last row goes to «حفظ». */
+    void fitList(final AlertDialog d) {
+        final android.widget.ListView lv = d.getListView();
+        final android.widget.Button save = d.getButton(AlertDialog.BUTTON_POSITIVE);
+        if (lv == null || save == null) return;   // no rows (no team followed yet): the buttons are all there is
+        if (lv.getId() == View.NO_ID) lv.setId(View.generateViewId());
+        for (int which : new int[] {AlertDialog.BUTTON_POSITIVE, AlertDialog.BUTTON_NEGATIVE, AlertDialog.BUTTON_NEUTRAL}) {
+            android.widget.Button b = d.getButton(which);
+            if (b != null) b.setNextFocusUpId(lv.getId());   // UP from a button goes back to the list
+        }
+        lv.setOnKeyListener((v, code, ev) -> {
+            if (code != android.view.KeyEvent.KEYCODE_DPAD_DOWN || ev.getAction() != android.view.KeyEvent.ACTION_DOWN) return false;
+            if (!DialogFit.downToSave(lv.getSelectedItemPosition(), lv.getCount())) return false;
+            save.requestFocus();
+            return true;
+        });
+        lv.post(() -> {   // laid out by now: its width is known; its rows' height, measured, decides whether it is capped
+            android.widget.ListAdapter a = lv.getAdapter();
+            if (a == null || !d.isShowing()) return;
+            android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+            int w = lv.getWidth() > 0 ? lv.getWidth() : dm.widthPixels / 2, content = lv.getPaddingTop() + lv.getPaddingBottom();
+            int across = View.MeasureSpec.makeMeasureSpec(w, View.MeasureSpec.EXACTLY), free = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+            for (int i = 0; i < a.getCount(); i++) {
+                View row = a.getView(i, null, lv);
+                row.measure(across, free);
+                content += row.getMeasuredHeight();
+            }
+            content += lv.getDividerHeight() * Math.max(0, a.getCount() - 1);
+            int h = DialogFit.listHeight(content, dm.heightPixels, dm.density);
+            if (h < 0) return;   // it fits: as it was
+            ViewGroup.LayoutParams lp = lv.getLayoutParams();
+            lp.height = h;
+            lv.setLayoutParams(lp);
+        });
+    }
 
     void dress(AlertDialog d, boolean raw) {
         if (d.getWindow() == null) return;

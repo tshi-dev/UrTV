@@ -12,6 +12,7 @@ import java.nio.file.Paths;
  *   network    wired(0|1) wifi(0|1) SSID RSSI -> the network tile's two lines, joined with «|»
  *   output     TYPE,TYPE,... [NAME|NAME|...] -> the sound output tile's line (the names are the products the devices report, one per type)
  *   layout     W H DENSITY N               -> "cols rows tileW tileH panelW panelH compact tiny" of the panel's tiles on that screen
+ *   mirror     PKG,PKG,...                 -> the mirroring app «انعكاس الشاشة» opens when the TV can open those packages, or "none"
  */
 public final class ControlTextRun {
     public static void main(String[] args) throws IOException {
@@ -34,6 +35,12 @@ public final class ControlTextRun {
                     for (int i = 0; i < t.length; i++) types[i] = Integer.parseInt(t[i]);
                     String[] names = f[2].isEmpty() ? null : f[2].split("\\|", -1);
                     out.append(ControlText.outputs(types, names));
+                    break;
+                }
+                case "mirror": {
+                    final java.util.Set<String> has = new java.util.HashSet<>(java.util.Arrays.asList(f[1].split(",")));
+                    String app = ControlText.mirrorApp(has::contains);
+                    out.append(app == null ? "none" : app);
                     break;
                 }
                 default: {   // layout

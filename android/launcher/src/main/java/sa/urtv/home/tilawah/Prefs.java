@@ -36,6 +36,9 @@ final class Prefs {
     /** The TV's own volume while an adhan plays, kept on disk so it comes back even if the player was stopped mid-adhan (-1: none). */
     int savedTvVolume() { return sp.getInt("tv_volume_saved", -1); }
     void setSavedTvVolume(int v) { sp.edit().putInt("tv_volume_saved", v).commit(); }
+    /** the TV was muted when the adhan raised its volume: muted again at the end */
+    boolean savedTvMuted() { return sp.getBoolean("tv_volume_saved_muted", false); }
+    void setSavedTvMuted(boolean v) { sp.edit().putBoolean("tv_volume_saved_muted", v).commit(); }
     /** The level the adhan set the volume to (-1: not known), so a volume the person changed during the adhan is left alone afterwards. */
     int adhanLevel() { return sp.getInt("tv_volume_adhan_level", -1); }
     void setAdhanLevel(int v) { sp.edit().putInt("tv_volume_adhan_level", v).commit(); }
@@ -78,7 +81,39 @@ final class Prefs {
 
     /** «أذان مختصر»: the adhan stops after its first minute with a short fade (not the few seconds of a preview). Off until it is turned on. */
     boolean adhanShort() { return sp.getBoolean("adhan_short", false); }
-    void setAdhanShort(boolean on) { sp.edit().putBoolean("adhan_short", on).apply(); }
+    void setAdhanShort(boolean on) {
+        SharedPreferences.Editor e = sp.edit().putBoolean("adhan_short", on);
+        if (on) e.putBoolean("adhan_takbir", false);   // one length at a time
+        e.apply();
+    }
+
+    /** «تكبير فقط»: the third length, next to «أذان مختصر»: only the opening takbir plays, then a fade (not a preview). Off until it is turned on; it turns «أذان مختصر» off and the other way round. */
+    boolean adhanTakbir() { return sp.getBoolean("adhan_takbir", false); }
+    void setAdhanTakbir(boolean on) {
+        SharedPreferences.Editor e = sp.edit().putBoolean("adhan_takbir", on);
+        if (on) e.putBoolean("adhan_short", false);
+        e.apply();
+    }
+
+    /** «الأذان على شاشة التوقف فقط»: the adhan plays only over the screensaver or our home; another app or an input in front gets none. Off until it is turned on. */
+    boolean adhanSaverOnly() { return sp.getBoolean("adhan_saver_only", false); }
+    void setAdhanSaverOnly(boolean on) { sp.edit().putBoolean("adhan_saver_only", on).apply(); }
+
+    /** «تنبيه عند الأذان»: a 5-second notice with the prayer's name when its time comes, whether or not the adhan plays. Off until it is turned on. */
+    boolean adhanNotice() { return sp.getBoolean("adhan_notice", false); }
+    void setAdhanNotice(boolean on) { sp.edit().putBoolean("adhan_notice", on).apply(); }
+
+    /** The alarm goes off for the adhan or for any option that acts at the prayer's time (the notice). */
+    boolean alarmWanted() { return adhanOn() || adhanNotice() || adhanSaverAt(); }
+
+    /** «شاشة التوقف وقت الأذان»: at the prayer's time the screensaver starts, if our home is in front (never over another app). Off until it is turned on. */
+    boolean adhanSaverAt() { return sp.getBoolean("adhan_saver_at", false); }
+    void setAdhanSaverAt(boolean on) { sp.edit().putBoolean("adhan_saver_at", on).apply(); }
+
+    /** What the last alarm did (AdhanPlan.note) and when, for `music.sh adhan`: a tester with the sound at 0 reads this. */
+    String lastAlarmNote() { return sp.getString("adhan_alarm_note", ""); }
+    long lastAlarmNoteAt() { return sp.getLong("adhan_alarm_note_at", 0); }
+    void setLastAlarmNote(String note, long at) { sp.edit().putString("adhan_alarm_note", note).putLong("adhan_alarm_note_at", at).apply(); }
 
     /** «إيقاف الأذان بأي زر»: while the adhan plays, any key stops it (once) and is consumed; ON by default (the owner's decision), off only when someone turns it off. The screensaver asks for it. */
     boolean adhanStopKey() { return sp.getBoolean("adhan_stopkey", true); }

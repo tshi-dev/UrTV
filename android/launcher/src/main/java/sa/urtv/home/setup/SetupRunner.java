@@ -507,7 +507,7 @@ final class SetupRunner {
         String cut = "انقطع الاتصال بالتلفزيون. إن كنت في منتصف تبديل الشاشة الرئيسية فسترجع الأصلية وحدها بعد 5 دقائق. جرّب مرة ثانية.";
         if (m == null) return cut;
         if (m.startsWith("debugging is off")) return "تصحيح USB مطفأ في التلفزيون. فعّله (خيارات المطوّر ← تصحيح USB) ثم اضغط «ابدأ».";
-        if (m.contains("permission was not accepted")) return "لم تُقبل رسالة «السماح بتصحيح USB؟». اضغط «ابدأ» وافتح الرسالة بالريموت واختر «السماح دائماً».";
+        if (m.contains("permission was not accepted")) return "لم تُقبل رسالة «السماح بتصحيح USB؟». إذا ما ظهرت الرسالة أصلاً: أعد تشغيل التلفزيون، ثم افتح «إعداد تلفزيوني» واضغط «ابدأ» وخلك عند التلفزيون، تطلع خلال ثواني. واختر «السماح دائماً».";   // a prompt left unanswered (e.g. under the screensaver) blocks every later one until adbd restarts: TV test, 30 Oct
         if (m.contains("TLS")) return "هذا التلفزيون يطلب التصحيح اللاسلكي؛ استخدم «تصحيح USB» العادي.";
         if (m.startsWith("the TV did not come back")) return "ما رجع الاتصال بالتلفزيون بعد إعادة تشغيله. تأكد أن «تصحيح USB» ما زال مفعّلاً، ثم اضغط «ابدأ» ليكمل الإعداد من حيث توقف.";
         return cut;

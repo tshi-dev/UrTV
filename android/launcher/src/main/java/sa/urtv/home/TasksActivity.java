@@ -8,10 +8,18 @@ import android.database.Cursor;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.text.InputFilter;
+import android.text.InputType;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -23,7 +31,8 @@ import java.util.List;
 
 /**
  * «المهام»: the tasks kept by the screensaver app (its ConfigProvider, same signing key), listed with OK to mark
- * one done, «حذف» beside each, and a mic that starts Android's speech recognizer. Said in Arabic:
+ * one done, «حذف» beside each, a text field with «إضافة» (the TV keyboard's own mic dictates into it, so it works where
+ * the system's speech window does not, e.g. Google TV), and a mic that starts Android's speech recognizer when the TV has one. Said in Arabic:
  * «أضف مهمة …» adds, «خلصت …» finishes, «احذف …» deletes (TaskVoice). Nothing changes until «نعم» is pressed.
  * No dialogs, like DockActivity: rows are built right-aligned by hand. `am start -n sa.urtv.home/.TasksActivity`.
  */
@@ -42,7 +51,9 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
     private final List<Long> ids = new ArrayList<>();
     private LinearLayout list, confirm;
     private TextView status, question;
-    private View mic, yes, no;
+    private View mic, yes, no, addBtn;
+    private EditText field;   // the task typed (or dictated by the keyboard's mic): «إضافة» or the keyboard's action key adds it
+    private long listenedAt;   // when the speech window was opened (SystemClock.elapsedRealtime), to tell one that never worked
     private Runnable onYes;
     private boolean micFirst;   // the first render puts the focus on the mic (EXTRA_MIC), later ones on the list as always
 
@@ -62,12 +73,49 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
         frame.addView(col, new FrameLayout.LayoutParams(dp(600), -2, Gravity.CENTER_HORIZONTAL));
 
         col.addView(text("المهام", 26, "Medium", TEXT), right(0));
-        col.addView(text("اختيار على مهمة لإنجازها. أو اضغط «تكلّم» وقل: أضف مهمة … / خلصت … / احذف …", 14, "Regular", DIM), right(dp(10)));
+        col.addView(text("اختيار على مهمة لإنجازها. اكتب مهمة جديدة في الخانة ثم «إضافة». أو اضغط «تكلّم» وقل: أضف مهمة … / خلصت … / احذف …", 14, "Regular", DIM), right(dp(10)));
 
+        field = new EditText(this);
+        field.setId(View.generateViewId());
+        field.setHint("اكتب المهمة هنا أو أملها بميكروفون لوحة المفاتيح");
+        field.setHintTextColor(DIM);
+        field.setTextColor(TEXT);
+        field.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+        field.setSingleLine(true);
+        field.setInputType(InputType.TYPE_CLASS_TEXT);   // plain text: the keyboard's dictation writes here
+        field.setImeOptions(EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_EXTRACT_UI);   // the action key is «إضافة», never a search
+        field.setImeActionLabel("إضافة", EditorInfo.IME_ACTION_DONE);
+        field.setFilters(new InputFilter[] { new InputFilter.LengthFilter(MAX_CHARS) });
+        field.setTextDirection(View.TEXT_DIRECTION_RTL);
+        field.setGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
+        field.setPadding(dp(16), dp(10), dp(16), dp(10));
+        field.setFocusable(true);
+        field.setFocusableInTouchMode(true);
+        try { field.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/Thmanyah-Medium.otf")); }
+        catch (RuntimeException ignored) { }
+        field.setOnFocusChangeListener((v, has) -> field.setHintTextColor(has ? look.onFocusSub : DIM));   // before card(): it keeps this one
+        GlassPaint.card(field, look, 14);   // the same panel and solid focus fill as every button: the focus is clear
+        field.setOnEditorActionListener((v, action, e) -> {
+            boolean enter = e != null && e.getKeyCode() == KeyEvent.KEYCODE_ENTER;
+            if (action == EditorInfo.IME_ACTION_DONE || (enter && e.getAction() == KeyEvent.ACTION_DOWN)) { addTyped(); return true; }
+            return enter;   // the key-up of an Enter we already took
+        });
+        col.addView(field, right(dp(8)));
+
+        LinearLayout actions = new LinearLayout(this);
+        actions.setGravity(Gravity.RIGHT);
+        addBtn = pill("إضافة", GOLD, v -> addTyped());
+        actions.addView(addBtn, new LinearLayout.LayoutParams(dp(110), dp(40)));
         mic = pill("🎤 تكلّم", GOLD, v -> listen());
         LinearLayout.LayoutParams mp = new LinearLayout.LayoutParams(dp(140), dp(40));
-        mp.gravity = Gravity.RIGHT;
-        col.addView(mic, mp);
+        mp.rightMargin = dp(10);
+        actions.addView(mic, mp);   // to the left of «إضافة»
+        col.addView(actions, new LinearLayout.LayoutParams(-1, -2));
+        field.setNextFocusDownId(addBtn.getId());
+        addBtn.setNextFocusUpId(field.getId());
+        mic.setNextFocusUpId(field.getId());
+        addBtn.setNextFocusLeftId(mic.getId());
+        mic.setNextFocusRightId(addBtn.getId());
         status = text("", 14, "Medium", GOLD);
         col.addView(status, right(dp(8)));
 
@@ -95,10 +143,7 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
         scroll.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);   // the D-pad ids of these rows are left-to-right: pinned, so a TV set to Arabic does not mirror the rows under them
         setContentView(scroll);
 
-        if (!hasRecognizer()) {
-            mic.setVisibility(View.GONE);
-            status.setText("الإدخال الصوتي غير متاح في هذا التلفزيون");
-        }
+        if (!hasRecognizer()) noMic("الإدخال الصوتي غير متاح في هذا التلفزيون. اكتب المهمة في الخانة، أو استعمل ميكروفون لوحة المفاتيح");
     }
 
     @Override
@@ -153,7 +198,7 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
             if (first == null) first = card;
             if (i == focus) wanted = card;
         }
-        View f = wanted != null ? wanted : first != null ? first : mic.getVisibility() == View.VISIBLE ? mic : null;
+        View f = wanted != null ? wanted : first != null ? first : mic.getVisibility() == View.VISIBLE ? mic : field;
         if (micFirst && mic.getVisibility() == View.VISIBLE) f = mic;   // from the home card: the mic first
         micFirst = false;
         if (f != null && confirm.getVisibility() != View.VISIBLE) f.post(f::requestFocus);
@@ -182,17 +227,33 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
 
     /** Text typed on the phone («تحكم من الجوال») becomes a task, like a spoken one. */
     @Override public boolean acceptText(String t) {
-        String text = t.trim();
+        String text = TaskVoice.typed(t, MAX_CHARS);
         if (text.isEmpty()) return false;
-        add(text.length() > MAX_CHARS ? text.substring(0, MAX_CHARS) : text);
+        add(text);
         return true;
     }
 
-    private void add(String t) {
+    /** «إضافة» / the keyboard's action key / Enter: the field's text becomes a task, the same insert as `saver.sh tasks add` (ConfigProvider -> Prefs.addTask). */
+    private void addTyped() {
+        String t = TaskVoice.typed(field.getText().toString(), MAX_CHARS);
+        if (t.isEmpty()) { toast("اكتب المهمة أولاً"); return; }
+        if (add(t)) field.setText("");   // a refused one (full list) keeps its words
+        hideKeyboard();
+        field.post(field::requestFocus);   // ready for the next one
+    }
+
+    private void hideKeyboard() {
+        InputMethodManager m = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        if (m != null) m.hideSoftInputFromWindow(field.getWindowToken(), 0);
+    }
+
+    private boolean add(String t) {
         ContentValues v = new ContentValues();
         v.put("t", t);
-        if (write(() -> getContentResolver().insert(TASKS, v) != null)) toast("أُضيفت: " + t);
+        boolean ok = write(() -> getContentResolver().insert(TASKS, v) != null);
+        if (ok) toast("أُضيفت: " + t);
         else toast("ما أضفت المهمة: القائمة ممتلئة (" + ar(12) + ") أو النص فاضي");
+        return ok;
     }
 
     private interface Change { boolean run(); }
@@ -262,22 +323,39 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
         return i;
     }
 
-    private boolean hasRecognizer() { return speechIntent().resolveActivity(getPackageManager()) != null; }
+    /** the TV offers a recognizer: a RecognitionService (SpeechRecognizer) or an activity for RECOGNIZE_SPEECH (both visible through the manifest's queries) */
+    private boolean hasRecognizer() {
+        return SpeechRecognizer.isRecognitionAvailable(this) || speechIntent().resolveActivity(getPackageManager()) != null;
+    }
+
+    /** no (working) voice here: no dead button, the typed field is the way */
+    private void noMic(String why) {
+        mic.setVisibility(View.GONE);
+        addBtn.setNextFocusLeftId(addBtn.getId());
+        status.setText(why);
+    }
 
     private void listen() {
         status.setText("");
         onYes = null;
         confirm.setVisibility(View.GONE);
+        listenedAt = SystemClock.elapsedRealtime();
         try { startActivityForResult(speechIntent(), SPEECH); }
-        catch (ActivityNotFoundException e) {
-            mic.setVisibility(View.GONE);
-            status.setText("الإدخال الصوتي غير متاح في هذا التلفزيون");
+        catch (ActivityNotFoundException | SecurityException e) {
+            noMic("الإدخال الصوتي غير متاح في هذا التلفزيون. اكتب المهمة في الخانة");
+            field.post(field::requestFocus);
         }
     }
 
     @Override
     protected void onActivityResult(int code, int result, Intent data) {
         super.onActivityResult(code, result, data);
+        if (code == SPEECH && TaskVoice.micDead(result == RESULT_CANCELED && data == null, SystemClock.elapsedRealtime() - listenedAt)) {
+            // a window that opened and closed at once with nothing (Google TV's search): the button would stay dead, so it goes
+            noMic("الإدخال الصوتي غير متاح في هذا التلفزيون (فتح وأغلق بلا صوت). اكتب المهمة في الخانة، أو استعمل ميكروفون لوحة المفاتيح");
+            field.post(field::requestFocus);
+            return;
+        }
         if (code != SPEECH || result != RESULT_OK || data == null) return;
         ArrayList<String> heard = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
         if (heard == null || heard.isEmpty()) return;

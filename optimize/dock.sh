@@ -82,7 +82,18 @@ case "${1:-}:$#" in
     fi
     # the list goes to the TV's shell in single quotes (a service like pkg/.Svc$Inner must not have its $Inner expanded)
     case "$now" in
-      *"$svc"*) echo "$what was already on" ;;
+      *"$svc"*)
+        # in the list but maybe not running: after an update of the app Android unbinds it and binds it again only when the list changes
+        # (or at a boot). Only when the TV's own answer says which services are bound and ours is not among them, the same list goes back
+        # through a change Android listens to: ours out for a moment, then the list exactly as it was (other apps' entries untouched).
+        bound=$("$PY" -I optimize/tv.py "dumpsys accessibility" | tr -d '\r' | grep -m1 'Bound services:' || true)
+        if [ -n "$bound" ] && [[ "$bound" != *"$svc"* ]] && [[ "$now" =~ ^[A-Za-z0-9_.\$/:]+$ ]]; then
+          rest=$(tr ':' '\n' <<< "$now" | grep -vxF "$svc" | paste -sd: - || true)
+          if [ -n "$rest" ]; then "$PY" -I optimize/tv.py "settings put secure enabled_accessibility_services '$rest'" >/dev/null
+          else "$PY" -I optimize/tv.py "settings delete secure enabled_accessibility_services" >/dev/null; fi
+          "$PY" -I optimize/tv.py "settings put secure enabled_accessibility_services '$now'" >/dev/null
+          echo "$what was already on in the list but Android was not running it: the same list was written again so Android binds it"
+        else echo "$what was already on"; fi ;;
       null|"") "$PY" -I optimize/tv.py "settings put secure enabled_accessibility_services '$svc'" >/dev/null ;;
       *) if [[ "$now" =~ ^[A-Za-z0-9_.\$/:]+$ ]]; then
            "$PY" -I optimize/tv.py "settings put secure enabled_accessibility_services '$now:$svc'" >/dev/null

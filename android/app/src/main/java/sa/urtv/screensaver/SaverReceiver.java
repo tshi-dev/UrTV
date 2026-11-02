@@ -124,6 +124,12 @@ public class SaverReceiver extends BroadcastReceiver {
         String[] city = null;
         String name = i.getStringExtra("city"), lat = i.getStringExtra("lat"), lon = i.getStringExtra("lon");
         String tz = i.getStringExtra("tz");   // only for a place of your own; a built-in city is Asia/Riyadh
+        String cityCountry = i.getStringExtra("country");
+        if (cityCountry != null) {
+            if (name == null || lat == null || lon == null || tz == null || !cityCountry.matches("(?:[A-Za-z]{2})?"))
+                return "error: country is a two-letter code with city, lat, lon and tz";
+            cityCountry = cityCountry.toUpperCase(java.util.Locale.ROOT);
+        }
         if (tz != null && (name == null || lat == null || lon == null))
             return "error: tz goes with city, lat and lon (a built-in city is Asia/Riyadh)";
         if (tz != null && !Arrays.asList(java.util.TimeZone.getAvailableIDs()).contains(tz))
@@ -138,13 +144,12 @@ public class SaverReceiver extends BroadcastReceiver {
                 if (tz == null) tz = CityMatch.zoneOf(name);   // a list name with coordinates of its own: its country's zone, not the TV's
                 city = new String[] {name, lat, lon};
             } else {
-                for (Cities.Region r : Cities.REGIONS) for (String[] x : r.cities) if (x[0].equals(name)) city = x;
                 if (city == null) {   // a short form of a built-in name: «مكة» for «مكة المكرمة»
                     List<String[]> hits = CityMatch.find(name);
                     if (hits.size() == 1) city = hits.get(0);
                     else if (hits.size() > 1) {
                         List<String> names = new ArrayList<>();
-                        for (String[] h : hits) names.add(h[0]);
+                        for (String[] h : hits) names.add(Cities.country(h) + "|" + (h.length > 4 ? h[4] : h[0]));
                         return "error: «" + name + "» fits several cities: " + Prefs.join(names, "، ") + " — give one of them in full";
                     }
                 }
@@ -330,7 +335,7 @@ public class SaverReceiver extends BroadcastReceiver {
                 return "error: idle not allowed: the TV refused the change";
             }
         }
-        if (city != null) p.setCity(city[0], city[1], city[2], tz == null ? "" : tz);
+        if (city != null) p.setCity(city[0], city[1], city[2], tz == null ? "" : tz, cityCountry);
         if (teams != null) p.setList("teams", teams);
         if (panel != null) p.setPanel(panel);
         if (panel2 != null) p.setPanel2(panel2);
@@ -472,6 +477,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + (newest >= 0 ? " (newest: " + Versions.otherEn(BuildConfig.MARKETING, newest) + ("next".equals(p.updateChannel()) ? ", on the next channel" : "") + ")" : "")
             + "\ncity: " + city[0] + " (" + city[1] + ", " + city[2] + ")"
             + "\ntimezone: " + p.cityTz()
+            + "\ncountry: " + p.cityCountry()
             + "\nteams: " + Prefs.join(p.teams(), ", ")
             + "\npanel: " + p.panel() + "\npanel2: " + p.panel2()
             + "\nhome_panel: " + p.homePanel()

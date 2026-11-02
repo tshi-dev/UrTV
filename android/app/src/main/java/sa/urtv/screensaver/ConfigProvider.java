@@ -31,6 +31,8 @@ import java.util.List;
  * else can be read or written there. .../own-in takes the next photo from the shell (`content write`), which the
  * manifest lets in with DUMP, as for SaverReceiver; SaverReceiver PHOTOS then checks and keeps it.
  *
+ * .../dreaming: one row (dreaming 1|0), whether the dream or its preview is on the screen (the home's «الأذان على شاشة التوقف فقط»).
+ *
  * «تحكم من الجوال» (the launcher's phone control) uses call(), and only with PHONE_SETTINGS (signature, same key):
  *   phone_state                         -> city, home_cards (list), panels (codes) and panel_names (Arabic, same order), idle (minutes)
  *   phone_set  extras city, home_panel, idle -> ok (and idle_denied when the TV does not let this app change the idle time), the same checks as SaverReceiver SET (it is that code)
@@ -42,6 +44,11 @@ public class ConfigProvider extends ContentProvider {
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] args, String sort) {
+        if (uri != null && "dreaming".equals(uri.getLastPathSegment())) {   // the home's «الأذان على شاشة التوقف فقط»: is the dream (or its preview) on the screen now
+            MatrixCursor d = new MatrixCursor(new String[] {"dreaming"});
+            d.addRow(new Object[] {Showing.now() ? 1 : 0});
+            return d;
+        }
         Prefs p = new Prefs(getContext());
         if (isOwn(uri)) {
             MatrixCursor o = new MatrixCursor(new String[] {"n", "mode", "rev"});
@@ -85,6 +92,7 @@ public class ConfigProvider extends ContentProvider {
                 out.putStringArrayList("panels", codes);
                 out.putStringArrayList("panel_names", names);
                 out.putString("idle", String.valueOf(Prefs.idleMs(c) / 60000));
+                out.putString("idle_s", String.valueOf(Prefs.idleMs(c) / 1000));   // the real delay: 45 s is not a whole minute ("idle" says 0)
                 return out;
             }
             case "phone_set": {

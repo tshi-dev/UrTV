@@ -3,7 +3,7 @@
 # (CleanYourTV issue #884: a Mi TV Stick after permissioncontroller, packageinstaller, ext.services and the module
 # overlays were turned off). optimize/disable.sh refuses a list that names one; optimize/community.sh drops them first.
 android
-com\.android\.(systemui|settings|shell|phone|packageinstaller|permissioncontroller|externalstorage|inputdevices|keychain|certinstaller|defcontainer|mtp|storagemanager|location\.fused|bluetooth|nfc|server\..*|networkstack.*|tethering|wifi\..*|ext\..*|modulemetadata|providers\..*)
+com\.android\.(systemui|settings|shell|phone|packageinstaller|permissioncontroller|externalstorage|inputdevices|keychain|certinstaller|defcontainer|mtp|storagemanager|location\.fused|sdksandbox|bluetooth|nfc|server\..*|networkstack.*|tethering|wifi\..*|ext\..*|modulemetadata|providers\..*)
 com\.google\.android\.(permissioncontroller|packageinstaller|ext\.services|ext\.shared|modulemetadata|overlay\..*|networkstack.*|gms|gsf|tv\.settings|tvsettings)
 .*webview.*
 # Added after a Haier boot loop: the MediaTek TV stack and the Android extension services (the names of Clean Your TV's CORE_RE,

@@ -147,6 +147,8 @@ def read_tv(keep_own=False):
     m = re.fullmatch(r"(.*) \((-?[\d.]+), (-?[\d.]+)\)", g.get("city", ""))
     if m and g.get("timezone"):
         s["city"] = {"name": m.group(1), "lat": float(m.group(2)), "lon": float(m.group(3)), "tz": g["timezone"]}
+        if "country" in g and re.fullmatch(r"(?:[A-Z]{2})?", g["country"]):
+            s["city"]["country"] = g["country"]
     for key, name in (("digits", "digits"), ("clock_size", "clocksize"), ("card_style", "cardstyle")):
         if name in g:
             s[key] = g[name]
@@ -245,6 +247,8 @@ def flat(s):
     if "city" in s:
         c = s["city"]
         out["city"] = (c["name"], float(c["lat"]), float(c["lon"]), c["tz"])
+        if "country" in c:
+            out["city"] += (c["country"],)
     for k in ("digits", "clock24", "clock_size", "card_style", "greeting", "listen_pill", "update_bell", "hijri_offset", "sunrise", "prayerbar", "wxmore", "months"):
         if k in s:
             out[k] = s[k]
@@ -271,14 +275,14 @@ def flat(s):
 
 
 def same(a, b):
-    if isinstance(a, tuple) and len(a) == 4 and isinstance(a[1], float):   # a city: coordinates to 6 places
-        return a[0] == b[0] and a[3] == b[3] and abs(a[1] - b[1]) < 1e-6 and abs(a[2] - b[2]) < 1e-6
+    if isinstance(a, tuple) and len(a) >= 4 and isinstance(a[1], float):   # a city: coordinates to 6 places
+        return a[0] == b[0] and a[3] == b[3] and abs(a[1] - b[1]) < 1e-6 and abs(a[2] - b[2]) < 1e-6 and (len(b) == 4 or len(a) > 4 and a[4] == b[4])
     return a == b
 
 
 def show(path, v, team_names=None):
     if path == "city":
-        return f"{v[0]} ({coord(v[1])}, {coord(v[2])}) {v[3]}"
+        return f"{v[0]} ({coord(v[1])}, {coord(v[2])}) {v[3]}" + (f" · {v[4]}" if len(v) > 4 and v[4] else "")
     if isinstance(v, bool):
         return flag(v)
     if isinstance(v, tuple):
@@ -304,6 +308,8 @@ def team_names(*settings):
 def diff(cur, new):
     """[(path, old, new)] for the settings in `new` that differ from the TV's; Refused for what the TV cannot show."""
     a, b = flat(cur), flat(new)
+    if "city" in b and len(b["city"]) > 4 and len(a.get("city", ())) < 5:
+        raise Refused("this TV does not report city.country (update the apps): nothing was sent")
     missing = [p for p in b if p not in a]
     if missing:
         raise Refused("this TV does not report " + ", ".join(sorted(missing)) + " (the apps may need an update: "
@@ -385,7 +391,7 @@ def validate(d):
     if d is None:
         return {}, errs, notes
     if "city" in d:
-        c = obj(d["city"], "city", ("name", "lat", "lon", "tz"), errs, notes)
+        c = obj(d["city"], "city", ("name", "lat", "lon", "tz", "country"), errs, notes)
         if c is not None:
             ok = True
             for k in ("name", "lat", "lon", "tz"):
@@ -410,8 +416,12 @@ def validate(d):
                     errs.append("city.tz must be text"); ok = False
                 elif not zone_known(c["tz"]):
                     errs.append("city.tz must be a time zone like Asia/Riyadh or Asia/Kuwait"); ok = False
+            if "country" in c and (not isinstance(c["country"], str) or not re.fullmatch(r"(?:[A-Za-z]{2})?", c["country"])):
+                errs.append("city.country must be a two-letter country code or empty"); ok = False
             if ok:
                 out["city"] = {k: c[k] for k in ("name", "lat", "lon", "tz")}
+                if "country" in c:
+                    out["city"]["country"] = c["country"].upper()
     for key, allowed in (("digits", DIGITS), ("clock_size", CLOCK_SIZES), ("card_style", CARD_STYLES)):
         if key in d and choice(d[key], allowed, key, errs):
             out[key] = d[key]
@@ -614,6 +624,8 @@ def ops(values, names):
     for p, v in values.items():
         if p == "city":
             es("city", v[0]); es("lat", coord(v[1])); es("lon", coord(v[2])); es("tz", v[3])
+            if len(v) > 4:
+                es("country", v[4])
         elif p == "digits":
             es("digits", v)
         elif p == "clock24":

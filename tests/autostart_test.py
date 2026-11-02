@@ -78,5 +78,14 @@ check("the TV says nothing about either op: not «none», a !! line that says it
       "!! Auto-start (TCL): the TV did not answer" in out and "none" not in out, out)
 rc, out, log, st = run("check", ops={"AUTO_START": {}, "APP_AUTO_START": {"sa.urtv.home": "ignore", "sa.urtv.screensaver": "allow"}})
 check("an explicit «unknown operation» for one op and an answer for the other: the answer counts", "sa.urtv.home(ignore)" in out, out)
+# the owner's TCL (Android 14): TclAppBoot also checks ASSOC_START; both ops at ignore blocked our receivers and services
+both = {"AUTO_START": {"sa.urtv.home": "ignore", "sa.urtv.screensaver": "ignore"}, "APP_AUTO_START": {}, "ASSOC_START": {"sa.urtv.home": "ignore", "sa.urtv.screensaver": "ignore"}}
+rc, out, log, st = run(ops=json.loads(json.dumps(both)))
+check("ASSOC_START (the owner's TCL) is allowed too, then written; the line says allow", "ASSOC_START allow" in log and st["ops"]["ASSOC_START"]["sa.urtv.home"] == "allow" and st["written"] and "!!" not in out, out + log)
+rc, out, log, st = run(ops=json.loads(json.dumps(both)), honour=False)
+check("ASSOC_START that stays ignore is a !! line naming it", "!! Auto-start (TCL)" in out and "assoc-ignore" in out, out)
+rc, out, log, st = run("check", ops={"AUTO_START": {"sa.urtv.home": "allow", "sa.urtv.screensaver": "allow"}, "APP_AUTO_START": {}, "ASSOC_START": {"sa.urtv.home": "ignore", "sa.urtv.screensaver": "allow"}})
+check("check: AUTO_START allowed but ASSOC_START ignore is still refused", "sa.urtv.home(allow/assoc-ignore)" in out and "appops set" not in log, out)
+
 print("\nall auto-start checks passed" if not failed else f"\n{failed} failed")
 sys.exit(1 if failed else 0)

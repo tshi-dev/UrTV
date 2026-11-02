@@ -1,6 +1,7 @@
 package sa.urtv.home;
 
 import android.accessibilityservice.AccessibilityService;
+import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -8,8 +9,11 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
@@ -26,13 +30,96 @@ import java.util.List;
  *
  * The log (tag UrTVType, one line per hop, in PhoneActions and here) has only fixed words and the length of the text: never the text, a
  * package name or anything of a node. The tester reads it to see how far a typing went.
+ *
+ * The remote's Settings key outside our home (SettingsKey): while our home is NOT in front and no stock home is enabled, the service asks
+ * Android for key events (FLAG_REQUEST_FILTER_KEY_EVENTS, set and cleared at run time; the xml only declares that it may). onKeyEvent hands
+ * every other key back at once, untouched and unlogged; only the Settings key (176 / 83) opens the TV's settings, through the family lock.
+ * With our home in front the flag is off, so no key goes through here at all.
  */
 public class TypeService extends AccessibilityService {
     private static volatile TypeService running;
     static final String TAG = "UrTVType";
 
-    @Override protected void onServiceConnected() { running = this; }
+    @Override protected void onServiceConnected() { running = this; filterKeys(); }
     @Override public boolean onUnbind(android.content.Intent i) { running = null; return super.onUnbind(i); }
+
+    // ---------------------------------------------------------------- the Settings key outside our home (SettingsKey)
+
+    /** MainActivity is resumed (it answers the Settings key itself then) */
+    private static volatile boolean homeFront;
+    /** a stock home was enabled when the filter was last set: its own receiver answers the key */
+    private volatile boolean stockHome;
+    private final SettingsKey settingsKey = new SettingsKey();
+    private final Handler main = new Handler(Looper.getMainLooper());
+
+    /** MainActivity's onResume (true) and onPause (false): the key filter goes off while the home is in front, on when it leaves. */
+    static void homeFront(boolean front) {
+        homeFront = front;
+        TypeService s = running;
+        if (s != null) s.filterKeys();
+    }
+
+    /** Ask Android for key events only while the Settings key could be ours to answer (SettingsKey.filterWanted). */
+    private void filterKeys() {
+        try {
+            boolean front = homeFront;
+            if (!front) stockHome = stockHomeOn(this);   // one package query, only when the home leaves
+            boolean want = SettingsKey.filterWanted(front, stockHome);
+            AccessibilityServiceInfo info = getServiceInfo();
+            if (info == null) return;
+            boolean has = (info.flags & AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS) != 0;
+            if (has == want) return;
+            info.flags = want ? info.flags | AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS
+                : info.flags & ~AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS;
+            setServiceInfo(info);
+            if (want) log("settings key=watch"); else log("settings key=off");
+        } catch (RuntimeException e) {   // the service is going away: the next connect sets it again
+            log("settings key=failed");
+        }
+    }
+
+    /** Every key, while the filter is on. Anything but the Settings key goes back to Android untouched: nothing is read, kept or logged. */
+    @Override protected boolean onKeyEvent(KeyEvent e) {
+        int d = settingsKey.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), homeFront, stockHome);
+        if (d == SettingsKey.PASS) return false;
+        if (d == SettingsKey.OPEN_TV_SETTINGS) main.post(this::openTvSettings);   // after the key is answered: the TV does not wait on us
+        return true;
+    }
+
+    /** The first of SettingsKey.TV_SETTINGS_ACTIONS this TV can open; when none resolves, the last one anyway (startActivity then says). */
+    static Intent tvSettingsIntent(Context c) {
+        for (String a : SettingsKey.TV_SETTINGS_ACTIONS) {
+            Intent i = new Intent(a);
+            if (c.getPackageManager().resolveActivity(i, 0) != null) return i;
+        }
+        return new Intent(SettingsKey.TV_SETTINGS_ACTIONS[SettingsKey.TV_SETTINGS_ACTIONS.length - 1]);
+    }
+
+    /** The TV's settings, over the app in front; when the family lock asks for the PIN for them, the home asks it (as for the key there). */
+    private void openTvSettings() {
+        Intent i = tvSettingsIntent(this);
+        try {
+            if (Parental.needsPin(this, ParentalPolicy.targets(ParentalPolicy.REMOTE_SETTINGS, packageOf(this, i.getAction())))) {
+                startActivity(new Intent(this, MainActivity.class).putExtra(MainActivity.EXTRA_SETTINGS_KEY, true).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                log("settings key=pin");
+                return;
+            }
+            startActivity(i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            log("settings key=open");
+        } catch (RuntimeException e) {
+            log("settings key=failed");
+        }
+    }
+
+    /** An enabled stock home answers HOME (queryIntentActivities leaves disabled packages out). */
+    private static boolean stockHomeOn(Context c) {
+        List<String> pkgs = new ArrayList<>();
+        for (ResolveInfo ri : c.getPackageManager().queryIntentActivities(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), 0))
+            if (ri.activityInfo != null) pkgs.add(ri.activityInfo.packageName);
+        return SettingsKey.stockHomeOn(pkgs, c.getPackageName());
+    }
+
+    // ----------------------------------------------------------------
     @Override public void onAccessibilityEvent(AccessibilityEvent e) { }
     @Override public void onInterrupt() { }
 

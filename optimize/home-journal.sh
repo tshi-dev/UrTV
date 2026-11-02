@@ -2,17 +2,24 @@
 # install.sh writes it before it changes anything on the TV (the stock home, the setup wizard and the HOME role holder as they
 # were), so a restart of the TV in the middle of the switch (it kills the safety switch with the shell) can be undone from here.
 #   state: switching (changes may be on the TV) · done (the new home was confirmed) · restored · aborted (nothing was changed)
+#   step (the last field, after the fields the app's SetupEngine writes too): the step of the switch that is about to act, written BEFORE it acts (armed, wizard_off, wifi_check, home_start,
+#         stock_off, switch, verify): after a cut-off the journal says how far the switch got
 TV_TMP=/data/local/tmp
 jfile() { echo "${URTV_RUN_DIR:-optimize/run}/home-switch.json"; }
 jget() { [ -f "$(jfile)" ] || return 0; sed -n "s/^  \"$1\": \"\(.*\)\",*\$/\1/p" "$(jfile)" | head -1; }
 jwrite() {   # nonce state stock role_holder_before wizard_before stock_before
   local f; f=$(jfile); mkdir -p "$(dirname "$f")"
-  printf '{\n  "nonce": "%s",\n  "state": "%s",\n  "stock": "%s",\n  "role_holder_before": "%s",\n  "wizard_before": "%s",\n  "stock_before": "%s",\n  "safety_switch": "armed",\n  "written": "%s"\n}\n' \
+  printf '{\n  "nonce": "%s",\n  "state": "%s",\n  "stock": "%s",\n  "role_holder_before": "%s",\n  "wizard_before": "%s",\n  "stock_before": "%s",\n  "safety_switch": "armed",\n  "written": "%s",\n  "step": "armed"\n}\n' \
     "$1" "$2" "$3" "$4" "$5" "$6" "$(date '+%Y-%m-%d %H:%M:%S')" > "$f.tmp" && mv "$f.tmp" "$f"
 }
 jstate() {   # new state, if there is a journal
   local f; f=$(jfile); [ -f "$f" ] || return 0
   sed "s/^  \"state\": \".*\",/  \"state\": \"$1\",/" "$f" > "$f.tmp" && mv "$f.tmp" "$f"
+}
+
+jstep() {   # the step about to act (see «step» above); called before the step changes anything on the TV
+  local f; f=$(jfile); [ -f "$f" ] || return 0
+  sed "s/^  \"step\": \"[^\"]*\"/  \"step\": \"$1\"/" "$f" > "$f.tmp" && mv "$f.tmp" "$f"   # (a journal of an older version, or the app's, has no step: left as it is)
 }
 
 jsafety() {   # armed | unavailable: whether a safety switch could be kept running on the TV (some TVs end background jobs with the ADB session)

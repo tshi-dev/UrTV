@@ -4,10 +4,16 @@
      stays null (the service was on, a phone typed, nothing happened). TypeService.onAccessibilityEvent is empty: no event is read, kept or
      logged, and no content event (typeWindowContentChanged, typeViewTextChanged...) is asked for. canRetrieveWindowContent is for one thing
      only: when a phone sends text while another app is in front, TypeService.typeText looks for the text field at that moment, sets it, and
-     forgets the screen (nothing is kept, logged or sent back). A separate service from the sleep timer's, turned on on its own by the owner. -->
+     forgets the screen (nothing is kept, logged or sent back). A separate service from the sleep timer's, turned on on its own by the owner.
+     canRequestFilterKeyEvents: the remote's Settings key outside our home (SettingsKey.java). Only the right to ask is declared here; the flag
+     itself (flagRequestFilterKeyEvents) is NOT set in this file: TypeService sets it at run time only while our home is not in front and no
+     stock home is enabled, and clears it when the home comes back. onKeyEvent passes every other key on untouched and logs nothing of it.
+     Android re-reads this file when the app is updated: a service that is already on keeps its place in the list and gets the new right
+     without being turned on again (the rebind after the update is A11yHeal's job). -->
 <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
     android:description="@string/type_service_desc"
     android:accessibilityEventTypes="typeWindowStateChanged"
     android:accessibilityFeedbackType="feedbackGeneric"
     android:notificationTimeout="100"
-    android:canRetrieveWindowContent="true" />
+    android:canRetrieveWindowContent="true"
+    android:canRequestFilterKeyEvents="true" />

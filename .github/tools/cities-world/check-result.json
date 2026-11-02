@@ -1,0 +1,3751 @@
+{
+"check:1": {
+"name_fixes": [
+{
+"country": "SD",
+"name_en": "Kosti",
+"old": "ربك",
+"new": "كوستي",
+"why": "Wrong name; Kosti is كوستي"
+},
+{
+"country": "SD",
+"name_en": "El Obeid",
+"old": "الأبي",
+"new": "الأبيض",
+"why": "Truncated; the common name is الأبيض"
+},
+{
+"country": "SD",
+"name_en": "Kassala",
+"old": "كسل",
+"new": "كسلا",
+"why": "Missing final alef; standard spelling is كسلا"
+},
+{
+"country": "SD",
+"name_en": "Port Sudan",
+"old": "بور سودان",
+"new": "بورتسودان",
+"why": "Common Arabic media spelling is one word, بورتسودان"
+},
+{
+"country": "IQ",
+"name_en": "Mosul",
+"old": "موسڵ",
+"new": "الموصل",
+"why": "Contains Kurdish/Persian letter ڵ; standard name is الموصل"
+},
+{
+"country": "IQ",
+"name_en": "Karbala",
+"old": "ڪربلا",
+"new": "كربلاء",
+"why": "Contains Persian/Kurdish kaf ڪ; standard spelling is كربلاء"
+},
+{
+"country": "IQ",
+"name_en": "Al Hillah",
+"old": "حلە",
+"new": "الحلة",
+"why": "Contains Kurdish heh ە; standard name is الحلة"
+},
+{
+"country": "IQ",
+"name_en": "Al Fallūjah",
+"old": "فەلوجە",
+"new": "الفلوجة",
+"why": "Contains Kurdish heh ە; standard name is الفلوجة"
+},
+{
+"country": "IQ",
+"name_en": "Soran",
+"old": "ديانا",
+"new": "سوران",
+"why": "Wrong: ديانا is Diana; Soran is سوران"
+},
+{
+"country": "IQ",
+"name_en": "Al Qā’im",
+"old": "حصيبة",
+"new": "القائم",
+"why": "Wrong: حصيبة is a different place; al-Qaim is القائم"
+},
+{
+"country": "IQ",
+"name_en": "'Ākra",
+"old": "بيوك",
+"new": "عاكرة",
+"why": "Kurdish/Turkish-style form; Arabic name is عاكرة"
+},
+{
+"country": "IQ",
+"name_en": "Al-Hamdaniya",
+"old": "قضاء الحمدانية",
+"new": "الحمدانية",
+"why": "Administrative prefix قضاء not part of the city name"
+},
+{
+"country": "IQ",
+"name_en": "Umm Qaşr",
+"old": "ام قصر",
+"new": "أم قصر",
+"why": "Missing hamza on alef; standard is أم قصر"
+},
+{
+"country": "YE",
+"name_en": "Al Ḩudaydah",
+"old": "حديده",
+"new": "الحديدة",
+"why": "Persian-style heh ending; standard is الحديدة"
+},
+{
+"country": "YE",
+"name_en": "Sayyān",
+"old": "سيان",
+"new": "سيئون",
+"why": "Wrong: the city is Seiyun, سيئون"
+},
+{
+"country": "SO",
+"name_en": "Beledweyne",
+"old": "بلد وين",
+"new": "بلدوين",
+"why": "Split word; common spelling is one word"
+},
+{
+"country": "ID",
+"name_en": "Medan",
+"old": "مدان",
+"new": "ميدان",
+"why": "Missing yaa; common Arabic spelling is ميدان"
+},
+{
+"country": "IN",
+"name_en": "Srinagar",
+"old": "سري نغر",
+"new": "سريناجار",
+"why": "Split and wrong transliteration; standard is سريناجار"
+},
+{
+"country": "IN",
+"name_en": "Bhiwandi",
+"old": "بيوانډي",
+"new": "بيواندي",
+"why": "Contains Urdu/Pashto letter ډ; standard is بيواندي"
+},
+{
+"country": "IN",
+"name_en": "Chānda",
+"old": "شاندرابور",
+"new": "تشاندرابور",
+"why": "Chanda is usually rendered Chandrapur, تشاندرابور"
+}
+],
+"added": [
+{
+"country": "ID",
+"name_en": "Makassar",
+"name_ar": "ماكاسار",
+"confidence": "high"
+},
+{
+"country": "ID",
+"name_en": "Denpasar",
+"name_ar": "دينباسار",
+"confidence": "high"
+},
+{
+"country": "ID",
+"name_en": "Jayapura",
+"name_ar": "جايابورا",
+"confidence": "high"
+},
+{
+"country": "ID",
+"name_en": "Palu",
+"name_ar": "بالو",
+"confidence": "high"
+},
+{
+"country": "ID",
+"name_en": "Gorontalo",
+"name_ar": "غورونتالو",
+"confidence": "high"
+},
+{
+"country": "ID",
+"name_en": "Tangerang",
+"name_ar": "تانجيرانغ",
+"confidence": "medium"
+},
+{
+"country": "ID",
+"name_en": "Depok",
+"name_ar": "ديبوك",
+"confidence": "medium"
+},
+{
+"country": "ID",
+"name_en": "Pekanbaru",
+"name_ar": "بيكانبارو",
+"confidence": "medium"
+},
+{
+"country": "ID",
+"name_en": "Balikpapan",
+"name_ar": "باليكبابان",
+"confidence": "medium"
+},
+{
+"country": "ID",
+"name_en": "Banjarmasin",
+"name_ar": "بنجرماسين",
+"confidence": "medium"
+},
+{
+"country": "ID",
+"name_en": "Kupang",
+"name_ar": "كوبانغ",
+"confidence": "medium"
+},
+{
+"country": "ID",
+"name_en": "Bandar Lampung",
+"name_ar": "باندار لامبونغ",
+"confidence": "medium"
+},
+{
+"country": "ID",
+"name_en": "Sorong",
+"name_ar": "سورونغ",
+"confidence": "medium"
+},
+{
+"country": "IN",
+"name_en": "Hyderabad",
+"name_ar": "حيدر آباد",
+"confidence": "high"
+},
+{
+"country": "IN",
+"name_en": "Surat",
+"name_ar": "سورات",
+"confidence": "high"
+},
+{
+"country": "IN",
+"name_en": "Kanpur",
+"name_ar": "كانبور",
+"confidence": "high"
+},
+{
+"country": "IN",
+"name_en": "Ludhiana",
+"name_ar": "لودهيانا",
+"confidence": "high"
+},
+{
+"country": "IN",
+"name_en": "Nashik",
+"name_ar": "ناشيك",
+"confidence": "high"
+},
+{
+"country": "IN",
+"name_en": "Agra",
+"name_ar": "آغرا",
+"confidence": "high"
+},
+{
+"country": "IN",
+"name_en": "Rajkot",
+"name_ar": "راجكوت",
+"confidence": "high"
+},
+{
+"country": "IN",
+"name_en": "Gwalior",
+"name_ar": "غواليور",
+"confidence": "high"
+},
+{
+"country": "IN",
+"name_en": "Kota",
+"name_ar": "كوتا",
+"confidence": "high"
+},
+{
+"country": "IN",
+"name_en": "Chandigarh",
+"name_ar": "شانديغار",
+"confidence": "high"
+},
+{
+"country": "IN",
+"name_en": "Kochi",
+"name_ar": "كوتشي",
+"confidence": "high"
+},
+{
+"country": "IN",
+"name_en": "Cuttack",
+"name_ar": "كاتاك",
+"confidence": "high"
+},
+{
+"country": "IN",
+"name_en": "Jammu",
+"name_ar": "جامو",
+"confidence": "high"
+},
+{
+"country": "IN",
+"name_en": "Patiala",
+"name_ar": "باتيالا",
+"confidence": "high"
+},
+{
+"country": "IN",
+"name_en": "Udaipur",
+"name_ar": "أودايبور",
+"confidence": "high"
+},
+{
+"country": "IN",
+"name_en": "Navi Mumbai",
+"name_ar": "نافي مومباي",
+"confidence": "medium"
+},
+{
+"country": "IN",
+"name_en": "Faridabad",
+"name_ar": "فاريدآباد",
+"confidence": "medium"
+},
+{
+"country": "IN",
+"name_en": "Prayagraj",
+"name_ar": "براياغراج",
+"confidence": "medium"
+},
+{
+"country": "IN",
+"name_en": "Howrah",
+"name_ar": "هاوراه",
+"confidence": "medium"
+},
+{
+"country": "IN",
+"name_en": "Gandhinagar",
+"name_ar": "غاندينغار",
+"confidence": "medium"
+},
+{
+"country": "IQ",
+"name_en": "Abū al-Kahṣīb",
+"name_ar": "أبو الخصيب",
+"confidence": "high"
+},
+{
+"country": "LY",
+"name_en": "Tarhuna",
+"name_ar": "ترهونة",
+"confidence": "high"
+},
+{
+"country": "LY",
+"name_en": "Tājūrā’",
+"name_ar": "تاجوراء",
+"confidence": "high"
+},
+{
+"country": "LY",
+"name_en": "Qaşr Bin Ghashīr",
+"name_ar": "قصر بن غشير",
+"confidence": "high"
+},
+{
+"country": "SD",
+"name_en": "Al Manāqil",
+"name_ar": "المناقل",
+"confidence": "high"
+},
+{
+"country": "SD",
+"name_en": "Dilling",
+"name_ar": "الدلنج",
+"confidence": "high"
+},
+{
+"country": "SD",
+"name_en": "Mellit",
+"name_ar": "مليط",
+"confidence": "high"
+},
+{
+"country": "SO",
+"name_en": "Marka",
+"name_ar": "مركة",
+"confidence": "high"
+}
+],
+"country_names": [],
+"methods": [
+{
+"code": "SD",
+"method": "MWL",
+"why": "No single official national prayer-time body; MWL is the fallback"
+},
+{
+"code": "IQ",
+"method": "MWL",
+"why": "No single official national method; MWL is the fallback (not a Shia method)"
+},
+{
+"code": "YE",
+"method": "MWL",
+"why": "No single official national method; MWL is the fallback"
+},
+{
+"code": "SO",
+"method": "MWL",
+"why": "No single official national method; MWL is the fallback"
+},
+{
+"code": "LY",
+"method": "EGYPT",
+"why": "Libyan timings follow the Egyptian General Authority of Survey method"
+},
+{
+"code": "MR",
+"method": "MWL",
+"why": "No single official national method; MWL is the fallback"
+},
+{
+"code": "DJ",
+"method": "MWL",
+"why": "No single official national method; MWL is the fallback"
+},
+{
+"code": "KM",
+"method": "MWL",
+"why": "No single official national method; MWL is the fallback"
+},
+{
+"code": "ID",
+"method": "KEMENAG",
+"why": "Indonesia's Ministry of Religious Affairs (KEMENAG) sets official prayer times"
+},
+{
+"code": "IN",
+"method": "KARACHI",
+"why": "India's Muslims commonly use the Karachi (University of Islamic Sciences) method"
+}
+]
+},
+"check:2": {
+"name_fixes": [
+{
+"country": "PK",
+"name_en": "Dera Ghazi Khan",
+"old": "ډېره غازي خان",
+"new": "ديرة غازي خان",
+"why": "Contains Pashto letters (ډ ې); Arabic form is ديرة"
+},
+{
+"country": "PK",
+"name_en": "Bhawana",
+"old": "ڀوانا",
+"new": "بهوانا",
+"why": "Contains Sindhi letter ڀ; use Arabic letters"
+},
+{
+"country": "PK",
+"name_en": "Jacobabad",
+"old": "جيڪب آباد",
+"new": "جاكوب آباد",
+"why": "Contains Sindhi letter ڪ; common Arabic spelling uses ك"
+},
+{
+"country": "PK",
+"name_en": "Dokri",
+"old": "ڏوڪري",
+"new": "دوكري",
+"why": "Contains Sindhi letter ڏ; use Arabic letters"
+},
+{
+"country": "PK",
+"name_en": "Umarkot",
+"old": "امرڪوٽ",
+"new": "عمركوت",
+"why": "Contains Sindhi letters (ڪ ٽ); common Arabic spelling is عمركوت"
+},
+{
+"country": "PK",
+"name_en": "Kot Radha Kishan",
+"old": "ڪوٽ راڌا ڪشن",
+"new": "كوت رادها كيشن",
+"why": "Contains Sindhi/Urdu letters (ڪ ڌ); use standard Arabic letters"
+},
+{
+"country": "PK",
+"name_en": "Sambrial",
+"old": "سمبڙيال",
+"new": "سمبريال",
+"why": "Contains Sindhi letter ڙ; use standard Arabic letters"
+},
+{
+"country": "PK",
+"name_en": "Gilgit",
+"old": "كلكت",
+"new": "جلجيت",
+"why": "Wrong spelling; common Arabic form is جلجيت"
+},
+{
+"country": "PK",
+"name_en": "Quetta",
+"old": "كويته",
+"new": "كويتا",
+"why": "Ends with Persian-style ه; Arabic spelling is كويتا"
+},
+{
+"country": "PK",
+"name_en": "Hasilpur",
+"old": "هاسيلبور",
+"new": "حاصل بور",
+"why": "Not the usual Arabic rendering of the name"
+},
+{
+"country": "PK",
+"name_en": "Multan",
+"old": "مُلتان",
+"new": "ملتان",
+"why": "Unneeded diacritics; standard spelling is ملتان"
+},
+{
+"country": "BD",
+"name_en": "Chattogram",
+"old": "شيتاجونج",
+"new": "شيتاغونغ",
+"why": "Arabic media spelling of Chittagong is شيتاغونغ"
+},
+{
+"country": "BD",
+"name_en": "Sylhet",
+"old": "سلهټ",
+"new": "سيلهت",
+"why": "Contains Sylheti letter ټ; standard Arabic is سيلهت"
+},
+{
+"country": "BD",
+"name_en": "Bagerhat",
+"old": "باغر هات",
+"new": "باغرهات",
+"why": "Should be one word"
+},
+{
+"country": "NG",
+"name_en": "Osogbo",
+"old": "اسوګبو",
+"new": "أوسوغبو",
+"why": "Contains Pashto letter ګ; use Arabic letters and standard form"
+},
+{
+"country": "NG",
+"name_en": "Jalingo",
+"old": "جالنګو",
+"new": "جالينغو",
+"why": "Contains Pashto letter ګ; use Arabic letters"
+},
+{
+"country": "NG",
+"name_en": "Ilorin",
+"old": "الورن",
+"new": "إلورين",
+"why": "Standard Arabic rendering is إلورين"
+},
+{
+"country": "NG",
+"name_en": "Benin City",
+"old": "بنين",
+"new": "بنين سيتي",
+"why": "Bare بنين is ambiguous with the country Benin"
+},
+{
+"country": "IR",
+"name_en": "Arāk",
+"old": "ساوه",
+"new": "أراك",
+"why": "ساوه is Saveh, a different city; Arak is أراك"
+},
+{
+"country": "IR",
+"name_en": "Khomeynī Shahr",
+"old": "سده",
+"new": "خمينيشهر",
+"why": "سده is a different place name; Khomeyni Shahr is خمينيشهر"
+},
+{
+"country": "IR",
+"name_en": "Pākdasht",
+"old": "مامازان",
+"new": "باكدشت",
+"why": "مامازان is a different place; Pakdasht is باكدشت"
+},
+{
+"country": "IR",
+"name_en": "Gorgān",
+"old": "اَستِر آباد",
+"new": "جرجان",
+"why": "استرآباد is the old name; current Arabic form is جرجان"
+},
+{
+"country": "IR",
+"name_en": "Sanandaj",
+"old": "سنە",
+"new": "سنندج",
+"why": "Contains Kurdish letter ە; Arabic form is سنندج"
+},
+{
+"country": "IR",
+"name_en": "Shahrud",
+"old": "شارود",
+"new": "شاهرود",
+"why": "Standard spelling is شاهرود"
+},
+{
+"country": "IR",
+"name_en": "Jahrom",
+"old": "دو",
+"new": "جهرم",
+"why": "دو is not the city name; Jahrom is جهرم"
+},
+{
+"country": "IR",
+"name_en": "Shahreẕā",
+"old": "قمشه",
+"new": "شهرضا",
+"why": "قمشه is the old name; Shahreza is شهرضا"
+},
+{
+"country": "IR",
+"name_en": "Ahvaz",
+"old": "اهواز",
+"new": "الأهواز",
+"why": "Standard Arabic media form is الأهواز"
+},
+{
+"country": "TR",
+"name_en": "Ankara",
+"old": "آنقره",
+"new": "أنقرة",
+"why": "Persian/Ottoman form; Arabic spelling is أنقرة"
+},
+{
+"country": "TR",
+"name_en": "Diyarbakır",
+"old": "ئامەد",
+"new": "ديار بكر",
+"why": "Kurdish name; Arabic media form is ديار بكر"
+},
+{
+"country": "TR",
+"name_en": "Batman",
+"old": "ئێلح",
+"new": "باتمان",
+"why": "Kurdish letters; Arabic form is باتمان"
+},
+{
+"country": "TR",
+"name_en": "Elazığ",
+"old": "الاضغ",
+"new": "ألازيغ",
+"why": "Wrong letters; standard Arabic is ألازيغ"
+},
+{
+"country": "TR",
+"name_en": "Kahramanmaraş",
+"old": "مرعش",
+"new": "قهرمان مرعش",
+"why": "Bare مرعش is the older name; full name is قهرمان مرعش"
+},
+{
+"country": "TR",
+"name_en": "Uşak",
+"old": "عشاق",
+"new": "أوشاك",
+"why": "عشاق is a different word; city is أوشاك"
+},
+{
+"country": "TR",
+"name_en": "Samandağ",
+"old": "سويدية",
+"new": "سمنداغ",
+"why": "سويدية is a different place; Samandag is سمنداغ"
+},
+{
+"country": "TR",
+"name_en": "Kırşehir",
+"old": "قر شهر",
+"new": "قرشهر",
+"why": "Should be one word"
+},
+{
+"country": "TR",
+"name_en": "Silifke",
+"old": "سيليفكى",
+"new": "سيليفكه",
+"why": "Ends with Persian-style yeh; Arabic spelling ends with ه"
+},
+{
+"country": "TR",
+"name_en": "Ordu",
+"old": "اردو",
+"new": "أوردو",
+"why": "اردو means Urdu; the city is أوردو"
+},
+{
+"country": "TR",
+"name_en": "Gaziantep",
+"old": "عنتاب",
+"new": "غازي عنتاب",
+"why": "Full name of the city in Arabic media is غازي عنتاب"
+},
+{
+"country": "AF",
+"name_en": "Kunduz",
+"old": "قندز",
+"new": "قندوز",
+"why": "Standard Arabic spelling is قندوز"
+},
+{
+"country": "UZ",
+"name_en": "Andijon",
+"old": "ظةنجان",
+"new": "أنديجان",
+"why": "Contains Uyghur/Persian letter ة and wrong letters; Arabic is أنديجان"
+},
+{
+"country": "UZ",
+"name_en": "Namangan",
+"old": "نمنقان",
+"new": "نمنغان",
+"why": "Standard Arabic spelling is نمنغان"
+},
+{
+"country": "UZ",
+"name_en": "Nukus",
+"old": "نوكاث",
+"new": "نوكوس",
+"why": "Standard Arabic spelling is نوكوس"
+},
+{
+"country": "UZ",
+"name_en": "Jizzax",
+"old": "جيزك",
+"new": "جيزاخ",
+"why": "Standard Arabic spelling is جيزاخ"
+},
+{
+"country": "UZ",
+"name_en": "Urganch",
+"old": "ارجنج",
+"new": "أورغنج",
+"why": "Standard Arabic spelling is أورغنج"
+}
+],
+"added": [
+{
+"country": "BD",
+"name_en": "Comilla",
+"name_ar": "كوميلا",
+"confidence": "high"
+},
+{
+"country": "BD",
+"name_en": "Bogra",
+"name_ar": "بوغرا",
+"confidence": "high"
+},
+{
+"country": "BD",
+"name_en": "Jessore",
+"name_ar": "جيسور",
+"confidence": "high"
+},
+{
+"country": "BD",
+"name_en": "Narayanganj",
+"name_ar": "نارايانغنج",
+"confidence": "medium"
+},
+{
+"country": "BD",
+"name_en": "Cox's Bazar",
+"name_ar": "كوكس بازار",
+"confidence": "high"
+},
+{
+"country": "BD",
+"name_en": "Savar",
+"name_ar": "سافار",
+"confidence": "medium"
+},
+{
+"country": "BD",
+"name_en": "Bandarban",
+"name_ar": "باندربان",
+"confidence": "medium"
+},
+{
+"country": "BD",
+"name_en": "Natore",
+"name_ar": "ناتور",
+"confidence": "medium"
+},
+{
+"country": "ET",
+"name_en": "Jijiga",
+"name_ar": "جيجيغا",
+"confidence": "medium"
+},
+{
+"country": "ET",
+"name_en": "Gonder",
+"name_ar": "غوندار",
+"confidence": "high"
+},
+{
+"country": "ET",
+"name_en": "Mek'ele",
+"name_ar": "مقلي",
+"confidence": "high"
+},
+{
+"country": "ET",
+"name_en": "Awasa",
+"name_ar": "أواسا",
+"confidence": "medium"
+},
+{
+"country": "NG",
+"name_en": "Onitsha",
+"name_ar": "أونيتشا",
+"confidence": "high"
+},
+{
+"country": "NG",
+"name_en": "Yenagoa",
+"name_ar": "ييناغوا",
+"confidence": "medium"
+},
+{
+"country": "PK",
+"name_en": "Gujranwala",
+"name_ar": "غوجرانوالا",
+"confidence": "high"
+},
+{
+"country": "PK",
+"name_en": "Bannu",
+"name_ar": "بنو",
+"confidence": "medium"
+},
+{
+"country": "PK",
+"name_en": "Sargodha",
+"name_ar": "سرغودا",
+"confidence": "high"
+},
+{
+"country": "PK",
+"name_en": "Sialkot",
+"name_ar": "سيالكوت",
+"confidence": "high"
+},
+{
+"country": "PK",
+"name_en": "Bahawalpur",
+"name_ar": "بهاولبور",
+"confidence": "high"
+},
+{
+"country": "PK",
+"name_en": "Dera Ismail Khan",
+"name_ar": "ديرة إسماعيل خان",
+"confidence": "high"
+},
+{
+"country": "PK",
+"name_en": "Sukkur",
+"name_ar": "سكر",
+"confidence": "medium"
+},
+{
+"country": "PK",
+"name_en": "Gujrat",
+"name_ar": "غوجرات",
+"confidence": "medium"
+},
+{
+"country": "PK",
+"name_en": "Kasur",
+"name_ar": "قصور",
+"confidence": "medium"
+},
+{
+"country": "PK",
+"name_en": "Sheikhupura",
+"name_ar": "شيخوبورة",
+"confidence": "medium"
+},
+{
+"country": "PK",
+"name_en": "Abbottabad",
+"name_ar": "أبوت آباد",
+"confidence": "medium"
+},
+{
+"country": "PK",
+"name_en": "Skardu",
+"name_ar": "سكاردو",
+"confidence": "medium"
+},
+{
+"country": "PK",
+"name_en": "Larkana",
+"name_ar": "لاركانا",
+"confidence": "medium"
+},
+{
+"country": "PK",
+"name_en": "Nawabshah",
+"name_ar": "نواب شاه",
+"confidence": "medium"
+},
+{
+"country": "PK",
+"name_en": "Mirpur Khas",
+"name_ar": "ميربور خاص",
+"confidence": "medium"
+},
+{
+"country": "TR",
+"name_en": "Mersin",
+"name_ar": "مرسين",
+"confidence": "high"
+},
+{
+"country": "TR",
+"name_en": "Esenyurt",
+"name_ar": "إسنيورت",
+"confidence": "medium"
+},
+{
+"country": "TR",
+"name_en": "Üsküdar",
+"name_ar": "أوسكودار",
+"confidence": "high"
+},
+{
+"country": "TR",
+"name_en": "Manisa",
+"name_ar": "مانيسا",
+"confidence": "high"
+},
+{
+"country": "TR",
+"name_en": "Gebze",
+"name_ar": "جبزة",
+"confidence": "medium"
+},
+{
+"country": "TR",
+"name_en": "Çankaya",
+"name_ar": "تشانكايا",
+"confidence": "medium"
+},
+{
+"country": "TR",
+"name_en": "Şişli",
+"name_ar": "شيشلي",
+"confidence": "medium"
+},
+{
+"country": "UZ",
+"name_en": "Qo‘qon",
+"name_ar": "قوقون",
+"confidence": "high"
+},
+{
+"country": "UZ",
+"name_en": "Marg‘ilon",
+"name_ar": "مرغيلان",
+"confidence": "high"
+}
+],
+"country_names": [],
+"methods": [
+{
+"code": "PK",
+"method": "KARACHI",
+"why": "Pakistan's Muslims follow the Karachi method (University of Islamic Sciences, Karachi), the national standard"
+},
+{
+"code": "BD",
+"method": "KARACHI",
+"why": "Bangladesh uses the Karachi method per the task's country mapping"
+},
+{
+"code": "NG",
+"method": "MWL",
+"why": "No single national body with a clear official method; Muslim World League used as default"
+},
+{
+"code": "IR",
+"method": "MWL",
+"why": "Iran's official method is Shia-specific (Tehran/Jafari), which is excluded; MWL used instead"
+},
+{
+"code": "TR",
+"method": "DIYANET",
+"why": "Turkey's Diyanet İşleri Başkanlığı is the official body"
+},
+{
+"code": "AF",
+"method": "KARACHI",
+"why": "Afghanistan uses the Karachi method per the task's country mapping"
+},
+{
+"code": "ET",
+"method": "MWL",
+"why": "No clear national body with an official method; Muslim World League used as default"
+},
+{
+"code": "UZ",
+"method": "MWL",
+"why": "No clear national body with an official method; Muslim World League used as default"
+}
+]
+},
+"check:3": {
+"name_fixes": [
+{
+"country": "CN",
+"name_en": "Shanghai",
+"old": "شاڭخەي",
+"new": "شنغهاي",
+"why": "Contains Uyghur/Kazakh letters (ڭ, ە); standard Arabic is شنغهاي"
+},
+{
+"country": "CN",
+"name_en": "Guangzhou",
+"old": "غوانزو",
+"new": "قوانغتشو",
+"why": "Loose transliteration; common Arabic media spelling is قوانغتشو"
+},
+{
+"country": "CN",
+"name_en": "Wuhan",
+"old": "وهان",
+"new": "ووهان",
+"why": "Common Arabic spelling is ووهان"
+},
+{
+"country": "CN",
+"name_en": "Jinan",
+"old": "جنان",
+"new": "جينان",
+"why": "جنان is an Arabic word (gardens); the city is جينان"
+},
+{
+"country": "CN",
+"name_en": "Taiyuan",
+"old": "تاي يوان",
+"new": "تاييوان",
+"why": "Two-part odd string; standard is تاييوان"
+},
+{
+"country": "CN",
+"name_en": "Fuzhou",
+"old": "فو جو",
+"new": "فوتشو",
+"why": "Two-part odd string; standard is فوتشو"
+},
+{
+"country": "CN",
+"name_en": "Lanzhou",
+"old": "لان جو",
+"new": "لانتشو",
+"why": "Two-part odd string; standard is لانتشو"
+},
+{
+"country": "CN",
+"name_en": "Shaoxing",
+"old": "شاوكسينج",
+"new": "شاوشينغ",
+"why": "Non-standard transliteration; common spelling is شاوشينغ"
+},
+{
+"country": "CN",
+"name_en": "Wuhu",
+"old": "واها",
+"new": "ووهو",
+"why": "Wrong transliteration; standard is ووهو"
+},
+{
+"country": "CN",
+"name_en": "Yinchuan",
+"old": "مدينة ينشوان",
+"new": "ينتشوان",
+"why": "Stray generic prefix مدينة; the name is ينتشوان"
+},
+{
+"country": "CN",
+"name_en": "Quzhou",
+"old": "كو زهو",
+"new": "تشيوتشو",
+"why": "Two-part odd string; standard is تشيوتشو"
+},
+{
+"country": "CN",
+"name_en": "Shihezi",
+"old": "شىخەنزە",
+"new": "شيخه تسي",
+"why": "Contains Uyghur/Kazakh letter ە; Arabic transliteration is شيخه تسي"
+},
+{
+"country": "CN",
+"name_en": "Zhoukou",
+"old": "زهوكو",
+"new": "تشوكو",
+"why": "Pinyin zh- should be تش; standard is تشوكو"
+},
+{
+"country": "CN",
+"name_en": "Zhangjiajie",
+"old": "زانغجياجي",
+"new": "تشانغجياجي",
+"why": "Pinyin zh- should be تش; standard is تشانغجياجي"
+},
+{
+"country": "CN",
+"name_en": "Artux",
+"old": "ئاتۇش",
+"new": "أرتوش",
+"why": "Uyghur-script letters ئ ۇ; Arabic transliteration is أرتوش"
+},
+{
+"country": "CN",
+"name_en": "Xinyuan",
+"old": "كۈنەس",
+"new": "شينيوان",
+"why": "Uyghur-script letters; the Chinese name Xinyuan is شينيوان in Arabic"
+},
+{
+"country": "CN",
+"name_en": "Ghulja",
+"old": "غۇلجا",
+"new": "غولجا",
+"why": "Contains Uyghur letter ۇ; Arabic form is غولجا"
+},
+{
+"country": "CN",
+"name_en": "Hami",
+"old": "قۇمۇل",
+"new": "هامي",
+"why": "Uyghur-script name; Arabic form of Hami is هامي"
+},
+{
+"country": "CN",
+"name_en": "Bole",
+"old": "بۆرتالا",
+"new": "بورتالا",
+"why": "Contains Uyghur letter ۆ; Arabic form is بورتالا"
+},
+{
+"country": "CN",
+"name_en": "Changji",
+"old": "سانجى",
+"new": "تشانغجي",
+"why": "Wrong transliteration of Chinese Changji; standard is تشانغجي"
+},
+{
+"country": "CN",
+"name_en": "Altay",
+"old": "ئالتاي",
+"new": "ألتاي",
+"why": "Uyghur-script letter ئ; Arabic form is ألتاي"
+},
+{
+"country": "CN",
+"name_en": "Shache",
+"old": "يەكەن",
+"new": "يركند",
+"why": "Uyghur-script letter ە; the Arabic form of Yarkant/Shache is يركند"
+},
+{
+"country": "CN",
+"name_en": "Ālā'ĕr",
+"old": "ئارال",
+"new": "ألار",
+"why": "Uyghur-script letter ئ; Arabic form is ألار"
+}
+],
+"added": [
+{
+"country": "CN",
+"name_en": "Pudong",
+"name_ar": "بودونغ",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Zhongshan",
+"name_ar": "تشونغشان",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Puyang",
+"name_ar": "بوياง",
+"confidence": "medium"
+},
+{
+"country": "CN",
+"name_en": "Tangshan",
+"name_ar": "تانغشان",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Changzhou",
+"name_ar": "تشانغتشو",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Huizhou",
+"name_ar": "هويتشو",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Baoding",
+"name_ar": "باودينغ",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Nantong",
+"name_ar": "نانتونغ",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Yantai",
+"name_ar": "يانتاي",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Weifang",
+"name_ar": "وايفانغ",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Ganzhou",
+"name_ar": "غانتشو",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Ordos",
+"name_ar": "أوردوس",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Jilin",
+"name_ar": "جيلين",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Datong",
+"name_ar": "داتونغ",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Nanyang",
+"name_ar": "نانيانغ",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Jiangmen",
+"name_ar": "جيانغمن",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Chaozhou",
+"name_ar": "تشاوتشو",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Huainan",
+"name_ar": "هواينان",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Daqing",
+"name_ar": "داتشينغ",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Guilin",
+"name_ar": "قويلين",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Mianyang",
+"name_ar": "مينيانغ",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Changde",
+"name_ar": "تشانغده",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Baoji",
+"name_ar": "باوجي",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Xianyang",
+"name_ar": "شيانيانغ",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Xuzhou",
+"name_ar": "شيوتشو",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Jining",
+"name_ar": "جينينغ",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Shaoguan",
+"name_ar": "شاوغوان",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Huzhou",
+"name_ar": "هوتشو",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Hanzhong",
+"name_ar": "هانتشونغ",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Xinxiang",
+"name_ar": "شينشيانغ",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Jingzhou",
+"name_ar": "جينغتشو",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Hengyang",
+"name_ar": "هنغيانغ",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Yichang",
+"name_ar": "ييتشانغ",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Xuchang",
+"name_ar": "شوتشانغ",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Qinzhou",
+"name_ar": "تشينتشو",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Maoming",
+"name_ar": "ماومينغ",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Zhanjiang",
+"name_ar": "تشانجيانغ",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Liaocheng",
+"name_ar": "لياوتشينغ",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Putian",
+"name_ar": "بوتيان",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Tianshui",
+"name_ar": "تيانشوي",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Panjin",
+"name_ar": "بانجين",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Jiujiang",
+"name_ar": "جيوجيانغ",
+"confidence": "high"
+},
+{
+"country": "CN",
+"name_en": "Shiyan",
+"name_ar": "شيايان",
+"confidence": "medium"
+},
+{
+"country": "CN",
+"name_en": "Yancheng",
+"name_ar": "يانتشنغ",
+"confidence": "medium"
+},
+{
+"country": "CN",
+"name_en": "Qingyuan",
+"name_ar": "تشينغيوان",
+"confidence": "medium"
+},
+{
+"country": "CN",
+"name_en": "Zhaoqing",
+"name_ar": "تشاوتشينغ",
+"confidence": "medium"
+},
+{
+"country": "CN",
+"name_en": "Shangqiu",
+"name_ar": "شانغتشيو",
+"confidence": "medium"
+},
+{
+"country": "CN",
+"name_en": "Nanchong",
+"name_ar": "نانتشونغ",
+"confidence": "medium"
+},
+{
+"country": "CN",
+"name_en": "Lianyungang",
+"name_ar": "ليانيونغانغ",
+"confidence": "medium"
+},
+{
+"country": "CN",
+"name_en": "Zhongwei",
+"name_ar": "تشونغوي",
+"confidence": "medium"
+}
+],
+"country_names": [
+{
+"code": "CN",
+"country_ar": "الصين"
+}
+],
+"methods": [
+{
+"code": "CN",
+"method": "MWL",
+"why": "China has no official national prayer-calculation body; Chinese Muslims (Hui, Uyghur, etc.) have no single standardized method, so MWL is used as the generic default. Not a Shia method."
+}
+]
+},
+"check:4": {
+"name_fixes": [
+{
+"country": "NE",
+"name_en": "Maradi",
+"old": "مرادي",
+"new": "مارادي",
+"why": "Standard Arabic spelling of Maradi is مارادي."
+},
+{
+"country": "NE",
+"name_en": "Zinder",
+"old": "زندر",
+"new": "زيندر",
+"why": "Common Arabic media spelling is زيندر."
+},
+{
+"country": "RU",
+"name_en": "Tver",
+"old": "تور",
+"new": "تفير",
+"why": "'تور' is a wrong transliteration; Tver is تفير."
+},
+{
+"country": "RU",
+"name_en": "Ivanovo",
+"old": "اوانوو",
+"new": "إيفانوفو",
+"why": "Missing hamza and a non-standard spelling; standard form is إيفانوفو."
+},
+{
+"country": "RU",
+"name_en": "Orekhovo-Zuyevo",
+"old": "اريخوفو-زويفو",
+"new": "أوريخوفو-زويفو",
+"why": "Missing initial alef in the first part; standard form is أوريخوفو-زويفو."
+},
+{
+"country": "MY",
+"name_en": "Klang",
+"old": "كلاج",
+"new": "كلانغ",
+"why": "Standard Arabic media spelling is كلانغ."
+},
+{
+"country": "MY",
+"name_en": "Bandar Tasik Puteri",
+"old": "بندر تاسيق ڤوتري",
+"new": "بندر تاسيك بوتري",
+"why": "Contains Persian letter ڤ (not allowed); standard Arabic letters are بوتري."
+},
+{
+"country": "TZ",
+"name_en": "Sumbawanga",
+"old": "سمبوانګا",
+"new": "سومباوانغا",
+"why": "Contains non-Arabic letter ګ; standard spelling is سومباوانغا."
+},
+{
+"country": "KZ",
+"name_en": "Semey",
+"old": "سمې",
+"new": "سيمي",
+"why": "Contains Kazakh letter ې (not standard Arabic); standard form is سيمي."
+},
+{
+"country": "KZ",
+"name_en": "Taldykorgan",
+"old": "تالدقۆرغان",
+"new": "تالديقورغان",
+"why": "Contains non-Arabic letter ۆ and a non-standard ق; standard form is تالديقورغان."
+},
+{
+"country": "KG",
+"name_en": "Manas",
+"old": "جلال آباد",
+"new": "ماناس",
+"why": "Wrong city: جلال آباد is Jalal-Abad, not Manas (Manas is ماناس)."
+},
+{
+"country": "PH",
+"name_en": "Manila",
+"old": "مانىلا",
+"new": "مانيلا",
+"why": "Standard spelling uses ي at the end, not ى."
+},
+{
+"country": "PH",
+"name_en": "Cebu City",
+"old": "شهر سبو",
+"new": "سيبو",
+"why": "'شهر سبو' is a loose descriptive variant; the standard name is سيبو."
+},
+{
+"country": "PH",
+"name_en": "Isulan",
+"old": "اسولان، سلطان قدرت",
+"new": "اسولان",
+"why": "Contains an extra province qualifier; the city name alone is اسولان."
+},
+{
+"country": "PH",
+"name_en": "Jolo",
+"old": "جولو، سولو",
+"new": "جولو",
+"why": "Contains a second spelling variant after a comma; the standard name is جولو."
+},
+{
+"country": "CI",
+"name_en": "Abidjan",
+"old": "آبدجان",
+"new": "أبيدجان",
+"why": "Standard Arabic spelling is أبيدجان."
+}
+],
+"added": [
+{
+"country": "CI",
+"name_en": "Abobo",
+"name_ar": "أبوبو",
+"confidence": "medium"
+},
+{
+"country": "MY",
+"name_en": "Muar",
+"name_ar": "موار",
+"confidence": "high"
+},
+{
+"country": "MY",
+"name_en": "Taiping",
+"name_ar": "تايبينغ",
+"confidence": "high"
+},
+{
+"country": "PH",
+"name_en": "Quezon City",
+"name_ar": "كيزون سيتي",
+"confidence": "high"
+},
+{
+"country": "PH",
+"name_en": "Caloocan",
+"name_ar": "كالوكان",
+"confidence": "high"
+},
+{
+"country": "PH",
+"name_en": "Taguig",
+"name_ar": "تاغيغ",
+"confidence": "high"
+},
+{
+"country": "PH",
+"name_en": "Zamboanga",
+"name_ar": "زامبوانغا",
+"confidence": "high"
+},
+{
+"country": "PH",
+"name_en": "Antipolo",
+"name_ar": "أنتيبولو",
+"confidence": "high"
+},
+{
+"country": "PH",
+"name_en": "Pasig City",
+"name_ar": "باسيغ",
+"confidence": "high"
+},
+{
+"country": "PH",
+"name_en": "Cagayan de Oro",
+"name_ar": "كاغايان دي أورو",
+"confidence": "high"
+},
+{
+"country": "PH",
+"name_en": "Valenzuela",
+"name_ar": "فالنسويلا",
+"confidence": "high"
+},
+{
+"country": "PH",
+"name_en": "Muntinlupa",
+"name_ar": "مونتينلوبا",
+"confidence": "high"
+},
+{
+"country": "PH",
+"name_en": "Makati City",
+"name_ar": "ماكاتي",
+"confidence": "high"
+},
+{
+"country": "PH",
+"name_en": "Lapu-Lapu City",
+"name_ar": "لابو لابو سيتي",
+"confidence": "high"
+},
+{
+"country": "PH",
+"name_en": "Iloilo",
+"name_ar": "إيلويلو",
+"confidence": "high"
+},
+{
+"country": "PH",
+"name_en": "Marikina City",
+"name_ar": "ماريكينا",
+"confidence": "high"
+},
+{
+"country": "PH",
+"name_en": "Bacolod City",
+"name_ar": "باكولود",
+"confidence": "high"
+},
+{
+"country": "PH",
+"name_en": "Pasay",
+"name_ar": "باساي",
+"confidence": "high"
+},
+{
+"country": "PH",
+"name_en": "Malabon",
+"name_ar": "مالابون",
+"confidence": "high"
+},
+{
+"country": "PH",
+"name_en": "Olongapo",
+"name_ar": "أولونغابو",
+"confidence": "high"
+},
+{
+"country": "PH",
+"name_en": "Lipa City",
+"name_ar": "ليبا",
+"confidence": "high"
+},
+{
+"country": "PH",
+"name_en": "Batangas",
+"name_ar": "باتانغاس",
+"confidence": "high"
+},
+{
+"country": "PH",
+"name_en": "Lucena",
+"name_ar": "لوسينا",
+"confidence": "high"
+},
+{
+"country": "PH",
+"name_en": "Navotas",
+"name_ar": "نافوتاس",
+"confidence": "high"
+},
+{
+"country": "PH",
+"name_en": "Tarlac City",
+"name_ar": "تارلاك",
+"confidence": "high"
+},
+{
+"country": "PH",
+"name_en": "Iligan City",
+"name_ar": "إيليغان",
+"confidence": "high"
+},
+{
+"country": "PH",
+"name_en": "Marawi City",
+"name_ar": "ماراوي",
+"confidence": "high"
+},
+{
+"country": "RU",
+"name_en": "Voronezh",
+"name_ar": "فورونيج",
+"confidence": "high"
+},
+{
+"country": "RU",
+"name_en": "Sochi",
+"name_ar": "سوتشي",
+"confidence": "high"
+},
+{
+"country": "RU",
+"name_en": "Novorossiysk",
+"name_ar": "نوفوروسيسك",
+"confidence": "high"
+},
+{
+"country": "RU",
+"name_en": "Zelenograd",
+"name_ar": "زيلينوغراد",
+"confidence": "high"
+},
+{
+"country": "SN",
+"name_en": "Pikine",
+"name_ar": "بيكين",
+"confidence": "high"
+},
+{
+"country": "SN",
+"name_en": "Touba",
+"name_ar": "توبا",
+"confidence": "high"
+},
+{
+"country": "SN",
+"name_en": "Thiès",
+"name_ar": "تياس",
+"confidence": "high"
+}
+],
+"country_names": [],
+"methods": [
+{
+"code": "NE",
+"method": "MWL",
+"why": "No official national prayer-calculation body in Niger; MWL used as the default."
+},
+{
+"code": "RU",
+"method": "RUSSIA",
+"why": "Russia's Muslims follow the Central Spiritual Board / Russian calculation method."
+},
+{
+"code": "ML",
+"method": "MWL",
+"why": "No official national prayer-calculation body in Mali; MWL default."
+},
+{
+"code": "MY",
+"method": "JAKIM",
+"why": "Malaysia's official body is JAKIM."
+},
+{
+"code": "SN",
+"method": "MWL",
+"why": "No official national prayer-calculation body in Senegal; MWL default."
+},
+{
+"code": "TZ",
+"method": "MWL",
+"why": "No official national prayer-calculation body in Tanzania; MWL default."
+},
+{
+"code": "KZ",
+"method": "MWL",
+"why": "No official national prayer-calculation body in Kazakhstan; MWL default."
+},
+{
+"code": "CI",
+"method": "MWL",
+"why": "No official national prayer-calculation body in Ivory Coast; MWL default."
+},
+{
+"code": "TD",
+"method": "MWL",
+"why": "No official national prayer-calculation body in Chad; MWL default."
+},
+{
+"code": "BF",
+"method": "MWL",
+"why": "No official national prayer-calculation body in Burkina Faso; MWL default."
+},
+{
+"code": "AZ",
+"method": "MWL",
+"why": "Azerbaijan has no official Sunni-or-Shia calculation body used here; MWL used, not a Shia-specific method (no Tehran/Jafari)."
+},
+{
+"code": "TJ",
+"method": "MWL",
+"why": "No official national prayer-calculation body in Tajikistan; MWL default."
+},
+{
+"code": "KG",
+"method": "MWL",
+"why": "No official national prayer-calculation body in Kyrgyzstan; MWL default."
+},
+{
+"code": "MZ",
+"method": "MWL",
+"why": "No official national prayer-calculation body in Mozambique; MWL default."
+},
+{
+"code": "PH",
+"method": "MWL",
+"why": "No official national prayer-calculation body in the Philippines; MWL default."
+}
+]
+},
+"check:5": {
+"name_fixes": [
+{
+"country": "FR",
+"name_en": "Marseille",
+"old": "مارساي",
+"new": "مرسيليا",
+"why": "Standard Arabic spelling of Marseille is مرسيليا."
+},
+{
+"country": "DE",
+"name_en": "Köln",
+"old": "قلونية",
+"new": "كولونيا",
+"why": "Standard Arabic name for Cologne is كولونيا; قلونية is not used."
+},
+{
+"country": "DE",
+"name_en": "Bremen",
+"old": "برمن",
+"new": "بريمن",
+"why": "Standard Arabic spelling is بريمن."
+},
+{
+"country": "DE",
+"name_en": "Düsseldorf",
+"old": "ډسلدورف",
+"new": "دوسلدورف",
+"why": "Contains Pashto letter ډ; Arabic spelling is دوسلدورف."
+},
+{
+"country": "DE",
+"name_en": "Stuttgart",
+"old": "سټوتګارت",
+"new": "شتوتغارت",
+"why": "Contains Pashto letters ټ and ګ; Arabic spelling is شتوتغارت."
+},
+{
+"country": "DE",
+"name_en": "Frankfurt am Main",
+"old": "فرانكفورت",
+"new": "فرانكفورت",
+"why": "No change needed; listed for completeness only."
+},
+{
+"country": "TH",
+"name_en": "Udon Thani",
+"old": "اډون ثاني",
+"new": "أودون تاني",
+"why": "Contains Pashto letter ډ; Arabic spelling is أودون تاني."
+},
+{
+"country": "IT",
+"name_en": "Rome",
+"old": "رم",
+"new": "روما",
+"why": "Standard Arabic name for Rome is روما; رم is a truncated form."
+},
+{
+"country": "IT",
+"name_en": "Milan",
+"old": "مىلان",
+"new": "ميلانو",
+"why": "Uses non-standard letter form; standard Arabic is ميلانو."
+},
+{
+"country": "IT",
+"name_en": "Palermo",
+"old": "بلرم",
+"new": "بالرمو",
+"why": "Standard Arabic spelling is بالرمو."
+},
+{
+"country": "AL",
+"name_en": "Tirana",
+"old": "تىرانا",
+"new": "تيرانا",
+"why": "Uses a non-standard letter form; standard is تيرانا."
+},
+{
+"country": "AL",
+"name_en": "Durrës",
+"old": "دراج",
+"new": "دوريس",
+"why": "Standard Arabic spelling of Durrës is دوريس; دراج is a different word."
+},
+{
+"country": "AL",
+"name_en": "Vlorë",
+"old": "فلوره",
+"new": "فلورا",
+"why": "Standard Arabic spelling is فلورا."
+},
+{
+"country": "AL",
+"name_en": "Elbasan",
+"old": "البصان",
+"new": "إلباسان",
+"why": "Standard Arabic spelling is إلباسان; البصان is a loose variant."
+},
+{
+"country": "ES",
+"name_en": "Barcelona",
+"old": "بارسلون",
+"new": "برشلونة",
+"why": "Standard Arabic name for Barcelona is برشلونة."
+},
+{
+"country": "ES",
+"name_en": "Sevilla",
+"old": "سيبييا",
+"new": "إشبيلية",
+"why": "Standard Arabic name for Seville is إشبيلية."
+},
+{
+"country": "NL",
+"name_en": "Rotterdam",
+"old": "رتردام",
+"new": "روتردام",
+"why": "Standard Arabic spelling is روتردام."
+},
+{
+"country": "PE",
+"name_en": "Lima",
+"old": "لىما",
+"new": "ليما",
+"why": "Uses a non-standard letter form; standard is ليما."
+},
+{
+"country": "PE",
+"name_en": "Trujillo",
+"old": "ټروجيلو",
+"new": "تروخيلو",
+"why": "Contains Pashto letter ټ; Arabic spelling is تروخيلو."
+},
+{
+"country": "BR",
+"name_en": "Belém",
+"old": "بلم",
+"new": "بيليم",
+"why": "Standard Arabic spelling is بيليم; بلم means a boat."
+},
+{
+"country": "BR",
+"name_en": "Manaus",
+"old": "مناؤس",
+"new": "ماناوس",
+"why": "Standard Arabic spelling is ماناوس."
+},
+{
+"country": "BR",
+"name_en": "Belo Horizonte",
+"old": "بيلو أفق",
+"new": "بيلو هوريزونتي",
+"why": "Loose translation; standard Arabic transliteration is بيلو هوريزونتي."
+},
+{
+"country": "JP",
+"name_en": "Hachiōji",
+"old": "هاتشيؤوجي",
+"new": "هاتشيوجي",
+"why": "Common Arabic spelling drops the extra hamza; هاتشيوجي is standard."
+},
+{
+"country": "MX",
+"name_en": "Ciudad Juárez",
+"old": "سيوداد خواريز",
+"new": "مدينة خواريز",
+"why": "Uses Spanish 'ciudad'; Arabic media uses مدينة خواريز."
+},
+{
+"country": "MX",
+"name_en": "Zapopan",
+"old": "سابوبان، خاليسكو",
+"new": "سابوبان",
+"why": "Two-part string with state suffix; the city name alone is standard."
+},
+{
+"country": "MX",
+"name_en": "Naucalpan de Juárez",
+"old": "ناوكالبان دي خواريز",
+"new": "ناوكالبان",
+"why": "Shorter standard form is ناوكالبان."
+},
+{
+"country": "MX",
+"name_en": "Mérida",
+"old": "ماردة",
+"new": "ميريدا",
+"why": "Standard Arabic spelling of Mérida is ميريدا; ماردة is a different word."
+},
+{
+"country": "MX",
+"name_en": "Tuxtla",
+"old": "توكستلا غوتيريز",
+"new": "توكستلا",
+"why": "Extra suffix; the city name is توكستلا."
+},
+{
+"country": "MX",
+"name_en": "Culiacán",
+"old": "كوليتاكان",
+"new": "كولياكان",
+"why": "Standard Arabic spelling is كولياكان."
+},
+{
+"country": "MX",
+"name_en": "Cancún",
+"old": "كانكون",
+"new": "كانكون",
+"why": "No change needed; listed for completeness only."
+},
+{
+"country": "VN",
+"name_en": "Ho Chi Minh City",
+"old": "مدينة هو تشي مينه",
+"new": "مدينة هو تشي منه",
+"why": "Common Arabic spelling uses منه."
+},
+{
+"country": "VN",
+"name_en": "Vinh",
+"old": "فينه",
+"new": "فينه",
+"why": "No change needed; listed for completeness only."
+},
+{
+"country": "MM",
+"name_en": "Yangon",
+"old": "يانجون",
+"new": "يانغون",
+"why": "Standard Arabic spelling is يانغون."
+},
+{
+"country": "KR",
+"name_en": "Daejeon",
+"old": "دائجئون",
+"new": "دايجون",
+"why": "Standard Arabic spelling is دايجون."
+},
+{
+"country": "KR",
+"name_en": "Daegu",
+"old": "ديغو",
+"new": "تايغو",
+"why": "Standard Arabic spelling is تايغو."
+},
+{
+"country": "TW",
+"name_en": "Taichung",
+"old": "تاي شانغ",
+"new": "تايتشونغ",
+"why": "Standard Arabic spelling is تايتشونغ."
+},
+{
+"country": "CO",
+"name_en": "Cartagena",
+"old": "قرطاجنة، كولومبيا",
+"new": "قرطاجنة",
+"why": "Two-part string with country suffix; city name alone is standard."
+},
+{
+"country": "CO",
+"name_en": "Ibagué",
+"old": "أباجي",
+"new": "إيباغي",
+"why": "Standard Arabic spelling is إيباغي."
+},
+{
+"country": "CO",
+"name_en": "Bucaramanga",
+"old": "بوكاراميانجا",
+"new": "بوكارامانغا",
+"why": "Standard Arabic spelling is بوكارامانغا."
+},
+{
+"country": "AR",
+"name_en": "Mar del Plata",
+"old": "ماريه ديل بلاتا",
+"new": "مار دل بلاتا",
+"why": "Standard Arabic spelling is مار دل بلاتا."
+},
+{
+"country": "US",
+"name_en": "Louisville",
+"old": "لويفيل",
+"new": "لويزفيل",
+"why": "Standard Arabic spelling is لويزفيل."
+},
+{
+"country": "US",
+"name_en": "Portland",
+"old": "بورتلاند، أوريغون",
+"new": "بورتلاند",
+"why": "Two-part string with state suffix; city name alone is standard."
+},
+{
+"country": "US",
+"name_en": "Austin",
+"old": "آسټن",
+"new": "أوستن",
+"why": "Contains Pashto letter ټ; Arabic spelling is أوستن."
+},
+{
+"country": "CA",
+"name_en": "Surrey",
+"old": "سوري، كولومبيا البريطانية",
+"new": "سري",
+"why": "Two-part string with province suffix; standard is سري."
+},
+{
+"country": "VE",
+"name_en": "Ciudad Guayana",
+"old": "",
+"new": "",
+"why": "Placeholder; no change."
+},
+{
+"country": "ZA",
+"name_en": "San Jose",
+"old": "سا ن جوز",
+"new": "سان خوسيه",
+"why": "Stray space in name; standard Arabic is سان خوسيه (city is in US list)."
+},
+{
+"country": "US",
+"name_en": "San Jose",
+"old": "سا ن جوز",
+"new": "سان خوسيه",
+"why": "Stray space in name; standard Arabic is سان خوسيه."
+},
+{
+"country": "TM",
+"name_en": "Daşoguz",
+"old": "داسوغوز",
+"new": "داسوغوز",
+"why": "No change needed; listed for completeness only."
+},
+{
+"country": "TM",
+"name_en": "Mary",
+"old": "مرو",
+"new": "مرو",
+"why": "No change needed; listed for completeness only."
+}
+],
+"added": [
+{
+"country": "TM",
+"name_en": "Ashgabat",
+"name_ar": "عشق آباد",
+"confidence": "high"
+},
+{
+"country": "MM",
+"name_en": "Nay Pyi Taw",
+"name_ar": "نايبيداو",
+"confidence": "high"
+},
+{
+"country": "US",
+"name_en": "Washington",
+"name_ar": "واشنطن",
+"confidence": "high"
+},
+{
+"country": "AU",
+"name_en": "Gold Coast",
+"name_ar": "جولد كوست",
+"confidence": "high"
+},
+{
+"country": "BR",
+"name_en": "Guarulhos",
+"name_ar": "غوارولهوس",
+"confidence": "medium"
+},
+{
+"country": "BR",
+"name_en": "Sorocaba",
+"name_ar": "سوروكابا",
+"confidence": "medium"
+},
+{
+"country": "BR",
+"name_en": "Ribeirão Preto",
+"name_ar": "ريبيراو بريتو",
+"confidence": "medium"
+},
+{
+"country": "BR",
+"name_en": "Osasco",
+"name_ar": "أوساسكو",
+"confidence": "medium"
+},
+{
+"country": "BR",
+"name_en": "Uberlândia",
+"name_ar": "أوبيرلانديا",
+"confidence": "medium"
+},
+{
+"country": "CL",
+"name_en": "Puente Alto",
+"name_ar": "بويينتي ألتو",
+"confidence": "medium"
+},
+{
+"country": "CO",
+"name_en": "Soacha",
+"name_ar": "سواتشا",
+"confidence": "medium"
+},
+{
+"country": "JP",
+"name_en": "Sendai",
+"name_ar": "سينداي",
+"confidence": "high"
+},
+{
+"country": "JP",
+"name_en": "Setagaya",
+"name_ar": "سيتاغايا",
+"confidence": "medium"
+},
+{
+"country": "JP",
+"name_en": "Sakai",
+"name_ar": "ساكاي",
+"confidence": "high"
+},
+{
+"country": "JP",
+"name_en": "Niigata",
+"name_ar": "نيغاتا",
+"confidence": "high"
+},
+{
+"country": "JP",
+"name_en": "Kumamoto",
+"name_ar": "كوماموتو",
+"confidence": "high"
+},
+{
+"country": "JP",
+"name_en": "Okayama",
+"name_ar": "أوكاياما",
+"confidence": "high"
+},
+{
+"country": "KE",
+"name_en": "Nakuru",
+"name_ar": "ناكورو",
+"confidence": "high"
+},
+{
+"country": "KE",
+"name_en": "Kakamega",
+"name_ar": "كاكاميغا",
+"confidence": "medium"
+},
+{
+"country": "KR",
+"name_en": "Goyang-si",
+"name_ar": "غويانغ",
+"confidence": "medium"
+},
+{
+"country": "KR",
+"name_en": "Seongnam-si",
+"name_ar": "سونغنام",
+"confidence": "medium"
+},
+{
+"country": "MX",
+"name_en": "Iztapalapa",
+"name_ar": "إستابالابا",
+"confidence": "medium"
+},
+{
+"country": "MX",
+"name_en": "Torreón",
+"name_ar": "تورييون",
+"confidence": "medium"
+},
+{
+"country": "MX",
+"name_en": "Reynosa",
+"name_ar": "رينوسا",
+"confidence": "medium"
+},
+{
+"country": "MX",
+"name_en": "Heroica Matamoros",
+"name_ar": "ماتاموروس",
+"confidence": "medium"
+},
+{
+"country": "TW",
+"name_en": "New Taipei City",
+"name_ar": "تايبيه الجديدة",
+"confidence": "high"
+},
+{
+"country": "US",
+"name_en": "Queens",
+"name_ar": "كوينز",
+"confidence": "high"
+},
+{
+"country": "US",
+"name_en": "The Bronx",
+"name_ar": "برونكس",
+"confidence": "high"
+},
+{
+"country": "CD",
+"name_en": "Kolwezi",
+"name_ar": "كولويزي",
+"confidence": "medium"
+},
+{
+"country": "CO",
+"name_en": "Kennedy",
+"name_ar": "كينيدي",
+"confidence": "medium"
+},
+{
+"country": "CA",
+"name_en": "Vancouver",
+"name_ar": "فانكوفر",
+"confidence": "high"
+}
+],
+"country_names": [],
+"methods": [
+{
+"code": "TM",
+"method": "MWL",
+"why": "No national prayer body; Hanafi Sunni majority, so MWL as the default."
+},
+{
+"code": "FR",
+"method": "FRANCE_UOIF",
+"why": "French Muslims commonly follow the UOIF/France timetable."
+},
+{
+"code": "GH",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "KE",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "MM",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "TH",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "CM",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "UG",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "DE",
+"method": "MWL",
+"why": "No single national body; MWL default."
+},
+{
+"code": "GB",
+"method": "MOONSIGHTING",
+"why": "UK Muslims commonly use Moonsighting Committee timings."
+},
+{
+"code": "US",
+"method": "ISNA",
+"why": "North American standard, ISNA."
+},
+{
+"code": "GM",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "SL",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "AL",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "XK",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "BA",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "IT",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "CA",
+"method": "ISNA",
+"why": "North American standard, ISNA."
+},
+{
+"code": "ES",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "NL",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "BN",
+"method": "SINGAPORE",
+"why": "Brunei uses the SINGAPORE-region calculation, per the regional convention."
+},
+{
+"code": "BR",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "JP",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "MX",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "VN",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "CD",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "ZA",
+"method": "MWL",
+"why": "No single national prayer body; MWL default."
+},
+{
+"code": "KR",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "CO",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "AR",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "UA",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "PL",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "PE",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "AO",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "VE",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "NP",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "MG",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "KP",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "AU",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "TW",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "LK",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "RO",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "CL",
+"method": "MWL",
+"why": "No official national body; MWL default."
+},
+{
+"code": "MW",
+"method": "MWL",
+"why": "No official national body; MWL default."
+}
+]
+},
+"verify:1": {
+"reject_fixes": [],
+"reject_added": [],
+"reject_methods": []
+},
+"check:6": {
+"name_fixes": [
+{
+"country": "EC",
+"name_en": "Quito",
+"old": "كىتو",
+"new": "كيتو",
+"why": "Uses the alef maksura (ى) where the standard spelling has yeh (ي)."
+},
+{
+"country": "TL",
+"name_en": "Dili",
+"old": "دىلى",
+"new": "ديلي",
+"why": "Uses alef maksura (ى) instead of yeh (ي); standard spelling is ديلي."
+},
+{
+"country": "BY",
+"name_en": "Homyel'",
+"old": "ګومل",
+"new": "غوميل",
+"why": "Contains a non-standard letter (ګ, Pashto/Persian-style kaf); Arabic spelling is غوميل."
+},
+{
+"country": "GE",
+"name_en": "Tbilisi",
+"old": "طفلس",
+"new": "تبليسي",
+"why": "Not the common Arabic spelling; standard is تبليسي."
+},
+{
+"country": "TG",
+"name_en": "Lomé",
+"old": "لوم",
+"new": "لومي",
+"why": "Truncated form; standard Arabic spelling is لومي."
+},
+{
+"country": "PY",
+"name_en": "Asunción",
+"old": "اسنشن",
+"new": "أسونسيون",
+"why": "Transliteration does not follow the standard Arabic spelling أسونسيون."
+},
+{
+"country": "NR",
+"name_en": "Yaren",
+"old": "ضاحية يارين",
+"new": "ياران",
+"why": "Loose variant with a 'suburb' prefix; the city name alone is ياران."
+},
+{
+"country": "NC",
+"name_en": "Nouméa",
+"old": "نومئا",
+"new": "نوميا",
+"why": "Uncommon spelling with a hamza; standard Arabic is نوميا."
+},
+{
+"country": "BS",
+"name_en": "Nassau",
+"old": "نساؤ",
+"new": "ناسو",
+"why": "Odd spelling with a trailing hamza-on-waw; standard is ناسو."
+},
+{
+"country": "GW",
+"name_en": "Bissau",
+"old": "بساؤ",
+"new": "بيساو",
+"why": "Odd spelling with hamza-on-waw; standard Arabic is بيساو."
+},
+{
+"country": "SM",
+"name_en": "San Marino",
+"old": "سان مارينو المدينة",
+"new": "سان مارينو",
+"why": "Two-part string; 'the city' is a loose addition. Standard is سان مارينو."
+},
+{
+"country": "MU",
+"name_en": "Port Louis",
+"old": "بور لويس",
+"new": "بورت لويس",
+"why": "Dropped the 'ت' of the English 'Port'; standard is بورت لويس."
+},
+{
+"country": "HU",
+"name_en": "Pest",
+"old": "بشت",
+"new": "بست",
+"why": "Wrong transliteration; standard Arabic spelling is بست."
+},
+{
+"country": "UY",
+"name_en": "Montevideo",
+"old": "مونتفيدو",
+"new": "مونتيفيديو",
+"why": "Missing vowel; standard Arabic spelling is مونتيفيديو."
+},
+{
+"country": "PR",
+"name_en": "San Juan",
+"old": "سان خوآن",
+"new": "سان خوان",
+"why": "Uses hamza-on-waw in a way not used in standard spelling; سان خوان is common."
+},
+{
+"country": "HK",
+"name_en": "Hong Kong",
+"old": "هونج كونج",
+"new": "هونغ كونغ",
+"why": "Inconsistent with the country name and standard Arabic media spelling هونغ كونغ."
+}
+],
+"added": [
+{
+"country": "BI",
+"name_en": "Gitega",
+"name_ar": "جيتيغا",
+"confidence": "high"
+},
+{
+"country": "CF",
+"name_en": "Bangui",
+"name_ar": "بانغي",
+"confidence": "high"
+},
+{
+"country": "DO",
+"name_en": "Santo Domingo",
+"name_ar": "سانتو دومينغو",
+"confidence": "high"
+},
+{
+"country": "FM",
+"name_en": "Palikir",
+"name_ar": "باليكير",
+"confidence": "high"
+},
+{
+"country": "GN",
+"name_en": "Conakry",
+"name_ar": "كوناكري",
+"confidence": "high"
+},
+{
+"country": "JE",
+"name_en": "Saint Helier",
+"name_ar": "سانت هيلير",
+"confidence": "high"
+},
+{
+"country": "JM",
+"name_en": "Kingston",
+"name_ar": "كينغستون",
+"confidence": "high"
+},
+{
+"country": "KI",
+"name_en": "Tarawa",
+"name_ar": "تاراوا",
+"confidence": "high"
+},
+{
+"country": "MH",
+"name_en": "Majuro",
+"name_ar": "ماجورو",
+"confidence": "high"
+},
+{
+"country": "MP",
+"name_en": "Saipan",
+"name_ar": "سايبان",
+"confidence": "high"
+},
+{
+"country": "MV",
+"name_en": "Male",
+"name_ar": "ماليه",
+"confidence": "high"
+},
+{
+"country": "PA",
+"name_en": "Panama City",
+"name_ar": "مدينة بنما",
+"confidence": "high"
+},
+{
+"country": "RE",
+"name_en": "Saint-Denis",
+"name_ar": "سان دوني",
+"confidence": "high"
+},
+{
+"country": "TO",
+"name_en": "Nuku'alofa",
+"name_ar": "نوكوالوفا",
+"confidence": "high"
+},
+{
+"country": "VU",
+"name_en": "Port Vila",
+"name_ar": "بورت فيلا",
+"confidence": "high"
+},
+{
+"country": "AG",
+"name_en": "St. John's",
+"name_ar": "سانت جونز",
+"confidence": "high"
+},
+{
+"country": "GD",
+"name_en": "St. George's",
+"name_ar": "سانت جورجز",
+"confidence": "high"
+},
+{
+"country": "CS",
+"name_en": "Belgrade",
+"name_ar": "بلغراد",
+"confidence": "high"
+},
+{
+"country": "AN",
+"name_en": "Willemstad",
+"name_ar": "ويلمستاد",
+"confidence": "high"
+},
+{
+"country": "EC",
+"name_en": "Cuenca",
+"name_ar": "كوينكا",
+"confidence": "high"
+},
+{
+"country": "GN",
+"name_en": "Kankan",
+"name_ar": "كانكان",
+"confidence": "high"
+},
+{
+"country": "HK",
+"name_en": "Kowloon",
+"name_ar": "كولون",
+"confidence": "high"
+},
+{
+"country": "HK",
+"name_en": "Hong Kong Island",
+"name_ar": "جزيرة هونغ كونغ",
+"confidence": "high"
+},
+{
+"country": "HK",
+"name_en": "Tuen Mun",
+"name_ar": "تون مون",
+"confidence": "high"
+},
+{
+"country": "HT",
+"name_en": "Carrefour",
+"name_ar": "كارفور",
+"confidence": "high"
+}
+],
+"country_names": [
+{
+"code": "AG",
+"country_ar": "أنتيغوا وبربودا"
+},
+{
+"code": "CF",
+"country_ar": "جمهورية أفريقيا الوسطى"
+},
+{
+"code": "FM",
+"country_ar": "ميكرونيزيا"
+},
+{
+"code": "GD",
+"country_ar": "غرينادا"
+},
+{
+"code": "GN",
+"country_ar": "غينيا"
+},
+{
+"code": "JE",
+"country_ar": "جيرزي"
+},
+{
+"code": "JM",
+"country_ar": "جامايكا"
+},
+{
+"code": "KI",
+"country_ar": "كيريباتي"
+},
+{
+"code": "MH",
+"country_ar": "جزر مارشال"
+},
+{
+"code": "MP",
+"country_ar": "جزر ماريانا الشمالية"
+},
+{
+"code": "MV",
+"country_ar": "جزر المالديف"
+},
+{
+"code": "PA",
+"country_ar": "بنما"
+},
+{
+"code": "RE",
+"country_ar": "ريونيون"
+},
+{
+"code": "TO",
+"country_ar": "تونغا"
+},
+{
+"code": "VU",
+"country_ar": "فانواتو"
+},
+{
+"code": "YT",
+"country_ar": "مايوت"
+},
+{
+"code": "CS",
+"country_ar": "صربيا والجبل الأسود"
+},
+{
+"code": "AN",
+"country_ar": "جزر الantilles الهولندية"
+},
+{
+"code": "HU",
+"country_ar": "المجر"
+},
+{
+"code": "DK",
+"country_ar": "الدنمارك"
+}
+],
+"methods": [
+{
+"code": "ZM",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "GT",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "EC",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "ZW",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "KH",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "RW",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "BJ",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "BE",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "BO",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "CU",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "BI",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "HT",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "GR",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "DO",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "CZ",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "PT",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "SE",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "HU",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "HN",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "BY",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "IL",
+"method": "MWL",
+"why": "No official national Muslim prayer body; MWL default"
+},
+{
+"code": "AT",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "PG",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "CH",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "SS",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "TG",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "HK",
+"method": "MWL",
+"why": "Special administrative region; no national Muslim prayer body; MWL default"
+},
+{
+"code": "LA",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "BG",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "RS",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "PY",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "NI",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "SV",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "ER",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "DK",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "SG",
+"method": "SINGAPORE",
+"why": "Singapore's MUIS-based method, as used officially in Singapore"
+},
+{
+"code": "FI",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "SK",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "NO",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "CG",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "CR",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "NZ",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "IE",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "LR",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "HR",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "GE",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default (Sunni-majority, but no national body)"
+},
+{
+"code": "MD",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "UY",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "PR",
+"method": "ISNA",
+"why": "US territory; ISNA is the method used in the United States"
+},
+{
+"code": "MN",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "AM",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "LT",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "NA",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "BW",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "GA",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "LS",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "MK",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "SI",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "LV",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "GW",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "TT",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "EE",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "GQ",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "TL",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "MU",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "CY",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "SZ",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "FJ",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "GY",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "BT",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "SB",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "MO",
+"method": "MWL",
+"why": "Special administrative region; no national Muslim prayer body; MWL default"
+},
+{
+"code": "ME",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "LU",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "SR",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "CV",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "MT",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "GP",
+"method": "FRANCE_UOIF",
+"why": "French overseas department; French Muslim federation method"
+},
+{
+"code": "MQ",
+"method": "FRANCE_UOIF",
+"why": "French overseas department; French Muslim federation method"
+},
+{
+"code": "BS",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "BZ",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "IS",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "BB",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "NC",
+"method": "FRANCE_UOIF",
+"why": "French overseas collectivity; French Muslim federation method"
+},
+{
+"code": "PF",
+"method": "FRANCE_UOIF",
+"why": "French overseas collectivity; French Muslim federation method"
+},
+{
+"code": "EH",
+"method": "MOROCCO",
+"why": "Administered by Morocco; Moroccan method"
+},
+{
+"code": "ST",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "WS",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "GF",
+"method": "FRANCE_UOIF",
+"why": "French overseas department; French Muslim federation method"
+},
+{
+"code": "LC",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "GU",
+"method": "ISNA",
+"why": "US territory; ISNA is the method used in the United States"
+},
+{
+"code": "CW",
+"method": "MWL",
+"why": "Constituent country of the Netherlands; no national prayer body; MWL default"
+},
+{
+"code": "VC",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "VI",
+"method": "ISNA",
+"why": "US territory; ISNA is the method used in the United States"
+},
+{
+"code": "AW",
+"method": "MWL",
+"why": "Constituent country of the Netherlands; no national prayer body; MWL default"
+},
+{
+"code": "SC",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "IM",
+"method": "MOONSIGHTING",
+"why": "Crown dependency; UK method"
+},
+{
+"code": "AD",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "DM",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "GG",
+"method": "MOONSIGHTING",
+"why": "Crown dependency; UK method"
+},
+{
+"code": "KY",
+"method": "MOONSIGHTING",
+"why": "British Overseas Territory; UK method"
+},
+{
+"code": "BM",
+"method": "MOONSIGHTING",
+"why": "British Overseas Territory; UK method"
+},
+{
+"code": "GL",
+"method": "MWL",
+"why": "Autonomous territory of Denmark; no national prayer body; MWL default"
+},
+{
+"code": "AS",
+"method": "ISNA",
+"why": "US territory; ISNA is the method used in the United States"
+},
+{
+"code": "KN",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "FO",
+"method": "MWL",
+"why": "Autonomous territory of Denmark; no national prayer body; MWL default"
+},
+{
+"code": "SX",
+"method": "MWL",
+"why": "Constituent country of the Netherlands; no national prayer body; MWL default"
+},
+{
+"code": "SM",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "GI",
+"method": "MOONSIGHTING",
+"why": "British Overseas Territory; UK method"
+},
+{
+"code": "VG",
+"method": "MOONSIGHTING",
+"why": "British Overseas Territory; UK method"
+},
+{
+"code": "CK",
+"method": "MWL",
+"why": "Self-governing in free association with New Zealand; no national prayer body; MWL default"
+},
+{
+"code": "WF",
+"method": "FRANCE_UOIF",
+"why": "French overseas collectivity; French Muslim federation method"
+},
+{
+"code": "NR",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "MS",
+"method": "MOONSIGHTING",
+"why": "British Overseas Territory; UK method"
+},
+{
+"code": "SH",
+"method": "MOONSIGHTING",
+"why": "British Overseas Territory; UK method"
+},
+{
+"code": "FK",
+"method": "MOONSIGHTING",
+"why": "British Overseas Territory; UK method"
+},
+{
+"code": "SJ",
+"method": "MWL",
+"why": "Norwegian territory; no national prayer body; MWL default"
+},
+{
+"code": "NF",
+"method": "MWL",
+"why": "Australian external territory; no national prayer body; MWL default"
+},
+{
+"code": "CX",
+"method": "MWL",
+"why": "Australian external territory; no national prayer body; MWL default"
+},
+{
+"code": "PN",
+"method": "MOONSIGHTING",
+"why": "British Overseas Territory; UK method"
+},
+{
+"code": "AG",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "CF",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "FM",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "GD",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "GN",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "JE",
+"method": "MOONSIGHTING",
+"why": "Crown dependency; UK method"
+},
+{
+"code": "JM",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "KI",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "MH",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "MP",
+"method": "ISNA",
+"why": "US territory; ISNA is the method used in the United States"
+},
+{
+"code": "MV",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "PA",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "RE",
+"method": "FRANCE_UOIF",
+"why": "French overseas department; French Muslim federation method"
+},
+{
+"code": "TO",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "VU",
+"method": "MWL",
+"why": "No national Muslim prayer body; MWL default"
+},
+{
+"code": "YT",
+"method": "FRANCE_UOIF",
+"why": "French overseas department; French Muslim federation method"
+},
+{
+"code": "CS",
+"method": "MWL",
+"why": "Historical entity (Serbia and Montenegro); no national prayer body; MWL default"
+},
+{
+"code": "AN",
+"method": "MWL",
+"why": "Historical Dutch Caribbean entity; no national prayer body; MWL default"
+}
+]
+},
+"verify:2": {
+"reject_fixes": [
+"PK|Hasilpur"
+],
+"reject_added": [
+"PK|Sukkur"
+],
+"reject_methods": []
+},
+"verify:3": {
+"reject_fixes": [],
+"reject_added": [],
+"reject_methods": []
+},
+"verify:5": {
+"reject_fixes": [
+"KR|Daegu",
+"ZA|San Jose"
+],
+"reject_added": [],
+"reject_methods": []
+},
+"verify:4": {
+"reject_fixes": [],
+"reject_added": [],
+"reject_methods": []
+},
+"verify:6": {
+"reject_fixes": [
+"AN|country_names: \"جزر الantilles الهولندية\" contains Latin text; should be \"جزر الأنتيل الهولندية\""
+],
+"reject_added": [],
+"reject_methods": []
+}
+}

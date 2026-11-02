@@ -1,0 +1,75 @@
+{
+  "source": "https://api.aladhan.com/v1/methods",
+  "retrieved": "2026-10-29",
+  "methods": {
+    "MWL": {
+      "id": 3,
+      "params": {
+        "Fajr": 18,
+        "Isha": 17
+      }
+    },
+    "ISNA": {
+      "id": 2,
+      "params": {
+        "Fajr": 15,
+        "Isha": 15
+      }
+    },
+    "KARACHI": {
+      "id": 1,
+      "params": {
+        "Fajr": 18,
+        "Isha": 18
+      }
+    },
+    "KEMENAG": {
+      "id": 20,
+      "params": {
+        "Fajr": 20,
+        "Isha": 18
+      }
+    },
+    "JAKIM": {
+      "id": 17,
+      "params": {
+        "Fajr": 20,
+        "Isha": 18
+      }
+    },
+    "SINGAPORE": {
+      "id": 11,
+      "params": {
+        "Fajr": 20,
+        "Isha": 18
+      }
+    },
+    "FRANCE": {
+      "id": 12,
+      "params": {
+        "Fajr": 12,
+        "Isha": 12
+      }
+    },
+    "TURKEY": {
+      "id": 13,
+      "params": {
+        "Fajr": 18,
+        "Isha": 17
+      }
+    },
+    "RUSSIA": {
+      "id": 14,
+      "params": {
+        "Fajr": 16,
+        "Isha": 15
+      }
+    },
+    "MOONSIGHTING": {
+      "id": 15,
+      "params": {
+        "shafaq": "general"
+      }
+    }
+  }
+}

@@ -1,0 +1,9915 @@
+{
+"name:1": {
+"names": [
+{
+"country": "AF",
+"name_en": "Gardez",
+"name_ar": "غارديز"
+},
+{
+"country": "AG",
+"name_en": "Saint John’s",
+"name_ar": "سانت جونز"
+},
+{
+"country": "AI",
+"name_en": "The Valley",
+"name_ar": "ذا فالي"
+},
+{
+"country": "AO",
+"name_en": "Mulenvos",
+"name_ar": "مولينفوس"
+},
+{
+"country": "AO",
+"name_en": "Viana",
+"name_ar": "فيانا"
+},
+{
+"country": "AO",
+"name_en": "Kikolo",
+"name_ar": "كيكولو"
+},
+{
+"country": "AO",
+"name_en": "Maianga",
+"name_ar": "مايانغا"
+},
+{
+"country": "AO",
+"name_en": "Camama",
+"name_ar": "كامامة"
+},
+{
+"country": "AO",
+"name_en": "Golfe",
+"name_ar": "غولفي"
+},
+{
+"country": "AO",
+"name_en": "Calumbo",
+"name_ar": "كالومبو"
+},
+{
+"country": "AO",
+"name_en": "Hoji ya Henda",
+"name_ar": "هوجي يا هيندا"
+},
+{
+"country": "AO",
+"name_en": "Talatona",
+"name_ar": "تالاتونا"
+},
+{
+"country": "AU",
+"name_en": "Gold Coast",
+"name_ar": "جولد كوست"
+},
+{
+"country": "AX",
+"name_en": "Mariehamn",
+"name_ar": "ماريهامن"
+},
+{
+"country": "BD",
+"name_en": "Comilla",
+"name_ar": "كوميلا"
+},
+{
+"country": "BD",
+"name_en": "Pallabi",
+"name_ar": "بالابي"
+},
+{
+"country": "BD",
+"name_en": "Mirpur Model Thana",
+"name_ar": "ميربور موديل ثانا"
+},
+{
+"country": "BD",
+"name_en": "Mohammadpur",
+"name_ar": "محمدبور"
+},
+{
+"country": "BD",
+"name_en": "Hāthazāri",
+"name_ar": "هاثازاري"
+},
+{
+"country": "BD",
+"name_en": "Bāndarban",
+"name_ar": "باندارابان"
+},
+{
+"country": "BD",
+"name_en": "Shibganj",
+"name_ar": "شيبغانج"
+},
+{
+"country": "BD",
+"name_en": "Natore",
+"name_ar": "ناتور"
+},
+{
+"country": "BD",
+"name_en": "Kafrul",
+"name_ar": "كافرول"
+},
+{
+"country": "BD",
+"name_en": "Tungi",
+"name_ar": "تونجي"
+},
+{
+"country": "BD",
+"name_en": "Bhatara",
+"name_ar": "بهاتارا"
+},
+{
+"country": "BD",
+"name_en": "Savar",
+"name_ar": "سافار"
+},
+{
+"country": "BD",
+"name_en": "Narsingdi",
+"name_ar": "ناراسينغدي"
+},
+{
+"country": "BD",
+"name_en": "Nagar Naluākot",
+"name_ar": "ناغار نالواكوت"
+},
+{
+"country": "BD",
+"name_en": "Brāhmanbāria",
+"name_ar": "برامانباريا"
+},
+{
+"country": "BD",
+"name_en": "Cox’s Bāzār",
+"name_ar": "كوكس بازار"
+},
+{
+"country": "BD",
+"name_en": "Jessore",
+"name_ar": "جيسور"
+},
+{
+"country": "BD",
+"name_en": "Nāgarpur",
+"name_ar": "ناغاربور"
+},
+{
+"country": "BD",
+"name_en": "Narayanganj",
+"name_ar": "نارايانغانج"
+},
+{
+"country": "BD",
+"name_en": "Ashuganj City",
+"name_ar": "أشوغانج"
+},
+{
+"country": "BD",
+"name_en": "Bogra",
+"name_ar": "بوغرا"
+},
+{
+"country": "BD",
+"name_en": "Dinajpur",
+"name_ar": "ديناجبور"
+},
+{
+"country": "BD",
+"name_en": "Karnaphuli",
+"name_ar": "كارنافولي"
+},
+{
+"country": "BD",
+"name_en": "Chāndpur",
+"name_ar": "شاندبور"
+},
+{
+"country": "BD",
+"name_en": "Motijheel",
+"name_ar": "موتيجيل"
+},
+{
+"country": "BD",
+"name_en": "Saidpur",
+"name_ar": "سعيدبور"
+},
+{
+"country": "BD",
+"name_en": "Pār Naogaon",
+"name_ar": "بار نوغاون"
+},
+{
+"country": "BD",
+"name_en": "Pābna",
+"name_ar": "بابنا"
+},
+{
+"country": "BD",
+"name_en": "Paltan",
+"name_ar": "بالتان"
+},
+{
+"country": "BD",
+"name_en": "Tangail",
+"name_ar": "تانغايل"
+},
+{
+"country": "BD",
+"name_en": "Puthia",
+"name_ar": "بوثيا"
+},
+{
+"country": "BD",
+"name_en": "Ramna Maidan",
+"name_ar": "رمنا ميدان"
+},
+{
+"country": "BD",
+"name_en": "Nawābganj",
+"name_ar": "نوابغانج"
+},
+{
+"country": "BD",
+"name_en": "Kushtia",
+"name_ar": "كوشتيا"
+},
+{
+"country": "BD",
+"name_en": "Maijdi",
+"name_ar": "ميجدي"
+},
+{
+"country": "BD",
+"name_en": "Sonārgaon",
+"name_ar": "سونارغاون"
+},
+{
+"country": "BD",
+"name_en": "Sātkhira",
+"name_ar": "ساتخيرا"
+},
+{
+"country": "BD",
+"name_en": "Sirajganj",
+"name_ar": "سيراجغانج"
+},
+{
+"country": "BD",
+"name_en": "Tungipara",
+"name_ar": "تونغيبارا"
+},
+{
+"country": "BD",
+"name_en": "Farīdpur",
+"name_ar": "فريدبور"
+},
+{
+"country": "BD",
+"name_en": "Sherpur",
+"name_ar": "شيربور"
+},
+{
+"country": "BD",
+"name_en": "Rangamati",
+"name_ar": "رانغاماتي"
+},
+{
+"country": "BD",
+"name_en": "Bhairab Bāzār",
+"name_ar": "بهيراب بازار"
+},
+{
+"country": "BD",
+"name_en": "Shāhzādpur",
+"name_ar": "شاهزادبور"
+},
+{
+"country": "BF",
+"name_en": "Saaba",
+"name_ar": "سابا"
+},
+{
+"country": "BI",
+"name_en": "Gitega",
+"name_ar": "غيتيغا"
+},
+{
+"country": "BL",
+"name_en": "Gustavia",
+"name_ar": "غوستافيا"
+},
+{
+"country": "BR",
+"name_en": "Guarulhos",
+"name_ar": "غوارولوس"
+},
+{
+"country": "BR",
+"name_en": "Nova Iguaçu",
+"name_ar": "نوفا إيغواسو"
+},
+{
+"country": "BR",
+"name_en": "Sorocaba",
+"name_ar": "سوروكابا"
+},
+{
+"country": "BR",
+"name_en": "São Bernardo do Campo",
+"name_ar": "ساو برناردو دو كامبو"
+},
+{
+"country": "BR",
+"name_en": "Osasco",
+"name_ar": "أوساسكو"
+},
+{
+"country": "BR",
+"name_en": "São José dos Campos",
+"name_ar": "ساو جوزيه دوس كامبوس"
+},
+{
+"country": "BR",
+"name_en": "Ribeirão Preto",
+"name_ar": "ريبيراو بريتو"
+},
+{
+"country": "BR",
+"name_en": "Santo André",
+"name_ar": "سانتو أندريه"
+},
+{
+"country": "BR",
+"name_en": "Jaboatão dos Guararapes",
+"name_ar": "جابواتاو دوس غواراباس"
+},
+{
+"country": "BR",
+"name_en": "Contagem",
+"name_ar": "كونتاجيم"
+},
+{
+"country": "BR",
+"name_en": "Feira de Santana",
+"name_ar": "فيرا دي سانتانا"
+},
+{
+"country": "BR",
+"name_en": "Uberlândia",
+"name_ar": "أوبيرلانديا"
+},
+{
+"country": "BR",
+"name_en": "Juiz de Fora",
+"name_ar": "جويز دي فورا"
+},
+{
+"country": "BR",
+"name_en": "Serra",
+"name_ar": "سيرا"
+},
+{
+"country": "BR",
+"name_en": "Aparecida de Goiânia",
+"name_ar": "أباريسيدا دي غوياني"
+},
+{
+"country": "CC",
+"name_en": "West Island",
+"name_ar": "ويست آيلاند"
+},
+{
+"country": "CD",
+"name_en": "Kolwezi",
+"name_ar": "كولويزي"
+},
+{
+"country": "CF",
+"name_en": "Bangui",
+"name_ar": "بانغي"
+},
+{
+"country": "CI",
+"name_en": "Abobo",
+"name_ar": "أبوبو"
+},
+{
+"country": "CL",
+"name_en": "Puente Alto",
+"name_ar": "بوينتي ألتو"
+},
+{
+"country": "CL",
+"name_en": "Maipú",
+"name_ar": "مايبو"
+},
+{
+"country": "CN",
+"name_en": "Wuzhong",
+"name_ar": "ووتشونغ"
+},
+{
+"country": "CN",
+"name_en": "Puxi",
+"name_ar": "بوشي"
+},
+{
+"country": "CN",
+"name_en": "Pudong",
+"name_ar": "بودونغ"
+},
+{
+"country": "CN",
+"name_en": "Bao'an",
+"name_ar": "باوآن"
+},
+{
+"country": "CN",
+"name_en": "Zhongshan",
+"name_ar": "تشونغشان"
+},
+{
+"country": "CN",
+"name_en": "Puyang",
+"name_ar": "بويانغ"
+},
+{
+"country": "CN",
+"name_en": "Shiyan",
+"name_ar": "شييان"
+},
+{
+"country": "CN",
+"name_en": "Tangshan",
+"name_ar": "تانغشان"
+},
+{
+"country": "CN",
+"name_en": "Lüliang",
+"name_ar": "لوليانغ"
+},
+{
+"country": "CN",
+"name_en": "Changzhou",
+"name_ar": "تشانغتشو"
+},
+{
+"country": "CN",
+"name_en": "Huizhou",
+"name_ar": "هويتشو"
+},
+{
+"country": "CN",
+"name_en": "Linyi",
+"name_ar": "لينيي"
+},
+{
+"country": "CN",
+"name_en": "Baoding",
+"name_ar": "باودينغ"
+},
+{
+"country": "CN",
+"name_en": "Minhang",
+"name_ar": "مينهانغ"
+},
+{
+"country": "CN",
+"name_en": "Yunfu",
+"name_ar": "يونفو"
+},
+{
+"country": "CN",
+"name_en": "Huai'an",
+"name_ar": "هواي آن"
+},
+{
+"country": "CN",
+"name_en": "Nantong",
+"name_ar": "نانتونغ"
+},
+{
+"country": "CN",
+"name_en": "Baoshan",
+"name_ar": "باوشان"
+},
+{
+"country": "CN",
+"name_en": "Yantai",
+"name_ar": "يانتاي"
+},
+{
+"country": "CN",
+"name_en": "Qingyang",
+"name_ar": "تشينغيانغ"
+},
+{
+"country": "CN",
+"name_en": "Kunshan",
+"name_ar": "كونشان"
+},
+{
+"country": "CN",
+"name_en": "Weifang",
+"name_ar": "ويفانغ"
+},
+{
+"country": "CN",
+"name_en": "Zunyi",
+"name_ar": "زونيي"
+},
+{
+"country": "CN",
+"name_en": "Lianyungang",
+"name_ar": "ليانيونغانغ"
+},
+{
+"country": "CN",
+"name_en": "Ganzhou",
+"name_ar": "غانزهو"
+},
+{
+"country": "CN",
+"name_en": "Songjiang",
+"name_ar": "سونغجيانغ"
+},
+{
+"country": "CN",
+"name_en": "Ordos",
+"name_ar": "أوردوس"
+},
+{
+"country": "CN",
+"name_en": "Jieyang",
+"name_ar": "جييانغ"
+},
+{
+"country": "CN",
+"name_en": "Jilin",
+"name_ar": "جيلين"
+},
+{
+"country": "CN",
+"name_en": "Jiading",
+"name_ar": "جيادينغ"
+},
+{
+"country": "CN",
+"name_en": "Shangqiu",
+"name_ar": "شانغتشيو"
+},
+{
+"country": "CN",
+"name_en": "Nanchong",
+"name_ar": "نانتشونغ"
+},
+{
+"country": "CN",
+"name_en": "Datong",
+"name_ar": "داتونغ"
+},
+{
+"country": "CN",
+"name_en": "Nanyang",
+"name_ar": "نانيانغ"
+},
+{
+"country": "CN",
+"name_en": "Jiangmen",
+"name_ar": "جيانغمن"
+},
+{
+"country": "CN",
+"name_en": "Jiangyin",
+"name_ar": "جيانغيين"
+},
+{
+"country": "CN",
+"name_en": "Fuyang",
+"name_ar": "فويانغ"
+},
+{
+"country": "CN",
+"name_en": "Bayan Nur",
+"name_ar": "بايان نور"
+},
+{
+"country": "CN",
+"name_en": "Chaozhou",
+"name_ar": "تشاوتشو"
+},
+{
+"country": "CN",
+"name_en": "Qingyuan",
+"name_ar": "تشينغيوان"
+},
+{
+"country": "CN",
+"name_en": "Tai’an",
+"name_ar": "تاي آن"
+},
+{
+"country": "CN",
+"name_en": "Changshu",
+"name_ar": "تشانغشو"
+},
+{
+"country": "CN",
+"name_en": "Huainan",
+"name_ar": "هواينان"
+},
+{
+"country": "CN",
+"name_en": "Suzhou",
+"name_ar": "سوتشو"
+},
+{
+"country": "CN",
+"name_en": "Lu’an",
+"name_ar": "لوآن"
+},
+{
+"country": "CN",
+"name_en": "Yancheng",
+"name_ar": "يانتشينغ"
+},
+{
+"country": "CN",
+"name_en": "Taizhou",
+"name_ar": "تايزهو"
+},
+{
+"country": "CN",
+"name_en": "Daqing",
+"name_ar": "داتشينغ"
+},
+{
+"country": "CN",
+"name_en": "Dazhou",
+"name_ar": "داتشو"
+},
+{
+"country": "CN",
+"name_en": "Guilin",
+"name_ar": "غويلين"
+},
+{
+"country": "CN",
+"name_en": "Zhaoqing",
+"name_ar": "تشاوتشينغ"
+},
+{
+"country": "CN",
+"name_en": "Mianyang",
+"name_ar": "ميانيانغ"
+},
+{
+"country": "CN",
+"name_en": "Wanzhou",
+"name_ar": "وانتشو"
+},
+{
+"country": "CN",
+"name_en": "Putian",
+"name_ar": "بوتيان"
+},
+{
+"country": "CN",
+"name_en": "Taizhou",
+"name_ar": "تايزهو"
+},
+{
+"country": "CN",
+"name_en": "Yiwu",
+"name_ar": "ييو"
+},
+{
+"country": "CN",
+"name_en": "Cixi",
+"name_ar": "تشيشي"
+},
+{
+"country": "CN",
+"name_en": "Changde",
+"name_ar": "تشانغدي"
+},
+{
+"country": "CN",
+"name_en": "Baoji",
+"name_ar": "باوجي"
+},
+{
+"country": "CN",
+"name_en": "Suqian",
+"name_ar": "سوتشيان"
+},
+{
+"country": "CN",
+"name_en": "Zhangjiagang",
+"name_ar": "تشانغجياغانغ"
+},
+{
+"country": "CN",
+"name_en": "Jinjiang",
+"name_ar": "جينجيانغ"
+},
+{
+"country": "CN",
+"name_en": "Qujing",
+"name_ar": "تشيوجينغ"
+},
+{
+"country": "CN",
+"name_en": "Zhanjiang",
+"name_ar": "تشانجيانغ"
+},
+{
+"country": "CN",
+"name_en": "Guankou",
+"name_ar": "غوانكو"
+},
+{
+"country": "CN",
+"name_en": "Yichang",
+"name_ar": "ييتشانغ"
+},
+{
+"country": "CN",
+"name_en": "Maoming",
+"name_ar": "ماومينغ"
+},
+{
+"country": "CN",
+"name_en": "Qinzhou",
+"name_ar": "تشينتشو"
+},
+{
+"country": "CN",
+"name_en": "Luohe",
+"name_ar": "لوهي"
+},
+{
+"country": "CN",
+"name_en": "Xiangyang",
+"name_ar": "شيانغيانغ"
+},
+{
+"country": "CN",
+"name_en": "Yangjiang",
+"name_ar": "يانغجيانغ"
+},
+{
+"country": "CN",
+"name_en": "Yixing",
+"name_ar": "ييشينغ"
+},
+{
+"country": "CN",
+"name_en": "Qingpu",
+"name_ar": "تشينغبو"
+},
+{
+"country": "CN",
+"name_en": "Xuchang",
+"name_ar": "شوتشانغ"
+},
+{
+"country": "CN",
+"name_en": "Xuzhou",
+"name_ar": "شيوتشو"
+},
+{
+"country": "CN",
+"name_en": "Neijiang",
+"name_ar": "نيجيانغ"
+},
+{
+"country": "CN",
+"name_en": "Heshan",
+"name_ar": "هيشان"
+},
+{
+"country": "CN",
+"name_en": "Jining",
+"name_ar": "جينينغ"
+},
+{
+"country": "CN",
+"name_en": "Putuo",
+"name_ar": "بوتو"
+},
+{
+"country": "CN",
+"name_en": "Liaocheng",
+"name_ar": "لياوتشنغ"
+},
+{
+"country": "CN",
+"name_en": "Jinzhong",
+"name_ar": "جينزهونغ"
+},
+{
+"country": "CN",
+"name_en": "Changzhi",
+"name_ar": "تشانغجي"
+},
+{
+"country": "CN",
+"name_en": "Tianshui",
+"name_ar": "تيانشوي"
+},
+{
+"country": "CN",
+"name_en": "Yangpu",
+"name_ar": "يانغبو"
+},
+{
+"country": "CN",
+"name_en": "Weinan",
+"name_ar": "وينان"
+},
+{
+"country": "CN",
+"name_en": "Jiaxing",
+"name_ar": "جياشينغ"
+},
+{
+"country": "CN",
+"name_en": "Zhongwei",
+"name_ar": "تشونغوي"
+},
+{
+"country": "CN",
+"name_en": "Panjin",
+"name_ar": "بانجين"
+},
+{
+"country": "CN",
+"name_en": "Jiujiang",
+"name_ar": "جيوجيانغ"
+},
+{
+"country": "CN",
+"name_en": "Luohu District",
+"name_ar": "حي لوهو"
+},
+{
+"country": "CN",
+"name_en": "Fengxiang",
+"name_ar": "فنغشيانغ"
+},
+{
+"country": "CN",
+"name_en": "Bijie",
+"name_ar": "بيجي"
+},
+{
+"country": "CN",
+"name_en": "Zhuzhou",
+"name_ar": "تشوتشو"
+},
+{
+"country": "CN",
+"name_en": "Shangrao",
+"name_ar": "شانغراو"
+},
+{
+"country": "CN",
+"name_en": "Huaibei",
+"name_ar": "هواي بي"
+},
+{
+"country": "CN",
+"name_en": "Xuhui",
+"name_ar": "شوهوي"
+},
+{
+"country": "CN",
+"name_en": "Meishan",
+"name_ar": "ميشان"
+},
+{
+"country": "CN",
+"name_en": "Fuzhou",
+"name_ar": "فوتشو"
+},
+{
+"country": "CN",
+"name_en": "Guigang",
+"name_ar": "غويغانغ"
+},
+{
+"country": "CN",
+"name_en": "Hengyang",
+"name_ar": "هنغيانغ"
+},
+{
+"country": "CN",
+"name_en": "Yulin",
+"name_ar": "يولين"
+},
+{
+"country": "CN",
+"name_en": "Jingzhou",
+"name_ar": "جينغتشو"
+},
+{
+"country": "CN",
+"name_en": "Xinxiang",
+"name_ar": "شينشيانغ"
+},
+{
+"country": "CN",
+"name_en": "Yichun",
+"name_ar": "ييتشون"
+},
+{
+"country": "CN",
+"name_en": "Xianyang",
+"name_ar": "شيانيانغ"
+},
+{
+"country": "CN",
+"name_en": "Shaoguan",
+"name_ar": "شاوغوان"
+},
+{
+"country": "CN",
+"name_en": "Yongzhou",
+"name_ar": "يونغتشو"
+},
+{
+"country": "CN",
+"name_en": "Huzhou",
+"name_ar": "هوتشو"
+},
+{
+"country": "CN",
+"name_en": "Wuwei",
+"name_ar": "ووي"
+},
+{
+"country": "CN",
+"name_en": "Hanzhong",
+"name_ar": "هانتشونغ"
+},
+{
+"country": "CN",
+"name_en": "Hezhou",
+"name_ar": "هيتشو"
+},
+{
+"country": "CN",
+"name_en": "Zhu Cheng City",
+"name_ar": "مدينة تشو تشنغ"
+},
+{
+"country": "CN",
+"name_en": "Dongying",
+"name_ar": "دونغينغ"
+},
+{
+"country": "CN",
+"name_en": "Meizhou",
+"name_ar": "ميتشو"
+},
+{
+"country": "CN",
+"name_en": "Yueyang",
+"name_ar": "يويانغ"
+},
+{
+"country": "CN",
+"name_en": "Benxi",
+"name_ar": "بنشي"
+},
+{
+"country": "CN",
+"name_en": "Pingdingshan",
+"name_ar": "بينغدينغشان"
+},
+{
+"country": "CN",
+"name_en": "Bengbu",
+"name_ar": "بنغبو"
+},
+{
+"country": "CN",
+"name_en": "Sanhe",
+"name_ar": "سانهي"
+},
+{
+"country": "CN",
+"name_en": "Xiangtan",
+"name_ar": "شيانغتان"
+},
+{
+"country": "CN",
+"name_en": "Linfen",
+"name_ar": "لينفن"
+},
+{
+"country": "CN",
+"name_en": "Zhenjiang",
+"name_ar": "تشنجيانغ"
+},
+{
+"country": "CN",
+"name_en": "Huludao",
+"name_ar": "هولودو"
+},
+{
+"country": "CN",
+"name_en": "Jing’an",
+"name_ar": "جينغآن"
+},
+{
+"country": "CN",
+"name_en": "Baoshan",
+"name_ar": "باوشان"
+},
+{
+"country": "CN",
+"name_en": "Rui’an",
+"name_ar": "رويآن"
+},
+{
+"country": "CN",
+"name_en": "Xiaogan",
+"name_ar": "شياوغان"
+},
+{
+"country": "CN",
+"name_en": "Ziyang",
+"name_ar": "زيانغ"
+},
+{
+"country": "CN",
+"name_en": "Zaozhuang",
+"name_ar": "زاوتشوانغ"
+},
+{
+"country": "CN",
+"name_en": "Pingxiang",
+"name_ar": "بينغشيانغ"
+},
+{
+"country": "CN",
+"name_en": "Zhoushan",
+"name_ar": "تشوشان"
+},
+{
+"country": "CN",
+"name_en": "Qiqihar",
+"name_ar": "تشيتشيهار"
+},
+{
+"country": "CN",
+"name_en": "Puning",
+"name_ar": "بونينغ"
+},
+{
+"country": "CN",
+"name_en": "Ankang",
+"name_ar": "آنكانغ"
+},
+{
+"country": "CN",
+"name_en": "Langfang",
+"name_ar": "لانغفانغ"
+},
+{
+"country": "CN",
+"name_en": "Jiaozuo",
+"name_ar": "جياوتشو"
+},
+{
+"country": "CN",
+"name_en": "Wanxian",
+"name_ar": "وانشيان"
+},
+{
+"country": "CN",
+"name_en": "Guang’an",
+"name_ar": "غوانغآن"
+},
+{
+"country": "CN",
+"name_en": "Weihai",
+"name_ar": "ويهاي"
+},
+{
+"country": "CN",
+"name_en": "Zhabei",
+"name_ar": "تشابي"
+},
+{
+"country": "CN",
+"name_en": "Xinyu",
+"name_ar": "شينيو"
+},
+{
+"country": "CN",
+"name_en": "Yibin",
+"name_ar": "يبين"
+},
+{
+"country": "CN",
+"name_en": "Taicang",
+"name_ar": "تايتشانغ"
+},
+{
+"country": "CN",
+"name_en": "Jinshan",
+"name_ar": "جينشان"
+},
+{
+"country": "CN",
+"name_en": "Chenzhou",
+"name_ar": "تشينزهو"
+},
+{
+"country": "CN",
+"name_en": "Anqing",
+"name_ar": "آنتشينغ"
+},
+{
+"country": "CN",
+"name_en": "Xingtai",
+"name_ar": "شينغتاي"
+},
+{
+"country": "CN",
+"name_en": "Zhaotong",
+"name_ar": "تشاوتونغ"
+},
+{
+"country": "CN",
+"name_en": "Panzhihua",
+"name_ar": "بانزهيهوا"
+},
+{
+"country": "CN",
+"name_en": "Chuzhou",
+"name_ar": "تشوزهو"
+},
+{
+"country": "CN",
+"name_en": "Xuancheng",
+"name_ar": "شوانتشنغ"
+},
+{
+"country": "CN",
+"name_en": "Shangyu",
+"name_ar": "شانغيو"
+},
+{
+"country": "CN",
+"name_en": "Wuzhou",
+"name_ar": "ووتشو"
+},
+{
+"country": "CN",
+"name_en": "Shaoyang",
+"name_ar": "شاويانغ"
+},
+{
+"country": "CN",
+"name_en": "Ma’anshan",
+"name_ar": "ماانشان"
+},
+{
+"country": "CN",
+"name_en": "Shizuishan",
+"name_ar": "شيزوي شان"
+},
+{
+"country": "CN",
+"name_en": "Deyang",
+"name_ar": "دييانغ"
+},
+{
+"country": "CN",
+"name_en": "Yangquan",
+"name_ar": "يانغتشيوان"
+},
+{
+"country": "CN",
+"name_en": "Zhumadian",
+"name_ar": "تشوماديان"
+},
+{
+"country": "CN",
+"name_en": "Changzhi",
+"name_ar": "تشانغجي"
+},
+{
+"country": "CN",
+"name_en": "Changning",
+"name_ar": "تشانغننغ"
+},
+{
+"country": "CN",
+"name_en": "Zhangjiakou",
+"name_ar": "تشانغجياكو"
+},
+{
+"country": "CN",
+"name_en": "Changsha",
+"name_ar": "تشانغشا"
+}
+]
+},
+"name:2": {
+"names": [
+{
+"country": "CN",
+"name_en": "Huangshi",
+"name_ar": "هوانغشي"
+},
+{
+"country": "CN",
+"name_en": "Liaoyang",
+"name_ar": "لياويانغ"
+},
+{
+"country": "CN",
+"name_en": "Hongkou",
+"name_ar": "هونغكو"
+},
+{
+"country": "CN",
+"name_en": "Baise",
+"name_ar": "بايسي"
+},
+{
+"country": "CN",
+"name_en": "Binzhou",
+"name_ar": "بينزو"
+},
+{
+"country": "CN",
+"name_en": "Yuncheng",
+"name_ar": "يونتشنغ"
+},
+{
+"country": "CN",
+"name_en": "Dezhou",
+"name_ar": "دجو"
+},
+{
+"country": "CN",
+"name_en": "Sanmenxia",
+"name_ar": "سانمنشيا"
+},
+{
+"country": "CN",
+"name_en": "E’zhou",
+"name_ar": "إيجو"
+},
+{
+"country": "CN",
+"name_en": "Mudanjiang",
+"name_ar": "موданجيانغ"
+},
+{
+"country": "CN",
+"name_en": "Leshan",
+"name_ar": "لشان"
+},
+{
+"country": "CN",
+"name_en": "Rizhao",
+"name_ar": "ريجاو"
+},
+{
+"country": "CN",
+"name_en": "Suining",
+"name_ar": "سوينينغ"
+},
+{
+"country": "CN",
+"name_en": "Puyang",
+"name_ar": "بويانغ"
+},
+{
+"country": "CN",
+"name_en": "Chongming",
+"name_ar": "تشونغمينغ"
+},
+{
+"country": "CN",
+"name_en": "Hebi",
+"name_ar": "هبي"
+},
+{
+"country": "CN",
+"name_en": "Jingmen",
+"name_ar": "جينغمن"
+},
+{
+"country": "CN",
+"name_en": "Panshan",
+"name_ar": "بانشان"
+},
+{
+"country": "CN",
+"name_en": "Jiaozhou",
+"name_ar": "جياوجو"
+},
+{
+"country": "CN",
+"name_en": "Suizhou",
+"name_ar": "سويجو"
+},
+{
+"country": "CN",
+"name_en": "Chizhou",
+"name_ar": "تشيجو"
+},
+{
+"country": "CN",
+"name_en": "Ya'an",
+"name_ar": "ياان"
+},
+{
+"country": "CN",
+"name_en": "Jinzhou",
+"name_ar": "جينجو"
+},
+{
+"country": "CN",
+"name_en": "Sanming",
+"name_ar": "سانمينغ"
+},
+{
+"country": "CN",
+"name_en": "Shuangyashan",
+"name_ar": "شوانغياشان"
+},
+{
+"country": "CN",
+"name_en": "Luancheng",
+"name_ar": "لوانتشنغ"
+},
+{
+"country": "CN",
+"name_en": "Mengzi",
+"name_ar": "منغزي"
+},
+{
+"country": "CN",
+"name_en": "Yingkou",
+"name_ar": "ينغكو"
+},
+{
+"country": "CN",
+"name_en": "Zhangzhou",
+"name_ar": "جانغجو"
+},
+{
+"country": "CN",
+"name_en": "Wenchang",
+"name_ar": "ونتشانغ"
+},
+{
+"country": "CN",
+"name_en": "Siping",
+"name_ar": "سيبينغ"
+},
+{
+"country": "CN",
+"name_en": "Chuxiong",
+"name_ar": "تشوشيونغ"
+},
+{
+"country": "CN",
+"name_en": "Huaihua",
+"name_ar": "هواي هوا"
+},
+{
+"country": "CN",
+"name_en": "Ulanqab",
+"name_ar": "أولانتشاب"
+},
+{
+"country": "CN",
+"name_en": "Jiamusi",
+"name_ar": "جياموسي"
+},
+{
+"country": "CN",
+"name_en": "Wanning",
+"name_ar": "وانينغ"
+},
+{
+"country": "CN",
+"name_en": "Xinzhou",
+"name_ar": "شينزو"
+},
+{
+"country": "CN",
+"name_en": "Pingdu",
+"name_ar": "بينغدو"
+},
+{
+"country": "CN",
+"name_en": "Ji’an",
+"name_ar": "جيان"
+},
+{
+"country": "CN",
+"name_en": "Guli",
+"name_ar": "غولي"
+},
+{
+"country": "CN",
+"name_en": "Tanggu",
+"name_ar": "تانغو"
+},
+{
+"country": "CN",
+"name_en": "Shangluo",
+"name_ar": "شانغلو"
+},
+{
+"country": "CN",
+"name_en": "Qionghai",
+"name_ar": "تشيونغهاي"
+},
+{
+"country": "CN",
+"name_en": "Cangzhou",
+"name_ar": "كانغجو"
+},
+{
+"country": "CN",
+"name_en": "Beihai",
+"name_ar": "بيهاي"
+},
+{
+"country": "CN",
+"name_en": "Hengshui",
+"name_ar": "هنغشوي"
+},
+{
+"country": "CN",
+"name_en": "Daxing’anling",
+"name_ar": "داشينغانلينغ"
+},
+{
+"country": "CN",
+"name_en": "Guangyuan",
+"name_ar": "قوانغيوان"
+},
+{
+"country": "CN",
+"name_en": "Xianning",
+"name_ar": "شيانينغ"
+},
+{
+"country": "CN",
+"name_en": "Tonghua",
+"name_ar": "تونغهوا"
+},
+{
+"country": "CN",
+"name_en": "Mianzhu, Deyang, Sichuan",
+"name_ar": "ميانتشو"
+},
+{
+"country": "CN",
+"name_en": "Banan",
+"name_ar": "بانان"
+},
+{
+"country": "CN",
+"name_en": "Zhangye",
+"name_ar": "جانغيه"
+},
+{
+"country": "CN",
+"name_en": "Pingliang",
+"name_ar": "بينغليانغ"
+},
+{
+"country": "CN",
+"name_en": "Huangpu",
+"name_ar": "هوانغبو"
+},
+{
+"country": "CN",
+"name_en": "Zhucheng",
+"name_ar": "جوتشنغ"
+},
+{
+"country": "CN",
+"name_en": "Loudi",
+"name_ar": "لودي"
+},
+{
+"country": "CN",
+"name_en": "Shanwei",
+"name_ar": "شانوي"
+},
+{
+"country": "CN",
+"name_en": "Jianshui",
+"name_ar": "جيانشوي"
+},
+{
+"country": "CN",
+"name_en": "Xichang",
+"name_ar": "شيتشانغ"
+},
+{
+"country": "CN",
+"name_en": "Chéngguān Qū",
+"name_ar": "تشنغقوان"
+},
+{
+"country": "CN",
+"name_en": "Jincheng",
+"name_ar": "جينتشنغ"
+},
+{
+"country": "CN",
+"name_en": "Shouguang",
+"name_ar": "شوغوانغ"
+},
+{
+"country": "CN",
+"name_en": "Jingdezhen",
+"name_ar": "جينغدتشن"
+},
+{
+"country": "CN",
+"name_en": "Jiaojiang",
+"name_ar": "جياوجيانغ"
+},
+{
+"country": "CN",
+"name_en": "Nanping",
+"name_ar": "نانبينغ"
+},
+{
+"country": "CN",
+"name_en": "Longshan",
+"name_ar": "لونغشان"
+},
+{
+"country": "CN",
+"name_en": "Heyuan",
+"name_ar": "هيوان"
+},
+{
+"country": "CN",
+"name_en": "Huangshan",
+"name_ar": "هوانغشان"
+},
+{
+"country": "CN",
+"name_en": "Wafangdian",
+"name_ar": "وافانغديان"
+},
+{
+"country": "CN",
+"name_en": "Yongji",
+"name_ar": "يونغجي"
+},
+{
+"country": "CN",
+"name_en": "Wenshan City",
+"name_ar": "ونشان"
+},
+{
+"country": "CN",
+"name_en": "Chengde",
+"name_ar": "تشنغدي"
+},
+{
+"country": "CN",
+"name_en": "Basuo",
+"name_ar": "باسو"
+},
+{
+"country": "CN",
+"name_en": "Bei’an",
+"name_ar": "بيان"
+},
+{
+"country": "CN",
+"name_en": "Shuozhou",
+"name_ar": "شووجو"
+},
+{
+"country": "CN",
+"name_en": "Ningde",
+"name_ar": "نينغدي"
+},
+{
+"country": "CN",
+"name_en": "Jiuquan",
+"name_ar": "جيوتشوان"
+},
+{
+"country": "CN",
+"name_en": "Dingxi",
+"name_ar": "دينغشي"
+},
+{
+"country": "CN",
+"name_en": "Tongchuan",
+"name_ar": "تونغتشوان"
+},
+{
+"country": "CN",
+"name_en": "Guyuan",
+"name_ar": "غويوان"
+},
+{
+"country": "CN",
+"name_en": "Chaoyang",
+"name_ar": "تشاويانغ"
+},
+{
+"country": "CN",
+"name_en": "Tongling",
+"name_ar": "تونغلينغ"
+},
+{
+"country": "CN",
+"name_en": "Gaomi",
+"name_ar": "غاومي"
+},
+{
+"country": "CN",
+"name_en": "Chongzuo",
+"name_ar": "تشونغزو"
+},
+{
+"country": "CN",
+"name_en": "Tanzhou",
+"name_ar": "تانجو"
+},
+{
+"country": "CN",
+"name_en": "Hechuan",
+"name_ar": "هتشوان"
+},
+{
+"country": "CN",
+"name_en": "Xuanhua",
+"name_ar": "شيوانهوا"
+},
+{
+"country": "CN",
+"name_en": "Dachang",
+"name_ar": "داتشانغ"
+},
+{
+"country": "CN",
+"name_en": "Fenghuang",
+"name_ar": "فينغهوانغ"
+},
+{
+"country": "CN",
+"name_en": "Huanggang",
+"name_ar": "هوانغانغ"
+},
+{
+"country": "CN",
+"name_en": "Anqiu",
+"name_ar": "آنجيو"
+},
+{
+"country": "CN",
+"name_en": "Jizhou",
+"name_ar": "جيجو"
+},
+{
+"country": "CN",
+"name_en": "Nanqiao",
+"name_ar": "نانتشياو"
+},
+{
+"country": "CN",
+"name_en": "Huocheng",
+"name_ar": "هوتشنغ"
+},
+{
+"country": "CN",
+"name_en": "Lhoka",
+"name_ar": "لهوكا"
+},
+{
+"country": "CN",
+"name_en": "Pengze",
+"name_ar": "بينغزه"
+},
+{
+"country": "CN",
+"name_en": "Xilinhot",
+"name_ar": "شيلينهوت"
+},
+{
+"country": "CN",
+"name_en": "Hulunbuir",
+"name_ar": "هولونبوير"
+},
+{
+"country": "CN",
+"name_en": "Daye",
+"name_ar": "داي"
+},
+{
+"country": "CN",
+"name_en": "Chifeng",
+"name_ar": "تشيفنغ"
+},
+{
+"country": "CN",
+"name_en": "Yunlong",
+"name_ar": "يونلونغ"
+},
+{
+"country": "CN",
+"name_en": "Qitaihe",
+"name_ar": "تشيتاهي"
+},
+{
+"country": "CN",
+"name_en": "Pizhou",
+"name_ar": "بيجو"
+},
+{
+"country": "CN",
+"name_en": "Shiqi",
+"name_ar": "شيتشي"
+},
+{
+"country": "CN",
+"name_en": "Laixi",
+"name_ar": "لايشي"
+},
+{
+"country": "CN",
+"name_en": "Tieling",
+"name_ar": "تيلينغ"
+},
+{
+"country": "CN",
+"name_en": "Hechi",
+"name_ar": "هيتشي"
+},
+{
+"country": "CN",
+"name_en": "Tongshan",
+"name_ar": "تونغشان"
+},
+{
+"country": "CN",
+"name_en": "Lincang",
+"name_ar": "لينتشانغ"
+},
+{
+"country": "CN",
+"name_en": "Xingyi",
+"name_ar": "شينغيي"
+},
+{
+"country": "CN",
+"name_en": "Tantou",
+"name_ar": "تانتو"
+},
+{
+"country": "CN",
+"name_en": "Baicheng",
+"name_ar": "بايتشنغ"
+},
+{
+"country": "CN",
+"name_en": "Lianshan",
+"name_ar": "ليانشان"
+},
+{
+"country": "CN",
+"name_en": "Changyi",
+"name_ar": "تشانغيي"
+},
+{
+"country": "CN",
+"name_en": "Xinyi",
+"name_ar": "شينيي"
+},
+{
+"country": "CN",
+"name_en": "Yangshuo",
+"name_ar": "يانغشوو"
+},
+{
+"country": "CN",
+"name_en": "Linqu",
+"name_ar": "لينتشو"
+},
+{
+"country": "CN",
+"name_en": "Pu'er",
+"name_ar": "بو إر"
+},
+{
+"country": "CN",
+"name_en": "Baiyin",
+"name_ar": "بايين"
+},
+{
+"country": "CN",
+"name_en": "Gaozhou",
+"name_ar": "غاوجو"
+},
+{
+"country": "CN",
+"name_en": "Xiuying",
+"name_ar": "شيوينغ"
+},
+{
+"country": "CN",
+"name_en": "Dengzhou",
+"name_ar": "دنغجو"
+},
+{
+"country": "CN",
+"name_en": "Qibao",
+"name_ar": "تشيباو"
+},
+{
+"country": "CN",
+"name_en": "Enshi",
+"name_ar": "إنشي"
+},
+{
+"country": "CN",
+"name_en": "Tanghe",
+"name_ar": "تانغه"
+},
+{
+"country": "CN",
+"name_en": "Zoucheng",
+"name_ar": "زوتشنغ"
+},
+{
+"country": "CN",
+"name_en": "Fangchenggang",
+"name_ar": "فانغتشنغانغ"
+},
+{
+"country": "CN",
+"name_en": "Kaili",
+"name_ar": "كايلي"
+},
+{
+"country": "CN",
+"name_en": "Xingning",
+"name_ar": "شينينغ"
+},
+{
+"country": "CN",
+"name_en": "Linxia Chengguanzhen",
+"name_ar": "لينشيا تشنغقوانجن"
+},
+{
+"country": "CN",
+"name_en": "Turpan",
+"name_ar": "تورفان"
+},
+{
+"country": "CN",
+"name_en": "Longling County",
+"name_ar": "لونغلينغ"
+},
+{
+"country": "CN",
+"name_en": "Fuling",
+"name_ar": "فولينغ"
+},
+{
+"country": "CN",
+"name_en": "Chengzhong",
+"name_ar": "تشنغتشونغ"
+},
+{
+"country": "CN",
+"name_en": "Hulan Ergi",
+"name_ar": "هولان إرغي"
+},
+{
+"country": "CN",
+"name_en": "Donghai",
+"name_ar": "دونغهاي"
+},
+{
+"country": "CN",
+"name_en": "Dongtai",
+"name_ar": "دونغتاي"
+},
+{
+"country": "CN",
+"name_en": "Karamay",
+"name_ar": "كرامي"
+},
+{
+"country": "CN",
+"name_en": "Tongliao",
+"name_ar": "تونغلياو"
+},
+{
+"country": "CN",
+"name_en": "Nianbo",
+"name_ar": "نيانبو"
+},
+{
+"country": "CN",
+"name_en": "Changle",
+"name_ar": "تشانغله"
+},
+{
+"country": "CN",
+"name_en": "Jining",
+"name_ar": "جينينغ"
+},
+{
+"country": "CN",
+"name_en": "Rugao",
+"name_ar": "روغاو"
+},
+{
+"country": "CN",
+"name_en": "Suicheng",
+"name_ar": "سويتشنغ"
+},
+{
+"country": "CN",
+"name_en": "Nada",
+"name_ar": "نادا"
+},
+{
+"country": "CN",
+"name_en": "Yanzhou",
+"name_ar": "يانتشو"
+},
+{
+"country": "CN",
+"name_en": "Laohekou",
+"name_ar": "لاوهيكو"
+},
+{
+"country": "CN",
+"name_en": "Suihua",
+"name_ar": "سويهوا"
+},
+{
+"country": "CN",
+"name_en": "Beibei",
+"name_ar": "بيبي"
+},
+{
+"country": "CN",
+"name_en": "Shijie",
+"name_ar": "شيجيه"
+},
+{
+"country": "CN",
+"name_en": "Huayin",
+"name_ar": "هواين"
+},
+{
+"country": "CN",
+"name_en": "Jiyuan",
+"name_ar": "جييوان"
+},
+{
+"country": "CN",
+"name_en": "Gucun",
+"name_ar": "غوتشون"
+},
+{
+"country": "CN",
+"name_en": "Xiantao",
+"name_ar": "شيانتاو"
+},
+{
+"country": "CN",
+"name_en": "Qingzhou",
+"name_ar": "تشينغجو"
+},
+{
+"country": "CN",
+"name_en": "Yuci",
+"name_ar": "يوتشي"
+},
+{
+"country": "CN",
+"name_en": "Dali",
+"name_ar": "دالي"
+},
+{
+"country": "CN",
+"name_en": "Jiayuguan",
+"name_ar": "جياويوغوان"
+},
+{
+"country": "CN",
+"name_en": "Changzheng",
+"name_ar": "تشانغجنغ"
+},
+{
+"country": "CN",
+"name_en": "Jinchang",
+"name_ar": "جينتشانغ"
+},
+{
+"country": "CN",
+"name_en": "Fendou",
+"name_ar": "فندو"
+},
+{
+"country": "CN",
+"name_en": "Jingling",
+"name_ar": "جينغلينغ"
+},
+{
+"country": "CN",
+"name_en": "Heihe",
+"name_ar": "هيهه"
+},
+{
+"country": "CN",
+"name_en": "Tongchuanshi",
+"name_ar": "تونغتشوانشي"
+},
+{
+"country": "CN",
+"name_en": "Xintai",
+"name_ar": "شينتاي"
+},
+{
+"country": "CN",
+"name_en": "Wuxue",
+"name_ar": "ووشيو"
+},
+{
+"country": "CN",
+"name_en": "Wuhai",
+"name_ar": "ووهاي"
+},
+{
+"country": "CN",
+"name_en": "Yintai",
+"name_ar": "يينتاي"
+},
+{
+"country": "CN",
+"name_en": "Jinzhou",
+"name_ar": "جينجو"
+},
+{
+"country": "CN",
+"name_en": "Longgang",
+"name_ar": "لونغانغ"
+},
+{
+"country": "CN",
+"name_en": "Yingtan",
+"name_ar": "ينغتان"
+},
+{
+"country": "CN",
+"name_en": "Zitong",
+"name_ar": "زيتونغ"
+},
+{
+"country": "CN",
+"name_en": "Luojiang",
+"name_ar": "لوجيانغ"
+},
+{
+"country": "CN",
+"name_en": "Hailar",
+"name_ar": "هايلار"
+},
+{
+"country": "CN",
+"name_en": "Daliang",
+"name_ar": "داليانغ"
+},
+{
+"country": "CN",
+"name_en": "Bachuan",
+"name_ar": "باتشوان"
+},
+{
+"country": "CN",
+"name_en": "Hangu",
+"name_ar": "هانغو"
+},
+{
+"country": "CN",
+"name_en": "Gunan",
+"name_ar": "غونان"
+},
+{
+"country": "CN",
+"name_en": "Jinghong",
+"name_ar": "جينغهونغ"
+},
+{
+"country": "CN",
+"name_en": "Gongheyong",
+"name_ar": "غونغهيونغ"
+},
+{
+"country": "CN",
+"name_en": "Nanchuan",
+"name_ar": "نانتشوان"
+},
+{
+"country": "CN",
+"name_en": "Bishan",
+"name_ar": "بيشان"
+},
+{
+"country": "CN",
+"name_en": "Yanghang",
+"name_ar": "يانغهانغ"
+},
+{
+"country": "CN",
+"name_en": "Gaoping",
+"name_ar": "غاوبينغ"
+},
+{
+"country": "CN",
+"name_en": "Nyingchi",
+"name_ar": "نيينغتشي"
+},
+{
+"country": "CN",
+"name_en": "Beiliu",
+"name_ar": "بيليو"
+},
+{
+"country": "CN",
+"name_en": "Duyun",
+"name_ar": "دويون"
+},
+{
+"country": "CN",
+"name_en": "Kaiyuan",
+"name_ar": "كايوان"
+},
+{
+"country": "CN",
+"name_en": "Mentougou",
+"name_ar": "منتوغو"
+},
+{
+"country": "CN",
+"name_en": "Lushui",
+"name_ar": "لوشوي"
+},
+{
+"country": "CN",
+"name_en": "Jijiang",
+"name_ar": "جيجيانغ"
+},
+{
+"country": "CN",
+"name_en": "Hanfeng",
+"name_ar": "هانفنغ"
+},
+{
+"country": "CN",
+"name_en": "Peicheng",
+"name_ar": "بيتشنغ"
+},
+{
+"country": "CN",
+"name_en": "Ezhou",
+"name_ar": "إيجو"
+},
+{
+"country": "CN",
+"name_en": "Zhengding",
+"name_ar": "تشنغدينغ"
+},
+{
+"country": "CN",
+"name_en": "Yongchuan",
+"name_ar": "يونغتشوان"
+},
+{
+"country": "CN",
+"name_en": "Hepu",
+"name_ar": "هيبو"
+},
+{
+"country": "CN",
+"name_en": "Aihui",
+"name_ar": "آيهوي"
+},
+{
+"country": "CN",
+"name_en": "Fuding",
+"name_ar": "فودينغ"
+},
+{
+"country": "CN",
+"name_en": "Humen",
+"name_ar": "هومن"
+},
+{
+"country": "CN",
+"name_en": "Haicheng",
+"name_ar": "هايتشنغ"
+},
+{
+"country": "CN",
+"name_en": "Beipiao",
+"name_ar": "بيبياو"
+},
+{
+"country": "CN",
+"name_en": "Guixi",
+"name_ar": "غويشي"
+},
+{
+"country": "CN",
+"name_en": "Laizhou",
+"name_ar": "لايجو"
+},
+{
+"country": "CN",
+"name_en": "Huixing",
+"name_ar": "هويشينغ"
+},
+{
+"country": "CN",
+"name_en": "Changyuan",
+"name_ar": "تشانغيوان"
+},
+{
+"country": "CN",
+"name_en": "Shangri-La",
+"name_ar": "شانغريلا"
+},
+{
+"country": "CN",
+"name_en": "Yangcheng",
+"name_ar": "يانغتشنغ"
+},
+{
+"country": "CN",
+"name_en": "Jing’an",
+"name_ar": "جينغان"
+},
+{
+"country": "CN",
+"name_en": "Zaoyang",
+"name_ar": "زاويانغ"
+},
+{
+"country": "CN",
+"name_en": "Zhenping",
+"name_ar": "تشنبينغ"
+},
+{
+"country": "CN",
+"name_en": "Anda",
+"name_ar": "آندا"
+},
+{
+"country": "CN",
+"name_en": "Pingwu County",
+"name_ar": "بينغو"
+},
+{
+"country": "CN",
+"name_en": "Qianjiang",
+"name_ar": "تشيانجيانغ"
+},
+{
+"country": "CN",
+"name_en": "Zhenzhou",
+"name_ar": "تشنجو"
+},
+{
+"country": "CN",
+"name_en": "Xindi",
+"name_ar": "شيندي"
+},
+{
+"country": "CN",
+"name_en": "Fengcheng",
+"name_ar": "فنغتشنغ"
+},
+{
+"country": "CN",
+"name_en": "Jiutai",
+"name_ar": "جيوتاي"
+},
+{
+"country": "CN",
+"name_en": "Licheng",
+"name_ar": "ليتشنغ"
+},
+{
+"country": "CN",
+"name_en": "Dongling",
+"name_ar": "دونغلينغ"
+},
+{
+"country": "CN",
+"name_en": "Laiyang",
+"name_ar": "لايانغ"
+},
+{
+"country": "CN",
+"name_en": "Songcheng",
+"name_ar": "سونغتشنغ"
+},
+{
+"country": "CN",
+"name_en": "Hengshan",
+"name_ar": "هنغشان"
+},
+{
+"country": "CN",
+"name_en": "Tongzhou",
+"name_ar": "تونغجو"
+},
+{
+"country": "CN",
+"name_en": "Anbu",
+"name_ar": "آنبو"
+},
+{
+"country": "CN",
+"name_en": "Ning’er",
+"name_ar": "نينغير"
+},
+{
+"country": "CN",
+"name_en": "Fengcheng",
+"name_ar": "فنغتشنغ"
+},
+{
+"country": "CN",
+"name_en": "Tacheng",
+"name_ar": "تاتشنغ"
+},
+{
+"country": "CN",
+"name_en": "Zhicheng",
+"name_ar": "تشيتشنغ"
+},
+{
+"country": "CN",
+"name_en": "Nanpiao",
+"name_ar": "نانبياو"
+},
+{
+"country": "CN",
+"name_en": "Lizhi",
+"name_ar": "ليجي"
+},
+{
+"country": "CN",
+"name_en": "Yizhou",
+"name_ar": "ييجو"
+},
+{
+"country": "CN",
+"name_en": "Xinqiao",
+"name_ar": "شينتشياو"
+},
+{
+"country": "CN",
+"name_en": "Yichun",
+"name_ar": "ييتشون"
+},
+{
+"country": "CN",
+"name_en": "Lianghu",
+"name_ar": "ليانغهو"
+},
+{
+"country": "CN",
+"name_en": "Guangshui",
+"name_ar": "قوانغشوي"
+},
+{
+"country": "CN",
+"name_en": "Fu’an",
+"name_ar": "فوآن"
+},
+{
+"country": "CN",
+"name_en": "Zhaodong",
+"name_ar": "تشاودونغ"
+},
+{
+"country": "CN",
+"name_en": "Wujiaqu",
+"name_ar": "ووجياتشو"
+},
+{
+"country": "CN",
+"name_en": "Sanshui",
+"name_ar": "سانشوي"
+},
+{
+"country": "CN",
+"name_en": "Boshan",
+"name_ar": "بوشان"
+},
+{
+"country": "CN",
+"name_en": "Yangchun",
+"name_ar": "يانغتشون"
+},
+{
+"country": "CN",
+"name_en": "Dingzhou",
+"name_ar": "دينغجو"
+}
+]
+},
+"name:3": {
+"names": [
+{
+"name_en": "Pengpu",
+"country": "CN",
+"name_ar": "بنغبو"
+},
+{
+"name_en": "Chenghua",
+"country": "CN",
+"name_ar": "تشنغهوا"
+},
+{
+"name_en": "Longfeng",
+"country": "CN",
+"name_ar": "لونغفنغ"
+},
+{
+"name_en": "Beining",
+"country": "CN",
+"name_ar": "بيننغ"
+},
+{
+"name_en": "Dunhua",
+"country": "CN",
+"name_ar": "دونهوا"
+},
+{
+"name_en": "Sujiatun",
+"country": "CN",
+"name_ar": "سوجياتون"
+},
+{
+"name_en": "Honggang",
+"country": "CN",
+"name_ar": "هونغانغ"
+},
+{
+"name_en": "Taozhou",
+"country": "CN",
+"name_ar": "تاوتشو"
+},
+{
+"name_en": "Xinji",
+"country": "CN",
+"name_ar": "شينجي"
+},
+{
+"name_en": "Hailin",
+"country": "CN",
+"name_ar": "هايلين"
+},
+{
+"name_en": "Yong’an",
+"country": "CN",
+"name_ar": "يونغان"
+},
+{
+"name_en": "Nanjin",
+"country": "CN",
+"name_ar": "نانجين"
+},
+{
+"name_en": "Qianjiang",
+"country": "CN",
+"name_ar": "تشيانجيانغ"
+},
+{
+"name_en": "Jieshou",
+"country": "CN",
+"name_ar": "جيشو"
+},
+{
+"name_en": "Yushu",
+"country": "CN",
+"name_ar": "يوشو"
+},
+{
+"name_en": "Sanhe",
+"country": "CN",
+"name_ar": "سانخه"
+},
+{
+"name_en": "Gongzhuling",
+"country": "CN",
+"name_ar": "غونغجولينغ"
+},
+{
+"name_en": "Shuizhai",
+"country": "CN",
+"name_ar": "شويجاي"
+},
+{
+"name_en": "Shanhaiguan",
+"country": "CN",
+"name_ar": "شانهاي قوان"
+},
+{
+"name_en": "Yuepu",
+"country": "CN",
+"name_ar": "يويبو"
+},
+{
+"name_en": "Huadian",
+"country": "CN",
+"name_ar": "هواديان"
+},
+{
+"name_en": "Liuzhi",
+"country": "CN",
+"name_ar": "ليوتشي"
+},
+{
+"name_en": "Fuyu",
+"country": "CN",
+"name_ar": "فويو"
+},
+{
+"name_en": "Chaohu",
+"country": "CN",
+"name_ar": "تشاوهو"
+},
+{
+"name_en": "Liangping",
+"country": "CN",
+"name_ar": "ليانغبينغ"
+},
+{
+"name_en": "Doilungdêqên",
+"country": "CN",
+"name_ar": "دويلونغ دخن"
+},
+{
+"name_en": "Jieshi",
+"country": "CN",
+"name_ar": "جيشي"
+},
+{
+"name_en": "Hejiang",
+"country": "CN",
+"name_ar": "خجيانغ"
+},
+{
+"name_en": "Xiayang",
+"country": "CN",
+"name_ar": "شيا يانغ"
+},
+{
+"name_en": "Wuyishan",
+"country": "CN",
+"name_ar": "ووي شان"
+},
+{
+"name_en": "Jiashan",
+"country": "CN",
+"name_ar": "جياشان"
+},
+{
+"name_en": "Huinong",
+"country": "CN",
+"name_ar": "هوينونغ"
+},
+{
+"name_en": "Gejiu",
+"country": "CN",
+"name_ar": "قيجيو"
+},
+{
+"name_en": "Jiagedaqi",
+"country": "CN",
+"name_ar": "جياغه داتشي"
+},
+{
+"name_en": "Tumxuk",
+"country": "CN",
+"name_ar": "توموشوق"
+},
+{
+"name_en": "Shiqiao",
+"country": "CN",
+"name_ar": "شيتشياو"
+},
+{
+"name_en": "Shenglilu",
+"country": "CN",
+"name_ar": "شنغلي لو"
+},
+{
+"name_en": "Jiawang",
+"country": "CN",
+"name_ar": "جياوانغ"
+},
+{
+"name_en": "Puqi",
+"country": "CN",
+"name_ar": "بوتشي"
+},
+{
+"name_en": "Wugang",
+"country": "CN",
+"name_ar": "ووغانغ"
+},
+{
+"name_en": "Zhalantun",
+"country": "CN",
+"name_ar": "جالانتون"
+},
+{
+"name_en": "Fuji",
+"country": "CN",
+"name_ar": "فوجي"
+},
+{
+"name_en": "Dawukou",
+"country": "CN",
+"name_ar": "داووكو"
+},
+{
+"name_en": "Majie",
+"country": "CN",
+"name_ar": "ماجيي"
+},
+{
+"name_en": "Hepo",
+"country": "CN",
+"name_ar": "هيبو"
+},
+{
+"name_en": "Shangzhi",
+"country": "CN",
+"name_ar": "شانغتشي"
+},
+{
+"name_en": "Shuangcheng",
+"country": "CN",
+"name_ar": "شوانغتشنغ"
+},
+{
+"name_en": "Dongyang",
+"country": "CN",
+"name_ar": "دونغيانغ"
+},
+{
+"name_en": "Nantou",
+"country": "CN",
+"name_ar": "نانتو"
+},
+{
+"name_en": "Jiazi",
+"country": "CN",
+"name_ar": "جياتزي"
+},
+{
+"name_en": "Wuda",
+"country": "CN",
+"name_ar": "ووادا"
+},
+{
+"name_en": "Pingxiang",
+"country": "CN",
+"name_ar": "بينغشيانغ"
+},
+{
+"name_en": "Santo António",
+"country": "CN",
+"name_ar": "سانتو أنتونيو"
+},
+{
+"name_en": "Leiyang",
+"country": "CN",
+"name_ar": "ليانغ"
+},
+{
+"name_en": "Shuanglonghu",
+"country": "CN",
+"name_ar": "شوانغلونغهو"
+},
+{
+"name_en": "Gaojing",
+"country": "CN",
+"name_ar": "غاوجينغ"
+},
+{
+"name_en": "Songnan",
+"country": "CN",
+"name_ar": "سونغنان"
+},
+{
+"name_en": "Jiangyou",
+"country": "CN",
+"name_ar": "جيانغيو"
+},
+{
+"name_en": "Tengyue",
+"country": "CN",
+"name_ar": "تنغيوي"
+},
+{
+"name_en": "Shajing",
+"country": "CN",
+"name_ar": "شاجينغ"
+},
+{
+"name_en": "Jinfeng",
+"country": "CN",
+"name_ar": "جينفنغ"
+},
+{
+"name_en": "Jingzhi",
+"country": "CN",
+"name_ar": "جينغتشي"
+},
+{
+"name_en": "Danshui",
+"country": "CN",
+"name_ar": "دانشوي"
+},
+{
+"name_en": "Macheng",
+"country": "CN",
+"name_ar": "ماتشنغ"
+},
+{
+"name_en": "Nossa Senhora de Fátima",
+"country": "CN",
+"name_ar": "نوسا سينيورا دي فاتيما"
+},
+{
+"name_en": "Huicheng",
+"country": "CN",
+"name_ar": "هوتشنغ"
+},
+{
+"name_en": "Xiazhen",
+"country": "CN",
+"name_ar": "شياتشن"
+},
+{
+"name_en": "Haimen",
+"country": "CN",
+"name_ar": "هايمن"
+},
+{
+"name_en": "Shahecheng",
+"country": "CN",
+"name_ar": "شاهيتشنغ"
+},
+{
+"name_en": "Yushu",
+"country": "CN",
+"name_ar": "يوشو"
+},
+{
+"name_en": "Lecheng",
+"country": "CN",
+"name_ar": "لتشنغ"
+},
+{
+"name_en": "Nancun",
+"country": "CN",
+"name_ar": "نانتسون"
+},
+{
+"name_en": "Jiupu",
+"country": "CN",
+"name_ar": "جيوبو"
+},
+{
+"name_en": "Baoshan",
+"country": "CN",
+"name_ar": "باوشان"
+},
+{
+"name_en": "Luoyang",
+"country": "CN",
+"name_ar": "لوويانغ"
+},
+{
+"name_en": "Jiaohe",
+"country": "CN",
+"name_ar": "جياوخه"
+},
+{
+"name_en": "Huangzhou",
+"country": "CN",
+"name_ar": "هوانغتشو"
+},
+{
+"name_en": "Xiulin",
+"country": "CN",
+"name_ar": "شيولين"
+},
+{
+"name_en": "Zhoucun",
+"country": "CN",
+"name_ar": "جوتسون"
+},
+{
+"name_en": "Xiangcheng",
+"country": "CN",
+"name_ar": "شيانغتشنغ"
+},
+{
+"name_en": "Longshui",
+"country": "CN",
+"name_ar": "لونغشوي"
+},
+{
+"name_en": "Lianhe",
+"country": "CN",
+"name_ar": "ليانخه"
+},
+{
+"name_en": "Xilin Hot",
+"country": "CN",
+"name_ar": "شيلين خوت"
+},
+{
+"name_en": "Lichuan",
+"country": "CN",
+"name_ar": "لي تشوان"
+},
+{
+"name_en": "Fengcheng",
+"country": "CN",
+"name_ar": "فنغتشنغ"
+},
+{
+"name_en": "Bao'an Centre",
+"country": "CN",
+"name_ar": "باوآن"
+},
+{
+"name_en": "Zhujing",
+"country": "CN",
+"name_ar": "جوجينغ"
+},
+{
+"name_en": "Zhaoyuan",
+"country": "CN",
+"name_ar": "تشاوييوان"
+},
+{
+"name_en": "Xunchang",
+"country": "CN",
+"name_ar": "شونتشانغ"
+},
+{
+"name_en": "Nanbin",
+"country": "CN",
+"name_ar": "نانبين"
+},
+{
+"name_en": "Luodian",
+"country": "CN",
+"name_ar": "لوديان"
+},
+{
+"name_en": "Shaoshan",
+"country": "CN",
+"name_ar": "شاوشان"
+},
+{
+"name_en": "Wushan",
+"country": "CN",
+"name_ar": "ووشان"
+},
+{
+"name_en": "Shunyi",
+"country": "CN",
+"name_ar": "شونيي"
+},
+{
+"name_en": "Longjing",
+"country": "CN",
+"name_ar": "لونغجينغ"
+},
+{
+"name_en": "Gulin",
+"country": "CN",
+"name_ar": "غولين"
+},
+{
+"name_en": "Chenggu",
+"country": "CN",
+"name_ar": "تشنغقو"
+},
+{
+"name_en": "Dasha",
+"country": "CN",
+"name_ar": "داشا"
+},
+{
+"name_en": "Yakeshi",
+"country": "CN",
+"name_ar": "ياكيشي"
+},
+{
+"name_en": "Baisha",
+"country": "CN",
+"name_ar": "بايشا"
+},
+{
+"name_en": "Anliu",
+"country": "CN",
+"name_ar": "آنليو"
+},
+{
+"name_en": "Lengshuijiang",
+"country": "CN",
+"name_ar": "لنغشويجيانغ"
+},
+{
+"name_en": "Tianfu",
+"country": "CN",
+"name_ar": "تيانفو"
+},
+{
+"name_en": "Mingshui",
+"country": "CN",
+"name_ar": "مينغشوي"
+},
+{
+"name_en": "Qiaotou",
+"country": "CN",
+"name_ar": "تشياوتو"
+},
+{
+"name_en": "Yuyao",
+"country": "CN",
+"name_ar": "يويياو"
+},
+{
+"name_en": "Zhaozhou",
+"country": "CN",
+"name_ar": "تشاوجو"
+},
+{
+"name_en": "Wansheng",
+"country": "CN",
+"name_ar": "وانشنغ"
+},
+{
+"name_en": "Wayaobu",
+"country": "CN",
+"name_ar": "واياوبو"
+},
+{
+"name_en": "Pingshan",
+"country": "CN",
+"name_ar": "بينغشان"
+},
+{
+"name_en": "Songyuan",
+"country": "CN",
+"name_ar": "سونغيوان"
+},
+{
+"name_en": "Maba",
+"country": "CN",
+"name_ar": "ما با"
+},
+{
+"name_en": "Chengqiao",
+"country": "CN",
+"name_ar": "تشنغتشياو"
+},
+{
+"name_en": "Taonan",
+"country": "CN",
+"name_ar": "تاونان"
+},
+{
+"name_en": "Haikou",
+"country": "CN",
+"name_ar": "هايكو"
+},
+{
+"name_en": "Shaowu",
+"country": "CN",
+"name_ar": "شاووو"
+},
+{
+"name_en": "Mengmao",
+"country": "CN",
+"name_ar": "منغماو"
+},
+{
+"name_en": "Kaiyuan",
+"country": "CN",
+"name_ar": "كايوان"
+},
+{
+"name_en": "Wuzhishan",
+"country": "CN",
+"name_ar": "ووجيشان"
+},
+{
+"name_en": "Xigang",
+"country": "CN",
+"name_ar": "شيغانغ"
+},
+{
+"name_en": "Chóngfú",
+"country": "CN",
+"name_ar": "تشونغفو"
+},
+{
+"name_en": "Encheng",
+"country": "CN",
+"name_ar": "إنتشنغ"
+},
+{
+"name_en": "Zhuji",
+"country": "CN",
+"name_ar": "جوجي"
+},
+{
+"name_en": "Datun",
+"country": "CN",
+"name_ar": "داتون"
+},
+{
+"name_en": "Qingnian",
+"country": "CN",
+"name_ar": "تشينغنيان"
+},
+{
+"name_en": "Linshui",
+"country": "CN",
+"name_ar": "لينشوي"
+},
+{
+"name_en": "Hailun",
+"country": "CN",
+"name_ar": "هايلون"
+},
+{
+"name_en": "Shilong",
+"country": "CN",
+"name_ar": "شيلونغ"
+},
+{
+"name_en": "Didao",
+"country": "CN",
+"name_ar": "ديداو"
+},
+{
+"name_en": "Jianchang",
+"country": "CN",
+"name_ar": "جيانتشانغ"
+},
+{
+"name_en": "Hulan",
+"country": "CN",
+"name_ar": "هولان"
+},
+{
+"name_en": "Zhongxiang",
+"country": "CN",
+"name_ar": "تشونغشيانغ"
+},
+{
+"name_en": "Dehui",
+"country": "CN",
+"name_ar": "ديهوي"
+},
+{
+"name_en": "Hanjia",
+"country": "CN",
+"name_ar": "هانجيا"
+},
+{
+"name_en": "Taibai",
+"country": "CN",
+"name_ar": "تايبي"
+},
+{
+"name_en": "Xuyong",
+"country": "CN",
+"name_ar": "شويونغ"
+},
+{
+"name_en": "Nehe",
+"country": "CN",
+"name_ar": "نيهه"
+},
+{
+"name_en": "Jalai Nur",
+"country": "CN",
+"name_ar": "جالاي نور"
+},
+{
+"name_en": "Tieli",
+"country": "CN",
+"name_ar": "تيلي"
+},
+{
+"name_en": "Shaping",
+"country": "CN",
+"name_ar": "شابينغ"
+},
+{
+"name_en": "Anning",
+"country": "CN",
+"name_ar": "آنينغ"
+},
+{
+"name_en": "Longjiang",
+"country": "CN",
+"name_ar": "لونغجيانغ"
+},
+{
+"name_en": "Buhe",
+"country": "CN",
+"name_ar": "بوخه"
+},
+{
+"name_en": "Xinghua",
+"country": "CN",
+"name_ar": "شينغهوا"
+},
+{
+"name_en": "Chengtangcun",
+"country": "CN",
+"name_ar": "تشنغتانغتسون"
+},
+{
+"name_en": "Yidu",
+"country": "CN",
+"name_ar": "يدو"
+},
+{
+"name_en": "Zhonghe",
+"country": "CN",
+"name_ar": "تشونغخه"
+},
+{
+"name_en": "Puyang Chengguanzhen",
+"country": "CN",
+"name_ar": "بويانغ تشنغجوانجن"
+},
+{
+"name_en": "Daxing",
+"country": "CN",
+"name_ar": "داشينغ"
+},
+{
+"name_en": "Yezhou",
+"country": "CN",
+"name_ar": "يي جو"
+},
+{
+"name_en": "Pailou",
+"country": "CN",
+"name_ar": "بايلو"
+},
+{
+"name_en": "Pulandian",
+"country": "CN",
+"name_ar": "بولانديان"
+},
+{
+"name_en": "Wuchuan",
+"country": "CN",
+"name_ar": "ووتشوان"
+},
+{
+"name_en": "Salaqi",
+"country": "CN",
+"name_ar": "سالاتشي"
+},
+{
+"name_en": "Jishu",
+"country": "CN",
+"name_ar": "جيشو"
+},
+{
+"name_en": "Yuxi",
+"country": "CN",
+"name_ar": "يوشي"
+},
+{
+"name_en": "Bashan",
+"country": "CN",
+"name_ar": "باشان"
+},
+{
+"name_en": "Tongren",
+"country": "CN",
+"name_ar": "تونغرن"
+},
+{
+"name_en": "Gangu Chengguanzhen",
+"country": "CN",
+"name_ar": "قانغو تشنغجوانجن"
+},
+{
+"name_en": "Xincheng",
+"country": "CN",
+"name_ar": "شينتشنغ"
+},
+{
+"name_en": "Jishou",
+"country": "CN",
+"name_ar": "جيشو"
+},
+{
+"name_en": "Shuifu",
+"country": "CN",
+"name_ar": "شويفو"
+},
+{
+"name_en": "Hedong",
+"country": "CN",
+"name_ar": "خه دونغ"
+},
+{
+"name_en": "Huacheng",
+"country": "CN",
+"name_ar": "هواتشنغ"
+},
+{
+"name_en": "Lianjiang",
+"country": "CN",
+"name_ar": "ليانجيانغ"
+},
+{
+"name_en": "Linxi",
+"country": "CN",
+"name_ar": "لينشي"
+},
+{
+"name_en": "Xinzhai",
+"country": "CN",
+"name_ar": "شينتشاي"
+},
+{
+"name_en": "Kangding",
+"country": "CN",
+"name_ar": "كانغدينغ"
+},
+{
+"name_en": "Kennedy",
+"country": "CO",
+"name_ar": "كينيدي"
+},
+{
+"name_en": "Soacha",
+"country": "CO",
+"name_ar": "سواتشا"
+},
+{
+"name_en": "Santo Domingo",
+"country": "DO",
+"name_ar": "سانتو دومينغو"
+},
+{
+"name_en": "Santo Domingo Oeste",
+"country": "DO",
+"name_ar": "سانتو دومينغو أوستي"
+},
+{
+"name_en": "Santo Domingo Este",
+"country": "DO",
+"name_ar": "سانتو دومينغو إيستي"
+},
+{
+"name_en": "Cuenca",
+"country": "EC",
+"name_ar": "كوينكا"
+},
+{
+"name_en": "Jijiga",
+"country": "ET",
+"name_ar": "جيجيغا"
+},
+{
+"name_en": "Gonder",
+"country": "ET",
+"name_ar": "غوندار"
+},
+{
+"name_en": "Mek'ele",
+"country": "ET",
+"name_ar": "مقلي"
+},
+{
+"name_en": "Nazrēt",
+"country": "ET",
+"name_ar": "نازرت"
+},
+{
+"name_en": "Warder",
+"country": "ET",
+"name_ar": "وردير"
+},
+{
+"name_en": "Awasa",
+"country": "ET",
+"name_ar": "أواسا"
+},
+{
+"name_en": "Shashamane",
+"country": "ET",
+"name_ar": "شاشامانه"
+},
+{
+"name_en": "Bishoftu",
+"country": "ET",
+"name_ar": "بيشوفتو"
+},
+{
+"name_en": "Sodo",
+"country": "ET",
+"name_ar": "سودو"
+},
+{
+"name_en": "Arba Minch",
+"country": "ET",
+"name_ar": "أربا مينش"
+},
+{
+"name_en": "Hosa’ina",
+"country": "ET",
+"name_ar": "هوسانا"
+},
+{
+"name_en": "Dīla",
+"country": "ET",
+"name_ar": "ديلا"
+},
+{
+"name_en": "Nek’emtē",
+"country": "ET",
+"name_ar": "نقمتي"
+},
+{
+"name_en": "Ārabī",
+"country": "ET",
+"name_ar": "أرابي"
+},
+{
+"name_en": "Debre Mark’os",
+"country": "ET",
+"name_ar": "دبرمرقس"
+},
+{
+"name_en": "Āsela",
+"country": "ET",
+"name_ar": "أسيلا"
+},
+{
+"name_en": "Ādīgrat",
+"country": "ET",
+"name_ar": "أديغرات"
+},
+{
+"name_en": "Sebeta",
+"country": "ET",
+"name_ar": "سيبيتا"
+},
+{
+"name_en": "Burayu",
+"country": "ET",
+"name_ar": "بورايو"
+},
+{
+"name_en": "Inda Silasē",
+"country": "ET",
+"name_ar": "إنداسيلاسي"
+},
+{
+"name_en": "Palikir",
+"country": "FM",
+"name_ar": "باليكير"
+},
+{
+"name_en": "Saint George's",
+"country": "GD",
+"name_ar": "سانت جورجز"
+},
+{
+"name_en": "Conakry",
+"country": "GN",
+"name_ar": "كوناكري"
+},
+{
+"name_en": "Camayenne",
+"country": "GN",
+"name_ar": "كامايان"
+},
+{
+"name_en": "Nzérékoré",
+"country": "GN",
+"name_ar": "نزيريكوري"
+},
+{
+"name_en": "Kankan",
+"country": "GN",
+"name_ar": "كانكان"
+},
+{
+"name_en": "Manéah",
+"country": "GN",
+"name_ar": "مانيا"
+},
+{
+"name_en": "Dubréka",
+"country": "GN",
+"name_ar": "دوبريكا"
+},
+{
+"name_en": "Kindia",
+"country": "GN",
+"name_ar": "كيندا"
+},
+{
+"name_en": "Siguiri",
+"country": "GN",
+"name_ar": "سيغيري"
+},
+{
+"name_en": "Dixinn",
+"country": "GN",
+"name_ar": "ديكسان"
+},
+{
+"name_en": "Kissidougou",
+"country": "GN",
+"name_ar": "كيسيدوغو"
+},
+{
+"name_en": "Kamsar",
+"country": "GN",
+"name_ar": "كامسار"
+},
+{
+"name_en": "Labé",
+"country": "GN",
+"name_ar": "لابي"
+},
+{
+"name_en": "Grytviken",
+"country": "GS",
+"name_ar": "غريتفيكن"
+},
+{
+"name_en": "Villa Nueva",
+"country": "GT",
+"name_ar": "فيا نويفا"
+},
+{
+"name_en": "New Territories",
+"country": "HK",
+"name_ar": "الأقاليم الجديدة"
+},
+{
+"name_en": "Kowloon",
+"country": "HK",
+"name_ar": "كاولون"
+},
+{
+"name_en": "Hong Kong Island",
+"country": "HK",
+"name_ar": "جزيرة هونغ كونغ"
+},
+{
+"name_en": "Victoria",
+"country": "HK",
+"name_ar": "فيكتوريا"
+},
+{
+"name_en": "Tuen Mun",
+"country": "HK",
+"name_ar": "تشوين مون"
+},
+{
+"name_en": "Carrefour",
+"country": "HT",
+"name_ar": "كارفور"
+},
+{
+"name_en": "Depok",
+"country": "ID",
+"name_ar": "دبوك"
+},
+{
+"name_en": "Tangerang",
+"country": "ID",
+"name_ar": "تانغيرانغ"
+},
+{
+"name_en": "Makassar",
+"country": "ID",
+"name_ar": "ماكاسار"
+},
+{
+"name_en": "South Tangerang",
+"country": "ID",
+"name_ar": "تانغيرانغ الجنوبية"
+},
+{
+"name_en": "Pekanbaru",
+"country": "ID",
+"name_ar": "بيكانبارو"
+},
+{
+"name_en": "Bandar Lampung",
+"country": "ID",
+"name_ar": "باندار لامبونغ"
+},
+{
+"name_en": "Tasikmalaya",
+"country": "ID",
+"name_ar": "تاسيكمالايا"
+},
+{
+"name_en": "Serang",
+"country": "ID",
+"name_ar": "سيراغ"
+},
+{
+"name_en": "Balikpapan",
+"country": "ID",
+"name_ar": "باليكبابان"
+},
+{
+"name_en": "Situbondo",
+"country": "ID",
+"name_ar": "سيتوبوندو"
+},
+{
+"name_en": "Denpasar",
+"country": "ID",
+"name_ar": "دنباسار"
+},
+{
+"name_en": "Banjarmasin",
+"country": "ID",
+"name_ar": "بانجارماسين"
+},
+{
+"name_en": "Cimahi",
+"country": "ID",
+"name_ar": "شيماهي"
+},
+{
+"name_en": "Kupang",
+"country": "ID",
+"name_ar": "كوبانغ"
+},
+{
+"name_en": "Cilegon",
+"country": "ID",
+"name_ar": "سيلغون"
+},
+{
+"name_en": "Jayapura",
+"country": "ID",
+"name_ar": "جايابورا"
+},
+{
+"name_en": "Palu",
+"country": "ID",
+"name_ar": "بالو"
+},
+{
+"name_en": "Sukabumi",
+"country": "ID",
+"name_ar": "سوكابومي"
+},
+{
+"name_en": "Cibinong",
+"country": "ID",
+"name_ar": "سيبينونغ"
+},
+{
+"name_en": "Kendari",
+"country": "ID",
+"name_ar": "كندري"
+},
+{
+"name_en": "Dumai",
+"country": "ID",
+"name_ar": "دوماي"
+},
+{
+"name_en": "Pekalongan",
+"country": "ID",
+"name_ar": "بيكالونغان"
+},
+{
+"name_en": "Palangkaraya",
+"country": "ID",
+"name_ar": "بالانكارايا"
+},
+{
+"name_en": "Percut",
+"country": "ID",
+"name_ar": "بيركوت"
+},
+{
+"name_en": "Karawang",
+"country": "ID",
+"name_ar": "كاراوانغ"
+},
+{
+"name_en": "Jember",
+"country": "ID",
+"name_ar": "جمبر"
+},
+{
+"name_en": "Banjarbaru",
+"country": "ID",
+"name_ar": "بانجاربارو"
+},
+{
+"name_en": "Cileungsir",
+"country": "ID",
+"name_ar": "سيلونغسير"
+},
+{
+"name_en": "Binjai",
+"country": "ID",
+"name_ar": "بينجاي"
+}
+]
+},
+"name:4": {
+"names": [
+{
+"country": "ID",
+"name_en": "Pematangsiantar",
+"name_ar": "بماتانغسيانتار"
+},
+{
+"country": "ID",
+"name_en": "Pasarkemis",
+"name_ar": "باساركيميس"
+},
+{
+"country": "ID",
+"name_en": "Cilacap",
+"name_ar": "تشيلاتشاب"
+},
+{
+"country": "ID",
+"name_en": "Singkawang",
+"name_ar": "سينغكاوانغ"
+},
+{
+"country": "ID",
+"name_en": "Padangsidempuan",
+"name_ar": "بادانغسيدمبوان"
+},
+{
+"country": "ID",
+"name_en": "Probolinggo",
+"name_ar": "بروبولينغو"
+},
+{
+"country": "ID",
+"name_en": "Toli-Toli",
+"name_ar": "تولي تولي"
+},
+{
+"country": "ID",
+"name_en": "Lubuklinggau",
+"name_ar": "لوبوكلينغاو"
+},
+{
+"country": "ID",
+"name_en": "Purwokerto",
+"name_ar": "بوروكرتو"
+},
+{
+"country": "ID",
+"name_en": "Pangkalpinang",
+"name_ar": "بانغكالبينانغ"
+},
+{
+"country": "ID",
+"name_en": "Batu",
+"name_ar": "باتو"
+},
+{
+"country": "ID",
+"name_en": "Klungkung",
+"name_ar": "كلونغكونغ"
+},
+{
+"country": "ID",
+"name_en": "Sorong",
+"name_ar": "سورونغ"
+},
+{
+"country": "ID",
+"name_en": "Citeureup",
+"name_ar": "تشيتوروب"
+},
+{
+"country": "ID",
+"name_en": "Pasuruan",
+"name_ar": "باسوروان"
+},
+{
+"country": "ID",
+"name_en": "Loa Janan",
+"name_ar": "لوا جانان"
+},
+{
+"country": "ID",
+"name_en": "Ternate",
+"name_ar": "تيرنات"
+},
+{
+"country": "ID",
+"name_en": "Banjar",
+"name_ar": "بانجار"
+},
+{
+"country": "ID",
+"name_en": "Ciputat",
+"name_ar": "تشيبوتات"
+},
+{
+"country": "ID",
+"name_en": "Ciampea",
+"name_ar": "تشيامبيا"
+},
+{
+"country": "ID",
+"name_en": "Gorontalo",
+"name_ar": "غورونتالو"
+},
+{
+"country": "ID",
+"name_en": "Madiun",
+"name_ar": "ماديون"
+},
+{
+"country": "ID",
+"name_en": "Rengasdengklok",
+"name_ar": "رينغاسدنغكلوك"
+},
+{
+"country": "ID",
+"name_en": "Lhokseumawe",
+"name_ar": "لوكسوماوي"
+},
+{
+"country": "ID",
+"name_en": "Sumedang",
+"name_ar": "سومدانغ"
+},
+{
+"country": "ID",
+"name_en": "Salatiga",
+"name_ar": "سالاتيغا"
+},
+{
+"country": "ID",
+"name_en": "Sawangan",
+"name_ar": "ساوانغان"
+},
+{
+"country": "ID",
+"name_en": "Bontang",
+"name_ar": "بونتانغ"
+},
+{
+"country": "ID",
+"name_en": "Padalarang",
+"name_ar": "بادالارانغ"
+},
+{
+"country": "ID",
+"name_en": "Curug",
+"name_ar": "تشوروغ"
+},
+{
+"country": "ID",
+"name_en": "Tanjungbalai",
+"name_ar": "تنجونغ بالاي"
+},
+{
+"country": "ID",
+"name_en": "Labuan Bajo",
+"name_ar": "لابوان باجو"
+},
+{
+"country": "ID",
+"name_en": "Palopo",
+"name_ar": "بالوبو"
+},
+{
+"country": "ID",
+"name_en": "Pemalang",
+"name_ar": "بيمالانغ"
+},
+{
+"country": "ID",
+"name_en": "Langsa",
+"name_ar": "لانغسا"
+},
+{
+"country": "ID",
+"name_en": "Lembang",
+"name_ar": "لمبانغ"
+},
+{
+"country": "ID",
+"name_en": "Singosari",
+"name_ar": "سينغوساري"
+},
+{
+"country": "ID",
+"name_en": "Metro",
+"name_ar": "ميترو"
+},
+{
+"country": "ID",
+"name_en": "Purwakarta",
+"name_ar": "بورواكرتا"
+},
+{
+"country": "ID",
+"name_en": "Teluknaga",
+"name_ar": "تيلوكناغا"
+},
+{
+"country": "ID",
+"name_en": "Cianjur",
+"name_ar": "تشيانجور"
+},
+{
+"country": "ID",
+"name_en": "Pamulang",
+"name_ar": "بامولانغ"
+},
+{
+"country": "ID",
+"name_en": "Cikupa",
+"name_ar": "تشيكوبا"
+},
+{
+"country": "ID",
+"name_en": "Ungaran",
+"name_ar": "أونغاران"
+},
+{
+"country": "ID",
+"name_en": "Plumbon",
+"name_ar": "بلومبون"
+},
+{
+"country": "ID",
+"name_en": "Sampit",
+"name_ar": "سامبيت"
+},
+{
+"country": "ID",
+"name_en": "Bima",
+"name_ar": "بيما"
+},
+{
+"country": "ID",
+"name_en": "Banjaran",
+"name_ar": "بانجاران"
+},
+{
+"country": "ID",
+"name_en": "Baubau",
+"name_ar": "باوباو"
+},
+{
+"country": "ID",
+"name_en": "Blitar",
+"name_ar": "بليتار"
+},
+{
+"country": "ID",
+"name_en": "Parepare",
+"name_ar": "باريباري"
+},
+{
+"country": "ID",
+"name_en": "Sunggal",
+"name_ar": "سونغغال"
+},
+{
+"country": "ID",
+"name_en": "Perbaungan",
+"name_ar": "بربونغان"
+},
+{
+"country": "ID",
+"name_en": "Watampone",
+"name_ar": "واتامبون"
+},
+{
+"country": "ID",
+"name_en": "Astanajapura",
+"name_ar": "أستاناجابورا"
+},
+{
+"country": "ID",
+"name_en": "Timika",
+"name_ar": "تيميكا"
+},
+{
+"country": "ID",
+"name_en": "Kisaran",
+"name_ar": "كيساران"
+},
+{
+"country": "ID",
+"name_en": "Mojokerto",
+"name_ar": "موجوكرتو"
+},
+{
+"country": "ID",
+"name_en": "Payakumbuh",
+"name_ar": "باياكومبوه"
+},
+{
+"country": "ID",
+"name_en": "Batang",
+"name_ar": "باتانغ"
+},
+{
+"country": "ID",
+"name_en": "Purwodadi",
+"name_ar": "بورواداي"
+},
+{
+"country": "ID",
+"name_en": "Sidoarjo",
+"name_ar": "سيدوارجو"
+},
+{
+"country": "ID",
+"name_en": "Weru",
+"name_ar": "ويرو"
+},
+{
+"country": "ID",
+"name_en": "Subang",
+"name_ar": "سوبانغ"
+},
+{
+"country": "ID",
+"name_en": "Rangkasbitung",
+"name_ar": "رانغكاسبيتونغ"
+},
+{
+"country": "ID",
+"name_en": "Gunungsitoli",
+"name_ar": "غونونغسيتولي"
+},
+{
+"country": "ID",
+"name_en": "Baturaja",
+"name_ar": "باتورجا"
+},
+{
+"country": "ID",
+"name_en": "Adiwerna",
+"name_ar": "أديورنا"
+},
+{
+"country": "ID",
+"name_en": "Singaraja",
+"name_ar": "سينغاراجا"
+},
+{
+"country": "ID",
+"name_en": "Garut",
+"name_ar": "غاروت"
+},
+{
+"country": "ID",
+"name_en": "Martapura",
+"name_ar": "مارتابورا"
+},
+{
+"country": "ID",
+"name_en": "Parung",
+"name_ar": "بارونغ"
+},
+{
+"country": "ID",
+"name_en": "Magelang",
+"name_ar": "ماغيلانغ"
+},
+{
+"country": "ID",
+"name_en": "Cikampek",
+"name_ar": "تشيكامبك"
+},
+{
+"country": "ID",
+"name_en": "Klaten",
+"name_ar": "كلاتن"
+},
+{
+"country": "ID",
+"name_en": "Jombang",
+"name_ar": "جومبانغ"
+},
+{
+"country": "ID",
+"name_en": "Paseh",
+"name_ar": "باسيه"
+},
+{
+"country": "ID",
+"name_en": "Sukawati",
+"name_ar": "سوكاواتي"
+},
+{
+"country": "ID",
+"name_en": "Lumajang",
+"name_ar": "لوماجانغ"
+},
+{
+"country": "ID",
+"name_en": "Indramayu",
+"name_ar": "إندرامايو"
+},
+{
+"country": "ID",
+"name_en": "Kotamobagu",
+"name_ar": "كوتاموباغو"
+},
+{
+"country": "ID",
+"name_en": "Bukittinggi",
+"name_ar": "بوكيتينغي"
+},
+{
+"country": "ID",
+"name_en": "Sepatan",
+"name_ar": "سيباتان"
+},
+{
+"country": "ID",
+"name_en": "Banyuwangi",
+"name_ar": "بانيووانغي"
+},
+{
+"country": "ID",
+"name_en": "Tebingtinggi",
+"name_ar": "تبينغتينغي"
+},
+{
+"country": "ID",
+"name_en": "Kedungwuni",
+"name_ar": "كدونغوني"
+},
+{
+"country": "ID",
+"name_en": "Soreang",
+"name_ar": "سوريانغ"
+},
+{
+"country": "ID",
+"name_en": "Pamanukan",
+"name_ar": "باماننوكان"
+},
+{
+"country": "ID",
+"name_en": "Lawang",
+"name_ar": "لاوانغ"
+},
+{
+"country": "ID",
+"name_en": "Kuningan",
+"name_ar": "كونينغان"
+},
+{
+"country": "ID",
+"name_en": "Cileunyi",
+"name_ar": "تشيلونيي"
+},
+{
+"country": "ID",
+"name_en": "Kresek",
+"name_ar": "كريسك"
+},
+{
+"country": "ID",
+"name_en": "Ciamis",
+"name_ar": "تشيامس"
+},
+{
+"country": "ID",
+"name_en": "Pelabuhanratu",
+"name_ar": "بيلابوهانراتو"
+},
+{
+"country": "ID",
+"name_en": "Pangkalanbuun",
+"name_ar": "بانغكالانبون"
+},
+{
+"country": "ID",
+"name_en": "Pati",
+"name_ar": "باتي"
+},
+{
+"country": "ID",
+"name_en": "Cikarang",
+"name_ar": "تشيكارانغ"
+},
+{
+"country": "ID",
+"name_en": "Pare",
+"name_ar": "باري"
+},
+{
+"country": "ID",
+"name_en": "Arjawinangun",
+"name_ar": "أرجاوينانغون"
+},
+{
+"country": "ID",
+"name_en": "Subulussalam",
+"name_ar": "سوبولوسسلام"
+},
+{
+"country": "ID",
+"name_en": "Depok",
+"name_ar": "دوبوك"
+},
+{
+"country": "ID",
+"name_en": "Prabumulih",
+"name_ar": "برابوموليه"
+},
+{
+"country": "ID",
+"name_en": "Tanjung Pandan",
+"name_ar": "تنجونغ باندان"
+},
+{
+"country": "ID",
+"name_en": "Rantauprapat",
+"name_ar": "رانتاوبرابات"
+},
+{
+"country": "ID",
+"name_en": "Belawan",
+"name_ar": "بيلاوان"
+},
+{
+"country": "ID",
+"name_en": "Sungai Penuh",
+"name_ar": "سونغاي بينوه"
+},
+{
+"country": "ID",
+"name_en": "Sungailiat",
+"name_ar": "سونغايليات"
+},
+{
+"country": "ID",
+"name_en": "Grogol",
+"name_ar": "غروغول"
+},
+{
+"country": "ID",
+"name_en": "Negara",
+"name_ar": "نيغارا"
+},
+{
+"country": "ID",
+"name_en": "Sumedang Utara",
+"name_ar": "سومدانغ أوتارا"
+},
+{
+"country": "IN",
+"name_en": "Hyderabad",
+"name_ar": "حيدرآباد"
+},
+{
+"country": "IN",
+"name_en": "Surat",
+"name_ar": "سورات"
+},
+{
+"country": "IN",
+"name_en": "Kanpur",
+"name_ar": "كانبور"
+},
+{
+"country": "IN",
+"name_en": "Navi Mumbai",
+"name_ar": "نافي مومباي"
+},
+{
+"country": "IN",
+"name_en": "Rasapūdipalem",
+"name_ar": "راسابوديبالم"
+},
+{
+"country": "IN",
+"name_en": "Pimpri-Chinchwad",
+"name_ar": "بيمبري تشينشوار"
+},
+{
+"country": "IN",
+"name_en": "Kallakurichi",
+"name_ar": "كالاكوريتشي"
+},
+{
+"country": "IN",
+"name_en": "Ludhiana",
+"name_ar": "لودهيانا"
+},
+{
+"country": "IN",
+"name_en": "Nashik",
+"name_ar": "ناشيك"
+},
+{
+"country": "IN",
+"name_en": "Agra",
+"name_ar": "آغرا"
+},
+{
+"country": "IN",
+"name_en": "Faridabad",
+"name_ar": "فاريداباد"
+},
+{
+"country": "IN",
+"name_en": "Rājkot",
+"name_ar": "راجكوت"
+},
+{
+"country": "IN",
+"name_en": "Najafgarh",
+"name_ar": "نجف غار"
+},
+{
+"country": "IN",
+"name_en": "Gorakhpur",
+"name_ar": "غوراخبور"
+},
+{
+"country": "IN",
+"name_en": "Pimpri",
+"name_ar": "بيمبري"
+},
+{
+"country": "IN",
+"name_en": "Kalyān",
+"name_ar": "كاليان"
+},
+{
+"country": "IN",
+"name_en": "Dombivali",
+"name_ar": "دومبيفالي"
+},
+{
+"country": "IN",
+"name_en": "Virār",
+"name_ar": "فيرار"
+},
+{
+"country": "IN",
+"name_en": "Nowrangapur",
+"name_ar": "نواربانغابور"
+},
+{
+"country": "IN",
+"name_en": "Ghāziābād",
+"name_ar": "غازي آباد"
+},
+{
+"country": "IN",
+"name_en": "Prayagraj",
+"name_ar": "براياغراج"
+},
+{
+"country": "IN",
+"name_en": "Gwalior",
+"name_ar": "غواليور"
+},
+{
+"country": "IN",
+"name_en": "Teni",
+"name_ar": "تيني"
+},
+{
+"country": "IN",
+"name_en": "Howrah",
+"name_ar": "هاورا"
+},
+{
+"country": "IN",
+"name_en": "Tiruchirappalli",
+"name_ar": "تيروتشيرابالي"
+},
+{
+"country": "IN",
+"name_en": "Kota",
+"name_ar": "كوتا"
+},
+{
+"country": "IN",
+"name_en": "Shivaji Nagar",
+"name_ar": "شيفاجي ناغار"
+},
+{
+"country": "IN",
+"name_en": "Sholapur",
+"name_ar": "شولابور"
+},
+{
+"country": "IN",
+"name_en": "Chandigarh",
+"name_ar": "تشانديغار"
+},
+{
+"country": "IN",
+"name_en": "Tiruppur",
+"name_ar": "تيروبور"
+},
+{
+"country": "IN",
+"name_en": "Hubballi",
+"name_ar": "هوبالي"
+},
+{
+"country": "IN",
+"name_en": "Bhubaneswar",
+"name_ar": "بوبانيسوار"
+},
+{
+"country": "IN",
+"name_en": "Rohini",
+"name_ar": "روهيني"
+},
+{
+"country": "IN",
+"name_en": "Kanayannur",
+"name_ar": "كاناياناور"
+},
+{
+"country": "IN",
+"name_en": "Narela",
+"name_ar": "ناريلا"
+},
+{
+"country": "IN",
+"name_en": "Alīgarh",
+"name_ar": "أليغار"
+},
+{
+"country": "IN",
+"name_en": "Morādābād",
+"name_ar": "مورادآباد"
+},
+{
+"country": "IN",
+"name_en": "Dhārāvi",
+"name_ar": "دهاراوي"
+},
+{
+"country": "IN",
+"name_en": "Puducherry",
+"name_ar": "بودوتشيري"
+},
+{
+"country": "IN",
+"name_en": "Jājmau",
+"name_ar": "جاجمو"
+},
+{
+"country": "IN",
+"name_en": "Amravati",
+"name_ar": "أمرافاتي"
+},
+{
+"country": "IN",
+"name_en": "Bikaner",
+"name_ar": "بيكانير"
+},
+{
+"country": "IN",
+"name_en": "Kochi",
+"name_ar": "كوتشي"
+},
+{
+"country": "IN",
+"name_en": "Bhilai",
+"name_ar": "بهيلاي"
+},
+{
+"country": "IN",
+"name_en": "Cuttack",
+"name_ar": "كاتاك"
+},
+{
+"country": "IN",
+"name_en": "Borivli",
+"name_ar": "بوريفالي"
+},
+{
+"country": "IN",
+"name_en": "Bhavnagar",
+"name_ar": "بهافناغار"
+},
+{
+"country": "IN",
+"name_en": "Sāngli",
+"name_ar": "سانغلي"
+},
+{
+"country": "IN",
+"name_en": "Jammu",
+"name_ar": "جامو"
+},
+{
+"country": "IN",
+"name_en": "Bokāro",
+"name_ar": "بوكارو"
+},
+{
+"country": "IN",
+"name_en": "Kolhāpur",
+"name_ar": "كولهابور"
+},
+{
+"country": "IN",
+"name_en": "Erode",
+"name_ar": "إيرود"
+},
+{
+"country": "IN",
+"name_en": "Durgapur",
+"name_ar": "دورغابور"
+},
+{
+"country": "IN",
+"name_en": "Loni",
+"name_ar": "لوني"
+},
+{
+"country": "IN",
+"name_en": "Siliguri",
+"name_ar": "سيليغوري"
+},
+{
+"country": "IN",
+"name_en": "Bilimora",
+"name_ar": "بيليمورا"
+},
+{
+"country": "IN",
+"name_en": "Karol Bāgh",
+"name_ar": "كارول باغ"
+},
+{
+"country": "IN",
+"name_en": "Āsansol",
+"name_ar": "آسانسول"
+},
+{
+"country": "IN",
+"name_en": "Belagavi",
+"name_ar": "بيلاغافي"
+},
+{
+"country": "IN",
+"name_en": "Sahāranpur",
+"name_ar": "سهارانبور"
+},
+{
+"country": "IN",
+"name_en": "Vellore",
+"name_ar": "فيلور"
+},
+{
+"country": "IN",
+"name_en": "Bhātpāra",
+"name_ar": "بهاتبارا"
+},
+{
+"country": "IN",
+"name_en": "Malegaon",
+"name_ar": "مالغاون"
+},
+{
+"country": "IN",
+"name_en": "Gaya",
+"name_ar": "غايا"
+},
+{
+"country": "IN",
+"name_en": "Ambattur",
+"name_ar": "أمباتور"
+},
+{
+"country": "IN",
+"name_en": "Jalgaon",
+"name_ar": "جالغاون"
+},
+{
+"country": "IN",
+"name_en": "Rāmgundam",
+"name_ar": "رامغوندام"
+},
+{
+"country": "IN",
+"name_en": "Udaipur",
+"name_ar": "أودايبور"
+},
+{
+"country": "IN",
+"name_en": "Maheshtala",
+"name_ar": "ماهيشتالا"
+},
+{
+"country": "IN",
+"name_en": "Patiāla",
+"name_ar": "باتيالا"
+},
+{
+"country": "IN",
+"name_en": "Shyamnagar",
+"name_ar": "شياماناغار"
+},
+{
+"country": "IN",
+"name_en": "Davangere",
+"name_ar": "دافانغيري"
+},
+{
+"country": "IN",
+"name_en": "Akola",
+"name_ar": "أكولا"
+},
+{
+"country": "IN",
+"name_en": "Rajpur Sonarpur",
+"name_ar": "راجبور سوناربور"
+},
+{
+"country": "IN",
+"name_en": "Korba",
+"name_ar": "كوربا"
+},
+{
+"country": "IN",
+"name_en": "Jhānsi",
+"name_ar": "جانسي"
+},
+{
+"country": "IN",
+"name_en": "Thoothukudi",
+"name_ar": "توتوكودي"
+},
+{
+"country": "IN",
+"name_en": "Ballari",
+"name_ar": "بلاري"
+},
+{
+"country": "IN",
+"name_en": "Bhāgalpur",
+"name_ar": "بهاغالبور"
+},
+{
+"country": "IN",
+"name_en": "Agartala",
+"name_ar": "أغارتالا"
+},
+{
+"country": "IN",
+"name_en": "Kākināda",
+"name_ar": "كاكيناضا"
+},
+{
+"country": "IN",
+"name_en": "Pānihāti",
+"name_ar": "باني هاتي"
+},
+{
+"country": "IN",
+"name_en": "Rajamahendravaram",
+"name_ar": "راجامهيندرافارام"
+},
+{
+"country": "IN",
+"name_en": "Kollam",
+"name_ar": "كولام"
+},
+{
+"country": "IN",
+"name_en": "Bilāspur",
+"name_ar": "بيلاسبور"
+},
+{
+"country": "IN",
+"name_en": "Bhilwara",
+"name_ar": "بهيلوارا"
+},
+{
+"country": "IN",
+"name_en": "Brahmapur",
+"name_ar": "براهمابور"
+},
+{
+"country": "IN",
+"name_en": "Punāsa",
+"name_ar": "بوناسا"
+},
+{
+"country": "IN",
+"name_en": "Muzaffarnagar",
+"name_ar": "مظفر نغار"
+},
+{
+"country": "IN",
+"name_en": "Avadi",
+"name_ar": "أفادي"
+},
+{
+"country": "IN",
+"name_en": "Kadapa",
+"name_ar": "كادابا"
+},
+{
+"country": "IN",
+"name_en": "Kukatpally",
+"name_ar": "كوكاتبالي"
+},
+{
+"country": "IN",
+"name_en": "Kāmārhāti",
+"name_ar": "كامارهاتي"
+},
+{
+"country": "IN",
+"name_en": "Vijayapura",
+"name_ar": "فيجايابورا"
+},
+{
+"country": "IN",
+"name_en": "Shivamogga",
+"name_ar": "شيفاموغا"
+},
+{
+"country": "IN",
+"name_en": "Shāhjānpur",
+"name_ar": "شاهجهانبور"
+},
+{
+"country": "IN",
+"name_en": "Jūnāgadh",
+"name_ar": "جوناغاد"
+},
+{
+"country": "IN",
+"name_en": "Thrissur",
+"name_ar": "تريشور"
+},
+{
+"country": "IN",
+"name_en": "Nizāmābād",
+"name_ar": "نظام آباد"
+},
+{
+"country": "IN",
+"name_en": "Tumkūr",
+"name_ar": "تومكور"
+},
+{
+"country": "IN",
+"name_en": "Parbhani",
+"name_ar": "بارباني"
+},
+{
+"country": "IN",
+"name_en": "Fīrozābād",
+"name_ar": "فيروزآباد"
+},
+{
+"country": "IN",
+"name_en": "Kulti",
+"name_ar": "كولتي"
+},
+{
+"country": "IN",
+"name_en": "Karnāl",
+"name_ar": "كارنال"
+},
+{
+"country": "IN",
+"name_en": "Barddhamān",
+"name_ar": "باردامان"
+},
+{
+"country": "IN",
+"name_en": "Gundupālaiyam",
+"name_ar": "غوندوباليام"
+},
+{
+"country": "IN",
+"name_en": "Bārāsat",
+"name_ar": "باراساتي"
+},
+{
+"country": "IN",
+"name_en": "Mulugu",
+"name_ar": "مولوغو"
+},
+{
+"country": "IN",
+"name_en": "Bihār Sharīf",
+"name_ar": "بيهار شريف"
+},
+{
+"country": "IN",
+"name_en": "Bāli",
+"name_ar": "بالي"
+},
+{
+"country": "IN",
+"name_en": "Rāmpur",
+"name_ar": "رامبور"
+},
+{
+"country": "IN",
+"name_en": "Panipat",
+"name_ar": "بانيبات"
+},
+{
+"country": "IN",
+"name_en": "Tirupati",
+"name_ar": "تيروباتي"
+},
+{
+"country": "IN",
+"name_en": "Gandhinagar",
+"name_ar": "غاندي ناغار"
+},
+{
+"country": "IN",
+"name_en": "Dindigul",
+"name_ar": "ديندغول"
+},
+{
+"country": "IN",
+"name_en": "Karīmnagar",
+"name_ar": "كريمناغار"
+},
+{
+"country": "IN",
+"name_en": "Sonīpat",
+"name_ar": "سونيبات"
+},
+{
+"country": "IN",
+"name_en": "Ichalkaranji",
+"name_ar": "إيتشالكارانجي"
+},
+{
+"country": "IN",
+"name_en": "Bathinda",
+"name_ar": "باثيندا"
+},
+{
+"country": "IN",
+"name_en": "Kirāri Sulemānnagar",
+"name_ar": "كيراري سليمان ناغار"
+},
+{
+"country": "IN",
+"name_en": "Satna",
+"name_ar": "ساتنا"
+},
+{
+"country": "IN",
+"name_en": "Imphal",
+"name_ar": "إمفال"
+},
+{
+"country": "IN",
+"name_en": "Saugor",
+"name_ar": "ساغور"
+},
+{
+"country": "IN",
+"name_en": "Kushinagar",
+"name_ar": "كوشيناغار"
+},
+{
+"country": "IN",
+"name_en": "Rourkela",
+"name_ar": "روركيلا"
+},
+{
+"country": "IN",
+"name_en": "Anantapur",
+"name_ar": "أناناتابور"
+},
+{
+"country": "IN",
+"name_en": "Ratlām",
+"name_ar": "راتلام"
+},
+{
+"country": "IN",
+"name_en": "Rānipet",
+"name_ar": "رانيبيت"
+},
+{
+"country": "IN",
+"name_en": "Lal Bahadur Nagar",
+"name_ar": "لال بهادور ناغار"
+},
+{
+"country": "IN",
+"name_en": "Baranagar",
+"name_ar": "باراناغار"
+},
+{
+"country": "IN",
+"name_en": "Gajuwaka",
+"name_ar": "غاجواكا"
+},
+{
+"country": "IN",
+"name_en": "Etāwah",
+"name_ar": "إيتاوا"
+},
+{
+"country": "IN",
+"name_en": "Ambarnath",
+"name_ar": "أمبرناث"
+},
+{
+"country": "IN",
+"name_en": "Naihāti",
+"name_ar": "نايهاتي"
+},
+{
+"country": "IN",
+"name_en": "Tiruvottiyūr",
+"name_ar": "تيرووتيور"
+}
+]
+},
+"name:5": {
+"names": [
+{
+"country": "IN",
+"name_en": "Gāndhīdhām",
+"name_ar": "غاندهيدهام"
+},
+{
+"country": "IN",
+"name_en": "Sīkar",
+"name_ar": "سيكار"
+},
+{
+"country": "IN",
+"name_en": "Ramagundam",
+"name_ar": "راماغوندام"
+},
+{
+"country": "IN",
+"name_en": "Hāpur",
+"name_ar": "هابور"
+},
+{
+"country": "IN",
+"name_en": "Farrukhābād",
+"name_ar": "فاروخ آباد"
+},
+{
+"country": "IN",
+"name_en": "Alappuzha",
+"name_ar": "ألابوزا"
+},
+{
+"country": "IN",
+"name_en": "Katihar",
+"name_ar": "كاتيهار"
+},
+{
+"country": "IN",
+"name_en": "Sri Ganganagar",
+"name_ar": "سري غانغاناغار"
+},
+{
+"country": "IN",
+"name_en": "Rewa",
+"name_ar": "ريوا"
+},
+{
+"country": "IN",
+"name_en": "Uluberiya",
+"name_ar": "أولوبيريا"
+},
+{
+"country": "IN",
+"name_en": "Sivakasi",
+"name_ar": "سيفاكاسي"
+},
+{
+"country": "IN",
+"name_en": "Rāichūr",
+"name_ar": "رايتشور"
+},
+{
+"country": "IN",
+"name_en": "Pallāvaram",
+"name_ar": "بالافارام"
+},
+{
+"country": "IN",
+"name_en": "Ooty",
+"name_ar": "أوتي"
+},
+{
+"country": "IN",
+"name_en": "Pāli",
+"name_ar": "بالي"
+},
+{
+"country": "IN",
+"name_en": "Hosūr",
+"name_ar": "هوسور"
+},
+{
+"country": "IN",
+"name_en": "Shrīrāmpur",
+"name_ar": "سريرامبور"
+},
+{
+"country": "IN",
+"name_en": "Quthbullapur",
+"name_ar": "قطب الله بور"
+},
+{
+"country": "IN",
+"name_en": "Nadiād",
+"name_ar": "نادياد"
+},
+{
+"country": "IN",
+"name_en": "Nāgercoil",
+"name_ar": "ناجيركويل"
+},
+{
+"country": "IN",
+"name_en": "Karāwalnagar",
+"name_ar": "كاراوالناغار"
+},
+{
+"country": "IN",
+"name_en": "Mango",
+"name_ar": "مانغو"
+},
+{
+"country": "IN",
+"name_en": "Murwāra",
+"name_ar": "مورواره"
+},
+{
+"country": "IN",
+"name_en": "Singrauli",
+"name_ar": "سينغراولي"
+},
+{
+"country": "IN",
+"name_en": "Mirzāpur",
+"name_ar": "ميرزابور"
+},
+{
+"country": "IN",
+"name_en": "Kharagpur",
+"name_ar": "خاراغبور"
+},
+{
+"country": "IN",
+"name_en": "Rāniganj",
+"name_ar": "رانيغانج"
+},
+{
+"country": "IN",
+"name_en": "Yamuna Nagar",
+"name_ar": "ياموناناغار"
+},
+{
+"country": "IN",
+"name_en": "Raurkela Industrial Township",
+"name_ar": "راوركيلا"
+},
+{
+"country": "IN",
+"name_en": "Bidar",
+"name_ar": "بيدار"
+},
+{
+"country": "IN",
+"name_en": "Munger",
+"name_ar": "مونغر"
+},
+{
+"country": "IN",
+"name_en": "Nandyāl",
+"name_ar": "نانديال"
+},
+{
+"country": "IN",
+"name_en": "Burhānpur",
+"name_ar": "برهانبور"
+},
+{
+"country": "IN",
+"name_en": "Morvi",
+"name_ar": "مورفي"
+},
+{
+"country": "IN",
+"name_en": "Ongole",
+"name_ar": "أونغول"
+},
+{
+"country": "IN",
+"name_en": "Hosapete",
+"name_ar": "هوسابيت"
+},
+{
+"country": "IN",
+"name_en": "Nāngloi Jāt",
+"name_ar": "نانغلوي جات"
+},
+{
+"country": "IN",
+"name_en": "Secunderabad",
+"name_ar": "سيكندرآباد"
+},
+{
+"country": "IN",
+"name_en": "Chāpra",
+"name_ar": "تشابرا"
+},
+{
+"country": "IN",
+"name_en": "Khandwa",
+"name_ar": "خاندوا"
+},
+{
+"country": "IN",
+"name_en": "Puri",
+"name_ar": "بوري"
+},
+{
+"country": "IN",
+"name_en": "Morena",
+"name_ar": "مورينا"
+},
+{
+"country": "IN",
+"name_en": "Gyānpur",
+"name_ar": "جيانبور"
+},
+{
+"country": "IN",
+"name_en": "Bhind",
+"name_ar": "بيند"
+},
+{
+"country": "IN",
+"name_en": "Bhālswa Jahangirpur",
+"name_ar": "بهالسوا جاهانغيربور"
+},
+{
+"country": "IN",
+"name_en": "Bhiwāni",
+"name_ar": "بهيواني"
+},
+{
+"country": "IN",
+"name_en": "Panvel",
+"name_ar": "بانفيل"
+},
+{
+"country": "IN",
+"name_en": "Ambāla",
+"name_ar": "أمبالا"
+},
+{
+"country": "IN",
+"name_en": "Kumarapalayam",
+"name_ar": "كوماراباليام"
+},
+{
+"country": "IN",
+"name_en": "Machilīpatnam",
+"name_ar": "ماتشيليباتنام"
+},
+{
+"country": "IN",
+"name_en": "Mahesāna",
+"name_ar": "ماهيسانا"
+},
+{
+"country": "IN",
+"name_en": "Mahbūbnagar",
+"name_ar": "محبوب ناغار"
+},
+{
+"country": "IN",
+"name_en": "Sambalpur",
+"name_ar": "سامبالبور"
+},
+{
+"country": "IN",
+"name_en": "Bhusawal",
+"name_ar": "بهوسوال"
+},
+{
+"country": "IN",
+"name_en": "Haridwar",
+"name_ar": "هاريدوار"
+},
+{
+"country": "IN",
+"name_en": "Phusro",
+"name_ar": "فوسرو"
+},
+{
+"country": "IN",
+"name_en": "Adoni",
+"name_ar": "أدوني"
+},
+{
+"country": "IN",
+"name_en": "Sūjāngarh",
+"name_ar": "سوجانغار"
+},
+{
+"country": "IN",
+"name_en": "Sirsa",
+"name_ar": "سيرسا"
+},
+{
+"country": "IN",
+"name_en": "Dinapur Nizamat",
+"name_ar": "دينابور نظامت"
+},
+{
+"country": "IN",
+"name_en": "Bahraigh",
+"name_ar": "بهريش"
+},
+{
+"country": "IN",
+"name_en": "Kāraikkudi",
+"name_ar": "كارايكودي"
+},
+{
+"country": "IN",
+"name_en": "Sultan Pur Majra",
+"name_ar": "سلطان بور ماجرا"
+},
+{
+"country": "IN",
+"name_en": "Guna",
+"name_ar": "غونا"
+},
+{
+"country": "IN",
+"name_en": "Chandannagar",
+"name_ar": "تشاندانناغار"
+},
+{
+"country": "IN",
+"name_en": "Baharampur",
+"name_ar": "بهارامبور"
+},
+{
+"country": "IN",
+"name_en": "Shahuwadi",
+"name_ar": "شاهوادي"
+},
+{
+"country": "IN",
+"name_en": "Madanapalle",
+"name_ar": "مادانابالي"
+},
+{
+"country": "IN",
+"name_en": "Shivpuri",
+"name_ar": "شيفبوري"
+},
+{
+"country": "IN",
+"name_en": "Surendranagar",
+"name_ar": "سورندرانغار"
+},
+{
+"country": "IN",
+"name_en": "Neyveli",
+"name_ar": "نيفيلي"
+},
+{
+"country": "IN",
+"name_en": "Silchar",
+"name_ar": "سيلتشار"
+},
+{
+"country": "IN",
+"name_en": "Proddatūr",
+"name_ar": "بروداتور"
+},
+{
+"country": "IN",
+"name_en": "Hugli",
+"name_ar": "هوغلي"
+},
+{
+"country": "IN",
+"name_en": "Hashtsāl",
+"name_ar": "هاشتسال"
+},
+{
+"country": "IN",
+"name_en": "Amroha",
+"name_ar": "أمروها"
+},
+{
+"country": "IN",
+"name_en": "Chhindwāra",
+"name_ar": "تشيندواره"
+},
+{
+"country": "IN",
+"name_en": "Tambaram",
+"name_ar": "تامبارام"
+},
+{
+"country": "IN",
+"name_en": "Bhetia",
+"name_ar": "بهتيا"
+},
+{
+"country": "IN",
+"name_en": "Badlapur",
+"name_ar": "بادلابور"
+},
+{
+"country": "IN",
+"name_en": "Cuddalore",
+"name_ar": "كودالور"
+},
+{
+"country": "IN",
+"name_en": "Gadag-Betageri",
+"name_ar": "غادغ بيتاجيري"
+},
+{
+"country": "IN",
+"name_en": "Gadag",
+"name_ar": "غادغ"
+},
+{
+"country": "IN",
+"name_en": "Verāval",
+"name_ar": "فيرافال"
+},
+{
+"country": "IN",
+"name_en": "Navsari",
+"name_ar": "نافساري"
+},
+{
+"country": "IN",
+"name_en": "Bahadurgarh",
+"name_ar": "بهادرغار"
+},
+{
+"country": "IN",
+"name_en": "Haldia",
+"name_ar": "هالديا"
+},
+{
+"country": "IN",
+"name_en": "Rāiganj",
+"name_ar": "رايغانج"
+},
+{
+"country": "IN",
+"name_en": "Malda",
+"name_ar": "مالدا"
+},
+{
+"country": "IN",
+"name_en": "Deoli",
+"name_ar": "ديولي"
+},
+{
+"country": "IN",
+"name_en": "Bharūch",
+"name_ar": "بهاروتش"
+},
+{
+"country": "IN",
+"name_en": "Hoshiārpur",
+"name_ar": "هوشياربور"
+},
+{
+"country": "IN",
+"name_en": "Jīnd",
+"name_ar": "جيند"
+},
+{
+"country": "IN",
+"name_en": "Kumbakonam",
+"name_ar": "كومباكونام"
+},
+{
+"country": "IN",
+"name_en": "Mohali",
+"name_ar": "موهالي"
+},
+{
+"country": "IN",
+"name_en": "Fatehpur",
+"name_ar": "فاتحبور"
+},
+{
+"country": "IN",
+"name_en": "Thenali",
+"name_ar": "تينالي"
+},
+{
+"country": "IN",
+"name_en": "Sītāpur",
+"name_ar": "سيتابور"
+},
+{
+"country": "IN",
+"name_en": "Alandur",
+"name_ar": "ألاندور"
+},
+{
+"country": "IN",
+"name_en": "Bhadrāvati",
+"name_ar": "بهادراواتي"
+},
+{
+"country": "IN",
+"name_en": "Vapi",
+"name_ar": "فابي"
+},
+{
+"country": "IN",
+"name_en": "Moga",
+"name_ar": "موغا"
+},
+{
+"country": "IN",
+"name_en": "Rāj-Nāndgaon",
+"name_ar": "راج ناندغاون"
+},
+{
+"country": "IN",
+"name_en": "Robertsonpet",
+"name_ar": "روبرتسونبيت"
+},
+{
+"country": "IN",
+"name_en": "Unnāo",
+"name_ar": "أوناو"
+},
+{
+"country": "IN",
+"name_en": "Budaun",
+"name_ar": "بودون"
+},
+{
+"country": "IN",
+"name_en": "Madhyamgram",
+"name_ar": "مادياماغرام"
+},
+{
+"country": "IN",
+"name_en": "Jāmuria",
+"name_ar": "جاموريا"
+},
+{
+"country": "IN",
+"name_en": "Jaigaon",
+"name_ar": "جايغاون"
+},
+{
+"country": "IN",
+"name_en": "Batāla",
+"name_ar": "باتالا"
+},
+{
+"country": "IN",
+"name_en": "Orai",
+"name_ar": "أوراي"
+},
+{
+"country": "IN",
+"name_en": "Hanumāngarh",
+"name_ar": "هانومانغار"
+},
+{
+"country": "IN",
+"name_en": "Thānesar",
+"name_ar": "تانيسار"
+},
+{
+"country": "IN",
+"name_en": "Kishangarh",
+"name_ar": "كيشانغار"
+},
+{
+"country": "IN",
+"name_en": "Dalūpura",
+"name_ar": "دالوبورا"
+},
+{
+"country": "IN",
+"name_en": "Rudrapur",
+"name_ar": "رودرابور"
+},
+{
+"country": "IN",
+"name_en": "Hazāribāgh",
+"name_ar": "هازاريباغ"
+},
+{
+"country": "IN",
+"name_en": "Medinīpur",
+"name_ar": "ميدنيبور"
+},
+{
+"country": "IN",
+"name_en": "Bālurghāt",
+"name_ar": "بالورغات"
+},
+{
+"country": "IN",
+"name_en": "Fyzābād",
+"name_ar": "فيض آباد"
+},
+{
+"country": "IN",
+"name_en": "Dinapore",
+"name_ar": "دينابور"
+},
+{
+"country": "IN",
+"name_en": "Bānda",
+"name_ar": "باندا"
+},
+{
+"country": "IN",
+"name_en": "Hindupur",
+"name_ar": "هيندوبور"
+},
+{
+"country": "IN",
+"name_en": "Beāwar",
+"name_ar": "بيوار"
+},
+{
+"country": "IN",
+"name_en": "Serilingampalle",
+"name_ar": "سيريلينغامبال"
+},
+{
+"country": "IN",
+"name_en": "Malkajgiri",
+"name_ar": "ملكاجيري"
+},
+{
+"country": "IN",
+"name_en": "Shāntipur",
+"name_ar": "شانتيبور"
+},
+{
+"country": "IN",
+"name_en": "Bārākpur",
+"name_ar": "باراكبور"
+},
+{
+"country": "IN",
+"name_en": "Hājīpur",
+"name_ar": "هاجيبور"
+},
+{
+"country": "IN",
+"name_en": "Sasarām",
+"name_ar": "ساسارام"
+},
+{
+"country": "IN",
+"name_en": "Bhimavaram",
+"name_ar": "بهيماوارام"
+},
+{
+"country": "IN",
+"name_en": "Beed",
+"name_ar": "بيد"
+},
+{
+"country": "IN",
+"name_en": "Burāri",
+"name_ar": "بوراري"
+},
+{
+"country": "IN",
+"name_en": "Krishnanagar",
+"name_ar": "كريشناناغار"
+},
+{
+"country": "IN",
+"name_en": "Chitradurga",
+"name_ar": "تشيتراجورغا"
+},
+{
+"country": "IN",
+"name_en": "Tiruvannamalai",
+"name_ar": "تيروفانامالاي"
+},
+{
+"country": "IN",
+"name_en": "Godhra",
+"name_ar": "غودرا"
+},
+{
+"country": "IN",
+"name_en": "Rewāri",
+"name_ar": "ريواري"
+},
+{
+"country": "IN",
+"name_en": "Basirhat City",
+"name_ar": "باسيرهات"
+},
+{
+"country": "IN",
+"name_en": "Chhatarpur",
+"name_ar": "تشاتاربور"
+},
+{
+"country": "IN",
+"name_en": "Chas",
+"name_ar": "تشاس"
+},
+{
+"country": "IN",
+"name_en": "Pālanpur",
+"name_ar": "بالانبور"
+},
+{
+"country": "IN",
+"name_en": "Lakhīmpur",
+"name_ar": "لاخيمبور"
+},
+{
+"country": "IN",
+"name_en": "Valsād",
+"name_ar": "فالساد"
+},
+{
+"country": "IN",
+"name_en": "Damoh",
+"name_ar": "داموه"
+},
+{
+"country": "IN",
+"name_en": "Hābra",
+"name_ar": "هابرا"
+},
+{
+"country": "IN",
+"name_en": "Kolār",
+"name_ar": "كولار"
+},
+{
+"country": "IN",
+"name_en": "Mandya",
+"name_ar": "ماندي"
+},
+{
+"country": "IN",
+"name_en": "Madhurampur Dehri",
+"name_ar": "ماذهورامبور ديهري"
+},
+{
+"country": "IN",
+"name_en": "Kānchrāpāra",
+"name_ar": "كانشرابارا"
+},
+{
+"country": "IN",
+"name_en": "Dimāpur",
+"name_ar": "ديمابور"
+},
+{
+"country": "IN",
+"name_en": "Māler Kotla",
+"name_ar": "مالير كوتلا"
+},
+{
+"country": "IN",
+"name_en": "Siwān",
+"name_ar": "سيوان"
+},
+{
+"country": "IN",
+"name_en": "Kalol",
+"name_ar": "كالول"
+},
+{
+"country": "IN",
+"name_en": "Bānkura",
+"name_ar": "بانكورا"
+},
+{
+"country": "IN",
+"name_en": "Pātan",
+"name_ar": "باتان"
+},
+{
+"country": "IN",
+"name_en": "Gondā City",
+"name_ar": "غوندا"
+},
+{
+"country": "IN",
+"name_en": "Dhaulpur",
+"name_ar": "دهولبور"
+},
+{
+"country": "IN",
+"name_en": "Gondiā",
+"name_ar": "غونديا"
+},
+{
+"country": "IN",
+"name_en": "Bettiah",
+"name_ar": "بيتياه"
+},
+{
+"country": "IN",
+"name_en": "Rānīganj",
+"name_ar": "رانيغانج"
+},
+{
+"country": "IN",
+"name_en": "Etah",
+"name_ar": "إيتاه"
+},
+{
+"country": "IN",
+"name_en": "Pīlibhīt",
+"name_ar": "بيليبهيت"
+},
+{
+"country": "IN",
+"name_en": "Rajapalayam",
+"name_ar": "راجابالايام"
+},
+{
+"country": "IN",
+"name_en": "Botad",
+"name_ar": "بوتاد"
+},
+{
+"country": "IN",
+"name_en": "Deoria",
+"name_ar": "ديوريا"
+},
+{
+"country": "IN",
+"name_en": "Nimach",
+"name_ar": "نيماش"
+},
+{
+"country": "IN",
+"name_en": "Khardah",
+"name_ar": "خاردا"
+},
+{
+"country": "IN",
+"name_en": "Yavatmāl",
+"name_ar": "ياوتمال"
+},
+{
+"country": "IN",
+"name_en": "Hālīsahar",
+"name_ar": "هاليساهار"
+},
+{
+"country": "IN",
+"name_en": "Khanna",
+"name_ar": "خانا"
+},
+{
+"country": "IN",
+"name_en": "Titāgarh",
+"name_ar": "تيتاغار"
+},
+{
+"country": "IN",
+"name_en": "Mustafābād",
+"name_ar": "مصطفى آباد"
+},
+{
+"country": "IN",
+"name_en": "Hāthras",
+"name_ar": "هاثراس"
+},
+{
+"country": "IN",
+"name_en": "Jorhat",
+"name_ar": "جورهات"
+},
+{
+"country": "IN",
+"name_en": "Lalitpur",
+"name_ar": "لالتبور"
+},
+{
+"country": "IN",
+"name_en": "Guntakal",
+"name_ar": "غونتاكال"
+},
+{
+"country": "IN",
+"name_en": "Pithampur",
+"name_ar": "بيثامبور"
+},
+{
+"country": "IN",
+"name_en": "Mothīhāri",
+"name_ar": "موتيهاري"
+},
+{
+"country": "IN",
+"name_en": "Kanhangad",
+"name_ar": "كانهانغاد"
+},
+{
+"country": "IN",
+"name_en": "Jagdalpur",
+"name_ar": "جاغدالبور"
+},
+{
+"country": "IN",
+"name_en": "Jagādhri",
+"name_ar": "جاغادري"
+},
+{
+"country": "IN",
+"name_en": "Dārjiling",
+"name_ar": "دارجيلينغ"
+},
+{
+"country": "IN",
+"name_en": "Kurichchi",
+"name_ar": "كوريتشي"
+},
+{
+"country": "IN",
+"name_en": "Dam Dam",
+"name_ar": "دام دام"
+},
+{
+"country": "IN",
+"name_en": "Hardoī",
+"name_ar": "هاردوي"
+},
+{
+"country": "IN",
+"name_en": "Puruliya",
+"name_ar": "بوروليا"
+},
+{
+"country": "IN",
+"name_en": "Dharmavaram",
+"name_ar": "دارمافارام"
+},
+{
+"country": "IN",
+"name_en": "Gokalpur",
+"name_ar": "غوكالبور"
+},
+{
+"country": "IN",
+"name_en": "Bhadreswar",
+"name_ar": "بهادريشوار"
+},
+{
+"country": "IN",
+"name_en": "Nagaon",
+"name_ar": "ناغاون"
+},
+{
+"country": "IN",
+"name_en": "Vejalpur",
+"name_ar": "فيجالبور"
+},
+{
+"country": "IN",
+"name_en": "Chikmagalūr",
+"name_ar": "تشيكمغالور"
+},
+{
+"country": "IN",
+"name_en": "Bhadrak",
+"name_ar": "بهادراك"
+},
+{
+"country": "IN",
+"name_en": "Sawai Madhopur",
+"name_ar": "ساواي مادهوبور"
+},
+{
+"country": "IN",
+"name_en": "Ambikāpur",
+"name_ar": "أمبيكابور"
+},
+{
+"country": "IN",
+"name_en": "Mandoli",
+"name_ar": "ماندولي"
+},
+{
+"country": "IN",
+"name_en": "Satara",
+"name_ar": "ساتارا"
+},
+{
+"country": "IN",
+"name_en": "Chūru",
+"name_ar": "تشورو"
+},
+{
+"country": "IN",
+"name_en": "Gangāpur",
+"name_ar": "غانغابور"
+},
+{
+"country": "IN",
+"name_en": "Madhavaram",
+"name_ar": "مادهافارام"
+},
+{
+"country": "IN",
+"name_en": "Dohad",
+"name_ar": "دوهاد"
+},
+{
+"country": "IN",
+"name_en": "Ādilābād",
+"name_ar": "عادل آباد"
+},
+{
+"country": "IN",
+"name_en": "Jhunjhunūn",
+"name_ar": "جهونجهونو"
+},
+{
+"country": "IN",
+"name_en": "Jetpur",
+"name_ar": "جيتبور"
+},
+{
+"country": "IN",
+"name_en": "Uppal Kalan",
+"name_ar": "أوبال كالان"
+},
+{
+"country": "IN",
+"name_en": "Gudivāda",
+"name_ar": "غوديفادا"
+},
+{
+"country": "IN",
+"name_en": "Bārān",
+"name_ar": "باران"
+},
+{
+"country": "IN",
+"name_en": "Narmadapuram",
+"name_ar": "نارمادابورام"
+},
+{
+"country": "IN",
+"name_en": "Amreli",
+"name_ar": "أمريلي"
+},
+{
+"country": "IN",
+"name_en": "Pudukkottai",
+"name_ar": "بودوكوتاي"
+},
+{
+"country": "IN",
+"name_en": "Narasaraopet",
+"name_ar": "ناراساراوبيت"
+},
+{
+"country": "IN",
+"name_en": "Rishra",
+"name_ar": "ريشرا"
+},
+{
+"country": "IN",
+"name_en": "Baripāda",
+"name_ar": "باريبادا"
+},
+{
+"country": "IN",
+"name_en": "Muktsar",
+"name_ar": "موكتسار"
+},
+{
+"country": "IN",
+"name_en": "Azamgarh",
+"name_ar": "أعظم غار"
+},
+{
+"country": "IN",
+"name_en": "Barnāla",
+"name_ar": "بارنالا"
+},
+{
+"country": "IN",
+"name_en": "Yelahanka",
+"name_ar": "يلاهانكا"
+},
+{
+"country": "IN",
+"name_en": "Tinsukia",
+"name_ar": "تينسوكيا"
+},
+{
+"country": "IN",
+"name_en": "Khargone",
+"name_ar": "خارغون"
+},
+{
+"country": "IN",
+"name_en": "Baidyabāti",
+"name_ar": "بايدياباتي"
+},
+{
+"country": "IN",
+"name_en": "Bastī",
+"name_ar": "باستي"
+},
+{
+"country": "IN",
+"name_en": "Gangavati",
+"name_ar": "غانغافاتي"
+},
+{
+"country": "IN",
+"name_en": "Giridih",
+"name_ar": "غيريديه"
+},
+{
+"country": "IN",
+"name_en": "Wardha",
+"name_ar": "واردها"
+},
+{
+"country": "IN",
+"name_en": "Tadepalligudem",
+"name_ar": "تاديبالليغوديم"
+},
+{
+"country": "IN",
+"name_en": "Chanduasi",
+"name_ar": "تشاندواسي"
+},
+{
+"country": "IN",
+"name_en": "Bagaha",
+"name_ar": "باغاها"
+},
+{
+"country": "IN",
+"name_en": "Gondal",
+"name_ar": "غوندال"
+},
+{
+"country": "IN",
+"name_en": "Port Blair",
+"name_ar": "بورت بلير"
+},
+{
+"country": "IN",
+"name_en": "Suriāpet",
+"name_ar": "سوريابيت"
+},
+{
+"country": "IN",
+"name_en": "Bangaon",
+"name_ar": "بانغاون"
+},
+{
+"country": "IN",
+"name_en": "Ashoknagar Kalyangarh",
+"name_ar": "أشوك ناغار كالياناغار"
+},
+{
+"country": "IN",
+"name_en": "Deesa",
+"name_ar": "ديسا"
+},
+{
+"country": "IN",
+"name_en": "Navadwīp",
+"name_ar": "نافادويب"
+},
+{
+"country": "IN",
+"name_en": "Sultānpur",
+"name_ar": "سلطانبور"
+},
+{
+"country": "IN",
+"name_en": "Delhi Cantonment",
+"name_ar": "دلهي كانتونمنت"
+},
+{
+"country": "IN",
+"name_en": "Firozpur",
+"name_ar": "فيروزبور"
+},
+{
+"country": "IN",
+"name_en": "Pandit Deen Dayal Upadhyaya Nagar",
+"name_ar": "باندت دين دايال أوباديايا ناغار"
+},
+{
+"country": "IN",
+"name_en": "Kanpur Cantonment",
+"name_ar": "كانبور كانتونمنت"
+},
+{
+"country": "IN",
+"name_en": "Bānsbāria",
+"name_ar": "بانسباريا"
+},
+{
+"country": "IN",
+"name_en": "Tadpatri",
+"name_ar": "تادباتري"
+},
+{
+"country": "IN",
+"name_en": "Jalpāiguri",
+"name_ar": "جالبايغوري"
+},
+{
+"country": "IN",
+"name_en": "Mangalagiri",
+"name_ar": "مانغالاجيري"
+},
+{
+"country": "IN",
+"name_en": "Ranebennur",
+"name_ar": "رانيبينور"
+}
+]
+},
+"name:6": {
+"names": [
+{
+"name_en": "Khurja",
+"country": "IN",
+"name_ar": "خورجا"
+},
+{
+"name_en": "Kishanganj",
+"country": "IN",
+"name_ar": "كيشنغانج"
+},
+{
+"name_en": "Ponnāni",
+"country": "IN",
+"name_ar": "بونّاني"
+},
+{
+"name_en": "Hindaun",
+"country": "IN",
+"name_ar": "هيندون"
+},
+{
+"name_en": "Jamālpur",
+"country": "IN",
+"name_ar": "جمالبور"
+},
+{
+"name_en": "Nāgaur",
+"country": "IN",
+"name_ar": "ناغور"
+},
+{
+"name_en": "Ambala Sadar",
+"country": "IN",
+"name_ar": "أمبالا سادار"
+},
+{
+"name_en": "Būndi",
+"country": "IN",
+"name_ar": "بوندي"
+},
+{
+"name_en": "Miryalaguda",
+"country": "IN",
+"name_ar": "ميريالاغودا"
+},
+{
+"name_en": "Soyībug",
+"country": "IN",
+"name_ar": "سويبوغ"
+},
+{
+"name_en": "Jagtiāl",
+"country": "IN",
+"name_ar": "جاغتيال"
+},
+{
+"name_en": "Udgīr",
+"country": "IN",
+"name_ar": "أودجير"
+},
+{
+"name_en": "Nagda",
+"country": "IN",
+"name_ar": "ناغدا"
+},
+{
+"name_en": "Betūl",
+"country": "IN",
+"name_ar": "بيتول"
+},
+{
+"name_en": "Jahānābād",
+"country": "IN",
+"name_ar": "جاهانآباد"
+},
+{
+"name_en": "Kashipur",
+"country": "IN",
+"name_ar": "كاشيبور"
+},
+{
+"name_en": "Ghazīpur",
+"country": "IN",
+"name_ar": "غازيبور"
+},
+{
+"name_en": "Amaravati",
+"country": "IN",
+"name_ar": "أمرافاتي"
+},
+{
+"name_en": "Nagapattinam",
+"country": "IN",
+"name_ar": "ناغابتينام"
+},
+{
+"name_en": "Buxar",
+"country": "IN",
+"name_ar": "باكسار"
+},
+{
+"name_en": "Mormugao",
+"country": "IN",
+"name_ar": "مورمغاو"
+},
+{
+"name_en": "Seoni",
+"country": "IN",
+"name_ar": "سيوني"
+},
+{
+"name_en": "Aurangābād",
+"country": "IN",
+"name_ar": "أورانغاباد"
+},
+{
+"name_en": "Hinganghāt",
+"country": "IN",
+"name_ar": "هينغانغات"
+},
+{
+"name_en": "Dhamtari",
+"country": "IN",
+"name_ar": "دامتاري"
+},
+{
+"name_en": "Chilakalūrupet",
+"country": "IN",
+"name_ar": "تشيلاكالوريبيت"
+},
+{
+"name_en": "Bānswāra",
+"country": "IN",
+"name_ar": "بانسوارا"
+},
+{
+"name_en": "Chirmiri",
+"country": "IN",
+"name_ar": "تشيرميري"
+},
+{
+"name_en": "Itārsi",
+"country": "IN",
+"name_ar": "إيتارسي"
+},
+{
+"name_en": "Vasco da Gama",
+"country": "IN",
+"name_ar": "فاسكو دا غاما"
+},
+{
+"name_en": "Gangtok",
+"country": "IN",
+"name_ar": "غانغتوك"
+},
+{
+"name_en": "Datia",
+"country": "IN",
+"name_ar": "داتيا"
+},
+{
+"name_en": "Phagwāra",
+"country": "IN",
+"name_ar": "فاغوارا"
+},
+{
+"name_en": "Airoli",
+"country": "IN",
+"name_ar": "أيرولي"
+},
+{
+"name_en": "Downtown",
+"country": "IO",
+"name_ar": "داونتاون"
+},
+{
+"name_en": "Abū al-Kahṣīb",
+"country": "IQ",
+"name_ar": "أبو الخصيب"
+},
+{
+"name_en": "Simele",
+"country": "IQ",
+"name_ar": "سميل"
+},
+{
+"name_en": "Qal‘at Sukkar",
+"country": "IQ",
+"name_ar": "قلعة سكر"
+},
+{
+"name_en": "Hajiawa",
+"country": "IQ",
+"name_ar": "حاجيوة"
+},
+{
+"name_en": "Qarchak",
+"country": "IR",
+"name_ar": "قرجك"
+},
+{
+"name_en": "Golestān",
+"country": "IR",
+"name_ar": "غوليستان"
+},
+{
+"name_en": "Nasimshahr",
+"country": "IR",
+"name_ar": "نسيم شهر"
+},
+{
+"name_en": "Khūy",
+"country": "IR",
+"name_ar": "خوي"
+},
+{
+"name_en": "Būkān",
+"country": "IR",
+"name_ar": "بوكان"
+},
+{
+"name_en": "Fardīs",
+"country": "IR",
+"name_ar": "فاردس"
+},
+{
+"name_en": "Shāhīn Shahr",
+"country": "IR",
+"name_ar": "شاهين شهر"
+},
+{
+"name_en": "Malāyer",
+"country": "IR",
+"name_ar": "ملاير"
+},
+{
+"name_en": "Piranshahr",
+"country": "IR",
+"name_ar": "بيرانشهر"
+},
+{
+"name_en": "Gonbad-e Kāvūs",
+"country": "IR",
+"name_ar": "جنبد كاووس"
+},
+{
+"name_en": "Kamālshahr",
+"country": "IR",
+"name_ar": "كمال شهر"
+},
+{
+"name_en": "Marīvān",
+"country": "IR",
+"name_ar": "مريوان"
+},
+{
+"name_en": "Andīmeshk",
+"country": "IR",
+"name_ar": "أنديمشك"
+},
+{
+"name_en": "Mīāndoāb",
+"country": "IR",
+"name_ar": "ميانداواب"
+},
+{
+"name_en": "Kāshmar",
+"country": "IR",
+"name_ar": "كاشمر"
+},
+{
+"name_en": "Jīroft",
+"country": "IR",
+"name_ar": "جيرفت"
+},
+{
+"name_en": "Torbat-e Ḩeydarīyeh",
+"country": "IR",
+"name_ar": "تربت حيدرية"
+},
+{
+"name_en": "Īz̄eh",
+"country": "IR",
+"name_ar": "إيذه"
+},
+{
+"name_en": "Bandar-e Anzalī",
+"country": "IR",
+"name_ar": "بندر أنزلي"
+},
+{
+"name_en": "Shahre Jadide Andisheh",
+"country": "IR",
+"name_ar": "شهر جديد أنديشه"
+},
+{
+"name_en": "Andīsheh",
+"country": "IR",
+"name_ar": "أنديشه"
+},
+{
+"name_en": "Pardīs",
+"country": "IR",
+"name_ar": "باردس"
+},
+{
+"name_en": "Qūchān",
+"country": "IR",
+"name_ar": "قوجان"
+},
+{
+"name_en": "Chālūs",
+"country": "IR",
+"name_ar": "جالوس"
+},
+{
+"name_en": "Mīāneh",
+"country": "IR",
+"name_ar": "ميانه"
+},
+{
+"name_en": "Lāhījān",
+"country": "IR",
+"name_ar": "لاهيجان"
+},
+{
+"name_en": "Masjed Soleymān",
+"country": "IR",
+"name_ar": "مسجد سليمان"
+},
+{
+"name_en": "Shahrak-e Pardīsān",
+"country": "IR",
+"name_ar": "شهرك باردسان"
+},
+{
+"name_en": "Saint Helier",
+"country": "JE",
+"name_ar": "سانت هيلير"
+},
+{
+"name_en": "Kingston",
+"country": "JM",
+"name_ar": "كينغستون"
+},
+{
+"name_en": "New Kingston",
+"country": "JM",
+"name_ar": "نيو كينغستون"
+},
+{
+"name_en": "Sendai",
+"country": "JP",
+"name_ar": "سينداي"
+},
+{
+"name_en": "Setagaya",
+"country": "JP",
+"name_ar": "سيتاغايا"
+},
+{
+"name_en": "Sakai",
+"country": "JP",
+"name_ar": "ساكاي"
+},
+{
+"name_en": "Niigata",
+"country": "JP",
+"name_ar": "نيغاتا"
+},
+{
+"name_en": "Ōta",
+"country": "JP",
+"name_ar": "أوتا"
+},
+{
+"name_en": "Kumamoto",
+"country": "JP",
+"name_ar": "كوماموتو"
+},
+{
+"name_en": "Aihara",
+"country": "JP",
+"name_ar": "آيهارا"
+},
+{
+"name_en": "Okayama",
+"country": "JP",
+"name_ar": "أوكاياما"
+},
+{
+"name_en": "Edogawe",
+"country": "JP",
+"name_ar": "إيدوغاوا"
+},
+{
+"name_en": "Adachi",
+"country": "JP",
+"name_ar": "أداتشي"
+},
+{
+"name_en": "Suginami",
+"country": "JP",
+"name_ar": "سوغيناما"
+},
+{
+"name_en": "Itabashi",
+"country": "JP",
+"name_ar": "إيتاباشي"
+},
+{
+"name_en": "Kotō",
+"country": "JP",
+"name_ar": "كوتو"
+},
+{
+"name_en": "Utsunomiya",
+"country": "JP",
+"name_ar": "أوتسونوميا"
+},
+{
+"name_en": "Kakamega",
+"country": "KE",
+"name_ar": "كاكاميغا"
+},
+{
+"name_en": "Nakuru",
+"country": "KE",
+"name_ar": "ناكورو"
+},
+{
+"name_en": "Tarawa",
+"country": "KI",
+"name_ar": "تاراوا"
+},
+{
+"name_en": "Goyang-si",
+"country": "KR",
+"name_ar": "غويانغ"
+},
+{
+"name_en": "Seongnam-si",
+"country": "KR",
+"name_ar": "سونغنام"
+},
+{
+"name_en": "Bucheon-si",
+"country": "KR",
+"name_ar": "بوتشون"
+},
+{
+"name_en": "Hwaseong-si",
+"country": "KR",
+"name_ar": "هوسونغ"
+},
+{
+"name_en": "Ansan-si",
+"country": "KR",
+"name_ar": "أنسان"
+},
+{
+"name_en": "Anyang-si",
+"country": "KR",
+"name_ar": "أنيانغ"
+},
+{
+"name_en": "Kimhae",
+"country": "KR",
+"name_ar": "كيمهاي"
+},
+{
+"name_en": "Rudnyy",
+"country": "KZ",
+"name_ar": "رودني"
+},
+{
+"name_en": "Ekibastuz",
+"country": "KZ",
+"name_ar": "إكيباستوز"
+},
+{
+"name_en": "Zhanaozen",
+"country": "KZ",
+"name_ar": "جاناوزن"
+},
+{
+"name_en": "Vaduz",
+"country": "LI",
+"name_ar": "فادوز"
+},
+{
+"name_en": "Qaşr Bin Ghashīr",
+"country": "LY",
+"name_ar": "قصر بن غشير"
+},
+{
+"name_en": "Tājūrā’",
+"country": "LY",
+"name_ar": "تاجوراء"
+},
+{
+"name_en": "As Sawānī",
+"country": "LY",
+"name_ar": "السوّاني"
+},
+{
+"name_en": "Tarhuna",
+"country": "LY",
+"name_ar": "ترهونة"
+},
+{
+"name_en": "Monaco",
+"country": "MC",
+"name_ar": "موناكو"
+},
+{
+"name_en": "Marigot",
+"country": "MF",
+"name_ar": "ماريغو"
+},
+{
+"name_en": "Majuro",
+"country": "MH",
+"name_ar": "ماجورو"
+},
+{
+"name_en": "Koutiala",
+"country": "ML",
+"name_ar": "كوتيالا"
+},
+{
+"name_en": "Kalaban Koro",
+"country": "ML",
+"name_ar": "كالابان كورو"
+},
+{
+"name_en": "San",
+"country": "ML",
+"name_ar": "سان"
+},
+{
+"name_en": "Nay Pyi Taw",
+"country": "MM",
+"name_ar": "نايبيداو"
+},
+{
+"name_en": "Hlaingthaya",
+"country": "MM",
+"name_ar": "لاينغتايا"
+},
+{
+"name_en": "Saipan",
+"country": "MP",
+"name_ar": "سايبان"
+},
+{
+"name_en": "Mbera",
+"country": "MR",
+"name_ar": "امبيرا"
+},
+{
+"name_en": "Ksar",
+"country": "MR",
+"name_ar": "قصر"
+},
+{
+"name_en": "Male",
+"country": "MV",
+"name_ar": "ماليه"
+},
+{
+"name_en": "Iztapalapa",
+"country": "MX",
+"name_ar": "إزتابالابا"
+},
+{
+"name_en": "Ecatepec de Morelos",
+"country": "MX",
+"name_ar": "إيكاتيبيك دي مورلوس"
+},
+{
+"name_en": "León de los Aldama",
+"country": "MX",
+"name_ar": "ليون دي لوس ألداما"
+},
+{
+"name_en": "Gustavo Adolfo Madero",
+"country": "MX",
+"name_ar": "غوستابو أدولفو مادييرو"
+},
+{
+"name_en": "Ciudad Nezahualcoyotl",
+"country": "MX",
+"name_ar": "سيودad نيثاوالكيوتل"
+},
+{
+"name_en": "Torreón",
+"country": "MX",
+"name_ar": "تورّيون"
+},
+{
+"name_en": "Álvaro Obregón",
+"country": "MX",
+"name_ar": "ألفارو أوبريغون"
+},
+{
+"name_en": "Guadalupe",
+"country": "MX",
+"name_ar": "غوادالوبي"
+},
+{
+"name_en": "Tlalnepantla",
+"country": "MX",
+"name_ar": "تلالنيبانتلا"
+},
+{
+"name_en": "Tlaquepaque",
+"country": "MX",
+"name_ar": "تلاكيباكي"
+},
+{
+"name_en": "Coyoacán",
+"country": "MX",
+"name_ar": "كويواكان"
+},
+{
+"name_en": "Reynosa",
+"country": "MX",
+"name_ar": "رينوسا"
+},
+{
+"name_en": "Tlalpan",
+"country": "MX",
+"name_ar": "تلالبان"
+},
+{
+"name_en": "Cuautitlán Izcalli",
+"country": "MX",
+"name_ar": "كواوتيتلان إسكالي"
+},
+{
+"name_en": "Cuauhtémoc",
+"country": "MX",
+"name_ar": "كواوتيموك"
+},
+{
+"name_en": "Victoria de Durango",
+"country": "MX",
+"name_ar": "فيكتوريا دي دورانغو"
+},
+{
+"name_en": "Heroica Matamoros",
+"country": "MX",
+"name_ar": "ماتاموروس"
+},
+{
+"name_en": "Kampung Baru Subang",
+"country": "MY",
+"name_ar": "كامبونغ بارو سوبانغ"
+},
+{
+"name_en": "Bukit Rahman Putra",
+"country": "MY",
+"name_ar": "بوكيت رحمن بوترا"
+},
+{
+"name_en": "Pelentong",
+"country": "MY",
+"name_ar": "بيلنتونغ"
+},
+{
+"name_en": "Iskandar Puteri",
+"country": "MY",
+"name_ar": "إسكندر بوتري"
+},
+{
+"name_en": "Kota Kuala Muda",
+"country": "MY",
+"name_ar": "كوتا كوالا موده"
+},
+{
+"name_en": "Sungai Petani",
+"country": "MY",
+"name_ar": "سونغاي بيتاني"
+},
+{
+"name_en": "Selayang Baru Utara",
+"country": "MY",
+"name_ar": "سيلاياغ بارو أوتارا"
+},
+{
+"name_en": "Pasir Gudang",
+"country": "MY",
+"name_ar": "باسير غودانغ"
+},
+{
+"name_en": "Mukim Pulai",
+"country": "MY",
+"name_ar": "موكيم بولاي"
+},
+{
+"name_en": "Kampung Larkin Lama",
+"country": "MY",
+"name_ar": "كامبونغ لاركين لاما"
+},
+{
+"name_en": "Kota Damansara",
+"country": "MY",
+"name_ar": "كوتا دامانسارا"
+},
+{
+"name_en": "Taman Petaling",
+"country": "MY",
+"name_ar": "تامان بيتالينغ"
+},
+{
+"name_en": "Kampung Kangkar Teberau",
+"country": "MY",
+"name_ar": "كامبونغ كانغكار تبراو"
+},
+{
+"name_en": "Puchong",
+"country": "MY",
+"name_ar": "بوتشونغ"
+},
+{
+"name_en": "Setapak",
+"country": "MY",
+"name_ar": "سيتاباك"
+},
+{
+"name_en": "Kluang",
+"country": "MY",
+"name_ar": "كلوانغ"
+},
+{
+"name_en": "Muar",
+"country": "MY",
+"name_ar": "موار"
+},
+{
+"name_en": "Kapar",
+"country": "MY",
+"name_ar": "كابار"
+},
+{
+"name_en": "Batu Caves",
+"country": "MY",
+"name_ar": "باتو كايفز"
+},
+{
+"name_en": "Kajang",
+"country": "MY",
+"name_ar": "كاجانغ"
+},
+{
+"name_en": "Teluk Intan",
+"country": "MY",
+"name_ar": "تيلوك إنتان"
+},
+{
+"name_en": "Kampong Baharu Cheras Batu Sebelas",
+"country": "MY",
+"name_ar": "كامبونغ بهارو تشيراس باتو سيبيلاس"
+},
+{
+"name_en": "Pasir Mas",
+"country": "MY",
+"name_ar": "باسير ماس"
+},
+{
+"name_en": "Paya Terubong",
+"country": "MY",
+"name_ar": "بايا تيروبونغ"
+},
+{
+"name_en": "Sungai Buloh",
+"country": "MY",
+"name_ar": "سونغاي بولوه"
+},
+{
+"name_en": "Bandar Seri Alam",
+"country": "MY",
+"name_ar": "باندار سري عالم"
+},
+{
+"name_en": "Taiping",
+"country": "MY",
+"name_ar": "تايبينغ"
+},
+{
+"name_en": "Wangsa Maju",
+"country": "MY",
+"name_ar": "وانغسا ماجو"
+},
+{
+"name_en": "Sepang",
+"country": "MY",
+"name_ar": "سيبانغ"
+},
+{
+"name_en": "Bandar Sunway",
+"country": "MY",
+"name_ar": "باندار صنواي"
+},
+{
+"name_en": "Bandar Utama",
+"country": "MY",
+"name_ar": "باندار أوتاما"
+},
+{
+"name_en": "Bukit Jalil",
+"country": "MY",
+"name_ar": "بوكيت جليل"
+},
+{
+"name_en": "Rawang",
+"country": "MY",
+"name_ar": "راوانغ"
+},
+{
+"name_en": "Kuala Kubu Baharu",
+"country": "MY",
+"name_ar": "كوالا كوبو باهارو"
+},
+{
+"name_en": "Kulim",
+"country": "MY",
+"name_ar": "كولim"
+},
+{
+"name_en": "Skudai",
+"country": "MY",
+"name_ar": "سكوداي"
+},
+{
+"name_en": "Batu Pahat",
+"country": "MY",
+"name_ar": "باتو باهات"
+},
+{
+"name_en": "Sitiawan",
+"country": "MY",
+"name_ar": "سيتياوان"
+},
+{
+"name_en": "Bercham",
+"country": "MY",
+"name_ar": "بيرشام"
+},
+{
+"name_en": "Setia Alam",
+"country": "MY",
+"name_ar": "سيتيا عالم"
+},
+{
+"name_en": "Bandar Bukit Raja",
+"country": "MY",
+"name_ar": "باندار بوكيت راجا"
+},
+{
+"name_en": "Kampung Pasir Gudang Baru",
+"country": "MY",
+"name_ar": "كامبونغ باسير غودانغ بارو"
+},
+{
+"name_en": "Kampung Sungai Glugur",
+"country": "MY",
+"name_ar": "كامبونغ سونغاي غلوغور"
+},
+{
+"name_en": "Masai",
+"country": "MY",
+"name_ar": "ماساي"
+},
+{
+"name_en": "Kampung Sungai Ara",
+"country": "MY",
+"name_ar": "كامبونغ سونغاي أرا"
+},
+{
+"name_en": "Pasir Puteh",
+"country": "MY",
+"name_ar": "باسير بوتيه"
+},
+{
+"name_en": "Cheras",
+"country": "MY",
+"name_ar": "تشيراس"
+},
+{
+"name_en": "Tasek Glugor",
+"country": "MY",
+"name_ar": "تاسيك غلوغور"
+},
+{
+"name_en": "Bayan Lepas",
+"country": "MY",
+"name_ar": "بايان ليباس"
+},
+{
+"name_en": "Seri Kembangan",
+"country": "MY",
+"name_ar": "سيري كمبانغان"
+},
+{
+"name_en": "Ampang",
+"country": "MY",
+"name_ar": "أمبانغ"
+},
+{
+"name_en": "Titiwangsa",
+"country": "MY",
+"name_ar": "تيتيوانغسا"
+},
+{
+"name_en": "Bukit Bintang",
+"country": "MY",
+"name_ar": "بوكيت بينتانغ"
+},
+{
+"name_en": "Port Dickson",
+"country": "MY",
+"name_ar": "بورت ديكسون"
+},
+{
+"name_en": "Maran",
+"country": "MY",
+"name_ar": "مارانغ"
+},
+{
+"name_en": "Lahad Datu",
+"country": "MY",
+"name_ar": "لاهاد داتو"
+},
+{
+"name_en": "Kuala Krai",
+"country": "MY",
+"name_ar": "كوالا كراي"
+},
+{
+"name_en": "Perling",
+"country": "MY",
+"name_ar": "بيرلينغ"
+},
+{
+"name_en": "Ijok",
+"country": "MY",
+"name_ar": "إيجوك"
+},
+{
+"name_en": "Sentul",
+"country": "MY",
+"name_ar": "سنترول"
+},
+{
+"name_en": "Seri Manjung",
+"country": "MY",
+"name_ar": "سيري مانجونغ"
+},
+{
+"name_en": "Bandar Mahkota Cheras",
+"country": "MY",
+"name_ar": "باندار ماهكوتا تشيراس"
+},
+{
+"name_en": "Onitsha",
+"country": "NG",
+"name_ar": "أونيتشا"
+},
+{
+"name_en": "Oyo",
+"country": "NG",
+"name_ar": "أويو"
+},
+{
+"name_en": "Agege",
+"country": "NG",
+"name_ar": "أغيغي"
+},
+{
+"name_en": "Ile-Ife",
+"country": "NG",
+"name_ar": "إيلي إيفي"
+},
+{
+"name_en": "Ajegunle",
+"country": "NG",
+"name_ar": "أجيغونلي"
+},
+{
+"name_en": "Ebute Ikorodu",
+"country": "NG",
+"name_ar": "إيبوتي إيكورودو"
+},
+{
+"name_en": "Okene",
+"country": "NG",
+"name_ar": "أوكيني"
+},
+{
+"name_en": "Ikare",
+"country": "NG",
+"name_ar": "إيكاري"
+},
+{
+"name_en": "Ogbomoso",
+"country": "NG",
+"name_ar": "أوغبوموشو"
+},
+{
+"name_en": "Lekki",
+"country": "NG",
+"name_ar": "ليكي"
+},
+{
+"name_en": "Bida",
+"country": "NG",
+"name_ar": "بيدا"
+},
+{
+"name_en": "Ondo",
+"country": "NG",
+"name_ar": "أوندو"
+},
+{
+"name_en": "Iseyin",
+"country": "NG",
+"name_ar": "إيسيين"
+},
+{
+"name_en": "Yenagoa",
+"country": "NG",
+"name_ar": "ينيغوا"
+},
+{
+"name_en": "Gboko",
+"country": "NG",
+"name_ar": "غبوكو"
+},
+{
+"name_en": "Ijebu Ode",
+"country": "NG",
+"name_ar": "إيجيبو أوده"
+},
+{
+"name_en": "Obalende",
+"country": "NG",
+"name_ar": "أوبالندي"
+},
+{
+"name_en": "Ilesa",
+"country": "NG",
+"name_ar": "إيليسا"
+},
+{
+"name_en": "Akowonjo",
+"country": "NG",
+"name_ar": "أكوونجو"
+},
+{
+"name_en": "Alimosho",
+"country": "NG",
+"name_ar": "أليموشو"
+},
+{
+"name_en": "Sapele",
+"country": "NG",
+"name_ar": "سابيلي"
+},
+{
+"name_en": "Efon-Alaaye",
+"country": "NG",
+"name_ar": "إيفون آلاي"
+},
+{
+"name_en": "Owo",
+"country": "NG",
+"name_ar": "أووو"
+},
+{
+"name_en": "Ikot Ekpene",
+"country": "NG",
+"name_ar": "إيكوت إيكبين"
+},
+{
+"name_en": "Ota",
+"country": "NG",
+"name_ar": "أوتا"
+},
+{
+"name_en": "Iwo",
+"country": "NG",
+"name_ar": "إيوو"
+},
+{
+"name_en": "Jimeta",
+"country": "NG",
+"name_ar": "جيميتا"
+},
+{
+"name_en": "Atani",
+"country": "NG",
+"name_ar": "أتاني"
+},
+{
+"name_en": "Aliyabiagba",
+"country": "NG",
+"name_ar": "ألياياغبا"
+},
+{
+"name_en": "Mubi",
+"country": "NG",
+"name_ar": "موبي"
+},
+{
+"name_en": "Ikire",
+"country": "NG",
+"name_ar": "إيكيري"
+},
+{
+"name_en": "Shagamu",
+"country": "NG",
+"name_ar": "شاغامو"
+},
+{
+"name_en": "Ugep",
+"country": "NG",
+"name_ar": "أوغيب"
+},
+{
+"name_en": "Chakwama",
+"country": "NG",
+"name_ar": "تشاكوامة"
+},
+{
+"name_en": "Mushin",
+"country": "NG",
+"name_ar": "موشين"
+},
+{
+"name_en": "Nnewi",
+"country": "NG",
+"name_ar": "نيوي"
+},
+{
+"name_en": "Surulere",
+"country": "NG",
+"name_ar": "سورولير"
+},
+{
+"name_en": "Ise-Ekiti",
+"country": "NG",
+"name_ar": "إيسي إكيتي"
+},
+{
+"name_en": "Ila Orangun",
+"country": "NG",
+"name_ar": "إيلا أورانغون"
+},
+{
+"name_en": "Saki",
+"country": "NG",
+"name_ar": "ساكي"
+},
+{
+"name_en": "Oshodi",
+"country": "NG",
+"name_ar": "أوشودي"
+},
+{
+"name_en": "Ijero-Ekiti",
+"country": "NG",
+"name_ar": "إيجيرو إكيتي"
+},
+{
+"name_en": "Inisa",
+"country": "NG",
+"name_ar": "إينيسا"
+},
+{
+"name_en": "Suleja",
+"country": "NG",
+"name_ar": "سوليجا"
+},
+{
+"name_en": "Ede",
+"country": "NG",
+"name_ar": "إيدي"
+},
+{
+"name_en": "Kisi",
+"country": "NG",
+"name_ar": "كيسي"
+},
+{
+"name_en": "Shomolu",
+"country": "NG",
+"name_ar": "شومولو"
+},
+{
+"name_en": "Irewe",
+"country": "NG",
+"name_ar": "إيريوي"
+},
+{
+"name_en": "Gbongan",
+"country": "NG",
+"name_ar": "غبونغان"
+},
+{
+"name_en": "Ejigbo",
+"country": "NG",
+"name_ar": "إيجيغبو"
+},
+{
+"name_en": "Funtua",
+"country": "NG",
+"name_ar": "فونتوا"
+},
+{
+"name_en": "Igboho",
+"country": "NG",
+"name_ar": "إيغبوهو"
+}
+]
+},
+"name:7": {
+"names": [
+{
+"country": "NG",
+"name_en": "Buguma",
+"name_ar": "بوغوما"
+},
+{
+"country": "NG",
+"name_en": "Ikirun",
+"name_ar": "إكيرون"
+},
+{
+"country": "NG",
+"name_en": "Okrika",
+"name_ar": "أوكريكا"
+},
+{
+"country": "NG",
+"name_en": "Amaigbo",
+"name_ar": "أمايغبو"
+},
+{
+"country": "NG",
+"name_en": "Gashua",
+"name_ar": "غاشوا"
+},
+{
+"country": "NG",
+"name_en": "Modakeke",
+"name_ar": "موداكيكي"
+},
+{
+"country": "NG",
+"name_en": "Bama",
+"name_ar": "باما"
+},
+{
+"country": "NG",
+"name_en": "Ilobu",
+"name_ar": "إيلوبو"
+},
+{
+"country": "NG",
+"name_en": "Okigwe",
+"name_ar": "أوكيغوي"
+},
+{
+"country": "NG",
+"name_en": "Offa",
+"name_ar": "أوفا"
+},
+{
+"country": "NG",
+"name_en": "Esuk Oron",
+"name_ar": "إيسوك أورون"
+},
+{
+"country": "NG",
+"name_en": "Nsukka",
+"name_ar": "نسوكا"
+},
+{
+"country": "NG",
+"name_en": "Nguru",
+"name_ar": "نغورو"
+},
+{
+"country": "NG",
+"name_en": "Hadejia",
+"name_ar": "هاديجيا"
+},
+{
+"country": "NG",
+"name_en": "Ijebu-Igbo",
+"name_ar": "إجيبو إيغبو"
+},
+{
+"country": "NG",
+"name_en": "Uromi",
+"name_ar": "أوروامي"
+},
+{
+"country": "NG",
+"name_en": "Pindiga",
+"name_ar": "بيندغا"
+},
+{
+"country": "NG",
+"name_en": "Azare",
+"name_ar": "أزاري"
+},
+{
+"country": "NG",
+"name_en": "Nkpor",
+"name_ar": "إنكبور"
+},
+{
+"country": "NG",
+"name_en": "Ikere-Ekiti",
+"name_ar": "إكيري إيكيتي"
+},
+{
+"country": "NG",
+"name_en": "Lafiagi",
+"name_ar": "لافياجي"
+},
+{
+"country": "NG",
+"name_en": "Alasia",
+"name_ar": "ألاسيا"
+},
+{
+"country": "NU",
+"name_en": "Alofi",
+"name_ar": "ألوفي"
+},
+{
+"country": "PA",
+"name_en": "Panama City",
+"name_ar": "مدينة بنما"
+},
+{
+"country": "PH",
+"name_en": "Quezon City",
+"name_ar": "كيزون سيتي"
+},
+{
+"country": "PH",
+"name_en": "Caloocan",
+"name_ar": "كالوكان"
+},
+{
+"country": "PH",
+"name_en": "Taguig",
+"name_ar": "تاغويغ"
+},
+{
+"country": "PH",
+"name_en": "Budta",
+"name_ar": "بودتا"
+},
+{
+"country": "PH",
+"name_en": "Malingao",
+"name_ar": "مالينغاو"
+},
+{
+"country": "PH",
+"name_en": "Zamboanga",
+"name_ar": "زامبوانغا"
+},
+{
+"country": "PH",
+"name_en": "Antipolo",
+"name_ar": "أنتيبولو"
+},
+{
+"country": "PH",
+"name_en": "Pasig City",
+"name_ar": "باسيغ"
+},
+{
+"country": "PH",
+"name_en": "Cagayan de Oro",
+"name_ar": "كاغايان دي أورو"
+},
+{
+"country": "PH",
+"name_en": "Valenzuela",
+"name_ar": "فالنزويلا"
+},
+{
+"country": "PH",
+"name_en": "Paranaque City",
+"name_ar": "باراناكي"
+},
+{
+"country": "PH",
+"name_en": "Las Piñas",
+"name_ar": "لاس بينياس"
+},
+{
+"country": "PH",
+"name_en": "Muntinlupa",
+"name_ar": "مونتينلوبا"
+},
+{
+"country": "PH",
+"name_en": "Makati City",
+"name_ar": "ماكاتي"
+},
+{
+"country": "PH",
+"name_en": "Lapu-Lapu City",
+"name_ar": "لابو لابو"
+},
+{
+"country": "PH",
+"name_en": "Angeles City",
+"name_ar": "أنخيليس"
+},
+{
+"country": "PH",
+"name_en": "Iloilo",
+"name_ar": "إيلويلو"
+},
+{
+"country": "PH",
+"name_en": "Marikina City",
+"name_ar": "ماريكينا"
+},
+{
+"country": "PH",
+"name_en": "Bacolod City",
+"name_ar": "باكولود"
+},
+{
+"country": "PH",
+"name_en": "Mansilingan",
+"name_ar": "مانسيلينغان"
+},
+{
+"country": "PH",
+"name_en": "Dasmariñas",
+"name_ar": "داسماريناس"
+},
+{
+"country": "PH",
+"name_en": "Mandaluyong",
+"name_ar": "ماندالويونغ"
+},
+{
+"country": "PH",
+"name_en": "Pasay",
+"name_ar": "باساي"
+},
+{
+"country": "PH",
+"name_en": "Tarlac City",
+"name_ar": "تارلاك"
+},
+{
+"country": "PH",
+"name_en": "Malabon",
+"name_ar": "مالابون"
+},
+{
+"country": "PH",
+"name_en": "San Jose del Monte",
+"name_ar": "سان خوسيه دل مونتي"
+},
+{
+"country": "PH",
+"name_en": "Bacoor",
+"name_ar": "باكور"
+},
+{
+"country": "PH",
+"name_en": "San Pedro",
+"name_ar": "سان بيدرو"
+},
+{
+"country": "PH",
+"name_en": "Cabanatuan City",
+"name_ar": "كاباناتوان"
+},
+{
+"country": "PH",
+"name_en": "Iligan",
+"name_ar": "إيليغان"
+},
+{
+"country": "PH",
+"name_en": "Mandaue City",
+"name_ar": "مانداوي"
+},
+{
+"country": "PH",
+"name_en": "Iligan City",
+"name_ar": "إيليغان"
+},
+{
+"country": "PH",
+"name_en": "Cabuyao",
+"name_ar": "كابوياو"
+},
+{
+"country": "PH",
+"name_en": "Biñan",
+"name_ar": "بينان"
+},
+{
+"country": "PH",
+"name_en": "Santol",
+"name_ar": "سانتول"
+},
+{
+"country": "PH",
+"name_en": "Cainta",
+"name_ar": "كاينتا"
+},
+{
+"country": "PH",
+"name_en": "Malolos",
+"name_ar": "مالولوس"
+},
+{
+"country": "PH",
+"name_en": "Mantampay",
+"name_ar": "مانتامباي"
+},
+{
+"country": "PH",
+"name_en": "Bagong Silang",
+"name_ar": "باغونغ سيلانغ"
+},
+{
+"country": "PH",
+"name_en": "Marawi City",
+"name_ar": "ماراوي"
+},
+{
+"country": "PH",
+"name_en": "Libertad",
+"name_ar": "ليبيرتاد"
+},
+{
+"country": "PH",
+"name_en": "Navotas",
+"name_ar": "نافوتاس"
+},
+{
+"country": "PH",
+"name_en": "Ormoc",
+"name_ar": "أورموك"
+},
+{
+"country": "PH",
+"name_en": "Batangas",
+"name_ar": "باتانغاس"
+},
+{
+"country": "PH",
+"name_en": "Taytay",
+"name_ar": "تايتاي"
+},
+{
+"country": "PH",
+"name_en": "Lucena",
+"name_ar": "لوسينا"
+},
+{
+"country": "PH",
+"name_en": "Meycauayan",
+"name_ar": "ميكاوايان"
+},
+{
+"country": "PH",
+"name_en": "NIA Valencia",
+"name_ar": "فالنسيا"
+},
+{
+"country": "PH",
+"name_en": "Olongapo",
+"name_ar": "أولونغابو"
+},
+{
+"country": "PH",
+"name_en": "Binangonan",
+"name_ar": "بينانغونان"
+},
+{
+"country": "PH",
+"name_en": "Santa Rosa",
+"name_ar": "سانتا روزا"
+},
+{
+"country": "PH",
+"name_en": "Commonwealth",
+"name_ar": "كومنولث"
+},
+{
+"country": "PH",
+"name_en": "Lipa City",
+"name_ar": "ليبا"
+},
+{
+"country": "PH",
+"name_en": "Kabankalan",
+"name_ar": "كابانكالان"
+},
+{
+"country": "PH",
+"name_en": "Toledo",
+"name_ar": "توليدو"
+},
+{
+"country": "PH",
+"name_en": "Panalanoy",
+"name_ar": "بانالانوي"
+},
+{
+"country": "PH",
+"name_en": "Mabalacat City",
+"name_ar": "مابالاكات"
+},
+{
+"country": "PH",
+"name_en": "Sorsogon",
+"name_ar": "سورسوغون"
+},
+{
+"country": "PH",
+"name_en": "Roxas City",
+"name_ar": "روكساس"
+},
+{
+"country": "PH",
+"name_en": "Legaspi",
+"name_ar": "ليغاسبي"
+},
+{
+"country": "PH",
+"name_en": "Concepcion",
+"name_ar": "كونسيبسيون"
+},
+{
+"country": "PH",
+"name_en": "Naga",
+"name_ar": "ناغا"
+},
+{
+"country": "PH",
+"name_en": "Dagupan",
+"name_ar": "داغوبان"
+},
+{
+"country": "PH",
+"name_en": "Ilagan",
+"name_ar": "إيلاغان"
+},
+{
+"country": "PH",
+"name_en": "Pandi",
+"name_ar": "باندي"
+},
+{
+"country": "PH",
+"name_en": "Capas",
+"name_ar": "كاباس"
+},
+{
+"country": "PH",
+"name_en": "Mariveles",
+"name_ar": "ماريفيليس"
+},
+{
+"country": "PH",
+"name_en": "Guyong",
+"name_ar": "غيونغ"
+},
+{
+"country": "PH",
+"name_en": "Urdaneta",
+"name_ar": "أوردانيتا"
+},
+{
+"country": "PH",
+"name_en": "San Jose",
+"name_ar": "سان خوسيه"
+},
+{
+"country": "PH",
+"name_en": "La Trinidad",
+"name_ar": "لا ترينيداد"
+},
+{
+"country": "PH",
+"name_en": "Norzagaray",
+"name_ar": "نورزاغاراي"
+},
+{
+"country": "PH",
+"name_en": "Gingoog",
+"name_ar": "غينغوغ"
+},
+{
+"country": "PH",
+"name_en": "Naga",
+"name_ar": "ناغا"
+},
+{
+"country": "PH",
+"name_en": "Candelaria",
+"name_ar": "كانديلاريا"
+},
+{
+"country": "PH",
+"name_en": "Baliuag",
+"name_ar": "باليواغ"
+},
+{
+"country": "PH",
+"name_en": "Angono",
+"name_ar": "أنغونو"
+},
+{
+"country": "PH",
+"name_en": "Rodriguez",
+"name_ar": "رودريغيز"
+},
+{
+"country": "PH",
+"name_en": "San Mateo",
+"name_ar": "سان ماتيو"
+},
+{
+"country": "PH",
+"name_en": "San Juan",
+"name_ar": "سان خوان"
+},
+{
+"country": "PH",
+"name_en": "Talisay",
+"name_ar": "تاليساي"
+},
+{
+"country": "PH",
+"name_en": "Muricay",
+"name_ar": "موريكاي"
+},
+{
+"country": "PH",
+"name_en": "Bulaon",
+"name_ar": "بولاون"
+},
+{
+"country": "PH",
+"name_en": "Gapan",
+"name_ar": "غابان"
+},
+{
+"country": "PH",
+"name_en": "Bayambang",
+"name_ar": "بايامبانغ"
+},
+{
+"country": "PH",
+"name_en": "Cadiz",
+"name_ar": "كاديز"
+},
+{
+"country": "PH",
+"name_en": "Rosario",
+"name_ar": "روساريو"
+},
+{
+"country": "PH",
+"name_en": "Pulong Santa Cruz",
+"name_ar": "بولونغ سانتا كروز"
+},
+{
+"country": "PH",
+"name_en": "Santa Cruz",
+"name_ar": "سانتا كروز"
+},
+{
+"country": "PH",
+"name_en": "Sultan Kudarat",
+"name_ar": "سلطان كودارات"
+},
+{
+"country": "PH",
+"name_en": "Poblacion",
+"name_ar": "بوبلاسيون"
+},
+{
+"country": "PH",
+"name_en": "Hagonoy",
+"name_ar": "هاغونوي"
+},
+{
+"country": "PH",
+"name_en": "Tabuk",
+"name_ar": "تابوك"
+},
+{
+"country": "PH",
+"name_en": "Tabuk",
+"name_ar": "تابوك"
+},
+{
+"country": "PH",
+"name_en": "Calumpit",
+"name_ar": "كالومبيت"
+},
+{
+"country": "PH",
+"name_en": "Apalit",
+"name_ar": "أباليت"
+},
+{
+"country": "PH",
+"name_en": "Plaridel",
+"name_ar": "بلاريدل"
+},
+{
+"country": "PH",
+"name_en": "Silang",
+"name_ar": "سيلانغ"
+},
+{
+"country": "PH",
+"name_en": "Malita",
+"name_ar": "مالييتا"
+},
+{
+"country": "PH",
+"name_en": "Guiguinto",
+"name_ar": "غيغينتو"
+},
+{
+"country": "PH",
+"name_en": "Manolo Fortich",
+"name_ar": "مانولو فورتيتش"
+},
+{
+"country": "PH",
+"name_en": "Midsayap",
+"name_ar": "ميدسايب"
+},
+{
+"country": "PH",
+"name_en": "Himamaylan",
+"name_ar": "هيمامايلان"
+},
+{
+"country": "PH",
+"name_en": "Los Baños",
+"name_ar": "لوس بانيوس"
+},
+{
+"country": "PH",
+"name_en": "Tacurong",
+"name_ar": "تاكورونغ"
+},
+{
+"country": "PH",
+"name_en": "Dinaig",
+"name_ar": "دينايغ"
+},
+{
+"country": "PH",
+"name_en": "Digos",
+"name_ar": "ديغوس"
+},
+{
+"country": "PH",
+"name_en": "Cavite City",
+"name_ar": "كافيت"
+},
+{
+"country": "PH",
+"name_en": "Tayabas",
+"name_ar": "تاياباس"
+},
+{
+"country": "PH",
+"name_en": "Iriga City",
+"name_ar": "إيريغا"
+},
+{
+"country": "PH",
+"name_en": "Quezon",
+"name_ar": "كيزون"
+},
+{
+"country": "PH",
+"name_en": "Carmona",
+"name_ar": "كارمونا"
+},
+{
+"country": "PH",
+"name_en": "Laoag",
+"name_ar": "لاواغ"
+},
+{
+"country": "PH",
+"name_en": "Pulilan",
+"name_ar": "بوليلان"
+},
+{
+"country": "PH",
+"name_en": "Bayugan",
+"name_ar": "بايوغان"
+},
+{
+"country": "PH",
+"name_en": "Maramag",
+"name_ar": "ماراماغ"
+},
+{
+"country": "PH",
+"name_en": "Santiago",
+"name_ar": "سانتياغو"
+},
+{
+"country": "PH",
+"name_en": "Santa Cruz",
+"name_ar": "سانتا كروز"
+},
+{
+"country": "PH",
+"name_en": "Catbalogan",
+"name_ar": "كاتبالوغان"
+},
+{
+"country": "PH",
+"name_en": "Bagong Silangan",
+"name_ar": "باغونغ سيلانغان"
+},
+{
+"country": "PH",
+"name_en": "Paniqui",
+"name_ar": "باني كي"
+},
+{
+"country": "PH",
+"name_en": "Mati",
+"name_ar": "ماتي"
+},
+{
+"country": "PH",
+"name_en": "Tanza",
+"name_ar": "تانزا"
+},
+{
+"country": "PH",
+"name_en": "Putatan",
+"name_ar": "بوتاتان"
+},
+{
+"country": "PH",
+"name_en": "Calasiao",
+"name_ar": "كالاسياو"
+},
+{
+"country": "PK",
+"name_en": "Gujranwala",
+"name_ar": "غوجرانوالا"
+},
+{
+"country": "PK",
+"name_en": "Bannu",
+"name_ar": "بانو"
+},
+{
+"country": "PK",
+"name_en": "Sargodha",
+"name_ar": "سرغودها"
+},
+{
+"country": "PK",
+"name_en": "Sialkot",
+"name_ar": "سيالكوت"
+},
+{
+"country": "PK",
+"name_en": "Bahawalpur",
+"name_ar": "بهاولبور"
+},
+{
+"country": "PK",
+"name_en": "Arifwala",
+"name_ar": "عارف والا"
+},
+{
+"country": "PK",
+"name_en": "Dera Ismail Khan",
+"name_ar": "ديرة إسماعيل خان"
+},
+{
+"country": "PK",
+"name_en": "Battagram",
+"name_ar": "باتاغرام"
+},
+{
+"country": "PK",
+"name_en": "Chunian",
+"name_ar": "تشونيان"
+},
+{
+"country": "PK",
+"name_en": "Shekhupura",
+"name_ar": "شيخوبورا"
+},
+{
+"country": "PK",
+"name_en": "Gujrat",
+"name_ar": "غوجرات"
+},
+{
+"country": "PK",
+"name_en": "Sukkur",
+"name_ar": "سكر"
+},
+{
+"country": "PK",
+"name_en": "Sahiwal",
+"name_ar": "ساهيوال"
+},
+{
+"country": "PK",
+"name_en": "Okara",
+"name_ar": "أوكارا"
+},
+{
+"country": "PK",
+"name_en": "Kasur",
+"name_ar": "قصور"
+},
+{
+"country": "PK",
+"name_en": "Jalalpur Pirwala",
+"name_ar": "جلال بور بيروالا"
+},
+{
+"country": "PK",
+"name_en": "Pindi Bhattian",
+"name_ar": "بندي بهاتيان"
+},
+{
+"country": "PK",
+"name_en": "Tando Bago",
+"name_ar": "تاندو باغو"
+},
+{
+"country": "PK",
+"name_en": "Tando Allahyar",
+"name_ar": "تاندو الله يار"
+},
+{
+"country": "PK",
+"name_en": "Wah Cantt",
+"name_ar": "واه كانت"
+},
+{
+"country": "PK",
+"name_en": "Chak Jhumra",
+"name_ar": "تشاك جومرا"
+},
+{
+"country": "PK",
+"name_en": "Larkana",
+"name_ar": "لاركانا"
+},
+{
+"country": "PK",
+"name_en": "Nawabshah",
+"name_ar": "نواب شاه"
+},
+{
+"country": "PK",
+"name_en": "Burewala",
+"name_ar": "بوريوالا"
+},
+{
+"country": "PK",
+"name_en": "Sinjhoro",
+"name_ar": "سنجهورو"
+},
+{
+"country": "PK",
+"name_en": "Hafizabad",
+"name_ar": "حافظ آباد"
+},
+{
+"country": "PK",
+"name_en": "Chiniot",
+"name_ar": "شنيوت"
+},
+{
+"country": "PK",
+"name_en": "Malir Cantonment",
+"name_ar": "ملير كانتونمنت"
+},
+{
+"country": "PK",
+"name_en": "Kamoke",
+"name_ar": "كاموكي"
+},
+{
+"country": "PK",
+"name_en": "Abbottabad",
+"name_ar": "أبوت آباد"
+},
+{
+"country": "PK",
+"name_en": "Saddiqabad",
+"name_ar": "صديق آباد"
+},
+{
+"country": "PK",
+"name_en": "Mirpur Khas",
+"name_ar": "ميربور خاص"
+},
+{
+"country": "PK",
+"name_en": "Skardu",
+"name_ar": "سكاردو"
+},
+{
+"country": "PK",
+"name_en": "Shahkot",
+"name_ar": "شاهكوت"
+},
+{
+"country": "PK",
+"name_en": "Bahawalnagar",
+"name_ar": "بهاولنغر"
+},
+{
+"country": "PK",
+"name_en": "Bahawalnagar",
+"name_ar": "بهاولنغر"
+},
+{
+"country": "PK",
+"name_en": "Kunri",
+"name_ar": "كوني"
+},
+{
+"country": "PK",
+"name_en": "Muzaffargarh",
+"name_ar": "مظفر غره"
+},
+{
+"country": "PK",
+"name_en": "Digri",
+"name_ar": "ديغري"
+},
+{
+"country": "PK",
+"name_en": "Shikarpur",
+"name_ar": "شكاربور"
+},
+{
+"country": "PK",
+"name_en": "Talhar",
+"name_ar": "تالهار"
+},
+{
+"country": "PK",
+"name_en": "Qadirpur Ran",
+"name_ar": "قادربور ران"
+},
+{
+"country": "PK",
+"name_en": "Dajal",
+"name_ar": "داجال"
+},
+{
+"country": "PK",
+"name_en": "Hub",
+"name_ar": "حب"
+},
+{
+"country": "PK",
+"name_en": "Dhirkot",
+"name_ar": "دهيركوت"
+},
+{
+"country": "PK",
+"name_en": "Garhi Khairo",
+"name_ar": "غرهي خيرو"
+},
+{
+"country": "PK",
+"name_en": "Khairpur Mir’s",
+"name_ar": "خيربور ميرس"
+},
+{
+"country": "PK",
+"name_en": "Tando Adam",
+"name_ar": "تاندو آدم"
+},
+{
+"country": "PK",
+"name_en": "Arif Wala",
+"name_ar": "عارف والا"
+},
+{
+"country": "PK",
+"name_en": "Jampur",
+"name_ar": "جامبور"
+},
+{
+"country": "PK",
+"name_en": "Kohat",
+"name_ar": "كوهات"
+},
+{
+"country": "PK",
+"name_en": "Layyah",
+"name_ar": "ليَّة"
+},
+{
+"country": "PK",
+"name_en": "Shujaabad",
+"name_ar": "شجاع آباد"
+},
+{
+"country": "PK",
+"name_en": "Eminabad",
+"name_ar": "إمين آباد"
+},
+{
+"country": "PK",
+"name_en": "Harunabad",
+"name_ar": "هارون آباد"
+},
+{
+"country": "PK",
+"name_en": "Jalalpur Jattan",
+"name_ar": "جلال بور جاتان"
+},
+{
+"country": "PK",
+"name_en": "Lodhran",
+"name_ar": "لودهران"
+},
+{
+"country": "PK",
+"name_en": "Moro",
+"name_ar": "مورو"
+},
+{
+"country": "PK",
+"name_en": "Khanpur",
+"name_ar": "خانبور"
+},
+{
+"country": "PK",
+"name_en": "Attock City",
+"name_ar": "أتوك"
+},
+{
+"country": "PK",
+"name_en": "Manjhand",
+"name_ar": "منجهند"
+},
+{
+"country": "PK",
+"name_en": "Mian Channun",
+"name_ar": "ميان تشنون"
+},
+{
+"country": "PK",
+"name_en": "Bhakkar",
+"name_ar": "بهكر"
+},
+{
+"country": "PK",
+"name_en": "Narowal",
+"name_ar": "ناروال"
+},
+{
+"country": "PK",
+"name_en": "Chaman",
+"name_ar": "تشامان"
+},
+{
+"country": "PK",
+"name_en": "Mandi Bahauddin",
+"name_ar": "منداي بهاء الدين"
+},
+{
+"country": "PK",
+"name_en": "Mianwali",
+"name_ar": "ميانوالي"
+},
+{
+"country": "PK",
+"name_en": "Daur",
+"name_ar": "داور"
+},
+{
+"country": "PK",
+"name_en": "Daska Kalan",
+"name_ar": "داسكة كالان"
+},
+{
+"country": "PK",
+"name_en": "Shakargarh",
+"name_ar": "شكركره"
+},
+{
+"country": "PK",
+"name_en": "Pakpattan",
+"name_ar": "باكبتن"
+},
+{
+"country": "PK",
+"name_en": "Mailsi",
+"name_ar": "مايلسي"
+},
+{
+"country": "PK",
+"name_en": "New Mirpur City",
+"name_ar": "ميربور الجديدة"
+},
+{
+"country": "PK",
+"name_en": "Toba Tek Singh",
+"name_ar": "طوبا تيك سينغ"
+},
+{
+"country": "PK",
+"name_en": "Haveli Lakha",
+"name_ar": "حويلي لاخا"
+},
+{
+"country": "PK",
+"name_en": "Shahdad Kot",
+"name_ar": "شهداد كوت"
+},
+{
+"country": "PK",
+"name_en": "Charsadda",
+"name_ar": "شارسدة"
+},
+{
+"country": "PK",
+"name_en": "Ghotki",
+"name_ar": "غوتكي"
+},
+{
+"country": "PK",
+"name_en": "Badin",
+"name_ar": "بدين"
+},
+{
+"country": "PK",
+"name_en": "Taunsa",
+"name_ar": "تونسا"
+},
+{
+"country": "PK",
+"name_en": "Phool Nagar",
+"name_ar": "فول نغر"
+},
+{
+"country": "PK",
+"name_en": "Tando Muhammad Khan",
+"name_ar": "تاندو محمد خان"
+},
+{
+"country": "PK",
+"name_en": "Pattoki",
+"name_ar": "باتوكي"
+},
+{
+"country": "PK",
+"name_en": "Jauharabad",
+"name_ar": "جوهر آباد"
+},
+{
+"country": "PK",
+"name_en": "Vihari",
+"name_ar": "فيهاري"
+},
+{
+"country": "PK",
+"name_en": "Chichawatni",
+"name_ar": "تشيتشاواتني"
+},
+{
+"country": "PK",
+"name_en": "Dera Murad Jamali",
+"name_ar": "ديرة مراد جمالي"
+},
+{
+"country": "PK",
+"name_en": "Kotri",
+"name_ar": "كوتري"
+},
+{
+"country": "PK",
+"name_en": "Kot Addu",
+"name_ar": "كوت أدّو"
+},
+{
+"country": "PK",
+"name_en": "Sangla Hill",
+"name_ar": "سانغلا هيل"
+},
+{
+"country": "PK",
+"name_en": "Kharian",
+"name_ar": "خاريان"
+},
+{
+"country": "PK",
+"name_en": "Khushāb",
+"name_ar": "خوشاب"
+},
+{
+"country": "PK",
+"name_en": "Pasrur",
+"name_ar": "باسرور"
+},
+{
+"country": "PK",
+"name_en": "Pano Aqil",
+"name_ar": "بانو عاقل"
+},
+{
+"country": "PK",
+"name_en": "Shabqadar",
+"name_ar": "شبقدر"
+},
+{
+"country": "PK",
+"name_en": "Chakwal",
+"name_ar": "تشاكوال"
+}
+]
+},
+"verify:1": {
+"fixes": [
+{
+"country": "CN",
+"name_en": "Changning",
+"name_ar": "تشانغنينغ"
+}
+]
+},
+"name:8": {
+"names": [
+{
+"country": "PK",
+"name_en": "Raja Jang",
+"name_ar": "راجا جانغ"
+},
+{
+"country": "PK",
+"name_en": "Model Town",
+"name_ar": "مودل تاون"
+},
+{
+"country": "PM",
+"name_en": "Saint-Pierre",
+"name_ar": "سان بيير"
+},
+{
+"country": "RE",
+"name_en": "Saint-Denis",
+"name_ar": "سان دوني"
+},
+{
+"country": "RU",
+"name_en": "Voronezh",
+"name_ar": "فورونيج"
+},
+{
+"country": "RU",
+"name_en": "Naberezhnyye Chelny",
+"name_ar": "نابيريجنيه تشيلني"
+},
+{
+"country": "RU",
+"name_en": "Kalininskiy",
+"name_ar": "كالينينسكي"
+},
+{
+"country": "RU",
+"name_en": "Nizhny Tagil",
+"name_ar": "نيجني تاغيل"
+},
+{
+"country": "RU",
+"name_en": "Krasnogvargeisky",
+"name_ar": "كراسنوغفارديسكي"
+},
+{
+"country": "RU",
+"name_en": "Sochi",
+"name_ar": "سوتشي"
+},
+{
+"country": "RU",
+"name_en": "Volzhsky",
+"name_ar": "فولجيسكي"
+},
+{
+"country": "RU",
+"name_en": "Komsomolsk-on-Amur",
+"name_ar": "كومسومولسك أون أمور"
+},
+{
+"country": "RU",
+"name_en": "Yoshkar-Ola",
+"name_ar": "يوشكار أولا"
+},
+{
+"country": "RU",
+"name_en": "Mar’ino",
+"name_ar": "مارينو"
+},
+{
+"country": "RU",
+"name_en": "Novorossiysk",
+"name_ar": "نوفوروسيسك"
+},
+{
+"country": "RU",
+"name_en": "Staryy Oskol",
+"name_ar": "ستاري أوسكول"
+},
+{
+"country": "RU",
+"name_en": "Prokop’yevsk",
+"name_ar": "بروكوبيفسك"
+},
+{
+"country": "RU",
+"name_en": "Vykhino-Zhulebino",
+"name_ar": "فيخينو-جوليبينو"
+},
+{
+"country": "RU",
+"name_en": "Zelenograd",
+"name_ar": "زيلينوغراد"
+},
+{
+"country": "RU",
+"name_en": "Biysk",
+"name_ar": "بيسك"
+},
+{
+"country": "RU",
+"name_en": "Centralniy",
+"name_ar": "تسينترالني"
+},
+{
+"country": "RU",
+"name_en": "Vasyl'evsky Ostrov",
+"name_ar": "فاسيليفسكي أوستروف"
+},
+{
+"country": "RU",
+"name_en": "Severnyy",
+"name_ar": "سيفيرني"
+},
+{
+"country": "RU",
+"name_en": "Engels",
+"name_ar": "إنغلس"
+},
+{
+"country": "RU",
+"name_en": "Syzran",
+"name_ar": "سيزران"
+},
+{
+"country": "RU",
+"name_en": "Kamensk-Ural’skiy",
+"name_ar": "كامينسك أورالسكي"
+},
+{
+"country": "RU",
+"name_en": "Yasenevo",
+"name_ar": "ياسينيفو"
+},
+{
+"country": "RU",
+"name_en": "Podolsk",
+"name_ar": "بودولسك"
+},
+{
+"country": "RU",
+"name_en": "Lyublino",
+"name_ar": "ليوبلينو"
+},
+{
+"country": "RU",
+"name_en": "Khoroshëvo-Mnevniki",
+"name_ar": "خوروشيفو-مnevniki"
+},
+{
+"country": "RU",
+"name_en": "Bibirevo",
+"name_ar": "بيبيريفو"
+},
+{
+"country": "RU",
+"name_en": "Gol’yanovo",
+"name_ar": "غولياينوفو"
+},
+{
+"country": "RU",
+"name_en": "Admiralteisky",
+"name_ar": "أدميرالتيسكي"
+},
+{
+"country": "RU",
+"name_en": "Ussuriysk",
+"name_ar": "أوسوريسك"
+},
+{
+"country": "RU",
+"name_en": "Strogino",
+"name_ar": "ستروغينو"
+},
+{
+"country": "RU",
+"name_en": "Zhulebino",
+"name_ar": "جوليبينو"
+},
+{
+"country": "RU",
+"name_en": "Kuntsevo",
+"name_ar": "كونتسيفو"
+},
+{
+"country": "RU",
+"name_en": "Elektrostal’",
+"name_ar": "إلكتروستال"
+},
+{
+"country": "RU",
+"name_en": "Biryulëvo",
+"name_ar": "بيريولفو"
+},
+{
+"country": "RU",
+"name_en": "Orekhovo-Borisovo",
+"name_ar": "أوريخوفو-بوريسوفو"
+},
+{
+"country": "RU",
+"name_en": "Novyye Kuz’minki",
+"name_ar": "نوفيي كوزمينكي"
+},
+{
+"country": "RU",
+"name_en": "Kuz’minki",
+"name_ar": "كوزمينكي"
+},
+{
+"country": "RU",
+"name_en": "Pyatigorsk",
+"name_ar": "بياتيغورسك"
+},
+{
+"country": "RU",
+"name_en": "Chertanovo Yuzhnoye",
+"name_ar": "تشيرتانوفو يوزنويي"
+},
+{
+"country": "RU",
+"name_en": "Zheleznodorozhnyy",
+"name_ar": "جيليزنودوروجني"
+},
+{
+"country": "RU",
+"name_en": "Al’met’yevsk",
+"name_ar": "ألميتيفسك"
+},
+{
+"country": "RU",
+"name_en": "Petrogradka",
+"name_ar": "بيتروغرادكا"
+},
+{
+"country": "RU",
+"name_en": "Ramenki",
+"name_ar": "رامينكي"
+},
+{
+"country": "RU",
+"name_en": "Zyablikovo",
+"name_ar": "زيابليكوفو"
+},
+{
+"country": "RU",
+"name_en": "Novocheboksarsk",
+"name_ar": "نوفوتشيبوكساري"
+},
+{
+"country": "RU",
+"name_en": "Serpukhov",
+"name_ar": "سيربوخوف"
+},
+{
+"country": "RU",
+"name_en": "Orekhovo-Borisovo Severnoye",
+"name_ar": "أوريخوفو-بوريسوفو سيفيرنويي"
+},
+{
+"country": "RU",
+"name_en": "Ivanovskoye",
+"name_ar": "إيفانوفسكوي"
+},
+{
+"country": "RU",
+"name_en": "Khasavyurt",
+"name_ar": "خاسافيورت"
+},
+{
+"country": "RU",
+"name_en": "Tyoply Stan",
+"name_ar": "تيوبلي ستان"
+},
+{
+"country": "RU",
+"name_en": "Tsaritsyno",
+"name_ar": "تساريتسينو"
+},
+{
+"country": "RU",
+"name_en": "Veshnyaki",
+"name_ar": "فيشنياكي"
+},
+{
+"country": "RU",
+"name_en": "Presnenskiy",
+"name_ar": "بريسنينسكي"
+},
+{
+"country": "RU",
+"name_en": "Zyuzino",
+"name_ar": "زيوزينو"
+},
+{
+"country": "RU",
+"name_en": "Solntsevo",
+"name_ar": "سولنتسيفو"
+},
+{
+"country": "RU",
+"name_en": "Troparëvo",
+"name_ar": "تروباريفو"
+},
+{
+"country": "RU",
+"name_en": "Taganskiy",
+"name_ar": "تاغانسكي"
+},
+{
+"country": "RU",
+"name_en": "Novo-Peredelkino",
+"name_ar": "نوفو-بيريديلكينو"
+},
+{
+"country": "RU",
+"name_en": "Ochakovo-Matveyevskoye",
+"name_ar": "أوتشاكوفو-ماتفيفسكوي"
+},
+{
+"country": "RU",
+"name_en": "Tobolsk",
+"name_ar": "توبولسك"
+},
+{
+"country": "RU",
+"name_en": "Shchyolkovo",
+"name_ar": "شيولكوفو"
+},
+{
+"country": "RU",
+"name_en": "Nefteyugansk",
+"name_ar": "نيفتيوغانسك"
+},
+{
+"country": "RU",
+"name_en": "Noyabrsk",
+"name_ar": "نويابرسك"
+},
+{
+"country": "RU",
+"name_en": "Bataysk",
+"name_ar": "باتايسك"
+},
+{
+"country": "RU",
+"name_en": "Seversk",
+"name_ar": "سيفيرسك"
+},
+{
+"country": "RU",
+"name_en": "Sergiyev Posad",
+"name_ar": "سيرغييف بوساد"
+},
+{
+"country": "RU",
+"name_en": "Oktyabrsky",
+"name_ar": "أكتيابرسكي"
+},
+{
+"country": "RU",
+"name_en": "Cherëmushki",
+"name_ar": "تشيريوموشكي"
+},
+{
+"country": "RU",
+"name_en": "Izmaylovo",
+"name_ar": "إزمايلوفو"
+},
+{
+"country": "RU",
+"name_en": "Kiselëvsk",
+"name_ar": "كيسيليفسك"
+},
+{
+"country": "RU",
+"name_en": "Akademicheskoe",
+"name_ar": "أكاديميتشيسكوي"
+},
+{
+"country": "RU",
+"name_en": "Velikiye Luki",
+"name_ar": "فيليكيي لوكي"
+},
+{
+"country": "RU",
+"name_en": "Bogorodskoye",
+"name_ar": "بوغوروديسكوي"
+},
+{
+"country": "RU",
+"name_en": "Artëm",
+"name_ar": "أرتيوم"
+},
+{
+"country": "RU",
+"name_en": "Shchukino",
+"name_ar": "شيوكينو"
+},
+{
+"country": "RU",
+"name_en": "Brateyevo",
+"name_ar": "براتييفو"
+},
+{
+"country": "RU",
+"name_en": "Ryazanskiy",
+"name_ar": "ريازانسكي"
+},
+{
+"country": "RU",
+"name_en": "Novyye Cherëmushki",
+"name_ar": "نوفيي تشيريوموشكي"
+},
+{
+"country": "RU",
+"name_en": "Ust’-Ilimsk",
+"name_ar": "أوست-إيليمسك"
+},
+{
+"country": "RU",
+"name_en": "Tekstil’shchiki",
+"name_ar": "تيكستيلشيكي"
+},
+{
+"country": "SD",
+"name_en": "El Geneina Fort",
+"name_ar": "الجنينة فورت"
+},
+{
+"country": "SD",
+"name_en": "Al Manāqil",
+"name_ar": "المناقل"
+},
+{
+"country": "SD",
+"name_en": "Ad Douiem",
+"name_ar": "الدويم"
+},
+{
+"country": "SD",
+"name_en": "Burām",
+"name_ar": "برام"
+},
+{
+"country": "SD",
+"name_en": "Dilling",
+"name_ar": "دلنج"
+},
+{
+"country": "SD",
+"name_en": "'Ārdamatā",
+"name_ar": "أردماتا"
+},
+{
+"country": "SD",
+"name_en": "Kas",
+"name_ar": "كاس"
+},
+{
+"country": "SD",
+"name_en": "Mellit",
+"name_ar": "ملية"
+},
+{
+"country": "SN",
+"name_en": "Pikine",
+"name_ar": "بيكين"
+},
+{
+"country": "SN",
+"name_en": "Touba",
+"name_ar": "توبا"
+},
+{
+"country": "SN",
+"name_en": "Guédiawaye",
+"name_ar": "غيديواي"
+},
+{
+"country": "SN",
+"name_en": "Thiès",
+"name_ar": "تيس"
+},
+{
+"country": "SN",
+"name_en": "Mbour",
+"name_ar": "مبور"
+},
+{
+"country": "SN",
+"name_en": "Thiès Nones",
+"name_ar": "تيس نونيس"
+},
+{
+"country": "SN",
+"name_en": "Rufisque est",
+"name_ar": "روفيسك الشرقية"
+},
+{
+"country": "SN",
+"name_en": "Tivaouane",
+"name_ar": "تيفاوان"
+},
+{
+"country": "SN",
+"name_en": "Mbaké",
+"name_ar": "مباكي"
+},
+{
+"country": "SN",
+"name_en": "Tiébo",
+"name_ar": "تيبو"
+},
+{
+"country": "SO",
+"name_en": "Marka",
+"name_ar": "مركا"
+},
+{
+"country": "SO",
+"name_en": "El Dibir",
+"name_ar": "الدبير"
+},
+{
+"country": "SO",
+"name_en": "Ruqi",
+"name_ar": "روقي"
+},
+{
+"country": "SO",
+"name_en": "Cabudwaaq",
+"name_ar": "كابودواق"
+},
+{
+"country": "SO",
+"name_en": "Kaambooni",
+"name_ar": "كامبوني"
+},
+{
+"country": "SO",
+"name_en": "Gebiley",
+"name_ar": "جبيلي"
+},
+{
+"country": "SO",
+"name_en": "Beled Hawo",
+"name_ar": "بلد حوا"
+},
+{
+"country": "SO",
+"name_en": "Balanbale",
+"name_ar": "بالانبالي"
+},
+{
+"country": "SO",
+"name_en": "Afgooye",
+"name_ar": "أفغوي"
+},
+{
+"country": "SO",
+"name_en": "Qoryooley",
+"name_ar": "قوريولي"
+},
+{
+"country": "TC",
+"name_en": "Cockburn Town",
+"name_ar": "كوكبيرن تاون"
+},
+{
+"country": "TF",
+"name_en": "Port-aux-Français",
+"name_ar": "بورت أو فرانسيه"
+},
+{
+"country": "TH",
+"name_en": "Phra Pradaeng",
+"name_ar": "فرا برادينغ"
+},
+{
+"country": "TH",
+"name_en": "Bang Khae",
+"name_ar": "بانغ كاي"
+},
+{
+"country": "TH",
+"name_en": "Pak Kret",
+"name_ar": "باك كريت"
+},
+{
+"country": "TH",
+"name_en": "Sai Mai",
+"name_ar": "ساي ماي"
+},
+{
+"country": "TH",
+"name_en": "Si Racha",
+"name_ar": "سي راتشا"
+},
+{
+"country": "TH",
+"name_en": "Latkrabang",
+"name_ar": "لاتكرابانغ"
+},
+{
+"country": "TH",
+"name_en": "Watthana",
+"name_ar": "واتانا"
+},
+{
+"country": "TH",
+"name_en": "Khlong Sam Wa",
+"name_ar": "خلونغ سام وا"
+},
+{
+"country": "TH",
+"name_en": "Bang Khun Thian",
+"name_ar": "بانغ خون تيان"
+},
+{
+"country": "TH",
+"name_en": "Lat Krabang",
+"name_ar": "لاتكرابانغ"
+},
+{
+"country": "TH",
+"name_en": "Chatuchak",
+"name_ar": "تشاتوتشاك"
+},
+{
+"country": "TH",
+"name_en": "Ban Khlong Prawet",
+"name_ar": "بان خلونغ براوي"
+},
+{
+"country": "TH",
+"name_en": "Chom Thong",
+"name_ar": "تشوم تونغ"
+},
+{
+"country": "TH",
+"name_en": "Nong Chok",
+"name_ar": "نونغ تشوك"
+},
+{
+"country": "TH",
+"name_en": "Lampang",
+"name_ar": "لامبانغ"
+},
+{
+"country": "TH",
+"name_en": "Nong Khaem",
+"name_ar": "نونغ خايم"
+},
+{
+"country": "TH",
+"name_en": "Bang Kapi",
+"name_ar": "بانغ كابي"
+},
+{
+"country": "TH",
+"name_en": "Bueng Kum",
+"name_ar": "بونغ كوم"
+},
+{
+"country": "TH",
+"name_en": "Kabin Buri",
+"name_ar": "كابين بوري"
+},
+{
+"country": "TH",
+"name_en": "Din Daeng",
+"name_ar": "دين داينغ"
+},
+{
+"country": "TH",
+"name_en": "Chiang Mai",
+"name_ar": "تشيانغ ماي"
+},
+{
+"country": "TH",
+"name_en": "Bang Sue",
+"name_ar": "بانغ سو"
+},
+{
+"country": "TH",
+"name_en": "Ban Samae Dam",
+"name_ar": "بان سامي دام"
+},
+{
+"country": "TH",
+"name_en": "Lat Phrao",
+"name_ar": "لات براو"
+},
+{
+"country": "TH",
+"name_en": "Phasi Charoen",
+"name_ar": "فاسي تشارون"
+},
+{
+"country": "TH",
+"name_en": "Ban I Chang",
+"name_ar": "بان إي تشانغ"
+},
+{
+"country": "TH",
+"name_en": "Thon Buri",
+"name_ar": "ثون بوري"
+},
+{
+"country": "TH",
+"name_en": "Khlong Luang",
+"name_ar": "خلونغ لوانغ"
+},
+{
+"country": "TH",
+"name_en": "Bangkok Noi",
+"name_ar": "بانغكوك نوي"
+},
+{
+"country": "TH",
+"name_en": "Thung Khru",
+"name_ar": "تونغ خرو"
+},
+{
+"country": "TH",
+"name_en": "Pattaya",
+"name_ar": "باتايا"
+},
+{
+"country": "TH",
+"name_en": "Suan Luang",
+"name_ar": "سوان لوانغ"
+},
+{
+"country": "TH",
+"name_en": "Wang Thonglang",
+"name_ar": "وانغ تونغلانغ"
+},
+{
+"country": "TH",
+"name_en": "Lak Si",
+"name_ar": "لاك سي"
+},
+{
+"country": "TH",
+"name_en": "Khlong Toei",
+"name_ar": "خلونغ تواي"
+},
+{
+"country": "TH",
+"name_en": "Dusit",
+"name_ar": "دوسيت"
+},
+{
+"country": "TH",
+"name_en": "Taling Chan",
+"name_ar": "تالينغ تشان"
+},
+{
+"country": "TH",
+"name_en": "Bang Bon",
+"name_ar": "بانغ بون"
+},
+{
+"country": "TH",
+"name_en": "Si Maha Phot",
+"name_ar": "سي ماها فوت"
+},
+{
+"country": "TJ",
+"name_en": "Kŭlob",
+"name_ar": "كولوب"
+},
+{
+"country": "TJ",
+"name_en": "Konibodom",
+"name_ar": "كونيبودوم"
+},
+{
+"country": "TO",
+"name_en": "Nuku‘alofa",
+"name_ar": "نوكو ألوفا"
+},
+{
+"country": "TR",
+"name_en": "Esenyurt",
+"name_ar": "إسنيورت"
+},
+{
+"country": "TR",
+"name_en": "Çankaya",
+"name_ar": "تشانكايا"
+},
+{
+"country": "TR",
+"name_en": "Küçükçekmece",
+"name_ar": "كوتشوكتشيكمجه"
+},
+{
+"country": "TR",
+"name_en": "Bağcılar",
+"name_ar": "باغجيلار"
+},
+{
+"country": "TR",
+"name_en": "Bahçelievler",
+"name_ar": "باهتشيليفلير"
+},
+{
+"country": "TR",
+"name_en": "Umraniye",
+"name_ar": "أومرانييه"
+},
+{
+"country": "TR",
+"name_en": "Mersin",
+"name_ar": "مرسين"
+},
+{
+"country": "TR",
+"name_en": "Nilüfer",
+"name_ar": "نيلوفر"
+},
+{
+"country": "TR",
+"name_en": "Üsküdar",
+"name_ar": "أوسكودار"
+},
+{
+"country": "TR",
+"name_en": "Esenler",
+"name_ar": "إسينلر"
+},
+{
+"country": "TR",
+"name_en": "Sancaktepe",
+"name_ar": "سنجاكتبه"
+},
+{
+"country": "TR",
+"name_en": "Karabağlar",
+"name_ar": "قرة باغلار"
+},
+{
+"country": "TR",
+"name_en": "Muratpaşa",
+"name_ar": "مراد باشا"
+},
+{
+"country": "TR",
+"name_en": "Sultangazi",
+"name_ar": "سلطان غازي"
+},
+{
+"country": "TR",
+"name_en": "Maltepe",
+"name_ar": "مالتيبه"
+},
+{
+"country": "TR",
+"name_en": "Beylikdüzü",
+"name_ar": "بيليكدوزو"
+},
+{
+"country": "TR",
+"name_en": "Ataşehir",
+"name_ar": "أتاشهير"
+},
+{
+"country": "TR",
+"name_en": "Sultanbeyli",
+"name_ar": "سلطان بيلي"
+},
+{
+"country": "TR",
+"name_en": "Fatih",
+"name_ar": "فاتح"
+},
+{
+"country": "TR",
+"name_en": "Karşıyaka",
+"name_ar": "قارشياكا"
+},
+{
+"country": "TR",
+"name_en": "Konak",
+"name_ar": "كوناك"
+},
+{
+"country": "TR",
+"name_en": "Şişli",
+"name_ar": "شيشلي"
+},
+{
+"country": "TR",
+"name_en": "Batikent",
+"name_ar": "باتيكنت"
+},
+{
+"country": "TR",
+"name_en": "Gebze",
+"name_ar": "جبزة"
+},
+{
+"country": "TR",
+"name_en": "Zeytinburnu",
+"name_ar": "زيتينبورنو"
+},
+{
+"country": "TR",
+"name_en": "Merkezefendi",
+"name_ar": "مركز أفندي"
+},
+{
+"country": "TR",
+"name_en": "Manisa",
+"name_ar": "مانيسا"
+},
+{
+"country": "TR",
+"name_en": "Çiğli",
+"name_ar": "تشيغلي"
+},
+{
+"country": "TR",
+"name_en": "Arnavutköy",
+"name_ar": "أرناوتكوي"
+},
+{
+"country": "TR",
+"name_en": "Başakşehir",
+"name_ar": "باشاك شهير"
+},
+{
+"country": "TR",
+"name_en": "Siverek",
+"name_ar": "سيفيريك"
+},
+{
+"country": "TR",
+"name_en": "Gölbaşı",
+"name_ar": "غولباشي"
+},
+{
+"country": "TR",
+"name_en": "Büyükçekmece",
+"name_ar": "بيوكتشكميجه"
+},
+{
+"country": "TR",
+"name_en": "Ereğli",
+"name_ar": "إيريلي"
+},
+{
+"country": "TR",
+"name_en": "Viranşehir",
+"name_ar": "ويرانشهير"
+},
+{
+"country": "TR",
+"name_en": "Kızıltepe",
+"name_ar": "قزيلتبه"
+},
+{
+"country": "TR",
+"name_en": "Cizre",
+"name_ar": "جزرة"
+},
+{
+"country": "TR",
+"name_en": "İnegöl",
+"name_ar": "إينغول"
+},
+{
+"country": "TR",
+"name_en": "Derince",
+"name_ar": "درينجه"
+},
+{
+"country": "TR",
+"name_en": "Nazilli",
+"name_ar": "نازيلي"
+},
+{
+"country": "TR",
+"name_en": "Salihli",
+"name_ar": "صالحلي"
+},
+{
+"country": "TR",
+"name_en": "Silopi",
+"name_ar": "سيلوبي"
+},
+{
+"country": "TR",
+"name_en": "Turhal",
+"name_ar": "تورهال"
+},
+{
+"country": "TR",
+"name_en": "Arsuz",
+"name_ar": "أرسوز"
+},
+{
+"country": "TR",
+"name_en": "Bandırma",
+"name_ar": "باندرما"
+},
+{
+"country": "TR",
+"name_en": "Turgutlu",
+"name_ar": "تورغوتلو"
+},
+{
+"country": "TR",
+"name_en": "Mustafakemalpaşa",
+"name_ar": "مصطفى كمال باشا"
+},
+{
+"country": "TR",
+"name_en": "Suruç",
+"name_ar": "سوروج"
+},
+{
+"country": "TV",
+"name_en": "Funafuti",
+"name_ar": "فونافوتي"
+},
+{
+"country": "TW",
+"name_en": "New Taipei City",
+"name_ar": "نيو تايبيه"
+},
+{
+"country": "TW",
+"name_en": "Banqiao",
+"name_ar": "بانكياو"
+},
+{
+"country": "TZ",
+"name_en": "Bariadi",
+"name_ar": "باريادي"
+},
+{
+"country": "TZ",
+"name_en": "Tunduma",
+"name_ar": "توندوما"
+},
+{
+"country": "TZ",
+"name_en": "Ifakara",
+"name_ar": "إيفاكارا"
+},
+{
+"country": "TZ",
+"name_en": "Bunda",
+"name_ar": "بوندا"
+},
+{
+"country": "TZ",
+"name_en": "Tarime",
+"name_ar": "تاريمي"
+},
+{
+"country": "TZ",
+"name_en": "Nzega",
+"name_ar": "نزيغا"
+},
+{
+"country": "TZ",
+"name_en": "Makumbako",
+"name_ar": "ماكومباكو"
+},
+{
+"country": "TZ",
+"name_en": "Sengerema",
+"name_ar": "سينغيريما"
+},
+{
+"country": "TZ",
+"name_en": "Handeni",
+"name_ar": "هانديني"
+},
+{
+"country": "TZ",
+"name_en": "Katumba",
+"name_ar": "كاتومبا"
+},
+{
+"country": "UG",
+"name_en": "Nansana",
+"name_ar": "نانسانا"
+},
+{
+"country": "US",
+"name_en": "Queens",
+"name_ar": "كوينز"
+},
+{
+"country": "US",
+"name_en": "The Bronx",
+"name_ar": "برونكس"
+},
+{
+"country": "US",
+"name_en": "Washington",
+"name_ar": "واشنطن"
+},
+{
+"country": "US",
+"name_en": "New South Memphis",
+"name_ar": "نيو ساوث ممفيس"
+},
+{
+"country": "US",
+"name_en": "South Boston",
+"name_ar": "ساوث بوسطن"
+},
+{
+"country": "UZ",
+"name_en": "Yunusobod",
+"name_ar": "يونوسوبود"
+},
+{
+"country": "UZ",
+"name_en": "Chilanzar",
+"name_ar": "تشيلانزار"
+},
+{
+"country": "UZ",
+"name_en": "Qo‘qon",
+"name_ar": "قوقون"
+},
+{
+"country": "UZ",
+"name_en": "Marg‘ilon",
+"name_ar": "مرغيلان"
+},
+{
+"country": "UZ",
+"name_en": "Angren",
+"name_ar": "أنغرين"
+},
+{
+"country": "UZ",
+"name_en": "Olmaliq",
+"name_ar": "ألمالق"
+},
+{
+"country": "UZ",
+"name_en": "Sergeli",
+"name_ar": "سيرغيلي"
+},
+{
+"country": "UZ",
+"name_en": "Chust",
+"name_ar": "تشوست"
+},
+{
+"country": "VA",
+"name_en": "Vatican City",
+"name_ar": "مدينة الفاتيكان"
+},
+{
+"country": "VE",
+"name_en": "Ciudad Guayana",
+"name_ar": "سيوداد غيانا"
+},
+{
+"country": "VN",
+"name_en": "Thuận An",
+"name_ar": "ثوان آن"
+},
+{
+"country": "VN",
+"name_en": "Chợ Lớn",
+"name_ar": "تشو لون"
+},
+{
+"country": "VN",
+"name_en": "Bình Thạnh",
+"name_ar": "بينه ثانه"
+},
+{
+"country": "VN",
+"name_en": "Thủ Đức",
+"name_ar": "ثو دوك"
+},
+{
+"country": "VU",
+"name_en": "Port-Vila",
+"name_ar": "بورت فيلا"
+},
+{
+"country": "YT",
+"name_en": "Mamoudzou",
+"name_ar": "مامودزو"
+},
+{
+"country": "ZA",
+"name_en": "Soshanguve",
+"name_ar": "سوشانغوف"
+},
+{
+"country": "ZA",
+"name_en": "Evaton",
+"name_ar": "إيفاتون"
+},
+{
+"country": "ZA",
+"name_en": "Thembisa",
+"name_ar": "تيمبيسا"
+}
+]
+},
+"verify:3": {
+"fixes": [
+{
+"country": "CN",
+"name_en": "Leiyang",
+"name_ar": "لي يانغ"
+}
+]
+},
+"verify:2": {
+"fixes": [
+{
+"country": "CN",
+"name_en": "Cangzhou",
+"name_ar": "تشانغجو"
+},
+{
+"country": "CN",
+"name_en": "Karamay",
+"name_ar": "كاراماي"
+}
+]
+},
+"verify:4": {
+"fixes": []
+},
+"verify:5": {
+"fixes": [
+{
+"country": "IN",
+"name_en": "Gāndhīdhām",
+"name_ar": "غانديدهام"
+}
+]
+},
+"verify:6": {
+"fixes": [
+{
+"country": "IR",
+"name_en": "Golestān",
+"name_ar": "غلستان"
+},
+{
+"country": "IN",
+"name_en": "Jahānābād",
+"name_ar": "جاهاناباد"
+},
+{
+"country": "MX",
+"name_en": "Ciudad Nezahualcoyotl",
+"name_ar": "سيوداد نيثاوالكيوتل"
+},
+{
+"country": "MY",
+"name_en": "Kulim",
+"name_ar": "كوليم"
+}
+]
+},
+"verify:7": {
+"fixes": [
+{
+"country": "PH",
+"name_en": "Paniqui",
+"name_ar": "بانيكي"
+},
+{
+"country": "PK",
+"name_en": "Layyah",
+"name_ar": "لية"
+},
+{
+"country": "PK",
+"name_en": "Kot Addu",
+"name_ar": "كوت أدو"
+}
+]
+},
+"verify:8": {
+"fixes": [
+{
+"country": "RU",
+"name_en": "Khoroshëvo-Mnevniki",
+"name_ar": "خوروشيفو-مينيفنيكي"
+}
+]
+}
+}

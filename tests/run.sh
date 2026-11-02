@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 # Every check in one go: static checks, then the screen in a real browser. See tests/check.py and page.test.mjs.
-#   pip install fonttools brotli pillow && npm install --no-save playwright@1.56.1 && npx playwright install chromium
+#   pip install fonttools brotli pillow -r .github/tools/cities-world/requirements.txt && npm install --no-save playwright@1.56.1 && npx playwright install chromium
 set -euo pipefail
 cd "$(dirname "$0")/.."
 python3 tests/check.py
 python3 tests/tilawah_test.py
 python3 tests/prayer_math_test.py
 python3 tests/prayer_crosscheck_test.py
+python3 tests/prayer_crosscheck_world_test.py
 python3 tests/hijri_crosscheck_test.py
 python3 tests/prayer_method_test.py
 python3 tests/place_choice_test.py
@@ -65,6 +66,7 @@ python3 tests/find_team_test.py
 python3 tests/team_search_test.py
 python3 tests/team_ids_test.py
 python3 tests/city_match_test.py
+python3 tests/cities_world_test.py
 python3 tests/cities_md_test.py
 python3 tests/home_card_test.py
 python3 tests/perf_idle_test.py
@@ -90,6 +92,7 @@ python3 tests/reset_screensaver_test.py
 python3 tests/reset_tweaks_test.py
 python3 tests/task_voice_test.py
 python3 tests/task_ids_test.py
+python3 tests/task_typed_test.py
 python3 tests/render_gone_test.py
 python3 tests/sleep_boot_test.py
 python3 tests/photo_prep_test.py
@@ -116,9 +119,11 @@ python3 tests/unsplash_header_test.py
 python3 tests/bounded_test.py
 python3 tests/adhan_bar_test.py
 python3 tests/adhan_keys_test.py
+python3 tests/adhan_options_test.py
 python3 tests/fav_edit_test.py
 python3 tests/apps_edit_test.py
 python3 tests/remote_keys_test.py
+python3 tests/settings_key_test.py
 python3 tests/remote_nav_test.py
 python3 tests/dpad_rtl_test.py
 python3 tests/home_grid_test.py
@@ -132,6 +137,8 @@ python3 tests/pairing_screen_test.py
 python3 tests/glass_test.py
 python3 tests/type_into_test.py
 python3 tests/fix7_test.py
+python3 tests/fix159_test.py
+python3 tests/a11y_heal_test.py
 python3 tests/saver_cards_test.py
 python3 tests/phone_qr_test.py
 python3 tests/update_test.py
@@ -142,6 +149,7 @@ python3 tests/countdown_text_test.py
 python3 tests/month_names_test.py
 python3 tests/focus_key_test.py
 python3 tests/settings_hub_test.py
+python3 tests/dialog_fit_test.py
 python3 tests/second_card_test.py
 python3 tests/pin_store_test.py
 python3 tests/parental_policy_test.py
@@ -149,6 +157,7 @@ python3 tests/parental_wiring_test.py
 python3 tests/dock_pin_test.py
 python3 tests/tvports_test.py   # BETA LG/Samsung packages: manifests, files, sizes (docs/LG-SAMSUNG.md)
 node tests/prayer_crosscheck_page.mjs
+node tests/prayer_crosscheck_world_page.mjs
 node tests/hijri_crosscheck_page.mjs
 node tests/page.test.mjs
 node tests/phone_page.test.mjs
