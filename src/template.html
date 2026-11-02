@@ -723,6 +723,8 @@ const CONFIG = {
   // #cd=YYYY-MM-DD&cdname=...: the date and name for slot=countdown (a bad date = none)
   cd: (v => /^\d{4}-\d{2}-\d{2}$/.test(v) && !isNaN(Date.parse(v + 'T00:00:00Z')) && new Date(v + 'T00:00:00Z').toISOString().slice(0, 10) === v ? v : '')(_Q.get('cd') || ''),
   cdName: (_Q.get('cdname') || '').trim().slice(0, 40),
+  // «تبديل الآية والحديث»: #versemin=3 a new verse or hadith every 3 minutes (a verse, then a hadith); anything else = one a day as always
+  verseMin: _Q.get('versemin') === '3' ? 3 : 0,
   // «التفسير الميسر» under the verse of the day: #tafsir=1 (anything else = off)
   tafsir: _Q.get('tafsir') === '1',
   // from PR #28, each off unless asked for: #sunrise=1 the panel at the bottom right counts to the sunrise after Fajr's iqama and tells
@@ -3074,17 +3076,19 @@ function pickShort(list, at, len, card){
   card.len = len(best);
   return best;
 }
+// The verse card's turn: the day as always, or with #versemin=3 the 3-minute slot of the clock (even = a verse, odd = a hadith)
+const quoteTurn = () => CONFIG.verseMin ? Math.floor(Date.now() / (CONFIG.verseMin * 60000)) : riyadhDayNumber();
 function quoteOfDay(card){
-  const n = riyadhDayNumber(), half = Math.floor(n / 2);
+  const n = quoteTurn(), half = Math.floor(n / 2);
   if(VERSES.length && n % 2 === 0){
     const v = pickShort(VERSES, half, x => x.text.length, card);
-    return {title:'آية اليوم', rows:[`<li class="quote quran${v.text.length > 330 ? ' q4' : quoteSize(v.text.length)}"><span class="orn">﴿</span><span class="qt">${esc(v.text)}</span><span class="orn">﴾</span></li>`, `<li class="src">${esc(v.surah)} · ${ar(v.ayah)}</li>`]
+    return {title:CONFIG.verseMin ? 'آية كريمة' : 'آية اليوم', rows:[`<li class="quote quran${v.text.length > 330 ? ' q4' : quoteSize(v.text.length)}"><span class="orn">﴿</span><span class="qt">${esc(v.text)}</span><span class="orn">﴾</span></li>`, `<li class="src">${esc(v.surah)} · ${ar(v.ayah)}</li>`]
       .concat(CONFIG.tafsir && v.tafsir ? [`<li class="tafsir">${esc(v.tafsir)}</li>`] : [])};
   }
   const h = pickShort(HADITH, half, x => x.parts.reduce((m, [, t]) => m + t.length, 0), card);
   const saw = s => s.replace(/ﷺ/g, '<span class="saw">ﷺ</span>').replace(/[﴿﴾]/g, m => `<span class="orn">${m}</span>`);
   const body = h.parts.map(([k, t]) => k === 'q' ? `«${saw(esc(t))}»` : `<span class="nar">${saw(esc(t))}</span>`).join(' ');
-  return {title:'حديث اليوم', rows:[`<li class="quote hadith${quoteSize(h.parts.reduce((n, [, t]) => n + t.length, 0))}">${body}</li>`, `<li class="src">${esc(h.source)}</li>`]};
+  return {title:CONFIG.verseMin ? 'حديث شريف' : 'حديث اليوم', rows:[`<li class="quote hadith${quoteSize(h.parts.reduce((n, [, t]) => n + t.length, 0))}">${body}</li>`, `<li class="src">${esc(h.source)}</li>`]};
 }
 
 // «حكمة اليوم»: one saying a day by the Riyadh day number, proverbs and classical sayings only (assets/shared/wisdom.json)
@@ -3512,6 +3516,15 @@ function cardTimers(){
     fitCards();
   }, 25*1000);
   setInterval(() => renderPanel(false, 'adhkar', 'stocks', ...clocked), 60*1000);   // a window may have opened; a market opened or closed
+  if(CONFIG.verseMin){   // #versemin=3: the verse card turns when its 3 minutes are up (checked every 10 s), not only once a day
+    let turn = quoteTurn();
+    setInterval(() => {
+      if(quoteTurn() === turn) return;
+      turn = quoteTurn();
+      CARDS.forEach(c => { if(c.kind === 'verse') renderCard(c, true); });   // only the verse cards: the others keep their own pace
+      fitCards();
+    }, 10*1000);
+  }
 }
 
 // Drops what this page no longer needs from localStorage, at boot. Only the families named here are looked at (other keys are not

@@ -21,7 +21,7 @@ import java.util.Locale;
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET
  *       [--es city 'الرس'] [--es lat 25.86 --es lon 43.49 --es tz Asia/Kuwait]   (tz is needed for a place that is not in the list) [--es teams '136013:Al-Hilal,150643:Al-Zulfi']
  *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
- *       [--es sunrise on|off] [--es prayerbar on|off] [--es wxmore on|off] [--es months default|levant] [--es genres Drama,Comedy] [--es langs English]
+ *       [--es sunrise on|off] [--es prayerbar on|off] [--es wxmore on|off] [--es months default|levant] [--es verse day|3] [--es genres Drama,Comedy] [--es langs English]
  *       [--es photos 30] [--es idle 10] [--es digits hindi|latin] [--es hijrioffset -2..2] [--es clock24 on|off]
  *       [--es cardstyle current|dark1|glass1|dark3|glass3] [--es national auto|off]
  *       [--es markets tasi,gold,btc] [--es mkstyle arrows|prices] [--es mkbar on|off] [--es clocksize large|medium|small] [--es stocks 2222,1120,AAPL]
@@ -52,6 +52,7 @@ import java.util.Locale;
  * yearstrip = the slim year strip under the screensaver's clock (on, or off, the default).
  * sunrise, prayerbar, wxmore = on or off (the default): the sunrise after Fajr in the prayer panel, the bar under it, the humidity and wind.
  * months = default («أكتوبر») or levant («تشرين الأول»), the Gregorian month's names on both screens.
+ * verse = day (the default: a verse one day, a hadith the next) or 3 (a new one every 3 minutes): the verse-or-hadith card (QuoteEvery).
  * slot = what the bottom-left slot shows (Prefs.SLOTS). countdown = the date (YYYY-MM-DD) slot=countdown counts down to, or
  * "clear"; cdname = its name (up to 40 characters).
  * national = auto (as always from now: the quiet green look on National Day, 21-25 September, and Founding Day, 20-24 February) or off.
@@ -229,6 +230,8 @@ public class SaverReceiver extends BroadcastReceiver {
             if (x[1] != null && !"on".equals(x[1]) && !"off".equals(x[1])) return "error: " + x[0] + " is one of on off";
         String months = i.getStringExtra("months");
         if (months != null && !"default".equals(months) && !"levant".equals(months)) return "error: months is one of default levant";
+        String verse = i.getStringExtra("verse");
+        if (verse != null && !QuoteEvery.valid(verse)) return "error: verse is one of day 3";
         String greeting = i.getStringExtra("greeting");
         if (greeting != null && !"on".equals(greeting) && !"off".equals(greeting))
             return "error: greeting is one of on off";
@@ -356,6 +359,7 @@ public class SaverReceiver extends BroadcastReceiver {
         if (prayerBar != null) p.setPrayerBar("on".equals(prayerBar));
         if (wxMore != null) p.setWxMore("on".equals(wxMore));
         if (months != null) p.setMonths(months);
+        if (verse != null) p.setQuoteEvery(verse);
         if (prayerMethod != null) p.setPrayerMethod(PrayerMethod.parse(prayerMethod));
         if (adj != null) p.setPrayerAdj(adj);
         if (hijriOffset != null) p.setHijriOffset(hijriOffset);
@@ -491,7 +495,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nupdatechannel: " + p.updateChannel()
             + "\nyearstrip: " + (p.yearStrip() ? "on" : "off")
             + "\nsunrise: " + (p.sunrise() ? "on" : "off") + "\nprayerbar: " + (p.prayerBar() ? "on" : "off")
-            + "\nwxmore: " + (p.wxMore() ? "on" : "off") + "\nmonths: " + p.months()
+            + "\nwxmore: " + (p.wxMore() ? "on" : "off") + "\nmonths: " + p.months() + "\nverse: " + p.quoteEvery()
             + "\nprayermethod: " + p.prayerMethod()
             + "\nprayeradj: " + (p.prayerAdjOn() ? "on" : "off") + " " + PrayerAdj.describe(p.prayerAdj())
             + "\nhijrioffset: " + HijriOffset.describe(p.hijriOffset())

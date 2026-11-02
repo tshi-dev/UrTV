@@ -296,6 +296,10 @@ public class SettingsActivity extends Activity {
             row("بطاقة ثانية", Prefs.panelLabel(prefs.panel2(), "بدون"), R.drawable.ic_eye, new Runnable() { public void run() { pickPanel2(); } });
         row("شكل البطاقة", Prefs.cardStyleLabel(prefs.cardStyle()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickCardStyle(); } });
+        // «تبديل الآية والحديث»: only while the verse-or-hadith card is shown somewhere (here, as the second card, or on the home screen)
+        if ("verse".equals(prefs.panel()) || "verse".equals(prefs.panel2()) || prefs.homePanels().contains("verse"))
+            row("تبديل الآية والحديث", QuoteEvery.label(prefs.quoteEvery()), R.drawable.ic_sync,
+                new Runnable() { public void run() { pickQuoteEvery(); } });
 
         header("الشاشة الرئيسية (تلفزيونك)");
         // «المظهر», the first row: «الشكل» (glass, graphite, navy, clean) and «الإضاءة» (dark, light, auto), each picked with a live preview
@@ -1218,6 +1222,13 @@ public class SettingsActivity extends Activity {
         new Dlg(this).setTitle("نظام الساعة")
             .setSingleChoiceItems(ClockSetting.CHOICES, ClockSetting.choice(prefs.clock24()),
                 (d, i) -> { prefs.setClock24(ClockSetting.fromChoice(i)); d.dismiss(); render(); })
+            .show();
+    }
+
+    private void pickQuoteEvery() {
+        new Dlg(this).setTitle("تبديل الآية والحديث")
+            .setSingleChoiceItems(QuoteEvery.CHOICES, QuoteEvery.choice(prefs.quoteEvery()),
+                (d, i) -> { prefs.setQuoteEvery(QuoteEvery.fromChoice(i)); d.dismiss(); render(); })
             .show();
     }
 

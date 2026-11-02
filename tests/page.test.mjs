@@ -358,6 +358,26 @@ for (const [hash, on] of [['panel=verse', false], ['panel=verse&tafsir=1', true]
   }
 }
 
+// ---- «تبديل الآية والحديث»: #versemin=3 a new verse or hadith every 3 minutes (verse, hadith, verse…) titled «آية كريمة» / «حديث شريف»;
+// anything else is one a day as always («آية اليوم» / «حديث اليوم», the same text all day)
+for (const [hash, every] of [['panel=verse', 0], ['panel=verse&versemin=3', 3], ['panel=verse&versemin=5', 0], ['panel=verse&versemin=x', 0]]) {
+  const { p, ctx, errors } = await open('tv.html', hash);
+  const r = await p.evaluate(() => {
+    const real = Date.now, base = 180000 * 2000;   // the start of an even 3-minute slot
+    const at = ms => { Date.now = () => base + ms; renderPanel(false);
+      return [document.getElementById('week-hd').textContent, document.querySelector('#week-list li.quote').textContent]; };
+    const a = at(0), b = at(179000), c = at(180000), d = at(360000);
+    Date.now = real;
+    return { every: CONFIG.verseMin, a, b, c, d };
+  });
+  const ok = every
+    ? r.every === 3 && r.a[0] === 'آية كريمة' && r.b[1] === r.a[1] && r.c[0] === 'حديث شريف' && r.d[0] === 'آية كريمة' && r.d[1] !== r.a[1]
+    : r.every === 0 && ['آية اليوم', 'حديث اليوم'].includes(r.a[0]) && r.a[1] === r.c[1] && r.c[1] === r.d[1];
+  check(`link #${hash} → ${every ? 'a new verse or hadith every 3 minutes, verse then hadith' : 'one a day, as always'}`,
+    !errors.length && ok, JSON.stringify(r).slice(0, 400) + errors.join('; '));
+  await ctx.close();
+}
+
 // ---- photo interval: #photos=N (5 10 15 30 60), anything else 30; the photo changes on that slot
 for (const [hash, want] of [['', 30], ['photos=5', 5], ['photos=60', 60], ['photos=7', 30], ['photos=abc', 30], ['photos=0', 30]]) {
   const { p, ctx, errors } = await open('tv.html', hash);

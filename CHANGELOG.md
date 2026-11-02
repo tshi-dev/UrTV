@@ -22,6 +22,8 @@ Four options for the adhan, each a switch in «تلاوة وأذان» ← ال�
 - Screensaver: the Arabic line under the clock («بتوقيت الرياض») and the card labels («الصلاة القادمة», «المباريات») no longer have letter-spacing: Chromium breaks the joining of Arabic letters when it is not 0, so the letters were cut apart on some TVs.
 - Never disabled: `com.android.sdksandbox` is now in the core list (`optimize/lists/core.txt`), beside `com.android.location.fused` (already there; a Clean Your TV report of a boot loop on a TCL). The app's copy of the lists (`SetupLists.java`) is regenerated.
 
+- «تبديل الآية والحديث»: the verse-or-hadith card can change every 3 minutes instead of once a day (a verse, then a hadith, titled «آية كريمة» / «حديث شريف»), on the screensaver and the home screen's cards. The default stays one a day; the row shows in «بجانب الساعة» while the verse card is chosen. `optimize/saver.sh verse 3|day`.
+
 ## 4.1
 
 The fixes for what broke after updating to 4.0: on TCL the phone remote stopped working inside other apps and the adhan was not rescheduled after an update (TCL's ASSOC_START op: `optimize/autostart.sh` now allows it; TVs already set up get it from the agent with «حدّث تلفزيوني»); a muted TV stayed at volume 0 after the adhan; the Settings key did nothing on HDMI; the screensaver cut phone pairing. Also in it: the new phone page, «نظام الساعة» 12/24, «حفظ» in long lists, «انعكاس الشاشة», and 3,679 cities in 242 countries and territories.
