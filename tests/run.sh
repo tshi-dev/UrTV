@@ -171,6 +171,7 @@ python3 tests/settings_report_test.py   # «أرسل تقرير»: share.py's al
 python3 tests/dialog_fit_test.py
 python3 tests/second_card_test.py
 python3 tests/pin_store_test.py
+python3 tests/pin_recovery_test.py
 python3 tests/parental_policy_test.py
 python3 tests/parental_wiring_test.py
 python3 tests/dock_pin_test.py
