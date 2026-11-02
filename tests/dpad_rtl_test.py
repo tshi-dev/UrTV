@@ -36,7 +36,8 @@ check("SurahActivity: a first press at an end of the grid is consumed, not hande
 check("SurahActivity: the walk uses CellWalk for the next cell, turned round in English (the grid reads from the left)", "CellWalk.next(position, grid.getCount(), right == sa.urtv.home.Dir.rtl())" in surah)
 main = (HOME / "MainActivity.java").read_text(encoding="utf-8")
 check("the home screen still forces right-to-left (Dir: English left-to-right) and walks its rows by hand", "root.setLayoutDirection(Dir.layout())" in main and "moveFocusSideways(" in main)
-check("…and the walk turns round with the direction: in Arabic «right» is the item before, in English the item after", "int next = right == Dir.rtl() ? index - 1 : index + 1;" in main)
+check("…and the walk turns round with the direction the row is drawn in (Dir.layout() when built): in Arabic «right» is the item before, in English the item after",
+      "boolean rtl = row.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;" in main and "FavBar.sideStep(index, row.getChildCount(), right, rtl)" in main)
 # every hand-written ◀▶ pair keeps its Arabic ids and swaps them in English
 pairs = {
     "MainActivity.java": ["b.setNextFocusRightId(Dir.rtl() ? before : after);", "b.setNextFocusLeftId(Dir.rtl() ? after : before);"],

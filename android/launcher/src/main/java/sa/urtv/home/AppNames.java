@@ -25,9 +25,47 @@ final class AppNames {
         String set = given.get(ri.activityInfo.packageName);
         if (set != null) return set;
         String own = String.valueOf(ri.loadLabel(c.getPackageManager()));
-        if (hasArabic(own) || S.en()) return own;
+        if (S.en()) return english(c, ri, own);
+        if (hasArabic(own)) return own;
         String ar = table(c).get(ri.activityInfo.packageName);
         return ar != null ? ar : own;
+    }
+
+    static final String SAVER = "sa.urtv.screensaver";
+    private static final Map<String, String> englishCache = new HashMap<>();
+
+    /**
+     * «اللغة» English (tester step 20): our own apps by their English names («Your TV Screen»); another app by its own label in English. The TV
+     * gives the label in ITS language, so on an Arabic TV YouTube says «يوتيوب»: then the label is read again from the app's resources with an
+     * English locale (a context of its own, the shared one is never changed). An app with no English label keeps the one the TV gives.
+     */
+    static String english(Context c, ResolveInfo ri, String own) {
+        String pkg = ri.activityInfo.packageName;
+        if (SAVER.equals(pkg)) return S.t("شاشة تلفزيونك");
+        if (c.getPackageName().equals(pkg)) return S.t("تلفزيونك");
+        if (!hasArabic(own)) return own;
+        String key = pkg + "/" + ri.activityInfo.name;
+        String en;
+        synchronized (englishCache) { en = englishCache.get(key); }
+        if (en == null) {
+            en = englishLabel(c, ri);
+            synchronized (englishCache) { englishCache.put(key, en == null ? "" : en); }
+        }
+        return en != null && !en.trim().isEmpty() && !hasArabic(en) ? en.trim() : own;
+    }
+
+    /** The app's label as its English resources say it; null when it has none (a label that is plain text, or no such resource). */
+    private static String englishLabel(Context c, ResolveInfo ri) {
+        try {
+            int res = ri.labelRes != 0 ? ri.labelRes : ri.activityInfo.labelRes != 0 ? ri.activityInfo.labelRes : ri.activityInfo.applicationInfo.labelRes;
+            if (res == 0) return null;
+            android.content.res.Configuration cfg = new android.content.res.Configuration(c.getResources().getConfiguration());
+            cfg.setLocale(java.util.Locale.ENGLISH);
+            Context theirs = c.createPackageContext(ri.activityInfo.packageName, 0).createConfigurationContext(cfg);
+            return String.valueOf(theirs.getResources().getText(res));
+        } catch (Exception e) {   // gone meanwhile, no such resource, not visible to us
+            return null;
+        }
     }
 
     /** Where the shown name comes from, for dock.sh names: agent, own, table. */

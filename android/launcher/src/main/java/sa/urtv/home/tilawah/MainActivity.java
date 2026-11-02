@@ -210,7 +210,7 @@ public class MainActivity extends Activity {
      * The broadcaster's live page in its own app or the browser (ACTION_VIEW): nothing plays here. A TV with nothing to open it says so; the
      * player and the radio are not touched.
      */
-    /** HaramLive.LIVE's titles, marked for the table (HaramLive is plain Java; the rows show them with S.tv) */
+    /** HaramLive.LIVE's titles, marked for the table (HaramLive is plain Java; the rows say them with Ui.line) */
     static final String[] LIVE_WORDS = {sa.urtv.home.S.n("مكة المكرمة · قناة القرآن الكريم"), sa.urtv.home.S.n("المدينة المنورة · قناة السنة النبوية")};
 
     /** One live channel (HaramLive.LIVE[which]): in the YouTube app, else SmartTube, else the browser (HaramLive.openOrder). */
@@ -431,7 +431,7 @@ public class MainActivity extends Activity {
                 }
                 // «البث المباشر من الحرم»: a link out to the broadcaster's own page, only once its official link is filled in (HaramLive)
                 for (int h = 0; h < HaramLive.LIVE.length; h++) {
-                    if (HaramLive.shown(HaramLive.LIVE[h][1])) rows.add(new Row(false, KIND_LINK, sa.urtv.home.S.tv(HaramLive.LIVE[h][0]), getString(R.string.haram_live_detail), h));
+                    if (HaramLive.shown(HaramLive.LIVE[h][1])) rows.add(new Row(false, KIND_LINK, HaramLive.LIVE[h][0], getString(R.string.haram_live_detail), h));
                 }
             } else {
                 // the adhan section: the switch first (the settings' «الأذان» button lands on it: OK, OK turns it on), then today's times

@@ -82,4 +82,36 @@ check("E17: the run's fixed end sentences are marked (ENDS) and shown with S.tv"
       and all(e in setup_tsv for e in ends))
 check("E17: the screen follows «اللغة»: S.wrap, and text starts on the right in Arabic, on the left in English", "super.attachBaseContext(S.wrap(b))" in act and "t.setGravity(Dir.start());" in act)
 
+# E14 / E15 / E18: the home in English
+names = text(HOME / "AppNames.java")
+check("E14: in English an app keeps its own label, read again in English when the TV gives it in Arabic (YouTube, not يوتيوب)",
+      "if (S.en()) return english(c, ri, own);" in names and "cfg.setLocale(java.util.Locale.ENGLISH);" in names
+      and "createPackageContext(ri.activityInfo.packageName, 0).createConfigurationContext(cfg)" in names and "!hasArabic(en) ? en.trim() : own" in names)
+check("E14: our own apps by their English names («Your TV Screen»), the shared Resources never reconfigured",
+      'if (SAVER.equals(pkg)) return S.t("شاشة تلفزيونك");' in names and "new Resources(" not in names and "updateConfiguration" not in names)
+saver_tsv = dict(l.split("\t", 1) for l in text(ROOT / "i18n/en/saver.tsv").splitlines() if l and not l.startswith("#"))
+check("E14: «شاشة تلفزيونك» is «Your TV Screen» in the table", saver_tsv.get("شاشة تلفزيونك") == "Your TV Screen")
+main = text(HOME / "MainActivity.java")
+check("E15/E18: the home is built again when «اللغة» changes (the heading, the names and the favourites' direction follow it)",
+      "langBuilt = S.lang();" in main and "if (langBuilt != null && !langBuilt.equals(S.lang())) {" in main and "recreate();" in main
+      and main.index("Digits.remember(this, cfg);") < main.index("if (langBuilt != null && !langBuilt.equals(S.lang()))"))
+check("E15: the apps grid heading is said in «اللغة»", 'appsLabel.setText(S.t("كل التطبيقات"));' in main and home_tsv.get("كل التطبيقات") == "All apps")
+check("E18: the favourites row is laid out by Dir (first tile on the left in English), and ◀ ▶ follow the row as drawn",
+      "dockRow.setLayoutDirection(Dir.layout());" in main and "dockRow.setGravity(Gravity.CENTER_VERTICAL | Dir.start());" in main
+      and "boolean rtl = row.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;" in main and "FavBar.sideStep(index, row.getChildCount(), right, rtl)" in main
+      and "else if (!dockCards.isEmpty()) dockCards.get(0).requestFocus();" in main)
+
+# E16: the Tilawah and adhan footers (XML strings whose runs of spaces the build makes one)
+sjava = text(HOME / "S.java")
+check("E16: the table finds an entry by its one-space form too (aapt makes «  •  » into « • » in getString)", "spaced(m);" in sjava
+      and 'String one = e.getKey().replaceAll(" {2,}", " ");' in sjava and sjava.index("spaced(m);") < sjava.index("table = m;"))
+xml = text(ROOT / "android/launcher/src/main/res/values/strings.xml")
+spaced = [v for v in re.findall(r"<string name=\"[^\"]+\"[^>]*>(.*?)</string>", xml, re.S) if re.search(r"\S  +\S", v)]
+one_space = {re.sub(" {2,}", " ", k): v for k, v in home_tsv.items()}
+check("E16: every XML string with a run of spaces (the footers, «متوقف  •  الأذان كاملًا»…) is found in its one-space form", spaced
+      and all(re.sub(" {2,}", " ", v) in one_space for v in spaced) and "يمين/يسار بين الأقسام  •  اختيار للفتح  •  رجوع للواجهة" in spaced
+      and "متوقف  •  الأذان كاملًا" in spaced, [v for v in spaced if re.sub(" {2,}", " ", v) not in one_space])
+til = text(HOME / "tilawah/MainActivity.java")
+check("E16: the rows keep their Arabic line (OnOff reads it) and say it through Ui.line, which now finds the one-space form whole",
+      "Ui.line(" in til and "String whole = sa.urtv.home.S.tv(s);" in text(HOME / "tilawah/Ui.java"))
 sys.exit(1 if failed else 0)

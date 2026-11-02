@@ -20,8 +20,8 @@ text = lambda p: p.read_text(encoding="utf-8")
 main, live = text(TIL / "MainActivity.java"), text(TIL / "HaramLive.java")
 strings = text(ROOT / "android/launcher/src/main/res/values/strings.xml")
 check("the rows are in the stations tab after the stations, one per live channel, each only while its link may be shown",
-      "if (HaramLive.shown(HaramLive.LIVE[h][1])) rows.add(new Row(false, KIND_LINK, sa.urtv.home.S.tv(HaramLive.LIVE[h][0]), getString(R.string.haram_live_detail), h));" in main
-      and main.index("rows.add(new Row(false, KIND_STATION") < main.index("KIND_LINK, sa.urtv.home.S.tv(HaramLive.LIVE[h][0])"))
+      "if (HaramLive.shown(HaramLive.LIVE[h][1])) rows.add(new Row(false, KIND_LINK, HaramLive.LIVE[h][0], getString(R.string.haram_live_detail), h));" in main
+      and main.index("rows.add(new Row(false, KIND_STATION") < main.index("KIND_LINK, HaramLive.LIVE[h][0]"))
 opener = main[main.index("private void openHaramLive(int which) {"):].split("\n    }\n")[0]
 check("OK opens it with ACTION_VIEW, in the order HaramLive.openOrder gives (YouTube, SmartTube, the browser); nothing to open it: a line, not a crash",
       "new Intent(Intent.ACTION_VIEW, link)" in opener and "HaramLive.openOrder(" in opener and "if (pkg != null) i.setPackage(pkg);" in opener

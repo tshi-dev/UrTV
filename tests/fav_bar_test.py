@@ -43,7 +43,7 @@ with tempfile.TemporaryDirectory() as tmp:
     subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "FavBar.java"), str(ROOT / "tests/FavBarRun.java")], check=True)
     out = subprocess.run(["java", "-cp", tmp, "sa.urtv.home.FavBarRun"], check=True, capture_output=True).stdout.decode().split("\n")
 for line in out:
-    if not line or line.startswith("nameX") or line.startswith("tile1080"): continue
+    if not line or line.startswith("nameX") or line.startswith("tile1080") or line.startswith("side "): continue
     f = line.split(); h = int(f[0]); v = dict(zip(f[1::2], f[2::2])) if False else None
     nums = re.findall(r"(\w+) ([-\d.]+(?: [-\d.]+)*)", line)
     tray = list(map(int, line.split(" tray ")[1].split(" fits ")[0].split()))
@@ -57,6 +57,12 @@ for line in out:
     check(f"{h}p: a tile picked up to move stays inside the tray", g["liftedTopRoom"] >= 0, g)
     check(f"{h}p: dropped 40 px for a widget, the tray is still on the screen", g["dropped"] <= g["screen"], g)
 check("1080p: a tile is the spec's 304", [l for l in out if l.startswith("tile1080")][0].split()[1] == "304")
+side = [l for l in out if l.startswith("side ")][0].split()[1:]
+check("◀ ▶: English (left to right) ▶ goes to the next favourite and ◀ stays at the first; Arabic ▶ goes to the one before; the edges stay (tester step 20)",
+      side == ["1", "-1", "1", "-1", "1", "-1"], side)
+check("the home walks its rows with FavBar.sideStep on the row as drawn, and the favourites row is laid out by Dir",
+      "FavBar.sideStep(index, row.getChildCount(), right, rtl)" in (HOME / "MainActivity.java").read_text(encoding="utf-8")
+      and "dockRow.setLayoutDirection(Dir.layout());" in (HOME / "MainActivity.java").read_text(encoding="utf-8"))
 nx = [l for l in out if l.startswith("nameX")][0].split()[1:]
 check("the name centres over its tile and never leaves its row", [float(x) for x in nx] == [400.0, 0.0, 1480.0], nx)
 sys.exit(1 if failed else 0)
