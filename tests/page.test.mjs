@@ -378,8 +378,8 @@ for (const [hash, every] of [['panel=verse', 0], ['panel=verse&versemin=3', 3], 
   await ctx.close();
 }
 
-// ---- photo interval: #photos=N (5 10 15 30 60), anything else 30; the photo changes on that slot
-for (const [hash, want] of [['', 30], ['photos=5', 5], ['photos=60', 60], ['photos=7', 30], ['photos=abc', 30], ['photos=0', 30]]) {
+// ---- photo interval: #photos=N (5 10 15 30 60, and 1), anything else 30; the photo changes on that slot
+for (const [hash, want] of [['', 30], ['photos=5', 5], ['photos=60', 60], ['photos=1', 1], ['photos=7', 30], ['photos=abc', 30], ['photos=0', 30], ['photos=0.25', 30]]) {
   const { p, ctx, errors } = await open('tv.html', hash);
   const r = await p.evaluate(() => {
     const real = riyadhParts;
@@ -390,6 +390,19 @@ for (const [hash, want] of [['', 30], ['photos=5', 5], ['photos=60', 60], ['phot
   const got = [r[1] !== r[2], r[3] !== r[4], r[5] !== r[6]];
   check(`link #${hash || '(empty)'} → CONFIG.photoMinutes ${want}, photo changes on that slot`,
     !errors.length && r[0] === want && JSON.stringify(got) === JSON.stringify(changes), JSON.stringify([r, changes]) + errors.join('; '));
+  await ctx.close();
+}
+
+// ---- 30-second photos: #photos=0.5 (the app sends it only on a TV with 2 GB): a new slot every 30 s, the same one within it
+{
+  const { p, ctx, errors } = await open('tv.html', 'photos=0.5');
+  const r = await p.evaluate(() => {
+    const real = riyadhParts;
+    const at = (h, mi, s) => { window.riyadhParts = () => ({ ...real(), h, mi, s }); BG_SLOT = -1; applyBackground(true); return BG_SLOT; };
+    return [CONFIG.photoMinutes, at(10, 4, 0), at(10, 4, 29), at(10, 4, 30), at(10, 4, 59), at(10, 5, 0)];
+  });
+  check('link #photos=0.5 → CONFIG.photoMinutes 0.5, the photo changes at :00 and :30 of each minute, not in between',
+    !errors.length && r[0] === 0.5 && r[1] === r[2] && r[2] !== r[3] && r[3] === r[4] && r[4] !== r[5] && r[5] - r[1] === 2, JSON.stringify(r) + errors.join('; '));
   await ctx.close();
 }
 

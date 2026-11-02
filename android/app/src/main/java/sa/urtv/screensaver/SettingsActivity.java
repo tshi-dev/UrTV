@@ -367,7 +367,7 @@ public class SettingsActivity extends Activity {
         }
 
         header("التوقيت");
-        row("تبديل الصورة كل", minutesLabel(Integer.parseInt(prefs.photoMinutes())), R.drawable.ic_sync,
+        row("تبديل الصورة كل", PhotoInterval.label(prefs.photoMinutes()), R.drawable.ic_sync,
             new Runnable() { public void run() { pickPhotoMinutes(); } });
         row("صوري (" + arabicNum(Own.count(this)) + "/" + arabicNum(Own.MAX) + ")", ownLabel(), R.drawable.ic_eye,
             new Runnable() { public void run() { pickOwn(); } });
@@ -1311,15 +1311,17 @@ public class SettingsActivity extends Activity {
             .show();
     }
 
+    /** The choices of this TV (PhotoInterval.choices: 30 seconds only with 2 GB of memory), the one in use checked. */
     private void pickPhotoMinutes() {
-        String[] labels = new String[Prefs.PHOTO_MINUTES.length];
+        final String[] values = PhotoInterval.choices(Prefs.ramMb(this));
+        String[] labels = new String[values.length];
         int sel = 0;
-        for (int i = 0; i < labels.length; i++) {
-            labels[i] = minutesLabel(Integer.parseInt(Prefs.PHOTO_MINUTES[i]));
-            if (Prefs.PHOTO_MINUTES[i].equals(prefs.photoMinutes())) sel = i;
+        for (int i = 0; i < values.length; i++) {
+            labels[i] = conv(PhotoInterval.label(values[i]));
+            if (values[i].equals(prefs.photoMinutes())) sel = i;
         }
         new Dlg(this).setTitle("تبديل الصورة كل")
-            .setSingleChoiceItems(labels, sel, (d, i) -> { prefs.setPhotoMinutes(Prefs.PHOTO_MINUTES[i]); d.dismiss(); render(); })
+            .setSingleChoiceItems(labels, sel, (d, i) -> { prefs.setPhotoMinutes(values[i]); d.dismiss(); render(); })
             .show();
     }
 

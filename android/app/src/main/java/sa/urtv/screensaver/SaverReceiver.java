@@ -63,7 +63,7 @@ import java.util.Locale;
  * markets = up to four of Prefs.MARKETS at the top left, in order; mkstyle = arrows only (as always) or the price and the day's change.
  * stocks = the watchlist of the stocks card (panel stocks): up to Prefs.MAX_STOCKS Tadawul codes (4 digits) or US tickers.
  * clock24 = «ساعة ٢٤»: every time of day as 24-hour (on) or 12-hour with ص and م (off, the default; ClockSetting).
- * digits = hindi (١٢٣, as always) or latin (123). photos = minutes between background photos (Prefs.PHOTO_MINUTES). idle = minutes before the TV starts the
+ * digits = hindi (١٢٣, as always) or latin (123). photos = minutes between background photos, or 30s on a TV with 2 GB (PhotoInterval). idle = minutes before the TV starts the
  * screensaver (Prefs.IDLE_MINUTES): this is the system's screen_off_timeout, which a receiver (it runs as this
  * app, not as the shell) may write only when the app holds WRITE_SETTINGS; otherwise it says so and
  * optimize/saver.sh sets it from the shell instead. Nothing changes unless the extra is given.
@@ -254,8 +254,8 @@ public class SaverReceiver extends BroadcastReceiver {
         if (rating != null && !Arrays.asList(Prefs.MIN_RATINGS).contains(rating))
             return "error: minrating is one of " + Prefs.join(Arrays.asList(Prefs.MIN_RATINGS), " ");
         String photos = i.getStringExtra("photos");
-        if (photos != null && !Arrays.asList(Prefs.PHOTO_MINUTES).contains(photos))
-            return "error: photos is one of " + Prefs.join(Arrays.asList(Prefs.PHOTO_MINUTES), " ");
+        String photosWhy = photos == null ? null : PhotoInterval.refuse(photos, Prefs.ramMb(c));   // 30s only on a TV with 2 GB
+        if (photosWhy != null) return photosWhy;
         String digits = i.getStringExtra("digits");
         if (digits != null && !isChoice(Prefs.DIGITS, digits))
             return "error: digits is one of " + choices(Prefs.DIGITS);
@@ -500,7 +500,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nprayeradj: " + (p.prayerAdjOn() ? "on" : "off") + " " + PrayerAdj.describe(p.prayerAdj())
             + "\nhijrioffset: " + HijriOffset.describe(p.hijriOffset())
             + "\nminrating: " + p.minRating()
-            + "\nphotos: " + p.photoMinutes()
+            + "\nphotos: " + p.photoMinutes() + (PhotoInterval.fast(Prefs.ramMb(c)) ? "" : " (30s needs 2 GB; " + Prefs.ramMb(c) + " MB here)")
             + "\ndigits: " + p.digits()
             + "\nclock24: " + ClockSetting.describe(p.clock24())
             + "\nnational: " + p.national()

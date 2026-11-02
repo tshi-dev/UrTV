@@ -69,8 +69,8 @@ final class Prefs {
 
     static final String[] MIN_RATINGS = {"0", "6", "6.5", "7", "7.5", "8"};
 
-    // minutes between background photos (sent to the page as #photos=; 30 is what it always did)
-    static final String[] PHOTO_MINUTES = {"5", "10", "15", "30", "60"};
+    // the time between background photos (PhotoInterval: minutes, or 30s on a TV with 2 GB; sent to the page as #photos=; 30 is what it always did)
+    static final String[] PHOTO_MINUTES = PhotoInterval.ALL;
 
     // digits on the screen (sent to the page as #digits=; hindi is what it always showed)
     static final String[][] DIGITS = {{"hindi", "هندية ١٢٣"}, {"latin", "عربية 123"}};
@@ -380,7 +380,24 @@ final class Prefs {
     String countdownName() { return sp.getString("cdName", ""); }
     void setCountdown(String date, String name) { sp.edit().putString("cd", date).putString("cdName", name).apply(); }
 
-    String photoMinutes() { return sp.getString("photoMinutes", "30"); }
+    /** the value in use on this TV: "30s" saved on a TV under 2 GB (or moved from one) is 1 minute here (PhotoInterval.read) */
+    String photoMinutes() { return PhotoInterval.read(sp.getString("photoMinutes", PhotoInterval.DEFAULT), ramMb(ctx)); }
+
+    private static long ramMb = -1;
+    /** The TV's memory in MB (MemTotal, what the setup reports' «free of 2048» counts); read once, it does not change. 0 when unknown. */
+    static long ramMb(Context c) {
+        if (ramMb < 0) {
+            long mb = 0;
+            try {
+                android.app.ActivityManager am = (android.app.ActivityManager) c.getSystemService(Context.ACTIVITY_SERVICE);
+                android.app.ActivityManager.MemoryInfo mi = new android.app.ActivityManager.MemoryInfo();
+                am.getMemoryInfo(mi);
+                mb = mi.totalMem / (1024 * 1024);
+            } catch (RuntimeException ignored) { }
+            ramMb = mb;
+        }
+        return ramMb;
+    }
     void setPhotoMinutes(String v) { sp.edit().putString("photoMinutes", v).apply(); }
 
     /**
@@ -498,7 +515,7 @@ final class Prefs {
             + "&langs=" + Uri.encode(join(list("langs"), ","))
             + "&shows=" + join(ids, ",")
             + "&minrating=" + minRating()
-            + "&photos=" + photoMinutes()
+            + "&photos=" + PhotoInterval.fragmentValue(photoMinutes())
             + "&digits=" + digits()
             + ClockSetting.fragment(clock24())
             + QuoteEvery.fragment(quoteEvery())

@@ -23,6 +23,7 @@ Four options for the adhan, each a switch in «تلاوة وأذان» ← ال�
 - Never disabled: `com.android.sdksandbox` is now in the core list (`optimize/lists/core.txt`), beside `com.android.location.fused` (already there; a Clean Your TV report of a boot loop on a TCL). The app's copy of the lists (`SetupLists.java`) is regenerated.
 
 - «تبديل الآية والحديث»: the verse-or-hadith card can change every 3 minutes instead of once a day (a verse, then a hadith, titled «آية كريمة» / «حديث شريف»), on the screensaver and the home screen's cards. The default stays one a day; the row shows in «بجانب الساعة» while the verse card is chosen. `optimize/saver.sh verse 3|day`.
+- «تبديل الصورة كل»: 1 minute is a new choice everywhere, and 30 seconds on a TV with 2 GB of memory (MemTotal 1600 MB or more, read once with `ActivityManager.getMemoryInfo`: the app had no memory read before). A smaller TV does not offer 30 seconds, `optimize/saver.sh photos 30s` is refused there with the MB it has, and a 30-second value that reaches it is used as 1 minute. The page gets `#photos=0.5` and checks the photo every 5 s only then; the default stays 30 minutes.
 
 ## 4.1
 

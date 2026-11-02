@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261102050144">
+<meta name="urtv-build" content="20261102074203">
 <title>شاشة تلفزيونك</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -698,8 +698,8 @@ const CONFIG = {
     minRating: _num('minrating', 7),
   },
   weekWindowDays: 7,
-  // minutes between background photos: #photos=5|10|15|30|60 (anything else = 30)
-  photoMinutes: (m => [5,10,15,30,60].includes(m) ? m : 30)(_num('photos', 30)),
+  // minutes between background photos: #photos=5|10|15|30|60, 1, or 0.5 (30 seconds: the app sends it only on a TV with 2 GB); anything else = 30
+  photoMinutes: (m => [0.5,1,5,10,15,30,60].includes(m) ? m : 30)(_num('photos', 30)),
   // the owner's own photos («صوري»): #own=how many (0-10) and #ownmode=mix (join ours, the default) or only
   own: Math.max(0, Math.min(10, Math.floor(_num('own', 0)))),
   ownMode: _Q.get('ownmode') === 'only' ? 'only' : 'mix',
@@ -3450,8 +3450,8 @@ function showOwn(pick, own, local){
 function applyBackground(force){
   try {
     const p = riyadhParts();
-    const slotMin = CONFIG.photoMinutes;   // divides 1440, so slots count on across midnight
-    const slot = riyadhDayNumber() * (1440 / slotMin) + Math.floor((p.h * 60 + p.mi) / slotMin);
+    const slotSec = Math.round(CONFIG.photoMinutes * 60);   // divides a day, so slots count on across midnight (in minutes as before)
+    const slot = riyadhDayNumber() * (86400 / slotSec) + Math.floor((p.h * 3600 + p.mi * 60 + (p.s || 0)) / slotSec);
     if(slot === BG_SLOT && !force) return;
     BG_SLOT = slot; BG_TURN++;   // a photo of theirs still on its way for an earlier turn is dropped
     const only = OWN_ONLY(), own = ownPhotos();
@@ -3622,7 +3622,7 @@ function boot(){
   document.title = 'شاشة تلفزيونك';
   applyBackground(true);
   loadPhotoIndex().then(() => applyBackground(true));
-  setInterval(() => applyBackground(false), 60*1000);
+  setInterval(() => applyBackground(false), (CONFIG.photoMinutes < 1 ? 5 : 60)*1000);   // 30 s photos: looked at every 5 s
   tickClock(); tickDates(); tickOccasion(); renderSlot();
   loadMarkets();
   renderPanel(false, ...CARD_KINDS.filter(k => k !== 'shows'));   // shows: its own data arrives with prayers, weather, matches
