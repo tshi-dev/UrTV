@@ -50,8 +50,8 @@ check("the only writes: the switch to 1, the list without ours, the list exactly
       and "SWITCH, 1)" in writes[0] and "A11yList.without(list, TYPE, SLEEP)" in writes[1] and writes[2].endswith("LIST, list);"), writes)
 check("the list is written only when Android runs none of it, the switch only when it is not 1", "if (!running) {" in heal and 'if (!"1".equals(sw))' in heal)
 check("an entry the list lost is logged under UrTVA11y, never put back", 'TAG = "UrTVA11y"' in heal and "A11yList.lost(" in heal and "Log.w(TAG" in heal)
-others = [p.name for p in (ROOT / "android").rglob("*.java") if p.name != "A11yHeal.java" and re.search(r"ACCESSIBILITY_ENABLED|ENABLED_ACCESSIBILITY_SERVICES", p.read_text(encoding="utf-8"))]
-check("nothing else of ours touches the accessibility settings", not others, others)
+others = [p.name for p in (ROOT / "android").rglob("*.java") if p.name not in ("A11yHeal.java", "UpdateCarry.java") and re.search(r"ACCESSIBILITY_ENABLED|ENABLED_ACCESSIBILITY_SERVICES", p.read_text(encoding="utf-8"))]
+check("nothing else of ours touches the accessibility settings (UpdateCarry: only our entries our own update lost, tests/tester_fixes_test.py)", not others, others)
 
 act = text(HOME + "phone/PhoneActions.java")
 check("the phone's state says when our service is listed but not running", 'm.put("a11y_stuck", sa.urtv.home.A11yHeal.stuck(app));' in act)
