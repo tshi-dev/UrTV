@@ -48,7 +48,7 @@ android {
     // the page is built by ../../src/build.py into dist/; only tv.html goes in (copyPage below): dist/urtv.html is the
     // stand-alone copy with the fonts and photos inlined, which no screen of the app loads
     sourceSets {
-        main { assets.srcDirs = ['../launcher/src/main/assets', '../../assets', "$buildDir/generated/page"] }   // Thmanyah fonts, backgrounds/, shared/ (the club lists), the page
+        main { assets.srcDirs = ['../launcher/src/main/assets', '../../assets', "$buildDir/generated/page", "$buildDir/generated/i18n"] }   // Thmanyah fonts, backgrounds/, shared/ (the club lists), the page
     }
 
     compileOptions {
@@ -62,3 +62,10 @@ def copyPage = tasks.register('copyPage', Copy) {
     into "$buildDir/generated/page"
 }
 preBuild.dependsOn copyPage
+
+// «اللغة»: the translation table (i18n/en/*.tsv, docs/ENGLISH.md) as assets/i18n/en/, read by S only when the setting is English
+def copyI18n = tasks.register('copyI18n', Copy) {
+    from('../../i18n') { include 'en/*.tsv' }
+    into "$buildDir/generated/i18n/i18n"
+}
+preBuild.dependsOn copyI18n

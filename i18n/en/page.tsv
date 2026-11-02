@@ -1,0 +1,2 @@
+# Phase 2: the page (src/template.html → dist/tv-en.html)
+# arabic<TAB>english, one per line, as docs/ENGLISH.md says. tests/i18n_test.py checks every entry.

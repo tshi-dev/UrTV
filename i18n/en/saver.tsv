@@ -1,0 +1,2 @@
+# Phase 1: the screensaver app (android/app): settings, hub, labels
+# arabic<TAB>english, one per line, as docs/ENGLISH.md says. tests/i18n_test.py checks every entry.

@@ -29,6 +29,7 @@ public final class Digits {
 
     /** the home screen's minute tick already reads the snapshot: it passes it on */
     static void remember(Context c, ConfigSnapshot snap) {
+        S.remember(c, snap);   // «اللغة» travels the same road (docs/ENGLISH.md)
         if (snap == null || snap.fragment == null) return;   // the screensaver is missing: what was known stays
         boolean now = snap.latin(), now24 = snap.clock24();
         if (now == latin && now24 == clock24) return;

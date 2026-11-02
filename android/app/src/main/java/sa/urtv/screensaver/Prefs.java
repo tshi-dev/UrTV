@@ -301,6 +301,13 @@ final class Prefs {
     boolean clock24() { return sp.getBoolean("clock24", false); }
     void setClock24(boolean v) { sp.edit().putBoolean("clock24", v).apply(); }
 
+    /**
+     * «اللغة» (docs/ENGLISH.md): ar (the default, as always) or en. Sent to the page and the home as &lang=en, only for English (Tr.fragment),
+     * so with Arabic the fragment and every screen are exactly what they were. S reads it for the words, Dir for the direction.
+     */
+    String lang() { return Tr.norm(sp.getString("lang", Tr.AR)); }
+    void setLang(String v) { sp.edit().putString("lang", Tr.norm(v)).apply(); S.set(v); }
+
     String digits() { return sp.getString("digits", "hindi"); }
     void setDigits(String v) { sp.edit().putString("digits", v).apply(); }
 
@@ -538,6 +545,7 @@ final class Prefs {
             + "&photos=" + PhotoInterval.fragmentValue(photoMinutes())
             + "&digits=" + digits()
             + ClockSetting.fragment(clock24())
+            + Tr.fragment(lang())
             + QuoteEvery.fragment(quoteEvery())
             + (occasion() ? "" : "&occasion=0") + (nightDim() ? "" : "&nightdim=0") + (tasksPill() ? "" : "&taskspill=0")
             + (backSaver() ? "&backsaver=1" : "")

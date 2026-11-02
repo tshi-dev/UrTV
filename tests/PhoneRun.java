@@ -302,12 +302,12 @@ public final class PhoneRun {
 
         e.now[0] += 6_000;
         boolean setBad = true;
-        for (String body : new String[] {"{\"sleep_minutes\":45}", "{\"sleep_minutes\":-5}", "{\"sleep_minutes\":\"30\"}", "{\"saver_idle\":7}", "{\"saver_idle\":0}", "{\"saver_idle\":\"10\"}", "{\"sleep_minutes\":true}"}) setBad &= authed(e, "POST", "/api/set", body, sess).status == 400;
-        check("v2: set refuses a sleep or idle value that is not one of the lists", setBad && e.actions.calls.isEmpty(), e.actions.calls.toString());
+        for (String body : new String[] {"{\"sleep_minutes\":45}", "{\"sleep_minutes\":-5}", "{\"sleep_minutes\":\"30\"}", "{\"saver_idle\":7}", "{\"saver_idle\":0}", "{\"saver_idle\":\"10\"}", "{\"sleep_minutes\":true}", "{\"lang\":\"fr\"}", "{\"lang\":\"EN\"}", "{\"lang\":1}", "{\"lang\":true}"}) setBad &= authed(e, "POST", "/api/set", body, sess).status == 400;
+        check("v2: set refuses a sleep, idle or lang value that is not one of the lists", setBad && e.actions.calls.isEmpty(), e.actions.calls.toString());
         e.now[0] += 6_000;
         boolean setOk = true;
-        for (String body : new String[] {"{\"sleep_minutes\":0}", "{\"sleep_minutes\":15}", "{\"sleep_minutes\":90}", "{\"saver_idle\":1}", "{\"saver_idle\":30}"}) setOk &= authed(e, "POST", "/api/set", body, sess).status == 200;
-        check("v2: set takes the sleep minutes (0 cancels) and the idle minutes of the lists", setOk && e.actions.calls.size() == 5, e.actions.calls.toString());
+        for (String body : new String[] {"{\"sleep_minutes\":0}", "{\"sleep_minutes\":15}", "{\"sleep_minutes\":90}", "{\"saver_idle\":1}", "{\"saver_idle\":30}", "{\"lang\":\"ar\"}", "{\"lang\":\"en\"}"}) setOk &= authed(e, "POST", "/api/set", body, sess).status == 200;
+        check("v2: set takes the sleep minutes (0 cancels), the idle minutes of the lists and lang ar or en", setOk && e.actions.calls.size() == 7, e.actions.calls.toString());
         e.actions.calls.clear();
         // the owner's TV test (fix7/8): a card, then «بدون» (an empty list) and «لا شيء» (none): each reaches the actions as it was sent
         e.now[0] += 6_000;

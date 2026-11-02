@@ -55,6 +55,8 @@
 #   optimize/saver.sh hijrioffset -1               the Hijri date moved by whole days, -2..2 (default 0 = Umm al-Qura as it is): where the month
 #                                                  starts by moon sighting (Egypt, Jordan, the Levant, Morocco); the page and the home screen both follow
 #   optimize/saver.sh clock24 on                   every time of day as 24-hour (١٩:٣٠) instead of 12-hour (٧:٣٠ م): on | off (default off)
+#   optimize/saver.sh lang ar                      «اللغة»: ar (default) | en. The English screens are still being made (docs/ENGLISH.md):
+#                                                  until docs/SETTINGS.md lists it, en changes nothing a person sees; do not offer it
 #   optimize/saver.sh markets tasi,gold,btc        top left, up to 4 in order: tasi aramco spx btc gold silver oil xrp (default tasi,spx,btc)
 #   optimize/saver.sh markets off                  hide the markets line at the top (only the weather stays; the list is kept and nothing is fetched for it); `markets on` brings it back
 #   optimize/saver.sh clocksize medium             the screensaver's clock: large (default) medium small
@@ -247,6 +249,7 @@ case "${1:-}" in
     v=$(quote "$2") || exit 1
     send SET "--es hijrioffset $v" ;;   # the offset moves what is shown, never a prayer time: no adhan alarm to set again
   clock24)  case "${2:-}" in on|off) set1 clock24 "$2" ;; *) echo "usage: optimize/saver.sh clock24 on|off"; exit 1 ;; esac ;;
+  lang)     case "${2:-}" in ar|en) set1 lang "$2" ;; *) echo "usage: optimize/saver.sh lang ar|en"; exit 1 ;; esac ;;
   idle)
     # the app may change the TV's timer only if the owner allowed it; the shell always may
     v=$(quote "${2:?usage: optimize/saver.sh idle 10}") || exit 1

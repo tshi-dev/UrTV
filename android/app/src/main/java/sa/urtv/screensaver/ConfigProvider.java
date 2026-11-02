@@ -34,8 +34,8 @@ import java.util.List;
  * .../dreaming: one row (dreaming 1|0), whether the dream or its preview is on the screen (the home's «الأذان على شاشة التوقف فقط»).
  *
  * «تحكم من الجوال» (the launcher's phone control) uses call(), and only with PHONE_SETTINGS (signature, same key):
- *   phone_state                         -> city, home_cards (list), panels (codes) and panel_names (Arabic, same order), idle (minutes)
- *   phone_set  extras city, home_panel, idle -> ok (and idle_denied when the TV does not let this app change the idle time), the same checks as SaverReceiver SET (it is that code)
+ *   phone_state                         -> city, home_cards (list), panels (codes) and panel_names (Arabic, same order), idle (minutes), lang (ar|en)
+ *   phone_set  extras city, home_panel, idle, lang -> ok (and idle_denied when the TV does not let this app change the idle time), the same checks as SaverReceiver SET (it is that code)
  *   phone_cities  arg = words           -> cities: the built-in names that match (at most 20)
  * Nothing else can be set this way.
  */
@@ -93,11 +93,12 @@ public class ConfigProvider extends ContentProvider {
                 out.putStringArrayList("panel_names", names);
                 out.putString("idle", String.valueOf(Prefs.idleMs(c) / 60000));
                 out.putString("idle_s", String.valueOf(Prefs.idleMs(c) / 1000));   // the real delay: 45 s is not a whole minute ("idle" says 0)
+                out.putString("lang", p.lang());   // «اللغة»: an older screensaver says nothing, and the phone takes that as ar
                 return out;
             }
             case "phone_set": {
                 android.content.Intent i = new android.content.Intent();
-                for (String k : new String[] {"city", "home_panel", "idle"}) if (extras != null && extras.getString(k) != null) i.putExtra(k, extras.getString(k));
+                for (String k : new String[] {"city", "home_panel", "idle", "lang"}) if (extras != null && extras.getString(k) != null) i.putExtra(k, extras.getString(k));
                 String r = SaverReceiver.set(c, p, i);
                 out.putBoolean("ok", r.startsWith("saved"));
                 out.putBoolean("idle_denied", r.startsWith("error: idle not allowed"));

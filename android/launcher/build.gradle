@@ -42,7 +42,7 @@ android {
 
     // wallpapers are the screensaver's Saudi photos, copied in at build time
     sourceSets {
-        main { assets.srcDirs += ["$buildDir/generated/wallpapers", "$buildDir/generated/web"] }
+        main { assets.srcDirs += ["$buildDir/generated/wallpapers", "$buildDir/generated/web", "$buildDir/generated/i18n"] }
     }
 
     compileOptions {
@@ -66,3 +66,10 @@ def copyWeb = tasks.register('copyWeb', Copy) {
     into "$buildDir/generated/web"
 }
 preBuild.dependsOn copyWeb
+
+// «اللغة»: the translation table (i18n/en/*.tsv, docs/ENGLISH.md) as assets/i18n/en/, read by S only when the setting is English
+def copyI18n = tasks.register('copyI18n', Copy) {
+    from('../../i18n') { include 'en/*.tsv' }
+    into "$buildDir/generated/i18n/i18n"
+}
+preBuild.dependsOn copyI18n
