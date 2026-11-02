@@ -188,6 +188,7 @@ public class MainActivity extends Activity {
                 View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         setContentView(buildUi());
+        getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((was, now) -> placeName());   // FavBar: the name only in the bar
         // started by the screensaver's «الأذان» row; not again after a restore (the system hands back the same intent)
         if (b == null && (getIntent().getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) == 0) {
             openRequested(getIntent());
@@ -399,10 +400,11 @@ public class MainActivity extends Activity {
         bottom.setOrientation(LinearLayout.VERTICAL);
         bottom.setClipChildren(false);
         bottom.setClipToPadding(false);
-        hero.addView(bottom, lp(-1, -2, Gravity.BOTTOM, dp(48), 0, dp(48), dp(30)));
+        hero.addView(bottom, lp(-1, -2, Gravity.BOTTOM, bar(FavBar.SIDE), 0, bar(FavBar.SIDE), bar(FavBar.BOTTOM)));   // the tray's place (FavBar)
         bottomBlock = bottom;
 
-        title = text(34, "sans-serif-light", Color.WHITE);
+        title = text(34, "sans-serif-medium", Color.WHITE);
+        title.setTextSize(TypedValue.COMPLEX_UNIT_PX, bar(FavBar.NAME_PX));   // FavBar: 30 px at 1080p, scaled by the screen's height
         title.setShadowLayer(dp(18), 0, 0, 0x66000000);
         title.setSingleLine(true);
         // the favourite's name, and beside it the quiet hint for the first few times (optionsHint): «اضغط مطوّلاً للخيارات»
@@ -420,20 +422,30 @@ public class MainActivity extends Activity {
         hp.bottomMargin = dp(8);
         titleRow.addView(optionsHint, hp);
         bottom.addView(titleRow, new LinearLayout.LayoutParams(-2, -2));
-        ((LinearLayout.LayoutParams) titleRow.getLayoutParams()).setMargins(dp(8), 0, 0, dp(14));
+        ((LinearLayout.LayoutParams) titleRow.getLayoutParams()).setMargins(0, 0, 0, bar(FavBar.NAME_GAP));
+        nameRow = titleRow;
+        titleRow.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> placeName());   // a new name, a new width: centred again
 
+        // the favourites bar (docs/PROPOSALS-NOV2.md §1, FavBar): a tray 218 high, the same on every look and layout; five 304×170 tiles
+        // show, the first on the right, and more scroll inside it; the row never leaves it
         dockRow = new LinearLayout(this);
         dockRow.setOrientation(LinearLayout.HORIZONTAL);
-        dockRow.setGravity(Gravity.CENTER);
+        dockRow.setGravity(Gravity.CENTER_VERTICAL | Dir.start());
         dockRow.setClipChildren(false);
         dockRow.setClipToPadding(false);
-        dockRow.setPadding(dp(20), dp(22), dp(20), dp(22));
+        dockRow.setPadding(bar(FavBar.PAD_SIDE), bar(FavBar.PAD_TOP), bar(FavBar.PAD_SIDE), bar(FavBar.PAD_TOP));
         GradientDrawable band = dockBand = new GradientDrawable();
-        band.setCornerRadius(dp(26));
-        band.setColor(0x1FFFFFFF);
-        band.setStroke(dp(1), 0x14FFFFFF);
-        dockRow.setBackground(band);
-        bottom.addView(dockRow, new LinearLayout.LayoutParams(-1, -2));
+        band.setCornerRadius(bar(FavBar.RADIUS));
+        band.setColor(FavBar.FILL_DARK);
+        band.setStroke(Math.max(1, bar(1)), FavBar.LINE_DARK);
+        tray = new android.widget.HorizontalScrollView(this);
+        tray.setHorizontalScrollBarEnabled(false);
+        tray.setFillViewport(true);
+        tray.setClipToPadding(true);   // a tile scrolled half out is cut at the tray's edge, never drawn over the photo
+        tray.setBackground(band);
+        tray.addView(dockRow, new FrameLayout.LayoutParams(-2, -1));
+        tray.setOnScrollChangeListener((v, x, y, ox, oy) -> placeName());
+        bottom.addView(tray, new LinearLayout.LayoutParams(-1, bar(FavBar.TRAY_H)));
 
         // «أكمل المشاهدة»: one row right under the favourites, in the first screen with the clock and the photo (empty until it is
         // allowed and has something); the dock band's padding, so its cards sit exactly under the favourites
@@ -441,7 +453,7 @@ public class MainActivity extends Activity {
         tvRowsBox.setOrientation(LinearLayout.VERTICAL);
         tvRowsBox.setClipChildren(false);
         tvRowsBox.setClipToPadding(false);
-        tvRowsBox.setPadding(dp(20), 0, dp(20), 0);   // the dock band's own padding: its cells are the favourites' cells, a card a tile's size
+        tvRowsBox.setPadding(bar(FavBar.PAD_SIDE), 0, bar(FavBar.PAD_SIDE), 0);   // the tray's own padding: its cells are the favourites' cells, a card a tile's size
         bottom.addView(tvRowsBox, new LinearLayout.LayoutParams(-1, -2));
 
         appsLabel = text(11, "sans-serif-medium", 0x99FFFFFF);
@@ -471,7 +483,7 @@ public class MainActivity extends Activity {
         if (!Dir.rtl() && clockBlock != null && clockBlock.getWidth() > 0) clockLeft = dm.widthPixels - ((View) clockBlock.getParent()).getLeft() - clockBlock.getRight();
         if (bottomBlock != null && bottomBlock.getHeight() > 0 && dockRow != null) {
             titleTop = bottomBlock.getTop();
-            dockTop = titleTop + dockRow.getTop();
+            dockTop = titleTop + tray.getTop();   // the tray's top (FavBar): the cards above end before it
             for (View c : dockCards) wide = Math.max(wide, Math.round(title.getPaint().measureText(((App) c.getTag()).label)));
         }
         return CardBox.box(cards, dm.widthPixels, dm.heightPixels, dm.density, clockLeft, titleTop, dockTop, wide);
@@ -881,7 +893,7 @@ public class MainActivity extends Activity {
 
         for (int i = 0; i < dock.size(); i++) {
             View tile = tile(dock.get(i), true);
-            dockRow.addView(tile, rowCell(i, dock.size(), -2));
+            dockRow.addView(tile, dockCell(i, dock.size()));
         }
         appsLabel.setVisibility(rest.isEmpty() ? View.GONE : View.VISIBLE);
         wireFocus();
@@ -942,6 +954,17 @@ public class MainActivity extends Activity {
      * row's two ends. Start and end, not left and right: the home is right to left, so the first cell's edge is the row's right edge,
      * under the start of «كل التطبيقات» (left and right margins put the outer gap inside and the row a step off, the owner's photo).
      */
+    /** A favourite's cell (FavBar): 304 wide (its 16:9 banner 170 high), 24 between two, none at the row's two ends. */
+    private LinearLayout.LayoutParams dockCell(int i, int n) {
+        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(FavBar.tileW(getResources().getDisplayMetrics().heightPixels), -2);
+        p.setMarginStart(i == 0 ? 0 : bar(FavBar.GAP) / 2);
+        p.setMarginEnd(i == n - 1 ? 0 : bar(FavBar.GAP) - bar(FavBar.GAP) / 2);
+        return p;
+    }
+
+    /** a length of FavBar's 1080p spec on this screen (scaled by its height, so 720p is two thirds) */
+    private int bar(float px1080) { return FavBar.px(px1080, getResources().getDisplayMetrics().heightPixels); }
+
     private LinearLayout.LayoutParams rowCell(int i, int n, int height) {
         LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(0, height, 1f);
         p.setMarginStart(i == 0 ? 0 : dp(10));
@@ -972,7 +995,7 @@ public class MainActivity extends Activity {
         card.setClipToOutline(true);
         card.setOutlineProvider(new ViewOutlineProvider() {
             @Override public void getOutline(View v, Outline o) {
-                o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), dp(10));
+                o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), inDock ? bar(FavBar.TILE_RADIUS) : dp(10));
             }
         });
         GradientDrawable bg = new GradientDrawable();
@@ -992,8 +1015,8 @@ public class MainActivity extends Activity {
 
         // Focus ring and sheen, drawn above the art.
         GradientDrawable ring = new GradientDrawable();
-        ring.setCornerRadius(dp(10));
-        ring.setStroke(dp(2), 0xE6FFFFFF);
+        ring.setCornerRadius(inDock ? bar(FavBar.TILE_RADIUS) : dp(10));
+        ring.setStroke(inDock ? bar(FavBar.RING) : dp(2), inDock ? FavBar.ring(lightNow) : 0xE6FFFFFF);
         ring.setOrientation(GradientDrawable.Orientation.TL_BR);
         ring.setColors(new int[]{0x26FFFFFF, 0x00FFFFFF, 0x00FFFFFF});
         View shine = new View(this);
@@ -1012,7 +1035,7 @@ public class MainActivity extends Activity {
         if (!inDock) {
             box.addView(label, llp(-1, -2, 0, dp(10), 0, 0));
             gridLabels.add(label);
-            if (lightNow) label.setTextColor(Look.LIGHT_LOOK.ink);
+            if (lightNow || "sand".equals(lookNow)) label.setTextColor(palette().ink);
         }
 
         card.setOnClickListener(v -> guarded(inDock ? ParentalPolicy.TILE : ParentalPolicy.GRID, app.pkg, app.label, () -> launch(new Intent(Intent.ACTION_MAIN)
@@ -1020,16 +1043,20 @@ public class MainActivity extends Activity {
                 .setComponent(app.component)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED))));
         card.setOnFocusChangeListener((v, has) -> {
-            float s = has ? (inDock ? 1.12f : 1.1f) : 1f;
+            float s = has ? (inDock ? FavBar.FOCUS_SCALE : 1.1f) : 1f;
             scaleTo(v, s);   // a spring: a held arrow keeps its speed from card to card
-            v.animate().translationZ(has ? dp(GlowLook.LIFT_DP) : 0).setInterpolator(new DecelerateInterpolator()).setDuration(has ? 320 : 200).start();
+            if (inDock) v.animate().translationY(has ? -bar(FavBar.LIFT) : 0).translationZ(has ? dp(GlowLook.LIFT_DP) : 0)
+                    .setInterpolator(new DecelerateInterpolator()).setDuration(FavBar.MS).start();
+            else v.animate().translationZ(has ? dp(GlowLook.LIFT_DP) : 0).setInterpolator(new DecelerateInterpolator()).setDuration(has ? 320 : 200).start();
             shine.animate().alpha(has ? 1f : 0f).setDuration(160).start();
             label.animate().alpha(has ? 1f : 0f).translationY(has ? dp(4) : 0).setDuration(200).start();
             if (!has) return;
             lastFocusedId = v.getId();
             optionsHint(inDock);
             if (inDock) {
+                nameCard = v;
                 title.setText(app.label);
+                placeName();
                 title.animate().alpha(1f).setDuration(200).start();
                 animateGlow(app.color);
                 fadeGlow(1f);
@@ -1292,8 +1319,8 @@ public class MainActivity extends Activity {
         int n = TvRowsPick.cells(dockCards.size(), MIN_DOCK);   // never one cell: see TvRowsPick.cells
         tvCells = n;
         for (TvRows.Row r : rows) {
-            TextView name = text(11, "sans-serif-medium", lightNow ? Look.LIGHT_LOOK.gold : GOLD);
-            name.setShadowLayer(dp(3), 0, dp(1), Look.of(lightNow).shadow);   // a halo in the light look, as the clock's lines
+            TextView name = text(11, "sans-serif-medium", lightNow || "sand".equals(lookNow) ? palette().gold : GOLD);
+            name.setShadowLayer(dp(3), 0, dp(1), palette().shadow);   // a halo in the light look, as the clock's lines
             name.setText(S.tv(TvRowsPick.WATCH_NEXT_TITLE));   // our words, whatever the apps call it
             tvNames.add(name);
             tvRowsBox.addView(name, llp(-2, -2, 0, dp(14), 0, dp(10)));
@@ -1305,10 +1332,10 @@ public class MainActivity extends Activity {
             int shown = Math.min(n, r.items.size());
             for (int i = 0; i < shown; i++) {
                 View box = tvCard(r.items.get(i));
-                line.addView(box, rowCell(i, n, -2));
+                line.addView(box, dockCell(i, n));
                 cards.add(((ViewGroup) box).getChildAt(0));
             }
-            for (int i = shown; i < n; i++) line.addView(new View(this), rowCell(i, n, 1));   // fewer cards: still a favourite's width each
+            for (int i = shown; i < n; i++) line.addView(new View(this), dockCell(i, n));   // fewer cards: still a favourite's width each
             tvRowsBox.addView(line, new LinearLayout.LayoutParams(-1, -2));
             tvCards.add(cards);
         }
@@ -1394,9 +1421,8 @@ public class MainActivity extends Activity {
         int y = grid.getTop() + row.getTop();
         int screenH = getResources().getDisplayMetrics().heightPixels;
         // First grid row: slide the dock band up to the top edge; later rows centre on screen.
-        View band = (View) dockRow.getParent();
         int target = grid.indexOfChild(row) == 0
-                ? hero.getTop() + band.getTop() + dockRow.getTop() - dp(22)
+                ? hero.getTop() + bottomBlock.getTop() + tray.getTop()   // the tray at the top edge
                 : y - (int) (screenH * 0.42f);
         int max = Math.max(0, content.getHeight() - scroll.getHeight());
         glideTo(Math.max(0, Math.min(target, max)));
@@ -1672,7 +1698,7 @@ public class MainActivity extends Activity {
         syncRow(e.row());
         boolean chip = e.undoAvailable(now);
         if (chip) {
-            int dockTop = bottomBlock.getTop() + dockRow.getTop();
+            int dockTop = bottomBlock.getTop() + tray.getTop();
             FrameLayout.LayoutParams p = (FrameLayout.LayoutParams) undoChip.getLayoutParams();
             p.bottomMargin = Math.max(dp(8), getResources().getDisplayMetrics().heightPixels - dockTop + dp(8));
             undoChip.setLayoutParams(p);
@@ -1704,28 +1730,29 @@ public class MainActivity extends Activity {
             if (card == null) continue;
             View box = (View) card.getParent();
             if (box.getParent() instanceof ViewGroup) ((ViewGroup) box.getParent()).removeView(box);
-            dockRow.addView(box, rowCell(i, order.size(), -2));
+            dockRow.addView(box, dockCell(i, order.size()));
             dockCards.add(card);
         }
         wireFocus();
     }
 
     /** Picked up: bigger, a gold outline and a little off the row. Dropped: as any tile. */
-    private void liftCard(View card, boolean lifted) { liftCard(card, lifted, 1.12f); }
+    private void liftCard(View card, boolean lifted) { liftCard(card, lifted, FavBar.FOCUS_SCALE); }
 
     private void liftCard(View card, boolean lifted, float focusScale) {
         GradientDrawable ring = ringByCard.get(card);
         View shine = shineByCard.get(card);
-        if (ring != null) ring.setStroke(dp(lifted ? 4 : 2), lifted ? GOLD : 0xE6FFFFFF);
+        boolean fav = dockCards.contains(card);
+        if (ring != null) ring.setStroke(lifted ? dp(4) : fav ? bar(FavBar.RING) : dp(2), lifted ? GOLD : fav ? FavBar.ring(lightNow) : 0xE6FFFFFF);
         if (shine != null && lifted) shine.setAlpha(1f);
         if (lifted) {
-            scaleTo(card, 1.25f);
-            card.animate().translationY(-dp(10)).translationZ(dp(GlowLook.LIFT_DP)).setDuration(160).start();
+            scaleTo(card, fav ? FavBar.LIFTED_SCALE : 1.25f);   // a favourite stays inside its tray
+            card.animate().translationY(fav ? -bar(FavBar.LIFT) : -dp(10)).translationZ(dp(GlowLook.LIFT_DP)).setDuration(160).start();
         } else {
             boolean has = card.isFocused();
             float s = has ? focusScale : 1f;
             scaleTo(card, s);
-            card.animate().translationY(0).translationZ(has ? dp(GlowLook.LIFT_DP) : 0).setDuration(160).start();
+            card.animate().translationY(has && fav ? -bar(FavBar.LIFT) : 0).translationZ(has ? dp(GlowLook.LIFT_DP) : 0).setDuration(160).start();
             if (shine != null) shine.setAlpha(has ? 1f : 0f);
         }
     }
@@ -1905,7 +1932,7 @@ public class MainActivity extends Activity {
         if (oldBox != null && oldBox.getParent() instanceof ViewGroup) ((ViewGroup) oldBox.getParent()).removeView(oldBox);
         gridCards.remove(card);
         dockRow.addView(tile(app, true));   // tile() puts it in dockCards and cardByPkg
-        for (int i = 0; i < dockRow.getChildCount(); i++) dockRow.getChildAt(i).setLayoutParams(rowCell(i, dockRow.getChildCount(), -2));
+        for (int i = 0; i < dockRow.getChildCount(); i++) dockRow.getChildAt(i).setLayoutParams(dockCell(i, dockRow.getChildCount()));
         Toast.makeText(this, S.t("أُضيف إلى المفضلة: %s", app.label), Toast.LENGTH_SHORT).show();
     }
 
@@ -2163,7 +2190,7 @@ public class MainActivity extends Activity {
         int seen = prefs().getInt("options_hint", 0);
         boolean on = show && seen < OPTIONS_HINT_TIMES && edit == null && appsEdit == null;
         if (on) prefs().edit().putInt("options_hint", seen + 1).apply();
-        optionsHint.setTextColor(Look.of(lightNow).soft);
+        optionsHint.setTextColor(palette().soft);
         optionsHint.animate().alpha(on ? 0.85f : 0f).setDuration(200).start();
     }
 
@@ -2171,6 +2198,38 @@ public class MainActivity extends Activity {
     private void optionsHintUsed() {
         prefs().edit().putInt("options_hint", OPTIONS_HINT_TIMES).apply();
         if (optionsHint != null) optionsHint.animate().alpha(0f).setDuration(150).start();
+    }
+
+    // ---- the favourites bar (FavBar): its tray, the name over the focused tile, and the one move it may make
+
+    private android.widget.HorizontalScrollView tray;
+    private View nameRow, nameCard;
+    private boolean trayLowered;
+
+    /** The name (and the hint beside it) centred over the focused favourite, as it scrolls too; hidden when the focus is not in the bar. */
+    private void placeName() {
+        if (nameRow == null || nameRow.getWidth() == 0) return;
+        View f = getCurrentFocus();
+        boolean inBar = f != null && dockCards.contains(f) && edit == null;
+        nameRow.animate().alpha(inBar ? 1f : 0f).setDuration(FavBar.MS).start();
+        if (!inBar || nameCard == null) return;
+        int[] c = new int[2], p = new int[2];
+        nameCard.getLocationInWindow(c);
+        ((View) nameRow.getParent()).getLocationInWindow(p);
+        float cardCentre = c[0] + nameCard.getWidth() * nameCard.getScaleX() / 2f;   // the scale is from the centre: the centre stays
+        nameRow.setTranslationX(FavBar.nameX(cardCentre - p[0], nameRow.getLeft(), nameRow.getWidth(), ((View) nameRow.getParent()).getWidth()));
+    }
+
+    /**
+     * The one move the tray makes (FavBar.WIDGET_DROP): 40 px down while the focus is in a widget that opens into a scrolling row (the
+     * matches widget of the football home, docs/PROPOSALS-NOV2.md §1), back before a tile lifts. Nothing calls it with true until that
+     * widget is on the home; the tray looks the same either way.
+     */
+    void lowerTray(boolean down) {
+        if (tray == null || down == trayLowered) return;
+        trayLowered = down;
+        tray.animate().translationY(down ? bar(FavBar.WIDGET_DROP) : 0).setInterpolator(new android.view.animation.AccelerateDecelerateInterpolator())
+                .setDuration(FavBar.DROP_MS).start();
     }
 
     /** the app's options while they show (closed when the home goes) */
@@ -2350,11 +2409,17 @@ public class MainActivity extends Activity {
     }
 
     /** The home in the light or the dark look; nothing is touched while the look stays the same. */
+    /** the home's own colours now: the light or the dark, and «رملي»'s own pair when that look is chosen (Look.of) */
+    private Look.Palette palette() { return Look.of(lookNow, lightNow); }
+    /** the look applyLook last painted (a change of look repaints even when the light stays) */
+    private String paletteLook = "";
+
     private void applyLook(boolean light) {
         GlassSource.setHomeLight(this, light);   // «تلقائي» on the other screens follows the home (kept only when it changes)
-        if (light == lightNow) return;
+        if (light == lightNow && lookNow.equals(paletteLook)) return;
         lightNow = light;
-        Look.Palette p = Look.of(light);
+        paletteLook = lookNow;
+        Look.Palette p = palette();
         clock.setTextColor(p.text);
         title.setTextColor(p.ink);
         title.setShadowLayer(dp(18), 0, 0, p.titleShadow);
@@ -2365,8 +2430,9 @@ public class MainActivity extends Activity {
         for (TextView t : tvNames) { t.setTextColor(p.gold); t.setShadowLayer(dp(3), 0, dp(1), p.shadow); }
         scrim.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, p.scrim));
         gridShade.setBackgroundColor(p.shade);
-        dockBand.setColor(p.band);
-        dockBand.setStroke(dp(1), p.bandStroke);
+        dockBand.setColor(light ? FavBar.FILL_LIGHT : FavBar.FILL_DARK);   // FavBar: the same tray on every look
+        dockBand.setStroke(Math.max(1, bar(1)), light ? FavBar.LINE_LIGHT : FavBar.LINE_DARK);
+        for (View c : dockCards) { GradientDrawable r = ringByCard.get(c); if (r != null) r.setStroke(bar(FavBar.RING), FavBar.ring(light)); }
     }
 
     private void updateClock() {

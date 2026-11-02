@@ -17,11 +17,11 @@ public final class LookRun {
         // photos: a mid grey, a dark one, a bright one; the top band (the clock) and the bottom (the title and the dock) of the scrim
         int[] photos = {0xFF808080, 0xFF202020, 0xFFE0E0E0};
         String[] names = {"grey", "dark", "bright"};
-        for (int light = 0; light < 2; light++) {
-            Look.Palette p = Look.of(light == 1);
+        for (int light = 0; light < 4; light++) {   // the home's two, then «رملي»'s two
+            Look.Palette p = light < 2 ? Look.of(light == 1) : Look.of("sand", light == 3);
             for (int k = 0; k < photos.length; k++) {
                 int top = Look.over(p.scrim[0], photos[k]), bottom = Look.over(p.scrim[4], photos[k]), grid = Look.over(p.shade, photos[k]);
-                String look = light == 1 ? "light" : "dark";
+                String look = new String[] {"dark", "light", "sanddark", "sandlight"}[light];
                 out.append("contrast ").append(look).append(" clock ").append(names[k]).append(" = ").append(Look.contrast(p.text, top)).append('\n');
                 out.append("contrast ").append(look).append(" date ").append(names[k]).append(" = ").append(Look.contrast(p.soft, top)).append('\n');
                 out.append("contrast ").append(look).append(" greeting ").append(names[k]).append(" = ").append(Look.contrast(p.gold, top)).append('\n');

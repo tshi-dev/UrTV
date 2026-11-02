@@ -4,6 +4,13 @@ Newest first. `next` is where changes land first; a release is what was tested t
 
 ## 4.2 (on `next`)
 
+- **The favourites bar** (docs/PROPOSALS-NOV2.md §1, FavBar.java): one glass tray, the same on every look and layout, x 120 to 1800 and
+  218 high, 54 px above the screen's bottom; five 304×170 tiles 24 apart, the first on the right, more scroll inside the tray and never
+  leave it. The focused tile lifts 6 px and grows 1.08 in 150 ms with a 3 px green ring (DGA green on light, #8FE0B4 over a photo); the
+  app's name sits centred over it and hides when the focus leaves the bar. The only move is 40 px down for a widget that opens into a
+  scrolling row (`lowerTray`, for the football home's matches; nothing calls it yet). **«رملي» on the home itself:** with that look the
+  home's own veil, words and labels are sand, ink and flag green in the light and green for gold in the dark (Look.SAND_LIGHT/SAND_DARK,
+  checked for contrast like the other two).
 - **The UX review, done** (docs/UX-REVIEW.md on work/ux-review; work/ux-impl). **The app's options:** a long OK on the app, or the remote's
   Menu key on it, shows a small box right above the app, its width, no title (a quiet «اضغط مطوّلاً للخيارات» beside a favourite's name
   the first six times): «انقل», «أخفِ», «اقفل», then ★ (in or out of the favourites) and ⓘ (Android's app details, where its uninstall is). The old
