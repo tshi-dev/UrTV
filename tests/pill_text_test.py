@@ -32,7 +32,7 @@ check("MainActivity: the pills left in the row are sources, then tasks (with the
 check("MainActivity: every pill is a Pill with a fixed 30 dp row (the row's height is reserved)",
       "right.addView(p, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(10), 0))" in main and "TextView tasks" not in main and "TextView saver" not in main)
 check("MainActivity: D-pad ends and order are unchanged (wireFocus and moveFocusSideways still walk the pills list)",
-      "p.setNextFocusLeftId(i == 0 ? p.getId() : pills.get(i - 1).getId())" in main and "int next = right == Dir.rtl() ? index - 1 : index + 1;" in main)
+      "p.setNextFocusLeftId(i == 0 ? p.getId() : pills.get(i - 1).getId())" in main and "FavBar.sideStep(index, row.getChildCount(), right, rtl)" in main)
 check("MainActivity: the control center's pill is gold while the sleep timer runs (its tile says how long is left)", "centerPill.setAccent(SleepTimer.minutesLeft(this) > 0)" in main
       and "wifiPill" not in main and "sleepPill" not in main)
 check("MainActivity: OK on the screensaver tile starts the screensaver (the preview activity, a fresh task), a long OK opens its settings, both through the family lock (the pill's old targets)",

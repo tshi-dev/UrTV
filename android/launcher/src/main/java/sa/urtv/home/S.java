@@ -98,8 +98,21 @@ public final class S {
             } catch (java.io.IOException | RuntimeException ignored) {
                 // no table: the Arabic words, never a crash
             }
+            spaced(m);
             table = m;
             return m;
+        }
+    }
+
+    /**
+     * The build (aapt) keeps an XML string's runs of spaces as ONE space, so getString gives «متوقف • الأذان كاملًا» for the «متوقف  •  الأذان
+     * كاملًا» of res/values/strings.xml and of the table (tester step 20: the Tilawah and adhan footers stayed Arabic). Each entry with a run of
+     * spaces is found by its one-space form too (its English as written).
+     */
+    static void spaced(Map<String, String> m) {
+        for (Map.Entry<String, String> e : new java.util.ArrayList<>(m.entrySet())) {
+            String one = e.getKey().replaceAll(" {2,}", " ");
+            if (!one.equals(e.getKey()) && !m.containsKey(one)) m.put(one, e.getValue());
         }
     }
 }

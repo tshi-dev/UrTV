@@ -13,7 +13,7 @@ public class SetupRunnerRun {
         final SetupEngineRun.Dead dead = new SetupEngineRun.Dead();
         boolean inline = true;
         String refuse;              // open() throws this message
-        int opens, finished, sleeps;
+        int opens, finished, sleeps, fresh, freshAtOpen = -1;
         final List<Runnable> held = new ArrayList<>();
         SetupRunner r;              // the runner this host serves: the person's answer at the start screen is given from sleep()
         Boolean answer = true;      // «ابدأ» (true), «إلغاء» (false), nothing (null: the ten minutes run out)
@@ -60,6 +60,7 @@ public class SetupRunnerRun {
         public SetupEngine.Store store() { return store; }
         public void spawn(Runnable job) { if (inline) job.run(); else held.add(job); }
         public void finished() { finished++; }
+        public void freshKey() { fresh++; }
         boolean late;
         String lateLines = "";
         public void sleep(int ms) {
@@ -176,6 +177,14 @@ public class SetupRunnerRun {
         SetupRunner.Start s = go(r, h, SetupRunner.Kind.FULL, new SetupRunner.Options());
         line("R1 " + s + " " + states(r) + " running=" + r.running() + " finished=" + h.finished + " bad=" + r.end().bad + " listened=" + (calls[0] > 5));
         line("R1end " + r.end().text);
+        // tester step 18: the second run did not ask: a key a run kept is let go again BEFORE a fresh run and an undo (when nothing is pending)
+        SetupRunner rk = new SetupRunner(); Host hk = new Host(SetupEngineRun.tv(), new SetupEngineRun.Mem());
+        go(rk, hk, SetupRunner.Kind.FULL, new SetupRunner.Options());
+        int afterFull = hk.fresh;
+        go(rk, hk, SetupRunner.Kind.UNDO, new SetupRunner.Options());
+        int afterUndo = hk.fresh;
+        go(rk, hk, SetupRunner.Kind.ANSWERS, new SetupRunner.Options());
+        line("RK " + afterFull + " " + afterUndo + " " + hk.fresh);
         List<SetupRunner.Line> all = r.linesSince(0);
         boolean ordered = true;
         for (int i = 1; i < all.size(); i++) if (all.get(i).seq != all.get(i - 1).seq + 1) ordered = false;

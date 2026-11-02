@@ -72,6 +72,7 @@ case "$1" in
   "pm uninstall"*) log uninstall ;;
   "pm install"*)
     [ "$INSTALL_MODE" = silent ] && { log silent; exit 1; }   # tv.py --bg gave up: no output at all
+    [ "$INSTALL_MODE" = downgrade ] && { log downgrade; echo "Failure [INSTALL_FAILED_VERSION_DOWNGRADE: Downgrade detected: Update version code 168 is older than current 174]"; exit 1; }
     [ "$INSTALL_MODE" = incompatible ] && { log incompatible; echo "Failure [INSTALL_FAILED_UPDATE_INCOMPATIBLE: signatures do not match]"; exit 1; }   # --bg now exits with pm's code
     if [ -n "$VERIFY" ] && { [ "$VERIFY" = always ] || [ "$(cat "$T/verifier" 2>/dev/null)" != 0 ]; }; then
       log refused; echo "Failure [INSTALL_FAILED_VERIFICATION_FAILURE: Install not allowed]"
@@ -247,6 +248,9 @@ cases = [
     ("an app of the same name with another signature: never uninstalled, stops and says what is lost", run("u", 0, "", install_mode="incompatible"),
      lambda c, o, l: c == 1 and "uninstall" not in l and l.count("incompatible") == 1 and "Nothing was removed" in o
      and "settings, tasks and own adhan" in o and "Ask the person first" in o),
+    ("the TV has a newer build than the tag's (174 over 168): an info line, no !!, nothing installed, the switch goes on (tester W3)",
+     run("w3", 0, "", install_mode="downgrade"),
+     lambda c, o, l: c == 0 and "!!" not in o and "already has a newer build" in o and l.count("downgrade") == 1 and "uninstall" not in l and "Launcher is home" in o),
     ("the TV never answers during the install: a clear line, exit 1", run("v", 0, "", install_mode="silent"),
      lambda c, o, l: c == 1 and "stopped answering while urtv-home.apk was installing" in o and "uninstall" not in l),
     ("no refusal: the setting is never touched", run("i", 0, "", verifier="1"),

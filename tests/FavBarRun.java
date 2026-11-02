@@ -26,6 +26,10 @@ public class FavBarRun {
         o.append("tile1080 ").append(FavBar.tileW(1080)).append('\n');
         o.append("nameX ").append(FavBar.nameX(500, 0, 200, 1680)).append(' ').append(FavBar.nameX(50, 0, 200, 1680)).append(' ')
          .append(FavBar.nameX(1670, 0, 200, 1680)).append('\n');
+        // tester step 20: Arabic (drawn right to left) ▶ goes to the item before, English (left to right) to the next; the edges stay
+        o.append("side ").append(FavBar.sideStep(0, 5, true, false)).append(' ').append(FavBar.sideStep(0, 5, false, false)).append(' ')
+         .append(FavBar.sideStep(2, 5, true, true)).append(' ').append(FavBar.sideStep(0, 5, true, true)).append(' ')
+         .append(FavBar.sideStep(0, 5, false, true)).append(' ').append(FavBar.sideStep(4, 5, true, false)).append('\n');
         System.out.print(o);
     }
 }

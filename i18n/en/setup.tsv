@@ -1,2 +1,18 @@
 # Phase 5: the setup on the TV (android/launcher/.../setup/)
 # arabic<TAB>english, one per line, as docs/ENGLISH.md says. tests/i18n_test.py checks every entry.
+امسح الرمز بجوالك لترى تقرير الإعداد وترسله للمطوّر إن أردت (بلا أي معلومة شخصية).	Scan the code with your phone to see the setup report and send it to the developer if you like (nothing personal in it).
+بعد الإعداد أطفئ التصحيح:	After the setup, turn debugging off:
+1. الإعدادات ← تفضيلات الجهاز ← خيارات المطوّر.	1. Settings → Device Preferences → Developer options.
+2. اختر «إلغاء تراخيص تصحيح USB».	2. Choose “Revoke USB debugging authorizations”.
+3. أطفئ «تصحيح USB». («تراجع» من هنا يحتاجه مفعّلاً.)	3. Turn “USB debugging” off. (“Undo” here needs it on.)
+لو صار شي:	If something goes wrong:
+• الشاشة الرئيسية ما فتحت تلفزيونك: انتظر 5 دقائق ترجع الأصلية وحدها، أو اضغط «تراجع».	• The Home button did not open Your TV: wait 5 minutes and the original comes back by itself, or press “Undo”.
+• تطبيق تحتاجه صار موقوفاً: «تراجع» يرجّع كل ما أوقفناه.	• An app you need was turned off: “Undo” turns back on everything we turned off.
+• انقطع الواي فاي: اتصل به من إعدادات التلفزيون ← الشبكة.	• The Wi-Fi dropped: connect to it in the TV settings → Network.
+• تبي التلفزيون كما كان: فعّل «تصحيح USB» واضغط «تراجع».	• You want the TV as it was: turn “USB debugging” on and press “Undo”.
+تراجع (يرجّع التلفزيون كما كان)	Undo (puts the TV back as it was)
+تم	Done
+تم الرجوع. أطفئ «تصحيح USB» من خيارات المطوّر، واختر «إلغاء تراخيص تصحيح USB» لتنظيف التلفزيون.	Undone. Turn “USB debugging” off in Developer options, and choose “Revoke USB debugging authorizations” to clean the TV up.
+انتهى الرجوع مع ملاحظات (فوق).	The undo finished with notes (above).
+توقّفنا قبل أي تغيير.	We stopped before changing anything.
+انتهى الإعداد. اضغط زر الرئيسية في الريموت. ثم أطفئ «تصحيح USB» من خيارات المطوّر واختر «إلغاء تراخيص تصحيح USB» إن لم تحتجهما (التراجع من هنا يحتاجهما).	The setup is done. Press the Home button on the remote. Then turn “USB debugging” off in Developer options and choose “Revoke USB debugging authorizations” if you do not need them (Undo here needs them).

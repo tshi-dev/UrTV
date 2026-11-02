@@ -101,6 +101,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     /** the 1-second position tick runs only while something plays */
     private boolean ticking;
     private String currentUrl;
+    private String radioAddress;   // the station's own address (StreamUrl resolves it again for every try: a redirect's address may not last)
 
     // what was on when the adhan started, so it comes back afterwards
     private boolean resumeAfterAdhan;
@@ -366,7 +367,65 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         pendingSeek = 0;
         wish.ask();
         prefs.save(source, "", surah, station, 0);
-        startUrl(cat.stations.get(index).url);
+        radioAddress = cat.stations.get(index).url;
+        startRadio(radioAddress, 0);
+    }
+
+    /**
+     * A station: its address is made ready first (StreamUrl: the redirects followed by us, so radiojar's https -> http one works; a 5xx tried
+     * again after 2 s, then 4 s), then the player gets the final address. «تعذّر» is said only after the last try (tester step 19).
+     */
+    private void startRadio(final String url, final int tries) {
+        releasePlayer();
+        final int gen = wish.newPlayer();
+        currentUrl = url;
+        error = tries > 0 ? Ui.str(this, R.string.retrying) : null;
+        buffering = true;
+        playing = false;
+        prepared = false;
+        position = 0;
+        duration = 0;
+        foreground();
+        updateSession();
+        updateNotification();
+        new Thread(() -> {
+            String ready = null;
+            boolean passing = false;
+            try {
+                ready = StreamUrl.resolve(url, 10_000);
+            } catch (java.io.IOException | RuntimeException e) {
+                passing = e.getMessage() != null && e.getMessage().startsWith("server error");
+                Log.w(TAG, "station address: " + e.getMessage());
+            }
+            final String go = ready;
+            final boolean busy = passing;
+            handler.post(() -> {
+                if (!wish.current(gen) || source != Prefs.SOURCE_RADIO || !url.equals(currentUrl)) return;   // stopped, or another pick meanwhile
+                if (go != null) { startUrl(go); return; }
+                if (busy && StreamUrl.again(tries + 1)) {
+                    error = Ui.str(this, R.string.retrying);
+                    updateSession();
+                    updateNotification();
+                    handler.postDelayed(() -> {
+                        if (wish.current(gen) && source == Prefs.SOURCE_RADIO && url.equals(currentUrl)) startRadio(url, tries + 1);
+                    }, StreamUrl.backoffMs(tries + 1));
+                    return;
+                }
+                if (busy) {   // the server failed every try: said now, as a player error is
+                    errors++;
+                    lastError = "radio server_error (" + StreamUrl.TRIES + " tries)";
+                    lastErrorAt = System.currentTimeMillis() / 1000;
+                    playing = false;
+                    buffering = false;
+                    error = PlayerFault.message(true, 0, PlayerFault.IO);
+                    updateSession();
+                    updateNotification();
+                    save();
+                    return;
+                }
+                startUrl(url);   // the address could not be checked (no answer to our request): the player tries it itself
+            });
+        }, "station-url").start();
     }
 
     // ---- the adhan: pause whatever is on, play it, then bring the surah back ----
@@ -619,9 +678,12 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             updateSession();
             updateNotification();
             final int gen = wish.currentGeneration();
+            final boolean radio = source == Prefs.SOURCE_RADIO && radioAddress != null;
+            final String station = radioAddress;
             handler.postDelayed(() -> {
-                if (wish.retry(gen, playing) && failed.equals(currentUrl)) startUrl(failed);   // not after a stop, a pause-and-leave or another pick
-            }, 3000);
+                if (!wish.retry(gen, playing) || !failed.equals(currentUrl)) return;   // not after a stop, a pause-and-leave or another pick
+                if (radio) startRadio(station, 0); else startUrl(failed);   // a station's address is resolved again (its redirect may not last)
+            }, radio ? StreamUrl.backoffMs(retries) : 3000);
         } else {
             error = PlayerFault.message(source == Prefs.SOURCE_RADIO, what, extra);
             updateSession();

@@ -42,8 +42,10 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
 
     private static final Uri TASKS = Uri.parse("content://sa.urtv.screensaver.config/tasks");
     private static final int SPEECH = 41;
-    /** from the home screen's «المهام» card: the list opens with the focus on «🎤 تكلّم», so one more OK starts the voice adding */
+    /** from the home screen's «المهام» card (kept for the callers); the list opens with the focus on the text field either way (tester T1) */
     static final String EXTRA_MIC = "mic";
+    /** the keyboard's action key: its own id with the label «إضافة», so a keyboard that shows labels reads «إضافة», not ✓ (DONE stays the fallback) */
+    static final int ACTION_ADD = 100;
     private int GOLD, INK, TEXT, DIM;   // from the glass look (glass(), before anything is drawn)
     private GlassStyle.Look look;
     private static final int MAX_CHARS = 60;   // as the screensaver keeps them (Prefs.TASK_CHARS)
@@ -58,13 +60,12 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
     private EditText field;   // the task typed (or dictated by the keyboard's mic): «إضافة» or the keyboard's action key adds it
     private long listenedAt;   // when the speech window was opened (SystemClock.elapsedRealtime), to tell one that never worked
     private Runnable onYes;
-    private boolean micFirst;   // the first render puts the focus on the mic (EXTRA_MIC), later ones on the list as always
+    private boolean fieldFirst = true;   // the first render puts the focus on the text field, later ones on the list as always
 
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
         Digits.init(this);
-        micFirst = getIntent().getBooleanExtra(EXTRA_MIC, false);
         ScrollView scroll = new ScrollView(this);
         glass(scroll);   // the glass look: the home's photo, small and blurred once, under its veil
         scroll.setVerticalScrollBarEnabled(false);
@@ -87,7 +88,7 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
         field.setSingleLine(true);
         field.setInputType(InputType.TYPE_CLASS_TEXT);   // plain text: the keyboard's dictation writes here
         field.setImeOptions(EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_EXTRACT_UI);   // the action key is «إضافة», never a search
-        field.setImeActionLabel(S.t("إضافة"), EditorInfo.IME_ACTION_DONE);
+        field.setImeActionLabel(S.t("إضافة"), ACTION_ADD);
         field.setFilters(new InputFilter[] { new InputFilter.LengthFilter(MAX_CHARS) });
         field.setTextDirection(Dir.text());
         field.setGravity(Dir.start() | Gravity.CENTER_VERTICAL);
@@ -100,7 +101,7 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
         GlassPaint.card(field, look, 14);   // the same panel and solid focus fill as every button: the focus is clear
         field.setOnEditorActionListener((v, action, e) -> {
             boolean enter = e != null && e.getKeyCode() == KeyEvent.KEYCODE_ENTER;
-            if (action == EditorInfo.IME_ACTION_DONE || (enter && e.getAction() == KeyEvent.ACTION_DOWN)) { addTyped(); return true; }
+            if (action == ACTION_ADD || action == EditorInfo.IME_ACTION_DONE || (enter && e.getAction() == KeyEvent.ACTION_DOWN)) { addTyped(); return true; }
             return enter;   // the key-up of an Enter we already took
         });
         col.addView(field, right(dp(8)));
@@ -204,8 +205,8 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
             if (i == focus) wanted = card;
         }
         View f = wanted != null ? wanted : first != null ? first : mic.getVisibility() == View.VISIBLE ? mic : field;
-        if (micFirst && mic.getVisibility() == View.VISIBLE) f = mic;   // from the home card: the mic first
-        micFirst = false;
+        if (fieldFirst) f = field;   // the first render: the text field, ready to type (OK opens the keyboard); «تكلّم» is one ▼ ◀ away
+        fieldFirst = false;
         if (f != null && confirm.getVisibility() != View.VISIBLE) f.post(f::requestFocus);
     }
 

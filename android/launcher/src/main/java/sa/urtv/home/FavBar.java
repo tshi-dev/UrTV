@@ -47,4 +47,14 @@ final class FavBar {
         x = Math.max(0, Math.min(parentW - width, x));
         return x - left;
     }
+
+    /**
+     * ◀ ▶ in a row of the home (the favourites, the pills): the index the focus goes to from `index`, or -1 at the edge (it stays). `rtl` is
+     * the row as it is drawn (Dir.layout() when it was built): in Arabic the first item is on the right, so ▶ goes to the one before; in English
+     * the first is on the left and ▶ goes to the next one (tester step 20: the favourites went the wrong way in English).
+     */
+    static int sideStep(int index, int count, boolean right, boolean rtl) {
+        int next = right == rtl ? index - 1 : index + 1;
+        return next < 0 || next >= count ? -1 : next;
+    }
 }

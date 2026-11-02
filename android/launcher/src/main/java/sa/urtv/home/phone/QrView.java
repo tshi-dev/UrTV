@@ -30,11 +30,14 @@ public final class QrView extends View {
         canvas.drawRect(0, 0, getWidth(), getHeight(), paint);
         if (code == null) return;
         int n = code.size + 8;   // four modules of white on each side
-        float cell = Math.min(getWidth(), getHeight()) / (float) n;
+        int side = Math.min(getWidth(), getHeight());
+        // whole pixels per module when they fit (sharp edges, every module the same size: easier for a phone's camera), centred in the view
+        float cell = side >= n ? (float) Math.floor(side / (float) n) : side / (float) n;
+        float x0 = (getWidth() - cell * n) / 2f + 4 * cell, y0 = (getHeight() - cell * n) / 2f + 4 * cell;
         paint.setColor(0xFF000000);
         for (int y = 0; y < code.size; y++) {
             for (int x = 0; x < code.size; x++) {
-                if (code.dark(x, y)) canvas.drawRect((x + 4) * cell, (y + 4) * cell, (x + 5) * cell + 0.5f, (y + 5) * cell + 0.5f, paint);
+                if (code.dark(x, y)) canvas.drawRect(x0 + x * cell, y0 + y * cell, x0 + (x + 1) * cell, y0 + (y + 1) * cell, paint);
             }
         }
     }

@@ -37,6 +37,9 @@ final class SetupSession implements Closeable {
      * key and the TV asks again.
      */
     static void deleteKeyIfFinished(Context c) {
-        if (!SetupRecovery.pending(c) && !SetupRunner.awaiting(new FileStore(c))) AdbKeys.delete(c);
+        boolean pending = SetupRecovery.pending(c), awaiting = SetupRunner.awaiting(new FileStore(c));
+        if (!pending && !awaiting) AdbKeys.delete(c);
+        android.util.Log.i("UrTVSetup", "adb key: " + (!pending && !awaiting ? "deleted" : "kept (" + (pending ? "home switch pending" : "run waiting") + ")")
+            + " exists=" + AdbKeys.exists(c));
     }
 }

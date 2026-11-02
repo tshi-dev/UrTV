@@ -112,6 +112,7 @@ public class MainActivity extends Activity {
     private final Runnable rotateWallpaper = this::nextWallpaper;
     static final long WALLPAPER_INTERVAL_MS = 10 * 60 * 1000;
     private TextView greeting, weatherLine, clock, ampm, date, zoneLine, title, appsLabel;
+    private String langBuilt;   // S.lang() when this screen was built
     // «المظهر» (Look): the parts a light look recolours; built in the dark look's colours, so dark is exactly as it was
     private View scrim;
     private GradientDrawable dockBand;
@@ -180,6 +181,7 @@ public class MainActivity extends Activity {
         FamilyDnsAndroid.status(this);   // first use in this process: undoes a Family DNS check that a crash cut short
         sa.urtv.home.setup.SetupHook.atHomeStart(this);   // a home switch that was cut off is put back (it never throws)
         Digits.init(this);   // the screensaver's «الأرقام» setting, for every number this screen writes
+        langBuilt = S.lang();   // the language this screen is built in (updateClock rebuilds it when «اللغة» changes)
         dockApps = loadDock();
         findTvApps();
         cols = getResources().getInteger(R.integer.columns);
@@ -431,6 +433,7 @@ public class MainActivity extends Activity {
         dockRow = new LinearLayout(this);
         dockRow.setOrientation(LinearLayout.HORIZONTAL);
         dockRow.setGravity(Gravity.CENTER_VERTICAL | Dir.start());
+        dockRow.setLayoutDirection(Dir.layout());   // the first favourite on the right in Arabic, on the left in English (tester step 20)
         dockRow.setClipChildren(false);
         dockRow.setClipToPadding(false);
         dockRow.setPadding(bar(FavBar.PAD_SIDE), bar(FavBar.PAD_TOP), bar(FavBar.PAD_SIDE), bar(FavBar.PAD_TOP));
@@ -2451,6 +2454,11 @@ public class MainActivity extends Activity {
         // one read of the screensaver's settings (its ConfigProvider, same signing key) for the whole tick; null zone = it is missing: the TV's own
         ConfigSnapshot cfg = ConfigSnapshot.read(this);
         Digits.remember(this, cfg);   // a change of the setting reaches the next tick
+        if (langBuilt != null && !langBuilt.equals(S.lang())) {   // «اللغة» changed while this screen was up (tester step 20: the words, the
+            langBuilt = S.lang();                                 // favourites' direction and the names stayed as built): built again in it
+            recreate();
+            return;
+        }
         String[] zone = cfg.cityZone();
         String tz = zone == null ? tvTz : zone[1];
         Calendar now = ClockZone.at(ms, tz);   // the city's time, like the prayer times beside it
@@ -3227,8 +3235,9 @@ public class MainActivity extends Activity {
         int index = row.indexOfChild(item);
         if (index < 0) return false;
         // the row reads from the right in Arabic, so the item before the focused one is the one on the right; in English the left
-        int next = right == Dir.rtl() ? index - 1 : index + 1;
-        if (next < 0 || next >= row.getChildCount()) return true;   // the edge of the row: stay put
+        boolean rtl = row.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;   // the row as it is drawn (Dir.layout() when it was built)
+        int next = FavBar.sideStep(index, row.getChildCount(), right, rtl);
+        if (next < 0) return true;   // the edge of the row: stay put
         View target = row.getChildAt(next);
         if (target == null || target.getVisibility() != View.VISIBLE) return true;
         View toFocus = target;

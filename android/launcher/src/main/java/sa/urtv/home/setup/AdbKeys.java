@@ -59,6 +59,9 @@ final class AdbKeys {
         new File(dir, "adbkey.pub.tmp").delete();
     }
 
+    /** For the log only: is a key on disk now. */
+    static synchronized boolean exists(Context c) { return new File(c.getFilesDir(), "adbkey").exists() || new File(c.getFilesDir(), "adbkey.pub").exists(); }
+
     private static byte[] readFile(File f) throws IOException {
         try (FileInputStream in = new FileInputStream(f)) {
             ByteArrayOutputStream out = new ByteArrayOutputStream();

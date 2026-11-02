@@ -79,6 +79,8 @@ check("the full plan, in the owner's order: precheck, backup, keep, measure, the
       PLAN == ["precheck", "backup", "keep", "before", "grants", "safe", "community", "tweaks", "install-saver", "screensaver", "extras", "autostart", "home", "after", "report"], PLAN)
 check("R1: «جهّز كل شي» on a healthy TV: every step in order, all done; the run is over; the key is let go once; the screen is told of changes",
       got.get("R1") == f"R1 STARTED {FULL_DONE} running=false finished=1 bad=false listened=true", got.get("R1"))
+check("a fresh full run and an undo first let go of a key a run before kept (when nothing is pending); the community answers do not (tester step 18)",
+      got.get("RK") == "RK 1 2 2", got.get("RK"))
 check("R1: the end is the setup screen's own sentence", (got.get("R1end") or "").startswith("R1end انتهى الإعداد. اضغط زر الرئيسية في الريموت."), got.get("R1end"))
 check("R1: numbered lines, in order, «since n» gives the ones after n; the prompt line comes first; a finished run leaves no resume pointer",
       got.get("R1lines") == "R1lines true true true 0 prompt=true" and got.get("R1nostate") == "R1nostate ", (got.get("R1lines"), got.get("R1nostate")))

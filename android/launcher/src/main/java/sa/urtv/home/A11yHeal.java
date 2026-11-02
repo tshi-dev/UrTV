@@ -58,6 +58,9 @@ public final class A11yHeal extends BroadcastReceiver {
     }
 
     static void check(Context c, String why) {
+        if (!"boot".equals(why)) {   // our own update: the mute and our entry as they were right before it (UpdateCarry), before the check below
+            try { UpdateCarry.after(c, why); } catch (RuntimeException e) { Log.w(TAG, "carry " + why + " failed: " + e.getClass().getSimpleName()); }
+        }
         try {
             String list = read(c, LIST), sw = read(c, SWITCH);
             SharedPreferences sp = c.getSharedPreferences("a11y", Context.MODE_PRIVATE);

@@ -146,7 +146,7 @@ public class MainActivity extends Activity {
                 adapter.rebuild();
                 focusList(list.getSelectedItemPosition());
             } else if (row.kind == KIND_LINK) {
-                openHaramLive();
+                openHaramLive(row.index);
             } else if (row.kind == KIND_EXACT) {
                 openExactAlarmSettings();
             }   // «صوت الأذان» is set with left/right (changeVolume); OK on it does nothing
@@ -210,13 +210,26 @@ public class MainActivity extends Activity {
      * The broadcaster's live page in its own app or the browser (ACTION_VIEW): nothing plays here. A TV with nothing to open it says so; the
      * player and the radio are not touched.
      */
-    private void openHaramLive() {
-        if (!HaramLive.shown(HaramLive.URL)) return;
-        try {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(HaramLive.URL)).addCategory(Intent.CATEGORY_BROWSABLE));
-        } catch (android.content.ActivityNotFoundException | SecurityException e) {
-            android.widget.Toast.makeText(this, Ui.str(this, R.string.haram_live_none), android.widget.Toast.LENGTH_LONG).show();
+    /** HaramLive.LIVE's titles, marked for the table (HaramLive is plain Java; the rows say them with Ui.line) */
+    static final String[] LIVE_WORDS = {sa.urtv.home.S.n("مكة المكرمة · قناة القرآن الكريم"), sa.urtv.home.S.n("المدينة المنورة · قناة السنة النبوية")};
+
+    /** One live channel (HaramLive.LIVE[which]): in the YouTube app, else SmartTube, else the browser (HaramLive.openOrder). */
+    private void openHaramLive(int which) {
+        if (which < 0 || which >= HaramLive.LIVE.length || !HaramLive.shown(HaramLive.LIVE[which][1])) return;
+        Uri link = Uri.parse(HaramLive.LIVE[which][1]);
+        for (String pkg : HaramLive.openOrder(p -> {
+            try { getPackageManager().getPackageInfo(p, 0); return true; } catch (Exception e) { return false; }
+        })) {
+            Intent i = new Intent(Intent.ACTION_VIEW, link).addCategory(Intent.CATEGORY_BROWSABLE);
+            if (pkg != null) i.setPackage(pkg);
+            try {
+                startActivity(i);
+                return;
+            } catch (android.content.ActivityNotFoundException | SecurityException e) {
+                // this app does not take the link: the next one
+            }
         }
+        android.widget.Toast.makeText(this, Ui.str(this, R.string.haram_live_none), android.widget.Toast.LENGTH_LONG).show();
     }
 
     /** The tab changes what the list holds; the selected row becomes the first one of that section. */
@@ -417,7 +430,9 @@ public class MainActivity extends Activity {
                     rows.add(new Row(false, KIND_STATION, cat.stations.get(i).name, getString(R.string.live), i));
                 }
                 // «البث المباشر من الحرم»: a link out to the broadcaster's own page, only once its official link is filled in (HaramLive)
-                if (HaramLive.shown(HaramLive.URL)) rows.add(new Row(false, KIND_LINK, getString(R.string.haram_live), getString(R.string.haram_live_detail), -1));
+                for (int h = 0; h < HaramLive.LIVE.length; h++) {
+                    if (HaramLive.shown(HaramLive.LIVE[h][1])) rows.add(new Row(false, KIND_LINK, HaramLive.LIVE[h][0], getString(R.string.haram_live_detail), h));
+                }
             } else {
                 // the adhan section: the switch first (the settings' «الأذان» button lands on it: OK, OK turns it on), then today's times
                 // with the next one marked, then the muezzin and the rest

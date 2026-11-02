@@ -243,10 +243,23 @@ final class SetupInstall {
     // ---- the undo -------------------------------------------------------------------------------------------------------------------
 
     /** What this setup installed (installed-by-us.txt) is removed; nothing else ever is. Play Protect's ADB check back if a run was cut off. */
+    /** The backup's own package list (saved before the first change) is a real one and does not have pkg. False when there is no usable list. */
+    static boolean notBefore(String backup, String pkg) {
+        if (backup == null || !SetupPrep.usable(backup)) return false;
+        java.util.Set<String> all = SetupPrep.section(backup, "all packages");
+        return all.size() >= 10 && !all.contains(pkg);
+    }
+
     List<String> undo() throws IOException {
         putVerifierBack();
         List<String> left = new ArrayList<>(), ours = SetupEngine.ledgerNames(store.get(INSTALLED));
         ours.remove(SetupEngine.SELF);   // never this app itself
+        // our screensaver that the record missed (tester step 18: «تراجع» left it after a from-scratch run): the backup saved before the first
+        // change says the TV did not have it then, so this setup put it there. Only our own screensaver, never another app, never this app.
+        if (!ours.contains(SetupEngine.SAVER) && notBefore(store.get(SetupPrep.BACKUP), SetupEngine.SAVER) && tv.installed(SetupEngine.SAVER)) {
+            out.line("شاشة التوقف لم تكن على التلفزيون قبل الإعداد (النسخة الاحتياطية)، فنزيلها مع ما ثبّته الإعداد.");
+            ours.add(SetupEngine.SAVER);
+        }
         if (ours.isEmpty()) return left;
         for (String p : ours) tv.run("pm uninstall " + p);
         Set<String> now = tv.packages("pm list packages");   // with its end marker: a TV that said nothing keeps the record

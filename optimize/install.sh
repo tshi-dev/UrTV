@@ -107,6 +107,13 @@ push_install() {   # $1 apk name, $2 package
     "$PY" -I optimize/tv.py "settings put global $VERIFIER 0" > /dev/null || true
     out=$(pm_install "$1" "$2")
   fi
+  if grep -q INSTALL_FAILED_VERSION_DOWNGRADE <<< "$out"; then
+    # the TV already runs a newer build than this tag's (it updated itself, or apk-next was installed): never a downgrade, never a !!
+    echo "$2: the TV already has a newer build than ${APK_TAG:-apk-latest}'s $1, so it was kept as it is (nothing installed)."
+    restore_verifier
+    "$PY" -I optimize/tv.py "rm -f /data/local/tmp/$1"
+    return 0
+  fi
   if [ "$out" = NO_ANSWER ]; then
     echo "!! The TV stopped answering while $1 was installing (some TVs take minutes and drop ADB meanwhile). Wait a minute, check the TV is on and on Wi-Fi, then run the same command again: an install that finished is found and not repeated."
     exit 1

@@ -33,6 +33,7 @@ public final class VersionsRun {
                 && Versions.buildOf(null) == -1 && Versions.buildOf("3.151 extra") == -1 && Versions.buildOf("151") == -1, "");
         check("a newer build is newer whatever the marketing name is (4.0 builds 151 and 152)", Versions.buildOf("3.152") > 151 && !(Versions.buildOf("3.151") > 151) && !(Versions.buildOf("3.150") > 151), "");
         check("the name shown to people: «4.0» alone, and for the agent «4.0 (build 151)»", "4.0".equals(Versions.display("4.0", 151)) && "4.0 (build 151)".equals(Versions.displayEn("4.0", 151)), "");
+        check("the settings' current version: the name, then the build (tester V1)", "4.2 (174)".equals(Versions.withBuild("4.2", 174)), Versions.withBuild("4.2", 174));
         check("the newest build for the agent: 3.142 (before the names) stays «3.142», 155 is «4.0 (build 155)»", "3.142".equals(Versions.otherEn("4.0", 142)) && "3.153".equals(Versions.otherEn("4.0", 153))
                 && "4.0 (build 154)".equals(Versions.otherEn("4.0", 154)) && "4.0 (build 155)".equals(Versions.otherEn("4.0", 155)), "");
         check("a named release tag (v4.0.151) gives the version.txt form 3.151; the old v3.51 and apk-latest are as before",

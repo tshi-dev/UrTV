@@ -35,6 +35,8 @@ python3 tests/setup_community_test.py
 python3 tests/setup_install_test.py
 python3 tests/setup_report_test.py
 python3 tests/type_test.py
+python3 tests/tester_fixes_test.py   # the tester's steps 16 to 20 (TCL, build 174): the fixes without a JVM case of their own
+python3 tests/stream_url_test.py   # the live stations: radiojar's https -> http redirect, qurango's random 500 tried again
 python3 tests/reboot_test.py
 python3 tests/tv_identity_test.py
 python3 tests/tv_read_only_test.py

@@ -35,6 +35,22 @@ with tempfile.TemporaryDirectory() as tmp:
     check("framing: command, args, length, checksum and the XOR magic of one message", got.get("frame") == "frame true 1 0 9 true true 33", got.get("frame"))
     check("the signed block: 00 01 FF… 00, the SHA-1 prefix, then the 20-byte token", got.get("padded") == "padded true", got.get("padded"))
     check("the public key in adbd's format: 64 words, n0inv, n, R², exponent 65537, the name", got.get("blob") == "blob true true true", got.get("blob"))
+    # tester step 18: adbd logged «Invalid base64 key» before «sending prompt». Our key, byte for byte against AOSP's own encoder
+    # (android_pubkey_encode, and adb's client: base64 of the 524-byte RSAPublicKey, " user@host", a NUL), computed here from the modulus alone
+    import base64, struct
+    raw = (got.get("blobraw") or "").split()
+    if len(raw) == 4:
+        n, e, blob = int(raw[1], 16), int(raw[2]), base64.b64decode(raw[3])
+        r32 = 1 << 32
+        ref = struct.pack("<II256s256sI", 64, (r32 - pow(n % r32, -1, r32)) % r32, n.to_bytes(256, "little"), pow(2, 4096, n).to_bytes(256, "little"), e)
+        ref_text = base64.b64encode(ref) + b" urtv-home@tv\0"
+        check("the public key is byte for byte AOSP's format (len 64 words, n0inv, n and rr little-endian, the exponent, 524 bytes)", blob == ref_text, (blob[:40], ref_text[:40]))
+        key_b64 = blob.split(b" ")[0]
+        check("its base64 is what adbd's b64_pton reads: 700 characters, standard alphabet with its padding, no line breaks, 524 bytes back",
+              len(key_b64) == 700 and b"\n" not in blob and b"\r" not in blob and len(base64.b64decode(key_b64, validate=True)) == 524)
+        check("the name after one space, then exactly one NUL at the end (adbd takes the key as a C string)", blob.endswith(b" urtv-home@tv\0") and blob.count(b"\0") == 1 and blob.count(b" ") == 1)
+    else:
+        check("the blob for the independent check was printed", False, got.get("blobraw"))
     check("an unknown key accepted on the TV: the prompt is announced once, the command runs, its code is read, a failing one says 3",
           got.get("accept") == "accept true 1 0 [out(echo hello)] 3 [out(echo plain)]", got.get("accept"))
     check("no exit marker, or a garbled one, is code -1 (the TV did not say), never 0", got.get("noMarker") == "noMarker -1 -1", got.get("noMarker"))

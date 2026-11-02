@@ -66,4 +66,30 @@ public final class A11yList {
         if (running && "1".equals(switchValue)) return OK;
         return canWrite ? HEAL : NO_PERMISSION;
     }
+
+    /**
+     * After our own update (UpdateCarry): which of OUR components the list had right before the install and no longer has. Only these may be
+     * added back, and only when the install is what lost them; another app's entry is never added, and an entry the owner removed before the
+     * update is not in `before`, so it stays off.
+     */
+    static List<String> ownLost(String before, String now, String... ours) {
+        List<String> out = new ArrayList<>();
+        for (String c : ours) if (has(before, c) && !has(now, c) && !out.contains(c)) out.add(c);
+        return out;
+    }
+
+    /** The list as written with these entries appended (each once); the others untouched, in their order. */
+    static String with(String list, List<String> add) {
+        StringBuilder sb = new StringBuilder();
+        for (String e : entries(list)) {
+            if (sb.length() > 0) sb.append(':');
+            sb.append(e);
+        }
+        for (String c : add) {
+            if (has(sb.toString(), c)) continue;
+            if (sb.length() > 0) sb.append(':');
+            sb.append(c);
+        }
+        return sb.toString();
+    }
 }

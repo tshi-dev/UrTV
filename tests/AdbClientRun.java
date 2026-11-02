@@ -249,6 +249,9 @@ public class AdbClientRun {
             && BigInteger.valueOf(n0inv & 0xffffffffL).multiply(n).add(BigInteger.ONE).mod(BigInteger.ONE.shiftLeft(32)).signum() == 0
             && new BigInteger(1, rrBig).equals(BigInteger.ONE.shiftLeft(4096).mod(n));
         line("blob " + named + " " + keyOk + " " + (blob.length == text.length()));
+        // 3b the same blob for tests/adb_client_test.py's independent check (AOSP's android_pubkey_encode, in Python): the modulus, then the bytes
+        line("blobraw " + ((java.security.interfaces.RSAPublicKey) keys.getPublic()).getModulus().toString(16) + " "
+            + ((java.security.interfaces.RSAPublicKey) keys.getPublic()).getPublicExponent() + " " + java.util.Base64.getEncoder().encodeToString(blob));
         // 4 an unknown key, accepted on the TV: the prompt is announced, the command runs, the code is read
         FakeAdbd d = new FakeAdbd("accept");
         final boolean[] waited = {false};
