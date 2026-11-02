@@ -722,6 +722,10 @@ const CONFIG = {
   // the owner's own photos («صوري»): #own=how many (0-10) and #ownmode=mix (join ours, the default) or only
   own: Math.max(0, Math.min(10, Math.floor(_num('own', 0)))),
   ownMode: _Q.get('ownmode') === 'only' ? 'only' : 'mix',
+  // the photo packs («صور شاشة التوقف»): #packs=id:count,id:count (downloaded and on; the screensaver app alone answers them, so only there)
+  // and #ours=0 when our own set is off (the app sends that only while a pack gives the screen something else)
+  packs: window.UrtvNative ? (_Q.get('packs') || '').split(',').map(x => x.split(':')).filter(x => /^[a-z][a-z0-9-]{1,30}$/.test(x[0]) && +x[1] >= 1).map(x => [x[0], Math.min(200, Math.floor(+x[1]))]).slice(0, 12) : [],
+  ours: _Q.get('ours') !== '0',
   // digits everywhere: #digits=hindi (١٢٣, the default) or latin (123); anything else = hindi
   digits: _Q.get('digits') === 'latin' ? 'latin' : 'hindi',
   // «ساعة ٢٤»: #clock=24 shows every time of day as 24-hour (١٩:٣٠); anything else, or nothing, is the 12-hour clock (٧:٣٠ م)
@@ -812,7 +816,7 @@ const USES = k => CONFIG.cards.some(c => c === k || (USES_OF[c] || []).includes(
 // The panels' snapshot is keyed by the link without the settings that only change how things look (the card's style and place, the clock's
 // size, the strips, the photo timing): changing one of those offline must not lose the games already on screen. What changes the words or
 // the markup inside the saved panels (the teams, leagues, digits, slot, markets, their style and switch…) stays in the key.
-const SNAP_LOOK = ['citynote', 'cardstyle', 'panel', 'panel2', 'week', 'clocksize', 'adhanbar', 'yearstrip', 'national', 'photos', 'adj', 'own', 'ownmode', 'gap'];
+const SNAP_LOOK = ['citynote', 'cardstyle', 'panel', 'panel2', 'week', 'clocksize', 'adhanbar', 'yearstrip', 'national', 'photos', 'adj', 'own', 'ownmode', 'packs', 'ours', 'gap'];
 function snapLink(){
   return location.hash.replace(/^#/, '').split('&').filter(kv => kv && !SNAP_LOOK.includes(kv.split('=')[0])).join('&');
 }
@@ -3400,7 +3404,17 @@ const OWN_BASE = 'https://own.urtv.invalid/';
 const OWN_ONLY = () => CONFIG.own > 0 && CONFIG.ownMode === 'only';
 const ownPhotos = () => Array.from({length: CONFIG.own}, (_, k) => ({url: OWN_BASE + (k + 1) + '.jpg', b: {}}));   // no credit: they are not ours
 
+// The downloaded packs: the app answers PACK_BASE ID/N.jpg (1..count) and ID/credits.json from its own folder. Each photo carries its credit
+// (author · licence) once the pack's credits arrive; one that has not yet is shown without it.
+const PACK_BASE = 'https://packs.urtv.invalid/';
+const PACK_CREDITS = {};
+const packPhotos = () => CONFIG.packs.flatMap(([id, n]) => Array.from({length: n}, (_, k) => ({url: PACK_BASE + id + '/' + (k + 1) + '.jpg', b: {get c(){ return (PACK_CREDITS[id] || {})[k + 1] || ''; }}})));
+function loadPackCredits(){
+  CONFIG.packs.forEach(([id]) => { fetchT(PACK_BASE + id + '/credits.json', 8000).then(r => r.ok ? r.json() : {}).then(j => { PACK_CREDITS[id] = j || {}; }).catch(() => {}); });
+}
+
 async function loadPhotoIndex(){
+  loadPackCredits();
   if(OWN_ONLY()) return;   // nothing of ours is shown, so nothing is fetched
   try{
     const r = await fetchT(PHOTO_BASE + 'index.json', 15000);
@@ -3558,18 +3572,18 @@ function applyBackground(force){
     const slot = riyadhDayNumber() * (86400 / slotSec) + Math.floor((p.h * 3600 + p.mi * 60 + (p.s || 0)) / slotSec);
     if(slot === BG_SLOT && !force) return;
     BG_SLOT = slot; BG_TURN++;   // a photo of theirs still on its way for an earlier turn is dropped
-    const only = OWN_ONLY(), own = ownPhotos();
+    const only = OWN_ONLY(), own = ownPhotos(), packs = only ? [] : packPhotos(), mine = own.concat(packs);   // theirs: their own photos, then the packs'
     const set = !only && REMOTE_BGS.length ? photoSet(REMOTE_BGS.length).map(k => REMOTE_BGS[k]) : [];
     const local = BGS[slot % BGS.length];
     // what rotates: ours (the hosted set, else the bundled photos once the owner has some), then the owner's; only = theirs alone
     let pool = own;
     if(!only){
-      const ours = set.length ? set.map(b => ({url: PHOTO_BASE + b.f, b})) : own.length ? BGS.map(b => ({url: b.u, b, bundled: true})) : [];
-      pool = ours.concat(own);
+      const ours = !CONFIG.ours ? [] : set.length ? set.map(b => ({url: PHOTO_BASE + b.f, b})) : mine.length ? BGS.map(b => ({url: b.u, b, bundled: true})) : [];
+      pool = ours.concat(mine);
     }
     if(!pool.length){ showBackground(local.u, local); return; }
     const pick = pool[slot % pool.length], url = pick.url, b = pick.b;
-    if(own.includes(pick)){ showOwn(pick, own, local); return; }
+    if(mine.includes(pick)){ showOwn(pick, mine, local); return; }
     if(pick.bundled){ showBackground(url, b); return; }
     // First photo: wait briefly for the hosted one (the app serves it from disk at once) so the screen
     // doesn't flash a bundled photo first; slow network → bundled one, swapped when the hosted one arrives.

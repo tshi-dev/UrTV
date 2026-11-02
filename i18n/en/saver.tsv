@@ -441,3 +441,30 @@
 طريقة التحديث: اطلب من مساعد الذكاء الاصطناعي «حدّث تلفزيوني»، وإعداداتك كلها تبقى.	To update: ask your AI assistant to “update my TV”; all your settings stay.
 # ---- the app's name (res/values/strings.xml; the system shows the Arabic label)
 شاشة تلفزيونك	Your TV Screen
+# ---- photo packs («صور شاشة التوقف», PhotoPacksActivity)
+صور شاشة التوقف	Screensaver photos
+اختر مجموعة أو أكثر. نزّل مرة واحدة وتبقى في التلفزيون، والصور تتبدّل بينها.	Pick one pack or more. Download once and it stays on the TV; the photos rotate across them.
+صورنا	Our photos
+مع التطبيق	With the app
+نزّل	Download
+جارٍ التنزيل…	Downloading…
+تشغيل	Turn on
+إغلاق	Close
+حقوق الصور	Photo credits
+لا توجد مجموعات للتنزيل الآن.	No packs to download right now.
+بلا أشخاص، وكل صورة بمصدرها ورخصتها في «حقوق الصور».	No people, and every photo with its source and licence in “Photo credits”.
+المساحة الفاضية: %s	Free space: %s
+%s صورة · %s م.ب	%s photos · %s MB
+فعّل مجموعة منزّلة أولاً، وبعدها تقدر توقف صورنا	Turn on a downloaded pack first, then you can turn off ours
+تم التنزيل، والمجموعة مفعّلة	Downloaded, and the pack is on
+الملف لم يطابق بصمته فلم يُستخدم	The file did not match its checksum, so it was not used
+لا توجد مساحة كافية	Not enough space
+المجموعة غير صالحة	The pack is not valid
+تعذّر التنزيل، تحقق من الإنترنت	Could not download; check the internet
+صورنا: Unsplash، وكل صورة في docs/PHOTO-CREDITS.md	Ours: Unsplash, and every photo in docs/PHOTO-CREDITS.md
+صورنا · مجموعة واحدة	Our photos · 1 pack
+صورنا · مجموعتان	Our photos · 2 packs
+صورنا · %s مجموعات	Our photos · %s packs
+صورنا · %s مجموعة	Our photos · %s packs
+%s ج.ب	%s GB
+%s م.ب	%s MB

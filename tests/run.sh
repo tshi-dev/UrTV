@@ -84,6 +84,8 @@ python3 tests/saver_quote_test.py
 python3 tests/quote_every_test.py
 python3 tests/user_options_test.py   # «الآية والحديث», «إظهار الثواني», «الخروج من تلفزيونك»: off by default
 python3 tests/photo_interval_test.py
+python3 tests/photo_packs_test.py   # photo packs: sha256 before use, safe names, the index, the picker
+python3 tests/make_pack_test.py   # the pack builder: the content rule and the zip
 python3 tests/hide_parts_test.py
 python3 tests/update_row_test.py
 python3 tests/haram_live_test.py

@@ -100,7 +100,7 @@ check(f"the patterns ({len(pats_l)}) are the entries with a value (%s), and only
 
 # ---- 2. every text in English, on a JVM
 SOURCES = ["SettingsActivity.java", "SettingsHub.java", "Prefs.java", "OnOff.java", "PrayerMethod.java", "PhotoInterval.java", "ClockSetting.java",
-           "QuoteEvery.java", "VerseKind.java", "HomeExit.java", "GlassStyle.java", "Location.java", "Updater.java", "CountdownText.java", "PrayerAdj.java"]
+           "QuoteEvery.java", "VerseKind.java", "HomeExit.java", "GlassStyle.java", "Location.java", "Updater.java", "CountdownText.java", "PrayerAdj.java", "PhotoPacksActivity.java"]
 # what is not a word of a screen: a club or a city (data, which has its own English), the bilingual title of «اللغة», a pattern of the code
 NOT_WORDS = {"الهلال", "المنتخب السعودي", "الرياض", "العربية · English", "اللغة · Language", "Language · اللغة", "[\\s,،]+", "العربية", "منطقة"}
 

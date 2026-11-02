@@ -98,3 +98,9 @@ From [Unsplash](https://unsplash.com), under the [Unsplash License](https://unsp
 | `photos/efzvMAIpfWY.jpg` | NEOM | [unsplash](https://unsplash.com/photos/a-couple-of-people-that-are-standing-in-the-dirt-efzvMAIpfWY) |
 | `photos/_Fmibx42BVU.jpg` | YUNUS A KHALIFAH | [unsplash](https://unsplash.com/photos/panoramic-photography-of-desert-during-daytime-_Fmibx42BVU) |
 | `photos/rkRYbmPuhOE.jpg` | Stijn te Strake | [unsplash](https://unsplash.com/photos/birds-eye-photography-of-city-rkRYbmPuhOE) |
+
+## Photo packs («صور شاشة التوقف»)
+
+Each pack carries the credit of every photo in its own `credits.json` (author, licence, link), shown in the app under «حقوق الصور». Only
+CC0 and public domain are accepted without a credit line; a pack is listed here when it is published, with the same details
+(`docs/PHOTO-PACKS.md`). No pack is published yet.

@@ -419,6 +419,8 @@ public class SettingsActivity extends Activity {
         header("التوقيت");
         row("تبديل الصورة كل", PhotoInterval.label(prefs.photoMinutes()), R.drawable.ic_sync,
             new Runnable() { public void run() { pickPhotoMinutes(); } });
+        row("صور شاشة التوقف", packsLabel(), R.drawable.ic_eye,
+            new Runnable() { public void run() { startActivity(new Intent(SettingsActivity.this, PhotoPacksActivity.class)); } });
         row("صوري (" + arabicNum(Own.count(this)) + "/" + arabicNum(Own.MAX) + ")", ownLabel(), R.drawable.ic_eye,
             new Runnable() { public void run() { pickOwn(); } });
         row("بدء شاشة التوقف بعد", idleLabel(), R.drawable.ic_screensaver,
@@ -1562,6 +1564,14 @@ public class SettingsActivity extends Activity {
         new Dlg(this).setTitle("تبديل الصورة كل")
             .setSingleChoiceItems(labels, sel, (d, i) -> { prefs.setPhotoMinutes(values[i]); d.dismiss(); render(); })
             .show();
+    }
+
+    /** «صورنا» and the packs that are on and on the TV: «صورنا» · ٢ مجموعات */
+    private String packsLabel() {
+        int n = 0;
+        java.util.Map<String, Integer> have = PackStore.installed(this);
+        for (String id : prefs.packsOn()) if (have.containsKey(id)) n++;
+        return n == 0 ? "صورنا" : n == 1 ? "صورنا · مجموعة واحدة" : n == 2 ? "صورنا · مجموعتان" : "صورنا · " + n + (n <= 10 ? " مجموعات" : " مجموعة");
     }
 
     private String ownLabel() {

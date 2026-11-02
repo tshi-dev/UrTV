@@ -63,6 +63,9 @@
             </intent-filter>
         </activity>
 
+        <!-- «صور شاشة التوقف»: the photo packs, opened from the settings only -->
+        <activity android:name=".PhotoPacksActivity" android:exported="false" />
+
         <!-- full-screen preview; any remote key closes it -->
         <activity
             android:name=".MainActivity"

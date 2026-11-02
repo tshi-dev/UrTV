@@ -590,7 +590,8 @@ final class Prefs {
             + "&cd=" + countdownDate()
             + "&cdname=" + Uri.encode(countdownName())
             + openTasksParam() + remindersParam()
-            + ownParam();
+            + ownParam()
+            + packsParam();
     }
 
     /** The city's name for the page and the home: as saved, or with «اللغة» English the built-in city's English name (Places; a place of one's own keeps its name) */
@@ -604,6 +605,19 @@ final class Prefs {
     private String ownParam() {
         int n = Own.count(ctx);
         return n == 0 ? "" : "&own=" + n + "&ownmode=" + Own.mode(ctx);
+    }
+
+    /** «صور شاشة التوقف»: the packs that are on (ids), and whether our own set («صورنا», on by default) is. Sent as #packs=id:count,... and #ours=0 only when set, so the fragment is as before. */
+    java.util.Set<String> packsOn() { return PhotoPacks.parseOn(sp.getString("packsOn", "")); }
+    void setPacksOn(java.util.Set<String> v) { sp.edit().putString("packsOn", PhotoPacks.joinOn(v)).apply(); }
+    boolean oursOn() { return sp.getBoolean("oursOn", true); }
+    void setOursOn(boolean v) { sp.edit().putBoolean("oursOn", v).apply(); }
+
+    private String packsParam() {
+        java.util.Map<String, Integer> have = PackStore.installed(ctx);
+        // «صورنا» off counts only while a pack that is on is on the TV: a pack deleted meanwhile brings ours back (nothing is left blank)
+        boolean ours = oursOn() || !PhotoPacks.mayTurnOursOff(packsOn(), have);
+        return PhotoPacks.fragment(packsOn(), have) + (ours ? "" : "&ours=0");
     }
 
     String ownMode() { return sp.getString("ownMode", Own.MIX); }
