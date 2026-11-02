@@ -43,3 +43,9 @@ If «الساعة والأرقام» becomes a main button, «المزيد» kee
 - **«الساعة والأرقام»:** yes, a main button next to «الموقع والصلاة» (both about time), holding نظام الساعة (١٢/٢٤)، الأرقام (عربية/لاتينية)، أسماء الأشهر الميلادية، تعديل التاريخ الهجري. Why: the most repeated ask (6 PRs/issues) and buried today. «المزيد» keeps four groups.
 - Grid: 2 columns kept; cards 124 px tall at a 140 px step so the wide adhan card plus 5 rows fit 1080.
 - Sub-lines use «،» or words, not «·» between two numbers: «·» next to Arabic digits reads as a zero («٣٠»).
+
+## v3: three replacements for the iOS switch (`v3-toggle-A/B/C.png`, open `proto.html#adhan:A:1` etc.)
+Each PNG is two adhan screens stacked: top with «الأذان» focused and on, bottom with it focused and off; the other rows show unfocused on and off.
+- **A, check square:** a 50 px square, empty when off, filled green with a white check when on.
+- **B, the word:** «مفعّل» in white with a thick green underline, «متوقف» in grey with none.
+- **C, two-part bar:** «مفعّل | متوقف» side by side, the current half filled (green for on, white or dark for off).

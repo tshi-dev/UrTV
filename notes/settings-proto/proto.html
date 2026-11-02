@@ -31,6 +31,19 @@ h1{position:absolute;right:0;top:56px;font:58px TD;line-height:1.2}
 .bar{width:300px;height:12px;border-radius:6px;background:rgba(255,255,255,.22);position:relative}
 .bar i{position:absolute;right:0;top:0;bottom:0;border-radius:6px;background:#fff}
 .fo .bar{background:rgba(20,22,26,.18)}.fo .bar i{background:var(--ink)}
+/* v3 toggle options, chosen by the hash: #adhan:A|B|C:1|0 */
+.ck{flex:none;width:50px;height:50px;border-radius:10px;border:3px solid rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center}
+.ck svg{width:34px;height:34px;fill:none;stroke:#fff;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;visibility:hidden}
+.ck.on{background:#2FB872;border-color:#2FB872}.ck.on svg{visibility:visible}
+.fo .ck{border-color:var(--ink)}.fo .ck.on{background:#1E8A53;border-color:#1E8A53}
+.wd{font:34px TM;color:var(--sub);padding-bottom:6px;border-bottom:5px solid transparent;line-height:1.2}
+.wd.on{color:#fff;border-bottom-color:#2FB872}
+.fo .wd{color:var(--inksub)}.fo .wd.on{color:var(--ink);border-bottom-color:#1E8A53}
+.sg{flex:none;display:flex;height:54px;border-radius:12px;border:2px solid rgba(255,255,255,.35);overflow:hidden}
+.sg b{width:120px;display:flex;align-items:center;justify-content:center;font:28px TM;color:var(--sub);font-weight:normal}
+.sg b.a{background:#fff;color:var(--ink)}.sg b.a.g{background:#2FB872;color:#fff}
+.fo .sg{border-color:rgba(20,22,26,.35)}.fo .sg b{color:var(--inksub)}
+.fo .sg b.a{background:var(--ink);color:#fff}.fo .sg b.a.g{background:#1E8A53;color:#fff}
 </style></head><body>
 <div class="f"><div class="bg"></div><div class="veil"></div><div class="wrap" id="w"></div></div>
 <script>
@@ -71,15 +84,20 @@ S.main=()=>{
 };
 S.cards=()=>'<h1>البطاقات</h1>'+card(0,0,'saver','شاشة التوقف','آية اليوم · ساعة كبيرة',1)+card(1,0,'home','الشاشة الرئيسية','الصلاة · الطقس · آية اليوم');
 S.more=()=>'<h1>المزيد</h1>'+[['trend','المباريات والأسواق','فريقان، ٣ أسواق',1],['apps','التطبيقات والمفضلة','٨ في المفضلة'],['play','جديد المسلسلات','الكل'],['shield','حماية العائلة','متوقفة']].map((c,i)=>card(i%2,Math.floor(i/2),c[0],c[1],c[2],c[3])).join('');
+const H=(location.hash||'#main').slice(1).split(':'),T=H[1]||'',X=H[2]||'0';
+const tg=on=>T=='A'?`<div class="ck${on?' on':''}"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>`
+  :T=='B'?`<div class="wd${on?' on':''}">${on?'مفعّل':'متوقف'}</div>`
+  :T=='C'?`<div class="sg"><b class="${on?'a g':''}">مفعّل</b><b class="${on?'':'a'}">متوقف</b></div>`
+  :`<div class="sw ${on?'on':''}" style="width:84px;height:46px"></div>`;
 const list=(title,R)=>{
   const rows=R.map((r,i)=>{const o=r[1];let e='';
-    if(o.sw!==undefined)e=`<div class="sw ${o.sw?'on':''}" style="width:84px;height:46px"></div>`;
+    if(o.sw!==undefined)e=tg(o.sw);
     else if(o.bar)e=`<div class="bar"><i style="width:${o.bar}%"></i></div><div class="val">٦٠٪</div>`;
     else if(o.v)e=`<div class="val">${o.v}</div>`;
     return `<div class="row${i==0?' fo':''}" style="top:${16+i*86}px"><div class="nm">${r[0]}</div>${e}</div>`;}).join('');
   return `<h1>${title}</h1><div class="list" style="height:${32+R.length*86-2}px">${rows}</div>`;
 };
-S.adhan=()=>list('الأذان',[['الأذان',{sw:0}],['المؤذن',{v:'مؤذن ٣'}],['مؤذن الفجر',{v:'فجر الحرم المكي'}],['مستوى الصوت',{bar:60}],['أذان مختصر',{sw:0}],['إيقاف الأذان بأي زر',{sw:1}],['تنبيه قبل الأذان',{sw:1}],['أذان من ملفي',{v:'لا يوجد'}],['جرّب الصوت',{}]]);
+S.adhan=()=>list('الأذان',[['الأذان',{sw:+X}],['المؤذن',{v:'مؤذن ٣'}],['مؤذن الفجر',{v:'فجر الحرم المكي'}],['مستوى الصوت',{bar:60}],['أذان مختصر',{sw:0}],['إيقاف الأذان بأي زر',{sw:1}],['تنبيه قبل الأذان',{sw:1}],['أذان من ملفي',{v:'لا يوجد'}],['جرّب الصوت',{}]]);
 S.clock=()=>list('الساعة والأرقام',[['نظام الساعة',{v:'١٢ ساعة'}],['الأرقام',{v:'عربية'}],['أسماء الأشهر الميلادية',{v:'يناير، فبراير'}],['تعديل التاريخ الهجري',{v:'٠ يوم'}]]);
-document.getElementById('w').innerHTML=S[(location.hash||'#main').slice(1)]();
+document.getElementById('w').innerHTML=S[H[0]]();
 </script></body></html>
