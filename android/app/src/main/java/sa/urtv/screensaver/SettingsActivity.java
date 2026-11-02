@@ -365,6 +365,12 @@ public class SettingsActivity extends Activity {
         // «كل التطبيقات»: the home screen's «تعديل التطبيقات», or the order by name again (what is hidden stays hidden)
         row("ترتيب كل التطبيقات", "تحريكها وإخفاؤها على الشاشة الرئيسية، أو الرجوع للترتيب الأصلي", R.drawable.ic_star,
             new Runnable() { public void run() { pickAppsOrder(); } });
+        // what an app's options box does (a long OK or Menu on the app, docs/UX-REVIEW.md) is here too: move, hide and the favourites
+        // above, the locks and the app's details here
+        row("قفل التطبيقات", "اختر التطبيقات التي تطلب الرمز", R.drawable.ic_lock,
+            new Runnable() { public void run() { openParental(); } });
+        row("تفاصيل التطبيقات", "قائمة التلفزيون: التخزين والأذونات والحذف", R.drawable.ic_settings,
+            new Runnable() { public void run() { openAppDetails(); } });
         row("تحديث تلفزيوني", "تحديث التطبيقين: يعرض الإصدار ويتحقق من التحديث", R.drawable.ic_sync,
             new Runnable() { public void run() { openUpdate(); } });
         // two buttons of the first screen that do one thing (SettingsHub.direct): the home's «مركز التحكم», and the report's QR code
@@ -1005,6 +1011,14 @@ public class SettingsActivity extends Activity {
         } catch (RuntimeException e) {
             toast("ثبّت الواجهة الرئيسية «تلفزيونك» أولاً");
         }
+    }
+
+    /** «تفاصيل التطبيقات»: Android's own list of apps, where each app's details and its uninstall are. */
+    private void openAppDetails() {
+        for (String action : new String[] {android.provider.Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS, android.provider.Settings.ACTION_APPLICATION_SETTINGS}) {
+            try { startActivity(new Intent(action)); return; } catch (RuntimeException ignored) { }
+        }
+        toast("ما قدرنا نفتح قائمة التطبيقات في التلفزيون");
     }
 
     /** «ترتيب المفضلة» lives in the launcher (it owns the row). */

@@ -264,7 +264,6 @@ public class MainActivity extends Activity {
         if (inputsPopup != null) inputsPopup.dismiss();
         if (control != null) control.dismiss();   // its speed test stops with it
         if (appOptions != null) { appOptions.dismiss(); appOptions = null; }
-        if (pickingOptions) endPickOptions();
         homeCard.pause();
     }
 
@@ -306,7 +305,6 @@ public class MainActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        if (pickingOptions) { endPickOptions(); if (optionsTile != null) optionsTile.requestFocus(); return; }   // «⋮ خيارات»: Back leaves the pick
         // Home has nowhere to go back to; Back from the grid returns to the dock.
         boolean scrolled = scroll.getScrollY() > 0 && !dockCards.isEmpty();
         if (scrolled) dockCards.get(0).requestFocus();
@@ -407,8 +405,22 @@ public class MainActivity extends Activity {
         title = text(34, "sans-serif-light", Color.WHITE);
         title.setShadowLayer(dp(18), 0, 0, 0x66000000);
         title.setSingleLine(true);
-        bottom.addView(title, new LinearLayout.LayoutParams(-2, -2));
-        ((LinearLayout.LayoutParams) title.getLayoutParams()).setMargins(dp(8), 0, 0, dp(14));
+        // the favourite's name, and beside it the quiet hint for the first few times (optionsHint): «اضغط مطوّلاً للخيارات»
+        LinearLayout titleRow = new LinearLayout(this);
+        titleRow.setOrientation(LinearLayout.HORIZONTAL);
+        titleRow.setGravity(Gravity.BOTTOM);
+        titleRow.addView(title, new LinearLayout.LayoutParams(-2, -2));
+        optionsHint = text(14, "sans-serif", Color.WHITE);
+        optionsHint.setText(S.tv(OPTIONS_HINT));
+        optionsHint.setSingleLine(true);
+        optionsHint.setAlpha(0f);
+        optionsHint.setShadowLayer(dp(3), 0, dp(1), 0x66000000);
+        LinearLayout.LayoutParams hp = new LinearLayout.LayoutParams(-2, -2);
+        hp.setMarginStart(dp(16));
+        hp.bottomMargin = dp(8);
+        titleRow.addView(optionsHint, hp);
+        bottom.addView(titleRow, new LinearLayout.LayoutParams(-2, -2));
+        ((LinearLayout.LayoutParams) titleRow.getLayoutParams()).setMargins(dp(8), 0, 0, dp(14));
 
         dockRow = new LinearLayout(this);
         dockRow.setOrientation(LinearLayout.HORIZONTAL);
@@ -871,7 +883,6 @@ public class MainActivity extends Activity {
             View tile = tile(dock.get(i), true);
             dockRow.addView(tile, rowCell(i, dock.size(), -2));
         }
-        placeOptionsTile();
         appsLabel.setVisibility(rest.isEmpty() ? View.GONE : View.VISIBLE);
         wireFocus();
         if (!dock.isEmpty()) { title.setText(dock.get(0).label); setGlow(dock.get(0).color); }
@@ -1004,11 +1015,10 @@ public class MainActivity extends Activity {
             if (lightNow) label.setTextColor(Look.LIGHT_LOOK.ink);
         }
 
-        card.setOnClickListener(v -> { if (pickingOptions) { endPickOptions(); showAppMenu(v, app.pkg, inDock); return; }
-            guarded(inDock ? ParentalPolicy.TILE : ParentalPolicy.GRID, app.pkg, app.label, () -> launch(new Intent(Intent.ACTION_MAIN)
+        card.setOnClickListener(v -> guarded(inDock ? ParentalPolicy.TILE : ParentalPolicy.GRID, app.pkg, app.label, () -> launch(new Intent(Intent.ACTION_MAIN)
                 .addCategory(app.category)
                 .setComponent(app.component)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED))); });
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED))));
         card.setOnFocusChangeListener((v, has) -> {
             float s = has ? (inDock ? 1.12f : 1.1f) : 1f;
             scaleTo(v, s);   // a spring: a held arrow keeps its speed from card to card
@@ -1017,6 +1027,7 @@ public class MainActivity extends Activity {
             label.animate().alpha(has ? 1f : 0f).translationY(has ? dp(4) : 0).setDuration(200).start();
             if (!has) return;
             lastFocusedId = v.getId();
+            optionsHint(inDock);
             if (inDock) {
                 title.setText(app.label);
                 title.animate().alpha(1f).setDuration(200).start();
@@ -1030,8 +1041,8 @@ public class MainActivity extends Activity {
             }
         });
 
-        // a long OK: the app's options, a shortcut to what «⋮ خيارات» at the end of the favourites opens (AppOptions)
-        card.setOnLongClickListener(v -> { if (pickingOptions) endPickOptions(); showAppMenu(v, app.pkg, inDock); return true; });
+        // a long OK (or the remote's Menu key, dispatchKeyEvent): the app's options (AppOptions); each of them is in the settings too
+        card.setOnLongClickListener(v -> { optionsHintUsed(); showAppMenu(v, app.pkg, inDock); return true; });
         cardByPkg.put(app.pkg, card);
 
         (inDock ? dockCards : gridCards).add(card);
@@ -1600,7 +1611,6 @@ public class MainActivity extends Activity {
             TextView x = xByCard.get(c);
             if (x != null) { x.setVisibility(View.GONE); x.setFocusable(false); }
         }
-        placeOptionsTile();
         wireFocus();   // the row's own ways again (up to the pills, down to the apps)
         if (!dockCards.isEmpty()) dockCards.get(Math.min(focus, dockCards.size() - 1)).requestFocus();
         for (View c : dockCards) liftCard(c, false);
@@ -1697,7 +1707,6 @@ public class MainActivity extends Activity {
             dockRow.addView(box, rowCell(i, order.size(), -2));
             dockCards.add(card);
         }
-        placeOptionsTile();
         wireFocus();
     }
 
@@ -1833,7 +1842,6 @@ public class MainActivity extends Activity {
         }
         if (appsLifted != null) liftCard(appsLifted, false, 1.1f);
         appsLifted = null;
-        placeOptionsTile();
         wireFocus();   // the grid's own ways again
         View f = focusPkg == null ? null : cardByPkg.get(focusPkg);
         if (f != null && gridCards.contains(f)) f.requestFocus();
@@ -1897,8 +1905,7 @@ public class MainActivity extends Activity {
         if (oldBox != null && oldBox.getParent() instanceof ViewGroup) ((ViewGroup) oldBox.getParent()).removeView(oldBox);
         gridCards.remove(card);
         dockRow.addView(tile(app, true));   // tile() puts it in dockCards and cardByPkg
-        for (int i = 0; i < dockCards.size(); i++) ((View) dockCards.get(i).getParent()).setLayoutParams(rowCell(i, dockCards.size(), -2));
-        placeOptionsTile();
+        for (int i = 0; i < dockRow.getChildCount(); i++) dockRow.getChildAt(i).setLayoutParams(rowCell(i, dockRow.getChildCount(), -2));
         Toast.makeText(this, S.t("أُضيف إلى المفضلة: %s", app.label), Toast.LENGTH_SHORT).show();
     }
 
@@ -2142,77 +2149,28 @@ public class MainActivity extends Activity {
         appOptions = AppOptions.show(this, anchor, inDock ? 1.12f : 1.1f, homeGlass(), font("sans-serif-medium"), o);
     }
 
-    // ---- «⋮ خيارات»: the visible way to an app's options (docs/UX-REVIEW.md); a long OK on an app is the shortcut to the same box
+    // ---- the hint beside a favourite's name: «اضغط مطوّلاً للخيارات», the first few times only (OPTIONS_HINT_TIMES), never after the box was opened
 
-    /** the ⋮ tile at the end of the favourites (not one of dockCards: the row's walk reaches it, the favourites' logic never counts it) */
-    private View optionsTile;
-    /** OK on «⋮ خيارات» was pressed: the next app chosen with OK shows its options instead of opening; Back or a shortcut key ends it */
-    private boolean pickingOptions;
+    /** how many times the hint shows at most, a favourite focused each time */
+    static final int OPTIONS_HINT_TIMES = 6;
+    /** the hint's line beside the name (built with the title) */
+    private TextView optionsHint;
+    static final String OPTIONS_HINT = S.n("اضغط مطوّلاً للخيارات");
 
-    /** At the end of the favourites while no mode edits them (a mode rebuilds the row; it comes back when the mode ends). */
-    private void placeOptionsTile() {
-        if (optionsTile == null) {
-            FrameLayout box = new FrameLayout(this);
-            box.setClipChildren(false);
-            LinearLayout t = new LinearLayout(this);
-            t.setOrientation(LinearLayout.VERTICAL);
-            t.setGravity(Gravity.CENTER);
-            t.setId(View.generateViewId());
-            t.setFocusable(true);
-            t.setClickable(true);
-            t.setContentDescription(S.tv(OPTIONS));
-            ImageView dots = new ImageView(this);
-            dots.setImageDrawable(getDrawable(R.drawable.ic_more).mutate());
-            dots.setTag(GlassPaint.ICON);
-            t.addView(dots, new LinearLayout.LayoutParams(dp(20), dp(20)));
-            TextView name = text(11, "sans-serif-medium", homeGlass().text);
-            name.setText(S.tv(OPTIONS));
-            name.setSingleLine(true);
-            t.addView(name, llp(-2, -2, 0, dp(4), 0, 0));
-            t.setOnClickListener(v -> guarded(ParentalPolicy.MENU, null, S.t("قائمة التطبيق"), this::beginPickOptions));
-            t.setOnFocusChangeListener((v, has) -> { paintOptionsTile(); scaleTo(v, has ? 1.08f : 1f); });
-            box.addView(t, new FrameLayout.LayoutParams(-1, -1));
-            optionsTile = t;
-        }
-        View box = (View) optionsTile.getParent();
-        if (box.getParent() instanceof ViewGroup) ((ViewGroup) box.getParent()).removeView(box);
-        if (edit != null || appsEdit != null || dockCards.isEmpty()) return;
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(64), -1);
-        lp.setMarginStart(dp(14));
-        dockRow.addView(box, lp);
-        paintOptionsTile();
-        View last = dockCards.get(dockCards.size() - 1);
-        optionsTile.setNextFocusUpId(last.getNextFocusUpId());
-        optionsTile.setNextFocusDownId(last.getNextFocusDownId() == last.getId() ? optionsTile.getId() : last.getNextFocusDownId());
+    /** the hint for this focus: shown while it has times left, counted once per favourite that takes the focus */
+    private void optionsHint(boolean show) {
+        if (optionsHint == null) return;
+        int seen = prefs().getInt("options_hint", 0);
+        boolean on = show && seen < OPTIONS_HINT_TIMES && edit == null && appsEdit == null;
+        if (on) prefs().edit().putInt("options_hint", seen + 1).apply();
+        optionsHint.setTextColor(Look.of(lightNow).soft);
+        optionsHint.animate().alpha(on ? 0.85f : 0f).setDuration(200).start();
     }
 
-    /** the ⋮ tile in the look of now: the panel at rest, the look's focus (with its line, «رملي») while focused */
-    private void paintOptionsTile() {
-        if (optionsTile == null) return;
-        GlassStyle.Look l = homeGlass();
-        boolean f = optionsTile.isFocused();
-        optionsTile.setBackground(f ? GlassPaint.focused(this, l, GlassStyle.over(l.focus, opaque(l.dialog)), 10)
-                : GlassPaint.fill(this, opaque(l.dialog), 10, l.line));
-        int ink = f ? l.onFocus : l.text;
-        ViewGroup g = (ViewGroup) optionsTile;
-        ((ImageView) g.getChildAt(0)).getDrawable().setTint(f && l.ring != 0 ? l.ring : ink);
-        ((TextView) g.getChildAt(1)).setTextColor(ink);
-    }
-
-    /** «⋮ خيارات», its name, and the line at the top while the next OK picks an app */
-    static final String OPTIONS = S.n("خيارات"), PICK_HINT = S.n("اختر التطبيق ثم اضغط اختيار · رجوع للإلغاء");
-
-    private void beginPickOptions() {
-        pickingOptions = true;
-        paintEditChrome();
-        editHint.setText(S.tv(PICK_HINT));
-        editHint.setVisibility(View.VISIBLE);
-        if (!dockCards.isEmpty()) dockCards.get(dockCards.size() - 1).requestFocus();   // the app next to it: ◀ ▶ ▼ to the one wanted
-    }
-
-    private void endPickOptions() {
-        pickingOptions = false;
-        if (edit == null && appsEdit == null) editHint.setVisibility(View.GONE);
+    /** the box was opened: the hint has done its job */
+    private void optionsHintUsed() {
+        prefs().edit().putInt("options_hint", OPTIONS_HINT_TIMES).apply();
+        if (optionsHint != null) optionsHint.animate().alpha(0f).setDuration(150).start();
     }
 
     /** the app's options while they show (closed when the home goes) */
@@ -2426,7 +2384,6 @@ public class MainActivity extends Activity {
         applyLook(Look.light(cfg.appearance(), dayBySun(cfg), h * 60 + now.get(Calendar.MINUTE)));
         GlassStyle.Look glassNow = homeGlass();
         for (Pill p : new Pill[] {inputsPill, tasksPill, tilawahPill, centerPill, bellPill}) if (p != null) p.look(glassNow);   // «رملي»: its own buttons
-        paintOptionsTile();
         boolean h24 = cfg.clock24();   // «ساعة ٢٤»: off (12-hour with the ص or م) unless the owner turned it on
         clock.setText(ClockText.face(h, now.get(Calendar.MINUTE), h24, Digits.latin()));
         ampm.setText(ClockText.suffix(h, h24));
@@ -3008,7 +2965,6 @@ public class MainActivity extends Activity {
                 RemoteKeys.opensApp(e.getKeyCode()) ? remoteInstalled() : Collections.<String>emptySet());
         if (key.kind != RemoteKeys.PASS) {
             if (key.kind != RemoteKeys.EAT) {
-                if (pickingOptions) endPickOptions();   // «⋮ خيارات»: a shortcut key ends the pick
                 if (edit != null) leaveEdit();   // a shortcut key in «تعديل المفضلة»: what was arranged is saved, as with Home, then the key acts
                 if (appsEdit != null) leaveAppsEdit();   // and in «تعديل التطبيقات»
                 openRemoteKey(key);
@@ -3017,7 +2973,14 @@ public class MainActivity extends Activity {
         }
         if (edit != null && editKey(e)) return true;   // «تعديل المفضلة»: every key but the volume and power ones is ours
         if (appsEdit != null && appsEditKey(e)) return true;   // «تعديل التطبيقات»: the same
-        // Menu key on the remote opens the Inputs dropdown.
+        // the Menu key on an app: its options (the long OK's box); anywhere else the Inputs dropdown, as before
+        if (e.getKeyCode() == KeyEvent.KEYCODE_MENU && e.getAction() == KeyEvent.ACTION_UP && edit == null && appsEdit == null
+                && getCurrentFocus() != null && getCurrentFocus().getTag() instanceof App) {
+            View f = getCurrentFocus();
+            optionsHintUsed();
+            showAppMenu(f, ((App) f.getTag()).pkg, dockCards.contains(f));
+            return true;
+        }
         if (e.getKeyCode() == KeyEvent.KEYCODE_MENU && e.getAction() == KeyEvent.ACTION_UP && !pills.isEmpty()) {
             showInputs(pills.get(0), ParentalPolicy.MENU_KEY);
             return true;

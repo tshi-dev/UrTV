@@ -359,8 +359,6 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 أُخفي، ويرجع من «تعديل التطبيقات»	Hidden. Bring it back from “Edit apps”
 فُتح القفل	Unlocked
 قُفل، ويطلب الرمز	Locked: it asks for the PIN
-خيارات	Options
-اختر التطبيق ثم اضغط اختيار · رجوع للإلغاء	Pick the app, then press OK · Back to cancel
 الرقابة الأبوية متوقفة	Parental controls are off
 ضع رمزًا من أربعة أرقام، ثم اختر ما يُقفل. بدون رمز لا يُقفل شيء، والشاشة الرئيسية كما هي.	Set a four-digit PIN, then choose what to lock. Without a PIN nothing is locked and the home screen stays as it is.
 ما الذي يُقفل؟	What gets locked?
@@ -380,3 +378,4 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 والإعدادات مفتوحة	settings open
 ووضع الأطفال مفعّل	kids mode on
 ووضع الأطفال متوقف	kids mode off
+اضغط مطوّلاً للخيارات	Hold OK for options

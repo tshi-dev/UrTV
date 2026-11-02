@@ -4,11 +4,12 @@ Newest first. `next` is where changes land first; a release is what was tested t
 
 ## 4.2 (on `next`)
 
-- **The UX review, done** (docs/UX-REVIEW.md on work/ux-review; work/ux-impl). **The app's options:** «⋮ خيارات» at the end of the
-  favourites (OK, then the app) or a long OK on the app (a shortcut to the same box) shows a small box right above the app, its width,
-  no title: «انقل», «أخفِ», «اقفل», then ★ (in or out of the favourites) and ⓘ (Android's app details, where its uninstall is). The old
+- **The UX review, done** (docs/UX-REVIEW.md on work/ux-review; work/ux-impl). **The app's options:** a long OK on the app, or the remote's
+  Menu key on it, shows a small box right above the app, its width, no title (a quiet «اضغط مطوّلاً للخيارات» beside a favourite's name
+  the first six times): «انقل», «أخفِ», «اقفل», then ★ (in or out of the favourites) and ⓘ (Android's app details, where its uninstall is). The old
   long-press menu's other items have their visible places (the update, «تلاوة وأذان» and the adhan in the settings, the default favourites
-  in «ترتيب المفضلة»). **«مركز التحكم»:** Wi-Fi and Bluetooth first, side by side; no tile asks for a long OK any more (the screensaver's
+  in «ترتيب المفضلة»), and everything in the box is also in Settings ← المزيد ← التطبيقات والمفضلة (new rows «قفل التطبيقات» and
+  «تفاصيل التطبيقات»), so nothing is long-press-only. **«مركز التحكم»:** Wi-Fi and Bluetooth first, side by side; no tile asks for a long OK any more (the screensaver's
   line says «ابدأها الآن»; the sleep service is turned on from «مؤقت النوم», as its notice now says). **«الرقابة الأبوية»:** a button in
   Settings ← المزيد, and its page starts with a card and two buttons («فعّل الرقابة الأبوية» / «ما الذي يُقفل؟», then «التطبيقات المقفلة» /
   «غيّر الرمز»). The DNS filter is «تصفية المواقع» (was «حماية العائلة», a name too close to the lock). **A fifth look, «رملي»** (`sand`):

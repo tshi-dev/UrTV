@@ -34,8 +34,19 @@ check("ⓘ opens through the family lock (MENU_APP: «قفل الإعدادات�
       "guarded(ParentalPolicy.MENU_APP, pkg, AppActions.DETAILS, () -> launch(details))" in menu and "startActivity" not in menu)
 check("MENU_APP asks about @urtv and @tvsettings", "case MENU_APP:" in policy and "t.add(OWN_SETTINGS);\n                t.add(TV_SETTINGS);" in policy.split("case MENU_APP:")[1][:400])
 check("kids mode moves and hides nothing (the lock, ★ and ⓘ stay, behind the lock)", "if (!kids) {\n            o.move = " in menu)
-check("the whole box opens behind the family lock's MENU, from «⋮ خيارات» and from a long OK", "guarded(ParentalPolicy.MENU, null, S.t(\"قائمة التطبيق\"), () -> showAppMenuNow(anchor, pkg, inDock));" in main
-      and "this::beginPickOptions" in main and "card.setOnLongClickListener(v -> { if (pickingOptions) endPickOptions(); showAppMenu(v, app.pkg, inDock); return true; });" in main)
+check("the whole box opens behind the family lock's MENU, from a long OK on the app and from the remote's Menu key on it (elsewhere Menu is the Inputs)",
+      "guarded(ParentalPolicy.MENU, null, S.t(\"قائمة التطبيق\"), () -> showAppMenuNow(anchor, pkg, inDock));" in main
+      and "card.setOnLongClickListener(v -> { optionsHintUsed(); showAppMenu(v, app.pkg, inDock); return true; });" in main
+      and "getCurrentFocus().getTag() instanceof App" in main and "showAppMenu(f, ((App) f.getTag()).pkg, dockCards.contains(f));" in main
+      and "showInputs(pills.get(0), ParentalPolicy.MENU_KEY);" in main)
+check("no tile beside the favourites: the bar is the apps only", "optionsTile" not in main and "pickingOptions" not in main)
+check("the hint «اضغط مطوّلاً للخيارات» beside a favourite's name, the first few times only, never once the box was opened",
+      'OPTIONS_HINT = S.n("اضغط مطوّلاً للخيارات")' in main and "seen < OPTIONS_HINT_TIMES" in main and "optionsHint(inDock);" in main
+      and "prefs().edit().putInt(\"options_hint\", OPTIONS_HINT_TIMES).apply();" in main)
+settings_src = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsActivity.java").read_text(encoding="utf-8")
+check("nothing is long-press-only: the settings' «التطبيقات والمفضلة» move, hide, change the favourites, lock (the family lock's page) and show the details",
+      all(f'row("{r}"' in settings_src for r in ("تعديل المفضلة", "ترتيب كل التطبيقات", "ترتيب التطبيقات المفضلة", "قفل التطبيقات", "تفاصيل التطبيقات"))
+      and "ACTION_MANAGE_APPLICATIONS_SETTINGS" in settings_src)
 check("D-pad: ▲ ▼ walk the rows to the icon row, ◀ ▶ only between ★ and ⓘ (★ at the start: the right in Arabic), no wrap",
       "star.setNextFocusLeftId(Dir.rtl() ? info.getId() : star.getId());" in opts and "info.setNextFocusRightId(Dir.rtl() ? star.getId() : info.getId());" in opts
       and "v.setNextFocusLeftId(v.getId()); v.setNextFocusRightId(v.getId());" in opts)
@@ -45,7 +56,7 @@ check("the box is the app's width as it shows focused, above it (under it when t
       and "GlassStyle.over(l.dialog, l.base)" in opts)
 check("the other menus (the «المخفية» list) have no row", "showMenu(hiddenCard, labels, actions);" in main and "Collections.<View>emptyList()" in main)
 check("the icons are there (Material, Apache 2.0)", all((ROOT / f"android/launcher/src/main/res/drawable/{n}.xml").exists()
-      for n in ("ic_info", "ic_move", "ic_hide", "ic_lock", "ic_star", "ic_star_filled", "ic_more")))
+      for n in ("ic_info", "ic_move", "ic_hide", "ic_lock", "ic_star", "ic_star_filled")))
 if not shutil.which("javac"):
     print("SKIP app actions: no javac here")
     sys.exit(1 if failed else 0)
