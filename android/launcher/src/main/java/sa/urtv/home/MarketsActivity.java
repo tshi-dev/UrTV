@@ -159,6 +159,7 @@ public class MarketsActivity extends Activity {
         main.removeCallbacks(minute);
         minute.run();
         new Thread(() -> {
+            MarketFile.loadDaily(getApplicationContext());   // the year's closes: only here, once a day
             MarketData d = MarketFile.load(getApplicationContext(), false);
             main.post(() -> {
                 if (isFinishing() || d == null) return;

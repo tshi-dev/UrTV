@@ -48,7 +48,12 @@ check("the pegs' names on the screen are MarketData.PEGS', in order", pegs == na
 check("«الأخبار» is off until a licensed source exists (NEWS = false), and no tab is built for it then",
       "static final boolean NEWS = false;" in act and 'NEWS ? new String[] {S.t("السوق"), S.t("قائمتي"), S.t("محفظتي"), S.t("الأخبار")}' in act)
 urls = set(re.findall(r'https?://[^"\s)]+', act + data + text(HOME / "MarketFile.java")))
-check("one source only: CI's markets file (no other address in the page's code)", urls == {"https://raw.githubusercontent.com/tshi-dev/UrTV/data-markets/markets/markets.json"}, urls)
+check("one source only: CI's two files, the 15-minute one and the daily one (no other address in the page's code)",
+      urls == {"https://raw.githubusercontent.com/tshi-dev/UrTV/data-markets/markets/markets.json",
+               "https://raw.githubusercontent.com/tshi-dev/UrTV/data-markets/markets/daily.json"}, urls)
+check("the daily file is asked only by the markets page, at most once a day; the screensaver's page never asks it",
+      "MarketFile.loadDaily(getApplicationContext());" in act and "DAY_OF_YEAR" in text(HOME / "MarketFile.java") and "daily.json" not in page
+      and sum("loadDaily(" in text(p) for p in HOME.rglob("*.java")) == 2)
 check("no card for a source we do not have: sectors, whole-market turnover, dividends, announcements, news",
       not re.search(r"القطاعات|توزيع|إعلانات الشركة|السيولة|قيمة التداول", act), re.findall(r"القطاعات|توزيع|إعلانات الشركة", act))
 check("«اتجاه السوق» says it counts the 30 we fetch, never the whole market", 'S.t("أكبر %s شركة", digits(MarketData.TADAWUL.length))' in act and "breadth()" in act)
