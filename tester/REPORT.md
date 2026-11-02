@@ -337,3 +337,26 @@ No `.m3u8` found: www.aloula.sa did not resolve (DNS) from the fetcher; sba.sa l
 
 Z: music stopped; sound muted; nothing else changed. restored: yes.
 Streams failed: 1 on the TV (L1); qurango intermittent 500.
+
+## step 20 (English), build 174 on both apps
+Screens opened with keys by a script (uiautomator dump for focus and text); the texts of each screen saved locally with a shot. Shots NOT pushed (text-only rule for this run).
+The owner asked to check especially left-to-right and the app NAMES in English.
+
+| # | OK/problem | note |
+|---|---|---|
+| E1 | OK (command) | `saver.sh lang en` → `lang: en`; settings and screensaver in English. «Language · English» row exists under More (not pressed) |
+| E2 home | PROBLEM | left-to-right, but the focused app's caption is Arabic: «يوتيوب» |
+| E2 apps grid | PROBLEM | left to right, but heading «كل التطبيقات» (should be «All apps») and some names stay Arabic: «متجر بلاي», «شاشة تلفزيونك», «يوتيوب», «يوتيوب ميوزك». Other apps keep their own English names |
+| E2 Control Center, Tasks | OK | English |
+| E2 Tilawah (3 tabs) | PROBLEM | footer stays Arabic: «يمين/يسار بين الأقسام • اختيار للفتح • رجوع للواجهة» (reciter/station names Arabic: allowed) |
+| E2 settings hub | OK | «Your TV · Settings», 12 tiles in English, left to right |
+| E2 Adhan page | PROBLEM | two Arabic lines: the same footer, and «متوقف • الأذان كاملًا» |
+| E2 other settings pages | OK | all 13 pages opened: no Arabic UI words, no trailing «…». «Send a report» not opened |
+| E2 screensaver | OK | English, left to right; the hadith text stays Arabic (allowed) |
+| E2 «إعداد تلفزيوني» | PROBLEM | the whole done screen stays Arabic in English mode (13 lines) |
+| E3 | partly | TV phone-control screen English; page served `<html lang="en" dir="ltr">`, title «Phone control». Not paired (the tester does not type pairing codes) |
+| E4 | PROBLEM | settings hub: ▶ right, ◀ left (OK). Favourites row: still right-to-left in English — focus starts far right and ▶ moves LEFT |
+| E5 | OK | back to Arabic: every screen's words identical to before; no English left in the UI |
+| Z | restored: yes | lang ar; show, dock, backsaver, adhan = start; updatechannel latest; phone control off; Home ours; 45 s; muted |
+
+Problems: 6 (home caption, apps-grid heading and names, Tilawah footer, Adhan page lines, setup done screen, favourites direction).
