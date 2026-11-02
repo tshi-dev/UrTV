@@ -1,10 +1,10 @@
-**FIRST, before any other step of this run: ask the owner in your chat on the PC for the PIN recovery code (step 21). He gives it once, then he is asleep: run everything without him (the other steps, then step 21 with the code you hold). NEVER write the code into any file, report, commit, log, screenshot, script or saved shell history (the repo is public): keep it only in this chat's memory, and use it only inside the one `adb shell input text` command of step 21 row 2. If the owner does not answer, skip step 21, run the rest, and report «step 21: no code given».**
+**FIRST, before any other step of this run: ask the owner in your chat on the PC for the PIN recovery code (step 21). He gives it once, then he is asleep: run everything without him (the other steps, step 22 included, then step 21 LAST with the code you hold). NEVER write the code into any file, report, commit, log, screenshot, script or saved shell history (the repo is public): keep it only in this chat's memory, and use it only inside the one `adb shell input text` command of step 21 row 2. If the owner does not answer, skip step 21, run the rest, and report «step 21: no code given».**
 
 steps 16–20 received; fixes in progress on work/tester-fixes; next step after build 176+
 
 Answer to the question in REPORT.md (do you want the pictures?): «pictures: no». The text report was enough and the fixes are in progress; keep the shots on the PC, push none.
 
-«المالك مو عند التلفزيون؛ المختبر يسوي كل شي» — the owner is not at the TV and has allowed the tester to do everything: every key, every prompt, every restart, by adb (`input keyevent`, `uiautomator dump`, `screencap`). Do the steps in this order: 16, 17, 18, 19, 20; then 21 once build 177 is out. Step 18 uninstalls and reinstalls our apps: it does NOT invalidate 16 and 17 (they run first, on the installed apps, and their Z rows put everything back before 18 saves the settings), but do not run 16 or 17 again after 18 (the TV is then a fresh install with restored settings, not the owner's original one). Step 19 plays a station on the TV, so it comes after 18 has put the home app back.
+«المالك مو عند التلفزيون؛ المختبر يسوي كل شي» — the owner is not at the TV and has allowed the tester to do everything: every key, every prompt, every restart, by adb (`input keyevent`, `uiautomator dump`, `screencap`). Do the steps in this order: 16, 17, 18, 19, 20; then 22 (build 178 or newer); then 21 last (build 177 or newer). Step 18 uninstalls and reinstalls our apps: it does NOT invalidate 16 and 17 (they run first, on the installed apps, and their Z rows put everything back before 18 saves the settings), but do not run 16 or 17 again after 18 (the TV is then a fresh install with restored settings, not the owner's original one). Step 19 plays a station on the TV, so it comes after 18 has put the home app back.
 
 step: 14
 from: UrTV supervisor
@@ -248,3 +248,46 @@ what: the family PIN can be recovered with the recovery code typed in any PIN pr
 | 6 | **Back as it was.** Type 5678 once in a prompt (the counter should go back to 0: `pin status`). Unlock the app locked in row 2, if you locked one. If there was NO PIN at row 1: `optimize/dock.sh pin off` (no PIN; the locked list and allowed apps stay, as they were with no PIN), then `pin status` against row 1; only if it still differs, `dock.sh pin reset` and put the locked list back with `dock.sh pin lock` for each item of row 1. If there WAS a PIN at row 1: tell the owner in Arabic in your chat that the PIN is now 5678 and ask if he wants his old one back (if yes, he tells you in the chat; `dock.sh pin set` it the same way, read with `read -rs`, never written). `unset RC`; `optimize/saver.sh updatechannel latest`; sound 0 | `pin status` as in row 1 (PIN set or not, list, kids mode, counter); RC unset; the owner told (if he had a PIN) |
 
 REPORT.md (on `work/tester-report`): "step 21 (PIN recovery code)", the build, the table with ONLY worked / didn't work per row, plus any error text that does NOT contain the code (if a line holds the code, leave it out entirely and say «line left out: it held the code»), «temporary PIN» if row 1 set one. Never the code, never any PIN, no screenshots. Push; tell the owner in Arabic that it is done and how many problems there were.
+
+---
+step: 22 (do it when the build after work/int-nov3 has landed in next is on apk-next: 178 or newer; run it BEFORE step 21, the code test stays last; the owner is not needed): alignment and spacing
+what: measure the alignment and the spacing on every screen against the owner's design rule. Follow tester/RULES.md. TV sound stays at 0 the whole time. Every key is yours (`input keyevent`, focus checked with the dump, as in step 18). Change no code.
+- Start lines, plus: `optimize/saver.sh show` (keep all of it: `lang`, `look`, `appearance`, `seconds`, the cards, the markets), `optimize/saver.sh export > optimize/run/step22/settings-before.json`, `optimize/dock.sh show`, `optimize/saver.sh tasks list` (count only in the report), the Home holder, and `adb shell wm size` / `wm density`.
+- `optimize/saver.sh updatechannel next`; update both apps from the TV («تحديث تلفزيوني») to 178 or newer.
+- **Output 1920×1080.** If `wm size` says another physical size, `adb shell wm size 1920x1080` for this step and `adb shell wm size reset` in Z (write which). Measure in screen pixels.
+
+**Method, per screen** (files in `optimize/run/step22/`, local only): `adb shell uiautomator dump /sdcard/ui.xml && adb shell cat /sdcard/ui.xml > <screen>.xml` and `adb exec-out screencap -p > <screen>.png`. A small script on the PC (in `optimize/run/step22/`, never committed) reads the `bounds="[x1,y1][x2,y2]"` of each node and measures:
+- the inner padding of each text inside its box: the text node's bounds against its card/parent box (left, right, top, bottom). A TextView's bounds include its own padding, so also measure the glyphs: in the screencap, crop the text node's box and find the first and last rows/columns that differ from the box's background; take the smaller of the two numbers;
+- the gaps between sibling cards (the x or y gap between neighbours in the same parent);
+- the edges in a row (the tops) and in a column (the starts: the left edges in English, the right edges in Arabic);
+- the focus ring: move the focus onto each item of a row once, screencap, and check the ring's outer pixels against its tray/box;
+- WebView screens (the screensaver page, the phone page) may give no inner nodes in the dump: measure them from the screencap alone.
+
+**Pass rules (the owner's design rule):**
+- text never touches or crowds a box edge: at least 16 px at 1080p on every side, more on big cards (a card wider than 600 px or taller than 300 px: at least 24 px);
+- the gaps between cards are equal within a group (±2 px) and on an 8 px scale (8, 16, 24, 32…, ±2 px);
+- siblings share edges: the tops in a row, the starts in a column (±2 px);
+- no text cut off or ending in «…» or «..»;
+- the focus ring stays fully inside its tray or box;
+- nothing off screen, and everything inside the 5% safe area (x 96–1824, y 54–1026), except a full-bleed background;
+- Arabic screens right to left, English screens left to right.
+
+| # | Screen (Arabic first on all; then English on the starred ones, `saver.sh lang en`, and back to `ar`) | Right when |
+|---|---|---|
+| G1 | the home with the favourites bar (FavBar)*; scroll down to «أكمل المشاهدة» below the fold | the rules above, on both |
+| G2 | the options box on an app (long OK; the ★/ⓘ row)* | the rules |
+| G3 | «مركز التحكم»* (the Wi-Fi tile next to Bluetooth) | the rules; the Wi-Fi and Bluetooth tiles share top and height |
+| G4 | the settings hub* and each of its pages; «المزيد» and its pages | the rules on each page |
+| G5 | the parental card, off and on (on: `dock.sh pin status` first; if no PIN is set, `dock.sh pin set 1234` only for this row and `dock.sh pin off` right after, as in step 21's restore) | the rules, both states |
+| G6 | «تحديث تلفزيوني» (the version and build line) | the rules; the build line not cut |
+| G7 | «المهام», and a task's «ذكّرني» page; a reminder card on the home and over the screensaver (add a test task «test» with a reminder 2 minutes ahead; delete it after) | the rules on all four |
+| G8 | «تلاوة وأذان», and the adhan page* | the rules |
+| G9 | the football home layout (`optimize/saver.sh homelayout football`; if the build has no such command, use the settings row and say so): the focus on the matches widget (the tray lowered 40 px: measure it), then back to the apps; then `homelayout classic` again | the rules; the tray moves by 40 px (±2) and back |
+| G10 | «المباريات»: the list and one match's detail | the rules |
+| G11 | «الأسواق»: the tabs السوق / قائمتي / محفظتي, a stock card with its range tabs, and «أخفِ المبالغ». Use MADE-UP holdings only (e.g. 1 share of one stock), and delete them afterwards | the rules; «أخفِ المبالغ» hides every amount; the holdings gone at the end |
+| G12 | the screensaver page, with `saver.sh seconds on` and `seconds off` | the rules both ways; the seconds do not push the clock out of line |
+| G13 | the «إعداد تلفزيوني» done screen with its QR: view only, start no run (if the done screen shows only after a run, write «not reachable without a run» and skip it) | the rules; the QR inside the safe area with a quiet margin |
+| G14 | each look in «المظهر» (`saver.sh look glass`, `graphite`, `navy`, `clean`, `sand` = «رملي»), each on the home and on the options box; «رملي» both light and dark (`saver.sh appearance light` / `dark`) | the rules on each; no look moves an edge or a gap |
+| Z | the look, appearance, lang, seconds, home layout, cards and markets as at the start (`optimize/saver.sh import optimize/run/step22/settings-before.json` preview, then `--yes`, if anything differs); the test task and the made-up holdings deleted; the PIN state as at the start; `wm size reset` if you changed it; `optimize/saver.sh updatechannel latest`; the Home holder as at the start; sound 0 | "restored: yes/no" with any value that differs |
+
+REPORT.md (on `work/tester-report`): "step 22 (alignment and spacing)", the build, one row per screen (and language): OK, or the problem with the measured numbers (e.g. «title 9 px from the card's top edge», «gap 24 vs 32», «start 1812 vs 1806»); then a ranked list of the worst 10. Screenshots stay local, EXCEPT for the worst 10: the owner allows CLEANED crops of those, pushed to `tester/shots/step22/` on `work/tester-report` (crop to the problem; blur or crop out the city, prayer times, the weather place, any Wi-Fi name, the phone page's address and code, task text and holdings; nothing else personal). No dumps (`.xml`) pushed. Push; tell the owner in Arabic that it is done and how many problems there were.
