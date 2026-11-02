@@ -81,6 +81,14 @@ rep = json.loads((Path(OUT) / "report.json").read_text())
 q = got["quotes"]
 check("run: a quote has price, the close before, at most 30 closes and its time", q["AAPL"]["p"] == 10.0 and q["AAPL"]["v"] == 9.0
       and 2 <= len(q["AAPL"]["c"]) <= 30 and q["AAPL"]["t"] == RUN.isoformat(timespec="seconds"), q.get("AAPL"))
+# the same answer's volume and 52-week range are kept when there (the home's «الأسواق» page), and left out when not
+answers["2222.SR"] = {"chart": {"result": [{"meta": {"regularMarketPrice": 26.1, "chartPreviousClose": 25.92, "regularMarketVolume": 14200000,
+                                                     "fiftyTwoWeekHigh": 28.9, "fiftyTwoWeekLow": 23.2}, "indicators": {"quote": [{"close": [25.96, 26.1]}]}}]}}
+q2 = mp.quote("2222.SR", RUN)
+check("quote: the same answer's volume and 52-week range are kept", q2.get("vol") == 14200000 and q2.get("yh") == 28.9 and q2.get("yl") == 23.2, q2)
+q3 = mp.quote("AAPL", RUN)
+check("quote: none of them when Yahoo's meta has none (a quote as before)", set(q3) == {"p", "v", "c", "t"}, q3)
+del answers["2222.SR"]
 check("run: the one that failed keeps its old quote and its old time", q["NVDA"] == {"p": 100.0, "v": 99.0, "c": [99, 100], "t": "2026-10-22T10:00:00+00:00"}, q.get("NVDA"))
 check("run: the 404 symbol is left out", "MSFT" not in q and "MSFT" in rep["notfound"], rep)
 check("run: Tadawul symbols are closed and not asked (none had a quote yet, so they are asked once)", "2222.SR" in q, list(q)[:5])

@@ -23,7 +23,7 @@
 #   optimize/dock.sh pin lock PKG          lock one app (its package, e.g. com.netflix.ninja), a pill (@inputs @wifi @tvsettings @tasks @saver @listen @sleep @center) or @urtv (our settings); `pin unlock PKG` opens it again
 #   optimize/dock.sh pin status            what is set: PIN or not, what is locked, kids mode, wrong tries (never the PIN)
 #   optimize/dock.sh pin off               no PIN: nothing asks, kids mode ends; the apps chosen stay for the next PIN
-#   optimize/dock.sh pin reset             the PIN was forgotten: everything parental back to nothing (the PIN, the locks, kids mode, the wrong tries)
+#   optimize/dock.sh pin reset             the PIN was forgotten: everything parental back to nothing (the PIN, the locks, kids mode, the wrong tries), and «محفظتي» is wiped
 # The home screen redraws at once; the sleep timer's pill too. Only ADB can do this (sa.urtv.home/.DockReceiver needs the shell's DUMP).
 set -euo pipefail
 cd "$(dirname "$0")/.."

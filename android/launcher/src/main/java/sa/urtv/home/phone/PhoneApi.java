@@ -37,6 +37,8 @@ final class PhoneApi implements PhoneServer.Handler {
         if (!post && !r.method.equals("GET")) return json(405, err("method"));
 
         if (r.path.equals("/p") || r.path.equals("/")) return post ? json(405, err("method")) : page();
+        // «محفظتي»'s own page: words and code only, like /p; the holdings come from /api/portfolio, behind the session and the TV's window
+        if (r.path.equals("/m")) return post ? json(405, err("method")) : portfolioPage();
         // the fonts are no secret, and CSS asks for them without the X-UrTV-Session header: no session, like the page itself
         if (r.path.startsWith("/fonts/")) return post ? json(405, err("method")) : font(r.path.substring("/fonts/".length()));
 
@@ -62,6 +64,10 @@ final class PhoneApi implements PhoneServer.Handler {
                 case "/api/apps": return ok(control.actions().apps());
                 case "/api/family": return ok(control.actions().family());
                 case "/api/backdrop": return backdrop();
+                case "/api/portfolio": {
+                    Map<String, Object> p = control.actions().portfolio();
+                    return p == null ? json(403, err("portfolio_closed")) : ok(p);
+                }
                 default: break;
             }
             if (r.path.startsWith("/api/icon/")) return icon(r.path.substring("/api/icon/".length()));
@@ -80,6 +86,7 @@ final class PhoneApi implements PhoneServer.Handler {
             case "/api/adhan_stop": endpoint = "adhanstop"; break;
             case "/api/do": endpoint = "do"; break;
             case "/api/logout": endpoint = "logout"; break;
+            case "/api/portfolio": endpoint = "portfolio"; break;
             default: return json(404, err("not_found"));
         }
         Schema.Clean c = body(endpoint, r);
@@ -108,6 +115,11 @@ final class PhoneApi implements PhoneServer.Handler {
             case "launch": return result(a.launch((String) v.get("target")));
             case "adhanstop": return result(a.adhanStop());
             case "do": return result(a.doOp((String) v.get("op")));
+            case "portfolio": {
+                List<String> buys = new ArrayList<>();
+                for (Object x : (List<?>) v.get("buys")) buys.add((String) x);
+                return result(a.portfolioSave((String) v.get("code"), buys));
+            }
             case "quran": return result(a.quran(v));
             case "cities": {
                 Map<String, Object> out = ok();
@@ -238,12 +250,19 @@ final class PhoneApi implements PhoneServer.Handler {
         }
     }
 
-    private PhoneServer.Response page() {
+    private PhoneServer.Response page() { return page(control.page().html()); }
+
+    private PhoneServer.Response portfolioPage() {
+        String html = control.page().portfolioHtml();
+        return html == null ? json(404, err("not_found")) : page(html);
+    }
+
+    private PhoneServer.Response page(String source) {
         byte[] nonceBytes = new byte[16];
         new java.security.SecureRandom().nextBytes(nonceBytes);
         StringBuilder n = new StringBuilder();
         for (byte b : nonceBytes) n.append(String.format(java.util.Locale.ROOT, "%02x", b & 0xff));
-        String html = control.page().html().replace("__NONCE__", n.toString());
+        String html = source.replace("__NONCE__", n.toString());
         PhoneServer.Response resp = new PhoneServer.Response(200, "text/html; charset=utf-8", html.getBytes(StandardCharsets.UTF_8));
         resp.headers.put("Content-Security-Policy", "default-src 'none'; script-src 'nonce-" + n + "'; style-src 'unsafe-inline'; "
             + "connect-src 'self'; img-src 'self' data:; font-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'");
@@ -287,7 +306,7 @@ final class PhoneApi implements PhoneServer.Handler {
     /** For tests: the endpoints that need a session. */
     static List<String> sessionPaths() {
         List<String> l = new ArrayList<>();
-        for (String p : new String[] {"/api/state", "/api/key", "/api/text", "/api/set", "/api/quran", "/api/cities", "/api/update", "/api/launch", "/api/adhan_stop", "/api/do", "/api/apps", "/api/family", "/api/icon/com.example.app", "/api/backdrop", "/api/logout"}) l.add(p);
+        for (String p : new String[] {"/api/state", "/api/key", "/api/text", "/api/set", "/api/quran", "/api/cities", "/api/update", "/api/launch", "/api/adhan_stop", "/api/do", "/api/apps", "/api/family", "/api/icon/com.example.app", "/api/backdrop", "/api/logout", "/api/portfolio"}) l.add(p);
         return l;
     }
 }

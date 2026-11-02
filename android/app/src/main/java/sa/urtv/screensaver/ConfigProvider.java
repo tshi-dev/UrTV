@@ -36,6 +36,7 @@ import java.util.List;
  * «تحكم من الجوال» (the launcher's phone control) uses call(), and only with PHONE_SETTINGS (signature, same key):
  *   phone_state                         -> city, home_cards (list), panels (codes) and panel_names (Arabic, same order), idle (minutes), lang (ar|en)
  *   phone_set  extras city, home_panel, idle, lang -> ok (and idle_denied when the TV does not let this app change the idle time), the same checks as SaverReceiver SET (it is that code)
+ *              also stocks and markets: the home's «الأسواق» page («أضف إلى قائمتي», «أظهره في شريط الأسواق»); the phone's API never sends them
  *   phone_cities  arg = words           -> cities: the built-in names that match (at most 20)
  * Nothing else can be set this way.
  */
@@ -99,6 +100,8 @@ public class ConfigProvider extends ContentProvider {
             case "phone_set": {
                 android.content.Intent i = new android.content.Intent();
                 for (String k : new String[] {"city", "home_panel", "idle", "lang"}) if (extras != null && extras.getString(k) != null) i.putExtra(k, extras.getString(k));
+                // the home's «الأسواق» page: the watchlist and the markets bar (the phone's API never sends these two)
+                for (String k : new String[] {"stocks", "markets"}) if (extras != null && extras.getString(k) != null) i.putExtra(k, extras.getString(k));
                 String r = SaverReceiver.set(c, p, i);
                 out.putBoolean("ok", r.startsWith("saved"));
                 out.putBoolean("idle_denied", r.startsWith("error: idle not allowed"));

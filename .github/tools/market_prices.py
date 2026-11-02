@@ -11,7 +11,9 @@ The symbols are built from what the page offers (src/template.html): the MARKETS
 A symbol that is not in the file is still asked by the page itself (direct, then the proxies).
 
 Out: markets/markets.json = {"updated", "quotes": {SYMBOL: {"p": price, "v": the close before, "c": [the day's
-closes, at most 30], "t": when this price was last confirmed}}} and markets/report.json. A symbol that fails this
+closes, at most 30], "t": when this price was last confirmed, and when Yahoo's answer has them: "vol": the day's volume,
+"yh"/"yl": the 52-week high and low}}} and markets/report.json. The last three cost nothing: they are in the same answer's
+meta (the home's «الأسواق» page shows them; docs/PROPOSALS-NOV2.md §6), and a quote without them is as before. A symbol that fails this
 time keeps its previous quote and its old "t" (MARKETS_PREV is a directory holding the last file), so the page sees
 how old it is. Which symbols a run asks for depends on the clock (due()): the open exchanges and the 24-hour assets
 every run, the closed ones about hourly.
@@ -117,8 +119,14 @@ def quote(sym, now):
         n = -(-len(closes) // CLOSES_MAX)
         closes = [x for i, x in enumerate(closes) if i % n == 0 or i == len(closes) - 1]
     prev = meta.get("chartPreviousClose") or meta.get("previousClose")
-    return {"p": round(price, 4), "v": round(prev, 4) if prev else None, "c": [round(x, 4) for x in closes],
-            "t": now.isoformat(timespec="seconds")}
+    q = {"p": round(price, 4), "v": round(prev, 4) if prev else None, "c": [round(x, 4) for x in closes],
+         "t": now.isoformat(timespec="seconds")}
+    # the same answer's volume and 52-week range (no extra request); only real positive numbers are kept
+    for key, field in (("vol", "regularMarketVolume"), ("yh", "fiftyTwoWeekHigh"), ("yl", "fiftyTwoWeekLow")):
+        v = meta.get(field)
+        if isinstance(v, (int, float)) and not isinstance(v, bool) and v > 0:
+            q[key] = round(float(v), 4)
+    return q
 
 
 def main(argv):

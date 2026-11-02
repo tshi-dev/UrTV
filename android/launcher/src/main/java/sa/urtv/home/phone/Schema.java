@@ -24,6 +24,9 @@ public final class Schema {
     public static final int[] SAVER_IDLE = {1, 2, 5, 10, 15, 30};
     public static final String[] DO_OPS = {"screensaver", "sleep_cancel"};
     public static final String[] TOOLS = {"@tasks", "@saver", "@inputs", "@settings", "@listen"};
+    /** «محفظتي»: the buys of one holding (Holdings.MAX_BUYS), each a quantity and a price, Western digits and «.» */
+    public static final int MAX_BUYS = 20;
+    public static final String BUY = "\\d{1,9}(\\.\\d{1,4})?:\\d{1,9}(\\.\\d{1,4})?";
 
     /** A checked body: the allowed keys with their typed values, or why it was refused (a fixed word, never the input). */
     public static final class Clean {
@@ -100,6 +103,15 @@ public final class Schema {
                 return c;
             }
             case "logout": return only(body);
+            case "portfolio": {   // «محفظتي» from the phone: one holding's buys, each "qty:price" (whole numbers only in the phone's JSON); none removes it
+                Clean c = only(body, "code", "buys");
+                if (!c.ok()) return c;
+                if (!(body.get("code") instanceof String) || !((String) body.get("code")).matches("\\d{4}|[A-Z][A-Z.\\-]{0,5}")) return no("bad code");
+                Object b = body.get("buys");
+                if (!(b instanceof List) || ((List<?>) b).size() > MAX_BUYS) return no("bad buys");
+                for (Object x : (List<?>) b) if (!(x instanceof String) || !((String) x).matches(BUY)) return no("bad buys");
+                return c;
+            }
             default: return no("unknown endpoint");
         }
     }

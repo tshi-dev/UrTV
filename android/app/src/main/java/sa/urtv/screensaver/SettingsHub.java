@@ -55,7 +55,7 @@ final class SettingsHub {
         {"الأرقام", CLOCK}, {"تنبيه قبل الأذان", SAVER}, {"الشروق بعد الفجر", SAVER}, {"شريط الوقت بين الصلاتين", SAVER},
         {"الرطوبة والرياح", SAVER}, {"أسماء الأشهر الميلادية", CLOCK}, {"شريط السنة تحت الساعة", SAVER}, {"المناسبات الوطنية", SAVER}, {"المناسبة القادمة", SAVER}, {"تعتيم الليل", SAVER},
         {"حجم الساعة", SAVER}, {"نظام الساعة", CLOCK}, {"إظهار الثواني", CLOCK}, {"الخانة اليسرى", SAVER}, {"العدّ التنازلي", SAVER},
-        {"شريط الأسواق", CONTENT}, {"الأسواق", CONTENT}, {"عرض الأسواق", CONTENT},
+        {"صفحة الأسواق", CONTENT}, {"شريط الأسواق", CONTENT}, {"الأسواق", CONTENT}, {"عرض الأسواق", CONTENT},
         {"المحتوى", SAVER}, {"بطاقة ثانية", SAVER}, {"شكل البطاقة", SAVER}, {"تبديل الآية والحديث", SAVER}, {"الآية والحديث", SAVER},
         {"البطاقة الأولى", HOME}, {"البطاقة الثانية", HOME}, {"البطاقة الثالثة", HOME}, {"التحية والطقس", HOME}, {"المظهر", LOOK},
         {"افتح تلاوة وأذان", LISTEN}, {"زر تلاوة وأذان", LISTEN}, {"زر المهام", HOME}, {"الرجوع يفتح شاشة التوقف", HOME}, {"الخروج من تلفزيونك", HOME},
@@ -71,7 +71,7 @@ final class SettingsHub {
 
     /** each group header and the category it belongs to: shown only there, above that category's rows of the group */
     static final String[][] HEADERS = {
-        {"الموقع", PLACE}, {"المباريات", CONTENT}, {"العرض", SAVER}, {"الأسواق (أعلى اليسار)", CONTENT}, {"بجانب الساعة", SAVER},
+        {"الموقع", PLACE}, {"المباريات", CONTENT}, {"العرض", SAVER}, {"صفحة الأسواق", CONTENT}, {"الأسواق (أعلى اليسار)", CONTENT}, {"بجانب الساعة", SAVER},
         {"الشاشة الرئيسية (تلفزيونك)", HOME}, {"جديد المسلسلات", SHOWS}, {"الأسهم", CONTENT}, {"التوقيت", SAVER}, {"التطبيق", UPDATE},
     };
 

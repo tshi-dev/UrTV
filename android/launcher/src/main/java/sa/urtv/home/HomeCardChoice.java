@@ -38,10 +38,27 @@ final class HomeCardChoice {
         return false;
     }
 
-    /** The cards' page as the launcher opens it: url(), and live=1 added when «المهام» is among the cards (its mic mark and its ring). */
+    /** Is the stocks card («الأسهم») one of them? Then it is a button too: OK opens «الأسواق» (MarketsActivity). */
+    static boolean hasStocks(String[] choice) {
+        if (choice == null || "none".equals(choice[1])) return false;
+        for (String k : choice[1].split(",")) if ("stocks".equals(k.trim())) return true;
+        return false;
+    }
+
+    /** Does the stocks card come before «المهام» (the targets' order for the D-pad)? */
+    static boolean stocksFirst(String[] choice) {
+        if (choice == null) return false;
+        java.util.List<String> l = java.util.Arrays.asList(choice[1].replace(" ", "").split(","));
+        return l.contains("stocks") && (!l.contains("tasks") || l.indexOf("stocks") < l.indexOf("tasks"));
+    }
+
+    /**
+     * The cards' page as the launcher opens it: url(), and live=1 added when «المهام» or the stocks card is among the cards (the page then
+     * draws their ring, and «المهام»'s mic mark).
+     */
     static String liveUrl(String[] choice) {
         String u = url(choice);
-        return u != null && hasTasks(choice) ? u + "&live=1" : u;
+        return u != null && (hasTasks(choice) || hasStocks(choice)) ? u + "&live=1" : u;
     }
 
     /**
