@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The shortcut keys of the remote on our home screen (RemoteKeys.java, tests/remote_keys_cases.tsv): YouTube/Netflix (BUTTON_3/4), the
+"""The shortcut keys of the remote on our home screen (RemoteKeys.java, tests/remote_keys_cases.tsv): YouTube/Netflix (BUTTON_3/4, and TCL's vendor keys 4065/4062/4099 for YouTube/Netflix/Prime Video, 4077 for Settings), the
 settings key, the star key (scan code 578), acting on a first press only and consuming its repeats and release; an app that is not installed
 or a key that is not mapped is left alone. Then the wiring, read from the source: MainActivity asks the adhan rule first and RemoteKeys
 second, and opens through the family lock.   Run: python3 tests/remote_keys_test.py"""
@@ -23,9 +23,13 @@ check("dispatchKeyEvent asks the adhan rule first, then RemoteKeys, then the Men
 check("the key numbers are written out (no Android in RemoteKeys)", "import android" not in keys and "KeyEvent." not in re.sub(r"//.*|/\*.*?\*/", "", keys, flags=re.S))
 check("the apps open through the family lock (REMOTE_APP / REMOTE_SETTINGS), the star through the Menu key's path",
       "ParentalPolicy.REMOTE_APP" in main and "ParentalPolicy.REMOTE_SETTINGS" in main and "ParentalPolicy.MENU_KEY" in body)
-check("the Settings key (176 and 83) opens OUR settings behind «قفل الإعدادات» (OUR_SETTINGS), falling back to the TV's settings when our app is missing",
-      "KEYCODE_SETTINGS:\n            case KEYCODE_NOTIFICATION: return new Decision(OPEN_OUR_SETTINGS, null);" in keys and "ParentalPolicy.OUR_SETTINGS" in main
+check("the Settings key (176, 83 and TCL's 4077) opens OUR settings behind «قفل الإعدادات» (OUR_SETTINGS), falling back to the TV's settings when our app is missing",
+      "KEYCODE_SETTINGS:\n            case KEYCODE_NOTIFICATION:\n            case TCL_SETTINGS: return new Decision(OPEN_OUR_SETTINGS, null);" in keys and "ParentalPolicy.OUR_SETTINGS" in main
       and "OPEN_SETTINGS" not in keys.split("private static Decision map")[1])
+check("TCL's vendor keys 4062 Netflix, 4065 YouTube, 4099 Prime Video and 4077 Settings are mapped, and opensApp knows the app ones",
+      all(f"{n} = {v}" in keys or f"{n} = {v}," in keys for n, v in [("TCL_NETFLIX", 4062), ("TCL_YOUTUBE", 4065), ("TCL_PRIME", 4099), ("TCL_SETTINGS", 4077)])
+      and "keyCode == TCL_NETFLIX || keyCode == TCL_YOUTUBE || keyCode == TCL_PRIME" in keys.replace("\n", " ").replace("  ", ""), keys[:0])
+check("Prime Video is among the apps a key can open", "com.amazon.amazonvideo.livingroom" in keys and "PACKAGES = {YOUTUBE, NETFLIX, PRIME}" in keys)
 check("an app hidden by kids mode counts as not installed (the key then does nothing)", "ParentalPolicy.visible(" in main.split("Set<String> remoteInstalled()")[1][:600] if "Set<String> remoteInstalled()" in main else False)
 check("no GLOBAL_BUTTON receiver (the system sends that broadcast to a named component only)",
       "GLOBAL_BUTTON" not in (ROOT / "android/launcher/src/main/AndroidManifest.xml").read_text(encoding="utf-8"))

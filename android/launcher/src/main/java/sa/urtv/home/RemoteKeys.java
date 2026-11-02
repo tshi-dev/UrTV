@@ -23,12 +23,16 @@ final class RemoteKeys {
     private static final int KEYCODE_NOTIFICATION = 83;
     private static final int KEYCODE_BUTTON_3 = 190;   // the YouTube key of a Google TV remote
     private static final int KEYCODE_BUTTON_4 = 191;   // the Netflix key
+    /** TCL's vendor keys (the UrTVKeys log and the Clean Your TV notes): a keycode of 1000 and up reaches only the window in front, so the home must answer it. */
+    private static final int TCL_NETFLIX = 4062, TCL_YOUTUBE = 4065, TCL_PRIME = 4099;
+    /** the Settings key of a TCL G05 remote (UrTVKeys logged key=4077) */
+    private static final int TCL_SETTINGS = 4077;
     /** Linux KEY_JOURNAL (0x242): the star key of a TCL G08 remote. Android's generic key map has no name for it, so the keycode may be 0. */
     static final int SCAN_STAR = 578;
 
-    static final String YOUTUBE = "com.google.android.youtube.tv", NETFLIX = "com.netflix.ninja";
+    static final String YOUTUBE = "com.google.android.youtube.tv", NETFLIX = "com.netflix.ninja", PRIME = "com.amazon.amazonvideo.livingroom";
     /** the apps the keys can open: the caller tells which of them are installed (and shown) */
-    static final String[] PACKAGES = {YOUTUBE, NETFLIX};
+    static final String[] PACKAGES = {YOUTUBE, NETFLIX, PRIME};
 
     /** the key goes on as it would have */
     static final int PASS = 0;
@@ -83,15 +87,20 @@ final class RemoteKeys {
 
     /** Whether this key can open an app, so the caller looks up what is installed only for it, not for every key of the remote. */
     static boolean opensApp(int keyCode) {
-        return keyCode == KEYCODE_BUTTON_3 || keyCode == KEYCODE_BUTTON_4;
+        return keyCode == KEYCODE_BUTTON_3 || keyCode == KEYCODE_BUTTON_4
+                || keyCode == TCL_NETFLIX || keyCode == TCL_YOUTUBE || keyCode == TCL_PRIME;
     }
 
     private static Decision map(int keyCode, int scanCode, Set<String> installed) {
         switch (keyCode) {
-            case KEYCODE_BUTTON_3: return app(YOUTUBE, installed);
-            case KEYCODE_BUTTON_4: return app(NETFLIX, installed);
+            case KEYCODE_BUTTON_3:
+            case TCL_YOUTUBE: return app(YOUTUBE, installed);
+            case KEYCODE_BUTTON_4:
+            case TCL_NETFLIX: return app(NETFLIX, installed);
+            case TCL_PRIME: return app(PRIME, installed);
             case KEYCODE_SETTINGS:
-            case KEYCODE_NOTIFICATION: return new Decision(OPEN_OUR_SETTINGS, null);
+            case KEYCODE_NOTIFICATION:
+            case TCL_SETTINGS: return new Decision(OPEN_OUR_SETTINGS, null);
             default: break;
         }
         if (scanCode == SCAN_STAR) return new Decision(OPEN_INPUTS, null);

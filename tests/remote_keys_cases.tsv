@@ -73,3 +73,25 @@ key	83	0	1	0		PASS	a release with no press before it goes on as it did
 key	83	0	0	1		PASS	a repeat with no press before it does not act
 key	83	0	0	0	YouTube,Netflix	OUR_SETTINGS	with the apps installed it is the same
 key	83	0	0	0		OUR_SETTINGS	a lost release: the next press works at once
+# TCL vendor keys (>= 1000): same rules as 190/191
+key	4062	0	0	0	YouTube,Netflix,Prime	APP:com.netflix.ninja	TCL Netflix key (4062) opens Netflix
+key	4062	0	0	2	YouTube,Netflix,Prime	EAT	its repeats are consumed
+key	4062	0	1	0	YouTube,Netflix,Prime	EAT	its release is consumed
+reset							-
+key	4065	0	0	0	YouTube,Netflix,Prime	APP:com.google.android.youtube.tv	TCL YouTube key (4065) opens YouTube
+key	4065	0	1	0	YouTube,Netflix,Prime	EAT	release consumed
+reset							-
+key	4099	0	0	0	YouTube,Netflix,Prime	APP:com.amazon.amazonvideo.livingroom	TCL Prime Video key (4099) opens Prime Video
+key	4099	0	1	0	YouTube,Netflix,Prime	EAT	release consumed
+reset							-
+key	4062	0	0	0	YouTube,Prime	PASS	Netflix not installed: 4062 is passed on
+key	4062	0	1	0	YouTube,Prime	PASS	and its release
+key	4065	0	0	0	Netflix,Prime	PASS	YouTube not installed: 4065 passed on
+key	4099	0	0	0	YouTube,Netflix	PASS	Prime Video not installed: 4099 passed on
+key	4099	0	0	0		PASS	nothing installed: 4099 passed on
+reset							-
+key	4077	0	0	0		OUR_SETTINGS	TCL G05 Settings key (4077) opens OUR settings
+key	4077	0	0	1		EAT	repeat consumed
+key	4077	0	1	0		EAT	release consumed
+reset							-
+key	190	0	0	0	Prime	PASS	Prime Video alone: the Google TV YouTube key still passes
