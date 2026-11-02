@@ -7,7 +7,8 @@ Newest first. `next` is where changes land first; a release is what was tested t
 - **«الأسواق», a page of its own** (docs/PROPOSALS-NOV2.md §6, MarketsActivity): OK on the home's stocks card (now a button, like «المهام»)
   or Settings ← المزيد ← المباريات والأسواق ← «صفحة الأسواق». «السوق»: TASI and its day against yesterday's close, «اتجاه السوق» over the 30
   companies we fetch, the top 3 up and down (and «الأكثر نشاطًا» once CI's file carries the volume); «قائمتي»: the stock list with each day's
-  line, gold, silver, Brent and the riyal's fixed pegs; a stock's card with the open, the day's range, «أضف إلى قائمتي» and «أظهره في شريط
+  line, gold, silver, Brent and the riyal's fixed pegs; «اليوم / أسبوع / شهر / سنة» on TASI and each stock card, from a year of daily closes CI
+  asks once a day; a stock's card with the open, the day's range, «أضف إلى قائمتي» and «أظهره في شريط
   الأسواق». Only data we have: no sectors, whole-market figures, dividends or news (the «الأخبار» tab is built but off until a source agrees).
   CI keeps the volume and the 52-week range from the same Yahoo answer. **«محفظتي»** (§7): holdings with their buys, totals, allocation,
   «أخفِ المبالغ», «اقفل محفظتي» with the parental PIN; added on the TV's number pad or from the phone's own page (/m, «أسهل من الجوال»). Kept

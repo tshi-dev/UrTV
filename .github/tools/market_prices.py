@@ -13,7 +13,9 @@ A symbol that is not in the file is still asked by the page itself (direct, then
 Out: markets/markets.json = {"updated", "quotes": {SYMBOL: {"p": price, "v": the close before, "c": [the day's
 closes, at most 30], "t": when this price was last confirmed, and when Yahoo's answer has them: "vol": the day's volume,
 "yh"/"yl": the 52-week high and low}}} and markets/report.json. The last three cost nothing: they are in the same answer's
-meta (the home's «الأسواق» page shows them; docs/PROPOSALS-NOV2.md §6), and a quote without them is as before. A symbol that fails this
+meta (the home's «الأسواق» page shows them; docs/PROPOSALS-NOV2.md §6), and a quote without them is as before.
+Once a day, a second request per symbol (DAILY: a year of daily closes) adds "d": [the closes, oldest first], "df"/"dl": the
+first and last day (YYYY-MM-DD) and "dt": when they were fetched; the page's «أسبوع / شهر / سنة» come from them. Crypto has none. A symbol that fails this
 time keeps its previous quote and its old "t" (MARKETS_PREV is a directory holding the last file), so the page sees
 how old it is. Which symbols a run asks for depends on the clock (due()): the open exchanges and the 24-hour assets
 every run, the closed ones about hourly.
@@ -38,6 +40,9 @@ ROOT = HERE.parents[1]
 OUT = Path(os.environ.get("MARKETS_OUT", "markets"))
 PREV = Path(os.environ["MARKETS_PREV"]) if os.environ.get("MARKETS_PREV") else None
 CHART = "https://query1.finance.yahoo.com/v8/finance/chart/{}?interval=15m&range=1d"
+DAILY = "https://query1.finance.yahoo.com/v8/finance/chart/{}?interval=1d&range=1y"
+DAILY_EVERY_H = 20   # the daily closes are asked again after this many hours: once a day
+DAILY_KEYS = ("d", "df", "dl", "dt")
 PAUSE_S = float(os.environ.get("MARKETS_PAUSE", "0.4"))   # between two requests
 CLOSED_REFRESH_MIN = 55   # a closed exchange's last close is confirmed about hourly
 CLOSES_MAX = 30
@@ -129,6 +134,38 @@ def quote(sym, now):
     return q
 
 
+def small(x):
+    """a close as kept in the year's line: 2 decimals under 1000, whole above (a chart needs no more, and the file stays small)"""
+    return round(x) if x >= 1000 else round(x, 2)
+
+
+def daily(sym, now):
+    """-> {"d": [a year of daily closes], "df", "dl", "dt"} or None. Raises on a failed request."""
+    j = fetch_json(DAILY.format(urllib.parse.quote(sym, safe="")))
+    res = ((j.get("chart") or {}).get("result") or [None])[0]
+    if not res:
+        raise NotFound(sym)
+    stamps = res.get("timestamp") or []
+    closes = (((res.get("indicators") or {}).get("quote") or [{}])[0].get("close") or [])
+    pairs = [(t, c) for t, c in zip(stamps, closes) if isinstance(c, (int, float)) and not isinstance(c, bool) and c > 0 and isinstance(t, int)]
+    if len(pairs) < 2:
+        return None
+    day = lambda t: datetime.datetime.fromtimestamp(t, datetime.timezone.utc).date().isoformat()
+    return {"d": [small(c) for _, c in pairs], "df": day(pairs[0][0]), "dl": day(pairs[-1][0]), "dt": now.isoformat(timespec="seconds")}
+
+
+def daily_due(sym, q, now, everything=False):
+    if sym.endswith("-USD"):   # crypto: no year's line on the page
+        return False
+    if everything:
+        return True
+    t = (q or {}).get("dt")
+    try:
+        return not t or now - datetime.datetime.fromisoformat(t) >= datetime.timedelta(hours=DAILY_EVERY_H)
+    except ValueError:
+        return True
+
+
 def main(argv):
     everything = "--all" in argv
     now = datetime.datetime.now(datetime.timezone.utc)
@@ -162,8 +199,29 @@ def main(argv):
                 break
             continue
         if q:
+            for k in DAILY_KEYS:   # the year's line is asked once a day, not with each quote: keep it
+                if k in (prev.get(sym) or {}):
+                    q[k] = prev[sym][k]
             quotes[sym] = q
             report["ok"] += 1
+    # the year's daily closes, once a day per symbol (a second request each); a failure keeps the old line
+    report.update({"daily_asked": 0, "daily_ok": 0, "daily_failed": 0})
+    if not report["stopped"]:
+        for sym in list(quotes):
+            if not daily_due(sym, quotes[sym], now, everything):
+                continue
+            time.sleep(PAUSE_S)
+            report["daily_asked"] += 1
+            try:
+                d = daily(sym, now)
+            except Exception:   # NotFound included: the quote stays, only without its year's line
+                report["daily_failed"] += 1
+                if report["daily_failed"] >= 5 and not report["daily_ok"]:
+                    break
+                continue
+            if d:
+                quotes[sym].update(d)
+                report["daily_ok"] += 1
     OUT.mkdir(parents=True, exist_ok=True)
     # "updated" moves only when something was confirmed: the page trusts a file for 3 hours from it
     updated = now.isoformat(timespec="seconds") if report["ok"] else None
@@ -178,7 +236,7 @@ def main(argv):
     gh = os.environ.get("GITHUB_OUTPUT")
     if gh:
         with open(gh, "a") as f:
-            f.write(f"changed={'true' if report['ok'] else 'false'}\n")
+            f.write(f"changed={'true' if report['ok'] or report['daily_ok'] else 'false'}\n")
     return 0
 
 

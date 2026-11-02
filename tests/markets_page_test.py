@@ -57,6 +57,9 @@ check("«الأكثر نشاطًا», the volume and the 52-week range only when
 mp = text(ROOT / ".github/tools/market_prices.py")
 check("CI keeps volume and the 52-week range from the same answer (no new request)",
       '("vol", "regularMarketVolume"), ("yh", "fiftyTwoWeekHigh"), ("yl", "fiftyTwoWeekLow")' in mp and mp.count("CHART = ") == 1 and "range=1d" in mp)
+check("«أسبوع / شهر / سنة»: from the year's daily closes CI asks once a day (DAILY, interval 1d), only when the file has them; «اليوم» always",
+      'DAILY = "https://query1.finance.yahoo.com/v8/finance/chart/{}?interval=1d&range=1y"' in mp and "DAILY_EVERY_H = 20" in mp
+      and "if (MarketData.hasRanges(q)) {" in act and 'S.t("اليوم"), S.t("أسبوع"), S.t("شهر"), S.t("سنة")' in act)
 check("the download: one file, kept in the app's files, size-capped, at most every 10 minutes",
       "FRESH_MS = 10 * 60_000L" in text(HOME / "MarketFile.java") and "MAX_BYTES" in text(HOME / "MarketFile.java"))
 

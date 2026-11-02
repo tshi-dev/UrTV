@@ -27,6 +27,7 @@ public final class MarketsRun {
     public static void main(String[] args) {
         data();
         hours();
+        ranges();
         numbers();
         holdings();
         System.out.println(failed == 0 ? "ALL PASS" : failed + " FAILED");
@@ -72,6 +73,30 @@ public final class MarketsRun {
         check("codes for the phone's search: the 30 first, then the file's others", codes.size() == 30 + 2 && codes.get(0).equals("2222") && codes.contains("AAPL") && codes.contains("9999")
             && !codes.contains("^TASI") && !codes.contains("GC=F"), codes);
         check("the pegs: fixed, four, dollar 3.75", MarketData.PEGS.length == 4 && "3.7500".equals(MarketData.PEGS[0][1]), "");
+    }
+
+    static void ranges() {
+        // 30 daily closes 100..129 from 2026-10-01 to 2026-11-01; today's price 131 confirmed on 2026-11-02 (after the line's last day)
+        StringBuilder d = new StringBuilder();
+        for (int i = 0; i < 30; i++) d.append(i == 0 ? "" : ",").append(100 + i);
+        String f = "{\"quotes\":{\"2222.SR\":{\"p\":131,\"v\":129,\"c\":[130,131],\"t\":\"2026-11-02T12:00:00+00:00\",\"d\":[" + d
+            + "],\"df\":\"2026-10-01\",\"dl\":\"2026-11-01\"},\"1120.SR\":{\"p\":60,\"v\":59,\"c\":[59,60],\"t\":\"2026-11-01T12:00:00+00:00\",\"d\":[" + d
+            + "],\"df\":\"2026-10-01\",\"dl\":\"2026-11-01\"},\"7010.SR\":{\"p\":41.5,\"v\":41,\"c\":[41,41.5],\"t\":\"2026-11-02T12:00:00+00:00\"}}}";
+        MarketData m = MarketData.parse(f);
+        MarketData.Quote q = m.of("2222");
+        check("ranges: the year's daily closes and their first and last day are read", q.d.length == 30 && q.df == MarketData.day("2026-10-01") && q.dl == MarketData.day("2026-11-01"), q.d.length);
+        MarketData.Range today = MarketData.range(q, MarketData.TODAY);
+        check("ranges: «اليوم» is the day's closes against the close before", today.line == q.c && near(today.base, 129) && near(today.pct(q.p), 2 / 129.0 * 100), today.base);
+        MarketData.Range w = MarketData.range(q, MarketData.WEEK);
+        check("ranges: «أسبوع» = the last five days and today's price after them, from the close five trading days back",
+            w.line.length == 6 && near(w.line[0], 125) && near(w.line[5], 131) && near(w.base, 125) && near(w.change(q.p), 6) && w.from == 0, Arrays.toString(w.line));
+        MarketData.Range mo = MarketData.range(q, MarketData.MONTH);
+        check("ranges: «شهر» = 21 trading days", mo.line.length == 22 && near(mo.base, 109), Arrays.toString(mo.line));
+        MarketData.Range y = MarketData.range(q, MarketData.YEAR);
+        check("ranges: «سنة» = the whole line, from its first day (the only start that is known)", y.line.length == 31 && near(y.base, 100) && y.from == q.df, y.line.length);
+        MarketData.Range same = MarketData.range(m.of("1120"), MarketData.WEEK);
+        check("ranges: a price of the line's last day is not added again", same.line.length == 6 && near(same.line[5], 129) && near(same.base, 124), Arrays.toString(same.line));
+        check("ranges: no daily closes -> no ranges, «اليوم» only", !MarketData.hasRanges(m.of("7010")) && MarketData.range(m.of("7010"), MarketData.YEAR).line == m.of("7010").c, "");
     }
 
     static void hours() {

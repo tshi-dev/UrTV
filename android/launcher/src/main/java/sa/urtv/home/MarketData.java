@@ -44,9 +44,15 @@ final class MarketData {
         final double[] c;        // the day's closes, oldest first (at most 30)
         final long t;            // when CI last confirmed it (ms, 0: not said)
         final double vol, yh, yl;   // volume and the 52-week range, when CI kept them (NaN: not kept)
+        final double[] d;        // a year of daily closes, oldest first (CI asks once a day; empty: none)
+        final long df, dl;       // the first and the last day of d (UTC midnight ms, 0: not said)
 
         Quote(double p, double v, double[] c, long t, double vol, double yh, double yl) {
-            this.p = p; this.v = v; this.c = c; this.t = t; this.vol = vol; this.yh = yh; this.yl = yl;
+            this(p, v, c, t, vol, yh, yl, new double[0], 0, 0);
+        }
+
+        Quote(double p, double v, double[] c, long t, double vol, double yh, double yl, double[] d, long df, long dl) {
+            this.p = p; this.v = v; this.c = c; this.t = t; this.vol = vol; this.yh = yh; this.yl = yl; this.d = d; this.df = df; this.dl = dl;
         }
 
         boolean hasPrev() { return !Double.isNaN(v) && v > 0; }
@@ -83,11 +89,8 @@ final class MarketData {
                 Map<?, ?> x = (Map<?, ?>) e.getValue();
                 double p = num(x.get("p"));
                 if (Double.isNaN(p) || p <= 0) continue;
-                List<Double> cl = new ArrayList<>();
-                if (x.get("c") instanceof List) for (Object o : (List<?>) x.get("c")) { double d = num(o); if (!Double.isNaN(d)) cl.add(d); }
-                double[] c = new double[cl.size()];
-                for (int i = 0; i < c.length; i++) c[i] = cl.get(i);
-                out.put((String) e.getKey(), new Quote(p, num(x.get("v")), c, time(x.get("t")), num(x.get("vol")), num(x.get("yh")), num(x.get("yl"))));
+                out.put((String) e.getKey(), new Quote(p, num(x.get("v")), numbers(x.get("c")), time(x.get("t")), num(x.get("vol")), num(x.get("yh")), num(x.get("yl")),
+                        numbers(x.get("d")), day(x.get("df")), day(x.get("dl"))));
             }
             return new MarketData(time(m.get("updated")), out);
         } catch (RuntimeException e) {
@@ -96,6 +99,55 @@ final class MarketData {
     }
 
     private static double num(Object o) { return o instanceof Double ? (Double) o : Double.NaN; }
+
+    /** the numbers of a list (anything else left out) */
+    private static double[] numbers(Object o) {
+        List<Double> l = new ArrayList<>();
+        if (o instanceof List) for (Object x : (List<?>) o) { double v = num(x); if (!Double.isNaN(v) && v > 0) l.add(v); }
+        double[] out = new double[l.size()];
+        for (int i = 0; i < out.length; i++) out[i] = l.get(i);
+        return out;
+    }
+
+    /** "2026-11-02" to that day's UTC midnight in ms; 0 for anything else */
+    static long day(Object o) {
+        return o instanceof String && ((String) o).matches("\\d{4}-\\d\\d-\\d\\d") ? time(o + "T00:00:00Z") : 0;
+    }
+
+    // ---------------------------------------------------------------- the ranges: «اليوم» «أسبوع» «شهر» «سنة»
+
+    static final int TODAY = 0, WEEK = 1, MONTH = 2, YEAR = 3;
+    /** trading days in a week and in a month (Tadawul and New York both trade five days a week) */
+    static final int WEEK_DAYS = 5, MONTH_DAYS = 21;
+
+    /** One range of a quote: its line, the value it is measured from (the dashed line), its first day (the year's only, else 0) and its last. */
+    static final class Range {
+        final double[] line;
+        final double base;
+        final long from, to;
+        Range(double[] line, double base, long from, long to) { this.line = line; this.base = base; this.from = from; this.to = to; }
+        double change(double p) { return Double.isNaN(base) ? Double.NaN : p - base; }
+        double pct(double p) { return Double.isNaN(base) || base <= 0 ? Double.NaN : (p - base) / base * 100; }
+    }
+
+    /** Does the quote have the daily closes the week, month and year need? */
+    static boolean hasRanges(Quote q) { return q != null && q.d.length > 1; }
+
+    /**
+     * The quote over a range. «اليوم»: the day's closes against the close before. The others: the last days of the year's line (and today's
+     * price after them when it is newer than the line's last day), measured from the close the range starts at.
+     */
+    static Range range(Quote q, int which) {
+        if (which == TODAY || !hasRanges(q)) return new Range(q.c, q.v, 0, 0);
+        boolean newer = q.dl > 0 && q.t > 0 && q.t >= q.dl + 86_400_000L;   // today's price is past the line's last day: it ends the line
+        int days = which == WEEK ? WEEK_DAYS : which == MONTH ? MONTH_DAYS : q.d.length;
+        int from = Math.max(0, q.d.length - (newer ? days : days + 1));
+        double[] line = new double[q.d.length - from + (newer ? 1 : 0)];
+        System.arraycopy(q.d, from, line, 0, q.d.length - from);
+        if (newer) line[line.length - 1] = q.p;
+        // its first day is known for the year only (the file keeps no date per point): the week and the month say «قبل أسبوع», «قبل شهر»
+        return new Range(line, line[0], which == YEAR ? q.df : 0, newer ? q.t : q.dl);
+    }
 
     /** "2026-11-02T21:15:44+00:00" (as CI writes it) to ms; 0 for anything else */
     static long time(Object o) {

@@ -280,22 +280,13 @@ public class MarketsActivity extends Activity {
         LinearLayout row1 = new LinearLayout(this);
         // TASI: value, change, and its day against yesterday's close
         MarketData.Quote tasi = data.quotes.get(MarketData.TASI);
-        LinearLayout t = card(true);
-        LinearLayout head = new LinearLayout(this);
-        head.setGravity(Gravity.CENTER_VERTICAL);
-        head.addView(text(S.t("تاسي"), 18, "Medium", TEXT), new LinearLayout.LayoutParams(0, -2, 1f));
-        t.addView(head, wrap());
-        if (tasi != null) {
-            t.addView(priceLine(tasi, 34), gap(4));
-            t.addView(new MarketChart(this).line(tasi.c, tasi.v, color(tasi), DIM, true, 2.5f), new LinearLayout.LayoutParams(-1, dp(96)));
-            t.addView(axis(), gap(8));
-            t.setOnClickListener(v -> stockCard(MarketData.TASI, S.t("تاسي")));
-        }
-        GlassPaint.card(t, look, 18);
+        LinearLayout t = card();
+        if (tasi != null) t.addView(chartBlock(S.t("تاسي"), tasi, 34, 96), wrap());
+        else t.addView(text(S.t("تاسي"), 18, "Medium", TEXT), wrap());
         row1.addView(t, weight(1.75f, 0));
 
         // «اتجاه السوق»: the 30 companies we fetch (and it says so), and the session
-        LinearLayout br = card(false);
+        LinearLayout br = card();
         LinearLayout bh = new LinearLayout(this);
         bh.setGravity(Gravity.BOTTOM);
         bh.addView(text(S.t("اتجاه السوق"), 18, "Medium", TEXT), new LinearLayout.LayoutParams(0, -2, 1f));
@@ -333,7 +324,7 @@ public class MarketsActivity extends Activity {
         LinearLayout mv = new LinearLayout(this);
         mv.setOrientation(LinearLayout.VERTICAL);
         mv.addView(text(S.t("الأكثر ارتفاعًا وانخفاضًا"), 18, "Medium", TEXT), gap(0));
-        LinearLayout list = card(false);
+        LinearLayout list = card();
         list.setPadding(dp(16), dp(8), dp(16), dp(8));
         List<String> ups = data.movers(true, 3), downs = data.movers(false, 3);
         for (String code : ups) list.addView(stockRow(code, false), wrap());
@@ -355,7 +346,7 @@ public class MarketsActivity extends Activity {
             ah.addView(text(S.t("الأكثر نشاطًا"), 18, "Medium", TEXT), new LinearLayout.LayoutParams(0, -2, 1f));
             ah.addView(text(S.t("بالكمية، من أكبر %s شركة", digits(MarketData.TADAWUL.length)), 13, "Regular", DIM), new LinearLayout.LayoutParams(-2, -2));
             ac.addView(ah, wrap());
-            LinearLayout al = card(false);
+            LinearLayout al = card();
             al.setPadding(dp(16), dp(8), dp(16), dp(8));
             for (String code : active) al.addView(volumeRow(code), wrap());
             ac.addView(al, gap(12));
@@ -374,23 +365,93 @@ public class MarketsActivity extends Activity {
         return (t - MarketData.OPEN_MIN) / (float) (MarketData.CLOSE_MIN - MarketData.OPEN_MIN);
     }
 
-    /** «١٠:٠٠ ص — الخط المتقطع: إغلاق أمس — ٣:٠٠ م» under a day's chart (the chart runs left to right: the open at the left) */
-    private View axis() {
+    /**
+     * Under a chart (it runs left to right: the start at the left). «اليوم»: «١٠:٠٠ ص — الخط المتقطع: إغلاق أمس — ٣:٠٠ م»; a longer range: its
+     * start («قبل أسبوع», «قبل شهر», the year's first day), «الخط المتقطع: أول الفترة», and its last day.
+     */
+    private View axis(int which, MarketData.Range r) {
         LinearLayout a = new LinearLayout(this);
         a.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
-        a.addView(text(clock(10, 0), 13, "Regular", DIM), new LinearLayout.LayoutParams(-2, -2));
-        TextView mid = text(S.t("الخط المتقطع: إغلاق أمس"), 13, "Regular", DIM);
+        String start = which == MarketData.TODAY ? clock(10, 0) : which == MarketData.WEEK ? S.t("قبل أسبوع") : which == MarketData.MONTH ? S.t("قبل شهر") : date(r.from);
+        String end = which == MarketData.TODAY ? clock(15, 0) : date(r.to);
+        a.addView(text(start, 13, "Regular", DIM), new LinearLayout.LayoutParams(-2, -2));
+        TextView mid = text(which == MarketData.TODAY ? S.t("الخط المتقطع: إغلاق أمس") : S.t("الخط المتقطع: أول الفترة"), 13, "Regular", DIM);
         mid.setGravity(Gravity.CENTER);
         a.addView(mid, new LinearLayout.LayoutParams(0, -2, 1f));
-        a.addView(text(clock(15, 0), 13, "Regular", DIM), new LinearLayout.LayoutParams(-2, -2));
+        a.addView(text(end, 13, "Regular", DIM), new LinearLayout.LayoutParams(-2, -2));
         return a;
+    }
+
+    private static final String[] MONTHS = {S.n("يناير"), S.n("فبراير"), S.n("مارس"), S.n("أبريل"), S.n("مايو"), S.n("يونيو"), S.n("يوليو"),
+        S.n("أغسطس"), S.n("سبتمبر"), S.n("أكتوبر"), S.n("نوفمبر"), S.n("ديسمبر")};
+
+    /** «٣ نوفمبر» (a day of the line, kept as UTC midnight); «» when not known */
+    private String date(long ms) {
+        if (ms <= 0) return "";
+        Calendar k = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        k.setTimeInMillis(ms);
+        return Digits.of(String.valueOf(k.get(Calendar.DAY_OF_MONTH))) + " " + S.tv(MONTHS[k.get(Calendar.MONTH)]);
+    }
+
+    /** the range each chart shows, by its quote, for as long as the screen is open */
+    private final java.util.Map<MarketData.Quote, Integer> ranges = new java.util.HashMap<>();
+
+    /**
+     * A quote's chart with its range tabs (§6: «اليوم / أسبوع / شهر / سنة»; the three longer ones only when the file has the year's daily
+     * closes): the title (null: none), the tabs, the price and its change over the range, the line and its axis. A tab redraws the block.
+     */
+    private View chartBlock(String title, MarketData.Quote q, float priceSp, int chartDp) {
+        LinearLayout block = new LinearLayout(this);
+        block.setOrientation(LinearLayout.VERTICAL);
+        fillChart(block, title, q, priceSp, chartDp, -1);
+        return block;
+    }
+
+    private void fillChart(LinearLayout block, String title, MarketData.Quote q, float priceSp, int chartDp, int focusTab) {
+        block.removeAllViews();
+        int which = MarketData.hasRanges(q) ? ranges.getOrDefault(q, MarketData.TODAY) : MarketData.TODAY;
+        MarketData.Range r = MarketData.range(q, which);
+        LinearLayout head = new LinearLayout(this);
+        head.setGravity(Gravity.CENTER_VERTICAL);
+        if (title != null) head.addView(text(title, 18, "Medium", TEXT), new LinearLayout.LayoutParams(0, -2, 1f));
+        else head.addView(new View(this), new LinearLayout.LayoutParams(0, 1, 1f));
+        View focus = null;
+        if (MarketData.hasRanges(q)) {
+            String[] names = {S.t("اليوم"), S.t("أسبوع"), S.t("شهر"), S.t("سنة")};
+            for (int i = 0; i < names.length; i++) {
+                final int k = i;
+                TextView t = text(names[i], 15, "Medium", i == which ? ACCENT : DIM);
+                t.setId(View.generateViewId());
+                t.setFocusable(true);
+                t.setClickable(true);
+                t.setGravity(Gravity.CENTER);
+                t.setPadding(dp(16), dp(8), dp(16), dp(8));
+                android.graphics.drawable.LayerDrawable bg = new android.graphics.drawable.LayerDrawable(new android.graphics.drawable.Drawable[] {
+                        new android.graphics.drawable.StateListDrawable(), new ColorDrawable(i == which ? ACCENT : 0)});
+                ((android.graphics.drawable.StateListDrawable) bg.getDrawable(0)).addState(new int[] {android.R.attr.state_focused}, GlassPaint.focused(this, look, 10));
+                bg.setLayerGravity(1, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL);
+                bg.setLayerHeight(1, dp(2));
+                t.setBackground(bg);
+                final int rest = i == which ? ACCENT : DIM;
+                t.setOnFocusChangeListener((v, has) -> t.setTextColor(has ? look.onFocus : rest));
+                t.setOnClickListener(v -> { ranges.put(q, k); fillChart(block, title, q, priceSp, chartDp, k); });
+                head.addView(t, new LinearLayout.LayoutParams(-2, -2));
+                if (i == focusTab) focus = t;
+            }
+        }
+        block.addView(head, wrap());
+        block.addView(priceLine(q, r, priceSp), gap(8));
+        int c = Double.isNaN(r.pct(q.p)) ? color(q) : r.pct(q.p) >= 0 ? UP : DOWN;
+        block.addView(new MarketChart(this).line(r.line, r.base, c, DIM, true, 2.5f), sized(-1, chartDp, 8));
+        block.addView(axis(which, r), gap(8));
+        if (focus != null) focus.requestFocus();
     }
 
     // ---------------------------------------------------------------- «قائمتي»
 
     private void watch() {
         LinearLayout row = new LinearLayout(this);
-        LinearLayout list = card(false);
+        LinearLayout list = card();
         list.setPadding(dp(16), dp(16), dp(16), dp(12));
         LinearLayout hd = new LinearLayout(this);
         hd.setPadding(dp(16), 0, dp(16), dp(8));
@@ -406,7 +467,7 @@ public class MarketsActivity extends Activity {
 
         LinearLayout side = new LinearLayout(this);
         side.setOrientation(LinearLayout.VERTICAL);
-        LinearLayout gold = card(false);
+        LinearLayout gold = card();
         gold.addView(text(S.t("الذهب والنفط"), 18, "Medium", TEXT), wrap());
         if (data != null) {
             commodity(gold, S.t("الذهب، للغرام"), MarketData.GOLD, MarketData.PEG / MarketData.OUNCE_G, S.t("ر.س"));
@@ -415,7 +476,7 @@ public class MarketsActivity extends Activity {
             commodity(gold, S.t("برنت"), MarketData.BRENT, 1, "$");
         }
         side.addView(gold, wrap());
-        LinearLayout fx = card(false);
+        LinearLayout fx = card();
         LinearLayout fh = new LinearLayout(this);
         fh.setGravity(Gravity.BOTTOM);
         fh.addView(text(S.t("العملات"), 18, "Medium", TEXT), new LinearLayout.LayoutParams(0, -2, 1f));
@@ -504,7 +565,7 @@ public class MarketsActivity extends Activity {
 
         List<Holdings.Holding> all = Portfolio.load(this);
         if (all.isEmpty()) {
-            LinearLayout e = card(false);
+            LinearLayout e = card();
             e.addView(text(S.t("لا أسهم في محفظتك بعد"), 20, "Medium", TEXT), wrap());
             e.addView(text(S.t("اضغط «أضف سهمًا»، أو أضفها من الجوال: افتح «التحكم من الجوال» وامسح الرمز، ثم «محفظتي»."), 15, "Regular", DIM), gap(8));
             content.addView(e, wrap());
@@ -513,7 +574,7 @@ public class MarketsActivity extends Activity {
         }
         Holdings.Totals t = Holdings.totals(all, data == null ? null : data::of);
 
-        LinearLayout sum = card(false);
+        LinearLayout sum = card();
         LinearLayout figs = new LinearLayout(this);
         figs.addView(figure(S.t("القيمة الإجمالية"), hide ? null : money(t.value, 2, S.t("ر.س")), Double.NaN, 32), new LinearLayout.LayoutParams(0, -2, 1f));
         figs.addView(figure(S.t("الربح الكلي"), hide ? null : signedMoney(t.gain), t.gainPct, 26), new LinearLayout.LayoutParams(0, -2, 1f));
@@ -533,7 +594,7 @@ public class MarketsActivity extends Activity {
         sum.addView(legend, gap(12));
         content.addView(sum, wrap());
 
-        LinearLayout table = card(false);
+        LinearLayout table = card();
         table.setPadding(dp(16), dp(16), dp(16), dp(12));
         LinearLayout hd = new LinearLayout(this);
         hd.setPadding(dp(16), 0, dp(16), dp(8));
@@ -634,9 +695,7 @@ public class MarketsActivity extends Activity {
         head.addView(ltrStart(text(sub, 14, "Regular", DIM)), new LinearLayout.LayoutParams(-2, -2));
         box.addView(head, wrap());
         if (q != null) {
-            box.addView(priceLine(q, 40), gap(8));
-            box.addView(new MarketChart(this).line(q.c, q.v, color(q), DIM, true, 2.5f), sized(-1, 130, 12));
-            box.addView(axis(), gap(8));
+            box.addView(chartBlock(null, q, 40, 130), gap(8));
             LinearLayout stats = new LinearLayout(this);
             stats.addView(stat(S.t("الافتتاح"), price(q.open())), weight(1f, 0));
             stats.addView(stat(S.t("نطاق اليوم"), price(q.low()) + " – " + price(q.high())), weight(1f, 12));
@@ -1016,16 +1075,16 @@ public class MarketsActivity extends Activity {
     }
 
     /** the big price and its change: «٩٬٨٨٢٫٨٥  +٤٤٫٥٧ (+٠٫٤٥٪)» */
-    private View priceLine(MarketData.Quote q, float sp) {
+    private View priceLine(MarketData.Quote q, MarketData.Range r, float sp) {
         LinearLayout l = new LinearLayout(this);
         l.setGravity(Gravity.BOTTOM);
         l.addView(ltr(text(price(q.p), sp, "Medium", TEXT)), new LinearLayout.LayoutParams(-2, -2));
-        if (q.hasPrev()) {
+        if (!Double.isNaN(r.pct(q.p))) {
             LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(-2, -2);
             p.setMarginStart(dp(16));
             p.bottomMargin = dp(4);
-            String s = MarketData.signed(q.change(), 2) + "  (" + MarketData.signed(q.pct(), 2) + "%)";
-            l.addView(ltr(text(MarketData.show(s, Digits.latin()), sp * 0.5f, "Medium", color(q))), p);
+            String s = MarketData.signed(r.change(q.p), 2) + "  (" + MarketData.signed(r.pct(q.p), 2) + "%)";
+            l.addView(ltr(text(MarketData.show(s, Digits.latin()), sp * 0.5f, "Medium", r.pct(q.p) >= 0 ? UP : DOWN)), p);
         }
         return l;
     }
@@ -1053,17 +1112,12 @@ public class MarketsActivity extends Activity {
 
     private String digits(int n) { return Digits.of(String.valueOf(n)); }
 
-    /** a panel the screen is made of; focusable when it opens something */
-    private LinearLayout card(boolean focusable) {
+    /** a panel the screen is made of */
+    private LinearLayout card() {
         LinearLayout c = new LinearLayout(this);
         c.setOrientation(LinearLayout.VERTICAL);
         c.setPadding(dp(20), dp(16), dp(20), dp(16));
         c.setBackground(GlassPaint.panel(this, look, 18));
-        if (focusable) {   // dressed as a tile once it is filled (GlassPaint.card collects its words then)
-            c.setId(View.generateViewId());
-            c.setFocusable(true);
-            c.setClickable(true);
-        }
         return c;
     }
 
