@@ -305,6 +305,8 @@ public class MainActivity extends Activity {
         if (scrolled) dockCards.get(0).requestFocus();
         // opened from its tile while the TV keeps its own home: Back at the top leaves, to the home that opened it
         else if (HomeBack.leaves(isDefaultHome(), false)) finish();
+        // «الرجوع يفتح شاشة التوقف» (off by default): nothing to go back to, so the screensaver, behind its own lock as on its pill
+        else if (HomeBack.startsSaver(Dock.backSaver(this), true, false, isInstalled(SAVER_PKG))) guarded(ParentalPolicy.PILL_SAVER, SAVER_PKG, "شاشة التوقف", this::startSaver);
     }
 
     /** Is this app the home the TV goes to on Home? (Not when the stock home is kept and this was opened from its tile.) */

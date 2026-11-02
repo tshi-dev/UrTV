@@ -262,6 +262,7 @@
                 <action android:name="sa.urtv.home.HIDE" />
                 <action android:name="sa.urtv.home.SHOW" />
                 <action android:name="sa.urtv.home.FAMILY_DNS" />
+                <action android:name="sa.urtv.home.BACK_SAVER" />
                 <action android:name="sa.urtv.home.PIN_SET" />
                 <action android:name="sa.urtv.home.PIN_LOCK" />
                 <action android:name="sa.urtv.home.PIN_UNLOCK" />

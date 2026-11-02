@@ -30,6 +30,7 @@ import java.util.Map;
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.PIN_STATUS            what is set
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.PIN_OFF               no PIN: nothing asks, kids mode ends, the choices stay
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.PIN_RESET             a forgotten PIN: everything parental back to nothing
+ *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.BACK_SAVER --es mode on|off|status   «الرجوع يفتح شاشة التوقف» (off by default)
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.SLEEP_TV [--ei minutes 30 | 0 = cancel]   «مؤقت النوم» for the whole TV
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.FAMILY_DNS --es mode on|off|status   «حماية العائلة (DNS)»: on/off
  *      answers (the shell script depends on these exact lines):
@@ -117,6 +118,13 @@ public class DockReceiver extends BroadcastReceiver {
                 }
                 InputLabels.set(c, id, name);
                 setResultData(name.isEmpty() ? "input-name: the TV's own name again" : "input-name: saved");
+                return;
+            }
+            case "sa.urtv.home.BACK_SAVER": {   // «الرجوع يفتح شاشة التوقف»: on | off | status; read at each Back, nothing to redraw
+                String m = String.valueOf(i.getStringExtra("mode"));
+                if (!m.equals("on") && !m.equals("off") && !m.equals("status")) { setResultData("error: add --es mode on|off|status"); return; }
+                if (!m.equals("status")) Dock.setBackSaver(c, m.equals("on"));
+                setResultData("back-saver: " + (Dock.backSaver(c) ? "on" : "off"));
                 return;
             }
             case "sa.urtv.home.SLEEP_TV": {   // the sleep timer: no extra = how it stands; minutes = start it; 0 = cancel
