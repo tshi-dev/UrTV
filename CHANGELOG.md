@@ -4,6 +4,8 @@ Newest first. `next` is where changes land first; a release is what was tested t
 
 ## 4.2 (on `next`)
 
+- Three owners' options, each off by default (nothing changes until chosen): «الآية والحديث» (`saver.sh versekind both|verse|hadith`: the verse card with verses only or hadith only), «إظهار الثواني» (`saver.sh seconds on|off`: the seconds on the screensaver's clock, small, in fixed-width boxes so nothing moves each second, in every clock size) and «الخروج من تلفزيونك» (`saver.sh backexit press|hold|three`: where the TV keeps its own home, our home leaves only on a long Back or three Backs, with a short hint the first time a Back is ignored). tests/user_options_test.py and page tests.
+
 - **The new settings screen** (work/settings-v2, the owner's choices in notes/settings-proto): big buttons, «الأذان» wide on top with its state
   under it; OK opens the home's adhan page on its switch (now its first row), so OK, OK turns it on or off, behind the family lock as before.
   Then «الموقع والصلاة», «الساعة والأرقام» (new: 12/24 hours, digits, month names together), «تلاوة وأذان», «البطاقات» («شاشة التوقف» and

@@ -214,6 +214,7 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
         resumed = true;
+        backExit.reset(); backGuarded = false;   // «الخروج من تلفزيونك»: a new visit, its count and its hint start again
         sa.urtv.home.tilawah.AdhanFront.home(true);   // «الأذان على شاشة التوقف فقط»: the adhan's alarm asks what is in front
         TypeService.homeFront(true);   // the Settings key is ours here (RemoteKeys): the service stops asking for keys
         A11yHeal.onStart(this);   // once per process: our accessibility service listed but not bound after an update (see A11yHeal)
@@ -3008,7 +3009,40 @@ public class MainActivity extends Activity {
                 return true;
             }
         }
+        if (e.getKeyCode() == KeyEvent.KEYCODE_BACK && backExitTakes(e)) return true;
         return super.dispatchKeyEvent(e);
+    }
+
+    private final BackExit backExit = new BackExit();
+    private boolean backGuarded;   // the Back now pressed goes through BackExit (decided on its first event)
+
+    /**
+     * «الخروج من تلفزيونك» (one Back by default, as always): with «ضغطة رجوع مطوّلة» or «ثلاث ضغطات رجوع», on a TV that keeps its own home,
+     * Back at the top of ours leaves only when held or pressed three times; the first ignored one of a visit says so. False: Back as always.
+     */
+    private boolean backExitTakes(KeyEvent e) {
+        int r;
+        if (e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0) {
+            String mode = BackExit.fromFragment(ConfigSnapshot.read(this).fragment);
+            boolean scrolled = scroll.getScrollY() > 0 && !dockCards.isEmpty();
+            backGuarded = BackExit.guards(mode, isDefaultHome(), scrolled);
+            if (!backGuarded) return false;
+            r = backExit.press(mode, e.getEventTime());
+        } else if (!backGuarded) {
+            return false;
+        } else if (e.getAction() == KeyEvent.ACTION_DOWN) {
+            r = backExit.repeat(e.getEventTime(), e.getDownTime());
+        } else if (e.getAction() == KeyEvent.ACTION_UP) {
+            r = backExit.release(e.getEventTime(), e.getDownTime());
+            backGuarded = false;
+        } else {
+            return true;
+        }
+        if (r == BackExit.LEAVE) finish();
+        else if (r == BackExit.HINT)
+            Toast.makeText(this, BackExit.THREE.equals(backExit.mode()) ? S.t("للخروج من تلفزيونك اضغط رجوع ثلاث مرات")
+                    : S.t("للخروج من تلفزيونك اضغط رجوع مطوّلًا"), Toast.LENGTH_SHORT).show();
+        return true;
     }
 
     private final RemoteKeys remoteKeys = new RemoteKeys();

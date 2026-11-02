@@ -466,6 +466,18 @@ final class Prefs {
     String quoteEvery() { return QuoteEvery.read(sp.getString("quoteEvery", QuoteEvery.DAY)); }
     void setQuoteEvery(String v) { sp.edit().putString("quoteEvery", QuoteEvery.read(v)).apply(); }
 
+    /** «الآية والحديث»: the verse-or-hadith card with both (default, as always), verses only or hadith only (VerseKind); #versekind= only then. */
+    String verseKind() { return VerseKind.read(sp.getString("verseKind", VerseKind.BOTH)); }
+    void setVerseKind(String v) { sp.edit().putString("verseKind", VerseKind.read(v)).apply(); }
+
+    /** «إظهار الثواني» (off by default): the seconds on the screensaver's clock; #seconds=1 only while on, so the page is otherwise as it was. */
+    boolean seconds() { return sp.getBoolean("seconds", false); }
+    void setSeconds(boolean v) { sp.edit().putBoolean("seconds", v).apply(); }
+
+    /** «الخروج من تلفزيونك»: one Back (default, as always), a long Back or three Backs leave our home opened from its tile (HomeExit). */
+    String homeExit() { return HomeExit.read(sp.getString("homeExit", HomeExit.PRESS)); }
+    void setHomeExit(String v) { sp.edit().putString("homeExit", HomeExit.read(v)).apply(); }
+
     /** The slim year strip under the clock, on the screensaver only (default off); sent to the page as #yearstrip=. */
     boolean yearStrip() { return sp.getBoolean("yearStrip", false); }
     void setYearStrip(boolean v) { sp.edit().putBoolean("yearStrip", v).apply(); }
@@ -550,6 +562,9 @@ final class Prefs {
             + ClockSetting.fragment(clock24())
             + Tr.fragment(lang())
             + QuoteEvery.fragment(quoteEvery())
+            + VerseKind.fragment(verseKind())
+            + (seconds() ? "&seconds=1" : "")
+            + HomeExit.fragment(homeExit())
             + (occasion() ? "" : "&occasion=0") + (nightDim() ? "" : "&nightdim=0") + (tasksPill() ? "" : "&taskspill=0")
             + (backSaver() ? "&backsaver=1" : "")
             + "&cardstyle=" + cardStyle()

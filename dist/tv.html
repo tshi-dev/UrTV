@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261102153225">
+<meta name="urtv-build" content="20261102155715">
 <title>شاشة تلفزيونك</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -428,6 +428,10 @@
     font-size:.28em;font-weight:500;color:var(--gold);
     align-self:flex-start;margin-top:.12em;margin-inline-end:.25em;
   }
+  /* «إظهار الثواني» (#seconds=1): small, on the minutes' baseline after them; each digit in a box of its own fixed width, so the
+     clock is as wide at :11 as at :58 and nothing around it moves when a second turns (the small clock's column counts them, --ckk) */
+  .clock .sec{font-size:.28em;font-weight:500;color:var(--gold);margin-inline-start:.3em;white-space:nowrap}
+  .clock .sec i{font-style:normal;display:inline-block;width:.62em;text-align:center}
   .subline{
     margin-top:1.4vh;display:flex;align-items:center;gap:.7em;
     font-size:clamp(12px,1.02vw,20px);font-weight:300;letter-spacing:0;color:#D8CDB6;
@@ -734,6 +738,10 @@ const CONFIG = {
   nightDim: _Q.get('nightdim') !== '0',
   // «تبديل الآية والحديث»: #versemin=3 a new verse or hadith every 3 minutes (a verse, then a hadith); anything else = one a day as always
   verseMin: _Q.get('versemin') === '3' ? 3 : 0,
+  // «الآية والحديث»: #versekind=verse only verses, #versekind=hadith only hadith; anything else = a verse, then a hadith, as always
+  verseKind: (v => v === 'verse' || v === 'hadith' ? v : 'both')(_Q.get('versekind')),
+  // «إظهار الثواني»: #seconds=1 the seconds on the screensaver's clock, small beside the minutes; anything else = none, as always
+  seconds: _Q.get('seconds') === '1',
   // «التفسير الميسر» under the verse of the day: #tafsir=1 (anything else = off)
   tafsir: _Q.get('tafsir') === '1',
   // from PR #28, each off unless asked for: #sunrise=1 the panel at the bottom right counts to the sunrise after Fajr's iqama and tells
@@ -861,6 +869,12 @@ function tickClock(){
   // one box per digit: browsers ignore letter-spacing on Arabic digits, and ٤ reaches into the next digit
   const digits = s => [...s].map(ch => '<i>' + ch + '</i>').join('');
   const key = (h24 ? p.h : h12) + ':' + p.mi;
+  const sec = CONFIG.seconds && document.getElementById('ck-s');
+  if(sec){   // «إظهار الثواني»: only the two digits' text changes, in boxes of a fixed width
+    const s = ar(pad(p.s));
+    if(sec.children[0].textContent !== s[0]) sec.children[0].textContent = s[0];
+    if(sec.children[1].textContent !== s[1]) sec.children[1].textContent = s[1];
+  }
   if(key === tickClock.last) return;   // ticks every second, redraws once a minute
   tickClock.last = key;
   document.getElementById('ck-h').innerHTML = digits(ar(h24 ? pad(p.h) : h12));   // 24-hour: «٠٧», still one box per digit
@@ -3088,8 +3102,9 @@ function pickShort(list, at, len, card){
 // The verse card's turn: the day as always, or with #versemin=3 the 3-minute slot of the clock (even = a verse, odd = a hadith)
 const quoteTurn = () => CONFIG.verseMin ? Math.floor(Date.now() / (CONFIG.verseMin * 60000)) : riyadhDayNumber();
 function quoteOfDay(card){
-  const n = quoteTurn(), half = Math.floor(n / 2);
-  if(VERSES.length && n % 2 === 0){
+  // both (the default): even turns a verse, odd a hadith, each list a step every two turns; verse or hadith alone: that list, a step every turn
+  const n = quoteTurn(), kind = CONFIG.verseKind, half = kind === 'both' ? Math.floor(n / 2) : n;
+  if(VERSES.length && (kind === 'verse' || (kind === 'both' && n % 2 === 0))){
     const v = pickShort(VERSES, half, x => x.text.length, card);
     return {title:CONFIG.verseMin ? 'آية كريمة' : 'آية اليوم', rows:[`<li class="quote quran${v.text.length > 330 ? ' q4' : quoteSize(v.text.length)}"><span class="orn">﴿</span><span class="qt">${esc(v.text)}</span><span class="orn">﴾</span></li>`, `<li class="src">${esc(v.surah)} · ${ar(v.ayah)}</li>`]
       .concat(CONFIG.tafsir && v.tafsir ? [`<li class="tafsir">${esc(v.tafsir)}</li>`] : [])};
@@ -3603,7 +3618,9 @@ function boot(){
   if(CONFIG.clockSize !== 'large') document.documentElement.classList.add('ck-' + CONFIG.clockSize);
   // the small clock's column: its widest time of day in ems, every minute measured in Thmanyah Display (١٢:٣٣ م is 2.60 of them, 10:00 م
   // in Latin digits 3.25), so the cards beside it and the panels under it never move
-  if(CONFIG.clockSize === 'small') document.documentElement.style.setProperty('--ckk', LATIN ? '3.26' : '2.62');
+  // with the seconds, their two boxes and the space before them: .28em × (.3 + 2 × .62) = .43 of the clock's em more, at any time
+  if(CONFIG.clockSize === 'small') document.documentElement.style.setProperty('--ckk', ((LATIN ? 3.26 : 2.62) + (CONFIG.seconds ? .44 : 0)).toFixed(2));
+  if(CONFIG.seconds && !CONFIG.widget) document.getElementById('ck-m').insertAdjacentHTML('afterend', '<span class="sec" id="ck-s"><i></i><i></i></span>');
   buildMarkets();
   restoreSnap();
   // #wxmore=1: its line under the city, once (the saved copy of the top left may bring one back: keep that one); off, none at all
@@ -3640,7 +3657,10 @@ function boot(){
   nowPlayingTick();
   setInterval(nowPlayingTick, 60*1000);
   setInterval(adhanLiveTick, 3000);
-  setInterval(tickClock, 1000);
+  if(CONFIG.seconds){   // the seconds turn on the second, not a drifting interval's moment (one could be shown twice or skipped)
+    const onSecond = () => { tickClock(); setTimeout(onSecond, 1000 - Date.now() % 1000 + 15); };
+    setTimeout(onSecond, 1000 - Date.now() % 1000 + 15);
+  } else setInterval(tickClock, 1000);
   setInterval(()=>{ tickDates(); tickPrayer(); tickOccasion(); wxExpire(); wxSource(); if(!SLOT_MATCHES) renderSlot(); }, 15000);
   if(SLOT_MATCHES){   // the matches timers run only while the slot shows matches
     setInterval(() => renderMatches(false), 60000);

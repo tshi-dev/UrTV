@@ -378,6 +378,41 @@ for (const [hash, every] of [['panel=verse', 0], ['panel=verse&versemin=3', 3], 
   await ctx.close();
 }
 
+// ---- «الآية والحديث»: #versekind=verse verses only, #versekind=hadith hadith only, a new one each turn; anything else a verse then a hadith,
+// as always (the same texts as before for the default)
+{
+  const runs = {};
+  for (const hash of ['panel=verse&versemin=3', 'panel=verse&versemin=3&versekind=both', 'panel=verse&versemin=3&versekind=verse',
+    'panel=verse&versemin=3&versekind=hadith', 'panel=verse&versemin=3&versekind=Verse', 'panel=verse&versekind=verse']) {
+    const { p, ctx, errors } = await open('tv.html', hash);
+    runs[hash] = await p.evaluate(() => {
+      const real = Date.now, base = 180000 * 2000;
+      const at = ms => { Date.now = () => base + ms; renderPanel(false);
+        return [document.getElementById('week-hd').textContent, document.querySelector('#week-list li.quote').textContent]; };
+      const turns = [0, 1, 2, 3].map(k => at(k * 180000));
+      Date.now = real;
+      return { kind: CONFIG.verseKind, turns };
+    });
+    runs[hash].errors = errors;
+    await ctx.close();
+  }
+  const titles = h => runs[h].turns.map(x => x[0]).join(',');
+  const texts = h => runs[h].turns.map(x => x[1]);
+  const plain = 'panel=verse&versemin=3';
+  check('versekind: none or both is a verse, then a hadith, the very texts of before',
+    titles(plain) === 'آية كريمة,حديث شريف,آية كريمة,حديث شريف' && JSON.stringify(texts(plain)) === JSON.stringify(texts(plain + '&versekind=both'))
+    && runs[plain].kind === 'both' && runs[plain + '&versekind=Verse'].kind === 'both' && titles(plain + '&versekind=Verse') === titles(plain),
+    JSON.stringify(runs).slice(0, 500));
+  const v = plain + '&versekind=verse', hd = plain + '&versekind=hadith';
+  check('versekind=verse: a verse every turn, a new one each time', titles(v) === 'آية كريمة,آية كريمة,آية كريمة,آية كريمة'
+    && new Set(texts(v)).size === 4 && texts(v)[0] === texts(plain)[0], JSON.stringify(runs[v]).slice(0, 400));
+  check('versekind=hadith: a hadith every turn, a new one each time', titles(hd) === 'حديث شريف,حديث شريف,حديث شريف,حديث شريف'
+    && new Set(texts(hd)).size === 4, JSON.stringify(runs[hd]).slice(0, 400));
+  check('versekind=verse, one a day: «آية اليوم»', runs['panel=verse&versekind=verse'].turns.every(x => x[0] === 'آية اليوم'),
+    JSON.stringify(runs['panel=verse&versekind=verse']).slice(0, 300));
+  check('versekind: no page errors', Object.values(runs).every(r => !r.errors.length), Object.values(runs).flatMap(r => r.errors).join('; '));
+}
+
 // ---- photo interval: #photos=N (5 10 15 30 60, and 1), anything else 30; the photo changes on that slot
 for (const [hash, want] of [['', 30], ['photos=5', 5], ['photos=60', 60], ['photos=1', 1], ['photos=7', 30], ['photos=abc', 30], ['photos=0', 30], ['photos=0.25', 30]]) {
   const { p, ctx, errors } = await open('tv.html', hash);
@@ -4039,6 +4074,58 @@ const CARD_KINDS_TEST = ['shows','prayers','forecast','hourly','prayerrow','next
   const { p, ctx } = await open('tv.html', 'clocksize=huge');
   check('clocksize: anything else is large', await p.evaluate(() => CONFIG.clockSize === 'large' && !/ck-/.test(document.documentElement.className)));
   await ctx.close();
+}
+
+// ---- «إظهار الثواني»: #seconds=1 the seconds beside the minutes, in every clock size and screen size: nothing overlaps or goes off screen,
+// and the clock is exactly as wide at every second (fixed boxes: no re-layout when a second turns); without it, no seconds at all
+{
+  for (const [w, h] of [[960, 540], [1280, 720], [1920, 1080]]) {
+    for (const size of ['large', 'medium', 'small']) {
+      const bad = [], errs = [];
+      for (const [panel, extra] of [['prayers', ''], ['verse', ''], ['matches', ''], ['verse', '&panel2=prayers'], ['prayers', '&clock=24'], ['prayers', '&digits=latin']]) {
+        const { p, ctx, errors } = await open('tv.html', `teams=136013&panel=${panel}&slot=weather&seconds=1&clocksize=${size}${extra}`, { width: w, height: h, now: HOME_NOW });
+        if (SAMPLE[panel]) await p.evaluate(`(${SAMPLE[panel]})(); renderPanel(false);`);
+        const r = await p.evaluate(() => {
+          const box = e => { const b = e.getBoundingClientRect(); return { l: b.left, r: b.right, t: b.top, b: b.bottom, w: b.width }; };
+          const vis = s => { const e = document.querySelector(s); return e && getComputedStyle(e).display !== 'none' && e.getBoundingClientRect().width ? e : null; };
+          const parts = ['.top', '.clock', '.bottom'].map(s => [s, vis(s)]).filter(x => x[1]).map(x => [x[0], box(x[1])])
+            .concat([...document.querySelectorAll('.week')].filter(e => getComputedStyle(e).display !== 'none' && e.getBoundingClientRect().width).map((e, i) => ['.week' + i, box(e)]));
+          const hit = [];
+          for (let i = 0; i < parts.length; i++) for (let j = i + 1; j < parts.length; j++) {
+            const a = parts[i][1], b = parts[j][1];
+            if (a.l < b.r - 1 && b.l < a.r - 1 && a.t < b.b - 1 && b.t < a.b - 1) hit.push(parts[i][0] + '×' + parts[j][0]);
+          }
+          const off = parts.filter(([, b]) => b.l < -1 || b.r > innerWidth + 1 || b.b > innerHeight + 1).map(x => x[0]);
+          const sec = document.getElementById('ck-s'), clock = document.querySelector('.clock');
+          const inClock = sec && sec.getBoundingClientRect().right <= clock.getBoundingClientRect().right + 0.5;
+          // every second of a minute, written as the tick writes it: the clock's width and every part's place stay the same
+          const where = () => JSON.stringify([...document.querySelectorAll('.clock, .week, .bottom, .top')].map(e => { const b = e.getBoundingClientRect(); return [b.left, b.top, b.width, b.height]; }));
+          const first = where(), widths = new Set();
+          let moved = 0;
+          for (let s = 0; s < 60; s++) {
+            const d = ar(pad(s)); sec.children[0].textContent = d[0]; sec.children[1].textContent = d[1];
+            widths.add(clock.getBoundingClientRect().width);
+            if (where() !== first) moved++;
+          }
+          return { hit, off, inClock, shown: sec && sec.textContent.length === 2, widths: widths.size, moved };
+        });
+        if (r.hit.length || r.off.length || !r.inClock || !r.shown || r.widths !== 1 || r.moved) bad.push(panel + extra + ':' + JSON.stringify(r));
+        errs.push(...errors);
+        await ctx.close();
+      }
+      check(`seconds, clock ${size} at ${w}x${h}: fits beside every card, nothing moves as the seconds turn`, !bad.length && !errs.length, bad.join(' | ') + errs.join('; '));
+    }
+  }
+  const { p, ctx, errors } = await open('tv.html', 'panel=verse');
+  check('no #seconds: no seconds on the clock, as always', !errors.length && await p.evaluate(() => !CONFIG.seconds && !document.getElementById('ck-s')));
+  await ctx.close();
+  const o = await open('tv.html', 'seconds=1', { now: new Date('2026-10-22T09:15:07Z') });
+  const s = await o.p.evaluate(() => document.getElementById('ck-s').textContent);
+  check('#seconds=1: the seconds of the clock, in Arabic digits', !o.errors.length && s === '٠٧', s);
+  await o.ctx.close();
+  const wd = await open('tv.html', 'seconds=1&widget=1&home_panel=verse');
+  check('the home\'s cards (widget): no seconds', !wd.errors.length && await wd.p.evaluate(() => !document.getElementById('ck-s')));
+  await wd.ctx.close();
 }
 
 // ---- the weather at the top left: the condition and the dust are two facts, and the source with the reading's age is a small line

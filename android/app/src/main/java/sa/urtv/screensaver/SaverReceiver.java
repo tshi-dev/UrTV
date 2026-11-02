@@ -21,7 +21,7 @@ import java.util.Locale;
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET
  *       [--es city 'الرس'] [--es lat 25.86 --es lon 43.49 --es tz Asia/Kuwait]   (tz is needed for a place that is not in the list) [--es teams '136013:Al-Hilal,150643:Al-Zulfi']
  *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
- *       [--es sunrise on|off] [--es prayerbar on|off] [--es wxmore on|off] [--es months default|levant] [--es verse day|3] [--es occasion on|off] [--es nightdim on|off] [--es taskspill on|off] [--es backsaver on|off] [--es genres Drama,Comedy] [--es langs English]
+ *       [--es sunrise on|off] [--es prayerbar on|off] [--es wxmore on|off] [--es months default|levant] [--es verse day|3] [--es versekind both|verse|hadith] [--es seconds on|off] [--es backexit press|hold|three] [--es occasion on|off] [--es nightdim on|off] [--es taskspill on|off] [--es backsaver on|off] [--es genres Drama,Comedy] [--es langs English]
  *       [--es photos 30] [--es idle 10] [--es digits hindi|latin] [--es hijrioffset -2..2] [--es clock24 on|off] [--es lang ar|en]
  *       [--es cardstyle current|dark1|glass1|dark3|glass3] [--es national auto|off]
  *       [--es markets tasi,gold,btc] [--es mkstyle arrows|prices] [--es mkbar on|off] [--es clocksize large|medium|small] [--es stocks 2222,1120,AAPL]
@@ -57,6 +57,9 @@ import java.util.Locale;
  * backsaver = on or off (the default): «الرجوع يفتح شاشة التوقف», Back on our home starts the screensaver; the home follows it when it
  * changes (optimize/dock.sh backsaver sends it beside the home's own switch, so the row says what the home does).
  * verse = day (the default: a verse one day, a hadith the next) or 3 (a new one every 3 minutes): the verse-or-hadith card (QuoteEvery).
+ * versekind = both (the default, as always), verse or hadith: what that card shows (VerseKind).
+ * seconds = on or off (the default): «إظهار الثواني», the seconds on the screensaver's clock.
+ * backexit = press (the default, as always), hold or three: «الخروج من تلفزيونك», how Back leaves our home where the TV keeps its own (HomeExit).
  * slot = what the bottom-left slot shows (Prefs.SLOTS). countdown = the date (YYYY-MM-DD) slot=countdown counts down to, or
  * "clear"; cdname = its name (up to 40 characters).
  * national = auto (as always from now: the quiet green look on National Day, 21-25 September, and Founding Day, 20-24 February) or off.
@@ -241,6 +244,12 @@ public class SaverReceiver extends BroadcastReceiver {
             if (x[1] != null && !"on".equals(x[1]) && !"off".equals(x[1])) return "error: " + x[0] + " is one of on off";
         String verse = i.getStringExtra("verse");
         if (verse != null && !QuoteEvery.valid(verse)) return "error: verse is one of day 3";
+        String verseKind = i.getStringExtra("versekind");
+        if (verseKind != null && !VerseKind.valid(verseKind)) return "error: versekind is one of both verse hadith";
+        String seconds = i.getStringExtra("seconds");
+        if (seconds != null && !"on".equals(seconds) && !"off".equals(seconds)) return "error: seconds is one of on off";
+        String backExit = i.getStringExtra("backexit");
+        if (backExit != null && !HomeExit.valid(backExit)) return "error: backexit is one of press hold three";
         String greeting = i.getStringExtra("greeting");
         if (greeting != null && !"on".equals(greeting) && !"off".equals(greeting))
             return "error: greeting is one of on off";
@@ -372,6 +381,9 @@ public class SaverReceiver extends BroadcastReceiver {
         if (wxMore != null) p.setWxMore("on".equals(wxMore));
         if (months != null) p.setMonths(months);
         if (verse != null) p.setQuoteEvery(verse);
+        if (verseKind != null) p.setVerseKind(verseKind);
+        if (seconds != null) p.setSeconds("on".equals(seconds));
+        if (backExit != null) p.setHomeExit(backExit);
         if (occasion != null) p.setOccasion("on".equals(occasion));
         if (nightDim != null) p.setNightDim("on".equals(nightDim));
         if (tasksPill != null) p.setTasksPill("on".equals(tasksPill));
@@ -513,6 +525,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nyearstrip: " + (p.yearStrip() ? "on" : "off")
             + "\nsunrise: " + (p.sunrise() ? "on" : "off") + "\nprayerbar: " + (p.prayerBar() ? "on" : "off")
             + "\nwxmore: " + (p.wxMore() ? "on" : "off") + "\nmonths: " + p.months() + "\nverse: " + p.quoteEvery()
+            + "\nversekind: " + p.verseKind() + "\nseconds: " + (p.seconds() ? "on" : "off") + "\nbackexit: " + p.homeExit()
             + "\noccasion: " + (p.occasion() ? "on" : "off") + "\nnightdim: " + (p.nightDim() ? "on" : "off") + "\ntaskspill: " + (p.tasksPill() ? "on" : "off")
             + "\nbacksaver: " + (p.backSaver() ? "on" : "off")
             + "\nprayermethod: " + p.prayerMethod()

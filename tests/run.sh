@@ -77,6 +77,7 @@ python3 tests/adhkar_tool_test.py
 python3 tests/saver_tasks_test.py
 python3 tests/saver_quote_test.py
 python3 tests/quote_every_test.py
+python3 tests/user_options_test.py   # «الآية والحديث», «إظهار الثواني», «الخروج من تلفزيونك»: off by default
 python3 tests/photo_interval_test.py
 python3 tests/hide_parts_test.py
 python3 tests/update_row_test.py
