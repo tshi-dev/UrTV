@@ -184,13 +184,18 @@ python3 .github/tools/fetch_quran.py --check   # ranged GET of every stream URL
 - **Stations** are eleven live streams from mp3quran/qurango.net, with the Saudi Quran Radio first.
 - Streams move or go quiet; the `--check` run verifies one kilobyte of each URL. At the time of
   writing all 51 URLs answered with `audio/mpeg`. A station that fails may be temporarily down;
-  the app retries and reports it.
-- **«البث المباشر من الحرم»** is a link, not a stream: a row after the stations that opens the
-  broadcaster's own live page or channel (the Saudi Broadcasting Authority's Quran channel) in its own
-  app or the browser (`ACTION_VIEW`). Nothing is played, copied or re-hosted here, and no aggregator is
-  used. The link is the constant `HaramLive.URL` (https, on `sba.sa`, `aloula.sa` or `youtube.com`
-  only); it is **empty** until the official link is checked by hand, and while it is empty the row
-  does not show. `tests/haram_live_test.py`.
+  the app retries and reports it. Before the player gets a station, the app follows its redirects
+  itself (radiojar sends https to its CDN over plain http, which the TV's player did not follow) and
+  tries a server error (backup.qurango.net's random 500) three times, 2 s then 4 s apart, before it says
+  it cannot play (`StreamUrl`, `tests/stream_url_test.py`).
+- **«البث المباشر من الحرم»** is two links, not streams: rows after the stations that open the Saudi
+  Broadcasting Authority's own YouTube channels live, Makkah on the Quran channel
+  (`https://www.youtube.com/@SaudiQuranTv/live`) and Madinah on the Sunnah channel
+  (`https://www.youtube.com/@SaudiSunnahTv/live`), both linked from sba.sa's footer. The `/live` address
+  follows whatever the channel broadcasts now (a video id would change). OK opens it in the YouTube app,
+  else SmartTube, else the browser (`ACTION_VIEW`). Nothing is played, copied or re-hosted here, and no
+  aggregator is used. The links are `HaramLive.LIVE` (https, on `sba.sa`, `aloula.sa` or `youtube.com`
+  only). `tests/haram_live_test.py`.
 
 The assets live in `android/launcher/src/main/assets/quran/` (`reciters.json`, `stations.json`,
 `surahs.json`). `tests/tilawah_test.py` checks the catalog, the adhan, the cleartext
