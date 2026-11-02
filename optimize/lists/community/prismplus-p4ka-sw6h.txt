@@ -1,0 +1,25 @@
+# UrTV community list: prismplus-p4ka-sw6h
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/prismplus-p4ka-sw6h/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: PRISM PRISMPLUS
+# match-model: PRISMP4KA4KAITV
+# match-device: SW6H
+
+com.coocaa.demonow.lightining
+com.smartdevice.epopplayer
+com.smartdevice.aftersale
+com.smartdevice.dailymanage
+com.smartdevice.dailyshortcut
+com.smartdevice.myapp
+com.tianci.localmedia
+com.smartdevice.factory
+mediatek.factorymenu.ui
+com.Smartdevice.emanual
+fusion.android.tv.demo
+com.mstar.android.tv.disclaimercustomization
+com.google.android.videos
+com.google.android.feedback
+com.google.android.tungsten.setupwraith
+com.google.android.apps.tv.launcherx

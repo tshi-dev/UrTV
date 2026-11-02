@@ -83,7 +83,7 @@ final class SetupCommunity {
         Set<String> homes = homes(tv.text("cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME 2> /dev/null"));
         if (homes.isEmpty()) return failed("لم يقل التلفزيون أي تطبيق شاشته الرئيسية، فما أوقفنا شيئاً من قائمة المجتمع. اضغط «جهّز كل شي» مرة ثانية.");
         List<String> pkgs = new ArrayList<>();
-        for (String p : CommunityMatch.packages(choice.meta, Arrays.asList(SetupLists.KEEP), homes, installed)) if (!CommunityMatch.core(p)) pkgs.add(p);
+        for (String p : CommunityMatch.packages(choice.meta, Arrays.asList(SetupLists.KEEP), homes, installed)) if (!CommunityMatch.core(p) && !CommunityMatch.input(p)) pkgs.add(p);
         // what owners often want: left on, and asked
         List<String> ask = new ArrayList<>();
         for (String p : pkgs) if (CommunityMatch.ask(p, lists.ask)) ask.add(p);
@@ -106,6 +106,9 @@ final class SetupCommunity {
         String base = choice.meta.name;
         store.put(NAME, base + "\n");
         if (todo.isEmpty()) return done("قائمة المجتمع لطراز تلفزيونك: لا شيء فيها نوقفه على هذا التلفزيون.");
+        todo = guarded(todo);   // disable.sh's input guard: what drives an HDMI input or is a keyboard stays on
+        if (todo == null) return failed(GUARD_SAID);
+        if (todo.isEmpty()) return done("قائمة المجتمع لطراز تلفزيونك: لا شيء فيها نوقفه على هذا التلفزيون.");
         union(APPLIED, todo);   // written BEFORE the commands: a run cut half way is still undone
         union(LEDGER, todo);
         for (String p : todo) tv.run("pm disable-user --user 0 " + p);
@@ -113,6 +116,16 @@ final class SetupCommunity {
         int off = 0;
         if (now != null) for (String p : todo) if (now.contains(p)) off++;
         return done("أوقفنا " + off + " تطبيقاً من قائمة المجتمع لطراز تلفزيونك (CleanYourTV)" + (off < todo.size() ? "؛ " + (todo.size() - off) + " رفض التلفزيون إيقافها." : "."));
+    }
+
+    static final String GUARD_SAID = "لم يقل التلفزيون أي التطبيقات تشغّل مداخل HDMI أو لوحة المفاتيح، فما أوقفنا شيئاً من قائمة المجتمع. أعد تشغيل التلفزيون ثم اضغط «جهّز كل شي» مرة ثانية.";
+
+    /** disable.sh's input guard (InputGuard): the packages without those the TV says drive an input or are a keyboard; null when it did not say. */
+    private List<String> guarded(List<String> pkgs) throws IOException {
+        InputGuard.Answer a = InputGuard.parse(tv.text(InputGuard.command(pkgs)));
+        if (a == null || a.hung) return null;
+        if (!a.left().isEmpty()) out.line("تركنا شغّالاً ما يشغّل مداخل التلفزيون (HDMI، الموالف) أو لوحة المفاتيح: " + String.join(" ", a.left()));
+        return InputGuard.without(pkgs, a.left());
     }
 
     /** Never what UAD-ng rates Unsafe; null when its list cannot be fetched (then nothing of the community list is applied). */
@@ -161,8 +174,12 @@ final class SetupCommunity {
         List<String> yes = new ArrayList<>();
         for (String p : asked) {
             if (!Boolean.TRUE.equals(answers.get(p))) continue;
-            if (!installed.contains(p) || disabled.contains(p) || CommunityMatch.core(p) || Arrays.asList(SetupLists.KEEP).contains(p) || CommunityMatch.NOT_FOR_US.matcher(p).find()) continue;
+            if (!installed.contains(p) || disabled.contains(p) || CommunityMatch.core(p) || CommunityMatch.input(p) || Arrays.asList(SetupLists.KEEP).contains(p) || CommunityMatch.NOT_FOR_US.matcher(p).find()) continue;
             yes.add(p);
+        }
+        if (!yes.isEmpty()) {
+            yes = guarded(yes);
+            if (yes == null) return failed(GUARD_SAID);
         }
         if (!yes.isEmpty()) {
             union(APPLIED, yes);

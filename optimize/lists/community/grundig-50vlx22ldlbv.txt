@@ -1,0 +1,23 @@
+# UrTV community list: grundig-50vlx22ldlbv
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/grundig-50vlx22ldlbv/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: GRUNDIG
+# match-model: 50VLX22LDLBV50ANDROIDTV CO3PLUS
+# match-device: SINCHON
+
+com.google.android.feedback
+com.google.android.partnersetup
+android.autoinstalls.config.arcelik.an
+com.mstar.android.tv.disclaimercustomization
+com.google.android.syncadapters.calendar
+com.google.android.onetimeinitializer
+com.android.printspooler
+com.netflix.ninja
+com.google.android.youtube.tvmusic
+com.google.android.katniss
+com.google.android.tv.remote.service
+com.google.android.tvlauncher
+com.google.android.tvrecommendations
+com.google.android.backdrop

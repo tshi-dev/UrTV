@@ -7,7 +7,7 @@ import java.util.Set;
  * sends them (as an explicit broadcast) to a receiver that lives in the stock launcher, so they would do nothing. While our home is in
  * front it sees the key first, and this says what to do with it: open YouTube or Netflix (only when that app is installed), the Settings
  * key (a user's request): a short press opens the TV's own settings, a long press ({@link #LONG_MS}) OUR settings; or open the inputs list
- * (the Menu key's list: the «star» key does what Menu does).
+ * (the Menu key's list: the «star» key does what Menu does). TCL's Guard key (4140) does nothing there.
  *
  * Only a press (DOWN, first, not a repeat) acts; the repeats and the release of a key that acted are consumed, so nothing else reacts to
  * them. The Settings key waits to know which press it is: its DOWN is consumed and kept, and it acts once, either when it has been held
@@ -28,6 +28,11 @@ final class RemoteKeys {
     private static final int KEYCODE_BUTTON_4 = 191;   // the Netflix key
     /** TCL's vendor keys (the UrTVKeys log and the Clean Your TV notes): a keycode of 1000 and up reaches only the window in front, so the home must answer it. */
     private static final int TCL_NETFLIX = 4062, TCL_YOUTUBE = 4065, TCL_PRIME = 4099;
+    /**
+     * TCL's Guard key (4140, a TCL 65P735 in the Clean Your TV notes): it opens TCL's memory cleaner (com.tcl.guard), which kills apps in the
+     * background, our adhan among them. On our home it does nothing: the press, its repeats and its release are consumed.
+     */
+    private static final int TCL_GUARD = 4140;
     /** the Settings key of a TCL G05 remote (UrTVKeys logged key=4077) */
     private static final int TCL_SETTINGS = 4077;
     /** Linux KEY_JOURNAL (0x242): the star key of a TCL G08 remote. Android's generic key map has no name for it, so the keycode may be 0. */
@@ -126,6 +131,7 @@ final class RemoteKeys {
             case KEYCODE_BUTTON_4:
             case TCL_NETFLIX: return app(NETFLIX, installed);
             case TCL_PRIME: return app(PRIME, installed);
+            case TCL_GUARD: return EAT_IT;   // TCL's cleaner would kill our adhan: nothing opens
             default: break;   // the Settings key is decided in decide(): short or long
         }
         if (scanCode == SCAN_STAR) return new Decision(OPEN_INPUTS, null);

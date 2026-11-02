@@ -1,0 +1,33 @@
+# UrTV community list: tcl-75p8k
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/tcl-75p8k/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: TCL
+# match-model: 75P8K G104KGB
+# match-device: G10
+
+com.tcl.ttvs
+com.tcl.guard
+com.tcl.usercenter
+com.tcl.useragreement
+com.tcl.interactive
+com.google.android.feedback
+com.google.android.partnersetup
+com.tcl.waterfall.overseas
+com.tcl.channelplus
+com.tcl.gamebar
+com.google.android.apps.tv.dreamx
+com.google.android.marvin.talkback
+com.android.printspooler
+com.android.wallpaper.livepicker
+com.android.wallpaperbackup
+com.android.sharedstoragebackup
+com.android.backupconfirm
+com.google.android.tungsten.setupwraith
+com.google.android.apps.tv.launcherx
+tv.wuaki.apptv
+com.discovery.dplay
+com.yle.webtv
+ar.tvplayer.tv
+com.google.android.play.games

@@ -56,6 +56,7 @@ public class SetupEngineRun {
         }
 
         String answer(String c) {
+            if (c.startsWith("s=$(getprop ro.build.version.sdk); for p in ")) return "END_OF_LIST\n";   // disable.sh's input guard (InputGuard): no input driver here
             if (!c.endsWith("; echo END_OF_LIST") && c.contains("; ")) {   // a line of several commands (the backup's, autostart's): each one's answer in turn
                 StringBuilder b = new StringBuilder();
                 for (String part : c.split("; ")) b.append(answer(part));

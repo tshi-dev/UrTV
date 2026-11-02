@@ -1,10 +1,10 @@
 # UrTV community list: sony-bravia-4k-vh2
 # Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
 # MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
-# Source: examples/sony-bravia-4k-vh2/debloat.txt at commit 6cad2be3a130a84494c3ea9b805accac6e5013e8, taken 2026-10-23.
+# Source: examples/sony-bravia-4k-vh2/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
 # Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
 # match-brand: SONY
-# match-model: BRAVIA4KVH2 BRAVIAVH2 KD55X80J
+# match-model: BRAVIA4KVH2 BRAVIAVH2 KD55X80J XR65A83J
 # match-device: BRAVIAVH2
 
 tv.samba.ssm
@@ -26,4 +26,17 @@ com.sony.dtv.sonyselect
 com.sony.dtv.seeds.iot
 com.sony.dtv.seeds.iot.remotestart
 com.sony.dtv.b2b.vendorprotocol
+com.sony.dtv.sonytab
+android.autoinstalls.config.sony.bravia
+com.sony.dtv.lastaccess
+com.sony.dtv.usercontext
+com.vewd.core.integration.dia
+com.sony.dtv.helpguidecontents
+com.sony.dtv.livingfit
+com.sony.dtv.osat.music
+com.amazon.music.tv
+com.gaana.fire_tv
+com.appgeneration.itunerfree
+com.sonypicturescore
+com.google.android.videos
 com.google.android.tungsten.setupwraith

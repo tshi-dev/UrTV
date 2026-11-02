@@ -1,0 +1,23 @@
+# UrTV community list: haier-hr9216eu
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/haier-hr9216eu/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: HAIER
+# match-model: HR9216EU MATRIXTVGE
+# match-device: HAEUNDAE
+
+com.haierubic.usmartdevice
+com.haier.oemtabprovider
+com.haier.apps
+com.haier.launcher.haiermatrix
+com.haier.tvhousekeeper
+com.haier.emanual9603
+com.google.android.feedback
+tv.anoki.acr.anokiacroptin
+com.mediatek.android.leanbacklauncher.partnercustomizer
+com.google.android.play.games
+fusion.android.tv.demo
+com.google.android.youtube.tvmusic
+com.google.android.apps.tv.dreamx
+com.google.android.tungsten.setupwraith

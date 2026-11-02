@@ -108,6 +108,14 @@ key	4065	0	0	0	Netflix,Prime	PASS	YouTube not installed: 4065 passed on
 key	4099	0	0	0	YouTube,Netflix	PASS	Prime Video not installed: 4099 passed on
 key	4099	0	0	0		PASS	nothing installed: 4099 passed on
 reset							-
+key	4140	0	0	0	YouTube,Netflix,Prime	EAT	TCL Guard key (4140): nothing opens (TCL's cleaner would kill our adhan)
+key	4140	0	0	2	YouTube,Netflix,Prime	EAT	its repeats are consumed
+key	4140	0	1	0	YouTube,Netflix,Prime	EAT	its release is consumed
+key	4140	0	1	0	YouTube,Netflix,Prime	PASS	a second release is nobody's
+reset							-
+key	4140	0	0	0		EAT	the Guard key does nothing with no app installed too
+key	4140	0	1	0		EAT	its release consumed
+reset							-
 key	4077	0	0	0		EAT	TCL G05 Settings key (4077): the press waits	0
 key	4077	0	1	0		TV_SETTINGS	a short press: the TV's settings	150
 reset						-	

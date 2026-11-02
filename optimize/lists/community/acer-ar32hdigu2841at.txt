@@ -1,0 +1,33 @@
+# UrTV community list: acer-ar32hdigu2841at
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/acer-ar32hdigu2841at/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: ACER
+# match-model: AR32HDIGU2841AT32HD
+# match-device: R3GTV
+
+com.apps.function.gdpr
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.apps.mk.wd
+android.autoinstalls.config.scbc.device
+com.realtek.leanbacklauncher.partnercustomizer
+com.google.android.partnersetup
+com.apps.esticker
+com.apps.esticker3
+com.apps.biz.mt
+com.apps.biz.ds
+com.apps.tvmanager
+com.mk.tv.meeting.service
+com.apps.wifihotspot
+com.apps.function.audiolink
+com.mk.tv.timeclock
+com.google.android.apps.tv.dreamx
+com.google.android.apps.mediashell
+com.creative.fastscreen.tv
+com.apps.scast
+com.google.android.play.games
+com.mxtech.videoplayer.television
+com.apps.usbmediaplayer
+com.google.android.youtube.tvmusic

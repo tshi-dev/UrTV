@@ -1,0 +1,35 @@
+# UrTV community list: oppo-k9-55-oppocnm632
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/oppo-k9-55-oppocnm632/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: OPPO
+# match-model: K955 OPPOCNM632
+# match-device: 
+
+com.heytap.tv.heycast
+com.hpplay.happyplay.aw
+com.apowersoft.mirror.tv
+com.heytap.iot.castservice
+com.heytap.optvmiracastservice
+com.opos.ott
+com.heytap.tv.pictorial
+com.heytap.tv.imagewall
+com.heytap.tv.msgboard
+com.heytap.mcs
+com.nearme.instant.platform.tv
+com.heytap.feedback
+com.heytap.tv.remotediagnosing
+com.oplus.crashbox
+tpv.factorymenu.ui
+mediatek.factorymenu.ui
+com.cvte.factory.service
+com.cvte.factory.at
+com.cvte.fac.menu
+com.cvte.license.at
+com.gaochuang.factory.at
+com.konka.factory.at
+com.heytap.tv.userguide
+com.heytap.tv.oobe
+com.optv.aiengine
+com.heytap.tv.aicaption

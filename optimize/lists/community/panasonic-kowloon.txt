@@ -1,0 +1,20 @@
+# UrTV community list: panasonic-kowloon
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/panasonic-kowloon/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: PANASONIC
+# match-model: GOOGLETVLCD
+# match-device: KOWLOON
+
+com.netflix.ninja
+com.amazon.amazonvideo.livingroom
+com.disney.disneyplus
+com.viaplay.android
+com.google.android.youtube.tvmusic
+com.google.android.play.games
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.google.android.feedback
+com.vestel.vestelreporter
+fusion.android.tv.demo

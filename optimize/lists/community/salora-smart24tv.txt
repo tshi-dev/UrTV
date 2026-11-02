@@ -1,0 +1,24 @@
+# UrTV community list: salora-smart24tv
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/salora-smart24tv/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: SALORA
+# match-model: SMART24TV
+# match-device: TOKYO
+
+com.vestel.vestelreporter
+com.vestel.tv.speedup
+com.mstar.android.tv.disclaimercustomization
+android.autoinstalls.config.vestel.cosmos
+com.vestel.tv.eib
+com.google.android.feedback
+com.google.android.syncadapters.calendar
+com.android.providers.calendar
+com.google.android.videos
+com.google.android.play.games
+com.mediatek.tv.freeviewplay
+com.google.android.tvrecommendations
+com.google.android.leanbacklauncher.partnercustomizer
+com.google.android.backdrop
+com.google.android.tvlauncher

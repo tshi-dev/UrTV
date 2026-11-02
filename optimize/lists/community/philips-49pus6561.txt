@@ -1,0 +1,53 @@
+# UrTV community list: philips-49pus6561
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/philips-49pus6561/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: PHILIPS
+# match-model: 49PUS656112 QM163E QM16XEU
+# match-device: QM16XEU
+
+org.droidtv.candeebug
+org.droidtv.gel
+org.droidtv.usagelogger
+org.droidtv.tv.frameworklogger
+com.google.android.feedback
+org.droidtv.demome
+org.droidtv.nettvrecommender
+org.droidtv.sticker
+com.google.android.tvrecommendations
+com.google.android.tvtutorials
+org.droidtv.nettv.market
+org.droidtv.nettvapps
+org.droidtv.nettv_launcherapp
+org.droidtv.smarttvhome
+org.droidtv.nettvregistration
+org.droidtv.twittershare
+org.droidtv.dropboxprovider
+com.google.android.sss
+com.google.android.sss.authbridge
+com.google.android.partnersetup
+org.droidtv.nettvapp1984
+org.droidtv.nettvapp3134
+org.droidtv.nettvapp3358
+org.droidtv.nettvapp3783
+org.droidtv.nettvapp3814
+org.droidtv.nettvapp3903
+org.droidtv.nettvapp4023
+org.droidtv.nettvapp4024
+org.droidtv.nettvapp4165
+org.droidtv.nettvapp4533
+org.droidtv.nettvapp4535
+org.droidtv.nettvapp4768
+org.droidtv.nettvapp4835
+org.droidtv.nettvapp4836
+org.droidtv.nettvapp4932
+com.google.android.videos
+com.google.android.music
+com.google.android.play.games
+com.cloudmosa.puffinTV
+com.pokemontv
+eu.bandainamcoent.pacman256
+com.expressvpn.vpn
+com.privateinternetaccess.android
+com.simplexsolutionsinc.vpn_unlimited

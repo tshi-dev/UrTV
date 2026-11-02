@@ -18,6 +18,7 @@ case "$1" in
     n=$(cat "$T/n" 2>/dev/null || echo 0); echo $(( (n+1) % 2 )) > "$T/n"
     [ "$n" = 0 ] || printf 'package:%s\\n' com.a.one com.a.two com.c.four
     echo END_OF_LIST ;;
+  *"dumpsys package"*) echo END_OF_LIST ;;   # disable.sh's input guard: no input driver here
 esac
 exit 0
 '''

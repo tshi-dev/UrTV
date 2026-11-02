@@ -1,7 +1,7 @@
 # UrTV community list: sony-bravia-4k-vh21
 # Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
 # MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
-# Source: examples/sony-bravia-4k-vh21/debloat.txt at commit 6cad2be3a130a84494c3ea9b805accac6e5013e8, taken 2026-10-23.
+# Source: examples/sony-bravia-4k-vh21/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
 # Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
 # match-brand: SONY
 # match-model: BRAVIA4KVH21 BRAVIAVH21 KD65X85K
@@ -13,10 +13,15 @@ com.sonyericsson.idd.agent
 com.sony.dtv.usercontext
 com.qterics.da.product
 com.sony.dtv.da.service
+com.sony.dtv.sonybugreportsys
 com.google.android.feedback
 com.sony.dtv.promos
 com.sony.dtv.sonyselect
 com.sony.dtv.sonytab
+com.sony.dtv.smarthelp
+com.sony.dtv.helpguidecontents
+com.sony.dtv.ecodashboard
+com.sony.dtv.customersupport
 com.sony.dtv.demosupport
 com.sony.dtv.demosystemsupport
 com.sony.dtv.multiscreendemo
@@ -34,5 +39,10 @@ com.vewd.core.service
 com.uei.quicksetsdk.sony
 com.google.android.tts
 com.sony.dtv.seeds.iot
+com.sony.dtv.seeds.auth
+com.sony.dtv.seeds.iot.remotestart
 com.sony.dtv.gestureapp
-com.google.android.tungsten.setupwraith
+com.sony.dtv.sensingcamera.fwupdate
+com.sony.dtv.sensingcamera.settings
+com.sony.dtv.distancealert
+com.sony.dtv.livingfit

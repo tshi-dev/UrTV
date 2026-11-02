@@ -1,7 +1,7 @@
 # UrTV community list: hisense-fire-tv-aftcibfbd1
 # Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
 # MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
-# Source: examples/hisense-fire-tv-aftcibfbd1/debloat.txt at commit 6cad2be3a130a84494c3ea9b805accac6e5013e8, taken 2026-10-23.
+# Source: examples/hisense-fire-tv-aftcibfbd1/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
 # Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
 # match-brand: HISENSE
 # match-model: AFTCIBFBD1 FIRETV
@@ -20,13 +20,28 @@ com.amazon.perfcollection
 com.amazon.perfc
 com.amazon.dp.logger
 com.amazon.device.telemetry.emitter
+com.amazon.ceviche
+com.amazon.livedeviceservice
+com.amazon.privacypassservice
+com.amazon.tv.developer.dataservice
+com.amazon.wifilocker
 com.amazon.storm.lightning.tutorial
 com.amazon.tmm.tutorial
+com.amazon.tv.ffsprovisioneeclient
+com.amazon.tv.releasenotes
+com.amazon.systemnotices
+com.amazon.uxnotification
+com.amazon.tv.easyupgrade
+com.amazon.providers.contentsupport
 com.amazon.vizzini
 com.amazon.tv.alexaalerts
 com.amazon.tv.alexanotifications
 com.amazon.alexamediaplayer.runtime.ftv
 com.amazon.alexa.externalmediaplayer.fireos
+com.amazon.aca
+com.amazon.spotify.mediabrowserservice
+com.amazon.rtcsessioncontroller
+com.amazon.ods.kindleconnect
 com.apple.airplay.amazon.airplay
 com.amazon.cast.sink
 com.tubitv.ott
@@ -37,3 +52,5 @@ com.amazon.naatyam
 com.amazon.gamehub
 com.amazon.hedwig
 com.amazon.tv.ftvambient
+com.amazon.tv.localgallery
+com.amazon.spiderpork

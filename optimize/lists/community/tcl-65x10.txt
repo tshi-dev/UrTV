@@ -1,0 +1,43 @@
+# UrTV community list: tcl-65x10
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/tcl-65x10/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: TCL
+# match-model: 65X10QLED
+# match-device: BEYONDTV
+
+com.tcl.bi
+com.google.android.feedback
+com.google.android.tv.bugreportsender
+com.google.android.partnersetup
+com.google.android.onetimeinitializer
+android.autoinstalls.config.tcl.device
+com.google.android.tvrecommendations
+com.google.android.leanbacklauncher.recommendations
+com.tcl.partnercustomizer
+com.tcl.messagebox
+com.tcl.esticker
+com.tcl.cyberui
+com.tcl.android.webview
+com.tcl.keyhelp
+com.google.android.videos
+com.google.android.play.games
+com.google.android.music
+com.tcl.smartalexa
+com.tcl.notereminder
+tv.wuaki.apptv
+com.google.android.katniss
+com.google.android.speech.pumpkin
+com.tcl.assistant
+com.tcl.micmanager
+com.google.android.tv.assistant
+com.tcl.usercenter
+com.google.android.marvin.talkback
+com.android.printspooler
+com.google.android.syncadapters.calendar
+com.google.android.syncadapters.contacts
+com.tcl.tvweishi
+com.tcl.appmarket2
+com.google.android.backdrop
+com.google.android.tvlauncher

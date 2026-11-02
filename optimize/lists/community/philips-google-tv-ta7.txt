@@ -1,7 +1,7 @@
 # UrTV community list: philips-google-tv-ta7
 # Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
 # MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
-# Source: examples/philips-google-tv-ta7/debloat.txt at commit 6cad2be3a130a84494c3ea9b805accac6e5013e8, taken 2026-10-23.
+# Source: examples/philips-google-tv-ta7/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
 # Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
 # match-brand: PHILIPS
 # match-model: GOOGLETVTA7 PH3MALT32 PH3MLTT32
@@ -11,13 +11,21 @@ org.droidtv.candeebug
 org.droidtv.gel
 com.google.android.partnersetup
 android.autoinstalls.config.tpv.device
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+com.android.tv.feedbackconsent
+com.google.android.feedback
 com.mediatek.opapp
 org.droidtv.consentcmpapp
 com.mstar.android.tv.disclaimercustomization
+fusion.android.tv.demo
 com.google.android.play.games
 com.google.android.onetimeinitializer
 com.google.android.syncadapters.calendar
 com.android.printspooler
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
 com.netflix.ninja
 com.amazon.amazonvideo.livingroom
 com.google.android.videos

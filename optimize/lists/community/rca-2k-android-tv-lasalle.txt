@@ -1,0 +1,24 @@
+# UrTV community list: rca-2k-android-tv-lasalle
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/rca-2k-android-tv-lasalle/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: RCA
+# match-model: 2KANDROIDTV
+# match-device: LASALLE
+
+com.google.android.tvrecommendations
+com.google.android.feedback
+com.google.android.partnersetup
+com.google.android.onetimeinitializer
+com.google.android.syncadapters.calendar
+com.android.printspooler
+com.android.dreams.basic
+com.amazon.amazonvideo.livingroom
+com.google.android.youtube.tvmusic
+com.google.android.play.games
+com.google.android.videos
+com.eltelon.zapping
+com.alphainventor.filemanager
+com.rtk.mediabrowser
+com.google.android.backdrop

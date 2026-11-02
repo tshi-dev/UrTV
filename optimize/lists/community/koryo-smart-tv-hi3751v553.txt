@@ -1,0 +1,29 @@
+# UrTV community list: koryo-smart-tv-hi3751v553
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/koryo-smart-tv-hi3751v553/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: KORYO
+# match-model: 554KSMARTTV TPHV553PC821B
+# match-device: 
+
+com.cvte.tv.steward
+com.cvte.tv.pictorial
+com.cvte.ui.help.unit2k17
+cn.zeasn.cvte.HV553.vstoresubclient
+com.zeasn.services.general
+com.ecloud.eshare.server
+com.ecloud.eairplay
+com.ecloud.emedia
+com.hisilicon.miracast
+com.hisilicon.dlna.dmp
+com.hisilicon.dlna.dmr
+com.hisilicon.dlna.dms
+com.google.android.feedback
+com.google.android.marvin.talkback
+com.google.android.voicesearch
+com.google.android.youtube.tv
+com.netflix.mediaclient
+com.android.browser
+com.android.egg
+com.svox.pico

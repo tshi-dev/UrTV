@@ -1,0 +1,24 @@
+# UrTV community list: anker-nebula-mars-3-air
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/anker-nebula-mars-3-air/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: ANKER
+# match-model: NEBULAMARS3AIRPROJECTOR
+# match-device: TAIHANG
+
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.android.adservices.api
+com.android.federatedcompute.services
+com.android.ondevicepersonalization.services
+com.google.android.partnersetup
+fusion.android.tv.demo
+com.zhixin.nebularetailmode
+com.waxrain.airplaydmr_OW
+com.spotify.music
+com.wbd.stream
+com.google.android.videos
+com.google.android.tungsten.setupwraith
+com.google.android.apps.tv.launcherx
+com.mediatek.android.leanbacklauncher.partnercustomizer

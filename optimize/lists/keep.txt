@@ -29,6 +29,8 @@ com.android.tv.settings
 com.tcl.systemserver
 com.tcl.versionUpdateApp               # firmware (OTA) updates
 com.tcl.providers.config               # firmware configuration provider
+com.tcl.xian.StartandroidService       # TCL's firmware updater gets the device number from it: off, «Network Update» fails
+com.xiaomi.android.tvsetup.partnercustomizer   # Xiaomi: answers the remote's Netflix, Prime and Input buttons and its Bluetooth pairing
 com.tcl.android.webview
 com.google.android.webview
 com.android.systemui

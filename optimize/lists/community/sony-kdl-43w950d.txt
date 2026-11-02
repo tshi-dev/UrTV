@@ -1,0 +1,80 @@
+# UrTV community list: sony-kdl-43w950d
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/sony-kdl-43w950d/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: SONY
+# match-model: BRAVIAKDL43W950D SVPDTV15
+# match-device: 
+
+com.sony.dtv.b2b.importexport
+com.sony.dtv.b2b.prosettings
+com.sony.dtv.b2b.rs232csupport
+com.sony.dtv.b2b.vendorprotocol
+com.sony.dtv.b2b.noderuntime.normal
+com.sony.dtv.b2b.noderuntime.privilege
+com.sony.dtv.customersupport
+com.sony.dtv.smarthelp
+com.sony.dtv.imanual
+com.sony.dtv.touchpad.tutorial
+com.sony.dtv.shopsettings
+com.sony.dtv.discovery
+com.sony.dtv.bivlinfo
+com.sony.dtv.sonyselect
+com.sony.dtv.sonyselect.overlay
+com.sony.dtv.indiametarecommendation
+com.hisense.odinbrowser
+android.autoinstalls.config.sony.bravia
+com.google.android.feedback
+com.google.android.tv.bugreportsender
+com.sony.dtv.remoteaccess
+com.sony.dtv.duid.generator
+com.sony.snei.np.android.account
+com.google.android.syncadapters.contacts
+com.google.android.syncadapters.calendar
+com.google.android.inputmethod.japanese
+com.sony.dtv.tvcamera
+com.sony.dtv.camerarecognitionservice
+com.sony.dtv.magicpacketnotifyservice
+com.sony.dtv.keepsleepserviceforwol
+com.google.android.katniss
+com.google.android.speech.pumpkin
+com.google.android.apps.mediashell
+com.google.android.sss
+com.google.android.sss.authbridge
+screnmirroring.com
+com.sony.dtv.networkapp.wifidirect
+com.sonyericsson.dlna
+com.sonyericsson.dlna.dtcpplayer
+com.sony.huey.dlna.renderersettings
+com.sony.huey.dlna.module
+com.vewd.core.integration.dia
+com.sony.dtv.hbbtvlauncher
+com.sony.dtv.netflixmanager
+com.sony.dtv.scrums.action.tvdotactionactivitymanagerplugin
+com.netflix.ninja
+com.amazon.amazonvideo.livingroom
+com.amazon.aiv.us
+com.google.android.youtube.tv
+in.startv.hotstar
+com.jio.media.stb.ondemand
+com.discoveryplus.tv.android
+com.mxtech.videoplayer.ad
+org.videolan.vlc
+com.google.android.music
+com.google.android.videos
+com.google.android.play.games
+com.sony.dtv.osat.album
+com.sony.dtv.osat.music
+com.sony.dtv.osat.video
+com.alphainventor.filemanager
+com.estrongs.android.pop
+com.teamsmart.videomanager.tv
+com.google.android.leanbacklauncher
+com.google.android.tungsten.setupwraith
+com.sony.dtv.tvlaunchercustomizer
+com.sony.dtv.tvxlauncher.titlelist
+com.google.android.tvrecommendations
+com.google.android.tvtutorials
+com.google.android.backdrop
+com.google.android.tvlauncher

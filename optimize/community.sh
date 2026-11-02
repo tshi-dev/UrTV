@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # For a TV our own lists do not know: the community list for exactly this model, if there is one (optimize/lists/community/, from
 # CleanYourTV's tested lists, MIT; optimize/community.py decides which, conservatively, and never a list for another model).
-# Applied: its packages minus everything in keep.txt and core.txt, minus launchers and setup wizards (the home switch is ours), minus what UAD-ng
+# Applied: its packages minus everything in keep.txt, core.txt and inputs.txt, minus launchers and setup wizards (the home switch is ours), minus what UAD-ng
 # rates Unsafe, minus what the person kept (keep.sh restore). Recorded in optimize/run/community-applied.txt: the report shows them,
 # keep.sh off lists them by name, reset.sh turns them back on.
 #   optimize/community.sh
@@ -44,6 +44,8 @@ printf '%s\n' "$kept" >> "$tmp/keep"
 "$PY" -I optimize/community.py packages "$chosen" --keep "$tmp/keep" --homes "$tmp/homes" --installed "$tmp/installed" > "$tmp/pkgs"
 # never Android's own core, whatever the list says (optimize/lists/core.txt; disable.sh would refuse the whole list)
 grep -vEf <(grep -vE '^[[:space:]]*(#|$)' "$LISTS/core.txt" | sed 's/.*/^(&)$/') "$tmp/pkgs" > "$tmp/pkgs2" || true; mv "$tmp/pkgs2" "$tmp/pkgs"
+# nor the TV's inputs (HDMI, AV, sources, the tuner) or a keyboard (optimize/lists/inputs.txt; disable.sh would refuse the list, and also asks the TV)
+grep -vEf <(grep -vE '^[[:space:]]*(#|$)' "$LISTS/inputs.txt" | awk '{print $1}' | sed 's/.*/^(&)$/') "$tmp/pkgs" > "$tmp/pkgs2" || true; mv "$tmp/pkgs2" "$tmp/pkgs"
 # what owners often want (an update service, voice, MiLink, a video player): left on, and offered to the person instead
 rm -f "$RUN/community-ask.txt"
 if grep -qE '^[^#[:space:]]' "$LISTS/community-ask.txt" 2> /dev/null; then
@@ -72,7 +74,8 @@ base=$(basename "$chosen" .txt)
 if [ ! -s "$tmp/todo" ]; then echo "   community list $base: nothing on this TV to turn off"; echo "$base" > "$name"; exit 0; fi
 { echo "# applied from community/$base.txt"; cat "$tmp/todo"; } > "$RUN/community-list.txt"
 optimize/disable.sh "$RUN/community-list.txt" > /dev/null
-cp "$tmp/todo" "$applied"
+# what disable.sh's input guard left on (the TV says it drives an input or is a keyboard) was not applied
+if [ -s "$RUN/inputs-left.txt" ]; then grep -vxFf "$RUN/inputs-left.txt" "$tmp/todo" > "$applied" || true; else cp "$tmp/todo" "$applied"; fi
 echo "$base" > "$name"
 echo "   community list $base (CleanYourTV, MIT): $(wc -l < "$applied" | tr -d ' ') packages turned off"
 rm -rf "$tmp"

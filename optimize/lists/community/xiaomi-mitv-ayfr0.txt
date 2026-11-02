@@ -1,7 +1,7 @@
 # UrTV community list: xiaomi-mitv-ayfr0
 # Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
 # MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
-# Source: examples/xiaomi-mitv-ayfr0/debloat.txt at commit 6cad2be3a130a84494c3ea9b805accac6e5013e8, taken 2026-10-23.
+# Source: examples/xiaomi-mitv-ayfr0/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
 # Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
 # match-brand: XIAOMI
 # match-model: MITVAYFR0 TVSTICK4K
@@ -12,16 +12,23 @@ com.xiaomi.statistic
 com.google.android.feedback
 com.android.tv.feedbackconsent
 com.google.android.partnersetup
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
+com.android.providers.contacts
+com.google.android.syncadapters.calendar
 com.mitv.tvhome.atv
 com.mitv.tvhome.michannel
 com.mitv.tvhome.mitvplus
 com.xm.webcontent
-com.google.android.tvrecommendations
 android.autoinstalls.config.soc.amlogic
 android.autoinstalls.config.xiaomi.mibox3
 android.autoinstalls.config.xioami.mibox3
 com.xiaomi.mitv.updateservice
 com.netflix.ninja
+com.netflix.tokenmanager
 com.amazon.amazonvideo.livingroom
 com.google.android.youtube.tvmusic
 com.google.android.play.games
@@ -29,3 +36,4 @@ com.google.android.marvin.talkback
 com.mitv.videoplayer
 com.xiaomi.mimusic2
 com.android.printspooler
+com.google.android.backdrop

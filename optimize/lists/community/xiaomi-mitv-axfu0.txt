@@ -1,0 +1,37 @@
+# UrTV community list: xiaomi-mitv-axfu0
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/xiaomi-mitv-axfu0/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: XIAOMI
+# match-model: AMLT950D5 MITVAXFU0 TVAPRO32
+# match-device: 
+
+com.miui.tv.analytics
+com.xiaomi.statistic
+com.xiaomi.mitv.detection
+com.xiaomi.tvqs.overseas.y24
+com.xiaomo.tv.milegal
+com.google.android.feedback
+com.mitv.tvhome.atv
+com.mitv.tvhome.mitvplus
+com.mitv.tvhome.michannel
+com.mitv.tvhome.oemtab
+com.xiaomi.android.tvsetup.partnercustomizer
+com.mitv.toolhouse
+com.xiaomi.mitv.tvmanager
+com.mitv.ABUpdateStatus
+com.xiaomi.mitv.manualhelp
+com.xiaomi.mitv.smartshare
+com.xiaomi.wfdsinkhelperservice
+com.mitv.videoplayer
+com.xiaomi.mimusic2
+com.mitv.gallery
+com.xiaomi.mitv.mediaexplorer
+com.xiaomi.floatingframe
+com.xiaomi.mitv.scenemode
+com.google.android.apps.tv.launcherx
+com.google.android.apps.tv.launcherx.overlay
+com.google.android.tungsten.setupwraith
+com.google.android.apps.tv.dreamx
+com.antena3.atresplayer.tv

@@ -1,0 +1,58 @@
+# UrTV community list: semp-tcl-50p8m
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/semp-tcl-50p8m/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: SEMP
+# match-model: TCL50P8M
+# match-device: 
+
+com.tcl.bi
+com.google.android.feedback
+com.google.android.tv.bugreportsender
+com.google.android.partnersetup
+com.google.android.onetimeinitializer
+android.autoinstalls.config.tcl.device
+com.google.android.tvrecommendations
+com.google.android.leanbacklauncher.recommendations
+com.tcl.partnercustomizer
+com.tcl.messagebox
+com.tcl.esticker
+com.tcl.cyberui
+com.tcl.waterfall.overseas
+com.google.android.videos
+com.tcl.ui_mediaCenter
+com.tcl.useragreement
+com.tcl.android.webview
+com.tcl.keyhelp
+com.tcl.tvweishi
+com.tcl.appmarket2
+com.google.android.katniss
+com.google.android.speech.pumpkin
+com.tcl.assistant
+com.tcl.micmanager
+com.google.android.tv.assistant
+com.tcl.smartalexa
+com.android.se
+com.android.dynsystem
+com.android.companiondevicemanager
+com.android.hotspot2.osulogin
+com.android.printspooler
+com.android.soundpicker
+com.android.providers.calendar
+com.android.providers.contacts
+com.android.providers.userdictionary
+uk.co.freeview.amc_catchup
+uk.co.freeview.amc_horror
+uk.co.freeview.bbc
+uk.co.freeview.bbc_sounds
+uk.co.freeview.ch4_vod
+uk.co.freeview.ch5
+uk.co.freeview.explore
+uk.co.freeview.fvpconfigauth
+uk.co.freeview.itv
+uk.co.freeview.mdsclient
+uk.co.freeview.onnow
+uk.co.freeview.stv
+uk.co.freeview.systemdistributor
+uk.co.freeview.uktv

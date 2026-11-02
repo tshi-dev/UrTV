@@ -5,6 +5,8 @@
 #                                  normally; on one set its idle CPU fell 31% -> 6%)
 #                                - app caches trimmed, only when the free storage is low (under 1 GB or 10%): the
 #                                  caches (thumbnails, app data to load) are useful while there is room
+#                                - our two apps compiled ahead of time from their profile (cmd package compile -m speed-profile,
+#                                  Android 7 and newer): a sideloaded app runs on the JIT until Android's idle job compiles it
 #   optimize/tweaks.sh restore   back to the values the TV had before (the journal optimize/run/tweaks-journal.txt, written
 #                                by the first apply: a value that was not set is deleted, not written); a TV with no journal
 #                                gets Android's defaults
@@ -31,6 +33,7 @@ SDK=$("$PY" -I optimize/tv.py "getprop ro.build.version.sdk" 2> /dev/null | tr -
 SDK_SAY=${SDK:-unknown}; SDK=${SDK:-0}
 SKIPPED=()   # "key: why", written to the journal so the record says what was not touched and why
 if [ "$SDK" -lt 29 ]; then KEYS=${KEYS/ max_cached_processes/}; SKIPPED+=("max_cached_processes: device_config needs Android 10 (this TV is SDK $SDK_SAY)"); fi
+OURS="sa.urtv.home sa.urtv.screensaver"   # compiled ahead of time by apply (journaled as compiled_<package>), back to «as installed» by restore
 BUCKET=restricted; [ "$SDK" -ge 30 ] || BUCKET=rare
 AKEYS=" $KEYS "; AKEYS=${AKEYS/ cached_apps_freezer / }; AKEYS=$(echo $AKEYS)   # what apply records and sets (after the SDK trimming above)
 getcmd() { case "$1" in max_cached_processes) echo "device_config get activity_manager $1" ;; *) echo "settings get global $1" ;; esac; }
@@ -65,6 +68,7 @@ if [ "$SDK" -lt 28 ]; then PSKEYS=${PSKEYS/standby_bucket /}; SKIPPED+=("standby
 # Android 9 and 10 (SDK < 30) are not asked for a bucket at all: 6 of 7 Android 9 reports still warned because the Play Store went back to «active» (the
 # «restricted» bucket is Android 11's; «rare» did not hold). Only apply skips it; restore still puts back a bucket an older run recorded.
 if [ "${1:-}" = apply ] && [ "$SDK" -lt 30 ] && [ "$SDK" -ge 28 ]; then PSKEYS=${PSKEYS/standby_bucket /}; SKIPPED+=("standby_bucket: the Play Store's standby bucket is only set on Android 11 and newer (this TV is SDK $SDK_SAY)"); fi
+if [ "$SDK" -lt 24 ]; then SKIPPED+=("compile: cmd package compile needs Android 7 (this TV is SDK $SDK_SAY)"); fi
 has_key() { case " $KEYS $PSKEYS " in *" $1 "*) return 0 ;; esac; return 1; }
 bucket_name() { case "$1" in 5) echo exempted ;; 10) echo active ;; 20) echo working_set ;; 30) echo frequent ;; 40) echo rare ;; 45) echo restricted ;; 50) echo never ;; *) echo unknown ;; esac; }
 psget() {
@@ -102,6 +106,7 @@ case "${1:?usage: optimize/tweaks.sh apply|restore|status}" in
     fi
     for k in $KEYS; do [ "$k" != cached_apps_freezer ] || [ -n "$(jget "$k")" ] || continue; echo "- tweak $k: was $(jget "$k"), now $(tvget "$k")"; done
     for k in $PSKEYS; do echo "- tweak $k: was $(jget "$k"), now $(psget "$k")"; done
+    for p in $OURS; do [ -z "$(jget "compiled_$p")" ] || echo "- tweak compiled_$p: $(jget "compiled_$p") (undo: cmd package compile --reset)"; done
     exit 0 ;;
   *) echo "usage: optimize/tweaks.sh apply|restore|status"; exit 1 ;;
 esac
@@ -206,6 +211,25 @@ for kv in "${pswant[@]+"${pswant[@]}"}"; do   # the standby bucket is the system
     else echo "!! ${kv%%=*}: this TV did not take the value (asked for ${kv#*=}, it says $got)"; bad=1; fi
   fi
 done
+# Our two apps, compiled ahead of time from their profile (Android 7 / SDK 24 and newer; the same commands as SetupTweaks.java). Only an app that
+# is on the TV, and only a «Success» is journaled; anything else is said and left to Android's own idle job (nothing to put back).
+if [ "$1" = apply ]; then
+  if [ "$SDK" -lt 24 ]; then echo "Our apps: not compiled ahead of time (cmd package compile needs Android 7; this TV is SDK $SDK_SAY)"
+  else
+    for p in $OURS; do
+      "$PY" -I optimize/tv.py "pm list packages $p" 2> /dev/null | tr -d '\r' | grep -qx "package:$p" || continue
+      r=$("$PY" -I optimize/tv.py "cmd package compile -m speed-profile -f $p 2>&1" 2> /dev/null | tr -d '\r') || r=""
+      if grep -qx Success <<< "$r"; then jset "compiled_$p" speed-profile; echo "Compiled ahead of time: $p"
+      else echo "info: $p was not compiled ahead of time (the TV said: $(tail -n 1 <<< "${r:-nothing}")); Android compiles it later by itself"; fi
+    done
+  fi
+elif [ -f "$JOURNAL" ]; then   # the undo: back to how it was installed
+  for p in $OURS; do
+    [ -n "$(jget "compiled_$p")" ] || continue
+    "$PY" -I optimize/tv.py "cmd package compile --reset $p 2>&1" > /dev/null 2>&1 || true
+    echo "Back to as installed: $p"
+  done
+fi
 if [ "$1" = restore ] && [ -f "$JOURNAL" ] && [ "$bad" = 0 ]; then mv -f "$JOURNAL" "$JOURNAL_DONE"; fi   # kept when the TV refused something
 if [ "$1" = apply ]; then echo "Animation scale $v, Play Store background: $bg"
 else echo "Tweaks undone, Play Store background: $bg"; fi

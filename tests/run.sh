@@ -96,6 +96,7 @@ python3 tests/app_fixes_test.py
 python3 tests/keep_test.py
 python3 tests/keep_restore_test.py
 python3 tests/community_test.py
+python3 tests/input_guard_test.py
 python3 tests/reset_screensaver_test.py
 python3 tests/reset_tweaks_test.py
 python3 tests/task_voice_test.py

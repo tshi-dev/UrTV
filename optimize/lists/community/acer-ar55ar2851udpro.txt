@@ -1,0 +1,37 @@
+# UrTV community list: acer-ar55ar2851udpro
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/acer-ar55ar2851udpro/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: ACER
+# match-model: AR55AR2851UDPRO55
+# match-device: 
+
+com.apps.function.gdpr
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+com.apps.mk.wd
+android.autoinstalls.config.scbc.device
+com.google.android.tvrecommendations
+com.apps.eshow
+com.apps.esticker
+com.mk.tv.meeting.service
+com.apps.tvmanager
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
+com.apps.wifihotspot
+com.mk.tv.timeclock
+com.apps.function.audiolink
+com.google.android.play.games
+com.google.android.partnersetup
+com.android.dreams.basic
+com.google.android.marvin.talkback
+com.google.android.youtube.tv
+com.google.android.youtube.tvmusic
+com.creative.fastscreen.tv
+com.apps.scast
+com.google.android.videos
+com.mk.tv.networkspeed

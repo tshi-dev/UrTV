@@ -33,6 +33,8 @@ check("MainActivity hands RemoteKeys how long the key has been down", "e.getRepe
 check("TCL's vendor keys 4062 Netflix, 4065 YouTube, 4099 Prime Video and 4077 Settings are mapped, and opensApp knows the app ones",
       all(f"{n} = {v}" in keys or f"{n} = {v}," in keys for n, v in [("TCL_NETFLIX", 4062), ("TCL_YOUTUBE", 4065), ("TCL_PRIME", 4099), ("TCL_SETTINGS", 4077)])
       and "keyCode == TCL_NETFLIX || keyCode == TCL_YOUTUBE || keyCode == TCL_PRIME" in keys.replace("\n", " ").replace("  ", ""), keys[:0])
+check("TCL's Guard key 4140 is consumed on our home (EAT: its cleaner kills the adhan) and opens no app",
+      "TCL_GUARD = 4140;" in keys and "case TCL_GUARD: return EAT_IT;" in keys and "TCL_GUARD" not in keys.split("static boolean opensApp")[1].split("}")[0])
 check("Prime Video is among the apps a key can open", "com.amazon.amazonvideo.livingroom" in keys and "PACKAGES = {YOUTUBE, NETFLIX, PRIME}" in keys)
 check("an app hidden by kids mode counts as not installed (the key then does nothing)", "ParentalPolicy.visible(" in main.split("Set<String> remoteInstalled()")[1][:600] if "Set<String> remoteInstalled()" in main else False)
 check("no GLOBAL_BUTTON receiver (the system sends that broadcast to a named component only)",

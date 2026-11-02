@@ -1,0 +1,24 @@
+# UrTV community list: sony-bravia-vu2
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/sony-bravia-vu2/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: SONY
+# match-model: BRAVIAVU14K BRAVIAVU2
+# match-device: BRAVIAVU14K
+
+com.google.android.feedback
+com.google.android.partnersetup
+com.google.android.onetimeinitializer
+com.sony.dtv.multiscreendemo
+com.google.android.syncadapters.calendar
+com.android.providers.calendar
+com.android.printspooler
+com.android.camera2
+com.android.gallery3d
+com.android.wallpaper.livepicker
+com.google.android.tts
+com.google.android.videos
+com.google.android.backdrop
+com.google.android.tvlauncher
+com.google.android.tvrecommendations

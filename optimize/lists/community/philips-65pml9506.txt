@@ -1,0 +1,33 @@
+# UrTV community list: philips-65pml9506
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/philips-65pml9506/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: PHILIPS
+# match-model: 65PML950612 PH1MEA9970A
+# match-device: 
+
+org.droidtv.candeebug
+org.droidtv.gel
+org.droidtv.usagelogger
+org.droidtv.tv.frameworklogger
+com.google.android.feedback
+com.google.android.partnersetup
+com.google.android.onetimeinitializer
+org.droidtv.nettvrecommender
+org.droidtv.recommendation
+org.droidtv.nettv.market
+org.droidtv.nettvapp1814
+org.droidtv.nettvapp4546
+org.droidtv.nettvapp4655
+org.droidtv.nettvapp4932
+org.droidtv.nettvapp20004410
+org.droidtv.demome
+com.google.android.sss.authbridge
+com.google.android.syncadapters.calendar
+com.google.android.play.games
+com.google.android.videos
+com.zeasn.whalelive
+com.boosteroidtv.streaming
+tv.wuaki.apptv
+org.droidtv.nettvapps

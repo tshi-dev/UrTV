@@ -1,0 +1,32 @@
+# UrTV community list: panavox-google-tv
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/panavox-google-tv/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: PANAVOX
+# match-model: BRANDMODEL
+# match-device: 
+
+com.google.android.partnersetup
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+tv.anoki.acr.anokiacroptin
+fusion.android.tv.demo
+com.google.android.apps.tv.launcherx
+com.google.android.tungsten.setupwraith
+com.mediatek.androidbox
+com.google.android.apps.tv.dreamx
+com.google.android.syncadapters.calendar
+com.android.providers.calendar
+com.android.providers.contacts
+com.mediatek.android.leanbacklauncher.partnercustomizer
+com.google.android.katniss
+com.google.android.play.games
+com.google.android.youtube.tvmusic
+com.google.android.marvin.talkback
+com.google.android.apps.mediashell
+com.google.android.tts
+com.google.android.tv.remote.service

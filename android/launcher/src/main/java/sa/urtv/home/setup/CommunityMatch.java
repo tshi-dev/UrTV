@@ -22,7 +22,7 @@ final class CommunityMatch {
         "SMARTTV4K", "ANDROIDTV4K", "LEDTV", "LCDTV", "SMARTLEDTV", "TELEVISION");
     static final Set<String> GENERIC_DEVICES = set("TV", "ATV", "GTV", "DEVICE", "GENERIC", "ANDROID", "UNKNOWN", "TVBOX", "BOX");
     /** what a home switch of ours must never find in a list: launchers, setup wizards, the provisioning app */
-    static final Pattern NOT_FOR_US = Pattern.compile("(launcher|tvhome|setupwraith|setupwizard|provision|\\.home$|\\.setup$)", Pattern.CASE_INSENSITIVE);
+    static final Pattern NOT_FOR_US = Pattern.compile("(launcher|tvhome|setupwraith|setupwizard|wizard|oobe|provision|\\.home$|\\.setup$)", Pattern.CASE_INSENSITIVE);
 
     /** One list: its name, the brands, models and devices it is for (normalised), and its packages. */
     static final class Meta {
@@ -119,6 +119,12 @@ final class CommunityMatch {
     /** Never Android's own core (optimize/lists/core.txt, regular expressions over the whole name), whatever a list says. */
     static boolean core(String p) {
         for (String re : SetupLists.CORE) if (p.matches(re)) return true;
+        return false;
+    }
+
+    /** Never the TV's inputs (HDMI, AV, sources, the tuner) or a keyboard (optimize/lists/inputs.txt, regular expressions over the whole name). */
+    static boolean input(String p) {
+        for (String re : SetupLists.INPUTS) if (p.matches(re)) return true;
         return false;
     }
 

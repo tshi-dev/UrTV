@@ -1,0 +1,25 @@
+# UrTV community list: acer-ar32ap2841hdfl
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/acer-ar32ap2841hdfl/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: ACER
+# match-model: PSERIESAR32AP2841HDFL32HD
+# match-device: 
+
+com.apps.function.gdpr
+com.google.android.feedback
+android.autoinstalls.config.scbc.device
+com.google.android.partnersetup
+com.realtek.leanbacklauncher.partnercustomizer
+com.google.android.tvrecommendations
+com.apps.esticker
+com.apps.eshow
+com.apps.clear
+com.apps.networkspeed
+com.apps.timeclock
+com.apps.wifihotspot
+com.apps.function.audiolink
+com.apps.channels
+com.vewd.core.service
+com.google.android.apps.nbu.smartconnect.tv

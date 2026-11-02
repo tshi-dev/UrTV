@@ -1,0 +1,38 @@
+# UrTV community list: redmi-mitv-mooq3
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/redmi-mitv-mooq3/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: REDMI
+# match-model: MITVMOOQ3 TV43
+# match-device: 
+
+com.miui.tv.analytics
+com.xiaomi.statistic
+com.google.android.feedback
+com.mitv.tvhome.atv
+com.mitv.tvhome.michannel
+com.mitv.tvhome.mitvplus
+com.xm.webcontent
+android.autoinstalls.config.xiaomi.amelie
+com.google.android.tvrecommendations
+com.xiaomi.mitv.tvmanager
+com.xiaomi.amazon.alexa
+com.mitv.gallery
+com.mitv.tvlock
+com.xiaomo.tv.milegal
+com.mstar.android.tv.disclaimercustomization
+com.mediatek.wwtv.webview
+fusion.android.tv.demo
+com.xiaomi.mimusic2
+com.google.android.play.games
+com.xiaomi.mitv.handbook
+mediatek.factorymenu.ui
+com.xiaomitv.sonyliv
+tv.airtel.xstream.tvapp
+com.discoveryplus.mitv
+com.firestick.shemaroome
+com.crunchyroll.crunchyroid
+com.google.android.youtube.tvmusic
+com.google.android.videos
+com.mxtech.videoplayer.television

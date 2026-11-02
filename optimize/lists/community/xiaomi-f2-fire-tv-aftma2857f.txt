@@ -1,0 +1,45 @@
+# UrTV community list: xiaomi-f2-fire-tv-aftma2857f
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/xiaomi-f2-fire-tv-aftma2857f/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: XIAOMI
+# match-model: AFTMA2857F F2FIRETV
+# match-device: 
+
+com.amazon.tv.acr
+com.miui.tv.analytics
+com.amazon.client.metrics.api
+com.amazon.tv.fw.metrics
+com.amazon.wirelessmetrics.service
+com.amazon.perfcollection
+com.amazon.perfc
+com.amazon.dp.logger
+com.amazon.ceviche
+com.amazon.tv.developer.dataservice
+com.amazon.wifilocker
+com.amazon.neo.minerva.logcat
+com.amazon.kso.blackbird
+com.amazon.sneakpeek
+com.amazon.hybridadidservice
+com.amazon.hedwig
+com.amazon.franktvinput
+com.amazon.tv.easyupgrade
+com.amazon.shoptv.client
+com.amazon.livedeviceservice
+com.amazon.gamehub
+com.amazon.minitv.android.app
+com.amazon.privacypassservice
+com.amazon.providers.contentsupport
+com.amazon.systemnotices
+com.amazon.uxnotification
+com.amazon.tv.democontent.provider
+com.amazon.tmm.tutorial
+com.amazon.storm.lightning.tutorial
+com.amazon.tahoe
+com.amazon.cloud9
+com.amazon.tv.website_launcher
+com.amazon.ods.kindleconnect
+com.amazon.whisperjoin.middleware.np
+com.amazon.tv.ffsprovisioneeclient
+com.amazon.wha.mediabrowserservice

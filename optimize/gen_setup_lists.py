@@ -18,6 +18,7 @@ ASSET = ROOT / "android/launcher/src/main/assets/setup/community.txt"
 LISTS = (("SAFE", "tcl-safe.txt", "the safe list: telemetry, ads, promos and helpers nobody opens (optimize/lists/tcl-safe.txt)"),
          ("KEEP", "keep.txt", "never turned off: features people use (optimize/lists/keep.txt)"),
          ("CORE", "core.txt", "never turned off: Android's own core, regular expressions matched against the whole name (optimize/lists/core.txt)"),
+         ("INPUTS", "inputs.txt", "never turned off: the TV's inputs (HDMI, AV, sources, the tuner) and keyboards, regular expressions matched against the whole name (optimize/lists/inputs.txt)"),
          ("HOME_HELPERS", "home-replaced.txt", "the stock home's helpers, turned off after our home is confirmed and back on with the stock home (optimize/lists/home-replaced.txt)"))
 
 

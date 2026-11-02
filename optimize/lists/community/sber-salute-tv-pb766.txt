@@ -1,0 +1,36 @@
+# UrTV community list: sber-salute-tv-pb766
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/sber-salute-tv-pb766/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: SBER
+# match-model: SALUTETV32 ST3151A072 TPDMT9216PB766
+# match-device: 
+
+ru.sberdevices.survey
+ru.sberdevices.bugreporter
+ru.sberdevices.starcleaner
+ru.sberdevices.rcfupdater
+ru.sberdevices.starprofile
+ru.sberdevices.openbeta
+ru.sberdevices.tv
+ru.sberdevices.starscreensaver
+ru.sberdevices.music
+ru.sberdevices.videos
+ru.sberdevices.starlivetv
+ru.sberdevices.sberplay
+ru.sberdevices.subscriptions
+ru.sberdevices.starbrowser
+ru.sberdevices.starkidsroom.prod
+ru.sberdevices.parentcontrol
+ru.sberdevices.smarthome.promo
+com.salute.star
+com.mediatek.androidbox
+ru.more.play
+ru.mts.mtstv
+ru.ivi.client
+com.vgtrk.smotrim
+ru.tv1.android.tv
+tv.lfstrm.smotreshka_stb
+com.yandex.browser.tv
+org.videolan.vlc

@@ -1,0 +1,31 @@
+# UrTV community list: xiaomi-mitv4i-magnolia
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/xiaomi-mitv4i-magnolia/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: XIAOMI
+# match-model: MITV4I
+# match-device: 
+
+com.miui.tv.analytics
+com.xiaomi.statistic
+com.google.android.feedback
+com.mitv.tvhome.atv
+com.mitv.tvhome.mitvplus
+com.xm.webcontent
+co.sensara.tv.mitv
+co.sensara.tv.mitv.res
+android.autoinstalls.config.xiaomi.amelie
+android.autoinstalls.config.xioami.dangal
+com.google.android.tvrecommendations
+com.google.android.leanbacklauncher.recommendations
+com.xiaomi.mitv.tvmanager
+com.mitv.tvlock
+com.xiaomo.tv.milegal
+com.xiaomi.android.tvsetup.partnercustomizer
+com.google.android.tv.bugreportsender
+com.xiaomi.mimusic2
+com.google.android.play.games
+com.google.android.videos
+com.mitv.gallery
+com.mitv.videoplayer

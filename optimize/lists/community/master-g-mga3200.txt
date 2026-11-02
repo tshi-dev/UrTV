@@ -1,0 +1,29 @@
+# UrTV community list: master-g-mga3200
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/master-g-mga3200/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: MASTER MASTERG
+# match-model: MGA3200
+# match-device: STRINGS
+
+com.google.android.tvrecommendations
+com.google.android.leanbacklauncher.recommendations
+com.google.android.apps.nbu.smartconnect.tv
+com.apps.function.gdpr
+com.realtek.leanbacklauncher.partnercustomizer
+com.google.android.feedback
+com.google.android.tv.bugreportsender
+com.apps.channels
+android.autoinstalls.config.scbc.device
+com.android.printspooler
+com.vewd.core.service
+com.google.android.videos
+com.google.android.play.games
+com.google.android.youtube.tvmusic
+com.apps.eshow
+com.apps.esticker
+com.apps.clear
+com.apps.networkspeed
+com.apps.usbmediaplayer
+com.apps.wifihotspot
