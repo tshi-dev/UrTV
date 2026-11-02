@@ -151,11 +151,11 @@ S.packs=()=>{
  const stars=Array.from({length:70},(_,i)=>`<circle cx="${(i*73)%400}" cy="${(i*37)%220}" r="${i%7?0.8:1.6}" fill="#fff" opacity="${.4+(i%5)/8}"/>`).join('');
  const sky=`<svg viewBox="0 0 400 220" style="position:absolute;inset:0;width:100%;height:100%" preserveAspectRatio="xMidYMax slice"><path d="M0 220V150h30v-30h20v30h25V95h18v-20h6v20h18v55h20v-40h30v40h22V60l8-14 8 14v90h24v-35h34v35h20v-60h26v60h30v-30h28v30h33v70z" fill="#5d6b78" opacity=".85"/></svg>`;
  const art=`<div style="position:absolute;inset:22px 70px;border:10px solid #b08a4a;box-shadow:inset 0 0 0 3px #6b4e22;background:linear-gradient(160deg,#6f8f6a,#d8c48a 50%,#9a6a3c);"></div>`;
- const w=(1680-2*30)/3,h=350;
+ const w=(1680-2*24)/3,h=350;
  const card=(p,i)=>{const fo=i==2,col=i%3,row=Math.floor(i/3);
-  return `<div class="abs" style="right:${120+col*(w+30)}px;top:${196+row*(h+26)}px;width:${w}px;height:${h}px;border-radius:22px;background:#fff;border:${fo?'3px solid var(--green)':'1.5px solid var(--line)'};overflow:hidden;${fo?'background:var(--tint)':''}">
-   <div style="position:relative;height:190px;background:${p.bg} center/cover">${p.space?`<svg viewBox="0 0 400 220" style="position:absolute;inset:0;width:100%;height:100%">${stars}<circle cx="300" cy="150" r="46" fill="#c46b3a"/><circle cx="300" cy="150" r="46" fill="url(#g)"/><defs><radialGradient id="g" cx=".35" cy=".35"><stop offset="0" stop-color="#ffd9a0" stop-opacity=".7"/><stop offset="1" stop-color="#000" stop-opacity=".45"/></radialGradient></defs></svg>`:''}${p.city?sky:''}${p.art?art:''}</div>
-   <div style="padding:18px 26px;display:flex;align-items:flex-start;gap:16px">
+  return `<div class="abs" style="right:${120+col*(w+24)}px;top:${196+row*(h+24)}px;width:${w}px;height:${h}px;border-radius:22px;background:#fff;border:${fo?'3px solid var(--green)':'1.5px solid var(--line)'};overflow:hidden;${fo?'background:var(--tint)':''}">
+   <div style="position:relative;height:176px;background:${p.bg} center/cover">${p.space?`<svg viewBox="0 0 400 220" style="position:absolute;inset:0;width:100%;height:100%">${stars}<circle cx="300" cy="150" r="46" fill="#c46b3a"/><circle cx="300" cy="150" r="46" fill="url(#g)"/><defs><radialGradient id="g" cx=".35" cy=".35"><stop offset="0" stop-color="#ffd9a0" stop-opacity=".7"/><stop offset="1" stop-color="#000" stop-opacity=".45"/></radialGradient></defs></svg>`:''}${p.city?sky:''}${p.art?art:''}</div>
+   <div style="padding:20px 32px 24px;display:flex;align-items:flex-start;gap:16px">
     ${p.st=='on'?tri():''}
     <div style="flex:1"><div style="font:34px TM">${p.n}</div><div style="font:24px TR;color:var(--sub);margin-top:2px">${p.c}</div><div style="font:22px TR;color:var(--mute)">${p.src}</div></div>
     ${p.st=='on'?`<div style="font:28px TM;color:var(--green)">مفعّل</div>`:`<div style="display:flex;align-items:center;gap:8px;font:28px TM;color:${fo?'var(--green)':'var(--sub)'}">${ic('down',30)}نزّل</div>`}
@@ -229,8 +229,8 @@ const H2=(light,o={})=>{const g=G(light);const W='color:'+g.ink;
   {h:'النصر',a:'القادسية',t:'٩:٠٠ م'},
   {h:'الاتحاد',a:'الشباب',t:'٩:٠٠ م'},
   {h:'ضمك',a:'الخليج',t:'٩:٣٠ م'}];
- const cw=300,gap=20;
- const card=(m,i)=>`<div style="${glass(g,`top:0;right:${i*(cw+gap)}px;width:${cw}px;height:212px;padding:16px 20px;display:flex;flex-direction:column;justify-content:space-between;${o.peek&&i==0?'border:3px solid #8FE0B4;background:rgba(28,22,18,.5)':''}`)}">
+ const cw=300,gap=24;
+ const card=(m,i)=>`<div style="${glass(g,`top:0;right:${i*(cw+gap)}px;width:${cw}px;height:212px;padding:16px 24px;display:flex;flex-direction:column;justify-content:space-between;${o.peek&&i==0?'border:3px solid #8FE0B4;background:rgba(28,22,18,.5)':''}`)}">
    <div style="display:flex;justify-content:space-between;font:22px TR;color:${g.sub}"><span>دوري روشن</span><span>الجولة ١٣</span></div>
    <div style="display:flex;align-items:center;justify-content:space-between">
     <div style="display:flex;flex-direction:column;align-items:center;gap:6px;width:110px">${crest(m.h,56)}<span style="font:24px TM;color:${m.mine?g.nx:g.ink};white-space:nowrap">${m.h}</span></div>
@@ -248,11 +248,11 @@ const H2=(light,o={})=>{const g=G(light);const W='color:'+g.ink;
  <div class="abs" style="left:120px;top:168px;width:400px;font:26px TM;${light?'color:#fff;text-shadow:0 1px 10px rgba(0,0,0,.3)':W}">الطقس</div>
  <div style="${glass(g,'left:120px;top:210px;width:400px;height:356px;padding:24px 28px')}">
   <div style="display:flex;align-items:center;gap:8px;font:26px TR;color:${g.sub}">${ic('pin',26)}الرياض</div>
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px">${ic('noon',96,'color:#F2B33D;stroke-width:1.4')}<div style="text-align:left"><div style="font:84px TL;line-height:1;${W}">٢٨°</div><div style="font:26px TR;color:${g.sub};margin-top:6px">سماء صافية</div></div></div>
-  <div style="display:flex;justify-content:space-between;margin-top:32px;padding-top:18px;border-top:1px solid ${light?'var(--line)':'rgba(255,255,255,.2)'};font:22px TR;color:${g.sub}">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px">${ic('noon',80,'color:#F2B33D;stroke-width:1.4')}<div style="text-align:left"><div style="font:84px TL;line-height:1;${W}">٢٨°</div><div style="font:26px TR;color:${g.sub};margin-top:6px">سماء صافية</div></div></div>
+  <div style="display:flex;justify-content:space-between;margin-top:16px;padding-top:16px;border-top:1px solid ${light?'var(--line)':'rgba(255,255,255,.2)'};font:22px TR;color:${g.sub}">
    ${[['therm','المحسوسة','٣٠°'],['drop','الرطوبة','١٨٪'],['wind','الرياح','١٢ كم/س']].map(x=>`<div style="display:flex;flex-direction:column;align-items:center;gap:4px">${ic(x[0],26)}<span>${x[1]}</span><b style="font:24px TM;${W}">${x[2]}</b></div>`).join('')}</div></div>
  <div class="abs" style="left:544px;width:440px;top:168px;font:26px TM;${light?'color:#fff;text-shadow:0 1px 10px rgba(0,0,0,.3)':W}">أوقات الصلاة</div>
- <div style="${glass(g,'left:544px;top:210px;width:440px;height:356px;padding:16px 16px')}">
+ <div style="${glass(g,'left:544px;top:210px;width:440px;height:356px;padding:16px')}">
   ${prs.map((p,i)=>`<div style="display:flex;align-items:center;gap:16px;height:54px;padding:0 16px;border-radius:14px;${i==1?`background:${g.band};${light?'box-shadow:inset 0 0 0 2px var(--green);':''}`:''}color:${i==1?g.nx:g.ink}">${ic(p[0],28)}<span style="flex:1;font:27px ${i==1?'TD':'TM'}">${p[1]}</span><span style="font:27px ${i==1?'TM':'TR'}">${p[2]}</span></div>`).join('')}
   <div style="text-align:center;font:25px TR;color:${g.nx};margin-top:12px">الظهر بعد ٤ س و٣٣ د</div></div>
  <div class="abs" style="right:120px;top:${o.peek?640:600}px;font:32px TD;${light?'color:var(--ink)':W}">مباريات اليوم</div>
@@ -282,22 +282,22 @@ const H3=(focus,bar)=>{const g=G(false);const W='color:#fff';
   <div><div style="font:42px TD">الأربعاء</div><div style="font:26px TR;margin-top:4px">١٣ جمادى الأولى ١٤٤٨ هـ</div><div style="font:26px TR">٤ نوفمبر ٢٠٢٦</div></div></div>
  <div class="abs" style="left:120px;top:56px;display:flex;gap:16px;direction:ltr">${['input','tasks','control','listen'].reverse().map(k=>`<div style="${glass(g,'position:relative;width:72px;height:72px;border-radius:18px;display:flex;align-items:center;justify-content:center')}">${ic(k,32,'color:#fff')}</div>`).join('')}</div>
  <div class="abs" style="left:120px;top:150px;width:380px;font:26px TM;${W}">الطقس</div>
- <div style="${glass(g,'left:120px;top:192px;width:380px;height:412px;padding:24px 28px')}">
+ <div style="${glass(g,'left:120px;top:192px;width:380px;height:380px;padding:24px 28px')}">
   <div style="display:flex;align-items:center;gap:8px;font:26px TR;color:${g.sub}">${ic('pin',26)}الرياض</div>
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-top:22px">${ic('noon',92,'color:#F2B33D;stroke-width:1.4')}<div style="text-align:left"><div style="font:80px TL;line-height:1;${W}">٢٨°</div><div style="font:26px TR;color:${g.sub};margin-top:6px">سماء صافية</div></div></div>
-  <div style="display:flex;justify-content:space-between;margin-top:46px;padding-top:20px;border-top:1px solid rgba(255,255,255,.2);font:22px TR;color:${g.sub}">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px">${ic('noon',88,'color:#F2B33D;stroke-width:1.4')}<div style="text-align:left"><div style="font:80px TL;line-height:1;${W}">٢٨°</div><div style="font:26px TR;color:${g.sub};margin-top:6px">سماء صافية</div></div></div>
+  <div style="display:flex;justify-content:space-between;margin-top:24px;padding-top:16px;border-top:1px solid rgba(255,255,255,.2);font:22px TR;color:${g.sub}">
    ${[['therm','المحسوسة','٣٠°'],['drop','الرطوبة','١٨٪'],['wind','الرياح','١٢ كم/س']].map(x=>`<div style="display:flex;flex-direction:column;align-items:center;gap:4px">${ic(x[0],26)}<span>${x[1]}</span><b style="font:24px TM;${W}">${x[2]}</b></div>`).join('')}</div></div>
  <div class="abs" style="left:524px;width:420px;top:150px;font:26px TM;${W}">أوقات الصلاة</div>
- <div style="${glass(g,'left:524px;top:192px;width:420px;height:412px;padding:18px 16px')}">
-  ${prs.map((p,i)=>`<div style="display:flex;align-items:center;gap:16px;height:62px;padding:0 16px;border-radius:14px;${i==1?`background:${g.band};`:''}color:${i==1?g.nx:'#fff'}">${ic(p[0],28)}<span style="flex:1;font:27px ${i==1?'TD':'TM'}">${p[1]}</span><span style="font:27px ${i==1?'TM':'TR'}">${p[2]}</span></div>`).join('')}
-  <div style="text-align:center;font:25px TR;color:${g.nx};margin-top:14px">الظهر بعد ٤ س و٣٣ د</div></div>
+ <div style="${glass(g,'left:524px;top:192px;width:420px;height:380px;padding:16px')}">
+  ${prs.map((p,i)=>`<div style="display:flex;align-items:center;gap:16px;height:56px;padding:0 16px;border-radius:12px;${i==1?`background:${g.band};`:''}color:${i==1?g.nx:'#fff'}">${ic(p[0],28)}<span style="flex:1;font:27px ${i==1?'TD':'TM'}">${p[1]}</span><span style="font:27px ${i==1?'TM':'TR'}">${p[2]}</span></div>`).join('')}
+  <div style="text-align:center;font:25px TR;color:${g.nx};margin-top:16px">الظهر بعد ٤ س و٣٣ د</div></div>
  <div class="abs" style="right:120px;top:242px;font:30px TD;${W}">مباريات اليوم</div>
  <div class="abs" style="left:968px;width:300px;top:250px;font:22px TR;color:${g.sub}">٦ مباريات · TheSportsDB</div>
- <div style="${glass(g,'right:120px;top:290px;width:832px;height:314px;padding:12px')}">
-  ${games.map((m,i)=>`<div style="display:flex;align-items:center;gap:14px;height:96px;padding:0 20px;border-radius:16px;${i==0&&focus=='w'?'background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 3px #8FE0B4;':''}${i?'border-top:1px solid rgba(255,255,255,.16);':''}">
+ <div style="${glass(g,'right:120px;top:290px;width:832px;height:282px;padding:16px')}">
+  ${games.map((m,i)=>`<div style="display:flex;align-items:center;gap:16px;height:83px;padding:0 24px;border-radius:12px;${i==0&&focus=='w'?'background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 3px #8FE0B4;':''}${i?'border-top:1px solid rgba(255,255,255,.16);':''}">
    ${crest(m.h,46)}<span style="width:120px;font:28px TM;color:${m.mine?g.nx:'#fff'}">${m.h}</span><span style="font:26px TL;color:${g.sub}">×</span><span style="width:130px;font:28px TM;${W};text-align:left">${m.a}</span>${crest(m.a,46)}
    <span style="flex:1;text-align:left;font:22px TR;color:#FFD27A">${m.n||''}</span><span style="width:110px;text-align:left;font:28px TM;${W}">${m.t}</span></div>`).join('')}</div>
- ${bar?BAR(804,focus=='a'?0:-1,false):SHELF(770,focus=='a'?0:-1)}`;};
+ ${bar?BAR(808,focus=='a'?0:-1,false):SHELF(770,focus=='a'?0:-1)}`;};
 S.favA=()=>H3('w');
 S.favBw=()=>H2(false,{peek:1});
 S.favBa=()=>H3('a');
@@ -309,15 +309,15 @@ const BAR=(trayTop,fo,light)=>{
  const tray=light?'background:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.85);box-shadow:0 20px 50px rgba(40,36,24,.12),inset 0 1px 0 #fff'
    :'background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);box-shadow:0 20px 50px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.35)';
  const ring=light?'#1B8354':'#8FE0B4';
- const x=i=>1800-28-296-i*(296+36);   // tile i's left edge, RTL: the first app on the right
- return `${fo>=0?`<div class="abs" style="left:${x(fo)-60}px;width:416px;top:${trayTop-52}px;text-align:center;font:30px TM;color:${light?'var(--ink)':'#fff'};${light?'':'text-shadow:0 2px 12px rgba(0,0,0,.35)'}">${FAV[fo][0]}</div>`:''}
- <div class="abs" style="left:120px;width:1680px;top:${trayTop}px;height:222px;border-radius:32px;backdrop-filter:blur(30px) saturate(1.3);${tray}"></div>
- ${FAV.map((a,i)=>`<div class="abs" style="left:${x(i)}px;top:${trayTop+28}px;width:296px;height:166px;border-radius:18px;background:${a[1]};display:flex;align-items:center;justify-content:center;font:38px TD;color:#fff;overflow:hidden;
+ const x=i=>1800-32-304-i*(304+24);   // tile i's left edge, RTL: the first app on the right
+ return `${fo>=0?`<div class="abs" style="left:${x(fo)-56}px;width:416px;top:${trayTop-56}px;text-align:center;font:30px TM;color:${light?'var(--ink)':'#fff'};${light?'':'text-shadow:0 2px 12px rgba(0,0,0,.35)'}">${FAV[fo][0]}</div>`:''}
+ <div class="abs" style="left:120px;width:1680px;top:${trayTop}px;height:218px;border-radius:32px;backdrop-filter:blur(30px) saturate(1.3);${tray}"></div>
+ ${FAV.map((a,i)=>`<div class="abs" style="left:${x(i)}px;top:${trayTop+24}px;width:304px;height:170px;border-radius:16px;background:${a[1]};display:flex;align-items:center;justify-content:center;font:38px TD;color:#fff;overflow:hidden;
    ${i==fo?`transform:translateY(-6px) scale(1.08);box-shadow:0 0 0 3px ${ring},0 18px 36px rgba(0,0,0,${light?.22:.4});z-index:2`:'box-shadow:0 2px 6px rgba(0,0,0,.12)'}">${a[0]}
    ${i==fo?'<div style="position:absolute;inset:0;background:linear-gradient(125deg,rgba(255,255,255,.26) 0,rgba(255,255,255,.08) 38%,rgba(255,255,255,0) 52%)"></div>':''}</div>`).join('')}`;};
 S.favbar=()=>`<div class="abs" style="left:0;right:0;top:0;height:540px;background:url(../../photos/-RlktmDy3Ec.jpg) center/cover"></div>
  <div class="abs" style="left:0;right:0;top:540px;height:540px;background:var(--paper)"></div>
- ${BAR(220,0,false)}${BAR(760,2,true)}`;
+ ${BAR(232,0,false)}${BAR(772,2,true)}`;
 S.final=()=>H3('a',1);
 
 // ---- broadcast: a small text mark per game (a placeholder, not the channel's real logo)
@@ -327,8 +327,8 @@ const TV=(n,light)=>`<span style="display:inline-flex;align-items:center;height:
 S.finalw=()=>{const g=G(false);
  const games=[{h:'الهلال',a:'الاتفاق',t:'٢ - ١',live:'الدقيقة ٦٧',tv:'ثمانية',mine:1},{h:'الأهلي',a:'التعاون',t:'٨:٠٠ م',tv:'ثمانية'},
   {h:'الفتح',a:'الرياض',t:'٨:٠٠ م',tv:'ثمانية'},{h:'النصر',a:'القادسية',t:'٩:٠٠ م',tv:'ثمانية'},{h:'الاتحاد',a:'الشباب',t:'٩:٠٠ م',tv:'ثمانية'},{h:'ضمك',a:'الخليج',t:'٩:٣٠ م',tv:'ثمانية'}];
- const cw=300,gap=20;
- const card=(m,i)=>`<div style="${glass(g,`top:0;right:${i*(cw+gap)}px;width:${cw}px;height:180px;padding:12px 18px;display:flex;flex-direction:column;justify-content:space-between;${i==0?'border:3px solid #8FE0B4;background:rgba(28,22,18,.5)':''}`)}">
+ const cw=300,gap=24;
+ const card=(m,i)=>`<div style="${glass(g,`top:0;right:${i*(cw+gap)}px;width:${cw}px;height:184px;padding:16px 24px;display:flex;flex-direction:column;justify-content:space-between;${i==0?'border:3px solid #8FE0B4;background:rgba(28,22,18,.5)':''}`)}">
    <div style="display:flex;justify-content:space-between;align-items:center;font:21px TR;color:${g.sub}"><span>دوري روشن · ١٣</span>${TV(m.tv)}</div>
    <div style="display:flex;align-items:center;justify-content:space-between">
     <div style="display:flex;flex-direction:column;align-items:center;gap:2px;width:104px">${crest(m.h,40)}<span style="font:23px TM;color:${m.mine?g.nx:'#fff'};white-space:nowrap">${m.h}</span></div>
@@ -337,12 +337,12 @@ S.finalw=()=>{const g=G(false);
    <div style="text-align:center;font:25px TM;color:${m.live?g.nx:'#fff'}">${m.live||m.t}</div></div>`;
  let h=H3('w',1);
  h=h.replace(/<div class="abs" style="right:120px;top:242px[\s\S]*?(?=<div class="abs" style="left:120px;width:1680px)/,'');   // the list leaves; the row takes its place
- h=h.replace('top:804px;height:222px','top:844px;height:222px').replace(/top:832px;width:296px/g,'top:872px;width:296px');
- return h+`<div class="abs" style="right:120px;top:612px;font:30px TD;color:#fff">مباريات اليوم</div>
-  <div class="abs" style="left:120px;top:620px;font:22px TR;color:${g.sub}">٦ مباريات · كلها على ثمانية</div>
+ h=h.replace('top:808px;height:218px','top:848px;height:218px').replace(/top:832px;width:304px/g,'top:872px;width:304px');
+ return h+`<div class="abs" style="right:120px;top:596px;font:30px TD;color:#fff">مباريات اليوم</div>
+  <div class="abs" style="left:120px;top:604px;font:22px TR;color:${g.sub}">٦ مباريات · كلها على ثمانية</div>
   <div class="abs" style="right:120px;left:0;top:626px;height:0"></div>
   <div class="abs" style="right:120px;left:0;top:${626+0}px;height:0"></div>
-  <div class="abs" style="right:120px;left:0;top:654px;height:182px;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent 40px,#000 200px)">${games.map(card).join('')}</div>`;};
+  <div class="abs" style="right:120px;left:0;top:640px;height:184px;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent 40px,#000 200px)">${games.map(card).join('')}</div>`;};
 
 // 2. «المباريات»: a page of its own (light look). Days across the top, leagues down the side, the followed team first.
 const ROW=(m,fo)=>`<div style="display:flex;align-items:center;gap:18px;height:92px;padding:0 26px;${fo?'background:var(--tint);outline:3px solid var(--green);outline-offset:-3px;border-radius:16px;':'border-top:1.5px solid var(--line);'}">

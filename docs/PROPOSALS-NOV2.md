@@ -65,26 +65,27 @@ tray and never slides, so B is out, and the «خيارات» tile is gone. The f
 
 | Part | Value |
 |---|---|
-| Tray | x 120 to 1800 (1680 wide), 222 high, radius 32. Its bottom is 54 px above the screen's (the 5 % safe area), so its top is at y 804. The same place on every theme and layout. |
+| Tray | x 120 to 1800 (1680 wide), 218 high, radius 32. Its bottom is 54 px above the screen's (the 5 % safe area), so its top is at y 808. The same place on every theme and layout. |
 | Tray, over a photo (dark look) | fill `rgba(255,255,255,.14)`, background blur 30 px with saturate 1.3 (on a TV: the home photo blurred once, as the glass look already does, never a live blur), 1 px border `rgba(255,255,255,.28)`, a 1 px inner top highlight `rgba(255,255,255,.35)`, shadow `0 20px 50px rgba(0,0,0,.18)` |
 | Tray, light look | fill `rgba(255,255,255,.72)`, the same blur, 1 px border `rgba(255,255,255,.85)`, a white 1 px inner top highlight, shadow `0 20px 50px rgba(40,36,24,.12)` |
-| Tiles | 296×166 (the app's 16:9 banner), radius 18, 36 apart, 28 from the tray's edges, vertically centred. Five show; the first app is on the right (RTL). More apps scroll inside the tray, and the row never leaves it. |
+| Tiles | 304×170 (the app's 16:9 banner), radius 16, 24 apart, 32 from the tray's sides and 24 from its top and bottom (one 8 px scale). Five show; the first app is on the right (RTL). More apps scroll inside the tray, and the row never leaves it. |
 | Resting tile | no movement and no dimming, shadow `0 2px 6px rgba(0,0,0,.12)` |
-| Focused tile | `translateY(-6px) scale(1.08)` from the centre (about 320×179), above its neighbours. Ring 3 px: DGA green `#1B8354` on the light look, `#8FE0B4` over a photo. Shadow `0 18px 36px rgba(0,0,0,.40)` (`.22` on light). Sheen: a 125° white gradient over the tile, 26 % at the corner, 8 % at 38 %, gone by 52 %. It stays 14 px inside the tray's edges, so the focus never leaves the box. |
+| Focused tile | `translateY(-6px) scale(1.08)` from the centre (about 328×184), above its neighbours. Ring 3 px: DGA green `#1B8354` on the light look, `#8FE0B4` over a photo. Shadow `0 18px 36px rgba(0,0,0,.40)` (`.22` on light). Sheen: a 125° white gradient over the tile, 26 % at the corner, 8 % at 38 %, gone by 52 %. With the ring it stays at least 8 px inside the tray's edges, so the focus never leaves the box. |
 | Motion | 150 ms ease-out for the lift, scale, shadow and sheen when focus arrives or leaves. Nothing else moves. |
-| App name | above the focused tile, centred on it, 30 px medium, white with a soft shadow over a photo, ink `#1B1F1D` on light. Its baseline is about 18 px above the tray's top edge (the text box is at y = tray top − 52). It follows the focus, and is hidden when focus is not in the bar. |
+| App name | above the focused tile, centred on it, 30 px medium, white with a soft shadow over a photo, ink `#1B1F1D` on light. Its text box is at y = tray top − 56, so its baseline sits about 16 px above the tray. It follows the focus, and is hidden when focus is not in the bar. |
 | No «خيارات» tile | the app options open from a long OK, as today, until a visible way is chosen that keeps the bar unchanged |
-| Widgets above | everything else on the home must end by y 740, so the name has room above the tray |
+| Widgets above | everything else on the home must end by y 728, so the name has room above the tray |
+| Spacing everywhere (the owner's rule) | text at least 16 px inside any box (24 on big cards), gaps between cards on one 8 px scale (24 between widgets and between match cards), a section title 16–24 px above its box |
 
 **The tray may move down a little, and only for a widget** (`notes/proposals/football-home-final-widgetfocus.png`).
 - When focus enters the matches widget, the widget opens into a row of game cards that scrolls right to left with ◀ ▶.
-  To make room, the tray moves down 40 px in 250 ms with ease-in-out. It looks exactly the same, and its tiles move with it.
+  To make room, the tray moves down 40 px, from y 808 to 848, in 250 ms with ease-in-out. It looks exactly the same, and its tiles move with it.
 - The app name above the tray is hidden while focus is outside the bar.
-- When focus comes back down to the apps, the tray returns to y 804 in the same 250 ms before the tile lifts, and the
+- When focus comes back down to the apps, the tray returns to y 808 in the same 250 ms before the tile lifts, and the
   widget closes back to its three lines.
 - Nothing moves while focus stays on the apps, or while it moves between the other widgets (weather and prayers need no
   extra room).
-- At 844 the tray's bottom is at 1066, still on the screen. 40 px is the most it ever moves.
+- At 848 the tray's bottom is at 1066, still on the screen. 40 px is the most it ever moves.
 
 ### The «المباريات» page
 
