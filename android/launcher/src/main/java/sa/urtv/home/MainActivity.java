@@ -447,14 +447,15 @@ public class MainActivity extends Activity {
         tray.setOnScrollChangeListener((v, x, y, ox, oy) -> placeName());
         bottom.addView(tray, new LinearLayout.LayoutParams(-1, bar(FavBar.TRAY_H)));
 
-        // «أكمل المشاهدة»: one row right under the favourites, in the first screen with the clock and the photo (empty until it is
-        // allowed and has something); the dock band's padding, so its cards sit exactly under the favourites
+        // «أكمل المشاهدة»: its own row below the first screen (the owner: the tray never moves for it), ▼ from the tray scrolls the home up
+        // to it and ▲ brings the tray back; the tray's sides and padding, so its cards sit exactly under the favourites' cells
         tvRowsBox = new LinearLayout(this);
         tvRowsBox.setOrientation(LinearLayout.VERTICAL);
         tvRowsBox.setClipChildren(false);
         tvRowsBox.setClipToPadding(false);
         tvRowsBox.setPadding(bar(FavBar.PAD_SIDE), 0, bar(FavBar.PAD_SIDE), 0);   // the tray's own padding: its cells are the favourites' cells, a card a tile's size
-        bottom.addView(tvRowsBox, new LinearLayout.LayoutParams(-1, -2));
+
+        content.addView(tvRowsBox, llp(-1, -2, bar(FavBar.SIDE), 0, bar(FavBar.SIDE), 0));
 
         appsLabel = text(11, "sans-serif-medium", 0x99FFFFFF);
         appsLabel.setText(S.t("كل التطبيقات"));
@@ -1408,12 +1409,20 @@ public class MainActivity extends Activity {
             shine.animate().alpha(has ? 1f : 0f).setDuration(160).start();
             if (!has) return;
             lastFocusedId = v.getId();
-            title.setText(it.meta.isEmpty() ? it.title : it.title + "  ·  " + it.meta);
-            title.animate().alpha(1f).setDuration(200).start();
             fadeGlow(1f);
-            glideTo(0);   // the first screen stays: the clock and the photo
+            View line = (View) box.getParent();
+            int at = tvRowsBox.indexOfChild(line) / 2;   // the box holds each row's name, then its cards
+            if (at >= 0 && at < tvNames.size()) tvNames.get(at).setText(S.tv(TvRowsPick.WATCH_NEXT_TITLE) + "  ·  " + (it.meta.isEmpty() ? it.title : it.title + "  ·  " + it.meta));
+            scrollToTvRow(line);   // below the first screen: the home slides up to the row; ▲ to the tray slides it back (glideTo(0))
         });
         return box;
+    }
+
+    /** «أكمل المشاهدة» below the first screen: the row (its name over it) a little above the screen's middle. */
+    private void scrollToTvRow(View line) {
+        int y = tvRowsBox.getTop() + line.getTop();
+        int max = Math.max(0, content.getHeight() - scroll.getHeight());
+        glideTo(Math.max(0, Math.min(y - (int) (getResources().getDisplayMetrics().heightPixels * 0.42f), max)));
     }
 
     private void scrollToRow(View tileBox) {
@@ -1421,7 +1430,7 @@ public class MainActivity extends Activity {
         int y = grid.getTop() + row.getTop();
         int screenH = getResources().getDisplayMetrics().heightPixels;
         // First grid row: slide the dock band up to the top edge; later rows centre on screen.
-        int target = grid.indexOfChild(row) == 0
+        int target = grid.indexOfChild(row) == 0 && tvCards.isEmpty()
                 ? hero.getTop() + bottomBlock.getTop() + tray.getTop()   // the tray at the top edge
                 : y - (int) (screenH * 0.42f);
         int max = Math.max(0, content.getHeight() - scroll.getHeight());

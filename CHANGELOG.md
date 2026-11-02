@@ -8,7 +8,8 @@ Newest first. `next` is where changes land first; a release is what was tested t
   218 high, 54 px above the screen's bottom; five 304×170 tiles 24 apart, the first on the right, more scroll inside the tray and never
   leave it. The focused tile lifts 6 px and grows 1.08 in 150 ms with a 3 px green ring (DGA green on light, #8FE0B4 over a photo); the
   app's name sits centred over it and hides when the focus leaves the bar. The only move is 40 px down for a widget that opens into a
-  scrolling row (`lowerTray`, for the football home's matches; nothing calls it yet). **«رملي» on the home itself:** with that look the
+  scrolling row (`lowerTray`, for the football home's matches; nothing calls it yet). «أكمل المشاهدة» is its own row below the first
+  screen (the owner's choice): ▼ from the tray slides the home up to it, ▲ slides it back; the tray stays at y 808 either way. **«رملي» on the home itself:** with that look the
   home's own veil, words and labels are sand, ink and flag green in the light and green for gold in the dark (Look.SAND_LIGHT/SAND_DARK,
   checked for contrast like the other two).
 - **The UX review, done** (docs/UX-REVIEW.md on work/ux-review; work/ux-impl). **The app's options:** a long OK on the app, or the remote's

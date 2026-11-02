@@ -26,6 +26,13 @@ check("a focused favourite lifts 6 and grows 1.08 in 150 ms, its ring 3 px green
 check("the name is centred over the focused favourite, follows it as the tray scrolls, and hides when the focus leaves the bar",
       "placeName();" in main and "tray.setOnScrollChangeListener((v, x, y, ox, oy) -> placeName());" in main
       and "addOnGlobalFocusChangeListener((was, now) -> placeName())" in main and "nameRow.animate().alpha(inBar ? 1f : 0f)" in main)
+bottom_adds = re.findall(r"bottom\.addView\((\w+)", main)
+check("the tray is always at y 808 (1080p): the first screen's bottom block holds only the name and the tray, so «أكمل المشاهدة» (its own row below) never lifts it",
+      bottom_adds == ["titleRow", "tray"] and "content.addView(tvRowsBox" in main and "bottom.addView(tvRowsBox" not in main
+      and "lp(-1, -2, Gravity.BOTTOM, bar(FavBar.SIDE), 0, bar(FavBar.SIDE), bar(FavBar.BOTTOM))" in main, bottom_adds)
+check("…and nothing else moves it: no translation or margin of the tray or its block but lowerTray's 40 px",
+      main.count("tray.animate()") == 1 and "tray.setTranslationY" not in main and "bottomBlock.setTranslationY" not in main
+      and "bottomBlock.animate()" not in main)
 check("no tile beside the bar", "optionsTile" not in main)
 check("the only move: 40 px down in 250 ms for a widget, back up the same way", "void lowerTray(boolean down)" in main
       and "bar(FavBar.WIDGET_DROP)" in main and "setDuration(FavBar.DROP_MS)" in main)

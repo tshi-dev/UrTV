@@ -27,9 +27,9 @@ check("only the TV's Watch Next list is read: no apps' rows, no chooser of rows 
       and not (HOME / "ChannelsActivity.java").exists() and "ChannelsActivity" not in manifest and "ChannelsActivity" not in settings)
 check("the row's name is ours whatever the apps call it (Arabic, or English with «اللغة»)", "name.setText(S.tv(TvRowsPick.WATCH_NEXT_TITLE));" in main and 'WATCH_NEXT_TITLE = S.n("أكمل المشاهدة")' in pick)
 show = fn(main, "private void showTvRows(List<TvRows.Row> rows)")
-check("the row sits in the first screen, right under the favourites, inside the same band padding (not under it, below the clock's screen)",
-      "bottom.addView(tvRowsBox, new LinearLayout.LayoutParams(-1, -2));" in main and "content.addView(tvRowsBox" not in main
-      and main.index("bottom.addView(tray") < main.index("bottom.addView(tvRowsBox")
+check("the row is its own row below the first screen (the owner: the tray never moves for it), with the tray's sides and padding",
+      "content.addView(tvRowsBox, llp(-1, -2, bar(FavBar.SIDE), 0, bar(FavBar.SIDE), 0));" in main and "bottom.addView(tvRowsBox" not in main
+      and main.index("content.addView(hero") < main.index("content.addView(tvRowsBox") < main.index("content.addView(appsLabel")
       and "tvRowsBox.setPadding(bar(FavBar.PAD_SIDE), 0, bar(FavBar.PAD_SIDE), 0);" in main
       and "dockRow.setPadding(bar(FavBar.PAD_SIDE), bar(FavBar.PAD_TOP), bar(FavBar.PAD_SIDE), bar(FavBar.PAD_TOP));" in main)
 check("no card is cut: no horizontal scroll, at most as many cards as favourites, at most the five a tray shows, each a favourite tile (FavBar)",
@@ -38,9 +38,9 @@ check("no card is cut: no horizontal scroll, at most as many cards as favourites
 check("tight: the name 14 dp under the favourites and 10 dp over its cards, one row only", "tvRowsBox.addView(name, llp(-2, -2, 0, dp(14), 0, dp(10)));" in show
       and "TvRows.Row row = new Row();" not in show)
 card = fn(main, "private View tvCard(TvRows.Item it)")
-check("on a card the clock and the photo stay: the page stays at the top, nothing dims, the episode's name is the line above the favourites",
-      "glideTo(0);" in card and "fadeGlow(1f);" in card and "title.setText(it.meta.isEmpty() ? it.title : it.title" in card
-      and "fadeGlow(0.35f)" not in card and "title.animate().alpha(1f)" in card and "scrollToTvRow" not in main)
+check("▼ from the tray to a card slides the home up to the row (▲ to a favourite slides it back, glideTo(0)); the episode's name is in the row's own line",
+      "scrollToTvRow(line);" in card and "fadeGlow(1f);" in card and "tvNames.get(at).setText(" in card and "fadeGlow(0.35f)" not in card
+      and "glideTo(0);" in main.split("private View tile(App app, boolean inDock)")[1].split("cardByPkg.put(app.pkg, card);")[0])
 check("a card grows as a favourite does (1.12, the same spring)", "scaleTo(v, has ? 1.12f : 1f);" in card)
 wire = fn(main, "private void wireFocus()")
 check("▼ from the favourites goes to the row; ▲ from the first apps row comes from it; ▲ from it to the favourites",
@@ -140,12 +140,7 @@ check("at 960x540 dp a card is a favourite tile's size: 148.8x83.7 dp with 5 fav
 check("…cut like the favourites (the tray's padding, FavBar's cell) and built again when their number changes",
       "tvRowsBox.setPadding(bar(FavBar.PAD_SIDE), 0, bar(FavBar.PAD_SIDE), 0);" in main
       and "if (!tvShown.isEmpty() && tvCells != dockCards.size()) showTvRows(tvShown);" in main)
-# the first screen at 960x540 dp with the row (the tallest case, 5 favourites): estimated as the home lays it out (sp ~ dp x 1.2 for a line)
-card5 = float(r["card_5"].split("x")[1])
-header = 36 + (15 * 1.2 + 4) + (12 * 1.2 + 5) + (58 * 1.25 - 2) + (14 * 1.2 - 2)        # top, greeting, weather, clock, date
-bottom = 30 + (11 * 1.2 + 24 + card5 * 1.12) + (22 + card5 * 1.12 + 22) + (34 * 1.2 + 14)  # margin, row (label, focused card), dock band, title
-check(f"at 960x540 dp the favourites and the row stay under the clock: the clock block ends at ~{header:.0f} dp, the favourites' block starts at ~{540 - bottom:.0f} dp",
-      540 - bottom > header + 8, (header, 540 - bottom))
+# the row is below the first screen: the first screen is the clock block and the tray only (FavBar's geometry, tests/fav_bar_test.py)
 check("how far in: a fraction up to 1, unknown without a position or a length",
       r["progress_half"] == "0.5" and r["progress_over"] == "1.0" and r["progress_unknown"] == "-1.0 -1.0", (r["progress_half"], r["progress_over"], r["progress_unknown"]))
 sys.exit(1 if failed else 0)
