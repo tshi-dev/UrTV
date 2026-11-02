@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261102213919">
+<meta name="urtv-build" content="20261102213929">
 <title>Your TV Screen</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -3419,7 +3419,7 @@ const ownPhotos = () => Array.from({length: CONFIG.own}, (_, k) => ({url: OWN_BA
 // (author · licence) once the pack's credits arrive; one that has not yet is shown without it.
 const PACK_BASE = 'https://packs.urtv.invalid/';
 const PACK_CREDITS = {};
-const packPhotos = () => CONFIG.packs.flatMap(([id, n]) => Array.from({length: n}, (_, k) => ({url: PACK_BASE + id + '/' + (k + 1) + '.jpg', b: {get c(){ return (PACK_CREDITS[id] || {})[k + 1] || ''; }}})));
+const packPhotos = () => CONFIG.packs.reduce((all, [id, n]) => all.concat(Array.from({length: n}, (_, k) => ({url: PACK_BASE + id + '/' + (k + 1) + '.jpg', b: {get c(){ return (PACK_CREDITS[id] || {})[k + 1] || ''; }}}))), []);
 function loadPackCredits(){
   CONFIG.packs.forEach(([id]) => { fetchT(PACK_BASE + id + '/credits.json', 8000).then(r => r.ok ? r.json() : {}).then(j => { PACK_CREDITS[id] = j || {}; }).catch(() => {}); });
 }
