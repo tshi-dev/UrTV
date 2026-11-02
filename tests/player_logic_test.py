@@ -44,7 +44,7 @@ check("choosing a voice for one never moves the other (the Fajr choice is writte
 check("the usual voice is never a Fajr recording", "AdhanVoices.normalVoice(" in prefs)
 
 # the short adhan: not for previews
-check("the short adhan is set only for a real adhan and cut by its own timer", "adhanShortNow = previewSeconds == 0 && prefs.adhanShort();" in service and "shortTick" in service)
+check("the short adhan is set only for a real adhan and cut by its own timer", "previewSeconds == 0 ? AdhanVoices.length(prefs.adhanTakbir(), prefs.adhanShort()) : AdhanVoices.FULL;" in service and "shortTick" in service)
 
 # the sleep timer's rows show where the focus is (a report: no highlight on them)
 R = ROOT / "android/launcher/src/main/res"

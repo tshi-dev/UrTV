@@ -357,7 +357,11 @@
                 <action android:name="sa.urtv.home.VOICE" />
                 <action android:name="sa.urtv.home.FAJR_VOICE" />
                 <action android:name="sa.urtv.home.ADHAN_SHORT" />
+                <action android:name="sa.urtv.home.ADHAN_TAKBIR" />
                 <action android:name="sa.urtv.home.ADHAN_STOPKEY" />
+                <action android:name="sa.urtv.home.ADHAN_SAVERONLY" />
+                <action android:name="sa.urtv.home.ADHAN_NOTICE" />
+                <action android:name="sa.urtv.home.ADHAN_SAVERAT" />
                 <action android:name="sa.urtv.home.STOP_ADHAN" />
                 <action android:name="sa.urtv.home.ADHAN_OWN" />
             </intent-filter>
