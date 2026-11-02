@@ -28,6 +28,11 @@ public class ScreenDream extends DreamService {
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
+        if (NowPlayingBridge.setupWaiting(this)) {   // «إعداد تلفزيوني» waits for «السماح بتصحيح USB؟»: never cover it (it would stay stuck)
+            android.util.Log.i("UrTVSaver", "not started: the setup is waiting for the debugging prompt");
+            finish();
+            return;
+        }
         setInteractive(false);
         setFullscreen(true);
         setScreenBright(true);

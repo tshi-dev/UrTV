@@ -102,8 +102,12 @@ public class SetupActivity extends Activity {
                 String end;
                 int color = GOLD;
                 try (SetupSession s = SetupSession.open(SetupActivity.this, 180_000, new AdbClient.Approval() {
-                    @Override public void waiting() { line("التلفزيون يسأل «السماح بتصحيح USB؟»: اختر «السماح دائماً» بالريموت."); }
+                    @Override public void waiting() {
+                        SaverHold.begin(SetupActivity.this);   // no screensaver over the prompt: one sent under it stays stuck until a restart
+                        line("التلفزيون يسأل «السماح بتصحيح USB؟»: اختر «السماح دائماً» بالريموت.");
+                    }
                 }, new SetupEngine.Out() { @Override public void line(String t) { SetupActivity.this.line(t); } })) {
+                    SaverHold.end();   // answered: the screensaver is free again (the run itself keeps the screen on as before)
                     SetupEngine e = s.engine;
                     if (undoIt) {
                         boolean ok = e.undo().status == SetupEngine.Status.DONE;
@@ -128,6 +132,8 @@ public class SetupActivity extends Activity {
                 } catch (RuntimeException ex) {
                     end = "حدث خطأ غير متوقع، ما غيّرنا شيئاً بعده. جرّب «تراجع» ثم أعد.";
                     color = RED;
+                } finally {
+                    SaverHold.end();   // a wait that gave up or failed frees the screensaver too
                 }
                 SetupSession.deleteKeyIfFinished(SetupActivity.this);   // after EVERY end (done, failed, skipped, error): the key is a standing credential; it stays only while a switch is pending
                 final String msg = end;
