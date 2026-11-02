@@ -117,9 +117,8 @@ final class Holdings {
     static double number(String raw) {
         if (raw == null) return Double.NaN;
         StringBuilder b = new StringBuilder();
-        for (char c : raw.trim().toCharArray()) {
-            if (c >= '٠' && c <= '٩') b.append((char) ('0' + (c - '٠')));
-            else if (c >= '۰' && c <= '۹') b.append((char) ('0' + (c - '۰')));
+        for (char c : DigitsText.convert(raw.trim(), true).toCharArray()) {   // ٠-٩ and «٫» by the one helper
+            if (c >= '۰' && c <= '۹') b.append((char) ('0' + (c - '۰')));
             else if (c == '٫' || c == ',' || c == '.') b.append('.');
             else if (c >= '0' && c <= '9') b.append(c);
             else return Double.NaN;

@@ -336,16 +336,8 @@ final class MarketData {
 
     /** For the screen: Arabic digits («٫» for the point, «٬» between thousands) unless the setting is Latin; «%» becomes «٪» likewise. */
     static String show(String western, boolean latin) {
-        if (latin) return western;
-        StringBuilder b = new StringBuilder(western.length());
-        for (char c : western.toCharArray()) {
-            if (c >= '0' && c <= '9') b.append((char) ('٠' + (c - '0')));
-            else if (c == '.') b.append('٫');
-            else if (c == ',') b.append('٬');
-            else if (c == '%') b.append('٪');
-            else b.append(c);
-        }
-        return b.toString();
+        if (latin || western == null) return western;
+        return DigitsText.convert(western.replace('.', '٫').replace(',', '٬'), false);   // the digits and «٪» by the one helper
     }
 
     // ---------------------------------------------------------------- a small JSON reader for the file (numbers as doubles)

@@ -101,7 +101,7 @@ if not shutil.which("javac"):
     print("SKIP markets logic: no javac here")
 else:
     with tempfile.TemporaryDirectory() as tmp:
-        subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "MarketData.java"), str(HOME / "Holdings.java"), str(ROOT / "tests/MarketsRun.java")], check=True)
+        subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "MarketData.java"), str(HOME / "Holdings.java"), str(HOME / "DigitsText.java"), str(ROOT / "tests/MarketsRun.java")], check=True)
         run = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.MarketsRun"], capture_output=True)
     out = run.stdout.decode("utf-8")
     print(out, end="")
