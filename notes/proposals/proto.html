@@ -272,7 +272,7 @@ const SHELF=(tileTop,fo)=>`${fo>=0?`<div class="abs" style="right:120px;top:${ti
  ${FAV.map((a,i)=>`<div style="flex:none;width:262px;height:170px;border-radius:20px;background:${a[1]};display:flex;align-items:center;justify-content:center;font:40px TD;color:#fff;border:1.5px solid rgba(255,255,255,.12);${i==fo?'outline:4px solid #8FE0B4;outline-offset:6px;transform:scale(1.04)':''}">${a[0]}</div>`).join('')}
  <div style="flex:none;width:120px;height:170px;border-radius:20px;background:rgba(28,22,18,.34);backdrop-filter:blur(26px);border:1px solid rgba(255,255,255,.22);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font:24px TM;color:#fff">${ic('dots',44,'fill:#fff;stroke:none')}<span>خيارات</span></div></div>`;
 // A: the widgets fit above the row. Left: weather and prayers. Right: the clock, then today's games as three lines.
-const H3=(focus)=>{const g=G(false);const W='color:#fff';
+const H3=(focus,bar)=>{const g=G(false);const W='color:#fff';
  const prs=[['dawn','الفجر','٤:٥٤ ص'],['noon','الظهر','١١:٤٦ ص'],['asr','العصر','٢:٥١ م'],['dusk','المغرب','٥:١٧ م'],['moon','العشاء','٦:٤٧ م']];
  const games=[{h:'الهلال',a:'الاتفاق',t:'٥:١٠ م',n:'المغرب ٥:١٧',mine:1},{h:'الأهلي',a:'التعاون',t:'٨:٠٠ م'},{h:'النصر',a:'القادسية',t:'٩:٠٠ م'}];
  return `<div class="photo" style="background-image:url(../../photos/-RlktmDy3Ec.jpg)"></div><div class="abs" style="inset:0;background:linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,0) 30%,rgba(0,0,0,.3) 100%)"></div>
@@ -297,9 +297,27 @@ const H3=(focus)=>{const g=G(false);const W='color:#fff';
   ${games.map((m,i)=>`<div style="display:flex;align-items:center;gap:14px;height:96px;padding:0 20px;border-radius:16px;${i==0&&focus=='w'?'background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 3px #8FE0B4;':''}${i?'border-top:1px solid rgba(255,255,255,.16);':''}">
    ${crest(m.h,46)}<span style="width:120px;font:28px TM;color:${m.mine?g.nx:'#fff'}">${m.h}</span><span style="font:26px TL;color:${g.sub}">×</span><span style="width:130px;font:28px TM;${W};text-align:left">${m.a}</span>${crest(m.a,46)}
    <span style="flex:1;text-align:left;font:22px TR;color:#FFD27A">${m.n||''}</span><span style="width:110px;text-align:left;font:28px TM;${W}">${m.t}</span></div>`).join('')}</div>
- ${SHELF(770,focus=='a'?0:-1)}`;};
+ ${bar?BAR(804,focus=='a'?0:-1,false):SHELF(770,focus=='a'?0:-1)}`;};
 S.favA=()=>H3('w');
 S.favBw=()=>H2(false,{peek:1});
 S.favBa=()=>H3('a');
+
+// ---- the favourites bar, final (the owner's decision): always the same, always inside its tray, no «خيارات» tile.
+// Spec in docs/PROPOSALS-NOV2.md. Tray 1680x222 at x 120, its bottom 54 px above the screen's (the 5 % safe area).
+// Tiles 296x166 (16:9 banners), 36 apart, 28 inside the tray. Focus: scale 1.08, lift 6, shadow, sheen, green ring.
+const BAR=(trayTop,fo,light)=>{
+ const tray=light?'background:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.85);box-shadow:0 20px 50px rgba(40,36,24,.12),inset 0 1px 0 #fff'
+   :'background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);box-shadow:0 20px 50px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.35)';
+ const ring=light?'#1B8354':'#8FE0B4';
+ const x=i=>1800-28-296-i*(296+36);   // tile i's left edge, RTL: the first app on the right
+ return `${fo>=0?`<div class="abs" style="left:${x(fo)-60}px;width:416px;top:${trayTop-52}px;text-align:center;font:30px TM;color:${light?'var(--ink)':'#fff'};${light?'':'text-shadow:0 2px 12px rgba(0,0,0,.35)'}">${FAV[fo][0]}</div>`:''}
+ <div class="abs" style="left:120px;width:1680px;top:${trayTop}px;height:222px;border-radius:32px;backdrop-filter:blur(30px) saturate(1.3);${tray}"></div>
+ ${FAV.map((a,i)=>`<div class="abs" style="left:${x(i)}px;top:${trayTop+28}px;width:296px;height:166px;border-radius:18px;background:${a[1]};display:flex;align-items:center;justify-content:center;font:38px TD;color:#fff;overflow:hidden;
+   ${i==fo?`transform:translateY(-6px) scale(1.08);box-shadow:0 0 0 3px ${ring},0 18px 36px rgba(0,0,0,${light?.22:.4});z-index:2`:'box-shadow:0 2px 6px rgba(0,0,0,.12)'}">${a[0]}
+   ${i==fo?'<div style="position:absolute;inset:0;background:linear-gradient(125deg,rgba(255,255,255,.26) 0,rgba(255,255,255,.08) 38%,rgba(255,255,255,0) 52%)"></div>':''}</div>`).join('')}`;};
+S.favbar=()=>`<div class="abs" style="left:0;right:0;top:0;height:540px;background:url(../../photos/-RlktmDy3Ec.jpg) center/cover"></div>
+ <div class="abs" style="left:0;right:0;top:540px;height:540px;background:var(--paper)"></div>
+ ${BAR(220,0,false)}${BAR(760,2,true)}`;
+S.final=()=>H3('a',1);
 document.getElementById('f').innerHTML=S[(location.hash||'#football').slice(1)]();
 </script></body></html>

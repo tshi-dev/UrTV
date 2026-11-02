@@ -56,6 +56,29 @@ are drawn.
   who find the TV by where things sit. B is a fair second choice if the owner wants the big match cards, because it moves
   only when focus crosses between the widgets and the apps.
 
+**The owner's decision:** the favourites bar looks the same on every theme and every home layout. It always sits in its
+tray and never slides, so B is out, and the «خيارات» tile is gone. The final home is
+`notes/proposals/football-home-final.png`: A with this bar. The bar alone, on the sunset photo and on sand, is
+`notes/proposals/fav-bar.png`.
+
+### Favourites bar: exact spec (1920×1080; scale by height for 720p)
+
+| Part | Value |
+|---|---|
+| Tray | x 120 to 1800 (1680 wide), 222 high, radius 32. Its bottom is 54 px above the screen's (the 5 % safe area), so its top is at y 804. The same place on every theme and layout. |
+| Tray, over a photo (dark look) | fill `rgba(255,255,255,.14)`, background blur 30 px with saturate 1.3 (on a TV: the home photo blurred once, as the glass look already does, never a live blur), 1 px border `rgba(255,255,255,.28)`, a 1 px inner top highlight `rgba(255,255,255,.35)`, shadow `0 20px 50px rgba(0,0,0,.18)` |
+| Tray, light look | fill `rgba(255,255,255,.72)`, the same blur, 1 px border `rgba(255,255,255,.85)`, a white 1 px inner top highlight, shadow `0 20px 50px rgba(40,36,24,.12)` |
+| Tiles | 296×166 (the app's 16:9 banner), radius 18, 36 apart, 28 from the tray's edges, vertically centred. Five show; the first app is on the right (RTL). More apps scroll inside the tray, and the row never leaves it. |
+| Resting tile | no movement and no dimming, shadow `0 2px 6px rgba(0,0,0,.12)` |
+| Focused tile | `translateY(-6px) scale(1.08)` from the centre (about 320×179), above its neighbours. Ring 3 px: DGA green `#1B8354` on the light look, `#8FE0B4` over a photo. Shadow `0 18px 36px rgba(0,0,0,.40)` (`.22` on light). Sheen: a 125° white gradient over the tile, 26 % at the corner, 8 % at 38 %, gone by 52 %. It stays 14 px inside the tray's edges, so the focus never leaves the box. |
+| Motion | 150 ms ease-out for the lift, scale, shadow and sheen when focus arrives or leaves. Nothing else moves. |
+| App name | above the focused tile, centred on it, 30 px medium, white with a soft shadow over a photo, ink `#1B1F1D` on light. Its baseline is about 18 px above the tray's top edge (the text box is at y = tray top − 52). It follows the focus, and is hidden when focus is not in the bar. |
+| No «خيارات» tile | the app options open from a long OK, as today, until a visible way is chosen that keeps the bar unchanged |
+| Widgets above | everything else on the home must end by y 740, so the name has room above the tray |
+
+The «⋮ خيارات» tile proposed in `UX-REVIEW.md` (problem 2) is overruled by this decision. The app box from that review
+still opens from a long OK on the app.
+
 **The first reference, on the light look** (an earlier pass, kept in `proto.html` as `#football`): a prayer strip and
 four match cards with a live score.
 
