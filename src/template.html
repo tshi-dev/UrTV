@@ -112,7 +112,7 @@
   }
   .week .hd{
     display:flex;align-items:center;gap:.7em;margin-bottom:1vh;
-    font-size:calc(clamp(12px,1vw,18px)*var(--z,1));font-weight:500;letter-spacing:.18em;color:var(--gold-2);
+    font-size:calc(clamp(12px,1vw,18px)*var(--z,1));font-weight:500;letter-spacing:0;color:var(--gold-2);
   }
   .week .hd::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(var(--gold-rgb),.5),transparent)}
   .week ul{list-style:none;display:flex;flex-direction:column;gap:0}
@@ -430,7 +430,7 @@
   }
   .subline{
     margin-top:1.4vh;display:flex;align-items:center;gap:.7em;
-    font-size:clamp(12px,1.02vw,20px);font-weight:300;letter-spacing:.3em;color:#D8CDB6;
+    font-size:clamp(12px,1.02vw,20px);font-weight:300;letter-spacing:0;color:#D8CDB6;
   }
   /* the first starts while no city was ever set (#citynote=1): one quiet line under the city, gone after ten minutes */
   .citynote{margin-top:1vh;font-size:clamp(14px,1.1vw,21px);font-weight:400;color:#D8CDB6}
@@ -445,7 +445,7 @@
   }
   .panel{min-width:0}
   .panel .label{
-    font-size:clamp(12px,.98vw,18px);font-weight:500;letter-spacing:.2em;
+    font-size:clamp(12px,.98vw,18px);font-weight:500;letter-spacing:0;
     color:var(--gold-2);margin-bottom:.8vh;white-space:nowrap;
   }
   .panel .big{

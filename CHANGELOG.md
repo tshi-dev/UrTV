@@ -7,6 +7,7 @@ Newest first. `next` is where changes land first; a release is what was tested t
 - Remote: TCL's own keys work on our home: Netflix (4062), YouTube (4065) and Prime Video (4099) open their app when it is installed, and are passed on otherwise; the Settings key of a TCL G05 (4077) opens our settings like 176 and 83 (they were logged by `UrTVKeys` and dropped).
 - Setup on Android 9 and 10 (SDK below 30): `optimize/tweaks.sh` no longer sets the Play Store's standby bucket (6 of 7 Android 9 reports still ended "with problems" because the TV kept `active`). It is skipped with one journal line (`skipped_standby_bucket`), no `!!`. Undo still puts back a bucket an older run recorded.
 - Setup no longer turns the cached-apps freezer on (`cached_apps_freezer`): one report linked it to apps hanging after standby, and Android 14 has it on by itself. The Play Store background tweak stays. A TV an older run already set gets its own value back from `optimize/tweaks.sh restore`, from the next apply, and from `reset.sh`.
+- Screensaver: the Arabic line under the clock («بتوقيت الرياض») and the card labels («الصلاة القادمة», «المباريات») no longer have letter-spacing: Chromium breaks the joining of Arabic letters when it is not 0, so the letters were cut apart on some TVs.
 
 ## 4.1
 
