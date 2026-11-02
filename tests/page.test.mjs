@@ -358,8 +358,28 @@ for (const [hash, on] of [['panel=verse', false], ['panel=verse&tafsir=1', true]
   }
 }
 
-// ---- photo interval: #photos=N (5 10 15 30 60), anything else 30; the photo changes on that slot
-for (const [hash, want] of [['', 30], ['photos=5', 5], ['photos=60', 60], ['photos=7', 30], ['photos=abc', 30], ['photos=0', 30]]) {
+// ---- «تبديل الآية والحديث»: #versemin=3 a new verse or hadith every 3 minutes (verse, hadith, verse…) titled «آية كريمة» / «حديث شريف»;
+// anything else is one a day as always («آية اليوم» / «حديث اليوم», the same text all day)
+for (const [hash, every] of [['panel=verse', 0], ['panel=verse&versemin=3', 3], ['panel=verse&versemin=5', 0], ['panel=verse&versemin=x', 0]]) {
+  const { p, ctx, errors } = await open('tv.html', hash);
+  const r = await p.evaluate(() => {
+    const real = Date.now, base = 180000 * 2000;   // the start of an even 3-minute slot
+    const at = ms => { Date.now = () => base + ms; renderPanel(false);
+      return [document.getElementById('week-hd').textContent, document.querySelector('#week-list li.quote').textContent]; };
+    const a = at(0), b = at(179000), c = at(180000), d = at(360000);
+    Date.now = real;
+    return { every: CONFIG.verseMin, a, b, c, d };
+  });
+  const ok = every
+    ? r.every === 3 && r.a[0] === 'آية كريمة' && r.b[1] === r.a[1] && r.c[0] === 'حديث شريف' && r.d[0] === 'آية كريمة' && r.d[1] !== r.a[1]
+    : r.every === 0 && ['آية اليوم', 'حديث اليوم'].includes(r.a[0]) && r.a[1] === r.c[1] && r.c[1] === r.d[1];
+  check(`link #${hash} → ${every ? 'a new verse or hadith every 3 minutes, verse then hadith' : 'one a day, as always'}`,
+    !errors.length && ok, JSON.stringify(r).slice(0, 400) + errors.join('; '));
+  await ctx.close();
+}
+
+// ---- photo interval: #photos=N (5 10 15 30 60, and 1), anything else 30; the photo changes on that slot
+for (const [hash, want] of [['', 30], ['photos=5', 5], ['photos=60', 60], ['photos=1', 1], ['photos=7', 30], ['photos=abc', 30], ['photos=0', 30], ['photos=0.25', 30]]) {
   const { p, ctx, errors } = await open('tv.html', hash);
   const r = await p.evaluate(() => {
     const real = riyadhParts;
@@ -370,6 +390,19 @@ for (const [hash, want] of [['', 30], ['photos=5', 5], ['photos=60', 60], ['phot
   const got = [r[1] !== r[2], r[3] !== r[4], r[5] !== r[6]];
   check(`link #${hash || '(empty)'} → CONFIG.photoMinutes ${want}, photo changes on that slot`,
     !errors.length && r[0] === want && JSON.stringify(got) === JSON.stringify(changes), JSON.stringify([r, changes]) + errors.join('; '));
+  await ctx.close();
+}
+
+// ---- 30-second photos: #photos=0.5 (the app sends it only on a TV with 2 GB): a new slot every 30 s, the same one within it
+{
+  const { p, ctx, errors } = await open('tv.html', 'photos=0.5');
+  const r = await p.evaluate(() => {
+    const real = riyadhParts;
+    const at = (h, mi, s) => { window.riyadhParts = () => ({ ...real(), h, mi, s }); BG_SLOT = -1; applyBackground(true); return BG_SLOT; };
+    return [CONFIG.photoMinutes, at(10, 4, 0), at(10, 4, 29), at(10, 4, 30), at(10, 4, 59), at(10, 5, 0)];
+  });
+  check('link #photos=0.5 → CONFIG.photoMinutes 0.5, the photo changes at :00 and :30 of each minute, not in between',
+    !errors.length && r[0] === 0.5 && r[1] === r[2] && r[2] !== r[3] && r[3] === r[4] && r[4] !== r[5] && r[5] - r[1] === 2, JSON.stringify(r) + errors.join('; '));
   await ctx.close();
 }
 
@@ -389,6 +422,28 @@ for (const [hash, latin] of [['', false], ['digits=hindi', false], ['digits=lati
                    : r.east > 10 && r.lat === 0;
   check(`link #${hash || '(empty)'} → ${latin ? '0-9' : '٠-٩'} in clock, dates, countdown and matches`, !errors.length && ok, JSON.stringify(r) + errors.join('; '));
   await ctx.close();
+}
+
+// ---- «المناسبة القادمة» hidden (#occasion=0: its place stays, empty, nothing else moves) and «تعتيم الليل» off (#nightdim=0: no dimmer
+// at midnight); anything else is shown and dimmed as always
+{
+  const base = {};
+  for (const [hash, occ, dim] of [['', true, true], ['occasion=0', false, true], ['nightdim=0', true, false], ['occasion=0&nightdim=0', false, false],
+                                   ['occasion=no&nightdim=1', true, true]]) {
+    const { p, ctx, errors } = await open('tv.html', hash, { now: '2026-10-23T21:00:00Z' });   // midnight in Riyadh: the darkest
+    const r = await p.evaluate(() => {
+      applyNight();
+      const mid = document.querySelector('.p-mid'), box = q => document.querySelector(q).getBoundingClientRect();
+      return { vis: getComputedStyle(mid).visibility, w: Math.round(box('.p-mid').width), op: +document.getElementById('dimmer').style.opacity,
+               prayer: Math.round(box('.p-prayer').left), slot: Math.round(box('.p-match').left), cfg: [CONFIG.occasion, CONFIG.nightDim] };
+    });
+    if (!hash) Object.assign(base, r);
+    const ok = r.vis === (occ ? 'visible' : 'hidden') && r.w > 0 && (dim ? r.op > 0.4 : r.op === 0) && r.prayer === base.prayer && r.slot === base.slot
+      && r.cfg[0] === occ && r.cfg[1] === dim;
+    check(`link #${hash || '(empty)'} → occasion ${occ ? 'shown' : 'hidden, its place kept'}, night dimming ${dim ? 'on' : 'off'}`,
+      !errors.length && ok, JSON.stringify([r, base]) + errors.join('; '));
+    await ctx.close();
+  }
 }
 
 // ---- «المناسبة القادمة»: each occasion counts down, then shows its own day (dates as Umm al-Qura gives them)

@@ -69,8 +69,8 @@ final class Prefs {
 
     static final String[] MIN_RATINGS = {"0", "6", "6.5", "7", "7.5", "8"};
 
-    // minutes between background photos (sent to the page as #photos=; 30 is what it always did)
-    static final String[] PHOTO_MINUTES = {"5", "10", "15", "30", "60"};
+    // the time between background photos (PhotoInterval: minutes, or 30s on a TV with 2 GB; sent to the page as #photos=; 30 is what it always did)
+    static final String[] PHOTO_MINUTES = PhotoInterval.ALL;
 
     // digits on the screen (sent to the page as #digits=; hindi is what it always showed)
     static final String[][] DIGITS = {{"hindi", "هندية ١٢٣"}, {"latin", "عربية 123"}};
@@ -380,7 +380,24 @@ final class Prefs {
     String countdownName() { return sp.getString("cdName", ""); }
     void setCountdown(String date, String name) { sp.edit().putString("cd", date).putString("cdName", name).apply(); }
 
-    String photoMinutes() { return sp.getString("photoMinutes", "30"); }
+    /** the value in use on this TV: "30s" saved on a TV under 2 GB (or moved from one) is 1 minute here (PhotoInterval.read) */
+    String photoMinutes() { return PhotoInterval.read(sp.getString("photoMinutes", PhotoInterval.DEFAULT), ramMb(ctx)); }
+
+    private static long ramMb = -1;
+    /** The TV's memory in MB (MemTotal, what the setup reports' «free of 2048» counts); read once, it does not change. 0 when unknown. */
+    static long ramMb(Context c) {
+        if (ramMb < 0) {
+            long mb = 0;
+            try {
+                android.app.ActivityManager am = (android.app.ActivityManager) c.getSystemService(Context.ACTIVITY_SERVICE);
+                android.app.ActivityManager.MemoryInfo mi = new android.app.ActivityManager.MemoryInfo();
+                am.getMemoryInfo(mi);
+                mb = mi.totalMem / (1024 * 1024);
+            } catch (RuntimeException ignored) { }
+            ramMb = mb;
+        }
+        return ramMb;
+    }
     void setPhotoMinutes(String v) { sp.edit().putString("photoMinutes", v).apply(); }
 
     /**
@@ -416,6 +433,23 @@ final class Prefs {
     String months() { return "levant".equals(sp.getString("months", "default")) ? "levant" : "default"; }
     void setMonths(String v) { sp.edit().putString("months", "levant".equals(v) ? "levant" : "default").apply(); }
     static String monthsLabel(String v) { return "levant".equals(v) ? "كانون الثاني، شباط، آذار…" : "يناير، فبراير، مارس…"; }
+
+    /**
+     * Three parts of the screens that can be hidden, each shown by default as it always was, and sent only when hidden so the fragment is
+     * otherwise as it was: «المناسبة القادمة» at the bottom middle of the screensaver (the countdown to Ramadan and the feasts, the iftar and
+     * suhoor in Ramadan; #occasion=0), «تعتيم الليل» (the screensaver darkens from 21:00, most from 23:00 to 05:00; #nightdim=0) and the
+     * «المهام» button on the home screen (#taskspill=0: the home reads it, the page ignores it).
+     */
+    boolean occasion() { return sp.getBoolean("occasion", true); }
+    void setOccasion(boolean v) { sp.edit().putBoolean("occasion", v).apply(); }
+    boolean nightDim() { return sp.getBoolean("nightDim", true); }
+    void setNightDim(boolean v) { sp.edit().putBoolean("nightDim", v).apply(); }
+    boolean tasksPill() { return sp.getBoolean("tasksPill", true); }
+    void setTasksPill(boolean v) { sp.edit().putBoolean("tasksPill", v).apply(); }
+
+    /** «تبديل الآية والحديث»: the verse-or-hadith card once a day (default, as always) or every 3 minutes (QuoteEvery); #versemin=3 only then. */
+    String quoteEvery() { return QuoteEvery.read(sp.getString("quoteEvery", QuoteEvery.DAY)); }
+    void setQuoteEvery(String v) { sp.edit().putString("quoteEvery", QuoteEvery.read(v)).apply(); }
 
     /** The slim year strip under the clock, on the screensaver only (default off); sent to the page as #yearstrip=. */
     boolean yearStrip() { return sp.getBoolean("yearStrip", false); }
@@ -494,9 +528,11 @@ final class Prefs {
             + "&langs=" + Uri.encode(join(list("langs"), ","))
             + "&shows=" + join(ids, ",")
             + "&minrating=" + minRating()
-            + "&photos=" + photoMinutes()
+            + "&photos=" + PhotoInterval.fragmentValue(photoMinutes())
             + "&digits=" + digits()
             + ClockSetting.fragment(clock24())
+            + QuoteEvery.fragment(quoteEvery())
+            + (occasion() ? "" : "&occasion=0") + (nightDim() ? "" : "&nightdim=0") + (tasksPill() ? "" : "&taskspill=0")
             + "&cardstyle=" + cardStyle()
             + "&adhanbar=" + (adhanBar() ? "1" : "0")
             + "&yearstrip=" + (yearStrip() ? "1" : "0")

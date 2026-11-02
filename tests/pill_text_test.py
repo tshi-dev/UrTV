@@ -26,8 +26,8 @@ check("Pill: a focused pill is its own focus target (focusable, children are not
 check("Pill: only the padding and the name's window change; the pill's own size params (its height) are never touched",
       pill.count("getLayoutParams()") == 2 and "clip.getLayoutParams()" in pill and "name.getLayoutParams()" in pill)
 order = re.findall(r"Arrays\.asList\(([^)]*)\)", main.split("List<Pill> row", 1)[1].split("\n", 1)[0])
-check("MainActivity: the pills left in the row are sources, then tasks (with the screensaver app), the control center and tilawah (the sleep, screensaver, network and settings pills are tiles of the control center)",
-      order == ["inputs"] and "if (isInstalled(SAVER_PKG)) row.add(tasks);" in main and "if (centerWanted()) row.add(centerPill);" in main and "row.add(tilawah)" in main
+check("MainActivity: the pills left in the row are sources, then tasks (with the screensaver app, unless «زر المهام» hides it), the control center and tilawah (the sleep, screensaver, network and settings pills are tiles of the control center)",
+      order == ["inputs"] and "if (isInstalled(SAVER_PKG) && ConfigSnapshot.read(this).tasksPillOn()) row.add(tasks);" in main and "if (centerWanted()) row.add(centerPill);" in main and "row.add(tilawah)" in main
       and main.index("row.add(tasks)") < main.index("row.add(centerPill)") < main.index("row.add(tilawah)"), order)
 check("MainActivity: every pill is a Pill with a fixed 30 dp row (the row's height is reserved)",
       "right.addView(p, llp(-2, dp(Pill.HEIGHT), dp(10), 0, 0, 0))" in main and "TextView tasks" not in main and "TextView saver" not in main)

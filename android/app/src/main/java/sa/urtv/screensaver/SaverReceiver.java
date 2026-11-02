@@ -21,7 +21,7 @@ import java.util.Locale;
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET
  *       [--es city 'الرس'] [--es lat 25.86 --es lon 43.49 --es tz Asia/Kuwait]   (tz is needed for a place that is not in the list) [--es teams '136013:Al-Hilal,150643:Al-Zulfi']
  *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
- *       [--es sunrise on|off] [--es prayerbar on|off] [--es wxmore on|off] [--es months default|levant] [--es genres Drama,Comedy] [--es langs English]
+ *       [--es sunrise on|off] [--es prayerbar on|off] [--es wxmore on|off] [--es months default|levant] [--es verse day|3] [--es occasion on|off] [--es nightdim on|off] [--es taskspill on|off] [--es genres Drama,Comedy] [--es langs English]
  *       [--es photos 30] [--es idle 10] [--es digits hindi|latin] [--es hijrioffset -2..2] [--es clock24 on|off]
  *       [--es cardstyle current|dark1|glass1|dark3|glass3] [--es national auto|off]
  *       [--es markets tasi,gold,btc] [--es mkstyle arrows|prices] [--es mkbar on|off] [--es clocksize large|medium|small] [--es stocks 2222,1120,AAPL]
@@ -52,6 +52,9 @@ import java.util.Locale;
  * yearstrip = the slim year strip under the screensaver's clock (on, or off, the default).
  * sunrise, prayerbar, wxmore = on or off (the default): the sunrise after Fajr in the prayer panel, the bar under it, the humidity and wind.
  * months = default («أكتوبر») or levant («تشرين الأول»), the Gregorian month's names on both screens.
+ * occasion, nightdim, taskspill = on (the default, as always) or off: «المناسبة القادمة» at the bottom middle of the screensaver (the
+ * countdown to Ramadan and the feasts), «تعتيم الليل» (the screensaver darker at night), the «المهام» button on the home screen.
+ * verse = day (the default: a verse one day, a hadith the next) or 3 (a new one every 3 minutes): the verse-or-hadith card (QuoteEvery).
  * slot = what the bottom-left slot shows (Prefs.SLOTS). countdown = the date (YYYY-MM-DD) slot=countdown counts down to, or
  * "clear"; cdname = its name (up to 40 characters).
  * national = auto (as always from now: the quiet green look on National Day, 21-25 September, and Founding Day, 20-24 February) or off.
@@ -62,7 +65,7 @@ import java.util.Locale;
  * markets = up to four of Prefs.MARKETS at the top left, in order; mkstyle = arrows only (as always) or the price and the day's change.
  * stocks = the watchlist of the stocks card (panel stocks): up to Prefs.MAX_STOCKS Tadawul codes (4 digits) or US tickers.
  * clock24 = «ساعة ٢٤»: every time of day as 24-hour (on) or 12-hour with ص and م (off, the default; ClockSetting).
- * digits = hindi (١٢٣, as always) or latin (123). photos = minutes between background photos (Prefs.PHOTO_MINUTES). idle = minutes before the TV starts the
+ * digits = hindi (١٢٣, as always) or latin (123). photos = minutes between background photos, or 30s on a TV with 2 GB (PhotoInterval). idle = minutes before the TV starts the
  * screensaver (Prefs.IDLE_MINUTES): this is the system's screen_off_timeout, which a receiver (it runs as this
  * app, not as the shell) may write only when the app holds WRITE_SETTINGS; otherwise it says so and
  * optimize/saver.sh sets it from the shell instead. Nothing changes unless the extra is given.
@@ -229,6 +232,11 @@ public class SaverReceiver extends BroadcastReceiver {
             if (x[1] != null && !"on".equals(x[1]) && !"off".equals(x[1])) return "error: " + x[0] + " is one of on off";
         String months = i.getStringExtra("months");
         if (months != null && !"default".equals(months) && !"levant".equals(months)) return "error: months is one of default levant";
+        String occasion = i.getStringExtra("occasion"), nightDim = i.getStringExtra("nightdim"), tasksPill = i.getStringExtra("taskspill");
+        for (String[] x : new String[][] {{"occasion", occasion}, {"nightdim", nightDim}, {"taskspill", tasksPill}})
+            if (x[1] != null && !"on".equals(x[1]) && !"off".equals(x[1])) return "error: " + x[0] + " is one of on off";
+        String verse = i.getStringExtra("verse");
+        if (verse != null && !QuoteEvery.valid(verse)) return "error: verse is one of day 3";
         String greeting = i.getStringExtra("greeting");
         if (greeting != null && !"on".equals(greeting) && !"off".equals(greeting))
             return "error: greeting is one of on off";
@@ -251,8 +259,8 @@ public class SaverReceiver extends BroadcastReceiver {
         if (rating != null && !Arrays.asList(Prefs.MIN_RATINGS).contains(rating))
             return "error: minrating is one of " + Prefs.join(Arrays.asList(Prefs.MIN_RATINGS), " ");
         String photos = i.getStringExtra("photos");
-        if (photos != null && !Arrays.asList(Prefs.PHOTO_MINUTES).contains(photos))
-            return "error: photos is one of " + Prefs.join(Arrays.asList(Prefs.PHOTO_MINUTES), " ");
+        String photosWhy = photos == null ? null : PhotoInterval.refuse(photos, Prefs.ramMb(c));   // 30s only on a TV with 2 GB
+        if (photosWhy != null) return photosWhy;
         String digits = i.getStringExtra("digits");
         if (digits != null && !isChoice(Prefs.DIGITS, digits))
             return "error: digits is one of " + choices(Prefs.DIGITS);
@@ -356,6 +364,10 @@ public class SaverReceiver extends BroadcastReceiver {
         if (prayerBar != null) p.setPrayerBar("on".equals(prayerBar));
         if (wxMore != null) p.setWxMore("on".equals(wxMore));
         if (months != null) p.setMonths(months);
+        if (verse != null) p.setQuoteEvery(verse);
+        if (occasion != null) p.setOccasion("on".equals(occasion));
+        if (nightDim != null) p.setNightDim("on".equals(nightDim));
+        if (tasksPill != null) p.setTasksPill("on".equals(tasksPill));
         if (prayerMethod != null) p.setPrayerMethod(PrayerMethod.parse(prayerMethod));
         if (adj != null) p.setPrayerAdj(adj);
         if (hijriOffset != null) p.setHijriOffset(hijriOffset);
@@ -491,12 +503,13 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nupdatechannel: " + p.updateChannel()
             + "\nyearstrip: " + (p.yearStrip() ? "on" : "off")
             + "\nsunrise: " + (p.sunrise() ? "on" : "off") + "\nprayerbar: " + (p.prayerBar() ? "on" : "off")
-            + "\nwxmore: " + (p.wxMore() ? "on" : "off") + "\nmonths: " + p.months()
+            + "\nwxmore: " + (p.wxMore() ? "on" : "off") + "\nmonths: " + p.months() + "\nverse: " + p.quoteEvery()
+            + "\noccasion: " + (p.occasion() ? "on" : "off") + "\nnightdim: " + (p.nightDim() ? "on" : "off") + "\ntaskspill: " + (p.tasksPill() ? "on" : "off")
             + "\nprayermethod: " + p.prayerMethod()
             + "\nprayeradj: " + (p.prayerAdjOn() ? "on" : "off") + " " + PrayerAdj.describe(p.prayerAdj())
             + "\nhijrioffset: " + HijriOffset.describe(p.hijriOffset())
             + "\nminrating: " + p.minRating()
-            + "\nphotos: " + p.photoMinutes()
+            + "\nphotos: " + p.photoMinutes() + (PhotoInterval.fast(Prefs.ramMb(c)) ? "" : " (30s needs 2 GB; " + Prefs.ramMb(c) + " MB here)")
             + "\ndigits: " + p.digits()
             + "\nclock24: " + ClockSetting.describe(p.clock24())
             + "\nnational: " + p.national()

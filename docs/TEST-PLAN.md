@@ -46,8 +46,8 @@ Navigate with the remote, or `adb shell input keyevent DPAD_DOWN|DPAD_UP|DPAD_CE
 | A14 | مسلسلات مختارة → untick it → حفظ | Removed |
 | A15 | أقل تقييم → 8 | Row shows 8 |
 | A16 | التحديث التلقائي → press | Toggles يعمل/متوقف; set back to يعمل |
-| A17 | تحديث الشاشة الآن | Toast «تم التحديث» or «الصفحة محدثة» (not «لا يوجد اتصال») |
-| A17b | The lines under «تحديث الشاشة الآن» (focus that row: the list scrolls to them) | Plain text, in no button: «الإصدار الحالي: ٣٫N», «الإصدار المتاح: …» (the number, «لا يوجد أحدث» or «لم يُفحص بعد»), «طريقة التحديث: …حدّث تلفزيوني…»; the row itself says only «ينزّل أحدث نسخة من الشاشة» |
+| A17 | تحديث صفحة شاشة التوقف | Toast «تم التحديث» or «الصفحة محدثة» (not «لا يوجد اتصال») |
+| A17b | The lines under «تحديث صفحة شاشة التوقف» (focus that row: the list scrolls to them) | Plain text, in no button: «الإصدار الحالي: ٣٫N», «الإصدار المتاح: …» (the number, «لا يوجد أحدث» or «لم يُفحص بعد»), «طريقة التحديث: …حدّث تلفزيوني…»; the row itself says only «ينزّل أحدث صفحة للشاشة فقط · لتحديث التطبيقين: «تحديث تلفزيوني» في نفس القسم» |
 | A18 | بدء شاشة التوقف بعد (TV without «Modify system settings» for the app, the usual case) | The row shows the TV's current delay (e.g. «١٠ دقائق»); pressing it shows the toast «غيّرها من إعدادات التلفاز، أو بأمر من مساعدك» and opens the TV's screensaver settings; the delay is unchanged |
 | A18b | بدء شاشة التوقف بعد, after `adb shell appops set sa.urtv.screensaver WRITE_SETTINGS allow` | Pressing it lists دقيقة واحدة, دقيقتان, ٥ دقائق, ١٠ دقائق, ١٥ دقيقة, ٣٠ دقيقة with the current one selected; pick ٥ دقائق → the row says «٥ دقائق» and `adb shell settings get system screen_off_timeout` prints `300000`; set it back afterwards |
 | A18c | الأرقام → عربية 123, then preview; then back to هندية ١٢٣ | With 123 the clock, both dates, prayer times, countdowns, weather, scores and the home screen card show 0-9; with ١٢٣ they show ٠-٩ as before; the row shows the choice |

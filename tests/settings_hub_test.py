@@ -125,7 +125,7 @@ check("a row is added only on its own category's screen (made on every screen, s
       and rowfn.index("if (!on(cat)) return card;") < rowfn.index("list.addView(card, lp);"))
 check("a header is drawn only on its category's screen, above the first of its rows there",
       "pendingHeader = on(groupCat) ? text : null;" in st and "if (pendingHeader != null && cat.equals(groupCat)) { drawHeader(pendingHeader); pendingHeader = null; }" in rowfn)
-check("the version lines show under «تحديث الشاشة الآن» only where that row is", "if (last.getParent() == list) note(last, Updater.versionLines(this));" in render)
+check("the version lines show under «تحديث صفحة شاشة التوقف» only where that row is", "if (last.getParent() == list) note(last, Updater.versionLines(this));" in render)
 check("the tiles and the rows are found again by their tag after a rebuild (the focus stays on the tile, as on a row)",
       'card.setTag("hub:" + cat);' in st and "if (all.contains(v)) return v;" in st)
 for fn_ in ("openAdhanSettings()", "openDockSettings()", "openInputNames()", "openDockEdit()", "openUpdate()", "openPhoneControl()", "openFamilyDns()", "pickCity()", "updateNow()"):

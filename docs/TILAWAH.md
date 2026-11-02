@@ -185,6 +185,12 @@ python3 .github/tools/fetch_quran.py --check   # ranged GET of every stream URL
 - Streams move or go quiet; the `--check` run verifies one kilobyte of each URL. At the time of
   writing all 51 URLs answered with `audio/mpeg`. A station that fails may be temporarily down;
   the app retries and reports it.
+- **«البث المباشر من الحرم»** is a link, not a stream: a row after the stations that opens the
+  broadcaster's own live page or channel (the Saudi Broadcasting Authority's Quran channel) in its own
+  app or the browser (`ACTION_VIEW`). Nothing is played, copied or re-hosted here, and no aggregator is
+  used. The link is the constant `HaramLive.URL` (https, on `sba.sa`, `aloula.sa` or `youtube.com`
+  only); it is **empty** until the official link is checked by hand, and while it is empty the row
+  does not show. `tests/haram_live_test.py`.
 
 The assets live in `android/launcher/src/main/assets/quran/` (`reciters.json`, `stations.json`,
 `surahs.json`). `tests/tilawah_test.py` checks the catalog, the adhan, the cleartext

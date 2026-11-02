@@ -117,6 +117,7 @@ public class MainActivity extends Activity {
     private boolean lightNow;   // the look on screen now: dark until a light one is asked for
     private Pill inputsPill;        // «المصادر», for the phone remote's request
     private Pill tilawahPill;       // «تلاوة وأذان»: in the row only while the setting shows it (applyListenPill)
+    private Pill tasksPill;         // «المهام»: in the row only while the screensaver app is here and the setting shows it (applyTasksPill)
     private LinearLayout pillRow;    // the top row of pills
     // [updates bell] «جرس التحديثات»: in the row only on evidence of waiting Play Store updates (applyUpdateBell)
     private Pill bellPill;
@@ -516,7 +517,8 @@ public class MainActivity extends Activity {
         centerPill.setOnClickListener(v -> guarded(ParentalPolicy.PILL_CENTER, null, ControlText.NAME, () -> control.open(v)));
         // ---- end «مركز التحكم»
         List<Pill> row = new ArrayList<>(Arrays.asList(inputs));
-        if (isInstalled(SAVER_PKG)) row.add(tasks);
+        tasksPill = tasks;
+        if (isInstalled(SAVER_PKG) && ConfigSnapshot.read(this).tasksPillOn()) row.add(tasks);   // «زر المهام»: hidden in the screensaver's settings, it is not in the row
         if (centerWanted()) row.add(centerPill);
         tilawahPill = tilawah;
         pillRow = right;
@@ -625,6 +627,30 @@ public class MainActivity extends Activity {
             pills.remove(tilawahPill);
             pillRow.removeView(tilawahPill);
             if (hadFocus && !pills.isEmpty()) pills.get(pills.size() - 1).requestFocus();
+        }
+        wireFocus();   // the row changed: up/down from the pills follow it
+    }
+
+    /**
+     * «زر المهام» shown or hidden by the screensaver's setting, while the screen is up (the minute tick), the way «زر تلاوة وأذان» is: taken
+     * OUT of the row and out of `pills` (never just hidden: the walk along the row needs every sibling visible), the focus to the pill before
+     * it; it comes back where it always was, right after «المصادر». Only with the screensaver app here (the list lives in it). The tasks, the
+     * «المهام» card and the phone's way in do not change.
+     */
+    private void applyTasksPill(boolean setting) {
+        if (tasksPill == null || pillRow == null || inputsPill == null) return;
+        boolean has = tasksPill.getParent() == pillRow;
+        if (setting == has) return;   // as it should be: the package manager is not asked every minute
+        boolean want = setting && isInstalled(SAVER_PKG);
+        if (want == has) return;
+        if (want) {
+            pillRow.addView(tasksPill, pillRow.indexOfChild(inputsPill) + 1, llp(-2, dp(Pill.HEIGHT), dp(10), 0, 0, 0));
+            pills.add(pills.indexOf(inputsPill) + 1, tasksPill);
+        } else {
+            boolean hadFocus = tasksPill.hasFocus();
+            pills.remove(tasksPill);
+            pillRow.removeView(tasksPill);
+            if (hadFocus) inputsPill.requestFocus();
         }
         wireFocus();   // the row changed: up/down from the pills follow it
     }
@@ -2377,6 +2403,7 @@ public class MainActivity extends Activity {
         date.setText(arabicDigits(hijri.isEmpty() ? greg : hijri + "  –  " + greg));
         updateAdhanBar(cfg);
         applyListenPill(cfg.listenPillOn);
+        applyTasksPill(cfg.tasksPillOn());
         applyUpdateBell(cfg.updateBellOn);   // [updates bell]
         applyCenterPill();   // kids mode may have been turned on or off
         sa.urtv.home.tilawah.AdhanSync.onConfig(this, cfg.placeFragment(), cfg.placeTicket());   // «تعديل وقت الصلاة» changed on the TV: the alarm follows

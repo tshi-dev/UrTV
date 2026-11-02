@@ -268,6 +268,11 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { prefs.setMonths("levant".equals(prefs.months()) ? "default" : "levant"); render(); } });
         row("شريط السنة تحت الساعة", prefs.yearStrip() ? "يعمل · نقاط السنة تحت الساعة، واليوم يلمع" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setYearStrip(!prefs.yearStrip()); render(); } });
+        // shown by default as always; OK hides it (and shows it again)
+        row("المناسبة القادمة", prefs.occasion() ? "ظاهرة · أسفل الشاشة في الوسط: كم باقي على رمضان والأعياد، والإفطار والإمساك في رمضان" : "مخفية", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setOccasion(!prefs.occasion()); render(); } });
+        row("تعتيم الليل", prefs.nightDim() ? "يعمل · تغمق الشاشة من ٩ مساءً، وأغمق من ١١ إلى ٥ الفجر، وترجع ٧ الصباح" : "متوقف · نفس الإضاءة طول الليل", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setNightDim(!prefs.nightDim()); render(); } });
         row("المناسبات الوطنية", Prefs.nationalLabel(prefs.national()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickNational(); } });
         row("حجم الساعة", Prefs.clockSizeLabel(prefs.clockSize()), R.drawable.ic_eye,
@@ -296,6 +301,10 @@ public class SettingsActivity extends Activity {
             row("بطاقة ثانية", Prefs.panelLabel(prefs.panel2(), "بدون"), R.drawable.ic_eye, new Runnable() { public void run() { pickPanel2(); } });
         row("شكل البطاقة", Prefs.cardStyleLabel(prefs.cardStyle()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickCardStyle(); } });
+        // «تبديل الآية والحديث»: only while the verse-or-hadith card is shown somewhere (here, as the second card, or on the home screen)
+        if ("verse".equals(prefs.panel()) || "verse".equals(prefs.panel2()) || prefs.homePanels().contains("verse"))
+            row("تبديل الآية والحديث", QuoteEvery.label(prefs.quoteEvery()), R.drawable.ic_sync,
+                new Runnable() { public void run() { pickQuoteEvery(); } });
 
         header("الشاشة الرئيسية (تلفزيونك)");
         // «المظهر», the first row: «الشكل» (glass, graphite, navy, clean) and «الإضاءة» (dark, light, auto), each picked with a live preview
@@ -316,6 +325,9 @@ public class SettingsActivity extends Activity {
         // hiding removes only the button; the help line says where the screen opens from then
         row("زر تلاوة وأذان", prefs.listenPill() ? "ظاهر" : "مخفي  •  الأذان والتلاوة تعمل، وتفتح الشاشة من قائمة التطبيق (اختيار مطوّلة) أو من بطاقة «يُتلى الآن»", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setListenPill(!prefs.listenPill()); render(); } });
+        // hiding removes only the button: the list stays in the «المهام» card and on the phone
+        row("زر المهام", prefs.tasksPill() ? "ظاهر" : "مخفي  •  المهام تبقى في بطاقة «المهام» ومن الجوال", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setTasksPill(!prefs.tasksPill()); render(); } });
         // the bell shows only while the Play Store has updates waiting (the home screen asks on return, at most every 6 hours)
         row("جرس التحديثات", prefs.updateBell() ? "ظاهر عند وجود تحديثات للتطبيقات" : "مخفي", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setUpdateBell(!prefs.updateBell()); render(); } });
@@ -339,7 +351,7 @@ public class SettingsActivity extends Activity {
         // «كل التطبيقات»: the home screen's «تعديل التطبيقات», or the order by name again (what is hidden stays hidden)
         row("ترتيب كل التطبيقات", "تحريكها وإخفاؤها على الشاشة الرئيسية، أو الرجوع للترتيب الأصلي", R.drawable.ic_star,
             new Runnable() { public void run() { pickAppsOrder(); } });
-        row("تحديث تلفزيوني", "يعرض الإصدار ويتحقق من التحديث", R.drawable.ic_sync,
+        row("تحديث تلفزيوني", "تحديث التطبيقين: يعرض الإصدار ويتحقق من التحديث", R.drawable.ic_sync,
             new Runnable() { public void run() { openUpdate(); } });
 
         row("حماية العائلة", "تفعيل أو إيقاف، ويرجع الإعداد القديم تلقائياً", R.drawable.ic_eye,
@@ -363,7 +375,7 @@ public class SettingsActivity extends Activity {
         }
 
         header("التوقيت");
-        row("تبديل الصورة كل", minutesLabel(Integer.parseInt(prefs.photoMinutes())), R.drawable.ic_sync,
+        row("تبديل الصورة كل", PhotoInterval.label(prefs.photoMinutes()), R.drawable.ic_sync,
             new Runnable() { public void run() { pickPhotoMinutes(); } });
         row("صوري (" + arabicNum(Own.count(this)) + "/" + arabicNum(Own.MAX) + ")", ownLabel(), R.drawable.ic_eye,
             new Runnable() { public void run() { pickOwn(); } });
@@ -373,7 +385,8 @@ public class SettingsActivity extends Activity {
         header("التطبيق");
         row("التحديث التلقائي للصفحة", prefs.autoUpdate() ? "يعمل · عند بدء الشاشة، كل ٦ ساعات" : "متوقف", R.drawable.ic_sync, new Runnable() { public void run() {
             prefs.setAutoUpdate(!prefs.autoUpdate()); render(); } });
-        View last = row("تحديث الشاشة الآن", "ينزّل أحدث نسخة من الشاشة", R.drawable.ic_sync, new Runnable() { public void run() { updateNow(); } });
+        // the page only, never the apps: people took it for the app update (rows 421, 441), so its line points to «تحديث تلفزيوني»
+        View last = row("تحديث صفحة شاشة التوقف", "ينزّل أحدث صفحة للشاشة فقط · لتحديث التطبيقين: «تحديث تلفزيوني» في نفس القسم", R.drawable.ic_sync, new Runnable() { public void run() { updateNow(); } });
         if (last.getParent() == list) note(last, Updater.versionLines(this));
         restoreFocus(want, wasIndex, scrollY);   // a screen just opened: its first row
     }
@@ -1221,6 +1234,13 @@ public class SettingsActivity extends Activity {
             .show();
     }
 
+    private void pickQuoteEvery() {
+        new Dlg(this).setTitle("تبديل الآية والحديث")
+            .setSingleChoiceItems(QuoteEvery.CHOICES, QuoteEvery.choice(prefs.quoteEvery()),
+                (d, i) -> { prefs.setQuoteEvery(QuoteEvery.fromChoice(i)); d.dismiss(); render(); })
+            .show();
+    }
+
     private void pickCardStyle() {
         String[] labels = new String[Prefs.CARD_STYLES.length];
         int sel = 0;
@@ -1300,15 +1320,17 @@ public class SettingsActivity extends Activity {
             .show();
     }
 
+    /** The choices of this TV (PhotoInterval.choices: 30 seconds only with 2 GB of memory), the one in use checked. */
     private void pickPhotoMinutes() {
-        String[] labels = new String[Prefs.PHOTO_MINUTES.length];
+        final String[] values = PhotoInterval.choices(Prefs.ramMb(this));
+        String[] labels = new String[values.length];
         int sel = 0;
-        for (int i = 0; i < labels.length; i++) {
-            labels[i] = minutesLabel(Integer.parseInt(Prefs.PHOTO_MINUTES[i]));
-            if (Prefs.PHOTO_MINUTES[i].equals(prefs.photoMinutes())) sel = i;
+        for (int i = 0; i < values.length; i++) {
+            labels[i] = conv(PhotoInterval.label(values[i]));
+            if (values[i].equals(prefs.photoMinutes())) sel = i;
         }
         new Dlg(this).setTitle("تبديل الصورة كل")
-            .setSingleChoiceItems(labels, sel, (d, i) -> { prefs.setPhotoMinutes(Prefs.PHOTO_MINUTES[i]); d.dismiss(); render(); })
+            .setSingleChoiceItems(labels, sel, (d, i) -> { prefs.setPhotoMinutes(values[i]); d.dismiss(); render(); })
             .show();
     }
 

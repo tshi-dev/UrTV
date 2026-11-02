@@ -115,5 +115,8 @@ final class ConfigSnapshot {
     /** «&clock=24» is in the fragment only while the setting is on; an older screensaver says nothing: the 12-hour clock */
     boolean clock24() { return fragment != null && (fragment.contains("&clock=24") || fragment.startsWith("clock=24")); }
 
+    /** «زر المهام»: «&taskspill=0» is in the fragment only while the button is hidden; an older screensaver (or none) says nothing: shown */
+    boolean tasksPillOn() { return fragment == null || !(fragment.contains("&taskspill=0") || fragment.startsWith("taskspill=0")); }
+
     boolean latin() { return fragment != null && (fragment.contains("&digits=latin") || fragment.startsWith("digits=latin")); }
 }

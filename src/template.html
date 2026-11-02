@@ -548,6 +548,7 @@
   /* #slot=none: the left panel is gone and the other two mirror each other: the prayer at the right edge, the occasion at the left edge,
      the same width, each text on its outer edge and the same lines (label, big line, small line) at the same heights */
   html.slot-none .p-match{display:none}
+  html.occ-off .p-mid{visibility:hidden}   /* #occasion=0: the occasion's place stays empty, so the prayer and the slot keep theirs */
   html.slot-none .bottom{grid-template-columns:1fr 1fr}
   html.slot-none .p-mid,html.slot-none .p-mid .big{text-align:left}
   html.slot-none .p-mid .big{line-height:1.1}
@@ -694,8 +695,8 @@ const CONFIG = {
     minRating: _num('minrating', 7),
   },
   weekWindowDays: 7,
-  // minutes between background photos: #photos=5|10|15|30|60 (anything else = 30)
-  photoMinutes: (m => [5,10,15,30,60].includes(m) ? m : 30)(_num('photos', 30)),
+  // minutes between background photos: #photos=5|10|15|30|60, 1, or 0.5 (30 seconds: the app sends it only on a TV with 2 GB); anything else = 30
+  photoMinutes: (m => [0.5,1,5,10,15,30,60].includes(m) ? m : 30)(_num('photos', 30)),
   // the owner's own photos («صوري»): #own=how many (0-10) and #ownmode=mix (join ours, the default) or only
   own: Math.max(0, Math.min(10, Math.floor(_num('own', 0)))),
   ownMode: _Q.get('ownmode') === 'only' ? 'only' : 'mix',
@@ -723,6 +724,12 @@ const CONFIG = {
   // #cd=YYYY-MM-DD&cdname=...: the date and name for slot=countdown (a bad date = none)
   cd: (v => /^\d{4}-\d{2}-\d{2}$/.test(v) && !isNaN(Date.parse(v + 'T00:00:00Z')) && new Date(v + 'T00:00:00Z').toISOString().slice(0, 10) === v ? v : '')(_Q.get('cd') || ''),
   cdName: (_Q.get('cdname') || '').trim().slice(0, 40),
+  // shown as always unless hidden in the settings: #occasion=0 empties «المناسبة القادمة» (bottom middle: Ramadan, the feasts, iftar and
+  // suhoor; the place stays, so nothing else moves) and #nightdim=0 keeps the night as bright as the day (no dimmer)
+  occasion: _Q.get('occasion') !== '0',
+  nightDim: _Q.get('nightdim') !== '0',
+  // «تبديل الآية والحديث»: #versemin=3 a new verse or hadith every 3 minutes (a verse, then a hadith); anything else = one a day as always
+  verseMin: _Q.get('versemin') === '3' ? 3 : 0,
   // «التفسير الميسر» under the verse of the day: #tafsir=1 (anything else = off)
   tafsir: _Q.get('tafsir') === '1',
   // from PR #28, each off unless asked for: #sunrise=1 the panel at the bottom right counts to the sunrise after Fajr's iqama and tells
@@ -3074,17 +3081,19 @@ function pickShort(list, at, len, card){
   card.len = len(best);
   return best;
 }
+// The verse card's turn: the day as always, or with #versemin=3 the 3-minute slot of the clock (even = a verse, odd = a hadith)
+const quoteTurn = () => CONFIG.verseMin ? Math.floor(Date.now() / (CONFIG.verseMin * 60000)) : riyadhDayNumber();
 function quoteOfDay(card){
-  const n = riyadhDayNumber(), half = Math.floor(n / 2);
+  const n = quoteTurn(), half = Math.floor(n / 2);
   if(VERSES.length && n % 2 === 0){
     const v = pickShort(VERSES, half, x => x.text.length, card);
-    return {title:'آية اليوم', rows:[`<li class="quote quran${v.text.length > 330 ? ' q4' : quoteSize(v.text.length)}"><span class="orn">﴿</span><span class="qt">${esc(v.text)}</span><span class="orn">﴾</span></li>`, `<li class="src">${esc(v.surah)} · ${ar(v.ayah)}</li>`]
+    return {title:CONFIG.verseMin ? 'آية كريمة' : 'آية اليوم', rows:[`<li class="quote quran${v.text.length > 330 ? ' q4' : quoteSize(v.text.length)}"><span class="orn">﴿</span><span class="qt">${esc(v.text)}</span><span class="orn">﴾</span></li>`, `<li class="src">${esc(v.surah)} · ${ar(v.ayah)}</li>`]
       .concat(CONFIG.tafsir && v.tafsir ? [`<li class="tafsir">${esc(v.tafsir)}</li>`] : [])};
   }
   const h = pickShort(HADITH, half, x => x.parts.reduce((m, [, t]) => m + t.length, 0), card);
   const saw = s => s.replace(/ﷺ/g, '<span class="saw">ﷺ</span>').replace(/[﴿﴾]/g, m => `<span class="orn">${m}</span>`);
   const body = h.parts.map(([k, t]) => k === 'q' ? `«${saw(esc(t))}»` : `<span class="nar">${saw(esc(t))}</span>`).join(' ');
-  return {title:'حديث اليوم', rows:[`<li class="quote hadith${quoteSize(h.parts.reduce((n, [, t]) => n + t.length, 0))}">${body}</li>`, `<li class="src">${esc(h.source)}</li>`]};
+  return {title:CONFIG.verseMin ? 'حديث شريف' : 'حديث اليوم', rows:[`<li class="quote hadith${quoteSize(h.parts.reduce((n, [, t]) => n + t.length, 0))}">${body}</li>`, `<li class="src">${esc(h.source)}</li>`]};
 }
 
 // «حكمة اليوم»: one saying a day by the Riyadh day number, proverbs and classical sayings only (assets/shared/wisdom.json)
@@ -3256,6 +3265,7 @@ function dustWord(pm, vis){
 
 // night dimming: transparent by day, dark after 21:00 and before 07:00
 function applyNight(){
+  if(!CONFIG.nightDim){ const el = document.getElementById('dimmer'); if(el && el.style.opacity !== '0') el.style.opacity = '0'; return; }   // #nightdim=0
   const p = riyadhParts();
   const h = p.h + p.mi/60;
   const MAX = 0.46;
@@ -3442,8 +3452,8 @@ function showOwn(pick, own, local){
 function applyBackground(force){
   try {
     const p = riyadhParts();
-    const slotMin = CONFIG.photoMinutes;   // divides 1440, so slots count on across midnight
-    const slot = riyadhDayNumber() * (1440 / slotMin) + Math.floor((p.h * 60 + p.mi) / slotMin);
+    const slotSec = Math.round(CONFIG.photoMinutes * 60);   // divides a day, so slots count on across midnight (in minutes as before)
+    const slot = riyadhDayNumber() * (86400 / slotSec) + Math.floor((p.h * 3600 + p.mi * 60 + (p.s || 0)) / slotSec);
     if(slot === BG_SLOT && !force) return;
     BG_SLOT = slot; BG_TURN++;   // a photo of theirs still on its way for an earlier turn is dropped
     const only = OWN_ONLY(), own = ownPhotos();
@@ -3512,6 +3522,15 @@ function cardTimers(){
     fitCards();
   }, 25*1000);
   setInterval(() => renderPanel(false, 'adhkar', 'stocks', ...clocked), 60*1000);   // a window may have opened; a market opened or closed
+  if(CONFIG.verseMin){   // #versemin=3: the verse card turns when its 3 minutes are up (checked every 10 s), not only once a day
+    let turn = quoteTurn();
+    setInterval(() => {
+      if(quoteTurn() === turn) return;
+      turn = quoteTurn();
+      CARDS.forEach(c => { if(c.kind === 'verse') renderCard(c, true); });   // only the verse cards: the others keep their own pace
+      fitCards();
+    }, 10*1000);
+  }
 }
 
 // Drops what this page no longer needs from localStorage, at boot. Only the families named here are looked at (other keys are not
@@ -3574,6 +3593,7 @@ function boot(){
     renderPanel(false, 'matches');
   });
   if(CONFIG.slot === 'none') document.documentElement.classList.add('slot-none');
+  if(!CONFIG.occasion) document.documentElement.classList.add('occ-off');
   if(!SLOT_MATCHES) document.getElementById('match-row').textContent = '';   // not «لا شيء هذا الأسبوع»: that is the matches slot's
   if(CONFIG.cardStyle !== 'current') document.documentElement.classList.add('cs-' + CONFIG.cardStyle);
   if(CONFIG.clockSize !== 'large') document.documentElement.classList.add('ck-' + CONFIG.clockSize);
@@ -3605,7 +3625,7 @@ function boot(){
   document.title = 'شاشة تلفزيونك';
   applyBackground(true);
   loadPhotoIndex().then(() => applyBackground(true));
-  setInterval(() => applyBackground(false), 60*1000);
+  setInterval(() => applyBackground(false), (CONFIG.photoMinutes < 1 ? 5 : 60)*1000);   // 30 s photos: looked at every 5 s
   tickClock(); tickDates(); tickOccasion(); renderSlot();
   loadMarkets();
   renderPanel(false, ...CARD_KINDS.filter(k => k !== 'shows'));   // shows: its own data arrives with prayers, weather, matches

@@ -9,6 +9,9 @@
     <string name="surah_count">%1$s سورة</string>
     <string name="choose_surah">اختر سورة</string>
     <string name="live">بث مباشر</string>
+    <string name="haram_live">البث المباشر من الحرم</string>
+    <string name="haram_live_detail">يفتح صفحة القناة الرسمية في تطبيقها أو المتصفح</string>
+    <string name="haram_live_none">ما في تطبيق يفتح الرابط على هذا التلفزيون</string>
     <string name="now_playing">يُتلى الآن</string>
     <string name="buffering">جارٍ التحميل…</string>
     <string name="no_connection">تعذر الاتصال</string>
