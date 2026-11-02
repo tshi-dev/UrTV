@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261102214017">
+<meta name="urtv-build" content="20261102223421">
 <title>Your TV Screen</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -372,7 +372,7 @@
     width:calc(24px*var(--z,1));height:calc(24px*var(--z,1));border-radius:50%;background:rgba(var(--gold-rgb),.2);border:1px solid rgba(var(--gold-rgb),.7)}
   html.widget .week .micmark svg{width:62%;height:62%;fill:var(--gold-hi)}
   html.widget .week.live .hd{padding-right:calc(32px*var(--z,1))}
-  html.widget .week.live.lf{box-shadow:inset 0 0 0 3px var(--gold-hi),inset 0 0 22px rgba(255,233,184,.22)!important;border-color:var(--gold-hi)!important}
+  html.widget .week.live.lf,html.widget .week.tap.lf{box-shadow:inset 0 0 0 3px var(--gold-hi),inset 0 0 22px rgba(255,233,184,.22)!important;border-color:var(--gold-hi)!important}
   html.widget .week.live.lf .micmark{background:var(--gold-hi)}
   html.widget .week.live.lf .micmark svg{fill:#1A1409}
   .clock{
@@ -2694,16 +2694,17 @@ function buildCards(){
 // The launcher's «المهام» card is a button (#live=1): the page draws its mic mark and its ring; Android owns the focus and OK.
 // setLiveFocus(true|false) is called by the launcher when the card gets or loses the focus; liveRect() says where the card is
 // ("left,top,width,height" in CSS px, '' when no card is live) so the launcher can put its focus target over it.
+// The stocks card too (tap: OK opens «الأسواق»; the ring, no mark): (on, 'stocks'), ('stocks'). No kind: «المهام».
 const MIC_MARK = '<span class="micmark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11z"/></svg></span>';
-const liveCards = () => CONFIG.widget && CONFIG.live ? CARDS.filter(c => c.kind === 'tasks') : [];
+const liveCards = () => CONFIG.widget && CONFIG.live ? CARDS.filter(c => c.kind === 'tasks' || c.kind === 'stocks') : [];
 function markLive(){
-  liveCards().forEach(c => { c.el.classList.add('live'); c.el.insertAdjacentHTML('beforeend', MIC_MARK); });
+  liveCards().forEach(c => c.kind === 'stocks' ? c.el.classList.add('tap') : (c.el.classList.add('live'), c.el.insertAdjacentHTML('beforeend', MIC_MARK)));
 }
-function setLiveFocus(on){
-  CARDS.forEach(c => c.el.classList.toggle('lf', !!on && c.el.classList.contains('live')));
+function setLiveFocus(on, kind = 'tasks'){
+  liveCards().forEach(c => c.el.classList.toggle('lf', !!on && c.kind === kind));
 }
-function liveRect(){
-  const c = liveCards()[0];
+function liveRect(kind = 'tasks'){
+  const c = liveCards().find(x => x.kind === kind);
   if(!c) return '';
   const b = c.el.getBoundingClientRect();
   return [b.left, b.top, b.width, b.height].map(v => v.toFixed(1)).join(',');

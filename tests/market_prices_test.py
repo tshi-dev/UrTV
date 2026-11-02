@@ -81,6 +81,32 @@ rep = json.loads((Path(OUT) / "report.json").read_text())
 q = got["quotes"]
 check("run: a quote has price, the close before, at most 30 closes and its time", q["AAPL"]["p"] == 10.0 and q["AAPL"]["v"] == 9.0
       and 2 <= len(q["AAPL"]["c"]) <= 30 and q["AAPL"]["t"] == RUN.isoformat(timespec="seconds"), q.get("AAPL"))
+# the same answer's volume and 52-week range are kept when there (the home's «الأسواق» page), and left out when not
+answers["2222.SR"] = {"chart": {"result": [{"meta": {"regularMarketPrice": 26.1, "chartPreviousClose": 25.92, "regularMarketVolume": 14200000,
+                                                     "fiftyTwoWeekHigh": 28.9, "fiftyTwoWeekLow": 23.2}, "indicators": {"quote": [{"close": [25.96, 26.1]}]}}]}}
+q2 = mp.quote("2222.SR", RUN)
+check("quote: the same answer's volume and 52-week range are kept", q2.get("vol") == 14200000 and q2.get("yh") == 28.9 and q2.get("yl") == 23.2, q2)
+q3 = mp.quote("AAPL", RUN)
+check("quote: none of them when Yahoo's meta has none (a quote as before)", set(q3) == {"p", "v", "c", "t"}, q3)
+del answers["2222.SR"]
+# the year's daily closes (DAILY, once a day): rounded small, the first and last day, crypto none; kept between runs
+day0 = int(at(2025, 11, 3, 13).timestamp())
+yahoo_year = {"chart": {"result": [{"meta": {}, "timestamp": [day0 + i * 86400 for i in range(250)],
+                                    "indicators": {"quote": [{"close": [9800.123 + i if i != 7 else None for i in range(250)]}]}}]}}
+saved_fetch = mp.fetch_json
+mp.fetch_json = lambda url: yahoo_year if "interval=1d" in url else saved_fetch(url)
+y = mp.daily("^TASI.SR", RUN)
+check("daily: a year of closes, oldest first, a missing day left out, whole numbers above 1000",
+      len(y["d"]) == 249 and y["d"][0] == 9800 and all(isinstance(v, int) for v in y["d"]) and y["df"] == "2025-11-03" and y["dt"] == RUN.isoformat(timespec="seconds"), {k: y[k] for k in ("df", "dl", "dt")})
+check("daily: 2 decimals under 1000", mp.small(26.1049) == 26.1 and mp.small(337.064) == 337.06 and mp.small(9882.85) == 9883)
+check("daily: once a day (20 hours), never for crypto", mp.daily_due("2222.SR", {}, RUN) and not mp.daily_due("2222.SR", {"dt": (RUN - datetime.timedelta(hours=3)).isoformat()}, RUN)
+      and mp.daily_due("2222.SR", {"dt": (RUN - datetime.timedelta(hours=21)).isoformat()}, RUN) and not mp.daily_due("BTC-USD", {}, RUN, True))
+mp.fetch_json = saved_fetch
+# the size every TV downloads: each symbol with a year of daily points, as rounded
+year_q = {"p": 26.1, "v": 25.92, "c": [26.04] * 30, "t": RUN.isoformat(timespec="seconds"), "vol": 14200000.0, "yh": 28.9, "yl": 23.2,
+          "d": [mp.small(20 + i / 37) for i in range(250)], "df": "2025-11-03", "dl": "2026-11-02", "dt": RUN.isoformat(timespec="seconds")}
+size = len(json.dumps({"updated": "x", "quotes": {s: year_q for s in mp.symbols()}}, separators=(",", ":")))
+check(f"the file with a year's daily line for every symbol stays under 200 kB ({size // 1024} kB)", size < 200 * 1024, size)
 check("run: the one that failed keeps its old quote and its old time", q["NVDA"] == {"p": 100.0, "v": 99.0, "c": [99, 100], "t": "2026-10-22T10:00:00+00:00"}, q.get("NVDA"))
 check("run: the 404 symbol is left out", "MSFT" not in q and "MSFT" in rep["notfound"], rep)
 check("run: Tadawul symbols are closed and not asked (none had a quote yet, so they are asked once)", "2222.SR" in q, list(q)[:5])

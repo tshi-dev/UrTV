@@ -405,3 +405,108 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 ، الآن	, now
 ، بعد %s	, in %s
 ذكّرني بعد %s	Remind me in %s
+# «الأسواق» and «محفظتي» (MarketsActivity, docs/PROPOSALS-NOV2.md §6 and §7)
+السوق	Market
+قائمتي	My list
+محفظتي	My portfolio
+الأخبار	News
+تداول مفتوح	Tadawul open
+تداول مغلق	Tadawul closed
+يغلق بعد %s	closes in %s
+يفتح بعد %s، %s %s	opens in %s, %s %s
+لا أسعار بعد: يلزم اتصال بالإنترنت	No prices yet: the TV needs the internet
+آخر تحديث %s · أسعار متأخرة	Updated %s · delayed prices
+الأحد	Sunday
+الاثنين	Monday
+الثلاثاء	Tuesday
+الأربعاء	Wednesday
+الخميس	Thursday
+%s س و%s د	%s h %s min
+%s د	%s min
+اتجاه السوق	Market direction
+أكبر %s شركة	Largest %s companies
+%s مرتفعة	%s up
+%s دون تغيير	%s unchanged
+%s منخفضة	%s down
+الجلسة	Session
+الأحد إلى الخميس	Sunday to Thursday
+%s · مزاد الإغلاق إلى %s	%s · closing auction to %s
+الأكثر ارتفاعًا وانخفاضًا	Top gainers and losers
+لا تغيير بعد اليوم	No change yet today
+الأكثر نشاطًا	Most active
+بالكمية، من أكبر %s شركة	By volume, of the largest %s companies
+الخط المتقطع: إغلاق أمس	Dashed line: yesterday’s close
+السهم	Stock
+السعر	Price
+التغيّر	Change
+قائمتك فارغة. افتح سهمًا من «السوق» واختر «أضف إلى قائمتي».	Your list is empty. Open a stock in “Market” and choose “Add to my list”.
+الذهب والنفط	Gold and oil
+الذهب، للغرام	Gold, per gram
+الذهب، للأونصة	Gold, per ounce
+الفضة، للغرام	Silver, per gram
+برنت	Brent
+العملات	Currencies
+بالريال	In riyals
+ربط ثابت	Fixed peg
+الدولار	US dollar
+الدرهم الإماراتي	UAE dirham
+الريال القطري	Qatari riyal
+الدينار البحريني	Bahraini dinar
+أظهر المبالغ	Show amounts
+أخفِ المبالغ	Hide amounts
+أضف سهمًا	Add a stock
+خيارات محفظتي	Portfolio options
+لا أسهم في محفظتك بعد	No stocks in your portfolio yet
+اضغط «أضف سهمًا»، أو أضفها من الجوال: افتح «التحكم من الجوال» وامسح الرمز، ثم «محفظتي».	Press “Add a stock”, or add them from your phone: open “Phone control”, scan the code, then “My portfolio”.
+القيمة الإجمالية	Total value
+الربح الكلي	Total gain
+الكمية	Quantity
+متوسط التكلفة	Average cost
+القيمة	Value
+الربح	Gain
+الأسهم الأمريكية بالدولار، والمجموع بالريال على سعر الربط %s	US stocks in dollars; the total in riyals at the %s peg
+%s · بالدولار	%s · in dollars
+تبقى في هذا التلفزيون فقط، ولا تُرسل في أي تقرير ولا تنتقل مع الإعدادات	Kept on this TV only: never in a report, never moved with the settings
+مؤشر السوق الرئيسية · تداول	Main market index · Tadawul
+%s · تداول · ر.س	%s · Tadawul · SAR
+الافتتاح	Open
+نطاق اليوم	Day’s range
+نطاق ٥٢ أسبوعًا	52-week range
+%s مليون	%s million
+لا سعر لهذا الرمز في ملف الأسعار بعد	No price for this code in the price file yet
+عدّل	Edit
+احذف	Delete
+أحذف «%s» من محفظتك؟	Delete “%s” from your portfolio?
+أزل من قائمتي	Remove from my list
+أضف إلى قائمتي	Add to my list
+أخفه من شريط الأسواق	Hide from the markets bar
+أظهره في شريط الأسواق	Show in the markets bar
+تبقى في قائمتك سهم واحد على الأقل	Your list keeps at least one stock
+قائمتك ممتلئة: %s أسهم	Your list is full: %s stocks
+تم الحفظ	Saved
+يبقى في الشريط سوق واحد على الأقل	The bar keeps at least one market
+الشريط ممتلئ: %s أسواق. أخفِ واحدًا أولًا	The bar is full: %s markets. Hide one first
+ما حُفظ: حدّث تطبيق «شاشة تلفزيونك»	Not saved: update the UrTV screensaver app
+أسهم أكبر %s شركة في تداول. لسهم أمريكي أو رمز آخر: «أسهل من الجوال».	The largest %s companies on Tadawul. For a US stock or another code: “Easier from the phone”.
+أسهل من الجوال	Easier from the phone
+%s · ر.س	%s · SAR
+احفظ	Save
+اكتب الكمية ومتوسط التكلفة	Type the quantity and the average cost
+المحفظة ممتلئة: %s سهمًا	The portfolio is full: %s stocks
+ما حُفظ	Not saved
+ما قدرنا نفتح «التحكم من الجوال»	Could not open “Phone control”
+اقفل محفظتي	Lock my portfolio
+مفعّل · تسأل عن الرقم السري قبل فتحها	On · asks for the PIN before it opens
+متوقف · ضع رقمًا سريًا من الرقابة الأبوية أولًا	Off · set a PIN in parental controls first
+ضع رقمًا سريًا من الرقابة الأبوية أولًا	Set a PIN in parental controls first
+احذف المحفظة	Delete the portfolio
+كل الأسهم وعمليات الشراء، من هذا التلفزيون	Every stock and buy, from this TV
+أحذف المحفظة كلها من هذا التلفزيون؟ لا يمكن التراجع.	Delete the whole portfolio from this TV? This cannot be undone.
+حُذفت المحفظة	Portfolio deleted
+%s م سهم	%s M shares
+أسبوع	Week
+شهر	Month
+سنة	Year
+قبل أسبوع	A week ago
+قبل شهر	A month ago
+الخط المتقطع: أول الفترة	Dashed line: the start of the range

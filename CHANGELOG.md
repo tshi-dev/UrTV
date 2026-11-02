@@ -17,7 +17,17 @@ Newest first. `next` is where changes land first; a release is what was tested t
   prayers around it on a line, one sentence), «ذكّرني قبلها بربع ساعة» (a task for now: MatchReminder is the hook) and «تابع». **Broadcast
   marks:** assets/shared/broadcast.json, a plain text mark per league shown only for a high-confidence, whole, verified row in season;
   .github/tools/broadcast_check.py (run by tests/check.py) fails a row with no source or seasons, or past its last season. No row yet: none
-  of the proposal's sources could be opened from here. tests/football_test.py, tests/football_page.test.mjs; the page's budget is 730 KB.
+  of the proposal's sources could be opened from here. tests/football_test.py, tests/football_page.test.mjs; the page's budget is 740 KB.
+- **«الأسواق», a page of its own** (docs/PROPOSALS-NOV2.md §6, MarketsActivity): OK on the home's stocks card (now a button, like «المهام»)
+  or Settings ← المزيد ← المباريات والأسواق ← «صفحة الأسواق». «السوق»: TASI and its day against yesterday's close, «اتجاه السوق» over the 30
+  companies we fetch, the top 3 up and down (and «الأكثر نشاطًا» once CI's file carries the volume); «قائمتي»: the stock list with each day's
+  line, gold, silver, Brent and the riyal's fixed pegs; «اليوم / أسبوع / شهر / سنة» on TASI and each stock card, from a year of daily closes CI
+  asks once a day; a stock's card with the open, the day's range, «أضف إلى قائمتي» and «أظهره في شريط
+  الأسواق». Only data we have: no sectors, whole-market figures, dividends or news (the «الأخبار» tab is built but off until a source agrees).
+  CI keeps the volume and the 52-week range from the same Yahoo answer. **«محفظتي»** (§7): holdings with their buys, totals, allocation,
+  «أخفِ المبالغ», «اقفل محفظتي» with the parental PIN; added on the TV's number pad or from the phone's own page (/m, «أسهل من الجوال»). Kept
+  in the home app's private prefs only: never in a URL, ConfigProvider, a report, a settings export (refused) or a command; the phone gets
+  them only while paired and while the TV is editing them; `pin reset` wipes them.
 - Three owners' options, each off by default (nothing changes until chosen): «الآية والحديث» (`saver.sh versekind both|verse|hadith`: the verse card with verses only or hadith only), «إظهار الثواني» (`saver.sh seconds on|off`: the seconds on the screensaver's clock, small, in fixed-width boxes so nothing moves each second, in every clock size) and «الخروج من تلفزيونك» (`saver.sh backexit press|hold|three`: where the TV keeps its own home, our home leaves only on a long Back or three Backs, with a short hint the first time a Back is ignored). tests/user_options_test.py and page tests.
 - **The favourites bar** (docs/PROPOSALS-NOV2.md §1, FavBar.java): one glass tray, the same on every look and layout, x 120 to 1800 and
   218 high, 54 px above the screen's bottom; five 304×170 tiles 24 apart, the first on the right, more scroll inside the tray and never

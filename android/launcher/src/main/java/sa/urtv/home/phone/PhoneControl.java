@@ -25,6 +25,8 @@ public final class PhoneControl {
     public interface Page {
         String html();
         byte[] font(String name);
+        /** «محفظتي»'s own page (/m), in the language of «اللغة»; null when this build has none */
+        default String portfolioHtml() { return null; }
     }
 
     public enum Start { OK, NO_WIFI, FAILED, ALREADY_ON }

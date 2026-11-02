@@ -3592,6 +3592,33 @@ for (const [cards, W] of [['tasks', 1920], ['tasks,prayerrow,hourly', 1920], ['p
     await on.ctx.close(); await off.ctx.close();
   }
 }
+{   // the stocks card is a button too (OK opens «الأسواق»): the ring and no mark; with no kind, the calls still mean «المهام» (an older launcher)
+  for (const cards of ['stocks', 'tasks,stocks', 'prayerrow,stocks,hourly']) {
+    const on = await homeCards(cards, 1920, { extra: LIVE_EXTRA + '&live=1' }), off = await homeCards(cards, 1920, { extra: LIVE_EXTRA });
+    const a = await liveRead(on.p), b = await liveRead(off.p);
+    const at = a.kinds.indexOf('stocks'), tk = a.kinds.indexOf('tasks'), tag = `home card ${cards}: the stocks card`;
+    const tap = await on.p.evaluate(() => CARDS.map(c => c.el.classList.contains('tap')));
+    check(`${tag} is a button (tap), with no mic mark; nothing changes size`,
+      !on.errors.length && tap[at] && tap.filter(Boolean).length === 1 && a.marks[at] === 0 && JSON.stringify(a.cards) === JSON.stringify(b.cards) && a.mid === b.mid,
+      JSON.stringify([tap, a.marks]));
+    const rect = await on.p.evaluate(() => liveRect('stocks'));
+    check(`${tag}: liveRect('stocks') is where it is; liveRect() is still «المهام»'s (or '')`,
+      rect === [a.cards[at].l, a.cards[at].t, a.cards[at].r - a.cards[at].l, a.cards[at].b - a.cards[at].t].map(v => v.toFixed(1)).join(',')
+      && (tk < 0 ? a.rect === '' : a.rect !== rect), rect + ' / ' + a.rect);
+    await on.p.evaluate(() => setLiveFocus(true, 'stocks'));
+    const f1 = await liveRead(on.p);
+    await on.p.evaluate(() => setLiveFocus(true));
+    const f2 = await liveRead(on.p);
+    await on.p.evaluate(() => setLiveFocus(false, 'stocks'));
+    const f0 = await liveRead(on.p);
+    check(`${tag}: setLiveFocus(true, 'stocks') rings it alone; setLiveFocus(true) rings «المهام» alone; false takes it off`,
+      f1.lf[at] && f1.lf.filter(Boolean).length === 1 && /inset/.test(f1.shadow[at]) && !f2.lf[at] && f2.lf.filter(Boolean).length === (tk < 0 ? 0 : 1)
+      && !f0.lf.some(Boolean), JSON.stringify([f1.lf, f2.lf, f0.lf]));
+    const nb = await off.p.evaluate(() => CARDS.some(c => c.el.classList.contains('tap')));
+    check(`${tag}: without live=1 it is no button`, !nb);
+    await on.ctx.close(); await off.ctx.close();
+  }
+}
 {   // no «المهام» among the cards: nothing live, whatever live=1 says; the screensaver's own page never has a mark
   const o = await homeCards('prayerrow,hourly', 1920, { extra: LIVE_EXTRA + '&live=1' });
   const a = await liveRead(o.p);

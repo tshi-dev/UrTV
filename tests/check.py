@@ -41,7 +41,7 @@ check("Thmanyah is in place for the build (CI: the private urtv-fonts checkout; 
 before = {n: (ROOT / "dist" / n).read_bytes() for n in ("tv.html", "tv-en.html") if (ROOT / "dist" / n).is_file()}
 r = subprocess.run([sys.executable, "src/build.py"], cwd=ROOT, capture_output=True, text=True)
 check("src/build.py runs", r.returncode == 0, r.stderr[-400:])
-for page, limit in (("urtv.html", 4_000_000), ("tv.html", 730_000), ("tv-en.html", 730_000)):   # 730 KB from the football home and «المباريات» (docs/PROPOSALS-NOV2.md §1, about 42 KB). tv.html: about 1000 verses and hadith (650 KB until the Gulf prayer methods and the checked Aladhan answer added 4 KB; 680 KB from the one release of 26 Oct: next-prayer card, crests, city line, adhan bar, then Wave 2 countries, Hijri offset and the 24-hour clock add about 11 KB)
+for page, limit in (("urtv.html", 4_000_000), ("tv.html", 740_000), ("tv-en.html", 740_000)):   # 740 KB with the football home and «المباريات» (docs/PROPOSALS-NOV2.md §1, about 42 KB), the reminder card and photo packs (about 7 KB) and the markets link; about 10 KB left. tv.html: about 1000 verses and hadith (650 KB until the Gulf prayer methods and the checked Aladhan answer added 4 KB; 680 KB from the one release of 26 Oct: next-prayer card, crests, city line, adhan bar, then Wave 2 countries, Hijri offset and the 24-hour clock add about 11 KB)
     html = (ROOT / "dist" / page).read_text(encoding="utf-8")
     left = sorted(set(re.findall(r"__[A-Z][A-Z_]+__", html)))
     check(f"{page}: every build token replaced", not left, left)
@@ -58,7 +58,7 @@ unstamp = lambda b: re.sub(rb'(<meta name="urtv-build" content=")\d{14}', rb"\1"
 stale = [n for n, b in before.items() if unstamp((ROOT / "dist" / n).read_bytes()) != unstamp(b)]
 check("dist/tv.html carries the build stamp the app compares pages by (<meta name=\"urtv-build\">, 14 digits)",
       re.search(rb'<meta name="urtv-build" content="\d{14}">', (ROOT / "dist/tv.html").read_bytes()[:4096]) is not None)
-check("dist/ matched a fresh build (run src/build.py after editing src/)", len(before) == 2 and not stale, stale)   # tv.html and tv-en.html («اللغة» English, its own 730 KB)
+check("dist/ matched a fresh build (run src/build.py after editing src/)", len(before) == 2 and not stale, stale)   # tv.html and tv-en.html («اللغة» English, its own 740 KB)
 
 
 # ---- the page must run on an old WebView (Chrome 66): no `?.` and no `??` (Chrome 80), no .flat() / .flatMap() (Chrome 69).

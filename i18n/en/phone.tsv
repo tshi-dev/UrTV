@@ -227,3 +227,32 @@
 الأقسام	Sections
 يوم المهمة	Task day
 وقت المهمة	Task time
+# «محفظتي»'s own phone page (assets/phone/portfolio.html; src/phone_en.py writes portfolio.en.html)
+جارٍ الاتصال بالتلفزيون…	Connecting to the TV…
+أعد المحاولة	Try again
+افتح صفحة الجوال	Open the phone page
+في محفظتك	In your portfolio
+أضف إلى محفظتي	Add to my portfolio
+ابحث باسم الشركة أو رمزها	Search by company name or code
+متوسط واحد	One average
+عدة عمليات شراء	Several buys
++ عملية أخرى	+ Another buy
+المجموع	Total
+المتوسط المحسوب	Worked-out average
+احفظ في التلفزيون	Save on the TV
+تُحفظ في التلفزيون فقط، ولا تبقى في الجوال بعد الحفظ. لا تُرسل في أي تقرير ولا تنتقل مع الإعدادات.	Saved on the TV only, nothing stays on the phone after saving. Never sent in a report, never moved with the settings.
+افتح «محفظتي» على التلفزيون أولًا، ثم أعد المحاولة.	Open “My portfolio” on the TV first, then try again.
+انتهت الجلسة. امسح الرمز من «أسهل من الجوال» على التلفزيون.	The session ended. Scan the code from “Easier from the phone” on the TV.
+ما وجدنا هذا الرمز في ملف الأسعار.	This code is not in the price file.
+المحفظة ممتلئة.	The portfolio is full.
+تحقق من الأرقام.	Check the numbers.
+ما نجح الحفظ.	Saving failed.
+سهم واحد	1 share
+سهمان	2 shares
+أسهم	shares
+سهمًا	shares
+عدّل في محفظتي	Edit in my portfolio
+السعر بالدولار	Price in dollars
+احذف هذه العملية	Delete this buy
+حُفظ في التلفزيون.	Saved on the TV.
+امسح الرمز من «أسهل من الجوال» في «محفظتي» على التلفزيون، أو ادخل من صفحة الجوال ثم «محفظتي».	Scan the code from “Easier from the phone” in “My portfolio” on the TV, or sign in on the phone page, then “My portfolio”.

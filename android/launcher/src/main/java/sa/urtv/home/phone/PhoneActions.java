@@ -309,6 +309,18 @@ final class PhoneActions implements Actions {
 
     @Override public Map<String, Object> family() { return PhoneApps.family(app); }
 
+    // ---- «محفظتي»: only while the TV is editing it (PortfolioPhone)
+
+    @Override public Map<String, Object> portfolio() {
+        sa.urtv.home.S.init(app);
+        return sa.urtv.home.PortfolioPhone.read(app, System.currentTimeMillis());
+    }
+
+    @Override public Result portfolioSave(String code, List<String> buys) {
+        String r = sa.urtv.home.PortfolioPhone.save(app, System.currentTimeMillis(), code, buys);
+        return "saved".equals(r) ? Result.ok(r) : Result.fail(r);
+    }
+
     @Override public Map<String, Object> update(String op) {
         return "install".equals(op) ? PhoneUpdater.install(app, true) : PhoneUpdater.checkVersion(app);   // «افحص التحديث» reads version.txt only; the files come with «ثبّت»
     }

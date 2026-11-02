@@ -79,6 +79,8 @@ python3 tests/home_page_test.py   # the home's cards on the screensaver's newer 
 python3 tests/perf_idle_test.py
 python3 tests/league_fixtures_test.py
 python3 tests/market_prices_test.py
+python3 tests/markets_page_test.py   # «الأسواق»: the data and the sums on a JVM, only the sources we have, «الأخبار» off, the ways in
+python3 tests/portfolio_privacy_test.py   # «محفظتي» stays on the TV: share.py, Report, settings_move, ConfigProvider, the commands
 python3 tests/stocks_search_test.py   # «قائمة الأسهم»: a Tadawul code, ٢٢٢٢ or a company name, and the match shown
 python3 tests/adhkar_tool_test.py
 python3 tests/saver_tasks_test.py

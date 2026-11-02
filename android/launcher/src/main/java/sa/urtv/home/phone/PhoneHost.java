@@ -31,6 +31,7 @@ public final class PhoneHost {
             }, actions, new PhoneControl.Page() {
                 @Override public String html() { sa.urtv.home.S.init(app); return page(app, actions.lang()); }
                 @Override public byte[] font(String name) { return fontAsset(app, name); }
+                @Override public String portfolioHtml() { sa.urtv.home.S.init(app); return portfolioPage(app, actions.lang()); }
             }, new java.util.function.Predicate<java.net.InetAddress>() {
                 @Override public boolean test(java.net.InetAddress a) { return Guard.privateClient(a); }
             }, new SecureRandom());
@@ -70,6 +71,17 @@ public final class PhoneHost {
         if (text != null) return text;
         String ar = sa.urtv.home.Tr.phonePageName(sa.urtv.home.Tr.AR);
         return name.equals(ar) ? "<!doctype html><title>x</title>" : page(c, sa.urtv.home.Tr.AR);
+    }
+
+    /** «محفظتي»'s page in the language of «اللغة» (portfolio.html, portfolio.en.html), read once; the Arabic one when the English is missing. */
+    private static synchronized String portfolioPage(Context c, String lang) {
+        String name = sa.urtv.home.Tr.EN.equals(lang) ? "phone/portfolio.en.html" : "phone/portfolio.html";
+        if (!pages.containsKey(name)) {
+            byte[] b = asset(c, name);
+            pages.put(name, b == null ? null : new String(b, StandardCharsets.UTF_8));
+        }
+        String text = pages.get(name);
+        return text != null || name.equals("phone/portfolio.html") ? text : portfolioPage(c, sa.urtv.home.Tr.AR);
     }
 
     /** A font the APK carries (CI puts Thmanyah in assets/fonts; a local build has none), read once; null when it is not there or not allowed. */

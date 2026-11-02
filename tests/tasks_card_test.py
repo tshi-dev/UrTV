@@ -29,8 +29,11 @@ check("HomeCard: the target is moved over the card by what the page says (liveRe
 check("HomeCard: the page asks for nothing new (no network, no JavaScript interface)", "addJavascriptInterface" not in card)
 check("MainActivity: OK on the card opens the list with EXTRA_MIC", "putExtra(TasksActivity.EXTRA_MIC, true)" in main)
 check("MainActivity: the card sits between the pills and the dock: pills down -> card, card down -> dock, dock up -> card, card up -> the pill it came from",
-      "p.setNextFocusDownId(card != null ? card.getId()" in main and "card.setNextFocusDownId(dockId" in main
+      "p.setNextFocusDownId(card != null ? card.getId()" in main and "t.setNextFocusDownId(dockId" in main
       and "int topId = card != null ? card.getId() : pills.get(0).getId();" in main and "card.setNextFocusUpId(v.getId())" in main)
+check("MainActivity: with the stocks card a button too, the targets go in the cards' order, one to the next with ◀▶ (the reading order)",
+      "homeCard.targets()" in main and "if (Dir.rtl()) { t.setNextFocusLeftId(next.getId()); t.setNextFocusRightId(prev.getId()); }" in main
+      and "for (View card : homeCard.targets()) card.setNextFocusUpId(v.getId());" in main)
 check("MainActivity: the order is re-wired when the settings bring the card or take it away", "wireFocus();   // the «المهام» card may have come or gone" in main)
 check("TasksActivity: the first render focuses the text field (tester T1: not «🎤 تكلّم»), later ones the list as before",
       "private boolean fieldFirst = true;" in tasks and "if (fieldFirst) f = field;" in tasks and "fieldFirst = false;" in tasks and "f = mic" not in tasks)

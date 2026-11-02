@@ -20,6 +20,8 @@ import tr   # noqa: E402
 
 PHONE = ROOT / "android/launcher/src/main/assets/phone"
 AR_FILE, EN_FILE = PHONE / "index.html", PHONE / "index.en.html"
+# «محفظتي»'s own page (/m, docs/PROPOSALS-NOV2.md §7): the same table, no link and nothing a table cannot do; written beside the main one
+PF_AR, PF_EN = PHONE / "portfolio.html", PHONE / "portfolio.en.html"
 
 # ---- the language link, in the Arabic page too: (where it goes, what goes after it). Shown only by a TV that knows «اللغة» (state.lang);
 # a press sets the TV's language (the same /api/set, PIN and all), and the TV then serves the page in it.
@@ -116,21 +118,32 @@ def pages(on=None):
     return ar, english(ar)
 
 
+def portfolio_english(ar_html, table=None):
+    """The English «محفظتي» page: every Arabic literal through the table; raises when one has no entry."""
+    out, left = tr.translate(ar_html, tr.load() if table is None else table)
+    if left:
+        raise SystemExit("i18n/en/phone.tsv has no entry for (portfolio.html): " + " | ".join(left[:10]))
+    return out
+
+
 def main(check=False):
     source = AR_FILE.read_text(encoding="utf-8")
     ar, en = pages()
     old_en = EN_FILE.read_text(encoding="utf-8") if EN_FILE.exists() else None
+    pf_en = portfolio_english(PF_AR.read_text(encoding="utf-8"))
+    old_pf = PF_EN.read_text(encoding="utf-8") if PF_EN.exists() else None
     if check:
-        bad = [p.name for p, new, old in ((AR_FILE, ar, source), (EN_FILE, en, old_en)) if new != old]
+        bad = [p.name for p, new, old in ((AR_FILE, ar, source), (EN_FILE, en, old_en), (PF_EN, pf_en, old_pf)) if new != old]
         if bad:
             print("not current (run python3 src/phone_en.py): " + ", ".join(bad))
             return 1
-        print("index.html and index.en.html are current")
+        print("index.html, index.en.html and portfolio.en.html are current")
         return 0
     if ar != source:
         AR_FILE.write_bytes(ar.encode("utf-8"))
     EN_FILE.write_bytes(en.encode("utf-8"))
-    print(f"index.html {len(ar.encode('utf-8'))} bytes, index.en.html {len(en.encode('utf-8'))} bytes")
+    PF_EN.write_bytes(pf_en.encode("utf-8"))
+    print(f"index.html {len(ar.encode('utf-8'))} bytes, index.en.html {len(en.encode('utf-8'))} bytes, portfolio.en.html {len(pf_en.encode('utf-8'))} bytes")
     return 0
 
 

@@ -403,6 +403,9 @@ public class MainActivity extends Activity {
             @Override public void open() {   // OK: the list, with the focus on «🎤 تكلّم» so one more OK starts the voice adding
                 launchGuarded(ParentalPolicy.CARD_TASKS, new Intent(MainActivity.this, TasksActivity.class).putExtra(TasksActivity.EXTRA_MIC, true), S.t("المهام"));
             }
+            @Override public void markets() {   // OK on the stocks card: «الأسواق» («محفظتي» there has its own lock)
+                launch(new Intent(MainActivity.this, MarketsActivity.class));
+            }
         });
         homeCard.football(new FootballFocus.Host() {   // «المظهر ← الواجهة ← كرة القدم» (docs/PROPOSALS-NOV2.md §1)
             @Override public int headerBottom() {
@@ -837,8 +840,7 @@ public class MainActivity extends Activity {
         p.setOnFocusChangeListener((v, has) -> {
             if (has) {
                 lastFocusedId = v.getId(); glideTo(0); fadeGlow(1f);
-                View card = homeCard == null ? null : homeCard.live();
-                if (card != null) card.setNextFocusUpId(v.getId());   // up from the «المهام» card goes back to the pill it came from
+                if (homeCard != null) for (View card : homeCard.targets()) card.setNextFocusUpId(v.getId());   // up from the «المهام» (or stocks) card goes back to the pill it came from
             }
         });
         return p;
@@ -1117,8 +1119,9 @@ public class MainActivity extends Activity {
     private void wireFocus() {
         footballHeader();   // the home card was just made again (or not): «الواجهة» may have changed with it
         int d = dockCards.size(), g = gridCards.size();
-        // the «المهام» card, when it is among the home cards, is a stop between the pills and the dock
-        View card = homeCard == null ? null : homeCard.live();
+        // the «المهام» card (and the stocks card), when among the home cards, is a stop between the pills and the dock
+        List<View> targets = homeCard == null ? Collections.<View>emptyList() : homeCard.targets();
+        View card = targets.isEmpty() ? null : targets.get(0);
         int dockId = d > 0 ? dockCards.get(Math.min(d - 1, d / 2)).getId() : View.NO_ID;
         // the football home (FootballFocus): the games at the start side, then the prayers, then the weather; ▼ from any of them is the tray,
         // ▲ from the tray the games, ▲ from the open row of games the prayers, ▲ from those two the buttons
@@ -1152,11 +1155,14 @@ public class MainActivity extends Activity {
             nowCard.setNextFocusRightId(nowCard.getId());
             nowCard.setNextFocusDownId(card != null ? card.getId() : dockId != View.NO_ID ? dockId : nowCard.getId());
         }
-        if (card != null && card != fPr) {
-            card.setNextFocusLeftId(card.getId());   // nothing beside it to move to: stay on it
-            card.setNextFocusRightId(card.getId());
-            card.setNextFocusUpId(pills.get(0).getId());   // a pill's own focus moves this to that pill, see pill()
-            card.setNextFocusDownId(dockId != View.NO_ID ? dockId : card.getId());
+        for (int i = 0; i < targets.size(); i++) {
+            View t = targets.get(i);
+            // the next card in reading order with the arrow that goes on (left in Arabic), the one before with the other; at an end: stay on it
+            View next = i + 1 < targets.size() ? targets.get(i + 1) : t, prev = i > 0 ? targets.get(i - 1) : t;
+            if (Dir.rtl()) { t.setNextFocusLeftId(next.getId()); t.setNextFocusRightId(prev.getId()); }
+            else { t.setNextFocusRightId(next.getId()); t.setNextFocusLeftId(prev.getId()); }
+            t.setNextFocusUpId(pills.get(0).getId());   // a pill's own focus moves this to that pill, see pill()
+            t.setNextFocusDownId(dockId != View.NO_ID ? dockId : t.getId());
         }
         for (int i = 0; i < d; i++) {
             View c = dockCards.get(i);

@@ -38,6 +38,9 @@ public class PhoneActivity extends Activity implements PrivateScreen {
 
     private int GOLD, INK, TEXT, DIM, RED;   // from the glass look (glass(), before anything is drawn)
     private GlassStyle.Look look;
+    /** from «محفظتي» («أسهل من الجوال»): the QR and the address open the phone's portfolio page (/m), which pairs the same way */
+    static final String EXTRA_PORTFOLIO = "portfolio";
+    private boolean portfolio;
 
     private PhoneControl control;
     private LinearLayout col;
@@ -57,6 +60,7 @@ public class PhoneActivity extends Activity implements PrivateScreen {
         super.onCreate(b);
         Digits.init(this);
         control = PhoneHost.get(this);
+        portfolio = getIntent().getBooleanExtra(EXTRA_PORTFOLIO, false);
         control.setPinGate(new sa.urtv.home.phone.PinStoreGate(Parental.pin(this), System::currentTimeMillis));   // with a family PIN, the phone's changes ask for it (same lockout as the TV's keypad)
         ScrollView scroll = new ScrollView(this);
         glass(scroll);   // the glass look: the home's photo, small and blurred once, under its veil
@@ -77,6 +81,7 @@ public class PhoneActivity extends Activity implements PrivateScreen {
     protected void onResume() {
         super.onResume();
         left = false;
+        if (portfolio) Portfolio.openEditing(System.currentTimeMillis());   // the phone that scans the code may edit «محفظتي» for a while
         PhoneHost.setUi(new Runnable() {
             @Override public void run() { runOnUiThread(new Runnable() { @Override public void run() { render(); } }); }
         });
@@ -180,7 +185,7 @@ public class PhoneActivity extends Activity implements PrivateScreen {
                 LinearLayout info = new LinearLayout(this);
                 info.setOrientation(LinearLayout.VERTICAL);
                 info.addView(text(S.t("افتح هذا العنوان في متصفح الجوال"), 15, "Regular", DIM, Dir.start()), right(dp(6)));
-                info.addView(boxed(ltr(control.address() + "/p"), 28, GOLD, 0f), right(dp(14)));
+                info.addView(boxed(ltr(control.address() + (portfolio ? "/m" : "/p")), 28, GOLD, 0f), right(dp(14)));
                 info.addView(text(S.t("واكتب هذا الرمز"), 15, "Regular", DIM, Dir.start()), right(dp(6)));
                 info.addView(boxed(ltr(spaced(o.code)), 48, TEXT, 0.08f), right(dp(8)));
                 countdown = text("", 13, "Regular", DIM, Dir.start());
@@ -192,7 +197,7 @@ public class PhoneActivity extends Activity implements PrivateScreen {
                 qrCol.setGravity(Gravity.CENTER_HORIZONTAL);
                 qrCol.addView(text(S.t("أو امسح الرمز بكاميرا الجوال"), 15, "Regular", DIM, Gravity.CENTER), new LinearLayout.LayoutParams(-1, -2));
                 QrView qr = new QrView(this);
-                qr.setCode(QrCode.encode(control.pairUrl(o)));
+                qr.setCode(QrCode.encode(portfolio ? control.pairUrl(o).replace("/p#", "/m#") : control.pairUrl(o)));
                 LinearLayout.LayoutParams qp = new LinearLayout.LayoutParams(dp(240), dp(240));
                 qp.topMargin = dp(8);
                 qrCol.addView(qr, qp);

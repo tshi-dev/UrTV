@@ -102,10 +102,14 @@ final class Parental {
         return status(c);
     }
 
-    /** {@code dock.sh pin reset}: the PIN was forgotten. Everything goes: the PIN, its tries, the locks, the allowed apps, kids mode. */
+    /**
+     * {@code dock.sh pin reset}: the PIN was forgotten. Everything goes: the PIN, its tries, the locks, the allowed apps, kids mode, and «محفظتي»
+     * (docs/PROPOSALS-NOV2.md §7: a holding behind a forgotten PIN is not left on the TV for whoever resets it).
+     */
     static String adbReset(Context c) {
         pin(c).clear();
         prefs(c).edit().clear().commit();
+        Portfolio.wipe(c);
         SESSION.clear();
         changed(c);
         return status(c);

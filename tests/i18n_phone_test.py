@@ -77,8 +77,12 @@ check("index.en.html: the TV's own words, untranslated: Quran and adhan names co
 
 # ---- the table: every entry safe in a page, the English has no Arabic, each Arabic of the page has one (tests/i18n_test.py checks it too)
 rows = tr.parse((ROOT / "i18n/en/phone.tsv").read_text(encoding="utf-8"), "phone.tsv")
-found = {a for _, _, a in tr.arabic_literals(ar)}
-check(f"phone.tsv: {len(rows)} entries, each for an Arabic literal of index.html", rows and all(a in found for _, a, _ in rows), [a for _, a, _ in rows if a not in found][:5])
+pf_ar = (ROOT / "android/launcher/src/main/assets/phone/portfolio.html").read_text(encoding="utf-8")
+pf_en = (ROOT / "android/launcher/src/main/assets/phone/portfolio.en.html").read_text(encoding="utf-8")
+found = {a for _, _, a in tr.arabic_literals(ar)} | {a for _, _, a in tr.arabic_literals(pf_ar)}
+check(f"phone.tsv: {len(rows)} entries, each for an Arabic literal of index.html or portfolio.html (/m, «محفظتي»)", rows and all(a in found for _, a, _ in rows), [a for _, a, _ in rows if a not in found][:5])
+check("portfolio.en.html: English, left to right, no Arabic literal or text left, under 64 KB like the main page",
+      '<html lang="en" dir="ltr">' in pf_en and not list(tr.arabic_literals(pf_en)) and len(pf_en.encode()) < 64 * 1024 and len(pf_ar.encode()) < 64 * 1024, len(pf_en.encode()))
 check("phone.tsv: every English is safe in JS quotes and HTML, and has no Arabic",
       all(not (set(e) & tr.UNSAFE) and not AR.search(e) for _, _, e in rows), [e for _, _, e in rows if set(e) & tr.UNSAFE or AR.search(e)][:5])
 check("phone.tsv: the labels of an element that ends its tag (aria-label=\"…\">) have their entries: the hook sees them",

@@ -299,6 +299,11 @@ public class SettingsActivity extends Activity {
             row("العدّ التنازلي", countdownLabel(), R.drawable.ic_eye,
                 new Runnable() { public void run() { manageCountdown(); } });
 
+        // «الأسواق»: the home's own page (docs/PROPOSALS-NOV2.md §6, §7): TASI, the watchlist, gold and the pegs, and «محفظتي» on this TV only
+        header("صفحة الأسواق");
+        row("صفحة الأسواق", "تاسي وقائمتك والذهب والعملات، ومحفظتك", R.drawable.ic_trophy,
+            new Runnable() { public void run() { openMarkets(); } });
+
         header("الأسواق (أعلى اليسار)");
         row("شريط الأسواق", prefs.marketsOn() ? "يعمل" : "مخفي · يبقى طقس اليوم فقط", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setMarketsOn(!prefs.marketsOn()); render(); } });
@@ -1015,6 +1020,17 @@ public class SettingsActivity extends Activity {
             try { getPackageManager().getPackageInfo("sa.urtv.home", 0); }
             catch (android.content.pm.PackageManager.NameNotFoundException gone) { installed = false; }
             toast(installed ? "ما قدرنا نفتح تصفية المواقع: حدّث الواجهة الرئيسية «تلفزيونك»" : "ثبّت الواجهة الرئيسية «تلفزيونك» أولاً");
+        } catch (RuntimeException e) {
+            toast("ثبّت الواجهة الرئيسية «تلفزيونك» أولاً");
+        }
+    }
+
+    /** «صفحة الأسواق» lives in the launcher, with «محفظتي» (kept there only; its own lock asks for the PIN). */
+    private void openMarkets() {
+        try {
+            startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.MarketsActivity"));
+        } catch (ActivityNotFoundException e) {
+            toast("حدّث الواجهة الرئيسية «تلفزيونك» لتظهر صفحة الأسواق");
         } catch (RuntimeException e) {
             toast("ثبّت الواجهة الرئيسية «تلفزيونك» أولاً");
         }

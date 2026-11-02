@@ -290,6 +290,14 @@
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Material.NoActionBar" />
 
+        <!-- «الأسواق»: the markets page (the home's stocks card, the settings); «محفظتي» on it stays in this app's private prefs -->
+        <activity
+            android:name=".MarketsActivity"
+            android:exported="true"
+            android:label="الأسواق"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Material.NoActionBar" />
+
         <!-- favourites row from ADB (agents, optimize/dock.sh); DUMP = only the shell can send it -->
         <receiver
             android:name=".DockReceiver"

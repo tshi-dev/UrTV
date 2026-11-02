@@ -30,6 +30,9 @@ import java.util.Collections;
  * FrameLayout, and the page (#live=1) draws its mic mark and, while the target has the focus, its ring (setLiveFocus).
  * The WebView itself stays unfocusable; the focus and OK are the Android side's, like a pill's. The target is moved over
  * the card by what the page says about where it is (liveRect), so the page stays the one place that lays the cards out.
+ *
+ * «الأسهم» among the cards is a button the same way (docs/PROPOSALS-NOV2.md §6): its own target (market()), the page's ring and no mark;
+ * OK opens «الأسواق» (Live.markets()).
  */
 final class HomeCard {
     private static final Uri CONFIG = Uri.parse("content://sa.urtv.screensaver.config");
@@ -42,8 +45,8 @@ final class HomeCard {
     /** The box in pixels, {width, height}, for that many cards; asked again whenever the screen is laid out. */
     interface Sizer { int[] box(int cards); }
 
-    /** What the home screen does with the «المهام» card: it gained or lost the focus, OK was pressed on it. */
-    interface Live { void focus(View target, boolean has); void open(); }
+    /** What the home screen does with the «المهام» card (and the stocks card): it gained or lost the focus, OK was pressed on it. */
+    interface Live { void focus(View target, boolean has); void open(); default void markets() { } }
 
     private final Activity activity;
     private final ViewGroup parent;
@@ -55,6 +58,10 @@ final class HomeCard {
     private boolean tasks;   // «المهام» is one of them: `target` exists
     private View target;
     private FrameLayout.LayoutParams targetParams;
+    private boolean stocks;   // «الأسهم» is one of them: `market` exists
+    private View market;
+    private FrameLayout.LayoutParams marketParams;
+    private boolean stocksFirst;   // the stocks card comes before «المهام» among the cards
     private final Live live;
     private final RenderGuard guard = new RenderGuard();
     private boolean resumed;
@@ -92,6 +99,17 @@ final class HomeCard {
     /** The focus target over the «المهام» card, or null when it is not among the cards. */
     View live() { return target; }
 
+    /** The focus target over the stocks card, or null when it is not among the cards. */
+    View market() { return market; }
+
+    /** The cards' focus targets in the cards' order (none, one or two). */
+    java.util.List<View> targets() {
+        java.util.List<View> l = new java.util.ArrayList<>();
+        if (target != null) l.add(target);
+        if (market != null) l.add(stocksFirst ? 0 : l.size(), market);
+        return l;
+    }
+
     /** The screen was laid out again (the dock's names, the clock's width): the box may have to move. */
     void fit() {
         if (web == null) return;
@@ -102,6 +120,7 @@ final class HomeCard {
         params.height = b[1];
         web.setLayoutParams(params);
         placeTarget();
+        placeMarket();
     }
 
     /** onResume: follow the current settings; a changed choice gets a fresh page. */
@@ -129,6 +148,7 @@ final class HomeCard {
         if (web == null) return;
         if (target != null) { parent.removeView(target); target = null; targetParams = null; }
         if (footballFocus != null) { footballFocus.remove(); footballFocus = null; }
+        if (market != null) { parent.removeView(market); market = null; marketParams = null; }
         parent.removeView(web);
         web.destroy();
         web = null;
@@ -158,9 +178,11 @@ final class HomeCard {
         // before this app): keep the last cards chosen, «بدون» included. Only with nothing remembered, the prayers.
         String[] choice = HomeCardChoice.pick(frag, panel, sp.getString("frag", null), sp.getString("panel", null));
         football = "football".equals(layout) && footballHost != null && choice != null;
-        if (football) { cards = 0; tasks = false; return HomePage.fresh(activity, HomeCardChoice.footballUrl(choice)); }
+        if (football) { cards = 0; tasks = false; stocks = false; stocksFirst = false; return HomePage.fresh(activity, HomeCardChoice.footballUrl(choice)); }
         cards = HomeCardChoice.count(choice);
         tasks = HomeCardChoice.hasTasks(choice);
+        stocks = HomeCardChoice.hasStocks(choice);
+        stocksFirst = HomeCardChoice.stocksFirst(choice);
         return HomePage.fresh(activity, HomeCardChoice.liveUrl(choice));   // the screensaver's newer page when it has one
     }
 
@@ -194,10 +216,12 @@ final class HomeCard {
                     v.postDelayed(() -> { if (footballFocus != null) footballFocus.fit(); }, 1500);
                     return;
                 }
-                if (target == null) return;
+                if (target == null && market == null) return;
                 // the page has laid its cards out; they may still be filling (fonts, the first rows): ask again a little later
                 v.postDelayed(HomeCard.this::placeTarget, 300);
                 v.postDelayed(HomeCard.this::placeTarget, 2500);
+                v.postDelayed(HomeCard.this::placeMarket, 300);
+                v.postDelayed(HomeCard.this::placeMarket, 2500);
             }
 
             @Override
@@ -242,6 +266,7 @@ final class HomeCard {
         parent.addView(web, params);
         if (football) footballFocus = new FootballFocus(activity, parent, web, params, footballHost);
         if (tasks) addTarget();
+        if (stocks) addMarket();
         url = u;
         web.loadUrl(u);
     }
@@ -262,12 +287,37 @@ final class HomeCard {
         parent.addView(target, targetParams);
     }
 
+    /** The transparent button over the stocks card: it takes the focus like a pill, and OK opens «الأسواق». */
+    private void addMarket() {
+        market = new View(activity);
+        market.setId(View.generateViewId());
+        market.setFocusable(true);
+        market.setContentDescription(S.t("الأسواق"));
+        market.setOnFocusChangeListener((v, has) -> {
+            if (web != null) web.evaluateJavascript("setLiveFocus(" + has + ",'stocks')", null);
+            if (has) placeMarket();
+            live.focus(v, has);
+        });
+        market.setOnClickListener(v -> live.markets());
+        marketParams = new FrameLayout.LayoutParams(params);
+        parent.addView(market, marketParams);
+    }
+
+    private void placeMarket() {
+        if (web == null || market == null) return;
+        place(market, marketParams, "liveRect('stocks')");
+    }
+
     /** Puts the target over the card, where the page says it is; until it has said, it covers the whole box. */
     private void placeTarget() {
         if (web == null || target == null) return;
-        web.evaluateJavascript("typeof liveRect==='function'?liveRect():''", new ValueCallback<String>() {
+        place(target, targetParams, "liveRect()");
+    }
+
+    private void place(final View target, final FrameLayout.LayoutParams targetParams, String ask) {
+        web.evaluateJavascript("typeof liveRect==='function'?" + ask + ":''", new ValueCallback<String>() {
             @Override public void onReceiveValue(String value) {
-                if (target == null || targetParams == null) return;
+                if (target.getParent() == null) return;
                 String[] r = value == null ? new String[0] : value.replace("\"", "").split(",");
                 if (r.length != 4) return;
                 try {
