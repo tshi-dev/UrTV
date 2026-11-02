@@ -516,6 +516,8 @@ final class Prefs {
      * and used to win for hours.
      */
     private String pageBase(Context c) {
+        String own = Updater.pageBase(c, lang(), autoUpdate());   // «اللغة» English: tv-en.html (Updater.pageBase); null for Arabic
+        if (own != null) return own;
         File remote = Updater.pageFile(c);
         boolean useRemote = false;
         if (autoUpdate() && remote.isFile()) {

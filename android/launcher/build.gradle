@@ -61,7 +61,7 @@ preBuild.dependsOn copyWallpapers
 
 // the optional home-screen card is the screensaver's page in card-only mode, with its woff2 fonts
 def copyWeb = tasks.register('copyWeb', Copy) {
-    from('../../dist') { include 'tv.html'; into 'web' }
+    from('../../dist') { include 'tv.html', 'tv-en.html'; into 'web' }   // tv-en.html: «اللغة» English (docs/ENGLISH.md)
     from('../../assets/fonts') { include '*.woff2'; into 'fonts' }
     into "$buildDir/generated/web"
 }

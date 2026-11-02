@@ -6,6 +6,11 @@ package sa.urtv.home;
  */
 final class HomeCardChoice {
     static final String BASE = "file:///android_asset/web/tv.html#";
+    /**
+     * «اللغة» English (the settings fragment carries lang=en, Tr.fragment): the English page, Tr.pageName("en"), which copyWeb puts beside
+     * tv.html. Written out here so this class stays plain Java on its own (tests/i18n_page_test.py checks it against Tr).
+     */
+    static final String BASE_EN = "file:///android_asset/web/tv-en.html#";
     static final String PRAYERS = BASE + "panel=prayers&widget=1";
 
     private HomeCardChoice() { }
@@ -48,6 +53,12 @@ final class HomeCardChoice {
         if (choice == null) return PRAYERS;
         if ("none".equals(choice[1]) || choice[1].isEmpty()) return null;
         String frag = choice[0].replaceAll("(^|&)(panel|week)=[^&]*", "");   // the screensaver's own card choice
-        return BASE + frag + "&panel=" + choice[1].split(",")[0] + "&home_panel=" + choice[1] + "&widget=1";
+        return base(choice[0]) + frag + "&panel=" + choice[1].split(",")[0] + "&home_panel=" + choice[1] + "&widget=1";
+    }
+
+    /** The page for the language the settings fragment says (as Tr.fromFragment): BASE for Arabic, as always. */
+    static String base(String frag) {
+        if (frag != null) for (String kv : frag.split("&")) if (kv.equals("lang=en")) return BASE_EN;
+        return BASE;
     }
 }

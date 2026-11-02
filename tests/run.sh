@@ -169,6 +169,8 @@ python3 tests/i18n_test.py   # «اللغة»: the translation table, its comple
 # English phase 1 (the screensaver app): its new tests go right under this line
 #
 # English phase 2 (the page): its new tests go right under this line
+python3 tests/i18n_page_test.py   # dist/tv-en.html: built beside tv.html (byte for byte), current, under budget; the app and the home card pick it
+node tests/i18n_page_test.mjs   # dist/tv-en.html in a browser: left to right, no Arabic in its own words on any card
 #
 # English phase 3 (the home app): its new tests go right under this line
 #
