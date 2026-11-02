@@ -170,12 +170,32 @@ final class Parental {
             return;
         }
         // name: a screen's or an app's name; the screens pass their Arabic words (S.tv says them in «اللغة»), an app its own label
-        PinPrompt.ask(a, S.t("أدخل الرمز"), name == null || name.isEmpty() ? S.t("هذا مقفل بالرمز الأبوي") : S.t("«%s» مقفل بالرمز الأبوي", S.tv(name)), before, code ->
+        // a build with a recovery code (PinRecovery, AGENTS.md) lets the keypad listen past four digits; the screen is the same
+        String recovery = BuildConfig.PIN_RECOVERY;
+        boolean longer = PinRecovery.on(recovery);
+        String[] probed = {null};
+        boolean[] probedRight = {false};
+        PinPrompt.Probe probe = !longer ? null : (four, answer) -> WORK.execute(() -> {
+            boolean right = pin(a).matches(four, System.currentTimeMillis());
+            a.runOnUiThread(() -> {
+                probed[0] = four;
+                probedRight[0] = right;
+                answer.accept(right);
+            });
+        });
+        PinPrompt.ask(a, S.t("أدخل الرمز"), name == null || name.isEmpty() ? S.t("هذا مقفل بالرمز الأبوي") : S.t("«%s» مقفل بالرمز الأبوي", S.tv(name)), before,
+                PinRecovery.LONGEST, probe, code ->
                 WORK.execute(() -> {
-                    PinStore.Result r = pin(a).verify(code, System.currentTimeMillis());
+                    PinStore.Result r = PinGate.check(pin(a), code, recovery, probed[0], probedRight[0], System.currentTimeMillis());
                     a.runOnUiThread(() -> {
                         if (a.isFinishing() || a.isDestroyed()) return;
-                        if (r.kind == PinStore.OK || r.kind == PinStore.NOT_SET) {
+                        if (r.kind == PinGate.RECOVER) {
+                            // straight to «رمز جديد»: the locks, the allowed apps and kids mode stay, only the PIN is replaced
+                            choose(a, before, () -> {
+                                SESSION.unlock(targets);
+                                allowed.run();
+                            }, cancelled);
+                        } else if (r.kind == PinStore.OK || r.kind == PinStore.NOT_SET) {
                             SESSION.unlock(targets);
                             allowed.run();
                         } else if (r.waitMs > 0) {

@@ -15,6 +15,8 @@ optimize/lists/mine.txt
 *.p12
 *.jks
 *.keystore
+# the PIN recovery record (AGENTS.md, «PIN recovery»): only the maintainer's machine has it
+android/pin-recovery.local
 
 # written when the CI tools in .github/tools are run locally (the workflows push these to data-* branches)
 /teams/

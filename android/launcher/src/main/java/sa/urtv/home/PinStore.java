@@ -61,7 +61,29 @@ public final class PinStore {
         if (record == null) return new Result(NOT_SET, 0, 0);
         long wait = waitLeft(now);
         if (wait > 0) return new Result(LOCKED, wait, 0);
-        if (PinCrypto.verify(pin, record)) {
+        return outcome(PinCrypto.verify(pin, record), now);
+    }
+
+    /**
+     * Whether these digits are the PIN, with nothing counted or started over, and false while locked: the keypad's look at the first four
+     * digits when a longer code may follow (PinRecovery). Its answer is then counted once, by {@link #record}, when the keypad gives up
+     * those four digits, so a look never makes a free try.
+     */
+    public synchronized boolean matches(String pin, long now) {
+        String record = store.get(RECORD);
+        return record != null && waitLeft(now) == 0 && PinCrypto.verify(pin, record);
+    }
+
+    /** A try already looked at by {@link #matches}, counted now as verify would (and turned away the same way if it has locked since). */
+    public synchronized Result record(boolean right, long now) {
+        if (store.get(RECORD) == null) return new Result(NOT_SET, 0, 0);
+        long wait = waitLeft(now);
+        if (wait > 0) return new Result(LOCKED, wait, 0);
+        return outcome(right, now);
+    }
+
+    private Result outcome(boolean right, long now) {
+        if (right) {
             store.remove(LOCK);
             return new Result(OK, 0, TRIES);
         }
