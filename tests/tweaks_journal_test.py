@@ -190,14 +190,22 @@ check("a normal build still gets the !! line", "!! standby_bucket: this TV did n
 
 # ---- the Android a TV runs: device_config is Android 10 (SDK 29) and newer; standby buckets Android 9 (28) and newer, «restricted» Android 11 (30) and newer
 def batch_of(tv): return (tv.t / "batch").read_text() if (tv.t / "batch").exists() else ""
-for sdk, want_dc, want_bucket in (("28", False, "40"), ("29", True, "40"), ("30", True, "45"), ("34", True, "45")):
+for sdk, want_dc, want_bucket in (("28", False, "null"), ("29", True, "null"), ("30", True, "45"), ("34", True, "45")):
     tv = Tv(); rc, out = tv.run("apply", sdk=sdk); b = batch_of(tv); j = tv.journal() or ""
-    check(f"SDK {sdk}: device_config {'is used' if want_dc else 'is never called'}; the standby bucket is {'restricted' if want_bucket == '45' else 'rare'}; no !! line, no refused bucket",
+    check(f"SDK {sdk}: device_config {'is used' if want_dc else 'is never called'}; the standby bucket is {'restricted' if want_bucket == '45' else 'not asked for (Android 9 and 10)'}; no !! line, no refused bucket",
           rc == 0 and ("device_config" in b) == want_dc and tv.get("standby_bucket") == want_bucket and "!!" not in out and not (tv.t / "errors").exists(), f"{rc} {out} {b}")
     if not want_dc:
         check(f"SDK {sdk}: the journal says what was skipped and why", "skipped_max_cached_processes=" in j and "max_cached_processes=" not in j.replace("skipped_max_cached_processes=", ""), j)
+    if want_bucket == "null":
+        check(f"SDK {sdk}: the bucket is skipped with one journal line and no !!, and it is not recorded as something to put back",
+              "skipped_standby_bucket=" in j and "\nstandby_bucket=" not in j and "set-standby-bucket" not in b and "!!" not in out and out.count("standby bucket") <= 1, f"{j} {out}")
     rc, out = tv.run("restore", sdk=sdk); b2 = batch_of(tv)
     check(f"SDK {sdk}: restore puts back the bucket and the others and never calls device_config below SDK 29", rc == 0 and "!!" not in out and (want_dc or "device_config" not in b2), f"{rc} {out}")
+# a TV an older version already set (journal with standby_bucket=frequent) on Android 10: restore still puts the bucket back
+tv = Tv(standby_bucket="40"); (tv.tree / "optimize" / "run").mkdir(parents=True)
+(tv.tree / "optimize" / "run" / "tweaks-journal.txt").write_text("window_animation_scale=1.0\ntransition_animation_scale=1.0\nanimator_duration_scale=1.0\ncached_apps_freezer=null\nmax_cached_processes=null\nstandby_bucket=frequent\nappop_RUN_IN_BACKGROUND=default\nappop_RUN_ANY_IN_BACKGROUND=default\n")
+rc, out = tv.run("restore", sdk="29")
+check("SDK 29, journal from an older run: restore still puts the Play Store's bucket back", rc == 0 and tv.get("standby_bucket") == "30" and "!!" not in out, f"{rc} {out}")
 tv = Tv(); rc, out = tv.run("apply", sdk="27"); b = batch_of(tv)
 check("SDK 27: no standby bucket at all (Android 8 has none), no device_config", rc == 0 and "set-standby-bucket" not in b and "device_config" not in b and "!!" not in out and "skipped_standby_bucket=" in (tv.journal() or ""), f"{rc} {out} {b}")
 tv = Tv(); rc, out = tv.run("apply", sdk=""); b = batch_of(tv)

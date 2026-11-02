@@ -59,6 +59,9 @@ original() {   # key tv|ps: what the journal has; an «unknown» one is read aga
 PS=com.android.vending
 PSKEYS="standby_bucket appop_RUN_IN_BACKGROUND appop_RUN_ANY_IN_BACKGROUND"
 if [ "$SDK" -lt 28 ]; then PSKEYS=${PSKEYS/standby_bucket /}; SKIPPED+=("standby_bucket: standby buckets need Android 9 (this TV is SDK $SDK_SAY)"); fi
+# Android 9 and 10 (SDK < 30) are not asked for a bucket at all: 6 of 7 Android 9 reports still warned because the Play Store went back to «active» (the
+# «restricted» bucket is Android 11's; «rare» did not hold). Only apply skips it; restore still puts back a bucket an older run recorded.
+if [ "${1:-}" = apply ] && [ "$SDK" -lt 30 ] && [ "$SDK" -ge 28 ]; then PSKEYS=${PSKEYS/standby_bucket /}; SKIPPED+=("standby_bucket: the Play Store's standby bucket is only set on Android 11 and newer (this TV is SDK $SDK_SAY)"); fi
 has_key() { case " $KEYS $PSKEYS " in *" $1 "*) return 0 ;; esac; return 1; }
 bucket_name() { case "$1" in 5) echo exempted ;; 10) echo active ;; 20) echo working_set ;; 30) echo frequent ;; 40) echo rare ;; 45) echo restricted ;; 50) echo never ;; *) echo unknown ;; esac; }
 psget() {
@@ -125,7 +128,7 @@ if [ "$1" = apply ]; then
       unknown) echo "!! standby_bucket: could not read what this TV has for the Play Store, so it is left as it is (nothing to put back)" ;;
       *) cmds+=("$(psput standby_bucket "$BUCKET")"); pswant+=("standby_bucket=$BUCKET") ;;
     esac
-  else echo "Play Store standby bucket: left alone (Android 9 is the first with standby buckets; this TV is SDK $SDK_SAY)"; fi
+  else echo "Play Store standby bucket: left alone (it is set on Android 11 and newer; this TV is SDK $SDK_SAY)"; fi
   for op in RUN_IN_BACKGROUND RUN_ANY_IN_BACKGROUND; do
     if [ "$(original "appop_$op" ps)" = unknown ]; then echo "!! appop_$op: could not read what this TV has for the Play Store, so it is left as it is (nothing to put back)"
     else cmds+=("$(psput "appop_$op" deny)"); pswant+=("appop_$op=deny"); fi
@@ -167,7 +170,8 @@ elif [ -f "$JOURNAL" ]; then
   done
   for k in $PSKEYS; do
     o=$(jget "$k")
-    if [ "$o" = exempted ]; then :   # the system's own exemption: never changed by apply, nothing to put back
+    if [ "$k" = standby_bucket ] && [ -z "$o" ] && [ -n "$(jget skipped_standby_bucket)" ]; then :   # apply never touched it (Android 9 and 10): nothing to put back
+    elif [ "$o" = exempted ]; then :   # the system's own exemption: never changed by apply, nothing to put back
     elif [[ "$o" =~ ^[a-z_]+$ ]] && [ "$o" != unknown ]; then cmds+=("$(psput "$k" "$o")"); pswant+=("$k=$o")
     else   # the original could not be read: apply left it alone, so there is nothing to put back (an older apply may have changed it: said)
       echo "!! $k: the TV's own value was not recorded (this firmware did not say), so it is left as it is; if an older version of these tools changed it, set it in the TV's settings"
