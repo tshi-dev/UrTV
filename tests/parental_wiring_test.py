@@ -91,7 +91,9 @@ check("adhanTakes is the adhan's old rule, unchanged: AdhanKeys.decide, then sto
 for n in ("ParentalActivity.java", "DockActivity.java"):
     check(f"{n}: its PIN keypad has the adhan's rule too", "Parental.adhanFirst(this)" in src(n) or "adhan = Parental.adhanFirst(this)" in src(n))
 ask = parental.split("private static void ask(")[1]
-check("the PIN is checked on a worker thread, never on the main one", ask.index("WORK.execute(") < ask.index(".verify("))
+check("the PIN is checked on a worker thread, never on the main one (the keypad's quiet look and the check itself, PinGate)",
+      ask.index("WORK.execute(") < ask.index(".matches(") and ask.index("WORK.execute(", ask.index(".matches(")) < ask.index("PinGate.check(")
+      and "store.verify(code, now)" in src("PinGate.java"))
 check("the PIN is created on the worker thread too", parental.split("static void choose(")[1].index("WORK.execute(") < parental.split("static void choose(")[1].index(".set(first)"))
 check("a wrong PIN or a wait never closes or pauses anything but the keypad: no sleep, no wait, no blocking call",
       not re.search(r"Thread\.sleep|\.wait\(|\.join\(\)|Future|CountDownLatch|\.invokeAll", parental + prompt + policy + src("PinStore.java")))
