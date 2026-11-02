@@ -6,12 +6,15 @@
 //   CHROMIUM=/path/to/chromium node tests/i18n_phone_test.mjs
 import { chromium } from 'playwright';
 import { readFileSync, mkdirSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DIR = path.join(ROOT, 'android/launcher/src/main/assets/phone');
 const FILES = { ar: readFileSync(path.join(DIR, 'index.html'), 'utf8'), en: readFileSync(path.join(DIR, 'index.en.html'), 'utf8') };
+// the link is off in the committed files until phases 1 and 3 (src/phone_en.py LINK): its cases run on both pages with it, as the generator writes them
+const LINKED = JSON.parse(execFileSync('python3', ['src/phone_en.py', '--with-link'], { cwd: ROOT, encoding: 'utf8', maxBuffer: 1 << 24 }));
 const ORIGIN = 'http://tv.test', PAGE = ORIGIN + '/phone/', NONCE = 'n0nce123';
 const CSP = `default-src 'none'; script-src 'nonce-${NONCE}'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; font-src 'self'`;   // PhoneApi's
 const AR = /[؀-ۿ]/;
@@ -38,14 +41,14 @@ const APPS = { ok: true, apps: [{ pkg: 'com.a', name: 'Netflix', locked: false }
 
 const browser = await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {});
 
-async function boot({ lang = 'en', state = STATE(), w = 390, h = 844 } = {}) {
+async function boot({ lang = 'en', state = STATE(), w = 390, h = 844, files = FILES } = {}) {
   const ctx = await browser.newContext({ viewport: { width: w, height: h }, colorScheme: 'dark' });
   const reqs = [], errors = [], c = { lang, loads: 0 };
   await ctx.route('**/*', async route => {
     const rq = route.request(), u = new URL(rq.url());
     if (u.origin !== ORIGIN) return route.abort();
     if (u.pathname.startsWith('/fonts/')) return route.fulfill({ status: 404, contentType: 'application/json', body: '{"ok":false}' });
-    if (u.pathname === '/phone/') { c.loads++; return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', headers: { 'Content-Security-Policy': CSP }, body: FILES[c.lang].replace('__NONCE__', NONCE) }); }
+    if (u.pathname === '/phone/') { c.loads++; return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', headers: { 'Content-Security-Policy': CSP }, body: files[c.lang].replace('__NONCE__', NONCE) }); }
     let body = null; try { body = rq.postData() ? JSON.parse(rq.postData()) : null; } catch (e) { body = '?'; }
     reqs.push({ path: u.pathname, body });
     const J = o => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(o) });
@@ -138,7 +141,9 @@ await T('left to right', async () => {
 });
 
 await T('the language link', async () => {
-  const S = await boot(); await login(S);
+  check('the committed pages have the link only when src/phone_en.py LINK is on (they are the generated pages either way)',
+    FILES.ar.includes('id="lang"') === FILES.en.includes('id="lang"') && (FILES.ar.includes('id="lang"') ? FILES.ar === LINKED.ar : FILES.ar !== LINKED.ar));
+  const S = await boot({ files: LINKED }); await login(S);
   const { p } = S;
   await tab(S, 'settings');
   check('English page: the link reads «العربية» (lang="ar")', (await p.textContent('#lang')) === 'العربية' && (await p.getAttribute('#lang', 'lang')) === 'ar' && await p.isVisible('#lang'));
@@ -150,7 +155,7 @@ await T('the language link', async () => {
   check('the request had only lang', S.reqs.filter(r => r.path === '/api/set').some(r => JSON.stringify(r.body) === '{"lang":"ar"}'));
   await S.ctx.close();
 
-  const A = await boot({ lang: 'ar', state: STATE({ lang: 'ar' }) }); await login(A);
+  const A = await boot({ lang: 'ar', state: STATE({ lang: 'ar' }), files: LINKED }); await login(A);
   await tab(A, 'settings');
   check('Arabic page: the link reads «English» (lang="en")', (await A.p.textContent('#lang')) === 'English' && (await A.p.getAttribute('#lang', 'lang')) === 'en' && await A.p.isVisible('#lang'));
   const l2 = A.c.loads;
@@ -158,7 +163,7 @@ await T('the language link', async () => {
   check('a press sends /api/set {lang:"en"} and the English page comes', await until(async () => A.c.loads > l2 && await A.p.evaluate(() => document.documentElement.lang === 'en').catch(() => false)));
   await A.ctx.close();
 
-  const O = await boot({ lang: 'ar', state: STATE({ lang: undefined }) }); await login(O);
+  const O = await boot({ lang: 'ar', state: STATE({ lang: undefined }), files: LINKED }); await login(O);
   await tab(O, 'settings');
   check('a TV whose screensaver knows no «اللغة» (no lang in the state): no link', !(await O.p.isVisible('#lang')));
   await O.ctx.close();

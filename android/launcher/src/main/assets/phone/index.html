@@ -227,7 +227,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 </div>
 
 <div id="t-settings" class="hidden">
-<div class="hd"><h2 class="h">إعدادات سريعة</h2><button id="theme" class="lnk">الوضع الفاتح</button><button id="lang" class="lnk hidden" lang="en">English</button></div>
+<div class="hd"><h2 class="h">إعدادات سريعة</h2><button id="theme" class="lnk">الوضع الفاتح</button></div>
 <div class="card">
 <div class="ch"><span class="ic" data-i="pin"></span><div><h2>المدينة</h2><p id="cityNow"></p></div></div>
 <div class="row"><input id="cityQ" placeholder="ابحث عن مدينة" maxlength="30" aria-label="مدينة"><button id="cityGo" style="flex:0 0 90px">بحث</button></div>
@@ -325,7 +325,6 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     try { localStorage.setItem('urtvTheme', n); } catch (e) { }
   };
 
-  $('lang').onclick = function () { gated('/api/set', { lang: 'en' }).then(function (j) { if (j.ok) location.reload(); else say(j); }); };
   // ---- the glass look: the home's photo, blurred once on the TV, under its veil
   var glassStamp = -1;
   function glass(s) {
@@ -596,7 +595,6 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     upText(s.update);
     if (!full) return;
     $('cityNow').textContent = s.settings ? 'المدينة الحالية: ' + s.city : 'إعدادات المدينة غير متاحة: حدّث تطبيق «شاشة تلفزيونك».';
-    $('lang').classList.toggle('hidden', !s.lang);
     cards(s);
     var a = s.adhan || {};
     $('aOn').checked = !!a.on; $('aOn2').checked = !!a.on; $('aShort').checked = !!a.short; $('aStop').checked = !!a.stopkey;

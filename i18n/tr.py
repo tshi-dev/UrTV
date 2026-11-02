@@ -22,8 +22,8 @@ ROOT = Path(__file__).resolve().parents[1]
 TABLE_DIR = ROOT / "i18n/en"
 AR = "\u0600-\u06ff"
 # a quoted literal with Arabic in it, on one line, whole: opened after code punctuation or a space (so the ’s of an English comment is no
-# quote), closed before the same; no backslash, no other quote, no ${…} inside (a template with values is no one literal)
-QUOTED = re.compile(r"""(?:(?<=^)|(?<=[\s(\[{,:=+?!|&>;]))(['"`])((?:(?!\$\{)[^'"`\n\\<>])*?[%s](?:(?!\$\{)[^'"`\n\\<>])*?)\1(?=[\s)\]},:;+.?|&<]|$)""" % AR, re.M)
+# quote), closed before the same or the «>» of a tag (aria-label="…">); no backslash, no other quote, no ${…} inside (a template with values is no one literal)
+QUOTED = re.compile(r"""(?:(?<=^)|(?<=[\s(\[{,:=+?!|&>;]))(['"`])((?:(?!\$\{)[^'"`\n\\<>])*?[%s](?:(?!\$\{)[^'"`\n\\<>])*?)\1(?=[\s)\]},:;+.?|&<>]|$)""" % AR, re.M)
 # an HTML text node with Arabic in it, whole, on one line; nothing that looks like code (braces, =, ;, $, backticks, parentheses)
 TEXT_NODE = re.compile(r">(\s*)([^<>\n{}`;=$()]*?[%s][^<>\n{}`;=$()]*?)(\s*)<" % AR)
 UNSAFE = set("'\"`<>&\\\n\r")

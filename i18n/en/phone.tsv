@@ -213,3 +213,15 @@
 مقفل بالرقم السري	PIN-locked
 الإصدار\u0020	build\u0020
 تم الخروج.	Signed out.
+# the labels of an element that ends its tag (aria-label="…">)
+الرمز	Code
+لوحة اللمس	Touchpad
+نص للتلفزيون	Text for the TV
+طريقة الكتابة	Typing mode
+مدينة	City
+القارئ	Reciter
+السورة	Surah
+مدة الخمول	Idle time
+المؤذن	Muezzin
+مستوى صوت الأذان	Adhan volume
+الأقسام	Sections
