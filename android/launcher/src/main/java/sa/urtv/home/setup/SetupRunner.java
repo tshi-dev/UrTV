@@ -83,6 +83,11 @@ final class SetupRunner {
         void spawn(Runnable job);
         /** After EVERY end of a run, when its connection is closed: the ADB key goes when nothing is pending (SetupSession.deleteKeyIfFinished). */
         void finished();
+        /**
+         * Before a fresh run (a full one that does not resume, or the undo): an ADB key a run before kept (a switch was pending then) goes now when
+         * nothing is pending any more, so a new run never gets in on an old «السماح دائماً» (tester step 18: the second run did not ask).
+         */
+        default void freshKey() { }
         void sleep(int ms) throws IOException;
         long now();
         /** A file of the app's assets (setup/community.txt), null when it is not there. */
@@ -466,6 +471,9 @@ final class SetupRunner {
         }
         if (k == Kind.FULL) {
             try { host.store().put(SetupReport.STEPS, ""); } catch (IOException ignored) { }
+        }
+        if (k == Kind.FULL || k == Kind.UNDO) {
+            try { host.freshKey(); } catch (RuntimeException ignored) { }
         }
         host.spawn(() -> run(k, opts, host, null));
         return Start.STARTED;

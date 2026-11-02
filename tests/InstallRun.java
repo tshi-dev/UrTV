@@ -28,6 +28,13 @@ public class InstallRun {
         System.out.println("unsignedNull " + InstallRules.fresh(P, P, s(me), null));
         System.out.println("selfUnknown " + InstallRules.fresh(P, P, Collections.<String>emptySet(), s(me)));
         System.out.println("notHex " + InstallRules.fresh(P, P, s("x"), s("x")));
+        // the undo's backup check (tester step 18): a real list without our screensaver yes; with it, a short list, no backup: no
+        StringBuilder bk = new StringBuilder("$ echo '== disabled packages'; pm list packages -d\n== disabled packages\npackage:sa.urtv.screensaver\n$ echo '== all packages'; pm list packages\n== all packages\npackage:android\n");
+        for (int i = 0; i < 25; i++) bk.append("package:com.tv.app").append(i).append('\n');
+        String withSaver = bk.toString() + "package:sa.urtv.screensaver\n";
+        System.out.println("notBefore " + SetupInstall.notBefore(bk.toString(), "sa.urtv.screensaver") + " " + SetupInstall.notBefore(withSaver, "sa.urtv.screensaver")
+            + " " + SetupInstall.notBefore("== all packages\npackage:android\n", "sa.urtv.screensaver") + " " + SetupInstall.notBefore(null, "sa.urtv.screensaver")
+            + " " + SetupInstall.notBefore("", "sa.urtv.screensaver"));
         System.out.println("otherApp " + InstallRules.fresh(P, "com.evil.app", s(me), s(me)));
         System.out.println("noApp " + InstallRules.fresh(P, null, s(me), s(me)));
     }

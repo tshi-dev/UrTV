@@ -51,6 +51,11 @@ got = dict(l.split(" ", 1) for l in subprocess.run(["java", "-cp", str(CLS), "sa
 check("fresh install: the same signer as this app is allowed (one certificate, or the same set)", got.get("same") == "null" and got.get("sameTwo") == "null", got)
 check("fresh install: another signer is refused (another key, a subset, a superset)", got.get("other") == got.get("subset") == got.get("superset") == "other_key", got)
 check("fresh install: unsigned is refused (no certificate, none read, or this app's own unknown)", got.get("unsigned") == got.get("unsignedNull") == got.get("selfUnknown") == got.get("notHex") == "unsigned", got)
+check("undo: our screensaver the record missed is removed only when the backup's own list (a real one) did not have it; a disabled-list line does not count (tester step 18)",
+      got.get("notBefore") == "true false false false false", got.get("notBefore"))
+u = inst[inst.index("List<String> undo()"):]
+check("undo: that fallback is only for our own screensaver, and the TV must have it now", "notBefore(store.get(SetupPrep.BACKUP), SetupEngine.SAVER) && tv.installed(SetupEngine.SAVER)" in u
+      and u.index("ours.remove(SetupEngine.SELF)") < u.index("notBefore(") < u.index("pm uninstall"))
 check("fresh install: another package is refused whatever its signer", got.get("otherApp") == got.get("noApp") == "other_app", got)
 
 # pick_asset: install.sh's own Python, and the app's, on the same release lists

@@ -46,6 +46,8 @@ final class SetupHost implements SetupRunner.Host {
 
     @Override public void finished() { SetupSession.deleteKeyIfFinished(app); }
 
+    @Override public void freshKey() { SetupSession.deleteKeyIfFinished(app); }
+
     @Override public void sleep(int ms) throws IOException {
         try { Thread.sleep(ms); } catch (InterruptedException e) { Thread.currentThread().interrupt(); throw new IOException("interrupted"); }
     }
