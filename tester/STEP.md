@@ -57,3 +57,36 @@ what: confirm the fixes from the 159 test AND the new batch (Settings key, 24-ho
 | Z | Phone control off, the pairing removed; updatechannel latest; restore everything from the start lines; sound 0 | "restored: yes/no" |
 
 REPORT.md: "step 15", the table, the UrTVA11y lines, any `!!`. Push; tell the owner in Arabic.
+
+---
+step: 16 (do it when the owner says «ابدأ الخطوة 16»)
+what: confirm the 4.2 batch on `next` (the adhan options, the text field in «المهام», the TCL remote keys and the safe fixes, and a read-only look at the Wi-Fi owner) on the newest apk-next: build 169 or newer (`version.txt` 3.169; the build after 167). Follow tester/RULES.md. TV sound stays at 0 the whole time: judge the adhan by logcat and the state, never by ear.
+- Start lines, plus: `optimize/music.sh adhan` (write down every `adhan_*=` value), `optimize/saver.sh prayeradj` state, the tasks count (`optimize/saver.sh tasks list`; count only), `adb shell pm list packages -d | sort` (keep the list), `adb shell settings get global cached_apps_freezer`, and who holds Home (`adb shell cmd package resolve-activity --brief -a android.intent.action.MAIN -c android.intent.category.HOME`).
+- `optimize/saver.sh updatechannel next`; update from the TV («تحديث تلفزيوني») to the newest apk-next; settings «الإصدار» shows the build.
+- The adhan state: `optimize/music.sh adhan` → the line `adhan_alarm_last=` reads `front= play= notice= saver=`. To make an alarm come, move the next prayer 1–2 minutes ahead with `optimize/saver.sh prayeradj <prayer> <minutes>` (on, then the minutes), wait for it, read the state and `adb logcat -d -s UrTVAdhan`; put the minutes back right after each row.
+- Wi-Fi: read only. Never forget a network, never turn Wi-Fi off, never change it.
+
+| # | Do | Right when |
+|---|---|---|
+| A1 | «الأذان على شاشة التوقف فقط» on (`optimize/music.sh adhan saver-only on`), the adhan on. An alarm with another app in front (YouTube) | `play=0`, `front=other`; logcat «adhan skipped» |
+| A2 | The same with our home in front, then with the screensaver showing | `play=1` both times (`front=home`, `front=dream`); stop it at once («أوقف الأذان الآن» or a key) |
+| A3 | saver-only off. «تنبيه عند الأذان» on (`adhan notice on`) with the adhan OFF. An alarm with the home in front; again with an app in front; again on HDMI if a source is connected | a 5-second text notice «حان وقت صلاة …» each time, then it goes by itself; `notice=1`; no sound |
+| A4 | «تكبير فقط» on (`adhan takbir on`); look at «تلاوة وأذان» ← الأذان | «أذان مختصر» turned off by it; `adhan_takbir=true`, `adhan_short=false` |
+| A5 | `optimize/music.sh adhan now`, then `optimize/music.sh` status every few seconds | it stops by itself at about 14 s (a short fade); a voice preview in the settings is NOT cut |
+| A6 | «شاشة التوقف وقت الأذان» on (`adhan saver-at on`). An alarm with our home in front; again with another app in front | home: the screensaver starts (`saver=1`); other app: nothing starts (`saver=0`) |
+| A7 | All four off again (saver-only, notice, takbir, saver-at); open «تلاوة وأذان» ← الأذان | all four rows read «متوقف»; `optimize/music.sh adhan` shows them false |
+| T1 | Open «المهام» | the text field has the focus (gold); OK opens the TV keyboard; type «تجربة»; the action key reads «إضافة»; the task is added and the field is empty again |
+| T2 | OK on «إضافة» with the field empty | «اكتب المهمة أولاً»; nothing added |
+| T3 | D-pad ▼▲◀▶ between the field, «إضافة» and the mic | every one is reachable and shows focus; no dead spot |
+| T4 | `adb shell am start -a android.speech.action.RECOGNIZE_SPEECH` (say whether a recognizer opens), then back in «المهام» the mic button, if shown | the button either listens, or the window closes and the button hides with a message; no dead button. Delete the test task |
+| K1 | `adb logcat -c`; our home in front; press the remote's Netflix, YouTube and Prime Video keys (Home between them); `adb logcat -d -s UrTVKeys` | each opens its app; the log shows `key=4062` / `4065` / `4099` |
+| K2 | The Settings key on our home; `logcat -d -s UrTVKeys` | `key=4077` or `83`, and OUR settings open |
+| K3 | `optimize/tweaks.sh apply`, then `settings get global cached_apps_freezer` | no change on Android 14 (no `!!`); the freezer value the same as at the start |
+| K4 | The screensaver (preview from settings); look at the Arabic line under the clock and the card labels | the Arabic letters are joined, no gaps between them |
+| K5 | `adb shell pm list packages -d` | `com.android.sdksandbox` is not in it; the list the same as at the start |
+| W1 | `optimize/tv.py "dumpsys wifi" \| grep -o 'cname=[^ ]*' \| sort \| uniq -c` | write the counts only (package names, never a network name) |
+| W2 | `adb shell cmd wifi status`, then `adb shell cmd wifi list-networks` | «connected»; a header and rows (count the rows; do not copy names) |
+| W3 | `optimize/install.sh launcher` | «nothing to switch» (Home is already ours), no pause, no `!!` |
+| Z | All four adhan options as they were at the start; the prayer minutes back exactly; the adhan on/off as at the start; the test task gone; `optimize/saver.sh updatechannel latest`; the disabled-apps list and Home holder as at the start; sound 0 | "restored: yes/no" with the Home holder line and the disabled-apps count before and after |
+
+REPORT.md: "step 16", the build, the table, the `adhan_alarm_last=` values (front/play/notice/saver only, never a prayer time), the UrTVKeys key numbers, the W1 counts, any `!!`. No personal data: no city, prayer times, task text beyond «تجربة», Wi-Fi names, IPs or serials. Push; tell the owner in Arabic that it is done and how many problems there were.
