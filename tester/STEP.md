@@ -483,7 +483,7 @@ what: the update, step 27's problems again, the new items, the targetSDK 34 chec
 | A | **Update from the TV** (180/181 → 182) with «تحديث تلفزيوني», full logcat, the 2 s watch for 60 s (step 24 row 4) | muted throughout; our home comes to the front by itself; «تم» on the installer leads to `sa.urtv.home/.MainActivity`; our screensaver never covers the second app's install question (dreams + resumed activity at each line) |
 | B1 | «الأسواق»: the header's change sign; save a made-up holding; live mode 2 min with `logcat -s UrTVMarkets`; the currency picker | the sign right («−٠٫٣٣٪»); focus stays on the row/add button after saving; UrTVMarkets lines present (if `parsed=0`, a `body_start` line too: copy it, cleaned); the picker's «تم» works, marks and focus right |
 | B2 | a match's detail | the focus ring is where OK acts (OK does what the ring shows) |
-| B3 | the setup screen during a run (part D's run, or note it there) | it stays visible the whole run |
+| B3 | the setup screen during a run: step 28 starts NO run, so write «not checked: no run in step 28» unless the supervisor adds one | (only if a run happens) it stays visible the whole run |
 | B4 | the TV's own sleep (screen off with `input keyevent 223`, wait 1 min, `224`) and a restart (`tv.py --reboot`); `logcat -d -s UrTVMute` after each | muted again after both; the UrTVMute lines copied |
 | C1 | the quick buttons «الأسواق» / «المباريات» at the top left of the home | present, reachable with keys, open the right pages, aligned with the other top buttons |
 | C2 | a match row in the football widget and in «المباريات» | aligned (step 22 rules) and the same in both |
