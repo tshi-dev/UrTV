@@ -46,11 +46,12 @@ check("the pegs' names on the screen are MarketData.PEGS', in order", pegs == na
 
 # ---- only the data we have
 check("«الأخبار» is off until a licensed source exists (NEWS = false), and no tab is built for it then",
-      "static final boolean NEWS = false;" in act and 'NEWS ? new String[] {S.t("السوق"), S.t("قائمتي"), S.t("محفظتي"), S.t("الأخبار")}' in act)
+      "static final boolean NEWS = false;" in act and 'NEWS ? new String[] {S.t("السوق"), S.t("قائمتي"), S.t("محفظتي"), S.t("صرف العملات"), S.t("الأخبار")}' in act)
 urls = set(re.findall(r'https?://[^"\s)]+', act + data + text(HOME / "MarketFile.java")))
 check("two sources only: CI's two files (the 5-minute one and the daily one) and, while the page is in front, Yahoo's quote endpoint for live mode (no other address in the page's code)",
       urls - {"https://github.com/tshi-dev/UrTV"} == {"https://raw.githubusercontent.com/tshi-dev/UrTV/data-markets/markets/markets.json",
                "https://raw.githubusercontent.com/tshi-dev/UrTV/data-markets/markets/daily.json",
+               "https://raw.githubusercontent.com/tshi-dev/UrTV/data-markets/markets/fx.json",
                "https://query1.finance.yahoo.com/v8/finance/spark?symbols=%s&range=1d&interval=5m",
                }, urls)
 check("the daily file is asked only by the markets page, at most once a day; the screensaver's page never asks it",
@@ -123,4 +124,21 @@ check("live mode: labels: Tadawul «متأخرة ~١٥ د», any other the quote
       and "clock(k.get(Calendar.HOUR_OF_DAY), k.get(Calendar.MINUTE))" in act2)
 check("live mode: only this page: the screensaver's page and the home's card never call the live ask", "MarketFile.live" not in "".join(text(p) for p in HOME.rglob("*.java") if p.name != "MarketsActivity.java" and p.name != "MarketFile.java")
       and "finance/spark" not in text(ROOT / "src/template.html").split("const MARKET_URL")[0])
+fxn = re.findall(r'\{"([A-Z]{3})", S\.n\("([^"]+)"\)\}', act2)
+codes = [c for c, _ in fxn]
+asked = ["USD", "KWD", "AED", "QAR", "BHD", "OMR", "JOD", "EGP", "EUR", "GBP", "TRY", "INR", "PKR"] + ["IQD", "MAD", "DZD", "TND", "LYD", "SDG", "YER", "LBP", "SYP", "MRU"] \
+    + ["PHP", "IDR", "BDT", "LKR", "NPR", "MYR", "ETB", "KES"] + ["JPY", "CNY", "CHF", "CAD", "AUD", "SGD", "HKD", "KRW", "RUB", "ZAR"]
+check("currencies: every one the owner asked for has an Arabic name (and SAR is there as the base), with an English one in home.tsv", set(asked) <= set(codes) and "SAR" in codes
+      and all(f"{ar}\t" in text(ROOT / "i18n/en/home.tsv") for _, ar in fxn), sorted(set(asked) - set(codes)))
+check("currencies: the list shows the defaults first (the dollar, KWD, AED, QAR, BHD, OMR, JOD, EGP, EUR, GBP, TRY, INR, PKR); the others are chosen and saved on this TV",
+      'FX_DEFAULT = {"USD", "KWD", "AED", "QAR", "BHD", "OMR", "JOD", "EGP", "EUR", "GBP", "TRY", "INR", "PKR"}' in act2 and 'getSharedPreferences("markets_fx"' in act2 and 'putString("list"' in act2)
+ci = text(ROOT / ".github/tools/market_prices.py")
+fxc = re.search(r"FX_CODES = \[(.*?)\]", ci, re.S).group(1)
+needed = [c for c in codes if c not in ("USD", "SAR") and c not in ("AED", "QAR", "BHD", "OMR", "JOD")]
+check("currencies: CI asks every one the app lists that is not a peg (and none of the pegs), in a file of its own, so markets.json stays small", all(f'"{c}"' in fxc for c in needed)
+      and not any(f'"{c}"' in fxc for c in ("SAR", "AED", "QAR", "BHD", "OMR", "JOD", "USD")) and "markets/fx.json" in text(HOME / "MarketData.java") + ci.replace("fx.json", "markets/fx.json"))
+check("currencies: a fourth tab «صرف العملات» with the list, «حوّل» (the converter with the number pad, USD to SAR at first), and «اختر العملات»; the file is loaded once a day by the page only",
+      'S.t("صرف العملات")' in act2 and 'TABS = {"market", "watch", "portfolio", "fx"}' in act2 and "else if (k == 3) currencies();" in act2 and "MarketFile.loadFx(app);" in act2
+      and 'fxPrefs().getString("from", "USD"), fxPrefs().getString("to", "SAR")' in act2 and "MarketFile.loadFx" not in "".join(text(p) for p in HOME.rglob("*.java") if p.name not in ("MarketsActivity.java", "MarketFile.java")))
+check("currencies: a missing rate shows «—» (MarketData.fxNumber of NaN), never 0; the pegs say «مربوط بالدولار»", 'MarketData.pegged(code) ? code + " · " + S.t("مربوط بالدولار")' in act2 and 'return "—"' in text(HOME / "MarketData.java"))
 sys.exit(1 if failed else 0)

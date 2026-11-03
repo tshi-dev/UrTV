@@ -31,6 +31,7 @@ public final class MarketsRun {
         numbers();
         holdings();
         live();
+        fx();
         System.out.println(failed == 0 ? "ALL PASS" : failed + " FAILED");
         System.exit(failed == 0 ? 0 : 1);
     }
@@ -77,6 +78,24 @@ public final class MarketsRun {
     }
 
     /** live mode («مباشر»): the pace and its backoff, what is fresh, the labels' kinds, Yahoo's answer read, and put over the file's prices */
+    /** «صرف العملات»: through the dollar, both directions; the pegs; a missing rate is NaN («—»), never 0 */
+    static void fx() {
+        java.util.Map<String, Double> r = MarketData.parseFx("{\"updated\":\"2026-11-03T08:00:00+00:00\",\"rates\":{\"KWD\":0.307,\"EGP\":48.5,\"EUR\":0.86,\"JPY\":150,\"BAD\":-1,\"lower\":3,\"X\":\"s\"}}");
+        check("fx: the file's rates are read (positive numbers under a three-letter capital code only)", r.size() == 4 && near(r.get("KWD"), 0.307) && !r.containsKey("BAD") && !r.containsKey("lower"), r.keySet());
+        check("fx: anything that is not that file is no rates", MarketData.parseFx("<html>").isEmpty() && MarketData.parseFx(null).isEmpty() && MarketData.parseFx("{}").isEmpty(), "");
+        check("fx: when it was made", MarketData.fxUpdated("{\"updated\":\"2026-11-03T08:00:00+00:00\",\"rates\":{}}") > 0 && MarketData.fxUpdated("x") == 0, "");
+        check("fx: the pegs are fixed and marked, SAR 3.75 / AED 3.6725 / QAR 3.64 / BHD 0.376 / OMR 0.3845 / JOD 0.709 per dollar, needing no file",
+            near(MarketData.perUsd("SAR", null), 3.75) && near(MarketData.perUsd("AED", null), 3.6725) && near(MarketData.perUsd("QAR", null), 3.64) && near(MarketData.perUsd("BHD", null), 0.376)
+            && near(MarketData.perUsd("OMR", null), 0.3845) && near(MarketData.perUsd("JOD", null), 0.709) && MarketData.pegged("JOD") && !MarketData.pegged("KWD") && !MarketData.pegged("USD"), "");
+        check("fx: the dollar is 1 and KWD is not pegged: it needs the file", near(MarketData.perUsd("USD", null), 1) && Double.isNaN(MarketData.perUsd("KWD", null)) && near(MarketData.perUsd("KWD", r), 0.307), "");
+        check("fx: 100 dollars are 375 riyals, and 375 riyals are 100 dollars (both directions through the dollar)", near(MarketData.convert(100, "USD", "SAR", r), 375) && near(MarketData.convert(375, "SAR", "USD", r), 100), "");
+        check("fx: a Kuwaiti dinar in riyals goes through the dollar (1 KWD = 3.75 / 0.307 SAR), and an Egyptian pound in dirhams", near(MarketData.convert(1, "KWD", "SAR", r), 3.75 / 0.307) && near(MarketData.convert(48.5, "EGP", "AED", r), 3.6725), MarketData.convert(1, "KWD", "SAR", r));
+        check("fx: the way back gives the amount we started with", near(MarketData.convert(MarketData.convert(250, "EUR", "JPY", r), "JPY", "EUR", r), 250), "");
+        check("fx: a currency with no rate converts to NaN («—»), never to 0", Double.isNaN(MarketData.convert(5, "SYP", "SAR", r)) && Double.isNaN(MarketData.convert(5, "SAR", "SDG", r)) && Double.isNaN(MarketData.convert(5, "USD", "KWD", null)), "");
+        check("fx: the numbers for the screen: whole above 1000, two decimals above 1, four then six under; «—» for nothing", MarketData.fxNumber(13000).equals("13,000") && MarketData.fxNumber(3.75).equals("3.75")
+            && MarketData.fxNumber(0.2667).equals("0.2667") && MarketData.fxNumber(0.000256).equals("0.000256") && MarketData.fxNumber(Double.NaN).equals("—"), MarketData.fxNumber(0.2667));
+    }
+
     static void bidi() {
         String ar = MarketData.isolate(MarketData.show(MarketData.signed(-0.33, 2) + "%", false));
         check("bidi: a change is one left-to-right isolate («−٠٫٣٣٪»), so the minus and the percent sign stay where they read in Arabic text", ar.equals("\u2066−٠٫٣٣٪\u2069"), ar.codePoints().boxed().collect(java.util.stream.Collectors.toList()));

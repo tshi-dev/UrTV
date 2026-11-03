@@ -111,6 +111,25 @@ final class MarketFile {
         if (text != null && text.contains("\"daily\"")) save(c, DAILY, text);
     }
 
+    // ---- «صرف العملات»: the currencies' file (CI, once a day; units per dollar), downloaded only by the markets page, once a day, kept in memory for the screen
+    private static final String FX = "markets-fx.json";
+    private static volatile String fxText;
+
+    /** the currencies' text in memory (null before the first load of this process): never a file read on the UI thread */
+    static String fxText() { return fxText; }
+
+    /** On a background thread: the copy on the TV into memory, and a fresh one downloaded when it is not from today. */
+    static void loadFx(Context c) {
+        File have = new File(c.getFilesDir(), FX);
+        if (fxText == null) fxText = file(c, FX);
+        java.util.Calendar now = java.util.Calendar.getInstance(), then = java.util.Calendar.getInstance();
+        then.setTimeInMillis(have.lastModified());
+        if (have.isFile() && now.get(java.util.Calendar.YEAR) == then.get(java.util.Calendar.YEAR)
+                && now.get(java.util.Calendar.DAY_OF_YEAR) == then.get(java.util.Calendar.DAY_OF_YEAR)) return;
+        String text = download(MarketData.FX_URL);
+        if (text != null && !MarketData.parseFx(text).isEmpty()) { save(c, FX, text); fxText = text; }
+    }
+
     /** when the copy was saved (ms), 0 for none */
     static long savedAt(Context c) { return new File(c.getFilesDir(), NAME).lastModified(); }
 

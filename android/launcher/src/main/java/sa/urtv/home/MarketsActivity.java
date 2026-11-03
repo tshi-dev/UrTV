@@ -48,7 +48,7 @@ public class MarketsActivity extends Activity {
     /** «الأخبار»: no licensed source yet (§6: Argaam, Saudi Exchange, Mubasher, CMA and SPA give no permission); off until one agrees */
     static final boolean NEWS = false;
     static final String EXTRA_TAB = "tab";
-    static final String[] TABS = {"market", "watch", "portfolio"};
+    static final String[] TABS = {"market", "watch", "portfolio", "fx"};
     /** the screensaver's default watchlist (its Prefs.DEFAULT_STOCKS), for a fragment that says none */
     static final String DEFAULT_STOCKS = "2222,1120,7010,2010";
     /** the markets bar's keys a symbol can be shown as (the page's MARKETS, the screensaver's Prefs.MARKETS) */
@@ -269,7 +269,7 @@ public class MarketsActivity extends Activity {
         // the tabs, and at the row's end the portfolio's buttons
         tabRow = new LinearLayout(this);
         tabRow.setGravity(Gravity.BOTTOM);
-        String[] names = NEWS ? new String[] {S.t("السوق"), S.t("قائمتي"), S.t("محفظتي"), S.t("الأخبار")} : new String[] {S.t("السوق"), S.t("قائمتي"), S.t("محفظتي")};
+        String[] names = NEWS ? new String[] {S.t("السوق"), S.t("قائمتي"), S.t("محفظتي"), S.t("صرف العملات"), S.t("الأخبار")} : new String[] {S.t("السوق"), S.t("قائمتي"), S.t("محفظتي"), S.t("صرف العملات")};
         for (int i = 0; i < names.length; i++) {
             final int k = i;
             TextView t = text(names[i], 19, "Medium", DIM);
@@ -329,6 +329,7 @@ public class MarketsActivity extends Activity {
             android.content.Context app = getApplicationContext();
             if (data == null) deliver(gen, MarketFile.cached(app));   // the copy on the TV first (parsed here, not on the UI thread)
             MarketFile.loadDaily(app);   // the year's closes: only here, once a day
+            MarketFile.loadFx(app);      // the currencies, once a day (and into memory for the screen)
             deliver(gen, MarketFile.load(app, false));
         }, "markets").start();
     }
@@ -435,8 +436,9 @@ public class MarketsActivity extends Activity {
         actions.removeAllViews();
         if (k == 0) market();
         else if (k == 1) watch();
+        else if (k == 3) currencies();
         else portfolio();
-        if (data != null) content.addView(sourceNote(), gap(16));
+        if (data != null && k != 3) content.addView(sourceNote(), gap(16));
         if (top) scroll.scrollTo(0, 0);
         // down from the tabs to the first thing that takes the focus
         View first = firstFocusable(content);
@@ -755,6 +757,205 @@ public class MarketsActivity extends Activity {
         return r;
     }
 
+    // ---------------------------------------------------------------- «صرف العملات»
+
+    /** every currency the page knows: code and name (the first six are the pegs, the rest need CI's rate); USD and SAR are the converter's ends */
+    private static final String[][] CCY = {
+        {"USD", S.n("دولار أمريكي")}, {"SAR", S.n("ريال سعودي")}, {"KWD", S.n("دينار كويتي")}, {"AED", S.n("درهم إماراتي")}, {"QAR", S.n("ريال قطري")}, {"BHD", S.n("دينار بحريني")},
+        {"OMR", S.n("ريال عماني")}, {"JOD", S.n("دينار أردني")}, {"EGP", S.n("جنيه مصري")}, {"EUR", S.n("يورو")}, {"GBP", S.n("جنيه إسترليني")}, {"TRY", S.n("ليرة تركية")},
+        {"INR", S.n("روبية هندية")}, {"PKR", S.n("روبية باكستانية")},
+        {"IQD", S.n("دينار عراقي")}, {"MAD", S.n("درهم مغربي")}, {"DZD", S.n("دينار جزائري")}, {"TND", S.n("دينار تونسي")}, {"LYD", S.n("دينار ليبي")}, {"SDG", S.n("جنيه سوداني")},
+        {"YER", S.n("ريال يمني")}, {"LBP", S.n("ليرة لبنانية")}, {"SYP", S.n("ليرة سورية")}, {"MRU", S.n("أوقية موريتانية")},
+        {"PHP", S.n("بيزو فلبيني")}, {"IDR", S.n("روبية إندونيسية")}, {"BDT", S.n("تاكا بنغلاديشية")}, {"LKR", S.n("روبية سريلانكية")}, {"NPR", S.n("روبية نيبالية")},
+        {"MYR", S.n("رينغيت ماليزي")}, {"ETB", S.n("بر إثيوبي")}, {"KES", S.n("شلن كيني")},
+        {"JPY", S.n("ين ياباني")}, {"CNY", S.n("يوان صيني")}, {"CHF", S.n("فرنك سويسري")}, {"CAD", S.n("دولار كندي")}, {"AUD", S.n("دولار أسترالي")}, {"SGD", S.n("دولار سنغافوري")},
+        {"HKD", S.n("دولار هونغ كونغ")}, {"KRW", S.n("وون كوري")}, {"RUB", S.n("روبل روسي")}, {"ZAR", S.n("راند جنوب أفريقي")},
+    };
+    /** what shows at first, in this order (the dollar first); the rest are chosen in «اختر العملات» */
+    static final String[] FX_DEFAULT = {"USD", "KWD", "AED", "QAR", "BHD", "OMR", "JOD", "EGP", "EUR", "GBP", "TRY", "INR", "PKR"};
+
+    private android.content.SharedPreferences fxPrefs() { return getSharedPreferences("markets_fx", MODE_PRIVATE); }
+
+    private String ccyName(String code) {
+        for (String[] c : CCY) if (c[0].equals(code)) return S.tv(c[1]);
+        return code;
+    }
+
+    /** the currencies chosen for the list, in the order of CCY, USD first; the defaults until the person chooses (saved on this TV only, like the stocks) */
+    private List<String> fxChosen() {
+        String raw = fxPrefs().getString("list", null);
+        List<String> out = new ArrayList<>();
+        for (String c : raw == null ? FX_DEFAULT : raw.split(",")) for (String[] k : CCY) if (k[0].equals(c.trim()) && !out.contains(k[0]) && !"SAR".equals(k[0])) out.add(k[0]);
+        return out;
+    }
+
+    private java.util.Map<String, Double> fxRates() { return MarketData.parseFx(MarketFile.fxText()); }
+
+    /** «1 دولار أمريكي = ٣٫٧٥ ريال» : the rate of one unit against the riyal, «—» when the file has none */
+    private String fxVsSar(String code, java.util.Map<String, Double> rates) {
+        return MarketData.show(MarketData.fxNumber(MarketData.convert(1, code, "SAR", rates)), Digits.latin());
+    }
+
+    private void currencies() {
+        final java.util.Map<String, Double> rates = fxRates();
+        LinearLayout list = card();
+        LinearLayout hd = new LinearLayout(this);
+        hd.setGravity(Gravity.BOTTOM);
+        hd.addView(text(S.t("الأسعار مقابل الريال السعودي"), 18, "Medium", TEXT), new LinearLayout.LayoutParams(0, -2, 1f));
+        long at = MarketData.fxUpdated(MarketFile.fxText());
+        Calendar k = Calendar.getInstance(TimeZone.getTimeZone(zone()));
+        k.setTimeInMillis(at);
+        hd.addView(text(at == 0 ? S.t("لا أسعار بعد: يلزم اتصال بالإنترنت") : S.t("آخر تحديث %s", clock(k.get(Calendar.HOUR_OF_DAY), k.get(Calendar.MINUTE))), 13, "Regular", DIM), new LinearLayout.LayoutParams(-2, -2));
+        list.addView(hd, wrap());
+        for (String code : fxChosen()) {
+            LinearLayout r = new LinearLayout(this);
+            r.setGravity(Gravity.CENTER_VERTICAL);
+            r.setPadding(dp(16), dp(12), dp(16), dp(12));
+            LinearLayout nm = new LinearLayout(this);
+            nm.setOrientation(LinearLayout.VERTICAL);
+            nm.addView(text(ccyName(code), 17, "Medium", TEXT), wrap());
+            nm.addView(ltrStart(text(MarketData.pegged(code) ? code + " · " + S.t("مربوط بالدولار") : code, 13, "Regular", DIM)), wrap());
+            r.addView(nm, new LinearLayout.LayoutParams(0, -2, 1f));
+            TextView v = text(fxVsSar(code, rates), 20, "Medium", TEXT);
+            v.setSingleLine(true);
+            v.setGravity(Dir.end());
+            r.addView(ltr(v), new LinearLayout.LayoutParams(-2, -2));
+            focusRow(r, 12);
+            r.setOnClickListener(x -> converter(code, "SAR"));
+            list.addView(r, gap(code.equals("USD") ? 8 : 4));
+        }
+        content.addView(list, wrap());
+        content.addView(text(S.t("أسعار يومية · المصدر: Yahoo Finance. الريال والدرهم والريال القطري والدينار البحريني والريال العماني والدينار الأردني مربوطة بالدولار."), 12, "Regular", DIM), gap(16));
+        actions.addView(button(S.t("حوّل"), true, v -> converter(fxPrefs().getString("from", "USD"), fxPrefs().getString("to", "SAR"))), buttonParams(0));
+        actions.addView(button(S.t("اختر العملات"), false, v -> chooseCurrencies()), buttonParams(8));
+        TextView last = tabViews.get(3);
+        View firstButton = actions.getChildAt(0);
+        if (Dir.rtl()) last.setNextFocusLeftId(firstButton.getId()); else last.setNextFocusRightId(firstButton.getId());
+    }
+
+    /** «اختر العملات»: each currency a row that turns on and off (the on mark), saved on this TV */
+    private void chooseCurrencies() {
+        Dialog d = dialog();
+        LinearLayout box = dialogBox(d, 640);
+        box.addView(text(S.t("اختر العملات"), 24, "Medium", TEXT), wrap());
+        ScrollView sv = new ScrollView(this);
+        sv.setVerticalScrollBarEnabled(false);
+        LinearLayout rows = new LinearLayout(this);
+        rows.setOrientation(LinearLayout.VERTICAL);
+        sv.addView(rows);
+        final List<String> chosen = new ArrayList<>(fxChosen());
+        final boolean[] changed = {false};
+        View first = null;
+        for (String[] c : CCY) {
+            if (c[0].equals("SAR")) continue;
+            final String code = c[0];
+            View[] holder = new View[1];
+            holder[0] = settingRow(ccyName(code), code, chosen.contains(code), v -> {
+                if (chosen.contains(code)) chosen.remove(code); else chosen.add(code);
+                List<String> ordered = new ArrayList<>();
+                for (String[] k : CCY) if (chosen.contains(k[0])) ordered.add(k[0]);
+                fxPrefs().edit().putString("list", String.join(",", ordered)).apply();
+                changed[0] = true;
+                d.dismiss();
+                chooseCurrencies();   // drawn again with the mark moved
+            });
+            if (first == null) first = holder[0];
+            rows.addView(holder[0], gap(rows.getChildCount() == 0 ? 12 : 4));
+        }
+        box.addView(sv, sized(-1, 380, 12));
+        box.addView(button(S.t("تم"), true, v -> { d.dismiss(); redraw(); }), gap(16));
+        d.setOnDismissListener(x -> { if (changed[0]) redraw(); });
+        d.show();
+        if (first != null) first.requestFocus();
+    }
+
+    /** one currency picked from the whole list, for the converter's two ends */
+    private void pickCurrency(java.util.function.Consumer<String> done) {
+        Dialog d = dialog();
+        LinearLayout box = dialogBox(d, 640);
+        box.addView(text(S.t("اختر العملة"), 24, "Medium", TEXT), wrap());
+        ScrollView sv = new ScrollView(this);
+        sv.setVerticalScrollBarEnabled(false);
+        LinearLayout rows = new LinearLayout(this);
+        rows.setOrientation(LinearLayout.VERTICAL);
+        sv.addView(rows);
+        View first = null;
+        for (String[] c : CCY) {
+            final String code = c[0];
+            View row = settingRow(ccyName(code), code, false, v -> { d.dismiss(); done.accept(code); });
+            if (first == null) first = row;
+            rows.addView(row, gap(rows.getChildCount() == 0 ? 12 : 4));
+        }
+        box.addView(sv, sized(-1, 380, 12));
+        d.show();
+        if (first != null) first.requestFocus();
+    }
+
+    /** the converter: an amount typed with the number pad (or the remote's digits), two currencies, the result through the dollar; the two ends are kept on this TV */
+    private void converter(String from0, String to0) {
+        final java.util.Map<String, Double> rates = fxRates();
+        final String[] ends = {from0, to0};
+        Dialog d = dialog();
+        LinearLayout box = dialogBox(d, 560);
+        box.addView(text(S.t("حوّل العملات"), 24, "Medium", TEXT), wrap());
+        final StringBuilder amount = new StringBuilder("1");
+        final boolean[] untouched = {true};   // the first key replaces the 1 that shows at first
+        final TextView shown = ltrStart(text("", 30, "Medium", TEXT)), result = ltrStart(text("", 22, "Medium", ACCENT)), fromB = (TextView) button("", false, null), toB = (TextView) button("", false, null);
+        Runnable paint = () -> {
+            fromB.setText(ccyName(ends[0]) + " · " + ends[0]);
+            toB.setText(ccyName(ends[1]) + " · " + ends[1]);
+            shown.setText(MarketData.show(amount.length() == 0 ? "0" : amount.toString(), Digits.latin()) + " " + ends[0]);
+            double a = amount.length() == 0 ? 0 : Double.parseDouble(amount.toString().endsWith(".") ? amount + "0" : amount.toString());
+            double r = MarketData.convert(a, ends[0], ends[1], rates);
+            result.setText("= " + MarketData.show(MarketData.fxNumber(r), Digits.latin()) + " " + ends[1]);   // «—» when a rate is missing, never 0
+            fxPrefs().edit().putString("from", ends[0]).putString("to", ends[1]).apply();
+        };
+        fromB.setOnClickListener(v -> pickCurrency(c -> { ends[0] = c; paint.run(); }));
+        toB.setOnClickListener(v -> pickCurrency(c -> { ends[1] = c; paint.run(); }));
+        LinearLayout pair = new LinearLayout(this);
+        pair.setLayoutDirection(Dir.layout());
+        pair.addView(fromB, weight(1f, 0));
+        View swap = button("⇄", false, v -> { String t = ends[0]; ends[0] = ends[1]; ends[1] = t; paint.run(); });
+        pair.addView(swap, buttonParams(8));
+        pair.addView(toB, weight(1f, 8));
+        box.addView(pair, gap(12));
+        box.addView(shown, gap(12));
+        box.addView(result, gap(4));
+        String[] keys = {"1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0", "⌫"};
+        LinearLayout pad = new LinearLayout(this);
+        pad.setOrientation(LinearLayout.VERTICAL);
+        View five = null;
+        for (int r = 0; r < 4; r++) {
+            LinearLayout line = new LinearLayout(this);
+            line.setLayoutDirection(Dir.layout());
+            for (int c = 0; c < 3; c++) {
+                final String key = keys[r * 3 + c];
+                View b = button(key.equals("⌫") ? "⌫" : MarketData.show(key, Digits.latin()), false, v -> {
+                    if (untouched[0] && !key.equals("⌫")) { amount.setLength(0); untouched[0] = false; }
+                    if (key.equals("⌫")) { untouched[0] = false; if (amount.length() > 0) amount.setLength(amount.length() - 1); }
+                    else if (key.equals(".")) { if (amount.indexOf(".") < 0 && amount.length() < 12) amount.append(amount.length() == 0 ? "0." : "."); }
+                    else if (amount.length() < 12) { if (amount.toString().equals("0")) amount.setLength(0); amount.append(key); }
+                    paint.run();
+                });
+                ((TextView) b).setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+                if (key.equals("5")) five = b;
+                line.addView(b, new LinearLayout.LayoutParams(0, dp(48), 1f));
+                if (c > 0) ((LinearLayout.LayoutParams) b.getLayoutParams()).setMarginStart(dp(8));
+            }
+            pad.addView(line, gap(r == 0 ? 0 : 8));
+        }
+        box.addView(pad, gap(12));
+        d.setOnKeyListener((di, keyCode, e) -> {
+            if (e.getAction() != KeyEvent.ACTION_DOWN) return false;
+            if (keyCode >= KeyEvent.KEYCODE_0 && keyCode <= KeyEvent.KEYCODE_9) { if (untouched[0]) { amount.setLength(0); untouched[0] = false; } if (amount.length() < 12) amount.append((char) ('0' + keyCode - KeyEvent.KEYCODE_0)); paint.run(); return true; }
+            if (keyCode == KeyEvent.KEYCODE_DEL) { if (amount.length() > 0) amount.setLength(amount.length() - 1); paint.run(); return true; }
+            return false;
+        });
+        paint.run();
+        d.show();
+        if (five != null) five.requestFocus();
+    }
+
     // ---------------------------------------------------------------- «محفظتي»
 
     private void portfolio() {
@@ -768,7 +969,7 @@ public class MarketsActivity extends Activity {
         actions.addView(button(S.t("أضف سهمًا"), false, v -> pick()), buttonParams(8));
         actions.addView(button(S.t("خيارات محفظتي"), false, v -> options()), buttonParams(8));
         // the tabs reach the buttons with the arrow that goes on in reading order
-        TextView last = tabViews.get(tabViews.size() - 1);
+        TextView last = tabViews.get(2);
         View firstButton = actions.getChildAt(0);
         if (Dir.rtl()) last.setNextFocusLeftId(firstButton.getId()); else last.setNextFocusRightId(firstButton.getId());
 

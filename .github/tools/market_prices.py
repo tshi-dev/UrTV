@@ -62,6 +62,12 @@ BATCH = int(os.environ.get("MARKETS_BATCH", "20"))   # symbols per batch request
 PROVIDERS = [x.strip() for x in os.environ.get("MARKETS_PROVIDERS", "yahoo").split(",") if x.strip()]   # the switch: "yahoo,stooq" turns the fallback on
 STOOQ = "https://stooq.com/q/l/?s={}&f=sd2t2ohlcv&h&e=csv"
 STOOQ_INDEX = {"^GSPC": "^spx", "^IXIC": "^ndq", "^DJI": "^dji"}
+# «صرف العملات» (the home's markets page): units of each currency per US dollar, once a day, in a file of its own (markets/fx.json) that only the markets page
+# downloads. The pegged ones (SAR, AED, QAR, BHD, OMR, JOD) are fixed in the app and never fetched. Yahoo's "CCY=X" is units of CCY per dollar; an exotic one
+# (SYP, SDG, LBP, ...) may have no rate: it is left out and the screen shows «—».
+FX_CODES = ["KWD", "EGP", "EUR", "GBP", "TRY", "INR", "PKR", "IQD", "MAD", "DZD", "TND", "LYD", "SDG", "YER", "LBP", "SYP", "MRU", "PHP", "IDR", "BDT", "LKR", "NPR",
+            "MYR", "ETB", "KES", "JPY", "CNY", "CHF", "CAD", "AUD", "SGD", "HKD", "KRW", "RUB", "ZAR"]
+FX_EVERY_H = 20
 # the only fields that are published (a provider's answer carries many more; none of them leaves this script)
 QUOTE_KEYS = ("p", "v", "c", "t", "vol", "yh", "yl")
 TOP_KEYS = ("updated", "quotes", "src")
@@ -265,6 +271,40 @@ def allowlist(doc):
     return out
 
 
+def allowlist_fx(doc):
+    """What may be published of the fx file: updated, and a positive rate (6 significant digits) per known code."""
+    rates = {}
+    for k, v in (doc.get("rates") or {}).items():
+        if k in FX_CODES and isinstance(v, (int, float)) and not isinstance(v, bool) and v > 0:
+            rates[k] = float(f"{v:.6g}")
+    return {"updated": doc.get("updated"), "rates": rates}
+
+
+def fx_due(prev_doc, now, everything=False):
+    t = (prev_doc or {}).get("updated")
+    try:
+        return everything or not t or now - datetime.datetime.fromisoformat(t) >= datetime.timedelta(hours=FX_EVERY_H)
+    except ValueError:
+        return True
+
+
+def fx_rates(now):
+    """-> {code: units per dollar} for the codes Yahoo answers (one or two batch requests; a code the batch lacks is asked alone, and left out when it has no price)."""
+    syms = [c + "=X" for c in FX_CODES]
+    got = batch(syms, now)
+    for sym in syms:
+        if sym in got:
+            continue
+        SLEEP(PAUSE_S)
+        try:
+            q = quote(sym, now)
+        except Exception:
+            continue
+        if q:
+            got[sym] = q
+    return {sym[:-2]: q["p"] for sym, q in got.items() if q and isinstance(q.get("p"), (int, float)) and q["p"] > 0}
+
+
 def small(x):
     """a close as kept in the year's line: 2 decimals under 1000, whole above (a chart needs no more, and the file stays small)"""
     return round(x) if x >= 1000 else round(x, 2)
@@ -389,9 +429,26 @@ def main(argv):
                 days[sym] = d
                 report["daily_ok"] += 1
     days = {sym: d for sym, d in days.items() if sym in quotes}   # a symbol that left the list leaves the year too
+    # the currencies, once a day, in their own file; a failed day keeps the old file (an old rate is better than none)
+    prev_fx = {}
+    if PREV and (PREV / "fx.json").exists():
+        try:
+            prev_fx = json.loads((PREV / "fx.json").read_text(encoding="utf-8"))
+        except ValueError:
+            prev_fx = {}
+    fx_doc, report["fx_ok"] = None, 0
+    if not report["stopped"] and fx_due(prev_fx, now, everything):
+        fresh = fx_rates(now)
+        report["fx_ok"] = len(fresh)
+        if fresh:
+            merged = dict(prev_fx.get("rates") or {})
+            merged.update(fresh)
+            fx_doc = allowlist_fx({"updated": now.isoformat(timespec="seconds"), "rates": merged})
     OUT.mkdir(parents=True, exist_ok=True)
     report["requests"] = REQUESTS[0]
     # nothing answered (Yahoo down, blocked, or a run with nothing due): nothing is published, the last good file stays as it is
+    if fx_doc:
+        (OUT / "fx.json").write_text(json.dumps(fx_doc, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     if report["ok"] or report["daily_ok"]:
         # "updated" moves only when something was confirmed: the page trusts a file for 3 hours from it
         updated = now.isoformat(timespec="seconds") if report["ok"] else None
@@ -416,7 +473,7 @@ def main(argv):
     gh = os.environ.get("GITHUB_OUTPUT")
     if gh:
         with open(gh, "a") as f:
-            f.write(f"changed={'true' if report['ok'] or report['daily_ok'] else 'false'}\n")
+            f.write(f"changed={'true' if report['ok'] or report['daily_ok'] or fx_doc else 'false'}\n")
     return 0
 
 

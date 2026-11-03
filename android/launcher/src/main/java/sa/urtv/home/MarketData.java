@@ -430,6 +430,69 @@ final class MarketData {
         return s.startsWith("-") ? "−" + s.substring(1) : "+" + s;
     }
 
+    // ---- «صرف العملات»: rates against the dollar, the converter's maths (pure; the names and the screen are MarketsActivity's)
+
+    /** Currencies whose rate to the dollar never moves (units per US dollar): they are never fetched, and the screen says «مربوط بالدولار». */
+    static final String FX_URL = "https://raw.githubusercontent.com/tshi-dev/UrTV/data-markets/markets/fx.json";
+
+    static final String[][] FX_PEGS = {{"SAR", "3.75"}, {"AED", "3.6725"}, {"QAR", "3.64"}, {"BHD", "0.376"}, {"OMR", "0.3845"}, {"JOD", "0.709"}};
+
+    static boolean pegged(String ccy) {
+        for (String[] p : FX_PEGS) if (p[0].equals(ccy)) return true;
+        return false;
+    }
+
+    /** Units of this currency for one US dollar; NaN when nothing is known (a currency the file has no rate for): the screen shows «—», never 0. */
+    static double perUsd(String ccy, Map<String, Double> rates) {
+        if ("USD".equals(ccy)) return 1;
+        for (String[] p : FX_PEGS) if (p[0].equals(ccy)) return Double.parseDouble(p[1]);
+        Double r = rates == null ? null : rates.get(ccy);
+        return r == null || Double.isNaN(r) || r <= 0 ? Double.NaN : r;
+    }
+
+    /** An amount of `from` in `to`, through the dollar (both directions use the same two numbers); NaN when either rate is unknown. */
+    static double convert(double amount, String from, String to, Map<String, Double> rates) {
+        double a = perUsd(from, rates), b = perUsd(to, rates);
+        if (Double.isNaN(a) || Double.isNaN(b) || Double.isNaN(amount)) return Double.NaN;
+        return amount / a * b;
+    }
+
+    /** The fx file CI writes ({"updated": "...", "rates": {"KWD": 0.307, ...}}, units per dollar): the rates that are positive numbers; empty for anything else. */
+    static Map<String, Double> parseFx(String json) {
+        Map<String, Double> out = new LinkedHashMap<>();
+        if (json == null) return out;
+        try {
+            Object root = new Reader(json).read();
+            Object r = root instanceof Map ? ((Map<?, ?>) root).get("rates") : null;
+            if (!(r instanceof Map)) return out;
+            for (Map.Entry<?, ?> e : ((Map<?, ?>) r).entrySet()) {
+                double v = num(e.getValue());
+                if (e.getKey() instanceof String && ((String) e.getKey()).matches("[A-Z]{3}") && !Double.isNaN(v) && v > 0) out.put((String) e.getKey(), v);
+            }
+        } catch (RuntimeException e) {
+            out.clear();
+        }
+        return out;
+    }
+
+    /** When the fx file says it was made (ms), 0 for anything else. */
+    static long fxUpdated(String json) {
+        try {
+            Object root = json == null ? null : new Reader(json).read();
+            return root instanceof Map ? time(((Map<?, ?>) root).get("updated")) : 0;
+        } catch (RuntimeException e) {
+            return 0;
+        }
+    }
+
+    /** A rate or a converted amount for the screen: whole above 1000, two decimals above 1, four above 0.01, six under; «—» for NaN. Western digits (the caller turns them). */
+    static String fxNumber(double v) {
+        if (Double.isNaN(v) || Double.isInfinite(v)) return "—";
+        String s = v >= 1000 ? String.format(java.util.Locale.ROOT, "%,.0f", v) : v >= 1 ? String.format(java.util.Locale.ROOT, "%,.2f", v)
+            : v >= 0.01 ? String.format(java.util.Locale.ROOT, "%.4f", v) : String.format(java.util.Locale.ROOT, "%.6f", v);
+        return s;
+    }
+
     /** A signed number, its point and its percent sign kept in reading order inside right-to-left text («−٠٫٣٣٪», not «−(٪٠٫٣٣−)»): a left-to-right isolate around it */
     static String isolate(String s) { return s == null || s.isEmpty() ? s : "\u2066" + s + "\u2069"; }
 

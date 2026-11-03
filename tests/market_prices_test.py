@@ -4,6 +4,7 @@ are due at which hour (Riyadh, New York in summer and winter time), a failed sym
 a 404 symbol is left out, a run that got nothing changes nothing, and the workflow only pushes when something changed.
 Run: python3 tests/market_prices_test.py"""
 import datetime
+import urllib.parse
 import importlib.util
 import json
 import os
@@ -220,7 +221,7 @@ mp.main(["--all"])
 rb = json.loads((Path(out_b) / "report.json").read_text())
 n_batches = sum("/spark?" in c for c in calls); n_single = sum("/chart/" in c and "interval=15m" in c for c in calls)
 check("batch: the whole list is asked in a handful of batch requests (<= symbols / 20 + 1), and the singles are only the symbols a batch lacked",
-      n_batches <= len(mp.symbols()) // mp.BATCH + 1 and n_single <= 1, (n_batches, n_single, rb["asked"]))
+      n_batches <= len(mp.symbols()) // mp.BATCH + 1 + (len(mp.FX_CODES) // mp.BATCH + 1) and n_single <= 1, (n_batches, n_single, rb["asked"]))
 
 # the allowlist: nothing of a provider's answer but the fields the page uses
 dirty = {"updated": "u", "quotes": {"AAA": {"p": 1.23456789, "v": 1.2, "c": [1, 2, "x", None], "t": "t", "vol": 5, "yh": 3, "yl": 1,
@@ -269,6 +270,33 @@ mp.fetch_json = lambda url: (_ for _ in ()).throw(mp.NotFound(url))
 out_n = tempfile.mkdtemp(); mp.OUT, mp.PREV = Path(out_n), Path(prevd)
 mp.main(["--all"])
 check("outage: a run where every symbol comes back 'not found' publishes nothing", not (Path(out_n) / "markets.json").exists())
+
+# ---- «صرف العملات»: the currencies file
+fxdoc = mp.allowlist_fx({"updated": "2026-11-03T08:00:00+00:00", "rates": {"KWD": 0.30712345678, "EGP": 48.5, "XXX": 5, "EUR": -1, "GBP": "x", "SAR": 3.75}, "debug": {"a": 1}})
+check("fx: the file keeps only known codes with a positive number (6 significant digits), no peg (SAR) and no other key", fxdoc == {"updated": "2026-11-03T08:00:00+00:00", "rates": {"KWD": 0.307123, "EGP": 48.5}}, fxdoc)
+check("fx: the pegged currencies are never fetched (SAR AED QAR BHD OMR JOD), the others are: USD per code, as 'CCY=X'", not {"SAR", "AED", "QAR", "BHD", "OMR", "JOD", "USD"} & set(mp.FX_CODES)
+      and {"KWD", "EGP", "EUR", "GBP", "TRY", "INR", "PKR", "IQD", "MAD", "DZD", "TND", "LYD", "SDG", "YER", "LBP", "SYP", "MRU", "PHP", "IDR", "BDT", "LKR", "NPR", "MYR", "ETB", "KES",
+              "JPY", "CNY", "CHF", "CAD", "AUD", "SGD", "HKD", "KRW", "RUB", "ZAR"} <= set(mp.FX_CODES))
+asked_fx = []
+def fx_fake(url):
+    asked_fx.append(url)
+    names = urllib.parse.unquote(re.search(r"symbols=([^&]+)", url).group(1)).split(",") if "/spark?" in url else [urllib.parse.unquote(re.search(r"chart/([^?]+)\?", url).group(1))]
+    res = [{"symbol": n, "response": [{"meta": {"regularMarketPrice": {"KWD=X": 0.307, "SYP=X": 13000.0}.get(n, 2.5)}, "indicators": {"quote": [{"close": [1.0]}]}}]} for n in names if n != "SDG=X"]
+    return {"spark": {"result": res}} if "/spark?" in url else {"chart": {"result": [r["response"][0] for r in res]}} if res else {"chart": {"result": None}}
+mp.fetch_json = fx_fake
+rates = mp.fx_rates(RUN)
+check("fx: one or two batch requests for every code; a code Yahoo has no price for (SDG here) is left out, with no error", rates["KWD"] == 0.307 and "SDG" not in rates and len(rates) == len(mp.FX_CODES) - 1
+      and sum("/spark?" in u for u in asked_fx) == len(mp.FX_CODES) // mp.BATCH + 1, (len(rates), asked_fx[:2]))
+check("fx: asked once a day (20 hours), the first time at once", mp.fx_due({}, RUN) and not mp.fx_due({"updated": (RUN - datetime.timedelta(hours=3)).isoformat()}, RUN) and mp.fx_due({"updated": (RUN - datetime.timedelta(hours=21)).isoformat()}, RUN))
+out_f = tempfile.mkdtemp(); prev_f = tempfile.mkdtemp()
+(Path(prev_f) / "fx.json").write_text(json.dumps({"updated": "2026-11-02T08:00:00+00:00", "rates": {"SDG": 600.0, "KWD": 0.3}}))
+mp.OUT, mp.PREV = Path(out_f), Path(prev_f)
+mp.fetch_json = fx_fake
+mp.main(["--all"])
+fxw = json.loads((Path(out_f) / "fx.json").read_text())
+check("fx: a run writes markets/fx.json; a code that fails today keeps its old rate, and the file is small", fxw["rates"]["SDG"] == 600.0 and fxw["rates"]["KWD"] == 0.307 and set(fxw) == {"updated", "rates"} and len((Path(out_f) / "fx.json").read_bytes()) < 2000)
+check("fx: the five-minute file does not carry the currencies (it stays under its 32 kB)", "KWD" not in (Path(out_f) / "markets.json").read_text() and len((Path(out_f) / "markets.json").read_bytes()) <= mp.QUOTE_MAX_BYTES)
+mp.PREV = Path(PREV)
 
 wf = (ROOT / ".github/workflows/market-prices.yml").read_text()
 check("workflow: pushes only when something changed, never from a work branch", "steps.run.outputs.changed == 'true'" in wf and "branches: [master, next]" in wf)
