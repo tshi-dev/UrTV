@@ -42,5 +42,24 @@ mf = text(HOME / "MarketFile.java")
 check("markets: an answer that parses to nothing logs its first 300 characters (UrTVMarkets body_start)", 'body_start=' in mf and "Math.min(300, body.length())" in mf)
 py = text(ROOT / ".github/tools/market_prices.py")
 check("markets CI: fx.json is carried by every run (the one-commit branch is rebuilt from the folder)", "carried_fx = True" in py and "allowlist_fx(prev_fx)" in py)
+
+# ---- items 14-19 (the owner's TV photos)
+main = text(HOME / "MainActivity.java")
+check("item 14: two more round buttons in the top row, «الأسواق» and «المباريات», the same Pill (size and 12 dp = 24 px gap) and the same focus", 'pill(S.t("الأسواق"), R.drawable.ic_markets)' in main and 'pill(S.t("المباريات"), R.drawable.ic_matches)' in main
+      and "row.add(marketsBtn);" in main and "row.add(matchesBtn);" in main and "static final int GAP = 12;" in text(HOME / "Pill.java").replace("    static final int GAP = 12;", "static final int GAP = 12;"))
+act = text(HOME / "MarketsActivity.java")
+check("item 15/19: the title, then ONE controls row (the live switch, «صرف العملات», «أخفِ المبالغ» on «محفظتي»), then one quiet 12 sp status line, then the tabs", "controls.addView(liveSwitch()" in act and "controls.addView(fxBtn" in act and "ctl.addView(hideBtn" in act
+      and act.index("page.addView(controls") < act.index("page.addView(state") < act.index("page.addView(tabRow"))
+check("item 19: the tab row has السوق / قائمتي / محفظتي only; no bar under the chosen tab and no white box (a green word, the focus fill when focused); the thin rule stays", 'new String[] {S.t("السوق"), S.t("قائمتي"), S.t("محفظتي")}' in act
+      and "setLayerHeight(1, dp(3))" not in act and "page.addView(rule" in act)
+check("item 15: the live switch is toggle style I (the triangles at the chosen word's start, green), not a box with a bar", "R.drawable.ic_on" in act.split("private void paintLive()")[1].split("private void keepAwake")[0] and "dp(7), dp(22)" in act)
+check("item 15: the status is one line «تداول مغلق · يفتح الأربعاء ١٠:٠٠ ص · آخر تحديث …» (no «بعد ١١ س» that ran off the screen), 12 sp, at most two lines", 'S.t("يفتح %s %s"' in act and 'state = text("", 12, "Regular", DIM)' in act and "state.setMaxLines(2);" in act)
+check("item 16: a card or dialog is a SOLID surface (the look's dialog fill over its base) with the page dimmed behind it", "GlassStyle.over(look.dialog, look.base)" in act and "FLAG_DIM_BEHIND" in act and "setDimAmount" in act)
+check("item 19: density: title 27 sp, tabs 17 sp, column headers 12 sp, a list row 60 dp (120 px) with its 12 dp (24 px) padding, card sides 12 dp (24 px)", 'text(S.t("الأسواق"), 27' in act and 'text(names[i], 17' in act and 'S.t("السهم"), 12' in act
+      and "r.setMinimumHeight(dp(60));" in act and "c.setPadding(dp(12), dp(16), dp(12), dp(16));" in act)
+tpl = text(ROOT / "src/template.html")
+check("item 17: the home stocks card has 24 px inside on every side, and «السوق مغلق» sits on the header line right after «الأسهم» (order 0), not at the far end over the first column",
+      ".week.stocks{padding:calc(24px*var(--z,1))}" in tpl and "card.el.classList.toggle('stocks', P === 'stocks');" in tpl and 'class="until near"' in tpl and ".week .hd .until.near{order:0" in tpl)
+
 print("ALL PASS" if not failed else f"{failed} failed")
 raise SystemExit(1 if failed else 0)

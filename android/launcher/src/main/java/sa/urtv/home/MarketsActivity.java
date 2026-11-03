@@ -65,7 +65,8 @@ public class MarketsActivity extends Activity {
     private boolean unlocked;   // the PIN was given for «محفظتي» since this screen opened
     private TextView state, updated;
     private final List<TextView> tabViews = new ArrayList<>();
-    private LinearLayout tabRow, actions, content;
+    private LinearLayout tabRow, actions, content, ctl;   // ctl: the controls row's tab-dependent button («أخفِ المبالغ» on «محفظتي»)
+    private View fxBtn;
     private ScrollView scroll;
     private int ticks;
 
@@ -95,27 +96,26 @@ public class MarketsActivity extends Activity {
             t.setOnClickListener(v -> setLive(on));
             liveButtons.add(t);
             LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(-2, -2);
-            if (i > 0) p.setMarginStart(dp(8));
+            if (i > 0) p.setMarginStart(dp(12));
             row.addView(t, p);
         }
         paintLive();
-        LinearLayout.LayoutParams rp = new LinearLayout.LayoutParams(-2, -2);
-        rp.setMarginEnd(dp(24));
-        rp.setMarginStart(dp(24));
-        row.setLayoutParams(rp);
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.setPadding(0, 0, dp(12), 0);   // 24 px to «صرف العملات»
         return row;
     }
 
+    /** toggle style I, as everywhere in the settings: the chosen word green with the triangles at its start; the focused one on the focus fill; no box, no bar */
     private void paintLive() {
         for (int i = 0; i < liveButtons.size(); i++) {
             TextView t = liveButtons.get(i);
             boolean chosen = (i == 0) == liveOn;
             t.setTextColor(t.hasFocus() ? look.onFocus : chosen ? ACCENT : DIM);
-            android.graphics.drawable.LayerDrawable bg = new android.graphics.drawable.LayerDrawable(new android.graphics.drawable.Drawable[] {
-                    t.hasFocus() ? GlassPaint.focused(this, look, 12) : new ColorDrawable(0), new ColorDrawable(chosen ? ACCENT : 0)});
-            bg.setLayerGravity(1, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL);
-            bg.setLayerHeight(1, dp(3));
-            t.setBackground(bg);
+            t.setBackground(t.hasFocus() ? GlassPaint.focused(this, look, 12) : new ColorDrawable(0));
+            android.graphics.drawable.Drawable on = chosen ? getDrawable(R.drawable.ic_on).mutate() : null;
+            if (on != null) { on.setBounds(0, 0, dp(7), dp(22)); on.setTint(t.hasFocus() ? look.onFocus : ACCENT); }
+            t.setCompoundDrawablesRelative(on, null, null, null);
+            t.setCompoundDrawablePadding(dp(8));
         }
     }
 
@@ -213,7 +213,7 @@ public class MarketsActivity extends Activity {
         collectFocusable(actions, after);
         if (at >= 0 && at < after.size()) after.get(at).requestFocus();
         else if (!(getCurrentFocus() != null && (tabViews.contains(getCurrentFocus()) || liveButtons.contains(getCurrentFocus())))) {   // nothing of the page had the focus (a dialog just closed): «أضف سهمًا» on «محفظتي», else the first thing in the tab, never «مباشر»
-            View to = tab == 2 && actions.getChildCount() > 1 ? actions.getChildAt(1) : after.isEmpty() ? null : after.get(0);
+            View to = tab == 2 && actions.getChildCount() > 0 ? actions.getChildAt(0) : after.isEmpty() ? null : after.get(0);
             if (to != null) to.requestFocus();
         }
         scroll.post(() -> scroll.scrollTo(0, sy));
@@ -257,29 +257,38 @@ public class MarketsActivity extends Activity {
         page.setPadding(Math.round(dm.widthPixels * 0.05f), Math.round(dm.heightPixels * 0.05f), Math.round(dm.widthPixels * 0.05f), Math.round(dm.heightPixels * 0.05f));
         root.addView(page, new FrameLayout.LayoutParams(-1, -1));
 
-        // the title at the start; the market's state and the last update at the end
-        LinearLayout top = new LinearLayout(this);
-        top.setGravity(Gravity.TOP);
-        top.addView(text(S.t("الأسواق"), 30, "Medium", TEXT), new LinearLayout.LayoutParams(0, -2, 1f));
-        top.addView(liveSwitch(), new LinearLayout.LayoutParams(-2, -2));
-        LinearLayout status = new LinearLayout(this);
-        status.setOrientation(LinearLayout.VERTICAL);
-        state = text("", 16, "Regular", TEXT);
-        updated = text("", 13, "Regular", DIM);
-        status.addView(state, new LinearLayout.LayoutParams(-2, -2));
-        LinearLayout.LayoutParams up = new LinearLayout.LayoutParams(-2, -2);
-        up.topMargin = dp(4);
-        status.addView(updated, up);
-        top.addView(status, new LinearLayout.LayoutParams(-2, -2));
-        page.addView(top, new LinearLayout.LayoutParams(-1, -2));
+        // the title; under it ONE controls row (the live switch, «صرف العملات», «أخفِ المبالغ» on «محفظتي»: small buttons, one height, 24 px apart); then the one quiet
+        // status line; then the tabs (السوق / قائمتي / محفظتي) with the tab's own buttons at their end
+        page.addView(text(S.t("الأسواق"), 27, "Medium", TEXT), new LinearLayout.LayoutParams(-2, -2));
+        LinearLayout controls = new LinearLayout(this);
+        controls.setGravity(Gravity.CENTER_VERTICAL);
+        controls.addView(liveSwitch(), new LinearLayout.LayoutParams(-2, dp(40)));
+        fxBtn = button(S.t("صرف العملات"), false, v -> want(3));
+        ((TextView) fxBtn).setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+        fxBtn.setOnFocusChangeListener((v, has) -> paintTabs());
+        controls.addView(fxBtn, new LinearLayout.LayoutParams(-2, dp(40)));
+        ctl = new LinearLayout(this);
+        ctl.setGravity(Gravity.CENTER_VERTICAL);
+        LinearLayout.LayoutParams cp2 = new LinearLayout.LayoutParams(-2, dp(40));
+        cp2.setMarginStart(dp(12));
+        controls.addView(ctl, cp2);
+        LinearLayout.LayoutParams ctp = new LinearLayout.LayoutParams(-1, -2);
+        ctp.topMargin = dp(8);
+        page.addView(controls, ctp);
+        state = text("", 12, "Regular", DIM);   // «تداول مغلق · يفتح الأربعاء ١٠:٠٠ ص · آخر تحديث ٧:٠١ م»: one quiet line, wrapped once if it must
+        state.setMaxLines(2);
+        updated = state;
+        LinearLayout.LayoutParams sp0 = new LinearLayout.LayoutParams(-1, -2);
+        sp0.topMargin = dp(8);
+        page.addView(state, sp0);
 
-        // the tabs, and at the row's end the portfolio's buttons
+        // the tabs, and at the row's end the tab's own buttons
         tabRow = new LinearLayout(this);
         tabRow.setGravity(Gravity.BOTTOM);
-        String[] names = NEWS ? new String[] {S.t("السوق"), S.t("قائمتي"), S.t("محفظتي"), S.t("صرف العملات"), S.t("الأخبار")} : new String[] {S.t("السوق"), S.t("قائمتي"), S.t("محفظتي"), S.t("صرف العملات")};
+        String[] names = NEWS ? new String[] {S.t("السوق"), S.t("قائمتي"), S.t("محفظتي"), S.t("الأخبار")} : new String[] {S.t("السوق"), S.t("قائمتي"), S.t("محفظتي")};
         for (int i = 0; i < names.length; i++) {
-            final int k = i;
-            TextView t = text(names[i], 19, "Medium", DIM);
+            final int k = i == 3 ? 4 : i;   // «صرف العملات» is tab 3 (its button, not a tab); the news would be 4
+            TextView t = text(names[i], 17, "Medium", DIM);
             t.setId(View.generateViewId());
             t.setFocusable(true);
             t.setGravity(Gravity.CENTER);
@@ -317,7 +326,7 @@ public class MarketsActivity extends Activity {
         int start = Arrays.asList(TABS).indexOf(getIntent().getStringExtra(EXTRA_TAB));
         tab = -1;
         want(Math.max(0, start));
-        tabViews.get(Math.max(0, tab)).requestFocus();
+        (tab >= 0 && tab < tabViews.size() ? tabViews.get(tab) : fxBtn).requestFocus();
     }
 
     @Override
@@ -383,19 +392,22 @@ public class MarketsActivity extends Activity {
         String word = open ? S.t("تداول مفتوح") : S.t("تداول مغلق");
         s.append(word);
         s.setSpan(new ForegroundColorSpan(open ? UP : TEXT), 0, word.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        s.append("  ");
+        s.append(" · ");
         if (open) {
             s.append(S.t("يغلق بعد %s", duration(MarketData.until(now, MarketData.closeAt(now)))));
         } else {
             long at = MarketData.nextOpen(now);
-            s.append(S.t("يفتح بعد %s، %s %s", duration(MarketData.until(now, at)), S.tv(DAYS[Math.min(DAYS.length - 1, MarketData.weekday(at) - 1)]), clock(10, 0)));
+            s.append(S.t("يفتح %s %s", S.tv(DAYS[Math.min(DAYS.length - 1, MarketData.weekday(at) - 1)]), clock(10, 0)));   // «يفتح الأربعاء ١٠:٠٠ ص»: short enough for the line
+        }
+        s.append(" · ");
+        if (data == null && loading) s.append(S.t("جارٍ التحميل…"));
+        else if (data == null || data.updated == 0) s.append(S.t("لا أسعار بعد: يلزم اتصال بالإنترنت"));
+        else {
+            Calendar k = Calendar.getInstance(TimeZone.getTimeZone(zone()));
+            k.setTimeInMillis(data.updated);
+            s.append(S.t("آخر تحديث %s · أسعار متأخرة", clock(k.get(Calendar.HOUR_OF_DAY), k.get(Calendar.MINUTE))));
         }
         state.setText(s);
-        if (data == null && loading) { updated.setText(S.t("جارٍ التحميل…")); return; }
-        if (data == null || data.updated == 0) { updated.setText(S.t("لا أسعار بعد: يلزم اتصال بالإنترنت")); return; }
-        Calendar k = Calendar.getInstance(TimeZone.getTimeZone(zone()));
-        k.setTimeInMillis(data.updated);
-        updated.setText(S.t("آخر تحديث %s · أسعار متأخرة", clock(k.get(Calendar.HOUR_OF_DAY), k.get(Calendar.MINUTE))));
     }
 
     /** Tadawul's trading days, Sunday to Thursday (MarketData.nextOpen is always one of them) */
@@ -448,6 +460,7 @@ public class MarketsActivity extends Activity {
         paintTabs();
         content.removeAllViews();
         actions.removeAllViews();
+        ctl.removeAllViews();
         if (k == 0) market();
         else if (k == 1) watch();
         else if (k == 3) currencies();
@@ -463,13 +476,12 @@ public class MarketsActivity extends Activity {
         for (int i = 0; i < tabViews.size(); i++) {
             TextView t = tabViews.get(i);
             boolean on = i == tab;
-            t.setTextColor(t.hasFocus() ? look.onFocus : on ? ACCENT : DIM);
-            // the focus fill while focused; the chosen tab's line along its bottom
-            android.graphics.drawable.LayerDrawable bg = new android.graphics.drawable.LayerDrawable(new android.graphics.drawable.Drawable[] {
-                    t.hasFocus() ? GlassPaint.focused(this, look, 12) : new ColorDrawable(0), new ColorDrawable(on ? ACCENT : 0)});
-            bg.setLayerGravity(1, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL);
-            bg.setLayerHeight(1, dp(3));
-            t.setBackground(bg);
+            t.setTextColor(t.hasFocus() ? look.onFocus : on ? ACCENT : DIM);   // the chosen tab is the green word; no bar under it (the thin rule under the row stays)
+            t.setBackground(t.hasFocus() ? GlassPaint.focused(this, look, 12) : new ColorDrawable(0));
+        }
+        if (fxBtn instanceof TextView) {   // «صرف العملات» is chosen while its page is shown
+            TextView f = (TextView) fxBtn;
+            f.setTextColor(f.hasFocus() ? look.onFocus : tab == 3 ? ACCENT : TEXT);
         }
     }
 
@@ -672,10 +684,10 @@ public class MarketsActivity extends Activity {
         list.setPadding(dp(16), dp(16), dp(16), dp(12));
         LinearLayout hd = new LinearLayout(this);
         hd.setPadding(dp(16), 0, dp(16), dp(8));
-        hd.addView(text(S.t("السهم"), 13, "Regular", DIM), new LinearLayout.LayoutParams(0, -2, 1.3f));
-        hd.addView(text(S.t("اليوم"), 13, "Regular", DIM), new LinearLayout.LayoutParams(0, -2, 1.2f));
-        hd.addView(text(S.t("السعر"), 13, "Regular", DIM), new LinearLayout.LayoutParams(0, -2, 0.8f));
-        hd.addView(text(S.t("التغيّر"), 13, "Regular", DIM), new LinearLayout.LayoutParams(0, -2, 0.7f));
+        hd.addView(text(S.t("السهم"), 12, "Regular", DIM), new LinearLayout.LayoutParams(0, -2, 1.3f));
+        hd.addView(text(S.t("اليوم"), 12, "Regular", DIM), new LinearLayout.LayoutParams(0, -2, 1.2f));
+        hd.addView(text(S.t("السعر"), 12, "Regular", DIM), new LinearLayout.LayoutParams(0, -2, 0.8f));
+        hd.addView(text(S.t("التغيّر"), 12, "Regular", DIM), new LinearLayout.LayoutParams(0, -2, 0.7f));
         list.addView(hd, wrap());
         List<String> codes = watchlist();
         for (String code : codes) list.addView(watchRow(code), gap(4));
@@ -763,10 +775,11 @@ public class MarketsActivity extends Activity {
         LinearLayout r = new LinearLayout(this);
         r.setGravity(Gravity.CENTER_VERTICAL);
         r.setPadding(dp(16), dp(12), dp(16), dp(12));
-        r.addView(nameCol(code, 19), new LinearLayout.LayoutParams(0, -2, 1.3f));
+        r.setMinimumHeight(dp(60));   // 120 px a row (it was 152), the 24 px padding kept
+        r.addView(nameCol(code, 17), new LinearLayout.LayoutParams(0, -2, 1.3f));
         FrameLayout sp = new FrameLayout(this);
-        if (q != null) sp.addView(new MarketChart(this).line(q.c, q.v, color(q), DIM, false, 2f), new FrameLayout.LayoutParams(dp(112), dp(32), Gravity.CENTER_VERTICAL | Dir.start()));
-        r.addView(sp, new LinearLayout.LayoutParams(0, dp(36), 1.2f));
+        if (q != null) sp.addView(new MarketChart(this).line(q.c, q.v, color(q), DIM, false, 2f), new FrameLayout.LayoutParams(dp(112), dp(28), Gravity.CENTER_VERTICAL | Dir.start()));
+        r.addView(sp, new LinearLayout.LayoutParams(0, dp(32), 1.2f));
         r.addView(ltr(text(q == null ? "—" : price(q.p), 18, "Medium", TEXT)), new LinearLayout.LayoutParams(0, -2, 0.8f));
         r.addView(q == null ? text("", 15, "Regular", DIM) : pct(q.pct(), 16), new LinearLayout.LayoutParams(0, -2, 0.7f));
         focusRow(r, 12);
@@ -844,10 +857,7 @@ public class MarketsActivity extends Activity {
         content.addView(list, wrap());
         content.addView(text(S.t("أسعار يومية · المصدر: Yahoo Finance. الريال والدرهم والريال القطري والدينار البحريني والريال العماني والدينار الأردني مربوطة بالدولار."), 12, "Regular", DIM), gap(16));
         actions.addView(button(S.t("حوّل"), true, v -> converter(fxPrefs().getString("from", "USD"), fxPrefs().getString("to", "SAR"))), buttonParams(0));
-        actions.addView(button(S.t("اختر العملات"), false, v -> chooseCurrencies()), buttonParams(8));
-        TextView last = tabViews.get(3);
-        View firstButton = actions.getChildAt(0);
-        if (Dir.rtl()) last.setNextFocusLeftId(firstButton.getId()); else last.setNextFocusRightId(firstButton.getId());
+        actions.addView(button(S.t("اختر العملات"), false, v -> chooseCurrencies()), buttonParams(12));
     }
 
     /** «اختر العملات»: each currency a row that turns on and off (the on mark), saved on this TV */
@@ -984,13 +994,16 @@ public class MarketsActivity extends Activity {
     private void portfolio() {
         Portfolio.openEditing(Portfolio.now());
         boolean hide = Portfolio.hidden(this);
-        actions.addView(button(hide ? S.t("أظهر المبالغ") : S.t("أخفِ المبالغ"), false, v -> {
+        // «أخفِ المبالغ» is in the controls row, beside «صرف العملات» (only on this tab); «أضف سهمًا» and «خيارات محفظتي» stay at the end of the tab row
+        final View hideBtn = button(hide ? S.t("أظهر المبالغ") : S.t("أخفِ المبالغ"), false, v -> {
             Portfolio.setHidden(this, !Portfolio.hidden(this));
             show(2, false);
-            actions.getChildAt(0).requestFocus();   // «أخفِ/أظهر المبالغ» stays under the focus, on «محفظتي»
-        }), buttonParams(0));
-        actions.addView(button(S.t("أضف سهمًا"), false, v -> pick()), buttonParams(8));
-        actions.addView(button(S.t("خيارات محفظتي"), false, v -> options()), buttonParams(8));
+            ctl.getChildAt(0).requestFocus();   // «أخفِ/أظهر المبالغ» stays under the focus, on «محفظتي»
+        });
+        ((TextView) hideBtn).setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+        ctl.addView(hideBtn, new LinearLayout.LayoutParams(-2, -1));
+        actions.addView(button(S.t("أضف سهمًا"), false, v -> pick()), buttonParams(0));
+        actions.addView(button(S.t("خيارات محفظتي"), false, v -> options()), buttonParams(12));
         // the tabs reach the buttons with the arrow that goes on in reading order
         TextView last = tabViews.get(2);
         View firstButton = actions.getChildAt(0);
@@ -1397,7 +1410,7 @@ public class MarketsActivity extends Activity {
         if (isFinishing() || isDestroyed() || tab != 2) return;
         View row = null;
         for (View v : focusables(content)) if (code.equals(v.getTag())) { row = v; break; }
-        View to = row != null ? row : actions.getChildCount() > 1 ? actions.getChildAt(1) : null;
+        View to = row != null ? row : actions.getChildCount() > 0 ? actions.getChildAt(0) : null;
         if (to != null) to.requestFocus();
     }
 
@@ -1539,7 +1552,7 @@ public class MarketsActivity extends Activity {
         nm.setOrientation(LinearLayout.VERTICAL);
         nm.addView(text(S.tv(MarketData.name(code)), sp, "Medium", TEXT), wrap());
         String tag = liveTag(code);
-        nm.addView(ltrStart(text(tag.isEmpty() ? code : code + " · " + tag, 14, "Regular", DIM)), wrap());
+        nm.addView(ltrStart(text(tag.isEmpty() ? code : code + " · " + tag, 12, "Regular", DIM)), wrap());
         return nm;
     }
 
@@ -1584,7 +1597,7 @@ public class MarketsActivity extends Activity {
     private LinearLayout card() {
         LinearLayout c = new LinearLayout(this);
         c.setOrientation(LinearLayout.VERTICAL);
-        c.setPadding(dp(20), dp(16), dp(20), dp(16));
+        c.setPadding(dp(12), dp(16), dp(12), dp(16));   // 24 px at the sides (it was 40)
         c.setBackground(GlassPaint.panel(this, look, 18));
         return c;
     }
@@ -1647,10 +1660,13 @@ public class MarketsActivity extends Activity {
         box.setOrientation(LinearLayout.VERTICAL);
         box.setLayoutDirection(Dir.layout());
         box.setPadding(dp(32), dp(28), dp(32), dp(28));
-        box.setBackground(GlassPaint.dialog(this, look));
+        // a SOLID surface (the look's dialog fill laid on its base colour: nothing of the page shows through it) and the page behind dimmed, like a dialog should be (step 27)
+        box.setBackground(GlassPaint.fill(this, GlassStyle.over(look.dialog, look.base), 22, look.line));
         d.setContentView(box);
         Window w = d.getWindow();
         if (w != null) {
+            w.addFlags(android.view.WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+            w.setDimAmount(0.6f);
             w.setBackgroundDrawable(new ColorDrawable(0));
             w.setLayout(Math.min(getResources().getDisplayMetrics().widthPixels - dp(48), dp(widthDp)), ViewGroup.LayoutParams.WRAP_CONTENT);
         }

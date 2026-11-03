@@ -66,7 +66,7 @@ check("market data: «الأسعار متأخرة · المصدر: Yahoo Finance
 ml = text(RES / "layout/activity_main.xml")
 check("B3: the Tilawah tabs are 24 px apart (12 dp)", ml.count('android:layout_marginStart="12dp"') >= 2 and 'android:layout_marginStart="10dp"' not in ml)
 check("B6: a change is one left-to-right isolate (MarketData.isolate) in the lists and in the price line, so the minus and the percent sign stay put in Arabic",
-      "MarketData.isolate(MarketData.show(MarketData.signed(v, 2) + \"%\", Digits.latin()))" in mk and "MarketData.isolate(MarketData.show(s, Digits.latin()))" in mk)
+      "MarketData.isolate(MarketData.show(MarketData.signed(v, 2) + \"%\", Digits.latin()))" in mk and "MarketData.changeLine(r.change(q.p), r.pct(q.p), Digits.latin())" in mk)   # the price line: two isolates, one per number (step 27)
 check("B6: a time never breaks («10:00 / AM»: a no-break space), the trend card's title is one line and gets its width (the note beside it gives way)",
       'Digits.of(h12 + ":" + mm) + "\\u00A0"' in mk and "trendTitle.setSingleLine(true);" in mk and "weight(1.6f, 0)" in mk and "weight(1.15f, 16)" in mk)
 check("«الذهب والنفط»: the name is on a line of its own (no 260 dp of fixed columns beside it), so the card never squeezes it into single letters",
@@ -78,7 +78,7 @@ check("B10: the live request has a generic honest User-Agent (Mozilla/5.0 compat
       'UA = "Mozilla/5.0 (compatible; UrTV-markets/1.0; +https://github.com/tshi-dev/UrTV)"' in text(HOME / "MarketFile.java") and 'setRequestProperty("User-Agent", UA)' in text(HOME / "MarketFile.java")
       and "depth > 12" in text(HOME / "MarketData.java"))
 check("item 10: after a holding is saved, deleted or the portfolio wiped the page is drawn again with the focus kept (redraw), and a focus that is lost goes to «أضف سهمًا», never to «مباشر»",
-      mk.count("redraw();") >= 6 and "tab == 2 && actions.getChildCount() > 1 ? actions.getChildAt(1)" in mk and "liveButtons.contains(getCurrentFocus())" in mk
+      mk.count("redraw();") >= 6 and "tab == 2 && actions.getChildCount() > 0 ? actions.getChildAt(0)" in mk and "liveButtons.contains(getCurrentFocus())" in mk
       and "show(2, false);\n        });\n        save.setBackground" not in mk)
 check("item 11: the dock is topped up from the other apps in the order of their package names, never of their labels (labels follow the language: Downloader in Arabic, Apple TV in English)",
       "AppsEdit.topUp(have, other, MIN_DOCK)" in main and "java.util.Collections.sort(pool);" in text(HOME / "AppsEdit.java"))
@@ -86,5 +86,5 @@ tpl2 = text(ROOT / "src/template.html")
 check("item 9: the matches page opens on the day the widget shows (today's games, else the next day that has games, in the city's zone) until the person picks a day",
       "if(!MP.picked){" in tpl2 and "const next = fbGames().filter(ev => fbKick(ev) > now).sort((a, b) => fbKick(a) - fbKick(b))[0];" in tpl2 and "MP.picked = true;" in tpl2)
 check("item 9: a match's card opens with no button focused (OK adds nothing by accident); ◀ ▶ go to the buttons",
-      "MP.btn = -1;" in tpl2 and "MP.btn = Math.max(-1, Math.min(MP.btn, btns.length - 1));" in tpl2 and text(ROOT / "dist/tv.html").count("MP.btn = -1;") >= 1)
+      "MP.btn = Math.max(-1, Math.min(MP.btn, btns.length - 1));" in tpl2 and ": -1;   // «شاهد على …» is ringed when it is there" in tpl2 and "ringed = document.querySelector('#mp-detail .mdb button.f')" in tpl2)
 sys.exit(1 if failed else 0)

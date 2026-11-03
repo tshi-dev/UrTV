@@ -596,10 +596,17 @@ public class MainActivity extends Activity {
         centerPill = pill(ControlText.NAME, R.drawable.ic_center);
         centerPill.setOnClickListener(v -> guarded(ParentalPolicy.PILL_CENTER, null, ControlText.NAME, () -> control.open(v)));
         // ---- end «مركز التحكم»
+        // «الأسواق» and «المباريات»: the markets page and the games page, two more round buttons (step 27, the owner's TV photos)
+        Pill marketsBtn = pill(S.t("الأسواق"), R.drawable.ic_markets);
+        marketsBtn.setOnClickListener(v -> launch(new Intent(this, MarketsActivity.class)));
+        Pill matchesBtn = pill(S.t("المباريات"), R.drawable.ic_matches);
+        matchesBtn.setOnClickListener(v -> launchGuarded(ParentalPolicy.WIDGET_MATCHES, new Intent(this, MatchesActivity.class), "المباريات"));
         List<Pill> row = new ArrayList<>(Arrays.asList(inputs));
         tasksPill = tasks;
         if (isInstalled(SAVER_PKG) && ConfigSnapshot.read(this).tasksPillOn()) row.add(tasks);   // «زر المهام»: hidden in the screensaver's settings, it is not in the row
         if (centerWanted()) row.add(centerPill);
+        row.add(marketsBtn);
+        row.add(matchesBtn);
         tilawahPill = tilawah;
         pillRow = right;
         // [updates bell] built here, put in the row by applyUpdateBell only while it has a reason to be there

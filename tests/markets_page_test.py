@@ -46,7 +46,7 @@ check("the pegs' names on the screen are MarketData.PEGS', in order", pegs == na
 
 # ---- only the data we have
 check("«الأخبار» is off until a licensed source exists (NEWS = false), and no tab is built for it then",
-      "static final boolean NEWS = false;" in act and 'NEWS ? new String[] {S.t("السوق"), S.t("قائمتي"), S.t("محفظتي"), S.t("صرف العملات"), S.t("الأخبار")}' in act)
+      "static final boolean NEWS = false;" in act and 'NEWS ? new String[] {S.t("السوق"), S.t("قائمتي"), S.t("محفظتي"), S.t("الأخبار")}' in act)   # «صرف العملات» is a button of the controls row now, not a tab
 urls = set(re.findall(r'https?://[^"\s)]+', act + data + text(HOME / "MarketFile.java")))
 check("two sources only: CI's two files (the 5-minute one and the daily one) and, while the page is in front, Yahoo's quote endpoint for live mode (no other address in the page's code)",
       urls - {"https://github.com/tshi-dev/UrTV"} == {"https://raw.githubusercontent.com/tshi-dev/UrTV/data-markets/markets/markets.json",
@@ -97,7 +97,7 @@ check("no pills: buttons and rows are GlassPaint tiles and rows", "Pill" not in 
 check("toggle style I for «اقفل محفظتي» (OnOff: the state word first, the three green marks at the start)", "R.drawable.ic_on" in act and "OnOff.wordEnd(value)" in act)
 check("every word through S.t / S.tv (English in i18n/en/home.tsv; tests/i18n_test.py checks each one)", "attachBaseContext(android.content.Context b) { super.attachBaseContext(S.wrap(b)); }" in act)
 pads = [int(x) for x in re.findall(r"setPadding\(dp\((\d+)\)", act)]
-check("text never crowds a box: 16 dp or more inside every padded box (at 1080p that is 32 px)", pads and min(pads) >= 16, sorted(set(pads)))
+check("text never crowds a box: 12 dp or more (24 px at 1080p; the design rule is 16 px) inside every padded box", pads and min(pads) >= 12, sorted(set(pads)))
 
 # ---- the logic on a JVM
 if not shutil.which("javac"):
@@ -110,7 +110,7 @@ else:
     print(out, end="")
     failed += run.returncode != 0
 act2 = text(HOME / "MarketsActivity.java")
-check("live mode: a switch «مباشر | عادي» on the page, «مباشر» by default", 'S.t("مباشر"), S.t("عادي")' in act2 and "private boolean liveOn = true" in act2 and "top.addView(liveSwitch()" in act2)
+check("live mode: a switch «مباشر | عادي» on the page, «مباشر» by default", 'S.t("مباشر"), S.t("عادي")' in act2 and "private boolean liveOn = true" in act2 and "controls.addView(liveSwitch()" in act2)
 check("live mode: asks only while resumed (starts in onResume, ends in onPause and with the generation), dropped when paused or switched off meanwhile",
       "resumed = true;" in act2 and "resumed = false;   // live mode ends" in act2 and "if (liveOn) main.postDelayed(liveTick, 1500);" in act2
       and "if (run != liveRun || !resumed || !liveOn || isFinishing() || isDestroyed()) return;" in act2 and "main.removeCallbacks(liveTick);" in act2.split("protected void onPause()")[1][:400])
