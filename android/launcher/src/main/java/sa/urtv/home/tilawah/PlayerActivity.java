@@ -52,6 +52,7 @@ public class PlayerActivity extends Activity {
         Ui.glassPage(this, R.id.bg);   // the glass page
         cat = Catalog.get(this);
         openedAt = SystemClock.elapsedRealtime();
+        NotifyAsk.once(this);   // Android 13+: the notifications permission, asked once, now that something plays (see NotifyAsk)
 
         kind = findViewById(R.id.kind);
         title = findViewById(R.id.title);

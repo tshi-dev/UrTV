@@ -54,7 +54,9 @@ public class SetupService extends Service {
     }
 
     @Override public int onStartCommand(Intent intent, int flags, final int startId) {
-        startForeground(NOTIF, notification());
+        // targetSdk 34: the type the manifest names (specialUse), said again here; before Android 14 the plain call
+        if (android.os.Build.VERSION.SDK_INT >= 34) startForeground(NOTIF, notification(), android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE);
+        else startForeground(NOTIF, notification());
         final Runnable job;
         synchronized (JOBS) { job = JOBS.pollFirst(); if (job != null) live++; }
         if (job == null) {

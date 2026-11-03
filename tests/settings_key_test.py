@@ -43,7 +43,7 @@ check("the xml comment says why, and that an enabled service keeps its place on 
 check("the service is still declared once, with its xml, behind BIND_ACCESSIBILITY_SERVICE",
       man.count('android:name=".TypeService"') == 1 and "@xml/type_service" in man
       and 'android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"' in man.split('android:name=".TypeService"')[1][:300])
-check("no new permission for this (the launcher declares the same ones)", man.count("<uses-permission") == 19)   # 19 since REQUEST_DELETE_PACKAGES («حذف التطبيق» in the app menu)
+check("no new permission for this (the launcher declares the same ones)", man.count("<uses-permission") == 21)   # 19 since REQUEST_DELETE_PACKAGES («حذف التطبيق» in the app menu); 21 since targetSdk 34: FOREGROUND_SERVICE_SPECIAL_USE (SetupService must name its type) and USE_EXACT_ALARM (the adhan stays exact on a new install)
 check("the TV's accessibility settings tell the person about the Settings key", "زر الإعدادات في الريموت يفتح إعدادات التلفزيون" in text("android/launcher/src/main/res/values/strings.xml"))
 
 # the service

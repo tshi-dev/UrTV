@@ -216,7 +216,16 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
 
     // ---- starting it from an activity or the receiver ----
     static void start(Context c, Intent intent) {
-        if (Build.VERSION.SDK_INT >= 26) c.startForegroundService(intent); else c.startService(intent);
+        if (Build.VERSION.SDK_INT < 26) { c.startService(intent); return; }
+        try {
+            c.startForegroundService(intent);
+        } catch (IllegalStateException e) {
+            // targetSdk 31+ on Android 12+: a foreground start from the background is refused unless Android allows it (an exact alarm such as the
+            // adhan's, our accessibility service bound, one of our screens in front). Nothing crashes: a service already playing keeps the
+            // process active, so the plain start still reaches it (a pause, a stop); one that cannot start at all is logged and skipped.
+            Log.w(TAG, "foreground start refused (" + e.getClass().getSimpleName() + "): " + intent.getAction());
+            try { c.startService(intent); } catch (IllegalStateException | SecurityException again) { Log.w(TAG, "service start refused too: " + intent.getAction()); }
+        }
     }
 
     private static Intent intent(Context c, String action) {
@@ -1080,10 +1089,15 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
 
     private void foreground() {
         Notification notification = buildNotification();
-        if (Build.VERSION.SDK_INT >= 29) {
-            startForeground(NOTIF, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
-        } else {
-            startForeground(NOTIF, notification);
+        try {
+            if (Build.VERSION.SDK_INT >= 29) {
+                startForeground(NOTIF, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
+            } else {
+                startForeground(NOTIF, notification);
+            }
+        } catch (IllegalStateException e) {   // started plainly (see start) while Android refuses a foreground start: it plays on without one
+            Log.w(TAG, "startForeground refused: " + e.getClass().getSimpleName());
+            return;
         }
         foregroundStarted = true;
     }

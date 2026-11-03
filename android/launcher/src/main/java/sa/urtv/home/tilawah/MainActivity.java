@@ -1,9 +1,7 @@
 package sa.urtv.home.tilawah;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.content.Context;
@@ -171,10 +169,7 @@ public class MainActivity extends Activity {
         buildLetters();
         selectTab("adhan".equals(getIntent().getStringExtra(EXTRA_OPEN)) ? TAB_ADHAN : TAB_RECITERS);
 
-        if (Build.VERSION.SDK_INT >= 33
-                && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
-        }
+        // the notifications permission is asked once, by the player when something first plays (NotifyAsk), not each time this screen opens
 
         // today's times from Aladhan when the network answers, and the recordings kept for offline
         // (refresh also puts the alarm back for the new times)
