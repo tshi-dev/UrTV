@@ -1,4 +1,4 @@
-«⛔ WAIT — don't start anything yet. The supervisor will replace this line with «✅ GO — build N».»
+«✅ GO — build 182»
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
