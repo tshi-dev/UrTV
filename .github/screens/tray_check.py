@@ -190,7 +190,7 @@ def settled_dump(out, name, tries=4, need_tile=True):
         try:
             ns = nodes(xml)
             tray = find_tray(ns)
-            if tray and any(t["focused"] for t in tiles(ns, tray)):
+            if tray and any(t["focused"] for t in tiles(ns, tray)) and name_label(ns, tray):   # a favourite has the focus AND its name shows (the 150 ms fade is over)
                 return xml, png
         except ET.ParseError:
             pass
@@ -300,11 +300,13 @@ def run(out):
     shell("wm density 320")
     start_in("ar", "football")
     key(*["DPAD_UP"] * 4)
-    for _ in range(8):   # the widgets are focus targets of the page (weather, prayers, games): walk until the games have it
+    for step in range(12):   # from the top ▼ walks down to the tray; ▲ from the tray is the games (FootballFocus); each step is logged
         focused = [n for n in nodes(quick()) if n["focused"]]
+        print(f"football step {step}: focus " + ", ".join(f"{n['cls'].split('.')[-1]} '{n['desc'][:20]}' {list(n['rect'])}" for n in focused))
         if any("مباريات" in (n["desc"] or "") for n in focused):
             break
-        key("DPAD_DOWN")
+        low_focus = any(n["rect"][1] > 700 and n["rect"][3] - n["rect"][1] < 400 for n in focused)
+        key("DPAD_UP" if low_focus else "DPAD_DOWN")
     xf, pf = settled_dump(out, "football-lowered", tries=1, need_tile=False)
     nf = nodes(xf)
     tf = find_tray(nf)
