@@ -150,8 +150,13 @@ def strips_same(img_a, img_b, tray, tolerance=0.01):
 
 # ---------------------------------------------------------------- the emulator side
 
-def adb(*a, check=False, text=True):
-    return subprocess.run(["adb", *a], capture_output=True, text=text, check=check)
+def adb(*a, check=False, text=True, timeout=60):
+    """one adb call that can never hang the job: after `timeout` seconds it gives up and answers nothing"""
+    try:
+        return subprocess.run(["adb", *a], capture_output=True, text=text, check=check, timeout=timeout)
+    except subprocess.TimeoutExpired:
+        print("adb timed out: " + " ".join(a)[:80])
+        return subprocess.CompletedProcess(a, 124, "" if text else b"", "" if text else b"")
 
 
 def shell(cmd):
@@ -168,7 +173,7 @@ def dump(out, name):
     adb("shell", "uiautomator", "dump", "/sdcard/d.xml")
     p = Path(out) / f"{name}.xml"
     p.write_bytes(adb("exec-out", "cat", "/sdcard/d.xml", text=False).stdout)
-    print(f"--- {name}: in front: " + " ".join(shell("dumpsys activity activities | grep -m1 mResumedActivity").split()[-2:]))
+    print(f"--- {name}: in front: " + " ".join(shell("dumpsys window | grep mCurrentFocus").split()[-2:]))
     print(summary(p.read_text(encoding="utf-8", errors="replace")))
     png = Path(out) / f"{name}.png"
     png.write_bytes(adb("exec-out", "screencap", "-p", text=False).stdout)
@@ -192,7 +197,7 @@ def seed_dock(n=7):
 def focus_in_tray():
     """press DOWN until a favourite has the focus (the home starts with it on the top row on some builds); False after six tries"""
     for _ in range(6):
-        adb("shell", "uiautomator", "dump", "/sdcard/q.xml")
+        adb("shell", "uiautomator", "dump", "/sdcard/q.xml", timeout=40)
         xml = adb("exec-out", "cat", "/sdcard/q.xml", text=False).stdout.decode("utf-8", "replace")
         try:
             ns = nodes(xml)
