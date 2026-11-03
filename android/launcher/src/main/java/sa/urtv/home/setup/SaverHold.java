@@ -20,13 +20,21 @@ import android.util.Log;
  */
 public final class SaverHold {
     private static volatile long since;   // SystemClock.elapsedRealtime() when the wait began; 0 = none
+    private static volatile long max = SaverHoldRule.MAX_MS;   // how long this hold may last
+    private static volatile String what = "debugging prompt";   // what it waits for, for the log
     private static PowerManager.WakeLock lock;
 
     private SaverHold() { }
 
     /** The wait for «السماح بتصحيح USB؟» began. */
     @SuppressWarnings("deprecation")   // SCREEN_BRIGHT_WAKE_LOCK: the one kind a normal app can hold that keeps the screen (and so no screensaver)
-    public static synchronized void begin(Context c) {
+    public static synchronized void begin(Context c) { begin(c, SaverHoldRule.MAX_MS, "debugging prompt"); }
+
+    /** The same for another wait: the update's install questions (SaverHoldRule.UPDATE_MS), named in the log. */
+    @SuppressWarnings("deprecation")
+    public static synchronized void begin(Context c, long maxMs, String waitsFor) {
+        max = maxMs;
+        what = waitsFor;
         since = Math.max(1, SystemClock.elapsedRealtime());
         try {
             if (lock == null) {
@@ -34,11 +42,11 @@ public final class SaverHold {
                 lock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ON_AFTER_RELEASE, "urtv:setup-prompt");
                 lock.setReferenceCounted(false);
             }
-            lock.acquire(SaverHoldRule.MAX_MS);
+            lock.acquire(maxMs);
         } catch (RuntimeException e) {
             Log.i("UrTVSetup", "screen hold not taken: " + e.getClass().getSimpleName());   // the screensaver's own check still holds it back
         }
-        Log.i("UrTVSetup", "waiting for the debugging prompt: screensaver held back");
+        Log.i("UrTVSetup", "waiting for the " + what + ": screensaver held back");
     }
 
     /** The answer came, or the wait ended: the screensaver is free again. Safe to call any number of times. */
@@ -46,11 +54,16 @@ public final class SaverHold {
         if (since == 0) return;
         since = 0;
         try { if (lock != null && lock.isHeld()) lock.release(); } catch (RuntimeException ignored) { }
-        Log.i("UrTVSetup", "debugging prompt answered or given up: screensaver free");
+        Log.i("UrTVSetup", what + " answered or given up: screensaver free");
+    }
+
+    /** The same, only when this is the hold for {@code waitsFor} (the update ending its flow does not free the setup's wait). */
+    public static synchronized void endIf(String waitsFor) {
+        if (waitsFor != null && waitsFor.equals(what)) end();
     }
 
     /** What the screensaver asks when it starts. */
     public static boolean held() {
-        return SaverHoldRule.held(since, SystemClock.elapsedRealtime());
+        return SaverHoldRule.held(since, SystemClock.elapsedRealtime(), max);
     }
 }

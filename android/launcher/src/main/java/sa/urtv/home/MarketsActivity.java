@@ -119,9 +119,16 @@ public class MarketsActivity extends Activity {
         }
     }
 
+    /** live mode keeps the screen awake while the page is in front (our screensaver started over it after 45 s of no key, step 27) */
+    private void keepAwake() {
+        if (liveOn && resumed) getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        else getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
     private void setLive(boolean on) {
         if (on == liveOn) return;
         liveOn = on;
+        keepAwake();
         liveRun++;
         liveFails = 0;
         main.removeCallbacks(liveTick);
@@ -320,6 +327,7 @@ public class MarketsActivity extends Activity {
         main.removeCallbacks(minute);
         minute.run();
         resumed = true;
+        keepAwake();
         liveRun++;
         liveFails = 0;
         main.removeCallbacks(liveTick);
@@ -352,6 +360,7 @@ public class MarketsActivity extends Activity {
     protected void onPause() {
         loadGen++;   // a load still running delivers nothing to a page that is not in front
         resumed = false;   // live mode ends with the page being in front
+        keepAwake();
         liveRun++;
         main.removeCallbacks(liveTick);
         super.onPause();
@@ -844,27 +853,33 @@ public class MarketsActivity extends Activity {
         rows.setOrientation(LinearLayout.VERTICAL);
         sv.addView(rows);
         final List<String> chosen = new ArrayList<>(fxChosen());
-        final boolean[] changed = {false};
+        final boolean[] changed = {false}, again = {false};
         View first = null;
         for (String[] c : CCY) {
             if (c[0].equals("SAR")) continue;
             final String code = c[0];
             View[] holder = new View[1];
-            holder[0] = settingRow(ccyName(code), code, chosen.contains(code), v -> {
+            // the state word first and green while on, with the three green triangles at the start (toggle style I, as everywhere in the settings)
+            holder[0] = settingRow(ccyName(code), (chosen.contains(code) ? S.t("مفعّلة") : S.t("متوقفة")) + " · " + code, chosen.contains(code), v -> {
                 if (chosen.contains(code)) chosen.remove(code); else chosen.add(code);
                 List<String> ordered = new ArrayList<>();
                 for (String[] k : CCY) if (chosen.contains(k[0])) ordered.add(k[0]);
                 fxPrefs().edit().putString("list", String.join(",", ordered)).apply();
                 changed[0] = true;
+                again[0] = true;
                 d.dismiss();
                 chooseCurrencies();   // drawn again with the mark moved
             });
             if (first == null) first = holder[0];
             rows.addView(holder[0], gap(rows.getChildCount() == 0 ? 12 : 4));
         }
-        box.addView(sv, sized(-1, 380, 12));
-        box.addView(button(S.t("تم"), true, v -> { d.dismiss(); redraw(); }), gap(16));
-        d.setOnDismissListener(x -> { if (changed[0]) redraw(); });
+        box.addView(sv, sized(-1, 300, 12));   // the list leaves room for the button under it on a 1080p screen (at 380 the button was squeezed to 64 px and its label vanished)
+        box.addView(button(S.t("تم"), true, v -> d.dismiss()), gap(16));
+        d.setOnDismissListener(x -> {
+            if (changed[0]) redraw();
+            if (again[0]) return;   // a row was pressed: the list opens again, the page behind keeps what it has
+            main.post(() -> { View b = actions.getChildCount() > 1 ? actions.getChildAt(1) : null; if (b != null && !isFinishing()) b.requestFocus(); });   // back on «اختر العملات»
+        });
         d.show();
         if (first != null) first.requestFocus();
     }

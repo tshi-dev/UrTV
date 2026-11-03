@@ -31,7 +31,7 @@ body = opn.split("}, out);")[1]
 check("it ends as soon as the session is open (the answer came), before the runner gets the session", "SaverHold.end();" in body and body.index("SaverHold.end();") < body.index("return new SetupRunner.Session()"))
 check("…and in a finally, so a wait that gave up or failed frees the screensaver too", "} finally {\n            SaverHold.end();" in opn)
 check("the app's own screen wake lock, with the rule's timeout, not reference counted, released at the end",
-      "SCREEN_BRIGHT_WAKE_LOCK" in hold and "lock.acquire(SaverHoldRule.MAX_MS);" in hold and "setReferenceCounted(false)" in hold and "lock.release();" in hold)
+      "SCREEN_BRIGHT_WAKE_LOCK" in hold and "lock.acquire(maxMs);" in hold and "SaverHoldRule.MAX_MS, \"debugging prompt\"" in hold and "setReferenceCounted(false)" in hold and "lock.release();" in hold)
 check("no DEVICE_POWER and no userActivity: a normal app cannot poke the TV's activity", "DEVICE_POWER" not in lman and "userActivity(" not in hold.split("*/", 1)[1])
 check("WAKE_LOCK is already declared (no new permission for this)", 'android.permission.WAKE_LOCK' in lman)
 check("the provider answers .../setup_hold with one row, held 1 or 0, from SaverHold.held()",
@@ -44,6 +44,11 @@ check("the dream ends at once while it is held, before anything is shown or coun
       and att.index("setupWaiting") < att.index("Showing.enter()") < att.index("show(true)"))
 check("the screen-on flag of a run stays as it was", "addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)" in act and "clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)" in act)
 check("the whole run's hold stays too (SetupHold, .../setup)", '"setup".equals(uri.getLastPathSegment())' in prov and "if (!NowPlayingBridge.setupRunning(this)) return;" in dream)
+upd = (ROOT / "android/launcher/src/main/java/sa/urtv/home/phone/PhoneUpdater.java").read_text(encoding="utf-8")
+inst = upd.split("public static Map<String, Object> install(")[1].split("\n    }\n")[0]
+check("the update holds the screensaver from «اضغط للتحديث» (install) for SaverHoldRule.UPDATE_MS, once the checks and the permission passed", "SaverHold.begin(app, sa.urtv.home.setup.SaverHoldRule.UPDATE_MS, HOLD);" in inst
+      and inst.index("need_permission") < inst.index("SaverHold.begin") < inst.index("startQueue()"))
+check("...and frees it when the state leaves downloading / waiting_owner (done, error, declined), only its own hold (endIf)", 'if (!s.equals("waiting_owner") && !s.equals("downloading")) sa.urtv.home.setup.SaverHold.endIf(HOLD);' in upd)
 if not shutil.which("javac"):
     print("SKIP saver hold rule: no javac here")
     sys.exit(1 if failed else 0)

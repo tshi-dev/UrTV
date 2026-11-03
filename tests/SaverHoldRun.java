@@ -19,6 +19,8 @@ public final class SaverHoldRun {
         check("free long after", !SaverHoldRule.held(t, t + 3_600_000));
         check("a clock that went back counts as no wait", !SaverHoldRule.held(t, t - 1));
         check("MAX_MS is the 180 s wait and a minute", SaverHoldRule.MAX_MS == 240_000);
+        check("the update's hold is five minutes: held at 4:59, free at 5:00, and the old wait is unchanged", SaverHoldRule.UPDATE_MS == 300_000 && SaverHoldRule.held(t, t + 299_999, SaverHoldRule.UPDATE_MS)
+            && !SaverHoldRule.held(t, t + 300_000, SaverHoldRule.UPDATE_MS) && !SaverHoldRule.held(t, t + SaverHoldRule.MAX_MS));
         System.out.println(failed == 0 ? "ALL PASS" : "FAILED " + failed);
         if (failed != 0) System.exit(1);
     }

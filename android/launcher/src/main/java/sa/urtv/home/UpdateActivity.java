@@ -131,6 +131,7 @@ public class UpdateActivity extends Activity {
     private View renderRecord() {
         if (result.kind == UpdateRecords.Kind.SUCCESS) {
             col.addView(text(UpdateText.done(UpdateText.versionOf(BuildConfig.MARKETING, result.target), S::tv), 22, "Medium", GOLD, Dir.start()), right(dp(18)));
+            return doneButton();
         } else {
             col.addView(text(S.tv(UpdateText.NOT_DONE), 22, "Medium", RED, Dir.start()), right(dp(6)));
             col.addView(text(UpdateText.failedStep(S.tv(UpdateOrder.label(result.step)), S::tv), 15, "Regular", DIM, Dir.start()), right(dp(14)));
@@ -181,7 +182,7 @@ public class UpdateActivity extends Activity {
                 return null;
             case "done":
                 col.addView(text(UpdateText.done(newest, S::tv), 22, "Medium", GOLD, Dir.start()), right(dp(16)));
-                return null;
+                return doneButton();
             case "error":
                 return renderError(why, detail);
             default:
@@ -222,6 +223,25 @@ public class UpdateActivity extends Activity {
         col.addView(text(S.tv(UpdateText.AI_MESSAGE), 20, "Medium", TEXT, Dir.start()), right(dp(8)));
         TextView repo = text("⁦" + UpdateText.REPO + "⁩", 12, "Regular", DIM, Dir.start());
         col.addView(repo, right(dp(18)));
+    }
+
+    /** «تم»: the end of an update goes to the home itself (the screen that stayed in front after the home install was this one, not the home; step 27) */
+    private View doneButton() {
+        return button(S.t("تم"), GOLD, new View.OnClickListener() {
+            @Override public void onClick(View v) { toHome(); }
+        }, 52);
+    }
+
+    private void toHome() {
+        startActivity(new android.content.Intent(this, MainActivity.class).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK | android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        finish();
+    }
+
+    /** Back from the screen that says the update is done leaves for the home, not for whatever app was in front before */
+    @Override
+    public void onBackPressed() {
+        boolean done = (result != null && result.kind == UpdateRecords.Kind.SUCCESS) || "done".equals(PhoneUpdater.status().get("status"));
+        if (done) toHome(); else super.onBackPressed();
     }
 
     private View checkButton() {

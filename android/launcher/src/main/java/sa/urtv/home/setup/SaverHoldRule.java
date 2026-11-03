@@ -11,8 +11,16 @@ public final class SaverHoldRule {
     /** ms: the setup's wait for the answer (180 s, SetupRunner) and a minute more; past it the screensaver is free again */
     public static final long MAX_MS = 240_000;
 
+    /** ms: the update's install questions («اضغط للتحديث» to the last answer): five minutes, then the screensaver is free again (step 27) */
+    public static final long UPDATE_MS = 300_000;
+
     /** since: when the wait began (0 = no wait); now: the clock (the same one). A clock that went back counts as no wait. */
     public static boolean held(long since, long now) {
-        return since > 0 && now >= since && now - since < MAX_MS;
+        return held(since, now, MAX_MS);
+    }
+
+    /** the same for a hold of its own length */
+    public static boolean held(long since, long now, long max) {
+        return since > 0 && now >= since && now - since < max;
     }
 }
