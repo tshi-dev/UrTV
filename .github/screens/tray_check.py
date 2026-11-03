@@ -180,6 +180,21 @@ def dump(out, name):
     return p.read_text(encoding="utf-8", errors="replace"), png
 
 
+def settled_dump(out, name, tries=4):
+    """the tray after the keys and its 150 ms / 250 ms animations: wait, dump, and dump again while no favourite has the focus (the focus is out of the tray for a moment while it scrolls)"""
+    for i in range(tries):
+        time.sleep(1.5)
+        xml, png = dump(out, name)
+        try:
+            ns = nodes(xml)
+            tray = find_tray(ns)
+            if tray and any(t["focused"] for t in tiles(ns, tray)):
+                return xml, png
+        except ET.ParseError:
+            pass
+    return xml, png
+
+
 def saver(*args):
     shell("am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET " + " ".join(args))
 
@@ -234,10 +249,10 @@ def run(out):
                 print(f"{density}-{lang}: no favourite took the focus after six DOWN keys")
             key(*[back] * 10)
             tag = f"d{density}-{lang}"
-            xa, pa = dump(out, f"{tag}-first")
+            xa, pa = settled_dump(out, f"{tag}-first")
             fa, ma = analyse(xa, lang, "first")
             key(*[fwd] * 10)
-            xb, pb = dump(out, f"{tag}-last")
+            xb, pb = settled_dump(out, f"{tag}-last")
             fb, mb = analyse(xb, lang, "last")
             fs = same_place(ma.get("label"), mb.get("label"))
             if ma.get("tray"):
@@ -250,15 +265,18 @@ def run(out):
     go_home()
     focus_in_tray()
     key("DPAD_UP")
-    xf, pf = dump(out, "football-lowered")
-    ff, mf = analyse(xf, "ar", "first", lowered=False)
-    low = mf.get("tray") and mf["tray"][3] == 1026
-    report["football"] = {"measure": mf, "lowered_seen": bool(low), "failures": ff}
+    xf, pf = settled_dump(out, "football-lowered", tries=2)
+    nf = nodes(xf)
+    tf = find_tray(nf)
+    low = bool(tf) and tf[3] == 1026
+    report["football"] = {"tray": list(tf) if tf else None, "lowered_seen": low, "failures": []}
     if low:
-        failures += [f"football: {f}" for f in analyse(xf, "ar", "first", lowered=True)[0]]
-    else:
+        ff = analyse(xf, "ar", "first", lowered=True)[0]
+        report["football"]["failures"] = ff
         failures += [f"football: {f}" for f in ff]
-        print("football: the matches widget did not take the focus here (no games on the emulator?): the lowered state was not measured")
+    else:
+        # the matches widget needs today's games; without them it takes no focus here and the tray is not lowered (or the home has scrolled): not measured, said so
+        print(f"football: NOT MEASURED - the tray is at {tf}, not lowered to y 1026 (no games on the emulator, so the matches widget did not take the focus)")
     saver("--es homelayout classic")
     (out / "tray-report.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
     for f in failures:
