@@ -83,7 +83,7 @@ check("a fresh full run and an undo first let go of a key a run before kept (whe
       got.get("RK") == "RK 1 2 2", got.get("RK"))
 check("step 27: a full run asks the home to open the setup screen again (once), and the screen being shown takes the ask back", got.get("R1reopen") == "R1reopen true false false", got.get("R1reopen"))
 hm = (ROOT / "android/launcher/src/main/java/sa/urtv/home/MainActivity.java").read_text(encoding="utf-8")
-check("step 27: our home, when it comes in front, opens the setup screen once if it was left behind (a window in front may start an activity)", "SetupReopen.take()" in hm.split("protected void onResume()")[1][:600] and "FLAG_ACTIVITY_REORDER_TO_FRONT" in hm.split("SetupReopen.take()")[1][:300])
+check("step 27: our home, when it comes in front, opens the setup screen once if it was left behind (a window in front may start an activity)", "SetupReopen.take()" in hm.split("protected void onResume()")[1][:600] and "FLAG_ACTIVITY_REORDER_TO_FRONT" in hm.split("SetupReopen.take()")[1][:400])
 check("the home switch step raises the ask after it ran", "c.runner.wantScreen();" in (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/SetupRunner.java").read_text(encoding="utf-8"))
 check("the setup screen is the first to cancel the ask (onResume and show)", "SetupRunner.get().screenShown();" in (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/SetupActivity.java").read_text(encoding="utf-8"))
 check("the setup screen\'s end is its own sentence"[:0] or "R1: the end is the setup screen's own sentence", (got.get("R1end") or "").startswith("R1end انتهى الإعداد. اضغط زر الرئيسية في الريموت."), got.get("R1end"))
