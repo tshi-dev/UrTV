@@ -16,7 +16,7 @@ for i in $(seq 1 "$N"); do
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="urtv.stub$i">
   <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="30"/>
-  <application android:label="Stub $i">
+  <application android:label="Stub $i" android:hasCode="false">
     <activity android:name="android.app.Activity" android:exported="true">
       <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LEANBACK_LAUNCHER"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
     </activity>
