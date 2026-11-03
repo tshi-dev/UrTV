@@ -502,3 +502,20 @@ who launched an app: Android's task stack, not a START from anyone: our home's t
 | B8 football names | OK | Arabic «الهلال × شباب الأهلي» full; English «Al-Hilal × Shabab Al-Ahli Dubai», no «…», but the long name wraps onto 2 lines («Shabab Al- / Ahli Dubai») |
 | B9 setup language switch | **PROBLEM** | switches both ways at once ✓. **The two switch labels are cut in half** (box [240,191,560,279] / [584,191,904,279], 88 px; only the top of «English»/«العربية» shows). **After OK on the switch the focus jumps to «جهّز كل شي» / «Set everything up»**: a second OK would start the run |
 | B10 «مباشر» | small | «مباشر | عادي» / «Live | Normal» shown, not cut, right in both. In Live mode it says «آخر تحديث ١:١٩ م · أسعار متأخرة» / «Updated 1:19 PM · delayed prices» 27 min later: prices did not move; the reason given is «delayed prices» |
+
+## step 26 — part D (marketing screenshots) and B7, build 180
+Demo-clean: city «مكة المكرمة», method auto (hub: «مكة المكرمة · تلقائي · أم القرى»); own photos: 0 (built-in only); owner's tasks at start: none; demo tasks 2; dock set to YouTube, Netflix, Shahid (the dock script kept Apple TV and Crunchyroll too); holdings أرامكو 50 and الراجحي 20 (made-up costs). **Apple 5: skipped**: the TV's «أضف سهمًا» list has only the 30 Tadawul shares («أسهل من الجوال» for others). No PIN, code, IP, serial or toast on any shot; the Wi-Fi name on 03 blurred.
+Images: 29 marketing + 12 part B shots, checked, on the PC (real city, weather, prayer times and Wi-Fi name blurred). **Not pushed yet**: pushing images to this public repo was stopped on the PC side; waiting for the owner's OK.
+- ar-sand 01–12, 14a–c, 15, 16: done. **13 skipped**: OK on the match detail landed on «ذكّرني قبلها بنصف ساعة» and added a task («أضيف إلى المهام»); after that task was deleted, «المباريات» showed **«لا مباريات اليوم»** twice while the football widget still showed today's match
+- ar-glass 01, 04, 11, 14a–c and en-glass 01, 04, 11, 14a–c: done
+
+| # | result | note |
+|---|---|---|
+| B7 «أخفِ المبالغ» | OK | on → value, profit, quantity, cost «••••» (the share price stays); stays on after switching tabs, after Back + reopen, after Home + reopen; the focus stays on «أظهر المبالغ» (no jump to «السوق» any more) |
+
+New problems seen in the shots:
+- **«الذهب والنفط» card on «قائمتي»: names drawn one letter per line** (a very narrow text column: «ا / ل / ذ / ه / ب …», «G / o / l / d …»), both languages, both looks
+- **the app-name label above the favourites is not tied to the focused tile**: in Arabic with the focus on YouTube (rightmost) «يوتيوب» shows above the leftmost tile (ar-sand-01, ar-glass-01); other times it follows the focus. The owner asks for one fixed place for the name
+- the dock in Arabic shows Downloader where English shows Apple TV, same dock setting
+- after saving a holding the focus jumps to «مباشر» at the top
+- matches page «لا مباريات اليوم» while the widget shows a match (above)
