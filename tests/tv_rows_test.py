@@ -32,9 +32,10 @@ check("the row is its own row below the first screen (the owner: the tray never 
       and main.index("content.addView(hero") < main.index("content.addView(tvRowsBox") < main.index("content.addView(appsLabel")
       and "tvRowsBox.setPadding(bar(FavBar.PAD_SIDE), 0, bar(FavBar.PAD_SIDE), 0);" in main
       and "dockRow.setPadding(bar(FavBar.PAD_SIDE), bar(FavBar.PAD_TOP), bar(FavBar.PAD_SIDE), bar(FavBar.PAD_TOP));" in main)
-check("no card is cut: no horizontal scroll, at most as many cards as favourites, at most the five a tray shows, each a favourite tile (FavBar)",
-      "HorizontalScrollView" not in show and "int n = Math.min(FavBar.SHOWN, TvRowsPick.cells(dockCards.size(), MIN_DOCK));" in show and "line.addView(box, dockCell(i, n));" in show
-      and "int shown = Math.min(n, r.items.size());" in show and "line.addView(new View(this), dockCell(i, n));" in show)
+check("no card is cut: no horizontal scroll, at most as many cards as favourites, at most the cells a tray shows (the bar-size setting, 5 by default, FavBar.shown), each a favourite tile (FavBar)",
+      "HorizontalScrollView" not in show and "int n = Math.min(barShown(), TvRowsPick.cells(dockCards.size(), MIN_DOCK));" in show and "line.addView(box, dockCell(i, n, dockCards.size()));" in show
+      and "int shown = Math.min(n, r.items.size());" in show and "line.addView(new View(this), dockCell(i, n, dockCards.size()));" in show
+      and "private int barShown() { return FavBar.shown(barSetting, dockCards.size()); }" in main)   # the same width as the tray's tiles, whatever N is: 5 to 10 whole cards
 check("tight: the name 14 dp under the favourites and 10 dp over its cards, one row only", "tvRowsBox.addView(name, llp(-2, -2, 0, dp(14), 0, dp(10)));" in show
       and "TvRows.Row row = new Row();" not in show)
 card = fn(main, "private View tvCard(TvRows.Item it)")
