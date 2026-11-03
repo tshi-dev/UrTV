@@ -480,11 +480,7 @@ public class MainActivity extends Activity {
         tray.setHorizontalScrollBarEnabled(false);
         tray.setFillViewport(true);
         tray.setClipToPadding(true);   // a tile scrolled half out is cut at the tray's edge, never drawn over the photo
-        tray.setClipChildren(true);
-        tray.setOutlineProvider(new android.view.ViewOutlineProvider() {   // build 180: a sixth tile was drawn outside the tray; everything the tray holds is cut to its rounded outline
-            @Override public void getOutline(View v, android.graphics.Outline o) { o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), bar(FavBar.RADIUS)); }
-        });
-        tray.setClipToOutline(true);
+        // CONTROL: no outline clip
         tray.setBackground(band);
         tray.addView(dockRow, new FrameLayout.LayoutParams(-2, -1));
         tray.setOnScrollChangeListener((v, x, y, ox, oy) -> placeName());
@@ -2297,7 +2293,7 @@ public class MainActivity extends Activity {
         boolean inBar = f != null && dockCards.contains(f) && edit == null;
         nameRow.animate().alpha(inBar ? 1f : 0f).setDuration(FavBar.MS).start();
         if (!inBar || nameCard == null) return;
-        nameRow.setTranslationX(0);   // the name has ONE place: above the tray at its start edge (right in Arabic, left in English), never following a tile (build 180)
+        nameRow.setTranslationX(-300);   // CONTROL: the name moved; the name has ONE place: above the tray at its start edge (right in Arabic, left in English), never following a tile (build 180)
     }
 
     /**
