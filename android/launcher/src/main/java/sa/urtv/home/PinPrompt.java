@@ -76,14 +76,14 @@ final class PinPrompt {
         TextView help = PinUi.text(a, hint, 18, PinUi.TEXT);
         help.setLineSpacing(dp(a, 3), 1.1f);
         LinearLayout.LayoutParams hp = new LinearLayout.LayoutParams(-1, -2);
-        hp.topMargin = dp(a, 14);
+        hp.topMargin = dp(a, 12);
         info.addView(help, hp);
         TextView masked = PinUi.text(a, "○ ○ ○ ○", 38, PinUi.GOLD);
         masked.setGravity(Gravity.CENTER);
         masked.setTextDirection(View.TEXT_DIRECTION_LTR);
         LinearLayout.LayoutParams mp = new LinearLayout.LayoutParams(-1, dp(a, 72));
         mp.topMargin = dp(a, 24);
-        mp.bottomMargin = dp(a, 20);
+        mp.bottomMargin = dp(a, 12);
         info.addView(masked, mp);
         info.addView(PinUi.text(a, S.t("يُفتح تلقائياً بعد الرقم الرابع\nاستخدم أرقام الريموت أو الأسهم"), 16, PinUi.MUTED), new LinearLayout.LayoutParams(-1, -2));
         Runnable redraw = () -> {
@@ -154,7 +154,7 @@ final class PinPrompt {
         }
         Button cancel = PinUi.button(a, S.t("إلغاء"));
         LinearLayout.LayoutParams ap = new LinearLayout.LayoutParams(-1, dp(a, 48));
-        ap.topMargin = dp(a, 20);
+        ap.topMargin = dp(a, 12);
         keypad.addView(cancel, ap);
         cancel.setOnClickListener(v -> dialog.cancel());
         for (int i = 0; i < 12; i++) {   // the D-pad walks the keys one step at a time and stops at the edges

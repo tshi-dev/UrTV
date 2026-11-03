@@ -21,7 +21,7 @@
         android:paddingStart="64dp"
         android:paddingTop="40dp"
         android:paddingEnd="64dp"
-        android:paddingBottom="22dp">
+        android:paddingBottom="28dp">
 
         <TextView
             android:id="@+id/count"

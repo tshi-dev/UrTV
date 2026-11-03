@@ -27,7 +27,7 @@
         android:paddingStart="56dp"
         android:paddingTop="34dp"
         android:paddingEnd="56dp"
-        android:paddingBottom="26dp">
+        android:paddingBottom="28dp">
 
         <Space
             android:layout_width="1dp"

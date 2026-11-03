@@ -21,7 +21,7 @@
         android:paddingStart="72dp"
         android:paddingTop="44dp"
         android:paddingEnd="72dp"
-        android:paddingBottom="24dp">
+        android:paddingBottom="28dp">
 
         <TextView
             android:id="@+id/title"
@@ -39,7 +39,7 @@
             android:layout_weight="1"
             android:clipToPadding="false"
             android:divider="@android:color/transparent"
-            android:dividerHeight="9dp"
+            android:dividerHeight="8dp"
             android:fadingEdge="none"
             android:listSelector="@android:color/transparent"
             android:paddingBottom="8dp"

@@ -1003,8 +1003,8 @@ public class MainActivity extends Activity {
 
     private LinearLayout.LayoutParams rowCell(int i, int n, int height) {
         LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(0, height, 1f);
-        p.setMarginStart(i == 0 ? 0 : dp(10));
-        p.setMarginEnd(i == n - 1 ? 0 : dp(10));
+        p.setMarginStart(i == 0 ? 0 : dp(6));   // 6 + 6 dp = 24 px apart at 1080p: the same gap as the favourites tray (FavBar.GAP)
+        p.setMarginEnd(i == n - 1 ? 0 : dp(6));
         return p;
     }
 

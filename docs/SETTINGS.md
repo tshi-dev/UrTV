@@ -37,6 +37,11 @@ once), Back returns to the button it came from. With «اللغة» English the 
 then run two to a row from the left). Which row is where: `SettingsHub.ROWS` in the screensaver app, and the list in
 docs/FEATURES.md. An on/off row has no switch: three green triangles at its start and its word in green while it is on. The commands below are unchanged.
 
+**By keys (D-pad), to the two football and markets pages** (tested path; Arabic screen, in English the sideways keys swap): *Settings → «المزيد» → «المباريات والأسواق»:*
+from the first button «الأذان», **▼ ×5** (to «أرسل تقرير»), **◀** to «المزيد», OK; OK on its first button «المباريات والأسواق»; the focus starts on **«مباريات اليوم»**: OK opens the matches page.
+Back, then **▼ ×4** to **«صفحة الأسواق»**, OK opens the markets page. From the home: OK on the stocks card (a home card set to «الأسهم») opens «الأسواق»; OK on the games widget
+(`optimize/saver.sh homelayout football`) opens «المباريات» on that game.
+
 ## The screensaver «شاشة تلفزيونك»
 
 | They ask for | The setting | Command |

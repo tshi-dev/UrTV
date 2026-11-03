@@ -62,12 +62,12 @@ public class SetupActivity extends Activity {
         col.setOrientation(LinearLayout.VERTICAL);
         col.setPadding(dp(120), dp(36), dp(120), dp(48));
         scroll.addView(col);
-        col.addView(text(S.t("إعداد تلفزيوني"), 26, "Medium", TEXT), right(dp(10)));
+        col.addView(text(S.t("إعداد تلفزيوني"), 26, "Medium", TEXT), right(dp(12)));
         body = new LinearLayout(this);
         body.setOrientation(LinearLayout.VERTICAL);
         col.addView(body, right(0));
         status = text("", 16, "Medium", GOLD);
-        col.addView(status, right(dp(6)));
+        col.addView(status, right(dp(8)));
         detail = text("", 13, "Regular", DIM);
         col.addView(detail, right(0));
         setContentView(scroll);
@@ -127,15 +127,15 @@ public class SetupActivity extends Activity {
     }
 
     private void buildStart(SetupRunner r) {
-        add(text(S.t("يجهّز التلفزيون نفسه، بدون كمبيوتر ولا جوال. اضغط «جهّز كل شي»: يسألك التلفزيون مرة واحدة «السماح بتصحيح USB؟»، ثم نعرض عليك ما سنفعله بالضبط قبل أي تغيير."), 15, "Regular", TEXT), dp(10));
-        add(text(S.t("قبل البدء: فعّل «تصحيح USB» (الإعدادات ← تفضيلات الجهاز ← حول ← اضغط «Build» سبع مرات ← خيارات المطوّر ← تصحيح USB). وخلك عند التلفزيون: لما تطلع الرسالة اختر «السماح دائماً»."), 13, "Regular", GOLD), dp(14));
-        if (SetupRunner.resumable(new FileStore(this))) add(text(S.t("إعداد سابق ما اكتمل: «جهّز كل شي» يكمله من حيث توقف."), 14, "Regular", TEXT), dp(10));
+        add(text(S.t("يجهّز التلفزيون نفسه، بدون كمبيوتر ولا جوال. اضغط «جهّز كل شي»: يسألك التلفزيون مرة واحدة «السماح بتصحيح USB؟»، ثم نعرض عليك ما سنفعله بالضبط قبل أي تغيير."), 15, "Regular", TEXT), dp(12));
+        add(text(S.t("قبل البدء: فعّل «تصحيح USB» (الإعدادات ← تفضيلات الجهاز ← حول ← اضغط «Build» سبع مرات ← خيارات المطوّر ← تصحيح USB). وخلك عند التلفزيون: لما تطلع الرسالة اختر «السماح دائماً»."), 13, "Regular", GOLD), dp(16));
+        if (SetupRunner.resumable(new FileStore(this))) add(text(S.t("إعداد سابق ما اكتمل: «جهّز كل شي» يكمله من حيث توقف."), 14, "Regular", TEXT), dp(12));
         start = button(S.t("جهّز كل شي"));
         start.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(false); } });
-        add(start, dp(10));
+        add(start, dp(12));
         undo = button(S.t("تراجع (يرجّع التلفزيون كما كان)"));
         undo.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(true); } });
-        add(undo, dp(14));
+        add(undo, dp(16));
         // «جهّز كل شي» has the focus once the screen is laid out (asked before that, the TV's first OK only put the focus on it: nothing happened)
         start.post(new Runnable() { @Override public void run() { start.requestFocus(); } });
         SetupRunner.End e = r.end();
@@ -148,7 +148,7 @@ public class SetupActivity extends Activity {
         if (p == null) p = new SetupRunner.Preview();
         add(text(S.t("هذا ما سنفعله في تلفزيونك، بالترتيب. ما تغيّر شيء بعد:"), 15, "Medium", TEXT), dp(8));
         List<String> plan = SetupRunner.planLines(p, TR);
-        for (int i = 0; i < plan.size(); i++) add(text(digits((i + 1) + ". " + plan.get(i)), 14, "Regular", TEXT), dp(6));
+        for (int i = 0; i < plan.size(); i++) add(text(digits((i + 1) + ". " + plan.get(i)), 14, "Regular", TEXT), dp(8));
         final boolean already = p.tvbro && p.smarttube;
         final TextView box = button("");
         final String words = SetupRunner.extrasLine(p, TR);
@@ -163,16 +163,16 @@ public class SetupActivity extends Activity {
         add(box, dp(12));
         final TextView begin = button(S.t("ابدأ"));
         begin.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { SetupRunner.get().confirm(extras); } });
-        add(begin, dp(10));
+        add(begin, dp(12));
         TextView no = button(S.t("إلغاء"));
         no.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { SetupRunner.get().cancel(); } });
-        add(no, dp(10));
+        add(no, dp(12));
         begin.post(new Runnable() { @Override public void run() { begin.requestFocus(); } });
         say("", GOLD);
     }
 
     private void buildProgress(SetupRunner r) {
-        add(text(r.kind() == SetupRunner.Kind.UNDO ? S.t("نرجّع التلفزيون كما كان:") : S.t("الإعداد يعمل. لا تطفئ التلفزيون، وقد يُعاد تشغيله وحده ويكمل."), 15, "Medium", TEXT), dp(10));
+        add(text(r.kind() == SetupRunner.Kind.UNDO ? S.t("نرجّع التلفزيون كما كان:") : S.t("الإعداد يعمل. لا تطفئ التلفزيون، وقد يُعاد تشغيله وحده ويكمل."), 15, "Medium", TEXT), dp(12));
         for (SetupRunner.Step s : r.steps()) {
             TextView t = text("", 15, "Regular", DIM);
             stepViews.add(t);
@@ -207,13 +207,13 @@ public class SetupActivity extends Activity {
 
     private void buildWifi() {
         add(text(S.t("خطوة منك قبل الشاشة الرئيسية"), 18, "Medium", TEXT), dp(8));
-        add(text(S.tv(SetupRunner.WIFI_ASK_TEXT), 15, "Regular", TEXT), dp(14));
+        add(text(S.tv(SetupRunner.WIFI_ASK_TEXT), 15, "Regular", TEXT), dp(16));
         final TextView more = button(S.t("كمّل"));
         more.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(false); } });
-        add(more, dp(10));
+        add(more, dp(12));
         undo = button(S.t("تراجع (يرجّع التلفزيون كما كان)"));
         undo.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(true); } });
-        add(undo, dp(14));
+        add(undo, dp(16));
         more.post(new Runnable() { @Override public void run() { more.requestFocus(); } });
         say("", GOLD);
     }
@@ -276,7 +276,7 @@ public class SetupActivity extends Activity {
             for (SetupRunner.Step s : r.steps()) {
                 TextView t = text("", 14, "Regular", DIM);
                 stepViews.add(t);
-                add(t, dp(3));
+                add(t, dp(4));
             }
             mode = "progress";   // the step lines are drawn the same way, once
             updateProgress(r);
@@ -315,17 +315,17 @@ public class SetupActivity extends Activity {
             }
         }
         add(text(S.t("بعد الإعداد أطفئ التصحيح:"), 15, "Medium", TEXT), dp(4));
-        add(text(digits(S.t("1. الإعدادات ← تفضيلات الجهاز ← خيارات المطوّر.")), 14, "Regular", TEXT), dp(2));
-        add(text(digits(S.t("2. اختر «إلغاء تراخيص تصحيح USB».")), 14, "Regular", TEXT), dp(2));
+        add(text(digits(S.t("1. الإعدادات ← تفضيلات الجهاز ← خيارات المطوّر.")), 14, "Regular", TEXT), dp(4));
+        add(text(digits(S.t("2. اختر «إلغاء تراخيص تصحيح USB».")), 14, "Regular", TEXT), dp(4));
         add(text(digits(S.t("3. أطفئ «تصحيح USB». («تراجع» من هنا يحتاجه مفعّلاً.)")), 14, "Regular", TEXT), dp(12));
         add(text(S.t("لو صار شي:"), 15, "Medium", TEXT), dp(4));
-        add(text(digits(S.t("• الشاشة الرئيسية ما فتحت تلفزيونك: انتظر 5 دقائق ترجع الأصلية وحدها، أو اضغط «تراجع».")), 14, "Regular", TEXT), dp(2));
-        add(text(S.t("• تطبيق تحتاجه صار موقوفاً: «تراجع» يرجّع كل ما أوقفناه."), 14, "Regular", TEXT), dp(2));
-        add(text(S.t("• انقطع الواي فاي: اتصل به من إعدادات التلفزيون ← الشبكة."), 14, "Regular", TEXT), dp(2));
+        add(text(digits(S.t("• الشاشة الرئيسية ما فتحت تلفزيونك: انتظر 5 دقائق ترجع الأصلية وحدها، أو اضغط «تراجع».")), 14, "Regular", TEXT), dp(4));
+        add(text(S.t("• تطبيق تحتاجه صار موقوفاً: «تراجع» يرجّع كل ما أوقفناه."), 14, "Regular", TEXT), dp(4));
+        add(text(S.t("• انقطع الواي فاي: اتصل به من إعدادات التلفزيون ← الشبكة."), 14, "Regular", TEXT), dp(4));
         add(text(S.t("• تبي التلفزيون كما كان: فعّل «تصحيح USB» واضغط «تراجع»."), 14, "Regular", TEXT), dp(12));
         undo = button(S.t("تراجع (يرجّع التلفزيون كما كان)")));
         undo.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(true); } });
-        add(undo, dp(10));
+        add(undo, dp(12));
         final TextView ok = button(S.t("تم"));
         ok.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -333,7 +333,7 @@ public class SetupActivity extends Activity {
                 show();
             }
         });
-        add(ok, dp(10));
+        add(ok, dp(12));
         ok.post(new Runnable() { @Override public void run() { ok.requestFocus(); } });
     }
 

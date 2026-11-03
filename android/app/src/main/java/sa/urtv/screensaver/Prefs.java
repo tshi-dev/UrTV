@@ -444,7 +444,7 @@ final class Prefs {
     /** The Gregorian month's names: "default" («أكتوبر») or "levant" («تشرين الأول»), on the screensaver and the home screen; #months=levant. */
     String months() { return "levant".equals(sp.getString("months", "default")) ? "levant" : "default"; }
     void setMonths(String v) { sp.edit().putString("months", "levant".equals(v) ? "levant" : "default").apply(); }
-    static String monthsLabel(String v) { return "levant".equals(v) ? "كانون الثاني، شباط، آذار…" : "يناير، فبراير، مارس…"; }
+    static String monthsLabel(String v) { return "levant".equals(v) ? "كانون الثاني، شباط، آذار" : "يناير، فبراير، مارس"; }
 
     /**
      * Three parts of the screens that can be hidden, each shown by default as it always was, and sent only when hidden so the fragment is

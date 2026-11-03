@@ -69,7 +69,7 @@ public class PhoneActivity extends Activity implements PrivateScreen {
         scroll.addView(frame);
         col = new LinearLayout(this);
         col.setOrientation(LinearLayout.VERTICAL);
-        col.setPadding(0, dp(20), 0, dp(16));
+        col.setPadding(0, dp(28), 0, dp(16));
         // wide enough for the code's two columns (the QR beside the address and the code) on one TV screen, no scrolling
         int wide = Math.min(Math.round(getResources().getDisplayMetrics().widthPixels / getResources().getDisplayMetrics().density) - 96, 1000);
         frame.addView(col, new FrameLayout.LayoutParams(dp(wide), -2, Gravity.CENTER_HORIZONTAL));
@@ -165,7 +165,7 @@ public class PhoneActivity extends Activity implements PrivateScreen {
                 @Override public void onClick(View v) { control.approve(); }
             });
             LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(0, dp(52), 1f);
-            p.setMarginEnd(dp(10));   // the screen is pinned right-to-left (English left-to-right): the end is between the two buttons
+            p.setMarginEnd(dp(12));   // the screen is pinned right-to-left (English left-to-right): the end is between the two buttons
             row.addView(allow, p);   // the start button first: the screen reads right to left (English: left to right)
             row.addView(deny, new LinearLayout.LayoutParams(0, dp(52), 1f));
             col.addView(row, button());

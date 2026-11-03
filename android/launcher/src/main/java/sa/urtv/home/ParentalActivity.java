@@ -310,7 +310,7 @@ public class ParentalActivity extends Activity {
         r.addView(new View(this), new LinearLayout.LayoutParams(0, 1, 1f));
         for (View c : new View[] {second, first}) {
             LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(dp(200), dp(44));
-            p.setMarginStart(dp(10));
+            p.setMarginStart(dp(12));
             r.addView(c, p);
         }
         rows.add(new View[] {second, first});

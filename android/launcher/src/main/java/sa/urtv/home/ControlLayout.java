@@ -10,7 +10,7 @@ final class ControlLayout {
 
     static final float MAX_W = 0.82f, MAX_H = 0.90f;
     /** dp: the panel's own padding on the sides, the gap between tiles, and what the title, its notice line and the padding take above and below the rows */
-    static final int SIDE_PAD = 36, GAP = 10, CHROME = 100;
+    static final int SIDE_PAD = 36, GAP = 12, CHROME = 100;
     /** dp: a tile at its best, and the least that still reads (icon, name, one line) */
     static final int TILE_W = 170, TILE_H = 116, MIN_W = 80, MIN_H = 72;
     /** dp: below these a tile is «compact» (smaller icon and text, one line under the name) */

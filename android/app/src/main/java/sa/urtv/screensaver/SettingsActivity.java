@@ -124,8 +124,10 @@ public class SettingsActivity extends Activity {
         hint.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         hint.setTypeface(font("Thmanyah-Regular"));
         hint.setGravity(Gravity.CENTER);
-        hint.setPadding(dp(72), dp(10), dp(72), dp(18));
-        column.addView(hint, new LinearLayout.LayoutParams(-1, -2));
+        hint.setPadding(dp(72), dp(10), dp(72), dp(8));
+        LinearLayout.LayoutParams hintLp = new LinearLayout.LayoutParams(-1, -2);
+        hintLp.bottomMargin = Math.round(getResources().getDisplayMetrics().heightPixels * 0.05f);   // the 5 % safe area: the hint ends at y 1026 of 1080
+        column.addView(hint, hintLp);
         root.addView(column, new FrameLayout.LayoutParams(-1, -1));
         setContentView(root);
         render();
@@ -2188,7 +2190,7 @@ public class SettingsActivity extends Activity {
         });
         glassCard(card);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
-        lp.bottomMargin = dp(9);
+        lp.bottomMargin = dp(8);
         if (!on(cat)) return card;
         if (pendingHeader != null && cat.equals(groupCat)) { drawHeader(pendingHeader); pendingHeader = null; }
         list.addView(card, lp);
