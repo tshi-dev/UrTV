@@ -465,3 +465,40 @@ Measured on 179, lang ar, home (bounds):
 - tray bottom 1026 = the safe-area edge exactly.
 Correction to steps 22/23: the «gap 20» on the home is NOT the favourites, it is the four round buttons at the top (`[116..184]`, `[204..272]`, `[292..360]`, `[380..448]`: gaps 20).
 Expected: tiles inside the tray with the same inset on all sides (24 px), no half tile at the edge (fit whole tiles, or fade the edge), the tray inside the safe area.
+
+## step 26 (final test of 4.2), build 180 — parts A and B (D and C follow)
+Start: Home ours, `wm size` override 1920x1080, muted, no PIN, lang ar, homelayout classic, no home card, updatechannel set to next for the update.
+Note before part A: found **Muted:false** once at a read before the log was running (after `am force-stop sa.urtv.home`, HOME, opening settings); muted again at once. Repeated the same three actions with a log: stayed muted. Cause not caught.
+
+### Part A, the update 179 → 180 (the app's own «تحديث تلفزيوني», not adb)
+Timeline (t=0 log start):
+- t+94: «تحديث جديد 4.2 · اضغط للتحديث» pressed; `UrTVUpdate: before the install: muted=true ours listed=false`; installer status=-1 → Android's confirm screen (screensaver app first)
+- t+140: screensaver installed (PACKAGE_REPLACED, MY_PACKAGE_REPLACED to sa.urtv.screensaver), status=0; second confirm screen (home app)
+- t+163: home installed: `Force stopping sa.urtv.home … installPackageLI` → `Force removing ActivityRecord … UpdateActivity: app died, no saved state`
+- t+163: **`am_proc_start … org.jellyfin.androidtv, top-activity`** → Jellyfin's MainActivity resumed. No `START u0` for it: Android resumed the next task in the recents stack when our task died
+- t+165: our process back only for `AdhanReceiver` (MY_PACKAGE_REPLACED); our home was **not** brought back to front
+- t+174: `UrTVA11y: check replaced: listed=false switch=0 running=true -> not_listed`; `UrTVUpdate: installer answered: status=0`
+- t+168 … t+497: Jellyfin stays in front until a key is pressed; muted at every 2 s line; no media session playing
+
+| # | result | note |
+|---|---|---|
+| A1 muted | OK | `Muted:true` at all 2 s lines (t+0 … t+497); 0 setStreamMute/adjustStreamVolume/setMasterMute lines in the log |
+| A2 no app opens by itself | **PROBLEM** | Jellyfin came to the front at t+163 (last-used app's task). Same mechanism as YouTube on 179: when the home package is replaced, its UpdateActivity task dies and Android resumes the next task. Our home is not started again after the install |
+| A3 UpdateCarry | **PROBLEM** | no `UpdateCarry` line at all in the log; the only UrTVUpdate lines are «before the install: muted=true ours listed=false» and «installer answered: status=-1/0» |
+
+who unmuted: nobody in this run (muted throughout).
+who launched an app: Android's task stack, not a START from anyone: our home's task was force-removed by the install (`installPackageLI`) and the previous app's task (Jellyfin) resumed as `top-activity`. Suggest: after MY_PACKAGE_REPLACED, start our MainActivity (or HOME) when the update was started from UpdateActivity.
+
+### Part B, the open items (1920x1080, dump bounds; Arabic, then English)
+| # | result | numbers |
+|---|---|---|
+| B1 favourites tray | **PROBLEM** | tray [128,768][1792,986] ✓ (y 768–986); tiles 304x170, insets 24 top/bottom/right/left ✓, gaps 24 ✓. But **the 6th tile (Spotify) is drawn outside the tray**: in Arabic at x 0–128 left of the tray, in English at x 1792–1920 right of it (dump bounds clip it to 0 width, the screen shows it). **Lowered state: none**: with a home card (temporary `home-card nextprayer`) and the focus on it, the tray stays at 768–986 (expected 808–1026). The focused tile grows to ~[1452,780][1780,964], 12 px from the tray edge. **The app's name label moves**: it sits above whichever tile has focus («يوتيوب» at x 1708, «شاهد» at x ~735); the owner asks that it stay in one place |
+| B2 round buttons | OK | [120..188] [212..280] [304..372] [396..464]: gaps 24, 24, 24 |
+| B3 «تلاوة وأذان» | half | rows 414–614, 630–830, 846–950: gaps 16, 16 ✓; footer bottom 1024 ✓. **Tabs gap 20, 20** (الأذان 1083–1291, الإذاعات 1311–1559, القرّاء 1579–1776): off the scale |
+| B4 PIN pad | OK | keys 218–219 wide, gaps 24/24 across, 24 between rows, «إلغاء» 24 below; nothing cut (temporary 1234, `pin off` right after; wrong tries 0) |
+| B5 settings hub | OK | title box bottom 230 → first row 262 (32); rows 472→496, 706→730: 24, 24. The 124 gap is gone |
+| B6 «الأسواق» | small | cards: content 40 px from each side (TASI [745..1824]/[785..1784], trend [96..713]/[136..673]) ✓ equal. Arabic: the change shows as «−(٪٠٫٣٣−)» with the minus signs on the wrong side (bidi). English: «Market direction» wraps to 2 lines and «10:00 AM» wraps («10:00 / AM»), so that card ends at 878 vs 858 for TASI |
+| B7 «أخفِ المبالغ» | in part D | (needs the made-up holdings) |
+| B8 football names | OK | Arabic «الهلال × شباب الأهلي» full; English «Al-Hilal × Shabab Al-Ahli Dubai», no «…», but the long name wraps onto 2 lines («Shabab Al- / Ahli Dubai») |
+| B9 setup language switch | **PROBLEM** | switches both ways at once ✓. **The two switch labels are cut in half** (box [240,191,560,279] / [584,191,904,279], 88 px; only the top of «English»/«العربية» shows). **After OK on the switch the focus jumps to «جهّز كل شي» / «Set everything up»**: a second OK would start the run |
+| B10 «مباشر» | small | «مباشر | عادي» / «Live | Normal» shown, not cut, right in both. In Live mode it says «آخر تحديث ١:١٩ م · أسعار متأخرة» / «Updated 1:19 PM · delayed prices» 27 min later: prices did not move; the reason given is «delayed prices» |
