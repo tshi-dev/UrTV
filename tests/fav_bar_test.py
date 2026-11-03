@@ -38,7 +38,10 @@ check("the only move: 40 px down in 250 ms for a widget, back up the same way", 
       and "bar(FavBar.WIDGET_DROP)" in main and "setDuration(FavBar.DROP_MS)" in main)
 if not shutil.which("javac"):
     print("SKIP fav bar: no javac here")
-    sys.exit(1 if failed else 0)
+    check("build 180: the tray cuts everything it holds to its rounded outline (a sixth tile was drawn outside it, x 0..128), and the name stays in one place: above the tray at its start edge, in line with the inner padding, never following a tile",
+      "tray.setClipToOutline(true);" in main_src and "tray.setClipChildren(true);" in main_src and "o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), bar(FavBar.RADIUS))" in main_src
+      and "nameRow.setTranslationX(0);" in main_src and "setMarginStart(bar(FavBar.PAD_SIDE))" in main_src and "FavBar.nameX(cardCentre" not in main_src)
+sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
     subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "FavBar.java"), str(ROOT / "tests/FavBarRun.java")], check=True)
     out = subprocess.run(["java", "-cp", tmp, "sa.urtv.home.FavBarRun"], check=True, capture_output=True).stdout.decode().split("\n")

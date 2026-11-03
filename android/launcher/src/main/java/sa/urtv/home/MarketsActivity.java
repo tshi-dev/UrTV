@@ -205,6 +205,10 @@ public class MarketsActivity extends Activity {
         collectFocusable(content, after);
         collectFocusable(actions, after);
         if (at >= 0 && at < after.size()) after.get(at).requestFocus();
+        else if (!(getCurrentFocus() != null && (tabViews.contains(getCurrentFocus()) || liveButtons.contains(getCurrentFocus())))) {   // nothing of the page had the focus (a dialog just closed): «أضف سهمًا» on «محفظتي», else the first thing in the tab, never «مباشر»
+            View to = tab == 2 && actions.getChildCount() > 1 ? actions.getChildAt(1) : after.isEmpty() ? null : after.get(0);
+            if (to != null) to.requestFocus();
+        }
         scroll.post(() -> scroll.scrollTo(0, sy));
     }
 
@@ -228,7 +232,7 @@ public class MarketsActivity extends Activity {
             main.postDelayed(this, 60_000);
         }
     };
-    private final Runnable changed = () -> main.post(() -> { if (tab == 2 && !isFinishing()) show(2, false); });
+    private final Runnable changed = () -> main.post(() -> { if (tab == 2 && !isFinishing()) redraw(); });
 
     @Override
     protected void onCreate(Bundle b) {
@@ -391,7 +395,7 @@ public class MarketsActivity extends Activity {
         String mm = (m < 10 ? "0" : "") + m;
         if (Digits.clock24()) return Digits.of(h + ":" + mm);
         int h12 = h % 12 == 0 ? 12 : h % 12;
-        return Digits.of(h12 + ":" + mm) + " " + (h < 12 ? S.t("ص") : S.t("م"));
+        return Digits.of(h12 + ":" + mm) + "\u00A0" + (h < 12 ? S.t("ص") : S.t("م"));   // no line break inside a time («10:00 / AM»)
     }
 
     /** the city's zone from the screensaver's settings, as the clock uses */
@@ -472,14 +476,22 @@ public class MarketsActivity extends Activity {
         LinearLayout t = card();
         if (tasi != null) t.addView(chartBlock(S.t("تاسي"), tasi, 34, 96), wrap());
         else t.addView(text(S.t("تاسي"), 18, "Medium", TEXT), wrap());
-        row1.addView(t, weight(1.75f, 0));
+        row1.addView(t, weight(1.6f, 0));
 
         // «اتجاه السوق»: the 30 companies we fetch (and it says so), and the session
         LinearLayout br = card();
         LinearLayout bh = new LinearLayout(this);
         bh.setGravity(Gravity.BOTTOM);
-        bh.addView(text(S.t("اتجاه السوق"), 18, "Medium", TEXT), new LinearLayout.LayoutParams(0, -2, 1f));
-        bh.addView(text(S.t("أكبر %s شركة", digits(MarketData.TADAWUL.length)), 13, "Regular", DIM), new LinearLayout.LayoutParams(-2, -2));
+        TextView trendTitle = text(S.t("اتجاه السوق"), 18, "Medium", TEXT);
+        trendTitle.setSingleLine(true);   // the title never wraps («Market direction» did in English); the small note beside it gives way
+        bh.addView(trendTitle, new LinearLayout.LayoutParams(-2, -2));
+        TextView trendNote = text(S.t("أكبر %s شركة", digits(MarketData.TADAWUL.length)), 13, "Regular", DIM);
+        trendNote.setSingleLine(true);
+        trendNote.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        trendNote.setGravity(Dir.end());
+        LinearLayout.LayoutParams noteLp = new LinearLayout.LayoutParams(0, -2, 1f);
+        noteLp.setMarginStart(dp(12));
+        bh.addView(trendNote, noteLp);
         br.addView(bh, wrap());
         int[] b = data.breadth();
         br.addView(new MarketChart(this).bar(new float[] {b[0], b[1], b[2]}, new int[] {UP, DIM, DOWN}, 0), sized(-1, 12, 16));
@@ -505,7 +517,7 @@ public class MarketsActivity extends Activity {
         se.addView(text(clock(10, 0), 13, "Regular", DIM), new LinearLayout.LayoutParams(0, -2, 1f));
         se.addView(text(S.t("%s · مزاد الإغلاق إلى %s", clock(15, 0), clock(15, 10)), 13, "Regular", DIM), new LinearLayout.LayoutParams(-2, -2));
         br.addView(se, gap(8));
-        row1.addView(br, weight(1f, 16));
+        row1.addView(br, weight(1.15f, 16));
         content.addView(row1, wrap());
 
         // the 3 that rose most and the 3 that fell most; «الأكثر نشاطًا» only when CI keeps the volume
@@ -695,16 +707,23 @@ public class MarketsActivity extends Activity {
     private void commodity(LinearLayout into, String name, String sym, double mul, String unit) {
         MarketData.Quote q = data.quotes.get(sym);
         if (q == null) return;
+        // two lines, so a narrow card never squeezes the name into a column of single letters (build 180): the name on the first, the line, the price and the change on the second
         LinearLayout r = new LinearLayout(this);
-        r.setGravity(Gravity.CENTER_VERTICAL);
-        r.addView(text(name, 16, "Regular", TEXT), new LinearLayout.LayoutParams(0, -2, 1f));
-        LinearLayout.LayoutParams lp = sized(64, 20, 0);
+        r.setOrientation(LinearLayout.VERTICAL);
+        r.addView(text(name, 16, "Regular", TEXT), wrap());
+        LinearLayout second = new LinearLayout(this);
+        second.setGravity(Gravity.CENTER_VERTICAL);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, dp(20), 1f);
         lp.setMarginEnd(dp(12));
-        r.addView(new MarketChart(this).line(q.c, Double.NaN, color(q), DIM, false, 1.5f), lp);
+        second.addView(new MarketChart(this).line(q.c, Double.NaN, color(q), DIM, false, 1.5f), lp);
         TextView px = text(money(q.p * mul, 2, unit), 16, "Medium", TEXT);
         px.setGravity(Dir.end());
-        r.addView(px, new LinearLayout.LayoutParams(dp(112), -2));
-        r.addView(pct(q.pct(), 14), new LinearLayout.LayoutParams(dp(72), -2));
+        px.setSingleLine(true);
+        second.addView(px, new LinearLayout.LayoutParams(-2, -2));
+        LinearLayout.LayoutParams pl = new LinearLayout.LayoutParams(-2, -2);
+        pl.setMarginStart(dp(12));
+        second.addView(pct(q.pct(), 14), pl);
+        r.addView(second, gap(4));
         into.addView(r, gap(12));
     }
 
@@ -912,7 +931,7 @@ public class MarketsActivity extends Activity {
             made.add(button(S.t("احذف"), false, v -> confirm(S.t("أحذف «%s» من محفظتك؟", S.tv(MarketData.name(code))), () -> {
                 d.dismiss();
                 Portfolio.save(this, Holdings.remove(Portfolio.load(this), code));
-                show(2, false);
+                redraw();
             })));
         } else if (!code.startsWith("^")) {
             boolean listed = watchlist().contains(code);
@@ -1115,7 +1134,7 @@ public class MarketsActivity extends Activity {
             if (next == null) { toast(S.t("المحفظة ممتلئة: %s سهمًا", digits(Holdings.MAX))); return; }
             if (!Portfolio.save(this, next)) { toast(S.t("ما حُفظ")); return; }
             d.dismiss();
-            show(2, false);
+            redraw();   // the focus stays where it was, or goes to «أضف سهمًا» (it used to fall to the first thing on the page: «مباشر»)
         });
         save.setBackground(GlassPaint.focused(this, look, ACCENT, 14));
         bottom.addView(save, weight(1f, 0));
@@ -1177,7 +1196,7 @@ public class MarketsActivity extends Activity {
         View wipe = settingRow(S.t("احذف المحفظة"), S.t("كل الأسهم وعمليات الشراء، من هذا التلفزيون"), false, v -> confirm(S.t("أحذف المحفظة كلها من هذا التلفزيون؟ لا يمكن التراجع."), () -> {
             Portfolio.wipe(this);
             d.dismiss();
-            show(2, false);
+            redraw();
             toast(S.t("حُذفت المحفظة"));
         }));
         box.addView(wipe, gap(8));
@@ -1290,13 +1309,13 @@ public class MarketsActivity extends Activity {
             p.setMarginStart(dp(16));
             p.bottomMargin = dp(4);
             String s = MarketData.signed(r.change(q.p), 2) + "  (" + MarketData.signed(r.pct(q.p), 2) + "%)";
-            l.addView(ltr(text(MarketData.show(s, Digits.latin()), sp * 0.5f, "Medium", r.pct(q.p) >= 0 ? UP : DOWN)), p);
+            l.addView(ltr(text(MarketData.isolate(MarketData.show(s, Digits.latin())), sp * 0.5f, "Medium", r.pct(q.p) >= 0 ? UP : DOWN)), p);
         }
         return l;
     }
 
     private TextView pct(double v, float sp) {
-        TextView t = text(Double.isNaN(v) ? "—" : MarketData.show(MarketData.signed(v, 2) + "%", Digits.latin()), sp, "Medium", Double.isNaN(v) ? DIM : v >= 0 ? UP : DOWN);
+        TextView t = text(Double.isNaN(v) ? "—" : MarketData.isolate(MarketData.show(MarketData.signed(v, 2) + "%", Digits.latin())), sp, "Medium", Double.isNaN(v) ? DIM : v >= 0 ? UP : DOWN);
         return ltrStart(t);
     }
 

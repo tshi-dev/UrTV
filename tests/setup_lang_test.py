@@ -50,8 +50,8 @@ check("the switch is the first row of the start screen", start.index("add(langTo
 check("«العربية» and «English», each in its own language, Arabic first", '{SetupLang.AR, "العربية"}, {SetupLang.EN, "English"}' in tog)
 check("the one in use is the language now (Arabic until the person says else), marked as every on/off is (triangles, green words)",
       "code.equals(S.lang())" in tog and "ic_on" in tog and "OnOff.green" in tog)
-check("laid out by Dir, 24 px apart, buttons 160 × 44 dp with the buttons' 14 radius (no pills)", "row.setLayoutDirection(Dir.layout());" in tog and "p.setMarginStart(dp(12))" in tog
-      and "dp(160), dp(44)" in tog and "panel(this, look, 14)" in act and "setCornerRadius" not in tog)
+check("laid out by Dir, 24 px apart, buttons 160 dp wide, as tall as their text needs plus 24 px above and below, the buttons' 14 radius (no pills)", "row.setLayoutDirection(Dir.layout());" in tog and "p.setMarginStart(dp(12))" in tog
+      and "dp(160), -2" in tog and "b.setPadding(dp(16), dp(12), dp(16), dp(12));" in tog and "panel(this, look, 14)" in act and "setCornerRadius" not in tog)
 check("both are focusable by the D-pad (the button style) and a press chooses", "SetupLang.choose(SetupActivity.this, code)" in tog and "button(opts[i][1])" in tog)
 sl = text(HOME / "setup/SetupLang.java")
 check("choosing keeps the language here, tells the screensaver (phone_set lang, as saver.sh lang does) and builds the screen again",
@@ -65,4 +65,6 @@ check("the screensaver's side: phone_set takes lang and SaverReceiver.set saves 
 check("S.set keeps the choice for the next start, with only ar or en", "public static void set(Context c, String v)" in text(HOME / "S.java") and "lang = Tr.norm(v);" in text(HOME / "S.java"))
 words = text(ROOT / "i18n/en/setup.tsv")
 check("the labels are the same in both languages, so they need no table entry (never translated)", "العربية\t" not in words and "English\t" not in words)
+check("build 180: after OK on the switch the screen is built again and the focus returns to the switch (not to «جهّز كل شي», where a second OK would start the run)",
+      "if (!code.equals(S.lang())) refocusLang = code;" in tog and "static String refocusLang;" in act and "final TextView first = again != null ? again : start;" in act and "refocusLang = null;" in act)
 sys.exit(1 if failed else 0)

@@ -459,6 +459,7 @@ public class MainActivity extends Activity {
         titleRow.addView(optionsHint, hp);
         bottom.addView(titleRow, new LinearLayout.LayoutParams(-2, -2));
         ((LinearLayout.LayoutParams) titleRow.getLayoutParams()).setMargins(0, 0, 0, bar(FavBar.NAME_GAP));
+        ((LinearLayout.LayoutParams) titleRow.getLayoutParams()).setMarginStart(bar(FavBar.PAD_SIDE));   // in line with the tray's inner padding, at its start edge
         nameRow = titleRow;
         titleRow.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> placeName());   // a new name, a new width: centred again
 
@@ -479,6 +480,11 @@ public class MainActivity extends Activity {
         tray.setHorizontalScrollBarEnabled(false);
         tray.setFillViewport(true);
         tray.setClipToPadding(true);   // a tile scrolled half out is cut at the tray's edge, never drawn over the photo
+        tray.setClipChildren(true);
+        tray.setOutlineProvider(new android.view.ViewOutlineProvider() {   // build 180: a sixth tile was drawn outside the tray; everything the tray holds is cut to its rounded outline
+            @Override public void getOutline(View v, android.graphics.Outline o) { o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), bar(FavBar.RADIUS)); }
+        });
+        tray.setClipToOutline(true);
         tray.setBackground(band);
         tray.addView(dockRow, new FrameLayout.LayoutParams(-2, -1));
         tray.setOnScrollChangeListener((v, x, y, ox, oy) -> placeName());
@@ -919,8 +925,14 @@ public class MainActivity extends Activity {
         cardByPkg.clear();
         List<App> rest = new ArrayList<>(byPkg.values());   // by name, then in the owner's order (inSavedOrder)
         Collections.sort(rest, (x, y) -> x.label.compareToIgnoreCase(y.label));
-        // Fewer than MIN_DOCK of the chosen apps installed: top the dock up from the rest.
-        while (dock.size() < MIN_DOCK && !rest.isEmpty()) dock.add(rest.remove(0));
+        // Fewer than MIN_DOCK of the chosen apps installed: top the dock up from the rest, in the order of their package names, never of their labels: a
+        // label follows the screen's language (Downloader in Arabic where English said Apple TV, build 180), the dock must not.
+        while (dock.size() < MIN_DOCK && !rest.isEmpty()) {
+            App pick = rest.get(0);
+            for (App x : rest) if (x.pkg.compareTo(pick.pkg) < 0) pick = x;
+            rest.remove(pick);
+            dock.add(pick);
+        }
         rest = inSavedOrder(rest);   // «تعديل التطبيقات»: the owner's order, new apps at the end; nothing saved, by name as always
 
         dockRow.removeAllViews();
@@ -2285,11 +2297,7 @@ public class MainActivity extends Activity {
         boolean inBar = f != null && dockCards.contains(f) && edit == null;
         nameRow.animate().alpha(inBar ? 1f : 0f).setDuration(FavBar.MS).start();
         if (!inBar || nameCard == null) return;
-        int[] c = new int[2], p = new int[2];
-        nameCard.getLocationInWindow(c);
-        ((View) nameRow.getParent()).getLocationInWindow(p);
-        float cardCentre = c[0] + nameCard.getWidth() * nameCard.getScaleX() / 2f;   // the scale is from the centre: the centre stays
-        nameRow.setTranslationX(FavBar.nameX(cardCentre - p[0], nameRow.getLeft(), nameRow.getWidth(), ((View) nameRow.getParent()).getWidth()));
+        nameRow.setTranslationX(0);   // the name has ONE place: above the tray at its start edge (right in Arabic, left in English), never following a tile (build 180)
     }
 
     /**

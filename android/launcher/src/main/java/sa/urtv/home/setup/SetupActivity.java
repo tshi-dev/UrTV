@@ -138,7 +138,10 @@ public class SetupActivity extends Activity {
         undo.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(true); } });
         add(undo, dp(16));
         // «جهّز كل شي» has the focus once the screen is laid out (asked before that, the TV's first OK only put the focus on it: nothing happened)
-        start.post(new Runnable() { @Override public void run() { start.requestFocus(); } });
+        final TextView again = refocusLang == null ? null : langButtons.get(refocusLang);
+        refocusLang = null;
+        final TextView first = again != null ? again : start;
+        first.post(new Runnable() { @Override public void run() { first.requestFocus(); } });
         SetupRunner.End e = r.end();
         if (e != null && e != dismissed) say(S.tv(e.text), e.bad ? RED : GOLD);
         else say("", GOLD);
@@ -149,6 +152,10 @@ public class SetupActivity extends Activity {
      * on/off is (three green triangles, its words in green), the other plain; no pills (radius 14 like every button), 24 px apart. Choosing one
      * saves the language for the whole system and builds the screen again in it (SetupLang). Arabic is the one in use until the person says else.
      */
+    private final java.util.Map<String, TextView> langButtons = new java.util.HashMap<>();
+    /** the language just chosen: the screen is built again, and the focus goes back to that button (not to «جهّز كل شي», where a second OK would start the run) */
+    static String refocusLang;
+
     private View langToggle() {
         LinearLayout row = new LinearLayout(this);
         row.setOrientation(LinearLayout.HORIZONTAL);
@@ -163,8 +170,11 @@ public class SetupActivity extends Activity {
             final boolean on = code.equals(S.lang());
             paintLang(b, on, false);
             b.setOnFocusChangeListener(new View.OnFocusChangeListener() { public void onFocusChange(View v, boolean has) { paintLang(b, on, has); } });
-            b.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { SetupLang.choose(SetupActivity.this, code); } });
-            LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(dp(160), dp(44));
+            b.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { if (!code.equals(S.lang())) refocusLang = code; SetupLang.choose(SetupActivity.this, code); } });
+            b.setPadding(dp(16), dp(12), dp(16), dp(12));   // the whole word inside: 24 px above and below (the 88 px box cut «English» in half, build 180)
+            b.setMinHeight(dp(52));
+            langButtons.put(code, b);
+            LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(dp(160), -2);
             if (i > 0) p.setMarginStart(dp(12));
             row.addView(b, p);
         }

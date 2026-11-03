@@ -77,7 +77,14 @@ public final class MarketsRun {
     }
 
     /** live mode («مباشر»): the pace and its backoff, what is fresh, the labels' kinds, Yahoo's answer read, and put over the file's prices */
+    static void bidi() {
+        String ar = MarketData.isolate(MarketData.show(MarketData.signed(-0.33, 2) + "%", false));
+        check("bidi: a change is one left-to-right isolate («−٠٫٣٣٪»), so the minus and the percent sign stay where they read in Arabic text", ar.equals("\u2066−٠٫٣٣٪\u2069"), ar.codePoints().boxed().collect(java.util.stream.Collectors.toList()));
+        check("bidi: Latin digits too, and nothing for an empty string", MarketData.isolate("+1.20%").equals("\u2066+1.20%\u2069") && MarketData.isolate("").isEmpty() && MarketData.isolate(null) == null, "");
+    }
+
     static void live() {
+        bidi();
         check("live: every 30 s, 60 s after one failure, 120 s after two or more (and no slower)", MarketData.liveDelay(0) == 30_000 && MarketData.liveDelay(1) == 60_000
             && MarketData.liveDelay(2) == 120_000 && MarketData.liveDelay(9) == 120_000, MarketData.liveDelay(1));
         check("live: «مباشر» only while the last good answer is at most 150 s old; never for none or a clock gone back", MarketData.liveFresh(1000, 1000 + 150_000) && !MarketData.liveFresh(1000, 1000 + 150_001)

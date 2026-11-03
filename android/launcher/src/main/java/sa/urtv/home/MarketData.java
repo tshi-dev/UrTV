@@ -430,6 +430,9 @@ final class MarketData {
         return s.startsWith("-") ? "−" + s.substring(1) : "+" + s;
     }
 
+    /** A signed number, its point and its percent sign kept in reading order inside right-to-left text («−٠٫٣٣٪», not «−(٪٠٫٣٣−)»): a left-to-right isolate around it */
+    static String isolate(String s) { return s == null || s.isEmpty() ? s : "\u2066" + s + "\u2069"; }
+
     /** For the screen: Arabic digits («٫» for the point, «٬» between thousands) unless the setting is Latin; «%» becomes «٪» likewise. */
     static String show(String western, boolean latin) {
         if (latin || western == null) return western;

@@ -22,15 +22,24 @@ final class MarketFile {
     static final long FRESH_MS = 5 * 60_000L;   // CI publishes every 5 minutes (a late file is shown with its own time)
     private static final int MAX_BYTES = 512 * 1024, TIMEOUT_MS = 12_000;
     private static final String NAME = "markets.json";
+    /** generic and honest, with the "Mozilla/5.0" start that bot-like clients use so a plain client is not refused (same as the CI collector) */
+    static final String UA = "Mozilla/5.0 (compatible; UrTV-markets/1.0; +https://github.com/tshi-dev/UrTV)";
 
     private static final String DAILY = "markets-daily.json";
 
     /** Yahoo's spark endpoint (build 179, «مباشر»; the one CI uses, no crumb): one request for the symbols on screen, asked only while the markets page is in front */
     private static final String LIVE_URL = "https://query1.finance.yahoo.com/v8/finance/spark?symbols=%s&range=1d&interval=5m";
 
-    /** On a background thread: the live answer for these symbols; an empty map for any failure (the caller backs off). Nothing is stored. */
+    /**
+     * On a background thread: the live answer for these symbols; an empty map for any failure (the caller backs off). Nothing is stored. Each request is
+     * logged under tag UrTVMarkets with fixed words: the HTTP status, how many symbols were asked and parsed, the size, and the reason for a failure
+     * (http_<status>, redirected (another host answered: a consent page), empty_body, parsed_none, <exception class>). No symbol, no price, nothing personal.
+     */
     static java.util.Map<String, MarketData.Live> live(java.util.Collection<String> symbols) {
         HttpURLConnection h = null;
+        int status = -1, bytes = 0;
+        String reason = "ok";
+        java.util.Map<String, MarketData.Live> out = new java.util.LinkedHashMap<>();
         try {
             StringBuilder s = new StringBuilder();
             for (String x : symbols) s.append(s.length() > 0 ? "," : "").append(java.net.URLEncoder.encode(x, "UTF-8"));
@@ -38,14 +47,29 @@ final class MarketFile {
             h.setConnectTimeout(TIMEOUT_MS);
             h.setReadTimeout(TIMEOUT_MS);
             h.setUseCaches(false);
-            h.setRequestProperty("User-Agent", "UrTV/1.0 (+https://github.com/tshi-dev/UrTV)");
-            if (h.getResponseCode() != 200) return new java.util.LinkedHashMap<>();
-            try (InputStream in = h.getInputStream()) { return MarketData.parseLive(read(in)); }
+            h.setRequestProperty("User-Agent", UA);
+            h.setRequestProperty("Accept", "application/json");
+            status = h.getResponseCode();   // gzip is undone by the platform (it asked for it)
+            if (!"query1.finance.yahoo.com".equals(h.getURL().getHost())) reason = "redirected";   // a consent or error page from another host
+            else if (status != 200) reason = "http_" + status;
+            else {
+                String body;
+                try (InputStream in = h.getInputStream()) { body = read(in); }
+                bytes = body.length();
+                if (body.isEmpty()) reason = "empty_body";
+                else {
+                    out = MarketData.parseLive(body);
+                    if (out.isEmpty()) reason = "parsed_none";
+                }
+            }
         } catch (Exception e) {
-            return new java.util.LinkedHashMap<>();
+            reason = e.getClass().getSimpleName();
         } finally {
             if (h != null) h.disconnect();
         }
+        if (!"ok".equals(reason)) out = new java.util.LinkedHashMap<>();
+        android.util.Log.i("UrTVMarkets", "live status=" + status + " asked=" + symbols.size() + " parsed=" + out.size() + " bytes=" + bytes + " reason=" + reason);
+        return out;
     }
 
     /** the last copy that parsed, kept in memory: a page opens with it at once, and nothing reads a file on the UI thread (build 179 review) */

@@ -199,7 +199,7 @@ check("retry: a 404 is not tried again", nf and slept == [])
 slept.clear(); mp.urllib.request.urlopen = scripted(OSError("timed out"), b"[1]")
 check("retry: a timeout is tried again", mp.fetch_json("https://x/y") == [1] and slept == [2], slept)
 mp.urllib.request.urlopen = real_urlopen
-check("requests: a generic User-Agent (a project, no person, no address)", "@" not in mp.UA and mp.UA.startswith("UrTV-markets/") and "Mozilla" not in mp.UA, mp.UA)
+check("requests: a generic User-Agent (a project, no person, no address)", "@" not in mp.UA and "UrTV-markets/" in mp.UA and mp.UA.startswith("Mozilla/5.0 (compatible;"), mp.UA)
 mp.SLEEP = real_get_sleep
 
 # one batch request holds many symbols; a symbol the batch did not answer is asked alone
