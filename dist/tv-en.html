@@ -621,13 +621,24 @@
   /* the games, three lines */
   #fb-mt-c{padding-block:calc(var(--u)*8)}
   #fb-mt-c ul{list-style:none;display:flex;flex-direction:column;height:100%}
-  .fln{flex:1;display:flex;align-items:center;gap:calc(var(--u)*16);min-height:0}
+  /* the match line, one template (the widget's .fln and the list's .mpg): a grid whose × is the axis; the time column at the start, the home pair and the away pair
+     hugging the ×, the note / mark last. Crest 40, 24 between crest and name, 32 each side of the ×; a name takes two lines, no word broken. */
+  .fln,.mpg{display:grid;grid-template-columns:calc(var(--u)*200) minmax(0,1fr) auto minmax(0,1fr) var(--zw);align-items:center;column-gap:0}
+  .fln{flex:1;min-height:0;--zw:0px}
+  .mpg{--zw:calc(var(--u)*136)}
+  .mlw{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--fs);margin-inline-end:calc(var(--u)*16);text-align:start}
+  .mlw .fnote{display:block;margin-inline-start:0;overflow:hidden;text-overflow:ellipsis}
+  .fln .mlt,.mpg .mlt{display:flex;align-items:center;gap:calc(var(--u)*24);min-width:0}
+  .mlh{justify-content:flex-end}.mla{justify-content:flex-start}
+  .mlh .nm{text-align:end}.mla .nm{text-align:start}
+  .fln .mlt .nm,.mpg .mlt .nm{overflow-wrap:normal;word-break:normal;hyphens:none}
+  .fln .fx,.fln .fsc,.mpg .fx,.mpg .fsc{margin-inline:calc(var(--u)*32);text-align:center}
+  .mlz{display:flex;align-items:center;justify-content:flex-end;margin-inline-start:calc(var(--u)*24);min-width:0}
   .fln + .fln{border-top:1px solid var(--fln)}
   .ftm{display:flex;align-items:center;gap:calc(var(--u)*12);min-width:0;font-weight:500}
   .ftm .nm{white-space:normal;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-height:1.15;word-break:normal;overflow-wrap:anywhere}   /* a club's name takes two lines (build 179: «شباب الأه…» was cut), only a third is cut */
   .ftm.me{color:var(--fgr)}
   #fb .cr,#mp .cr,.ftm .crgap{width:calc(var(--u)*40);height:calc(var(--u)*40);object-fit:contain;flex:none;display:inline-block}
-  .fln .ftm{flex:0 1 calc(var(--u)*230)}
   .fx{font-style:normal;color:var(--fs);flex:none;font-size:.8em}
   .fsc{flex:none;font-weight:700}
   .fnote{color:var(--fam);font-size:calc(var(--u)*22);white-space:nowrap;margin-inline-start:auto}
@@ -677,11 +688,9 @@
   #mp-list h2{font-size:calc(var(--u)*30);font-weight:700;margin:0 0 calc(var(--u)*16)}
   #mp-list section + section{margin-top:calc(var(--u)*32)}
   #mp-list ul{list-style:none;background:var(--fbg);border:1px solid var(--fln);border-radius:calc(var(--u)*24);padding:calc(var(--u)*8)}
-  .mpg{display:flex;align-items:center;gap:calc(var(--u)*24);min-height:calc(var(--u)*84);padding:0 calc(var(--u)*24);border-radius:calc(var(--u)*16)}
+  .mpg{min-height:calc(var(--u)*88);padding:calc(var(--u)*16) calc(var(--u)*24);border-radius:calc(var(--u)*16)}
   .mpg + .mpg{border-top:1px solid var(--fln)}
   .mpg.f{box-shadow:inset 0 0 0 calc(var(--u)*3) var(--fring);background:#EEF6F1}
-  .mpw{flex:none;width:calc(var(--u)*170);color:var(--fs);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .mpg .ftm{flex:0 1 calc(var(--u)*280)}
   #mp .fnote{font-size:calc(var(--u)*22)}
   #mp .fmk{opacity:1;color:var(--fs);border-color:var(--fln);background:#fff}
   #mp .fnone{min-height:calc(var(--u)*240)}
@@ -4016,9 +4025,18 @@ function fbPrayersHtml(){
     + `<b>${prayerName(x)}</b><span class="fpt">${fmtTime(x.h, x.mi)}</span></li>`).join('') + '</ul>'
     + `<div class="fpn">${fw(FB_W.nextIn, prayerName(n), shortHM(Math.max(0, Math.round(left * 60))))}</div>`;
 }
+// ONE match line for the home widget and the «المباريات» list (the owner's screenshots: the crests, names and time floated apart with no shared axis):
+// [time column at the start] [home: crest + name, hugging the ×] [×, 32 px each side] [away: name + crest, hugging the ×] [note / mark]. The × (or the score) is the axis.
+const fbTeamLine = (ev, side) => {
+  const id = ev['id' + side + 'Team'];
+  const cr = crestImg(ev, side) || '<span class="crgap"></span>', nm = `<span class="nm">${esc(nbName(teamAr(ev['str' + side + 'Team'], id)))}</span>`;
+  return `<span class="ftm mlt ${side === 'Home' ? 'mlh' : 'mla'}${fbFollowed(id) ? ' me' : ''}">${side === 'Home' ? cr + nm : nm + cr}</span>`;
+};
+const fbMatchLine = (ev, now, cls, attrs, whenHtml, noteHtml, markHtml) =>
+  `<li class="${cls}"${attrs}><span class="mlw${cls.startsWith('mpg') ? ' mpw' : ''}">${whenHtml}${noteHtml}</span>${fbTeamLine(ev, 'Home')}${fbMid(ev, now)}${fbTeamLine(ev, 'Away')}<span class="mlz">${markHtml}</span></li>`;
 function fbLine(ev, now){
   const c = fbClash(ev);
-  return `<li class="fln">${fbTeam(ev, 'Home')}${fbMid(ev, now)}${fbTeam(ev, 'Away')}<span class="fnote">${c ? esc(fbNote(c)) : ''}</span><span class="fwhen">${fbWhen(ev, now)}</span></li>`;
+  return fbMatchLine(ev, now, 'fln', '', fbWhen(ev, now), c ? `<span class="fnote">${esc(fbNote(c))}</span>` : '', '');
 }
 function fbCard(ev, now, i){
   return `<div class="fcd${i === FB.at ? ' sel' : ''}" data-i="${i}"><div class="fct"><span>${esc(fbRound(ev))}</span>${fbMarkChip(ev)}</div>`
@@ -4131,8 +4149,8 @@ function mpGroups(){   // [{key, name, games}] of the chosen day: «فرقك», 
 }
 function mpRow(ev, now, i){
   const c = fbClash(ev);
-  return `<li class="mpg${i === MP.r && MP.zone === 'rows' && !MP.detail ? ' f' : ''}" data-r="${i}"><span class="mpw">${fbLive(ev, now) || fbDone(ev, now) ? fbWhen(ev, now) : fbClock(fbKick(ev))}</span>`
-    + `${fbTeam(ev, 'Home')}${fbMid(ev, now)}${fbTeam(ev, 'Away')}<span class="fnote">${c ? esc(fbNote(c)) : ''}</span>${fbMarkChip(ev)}</li>`;
+  return fbMatchLine(ev, now, 'mpg' + (i === MP.r && MP.zone === 'rows' && !MP.detail ? ' f' : ''), ` data-r="${i}"`, fbLive(ev, now) || fbDone(ev, now) ? fbWhen(ev, now) : fbClock(fbKick(ev)),
+    c ? `<span class="fnote">${esc(fbNote(c))}</span>` : '', fbMarkChip(ev));
 }
 function mpAge(){
   const at = Math.max(MATCH_OK_AT || 0, ...Object.values(LEAGUE_DATA).map(d => Date.parse(d && d.updated) || 0));

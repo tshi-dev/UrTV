@@ -70,6 +70,30 @@ const shot = async (p, name) => {
   await p.screenshot({ path: path.join(ROOT, 'docs/shots', name) });
 };
 
+// The geometry of one match line template (the home widget's .fln and the list's .mpg): the × (or the score) is the shared axis; the time is a column at the row's start;
+// 24 px between a crest and its name, 32 px between the names and the ×; crests 40 px, centred with the text. Measured in the page, in px at the page's own unit.
+const lineGeo = async (p, sel) => p.evaluate(sel => {
+  const u = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--u')) || 1;
+  const near = (a, b) => Math.min(Math.abs(a.left - b.right), Math.abs(b.left - a.right));
+  const rtl = getComputedStyle(document.documentElement).direction === 'rtl';
+  return { u, rtl, rows: [...document.querySelectorAll(sel)].filter(r => r.offsetParent).map(r => {
+    const q = c => r.querySelector(c), R = e => e.getBoundingClientRect(), mid = R(q('.fx, .fsc')), w = R(q('.mlw')), rr = R(r);
+    const hn = R(q('.mlh .nm')), an = R(q('.mla .nm')), hc = R(q('.mlh .cr, .mlh .crgap')), ac = R(q('.mla .cr, .mla .crgap'));
+    return { axis: (mid.left + mid.right) / 2, midGapHome: near(hn, mid), midGapAway: near(an, mid), crHome: near(hc, hn), crAway: near(ac, an), crW: [hc.width, hc.height, ac.width, ac.height],
+      timeEdge: rtl ? rr.right - w.right : w.left - rr.left, timeY: (w.top + w.bottom) / 2, midY: (mid.top + mid.bottom) / 2, hcY: (hc.top + hc.bottom) / 2, hnY: (hn.top + hn.bottom) / 2,
+      homeToward: rtl ? hn.left - hc.left : hc.right - hn.right, rowH: rr.height, textInset: Math.min(...[...r.querySelectorAll('.nm,.mlw')].map(e => Math.min(R(e).left - rr.left, rr.right - R(e).right))) };
+  }) };
+}, sel);
+const checkLineGeo = (label, g, sel) => {
+  const u = g.u, same = (xs, tol = 1.5) => Math.max(...xs) - Math.min(...xs) <= tol;
+  check(`${label}: rows found`, g.rows.length >= 2, g.rows.length);
+  check(`${label}: the × (or the score) is one axis for every row`, same(g.rows.map(r => r.axis)), JSON.stringify(g.rows.map(r => r.axis)));
+  check(`${label}: 32 px between the names and the ×, both sides`, g.rows.every(r => Math.abs(r.midGapHome - 32 * u) <= 1.5 && Math.abs(r.midGapAway - 32 * u) <= 1.5), JSON.stringify(g.rows.map(r => [r.midGapHome, r.midGapAway])));
+  check(`${label}: 24 px between a crest and its name`, g.rows.every(r => Math.abs(r.crHome - 24 * u) <= 1.5 && Math.abs(r.crAway - 24 * u) <= 1.5), JSON.stringify(g.rows.map(r => [r.crHome, r.crAway])));
+  check(`${label}: crests 40 px, the same on both sides`, g.rows.every(r => r.crW.every(x => Math.abs(x - 40 * u) <= 1)), JSON.stringify(g.rows.map(r => r.crW)));
+  check(`${label}: the time is a column at the row's start (same edge in every row), centred with the line`, same(g.rows.map(r => r.timeEdge)) && g.rows.every(r => Math.abs(r.timeY - r.midY) <= 3 && Math.abs(r.hcY - r.hnY) <= 3), JSON.stringify(g.rows.map(r => [r.timeEdge, r.timeY, r.midY])));
+};
+
 // ---- the football home
 {
   const sp = 'city=الرياض&lat=24.7136&lon=46.6753&tz=Asia/Riyadh&teams=136013&widget=1&football=1';
@@ -88,6 +112,7 @@ const shot = async (p, name) => {
   check('football home: text at least 16 px inside each card', !(await crowded(p, '.fbw .fbc', 16)).length, (await crowded(p, '.fbw .fbc', 16)).join(' | '));
   const lines = await p.$$eval('#fb-mt-c .fln', ls => ls.map(l => l.textContent));
   check('football home: three games, the followed team first, live with its score and minute', lines.length === 3 && /الهلال/.test(lines[0]) && /٢ - ١/.test(lines[0]) && /الدقيقة ٦٧/.test(lines[0]), lines.join(' / '));
+  checkLineGeo('football home: the match line', await lineGeo(p, '#fb-mt-c .fln'));
   check('football home: a game during a prayer says which, in amber', await p.$$eval('#fb-mt-c .fnote', ns => ns.some(n => /المغرب/.test(n.textContent) && getComputedStyle(n).color !== 'rgb(255, 255, 255)')), lines.join(' / '));
   check('football home: the count and the source over the games', /TheSportsDB · ٤ مباريات/.test(await p.textContent('#fb-mt h3')), await p.textContent('#fb-mt h3'));
   check('football home: the weather (city, temperature, feels-like, humidity, wind)', await p.evaluate(() => { const t = document.getElementById('fb-wx').textContent; return /الرياض/.test(t) && /٢٨°/.test(t) && /٣٠°/.test(t) && /١٨/.test(t) && /١٢ كم\/س/.test(t); }), await p.textContent('#fb-wx'));
@@ -135,6 +160,9 @@ for (const [why, rows] of [['the shipped table', null], ['medium confidence', [{
   check('matches page: a live game shows its minute and score', /الدقيقة ٦٧/.test(await p.textContent('#mp-list section:first-child')) && /٢ - ١/.test(await p.textContent('#mp-list section:first-child')));
   check('matches page: text at least 16 px inside the rows and the leagues', !(await crowded(p, '#mp-list ul, #mp-side', 16)).length, (await crowded(p, '#mp-list ul, #mp-side', 16)).join(' | '));
   check('matches page: the mark on every row of the league', await p.$$eval('#mp-list .mpg .fmk', m => m.length === 4));
+  const lg = await lineGeo(p, '#mp-list .mpg');
+  checkLineGeo('matches page: the match line', lg);
+  check('matches page: a row is at least 88 (the 8 px scale) and a one-line row exactly 88; its text 16 px or more from the row edges', lg.rows.every(r => r.rowH >= 88 * lg.u - .5 && r.textInset >= 16 * lg.u - .5) && lg.rows.some(r => Math.abs(r.rowH - 88 * lg.u) < 1), JSON.stringify(lg.rows.map(r => [r.rowH, r.textInset])));
   await shot(p, 'football-matches-page.png');
   await p.keyboard.press('ArrowDown');
   await p.keyboard.press('ArrowDown');
@@ -177,6 +205,7 @@ for (const [why, rows] of [['the shipped table', null], ['medium confidence', [{
   const { p, ctx, errors } = await open('teams=136013&matchpage=1&lang=en', { file: 'tv-en.html', rows: ROWS, height: 1080 });
   await p.evaluate(() => mpRender());
   const own = await p.evaluate(() => [...document.querySelectorAll('#mp-days li, #mp-list h2, #mp h1, #mp-side li span')].map(x => x.textContent).filter(t => /[؀-ۿ]/.test(t) && !/الجولة/.test(t)));
+  checkLineGeo('English matches page: the match line (left to right)', await lineGeo(p, '#mp-list .mpg'));
   check('English matches page: no script error, its own words in English', !errors.length && !own.length, errors.join(' | ') + own.join(','));
   await ctx.close();
 }
