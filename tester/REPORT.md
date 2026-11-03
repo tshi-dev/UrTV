@@ -456,3 +456,12 @@ Start: Home ours, `wm size` override 1920x1080, muted, no PIN, lang ar, homelayo
 Parental card: no problem found.
 
 Problems left: 4 (update unmutes + opens an app; favourites gap 20; Tilawah rows gap 20; PIN pad first row 20) + small: «أخفِ المبالغ» jumps to «السوق», the games card cuts names, the 124 px first gap.
+
+## step 23 addendum: the favourites bar (owner: «the fav bar was not set right»)
+Measured on 179, lang ar, home (bounds):
+- tray `[120,808][1800,1026]`; tiles 304×170: `[1496..1800]`, `[1168..1472]`, `[840..1144]`, `[512..816]`, `[184..488]`, and a 6th tile cut to **40 px** at `[120..160]` (7 favourites, 5 and a sliver shown).
+- the first tile (focused) touches the tray's right edge: **0 px** inside, while top and bottom are 24 px (832−808, 1026−1002). Not centred; the 6th tile is cut by the tray's left edge.
+- tile gaps are 24 (equal, on the scale).
+- tray bottom 1026 = the safe-area edge exactly.
+Correction to steps 22/23: the «gap 20» on the home is NOT the favourites, it is the four round buttons at the top (`[116..184]`, `[204..272]`, `[292..360]`, `[380..448]`: gaps 20).
+Expected: tiles inside the tray with the same inset on all sides (24 px), no half tile at the edge (fit whole tiles, or fade the edge), the tray inside the safe area.
