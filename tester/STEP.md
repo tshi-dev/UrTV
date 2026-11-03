@@ -1,8 +1,8 @@
-«✅ GO — build 180»
+«⛔ WAIT — don't start anything yet. The supervisor will replace this line with «✅ GO — build N».»
 
-**1. Ask the owner for the PIN recovery code RIGHT NOW, before waiting for anything. Hold it in chat memory only, never in a file, log, commit, script or screenshot. If he doesn't answer, carry on without it, and report step 21 as "no code given".**
+**1. The PIN recovery code is NOT needed for the next run (step 27): do not ask for it. (When a step needs it again, it will say so here. The rule stays: never in a file, log, commit, script or screenshot.)**
 
-**2. Then WAIT for the GO line. Every 5 minutes, run `git fetch origin work/tester` and read the first line of `origin/work/tester:tester/STEP.md` (`git show origin/work/tester:tester/STEP.md | head -1`). Don't start until it reads «✅ GO — build N». Then make sure the TV has build N or newer from apk-next, and run **step 26 «final test of 4.2»** (at the end of this file): parts A, B, D, then C last. Steps 16–25 are done; do not run them again on their own.**
+**2. WAIT for the GO line. Every 5 minutes, run `git fetch origin work/tester` and read the first line of `origin/work/tester:tester/STEP.md` (`git show origin/work/tester:tester/STEP.md | head -1`). Don't start until it reads «✅ GO — build N». Then make sure the TV has build N or newer from apk-next, and run **step 27 «re-check after the fixes»** (at the end of this file): parts A, B, D, then Z. Steps 16–26 are done; do not run them again.**
 
 **3. Keep the TV MUTED the whole time: check the mute before each step and after every restart, update or install, and mute again at once if it isn't.**
 
@@ -414,3 +414,36 @@ what: one last run that folds steps 24 and 25 into one, plus the open items and 
 | Z | Everything back: `optimize/saver.sh import optimize/run/step26/settings-before.json` (preview, then `--yes`); the demo tasks and the made-up holdings deleted (the owner's own untouched); the dock order; `lang ar`; the PIN state as in step 21 row 6; `wm size reset` if changed; `optimize/saver.sh updatechannel latest`; the Home holder as at the start; muted; YouTube force-stopped | "restored: yes/no" with any value that differs; muted |
 
 REPORT.md (on `work/tester-report`): "step 26 (final test of 4.2)", the build; part A: the timeline (t+s: event), A1–A3 with the UpdateCarry reason codes, one line «who unmuted: …» and one «who launched an app: …» (or «nobody»); part B: B1–B10, OK or the problem with numbers; part D: one line per image, done or skipped with the reason; part C: worked / didn't work per row only (never the code or a PIN); "restored: yes/no". No personal data. Push; tell the owner in Arabic that it is done and how many problems there were.
+
+---
+step: 27 (the build after work/fix-180 lands in next: 181 or newer; run it on the build named in the GO line; the owner is not needed; NO recovery code): re-check after the fixes
+what: the problems of step 26, checked again with numbers, the new «العملات», and a few marketing shots again. Follow tester/RULES.md. **The TV stays MUTED the whole time:** check it before each part and after every restart, update or install, and mute again at once if it isn't (write the time first). Every key is yours (focus checked with the dump, as in step 18). Measure as in step 22 (1920×1080, dump bounds + glyphs in the screencap, ±2 px, the 8 px scale, safe area x 96–1824, y 54–1026). Files in `optimize/run/step27/`, local only.
+- Start lines, plus: `optimize/saver.sh show` (all of it), `optimize/saver.sh export > optimize/run/step27/settings-before.json`, `optimize/dock.sh show`, `optimize/saver.sh tasks list` (count only in the report), `optimize/photos.sh list`, `dock.sh pin status`, the Home holder, `adb shell wm size`.
+
+**Part A, the update** with the app's own «تحديث تلفزيوني» (channel `next`; not `adb install`): before it, HOME, force-stop YouTube, muted; full `adb logcat -b all -v threadtime > optimize/run/step27/update.log` from t=0; the 2 s watch for 60 s after the install (mute, the resumed activity, a media session playing), as in step 24 row 4.
+| # | Right when |
+|---|---|
+| A1 | muted at every 2 s line, during and after the install |
+| A2 | after the install, OUR home comes to the front by itself (`mResumedActivity` = `sa.urtv.home/.MainActivity`), and no other app is resumed at any line |
+| A3 | `UrTVUpdate` has a `carry stage=… why=…` line for every stage: write each stage and its `why` (no personal data) |
+
+**Part B, every step 26 problem again, with numbers** (Arabic, then English where it has words):
+| # | Item | Right when |
+|---|---|---|
+| B1 | the favourites tray with 6 or more favourites (add common apps with `dock.sh set` if fewer; the old order back in Z), AR and EN; move the focus along the whole row | no tile drawn outside the tray (glyph/pixel check at both ends); the app name in ONE fixed place above the tray's start edge (right in AR, left in EN): its bounds the same (±2) for every focused tile |
+| B2 | «تلاوة وأذان»: the tabs | the gap between tabs on the 8 px scale, equal |
+| B3 | «الأسواق» | the Arabic change sign right (e.g. «−٠٫٣٣٪»: the minus before the digits, never «٪٠٫٣٣-»); in English no wrapped label and no time split over two lines; the «الذهب والنفط» card's names read normally (not one letter per line); after saving a made-up holding the focus stays on that row or on the add button |
+| B4 | «إعداد تلفزيوني»: the «العربية \| English» switch (view only, no run) | the labels fully visible, ≥16 px padding; after OK the focus stays on the switch, not on «جهّز كل شي» |
+| B5 | live mode «مباشر»: `adb logcat -c`, turn it on, watch 2 minutes, `adb logcat -d -s UrTVMarkets > optimize/run/step27/markets.log` | during market hours the prices of US or Saudi rows change within 2 minutes (outside hours write «market closed» and which); the labels honest (they say live only when live, delayed/closed otherwise); the UrTVMarkets lines copied (cleaned) |
+| B6 | «المباريات» against the football widget (`saver.sh homelayout football`, back in Z); open one match's detail | the same matches on both; no «لا مباريات اليوم» while the widget shows matches; on the detail the focus is NOT on «ذكّرني»; `tasks list` count unchanged (no task added by accident) |
+| B7 | the dock, AR then EN, the same setting | the same apps in the same order in both languages |
+| B8 | **New: «العملات»** in the markets page | the default list has USD first; the pegged ones say «مربوط بالدولار»; KWD shows a real rate with «آخر تحديث»; the converter: 100 USD → SAR = 375 (exactly), 1 KWD → SAR a sensible value (about 12.2; write it), SAR → USD gives the reverse; pick 3 extra currencies (one Arab, e.g. EGP or JOD; one remittance, e.g. INR, PKR or PHP; one major, e.g. EUR or GBP): they appear; write any that shows «—». Remove the 3 extras in Z |
+| B9 | step 22's measures, quickly: the footers (≤1026), the round buttons at the top, the PIN pad (a temporary 1234 only if no PIN is set, `dock.sh pin off` right after), the settings gaps | report ONLY what regressed against step 26 (with the numbers); else «no regression» |
+
+**Part D, these marketing shots only** (step 25's demo-clean setup and privacy rules in full: Makkah + Umm al-Qura, built-in wallpapers only, the 2 demo tasks, common apps, the made-up holdings, no PIN/code/Wi-Fi/IP/serial/toast; check every image): `ar-sand-13-match.png` (the match detail, skipped last time); `ar-sand-01-home.png`, `ar-glass-01-home.png`, `en-glass-01-home.png` with a built-in wallpaper that has NO person in it (step through the wallpapers until one with no person shows; write which one, by its number or description); `ar-sand-14b-watchlist.png` (the gold card fixed); and a new `ar-sand-17-currencies.png` («العملات»). **Keep them on the PC** in `optimize/run/step27/marketing/` (the owner sends them as a zip): push NO images this time.
+
+| # | Do | Right when |
+|---|---|---|
+| Z | Everything back: `optimize/saver.sh import optimize/run/step27/settings-before.json` (preview, then `--yes`); the demo tasks, the made-up holdings and the 3 extra currencies removed (the owner's own untouched); the dock order; the home layout; `lang ar`; the PIN state as at the start; `wm size reset` if changed; `optimize/saver.sh updatechannel latest`; the Home holder as at the start; muted; YouTube force-stopped | "restored: yes/no" with any value that differs; muted |
+
+REPORT.md (on `work/tester-report`): "step 27 (re-check after the fixes)", the build; part A: the timeline (t+s: event), A1–A3 with every `carry stage=… why=…`; part B: B1–B9, OK or the problem with numbers (B5: market open/closed and the price changes; B8: the KWD value, the converter results, any «—»); part D: one line per shot, done (kept on the PC) or skipped with the reason; "restored: yes/no". No personal data; no images pushed. Push; tell the owner in Arabic that it is done, how many problems there were, and that the shots are on the PC in `optimize/run/step27/marketing/`.
