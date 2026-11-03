@@ -161,6 +161,11 @@ for (const [why, rows] of [['the shipped table', null], ['medium confidence', [{
   check('matches page: OK acts on exactly the ringed button: after ◀ again the ring is on «تابع» alone', await p.$$eval('.mdb button.f', b => b.length === 1 && b[0].dataset.k === 'follow'));
   check('matches page: «تابع» hands it the club\'s id and name', JSON.stringify(await p.evaluate(() => window.__fol)) === '["137721","Al-Ahli"]');
   await shot(p, 'football-matches-detail.png');
+  // a live game's "with prayer" line says the minute, not «تبدأ بعد العشاء…»; the hyphen of a Latin club name does not break
+  const liveLine = await p.evaluate(() => { const ev = { ...MP.detail, strStatus: '2H', strProgress: '67', intHomeScore: '1', intAwayScore: '0', dateEvent: MP.detail.dateEvent, strTimestamp: new Date(Date.now() - 67 * 60000).toISOString().slice(0, 19) };
+    MP.detail = ev; mpDetailRender(); return document.querySelector('.mds').textContent; });
+  check('matches page: a live game reads its minute on the prayer line, not «تبدأ بعد…»', /الدقيقة/.test(liveLine) && !/تبدأ/.test(liveLine), liveLine);
+  check('matches page: a Latin club name is kept whole at its hyphen (non-breaking hyphen)', await p.evaluate(() => nbName('Shabab Al-Ahli Dubai') === 'Shabab Al\u2011Ahli Dubai' && nbName('Al-Hilal') === 'Al\u2011Hilal' && nbName('الأهلي') === 'الأهلي'));
   check('matches page: Back closes the card first, then leaves', await p.evaluate(() => mpBack() === 'closed' && mpBack() === 'out'));
   await p.keyboard.press('ArrowUp'); await p.keyboard.press('ArrowUp'); await p.keyboard.press('ArrowUp');
   await p.keyboard.press('ArrowLeft');

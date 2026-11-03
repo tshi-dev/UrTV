@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261103115144">
+<meta name="urtv-build" content="20261103190648">
 <title>شاشة تلفزيونك</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -1764,6 +1764,8 @@ function arName(en, kind, id){
   return translit(en);
 }
 const teamAr = (s, id) => arName(s, 'team', id);
+// a Latin club name never breaks inside a hyphenated word: «Shabab Al-Ahli Dubai» wrapped as «Shabab Al-» / «Ahli Dubai» (step 27); the non-breaking hyphen keeps «Al-Ahli» whole
+const nbName = s => String(s).replace(/([A-Za-z])-(?=[A-Za-z])/g, '$1\u2011');
 
 async function fetchNext(id){
   const r = await fetchT(`https://www.thesportsdb.com/api/v1/json/${CONFIG.sportsKey}/eventsnext.php?id=${id}`, 12000);
@@ -3948,7 +3950,7 @@ const fbMid = (ev, now) => (fbLive(ev, now) || fbDone(ev, now)) && fbScored(ev)
   ? `<b class="fsc">${ar(+ev.intHomeScore)} - ${ar(+ev.intAwayScore)}</b>` : `<i class="fx">${FB_W.vs}</i>`;
 const fbTeam = (ev, side) => {
   const id = ev['id' + side + 'Team'];
-  return `<span class="ftm${fbFollowed(id) ? ' me' : ''}">${crestImg(ev, side) || '<span class="crgap"></span>'}<span class="nm">${esc(teamAr(ev['str' + side + 'Team'], id))}</span></span>`;
+  return `<span class="ftm${fbFollowed(id) ? ' me' : ''}">${crestImg(ev, side) || '<span class="crgap"></span>'}<span class="nm">${esc(nbName(teamAr(ev['str' + side + 'Team'], id)))}</span></span>`;
 };
 const fbMarkChip = ev => { const m = markOf(ev); return m ? `<span class="fmk">${esc(m.mark)}</span>` : ''; };
 const fbRound = ev => leagueName(ev) && ev.intRound ? fw(FB_W.round, leagueName(ev), ar(ev.intRound)) : leagueName(ev);
@@ -4183,11 +4185,11 @@ function mpButtons(ev, now){
 }
 function mpDetailRender(){
   const ev = MP.detail, now = Date.now(), m = markOf(ev), k = fbKick(ev);
-  const big = side => { const c = crestOf(ev, side); return `<div class="mdt">${c ? `<img class="mdc" src="${esc(c.u)}" alt="">` : '<span class="mdc"></span>'}<b>${esc(teamAr(ev['str' + side + 'Team'], ev['id' + side + 'Team']))}</b></div>`; };
+  const big = side => { const c = crestOf(ev, side); return `<div class="mdt">${c ? `<img class="mdc" src="${esc(c.u)}" alt="">` : '<span class="mdc"></span>'}<b>${esc(nbName(teamAr(ev['str' + side + 'Team'], ev['id' + side + 'Team'])))}</b></div>`; };
   const mid = (fbLive(ev, now) || fbDone(ev, now)) && fbScored(ev) ? `<b>${ar(+ev.intHomeScore)} - ${ar(+ev.intAwayScore)}</b><i>${fbWhen(ev, now)}</i>`
     : `<b>${fbClock(k)}</b><i>${fbDayWord(fbDayOf(k))}</i>`;
   const rows = [ev.strVenue ? `<li><span>${FB_W.venue}</span><i>${esc(ev.strVenue)}</i></li>` : '', m ? `<li><span>${FB_W.channel}</span><i>${esc(m.detail)}</i></li>` : '',
-    `<li class="mdp"><div><span>${FB_W.withPrayer}</span><i class="mds">${esc(fbSentence(ev))}</i></div>${mpLine(ev)}</li>`].join('');
+    `<li class="mdp"><div><span>${FB_W.withPrayer}</span><i class="mds">${esc(fbLive(ev, now) ? fbStatus(ev, now) : fbDone(ev, now) ? FB_W.ended : fbSentence(ev))}</i></div>${mpLine(ev)}</li>`].join('');
   const btns = mpButtons(ev, now);
   MP.btn = Math.max(-1, Math.min(MP.btn, btns.length - 1));
   setHTML(document.getElementById('mp-detail'), `<div class="mdx${MP.btn < 0 ? ' f' : ''}"><div class="mdh"><span>${esc(fbRound(ev))}</span>${fbMarkChip(ev)}</div>`
