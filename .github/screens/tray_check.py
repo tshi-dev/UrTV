@@ -226,6 +226,11 @@ def focus_in_tray():
             tray = find_tray(ns)
             if tray and any(t["focused"] for t in tiles(ns, tray)):
                 return True
+            if not tray or tray[1] < 600:   # the home has scrolled to its apps (the pills row is what is left at the top): start it again, DOWN would go further
+                print("focus_in_tray: the tray is not in its place " + str(tray) + ", starting the home again")
+                shell("am force-stop sa.urtv.home")
+                go_home()
+                continue
         except ET.ParseError:
             pass
         key("DPAD_DOWN")
