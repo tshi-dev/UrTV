@@ -30,6 +30,7 @@ public final class MarketsRun {
         ranges();
         numbers();
         holdings();
+        live();
         System.out.println(failed == 0 ? "ALL PASS" : failed + " FAILED");
         System.exit(failed == 0 ? 0 : 1);
     }
@@ -73,6 +74,28 @@ public final class MarketsRun {
         check("codes for the phone's search: the 30 first, then the file's others", codes.size() == 30 + 2 && codes.get(0).equals("2222") && codes.contains("AAPL") && codes.contains("9999")
             && !codes.contains("^TASI") && !codes.contains("GC=F"), codes);
         check("the pegs: fixed, four, dollar 3.75", MarketData.PEGS.length == 4 && "3.7500".equals(MarketData.PEGS[0][1]), "");
+    }
+
+    /** live mode («مباشر»): the pace and its backoff, what is fresh, the labels' kinds, Yahoo's answer read, and put over the file's prices */
+    static void live() {
+        check("live: every 30 s, 60 s after one failure, 120 s after two or more (and no slower)", MarketData.liveDelay(0) == 30_000 && MarketData.liveDelay(1) == 60_000
+            && MarketData.liveDelay(2) == 120_000 && MarketData.liveDelay(9) == 120_000, MarketData.liveDelay(1));
+        check("live: «مباشر» only while the last good answer is at most 150 s old; never for none or a clock gone back", MarketData.liveFresh(1000, 1000 + 150_000) && !MarketData.liveFresh(1000, 1000 + 150_001)
+            && !MarketData.liveFresh(0, 5) && !MarketData.liveFresh(5000, 1000), "");
+        check("live: Tadawul rows are 'delayed' (~15 min at the source), every other row shows its time", "delayed".equals(MarketData.liveKind("2222.SR")) && "delayed".equals(MarketData.liveKind("^TASI.SR"))
+            && "time".equals(MarketData.liveKind("AAPL")) && "time".equals(MarketData.liveKind("^GSPC")) && "time".equals(MarketData.liveKind(null)), "");
+        String json = "{\"quoteResponse\":{\"result\":[{\"symbol\":\"AAPL\",\"regularMarketPrice\":201.5,\"regularMarketPreviousClose\":200,\"regularMarketTime\":1793000000,\"currency\":\"USD\"},"
+            + "{\"symbol\":\"2222.SR\",\"regularMarketPrice\":26.3,\"regularMarketTime\":1793000100},{\"symbol\":\"BAD\",\"regularMarketPrice\":\"x\"},{\"regularMarketPrice\":1}]}}";
+        java.util.Map<String, MarketData.Live> m = MarketData.parseLive(json);
+        check("live: Yahoo's quote answer is read (price, close before, time in ms); a row with no symbol or a bad price is skipped", m.size() == 2 && near(m.get("AAPL").p, 201.5) && near(m.get("AAPL").v, 200)
+            && m.get("AAPL").at == 1793000000_000L && Double.isNaN(m.get("2222.SR").v), m.keySet());
+        check("live: anything that is not that answer is an empty map (the caller backs off)", MarketData.parseLive("<html>").isEmpty() && MarketData.parseLive(null).isEmpty() && MarketData.parseLive("{}").isEmpty(), "");
+        MarketData file = MarketData.parse(FILE);
+        MarketData on = file.withLive(m);
+        check("live: the live price goes over the file's (its close before too), the day's line stays the file's, the file itself is unchanged, and the live symbols are listed",
+            near(on.of("2222.SR").p, 26.3) && near(on.of("2222.SR").v, file.of("2222.SR").v) && on.of("2222.SR").c.length == file.of("2222.SR").c.length && near(file.of("2222.SR").p, 26.1)
+            && on.liveAt.containsKey("2222.SR") && !on.liveAt.containsKey("^TASI.SR") && file.liveAt.isEmpty(), on.liveAt);
+        check("live: a symbol the file does not have is not invented", on.of("AAPL") == null || file.of("AAPL") != null, "");
     }
 
     static void ranges() {

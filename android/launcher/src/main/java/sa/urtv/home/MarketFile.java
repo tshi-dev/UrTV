@@ -25,6 +25,29 @@ final class MarketFile {
 
     private static final String DAILY = "markets-daily.json";
 
+    /** Yahoo's quote endpoint (build 179, «مباشر»): one request for the symbols on screen; this app asks it only while the markets page is in front */
+    private static final String LIVE_URL = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=%s&fields=regularMarketPrice,regularMarketPreviousClose,regularMarketTime";
+
+    /** On a background thread: the live answer for these symbols; an empty map for any failure (the caller backs off). Nothing is stored. */
+    static java.util.Map<String, MarketData.Live> live(java.util.Collection<String> symbols) {
+        HttpURLConnection h = null;
+        try {
+            StringBuilder s = new StringBuilder();
+            for (String x : symbols) s.append(s.length() > 0 ? "," : "").append(java.net.URLEncoder.encode(x, "UTF-8"));
+            h = (HttpURLConnection) new URL(String.format(LIVE_URL, s.toString().replace("%2C", ","))).openConnection();
+            h.setConnectTimeout(TIMEOUT_MS);
+            h.setReadTimeout(TIMEOUT_MS);
+            h.setUseCaches(false);
+            h.setRequestProperty("User-Agent", "UrTV/1.0 (+https://github.com/tshi-dev/UrTV)");
+            if (h.getResponseCode() != 200) return new java.util.LinkedHashMap<>();
+            try (InputStream in = h.getInputStream()) { return MarketData.parseLive(read(in)); }
+        } catch (Exception e) {
+            return new java.util.LinkedHashMap<>();
+        } finally {
+            if (h != null) h.disconnect();
+        }
+    }
+
     /** the last copy that parsed, kept in memory: a page opens with it at once, and nothing reads a file on the UI thread (build 179 review) */
     private static volatile MarketData lastGood;
 

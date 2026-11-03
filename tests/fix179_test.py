@@ -60,6 +60,6 @@ md = text(HOME / "MarketData.java")
 check("market data (owner): the TV asks the file every 5 minutes (the open page too), a late file shows its own time «آخر تحديث», no error",
       "FRESH_MS = 5 * 60_000L" in text(HOME / "MarketFile.java") and "if (++ticks % 5 == 0) refreshPrices();" in mk and "periodic(loadMarkets, 5*60*1000);" in tpl and "15*60*1000);" not in tpl[tpl.index("const loadStocks = loadMarkets"):][:6000])
 check("market data: «الأسعار متأخرة · المصدر: Yahoo Finance» under every tab of the markets page and on the stock card, small, in the file's own provider name",
-      'S.t("الأسعار متأخرة · المصدر: %s"' in mk and "content.addView(sourceNote(), gap(16));" in mk and "box.addView(sourceNote(), gap(12));" in mk and 'return "stooq".equals(src)' in md
+      'S.t("الأسعار متأخرة · المصدر: %s", name)' in mk and "content.addView(sourceNote(), gap(16));" in mk and "cardNote = (TextView) sourceNote();" in mk and 'return "stooq".equals(src)' in md
       and "الأسعار متأخرة · المصدر: %s\tDelayed prices · Source: %s" in text(ROOT / "i18n/en/home.tsv"))
 sys.exit(1 if failed else 0)

@@ -74,6 +74,66 @@ final class MarketData {
     final long updated;
     final Map<String, Quote> quotes;
 
+    // ---- live mode («مباشر»): the TV's own quotes for the symbols on screen, only while the page is in front; kept in memory, never stored
+
+    /** one live answer: the price, the close before (NaN: none) and when Yahoo stamps it (ms) */
+    static final class Live {
+        final double p, v;
+        final long at;
+        Live(double p, double v, long at) { this.p = p; this.v = v; this.at = at; }
+    }
+
+    /** the seconds between two live asks: 30 at first, 60 after one failure, 120 after two or more (the CI file is what shows meanwhile) */
+    static long liveDelay(int fails) { return fails <= 0 ? 30_000 : fails == 1 ? 60_000 : 120_000; }
+
+    /** «مباشر» is said only while the last good live answer is younger than this (two asks of the slowest pace would have passed otherwise) */
+    static boolean liveFresh(long okAt, long now) { return okAt > 0 && now >= okAt && now - okAt <= 150_000; }
+
+    /** how a live row is labelled: Tadawul's data is delayed at the source («متأخرة ~١٥ د»), any other shows the quote's time */
+    static String liveKind(String code) { return code != null && code.endsWith(".SR") ? "delayed" : "time"; }
+
+    /** Yahoo's quote answer ({"quoteResponse":{"result":[{symbol, regularMarketPrice, regularMarketPreviousClose, regularMarketTime (s)}]}}) -> {symbol: Live} */
+    static Map<String, Live> parseLive(String json) {
+        Map<String, Live> out = new LinkedHashMap<>();
+        if (json == null) return out;
+        try {
+            Object root = new Reader(json).read();
+            Object qr = root instanceof Map ? ((Map<?, ?>) root).get("quoteResponse") : null;
+            Object list = qr instanceof Map ? ((Map<?, ?>) qr).get("result") : null;
+            if (!(list instanceof List)) return out;
+            for (Object o : (List<?>) list) {
+                if (!(o instanceof Map)) continue;
+                Map<?, ?> m = (Map<?, ?>) o;
+                double p = num(m.get("regularMarketPrice"));
+                if (!(m.get("symbol") instanceof String) || Double.isNaN(p) || p <= 0) continue;
+                double t = num(m.get("regularMarketTime"));
+                out.put((String) m.get("symbol"), new Live(p, num(m.get("regularMarketPreviousClose")), Double.isNaN(t) ? 0 : (long) t * 1000L));
+            }
+        } catch (RuntimeException e) {
+            out.clear();
+        }
+        return out;
+    }
+
+    /** these quotes with the live prices put over the file's (the day's line, volume and the year are the file's); what is live is in liveAt */
+    MarketData withLive(Map<String, Live> live) {
+        Map<String, Quote> out = new LinkedHashMap<>(quotes);
+        MarketData d = new MarketData(updated, out);
+        d.src = src;
+        d.liveAt = new LinkedHashMap<>(liveAt);
+        for (Map.Entry<String, Live> e : live.entrySet()) {
+            Quote q = quotes.get(e.getKey());
+            if (q == null) continue;
+            Live l = e.getValue();
+            out.put(e.getKey(), new Quote(l.p, l.v > 0 ? l.v : q.v, q.c, q.t, q.vol, q.yh, q.yl, q.d, q.df, q.dl));
+            d.liveAt.put(e.getKey(), l.at);
+        }
+        return d;
+    }
+
+    /** symbol -> when its live price was stamped (ms); empty for a file's own */
+    Map<String, Long> liveAt = new LinkedHashMap<>();
+
     /** who the prices are from, as the file says ("yahoo" when it says nothing): "yahoo", "stooq" or "yahoo+stooq" */
     String src = "yahoo";
 
@@ -132,6 +192,7 @@ final class MarketData {
         }
         MarketData d = new MarketData(updated, out);
         d.src = src;
+        d.liveAt = liveAt;
         return d;
     }
 

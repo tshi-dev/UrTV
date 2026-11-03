@@ -48,9 +48,11 @@ check("the pegs' names on the screen are MarketData.PEGS', in order", pegs == na
 check("«الأخبار» is off until a licensed source exists (NEWS = false), and no tab is built for it then",
       "static final boolean NEWS = false;" in act and 'NEWS ? new String[] {S.t("السوق"), S.t("قائمتي"), S.t("محفظتي"), S.t("الأخبار")}' in act)
 urls = set(re.findall(r'https?://[^"\s)]+', act + data + text(HOME / "MarketFile.java")))
-check("one source only: CI's two files, the 15-minute one and the daily one (no other address in the page's code)",
-      urls == {"https://raw.githubusercontent.com/tshi-dev/UrTV/data-markets/markets/markets.json",
-               "https://raw.githubusercontent.com/tshi-dev/UrTV/data-markets/markets/daily.json"}, urls)
+check("two sources only: CI's two files (the 5-minute one and the daily one) and, while the page is in front, Yahoo's quote endpoint for live mode (no other address in the page's code)",
+      urls - {"https://github.com/tshi-dev/UrTV"} == {"https://raw.githubusercontent.com/tshi-dev/UrTV/data-markets/markets/markets.json",
+               "https://raw.githubusercontent.com/tshi-dev/UrTV/data-markets/markets/daily.json",
+               "https://query1.finance.yahoo.com/v7/finance/quote?symbols=%s&fields=regularMarketPrice,regularMarketPreviousClose,regularMarketTime",
+               }, urls)
 check("the daily file is asked only by the markets page, at most once a day; the screensaver's page never asks it",
       "MarketFile.loadDaily(app);" in act and "DAY_OF_YEAR" in text(HOME / "MarketFile.java") and "daily.json" not in page
       and sum("loadDaily(" in text(p) for p in HOME.rglob("*.java")) == 2)
@@ -106,4 +108,19 @@ else:
     out = run.stdout.decode("utf-8")
     print(out, end="")
     failed += run.returncode != 0
+act2 = text(HOME / "MarketsActivity.java")
+check("live mode: a switch «مباشر | عادي» on the page, «مباشر» by default", 'S.t("مباشر"), S.t("عادي")' in act2 and "private boolean liveOn = true" in act2 and "top.addView(liveSwitch()" in act2)
+check("live mode: asks only while resumed (starts in onResume, ends in onPause and with the generation), dropped when paused or switched off meanwhile",
+      "resumed = true;" in act2 and "resumed = false;   // live mode ends" in act2 and "if (liveOn) main.postDelayed(liveTick, 1500);" in act2
+      and "if (run != liveRun || !resumed || !liveOn || isFinishing() || isDestroyed()) return;" in act2 and "main.removeCallbacks(liveTick);" in act2.split("protected void onPause()")[1][:400])
+check("live mode: one batched request for the symbols on screen and the open card; the pace and the backoff come from MarketData.liveDelay; nothing is stored",
+      "MarketFile.live(syms)" in act2 and "main.postDelayed(liveTick, MarketData.liveDelay(liveFails));" in act2 and "liveFails++" in act2 and "liveFails = 0;" in act2
+      and "save(" not in text(HOME / "MarketFile.java").split("static java.util.Map<String, MarketData.Live> live")[1].split("static MarketData cached")[0])
+check("live mode: it falls back to the 5-minute file: «عادي» puts the file's prices back (MarketFile.last), a failed ask leaves the data and the footer returns to «الأسعار متأخرة»",
+      "MarketData file = MarketFile.last();" in act2 and "shownLive = liveOn && MarketData.liveFresh(liveOkAt, System.currentTimeMillis());" in act2
+      and 'S.t("الأسعار متأخرة · المصدر: %s", name)' in act2 and 'S.t("مباشر · المصدر: %s", name)' in act2)
+check("live mode: labels: Tadawul «متأخرة ~١٥ د», any other the quote's time; the footer says «مباشر» while live", 'S.t("متأخرة ~%s د", digits(15))' in act2 and "MarketData.liveKind(code)" in act2
+      and "clock(k.get(Calendar.HOUR_OF_DAY), k.get(Calendar.MINUTE))" in act2)
+check("live mode: only this page: the screensaver's page and the home's card never call the live ask", "MarketFile.live" not in "".join(text(p) for p in HOME.rglob("*.java") if p.name != "MarketsActivity.java" and p.name != "MarketFile.java")
+      and "v7/finance/quote" not in page and "v7/finance/quote" not in text(ROOT / "src/template.html"))
 sys.exit(1 if failed else 0)

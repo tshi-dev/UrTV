@@ -69,6 +69,150 @@ public class MarketsActivity extends Activity {
     private ScrollView scroll;
     private int ticks;
 
+    // ---- «مباشر | عادي»: while this page (or a stock card on it) is in front, the TV asks Yahoo for the symbols on screen every 30 s (60, then 120 s after
+    // failures, the 5-minute file meanwhile); a pause, a stop or «عادي» ends it. Nothing is stored: the last good answer lives in `data`.
+    private boolean liveOn = true, resumed, shownLive;
+    private int liveFails, liveRun;
+    private long liveOkAt;
+    private final java.util.LinkedHashSet<String> onScreen = new java.util.LinkedHashSet<>();
+    private final List<TextView> liveButtons = new ArrayList<>();
+    private LinearLayout cardBlock;
+    private TextView cardNote;
+    private String cardCode;
+    private final Runnable liveTick = this::liveAsk;
+
+    private View liveSwitch() {
+        LinearLayout row = new LinearLayout(this);
+        row.setLayoutDirection(Dir.layout());
+        String[] names = {S.t("مباشر"), S.t("عادي")};
+        for (int i = 0; i < 2; i++) {
+            final boolean on = i == 0;
+            TextView t = text(names[i], 16, "Medium", DIM);
+            t.setFocusable(true);
+            t.setGravity(Gravity.CENTER);
+            t.setPadding(dp(16), dp(8), dp(16), dp(8));
+            t.setOnFocusChangeListener((v, has) -> paintLive());
+            t.setOnClickListener(v -> setLive(on));
+            liveButtons.add(t);
+            LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(-2, -2);
+            if (i > 0) p.setMarginStart(dp(8));
+            row.addView(t, p);
+        }
+        paintLive();
+        LinearLayout.LayoutParams rp = new LinearLayout.LayoutParams(-2, -2);
+        rp.setMarginEnd(dp(24));
+        rp.setMarginStart(dp(24));
+        row.setLayoutParams(rp);
+        return row;
+    }
+
+    private void paintLive() {
+        for (int i = 0; i < liveButtons.size(); i++) {
+            TextView t = liveButtons.get(i);
+            boolean chosen = (i == 0) == liveOn;
+            t.setTextColor(t.hasFocus() ? look.onFocus : chosen ? ACCENT : DIM);
+            android.graphics.drawable.LayerDrawable bg = new android.graphics.drawable.LayerDrawable(new android.graphics.drawable.Drawable[] {
+                    t.hasFocus() ? GlassPaint.focused(this, look, 12) : new ColorDrawable(0), new ColorDrawable(chosen ? ACCENT : 0)});
+            bg.setLayerGravity(1, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL);
+            bg.setLayerHeight(1, dp(3));
+            t.setBackground(bg);
+        }
+    }
+
+    private void setLive(boolean on) {
+        if (on == liveOn) return;
+        liveOn = on;
+        liveRun++;
+        liveFails = 0;
+        main.removeCallbacks(liveTick);
+        paintLive();
+        if (on) { if (resumed) main.postDelayed(liveTick, 500); return; }
+        liveOkAt = 0;
+        MarketData file = MarketFile.last();   // the file's own prices again (memory only)
+        if (file != null) data = file;
+        redraw();
+    }
+
+    private void liveAsk() {
+        if (!liveOn || !resumed || isFinishing() || isDestroyed()) return;
+        final int run = liveRun;
+        final java.util.LinkedHashSet<String> syms = new java.util.LinkedHashSet<>(onScreen);
+        if (cardCode != null) syms.add(cardCode);
+        if (syms.isEmpty() || data == null) { main.postDelayed(liveTick, MarketData.liveDelay(0)); return; }
+        new Thread(() -> {
+            java.util.Map<String, MarketData.Live> m = MarketFile.live(syms);   // one request for all of them
+            main.post(() -> liveDone(run, m));
+        }, "markets-live").start();
+    }
+
+    private void liveDone(int run, java.util.Map<String, MarketData.Live> m) {
+        if (run != liveRun || !resumed || !liveOn || isFinishing() || isDestroyed()) return;   // paused, stopped or switched off meanwhile: dropped
+        long now = System.currentTimeMillis();
+        if (m.isEmpty() || data == null) liveFails++;
+        else {
+            liveFails = 0;
+            liveOkAt = now;
+            data = data.withLive(m);
+            redraw();
+            if (cardCode != null && cardBlock != null && data.of(cardCode) != null) {
+                View f = cardBlock.findFocus();
+                ViewGroup head = (ViewGroup) cardBlock.getChildAt(0);
+                int at = f == null || head == null ? -1 : head.indexOfChild(f) - 1;
+                fillChart(cardBlock, null, data.of(cardCode), 40, 130, at);
+            }
+        }
+        if (shownLive != MarketData.liveFresh(liveOkAt, now)) redraw();   // «مباشر» to «الأسعار متأخرة» (or back) in the footer
+        if (cardNote != null) cardNote.setText(sourceText());
+        header();
+        main.postDelayed(liveTick, MarketData.liveDelay(liveFails));
+    }
+
+    /** the live prices a data object holds, as a map (to put them over a newer file) */
+    private static java.util.Map<String, MarketData.Live> liveOf(MarketData m) {
+        java.util.Map<String, MarketData.Live> out = new java.util.LinkedHashMap<>();
+        for (java.util.Map.Entry<String, Long> e : m.liveAt.entrySet()) {
+            MarketData.Quote q = m.quotes.get(e.getKey());
+            if (q != null) out.put(e.getKey(), new MarketData.Live(q.p, q.v, e.getValue()));
+        }
+        return out;
+    }
+
+    private String sourceText() {
+        shownLive = liveOn && MarketData.liveFresh(liveOkAt, System.currentTimeMillis());
+        String name = data == null ? "Yahoo Finance" : data.sourceName();
+        return shownLive ? S.t("مباشر · المصدر: %s", name) : S.t("الأسعار متأخرة · المصدر: %s", name);
+    }
+
+    /** a row's live label: Tadawul's «متأخرة ~١٥ د» (delayed at the source), any other market its quote's time; nothing when it is not live */
+    private String liveTag(String code) {
+        Long at = data == null || !liveOn || !MarketData.liveFresh(liveOkAt, System.currentTimeMillis()) ? null : data.liveAt.get(code);
+        if (at == null) return "";
+        if ("delayed".equals(MarketData.liveKind(code))) return S.t("متأخرة ~%s د", digits(15));
+        Calendar k = Calendar.getInstance(TimeZone.getTimeZone(zone()));
+        k.setTimeInMillis(at == 0 ? System.currentTimeMillis() : at);
+        return clock(k.get(Calendar.HOUR_OF_DAY), k.get(Calendar.MINUTE));
+    }
+
+    /** the tab drawn again with the focus and the scroll where they were (a price changed; the buttons keep their place) */
+    private void redraw() {
+        if (tab < 0) return;
+        List<View> before = new ArrayList<>();
+        collectFocusable(content, before);
+        collectFocusable(actions, before);
+        int at = before.indexOf(getCurrentFocus()), sy = scroll.getScrollY();
+        show(tab, false);
+        List<View> after = new ArrayList<>();
+        collectFocusable(content, after);
+        collectFocusable(actions, after);
+        if (at >= 0 && at < after.size()) after.get(at).requestFocus();
+        scroll.post(() -> scroll.scrollTo(0, sy));
+    }
+
+    private static void collectFocusable(View v, List<View> out) {
+        if (v.isFocusable() && v.getVisibility() == View.VISIBLE) out.add(v);
+        if (v instanceof ViewGroup) for (int i = 0; i < ((ViewGroup) v).getChildCount(); i++) collectFocusable(((ViewGroup) v).getChildAt(i), out);
+    }
+
     /** the file again, on the worker, while the page stays open; the same lifecycle guard as the first load */
     private void refreshPrices() {
         final int gen = loadGen;
@@ -105,6 +249,7 @@ public class MarketsActivity extends Activity {
         LinearLayout top = new LinearLayout(this);
         top.setGravity(Gravity.TOP);
         top.addView(text(S.t("الأسواق"), 30, "Medium", TEXT), new LinearLayout.LayoutParams(0, -2, 1f));
+        top.addView(liveSwitch(), new LinearLayout.LayoutParams(-2, -2));
         LinearLayout status = new LinearLayout(this);
         status.setOrientation(LinearLayout.VERTICAL);
         state = text("", 16, "Regular", TEXT);
@@ -169,6 +314,11 @@ public class MarketsActivity extends Activity {
         Portfolio.listener = changed;
         main.removeCallbacks(minute);
         minute.run();
+        resumed = true;
+        liveRun++;
+        liveFails = 0;
+        main.removeCallbacks(liveTick);
+        if (liveOn) main.postDelayed(liveTick, 1500);   // live while the page is in front
         final int gen = ++loadGen;
         new Thread(() -> {
             android.content.Context app = getApplicationContext();
@@ -186,15 +336,18 @@ public class MarketsActivity extends Activity {
         main.post(() -> {
             if (gen != loadGen || isFinishing() || isDestroyed()) return;
             loading = false;
-            if (d != null) data = d;
+            if (d != null) data = liveOn && d != data && data != null && !data.liveAt.isEmpty() ? d.withLive(liveOf(data)) : d;   // the file's news, with the live prices kept over it
             header();
-            show(tab, false);
+            redraw();
         });
     }
 
     @Override
     protected void onPause() {
         loadGen++;   // a load still running delivers nothing to a page that is not in front
+        resumed = false;   // live mode ends with the page being in front
+        liveRun++;
+        main.removeCallbacks(liveTick);
         super.onPause();
         main.removeCallbacks(minute);
         if (Portfolio.listener == changed) Portfolio.listener = null;
@@ -270,6 +423,8 @@ public class MarketsActivity extends Activity {
             main.post(() -> main.post(() -> rebuilding = false));   // after the layout that hands the lost focus on
         }
         tab = k;
+        onScreen.clear();
+        onScreen.add(MarketData.TASI);
         paintTabs();
         content.removeAllViews();
         actions.removeAllViews();
@@ -564,6 +719,7 @@ public class MarketsActivity extends Activity {
     }
 
     private View watchRow(String code) {
+        onScreen.add(code);
         MarketData.Quote q = data == null ? null : data.of(code);
         LinearLayout r = new LinearLayout(this);
         r.setGravity(Gravity.CENTER_VERTICAL);
@@ -719,16 +875,20 @@ public class MarketsActivity extends Activity {
     private void stockCard(String code, String title) {
         MarketData.Quote q = data == null ? null : code.startsWith("^") ? data.quotes.get(code) : data.of(code);
         Dialog d = dialog();
+        cardCode = code;   // live mode asks for it too while the card is open
+        d.setOnDismissListener(x -> { cardCode = null; cardBlock = null; cardNote = null; });
         LinearLayout box = dialogBox(d, 760);
         LinearLayout head = new LinearLayout(this);
         head.setGravity(Gravity.BOTTOM);
         head.addView(text(title != null ? title : S.tv(MarketData.name(code)), 26, "Medium", TEXT), new LinearLayout.LayoutParams(0, -2, 1f));
         boolean sa = code.startsWith("^") || MarketData.isSaudi(code);
         String sub = code.startsWith("^") ? S.t("مؤشر السوق الرئيسية · تداول") : sa ? S.t("%s · تداول · ر.س", code) : S.t("%s · بالدولار", code);
-        head.addView(ltrStart(text(sub, 14, "Regular", DIM)), new LinearLayout.LayoutParams(-2, -2));
+        String tag = liveTag(code);
+        head.addView(ltrStart(text(tag.isEmpty() ? sub : sub + " · " + tag, 14, "Regular", DIM)), new LinearLayout.LayoutParams(-2, -2));
         box.addView(head, wrap());
         if (q != null) {
-            box.addView(chartBlock(null, q, 40, 130), gap(8));
+            cardBlock = (LinearLayout) chartBlock(null, q, 40, 130);
+            box.addView(cardBlock, gap(8));
             LinearLayout stats = new LinearLayout(this);
             stats.addView(stat(S.t("الافتتاح"), price(q.open())), weight(1f, 0));
             stats.addView(stat(S.t("نطاق اليوم"), price(q.low()) + " – " + price(q.high())), weight(1f, 12));
@@ -738,7 +898,8 @@ public class MarketsActivity extends Activity {
         } else {
             box.addView(note(S.t("لا سعر لهذا الرمز في ملف الأسعار بعد")), gap(12));
         }
-        box.addView(sourceNote(), gap(12));
+        cardNote = (TextView) sourceNote();
+        box.addView(cardNote, gap(12));
         LinearLayout buttons = new LinearLayout(this);
         List<View> made = new ArrayList<>();
         List<Holdings.Holding> mine = Portfolio.load(this);
@@ -769,7 +930,7 @@ public class MarketsActivity extends Activity {
 
     /** «الأسعار متأخرة · المصدر: Yahoo Finance»: small, in the footer's style, under the prices (the file says whose they are) */
     private View sourceNote() {
-        TextView t = text(S.t("الأسعار متأخرة · المصدر: %s", data == null ? "Yahoo Finance" : data.sourceName()), 12, "Regular", DIM);
+        TextView t = text(sourceText(), 12, "Regular", DIM);
         t.setTextDirection(View.TEXT_DIRECTION_FIRST_STRONG);
         return t;
     }
@@ -1083,6 +1244,7 @@ public class MarketsActivity extends Activity {
 
     /** a stock's row in a list: the name, its price and its change; OK opens its card */
     private View stockRow(String code, boolean withLine) {
+        onScreen.add(code);
         MarketData.Quote q = data.of(code);
         LinearLayout r = new LinearLayout(this);
         r.setGravity(Gravity.CENTER_VERTICAL);
@@ -1096,6 +1258,7 @@ public class MarketsActivity extends Activity {
     }
 
     private View volumeRow(String code) {
+        onScreen.add(code);
         MarketData.Quote q = data.of(code);
         LinearLayout r = new LinearLayout(this);
         r.setGravity(Gravity.CENTER_VERTICAL);
@@ -1111,7 +1274,8 @@ public class MarketsActivity extends Activity {
         LinearLayout nm = new LinearLayout(this);
         nm.setOrientation(LinearLayout.VERTICAL);
         nm.addView(text(S.tv(MarketData.name(code)), sp, "Medium", TEXT), wrap());
-        nm.addView(ltrStart(text(code, 14, "Regular", DIM)), wrap());
+        String tag = liveTag(code);
+        nm.addView(ltrStart(text(tag.isEmpty() ? code : code + " · " + tag, 14, "Regular", DIM)), wrap());
         return nm;
     }
 
