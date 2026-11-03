@@ -30,7 +30,7 @@ check("MainActivity: the pills left in the row are sources, then tasks (with the
       order == ["inputs"] and "if (isInstalled(SAVER_PKG) && ConfigSnapshot.read(this).tasksPillOn()) row.add(tasks);" in main and "if (centerWanted()) row.add(centerPill);" in main and "row.add(tilawah)" in main
       and main.index("row.add(tasks)") < main.index("row.add(centerPill)") < main.index("row.add(tilawah)"), order)
 check("MainActivity: every pill is a Pill with a fixed 30 dp row (the row's height is reserved)",
-      "right.addView(p, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(10), 0))" in main and "TextView tasks" not in main and "TextView saver" not in main)
+      "right.addView(p, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(12), 0))" in main and "TextView tasks" not in main and "TextView saver" not in main)
 check("MainActivity: D-pad ends and order are unchanged (wireFocus and moveFocusSideways still walk the pills list)",
       "p.setNextFocusLeftId(i == 0 ? p.getId() : pills.get(i - 1).getId())" in main and "FavBar.sideStep(index, row.getChildCount(), right, rtl)" in main)
 check("MainActivity: the control center's pill is gold while the sleep timer runs (its tile says how long is left)", "centerPill.setAccent(SleepTimer.minutesLeft(this) > 0)" in main

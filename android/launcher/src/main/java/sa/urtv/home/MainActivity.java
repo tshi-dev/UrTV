@@ -473,7 +473,7 @@ public class MainActivity extends Activity {
         band.setCornerRadius(bar(FavBar.RADIUS));
         band.setColor(FavBar.FILL_DARK);
         band.setStroke(Math.max(1, bar(1)), FavBar.LINE_DARK);
-        tray = new android.widget.HorizontalScrollView(this);
+        tray = new TraySnap(this);
         tray.setHorizontalScrollBarEnabled(false);
         tray.setFillViewport(true);
         tray.setClipToPadding(true);   // a tile scrolled half out is cut at the tray's edge, never drawn over the photo
@@ -597,7 +597,7 @@ public class MainActivity extends Activity {
         // [/updates bell]
         if (listenPillWanted(ConfigSnapshot.read(this).listenPillOn)) row.add(tilawah);   // «زر تلاوة وأذان»: hidden in the screensaver's settings, it is simply not in the row
         for (Pill p : row) {
-            right.addView(p, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(10), 0));
+            right.addView(p, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(12), 0));
             pills.add(p);
         }
         // «يُتلى الآن»: the first child of the row, so it sits at its right end and the pills keep their places when it comes
@@ -612,7 +612,7 @@ public class MainActivity extends Activity {
         // taller than a pill by 10 dp, hung 5 dp over the row's top and bottom: the row stays Pill.HEIGHT, so the pills do not move; it
         // reaches from 31 to 75 dp down, clear of the adhan bar (to 26) and the cards (from 84)
         int hang = dp((NowCard.HEIGHT - Pill.HEIGHT) / 2f);
-        right.addView(nowCard, 0, sideLlp(-2, dp(NowCard.HEIGHT), 0, -hang, dp(10), -hang));
+        right.addView(nowCard, 0, sideLlp(-2, dp(NowCard.HEIGHT), 0, -hang, dp(12), -hang));
         header.addView(right, new FrameLayout.LayoutParams(-2, -2, Dir.end() | Gravity.TOP));
         return header;
     }
@@ -705,7 +705,7 @@ public class MainActivity extends Activity {
         boolean want = listenPillWanted(setting), has = tilawahPill.getParent() == pillRow;
         if (want == has) return;
         if (want) {
-            pillRow.addView(tilawahPill, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(10), 0));
+            pillRow.addView(tilawahPill, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(12), 0));
             pills.add(tilawahPill);
         } else {
             boolean hadFocus = tilawahPill.hasFocus();
@@ -729,7 +729,7 @@ public class MainActivity extends Activity {
         boolean want = setting && isInstalled(SAVER_PKG);
         if (want == has) return;
         if (want) {
-            pillRow.addView(tasksPill, pillRow.indexOfChild(inputsPill) + 1, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(10), 0));
+            pillRow.addView(tasksPill, pillRow.indexOfChild(inputsPill) + 1, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(12), 0));
             pills.add(pills.indexOf(inputsPill) + 1, tasksPill);
         } else {
             boolean hadFocus = tasksPill.hasFocus();
@@ -757,7 +757,7 @@ public class MainActivity extends Activity {
         boolean want = UpdatesBell.shown(setting, family.kids, usable, e), has = bellPill.getParent() == pillRow;
         if (want == has) return;
         if (want) {
-            pillRow.addView(bellPill, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(10), 0));
+            pillRow.addView(bellPill, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(12), 0));
             pills.add(bellPill);
         } else {
             boolean hadFocus = bellPill.hasFocus();
@@ -784,7 +784,7 @@ public class MainActivity extends Activity {
         if (want) {
             int at = pills.contains(tilawahPill) ? pills.indexOf(tilawahPill) : pills.size();
             pills.add(at, centerPill);
-            pillRow.addView(centerPill, at + 1, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(10), 0));   // child 0 is «يُتلى الآن»
+            pillRow.addView(centerPill, at + 1, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(12), 0));   // child 0 is «يُتلى الآن»
         } else {
             control.dismiss();
             boolean hadFocus = centerPill.hasFocus();
@@ -3331,6 +3331,15 @@ public class MainActivity extends Activity {
         @Override protected void onMeasure(int w, int h) {
             int width = MeasureSpec.getSize(w);
             super.onMeasure(w, MeasureSpec.makeMeasureSpec(width * 9 / 16, MeasureSpec.EXACTLY));
+        }
+    }
+
+    /** The favourites tray: a focused tile is brought whole into view with the tray's 24 px inset (FavBar.scrollDelta), never flush with the edge and never beside a sliver. */
+    final class TraySnap extends android.widget.HorizontalScrollView {
+        TraySnap(Context c) { super(c); }
+        @Override protected int computeScrollDeltaToGetChildRectOnScreen(android.graphics.Rect r) {
+            if (getChildCount() == 0) return 0;
+            return FavBar.scrollDelta(r.left, r.right, getScrollX(), getWidth(), bar(FavBar.PAD_SIDE), getChildAt(0).getWidth());
         }
     }
 

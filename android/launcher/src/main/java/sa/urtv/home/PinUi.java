@@ -44,6 +44,6 @@ final class PinUi {
         StateListDrawable bg=new StateListDrawable();
         bg.addState(states[0],panel(c,FOCUS,RING));bg.addState(states[1],panel(c,FOCUS,RING));
         bg.addState(states[2],panel(c,SURFACE,LINE));b.setBackground(bg);
-        b.setOnFocusChangeListener((v,on)->v.animate().scaleX(on?1.035f:1f).scaleY(on?1.035f:1f).setDuration(130).start());return b;
+        return b;   // no focus scale: a grown key ate 4 px of its neighbour's gap (the tester measured 20 and 24 in one row); the fill and the ring show the focus
     }
 }

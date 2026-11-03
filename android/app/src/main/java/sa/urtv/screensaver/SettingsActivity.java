@@ -95,7 +95,7 @@ public class SettingsActivity extends Activity {
         list = new LinearLayout(this);
         list.setOrientation(LinearLayout.VERTICAL);
         list.setLayoutDirection(Dir.layout());
-        list.setPadding(dp(8), dp(40), dp(8), dp(16));
+        list.setPadding(dp(8), dp(32), dp(8), dp(16));   // 64 px above the first line: with the group header (32 + its text) the first row is not 124 px down
         int width = Math.min(getResources().getDisplayMetrics().widthPixels - dp(144), dp(1100));
         frame.addView(list, new FrameLayout.LayoutParams(-1, -2));
         scroll.addView(frame);
@@ -215,7 +215,7 @@ public class SettingsActivity extends Activity {
         LinearLayout head = new LinearLayout(this);
         head.setOrientation(LinearLayout.HORIZONTAL);
         head.setGravity(Gravity.CENTER_VERTICAL);
-        head.setPadding(0, 0, 0, dp(14));
+        head.setPadding(0, 0, 0, dp(16));
         TextView title = new TextView(this);
         title.setText(Words.of("تلفزيونك"));
         title.setTextColor(look.text);
@@ -2062,7 +2062,7 @@ public class SettingsActivity extends Activity {
         t.setTextColor(look.accent);
         t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
         t.setTypeface(font("Thmanyah-Medium"));
-        t.setPadding(dp(10), dp(18), dp(10), dp(6));
+        t.setPadding(dp(10), dp(16), dp(10), dp(8));   // 32 above and 16 under a group's header: on the 8 px scale
         list.addView(t);
     }
 

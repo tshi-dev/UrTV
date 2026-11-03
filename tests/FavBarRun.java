@@ -18,7 +18,7 @@ public class FavBarRun {
             float lifted = (FavBar.LIFTED_SCALE - 1) / 2f;
             o.append(h).append(" tray ").append(x0).append(' ').append(x1).append(' ').append(top).append(' ').append(bottom)
              .append(" fits ").append(padT * 2 + tileH <= FavBar.px(FavBar.TRAY_H, h) + 1 ? 1 : 0)
-             .append(" five ").append(five).append(" width ").append(x1 - x0)
+             .append(" five ").append(five).append(" width ").append(x1 - x0).append(" padS ").append(padS).append(" padT ").append(padT)
              .append(" topRoom ").append(padT - overTop).append(" sideRoom ").append(padS - overSide)
              .append(" liftedTopRoom ").append(padT - (tileH * lifted + FavBar.px(FavBar.LIFT, h)))
              .append(" dropped ").append(bottom + FavBar.px(FavBar.WIDGET_DROP, h)).append(" screen ").append(h).append('\n');
@@ -30,6 +30,12 @@ public class FavBarRun {
         o.append("side ").append(FavBar.sideStep(0, 5, true, false)).append(' ').append(FavBar.sideStep(0, 5, false, false)).append(' ')
          .append(FavBar.sideStep(2, 5, true, true)).append(' ').append(FavBar.sideStep(0, 5, true, true)).append(' ')
          .append(FavBar.sideStep(0, 5, false, true)).append(' ').append(FavBar.sideStep(4, 5, true, false)).append('\n');
+        // build 179 (tester step 23): seven favourites, tile 304 / gap 24 / inset 24, tray 1664 wide, content 24 + 7*304 + 6*24 + 24 = 2320
+        o.append("scroll ").append(FavBar.scrollDelta(1000, 1304, 656, 1664, 24, 2320)).append(' ')   // whole inside already: stays
+         .append(FavBar.scrollDelta(656 + 1664 - 24, 656 + 1664 + 280, 656, 1664, 24, 2320)).append(' ')   // clamped at the end
+         .append(FavBar.scrollDelta(328 - 328, 304, 656, 1664, 24, 2320)).append(' ')   // the left end
+         .append(FavBar.scrollDelta(680 - 328, 680 - 24, 656, 1664, 24, 2320)).append(' ')   // the next tile to the left: one pitch (328) back
+         .append(FavBar.scrollDelta(0, 304, 0, 1664, 24, 1664)).append('\n');   // five or fewer: nothing scrolls
         System.out.print(o);
     }
 }

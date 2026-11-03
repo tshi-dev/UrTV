@@ -8,10 +8,10 @@ package sa.urtv.home;
 final class FavBar {
     private FavBar() {}
 
-    /** the tray: 120 from each side (x 120 to 1800), 218 high, radius 32, its bottom 54 above the screen's (the 5 % safe area) */
-    static final int SIDE = 120, TRAY_H = 218, RADIUS = 32, BOTTOM = 54;
-    /** the tiles: 304×170 (a 16:9 banner), radius 16, 24 apart, 32 from the tray's sides and 24 from its top and bottom */
-    static final int TILE_W = 304, TILE_H = 170, TILE_RADIUS = 16, GAP = 24, PAD_SIDE = 32, PAD_TOP = 24;
+    /** the tray: 128 from each side (x 128 to 1792), 218 high, radius 32, its bottom 54 above the screen's (the 5 % safe area) */
+    static final int SIDE = 128, TRAY_H = 218, RADIUS = 32, BOTTOM = 54;
+    /** the tiles: 304×170 (a 16:9 banner), radius 16, 24 apart, and 24 from the tray's four sides: five tiles are exactly 24 + 5×304 + 4×24 + 24 = 1664 wide */
+    static final int TILE_W = 304, TILE_H = 170, TILE_RADIUS = 16, GAP = 24, PAD_SIDE = 24, PAD_TOP = 24;
     /** five tiles show; more scroll inside the tray */
     static final int SHOWN = 5;
     /** the focused tile: 6 up and 1.08 from its centre, a 3 px ring, in 150 ms; a tile picked up to move: a little more, still inside */
@@ -33,6 +33,19 @@ final class FavBar {
     static int tileW(int screenH) {
         int inner = px(1920 - 2 * SIDE, screenH) - 2 * px(PAD_SIDE, screenH) - (SHOWN - 1) * px(GAP, screenH);
         return inner / SHOWN;
+    }
+
+    /**
+     * How far the tray scrolls (in its content's pixels, + toward the content's end) to bring a focused tile ({@code rectLeft}..{@code rectRight}) fully
+     * in view with the tray's inset ({@code inset}, 24) free on its side: 0 when it is whole inside already, else its edge goes to the inset, and
+     * never past the content's ends. The stock scroll view brings a focused child flush with its edge (0 px inset, and the next tile cut to a sliver).
+     */
+    static int scrollDelta(int rectLeft, int rectRight, int scrollX, int viewW, int inset, int contentW) {
+        int left = scrollX + inset, right = scrollX + viewW - inset, d;
+        if (rectLeft >= left && rectRight <= right) return 0;
+        d = rectLeft < left ? rectLeft - left : rectRight - right;
+        int to = Math.max(0, Math.min(Math.max(0, contentW - viewW), scrollX + d));
+        return to - scrollX;
     }
 
     /** a length of the 1080p spec on a screen this many pixels high */

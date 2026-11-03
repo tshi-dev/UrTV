@@ -88,7 +88,7 @@ public class MarketsActivity extends Activity {
 
         LinearLayout page = new LinearLayout(this);
         page.setOrientation(LinearLayout.VERTICAL);
-        page.setPadding(dp(60), dp(28), dp(60), dp(0));
+        page.setPadding(dp(60), dp(28), dp(60), Math.round(getResources().getDisplayMetrics().heightPixels * 0.05f));   // the page ends at the safe area (y 1026): the lists scroll in above it, none starts under it
         root.addView(page, new FrameLayout.LayoutParams(-1, -1));
 
         // the title at the start; the market's state and the last update at the end
@@ -117,7 +117,7 @@ public class MarketsActivity extends Activity {
             t.setFocusable(true);
             t.setGravity(Gravity.CENTER);
             t.setPadding(dp(16), dp(8), dp(16), dp(8));
-            t.setOnFocusChangeListener((v, has) -> { if (has && k != tab) want(k); paintTabs(); });
+            t.setOnFocusChangeListener((v, has) -> { if (has && k != tab && !rebuilding) want(k); paintTabs(); });
             t.setOnClickListener(v -> want(k));
             tabViews.add(t);
             tabRow.addView(t, new LinearLayout.LayoutParams(-2, -2));
@@ -236,8 +236,15 @@ public class MarketsActivity extends Activity {
         show(k, true);
     }
 
+    /** The same tab drawn again (a button pressed in it): the focus that falls on the tabs while its buttons are rebuilt must not switch the tab («أخفِ المبالغ» jumped to «السوق»). */
+    private boolean rebuilding;
+
     private void show(int k, boolean top) {
         if (k < 0) return;
+        if (k == tab) {
+            rebuilding = true;
+            main.post(() -> main.post(() -> rebuilding = false));   // after the layout that hands the lost focus on
+        }
         tab = k;
         paintTabs();
         content.removeAllViews();
@@ -535,7 +542,7 @@ public class MarketsActivity extends Activity {
         MarketData.Quote q = data == null ? null : data.of(code);
         LinearLayout r = new LinearLayout(this);
         r.setGravity(Gravity.CENTER_VERTICAL);
-        r.setPadding(dp(16), dp(8), dp(16), dp(8));
+        r.setPadding(dp(16), dp(12), dp(16), dp(12));
         r.addView(nameCol(code, 19), new LinearLayout.LayoutParams(0, -2, 1.3f));
         FrameLayout sp = new FrameLayout(this);
         if (q != null) sp.addView(new MarketChart(this).line(q.c, q.v, color(q), DIM, false, 2f), new FrameLayout.LayoutParams(dp(112), dp(32), Gravity.CENTER_VERTICAL | Dir.start()));
@@ -555,7 +562,7 @@ public class MarketsActivity extends Activity {
         actions.addView(button(hide ? S.t("أظهر المبالغ") : S.t("أخفِ المبالغ"), false, v -> {
             Portfolio.setHidden(this, !Portfolio.hidden(this));
             show(2, false);
-            actions.getChildAt(0).requestFocus();
+            actions.getChildAt(0).requestFocus();   // «أخفِ/أظهر المبالغ» stays under the focus, on «محفظتي»
         }), buttonParams(0));
         actions.addView(button(S.t("أضف سهمًا"), false, v -> pick()), buttonParams(8));
         actions.addView(button(S.t("خيارات محفظتي"), false, v -> options()), buttonParams(8));
@@ -1046,7 +1053,7 @@ public class MarketsActivity extends Activity {
         MarketData.Quote q = data.of(code);
         LinearLayout r = new LinearLayout(this);
         r.setGravity(Gravity.CENTER_VERTICAL);
-        r.setPadding(dp(16), dp(8), dp(16), dp(8));
+        r.setPadding(dp(16), dp(12), dp(16), dp(12));
         r.addView(text(S.tv(MarketData.name(code)), 17, "Medium", TEXT), new LinearLayout.LayoutParams(0, -2, 1f));
         r.addView(ltr(text(price(q.p), 16, "Regular", DIM)), new LinearLayout.LayoutParams(dp(96), -2));
         r.addView(pct(q.pct(), 16), new LinearLayout.LayoutParams(dp(96), -2));
@@ -1059,7 +1066,7 @@ public class MarketsActivity extends Activity {
         MarketData.Quote q = data.of(code);
         LinearLayout r = new LinearLayout(this);
         r.setGravity(Gravity.CENTER_VERTICAL);
-        r.setPadding(dp(16), dp(8), dp(16), dp(8));
+        r.setPadding(dp(16), dp(12), dp(16), dp(12));
         r.addView(text(S.tv(MarketData.name(code)), 17, "Medium", TEXT), new LinearLayout.LayoutParams(0, -2, 1f));
         r.addView(text(S.t("%s م سهم", MarketData.show(MarketData.num(q.vol / 1e6, 1), Digits.latin())), 16, "Regular", DIM), new LinearLayout.LayoutParams(-2, -2));
         focusRow(r, 12);

@@ -57,13 +57,13 @@
             android:clipToPadding="false"
             android:columnWidth="120dp"
             android:fadingEdge="none"
-            android:horizontalSpacing="9dp"
+            android:horizontalSpacing="8dp"
             android:listSelector="@drawable/focus_selector"
             android:numColumns="6"
             android:paddingBottom="10dp"
             android:scrollbars="none"
             android:stretchMode="columnWidth"
-            android:verticalSpacing="9dp" />
+            android:verticalSpacing="8dp" />
 
         <TextView
             android:id="@+id/hint"
