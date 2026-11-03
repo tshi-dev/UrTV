@@ -37,20 +37,20 @@ public final class PinRecoveryRun {
         kept.put("allowed", "com.example.kids");
         kept.put("kids", "true");
         long t = 1000;
-        say("recover", kind(PinGate.check(s, code, rec, null, false, t)));
-        for (int i = 0; i < 7; i++) PinGate.check(s, code, rec, null, false, t + i);
+        say("recover", kind(PinGate.check(s, code, rec, null, t)));
+        for (int i = 0; i < 7; i++) PinGate.check(s, code, rec, null, t + i);
         say("recover_fails", s.fails());
         say("recover_wait", s.waitLeft(t + 10));
-        say("pin4_right", kind(PinGate.check(s, "1234", rec, null, false, t)));
-        say("pin4_wrong", kind(PinGate.check(s, "1111", rec, null, false, t)));
+        say("pin4_right", kind(PinGate.check(s, "1234", rec, null, t)));
+        say("pin4_wrong", kind(PinGate.check(s, "1111", rec, null, t)));
         say("pin4_wrong_fails", s.fails());
-        PinGate.check(s, "1234", rec, null, false, t);
+        PinGate.check(s, "1234", rec, null, t);
         String wrongLong = code.equals("98765432") ? "98765431" : "98765432";
-        say("long_wrong", kind(PinGate.check(s, wrongLong, rec, null, false, t)));
+        say("long_wrong", kind(PinGate.check(s, wrongLong, rec, null, t)));
         say("long_wrong_fails", s.fails());
-        for (int i = 0; i < 4; i++) PinGate.check(s, wrongLong, rec, null, false, t);
+        for (int i = 0; i < 4; i++) PinGate.check(s, wrongLong, rec, null, t);
         say("long_wrong_locks", s.waitLeft(t) > 0);
-        say("recover_while_locked", kind(PinGate.check(s, code, rec, null, false, t)));
+        say("recover_while_locked", kind(PinGate.check(s, code, rec, null, t)));
         // recovery is the choose step: a new PIN; the rest stays
         s.set("5678");
         say("after_new_pin", kind(s.verify("5678", t)));
@@ -62,17 +62,67 @@ public final class PinRecoveryRun {
 
         // no record: no recovery code, a long entry is a wrong try
         s.set("1234");
-        say("none_long", kind(PinGate.check(s, code, "", null, false, t)));
+        say("none_long", kind(PinGate.check(s, code, "", null, t)));
         say("none_long_fails", s.fails());
         s.set("1234");
-        // the quiet look counts nothing, its answer is counted once
-        say("look_wrong", s.matches("1111", t));
-        say("look_right", s.matches("1234", t));
+        // the look at four digits is a try, counted once, whatever the keypad does next (R01)
+        s.set("1234");
+        PinGate g1 = new PinGate(s, rec);
+        say("look_wrong", g1.look("1111", t));
         say("look_fails", s.fails());
-        say("probed_wrong", kind(PinGate.check(s, "1111", rec, "1111", false, t)));
-        say("probed_wrong_fails", s.fails());
-        say("probed_right", kind(PinGate.check(s, "1234", rec, "1234", true, t)));
+        say("probed_wrong", kind(g1.submit("1111", t)));
+        say("probed_wrong_fails", s.fails());   // the submission after the look: not counted again
+        say("submit_twice", kind(g1.submit("1111", t)) + " " + s.fails());   // a second give-up of one keypad counts nothing
+        PinGate g2 = new PinGate(s, rec);
+        say("look_right", g2.look("1234", t));
+        say("probed_right", kind(g2.submit("1234", t)));
         say("probed_right_fails", s.fails());
+        // Back / reopen: 20 keypads, each a wrong look then abandoned (never submitted): locked after the 5th, the rest turned away
+        s.set("1234");
+        StringBuilder loop = new StringBuilder();
+        int lockedAt = -1;
+        for (int i = 1; i <= 20; i++) {
+            if (s.waitLeft(t) > 0) { loop.append('L'); continue; }   // Parental.ask: a locked keypad is not even opened
+            PinGate g = new PinGate(s, rec);
+            g.look("11" + (10 + i % 90), t);   // abandoned: no submit
+            if (s.waitLeft(t) > 0 && lockedAt < 0) lockedAt = i;
+            loop.append('.');
+        }
+        say("back_loop", loop + " " + lockedAt + " " + s.fails());
+        // even a look made on a keypad reopened while locked counts nothing and says no (no oracle while locked)
+        PinGate gl = new PinGate(s, rec);
+        say("look_while_locked", gl.look("1234", t) + " " + s.fails());
+        // the look answered after the keypad closed (late callback): it was counted when made, the closed keypad changes nothing
+        s.set("1234");
+        PinGate late = new PinGate(s, rec);
+        boolean lateAnswer = late.look("2222", t);
+        say("late_look", lateAnswer + " " + s.fails());
+        // cancel after extending the entry: the look on the first four stands
+        PinGate ext = new PinGate(s, rec);
+        ext.look("3333", t);
+        say("cancel_extended", s.fails());
+        // extended and submitted: one try for the whole entry, not two
+        PinGate ext2 = new PinGate(s, rec);
+        ext2.look("4444", t);
+        say("extended_submitted", kind(ext2.submit("44445", t)) + " " + s.fails());
+        // the recovery code: its first four are looked at (and counted), then refunded when it is given up whole
+        PinGate rg = new PinGate(s, rec);
+        rg.look(code.substring(0, 4), t);
+        say("recover_refund", kind(rg.submit(code, t)) + " " + s.fails());
+        // the recovery code typed on a keypad whose look locked it: refunded, the lock gone with it
+        s.set("1234");
+        for (int i = 0; i < 4; i++) new PinGate(s, rec).look("9999", t);
+        PinGate rl = new PinGate(s, rec);
+        rl.look(code.substring(0, 4).equals("1234") ? "1235" : code.substring(0, 4), t);
+        boolean lockedBy = s.waitLeft(t) > 0;
+        say("recover_refund_lock", lockedBy + " " + kind(rl.submit(code, t)) + " " + s.fails() + " " + (s.waitLeft(t) > 0));
+        // a submission then the dismissal: dismissal settles nothing more
+        s.set("1234");
+        PinGate sd = new PinGate(s, rec);
+        sd.look("5555", t);
+        sd.submit("5555", t);
+        sd.look("5556", t);   // a late look from the same, already given-up keypad
+        say("submit_dismiss", s.fails());
 
         // the keypad: a build without a recovery code gives four digits up on the fourth
         PinKeys k = new PinKeys(4);

@@ -37,7 +37,7 @@ final class PinPrompt {
         if (d != null && d.isShowing() && d.getOwnerActivity() == a) d.dismiss();
     }
 
-    /** A quiet look at the first four digits (PinKeys): answers on the UI thread whether they are the PIN, counting nothing. */
+    /** A look at the first four digits (PinKeys): answers on the UI thread whether they are the PIN. It is a try, counted when made (PinGate). */
     interface Probe {
         void look(String four, Consumer<Boolean> answer);
     }
