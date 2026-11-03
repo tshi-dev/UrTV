@@ -425,3 +425,34 @@ Before: no PIN set; the locked list (6 apps), kids mode off, wrong tries 0. **te
 | 5 | worked: a wrong 8-digit code → the same; wrong tries 2 |
 | 6 | worked: the new PIN once → wrong tries 0; `pin off` → no PIN, the same 6 locked apps, kids off, 0 — as at the start |
 Problems: 0.
+
+## step 23 (re-check of 178's problems on 179), build 179 (next b202ae3)
+Start: Home ours, `wm size` override 1920x1080, muted, no PIN, lang ar, homelayout classic, no home card.
+
+| # | result | numbers / note |
+|---|---|---|
+| 1 update 178 → 179 | PROBLEM | both apps versionCode=179; settings «الإصدار الحالي: ٤٫٢ (١٧٩)». Mute after the install: **4 s Muted:false, 11 s Muted:false, 30 s Muted:false** (muted again by the tester). **A store app (YouTube) opened by itself** after the update and was in front at all three reads. The owner, at home, heard music at that moment |
+| 2 radiojar L1 | FIXED | `playing=1 … buffering=0 errors=0 rebuffers=0`; MediaPlayer: `notify() prepared` → `start` → `NuPlayer: media rendering started` → `Received media started message`; no error. (The owner thought it was music: checked from the PC, a 30 s sample of the stream is Arabic speech about Quran teaching; icy-name is the server's «Mini2's Broadcast». What he heard was YouTube, row 1) |
+| 3 setup in English | FIXED (start screen) | «Your TV setup», «Set everything up», «Undo (puts the TV back as it was)», left to right, no Arabic, no «…». Plan/progress/done screens: not reachable without a run |
+| 5 matches path | OK | from «الأذان» ▼×5 → «أرسل تقرير», ◀ → «المزيد», OK → focus «المباريات والأسواق», OK → focus «مباريات اليوم», OK → matches page (focus «المباريات»); OK → a match's detail; Back → «مباريات اليوم», ▼×4 → «صفحة الأسواق», OK → markets (focus «السوق»). Home: stocks card (temporary `home-card stocks`), ▲ once onto it (gold ring), OK → `MarketsActivity`. Football layout: ▲ onto the games widget, OK → `MatchesActivity` |
+| G10 | OK | matches list: no problem found; detail: no problem found |
+| G11 | OK + notes | market tab: the «الأكثر ارتفاعًا وانخفاضًا» list starts at y 1032+ (below the fold, scrolls; first row under the safe area); watchlist rows 152 px tall, text 16 px from top/bottom (24 needed for a box > 600 px wide). Holdings: 1 share of أرامكو at a made-up cost (form: «الكمية», «متوسط التكلفة», «احفظ»); «أخفِ المبالغ» hides value, profit, quantity and cost («••••»; percentages and the share price stay). Note: pressing «أخفِ/أظهر المبالغ» jumps the tabs to «السوق» (the portfolio tab is left). The stock card (range, open, day range, «عدّل/احذف/أظهره في شريط الأسواق»): no problem found. Holding deleted («أحذف «أرامكو» من محفظتك؟» → «نعم»); «لا أسهم في محفظتك بعد» |
+| football widget | small | the games card cuts «…FC Champions League Elite» and «شباب الأه…» |
+| Z | restored: yes | lang ar, homelayout classic, no home card, show and dock = start, no PIN (temporary 1234 for the PIN-pad measure, then `pin off`), wrong tries 0, 45 s, updatechannel latest, Home ours, muted |
+
+### worst 10: 178 → 179 (lang ar)
+| # | item | 178 | 179 |
+|---|---|---|---|
+| 1 | settings footer glyph bottom (every settings page) | 1037 | **1002** ✓ (adhan page 1016 ✓) |
+| 2 | Tilawah/adhan footer glyph bottom | 1032 | **1023** ✓ |
+| 3 | favourites gap | 20 | **20** ✗ |
+| 4 | Control Center tile gap | 20 | **no gap problem** ✓ |
+| 5 | Tilawah rows gap | 20 | **20** ✗ (row text 1 px from the row's bottom by bounds) |
+| 6 | PIN pad gaps (keys row 1 / rows 2–3 / between rows) | 20/24 | **20, 24 / 24, 24 / 24** ✗ (row 1 still 20 then 24) |
+| 7 | settings rows gap | 18 | **16** ✓ (but the first gap after the header is 124: off the scale) |
+| 8 | phone-control title top | 40 | **box 56, glyphs 80** ✓ |
+| 9 | month line «…» | «يناير، فبراير، مارس…» | **«يناير، فبراير، مارس»** ✓ |
+| 10 | setup screen gap | 20 | **no problem** ✓ |
+Parental card: no problem found.
+
+Problems left: 4 (update unmutes + opens an app; favourites gap 20; Tilawah rows gap 20; PIN pad first row 20) + small: «أخفِ المبالغ» jumps to «السوق», the games card cuts names, the 124 px first gap.
