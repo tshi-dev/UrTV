@@ -19,7 +19,7 @@ import java.nio.charset.StandardCharsets;
 final class MarketFile {
     private MarketFile() { }
 
-    static final long FRESH_MS = 10 * 60_000L;
+    static final long FRESH_MS = 5 * 60_000L;   // CI publishes every 5 minutes (a late file is shown with its own time)
     private static final int MAX_BYTES = 512 * 1024, TIMEOUT_MS = 12_000;
     private static final String NAME = "markets.json";
 

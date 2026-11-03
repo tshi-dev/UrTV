@@ -67,10 +67,19 @@ public class MarketsActivity extends Activity {
     private final List<TextView> tabViews = new ArrayList<>();
     private LinearLayout tabRow, actions, content;
     private ScrollView scroll;
+    private int ticks;
+
+    /** the file again, on the worker, while the page stays open; the same lifecycle guard as the first load */
+    private void refreshPrices() {
+        final int gen = loadGen;
+        new Thread(() -> deliver(gen, MarketFile.load(getApplicationContext(), false)), "markets-refresh").start();
+    }
+
     private final Runnable minute = new Runnable() {
         @Override public void run() {
             header();
             if (tab == 2) Portfolio.openEditing(System.currentTimeMillis());   // the phone may edit while the tab is on the screen
+            if (++ticks % 5 == 0) refreshPrices();   // CI's file is new every 5 minutes (a late one shows its own time, no error)
             main.postDelayed(this, 60_000);
         }
     };
@@ -267,6 +276,7 @@ public class MarketsActivity extends Activity {
         if (k == 0) market();
         else if (k == 1) watch();
         else portfolio();
+        if (data != null) content.addView(sourceNote(), gap(16));
         if (top) scroll.scrollTo(0, 0);
         // down from the tabs to the first thing that takes the focus
         View first = firstFocusable(content);
@@ -728,6 +738,7 @@ public class MarketsActivity extends Activity {
         } else {
             box.addView(note(S.t("لا سعر لهذا الرمز في ملف الأسعار بعد")), gap(12));
         }
+        box.addView(sourceNote(), gap(12));
         LinearLayout buttons = new LinearLayout(this);
         List<View> made = new ArrayList<>();
         List<Holdings.Holding> mine = Portfolio.load(this);
@@ -754,6 +765,13 @@ public class MarketsActivity extends Activity {
         if (!made.isEmpty()) box.addView(buttons, gap(20));
         d.show();
         if (!made.isEmpty()) made.get(0).requestFocus();
+    }
+
+    /** «الأسعار متأخرة · المصدر: Yahoo Finance»: small, in the footer's style, under the prices (the file says whose they are) */
+    private View sourceNote() {
+        TextView t = text(S.t("الأسعار متأخرة · المصدر: %s", data == null ? "Yahoo Finance" : data.sourceName()), 12, "Regular", DIM);
+        t.setTextDirection(View.TEXT_DIRECTION_FIRST_STRONG);
+        return t;
     }
 
     private View stat(String name, String value) {

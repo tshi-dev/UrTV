@@ -74,7 +74,15 @@ final class MarketData {
     final long updated;
     final Map<String, Quote> quotes;
 
+    /** who the prices are from, as the file says ("yahoo" when it says nothing): "yahoo", "stooq" or "yahoo+stooq" */
+    String src = "yahoo";
+
     private MarketData(long updated, Map<String, Quote> quotes) { this.updated = updated; this.quotes = quotes; }
+
+    /** the name a person reads under the prices («المصدر: Yahoo Finance»): a provider's own name, not translated */
+    String sourceName() {
+        return "stooq".equals(src) ? "Stooq" : "yahoo+stooq".equals(src) ? "Yahoo Finance + Stooq" : "Yahoo Finance";
+    }
 
     /** The file's contents, or null when it is not the file (an error page, a cut download). */
     static MarketData parse(String json) {
@@ -93,7 +101,9 @@ final class MarketData {
                 if (Double.isNaN(p) || p <= 0) continue;
                 out.put((String) e.getKey(), new Quote(p, num(x.get("v")), numbers(x.get("c")), time(x.get("t")), num(x.get("vol")), num(x.get("yh")), num(x.get("yl"))));
             }
-            return new MarketData(time(m.get("updated")), out);
+            MarketData d = new MarketData(time(m.get("updated")), out);
+            if (m.get("src") instanceof String && ((String) m.get("src")).matches("yahoo|stooq|yahoo\\+stooq")) d.src = (String) m.get("src");
+            return d;
         } catch (RuntimeException e) {
             return null;
         }
@@ -120,7 +130,9 @@ final class MarketData {
             }
             out.put(e.getKey(), q);
         }
-        return new MarketData(updated, out);
+        MarketData d = new MarketData(updated, out);
+        d.src = src;
+        return d;
     }
 
     private static double num(Object o) { return o instanceof Double ? (Double) o : Double.NaN; }

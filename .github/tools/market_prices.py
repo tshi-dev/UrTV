@@ -16,11 +16,17 @@ closes, at most 30], "t": when this price was last confirmed, and when Yahoo's a
 meta (the home's «الأسواق» page shows them; docs/PROPOSALS-NOV2.md §6), and a quote without them is as before.
 Once a day, a second request per symbol (DAILY: a year of daily closes) writes markets/daily.json = {"updated", "daily":
 {SYMBOL: {"d": [the closes, oldest first], "df"/"dl": the first and last day (YYYY-MM-DD), "dt": when they were fetched}}},
-for the home's «الأسواق» page («أسبوع / شهر / سنة»). A file of its own: every TV's page downloads markets.json every 15 minutes
+for the home's «الأسواق» page («أسبوع / شهر / سنة»). A file of its own: every TV's page downloads markets.json every 5 minutes
 and stays about 20 kB; only a TV that opens the markets page downloads the year (about 140 kB), once a day. Crypto has none. A symbol that fails this
 time keeps its previous quote and its old "t" (MARKETS_PREV is a directory holding the last file), so the page sees
 how old it is. Which symbols a run asks for depends on the clock (due()): the open exchanges and the 24-hour assets
 every run, the closed ones about hourly.
+
+Requests (build 179, the owner): symbols go in batches (Yahoo's spark endpoint, BATCH per request; a symbol the batch did not answer is asked alone),
+with a generic User-Agent, a pause between requests, and 2/4/8 s of backoff on a 429, a 5xx or a timeout (Retry-After honoured up to 30 s).
+When no symbol answers the run publishes nothing, so the last good file stays. MARKETS_PROVIDERS="yahoo" (default) or "yahoo,stooq": the second
+is asked only for what the first did not answer (Stooq's free CSV has US stocks and indices, not Tadawul; its terms are the maintainer's to
+check before the switch is turned on). What is written passes an allowlist (QUOTE_KEYS, TOP_KEYS, DAILY_KEYS): nothing else of a provider's answer is published.
 
     python3 .github/tools/market_prices.py          what is due now
     python3 .github/tools/market_prices.py --all    everything
@@ -47,6 +53,18 @@ DAILY_EVERY_H = 20   # the daily closes are asked again after this many hours: o
 DAILY_KEYS = ("d", "df", "dl", "dt")
 QUOTE_MAX_BYTES = 32 * 1024   # markets.json, downloaded by every TV every 15 minutes: the year never goes in it
 PAUSE_S = float(os.environ.get("MARKETS_PAUSE", "0.4"))   # between two requests
+UA = "UrTV-markets/1.0 (+https://github.com/tshi-dev/UrTV)"   # generic: a project, no person, no address
+RETRY_WAITS = (2, 4, 8)   # seconds before the 2nd, 3rd and 4th try of one request
+RETRY_AFTER_MAX = 30
+SLEEP = time.sleep   # a test replaces it
+SPARK = "https://query1.finance.yahoo.com/v8/finance/spark?symbols={}&range=1d&interval=15m"
+BATCH = int(os.environ.get("MARKETS_BATCH", "20"))   # symbols per batch request; 0 = one request each
+PROVIDERS = [x.strip() for x in os.environ.get("MARKETS_PROVIDERS", "yahoo").split(",") if x.strip()]   # the switch: "yahoo,stooq" turns the fallback on
+STOOQ = "https://stooq.com/q/l/?s={}&f=sd2t2ohlcv&h&e=csv"
+STOOQ_INDEX = {"^GSPC": "^spx", "^IXIC": "^ndq", "^DJI": "^dji"}
+# the only fields that are published (a provider's answer carries many more; none of them leaves this script)
+QUOTE_KEYS = ("p", "v", "c", "t", "vol", "yh", "yl")
+TOP_KEYS = ("updated", "quotes", "src")
 CLOSED_REFRESH_MIN = 55   # a closed exchange's last close is confirmed about hourly
 CLOSES_MAX = 30
 
@@ -101,15 +119,40 @@ class NotFound(Exception):
     pass
 
 
+REQUESTS = [0]   # how many HTTP requests this run made (the report says)
+
+
+def _get(url, read):
+    """One GET with the generic User-Agent; 404 -> NotFound; a 429, a 5xx, a timeout or a bad body is tried again after RETRY_WAITS."""
+    for attempt in range(len(RETRY_WAITS) + 1):
+        wait = RETRY_WAITS[attempt] if attempt < len(RETRY_WAITS) else None
+        REQUESTS[0] += 1
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": UA})
+            with urllib.request.urlopen(req, timeout=20) as r:
+                return read(r)
+        except urllib.error.HTTPError as e:
+            if e.code == 404:
+                raise NotFound(url)
+            if not (e.code == 429 or 500 <= e.code <= 599):
+                raise
+            last = e
+            ra = (e.headers.get("Retry-After") if e.headers else None) or ""
+            if ra.isdigit():
+                wait = min(RETRY_AFTER_MAX, int(ra)) if wait is not None else None
+        except (urllib.error.URLError, OSError, ValueError) as e:   # a timeout, a reset, a body that is not JSON
+            last = e
+        if wait is None:
+            raise last
+        SLEEP(wait)
+
+
 def fetch_json(url):
-    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (urtv-markets)"})
-    try:
-        with urllib.request.urlopen(req, timeout=20) as r:
-            return json.load(r)
-    except urllib.error.HTTPError as e:
-        if e.code == 404:
-            raise NotFound(url)
-        raise
+    return _get(url, json.load)
+
+
+def fetch_text(url):
+    return _get(url, lambda r: r.read(512 * 1024).decode("utf-8", "replace"))
 
 
 def quote(sym, now):
@@ -118,6 +161,11 @@ def quote(sym, now):
     res = ((j.get("chart") or {}).get("result") or [None])[0]
     if not res:
         raise NotFound(sym)
+    return parse_result(res, now)
+
+
+def parse_result(res, now):
+    """-> the quote out of one result of a chart (or spark) answer: only the fields QUOTE_KEYS name are taken, rounded; None without a price."""
     meta = res.get("meta") or {}
     price = meta.get("regularMarketPrice")
     if not isinstance(price, (int, float)):
@@ -135,6 +183,86 @@ def quote(sym, now):
         if isinstance(v, (int, float)) and not isinstance(v, bool) and v > 0:
             q[key] = round(float(v), 4)
     return q
+
+
+def batch(syms, now):
+    """-> {symbol: quote} for what Yahoo's spark endpoint answers, BATCH symbols per request. A batch that fails answers nothing (the caller asks
+    those alone); the spark answer is read with the same parser as a chart's."""
+    out = {}
+    if BATCH <= 0:
+        return out
+    for i in range(0, len(syms), BATCH):
+        chunk = syms[i:i + BATCH]
+        if i:
+            SLEEP(PAUSE_S)
+        try:
+            j = fetch_json(SPARK.format(urllib.parse.quote(",".join(chunk), safe=",")))
+            for r in ((j.get("spark") or {}).get("result") or []):
+                resp = (r.get("response") or [None])[0]
+                q = parse_result(resp, now) if isinstance(resp, dict) and r.get("symbol") in chunk else None
+                if q:
+                    out[r["symbol"]] = q
+        except Exception:
+            continue
+    return out
+
+
+def stooq_symbol(sym):
+    """Stooq's name for a symbol, or None when it has no such market (Tadawul, futures, crypto)."""
+    if sym in STOOQ_INDEX:
+        return STOOQ_INDEX[sym]
+    if sym.endswith(".SR") or sym.endswith("-USD") or "=" in sym or sym.startswith("^"):
+        return None
+    return sym.lower() + ".us"
+
+
+def stooq_quotes(syms, prev, now):
+    """-> {symbol: quote} from one request of Stooq's quote CSV for the symbols it covers (US stocks and three indices). It has no previous close:
+    the one of the last good file is kept, and the price is added to the day's closes."""
+    names = {stooq_symbol(x): x for x in syms if stooq_symbol(x)}
+    if not names:
+        return {}
+    rows = fetch_text(STOOQ.format("+".join(names))).strip().splitlines()[1:]
+    out = {}
+    for row in rows:
+        f = row.split(",")
+        sym = names.get(f[0].lower()) if f else None
+        try:
+            price = float(f[6])
+        except (IndexError, ValueError):
+            continue
+        if not sym or price <= 0:
+            continue
+        old = prev.get(sym) or {}
+        closes = list(old.get("c") or [])
+        closes = (closes + [round(price, 4)])[-CLOSES_MAX:]
+        out[sym] = {"p": round(price, 4), "v": old.get("v"), "c": closes, "t": now.isoformat(timespec="seconds")}
+    return out
+
+
+def allowlist(doc):
+    """What may be published of a quotes file: the keys of TOP_KEYS, and per quote only QUOTE_KEYS with numbers as numbers."""
+    quotes = {}
+    for sym, q in (doc.get("quotes") or {}).items():
+        if not isinstance(q, dict) or not isinstance(q.get("p"), (int, float)):
+            continue
+        kept = {}
+        for k in QUOTE_KEYS:
+            v = q.get(k)
+            if k == "c":
+                if isinstance(v, list):
+                    kept[k] = [round(float(x), 4) for x in v if isinstance(x, (int, float)) and not isinstance(x, bool)][-CLOSES_MAX:]
+            elif k == "t":
+                if isinstance(v, str):
+                    kept[k] = v
+            elif isinstance(v, (int, float)) and not isinstance(v, bool):
+                kept[k] = round(float(v), 4) if k != "p" else round(v, 4)
+            elif k == "v" and v is None:
+                kept[k] = None
+        quotes[sym] = kept
+    out = {k: doc[k] for k in TOP_KEYS if k in doc and k != "quotes"}
+    out["quotes"] = quotes
+    return out
 
 
 def small(x):
@@ -187,37 +315,68 @@ def main(argv):
         except ValueError:
             days = {}
     report = {"asked": 0, "ok": 0, "failed": [], "notfound": [], "skipped": 0, "stopped": ""}
-    asked = 0
+    todo = []
     for sym, kind in symbols().items():
-        if not due(sym, kind, prev, now, everything):
+        if due(sym, kind, prev, now, everything):
+            todo.append(sym)
+        else:
             report["skipped"] += 1
+    report["asked"] = len(todo)
+    got, notfound, used = {}, set(), []
+    for name in PROVIDERS:
+        remaining = [x for x in todo if x not in got and x not in notfound]
+        if not remaining:
+            break
+        if name == "yahoo":
+            if report["stopped"]:
+                continue
+            found = batch(remaining, now)   # a few requests for most of them
+            asked = 0
+            for sym in remaining:
+                if sym in found:
+                    continue
+                if asked:
+                    SLEEP(PAUSE_S)
+                asked += 1
+                try:
+                    q = quote(sym, now)
+                except NotFound:
+                    notfound.add(sym)
+                    continue
+                except Exception as e:   # 429 after its tries, a timeout, a bad answer: keep the old quote, its old "t" says how old it is
+                    report["failed"].append(f"{sym}: {e}")
+                    if len(report["failed"]) >= 5 and not report["ok"] and not found:   # the first five all failed: blocked, do not hammer
+                        report["stopped"] = "five failures in a row"
+                        break
+                    continue
+                if q:
+                    found[sym] = q
+        elif name == "stooq":
+            try:
+                found = stooq_quotes(remaining, prev, now)
+            except Exception as e:
+                report["failed"].append(f"stooq: {e}")
+                found = {}
+        else:
             continue
-        if asked:
-            time.sleep(PAUSE_S)
-        asked += 1
-        report["asked"] += 1
-        try:
-            q = quote(sym, now)
-        except NotFound:
-            report["notfound"].append(sym)
+        if found:
+            got.update(found)
+            used.append(name)
+    report["providers"] = used
+    report["ok"] = len(got)
+    quotes.update(got)
+    # a symbol Yahoo says it does not have is dropped, but only in a run that mostly worked (an outage must not empty the file)
+    if len(notfound) * 2 <= max(1, len(todo)) and report["ok"]:
+        for sym in notfound:
             quotes.pop(sym, None)
-            continue
-        except Exception as e:   # 429, a timeout, a bad answer: keep the old quote, its old "t" says how old it is
-            report["failed"].append(f"{sym}: {e}")
-            if len(report["failed"]) >= 5 and not report["ok"]:   # the first five all failed: blocked, do not hammer
-                report["stopped"] = "five failures in a row"
-                break
-            continue
-        if q:
-            quotes[sym] = q
-            report["ok"] += 1
+    report["notfound"] = sorted(notfound)
     # the year's daily closes, once a day per symbol (a second request each); a failure keeps the old line
     report.update({"daily_asked": 0, "daily_ok": 0, "daily_failed": 0})
     if not report["stopped"]:
         for sym in list(quotes):
             if not daily_due(sym, days.get(sym), now, everything):
                 continue
-            time.sleep(PAUSE_S)
+            SLEEP(PAUSE_S)
             report["daily_asked"] += 1
             try:
                 d = daily(sym, now)
@@ -231,14 +390,24 @@ def main(argv):
                 report["daily_ok"] += 1
     days = {sym: d for sym, d in days.items() if sym in quotes}   # a symbol that left the list leaves the year too
     OUT.mkdir(parents=True, exist_ok=True)
-    # "updated" moves only when something was confirmed: the page trusts a file for 3 hours from it
-    updated = now.isoformat(timespec="seconds") if report["ok"] else None
-    if not updated and PREV and (PREV / "markets.json").exists():
-        try:
-            updated = json.loads((PREV / "markets.json").read_text(encoding="utf-8")).get("updated")
-        except ValueError:
-            pass
-    (OUT / "markets.json").write_text(json.dumps({"updated": updated, "quotes": quotes}, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    report["requests"] = REQUESTS[0]
+    # nothing answered (Yahoo down, blocked, or a run with nothing due): nothing is published, the last good file stays as it is
+    if report["ok"] or report["daily_ok"]:
+        # "updated" moves only when something was confirmed: the page trusts a file for 3 hours from it
+        updated = now.isoformat(timespec="seconds") if report["ok"] else None
+        if not updated and PREV and (PREV / "markets.json").exists():
+            try:
+                updated = json.loads((PREV / "markets.json").read_text(encoding="utf-8")).get("updated")
+            except ValueError:
+                pass
+        src = "yahoo+stooq" if len(used) > 1 else (used[0] if used else None)
+        if src is None and PREV and (PREV / "markets.json").exists():
+            try:
+                src = json.loads((PREV / "markets.json").read_text(encoding="utf-8")).get("src")
+            except ValueError:
+                pass
+        doc = allowlist({"updated": updated, "quotes": quotes, "src": src or "yahoo"})
+        (OUT / "markets.json").write_text(json.dumps(doc, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     if report["daily_ok"] or days:
         (OUT / "daily.json").write_text(json.dumps({"updated": now.isoformat(timespec="seconds") if report["daily_ok"] else days_updated, "daily": days},
                                                    ensure_ascii=False, separators=(",", ":")), encoding="utf-8")

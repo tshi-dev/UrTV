@@ -17,6 +17,7 @@ os.environ.update(MARKETS_OUT=OUT, MARKETS_PREV=PREV, MARKETS_PAUSE="0")
 spec = importlib.util.spec_from_file_location("market_prices", ROOT / ".github/tools/market_prices.py")
 mp = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mp)
+real_fetch_json, real_fetch_text = mp.fetch_json, mp.fetch_text
 failed = 0
 
 
@@ -153,13 +154,126 @@ gh = Path(tempfile.mkdtemp()) / "out"
 os.environ["GITHUB_OUTPUT"] = str(gh)
 RUN = at(2026, 10, 22, 15, 0)
 mp.main(["--all"])
-got2 = json.loads((Path(out2) / "markets.json").read_text())
 check("blocked: it stops after five failures instead of hammering", json.loads((Path(out2) / "report.json").read_text())["stopped"] != "", )
-check("blocked: the old quotes and the old 'updated' stay", got2["quotes"]["AAPL"] == got["quotes"]["AAPL"] and got2["updated"] == got["updated"])
+check("blocked: nothing is written, so the last good file stays as it was (never an empty one)", not (Path(out2) / "markets.json").exists())
 check("blocked: nothing is pushed", "changed=false" in gh.read_text(), gh.read_text())
+
+# ---- build 179: retries and backoff, one batch request, the allowlist, the fallback provider and its switch
+import io, urllib.error
+mp.fetch_json = real_fetch_json
+real_get_sleep = mp.SLEEP
+slept = []
+mp.SLEEP = slept.append
+class Resp(io.BytesIO):
+    def __enter__(self): return self
+    def __exit__(self, *a): return False
+def http(code, retry_after=None):
+    h = {"Retry-After": retry_after} if retry_after else {}
+    return urllib.error.HTTPError("u", code, "x", h, None)
+def scripted(*steps):
+    it = iter(steps)
+    def urlopen(req, timeout=0):
+        step = next(it)
+        if isinstance(step, Exception):
+            raise step
+        return Resp(step)
+    return urlopen
+real_urlopen = mp.urllib.request.urlopen
+mp.urllib.request.urlopen = scripted(http(429), http(503), b'{"ok":1}')
+check("retry: a 429 then a 503 are tried again after 2 s and 4 s, then it answers", mp.fetch_json("https://x/y") == {"ok": 1} and slept == [2, 4], slept)
+slept.clear(); mp.urllib.request.urlopen = scripted(http(500), http(500), http(500), http(500))
+try:
+    mp.fetch_json("https://x/y"); err = None
+except Exception as e:
+    err = e
+check("retry: four tries in all (waits 2, 4, 8 s), then the error is raised", isinstance(err, urllib.error.HTTPError) and slept == [2, 4, 8], (err, slept))
+slept.clear(); mp.urllib.request.urlopen = scripted(http(429, "5"), b"{}")
+mp.fetch_json("https://x/y")
+check("retry: Retry-After is honoured (up to 30 s)", slept == [5], slept)
+slept.clear(); mp.urllib.request.urlopen = scripted(http(404))
+try:
+    mp.fetch_json("https://x/y"); nf = False
+except mp.NotFound:
+    nf = True
+check("retry: a 404 is not tried again", nf and slept == [])
+slept.clear(); mp.urllib.request.urlopen = scripted(OSError("timed out"), b"[1]")
+check("retry: a timeout is tried again", mp.fetch_json("https://x/y") == [1] and slept == [2], slept)
+mp.urllib.request.urlopen = real_urlopen
+check("requests: a generic User-Agent (a project, no person, no address)", "@" not in mp.UA and mp.UA.startswith("UrTV-markets/") and "Mozilla" not in mp.UA, mp.UA)
+mp.SLEEP = real_get_sleep
+
+# one batch request holds many symbols; a symbol the batch did not answer is asked alone
+calls = []
+def spark_fake(url):
+    calls.append(url)
+    if "/spark?" in url:
+        names = urllib.parse.unquote(re.search(r"symbols=([^&]+)", url).group(1)).split(",")
+        return {"spark": {"result": [{"symbol": n, "response": [{"meta": {"regularMarketPrice": 10.0, "chartPreviousClose": 9.0}, "indicators": {"quote": [{"close": [9.5, 10.0]}]}}]}
+                                     for n in names if n != "NVDA"]}}
+    return chart(77.0, 70.0, [70, 77])
+import urllib.parse
+mp.fetch_json = spark_fake
+b = mp.batch(["AAPL", "MSFT", "NVDA"], RUN)
+check("batch: three symbols in one request, a symbol the answer lacks is simply missing", len(calls) == 1 and set(b) == {"AAPL", "MSFT"} and b["AAPL"]["p"] == 10.0, (calls, b))
+calls.clear(); out_b = tempfile.mkdtemp(); mp.OUT, mp.PREV = Path(out_b), Path(tempfile.mkdtemp())
+mp.main(["--all"])
+rb = json.loads((Path(out_b) / "report.json").read_text())
+n_batches = sum("/spark?" in c for c in calls); n_single = sum("/chart/" in c and "interval=15m" in c for c in calls)
+check("batch: the whole list is asked in a handful of batch requests (<= symbols / 20 + 1), and the singles are only the symbols a batch lacked",
+      n_batches <= len(mp.symbols()) // mp.BATCH + 1 and n_single <= 1, (n_batches, n_single, rb["asked"]))
+
+# the allowlist: nothing of a provider's answer but the fields the page uses
+dirty = {"updated": "u", "quotes": {"AAA": {"p": 1.23456789, "v": 1.2, "c": [1, 2, "x", None], "t": "t", "vol": 5, "yh": 3, "yl": 1,
+                                             "regularMarketTime": 1, "exchangeName": "SAU", "longName": "A B", "currency": "SAR", "extra": {"a": 1}},
+                                    "BAD": {"p": "nope"}}, "meta": {"user": "x"}, "src": "yahoo"}
+clean = mp.allowlist(dirty)
+check("allowlist: only p v c t vol yh yl per quote, numbers rounded, a quote with no price dropped, no other top-level key",
+      set(clean["quotes"]["AAA"]) <= set(mp.QUOTE_KEYS) and clean["quotes"]["AAA"]["p"] == 1.2346 and clean["quotes"]["AAA"]["c"] == [1.0, 2.0] and "BAD" not in clean["quotes"]
+      and set(clean) <= set(mp.TOP_KEYS), clean)
+written = json.loads((Path(out_b) / "markets.json").read_text())
+allowed = set(mp.QUOTE_KEYS)
+check("allowlist: the published file of a run has nothing else (and the year stays out of it)", all(set(q) <= allowed for q in written["quotes"].values()) and set(written) <= set(mp.TOP_KEYS), set(written))
+
+# the fallback provider and its switch
+def yahoo_down(url):
+    raise OSError("HTTP Error 503")
+stooq_csv = "Symbol,Date,Time,Open,High,Low,Close,Volume\nAAPL.US,2026-10-22,21:00:00,1,2,0.5,150.25,100\nMSFT.US,N/D,N/D,N/D,N/D,N/D,N/D,N/D\n"
+asked_text = []
+mp.fetch_text = lambda url: (asked_text.append(url), stooq_csv)[1]
+mp.fetch_json = yahoo_down
+prevd = tempfile.mkdtemp()
+(Path(prevd) / "markets.json").write_text(json.dumps({"updated": "2026-10-22T10:00:00+00:00", "quotes": {
+    "AAPL": {"p": 140.0, "v": 139.0, "c": [139, 140], "t": "2026-10-22T10:00:00+00:00"}}}))
+mp.PROVIDERS = ["yahoo"]; mp.PROVIDER_ARGS = None
+out_s = tempfile.mkdtemp(); mp.OUT, mp.PREV = Path(out_s), Path(prevd)
+mp.main(["--all"])
+check("switch off (the default): Stooq is never asked, and with Yahoo down nothing is written", not asked_text and not (Path(out_s) / "markets.json").exists(), asked_text)
+mp.PROVIDERS = ["yahoo", "stooq"]
+out_s2 = tempfile.mkdtemp(); mp.OUT = Path(out_s2)
+mp.main(["--all"])
+fb = json.loads((Path(out_s2) / "markets.json").read_text())
+check("switch on: with Yahoo down, Stooq covers the US stocks it has (one request), keeps the old previous close, and says so (src)",
+      len(asked_text) == 1 and fb["quotes"]["AAPL"]["p"] == 150.25 and fb["quotes"]["AAPL"]["v"] == 139.0 and fb["src"] == "stooq", (asked_text, fb["quotes"].get("AAPL"), fb.get("src")))
+check("switch on: Tadawul, futures and crypto are not Stooq's: they are not asked of it, and keep no new quote", "2222.SR" not in fb["quotes"] and "BTC-USD" not in fb["quotes"]
+      and "2222.sr" not in asked_text[0].lower() and "btc" not in asked_text[0].lower() and "gc=f" not in asked_text[0].lower())
+check("switch on: a row Stooq has no data for (N/D) is skipped", "MSFT" not in fb["quotes"])
+mp.fetch_json = spark_fake; asked_text.clear()
+out_s3 = tempfile.mkdtemp(); mp.OUT, mp.PREV = Path(out_s3), Path(tempfile.mkdtemp())
+mp.main(["--all"])
+fb3 = json.loads((Path(out_s3) / "markets.json").read_text())
+check("switch on, Yahoo up: Stooq is not asked at all (only what Yahoo did not answer)", not asked_text and fb3["src"] == "yahoo", (asked_text, fb3.get("src")))
+mp.PROVIDERS = ["yahoo"]
+
+# an outage must not empty the file: every symbol 404s -> nothing dropped, nothing written
+mp.fetch_json = lambda url: (_ for _ in ()).throw(mp.NotFound(url))
+out_n = tempfile.mkdtemp(); mp.OUT, mp.PREV = Path(out_n), Path(prevd)
+mp.main(["--all"])
+check("outage: a run where every symbol comes back 'not found' publishes nothing", not (Path(out_n) / "markets.json").exists())
 
 wf = (ROOT / ".github/workflows/market-prices.yml").read_text()
 check("workflow: pushes only when something changed, never from a work branch", "steps.run.outputs.changed == 'true'" in wf and "branches: [master, next]" in wf)
-check("workflow: a timer in each window and one off-hours", all(c in wf for c in ["*/15 7-11 * * 0-4", "*/15 13-20 * * 1-5", "7,37 * * * *"]))
+check("workflow: every 5 minutes while an exchange is open, off-hours every 30", all(c in wf for c in ["*/5 7-11 * * 0-4", "*/5 13-20 * * 1-5", "7,37 * * * *"]) and "*/15" not in wf, wf[:900])
+check("workflow: one force-pushed orphan commit, no history of snapshots", "git checkout --orphan data-markets" in wf and "git push -f origin data-markets" in wf)
+check("workflow: the fallback switch is visible and off", "MARKETS_PROVIDERS: yahoo" in wf and "stooq" in wf)
 print("\n%d failed" % failed if failed else "\nall market price tests passed")
 raise SystemExit(1 if failed else 0)

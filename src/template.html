@@ -4331,7 +4331,7 @@ function boot(){
   }
   if(NEEDS_MATCHES){ periodic(loadLive, 2*60000); periodic(loadMatches, 30*60*1000); }
   periodic(loadPrayers, 6*3600*1000);
-  periodic(loadMarkets, 15*60*1000);
+  periodic(loadMarkets, 5*60*1000);
   if(USES('shows')) periodic(loadWeek, 6*3600*1000);
   periodic(loadWeather, 30*60*1000);
   cardTimers();
@@ -4365,7 +4365,7 @@ function bootWidget(){
   if(USES('adhkar') || USES('prayers') || USES('prayerrow')){ loadPrayers(); periodic(loadPrayers, 6*3600*1000); }
   if(USES('forecast') || USES('hourly')){ loadWeather(); periodic(loadWeather, 30*60*1000); }
   if(USES('matches')){ loadMatches(); periodic(loadMatches, 30*60*1000); periodic(loadLive, 2*60000); }
-  if(USES('stocks')){ loadMarkets(); periodic(loadMarkets, 15*60*1000); }
+  if(USES('stocks')){ loadMarkets(); periodic(loadMarkets, 5*60*1000); }
   cardTimers();
   let lastDay = riyadhDayNumber();
   setInterval(() => { if(riyadhDayNumber() !== lastDay){ lastDay = riyadhDayNumber(); renderPanel(false); if(USES('prayers') || USES('prayerrow') || USES('adhkar')) later(loadPrayers); } }, 60*1000);
