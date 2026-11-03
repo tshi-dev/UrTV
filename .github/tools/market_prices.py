@@ -447,6 +447,13 @@ def main(argv):
     OUT.mkdir(parents=True, exist_ok=True)
     report["requests"] = REQUESTS[0]
     # nothing answered (Yahoo down, blocked, or a run with nothing due): nothing is published, the last good file stays as it is
+    if not fx_doc and prev_fx.get("rates"):
+        # not due today (or Yahoo failed): the last file goes out again. The branch holds ONE commit made from this folder alone, so a run that did not write
+        # fx.json removed it for everyone until tomorrow's run: a TV reinstalled in between had no rates (step 27)
+        fx_doc = allowlist_fx(prev_fx)
+        carried_fx = True
+    else:
+        carried_fx = False
     if fx_doc:
         (OUT / "fx.json").write_text(json.dumps(fx_doc, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     if report["ok"] or report["daily_ok"]:
@@ -473,7 +480,7 @@ def main(argv):
     gh = os.environ.get("GITHUB_OUTPUT")
     if gh:
         with open(gh, "a") as f:
-            f.write(f"changed={'true' if report['ok'] or report['daily_ok'] or fx_doc else 'false'}\n")
+            f.write(f"changed={'true' if report['ok'] or report['daily_ok'] or (fx_doc and not carried_fx) else 'false'}\n")
     return 0
 
 

@@ -295,6 +295,14 @@ mp.fetch_json = fx_fake
 mp.main(["--all"])
 fxw = json.loads((Path(out_f) / "fx.json").read_text())
 check("fx: a run writes markets/fx.json; a code that fails today keeps its old rate, and the file is small", fxw["rates"]["SDG"] == 600.0 and fxw["rates"]["KWD"] == 0.307 and set(fxw) == {"updated", "rates"} and len((Path(out_f) / "fx.json").read_bytes()) < 2000)
+# a run where the currencies are not due (3 hours since the last) still publishes the last file: the branch is rebuilt from the folder each time
+out_g = tempfile.mkdtemp(); prev_g = tempfile.mkdtemp()
+(Path(prev_g) / "fx.json").write_text(json.dumps({"updated": mp.datetime.datetime.now(mp.datetime.timezone.utc).isoformat(timespec="seconds"), "rates": {"KWD": 0.3, "EGP": 48.5}}))
+mp.OUT, mp.PREV = Path(out_g), Path(prev_g)
+asked_fx.clear()
+mp.main([])   # no --all: nothing is forced
+check("fx: a run where the currencies are not due writes the last fx.json again (the one-commit branch would lose it), and asks Yahoo for no currency",
+      (Path(out_g) / "fx.json").exists() and json.loads((Path(out_g) / "fx.json").read_text())["rates"] == {"KWD": 0.3, "EGP": 48.5} and not any("%3DX" in u or "=X" in u for u in asked_fx), asked_fx[:2])
 check("fx: the five-minute file does not carry the currencies (it stays under its 32 kB)", "KWD" not in (Path(out_f) / "markets.json").read_text() and len((Path(out_f) / "markets.json").read_bytes()) <= mp.QUOTE_MAX_BYTES)
 mp.PREV = Path(PREV)
 

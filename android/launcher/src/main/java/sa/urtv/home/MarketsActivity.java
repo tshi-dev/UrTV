@@ -1509,8 +1509,7 @@ public class MarketsActivity extends Activity {
             LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(-2, -2);
             p.setMarginStart(dp(16));
             p.bottomMargin = dp(4);
-            String s = MarketData.signed(r.change(q.p), 2) + "  (" + MarketData.signed(r.pct(q.p), 2) + "%)";
-            l.addView(ltr(text(MarketData.isolate(MarketData.show(s, Digits.latin())), sp * 0.5f, "Medium", r.pct(q.p) >= 0 ? UP : DOWN)), p);
+            l.addView(ltr(text(MarketData.changeLine(r.change(q.p), r.pct(q.p), Digits.latin()), sp * 0.5f, "Medium", r.pct(q.p) >= 0 ? UP : DOWN)), p);
         }
         return l;
     }

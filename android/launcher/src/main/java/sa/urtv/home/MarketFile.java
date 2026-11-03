@@ -59,7 +59,11 @@ final class MarketFile {
                 if (body.isEmpty()) reason = "empty_body";
                 else {
                     out = MarketData.parseLive(body);
-                    if (out.isEmpty()) reason = "parsed_none";
+                    if (out.isEmpty()) {
+                        reason = "parsed_none";
+                        // what the answer looks like, so the next test says what it was (the first 300 characters, single-lined; prices only, nothing personal)
+                        android.util.Log.i("UrTVMarkets", "live body_start=" + body.substring(0, Math.min(300, body.length())).replaceAll("[\\r\\n]+", " "));
+                    }
                 }
             }
         } catch (Exception e) {

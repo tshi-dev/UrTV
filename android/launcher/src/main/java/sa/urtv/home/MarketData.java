@@ -102,33 +102,48 @@ final class MarketData {
         if (json == null) return out;
         try {
             Object root = new Reader(json).read();
-            Object sp = root instanceof Map ? ((Map<?, ?>) root).get("spark") : null;
+            if (!(root instanceof Map)) return out;
+            Map<?, ?> top = (Map<?, ?>) root;
+            Object sp = top.get("spark");
             Object list = sp instanceof Map ? ((Map<?, ?>) sp).get("result") : null;
-            if (!(list instanceof List)) return out;
-            for (Object o : (List<?>) list) {
-                if (!(o instanceof Map) || !(((Map<?, ?>) o).get("symbol") instanceof String)) continue;
-                Object resp = ((Map<?, ?>) o).get("response");
-                Object first = resp instanceof List && !((List<?>) resp).isEmpty() ? ((List<?>) resp).get(0) : null;
-                if (!(first instanceof Map)) continue;
-                Map<?, ?> r = (Map<?, ?>) first;
-                Map<?, ?> meta = r.get("meta") instanceof Map ? (Map<?, ?>) r.get("meta") : new LinkedHashMap<String, Object>();
-                double[] closes = lastCloses(r);
-                double p = num(meta.get("regularMarketPrice"));
-                if (Double.isNaN(p) && closes.length > 0) p = closes[closes.length - 1];
-                if (Double.isNaN(p) || p <= 0) continue;
-                double prev = num(meta.get("chartPreviousClose"));
-                if (Double.isNaN(prev)) prev = num(meta.get("previousClose"));
-                double t = num(meta.get("regularMarketTime"));
-                if (Double.isNaN(t) && r.get("timestamp") instanceof List && !((List<?>) r.get("timestamp")).isEmpty()) {
-                    List<?> ts = (List<?>) r.get("timestamp");
-                    t = num(ts.get(ts.size() - 1));
+            if (list instanceof List) {   // shape 1: spark.result[].response[].meta
+                for (Object o : (List<?>) list) {
+                    if (!(o instanceof Map) || !(((Map<?, ?>) o).get("symbol") instanceof String)) continue;
+                    Object resp = ((Map<?, ?>) o).get("response");
+                    Object first = resp instanceof List && !((List<?>) resp).isEmpty() ? ((List<?>) resp).get(0) : null;
+                    if (!(first instanceof Map)) continue;
+                    Map<?, ?> r = (Map<?, ?>) first;
+                    Map<?, ?> meta = r.get("meta") instanceof Map ? (Map<?, ?>) r.get("meta") : new LinkedHashMap<String, Object>();
+                    Live l = liveOf(meta, lastCloses(r), r.get("timestamp"));
+                    if (l != null) out.put((String) ((Map<?, ?>) o).get("symbol"), l);
                 }
-                out.put((String) ((Map<?, ?>) o).get("symbol"), new Live(p, prev, Double.isNaN(t) ? 0 : (long) t * 1000L));
+            } else {   // shape 2: the map keyed by symbol ({"2222.SR": {"timestamp": [...], "close": [...], "chartPreviousClose": n, ...}, ...})
+                for (Map.Entry<?, ?> e : top.entrySet()) {
+                    if (!(e.getKey() instanceof String) || !(e.getValue() instanceof Map)) continue;
+                    Map<?, ?> r = (Map<?, ?>) e.getValue();
+                    Live l = liveOf(r, numbers(r.get("close")), r.get("timestamp"));
+                    if (l != null) out.put((String) e.getKey(), l);
+                }
             }
         } catch (RuntimeException e) {
             out.clear();
         }
         return out;
+    }
+
+    /** one symbol's live price from its fields (a meta, or the symbol's own map), its closes and its timestamps; null without a usable price */
+    private static Live liveOf(Map<?, ?> meta, double[] closes, Object timestamps) {
+        double p = num(meta.get("regularMarketPrice"));
+        if (Double.isNaN(p) && closes.length > 0) p = closes[closes.length - 1];
+        if (Double.isNaN(p) || p <= 0) return null;
+        double prev = num(meta.get("chartPreviousClose"));
+        if (Double.isNaN(prev)) prev = num(meta.get("previousClose"));
+        double t = num(meta.get("regularMarketTime"));
+        if (Double.isNaN(t) && timestamps instanceof List && !((List<?>) timestamps).isEmpty()) {
+            List<?> ts = (List<?>) timestamps;
+            t = num(ts.get(ts.size() - 1));
+        }
+        return new Live(p, prev, Double.isNaN(t) ? 0 : (long) t * 1000L);
     }
 
     private static double[] lastCloses(Map<?, ?> r) {
@@ -494,6 +509,14 @@ final class MarketData {
     }
 
     /** A signed number, its point and its percent sign kept in reading order inside right-to-left text («−٠٫٣٣٪», not «−(٪٠٫٣٣−)»): a left-to-right isolate around it */
+    /**
+     * The price line's change, «−٦٫٧٢  (−٠٫٠٧٪)»: each number in its own isolate («−٦٫٧٢» and «(−٠٫٠٧٪)»), the two spaces between them outside. One isolate
+     * around the whole made the space and bracket between the two Arabic-digit runs join them, and the line drew as «−(٪٠٫٠٧−)  ٦٫٧٢» (step 27).
+     */
+    static String changeLine(double change, double pct, boolean latin) {
+        return isolate(show(signed(change, 2), latin)) + "  " + isolate(show("(" + signed(pct, 2) + "%)", latin));
+    }
+
     static String isolate(String s) { return s == null || s.isEmpty() ? s : "\u2066" + s + "\u2069"; }
 
     /** For the screen: Arabic digits («٫» for the point, «٬» between thousands) unless the setting is Latin; «%» becomes «٪» likewise. */

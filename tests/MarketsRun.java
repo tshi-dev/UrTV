@@ -102,8 +102,37 @@ public final class MarketsRun {
         check("bidi: Latin digits too, and nothing for an empty string", MarketData.isolate("+1.20%").equals("\u2066+1.20%\u2069") && MarketData.isolate("").isEmpty() && MarketData.isolate(null) == null, "");
     }
 
+    /** the order a segment is DRAWN in (left to right), by the Unicode bidi algorithm in a left-to-right line: the visual string */
+    static String drawn(String seg) {
+        java.text.Bidi b = new java.text.Bidi(seg, java.text.Bidi.DIRECTION_LEFT_TO_RIGHT);
+        int n = b.getRunCount();
+        byte[] lv = new byte[n];
+        Integer[] idx = new Integer[n];
+        for (int i = 0; i < n; i++) { lv[i] = (byte) b.getRunLevel(i); idx[i] = i; }
+        java.text.Bidi.reorderVisually(lv, 0, idx, 0, n);
+        StringBuilder out = new StringBuilder();
+        for (int k = 0; k < n; k++) {
+            int i = idx[k];
+            String run = seg.substring(b.getRunStart(i), b.getRunLimit(i));
+            out.append(b.getRunLevel(i) % 2 == 1 ? new StringBuilder(run).reverse() : run);
+        }
+        return out.toString();
+    }
+
+    static void changeLine() {
+        String line = MarketData.changeLine(-6.72, -0.07, false);
+        String a = "\u2066−٦٫٧٢\u2069", b = "\u2066(−٠٫٠٧٪)\u2069";
+        check("bidi: the price line's change is two isolates, one per number, with the spaces outside them", line.equals(a + "  " + b), line.codePoints().boxed().collect(java.util.stream.Collectors.toList()));
+        String ina = a.substring(1, a.length() - 1), inb = b.substring(1, b.length() - 1);
+        check("bidi: DRAWN left to right «−٦٫٧٢» and «(−٠٫٠٧٪)», each as written (the minus first, the digits in reading order, the percent last)", drawn(ina).equals(ina) && drawn(inb).equals(inb), drawn(ina) + " | " + drawn(inb));
+        check("bidi: ...and the old line (one isolate around both) is drawn out of order (the step 27 report), so this check can fail", !drawn("−٦٫٧٢  (−٠٫٠٧٪)").equals("−٦٫٧٢  (−٠٫٠٧٪)"), drawn("−٦٫٧٢  (−٠٫٠٧٪)"));
+        String plus = MarketData.changeLine(44.57, 0.45, true);
+        check("bidi: the same with Latin digits and a plus", plus.equals("\u2066+44.57\u2069  \u2066(+0.45%)\u2069"), plus);
+    }
+
     static void live() {
         bidi();
+        changeLine();
         check("live: every 30 s, 60 s after one failure, 120 s after two or more (and no slower)", MarketData.liveDelay(0) == 30_000 && MarketData.liveDelay(1) == 60_000
             && MarketData.liveDelay(2) == 120_000 && MarketData.liveDelay(9) == 120_000, MarketData.liveDelay(1));
         check("live: «مباشر» only while the last good answer is at most 150 s old; never for none or a clock gone back", MarketData.liveFresh(1000, 1000 + 150_000) && !MarketData.liveFresh(1000, 1000 + 150_001)
@@ -116,6 +145,11 @@ public final class MarketsRun {
         java.util.Map<String, MarketData.Live> m = MarketData.parseLive(json);
         check("live: Yahoo's spark answer is read (the meta\'s price, close before and time in ms; else the last close and the last time); a row with no symbol, no response or a bad price is skipped", m.size() == 2 && near(m.get("AAPL").p, 201.5) && near(m.get("AAPL").v, 200)
             && m.get("AAPL").at == 1793000000_000L && Double.isNaN(m.get("2222.SR").v), m.keySet());
+        String keyed = "{\"2222.SR\":{\"symbol\":\"2222.SR\",\"timestamp\":[1793000000,1793000300],\"close\":[null,26.3],\"previousClose\":26.1,\"chartPreviousClose\":26.0,\"dataGranularity\":300},"
+            + "\"AAPL\":{\"timestamp\":[1793000000],\"close\":[201.5],\"chartPreviousClose\":200},\"BAD\":{\"close\":[]},\"X\":5}";
+        java.util.Map<String, MarketData.Live> k = MarketData.parseLive(keyed);
+        check("live: the other spark shape (a map keyed by symbol, with close / timestamp / chartPreviousClose) is read too: the last close, the close before, the last time in ms", k.size() == 2
+            && near(k.get("2222.SR").p, 26.3) && near(k.get("2222.SR").v, 26.0) && k.get("2222.SR").at == 1793000300_000L && near(k.get("AAPL").p, 201.5), k.keySet());
         check("live: anything that is not that answer is an empty map (the caller backs off)", MarketData.parseLive("<html>").isEmpty() && MarketData.parseLive(null).isEmpty() && MarketData.parseLive("{}").isEmpty(), "");
         MarketData file = MarketData.parse(FILE);
         MarketData on = file.withLive(m);
