@@ -84,10 +84,11 @@ public final class MarketsRun {
             && !MarketData.liveFresh(0, 5) && !MarketData.liveFresh(5000, 1000), "");
         check("live: Tadawul rows are 'delayed' (~15 min at the source), every other row shows its time", "delayed".equals(MarketData.liveKind("2222.SR")) && "delayed".equals(MarketData.liveKind("^TASI.SR"))
             && "time".equals(MarketData.liveKind("AAPL")) && "time".equals(MarketData.liveKind("^GSPC")) && "time".equals(MarketData.liveKind(null)), "");
-        String json = "{\"quoteResponse\":{\"result\":[{\"symbol\":\"AAPL\",\"regularMarketPrice\":201.5,\"regularMarketPreviousClose\":200,\"regularMarketTime\":1793000000,\"currency\":\"USD\"},"
-            + "{\"symbol\":\"2222.SR\",\"regularMarketPrice\":26.3,\"regularMarketTime\":1793000100},{\"symbol\":\"BAD\",\"regularMarketPrice\":\"x\"},{\"regularMarketPrice\":1}]}}";
+        String json = "{\"spark\":{\"result\":[{\"symbol\":\"AAPL\",\"response\":[{\"meta\":{\"regularMarketPrice\":201.5,\"chartPreviousClose\":200,\"regularMarketTime\":1793000000},\"timestamp\":[1792999700,1793000000],\"indicators\":{\"quote\":[{\"close\":[201.1,201.5]}]}}]},"
+            + "{\"symbol\":\"2222.SR\",\"response\":[{\"meta\":{},\"timestamp\":[1793000100],\"indicators\":{\"quote\":[{\"close\":[null,26.3]}]}}]},"
+            + "{\"symbol\":\"BAD\",\"response\":[{\"meta\":{\"regularMarketPrice\":\"x\"},\"indicators\":{\"quote\":[{\"close\":[]}]}}]},{\"response\":[]},{\"symbol\":\"NONE\",\"response\":null}]}}";
         java.util.Map<String, MarketData.Live> m = MarketData.parseLive(json);
-        check("live: Yahoo's quote answer is read (price, close before, time in ms); a row with no symbol or a bad price is skipped", m.size() == 2 && near(m.get("AAPL").p, 201.5) && near(m.get("AAPL").v, 200)
+        check("live: Yahoo's spark answer is read (the meta\'s price, close before and time in ms; else the last close and the last time); a row with no symbol, no response or a bad price is skipped", m.size() == 2 && near(m.get("AAPL").p, 201.5) && near(m.get("AAPL").v, 200)
             && m.get("AAPL").at == 1793000000_000L && Double.isNaN(m.get("2222.SR").v), m.keySet());
         check("live: anything that is not that answer is an empty map (the caller backs off)", MarketData.parseLive("<html>").isEmpty() && MarketData.parseLive(null).isEmpty() && MarketData.parseLive("{}").isEmpty(), "");
         MarketData file = MarketData.parse(FILE);

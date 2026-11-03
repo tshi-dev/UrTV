@@ -25,8 +25,8 @@ final class MarketFile {
 
     private static final String DAILY = "markets-daily.json";
 
-    /** Yahoo's quote endpoint (build 179, «مباشر»): one request for the symbols on screen; this app asks it only while the markets page is in front */
-    private static final String LIVE_URL = "https://query1.finance.yahoo.com/v7/finance/quote?symbols=%s&fields=regularMarketPrice,regularMarketPreviousClose,regularMarketTime";
+    /** Yahoo's spark endpoint (build 179, «مباشر»; the one CI uses, no crumb): one request for the symbols on screen, asked only while the markets page is in front */
+    private static final String LIVE_URL = "https://query1.finance.yahoo.com/v8/finance/spark?symbols=%s&range=1d&interval=5m";
 
     /** On a background thread: the live answer for these symbols; an empty map for any failure (the caller backs off). Nothing is stored. */
     static java.util.Map<String, MarketData.Live> live(java.util.Collection<String> symbols) {

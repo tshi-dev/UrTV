@@ -51,7 +51,7 @@ urls = set(re.findall(r'https?://[^"\s)]+', act + data + text(HOME / "MarketFile
 check("two sources only: CI's two files (the 5-minute one and the daily one) and, while the page is in front, Yahoo's quote endpoint for live mode (no other address in the page's code)",
       urls - {"https://github.com/tshi-dev/UrTV"} == {"https://raw.githubusercontent.com/tshi-dev/UrTV/data-markets/markets/markets.json",
                "https://raw.githubusercontent.com/tshi-dev/UrTV/data-markets/markets/daily.json",
-               "https://query1.finance.yahoo.com/v7/finance/quote?symbols=%s&fields=regularMarketPrice,regularMarketPreviousClose,regularMarketTime",
+               "https://query1.finance.yahoo.com/v8/finance/spark?symbols=%s&range=1d&interval=5m",
                }, urls)
 check("the daily file is asked only by the markets page, at most once a day; the screensaver's page never asks it",
       "MarketFile.loadDaily(app);" in act and "DAY_OF_YEAR" in text(HOME / "MarketFile.java") and "daily.json" not in page
@@ -122,5 +122,5 @@ check("live mode: it falls back to the 5-minute file: «عادي» puts the file
 check("live mode: labels: Tadawul «متأخرة ~١٥ د», any other the quote's time; the footer says «مباشر» while live", 'S.t("متأخرة ~%s د", digits(15))' in act2 and "MarketData.liveKind(code)" in act2
       and "clock(k.get(Calendar.HOUR_OF_DAY), k.get(Calendar.MINUTE))" in act2)
 check("live mode: only this page: the screensaver's page and the home's card never call the live ask", "MarketFile.live" not in "".join(text(p) for p in HOME.rglob("*.java") if p.name != "MarketsActivity.java" and p.name != "MarketFile.java")
-      and "v7/finance/quote" not in page and "v7/finance/quote" not in text(ROOT / "src/template.html"))
+      and "finance/spark" not in text(ROOT / "src/template.html").split("const MARKET_URL")[0])
 sys.exit(1 if failed else 0)

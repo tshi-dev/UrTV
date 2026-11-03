@@ -33,23 +33,35 @@ check("S7: a row's value wraps to a second line (max 2), only a third is cut", "
 carry = text(HOME / "UpdateCarry.java")
 heal = text(HOME / "A11yHeal.java")
 upd = text(HOME / "phone/PhoneUpdater.java")
-check("B5/B6: the state is recorded right before the files go to the installer", upd.index("UpdateCarry.before(app);") < upd.index("installNext(app);", upd.index("UpdateCarry.before(app);")))
-check("B5/B6: recorded with commit() (the process is replaced next), with the build that recorded it", ".commit();" in carry and 'putInt("code", BuildConfig.VERSION_CODE)' in carry
-      and 'if (sp.getInt("code", -1) == BuildConfig.VERSION_CODE) return;' in carry)
-check("B5/B6: A11yHeal hands the replace and the home's first show (not a boot) to UpdateCarry.after, before its own check",
-      'if (!"boot".equals(why))' in heal and "UpdateCarry.after(c, why);" in heal and heal.index("UpdateCarry.after(c, why);") < heal.index("String list = read(c, LIST), sw"))
-check("B5: a TV muted before the install is muted again (now and once 20 s later), never unmuted by us",
-      "if (fresh && wasMuted) {" in carry and "ADJUST_MUTE" in carry and "ADJUST_UNMUTE" not in carry and "AGAIN_MS = 20_000" in carry)
-check("B5 (build 178): the mute is asked in the receiver at once, at the home's first start, and 20 s after each; the record lives until both looked",
-      'UpdateCarry.remute(app, "replaced now")' in heal and 'UpdateCarry.remute(app, "first start")' in heal and "static void remute(" in carry
-      and 'seen.contains("replaced;") && seen.contains("start;")' in carry and heal.index('UpdateCarry.remute(app, "replaced now")') < heal.index("goAsync()"))
-check("B5 (build 178): nothing of ours starts another app after our update (the last app coming back is the TV's own)",
-      "getLaunchIntentForPackage" not in carry and "startActivity" not in carry and "startActivity" not in heal)
+heal_list = text(HOME / "A11yList.java")
+mus = text(HOME / "tilawah/MusicService.java")
+check("B5/B6: the state is recorded right before OUR replace (the launcher's own session, with the build the file holds), not when the downloads start",
+      "UpdateCarry.before(c, (int) Math.min(target, 999_999_999L));" in upd and "UpdateCarry.before(app)" not in upd
+      and upd.index("UpdateRecords.begin(store") < upd.index("UpdateCarry.before(c,") < upd.index("installer.createSession(params)"))
+check("B5/B6: recorded with commit() (the process is replaced next): a generation, the expected build, the mute, the volume and the list", ".commit();" in carry
+      and all(k in carry for k in ('putLong("gen", gen)', 'putInt("expected", expected)', 'putBoolean("muted", muted)', 'putInt("vol", vol)', 'putString("a11y"')))
+check("B5/B6: A11yHeal hands the replace (at once and after its wait), the home's first start and the alarms to UpdateCarry.after; the alarms by their generation",
+      'UpdateCarry.after(app, "replaced")' in heal and 'UpdateCarry.after(app, "start")' in heal and "UpdateCarry.after(c, why);" in heal
+      and 'UpdateCarry.after(app, "alarm", intent.getLongExtra("gen", -1))' in heal and heal.index('UpdateCarry.after(app, "replaced")') < heal.index("goAsync()"))
+check("B5: a durable trigger: an exact alarm (inexact when the TV does not allow exact ones) at +10 s and +30 s and at each backoff of an unfinished stage, for the generation",
+      "setExactAndAllowWhileIdle" in carry and "setAndAllowWhileIdle" in carry and "canScheduleExactAlarms" in carry and "FLAG_IMMUTABLE" in carry and "putExtra(\"gen\", gen)" in carry
+      and "tv.alarm(10_000, 1);" in heal_list and "tv.alarm(30_000, 2);" in heal_list and "tv.alarm(backoffMs(c.a11yTries), 3);" in heal_list)
+check("B5: muted only while the stage is live: never over the adhan (MusicService.carryAdhanActive), never after the owner changed the volume, never past the 60 s OEM window, three times at most",
+      "ADJUST_MUTE" in carry and "ADJUST_UNMUTE" not in carry and "if (adhanActive) return \"adhan\"" in heal_list and 'if (nowVol != snapVol) return "owner_volume"' in heal_list
+      and 'sinceReplaceMs > OEM_WINDOW_MS) return "owner_unmute"' in heal_list and "MAX_MUTES = 3" in heal_list and "public static boolean carryAdhanActive()" in mus)
+check("B5: another app resumed by the OEM is paused with one media key only inside the window, only when the TV was muted before, never over the adhan or our playback",
+      "KEYCODE_MEDIA_PAUSE" in carry and "pauseOthers(true, c.muted, adhan, tv.ourPlaying(), tv.musicActive(), false, since) && since <= OEM_WINDOW_MS" in heal_list
+      and "getLaunchIntentForPackage" not in carry and "startActivity" not in carry and "startActivity" not in heal)
+check("B5: every step logs a fixed reason code under tag UrTVUpdate (stage, a short generation, the result), nothing personal",
+      'TAG = "UrTVUpdate"' in carry and 'Log.i(TAG, "carry stage=" + stage + " gen=" + (gen / 1000 % 1_000_000) + " result=" + result' in carry)
 check("B5: the installer itself never touches the sound", "AudioManager" not in upd)
-check("B6: only our entries the install lost are added back, only with WRITE_SECURE_SETTINGS; else a one-time notice",
-      "A11yList.ownLost(before, now, A11yHeal.TYPE, A11yHeal.SLEEP)" in carry and "A11yList.with(now, lost)" in carry
-      and "WRITE_SECURE_SETTINGS" in carry and "Toast.makeText" in carry and "sp.edit().clear().commit();" in carry)
-check("B6: the record is used once and only within 30 minutes", "FRESH_MS = 30 * 60_000L" in carry and "if (!fresh || a11yDone) return;" in carry)
+check("B6: only our entries the install lost are added back, only with WRITE_SECURE_SETTINGS (a one-time notice without it); the write is read back and the stage is done only when listed, on and bound",
+      "ownLost(c.saved, now_, " in heal_list and "with(now_, lost)" in heal_list and "WRITE_SECURE_SETTINGS" in carry and "Toast.makeText" in carry
+      and "A11yHeal.ownLost" not in carry and 'ownLost(rec.saved, safe(c, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)' in carry and "static boolean listedAndBound(Context c)" in text(HOME / "A11yHeal.java")
+      and 'return switchOn && bound ? "done" : "verify";' in heal_list)
+check("B6: the saved entries are kept until the stage is done (a failed write does not consume them): a11yDone is set only by a read-back, or the bound on tries / the 30 minutes",
+      'putBoolean("a11yDone", rec.a11yDone)' in carry and "c.a11yDone = true;" in heal_list and heal_list.count("c.a11yDone = true;") == 2 and "MAX_A11Y_TRIES = 8" in heal_list)
+check("B6: a record older than 30 minutes at the replace is dropped", "FRESH_MS = 30 * 60_000L" in carry and "fresh(c.at, now, freshMs)" in heal_list)
 m = re.search(r"static boolean fresh\(long at, long now\) \{ return (.*?); \}", carry)
 fresh = (lambda at, now: eval(m.group(1).replace("&&", "and").replace("FRESH_MS", "1800000"), {}, {"at": at, "now": now})) if m else None
 check("B6: fresh(): within the window yes, before it, after it and with no record no", fresh is not None and fresh(1000, 1000 + 60_000)

@@ -34,8 +34,12 @@ public final class A11yHeal extends BroadcastReceiver {
     /** MY_PACKAGE_REPLACED and BOOT_COMPLETED (manifest; only the system sends them). */
     @Override public void onReceive(Context context, Intent intent) {
         final Context app = context.getApplicationContext();
+        if (intent != null && UpdateCarry.actionName().equals(intent.getAction())) {   // an alarm of UpdateCarry (+10 s, +30 s, a retry): the same step, for the generation it was set for
+            UpdateCarry.after(app, "alarm", intent.getLongExtra("gen", -1));
+            return;
+        }
         final String why = intent != null && Intent.ACTION_MY_PACKAGE_REPLACED.equals(intent.getAction()) ? "replaced" : "boot";
-        if ("replaced".equals(why)) { try { UpdateCarry.remute(app, "replaced now"); } catch (RuntimeException e) { Log.w(TAG, "remute failed: " + e.getClass().getSimpleName()); } }   // at once, before the wait
+        if ("replaced".equals(why)) UpdateCarry.after(app, "replaced");   // at once, before the wait (arms the alarms)
         final PendingResult pending = goAsync();
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override public void run() {
@@ -49,7 +53,7 @@ public final class A11yHeal extends BroadcastReceiver {
         if (checkedThisProcess) return;
         checkedThisProcess = true;
         final Context app = c.getApplicationContext();
-        try { UpdateCarry.remute(app, "first start"); } catch (RuntimeException e) { Log.w(TAG, "remute failed: " + e.getClass().getSimpleName()); }
+        UpdateCarry.after(app, "start");   // the home's first show: the same step, within the lifetime
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() { @Override public void run() { check(app, "start"); } }, SETTLE_MS);
     }
 
@@ -57,6 +61,13 @@ public final class A11yHeal extends BroadcastReceiver {
     public static boolean stuck(Context c) {
         String list = read(c, LIST);
         return (A11yList.has(list, TYPE) && !TypeService.enabled()) || (A11yList.has(list, SLEEP) && !SleepService.enabled());
+    }
+
+    /** Our service is in the list AND Android runs it (bound): the carry's accessibility stage is done only then. */
+    static boolean listedAndBound(Context c) {
+        String list = read(c, LIST);
+        boolean typeOk = A11yList.has(list, TYPE) && TypeService.enabled(), sleepOk = A11yList.has(list, SLEEP) && SleepService.enabled();
+        return (A11yList.has(list, TYPE) || A11yList.has(list, SLEEP)) && !stuck(c) && (typeOk || sleepOk);
     }
 
     static void check(Context c, String why) {

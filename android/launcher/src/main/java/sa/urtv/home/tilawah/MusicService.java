@@ -191,6 +191,10 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     }
 
     // ---- state for the screens and optimize/music.sh ----
+    /** for UpdateCarry: is the adhan sounding or loading, and is anything of ours playing (a pause key must not stop it) */
+    public static boolean carryAdhanActive() { return source == Prefs.SOURCE_ADHAN && (playing || buffering); }
+    public static boolean carryOurPlaying() { return playing || buffering; }
+
     static int currentSource() { return source; }
     static boolean isPlaying() { return playing; }
     static boolean isBuffering() { return buffering; }

@@ -312,7 +312,6 @@ public final class PhoneUpdater {
             @Override public void run() {
                 try {
                     if (found && !downloadAndVerify(app, true)) return;   // stopped on an error, which is already on the screen
-                    sa.urtv.home.UpdateCarry.before(app);   // the mute and our accessibility entry, put back after the replace if it loses them
                     installNext(app);
                 } catch (Exception e) {
                     Log.w(TAG, "install failed: " + e);
@@ -493,6 +492,7 @@ public final class PhoneUpdater {
             // the target is what the file says, not what version.txt said: the screen compares it with the build that is installed then
             long target = archiveCode(c, file);
             if (target < 0 || !UpdateRecords.begin(store, (int) Math.min(target, 999_999_999L), pkg)) { fail(c, "failed", pkg, "record"); return; }
+            sa.urtv.home.UpdateCarry.before(c, (int) Math.min(target, 999_999_999L));   // right before our own replace: the mute and our accessibility entry, put back if it loses them
         }
         PackageInstaller installer = null;
         int id = -1;

@@ -92,27 +92,50 @@ final class MarketData {
     /** how a live row is labelled: Tadawul's data is delayed at the source («متأخرة ~١٥ د»), any other shows the quote's time */
     static String liveKind(String code) { return code != null && code.endsWith(".SR") ? "delayed" : "time"; }
 
-    /** Yahoo's quote answer ({"quoteResponse":{"result":[{symbol, regularMarketPrice, regularMarketPreviousClose, regularMarketTime (s)}]}}) -> {symbol: Live} */
+    /**
+     * Yahoo's spark answer ({"spark":{"result":[{"symbol", "response":[{"meta":{regularMarketPrice, chartPreviousClose, regularMarketTime (s)},
+     * "timestamp":[…], "indicators":{"quote":[{"close":[…]}]}}]}]}}) -> {symbol: Live}. The price is the meta's, else the last close; the time is the meta's,
+     * else the last timestamp. A row with no usable price is skipped.
+     */
     static Map<String, Live> parseLive(String json) {
         Map<String, Live> out = new LinkedHashMap<>();
         if (json == null) return out;
         try {
             Object root = new Reader(json).read();
-            Object qr = root instanceof Map ? ((Map<?, ?>) root).get("quoteResponse") : null;
-            Object list = qr instanceof Map ? ((Map<?, ?>) qr).get("result") : null;
+            Object sp = root instanceof Map ? ((Map<?, ?>) root).get("spark") : null;
+            Object list = sp instanceof Map ? ((Map<?, ?>) sp).get("result") : null;
             if (!(list instanceof List)) return out;
             for (Object o : (List<?>) list) {
-                if (!(o instanceof Map)) continue;
-                Map<?, ?> m = (Map<?, ?>) o;
-                double p = num(m.get("regularMarketPrice"));
-                if (!(m.get("symbol") instanceof String) || Double.isNaN(p) || p <= 0) continue;
-                double t = num(m.get("regularMarketTime"));
-                out.put((String) m.get("symbol"), new Live(p, num(m.get("regularMarketPreviousClose")), Double.isNaN(t) ? 0 : (long) t * 1000L));
+                if (!(o instanceof Map) || !(((Map<?, ?>) o).get("symbol") instanceof String)) continue;
+                Object resp = ((Map<?, ?>) o).get("response");
+                Object first = resp instanceof List && !((List<?>) resp).isEmpty() ? ((List<?>) resp).get(0) : null;
+                if (!(first instanceof Map)) continue;
+                Map<?, ?> r = (Map<?, ?>) first;
+                Map<?, ?> meta = r.get("meta") instanceof Map ? (Map<?, ?>) r.get("meta") : new LinkedHashMap<String, Object>();
+                double[] closes = lastCloses(r);
+                double p = num(meta.get("regularMarketPrice"));
+                if (Double.isNaN(p) && closes.length > 0) p = closes[closes.length - 1];
+                if (Double.isNaN(p) || p <= 0) continue;
+                double prev = num(meta.get("chartPreviousClose"));
+                if (Double.isNaN(prev)) prev = num(meta.get("previousClose"));
+                double t = num(meta.get("regularMarketTime"));
+                if (Double.isNaN(t) && r.get("timestamp") instanceof List && !((List<?>) r.get("timestamp")).isEmpty()) {
+                    List<?> ts = (List<?>) r.get("timestamp");
+                    t = num(ts.get(ts.size() - 1));
+                }
+                out.put((String) ((Map<?, ?>) o).get("symbol"), new Live(p, prev, Double.isNaN(t) ? 0 : (long) t * 1000L));
             }
         } catch (RuntimeException e) {
             out.clear();
         }
         return out;
+    }
+
+    private static double[] lastCloses(Map<?, ?> r) {
+        Object ind = r.get("indicators");
+        Object q = ind instanceof Map ? ((Map<?, ?>) ind).get("quote") : null;
+        Object first = q instanceof List && !((List<?>) q).isEmpty() ? ((List<?>) q).get(0) : null;
+        return first instanceof Map ? numbers(((Map<?, ?>) first).get("close")) : new double[0];
     }
 
     /** these quotes with the live prices put over the file's (the day's line, volume and the year are the file's); what is live is in liveAt */
@@ -431,7 +454,7 @@ final class MarketData {
         private void ws() { while (i < s.length() && Character.isWhitespace(s.charAt(i))) i++; }
 
         private Object value(int depth) {
-            if (depth > 8) throw new IllegalArgumentException("deep");
+            if (depth > 12) throw new IllegalArgumentException("deep");   // the spark answer is ten deep
             ws();
             if (i >= s.length()) throw new IllegalArgumentException("end");
             char c = s.charAt(i);
