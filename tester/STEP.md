@@ -1,8 +1,8 @@
-«✅ GO — build 179 (steps 24, 25)»
+«⛔ WAIT — don't start anything yet. The supervisor will replace this line with «✅ GO — build N».»
 
 **1. Ask the owner for the PIN recovery code RIGHT NOW, before waiting for anything. Hold it in chat memory only, never in a file, log, commit, script or screenshot. If he doesn't answer, carry on without it, and report step 21 as "no code given".**
 
-**2. Then WAIT for the GO line. Every 5 minutes, run `git fetch origin work/tester` and read the first line of `origin/work/tester:tester/STEP.md` (`git show origin/work/tester:tester/STEP.md | head -1`). Don't start until it reads «✅ GO — build N». Then make sure the TV has build N or newer from apk-next, and run the steps in order: 16–20, then 22, then 21 last.**
+**2. Then WAIT for the GO line. Every 5 minutes, run `git fetch origin work/tester` and read the first line of `origin/work/tester:tester/STEP.md` (`git show origin/work/tester:tester/STEP.md | head -1`). Don't start until it reads «✅ GO — build N». Then make sure the TV has build N or newer from apk-next, and run **step 26 «final test of 4.2»** (at the end of this file): parts A, B, D, then C last. Steps 16–25 are done; do not run them again on their own.**
 
 **3. Keep the TV MUTED the whole time: check the mute before each step and after every restart, update or install, and mute again at once if it isn't.**
 
@@ -315,7 +315,7 @@ what: the problems the 178 run found, checked again on 179, with numbers. Follow
 REPORT.md (on `work/tester-report`): "step 23 (re-check of 178's problems on 179)", the build, the table, the three mute reads and any app that opened by itself, `playing=` and the MediaPlayer error/state lines, the English setup screens' result, the worst-10 table 178 → 179 with numbers, the matches/markets paths and the G10/G11 numbers, any `!!`. No personal data; no screenshots. Push; tell the owner in Arabic that it is done and how many problems there were.
 
 ---
-step: 24 (build 179; the owner is not needed; no recovery code): diagnose: the self-update unmutes the TV and opens YouTube
+step: 24 (NOT run on its own any more: it is part A of step 26; read it there): diagnose: the self-update unmutes the TV and opens YouTube
 what: DIAGNOSIS ONLY: find who unmutes the TV and who starts YouTube when our app updates itself (the owner heard YouTube music last night). Change no setting beyond what the row says, no code. Follow tester/RULES.md. Keep the TV MUTED: if it is ever found unmuted, write down the time (t+s) FIRST, then mute again at once (`adb shell input keyevent 164`, check with `dumpsys audio`) and go on. Files in `optimize/run/step24/` on the PC, local only, never committed.
 - Before anything: press HOME (`adb shell input keyevent 3`) so our home is in front and nothing plays; `adb shell am force-stop com.google.android.youtube.tv`; check muted.
 
@@ -331,7 +331,7 @@ what: DIAGNOSIS ONLY: find who unmutes the TV and who starts YouTube when our ap
 REPORT.md (on `work/tester-report`): "step 24 (diagnose: update unmutes and opens YouTube)", the build, the path used in row 3 (the app's «تحديث تلفزيوني» or `adb install -r`), a timeline (t+seconds: event: each install, PACKAGE_REPLACED, our process death and restart, each mute change, each activity start, each media session that played), then ONE line «who unmuted: …» and ONE line «who launched YouTube: …», each with its evidence (the log lines, cleaned). If neither happened in this run, say so plainly and which path was used. No personal data, no screenshots, never the full log. Push; tell the owner in Arabic what was found.
 
 ---
-step: 25 (right after step 24, same build 179; the owner is not needed): marketing screenshots
+step: 25 (NOT run on its own any more: it is part D of step 26; read it there): marketing screenshots
 what: clean screenshots for ads and promotion, from a demo-clean TV. Follow tester/RULES.md, except that the CHECKED images of this step go to `tester/shots/marketing/` on `work/tester-report` (the owner asked for them). The TV stays MUTED the whole time. Every key is yours (focus checked with the dump, as in step 18). Raw shots stay in `optimize/run/step25/` on the PC.
 - **Save first** (restored in Z): `optimize/saver.sh show` (all of it), `optimize/saver.sh export > optimize/run/step25/settings-before.json`, `optimize/dock.sh show`, `optimize/saver.sh tasks list` (on the PC only), `optimize/photos.sh list`, `dock.sh pin status`, the Home holder.
 
@@ -377,3 +377,40 @@ what: clean screenshots for ads and promotion, from a demo-clean TV. Follow test
 | Z | Everything back: `optimize/saver.sh import optimize/run/step25/settings-before.json` (preview, then `--yes`: the city, method, look, appearance, lang, seconds, home layout, cards); the two demo tasks deleted (the owner's own untouched); the dock order as at the start (`dock.sh set …`); the made-up holdings deleted; the PIN state as at the start; `updatechannel latest`; the Home holder as at the start; muted | "restored: yes/no" with any value that differs; `tasks list` count = the start count |
 
 REPORT.md (on `work/tester-report`): "step 25 (marketing screenshots)", one line per image: done, or skipped with the reason; "restored: yes/no". No personal data. Push; tell the owner in Arabic where the pictures are and how many.
+
+---
+step: 26 (the final test of 4.2; run it on the build named in the GO line, once the supervisor writes «✅ GO — build N»; the owner is not needed): final test of 4.2
+what: one last run that folds steps 24 and 25 into one, plus the open items and the PIN recovery code. Follow tester/RULES.md (step 25's checked images are the one exception, as written there). **The TV stays MUTED the whole time:** check it before each part and after every restart, update or install, and mute again at once if it isn't (write the time first). Every key is yours (focus checked with the dump, as in step 18). **Order: A, B, D, then C last.** Files in `optimize/run/step26/`, local only.
+- Start lines, plus: `optimize/saver.sh show` (all of it), `optimize/saver.sh export > optimize/run/step26/settings-before.json`, `optimize/dock.sh show`, `optimize/saver.sh tasks list` (PC only), `optimize/photos.sh list`, `dock.sh pin status`, the Home holder, `adb shell wm size`.
+- The recovery code: you asked the owner for it at the very start (the bold line 1 at the top of this file). Hold it in chat memory only, never in a file, log, commit, script or screenshot. No code given: skip part C and report «part C: no code given».
+
+**Part A, the update (step 24's rows 1–5, with the build N update as row 3).** Before: HOME, force-stop YouTube, muted. Full `adb logcat -b all -v threadtime > optimize/run/step26/update.log` from t=0; then update from the TV («تحديث تلفزيوني», channel `next`) to build N (if it says up to date, `adb install -r` of apk-next's two APKs, and say so); the 2 s watch for 60 s (mute, resumed activity, a media session playing) as in step 24 row 4; then the line groups of step 24 row 5.
+| # | Right when |
+|---|---|
+| A1 | muted at every 2 s line, during and after the install |
+| A2 | no app opens by itself (the resumed activity stays our home; no `START u0` for YouTube or any other app that we did not start) |
+| A3 | `adb logcat -d -s UrTVUpdate` (from update.log) has UpdateCarry lines with their reason codes: write each code and what it says (no personal data) |
+
+**Part B, the open items** (measure as in step 22: 1920×1080, dump bounds + glyphs in the screencap, ±2 px, the 8 px scale, safe area x 96–1824, y 54–1026; Arabic, then English where the item has words):
+| # | Item | Right when |
+|---|---|---|
+| B1 | the favourites tray, at rest and lowered (focus on the widget above it) | inset 24 px on each side; no sliver of the tray or a tile showing outside it; at rest y 768–986, lowered y 808–1026 (±2) |
+| B2 | the round buttons at the top of the home | the gaps between them equal (±2) and on the 8 px scale |
+| B3 | «تلاوة وأذان»: the rows | the row gaps equal and on the 8 px scale; the footer ≤ 1026 |
+| B4 | the PIN pad (a temporary 1234 only if no PIN is set, `dock.sh pin off` right after) | the key gaps equal and on the 8 px scale; nothing cut |
+| B5 | the settings hub: the first gap (title to first row / first row to second) | on the 8 px scale and the same as the gaps below it |
+| B6 | «الأسواق»: the insets and the padding of its tabs, lists and stock card | text ≥ 16 px from every box edge (≥ 24 on big cards); insets equal on both sides |
+| B7 | «أخفِ المبالغ» on «محفظتي» (made-up holdings, as in part D): turn it on, leave the page, come back; also after Back/Home | it stays on; every amount stays hidden |
+| B8 | the football home: the match cards' team names | no name cut, no «…» / «..», in Arabic and English |
+| B9 | «إعداد تلفزيوني»: the «العربية \| English» switch (view only, no run) | it switches the screen's language both ways at once; the focus visible; nothing cut |
+| B10 | «الأسواق» live mode «مباشر» | the «مباشر» label and its other labels shown, not cut, right in both languages; the prices move or say why not |
+
+**Part D, the marketing screenshots: step 25, all of it** (the demo-clean setup: Makkah + Umm al-Qura, built-in wallpapers only and never the owner's photos, the 2 demo tasks, common apps only, the made-up holdings, no PIN/code/Wi-Fi/IP/serial/toast; the 16 Arabic «رملي» light shots, then 01, 04, 11 and 14 in glass dark and in English; check every image; push the checked ones to `tester/shots/marketing/` on `work/tester-report` with `index.md`). Shots that already exist there from an earlier run: replace them with the new build's.
+
+**Part C, the PIN recovery code, LAST: step 21's rows 1–6** with the code held in memory (step 21's strict rule applies in full: one `adb shell input text <code>` command, no screencap or dump while the code is in the field, no logcat saved while typing, nothing written).
+
+| # | Do | Right when |
+|---|---|---|
+| Z | Everything back: `optimize/saver.sh import optimize/run/step26/settings-before.json` (preview, then `--yes`); the demo tasks and the made-up holdings deleted (the owner's own untouched); the dock order; `lang ar`; the PIN state as in step 21 row 6; `wm size reset` if changed; `optimize/saver.sh updatechannel latest`; the Home holder as at the start; muted; YouTube force-stopped | "restored: yes/no" with any value that differs; muted |
+
+REPORT.md (on `work/tester-report`): "step 26 (final test of 4.2)", the build; part A: the timeline (t+s: event), A1–A3 with the UpdateCarry reason codes, one line «who unmuted: …» and one «who launched an app: …» (or «nobody»); part B: B1–B10, OK or the problem with numbers; part D: one line per image, done or skipped with the reason; part C: worked / didn't work per row only (never the code or a PIN); "restored: yes/no". No personal data. Push; tell the owner in Arabic that it is done and how many problems there were.
