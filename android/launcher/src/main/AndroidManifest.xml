@@ -18,10 +18,17 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <!-- «إعداد تلفزيوني»: SetupService holds the setup run as a foreground service; from targetSdk 34 every foreground service names its type, and
+         a TV setting itself up over its own adb fits no other type than specialUse (see the property on SetupService) -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- the adhan alarm, put back after a reboot or a clock change -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <!-- the adhan at its minute (an alarm clock for the prayer times): from targetSdk 33, Android 14 no longer gives SCHEDULE_EXACT_ALARM to a new
+         install, so a TV set up from Downloader would hear the adhan minutes late until the setup's appops ran. USE_EXACT_ALARM (Android 13+, a
+         normal permission) keeps it exact as it was on 30; Android 12 still reads SCHEDULE_EXACT_ALARM above. -->
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <!-- the adhan sets the TV's volume to its own level and puts it back afterwards -->
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
@@ -183,7 +190,14 @@
         </activity>
 
         <!-- a setup run holds the process while it goes (it outlives the setup screen); not exported, it stops itself at the end -->
-        <service android:name=".setup.SetupService" android:exported="false" />
+        <service
+            android:name=".setup.SetupService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="The TV sets itself up over its own local adb (settings, the home switch); the run outlives the setup screen and stops itself at the end." />
+        </service>
         <!-- the in-app safety switch of the home switch: puts the stock home back after 5 minutes unless it was confirmed (ours only) -->
         <receiver android:name=".setup.SetupRevertReceiver" android:exported="false" />
         <!-- the TV started again in the middle of a home switch: the safety switch comes back and the stock home is put back (only the system sends this) -->

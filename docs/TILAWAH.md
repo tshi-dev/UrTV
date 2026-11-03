@@ -5,7 +5,7 @@ opens it, and it is never listed among the TV's apps. It plays the Quran only �
 murattal (114 surahs each) and live Quran radio — plus the five daily adhans at Umm al-Qura times.
 There is no local/USB music, no Spotify or YouTube Music, no account, no ads and no analytics.
 
-Package `sa.urtv.home` · classes `sa.urtv.home.tilawah` · label «تلاوة» · minSdk 26, targetSdk 30.
+Package `sa.urtv.home` · classes `sa.urtv.home.tilawah` · label «تلاوة» · minSdk 26, targetSdk 34.
 
 ## What is in here
 

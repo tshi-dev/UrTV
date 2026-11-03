@@ -55,6 +55,7 @@ python3 tests/power_test.py
 python3 tests/familydns_test.py
 python3 tests/family_dns_test.py
 python3 tests/receiver_flags_test.py
+python3 tests/target_sdk_test.py   # both apps target 34 (Play Protect): FGS types, exact alarms, background starts, the notifications ask
 python3 tests/restore_scripts_test.py
 python3 tests/power_fixes_test.py
 python3 tests/settle_test.py
