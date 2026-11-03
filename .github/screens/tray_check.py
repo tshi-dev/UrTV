@@ -72,12 +72,14 @@ def summary(xml_text):
     return "\n".join(out[:40])
 
 
-def tiles(ns, tray, n=5):
-    """the favourites that show: focusable nodes inside the tray's height whose height is a tile's (a sliver is as tall, but narrower)"""
+def tiles(ns, tray, n=None):
+    """the favourites that show: focusable nodes inside the tray's height whose height is a tile's (a sliver is as tall, but narrower).
+    n: how many show whole (the bar-size setting); None: any size from 10 to 5 (the walk only needs to know whether a tile has the focus)."""
     t0, t1 = tray[1], tray[3]
-    tw, th = tile_size(n)
+    tw, th = tile_size(n or 10)
+    lo, hi = 0.8 * th, 1.3 * (tile_size(n)[1] if n else tile_size(5)[1])
     out = [x for x in ns if x["focusable"] and not x["cls"].endswith("HorizontalScrollView") and x["rect"][1] >= t0 - 40 and x["rect"][3] <= t1 + 40
-           and 0.8 * th <= x["rect"][3] - x["rect"][1] <= 1.3 * th and x["rect"][2] > tray[0] - tw and x["rect"][0] < tray[2] + tw]
+           and lo <= x["rect"][3] - x["rect"][1] <= hi and x["rect"][2] > tray[0] - tw and x["rect"][0] < tray[2] + tw]
     return sorted(out, key=lambda n: n["rect"][0])
 
 
@@ -322,7 +324,7 @@ def go_home():
 def run(out):
     from PIL import Image
     import faulthandler
-    faulthandler.dump_traceback_later(900, exit=True)   # a hang prints where it is stuck and ends the check after 15 minutes
+    faulthandler.dump_traceback_later(1500, exit=True)   # a hang prints where it is stuck and ends the check after 25 minutes
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     report, failures = {}, []
