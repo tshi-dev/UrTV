@@ -390,3 +390,38 @@ Update from the TV 174 → 178 (both versionName=4.2 versionCode=178). 16–20 w
 | 20 | «إعداد تلفزيوني» all Arabic in English | STILL: the whole screen in Arabic |
 
 Restored: lang ar, 45 s, muted, Home ours. Next: step 22, then step 21.
+
+## step 22 (alignment and spacing), build 178
+Output: `wm size` physical 3840x2160, override already 1920x1080 (left as is). Method: uiautomator bounds per screen + glyph rows/columns from the screencap where a text box equals its button (local only). Focus-ring pixels not measured; WebView (screensaver) gives no nodes.
+Screens measured, Arabic: home (+ below the fold), options box, Control Center, the settings hub and all its pages (adhan, location, clock, Quran & adhan, cards → screensaver + home, appearance, control center, phone control, update, more → matches & markets, apps & favourites, new episodes, parental, site filter, language), tasks, Tilawah + adhan, screensaver seconds on/off, setup; English: home, options, Control Center, hub + every page, Tilawah + adhan; the 5 looks (+ sand light) on home and options; football layout.
+
+| # | result | numbers |
+|---|---|---|
+| G1 home | PROBLEM | favourites gap 20 px (not on the 8 px scale); below the fold OK; EN same |
+| G2 options box | OK | glyphs 17–22 px from the button edges (bounds said 0: the text box fills the button); EN same |
+| G3 Control Center | PROBLEM | tile gap 20 px; EN same |
+| G4 hub and pages | PROBLEM | the footer hint («الأسهم بين الأقسام…» / «أعلى/أسفل بين الصفوف…», EN «Arrows to move…» / «Up/Down to move…»): box y 974–1080, glyphs end at **y 1037** → outside the 5% safe area (≤1026) on every settings page; list rows: gap 18 px (Screensaver, Update pages: column gaps [126, 18, 18]); «تحكم من الجوال» title top y 40 (<54); «يناير، فبراير، مارس…» / «Standard (January, February…» end with «…» (is it on purpose?) |
+| G5 parental | PROBLEM | PIN pad: gaps 20 and 24 (unequal, 20 off-scale). Card «off» page: gap 20 |
+| G6 update | OK | «الإصدار الحالي: ٤٫٢ (١٧٨)» / «Current version: 4.2 (178)» not cut |
+| G7 tasks | OK (page) | reminder page/cards not tested |
+| G8 Tilawah + adhan | PROBLEM | row gap 20; footer «يمين/يسار بين الأقسام…» box ends y 1032 (>1026); EN same |
+| G9 football | OK | tray top 808 → 848 with the focus on the matches widget (40 px) and back to 808; home gap 20 as G1 |
+| G10, G11 | not done | matches list/detail and markets screens not reached by keys in this run |
+| G12 screensaver | not measurable | WebView: no nodes; seconds on/off shots kept locally |
+| G13 setup | partly | the done screen only shows after a run; the start screen: column gap 20 |
+| G14 looks | OK | glass, graphite, navy, clean, sand (dark and light): every edge and gap identical across looks |
+| Z | restored: yes | look glass, appearance dark, lang ar, seconds off, homelayout classic, cards and markets, dock = start; screensaver delay back to 45 s; updatechannel latest; Home ours; muted |
+
+Worst 10: 1) settings footer glyphs to y 1037 (all settings pages); 2) Tilawah/adhan footer to y 1032; 3) favourites gap 20; 4) Control Center gap 20; 5) Tilawah rows gap 20; 6) PIN pad gaps 20/24; 7) settings list rows gap 18; 8) phone-control title at y 40; 9) month line ending in «…»; 10) setup screen gap 20. No crops pushed (pictures: no).
+
+## step 21 (PIN recovery code), build 178
+Before: no PIN set; the locked list (6 apps), kids mode off, wrong tries 0. **temporary PIN** set for this step only, removed at the end. The code is in no file (checked: 0 files).
+| # | result |
+|---|---|
+| 1 | worked (178 on both apps; status kept; temporary PIN) |
+| 2 | worked: the code typed in the parental PIN prompt with one `input text` → «رمز جديد» («اختر رمزاً من أربعة أرقام») opened; then «تأكيد الرمز»; new PIN set. The 4-dot field during typing was not captured (no dump while the code was in the field) |
+| 3 | worked: locked list, kids mode the same; wrong tries 0 after the code (the code is not a wrong try); the new PIN opens the prompt |
+| 4 | worked: a wrong 4-digit PIN → stays on «أدخل الرمز»; wrong tries 1 |
+| 5 | worked: a wrong 8-digit code → the same; wrong tries 2 |
+| 6 | worked: the new PIN once → wrong tries 0; `pin off` → no PIN, the same 6 locked apps, kids off, 0 — as at the start |
+Problems: 0.
