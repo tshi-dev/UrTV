@@ -927,11 +927,11 @@ public class MainActivity extends Activity {
         Collections.sort(rest, (x, y) -> x.label.compareToIgnoreCase(y.label));
         // Fewer than MIN_DOCK of the chosen apps installed: top the dock up from the rest, in the order of their package names, never of their labels: a
         // label follows the screen's language (Downloader in Arabic where English said Apple TV, build 180), the dock must not.
-        while (dock.size() < MIN_DOCK && !rest.isEmpty()) {
-            App pick = rest.get(0);
-            for (App x : rest) if (x.pkg.compareTo(pick.pkg) < 0) pick = x;
-            rest.remove(pick);
-            dock.add(pick);
+        {
+            List<String> have = new ArrayList<>(), other = new ArrayList<>();
+            for (App d : dock) have.add(d.pkg);
+            for (App x : rest) other.add(x.pkg);
+            for (String p : AppsEdit.topUp(have, other, MIN_DOCK)) for (App x : new ArrayList<>(rest)) if (x.pkg.equals(p)) { rest.remove(x); dock.add(x); }   // AppsEdit.topUp: by package, not by label
         }
         rest = inSavedOrder(rest);   // «تعديل التطبيقات»: the owner's order, new apps at the end; nothing saved, by name as always
 

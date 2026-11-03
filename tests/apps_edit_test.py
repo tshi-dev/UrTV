@@ -28,9 +28,9 @@ check("«تراجع» lasts as long as in «تعديل المفضلة» (FavEdit
 
 # ---- the order «كل التطبيقات» shows
 show = fn(main, "private void showApps(List<App> all, String[] wanted, int gen)")
-check("the grid is by name, topped-up favourites first (as before), then in the owner's saved order (AppsEdit.arrange)",
-      show.index("Collections.sort(rest, (x, y) -> x.label.compareToIgnoreCase(y.label));") < show.index("dock.add(rest.remove(0));")
-      < show.index("rest = inSavedOrder(rest);") and "AppsEdit.arrange(names, Dock.appsOrder(this))" in main)
+check("the grid is by name, then in the owner's saved order (AppsEdit.arrange); the favourites are topped up first, by package (AppsEdit.topUp, cases in tests/apps_edit_cases.tsv), never by label",
+      show.index("Collections.sort(rest, (x, y) -> x.label.compareToIgnoreCase(y.label));") < show.index("AppsEdit.topUp(have, other, MIN_DOCK)")
+      < show.index("rest = inSavedOrder(rest);") and "AppsEdit.arrange(names, Dock.appsOrder(this))" in main and "dock.add(rest.remove(0));" not in show)
 check("the order is kept in the launcher's settings file as \"apps_order\"; nothing saved means by name, as always",
       'prefs(c).getString("apps_order", null)' in dock and 'e.putString("apps_order", String.join(",", order));' in dock)
 check("«رجوع للترتيب الأصلي» removes only the order (what is hidden stays hidden) and redraws",

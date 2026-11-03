@@ -78,6 +78,14 @@ final class AppsEdit {
      * The grid as it shows: the owner's saved order first (the apps still there), then the rest as they come (by name), so a new app
      * goes at the end and one that went is simply not there. Nothing saved: the rest alone, by name, as always.
      */
+    static List<String> topUp(List<String> chosen, List<String> rest, int min) {
+        List<String> add = new ArrayList<>(), pool = new ArrayList<>(rest);
+        java.util.Collections.sort(pool);   // package names: the same on every language (labels follow it, build 180: Downloader in Arabic, Apple TV in English)
+        for (int n = chosen.size(); n < min && !pool.isEmpty(); n++) add.add(pool.remove(0));
+        return add;
+    }
+
+    /** (the favourites' top-up, above) the order the grid shows */
     static List<String> arrange(List<String> byName, String saved) {
         List<String> out = new ArrayList<>();
         if (saved != null) for (String p : saved.split(",")) if (!p.isEmpty() && byName.contains(p) && !out.contains(p)) out.add(p);
