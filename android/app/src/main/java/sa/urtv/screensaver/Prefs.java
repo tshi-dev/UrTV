@@ -644,7 +644,7 @@ final class Prefs {
             boolean ids = TaskList.needsIds(v);
             if (ids) v = TaskList.withIds(v, sp.getLong("taskSeq", 0));
             boolean roll = Reminders.needsRoll(v, now);   // a repeating reminder nobody answered moves to its next time
-            if (roll) v = Reminders.roll(v, now);
+            if (roll) v = Reminders.roll(v, now, Reminders.zone(cityTz()));   // whole days in the TV's city (summer time keeps the hour)
             if (ids || roll) setTasks(v);
             return v;
         }
@@ -756,7 +756,7 @@ final class Prefs {
     /** the task with this id is marked done; false when it is gone */
     boolean doneTaskId(long id) {
         synchronized (TASKS_LOCK) {
-            List<Task> out = TaskList.markDone(tasks(), id, System.currentTimeMillis());   // a repeating reminder is done for this time only
+            List<Task> out = TaskList.markDone(tasks(), id, System.currentTimeMillis(), Reminders.zone(cityTz()));   // a repeating reminder is done for this time only
             if (out == null) return false;
             setTasks(out);
             return true;

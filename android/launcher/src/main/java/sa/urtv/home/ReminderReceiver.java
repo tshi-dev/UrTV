@@ -33,16 +33,28 @@ public class ReminderReceiver extends BroadcastReceiver {
             return;
         }
         long now = System.currentTimeMillis();
-        List<ReminderPlan.Row> showing = ReminderPlan.showing(ReminderStore.read(c), now);
-        if (!showing.isEmpty() && screenOn(c)) {
-            if (NowPlaying.adhanLive()) { ReminderScheduler.schedule(c, now + ADHAN_WAIT); return; }   // the card waits for the adhan to end
-            ReminderPlan.Row r = showing.get(0);
-            int front = AdhanFront.whereNow(c);
-            if (front == AdhanFront.AT_HOME) c.sendBroadcast(new Intent(SHOW).setPackage(c.getPackageName()));
-            else if (front == AdhanFront.AT_OTHER) notice(c, r, now);
-            // the screensaver (DREAM) draws its own card from its page's clock
-        }
+        deliver(c, now);
         ReminderScheduler.schedule(c);
+    }
+
+    /**
+     * The cards that came due and were not delivered yet (ReminderPlan.fresh: each its own, by its key), each once: two reminders inside
+     * one grace both come, an older unanswered one is not repeated, and an alarm delivered twice delivers nothing twice.
+     */
+    private static void deliver(Context c, long now) {
+        List<ReminderPlan.Row> showing = ReminderPlan.showing(ReminderStore.read(c), now);
+        java.util.Set<String> delivered = ReminderStore.delivered(c);
+        List<ReminderPlan.Row> fresh = ReminderPlan.fresh(showing, delivered);
+        if (fresh.isEmpty() || !screenOn(c)) {
+            ReminderStore.setDelivered(c, ReminderPlan.remember(delivered, showing, new java.util.ArrayList<>()));   // old keys go
+            return;
+        }
+        if (NowPlaying.adhanLive()) { ReminderScheduler.schedule(c, now + ADHAN_WAIT); return; }   // the card waits for the adhan to end
+        int front = AdhanFront.whereNow(c);
+        if (front == AdhanFront.AT_HOME) c.sendBroadcast(new Intent(SHOW).setPackage(c.getPackageName()));
+        else if (front == AdhanFront.AT_OTHER) notice(c, fresh, now);   // one notice, a line for each
+        else return;   // the screensaver (DREAM) draws its own card from its page's clock; nothing delivered here
+        ReminderStore.setDelivered(c, ReminderPlan.remember(delivered, showing, fresh));
     }
 
     private static boolean screenOn(Context c) {
@@ -51,11 +63,16 @@ public class ReminderReceiver extends BroadcastReceiver {
     }
 
     /** «تذكير: موعد طبيب الأسنان · بعد ٣٠ دقيقة» for 5 seconds over whatever app is in front: a long toast, then a short one, cut at 5 s */
-    static void notice(Context c, ReminderPlan.Row r, long now) {
+    static void notice(Context c, ReminderPlan.Row r, long now) { notice(c, java.util.Collections.singletonList(r), now); }
+
+    /** the same, one line for each reminder that came due together */
+    static void notice(Context c, List<ReminderPlan.Row> rows, long now) {
         final Context app = c.getApplicationContext();
         S.init(app);
         Digits.init(app);
-        final String text = ReminderCard.line(app, r, now);
+        StringBuilder lines = new StringBuilder();
+        for (ReminderPlan.Row r : rows) lines.append(lines.length() > 0 ? "\n" : "").append(ReminderCard.line(app, r, now));
+        final String text = lines.toString();
         try {
             final Handler h = new Handler(Looper.getMainLooper());
             Toast.makeText(app, text, Toast.LENGTH_LONG).show();

@@ -21,14 +21,35 @@ final class ReminderStore {
             if (cur == null || cur.getColumnIndex("due") < 0) return out;   // an older screensaver app has no reminders
             int id = cur.getColumnIndexOrThrow("id"), t = cur.getColumnIndexOrThrow("t"), done = cur.getColumnIndexOrThrow("done"), due = cur.getColumnIndexOrThrow("due");
             int bf = cur.getColumnIndexOrThrow("bf"), snd = cur.getColumnIndexOrThrow("snd"), wh = cur.getColumnIndexOrThrow("wh"), sn = cur.getColumnIndexOrThrow("sn");
+            int rp = cur.getColumnIndex("rp"), tz = cur.getColumnIndex("tz");   // the repeat and its zone: the alarm plans the next one (an older screensaver: no zone, the TV's)
             while (cur.moveToNext()) {
                 if (cur.getLong(due) <= 0) continue;
-                out.add(new ReminderPlan.Row(cur.getLong(id), cur.getString(t), cur.getInt(done) != 0, cur.getLong(due), cur.getInt(bf), cur.getInt(snd) == 1, cur.getInt(wh), cur.getLong(sn)));
+                out.add(new ReminderPlan.Row(cur.getLong(id), cur.getString(t), cur.getInt(done) != 0, cur.getLong(due), cur.getInt(bf), cur.getInt(snd) == 1, cur.getInt(wh), cur.getLong(sn),
+                        rp < 0 ? ReminderPlan.NO : cur.getInt(rp), tz < 0 ? null : zone(cur.getString(tz))));
             }
         } catch (RuntimeException e) {   // not installed, no permission
             out.clear();
         }
         return out;
+    }
+
+    /** the zone of an id such as "Asia/Riyadh"; null (the TV's own) when it is empty or unknown */
+    static java.util.TimeZone zone(String id) {
+        if (id == null || id.isEmpty()) return null;
+        java.util.TimeZone z = java.util.TimeZone.getTimeZone(id);
+        return "GMT".equals(z.getID()) && !"GMT".equals(id) ? null : z;
+    }
+
+    /** The cards already delivered (ReminderPlan.key), kept on the disk: a duplicate alarm or a restart delivers none twice. */
+    static java.util.Set<String> delivered(Context c) {
+        String s = c.getApplicationContext().getSharedPreferences("reminders", Context.MODE_PRIVATE).getString("delivered", "");
+        java.util.Set<String> out = new java.util.LinkedHashSet<>();
+        for (String k : s.split(",")) if (!k.isEmpty()) out.add(k);
+        return out;
+    }
+
+    static void setDelivered(Context c, java.util.Set<String> keys) {
+        c.getApplicationContext().getSharedPreferences("reminders", Context.MODE_PRIVATE).edit().putString("delivered", String.join(",", keys)).commit();
     }
 
     static boolean done(Context c, long id) {

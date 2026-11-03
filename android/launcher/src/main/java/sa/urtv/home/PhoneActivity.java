@@ -40,7 +40,7 @@ public class PhoneActivity extends Activity implements PrivateScreen {
     private GlassStyle.Look look;
     /** from «محفظتي» («أسهل من الجوال»): the QR and the address open the phone's portfolio page (/m), which pairs the same way */
     static final String EXTRA_PORTFOLIO = "portfolio";
-    private boolean portfolio;   // the extra asked for «محفظتي»'s view; shown only once the window is open (portfolioAuthorized)
+    private boolean portfolio;   // the extra asked for «محفظتي»'s view; shown only once the window is open (portfolioShown)
     private boolean asking;      // the PIN keypad for «محفظتي» is on the screen
 
     private PhoneControl control;

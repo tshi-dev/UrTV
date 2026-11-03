@@ -3,6 +3,7 @@ package sa.urtv.screensaver;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -53,29 +54,67 @@ final class Reminders {
         return repeat == DAILY ? DAY : repeat == WEEKLY ? 7 * DAY : 0;
     }
 
-    /** the appointment after this one: a repeating one moves by whole periods until it is ahead of `now`; a single one stays (0 change) */
-    static long advance(long due, int repeat, long now) {
-        long p = period(repeat);
-        if (p == 0 || due <= 0) return due;
+    /** whole days a repeat moves by: 1, 7, or 0 for a single one */
+    static int days(int repeat) { return repeat == DAILY ? 1 : repeat == WEEKLY ? 7 : 0; }
+
+    /**
+     * The appointment `days` calendar days after `due` at the same wall-clock time in `tz` (not a fixed 24 h: across a summer-time change
+     * the hour stays). A wall time that does not exist that day (the clocks jump over it) is read with the offset from before the jump, so
+     * it comes that much later (02:30 in a 02:00 to 03:00 gap is 03:30), and from then on it stays at that time; a wall time that comes
+     * twice (the clocks go back) is the first of the two. The same rule as the home's ReminderPlan.step.
+     */
+    static long step(long due, int days, TimeZone tz) {
+        if (days == 0) return due;
+        Calendar wall = Calendar.getInstance(TimeZone.getTimeZone("UTC"), Locale.US);   // the wall clock, with no change of its own
+        wall.setTimeInMillis(due + tz.getOffset(due));
+        wall.add(Calendar.DAY_OF_MONTH, days);
+        long w = wall.getTimeInMillis();
+        int before = tz.getOffset(w - DAY), after = tz.getOffset(w + DAY);
+        boolean a = tz.getOffset(w - before) == before, b = tz.getOffset(w - after) == after;
+        if (a && b) return Math.min(w - before, w - after);   // twice (or once, the same): the first
+        if (a) return w - before;
+        if (b) return w - after;
+        return w - before;   // not at all: read with the offset from before the jump
+    }
+
+    /** the appointment after this one: a repeating one moves by whole calendar periods in `tz` until it is ahead of `now`; a single one stays */
+    static long advance(long due, int repeat, long now, TimeZone tz) {
+        int n = days(repeat);
+        if (n == 0 || due <= 0) return due;
         long d = due;
-        if (d <= now) d += ((now - d) / p + 1) * p;
+        if (d > now) return d;
+        long skip = (now - d) / (n * DAY) - 1;   // most of a long gap at once (whole periods of wall time), then one by one
+        if (skip > 0) d = step(d, (int) Math.min(skip * n, 100_000), tz);
+        while (d <= now) d = step(d, n, tz);
         return d;
     }
 
-    /** every open repeating task whose appointment and grace are over is moved to its next; others are the same objects */
-    static List<Task> roll(List<Task> v, long now) {
+    /** advance in the TV's default zone (the tests' old form) */
+    static long advance(long due, int repeat, long now) { return advance(due, repeat, now, TimeZone.getDefault()); }
+
+    /** every open repeating task whose appointment and grace are over is moved to its next (calendar periods in `tz`); others are the same objects */
+    static List<Task> roll(List<Task> v, long now, TimeZone tz) {
         List<Task> out = new ArrayList<>(v.size());
         for (Task t : v) {
-            if (has(t) && t.repeat != NO && now >= t.due + GRACE) out.add(t.remind(advance(t.due, t.repeat, now), t.before, t.repeat, t.sound, t.where));
+            if (has(t) && t.repeat != NO && now >= t.due + GRACE) out.add(t.remind(advance(t.due, t.repeat, now, tz), t.before, t.repeat, t.sound, t.where));
             else out.add(t);
         }
         return out;
     }
 
+    static List<Task> roll(List<Task> v, long now) { return roll(v, now, TimeZone.getDefault()); }
+
     /** false when anything in the list needs rolling (so the saved list is only written when it changed) */
     static boolean needsRoll(List<Task> v, long now) {
         for (Task t : v) if (has(t) && t.repeat != NO && now >= t.due + GRACE) return true;
         return false;
+    }
+
+    /** the zone of an id such as "Asia/Riyadh"; the TV's own when it is empty or unknown */
+    static TimeZone zone(String id) {
+        if (id == null || id.isEmpty()) return TimeZone.getDefault();
+        TimeZone z = TimeZone.getTimeZone(id);
+        return "GMT".equals(z.getID()) && !"GMT".equals(id) ? TimeZone.getDefault() : z;
     }
 
     /** "2026-11-05 17:00" (or with a T) in the zone, as epoch milliseconds; -1 when it is not a date and time */
