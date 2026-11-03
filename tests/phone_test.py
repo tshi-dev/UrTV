@@ -70,7 +70,7 @@ check("the screen the owner answers on is out of the phone's reach (PrivateScree
 check("the city and the home cards go through SaverReceiver.set, the code optimize/saver.sh uses", "SaverReceiver.set(" in text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/ConfigProvider.java"), "")
 check("the provider's phone calls need the signature permission", "checkCallingPermission(PHONE_PERMISSION)" in text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/ConfigProvider.java")
       and 'sa.urtv.screensaver.PHONE_SETTINGS"\n        android:protectionLevel="signature"' in text(ROOT / "android/app/src/main/AndroidManifest.xml"), "")
-check("the provider lets the phone set only the city, the home cards, the idle time and «اللغة»", re.search(r'for \(String k : new String\[\] \{"city", "home_panel", "idle", "lang"\}\)', text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/ConfigProvider.java")) is not None, "")
+check("the provider lets the phone set only the city, the home cards, the idle time, «اللغة» and «تطبيقات في الشريط»", re.search(r'for \(String k : new String\[\] \{"city", "home_panel", "idle", "lang", "favbar"\}\)', text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/ConfigProvider.java")) is not None, "")
 til = JAVA / "tilawah"
 check("the adhan goes through AdhanSettings, for the ADB receiver and for the phone alike", "AdhanSettings." in text(til / "MusicReceiver.java") and "AdhanSettings." in text(til / "PhoneBridge.java"), "")
 voices = re.search(r"COUNT = (\d+)", text(til / "AdhanVoices.java"))

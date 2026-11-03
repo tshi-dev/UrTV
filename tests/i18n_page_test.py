@@ -45,7 +45,7 @@ check("tv-en.html: the English title", "<title>Your TV Screen</title>" in en and
 markup = re.sub(r"<script>.*?</script>|<style>.*?</style>|<!--.*?-->", "", en, flags=re.S)
 check("tv-en.html: no Arabic in the markup", not AR.search(markup), AR.findall(markup)[:5])
 script = en[en.index("<script>"):]
-code = re.sub(r"^const (ADHKAR|VERSES|HADITH|WISDOM|EVENTS|TEAM_AR|TEAM_BY_ID|BGS)\b.*$", "", script, flags=re.M)
+code = re.sub(r"^const (ADHKAR|VERSES|HADITH|WISDOM|EVENTS|TEAM_AR|TEAM_BY_ID|BGS|BROADCAST)\b.*$", "", script, flags=re.M)
 dead = ("const TL_WORDS", "const TL_LETTERS", "function translitAr")
 left = [a for _, _, a in tr.arabic_literals(code)]
 check("tv-en.html: no Arabic literal left in the page's code (the data and the unused transliteration aside)",

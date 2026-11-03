@@ -222,7 +222,7 @@ public class MainActivity extends Activity {
         super.onResume();
         resumed = true;
         if (sa.urtv.home.setup.SetupReopen.take()) {   // «إعداد تلفزيوني» was left behind by the home switch: its progress and its done screen come back (once)
-            try { startActivity(new Intent(this, sa.urtv.home.setup.SetupActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)); } catch (RuntimeException ignored) { }
+            try { guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t("إعداد تلفزيوني"), () -> launch(new Intent(this, sa.urtv.home.setup.SetupActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT))); } catch (RuntimeException ignored) { }   // the person opened this screen already (its own lock was passed then)
         }
         UpdateCarry.homeShown = true;   // the carry-over after our update asks whether our home is in front
         backExit.reset(); backGuarded = false;   // «الخروج من تلفزيونك»: a new visit, its count and its hint start again
@@ -598,7 +598,7 @@ public class MainActivity extends Activity {
         // ---- end «مركز التحكم»
         // «الأسواق» and «المباريات»: the markets page and the games page, two more round buttons (step 27, the owner's TV photos)
         Pill marketsBtn = pill(S.t("الأسواق"), R.drawable.ic_markets);
-        marketsBtn.setOnClickListener(v -> launch(new Intent(this, MarketsActivity.class)));
+        marketsBtn.setOnClickListener(v -> guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t("الأسواق"), () -> launch(new Intent(this, MarketsActivity.class))));   // our own page: no app of the lists
         Pill matchesBtn = pill(S.t("المباريات"), R.drawable.ic_matches);
         matchesBtn.setOnClickListener(v -> launchGuarded(ParentalPolicy.WIDGET_MATCHES, new Intent(this, MatchesActivity.class), "المباريات"));
         List<Pill> row = new ArrayList<>(Arrays.asList(inputs));
