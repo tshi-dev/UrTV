@@ -205,7 +205,8 @@ bad=0
 for kv in "${want[@]+"${want[@]}"}"; do verify "${kv%%=*}" "${kv#*=}" || bad=1; done
 for kv in "${pswant[@]+"${pswant[@]}"}"; do   # the standby bucket is the system's to move, so a mismatch is said, not fatal
   got=$(psget "${kv%%=*}")
-  if [ "$got" != "${kv#*=}" ]; then
+  # an appop put back to «allow» that the TV reads as «default» is the same thing (allow IS the default for these two): not a problem (step 27: two !! on every reset)
+  if [ "$got" != "${kv#*=}" ] && ! { case "${kv%%=*}" in appop_*) [ "${kv#*=}" = allow ] && [ "$got" = default ] ;; *) false ;; esac; }; then
     if [ "${kv%%=*}" = standby_bucket ] && test_build; then   # a test build (userdebug, test-keys) keeps its own bucket: not a problem to report
       echo "info: standby_bucket stays $got on this test build (userdebug / test-keys): the system keeps its own standby bucket"
     else echo "!! ${kv%%=*}: this TV did not take the value (asked for ${kv#*=}, it says $got)"; bad=1; fi

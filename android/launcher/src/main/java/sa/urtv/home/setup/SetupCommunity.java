@@ -80,6 +80,7 @@ final class SetupCommunity {
         for (String k : new String[] {"ro.product.manufacturer", "ro.product.brand", "ro.product.model", "ro.product.device"}) props.put(k, tv.tail1("getprop " + k));
         CommunityMatch.Choice choice = CommunityMatch.choose(props, lists.metas);
         if (choice.meta == null) return done("ما وجدنا قائمة مجتمع لطراز تلفزيونك بالضبط، فما أوقفنا شيئاً منها (" + why(choice.why) + ").");
+        out.line("قائمة المجتمع لهذا الطراز: " + choice.meta.name);   // which list was used, in the report (step 27: no line named it)
         Set<String> homes = homes(tv.text("cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME 2> /dev/null"));
         if (homes.isEmpty()) return failed("لم يقل التلفزيون أي تطبيق شاشته الرئيسية، فما أوقفنا شيئاً من قائمة المجتمع. اضغط «جهّز كل شي» مرة ثانية.");
         List<String> pkgs = new ArrayList<>();

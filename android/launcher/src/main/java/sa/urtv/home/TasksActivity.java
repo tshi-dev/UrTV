@@ -209,6 +209,7 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
             final boolean done = dones.get(i);
             final long id = ids.get(i);
             LinearLayout r = new LinearLayout(this);
+            r.setMinimumHeight(dp(56));   // every row the same height, its card and buttons filling it: the gap between two rows is the same everywhere (16, then 20, step 27)
             View del = pill(S.t("حذف"), look.warn, v -> ask(S.t("أحذف «%s»؟", t), () -> delete(t, id)));
             r.addView(del, new LinearLayout.LayoutParams(dp(84), -1));
             final long due = i < dues.size() ? dues.get(i) : 0L;
@@ -223,8 +224,9 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
                 if (done) toast(S.t("هذي المهمة منجزة"));
                 else markDone(t, id);
             });
-            LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(0, -2, 1f);
+            LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(0, -1, 1f);
             cp.setMarginStart(dp(10));
+            ((TextView) card).setGravity(Gravity.CENTER_VERTICAL | Dir.start());
             r.addView(card, cp);
             if (Dir.rtl()) card.setNextFocusLeftId(del.getId()); else card.setNextFocusRightId(del.getId());
             if (Dir.rtl()) del.setNextFocusRightId(card.getId()); else del.setNextFocusLeftId(card.getId());
@@ -288,9 +290,10 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
     private boolean add(String t) {
         ContentValues v = new ContentValues();
         v.put("t", t);
+        if (texts.size() >= MAX_TASKS) { toast(S.t("%s مهمة كحد أقصى", ar(MAX_TASKS))); return false; }   // said on the screen (a toast alone was not seen on the TV, step 27)
         boolean ok = write(() -> getContentResolver().insert(TASKS, v) != null);
         if (ok) toast(S.t("أُضيفت: %s", t));
-        else toast(S.t("ما أضفت المهمة: القائمة ممتلئة (%s) أو النص فاضي", ar(12)));
+        else toast(S.t("ما أضفت المهمة: القائمة ممتلئة (%s) أو النص فاضي", ar(MAX_TASKS)));
         return ok;
     }
 
@@ -485,7 +488,14 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
         return p;
     }
 
-    private void toast(String s) { Toast.makeText(this, s, Toast.LENGTH_SHORT).show(); }
+    /** the most tasks the list holds (the same limit as `saver.sh tasks add`) */
+    static final int MAX_TASKS = 12;
+
+    /** a toast, and the same words on the page itself under the buttons: some TVs draw no toast over this screen */
+    private void toast(String s) {
+        if (status != null) status.setText(s);
+        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
+    }
 
     private int dp(float v) { return Math.round(v * getResources().getDisplayMetrics().density); }
 

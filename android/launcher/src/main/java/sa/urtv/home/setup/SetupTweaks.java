@@ -238,7 +238,7 @@ final class SetupTweaks {
         }
         for (String kv : psWant) {
             String k = kv.substring(0, kv.indexOf('=')), v = kv.substring(kv.indexOf('=') + 1), got = psget(k);
-            if (!got.equals(v)) {
+            if (!got.equals(v) && !(k.startsWith("appop_") && v.equals("allow") && got.equals("default"))) {   // allow IS the default for these appops: the same thing
                 if (k.equals("standby_bucket") && testBuild()) out.line("وضع الاستعداد لمتجر Play يبقى " + got + " في نسخة الاختبار هذه من النظام: النظام يحتفظ به.");
                 else { out.line("التلفزيون لم يقبل " + k + " (طلبنا " + v + "، ويقول " + got + ")."); bad = true; }
             }

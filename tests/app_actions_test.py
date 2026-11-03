@@ -42,7 +42,8 @@ check("the whole box opens behind the family lock's MENU, from a long OK on the 
 check("no tile beside the favourites: the bar is the apps only", "optionsTile" not in main and "pickingOptions" not in main)
 check("the hint «اضغط مطوّلاً للخيارات» beside a favourite's name, the first few times only, never once the box was opened",
       'OPTIONS_HINT = S.n("اضغط مطوّلاً للخيارات")' in main and "seen < OPTIONS_HINT_TIMES" in main and "optionsHint(inDock);" in main
-      and "prefs().edit().putInt(\"options_hint\", OPTIONS_HINT_TIMES).apply();" in main)
+      and 'putInt("options_hint", OPTIONS_HINT_TIMES).putInt("options_hint_en", OPTIONS_HINT_TIMES).apply();' in main
+      and 'S.en() ? "options_hint_en" : "options_hint"' in main)   # step 27: counted per language, so the English home shows it too
 settings_src = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsActivity.java").read_text(encoding="utf-8")
 check("nothing is long-press-only: the settings' «التطبيقات والمفضلة» move, hide, change the favourites, lock (the family lock's page) and show the details",
       all(f'row("{r}"' in settings_src for r in ("تعديل المفضلة", "ترتيب كل التطبيقات", "ترتيب التطبيقات المفضلة", "قفل التطبيقات", "تفاصيل التطبيقات"))

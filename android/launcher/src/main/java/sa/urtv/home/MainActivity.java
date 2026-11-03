@@ -2271,19 +2271,22 @@ public class MainActivity extends Activity {
     private TextView optionsHint;
     static final String OPTIONS_HINT = S.n("اضغط مطوّلاً للخيارات");
 
+    /** the count is per language: the six times in Arabic had used up the English home's hint (step 27: «Hold OK for options» never showed) */
+    private static String hintKey() { return S.en() ? "options_hint_en" : "options_hint"; }
+
     /** the hint for this focus: shown while it has times left, counted once per favourite that takes the focus */
     private void optionsHint(boolean show) {
         if (optionsHint == null) return;
-        int seen = prefs().getInt("options_hint", 0);
+        int seen = prefs().getInt(hintKey(), 0);
         boolean on = show && seen < OPTIONS_HINT_TIMES && edit == null && appsEdit == null;
-        if (on) prefs().edit().putInt("options_hint", seen + 1).apply();
+        if (on) prefs().edit().putInt(hintKey(), seen + 1).apply();
         optionsHint.setTextColor(palette().soft);
         optionsHint.animate().alpha(on ? 0.85f : 0f).setDuration(200).start();
     }
 
     /** the box was opened: the hint has done its job */
     private void optionsHintUsed() {
-        prefs().edit().putInt("options_hint", OPTIONS_HINT_TIMES).apply();
+        prefs().edit().putInt("options_hint", OPTIONS_HINT_TIMES).putInt("options_hint_en", OPTIONS_HINT_TIMES).apply();   // the box was opened, in either language: the person knows
         if (optionsHint != null) optionsHint.animate().alpha(0f).setDuration(150).start();
     }
 
