@@ -214,7 +214,9 @@ final class SetupRunner {
         p.add(new Def("autostart", true, c -> new SetupPrep(c.shell, c.store, c.out).autostart()));
         p.add(new Def("home", false, c -> {
             if (c.engine.askWifi()) throw new Paused();   // before anything of the switch: the person is asked once, the run resumes here
-            return c.engine.home();
+            SetupEngine.Result r = c.engine.home();
+            c.runner.wantScreen();   // the stock home and then ours come in front: our home opens this screen again
+            return r;
         }));
         p.add(new Def("after", true, c -> measure(c).measure("after", !switching(c.store))));
         p.add(new Def("report", true, c -> report(c)));
@@ -393,6 +395,17 @@ final class SetupRunner {
     synchronized boolean running() { return running; }
     synchronized Kind kind() { return kind; }
     synchronized End end() { return end; }
+
+    /**
+     * The setup screen was left behind: the home switch puts the stock home in front and then ours, and a family that pressed «ابدأ» never saw the run
+     * or the done screen (step 27). The runner raises this when the switch is done and when a full run ends; our home, when it comes in front (a visible
+     * window may start an activity, a service may not), takes it ONCE and opens the screen again; the screen clears it when it is shown.
+     */
+    private boolean reopen;
+    synchronized void wantScreen() { reopen = true; }
+    synchronized void screenShown() { reopen = false; }
+    /** true once: and the flag is down (the home opens the screen now) */
+    synchronized boolean takeReopen() { boolean r = reopen; reopen = false; return r; }
     synchronized Options options() { Options o = new Options(); o.extras = options.extras; o.answers.putAll(options.answers); return o; }
 
     synchronized List<Step> steps() {
@@ -604,6 +617,7 @@ final class SetupRunner {
             end = e;
             promptSince = 0;
             awaitingConfirm = false;
+            if (k == Kind.FULL && e != null && !e.wifi) reopen = true;   // the done screen is shown even when the person is looking at another screen
         }
         changed();
     }

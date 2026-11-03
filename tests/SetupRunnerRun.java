@@ -177,6 +177,10 @@ public class SetupRunnerRun {
         SetupRunner.Start s = go(r, h, SetupRunner.Kind.FULL, new SetupRunner.Options());
         line("R1 " + s + " " + states(r) + " running=" + r.running() + " finished=" + h.finished + " bad=" + r.end().bad + " listened=" + (calls[0] > 5));
         line("R1end " + r.end().text);
+        // step 27: the home switch left the setup screen behind: the runner asks the home to open it again, once, and the screen being shown cancels the ask
+        boolean ro1 = r.takeReopen(), ro2 = r.takeReopen();
+        r.wantScreen(); r.screenShown();
+        line("R1reopen " + ro1 + " " + ro2 + " " + r.takeReopen());
         // tester step 18: the second run did not ask: a key a run kept is let go again BEFORE a fresh run and an undo (when nothing is pending)
         SetupRunner rk = new SetupRunner(); Host hk = new Host(SetupEngineRun.tv(), new SetupEngineRun.Mem());
         go(rk, hk, SetupRunner.Kind.FULL, new SetupRunner.Options());

@@ -95,6 +95,7 @@ public class SetupActivity extends Activity {
     /** The state the runner is in decides the screen; it is built again only when that state changes, otherwise its lines are updated. */
     private void show() {
         SetupRunner r = SetupRunner.get();
+        if (resumedNow) r.screenShown();   // it is in front: the home need not open it again
         String want = decide(r);
         if (!want.equals(mode)) {
             mode = want;
@@ -430,15 +431,20 @@ public class SetupActivity extends Activity {
         if (!t.isEmpty()) status.post(new Runnable() { @Override public void run() { status.requestRectangleOnScreen(new android.graphics.Rect(0, 0, status.getWidth(), status.getHeight())); } });
     }
 
+    private boolean resumedNow;
+
     @Override protected void onResume() {
         super.onResume();
+        resumedNow = true;
         SetupRunner.get().setListener(new Runnable() {
             @Override public void run() { runOnUiThread(new Runnable() { @Override public void run() { show(); } }); }
         });
+        SetupRunner.get().screenShown();   // the home need not open this screen again
         show();   // a run started before this screen was opened (or while it was closed) is shown as it is now
     }
 
     @Override protected void onPause() {
+        resumedNow = false;
         SetupRunner.get().setListener(null);
         super.onPause();
     }
