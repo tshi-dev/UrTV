@@ -519,3 +519,7 @@ New problems seen in the shots:
 - the dock in Arabic shows Downloader where English shows Apple TV, same dock setting
 - after saving a holding the focus jumps to «مباشر» at the top
 - matches page «لا مباريات اليوم» while the widget shows a match (above)
+
+### step 26 — Z (before part C), build 180
+restored: yes. Settings imported from the start file (only the city differed), seconds off, lang ar, homelayout classic, no home card; the 2 demo tasks and the match-reminder task deleted (tasks: none, as at the start); the made-up holdings deleted («احذف المحفظة»: the owner had none); dock order = start; no PIN (temporary 1234 for B4 and shot 07, `pin off` each time, wrong tries 0); `wm size` unchanged (override 1920x1080); updatechannel latest; Home ours; YouTube force-stopped; the TV-side log file removed; muted.
+Part C: waiting for the owner to give the recovery code again in chat (this session restarted and holds no code). Problems in 26 so far: A2, A3, B1 (tile outside the tray, no lowered state, moving name label), B3 tabs 20, B9 (cut labels, focus jumps to «جهّز كل شي»), the «الذهب والنفط» letters, the empty matches page; small: B6 bidi minus, English wraps, B10 prices not moving in «مباشر», Arabic/English dock difference, focus to «مباشر» after a save.
