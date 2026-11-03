@@ -1,10 +1,10 @@
-«✅ GO — build 181»
+«⛔ WAIT — don't start anything yet. The supervisor will replace this line with «✅ GO — build N».»
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
-**1. The PIN recovery code is NOT needed for the next run (step 27): do not ask for it. (When a step needs it again, it will say so here. The rule stays: never in a file, log, commit, script or screenshot.)**
+**1. The PIN recovery code is NOT needed for the next run (step 28): do not ask for it. (When a step needs it again, it will say so here. The rule stays: never in a file, log, commit, script or screenshot.)**
 
-**2. WAIT for the GO line. Every 5 minutes, run `git fetch origin work/tester` and read the first line of `origin/work/tester:tester/STEP.md` (`git show origin/work/tester:tester/STEP.md | head -1`). Don't start until it reads «✅ GO — build N». Then make sure the TV has build N or newer from apk-next, and run **step 27 «re-check after the fixes»** (at the end of this file): parts A, B, E, F, D, then Z. Steps 16–26 are done; do not run them again.**
+**2. WAIT for the GO line. Every 5 minutes, run `git fetch origin work/tester` and read the first line of `origin/work/tester:tester/STEP.md` (`git show origin/work/tester:tester/STEP.md | head -1`). Don't start until it reads «✅ GO — build N». Then make sure the TV has build N or newer from apk-next, and run **step 28** (at the end of this file): parts A, B, C, D, E, then Z. Steps 16–27 are done; do not run them again.**
 
 **3. Keep the TV MUTED the whole time: check the mute before each step and after every restart, update or install, and mute again at once if it isn't.**
 
@@ -472,3 +472,31 @@ what: the problems of step 26, checked again with numbers, the new «العمل�
 | Z | Everything back: `optimize/saver.sh import optimize/run/step27/settings-before.json` (preview, then `--yes`); the demo tasks, the made-up holdings and the 3 extra currencies and everything added in part E removed (the owner's own untouched); the dock order; the home layout; `lang ar`; the PIN state as at the start; `wm size reset` if changed; `optimize/saver.sh updatechannel latest`; the Home holder as at the start; muted; YouTube force-stopped | "restored: yes/no" with any value that differs; muted |
 
 REPORT.md (on `work/tester-report`): "step 27 (re-check after the fixes)", the build; part A: the timeline (t+s: event), A1–A3 with every `carry stage=… why=…`; part B: B1–B9, OK or the problem with numbers (B5: market open/closed and the price changes; B8: the KWD value, the converter results, any «—»); part E: E1–E3, your own 10+ tests (what, why, result), the network test (or why skipped), and a list of every finding with its key path, repeats yes/no, the crash/ANR lines (cleaned) and the screen's name; part F: F1–F8, the Downloader screens and times, the plan's counts and every step line with its mark, the disabled count, MemAvailable and process count before/after, any user app killed, the list picked, what the F2 apps changed; part D: one line per shot, done (kept on the PC) or skipped with the reason; "restored: yes/no". No personal data; no images pushed. Push; tell the owner in Arabic that it is done, how many problems there were, and that the shots are on the PC in `optimize/run/step27/marketing/`.
+
+---
+step: 28 (build 182 or newer, the one named in the GO line; the owner is not needed; NO recovery code)
+what: the update, step 27's problems again, the new items, the targetSDK 34 checks, three shots. Follow tester/RULES.md. **MUTED the whole time** (check before each part and after every restart, update or install; mute again at once, time written first). Keys by adb, focus checked with the dump; measure as in step 22. Files in `optimize/run/step28/`, local only.
+- Start lines + `saver.sh show`, `saver.sh export > optimize/run/step28/settings-before.json`, `dock.sh show`, `tasks list` (count), `dock.sh pin status`, the Home holder.
+
+| # | Do | Right when |
+|---|---|---|
+| A | **Update from the TV** (180/181 → 182) with «تحديث تلفزيوني», full logcat, the 2 s watch for 60 s (step 24 row 4) | muted throughout; our home comes to the front by itself; «تم» on the installer leads to `sa.urtv.home/.MainActivity`; our screensaver never covers the second app's install question (dreams + resumed activity at each line) |
+| B1 | «الأسواق»: the header's change sign; save a made-up holding; live mode 2 min with `logcat -s UrTVMarkets`; the currency picker | the sign right («−٠٫٣٣٪»); focus stays on the row/add button after saving; UrTVMarkets lines present (if `parsed=0`, a `body_start` line too: copy it, cleaned); the picker's «تم» works, marks and focus right |
+| B2 | a match's detail | the focus ring is where OK acts (OK does what the ring shows) |
+| B3 | the setup screen during a run (part D's run, or note it there) | it stays visible the whole run |
+| B4 | the TV's own sleep (screen off with `input keyevent 223`, wait 1 min, `224`) and a restart (`tv.py --reboot`); `logcat -d -s UrTVMute` after each | muted again after both; the UrTVMute lines copied |
+| C1 | the quick buttons «الأسواق» / «المباريات» at the top left of the home | present, reachable with keys, open the right pages, aligned with the other top buttons |
+| C2 | a match row in the football widget and in «المباريات» | aligned (step 22 rules) and the same in both |
+| C3 | a match detail's buttons | «شاهد على ثمانية» only if Thmanyah is installed (OK opens it); «أضف لفرقي» adds the team (remove it in Z) |
+| C4 | «الأسواق» after the tidy; a stock card; the home «الأسهم» card | the controls row aligned, no green bar, density even; the stock card solid with the page dimmed behind it; the home stocks card has 24 px padding (±2) |
+| C5 | «تطبيقات في الشريط» = 7, then 10 | every tile whole and inside the tray (AR and EN); back to the start value in Z |
+| C6 | «تلاوة وأذان» ← القرّاء | the favourite reciters first; the letter index works with keys |
+| D1 | **targetSDK 34.** Save as step 18 row 1 (the owner accepts the PIN/own adhan/pairing loss as before). `adb uninstall sa.urtv.home` only (the screensaver stays). Downloader: type the URL WITHOUT `https://` (`github.com/tshi-dev/UrTV/releases/download/apk-next/urtv-home.apk`), install | NO Play Protect block (write every prompt shown); versionCode = the GO build |
+| D2 | the adhan alarm after that install: `optimize/music.sh adhan` (`adhan_exact=`), `dumpsys alarm \| grep -c sa.urtv.home` once the adhan is back on (D5) | exact (`adhan_exact` not 0) |
+| D3 | open the player for the first time (a station) | the notification question appears ONCE; answer «لا» |
+| D4 | play a station after «لا» | `playing=1`; no «cannot play» |
+| D5 | restore the settings as in step 18 row 12 (import, the adhan on as before, the rest by command); then the adhan while YouTube is in front: `saver.sh prayeradj` 1–2 min ahead (as in step 16), YouTube open, sound 0; `logcat -s UrTVAdhan`; minutes back right after | the adhan plays with YouTube in front (`play=1` in `adhan_alarm_last`, judged by the log only) |
+| E | shots (step 25's demo-clean and privacy rules; keep on the PC in `optimize/run/step28/marketing/`, push none): `ar-sand-17-currencies.png`, `ar-sand-14a-market.png` (after the tidy), `ar-sand-11-football.png` (the new match row) | checked; done or skipped with the reason |
+| Z | `saver.sh import optimize/run/step28/settings-before.json` (preview, `--yes`); the made-up holdings, the added team, the demo tasks gone; tray count, prayer minutes, dock, PIN state, lang as at the start; `updatechannel latest`; Home holder as at the start; YouTube force-stopped; muted | "restored: yes/no" |
+
+REPORT.md (`work/tester-report`): "step 28", the build, one line per row (OK or the problem with numbers), the UrTVMarkets / UrTVMute / UrTVAdhan lines (cleaned), the Downloader prompts, "restored: yes/no". No personal data, no images pushed. Tell the owner in Arabic.
