@@ -503,9 +503,23 @@ final class MarketData {
     /** A rate or a converted amount for the screen: whole above 1000, two decimals above 1, four above 0.01, six under; «—» for NaN. Western digits (the caller turns them). */
     static String fxNumber(double v) {
         if (Double.isNaN(v) || Double.isInfinite(v)) return "—";
+        if (v == 0) return "0";   // nothing converts to «0», not to «0.000000»
         String s = v >= 1000 ? String.format(java.util.Locale.ROOT, "%,.0f", v) : v >= 1 ? String.format(java.util.Locale.ROOT, "%,.2f", v)
             : v >= 0.01 ? String.format(java.util.Locale.ROOT, "%.4f", v) : String.format(java.util.Locale.ROOT, "%.6f", v);
         return s;
+    }
+
+    /** The amount as it is typed in the converter, with thousands separators in its whole part and the rest as typed («1234.50» -> «1,234.50», «1234.» -> «1,234.»); Western digits. */
+    static String typedAmount(String raw) {
+        if (raw == null || raw.isEmpty()) return "0";
+        int dot = raw.indexOf('.');
+        String whole = dot < 0 ? raw : raw.substring(0, dot), rest = dot < 0 ? "" : raw.substring(dot);
+        StringBuilder g = new StringBuilder();
+        for (int i = 0; i < whole.length(); i++) {
+            if (i > 0 && (whole.length() - i) % 3 == 0) g.append(',');
+            g.append(whole.charAt(i));
+        }
+        return g + rest;
     }
 
     /** A signed number, its point and its percent sign kept in reading order inside right-to-left text («−٠٫٣٣٪», not «−(٪٠٫٣٣−)»): a left-to-right isolate around it */

@@ -328,6 +328,9 @@ public class MarketsActivity extends Activity {
         minute.run();
         resumed = true;
         keepAwake();
+        if (builtIn == null) builtIn = S.lang();
+        main.removeCallbacks(langWatch);
+        main.postDelayed(langWatch, 2000);
         liveRun++;
         liveFails = 0;
         main.removeCallbacks(liveTick);
@@ -361,6 +364,8 @@ public class MarketsActivity extends Activity {
         loadGen++;   // a load still running delivers nothing to a page that is not in front
         resumed = false;   // live mode ends with the page being in front
         keepAwake();
+        closeDialogs();
+        main.removeCallbacks(langWatch);
         liveRun++;
         main.removeCallbacks(liveTick);
         super.onPause();
@@ -725,12 +730,15 @@ public class MarketsActivity extends Activity {
         LinearLayout second = new LinearLayout(this);
         second.setGravity(Gravity.CENTER_VERTICAL);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, dp(20), 1f);
-        lp.setMarginEnd(dp(12));
+        lp.setMarginEnd(dp(16));   // at least 16 px between the line and the price on either side (the line touched the price, step 27)
+        lp.setMarginStart(dp(0));
         second.addView(new MarketChart(this).line(q.c, Double.NaN, color(q), DIM, false, 1.5f), lp);
         TextView px = text(money(q.p * mul, 2, unit), 16, "Medium", TEXT);
         px.setGravity(Dir.end());
         px.setSingleLine(true);
-        second.addView(px, new LinearLayout.LayoutParams(-2, -2));
+        LinearLayout.LayoutParams pxl = new LinearLayout.LayoutParams(-2, -2);
+        pxl.setMarginStart(dp(16));
+        second.addView(px, pxl);
         LinearLayout.LayoutParams pl = new LinearLayout.LayoutParams(-2, -2);
         pl.setMarginStart(dp(12));
         second.addView(pct(q.pct(), 14), pl);
@@ -919,7 +927,7 @@ public class MarketsActivity extends Activity {
         Runnable paint = () -> {
             fromB.setText(ccyName(ends[0]) + " · " + ends[0]);
             toB.setText(ccyName(ends[1]) + " · " + ends[1]);
-            shown.setText(MarketData.show(amount.length() == 0 ? "0" : amount.toString(), Digits.latin()) + " " + ends[0]);
+            shown.setText(MarketData.show(MarketData.typedAmount(amount.toString()), Digits.latin()) + " " + ends[0]);
             double a = amount.length() == 0 ? 0 : Double.parseDouble(amount.toString().endsWith(".") ? amount + "0" : amount.toString());
             double r = MarketData.convert(a, ends[0], ends[1], rates);
             result.setText("= " + MarketData.show(MarketData.fxNumber(r), Digits.latin()) + " " + ends[1]);   // «—» when a rate is missing, never 0
@@ -1045,6 +1053,7 @@ public class MarketsActivity extends Activity {
         row.setGravity(Gravity.CENTER_VERTICAL);
         row.setPadding(dp(16), dp(8), dp(16), dp(8));
         String code = r.h.code;
+        row.setTag(code);   // after «احفظ» the focus goes to this row (focusHolding)
         LinearLayout nm = new LinearLayout(this);
         nm.setOrientation(LinearLayout.VERTICAL);
         nm.addView(text(S.tv(MarketData.name(code)), 18, "Medium", TEXT), wrap());
@@ -1342,15 +1351,19 @@ public class MarketsActivity extends Activity {
             pad.addView(line, gap(r == 0 ? 0 : 8));
         }
         box.addView(pad, gap(16));
+        final TextView missing = text("", 16, "Medium", look.warn);   // what «احفظ» still needs, in the dialog (a toast is not seen on every TV)
+        missing.setVisibility(View.GONE);
+        box.addView(missing, gap(12));
         LinearLayout bottom = new LinearLayout(this);
         View save = button(S.t("احفظ"), true, v -> {
             Holdings.Buy b = Holdings.buy(values[0].toString(), values[1].toString());
-            if (b == null) { toast(S.t("اكتب الكمية ومتوسط التكلفة")); return; }
+            if (b == null) { missing.setText(Holdings.missing(values[0].toString(), values[1].toString()) == 0 ? S.t("اكتب الكمية") : Holdings.missing(values[0].toString(), values[1].toString()) == 1 ? S.t("اكتب متوسط التكلفة") : S.t("اكتب الكمية ومتوسط التكلفة")); missing.setVisibility(View.VISIBLE); return; }
             List<Holdings.Holding> next = Holdings.put(Portfolio.load(this), code, java.util.Collections.singletonList(b));
             if (next == null) { toast(S.t("المحفظة ممتلئة: %s سهمًا", digits(Holdings.MAX))); return; }
             if (!Portfolio.save(this, next)) { toast(S.t("ما حُفظ")); return; }
             d.dismiss();
-            redraw();   // the focus stays where it was, or goes to «أضف سهمًا» (it used to fall to the first thing on the page: «مباشر»)
+            redraw();
+            scroll.post(() -> focusHolding(code));   // after redraw's own scroll: the new holding's row, else «أضف سهمًا» (it landed on «أخفِ المبالغ», step 27)
         });
         save.setBackground(GlassPaint.focused(this, look, ACCENT, 14));
         bottom.addView(save, weight(1f, 0));
@@ -1377,6 +1390,21 @@ public class MarketsActivity extends Activity {
         paint.run();
         d.show();
         (five != null ? five : save).requestFocus();
+    }
+
+    /** the focus after a holding was saved: its row on the page, else «أضف سهمًا» */
+    private void focusHolding(String code) {
+        if (isFinishing() || isDestroyed() || tab != 2) return;
+        View row = null;
+        for (View v : focusables(content)) if (code.equals(v.getTag())) { row = v; break; }
+        View to = row != null ? row : actions.getChildCount() > 1 ? actions.getChildAt(1) : null;
+        if (to != null) to.requestFocus();
+    }
+
+    private static List<View> focusables(View root) {
+        List<View> l = new ArrayList<>();
+        collectFocusable(root, l);
+        return l;
     }
 
     /** «أسهل من الجوال»: the phone page's QR (pairing), opened on «محفظتي»; the phone may edit for a while */
@@ -1588,11 +1616,31 @@ public class MarketsActivity extends Activity {
         return p;
     }
 
+    /** the dialogs this page opened: ended with the page's pause so none leaks its window when HOME is pressed (WindowLeaked from the converter, step 27) */
+    private final List<Dialog> dialogs = new ArrayList<>();
+
     private Dialog dialog() {
         Dialog d = new Dialog(this);
         d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        for (int i = dialogs.size() - 1; i >= 0; i--) if (!dialogs.get(i).isShowing()) dialogs.remove(i);
+        dialogs.add(d);
         return d;
     }
+
+    private void closeDialogs() {
+        for (Dialog d : new ArrayList<>(dialogs)) { try { if (d.isShowing()) d.dismiss(); } catch (RuntimeException ignored) { } }
+        dialogs.clear();
+    }
+
+    /** the language this page was built in: a change while it is open (the setting, or `lang`) recreates it, as the other pages do not need to (it is cheap here) */
+    private String builtIn;
+    private final Runnable langWatch = new Runnable() {
+        @Override public void run() {
+            if (isFinishing() || isDestroyed()) return;
+            if (builtIn != null && !builtIn.equals(S.lang())) { recreate(); return; }
+            main.postDelayed(this, 2000);
+        }
+    };
 
     private LinearLayout dialogBox(Dialog d, int widthDp) {
         LinearLayout box = new LinearLayout(this);

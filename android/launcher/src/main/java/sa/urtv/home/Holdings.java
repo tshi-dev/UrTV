@@ -113,6 +113,13 @@ final class Holdings {
         return new Buy(q, p);
     }
 
+    /** which of the two is not usable yet: 0 the quantity only, 1 the cost only, 2 both, -1 none (a quantity of 0 and no cost are missing; «احفظ» says which) */
+    static int missing(String qty, String price) {
+        double q = number(qty), p = number(price);
+        boolean noQ = Double.isNaN(q) || q <= 0 || q > MAX_QTY, noP = Double.isNaN(p) || p <= 0 || p > MAX_PRICE;
+        return noQ && noP ? 2 : noQ ? 0 : noP ? 1 : -1;
+    }
+
     /** a typed number: digits of either kind and one decimal point («٫», «.» or «,»); NaN for anything else */
     static double number(String raw) {
         if (raw == null) return Double.NaN;

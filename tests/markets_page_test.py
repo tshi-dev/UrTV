@@ -122,6 +122,15 @@ check("live mode: it falls back to the 5-minute file: «عادي» puts the file
       and 'S.t("الأسعار متأخرة · المصدر: %s", name)' in act2 and 'S.t("مباشر · المصدر: %s", name)' in act2)
 check("live mode: labels: Tadawul «متأخرة ~١٥ د», any other the quote's time; the footer says «مباشر» while live", 'S.t("متأخرة ~%s د", digits(15))' in act2 and "MarketData.liveKind(code)" in act2
       and "clock(k.get(Calendar.HOUR_OF_DAY), k.get(Calendar.MINUTE))" in act2)
+check("step 27: live mode keeps the screen awake while the page is in front (FLAG_KEEP_SCREEN_ON set when live and resumed, cleared otherwise)", "FLAG_KEEP_SCREEN_ON" in act2 and "if (liveOn && resumed) getWindow().addFlags" in act2
+      and "keepAwake();" in act2.split("protected void onPause()")[1][:300] and "keepAwake();" in act2.split("protected void onResume()")[1][:300])
+check("step 27: «اختر العملات»: «تم» is not squeezed (list 300 dp), the chosen ones carry the state word and the on mark (style I), and the focus returns to «اختر العملات»",
+      "sized(-1, 300, 12)" in act2.split("private void chooseCurrencies()")[1].split("private void pickCurrency")[0] and 'S.t("مفعّلة") : S.t("متوقفة")' in act2
+      and "actions.getChildAt(1)" in act2.split("private void chooseCurrencies()")[1].split("private void pickCurrency")[0] and "again[0] = true;" in act2)
+check("step 27: after «احفظ» the focus goes to the new holding's row (tagged with its code), else «أضف سهمًا»; «احفظ» names what is missing in the dialog", "row.setTag(code);" in act2 and "scroll.post(() -> focusHolding(code));" in act2
+      and "Holdings.missing(" in act2 and 'S.t("اكتب متوسط التكلفة")' in act2 and 'S.t("اكتب الكمية")' in act2)
+check("step 27: the page closes its dialogs when it pauses (no WindowLeaked) and recreates itself when the language changes", "closeDialogs();" in act2.split("protected void onPause()")[1][:400] and "recreate();" in act2 and "S.lang()" in act2)
+check("step 27: the gold card's line keeps 16 dp from the price on both sides", "lp.setMarginEnd(dp(16));" in act2 and "pxl.setMarginStart(dp(16));" in act2)
 check("live mode: only this page: the screensaver's page and the home's card never call the live ask", "MarketFile.live" not in "".join(text(p) for p in HOME.rglob("*.java") if p.name != "MarketsActivity.java" and p.name != "MarketFile.java")
       and "finance/spark" not in text(ROOT / "src/template.html").split("const MARKET_URL")[0])
 fxn = re.findall(r'\{"([A-Z]{3})", S\.n\("([^"]+)"\)\}', act2)

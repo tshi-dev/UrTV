@@ -119,6 +119,14 @@ public final class MarketsRun {
         return out.toString();
     }
 
+    static void converterNumbers() {
+        check("converter: 0 is «0», not six decimals; a small rate keeps its six; NaN is «—»", MarketData.fxNumber(0).equals("0") && MarketData.fxNumber(0.0237).equals("0.0237") && MarketData.fxNumber(0.0012345).equals("0.001235")
+            && MarketData.fxNumber(Double.NaN).equals("—"), MarketData.fxNumber(0) + " " + MarketData.fxNumber(0.0012345));
+        check("converter: the typed amount gets thousands separators in its whole part and keeps the rest as typed", MarketData.typedAmount("1234567").equals("1,234,567") && MarketData.typedAmount("999").equals("999")
+            && MarketData.typedAmount("1234.50").equals("1,234.50") && MarketData.typedAmount("1234.").equals("1,234.") && MarketData.typedAmount("0.5").equals("0.5") && MarketData.typedAmount("").equals("0")
+            && MarketData.typedAmount("999999999999").equals("999,999,999,999"), MarketData.typedAmount("1234567"));
+    }
+
     static void changeLine() {
         String line = MarketData.changeLine(-6.72, -0.07, false);
         String a = "\u2066−٦٫٧٢\u2069", b = "\u2066(−٠٫٠٧٪)\u2069";
@@ -133,6 +141,7 @@ public final class MarketsRun {
     static void live() {
         bidi();
         changeLine();
+        converterNumbers();
         check("live: every 30 s, 60 s after one failure, 120 s after two or more (and no slower)", MarketData.liveDelay(0) == 30_000 && MarketData.liveDelay(1) == 60_000
             && MarketData.liveDelay(2) == 120_000 && MarketData.liveDelay(9) == 120_000, MarketData.liveDelay(1));
         check("live: «مباشر» only while the last good answer is at most 150 s old; never for none or a clock gone back", MarketData.liveFresh(1000, 1000 + 150_000) && !MarketData.liveFresh(1000, 1000 + 150_001)
