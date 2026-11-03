@@ -104,7 +104,12 @@ if "MusicReceiver" in cmd:
     if cmd.endswith(".GET_PLAYER"):
         out("|".join(["playing=false", "adhan=" + a["on"], "voice=" + str(a["voice"]), "fajr_voice=" + str(a["fajr_voice"]),
                       "adhan_short=" + a["short"], "adhan_stopkey=" + a["stopkey"], "adhan_volume=" + str(a["volume"]),
-                      "own_bytes=" + str(st.get("own_bytes", 0)), "error="]))
+                      "own_bytes=" + str(st.get("own_bytes", 0)), "reciter_favs=" + ",".join(st.get("favs", [])), "error="]))
+    mf = re.search(r"RECITER_FAVS --es ids (\S+)$", cmd)
+    if mf:   # the whole list at once ("-" = none)
+        st["favs"] = [] if mf.group(1) == "-" else mf.group(1).split(",")
+        json.dump(st, open(st_path, "w"))
+        out("saved\nreciter_favs=" + ",".join(st["favs"]))
     m = re.search(r"\.(\w+)(?: --e[iz] (\w+) (\w+))?$", cmd)
     act, val = m.group(1), m.group(3)
     ans = None
@@ -141,6 +146,7 @@ CONFIGURED["saver"].update({"city": ["الدوحة", "25.2854", "51.531"], "tz":
                             "cardstyle": "glass1", "markets": ["gold", "btc"], "mkbar": "off", "clocksize": "medium", "mkstyle": "prices",
                             "panel2": "hourly", "sunrise": "on", "prayerbar": "on", "wxmore": "on", "months": "levant", "favbar": "7"})
 CONFIGURED["saver"]["adj"] = {"fajr": 2, "dhuhr": 0, "asr": -3, "maghrib": 1, "isha": 0}
+CONFIGURED["favs"] = ["afasy", "sudais"]
 CONFIGURED["adhan"] = {"on": "off", "voice": 3, "fajr_voice": 13, "short": "on", "stopkey": "off", "volume": 40}
 
 
@@ -185,6 +191,7 @@ def write(name, obj):
 a = Tv("a", CONFIGURED)
 rc, out, err = a.run("export")
 check("export: exits 0 and prints JSON only on stdout", rc == 0 and json.loads(out)["schema"] == 1, (rc, out[:100], err))
+check("export: the ★ reciters are in the file (reciter_favs), in the order they were marked", json.loads(out).get("reciter_favs") == ["afasy", "sudais"], out[-300:])
 check("export: «تطبيقات في الشريط» is in the file (fav_bar), and the round trip below carries it", json.loads(out).get("fav_bar") == "7", out[:300])
 exp = json.loads(out)
 b = Tv("b", BASE)
@@ -197,6 +204,7 @@ check("preview: old → new, one line per changed setting", "  digits: hindi →
 check("preview: the «تلاوة وأذان» button's setting is one more line", "  listen_pill: on \u2192 off" in out, out)
 check("preview: the «جرس التحديثات» setting is one more line", "  update_bell: on \u2192 off" in out, out)
 check("preview: «تطبيقات في الشريط» is one more line (5 → 7)", "  fav_bar: 5 \u2192 7" in out, out)
+check("preview: the ★ reciters are one more line (none -> afasy,sudais)", "  reciter_favs:  \u2192 afasy,sudais" in out or "reciter_favs" in out, out)
 check("preview: unchanged settings are absent", "prayer.adjust.dhuhr" not in out and "prayer.adjust.isha" not in out, out)
 rc, out, err = b.run("import", f, "--yes")
 check("import --yes: applied (exit 0)", rc == 0 and "Done" in out, (rc, out, err))
@@ -274,6 +282,9 @@ refused("clock size unknown", lambda d: d.update(clock_size="huge"), "clock_size
 refused("clock24 not a boolean", lambda d: d.update(clock24="on"), "clock24 must be true or false")
 refused("greeting not a boolean", lambda d: d.update(greeting=1), "greeting must be true or false")
 refused("listen_pill not a boolean", lambda d: d.update(listen_pill="off"), "listen_pill must be true or false")
+refused("reciter_favs not a list", lambda d: d.update(reciter_favs="afasy"), "reciter_favs must be a list")
+refused("reciter_favs a bad id", lambda d: d.update(reciter_favs=["a b"]), "reciter_favs must be a list")
+refused("reciter_favs twice", lambda d: d.update(reciter_favs=["a", "a"]), "reciter_favs must be a list")
 refused("fav_bar unknown", lambda d: d.update(fav_bar="11"), "fav_bar must be one of")
 refused("fav_bar a number", lambda d: d.update(fav_bar=7), "fav_bar must be one of")
 refused("prayer method unknown", lambda d: d["prayer"].update(method="mwl"), "prayer.method must be one of auto gulf jafari")
@@ -411,7 +422,7 @@ tv = Tv("r7", BASE)
 tv.edit(no_home=True)
 rc, out, err = tv.run("export")
 check("export with the home app silent: the rest is exported, a note says why", rc == 0 and "adhan" in json.loads(out) and "volume" not in json.loads(out)["adhan"] and "note" in err, (out[-200:], err))
-rc, out, err = tv.run("import", write("noadhan.json", {k: v for k, v in GOOD.items() if k != "adhan"}), "--yes")
+rc, out, err = tv.run("import", write("noadhan.json", {k: v for k, v in GOOD.items() if k not in ("adhan", "reciter_favs")}), "--yes")
 check("...and a file without adhan settings imports fine onto that TV", rc == 0 and "Done" in out, (rc, out, err))
 
 # ---- quoting: text is data

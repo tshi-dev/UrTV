@@ -45,7 +45,7 @@ MIGRATIONS = {}
 # TODO(parental PIN, branch work/parental): the PIN must NEVER be added here, and must never be exported by any other way.
 ALLOWED_TOP = ("schema", "city", "digits", "prayer", "hijri_offset", "clock24", "clock_size", "card_style", "cards",
                "greeting", "listen_pill", "update_bell", "markets", "teams", "adhan", "sunrise", "prayerbar", "wxmore", "months",
-               "lang", "fav_bar")
+               "lang", "fav_bar", "reciter_favs")
 # NEVER here: the hidden update-channel switch (updatechannel) and the parental PIN. tests/settings_move_test.py checks both.
 
 # The same lists the apps validate (android/app/src/main/java/sa/urtv/screensaver/Prefs.java; tests/settings_move_test.py
@@ -57,6 +57,7 @@ CLOCK_SIZES = ("large", "medium", "small")
 MK_STYLES = ("arrows", "prices")
 MONTHS = ("default", "levant")
 LANGS = ("ar", "en")   # «اللغة» (Tr.java: ar, the default, or en)
+RECITER_ID = re.compile(r"[A-Za-z0-9_-]{1,60}")   # a reciter's id in quran/reciters.json
 FAV_BARS = ("5", "6", "7", "8", "9", "10", "all")   # «تطبيقات في الشريط»: how many favourites the home tray shows whole (Prefs.FAV_BARS)
 SWITCHES = ("greeting", "sunrise", "prayerbar", "wxmore")   # on/off switches the TV reports as «on» / «off»
 MARKETS = ("tasi", "aramco", "spx", "btc", "gold", "silver", "oil", "xrp")
@@ -214,11 +215,26 @@ def read_tv(keep_own=False):
                 teams.append({"id": tid.strip(), "name": "" if name.strip() == "#" + tid.strip() else name.strip()})
         s["teams"] = teams
     adhan = read_adhan(keep_own)
+    favs = read_reciter_favs()
+    if favs is not None:
+        s["reciter_favs"] = favs
     if g.get("adhanbar"):
         adhan["bar"] = g["adhanbar"] == "on"
     if adhan:
         s["adhan"] = adhan
     return s
+
+
+def read_reciter_favs():
+    """The reciters marked ★ on the home app («القرّاء» in «تلاوة وأذان»), a list of ids; None when that app does not answer or is older and says nothing."""
+    try:
+        data = tv(HOME + "GET_PLAYER")
+    except TvError:
+        return None
+    f = dict(p.partition("=")[::2] for p in data.split("|") if "=" in p)
+    if "reciter_favs" not in f:
+        return None
+    return [x for x in f["reciter_favs"].strip().strip('"').split(",") if RECITER_ID.fullmatch(x)]
 
 
 def read_adhan(keep_own=False):
@@ -279,6 +295,8 @@ def flat(s):
         out["teams"] = tuple(t["id"] for t in s["teams"])
     for k, v in s.get("adhan", {}).items():
         out["adhan." + k] = v
+    if "reciter_favs" in s:
+        out["reciter_favs"] = tuple(s["reciter_favs"])
     return out
 
 
@@ -523,6 +541,12 @@ def validate(d):
                 errs.append("teams has a club twice")
             if len(errs) == n:
                 out["teams"] = clean
+    if "reciter_favs" in d:
+        v = d["reciter_favs"]
+        if isinstance(v, list) and len(v) <= 200 and all(isinstance(x, str) and RECITER_ID.fullmatch(x) for x in v) and len(set(v)) == len(v):
+            out["reciter_favs"] = v
+        else:
+            errs.append("reciter_favs must be a list of reciter ids (letters, digits, - and _), none twice")
     if "adhan" in d:
         a = obj(d["adhan"], "adhan", ("on", "voice", "fajr_voice", "short", "stopkey", "volume", "bar"), errs, notes)
         if a is not None:
@@ -680,6 +704,8 @@ def ops(values, names):
             es("mkstyle", v)
         elif p == "teams":
             es("teams", ",".join(f"{i}:{names.get(i, '')}" for i in v))
+        elif p == "reciter_favs":
+            home.append(HOME + "RECITER_FAVS --es ids " + (",".join(v) if v else "-"))
         elif p == "adhan.bar":
             es("adhanbar", flag(v))
         elif p == "adhan.on":

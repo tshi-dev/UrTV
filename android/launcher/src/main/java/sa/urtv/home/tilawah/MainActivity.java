@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ImageView;
@@ -167,6 +168,7 @@ public class MainActivity extends Activity {
                 focusList(firstSelectable());
             });
         }
+        buildLetters();
         selectTab("adhan".equals(getIntent().getStringExtra(EXTRA_OPEN)) ? TAB_ADHAN : TAB_RECITERS);
 
         if (Build.VERSION.SDK_INT >= 33
@@ -237,6 +239,7 @@ public class MainActivity extends Activity {
         tab = Math.max(TAB_RECITERS, Math.min(TAB_ADHAN, which));
         for (int i = 0; i < tabViews.length; i++) tabViews[i].setSelected(i == tab);
         if (adapter != null) adapter.rebuild();
+        paintLetters();
         if (list != null) list.setSelection(firstSelectable());
     }
 
@@ -265,6 +268,14 @@ public class MainActivity extends Activity {
     }
 
     @Override public boolean dispatchKeyEvent(KeyEvent event) {
+        // long OK on a reciter marks it ★ (or takes it off); the OK that ends the long press opens nothing
+        int kc = event.getKeyCode();
+        boolean center = kc == KeyEvent.KEYCODE_DPAD_CENTER || kc == KeyEvent.KEYCODE_ENTER || kc == KeyEvent.KEYCODE_NUMPAD_ENTER;
+        if (center && list != null && list.hasFocus() && tab == TAB_RECITERS) {
+            if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 1) { longFav = true; toggleFavourite(); return true; }
+            if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() > 1 && longFav) return true;
+            if (event.getAction() == KeyEvent.ACTION_UP && longFav) { longFav = false; return true; }
+        }
         // the list swallows «up» even on its first row, so the jump back to the tabs happens here
         if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0
                 && event.getKeyCode() == KeyEvent.KEYCODE_DPAD_UP
@@ -282,6 +293,14 @@ public class MainActivity extends Activity {
                 && tab == TAB_ADHAN && selectedKind() == KIND_VOLUME) {
             changeVolume(keyCode == sa.urtv.home.Dir.forwardKey() ? 10 : -10);
             return true;
+        }
+        // the letter index: the key toward the column (the start edge: right in Arabic, left in English) enters it from the list, the other key leaves it
+        if (tab == TAB_RECITERS && (keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)) {
+            if (lettersHaveFocus()) {
+                if (keyCode == sa.urtv.home.Dir.forwardKey()) focusList(list.getSelectedItemPosition());   // back to the list, where the letter put it
+                return true;
+            }
+            if (list.hasFocus() && keyCode == sa.urtv.home.Dir.backKey() && enterLetters()) return true;
         }
         // left/right walk the tab bar from anywhere on the screen: the sections are one key apart
         if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
@@ -402,6 +421,106 @@ public class MainActivity extends Activity {
         static Row header(String title) { return new Row(true, -1, title, null, -1); }
     }
 
+    /** the reciters tab's rows as ReciterOrder made them, and where they start among the adapter's rows (a «متابعة التلاوة» row may come first) */
+    private List<ReciterOrder.Item> reciterItems = new ArrayList<>();
+    private int reciterOffset;
+
+    private List<String> reciterIds() {
+        List<String> ids = new ArrayList<>();
+        for (Catalog.Reciter r : cat.reciters) ids.add(r.id);
+        return ids;
+    }
+
+    private List<String> reciterNames() {
+        List<String> names = new ArrayList<>();
+        for (Catalog.Reciter r : cat.reciters) names.add(r.name);
+        return names;
+    }
+
+    // ---- the letter index of the reciters tab: a column at the list's start edge; a letter no reciter starts with is dimmed and skipped
+
+    private LinearLayout letters;
+    private TextView[] letterViews;
+    private boolean[] letterLit;
+    private String[] alphabet;
+    private boolean longFav;
+
+    private void buildLetters() {
+        letters = findViewById(R.id.letters);
+        alphabet = ReciterOrder.alphabet(sa.urtv.home.S.en());
+        letterViews = new TextView[alphabet.length];
+        letters.removeAllViews();
+        for (int i = 0; i < alphabet.length; i++) {
+            final int which = i;
+            TextView t = new TextView(this);
+            t.setText(alphabet[i]);
+            t.setTypeface(Ui.font(this, "Thmanyah-Medium.otf"));
+            t.setTextSize(11);
+            t.setGravity(android.view.Gravity.CENTER);
+            t.setIncludeFontPadding(false);
+            t.setTextColor(0xFFE7DCC4);
+            t.setOnFocusChangeListener((v, has) -> {
+                v.setBackgroundResource(has ? R.drawable.tab_bg : 0);
+                v.setSelected(has);
+                if (has) jumpToLetter(which);   // just focusing it jumps the list
+            });
+            t.setOnClickListener(v -> jumpToLetter(which));
+            letters.addView(t, new LinearLayout.LayoutParams(-1, 0, 1f));
+            letterViews[i] = t;
+        }
+        paintLetters();
+    }
+
+    /** lit letters: those a reciter's name starts with; the others are dimmed and cannot take the focus (the D-pad skips them) */
+    private void paintLetters() {
+        if (letters == null) return;
+        letterLit = ReciterOrder.present(alphabet, reciterNames());
+        for (int i = 0; i < letterViews.length; i++) {
+            letterViews[i].setFocusable(letterLit[i]);
+            letterViews[i].setClickable(letterLit[i]);
+            letterViews[i].setAlpha(letterLit[i] ? 1f : 0.3f);
+        }
+        letters.setVisibility(tab == TAB_RECITERS ? View.VISIBLE : View.GONE);
+    }
+
+    private void jumpToLetter(int which) {
+        int at = ReciterOrder.jump(reciterItems, reciterNames(), alphabet[which]);
+        if (at >= 0) list.setSelectionFromTop(reciterOffset + at, 0);
+    }
+
+    /** the letter column gets the focus (the letter of the row the list is on, else the first lit one) */
+    private boolean enterLetters() {
+        if (tab != TAB_RECITERS || letters == null || letters.getVisibility() != View.VISIBLE) return false;
+        int sel = list.getSelectedItemPosition(), target = -1;
+        if (sel >= 0 && sel < adapter.rows.size() && adapter.rows.get(sel).kind == KIND_RECITER) {
+            String l = ReciterOrder.letterOf(cat.reciters.get(adapter.rows.get(sel).index).name);
+            for (int i = 0; i < alphabet.length; i++) if (alphabet[i].equals(l) && letterLit[i]) target = i;
+        }
+        for (int i = 0; target < 0 && i < letterLit.length; i++) if (letterLit[i]) target = i;
+        if (target < 0) return false;
+        letterViews[target].requestFocus();
+        return true;
+    }
+
+    private boolean lettersHaveFocus() {
+        if (letters == null) return false;
+        for (TextView t : letterViews) if (t.hasFocus()) return true;
+        return false;
+    }
+
+    /** long OK on a reciter: ★ on or off, the list kept on that reciter */
+    private void toggleFavourite() {
+        int sel = list.getSelectedItemPosition();
+        if (sel < 0 || sel >= adapter.rows.size() || adapter.rows.get(sel).kind != KIND_RECITER) return;
+        int reciter = adapter.rows.get(sel).index;
+        String id = cat.reciters.get(reciter).id;
+        boolean on = !ReciterOrder.parse(prefs.reciterFavs()).contains(id);
+        prefs.setReciterFavs(ReciterOrder.toggle(prefs.reciterFavs(), id, on));
+        adapter.rebuild();
+        paintLetters();
+        for (int p = 0; p < adapter.rows.size(); p++) if (adapter.rows.get(p).kind == KIND_RECITER && adapter.rows.get(p).index == reciter) { focusList(p); break; }
+    }
+
     private final class RowsAdapter extends BaseAdapter {
         final List<Row> rows = new ArrayList<>();
 
@@ -416,10 +535,13 @@ public class MainActivity extends Activity {
                                         cat.surahName(prefs.surah()), cat.reciters.get(index).name), index));
                     }
                 }
-                for (int i = 0; i < cat.reciters.size(); i++) {
-                    Catalog.Reciter reciter = cat.reciters.get(i);
-                    rows.add(new Row(false, KIND_RECITER, reciter.name,
-                            Ui.str(MainActivity.this, R.string.surah_count, Ui.arabic(reciter.surahs)), i));
+                reciterOffset = rows.size();
+                reciterItems = ReciterOrder.order(reciterIds(), new java.util.HashSet<>(ReciterOrder.parse(prefs.reciterFavs())));
+                for (ReciterOrder.Item it : reciterItems) {
+                    if (it.header) { rows.add(Row.header(sa.urtv.home.S.t("المفضلون"))); continue; }   // the ★ reciters first, under their heading
+                    Catalog.Reciter reciter = cat.reciters.get(it.reciter);
+                    rows.add(new Row(false, KIND_RECITER, (it.fav ? "★ " : "") + reciter.name,
+                            Ui.str(MainActivity.this, R.string.surah_count, Ui.arabic(reciter.surahs)), it.reciter));
                 }
             } else if (tab == TAB_STATIONS) {
                 if (prefs.source() == Prefs.SOURCE_RADIO && prefs.station() < cat.stations.size()) {

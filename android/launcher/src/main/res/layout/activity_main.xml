@@ -99,19 +99,35 @@
                 android:textSize="19sp" />
         </LinearLayout>
 
-        <ListView
-            android:id="@+id/list"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="16dp"
             android:layout_weight="1"
-            android:clipToPadding="false"
-            android:divider="@android:color/transparent"
-            android:dividerHeight="8dp"
-            android:fadingEdge="none"
-            android:listSelector="@android:color/transparent"
-            android:paddingBottom="8dp"
-            android:scrollbars="none" />
+            android:orientation="horizontal">
+
+            <!-- the letter index of the reciters tab, at the list's start edge (right in Arabic): built in code, shown only on that tab -->
+            <LinearLayout
+                android:id="@+id/letters"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="12dp"
+                android:orientation="vertical"
+                android:visibility="gone" />
+
+            <ListView
+                android:id="@+id/list"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:clipToPadding="false"
+                android:divider="@android:color/transparent"
+                android:dividerHeight="8dp"
+                android:fadingEdge="none"
+                android:listSelector="@android:color/transparent"
+                android:paddingBottom="8dp"
+                android:scrollbars="none" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/hint"
