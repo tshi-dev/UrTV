@@ -23,7 +23,7 @@ const LEAGUE = { league: 'Saudi-Arabian Pro League', id: '4668', updated: '2026-
   ev('5', 'Al-Ittihad', '136015', 'Al-Shabab', '136017', '2026-11-05T18:00:00'),
 ] };
 const ROWS = [{ idLeague: '4668', competition: 'Saudi Pro League', ar: 'ثمانية', en: 'Thmanyah', detail_ar: 'ثمانية، أو تطبيق ثمانية', detail_en: 'Thmanyah, or the Thmanyah app',
-  from: '2025-26', until: '2030-31', source: 'https://example.org/source', confidence: 'high', whole: true, verified: '2026-11-04' }];
+  from: '2025-26', until: '2030-31', source: 'https://example.org/source', confidence: 'high', whole: true, verified: '2026-11-04', app: ['com.thmanyah.shasha.tv', 'com.thmanyah.shasha'] }];
 
 const browser = await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {});
 async function open(hash, { file = 'tv.html', rows = null, width = 1920, height = 832 } = {}) {
@@ -171,7 +171,7 @@ for (const [why, rows] of [['the shipped table', null], ['medium confidence', [{
   const card = await p.textContent('#mp-detail');
   check('matches page: OK opens the game\'s card: the round, the venue, the channel, the prayers', /دوري روشن، الجولة ١٣/.test(card) && /King Abdullah Sports City/.test(card)
     && /ثمانية، أو تطبيق ثمانية/.test(card) && /مع الصلاة/.test(card) && /تبدأ بعد العشاء/.test(card), card);
-  check('matches page: the card\'s two buttons: remind and follow', await p.$$eval('.mdb button', b => b.length === 2 && /ذكّرني قبلها بنصف ساعة/.test(b[0].textContent) && /تابع الأهلي/.test(b[1].textContent)));
+  check('matches page: the card\'s two buttons: remind and follow', await p.$$eval('.mdb button', b => b.length === 2 && /ذكّرني قبلها بنصف ساعة/.test(b[0].textContent) && /أضف الأهلي لفرقي/.test(b[1].textContent)));
   check('matches page: the game a green bar on the prayers\' line, the prayers marked', await p.$$eval('.mpline .mpk', k => k.length >= 1) && (await p.$$('.mpbar')).length === 1);
   await p.evaluate(() => { window.UrtvMatches = { remind: (t, at) => (window.__rem = [t, at], true), follow: (id, n) => (window.__fol = [id, n], true) }; });
   check('matches page: the card opens with a visible focus: the card itself is ringed and no button is', await p.$$eval('#mp-detail .mdx.f', c => c.length === 1) && await p.$$eval('.mdb button.f', b => b.length === 0));
@@ -186,14 +186,34 @@ for (const [why, rows] of [['the shipped table', null], ['medium confidence', [{
   check('matches page: «ذكّرني» hands the launcher the task and the kick-off itself (the app reminds 30 minutes ahead)', rem && /الأهلي × التعاون/.test(rem[0]) && rem[1] === Date.parse('2026-11-04T17:00:00Z'), JSON.stringify(rem));
   await p.keyboard.press('ArrowLeft');
   await p.keyboard.press('Enter');
-  check('matches page: OK acts on exactly the ringed button: after ◀ again the ring is on «تابع» alone', await p.$$eval('.mdb button.f', b => b.length === 1 && b[0].dataset.k === 'follow'));
-  check('matches page: «تابع» hands it the club\'s id and name', JSON.stringify(await p.evaluate(() => window.__fol)) === '["137721","Al-Ahli"]');
+  check('matches page: OK acts on exactly the ringed button: after ◀ again the ring is on «أضف … لفرقي» alone', await p.$$eval('.mdb button.f', b => b.length === 1 && b[0].dataset.k === 'follow'));
+  check('matches page: «أضف … لفرقي» hands it the club\'s id and name', JSON.stringify(await p.evaluate(() => window.__fol)) === '["137721","Al-Ahli"]');
   await shot(p, 'football-matches-detail.png');
   // a live game's "with prayer" line says the minute, not «تبدأ بعد العشاء…»; the hyphen of a Latin club name does not break
   const liveLine = await p.evaluate(() => { const ev = { ...MP.detail, strStatus: '2H', strProgress: '67', intHomeScore: '1', intAwayScore: '0', dateEvent: MP.detail.dateEvent, strTimestamp: new Date(Date.now() - 67 * 60000).toISOString().slice(0, 19) };
-    MP.detail = ev; mpDetailRender(); return document.querySelector('.mds').textContent; });
+    const keep = MP.detail; MP.detail = ev; mpDetailRender(); const t = document.querySelector('.mds').textContent; MP.detail = keep; mpDetailRender(); return t; });
   check('matches page: a live game reads its minute on the prayer line, not «تبدأ بعد…»', /الدقيقة/.test(liveLine) && !/تبدأ/.test(liveLine), liveLine);
   check('matches page: a Latin club name is kept whole at its hyphen (non-breaking hyphen)', await p.evaluate(() => nbName('Shabab Al-Ahli Dubai') === 'Shabab Al\u2011Ahli Dubai' && nbName('Al-Hilal') === 'Al\u2011Hilal' && nbName('الأهلي') === 'الأهلي'));
+  // «شاهد على ثمانية»: only with a verified row for the competition AND the broadcaster's app installed; first, ringed by default; OK opens the app and adds nothing else
+  const watchCase = async (installed, ev) => p.evaluate(([installed, ev]) => {
+    window.__open = []; window.__rem = undefined; window.__fol = undefined; window.__unf = undefined;
+    window.UrtvMatches = { appOf: csv => installed ? csv.split(',')[0] : '', open: csv => (window.__open.push(csv), true), remind: (t, at) => (window.__rem = [t, at], true), follow: (id, n) => (window.__fol = [id, n], true), unfollow: id => (window.__unf = id, true) };
+    mpOpen(ev || MP.detail);
+    return { ks: [...document.querySelectorAll('.mdb button')].map(b => b.dataset.k), texts: [...document.querySelectorAll('.mdb button')].map(b => b.textContent.trim()), ringed: [...document.querySelectorAll('.mdb button.f')].map(b => b.dataset.k), card: document.querySelectorAll('#mp-detail .mdx.f').length };
+  }, [installed, ev || null]);
+  const w1 = await watchCase(true);
+  check('matches page: with the verified row and the app installed: «شاهد على ثمانية» first, then remind, then «أضف … لفرقي»; it is the ringed one', JSON.stringify(w1.ks) === '["watch","remind","follow"]' && w1.texts[0] === 'شاهد على ثمانية' && JSON.stringify(w1.ringed) === '["watch"]' && w1.card === 0, JSON.stringify(w1));
+  await p.keyboard.press('Enter');
+  check('matches page: OK on «شاهد على …» opens the app (the TV build first) and adds no reminder and follows no team', await p.evaluate(() => JSON.stringify(window.__open) === '["com.thmanyah.shasha.tv,com.thmanyah.shasha"]' && window.__rem === undefined && window.__fol === undefined));
+  const w2 = await watchCase(false);
+  check('matches page: the app not installed: no «شاهد على …» button (hidden), the card ringed, remind and follow as before', JSON.stringify(w2.ks) === '["remind","follow"]' && w2.card === 1 && w2.ringed.length === 0, JSON.stringify(w2));
+  const w3 = await p.evaluate(() => { const ev = { ...MP.detail, idLeague: '4328' }; window.UrtvMatches = { appOf: () => 'x', open: () => true, follow: () => true, remind: () => true, unfollow: () => true }; mpOpen(ev); return [...document.querySelectorAll('.mdb button')].map(b => b.dataset.k); });
+  check('matches page: a competition with no verified row (the Premier League here) never shows «شاهد على …», installed or not', JSON.stringify(w3) === '["remind","follow"]', JSON.stringify(w3));
+  const w4 = await p.evaluate(() => { CONFIG.teamIds.push(String(MP.detail.idHomeTeam), String(MP.detail.idAwayTeam)); window.UrtvMatches = { appOf: () => '', unfollow: id => (window.__unf = id, true), remind: () => true, follow: () => true, open: () => true }; mpOpen(MP.detail); return [...document.querySelectorAll('.mdb button')].map(b => [b.dataset.k, b.textContent.trim()]); });
+  check('matches page: both teams already followed: «أزل … من فرقي» instead of the add button', w4.length === 2 && w4[1][0] === 'unfollow' && /^أزل .+ من فرقي$/.test(w4[1][1]), JSON.stringify(w4));
+  await p.keyboard.press('ArrowLeft'); await p.keyboard.press('ArrowLeft'); await p.keyboard.press('Enter');
+  check('matches page: OK on the ringed «أزل … من فرقي» removes exactly that team (nothing else)', await p.evaluate(() => window.__unf === String(MP.detail.idHomeTeam) && window.__fol === undefined), '');
+  await p.evaluate(() => { CONFIG.teamIds = CONFIG.teamIds.filter(x => x !== String(MP.detail.idAwayTeam) && x !== String(MP.detail.idHomeTeam)); delete window.UrtvMatches; });
   check('matches page: Back closes the card first, then leaves', await p.evaluate(() => mpBack() === 'closed' && mpBack() === 'out'));
   await p.keyboard.press('ArrowUp'); await p.keyboard.press('ArrowUp'); await p.keyboard.press('ArrowUp');
   await p.keyboard.press('ArrowLeft');

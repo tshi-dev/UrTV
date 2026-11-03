@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261103192108">
+<meta name="urtv-build" content="20261103192543">
 <title>شاشة تلفزيونك</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -3876,7 +3876,7 @@ const FB_W = {
   feels:'المحسوسة', hum:'الرطوبة', wind:'الرياح', kmh:'%s كم/س', pct:'٪%s', live:'مباشر', ended:'انتهت', vs:'×',
   yesterday:'أمس', tday:'اليوم', tomorrow:'غدًا', g1:'مباراة واحدة', g2:'مباراتان', gFew:'%s مباريات', gMany:'%s مباراة',
   allOn:'كلها على %s', round:'%s، الجولة %s', venue:'الملعب', channel:'القناة', withPrayer:'مع الصلاة', game:'المباراة',
-  remind:'ذكّرني قبلها بنصف ساعة', reminded:'أُضيفت إلى المهام', follow:'تابع %s', followed:'تتابع %s', failed:'ما قدرنا، جرّب مرة ثانية',
+  remind:'ذكّرني قبلها بنصف ساعة', reminded:'أُضيفت إلى المهام', follow:'أضف %s لفرقي', unfollow:'أزل %s من فرقي', followed:'أُضيف %s إلى فرقك', unfollowed:'أُزيل %s من فرقك', watch:'شاهد على %s', failed:'ما قدرنا، جرّب مرة ثانية',
   startsAfter:'تبدأ بعد %s %s', startsBefore:'تبدأ قبل %s %s', adhanAt:'أذان %s في الدقيقة %s منها', ago:'قبل %s', nextIn:'%s بعد %s',
   h1:'بساعة', h2:'بساعتين', hFew:'ب%s ساعات', hMany:'ب%s ساعة', m1:'بدقيقة', m2:'بدقيقتين', mFew:'ب%s دقائق', mMany:'ب%s دقيقة',
   am1:'ودقيقة', am2:'ودقيقتين', amFew:'و%s دقائق', amMany:'و%s دقيقة', taskText:'مباراة %s، تبدأ %s',
@@ -3891,7 +3891,7 @@ const FB_LEAGUE_ORDER = Object.keys(FB_LEAGUES);
 const leagueName = ev => FB_LEAGUES[String(ev.idLeague || '')] || String(ev.strLeague || '');
 // «مباريات اليوم»'s marks (assets/shared/broadcast.json): plain text, never a logo; a row counts only while it is high, whole (every game),
 // verified and in season, so an unknown, doubtful or partial holder shows nothing (a wrong channel is worse than none)
-const BROADCAST = [];
+const BROADCAST = [{"idLeague":"4668","competition":"Saudi Pro League","ar":"ثمانية","en":"Thmanyah","detail_ar":"ثمانية، أو تطبيق ثمانية","detail_en":"Thmanyah, or the Thmanyah app","from":"2025-26","until":"2030-31","source":"https://www.sportcal.com/media/srmgs-thmanyah-secures-exclusive-saudi-league-rights-until-2031/","confidence":"high","whole":true,"verified":"2026-11-03","app":["com.thmanyah.shasha.tv","com.thmanyah.shasha"]}];
 function seasonBound(s, end){   // «2027-28»: 1 August 2027 to 31 July 2028; «2026»: the calendar year; NaN when unreadable
   const m = /^(\d{4})(?:-(\d{2}))?$/.exec(String(s || ''));
   if(!m) return NaN;
@@ -3902,7 +3902,7 @@ function markOf(ev, now = Date.now()){
   const r = (Array.isArray(BROADCAST) ? BROADCAST : []).find(x => x && String(x.idLeague) === String(ev.idLeague || '') && x.confidence === 'high'
     && x.whole === true && /^\d{4}-\d{2}-\d{2}$/.test(x.verified || '') && /^https:\/\//.test(x.source || '')
     && now >= seasonBound(x.from, false) && now <= seasonBound(x.until, true));
-  return r ? {mark: FB_EN ? r.en : r.ar, detail: (FB_EN ? r.detail_en : r.detail_ar) || (FB_EN ? r.en : r.ar)} : null;
+  return r ? {mark: FB_EN ? r.en : r.ar, detail: (FB_EN ? r.detail_en : r.detail_ar) || (FB_EN ? r.en : r.ar), app: Array.isArray(r.app) ? r.app.filter(x => typeof x === 'string').join(',') : ''} : null;
 }
 const FB_DUR = 110 * 60000;   // a football game with its half-time
 const fbKick = ev => toDate(ev).getTime();
@@ -4194,11 +4194,13 @@ function mpLine(ev){   // «مع الصلاة»: the prayers around the game on 
   return `<div class="mpline"><span class="mpbar" style="inset-inline-start:${pos(k)};width:${((FB_DUR) / (to - from) * 100).toFixed(2)}%"></span>${marks}`
     + `<span class="mpgl" style="inset-inline-start:${pos(k)}">${FB_W.game} ${fbClock(k)} – ${fbClock(k + FB_DUR)}</span></div>`;
 }
-function mpButtons(ev, now){
-  const out = [];
+function mpButtons(ev, now){   // «شاهد على …» (the broadcaster's app is installed) first, then «ذكّرني», then «أضف … لفرقي» / «أزل … من فرقي»
+  const out = [], m = markOf(ev, now), host = window.UrtvMatches;
+  if(m && m.app && host && typeof host.appOf === 'function' && host.appOf(m.app)) out.push({k: 'watch', t: fw(FB_W.watch, m.mark), app: m.app});
   if(fbKick(ev) - 30 * 60000 > now) out.push({k: 'remind', t: FB_W.remind, icon: true});
-  const team = ['Home', 'Away'].find(s => !fbFollowed(ev['id' + s + 'Team']));
-  if(team) out.push({k: 'follow', side: team, t: fw(FB_W.follow, teamAr(ev['str' + team + 'Team'], ev['id' + team + 'Team']))});
+  const sides = ['Home', 'Away'], add = sides.find(s => !fbFollowed(ev['id' + s + 'Team'])), drop = sides.find(s => fbFollowed(ev['id' + s + 'Team']));
+  if(add) out.push({k: 'follow', side: add, t: fw(FB_W.follow, teamAr(ev['str' + add + 'Team'], ev['id' + add + 'Team']))});
+  else if(drop) out.push({k: 'unfollow', side: drop, t: fw(FB_W.unfollow, teamAr(ev['str' + drop + 'Team'], ev['id' + drop + 'Team']))});
   return out;
 }
 function mpDetailRender(){
@@ -4216,7 +4218,7 @@ function mpDetailRender(){
     + `<div class="mdn" id="mp-note">${esc(MP.note)}</div></div>`);
   document.getElementById('mp-detail').hidden = false;
 }
-function mpOpen(ev){ MP.detail = ev; MP.btn = -1;   // the card itself has the (ringed) focus at first, no button: OK on the card must never add a reminder by accident
+function mpOpen(ev){ MP.detail = ev; MP.btn = mpButtons(ev, Date.now())[0] && mpButtons(ev, Date.now())[0].k === 'watch' ? 0 : -1;   // «شاهد على …» is ringed when it is there (OK opens an app, adds nothing); else the card itself is ringed and OK adds nothing
    MP.note = ''; mpDetailRender(); }
 function mpBack(){   // the launcher's Back: closes the card first; 'out' when there is nothing to close
   if(!MP.detail) return 'out';
@@ -4230,7 +4232,13 @@ function mpAct(){
   const host = window.UrtvMatches;
   let ok = false;
   try{
-    if(b.k === 'remind') ok = !!(host && host.remind(fw(FB_W.taskText, teamAr(ev.strHomeTeam, ev.idHomeTeam) + ' × ' + teamAr(ev.strAwayTeam, ev.idAwayTeam),
+    if(b.k === 'watch'){ ok = !!(host && host.open(b.app)); MP.note = ok ? '' : FB_W.failed; if(ok) return; }
+    else if(b.k === 'unfollow'){
+      const id = String(ev['id' + b.side + 'Team']);
+      ok = !!(host && host.unfollow(id));
+      if(ok){ const i = CONFIG.teamIds.indexOf(id); if(i >= 0) CONFIG.teamIds.splice(i, 1); }
+    }
+    else if(b.k === 'remind') ok = !!(host && host.remind(fw(FB_W.taskText, teamAr(ev.strHomeTeam, ev.idHomeTeam) + ' × ' + teamAr(ev.strAwayTeam, ev.idAwayTeam),
       fbDayWord(fbDayOf(fbKick(ev))) + ' ' + fbClock(fbKick(ev))), fbKick(ev)));   // the kick-off: the app reminds 30 minutes ahead
     else{
       const id = String(ev['id' + b.side + 'Team']);
@@ -4238,7 +4246,7 @@ function mpAct(){
       if(ok && !CONFIG.teamIds.includes(id)) CONFIG.teamIds.push(id);
     }
   }catch(e){ ok = false; }
-  MP.note = ok ? (b.k === 'remind' ? FB_W.reminded : fw(FB_W.followed, teamAr(ev['str' + b.side + 'Team'], ev['id' + b.side + 'Team']))) : FB_W.failed;
+  MP.note = ok ? (b.k === 'remind' ? FB_W.reminded : fw(b.k === 'unfollow' ? FB_W.unfollowed : FB_W.followed, teamAr(ev['str' + b.side + 'Team'], ev['id' + b.side + 'Team']))) : FB_W.failed;
   mpDetailRender();
 }
 // the remote: ◀ ▶ ▲ ▼ OK and Back as the WebView hands them over; ◀ is «forward» in Arabic (the next day, the list beside the leagues)

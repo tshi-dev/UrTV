@@ -1,5 +1,38 @@
 {
- "about": "Who holds a competition's MENA rights, shown as a plain text mark on «مباريات اليوم» (docs/PROPOSALS-NOV2.md §1). A row is shown only when confidence is high, whole is true (the holder shows every game), verified holds the date its source was opened and read, and its season has not ended (until); anything else shows nothing. Every row needs its source link. Checked by .github/tools/broadcast_check.py (tests/check.py runs it): a row past its season fails. The candidate rows of the proposal are not here: none could be opened and checked yet.",
- "fields": {"idLeague": "TheSportsDB idLeague", "competition": "English name", "ar": "the mark", "en": "the mark in English", "detail_ar": "the line in a game's card", "detail_en": "the same in English", "from": "first season, 2025-26 or 2026", "until": "last season, 2030-31 or 2026", "source": "https link", "confidence": "high, medium or low", "whole": "true when the holder shows every game", "verified": "YYYY-MM-DD the source was read"},
- "rows": []
+ "about": "Who holds a competition's MENA rights, shown as a plain text mark on «مباريات اليوم» (docs/PROPOSALS-NOV2.md §1). A row is shown only when confidence is high, whole is true (the holder shows every game), verified holds the date its source was opened and read, and its season has not ended (until); anything else shows nothing. Every row needs its source link. Checked by .github/tools/broadcast_check.py (tests/check.py runs it): a row past its season fails. The Saudi Pro League row (Thmanyah, all matches, 2025-26 to 2030-31) was confirmed by the supervisor session; the page could not be opened again while it was entered (the network was closed), so its date stands on that reading.",
+ "fields": {
+  "idLeague": "TheSportsDB idLeague",
+  "competition": "English name",
+  "ar": "the mark",
+  "en": "the mark in English",
+  "detail_ar": "the line in a game's card",
+  "detail_en": "the same in English",
+  "from": "first season, 2025-26 or 2026",
+  "until": "last season, 2030-31 or 2026",
+  "source": "https link",
+  "confidence": "high, medium or low",
+  "whole": "true when the holder shows every game",
+  "verified": "YYYY-MM-DD the source was read",
+  "app": "the broadcaster's Android app packages (the TV build first): «شاهد على …» on a game's card shows only when one is installed"
+ },
+ "rows": [
+  {
+   "idLeague": "4668",
+   "competition": "Saudi Pro League",
+   "ar": "ثمانية",
+   "en": "Thmanyah",
+   "detail_ar": "ثمانية، أو تطبيق ثمانية",
+   "detail_en": "Thmanyah, or the Thmanyah app",
+   "from": "2025-26",
+   "until": "2030-31",
+   "source": "https://www.sportcal.com/media/srmgs-thmanyah-secures-exclusive-saudi-league-rights-until-2031/",
+   "confidence": "high",
+   "whole": true,
+   "verified": "2026-11-03",
+   "app": [
+    "com.thmanyah.shasha.tv",
+    "com.thmanyah.shasha"
+   ]
+  }
+ ]
 }

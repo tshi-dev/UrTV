@@ -97,6 +97,9 @@
         <intent>
             <action android:name="android.settings.SETTINGS" />
         </intent>
+        <!-- «شاهد على ثمانية» on a game's card: Thmanyah's apps (the TV build first), so the page can tell whether one is installed -->
+        <package android:name="com.thmanyah.shasha.tv" />
+        <package android:name="com.thmanyah.shasha" />
         <!-- «المصادر»: the TVs' live TV apps and source pickers (TvVendor.LIVE_TV, TvVendor.PICKERS), found on the TV when the menu opens -->
         <package android:name="com.tcl.tv" />
         <package android:name="com.tcl.suspension" />

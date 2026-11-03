@@ -123,6 +123,10 @@ public class ConfigProvider extends ContentProvider {
                 out.putBoolean("ok", ok);
                 return out;
             }
+            case "phone_unfollow": {   // «أزل … من فرقي» on a game's card: arg is the team's id
+                out.putBoolean("ok", arg != null && arg.matches("\\d{1,9}") && p.removeTeam(arg));
+                return out;
+            }
             case "phone_cities": {
                 ArrayList<String> names = new ArrayList<>();
                 for (String[] city : CityMatch.find(arg == null ? "" : arg)) if (names.size() < 20) names.add(city[0]);

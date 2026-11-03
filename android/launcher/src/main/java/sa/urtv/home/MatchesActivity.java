@@ -116,6 +116,28 @@ public class MatchesActivity extends Activity {
 
         @JavascriptInterface public boolean remind(String text, double at) { return MatchReminder.add(c, text, (long) at); }
 
+        /** the first of these packages (comma separated) that is installed and can be opened, else "" */
+        @JavascriptInterface public String appOf(String csv) { return installedOf(c.getPackageManager(), csv); }
+
+        /** opens the app (its TV launcher entry, else its launcher entry): no deep link is known for the match, so the app itself opens */
+        @JavascriptInterface public boolean open(String csv) {
+            String pkg = installedOf(c.getPackageManager(), csv);
+            if (pkg.isEmpty()) return false;
+            android.content.Intent i = c.getPackageManager().getLeanbackLaunchIntentForPackage(pkg);
+            if (i == null) i = c.getPackageManager().getLaunchIntentForPackage(pkg);
+            try { c.startActivity(i.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)); return true; } catch (RuntimeException e) { return false; }
+        }
+
+        @JavascriptInterface public boolean unfollow(String id) {
+            if (id == null || !id.matches("\\d{1,9}")) return false;
+            try {
+                Bundle out = c.getContentResolver().call(CONFIG, "phone_unfollow", id, null);
+                return out != null && out.getBoolean("ok");
+            } catch (RuntimeException e) {
+                return false;
+            }
+        }
+
         @JavascriptInterface public boolean follow(String id, String name) {
             if (id == null || !id.matches("\\d{1,9}")) return false;
             try {
@@ -125,6 +147,17 @@ public class MatchesActivity extends Activity {
                 return false;
             }
         }
+    }
+
+    /** the bridge's other asks: «أزل … من فرقي», and the broadcaster's app («شاهد على …») */
+    static String installedOf(android.content.pm.PackageManager pm, String csv) {
+        if (csv == null) return "";
+        for (String pkg : csv.split(",")) {
+            pkg = pkg.trim();
+            if (!pkg.matches("[A-Za-z0-9_.]{3,120}")) continue;
+            if (pm.getLeanbackLaunchIntentForPackage(pkg) != null || pm.getLaunchIntentForPackage(pkg) != null) return pkg;
+        }
+        return "";
     }
 
     /** «ذكّرني قبلها»: a task with the game and its time, its reminder at kick-off with «قبلها بـ» 30 and no sound (ReminderPlan.forMatch);

@@ -209,6 +209,14 @@ final class Prefs {
         return true;
     }
 
+    /** «أزل … من فرقي» on a game's card: false when the team was not followed */
+    boolean removeTeam(String id) {
+        List<String> v = teams();
+        boolean had = v.removeIf(t -> t.startsWith(id + "|"));
+        if (had) setList("teams", v);
+        return had;
+    }
+
     // The card beside the clock: value sent to the page (#panel=), Arabic label
     static final String[][] PANELS = {
         {"shows", "جديد المسلسلات"}, {"prayers", "مواقيت الصلاة اليوم"}, {"forecast", "طقس الأيام القادمة"}, {"hourly", "طقس الساعات القادمة"}, {"prayerrow", "الصلوات في صف"}, {"nextprayer", "الصلاة القادمة"},

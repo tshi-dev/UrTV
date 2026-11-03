@@ -436,8 +436,11 @@
 مع الصلاة	With the prayers
 ذكّرني قبلها بنصف ساعة	Remind me 30 min before
 أُضيفت إلى المهام	Added to your tasks
-تابع %s	Follow %s
-تتابع %s	Following %s
+أضف %s لفرقي	Add %s to my teams
+أُضيف %s إلى فرقك	%s was added to your teams
+أزل %s من فرقي	Remove %s from my teams
+أُزيل %s من فرقك	%s was removed from your teams
+شاهد على %s	Watch on %s
 ما قدرنا، جرّب مرة ثانية	That didn’t work, try again
 تبدأ بعد %s %s	Starts %2$s after %1$s
 تبدأ قبل %s %s	Starts %2$s before %1$s

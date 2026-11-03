@@ -56,9 +56,11 @@ check("OK on the games opens «المباريات» on the chosen game", "guarde
 check("«المباريات»: the page's own mode, Back closes a game's card first, its WebView pauses and resumes like HomeCard's",
       "HomeCardChoice.matchesUrl(cfg.fragment, event)" in ma and "mpBack()" in ma and 'if (!"closed".equals(FootballFocus.unquote(v))) finish();' in ma
       and 'android:name=".MatchesActivity"' in read(ROOT / "android/launcher/src/main/AndroidManifest.xml"))
-check("what the page may ask: a task (the reminder's hook, MatchReminder) and a followed club, nothing else",
-      ma.count("@JavascriptInterface") == 2 and "public boolean remind(String text, double at)" in ma and "public boolean follow(String id, String name)" in ma
-      and 'if (id == null || !id.matches("\\\\d{1,9}")) return false;' in ma and "static boolean add(Context c, String text, long at)" in ma)
+check("what the page may ask: a task (the reminder's hook, MatchReminder), a followed club added or removed, and the broadcaster's app (installed? open), nothing else",
+      ma.count("@JavascriptInterface") == 5 and "public boolean remind(String text, double at)" in ma and "public boolean follow(String id, String name)" in ma and "public boolean unfollow(String id)" in ma
+      and "public String appOf(String csv)" in ma and "public boolean open(String csv)" in ma
+      and 'if (id == null || !id.matches("\\\\d{1,9}")) return false;' in ma and "static boolean add(Context c, String text, long at)" in ma
+      and 'pkg.matches("[A-Za-z0-9_.]{3,120}")' in ma and "getLeanbackLaunchIntentForPackage" in ma)   # a package name only, never a link or an intent from the page
 check("«ذكّرني قبلها»: a task with a reminder at kick-off, «قبلها بـ» 30, silent (ReminderPlan.forMatch, tests/ReminderHomeRun.java), the alarm set again",
       "long[] r = ReminderPlan.forMatch(at);" in ma and 'v.put("due", r[0]);' in ma and 'v.put("bf", (int) r[1]);' in ma and 'v.put("snd", (int) r[3]);' in ma
       and "if (ok) ReminderScheduler.schedule(c);" in ma
