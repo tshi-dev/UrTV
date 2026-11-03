@@ -54,7 +54,7 @@ check("the mirrored name (above the leftmost tile, the owner's report) is found"
 f, _ = tc.analyse(dump(ar_tiles(), good_label, tray=(120, 768, 1800, 1066)), "ar", "first")
 check("a tray past the safe area (x 120..1800 and a bottom of 1066) is found", any("safe area" in x for x in f), f)
 low = [(r[0], r[1] + 40, r[2], r[3] + 40) for r in ar_tiles()]
-f, _ = tc.analyse(dump(low, (1664, 744, 1768, 792), tray=(128, 808, 1792, 1026)), "ar", "first", lowered=True)
+f, _ = tc.analyse(dump(low, (1664, 744, 1768, 792), tray=(128, 808, 1792, 986)), "ar", "first", lowered=True)
 check("lowered: the tray at 808..1026 is inside the safe area, ends at 1026 and its tiles are whole inside it", not f, f)
 en_tiles = [(tc.W - r[2], r[1], tc.W - r[0], r[3]) for r in ar_tiles()]
 f, _ = tc.analyse(dump(en_tiles, (152, 704, 256, 752)), "en", "first")

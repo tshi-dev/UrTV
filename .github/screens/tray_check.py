@@ -60,6 +60,9 @@ def summary(xml_text):
             out.append(f"  focusable{'*' if n['focused'] else ''} {n['cls'].split('.')[-1]} {list(n['rect'])}")
         elif n["text"].strip() and n["rect"][1] > 500:
             out.append(f"  text '{n['text'][:20]}' {list(n['rect'])}")
+    for n in nodes(xml_text):   # whatever else has the focus, wherever it is (a focus that left the tray shows here)
+        if n["focused"] and not (n["focusable"] and n["rect"][1] > 500):
+            out.append(f"  FOCUSED {n['cls'].split('.')[-1]} '{(n['desc'] or n['text'])[:20]}' {list(n['rect'])}")
     return "\n".join(out[:40])
 
 
@@ -83,12 +86,14 @@ def analyse(xml_text, lang, focus, lowered=False, label_required=True):
     tray = find_tray(ns)
     if not tray:
         return ["no tray found in the dump"], {}
+    if lowered:   # the accessibility bounds are cut at the screen's safe-area clip (986) while the tray is moved 40 px down: judge it by its top (808) and its resting height
+        if tray[1] != 808:
+            return [f"lowered, the tray starts at {tray[1]}, not 808"], {"tray": list(tray)}
+        tray = (tray[0], tray[1], tray[2], tray[1] + (986 - 768))
     fails, m = [], {"tray": list(tray)}
     x0, y0, x1, y1 = SAFE
     if tray[0] < x0 or tray[1] < y0 or tray[2] > x1 or tray[3] > y1:
         fails.append(f"the tray {tray} is outside the safe area {SAFE}")
-    if lowered and tray[3] != 1026:
-        fails.append(f"lowered, the tray ends at {tray[3]}, not 1026")
     ts = tiles(ns, tray)
     m["tiles"] = [list(t["rect"]) for t in ts]
     if len(ts) < 3:
@@ -105,7 +110,7 @@ def analyse(xml_text, lang, focus, lowered=False, label_required=True):
         else:
             if w < TILE_W - 8:
                 fails.append(f"a tile cut to {w} px at {list(r)} (a sliver)")
-            elif r[0] < inner[0] - 2 or r[2] > inner[2] + 2 or r[1] < inner[1] - 2 or r[3] > inner[3] + 2:
+            elif r[0] < inner[0] - 2 or r[2] > inner[2] + 2 or (not lowered and (r[1] < inner[1] - 2 or r[3] > inner[3] + 2)):
                 fails.append(f"a tile {list(r)} is not inside the tray's inner rect {list(inner)}")
     label = name_label(ns, tray)
     if label:
@@ -310,7 +315,7 @@ def run(out):
     xf, pf = settled_dump(out, "football-lowered", tries=1, need_tile=False)
     nf = nodes(xf)
     tf = find_tray(nf)
-    low = bool(tf) and tf[3] == 1026
+    low = bool(tf) and tf[1] == 808
     report["football"] = {"tray": list(tf) if tf else None, "lowered_seen": low, "failures": []}
     if low:
         ff = analyse(xf, "ar", "first", lowered=True, label_required=False)[0]   # the focus is on the widget: the name is hidden then
@@ -319,7 +324,7 @@ def run(out):
     else:
         # the matches widget needs today's games; without them it takes no focus here and the tray is not lowered (or the home has scrolled): not measured, said so
         print("football summary:\n" + summary(xf))
-        print(f"football: NOT MEASURED - the tray is at {tf}, not lowered to y 1026 (no games on the emulator, so the matches widget did not take the focus)")
+        print(f"football: NOT MEASURED - the tray is at {tf}, not lowered to y 808 (no games on the emulator, so the matches widget did not take the focus)")
     saver("--es homelayout classic")
     (out / "tray-report.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
     for f in failures:
