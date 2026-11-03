@@ -32,7 +32,7 @@ check("3. pairing: the screen is still kept awake while control is on, and let g
 
 su = text(HOME + "setup/SetupActivity.java")
 check("setup: «ابدأ» is focused after the screen is laid out (one OK presses it)",
-      "start.post(new Runnable() { @Override public void run() { start.requestFocus(); } });" in su and "\n        start.requestFocus();" not in su)
+      "first.post(new Runnable() { @Override public void run() { first.requestFocus(); } });" in su and "final TextView first = again != null ? again : start;" in su and "\n        start.requestFocus();" not in su)
 check("setup: the press's answer (the status line) is brought into sight", "status.requestRectangleOnScreen(" in su)
 
 ms = text(HOME + "tilawah/MusicService.java")

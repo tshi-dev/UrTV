@@ -219,9 +219,9 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onResume() {
-        UpdateCarry.homeShown = true;   // the carry-over after our update asks whether our home is in front
         super.onResume();
         resumed = true;
+        UpdateCarry.homeShown = true;   // the carry-over after our update asks whether our home is in front
         backExit.reset(); backGuarded = false;   // «الخروج من تلفزيونك»: a new visit, its count and its hint start again
         sa.urtv.home.tilawah.AdhanFront.home(true);   // «الأذان على شاشة التوقف فقط»: the adhan's alarm asks what is in front
         TypeService.homeFront(true);   // the Settings key is ours here (RemoteKeys): the service stops asking for keys
@@ -261,9 +261,9 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onPause() {
-        UpdateCarry.homeShown = false;
         super.onPause();
-        resumed = false;   // a slow photo check that answers now must not start the 10-minute rotation again
+        resumed = false;
+        UpdateCarry.homeShown = false;   // a slow photo check that answers now must not start the 10-minute rotation again
         sa.urtv.home.tilawah.AdhanFront.home(false);
         TypeService.homeFront(false);   // another app is coming to the front: the service answers the Settings key there (SettingsKey)
         remoteKeys.reset();   // a shortcut key opened an app: its release went there, not here
