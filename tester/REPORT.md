@@ -368,3 +368,25 @@ Ready on the PC, if you say yes (each cleaned first: city, prayer times, weather
 - step 18: the done screen with the QR (for the owner's QR design request); the USB prompt
 - step 16 T1 (focus on the mic in «المهام»), step 17 S7
 Answer in STEP.md: «pictures: yes» (which ones, and the folder, e.g. tester/shots/) or «pictures: no».
+
+## GO — build 178: steps 16–20 again (re-check of every problem found on 174)
+Update from the TV 174 → 178 (both versionName=4.2 versionCode=178). 16–20 were run in full on 174 the day before, and 18 already reinstalled the apps, so on 178 every row that failed on 174 was checked again (16/17 were not re-run in full after 18, as STEP.md says).
+
+| from | problem on 174 | on 178 |
+|---|---|---|
+| update | accessibility off after a self-update | FIXED: `UrTVA11y: check replaced: listed=true switch=1 running=true -> ok`; ours still bound |
+| update | the self-update unmutes the TV | STILL: `Muted: false` right after the update (muted again). Also: after the update the last app (a store video app) opened by itself |
+| 16 T1 | focus on the mic when «المهام» opens | FIXED: focus on the text field (EditText) |
+| 16 T1 | keyboard action key reads ✓, not «إضافة» | same (TCL keyboard; may be the IME ignoring the label) |
+| 16 W3 | `install.sh launcher` tried a downgrade (`!!`) | FIXED: «the TV already has a newer build than apk-latest's urtv-home.apk, so it was kept as it is», no `!!` |
+| 16 K2 / 17 H6 | Settings key 4077/83 on our home → the TV's settings; long press too | same: short 4077, `--longpress 4077` and 83 all open `com.android.tv.settings/.MainSettings` (UrTVKeys logs each). Injected keys only |
+| 17 V1 | no build number | FIXED: «الإصدار الحالي: ٤٫٢ (١٧٨)» |
+| 18 | the prompt does not show on the first «جهّز كل شي» | STILL: `adbd: Invalid base64 key` → no prompt; after 20 s «ما ظهرت الرسالة؟…» (now a longer, clearer text on give-up). Not restarted again (same finding); «تراجع» not re-run |
+| 19 R4 | L1 (radiojar) does not play on the TV | STILL: the app now opens the resolved `http://n03.radiojar.com/…` itself (`MediaPlayer: setDataSource1 (http://…)`), but after 30 s `playing=0 buffering=1 errors=0`. Cleartext http probably blocked |
+| 20 | home caption Arabic | FIXED: «Hold OK for options» |
+| 20 | apps grid heading/names Arabic | FIXED: «All apps», «Play Store», «Your TV Screen», «Prime Video» |
+| 20 | Tilawah footer Arabic; Adhan page lines Arabic | FIXED: no Arabic UI words left on Tilawah and its adhan tab |
+| 20 | favourites row right-to-left in English | FIXED: focus starts at the left (x 152), ▶ moves right (x 480) |
+| 20 | «إعداد تلفزيوني» all Arabic in English | STILL: the whole screen in Arabic |
+
+Restored: lang ar, 45 s, muted, Home ours. Next: step 22, then step 21.
