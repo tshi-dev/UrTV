@@ -127,6 +127,7 @@ public class SetupActivity extends Activity {
     }
 
     private void buildStart(SetupRunner r) {
+        add(langToggle(), dp(12));
         add(text(S.t("يجهّز التلفزيون نفسه، بدون كمبيوتر ولا جوال. اضغط «جهّز كل شي»: يسألك التلفزيون مرة واحدة «السماح بتصحيح USB؟»، ثم نعرض عليك ما سنفعله بالضبط قبل أي تغيير."), 15, "Regular", TEXT), dp(12));
         add(text(S.t("قبل البدء: فعّل «تصحيح USB» (الإعدادات ← تفضيلات الجهاز ← حول ← اضغط «Build» سبع مرات ← خيارات المطوّر ← تصحيح USB). وخلك عند التلفزيون: لما تطلع الرسالة اختر «السماح دائماً»."), 13, "Regular", GOLD), dp(16));
         if (SetupRunner.resumable(new FileStore(this))) add(text(S.t("إعداد سابق ما اكتمل: «جهّز كل شي» يكمله من حيث توقف."), 14, "Regular", TEXT), dp(12));
@@ -141,6 +142,48 @@ public class SetupActivity extends Activity {
         SetupRunner.End e = r.end();
         if (e != null && e != dismissed) say(S.tv(e.text), e.bad ? RED : GOLD);
         else say("", GOLD);
+    }
+
+    /**
+     * «العربية | English»: the first row of the start screen, two buttons side by side at the start of the line, the one in use marked the way every
+     * on/off is (three green triangles, its words in green), the other plain; no pills (radius 14 like every button), 24 px apart. Choosing one
+     * saves the language for the whole system and builds the screen again in it (SetupLang). Arabic is the one in use until the person says else.
+     */
+    private View langToggle() {
+        LinearLayout row = new LinearLayout(this);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setLayoutDirection(Dir.layout());
+        row.setGravity(Dir.start());
+        String[][] opts = {{SetupLang.AR, "العربية"}, {SetupLang.EN, "English"}};
+        for (int i = 0; i < opts.length; i++) {
+            final String code = opts[i][0];
+            final TextView b = button(opts[i][1]);
+            b.setTextDirection(View.TEXT_DIRECTION_FIRST_STRONG);
+            b.setContentDescription(opts[i][1]);
+            final boolean on = code.equals(S.lang());
+            paintLang(b, on, false);
+            b.setOnFocusChangeListener(new View.OnFocusChangeListener() { public void onFocusChange(View v, boolean has) { paintLang(b, on, has); } });
+            b.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { SetupLang.choose(SetupActivity.this, code); } });
+            LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(dp(160), dp(44));
+            if (i > 0) p.setMarginStart(dp(12));
+            row.addView(b, p);
+        }
+        return row;
+    }
+
+    /** the on/off look (OnOff): the focus fill while focused, else the panel; the one in use has the green triangles and its words in green */
+    private void paintLang(TextView t, boolean on, boolean focused) {
+        t.setBackground(focused ? sa.urtv.home.GlassPaint.focused(this, look, 14) : sa.urtv.home.GlassPaint.panel(this, look, 14));
+        int green = sa.urtv.home.OnOff.green(focused ? look.focus : look.light ? 0xFFFFFFFF : 0xFF000000);
+        android.graphics.drawable.Drawable mark = null;
+        if (on) {
+            mark = getDrawable(sa.urtv.home.R.drawable.ic_on).mutate();
+            mark.setTint(green);
+            mark.setBounds(0, 0, dp(7), dp(22));
+        }
+        if (Dir.rtl()) t.setCompoundDrawables(null, null, mark, null); else t.setCompoundDrawables(mark, null, null, null);
+        t.setCompoundDrawablePadding(dp(8));
+        t.setTextColor(on ? green : focused ? INK : TEXT);
     }
 
     private void buildPlan(SetupRunner r) {

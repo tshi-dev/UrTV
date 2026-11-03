@@ -52,6 +52,13 @@ public final class S {
         loaded = true;
     }
 
+    /** The person chose a language on the installer's start screen: kept here at once (the next screen is built in it); the screensaver, which holds the setting, is told by SetupLang. */
+    public static void set(Context c, String v) {
+        init(c);
+        lang = Tr.norm(v);
+        c.getApplicationContext().getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString("lang", lang).apply();
+    }
+
     /** what the screensaver says now (Digits passes every snapshot on); a missing screensaver leaves the kept value */
     static void remember(Context c, ConfigSnapshot snap) {
         init(c);
