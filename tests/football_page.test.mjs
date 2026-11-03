@@ -146,6 +146,9 @@ for (const [why, rows] of [['the shipped table', null], ['medium confidence', [{
   check('matches page: the card\'s two buttons: remind and follow', await p.$$eval('.mdb button', b => b.length === 2 && /ذكّرني قبلها بنصف ساعة/.test(b[0].textContent) && /تابع الأهلي/.test(b[1].textContent)));
   check('matches page: the game a green bar on the prayers\' line, the prayers marked', await p.$$eval('.mpline .mpk', k => k.length >= 1) && (await p.$$('.mpbar')).length === 1);
   await p.evaluate(() => { window.UrtvMatches = { remind: (t, at) => (window.__rem = [t, at], true), follow: (id, n) => (window.__fol = [id, n], true) }; });
+  await p.keyboard.press('Enter');   // the card just opened: no button has the focus, OK adds nothing
+  check('matches page: OK on the freshly opened card adds no reminder and follows no team', await p.evaluate(() => window.__rem === undefined && window.__fol === undefined));
+  await p.keyboard.press('ArrowLeft');   // ◀ is forward in Arabic: the focus goes to «ذكّرني»
   await p.keyboard.press('Enter');
   const rem = await p.evaluate(() => window.__rem);
   check('matches page: «ذكّرني» hands the launcher the task and the kick-off itself (the app reminds 30 minutes ahead)', rem && /الأهلي × التعاون/.test(rem[0]) && rem[1] === Date.parse('2026-11-04T17:00:00Z'), JSON.stringify(rem));
