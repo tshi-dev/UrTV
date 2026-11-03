@@ -523,3 +523,19 @@ New problems seen in the shots:
 ### step 26 — Z (before part C), build 180
 restored: yes. Settings imported from the start file (only the city differed), seconds off, lang ar, homelayout classic, no home card; the 2 demo tasks and the match-reminder task deleted (tasks: none, as at the start); the made-up holdings deleted («احذف المحفظة»: the owner had none); dock order = start; no PIN (temporary 1234 for B4 and shot 07, `pin off` each time, wrong tries 0); `wm size` unchanged (override 1920x1080); updatechannel latest; Home ours; YouTube force-stopped; the TV-side log file removed; muted.
 Part C: waiting for the owner to give the recovery code again in chat (this session restarted and holds no code). Problems in 26 so far: A2, A3, B1 (tile outside the tray, no lowered state, moving name label), B3 tabs 20, B9 (cut labels, focus jumps to «جهّز كل شي»), the «الذهب والنفط» letters, the empty matches page; small: B6 bidi minus, English wraps, B10 prices not moving in «مباشر», Arabic/English dock difference, focus to «مباشر» after a save.
+
+### step 26 — part C (PIN recovery code, step 21 rows 1–6), build 180
+The owner gave the code again in chat. Temporary PIN for this part (no PIN at the start).
+| # | result |
+|---|---|
+| 1 prep | worked: both apps 180; `pin status` saved; temporary PIN set |
+| 2 the code | worked: one `input text` command; «رمز جديد» opened; new PIN set and confirmed («تأكيد الرمز») |
+| 3 nothing else changed | worked: `pin status` same as row 1 (locked list, kids mode off, wrong tries 0); the new PIN opens «الرقابة الأبوية» |
+| 4 wrong 4 digits | worked: «أدخل الرمز» again, wrong tries 0 → 1 (and the code at row 2 did not count: 0 → 0) |
+| 5 wrong long code | worked: the same, wrong tries 1 → 2 |
+| 6 back as it was | worked: the new PIN once → wrong tries 0; `pin off`; `pin status` identical to the start (no PIN, same locked list, kids mode off, 0) |
+Not checked: the dots while the code was in the field (no dump allowed then).
+A file on the tester's PC (an old step-21 push script in a temp folder) was found holding the code and deleted; the code is in no branch or commit (`git log --all -S` empty).
+
+### step 26 — final
+restored: yes (as in Z above; PIN not set, updatechannel latest, Home ours, muted). Pictures: the owner shares them with the supervisor himself as a zip (29 marketing + 12 measurement shots, blurred where needed).
