@@ -37,6 +37,9 @@ import java.util.List;
 public final class UpdateCarry {
     private UpdateCarry() { }
 
+    /** set by MainActivity while our home is the resumed screen: the carry-over asks it whether the install left us in front */
+    static volatile boolean homeShown;
+
     static final String TAG = "UrTVUpdate";
     private static final String PREFS = "update_carry", ACTION = "sa.urtv.home.CARRY_CHECK";
     /** between before() and the replace (the owner confirms Android's install screen) */
@@ -53,7 +56,7 @@ public final class UpdateCarry {
             boolean ours = A11yList.has(list, A11yHeal.TYPE) || A11yList.has(list, A11yHeal.SLEEP);
             synchronized (UpdateCarry.class) {
                 c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().clear().putLong("gen", gen).putLong("at", gen).putInt("code", BuildConfig.VERSION_CODE)
-                    .putInt("expected", expected).putBoolean("muted", muted).putInt("vol", vol).putString("a11y", list == null ? "" : list).putBoolean("hadOurs", ours).commit();
+                    .putInt("expected", expected).putBoolean("ui", true).putBoolean("muted", muted).putInt("vol", vol).putString("a11y", list == null ? "" : list).putBoolean("hadOurs", ours).commit();
             }
             log("before", gen, "recorded", "muted=" + muted + " ours=" + ours);
         } catch (RuntimeException e) {
@@ -81,13 +84,16 @@ public final class UpdateCarry {
         SharedPreferences sp = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         final A11yList.Carry rec = new A11yList.Carry();
         rec.gen = sp.getLong("gen", 0);
-        if (rec.gen == 0) return;
+        if (rec.gen == 0 && sp.getLong("at", 0) > 0) rec.gen = sp.getLong("at", 0);   // a record written by the build before this one (no generation): the same operation
+        if (rec.gen == 0) { log("step", 0, "no_record", "why=" + why); return; }   // build 180 logged nothing at all on the TV: every call says what it found
         rec.at = sp.getLong("at", 0); rec.replacedAt = sp.getLong("replacedAt", 0);
         rec.expected = sp.getInt("expected", -1); rec.code = sp.getInt("code", -1); rec.vol = sp.getInt("vol", -1);
         rec.mutes = sp.getInt("mutes", 0); rec.a11yTries = sp.getInt("a11yTries", 0);
         rec.muted = sp.getBoolean("muted", false); rec.hadOurs = sp.getBoolean("hadOurs", false); rec.audioDone = sp.getBoolean("audioDone", false);
         rec.paused = sp.getBoolean("paused", false); rec.a11yDone = sp.getBoolean("a11yDone", false); rec.toasted = sp.getBoolean("toasted", false);
         rec.saved = sp.getString("a11y", "");
+        rec.ui = sp.getBoolean("ui", true); rec.frontDone = sp.getBoolean("frontDone", false); rec.frontTries = sp.getInt("frontTries", 0);
+        if (!sp.contains("hadOurs")) rec.hadOurs = A11yList.has(rec.saved, A11yHeal.TYPE) || A11yList.has(rec.saved, A11yHeal.SLEEP);   // the older record
         final AudioManager audio = (AudioManager) c.getSystemService(Context.AUDIO_SERVICE);
         A11yList.carryStep(rec, new A11yList.Tv() {
             @Override public int versionCode() { return BuildConfig.VERSION_CODE; }
@@ -96,6 +102,8 @@ public final class UpdateCarry {
             @Override public boolean adhanActive() { return sa.urtv.home.tilawah.MusicService.carryAdhanActive(); }
             @Override public boolean ourPlaying() { return sa.urtv.home.tilawah.MusicService.carryOurPlaying(); }
             @Override public boolean musicActive() { return audio != null && audio.isMusicActive(); }
+            @Override public boolean homeInFront() { return homeShown; }
+            @Override public String bringFront(int attempt) { return UpdateCarry.bringFront(c, attempt); }
             @Override public boolean mute() {
                 try {
                     audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0);
@@ -133,7 +141,31 @@ public final class UpdateCarry {
         }, why, gen, System.currentTimeMillis(), FRESH_MS);
         if (rec.finished) { sp.edit().clear().commit(); return; }
         sp.edit().putLong("replacedAt", rec.replacedAt).putInt("mutes", rec.mutes).putInt("a11yTries", rec.a11yTries).putBoolean("audioDone", rec.audioDone)
-            .putBoolean("paused", rec.paused).putBoolean("a11yDone", rec.a11yDone).putBoolean("toasted", rec.toasted).commit();
+            .putBoolean("paused", rec.paused).putBoolean("frontDone", rec.frontDone).putInt("frontTries", rec.frontTries).putBoolean("a11yDone", rec.a11yDone).putBoolean("toasted", rec.toasted).commit();
+    }
+
+    /**
+     * Our home to the front after the install removed its task. Android 14 restricts activity starts from the background, so three ways in turn, one per call:
+     * 0 the HOME intent (the TV's own home role is ours; allowed when the app may start from the background), 1 HOME pressed through our accessibility service
+     * when it is bound (the system's own action), 2 a full-screen-intent notification to our home. Answers a fixed word.
+     */
+    static String bringFront(Context c, int attempt) {
+        try {
+            if (attempt == 0) {
+                c.startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                return "home_intent_sent";
+            }
+            if (attempt == 1) return TypeService.goHome() ? "a11y_home_pressed" : "a11y_not_bound";
+            android.app.NotificationManager nm = (android.app.NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
+            if (nm == null) return "no_notification_service";
+            nm.createNotificationChannel(new android.app.NotificationChannel("carry_front", S.t("تحديث تلفزيونك"), android.app.NotificationManager.IMPORTANCE_HIGH));
+            PendingIntent pi = PendingIntent.getActivity(c, 9200, new Intent(c, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            nm.notify(9200, new android.app.Notification.Builder(c, "carry_front").setSmallIcon(R.drawable.ic_settings).setContentTitle(S.t("تحديث تلفزيونك"))
+                .setContentText(S.t("اكتمل التحديث. اضغط للعودة إلى الشاشة الرئيسية.")).setFullScreenIntent(pi, true).setContentIntent(pi).setAutoCancel(true).build());
+            return "notification_posted";
+        } catch (RuntimeException e) {
+            return "refused_" + e.getClass().getSimpleName();
+        }
     }
 
     private static String safe(Context c, String key) {

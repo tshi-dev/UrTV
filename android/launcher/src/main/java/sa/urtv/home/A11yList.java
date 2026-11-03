@@ -42,6 +42,7 @@ public final class A11yList {
     /** how long after the replace the OEM may still unmute the TV by itself; after it, an unmute is the owner's */
     public static final long OEM_WINDOW_MS = 60_000, AUDIO_LIFETIME_MS = 180_000, A11Y_LIFETIME_MS = 30 * 60_000L;
     public static final int MAX_MUTES = 3, MAX_A11Y_TRIES = 8;
+    public static final long FRONT_WINDOW_MS = 45_000;
 
     /**
      * The mute stage: "mute" (do it now) or why not. `live` = the record's generation is the current one and it is inside the lifetime. The first answer that
@@ -51,7 +52,7 @@ public final class A11yList {
         if (!live || sinceReplaceMs > AUDIO_LIFETIME_MS) return "expired";
         if (!wasMuted) return "not_muted_before";
         if (adhanActive) return "adhan";   // the adhan unmutes the music stream on purpose, and puts the mute back itself
-        if (nowVol != snapVol) return "owner_volume";   // the owner turned the volume since: theirs
+        if (snapVol >= 0 && nowVol != snapVol) return "owner_volume";   // the owner turned the volume since: theirs
         if (nowMuted) return "already";
         if (sinceReplaceMs > OEM_WINDOW_MS) return "owner_unmute";   // past the window an unmute is not the OEM's
         if (mutesDone >= MAX_MUTES) return "enough";
@@ -80,7 +81,8 @@ public final class A11yList {
     public static final class Carry {
         public long gen, at, replacedAt;
         public int expected = -1, code, vol = -1, mutes, a11yTries;
-        public boolean muted, hadOurs, audioDone, paused, a11yDone, toasted, finished;
+        public boolean muted, hadOurs, audioDone, paused, a11yDone, toasted, finished, ui, frontDone;
+        public int frontTries;
         public String saved = "";
     }
 
@@ -92,6 +94,8 @@ public final class A11yList {
         boolean adhanActive();
         boolean ourPlaying();
         boolean musicActive();
+        boolean homeInFront();                // our home is the resumed screen
+        String bringFront(int attempt);       // 0: the HOME intent, 1: HOME through the accessibility service, 2: a full-screen notification; answers a fixed word
         boolean mute();                       // asks for the mute, answers whether the TV is muted after it
         void pauseKey();
         String list();                        // enabled_accessibility_services now
@@ -125,8 +129,15 @@ public final class A11yList {
         }
         long since = now - c.replacedAt;
         boolean adhan = tv.adhanActive();
+        // our home back in front: the install removed its task, so Android resumed the app used before (YouTube on 179, Jellyfin on 180). Only after an update
+        // started from our UpdateActivity, only in the first 45 s, at most three ways, each tried once and logged.
+        if (c.ui && !c.frontDone) {
+            if (tv.homeInFront()) { c.frontDone = true; tv.log("front", "home_in_front", "why=" + why); }
+            else if (since > FRONT_WINDOW_MS || c.frontTries >= 3) { c.frontDone = true; tv.log("front", "gave_up", "why=" + why + " tries=" + c.frontTries); }
+            else { String how = tv.bringFront(c.frontTries); c.frontTries++; tv.log("front", how, "why=" + why + " attempt=" + c.frontTries); }
+        }
         if (!c.audioDone) {
-            String r = audioStep(true, c.muted, adhan, c.vol, tv.volume(), tv.muted(), c.mutes, since);
+            String r = audioStep(true, c.muted, adhan, c.vol, tv.volume(), tv.muted(), c.mutes, since);   // every outcome is logged, "do nothing" ones too
             if (r.equals("mute")) {
                 boolean ok = tv.mute();
                 c.mutes++;
@@ -156,12 +167,12 @@ public final class A11yList {
                 tv.log("a11y", "listed_not_bound", "why=" + why + " tries=" + c.a11yTries);
             } else {
                 c.a11yDone = true;
-                tv.log("a11y", r, "why=" + why);
+                tv.log("a11y", r.equals("none") ? "no_a11y_entry" : r, "why=" + why);
             }
             if (!c.a11yDone && (c.a11yTries >= MAX_A11Y_TRIES || since > A11Y_LIFETIME_MS)) { c.a11yDone = true; tv.log("a11y", "gave_up", "why=" + why + " tries=" + c.a11yTries); }
             if (!c.a11yDone) tv.alarm(backoffMs(c.a11yTries), 3);
         }
-        if (c.audioDone && c.a11yDone) { c.finished = true; tv.log("step", "finished", "why=" + why); }
+        if (c.audioDone && c.a11yDone && (c.frontDone || !c.ui)) { c.finished = true; tv.log("step", "finished", "why=" + why); }
     }
 
     /** The list with every entry of these components taken out; the others as written, in their order. Empty when nothing else is left. */

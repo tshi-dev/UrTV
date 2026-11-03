@@ -126,6 +126,12 @@ public class TypeService extends AccessibilityService {
     /** Is the service on? (the owner or ADB enabled it, and Android has started it) */
     static boolean enabled() { return running != null; }
 
+    /** HOME pressed for the person (our carry-over after an update of ours): allowed from the background because it is the system's own action; false when the service is not bound */
+    static boolean goHome() {
+        TypeService s = running;
+        return s != null && s.performGlobalAction(GLOBAL_ACTION_HOME);
+    }
+
     /** The words typeText answers with; the phone gets nothing else of what it saw. */
     static final String TYPED = "typed_other", TYPED_NO_SEARCH = "typed_other_nosearch", OFF = "service_off", LOCKED = "locked", REFUSED = "refused",
         NO_FIELD = "no_field", PASSWORD = "password_field", FAILED = "failed", SEARCHED = "searched";

@@ -219,6 +219,7 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onResume() {
+        UpdateCarry.homeShown = true;   // the carry-over after our update asks whether our home is in front
         super.onResume();
         resumed = true;
         backExit.reset(); backGuarded = false;   // «الخروج من تلفزيونك»: a new visit, its count and its hint start again
@@ -260,6 +261,7 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onPause() {
+        UpdateCarry.homeShown = false;
         super.onPause();
         resumed = false;   // a slow photo check that answers now must not start the 10-minute rotation again
         sa.urtv.home.tilawah.AdhanFront.home(false);

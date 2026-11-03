@@ -64,12 +64,16 @@ public final class A11yListRun {
         public void alarm(long d, int slot) { alarms.add(slot + ":" + d); }
         public void toast() { toasts++; }
         public void log(String st, String r, String m) { logs.add(st + "=" + r); }
+        boolean front;
+        final java.util.List<Integer> fronts = new java.util.ArrayList<>();
+        public boolean homeInFront() { return front; }
+        public String bringFront(int a) { fronts.add(a); return a == 0 ? "home_intent_sent" : a == 1 ? "a11y_not_bound" : "notification_posted"; }
         boolean said(String x) { return logs.contains(x); }
     }
 
     static A11yList.Carry rec(boolean muted, String savedList, boolean hadOurs) {
         A11yList.Carry c = new A11yList.Carry();
-        c.gen = 1000; c.at = 1000; c.expected = 179; c.code = 178; c.vol = 7; c.muted = muted; c.saved = savedList; c.hadOurs = hadOurs;
+        c.gen = 1000; c.at = 1000; c.expected = 179; c.ui = false; c.code = 178; c.vol = 7; c.muted = muted; c.saved = savedList; c.hadOurs = hadOurs;
         return c;
     }
 
@@ -171,7 +175,33 @@ public final class A11yListRun {
         check("carry: a write that never works ends after the bounded number of tries", c.a11yDone && c.a11yTries <= A11yList.MAX_A11Y_TRIES && tv.said("a11y=gave_up"));
         tv = new FakeTv(); c = rec(false, "", false);
         A11yList.carryStep(c, tv, "replaced", 0, t0, fresh);
-        check("carry: no entry of ours before the update: nothing to put back, and the operation finishes", c.finished && tv.said("a11y=none"));
+        check("carry: no entry of ours before the update: nothing to put back, and the operation finishes", c.finished && tv.said("a11y=no_a11y_entry"));
+        // 11b. our home back in front after the install took its task (A2): HOME intent, then the accessibility HOME, then the notification, within 45 s
+        tv = new FakeTv(); c = rec(false, "", false); c.ui = true;
+        A11yList.carryStep(c, tv, "replaced", 0, t0, fresh);
+        A11yList.carryStep(c, tv, "alarm", 1000, t0 + 10_000, fresh);
+        A11yList.carryStep(c, tv, "alarm", 1000, t0 + 30_000, fresh);
+        check("carry: our home is brought to the front in three ways in turn (intent, accessibility HOME, notification), one per call, each logged", tv.fronts.equals(Arrays.asList(0, 1, 2)) && tv.said("front=home_intent_sent") && tv.said("front=notification_posted"));
+        A11yList.carryStep(c, tv, "alarm", 1000, t0 + 40_000, fresh);
+        check("carry: no fourth try, the stage ends (gave up)", tv.fronts.size() == 3 && c.frontDone && tv.said("front=gave_up"));
+        tv = new FakeTv(); c = rec(false, "", false); c.ui = true;
+        A11yList.carryStep(c, tv, "replaced", 0, t0, fresh);
+        tv.front = true;
+        A11yList.carryStep(c, tv, "alarm", 1000, t0 + 10_000, fresh);
+        check("carry: once our home is in front nothing more is tried", tv.fronts.size() == 1 && c.frontDone && tv.said("front=home_in_front"));
+        tv = new FakeTv(); c = rec(false, "", false); c.ui = true;
+        A11yList.carryStep(c, tv, "replaced", 0, t0 + 50_000 - 50_000, fresh);
+        A11yList.carryStep(c, tv, "start", 0, t0 + 46_000, fresh);
+        check("carry: later than 45 s after the replace our home is no longer pulled to the front (the owner may have opened something)", tv.fronts.size() == 1 && tv.said("front=gave_up"));
+        tv = new FakeTv(); c = rec(false, "", false);
+        A11yList.carryStep(c, tv, "replaced", 0, t0, fresh);
+        check("carry: an update not started from our UpdateActivity never brings the home forward", tv.fronts.isEmpty());
+        tv = new FakeTv(); c = rec(true, "", false);
+        A11yList.Carry old = new A11yList.Carry(); old.gen = 55; old.at = 55; old.code = 178; old.expected = -1; old.muted = true; old.vol = -1; old.ui = true;
+        old.hadOurs = false;
+        tv.version = 179; tv.muted = false;
+        A11yList.carryStep(old, tv, "replaced", 0, 55 + 1000, fresh);
+        check("carry: a record the build before wrote (no volume, no expected build) is still carried over: muted again, every step logged", tv.mutes == 1 && tv.said("audio=muted") && tv.said("a11y=no_a11y_entry") && tv.said("step=armed"));
         // 12. a record from long ago is dropped, not applied to an unrelated replace
         tv = new FakeTv(); c = rec(true, "", false);
         A11yList.carryStep(c, tv, "replaced", 0, 1000 + fresh + 1, fresh);
