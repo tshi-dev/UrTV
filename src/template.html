@@ -2886,6 +2886,7 @@ function renderCard(card, animate, keepSize){
   const wrote = setHTML(ul, rows.join(''), animate);
   if(!keepSize){ card.base = rows.length; card.len0 = card.len || 0; }   // what full size holds: the rows of a page, the length of the text
   if(P === 'matches'){ fillCrests(ul); if(wrote){ shortenRows(ul); fitLive(ul); } }
+  fitQuote(ul);
   if(CONFIG.tafsir) fitTafsir(ul);
   ul.classList.remove('flip');
   if(animate){ void ul.offsetWidth; ul.classList.add('flip'); }
@@ -3319,6 +3320,20 @@ const VERSES = __VERSES__;   // assets/shared/verses.json
 const HADITH = __HADITH__;   // assets/shared/hadith.json, through src/build.py
 // the text's size steps down with its length (characters): up to 180 as it was, then three smaller steps
 const quoteSize = n => n > 420 ? ' q3' : n > 300 ? ' q2' : n > 180 ? ' q1' : '';
+// a long text on a small screen steps down one size more (q1..q4) until the card has 4 px to spare under its 42% and above the bottom bar,
+// so a font whose lines are a pixel taller than expected still fits (the next size is the text's own smaller class)
+function fitQuote(ul){
+  const li = ul.querySelector('li.quote');
+  if(!li || CONFIG.widget || CARDS.length > 1) return;   // the screensaver's one card beside the clock; the launcher's cards are fitted by fitCards
+  const card = ul.closest('.week'), bar = document.querySelector('.bottom');
+  if(!card || !bar) return;
+  const crowded = () => { const c = card.getBoundingClientRect(); return c.height > .42 * innerHeight - 4 || c.bottom > bar.getBoundingClientRect().top - 8; };
+  let at = ['q1', 'q2', 'q3', 'q4'].findIndex(k => li.classList.contains(k)) + 1;
+  while(at < 4 && crowded()){
+    if(at) li.classList.remove('q' + at);
+    li.classList.add('q' + ++at);
+  }
+}
 // the tafsir cut at a word, «…» after it, until it fits three lines (the build already limits its length); on a card
 // that is already full (a long verse on a small screen) fewer lines, none at all if not even one fits
 function fitTafsir(ul){
