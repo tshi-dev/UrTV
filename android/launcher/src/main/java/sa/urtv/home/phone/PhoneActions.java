@@ -313,11 +313,11 @@ final class PhoneActions implements Actions {
 
     @Override public Map<String, Object> portfolio() {
         sa.urtv.home.S.init(app);
-        return sa.urtv.home.PortfolioPhone.read(app, System.currentTimeMillis());
+        return sa.urtv.home.PortfolioPhone.read(app, sa.urtv.home.PortfolioPhone.now());
     }
 
     @Override public Result portfolioSave(String code, List<String> buys) {
-        String r = sa.urtv.home.PortfolioPhone.save(app, System.currentTimeMillis(), code, buys);
+        String r = sa.urtv.home.PortfolioPhone.save(app, sa.urtv.home.PortfolioPhone.now(), code, buys);
         return "saved".equals(r) ? Result.ok(r) : Result.fail(r);
     }
 

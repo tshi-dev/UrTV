@@ -71,8 +71,13 @@ want = {
     "kept_locked": "com.example.a,@wifi", "kept_allowed": "com.example.kids", "kept_kids": "true",   # only the PIN is replaced
     "plain_kept": "false",
     "none_long": "WRONG", "none_long_fails": "1",           # no record: no recovery code at all
-    "look_wrong": "false", "look_right": "true", "look_fails": "0",
+    "look_wrong": "false", "look_right": "true", "look_fails": "1",   # a look is a try, counted when made (R01)
     "probed_wrong": "WRONG", "probed_wrong_fails": "1", "probed_right": "OK", "probed_right_fails": "0",
+    "submit_twice": "LOCKED 1",
+    "back_loop": "....." + "L" * 15 + " 5 5",   # Back/reopen: 20 abandoned wrong looks lock after 5
+    "look_while_locked": "false 5", "late_look": "false 1", "cancel_extended": "2",
+    "extended_submitted": "WRONG 3", "recover_refund": "RECOVER 3",
+    "recover_refund_lock": "true RECOVER 4 false", "submit_dismiss": "1",
     "keys4": "00010 1234",                                   # no recovery: on the fourth digit, a fifth not taken
     "keys8_pin": "00021 1234 4",
     "keys8_wrong4": "01 1111", "keys8_slow_look": "01 1111",

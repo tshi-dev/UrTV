@@ -177,20 +177,17 @@ final class Parental {
         // a build with a recovery code (PinRecovery, AGENTS.md) lets the keypad listen past four digits; the screen is the same
         String recovery = BuildConfig.PIN_RECOVERY;
         boolean longer = PinRecovery.on(recovery);
-        String[] probed = {null};
-        boolean[] probedRight = {false};
+        // one owner for this keypad's tries (PinGate): its look at four digits is counted when made, so Back, a dismissed keypad or a
+        // look answered after it closed is still a try, and the entry it gives up is settled once
+        PinGate gate = new PinGate(pin(a), recovery);
         PinPrompt.Probe probe = !longer ? null : (four, answer) -> WORK.execute(() -> {
-            boolean right = pin(a).matches(four, System.currentTimeMillis());
-            a.runOnUiThread(() -> {
-                probed[0] = four;
-                probedRight[0] = right;
-                answer.accept(right);
-            });
+            boolean right = gate.look(four, System.currentTimeMillis());
+            a.runOnUiThread(() -> answer.accept(right));
         });
         PinPrompt.ask(a, S.t("أدخل الرمز"), name == null || name.isEmpty() ? S.t("هذا مقفل بالرمز الأبوي") : S.t("«%s» مقفل بالرمز الأبوي", S.tv(name)), before,
                 PinRecovery.LONGEST, probe, code ->
                 WORK.execute(() -> {
-                    PinStore.Result r = PinGate.check(pin(a), code, recovery, probed[0], probedRight[0], System.currentTimeMillis());
+                    PinStore.Result r = gate.submit(code, System.currentTimeMillis());
                     a.runOnUiThread(() -> {
                         if (a.isFinishing() || a.isDestroyed()) return;
                         if (r.kind == PinGate.RECOVER) {

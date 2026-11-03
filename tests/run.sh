@@ -38,6 +38,8 @@ python3 tests/type_test.py
 python3 tests/tester_fixes_test.py   # the tester's steps 16 to 20 (TCL, build 174): the fixes without a JVM case of their own
 python3 tests/setup_lang_test.py   # Arabic is the default everywhere; the installer's «العربية | English» switch
 python3 tests/fix179_test.py   # build 179 re-check: the round buttons, Tilawah rows, PIN pad, settings gap, markets, football names
+python3 tests/portfolio_window_test.py   # «محفظتي» and the phone: the extra never trusted, only the TV renews the window (4.2 review R02, R03)
+python3 tests/reminder_fixes_test.py   # reminders: the next repeat stays on the alarm, overlapping ones each delivered once, calendar days over summer time (4.2 review R04, R07, R08)
 python3 tests/spacing_178_test.py   # build 178 alignment: footers inside y 1026, gaps on the 8 px scale, matches and markets by keys
 python3 tests/setup_i18n_test.py   # «إعداد تلفزيوني» in English: the start, plan and progress screens (build 178 GO)
 python3 tests/stream_url_test.py   # the live stations: radiojar's https -> http redirect, qurango's random 500 tried again

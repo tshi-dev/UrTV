@@ -55,6 +55,11 @@
         android:name="sa.urtv.home.OPEN_UPDATE"
         android:protectionLevel="signature" />
 
+    <!-- «تحكم من الجوال»: only our two apps (same signing key) may open the pairing screen from outside (the screensaver's settings) -->
+    <permission
+        android:name="sa.urtv.home.OPEN_PHONE"
+        android:protectionLevel="signature" />
+
     <uses-feature android:name="android.software.leanback" android:required="false" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 
@@ -235,10 +240,11 @@
             android:theme="@android:style/Theme.Material.NoActionBar" />
 
         <!-- «تحكم من الجوال»: the owner's switch and the pairing screen. Nothing listens until «تشغيل» is pressed there. Exported only so the
-             screensaver's settings can open it, as with DockActivity. -->
+             screensaver's settings can open it, behind a signature permission (same key) as UpdateActivity: no other app can. -->
         <activity
             android:name=".PhoneActivity"
             android:exported="true"
+            android:permission="sa.urtv.home.OPEN_PHONE"
             android:label="تحكم من الجوال"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Material.NoActionBar" />

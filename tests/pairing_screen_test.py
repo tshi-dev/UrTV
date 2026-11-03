@@ -19,8 +19,8 @@ offer = on[on.index("shownToken = o.token;"):on.index("update();")]
 check("two columns, right to left: the address and the code first (the right), then the QR code (the left)",
       "body.setOrientation(LinearLayout.HORIZONTAL);" in offer and offer.index("body.addView(info") < offer.index("body.addView(qrCol"))
 check("the address stands out: large (28), gold, in its own framed box (/p, or /m from «محفظتي»'s «أسهل من الجوال»)",
-      'boxed(ltr(control.address() + (portfolio ? "/m" : "/p")), 28, GOLD, 0f)' in offer
-      and 'QrCode.encode(portfolio ? control.pairUrl(o).replace("/p#", "/m#") : control.pairUrl(o))' in offer)
+      'boxed(ltr(control.address() + (portfolioShown() ? "/m" : "/p")), 28, GOLD, 0f)' in offer
+      and 'QrCode.encode(portfolioShown() ? control.pairUrl(o).replace("/p#", "/m#") : control.pairUrl(o))' in offer)
 check("the code stands out: very large (48), in its own framed box, its six digits read as two threes", "boxed(ltr(spaced(o.code)), 48, TEXT, 0.08f)" in offer
       and 'code.substring(0, 3) + " " + code.substring(3)' in act)
 check("a value's box: a glass panel of its own (GlassPaint.panel, the glass look), one line", "t.setBackground(GlassPaint.panel(this, look, 16));" in act and "t.setSingleLine(true);" in act)

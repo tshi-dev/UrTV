@@ -61,11 +61,12 @@ public class ConfigProvider extends ContentProvider {
             return o;
         }
         if (isTasks(uri)) {
-            MatrixCursor t = new MatrixCursor(new String[] {"i", "t", "done", "at", "id", "due", "bf", "rp", "snd", "wh", "sn"});
+            MatrixCursor t = new MatrixCursor(new String[] {"i", "t", "done", "at", "id", "due", "bf", "rp", "snd", "wh", "sn", "tz"});
             List<Task> all = p.tasks();
+            String tz = p.cityTz();   // the zone the repeats count whole days in (the home's alarm plans the next one with it)
             for (int k = 0; k < all.size(); k++) {
                 Task x = all.get(k);
-                t.addRow(new Object[] {k + 1, x.text, x.done ? 1 : 0, x.at, x.id, x.due, x.before, x.repeat, x.sound ? 1 : 0, x.where, x.snooze});
+                t.addRow(new Object[] {k + 1, x.text, x.done ? 1 : 0, x.at, x.id, x.due, x.before, x.repeat, x.sound ? 1 : 0, x.where, x.snooze, tz});
             }
             return t;
         }
