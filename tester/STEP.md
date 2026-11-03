@@ -1,4 +1,4 @@
-«✅ GO — build 179 (step 24 only)»
+«✅ GO — build 179 (steps 24, 25)»
 
 **1. Ask the owner for the PIN recovery code RIGHT NOW, before waiting for anything. Hold it in chat memory only, never in a file, log, commit, script or screenshot. If he doesn't answer, carry on without it, and report step 21 as "no code given".**
 
@@ -329,3 +329,51 @@ what: DIAGNOSIS ONLY: find who unmutes the TV and who starts YouTube when our ap
 | Z | Muted (check); `adb shell am force-stop com.google.android.youtube.tv`; HOME, our home in front (the Home holder as before); `optimize/saver.sh updatechannel latest`; the log stopped | "restored: yes/no" |
 
 REPORT.md (on `work/tester-report`): "step 24 (diagnose: update unmutes and opens YouTube)", the build, the path used in row 3 (the app's «تحديث تلفزيوني» or `adb install -r`), a timeline (t+seconds: event: each install, PACKAGE_REPLACED, our process death and restart, each mute change, each activity start, each media session that played), then ONE line «who unmuted: …» and ONE line «who launched YouTube: …», each with its evidence (the log lines, cleaned). If neither happened in this run, say so plainly and which path was used. No personal data, no screenshots, never the full log. Push; tell the owner in Arabic what was found.
+
+---
+step: 25 (right after step 24, same build 179; the owner is not needed): marketing screenshots
+what: clean screenshots for ads and promotion, from a demo-clean TV. Follow tester/RULES.md, except that the CHECKED images of this step go to `tester/shots/marketing/` on `work/tester-report` (the owner asked for them). The TV stays MUTED the whole time. Every key is yours (focus checked with the dump, as in step 18). Raw shots stay in `optimize/run/step25/` on the PC.
+- **Save first** (restored in Z): `optimize/saver.sh show` (all of it), `optimize/saver.sh export > optimize/run/step25/settings-before.json`, `optimize/dock.sh show`, `optimize/saver.sh tasks list` (on the PC only), `optimize/photos.sh list`, `dock.sh pin status`, the Home holder.
+
+**Make the TV demo-clean:**
+- City: `optimize/saver.sh city مكة` (مكة المكرمة) and `optimize/saver.sh prayermethod auto` (Umm al-Qura in Saudi Arabia; `saver.sh show` must say so; if not, set Umm al-Qura by its name in «الموقع والصلاة» with keys).
+- Photos: the built-in wallpapers only. If `photos.sh list` shows ANY own photo: do NOT clear or delete them (they are the owner's); write «own photos present: skipped» for every shot where the background is a photo, and take only the screens with no photo behind (or ask the supervisor). With none, go on.
+- Tasks: `optimize/saver.sh tasks add 'اشتر خبز'` and `optimize/saver.sh tasks add 'موعد الساعة ٥' --at '<today> 17:00' --where home` (a reminder for shot 8); delete both in Z (`tasks del N`, N from `tasks list`), and leave the owner's own tasks alone. If his tasks show on a screen, skip that shot or wait for the screen without them; never delete his.
+- Favourites: `optimize/dock.sh set` with common apps only: YouTube (`com.google.android.youtube.tv`), Netflix, Shahid, ثمانية / TOD if installed (check with `pm list packages`); no personal apps. Put the old order back in Z.
+- Holdings: made-up ones in «محفظتي» by keys: أرامكو 50, الراجحي 20, Apple 5. Delete them in Z.
+- No PIN on screen, no phone pairing code, no Wi-Fi name, no IP, no serial, no notification or toast showing (wait for a toast to go; take the shot again if one shows).
+- Sound muted the whole time.
+
+**Capture** at full resolution: `adb exec-out screencap -p > optimize/run/step25/<name>.png` (PNG, the TV's full size; write the size once).
+
+**Arabic, look «رملي» light** (`saver.sh lang ar`, `saver.sh look sand`, `saver.sh appearance light`), names `ar-sand-NN-<screen>.png`:
+
+| # | Screen | file |
+|---|---|---|
+| 01 | home | `ar-sand-01-home.png` |
+| 02 | home with the options box open on YouTube (long OK on its tile) | `ar-sand-02-options.png` |
+| 03 | Control Center | `ar-sand-03-control.png` |
+| 04 | settings hub | `ar-sand-04-settings.png` |
+| 05 | the adhan page | `ar-sand-05-adhan.png` |
+| 06 | «الساعة والأرقام» | `ar-sand-06-clock.png` |
+| 07 | the parental card, on: only if NO PIN was set at the start: `dock.sh pin set 1234` just for this shot (the PIN is never on screen; take the card, not a PIN prompt), then `dock.sh pin off` at once. If a PIN WAS set, take the card as it is (on) without typing anything | `ar-sand-07-parental.png` |
+| 08 | «المهام» with the reminder (the demo tasks only) | `ar-sand-08-tasks.png` |
+| 09 | «تلاوة وأذان» | `ar-sand-09-tilawah.png` |
+| 10 | the screensaver page, `saver.sh seconds on` (back in Z) | `ar-sand-10-screensaver.png` |
+| 11 | the football home (`saver.sh homelayout football`) | `ar-sand-11-football.png` |
+| 12 | «المباريات» list | `ar-sand-12-matches.png` |
+| 13 | a match detail | `ar-sand-13-match.png` |
+| 14 | «الأسواق»: السوق / قائمتي / محفظتي (one shot per tab: `-14a-market`, `-14b-watchlist`, `-14c-portfolio`) | `ar-sand-14a-market.png` … |
+| 15 | the stock card with the year range | `ar-sand-15-stock.png` |
+| 16 | «إعداد تلفزيوني» start screen (view only, no run) | `ar-sand-16-setup.png` |
+
+**Repeat 01, 04, 11 and 14** (all three tabs): in the glass look, dark (`saver.sh look glass`, `appearance dark`) → `ar-glass-NN-…png`; and in English (`saver.sh lang en`, glass dark) → `en-glass-NN-…png` (e.g. `en-glass-11-football.png`).
+
+**Check every image before pushing it** (open it and look, at full size): no city other than مكة المكرمة / Makkah, no personal names, no task but the two demo ones, no Wi-Fi name, IP, serial or phone code, no holdings but the made-up ones, no notification or toast, no own photo. Crop or blur anything doubtful; if unsure, leave the image out (write «skipped: <reason>»).
+
+| # | Do | Right when |
+|---|---|---|
+| P | Push the checked images to `tester/shots/marketing/` on `work/tester-report`, plus `tester/shots/marketing/index.md` listing each file with one line (screen, look, language) | only checked images; index lists every file pushed |
+| Z | Everything back: `optimize/saver.sh import optimize/run/step25/settings-before.json` (preview, then `--yes`: the city, method, look, appearance, lang, seconds, home layout, cards); the two demo tasks deleted (the owner's own untouched); the dock order as at the start (`dock.sh set …`); the made-up holdings deleted; the PIN state as at the start; `updatechannel latest`; the Home holder as at the start; muted | "restored: yes/no" with any value that differs; `tasks list` count = the start count |
+
+REPORT.md (on `work/tester-report`): "step 25 (marketing screenshots)", one line per image: done, or skipped with the reason; "restored: yes/no". No personal data. Push; tell the owner in Arabic where the pictures are and how many.
