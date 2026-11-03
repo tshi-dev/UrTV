@@ -76,8 +76,8 @@ final class ControlLayout {
         int tw = px(wDp, density), th = px(hDp, density);
         boolean tiny = hDp < MIN_H;
         int panelW = tw * c + px(GAP, density) * (c - 1) + px(SIDE_PAD, density);
-        // each tile rounded up by half a pixel adds up on a row of five: never past MAX_W of the screen by more than a pixel
-        int over = panelW - ((int) Math.ceil(screenW * MAX_W) + 1);
+        // each tile rounded up by half a pixel adds up on a row of five: never past MAX_W of the screen by more than the rounding of the limit itself
+        int over = panelW - ((int) Math.ceil(screenW * MAX_W));
         if (over > 0) {
             tw -= (over + c - 1) / c;
             panelW = tw * c + px(GAP, density) * (c - 1) + px(SIDE_PAD, density);

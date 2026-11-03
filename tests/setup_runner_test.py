@@ -35,9 +35,9 @@ check("the screen keeps the PIN gate and the buttons' guard against overlays (ev
 check("one way to set up: the screen starts only the full run or the undo (the old five-step run is gone from the runner too)",
       "SetupRunner.Kind.FULL" in act and "Kind.SETUP" not in act and "SETUP" not in runner[runner.index("enum Kind"):runner.index("enum State")] and "SetupEngine.plan()" not in act)
 check("the screen: «جهّز كل شي», the plan with «ابدأ» and «إلغاء», the extras box on by default, «كمّل» for the Wi-Fi, the QR of the report, «تراجع»",
-      all(w in act for w in ('button("جهّز كل شي")', 'button("ابدأ")', 'button("إلغاء")', 'button("كمّل")', "private boolean extras = true;", "QrCode.encodeLarge(url)",
+      all(w in act for w in ('button(S.t("جهّز كل شي"))', 'S.t("ابدأ")', 'S.t("إلغاء")', 'S.t("كمّل")', "private boolean extras = true;", "QrCode.encodeLarge(url)",
                              '"تراجع (يرجّع التلفزيون كما كان)"', "SetupRunner.get().confirm(extras)", "SetupRunner.get().cancel()", "SetupRunner.PROMPT_LATE", "SetupRunner.WIFI_ASK_TEXT")))
-check("the progress screen: one line per step, ✓ done, – تُرك, ✕ not done", all(w in act for w in ('mark = "✓"', 'mark = "–"', '" (تُرك)"', 'mark = "✕"')))
+check("the progress screen: one line per step, ✓ done, – تُرك, ✕ not done", all(w in act for w in ('mark = "✓"', 'mark = "–"', 'S.t("(تُرك)")', 'mark = "✕"')))
 check("the counts follow the person's digits setting (the screens' DigitsText)", "DigitsText.convert(s, Digits.latin())" in act)
 check("the 20 s notice is the owner's wording", 'PROMPT_LATE = "ما ظهرت الرسالة؟ أعد تشغيل التلفزيون وافتح «إعداد تلفزيوني» واضغط «جهّز كل شي» وخلك عند التلفزيون"' in runner)
 check("a run lives in a foreground service (it outlives the screen), not exported", 'android:name=".setup.SetupService" android:exported="false"' in manifest

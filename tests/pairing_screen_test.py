@@ -27,7 +27,7 @@ check("a value's box: a glass panel of its own (GlassPaint.panel, the glass look
 check("the QR code a little smaller (240 dp), beside the values, not over them", "new LinearLayout.LayoutParams(dp(240), dp(240))" in offer and "dp(300), dp(300)" not in act)
 check("the screen is wide enough for both on one TV screen (up to 1000 dp, the screen less 96 dp), with less room above and below",
       "Math.min(Math.round(getResources().getDisplayMetrics().widthPixels / getResources().getDisplayMetrics().density) - 96, 1000)" in act
-      and "col.setPadding(0, dp(20), 0, dp(16));" in act)
+      and "col.setPadding(0, dp(28), 0, dp(16));" in act)
 # a rough height at 1080p and 720p (both 540 dp tall): text is about 1.4 times its size; the taller of the two columns, with one phone
 txt = lambda sp: sp * 1.4
 info = (txt(15) + 6) + (txt(28) + 22 + 14) + (txt(15) + 6) + (txt(48) + 22 + 8) + (txt(13) + 14) + (txt(16) + 4) + (46 + 8) + (4 + 52 + 8)

@@ -323,7 +323,7 @@ public class SetupActivity extends Activity {
         add(text(S.t("• تطبيق تحتاجه صار موقوفاً: «تراجع» يرجّع كل ما أوقفناه."), 14, "Regular", TEXT), dp(4));
         add(text(S.t("• انقطع الواي فاي: اتصل به من إعدادات التلفزيون ← الشبكة."), 14, "Regular", TEXT), dp(4));
         add(text(S.t("• تبي التلفزيون كما كان: فعّل «تصحيح USB» واضغط «تراجع»."), 14, "Regular", TEXT), dp(12));
-        undo = button(S.t("تراجع (يرجّع التلفزيون كما كان)")));
+        undo = button(S.t("تراجع (يرجّع التلفزيون كما كان)"));
         undo.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(true); } });
         add(undo, dp(12));
         final TextView ok = button(S.t("تم"));

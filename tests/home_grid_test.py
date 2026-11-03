@@ -16,8 +16,8 @@ def check(name, ok, detail=""):
     failed += not ok
 
 cell = main[main.index("private LinearLayout.LayoutParams rowCell(int i, int n, int height)"):].split("\n    }\n")[0]
-check("one rule for a row's cells: start and end margins, 10 dp each side between two cells, none at the row's ends",
-      "p.setMarginStart(i == 0 ? 0 : dp(10));" in cell and "p.setMarginEnd(i == n - 1 ? 0 : dp(10));" in cell and "setMargins(" not in cell)
+check("one rule for a row's cells: start and end margins, 6 dp each side (24 px apart) between two cells, none at the row's ends",
+      "p.setMarginStart(i == 0 ? 0 : dp(6));" in cell and "p.setMarginEnd(i == n - 1 ? 0 : dp(6));" in cell and "setMargins(" not in cell)
 check("the grid and its last row's padding use it; the favourites (and the row rebuilt in «تعديل المفضلة») take the bar's own cell (FavBar)",
       "dockRow.addView(tile, dockCell(i, dock.size()));" in main and "dockRow.addView(box, dockCell(i, order.size()));" in main
       and "row.addView(tile, rowCell(i % cols, cols, -2));" in main and "row.addView(new View(this), rowCell(i, cols, 1));" in main)
