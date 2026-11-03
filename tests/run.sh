@@ -29,6 +29,7 @@ python3 tests/phone_userland_test.py
 python3 tests/adb_client_test.py
 python3 tests/setup_engine_test.py
 python3 tests/saver_hold_test.py
+python3 tests/mute_keep_test.py   # a muted TV stays muted after its own sleep or a restart (step 27)
 python3 tests/setup_runner_test.py
 python3 tests/setup_prep_test.py
 python3 tests/setup_community_test.py

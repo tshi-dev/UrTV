@@ -121,6 +121,7 @@
     </queries>
 
     <application
+        android:name=".HomeApp"
         android:label="تلفزيونك"
         android:icon="@mipmap/ic_launcher"
         android:banner="@drawable/banner"
