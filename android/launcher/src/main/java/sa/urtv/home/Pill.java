@@ -24,6 +24,8 @@ final class Pill extends LinearLayout {
     private static final long MS = 150;
     /** the row's height in dp: every pill, the circles and the one with the focus, is this tall, so they share one centre line */
     static final int HEIGHT = 34;
+    /** dp between two buttons of the top row (and the now-playing card): 12 dp = 24 px at 1080p, on the 8 px scale */
+    static final int GAP = 12;
 
     private final float density;
     private final ImageView icon;

@@ -52,7 +52,7 @@ check("one source only: CI's two files, the 15-minute one and the daily one (no 
       urls == {"https://raw.githubusercontent.com/tshi-dev/UrTV/data-markets/markets/markets.json",
                "https://raw.githubusercontent.com/tshi-dev/UrTV/data-markets/markets/daily.json"}, urls)
 check("the daily file is asked only by the markets page, at most once a day; the screensaver's page never asks it",
-      "MarketFile.loadDaily(getApplicationContext());" in act and "DAY_OF_YEAR" in text(HOME / "MarketFile.java") and "daily.json" not in page
+      "MarketFile.loadDaily(app);" in act and "DAY_OF_YEAR" in text(HOME / "MarketFile.java") and "daily.json" not in page
       and sum("loadDaily(" in text(p) for p in HOME.rglob("*.java")) == 2)
 check("no card for a source we do not have: sectors, whole-market turnover, dividends, announcements, news",
       not re.search(r"القطاعات|توزيع|إعلانات الشركة|السيولة|قيمة التداول", act), re.findall(r"القطاعات|توزيع|إعلانات الشركة", act))

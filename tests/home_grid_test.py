@@ -25,8 +25,8 @@ check("no row cell is placed with left and right margins any more (they put the 
       not re.search(r"setMargins\(i (%|==)", main), re.findall(r".*setMargins\(i.*", main))
 check("«كل التطبيقات» is inset like the grid on both sides (68 dp), the grid 68 dp too",
       "content.addView(appsLabel, llp(-2, -2, dp(68), dp(8), dp(68), dp(18)));" in main and "content.addView(grid, llp(-1, -2, dp(68), 0, dp(68), dp(160)));" in main)
-check("the favourites' tray (FavBar): 120 in from the screen's sides and 54 from its bottom, 32 of padding beside the tiles and 24 above and under",
-      "hero.addView(bottom, lp(-1, -2, Gravity.BOTTOM, bar(FavBar.SIDE), 0, bar(FavBar.SIDE), bar(FavBar.BOTTOM)));" in main
+check("the favourites' tray (FavBar): 128 in from the screen's sides, 94 from its bottom at rest (54 lowered), 24 of padding beside the tiles and 24 above and under",
+      "hero.addView(bottom, lp(-1, -2, Gravity.BOTTOM, bar(FavBar.SIDE), 0, bar(FavBar.SIDE), bar(FavBar.REST_BOTTOM)));" in main
       and "dockRow.setPadding(bar(FavBar.PAD_SIDE), bar(FavBar.PAD_TOP), bar(FavBar.PAD_SIDE), bar(FavBar.PAD_TOP));" in main)
 check("the home is right to left whatever the TV's language (the English TV too); «اللغة» English is left to right (Dir)", "root.setLayoutDirection(Dir.layout());" in main
       and main.count("setLayoutDirection(View.LAYOUT_DIRECTION_LTR)") == 0)

@@ -43,7 +43,7 @@ check("MainActivity: ◀ is the previous surah and ▶ the next while the card h
       "NowPlaying.prev(this); else NowPlaying.next(this)" in main and "if (s.show && !s.radio) {" in main and "KEYCODE_DPAD_LEFT) NowPlaying.prev" in main)
 check("MainActivity: it is the first child of the pills row, hung evenly over its top and bottom so the row stays a pill's height,"
       " hidden until something plays: the pills do not move",
-      "int hang = dp((NowCard.HEIGHT - Pill.HEIGHT) / 2f);" in main and "right.addView(nowCard, 0, sideLlp(-2, dp(NowCard.HEIGHT), 0, -hang, dp(10), -hang))" in main
+      "int hang = dp((NowCard.HEIGHT - Pill.HEIGHT) / 2f);" in main and "right.addView(nowCard, 0, sideLlp(-2, dp(NowCard.HEIGHT), 0, -hang, dp(Pill.GAP), -hang))" in main
       and "nowCard.setVisibility(View.GONE);" in main)
 import re
 num = lambda pat, src: float(re.search(pat, src).group(1))

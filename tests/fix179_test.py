@@ -21,8 +21,10 @@ def text(p):
 
 
 main = text(HOME / "MainActivity.java")
-pills = re.findall(r"sideLlp\(-2, dp\((?:Pill|NowCard)\.HEIGHT\), 0, [-\w]+, dp\((\d+)\), [-\w]+\)", main)
-check("the round buttons at the top of the home: 24 px apart (12 dp), every one added the same way", len(pills) == 6 and set(pills) == {"12"}, pills)
+pills = re.findall(r"sideLlp\(-2, dp\((?:Pill|NowCard)\.HEIGHT\), 0, [-\w]+, dp\(([\w.]+)\), [-\w]+\)", main)
+gap = int(re.search(r"static final int GAP = (\d+);", text(HOME / "Pill.java")).group(1))
+check("the round buttons at the top of the home: every one (and the now-playing card) is added with the one gap Pill.GAP, which is 24 px at 1080p (12 dp at density 2) and on the 8 px scale",
+      len(pills) == 6 and set(pills) == {"Pill.GAP"} and gap * 2 == 24 and (gap * 2) % 8 == 0, (pills, gap))
 row = text(RES / "layout/item_row.xml")
 check("Tilawah rows: 32 px of padding above and below the text (16 dp), 32 at the start, 32 at the end; rows 16 px apart",
       'android:paddingTop="16dp"' in row and 'android:paddingBottom="16dp">' in row and 'android:paddingEnd="16dp"' in row
@@ -36,7 +38,8 @@ check("settings pages: 64 px above the first line, a group's header 32 above and
       "list.setPadding(dp(8), dp(32), dp(8), dp(16));" in settings and "t.setPadding(dp(10), dp(16), dp(10), dp(8));" in settings and "head.setPadding(0, 0, 0, dp(16));" in settings)
 mk = text(HOME / "MarketsActivity.java")
 check("markets: the page ends at the safe area (5 % under it), so no list starts under y 1026 and the lists scroll in",
-      "page.setPadding(dp(60), dp(28), dp(60), Math.round(getResources().getDisplayMetrics().heightPixels * 0.05f));" in mk)
+      "page.setPadding(Math.round(dm.widthPixels * 0.05f), Math.round(dm.heightPixels * 0.05f), Math.round(dm.widthPixels * 0.05f), Math.round(dm.heightPixels * 0.05f));" in mk
+      and "page.setPadding(dp(" not in mk)
 check("markets: stock, volume and watchlist rows have 24 px above and below their text (box wider than 600 px)", mk.count("r.setPadding(dp(16), dp(12), dp(16), dp(12));") >= 3 and "r.setPadding(dp(16), dp(8), dp(16), dp(8));" not in mk)
 check("markets: pressing «أخفِ/أظهر المبالغ» keeps «محفظتي»: the tab's own re-draw does not let the focus that falls on the tabs switch the tab",
       "private boolean rebuilding;" in mk and "if (has && k != tab && !rebuilding) want(k);" in mk and "if (k == tab) {\n            rebuilding = true;" in mk)
@@ -45,4 +48,12 @@ check("football games card: a club's name takes two lines and the league label w
       re.search(r"\.ftm \.nm\{white-space:normal;[^}]*-webkit-line-clamp:2", tpl) is not None
       and re.search(r"\.fct span:first-child\{[^}]*-webkit-line-clamp:2", tpl) is not None)
 check("dist matches the source (src/build.py)", text(ROOT / "dist/tv.html").count("-webkit-line-clamp:2") >= 2 and text(ROOT / "dist/tv-en.html").count("-webkit-line-clamp:2") >= 2)
+check("markets (review R11): no file is read or parsed on the UI thread: onCreate takes the in-memory copy, the worker parses the copy on the TV and then loads, a loading note shows meanwhile",
+      "data = MarketFile.last();" in mk and "MarketFile.cached(this)" not in mk and "deliver(gen, MarketFile.cached(app))" in mk and "deliver(gen, MarketFile.load(app, false))" in mk
+      and "private static volatile MarketData lastGood;" in text(HOME / "MarketFile.java") and 'loading ? S.t("جارٍ التحميل…")' in mk)
+check("…and a result is dropped by a pause, a newer load, a finishing or destroyed page", "if (gen != loadGen || isFinishing() || isDestroyed()) return;" in mk and "loadGen++;   // a load still running" in mk)
+fav = text(HOME / "FavBar.java")
+check("favourites tray (review R10): it rests 40 px higher (94 from the bottom) so the lowered tray ends at 1026; the fully lowered state is tested in fav_bar_test", "REST_BOTTOM = BOTTOM + 40" in fav and "bar(FavBar.REST_BOTTOM)" in main)
+svc = text(HOME / "setup/SetupService.java")
+check("the setup's ongoing notification is in the person's language (review R12)", svc.count("S.t(\"") == 3 and "S.init(this)" in svc and '"إعداد تلفزيوني", NotificationManager' not in svc)
 sys.exit(1 if failed else 0)

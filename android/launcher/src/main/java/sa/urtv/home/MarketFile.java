@@ -25,10 +25,19 @@ final class MarketFile {
 
     private static final String DAILY = "markets-daily.json";
 
-    /** the copy on the TV, with the year's daily closes when the TV has them; or null */
+    /** the last copy that parsed, kept in memory: a page opens with it at once, and nothing reads a file on the UI thread (build 179 review) */
+    private static volatile MarketData lastGood;
+
+    /** the copy in memory (never a file read); null before the first load of this process */
+    static MarketData last() { return lastGood; }
+
+    /** the copy on the TV, with the year's daily closes when the TV has them; or null. Reads and parses files: a background thread only. */
     static MarketData cached(Context c) {
         MarketData d = MarketData.parse(file(c, NAME));
-        return d == null ? null : d.withDaily(file(c, DAILY));
+        if (d == null) return lastGood;   // a broken or missing file keeps the last good copy
+        d = d.withDaily(file(c, DAILY));
+        lastGood = d;
+        return d;
     }
 
     private static String file(Context c, String name) {

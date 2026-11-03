@@ -7,7 +7,7 @@ public class FavBarRun {
         for (int h : new int[] {1080, 720}) {
             int w = h * 16 / 9;
             int x0 = FavBar.px(FavBar.SIDE, h), x1 = w - FavBar.px(FavBar.SIDE, h);
-            int bottom = h - FavBar.px(FavBar.BOTTOM, h), top = bottom - FavBar.px(FavBar.TRAY_H, h);
+            int bottom = h - FavBar.px(FavBar.REST_BOTTOM, h), top = bottom - FavBar.px(FavBar.TRAY_H, h);
             int tileW = FavBar.tileW(h), tileH = FavBar.px(FavBar.TILE_H, h), gap = FavBar.px(FavBar.GAP, h);
             int padS = FavBar.px(FavBar.PAD_SIDE, h), padT = FavBar.px(FavBar.PAD_TOP, h);
             int five = FavBar.SHOWN * tileW + (FavBar.SHOWN - 1) * gap + 2 * padS;
@@ -21,7 +21,7 @@ public class FavBarRun {
              .append(" five ").append(five).append(" width ").append(x1 - x0).append(" padS ").append(padS).append(" padT ").append(padT)
              .append(" topRoom ").append(padT - overTop).append(" sideRoom ").append(padS - overSide)
              .append(" liftedTopRoom ").append(padT - (tileH * lifted + FavBar.px(FavBar.LIFT, h)))
-             .append(" dropped ").append(bottom + FavBar.px(FavBar.WIDGET_DROP, h)).append(" screen ").append(h).append('\n');
+             .append(" dropped ").append(bottom + FavBar.px(FavBar.WIDGET_DROP, h)).append(" safe ").append(h - FavBar.px(FavBar.BOTTOM, h)).append(" screen ").append(h).append('\n');
         }
         o.append("tile1080 ").append(FavBar.tileW(1080)).append('\n');
         o.append("nameX ").append(FavBar.nameX(500, 0, 200, 1680)).append(' ').append(FavBar.nameX(50, 0, 200, 1680)).append(' ')

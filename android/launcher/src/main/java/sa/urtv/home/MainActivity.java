@@ -434,7 +434,7 @@ public class MainActivity extends Activity {
         bottom.setOrientation(LinearLayout.VERTICAL);
         bottom.setClipChildren(false);
         bottom.setClipToPadding(false);
-        hero.addView(bottom, lp(-1, -2, Gravity.BOTTOM, bar(FavBar.SIDE), 0, bar(FavBar.SIDE), bar(FavBar.BOTTOM)));   // the tray's place (FavBar)
+        hero.addView(bottom, lp(-1, -2, Gravity.BOTTOM, bar(FavBar.SIDE), 0, bar(FavBar.SIDE), bar(FavBar.REST_BOTTOM)));   // the tray's place (FavBar)
         bottomBlock = bottom;
 
         title = text(34, "sans-serif-medium", Color.WHITE);
@@ -597,7 +597,7 @@ public class MainActivity extends Activity {
         // [/updates bell]
         if (listenPillWanted(ConfigSnapshot.read(this).listenPillOn)) row.add(tilawah);   // «زر تلاوة وأذان»: hidden in the screensaver's settings, it is simply not in the row
         for (Pill p : row) {
-            right.addView(p, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(12), 0));
+            right.addView(p, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(Pill.GAP), 0));
             pills.add(p);
         }
         // «يُتلى الآن»: the first child of the row, so it sits at its right end and the pills keep their places when it comes
@@ -612,7 +612,7 @@ public class MainActivity extends Activity {
         // taller than a pill by 10 dp, hung 5 dp over the row's top and bottom: the row stays Pill.HEIGHT, so the pills do not move; it
         // reaches from 31 to 75 dp down, clear of the adhan bar (to 26) and the cards (from 84)
         int hang = dp((NowCard.HEIGHT - Pill.HEIGHT) / 2f);
-        right.addView(nowCard, 0, sideLlp(-2, dp(NowCard.HEIGHT), 0, -hang, dp(12), -hang));
+        right.addView(nowCard, 0, sideLlp(-2, dp(NowCard.HEIGHT), 0, -hang, dp(Pill.GAP), -hang));
         header.addView(right, new FrameLayout.LayoutParams(-2, -2, Dir.end() | Gravity.TOP));
         return header;
     }
@@ -705,7 +705,7 @@ public class MainActivity extends Activity {
         boolean want = listenPillWanted(setting), has = tilawahPill.getParent() == pillRow;
         if (want == has) return;
         if (want) {
-            pillRow.addView(tilawahPill, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(12), 0));
+            pillRow.addView(tilawahPill, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(Pill.GAP), 0));
             pills.add(tilawahPill);
         } else {
             boolean hadFocus = tilawahPill.hasFocus();
@@ -729,7 +729,7 @@ public class MainActivity extends Activity {
         boolean want = setting && isInstalled(SAVER_PKG);
         if (want == has) return;
         if (want) {
-            pillRow.addView(tasksPill, pillRow.indexOfChild(inputsPill) + 1, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(12), 0));
+            pillRow.addView(tasksPill, pillRow.indexOfChild(inputsPill) + 1, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(Pill.GAP), 0));
             pills.add(pills.indexOf(inputsPill) + 1, tasksPill);
         } else {
             boolean hadFocus = tasksPill.hasFocus();
@@ -757,7 +757,7 @@ public class MainActivity extends Activity {
         boolean want = UpdatesBell.shown(setting, family.kids, usable, e), has = bellPill.getParent() == pillRow;
         if (want == has) return;
         if (want) {
-            pillRow.addView(bellPill, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(12), 0));
+            pillRow.addView(bellPill, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(Pill.GAP), 0));
             pills.add(bellPill);
         } else {
             boolean hadFocus = bellPill.hasFocus();
@@ -784,7 +784,7 @@ public class MainActivity extends Activity {
         if (want) {
             int at = pills.contains(tilawahPill) ? pills.indexOf(tilawahPill) : pills.size();
             pills.add(at, centerPill);
-            pillRow.addView(centerPill, at + 1, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(12), 0));   // child 0 is «يُتلى الآن»
+            pillRow.addView(centerPill, at + 1, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(Pill.GAP), 0));   // child 0 is «يُتلى الآن»
         } else {
             control.dismiss();
             boolean hadFocus = centerPill.hasFocus();
@@ -1080,7 +1080,7 @@ public class MainActivity extends Activity {
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED))));
         card.setOnFocusChangeListener((v, has) -> {
             float s = has ? (inDock ? FavBar.FOCUS_SCALE : 1.1f) : 1f;
-            // from the games of the football home: the tray goes back to y 808 first, then the tile lifts (FavBar.DROP_MS)
+            // from the games of the football home: the tray goes back to its resting place (y 768) first, then the tile lifts (FavBar.DROP_MS)
             long wait = inDock && has && trayLowered ? FavBar.DROP_MS : 0;
             if (inDock && has) lowerTray(false);
             if (wait > 0) v.postDelayed(() -> { if (v.hasFocus()) scaleTo(v, s); }, wait); else scaleTo(v, s);   // a spring: a held arrow keeps its speed from card to card

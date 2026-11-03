@@ -88,7 +88,8 @@ public class MarketsActivity extends Activity {
 
         LinearLayout page = new LinearLayout(this);
         page.setOrientation(LinearLayout.VERTICAL);
-        page.setPadding(dp(60), dp(28), dp(60), Math.round(getResources().getDisplayMetrics().heightPixels * 0.05f));   // the page ends at the safe area (y 1026): the lists scroll in above it, none starts under it
+        android.util.DisplayMetrics dm = getResources().getDisplayMetrics();   // the 5 % safe area on all four sides, from the real viewport (at density 1.5, 60/28 dp were 90/42 px, outside it); the lists scroll in above the bottom one
+        page.setPadding(Math.round(dm.widthPixels * 0.05f), Math.round(dm.heightPixels * 0.05f), Math.round(dm.widthPixels * 0.05f), Math.round(dm.heightPixels * 0.05f));
         root.addView(page, new FrameLayout.LayoutParams(-1, -1));
 
         // the title at the start; the market's state and the last update at the end
@@ -145,7 +146,8 @@ public class MarketsActivity extends Activity {
         page.addView(scroll, new LinearLayout.LayoutParams(-1, 0, 1f));
         setContentView(root);
 
-        data = MarketFile.cached(this);
+        data = MarketFile.last();   // memory only: the files are read on the worker (onResume); until then «جارٍ التحميل…»
+        loading = data == null;
         int start = Arrays.asList(TABS).indexOf(getIntent().getStringExtra(EXTRA_TAB));
         tab = -1;
         want(Math.max(0, start));
@@ -158,20 +160,32 @@ public class MarketsActivity extends Activity {
         Portfolio.listener = changed;
         main.removeCallbacks(minute);
         minute.run();
+        final int gen = ++loadGen;
         new Thread(() -> {
-            MarketFile.loadDaily(getApplicationContext());   // the year's closes: only here, once a day
-            MarketData d = MarketFile.load(getApplicationContext(), false);
-            main.post(() -> {
-                if (isFinishing() || d == null) return;
-                data = d;
-                header();
-                show(tab, false);
-            });
+            android.content.Context app = getApplicationContext();
+            if (data == null) deliver(gen, MarketFile.cached(app));   // the copy on the TV first (parsed here, not on the UI thread)
+            MarketFile.loadDaily(app);   // the year's closes: only here, once a day
+            deliver(gen, MarketFile.load(app, false));
         }, "markets").start();
+    }
+
+    /** which load may still hand its result over: a pause, a stop or a newer load makes an older one drop it */
+    private int loadGen;
+    private boolean loading = true;
+
+    private void deliver(int gen, MarketData d) {
+        main.post(() -> {
+            if (gen != loadGen || isFinishing() || isDestroyed()) return;
+            loading = false;
+            if (d != null) data = d;
+            header();
+            show(tab, false);
+        });
     }
 
     @Override
     protected void onPause() {
+        loadGen++;   // a load still running delivers nothing to a page that is not in front
         super.onPause();
         main.removeCallbacks(minute);
         if (Portfolio.listener == changed) Portfolio.listener = null;
@@ -195,6 +209,7 @@ public class MarketsActivity extends Activity {
             s.append(S.t("يفتح بعد %s، %s %s", duration(MarketData.until(now, at)), S.tv(DAYS[Math.min(DAYS.length - 1, MarketData.weekday(at) - 1)]), clock(10, 0)));
         }
         state.setText(s);
+        if (data == null && loading) { updated.setText(S.t("جارٍ التحميل…")); return; }
         if (data == null || data.updated == 0) { updated.setText(S.t("لا أسعار بعد: يلزم اتصال بالإنترنت")); return; }
         Calendar k = Calendar.getInstance(TimeZone.getTimeZone(zone()));
         k.setTimeInMillis(data.updated);
@@ -284,7 +299,7 @@ public class MarketsActivity extends Activity {
     // ---------------------------------------------------------------- «السوق»
 
     private void market() {
-        if (data == null) { content.addView(note(S.t("لا أسعار بعد: يلزم اتصال بالإنترنت")), wrap()); return; }
+        if (data == null) { content.addView(note(loading ? S.t("جارٍ التحميل…") : S.t("لا أسعار بعد: يلزم اتصال بالإنترنت")), wrap()); return; }
         LinearLayout row1 = new LinearLayout(this);
         // TASI: value, change, and its day against yesterday's close
         MarketData.Quote tasi = data.quotes.get(MarketData.TASI);

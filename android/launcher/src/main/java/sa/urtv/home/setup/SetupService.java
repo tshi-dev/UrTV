@@ -82,11 +82,12 @@ public class SetupService extends Service {
     }
 
     private Notification notification() {
+        sa.urtv.home.S.init(this);   // the kept language (a service has no screen to ask)
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        if (nm != null) nm.createNotificationChannel(new NotificationChannel(CHANNEL, "إعداد تلفزيوني", NotificationManager.IMPORTANCE_LOW));
+        if (nm != null) nm.createNotificationChannel(new NotificationChannel(CHANNEL, sa.urtv.home.S.t("إعداد تلفزيوني"), NotificationManager.IMPORTANCE_LOW));
         return new Notification.Builder(this, CHANNEL)
-            .setContentTitle("إعداد تلفزيوني")
-            .setContentText("الإعداد يعمل… لا تطفئ التلفزيون.")
+            .setContentTitle(sa.urtv.home.S.t("إعداد تلفزيوني"))
+            .setContentText(sa.urtv.home.S.t("الإعداد يعمل… لا تطفئ التلفزيون."))
             .setSmallIcon(sa.urtv.home.R.drawable.ic_settings)
             .setOngoing(true)
             .build();

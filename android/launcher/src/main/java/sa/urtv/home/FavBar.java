@@ -8,8 +8,12 @@ package sa.urtv.home;
 final class FavBar {
     private FavBar() {}
 
-    /** the tray: 128 from each side (x 128 to 1792), 218 high, radius 32, its bottom 54 above the screen's (the 5 % safe area) */
-    static final int SIDE = 128, TRAY_H = 218, RADIUS = 32, BOTTOM = 54;
+    /**
+     * the tray: 128 from each side (x 128 to 1792), 218 high, radius 32. BOTTOM = the 5 % safe area: the tray's bottom is never lower than 54 above
+     * the screen's, even while it is lowered for a widget. At rest it stands WIDGET_DROP (40) higher, REST_BOTTOM above the screen's bottom
+     * (y 768 to 986), and lowering it puts it at y 808 to 1026 (build 179 review: it went to 1066, outside the safe area).
+     */
+    static final int SIDE = 128, TRAY_H = 218, RADIUS = 32, BOTTOM = 54, REST_BOTTOM = BOTTOM + 40;
     /** the tiles: 304×170 (a 16:9 banner), radius 16, 24 apart, and 24 from the tray's four sides: five tiles are exactly 24 + 5×304 + 4×24 + 24 = 1664 wide */
     static final int TILE_W = 304, TILE_H = 170, TILE_RADIUS = 16, GAP = 24, PAD_SIDE = 24, PAD_TOP = 24;
     /** five tiles show; more scroll inside the tray */
