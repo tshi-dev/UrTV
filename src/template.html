@@ -717,6 +717,8 @@
   .mdb button{flex:1;display:flex;align-items:center;justify-content:center;gap:calc(var(--u)*12);font:inherit;color:var(--fi);background:#fff;border:1px solid var(--fln);
     border-radius:calc(var(--u)*16);padding:calc(var(--u)*24);outline:none}
   .mdb button.pri{background:#21915F;color:#fff;border-color:#21915F}
+  .mdx.f{box-shadow:0 0 0 calc(var(--u)*3) #F7F6F1,0 0 0 calc(var(--u)*6) var(--fring)}
+  .mdb button:focus{outline:none}
   .mdb button.f{box-shadow:0 0 0 calc(var(--u)*3) #F7F6F1,0 0 0 calc(var(--u)*6) var(--fring)}
   .mdb svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.8}
   .mdb .fg{font-size:1em}
@@ -4184,13 +4186,13 @@ function mpDetailRender(){
     `<li class="mdp"><div><span>${FB_W.withPrayer}</span><i class="mds">${esc(fbSentence(ev))}</i></div>${mpLine(ev)}</li>`].join('');
   const btns = mpButtons(ev, now);
   MP.btn = Math.max(-1, Math.min(MP.btn, btns.length - 1));
-  setHTML(document.getElementById('mp-detail'), `<div class="mdx"><div class="mdh"><span>${esc(fbRound(ev))}</span>${fbMarkChip(ev)}</div>`
+  setHTML(document.getElementById('mp-detail'), `<div class="mdx${MP.btn < 0 ? ' f' : ''}"><div class="mdh"><span>${esc(fbRound(ev))}</span>${fbMarkChip(ev)}</div>`
     + `<div class="mdm">${big('Home')}<div class="mdk">${mid}</div>${big('Away')}</div><ul class="mdr">${rows}</ul>`
-    + `<div class="mdb">${btns.map((b, i) => `<button class="${i === 0 ? 'pri' : ''}${i === MP.btn ? ' f' : ''}" data-k="${b.k}">${b.icon ? fbGlyph('bell') : ''}<span>${esc(b.t)}</span></button>`).join('')}</div>`
+    + `<div class="mdb">${btns.map((b, i) => `<button tabindex="-1" class="${i === 0 ? 'pri' : ''}${i === MP.btn ? ' f' : ''}" data-k="${b.k}">${b.icon ? fbGlyph('bell') : ''}<span>${esc(b.t)}</span></button>`).join('')}</div>`
     + `<div class="mdn" id="mp-note">${esc(MP.note)}</div></div>`);
   document.getElementById('mp-detail').hidden = false;
 }
-function mpOpen(ev){ MP.detail = ev; MP.btn = -1;   // no button has the focus at first: OK on the card must never add a reminder by accident
+function mpOpen(ev){ MP.detail = ev; MP.btn = -1;   // the card itself has the (ringed) focus at first, no button: OK on the card must never add a reminder by accident
    MP.note = ''; mpDetailRender(); }
 function mpBack(){   // the launcher's Back: closes the card first; 'out' when there is nothing to close
   if(!MP.detail) return 'out';
@@ -4198,7 +4200,8 @@ function mpBack(){   // the launcher's Back: closes the card first; 'out' when t
   return 'closed';
 }
 function mpAct(){
-  const ev = MP.detail, b = mpButtons(ev, Date.now())[MP.btn];
+  // one focus: OK acts on the button that is RINGED on screen (the one drawn with .f), and on nothing when the card itself is ringed
+  const ev = MP.detail, ringed = document.querySelector('#mp-detail .mdb button.f'), b = ringed && mpButtons(ev, Date.now()).find(x => x.k === ringed.dataset.k);
   if(!b) return;
   const host = window.UrtvMatches;
   let ok = false;
