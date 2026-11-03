@@ -112,7 +112,7 @@ def analyse(xml_text, lang, focus, lowered=False, label_required=True):
                 fails.append(f"a tile cut to {w} px at {list(r)} (a sliver)")
             elif r[0] < inner[0] - 2 or r[2] > inner[2] + 2 or (not lowered and (r[1] < inner[1] - 2 or r[3] > inner[3] + 2)):
                 fails.append(f"a tile {list(r)} is not inside the tray's inner rect {list(inner)}")
-    label = name_label(ns, tray)
+    label = None if lowered else name_label(ns, tray)   # lowered, the focus is on the matches widget: the texts above the tray are the widget's
     if label:
         r = label["rect"]
         m["label"] = list(r)
@@ -121,7 +121,7 @@ def analyse(xml_text, lang, focus, lowered=False, label_required=True):
         m["label_edge"], m["label_want"] = edge, want
         if abs(edge - want) > 2:
             fails.append(f"the name's {'right' if lang == 'ar' else 'left'} edge is at {edge}, the tray's inner padding is at {want}")
-    elif label_required:
+    elif label_required and not lowered:
         fails.append("no name label above the tray")
     return fails, m
 
@@ -269,6 +269,30 @@ def start_in(lang, layout="classic", tries=4):
     return False
 
 
+def in_front_home():
+    return "sa.urtv.home" in shell("dumpsys window | grep mCurrentFocus")
+
+
+def walk(keys_to_press, out, name, tries=4):
+    """puts the focus on a favourite (the home may have taken it back to the top row after it loaded), presses the keys, settles, and starts again when
+    the focus is not on a favourite afterwards (it left the tray on the way). Returns (xml, png)."""
+    for attempt in range(tries):
+        if not in_front_home():
+            go_home()
+        focus_in_tray()
+        key(*keys_to_press)
+        xml, png = settled_dump(out, name)
+        try:
+            ns = nodes(xml)
+            tray = find_tray(ns)
+            if tray and any(t["focused"] for t in tiles(ns, tray)):
+                return xml, png
+        except ET.ParseError:
+            pass
+        print(f"{name}: the focus was not on a favourite after the keys (try {attempt + 1}), starting this walk again")
+    return xml, png
+
+
 def go_home():
     shell("am start -W --activity-clear-task -n sa.urtv.home/.MainActivity")
     time.sleep(10)
@@ -291,12 +315,10 @@ def run(out):
             fwd, back = ("DPAD_LEFT", "DPAD_RIGHT") if lang == "ar" else ("DPAD_RIGHT", "DPAD_LEFT")
             if not start_in(lang):
                 failures.append(f"d{density}-{lang}: the home did not show the language {lang} (the layout stayed in the other direction)")
-            key(*[back] * 10)
             tag = f"d{density}-{lang}"
-            xa, pa = settled_dump(out, f"{tag}-first")
+            xa, pa = walk([back] * 10, out, f"{tag}-first")
             fa, ma = analyse(xa, lang, "first")
-            key(*[fwd] * 10)
-            xb, pb = settled_dump(out, f"{tag}-last")
+            xb, pb = walk([fwd] * 10, out, f"{tag}-last")
             fb, mb = analyse(xb, lang, "last")
             fs = same_place(ma.get("label"), mb.get("label"))
             if ma.get("tray"):
