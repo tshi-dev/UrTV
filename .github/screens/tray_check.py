@@ -77,7 +77,7 @@ def name_label(ns, tray):
     return max(c, key=lambda n: n["rect"][3] - n["rect"][1]) if c else None
 
 
-def analyse(xml_text, lang, focus, lowered=False):
+def analyse(xml_text, lang, focus, lowered=False, label_required=True):
     """-> (failures, measurements) for one dump"""
     ns = nodes(xml_text)
     tray = find_tray(ns)
@@ -116,7 +116,7 @@ def analyse(xml_text, lang, focus, lowered=False):
         m["label_edge"], m["label_want"] = edge, want
         if abs(edge - want) > 2:
             fails.append(f"the name's {'right' if lang == 'ar' else 'left'} edge is at {edge}, the tray's inner padding is at {want}")
-    else:
+    elif label_required:
         fails.append("no name label above the tray")
     return fails, m
 
@@ -180,11 +180,13 @@ def dump(out, name):
     return p.read_text(encoding="utf-8", errors="replace"), png
 
 
-def settled_dump(out, name, tries=4):
+def settled_dump(out, name, tries=4, need_tile=True):
     """the tray after the keys and its 150 ms / 250 ms animations: wait, dump, and dump again while no favourite has the focus (the focus is out of the tray for a moment while it scrolls)"""
     for i in range(tries):
         time.sleep(1.5)
         xml, png = dump(out, name)
+        if not need_tile:
+            return xml, png
         try:
             ns = nodes(xml)
             tray = find_tray(ns)
@@ -225,6 +227,43 @@ def focus_in_tray():
     return False
 
 
+def quick(name="q"):
+    """a dump kept in memory, without saving: (xml text or '')"""
+    adb("shell", "uiautomator", "dump", f"/sdcard/{name}.xml", timeout=40)
+    return adb("exec-out", "cat", f"/sdcard/{name}.xml", text=False).stdout.decode("utf-8", "replace")
+
+
+def home_direction(xml):
+    """'ar' or 'en' from where the app's name sits: at the tray's start edge (right in Arabic, left in English); None when no name shows"""
+    try:
+        ns = nodes(xml)
+        tray = find_tray(ns)
+        label = name_label(ns, tray) if tray else None
+    except ET.ParseError:
+        return None
+    if not label:
+        return None
+    return "ar" if (label["rect"][0] + label["rect"][2]) / 2 > (tray[0] + tray[2]) / 2 else "en"
+
+
+def start_in(lang, layout="classic", tries=4):
+    """sets the language and the layout, starts the home fresh, and waits until the home shows that language (the launcher reads the setting from the
+    screensaver when it starts; a broadcast not yet handled, or a process that kept the old one, shows the old direction). Prints how many tries it took."""
+    for attempt in range(1, tries + 1):
+        saver(f"--es lang {lang}", f"--es homelayout {layout}")
+        for _ in range(8):   # the screensaver says it has the new language before the home is started
+            if f"lang: {lang}" in shell("am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.GET"):
+                break
+            time.sleep(1)
+        shell("am force-stop sa.urtv.home")
+        go_home()
+        if layout != "classic" or (focus_in_tray() and home_direction(quick()) == lang):
+            print(f"{lang}/{layout}: the home shows the language after {attempt} start(s)")
+            return True
+    print(f"{lang}/{layout}: the home did NOT show the language after {tries} starts")
+    return False
+
+
 def go_home():
     shell("am start -W --activity-clear-task -n sa.urtv.home/.MainActivity")
     time.sleep(10)
@@ -242,11 +281,9 @@ def run(out):
     for density in (320, 240):
         shell(f"wm density {density}")
         for lang in ("ar", "en"):
-            saver(f"--es lang {lang}", "--es homelayout classic")
-            go_home()
             fwd, back = ("DPAD_LEFT", "DPAD_RIGHT") if lang == "ar" else ("DPAD_RIGHT", "DPAD_LEFT")
-            if not focus_in_tray():
-                print(f"{density}-{lang}: no favourite took the focus after six DOWN keys")
+            if not start_in(lang):
+                failures.append(f"d{density}-{lang}: the home did not show the language {lang} (the layout stayed in the other direction)")
             key(*[back] * 10)
             tag = f"d{density}-{lang}"
             xa, pa = settled_dump(out, f"{tag}-first")
@@ -261,21 +298,25 @@ def run(out):
             failures += [f"{tag}: {f}" for f in fa + fb + fs]
     # the football layout with the matches widget focused: the tray is lowered by 40 px (best effort: the widget needs the emulator to hold today's games)
     shell("wm density 320")
-    saver("--es lang ar", "--es homelayout football")
-    go_home()
-    focus_in_tray()
-    key("DPAD_UP")
-    xf, pf = settled_dump(out, "football-lowered", tries=2)
+    start_in("ar", "football")
+    key(*["DPAD_UP"] * 4)
+    for _ in range(8):   # the widgets are focus targets of the page (weather, prayers, games): walk until the games have it
+        focused = [n for n in nodes(quick()) if n["focused"]]
+        if any("مباريات" in (n["desc"] or "") for n in focused):
+            break
+        key("DPAD_DOWN")
+    xf, pf = settled_dump(out, "football-lowered", tries=1, need_tile=False)
     nf = nodes(xf)
     tf = find_tray(nf)
     low = bool(tf) and tf[3] == 1026
     report["football"] = {"tray": list(tf) if tf else None, "lowered_seen": low, "failures": []}
     if low:
-        ff = analyse(xf, "ar", "first", lowered=True)[0]
+        ff = analyse(xf, "ar", "first", lowered=True, label_required=False)[0]   # the focus is on the widget: the name is hidden then
         report["football"]["failures"] = ff
         failures += [f"football: {f}" for f in ff]
     else:
         # the matches widget needs today's games; without them it takes no focus here and the tray is not lowered (or the home has scrolled): not measured, said so
+        print("football summary:\n" + summary(xf))
         print(f"football: NOT MEASURED - the tray is at {tf}, not lowered to y 1026 (no games on the emulator, so the matches widget did not take the focus)")
     saver("--es homelayout classic")
     (out / "tray-report.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
