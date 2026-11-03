@@ -45,9 +45,22 @@ def nodes(xml_text):
 
 
 def find_tray(ns):
-    """the tray: the horizontal scroll view, 1664 wide at 1080p"""
-    c = [n for n in ns if n["cls"].endswith("HorizontalScrollView") and n["rect"][2] - n["rect"][0] > 1200]
-    return max(c, key=lambda n: n["rect"][2] - n["rect"][0])["rect"] if c else None
+    """the tray: the horizontal scroll view, 1664 wide at 1080p, in the lower half of the screen (the lowest one if the screen has more)"""
+    c = [n for n in ns if n["cls"].endswith("HorizontalScrollView") and n["rect"][2] - n["rect"][0] > 1200 and n["rect"][3] - n["rect"][1] < 400]
+    return max(c, key=lambda n: n["rect"][3])["rect"] if c else None
+
+
+def summary(xml_text):
+    """a few lines for the CI log (the artifact may not be readable where the log is): every scroll view, the focusable nodes and the texts in the lower half"""
+    out = []
+    for n in nodes(xml_text):
+        if n["cls"].endswith("HorizontalScrollView"):
+            out.append(f"  scroll {list(n['rect'])}")
+        elif n["focusable"] and n["rect"][1] > 500:
+            out.append(f"  focusable{'*' if n['focused'] else ''} {n['cls'].split('.')[-1]} {list(n['rect'])}")
+        elif n["text"].strip() and n["rect"][1] > 500:
+            out.append(f"  text '{n['text'][:20]}' {list(n['rect'])}")
+    return "\n".join(out[:40])
 
 
 def tiles(ns, tray):
@@ -84,6 +97,8 @@ def analyse(xml_text, lang, focus, lowered=False):
     for t in ts:
         r = t["rect"]
         w = r[2] - r[0]
+        if w <= 0:
+            continue   # a tile entirely outside the tray: the dump gives it no width, it is not drawn
         if t["focused"]:
             if r[0] < tray[0] + LIFT_ROOM or r[2] > tray[2] - LIFT_ROOM or r[1] < tray[1] + LIFT_ROOM or r[3] > tray[3] - LIFT_ROOM:
                 fails.append(f"the focused tile {list(r)} is closer than {LIFT_ROOM} px to the tray {list(tray)}")
@@ -153,6 +168,8 @@ def dump(out, name):
     adb("shell", "uiautomator", "dump", "/sdcard/d.xml")
     p = Path(out) / f"{name}.xml"
     p.write_bytes(adb("exec-out", "cat", "/sdcard/d.xml", text=False).stdout)
+    print(f"--- {name}: in front: " + " ".join(shell("dumpsys activity activities | grep -m1 mResumedActivity").split()[-2:]))
+    print(summary(p.read_text(encoding="utf-8", errors="replace")))
     png = Path(out) / f"{name}.png"
     png.write_bytes(adb("exec-out", "screencap", "-p", text=False).stdout)
     return p.read_text(encoding="utf-8", errors="replace"), png
@@ -170,6 +187,22 @@ def seed_dock(n=7):
         raise SystemExit(f"only {len(pk)} stub apps are installed, {n} are needed")
     shell(f"am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.SET_DOCK --es apps {','.join(pk)}")
     return pk
+
+
+def focus_in_tray():
+    """press DOWN until a favourite has the focus (the home starts with it on the top row on some builds); False after six tries"""
+    for _ in range(6):
+        adb("shell", "uiautomator", "dump", "/sdcard/q.xml")
+        xml = adb("exec-out", "cat", "/sdcard/q.xml", text=False).stdout.decode("utf-8", "replace")
+        try:
+            ns = nodes(xml)
+            tray = find_tray(ns)
+            if tray and any(t["focused"] for t in tiles(ns, tray)):
+                return True
+        except ET.ParseError:
+            pass
+        key("DPAD_DOWN")
+    return False
 
 
 def go_home():
@@ -192,7 +225,8 @@ def run(out):
             saver(f"--es lang {lang}", "--es homelayout classic")
             go_home()
             fwd, back = ("DPAD_LEFT", "DPAD_RIGHT") if lang == "ar" else ("DPAD_RIGHT", "DPAD_LEFT")
-            key("DPAD_DOWN")
+            if not focus_in_tray():
+                print(f"{density}-{lang}: no favourite took the focus after six DOWN keys")
             key(*[back] * 10)
             tag = f"d{density}-{lang}"
             xa, pa = dump(out, f"{tag}-first")
@@ -209,7 +243,8 @@ def run(out):
     shell("wm density 320")
     saver("--es lang ar", "--es homelayout football")
     go_home()
-    key("DPAD_DOWN", "DPAD_UP")
+    focus_in_tray()
+    key("DPAD_UP")
     xf, pf = dump(out, "football-lowered")
     ff, mf = analyse(xf, "ar", "first", lowered=False)
     low = mf.get("tray") and mf["tray"][3] == 1026
