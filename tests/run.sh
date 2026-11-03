@@ -37,6 +37,7 @@ python3 tests/setup_report_test.py
 python3 tests/type_test.py
 python3 tests/tester_fixes_test.py   # the tester's steps 16 to 20 (TCL, build 174): the fixes without a JVM case of their own
 python3 tests/setup_lang_test.py   # Arabic is the default everywhere; the installer's «العربية | English» switch
+python3 tests/tray_check_test.py   # the favourites tray's rendered check: its rules on made-up dumps and the CI wiring
 python3 tests/fix179_test.py   # build 179 re-check: the round buttons, Tilawah rows, PIN pad, settings gap, markets, football names
 python3 tests/portfolio_window_test.py   # «محفظتي» and the phone: the extra never trusted, only the TV renews the window (4.2 review R02, R03)
 python3 tests/reminder_fixes_test.py   # reminders: the next repeat stays on the alarm, overlapping ones each delivered once, calendar days over summer time (4.2 review R04, R07, R08)

@@ -1,0 +1,87 @@
+name: Favourites tray (rendered)
+
+# The favourites box has failed on the TV after every "fix", because nothing drew it before the tester did. This runs the real launcher on an API 34 Android TV
+# emulator (1920x1080, density 2 and 1.5), seeds seven favourites (stub apps), and checks the REAL bounds (uiautomator dump) and pixels (screencap):
+# the tiles whole and inside the tray, nothing drawn outside it, the name in one fixed place, the tray inside the safe area, at rest and lowered
+# (.github/screens/tray_check.py; its rules are tested on made-up dumps by tests/tray_check_test.py).
+# A failing rule fails this run. To make it block merges into next, add the check "Favourites tray (rendered) / tray" as a required status check of
+# the branch (Settings > Branches > next > Require status checks): a workflow cannot set that itself.
+on:
+  push:
+    branches: [next, 'work/**']
+    paths: ['android/**', 'src/**', 'assets/**', '.github/workflows/tray.yml', '.github/screens/**']
+  pull_request:
+    branches: [next]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tray-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tray:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      # Thmanyah comes from the private fonts repository, as in android.yml: built in, never committed
+      - uses: actions/checkout@v4
+        with:
+          repository: tshi-dev/urtv-fonts
+          token: ${{ secrets.FONTS_TOKEN }}
+          path: .fonts-private
+      - name: Private fonts
+        run: |
+          cp .fonts-private/web/*.woff2 assets/fonts/
+          mkdir -p android/launcher/src/main/assets/fonts
+          cp .fonts-private/android/*.otf android/launcher/src/main/assets/fonts/
+          rm -rf .fonts-private
+
+      - name: Build the page
+        run: python3 src/build.py
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build debug APKs
+        run: gradle -p android assembleDebug --no-daemon
+
+      - name: Stub apps for the favourites
+        run: |
+          pip install pillow
+          bash .github/screens/make_stubs.sh stubs 8
+
+      - name: Rules of the check, on made-up dumps
+        run: python3 tests/tray_check_test.py
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Draw the home on an Android TV emulator and check the tray
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: android-tv
+          arch: x86
+          profile: tv_1080p
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          script: bash .github/screens/tray_run.sh android/app/build/outputs/apk/debug/app-debug.apk android/launcher/build/outputs/apk/debug/launcher-debug.apk stubs tray-out
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tray-check
+          path: tray-out
