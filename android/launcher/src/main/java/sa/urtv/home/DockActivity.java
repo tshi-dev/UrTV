@@ -239,7 +239,7 @@ public class DockActivity extends Activity {
     }
 
     private void add(String pkg) {
-        if (row.size() >= Dock.MAX) { toast(S.t("المفضلة ممتلئة (%s)", ar(Dock.MAX))); return; }
+        if (row.size() >= Dock.MAX) { toast(S.t("%s كحد أقصى", ar(Dock.MAX))); return; }
         row.add(pkg);
         Dock.save(this, row);
         render(row.size() - 1);

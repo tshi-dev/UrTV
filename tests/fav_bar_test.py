@@ -46,7 +46,7 @@ with tempfile.TemporaryDirectory() as tmp:
     subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "FavBar.java"), str(ROOT / "tests/FavBarRun.java")], check=True)
     out = subprocess.run(["java", "-cp", tmp, "sa.urtv.home.FavBarRun"], check=True, capture_output=True).stdout.decode().split("\n")
 for line in out:
-    if not line or line.startswith("nameX") or line.startswith("tile1080") or line.startswith("side ") or line.startswith("scroll "): continue
+    if not line or line.startswith("nameX") or line.startswith("tile1080") or line.startswith("bar ") or line.startswith("shown ") or line.startswith("side ") or line.startswith("scroll "): continue
     f = line.split(); h = int(f[0]); v = dict(zip(f[1::2], f[2::2])) if False else None
     nums = re.findall(r"(\w+) ([-\d.]+(?: [-\d.]+)*)", line)
     tray = list(map(int, line.split(" tray ")[1].split(" fits ")[0].split()))
@@ -68,6 +68,18 @@ check("the tray is a TraySnap (FavBar.scrollDelta with the inset) so a focused t
       and "FavBar.scrollDelta(r.left, r.right, getScrollX(), getWidth(), bar(FavBar.PAD_SIDE), getChildAt(0).getWidth())" in main_src)
 check("the tray's bottom is never lower than 1026: it rests 40 higher (REST_BOTTOM 94) and the lowering by WIDGET_DROP 40 ends exactly there",
       "BOTTOM = 54, REST_BOTTOM = BOTTOM + 40" in (HOME / "FavBar.java").read_text(encoding="utf-8") and "WIDGET_DROP = 40" in (HOME / "FavBar.java").read_text(encoding="utf-8"))
+# «تطبيقات في الشريط»: N whole tiles, 24 gaps, 24 insets, the tray's box unchanged
+bars = {}
+for l in out:
+    if l.startswith("bar "):
+        t = l.split()
+        bars[(int(t[1]), int(t[2]))] = {"tile": int(t[4]), "row": int(t[6]), "inner": int(t[8]), "slack": int(t[10]), "ratio": t[12] == "1", "ring": t[14] == "1"}
+check("bar size: 5 shows the default 304, 7 shows 210, 10 shows 140 at 1080p ((inner 1616 - (N-1) x 24) / N, rounded down)", bars[(1080, 5)]["tile"] == 304 and bars[(1080, 7)]["tile"] == 210 and bars[(1080, 10)]["tile"] == 140, bars)
+check("bar size: for every N from 5 to 10 at 1080p and 720p the tiles fill the tray's inner width to within N pixels (whole tiles, 24 apart), never past it", all(0 <= v["slack"] <= n for (h, n), v in bars.items()), bars)
+check("bar size: the tile keeps its 16:9 ratio, and the focused tile's ring stays inside the 24 px inset, for every N", all(v["ratio"] and v["ring"] for v in bars.values()), bars)
+shown = [l for l in out if l.startswith("shown ")][0].split()[1:]
+check("bar size: «5» is 5, «7» is 7 even with 3 favourites (the tray keeps its size), «10» is 10, «all» is the favourites up to 10 but never fewer than 5, a number out of range or a word is clamped / 5",
+      shown == ["5", "7", "10", "8", "5", "10", "10", "5", "5", "5"], shown)
 check("1080p: a tile is the spec's 304", [l for l in out if l.startswith("tile1080")][0].split()[1] == "304")
 side = [l for l in out if l.startswith("side ")][0].split()[1:]
 check("◀ ▶: English (left to right) ▶ goes to the next favourite and ◀ stays at the first; Arabic ▶ goes to the one before; the edges stay (tester step 20)",

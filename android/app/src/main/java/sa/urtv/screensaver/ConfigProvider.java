@@ -72,8 +72,8 @@ public class ConfigProvider extends ContentProvider {
         }
         // home_panel: the first card alone (what an older launcher reads); home_panels: all of them, "a,b,c" or "none"
         List<String> cards = p.homePanels();
-        MatrixCursor c = new MatrixCursor(new String[] {"fragment", "home_panel", "greeting", "home_panels", "adhan_bar", "listen_pill", "update_channel", "appearance", "update_bell", "watch_next", "look", "home_layout"});
-        c.addRow(new Object[] {p.fragment(), cards.isEmpty() ? "none" : cards.get(0), p.greeting() ? "1" : "0", p.homePanel(), p.adhanBar() ? "1" : "0", p.listenPill() ? "1" : "0", p.updateChannel(), p.appearance(), p.updateBell() ? "1" : "0", p.watchNext() ? "1" : "0", p.look(), p.homeLayout()});
+        MatrixCursor c = new MatrixCursor(new String[] {"fragment", "home_panel", "greeting", "home_panels", "adhan_bar", "listen_pill", "update_channel", "appearance", "update_bell", "watch_next", "look", "home_layout", "fav_bar"});
+        c.addRow(new Object[] {p.fragment(), cards.isEmpty() ? "none" : cards.get(0), p.greeting() ? "1" : "0", p.homePanel(), p.adhanBar() ? "1" : "0", p.listenPill() ? "1" : "0", p.updateChannel(), p.appearance(), p.updateBell() ? "1" : "0", p.watchNext() ? "1" : "0", p.look(), p.homeLayout(), p.favBar()});
         return c;
     }
 
@@ -100,11 +100,12 @@ public class ConfigProvider extends ContentProvider {
                 out.putString("idle", String.valueOf(Prefs.idleMs(c) / 60000));
                 out.putString("idle_s", String.valueOf(Prefs.idleMs(c) / 1000));   // the real delay: 45 s is not a whole minute ("idle" says 0)
                 out.putString("lang", p.lang());   // «اللغة»: an older screensaver says nothing, and the phone takes that as ar
+                out.putString("fav_bar", p.favBar());   // «تطبيقات في الشريط»
                 return out;
             }
             case "phone_set": {
                 android.content.Intent i = new android.content.Intent();
-                for (String k : new String[] {"city", "home_panel", "idle", "lang"}) if (extras != null && extras.getString(k) != null) i.putExtra(k, extras.getString(k));
+                for (String k : new String[] {"city", "home_panel", "idle", "lang", "favbar"}) if (extras != null && extras.getString(k) != null) i.putExtra(k, extras.getString(k));
                 // the home's «الأسواق» page: the watchlist and the markets bar (the phone's API never sends these two)
                 for (String k : new String[] {"stocks", "markets"}) if (extras != null && extras.getString(k) != null) i.putExtra(k, extras.getString(k));
                 String r = SaverReceiver.set(c, p, i);

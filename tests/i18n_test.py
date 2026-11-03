@@ -230,7 +230,7 @@ check("the receiver: lang is checked (ar or en, nothing half-saved), set and sho
       and rcv.index('return "error: lang is one of ar en";') < rcv.index("if (lang != null) p.setLang(lang);"))
 cp = text(APP / "ConfigProvider.java")
 check("the ConfigProvider: the phone reads lang and sets it through the receiver's own checks",
-      'out.putString("lang", p.lang());' in cp and 'new String[] {"city", "home_panel", "idle", "lang"}' in cp)
+      'out.putString("lang", p.lang());' in cp and 'new String[] {"city", "home_panel", "idle", "lang", "favbar"}' in cp)
 snap = text(HOME / "ConfigSnapshot.java")
 dig = text(HOME / "Digits.java")
 check("the home: ConfigSnapshot reads lang from the fragment, Digits passes every snapshot to S, which keeps it for the next start",
@@ -240,7 +240,7 @@ check("the home: ConfigSnapshot reads lang from the fragment, Digits passes ever
 schema = text(HOME / "phone/Schema.java")
 acts = text(HOME / "phone/PhoneActions.java")
 check("the phone API: set takes lang ar or en, state says it",
-      '"saver_idle", "lang", "pin");' in schema and 'case "lang": if (!"ar".equals(v) && !"en".equals(v)) return no("bad lang"); break;' in schema
+      '"saver_idle", "lang", "fav_bar", "pin");' in schema and 'case "lang": if (!"ar".equals(v) && !"en".equals(v)) return no("bad lang"); break;' in schema
       and 'extras.putString("lang", (String) v.get("lang"));' in acts and 'm.put("lang", sa.urtv.home.Tr.norm(b.getString("lang")));' in acts)
 for mod in ("app", "launcher"):
     g = text(ROOT / f"android/{mod}/build.gradle")

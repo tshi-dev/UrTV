@@ -97,7 +97,6 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 أُضيف إلى المفضلة: %s	Added to Favorites: %s
 قائمة التطبيق	App menu
 المفضلة لا تقل عن %s	At least %s favorites
-المفضلة ممتلئة (%s)	Favorites are full (%s)
 الرقابة الأبوية	Parental controls
 البث التلفزيوني	Live TV
 كل المصادر	All inputs
@@ -571,3 +570,4 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 %s مهمة كحد أقصى	At most %s tasks
 الأسواق	Markets
 المباريات	Matches
+%s كحد أقصى	%s at most

@@ -58,7 +58,7 @@ jobs:
       - name: Stub apps for the favourites
         run: |
           pip install pillow
-          bash .github/screens/make_stubs.sh stubs 8
+          bash .github/screens/make_stubs.sh stubs 12
 
       - name: Rules of the check, on made-up dumps
         run: python3 tests/tray_check_test.py

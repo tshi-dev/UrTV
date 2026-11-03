@@ -61,5 +61,24 @@ tpl = text(ROOT / "src/template.html")
 check("item 17: the home stocks card has 24 px inside on every side, and «السوق مغلق» sits on the header line right after «الأسهم» (order 0), not at the far end over the first column",
       ".week.stocks{padding:calc(24px*var(--z,1))}" in tpl and "card.el.classList.toggle('stocks', P === 'stocks');" in tpl and 'class="until near"' in tpl and ".week .hd .until.near{order:0" in tpl)
 
+
+# ---- item 18: «تطبيقات في الشريط»
+prefs = text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/Prefs.java")
+rcv = text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/SaverReceiver.java")
+prov = text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/ConfigProvider.java")
+snap = text(HOME / "ConfigSnapshot.java")
+check("bar size: 5 (default) to 10 or all; a bad value keeps 5; the command checks the word before anything is set, and `show` says it", 'FAV_BARS = {"5", "6", "7", "8", "9", "10", "all"}' in prefs and 'sp.getString("favBar", "5")' in prefs
+      and 'error: favbar is one of' in rcv and "if (favBar != null) p.setFavBar(favBar);" in rcv and '"\\nfavbar: " + p.favBar()' in rcv)
+check("bar size: the provider gives the home fav_bar, the home reads it (5 for an older screensaver) and the phone API sets and states it", '"home_layout", "fav_bar"}' in prov and 'out.putString("fav_bar", p.favBar())' in prov
+      and 'cur.getColumnIndex("fav_bar")' in snap and 'case "fav_bar":' in text(HOME / "phone/Schema.java") and 'm.put("fav_bar"' in text(HOME / "phone/PhoneActions.java"))
+mn = text(HOME / "MainActivity.java")
+check("bar size: every favourite's cell is as wide as FavBar.tileW(h, shown) says (the tray keeps its box, the insets and the gap), the watch-next rows share the tray's cells, a changed setting resizes the cells", "FavBar.tileW(getResources().getDisplayMetrics().heightPixels, FavBar.shown(barSetting, favs))" in mn
+      and "applyBarSize(cfg.favBar);" in mn and "dockCell(i, n, dockCards.size())" in mn)
+check("bar size: ten favourites at most; the eleventh is refused with «١٠ كحد أقصى»", "static final int MAX = 10;" in text(HOME / "Dock.java") and 'S.t("%s كحد أقصى", arabicDigits(String.valueOf(MAX_DOCK)))' in mn and 'S.t("%s كحد أقصى", ar(Dock.MAX))' in text(HOME / "DockActivity.java"))
+check("bar size: a row «تطبيقات في الشريط» in «التطبيقات والمفضلة» (المزيد) with its seven choices, the command in saver.sh, the row in docs/SETTINGS.md", 'row("تطبيقات في الشريط"' in text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsActivity.java")
+      and '{"تطبيقات في الشريط", APPS}' in text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsHub.java") and "favbar)    set1 favbar" in text(ROOT / "optimize/saver.sh") and "optimize/saver.sh favbar 7" in text(ROOT / "docs/SETTINGS.md"))
+check("bar size: the tray CI measures 7 (Arabic) and 10 (English) whole tiles and takes a picture of the markets page", 'for n, lang, favs in ((7, "ar", 7), (10, "en", 10)):' in text(ROOT / ".github/screens/tray_check.py") and "markets.png" in text(ROOT / ".github/screens/tray_check.py")
+      and "make_stubs.sh stubs 12" in text(ROOT / ".github/workflows/tray.yml"))
+
 print("ALL PASS" if not failed else f"{failed} failed")
 raise SystemExit(1 if failed else 0)

@@ -364,6 +364,8 @@ public class SettingsActivity extends Activity {
         // the bell shows only while the Play Store has updates waiting (the home screen asks on return, at most every 6 hours)
         row("جرس التحديثات", prefs.updateBell() ? "ظاهر عند وجود تحديثات للتطبيقات" : "مخفي", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setUpdateBell(!prefs.updateBell()); render(); } });
+        row("تطبيقات في الشريط", Prefs.favBarLabel(prefs.favBar()), R.drawable.ic_star,
+            new Runnable() { public void run() { pickFavBar(); } });
         row("ترتيب التطبيقات المفضلة", "قائمة ترتّب فيها المفضلة بالأسهم", R.drawable.ic_star,
             new Runnable() { public void run() { openDockSettings(); } });
         // «أكمل المشاهدة»: on or off; turned on while the home app may not read the TV's list yet, it opens the home app's one question
@@ -1768,6 +1770,20 @@ public class SettingsActivity extends Activity {
             .setItems(new String[] {"الشكل: " + Prefs.lookLabel(prefs.look()), "الإضاءة: " + Prefs.appearanceLabel(prefs.appearance()),
                     "الواجهة: " + Prefs.homeLayoutLabel(prefs.homeLayout())},
                 (d, i) -> { if (i == 2) pickHomeLayout(); else pickLookPart(i == 0); })
+            .show();
+    }
+
+    /** «تطبيقات في الشريط»: how many favourites the tray shows whole at once (5 as always, up to 10, or all of them); more scroll inside the tray */
+    private void pickFavBar() {
+        final String[] labels = new String[Prefs.FAV_BARS.length];
+        for (int i = 0; i < labels.length; i++) labels[i] = Prefs.favBarLabel(Prefs.FAV_BARS[i]);
+        new Dlg(this).setTitle("تطبيقات في الشريط")
+            .setSingleChoiceItems(labels, java.util.Arrays.asList(Prefs.FAV_BARS).indexOf(prefs.favBar()), (d, i) -> {
+                prefs.setFavBar(Prefs.FAV_BARS[i]);
+                d.dismiss();
+                render();
+            })
+            .setNegativeButton("إلغاء", null)
             .show();
     }
 

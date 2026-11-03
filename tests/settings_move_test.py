@@ -53,7 +53,8 @@ for bad in st.get("refuse", []):          # a value the TV refuses (answers erro
 ENUM = {"digits": ["hindi", "latin"], "clocksize": ["large", "medium", "small"], "mkstyle": ["arrows", "prices"],
         "cardstyle": ["current", "dark1", "glass1", "dark3", "glass3"], "prayermethod": ["auto", "gulf", "jafari"],
         "sunrise": ["on", "off"], "prayerbar": ["on", "off"], "wxmore": ["on", "off"], "months": ["default", "levant"],
-        "greeting": ["on", "off"], "listenpill": ["on", "off"], "updatebell": ["on", "off"], "adhanbar": ["on", "off"], "clock24": ["on", "off"], "mkbar": ["on", "off"], "prayeradj": ["on", "off"]}
+        "greeting": ["on", "off"], "listenpill": ["on", "off"], "updatebell": ["on", "off"], "adhanbar": ["on", "off"], "clock24": ["on", "off"], "mkbar": ["on", "off"], "prayeradj": ["on", "off"],
+        "favbar": ["5", "6", "7", "8", "9", "10", "all"]}
 if "SaverReceiver" in cmd and cmd.endswith(".GET"):
     s = st["saver"]
     adj = " ".join(f"{k}={'+' if v > 0 else ''}{v}" for k, v in s["adj"].items())
@@ -65,7 +66,7 @@ if "SaverReceiver" in cmd and cmd.endswith(".GET"):
         f"clock24: {s['clock24']}", "national: auto", f"cardstyle: {s['cardstyle']}",
         "markets: " + ("" if s["mkbar"] == "on" else "off ") + ",".join(s["markets"]), f"clocksize: {s['clocksize']}",
         f"mkstyle: {s['mkstyle']}", "stocks: 2222", "slot: matches", "countdown: none", "idle: 10", "genres: ", "langs: ", "events: ",
-        "leagues: ", "autoupdate: on", "pin: 4321", "wifi: HomeNet", "tasks: buy milk", "updatechannel: " + s.get("updatechannel", "stable")]
+        "leagues: ", "autoupdate: on", "pin: 4321", "wifi: HomeNet", "tasks: buy milk", "updatechannel: " + s.get("updatechannel", "stable"), "favbar: " + s.get("favbar", "5")]
         + ([f"country: {s['country']}"] if "country" in s else [])
         + ([] if st.get("old_app") else [f"panel2: {s['panel2']}", f"sunrise: {s['sunrise']}", f"prayerbar: {s['prayerbar']}",
                                           f"wxmore: {s['wxmore']}", f"months: {s['months']}"])))
@@ -130,7 +131,7 @@ BASE = {
               "panel": "verse", "home_panel": "none", "greeting": "on", "listenpill": "on", "updatebell": "on", "adhanbar": "on", "prayermethod": "auto", "prayeradj": "off",
               "adj": {"fajr": 0, "dhuhr": 0, "asr": 0, "maghrib": 0, "isha": 0}, "hijri": "0", "digits": "hindi", "clock24": "off",
               "cardstyle": "current", "markets": ["tasi", "spx", "btc"], "mkbar": "on", "clocksize": "large", "mkstyle": "arrows",
-              "panel2": "none", "sunrise": "off", "prayerbar": "off", "wxmore": "off", "months": "default", "updatechannel": "stable"},
+              "panel2": "none", "sunrise": "off", "prayerbar": "off", "wxmore": "off", "months": "default", "updatechannel": "stable", "favbar": "5"},
     "adhan": {"on": "on", "voice": 1, "fajr_voice": 10, "short": "off", "stopkey": "on", "volume": 70},
 }
 CONFIGURED = copy.deepcopy(BASE)
@@ -138,7 +139,7 @@ CONFIGURED["saver"].update({"city": ["الدوحة", "25.2854", "51.531"], "tz":
                             "panel": "prayers", "home_panel": "verse,hourly", "greeting": "off", "listenpill": "off", "updatebell": "off", "adhanbar": "off",
                             "prayermethod": "jafari", "prayeradj": "on", "hijri": "-1", "digits": "latin", "clock24": "on",
                             "cardstyle": "glass1", "markets": ["gold", "btc"], "mkbar": "off", "clocksize": "medium", "mkstyle": "prices",
-                            "panel2": "hourly", "sunrise": "on", "prayerbar": "on", "wxmore": "on", "months": "levant"})
+                            "panel2": "hourly", "sunrise": "on", "prayerbar": "on", "wxmore": "on", "months": "levant", "favbar": "7"})
 CONFIGURED["saver"]["adj"] = {"fajr": 2, "dhuhr": 0, "asr": -3, "maghrib": 1, "isha": 0}
 CONFIGURED["adhan"] = {"on": "off", "voice": 3, "fajr_voice": 13, "short": "on", "stopkey": "off", "volume": 40}
 
@@ -184,6 +185,7 @@ def write(name, obj):
 a = Tv("a", CONFIGURED)
 rc, out, err = a.run("export")
 check("export: exits 0 and prints JSON only on stdout", rc == 0 and json.loads(out)["schema"] == 1, (rc, out[:100], err))
+check("export: «تطبيقات في الشريط» is in the file (fav_bar), and the round trip below carries it", json.loads(out).get("fav_bar") == "7", out[:300])
 exp = json.loads(out)
 b = Tv("b", BASE)
 f = write("moved.json", out)
@@ -194,6 +196,7 @@ check("preview: old → new, one line per changed setting", "  digits: hindi →
       and "  markets.list: tasi,spx,btc → gold,btc" in out and "  city: الرياض (24.6877, 46.7219) Asia/Riyadh → الدوحة (25.2854, 51.531) Asia/Qatar" in out, out)
 check("preview: the «تلاوة وأذان» button's setting is one more line", "  listen_pill: on \u2192 off" in out, out)
 check("preview: the «جرس التحديثات» setting is one more line", "  update_bell: on \u2192 off" in out, out)
+check("preview: «تطبيقات في الشريط» is one more line (5 → 7)", "  fav_bar: 5 \u2192 7" in out, out)
 check("preview: unchanged settings are absent", "prayer.adjust.dhuhr" not in out and "prayer.adjust.isha" not in out, out)
 rc, out, err = b.run("import", f, "--yes")
 check("import --yes: applied (exit 0)", rc == 0 and "Done" in out, (rc, out, err))
@@ -271,6 +274,8 @@ refused("clock size unknown", lambda d: d.update(clock_size="huge"), "clock_size
 refused("clock24 not a boolean", lambda d: d.update(clock24="on"), "clock24 must be true or false")
 refused("greeting not a boolean", lambda d: d.update(greeting=1), "greeting must be true or false")
 refused("listen_pill not a boolean", lambda d: d.update(listen_pill="off"), "listen_pill must be true or false")
+refused("fav_bar unknown", lambda d: d.update(fav_bar="11"), "fav_bar must be one of")
+refused("fav_bar a number", lambda d: d.update(fav_bar=7), "fav_bar must be one of")
 refused("prayer method unknown", lambda d: d["prayer"].update(method="mwl"), "prayer.method must be one of auto gulf jafari")
 refused("prayer adjust 21", lambda d: d["prayer"]["adjust"].update(fajr=21), "prayer.adjust.fajr must be a whole number from -20 to 20")
 refused("prayer adjust -21", lambda d: d["prayer"]["adjust"].update(isha=-21), "prayer.adjust.isha")

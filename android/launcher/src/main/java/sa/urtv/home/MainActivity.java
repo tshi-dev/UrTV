@@ -1015,11 +1015,29 @@ public class MainActivity extends Activity {
      * under the start of «كل التطبيقات» (left and right margins put the outer gap inside and the row a step off, the owner's photo).
      */
     /** A favourite's cell (FavBar): 304 wide (its 16:9 banner 170 high), 24 between two, none at the row's two ends. */
-    private LinearLayout.LayoutParams dockCell(int i, int n) {
-        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(FavBar.tileW(getResources().getDisplayMetrics().heightPixels), -2);
+    private LinearLayout.LayoutParams dockCell(int i, int n) { return dockCell(i, n, n); }
+
+    /** cell {@code i} of {@code n} in a row whose tiles are as wide as the tray's when {@code favs} favourites are shown (the watch-next rows share the tray's cells) */
+    private LinearLayout.LayoutParams dockCell(int i, int n, int favs) {
+        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(FavBar.tileW(getResources().getDisplayMetrics().heightPixels, FavBar.shown(barSetting, favs)), -2);
         p.setMarginStart(i == 0 ? 0 : bar(FavBar.GAP) / 2);
         p.setMarginEnd(i == n - 1 ? 0 : bar(FavBar.GAP) - bar(FavBar.GAP) / 2);
         return p;
+    }
+
+    /** «تطبيقات في الشريط» (the screensaver's setting, read with the rest): how many tiles the tray shows whole; the count of favourites matters for "all" */
+    private String barSetting = "5";
+
+    private int barShown() { return FavBar.shown(barSetting, dockCards.size()); }
+
+    /** the setting changed (or the favourites did): every cell gets its new width, and the tray shows the same favourites in the new size */
+    private void applyBarSize(String setting) {
+        if (setting == null) return;
+        boolean changed = !setting.equals(barSetting);
+        barSetting = setting;
+        if (dockRow == null) return;
+        int n = dockRow.getChildCount();
+        if (changed) for (int i = 0; i < n; i++) dockRow.getChildAt(i).setLayoutParams(dockCell(i, n));
     }
 
     /** a length of FavBar's 1080p spec on this screen (scaled by its height, so 720p is two thirds) */
@@ -1402,7 +1420,7 @@ public class MainActivity extends Activity {
         tvRowsBox.removeAllViews();
         tvCards.clear();
         tvNames.clear();
-        int n = Math.min(FavBar.SHOWN, TvRowsPick.cells(dockCards.size(), MIN_DOCK));   // never one cell (TvRowsPick.cells); at most the five a tray shows: no scroll here, no card cut
+        int n = Math.min(barShown(), TvRowsPick.cells(dockCards.size(), MIN_DOCK));   // never one cell (TvRowsPick.cells); at most the cells a tray shows: no scroll here, no card cut
         tvCells = n;
         for (TvRows.Row r : rows) {
             TextView name = text(11, "sans-serif-medium", lightNow || "sand".equals(lookNow) ? palette().gold : GOLD);
@@ -1418,10 +1436,10 @@ public class MainActivity extends Activity {
             int shown = Math.min(n, r.items.size());
             for (int i = 0; i < shown; i++) {
                 View box = tvCard(r.items.get(i));
-                line.addView(box, dockCell(i, n));
+                line.addView(box, dockCell(i, n, dockCards.size()));
                 cards.add(((ViewGroup) box).getChildAt(0));
             }
-            for (int i = shown; i < n; i++) line.addView(new View(this), dockCell(i, n));   // fewer cards: still a favourite's width each
+            for (int i = shown; i < n; i++) line.addView(new View(this), dockCell(i, n, dockCards.size()));   // fewer cards: still a favourite's width each
             tvRowsBox.addView(line, new LinearLayout.LayoutParams(-1, -2));
             tvCards.add(cards);
         }
@@ -2258,7 +2276,7 @@ public class MainActivity extends Activity {
                 dock.remove(pkg);
                 saveDock(dock, dock.get(Math.max(0, i - 1)));
             } else if (dock.size() >= MAX_DOCK) {
-                toast(S.t("المفضلة ممتلئة (%s)", MAX_DOCK));
+                toast(S.t("%s كحد أقصى", arabicDigits(String.valueOf(MAX_DOCK))));   // the 11th is refused with its hint (the tray holds ten at most)
             } else {
                 dock.add(pkg);
                 saveDock(dock, pkg);
@@ -2598,6 +2616,7 @@ public class MainActivity extends Activity {
         applyTasksPill(cfg.tasksPillOn());
         Dock.followBackSaver(this, cfg.backSaver());   // «الرجوع يفتح شاشة التوقف» changed in the screensaver's settings: read at the next Back
         applyUpdateBell(cfg.updateBellOn);   // [updates bell]
+        applyBarSize(cfg.favBar);   // «تطبيقات في الشريط»
         applyCenterPill();   // kids mode may have been turned on or off
         sa.urtv.home.tilawah.AdhanSync.onConfig(this, cfg.placeFragment(), cfg.placeTicket());   // «تعديل وقت الصلاة» changed on the TV: the alarm follows
         updateSleepPill();

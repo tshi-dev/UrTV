@@ -26,6 +26,12 @@ W, H = 1920, 1080
 SAFE = (96, 54, 1824, 1026)   # x0 y0 x1 y1: the 5 % safe area
 INSET = 24                    # the tray's padding on all four sides
 TILE_W, TILE_H = 304, 170
+
+
+def tile_size(n=5):
+    """a tile's width and height when n show whole (tray inner width 1616 at 1080p, 24 between): (1616 - (n-1) x 24) / n, 16:9 («تطبيقات في الشريط», FavBar.tileW)"""
+    w = (1616 - 24 * (n - 1)) // n
+    return w, w * 9 // 16
 LIFT_ROOM = 8                 # the focused tile (lifted 6, grown 1.08, ringed) keeps at least this much between it and the tray's edge
 
 
@@ -66,11 +72,12 @@ def summary(xml_text):
     return "\n".join(out[:40])
 
 
-def tiles(ns, tray):
+def tiles(ns, tray, n=5):
     """the favourites that show: focusable nodes inside the tray's height whose height is a tile's (a sliver is as tall, but narrower)"""
     t0, t1 = tray[1], tray[3]
-    out = [n for n in ns if n["focusable"] and not n["cls"].endswith("HorizontalScrollView") and n["rect"][1] >= t0 - 40 and n["rect"][3] <= t1 + 40
-           and 0.8 * TILE_H <= n["rect"][3] - n["rect"][1] <= 1.3 * TILE_H and n["rect"][2] > tray[0] - TILE_W and n["rect"][0] < tray[2] + TILE_W]
+    tw, th = tile_size(n)
+    out = [x for x in ns if x["focusable"] and not x["cls"].endswith("HorizontalScrollView") and x["rect"][1] >= t0 - 40 and x["rect"][3] <= t1 + 40
+           and 0.8 * th <= x["rect"][3] - x["rect"][1] <= 1.3 * th and x["rect"][2] > tray[0] - tw and x["rect"][0] < tray[2] + tw]
     return sorted(out, key=lambda n: n["rect"][0])
 
 
@@ -80,7 +87,7 @@ def name_label(ns, tray):
     return max(c, key=lambda n: n["rect"][3] - n["rect"][1]) if c else None
 
 
-def analyse(xml_text, lang, focus, lowered=False, label_required=True):
+def analyse(xml_text, lang, focus, lowered=False, label_required=True, n=5, favs=7):
     """-> (failures, measurements) for one dump"""
     ns = nodes(xml_text)
     tray = find_tray(ns)
@@ -94,7 +101,8 @@ def analyse(xml_text, lang, focus, lowered=False, label_required=True):
     x0, y0, x1, y1 = SAFE
     if tray[0] < x0 or tray[1] < y0 or tray[2] > x1 or tray[3] > y1:
         fails.append(f"the tray {tray} is outside the safe area {SAFE}")
-    ts = tiles(ns, tray)
+    tw = tile_size(n)[0]
+    ts = tiles(ns, tray, n)
     m["tiles"] = [list(t["rect"]) for t in ts]
     if len(ts) < 3:
         fails.append(f"only {len(ts)} tiles found")
@@ -108,10 +116,18 @@ def analyse(xml_text, lang, focus, lowered=False, label_required=True):
             if r[0] < tray[0] + LIFT_ROOM or r[2] > tray[2] - LIFT_ROOM or r[1] < tray[1] + LIFT_ROOM or r[3] > tray[3] - LIFT_ROOM:
                 fails.append(f"the focused tile {list(r)} is closer than {LIFT_ROOM} px to the tray {list(tray)}")
         else:
-            if w < TILE_W - 8:
+            if w < tw - 8:
                 fails.append(f"a tile cut to {w} px at {list(r)} (a sliver)")
             elif r[0] < inner[0] - 2 or r[2] > inner[2] + 2 or (not lowered and (r[1] < inner[1] - 2 or r[3] > inner[3] + 2)):
                 fails.append(f"a tile {list(r)} is not inside the tray's inner rect {list(inner)}")
+    whole = sorted([t["rect"] for t in ts if t["rect"][2] - t["rect"][0] >= tw - 8], key=lambda r: r[0])
+    m["whole"] = len(whole)
+    if focus == "first" and not lowered and len(whole) < min(n, favs):
+        fails.append(f"only {len(whole)} whole tiles of {tw} px show, {min(n, favs)} were set")
+    still = sorted([t["rect"] for t in ts if t["rect"][2] - t["rect"][0] >= tw - 8 and not t["focused"]], key=lambda r: r[0])   # the focused one is drawn grown: its gaps are not the rest's
+    for a, b in zip(still, still[1:]):
+        if b[0] - a[2] < 60 and abs(b[0] - a[2] - 24) > 3:   # two neighbours: 24 apart
+            fails.append(f"two tiles {list(a)} {list(b)} are {b[0] - a[2]} px apart, not 24")
     label = None if lowered else name_label(ns, tray)   # lowered, the focus is on the matches widget: the texts above the tray are the widget's
     if label:
         r = label["rect"]
@@ -330,6 +346,24 @@ def run(out):
                 fs += strips_same(Image.open(pa), Image.open(pb), ma["tray"])
             report[tag] = {"first": ma, "last": mb, "failures": fa + fb + fs}
             failures += [f"{tag}: {f}" for f in fa + fb + fs]
+    # «تطبيقات في الشريط»: 7 whole tiles (Arabic) and 10 (English), the tray's box and the name's place unchanged
+    shell("wm density 320")
+    for n, lang, favs in ((7, "ar", 7), (10, "en", 10)):
+        seed_dock(favs)
+        saver(f"--es favbar {n}")
+        tag = f"bar{n}-{lang}"
+        if not start_in(lang):
+            failures.append(f"{tag}: the home did not show the language {lang}")
+        fwd, back = ("DPAD_LEFT", "DPAD_RIGHT") if lang == "ar" else ("DPAD_RIGHT", "DPAD_LEFT")
+        xa, pa = walk([back] * 12, out, f"{tag}-first")
+        fa, ma = analyse(xa, lang, "first", n=n, favs=favs)
+        xb, pb = walk([fwd] * 12, out, f"{tag}-last")
+        fb, mb = analyse(xb, lang, "last", n=n, favs=favs)
+        fs = same_place(ma.get("label"), mb.get("label"))
+        report[tag] = {"first": ma, "last": mb, "failures": fa + fb + fs}
+        failures += [f"{tag}: {f}" for f in fa + fb + fs]
+    saver("--es favbar 5")
+    seed_dock(7)
     # the football layout with the matches widget focused: the tray is lowered by 40 px (best effort: the widget needs the emulator to hold today's games)
     shell("wm density 320")
     start_in("ar", "football")
@@ -355,6 +389,17 @@ def run(out):
         print("football summary:\n" + summary(xf))
         print(f"football: NOT MEASURED - the tray is at {tf}, not lowered to y 808 (no games on the emulator, so the matches widget did not take the focus)")
     saver("--es homelayout classic")
+    # the markets page, for a person to look at (no assertions): the PNG is in the artifact
+    try:
+        shell("am start -W -n sa.urtv.home/.MarketsActivity")
+        time.sleep(8)
+        (out / "markets.png").write_bytes(adb("exec-out", "screencap", "-p", text=False).stdout)
+        print("markets page captured: markets.png")
+        key("DPAD_DOWN", "DPAD_DOWN")
+        (out / "markets-down.png").write_bytes(adb("exec-out", "screencap", "-p", text=False).stdout)
+        shell("input keyevent KEYCODE_HOME")
+    except Exception as e:   # a picture for the eyes, never a reason to fail
+        print("markets page not captured:", type(e).__name__)
     (out / "tray-report.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
     for f in failures:
         print("FAIL " + f)

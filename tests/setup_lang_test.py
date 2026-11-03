@@ -61,7 +61,7 @@ check("choosing the language already in use does nothing", "if (v.equals(S.lang(
 prov = text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/ConfigProvider.java")
 rec = text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/SaverReceiver.java")
 check("the screensaver's side: phone_set takes lang and SaverReceiver.set saves it with Prefs.setLang (the same call as `saver.sh lang`)",
-      '"idle", "lang"}' in prov and "if (lang != null) p.setLang(lang);" in rec)
+      '"idle", "lang", "favbar"}' in prov and "if (lang != null) p.setLang(lang);" in rec)
 check("S.set keeps the choice for the next start, with only ar or en", "public static void set(Context c, String v)" in text(HOME / "S.java") and "lang = Tr.norm(v);" in text(HOME / "S.java"))
 words = text(ROOT / "i18n/en/setup.tsv")
 check("the labels are the same in both languages, so they need no table entry (never translated)", "العربية\t" not in words and "English\t" not in words)

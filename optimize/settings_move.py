@@ -45,7 +45,7 @@ MIGRATIONS = {}
 # TODO(parental PIN, branch work/parental): the PIN must NEVER be added here, and must never be exported by any other way.
 ALLOWED_TOP = ("schema", "city", "digits", "prayer", "hijri_offset", "clock24", "clock_size", "card_style", "cards",
                "greeting", "listen_pill", "update_bell", "markets", "teams", "adhan", "sunrise", "prayerbar", "wxmore", "months",
-               "lang")
+               "lang", "fav_bar")
 # NEVER here: the hidden update-channel switch (updatechannel) and the parental PIN. tests/settings_move_test.py checks both.
 
 # The same lists the apps validate (android/app/src/main/java/sa/urtv/screensaver/Prefs.java; tests/settings_move_test.py
@@ -57,6 +57,7 @@ CLOCK_SIZES = ("large", "medium", "small")
 MK_STYLES = ("arrows", "prices")
 MONTHS = ("default", "levant")
 LANGS = ("ar", "en")   # «اللغة» (Tr.java: ar, the default, or en)
+FAV_BARS = ("5", "6", "7", "8", "9", "10", "all")   # «تطبيقات في الشريط»: how many favourites the home tray shows whole (Prefs.FAV_BARS)
 SWITCHES = ("greeting", "sunrise", "prayerbar", "wxmore")   # on/off switches the TV reports as «on» / «off»
 MARKETS = ("tasi", "aramco", "spx", "btc", "gold", "silver", "oil", "xrp")
 MAX_MARKETS = 4
@@ -167,6 +168,8 @@ def read_tv(keep_own=False):
         s["listen_pill"] = g["listenpill"] == "on"
     if g.get("updatebell") in ("on", "off"):   # likewise
         s["update_bell"] = g["updatebell"] == "on"
+    if g.get("favbar") in FAV_BARS:   # «تطبيقات في الشريط»; an older screensaver does not say: left out of the file
+        s["fav_bar"] = g["favbar"]
     prayer = {}
     if "prayermethod" in g:
         prayer["method"] = g["prayermethod"]
@@ -254,7 +257,7 @@ def flat(s):
         if "country" in c:
             out["city"] += (c["country"],)
     for k in ("digits", "clock24", "clock_size", "card_style", "greeting", "listen_pill", "update_bell", "hijri_offset", "sunrise", "prayerbar", "wxmore", "months",
-              "lang"):
+              "lang", "fav_bar"):
         if k in s:
             out[k] = s[k]
     for k, v in s.get("prayer", {}).items():
@@ -434,6 +437,8 @@ def validate(d):
         out["months"] = d["months"]
     if "lang" in d and choice(d["lang"], LANGS, "lang", errs):
         out["lang"] = d["lang"]
+    if "fav_bar" in d and choice(d["fav_bar"], FAV_BARS, "fav_bar", errs):
+        out["fav_bar"] = d["fav_bar"]
     for key in ("clock24", "greeting", "listen_pill", "update_bell", "sunrise", "prayerbar", "wxmore"):
         if key in d:
             n = len(errs)
@@ -647,6 +652,8 @@ def ops(values, names):
             es("months", v)
         elif p == "lang":
             es("lang", v)
+        elif p == "fav_bar":
+            es("favbar", v)
         elif p == "cards.panel2":
             es("panel2", v)
         elif p == "listen_pill":

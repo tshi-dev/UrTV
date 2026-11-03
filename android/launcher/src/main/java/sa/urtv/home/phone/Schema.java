@@ -119,7 +119,7 @@ public final class Schema {
     }
 
     private static Clean set(Map<String, Object> b) {
-        Clean c = only(b, "city", "home_cards", "adhan_on", "adhan_voice", "adhan_fajr_voice", "adhan_short", "adhan_stopkey", "adhan_volume", "sleep_minutes", "saver_idle", "lang", "pin");
+        Clean c = only(b, "city", "home_cards", "adhan_on", "adhan_voice", "adhan_fajr_voice", "adhan_short", "adhan_stopkey", "adhan_volume", "sleep_minutes", "saver_idle", "lang", "fav_bar", "pin");
         if (!c.ok()) return c;
         if (!pin(b)) return no("bad pin");
         boolean any = false;
@@ -144,6 +144,7 @@ public final class Schema {
                 case "sleep_minutes": if (!oneOf(v, SLEEP_MINUTES)) return no("bad sleep_minutes"); break;
                 case "saver_idle": if (!oneOf(v, SAVER_IDLE)) return no("bad saver_idle"); break;
                 case "lang": if (!"ar".equals(v) && !"en".equals(v)) return no("bad lang"); break;   // «اللغة» (docs/ENGLISH.md)
+                case "fav_bar": if (!(v instanceof String) || !((String) v).matches("[5-9]|10|all")) return no("bad fav_bar"); break;   // «تطبيقات في الشريط»
                 default: return no("unknown key");
             }
         }

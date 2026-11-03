@@ -200,7 +200,8 @@ final class PhoneActions implements Actions {
                 panels.add(p);
             }
             m.put("panels", panels);
-            m.put("lang", sa.urtv.home.Tr.norm(b.getString("lang")));   // «اللغة»: an older screensaver says nothing: ar
+            m.put("lang", sa.urtv.home.Tr.norm(b.getString("lang")));
+            m.put("fav_bar", b.getString("fav_bar") == null ? "5" : b.getString("fav_bar"));   // an older screensaver says nothing: 5, as always   // «اللغة»: an older screensaver says nothing: ar
         }
         m.putAll(PhoneBridge.state(app));
         PhoneBridge.addAdhanLive(app, m);
@@ -235,6 +236,7 @@ final class PhoneActions implements Actions {
         }
         if (v.containsKey("saver_idle")) extras.putString("idle", String.valueOf((Long) v.get("saver_idle")));
         if (v.containsKey("lang")) extras.putString("lang", (String) v.get("lang"));   // «اللغة»: the screensaver holds it (SaverReceiver.set checks it again)
+        if (v.containsKey("fav_bar")) extras.putString("favbar", (String) v.get("fav_bar"));   // «تطبيقات في الشريط»: the screensaver holds it (SaverReceiver.set checks it again)
         if (v.containsKey("sleep_minutes") && !PhoneApps.setSleep(app, ((Long) v.get("sleep_minutes")).intValue())) return Result.fail("refused");
         if (!extras.isEmpty()) {
             Bundle r = saver("phone_set", null, extras);

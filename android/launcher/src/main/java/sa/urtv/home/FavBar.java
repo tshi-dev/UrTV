@@ -33,11 +33,30 @@ final class FavBar {
 
     static int ring(boolean light) { return light ? RING_LIGHT : RING_DARK; }
 
-    /** a tile's width on this screen: what is left of the tray for five, so rounding never pushes the fifth past it (304 at 1080p) */
-    static int tileW(int screenH) {
-        int inner = px(1920 - 2 * SIDE, screenH) - 2 * px(PAD_SIDE, screenH) - (SHOWN - 1) * px(GAP, screenH);
-        return inner / SHOWN;
+    /** the most a tray ever shows whole at once, and the most favourites there are (Dock.MAX) */
+    static final int MAX_SHOWN = 10;
+
+    /**
+     * How many tiles the tray shows whole at once: the setting ("5" to "10", or "all": every favourite, up to 10, so never a scroll), at least five (the tray never
+     * shows fewer than the tiles it was drawn for) and never more than ten. An unknown word is five.
+     */
+    static int shown(String setting, int favourites) {
+        if ("all".equals(setting)) return Math.max(SHOWN, Math.min(MAX_SHOWN, favourites));
+        try {
+            return Math.max(SHOWN, Math.min(MAX_SHOWN, Integer.parseInt(setting.trim())));
+        } catch (RuntimeException e) {
+            return SHOWN;
+        }
     }
+
+    /** a tile's width on this screen when {@code n} show: what is left of the tray, (inner width - (n-1) x 24) / n, so rounding never pushes the last past it (304 for 5, 213 for 7, 141 for 10 at 1080p) */
+    static int tileW(int screenH, int n) {
+        int inner = px(1920 - 2 * SIDE, screenH) - 2 * px(PAD_SIDE, screenH) - (n - 1) * px(GAP, screenH);
+        return inner / n;
+    }
+
+    /** a tile's width with the five of the default */
+    static int tileW(int screenH) { return tileW(screenH, SHOWN); }
 
     /**
      * How far the tray scrolls (in its content's pixels, + toward the content's end) to bring a focused tile ({@code rectLeft}..{@code rectRight}) fully

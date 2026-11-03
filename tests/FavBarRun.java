@@ -24,6 +24,20 @@ public class FavBarRun {
              .append(" dropped ").append(bottom + FavBar.px(FavBar.WIDGET_DROP, h)).append(" safe ").append(h - FavBar.px(FavBar.BOTTOM, h)).append(" screen ").append(h).append('\n');
         }
         o.append("tile1080 ").append(FavBar.tileW(1080)).append('\n');
+        // «تطبيقات في الشريط»: N whole tiles with 24 gaps and 24 insets, at 1080p and 720p: width, the row they make, the ring room of the focused one
+        for (int h : new int[] {1080, 720}) {
+            for (int n : new int[] {5, 6, 7, 8, 9, 10}) {
+                int tw = FavBar.tileW(h, n), th = tw * 9 / 16, inner = FavBar.px(1920 - 2 * FavBar.SIDE, h) - 2 * FavBar.px(FavBar.PAD_SIDE, h);
+                int row = n * tw + (n - 1) * FavBar.px(FavBar.GAP, h);
+                float over = tw * (FavBar.FOCUS_SCALE - 1) / 2f + FavBar.px(FavBar.RING, h);
+                o.append("bar ").append(h).append(' ').append(n).append(" tile ").append(tw).append(" row ").append(row).append(" inner ").append(inner)
+                 .append(" slack ").append(inner - row).append(" ratio ").append(Math.abs(tw * 9 / 16f - th) < 1 ? 1 : 0)
+                 .append(" ringRoom ").append(FavBar.px(FavBar.PAD_SIDE, h) - over >= 0 ? 1 : 0).append('\n');
+            }
+        }
+        o.append("shown ").append(FavBar.shown("5", 7)).append(' ').append(FavBar.shown("7", 3)).append(' ').append(FavBar.shown("10", 10)).append(' ').append(FavBar.shown("all", 8)).append(' ')
+         .append(FavBar.shown("all", 3)).append(' ').append(FavBar.shown("all", 12)).append(' ').append(FavBar.shown("12", 12)).append(' ').append(FavBar.shown("4", 12)).append(' ').append(FavBar.shown("x", 12)).append(' ')
+         .append(FavBar.shown(null, 12)).append('\n');
         o.append("nameX ").append(FavBar.nameX(500, 0, 200, 1680)).append(' ').append(FavBar.nameX(50, 0, 200, 1680)).append(' ')
          .append(FavBar.nameX(1670, 0, 200, 1680)).append('\n');
         // tester step 20: Arabic (drawn right to left) ▶ goes to the item before, English (left to right) to the next; the edges stay

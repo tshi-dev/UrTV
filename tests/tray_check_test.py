@@ -40,6 +40,23 @@ def ar_tiles(shift=0):   # the first tile at the right, 304 wide, 24 apart, 24 i
     return t
 
 
+def en_n_tiles(n, first_focus=True):   # n whole tiles from the left, tile_size(n) wide, 24 apart, 24 inside the tray, centred in its height
+    w, h = tc.tile_size(n)
+    y = 768 + (218 - h) // 2
+    t = [(152 + k * (w + 24), y, 152 + k * (w + 24) + w, y + h) for k in range(n)]
+    t[0] = (t[0][0] - 6, t[0][1] - 6, t[0][2] + 6, t[0][3] + 6) if first_focus else t[0]
+    return t
+
+
+check("tile_size: 5 is 304x171, 7 is 210x118, 10 is 140x78 at 1080p (the bar-size setting)", [tc.tile_size(n) for n in (5, 7, 10)] == [(304, 171), (210, 118), (140, 78)], [tc.tile_size(n) for n in (5, 7, 10)])
+for n in (7, 10):
+    f, m = tc.analyse(dump(en_n_tiles(n), (152, 704, 256, 752)), "en", "first", n=n, favs=n)
+    check(f"a good tray of {n} whole tiles passes (24 apart, 24 inside, the name at the left inner padding)", not f and m.get("whole") == n, (f, m.get("whole")))
+t = en_n_tiles(7)
+f, _ = tc.analyse(dump(t[:6] + [(t[6][0] + 20, t[6][1], t[6][2] + 20, t[6][3])], (152, 704, 256, 752)), "en", "first", n=7, favs=7)
+check("7 set, one tile 20 px out of its place: found (not 24 apart)", any("not 24" in x for x in f), f)
+f, _ = tc.analyse(dump(en_n_tiles(7)[:5], (152, 704, 256, 752)), "en", "first", n=7, favs=7)
+check("7 set but only 5 whole tiles show: found", any("whole tiles" in x for x in f), f)
 good_label = (1664, 704, 1768, 752)
 f, m = tc.analyse(dump(ar_tiles(), good_label), "ar", "first")
 check("a good tray in Arabic passes: five whole tiles inside the inner rect, the focused one with room to spare, the name at the inner padding", not f, f)
