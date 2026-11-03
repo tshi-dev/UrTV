@@ -190,10 +190,7 @@
         </activity>
 
         <!-- a setup run holds the process while it goes (it outlives the setup screen); not exported, it stops itself at the end -->
-        <service
-            android:name=".setup.SetupService"
-            android:exported="false"
-            android:foregroundServiceType="specialUse">
+        <service android:name=".setup.SetupService" android:exported="false" android:foregroundServiceType="specialUse">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="The TV sets itself up over its own local adb (settings, the home switch); the run outlives the setup screen and stops itself at the end." />
