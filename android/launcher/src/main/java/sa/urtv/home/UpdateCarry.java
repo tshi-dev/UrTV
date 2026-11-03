@@ -48,20 +48,36 @@ public final class UpdateCarry {
     /** True when a record of an install in the last FRESH_MS is there (pure: tests/tester_fixes_test.py reads the rule from the source). */
     static boolean fresh(long at, long now) { return at > 0 && now >= at && now - at <= FRESH_MS; }
 
-    /** After the replace (or the home's first show): the record, once. */
+    /**
+     * The mute only, at once (MY_PACKAGE_REPLACED, before anything waits) and again when the home first shows. The record is NOT used up here: the
+     * tester saw «Muted: false» after 174 -> 178 although the single look 8 s after the replace (and the one 20 s later, on a Handler of a receiver
+     * process that is gone by then) were meant to hold. Now the mute is asked in the receiver at once, after A11yHeal's wait, at the home's first
+     * start, and 20 s after each of those that ran in a living process.
+     */
+    static void remute(final Context c, final String why) {
+        SharedPreferences sp = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        long at = sp.getLong("at", 0);
+        if (at == 0 || sp.getInt("code", -1) == BuildConfig.VERSION_CODE || !sp.getBoolean("muted", false) || !fresh(at, System.currentTimeMillis())) return;
+        muteAgain(c, why);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> muteAgain(c, why + " +20s"), AGAIN_MS);
+    }
+
+    /** After the replace (or the home's first show): the accessibility entry once; the mute record stays until both the replace and the first start have looked. */
     static void after(final Context c, String why) {
         SharedPreferences sp = c.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         long at = sp.getLong("at", 0);
         if (at == 0) return;
         if (sp.getInt("code", -1) == BuildConfig.VERSION_CODE) return;   // still the build that recorded it: the home was not replaced yet
-        boolean wasMuted = sp.getBoolean("muted", false);
-        String before = sp.getString("a11y", "");
-        sp.edit().clear().commit();   // once: a later unmute or a later change of the list by the owner is theirs
-        if (!fresh(at, System.currentTimeMillis())) return;
-        if (wasMuted) {
+        boolean wasMuted = sp.getBoolean("muted", false), a11yDone = sp.getBoolean("a11yDone", false), fresh = fresh(at, System.currentTimeMillis());
+        String before = sp.getString("a11y", ""), seen = sp.getString("seen", "");
+        if (!seen.contains(why + ";")) seen = seen + why + ";";
+        if (fresh && wasMuted) {
             muteAgain(c, why);
             new Handler(Looper.getMainLooper()).postDelayed(() -> muteAgain(c, why + " +20s"), AGAIN_MS);
         }
+        if (!fresh || (seen.contains("replaced;") && seen.contains("start;"))) sp.edit().clear().commit();   // used up: a later unmute or change by the owner is theirs
+        else sp.edit().putString("seen", seen).putBoolean("a11yDone", true).commit();
+        if (!fresh || a11yDone) return;   // the entry is put back once
         try {
             String now = Settings.Secure.getString(c.getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
             List<String> lost = A11yList.ownLost(before, now, A11yHeal.TYPE, A11yHeal.SLEEP);

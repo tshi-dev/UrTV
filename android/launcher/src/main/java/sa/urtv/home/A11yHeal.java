@@ -35,6 +35,7 @@ public final class A11yHeal extends BroadcastReceiver {
     @Override public void onReceive(Context context, Intent intent) {
         final Context app = context.getApplicationContext();
         final String why = intent != null && Intent.ACTION_MY_PACKAGE_REPLACED.equals(intent.getAction()) ? "replaced" : "boot";
+        if ("replaced".equals(why)) { try { UpdateCarry.remute(app, "replaced now"); } catch (RuntimeException e) { Log.w(TAG, "remute failed: " + e.getClass().getSimpleName()); } }   // at once, before the wait
         final PendingResult pending = goAsync();
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override public void run() {
@@ -48,6 +49,7 @@ public final class A11yHeal extends BroadcastReceiver {
         if (checkedThisProcess) return;
         checkedThisProcess = true;
         final Context app = c.getApplicationContext();
+        try { UpdateCarry.remute(app, "first start"); } catch (RuntimeException e) { Log.w(TAG, "remute failed: " + e.getClass().getSimpleName()); }
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() { @Override public void run() { check(app, "start"); } }, SETTLE_MS);
     }
 

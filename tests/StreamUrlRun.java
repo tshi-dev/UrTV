@@ -28,13 +28,16 @@ public final class StreamUrlRun {
         srv.createContext("/loop", x -> { x.getResponseHeaders().add("Location", base + "/loop"); x.sendResponseHeaders(302, -1); x.close(); });
         srv.createContext("/away", x -> { x.getResponseHeaders().add("Location", "http://localhost:" + port + "/n05/x"); x.sendResponseHeaders(302, -1); x.close(); });
         srv.start();
+        final boolean[] flip = {false};
+        StreamUrl.HttpHosts alternate = h -> { flip[0] = !flip[0]; return flip[0]; };   // true for the scheme check, false for "hand over unasked": the loop is followed
         StreamUrl.HttpHosts local = h -> h.equals("127.0.0.1"), app = StreamUrl::cleartextAllowed;
         try {
             check("a 302 is followed and the player gets the final address (radiojar's https -> http one)", (base + "/n05/stream?token=1").equals(tryResolve(base + "/live", local)), tryResolve(base + "/live", local));
+            check("an allowed http step is handed over without our own request (a single-use token stays unused)", gets.get() == 0, gets.get());
             check("a relative Location is read against the address that gave it", (base + "/n05/stream").equals(tryResolve(base + "/rel", local)), tryResolve(base + "/rel", local));
             check("a 500 (qurango's 177 bytes) is a passing server error: tried again", tryResolve(base + "/busy", local).equals("ERR server error 500"), tryResolve(base + "/busy", local));
             check("a 404 is not tried again", tryResolve(base + "/gone", local).equals("ERR refused 404"), tryResolve(base + "/gone", local));
-            check("redirects that never end stop after " + StreamUrl.MAX_REDIRECTS, tryResolve(base + "/loop", local).equals("ERR too many redirects"), tryResolve(base + "/loop", local));
+            check("redirects that never end stop after " + StreamUrl.MAX_REDIRECTS, tryResolve(base + "/loop", alternate).equals("ERR too many redirects"), tryResolve(base + "/loop", alternate));
             check("a redirect to plain http on a host the app may not reach that way is refused", tryResolve(base + "/away", local).startsWith("ERR not allowed: http://localhost"), tryResolve(base + "/away", local));
             check("plain http only for the hosts network_security_config allows (radiojar.com and its subdomains)", StreamUrl.cleartextAllowed("n05.radiojar.com") && StreamUrl.cleartextAllowed("radiojar.com")
                 && !StreamUrl.cleartextAllowed("evilradiojar.com") && !StreamUrl.cleartextAllowed("backup.qurango.net") && !StreamUrl.cleartextAllowed(null), "");

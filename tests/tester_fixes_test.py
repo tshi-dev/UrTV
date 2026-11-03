@@ -39,12 +39,17 @@ check("B5/B6: recorded with commit() (the process is replaced next), with the bu
 check("B5/B6: A11yHeal hands the replace and the home's first show (not a boot) to UpdateCarry.after, before its own check",
       'if (!"boot".equals(why))' in heal and "UpdateCarry.after(c, why);" in heal and heal.index("UpdateCarry.after(c, why);") < heal.index("String list = read(c, LIST), sw"))
 check("B5: a TV muted before the install is muted again (now and once 20 s later), never unmuted by us",
-      "if (wasMuted) {" in carry and "ADJUST_MUTE" in carry and "ADJUST_UNMUTE" not in carry and "AGAIN_MS = 20_000" in carry)
+      "if (fresh && wasMuted) {" in carry and "ADJUST_MUTE" in carry and "ADJUST_UNMUTE" not in carry and "AGAIN_MS = 20_000" in carry)
+check("B5 (build 178): the mute is asked in the receiver at once, at the home's first start, and 20 s after each; the record lives until both looked",
+      'UpdateCarry.remute(app, "replaced now")' in heal and 'UpdateCarry.remute(app, "first start")' in heal and "static void remute(" in carry
+      and 'seen.contains("replaced;") && seen.contains("start;")' in carry and heal.index('UpdateCarry.remute(app, "replaced now")') < heal.index("goAsync()"))
+check("B5 (build 178): nothing of ours starts another app after our update (the last app coming back is the TV's own)",
+      "getLaunchIntentForPackage" not in carry and "startActivity" not in carry and "startActivity" not in heal)
 check("B5: the installer itself never touches the sound", "AudioManager" not in upd)
 check("B6: only our entries the install lost are added back, only with WRITE_SECURE_SETTINGS; else a one-time notice",
       "A11yList.ownLost(before, now, A11yHeal.TYPE, A11yHeal.SLEEP)" in carry and "A11yList.with(now, lost)" in carry
       and "WRITE_SECURE_SETTINGS" in carry and "Toast.makeText" in carry and "sp.edit().clear().commit();" in carry)
-check("B6: the record is used once and only within 30 minutes", "FRESH_MS = 30 * 60_000L" in carry and "if (!fresh(at, System.currentTimeMillis())) return;" in carry)
+check("B6: the record is used once and only within 30 minutes", "FRESH_MS = 30 * 60_000L" in carry and "if (!fresh || a11yDone) return;" in carry)
 m = re.search(r"static boolean fresh\(long at, long now\) \{ return (.*?); \}", carry)
 fresh = (lambda at, now: eval(m.group(1).replace("&&", "and").replace("FRESH_MS", "1800000"), {}, {"at": at, "now": now})) if m else None
 check("B6: fresh(): within the window yes, before it, after it and with no record no", fresh is not None and fresh(1000, 1000 + 60_000)

@@ -127,33 +127,31 @@ public class SetupActivity extends Activity {
     }
 
     private void buildStart(SetupRunner r) {
-        add(text("يجهّز التلفزيون نفسه، بدون كمبيوتر ولا جوال. اضغط «جهّز كل شي»: يسألك التلفزيون مرة واحدة «السماح بتصحيح USB؟»، "
-            + "ثم نعرض عليك ما سنفعله بالضبط قبل أي تغيير.", 15, "Regular", TEXT), dp(10));
-        add(text("قبل البدء: فعّل «تصحيح USB» (الإعدادات ← تفضيلات الجهاز ← حول ← اضغط «Build» سبع مرات ← خيارات المطوّر ← تصحيح USB). "
-            + "وخلك عند التلفزيون: لما تطلع الرسالة اختر «السماح دائماً».", 13, "Regular", GOLD), dp(14));
-        if (SetupRunner.resumable(new FileStore(this))) add(text("إعداد سابق ما اكتمل: «جهّز كل شي» يكمله من حيث توقف.", 14, "Regular", TEXT), dp(10));
-        start = button("جهّز كل شي");
+        add(text(S.t("يجهّز التلفزيون نفسه، بدون كمبيوتر ولا جوال. اضغط «جهّز كل شي»: يسألك التلفزيون مرة واحدة «السماح بتصحيح USB؟»، ثم نعرض عليك ما سنفعله بالضبط قبل أي تغيير."), 15, "Regular", TEXT), dp(10));
+        add(text(S.t("قبل البدء: فعّل «تصحيح USB» (الإعدادات ← تفضيلات الجهاز ← حول ← اضغط «Build» سبع مرات ← خيارات المطوّر ← تصحيح USB). وخلك عند التلفزيون: لما تطلع الرسالة اختر «السماح دائماً»."), 13, "Regular", GOLD), dp(14));
+        if (SetupRunner.resumable(new FileStore(this))) add(text(S.t("إعداد سابق ما اكتمل: «جهّز كل شي» يكمله من حيث توقف."), 14, "Regular", TEXT), dp(10));
+        start = button(S.t("جهّز كل شي"));
         start.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(false); } });
         add(start, dp(10));
-        undo = button("تراجع (يرجّع التلفزيون كما كان)");
+        undo = button(S.t("تراجع (يرجّع التلفزيون كما كان)"));
         undo.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(true); } });
         add(undo, dp(14));
         // «جهّز كل شي» has the focus once the screen is laid out (asked before that, the TV's first OK only put the focus on it: nothing happened)
         start.post(new Runnable() { @Override public void run() { start.requestFocus(); } });
         SetupRunner.End e = r.end();
-        if (e != null && e != dismissed) say(e.text, e.bad ? RED : GOLD);
+        if (e != null && e != dismissed) say(S.tv(e.text), e.bad ? RED : GOLD);
         else say("", GOLD);
     }
 
     private void buildPlan(SetupRunner r) {
         SetupRunner.Preview p = r.preview();
         if (p == null) p = new SetupRunner.Preview();
-        add(text("هذا ما سنفعله في تلفزيونك، بالترتيب. ما تغيّر شيء بعد:", 15, "Medium", TEXT), dp(8));
-        List<String> plan = SetupRunner.planLines(p);
+        add(text(S.t("هذا ما سنفعله في تلفزيونك، بالترتيب. ما تغيّر شيء بعد:"), 15, "Medium", TEXT), dp(8));
+        List<String> plan = SetupRunner.planLines(p, TR);
         for (int i = 0; i < plan.size(); i++) add(text(digits((i + 1) + ". " + plan.get(i)), 14, "Regular", TEXT), dp(6));
         final boolean already = p.tvbro && p.smarttube;
         final TextView box = button("");
-        final String words = SetupRunner.extrasLine(p);
+        final String words = SetupRunner.extrasLine(p, TR);
         box.setText(already ? words : (extras ? "☑ " : "☐ ") + words);
         box.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -163,10 +161,10 @@ public class SetupActivity extends Activity {
             }
         });
         add(box, dp(12));
-        final TextView begin = button("ابدأ");
+        final TextView begin = button(S.t("ابدأ"));
         begin.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { SetupRunner.get().confirm(extras); } });
         add(begin, dp(10));
-        TextView no = button("إلغاء");
+        TextView no = button(S.t("إلغاء"));
         no.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { SetupRunner.get().cancel(); } });
         add(no, dp(10));
         begin.post(new Runnable() { @Override public void run() { begin.requestFocus(); } });
@@ -174,7 +172,7 @@ public class SetupActivity extends Activity {
     }
 
     private void buildProgress(SetupRunner r) {
-        add(text(r.kind() == SetupRunner.Kind.UNDO ? "نرجّع التلفزيون كما كان:" : "الإعداد يعمل. لا تطفئ التلفزيون، وقد يُعاد تشغيله وحده ويكمل.", 15, "Medium", TEXT), dp(10));
+        add(text(r.kind() == SetupRunner.Kind.UNDO ? S.t("نرجّع التلفزيون كما كان:") : S.t("الإعداد يعمل. لا تطفئ التلفزيون، وقد يُعاد تشغيله وحده ويكمل."), 15, "Medium", TEXT), dp(10));
         for (SetupRunner.Step s : r.steps()) {
             TextView t = text("", 15, "Regular", DIM);
             stepViews.add(t);
@@ -190,17 +188,17 @@ public class SetupActivity extends Activity {
             int color;
             switch (s.state) {
                 case DONE: mark = "✓"; color = TEXT; break;
-                case SKIPPED: mark = "–"; color = DIM; tail = " (تُرك)" + why(s.reason); break;
+                case SKIPPED: mark = "–"; color = DIM; tail = " " + S.t("(تُرك)") + why(s.reason); break;
                 case FAILED: mark = "✕"; color = RED; tail = why(s.reason); break;
                 case RUNNING: mark = "…"; color = GOLD; break;
                 default: mark = "·"; color = DIM; break;
             }
-            stepViews.get(i).setText(digits(mark + " " + SetupRunner.label(s.id) + tail));
+            stepViews.get(i).setText(digits(mark + " " + S.tv(SetupRunner.label(s.id)) + tail));
             stepViews.get(i).setTextColor(color);
         }
-        if (r.promptLate()) say(SetupRunner.PROMPT_LATE, RED);
-        else if (r.promptWaiting()) say(SetupRunner.PROMPT_LINE, GOLD);
-        else say(r.kind() == SetupRunner.Kind.UNDO ? "جارٍ الرجوع…" : "جارٍ الإعداد… لا تطفئ التلفزيون.", GOLD);
+        if (r.promptLate()) say(S.tv(SetupRunner.PROMPT_LATE), RED);
+        else if (r.promptWaiting()) say(S.tv(SetupRunner.PROMPT_LINE), GOLD);
+        else say(r.kind() == SetupRunner.Kind.UNDO ? S.t("جارٍ الرجوع…") : S.t("جارٍ الإعداد… لا تطفئ التلفزيون."), GOLD);
         List<SetupRunner.Line> lines = r.linesSince(Math.max(0, r.lastSeq() - 1));
         detail.setText(lines.isEmpty() ? "" : digits(lines.get(lines.size() - 1).text));
     }
@@ -208,17 +206,60 @@ public class SetupActivity extends Activity {
     private static String why(String reason) { return reason == null || reason.isEmpty() ? "" : " — " + reason; }
 
     private void buildWifi() {
-        add(text("خطوة منك قبل الشاشة الرئيسية", 18, "Medium", TEXT), dp(8));
-        add(text(SetupRunner.WIFI_ASK_TEXT, 15, "Regular", TEXT), dp(14));
-        final TextView more = button("كمّل");
+        add(text(S.t("خطوة منك قبل الشاشة الرئيسية"), 18, "Medium", TEXT), dp(8));
+        add(text(S.tv(SetupRunner.WIFI_ASK_TEXT), 15, "Regular", TEXT), dp(14));
+        final TextView more = button(S.t("كمّل"));
         more.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(false); } });
         add(more, dp(10));
-        undo = button("تراجع (يرجّع التلفزيون كما كان)");
+        undo = button(S.t("تراجع (يرجّع التلفزيون كما كان)"));
         undo.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(true); } });
         add(undo, dp(14));
         more.post(new Runnable() { @Override public void run() { more.requestFocus(); } });
         say("", GOLD);
     }
+
+    /** Every fixed sentence SetupRunner shows (labels, the plan, the prompt lines, the Wi-Fi question), marked for the table: tests/setup_i18n_test.py checks the list against the runner. */
+    static final String[] WORDS = {
+        S.n("فحص التلفزيون"),
+        S.n("نسخة احتياطية من حالة التلفزيون"),
+        S.n("الميزات المحمية"),
+        S.n("قياس الذاكرة قبل"),
+        S.n("أذونات تلفزيونك"),
+        S.n("القائمة الآمنة"),
+        S.n("قائمة المجتمع"),
+        S.n("تسريع التلفزيون"),
+        S.n("تثبيت شاشة التوقف"),
+        S.n("تفعيل شاشة التوقف"),
+        S.n("TV Bro و SmartTube"),
+        S.n("التشغيل التلقائي"),
+        S.n("الشاشة الرئيسية"),
+        S.n("قياس الذاكرة بعد"),
+        S.n("التقرير"),
+        S.n("التراجع"),
+        S.n("أجوبة قائمة المجتمع"),
+        S.n("نحفظ حالة التلفزيون الآن (نسخة احتياطية) قبل أي تغيير، ونرجّع أي ميزة محمية موقوفة (البث، الصوت، الريموت، المتجر)."),
+        S.n("نقيس الذاكرة قبل الإعداد وبعده: يُعاد تشغيل التلفزيون مرتين، ويكمل الإعداد وحده بعد كل مرة."),
+        S.n("نقيس الذاكرة قبل الإعداد وبعده (بدون إعادة تشغيل في هذا التلفزيون)."),
+        S.n("نعطي تلفزيونك أذوناته (الموقع، منبّهات الأذان، التحديثات)."),
+        S.n("نوقف تطبيقات القائمة الآمنة (إعلانات وتتبّع وعروض)، ونسجّلها لنرجعها بزر واحد."),
+        S.n("القائمة الآمنة: لا شيء منها شغّال في هذا التلفزيون."),
+        S.n("نوقف %s تطبيقاً من القائمة الآمنة (إعلانات وتتبّع وعروض)، ونسجّلها لنرجعها بزر واحد."),
+        S.n("نطابق قائمة المجتمع لطراز تلفزيونك إن وُجدت، ونسألك عن المشكوك فيه. بدون إنترنت نتركها."),
+        S.n("نسرّع التلفزيون: حركات أقصر، ومتجر Play لا يعمل في الخلفية."),
+        S.n("نحدّث شاشة التوقف إن وُجدت نسخة أحدث، ونفعّلها."),
+        S.n("نثبّت شاشة التوقف من إصداراتنا (بعد التأكد أنها موقّعة بمفتاحنا)، ونفعّلها."),
+        S.n("نسمح لتطبيقاتنا بالعمل عند تشغيل التلفزيون (الأذان ومؤقت النوم بعد إعادة التشغيل)."),
+        S.n("تلفزيونك هو الشاشة الرئيسية أصلاً."),
+        S.n("نجعل تلفزيونك الشاشة الرئيسية. إن ما اشتغلت خلال 5 دقائق ترجع الأصلية وحدها."),
+        S.n("وقبلها نطلب منك نسيان شبكة الواي فاي والاتصال بها من جديد (هذا التلفزيون يحفظها باسم وسيط الإعداد)."),
+        S.n("نكتب تقريراً بلا أي معلومة شخصية، وتقدر ترسله برمز QR إن أردت."),
+        S.n("TV Bro و SmartTube مثبّتان من قبل: نتركهما."),
+        S.n("ثبّت أيضاً TV Bro (متصفح) و SmartTube (يوتيوب بلا إعلانات)"),
+        S.n("التلفزيون يسأل «السماح بتصحيح USB؟»: اختر «السماح دائماً» بالريموت."),
+        S.n("ما ظهرت الرسالة؟ أعد تشغيل التلفزيون وافتح «إعداد تلفزيوني» واضغط «جهّز كل شي» وخلك عند التلفزيون"),
+        S.n("ما بدأنا الإعداد، وما تغيّر شيء في التلفزيون."),
+        S.n("قبل تبديل الشاشة الرئيسية: شبكة الواي فاي محفوظة باسم «وسيط الإعداد» في هذا التلفزيون، وإيقافه يمسحها. افتح إعدادات التلفزيون ← الشبكة، واختر «انسَ الشبكة»، ثم اتصل بها من جديد بنفس كلمة المرور (خلّها قدامك قبل). بعدها ارجع هنا واضغط «كمّل». ما تبي؟ اضغط «كمّل» بدونها، ونكمل والوسيط شغّال."),
+    };
 
     /** The ends SetupRunner.endOf says in fixed words, marked for the table (the done screen shows them with S.tv; tests/tester_fixes_test.py). */
     static final String[] ENDS = {
@@ -282,7 +323,7 @@ public class SetupActivity extends Activity {
         add(text(S.t("• تطبيق تحتاجه صار موقوفاً: «تراجع» يرجّع كل ما أوقفناه."), 14, "Regular", TEXT), dp(2));
         add(text(S.t("• انقطع الواي فاي: اتصل به من إعدادات التلفزيون ← الشبكة."), 14, "Regular", TEXT), dp(2));
         add(text(S.t("• تبي التلفزيون كما كان: فعّل «تصحيح USB» واضغط «تراجع»."), 14, "Regular", TEXT), dp(12));
-        undo = button(S.t("تراجع (يرجّع التلفزيون كما كان)"));
+        undo = button(S.t("تراجع (يرجّع التلفزيون كما كان)")));
         undo.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(true); } });
         add(undo, dp(10));
         final TextView ok = button(S.t("تم"));
@@ -355,6 +396,9 @@ public class SetupActivity extends Activity {
     }
 
     // ---- views --------------------------------------------------------------------------------------------------------------------
+
+    /** the runner's fixed Arabic sentences, in the person's language (WORDS lists them for the table) */
+    private static final java.util.function.UnaryOperator<String> TR = new java.util.function.UnaryOperator<String>() { @Override public String apply(String ar) { return S.tv(ar); } };
 
     private String digits(String s) { return DigitsText.convert(s, Digits.latin()); }
 

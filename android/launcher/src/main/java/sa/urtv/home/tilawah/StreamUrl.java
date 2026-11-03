@@ -12,6 +12,7 @@ import java.util.Locale;
  *   step is taken only to a host the app allows cleartext for (network_security_config.xml: radiojar.com); any other is refused.
  * - backup.qurango.net answers 500 (177 bytes) at random. A 5xx is an error here, so the player's caller tries again after a pause that grows
  *   (backoffMs), and says «تعذّر» only after the last try.
+ * - that final http address is handed to the player without being requested by us (its token may be single use).
  * Plain Java (java.net): tests/stream_url_test.py runs it against a local server.
  */
 final class StreamUrl {
@@ -63,6 +64,10 @@ final class StreamUrl {
                     String to = c.getHeaderField("Location");
                     if (to == null || to.isEmpty()) throw new IOException("redirect without a Location");
                     now = new URL(u, to).toString();
+                    // radiojar's http://nNN.radiojar.com/…?rj-tok=… address carries a token that one request can use up: asking it here (a GET) left
+                    // the player's own request with nothing (buffering for ever, tester step 19/GO 178). An allowed cleartext step is handed over unasked.
+                    URL next = new URL(now);
+                    if (next.getProtocol().equals("http") && http.allowed(next.getHost())) return now;
                     continue;
                 }
                 if (status >= 200 && status < 300) return now;

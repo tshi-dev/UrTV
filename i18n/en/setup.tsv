@@ -16,3 +16,55 @@
 انتهى الرجوع مع ملاحظات (فوق).	The undo finished with notes (above).
 توقّفنا قبل أي تغيير.	We stopped before changing anything.
 انتهى الإعداد. اضغط زر الرئيسية في الريموت. ثم أطفئ «تصحيح USB» من خيارات المطوّر واختر «إلغاء تراخيص تصحيح USB» إن لم تحتجهما (التراجع من هنا يحتاجهما).	The setup is done. Press the Home button on the remote. Then turn “USB debugging” off in Developer options and choose “Revoke USB debugging authorizations” if you do not need them (Undo here needs them).
+# the start, plan, wait and Wi-Fi screens (build 179): SetupActivity and the fixed sentences of SetupRunner (SetupActivity.WORDS)
+فحص التلفزيون	Checking the TV
+نسخة احتياطية من حالة التلفزيون	Backing up the TV’s state
+الميزات المحمية	Protected features
+قياس الذاكرة قبل	Measuring memory before
+أذونات تلفزيونك	Your TV’s permissions
+القائمة الآمنة	Safe list
+قائمة المجتمع	Community list
+تسريع التلفزيون	Speeding up the TV
+تثبيت شاشة التوقف	Installing the screensaver
+تفعيل شاشة التوقف	Turning on the screensaver
+TV Bro و SmartTube	TV Bro and SmartTube
+التشغيل التلقائي	Auto-start
+قياس الذاكرة بعد	Measuring memory after
+التقرير	Report
+التراجع	Undo
+أجوبة قائمة المجتمع	Community list answers
+نحفظ حالة التلفزيون الآن (نسخة احتياطية) قبل أي تغيير، ونرجّع أي ميزة محمية موقوفة (البث، الصوت، الريموت، المتجر).	We save the TV’s state now (a backup) before any change, and turn back on any protected feature that was turned off (streaming, sound, remote, store).
+نقيس الذاكرة قبل الإعداد وبعده: يُعاد تشغيل التلفزيون مرتين، ويكمل الإعداد وحده بعد كل مرة.	We measure memory before and after the setup: the TV restarts twice and the setup carries on by itself each time.
+نقيس الذاكرة قبل الإعداد وبعده (بدون إعادة تشغيل في هذا التلفزيون).	We measure memory before and after the setup (no restart on this TV).
+نعطي تلفزيونك أذوناته (الموقع، منبّهات الأذان، التحديثات).	We give Your TV its permissions (location, adhan alarms, updates).
+نوقف تطبيقات القائمة الآمنة (إعلانات وتتبّع وعروض)، ونسجّلها لنرجعها بزر واحد.	We turn off the safe-list apps (ads, tracking and promos) and record them so one button turns them back on.
+القائمة الآمنة: لا شيء منها شغّال في هذا التلفزيون.	Safe list: none of it is running on this TV.
+نوقف %s تطبيقاً من القائمة الآمنة (إعلانات وتتبّع وعروض)، ونسجّلها لنرجعها بزر واحد.	We turn off %s safe-list apps (ads, tracking and promos) and record them so one button turns them back on.
+نطابق قائمة المجتمع لطراز تلفزيونك إن وُجدت، ونسألك عن المشكوك فيه. بدون إنترنت نتركها.	We match the community list for your TV model if there is one, and ask you about anything doubtful. Without internet we skip it.
+نسرّع التلفزيون: حركات أقصر، ومتجر Play لا يعمل في الخلفية.	We speed up the TV: shorter animations, and the Play Store stops running in the background.
+نحدّث شاشة التوقف إن وُجدت نسخة أحدث، ونفعّلها.	We update the screensaver if a newer version exists, and turn it on.
+نثبّت شاشة التوقف من إصداراتنا (بعد التأكد أنها موقّعة بمفتاحنا)، ونفعّلها.	We install the screensaver from our releases (after checking it is signed with our key), and turn it on.
+نسمح لتطبيقاتنا بالعمل عند تشغيل التلفزيون (الأذان ومؤقت النوم بعد إعادة التشغيل).	We let our apps start with the TV (the adhan and the sleep timer after a restart).
+تلفزيونك هو الشاشة الرئيسية أصلاً.	Your TV is already the home screen.
+نجعل تلفزيونك الشاشة الرئيسية. إن ما اشتغلت خلال 5 دقائق ترجع الأصلية وحدها.	We make Your TV the home screen. If it does not start within 5 minutes, the original comes back by itself.
+وقبلها نطلب منك نسيان شبكة الواي فاي والاتصال بها من جديد (هذا التلفزيون يحفظها باسم وسيط الإعداد).	Before that we ask you to forget the Wi-Fi network and join it again (this TV keeps it under the setup helper’s name).
+نكتب تقريراً بلا أي معلومة شخصية، وتقدر ترسله برمز QR إن أردت.	We write a report with nothing personal in it, and you can send it with a QR code if you like.
+TV Bro و SmartTube مثبّتان من قبل: نتركهما.	TV Bro and SmartTube are already installed: we leave them.
+ثبّت أيضاً TV Bro (متصفح) و SmartTube (يوتيوب بلا إعلانات)	Also install TV Bro (a browser) and SmartTube (YouTube without ads)
+التلفزيون يسأل «السماح بتصحيح USB؟»: اختر «السماح دائماً» بالريموت.	The TV is asking “Allow USB debugging?”: choose “Always allow” with the remote.
+ما ظهرت الرسالة؟ أعد تشغيل التلفزيون وافتح «إعداد تلفزيوني» واضغط «جهّز كل شي» وخلك عند التلفزيون	No message? Restart the TV, open “Your TV setup”, press “Set everything up” and stay at the TV.
+ما بدأنا الإعداد، وما تغيّر شيء في التلفزيون.	We did not start the setup, and nothing on the TV changed.
+قبل تبديل الشاشة الرئيسية: شبكة الواي فاي محفوظة باسم «وسيط الإعداد» في هذا التلفزيون، وإيقافه يمسحها. افتح إعدادات التلفزيون ← الشبكة، واختر «انسَ الشبكة»، ثم اتصل بها من جديد بنفس كلمة المرور (خلّها قدامك قبل). بعدها ارجع هنا واضغط «كمّل». ما تبي؟ اضغط «كمّل» بدونها، ونكمل والوسيط شغّال.	Before switching the home screen: the Wi-Fi network is saved on this TV under the name “Setup helper”, and turning it off erases it. Open the TV’s Settings → Network, choose “Forget network”, then join it again with the same password (have it ready first). Then come back here and press “Continue”. Rather not? Press “Continue” without it and we carry on with the helper running.
+يجهّز التلفزيون نفسه، بدون كمبيوتر ولا جوال. اضغط «جهّز كل شي»: يسألك التلفزيون مرة واحدة «السماح بتصحيح USB؟»، ثم نعرض عليك ما سنفعله بالضبط قبل أي تغيير.	The TV sets itself up, with no computer and no phone. Press “Set everything up”: the TV asks you once “Allow USB debugging?”, then we show you exactly what we will do before any change.
+قبل البدء: فعّل «تصحيح USB» (الإعدادات ← تفضيلات الجهاز ← حول ← اضغط «Build» سبع مرات ← خيارات المطوّر ← تصحيح USB). وخلك عند التلفزيون: لما تطلع الرسالة اختر «السماح دائماً».	Before you start: turn on “USB debugging” (Settings → Device Preferences → About → press “Build” seven times → Developer options → USB debugging). Stay at the TV: when the message appears, choose “Always allow”.
+إعداد سابق ما اكتمل: «جهّز كل شي» يكمله من حيث توقف.	An earlier setup did not finish: “Set everything up” carries on from where it stopped.
+جهّز كل شي	Set everything up
+هذا ما سنفعله في تلفزيونك، بالترتيب. ما تغيّر شيء بعد:	This is what we will do on your TV, in order. Nothing has changed yet:
+ابدأ	Start
+نرجّع التلفزيون كما كان:	Putting the TV back as it was:
+الإعداد يعمل. لا تطفئ التلفزيون، وقد يُعاد تشغيله وحده ويكمل.	The setup is running. Do not turn the TV off; it may restart by itself and carry on.
+جارٍ الرجوع…	Undoing…
+جارٍ الإعداد… لا تطفئ التلفزيون.	Setting up… do not turn the TV off.
+خطوة منك قبل الشاشة الرئيسية	A step from you before the home screen
+كمّل	Continue
+(تُرك)	(skipped)

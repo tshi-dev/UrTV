@@ -246,31 +246,36 @@ final class SetupRunner {
     }
 
     /** The start screen's plan, in the run's order, with this TV's counts (Western digits: the screen writes them in the person's digits). */
-    static List<String> planLines(Preview p) {
+    static List<String> planLines(Preview p) { return planLines(p, new java.util.function.UnaryOperator<String>() { @Override public String apply(String ar) { return ar; } }); }
+
+    /** The same, each fixed sentence given to tr first (the screen's S.tv: «اللغة»); a count is a %s in the sentence. */
+    static List<String> planLines(Preview p, java.util.function.UnaryOperator<String> tr) {
         List<String> l = new ArrayList<>();
-        l.add("نحفظ حالة التلفزيون الآن (نسخة احتياطية) قبل أي تغيير، ونرجّع أي ميزة محمية موقوفة (البث، الصوت، الريموت، المتجر).");
-        l.add(p.restarts ? "نقيس الذاكرة قبل الإعداد وبعده: يُعاد تشغيل التلفزيون مرتين، ويكمل الإعداد وحده بعد كل مرة."
-            : "نقيس الذاكرة قبل الإعداد وبعده (بدون إعادة تشغيل في هذا التلفزيون).");
-        l.add("نعطي تلفزيونك أذوناته (الموقع، منبّهات الأذان، التحديثات).");
-        if (p.safe < 0) l.add("نوقف تطبيقات القائمة الآمنة (إعلانات وتتبّع وعروض)، ونسجّلها لنرجعها بزر واحد.");
-        else if (p.safe == 0) l.add("القائمة الآمنة: لا شيء منها شغّال في هذا التلفزيون.");
-        else l.add("نوقف " + p.safe + " تطبيقاً من القائمة الآمنة (إعلانات وتتبّع وعروض)، ونسجّلها لنرجعها بزر واحد.");
-        l.add("نطابق قائمة المجتمع لطراز تلفزيونك إن وُجدت، ونسألك عن المشكوك فيه. بدون إنترنت نتركها.");
-        l.add("نسرّع التلفزيون: حركات أقصر، ومتجر Play لا يعمل في الخلفية.");
-        l.add(p.saverInstalled ? "نحدّث شاشة التوقف إن وُجدت نسخة أحدث، ونفعّلها."
-            : "نثبّت شاشة التوقف من إصداراتنا (بعد التأكد أنها موقّعة بمفتاحنا)، ونفعّلها.");
-        if (p.tcl) l.add("نسمح لتطبيقاتنا بالعمل عند تشغيل التلفزيون (الأذان ومؤقت النوم بعد إعادة التشغيل).");
-        if (p.homeOurs) l.add("تلفزيونك هو الشاشة الرئيسية أصلاً.");
-        else l.add("نجعل تلفزيونك الشاشة الرئيسية. إن ما اشتغلت خلال 5 دقائق ترجع الأصلية وحدها."
-            + (p.wifiAsk ? " وقبلها نطلب منك نسيان شبكة الواي فاي والاتصال بها من جديد (هذا التلفزيون يحفظها باسم وسيط الإعداد)." : ""));
-        l.add("نكتب تقريراً بلا أي معلومة شخصية، وتقدر ترسله برمز QR إن أردت.");
+        l.add(tr.apply("نحفظ حالة التلفزيون الآن (نسخة احتياطية) قبل أي تغيير، ونرجّع أي ميزة محمية موقوفة (البث، الصوت، الريموت، المتجر)."));
+        l.add(tr.apply(p.restarts ? "نقيس الذاكرة قبل الإعداد وبعده: يُعاد تشغيل التلفزيون مرتين، ويكمل الإعداد وحده بعد كل مرة."
+            : "نقيس الذاكرة قبل الإعداد وبعده (بدون إعادة تشغيل في هذا التلفزيون)."));
+        l.add(tr.apply("نعطي تلفزيونك أذوناته (الموقع، منبّهات الأذان، التحديثات)."));
+        if (p.safe < 0) l.add(tr.apply("نوقف تطبيقات القائمة الآمنة (إعلانات وتتبّع وعروض)، ونسجّلها لنرجعها بزر واحد."));
+        else if (p.safe == 0) l.add(tr.apply("القائمة الآمنة: لا شيء منها شغّال في هذا التلفزيون."));
+        else l.add(String.format(java.util.Locale.ROOT, tr.apply("نوقف %s تطبيقاً من القائمة الآمنة (إعلانات وتتبّع وعروض)، ونسجّلها لنرجعها بزر واحد."), p.safe));
+        l.add(tr.apply("نطابق قائمة المجتمع لطراز تلفزيونك إن وُجدت، ونسألك عن المشكوك فيه. بدون إنترنت نتركها."));
+        l.add(tr.apply("نسرّع التلفزيون: حركات أقصر، ومتجر Play لا يعمل في الخلفية."));
+        l.add(tr.apply(p.saverInstalled ? "نحدّث شاشة التوقف إن وُجدت نسخة أحدث، ونفعّلها."
+            : "نثبّت شاشة التوقف من إصداراتنا (بعد التأكد أنها موقّعة بمفتاحنا)، ونفعّلها."));
+        if (p.tcl) l.add(tr.apply("نسمح لتطبيقاتنا بالعمل عند تشغيل التلفزيون (الأذان ومؤقت النوم بعد إعادة التشغيل)."));
+        if (p.homeOurs) l.add(tr.apply("تلفزيونك هو الشاشة الرئيسية أصلاً."));
+        else l.add(tr.apply("نجعل تلفزيونك الشاشة الرئيسية. إن ما اشتغلت خلال 5 دقائق ترجع الأصلية وحدها.")
+            + (p.wifiAsk ? " " + tr.apply("وقبلها نطلب منك نسيان شبكة الواي فاي والاتصال بها من جديد (هذا التلفزيون يحفظها باسم وسيط الإعداد).") : ""));
+        l.add(tr.apply("نكتب تقريراً بلا أي معلومة شخصية، وتقدر ترسله برمز QR إن أردت."));
         return l;
     }
 
     /** The extras box's words (TV Bro and SmartTube, on by default: the owner's choice). */
-    static String extrasLine(Preview p) {
-        if (p != null && p.tvbro && p.smarttube) return "TV Bro و SmartTube مثبّتان من قبل: نتركهما.";
-        return "ثبّت أيضاً TV Bro (متصفح) و SmartTube (يوتيوب بلا إعلانات)";
+    static String extrasLine(Preview p) { return extrasLine(p, new java.util.function.UnaryOperator<String>() { @Override public String apply(String ar) { return ar; } }); }
+
+    static String extrasLine(Preview p, java.util.function.UnaryOperator<String> tr) {
+        if (p != null && p.tvbro && p.smarttube) return tr.apply("TV Bro و SmartTube مثبّتان من قبل: نتركهما.");
+        return tr.apply("ثبّت أيضاً TV Bro (متصفح) و SmartTube (يوتيوب بلا إعلانات)");
     }
 
     /** The precheck, then what the run would change, then the person's «ابدأ» (or not): nothing is changed before it. */
