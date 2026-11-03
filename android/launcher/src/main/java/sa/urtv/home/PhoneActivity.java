@@ -29,7 +29,7 @@ import sa.urtv.home.phone.Sessions;
  * «تحكم من الجوال»: the owner's switch and the screen for it. Off, it only offers «تشغيل»; nothing listens. On, it shows the QR code for the
  * pairing address (and the address with a 6-digit code under it), asks «جوال جديد يطلب التحكم» with سماح / رفض, lists «الجوالات المتصلة» with
  * إلغاء for each, and has «إيقاف التحكم من الجوال». Leaving this screen with no phone connected turns it off again. No dialogs, like
- * DockActivity: rows are built right-aligned by hand. Opened from the screensaver's settings, or `am start -n sa.urtv.home/.PhoneActivity`.
+ * DockActivity: rows are built right-aligned by hand. Opened from the screensaver's settings (behind the signature permission sa.urtv.home.OPEN_PHONE) or from «محفظتي».
  * It is a PrivateScreen: keys sent from a phone never reach it, so a phone can't press سماح for another one.
  */
 public class PhoneActivity extends Activity implements PrivateScreen {
@@ -40,7 +40,8 @@ public class PhoneActivity extends Activity implements PrivateScreen {
     private GlassStyle.Look look;
     /** from «محفظتي» («أسهل من الجوال»): the QR and the address open the phone's portfolio page (/m), which pairs the same way */
     static final String EXTRA_PORTFOLIO = "portfolio";
-    private boolean portfolio;
+    private boolean portfolio;   // the extra asked for «محفظتي»'s view; shown only once the window is open (portfolioAuthorized)
+    private boolean asking;      // the PIN keypad for «محفظتي» is on the screen
 
     private PhoneControl control;
     private LinearLayout col;
@@ -61,6 +62,7 @@ public class PhoneActivity extends Activity implements PrivateScreen {
         Digits.init(this);
         control = PhoneHost.get(this);
         portfolio = getIntent().getBooleanExtra(EXTRA_PORTFOLIO, false);
+        control.setOnSessionEnd(Portfolio::closeEditing);   // a phone revoked, logged out or control stopped: «محفظتي»'s window closes
         control.setPinGate(new sa.urtv.home.phone.PinStoreGate(Parental.pin(this), System::currentTimeMillis));   // with a family PIN, the phone's changes ask for it (same lockout as the TV's keypad)
         ScrollView scroll = new ScrollView(this);
         glass(scroll);   // the glass look: the home's photo, small and blurred once, under its veil
@@ -81,7 +83,7 @@ public class PhoneActivity extends Activity implements PrivateScreen {
     protected void onResume() {
         super.onResume();
         left = false;
-        if (portfolio) Portfolio.openEditing(System.currentTimeMillis());   // the phone that scans the code may edit «محفظتي» for a while
+        if (portfolio) authorizePortfolio();   // the extra is a wish: «محفظتي» opens only as its own tab would (the PIN, with «اقفل محفظتي»)
         PhoneHost.setUi(new Runnable() {
             @Override public void run() { runOnUiThread(new Runnable() { @Override public void run() { render(); } }); }
         });
@@ -95,6 +97,10 @@ public class PhoneActivity extends Activity implements PrivateScreen {
         keepAwake(false);
         main.removeCallbacks(tick);
         PhoneHost.setUi(null);
+        if (asking) {   // the keypad goes with the screen; coming back asks again
+            PinPrompt.dismiss(this);
+            asking = false;
+        }
         // the code is shown only here: leaving with nobody connected turns it off, so nothing keeps listening for a code nobody can see.
         // The screensaver coming over it is not leaving (the TV test of 159: it came while a phone was pairing and switched control off): Android
         // starts the dream without the user-leaving hint, so control stays on and the code is there again on the way back; the «unused» stop
@@ -104,6 +110,31 @@ public class PhoneActivity extends Activity implements PrivateScreen {
             control.stop("owner");
         }
     }
+
+    /**
+     * «محفظتي» from this screen: never on the extra alone (any caller can set it). Already opened by the owner on the TV (the tab, «أسهل من
+     * الجوال»): shown as it is. With «اقفل محفظتي» and a PIN: the PIN first, here; cancelled, the plain phone view, nothing opened. Otherwise
+     * this screen on the TV opens it, as the tab itself would.
+     */
+    private void authorizePortfolio() {
+        if (asking) return;
+        int entry = PortfolioWindow.entry(Portfolio.editing(Portfolio.now()), Portfolio.locked(this), Parental.state(this).pinSet);
+        if (entry == PortfolioWindow.OPEN) Portfolio.openEditing(Portfolio.now());
+        if (entry != PortfolioWindow.ASK) return;
+        asking = true;
+        Parental.confirm(this, Parental.adhanFirst(this), S.n("محفظتي"), () -> {
+            asking = false;
+            Portfolio.openEditing(Portfolio.now());
+            render();
+        }, () -> {
+            asking = false;
+            portfolio = false;   // cancelled: the plain phone view; the window stays shut
+            render();
+        });
+    }
+
+    /** The portfolio's view (/m) only while its window is open: the extra alone never shows it. */
+    private boolean portfolioShown() { return portfolio && Portfolio.editing(Portfolio.now()); }
 
     /** Home, or another app started over this screen by the person: Android's user-leaving hint (never for the screensaver). */
     @Override
@@ -185,7 +216,7 @@ public class PhoneActivity extends Activity implements PrivateScreen {
                 LinearLayout info = new LinearLayout(this);
                 info.setOrientation(LinearLayout.VERTICAL);
                 info.addView(text(S.t("افتح هذا العنوان في متصفح الجوال"), 15, "Regular", DIM, Dir.start()), right(dp(6)));
-                info.addView(boxed(ltr(control.address() + (portfolio ? "/m" : "/p")), 28, GOLD, 0f), right(dp(14)));
+                info.addView(boxed(ltr(control.address() + (portfolioShown() ? "/m" : "/p")), 28, GOLD, 0f), right(dp(14)));
                 info.addView(text(S.t("واكتب هذا الرمز"), 15, "Regular", DIM, Dir.start()), right(dp(6)));
                 info.addView(boxed(ltr(spaced(o.code)), 48, TEXT, 0.08f), right(dp(8)));
                 countdown = text("", 13, "Regular", DIM, Dir.start());
@@ -197,7 +228,7 @@ public class PhoneActivity extends Activity implements PrivateScreen {
                 qrCol.setGravity(Gravity.CENTER_HORIZONTAL);
                 qrCol.addView(text(S.t("أو امسح الرمز بكاميرا الجوال"), 15, "Regular", DIM, Gravity.CENTER), new LinearLayout.LayoutParams(-1, -2));
                 QrView qr = new QrView(this);
-                qr.setCode(QrCode.encode(portfolio ? control.pairUrl(o).replace("/p#", "/m#") : control.pairUrl(o)));
+                qr.setCode(QrCode.encode(portfolioShown() ? control.pairUrl(o).replace("/p#", "/m#") : control.pairUrl(o)));
                 LinearLayout.LayoutParams qp = new LinearLayout.LayoutParams(dp(240), dp(240));
                 qp.topMargin = dp(8);
                 qrCol.addView(qr, qp);

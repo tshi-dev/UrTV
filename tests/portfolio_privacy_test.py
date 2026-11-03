@@ -111,7 +111,7 @@ check("Android backup is off in both apps", 'android:allowBackup="false"' in tex
 check("only the markets page and the phone bridge touch them", sorted(p.name for p in HOME.rglob("*.java") if "Portfolio.load(" in text(p) or "Portfolio.save(" in text(p))
       == ["MarketsActivity.java", "PortfolioPhone.java"], [p.name for p in HOME.rglob("*.java") if "Portfolio.load(" in text(p)])
 check("`dock.sh pin reset` wipes them, and «احذف المحفظة» does", "Portfolio.wipe(c);" in text(HOME / "Parental.java") and "Portfolio.wipe(this);" in act)
-check("the phone's window: in memory only, opened by the TV (the tab, «أسهل من الجوال»), a few minutes", "private static long editUntil;" in pf
+check("the phone's window: in memory only, opened by the TV (the tab, «أسهل من الجوال»), a few minutes", "private static final PortfolioWindow WINDOW = new PortfolioWindow();" in pf
       and "EDIT_MS = 10 * 60_000L" in pf and "Portfolio.openEditing(" in act and "Portfolio.openEditing(" in text(HOME / "PhoneActivity.java"))
 pp = text(HOME / "PortfolioPhone.java")
 check("the phone bridge reads and writes only inside the window", pp.count("if (!Portfolio.editing(now))") == 2)

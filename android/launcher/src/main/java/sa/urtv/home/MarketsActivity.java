@@ -70,7 +70,8 @@ public class MarketsActivity extends Activity {
     private final Runnable minute = new Runnable() {
         @Override public void run() {
             header();
-            if (tab == 2) Portfolio.openEditing(System.currentTimeMillis());   // the phone may edit while the tab is on the screen
+            // the phone may edit while the tab is on the screen (and, with «اقفل محفظتي», only after the PIN on this screen)
+            if (tab == 2 && (unlocked || !Portfolio.locked(MarketsActivity.this) || !Parental.state(MarketsActivity.this).pinSet)) Portfolio.openEditing(Portfolio.now());
             main.postDelayed(this, 60_000);
         }
     };
@@ -557,7 +558,7 @@ public class MarketsActivity extends Activity {
     // ---------------------------------------------------------------- «محفظتي»
 
     private void portfolio() {
-        Portfolio.openEditing(System.currentTimeMillis());
+        Portfolio.openEditing(Portfolio.now());
         boolean hide = Portfolio.hidden(this);
         actions.addView(button(hide ? S.t("أظهر المبالغ") : S.t("أخفِ المبالغ"), false, v -> {
             Portfolio.setHidden(this, !Portfolio.hidden(this));
@@ -951,7 +952,7 @@ public class MarketsActivity extends Activity {
 
     /** «أسهل من الجوال»: the phone page's QR (pairing), opened on «محفظتي»; the phone may edit for a while */
     private void fromPhone() {
-        Portfolio.openEditing(System.currentTimeMillis());
+        Portfolio.openEditing(Portfolio.now());
         try {
             startActivity(new Intent(this, PhoneActivity.class).putExtra(PhoneActivity.EXTRA_PORTFOLIO, true));
         } catch (RuntimeException e) {

@@ -9,11 +9,14 @@ import java.util.Map;
 
 /**
  * «محفظتي» for the phone's portfolio page (assets/phone/portfolio.html, served at /m), through PhoneActions. The one way out of the TV for
- * the holdings, and only to a paired phone (PhoneApi asks for the session first) while the TV is editing them (Portfolio.editing): outside
+ * the holdings, and only to a paired phone (PhoneApi asks for the session first) while the TV is editing them (Portfolio.editing, on Portfolio.now(): the monotonic clock): outside
  * that window both answer "portfolio_closed" and nothing is read. The page keeps nothing after saving.
  */
 public final class PortfolioPhone {
     private PortfolioPhone() { }
+
+    /** The clock of the TV's window (Portfolio.now: monotonic), for PhoneActions. */
+    public static long now() { return Portfolio.now(); }
 
     /**
      * The holdings with their buys, the names the search offers and the codes the price file knows, or null when the TV is not editing them.
@@ -74,7 +77,7 @@ public final class PortfolioPhone {
         List<Holdings.Holding> next = Holdings.put(all, code, list);
         if (next == null) return "full";
         if (!Portfolio.save(c, next)) return "failed";
-        Portfolio.openEditing(now);   // still editing: the window runs on from this save
+        // the window is not renewed here: only the TV renews it (Portfolio.openEditing), so a phone cannot keep itself in
         Portfolio.changed();
         return "saved";
     }

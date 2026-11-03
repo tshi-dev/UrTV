@@ -25,7 +25,8 @@ final class Portfolio {
     /** how long the phone may read and write them after the TV last opened them */
     static final long EDIT_MS = 10 * 60_000L;
 
-    private static long editUntil;   // in memory only: a restart closes the window
+    /** in memory only: a restart closes it; on SystemClock.elapsedRealtime, renewed only from the TV (PortfolioWindow) */
+    private static final PortfolioWindow WINDOW = new PortfolioWindow();
 
     /** the markets page while it is on the screen: told (on the phone server's thread) when the phone saved */
     static volatile Runnable listener;
@@ -50,7 +51,10 @@ final class Portfolio {
 
     /** «اقفل محفظتي»: the tab asks for the parental PIN first (only while a PIN exists) */
     static boolean locked(Context c) { return prefs(c).getBoolean(LOCK, false); }
-    static void setLocked(Context c, boolean on) { prefs(c).edit().putBoolean(LOCK, on).apply(); }
+    static void setLocked(Context c, boolean on) {
+        prefs(c).edit().putBoolean(LOCK, on).apply();
+        if (on) closeEditing();   // locked: a phone in the window now is out until the PIN is given on the TV again
+    }
 
     /** «احذف المحفظة» and {@code dock.sh pin reset}: everything, the switches too */
     static synchronized void wipe(Context c) {
@@ -60,10 +64,17 @@ final class Portfolio {
 
     // ---------------------------------------------------------------- the phone's window
 
-    /** The TV shows the holdings (the tab, or «أسهل من الجوال»): a paired phone may read and write them for EDIT_MS from now. */
-    static synchronized void openEditing(long now) { editUntil = now + EDIT_MS; }
+    /** The TV clock the window runs on: monotonic, so a clock change neither extends nor ends it. */
+    static long now() { return android.os.SystemClock.elapsedRealtime(); }
 
-    static synchronized void closeEditing() { editUntil = 0; }
+    /**
+     * The owner on the TV shows the holdings (the tab, «أسهل من الجوال», or the pairing screen after the PIN): a paired phone may read and
+     * write them for EDIT_MS from now (now()). Only the TV calls this; a phone's save never does, so a phone cannot renew its own window.
+     */
+    static void openEditing(long now) { WINDOW.open(now, EDIT_MS); }
 
-    static synchronized boolean editing(long now) { return now < editUntil; }
+    /** «اقفل محفظتي», «احذف المحفظة», pin reset, a phone session ended: the phone is out until the TV opens it again. */
+    static void closeEditing() { WINDOW.close(); }
+
+    static boolean editing(long now) { return WINDOW.open(now); }
 }
