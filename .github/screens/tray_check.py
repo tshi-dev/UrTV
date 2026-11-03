@@ -276,6 +276,8 @@ def go_home():
 
 def run(out):
     from PIL import Image
+    import faulthandler
+    faulthandler.dump_traceback_later(900, exit=True)   # a hang prints where it is stuck and ends the check after 15 minutes
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     report, failures = {}, []
