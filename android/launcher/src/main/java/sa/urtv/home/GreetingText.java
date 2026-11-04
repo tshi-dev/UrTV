@@ -9,12 +9,14 @@ final class GreetingText {
 
     private GreetingText() { }
 
-    /** Fajr to Dhuhr, Dhuhr to Asr, Asr to Isha, and the night from Isha to the next Fajr. Times in millis. */
+    /** Fajr to Dhuhr, Dhuhr to Asr, Asr to two hours after Isha (still the evening at 19:18: «تصبح على خير» was too early, step 30), and the night from then to the next Fajr. Times in millis. */
+    static final long NIGHT_AFTER_ISHA_MS = 2 * 3600_000L;
+
     static int part(long now, long fajr, long dhuhr, long asr, long isha) {
         if (now < fajr) return NIGHT;       // still the night before
         if (now < dhuhr) return MORNING;
         if (now < asr) return DAY;
-        if (now < isha) return EVENING;
+        if (now < isha + NIGHT_AFTER_ISHA_MS) return EVENING;
         return NIGHT;
     }
 

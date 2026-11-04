@@ -50,13 +50,13 @@ final class Greeting {
     void update(int hour, ConfigSnapshot snap) {
         Config s = Config.of(snap);
         if (!s.on) {
-            greeting.setText(hour < 4 ? S.t("تصبح على خير") : hour < 12 ? S.t("صباح الخير") : S.t("مساء الخير"));
+            greeting.setText(hour < 4 || hour >= 22 ? S.t("تصبح على خير") : hour < 12 ? S.t("صباح الخير") : S.t("مساء الخير"));
             weather.setVisibility(android.view.View.GONE);
             return;
         }
         DayParts d = null;
         try { d = DayParts.now(context, snap.placeFragment(), snap.placeTicket()); } catch (RuntimeException ignored) { }
-        greeting.setText(d == null ? (hour < 4 ? S.t("تصبح على خير") : hour < 12 ? S.t("صباح الخير") : S.t("مساء الخير"))
+        greeting.setText(d == null ? (hour < 4 || hour >= 22 ? S.t("تصبح على خير") : hour < 12 ? S.t("صباح الخير") : S.t("مساء الخير"))
                 : GreetingText.greeting(GreetingText.part(System.currentTimeMillis(), d.fajr, d.dhuhr, d.asr, d.isha)));
 
         SharedPreferences sp = prefs();

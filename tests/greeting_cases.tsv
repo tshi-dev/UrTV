@@ -6,7 +6,9 @@ part	700	290	700	900	1155	طاب يومك	Dhuhr itself
 part	899	290	700	900	1155	طاب يومك	a minute before Asr
 part	900	290	700	900	1155	مساء الخير	Asr itself
 part	1154	290	700	900	1155	مساء الخير	a minute before Isha
-part	1155	290	700	900	1155	تصبح على خير	Isha itself
+part	1155	290	700	900	1155	مساء الخير	Isha itself: still the evening (19:18 said «تصبح على خير», step 30)
+part	1274	290	700	900	1155	مساء الخير	a minute before two hours after Isha
+part	1275	290	700	900	1155	تصبح على خير	two hours after Isha: the night
 part	1400	290	700	900	1155	تصبح على خير	late night
 weather	0	0	الرياض	31	hindi	سماء صافية في الرياض، ٣١°	clear
 weather	0	0	Riyadh	30.6	latin	سماء صافية في Riyadh، 31°	latin digits, rounded

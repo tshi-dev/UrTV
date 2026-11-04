@@ -207,6 +207,7 @@ public class MarketsActivity extends Activity {
         collectFocusable(content, before);
         collectFocusable(actions, before);
         int at = before.indexOf(getCurrentFocus()), sy = scroll.getScrollY();
+        if (at < 0 && focusIndexAfter >= 0) at = focusIndexAfter;   // the card that asked for this redraw had the focus: the row that opened it
         show(tab, false);
         List<View> after = new ArrayList<>();
         collectFocusable(content, after);
@@ -977,6 +978,7 @@ public class MarketsActivity extends Activity {
         for (int r = 0; r < 4; r++) {
             LinearLayout line = new LinearLayout(this);
             line.setLayoutDirection(Dir.layout());
+            line.setBaselineAligned(false);   // every key is one box: aligned on their baselines the keys with the bigger «٫» pushed the others 8 px down and cut their bottoms (step 30)
             for (int c = 0; c < 3; c++) {
                 final String key = keys[r * 3 + c];
                 View b = button(padLabel(key), false, v -> {
@@ -1146,16 +1148,35 @@ public class MarketsActivity extends Activity {
     // ---------------------------------------------------------------- the stock card
 
     /** OK on a stock: its price, its day, the open and the day's range; the watchlist and the bar; in the portfolio, «عدّل» and «احذف». */
+    private int focusIndexAfter = -1;   // see stockCard
+
     private void stockCard(String code, String title) {
         MarketData.Quote q = data == null ? null : code.startsWith("^") ? data.quotes.get(code) : data.of(code);
         Dialog d = dialog();
         cardCode = code;   // live mode asks for it too while the card is open
         final View from = getCurrentFocus();   // the row that opened the card: it has the focus again when the card closes (OK on «رجوع», or the remote's Back)
+        {   // its place among the page's focusable things: an action that draws the page again (add, remove) puts the focus back there, not on «مباشر» (step 30)
+            List<View> all = new ArrayList<>();
+            collectFocusable(content, all);
+            collectFocusable(actions, all);
+            focusIndexAfter = from == null ? -1 : all.indexOf(from);
+        }
         d.setOnDismissListener(x -> {
             cardCode = null; cardBlock = null; cardNote = null;
-            if (from != null) main.post(() -> { if (!isFinishing() && !isDestroyed() && from.isAttachedToWindow() && from.isFocusable()) from.requestFocus(); });
+            main.post(() -> {
+                focusIndexAfter = -1;
+                if (from != null && !isFinishing() && !isDestroyed() && from.isAttachedToWindow() && from.isFocusable()) from.requestFocus();
+            });
         });
         LinearLayout box = dialogBox(d, 760);
+        // the card must fit the screen's 5 % safe area (y 54 to 1026 at 1080p): its text part (name, chart, figures, source) is a scroll view that gives way when the card is too tall,
+        // the buttons and «رجوع» under it are always whole and on screen (step 30: the card was taller than the screen, «رجوع» never showed and the action button was squeezed to 36 px)
+        final ScrollView bodyScroll = new ScrollView(this);
+        bodyScroll.setVerticalScrollBarEnabled(false);
+        final LinearLayout inner = new LinearLayout(this);
+        inner.setOrientation(LinearLayout.VERTICAL);
+        bodyScroll.addView(inner, new FrameLayout.LayoutParams(-1, -2));
+        box.addView(bodyScroll, new LinearLayout.LayoutParams(-1, -2));
         LinearLayout head = new LinearLayout(this);
         head.setGravity(Gravity.BOTTOM);
         head.addView(text(title != null ? title : S.tv(MarketData.name(code)), 26, "Medium", TEXT), new LinearLayout.LayoutParams(0, -2, 1f));
@@ -1163,21 +1184,21 @@ public class MarketsActivity extends Activity {
         String sub = code.startsWith("^") ? S.t("مؤشر السوق الرئيسية · تداول") : sa ? S.t("%s · تداول · ر.س", code) : S.t("%s · بالدولار", code);
         String tag = liveTag(code);
         head.addView(ltrStart(text(tag.isEmpty() ? sub : sub + " · " + tag, 14, "Regular", DIM)), new LinearLayout.LayoutParams(-2, -2));
-        box.addView(head, wrap());
+        inner.addView(head, wrap());
         if (q != null) {
-            cardBlock = (LinearLayout) chartBlock(null, q, 40, 130);
-            box.addView(cardBlock, gap(8));
+            cardBlock = (LinearLayout) chartBlock(null, q, 40, 104);
+            inner.addView(cardBlock, gap(8));
             LinearLayout stats = new LinearLayout(this);
             stats.addView(stat(S.t("الافتتاح"), price(q.open())), weight(1f, 0));
             stats.addView(stat(S.t("نطاق اليوم"), price(q.low()) + " – " + price(q.high())), weight(1f, 12));
             if (!Double.isNaN(q.yl) && !Double.isNaN(q.yh)) stats.addView(stat(S.t("نطاق ٥٢ أسبوعًا"), price(q.yl) + " – " + price(q.yh)), weight(1f, 12));
             if (!Double.isNaN(q.vol) && q.vol > 0) stats.addView(stat(S.t("الكمية"), S.t("%s مليون", MarketData.show(MarketData.num(q.vol / 1e6, 1), Digits.latin()))), weight(1f, 12));
-            box.addView(stats, gap(16));
+            inner.addView(stats, gap(16));
         } else {
-            box.addView(note(S.t("لا سعر لهذا الرمز في ملف الأسعار بعد")), gap(12));
+            inner.addView(note(S.t("لا سعر لهذا الرمز في ملف الأسعار بعد")), gap(12));
         }
         cardNote = (TextView) sourceNote();
-        box.addView(cardNote, gap(12));
+        inner.addView(cardNote, gap(12));
         LinearLayout buttons = new LinearLayout(this);
         List<View> made = new ArrayList<>();
         List<Holdings.Holding> mine = Portfolio.load(this);
@@ -1206,7 +1227,15 @@ public class MarketsActivity extends Activity {
         final View back = button(S.t("رجوع"), false, v -> d.dismiss());
         box.addView(back, gap(made.isEmpty() ? 20 : 12));
         d.show();
-        (made.isEmpty() ? back : made.get(0)).requestFocus();
+        back.requestFocus();   // never an action that changes the list: OK on a card just opened closes it (step 30: the only reachable button added a stock the person had not read)
+        box.post(() -> {   // too tall for the safe area: the text part shrinks (it scrolls, and takes the focus then so ▲ ▼ reach what is cut), the buttons stay whole
+            int h = getResources().getDisplayMetrics().heightPixels, max = h - 2 * Math.round(h * 0.05f), over = box.getHeight() - max;
+            if (over <= 0) return;
+            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) bodyScroll.getLayoutParams();
+            lp.height = Math.max(dp(96), bodyScroll.getHeight() - over);
+            bodyScroll.setLayoutParams(lp);
+            bodyScroll.setFocusable(true);
+        });
     }
 
     /** «الأسعار متأخرة · المصدر: Yahoo Finance»: small, in the footer's style, under the prices (the file says whose they are) */
@@ -1370,6 +1399,7 @@ public class MarketsActivity extends Activity {
         for (int r = 0; r < 4; r++) {
             LinearLayout line = new LinearLayout(this);
             line.setLayoutDirection(Dir.layout());
+            line.setBaselineAligned(false);   // every key is one box: aligned on their baselines the keys with the bigger «٫» pushed the others 8 px down and cut their bottoms (step 30)
             for (int c = 0; c < 3; c++) {
                 final String k = keys[r * 3 + c];
                 View b = button(padLabel(k), false, v -> {

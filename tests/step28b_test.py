@@ -59,8 +59,8 @@ check("8: saver.sh pagesdark on|off, and the export / import carry it (settings_
       and '"pagesdark"' in text(ROOT / "optimize/settings_move.py") and text(ROOT / "optimize/settings_move.py").count('"pagesdark"') >= 5)
 
 # the owner: a «رجوع» under the stock's card, and the focus back on its row
-check("9: the stock's card has «رجوع» under its actions (▼ reaches it, OK closes the card; first focus on the first action, else on it), and the row that opened the card has the focus again when it closes; the matches card has it too (tests/football_page.test.mjs)",
-      'final View back = button(S.t("رجوع"), false, v -> d.dismiss());' in text(HOME / "MarketsActivity.java") and "(made.isEmpty() ? back : made.get(0)).requestFocus();" in text(HOME / "MarketsActivity.java")
+check("9: the stock's card has «رجوع» under its actions (▼ reaches it, OK closes the card; the first focus is on it, step 30), and the row that opened the card has the focus again when it closes; the matches card has it too (tests/football_page.test.mjs)",
+      'final View back = button(S.t("رجوع"), false, v -> d.dismiss());' in text(HOME / "MarketsActivity.java") and "back.requestFocus();" in text(HOME / "MarketsActivity.java")
       and "final View from = getCurrentFocus();" in text(HOME / "MarketsActivity.java") and "from.requestFocus();" in text(HOME / "MarketsActivity.java")
       and 'data-k="back"' in tpl and "if(ringed && ringed.dataset.k === 'back'){ mpBack(); return; }" in tpl)
 
@@ -76,4 +76,17 @@ check("12: every volume or mute change of ours is logged (UrTVMute stage=ours: w
       and all(w in ms + text(HOME / "phone/PhoneActions.java") for w in ('ours(this, "adhan_unmute")', 'ours(this, "adhan_volume_set")', 'ours(this, "adhan_volume_back")', 'ours(this, "adhan_remute")', '"phone_mute_toggle"', '"phone_vol_up"')))
 check("13: a game the league's file also has is read from the league's copy (a followed team's own copy of it may carry another day or status: «فرقك» was lost after «أضف لفرقي»)",
       "const lg = new Map(leagueGames().map(e => [String(e.idEvent), e]));" in tpl and "Object.assign({}, ev, lg.get(String(ev.idEvent)))" in tpl)
+
+# step 30
+mka = text(HOME / "MarketsActivity.java")
+sc = mka.split("private void stockCard(")[1].split("/** «الأسعار متأخرة")[0]
+check("14: the stock card fits the safe area: its text part is a scroll view that shrinks when the card is taller than the screen minus 5 % top and bottom, the action buttons and «رجوع» are a fixed footer; the first focus is «رجوع», never an action; the chart is shorter",
+      "final ScrollView bodyScroll = new ScrollView(this);" in sc and "box.addView(bodyScroll, new LinearLayout.LayoutParams(-1, -2));" in sc and "max = h - 2 * Math.round(h * 0.05f), over = box.getHeight() - max" in sc
+      and "back.requestFocus();" in sc and "(made.isEmpty() ? back : made.get(0)).requestFocus()" not in sc and "chartBlock(null, q, 40, 104)" in sc and "made.get(0).requestFocus()" not in sc)
+check("14: after an action that draws the page again the focus is on the row that opened the card (its place is kept), not on «مباشر»", "focusIndexAfter = from == null ? -1 : all.indexOf(from);" in sc and "if (at < 0 && focusIndexAfter >= 0) at = focusIndexAfter;" in mka)
+check("15: both number pads' key rows are not baseline-aligned (the bigger «٫» pushed the other keys 8 px down and cut their bottoms)", mka.count("line.setBaselineAligned(false);") == 2)
+gt = text(HOME / "GreetingText.java")
+check("16: the greeting is «مساء الخير» until two hours after Isha (not «تصبح على خير» at 19:18), and the plain one says the night from 22:00", "now < isha + NIGHT_AFTER_ISHA_MS" in gt and "2 * 3600_000L" in gt and text(HOME / "Greeting.java").count("hour < 4 || hour >= 22") == 2)
+check("17: the followed teams' games are kept on the TV and a team whose requests were all refused is asked again once, 20 s later (a quick reopen lost «فرقك» when the sports server refused it)",
+      "localStorage.getItem('teamData')" in tpl and "saveTeamData();" in tpl and "setTimeout(loadMatches, 20000)" in tpl and "if(!got) failed.push(id);" in tpl)
 sys.exit(1 if failed else 0)

@@ -212,6 +212,25 @@ for (const [why, rows] of [['the shipped table', null], ['medium confidence', [{
   check('matches page: «أضف … لفرقي» hands it the club\'s id and name', JSON.stringify(await p.evaluate(() => window.__fol)) === '["137721","Al-Ahli"]');
   check('matches page: after «أضف … لفرقي» the day on screen is kept (the new team\'s games arrive and must not move the list to another day: «فرقك» was lost, step 28b), and a Back on the open card draws nothing of it',
     await p.evaluate(() => MP.picked === true) && !errors.length, errors.join(' | '));
+  {   // step 30: a quick reopen whose requests the sports server refuses (each open asks two per team) must not blank the team's games: they are kept on the TV
+    const cq = await browser.newContext({ viewport: { width: 1920, height: 1080 }, timezoneId: 'Asia/Riyadh' });
+    let refuse = false;
+    const only = ev('99', 'Al-Hilal', '136013', 'Al-Fateh', '136011', '2026-11-05T18:00:00');   // in the team's data only, not in the league file
+    await cq.route(/^https?:/, r => {
+      const u = r.request().url(), h = { 'Access-Control-Allow-Origin': '*' };
+      if (u.includes('/data-leagues/')) return r.fulfill({ json: LEAGUE, headers: h });
+      if (u.includes('eventsnext.php')) return refuse ? r.fulfill({ status: 429, body: 'Too Many Requests', headers: h }) : r.fulfill({ json: { events: [only] }, headers: h });
+      if (u.includes('eventslast.php')) return refuse ? r.fulfill({ status: 429, body: 'Too Many Requests', headers: h }) : r.fulfill({ json: { results: null }, headers: h });
+      return r.abort();
+    });
+    const hash = 'file://' + path.join(ROOT, 'dist', 'tv.html') + '#city=الرياض&lat=24.7136&lon=46.6753&tz=Asia/Riyadh&teams=136013&matchpage=1&gap=0';
+    const seen99 = async () => { const q = await cq.newPage(); await q.clock.setFixedTime(NOW); await q.goto(hash); await q.waitForTimeout(2500); const r = await q.evaluate(() => fbGames().some(e => e.idEvent === '99')); await q.close(); return r; };
+    const first = await seen99();
+    refuse = true;
+    const second = await seen99();   // every team request answers 429
+    check('matches page: a team\'s game the server stops answering for on a quick reopen is still listed (kept on the TV), as it was on the first open', first === true && second === true, JSON.stringify([first, second]));
+    await cq.close();
+  }
   {   // step 29: the root cause of the lost «فرقك» — the new team's own copy of the same fixture (another time, another status) used to win over the league file's copy, and the game left its day
     const { p: pf, ctx: cf, errors: ef } = await open('city=الرياض&lat=24.7136&lon=46.6753&tz=Asia/Riyadh&teams=136013&matchpage=1', { rows: ROWS, height: 1080 });
     await pf.evaluate(() => mpRender());
