@@ -1,4 +1,4 @@
-«✅ GO — step 30b now (build 188, US market hours). TV muted throughout.»
+«✅ GO — build 190» — run step 31 (end of this file). TV muted throughout. Owner asleep: do everything yourself, quietly.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -544,3 +544,17 @@ US market is open (17:30–00:00 Saudi). On «قائمتي» add AAPL, NVDA, TSL
 6. Screenshots (demo-clean): «قائمتي» live and «محفظتي».
 Z. Remove the three stocks and the holding; «مباشر» back as it was.
 Report as «step 30b» in REPORT.md and push.
+
+## step 31 — build 190 (update; TV muted throughout; owner asleep — keep the screen use quiet; restore in Z)
+Re-check step 30's fixes plus the smoothness / low-RAM work:
+1. «فرقك»: follow a team, reopen the matches page quickly (10–20 s apart) 12×: the group shows every time.
+2. Stock card (2222, 1120, 1211; from «قائمتي» and the movers): fits the screen, «رجوع» visible with first focus, the action button readable; OK on «رجوع» returns to the same row; nothing changes the list by accident.
+3. Pad: every key box the same height, borders whole.
+4. Greeting: «مساء الخير» in the evening until about 2 h after Isha.
+5. Dark pages still dark; «رجوع» in the match card.
+6. Smoothness: open settings (time it with logcat Displayed), markets with «مباشر» on for 5 min (count redraws in the log; no redraw when prices didn't change), tray scrolling. Note any jank.
+7. Low-RAM: this TV has 2 GB, so Ram.low should be ON: check `UrTVType` shows no key filter outside home, markets «مباشر» off by default on a fresh state, and the screensaver page has `lowram=1` (no seconds). Report whether anything feels worse.
+8. Chromecast logic: `optimize/dock.sh cast status` on this TCL must say not a Chromecast and change nothing.
+9. Mute log: any `mute changed: muted=false by=not us`.
+Z. Restore as in step 28b Z.
+Report as «step 31» in REPORT.md and push.
