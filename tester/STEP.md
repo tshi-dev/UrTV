@@ -1,4 +1,4 @@
-«✅ GO — step 29a now (no new build needed; PC network checks only). Then keep polling for the build GO.»
+«✅ GO — build 186» — run step 29 (end of this file). TV muted throughout.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -509,3 +509,16 @@ Our cloud sessions are blocked from these hosts, so run from the PC:
 3. On the TV (muted, then mute kept): `adb shell am start -a android.intent.action.VIEW -d "<kwikmotion URL>" -t audio/x-mpegurl` is NOT needed; instead just report whether `curl -sI` of the kwikmotion URL from the PC returns 200.
 4. Fetch `https://query1.finance.yahoo.com/v8/finance/spark?symbols=SAR%3DX,KWD%3DX&range=1d&interval=1d` with curl and report the HTTP status and the first 200 bytes.
 Report as «step 29a» in REPORT.md and push.
+
+## step 29 — build 186 (update from the installed build; TV muted throughout; restore everything in Z)
+Re-check every step 28b problem plus the new work. Report each as ✓/✗ with the log line or bounds.
+A. Update via «تحديث تلفزيوني» (channel next): as step 28b A (no screensaver over the question, home back in front, muted).
+B. With the home card «الأسهم» on: ▲ from the tray → card → ▲ reaches the top row; every quick button reachable and opens its page.
+C. Matches: «أضف … لفرقي», then reopen the page 3×: the «فرقك» group stays (no force-stop).
+D. Markets: «صرف العملات» shows rates (KWD not «—»), and its button and «أخفِ المبالغ» are small, beside مباشر | عادي. In Tadawul hours (if open), live mode parses all symbols (`parsed=N` = asked) and prices move. Number pad in «متوسط التكلفة»: ⌫ points right in Arabic; zero is clear; «٫» key types 12٫5 → saved as 12.5.
+E. Station 0 «إذاعة القرآن الكريم - السعودية» plays (new SBA HLS) for 60 s; stations 1–3 play.
+F. Favourites tray at sizes 5, 7, 8, «الكل» with ≥10 favourites, AR and EN: whole tiles only, no sliver, tray height fits tiles, the small «more» triangle on the correct side, focus ring inside, «Hold OK for options» on the name's baseline. One screenshot each (demo-clean, PC only).
+G. Home: the 6 quick buttons look the same; the prayer card's last line ≥16 px from its bottom; matches rows centred; the «اضغط مطولاً للخيارات» hint legible.
+H. Adhan on a muted TV (volume 10%, guard ready): it unmutes, plays, and is muted again at the end; check `tv_muted_before=true` and `adhan end: re-mute done`. Also stop it early with Back: muted again.
+Z. Restore as in step 28b Z.
+Report as «step 29» in REPORT.md and push.
