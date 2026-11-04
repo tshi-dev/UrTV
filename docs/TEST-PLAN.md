@@ -208,7 +208,7 @@ in «كل التطبيقات». Full reference: [TILAWAH.md](TILAWAH.md).
 | W3 | Left/Right from the list, then Up from the first row, then Down | The section changes and its list starts at the top; the right arrow always moves the highlight to the right and the left arrow to the left; Up reaches the tab bar (solid gold on the active tab), Down returns to the first row; the selected row always has a solid dark card, thick gold frame and gold chevron |
 | W4 | OK on a reciter, then OK on الفاتحة | 114-surah grid in reading order; the player shows the surah and reciter; audio plays; Back returns |
 | W5 | Play, press Home, wait for the screensaver | Audio continues; the media play/pause key controls it; «تلاوة» shows «متابعة التلاوة» again |
-| W6 | OK on «إذاعة القرآن الكريم - السعودية» | Live player, long title fits, audio plays, no error (this also proves the scoped radiojar cleartext redirect) |
+| W6 | OK on «إذاعة القرآن الكريم - السعودية» | Live player, long title fits, audio plays within a few seconds, no error (the Saudi Broadcasting Authority's https HLS, step 182) |
 | W7 | OK on a prayer row (e.g. المغرب) | That adhan plays now through the player screen («الأذان» + the muezzin's name); the previous/next buttons are gone and Left/Right do nothing; Back leaves it playing |
 | W8 | The «الأذان» tab, untouched after a fresh install | «الأذان التلقائي» reads «متوقف» (off by default); OK switches it to «مفعّل» and back, and the state survives a reboot |
 | W9 | OK on «المؤذن» | 21 recordings by name (الحرم المكي، المسجد الأقصى، عبدالملك الملا…), the chosen one in gold with its city; OK picks one and plays 12 seconds of it; the list scrolls and the selected row keeps its gold frame at the bottom |

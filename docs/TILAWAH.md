@@ -184,8 +184,12 @@ python3 .github/tools/fetch_quran.py --check   # ranged GET of every stream URL
 - **Stations** are eleven live streams from mp3quran/qurango.net, with the Saudi Quran Radio first.
 - Streams move or go quiet; the `--check` run verifies one kilobyte of each URL. At the time of
   writing all 51 URLs answered with `audio/mpeg`. A station that fails may be temporarily down;
-  the app retries and reports it. Before the player gets a station, the app follows its redirects
-  itself (radiojar sends https to its CDN over plain http, which the TV's player did not follow) and
+  the app retries and reports it. The Saudi Quran Radio is the Saudi Broadcasting Authority's own HLS
+  (`live.kwikmotion.com`, the CDN of radioplus.sba.sa): https, no redirect, no token. Its former radiojar
+  address never played on the owner's TV (step 182). `.github/workflows/stations-check.yml` checks every
+  station in CI (ffprobe, then 60 s of audio; the table goes to the `data-stations` branch). Before the
+  player gets a station, the app follows its redirects itself (radiojar sent https to its CDN over plain
+  http, which the TV's player did not follow) and
   tries a server error (backup.qurango.net's random 500) three times, 2 s then 4 s apart, before it says
   it cannot play (`StreamUrl`, `tests/stream_url_test.py`).
 - **«البث المباشر من الحرم»** is two links, not streams: rows after the stations that open the Saudi
@@ -206,9 +210,9 @@ scope and the manifest.
 - Runtime requests are the audio streams and their redirects, the adhan recordings
   (`archive.org`), and one Aladhan call a day (`api.aladhan.com`, method 4). There is no account,
   upload, analytics or ad SDK.
-- `res/xml/network_security_config.xml` sets `cleartextTrafficPermitted="false"` globally. The Saudi
-  Quran Radio (`stream.radiojar.com`) redirects to its CDN over `http://n0X.radiojar.com`; cleartext
-  is allowed only for `radiojar.com` and its subdomains. Nothing else may use HTTP.
+- `res/xml/network_security_config.xml` sets `cleartextTrafficPermitted="false"` globally. Every
+  station is https now; cleartext stays allowed only for `radiojar.com` and its subdomains (the former
+  Saudi Quran Radio address redirected to `http://n0X.radiojar.com`). Nothing else may use HTTP.
 - Permissions: internet, network/Wi-Fi state (Wi-Fi lock), wake lock, foreground media playback,
   notifications, boot completed (the adhan alarm), exact alarms, and modify audio settings (the
   adhan's own volume). There is no storage permission and no access to local media.

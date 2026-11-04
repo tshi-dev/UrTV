@@ -4,7 +4,7 @@
 For each station of android/launcher/src/main/assets/quran/stations.json, and each extra address given on the command line (a candidate for a
 replacement), it records: the redirect chain of a GET (curl, as StreamUrl.resolve follows it), whether an https -> http step goes to a host the app
 allows cleartext for (radiojar.com only), what ffprobe finds (an audio stream, its codec and rate), and whether ffmpeg can read PLAY_S seconds of audio
-in at most PLAY_S + SLACK_S of wall time (a live stream that stalls or drops fails). Nothing but the addresses is sent anywhere.
+in at most PLAY_S + SLACK_S of wall time, staying up at least UP_S (a live stream that stalls or drops fails). Nothing but the addresses is sent anywhere.
 
 Out: stations/report.json and stations/report.md (a table).
 
@@ -20,8 +20,9 @@ from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = Path(os.environ.get("STATIONS_OUT", "stations"))
-PLAY_S = int(os.environ.get("STATIONS_PLAY_S", "30"))
-SLACK_S = 25
+PLAY_S = int(os.environ.get("STATIONS_PLAY_S", "60"))   # seconds of audio read
+UP_S = 30     # the stream must stay up at least this long (wall time)
+SLACK_S = 40
 UA_ANDROID = "stagefright/1.2 (Linux;Android 11)"   # what the TV's MediaPlayer sends
 
 
@@ -70,8 +71,9 @@ def play(url):
         r = subprocess.run(["ffmpeg", "-v", "error", "-nostdin", "-rw_timeout", "15000000", "-user_agent", UA_ANDROID, "-i", url, "-vn", "-t", str(PLAY_S), "-f", "null", "-"],
                            capture_output=True, text=True, timeout=PLAY_S + SLACK_S)
         wall = time.time() - t0
-        # -t counts media time: reading 30 s of a live stream takes about 30 s of wall time; much less means a file, not a live stream
-        return {"ok": r.returncode == 0 and wall >= PLAY_S * 0.5, "wall_s": round(wall, 1), "err": r.stderr.strip()[-200:]}
+        # -t counts media time: a live server sends a burst first (Icecast about 15 s, HLS its last segments), then real time, so 60 s of audio
+        # read without an error takes at least UP_S of wall time on a live stream
+        return {"ok": r.returncode == 0 and wall >= UP_S, "wall_s": round(wall, 1), "err": r.stderr.strip()[-200:]}
     except subprocess.TimeoutExpired:
         return {"ok": False, "wall_s": round(time.time() - t0, 1), "err": "stalled (no %d s of audio in %d s)" % (PLAY_S, PLAY_S + SLACK_S)}
 

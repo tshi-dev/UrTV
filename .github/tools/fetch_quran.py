@@ -64,10 +64,11 @@ RECITERS = [
     ("وديع اليمني", "yamani"),
 ]
 
-# Continuous streams. The Saudi Quran Radio (radiojar) redirects to http, which the app permits
-# for *.radiojar.com only (res/xml/network_security_config.xml). The rest are https.
+# Continuous streams, all https. The Saudi Quran Radio is the Saudi Broadcasting Authority's own HLS on its CDN (KWIKmotion, the
+# player of radioplus.sba.sa): https end to end, no redirect, no token. Its radiojar address (an https -> http redirect with a one-use
+# token) never played on the owner's TV (step 182); radiojar.com keeps its cleartext permission in case it is used again.
 STATIONS = [
-    ("إذاعة القرآن الكريم - السعودية", "https://stream.radiojar.com/0tpy1h0kxtzuv"),
+    ("إذاعة القرآن الكريم - السعودية", "https://live.kwikmotion.com/sbrksaquranradiolive/ksaquranradio/playlist.m3u8"),
     ("الشيخ أبو بكر الشاطري", "radio/shaik_abu_bakr_al_shatri"),
     ("عبدالرحمن السديس", "radio/abdulrahman_alsudaes"),
     ("سعود الشريم", "radio/saud_alshuraim"),
