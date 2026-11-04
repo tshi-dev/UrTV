@@ -56,6 +56,7 @@ RECITERS = [
     ("محمود عبدالحكم", "abdulhakim"),
     ("عبدالرحمن العوسي", "oosi"),
     ("عبدالله الكندري", "kandari"),
+    ("بدر التركي", "turki"),   # 4.1 reports; mp3quran's «حفص عن عاصم - مرتل», 114 surahs
     ("عبدالعزيز الزهراني", "zahrani"),
     ("صالح الصاهود", "sahood"),
     ("مفتاح السلطني", "saltani"),
@@ -79,6 +80,7 @@ STATIONS = [
     ("عبدالباسط عبدالصمد", "radio/abdulbasit_abdulsamad"),
     ("محمد صديق المنشاوي", "radio/mohammed_siddiq_alminshawi"),
     ("أحمد العجمي", "radio/ahmad_alajmy"),
+    ("إذاعة القرآن الكريم - القاهرة", "https://stream.radiojar.com/8s5u5tpdtwzuv"),   # 4.1 reports: Maspero's own (maspero.eg/stream/7), radiojar like the Saudi one used to be; last, so saved station indices stay
 ]
 
 

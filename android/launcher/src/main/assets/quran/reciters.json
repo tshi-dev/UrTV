@@ -279,6 +279,13 @@
    "en": "Wadee Al-Yamani",
    "server": "https://cdn.mp3quran.net/audio/wadee-yamani/r1/",
    "surahs": 114
+  },
+  {
+   "id": "turki",
+   "name": "بدر التركي",
+   "en": "Badr Al-Turki",
+   "server": "https://cdn.mp3quran.net/audio/badr-turki/r1/",
+   "surahs": 114
   }
  ]
 }

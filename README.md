@@ -104,7 +104,7 @@ screen: [docs/RECREATE-PROMPT.md](docs/RECREATE-PROMPT.md).
 Every build is also kept as a numbered release (`v4.0.N`: the version and the build; the older ones are `v3.N`), to go back
 to one: `APK_TAG=v4.0.N optimize/install.sh all`.
 
-The home screen carries «تلاوة وأذان»: forty reciters (114 surahs each), live Quran radio, and the five daily
+The home screen carries «تلاوة وأذان»: forty-one reciters (114 surahs each), live Quran radio, and the five daily
 adhans at Umm al-Qura times with a choice of 21 recordings.
 Nothing to install apart from the home app; [docs/TILAWAH.md](docs/TILAWAH.md) has the screens, the
 remote keys and the ADB controls.
