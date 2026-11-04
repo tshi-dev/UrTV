@@ -110,6 +110,16 @@ const checkLineGeo = (label, g, sel) => {
   const wx = await box(p, '#fb-wx'), pr = await box(p, '#fb-pr'), mt = await box(p, '#fb-mt');
   check('football home: the cards 24 px apart, the games on the right (RTL)', Math.abs(pr.l - wx.r - 24) < 1 && Math.abs(mt.l - pr.r - 24) < 1 && mt.r > pr.r, JSON.stringify([wx, pr, mt]));
   check('football home: text at least 16 px inside each card', !(await crowded(p, '.fbw .fbc', 16)).length, (await crowded(p, '.fbw .fbc', 16)).join(' | '));
+  {   // step 28 (the owner's screenshots): the prayer card's last line keeps 16 px from the card's bottom edge, the rows are 40 apart by 8, the games sit centred in their card
+    const g = await p.evaluate(() => {
+      const r = e => e.getBoundingClientRect(), card = r(document.getElementById('fb-pr-c')), n = r(document.querySelector('.fpn')), li = [...document.querySelectorAll('#fb-pr li')].map(r);
+      const mt = r(document.getElementById('fb-mt-c')), ln = [...document.querySelectorAll('#fb-mt-c .fln')].map(r);
+      return { below: card.bottom - n.bottom, rowH: li[0].height, step: li[1].top - li[0].top, above: ln[0].top - mt.top, under: mt.bottom - ln[ln.length - 1].bottom };
+    });
+    const u = 1;
+    check('football home: the prayer card\'s last line is 16+ px from its bottom edge, rows 40 high on an 8 gap', g.below >= 16 * u - .5 && Math.abs(g.rowH - 40 * u) < 1 && Math.abs(g.step - 48 * u) < 1, JSON.stringify(g));
+    check('football home: the games are centred in their card (the gap above the first = the gap under the last)', Math.abs(g.above - g.under) <= 2, JSON.stringify(g));
+  }
   const lines = await p.$$eval('#fb-mt-c .fln', ls => ls.map(l => l.textContent));
   check('football home: three games, the followed team first, live with its score and minute', lines.length === 3 && /الهلال/.test(lines[0]) && /٢ - ١/.test(lines[0]) && /الدقيقة ٦٧/.test(lines[0]), lines.join(' / '));
   checkLineGeo('football home: the match line', await lineGeo(p, '#fb-mt-c .fln'));

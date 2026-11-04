@@ -263,9 +263,7 @@ public class MarketsActivity extends Activity {
         LinearLayout controls = new LinearLayout(this);
         controls.setGravity(Gravity.CENTER_VERTICAL);
         controls.addView(liveSwitch(), new LinearLayout.LayoutParams(-2, dp(40)));
-        fxBtn = button(S.t("صرف العملات"), false, v -> want(3));
-        ((TextView) fxBtn).setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-        fxBtn.setOnFocusChangeListener((v, has) -> paintTabs());
+        fxBtn = ctlButton(S.t("صرف العملات"), v -> want(3));
         controls.addView(fxBtn, new LinearLayout.LayoutParams(-2, -2));   // its text's height plus its own padding (a fixed 40 dp cut the letters in half, step 28)
         ctl = new LinearLayout(this);
         ctl.setGravity(Gravity.CENTER_VERTICAL);
@@ -1013,12 +1011,11 @@ public class MarketsActivity extends Activity {
         Portfolio.openEditing(Portfolio.now());
         boolean hide = Portfolio.hidden(this);
         // «أخفِ المبالغ» is in the controls row, beside «صرف العملات» (only on this tab); «أضف سهمًا» and «خيارات محفظتي» stay at the end of the tab row
-        final View hideBtn = button(hide ? S.t("أظهر المبالغ") : S.t("أخفِ المبالغ"), false, v -> {
+        final View hideBtn = ctlButton(hide ? S.t("أظهر المبالغ") : S.t("أخفِ المبالغ"), v -> {
             Portfolio.setHidden(this, !Portfolio.hidden(this));
             show(2, false);
             ctl.getChildAt(0).requestFocus();   // «أخفِ/أظهر المبالغ» stays under the focus, on «محفظتي»
         });
-        ((TextView) hideBtn).setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         ctl.addView(hideBtn, new LinearLayout.LayoutParams(-2, -2));
         actions.addView(button(S.t("أضف سهمًا"), false, v -> pick()), buttonParams(0));
         actions.addView(button(S.t("خيارات محفظتي"), false, v -> options()), buttonParams(12));
@@ -1638,6 +1635,23 @@ public class MarketsActivity extends Activity {
         r.setClickable(true);
         r.setBackground(GlassPaint.row(this, look, radius));
         GlassPaint.follow(r, look);
+    }
+
+    /** a small button of the controls row, the same height and type size as «مباشر | عادي» (16 sp, 16 / 8 dp inside, no box, the focus fill only; step 28: a boxed 15 sp one was clipped) */
+    private TextView ctlButton(String label, View.OnClickListener click) {
+        final TextView t = text(label, 16, "Medium", TEXT);
+        t.setGravity(Gravity.CENTER);
+        t.setPadding(dp(16), dp(8), dp(16), dp(8));
+        t.setId(View.generateViewId());
+        t.setFocusable(true);
+        t.setClickable(true);
+        t.setBackground(new ColorDrawable(0));
+        t.setOnClickListener(click);
+        t.setOnFocusChangeListener((v, has) -> {
+            t.setBackground(has ? GlassPaint.focused(this, look, 12) : new ColorDrawable(0));
+            t.setTextColor(has ? look.onFocus : t == fxBtn && tab == 3 ? ACCENT : TEXT);
+        });
+        return t;
     }
 
     private View button(String label, boolean primary, View.OnClickListener click) {

@@ -452,7 +452,7 @@ public class MainActivity extends Activity {
         titleRow.setOrientation(LinearLayout.HORIZONTAL);
         titleRow.setGravity(Gravity.BOTTOM);
         titleRow.addView(title, new LinearLayout.LayoutParams(-2, -2));
-        optionsHint = text(14, "sans-serif", Color.WHITE);
+        optionsHint = text(18, "sans-serif-medium", Color.WHITE);   // 18 sp in the name's own colour: at 14 sp and 85 % in the soft tone it read as a rendering bug (step 28)
         optionsHint.setText(S.tv(OPTIONS_HINT));
         optionsHint.setSingleLine(true);
         optionsHint.setAlpha(0f);
@@ -2308,8 +2308,8 @@ public class MainActivity extends Activity {
         int seen = prefs().getInt(hintKey(), 0);
         boolean on = show && seen < OPTIONS_HINT_TIMES && edit == null && appsEdit == null;
         if (on) prefs().edit().putInt(hintKey(), seen + 1).apply();
-        optionsHint.setTextColor(palette().soft);
-        optionsHint.animate().alpha(on ? 0.85f : 0f).setDuration(200).start();
+        optionsHint.setTextColor(palette().text);
+        optionsHint.animate().alpha(on ? 1f : 0f).setDuration(200).start();
     }
 
     /** the box was opened: the hint has done its job */
@@ -2580,6 +2580,7 @@ public class MainActivity extends Activity {
         applyLook(Look.light(cfg.appearance(), dayBySun(cfg), h * 60 + now.get(Calendar.MINUTE)));
         GlassStyle.Look glassNow = homeGlass();
         for (Pill p : new Pill[] {inputsPill, tasksPill, tilawahPill, centerPill, marketsPill, matchesPill, bellPill}) if (p != null) p.look(glassNow);   // «رملي»: its own buttons
+        for (View v : pills) if (v instanceof Pill) ((Pill) v).look(glassNow);   // and every pill of the row, whatever else is added to it: six buttons, one style (step 28: two stayed grey circles)
         boolean h24 = cfg.clock24();   // «ساعة ٢٤»: off (12-hour with the ص or م) unless the owner turned it on
         clock.setText(ClockText.face(h, now.get(Calendar.MINUTE), h24, Digits.latin()));
         ampm.setText(ClockText.suffix(h, h24));

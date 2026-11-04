@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261104040203">
+<meta name="urtv-build" content="20261104041147">
 <title>شاشة تلفزيونك</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -592,6 +592,7 @@
   .fbw,#fb-row{position:absolute}
   .fbw{top:calc(var(--u)*(var(--ft,216) + 44));height:calc(var(--u)*(572 - 44 - var(--ft,216)))}
   #fb-mt{inset-inline-start:calc(var(--u)*120);width:calc(var(--u)*830)}
+  #fb-mt h3{padding-inline-end:calc(var(--u)*24)}   /* «TheSportsDB · مباراتان» ends 24 px inside its box: 48 from the next widget's title, not 24 (step 28) */
   #fb-pr{inset-inline-start:calc(var(--u)*974);width:calc(var(--u)*420)}
   #fb-wx{inset-inline-start:calc(var(--u)*1418);width:calc(var(--u)*382)}
   .fbc{height:100%;background:var(--fbg);border:1px solid var(--fln);border-radius:calc(var(--u)*28);box-shadow:inset 0 1px 0 var(--fhl),0 20px 50px rgba(0,0,0,.18);
@@ -614,19 +615,19 @@
   .fws b{font-weight:500;font-size:calc(var(--u)*24*var(--k));white-space:nowrap}
   /* prayers */
   #fb-pr-c{display:flex;flex-direction:column;justify-content:space-between;padding:calc(var(--u)*16)}
-  .fpl{list-style:none;display:flex;flex-direction:column;gap:calc(var(--u)*4*var(--k))}
-  .fpl li{display:flex;align-items:center;gap:calc(var(--u)*16);height:calc(var(--u)*46*var(--k));padding-inline:calc(var(--u)*16);border-radius:calc(var(--u)*14);font-size:calc(var(--u)*28*var(--k))}
+  .fpl{list-style:none;display:flex;flex-direction:column;gap:calc(var(--u)*8*var(--k))}   /* rows 40 + gaps 8 (the 8 scale): five rows and the last line fit the 312 box with 16 above and below (the last line sat under 16 px from the edge, step 28) */
+  .fpl li{display:flex;align-items:center;gap:calc(var(--u)*16);height:calc(var(--u)*40*var(--k));padding-inline:calc(var(--u)*16);border-radius:calc(var(--u)*14);font-size:calc(var(--u)*28*var(--k))}
   .fpl li b{font-weight:500;flex:1}
   .fpl li.nx{background:var(--fhl);color:var(--fgr)}
   .fpi{display:flex;font-size:calc(var(--u)*26*var(--k));opacity:.9}
   .fpn{text-align:center;color:var(--fgr);font-size:calc(var(--u)*24*var(--k))}
   /* the games, three lines */
   #fb-mt-c{padding-block:calc(var(--u)*8)}
-  #fb-mt-c ul{list-style:none;display:flex;flex-direction:column;height:100%}
+  #fb-mt-c ul{list-style:none;display:flex;flex-direction:column;justify-content:center;height:100%}   /* one, two or three lines: a block centred in the card, not each stretched over its share (a big gap above the first, step 28) */
   /* the match line, one template (the widget's .fln and the list's .mpg): a grid whose × is the axis; the time column at the start, the home pair and the away pair
      hugging the ×, the note / mark last. Crest 40, 24 between crest and name, 32 each side of the ×; a name takes two lines, no word broken. */
   .fln,.mpg{display:grid;grid-template-columns:calc(var(--u)*200) minmax(0,1fr) auto minmax(0,1fr) var(--zw);align-items:center;column-gap:0}
-  .fln{flex:1;min-height:0;--zw:0px}
+  .fln{flex:0 1 calc(var(--u)*80);min-height:0;--zw:0px}
   .mpg{--zw:calc(var(--u)*136)}
   .mlw{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--fs);margin-inline-end:calc(var(--u)*16);text-align:start}
   .mlw .fnote{display:block;margin-inline-start:0;overflow:hidden;text-overflow:ellipsis}
