@@ -82,11 +82,25 @@ mka = text(HOME / "MarketsActivity.java")
 sc = mka.split("private void stockCard(")[1].split("/** «الأسعار متأخرة")[0]
 check("14: the stock card fits the safe area: its text part is a scroll view that shrinks when the card is taller than the screen minus 5 % top and bottom, the action buttons and «رجوع» are a fixed footer; the first focus is «رجوع», never an action; the chart is shorter",
       "final ScrollView bodyScroll = new ScrollView(this);" in sc and "box.addView(bodyScroll, new LinearLayout.LayoutParams(-1, -2));" in sc and "max = h - 2 * Math.round(h * 0.05f), over = box.getHeight() - max" in sc
-      and "back.requestFocus();" in sc and "(made.isEmpty() ? back : made.get(0)).requestFocus()" not in sc and "chartBlock(null, q, 40, 104)" in sc and "made.get(0).requestFocus()" not in sc)
+      and "back.requestFocus();" in sc and "(made.isEmpty() ? back : made.get(0)).requestFocus()" not in sc and "chartBlock(null, q, 40, 104, MarketData.symbol(code))" in sc and "made.get(0).requestFocus()" not in sc)
 check("14: after an action that draws the page again the focus is on the row that opened the card (its place is kept), not on «مباشر»", "focusIndexAfter = from == null ? -1 : all.indexOf(from);" in sc and "if (at < 0 && focusIndexAfter >= 0) at = focusIndexAfter;" in mka)
 check("15: both number pads' key rows are not baseline-aligned (the bigger «٫» pushed the other keys 8 px down and cut their bottoms)", mka.count("line.setBaselineAligned(false);") == 2)
 gt = text(HOME / "GreetingText.java")
 check("16: the greeting is «مساء الخير» until two hours after Isha (not «تصبح على خير» at 19:18), and the plain one says the night from 22:00", "now < isha + NIGHT_AFTER_ISHA_MS" in gt and "2 * 3600_000L" in gt and text(HOME / "Greeting.java").count("hour < 4 || hour >= 22") == 2)
 check("17: the followed teams' games are kept on the TV and a team whose requests were all refused is asked again once, 20 s later (a quick reopen lost «فرقك» when the sports server refused it)",
       "localStorage.getItem('teamData')" in tpl and "saveTeamData();" in tpl and "setTimeout(loadMatches, 20000)" in tpl and "if(!got) failed.push(id);" in tpl)
+
+# step 30b
+mdt = text(HOME / "MarketData.java")
+la = mka.split("private void liveAsk()")[1].split("private void liveDone")[0]
+hd = mka.split("private void header()")[1].split("private static final String[] DAYS")[0]
+check("30b-1: a closed exchange's symbols are not asked (and the log says so with reason=closed); asked symbols are the file's keys (2222.SR)", "MarketData.openFor(it.next(), at0)" in la and 'reason=closed' in la and "MarketData.symbol(c)" in la)
+check("30b-2: the header says New York's session when US symbols are on the page and it is open, and «مباشر» (not «أسعار متأخرة») while live prices are fresh",
+      'S.t("السوق الأمريكي مفتوح")' in hd and "usShown()" in hd and "MarketData.usCloseAt(now)" in hd and 'S.t("مباشر")' in hd and "MarketData.liveFresh(liveOkAt, now)" in hd)
+ax = mka.split("private View axis(")[1].split("private static final String[] MONTHS")[0]
+check("30b-3: a US symbol's chart axis shows New York's hours, and its card shows «–» for the open and range while the file's line is the session before's",
+      'clock(9, 30)' in ax and 'clock(16, 0)' in ax and "MarketData.staleSession(MarketData.symbol(code), q.t, System.currentTimeMillis())" in sc and "l.c.length > 0 && !\"SA\".equals(exchange(e.getKey())) ? l.c : q.c" in mdt)
+tp = text(ROOT / "src/template.html")
+check("30b-4: «تغيّر الأسهم» as an amount applies to every row, Saudi ones too", "CONFIG.stkChg === 'amount' && !isSA(k)" not in tp and "CONFIG.stkChg === 'amount'\n" in tp)
+check("30b-5: «السوق» has a small row of S&P 500, Nasdaq and Dow, asked live while New York is open", "private View usIndices()" in mka and '{"^GSPC", "^IXIC", "^DJI"}' in mka and "usIndices()" in mka.split("private void market()")[1].split("private View usIndices")[0])
 sys.exit(1 if failed else 0)

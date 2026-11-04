@@ -92,7 +92,7 @@ final class Prefs {
 
     // how the markets are shown (#mkstyle=; arrows is what it always showed)
     static final String[][] MK_STYLES = {{"arrows", "الاتجاه فقط ▲▼"}, {"prices", "السعر والنسبة"}};
-    // how the stocks card shows a US stock's change (#stkchg=amount; the percentage is what it always showed). Saudi codes keep the %.
+    // how the stocks card shows every stock's change (#stkchg=amount; the percentage is what it always showed).
     static final String[][] STK_CHG = {{"pct", "بالنسبة ٪"}, {"amount", "بالمبلغ"}};
     // the size of the screensaver's clock (sent as #clocksize=; large is what it always was)
     static final String[][] CLOCK_SIZES = {{"large", "كبيرة"}, {"medium", "متوسطة"}, {"small", "صغيرة"}};

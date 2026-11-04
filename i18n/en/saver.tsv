@@ -228,7 +228,7 @@
 مثال: ⁦2222 1120 AAPL NVDA⁩	Example: 2222 1120 AAPL NVDA
 قائمة الأسهم (رمز تداول من ٤ أرقام أو اسم الشركة أو رمز أمريكي، حتى %s)	Stock list (4-digit Tadawul code, company name or US ticker, up to %s)
 الأسهم: %s	Stocks: %s
-تغيّر الأسهم الأمريكية	US stocks' change
+تغيّر الأسهم	Stocks' change
 بالنسبة ٪	As a percentage
 بالمبلغ	As an amount
 رمز غير صالح: %s	Invalid code: %s

@@ -143,8 +143,16 @@ public class MarketsActivity extends Activity {
     private void liveAsk() {
         if (!liveOn || !resumed || isFinishing() || isDestroyed()) return;
         final int run = liveRun;
-        final java.util.LinkedHashSet<String> syms = new java.util.LinkedHashSet<>(onScreen);
-        if (cardCode != null) syms.add(cardCode);
+        final java.util.LinkedHashSet<String> syms = new java.util.LinkedHashSet<>();
+        for (String c : onScreen) syms.add(MarketData.symbol(c));   // the file's and Yahoo's key: 2222 -> 2222.SR
+        if (cardCode != null) syms.add(MarketData.symbol(cardCode));
+        // a closed exchange's symbols are not asked (Tadawul after hours answers nothing, so «parsed» was never «asked»): they are answered by the file, and the log says so
+        final long at0 = System.currentTimeMillis();
+        int closed = 0;
+        for (java.util.Iterator<String> it = syms.iterator(); it.hasNext(); ) {
+            if (!MarketData.openFor(it.next(), at0)) { it.remove(); closed++; }
+        }
+        if (closed > 0) android.util.Log.i("UrTVMarkets", "live closed=" + closed + " asked=" + syms.size() + " reason=closed");
         if (syms.isEmpty() || data == null) { main.postDelayed(liveTick, MarketData.liveDelay(0, Ram.low(this))); return; }
         new Thread(() -> {
             java.util.Map<String, MarketData.Live> m = MarketFile.live(syms);   // one request for all of them
@@ -166,7 +174,7 @@ public class MarketsActivity extends Activity {
                 View f = cardBlock.findFocus();
                 ViewGroup head = (ViewGroup) cardBlock.getChildAt(0);
                 int at = f == null || head == null ? -1 : head.indexOfChild(f) - 1;
-                fillChart(cardBlock, null, data.of(cardCode), 40, 130, at);
+                fillChart(cardBlock, null, data.of(cardCode), 40, 130, at, MarketData.symbol(cardCode));
             }
         }
         if (shownLive != MarketData.liveFresh(liveOkAt, now)) redraw();   // «مباشر» to «الأسعار متأخرة» (or back) in the footer
@@ -385,28 +393,47 @@ public class MarketsActivity extends Activity {
 
     // ---------------------------------------------------------------- the header
 
-    /** «تداول مغلق · يفتح بعد ١١ س و١٥ د، الثلاثاء ١٠:٠٠ ص» and «آخر تحديث ١٠:٤٥ م · أسعار متأخرة» */
+    /** is a US symbol on the page (a row, or the open card) */
+    private boolean usShown() {
+        for (String c : onScreen) if ("US".equals(MarketData.exchange(MarketData.symbol(c)))) return true;
+        return cardCode != null && "US".equals(MarketData.exchange(MarketData.symbol(cardCode)));
+    }
+
+    /**
+     * «تداول مغلق · يفتح الأحد ١٠:٠٠ ص» and «آخر تحديث ١٠:٤٥ م · أسعار متأخرة». When US symbols are on the page and New York is open the line says its session too («السوق الأمريكي
+     * مفتوح · يغلق بعد …»; with Tadawul open as well, both words), and the tail says «مباشر» while live prices are fresh (it said «أسعار متأخرة» over live prices: step 30b).
+     */
     private void header() {
         long now = System.currentTimeMillis();
         SpannableStringBuilder s = new SpannableStringBuilder();
-        boolean open = MarketData.open(now);
-        String word = open ? S.t("تداول مفتوح") : S.t("تداول مغلق");
-        s.append(word);
-        s.setSpan(new ForegroundColorSpan(open ? UP : TEXT), 0, word.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        s.append(" · ");
-        if (open) {
-            s.append(S.t("يغلق بعد %s", duration(MarketData.until(now, MarketData.closeAt(now)))));
+        boolean open = MarketData.open(now), us = usShown() && MarketData.usOpen(now);
+        if (us && !open) {
+            String word = S.t("السوق الأمريكي مفتوح");
+            s.append(word);
+            s.setSpan(new ForegroundColorSpan(UP), 0, word.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            s.append(" · ").append(S.t("يغلق بعد %s", duration(MarketData.until(now, MarketData.usCloseAt(now)))));
         } else {
-            long at = MarketData.nextOpen(now);
-            s.append(S.t("يفتح %s %s", S.tv(DAYS[Math.min(DAYS.length - 1, MarketData.weekday(at) - 1)]), clock(10, 0)));   // «يفتح الأربعاء ١٠:٠٠ ص»: short enough for the line
+            String word = open ? S.t("تداول مفتوح") : S.t("تداول مغلق");
+            s.append(word);
+            s.setSpan(new ForegroundColorSpan(open ? UP : TEXT), 0, word.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            s.append(" · ");
+            if (open) {
+                s.append(S.t("يغلق بعد %s", duration(MarketData.until(now, MarketData.closeAt(now)))));
+                if (us) s.append(" · ").append(S.t("السوق الأمريكي مفتوح"));
+            } else {
+                long at = MarketData.nextOpen(now);
+                s.append(S.t("يفتح %s %s", S.tv(DAYS[Math.min(DAYS.length - 1, MarketData.weekday(at) - 1)]), clock(10, 0)));   // «يفتح الأربعاء ١٠:٠٠ ص»: short enough for the line
+            }
         }
         s.append(" · ");
+        boolean live = liveOn && MarketData.liveFresh(liveOkAt, now);
         if (data == null && loading) s.append(S.t("جارٍ التحميل…"));
         else if (data == null || data.updated == 0) s.append(S.t("لا أسعار بعد: يلزم اتصال بالإنترنت"));
         else {
             Calendar k = Calendar.getInstance(TimeZone.getTimeZone(zone()));
-            k.setTimeInMillis(data.updated);
-            s.append(S.t("آخر تحديث %s · أسعار متأخرة", clock(k.get(Calendar.HOUR_OF_DAY), k.get(Calendar.MINUTE))));
+            k.setTimeInMillis(live ? liveOkAt : data.updated);
+            String at = clock(k.get(Calendar.HOUR_OF_DAY), k.get(Calendar.MINUTE));
+            s.append(live ? S.t("آخر تحديث %s", at) + " · " + S.t("مباشر") : S.t("آخر تحديث %s · أسعار متأخرة", at));
         }
         state.setText(s);
     }
@@ -507,7 +534,7 @@ public class MarketsActivity extends Activity {
         // TASI: value, change, and its day against yesterday's close
         MarketData.Quote tasi = data.quotes.get(MarketData.TASI);
         LinearLayout t = card();
-        if (tasi != null) t.addView(chartBlock(S.t("تاسي"), tasi, 34, 96), wrap());
+        if (tasi != null) t.addView(chartBlock(S.t("تاسي"), tasi, 34, 96, MarketData.TASI), wrap());
         else t.addView(text(S.t("تاسي"), 18, "Medium", TEXT), wrap());
         row1.addView(t, weight(1.6f, 0));
 
@@ -552,6 +579,8 @@ public class MarketsActivity extends Activity {
         br.addView(se, gap(8));
         row1.addView(br, weight(1.15f, 16));
         content.addView(row1, wrap());
+        View us = usIndices();
+        if (us != null) content.addView(us, gap(16));
 
         // the 3 that rose most and the 3 that fell most; «الأكثر نشاطًا» only when CI keeps the volume
         LinearLayout row2 = new LinearLayout(this);
@@ -589,6 +618,31 @@ public class MarketsActivity extends Activity {
         content.addView(row2, gap(24));
     }
 
+    /** the index names MarketData.name gives (marked here for the English table) */
+    private static final String[] US_NAMES = {S.n("ناسداك"), S.n("داو جونز")};
+
+    /** S&P 500, Nasdaq and Dow in one small row under the Tadawul cards (live while New York is open, else the file's last close); null when none has a price */
+    private View usIndices() {
+        String[] codes = {"^GSPC", "^IXIC", "^DJI"};
+        LinearLayout row = null;
+        for (String code : codes) {
+            onScreen.add(code);   // asked live while New York is open
+            MarketData.Quote q = data.quotes.get(code);
+            if (q == null) continue;
+            if (row == null) { row = new LinearLayout(this); row.setBaselineAligned(false); }
+            LinearLayout c = new LinearLayout(this);
+            c.setGravity(Gravity.CENTER_VERTICAL);
+            c.setPadding(dp(16), dp(12), dp(16), dp(12));
+            c.addView(text(S.tv(MarketData.name(code)), 16, "Medium", TEXT), new LinearLayout.LayoutParams(0, -2, 1f));
+            c.addView(ltr(text(price(q.p), 16, "Regular", DIM)), new LinearLayout.LayoutParams(-2, -2));
+            c.addView(pct(q.pct(), 15), new LinearLayout.LayoutParams(dp(88), -2));
+            focusRow(c, 12);
+            c.setOnClickListener(v -> stockCard(code, null));
+            row.addView(c, weight(1f, row.getChildCount() == 0 ? 0 : 12));
+        }
+        return row;
+    }
+
     /** how far today's session is, 0 to 1 (0 before it, 1 after it or on a day off) */
     private static float session(long now) {
         long t = (now + MarketData.RIYADH) % 86_400_000L / 60_000L;
@@ -603,11 +657,12 @@ public class MarketsActivity extends Activity {
      * Under a chart (it runs left to right: the start at the left). «اليوم»: «١٠:٠٠ ص — الخط المتقطع: إغلاق أمس — ٣:٠٠ م»; a longer range: its
      * start («قبل أسبوع», «قبل شهر», the year's first day), «الخط المتقطع: أول الفترة», and its last day.
      */
-    private View axis(int which, MarketData.Range r) {
+    private View axis(int which, MarketData.Range r, String sym) {
         LinearLayout a = new LinearLayout(this);
         a.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
-        String start = which == MarketData.TODAY ? clock(10, 0) : which == MarketData.WEEK ? S.t("قبل أسبوع") : which == MarketData.MONTH ? S.t("قبل شهر") : date(r.from);
-        String end = which == MarketData.TODAY ? clock(15, 0) : date(r.to);
+        boolean us = "US".equals(MarketData.exchange(sym));   // the day's hours are the symbol's own exchange's, in its own time (New York: 9:30 to 4:00)
+        String start = which == MarketData.TODAY ? (us ? S.t("%s · نيويورك", clock(9, 30)) : clock(10, 0)) : which == MarketData.WEEK ? S.t("قبل أسبوع") : which == MarketData.MONTH ? S.t("قبل شهر") : date(r.from);
+        String end = which == MarketData.TODAY ? (us ? clock(16, 0) : clock(15, 0)) : date(r.to);
         a.addView(text(start, 13, "Regular", DIM), new LinearLayout.LayoutParams(-2, -2));
         TextView mid = text(which == MarketData.TODAY ? S.t("الخط المتقطع: إغلاق أمس") : S.t("الخط المتقطع: أول الفترة"), 13, "Regular", DIM);
         mid.setGravity(Gravity.CENTER);
@@ -634,14 +689,14 @@ public class MarketsActivity extends Activity {
      * A quote's chart with its range tabs (§6: «اليوم / أسبوع / شهر / سنة»; the three longer ones only when the file has the year's daily
      * closes): the title (null: none), the tabs, the price and its change over the range, the line and its axis. A tab redraws the block.
      */
-    private View chartBlock(String title, MarketData.Quote q, float priceSp, int chartDp) {
+    private View chartBlock(String title, MarketData.Quote q, float priceSp, int chartDp, String sym) {
         LinearLayout block = new LinearLayout(this);
         block.setOrientation(LinearLayout.VERTICAL);
-        fillChart(block, title, q, priceSp, chartDp, -1);
+        fillChart(block, title, q, priceSp, chartDp, -1, sym);
         return block;
     }
 
-    private void fillChart(LinearLayout block, String title, MarketData.Quote q, float priceSp, int chartDp, int focusTab) {
+    private void fillChart(LinearLayout block, String title, MarketData.Quote q, float priceSp, int chartDp, int focusTab, String sym) {
         block.removeAllViews();
         int which = MarketData.hasRanges(q) ? ranges.getOrDefault(q, MarketData.TODAY) : MarketData.TODAY;
         MarketData.Range r = MarketData.range(q, which);
@@ -668,7 +723,7 @@ public class MarketsActivity extends Activity {
                 t.setBackground(bg);
                 final int rest = i == which ? ACCENT : DIM;
                 t.setOnFocusChangeListener((v, has) -> t.setTextColor(has ? look.onFocus : rest));
-                t.setOnClickListener(v -> { ranges.put(q, k); fillChart(block, title, q, priceSp, chartDp, k); });
+                t.setOnClickListener(v -> { ranges.put(q, k); fillChart(block, title, q, priceSp, chartDp, k, sym); });
                 head.addView(t, new LinearLayout.LayoutParams(-2, -2));
                 if (i == focusTab) focus = t;
             }
@@ -677,7 +732,7 @@ public class MarketsActivity extends Activity {
         block.addView(priceLine(q, r, priceSp), gap(8));
         int c = Double.isNaN(r.pct(q.p)) ? color(q) : r.pct(q.p) >= 0 ? UP : DOWN;
         block.addView(new MarketChart(this).line(r.line, r.base, c, DIM, true, 2.5f), sized(-1, chartDp, 8));
-        block.addView(axis(which, r), gap(8));
+        block.addView(axis(which, r, sym), gap(8));
         if (focus != null) focus.requestFocus();
     }
 
@@ -1185,17 +1240,20 @@ public class MarketsActivity extends Activity {
         LinearLayout head = new LinearLayout(this);
         head.setGravity(Gravity.BOTTOM);
         head.addView(text(title != null ? title : S.tv(MarketData.name(code)), 26, "Medium", TEXT), new LinearLayout.LayoutParams(0, -2, 1f));
-        boolean sa = code.startsWith("^") || MarketData.isSaudi(code);
-        String sub = code.startsWith("^") ? S.t("مؤشر السوق الرئيسية · تداول") : sa ? S.t("%s · تداول · ر.س", code) : S.t("%s · بالدولار", code);
+        boolean us = MarketData.isUsIndex(code);
+        boolean sa = !us && (code.startsWith("^") || MarketData.isSaudi(code));
+        String sub = us ? S.t("%s · بالدولار", code) : code.startsWith("^") ? S.t("مؤشر السوق الرئيسية · تداول") : sa ? S.t("%s · تداول · ر.س", code) : S.t("%s · بالدولار", code);
         String tag = liveTag(code);
         head.addView(ltrStart(text(tag.isEmpty() ? sub : sub + " · " + tag, 14, "Regular", DIM)), new LinearLayout.LayoutParams(-2, -2));
         inner.addView(head, wrap());
         if (q != null) {
-            cardBlock = (LinearLayout) chartBlock(null, q, 40, 104);
+            cardBlock = (LinearLayout) chartBlock(null, q, 40, 104, MarketData.symbol(code));
             inner.addView(cardBlock, gap(8));
             LinearLayout stats = new LinearLayout(this);
-            stats.addView(stat(S.t("الافتتاح"), price(q.open())), weight(1f, 0));
-            stats.addView(stat(S.t("نطاق اليوم"), price(q.low()) + " – " + price(q.high())), weight(1f, 12));
+            // the file's day line is the session before's while this exchange is open and no live answer has replaced it: «–», not yesterday's open and range
+            boolean stale = MarketData.staleSession(MarketData.symbol(code), q.t, System.currentTimeMillis());
+            stats.addView(stat(S.t("الافتتاح"), stale ? "–" : price(q.open())), weight(1f, 0));
+            stats.addView(stat(S.t("نطاق اليوم"), stale ? "–" : price(q.low()) + " – " + price(q.high())), weight(1f, 12));
             if (!Double.isNaN(q.yl) && !Double.isNaN(q.yh)) stats.addView(stat(S.t("نطاق ٥٢ أسبوعًا"), price(q.yl) + " – " + price(q.yh)), weight(1f, 12));
             if (!Double.isNaN(q.vol) && q.vol > 0) stats.addView(stat(S.t("الكمية"), S.t("%s مليون", MarketData.show(MarketData.num(q.vol / 1e6, 1), Digits.latin()))), weight(1f, 12));
             inner.addView(stats, gap(16));

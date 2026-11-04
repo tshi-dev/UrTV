@@ -291,5 +291,31 @@ public final class MarketsRun {
         check("a holding with no price in the file: at its cost, no gain, no day", near(none.value, 170) && near(none.gain, 0) && Double.isNaN(none.rows.get(0).price)
             && Double.isNaN(none.rows.get(0).dayPct), none.value);
         check("plain: up to 4 decimals, no trailing zeros", "52.1".equals(Holdings.plain(52.1)) && "3".equals(Holdings.plain(3.0)) && "0.3333".equals(Holdings.plain(1 / 3.0)), "");
-    }
+
+        // step 30b: each exchange has its own hours; a closed one is not asked; the live line replaces a stale file line
+        long tue1530utc = java.time.ZonedDateTime.of(2026, 11, 3, 15, 30, 0, 0, java.time.ZoneId.of("UTC")).toInstant().toEpochMilli();   // Tuesday: New York 10:30 (winter time), Riyadh 18:30
+        long tue0700utc = java.time.ZonedDateTime.of(2026, 11, 3, 7, 0, 0, 0, java.time.ZoneId.of("UTC")).toInstant().toEpochMilli();      // Riyadh 10:00 (open), New York 02:00 (closed)
+        long sat1530utc = java.time.ZonedDateTime.of(2026, 11, 7, 15, 30, 0, 0, java.time.ZoneId.of("UTC")).toInstant().toEpochMilli();
+        long jul1400utc = java.time.ZonedDateTime.of(2026, 7, 7, 14, 0, 0, 0, java.time.ZoneId.of("UTC")).toInstant().toEpochMilli();      // summer time: New York 10:00
+        check("exchange of a symbol: Tadawul, US, none for gold, oil, coins", "SA".equals(MarketData.exchange("2222.SR")) && "SA".equals(MarketData.exchange("^TASI.SR")) && "US".equals(MarketData.exchange("AAPL"))
+            && "US".equals(MarketData.exchange("^GSPC")) && "".equals(MarketData.exchange("GC=F")) && "".equals(MarketData.exchange("BTC-USD")), "");
+        check("US open: Tuesday 10:30 New York yes (winter and summer time), Tuesday 02:00 no, Saturday no", MarketData.usOpen(tue1530utc) && MarketData.usOpen(jul1400utc) && !MarketData.usOpen(tue0700utc) && !MarketData.usOpen(sat1530utc), "");
+        check("openFor: Tuesday 18:30 Riyadh = Tadawul closed, the US open; 10:00 Riyadh = Tadawul open, the US closed; gold always",
+            !MarketData.openFor("2222.SR", tue1530utc) && MarketData.openFor("AAPL", tue1530utc) && MarketData.openFor("2222.SR", tue0700utc) && !MarketData.openFor("AAPL", tue0700utc) && MarketData.openFor("GC=F", sat1530utc), "");
+        long start = MarketData.usSessionStart(tue1530utc);
+        check("the US session starts at 14:30 UTC in winter and closes 6 h 30 min later", start == tue1530utc - 60 * 60_000L && MarketData.usCloseAt(tue1530utc) == start + 390 * 60_000L, start);
+        check("a file price from before today's US open is stale while New York is open, not once the live answer stamps it or when it is closed",
+            MarketData.staleSession("AAPL", start - 3600_000L, tue1530utc) && !MarketData.staleSession("AAPL", start + 60_000L, tue1530utc) && !MarketData.staleSession("AAPL", start - 3600_000L, tue0700utc)
+            && !MarketData.staleSession("GC=F", 1, tue1530utc), "");
+        MarketData fileD = MarketData.parse(MarketsRun.FILE);
+        MarketData.Quote old = fileD.quotes.get("AAPL");
+        java.util.Map<String, MarketData.Live> lv = new java.util.LinkedHashMap<>();
+        lv.put("AAPL", new MarketData.Live(341.9, 340.0, tue1530utc, new double[] {341.57, 341.0, 341.9}));
+        lv.put("^GSPC", new MarketData.Live(6800, 6790, tue1530utc, new double[] {6795, 6800}));
+        MarketData withL = fileD.withLive(lv);
+        MarketData.Quote nq = withL.quotes.get("AAPL");
+        check("a live answer's closes replace the file's day line: the open and range are today's session", nq.open() == 341.57 && nq.low() == 341.0 && nq.high() == 341.9 && nq.t == tue1530utc && old.open() != 341.57, nq.open());
+        check("an index the file does not keep comes from the live line alone", withL.quotes.get("^GSPC") != null && withL.quotes.get("^GSPC").p == 6800 && fileD.quotes.get("^GSPC") == null, "");
+        check("parseLive keeps the answer's closes", MarketData.parseLive("{\"spark\":{\"result\":[{\"symbol\":\"AAPL\",\"response\":[{\"meta\":{\"regularMarketPrice\":2.5,\"chartPreviousClose\":2},\"timestamp\":[1,2],\"indicators\":{\"quote\":[{\"close\":[2.1,2.5]}]}}]}]}}").get("AAPL").c.length == 2, "");
+        check("names of the US indices", "S&P 500".equals(MarketData.name("^GSPC")) && "ناسداك".equals(MarketData.name("^IXIC")) && "داو جونز".equals(MarketData.name("^DJI")), "");    }
 }

@@ -71,7 +71,7 @@ import java.util.Locale;
  * mkbar = the markets line at the top, on (default) or off (the weather stays; the list is kept); clocksize = the screensaver's clock.
  * markets = up to four of Prefs.MARKETS at the top left, in order; mkstyle = arrows only (as always) or the price and the day's change.
  * stocks = the watchlist of the stocks card (panel stocks): up to Prefs.MAX_STOCKS Tadawul codes (4 digits) or US tickers.
- * stkchg = «تغيّر الأسهم الأمريكية»: a US stock's change as a percentage (pct, the default) or an amount; Saudi codes keep the %.
+ * stkchg = «تغيّر الأسهم»: every stock's change as a percentage (pct, the default) or an amount.
  * clock24 = «ساعة ٢٤»: every time of day as 24-hour (on) or 12-hour with ص and م (off, the default; ClockSetting).
  * lang = «اللغة»: ar (the default, as always) or en, the words and direction of both apps' screens, the page and the phone page (docs/ENGLISH.md).
  * digits = hindi (١٢٣, as always) or latin (123). photos = minutes between background photos, or 30s on a TV with 2 GB (PhotoInterval). idle = minutes before the TV starts the

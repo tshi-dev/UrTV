@@ -80,7 +80,9 @@ final class MarketData {
     static final class Live {
         final double p, v;
         final long at;
-        Live(double p, double v, long at) { this.p = p; this.v = v; this.at = at; }
+        final double[] c;   // today's closes when the answer has them (the session's own line; empty: none)
+        Live(double p, double v, long at) { this(p, v, at, new double[0]); }
+        Live(double p, double v, long at, double[] c) { this.p = p; this.v = v; this.at = at; this.c = c; }
     }
 
     /** the seconds between two live asks: 30 at first, 60 after one failure, 120 after two or more (the CI file is what shows meanwhile) */
@@ -161,7 +163,7 @@ final class MarketData {
             t = num(ts.get(ts.size() - 1));
         }
         if (Double.isNaN(t)) t = System.currentTimeMillis() / 1000.0;   // an answer with no time at all is as of now (the provider's delay is said by the page: «متأخرة»)
-        return new Live(p, prev, (long) t * 1000L);
+        return new Live(p, prev, (long) t * 1000L, closes);
     }
 
     private static double[] lastCloses(Map<?, ?> r) {
@@ -179,9 +181,11 @@ final class MarketData {
         d.liveAt = new LinkedHashMap<>(liveAt);
         for (Map.Entry<String, Live> e : live.entrySet()) {
             Quote q = quotes.get(e.getKey());
-            if (q == null) continue;
             Live l = e.getValue();
-            out.put(e.getKey(), new Quote(l.p, l.v > 0 ? l.v : q.v, q.c, q.t, q.vol, q.yh, q.yl, q.d, q.df, q.dl));
+            if (q == null && isUsIndex(e.getKey()) && l.c.length > 0) q = new Quote(l.p, l.v, l.c, l.at, Double.NaN, Double.NaN, Double.NaN);   // an index the file does not keep: the live line is all of it
+            if (q == null) continue;
+            // the live answer's closes are today's session of ITS exchange (Tadawul's are sparse and delayed: its file line stays): they replace the file's, which may still be the session before (step 30b: the card's open and range were yesterday's)
+            out.put(e.getKey(), new Quote(l.p, l.v > 0 ? l.v : q.v, l.c.length > 0 && !"SA".equals(exchange(e.getKey())) ? l.c : q.c, l.at > 0 ? l.at : q.t, q.vol, q.yh, q.yl, q.d, q.df, q.dl));
             d.liveAt.put(e.getKey(), l.at);
         }
         return d;
@@ -335,6 +339,9 @@ final class MarketData {
     /** the short Arabic name of one of the 30, else the code itself (a US ticker, another Tadawul code) */
     static String name(String code) {
         for (String[] t : TADAWUL) if (t[0].equals(code)) return t[1];
+        if ("^GSPC".equals(code)) return "S&P 500";
+        if ("^IXIC".equals(code)) return "ناسداك";
+        if ("^DJI".equals(code)) return "داو جونز";
         return code;
     }
 
@@ -438,6 +445,60 @@ final class MarketData {
 
     /** the weekday of a moment in Riyadh, Calendar.SUNDAY..SATURDAY */
     static int weekday(long ms) { return riyadh(ms)[0]; }
+
+    // ---------------------------------------------------------------- the US session (public facts; holidays are not known here)
+
+    static final TimeZone NEW_YORK = TimeZone.getTimeZone("America/New_York");
+    static final int US_OPEN_MIN = 570, US_CLOSE_MIN = 960;   // 09:30 to 16:00 New York time, Monday to Friday, summer time and winter time alike
+
+    static boolean isUsIndex(String sym) { return "^GSPC".equals(sym) || "^IXIC".equals(sym) || "^DJI".equals(sym); }
+
+    /** which exchange a file key belongs to: "SA" (Tadawul), "US", or "" for what trades round the clock (gold, oil, coins, rates) */
+    static String exchange(String sym) {
+        if (sym == null) return "";
+        if (sym.endsWith(".SR") || sym.matches("\\d{4}")) return "SA";
+        if (isUsIndex(sym) || sym.matches("[A-Z][A-Z.\\-]{0,5}")) return "US";
+        return "";
+    }
+
+    /** is the exchange this symbol trades on open at that moment (true for what has no exchange hours) */
+    static boolean openFor(String sym, long ms) {
+        String x = exchange(sym);
+        return "SA".equals(x) ? open(ms) : "US".equals(x) ? usOpen(ms) : true;
+    }
+
+    private static Calendar ny(long ms) {
+        Calendar k = Calendar.getInstance(NEW_YORK);
+        k.setTimeInMillis(ms);
+        return k;
+    }
+
+    private static boolean usDay(int dow) { return dow >= Calendar.MONDAY && dow <= Calendar.FRIDAY; }
+
+    static boolean usOpen(long ms) {
+        Calendar k = ny(ms);
+        int m = k.get(Calendar.HOUR_OF_DAY) * 60 + k.get(Calendar.MINUTE);
+        return usDay(k.get(Calendar.DAY_OF_WEEK)) && m >= US_OPEN_MIN && m < US_CLOSE_MIN;
+    }
+
+    /** the moment (ms) of New York's session start on that moment's New York day */
+    static long usSessionStart(long ms) {
+        Calendar k = ny(ms);
+        k.set(Calendar.HOUR_OF_DAY, 9);
+        k.set(Calendar.MINUTE, 30);
+        k.set(Calendar.SECOND, 0);
+        k.set(Calendar.MILLISECOND, 0);
+        return k.getTimeInMillis();
+    }
+
+    /** today's close in New York (ms), while it is open */
+    static long usCloseAt(long ms) { return usSessionStart(ms) + (US_CLOSE_MIN - US_OPEN_MIN) * 60_000L; }
+
+    /** the file's price is from before this exchange's open of today, which is now open: its day line and open are the session before's */
+    static boolean staleSession(String sym, long stamp, long now) {
+        if ("US".equals(exchange(sym)) && usOpen(now)) return stamp < usSessionStart(now);
+        return false;
+    }
 
     // ---------------------------------------------------------------- numbers
 

@@ -69,7 +69,7 @@
 #   optimize/saver.sh clocksize medium             the screensaver's clock: large (default) medium small
 #   optimize/saver.sh mkstyle prices               markets: arrows (▲▼ only, default) or prices (price and day's change)
 #   optimize/saver.sh stocks 2222 1120 AAPL        watchlist of the stocks card (card stocks): up to 8 Tadawul codes (4 digits) or US tickers
-#   optimize/saver.sh stkchg amount                a US stock's change as an amount (pct = a percentage, the default); Saudi codes keep the %
+#   optimize/saver.sh stkchg amount                every stock's change as an amount (pct = a percentage, the default)
 #   optimize/saver.sh tasks list                   «المهام» kept on the TV; N = the number list shows
 #   optimize/saver.sh tasks add 'نص'               (up to 12, 60 characters each)  |  done N  |  del N  |  clear
 #   optimize/saver.sh tasks add 'نص' --at '2026-11-05 17:00' [--before 30] [--repeat daily|weekly] [--sound on] [--where saver|home]
