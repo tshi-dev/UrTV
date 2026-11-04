@@ -36,9 +36,12 @@ public class AdhanReceiver extends BroadcastReceiver {
             if (due > 0) prefs.setLastDue(due); else prefs.setLastAlarmAt(now);
             int prayer = intent.getIntExtra(AdhanScheduler.EXTRA_PRAYER, -1);   // an alarm of an older version has none: the usual voice
             int front = AdhanFront.now(context);
-            boolean play = prefs.adhanOn() && AdhanPlan.mayPlay(prefs.adhanSaverOnly(), front);
-            boolean notice = prefs.adhanNotice();
+            boolean muted = muted(context);   // read before anything touches the volume
+            boolean wanted = prefs.adhanOn() && AdhanPlan.mayPlay(prefs.adhanSaverOnly(), front);
+            boolean play = wanted && !muted;   // a muted TV stays silent: the adhan is not played to it, its notice is shown instead (step 28b)
+            boolean notice = prefs.adhanNotice() || (wanted && muted);
             if (play) MusicService.adhan(context, prefs.playVoiceFor(context, prayer == PrayerTimes.FAJR), null, 0, prayer);
+            else if (wanted && muted) Log.i("UrTVAdhan", "adhan skipped: the TV is muted (it stays silent; the notice is shown)");
             else if (prefs.adhanOn()) Log.i("UrTVAdhan", "adhan skipped: another app is in front (saver-only is on)");
             if (notice) AdhanNotice.show(context, prayer);
             boolean saver = AdhanPlan.startSaver(prefs.adhanSaverAt(), front) && AdhanSaver.start(context);   // after the adhan and the notice: nothing waits for it
@@ -54,6 +57,10 @@ public class AdhanReceiver extends BroadcastReceiver {
      */
     private static boolean alreadyPlayed(Prefs prefs, long due, long now) {
         return due > 0 ? prefs.lastDue() == due : now - prefs.lastAlarmAt() <= DUPLICATE;
+    }
+
+    private static boolean muted(Context context) {
+        try { return ((android.media.AudioManager) context.getSystemService(Context.AUDIO_SERVICE)).isStreamMute(android.media.AudioManager.STREAM_MUSIC); } catch (RuntimeException e) { return false; }
     }
 
     /** Standby is off: the adhan is never played to a dark screen, and never made up later. */

@@ -4277,6 +4277,7 @@ function mpAct(){
       if(ok && !CONFIG.teamIds.includes(id)) CONFIG.teamIds.push(id);
     }
   }catch(e){ ok = false; }
+  if(ok && b.k !== 'remind') MP.picked = true;   // the day on screen stays: the new team's games arrive and the day that follows «today's, else the next day with games» must not move under the person (the list lost «فرقك», step 28b)
   if(ok && b.k !== 'remind'){   // the followed teams changed: their games are asked for now, and the list and the home widget drawn from them (one list showed half its groups, step 28)
     try{ Promise.resolve(loadMatches()).then(() => { fbRender(); if(document.getElementById('mp')) mpRender(); }).catch(() => {}); }catch(e){}
   }
@@ -4291,7 +4292,7 @@ function mpKey(e){
     const n = mpButtons(MP.detail, Date.now()).length;
     if(k === fwd) MP.btn = Math.min(n - 1, MP.btn + 1); else if(k === back) MP.btn = Math.max(-1, MP.btn - 1);
     else if(ok) return mpAct(), e.preventDefault();
-    else if(k === 'Escape' || k === 'Backspace') mpBack();
+    else if(k === 'Escape' || k === 'Backspace'){ mpBack(); return e.preventDefault(); }   // the card is closed: nothing of it to draw again
     else return;
     e.preventDefault(); return mpDetailRender();
   }

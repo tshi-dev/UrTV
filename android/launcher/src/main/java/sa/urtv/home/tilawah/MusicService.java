@@ -390,6 +390,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
      */
     private void startRadio(final String url, final int tries) {
         releasePlayer();
+        if (tries == 0) radioDirectTried = false;
         final int gen = wish.newPlayer();
         currentUrl = url;
         error = tries > 0 ? Ui.str(this, R.string.retrying) : null;
@@ -446,6 +447,11 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     private void playAdhan(int wanted, String name, int previewSeconds, int prayer) {
         handler.removeCallbacks(previewStop);
         handler.removeCallbacks(shortTick);
+        final boolean mutedBefore = tvMuted();   // read first: the volume code below unmutes a muted TV for a preview
+        if (previewSeconds == 0 && mutedBefore) {   // a real adhan on a muted TV: the house rule, a muted TV stays silent (the alarm shows its notice; step 28b: it unmuted the TV and played aloud)
+            Log.i("UrTVAdhan", "adhan skipped: the TV is muted (it stays silent; prayer=" + prayer + ")");
+            return;
+        }
         boolean wasAdhan = source == Prefs.SOURCE_ADHAN;
         if (wasAdhan && playing) {
             if (adhanPreview && previewSeconds > 0) {   // the volume row again: the new level, and the same few seconds again
@@ -475,7 +481,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         retries = 0;
         pendingSeek = 0;
         wish.ask();
-        Log.i("UrTVAdhan", "adhan start: voice=" + voice + " prayer=" + prayer + (previewSeconds > 0 ? " preview=" + previewSeconds + "s" : " live") + " tv_muted_before=" + tvMuted());   // step 28: the log had no line at all
+        Log.i("UrTVAdhan", "adhan start: voice=" + voice + " prayer=" + prayer + (previewSeconds > 0 ? " preview=" + previewSeconds + "s" : " live") + " tv_muted_before=" + mutedBefore);   // step 28: the log had no line at all
         prefs.setLastAdhan(System.currentTimeMillis());   // for `music.sh adhan`; the duplicate guard is the alarm's own (AdhanReceiver)
         File cached = voice == Prefs.OWN ? OwnAdhan.file(this) : Adhan.cached(this, voice);
         // the person's own file is always on the TV: nothing to fetch, nothing to retry from the network
@@ -662,6 +668,12 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             if (source == Prefs.SOURCE_RADIO) {   // a station that gives no sound and no error (step 28: station 0 stayed «جارٍ التحميل…» for minutes): said after 20 s
                 handler.postDelayed(() -> {
                     if (!wish.current(gen) || prepared || source != Prefs.SOURCE_RADIO || !url.equals(currentUrl)) return;
+                    if (!radioDirectTried && radioAddress != null && !url.equals(radioAddress)) {   // the address we resolved gave nothing: once, the station's own address straight to the player (its redirect handled by the platform)
+                        radioDirectTried = true;
+                        Log.i(TAG, "station gave nothing from the resolved address in " + RADIO_WAIT_MS / 1000 + " s: " + hostOf(url) + "; trying " + hostOf(radioAddress) + " as given");
+                        startUrl(radioAddress);
+                        return;
+                    }
                     errors++;
                     lastError = "radio no_answer (" + RADIO_WAIT_MS / 1000 + " s, host " + hostOf(url) + ")";   // the host only: the address carries a token
                     lastErrorAt = System.currentTimeMillis() / 1000;
@@ -682,6 +694,9 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         updateSession();
         updateNotification();
     }
+
+    /** the resolved address of a station got no sound: its own address was given to the player once (reset by every pick) */
+    private boolean radioDirectTried;
 
     /** a station that has not started in this long is said to have failed */
     static final long RADIO_WAIT_MS = 20_000;

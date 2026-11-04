@@ -131,7 +131,27 @@ final class MarketFile {
         if (have.isFile() && now.get(java.util.Calendar.YEAR) == then.get(java.util.Calendar.YEAR)
                 && now.get(java.util.Calendar.DAY_OF_YEAR) == then.get(java.util.Calendar.DAY_OF_YEAR)) return;
         String text = download(MarketData.FX_URL);
-        if (text != null && !MarketData.parseFx(text).isEmpty()) { save(c, FX, text); fxText = text; }
+        if (text != null && !MarketData.parseFx(text).isEmpty()) { save(c, FX, text); fxText = text; return; }
+        // CI's file is not there (the data branch had none for a while: a TV installed then showed «لا أسعار بعد» for hours, steps 27 and 28b): with no rates at all
+        // yet, the app asks Yahoo itself for the currencies, the way it asks for the live prices, and keeps the result like CI's file
+        if (fxText == null || MarketData.parseFx(fxText).isEmpty()) {
+            String own = fxFromYahoo();
+            if (own != null) { save(c, FX, own); fxText = own; }
+        }
+    }
+
+    /** the currencies' rates (units per dollar) from Yahoo's spark answer, two requests; null when none came */
+    private static String fxFromYahoo() {
+        java.util.Map<String, Double> rates = new java.util.LinkedHashMap<>();
+        String[] codes = MarketData.FX_CODES;
+        for (int from = 0; from < codes.length; from += 18) {
+            java.util.List<String> syms = new java.util.ArrayList<>();
+            for (int i = from; i < Math.min(codes.length, from + 18); i++) syms.add(codes[i] + "=X");
+            for (java.util.Map.Entry<String, MarketData.Live> e : live(syms).entrySet())
+                if (e.getKey().endsWith("=X") && e.getValue().p > 0) rates.put(e.getKey().substring(0, e.getKey().length() - 2), e.getValue().p);
+        }
+        String text = MarketData.fxFile(rates, System.currentTimeMillis());
+        return text.isEmpty() || MarketData.parseFx(text).isEmpty() ? null : text;
     }
 
     /** when the copy was saved (ms), 0 for none */

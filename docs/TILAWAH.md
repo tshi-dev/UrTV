@@ -233,3 +233,7 @@ CI builds the home app with the screensaver, renames it to `urtv-home.apk`, and 
   calendar: Umm al-Qura for a place outside the Gulf, which is the project's choice. `تعديل وقت الصلاة` moves them to a mosque's minutes.
 - The UI is Arabic/RTL; the transport buttons are intentionally LTR so the previous/next arrows match
   every other player.
+
+## الأذان والتلفزيون المكتوم (step 28b)
+
+إذا كان التلفزيون مكتومًا وقت الأذان، **يبقى مكتومًا**: التطبيق لا يرفع الكتم ولا يشغّل الأذان، ويظهر «تنبيه عند الأذان» بدل الصوت (حتى لو كان التنبيه مطفأ في الإعدادات). السبب في السجل (`UrTVAdhan`): `adhan skipped: the TV is muted`. المعاينة بزر في الإعدادات (اختبار الصوت) تبقى كما هي: يضغطها المالك بنفسه ليسمعها. الكتم يُقرأ قبل أي لمس للصوت، و`adhan start` يسجّل `tv_muted_before` بما قُرئ أولًا.

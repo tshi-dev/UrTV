@@ -135,6 +135,7 @@ final class MarketData {
     private static Live liveOf(Map<?, ?> meta, double[] closes, Object timestamps) {
         double p = num(meta.get("regularMarketPrice"));
         if (Double.isNaN(p) && closes.length > 0) p = closes[closes.length - 1];
+        if (Double.isNaN(p)) p = num(meta.get("fulldayPrice"));   // Tadawul in market hours: {"timestamp":[],"close":null,"fulldayPrice":9876.13} (step 28b: parsed=0, then one symbol of seven)
         if (Double.isNaN(p) || p <= 0) return null;
         double prev = num(meta.get("chartPreviousClose"));
         if (Double.isNaN(prev)) prev = num(meta.get("previousClose"));
@@ -143,7 +144,8 @@ final class MarketData {
             List<?> ts = (List<?>) timestamps;
             t = num(ts.get(ts.size() - 1));
         }
-        return new Live(p, prev, Double.isNaN(t) ? 0 : (long) t * 1000L);
+        if (Double.isNaN(t)) t = System.currentTimeMillis() / 1000.0;   // an answer with no time at all is as of now (the provider's delay is said by the page: «متأخرة»)
+        return new Live(p, prev, (long) t * 1000L);
     }
 
     private static double[] lastCloses(Map<?, ?> r) {
@@ -448,6 +450,23 @@ final class MarketData {
     // ---- «صرف العملات»: rates against the dollar, the converter's maths (pure; the names and the screen are MarketsActivity's)
 
     /** Currencies whose rate to the dollar never moves (units per US dollar): they are never fetched, and the screen says «مربوط بالدولار». */
+    /** the currencies the page can show that are not pegged: the ones CI asks Yahoo for (market_prices.py FX_CODES), and what the app asks itself when CI's file is missing */
+    static final String[] FX_CODES = {"KWD", "EGP", "EUR", "GBP", "TRY", "INR", "PKR", "IQD", "MAD", "DZD", "TND", "LYD", "SDG", "YER", "LBP", "SYP", "MRU", "PHP", "IDR", "BDT", "LKR", "NPR",
+        "MYR", "ETB", "KES", "JPY", "CNY", "CHF", "CAD", "AUD", "SGD", "HKD", "KRW", "RUB", "ZAR"};
+
+    /** the fx file's text for rates read live: {"updated":"<UTC time>","rates":{"KWD":0.307,...}}, only positive numbers; "" when there are none */
+    static String fxFile(Map<String, Double> rates, long nowMs) {
+        StringBuilder b = new StringBuilder();
+        for (Map.Entry<String, Double> e : rates.entrySet()) {
+            if (!e.getKey().matches("[A-Z]{3}") || !(e.getValue() > 0) || Double.isInfinite(e.getValue())) continue;
+            b.append(b.length() > 0 ? "," : "").append('"').append(e.getKey()).append("\":").append(String.format(java.util.Locale.ROOT, "%.6g", e.getValue()));
+        }
+        if (b.length() == 0) return "";
+        java.text.SimpleDateFormat f = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.ROOT);
+        f.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return "{\"updated\":\"" + f.format(new java.util.Date(nowMs)) + "\",\"rates\":{" + b + "}}";
+    }
+
     static final String FX_URL = "https://raw.githubusercontent.com/tshi-dev/UrTV/data-markets/markets/fx.json";
 
     static final String[][] FX_PEGS = {{"SAR", "3.75"}, {"AED", "3.6725"}, {"QAR", "3.64"}, {"BHD", "0.376"}, {"OMR", "0.3845"}, {"JOD", "0.709"}};

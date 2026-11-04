@@ -159,6 +159,17 @@ public final class MarketsRun {
         java.util.Map<String, MarketData.Live> k = MarketData.parseLive(keyed);
         check("live: the other spark shape (a map keyed by symbol, with close / timestamp / chartPreviousClose) is read too: the last close, the close before, the last time in ms", k.size() == 2
             && near(k.get("2222.SR").p, 26.3) && near(k.get("2222.SR").v, 26.0) && k.get("2222.SR").at == 1793000300_000L && near(k.get("AAPL").p, 201.5), k.keySet());
+        String tdw = "{\"^TASI.SR\":{\"timestamp\":[],\"symbol\":\"^TASI.SR\",\"end\":null,\"previousClose\":9882.85,\"close\":null,\"fulldayChange\":-6.72,\"fulldayPrice\":9876.13},"
+            + "\"2222.SR\":{\"timestamp\":[],\"close\":null,\"previousClose\":26.1,\"fulldayPrice\":26.2},\"BAD\":{\"timestamp\":[],\"close\":null}}";
+        java.util.Map<String, MarketData.Live> td = MarketData.parseLive(tdw);
+        check("live: in Tadawul hours Yahoo's rows have no timestamps and no closes, only fulldayPrice (step 28b: parsed=0, then one of seven): every symbol with it is read, the close before from previousClose, the time is now", td.size() == 2
+            && near(td.get("^TASI.SR").p, 9876.13) && near(td.get("^TASI.SR").v, 9882.85) && near(td.get("2222.SR").p, 26.2) && Math.abs(td.get("2222.SR").at - System.currentTimeMillis()) < 60_000, td.keySet());
+        java.util.Map<String, Double> own = new java.util.LinkedHashMap<>();
+        own.put("KWD", 0.30741); own.put("EUR", 0.8612); own.put("BAD", -1.0); own.put("zz", 2.0);
+        String ownFile = MarketData.fxFile(own, 1793000000_000L);
+        check("fx: with no file from CI the app writes its own (rates it read live): only known-shaped codes with a positive rate, 6 significant digits, the time of the reading; none at all is an empty text",
+            MarketData.parseFx(ownFile).size() == 2 && near(MarketData.parseFx(ownFile).get("KWD"), 0.30741) && MarketData.fxUpdated(ownFile) == 1793000000_000L && MarketData.fxFile(new java.util.LinkedHashMap<String, Double>(), 1L).isEmpty()
+            && MarketData.FX_CODES.length == 35, ownFile);
         check("live: anything that is not that answer is an empty map (the caller backs off)", MarketData.parseLive("<html>").isEmpty() && MarketData.parseLive(null).isEmpty() && MarketData.parseLive("{}").isEmpty(), "");
         MarketData file = MarketData.parse(FILE);
         MarketData on = file.withLive(m);

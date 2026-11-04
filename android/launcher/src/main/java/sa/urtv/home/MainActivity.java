@@ -863,7 +863,7 @@ public class MainActivity extends Activity {
         p.setId(View.generateViewId());
         p.setOnFocusChangeListener((v, has) -> {
             if (has) {
-                lastFocusedId = v.getId(); glideTo(0); fadeGlow(1f);
+                lastFocusedId = v.getId(); lastPillId = v.getId(); glideTo(0); fadeGlow(1f);
                 if (homeCard != null) for (View card : homeCard.targets()) card.setNextFocusUpId(v.getId());   // up from the «المهام» (or stocks) card goes back to the pill it came from
             }
         });
@@ -1176,6 +1176,8 @@ public class MainActivity extends Activity {
     }
 
     /** Explicit D-pad targets: one row per press, ends of rows and of the top bar don't wrap. */
+    private int lastPillId = View.NO_ID;   // the pill that had the focus last: ▲ from a home card goes back to it
+
     private void wireFocus() {
         footballHeader();   // the home card was just made again (or not): «الواجهة» may have changed with it
         int d = dockCards.size(), g = gridCards.size();
@@ -1222,6 +1224,13 @@ public class MainActivity extends Activity {
             if (Dir.rtl()) { t.setNextFocusLeftId(next.getId()); t.setNextFocusRightId(prev.getId()); }
             else { t.setNextFocusRightId(next.getId()); t.setNextFocusLeftId(prev.getId()); }
             t.setNextFocusUpId(pills.get(0).getId());   // a pill's own focus moves this to that pill, see pill()
+            t.setOnKeyListener((v, keyCode, ev) -> {   // ▲ from a home card is a pill that is on screen: the pill it last came from may be gone (the bell leaves the row), and the focus then stayed on the card (step 28b)
+                if (keyCode != KeyEvent.KEYCODE_DPAD_UP) return false;
+                if (ev.getAction() != KeyEvent.ACTION_DOWN) return true;
+                View to = null;
+                for (View pv : pills) if (pv.isShown() && pv.isFocusable()) { if (to == null) to = pv; if (pv.getId() == lastPillId) { to = pv; break; } }
+                return to != null && to.requestFocus();
+            });
             t.setNextFocusDownId(dockId != View.NO_ID ? dockId : t.getId());
         }
         for (int i = 0; i < d; i++) {

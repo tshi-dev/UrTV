@@ -198,6 +198,8 @@ for (const [why, rows] of [['the shipped table', null], ['medium confidence', [{
   await p.keyboard.press('Enter');
   check('matches page: OK acts on exactly the ringed button: after ◀ again the ring is on «أضف … لفرقي» alone', await p.$$eval('.mdb button.f', b => b.length === 1 && b[0].dataset.k === 'follow'));
   check('matches page: «أضف … لفرقي» hands it the club\'s id and name', JSON.stringify(await p.evaluate(() => window.__fol)) === '["137721","Al-Ahli"]');
+  check('matches page: after «أضف … لفرقي» the day on screen is kept (the new team\'s games arrive and must not move the list to another day: «فرقك» was lost, step 28b), and a Back on the open card draws nothing of it',
+    await p.evaluate(() => MP.picked === true) && !errors.length, errors.join(' | '));
   await shot(p, 'football-matches-detail.png');
   // a live game's "with prayer" line says the minute, not «تبدأ بعد العشاء…»; the hyphen of a Latin club name does not break
   const liveLine = await p.evaluate(() => { const ev = { ...MP.detail, strStatus: '2H', strProgress: '67', intHomeScore: '1', intAwayScore: '0', dateEvent: MP.detail.dateEvent, strTimestamp: new Date(Date.now() - 67 * 60000).toISOString().slice(0, 19) };
