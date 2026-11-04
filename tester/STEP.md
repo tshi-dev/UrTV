@@ -1,4 +1,4 @@
-«⏳ WAIT — keep polling every 5 min; the next GO (build 186+) comes soon. Do not stop.»
+«✅ GO — step 29a now (no new build needed; PC network checks only). Then keep polling for the build GO.»
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -501,3 +501,11 @@ what: the update, step 27's problems again, the new items, the targetSDK 34 chec
 | Z | `saver.sh import optimize/run/step28/settings-before.json` (preview, `--yes`); the made-up holdings, the added team, the demo tasks gone; tray count, prayer minutes, dock, PIN state, lang as at the start; `updatechannel latest`; Home holder as at the start; YouTube force-stopped; muted | "restored: yes/no" |
 
 REPORT.md (`work/tester-report`): "step 28", the build, one line per row (OK or the problem with numbers), the D1b plan counts, step lines with marks and the community list's name, the UrTVMarkets / UrTVMute / UrTVAdhan lines (cleaned), the Downloader prompts, "restored: yes/no". No personal data, no images pushed. Tell the owner in Arabic.
+
+## step 29a — PC network checks (no TV install; TV stays muted; no personal data in the report)
+Our cloud sessions are blocked from these hosts, so run from the PC:
+1. `ffprobe -v error -show_entries stream=codec_name -of csv=p=0 "https://live.kwikmotion.com/sbrksaquranradiolive/ksaquranradio/playlist.m3u8"` and then `ffmpeg -v error -t 60 -i <same URL> -f null -` — report codec, and whether 60 s read cleanly (wall time).
+2. The same for the old one: `https://stream.radiojar.com/0tpy1h0kxtzuv`, plus `curl -sI` on it (show the redirect chain status codes and whether it goes https→http; hosts only, strip tokens).
+3. On the TV (muted, then mute kept): `adb shell am start -a android.intent.action.VIEW -d "<kwikmotion URL>" -t audio/x-mpegurl` is NOT needed; instead just report whether `curl -sI` of the kwikmotion URL from the PC returns 200.
+4. Fetch `https://query1.finance.yahoo.com/v8/finance/spark?symbols=SAR%3DX,KWD%3DX&range=1d&interval=1d` with curl and report the HTTP status and the first 200 bytes.
+Report as «step 29a» in REPORT.md and push.
