@@ -1,4 +1,4 @@
-«✅ GO — build 188» — run step 30 (end of this file). TV muted throughout.
+«✅ GO — step 30b now (build 188, US market hours). TV muted throughout.»
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -533,3 +533,14 @@ Report as «step 29» in REPORT.md and push.
 7. If Tadawul is open (Sun–Thu 10:00–15:00), live prices: `parsed` = asked, and prices move within 10 min.
 Z. Restore as in step 28b Z.
 Report as «step 30» in REPORT.md and push.
+
+## step 30b — live US prices now (build 188; TV muted; restore in Z)
+US market is open (17:30–00:00 Saudi). On «قائمتي» add AAPL, NVDA, TSLA (and see the S&P 500 / Nasdaq indices on «السوق» if shown).
+1. Turn on «مباشر». For 10 min: log every `live status=… asked= parsed= reason=` line; parsed must equal asked.
+2. Prices must move: note each one's price at +0, +3, +6 and +10 min, and compare with a public quote on the PC (the same minute, ±0.5%).
+3. The header reads the US session (open / closes in …), not Tadawul's.
+4. Portfolio: add AAPL 2 @ 150 → value in USD and the total in SAR at 3.75. Check the math.
+5. The change shown as an amount (if that option is on) and as %.
+6. Screenshots (demo-clean): «قائمتي» live and «محفظتي».
+Z. Remove the three stocks and the holding; «مباشر» back as it was.
+Report as «step 30b» in REPORT.md and push.
