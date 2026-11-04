@@ -450,7 +450,7 @@ public class MainActivity extends Activity {
             TextView t = new TextView(this);
             t.setText(alphabet[i]);
             t.setTypeface(Ui.font(this, "Thmanyah-Medium.otf"));
-            t.setTextSize(11);
+            t.setTextSize(16);   // 16 sp at least (11 was unreadable on a TV, step 28); the letters no reciter starts with are not drawn, so the lit ones have the room
             t.setGravity(android.view.Gravity.CENTER);
             t.setIncludeFontPadding(false);
             t.setTextColor(0xFFE7DCC4);
@@ -474,6 +474,7 @@ public class MainActivity extends Activity {
             letterViews[i].setFocusable(letterLit[i]);
             letterViews[i].setClickable(letterLit[i]);
             letterViews[i].setAlpha(letterLit[i] ? 1f : 0.3f);
+            letterViews[i].setVisibility(letterLit[i] ? View.VISIBLE : View.GONE);
         }
         letters.setVisibility(tab == TAB_RECITERS ? View.VISIBLE : View.GONE);
     }

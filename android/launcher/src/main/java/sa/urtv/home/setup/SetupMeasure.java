@@ -104,8 +104,8 @@ final class SetupMeasure {
         }
         String text;
         try {
-            tv.run("input keyevent KEYCODE_HOME");
-            if (restarted) {
+            if (restarted) {   // only after the restart: the TV is on its home then. A reading taken at once leaves the setup screen where it is (step 28: HOME 2 s after «ابدأ» hid the progress for 25 s)
+                tv.run("input keyevent KEYCODE_HOME");
                 out.line("نترك التلفزيون 3 دقائق على الشاشة الرئيسية ثم نقيس…");
                 sleeper.sleep(SETTLE_MS);
             }

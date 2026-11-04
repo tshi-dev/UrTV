@@ -475,6 +475,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         retries = 0;
         pendingSeek = 0;
         wish.ask();
+        Log.i("UrTVAdhan", "adhan start: voice=" + voice + " prayer=" + prayer + (previewSeconds > 0 ? " preview=" + previewSeconds + "s" : " live") + " tv_muted_before=" + tvMuted());   // step 28: the log had no line at all
         prefs.setLastAdhan(System.currentTimeMillis());   // for `music.sh adhan`; the duplicate guard is the alarm's own (AdhanReceiver)
         File cached = voice == Prefs.OWN ? OwnAdhan.file(this) : Adhan.cached(this, voice);
         // the person's own file is always on the TV: nothing to fetch, nothing to retry from the network
@@ -518,7 +519,12 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     }
 
     /** The adhan is over: put the surah back where it was, or stop. */
+    private boolean tvMuted() {
+        try { return ((android.media.AudioManager) getSystemService(AUDIO_SERVICE)).isStreamMute(android.media.AudioManager.STREAM_MUSIC); } catch (RuntimeException e) { return false; }
+    }
+
     private void finishAdhan() {
+        Log.i("UrTVAdhan", "adhan stop: tv_muted_now=" + tvMuted());
         handler.removeCallbacks(previewStop);
         handler.removeCallbacks(shortTick);
         adhanCutMs = 0;
@@ -653,12 +659,35 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         try {
             player.setDataSource(url);
             player.prepareAsync();
+            if (source == Prefs.SOURCE_RADIO) {   // a station that gives no sound and no error (step 28: station 0 stayed «جارٍ التحميل…» for minutes): said after 20 s
+                handler.postDelayed(() -> {
+                    if (!wish.current(gen) || prepared || source != Prefs.SOURCE_RADIO || !url.equals(currentUrl)) return;
+                    errors++;
+                    lastError = "radio no_answer (" + RADIO_WAIT_MS / 1000 + " s, host " + hostOf(url) + ")";   // the host only: the address carries a token
+                    lastErrorAt = System.currentTimeMillis() / 1000;
+                    Log.w(TAG, "station gave nothing in " + RADIO_WAIT_MS / 1000 + " s: " + hostOf(url));
+                    releasePlayer();
+                    playing = false;
+                    buffering = false;
+                    error = sa.urtv.home.S.t("تعذّر التشغيل");
+                    updateSession();
+                    updateNotification();
+                    save();
+                }, RADIO_WAIT_MS);
+            }
         } catch (Exception e) {
             Log.w(TAG, "cannot play " + url, e);
             onPlaybackError(-1, 0);
         }
         updateSession();
         updateNotification();
+    }
+
+    /** a station that has not started in this long is said to have failed */
+    static final long RADIO_WAIT_MS = 20_000;
+
+    private static String hostOf(String url) {
+        try { return new java.net.URL(url).getHost(); } catch (java.io.IOException e) { return "?"; }
     }
 
     private void onPlaybackError(int what, int extra) {

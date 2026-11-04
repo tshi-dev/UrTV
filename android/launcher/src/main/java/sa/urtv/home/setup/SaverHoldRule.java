@@ -23,4 +23,9 @@ public final class SaverHoldRule {
     public static boolean held(long since, long now, long max) {
         return since > 0 && now >= since && now - since < max;
     }
+
+    /** until: the wall-clock end kept on disk (0 = none); now: the wall clock; maxLen: the longest a hold may be. A clock far off counts as no wait. */
+    public static boolean heldUntil(long until, long now, long maxLen) {
+        return until > 0 && now < until && until - now <= maxLen;
+    }
 }

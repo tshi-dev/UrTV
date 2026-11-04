@@ -41,7 +41,7 @@ if not shutil.which("javac"):
     check("build 180: the tray cuts everything it holds to its rounded outline (a sixth tile was drawn outside it, x 0..128), and the name stays in one place: above the tray at its start edge, in line with the inner padding, never following a tile",
       "tray.setClipToOutline(true);" in main_src and "tray.setClipChildren(true);" in main_src and "o.setRoundRect(0, 0, v.getWidth(), v.getHeight(), bar(FavBar.RADIUS))" in main_src
       and "nameRow.setTranslationX(0);" in main_src and "setMarginStart(bar(FavBar.PAD_SIDE))" in main_src and "FavBar.nameX(cardCentre" not in main_src)
-sys.exit(1 if failed else 0)
+    sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
     subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "FavBar.java"), str(ROOT / "tests/FavBarRun.java")], check=True)
     out = subprocess.run(["java", "-cp", tmp, "sa.urtv.home.FavBarRun"], check=True, capture_output=True).stdout.decode().split("\n")
@@ -73,8 +73,9 @@ bars = {}
 for l in out:
     if l.startswith("bar "):
         t = l.split()
-        bars[(int(t[1]), int(t[2]))] = {"tile": int(t[4]), "row": int(t[6]), "inner": int(t[8]), "slack": int(t[10]), "ratio": t[12] == "1", "ring": t[14] == "1"}
+        bars[(int(t[1]), int(t[2]))] = {"tile": int(t[4]), "row": int(t[6]), "inner": int(t[8]), "slack": int(t[10]), "ratio": t[12] == "1", "ring": t[14] == "1", "fill": int(t[16])}
 check("bar size: 5 shows the default 304, 7 shows 210, 10 shows 140 at 1080p ((inner 1616 - (N-1) x 24) / N, rounded down)", bars[(1080, 5)]["tile"] == 304 and bars[(1080, 7)]["tile"] == 210 and bars[(1080, 10)]["tile"] == 140, bars)
+check("step 28: the tiles of every N (5 to 10) at 1080p and 720p, with the rounding's leftover pixels spread over the first ones, fill the tray's inner width exactly (no 2 px sliver of the next tile)", all(v["fill"] == 0 for v in bars.values()), bars)
 check("bar size: for every N from 5 to 10 at 1080p and 720p the tiles fill the tray's inner width to within N pixels (whole tiles, 24 apart), never past it", all(0 <= v["slack"] <= n for (h, n), v in bars.items()), bars)
 check("bar size: the tile keeps its 16:9 ratio, and the focused tile's ring stays inside the 24 px inset, for every N", all(v["ratio"] and v["ring"] for v in bars.values()), bars)
 shown = [l for l in out if l.startswith("shown ")][0].split()[1:]

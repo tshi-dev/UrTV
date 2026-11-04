@@ -59,7 +59,7 @@ check("item 19: density: title 27 sp, tabs 17 sp, column headers 12 sp, a list r
       and "r.setMinimumHeight(dp(60));" in act and "c.setPadding(dp(12), dp(16), dp(12), dp(16));" in act)
 tpl = text(ROOT / "src/template.html")
 check("item 17: the home stocks card has 24 px inside on every side, and «السوق مغلق» sits on the header line right after «الأسهم» (order 0), not at the far end over the first column",
-      ".week.stocks{padding:calc(24px*var(--z,1))}" in tpl and "card.el.classList.toggle('stocks', P === 'stocks');" in tpl and 'class="until near"' in tpl and ".week .hd .until.near{order:0" in tpl)
+      ".week.stocks,html[class] .week.stocks{padding:calc(24px*var(--z,1)) !important}" in tpl and "card.el.classList.toggle('stocks', P === 'stocks');" in tpl and 'class="until near"' in tpl and ".week .hd .until.near{order:0" in tpl)
 
 
 # ---- item 18: «تطبيقات في الشريط»
@@ -72,7 +72,7 @@ check("bar size: 5 (default) to 10 or all; a bad value keeps 5; the command chec
 check("bar size: the provider gives the home fav_bar, the home reads it (5 for an older screensaver) and the phone API sets and states it", '"home_layout", "fav_bar"}' in prov and 'out.putString("fav_bar", p.favBar())' in prov
       and 'cur.getColumnIndex("fav_bar")' in snap and 'case "fav_bar":' in text(HOME / "phone/Schema.java") and 'm.put("fav_bar"' in text(HOME / "phone/PhoneActions.java"))
 mn = text(HOME / "MainActivity.java")
-check("bar size: every favourite's cell is as wide as FavBar.tileW(h, shown) says (the tray keeps its box, the insets and the gap), the watch-next rows share the tray's cells, a changed setting resizes the cells", "FavBar.tileW(getResources().getDisplayMetrics().heightPixels, FavBar.shown(barSetting, favs))" in mn
+check("bar size: every favourite's cell is as wide as FavBar.tileW(h, shown) says (the tray keeps its box, the insets and the gap), the watch-next rows share the tray's cells, a changed setting resizes the cells", "FavBar.tileW(getResources().getDisplayMetrics().heightPixels, FavBar.shown(barSetting, favs), i)" in mn
       and "applyBarSize(cfg.favBar);" in mn and "dockCell(i, n, dockCards.size())" in mn)
 check("bar size: ten favourites at most; the eleventh is refused with «١٠ كحد أقصى»", "static final int MAX = 10;" in text(HOME / "Dock.java") and 'S.t("%s كحد أقصى", arabicDigits(String.valueOf(MAX_DOCK)))' in mn and 'S.t("%s كحد أقصى", ar(Dock.MAX))' in text(HOME / "DockActivity.java"))
 check("bar size: a row «تطبيقات في الشريط» in «التطبيقات والمفضلة» (المزيد) with its seven choices, the command in saver.sh, the row in docs/SETTINGS.md", 'row("تطبيقات في الشريط"' in text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsActivity.java")

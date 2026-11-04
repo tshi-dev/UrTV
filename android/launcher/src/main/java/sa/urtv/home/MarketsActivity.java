@@ -266,10 +266,10 @@ public class MarketsActivity extends Activity {
         fxBtn = button(S.t("صرف العملات"), false, v -> want(3));
         ((TextView) fxBtn).setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         fxBtn.setOnFocusChangeListener((v, has) -> paintTabs());
-        controls.addView(fxBtn, new LinearLayout.LayoutParams(-2, dp(40)));
+        controls.addView(fxBtn, new LinearLayout.LayoutParams(-2, -2));   // its text's height plus its own padding (a fixed 40 dp cut the letters in half, step 28)
         ctl = new LinearLayout(this);
         ctl.setGravity(Gravity.CENTER_VERTICAL);
-        LinearLayout.LayoutParams cp2 = new LinearLayout.LayoutParams(-2, dp(40));
+        LinearLayout.LayoutParams cp2 = new LinearLayout.LayoutParams(-2, -2);
         cp2.setMarginStart(dp(12));
         controls.addView(ctl, cp2);
         LinearLayout.LayoutParams ctp = new LinearLayout.LayoutParams(-1, -2);
@@ -470,6 +470,10 @@ public class MarketsActivity extends Activity {
         // down from the tabs to the first thing that takes the focus
         View first = firstFocusable(content);
         for (TextView t : tabViews) t.setNextFocusDownId(first != null ? first.getId() : View.NO_ID);
+        // on the currency view «صرف العملات» keeps ▲/▼ inside it (▼ went to the tab «محفظتي» and left the view, step 28): down to the view's own buttons, up stays
+        View below = actions.getChildCount() > 0 ? actions.getChildAt(0) : first;
+        fxBtn.setNextFocusDownId(k == 3 && below != null ? below.getId() : View.NO_ID);
+        fxBtn.setNextFocusUpId(k == 3 ? fxBtn.getId() : View.NO_ID);
     }
 
     private void paintTabs() {
@@ -861,7 +865,14 @@ public class MarketsActivity extends Activity {
     }
 
     /** «اختر العملات»: each currency a row that turns on and off (the on mark), saved on this TV */
+    /** the picker drawn again after a pick keeps the pick's row focused and the list where it was (it jumped to the top, step 28) */
+    private String pickedCode;
+    private int pickedScroll;
+
     private void chooseCurrencies() {
+        final String keepCode = pickedCode;
+        final int keepScroll = pickedScroll;
+        pickedCode = null;
         Dialog d = dialog();
         LinearLayout box = dialogBox(d, 640);
         box.addView(text(S.t("اختر العملات"), 24, "Medium", TEXT), wrap());
@@ -872,7 +883,7 @@ public class MarketsActivity extends Activity {
         sv.addView(rows);
         final List<String> chosen = new ArrayList<>(fxChosen());
         final boolean[] changed = {false}, again = {false};
-        View first = null;
+        View first = null, kept = null;
         for (String[] c : CCY) {
             if (c[0].equals("SAR")) continue;
             final String code = c[0];
@@ -885,10 +896,13 @@ public class MarketsActivity extends Activity {
                 fxPrefs().edit().putString("list", String.join(",", ordered)).apply();
                 changed[0] = true;
                 again[0] = true;
+                pickedCode = code;
+                pickedScroll = sv.getScrollY();
                 d.dismiss();
                 chooseCurrencies();   // drawn again with the mark moved
             });
             if (first == null) first = holder[0];
+            if (code.equals(keepCode)) kept = holder[0];
             rows.addView(holder[0], gap(rows.getChildCount() == 0 ? 12 : 4));
         }
         box.addView(sv, sized(-1, 300, 12));   // the list leaves room for the button under it on a 1080p screen (at 380 the button was squeezed to 64 px and its label vanished)
@@ -899,7 +913,11 @@ public class MarketsActivity extends Activity {
             main.post(() -> { View b = actions.getChildCount() > 1 ? actions.getChildAt(1) : null; if (b != null && !isFinishing()) b.requestFocus(); });   // back on «اختر العملات»
         });
         d.show();
-        if (first != null) first.requestFocus();
+        if (kept != null) {
+            final View k = kept;
+            k.requestFocus();
+            sv.post(() -> sv.scrollTo(0, keepScroll));
+        } else if (first != null) first.requestFocus();
     }
 
     /** one currency picked from the whole list, for the converter's two ends */
@@ -1001,7 +1019,7 @@ public class MarketsActivity extends Activity {
             ctl.getChildAt(0).requestFocus();   // «أخفِ/أظهر المبالغ» stays under the focus, on «محفظتي»
         });
         ((TextView) hideBtn).setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-        ctl.addView(hideBtn, new LinearLayout.LayoutParams(-2, -1));
+        ctl.addView(hideBtn, new LinearLayout.LayoutParams(-2, -2));
         actions.addView(button(S.t("أضف سهمًا"), false, v -> pick()), buttonParams(0));
         actions.addView(button(S.t("خيارات محفظتي"), false, v -> options()), buttonParams(12));
         // the tabs reach the buttons with the arrow that goes on in reading order
@@ -1411,7 +1429,18 @@ public class MarketsActivity extends Activity {
         View row = null;
         for (View v : focusables(content)) if (code.equals(v.getTag())) { row = v; break; }
         View to = row != null ? row : actions.getChildCount() > 0 ? actions.getChildAt(0) : null;
-        if (to != null) to.requestFocus();
+        if (to == null) return;
+        to.requestFocus();
+        if (to == row) {   // the new row is scrolled into view, a margin above and below (it stayed 8 px in at the page's end, step 28)
+            final View target = row;
+            scroll.post(() -> {
+                android.graphics.Rect r = new android.graphics.Rect(0, 0, target.getWidth(), target.getHeight());
+                content.offsetDescendantRectToMyCoords(target, r);
+                int pad = dp(24), top = scroll.getScrollY(), h = scroll.getHeight();
+                if (r.bottom + pad > top + h) scroll.scrollTo(0, r.bottom + pad - h);
+                else if (r.top - pad < top) scroll.scrollTo(0, Math.max(0, r.top - pad));
+            });
+        }
     }
 
     private static List<View> focusables(View root) {

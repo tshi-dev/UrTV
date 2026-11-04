@@ -75,10 +75,10 @@ final class SetupCommunity {
         // our lists know a TV when several of their TCL packages are on it (the Google ones are on every Android TV)
         int mine = 0;
         for (String p : lists.knownTcl) if (installed.contains(p)) mine++;
-        if (mine >= 3) return done("قوائمنا تعرف هذا التلفزيون، فلا حاجة لقائمة المجتمع.");
         Map<String, String> props = new LinkedHashMap<>();
         for (String k : new String[] {"ro.product.manufacturer", "ro.product.brand", "ro.product.model", "ro.product.device"}) props.put(k, tv.tail1("getprop " + k));
         CommunityMatch.Choice choice = CommunityMatch.choose(props, lists.metas);
+        if (mine >= 3) return done("قوائمنا تعرف هذا التلفزيون، فلا حاجة لقائمة المجتمع" + (choice.meta != null ? " (" + choice.meta.name + ")" : "") + ".");   // the list that matches is named either way (step 28: no name in the report)
         if (choice.meta == null) return done("ما وجدنا قائمة مجتمع لطراز تلفزيونك بالضبط، فما أوقفنا شيئاً منها (" + why(choice.why) + ").");
         out.line("قائمة المجتمع لهذا الطراز: " + choice.meta.name);   // which list was used, in the report (step 27: no line named it)
         Set<String> homes = homes(tv.text("cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME 2> /dev/null"));

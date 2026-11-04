@@ -39,6 +39,7 @@ public final class MuteKeep {
                 }
             }, f);
         }
+        if (!app.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean("has", false)) remember(app, "first_start");   // a fresh install has no record yet (the mute was set before it): the first start writes one, or a restart soon after would find none (step 28)
         if (SystemClock.elapsedRealtime() < 120_000) woke(app, "boot");   // this process started with the TV: the wake is the boot
     }
 

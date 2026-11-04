@@ -1,6 +1,7 @@
 package sa.urtv.home.setup;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.util.Log;
@@ -46,6 +47,7 @@ public final class SaverHold {
         } catch (RuntimeException e) {
             Log.i("UrTVSetup", "screen hold not taken: " + e.getClass().getSimpleName());   // the screensaver's own check still holds it back
         }
+        remember(c, maxMs);
         Log.i("UrTVSetup", "waiting for the " + what + ": screensaver held back");
     }
 
@@ -53,6 +55,7 @@ public final class SaverHold {
     public static synchronized void end() {
         if (since == 0) return;
         since = 0;
+        forget();
         try { if (lock != null && lock.isHeld()) lock.release(); } catch (RuntimeException ignored) { }
         Log.i("UrTVSetup", what + " answered or given up: screensaver free");
     }
@@ -60,6 +63,35 @@ public final class SaverHold {
     /** The same, only when this is the hold for {@code waitsFor} (the update ending its flow does not free the setup's wait). */
     public static synchronized void endIf(String waitsFor) {
         if (waitsFor != null && waitsFor.equals(what)) end();
+    }
+
+    /**
+     * The update replaces the launcher itself before the screensaver app's own question (step 28: the screensaver covered the second install
+     * question 45 s after the first): the new process has no memory of the wait, so its end is kept on disk (wall clock) and read back.
+     */
+    private static volatile Context appCtx;
+    private static final String PREFS = "saver_hold";
+
+    private static void remember(Context c, long maxMs) {
+        try {
+            appCtx = c.getApplicationContext();
+            appCtx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putLong("until", System.currentTimeMillis() + maxMs).commit();
+        } catch (RuntimeException ignored) { }
+    }
+
+    private static void forget() {
+        try { if (appCtx != null) appCtx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().remove("until").apply(); } catch (RuntimeException ignored) { }
+    }
+
+    /** What the screensaver asks when it starts, in a process that may be a new one (after our own replace): the wait kept on disk counts. */
+    public static boolean held(Context c) {
+        if (held()) return true;
+        try {
+            SharedPreferences p = c.getApplicationContext().getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+            return SaverHoldRule.heldUntil(p.getLong("until", 0), System.currentTimeMillis(), SaverHoldRule.UPDATE_MS);
+        } catch (RuntimeException e) {
+            return false;
+        }
     }
 
     /** What the screensaver asks when it starts. */

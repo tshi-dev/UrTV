@@ -880,6 +880,10 @@ const stkRows = p => p.evaluate(() => ({ hd: document.getElementById('week-hd').
   await p.waitForTimeout(600);
   check('stocks: offline keeps the last values on screen', before.length > 10 && await prices() === before);
   check('stocks: no Latin digits in the card', !/[0-9]/.test(await p.evaluate(() => document.getElementById('week-list').textContent)));
+  for (const cls of ['', 'cs-dark3', 'cs-glass3', 'widget cs-dark3', 'cs-dark1']) {   // step 28: the card styles' own paddings made it 50, not 24, on every side
+    const pad = await p.evaluate(c => { document.documentElement.className = c; const cs = getComputedStyle(document.querySelector('.week.stocks')); return [cs.paddingTop, cs.paddingRight, cs.paddingBottom, cs.paddingLeft].join(' '); }, cls);
+    check(`stocks: 24 px inside on every side (style «${cls || 'plain'}»)`, pad === '24px 24px 24px 24px', pad);
+  }
   await ctx.close();
 }
 // «تغيّر الأسهم الأمريكية»: #stkchg=amount shows a US stock's change as an amount; a Saudi code keeps its percentage

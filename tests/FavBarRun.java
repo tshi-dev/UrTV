@@ -32,7 +32,10 @@ public class FavBarRun {
                 float over = tw * (FavBar.FOCUS_SCALE - 1) / 2f + FavBar.px(FavBar.RING, h);
                 o.append("bar ").append(h).append(' ').append(n).append(" tile ").append(tw).append(" row ").append(row).append(" inner ").append(inner)
                  .append(" slack ").append(inner - row).append(" ratio ").append(Math.abs(tw * 9 / 16f - th) < 1 ? 1 : 0)
-                 .append(" ringRoom ").append(FavBar.px(FavBar.PAD_SIDE, h) - over >= 0 ? 1 : 0).append('\n');
+                 .append(" ringRoom ").append(FavBar.px(FavBar.PAD_SIDE, h) - over >= 0 ? 1 : 0);
+                int sum = 0;
+                for (int i = 0; i < n; i++) sum += FavBar.tileW(h, n, i);
+                o.append(" fill ").append(inner - sum - (n - 1) * FavBar.px(FavBar.GAP, h)).append('\n');   // 0: the cells with their gaps are exactly the inner width, no sliver of the next tile
             }
         }
         o.append("shown ").append(FavBar.shown("5", 7)).append(' ').append(FavBar.shown("7", 3)).append(' ').append(FavBar.shown("10", 10)).append(' ').append(FavBar.shown("all", 8)).append(' ')

@@ -34,8 +34,8 @@ check("the app's own screen wake lock, with the rule's timeout, not reference co
       "SCREEN_BRIGHT_WAKE_LOCK" in hold and "lock.acquire(maxMs);" in hold and "SaverHoldRule.MAX_MS, \"debugging prompt\"" in hold and "setReferenceCounted(false)" in hold and "lock.release();" in hold)
 check("no DEVICE_POWER and no userActivity: a normal app cannot poke the TV's activity", "DEVICE_POWER" not in lman and "userActivity(" not in hold.split("*/", 1)[1])
 check("WAKE_LOCK is already declared (no new permission for this)", 'android.permission.WAKE_LOCK' in lman)
-check("the provider answers .../setup_hold with one row, held 1 or 0, from SaverHold.held()",
-      '"setup_hold".equals(uri.getLastPathSegment())' in prov and 'new MatrixCursor(new String[]{"held"})' in prov and "SaverHold.held() ? 1 : 0" in prov)
+check("the provider answers .../setup_hold with one row, held 1 or 0, from SaverHold.held(getContext())",
+      '"setup_hold".equals(uri.getLastPathSegment())' in prov and 'new MatrixCursor(new String[]{"held"})' in prov and "SaverHold.held(getContext()) ? 1 : 0" in prov)
 check("only the screensaver may ask (READ_NOW_PLAYING, signature)", 'android:readPermission="sa.urtv.home.READ_NOW_PLAYING"' in lman and "sa.urtv.home.READ_NOW_PLAYING" in sman)
 check("the screensaver asks it, false when the launcher does not say (older one, missing, refused)",
       "content://sa.urtv.home.nowplaying/setup_hold" in bridge and 'cur.getColumnIndex("held") < 0' in bridge and "return false;" in bridge.split("static boolean setupWaiting")[1].split("\n    }\n")[0])
@@ -49,6 +49,12 @@ inst = upd.split("public static Map<String, Object> install(")[1].split("\n    }
 check("the update holds the screensaver from «اضغط للتحديث» (install) for SaverHoldRule.UPDATE_MS, once the checks and the permission passed", "SaverHold.begin(app, sa.urtv.home.setup.SaverHoldRule.UPDATE_MS, HOLD);" in inst
       and inst.index("need_permission") < inst.index("SaverHold.begin") < inst.index("startQueue()"))
 check("...and frees it when the state leaves downloading / waiting_owner (done, error, declined), only its own hold (endIf)", 'if (!s.equals("waiting_owner") && !s.equals("downloading")) sa.urtv.home.setup.SaverHold.endIf(HOLD);' in upd)
+# step 28: our own replace kills the process between the two install questions: the wait is kept on disk and read back
+hold = (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/SaverHold.java").read_text(encoding="utf-8")
+check("step 28: the hold's end is kept on disk and the provider reads it in a new process (the screensaver covered the second install question)",
+      "remember(c, maxMs)" in hold and "SaverHoldRule.heldUntil(" in hold and "public static boolean held(Context c)" in hold)
+
+
 if not shutil.which("javac"):
     print("SKIP saver hold rule: no javac here")
     sys.exit(1 if failed else 0)

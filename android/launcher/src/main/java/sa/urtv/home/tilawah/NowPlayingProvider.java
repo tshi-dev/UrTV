@@ -26,7 +26,7 @@ public class NowPlayingProvider extends ContentProvider {
         if (getContext() == null) return new MatrixCursor(new String[]{"playing", "title", "who"});
         if (uri != null && "setup_hold".equals(uri.getLastPathSegment())) {   // «إعداد تلفزيوني» waits for «السماح بتصحيح USB؟»: no screensaver over it
             MatrixCursor h = new MatrixCursor(new String[]{"held"});
-            h.addRow(new Object[]{sa.urtv.home.setup.SaverHold.held() ? 1 : 0});
+            h.addRow(new Object[]{sa.urtv.home.setup.SaverHold.held(getContext()) ? 1 : 0});
             return h;
         }
         if (uri != null && "setup".equals(uri.getLastPathSegment())) {

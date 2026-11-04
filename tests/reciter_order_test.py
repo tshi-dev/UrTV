@@ -49,5 +49,6 @@ with tempfile.TemporaryDirectory() as tmp:
     subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "tilawah/ReciterOrder.java"), str(ROOT / "tests/ReciterOrderRun.java")], check=True, capture_output=True)
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.tilawah.ReciterOrderRun"], capture_output=True, text=True).stdout
 print(out.strip())
+check("step 28: the index letters are 16 sp (11 was too small on a TV) and a letter no reciter starts with is not drawn", "t.setTextSize(16);" in act and "setVisibility(letterLit[i] ? View.VISIBLE : View.GONE)" in act)
 check("every ReciterOrder case ran", "ALL PASS" in out, out[-200:])
 sys.exit(1 if failed else 0)

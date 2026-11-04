@@ -137,6 +137,7 @@ public class MainActivity extends Activity {
     private PopupWindow inputsPopup;
     private HomeCard homeCard;
     private NowCard nowCard;   // «يُتلى الآن»: at the right end of the pills row while a surah or a station is on
+    private Pill marketsPill, matchesPill;   // «الأسواق» and «المباريات»: they take the look like the others («رملي»: they stayed grey, step 28)
     private Pill centerPill;   // «مركز التحكم»: gold while the sleep timer runs; in the row except in kids mode (applyCenterPill)
     private ControlCenter control;   // the panel it opens
     private TextView adhanBar;   // «أذان المغرب بعد ٨ دقائق», over the top edge; while the adhan plays «أذان المغرب · أي زر يوقف الأذان»
@@ -598,8 +599,10 @@ public class MainActivity extends Activity {
         // ---- end «مركز التحكم»
         // «الأسواق» and «المباريات»: the markets page and the games page, two more round buttons (step 27, the owner's TV photos)
         Pill marketsBtn = pill(S.t("الأسواق"), R.drawable.ic_markets);
+        marketsPill = marketsBtn;
         marketsBtn.setOnClickListener(v -> guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t("الأسواق"), () -> launch(new Intent(this, MarketsActivity.class))));   // our own page: no app of the lists
         Pill matchesBtn = pill(S.t("المباريات"), R.drawable.ic_matches);
+        matchesPill = matchesBtn;
         matchesBtn.setOnClickListener(v -> launchGuarded(ParentalPolicy.WIDGET_MATCHES, new Intent(this, MatchesActivity.class), "المباريات"));
         List<Pill> row = new ArrayList<>(Arrays.asList(inputs));
         tasksPill = tasks;
@@ -1019,7 +1022,7 @@ public class MainActivity extends Activity {
 
     /** cell {@code i} of {@code n} in a row whose tiles are as wide as the tray's when {@code favs} favourites are shown (the watch-next rows share the tray's cells) */
     private LinearLayout.LayoutParams dockCell(int i, int n, int favs) {
-        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(FavBar.tileW(getResources().getDisplayMetrics().heightPixels, FavBar.shown(barSetting, favs)), -2);
+        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(FavBar.tileW(getResources().getDisplayMetrics().heightPixels, FavBar.shown(barSetting, favs), i), -2);
         p.setMarginStart(i == 0 ? 0 : bar(FavBar.GAP) / 2);
         p.setMarginEnd(i == n - 1 ? 0 : bar(FavBar.GAP) - bar(FavBar.GAP) / 2);
         return p;
@@ -2576,7 +2579,7 @@ public class MainActivity extends Activity {
         lookNow = cfg.look();
         applyLook(Look.light(cfg.appearance(), dayBySun(cfg), h * 60 + now.get(Calendar.MINUTE)));
         GlassStyle.Look glassNow = homeGlass();
-        for (Pill p : new Pill[] {inputsPill, tasksPill, tilawahPill, centerPill, bellPill}) if (p != null) p.look(glassNow);   // «رملي»: its own buttons
+        for (Pill p : new Pill[] {inputsPill, tasksPill, tilawahPill, centerPill, marketsPill, matchesPill, bellPill}) if (p != null) p.look(glassNow);   // «رملي»: its own buttons
         boolean h24 = cfg.clock24();   // «ساعة ٢٤»: off (12-hour with the ص or م) unless the owner turned it on
         clock.setText(ClockText.face(h, now.get(Calendar.MINUTE), h24, Digits.latin()));
         ampm.setText(ClockText.suffix(h, h24));

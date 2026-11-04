@@ -55,6 +55,15 @@ final class FavBar {
         return inner / n;
     }
 
+    /**
+     * The width of tile {@code i} of {@code n}: the same, and the pixels that rounding left over (up to n - 1) go one each to the first tiles, so the n tiles and
+     * their gaps fill the tray's inner width exactly and the next tile starts right at the tray's padding edge, not 2 px inside it (a sliver at 7, step 28).
+     */
+    static int tileW(int screenH, int n, int i) {
+        int inner = px(1920 - 2 * SIDE, screenH) - 2 * px(PAD_SIDE, screenH) - (n - 1) * px(GAP, screenH);
+        return inner / n + (i < inner % n ? 1 : 0);
+    }
+
     /** a tile's width with the five of the default */
     static int tileW(int screenH) { return tileW(screenH, SHOWN); }
 

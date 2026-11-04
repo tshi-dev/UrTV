@@ -239,7 +239,7 @@
   .week .hd::after{order:1}
   .week .hd svg{flex:0 0 auto;width:1.5em;height:1.5em;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
   .week .hd .until{order:2;font-size:.9em;font-weight:400;letter-spacing:0;color:#9C9279;white-space:nowrap}
-  .week.stocks{padding:calc(24px*var(--z,1))}
+  .week.stocks,html[class] .week.stocks{padding:calc(24px*var(--z,1)) !important}   /* 24 on every side in every card style: the styles' own paddings (1.4vw + 8, the widget's) made it 50 (step 28) */
   .week .hd .until.near{order:0;margin-inline-start:.2em}   /* «السوق مغلق» right after «الأسهم» on the header line, not at the card's far end over the first column */
   .week li.stk{align-items:center;gap:.8em}
   .week li.stk .nm{flex:1 1 auto;min-width:0;max-width:none;overflow:hidden;text-overflow:ellipsis;padding-bottom:.3em;margin-bottom:-.3em}
@@ -3886,7 +3886,7 @@ function nowPlayingTick(){
 // files on data-leagues, the Saudi Pro League's when none is followed), the prayers are computed or Aladhan's, as everywhere on the page.
 // The launcher owns the focus (FootballFocus.java): it calls fbTop(), fbLight(), fbFocus(), fbMove(), fbPick() and reads fbRects().
 const FB_W = {
-  weather:'الطقس', prayers:'أوقات الصلاة', today:'مباريات اليوم', title:'المباريات', yours:'فرقك', none:'لا مباريات اليوم',
+  weather:'الطقس', prayers:'أوقات الصلاة', today:'مباريات اليوم', upcoming:'المباريات القادمة', title:'المباريات', yours:'فرقك', none:'لا مباريات اليوم',
   feels:'المحسوسة', hum:'الرطوبة', wind:'الرياح', kmh:'%s كم/س', pct:'٪%s', live:'مباشر', ended:'انتهت', vs:'×',
   yesterday:'أمس', tday:'اليوم', tomorrow:'غدًا', g1:'مباراة واحدة', g2:'مباراتان', gFew:'%s مباريات', gMany:'%s مباراة',
   allOn:'كلها على %s', round:'%s، الجولة %s', venue:'الملعب', channel:'القناة', withPrayer:'مع الصلاة', game:'المباراة',
@@ -4061,6 +4061,11 @@ function fbRender(){
   setHTML(document.getElementById('fb-wx-c'), fbWeatherHtml());
   setHTML(document.getElementById('fb-pr-c'), fbPrayersHtml());
   const count = list.length ? 'TheSportsDB · ' + fbCount(list.length) : '';
+  const upcoming = list.length && !list.some(ev => fbDayOf(fbKick(ev)) === cityToday(now));   // none today: the next day's games, titled so (they sat under «مباريات اليوم», step 28)
+  for(const id of ['fb-mt', 'fb-row']){
+    const h = document.querySelector('#' + id + ' h3'), t = h && h.firstChild;
+    if(t && t.nodeType === 3) t.nodeValue = upcoming ? FB_W.upcoming : FB_W.today;
+  }
   setText(document.getElementById('fb-mt-n'), count);
   setText(document.getElementById('fb-row-n'), list.length ? fbCount(list.length) + fbAllOn(list) : '');
   setHTML(document.getElementById('fb-mt-c'), list.length ? '<ul>' + list.slice(0, 3).map(ev => fbLine(ev, now)).join('') + '</ul>'
@@ -4260,6 +4265,9 @@ function mpAct(){
       if(ok && !CONFIG.teamIds.includes(id)) CONFIG.teamIds.push(id);
     }
   }catch(e){ ok = false; }
+  if(ok && b.k !== 'remind'){   // the followed teams changed: their games are asked for now, and the list and the home widget drawn from them (one list showed half its groups, step 28)
+    try{ Promise.resolve(loadMatches()).then(() => { fbRender(); if(document.getElementById('mp')) mpRender(); }).catch(() => {}); }catch(e){}
+  }
   MP.note = ok ? (b.k === 'remind' ? FB_W.reminded : fw(b.k === 'unfollow' ? FB_W.unfollowed : FB_W.followed, teamAr(ev['str' + b.side + 'Team'], ev['id' + b.side + 'Team']))) : FB_W.failed;
   mpDetailRender();
 }

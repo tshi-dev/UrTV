@@ -109,7 +109,7 @@
             <!-- the letter index of the reciters tab, at the list's start edge (right in Arabic): built in code, shown only on that tab -->
             <LinearLayout
                 android:id="@+id/letters"
-                android:layout_width="40dp"
+                android:layout_width="44dp"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="12dp"
                 android:orientation="vertical"
