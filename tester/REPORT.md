@@ -710,3 +710,65 @@ Main: (1) A: our screensaver still covers the second app's install question (45 
 Small: focus goes to the saved row but the page does not scroll to it; picker jumps to the top after each pick; ▲/▼ from «صرف العملات» leaves the currency view; fresh install has no mute record, so a restart after it comes back unmuted (`no_record`); first «جهّز كل شي» has no USB prompt (1 restart); community list's name not found; no UrTVAdhan lines; 2 px sliver at favbar 7; reciter index letters tiny; the 2 quick buttons look grey in «رملي»; «مباريات اليوم» above tomorrow's games (and once a stale list after adding a team).
 Fixed since step 27: the header sign, Jellyfin after the update, UpdateCarry lines, «تم» → MainActivity, Play Protect (targetSdk 34: no block), TV's sleep and restart mute (UrTVMute), match detail's focus ring, picker's «تم», marks and focus, live `parsed`.
 Shots on the PC in `optimize/run/step28/marketing/` (2 kept, 1 skipped).
+
+## step 28b (step 28 again), build 183 (update 182 → 183, targetSdk home 34)
+Start: muted; no tasks; Home ours; no PIN; classic; lang ar; home card stocks; favbar 5.
+
+### A, the update («تحديث تلفزيوني», channel next)
+- t+88 first question (screensaver); t+109 Update; t+114 the home app's question
+- held on purpose, no keys, **131 s (t+114 … t+245): the screensaver did NOT start** (dreams null at every line, installer in front). ✓ (step 28: covered after 45 s)
+- t+245 Update; t+248 UpdateActivity; t+253 `sa.urtv.home/.MainActivity`; t+257 UpdateActivity «تم التحديث ✓ 4.2» with «تم»; OK → `sa.urtv.home/.MainActivity` resumed
+- no other app resumed at any line; nothing playing; muted at every line
+- **A: all OK.**
+
+### B
+- B1 sign: «−٦٫٧٢ (−٠٫٠٧٪)» OK. «صرف العملات» [1233,170,1479,273] now 103 px, label whole; «أخفِ المبالغ» the same. OK
+- B1 holding (أرامكو 10 @ 25): focus on the new row [128,833,1792,978], the page scrolled to it, whole. OK
+- B1 live 2 min (08:05 Saudi, Tadawul closed): `live status=200 asked=1 parsed=1 bytes=1400 reason=ok` every 30 s on «محفظتي» (no parsed=0, so no body_start). OK. Checked again in market hours below
+- B1 picker: «تم» works, marks «مفعّلة»; the pick stays on its row (دينار تونسي, was jumping to the top); after «تم» focus on «اختر العملات». OK
+- **Currencies still show no rates** on this install: «لا أسعار بعد: يلزم اتصال بالإنترنت» at 08:08 (installed about 03:32, 4.5 h, one update since). ✗ (see E)
+- B2 match detail: opens with the ring on the dialog; ◀ ring on «ذكّرني» → OK adds that reminder (`tasks list`; deleted); ◀◀ ring on «أضف الاتفاق لفرقي» → OK adds the team. OK
+- C1: top row الأسواق [304..372], المباريات [212..280], all y 72–140, gaps 24; ▲ then ◀; OK opens MarketsActivity / MatchesActivity. OK **only with no home card. ✗ With the home card on (the owner's own setting, «الأسهم»), ▲ from the tray stops on the card, 3 more ▲ and ◀▲ / ▶▲ never reach the top row** (the card's own box [96,168,1018,668] holds the focus): the top buttons cannot be reached with keys. Repeated
+- C2 match row the same in widget and list; title now «المباريات القادمة» ✓. **After adding a team («أضف لفرقي») the list loses the «فرقك» group: only «دوري روشن» (1), Hilal's match gone, while the widget shows it. Repeated (step 28 once, now 3 reads including reopening the page); `am force-stop sa.urtv.home` brings it back (فرقك 1, دوري روشن 2).** ✗
+- C3: no «شاهد على ثمانية» (Thmanyah not installed); «أضف لفرقي» OK. Not tested with the app
+- C4: controls row aligned, labels whole, no green bar; stock card solid, page dimmed (as 182). **Home stocks card padding about 36 px** (card x 98–1016, text x 134–980; top ≈ 42, bottom ≈ 40), expected 24±2 ✗ (step 28: 50)
+- C5 bar 7: tiles 210×118, inside [128..1792], AR and EN; bar 10: 140×78, inside, AR and EN. OK. At 7 with more favourites than fit a 2 px sliver of the next tile shows at the tray's edge (it scrolls). Small
+- C6: السديس, الشريم, المعيقلي first; ▶ goes to the index, rows now 45 px; ▼ to «ي» → the list at «ياسر الدوسري». OK
+- B4 sleep (223, 60 s, 224): muted; UrTVMute `stage=remember why=screen_off muted=true`, `stage=restore why=screen_on result=muted_again after_ms=1502`, `stage=check why=screen_on result=already_done`. OK
+- B4 restart: muted at every read from 08:19:32; `stage=check why=boot result=already_done` ×3. OK
+
+### D
+- D1: saved; `pm uninstall sa.urtv.home` Success; Downloader, URL without `https://`: t+49 «Download» → t+56 «Thank You! Your file has been successfully downloaded.» (Install / Done) → Android «تلفزيونك · Do you want to install this app?» (focus on Cancel) → t+97 Install → «App installed.» (DONE / OPEN). **No Play Protect block.** versionCode 183, targetSdk 34. OK
+- D1b / B3: USB prompt **on the first press** (t+13; ticked «Always allow from this computer», ▶ Allow). Plan as in step 28 (10 lines; safe list «لا شيء منها شغّال», «تلفزيونك هو الشاشة الرئيسية أصلاً», no restart, TV Bro/SmartTube kept). Run: «ابدأ» t+73; every ~12 s `SetupActivity` resumed with the lines moving (✓ / … / ·) at t+79, 91, 103, 116, 128; dreams none; muted; done screen at t+128. **The setup screen stayed in front the whole run ✓**
+  - All 15 ✓: فحص التلفزيون، نسخة احتياطية من حالة التلفزيون، الميزات المحمية، قياس الذاكرة قبل، أذونات تلفزيونك، القائمة الآمنة، قائمة المجتمع، تسريع التلفزيون، تثبيت شاشة التوقف، تفعيل شاشة التوقف، TV Bro و SmartTube، التشغيل التلقائي، الشاشة الرئيسية، قياس الذاكرة بعد، التقرير. No ✕/–. Wi-Fi pause: did not come
+  - Community list's name: **still not found** (plan names none; UrTVSetup: `adb key: deleted exists=false`, `waiting for the debugging prompt: screensaver held back`, `debugging prompt answered or given up: screensaver free`, `adb key: deleted exists=false`)
+- D2: `adhan_exact=1` after the install. OK (alarm count at D5)
+- D3: first open: no question (setup granted POST_NOTIFICATIONS, `granted=true`). After `pm revoke` + flags cleared + force-stop: «Allow تلفزيونك to send you notifications?» once; «Don't allow» → player runs; Back and open again: not asked. OK (granted back after)
+- D4 after «لا»: station 1 `playing=1`, no «cannot play». OK. Station 0 («إذاعة القرآن الكريم - السعودية»): now «تعذّر التشغيل» within 28 s ✓ (step 28: «جارٍ التحميل…» forever), but the station itself still does not play (2 tries) ✗: the first station in the list, worth checking its address
+
+### E (demo-clean; on the PC in `optimize/run/step28b/marketing/`; checked; none pushed)
+- `ar-sand-11-football.png`: done (AlUla rocks wallpaper, no person; «المباريات القادمة»; the 6 top buttons now all white in «رملي» ✓)
+- `ar-sand-14a-market.png`: done (labels whole)
+
+### B1 live in market hours (Tadawul open, 10:05–10:32 Saudi; the header says «تداول مفتوح · يغلق بعد …»)
+- 10:05: `live body_start={"^TASI.SR":{"timestamp":[],"symbol":"^TASI.SR","end":null,"previousClose":9882.85,…,"close":null,"fulldayChange":-6.72,…,"fulldayPrice":9876.13,…}}` then `live status=200 asked=7 parsed=0 bytes=236 reason=parsed_none`, once a minute
+- 10:30: `live status=200 asked=7 parsed=1 bytes=320 reason=ok`, then `asked=6 parsed=1 bytes=339 reason=ok`, every 30 s
+- **Prices did not move** on «قائمتي» (أرامكو ٢٦٫١٦, الراجحي ٦٠٫١٥, stc ٤١٫١٨ the same at 10:06, 10:08, 10:30, 10:32, the same as yesterday's); only 1 of 6–7 is parsed and the header still reads «آخر تحديث ٦:١٢ ص · أسعار متأخرة» (honest). ✗ Could be the source's delay (not checked later than 10:32)
+- Currencies at 10:08: still «لا أسعار بعد», KWD «—» (6.5 h after the install) ✗
+- `ar-sand-17-currencies.png`: **skipped: no rates** at 08:30, 10:08 and 11:18 (8 h after the install): «لا أسعار بعد: يلزم اتصال بالإنترنت», KWD «—», online. Same since step 27. ✗
+
+### D5 (settings back, then the adhan with YouTube in front)
+- Restore: import (preview: adhan volume → `--yes`), dock, the locked apps; diff with D1's save: show, dock, pin, tasks, photos, disabled (21), packages, Home, screensaver, family DNS: identical (adhan: runtime lines only)
+- Test: adhan volume set to the minimum 10% for this row and **a guard that polled the mute and pressed mute + stop the moment it opened** (step 28 played aloud for 115 s). `adhan_next_clock=11:17`, `adhan_exact=1`, `dumpsys alarm | grep -c sa.urtv.home` = 4, YouTube in front
+- Result: `adhan_alarm_last=… front=other play=1 notice=0 saver=0`; YouTube stayed in front. **OK**. UrTVAdhan: `adhan start: voice=1 prayer=2 live tv_muted_before=false`
+- **The adhan still unmutes a muted TV by itself** (`STREAM_MUTE_CHANGED muted=false` at 11:17:00.123, before the `adhan start` line). Muted again by the guard at 11:17:00–03: audible under 3 s at 10%. **`tv_muted_before=false` on a TV that WAS muted** (UrTVMute/dumpsys said muted just before): the value is read after the unmute, so the «mute again after the adhan» part may not know. Not tested to the adhan's end (for the sound rule). ✗ to check
+- Adhan off, minutes 0, `prayeradj off` right after
+
+### Z
+`import settings-before.json` (preview: home card → stocks, teams → without الاتفاق, adhan volume → 20; `--yes`), tasks none, holdings none (the reinstall), favbar 5, dock, PIN «not set», locked list, lang ar, classic, updatechannel latest, Home holder, disabled list (21), wm size unchanged, adhan off volume 20, minutes 0, YouTube force-stopped, downloaded apk removed, no logs left, muted. **restored: yes**; only the build differs (183).
+
+### Problems in step 28b: 7 main, 2 small
+Main: (1) C1 with a home card on, the top buttons (with the new quick ones) cannot be reached with keys; (2) C2 after «أضف لفرقي» the list loses «فرقك» until the app restarts (repeats); (3) currencies show no rates after a fresh install, 8 h later (KWD «—»); (4) station 0 «إذاعة القرآن الكريم - السعودية» fails, now with «تعذّر التشغيل»; (5) home stocks card padding about 36, expected 24; (6) in market hours prices do not move in 30 min (`parsed=0` with body_start, then `parsed=1` of 6–7); (7) the adhan unmutes a muted TV and logs `tv_muted_before=false`.
+Small: community list's name not in the plan or the log; 2 px sliver at bar 7.
+Fixed since step 28: screensaver no longer covers the install question; setup screen stays in front the whole run and the USB prompt came first time; «صرف العملات» / «أخفِ المبالغ» labels; the page scrolls to a saved holding; picker keeps its row; quick buttons' colour; «المباريات القادمة»; a bigger reciter index; a station that fails now says so.
+Shots: `optimize/run/step28b/marketing/` (2 kept, 1 skipped).
