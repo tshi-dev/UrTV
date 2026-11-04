@@ -871,3 +871,46 @@ The home greeting reads «تصبح على خير» at 19:18.
 ### step 30 summary: ✓ 3, 4, 6; match card in 5. ✗ 1, stock card in 5; 2 glyphs ✓ with a small box problem. 7 not testable.
 Problems: (1) «فرقك» and the team's game vanish on quick reopens (4/12 shown; 4/4 with a minute's wait; 1/6 without the added team); (2) stock card too tall: «رجوع» unseen and unreachable, the action button squeezed to 36 px and unreadable, OK on it changes the list; (3) pad keys ⌫ and ٠ have a cut box; (4) greeting note.
 Shots: PC only, none pushed.
+
+## step 30b — live US prices (build 188; TV muted; Wed 21:32–22:00, US market open)
+AAPL, NVDA, TSLA added with `saver.sh stocks` (not by the page's own add); «مباشر» was already on. Muted at every check; `UrTVMute` 0 lines.
+
+### 1 ✗ by the rule (parsed ≠ asked), the US symbols themselves ✓
+Every line caught on «قائمتي» (9; the log buffer keeps only a few, so **not every line of the 10 min**): 21:34:51, 21:36:22–21:37:54, 21:43:00–21:44:32: all `live status=200 asked=9 parsed=4 reason=ok`, about every 30 s.
+Rest: first page «السوق» `asked=6 parsed=1`; again at 21:57–21:58 `asked=9 parsed=4`; one `status=-1 asked=1 reason=SocketTimeoutException` at 21:55:11, next at 21:56:14 `asked=1 parsed=1`.
+My reading, not proven (the log gives counts, no names): the 4 are the 3 US + one other; the Tadawul symbols are the ones not parsed, as on step 29 (`asked=7 parsed=1`, market closed). US rows carry a live time («AAPL · ٩:٣٤ م»), Tadawul rows none. Still to see in Tadawul hours.
+
+### 2 ✓ Prices move and match (Google Finance in the browser, same minute)
+| Saudi time | AAPL TV / Google | NVDA TV / Google | TSLA TV / Google |
+|---|---|---|---|
+| +0 21:35 | 352.53 / 352.61 | 203.98 / 203.97 | 389.53 / 389.66 |
+| +3 21:38 | 352.80 / 352.75 | 203.66 / 203.68 | 388.72 / 388.80 |
+| +6 21:40 | 352.78 / 352.75 | 203.75 / 203.80 | 389.08 / 389.00 |
+| +10 21:44 | 352.88 / 352.86 | 203.56 / 203.39 | 389.48 / 389.68 |
+All within 0.1% (limit 0.5%). Note: the +10 Google read was 74 s after the TV's, the others about 3 s. % also agree (AAPL +6.21 / +6.24 at +0).
+
+### 3 ✗ Header stays on Tadawul
+With only US prices moving, the whole 10 min: «تداول مغلق · يفتح الخميس ١٠:٠٠ ص · آخر تحديث ٥:٥٧ م · أسعار متأخرة». No US session text anywhere (open / closes in …). It also says **«أسعار متأخرة» while the footer says «مباشر · المصدر: Yahoo Finance»** and the rows are live.
+S&P 500 / Nasdaq: not shown on «السوق» here (Tadawul only; markets setting has `spx`, seen on no row of that tab).
+
+### 4 ✓ Portfolio: AAPL 2 @ 150 (price then 352.68)
+Value `$ ٧٠٥٫٣٥`, total `٢٬٦٤٥٫٠٦ ر.س`: 705.35 × 3.75 = 2645.06 ✓. Profit +405.35 = +135.12% (on 300) ✓, in SAR +1,520.06 = 405.35 × 3.75 ✓. Today +41.55 = 2 × (352.68 − 331.90 Google's previous close) ✓, in SAR +155.81 = 41.55 × 3.75 ✓, +6.26% ✓. (2 × 352.68 = 705.36: one cent off from the hidden decimals, fine.) AAPL is at the end of the «أضف سهمًا» list once in the watchlist.
+
+### 5 Mostly ✓, ✗ small on the home card
+- Stock card: amount and % together, right: AAPL 352.75 `+٢٠٫٨٥ (+٦٫٢٨٪)` ✓ (352.75 − 331.90 = 20.85). This does not depend on the option
+- «قائمتي» list: always %, with `stkchg amount` too (AAPL +6.27%)
+- Home card with `stkchg amount`: US rows show the amount (AAPL ٢٠٫٩٩, NVDA ٣٫٣٨, TSLA ٨٫٩٤; AAPL's is right), but **Tadawul rows keep % in the same column** (stc ٠٫٧٣٪…). Mixed units. Also: US rows there have no «مغلق», Tadawul ones do ✓
+
+### Also found, on the US stock's card ✗
+- **The chart's axis reads Tadawul's hours** («١٠:٠٠ ص … ٣:٠٠ م») for AAPL
+- **Open and range are wrong**: «الافتتاح» ٣٥٠٫٤٨ against Google's 341.57; «نطاق اليوم» ٣٥٠٫٤٨–٣٥٤٫٣٧ against 340.99–354.50. It looks like the low and the open start from the app's last file (17:57) or a later point, not the session's open (my guess)
+- Just after a fresh open, before the first live answer (about 30 s): the file's old price: AAPL ٣٥٠٫٩٠, +١٩٫٠٠
+- The same card overflow as step 30: no «رجوع», squeezed action button
+
+### 6 Shots (PC only, none pushed): `marketing/ar-qaimati-live.png`, `ar-mahfaza.png` (the total is scrolled off in that one; its numbers are in 4)
+
+### Z
+Holding deleted by «خيارات محفظتي ← احذف المحفظة ← نعم» («لا أسهم في محفظتك بعد»); stocks back to the 5, stkchg pct, «مباشر» on as found; import: «Nothing to change». `show` before/after identical. Same: dock, PIN, Home holder, disabled (21), packages (177), tasks, adhan, photos, family DNS, saver. Muted. **restored: yes**.
+
+### step 30b summary: ✓ 2, 4. ✗ 1 by the rule (`parsed=4` of 9; the US ones all live), ✗ 3, ✗ small in 5
+Problems: (1) `parsed` ≠ `asked`, probably the Tadawul symbols; (2) header shows Tadawul and «أسعار متأخرة» while US prices are live; (3) US stock's card: Tadawul hours on the axis, wrong open and day range; (4) home card mixes amount and % with `stkchg amount`; (5) no S&P 500 / Nasdaq on «السوق» (asked «if shown»).
