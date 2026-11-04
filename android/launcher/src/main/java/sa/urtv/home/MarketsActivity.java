@@ -246,7 +246,7 @@ public class MarketsActivity extends Activity {
         super.onCreate(b);
         Digits.init(this);
         FrameLayout root = new FrameLayout(this);
-        look = GlassSource.page(this, root);
+        look = GlassSource.pageFor(this, root);   // dark while «صفحات الأسهم والمباريات داكنة» is on (the default)
         TEXT = look.text; DIM = look.sub; ACCENT = look.light ? 0xFF166A45 : OnOff.GREEN_ON_DARK;
         UP = ACCENT; DOWN = look.warn;
         root.setLayoutDirection(Dir.layout());

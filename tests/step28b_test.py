@@ -40,4 +40,21 @@ check("6 (the owner's choice B): a muted TV is unmuted for the adhan and muted a
       and "muted(context)" not in rc and "adhan skipped: the TV is muted" not in rc and "adhan skipped: the TV is muted" not in ms)
 sc = text(HOME / "setup/SetupCommunity.java")
 check("7: the community list's name is in the report also when our own lists know the TV", "choice.meta != null ? \" (\" + choice.meta.name + \")\" : \"\"" in sc)
+
+# the owner's ask: «صفحات الأسهم والمباريات داكنة» (default on)
+SA = ROOT / "android/app/src/main/java/sa/urtv/screensaver"
+pf, rv, cpv, st = text(SA / "Prefs.java"), text(SA / "SaverReceiver.java"), text(SA / "ConfigProvider.java"), text(SA / "SettingsActivity.java")
+check("8: the setting: Prefs (on by default), the command's word checked before anything is set, `show` says it, the provider gives the home pages_dark, and the settings row is next to «المظهر»",
+      'boolean pagesDark() { return sp.getBoolean("pagesDark", true); }' in pf and 'error: pagesdark is one of on off' in rv and 'p.setPagesDark("on".equals(pagesDark))' in rv
+      and '"\\npagesdark: " + (p.pagesDark() ? "on" : "off")' in rv and '"pages_dark"' in cpv and 'p.pagesDark() ? "1" : "0"' in cpv
+      and st.index('row("المظهر"') < st.index('row("صفحات الأسهم والمباريات داكنة"') < st.index('row("الخروج من تلفزيونك"'))
+cfg, gs = text(HOME / "ConfigSnapshot.java"), text(HOME / "GlassSource.java")
+check("8: the home reads it (on for an older screensaver); Markets uses the dark look (GlassStyle.DARK over the same backdrop) while on, else the home's look; the matches page gets #pagedark=1",
+      "boolean pagesDark = true;" in cfg and 'cur.getColumnIndex("pages_dark")' in cfg and "GlassStyle.Look l = GlassStyle.DARK;" in gs and "if (!ConfigSnapshot.read(a).pagesDark) return page(a, root);" in gs
+      and "GlassSource.pageFor(this, root)" in text(HOME / "MarketsActivity.java") and '(cfg.pagesDark ? "&pagedark=1" : "")' in text(HOME / "MatchesActivity.java"))
+check("8: the page has its dark theme (#pagedark=1 → html.mpdark), the sand look is the default of the page without it", "pageDark: _Q.get('pagedark') === '1'," in tpl and "html.mpage.mpdark,html.mpage.mpdark body{background:#17181B}" in tpl
+      and "classList.toggle('mpdark', !!CONFIG.pageDark)" in tpl)
+sh = text(ROOT / "optimize/saver.sh")
+check("8: saver.sh pagesdark on|off, and the export / import carry it (settings_move.py: SWITCHES, the allow-list, the import)", 'pagesdark) set1 pagesdark' in sh
+      and '"pagesdark"' in text(ROOT / "optimize/settings_move.py") and text(ROOT / "optimize/settings_move.py").count('"pagesdark"') >= 5)
 sys.exit(1 if failed else 0)

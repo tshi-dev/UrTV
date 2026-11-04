@@ -230,6 +230,40 @@ for (const [why, rows] of [['the shipped table', null], ['medium confidence', [{
   await p.keyboard.press('ArrowUp'); await p.keyboard.press('ArrowUp'); await p.keyboard.press('ArrowUp');
   await p.keyboard.press('ArrowLeft');
   check('matches page: ◀ on the days shows tomorrow\'s games', await p.$eval('#mp-days li.on', x => x.textContent === 'غدًا') && await p.$$eval('#mp-list .mpg', r => r.length === 1 && r[0].querySelector('.mpw').textContent === '٩:٠٠ م'));
+    // «صفحات الأسهم والمباريات داكنة»: #pagedark=1 is the dark look; every text keeps 4.5:1 against what it stands on, the ring is the green of the dark look
+  {
+    const { p: pd, ctx: cd, errors: ed } = await open('city=الرياض&lat=24.7136&lon=46.6753&tz=Asia/Riyadh&teams=136013&matchpage=1&pagedark=1', { rows: ROWS, height: 1080 });
+    await pd.evaluate(() => mpRender());
+    const contrast = async () => pd.evaluate(() => {
+      const parse = c => { const m = c.match(/[\d.]+/g).map(Number); return { r: m[0], g: m[1], b: m[2], a: m.length > 3 ? m[3] : 1 }; };
+      const lum = ({ r, g, b }) => { const f = v => { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }; return .2126 * f(r) + .7152 * f(g) + .0722 * f(b); };
+      const bgOf = el => { let layers = []; for (let n = el; n; n = n.parentElement) { const c = parse(getComputedStyle(n).backgroundColor); if (c.a > 0) layers.push(c); if (c.a >= 1) break; }
+        let base = { r: 23, g: 24, b: 27 }; for (let k = layers.length - 1; k >= 0; k--) { const c = layers[k]; base = { r: c.r * c.a + base.r * (1 - c.a), g: c.g * c.a + base.g * (1 - c.a), b: c.b * c.a + base.b * (1 - c.a) }; } return base; };
+      const bad = [], root = document.querySelector('#mp'), det = document.querySelector('#mp-detail');
+      for (const scope of [root, det]) {
+        if (scope.hidden) continue;
+        const w = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT);
+        for (let n; (n = w.nextNode());) {
+          if (!n.textContent.trim()) continue;
+          const el = n.parentElement, fg = parse(getComputedStyle(el).color), bg = bgOf(el), L1 = lum({ r: fg.r, g: fg.g, b: fg.b }), L2 = lum(bg), ratio = (Math.max(L1, L2) + .05) / (Math.min(L1, L2) + .05);
+          if (ratio < 4.5) bad.push(n.textContent.trim().slice(0, 20) + ' ' + ratio.toFixed(2));
+        }
+      }
+      return bad;
+    });
+    check('matches page, dark: the dark theme is on (#17181B page, white text), no script error', await pd.evaluate(() => document.documentElement.classList.contains('mpdark') && getComputedStyle(document.body).backgroundColor === 'rgb(23, 24, 27)' && getComputedStyle(document.querySelector('#mp')).color === 'rgb(255, 255, 255)') && !ed.length, ed.join(' | '));
+    const lowList = await contrast();
+    check('matches page, dark: every text of the list keeps 4.5:1 against what it stands on', !lowList.length, lowList.join(' | '));
+    check('matches page, dark: the focused row is ringed in the dark look\'s green (#8FE0B4)', await pd.evaluate(() => { const f = document.querySelector('.mpg.f'); return !!f && getComputedStyle(f).boxShadow.includes('rgb(143, 224, 180)'); }));
+    await pd.keyboard.press('Enter');
+    const lowCard = await contrast();
+    check('matches page, dark: the game\'s card keeps 4.5:1 too (its buttons, rows and prayers\' line)', !lowCard.length && await pd.$$eval('#mp-detail .mdx', c => c.length === 1), lowCard.join(' | '));
+    await shot(pd, 'football-matches-page-dark.png');
+    const { p: pl, ctx: cl } = await open('city=الرياض&lat=24.7136&lon=46.6753&tz=Asia/Riyadh&teams=136013&matchpage=1', { rows: ROWS, height: 1080 });
+    check('matches page: with the setting off (no #pagedark) the page is the sand look as before', await pl.evaluate(() => !document.documentElement.classList.contains('mpdark') && getComputedStyle(document.body).backgroundColor === 'rgb(244, 242, 236)'));
+    await cl.close();
+    await cd.close();
+  }
   await ctx.close();
 }
 // English: the same page laid out left to right, none of its own words in Arabic

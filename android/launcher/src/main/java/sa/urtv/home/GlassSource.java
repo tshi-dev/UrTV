@@ -74,6 +74,17 @@ public final class GlassSource {
         return l;
     }
 
+    /**
+     * «صفحات الأسهم والمباريات داكنة»: the markets and matches pages are in the dark look (GlassStyle.DARK, over the same backdrop) while the setting is on
+     * (the default), else in the look of the home as every page is. The look is returned for the screen's own colours.
+     */
+    public static GlassStyle.Look pageFor(Activity a, View root) {
+        if (!ConfigSnapshot.read(a).pagesDark) return page(a, root);
+        GlassStyle.Look l = GlassStyle.DARK;
+        root.setBackground(GlassPaint.page(a, backdrop(a), l, scrim(a, l)));
+        return l;
+    }
+
     /** The backdrop's PNG for the phone page (/api/backdrop), or null while there is none; read bounded: it is small. */
     public static byte[] png(Context c) {
         File f = file(c);

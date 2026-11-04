@@ -31,6 +31,7 @@
 #   optimize/saver.sh updatechannel next          TESTING ONLY (agents; no screen shows it): «تحديث تلفزيوني» reads the version and the APKs from the apk-next release instead
 #                                                  of apk-latest: next or latest (default). Same signature, newer-version and permission checks. Put it back to latest after
 #   optimize/saver.sh reciter-fav add sudais      the ★ of a reciter in «تلاوة وأذان ← القرّاء» (`remove` takes it off): favourites are listed first under «المفضلون»; ids are `optimize/music.sh reciters`'s
+#   optimize/saver.sh pagesdark off               «صفحات الأسهم والمباريات داكنة» (الشاشة الرئيسية): the home's markets and matches pages in the dark look (on, the default) or in the home's look (off)
 #   optimize/saver.sh favbar 7                    the favourites bar's size («التطبيقات والمفضلة ← تطبيقات في الشريط»): how many apps show whole at once, 5 (default) to 8, or all (every favourite, 8 in view and the rest scroll); 9 and 10 are taken as 8
 #   optimize/saver.sh yearstrip on                 the slim year strip under the screensaver's clock (365 dots in 7 rows, today lit, no words): on or off (default)
 #   optimize/saver.sh sunrise on                   the prayer panel counts to the sunrise after Fajr's iqama, and tells it for 30 minutes: on or off (default)
@@ -221,6 +222,7 @@ case "${1:-}" in
     case "$id" in *[!A-Za-z0-9_-]*|"") echo "!! a reciter id is letters, digits, - and _ (optimize/music.sh reciters lists them)" >&2; exit 2 ;; esac
     out=$("$PY" -I optimize/tv.py "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.RECITER_FAV --es op $op --es id $id" | tr -d '\r') || out=""
     case "$out" in *'data="saved'*) echo "reciter-fav $op $id: saved" ;; *error:*) echo "!! $(printf '%s\n' "$out" | sed -n 's/.*data="\(error:[^"]*\)".*/\1/p' | head -1)"; exit 1 ;; *) echo "!! the home app did not answer (is it installed and up to date?)"; exit 1 ;; esac ;;
+  pagesdark) set1 pagesdark "${2:?usage: optimize/saver.sh pagesdark on|off}" ;;
   favbar)    set1 favbar "${2:?usage: optimize/saver.sh favbar 5|6|7|8|all}" ;;
   yearstrip)set1 yearstrip "${2:?usage: optimize/saver.sh yearstrip on|off}" ;;
   sunrise)  set1 sunrise "${2:?usage: optimize/saver.sh sunrise on|off}" ;;

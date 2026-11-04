@@ -52,7 +52,7 @@ for bad in st.get("refuse", []):          # a value the TV refuses (answers erro
         out("error: refused by the fake TV: " + bad)
 ENUM = {"digits": ["hindi", "latin"], "clocksize": ["large", "medium", "small"], "mkstyle": ["arrows", "prices"],
         "cardstyle": ["current", "dark1", "glass1", "dark3", "glass3"], "prayermethod": ["auto", "gulf", "jafari"],
-        "sunrise": ["on", "off"], "prayerbar": ["on", "off"], "wxmore": ["on", "off"], "months": ["default", "levant"],
+        "sunrise": ["on", "off"], "prayerbar": ["on", "off"], "wxmore": ["on", "off"], "pagesdark": ["on", "off"], "months": ["default", "levant"],
         "greeting": ["on", "off"], "listenpill": ["on", "off"], "updatebell": ["on", "off"], "adhanbar": ["on", "off"], "clock24": ["on", "off"], "mkbar": ["on", "off"], "prayeradj": ["on", "off"],
         "favbar": ["5", "6", "7", "8", "9", "10", "all"]}
 if "SaverReceiver" in cmd and cmd.endswith(".GET"):
@@ -69,7 +69,7 @@ if "SaverReceiver" in cmd and cmd.endswith(".GET"):
         "leagues: ", "autoupdate: on", "pin: 4321", "wifi: HomeNet", "tasks: buy milk", "updatechannel: " + s.get("updatechannel", "stable"), "favbar: " + s.get("favbar", "5")]
         + ([f"country: {s['country']}"] if "country" in s else [])
         + ([] if st.get("old_app") else [f"panel2: {s['panel2']}", f"sunrise: {s['sunrise']}", f"prayerbar: {s['prayerbar']}",
-                                          f"wxmore: {s['wxmore']}", f"months: {s['months']}"])))
+                                          f"wxmore: {s['wxmore']}", f"pagesdark: {s.get('pagesdark', 'on')}", f"months: {s['months']}"])))
 if "SaverReceiver" in cmd and re.search(r"screensaver\.SET( |$)", cmd):
     s, extras = st["saver"], dict(re.findall(r"--es (\w+) '([^']*)'", cmd))
     assert cmd.count("--es ") == len(extras), "an unquoted value was sent: " + cmd
@@ -136,7 +136,7 @@ BASE = {
               "panel": "verse", "home_panel": "none", "greeting": "on", "listenpill": "on", "updatebell": "on", "adhanbar": "on", "prayermethod": "auto", "prayeradj": "off",
               "adj": {"fajr": 0, "dhuhr": 0, "asr": 0, "maghrib": 0, "isha": 0}, "hijri": "0", "digits": "hindi", "clock24": "off",
               "cardstyle": "current", "markets": ["tasi", "spx", "btc"], "mkbar": "on", "clocksize": "large", "mkstyle": "arrows",
-              "panel2": "none", "sunrise": "off", "prayerbar": "off", "wxmore": "off", "months": "default", "updatechannel": "stable", "favbar": "5"},
+              "panel2": "none", "sunrise": "off", "prayerbar": "off", "wxmore": "off", "pagesdark": "on", "months": "default", "updatechannel": "stable", "favbar": "5"},
     "adhan": {"on": "on", "voice": 1, "fajr_voice": 10, "short": "off", "stopkey": "on", "volume": 70},
 }
 CONFIGURED = copy.deepcopy(BASE)
@@ -144,7 +144,7 @@ CONFIGURED["saver"].update({"city": ["الدوحة", "25.2854", "51.531"], "tz":
                             "panel": "prayers", "home_panel": "verse,hourly", "greeting": "off", "listenpill": "off", "updatebell": "off", "adhanbar": "off",
                             "prayermethod": "jafari", "prayeradj": "on", "hijri": "-1", "digits": "latin", "clock24": "on",
                             "cardstyle": "glass1", "markets": ["gold", "btc"], "mkbar": "off", "clocksize": "medium", "mkstyle": "prices",
-                            "panel2": "hourly", "sunrise": "on", "prayerbar": "on", "wxmore": "on", "months": "levant", "favbar": "7"})
+                            "panel2": "hourly", "sunrise": "on", "prayerbar": "on", "wxmore": "on", "pagesdark": "off", "months": "levant", "favbar": "7"})
 CONFIGURED["saver"]["adj"] = {"fajr": 2, "dhuhr": 0, "asr": -3, "maghrib": 1, "isha": 0}
 CONFIGURED["favs"] = ["afasy", "sudais"]
 CONFIGURED["adhan"] = {"on": "off", "voice": 3, "fajr_voice": 13, "short": "on", "stopkey": "off", "volume": 40}
@@ -532,6 +532,7 @@ rc, out, err = rd.run("import", deep)
 check("a file nested too deeply is refused, not a traceback", rc != 0 and "nested too deeply" in err and "Traceback" not in err and not rd.sent(), (rc, err[-200:]))
 
 # ---- today's settings: the second card, the sunrise, the prayer bar, the humidity and wind, the month names (and never the update channel)
+check("«صفحات الأسهم والمباريات داكنة»: export carries pagesdark as the TV reports it (off here), and the default TV exports on", exp["pagesdark"] is False, exp.get("pagesdark"))
 check("export carries cards.panel2, sunrise, prayerbar, wxmore and months as the TV reports them",
       exp["cards"]["panel2"] == "hourly" and exp["sunrise"] is True and exp["prayerbar"] is True and exp["wxmore"] is True and exp["months"] == "levant", exp)
 check("the hidden update-channel switch is never exported, never allow-listed, and never sent",

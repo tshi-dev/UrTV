@@ -45,7 +45,7 @@ MIGRATIONS = {}
 # TODO(parental PIN, branch work/parental): the PIN must NEVER be added here, and must never be exported by any other way.
 ALLOWED_TOP = ("schema", "city", "digits", "prayer", "hijri_offset", "clock24", "clock_size", "card_style", "cards",
                "greeting", "listen_pill", "update_bell", "markets", "teams", "adhan", "sunrise", "prayerbar", "wxmore", "months",
-               "lang", "fav_bar", "reciter_favs")
+               "lang", "fav_bar", "reciter_favs", "pagesdark")
 # NEVER here: the hidden update-channel switch (updatechannel) and the parental PIN. tests/settings_move_test.py checks both.
 
 # The same lists the apps validate (android/app/src/main/java/sa/urtv/screensaver/Prefs.java; tests/settings_move_test.py
@@ -59,7 +59,7 @@ MONTHS = ("default", "levant")
 LANGS = ("ar", "en")   # «اللغة» (Tr.java: ar, the default, or en)
 RECITER_ID = re.compile(r"[A-Za-z0-9_-]{1,60}")   # a reciter's id in quran/reciters.json
 FAV_BARS = ("5", "6", "7", "8", "9", "10", "all")   # «تطبيقات في الشريط»: how many favourites the home tray shows whole (Prefs.FAV_BARS)
-SWITCHES = ("greeting", "sunrise", "prayerbar", "wxmore")   # on/off switches the TV reports as «on» / «off»
+SWITCHES = ("greeting", "sunrise", "prayerbar", "wxmore", "pagesdark")   # on/off switches the TV reports as «on» / «off»
 MARKETS = ("tasi", "aramco", "spx", "btc", "gold", "silver", "oil", "xrp")
 MAX_MARKETS = 4
 PANELS = ("shows", "prayers", "forecast", "hourly", "prayerrow", "nextprayer", "matches", "verse", "wisdom", "adhkar",
@@ -273,7 +273,7 @@ def flat(s):
         if "country" in c:
             out["city"] += (c["country"],)
     for k in ("digits", "clock24", "clock_size", "card_style", "greeting", "listen_pill", "update_bell", "hijri_offset", "sunrise", "prayerbar", "wxmore", "months",
-              "lang", "fav_bar"):
+              "lang", "fav_bar", "pagesdark"):
         if k in s:
             out[k] = s[k]
     for k, v in s.get("prayer", {}).items():
@@ -457,7 +457,7 @@ def validate(d):
         out["lang"] = d["lang"]
     if "fav_bar" in d and choice(d["fav_bar"], FAV_BARS, "fav_bar", errs):
         out["fav_bar"] = d["fav_bar"]
-    for key in ("clock24", "greeting", "listen_pill", "update_bell", "sunrise", "prayerbar", "wxmore"):
+    for key in ("clock24", "greeting", "listen_pill", "update_bell", "sunrise", "prayerbar", "wxmore", "pagesdark"):
         if key in d:
             n = len(errs)
             boolean(d[key], key, errs)
@@ -670,7 +670,7 @@ def ops(values, names):
             es("clocksize", v)
         elif p == "card_style":
             es("cardstyle", v)
-        elif p in ("greeting", "sunrise", "prayerbar", "wxmore"):
+        elif p in ("greeting", "sunrise", "prayerbar", "wxmore", "pagesdark"):
             es(p, flag(v))
         elif p == "months":
             es("months", v)

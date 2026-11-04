@@ -885,6 +885,9 @@ final class Prefs {
     void setFavBar(String v) { v = favBarFix(v); if (java.util.Arrays.asList(FAV_BARS).contains(v)) sp.edit().putString("favBar", v).apply(); }
     /** the choice as the settings row says it */
     static String favBarLabel(String v) { return "all".equals(v) ? "كل المفضلة" : v; }
+    /** «صفحات الأسهم والمباريات داكنة»: the home's markets and matches pages in the dark look whatever the home's look (on, the default), or in the home's look as before (off) */
+    boolean pagesDark() { return sp.getBoolean("pagesDark", true); }
+    void setPagesDark(boolean v) { sp.edit().putBoolean("pagesDark", v).apply(); }
     boolean watchNext() { return sp.getBoolean("watchNext", true); }
     void setWatchNext(boolean v) { sp.edit().putBoolean("watchNext", v).apply(); }
     void setUpdateBell(boolean v) { sp.edit().putBoolean("updateBell", v).apply(); }

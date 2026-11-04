@@ -82,7 +82,7 @@ public class MatchesActivity extends Activity {
         setContentView(web);
         ConfigSnapshot cfg = ConfigSnapshot.read(this);
         String event = getIntent().getStringExtra(EXTRA_EVENT);
-        web.loadUrl(HomePage.fresh(this, HomeCardChoice.matchesUrl(cfg.fragment, event)));
+        web.loadUrl(HomePage.fresh(this, HomeCardChoice.matchesUrl(cfg.fragment, event) + (cfg.pagesDark ? "&pagedark=1" : "")));   // «صفحات الأسهم والمباريات داكنة»: the page in its dark theme
         web.requestFocus();
     }
 

@@ -91,7 +91,7 @@ check("the phone API cannot send stocks or markets (Schema's set has neither)", 
 
 # ---- the design rules
 check("the look's tokens, no colours of its own but the allocation's and the greens of OnOff",
-      "GlassSource.page(this, root)" in act and "OnOff.GREEN_ON_DARK" in act and "look.warn" in act and not re.search(r"0x[0-9A-F]{8}", act.replace(act[act.index("ALLOC = {"):act.index("};", act.index("ALLOC = {"))], "")
+      "GlassSource.pageFor(this, root)" in act and "OnOff.GREEN_ON_DARK" in act and "look.warn" in act and not re.search(r"0x[0-9A-F]{8}", act.replace(act[act.index("ALLOC = {"):act.index("};", act.index("ALLOC = {"))], "")
                                                                                                                          .replace("0xFF166A45", "").replace("0xFFFFFFFF", "").replace("0xFF000000", "")))
 check("no pills: buttons and rows are GlassPaint tiles and rows", "Pill" not in act and "GlassPaint.card(b, look, 14)" in act and "GlassPaint.row(this, look, radius)" in act)
 check("toggle style I for «اقفل محفظتي» (OnOff: the state word first, the three green marks at the start)", "R.drawable.ic_on" in act and "OnOff.wordEnd(value)" in act)

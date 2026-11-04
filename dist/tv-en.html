@@ -735,6 +735,18 @@
   .mdb svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.8}
   .mdb .fg{font-size:1em}
   .mdn{min-height:calc(var(--u)*36);margin-top:calc(var(--u)*16);text-align:center;color:var(--fgr);font-size:calc(var(--u)*24)}
+  /* the dark look of the page («صفحات الأسهم والمباريات داكنة», #pagedark=1): GlassStyle.DARK's colours, white on #17181B (21:1), the muted text #DADCE0 (13:1), the green #8FE0B4 on #202227 (10:1);
+     the same sizes, gaps and rings as the sand look, only the colours differ */
+  html.mpage.mpdark,html.mpage.mpdark body{background:#17181B}
+  html.mpdark #mp,html.mpdark #mp-detail{--fi:#FFFFFF;--fs:#DADCE0;--fgr:#8FE0B4;--fam:#F0B35A;--fring:#8FE0B4;--fln:rgba(255,255,255,.16);--fbg:#202227}
+  html.mpdark .mpg.f{background:rgba(143,224,180,.14)}
+  html.mpdark #mp .fmk{background:rgba(255,255,255,.08)}
+  html.mpdark #mp-detail{background:rgba(0,0,0,.66)}
+  html.mpdark .mdx{background:#1D1F24;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+  html.mpdark .mdr{background:#202227}
+  html.mpdark .mdb button{background:#2A2D33}
+  html.mpdark .mdb button.pri{background:#1B8354;border-color:#1B8354}
+  html.mpdark .mdx.f,html.mpdark .mdb button.f{box-shadow:0 0 0 calc(var(--u)*3) #1D1F24,0 0 0 calc(var(--u)*6) var(--fring)}
   .clock .ampm{order:1;margin-inline-end:0;margin-inline-start:.25em}
   .week li.quote,.week li.src,.week li.tafsir,.week li.adf .s{direction:rtl}
 </style>
@@ -957,6 +969,8 @@ const CONFIG = {
   // #matchpage=1: «المباريات», the launcher's page of the games (#event= opens one game's card). Neither is ever the screensaver.
   football: _Q.get('football') === '1' && _Q.get('widget') === '1',
   matchPage: _Q.get('matchpage') === '1',
+  // #pagedark=1 with #matchpage=1: «صفحات الأسهم والمباريات داكنة» (on, the default, in the launcher): the page in the dark glass look instead of the sand paper
+  pageDark: _Q.get('pagedark') === '1',
 };
 // the football home and «المباريات» show a league even when none is followed: the Saudi Pro League's file (no request to the sports server)
 if((CONFIG.football || CONFIG.matchPage) && !CONFIG.leagues.length) CONFIG.leagues = ['Saudi-Arabian Pro League'];
@@ -4321,6 +4335,7 @@ function mpKey(e){
 }
 function bootMatchPage(){
   document.documentElement.classList.add('mpage');
+  document.documentElement.classList.toggle('mpdark', !!CONFIG.pageDark);
   document.body.insertAdjacentHTML('beforeend', `<div id="mp"><header><h1>${FB_W.title}</h1><span id="mp-age"></span></header>`
     + '<ul id="mp-days"></ul><div class="mpb"><ul id="mp-side"></ul><div id="mp-list"></div></div></div><div id="mp-detail" hidden></div>');
   document.documentElement.style.setProperty('--u', (innerWidth / 1920) + 'px');
