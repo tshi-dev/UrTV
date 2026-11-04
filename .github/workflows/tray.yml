@@ -24,6 +24,8 @@ concurrency:
 jobs:
   tray:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # only for the pictures step below (a commit whose message asks for it)
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
@@ -86,3 +88,18 @@ jobs:
         with:
           name: tray-check
           path: tray-out
+
+      # The pictures of the check (docs/shots/tray) go onto the branch when the pushed commit's message says «[shots]»: the artifact is a 50 MB zip that not every
+      # reader can fetch. The commit is marked [skip ci], so it starts no run of its own. Other pushes commit nothing.
+      - name: Commit the pictures
+        if: always() && contains(github.event.head_commit.message, '[shots]') && startsWith(github.ref, 'refs/heads/work/')
+        run: |
+          if ls tray-out/shots/*.png >/dev/null 2>&1; then
+            mkdir -p docs/shots/tray
+            cp tray-out/shots/*.png docs/shots/tray/
+            git config user.name tshi-dev
+            git config user.email 272740088+tshi-dev@users.noreply.github.com
+            git add docs/shots/tray
+            git commit -m "Tray pictures from CI: sand and dark glass, bar size 5, 7, 10 and all on 12 apps [skip ci]" || exit 0
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
