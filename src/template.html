@@ -902,7 +902,7 @@ const CONFIG = {
   markets: (l => l.length ? l : ['tasi','spx','btc'])(
     _list('markets').filter((k, i, a) => ['tasi','aramco','spx','btc','gold','silver','oil','xrp'].includes(k) && a.indexOf(k) === i).slice(0, 4)),
   mkStyle: _Q.get('mkstyle') === 'prices' ? 'prices' : 'arrows',
-  // «تغيّر الأسهم الأمريكية»: #stkchg=amount shows a US stock's change as an amount (▲ 2.25) instead of a percentage; Saudi ones keep the %
+  // «تغيّر الأسهم»: #stkchg=amount shows every stock's change as an amount (▲ 2.25) instead of a percentage
   stkChg: _Q.get('stkchg') === 'amount' ? 'amount' : 'pct',
   // #mkbar=off hides the markets line at the top (the weather stays); the list above is kept and no request is made for it
   mkBar: _Q.get('mkbar') !== 'off',
@@ -3320,7 +3320,7 @@ function stocksCard(){
     const cls = up === null ? '' : up ? 'up' : 'down';
     return `<li class="stk${staleMark(d) ? ' old' : ''}"><span class="nm">${esc(stockName(k))}${mixed && !marketOpen(isSA(k)) ? '<span class="cl">مغلق</span>' : ''}</span>`
       + (up === null ? '' : spark(d.c, up)) + `<span class="px">${num(d.p, 2)}</span>`
-      + (pct === null ? '' : `<span class="chg ${cls}">${pct >= 0 ? '▲' : '▼'} ${CONFIG.stkChg === 'amount' && !isSA(k)
+      + (pct === null ? '' : `<span class="chg ${cls}">${pct >= 0 ? '▲' : '▼'} ${CONFIG.stkChg === 'amount'
           ? num(Math.abs(d.p - v), 2) : num(Math.abs(pct), 2) + (LATIN ? '%' : '٪')}</span>`) + '</li>';
   });
   const note = [allClosed ? 'السوق مغلق' : '', stale.length ? staleMark(stale[0]) : ''].filter(Boolean).join(' · ');   // the oldest price that is not current
