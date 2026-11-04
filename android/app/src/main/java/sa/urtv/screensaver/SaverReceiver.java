@@ -515,7 +515,7 @@ public class SaverReceiver extends BroadcastReceiver {
 
     private static String photoListing(Context c, Prefs p) {
         int n = Own.count(c);
-        StringBuilder b = new StringBuilder("photos: " + n + " of " + Own.MAX + "\nmode: " + p.ownMode());
+        StringBuilder b = new StringBuilder("photos: " + n + " of " + Own.max(c) + "\nmode: " + p.ownMode());
         if (n == 0) b.append(" (no photos: ours only)");
         else if (!Own.ONLY.equals(Own.mode(c))) b.append(" (they join ours)");
         else b.append(" (only theirs)");

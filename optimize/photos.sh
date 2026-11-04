@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# The owner's own photos for the screensaver and the home screen: 1 to 10, from their agent. No remote, no menus.
+# The owner's own photos for the screensaver and the home screen: 1 to 30 (10 on a weak TV, under 2.5 GB), from their agent. No remote, no menus.
 #   optimize/photos.sh add FILE...       make each ready on this computer (upright, at the TV's screen size, at most 1920 px wide,
-#                                        JPEG 85, no location or camera data) and put it on the TV (up to 10 in all)
+#                                        JPEG 85, no location or camera data) and put it on the TV (up to 30 in all; 10 on a weak TV)
 #   optimize/photos.sh list              how many, the mode, each one's size
 #   optimize/photos.sh del N             remove photo N (N from 'list'); the ones after it move up
 #   optimize/photos.sh clear             remove them all: the TV is as before
@@ -13,7 +13,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 PY="${PY:-optimize/venv/bin/python}"
-MAX=10
+MAX=30   # the most any TV keeps; the TV's own limit (10 on a weak TV) is read from its list (count)
 STAGE=/data/local/tmp/urtv-own
 tv() { "$PY" -I optimize/tv.py "$@"; }
 send() {   # $1 extras; prints the receiver's answer (the "data" of am broadcast); exit 1 on "error:" or when there is no answer
@@ -29,7 +29,11 @@ send() {   # $1 extras; prints the receiver's answer (the "data" of am broadcast
 }
 count() {   # photos on the TV now
   local n
-  n=$(send "--es op list" | sed -n 's/^photos: \([0-9]*\) of.*/\1/p')
+  local l m
+  l=$(send "--es op list")
+  n=$(sed -n 's/^photos: \([0-9]*\) of.*/\1/p' <<< "$l")
+  m=$(sed -n 's/^photos: [0-9]* of \([0-9]*\).*/\1/p' <<< "$l")
+  [[ "$m" =~ ^[0-9]+$ ]] && [ "$m" -gt 0 ] && echo "$m" > "${TMPDIR:-/tmp}/urtv-photos-max.$$"
   [[ "$n" =~ ^[0-9]+$ ]] || { echo "error: the TV did not say how many photos it has (is the screensaver app installed and up to date?)" >&2; exit 1; }
   echo "$n"
 }
@@ -57,6 +61,9 @@ case "${1:-}" in
     [ $# -le $MAX ] || { echo "error: at most $MAX photos"; exit 1; }
     for f in "$@"; do [ -f "$f" ] || { echo "error: $f is not a file"; exit 1; }; done
     have=$(count)
+    tvmax=$(cat "${TMPDIR:-/tmp}/urtv-photos-max.$$" 2> /dev/null || echo "$MAX"); rm -f "${TMPDIR:-/tmp}/urtv-photos-max.$$"
+    [[ "$tvmax" =~ ^[0-9]+$ ]] && [ "$tvmax" -le "$MAX" ] || tvmax=$MAX
+    MAX=$tvmax   # this TV's own limit (an older screensaver app says 10)
     [ $((have + $#)) -le $MAX ] || { echo "error: the TV has $have; room for $((MAX - have)) more (photos.sh del N removes one)"; exit 1; }
     size=$(screen)
     work=$(mktemp -d)

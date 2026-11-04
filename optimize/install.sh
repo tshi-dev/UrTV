@@ -330,8 +330,27 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
       echo "asked $(date '+%Y-%m-%d %H:%M:%S')" > "$ASKF"
       echo "Home switch paused, nothing was changed: this TV's setup wizard (setupwraith) owns the saved Wi-Fi network, so it cannot be turned off without deleting the network, and with it on Home mostly stays with the stock home. The person can move the network to the TV's Settings: forget it and join it again. Not an error."
       echo "للشخص: انسَ شبكة الواي فاي من إعدادات التلفزيون ← الشبكة، وارجع اتصل فيها بنفس كلمة المرور (خلّها قدامك قبل)، وبعدها قل لي «كمّل»."
-      echo "After «كمّل»: the same command again (optimize/run.sh, or optimize/install.sh launcher). If the TV does not answer then, optimize/find-tv.sh first (its address may have changed). If the person does not want to, the same command too: it does not ask again, and goes on as before."
-      exit 5
+      # 0b. This run waits for the person (4.1 reports: about 27 setups stopped here and needed a second run): the owner is read again every
+      #     15 s, for up to URTV_WIFI_WAIT seconds (600; 0 = stop at once, as before). Once the network is no longer the wizard's, the switch
+      #     goes on in the safe order (below). While the TV leaves and rejoins its network it may not answer for a while: those reads are quiet
+      #     («unknown») and the wait goes on. Only the person touches the Wi-Fi, in the TV's own Settings.
+      wifi_wait=${URTV_WIFI_WAIT:-600}
+      [[ "$wifi_wait" =~ ^[0-9]+$ ]] || wifi_wait=600
+      moved=no; waited=0
+      if [ "$wifi_wait" -gt 0 ]; then
+        echo "Waiting up to $(( (wifi_wait + 59) / 60 )) minutes for the person, so no second run is needed: send them the Arabic line above NOW (this command is still running); it goes on by itself once the network is the TV Settings' own. The TV may not answer while it rejoins its network: that is expected."
+        while [ "$waited" -lt "$wifi_wait" ]; do
+          sleep 15; waited=$((waited + 15))
+          if [ "$(TV_TRIES=2 wifi_owner 2> /dev/null)" = other ]; then moved=yes; break; fi
+        done
+      fi
+      if [ "$moved" = yes ]; then
+        echo "The saved Wi-Fi network is no longer the setup wizard's (the person forgot it and joined it again): the home switch goes on now, in the safe order."
+      else
+        [ "$wifi_wait" -gt 0 ] && echo "The network is still the setup wizard's after $(( (wifi_wait + 59) / 60 )) minutes."
+        echo "After «كمّل»: the same command again (optimize/run.sh, or optimize/install.sh launcher). If the TV does not answer then, optimize/find-tv.sh first (its address may have changed). If the person does not want to, the same command too: it does not ask again, and goes on as before."
+        exit 5
+      fi
     fi
   fi
 

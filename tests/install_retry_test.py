@@ -84,7 +84,12 @@ case "$1" in
   "cmd package query-activities"*) echo "2 activities found:"; echo "  Activity #0:"; echo "    priority=0 preferredOrder=0 match=0x108000 specificIndex=-1 isDefault=true"   # the real format: components are indented
        [ "$WRAITH_HOME" = yes ] && echo "    com.google.android.tungsten.setupwraith/.RecoveryActivity"
        [ -n "$QUERY_EXTRA" ] && printf '    %s\n' $QUERY_EXTRA ;;
-  "dumpsys wifi") log wifi-owner-read; case "$WIFI" in owned) echo "cname=com.google.android.tungsten.setupwraith" ;; other) echo "cname=android.uid.system" ;; esac ;;
+  "dumpsys wifi") log wifi-owner-read
+       if [ "$WIFI" = moves ]; then   # the person forgets the network and joins it again: the wizard's for 3 reads, then the Settings'
+         n=$(( $(cat "$T/wifireads" 2>/dev/null || echo 0) + 1 )); echo $n > "$T/wifireads"
+         [ "$n" -le 3 ] && echo "cname=com.google.android.tungsten.setupwraith" || echo "cname=android.uid.system"; exit 0
+       fi
+       case "$WIFI" in owned) echo "cname=com.google.android.tungsten.setupwraith" ;; other) echo "cname=android.uid.system" ;; esac ;;
   "pm disable-user --user 0 com.google.android.tungsten.setupwraith") log wraith-off; log "wraith-off@$(step)"; touch "$T/wraith_off"
        [ "$DROP_AT" = wizard ] && { log drop; exit 1; } ;;
   "cmd wifi status"*)   # read only. WIFI_READ=none: the TV says nothing about it; WIFI_AFTER=lost: the network is gone once the wizard is off
@@ -138,7 +143,7 @@ while [ $# -gt 0 ]; do [ "$1" = -o ] && : > "$2"; shift; done
 
 def run(name, fail_switches, first_drop, down_polls=0, verify="", verifier=None, curl_mode="", vanish="", illegal="", wraith_home="", wifi="", nohome="", install_mode="",
         watchdog="", restore_fail="", tcltv="", dialog="", verifier_empty="", pkgs="", stockless="", pkgextra="", query_extra="", seed=None, seed_home="", seed_marker=False, role="", resolve="", script="install.sh", args=("launcher",),
-        seed_ask="", wifi_after="", wifi_read="", start="", front="", drop_at="", seed_step=False, disabled="", cast="", cast_wiz="", seed_cast=""):
+        seed_ask="", wifi_after="", wifi_read="", start="", front="", drop_at="", seed_step=False, disabled="", cast="", cast_wiz="", seed_cast="", wifi_wait=None):
     t = Path(tempfile.mkdtemp())
     tree, bin_ = t / "tree", t / "bin"
     (tree / "optimize" / "lists").mkdir(parents=True); bin_.mkdir()
@@ -171,7 +176,7 @@ def run(name, fail_switches, first_drop, down_polls=0, verify="", verifier=None,
         (t / "verifier").write_text(verifier + "\n")
     env = dict(os.environ, QUERY_EXTRA=query_extra, PKGS=pkgs, STOCKLESS=stockless, PKGEXTRA=pkgextra, VERIFIER_EMPTY=verifier_empty, DIALOG=dialog, TCLTV=tcltv, RESTORE_FAIL=restore_fail, WATCHDOG=watchdog, ROLE=role, RESOLVE=resolve, INSTALL_MODE=install_mode, NOHOME=nohome, WRAITH_HOME=wraith_home, WIFI=wifi, ILLEGAL=illegal, VERIFY=verify, VANISH=vanish, CURL_MODE=curl_mode, PATH=f"{bin_}:{os.environ['PATH']}", PY=str(bin_ / "py"), T=str(t),
                FAIL_SWITCHES=str(fail_switches), FIRST_DROP=first_drop, DOWN_POLLS=str(down_polls),
-               WIFI_AFTER=wifi_after, WIFI_READ=wifi_read, START=start, FRONT=front, DROP_AT=drop_at, DISABLED=disabled, CAST=cast, CAST_WIZ=cast_wiz, J=str(tree / "optimize" / "run" / "home-switch.json"))
+               WIFI_AFTER=wifi_after, WIFI_READ=wifi_read, START=start, FRONT=front, DROP_AT=drop_at, DISABLED=disabled, CAST=cast, CAST_WIZ=cast_wiz, **({"URTV_WIFI_WAIT": wifi_wait} if wifi_wait is not None else {}), J=str(tree / "optimize" / "run" / "home-switch.json"))
     r = subprocess.run(["bash", str(tree / "optimize" / script), *args], env=env, capture_output=True, text=True)
     log = (t / "log").read_text().split() if (t / "log").exists() else []
     af = tree / "optimize" / "run" / "wifi-ask.txt"
@@ -370,7 +375,16 @@ cases += [
     ("the wizard answers Home and owns the Wi-Fi, not asked yet: STOPS before anything is changed (nothing installed, no safety switch, no wizard off), exit 5, a plain line (no !!) and the Arabic words for the person, and it remembers it asked",
      run("w1", 0, "", wraith_home="yes", wifi="owned"),
      lambda c, o, l: c == 5 and "!!" not in o and "Home switch paused, nothing was changed" in o and ASK_AR in o and "«كمّل»" in o
+     and "still the setup wizard's after 10 minutes" in o and l.count("wifi-owner-read") >= 40
      and "installed" not in l and "bg" not in l and "arm" not in l and "wraith-off" not in l and "switch" not in l and "ask-kept" in l and "rhb-" not in " ".join(l)),
+    ("4.1 reports: the run WAITS for the person (no second run): the network moves while it waits, and it goes on by itself in the safe order",
+     run("w1b", 0, "", wraith_home="yes", wifi="moves"),
+     lambda c, o, l: c == 0 and "!!" not in o and "Home switch paused, nothing was changed" in o and ASK_AR in o and "Waiting up to 10 minutes" in o
+     and "the home switch goes on now, in the safe order" in o and "After «كمّل»" not in o and in_order(l, ["arm", "hb-check"] + STEPS_FIRST + ["disarm"])
+     and "Launcher is home" in o),
+    ("URTV_WIFI_WAIT=0: no wait, the pause stops at once as before (exit 5)",
+     run("w1c", 0, "", wraith_home="yes", wifi="owned", wifi_wait="0"),
+     lambda c, o, l: c == 5 and "Waiting up to" not in o and "After «كمّل»" in o and l.count("wifi-owner-read") == 1),
     ("the pause is said only once: asked before, the network still the wizard's: no second stop (it goes on as before)",
      run("w2", 0, "", wraith_home="yes", wifi="owned", seed_ask="asked x"),
      lambda c, o, l: c == 0 and "Home switch paused" not in o and "arm" in l and "wraith-off" not in l),

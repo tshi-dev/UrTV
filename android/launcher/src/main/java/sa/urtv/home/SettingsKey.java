@@ -31,6 +31,15 @@ final class SettingsKey {
     static final int EAT = 1;
     /** open the TV's settings */
     static final int OPEN_TV_SETTINGS = 2;
+    /** our home is in front but the key never reaches it (homeKeyLost): hand the event to the home's own key path (RemoteKeys) */
+    static final int TO_HOME = 3;
+
+    /**
+     * The Intent action Android TV's SystemUI starts for the Settings / Notification key. On a Haier MatrixTV (Android 14, 4.1 reports) it
+     * resolves to nothing: SystemUI takes the key, starts nothing, and our home never sees it, so the key did nothing there. Where it resolves to
+     * nothing, the service also listens while our home is in front and hands the key to it (TO_HOME).
+     */
+    static final String NOTIFICATION_PANEL_ACTION = "android.app.action.TOGGLE_NOTIFICATION_HANDLER_PANEL";
 
     /**
      * What the key opens outside our home, tried in order: the first one the TV can open is used. Only intents seen on a TV go here. A known
@@ -54,8 +63,10 @@ final class SettingsKey {
         return keyCode == KEYCODE_SETTINGS || keyCode == KEYCODE_NOTIFICATION || keyCode == KEYCODE_TCL_SETTINGS;
     }
 
-    int decide(int keyCode, int action, int repeat, boolean homeFront, boolean stockHome) {
+    /** homeKeyLost: this TV's system takes the key before our home (NOTIFICATION_PANEL_ACTION resolves to nothing) */
+    int decide(int keyCode, int action, int repeat, boolean homeFront, boolean stockHome, boolean homeKeyLost) {
         if (!isSettingsKey(keyCode)) return PASS;   // every other key: untouched, nothing remembered
+        if (homeFront && homeKeyLost) { holding = false; return TO_HOME; }   // every event of it (press, repeats, release): the home tells short from long
         if (holding && keyCode == heldCode) {
             // a new press (DOWN, first) is always a new press: the release may have gone to the settings window
             if (action == ACTION_DOWN && repeat == 0) holding = false;
@@ -71,6 +82,10 @@ final class SettingsKey {
         return OPEN_TV_SETTINGS;
     }
 
+    int decide(int keyCode, int action, int repeat, boolean homeFront, boolean stockHome) {
+        return decide(keyCode, action, repeat, homeFront, stockHome, false);
+    }
+
     /** Whether the service should ask Android for key events at all: only while it could act on the Settings key. */
     static boolean filterWanted(boolean homeFront, boolean stockHome) {
         return !homeFront && !stockHome;
@@ -81,7 +96,13 @@ final class SettingsKey {
      * every key in YouTube or on HDMI could lag (a user report on 4.1). There the Settings key outside our home is the TV's own again.
      */
     static boolean filterWanted(boolean homeFront, boolean stockHome, boolean lowRam) {
-        return !lowRam && filterWanted(homeFront, stockHome);
+        return filterWanted(homeFront, stockHome, lowRam, false);
+    }
+
+    /** ... and on a TV whose system takes the key before our home (homeKeyLost), also while our home is in front (never on a weak TV) */
+    static boolean filterWanted(boolean homeFront, boolean stockHome, boolean lowRam, boolean homeKeyLost) {
+        if (lowRam) return false;
+        return homeFront ? homeKeyLost : filterWanted(false, stockHome);
     }
 
     /** The enabled HOME answerers (packages) include a stock home: one that is not ours, not the setup wizard, not a settings app's fallback. */

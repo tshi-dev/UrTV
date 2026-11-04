@@ -58,3 +58,18 @@ key	4077	1	0	other	off	EAT	its release is consumed
 key	4077	0	0	home	off	HOME_EAT	on our home: the press waits, as 83 and 176	0
 key	4077	1	0	home	off	HOME_TV_SETTINGS	short: the TV's settings	100
 key	4062	0	0	other	off	PASS	a TCL app key (4062) is not the Settings key: untouched
+reset						-	
+lost	83	0	0	home	off	TO_HOME:HOME_EAT	Haier MatrixTV: the system keeps the key from our home; the service hands the press to the home's path	0
+lost	83	1	0	home	off	TO_HOME:HOME_TV_SETTINGS	a short press: the TV's own settings, as on any home	100
+lost	176	0	0	home	off	TO_HOME:HOME_EAT	176: the same	0
+lost	176	0	1	home	off	TO_HOME:OUR_SETTINGS	held 600 ms: OUR settings	600
+lost	176	1	0	home	off	TO_HOME:HOME_EAT	its release	700
+lost	20	0	0	home	off	PASS	any other key on our home: untouched
+lost	83	0	0	other	off	TV_SETTINGS	another app in front: as before
+lost	83	1	0	other	off	EAT	its release
+filter4	home	off	ok	lost		on	the home in front on such a TV: the service listens
+filter4	home	off	ok	ok		off	any other TV: not while our home is in front, as before
+filter4	other	off	ok	ok		on	another app: as before
+filter4	other	on	ok	ok		off	a stock home on: as before
+filter4	home	off	low	lost		off	a weak TV: never (Ram.low)
+filter4	other	off	low	ok		off	a weak TV, another app: never

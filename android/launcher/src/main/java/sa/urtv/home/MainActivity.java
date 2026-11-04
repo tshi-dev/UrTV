@@ -240,6 +240,7 @@ public class MainActivity extends Activity {
             try { guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t("إعداد تلفزيوني"), () -> launch(new Intent(this, sa.urtv.home.setup.SetupActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT))); } catch (RuntimeException ignored) { }   // the person opened this screen already (its own lock was passed then)
         }
         UpdateCarry.homeShown = true;   // the carry-over after our update asks whether our home is in front
+        front = new java.lang.ref.WeakReference<>(this);   // TypeService's key hand-over (keyFromService)
         backExit.reset(); backGuarded = false;   // «الخروج من تلفزيونك»: a new visit, its count and its hint start again
         sa.urtv.home.tilawah.AdhanFront.home(true);   // «الأذان على شاشة التوقف فقط»: the adhan's alarm asks what is in front
         TypeService.homeFront(true);   // the Settings key is ours here (RemoteKeys): the service stops asking for keys
@@ -3237,6 +3238,15 @@ public class MainActivity extends Activity {
         return stop != AdhanKeys.PASS;
     }
 
+    /** the home in front (onResume to onPause), for keyFromService */
+    private static java.lang.ref.WeakReference<MainActivity> front = new java.lang.ref.WeakReference<>(null);
+
+    /** TypeService saw the Settings key while this home is in front, on a TV whose system keeps it from us (SettingsKey.TO_HOME): our key path */
+    static void keyFromService(KeyEvent e) {
+        MainActivity a = front.get();
+        if (a != null && a.resumed && !a.isDestroyed()) a.dispatchKeyEvent(e);
+    }
+
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
         // while the adhan plays: OK on its bar stops it, and with «إيقاف الأذان بأي زر» any key does; that press is consumed whole
@@ -3247,6 +3257,8 @@ public class MainActivity extends Activity {
             android.util.Log.d("UrTVKeys", "key=" + e.getKeyCode() + " scan=" + e.getScanCode());   // for the TV test: does the shortcut key reach the home screen at all? (codes only)
         RemoteKeys.Decision key = remoteKeys.decide(e.getKeyCode(), e.getScanCode(), e.getAction(), e.getRepeatCount(), e.getEventTime() - e.getDownTime(),
                 RemoteKeys.opensApp(e.getKeyCode()) ? remoteInstalled() : Collections.<String>emptySet());
+        if (key.kind == RemoteKeys.PASS && e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0 && RemoteKeys.unmapped(e.getKeyCode()))
+            android.util.Log.i("UrTVKeys", "unmapped key=" + e.getKeyCode() + " scan=" + e.getScanCode());   // codes only: for the next report (RemoteKeys.unmapped)
         if (key.kind != RemoteKeys.PASS) {
             if (key.kind != RemoteKeys.EAT) {
                 if (edit != null) leaveEdit();   // a shortcut key in «تعديل المفضلة»: what was arranged is saved, as with Home, then the key acts

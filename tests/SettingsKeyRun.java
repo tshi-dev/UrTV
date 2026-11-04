@@ -25,11 +25,21 @@ public final class SettingsKeyRun {
             switch (f[0]) {
                 case "reset": sk = new SettingsKey(); home = new RemoteKeys(); r = "-"; break;
                 case "filter": r = SettingsKey.filterWanted(f[1].equals("home"), f[2].equals("on")) ? "on" : "off"; break;
+                // "filter4": front stockHome lowRam(low|ok) homeKeyLost(lost|ok)
+                case "filter4": r = SettingsKey.filterWanted(f[1].equals("home"), f[2].equals("on"), f[3].equals("low"), f[4].equals("lost")) ? "on" : "off"; break;
                 case "stock": r = SettingsKey.stockHomeOn(f[1].isEmpty() ? Collections.<String>emptyList() : Arrays.asList(f[1].split(",")), "sa.urtv.home") ? "yes" : "no"; break;
                 default: {
                     int code = Integer.parseInt(f[1]), action = Integer.parseInt(f[2]), repeat = Integer.parseInt(f[3]);
                     boolean front = f[4].equals("home"), stock = f[5].equals("on");
-                    int d = sk.decide(code, action, repeat, front, stock);
+                    int d = f[0].equals("lost") ? sk.decide(code, action, repeat, front, stock, true) : sk.decide(code, action, repeat, front, stock);
+                    if (d == SettingsKey.TO_HOME) {   // handed to the home's own path, as TypeService does (MainActivity.keyFromService)
+                        long held = f.length > 8 && !f[8].isEmpty() ? Long.parseLong(f[8]) : 0;
+                        RemoteKeys.Decision h = home.decide(code, 0, action, repeat, held, Collections.<String>emptySet());
+                        r = "TO_HOME:" + (h.kind == RemoteKeys.OPEN_OUR_SETTINGS ? "OUR_SETTINGS" : h.kind == RemoteKeys.OPEN_SETTINGS ? "HOME_TV_SETTINGS"
+                                : h.kind == RemoteKeys.EAT ? "HOME_EAT" : "OTHER");
+                        out.append(r).append('\n');
+                        continue;
+                    }
                     if (d == SettingsKey.EAT) r = "EAT";
                     else if (d == SettingsKey.OPEN_TV_SETTINGS) r = "TV_SETTINGS";
                     else if (!front) r = "PASS";

@@ -44,6 +44,10 @@ check("MainActivity forgets a held shortcut key when it goes to the background (
       "remoteKeys.reset();" in main_src.split("protected void onPause() {")[1].split("\n    }\n")[0])
 check("MainActivity logs every first press that reaches it, codes only, for the TV test (adb logcat -s UrTVKeys)",
       'android.util.Log.d("UrTVKeys", "key=" + e.getKeyCode() + " scan=" + e.getScanCode())' in main_src)
+rk_src = (HOME / "RemoteKeys.java").read_text(encoding="utf-8")
+check("a key the home does not answer, 0 or 170 and up (TCL G08's Video / TCL Channel / Web, 4.1 reports), is logged once per press as «unmapped key=… scan=…», codes only, and mapped to nothing",
+      "return keyCode == 0 || keyCode >= 170;" in rk_src and 'android.util.Log.i("UrTVKeys", "unmapped key=" + e.getKeyCode() + " scan=" + e.getScanCode());' in main_src
+      and "key.kind == RemoteKeys.PASS && e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0 && RemoteKeys.unmapped(e.getKeyCode())" in main_src)
 check("TVS.md says the key may be taken before our home sees it, and how to check", "before our home sees it" in (ROOT / "docs/TVS.md").read_text(encoding="utf-8") and "logcat -s UrTVKeys" in (ROOT / "docs/TVS.md").read_text(encoding="utf-8"))
 if not shutil.which("javac"):
     print("SKIP remote keys: no javac here")

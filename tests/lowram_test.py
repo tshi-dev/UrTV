@@ -73,7 +73,7 @@ else:
     print("SKIP the JVM cases: no javac")
 
 ts = text(HOME / "TypeService.java")
-check("TypeService asks the rule with Ram.low, and skips its package query on a weak TV", "SettingsKey.filterWanted(front, stockHome, lowRam)" in ts and "if (!front && !lowRam) stockHome = stockHomeOn(this);" in ts)
+check("TypeService asks the rule with Ram.low, and skips its package query on a weak TV", "SettingsKey.filterWanted(front, stockHome, lowRam, homeKeyLost)" in ts and "if (!front && !lowRam) stockHome = stockHomeOn(this);" in ts)
 ma = text(HOME / "MainActivity.java")
 tick = ma[ma.index("private final BroadcastReceiver tick"):ma.index("private long clockDrawnAt;")]
 check("the clock's tick: the minute guard for Wi-Fi broadcasts, the settings read on clockReads, then the redraw on the UI thread only while in front",

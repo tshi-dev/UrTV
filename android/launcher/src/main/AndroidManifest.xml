@@ -71,6 +71,10 @@
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 
     <queries>
+        <!-- the Settings key's SystemUI handler: whether it resolves (SettingsKey.NOTIFICATION_PANEL_ACTION, a Haier MatrixTV has none) -->
+        <intent>
+            <action android:name="android.app.action.TOGGLE_NOTIFICATION_HANDLER_PANEL" />
+        </intent>
         <intent>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LEANBACK_LAUNCHER" />

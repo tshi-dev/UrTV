@@ -64,7 +64,8 @@ public class TypeService extends AccessibilityService {
         try {
             boolean front = homeFront, lowRam = Ram.low(this);
             if (!front && !lowRam) stockHome = stockHomeOn(this);   // one package query, only when the home leaves (none on a weak TV: no filter there)
-            boolean want = SettingsKey.filterWanted(front, stockHome, lowRam);
+            if (homeKeyLost == null) homeKeyLost = homeKeyLost(this);   // once per service: it does not change while the TV runs
+            boolean want = SettingsKey.filterWanted(front, stockHome, lowRam, homeKeyLost);
             AccessibilityServiceInfo info = getServiceInfo();
             if (info == null) return;
             boolean has = (info.flags & AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS) != 0;
@@ -80,8 +81,14 @@ public class TypeService extends AccessibilityService {
 
     /** Every key, while the filter is on. Anything but the Settings key goes back to Android untouched: nothing is read, kept or logged. */
     @Override protected boolean onKeyEvent(KeyEvent e) {
-        int d = settingsKey.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), homeFront, stockHome);
+        Boolean lost = homeKeyLost;
+        int d = settingsKey.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), homeFront, stockHome, lost != null && lost);
         if (d == SettingsKey.PASS) return false;
+        if (d == SettingsKey.TO_HOME) {   // the home's own key path, on its thread: a short press the TV's settings, a long one ours (RemoteKeys)
+            final KeyEvent copy = new KeyEvent(e);
+            main.post(() -> MainActivity.keyFromService(copy));
+            return true;
+        }
         if (d == SettingsKey.OPEN_TV_SETTINGS) main.post(this::openTvSettings);   // after the key is answered: the TV does not wait on us
         return true;
     }
@@ -108,6 +115,19 @@ public class TypeService extends AccessibilityService {
             log("settings key=open");
         } catch (RuntimeException e) {
             log("settings key=failed");
+        }
+    }
+
+    /** this TV's system takes the Settings key before our home: SettingsKey.NOTIFICATION_PANEL_ACTION resolves to no activity (Haier MatrixTV) */
+    private volatile Boolean homeKeyLost;
+
+    static boolean homeKeyLost(Context c) {
+        try {
+            boolean lost = c.getPackageManager().queryIntentActivities(new Intent(SettingsKey.NOTIFICATION_PANEL_ACTION), 0).isEmpty();
+            if (lost) log("settings key=homelost"); else log("settings key=homeok");
+            return lost;
+        } catch (RuntimeException e) {
+            return false;   // could not tell: as before
         }
     }
 
