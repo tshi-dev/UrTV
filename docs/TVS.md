@@ -57,8 +57,8 @@ app's preview of the same page and `measure.sh` writes «not measured»). Times 
 | Hisense HiSmartTV A4 (Toshiba) | 9 | works | not reported | not reported | – | not reported |
 | Hisense SmartTV 4K FFM (hengshan) | 12 | not reported | not reported | not reported | SmartTube (about 25 MB) uploaded to 100%, then the install ended in a read timeout on the TV (the install is now watched with short looks, and an extra that still fails is skipped by itself; `SKIP_EXTRAS=1` skips the extras) | not reported |
 | Hisense HiSmartTV A4 | 11 | not reported | not reported | not reported | – | not reported |
-| Chromecast with Google TV (sabrina) · 2 reports | 14 | works | not reported | no Network debugging, only Wireless debugging: `adb pair`, then `adb tcpip 5555`; every restart turns it off and closes 5555 | pair and run `adb tcpip 5555` again after each restart (wireless debugging must be paired again after a reboot); SmartTube (about 25 MB) uploaded to 100%, then the install ended in a read timeout on the TV (slow steps now run in the background on the TV; `SKIP_EXTRAS=1` skips the extras) | not reported |
-| Chromecast HD (boreal) | 14 | works | not reported | same as the sabrina: Wireless debugging only, `adb pair`, then `adb tcpip 5555`; closes at every restart | pair again after each restart; SmartTube (about 25 MB) uploaded to 100%, then the install ended in a read timeout on the TV (slow steps now run in the background on the TV; `SKIP_EXTRAS=1` skips the extras) | not reported |
+| Chromecast with Google TV (sabrina) · 2 reports | 14 | works (casting: see below) | not reported | no Network debugging, only Wireless debugging: `adb pair`, then `adb tcpip 5555`; every restart turns it off and closes 5555 | pair and run `adb tcpip 5555` again after each restart (wireless debugging must be paired again after a reboot); SmartTube (about 25 MB) uploaded to 100%, then the install ended in a read timeout on the TV (slow steps now run in the background on the TV; `SKIP_EXTRAS=1` skips the extras) | not reported |
+| Chromecast HD (boreal) | 14 | works (casting: see below) | not reported | same as the sabrina: Wireless debugging only, `adb pair`, then `adb tcpip 5555`; closes at every restart | pair again after each restart; SmartTube (about 25 MB) uploaded to 100%, then the install ended in a read timeout on the TV (slow steps now run in the background on the TV; `SKIP_EXTRAS=1` skips the extras) | not reported |
 | Google TV Streamer (kirkwood) | not reported | not reported | not reported | not reported | – | not reported |
 | SCBC R4 | 11 | works | not reported | 5555 | the TV's IP changed mid-setup: rediscovery (`optimize/find-tv.sh`) fixed it | not reported |
 | SCBC ATV R2 | not reported | not reported | not reported | not reported | – | not reported |
@@ -73,6 +73,8 @@ app's preview of the same page and `measure.sh` writes «not measured»). Times 
 | MOKA R3G | not reported | not reported | not reported | not reported | – | not reported |
 | xangshi XS97 | not reported | not reported | not reported | not reported | – | not reported |
 | SHARP AQUOS | not reported | not reported | not reported | not reported | – | not reported |
+
+Chromecast with Google TV (sabrina, boreal) and the Google TV Streamer (kirkwood): the cast receiver reads its device credentials from the setup wizard (setupwraith). Setups before 4.2 turned the wizard off with the home switch, and after the next restart casting from a phone and the Google Home remote said «جهاز غير موثوق فيه» (untrusted device): the earlier «works» rows were never checked with a cast after a restart. From 4.2 the wizard stays on there; `optimize/dock.sh cast on|off` chooses between casting and our home as Home when the wizard keeps Home.
 
 ## When the setup wizard owns the Wi-Fi (TCL G08/G10/G14, Google TV sets)
 

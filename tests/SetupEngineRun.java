@@ -21,7 +21,7 @@ public class SetupEngineRun {
         String stockPkg = "com.google.android.apps.tv.launcherx";
         String webview = "Current WebView package (name, version): (com.google.android.webview, 120.0.6099.144)";
         String sdk = "34";
-        boolean silent, dashFailsMarker, wizardAnswersHome, wizardOwnsWifi, nokia, refuseSwitch, noRoleManager, emptyResolve;
+        boolean silent, dashFailsMarker, wizardAnswersHome, wizardOwnsWifi, castInWizard, nokia, refuseSwitch, noRoleManager, emptyResolve;
         boolean roleRejected, homeRejected, ignoreRoleBack, appopRefused;
         String exactAlarm = "default";
         String maker = "Google", adbPort = "", bucket = "10", bootId = "boot-1";
@@ -63,6 +63,8 @@ public class SetupEngineRun {
                 return b.toString();
             }
             c = c.replace(" 2> /dev/null", "").replace(" 2>&1", "");
+            if (c.startsWith("dumpsys package com.google.android.tungsten.setupwraith"))   // a Chromecast: the cast credentials are in the wizard
+                return castInWizard ? "    x/com.google.android.libraries.tv.setupwraith.libs.castinfo.CastInfoProvider\n" : "";
             if (c.startsWith("echo '")) return c.substring(6, c.lastIndexOf('\'')) + "\n";
             if (c.equals("true") || c.equals("appops write-settings") || c.startsWith("pm trim-caches")) return "";
             if (c.startsWith("dumpsys activity settings")) return "";
@@ -272,6 +274,15 @@ public class SetupEngineRun {
         FakeTv tx = tv(); tx.wizardAnswersHome = true; tx.wizardOwnsWifi = false;
         engine(tx, new Mem(), new Dead(), new ArrayList<>()).home();
         line("G2 wizardDisabled=" + tx.count("pm disable-user --user 0 com.google.android.tungsten.setupwraith"));
+        // G3: a Chromecast (the wizard holds the cast credentials), the Wi-Fi not the wizard's: the wizard stays on; G4: the person chose our home first
+        FakeTv tcc = tv(); tcc.wizardAnswersHome = true; tcc.wizardOwnsWifi = false; tcc.castInWizard = true;
+        SetupEngine.Result rcc = engine(tcc, new Mem(), new Dead(), new ArrayList<>()).home();
+        line("G3 " + rcc.status + " wizardDisabled=" + tcc.count("pm disable-user --user 0 com.google.android.tungsten.setupwraith"));
+        FakeTv tco = tv(); tco.wizardAnswersHome = true; tco.wizardOwnsWifi = false; tco.castInWizard = true; Mem mco = new Mem(); mco.put("cast.txt", "off\n");
+        engine(tco, mco, new Dead(), new ArrayList<>()).home();
+        line("G4 wizardDisabled=" + tco.count("pm disable-user --user 0 com.google.android.tungsten.setupwraith"));
+        FakeTv tca = tv(); tca.wizardAnswersHome = true; tca.wizardOwnsWifi = true; tca.castInWizard = true;
+        line("G5 asks=" + engine(tca, new Mem(), new Dead(), new ArrayList<>()).wizardOwnsWifi());
         // L: no alarm could be set: the home switch does not start, nothing on the TV changes
         FakeTv tl = tv(); Mem ml = new Mem(); Dead dl = new Dead(); dl.works = false;
         SetupEngine el = engine(tl, ml, dl, new ArrayList<>());
