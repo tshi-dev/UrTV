@@ -150,4 +150,7 @@ check("currencies: a fourth tab «صرف العملات» with the list, «حو�
       'S.t("صرف العملات")' in act2 and 'TABS = {"market", "watch", "portfolio", "fx"}' in act2 and "else if (k == 3) currencies();" in act2 and "MarketFile.loadFx(app);" in act2
       and 'fxPrefs().getString("from", "USD"), fxPrefs().getString("to", "SAR")' in act2 and "MarketFile.loadFx" not in "".join(text(p) for p in HOME.rglob("*.java") if p.name not in ("MarketsActivity.java", "MarketFile.java")))
 check("currencies: a missing rate shows «—» (MarketData.fxNumber of NaN), never 0; the pegs say «مربوط بالدولار»", 'MarketData.pegged(code) ? code + " · " + S.t("مربوط بالدولار")' in act2 and 'return "—"' in text(HOME / "MarketData.java"))
+check("step 28 (the owner's photo): the pad's zero is a Latin-style 0 in Arabic (the Arabic one is a dot beside the separator), the separator key is large, and ⌫ is mirrored in RTL",
+      'if (key.equals("0") && !Digits.latin()) return "0";' in act2 and 'sp + 10' in act2 and 'key.equals("⌫") && Dir.rtl()) b.setScaleX(-1f)' in act2
+      and act2.count("padStyle((TextView) b,") == 2 and act2.count("button(padLabel(") == 2)
 sys.exit(1 if failed else 0)

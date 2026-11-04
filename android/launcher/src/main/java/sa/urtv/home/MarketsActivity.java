@@ -979,7 +979,7 @@ public class MarketsActivity extends Activity {
             line.setLayoutDirection(Dir.layout());
             for (int c = 0; c < 3; c++) {
                 final String key = keys[r * 3 + c];
-                View b = button(key.equals("⌫") ? "⌫" : MarketData.show(key, Digits.latin()), false, v -> {
+                View b = button(padLabel(key), false, v -> {
                     if (untouched[0] && !key.equals("⌫")) { amount.setLength(0); untouched[0] = false; }
                     if (key.equals("⌫")) { untouched[0] = false; if (amount.length() > 0) amount.setLength(amount.length() - 1); }
                     else if (key.equals(".")) { if (amount.indexOf(".") < 0 && amount.length() < 12) amount.append(amount.length() == 0 ? "0." : "."); }
@@ -987,6 +987,7 @@ public class MarketsActivity extends Activity {
                     paint.run();
                 });
                 ((TextView) b).setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+                padStyle((TextView) b, key, 22);
                 if (key.equals("5")) five = b;
                 line.addView(b, new LinearLayout.LayoutParams(0, dp(48), 1f));
                 if (c > 0) ((LinearLayout.LayoutParams) b.getLayoutParams()).setMarginStart(dp(8));
@@ -1364,7 +1365,7 @@ public class MarketsActivity extends Activity {
             line.setLayoutDirection(Dir.layout());
             for (int c = 0; c < 3; c++) {
                 final String k = keys[r * 3 + c];
-                View b = button(k.equals("⌫") ? "⌫" : MarketData.show(k, Digits.latin()), false, v -> {
+                View b = button(padLabel(k), false, v -> {
                     StringBuilder s = values[field[0]];
                     if (k.equals("⌫")) { if (s.length() > 0) s.setLength(s.length() - 1); }
                     else if (k.equals(".")) { if (s.indexOf(".") < 0 && s.length() < 9) s.append(s.length() == 0 ? "0." : "."); }
@@ -1372,6 +1373,7 @@ public class MarketsActivity extends Activity {
                     paint.run();
                 });
                 ((TextView) b).setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
+                padStyle((TextView) b, k, 24);
                 if (k.equals("5")) five = b;
                 line.addView(b, new LinearLayout.LayoutParams(0, dp(52), 1f));
                 if (c > 0) ((LinearLayout.LayoutParams) b.getLayoutParams()).setMarginStart(dp(8));
@@ -1652,6 +1654,24 @@ public class MarketsActivity extends Activity {
             t.setTextColor(has ? look.onFocus : t == fxBtn && tab == 3 ? ACCENT : TEXT);
         });
         return t;
+    }
+
+    /**
+     * A number pad key's label. The Arabic zero «٠» is a dot and read as a decimal point next to the real one (step 28, the owner's photo): the zero key
+     * shows a Latin-style 0, the decimal key the separator «٫» (English «.») as a large mark, and the backspace key a ⌫ that points the way text deletes.
+     */
+    private static String padLabel(String key) {
+        if (key.equals("⌫")) return "⌫";
+        if (key.equals("0") && !Digits.latin()) return "0";
+        return MarketData.show(key, Digits.latin());
+    }
+
+    private void padStyle(TextView b, String key, int sp) {
+        if (key.equals(".")) {   // the separator, large enough to read as a key (no vertical padding: the key's height is fixed)
+            b.setTextSize(TypedValue.COMPLEX_UNIT_SP, sp + 10);
+            b.setPadding(dp(20), 0, dp(20), 0);
+        }
+        if (key.equals("⌫") && Dir.rtl()) b.setScaleX(-1f);   // ⌫ points left (English); in Arabic the text deletes from the left, so the key points right
     }
 
     private View button(String label, boolean primary, View.OnClickListener click) {
