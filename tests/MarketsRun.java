@@ -181,6 +181,13 @@ public final class MarketsRun {
             && MarketData.fxNeedsOwn("{\"updated\":\"2026-11-04T06:00:00Z\",\"rates\":{}}", now182) && MarketData.fxNeedsOwn("{\"rates\":{\"KWD\":0.307}}", now182)
             && MarketData.fxNeedsOwn("{\"updated\":\"2026-11-01T06:00:00+00:00\",\"rates\":{\"KWD\":0.307}}", now182) && MarketData.fxNeedsOwn("<html>", now182)
             && !MarketData.fxNeedsOwn(MarketData.fxFile(own, now182), now182), "");
+        java.util.Map<String, MarketData.Live> shownLive = new java.util.LinkedHashMap<>(td), nowLive = new java.util.LinkedHashMap<>(td);
+        check("live: an answer that says what is shown (same price, same close before, same time; Tadawul's time does not count, it is told in words) draws nothing again; a new price or a new symbol does",
+            MarketData.liveSame(shownLive, nowLive) && MarketData.liveSame(shownLive, new java.util.LinkedHashMap<String, MarketData.Live>())
+            && !MarketData.liveSame(new java.util.LinkedHashMap<String, MarketData.Live>(), nowLive)
+            && MarketData.liveSame(shownLive, java.util.Collections.singletonMap("2222.SR", new MarketData.Live(td.get("2222.SR").p, td.get("2222.SR").v, td.get("2222.SR").at + 600_000L)))
+            && !MarketData.liveSame(shownLive, java.util.Collections.singletonMap("2222.SR", new MarketData.Live(td.get("2222.SR").p + 0.1, td.get("2222.SR").v, td.get("2222.SR").at)))
+            && !MarketData.liveSame(java.util.Collections.singletonMap("AAPL", new MarketData.Live(201.5, 200, 1793000000_000L)), java.util.Collections.singletonMap("AAPL", new MarketData.Live(201.5, 200, 1793000300_000L))), "");
         check("live: anything that is not that answer is an empty map (the caller backs off)", MarketData.parseLive("<html>").isEmpty() && MarketData.parseLive(null).isEmpty() && MarketData.parseLive("{}").isEmpty(), "");
         MarketData file = MarketData.parse(FILE);
         MarketData on = file.withLive(m);

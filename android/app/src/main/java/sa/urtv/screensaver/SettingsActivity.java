@@ -151,6 +151,7 @@ public class SettingsActivity extends Activity {
     @Override
     protected void onResume() {   // back in front (from the TV's settings, or opened again over itself): show what is set now
         super.onResume();
+        adhanAsked = false;
         look = GlassSource.page(this, root);   // the home's photo or «المظهر» may have changed meanwhile
         hint.setTextColor(look.sub);
         render();
@@ -562,7 +563,7 @@ public class SettingsActivity extends Activity {
     private String hubSummary(String cat) {
         switch (cat) {
             case SettingsHub.ADHAN: {
-                Boolean on = homeAdhanOn();   // the home's switch; null when the home cannot say (not installed, or older)
+                Boolean on = homeAdhanSeen();   // the home's switch as last known; null when the home cannot say (not installed, or older)
                 return on == null ? "تشغيله وصوته ومؤذن الفجر" : on ? OnOff.ON_WORD : OnOff.OFF_WORD;
             }
             case SettingsHub.PLACE: return Words.city(prefs.city()) + " · " + PrayerMethod.label(prefs.prayerMethod(), prefs.cityCountry(), prefs.cityTz());
@@ -595,6 +596,34 @@ public class SettingsActivity extends Activity {
      * The home's adhan switch (its «الأذان التلقائي»), read from the home (NowPlayingProvider .../adhan_on, the same permission as «يُتلى الآن»):
      * null when the home cannot say (not installed, older than this question, or it refused).
      */
+    private Boolean adhanSeen;       // what the hub shows: the last answer (kept on disk too), so opening the settings never waits for the other app
+    private boolean adhanAsked;      // asked once per time the settings come to the front
+
+    /**
+     * The adhan tile's state without a call to the home on the UI thread (the call may start the home's process: seconds on a weak TV): the copy kept from the
+     * last time, and one question asked on a thread each time the settings come to the front; the tile is drawn again only when the answer differs.
+     */
+    private Boolean homeAdhanSeen() {
+        if (adhanSeen == null) {
+            int v = getSharedPreferences("hub_seen", MODE_PRIVATE).getInt("adhan_on", -1);
+            adhanSeen = v < 0 ? null : v == 1;
+        }
+        if (!adhanAsked) {
+            adhanAsked = true;
+            new Thread(() -> {
+                final Boolean now = homeAdhanOn();
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()) return;
+                    boolean changed = !java.util.Objects.equals(now, adhanSeen);
+                    adhanSeen = now;
+                    getSharedPreferences("hub_seen", MODE_PRIVATE).edit().putInt("adhan_on", now == null ? -1 : now ? 1 : 0).apply();
+                    if (changed) render();
+                });
+            }, "hub-adhan").start();
+        }
+        return adhanSeen;
+    }
+
     private Boolean homeAdhanOn() {
         android.database.Cursor c = null;
         try {

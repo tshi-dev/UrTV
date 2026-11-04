@@ -3417,9 +3417,11 @@ public class MainActivity extends Activity {
             for (int i = 0; i < row.getChildCount(); i++) {
                 View c = row.getChildAt(i);
                 boolean whole = c.getLeft() >= s && c.getRight() <= s + w, out = c.getRight() <= s || c.getLeft() >= s + w;
-                c.setClipBounds(whole || out || c.hasFocus() ? null : new android.graphics.Rect(0, 0, 0, 0));
+                boolean clip = !(whole || out || c.hasFocus());
+                if (clip != (c.getClipBounds() != null)) c.setClipBounds(clip ? NOTHING : null);   // only a tile that changes state is touched (this runs on every scroll step and focus move)
             }
         }
+        private final android.graphics.Rect NOTHING = new android.graphics.Rect(0, 0, 0, 0);
         private final android.graphics.Paint chev = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
         private final android.graphics.Path chevPath = new android.graphics.Path();
         /**

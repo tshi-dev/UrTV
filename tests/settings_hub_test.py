@@ -141,8 +141,8 @@ icons = st[st.index("private static int hubIcon(String cat)"):].split("\n    }\n
 summ = st[st.index("private String hubSummary(String cat)"):].split("\n    }\n")[0]
 check("every button has its icon and says what is set in it now (a case for every category)",
       all(f"case SettingsHub.{k.upper()}:" in icons and f"case SettingsHub.{k.upper()}:" in summ for k in C), [k for k in C if f"case SettingsHub.{k.upper()}:" not in summ])
-check("«الأذان» shows the home's switch, read from the home (NowPlayingProvider .../adhan_on), and says nothing of it when the home cannot say",
-      "Boolean on = homeAdhanOn();" in summ and 'content://sa.urtv.home.nowplaying/adhan_on' in st and "OnOff.ON_WORD : OnOff.OFF_WORD" in summ)
+check("«الأذان» shows the home's switch, read from the home (NowPlayingProvider .../adhan_on) off the UI thread (the last answer is kept), and says nothing of it when the home cannot say",
+      "Boolean on = homeAdhanSeen();" in summ and "private Boolean homeAdhanSeen()" in st and "new Thread(() -> {" in st.split("private Boolean homeAdhanSeen()")[1].split("private Boolean homeAdhanOn()")[0] and 'content://sa.urtv.home.nowplaying/adhan_on' in st and "OnOff.ON_WORD : OnOff.OFF_WORD" in summ)
 tilefn = st[st.index("private View tile(final String cat, String name, int icon, String summary)"):].split("\n    }\n")[0]
 check("OK on a button: a DIRECT one runs its row's own action, any other opens its screen (and is the one focused on the way back)",
       "String row = SettingsHub.direct(cat);" in tilefn and "Runnable act = row == null ? null : actions.get(row);" in tilefn

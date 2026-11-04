@@ -131,6 +131,19 @@ final class MarketData {
         return out;
     }
 
+    /**
+     * True when this live answer says what the page already shows: every symbol in it has the same price and the same close before (and the same quote time, except
+     * where the source's delay is told in words, not by a time). A live tick that changes nothing (the exchange is closed, or quiet) draws nothing again.
+     */
+    static boolean liveSame(Map<String, Live> shown, Map<String, Live> now) {
+        for (Map.Entry<String, Live> e : now.entrySet()) {
+            Live o = shown.get(e.getKey()), l = e.getValue();
+            if (o == null || Double.compare(o.p, l.p) != 0 || Double.compare(o.v, l.v) != 0) return false;
+            if (!"delayed".equals(liveKind(e.getKey())) && o.at != l.at) return false;
+        }
+        return true;
+    }
+
     /** one symbol's live price from its fields (a meta, or the symbol's own map), its closes and its timestamps; null without a usable price */
     private static Live liveOf(Map<?, ?> meta, double[] closes, Object timestamps) {
         double p = num(meta.get("regularMarketPrice"));

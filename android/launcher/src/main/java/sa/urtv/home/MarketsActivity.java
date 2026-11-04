@@ -159,9 +159,10 @@ public class MarketsActivity extends Activity {
         else {
             liveFails = 0;
             liveOkAt = now;
+            boolean same = MarketData.liveSame(liveOf(data), m);   // nothing new (closed exchange, quiet minute): the whole tab is not built again for it
             data = data.withLive(m);
-            redraw();
-            if (cardCode != null && cardBlock != null && data.of(cardCode) != null) {
+            if (!same) redraw();
+            if (!same && cardCode != null && cardBlock != null && data.of(cardCode) != null) {
                 View f = cardBlock.findFocus();
                 ViewGroup head = (ViewGroup) cardBlock.getChildAt(0);
                 int at = f == null || head == null ? -1 : head.indexOfChild(f) - 1;
