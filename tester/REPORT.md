@@ -914,3 +914,58 @@ Holding deleted by «خيارات محفظتي ← احذف المحفظة ← �
 
 ### step 30b summary: ✓ 2, 4. ✗ 1 by the rule (`parsed=4` of 9; the US ones all live), ✗ 3, ✗ small in 5
 Problems: (1) `parsed` ≠ `asked`, probably the Tadawul symbols; (2) header shows Tadawul and «أسعار متأخرة» while US prices are live; (3) US stock's card: Tadawul hours on the axis, wrong open and day range; (4) home card mixes amount and % with `stkchg amount`; (5) no S&P 500 / Nasdaq on «السوق» (asked «if shown»).
+
+## step 31 — build 191 (updated from 188 with «تحديث تلفزيوني», channel next: the channel gave 191, newer than the 190 asked; TV muted throughout; Thu 01:47–02:24)
+Update: no screensaver over the question (45 watcher reads, `dream=null`), «تم» → MainActivity, both apps versionCode=191. `Muted:true` at every read.
+
+### 1 ✓ «فرقك»
+Added الاتفاق (3 teams), reopened about every 14.5 s: **12 of 12** with «فرقك» and الاتفاق × الهلال (step 30: 4 of 12). Checked on the 12 shots by eye. One run, at night.
+
+### 2 Stock card: fits ✓, «رجوع» ✗
+2222 and 1120 from «قائمتي», 1211 from the movers:
+- ✓ Fits the safe area: content [264,56,1656,788], action button [264,828,1656,939], «رجوع» [264,963,1656,1024]. Action button 111 px high, label readable
+- ✓ OK on «رجوع» returns to the same row on all 3 (أرامكو, الراجحي [777,727,1792,881], معادن [128,434,1792,545]); remote Back too (2222)
+- ✓ The list did not change (`stocks` the same; 1211 stayed out)
+- **✗ «رجوع» has no visible label:** the dump has the text, but the screen shows an empty box, and an empty white pill when focused. All 3 stocks. The box is 61 px high against 111 for the button above it. The match card's «رجوع» shows its label. Shots S3-dn2, crop-card
+- **✗ First focus is not on «رجوع»:** it is on the scrolling content (`ScrollView` [264,56,1656,788]), with no visible ring. ▼ reaches «رجوع» after 2 presses on 1120, 3 on 2222 and 1211, and the first ▼ on the last two only scrolls the name out of view
+
+### 3 ✓ Pad, with a small note
+All 11 keys read from the dump are 104 px high, same rows, borders whole in the shot. ⌫ `[544,784,811,888]`, ٫ `[1110,784,1376,888]`. The middle bottom key is not in the dump as ٠, and in the shot it reads as a hollow «0», close to ٥ two rows above. Digits are `hindi`, where ٠ is a dot. **Small ✗, from the shot and the missing text only.**
+
+### 4 Greeting: not testable now
+02:04 shows «تصبح على خير», right for the small hours. «مساء الخير» until 2 h after Isha needs an evening run. The rule in `GreetingText.part` reads as asked; `tests/greeting_test.py` not run (no javac here).
+
+### 5 ✓ Dark pages and match card
+With look «رملي»: markets, stock card, matches and match card all dark. With the glass look the markets page keeps the blurred photo behind, as in 30b (the page's darkening varies with the photo). Match card: «رجوع» labelled, ▼ reaches it in one press, OK and Back return to the same row (2nd row, الخلود × الخليج).
+
+### 6 Smoothness: numbers, feel not judged
+- **Settings ✓** `Displayed`: cold (after force-stop) 811, 676, 686 ms. Warm: no `Displayed` line; `am start -W` TotalTime 207, 201, 199 ms
+- **Markets «مباشر»** 5 min on «قائمتي», prices closed: asks at 02:08:33, 09:37, 10:37, 11:37, 12:38, so **every 60 s** as the weak-TV rule says
+- **No redraw log exists**, so I counted frames with `dumpsys gfxinfo`. Page in «عادي», 100 s: **0 frames ✓**. «مباشر», 190 s, 3 asks with unchanged prices: **8 frames**, 1 janky. So a tick still draws something. It may be only the header and footer text: I can't tell from this whether the rows are rebuilt. A live tick with changing prices was not tested (both markets closed)
+- **Tray:** focus left and right over the home tiles, 10 presses each way, 2 rounds, 0.35 s apart: **725 frames, 142 janky (19.59%), 50th 42 ms, 90th 53 ms, 99th 69 ms**. No earlier number to compare with, and the photo look was on. That is near 24 fps at the median
+
+### 6b ✗ `parsed` far below `asked`, again
+`live status=200 asked=6 parsed=1 bytes=1440 reason=ok` on every ask (30b: asked=9 parsed=4). The list here is Tadawul stocks, with the market closed. Only one symbol comes back and the log gives no names, so I can't say which, or whether it would be 6 during a session.
+
+### 7 Low RAM: on, as far as can be seen
+MemTotal 2,451,284 kB (2,394 MB, under the 2,560 limit); `ro.config.low_ram` empty.
+- ✓ Markets open in «عادي» after a force-stop (no data wiped: the rule is set on every open; shots L-0)
+- **`lowram=1` indirect ✓:** the provider refuses shell reads (Permission Denial), the app is not debuggable, so I can't read the URL. With `seconds on`, the page showed no seconds in 3 shots, as `lowram` requires. `seconds` back off
+- **`UrTVType` not testable:** 0 lines. Our typing service is not enabled on this TV (`enabled_accessibility_services` has only another app), and I don't toggle services
+- Worse or better by feel: not judged, no person at the TV
+
+### 8 ✗ Chromecast logic on this TCL
+`optimize/dock.sh cast status` says: «Chromecast: the setup wizard holds the cast credentials. Wizard: off. Home: sa.urtv.home/.MainActivity. Choice: on». **It should say not a Chromecast.** `getprop ro.product.manufacturer` is TCL, but `com.google.android.tungsten.setupwraith` here does hold `…castinfo.CastInfoProvider`, so the provider test gives a false match.
+- ✓ Status changed nothing: disabled list the same (21, wizard still off), Home the same, no `cast.txt`
+- Risk, read from the script and not run: `cast on` here would `pm enable` the wizard and restart the cast receiver
+- Small: on a clean PC `cast.sh` line 26 prints «optimize/run/cast.txt: No such file or directory», because the `2>` comes after the `<`
+
+### 9 ✓ Mute log
+`logcat -d -s UrTVMute`: 0 lines, and 0 `by=not us`, at 02:07 and at 02:23. I cleared the main log twice between (02:08 and about 02:17) for the markets count, so the second read covers only the time after that. Nothing played, so this does not show the logging works. Muted at every check.
+
+### Z
+`import settings-before.json` (preview: only teams changed; `--yes`), look glass, seconds off, updatechannel latest. `show` before/after differs only in the build. Same: dock, PIN and locked list, tasks, photos, adhan, family DNS, disabled (21), packages (177), Home holder, saver. Muted. **restored: yes**; only the build differs (191).
+
+### step 31 summary: ✓ 1, 3, 5, 9, settings timing. ✗ 2 (part), 6b, 8. Not testable: 4, `UrTVType`, a live tick with moving prices.
+Problems (4 + 1 small): (1) stock card «رجوع» shows no label; (2) stock card first focus is on the content, not «رجوع», with no ring; (3) `cast status` calls this TCL a Chromecast; (4) `parsed=1` of `asked=6`; (small) pad zero looks like a Latin 0. Numbers to weigh: tray 19.59% janky, 8 frames in 190 s on unchanged live ticks.
+Shots: PC only, none pushed.
