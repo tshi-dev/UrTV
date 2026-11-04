@@ -882,7 +882,7 @@ const stkRows = p => p.evaluate(() => ({ hd: document.getElementById('week-hd').
   check('stocks: no Latin digits in the card', !/[0-9]/.test(await p.evaluate(() => document.getElementById('week-list').textContent)));
   for (const cls of ['', 'cs-dark3', 'cs-glass3', 'widget cs-dark3', 'cs-dark1']) {   // step 28: the card styles' own paddings made it 50, not 24, on every side
     const pad = await p.evaluate(c => { document.documentElement.className = c; const cs = getComputedStyle(document.querySelector('.week.stocks')); return [cs.paddingTop, cs.paddingRight, cs.paddingBottom, cs.paddingLeft].join(' '); }, cls);
-    check(`stocks: 24 px inside on every side (style «${cls || 'plain'}»)`, pad === '24px 24px 24px 24px', pad);
+    check(`stocks: 24 px inside on every side (style «${cls || 'plain'}»)`, pad.split(' ').every(v => Math.abs(parseFloat(v) - 24) < 0.5), pad);   // 2.2222vh at 1080p
   }
   await ctx.close();
 }
