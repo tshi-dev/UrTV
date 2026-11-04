@@ -1,0 +1,43 @@
+name: Check the live stations
+
+# Does every live station of assets/quran/stations.json still play (.github/tools/check_stations.py)? The stream hosts are unreachable from the
+# dev container; CI probes each with ffprobe, reads 30 s of audio with ffmpeg, and pushes the table to the data-stations branch (one commit,
+# replaced each run). The addresses in CANDIDATES are possible replacements, checked the same way. Run by hand, or when the stations change.
+on:
+  workflow_dispatch:
+  push:
+    branches: [master, next, 'work/**']
+    paths:
+      - 'android/launcher/src/main/assets/quran/stations.json'
+      - '.github/tools/check_stations.py'
+      - '.github/workflows/stations-check.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: stations-check
+  cancel-in-progress: false
+
+jobs:
+  stations:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CANDIDATES: >-
+        https://stream.radiojar.com/0tpy1h0kxtzuv
+        https://live.kwikmotion.com/sbrksaquranradiolive/ksaquranradio/playlist.m3u8
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - run: python3 -u .github/tools/check_stations.py $CANDIDATES
+      - name: Push to data-stations
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan data-stations
+          git rm -rfq --cached .
+          git add -f stations
+          git commit -qm "Live stations check"
+          git push -f origin data-stations
