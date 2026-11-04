@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261104154216">
+<meta name="urtv-build" content="20261104183339">
 <title>Your TV Screen</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -747,6 +747,8 @@
   html.mpdark .mdb button,html.mpdark .mdq button{background:#2A2D33}
   html.mpdark .mdb button.pri{background:#1B8354;border-color:#1B8354}
   html.mpdark .mdx.f,html.mpdark .mdb button.f,html.mpdark .mdq button.f{box-shadow:0 0 0 calc(var(--u)*3) #1D1F24,0 0 0 calc(var(--u)*6) var(--fring)}
+/* #lowram=1 (a weak TV): no transitions, the moves happen at once */
+html.lowram *, html.lowram *::before, html.lowram *::after { transition: none !important; }
   .clock .ampm{order:1;margin-inline-end:0;margin-inline-start:.25em}
   .week li.quote,.week li.src,.week li.tafsir,.week li.adf .s{direction:rtl}
 </style>
@@ -936,7 +938,10 @@ const CONFIG = {
   // «الآية والحديث»: #versekind=verse only verses, #versekind=hadith only hadith; anything else = a verse, then a hadith, as always
   verseKind: (v => v === 'verse' || v === 'hadith' ? v : 'both')(_Q.get('versekind')),
   // «إظهار الثواني»: #seconds=1 the seconds on the screensaver's clock, small beside the minutes; anything else = none, as always
-  seconds: _Q.get('seconds') === '1',
+  // #lowram=1: the app says this TV is weak (Ram.low: Android's low-RAM flag, or under 2.5 GB; a user report on 4.1, lag): no seconds, slower timers
+  // (the markets every 15 minutes, the adhan check every 15 s, the reminders' countdown every 5 s), no CSS transitions
+  lowram: _Q.get('lowram') === '1',
+  seconds: _Q.get('seconds') === '1' && _Q.get('lowram') !== '1',
   // «التفسير الميسر» under the verse of the day: #tafsir=1 (anything else = off)
   tafsir: _Q.get('tafsir') === '1',
   // from PR #28, each off unless asked for: #sunrise=1 the panel at the bottom right counts to the sunrise after Fajr's iqama and tells
@@ -4369,6 +4374,7 @@ function bootMatchPage(){
 }
 
 function boot(){
+  if(CONFIG.lowram) document.documentElement.classList.add('lowram');
   pruneStorage();
   if(CONFIG.matchPage){ bootMatchPage(); return; }
   if(CONFIG.football){ bootFootball(); return; }
@@ -4425,8 +4431,8 @@ function boot(){
 
   nowPlayingTick();
   setInterval(nowPlayingTick, 60*1000);
-  setInterval(adhanLiveTick, 3000);
-  if(REMS.length){ remDraw(); setInterval(remDraw, 1000); }
+  setInterval(adhanLiveTick, CONFIG.lowram ? 15000 : 3000);
+  if(REMS.length){ remDraw(); setInterval(remDraw, CONFIG.lowram ? 5000 : 1000); }
   if(CONFIG.seconds){   // the seconds turn on the second, not a drifting interval's moment (one could be shown twice or skipped)
     const onSecond = () => { tickClock(); setTimeout(onSecond, 1000 - Date.now() % 1000 + 15); };
     setTimeout(onSecond, 1000 - Date.now() % 1000 + 15);
@@ -4440,7 +4446,7 @@ function boot(){
   }
   if(NEEDS_MATCHES){ periodic(loadLive, 2*60000); periodic(loadMatches, 30*60*1000); }
   periodic(loadPrayers, 6*3600*1000);
-  periodic(loadMarkets, 5*60*1000);
+  periodic(loadMarkets, (CONFIG.lowram ? 15 : 5)*60*1000);
   if(USES('shows')) periodic(loadWeek, 6*3600*1000);
   periodic(loadWeather, 30*60*1000);
   cardTimers();
@@ -4459,6 +4465,7 @@ function boot(){
 // The launcher's cards: the chosen ones only (up to three), refreshed like on the screensaver, nothing else loaded.
 function bootWidget(){
   document.documentElement.classList.add('widget');
+  if(CONFIG.lowram) document.documentElement.classList.add('lowram');
   if(CONFIG.cardStyle !== 'current') document.documentElement.classList.add('cs-' + CONFIG.cardStyle);   // «شكل البطاقة» applies to each of them
   buildCards();
   restoreSnap();
@@ -4474,7 +4481,7 @@ function bootWidget(){
   if(USES('adhkar') || USES('prayers') || USES('prayerrow')){ loadPrayers(); periodic(loadPrayers, 6*3600*1000); }
   if(USES('forecast') || USES('hourly')){ loadWeather(); periodic(loadWeather, 30*60*1000); }
   if(USES('matches')){ loadMatches(); periodic(loadMatches, 30*60*1000); periodic(loadLive, 2*60000); }
-  if(USES('stocks')){ loadMarkets(); periodic(loadMarkets, 5*60*1000); }
+  if(USES('stocks')){ loadMarkets(); periodic(loadMarkets, (CONFIG.lowram ? 15 : 5)*60*1000); }
   cardTimers();
   let lastDay = riyadhDayNumber();
   setInterval(() => { if(riyadhDayNumber() !== lastDay){ lastDay = riyadhDayNumber(); renderPanel(false); if(USES('prayers') || USES('prayerrow') || USES('adhkar')) later(loadPrayers); } }, 60*1000);

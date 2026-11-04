@@ -115,7 +115,7 @@ check("live mode: asks only while resumed (starts in onResume, ends in onPause a
       "resumed = true;" in act2 and "resumed = false;   // live mode ends" in act2 and "if (liveOn) main.postDelayed(liveTick, 1500);" in act2
       and "if (run != liveRun || !resumed || !liveOn || isFinishing() || isDestroyed()) return;" in act2 and "main.removeCallbacks(liveTick);" in act2.split("protected void onPause()")[1][:400])
 check("live mode: one batched request for the symbols on screen and the open card; the pace and the backoff come from MarketData.liveDelay; nothing is stored",
-      "MarketFile.live(syms)" in act2 and "main.postDelayed(liveTick, MarketData.liveDelay(liveFails));" in act2 and "liveFails++" in act2 and "liveFails = 0;" in act2
+      "MarketFile.live(syms)" in act2 and "main.postDelayed(liveTick, MarketData.liveDelay(liveFails, Ram.low(this)));" in act2 and "liveFails++" in act2 and "liveFails = 0;" in act2
       and "save(" not in text(HOME / "MarketFile.java").split("static java.util.Map<String, MarketData.Live> live")[1].split("static MarketData cached")[0])
 check("live mode: it falls back to the 5-minute file: «عادي» puts the file's prices back (MarketFile.last), a failed ask leaves the data and the footer returns to «الأسعار متأخرة»",
       "MarketData file = MarketFile.last();" in act2 and "shownLive = liveOn && MarketData.liveFresh(liveOkAt, System.currentTimeMillis());" in act2

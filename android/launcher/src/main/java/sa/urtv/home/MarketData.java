@@ -86,6 +86,9 @@ final class MarketData {
     /** the seconds between two live asks: 30 at first, 60 after one failure, 120 after two or more (the CI file is what shows meanwhile) */
     static long liveDelay(int fails) { return fails <= 0 ? 30_000 : fails == 1 ? 60_000 : 120_000; }
 
+    /** the same on a weak TV (Ram.low; a user report on 4.1, lag): never more often than every 60 s */
+    static long liveDelay(int fails, boolean lowRam) { return lowRam ? Math.max(60_000, liveDelay(fails)) : liveDelay(fails); }
+
     /** «مباشر» is said only while the last good live answer is younger than this (two asks of the slowest pace would have passed otherwise) */
     static boolean liveFresh(long okAt, long now) { return okAt > 0 && now >= okAt && now - okAt <= 150_000; }
 

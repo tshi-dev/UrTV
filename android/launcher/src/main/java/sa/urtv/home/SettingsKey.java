@@ -76,6 +76,14 @@ final class SettingsKey {
         return !homeFront && !stockHome;
     }
 
+    /**
+     * The same on a weak TV (Ram.low): never. A filtered key goes through our main thread and Android waits for the answer, so on a busy 2 GB TV
+     * every key in YouTube or on HDMI could lag (a user report on 4.1). There the Settings key outside our home is the TV's own again.
+     */
+    static boolean filterWanted(boolean homeFront, boolean stockHome, boolean lowRam) {
+        return !lowRam && filterWanted(homeFront, stockHome);
+    }
+
     /** The enabled HOME answerers (packages) include a stock home: one that is not ours, not the setup wizard, not a settings app's fallback. */
     static boolean stockHomeOn(Iterable<String> homePackages, String ours) {
         if (homePackages == null) return false;

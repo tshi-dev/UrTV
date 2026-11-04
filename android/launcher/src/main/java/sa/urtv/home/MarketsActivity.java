@@ -145,7 +145,7 @@ public class MarketsActivity extends Activity {
         final int run = liveRun;
         final java.util.LinkedHashSet<String> syms = new java.util.LinkedHashSet<>(onScreen);
         if (cardCode != null) syms.add(cardCode);
-        if (syms.isEmpty() || data == null) { main.postDelayed(liveTick, MarketData.liveDelay(0)); return; }
+        if (syms.isEmpty() || data == null) { main.postDelayed(liveTick, MarketData.liveDelay(0, Ram.low(this))); return; }
         new Thread(() -> {
             java.util.Map<String, MarketData.Live> m = MarketFile.live(syms);   // one request for all of them
             main.post(() -> liveDone(run, m));
@@ -171,7 +171,7 @@ public class MarketsActivity extends Activity {
         if (shownLive != MarketData.liveFresh(liveOkAt, now)) redraw();   // «مباشر» to «الأسعار متأخرة» (or back) in the footer
         if (cardNote != null) cardNote.setText(sourceText());
         header();
-        main.postDelayed(liveTick, MarketData.liveDelay(liveFails));
+        main.postDelayed(liveTick, MarketData.liveDelay(liveFails, Ram.low(this)));
     }
 
     /** the live prices a data object holds, as a map (to put them over a newer file) */
@@ -246,6 +246,7 @@ public class MarketsActivity extends Activity {
     protected void onCreate(Bundle b) {
         super.onCreate(b);
         Digits.init(this);
+        if (Ram.low(this)) liveOn = false;   // a weak TV (a user report on 4.1, lag): «عادي» at first; «مباشر» stays one press away, at most every 60 s
         FrameLayout root = new FrameLayout(this);
         look = GlassSource.pageFor(this, root);   // dark while «صفحات الأسهم والمباريات داكنة» is on (the default)
         TEXT = look.text; DIM = look.sub; ACCENT = look.light ? 0xFF166A45 : OnOff.GREEN_ON_DARK;

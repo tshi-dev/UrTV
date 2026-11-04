@@ -143,7 +143,10 @@ final class Prefs {
         String code = sp.getString("cityCountry", "");
         if (!code.isEmpty()) return code;
         String[] c = city(), builtin = Cities.find(c[0], c[1], c[2]);
-        return builtin != null ? Cities.country(builtin) : Location.codeOf(cityTz());
+        if (builtin == null) return Location.codeOf(cityTz());   // a place of one's own: from its zone, never saved (the TV's zone may change)
+        code = Cities.country(builtin);
+        if (!code.isEmpty()) sp.edit().putString("cityCountry", code).apply();   // a city saved before 4.1 has none: found once, kept (a user report on 4.1: lag)
+        return code;
     }
 
     /** The time zone the page shows: Asia/Riyadh for a built-in Saudi city, the country's own for a Gulf one; a place of your own gets the one given
@@ -151,10 +154,8 @@ final class Prefs {
     String cityTz() {
         String own = sp.getString("cityTz", "");
         if (!own.isEmpty()) return own;
-        String[] c = city();
-        for (Cities.Region r : Cities.REGIONS)
-            for (String[] x : r.cities)
-                if (x[0].equals(c[0]) && x[1].equals(c[1]) && x[2].equals(c[2])) return x.length > 3 ? x[3] : TZ;   // the Gulf cities carry their own
+        String[] c = city(), x = Cities.find(c[0], c[1], c[2]);   // the map, not a scan of every city (Cities.find)
+        if (x != null) return x.length > 3 && x[3] != null ? x[3] : TZ;   // the Gulf and world cities carry their own
         return java.util.TimeZone.getDefault().getID();
     }
 
@@ -418,6 +419,17 @@ final class Prefs {
         }
         return ramMb;
     }
+    /** A weak TV, the same rule as the home's Ram.low: Android's low-RAM flag, or under 2.5 GB in all (2560 MB; 0 = unknown: not weak). Read once. */
+    static boolean lowRam(Context c) {
+        if (lowRam == null) {
+            boolean flag = false;
+            try { flag = ((android.app.ActivityManager) c.getSystemService(Context.ACTIVITY_SERVICE)).isLowRamDevice(); } catch (RuntimeException ignored) { }
+            long mb = ramMb(c);
+            lowRam = flag || (mb > 0 && mb < 2560);
+        }
+        return lowRam;
+    }
+    private static Boolean lowRam;
     void setPhotoMinutes(String v) { sp.edit().putString("photoMinutes", v).apply(); }
 
     /**
@@ -576,6 +588,7 @@ final class Prefs {
             + QuoteEvery.fragment(quoteEvery())
             + VerseKind.fragment(verseKind())
             + (seconds() ? "&seconds=1" : "")
+            + (lowRam(ctx) ? "&lowram=1" : "")   // a weak TV (a user report on 4.1, lag): the page's slower timers, no seconds, no transitions
             + HomeExit.fragment(homeExit())
             + (occasion() ? "" : "&occasion=0") + (nightDim() ? "" : "&nightdim=0") + (tasksPill() ? "" : "&taskspill=0")
             + (backSaver() ? "&backsaver=1" : "")

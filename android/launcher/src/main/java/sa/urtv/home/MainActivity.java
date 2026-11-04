@@ -150,10 +150,24 @@ public class MainActivity extends Activity {
 
     private final BroadcastReceiver tick = new BroadcastReceiver() {
         @Override public void onReceive(Context c, Intent i) {
-            updateClock();
-                updateNowPlaying();   // the minutes left of its sleep timer
+            // a Wi-Fi broadcast redraws only when the minute moved (ClockTick); the settings are read on clockReads first, so the redraw on the
+            // UI thread finds them in ConfigSnapshot's 3-second copy and never waits on the screensaver's process (a user report on 4.1: lag)
+            if (!ClockTick.redraw(WifiManager.NETWORK_STATE_CHANGED_ACTION.equals(i.getAction()), clockDrawnAt, System.currentTimeMillis())) return;
+            final Context app = getApplicationContext();
+            clockReads.execute(() -> {
+                ConfigSnapshot.read(app);
+                runOnUiThread(() -> {
+                    if (isDestroyed() || !resumed) return;
+                    updateClock();
+                    updateNowPlaying();   // the minutes left of its sleep timer
+                });
+            });
         }
     };
+    /** the settings read of the clock's tick, off the UI thread (one at a time) */
+    private final java.util.concurrent.ExecutorService clockReads = java.util.concurrent.Executors.newSingleThreadExecutor();
+    /** when updateClock last drew (ms since the epoch), for ClockTick */
+    private long clockDrawnAt;
     // «تلاوة» started, paused, changed or stopped a surah or a station (MusicService says so; nothing polls): the «يُتلى الآن» card follows
     private final BroadcastReceiver nowPlayingChanged = new BroadcastReceiver() {
         @Override public void onReceive(Context c, Intent i) {
@@ -256,7 +270,7 @@ public class MainActivity extends Activity {
             if (appsShown) playEntrance(); else entranceDue = true;
         }
         // New photo on return if the current one has been up for the full interval.
-        if (wallIndex < 0 || SystemClock.elapsedRealtime() - wallChangedAt >= WALLPAPER_INTERVAL_MS) nextWallpaper();
+        if (wallTrimmed || wallIndex < 0 || SystemClock.elapsedRealtime() - wallChangedAt >= WALLPAPER_INTERVAL_MS) { wallTrimmed = false; nextWallpaper(); }
         else {
             scheduleWallpaper(WALLPAPER_INTERVAL_MS - (SystemClock.elapsedRealtime() - wallChangedAt));
             checkOwnChanged();   // the owner added or removed photos while another app was in front
@@ -283,6 +297,22 @@ public class MainActivity extends Activity {
         if (reminder != null) reminder.hide();
     }
 
+    /**
+     * A weak TV (Ram.low) with another app in front: the home's photos and its card page let go, so the app in front has that memory (a user report
+     * on 4.1: lag). onResume brings them back (a fresh photo at once, the card page through HomeCard.refresh). On other TVs nothing changes.
+     */
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        if (level < TRIM_MEMORY_UI_HIDDEN || resumed || !Ram.low(this)) return;
+        homeCard.destroy();
+        for (ImageView v : new ImageView[] {wallFront, wallBack}) if (v != null) v.setImageDrawable(null);   // both photos (not the fade's end: tilawah_test)
+        wallTrimmed = true;
+        firstWallpaper = true;   // the short fade when it comes back
+    }
+    /** the photos were let go (onTrimMemory): the next onResume shows one at once */
+    private boolean wallTrimmed;
+
     @Override
     protected void onDestroy() {
         unregisterReceiver(packages);
@@ -293,6 +323,7 @@ public class MainActivity extends Activity {
         unregisterReceiver(reminderDue);
         loader.shutdownNow();
         tvLoader.shutdownNow();
+        clockReads.shutdownNow();
         homeCard.destroy();
         super.onDestroy();
     }
@@ -2587,6 +2618,7 @@ public class MainActivity extends Activity {
 
     private void updateClock() {
         long ms = System.currentTimeMillis();
+        clockDrawnAt = ms;
         String tvTz = java.util.TimeZone.getDefault().getID();
         // one read of the screensaver's settings (its ConfigProvider, same signing key) for the whole tick; null zone = it is missing: the TV's own
         ConfigSnapshot cfg = ConfigSnapshot.read(this);
