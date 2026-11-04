@@ -234,6 +234,6 @@ CI builds the home app with the screensaver, renames it to `urtv-home.apk`, and 
 - The UI is Arabic/RTL; the transport buttons are intentionally LTR so the previous/next arrows match
   every other player.
 
-## الأذان والتلفزيون المكتوم (step 28b)
+## الأذان والتلفزيون المكتوم (قرار المالك، step 28b)
 
-إذا كان التلفزيون مكتومًا وقت الأذان، **يبقى مكتومًا**: التطبيق لا يرفع الكتم ولا يشغّل الأذان، ويظهر «تنبيه عند الأذان» بدل الصوت (حتى لو كان التنبيه مطفأ في الإعدادات). السبب في السجل (`UrTVAdhan`): `adhan skipped: the TV is muted`. المعاينة بزر في الإعدادات (اختبار الصوت) تبقى كما هي: يضغطها المالك بنفسه ليسمعها. الكتم يُقرأ قبل أي لمس للصوت، و`adhan start` يسجّل `tv_muted_before` بما قُرئ أولًا.
+إذا كان التلفزيون **مكتومًا** وقت الأذان: يرفع التطبيق الكتم، يشغّل الأذان بمستواه الخاص، ثم **يكتم التلفزيون من جديد** عند نهايته، وكذلك إذا أُوقف أو رجعتَ (Back) أو انطفأت الشاشة أو توقفت الخدمة؛ ولو مات التطبيق في الوسط، يرجع الكتم والمستوى أول ما تبدأ الخدمة من جديد. الكتم يُقرأ **قبل** أي رفع. في السجل (`UrTVAdhan`): `adhan start: … tv_muted_before=<true|false>` ثم `adhan volume: the TV was muted, unmuted for the adhan` ثم عند النهاية `adhan end: re-mute done` (أو `FAILED`، أو `not done: the volume was changed during the adhan` إذا غيّر الشخص الصوت بنفسه فيبقى كما اختار).

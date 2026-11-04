@@ -45,8 +45,8 @@ sched = text(T / "AdhanScheduler.java")
 check("notice is off until it is turned on", 'getBoolean("adhan_notice", false)' in prefs)
 check("the alarm is set for the notice alone (adhan off), and cancelled only when neither is wanted",
       "boolean alarmWanted() { return adhanOn() || adhanNotice() || adhanSaverAt(); }" in prefs and "alarmWanted()" in sched and sched.count("adhanOn()") == 1)
-check("the adhan itself still needs its own switch: the notice never plays it", "boolean wanted = prefs.adhanOn() && AdhanPlan.mayPlay(" in receiver and "boolean play = wanted && !muted;" in receiver)
-check("the notice is shown whether the adhan plays or not, when the option is on", "if (notice) AdhanNotice.show(context, prayer);" in receiver and "boolean notice = prefs.adhanNotice() || (wanted && muted);" in receiver)   # step 28b: a muted TV gets the notice instead of the sound
+check("the adhan itself still needs its own switch: the notice never plays it", "boolean play = prefs.adhanOn() && AdhanPlan.mayPlay(" in receiver)
+check("the notice is shown whether the adhan plays or not, when the option is on", "if (notice) AdhanNotice.show(context, prayer);" in receiver and "boolean notice = prefs.adhanNotice();" in receiver)
 check("the notice is a text toast (no permission, no focus), never throws, logs", "Toast.makeText(" in notice and "catch (RuntimeException" in notice and "UrTVAdhan" in notice)
 check("no overlay permission was added for it", "SYSTEM_ALERT_WINDOW" not in manifest and "TYPE_APPLICATION_OVERLAY" not in notice)
 check("the last alarm is written down for the status", "setLastAlarmNote(AdhanPlan.note(" in receiver and "adhan_alarm_last=" in music)

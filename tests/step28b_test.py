@@ -33,9 +33,11 @@ check("4: a station that gives nothing in 20 s is retried once with its own addr
       "radioDirectTried" in ms and "trying \" + hostOf(radioAddress) + \" as given" in ms and 'S.t("تعذّر التشغيل")' in ms)
 check("5: a Tadawul row with no timestamp and no close is read from fulldayPrice, its time is now", 'meta.get("fulldayPrice")' in md and "System.currentTimeMillis() / 1000.0" in md)
 rc = text(HOME / "tilawah/AdhanReceiver.java")
-check("6: the mute is read before anything touches the volume; a muted TV is not played the adhan (its notice is shown); a live adhan asked of the service on a muted TV is skipped too; the log says what it read first",
-      "boolean muted = muted(context);" in rc and "boolean play = wanted && !muted;" in rc and "(wanted && muted)" in rc
-      and "if (previewSeconds == 0 && mutedBefore) {" in ms and "final boolean mutedBefore = tvMuted();" in ms and '" tv_muted_before=" + mutedBefore' in ms)
+check("6 (the owner's choice B): a muted TV is unmuted for the adhan and muted again at its end; the mute is read FIRST (before the unmute) and logged as tv_muted_before; the re-mute result is logged; every end goes through adhanVolumeBack (over, stopped, left, the screen off, the service gone, a restart after a crash)",
+      "final boolean mutedBefore = tvMuted();" in ms and '" tv_muted_before=" + mutedBefore' in ms and ms.index("tv_muted_before=") < ms.index("adhanVolumeUp();\n        boolean comeBack")
+      and 'adhan end: re-mute " + (audio.isStreamMute(AudioManager.STREAM_MUSIC) ? "done" : "FAILED' in ms and "adhan volume: the TV was muted, unmuted for the adhan" in ms
+      and ms.count("adhanVolumeBack();") >= 5 and "if (source == Prefs.SOURCE_ADHAN) finishAdhan();" in ms and "savedVolume = prefs.savedTvVolume();" in ms
+      and "muted(context)" not in rc and "adhan skipped: the TV is muted" not in rc and "adhan skipped: the TV is muted" not in ms)
 sc = text(HOME / "setup/SetupCommunity.java")
 check("7: the community list's name is in the report also when our own lists know the TV", "choice.meta != null ? \" (\" + choice.meta.name + \")\" : \"\"" in sc)
 sys.exit(1 if failed else 0)

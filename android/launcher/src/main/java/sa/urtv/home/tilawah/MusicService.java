@@ -447,11 +447,9 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     private void playAdhan(int wanted, String name, int previewSeconds, int prayer) {
         handler.removeCallbacks(previewStop);
         handler.removeCallbacks(shortTick);
-        final boolean mutedBefore = tvMuted();   // read first: the volume code below unmutes a muted TV for a preview
-        if (previewSeconds == 0 && mutedBefore) {   // a real adhan on a muted TV: the house rule, a muted TV stays silent (the alarm shows its notice; step 28b: it unmuted the TV and played aloud)
-            Log.i("UrTVAdhan", "adhan skipped: the TV is muted (it stays silent; prayer=" + prayer + ")");
-            return;
-        }
+        // the owner's choice (step 28b): a muted TV is unmuted for the adhan and muted again when it ends (adhanVolumeBack, every way the adhan can end).
+        // The mute is read FIRST, before anything unmutes, and said in the log before the unmute shows up in the system's own
+        final boolean mutedBefore = tvMuted();
         boolean wasAdhan = source == Prefs.SOURCE_ADHAN;
         if (wasAdhan && playing) {
             if (adhanPreview && previewSeconds > 0) {   // the volume row again: the new level, and the same few seconds again
@@ -468,6 +466,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         adhanCutMs = AdhanVoices.cutMs(length, voice);
         adhanFadeMs = AdhanVoices.fadeMs(length);
         if (gone) name = null;
+        Log.i("UrTVAdhan", "adhan start: prayer=" + prayer + (previewSeconds > 0 ? " preview=" + previewSeconds + "s" : " live") + " tv_muted_before=" + mutedBefore);   // before the unmute: the first read
         adhanVolumeUp();
         boolean comeBack = prepareAdhanPause();   // false when an adhan was already on
         if (!wasAdhan) resumeAfterAdhan = comeBack;   // the first adhan's answer stays: what it paused still waits
@@ -481,7 +480,6 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         retries = 0;
         pendingSeek = 0;
         wish.ask();
-        Log.i("UrTVAdhan", "adhan start: voice=" + voice + " prayer=" + prayer + (previewSeconds > 0 ? " preview=" + previewSeconds + "s" : " live") + " tv_muted_before=" + mutedBefore);   // step 28: the log had no line at all
         prefs.setLastAdhan(System.currentTimeMillis());   // for `music.sh adhan`; the duplicate guard is the alarm's own (AdhanReceiver)
         File cached = voice == Prefs.OWN ? OwnAdhan.file(this) : Adhan.cached(this, voice);
         // the person's own file is always on the TV: nothing to fetch, nothing to retry from the network
@@ -558,7 +556,10 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             // a muted TV: Android says 0 for a muted stream, so it is unmuted first (the adhan would unmute it anyway) to read the real level,
             // and muted again at the end; before, the end put the level back to 0 and the TV stayed silent at 0 even after an unmute
             boolean muted = audio.isStreamMute(AudioManager.STREAM_MUSIC);
-            if (muted) audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, 0);
+            if (muted) {
+                audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, 0);
+                Log.i("UrTVAdhan", "adhan volume: the TV was muted, unmuted for the adhan (it is muted again at its end)");
+            }
             savedVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
             prefs.setSavedTvMuted(muted);
             prefs.setSavedTvVolume(savedVolume);
@@ -576,7 +577,13 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             int level = adhanLevel >= 0 ? adhanLevel : prefs.adhanLevel();
             int to = AdhanVolume.restore(savedVolume, level, audio.getStreamVolume(AudioManager.STREAM_MUSIC));
             if (to >= 0) audio.setStreamVolume(AudioManager.STREAM_MUSIC, to, 0);   // else the person turned it themselves: it stays
-            if (AdhanVolume.muteAgain(prefs.savedTvMuted(), to)) audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0);
+            boolean wasMuted = prefs.savedTvMuted();
+            if (AdhanVolume.muteAgain(wasMuted, to)) {
+                audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0);
+                Log.i("UrTVAdhan", "adhan end: re-mute " + (audio.isStreamMute(AudioManager.STREAM_MUSIC) ? "done" : "FAILED (still unmuted)") + ", volume back to " + to);
+            } else if (wasMuted) {
+                Log.i("UrTVAdhan", "adhan end: re-mute not done: the volume was changed during the adhan (the person chose to hear it)");
+            }
         }
         prefs.setSavedTvMuted(false);
         savedVolume = -1;
