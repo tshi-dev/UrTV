@@ -68,6 +68,10 @@ def run(cmd):
         if m:
             if m.group(1) in FS: FS[m.group(3)] = FS.pop(m.group(2))
             continue
+        m = re.fullmatch(r"mv (\S+) (\S+)", part)
+        if m:
+            if m.group(1) in FS: FS[m.group(2)] = FS.pop(m.group(1))
+            continue
         m = re.fullmatch(r"\[ -f (\S+) \] && echo y", part)
         if m: out.append("y" if m.group(1) in FS else ""); continue
         m = re.fullmatch(r"\[ -d '(\S+)' \] && echo y", part)
@@ -252,5 +256,27 @@ with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.St
     tv.push_b64(tv.TV(transport_s=tv.SLOW_READ_S), src, "/data/local/tmp/y.apk")
 e1 = FS.get("/data/local/tmp/y.apk") == big and 0 < seen["max"] <= 40_000 and tv.upload_chunk() <= 40_000 and tv.SLOW_READ_S >= 180 and seen["read"] and set(seen["read"]) == {tv.SLOW_READ_S}
 print(f"E1: pieces of at most {seen['max']} characters, transport timeout {seen['read']}: " + ("ok" if e1 else "WRONG"))
+# F: adb's sync push first (4.1 reports: «No space left on device» at 96% in base64): one copy, checked by md5; a failed or wrong push
+# removes its .part and the base64 way goes on, so the file still arrives exactly
+class Pusher(Spy):
+    mode = "ok"
+    def push(self, local, remote, read_timeout_s=0):
+        seen.setdefault("pushes", []).append(remote)
+        if Pusher.mode == "full":
+            FS[remote] = b"half"; raise OSError("No space left on device")
+        FS[remote] = open(local, "rb").read() if Pusher.mode == "ok" else b"other"
+tv.AdbDeviceTcp = Pusher
+fres = {}
+for mode in ("ok", "full", "wrong"):
+    FS.clear(); JOB.clear(); seen["max"] = 0; seen["pushes"] = []; Pusher.mode = mode
+    with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+        tv.push_b64(tv.TV(transport_s=tv.SLOW_READ_S), src, "/data/local/tmp/y.apk")
+    fres[mode] = (FS.get("/data/local/tmp/y.apk") == big, seen["max"], seen["pushes"], sorted(FS))
+f_ok = fres["ok"][0] and fres["ok"][1] == 0 and fres["ok"][2] == ["/data/local/tmp/y.apk.part"] and "/data/local/tmp/y.apk.part" not in fres["ok"][3]
+f_full = fres["full"][0] and fres["full"][1] > 0 and not any(f.endswith(".part") or f.endswith(".b64") or f.endswith(".x") for f in fres["full"][3])
+f_wrong = fres["wrong"][0] and fres["wrong"][1] > 0 and "/data/local/tmp/y.apk.part" not in fres["wrong"][3]
+print("F: sync push first, no base64 when it lands: " + ("ok" if f_ok else "WRONG %r" % (fres["ok"],)))
+print("F: a full disk during the push: the .part removed, then base64, the file exact, nothing left over: " + ("ok" if f_full else "WRONG %r" % (fres["full"],)))
+print("F: a push whose md5 differs: removed, then base64, the file exact: " + ("ok" if f_wrong else "WRONG %r" % (fres["wrong"],)))
 tv.AdbDeviceTcp = Dev
-sys.exit(1 if not e1 or bad or wrong or bgbad or cutbad else 0)
+sys.exit(1 if not e1 or bad or wrong or bgbad or cutbad or not (f_ok and f_full and f_wrong) else 0)

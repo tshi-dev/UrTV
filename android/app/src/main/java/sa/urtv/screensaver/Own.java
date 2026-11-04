@@ -19,7 +19,11 @@ import java.io.OutputStream;
  * MAX_BYTES, at most MAX_SIDE a side and MAX_PIXELS in all (optimize/photos.sh sends 1920 px wide).
  */
 final class Own {
-    static final int MAX = 10;
+    /** the most kept (4.1 reports asked for more than 10); a weak TV (Prefs.lowRam) keeps MAX_LOW: each photo is decoded at full screen size */
+    static final int MAX = 30, MAX_LOW = 10;
+
+    /** how many this TV keeps */
+    static int max(Context c) { return Prefs.lowRam(c) ? MAX_LOW : MAX; }
     static final long MAX_BYTES = 3L << 20;
     static final int MAX_SIDE = 3840, MAX_PIXELS = 3840 * 2160;
     static final String MIX = "mix", ONLY = "only";
@@ -36,7 +40,8 @@ final class Own {
     /** how many photos are kept (1.jpg up to the first gap) */
     static int count(Context c) {
         int n = 0;
-        while (n < MAX && file(c, n + 1).isFile()) n++;
+        int max = max(c);   // a weak TV shows its first MAX_LOW (more kept from elsewhere stay on disk, unused)
+        while (n < max && file(c, n + 1).isFile()) n++;
         return n;
     }
 
@@ -71,7 +76,7 @@ final class Own {
     }
 
     private static synchronized String keep(Context c, File src) {
-        if (count(c) >= MAX) return "already " + MAX + " photos (delete one first)";
+        if (count(c) >= max(c)) return "already " + max(c) + " photos (delete one first)";
         String why = check(src);
         if (!why.isEmpty()) return why;
         File dir = dir(c);

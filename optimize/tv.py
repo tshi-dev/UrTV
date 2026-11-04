@@ -467,17 +467,54 @@ def cut_back(tmp, i):
     there; never mv a file that is not."""
     if i == 0:
         return f"rm -f {tmp} {tmp}.x"
-    return f"if [ -f {tmp} ]; then head -c {i} {tmp} > {tmp}.x && [ -f {tmp}.x ] && mv {tmp}.x {tmp}; fi"
+    # the .x copy is removed whatever happened: a cut that failed (a full disk) must not leave a second copy taking the room (4.1 reports: «No space left» at 96%)
+    return f"if [ -f {tmp} ]; then head -c {i} {tmp} > {tmp}.x && [ -f {tmp}.x ] && mv {tmp}.x {tmp}; fi; rm -f {tmp}.x"
+
+
+def push_sync(tv, local, remote):
+    """adb's own file transfer first (sync, through adb_shell's push): one copy of the file on the TV. The base64 way needs the text (4/3 of the
+    file) and the decoded file side by side, and a TV with little room said «No space left on device» at 96% (4.1 reports). Written to
+    {remote}.part, checked by md5, then moved; True when that is done. Anything else (no push in this client, a dropped connection, a full disk,
+    another md5) removes the .part and gives False: push_b64 then goes on the usual way."""
+    data_md5 = hashlib.md5(open(local, "rb").read()).hexdigest()
+    part = remote + ".part"
+    try:
+        if tv.dev is None:
+            tv._open()
+        push = getattr(tv.dev, "push", None)
+        if push is None:   # the adb program's client (Wireless debugging) has none here: base64 as before
+            return False
+        tv.shell(f"rm -f {part}")
+        push(local, part, read_timeout_s=SLOW_READ_S)
+    except SystemExit:
+        raise
+    except Exception as e:  # noqa: BLE001
+        tv.close()
+        print(f"   (adb sync push did not go through: {type(e).__name__}; uploading in base64 pieces instead)", file=sys.stderr)
+        tv.shell(f"rm -f {part}")
+        return False
+    rc, out = run_bg(tv, "md5", f"md5sum {part}")
+    if rc != 0 or not out.split() or out.split()[0] != data_md5:
+        tv.shell(f"rm -f {part}")
+        print("   (adb sync push: the copy on the TV is not the same; uploading in base64 pieces instead)", file=sys.stderr)
+        return False
+    tv.shell(f"mv {part} {remote}")
+    if tv.shell(f"[ -f {remote} ] && echo y").strip() != "y":
+        return False
+    print(f"pushed {local} -> {remote} ({Path(local).stat().st_size} bytes, adb sync, md5 ok)")
+    return True
 
 
 def push_b64(tv, local, remote, chunk=None):   # one argument may not exceed 128 KB on Android (32 KB on a Windows command line)
-    """Upload in base64 pieces; on a retry, pieces already on the TV are kept (resumes, not restarts)."""
-    chunk = chunk or upload_chunk()
-    data = open(local, "rb").read()
-    enc = base64.b64encode(data).decode()
+    """Upload: adb's sync push first (push_sync); else in base64 pieces, and on a retry, pieces already on the TV are kept (resumes, not restarts)."""
     folder = remote.rsplit("/", 1)[0] or "/"
     if tv.shell(f"[ -d '{folder}' ] && echo y").strip() != "y":
         sys.exit(f"!! {folder} is not a folder on the TV, so nothing can be uploaded to {remote}.")
+    if not tv.shell(f"[ -f {remote}.b64 ] && echo y").strip() and push_sync(tv, local, remote):   # a base64 upload in progress is resumed instead
+        return
+    chunk = chunk or upload_chunk()
+    data = open(local, "rb").read()
+    enc = base64.b64encode(data).decode()
     tmp = remote + ".b64"
     have = tv.shell(f"[ -f {tmp} ] && wc -c < {tmp} || echo 0").strip()
     done = int(have) if have.isdigit() and int(have) % chunk == 0 and int(have) <= len(enc) else 0
