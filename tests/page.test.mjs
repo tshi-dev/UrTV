@@ -466,6 +466,10 @@ for (const [hash, latin] of [['', false], ['digits=hindi', false], ['digits=lati
   for (const [hash, occ, dim] of [['', true, true], ['occasion=0', false, true], ['nightdim=0', true, false], ['occasion=0&nightdim=0', false, false],
                                    ['occasion=no&nightdim=1', true, true]]) {
     const { p, ctx, errors } = await open('tv.html', hash, { now: '2026-10-23T21:00:00Z' });   // midnight in Riyadh: the darkest
+    await p.evaluate(async () => {   // the page's entrance (a 3 s transform transition of the stage) is over before a position is measured: getBoundingClientRect includes transforms, and a slot read mid-way was 1 px off (about one run in three)
+      await document.fonts.ready;
+      await Promise.all(document.getAnimations().filter(a => a.transitionProperty === 'transform').map(a => a.finished.catch(() => {})));
+    });
     const r = await p.evaluate(() => {
       applyNight();
       const mid = document.querySelector('.p-mid'), box = q => document.querySelector(q).getBoundingClientRect();
@@ -2033,7 +2037,7 @@ for (const [width, height] of [[1920, 1080], [1280, 720], [960, 540]]) {
     seen.length = 0;
     await p.clock.setFixedTime(LEAGUE_NOW);
     await p.goto(page('tv.html') + '#gap=0&teams=136013&leagues=' + encodeURIComponent('Saudi-Arabian Pro League') + '&panel=matches');
-    await p.waitForTimeout(1200);
+    await Promise.all([p.waitForTimeout(1200), p.waitForFunction(() => typeof MATCHES_LOADED !== 'undefined' && MATCHES_LOADED === true, null, { timeout: 15000 }).catch(() => {})]);   // at least the 1200 ms as before, and until the loader has answered (a slow 960x540 run counted the requests before the last one was made)
     const tag = `league round at ${width}x${height}`;
     const asked = seen.filter(u => /thesportsdb|data-leagues/.test(u));
     check(`${tag}: one request for the league's file, two for the one followed club, nothing per club of the league`,
