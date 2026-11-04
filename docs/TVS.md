@@ -86,6 +86,12 @@ Settings moved the creator to `com.android.tv.settings` at once (`android.uid.sy
 Wi-Fi, and the switch in the order wizard → Wi-Fi check → new home in front → stock home off held Home, Wi-Fi and the
 disabled packages through three restarts (the order is CleanYourTV's, MIT).
 
+From 4.2 the run waits for the person (about 27 reports on 4.1 stopped at this pause and needed a second run): it reads the
+owner again every 15 s for up to 10 minutes (`URTV_WIFI_WAIT`, seconds; 0 stops at once as before) and goes on in the safe
+order as soon as the network is no longer the wizard's. **Fallback** when it still ends with exit 5: the TV took a new address
+when it rejoined (`optimize/find-tv.sh`, then the same command), or the person could not forget the network (run the same
+command anyway: it never asks twice, keeps the wizard on, and the TV may keep its own home, with UrTV on its «تلفزيونك» tile).
+
 So `install.sh launcher` now pauses once (`Home switch paused`, exit 5) and asks the person to forget the network and join it
 again; after «كمّل» it reads the owner again and switches in that order if the network moved, or as before if it did not.
 Read only, on any set: `optimize/venv/bin/python -I optimize/tv.py "dumpsys wifi" | grep -o 'cname=[^ ]*' | sort | uniq -c`

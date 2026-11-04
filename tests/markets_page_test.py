@@ -159,6 +159,8 @@ check("step 182: CI's fx.json first; Yahoo asked only when it is missing, empty 
       and "if (!MarketData.fxNeedsOwn(text, t)) { save(c, FX, text); fxText = text; }" in lf and "fxText == null ||" not in lf)
 peg_doc = text(HOME / "MarketData.java")
 check("step 182: FX_PEGS keeps its own doc (no two docs stacked over FX_CODES)", "«مربوط بالدولار». */\n    static final String[][] FX_PEGS" in peg_doc and "*/\n    /** the currencies the page" not in peg_doc)
+check("4.1 reports: each currency of «صرف العملات» shows a gram of gold in it (KWD, BHD…) when the gold price and its rate are known",
+      "MarketData.goldGram(gq == null ? Double.NaN : gq.p, code, rates)" in act2 and 'S.t("غرام الذهب %s"' in act2 and "if (!Double.isNaN(gram))" in act2)
 check("currencies: a missing rate shows «—» (MarketData.fxNumber of NaN), never 0; the pegs say «مربوط بالدولار»", 'MarketData.pegged(code) ? code + " · " + S.t("مربوط بالدولار")' in act2 and 'return "—"' in text(HOME / "MarketData.java"))
 check("step 28 (the owner's photo): the pad's zero is a Latin-style 0 in Arabic (the Arabic one is a dot beside the separator), the separator key is large, and ⌫ is mirrored in RTL",
       'if (key.equals("0") && !Digits.latin()) return "0";' in act2 and 'sp + 10' in act2 and 'key.equals("⌫") && Dir.rtl()) b.setScaleX(-1f)' in act2

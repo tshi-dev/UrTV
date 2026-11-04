@@ -497,6 +497,16 @@ final class MarketData {
         return r == null || Double.isNaN(r) || r <= 0 ? Double.NaN : r;
     }
 
+    /**
+     * A gram of gold in this currency (4.1 reports: no gold price in KWD or BHD anywhere): the ounce in dollars (GC=F) over OUNCE_G, times the
+     * currency's units per dollar (the same rates as the list); NaN when either is unknown, so the line is left out.
+     */
+    static double goldGram(double ounceUsd, String ccy, Map<String, Double> rates) {
+        double per = perUsd(ccy, rates);
+        if (Double.isNaN(ounceUsd) || ounceUsd <= 0 || Double.isNaN(per)) return Double.NaN;
+        return ounceUsd / OUNCE_G * per;
+    }
+
     /** An amount of `from` in `to`, through the dollar (both directions use the same two numbers); NaN when either rate is unknown. */
     static double convert(double amount, String from, String to, Map<String, Double> rates) {
         double a = perUsd(from, rates), b = perUsd(to, rates);

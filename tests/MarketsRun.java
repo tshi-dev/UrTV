@@ -170,6 +170,11 @@ public final class MarketsRun {
         check("fx: with no file from CI the app writes its own (rates it read live): only known-shaped codes with a positive rate, 6 significant digits, the time of the reading; none at all is an empty text",
             MarketData.parseFx(ownFile).size() == 2 && near(MarketData.parseFx(ownFile).get("KWD"), 0.30741) && MarketData.fxUpdated(ownFile) == 1793000000_000L && MarketData.fxFile(new java.util.LinkedHashMap<String, Double>(), 1L).isEmpty()
             && MarketData.FX_CODES.length == 35, ownFile);
+        java.util.Map<String, Double> gr = new java.util.LinkedHashMap<>(); gr.put("KWD", 0.307);
+        check("gold 4.1: a gram in KWD (from the dollar ounce and KWD's rate), in BHD (its peg), in SAR (3.75), the dollar itself; NaN with no rate or no price",
+            near(MarketData.goldGram(3110.34768, "KWD", gr), 100 * 0.307) && near(MarketData.goldGram(3110.34768, "BHD", gr), 100 * 0.376)
+            && near(MarketData.goldGram(3110.34768, "SAR", gr), 375) && near(MarketData.goldGram(3110.34768, "USD", gr), 100)
+            && Double.isNaN(MarketData.goldGram(3110.34768, "EGP", gr)) && Double.isNaN(MarketData.goldGram(Double.NaN, "KWD", gr)), MarketData.goldGram(3110.34768, "KWD", gr));
         java.util.Map<String, Double> wide = new java.util.LinkedHashMap<>();
         wide.put("AAA", 1234567.891); wide.put("BBB", 0.0000123456789);
         String wideFile = MarketData.fxFile(wide, 1L);

@@ -849,6 +849,9 @@ public class MarketsActivity extends Activity {
             nm.setOrientation(LinearLayout.VERTICAL);
             nm.addView(text(ccyName(code), 17, "Medium", TEXT), wrap());
             nm.addView(ltrStart(text(MarketData.pegged(code) ? code + " · " + S.t("مربوط بالدولار") : code, 13, "Regular", DIM)), wrap());
+            MarketData.Quote gq = data == null ? null : data.quotes.get(MarketData.GOLD);
+            double gram = MarketData.goldGram(gq == null ? Double.NaN : gq.p, code, rates);   // a gram of gold in this currency (KWD, BHD…: 4.1 reports)
+            if (!Double.isNaN(gram)) nm.addView(text(S.t("غرام الذهب %s", MarketData.show(MarketData.fxNumber(gram), Digits.latin())), 13, "Regular", DIM), wrap());
             r.addView(nm, new LinearLayout.LayoutParams(0, -2, 1f));
             TextView v = text(fxVsSar(code, rates), 20, "Medium", TEXT);
             v.setSingleLine(true);

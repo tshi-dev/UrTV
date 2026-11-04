@@ -49,13 +49,19 @@ check("the TV's accessibility settings tell the person about the Settings key", 
 # the service
 fk = ts.split("private void filterKeys() {")[1].split("\n    }\n")[0]
 check("the flag follows SettingsKey.filterWanted, set and cleared with setServiceInfo",
-      "SettingsKey.filterWanted(front, stockHome, lowRam)" in fk and "FLAG_REQUEST_FILTER_KEY_EVENTS" in fk and "setServiceInfo(info)" in fk and "~AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS" in fk)
+      "SettingsKey.filterWanted(front, stockHome, lowRam, homeKeyLost)" in fk and "FLAG_REQUEST_FILTER_KEY_EVENTS" in fk and "setServiceInfo(info)" in fk and "~AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS" in fk)
 check("the filter is set when the service connects", "onServiceConnected() { running = this; filterKeys(); }" in ts)
 ok = ts.split("protected boolean onKeyEvent(KeyEvent e) {")[1].split("\n    }\n")[0]
 check("onKeyEvent: SettingsKey decides; PASS returns false at once; nothing is logged or kept there",
-      "settingsKey.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), homeFront, stockHome)" in ok and "if (d == SettingsKey.PASS) return false;" in ok
+      "settingsKey.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), homeFront, stockHome, lost != null && lost)" in ok and "if (d == SettingsKey.PASS) return false;" in ok
       and "log(" not in ok and "Log." not in ok and "getScanCode" not in ok and ok.index("return false") < ok.index("main.post"), ok)
 check("the TV's settings open after the key is answered (posted), never inside onKeyEvent", "main.post(this::openTvSettings)" in ok)
+check("Haier MatrixTV (4.1 reports): where the SystemUI action resolves to nothing, the key is handed to the home's own path (posted, a copy of the event); "
+      "the check is once per service, and the manifest may see that action",
+      "main.post(() -> MainActivity.keyFromService(copy));" in ok and "final KeyEvent copy = new KeyEvent(e);" in ok
+      and "if (homeKeyLost == null) homeKeyLost = homeKeyLost(this);" in fk and "queryIntentActivities(new Intent(SettingsKey.NOTIFICATION_PANEL_ACTION), 0).isEmpty()" in ts
+      and '"android.app.action.TOGGLE_NOTIFICATION_HANDLER_PANEL"' in sk and '<action android:name="android.app.action.TOGGLE_NOTIFICATION_HANDLER_PANEL" />' in man
+      and "if (a != null && a.resumed && !a.isDestroyed()) a.dispatchKeyEvent(e);" in main)
 op = ts.split("private void openTvSettings() {")[1].split("\n    }\n")[0]
 check("the TV's settings go through the family lock: with the PIN wanted, the home asks it (EXTRA_SETTINGS_KEY)",
       "Parental.needsPin(this, ParentalPolicy.targets(ParentalPolicy.REMOTE_SETTINGS," in op and "MainActivity.EXTRA_SETTINGS_KEY" in op

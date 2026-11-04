@@ -118,6 +118,15 @@ final class RemoteKeys {
         return keyCode == KEYCODE_SETTINGS || keyCode == KEYCODE_NOTIFICATION || keyCode == TCL_SETTINGS;
     }
 
+    /**
+     * A key the home does not answer that may be a remote's own button (TCL G08: «Video», «TCL Channel», «Web» did nothing, 4.1 reports): 0
+     * (KEYCODE_UNKNOWN) or Android's TV and vendor range (170 and up). The home logs it once per press («unmapped key=…»), so the next report
+     * can name it and a later build map it. Nothing is mapped on a guess.
+     */
+    static boolean unmapped(int keyCode) {
+        return keyCode == 0 || keyCode >= 170;
+    }
+
     /** Whether this key can open an app, so the caller looks up what is installed only for it, not for every key of the remote. */
     static boolean opensApp(int keyCode) {
         return keyCode == KEYCODE_BUTTON_3 || keyCode == KEYCODE_BUTTON_4
