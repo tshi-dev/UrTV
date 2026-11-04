@@ -669,7 +669,7 @@
   /* ---- «المباريات» (#matchpage=1): the light look, sand paper and white cards, a green ring for the focus */
   html.mpage .stage,html.mpage .photo,html.mpage .veil,html.mpage .grain,html.mpage .top-veil,html.mpage .bottom-veil,html.mpage .dimmer,html.mpage #credit,html.mpage .adbar{display:none}
   html.mpage,html.mpage body{background:#F4F2EC}
-  #mp,#mp-detail{--fi:#1B1F1D;--fs:#5E635F;--fgr:#1B8354;--fam:#8A5600;--fring:#1B8354;--fln:#E4E1D8;--fbg:#fff}
+  #mp,#mp-detail{--fi:#1B1F1D;--fs:#5E635F;--fgr:#1B8354;--fam:#8A5600;--fring:#1B8354;--fln:#E4E1D8;--fbg:#fff;--chip:#fff;--rowf:#EEF6F1;--dlg:#F7F6F1;--btn:#fff;--pri:#21915F;--veil:rgba(244,242,236,.72);--shd:rgba(40,36,24,.18)}
   #mp{position:fixed;inset:0;padding:calc(var(--u)*64) calc(var(--u)*120) calc(var(--u)*56);color:var(--fi);display:flex;flex-direction:column;font-size:calc(var(--u)*28)}
   #mp header{display:flex;justify-content:space-between;align-items:baseline}
   #mp h1{font-size:calc(var(--u)*64);font-weight:700}
@@ -693,14 +693,14 @@
   #mp-list ul{list-style:none;background:var(--fbg);border:1px solid var(--fln);border-radius:calc(var(--u)*24);padding:calc(var(--u)*8)}
   .mpg{min-height:calc(var(--u)*88);padding:calc(var(--u)*16) calc(var(--u)*24);border-radius:calc(var(--u)*16)}
   .mpg + .mpg{border-top:1px solid var(--fln)}
-  .mpg.f{box-shadow:inset 0 0 0 calc(var(--u)*3) var(--fring);background:#EEF6F1}
+  .mpg.f{box-shadow:inset 0 0 0 calc(var(--u)*3) var(--fring);background:var(--rowf)}
   #mp .fnote{font-size:calc(var(--u)*22)}
-  #mp .fmk{opacity:1;color:var(--fs);border-color:var(--fln);background:#fff}
+  #mp .fmk{opacity:1;color:var(--fs);border-color:var(--fln);background:var(--chip)}
   #mp .fnone{min-height:calc(var(--u)*240)}
   /* a game's card over the page */
-  #mp-detail{position:fixed;inset:0;background:rgba(244,242,236,.72);display:flex;align-items:center;justify-content:center;color:var(--fi);font-size:calc(var(--u)*28)}
+  #mp-detail{position:fixed;inset:0;background:var(--veil);display:flex;align-items:center;justify-content:center;color:var(--fi);font-size:calc(var(--u)*28)}
   #mp-detail[hidden]{display:none}
-  .mdx{width:calc(var(--u)*1320);background:#F7F6F1;border:1px solid var(--fln);border-radius:calc(var(--u)*32);padding:calc(var(--u)*48) calc(var(--u)*56);box-shadow:0 30px 80px rgba(40,36,24,.18)}
+  .mdx{width:calc(var(--u)*1320);background:var(--dlg);border:1px solid var(--fln);border-radius:calc(var(--u)*32);padding:calc(var(--u)*48) calc(var(--u)*56);box-shadow:0 30px 80px var(--shd)}
   .mdh{display:flex;justify-content:space-between;align-items:center;color:var(--fs);font-size:calc(var(--u)*26)}
   .mdm{display:flex;justify-content:center;align-items:center;gap:calc(var(--u)*80);margin:calc(var(--u)*24) 0}
   .mdt{display:flex;flex-direction:column;align-items:center;gap:calc(var(--u)*16);width:calc(var(--u)*300)}
@@ -709,7 +709,7 @@
   .mdk{display:flex;flex-direction:column;align-items:center;gap:calc(var(--u)*8)}
   .mdk b{font-size:calc(var(--u)*72);font-weight:700;white-space:nowrap}
   .mdk i{font-style:normal;color:var(--fs)}
-  .mdr{list-style:none;background:#fff;border:1px solid var(--fln);border-radius:calc(var(--u)*24)}
+  .mdr{list-style:none;background:var(--fbg);border:1px solid var(--fln);border-radius:calc(var(--u)*24)}
   .mdr li{display:flex;justify-content:space-between;align-items:center;gap:calc(var(--u)*24);padding:calc(var(--u)*24) calc(var(--u)*32)}
   .mdr li + li{border-top:1px solid var(--fln)}
   .mdr li > span{font-weight:700}
@@ -727,26 +727,18 @@
   .mpgl{position:absolute;top:calc(var(--u)*16);color:var(--fgr);transform:translateX(50%)}
   .mdb,.mdq{display:flex;gap:calc(var(--u)*24);margin-top:calc(var(--u)*32)}
   .mdq{margin-top:calc(var(--u)*16)}
-  .mdb button,.mdq button{flex:1;display:flex;align-items:center;justify-content:center;gap:calc(var(--u)*12);font:inherit;color:var(--fi);background:#fff;border:1px solid var(--fln);
+  .mdb button,.mdq button{flex:1;display:flex;align-items:center;justify-content:center;gap:calc(var(--u)*12);font:inherit;color:var(--fi);background:var(--btn);border:1px solid var(--fln);
     border-radius:calc(var(--u)*16);padding:calc(var(--u)*24);outline:none}
-  .mdb button.pri{background:#21915F;color:#fff;border-color:#21915F}
-  .mdx.f{box-shadow:0 0 0 calc(var(--u)*3) #F7F6F1,0 0 0 calc(var(--u)*6) var(--fring)}
+  .mdb button.pri{background:var(--pri);color:#fff;border-color:var(--pri)}
+  .mdx.f{box-shadow:0 0 0 calc(var(--u)*3) var(--dlg),0 0 0 calc(var(--u)*6) var(--fring)}
   .mdb button:focus,.mdq button:focus{outline:none}
-  .mdb button.f,.mdq button.f{box-shadow:0 0 0 calc(var(--u)*3) #F7F6F1,0 0 0 calc(var(--u)*6) var(--fring)}
+  .mdb button.f,.mdq button.f{box-shadow:0 0 0 calc(var(--u)*3) var(--dlg),0 0 0 calc(var(--u)*6) var(--fring)}
   .mdb svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.8}
   .mdb .fg{font-size:1em}
   .mdn{min-height:calc(var(--u)*36);margin-top:calc(var(--u)*16);text-align:center;color:var(--fgr);font-size:calc(var(--u)*24)}
   /* the dark look (#pagedark=1): GlassStyle.DARK's colours, same sizes and rings */
   html.mpage.mpdark,html.mpage.mpdark body{background:#17181B}
-  html.mpdark #mp,html.mpdark #mp-detail{--fi:#FFFFFF;--fs:#DADCE0;--fgr:#8FE0B4;--fam:#F0B35A;--fring:#8FE0B4;--fln:rgba(255,255,255,.16);--fbg:#202227}
-  html.mpdark .mpg.f{background:rgba(143,224,180,.14)}
-  html.mpdark #mp .fmk{background:rgba(255,255,255,.08)}
-  html.mpdark #mp-detail{background:rgba(0,0,0,.66)}
-  html.mpdark .mdx{background:#1D1F24;box-shadow:0 30px 80px rgba(0,0,0,.5)}
-  html.mpdark .mdr{background:#202227}
-  html.mpdark .mdb button,html.mpdark .mdq button{background:#2A2D33}
-  html.mpdark .mdb button.pri{background:#1B8354;border-color:#1B8354}
-  html.mpdark .mdx.f,html.mpdark .mdb button.f,html.mpdark .mdq button.f{box-shadow:0 0 0 calc(var(--u)*3) #1D1F24,0 0 0 calc(var(--u)*6) var(--fring)}
+  html.mpdark #mp,html.mpdark #mp-detail{--fi:#FFFFFF;--fs:#DADCE0;--fgr:#8FE0B4;--fam:#F0B35A;--fring:#8FE0B4;--fln:rgba(255,255,255,.16);--fbg:#202227;--chip:rgba(255,255,255,.08);--rowf:rgba(143,224,180,.14);--dlg:#1D1F24;--btn:#2A2D33;--pri:#1B8354;--veil:rgba(0,0,0,.66);--shd:rgba(0,0,0,.5)}
 /* #lowram=1 (a weak TV): no transitions, the moves happen at once */
 html.lowram *, html.lowram *::before, html.lowram *::after { transition: none !important; }
 </style>
@@ -2811,13 +2803,10 @@ function fitLive(ul){
   });
 }
 
-// ---- «البطاقة الذكية» (smart): the card for what matters now, picked again with every redraw (the clock timers draw it every 15 s,
-// so a change shows within a minute); no request of its own, it shows what the other cards load. In this order:
-//  1. a followed team's game is live, or starts within 60 minutes: the matches card, with that game;
-//  2. within 15 minutes of a prayer: the prayers' row, with the minutes left in its title (before the adhkar: the last quarter
-//     hour of the adhkar window is the wait for Dhuhr or Maghrib, and the prayer is what matters then);
-//  3. the adhkar window (morning from Fajr to Dhuhr, evening from Asr to Maghrib): the adhkar card;
-//  4. otherwise: the next hours' weather.
+    // ---- «البطاقة الذكية» (smart): what matters now, picked again with every redraw (the clock timers draw it every 15 s); no request of its own. In order:
+    //  1. a followed team's game is live or starts within 60 minutes: the matches card with that game;
+    //  2. within 15 minutes of a prayer: the prayers' row, minutes left in its title (before the adhkar, whose last quarter hour is the wait for the prayer);
+    //  3. the adhkar window (morning Fajr to Dhuhr, evening Asr to Maghrib): the adhkar card;   4. otherwise: the next hours' weather.
 const SMART_GAME_MIN = 60, SMART_PRAYER_MIN = 15;
 // the followed teams' games that are live now, or (not liveOnly) start within SMART_GAME_MIN minutes: [ev] in time order
 function focusGames(now, liveOnly){
@@ -2921,13 +2910,9 @@ function renderCard(card, animate, keepSize){
   if(animate){ void ul.offsetWidth; ul.classList.add('flip'); }
 }
 
-// ---- sizing in the launcher. The cards share the box of the WebView (two or three of them). A card that does not fit steps
-// down in text size, then in rows per page (a list), then picks a shorter text (a verse, a hadith, a dhikr); the one that is
-// cut off or tallest goes first. One card keeps the box to itself and is never changed, as it always was.
-// How a card gets smaller, one step at a time. Its text size comes from Z_STEPS (card.zi); a list may also give rows (card.ri
-// of them gone: the pages are shorter, and every row still comes round), a verse or a dhikr ask for a shorter text (card.ri
-// times a fifth shorter than the day's). A card that is too tall gives rows first, a quote comes down to .82 before a shorter
-// text is looked for; one that is too wide (a name that would end in «…») can only give text size.
+    // ---- sizing in the launcher: the cards share the box of the WebView. A card that does not fit steps down in text size (Z_STEPS, card.zi), then in rows
+    // per page (a list, card.ri), then picks a shorter text (a verse, a hadith, a dhikr); the one cut off or tallest goes first; one card keeps the box and is never
+    // changed. A quote comes down to .82 before a shorter text; a card too wide (a name ending in «…») can only give text size.
 const Z_STEPS = [1, .94, .88, .82, .76, .7, .64];
 function cardCut(card){   // a name or a cell wider than its place: it would end in «…» or run into the next
   for(const e of card.el.querySelectorAll('li, li *, .hd > span')){
