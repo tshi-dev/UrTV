@@ -93,4 +93,8 @@ check("the home walks its rows with FavBar.sideStep on the row as drawn, and the
       and "dockRow.setLayoutDirection(Dir.layout());" in (HOME / "MainActivity.java").read_text(encoding="utf-8"))
 nx = [l for l in out if l.startswith("nameX")][0].split()[1:]
 check("the name centres over its tile and never leaves its row", [float(x) for x in nx] == [400.0, 0.0, 1480.0], nx)
+check("step 28: a tile is whole or not drawn (TraySnap.wholeOnly clips a partly visible one away), and a small Sadu triangle marks the side that has favourites out of view: drawn in the 24 px inset, centred on the tiles, only when the tray can scroll that way (physical sides, so Arabic's «more» is at the left)",
+      "void wholeOnly()" in main_src and "c.setClipBounds(whole || out || c.hasFocus() ? null : new android.graphics.Rect(0, 0, 0, 0))" in main_src
+      and "canScrollHorizontally(1), before = canScrollHorizontally(-1)" in main_src and "if (!more && !before) return;" in main_src and "tw = bar(6), th = bar(14), off = bar(2)" in main_src
+      and "float cy = getHeight() / 2f" in main_src)
 sys.exit(1 if failed else 0)

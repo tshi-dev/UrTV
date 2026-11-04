@@ -3409,6 +3409,37 @@ public class MainActivity extends Activity {
                 c.setClipBounds(whole || out || c.hasFocus() ? null : new android.graphics.Rect(0, 0, 0, 0));
             }
         }
+        private final android.graphics.Paint chev = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
+        private final android.graphics.Path chevPath = new android.graphics.Path();
+        /**
+         * «more favourites this way»: a small triangle (the Sadu mark) in the tray's 24 px inset on a side that has tiles out of view, centred on the tiles. Drawn over
+         * the children, never over a tile (the inset is empty) nor the focus ring (6 px wide from 2 px in; a grown focused tile and its ring come within 9 px of the edge
+         * at five). Physical sides, so in Arabic «more» is at the left: the first tile is at the right and the rest lie to the left.
+         */
+        @Override protected void dispatchDraw(android.graphics.Canvas c) {
+            super.dispatchDraw(c);
+            boolean more = canScrollHorizontally(1), before = canScrollHorizontally(-1);
+            if (!more && !before) return;
+            chev.setStyle(android.graphics.Paint.Style.FILL);
+            chev.setColor(lightNow || "sand".equals(lookNow) ? (palette().ink & 0x00FFFFFF) | 0xCC000000 : 0xCCFFFFFF);
+            float cy = getHeight() / 2f, tw = bar(6), th = bar(14), off = bar(2), sx = getScrollX(), w = getWidth();
+            if (more) {
+                chevPath.reset();
+                chevPath.moveTo(sx + w - off, cy);
+                chevPath.lineTo(sx + w - off - tw, cy - th / 2);
+                chevPath.lineTo(sx + w - off - tw, cy + th / 2);
+                chevPath.close();
+                c.drawPath(chevPath, chev);
+            }
+            if (before) {
+                chevPath.reset();
+                chevPath.moveTo(sx + off, cy);
+                chevPath.lineTo(sx + off + tw, cy - th / 2);
+                chevPath.lineTo(sx + off + tw, cy + th / 2);
+                chevPath.close();
+                c.drawPath(chevPath, chev);
+            }
+        }
         @Override protected void onScrollChanged(int l, int t, int ol, int ot) { super.onScrollChanged(l, t, ol, ot); wholeOnly(); }
         @Override protected void onLayout(boolean changed, int l, int t, int r, int b) { super.onLayout(changed, l, t, r, b); wholeOnly(); }
         @Override protected int computeScrollDeltaToGetChildRectOnScreen(android.graphics.Rect r) {
