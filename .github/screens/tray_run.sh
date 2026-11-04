@@ -16,4 +16,4 @@ fi
 for s in "$3"/*.apk; do timeout 120 adb install -r "$s"; done
 echo "tray_run: apps installed, starting the check"
 mkdir -p "$4"
-timeout 1560 python3 -u .github/screens/tray_check.py "$4"
+timeout 2760 python3 -u .github/screens/tray_check.py "$4"

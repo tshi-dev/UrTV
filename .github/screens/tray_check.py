@@ -321,10 +321,36 @@ def go_home():
     time.sleep(10)
 
 
+def shots(out, report, failures):
+    """the owner's question (more apps in the tray): the home at 1080p in the sand look and the dark glass look with the bar size 5, 7, 10 and all (12 apps),
+    each measured with the same rules as above (inside the safe area, a 24 inset, whole tiles 24 apart, the focused tile's ring inside the tray) and with no «…» in
+    the name above; the 8 pictures are in OUT_DIR/shots for docs/shots/tray. Arabic, the focus on the first favourite."""
+    d = out / "shots"
+    d.mkdir(parents=True, exist_ok=True)
+    shell("wm density 320")
+    seed_dock(12)
+    saver("--es lang ar", "--es homelayout classic")
+    for look in ("sand", "glass"):
+        for setting, n in (("5", 5), ("7", 7), ("10", 10), ("all", 10)):
+            tag = f"shot-{look}-{setting}"
+            saver(f"--es look {look}", f"--es favbar {setting}", "--es appearance dark" if look == "glass" else "--es appearance auto")
+            time.sleep(4)
+            xa, pa = walk(["DPAD_RIGHT"] * 12, out, tag)
+            fa, ma = analyse(xa, "ar", "first", n=n, favs=12)
+            label = name_label(nodes(xa), tuple(ma["tray"])) if ma.get("tray") else None
+            if label and "…" in label["text"]:
+                fa.append(f"the app's name above the tray is cut with «…»: {label['text']}")
+            report[tag] = {"tray": ma.get("tray"), "whole": ma.get("whole"), "failures": fa}
+            failures += [f"{tag}: {f}" for f in fa]
+            (d / f"tray-{look}-{setting}.png").write_bytes(Path(pa).read_bytes())
+    saver("--es look glass", "--es favbar 5", "--es appearance dark")
+    seed_dock(7)
+
+
 def run(out):
     from PIL import Image
     import faulthandler
-    faulthandler.dump_traceback_later(1500, exit=True)   # a hang prints where it is stuck and ends the check after 25 minutes
+    faulthandler.dump_traceback_later(2700, exit=True)   # a hang prints where it is stuck and ends the check after 45 minutes
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     report, failures = {}, []
@@ -402,6 +428,10 @@ def run(out):
         shell("input keyevent KEYCODE_HOME")
     except Exception as e:   # a picture for the eyes, never a reason to fail
         print("markets page not captured:", type(e).__name__)
+    try:
+        shots(out, report, failures)
+    except Exception as e:   # the pictures are for the eyes; a crash here must not hide the rules above
+        print("shots not completed:", type(e).__name__, str(e)[:200])
     (out / "tray-report.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
     for f in failures:
         print("FAIL " + f)

@@ -96,4 +96,7 @@ check("the CI job: builds the debug apps, builds stub apps, starts an API 34 TV 
       and "actions/upload-artifact@v4" in wf and "if: always()" in wf)
 check("the CI job runs on every push to next and work branches and on pull requests into next, and a failing check fails the run (no continue-on-error)",
       "pull_request" in wf and "branches: [next]" in wf and "continue-on-error" not in wf and "work/**" in wf)
+src = (ROOT / ".github/screens/tray_check.py").read_text(encoding="utf-8")
+check("the rendered check also takes the 8 pictures of the owner's question: sand and dark glass, bar size 5, 7, 10 and all on 12 apps, each judged by analyse() and for a name cut with «…»",
+      "def shots(out, report, failures):" in src and 'for look in ("sand", "glass"):' in src and '(("5", 5), ("7", 7), ("10", 10), ("all", 10))' in src and "seed_dock(12)" in src and "tray-{look}-{setting}.png" in src and "«…»" in src)
 sys.exit(1 if failed else 0)
