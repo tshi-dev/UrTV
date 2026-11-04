@@ -104,6 +104,9 @@ case "$1" in
        [ "$(cat "$T/home" 2>/dev/null)" = ours ] && echo sa.urtv.home/.MainActivity || echo stock/.Home ;;
   "cmd role get-role-holders"*) echo "$ROLE" ;;
   "pm list packages -d; echo D_END") [ "$DISABLED" = none ] && exit 0; [ "$DISABLED" = stock ] && echo "package:com.google.android.apps.tv.launcherx"; echo D_END ;;
+  "dumpsys package com.google.android.tungsten.setupwraith"*) log cast-read   # CAST=yes: a Chromecast, the wizard holds the cast credentials
+       [ "$CAST" = yes ] && echo "    com.google.android.tungsten.setupwraith/com.google.android.libraries.tv.setupwraith.libs.castinfo.CastInfoProvider" ;;
+  "pm list packages -d") [ "$CAST_WIZ" = off ] && echo "package:com.google.android.tungsten.setupwraith" ;;
   *dumpsys*) n=$(( $(cat "$T/dumps" 2>/dev/null || echo 0) + 1 )); echo $n > "$T/dumps"
     if [ "$DIALOG" = yes ] && [ "$n" -le 4 ]; then echo "mResumedActivity: ActivityRecord{x u0 android/com.android.internal.app.ResolverActivity t5}"
     elif [ "$DIALOG" = yes ]; then echo ours > "$T/home"; echo "mResumedActivity: sa.urtv.home"
@@ -135,7 +138,7 @@ while [ $# -gt 0 ]; do [ "$1" = -o ] && : > "$2"; shift; done
 
 def run(name, fail_switches, first_drop, down_polls=0, verify="", verifier=None, curl_mode="", vanish="", illegal="", wraith_home="", wifi="", nohome="", install_mode="",
         watchdog="", restore_fail="", tcltv="", dialog="", verifier_empty="", pkgs="", stockless="", pkgextra="", query_extra="", seed=None, seed_home="", seed_marker=False, role="", resolve="", script="install.sh", args=("launcher",),
-        seed_ask="", wifi_after="", wifi_read="", start="", front="", drop_at="", seed_step=False, disabled=""):
+        seed_ask="", wifi_after="", wifi_read="", start="", front="", drop_at="", seed_step=False, disabled="", cast="", cast_wiz="", seed_cast=""):
     t = Path(tempfile.mkdtemp())
     tree, bin_ = t / "tree", t / "bin"
     (tree / "optimize" / "lists").mkdir(parents=True); bin_.mkdir()
@@ -154,6 +157,9 @@ def run(name, fail_switches, first_drop, down_polls=0, verify="", verifier=None,
     if seed_ask:   # an earlier run asked the person to forget the Wi-Fi network and join it again
         (tree / "optimize" / "run").mkdir(exist_ok=True)
         (tree / "optimize" / "run" / "wifi-ask.txt").write_text(seed_ask + "\n")
+    if seed_cast:   # the person's «البث من الجوال» choice (optimize/cast.sh)
+        (tree / "optimize" / "run").mkdir(exist_ok=True)
+        (tree / "optimize" / "run" / "cast.txt").write_text(seed_cast + "\n")
     if seed_home:
         (t / "home").write_text(seed_home + "\n")
     if seed_marker:
@@ -165,7 +171,7 @@ def run(name, fail_switches, first_drop, down_polls=0, verify="", verifier=None,
         (t / "verifier").write_text(verifier + "\n")
     env = dict(os.environ, QUERY_EXTRA=query_extra, PKGS=pkgs, STOCKLESS=stockless, PKGEXTRA=pkgextra, VERIFIER_EMPTY=verifier_empty, DIALOG=dialog, TCLTV=tcltv, RESTORE_FAIL=restore_fail, WATCHDOG=watchdog, ROLE=role, RESOLVE=resolve, INSTALL_MODE=install_mode, NOHOME=nohome, WRAITH_HOME=wraith_home, WIFI=wifi, ILLEGAL=illegal, VERIFY=verify, VANISH=vanish, CURL_MODE=curl_mode, PATH=f"{bin_}:{os.environ['PATH']}", PY=str(bin_ / "py"), T=str(t),
                FAIL_SWITCHES=str(fail_switches), FIRST_DROP=first_drop, DOWN_POLLS=str(down_polls),
-               WIFI_AFTER=wifi_after, WIFI_READ=wifi_read, START=start, FRONT=front, DROP_AT=drop_at, DISABLED=disabled, J=str(tree / "optimize" / "run" / "home-switch.json"))
+               WIFI_AFTER=wifi_after, WIFI_READ=wifi_read, START=start, FRONT=front, DROP_AT=drop_at, DISABLED=disabled, CAST=cast, CAST_WIZ=cast_wiz, J=str(tree / "optimize" / "run" / "home-switch.json"))
     r = subprocess.run(["bash", str(tree / "optimize" / script), *args], env=env, capture_output=True, text=True)
     log = (t / "log").read_text().split() if (t / "log").exists() else []
     af = tree / "optimize" / "run" / "wifi-ask.txt"
@@ -225,6 +231,24 @@ cases = [
      lambda c, o, l: c == 0 and "wraith-off" not in l and "Launcher is home" in o),
     ("the wizard answers Home and the Wi-Fi is the system's: turned off", run("r", 0, "", wraith_home="yes", wifi="other"),
      lambda c, o, l: c == 0 and l.count("wraith-off") == 1 and "Launcher is home" in o),
+    ("a Chromecast (the wizard holds the cast credentials) with the Wi-Fi the system's: the wizard stays on, our home is still made the Home, and it says why",
+     run("cc1", 0, "", wraith_home="yes", wifi="other", cast="yes"),
+     lambda c, o, l: c == 0 and "wraith-off" not in l and "Launcher is home" in o and "holds its cast credentials" in o and "cast-read" in l),
+    ("a Chromecast whose wizard owns the Wi-Fi: no Wi-Fi pause (the wizard stays anyway), the wizard on, the switch goes on",
+     run("cc2", 0, "", wraith_home="yes", wifi="owned", cast="yes"),
+     lambda c, o, l: c == 0 and "Home switch paused" not in o and "ask-kept" not in l and "wraith-off" not in l and "Launcher is home" in o),
+    ("a Chromecast where the wizard keeps Home: never turned off (not even by the verify step), the stock home back, ONE plain line naming the cast trade-off and dock.sh cast off",
+     run("cc3", 0, "", wraith_home="yes", wifi="other", cast="yes", nohome="yes"),
+     lambda c, o, l: c == 0 and "!!" not in o and "wraith-off" not in l and "keeps its own home screen" in o and "cast credentials" in o and "dock.sh cast off" in o and "restore-stock" in l),
+    ("a Chromecast whose person chose our home first (cast.txt = off): the usual switch, the wizard off with its Wi-Fi guard",
+     run("cc4", 0, "", wraith_home="yes", wifi="other", cast="yes", seed_cast="off"),
+     lambda c, o, l: c == 0 and l.count("wraith-off") == 1 and "Launcher is home" in o and "holds its cast credentials" not in o),
+    ("a Chromecast set up before (the wizard already off): it says so and how to bring casting back; nothing else changes",
+     run("cc5", 0, "", wifi="other", cast="yes", cast_wiz="off"),
+     lambda c, o, l: c == 0 and "it is off (an earlier setup turned it off)" in o and "dock.sh cast on" in o and "Launcher is home" in o),
+    ("not a Chromecast: the cast check changes nothing (the wizard off as before)",
+     run("cc6", 0, "", wraith_home="yes", wifi="other"),
+     lambda c, o, l: c == 0 and l.count("wraith-off") == 1 and "cast credentials" not in o),
     ("the wizard owns the Wi-Fi, the person was asked and the network did not move: it stays on and the switch goes on without it, as before", run("s", 0, "", wraith_home="yes", wifi="owned", seed_ask="asked x"),
      lambda c, o, l: c == 0 and "wraith-off" not in l and "Launcher is home" in o and "stays on" in o and "was not forgotten and joined again" in o and "!!" not in o and "ask-none" in l),
     ("Home never opens ours and the wizard owns the Wi-Fi (it must stay on): the stock home is put back at once, and it says plainly that this TV keeps its own home (not an error)",

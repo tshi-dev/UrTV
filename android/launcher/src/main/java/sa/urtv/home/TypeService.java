@@ -62,9 +62,9 @@ public class TypeService extends AccessibilityService {
     /** Ask Android for key events only while the Settings key could be ours to answer (SettingsKey.filterWanted). */
     private void filterKeys() {
         try {
-            boolean front = homeFront;
-            if (!front) stockHome = stockHomeOn(this);   // one package query, only when the home leaves
-            boolean want = SettingsKey.filterWanted(front, stockHome);
+            boolean front = homeFront, lowRam = Ram.low(this);
+            if (!front && !lowRam) stockHome = stockHomeOn(this);   // one package query, only when the home leaves (none on a weak TV: no filter there)
+            boolean want = SettingsKey.filterWanted(front, stockHome, lowRam);
             AccessibilityServiceInfo info = getServiceInfo();
             if (info == null) return;
             boolean has = (info.flags & AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS) != 0;

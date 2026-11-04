@@ -58,7 +58,7 @@ check("home: BackExit sees Back last, after the adhan, the shortcut keys and the
 check("home: a new visit starts the count and the hint again", "backExit.reset(); backGuarded = false;" in main)
 check("home: one press as always still goes to onBackPressed (HomeBack.leaves)", "else if (HomeBack.leaves(isDefaultHome(), false)) finish();" in main)
 check("page: #versekind and #seconds only as written", "verseKind: (v => v === 'verse' || v === 'hadith' ? v : 'both')(_Q.get('versekind'))," in tpl
-      and "seconds: _Q.get('seconds') === '1'," in tpl)
+      and "seconds: _Q.get('seconds') === '1' && _Q.get('lowram') !== '1'," in tpl)   # a weak TV (#lowram=1) never shows them
 check("page: the seconds' digits in fixed boxes, counted in the small clock's column",
       ".clock .sec i{font-style:normal;display:inline-block;width:.62em;text-align:center}" in tpl and "(CONFIG.seconds ? .44 : 0)" in tpl)
 check("docs: SETTINGS.md has the three commands", all(c in settings_md for c in ("saver.sh versekind verse", "saver.sh seconds on", "saver.sh backexit hold")))

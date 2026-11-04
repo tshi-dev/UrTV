@@ -19,6 +19,8 @@ import java.util.regex.Pattern;
 final class SetupEngine {
     static final String SELF = "sa.urtv.home", SAVER = "sa.urtv.screensaver", OURS_DREAM = SAVER + "/.ScreenDream", HOME_ACTIVITY = SELF + "/.MainActivity";
     static final String WRAITH = "com.google.android.tungsten.setupwraith";
+    /** the person's choice on a Chromecast (optimize/cast.sh): «off» = our home first, the wizard may go; anything else = casting kept */
+    static final String CAST_CHOICE = "cast.txt";
     static final String LAUNCHERX = "com.google.android.apps.tv.launcherx", LAUNCHERX_HOME = LAUNCHERX + "/.home.HomeActivity";
     static final String TVLAUNCHER = "com.google.android.tvlauncher", TVLAUNCHER_HOME = TVLAUNCHER + "/.MainActivity";
     static final String NOTIFICATION_LISTENER = LAUNCHERX + "/.coreservices.notificationlistener.TvNotificationListenerService";
@@ -313,6 +315,18 @@ final class SetupEngine {
         return text("cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME 2> /dev/null").contains("setupwraith");
     }
 
+    /**
+     * install.sh's wraith_casts: on a Chromecast with Google TV (and the Google TV Streamer) the cast receiver reads its device credentials from a
+     * provider inside the setup wizard (…castinfo.CastInfoProvider); with the wizard off, casting from a phone and the Google Home remote say «untrusted
+     * device» after the next restart (a user report on 4.1). Told by that provider, never by the model name. The wizard is then never turned off here,
+     * unless the person chose our home first («cast.txt» = off, optimize/dock.sh cast off).
+     */
+    boolean castKeepsWizard() throws IOException {
+        String c = store.get(CAST_CHOICE);
+        if (c != null && c.trim().equals("off")) return false;
+        return text("dumpsys package " + WRAITH + " 2> /dev/null | grep -m 1 castinfo.CastInfoProvider").contains("castinfo.CastInfoProvider");
+    }
+
     /** owned: a saved network belongs to the setup wizard · other: none does · unknown: the TV did not say. */
     private String wifiOwner() throws IOException {
         Matcher m = Pattern.compile("cname=([^\\s]*)").matcher(text("dumpsys wifi"));
@@ -366,7 +380,7 @@ final class SetupEngine {
         if (pk == null || !(pk.contains(LAUNCHERX) || pk.contains(TVLAUNCHER))) return false;
         String res = resolveHome();
         if (res.isEmpty() || res.startsWith(SELF + "/")) return false;
-        if (!wraithAnswersHome() || !wifiOwner().equals("owned")) return false;
+        if (!wraithAnswersHome() || !wifiOwner().equals("owned") || castKeepsWizard()) return false;   // a Chromecast keeps its wizard anyway
         store.put(WIFI_ASK, "asked " + stamp + "\n");
         return true;
     }
@@ -376,7 +390,7 @@ final class SetupEngine {
         String asked = store.get(WIFI_ASK);
         if (asked != null && !asked.trim().isEmpty()) return false;
         String res = resolveHome();
-        return !res.isEmpty() && !res.startsWith(SELF + "/") && wraithAnswersHome() && wifiOwner().equals("owned");
+        return !res.isEmpty() && !res.startsWith(SELF + "/") && wraithAnswersHome() && wifiOwner().equals("owned") && !castKeepsWizard();
     }
 
     private boolean ours(String top) { return top.contains(SELF + "/") && top.contains("MainActivity"); }
@@ -392,7 +406,9 @@ final class SetupEngine {
         boolean wizardListed = false, safeOrder = false;
         String wifiBefore = null, asked = store.get(WIFI_ASK);
         boolean wasAsked = asked != null && !asked.trim().isEmpty();
-        if (wraithAnswersHome()) {
+        if (castKeepsWizard()) {
+            out.line("وسيط الإعداد في هذا الجهاز يحمل شهادة البث (Chromecast)، فنتركه شغّالاً كي يشتغل البث من الجوال وريموت Google Home، ونحاول نخلي تلفزيونك الشاشة الرئيسية.");
+        } else if (wraithAnswersHome()) {
             String owner = wifiOwner();
             if (owner.equals("other")) {
                 wizardListed = true;

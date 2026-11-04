@@ -49,7 +49,7 @@ check("the TV's accessibility settings tell the person about the Settings key", 
 # the service
 fk = ts.split("private void filterKeys() {")[1].split("\n    }\n")[0]
 check("the flag follows SettingsKey.filterWanted, set and cleared with setServiceInfo",
-      "SettingsKey.filterWanted(front, stockHome)" in fk and "FLAG_REQUEST_FILTER_KEY_EVENTS" in fk and "setServiceInfo(info)" in fk and "~AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS" in fk)
+      "SettingsKey.filterWanted(front, stockHome, lowRam)" in fk and "FLAG_REQUEST_FILTER_KEY_EVENTS" in fk and "setServiceInfo(info)" in fk and "~AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS" in fk)
 check("the filter is set when the service connects", "onServiceConnected() { running = this; filterKeys(); }" in ts)
 ok = ts.split("protected boolean onKeyEvent(KeyEvent e) {")[1].split("\n    }\n")[0]
 check("onKeyEvent: SettingsKey decides; PASS returns false at once; nothing is logged or kept there",

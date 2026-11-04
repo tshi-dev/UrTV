@@ -285,7 +285,28 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
     elif grep -q setupwraith <<< "$owners"; then echo owned
     else echo other; fi
   }
-  wraith_off() {   # 0: turned off; 1: left on (owns the Wi-Fi, or it could not be told)
+  # On Google's own Chromecast with Google TV (sabrina, boreal) and the Google TV Streamer, the cast receiver (mediashell) reads its
+  # factory device credentials from a provider inside the wizard (…setupwraith.libs.castinfo.CastInfoProvider). With the wizard off,
+  # after the next restart the phone says «جهاز غير موثوق فيه … برامج ثابتة قديمة» (untrusted device) and the Google Home remote
+  # fails until the wizard is back (a user report on 4.1; CleanYourTV's TROUBLESHOOTING.md and its keep-cast list for this device, github.com/Gathin23/cleanyourtv).
+  # Such a TV is told by that provider, never by a model name. There the wizard stays on (casting kept) unless the person chose
+  # «البث من الجوال» off (optimize/dock.sh cast off: our home first, casting lost), recorded in cast.txt.
+  CASTF="${URTV_RUN_DIR:-optimize/run}/cast.txt"
+  wraith_casts() {   # 0: the wizard holds the cast credentials (Chromecast); 1: it does not, or the TV did not say
+    "$PY" -I optimize/tv.py "dumpsys package $WRAITH 2> /dev/null | grep -m 1 castinfo.CastInfoProvider" 2> /dev/null \
+      | grep castinfo.CastInfoProvider > /dev/null
+  }
+  CAST_KEPT=no      # yes: the wizard stays on for the cast credentials
+  if [ "$(tr -d '\r\n ' < "$CASTF" 2> /dev/null)" != off ] && wraith_casts; then
+    if "$PY" -I optimize/tv.py "pm list packages -d" 2> /dev/null | tr -d '\r' | grep -x "package:$WRAITH" > /dev/null; then   # no grep -q (pipefail)
+      echo "This TV's setup wizard holds its cast credentials (a Chromecast), but it is off (an earlier setup turned it off), so casting from a phone says «untrusted device». optimize/dock.sh cast on turns it back on."
+    else
+      CAST_KEPT=yes
+      echo "This TV's setup wizard holds its cast credentials (a Chromecast): it stays on, so casting from a phone and the Google Home remote keep working. Our home is still asked to be Home; optimize/dock.sh cast off puts our home first and gives casting up."
+    fi
+  fi
+  wraith_off() {   # 0: turned off; 1: left on (owns the Wi-Fi, holds the cast credentials, or it could not be told)
+    if [ "$CAST_KEPT" = yes ]; then echo "The setup wizard holds this TV's cast credentials: left on (optimize/dock.sh cast off to turn casting off)."; return 1; fi
     case "$(wifi_owner)" in
       other) "$PY" -I optimize/tv.py "pm disable-user --user 0 $WRAITH" > /dev/null || true; optimize/settle.sh mark 2> /dev/null || true; return 0 ;;
       owned) echo "The setup wizard of this TV owns its saved Wi-Fi network: left on, so the network is not lost." ;;
@@ -302,7 +323,7 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
   #    («wifi-ask.txt» says it was asked: never twice) and goes on: in the safe order if the network moved, as before if it did not.
   #    Only the person touches the Wi-Fi, in the TV's own Settings: this script never forgets, deletes or changes a network.
   ASKF="${URTV_RUN_DIR:-optimize/run}/wifi-ask.txt"
-  if [ -n "$STOCK" ] && [ ! -s "$ASKF" ]; then
+  if [ -n "$STOCK" ] && [ ! -s "$ASKF" ] && [ "$CAST_KEPT" != yes ]; then   # a Chromecast keeps its wizard anyway: nothing to ask
     res=$("$PY" -I optimize/tv.py "cmd package resolve-activity --brief -c android.intent.category.HOME -a android.intent.action.MAIN" 2> /dev/null) || res=""
     if [ -n "$res" ] && ! grep -q sa.urtv.home <<< "$res" && wraith_answers_home && [ "$(wifi_owner)" = owned ]; then
       mkdir -p "$(dirname "$ASKF")"
@@ -395,7 +416,9 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
     if [ "${1:-}" != verify ]; then
       SAFE_ORDER=no; SAFE_STAGE=
       # before anything is changed: does the wizard answer Home, and can it go without taking the Wi-Fi with it?
-      if wraith_answers_home; then
+      if [ "$CAST_KEPT" = yes ]; then
+        WIZARD_KEPT=yes   # never «listed»: the wizard is not in the batch, and the verify step's wraith_off leaves it on too
+      elif wraith_answers_home; then
         # owned: the switch goes on with the wizard left on (the HOME role and set-home-activity choose ours, and the
         # check below and the safety switch catch a TV where it still wins). Stopping for good here blocked 13 of 39 setups on
         # 51b9680; now the person is asked once (step 0 above) and this run goes on either way.
@@ -695,7 +718,8 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
        mkdir -p "${URTV_RUN_DIR:-optimize/run}"
        echo "Home switch: skipped, could not tell which app is this TV's own home screen" > "${URTV_RUN_DIR:-optimize/run}/home-skipped.txt" ;;
     2|6) home_skipped=1   # every way a TV keeps its own home ends here: ONE plain result that is not an error, so nobody runs the launcher again and again
-       if [ "$WIZARD_KEPT" = yes ]; then why="Its setup wizard must stay on to keep the saved Wi-Fi password, and Home still goes to the stock home"
+       if [ "$CAST_KEPT" = yes ]; then why="Its setup wizard holds the cast credentials (a Chromecast) and stays on so casting and the Google Home remote work, and with it on Home still goes to the stock home. optimize/dock.sh cast off makes our home the Home and gives casting up; optimize/dock.sh cast on brings casting back"
+       elif [ "$WIZARD_KEPT" = yes ]; then why="Its setup wizard must stay on to keep the saved Wi-Fi password, and Home still goes to the stock home"
        else why="Home did not open the new launcher after the role and the home activity were asked twice (some firmware pins Home to its own launcher)"; fi
        echo "Home switch skipped: this TV keeps its own home screen. $why ($DIAG). UrTV works as an app and as the screensaver; the stock home is back as it was. This is not an error, and trying again will not change it."
        echo "للشخص: تلفزيونك ما صار الشاشة الرئيسية في هذا التلفزيون، لكنه يشتغل من أيقونة «تلفزيونك» في صف التطبيقات."

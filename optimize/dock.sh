@@ -17,6 +17,7 @@
 #   optimize/dock.sh sleep cancel          stop it
 #   optimize/dock.sh backsaver on|off        «الرجوع يفتح شاشة التوقف»: Back on our home starts the screensaver (off by default; the TV row in «الشاشة الرئيسية» is set too); no argument says how it stands
 #   optimize/dock.sh familydns on|off|status|grant   «حماية العائلة (DNS)»: Private DNS to AdGuard Family, checked and undone by optimize/familydns.sh
+#   optimize/dock.sh cast on|off|status    «البث من الجوال» on a Chromecast with Google TV: casting and the Google Home remote kept (on, the default) or our home first (off); optimize/cast.sh
 #   optimize/dock.sh sleep-setup           turn on the sleep service (an accessibility service, once) so the end turns the screen off
 #   optimize/dock.sh type-setup            turn on the remote-and-typing service (a second accessibility service, once) so the phone remote can press keys and type in other apps
 #   optimize/dock.sh pin set 1234         «الرقابة الأبوية»: the master PIN (4 digits), set or changed from here without the old one; never printed back
@@ -42,6 +43,7 @@ send() {   # $1 action, $2 extra arguments; prints the receiver's answer (the "d
 }
 case "${1:-}:$#" in
   familydns:*) shift; exec optimize/familydns.sh "$@" ;;
+  cast:*) shift; exec optimize/cast.sh "$@" ;;
   show:1) send GET_DOCK ;;
   apps:*)  send LIST_APPS ;;
   reset:*) send RESET_DOCK ;;
@@ -146,5 +148,5 @@ case "${1:-}:$#" in
     esc=$(printf '%s' "$3" | sed "s/'/'\\\\''/g")   # an apostrophe inside the quotes, as optimize/type.sh does; the app decides whether the name is kept
     send SET_INPUT_NAME "--es id '$2' --es name '$esc'" ;;
   input-name:*) echo "usage: optimize/dock.sh input-name ID 'الاسم'   (ID from: optimize/dock.sh input-names; '' = the TV's own name)"; exit 1 ;;
-  *) sed -n '2,26p' "$0"; exit 1 ;;
+  *) sed -n '2,27p' "$0"; exit 1 ;;
 esac
