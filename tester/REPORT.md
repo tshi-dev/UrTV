@@ -828,3 +828,46 @@ Six quick buttons the same size and look ✓ ([120..188] … [580..648], y 72–
 ### step 29 summary: ✓ A, B, E, F (with one question), G (Arabic hint not seen), H. ✗ C. D ✓ except the bottom keys cut; live in market hours not testable (closed)
 Problems: (1) C «فرقك» disappears after «أضف لفرقي», 3/3 reopens; (2) pad's bottom row (⌫ ٠ ٫) cut at the bottom; (3) question: «الكل» with 10 favourites shows 8, the rest scroll; (4) the Arabic hint «اضغط مطولاً للخيارات» did not show; (5) start: TV found unmuted at 16:55:45, cause unknown (an update to the mute record? nothing in the log kept). Not tested: live prices in Tadawul hours (needs 10:00–15:00 Sun–Thu).
 Shots: `optimize/run/step29/marketing/` (8 tray shots, demo-clean, none pushed).
+
+## step 30 — build 188 (updated from 186 with «تحديث تلفزيوني», channel next; TV muted throughout; Wed 19:14–19:46)
+Update: no screensaver over the question, «تم» → MainActivity, both apps versionCode=188. 200 watcher reads from the start of the update to t+762: `Muted:true` in all, `Muted:false` 0.
+
+### 1 ✗ «فرقك» still disappears, but only when the page is reopened quickly (improved since 186; the cause looks different)
+«أضف الاتفاق لفرقي» (`teams … 136017|الاتفاق`). The group holds الاتفاق × الهلال when it shows. It comes and goes:
+| how reopened | teams | «فرقك» shown |
+|---|---|---|
+| quickly, 13–28 s between opens | 3 | **4 of 12** (✓✗✗✗✗✓✓✓✗✗✗✗) |
+| 60 s wait + about 14 s per open | 3 | **4 of 4** |
+| quickly, control after the added team was removed | 2 | **1 of 6** (✗✗✗✗✗✓) |
+When it is gone, the Hilal game is gone too (only «دوري روشن ١»), and it stays gone for that open (same at 3, 8 and 17 s). The control shows **adding a team is not the trigger**.
+My guess, not proven: the sports server refuses quick repeat requests (each open asks 2 per team, 6 with 3 teams). `NEXT_LIST` and `MATCHES` are memory only, so a new page with a refused team has nothing for it (`loadMatches` treats a partial answer as a success; `leagues` is empty on this TV). I have no response codes: no `UrTVMatches` lines, and no WebView console in logcat. A person opening the page twice inside a minute could see it.
+
+### 2 Pad: glyphs ✓, ✗ small: two keys' boxes
+⌫ ٠ ٫ glyphs are whole and centred. But the boxes of ⌫ and ٠ are not whole: `⌫ [544,792,811,888]`, 96 high, top 8 px lower than `٫ [1110,784,1376,888]`, 104 high like the other keys, and **their bottom border and round corners are cut off** at y 888. The sheet itself runs y 0–1080, edge to edge (shot D-pad).
+
+### 3 ✓ Arabic hint
+«اضغط مطوّلاً للخيارات» [1373,692,1652,752] beside the name «يوتيوب» [1684,695,1768,750], on the same line, legible on the photo; it follows the name (Crunchyroll: [1294,692,1573,752]).
+
+### 4 ✓ Dark pages (home look «رملي» فاتح)
+`pagesdark: on` by default: both pages dark, rings and contrast OK (white ring on markets, green on matches). Off (`saver.sh pagesdark off`): both pages, the stock card and the match card follow the sand look, rings and contrast OK. On again with OK on the row in Settings ← البطاقات ← الشاشة الرئيسية («مفعّل · بالمظهر الداكن دائمًا», `pagesdark: on`). Shots: `marketing/ar-sand-markets-dark.png`, `ar-sand-matches-dark.png`, and the P-on / P-off shots.
+
+### 5 Match card ✓, stock card ✗
+- **Match card ✓:** ▼ reaches «رجوع», OK closes, Back closes. Focus returns to the same row, tested on the 2nd row too (ring on الخلود × الخليج both ways)
+- **Stock card ✗ (the owner's request is not met there):** the card is taller than the screen. **«رجوع» never shows and is not in the dump**, and ▼ stays on the action button. That button is squeezed to `[264,988,1656,1024]`, 36 px high, label unreadable, a plain white pill. Seen on 3 stocks (2222, 1120, 1211), from «قائمتي» and from the movers list. So OK on the only button reachable **changes the list without the person reading it**: mine added 1211 to «قائمتي» (removed in Z), the card closed and focus fell to «مباشر», not to the row
+- Remote Back on the stock card ✓: closes, focus on the same row (الراجحي [777,727,1792,881])
+
+### 6 Mute ✓
+`logcat -d -s UrTVMute` from before the update to the end: **0 lines**, so no `by=not us`. (No change of ours either: nothing played. So this run does not show that the logging itself works.) Muted at every check.
+
+### 7 Not testable
+Tadawul closed (Wednesday evening, the page says it opens Thursday 10:00). Needs Sun–Thu 10:00–15:00.
+
+### Small note, not asked
+The home greeting reads «تصبح على خير» at 19:18.
+
+### Z
+`import settings-before.json` (preview: only teams changed; `--yes`), stocks back to the 5, look glass, dark, updatechannel latest. `show` before/after differs only in the build and the new `pagesdark: on`. Same: dock, PIN and locked list, Home holder, disabled list (21), packages (177), tasks, adhan, photos, family DNS, saver. Portfolio empty (the pad was left without saving). Muted. **restored: yes**; only the build differs (188).
+
+### step 30 summary: ✓ 3, 4, 6; match card in 5. ✗ 1, stock card in 5; 2 glyphs ✓ with a small box problem. 7 not testable.
+Problems: (1) «فرقك» and the team's game vanish on quick reopens (4/12 shown; 4/4 with a minute's wait; 1/6 without the added team); (2) stock card too tall: «رجوع» unseen and unreachable, the action button squeezed to 36 px and unreadable, OK on it changes the list; (3) pad keys ⌫ and ٠ have a cut box; (4) greeting note.
+Shots: PC only, none pushed.
