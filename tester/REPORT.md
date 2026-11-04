@@ -772,3 +772,12 @@ Main: (1) C1 with a home card on, the top buttons (with the new quick ones) cann
 Small: community list's name not in the plan or the log; 2 px sliver at bar 7.
 Fixed since step 28: screensaver no longer covers the install question; setup screen stays in front the whole run and the USB prompt came first time; «صرف العملات» / «أخفِ المبالغ» labels; the page scrolls to a saved holding; picker keeps its row; quick buttons' colour; «المباريات القادمة»; a bigger reciter index; a station that fails now says so.
 Shots: `optimize/run/step28b/marketing/` (2 kept, 1 skipped).
+
+## step 29a, PC network checks (no TV touched; run from the owner's PC)
+1. kwikmotion (`live.kwikmotion.com/…/playlist.m3u8`): `curl -sI` **HTTP 200**, `application/x-mpegURL`. `ffprobe`: **aac** (one more stream with no codec name, an empty first line). `ffmpeg -t 60`: rc=0, **no errors, 53 s wall**. Reads cleanly
+2. radiojar (`stream.radiojar.com/0tpy1h0kxtzuv`): `ffprobe`: **mp3**. `ffmpeg -t 60`: rc=0, no errors, 55 s wall. `curl -sI` (HEAD): **HTTP 404**, no redirect. With GET (`curl -L -r 0-1000`): **HTTP 302 → `http://n04.radiojar.com` (https→http) → HTTP 200 `audio/mpeg`**. So the old stream goes to clear http on GET; a build that blocks cleartext could fail on it, which would fit station 0's «تعذّر التشغيل» on targetSdk 34 (not proven from the TV)
+3. kwikmotion `curl -sI` from the PC: 200 (as in 1)
+4. Yahoo `query1…/v8/finance/spark?symbols=SAR%3DX,KWD%3DX&range=1d&interval=1d`:
+   - curl's default User-Agent: **HTTP 429**, 23 bytes: `Edge: Too Many Requests`
+   - with `-A "Mozilla/5.0"` (added by me): **HTTP 200**, 467 bytes, first 200: `{"KWD=X":{"timestamp":[1793730339],"symbol":"KWD=X","end":null,"close":[0.3107],"dataGranularity":300,"chartPreviousClose":0.3107,"start":null,"previousClose":null,"fulldayChange":0.0,"fulldayChangePe`; `SAR=X` close 3.7533, `KWD=X` close 0.3107 (about 12.08 SAR per KWD)
+   - So the answer depends on the User-Agent: worth checking what the app sends, given the empty currency tab
