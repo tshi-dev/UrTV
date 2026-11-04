@@ -212,6 +212,18 @@ for (const [why, rows] of [['the shipped table', null], ['medium confidence', [{
   check('matches page: «أضف … لفرقي» hands it the club\'s id and name', JSON.stringify(await p.evaluate(() => window.__fol)) === '["137721","Al-Ahli"]');
   check('matches page: after «أضف … لفرقي» the day on screen is kept (the new team\'s games arrive and must not move the list to another day: «فرقك» was lost, step 28b), and a Back on the open card draws nothing of it',
     await p.evaluate(() => MP.picked === true) && !errors.length, errors.join(' | '));
+  {   // step 29: the root cause of the lost «فرقك» — the new team's own copy of the same fixture (another time, another status) used to win over the league file's copy, and the game left its day
+    const { p: pf, ctx: cf, errors: ef } = await open('city=الرياض&lat=24.7136&lon=46.6753&tz=Asia/Riyadh&teams=136013&matchpage=1', { rows: ROWS, height: 1080 });
+    await pf.evaluate(() => mpRender());
+    const before = await pf.$$eval('#mp-list h2', h => h.map(x => x.textContent));
+    await pf.evaluate(() => {
+      const bad = { ...fbGames().find(e => e.idEvent === '1'), strStatus: 'Match Postponed', dateEvent: '2026-11-09', strTimestamp: '2026-11-09T17:00:00' };
+      CONFIG.teamIds.push('136020'); MATCHES['136020'] = bad; NEXT_LIST['136020'] = [bad]; mpRender();
+    });
+    const after = await pf.$$eval('#mp-list h2', h => h.map(x => x.textContent));
+    check('matches page: a followed team\'s own copy of a league game (another day, postponed) does not take the game, nor «فرقك», away: the league file\'s copy is the one read', before[0] === 'فرقك' && after[0] === 'فرقك' && await pf.evaluate(() => fbGames().find(e => e.idEvent === '1').dateEvent === '2026-11-04') && !ef.length, JSON.stringify([before, after, ef]));
+    await cf.close();
+  }
   await shot(p, 'football-matches-detail.png');
   // a live game's "with prayer" line says the minute, not «تبدأ بعد العشاء…»; the hyphen of a Latin club name does not break
   const liveLine = await p.evaluate(() => { const ev = { ...MP.detail, strStatus: '2H', strProgress: '67', intHomeScore: '1', intAwayScore: '0', dateEvent: MP.detail.dateEvent, strTimestamp: new Date(Date.now() - 67 * 60000).toISOString().slice(0, 19) };

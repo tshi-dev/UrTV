@@ -558,6 +558,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             boolean muted = audio.isStreamMute(AudioManager.STREAM_MUSIC);
             if (muted) {
                 audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_UNMUTE, 0);
+                sa.urtv.home.MuteKeep.ours(this, "adhan_unmute");
                 Log.i("UrTVAdhan", "adhan volume: the TV was muted, unmuted for the adhan (it is muted again at its end)");
             }
             savedVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
@@ -566,6 +567,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         }
         int want = Math.round(max * prefs.adhanVolume() / 100f);
         audio.setStreamVolume(AudioManager.STREAM_MUSIC, Math.max(1, Math.min(max, want)), 0);
+        sa.urtv.home.MuteKeep.ours(this, "adhan_volume_set");   // a volume set can end a mute by itself on some TVs: the state after it is in the log
         adhanLevel = audio.getStreamVolume(AudioManager.STREAM_MUSIC);   // what it took, which can differ from what was asked
         prefs.setAdhanLevel(adhanLevel);
     }
@@ -576,10 +578,11 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         if (audio != null) {
             int level = adhanLevel >= 0 ? adhanLevel : prefs.adhanLevel();
             int to = AdhanVolume.restore(savedVolume, level, audio.getStreamVolume(AudioManager.STREAM_MUSIC));
-            if (to >= 0) audio.setStreamVolume(AudioManager.STREAM_MUSIC, to, 0);   // else the person turned it themselves: it stays
+            if (to >= 0) { audio.setStreamVolume(AudioManager.STREAM_MUSIC, to, 0); sa.urtv.home.MuteKeep.ours(this, "adhan_volume_back"); }   // else the person turned it themselves: it stays
             boolean wasMuted = prefs.savedTvMuted();
             if (AdhanVolume.muteAgain(wasMuted, to)) {
                 audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0);
+                sa.urtv.home.MuteKeep.ours(this, "adhan_remute");
                 Log.i("UrTVAdhan", "adhan end: re-mute " + (audio.isStreamMute(AudioManager.STREAM_MUSIC) ? "done" : "FAILED (still unmuted)") + ", volume back to " + to);
             } else if (wasMuted) {
                 Log.i("UrTVAdhan", "adhan end: re-mute not done: the volume was changed during the adhan (the person chose to hear it)");

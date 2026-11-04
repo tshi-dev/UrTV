@@ -241,3 +241,5 @@ CI builds the home app with the screensaver, renames it to `urtv-home.apk`, and 
 ## الأذان والتلفزيون المكتوم (قرار المالك، step 28b)
 
 إذا كان التلفزيون **مكتومًا** وقت الأذان: يرفع التطبيق الكتم، يشغّل الأذان بمستواه الخاص، ثم **يكتم التلفزيون من جديد** عند نهايته، وكذلك إذا أُوقف أو رجعتَ (Back) أو انطفأت الشاشة أو توقفت الخدمة؛ ولو مات التطبيق في الوسط، يرجع الكتم والمستوى أول ما تبدأ الخدمة من جديد. الكتم يُقرأ **قبل** أي رفع. في السجل (`UrTVAdhan`): `adhan start: … tv_muted_before=<true|false>` ثم `adhan volume: the TV was muted, unmuted for the adhan` ثم عند النهاية `adhan end: re-mute done` (أو `FAILED`، أو `not done: the volume was changed during the adhan` إذا غيّر الشخص الصوت بنفسه فيبقى كما اختار).
+
+**سجل الكتم (`UrTVMute`، step 29):** كل تغيير في الصوت أو الكتم نسببه نحن يُكتب: `mute keep stage=ours why=<adhan_unmute|adhan_volume_set|adhan_volume_back|adhan_remute|phone_mute_toggle|phone_vol_up|phone_vol_down|restore_mute> muted_now=… vol=…`؛ وكل تغيّر في كتم الموسيقى يسجّله النظام يُكتب `mute changed: muted=… by=us` أو `by=not us (the system, the TV or another app)`. هكذا يُعرف من فكّ الكتم إذا وُجد التلفزيون غير مكتوم.

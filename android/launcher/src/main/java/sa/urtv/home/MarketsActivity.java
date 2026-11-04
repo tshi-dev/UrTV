@@ -1674,10 +1674,12 @@ public class MarketsActivity extends Activity {
     }
 
     private void padStyle(TextView b, String key, int sp) {
-        if (key.equals(".")) {   // the separator, large enough to read as a key (no vertical padding: the key's height is fixed)
-            b.setTextSize(TypedValue.COMPLEX_UNIT_SP, sp + 10);
-            b.setPadding(dp(20), 0, dp(20), 0);
-        }
+        // the key's height is fixed (48 / 52 dp): the glyph is centred in it, with no padding above or below and no font padding (the bottom row's ⌫ and «٫» come from
+        // fallback fonts with taller lines and were drawn low and cut at the bottom, step 29)
+        b.setPadding(dp(20), 0, dp(20), 0);
+        b.setIncludeFontPadding(false);
+        b.setGravity(Gravity.CENTER);
+        if (key.equals(".")) b.setTextSize(TypedValue.COMPLEX_UNIT_SP, sp + 10);   // the separator, large enough to read as a key
         if (key.equals("⌫") && Dir.rtl()) b.setScaleX(-1f);   // ⌫ points left (English); in Arabic the text deletes from the left, so the key points right
     }
 

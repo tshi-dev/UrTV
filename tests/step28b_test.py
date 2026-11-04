@@ -63,4 +63,17 @@ check("9: the stock's card has «رجوع» under its actions (▼ reaches it, O
       'final View back = button(S.t("رجوع"), false, v -> d.dismiss());' in text(HOME / "MarketsActivity.java") and "(made.isEmpty() ? back : made.get(0)).requestFocus();" in text(HOME / "MarketsActivity.java")
       and "final View from = getCurrentFocus();" in text(HOME / "MarketsActivity.java") and "from.requestFocus();" in text(HOME / "MarketsActivity.java")
       and 'data-k="back"' in tpl and "if(ringed && ringed.dataset.k === 'back'){ mpBack(); return; }" in tpl)
+
+# step 29
+mk = text(HOME / "MuteKeep.java")
+check("10: the pad's keys centre their glyph (no padding above or below, no font padding): the bottom row's ⌫ and «٫» were drawn low and cut",
+      "b.setPadding(dp(20), 0, dp(20), 0);" in text(HOME / "MarketsActivity.java").split("private void padStyle")[1].split("private View button")[0]
+      and "b.setIncludeFontPadding(false);" in text(HOME / "MarketsActivity.java") and "b.setGravity(Gravity.CENTER);" in text(HOME / "MarketsActivity.java").split("private void padStyle")[1])
+check("11: the options hint shows again once, six times, in either language (the Arabic count of a TV in use was spent)",
+      'prefs().getInt("options_hint_v", 0) < 2' in main and 'putInt("options_hint", 0).putInt("options_hint_en", 0).putInt("options_hint_v", 2)' in main)
+check("12: every volume or mute change of ours is logged (UrTVMute stage=ours: what we did and the state after), the system's own mute changes are logged with who did it, and the unmutes we can cause (the adhan's, the phone's «كتم» and volume keys) call it",
+      "public static void ours(Context c, String why)" in mk and '"android.media.STREAM_MUTE_CHANGED_ACTION"' in mk and 'by=" + (SystemClock.elapsedRealtime() - oursAt < 3000 ? "us"' in mk
+      and all(w in ms + text(HOME / "phone/PhoneActions.java") for w in ('ours(this, "adhan_unmute")', 'ours(this, "adhan_volume_set")', 'ours(this, "adhan_volume_back")', 'ours(this, "adhan_remute")', '"phone_mute_toggle"', '"phone_vol_up"')))
+check("13: a game the league's file also has is read from the league's copy (a followed team's own copy of it may carry another day or status: «فرقك» was lost after «أضف لفرقي»)",
+      "const lg = new Map(leagueGames().map(e => [String(e.idEvent), e]));" in tpl and "Object.assign({}, ev, lg.get(String(ev.idEvent)))" in tpl)
 sys.exit(1 if failed else 0)

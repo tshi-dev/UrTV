@@ -55,9 +55,9 @@ final class PhoneActions implements Actions {
         }
         AudioManager audio = (AudioManager) app.getSystemService(Context.AUDIO_SERVICE);
         switch (key) {
-            case "vol_up": audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI); return Result.ok("done");
-            case "vol_down": audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI); return Result.ok("done");
-            case "mute": audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_TOGGLE_MUTE, AudioManager.FLAG_SHOW_UI); return Result.ok("done");
+            case "vol_up": audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI); sa.urtv.home.MuteKeep.ours(app, "phone_vol_up"); return Result.ok("done");
+            case "vol_down": audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI); sa.urtv.home.MuteKeep.ours(app, "phone_vol_down"); return Result.ok("done");
+            case "mute": audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_TOGGLE_MUTE, AudioManager.FLAG_SHOW_UI); sa.urtv.home.MuteKeep.ours(app, "phone_mute_toggle"); return Result.ok("done");
             case "home":
                 if (PhoneApps.keysEverywhere() && RemoteNav.DONE.equals(PhoneApps.pressKey("home"))) return Result.ok("done");   // the service's Home: right from any app
                 try {

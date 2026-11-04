@@ -39,8 +39,28 @@ public final class MuteKeep {
                 }
             }, f);
         }
+        try {   // the music stream's mute flips are logged, with who did it (ours() within 3 s: us)
+            app.registerReceiver(new BroadcastReceiver() {
+                @Override public void onReceive(Context c, Intent i) {
+                    if (i.getIntExtra("android.media.EXTRA_VOLUME_STREAM_TYPE", -1) != AudioManager.STREAM_MUSIC) return;
+                    boolean m = i.getBooleanExtra("android.media.EXTRA_STREAM_VOLUME_MUTED", false);
+                    Log.i(TAG, "mute changed: muted=" + m + " by=" + (SystemClock.elapsedRealtime() - oursAt < 3000 ? "us" : "not us (the system, the TV or another app)"));
+                }
+            }, new IntentFilter("android.media.STREAM_MUTE_CHANGED_ACTION"));
+        } catch (RuntimeException ignored) { }
         if (!app.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean("has", false)) remember(app, "first_start");   // a fresh install has no record yet (the mute was set before it): the first start writes one, or a restart soon after would find none (step 28)
         if (SystemClock.elapsedRealtime() < 120_000) woke(app, "boot");   // this process started with the TV: the wake is the boot
+    }
+
+    private static volatile long oursAt;
+
+    /**
+     * Every change of the volume or the mute that WE make says so in the log (step 29: the TV was found unmuted and nothing said by whom): what we did and the state after it.
+     * The system's own change broadcast is logged below with «by=us» when one of these came within 3 s of it, «by=not us» otherwise.
+     */
+    public static void ours(Context c, String why) {
+        oursAt = SystemClock.elapsedRealtime();
+        try { Log.i(TAG, "mute keep stage=ours why=" + why + " muted_now=" + muted(c) + " vol=" + volume(c)); } catch (RuntimeException ignored) { }
     }
 
     private static AudioManager audio(Context c) { return (AudioManager) c.getSystemService(Context.AUDIO_SERVICE); }
@@ -86,6 +106,7 @@ public final class MuteKeep {
                 try {
                     audio(app).adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0);
                     ok = muted(app);
+                    ours(app, "restore_mute");
                 } catch (RuntimeException e) {
                     ok = false;
                 }

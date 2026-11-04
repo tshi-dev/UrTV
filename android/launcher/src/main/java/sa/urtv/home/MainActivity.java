@@ -2329,6 +2329,8 @@ public class MainActivity extends Activity {
     /** the hint for this focus: shown while it has times left, counted once per favourite that takes the focus */
     private void optionsHint(boolean show) {
         if (optionsHint == null) return;
+        if (prefs().getInt("options_hint_v", 0) < 2)   // the hint was made legible (step 28): everyone sees it again, six times, in either language (the Arabic count of a TV in use was long spent, step 29)
+            prefs().edit().putInt("options_hint", 0).putInt("options_hint_en", 0).putInt("options_hint_v", 2).apply();
         int seen = prefs().getInt(hintKey(), 0);
         boolean on = show && seen < OPTIONS_HINT_TIMES && edit == null && appsEdit == null;
         if (on) prefs().edit().putInt(hintKey(), seen + 1).apply();

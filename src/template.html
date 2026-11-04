@@ -239,7 +239,7 @@
   .week .hd::after{order:1}
   .week .hd svg{flex:0 0 auto;width:1.5em;height:1.5em;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
   .week .hd .until{order:2;font-size:.9em;font-weight:400;letter-spacing:0;color:#9C9279;white-space:nowrap}
-  .week.stocks,html[class] .week.stocks{padding:calc(max(18px,2.2222vh)*var(--z,1)) !important}   /* 24 on every side at 1080p (2.2222vh, never under 18 so the corner ornaments clear the text; the small screens keep their room) in every card style: the styles' own paddings (1.4vw + 8, the widget's) made it 50 (step 28) */
+  .week.stocks,html[class] .week.stocks{padding:calc(max(18px,2.2222vh)*var(--z,1)) !important}   /* 24 at 1080p, never under 18, in every card style */
   .week .hd .until.near{order:0;margin-inline-start:.2em}   /* «السوق مغلق» right after «الأسهم» on the header line, not at the card's far end over the first column */
   .week li.stk{align-items:center;gap:.8em}
   .week li.stk .nm{flex:1 1 auto;min-width:0;max-width:none;overflow:hidden;text-overflow:ellipsis;padding-bottom:.3em;margin-bottom:-.3em}
@@ -592,7 +592,7 @@
   .fbw,#fb-row{position:absolute}
   .fbw{top:calc(var(--u)*(var(--ft,216) + 44));height:calc(var(--u)*(572 - 44 - var(--ft,216)))}
   #fb-mt{inset-inline-start:calc(var(--u)*120);width:calc(var(--u)*830)}
-  #fb-mt h3{padding-inline-end:calc(var(--u)*24)}   /* «TheSportsDB · مباراتان» ends 24 px inside its box: 48 from the next widget's title, not 24 (step 28) */
+  #fb-mt h3{padding-inline-end:calc(var(--u)*24)}   /* the count ends 24 px inside: 48 from the next title */
   #fb-pr{inset-inline-start:calc(var(--u)*974);width:calc(var(--u)*420)}
   #fb-wx{inset-inline-start:calc(var(--u)*1418);width:calc(var(--u)*382)}
   .fbc{height:100%;background:var(--fbg);border:1px solid var(--fln);border-radius:calc(var(--u)*28);box-shadow:inset 0 1px 0 var(--fhl),0 20px 50px rgba(0,0,0,.18);
@@ -615,7 +615,7 @@
   .fws b{font-weight:500;font-size:calc(var(--u)*24*var(--k));white-space:nowrap}
   /* prayers */
   #fb-pr-c{display:flex;flex-direction:column;justify-content:space-between;padding:calc(var(--u)*16)}
-  .fpl{list-style:none;display:flex;flex-direction:column;gap:calc(var(--u)*8*var(--k))}   /* rows 40 + gaps 8 (the 8 scale): five rows and the last line fit the 312 box with 16 above and below (the last line sat under 16 px from the edge, step 28) */
+  .fpl{list-style:none;display:flex;flex-direction:column;gap:calc(var(--u)*8*var(--k))}   /* rows 40, gaps 8: 16 above and below the last line */
   .fpl li{display:flex;align-items:center;gap:calc(var(--u)*16);height:calc(var(--u)*40*var(--k));padding-inline:calc(var(--u)*16);border-radius:calc(var(--u)*14);font-size:calc(var(--u)*28*var(--k))}
   .fpl li b{font-weight:500;flex:1}
   .fpl li.nx{background:var(--fhl);color:var(--fgr)}
@@ -623,7 +623,7 @@
   .fpn{text-align:center;color:var(--fgr);font-size:calc(var(--u)*24*var(--k))}
   /* the games, three lines */
   #fb-mt-c{padding-block:calc(var(--u)*8)}
-  #fb-mt-c ul{list-style:none;display:flex;flex-direction:column;justify-content:center;height:100%}   /* one, two or three lines: a block centred in the card, not each stretched over its share (a big gap above the first, step 28) */
+  #fb-mt-c ul{list-style:none;display:flex;flex-direction:column;justify-content:center;height:100%}   /* the lines are a centred block */
   /* the match line, one template (the widget's .fln and the list's .mpg): a grid whose × is the axis; the time column at the start, the home pair and the away pair
      hugging the ×, the note / mark last. Crest 40, 24 between crest and name, 32 each side of the ×; a name takes two lines, no word broken. */
   .fln,.mpg{display:grid;grid-template-columns:calc(var(--u)*200) minmax(0,1fr) auto minmax(0,1fr) var(--zw);align-items:center;column-gap:0}
@@ -1787,7 +1787,7 @@ function arName(en, kind, id){
   return translit(en);
 }
 const teamAr = (s, id) => arName(s, 'team', id);
-// a Latin club name never breaks inside a hyphenated word: «Shabab Al-Ahli Dubai» wrapped as «Shabab Al-» / «Ahli Dubai» (step 27); the non-breaking hyphen keeps «Al-Ahli» whole
+// a Latin club name never breaks inside a hyphenated word (non-breaking hyphen)
 const nbName = s => String(s).replace(/([A-Za-z])-(?=[A-Za-z])/g, '$1\u2011');
 
 async function fetchNext(id){
@@ -2865,7 +2865,7 @@ function renderCard(card, animate, keepSize){
     else paintHd(hd, PANEL_TITLE.shows);
     renderWeekPage(card, animate); return;
   }
-  card.el.classList.toggle('stocks', P === 'stocks');   // the stocks card has 24 px of its own inside on every side (the % column touched the edge, step 27)
+  card.el.classList.toggle('stocks', P === 'stocks');   // 24 px of its own inside
   let rows = [];
   if(P === 'prayers') rows = prayerRows();
   else if(P === 'forecast') rows = forecastRows();
@@ -3336,8 +3336,7 @@ const VERSES = __VERSES__;   // assets/shared/verses.json
 const HADITH = __HADITH__;   // assets/shared/hadith.json, through src/build.py
 // the text's size steps down with its length (characters): up to 180 as it was, then three smaller steps
 const quoteSize = n => n > 420 ? ' q3' : n > 300 ? ' q2' : n > 180 ? ' q1' : '';
-// a long text on a small screen steps down one size more (q1..q4) until the card has 4 px to spare under its 42% and above the bottom bar,
-// so a font whose lines are a pixel taller than expected still fits (the next size is the text's own smaller class)
+// a long text steps down one size more (q1..q4) until the card has 4 px to spare under its 42% and above the bottom bar
 function fitQuote(ul){
   const li = ul.querySelector('li.quote');
   if(!li || CONFIG.widget || CARDS.length > 1) return;   // the screensaver's one card beside the clock; the launcher's cards are fitted by fitCards
@@ -3942,7 +3941,9 @@ const fbDone = (ev, now) => FINAL.includes((ev.strStatus || '').toUpperCase()) |
 const fbLive = (ev, now) => now >= fbKick(ev) && !fbDone(ev, now);
 const fbScored = ev => ev.intHomeScore != null && ev.intAwayScore != null && ev.intHomeScore !== '' && ev.intAwayScore !== '';
 function fbGames(){
-  return matchEvents().filter(ev => ev && ev.idEvent && !isNaN(fbKick(ev)) && !CALLED_OFF.test(ev.strStatus || ''))
+  // a game the league's file also has is read from its copy (a team's own copy may carry another time or status and won: «فرقك» was lost, step 29)
+  const lg = new Map(leagueGames().map(e => [String(e.idEvent), e]));
+  return matchEvents().map(ev => lg.has(String(ev.idEvent)) ? Object.assign({}, ev, lg.get(String(ev.idEvent))) : ev).filter(ev => ev && ev.idEvent && !isNaN(fbKick(ev)) && !CALLED_OFF.test(ev.strStatus || ''))
     .sort((a, b) => (fbMine(b) - fbMine(a)) || fbKick(a) - fbKick(b));
 }
 const fbDayOf = ms => cityToday(ms);
@@ -4077,7 +4078,7 @@ function fbRender(){
   setHTML(document.getElementById('fb-wx-c'), fbWeatherHtml());
   setHTML(document.getElementById('fb-pr-c'), fbPrayersHtml());
   const count = list.length ? 'TheSportsDB · ' + fbCount(list.length) : '';
-  const upcoming = list.length && !list.some(ev => fbDayOf(fbKick(ev)) === cityToday(now));   // none today: the next day's games, titled so (they sat under «مباريات اليوم», step 28)
+  const upcoming = list.length && !list.some(ev => fbDayOf(fbKick(ev)) === cityToday(now));   // none today: the next day's, titled so
   for(const id of ['fb-mt', 'fb-row']){
     const h = document.querySelector('#' + id + ' h3'), t = h && h.firstChild;
     if(t && t.nodeType === 3) t.nodeValue = upcoming ? FB_W.upcoming : FB_W.today;
@@ -4284,8 +4285,8 @@ function mpAct(){
       if(ok && !CONFIG.teamIds.includes(id)) CONFIG.teamIds.push(id);
     }
   }catch(e){ ok = false; }
-  if(ok && b.k !== 'remind') MP.picked = true;   // the day on screen stays: the new team's games arrive and the day that follows «today's, else the next day with games» must not move under the person (the list lost «فرقك», step 28b)
-  if(ok && b.k !== 'remind'){   // the followed teams changed: their games are asked for now, and the list and the home widget drawn from them (one list showed half its groups, step 28)
+  if(ok && b.k !== 'remind') MP.picked = true;   // the day on screen stays
+  if(ok && b.k !== 'remind'){   // the teams changed: ask for their games now and draw again
     try{ Promise.resolve(loadMatches()).then(() => { fbRender(); if(document.getElementById('mp')) mpRender(); }).catch(() => {}); }catch(e){}
   }
   MP.note = ok ? (b.k === 'remind' ? FB_W.reminded : fw(b.k === 'unfollow' ? FB_W.unfollowed : FB_W.followed, teamAr(ev['str' + b.side + 'Team'], ev['id' + b.side + 'Team']))) : FB_W.failed;
