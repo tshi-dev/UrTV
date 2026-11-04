@@ -149,6 +149,16 @@ check("currencies: CI asks every one the app lists that is not a peg (and none o
 check("currencies: a fourth tab «صرف العملات» with the list, «حوّل» (the converter with the number pad, USD to SAR at first), and «اختر العملات»; the file is loaded once a day by the page only",
       'S.t("صرف العملات")' in act2 and 'TABS = {"market", "watch", "portfolio", "fx"}' in act2 and "else if (k == 3) currencies();" in act2 and "MarketFile.loadFx(app);" in act2
       and 'fxPrefs().getString("from", "USD"), fxPrefs().getString("to", "SAR")' in act2 and "MarketFile.loadFx" not in "".join(text(p) for p in HOME.rglob("*.java") if p.name not in ("MarketsActivity.java", "MarketFile.java")))
+app_fx = re.findall(r'"([A-Z]{3})"', text(HOME / "MarketData.java").split("static final String[] FX_CODES = {")[1].split("};")[0])
+check("step 182: the app's own FX_CODES are CI's, in the same order (a TV asks Yahoo for exactly what CI would publish)", app_fx == re.findall(r'"([A-Z]{3})"', fxc), (app_fx, fxc))
+mf182 = text(HOME / "MarketFile.java")
+lf = mf182[mf182.index("static void loadFx("):mf182.index("private static String fxFromYahoo(")]
+check("step 182: CI's fx.json first; Yahoo asked only when it is missing, empty or older than 48 h, once a day (the copy of today returns first), not again for 30 min after a failure; only today's rates are saved",
+      "DAY_OF_YEAR" in lf and lf.index("download(MarketData.FX_URL)") < lf.index("MarketData.fxNeedsOwn(text, t) && t - fxOwnAskedAt >= FX_OWN_PAUSE_MS") < lf.index("fxFromYahoo()")
+      and "FX_OWN_PAUSE_MS = 30 * 60_000L" in mf182 and "FX_STALE_MS = 48 * 3600_000L" in text(HOME / "MarketData.java")
+      and "if (!MarketData.fxNeedsOwn(text, t)) { save(c, FX, text); fxText = text; }" in lf and "fxText == null ||" not in lf)
+peg_doc = text(HOME / "MarketData.java")
+check("step 182: FX_PEGS keeps its own doc (no two docs stacked over FX_CODES)", "«مربوط بالدولار». */\n    static final String[][] FX_PEGS" in peg_doc and "*/\n    /** the currencies the page" not in peg_doc)
 check("currencies: a missing rate shows «—» (MarketData.fxNumber of NaN), never 0; the pegs say «مربوط بالدولار»", 'MarketData.pegged(code) ? code + " · " + S.t("مربوط بالدولار")' in act2 and 'return "—"' in text(HOME / "MarketData.java"))
 check("step 28 (the owner's photo): the pad's zero is a Latin-style 0 in Arabic (the Arabic one is a dot beside the separator), the separator key is large, and ⌫ is mirrored in RTL",
       'if (key.equals("0") && !Digits.latin()) return "0";' in act2 and 'sp + 10' in act2 and 'key.equals("⌫") && Dir.rtl()) b.setScaleX(-1f)' in act2

@@ -170,6 +170,17 @@ public final class MarketsRun {
         check("fx: with no file from CI the app writes its own (rates it read live): only known-shaped codes with a positive rate, 6 significant digits, the time of the reading; none at all is an empty text",
             MarketData.parseFx(ownFile).size() == 2 && near(MarketData.parseFx(ownFile).get("KWD"), 0.30741) && MarketData.fxUpdated(ownFile) == 1793000000_000L && MarketData.fxFile(new java.util.LinkedHashMap<String, Double>(), 1L).isEmpty()
             && MarketData.FX_CODES.length == 35, ownFile);
+        java.util.Map<String, Double> wide = new java.util.LinkedHashMap<>();
+        wide.put("AAA", 1234567.891); wide.put("BBB", 0.0000123456789);
+        String wideFile = MarketData.fxFile(wide, 1L);
+        check("fx 182: no exponent in the own file (6 significant digits, plain), so any JSON reader takes it", !wideFile.matches("(?s).*\\d[eE][-+]?\\d.*")
+            && near(MarketData.parseFx(wideFile).get("AAA"), 1234570) && Math.abs(MarketData.parseFx(wideFile).get("BBB") - 0.0000123457) < 1e-12, wideFile);
+        long now182 = MarketData.time("2026-11-04T10:00:00Z");
+        check("fx 182: a file of today is used as is; a missing one, one with no rate, no time or older than two days makes the app ask itself",
+            !MarketData.fxNeedsOwn("{\"updated\":\"2026-11-04T06:00:00+00:00\",\"rates\":{\"KWD\":0.307}}", now182) && MarketData.fxNeedsOwn(null, now182)
+            && MarketData.fxNeedsOwn("{\"updated\":\"2026-11-04T06:00:00Z\",\"rates\":{}}", now182) && MarketData.fxNeedsOwn("{\"rates\":{\"KWD\":0.307}}", now182)
+            && MarketData.fxNeedsOwn("{\"updated\":\"2026-11-01T06:00:00+00:00\",\"rates\":{\"KWD\":0.307}}", now182) && MarketData.fxNeedsOwn("<html>", now182)
+            && !MarketData.fxNeedsOwn(MarketData.fxFile(own, now182), now182), "");
         check("live: anything that is not that answer is an empty map (the caller backs off)", MarketData.parseLive("<html>").isEmpty() && MarketData.parseLive(null).isEmpty() && MarketData.parseLive("{}").isEmpty(), "");
         MarketData file = MarketData.parse(FILE);
         MarketData on = file.withLive(m);

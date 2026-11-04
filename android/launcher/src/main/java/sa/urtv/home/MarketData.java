@@ -449,7 +449,6 @@ final class MarketData {
 
     // ---- «صرف العملات»: rates against the dollar, the converter's maths (pure; the names and the screen are MarketsActivity's)
 
-    /** Currencies whose rate to the dollar never moves (units per US dollar): they are never fetched, and the screen says «مربوط بالدولار». */
     /** the currencies the page can show that are not pegged: the ones CI asks Yahoo for (market_prices.py FX_CODES), and what the app asks itself when CI's file is missing */
     static final String[] FX_CODES = {"KWD", "EGP", "EUR", "GBP", "TRY", "INR", "PKR", "IQD", "MAD", "DZD", "TND", "LYD", "SDG", "YER", "LBP", "SYP", "MRU", "PHP", "IDR", "BDT", "LKR", "NPR",
         "MYR", "ETB", "KES", "JPY", "CNY", "CHF", "CAD", "AUD", "SGD", "HKD", "KRW", "RUB", "ZAR"};
@@ -459,7 +458,7 @@ final class MarketData {
         StringBuilder b = new StringBuilder();
         for (Map.Entry<String, Double> e : rates.entrySet()) {
             if (!e.getKey().matches("[A-Z]{3}") || !(e.getValue() > 0) || Double.isInfinite(e.getValue())) continue;
-            b.append(b.length() > 0 ? "," : "").append('"').append(e.getKey()).append("\":").append(String.format(java.util.Locale.ROOT, "%.6g", e.getValue()));
+            b.append(b.length() > 0 ? "," : "").append('"').append(e.getKey()).append("\":").append(new java.math.BigDecimal(e.getValue()).round(new java.math.MathContext(6)).stripTrailingZeros().toPlainString());
         }
         if (b.length() == 0) return "";
         java.text.SimpleDateFormat f = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.ROOT);
@@ -467,8 +466,19 @@ final class MarketData {
         return "{\"updated\":\"" + f.format(new java.util.Date(nowMs)) + "\",\"rates\":{" + b + "}}";
     }
 
+    /** CI's file (or the app's own copy) is today's while it is younger than this; older, missing or with no rate, the app asks Yahoo itself (step 182) */
+    static final long FX_STALE_MS = 48 * 3600_000L;
+
+    /** True when this fx text (CI's file, the copy here, or null) cannot stand for today's rates: no rate in it, no time, or older than FX_STALE_MS. */
+    static boolean fxNeedsOwn(String json, long now) {
+        if (parseFx(json).isEmpty()) return true;
+        long at = fxUpdated(json);
+        return at <= 0 || now - at > FX_STALE_MS;
+    }
+
     static final String FX_URL = "https://raw.githubusercontent.com/tshi-dev/UrTV/data-markets/markets/fx.json";
 
+    /** Currencies whose rate to the dollar never moves (units per US dollar): they are never fetched, and the screen says «مربوط بالدولار». */
     static final String[][] FX_PEGS = {{"SAR", "3.75"}, {"AED", "3.6725"}, {"QAR", "3.64"}, {"BHD", "0.376"}, {"OMR", "0.3845"}, {"JOD", "0.709"}};
 
     static boolean pegged(String ccy) {

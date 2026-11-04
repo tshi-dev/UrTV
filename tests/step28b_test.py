@@ -26,8 +26,8 @@ tpl = text(ROOT / "src/template.html")
 check("2: the matches list keeps its day when a team is followed or unfollowed (the new team's games must not move it), and Back on the open card draws nothing of it",
       "if(ok && b.k !== 'remind') MP.picked = true;" in tpl and "mpBack(); return e.preventDefault(); }" in tpl)
 mf, md = text(HOME / "MarketFile.java"), text(HOME / "MarketData.java")
-check("3: with no fx file from CI and no rates yet the app asks Yahoo itself (two batches of the 35 codes) and keeps the result as CI's file",
-      "private static String fxFromYahoo()" in mf and "if (fxText == null || MarketData.parseFx(fxText).isEmpty()) {" in mf and "from += 18" in mf and "static String fxFile(" in md)
+check("3: with no fx file from CI (or an old one, step 182) the app asks Yahoo itself (two batches of the 35 codes), once a day, and keeps the result as CI's file",
+      "private static String fxFromYahoo()" in mf and "if (MarketData.fxNeedsOwn(text, t) && t - fxOwnAskedAt >= FX_OWN_PAUSE_MS) {" in mf and "from += 18" in mf and "static String fxFile(" in md)
 ms = text(HOME / "tilawah/MusicService.java")
 check("4: a station that gives nothing in 20 s is retried once with its own address straight to the player, then says «تعذّر التشغيل»; the host (never the token) is logged",
       "radioDirectTried" in ms and "trying \" + hostOf(radioAddress) + \" as given" in ms and 'S.t("تعذّر التشغيل")' in ms)

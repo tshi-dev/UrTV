@@ -131,14 +131,23 @@ final class MarketFile {
         if (have.isFile() && now.get(java.util.Calendar.YEAR) == then.get(java.util.Calendar.YEAR)
                 && now.get(java.util.Calendar.DAY_OF_YEAR) == then.get(java.util.Calendar.DAY_OF_YEAR)) return;
         String text = download(MarketData.FX_URL);
-        if (text != null && !MarketData.parseFx(text).isEmpty()) { save(c, FX, text); fxText = text; return; }
-        // CI's file is not there (the data branch had none for a while: a TV installed then showed «لا أسعار بعد» for hours, steps 27 and 28b): with no rates at all
-        // yet, the app asks Yahoo itself for the currencies, the way it asks for the live prices, and keeps the result like CI's file
-        if (fxText == null || MarketData.parseFx(fxText).isEmpty()) {
+        long t = System.currentTimeMillis();
+        // CI's file is missing, has no rate or is older than MarketData.FX_STALE_MS (the data branch had none for a while: a TV installed then showed
+        // «لا أسعار بعد» for hours, steps 27, 28b and 182): the app asks Yahoo itself, the way it asks for the live prices. We get here only when the copy
+        // here is not from today, so a TV asks at most once a day while CI has none; a failed ask is not repeated for FX_OWN_PAUSE_MS
+        if (MarketData.fxNeedsOwn(text, t) && t - fxOwnAskedAt >= FX_OWN_PAUSE_MS) {
+            fxOwnAskedAt = t;
             String own = fxFromYahoo();
-            if (own != null) { save(c, FX, own); fxText = own; }
+            if (own != null) text = own;
         }
+        if (text == null || MarketData.parseFx(text).isEmpty()) return;   // nothing new: the old copy stays
+        if (!MarketData.fxNeedsOwn(text, t)) { save(c, FX, text); fxText = text; }   // today's rates: the day's copy
+        else if (MarketData.fxUpdated(text) > MarketData.fxUpdated(fxText)) fxText = text;   // old, but newer than ours: shown with its time, not kept as today's (the next open tries again)
     }
+
+    /** when this process last asked Yahoo for the rates itself (ms) */
+    private static volatile long fxOwnAskedAt;
+    private static final long FX_OWN_PAUSE_MS = 30 * 60_000L;
 
     /** the currencies' rates (units per dollar) from Yahoo's spark answer, two requests; null when none came */
     private static String fxFromYahoo() {
