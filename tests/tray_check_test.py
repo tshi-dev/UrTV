@@ -105,4 +105,7 @@ check("the rendered check also takes the 8 pictures of the owner's question: san
       "def shots(out, report, failures):" in src and 'for look in ("sand", "glass"):' in src and '(("5", 5), ("7", 7), ("10", 8), ("all", 8))' in src and "seed_dock(12)" in src and "tray-{look}-{setting}.png" in src and "«…»" in src)
 f, _ = tc.analyse(dump(en_n_tiles(7), (152, 704, 256, 752), tray=(128, 768, 1792, 986)), "en", "first", n=7, favs=7)
 check("step 28: 7 tiles in a tray that kept its 218 height (an empty band under them): found", any("high" in x for x in f) and any("not 24 and 24" in x for x in f), f)
+ns_h = [{"cls": "android.widget.TextView", "text": "Stub 1", "desc": "", "focusable": False, "focused": False, "rect": (152, 764, 236, 819)},
+        {"cls": "android.widget.TextView", "text": "Hold OK for options", "desc": "", "focusable": False, "focused": False, "rect": (268, 760, 520, 819)}]
+check("step 28: the hint beside the name (16 sp, as big as the name) is not taken for the name", tc.name_label(ns_h, (128, 837, 1792, 986))["text"] == "Stub 1")
 sys.exit(1 if failed else 0)

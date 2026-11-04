@@ -90,7 +90,8 @@ def tiles(ns, tray, n=None):
 
 def name_label(ns, tray):
     """the app's name: the biggest text just above the tray (the hint beside it is smaller)"""
-    c = [n for n in ns if n["text"].strip() and tray[1] - 140 <= n["rect"][3] <= tray[1] + 2 and n["rect"][1] >= 0]
+    c = [n for n in ns if n["text"].strip() and tray[1] - 140 <= n["rect"][3] <= tray[1] + 2 and n["rect"][1] >= 0
+         and "للخيارات" not in n["text"] and "for options" not in n["text"]]   # the hint beside the name (16 sp, as large as the name) is not the name
     return max(c, key=lambda n: n["rect"][3] - n["rect"][1]) if c else None
 
 
@@ -349,7 +350,8 @@ def shots(out, report, failures):
         for setting, n in (("5", 5), ("7", 7), ("10", 8), ("all", 8)):
             tag = f"shot-{look}-{setting}"
             saver(f"--es look {look}", f"--es favbar {setting}", "--es appearance dark" if look == "glass" else "--es appearance auto")
-            time.sleep(4)
+            shell("am force-stop sa.urtv.home")   # the home reads the bar size and the look when it starts (a running one only at a later tick: each picture showed the one before)
+            go_home()
             xa, pa = walk(["DPAD_RIGHT"] * 12, out, tag)
             fa, ma = analyse(xa, "ar", "first", n=n, favs=12)
             label = name_label(nodes(xa), tuple(ma["tray"])) if ma.get("tray") else None
