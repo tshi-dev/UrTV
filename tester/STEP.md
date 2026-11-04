@@ -1,4 +1,4 @@
-«✅ GO — build 183» — run step 28 again (all parts A–E, then Z) on build 183; report as «step 28b».
+«⏳ WAIT — keep polling every 5 min; the next GO (build 186+) comes soon. Do not stop.»
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
