@@ -1,4 +1,4 @@
-«✅ GO — build 186» — run step 29 (end of this file). TV muted throughout.
+«✅ GO — build 188» — run step 30 (end of this file). TV muted throughout.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -522,3 +522,14 @@ G. Home: the 6 quick buttons look the same; the prayer card's last line ≥16 px
 H. Adhan on a muted TV (volume 10%, guard ready): it unmutes, plays, and is muted again at the end; check `tv_muted_before=true` and `adhan end: re-mute done`. Also stop it early with Back: muted again.
 Z. Restore as in step 28b Z.
 Report as «step 29» in REPORT.md and push.
+
+## step 30 — build 188 (update; TV muted throughout; restore in Z)
+1. «فرقك»: «أضف … لفرقي», reopen the matches page 3×: the group stays, with that team's game.
+2. Number pad: the bottom row (⌫ ٠ ٫) glyphs whole and centred.
+3. The Arabic hint «اضغط مطولاً للخيارات» shows near the tray name (counter reset in this build).
+4. Markets and matches pages are DARK by default while the home look is «رملي»; turning «صفحات الأسهم والمباريات داكنة» off makes them follow the home look; on again → dark. Contrast and rings OK. Screenshots of both pages, dark.
+5. «رجوع» button at the bottom of a stock's card and of a match's card: ▼ reaches it, OK closes, focus returns to the same row; remote Back does the same.
+6. Mute: from the update on, check `UrTVMute` lines; report any `mute changed: muted=false by=not us` with its time.
+7. If Tadawul is open (Sun–Thu 10:00–15:00), live prices: `parsed` = asked, and prices move within 10 min.
+Z. Restore as in step 28b Z.
+Report as «step 30» in REPORT.md and push.
