@@ -186,6 +186,18 @@ for (const [why, rows] of [['the shipped table', null], ['medium confidence', [{
   await p.evaluate(() => { window.UrtvMatches = { remind: (t, at) => (window.__rem = [t, at], true), follow: (id, n) => (window.__fol = [id, n], true) }; });
   check('matches page: the card opens with a visible focus: the card itself is ringed and no button is', await p.$$eval('#mp-detail .mdx.f', c => c.length === 1) && await p.$$eval('.mdb button.f', b => b.length === 0));
   check('matches page: the card\'s buttons cannot take the browser\'s own focus (tabindex -1), so there is one focus: the drawn ring', await p.$$eval('.mdb button', b => b.every(x => x.getAttribute('tabindex') === '-1')));
+  // «رجوع» under the card's actions (the owner, step 28b): a button of its own, ▼ rings it alone, OK or Back closes the card and the game's row is ringed again
+  check('matches page: the card has «رجوع» as a row of its own under the actions, not ringed at first', await p.$$eval('.mdq button', b => b.length === 1 && b[0].textContent.trim() === 'رجوع' && !b[0].classList.contains('f')));
+  await p.keyboard.press('ArrowDown');
+  check('matches page: ▼ rings «رجوع» alone (no action and not the card)', await p.$$eval('.mdq button.f', b => b.length === 1) && await p.$$eval('.mdb button.f', b => b.length === 0) && await p.$$eval('#mp-detail .mdx.f', c => c.length === 0));
+  await p.keyboard.press('ArrowUp');
+  check('matches page: ▲ from «رجوع» goes back to the first action', await p.$$eval('.mdb button.f', b => b.length === 1 && b[0].dataset.k === 'remind') && await p.$$eval('.mdq button.f', b => b.length === 0));
+  await p.keyboard.press('ArrowDown');
+  await p.keyboard.press('Enter');
+  check('matches page: OK on «رجوع» closes the card and the game\'s row is ringed again', await p.$eval('#mp-detail', d => d.hidden) && await p.$$eval('.mpg.f', r => r.length === 1 && /الأهلي/.test(r[0].textContent)));
+  await p.keyboard.press('Enter');   // the card again, for what follows
+  check('matches page: the remote\'s Back (Escape) does the same', await p.evaluate(() => { const r = mpBack(); return r === 'closed' && document.getElementById('mp-detail').hidden; }) && await p.$$eval('.mpg.f', r => r.length === 1));
+  await p.keyboard.press('Enter');   // opened again: the checks below find it as it was
   await p.keyboard.press('Enter');   // the card just opened: no button has the focus, OK adds nothing
   check('matches page: OK on the freshly opened card adds no reminder and follows no team', await p.evaluate(() => window.__rem === undefined && window.__fol === undefined));
   await p.keyboard.press('ArrowLeft');   // ◀ is forward in Arabic: the focus goes to «ذكّرني»

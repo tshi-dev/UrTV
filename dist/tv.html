@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261104103825">
+<meta name="urtv-build" content="20261104141913">
 <title>شاشة تلفزيونك</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -725,13 +725,14 @@
   .mpk i{width:calc(var(--u)*2);height:calc(var(--u)*24);background:var(--fi);opacity:.6}
   .mpk b,.mpgl{font-weight:400;font-size:calc(var(--u)*22);color:var(--fs);white-space:nowrap;margin-top:calc(var(--u)*8)}
   .mpgl{position:absolute;top:calc(var(--u)*16);color:var(--fgr);transform:translateX(50%)}
-  .mdb{display:flex;gap:calc(var(--u)*24);margin-top:calc(var(--u)*32)}
-  .mdb button{flex:1;display:flex;align-items:center;justify-content:center;gap:calc(var(--u)*12);font:inherit;color:var(--fi);background:#fff;border:1px solid var(--fln);
+  .mdb,.mdq{display:flex;gap:calc(var(--u)*24);margin-top:calc(var(--u)*32)}
+  .mdq{margin-top:calc(var(--u)*16)}   /* «رجوع», a row of its own under the card's actions: ▼ reaches it, OK or Back closes the card */
+  .mdb button,.mdq button{flex:1;display:flex;align-items:center;justify-content:center;gap:calc(var(--u)*12);font:inherit;color:var(--fi);background:#fff;border:1px solid var(--fln);
     border-radius:calc(var(--u)*16);padding:calc(var(--u)*24);outline:none}
   .mdb button.pri{background:#21915F;color:#fff;border-color:#21915F}
   .mdx.f{box-shadow:0 0 0 calc(var(--u)*3) #F7F6F1,0 0 0 calc(var(--u)*6) var(--fring)}
-  .mdb button:focus{outline:none}
-  .mdb button.f{box-shadow:0 0 0 calc(var(--u)*3) #F7F6F1,0 0 0 calc(var(--u)*6) var(--fring)}
+  .mdb button:focus,.mdq button:focus{outline:none}
+  .mdb button.f,.mdq button.f{box-shadow:0 0 0 calc(var(--u)*3) #F7F6F1,0 0 0 calc(var(--u)*6) var(--fring)}
   .mdb svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.8}
   .mdb .fg{font-size:1em}
   .mdn{min-height:calc(var(--u)*36);margin-top:calc(var(--u)*16);text-align:center;color:var(--fgr);font-size:calc(var(--u)*24)}
@@ -744,9 +745,9 @@
   html.mpdark #mp-detail{background:rgba(0,0,0,.66)}
   html.mpdark .mdx{background:#1D1F24;box-shadow:0 30px 80px rgba(0,0,0,.5)}
   html.mpdark .mdr{background:#202227}
-  html.mpdark .mdb button{background:#2A2D33}
+  html.mpdark .mdb button,html.mpdark .mdq button{background:#2A2D33}
   html.mpdark .mdb button.pri{background:#1B8354;border-color:#1B8354}
-  html.mpdark .mdx.f,html.mpdark .mdb button.f{box-shadow:0 0 0 calc(var(--u)*3) #1D1F24,0 0 0 calc(var(--u)*6) var(--fring)}
+  html.mpdark .mdx.f,html.mpdark .mdb button.f,html.mpdark .mdq button.f{box-shadow:0 0 0 calc(var(--u)*3) #1D1F24,0 0 0 calc(var(--u)*6) var(--fring)}
 </style>
 </head>
 <body>
@@ -3905,7 +3906,7 @@ function nowPlayingTick(){
 // files on data-leagues, the Saudi Pro League's when none is followed), the prayers are computed or Aladhan's, as everywhere on the page.
 // The launcher owns the focus (FootballFocus.java): it calls fbTop(), fbLight(), fbFocus(), fbMove(), fbPick() and reads fbRects().
 const FB_W = {
-  weather:'الطقس', prayers:'أوقات الصلاة', today:'مباريات اليوم', upcoming:'المباريات القادمة', title:'المباريات', yours:'فرقك', none:'لا مباريات اليوم',
+  weather:'الطقس', prayers:'أوقات الصلاة', today:'مباريات اليوم', upcoming:'المباريات القادمة', title:'المباريات', yours:'فرقك', none:'لا مباريات اليوم', back:'رجوع',
   feels:'المحسوسة', hum:'الرطوبة', wind:'الرياح', kmh:'%s كم/س', pct:'٪%s', live:'مباشر', ended:'انتهت', vs:'×',
   yesterday:'أمس', tday:'اليوم', tomorrow:'غدًا', g1:'مباراة واحدة', g2:'مباراتان', gFew:'%s مباريات', gMany:'%s مباراة',
   allOn:'كلها على %s', round:'%s، الجولة %s', venue:'الملعب', channel:'القناة', withPrayer:'مع الصلاة', game:'المباراة',
@@ -4249,10 +4250,11 @@ function mpDetailRender(){
   const rows = [ev.strVenue ? `<li><span>${FB_W.venue}</span><i>${esc(ev.strVenue)}</i></li>` : '', m ? `<li><span>${FB_W.channel}</span><i>${esc(m.detail)}</i></li>` : '',
     `<li class="mdp"><div><span>${FB_W.withPrayer}</span><i class="mds">${esc(fbLive(ev, now) ? fbStatus(ev, now) : fbDone(ev, now) ? FB_W.ended : fbSentence(ev))}</i></div>${mpLine(ev)}</li>`].join('');
   const btns = mpButtons(ev, now);
-  MP.btn = Math.max(-1, Math.min(MP.btn, btns.length - 1));
+  MP.btn = Math.max(-1, Math.min(MP.btn, btns.length));   // btns.length is «رجوع», the row under the actions
   setHTML(document.getElementById('mp-detail'), `<div class="mdx${MP.btn < 0 ? ' f' : ''}"><div class="mdh"><span>${esc(fbRound(ev))}</span>${fbMarkChip(ev)}</div>`
     + `<div class="mdm">${big('Home')}<div class="mdk">${mid}</div>${big('Away')}</div><ul class="mdr">${rows}</ul>`
     + `<div class="mdb">${btns.map((b, i) => `<button tabindex="-1" class="${i === 0 ? 'pri' : ''}${i === MP.btn ? ' f' : ''}" data-k="${b.k}">${b.icon ? fbGlyph('bell') : ''}<span>${esc(b.t)}</span></button>`).join('')}</div>`
+    + `<div class="mdq"><button tabindex="-1" class="${MP.btn === btns.length ? 'f' : ''}" data-k="back"><span>${FB_W.back}</span></button></div>`
     + `<div class="mdn" id="mp-note">${esc(MP.note)}</div></div>`);
   document.getElementById('mp-detail').hidden = false;
 }
@@ -4265,7 +4267,9 @@ function mpBack(){   // the launcher's Back: closes the card first; 'out' when t
 }
 function mpAct(){
   // one focus: OK acts on the button that is RINGED on screen (the one drawn with .f), and on nothing when the card itself is ringed
-  const ev = MP.detail, ringed = document.querySelector('#mp-detail .mdb button.f'), b = ringed && mpButtons(ev, Date.now()).find(x => x.k === ringed.dataset.k);
+  const ev = MP.detail, ringed = document.querySelector('#mp-detail .mdb button.f, #mp-detail .mdq button.f');
+  if(ringed && ringed.dataset.k === 'back'){ mpBack(); return; }   // «رجوع»: the card closes, the focus is on the game's row again
+  const b = ringed && mpButtons(ev, Date.now()).find(x => x.k === ringed.dataset.k);
   if(!b) return;
   const host = window.UrtvMatches;
   let ok = false;
@@ -4296,10 +4300,13 @@ function mpKey(e){
   const fwd = Dir_rtl() ? 'ArrowLeft' : 'ArrowRight', back = Dir_rtl() ? 'ArrowRight' : 'ArrowLeft', k = e.key;
   const ok = k === 'Enter' || k === ' ';
   if(MP.detail){
-    const n = mpButtons(MP.detail, Date.now()).length;
-    if(k === fwd) MP.btn = Math.min(n - 1, MP.btn + 1); else if(k === back) MP.btn = Math.max(-1, MP.btn - 1);
-    else if(ok) return mpAct(), e.preventDefault();
-    else if(k === 'Escape' || k === 'Backspace'){ mpBack(); return e.preventDefault(); }   // the card is closed: nothing of it to draw again
+    const n = mpButtons(MP.detail, Date.now()).length;   // the actions are 0..n-1, «رجوع» is n, the card itself is -1
+    if(ok) return mpAct(), e.preventDefault();
+    if(k === 'Escape' || k === 'Backspace'){ mpBack(); return e.preventDefault(); }   // the card is closed: nothing of it to draw again
+    if(MP.btn === n){ if(k === 'ArrowUp') MP.btn = n > 0 ? 0 : -1; }   // on «رجوع»: ▲ goes up to the actions (the first, else the card); ◀ ▶ stay
+    else if(k === 'ArrowDown') MP.btn = n;
+    else if(k === fwd) MP.btn = Math.min(n - 1, MP.btn + 1);
+    else if(k === back) MP.btn = Math.max(-1, MP.btn - 1);
     else return;
     e.preventDefault(); return mpDetailRender();
   }

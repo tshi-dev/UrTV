@@ -57,4 +57,10 @@ check("8: the page has its dark theme (#pagedark=1 → html.mpdark), the sand lo
 sh = text(ROOT / "optimize/saver.sh")
 check("8: saver.sh pagesdark on|off, and the export / import carry it (settings_move.py: SWITCHES, the allow-list, the import)", 'pagesdark) set1 pagesdark' in sh
       and '"pagesdark"' in text(ROOT / "optimize/settings_move.py") and text(ROOT / "optimize/settings_move.py").count('"pagesdark"') >= 5)
+
+# the owner: a «رجوع» under the stock's card, and the focus back on its row
+check("9: the stock's card has «رجوع» under its actions (▼ reaches it, OK closes the card; first focus on the first action, else on it), and the row that opened the card has the focus again when it closes; the matches card has it too (tests/football_page.test.mjs)",
+      'final View back = button(S.t("رجوع"), false, v -> d.dismiss());' in text(HOME / "MarketsActivity.java") and "(made.isEmpty() ? back : made.get(0)).requestFocus();" in text(HOME / "MarketsActivity.java")
+      and "final View from = getCurrentFocus();" in text(HOME / "MarketsActivity.java") and "from.requestFocus();" in text(HOME / "MarketsActivity.java")
+      and 'data-k="back"' in tpl and "if(ringed && ringed.dataset.k === 'back'){ mpBack(); return; }" in tpl)
 sys.exit(1 if failed else 0)

@@ -86,5 +86,5 @@ tpl2 = text(ROOT / "src/template.html")
 check("item 9: the matches page opens on the day the widget shows (today's games, else the next day that has games, in the city's zone) until the person picks a day",
       "if(!MP.picked){" in tpl2 and "const next = fbGames().filter(ev => fbKick(ev) > now).sort((a, b) => fbKick(a) - fbKick(b))[0];" in tpl2 and "MP.picked = true;" in tpl2)
 check("item 9: a match's card opens with no button focused (OK adds nothing by accident); ◀ ▶ go to the buttons",
-      "MP.btn = Math.max(-1, Math.min(MP.btn, btns.length - 1));" in tpl2 and ": -1;   // «شاهد على …» is ringed when it is there" in tpl2 and "ringed = document.querySelector('#mp-detail .mdb button.f')" in tpl2)
+      "MP.btn = Math.max(-1, Math.min(MP.btn, btns.length));" in tpl2 and ": -1;   // «شاهد على …» is ringed when it is there" in tpl2 and "ringed = document.querySelector('#mp-detail .mdb button.f, #mp-detail .mdq button.f')" in tpl2)   # step 28b: btns.length is «رجوع»
 sys.exit(1 if failed else 0)

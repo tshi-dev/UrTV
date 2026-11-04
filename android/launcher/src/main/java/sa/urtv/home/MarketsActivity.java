@@ -1150,7 +1150,11 @@ public class MarketsActivity extends Activity {
         MarketData.Quote q = data == null ? null : code.startsWith("^") ? data.quotes.get(code) : data.of(code);
         Dialog d = dialog();
         cardCode = code;   // live mode asks for it too while the card is open
-        d.setOnDismissListener(x -> { cardCode = null; cardBlock = null; cardNote = null; });
+        final View from = getCurrentFocus();   // the row that opened the card: it has the focus again when the card closes (OK on «رجوع», or the remote's Back)
+        d.setOnDismissListener(x -> {
+            cardCode = null; cardBlock = null; cardNote = null;
+            if (from != null) main.post(() -> { if (!isFinishing() && !isDestroyed() && from.isAttachedToWindow() && from.isFocusable()) from.requestFocus(); });
+        });
         LinearLayout box = dialogBox(d, 760);
         LinearLayout head = new LinearLayout(this);
         head.setGravity(Gravity.BOTTOM);
@@ -1198,8 +1202,11 @@ public class MarketsActivity extends Activity {
         }
         for (int i = 0; i < made.size(); i++) buttons.addView(made.get(i), weight(1f, i == 0 ? 0 : 16));
         if (!made.isEmpty()) box.addView(buttons, gap(20));
+        // «رجوع» under the actions, like the other pages' buttons (the card had no button to leave it by: step 28b, the owner): ▼ reaches it, OK closes the card
+        final View back = button(S.t("رجوع"), false, v -> d.dismiss());
+        box.addView(back, gap(made.isEmpty() ? 20 : 12));
         d.show();
-        if (!made.isEmpty()) made.get(0).requestFocus();
+        (made.isEmpty() ? back : made.get(0)).requestFocus();
     }
 
     /** «الأسعار متأخرة · المصدر: Yahoo Finance»: small, in the footer's style, under the prices (the file says whose they are) */
