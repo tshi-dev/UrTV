@@ -59,7 +59,7 @@ check("item 19: density: title 27 sp, tabs 17 sp, column headers 12 sp, a list r
       and "r.setMinimumHeight(dp(60));" in act and "c.setPadding(dp(12), dp(16), dp(12), dp(16));" in act)
 tpl = text(ROOT / "src/template.html")
 check("item 17: the home stocks card has 24 px inside on every side, and «السوق مغلق» sits on the header line right after «الأسهم» (order 0), not at the far end over the first column",
-      ".week.stocks,html[class] .week.stocks{padding:calc(2.2222vh*var(--z,1)) !important}" in tpl and "card.el.classList.toggle('stocks', P === 'stocks');" in tpl and 'class="until near"' in tpl and ".week .hd .until.near{order:0" in tpl)
+      ".week.stocks,html[class] .week.stocks{padding:calc(max(18px,2.2222vh)*var(--z,1)) !important}" in tpl and "card.el.classList.toggle('stocks', P === 'stocks');" in tpl and 'class="until near"' in tpl and ".week .hd .until.near{order:0" in tpl)
 
 
 # ---- item 18: «تطبيقات في الشريط»
