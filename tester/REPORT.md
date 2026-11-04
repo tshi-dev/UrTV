@@ -781,3 +781,50 @@ Shots: `optimize/run/step28b/marketing/` (2 kept, 1 skipped).
    - curl's default User-Agent: **HTTP 429**, 23 bytes: `Edge: Too Many Requests`
    - with `-A "Mozilla/5.0"` (added by me): **HTTP 200**, 467 bytes, first 200: `{"KWD=X":{"timestamp":[1793730339],"symbol":"KWD=X","end":null,"close":[0.3107],"dataGranularity":300,"chartPreviousClose":0.3107,"start":null,"previousClose":null,"fulldayChange":0.0,"fulldayChangePe`; `SAR=X` close 3.7533, `KWD=X` close 0.3107 (about 12.08 SAR per KWD)
    - So the answer depends on the User-Agent: worth checking what the app sends, given the empty currency tab
+
+## step 29, build 186 (update 183 → 186)
+Start: **found unmuted at 16:55:45**, muted at once (the TV had been idle since the morning; cause not known; last step ended muted). No tasks, Home ours, no PIN, classic, lang ar, home card stocks, favbar 5, adhan off.
+
+### A ✓
+Second install question held 81 s (t+135 … t+216): dreams null at every line, installer in front. t+216 Update; then UpdateActivity «تم التحديث ✓ 4.2»; «تم» → `sa.urtv.home/.MainActivity`. No other app at any line; muted at every line. Both apps 186.
+
+### B ✓ (home card «الأسهم» on)
+▲ from the tray → the card (ring on it) → ▲ → the top row («المصادر», label open). ◀ walks المهام → مركز التحكم → الأسواق → المباريات → تلاوة وأذان; OK opens TasksActivity, the control centre, MarketsActivity, MatchesActivity, tilawah.MainActivity; Back returns.
+**Correction to step 28 and 28b:** I reported the top row unreachable with a home card. That was **my reading error, possibly not a bug in those builds**: the dump keeps a second `focused=true` node (the hidden card), and I read the last one. The screenshots here show the ring moving. (Not re-tested on 183.)
+
+### C ✗
+Before: list «غدًا»: فرقك 1 (الاتفاق × الهلال) + دوري روشن 2 (screenshot C-0). «أضف الاتفاق لفرقي» (`teams … 136017|الاتفاق`). Reopened 3× (Back, Home, open, 8 s): **all 3 times only «دوري روشن 1» (الخلود × الخليج); «فرقك» and Hilal's match are gone.** Unchanged since 28b
+
+### D
+- «صرف العملات» shows rates ✓: USD ٣٫٧٥, KWD **١٢٫٠٧**, AED ١٫٠٢, «آخر تحديث ٥:٠٣ م» (after the app restart; the install is from step 28b). Bounds: مباشر [1636,176,1800,256], عادي [1479,176,1612,256], صرف العملات [1239,170,1479,262], same row
+- Tadawul closed at this hour (17:05): `live status=200 asked=7 parsed=1 bytes=1440 reason=ok`. «parsed = asked» and moving prices **not testable** now
+- «أخفِ المبالغ» [1001,170,1215,262], «صرف العملات» [1239,170,1479,262], whole labels, beside مباشر | عادي ✓
+- Pad «متوسط التكلفة»: ⌫ points right ✓; zero reads as a clear «٠» (hollow) ✓; «٫» key: ١٢٫٥ typed, quantity ٣ → saved, row shows **١٢٫٥٠** ✓ focus on the saved row [128,833,1792,978]. ✗ small: **the bottom row of keys (⌫, ٠, ٫) is cut at the bottom of the glyph**, drawn low in the key
+
+### E ✓
+Station 0 «إذاعة القرآن الكريم - السعودية»: `playing=1` at each read over 70 s (17:13:10–17:14:19). Stations 1, 2, 3: `playing=1`. Muted at every read.
+
+### F (10 favourites; shots `marketing/{ar,en}-tray-{5,7,8,all}.png`, demo-clean, PC only)
+| size | tiles shown | tile | tiles x | tile y | tray | 
+|---|---|---|---|---|---|
+| 5 | 5 | 304×170 | 152–1768 | 792–962 | 128–1792, 768–986 |
+| 7 | 7 | 210×117 | 152–1768 | 845–962 | 128–1792, 821–986 |
+| 8 | 8 | 181×101 | 152–1768 | 861–962 | 128–1792, 837–986 |
+| الكل | 8 | 181×101 | 152–1768 | 861–962 | 128–1792, 837–986 |
+✓ AR and EN: whole tiles only, **no sliver**, tray height follows the tile (inset 24), «more» triangle on the left in AR and on the right in EN, focused tile inside the tray. EN «Hold OK for options» [306,745,597,805] on the name's line [152,748,274,803]. ✗ question: **«الكل» with 10 favourites shows the same as 8 (8 tiles, a «more» triangle, the rest scroll)**, not all 10
+
+### G
+Six quick buttons the same size and look ✓ ([120..188] … [580..648], y 72–140; white in «رملي»). Prayer card [526,319,946,572]: last line bottom about y 553, about 19 px from the bottom ✓. Matches rows centred in their rows, the same x for names ✓. Long-press hint: English «Hold OK for options» legible on dark ✓; **the Arabic «اضغط مطولاً للخيارات» did not show in this session** (after focus moves, 5 s after a restart, dark and light), so its legibility was not judged
+
+### H ✓ (adhan volume 10%, «تكبير فقط» so it ends by itself in about 14 s, guard ready, not needed)
+- `adhan now`: unmuted t+2 … t+15, `playing=1`, then muted, `playing=0` at t+17. UrTVAdhan: `adhan start: prayer=-1 live tv_muted_before=true`; `adhan volume: the TV was muted, unmuted for the adhan (it is muted again at its end)`; `adhan stop: tv_muted_now=false`; `adhan end: re-mute done, volume back to 25`
+- Back after 5 s: stopped, muted within 2 s; `adhan start … tv_muted_before=true`, `adhan stop: tv_muted_now=false`, `adhan end: re-mute done, volume back to 25`
+- Real alarm (Maghrib moved to 17:25): unmuted 17:25:00, muted again 17:25:14; `adhan start: prayer=4 live tv_muted_before=true` … `adhan end: re-mute done, volume back to 25`; `adhan_alarm_last=… front=dream play=1 notice=0 saver=0`
+- Audible 14 s + 5 s + 14 s at 10%, as the row asks. Note: «volume back to 25»: the TV's level was 28 yesterday (not read at this run's start); it reads 25 now
+
+### Z
+`import settings-before.json` (preview: city, team, adhan volume; `--yes`), the made-up holding deleted by «خيارات محفظتي ← احذف المحفظة ← نعم» («لا أسهم في محفظتك بعد»), tasks none, dock, favbar 5, classic, lang ar, glass dark, PIN «not set» and locked list same, Home holder, disabled list (21), wm size unchanged, adhan off, takbir off, volume 20, minutes 0, updatechannel latest, YouTube force-stopped, no logs left, muted. **restored: yes**; only the build differs (186).
+
+### step 29 summary: ✓ A, B, E, F (with one question), G (Arabic hint not seen), H. ✗ C. D ✓ except the bottom keys cut; live in market hours not testable (closed)
+Problems: (1) C «فرقك» disappears after «أضف لفرقي», 3/3 reopens; (2) pad's bottom row (⌫ ٠ ٫) cut at the bottom; (3) question: «الكل» with 10 favourites shows 8, the rest scroll; (4) the Arabic hint «اضغط مطولاً للخيارات» did not show; (5) start: TV found unmuted at 16:55:45, cause unknown (an update to the mute record? nothing in the log kept). Not tested: live prices in Tadawul hours (needs 10:00–15:00 Sun–Thu).
+Shots: `optimize/run/step29/marketing/` (8 tray shots, demo-clean, none pushed).
