@@ -11,6 +11,7 @@ on:
       - 'android/launcher/src/main/assets/quran/stations.json'
       - '.github/tools/check_stations.py'
       - '.github/workflows/stations-check.yml'
+      - '.github/tools/find_streams.py'
 
 permissions:
   contents: write
@@ -29,6 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - run: python3 -u .github/tools/find_streams.py || true   # a report of candidates (radio-browser, mp3quran), nothing changed
       - run: python3 -u .github/tools/check_stations.py $CANDIDATES
       - name: Push to data-stations
         if: always()
