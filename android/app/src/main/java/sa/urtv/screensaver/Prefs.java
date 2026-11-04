@@ -878,9 +878,11 @@ final class Prefs {
     void setHomeLayout(String v) { if (java.util.Arrays.asList(HOME_LAYOUTS).contains(v)) sp.edit().putString("homeLayout", v).apply(); }
     static String homeLayoutLabel(String v) { int i = java.util.Arrays.asList(HOME_LAYOUTS).indexOf(v); return HOME_LAYOUT_NAMES[Math.max(0, i)]; }
     /** «تطبيقات في الشريط»: how many favourites the home's tray shows whole at once, 5 (the default, as always) to 10, or "all" (up to 10, never a scroll) */
-    static final String[] FAV_BARS = {"5", "6", "7", "8", "9", "10", "all"};
-    String favBar() { String v = sp.getString("favBar", "5"); return java.util.Arrays.asList(FAV_BARS).contains(v) ? v : "5"; }
-    void setFavBar(String v) { if (java.util.Arrays.asList(FAV_BARS).contains(v)) sp.edit().putString("favBar", v).apply(); }
+    static final String[] FAV_BARS = {"5", "6", "7", "8", "all"};
+    /** 9 and 10 were offered once; ten tiles across were too small to read (step 28), so they mean 8 (eight in view, the rest scroll) */
+    static String favBarFix(String v) { return "9".equals(v) || "10".equals(v) ? "8" : v; }
+    String favBar() { String v = favBarFix(sp.getString("favBar", "5")); return java.util.Arrays.asList(FAV_BARS).contains(v) ? v : "5"; }
+    void setFavBar(String v) { v = favBarFix(v); if (java.util.Arrays.asList(FAV_BARS).contains(v)) sp.edit().putString("favBar", v).apply(); }
     /** the choice as the settings row says it */
     static String favBarLabel(String v) { return "all".equals(v) ? "كل المفضلة" : v; }
     boolean watchNext() { return sp.getBoolean("watchNext", true); }

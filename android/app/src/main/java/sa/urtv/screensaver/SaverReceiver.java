@@ -49,7 +49,7 @@ import java.util.Locale;
  * watchnext = «أكمل المشاهدة» under the home screen's favourites (on, the default, or off); it needs the home app's TV listings permission.
  * updatebell = the «جرس التحديثات» on the home screen (on, the default, or off: only the bell goes; it shows only while the Play Store has updates waiting).
  * greeting = the greeting and the weather line above the home screen's clock (on, the default, or off: the plain good-morning).
- * favbar = how many favourites the home's tray shows whole at once: 5 (the default), 6, 7, 8, 9, 10, or all (every favourite, up to 10, no scroll).
+ * favbar = how many favourites the home's tray shows whole at once: 5 (the default), 6, 7, 8, or all (every favourite, up to 8 in view; the rest scroll). 9 and 10 are taken as 8: ten tiles across were too small to read.
  * yearstrip = the slim year strip under the screensaver's clock (on, or off, the default).
  * sunrise, prayerbar, wxmore = on or off (the default): the sunrise after Fajr in the prayer panel, the bar under it, the humidity and wind.
  * months = default («أكتوبر») or levant («تشرين الأول»), the Gregorian month's names on both screens.
@@ -274,6 +274,7 @@ public class SaverReceiver extends BroadcastReceiver {
         if (homeLayout != null && !Arrays.asList(Prefs.HOME_LAYOUTS).contains(homeLayout))
             return "error: homelayout is one of " + Prefs.join(Arrays.asList(Prefs.HOME_LAYOUTS), " ");
         String favBar = i.getStringExtra("favbar");
+        if (favBar != null) favBar = Prefs.favBarFix(favBar);   // 9 and 10 (offered once) mean 8
         if (favBar != null && !Arrays.asList(Prefs.FAV_BARS).contains(favBar))
             return "error: favbar is one of " + Prefs.join(Arrays.asList(Prefs.FAV_BARS), " ");
         String rating = i.getStringExtra("minrating");

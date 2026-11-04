@@ -40,9 +40,13 @@ def ar_tiles(shift=0):   # the first tile at the right, 304 wide, 24 apart, 24 i
     return t
 
 
+def tray_for(n):
+    return (128, 986 - tc.tray_height(n), 1792, 986)
+
+
 def en_n_tiles(n, first_focus=True):   # n whole tiles from the left, tile_size(n) wide, 24 apart, 24 inside the tray, centred in its height
     w, h = tc.tile_size(n)
-    y = 768 + (218 - h) // 2
+    y = 986 - tc.tray_height(n) + 24   # the tray is as high as its tiles with 24 above and below (step 28)
     t = [(152 + k * (w + 24), y, 152 + k * (w + 24) + w, y + h) for k in range(n)]
     t[0] = (t[0][0] - 6, t[0][1] - 6, t[0][2] + 6, t[0][3] + 6) if first_focus else t[0]
     return t
@@ -50,12 +54,12 @@ def en_n_tiles(n, first_focus=True):   # n whole tiles from the left, tile_size(
 
 check("tile_size: 5 is 304x171, 7 is 210x118, 10 is 140x78 at 1080p (the bar-size setting)", [tc.tile_size(n) for n in (5, 7, 10)] == [(304, 171), (210, 118), (140, 78)], [tc.tile_size(n) for n in (5, 7, 10)])
 for n in (7, 10):
-    f, m = tc.analyse(dump(en_n_tiles(n), (152, 704, 256, 752)), "en", "first", n=n, favs=n)
+    f, m = tc.analyse(dump(en_n_tiles(n), (152, 704, 256, 752), tray=tray_for(n)), "en", "first", n=n, favs=n)
     check(f"a good tray of {n} whole tiles passes (24 apart, 24 inside, the name at the left inner padding)", not f and m.get("whole") == n, (f, m.get("whole")))
 t = en_n_tiles(7)
-f, _ = tc.analyse(dump(t[:6] + [(t[6][0] + 20, t[6][1], t[6][2] + 20, t[6][3])], (152, 704, 256, 752)), "en", "first", n=7, favs=7)
+f, _ = tc.analyse(dump(t[:6] + [(t[6][0] + 20, t[6][1], t[6][2] + 20, t[6][3])], (152, 704, 256, 752), tray=tray_for(7)), "en", "first", n=7, favs=7)
 check("7 set, one tile 20 px out of its place: found (not 24 apart)", any("not 24" in x for x in f), f)
-f, _ = tc.analyse(dump(en_n_tiles(7)[:5], (152, 704, 256, 752)), "en", "first", n=7, favs=7)
+f, _ = tc.analyse(dump(en_n_tiles(7)[:5], (152, 704, 256, 752), tray=tray_for(7)), "en", "first", n=7, favs=7)
 check("7 set but only 5 whole tiles show: found", any("whole tiles" in x for x in f), f)
 good_label = (1664, 704, 1768, 752)
 f, m = tc.analyse(dump(ar_tiles(), good_label), "ar", "first")
@@ -98,5 +102,7 @@ check("the CI job runs on every push to next and work branches and on pull reque
       "pull_request" in wf and "branches: [next]" in wf and "continue-on-error" not in wf and "work/**" in wf)
 src = (ROOT / ".github/screens/tray_check.py").read_text(encoding="utf-8")
 check("the rendered check also takes the 8 pictures of the owner's question: sand and dark glass, bar size 5, 7, 10 and all on 12 apps, each judged by analyse() and for a name cut with «…»",
-      "def shots(out, report, failures):" in src and 'for look in ("sand", "glass"):' in src and '(("5", 5), ("7", 7), ("10", 10), ("all", 10))' in src and "seed_dock(12)" in src and "tray-{look}-{setting}.png" in src and "«…»" in src)
+      "def shots(out, report, failures):" in src and 'for look in ("sand", "glass"):' in src and '(("5", 5), ("7", 7), ("10", 8), ("all", 8))' in src and "seed_dock(12)" in src and "tray-{look}-{setting}.png" in src and "«…»" in src)
+f, _ = tc.analyse(dump(en_n_tiles(7), (152, 704, 256, 752), tray=(128, 768, 1792, 986)), "en", "first", n=7, favs=7)
+check("step 28: 7 tiles in a tray that kept its 218 height (an empty band under them): found", any("high" in x for x in f) and any("not 24 and 24" in x for x in f), f)
 sys.exit(1 if failed else 0)

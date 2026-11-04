@@ -67,7 +67,7 @@ prefs = text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/Prefs.java")
 rcv = text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/SaverReceiver.java")
 prov = text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/ConfigProvider.java")
 snap = text(HOME / "ConfigSnapshot.java")
-check("bar size: 5 (default) to 10 or all; a bad value keeps 5; the command checks the word before anything is set, and `show` says it", 'FAV_BARS = {"5", "6", "7", "8", "9", "10", "all"}' in prefs and 'sp.getString("favBar", "5")' in prefs
+check("bar size: 5 (default) to 8 or all (9 and 10 are taken as 8: ten tiles across were too small, step 28); a bad value keeps 5; the command checks the word before anything is set, and `show` says it", 'FAV_BARS = {"5", "6", "7", "8", "all"}' in prefs and 'return "9".equals(v) || "10".equals(v) ? "8" : v;' in prefs and 'sp.getString("favBar", "5")' in prefs
       and 'error: favbar is one of' in rcv and "if (favBar != null) p.setFavBar(favBar);" in rcv and '"\\nfavbar: " + p.favBar()' in rcv)
 check("bar size: the provider gives the home fav_bar, the home reads it (5 for an older screensaver) and the phone API sets and states it", '"home_layout", "fav_bar"}' in prov and 'out.putString("fav_bar", p.favBar())' in prov
       and 'cur.getColumnIndex("fav_bar")' in snap and 'case "fav_bar":' in text(HOME / "phone/Schema.java") and 'm.put("fav_bar"' in text(HOME / "phone/PhoneActions.java"))

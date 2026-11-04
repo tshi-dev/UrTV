@@ -450,17 +450,19 @@ public class MainActivity extends Activity {
         // the favourite's name, and beside it the quiet hint for the first few times (optionsHint): «اضغط مطوّلاً للخيارات»
         LinearLayout titleRow = new LinearLayout(this);
         titleRow.setOrientation(LinearLayout.HORIZONTAL);
-        titleRow.setGravity(Gravity.BOTTOM);
+        titleRow.setGravity(Gravity.TOP);
         titleRow.addView(title, new LinearLayout.LayoutParams(-2, -2));
-        optionsHint = text(18, "sans-serif-medium", Color.WHITE);   // 18 sp in the name's own colour: at 14 sp and 85 % in the soft tone it read as a rendering bug (step 28)
+        optionsHint = text(16, "sans-serif-medium", Color.WHITE);   // 18 sp in the name's own colour: at 14 sp and 85 % in the soft tone it read as a rendering bug (step 28)
         optionsHint.setText(S.tv(OPTIONS_HINT));
         optionsHint.setSingleLine(true);
         optionsHint.setAlpha(0f);
         optionsHint.setShadowLayer(dp(3), 0, dp(1), 0x66000000);
         LinearLayout.LayoutParams hp = new LinearLayout.LayoutParams(-2, -2);
         hp.setMarginStart(dp(16));
-        hp.bottomMargin = dp(8);
         titleRow.addView(optionsHint, hp);
+        titleRow.setBaselineAligned(true);   // the hint stands on the name's own baseline (it sat 8 px higher and was clipped at the top, step 28)
+        titleRow.setBaselineAlignedChildIndex(0);
+        titleRow.setClipChildren(false);
         bottom.addView(titleRow, new LinearLayout.LayoutParams(-2, -2));
         ((LinearLayout.LayoutParams) titleRow.getLayoutParams()).setMargins(0, 0, 0, bar(FavBar.NAME_GAP));
         ((LinearLayout.LayoutParams) titleRow.getLayoutParams()).setMarginStart(bar(FavBar.PAD_SIDE));   // in line with the tray's inner padding, at its start edge
@@ -492,6 +494,7 @@ public class MainActivity extends Activity {
         tray.setBackground(band);
         tray.addView(dockRow, new FrameLayout.LayoutParams(-2, -1));
         tray.setOnScrollChangeListener((v, x, y, ox, oy) -> placeName());
+        tray.getViewTreeObserver().addOnGlobalFocusChangeListener((oldFocus, newFocus) -> tray.wholeOnly());   // the focused tile is the one that may stand partly out
         bottom.addView(tray, new LinearLayout.LayoutParams(-1, bar(FavBar.TRAY_H)));
 
         // «أكمل المشاهدة»: its own row below the first screen (the owner: the tray never moves for it), ▼ from the tray scrolls the home up
@@ -958,6 +961,7 @@ public class MainActivity extends Activity {
             View tile = tile(dock.get(i), true);
             dockRow.addView(tile, dockCell(i, dock.size()));
         }
+        applyTrayHeight();
         appsLabel.setVisibility(rest.isEmpty() ? View.GONE : View.VISIBLE);
         wireFocus();
         if (!dock.isEmpty()) { title.setText(dock.get(0).label); setGlow(dock.get(0).color); }
@@ -1033,6 +1037,16 @@ public class MainActivity extends Activity {
 
     private int barShown() { return FavBar.shown(barSetting, dockCards.size()); }
 
+    private int lift() { return FavBar.lift(getResources().getDisplayMetrics().heightPixels, barShown()); }
+
+    /** the tray is as high as its tiles with the same 24 above and below them (FavBar.trayH): its bottom stays where it was, its top follows */
+    private void applyTrayHeight() {
+        if (tray == null) return;
+        int h = FavBar.trayH(getResources().getDisplayMetrics().heightPixels, barShown());
+        android.view.ViewGroup.LayoutParams lp = tray.getLayoutParams();
+        if (lp != null && lp.height != h) { lp.height = h; tray.setLayoutParams(lp); }
+    }
+
     /** the setting changed (or the favourites did): every cell gets its new width, and the tray shows the same favourites in the new size */
     private void applyBarSize(String setting) {
         if (setting == null) return;
@@ -1041,6 +1055,7 @@ public class MainActivity extends Activity {
         if (dockRow == null) return;
         int n = dockRow.getChildCount();
         if (changed) for (int i = 0; i < n; i++) dockRow.getChildAt(i).setLayoutParams(dockCell(i, n));
+        applyTrayHeight();
     }
 
     /** a length of FavBar's 1080p spec on this screen (scaled by its height, so 720p is two thirds) */
@@ -1129,7 +1144,7 @@ public class MainActivity extends Activity {
             long wait = inDock && has && trayLowered ? FavBar.DROP_MS : 0;
             if (inDock && has) lowerTray(false);
             if (wait > 0) v.postDelayed(() -> { if (v.hasFocus()) scaleTo(v, s); }, wait); else scaleTo(v, s);   // a spring: a held arrow keeps its speed from card to card
-            if (inDock) v.animate().translationY(has ? -bar(FavBar.LIFT) : 0).translationZ(has ? dp(GlowLook.LIFT_DP) : 0)
+            if (inDock) v.animate().translationY(has ? -lift() : 0).translationZ(has ? dp(GlowLook.LIFT_DP) : 0)
                     .setInterpolator(new DecelerateInterpolator()).setStartDelay(wait).setDuration(FavBar.MS).start();
             else v.animate().translationZ(has ? dp(GlowLook.LIFT_DP) : 0).setInterpolator(new DecelerateInterpolator()).setDuration(has ? 320 : 200).start();
             shine.animate().alpha(has ? 1f : 0f).setDuration(160).start();
@@ -1862,12 +1877,12 @@ public class MainActivity extends Activity {
         if (shine != null && lifted) shine.setAlpha(1f);
         if (lifted) {
             scaleTo(card, fav ? FavBar.LIFTED_SCALE : 1.25f);   // a favourite stays inside its tray
-            card.animate().translationY(fav ? -bar(FavBar.LIFT) : -dp(10)).translationZ(dp(GlowLook.LIFT_DP)).setDuration(160).start();
+            card.animate().translationY(fav ? -lift() : -dp(10)).translationZ(dp(GlowLook.LIFT_DP)).setDuration(160).start();
         } else {
             boolean has = card.isFocused();
             float s = has ? focusScale : 1f;
             scaleTo(card, s);
-            card.animate().translationY(has && fav ? -bar(FavBar.LIFT) : 0).translationZ(has ? dp(GlowLook.LIFT_DP) : 0).setDuration(160).start();
+            card.animate().translationY(has && fav ? -lift() : 0).translationZ(has ? dp(GlowLook.LIFT_DP) : 0).setDuration(160).start();
             if (shine != null) shine.setAlpha(has ? 1f : 0f);
         }
     }
@@ -2320,7 +2335,7 @@ public class MainActivity extends Activity {
 
     // ---- the favourites bar (FavBar): its tray, the name over the focused tile, and the one move it may make
 
-    private android.widget.HorizontalScrollView tray;
+    private TraySnap tray;
     private View nameRow, nameCard;
     private boolean trayLowered;
 
@@ -3383,6 +3398,19 @@ public class MainActivity extends Activity {
     /** The favourites tray: a focused tile is brought whole into view with the tray's 24 px inset (FavBar.scrollDelta), never flush with the edge and never beside a sliver. */
     final class TraySnap extends android.widget.HorizontalScrollView {
         TraySnap(Context c) { super(c); }
+        /** a tile is whole or not drawn: one only partly inside the tray (a rounding pixel of the next tile, or a half-scrolled one) is clipped away, the focused one never */
+        void wholeOnly() {
+            if (getChildCount() == 0 || !(getChildAt(0) instanceof android.view.ViewGroup)) return;
+            android.view.ViewGroup row = (android.view.ViewGroup) getChildAt(0);
+            int s = getScrollX(), w = getWidth();
+            for (int i = 0; i < row.getChildCount(); i++) {
+                View c = row.getChildAt(i);
+                boolean whole = c.getLeft() >= s && c.getRight() <= s + w, out = c.getRight() <= s || c.getLeft() >= s + w;
+                c.setClipBounds(whole || out || c.hasFocus() ? null : new android.graphics.Rect(0, 0, 0, 0));
+            }
+        }
+        @Override protected void onScrollChanged(int l, int t, int ol, int ot) { super.onScrollChanged(l, t, ol, ot); wholeOnly(); }
+        @Override protected void onLayout(boolean changed, int l, int t, int r, int b) { super.onLayout(changed, l, t, r, b); wholeOnly(); }
         @Override protected int computeScrollDeltaToGetChildRectOnScreen(android.graphics.Rect r) {
             if (getChildCount() == 0) return 0;
             return FavBar.scrollDelta(r.left, r.right, getScrollX(), getWidth(), bar(FavBar.PAD_SIDE), getChildAt(0).getWidth());

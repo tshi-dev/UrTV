@@ -38,6 +38,8 @@ public class FavBarRun {
                 o.append(" fill ").append(inner - sum - (n - 1) * FavBar.px(FavBar.GAP, h)).append('\n');   // 0: the cells with their gaps are exactly the inner width, no sliver of the next tile
             }
         }
+        o.append("trayh ").append(FavBar.trayH(1080, 5)).append(' ').append(FavBar.trayH(1080, 7)).append(' ').append(FavBar.trayH(1080, 8)).append(" lift ")
+         .append(FavBar.lift(1080, 5)).append(' ').append(FavBar.lift(1080, 6)).append(' ').append(FavBar.lift(1080, 7)).append('\n');   // step 28: the tray is as high as its tiles; the lift only for 5 and 6
         o.append("shown ").append(FavBar.shown("5", 7)).append(' ').append(FavBar.shown("7", 3)).append(' ').append(FavBar.shown("10", 10)).append(' ').append(FavBar.shown("all", 8)).append(' ')
          .append(FavBar.shown("all", 3)).append(' ').append(FavBar.shown("all", 12)).append(' ').append(FavBar.shown("12", 12)).append(' ').append(FavBar.shown("4", 12)).append(' ').append(FavBar.shown("x", 12)).append(' ')
          .append(FavBar.shown(null, 12)).append('\n');

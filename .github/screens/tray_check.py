@@ -32,6 +32,11 @@ def tile_size(n=5):
     """a tile's width and height when n show whole (tray inner width 1616 at 1080p, 24 between): (1616 - (n-1) x 24) / n, 16:9 («تطبيقات في الشريط», FavBar.tileW)"""
     w = (1616 - 24 * (n - 1)) // n
     return w, w * 9 // 16
+
+
+def tray_height(n=5):
+    """the tray's height when n show: the tile's height with 24 above and below it (FavBar.trayH: 218 for five)"""
+    return round(tile_size(n)[0] * 170 / 304) + 48
 LIFT_ROOM = 8                 # the focused tile (lifted 6, grown 1.08, ringed) keeps at least this much between it and the tray's edge
 
 
@@ -122,6 +127,16 @@ def analyse(xml_text, lang, focus, lowered=False, label_required=True, n=5, favs
                 fails.append(f"a tile cut to {w} px at {list(r)} (a sliver)")
             elif r[0] < inner[0] - 2 or r[2] > inner[2] + 2 or (not lowered and (r[1] < inner[1] - 2 or r[3] > inner[3] + 2)):
                 fails.append(f"a tile {list(r)} is not inside the tray's inner rect {list(inner)}")
+    if not lowered:   # step 28: no empty band under small tiles: the tray is as high as its tiles with the same inset above and below
+        steady = [t["rect"] for t in ts if not t["focused"] and t["rect"][2] - t["rect"][0] >= tw - 8]
+        want_h = tray_height(n)
+        if abs((tray[3] - tray[1]) - want_h) > 4:
+            fails.append(f"the tray is {tray[3] - tray[1]} high, {want_h} fit {n} tiles")
+        if steady:
+            above, below = steady[0][1] - tray[1], tray[3] - steady[0][3]
+            m["inset"] = [above, below]
+            if abs(above - below) > 3 or abs(above - 24) > 4:
+                fails.append(f"the tiles sit {above} px under the tray's top and {below} above its bottom, not 24 and 24")
     whole = sorted([t["rect"] for t in ts if t["rect"][2] - t["rect"][0] >= tw - 8], key=lambda r: r[0])
     m["whole"] = len(whole)
     if focus == "first" and not lowered and len(whole) < min(n, favs):
@@ -331,7 +346,7 @@ def shots(out, report, failures):
     seed_dock(12)
     saver("--es lang ar", "--es homelayout classic")
     for look in ("sand", "glass"):
-        for setting, n in (("5", 5), ("7", 7), ("10", 10), ("all", 10)):
+        for setting, n in (("5", 5), ("7", 7), ("10", 8), ("all", 8)):
             tag = f"shot-{look}-{setting}"
             saver(f"--es look {look}", f"--es favbar {setting}", "--es appearance dark" if look == "glass" else "--es appearance auto")
             time.sleep(4)
@@ -377,6 +392,7 @@ def run(out):
     # «تطبيقات في الشريط»: 7 whole tiles (Arabic) and 10 (English), the tray's box and the name's place unchanged
     shell("wm density 320")
     for n, lang, favs in ((7, "ar", 7), (10, "en", 10)):
+        shown_n = min(n, 8)   # ten across were too small: eight show whole, the rest scroll (FavBar.MAX_SHOWN)
         seed_dock(favs)
         saver(f"--es favbar {n}")
         tag = f"bar{n}-{lang}"
@@ -384,9 +400,9 @@ def run(out):
             failures.append(f"{tag}: the home did not show the language {lang}")
         fwd, back = ("DPAD_LEFT", "DPAD_RIGHT") if lang == "ar" else ("DPAD_RIGHT", "DPAD_LEFT")
         xa, pa = walk([back] * 12, out, f"{tag}-first")
-        fa, ma = analyse(xa, lang, "first", n=n, favs=favs)
+        fa, ma = analyse(xa, lang, "first", n=shown_n, favs=favs)
         xb, pb = walk([fwd] * 12, out, f"{tag}-last")
-        fb, mb = analyse(xb, lang, "last", n=n, favs=favs)
+        fb, mb = analyse(xb, lang, "last", n=shown_n, favs=favs)
         fs = same_place(ma.get("label"), mb.get("label"))
         report[tag] = {"first": ma, "last": mb, "failures": fa + fb + fs}
         failures += [f"{tag}: {f}" for f in fa + fb + fs]

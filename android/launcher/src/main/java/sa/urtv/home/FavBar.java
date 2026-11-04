@@ -34,7 +34,8 @@ final class FavBar {
     static int ring(boolean light) { return light ? RING_LIGHT : RING_DARK; }
 
     /** the most a tray ever shows whole at once, and the most favourites there are (Dock.MAX) */
-    static final int MAX_SHOWN = 10;
+    static final int MAX_SHOWN = 8;
+    /** ten tiles across were 140×79: too small to read (step 28, the owner's renders). Eight is the most that shows whole at a legible size (181×102); 9, 10 and «all» keep eight in view and scroll the rest. */
 
     /**
      * How many tiles the tray shows whole at once: the setting ("5" to "10", or "all": every favourite, up to 10, so never a scroll), at least five (the tray never
@@ -63,6 +64,14 @@ final class FavBar {
         int inner = px(1920 - 2 * SIDE, screenH) - 2 * px(PAD_SIDE, screenH) - (n - 1) * px(GAP, screenH);
         return inner / n + (i < inner % n ? 1 : 0);
     }
+
+    /** the tray's height when {@code n} tiles show: the tile's height (16:9) with the same 24 above and below it, so no empty band under small tiles (218 for five) */
+    static int trayH(int screenH, int n) {
+        return Math.round(tileW(screenH, n) * (float) TILE_H / TILE_W) + 2 * px(PAD_TOP, screenH);
+    }
+
+    /** the focused tile's lift (px): 6 for five or six tiles, none for smaller ones: it stays on its own centre line (at ten it jumped out of line) */
+    static int lift(int screenH, int n) { return n <= 6 ? px(LIFT, screenH) : 0; }
 
     /** a tile's width with the five of the default */
     static int tileW(int screenH) { return tileW(screenH, SHOWN); }

@@ -21,7 +21,7 @@ check("the same tray on every look: its colours are FavBar's, light or dark, nev
 check("the favourites and the row under them take FavBar's cell (304 wide, 24 apart), not a share of the width",
       main.count("dockCell(") >= 6 and "dockRow.addView(tile, dockCell(i, dock.size()));" in main)
 check("a focused favourite lifts 6 and grows 1.08 in 150 ms, its ring 3 px green (DGA on light, #8FE0B4 over a photo)",
-      "translationY(has ? -bar(FavBar.LIFT) : 0)" in main and "FavBar.FOCUS_SCALE" in main and "setDuration(FavBar.MS)" in main
+      "translationY(has ? -lift() : 0)" in main and "static int lift(int screenH, int n) { return n <= 6 ? px(LIFT, screenH) : 0; }" in (HOME / "FavBar.java").read_text(encoding="utf-8") and "FavBar.FOCUS_SCALE" in main and "setDuration(FavBar.MS)" in main
       and "FavBar.ring(lightNow)" in main)
 check("the name is centred over the focused favourite, follows it as the tray scrolls, and hides when the focus leaves the bar",
       "placeName();" in main and "tray.setOnScrollChangeListener((v, x, y, ox, oy) -> placeName());" in main
@@ -46,7 +46,7 @@ with tempfile.TemporaryDirectory() as tmp:
     subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "FavBar.java"), str(ROOT / "tests/FavBarRun.java")], check=True)
     out = subprocess.run(["java", "-cp", tmp, "sa.urtv.home.FavBarRun"], check=True, capture_output=True).stdout.decode().split("\n")
 for line in out:
-    if not line or line.startswith("nameX") or line.startswith("tile1080") or line.startswith("bar ") or line.startswith("shown ") or line.startswith("side ") or line.startswith("scroll "): continue
+    if not line or line.startswith("nameX") or line.startswith("tile1080") or line.startswith("bar ") or line.startswith("shown ") or line.startswith("trayh ") or line.startswith("side ") or line.startswith("scroll "): continue
     f = line.split(); h = int(f[0]); v = dict(zip(f[1::2], f[2::2])) if False else None
     nums = re.findall(r"(\w+) ([-\d.]+(?: [-\d.]+)*)", line)
     tray = list(map(int, line.split(" tray ")[1].split(" fits ")[0].split()))
@@ -79,8 +79,11 @@ check("step 28: the tiles of every N (5 to 10) at 1080p and 720p, with the round
 check("bar size: for every N from 5 to 10 at 1080p and 720p the tiles fill the tray's inner width to within N pixels (whole tiles, 24 apart), never past it", all(0 <= v["slack"] <= n for (h, n), v in bars.items()), bars)
 check("bar size: the tile keeps its 16:9 ratio, and the focused tile's ring stays inside the 24 px inset, for every N", all(v["ratio"] and v["ring"] for v in bars.values()), bars)
 shown = [l for l in out if l.startswith("shown ")][0].split()[1:]
-check("bar size: «5» is 5, «7» is 7 even with 3 favourites (the tray keeps its size), «10» is 10, «all» is the favourites up to 10 but never fewer than 5, a number out of range or a word is clamped / 5",
-      shown == ["5", "7", "10", "8", "5", "10", "10", "5", "5", "5"], shown)
+check("bar size: «5» is 5, «7» is 7 even with 3 favourites (the tray keeps its size), «10» is 8 (ten across were 140 px wide, too small: 8 show whole, the rest scroll), «all» is the favourites up to 8 but never fewer than 5, a number out of range or a word is clamped / 5",
+      shown == ["5", "7", "8", "8", "5", "8", "8", "5", "5", "5"], shown)
+th = [l for l in out if l.startswith("trayh ")][0].split()
+check("step 28: the tray is as high as its tiles with the same 24 above and below (218 for 5, 165 for 7, 149 for 8), and the focused tile lifts 6 only for 5 and 6 tiles (none at 7 and more: it stays on its own centre line)",
+      th[1:4] == ["218", "165", "149"] and th[5:8] == ["6", "6", "0"], th)
 check("1080p: a tile is the spec's 304", [l for l in out if l.startswith("tile1080")][0].split()[1] == "304")
 side = [l for l in out if l.startswith("side ")][0].split()[1:]
 check("◀ ▶: English (left to right) ▶ goes to the next favourite and ◀ stays at the first; Arabic ▶ goes to the one before; the edges stay (tester step 20)",
