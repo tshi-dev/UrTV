@@ -42,7 +42,8 @@ check("2. the adhan on a muted TV: unmuted first to read the real level (Android
       "audio.isStreamMute(AudioManager.STREAM_MUSIC)" in up and "ADJUST_UNMUTE" in up and "prefs.setSavedTvMuted(muted);" in up
       and up.index("ADJUST_UNMUTE") < up.index("savedVolume = audio.getStreamVolume"))
 check("2. …and muted again when the volume goes back (not when the person turned it during the adhan)",
-      "if (AdhanVolume.muteAgain(prefs.savedTvMuted(), to)) audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0);" in back
+      "boolean wasMuted = prefs.savedTvMuted();" in back and "if (AdhanVolume.muteAgain(wasMuted, to)) {" in back
+      and "audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_MUTE, 0);" in back and "adhan end: re-mute " in back   # step 28b: the result is logged
       and "prefs.setSavedTvMuted(false);" in back)
 unmute = [p.name for p in (ROOT / "android").rglob("*.java") if re.search(r"ADJUST_UNMUTE|ADJUST_TOGGLE_MUTE|setStreamMute", p.read_text(encoding="utf-8"))]
 check("2. nothing else unmutes: only the adhan (MusicService) and the phone's own «كتم» key (PhoneActions)", sorted(unmute) == ["MusicService.java", "PhoneActions.java"], unmute)
