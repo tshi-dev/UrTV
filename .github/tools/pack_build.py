@@ -42,6 +42,22 @@ def scaled(url):
     return f"https://commons.wikimedia.org/wiki/Special:FilePath/{m.group(1)}?width=3840" if m else url
 
 
+def focus_crop(data, fx, fy):
+    """The source cut to 16:9 around (fx, fy) (0..1 of its width and height), kept inside the frame; JPEG quality 95."""
+    from PIL import Image
+    im = Image.open(io.BytesIO(data)).convert("RGB")
+    w, h = im.size
+    if w * 9 > h * 16:   # wider than 16:9: choose where the 16:9 window sits across
+        cw, ch = h * 16 // 9, h
+    else:                # taller: choose where it sits down
+        cw, ch = w, w * 9 // 16
+    left = min(max(0, int(fx * w - cw / 2)), w - cw)
+    top = min(max(0, int(fy * h - ch / 2)), h - ch)
+    buf = io.BytesIO()
+    im.crop((left, top, left + cw, top + ch)).save(buf, "JPEG", quality=95)
+    return buf.getvalue()
+
+
 def sheet(zpath, path):
     import zipfile
     from PIL import Image, ImageDraw
@@ -74,7 +90,10 @@ def main():
         photos = []
         for i, ph in enumerate(pk["photos"], 1):
             name = f"src{i:03d}.img"   # Pillow reads the format from the bytes
-            (work / name).write_bytes(get(scaled(ph["url"])))
+            data = get(scaled(ph["url"]))
+            if ph.get("focus"):   # the subject away from the clock: cut 16:9 around this point first (make_pack.py then only resizes)
+                data = focus_crop(data, *ph["focus"])
+            (work / name).write_bytes(data)
             photos.append({"file": name, "title": ph["title"], "author": ph["author"], "licence": ph["licence"], "link": ph["link"]})
         (work / "manifest.json").write_text(json.dumps({"reviewed": pk.get("reviewed") is True, "photos": photos}, ensure_ascii=False, indent=1),
                                             encoding="utf-8")

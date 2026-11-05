@@ -26,9 +26,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: pip install pillow
-      - name: Candidates (only while no pack has been picked)
+      - name: Candidates (unless photos/packs-src/.no-candidates)
         run: |
-          if ls photos/packs-src/*.json > /dev/null 2>&1; then echo "picks present: no new candidates"; else python3 -u .github/tools/pack_candidates.py; fi
+          if [ -f photos/packs-src/.no-candidates ]; then echo "candidates off"; else python3 -u .github/tools/pack_candidates.py; fi
       - name: Build the picked packs and publish their zips
         env:
           GH_TOKEN: ${{ github.token }}

@@ -26,25 +26,25 @@ API = "https://commons.wikimedia.org/w/api.php"
 UA = {"User-Agent": "UrTV-photo-packs/1.0 (https://github.com/tshi-dev/UrTV)"}
 OUT = Path(os.environ.get("OUT", "packs-candidates"))
 FREE = {"public domain": "Public domain", "cc0": "CC0", "pdm-owner": "Public domain", "pd": "Public domain"}
-MAX_PER_PACK = 120
+MAX_PER_PACK = 220   # looked at for calm; the SHEET_N calmest go on the sheets
+SHEET_N = 60
 
 # searches per pack (CirrusSearch: incategory: / deepcat: and words); the licence is checked on each file, not trusted from the search
 PACKS = {
-    "space": ['incategory:"Featured pictures of astronomy"', 'incategory:"Hubble images of nebulae"', 'incategory:"Hubble images of galaxies"',
-              'nebula hubble filetype:bitmap', 'galaxy hubble filetype:bitmap', '"earth from space" ISS filetype:bitmap',
-              'incategory:"Photographs of the Moon"', 'jupiter juno filetype:bitmap', 'saturn cassini filetype:bitmap'],
-    "nature": ['incategory:"CC-Zero" landscape', 'incategory:"CC-Zero" mountains', 'incategory:"CC-Zero" waterfall',
-               'incategory:"Images from the National Park Service" landscape', 'incategory:"Photographs by the U.S. Fish and Wildlife Service" wildlife',
-               'incategory:"Featured pictures of landscapes"', 'incategory:"Quality images of landscapes" public domain',
-               'desert dunes public domain filetype:bitmap', 'national park landscape public domain filetype:bitmap'],
-    "saudi": ['Riyadh skyline filetype:bitmap', 'Riyadh filetype:bitmap', 'Jeddah filetype:bitmap', 'Jeddah corniche filetype:bitmap',
-              'AlUla filetype:bitmap', 'Hegra Mada\'in Salih filetype:bitmap', 'Abha filetype:bitmap', 'Dammam filetype:bitmap',
-              'Khobar filetype:bitmap', 'Medina Prophet\'s Mosque filetype:bitmap', 'Masjid al-Haram filetype:bitmap', 'Mecca filetype:bitmap',
-              'Edge of the World Riyadh filetype:bitmap', 'Asir mountains filetype:bitmap', 'Taif filetype:bitmap', 'Tabuk filetype:bitmap',
-              'deepcat:"Saudi Arabia" CC0', 'deepcat:"Saudi Arabia" "public domain"', 'incategory:"CC-Zero" Saudi Arabia'],
-    "sea": ['incategory:"Photographs by NOAA" ocean', 'incategory:"Photographs by NOAA" coral reef', 'incategory:"CC-Zero" beach',
-            'incategory:"CC-Zero" sea', 'incategory:"CC-Zero" ocean waves', 'coral reef public domain filetype:bitmap',
-            'beach sunset public domain filetype:bitmap', 'Red Sea coral filetype:bitmap', 'lighthouse sea public domain filetype:bitmap'],
+    "space": ['Earth limb ISS filetype:bitmap', '"Earth horizon" ISS filetype:bitmap', 'aurora seen from the International Space Station filetype:bitmap',
+              'Earth at night from ISS filetype:bitmap', 'sunrise from ISS orbit filetype:bitmap', 'Mars Curiosity panorama filetype:bitmap',
+              'Mars Perseverance panorama filetype:bitmap', 'Mars sunset Curiosity filetype:bitmap', 'Carina nebula hubble filetype:bitmap',
+              'Orion nebula hubble filetype:bitmap', 'Pillars of Creation filetype:bitmap', 'Heart and Soul nebulae', 'Cassiopeia A hubble filetype:bitmap',
+              'Earth from space Apollo filetype:bitmap', 'Moon limb from ISS filetype:bitmap'],
+    "nature": ['incategory:"CC-Zero" lake mountains', 'incategory:"CC-Zero" fog forest', 'incategory:"CC-Zero" snow mountains', 'incategory:"CC-Zero" meadow',
+               'incategory:"CC-Zero" lake reflection', 'incategory:"CC-Zero" sand dunes', 'incategory:"CC-Zero" sunset landscape', 'incategory:"CC-Zero" valley',
+               'Grand Teton National Park NPS filetype:bitmap', 'Yellowstone landscape NPS filetype:bitmap', 'Glacier National Park landscape NPS filetype:bitmap',
+               'Great Sand Dunes National Park NPS filetype:bitmap', 'Death Valley dunes NPS filetype:bitmap', 'incategory:"CC-Zero" mountains'],
+    "sea": ['incategory:"CC-Zero" sea horizon', 'incategory:"CC-Zero" calm sea', 'incategory:"CC-Zero" beach', 'incategory:"CC-Zero" ocean',
+            'incategory:"CC-Zero" sea sunset', 'incategory:"CC-Zero" coast cliffs', 'incategory:"CC-Zero" lagoon', 'aerial beach CC0 filetype:bitmap',
+            'coral reef NOAA filetype:bitmap', 'Papahanaumokuakea NOAA filetype:bitmap', 'ocean horizon public domain filetype:bitmap'],
+    "saudi": ['Riyadh skyline filetype:bitmap', 'AlUla filetype:bitmap', 'Jeddah corniche filetype:bitmap', 'Abha filetype:bitmap',
+              'Medina Prophet\'s Mosque filetype:bitmap', 'Masjid al-Haram filetype:bitmap', 'incategory:"CC-Zero" Saudi Arabia'],
 }
 
 # leave out, whatever the licence (the content rule; docs/PHOTO-PACKS.md and the owner's rules: no Israel locations, no Western Sahara maps)
@@ -107,6 +107,23 @@ def accept(c):
             "url": ii.get("url", ""), "thumb": ii.get("thumburl", ""), "width": w, "height": h, "file": c["title"]}, ""
 
 
+def calm(c):
+    """How busy the clock's zone is (the middle 40% across, 20-62% down) against the whole frame: edge density there over the mean; lower is
+    calmer. None when the thumbnail cannot be read."""
+    from PIL import Image, ImageFilter, ImageStat
+    try:
+        req = urllib.request.Request(c["thumb"], headers=UA)
+        with urllib.request.urlopen(req, timeout=60) as r:
+            im = Image.open(io.BytesIO(r.read())).convert("L")
+        im = im.resize((480, 270))
+        e = im.filter(ImageFilter.FIND_EDGES)
+        whole = ImageStat.Stat(e).mean[0] + 1
+        mid = ImageStat.Stat(e.crop((144, 54, 336, 167))).mean[0]
+        return round(mid / whole, 2)
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def sheet(cands, path):
     from PIL import Image, ImageDraw
     W, H, cols = 384, 216, 5
@@ -123,6 +140,7 @@ def sheet(cands, path):
             im.paste(t, (x + (W - t.width) // 2, y + (H - t.height) // 2))
             d.rectangle([x, y, x + 46, y + 26], fill=(0, 0, 0))
             d.text((x + 6, y + 6), str(c["n"]), fill=(255, 255, 0))
+            d.text((x + 6, y + 190), f'{c["width"]}w calm {c.get("calm")}', fill=(255, 255, 0))
         except Exception:  # noqa: BLE001
             pass
     im.save(path, "JPEG", quality=82)
@@ -148,10 +166,14 @@ def main(which):
                     break
             if len(cands) >= MAX_PER_PACK:
                 break
+        for c in cands:
+            c["calm"] = calm(c)
+        # the calmest first, and a wider source before a narrower one of the same calm (the owner: ≥2560 wide preferred)
+        cands.sort(key=lambda c: (c["calm"] if c["calm"] is not None else 9, -min(c["width"], 4000)))
         for i, c in enumerate(cands, 1):
             c["n"] = i
         (OUT / f"{pack}.json").write_text(json.dumps(cands, ensure_ascii=False, indent=1), encoding="utf-8")
-        for k in range(0, len(cands), 20):
+        for k in range(0, min(len(cands), SHEET_N), 20):
             sheet(cands[k:k + 20], OUT / f"{pack}-{k // 20 + 1}.jpg")
         summary[pack] = {"looked_at": len(seen), "candidates": len(cands), "left_out": why}
         print(pack, summary[pack], flush=True)
