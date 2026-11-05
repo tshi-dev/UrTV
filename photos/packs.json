@@ -5,25 +5,25 @@
    "id": "space",
    "name": "الفضاء",
    "name_en": "Space",
-   "source": "ناسا، ملكية عامة",
-   "source_en": "NASA, public domain",
+   "source": "ناسا وهابل، ملكية عامة",
+   "source_en": "NASA and Hubble, public domain",
    "cover": "https://raw.githubusercontent.com/tshi-dev/UrTV/master/photos/covers/space.jpg",
    "url": "https://github.com/tshi-dev/UrTV/releases/download/photos-space/space.zip",
-   "sha256": "ef922bf4b8aeaf2ca1934514af6e6dd9a1643211a0544093c7412b9e5573f731",
-   "count": 20,
-   "bytes": 2724470
+   "sha256": "1bf406ca0455a8733d04689aec1be4b885ebfdd533ef0db02dfcda980f32bcc5",
+   "count": 12,
+   "bytes": 4120027
   },
   {
    "id": "nature",
    "name": "الطبيعة",
    "name_en": "Nature",
-   "source": "ويكيميديا كومنز، CC0",
-   "source_en": "Wikimedia Commons, CC0",
+   "source": "ويكيميديا كومنز، CC0 وملكية عامة",
+   "source_en": "Wikimedia Commons, CC0 and public domain",
    "cover": "https://raw.githubusercontent.com/tshi-dev/UrTV/master/photos/covers/nature.jpg",
    "url": "https://github.com/tshi-dev/UrTV/releases/download/photos-nature/nature.zip",
-   "sha256": "635e9862e54039af83c1af1208a33693db5e1b5bdf7263454e648bbe07b6c100",
-   "count": 15,
-   "bytes": 5924631
+   "sha256": "cacf113974b9be3d152bfd48505bba3654abdb279976d5056ba2cb5be3b368ff",
+   "count": 16,
+   "bytes": 6400415
   },
   {
    "id": "sea",
@@ -33,9 +33,9 @@
    "source_en": "Wikimedia Commons, CC0 and public domain",
    "cover": "https://raw.githubusercontent.com/tshi-dev/UrTV/master/photos/covers/sea.jpg",
    "url": "https://github.com/tshi-dev/UrTV/releases/download/photos-sea/sea.zip",
-   "sha256": "31308db777da43c1741ccd7c2902ad8d8909d14842b0fe0e1e4698e1967d7b3f",
-   "count": 13,
-   "bytes": 4324124
+   "sha256": "10b300ce50340621c9ad20664d3d61d2f27bd525aa08877b67ad5433b7a0eddb",
+   "count": 19,
+   "bytes": 8175528
   },
   {
    "id": "ksa-cities",
@@ -45,9 +45,9 @@
    "source_en": "Wikimedia Commons: CC BY, BY-SA, CC0, public domain",
    "cover": "https://raw.githubusercontent.com/tshi-dev/UrTV/master/photos/covers/ksa-cities.jpg",
    "url": "https://github.com/tshi-dev/UrTV/releases/download/photos-ksa-cities/ksa-cities.zip",
-   "sha256": "c85182a3a2b36fdf1a39d90396cdbd8a75888a7100668be3457b5e11dd9cd1a5",
-   "count": 23,
-   "bytes": 9830268
+   "sha256": "b57d34efe0dc54e91878a952384386c1bba45628ebc601d092935d25fdfb4721",
+   "count": 16,
+   "bytes": 6922510
   }
  ]
 }
