@@ -1,0 +1,65 @@
+{
+ "version": 1,
+ "packs": [
+  {
+   "id": "haramain",
+   "name": "الحرمين",
+   "name_en": "The Two Holy Mosques",
+   "source": "ويكيميديا كومنز: CC BY وBY-SA وCC0 وملكية عامة",
+   "source_en": "Wikimedia Commons: CC BY, BY-SA, CC0, public domain",
+   "cover": "https://raw.githubusercontent.com/tshi-dev/UrTV/master/photos/covers/haramain.jpg",
+   "url": "https://github.com/tshi-dev/UrTV/releases/download/photos-haramain/haramain.zip",
+   "sha256": "879f3f5902293b7cd2f7d03231503924534ac6dfbd71c062435a18307dff6b97",
+   "count": 17,
+   "bytes": 7708482
+  },
+  {
+   "id": "ksa-cities",
+   "name": "مدن السعودية",
+   "name_en": "Saudi cities",
+   "source": "ويكيميديا كومنز: CC BY وBY-SA وCC0 وملكية عامة",
+   "source_en": "Wikimedia Commons: CC BY, BY-SA, CC0, public domain",
+   "cover": "https://raw.githubusercontent.com/tshi-dev/UrTV/master/photos/covers/ksa-cities.jpg",
+   "url": "https://github.com/tshi-dev/UrTV/releases/download/photos-ksa-cities/ksa-cities.zip",
+   "sha256": "164a75a796291e401d4f387e545dadbcb983fb15d7d45a356b65d7557159ce0e",
+   "count": 13,
+   "bytes": 5998946
+  },
+  {
+   "id": "nature",
+   "name": "الطبيعة",
+   "name_en": "Nature",
+   "source": "ويكيميديا كومنز، CC0 وملكية عامة",
+   "source_en": "Wikimedia Commons, CC0 and public domain",
+   "cover": "https://raw.githubusercontent.com/tshi-dev/UrTV/master/photos/covers/nature.jpg",
+   "url": "https://github.com/tshi-dev/UrTV/releases/download/photos-nature/nature.zip",
+   "sha256": "cacf113974b9be3d152bfd48505bba3654abdb279976d5056ba2cb5be3b368ff",
+   "count": 16,
+   "bytes": 6400415
+  },
+  {
+   "id": "sea",
+   "name": "البحر والشواطئ",
+   "name_en": "Sea and beaches",
+   "source": "ويكيميديا كومنز، CC0 وملكية عامة",
+   "source_en": "Wikimedia Commons, CC0 and public domain",
+   "cover": "https://raw.githubusercontent.com/tshi-dev/UrTV/master/photos/covers/sea.jpg",
+   "url": "https://github.com/tshi-dev/UrTV/releases/download/photos-sea/sea.zip",
+   "sha256": "10b300ce50340621c9ad20664d3d61d2f27bd525aa08877b67ad5433b7a0eddb",
+   "count": 19,
+   "bytes": 8175528
+  },
+  {
+   "id": "space",
+   "name": "الفضاء",
+   "name_en": "Space",
+   "source": "ناسا وهابل، ملكية عامة",
+   "source_en": "NASA and Hubble, public domain",
+   "cover": "https://raw.githubusercontent.com/tshi-dev/UrTV/master/photos/covers/space.jpg",
+   "url": "https://github.com/tshi-dev/UrTV/releases/download/photos-space/space.zip",
+   "sha256": "1bf406ca0455a8733d04689aec1be4b885ebfdd533ef0db02dfcda980f32bcc5",
+   "count": 12,
+   "bytes": 4120027
+  }
+ ]
+}
