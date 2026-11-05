@@ -52,6 +52,15 @@ def norm_licence(s):
     return re.sub(r"\s+", " ", (s or "").strip().lower())
 
 
+def credit_licence(e):
+    """The licence line of credits.json (the app shows «author · licence · link»): a CC BY / BY-SA licence carries its address and the changes."""
+    parts = [str(e["licence"]).strip()]
+    for k in ("licence_url", "changes"):
+        if str(e.get(k) or "").strip():
+            parts.append(str(e[k]).strip())
+    return " · ".join(parts)
+
+
 def check_photo(entry, allow_attribution):
     """[] when the entry may go in, else the reasons."""
     why = []
@@ -61,6 +70,11 @@ def check_photo(entry, allow_attribution):
     elif lic in ATTRIBUTION:
         if not allow_attribution:
             why.append(f"licence {entry.get('licence')!r} needs --allow-attribution")
+        # CC BY / BY-SA: the licence's own address and what was changed travel with the credit (the app shows the licence line in «حقوق الصور»)
+        if not re.fullmatch(r"https://creativecommons\.org/licenses/by(-sa)?/[234]\.0/?", str(entry.get("licence_url") or "")):
+            why.append("a CC BY / BY-SA photo needs its licence_url (https://creativecommons.org/licenses/…)")
+        if not str(entry.get("changes") or "").strip():
+            why.append("a CC BY / BY-SA photo needs its changes (e.g. «cropped to 16:9 and resized»)")
     else:
         why.append(f"licence {entry.get('licence')!r} is not allowed (CC0 or public domain; CC BY/BY-SA with --allow-attribution)")
     for k in ("title", "author", "link"):
@@ -146,7 +160,7 @@ def build(args):
                 problems.append(f"{e['file']}: {x}")
     if problems:
         sys.exit("refused:\n  " + "\n  ".join(problems))
-    credits = {"pack": args.id, "photos": [{"file": f"{i}.jpg", "title": e["title"], "author": e["author"], "licence": e["licence"], "link": e["link"]}
+    credits = {"pack": args.id, "photos": [{"file": f"{i}.jpg", "title": e["title"], "author": e["author"], "licence": credit_licence(e), "link": e["link"]}
                                            for i, e in enumerate(entries, 1)]}
     zbytes = make_zip(photos, credits)
     if len(zbytes) > MAX_ZIP:

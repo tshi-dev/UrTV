@@ -102,8 +102,17 @@ with tempfile.TemporaryDirectory() as t:
 
     check("a pack nobody reviewed is refused", "reviewed" in (with_manifest({"reviewed": False, "photos": [entry("a.jpg")]}) or ""))
     check("an unknown licence is refused, naming the file", "a.jpg" in (with_manifest({"reviewed": True, "photos": [entry("a.jpg", licence="All rights reserved")]}) or ""))
-    check("CC BY is refused unless --allow-attribution", with_manifest({"reviewed": True, "photos": [entry("a.jpg", licence="CC BY 4.0")]}) is not None
+    by = dict(licence="CC BY 4.0", licence_url="https://creativecommons.org/licenses/by/4.0/", changes="cropped to 16:9 and resized")
+    check("CC BY is refused unless --allow-attribution", with_manifest({"reviewed": True, "photos": [entry("a.jpg", **by)]}) is not None
           and refused(args(src, t / "o3", "", "", allow_attribution=True)) is None)
+    with_manifest({"reviewed": True, "photos": [entry("a.jpg", licence="CC BY-SA 3.0")]})
+    why = refused(args(src, t / "o5", "", "", allow_attribution=True)) or ""
+    check("a CC BY-SA photo without its licence address or its changes is refused, even with --allow-attribution", "licence_url" in why and "changes" in why, why)
+    check("the credit line of a BY-SA photo carries its licence address and the changes; a CC0 one is as before",
+          mp.credit_licence(dict(licence="CC BY-SA 4.0", licence_url="https://creativecommons.org/licenses/by-sa/4.0/", changes="cropped and resized"))
+          == "CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0/ · cropped and resized" and mp.credit_licence(dict(licence="CC0")) == "CC0")
+    with_manifest({"reviewed": True, "photos": [entry("a.jpg", licence="CC BY-NC 4.0", licence_url="https://creativecommons.org/licenses/by-nc/4.0/", changes="x")]})
+    check("NC and ND are never taken", refused(args(src, t / "o6", "", "", allow_attribution=True)) is not None)
     for bad in ("An astronaut on a spacewalk", "Portrait of a man", "The statue at dawn", "St. Mary's cathedral", "Crowd at the market", "NASA logo on the wall"):
         check(f"the content rule: «{bad}» is refused", "content rule" in (with_manifest({"reviewed": True, "photos": [entry("a.jpg", title=bad)]}) or ""))
     check("a photo marked as showing people is refused", "people" in (with_manifest({"reviewed": True, "photos": [entry("a.jpg", people=True)]}) or ""))

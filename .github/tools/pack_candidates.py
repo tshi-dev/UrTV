@@ -26,6 +26,9 @@ API = "https://commons.wikimedia.org/w/api.php"
 UA = {"User-Agent": "UrTV-photo-packs/1.0 (https://github.com/tshi-dev/UrTV)"}
 OUT = Path(os.environ.get("OUT", "packs-candidates"))
 FREE = {"public domain": "Public domain", "cc0": "CC0", "pdm-owner": "Public domain", "pd": "Public domain"}
+# the owner allowed attribution licences for «مدن السعودية» only (never NC or ND): their exact names, as make_pack.py's ATTRIBUTION
+BY = {f"cc {k} {v}": f"CC {k.upper()} {v}" for k in ("by", "by-sa") for v in ("2.0", "3.0", "4.0")}
+ATTRIBUTION_PACKS = {"ksa-cities"}
 MAX_PER_PACK = 220   # looked at for calm; the SHEET_N calmest go on the sheets
 SHEET_N = 60
 
@@ -43,8 +46,15 @@ PACKS = {
     "sea": ['incategory:"CC-Zero" sea horizon', 'incategory:"CC-Zero" calm sea', 'incategory:"CC-Zero" beach', 'incategory:"CC-Zero" ocean',
             'incategory:"CC-Zero" sea sunset', 'incategory:"CC-Zero" coast cliffs', 'incategory:"CC-Zero" lagoon', 'aerial beach CC0 filetype:bitmap',
             'coral reef NOAA filetype:bitmap', 'Papahanaumokuakea NOAA filetype:bitmap', 'ocean horizon public domain filetype:bitmap'],
-    "saudi": ['Riyadh skyline filetype:bitmap', 'AlUla filetype:bitmap', 'Jeddah corniche filetype:bitmap', 'Abha filetype:bitmap',
-              'Medina Prophet\'s Mosque filetype:bitmap', 'Masjid al-Haram filetype:bitmap', 'incategory:"CC-Zero" Saudi Arabia'],
+    "ksa-cities": ['"Kingdom Centre" Riyadh filetype:bitmap', '"King Abdullah Financial District" filetype:bitmap', 'KAFD Riyadh filetype:bitmap',
+                   'Diriyah At-Turaif filetype:bitmap', 'Riyadh skyline night filetype:bitmap', 'Al Faisaliyah Center filetype:bitmap',
+                   'Jeddah corniche filetype:bitmap', 'Al-Balad Jeddah filetype:bitmap', 'King Fahd Fountain Jeddah filetype:bitmap',
+                   'Abraj Al Bait filetype:bitmap', 'Masjid al-Haram exterior filetype:bitmap', 'Mecca skyline filetype:bitmap',
+                   "Prophet's Mosque Medina filetype:bitmap", 'Quba Mosque filetype:bitmap', 'AlUla Elephant Rock filetype:bitmap',
+                   'Hegra Mada\'in Salih tomb Qasr al-Farid filetype:bitmap', 'Maraya AlUla filetype:bitmap', 'AlUla landscape filetype:bitmap',
+                   'Abha filetype:bitmap', 'Habala Asir filetype:bitmap', 'Khobar corniche filetype:bitmap', 'Khobar water tower filetype:bitmap',
+                   'Taif Al Hada filetype:bitmap', 'Taif mountains filetype:bitmap', 'Tabuk mountains filetype:bitmap', 'Wadi Disah filetype:bitmap',
+                   'Edge of the World Riyadh filetype:bitmap'],
 }
 
 # leave out, whatever the licence (the content rule; docs/PHOTO-PACKS.md and the owner's rules: no Israel locations, no Western Sahara maps)
@@ -84,10 +94,16 @@ def search(query, limit=200):
     return out[:limit]
 
 
-def accept(c):
+def accept(c, pack=""):
     ii, md = c["ii"], c["md"]
     lic = text((md.get("LicenseShortName") or {}).get("value")).lower()
     licence = FREE.get(lic) or ("Public domain" if lic.startswith("public domain") else None)
+    licence_url = ""
+    if not licence and pack in ATTRIBUTION_PACKS and lic in BY:
+        licence = BY[lic]
+        licence_url = text((md.get("LicenseUrl") or {}).get("value")).replace("http://", "https://")
+        if not re.fullmatch(r"https://creativecommons\.org/licenses/by(-sa)?/[234]\.0/?", licence_url):
+            return None, "licence url " + licence_url
     if not licence:
         return None, "licence " + lic
     if text((md.get("Restrictions") or {}).get("value")):
@@ -103,7 +119,7 @@ def accept(c):
         return None, "word " + m.group(0)
     title = text((md.get("ObjectName") or {}).get("value")) or re.sub(r"\.\w+$", "", c["title"].replace("File:", ""))
     author = text((md.get("Artist") or {}).get("value")) or text((md.get("Credit") or {}).get("value")) or "Unknown"
-    return {"title": title[:120], "author": author[:120], "licence": licence, "link": ii.get("descriptionurl", ""),
+    return {"title": title[:120], "author": author[:120], "licence": licence, "licence_url": licence_url, "link": ii.get("descriptionurl", ""),
             "url": ii.get("url", ""), "thumb": ii.get("thumburl", ""), "width": w, "height": h, "file": c["title"]}, ""
 
 
@@ -156,7 +172,7 @@ def main(which):
                 if c["title"] in seen:
                     continue
                 seen.add(c["title"])
-                ok, reason = accept(c)
+                ok, reason = accept(c, pack)
                 if ok:
                     cands.append(ok)
                 else:

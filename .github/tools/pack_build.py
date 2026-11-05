@@ -94,7 +94,11 @@ def main():
             if ph.get("focus"):   # the subject away from the clock: cut 16:9 around this point first (make_pack.py then only resizes)
                 data = focus_crop(data, *ph["focus"])
             (work / name).write_bytes(data)
-            photos.append({"file": name, "title": ph["title"], "author": ph["author"], "licence": ph["licence"], "link": ph["link"]})
+            e = {"file": name, "title": ph["title"], "author": ph["author"], "licence": ph["licence"], "link": ph["link"]}
+            for k in ("licence_url", "changes"):   # a CC BY / BY-SA photo's licence address and what was changed (make_pack.py requires them)
+                if ph.get(k):
+                    e[k] = ph[k]
+            photos.append(e)
         (work / "manifest.json").write_text(json.dumps({"reviewed": pk.get("reviewed") is True, "photos": photos}, ensure_ascii=False, indent=1),
                                             encoding="utf-8")
         idx = OUT / "index.json"
@@ -102,7 +106,8 @@ def main():
             idx.write_text('{"version": 1, "packs": []}\n', encoding="utf-8")
         subprocess.run([sys.executable, str(ROOT / ".github/tools/make_pack.py"), "build", "--id", pid, "--name", pk["name"], "--name-en", pk["name_en"],
                         "--source", pk["source"], "--source-en", pk["source_en"], "--src", str(work), "--out", str(OUT),
-                        "--index", str(idx), "--covers", str(OUT / "covers")], check=True)
+                        "--index", str(idx), "--covers", str(OUT / "covers")] + (["--allow-attribution"] if pk.get("allow_attribution") is True else []),
+                       check=True)
         zpath = OUT / f"{pid}.zip"
         sheet(zpath, OUT / f"{pid}-sheet.jpg")
         tag = f"photos-{pid}"

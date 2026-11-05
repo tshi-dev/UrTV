@@ -28,7 +28,7 @@ jobs:
       - run: pip install pillow
       - name: Candidates (unless photos/packs-src/.no-candidates)
         run: |
-          if [ -f photos/packs-src/.no-candidates ]; then echo "candidates off"; else python3 -u .github/tools/pack_candidates.py; fi
+          if [ -f photos/packs-src/.no-candidates ]; then echo "candidates off"; else python3 -u .github/tools/pack_candidates.py $(cat photos/packs-src/.candidates 2> /dev/null); fi   # .candidates: only these packs
       - name: Build the picked packs and publish their zips
         env:
           GH_TOKEN: ${{ github.token }}
