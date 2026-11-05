@@ -43,8 +43,8 @@ check("a stop or another pick meanwhile wins (the generation and the address are
 err = svc[svc.index("private void onPlaybackError"):svc.index("private void playSurahAgain")]
 check("a player error on a station resolves the address again, with the growing wait", "if (radio) startRadio(station, 0); else startUrl(failed);" in err and "radio ? StreamUrl.backoffMs(retries) : 3000" in err)
 nsc = (ROOT / "android/launcher/src/main/res/xml/network_security_config.xml").read_text(encoding="utf-8")
-check("cleartext only for radiojar.com (and its subdomains) and this device's own proxy, everything else https", '<base-config cleartextTrafficPermitted="false" />' in nsc
-      and re.findall(r"<domain[^>]*>([^<]+)</domain>", nsc) == ["radiojar.com", "127.0.0.1"] and 'includeSubdomains="true"' in nsc)
+check("cleartext only for radiojar.com (and its subdomains), everything else https", '<base-config cleartextTrafficPermitted="false" />' in nsc
+      and re.findall(r"<domain[^>]*>([^<]+)</domain>", nsc) == ["radiojar.com"] and 'includeSubdomains="true"' in nsc)
 man = (ROOT / "android/launcher/src/main/AndroidManifest.xml").read_text(encoding="utf-8")
 check("the launcher's manifest uses the config, and does not allow cleartext for everything", 'android:networkSecurityConfig="@xml/network_security_config"' in man and 'usesCleartextTraffic="true"' not in man)
 check("the radiojar entry includes its nNN subdomains", re.search(r'<domain includeSubdomains="true">radiojar\.com</domain>', nsc) is not None)

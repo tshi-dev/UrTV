@@ -82,7 +82,7 @@ mka = text(HOME / "MarketsActivity.java")
 sc = mka.split("private void stockCard(")[1].split("/** «الأسعار متأخرة")[0]
 check("14: the stock card fits the safe area: its text part is a scroll view that shrinks when the card is taller than the screen minus 5 % top and bottom, the action buttons and «رجوع» are a fixed footer; the first focus is «رجوع», never an action; the chart is shorter",
       "final ScrollView bodyScroll = new ScrollView(this);" in sc and "box.addView(bodyScroll, new LinearLayout.LayoutParams(-1, -2));" in sc and "int room = screenH - 2 * Math.round(screenH * 0.05f)" in sc and "inner.measure(wide, any);" in sc and "bodyScroll.setForeground(ring);" in sc and "box.post(() -> back.requestFocus());" in sc
-      and "back.requestFocus();" in sc and "(made.isEmpty() ? back : made.get(0)).requestFocus()" not in sc and "chartBlock(null, q, 40, 104, MarketData.symbol(code))" in sc and "made.get(0).requestFocus()" not in sc)
+      and "back.requestFocus();" in sc and "(made.isEmpty() ? back : made.get(0)).requestFocus()" not in sc and "chartBlock(null, q, 40, 96, MarketData.symbol(code))" in sc and "made.get(0).requestFocus()" not in sc)
 check("14: after an action that draws the page again the focus is on the row that opened the card (its place is kept), not on «مباشر»", "focusIndexAfter = from == null ? -1 : all.indexOf(from);" in sc and "if (at < 0 && focusIndexAfter >= 0) at = focusIndexAfter;" in mka)
 check("15: both number pads' key rows are not baseline-aligned (the bigger «٫» pushed the other keys 8 px down and cut their bottoms)", mka.count("line.setBaselineAligned(false);") == 2)
 gt = text(HOME / "GreetingText.java")
@@ -132,4 +132,13 @@ check("34-A: the English page's radial gradients go with their side (the top vei
       "radial-gradient\\(" in text(ROOT / "src/build.py") and "100 - int(m.group(2))" in text(ROOT / "src/build.py") and "top veil, ${file}: no hard edge" in text(ROOT / "tests/page.test.mjs"))
 check("34-B: while a symbol's exchange is open a market file older than 20 minutes is not trusted (Yahoo is asked, the older file only when Yahoo refuses), and a quiet «متأخر» shows beside the time",
       "LATE_MS = 20*60000" in tp and "(!lax && sesOpen(sym) ? LATE_MS : MARKET_TRUST_MS)" in tp and "directQuote(j) || fileQuote(j.key, 1)" in tp and "' · ' + 'متأخر'" in tp and "? 'متأخر' : ''" in tp)
+
+# step 35 (release)
+check("35-1: Cairo's radio, LiveFeed and LiveProxy are gone (the station was the last: saved numbers stay), cleartext is for radiojar.com only",
+      not (ROOT / "android/launcher/src/main/java/sa/urtv/home/tilawah/LiveFeed.java").exists() and not (ROOT / "android/launcher/src/main/java/sa/urtv/home/tilawah/LiveProxy.java").exists()
+      and "radiojar.com/8s5u5tpdtwzuv" not in text(ROOT / "android/launcher/src/main/assets/quran/stations.json") and "127.0.0.1" not in text(ROOT / "android/launcher/src/main/res/xml/network_security_config.xml")
+      and "LiveFeed" not in text(HOME / "tilawah/MusicService.java"))
+check("35-2: the S&P 500 row has 16 and 8 dp between name, price and change and its price is TEXT-coloured (the focus turns it dark on the pill)",
+      "pp.setMarginStart(dp(16));" in mka and "cp.setMarginStart(dp(8));" in mka and 'ltr(text(price(q.p), 16, "Regular", TEXT)), pp' in mka)
+check("35-3: the stock card's «رجوع» is in the actions' row (one footer row, not two) and the chart is 96 dp, so the card fits without scrolling", "List<View> row = new ArrayList<>(made);" in sc and "row.add(back);" in sc)
 sys.exit(1 if failed else 0)

@@ -31,7 +31,7 @@ Package `sa.urtv.home` · classes `sa.urtv.home.tilawah` · label «تلاوة»
   read from the right, like the rest of the app. Left/Right switches section from anywhere on the
   screen; Down (or OK on the tab) enters the list and
   Up from the first row goes back to the tabs. «القرّاء» holds «متابعة التلاوة» when a surah is
-  paused, then the forty-two reciters; «الإذاعات» holds the twelve live stations (and the resume row when
+  paused, then the forty-two reciters; «الإذاعات» holds the eleven live stations (and the resume row when
   a station was playing); «الأذان» holds today's five times (the next one in gold with the time left,
   OK plays that adhan now), «الأذان التلقائي» (OK switches it on or off), «المؤذن» (OK opens the 21
   recordings) and «صوت الأذان» (Left/Right set it in steps of 10, 10 % to 100 %, thirty by default, with a bar
@@ -181,9 +181,9 @@ python3 .github/tools/fetch_quran.py --check   # ranged GET of every stream URL
   the app builds `server + 001.mp3 … 114.mp3` from the server field.
 - **Surahs** come from [api.alquran.cloud](https://alquran.cloud); names are stripped of the
   «سُورَةُ» prefix, vowel marks and tatweel.
-- **Stations** are twelve live streams: the Saudi Quran Radio first (the Saudi Broadcasting Authority's own), ten from mp3quran/qurango.net, and Cairo's Quran Radio last (Maspero's own stream on radiojar, an https -> http redirect like the Saudi one's old address; added from the 4.1 reports, last so the saved station numbers stay).
+- **Stations** are eleven live streams: the Saudi Quran Radio first (the Saudi Broadcasting Authority's own) and ten from mp3quran/qurango.net. (Cairo's Quran Radio on radiojar was tried and removed: the TV's player never played it, neither from the resolved address nor through a local relay; it was the last, so the saved station numbers stay. A saved number past the end falls back to the first.)
 - Streams move or go quiet; the `--check` run verifies one kilobyte of each URL. At the time of
-  writing all 51 URLs answered with `audio/mpeg`. A station that fails may be temporarily down;
+  writing all 50 URLs answered with `audio/mpeg`. A station that fails may be temporarily down;
   the app retries and reports it. The Saudi Quran Radio is the Saudi Broadcasting Authority's own HLS
   (`live.kwikmotion.com`, the CDN of radioplus.sba.sa): https, no redirect, no token. Its former radiojar
   address never played on the owner's TV (step 182). `.github/workflows/stations-check.yml` checks every

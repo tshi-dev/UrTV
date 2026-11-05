@@ -33,9 +33,7 @@ phone_java = sorted(PHONE.glob("*.java"))
 
 # ---- where it listens, and who may start it
 makers = [f"{f.relative_to(ROOT)}" for f in all_java if re.search(r"new\s+ServerSocket\s*\(", text(f))]
-check("the only `new ServerSocket` in the apps are PhoneServer.DefaultBinder and LiveProxy (a radio station's stream for the player, bound to 127.0.0.1 only)",
-      makers == ["android/launcher/src/main/java/sa/urtv/home/phone/PhoneServer.java", "android/launcher/src/main/java/sa/urtv/home/tilawah/LiveProxy.java"]
-      and 'new ServerSocket(0, 4, InetAddress.getByName("127.0.0.1"))' in text(ROOT / "android/launcher/src/main/java/sa/urtv/home/tilawah/LiveProxy.java"), makers)
+check("the only `new ServerSocket` in the apps is PhoneServer.DefaultBinder", makers == ["android/launcher/src/main/java/sa/urtv/home/phone/PhoneServer.java"], makers)
 check("it is always bound to a given address and port (never the one-argument form that listens on every address)",
       re.findall(r"new\s+ServerSocket\s*\(([^)]*)\)", text(PHONE / "PhoneServer.java")) == ["port, 8, address"], "")
 check("no wildcard address in the phone code", not any(re.search(r"0\.0\.0\.0|getByName\(\s*\"0|INADDR_ANY|anyLocalAddress\(\)\s*[^.]", text(f).replace("isAnyLocalAddress", "")) for f in phone_java), "")

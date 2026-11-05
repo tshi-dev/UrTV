@@ -637,8 +637,11 @@ public class MarketsActivity extends Activity {
             c.setGravity(Gravity.CENTER_VERTICAL);
             c.setPadding(dp(16), dp(12), dp(16), dp(12));
             c.addView(text(S.tv(MarketData.name(code)), 16, "Medium", TEXT), new LinearLayout.LayoutParams(0, -2, 1f));
-            c.addView(ltr(text(price(q.p), 16, "Regular", DIM)), new LinearLayout.LayoutParams(-2, -2));
-            c.addView(pct(q.pct(), 15), new LinearLayout.LayoutParams(dp(88), -2));
+            LinearLayout.LayoutParams pp = new LinearLayout.LayoutParams(-2, -2), cp = new LinearLayout.LayoutParams(dp(88), -2);
+            pp.setMarginStart(dp(16));   // name | price | change, each 16 and 8 dp apart (the price touched the change: «+1.58%7,688.62»)
+            cp.setMarginStart(dp(8));
+            c.addView(ltr(text(price(q.p), 16, "Regular", TEXT)), pp);   // TEXT, not DIM: the focused pill turns it to the look's dark text (DIM went pale on the white pill)
+            c.addView(pct(q.pct(), 15), cp);
             focusRow(c, 12);
             c.setOnClickListener(v -> stockCard(code, null));
             row.addView(c, weight(1f, row.getChildCount() == 0 ? 0 : 12));
@@ -1250,7 +1253,7 @@ public class MarketsActivity extends Activity {
         head.addView(ltrStart(text(tag.isEmpty() ? sub : sub + " · " + tag, 14, "Regular", DIM)), new LinearLayout.LayoutParams(-2, -2));
         inner.addView(head, wrap());
         if (q != null) {
-            cardBlock = (LinearLayout) chartBlock(null, q, 40, 104, MarketData.symbol(code));
+            cardBlock = (LinearLayout) chartBlock(null, q, 40, 96, MarketData.symbol(code));
             inner.addView(cardBlock, gap(8));
             LinearLayout stats = new LinearLayout(this);
             // the file's day line is the session before's while this exchange is open and no live answer has replaced it: «–», not yesterday's open and range
@@ -1287,20 +1290,20 @@ public class MarketsActivity extends Activity {
             boolean onBar = bar().contains(key);
             made.add(button(onBar ? S.t("أخفه من شريط الأسواق") : S.t("أظهره في شريط الأسواق"), false, v -> { d.dismiss(); toggleBar(key); }));
         }
-        for (int i = 0; i < made.size(); i++) buttons.addView(made.get(i), weight(1f, i == 0 ? 0 : 16));
-        if (!made.isEmpty()) box.addView(buttons, gap(20));
-        // «رجوع» under the actions, like the other pages' buttons (the card had no button to leave it by: step 28b, the owner): ▼ reaches it, OK closes the card
+        // «رجوع» is the last button of the same row as the actions (the card had no button to leave it by: step 28b; on its own row the footer was 62 dp taller and the chart did not fit, step 34): ◀ ▶ reach it, OK closes the card
         final View back = button(S.t("رجوع"), false, v -> d.dismiss());
-        box.addView(back, gap(made.isEmpty() ? 20 : 12));
+        List<View> row = new ArrayList<>(made);
+        row.add(back);
+        for (int i = 0; i < row.size(); i++) buttons.addView(row.get(i), weight(1f, i == 0 ? 0 : 12));
+        box.addView(buttons, gap(16));
         // too tall for the safe area (y 54 to 1026 at 1080p): the text part is given the height that is left once the buttons and «رجوع» have theirs, worked out BEFORE the window opens
         // (build 191: the window clipped the box, the last child was squeezed to 61 px and «رجوع» showed no label). The text part then scrolls, and has a ring when it holds the focus.
         int sw = Math.min(getResources().getDisplayMetrics().widthPixels - dp(48), dp(760)) - box.getPaddingLeft() - box.getPaddingRight();
         int wide = View.MeasureSpec.makeMeasureSpec(sw, View.MeasureSpec.EXACTLY), any = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
         inner.measure(wide, any);
         int foot = 0;
-        if (!made.isEmpty()) { buttons.measure(wide, any); foot += buttons.getMeasuredHeight() + dp(20); }
-        back.measure(wide, any);
-        foot += back.getMeasuredHeight() + dp(made.isEmpty() ? 20 : 12);
+        buttons.measure(wide, any);
+        foot += buttons.getMeasuredHeight() + dp(16);
         int screenH = getResources().getDisplayMetrics().heightPixels;
         int room = screenH - 2 * Math.round(screenH * 0.05f) - box.getPaddingTop() - box.getPaddingBottom() - foot;
         if (inner.getMeasuredHeight() > room) {
@@ -1316,7 +1319,7 @@ public class MarketsActivity extends Activity {
             ring.addState(new int[] {android.R.attr.state_focused}, g);
             bodyScroll.setForeground(ring);
         }
-        back.setMinimumHeight(back.getMeasuredHeight());
+        buttons.setMinimumHeight(buttons.getMeasuredHeight());
         d.show();
         back.requestFocus();   // never an action that changes the list: OK on a card just opened closes it (step 30: the only reachable button added a stock the person had not read)
         box.post(() -> back.requestFocus());   // and again after the first layout, which must not hand it to the scroll view
