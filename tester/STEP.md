@@ -1,4 +1,4 @@
-«✅ GO — step 37 now: 8 demo-clean pictures for a post today (build 204). TV muted. Restore lang en after.
+«✅ GO — step 37b now: redo 2 pictures (TV muted).»
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -629,3 +629,8 @@ Demo-clean exactly as step 34m (Makkah, no owner data, no PIN/code/QR/Wi-Fi name
 7. `r1-tasks.png` — «المهام» with 2 demo tasks, one with «ذكّرني» time; plus `r2-reminder.png` the reminder card showing over the screensaver/home if you can trigger it with a demo task 1–2 min ahead.
 8. `b1-own-photos.png` — Settings › شاشة التوقف › «صور شاشة التوقف» / «صوري» screen (packs list may be empty: shoot it anyway), and `b2-screensaver.png` — the screensaver with a nice built-in photo, no person.
 Check each by eye, then commit ONLY these files to branch `work/marketing` under `marketing/4.2b/` and push. Remove the demo tasks. Report «step 37: pushed N pictures».
+
+## step 37b — redo 2 pictures (same rules as step 37; push to work/marketing marketing/4.2b/, overwrite)
+- `p2-phone-search.png`: it came out identical to the remote. Show the phone page's TYPING/search screen with a demo query typed (e.g. «سورة الكهف») sent to YouTube's search, not the remote pad.
+- `r1-tasks.png`: no blurred rows. Delete every task first, then add exactly 3 demo tasks («اشتر خبز», «موعد الطبيب» with a reminder time, «اتصل بالوالدة») and shoot; remove them after.
+Report «step 37b: pushed».
