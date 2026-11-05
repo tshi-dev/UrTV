@@ -1,4 +1,4 @@
-«✅ GO — build 200» — run step 35 (end of this file), short release check. TV muted. lang stays en.
+«✅ GO — step 34p now: push the 4 marketing pictures (no TV work).»
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -608,3 +608,6 @@ Save in `optimize/run/step34/marketing/` on the PC, check each by eye, push none
 6. Quick sweep: home, tray, matches, markets, settings hub, screensaver — no crash, no cut text (AR and EN).
 Z. Restore as in step 28b Z, except lang en.
 Write «step 35: ALL PASS» if all pass, else list problems. Push.
+
+## step 34p — share the 4 X pictures (no TV work)
+The owner wants the 4 demo-clean pictures from step 34m. Check each by eye once more for personal data (none allowed), then commit ONLY these 4 files to a new branch `work/marketing` under `marketing/4.2/` (x1-home-football.png, x2-markets.png, x3-matches.png, x4-screensaver.png) and push. Write «step 34p: pushed» in REPORT.md.
