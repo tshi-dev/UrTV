@@ -5,71 +5,50 @@
  "source": "ويكيميديا كومنز، CC0 وملكية عامة",
  "source_en": "Wikimedia Commons, CC0 and public domain",
  "reviewed": true,
- "review": "curated for the owner's brief: each photo looked at on the CI sheets (calm clock zone, sharp, no text, no people, ≥2048 px wide source, one palette per pack); the owner reviews photos/covers/sheet-<id>.jpg before the index goes to master",
+ "review": "the owner's final selection (v1 pruned + v2 picks), then the variety rule: at most 2 of a kind, near-duplicates dropped, no two neighbours alike in palette or subject",
  "photos": [
   {
-   "title": "Kustaanmiekka view to the sea and Harmaja",
-   "author": "Ypsilon from Finland",
+   "title": "Komos site baie Crète",
+   "author": "Jebulon",
    "licence": "CC0",
-   "link": "https://commons.wikimedia.org/wiki/File:Kustaanmiekka_view_to_the_sea_and_Harmaja.jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/8/8e/Kustaanmiekka_view_to_the_sea_and_Harmaja.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 4032
+   "link": "https://commons.wikimedia.org/wiki/File:Komos_site_baie_Cr%C3%A8te.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/3/3f/Komos_site_baie_Cr%C3%A8te.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
   },
   {
-   "title": "Yabucoa-Evening-Ocean-Clouds-Left",
-   "author": "BrickLightning",
+   "title": "Sunset clouds over the sea, La Fajana, La Palma",
+   "author": "Gerda Arendt",
    "licence": "CC0",
-   "link": "https://commons.wikimedia.org/wiki/File:Yabucoa-Evening-Ocean-Clouds-Left.jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/f/f8/Yabucoa-Evening-Ocean-Clouds-Left.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 5472
+   "link": "https://commons.wikimedia.org/wiki/File:Sunset_clouds_over_the_sea,_La_Fajana,_La_Palma.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/8/8d/Sunset_clouds_over_the_sea%2C_La_Fajana%2C_La_Palma.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 4000
   },
   {
-   "title": "Desert mountain at sunset (Unsplash)",
-   "author": "Hannah Gut hannahgut",
-   "licence": "CC0",
-   "link": "https://commons.wikimedia.org/wiki/File:Desert_mountain_at_sunset_(Unsplash).jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/6/64/Desert_mountain_at_sunset_%28Unsplash%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 3872
+   "title": "Coral Reef",
+   "author": "Jerry Reid",
+   "licence": "Public domain",
+   "link": "https://commons.wikimedia.org/wiki/File:Coral_Reef.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/d/de/Coral_Reef.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
   },
   {
-   "title": "Tranquil Horizons (Unsplash)",
-   "author": "Sergei Akulich sakulich",
-   "licence": "CC0",
-   "link": "https://commons.wikimedia.org/wiki/File:Tranquil_Horizons_(Unsplash).jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/9/9c/Tranquil_Horizons_%28Unsplash%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 4494
-  },
-  {
-   "title": "Ocean view towards the pale yellow horizon (Unsplash)",
-   "author": "Colin Maynard invent",
-   "licence": "CC0",
-   "link": "https://commons.wikimedia.org/wiki/File:Ocean_view_towards_the_pale_yellow_horizon_(Unsplash).jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/b/b9/Ocean_view_towards_the_pale_yellow_horizon_%28Unsplash%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 5255
-  },
-  {
-   "title": "Yabucoa-Evening-Ocean-Clouds-Right",
-   "author": "BrickLightning",
-   "licence": "CC0",
-   "link": "https://commons.wikimedia.org/wiki/File:Yabucoa-Evening-Ocean-Clouds-Right.jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/1/17/Yabucoa-Evening-Ocean-Clouds-Right.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 5472
-  },
-  {
-   "title": "Soft Sea Mist (Unsplash)",
-   "author": "Kate Chikina moho477",
-   "licence": "CC0",
-   "link": "https://commons.wikimedia.org/wiki/File:Soft_Sea_Mist_(Unsplash).jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Soft_Sea_Mist_%28Unsplash%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 4911
-  },
-  {
-   "title": "Tommy Beach, on Ishigakijima 2",
+   "title": "Tommy Beach, on Ishigakijima 11",
    "author": "Syced",
    "licence": "CC0",
-   "link": "https://commons.wikimedia.org/wiki/File:Tommy_Beach,_on_Ishigakijima_2.jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/e/e8/Tommy_Beach%2C_on_Ishigakijima_2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 4080
+   "link": "https://commons.wikimedia.org/wiki/File:Tommy_Beach,_on_Ishigakijima_11.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/6/68/Tommy_Beach%2C_on_Ishigakijima_11.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+   "title": "Ocean Foam (Unsplash)",
+   "author": "Jeremy Bishop tidesinourveins",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Ocean_Foam_(Unsplash).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/e/e1/Ocean_Foam_%28Unsplash%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+   "title": "Схід сонця на узбережжі поблизу Тузловського ліману на околиці селища Лебедівка",
+   "author": "Віктор Височин",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:%D0%A1%D1%85%D1%96%D0%B4_%D1%81%D0%BE%D0%BD%D1%86%D1%8F_%D0%BD%D0%B0_%D1%83%D0%B7%D0%B1%D0%B5%D1%80%D0%B5%D0%B6%D0%B6%D1%96_%D0%BF%D0%BE%D0%B1%D0%BB%D0%B8%D0%B7%D1%83_%D0%A2%D1%83%D0%B7%D0%BB%D0%BE%D0%B2%D1%81%D1%8C%D0%BA%D0%BE%D0%B3%D0%BE_%D0%BB%D1%96%D0%BC%D0%B0%D0%BD%D1%83_%D0%BD%D0%B0_%D0%BE%D0%BA%D0%BE%D0%BB%D0%B8%D1%86%D1%96_%D1%81%D0%B5%D0%BB%D0%B8%D1%89%D0%B0_%D0%9B%D0%B5%D0%B1%D0%B5%D0%B4%D1%96%D0%B2%D0%BA%D0%B0.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/7/74/%D0%A1%D1%85%D1%96%D0%B4_%D1%81%D0%BE%D0%BD%D1%86%D1%8F_%D0%BD%D0%B0_%D1%83%D0%B7%D0%B1%D0%B5%D1%80%D0%B5%D0%B6%D0%B6%D1%96_%D0%BF%D0%BE%D0%B1%D0%BB%D0%B8%D0%B7%D1%83_%D0%A2%D1%83%D0%B7%D0%BB%D0%BE%D0%B2%D1%81%D1%8C%D0%BA%D0%BE%D0%B3%D0%BE_%D0%BB%D1%96%D0%BC%D0%B0%D0%BD%D1%83_%D0%BD%D0%B0_%D0%BE%D0%BA%D0%BE%D0%BB%D0%B8%D1%86%D1%96_%D1%81%D0%B5%D0%BB%D0%B8%D1%89%D0%B0_%D0%9B%D0%B5%D0%B1%D0%B5%D0%B4%D1%96%D0%B2%D0%BA%D0%B0.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
   },
   {
    "title": "View form cliffs in UNSECO site Jasmund near Kolliner Bach 2021-09-14 07",
@@ -80,36 +59,90 @@
    "source_width": 8368
   },
   {
-   "title": "Early Sunset Over Hill And Ocean, New South Wales, Australia",
-   "author": "Lunaseeker",
+   "title": "Drone view of ocean waves 1 (Unsplash)",
+   "author": "Matthew Kane matthewkane",
    "licence": "CC0",
-   "link": "https://commons.wikimedia.org/wiki/File:Early_Sunset_Over_Hill_And_Ocean,_New_South_Wales,_Australia.jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/f/f5/Early_Sunset_Over_Hill_And_Ocean%2C_New_South_Wales%2C_Australia.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 4032
+   "link": "https://commons.wikimedia.org/wiki/File:Drone_view_of_ocean_waves_1_(Unsplash).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/5/50/Drone_view_of_ocean_waves_1_%28Unsplash%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
   },
   {
-   "title": "A serene view of labadi Beach, Accra",
-   "author": "Siddique Hamad Nubania",
+   "title": "Руїни пірсу",
+   "author": "Віктор Височин",
    "licence": "CC0",
-   "link": "https://commons.wikimedia.org/wiki/File:A_serene_view_of_labadi_Beach,_Accra.jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/1/17/A_serene_view_of_labadi_Beach%2C_Accra.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 4096
+   "link": "https://commons.wikimedia.org/wiki/File:%D0%A0%D1%83%D1%97%D0%BD%D0%B8_%D0%BF%D1%96%D1%80%D1%81%D1%83.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/5/5f/%D0%A0%D1%83%D1%97%D0%BD%D0%B8_%D0%BF%D1%96%D1%80%D1%81%D1%83.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
   },
   {
-   "title": "Kitaimaizumi beach 7",
+   "title": "Sea sky and clouds, Ibiza, Spain",
+   "author": "Joselodos",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Sea_sky_and_clouds,_Ibiza,_Spain.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/8/8c/Sea_sky_and_clouds%2C_Ibiza%2C_Spain.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+   "title": "Ocean Spray (Unsplash)",
+   "author": "Levi Morsy levim",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Ocean_Spray_(Unsplash).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/d/d1/Ocean_Spray_%28Unsplash%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+   "title": "Calm-sea-haleiwa (Unsplash)",
+   "author": "Jeremy Bishop tidesinourveins",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Calm-sea-haleiwa_(Unsplash).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/9/96/Calm-sea-haleiwa_%28Unsplash%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 5184
+  },
+  {
+   "title": "Coral Reef in the Red Sea",
+   "author": "Mahmoud Habeeb",
+   "licence": "Public domain",
+   "link": "https://commons.wikimedia.org/wiki/File:Coral_Reef_in_the_Red_Sea.JPG",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/4/44/Coral_Reef_in_the_Red_Sea.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+   "title": "Rocks and sea Karystos Euboea Greece",
+   "author": "Jebulon",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Rocks_and_sea_Karystos_Euboea_Greece.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/5/5a/Rocks_and_sea_Karystos_Euboea_Greece.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+   "title": "Big ocean surf wave (Unsplash)",
+   "author": "Austin Schmid schmidy",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Big_ocean_surf_wave_(Unsplash).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Big_ocean_surf_wave_%28Unsplash%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+   "title": "Ocean view towards the pale yellow horizon (Unsplash)",
+   "author": "Colin Maynard invent",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Ocean_view_towards_the_pale_yellow_horizon_(Unsplash).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/b/b9/Ocean_view_towards_the_pale_yellow_horizon_%28Unsplash%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 5255
+  },
+  {
+   "title": "Ocean waves drone view of Palm Coast beach",
+   "author": "Lance Asper lance_asper",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Ocean_waves_drone_view_of_Palm_Coast_beach.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/f/f5/Ocean_waves_drone_view_of_Palm_Coast_beach.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+   "title": "Waves+Rocks",
+   "author": "Cole Patrick",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Waves%2BRocks.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/6/6a/Waves%2BRocks.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+   "title": "Tommy Beach, on Ishigakijima 7",
    "author": "Syced",
    "licence": "CC0",
-   "link": "https://commons.wikimedia.org/wiki/File:Kitaimaizumi_beach_7.jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Kitaimaizumi_beach_7.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 4032
-  },
-  {
-   "title": "Sunset at Thalassery sea bridge",
-   "author": "Shagil Kannur",
-   "licence": "CC0",
-   "link": "https://commons.wikimedia.org/wiki/File:Sunset_at_Thalassery_sea_bridge_.jpeg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/4/4e/Sunset_at_Thalassery_sea_bridge_.jpeg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 2560
+   "link": "https://commons.wikimedia.org/wiki/File:Tommy_Beach,_on_Ishigakijima_7.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/8/81/Tommy_Beach%2C_on_Ishigakijima_7.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
   }
  ]
 }

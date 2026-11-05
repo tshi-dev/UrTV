@@ -2,138 +2,31 @@
  "id": "space",
  "name": "الفضاء",
  "name_en": "Space",
- "source": "ناسا، ملكية عامة",
- "source_en": "NASA, public domain",
+ "source": "ناسا وهابل، ملكية عامة",
+ "source_en": "NASA and Hubble, public domain",
  "reviewed": true,
- "review": "curated for the owner's brief: each photo looked at on the CI sheets (calm clock zone, sharp, no text, no people, ≥2048 px wide source, one palette per pack); the owner reviews photos/covers/sheet-<id>.jpg before the index goes to master",
+ "review": "the owner's final selection (v1 pruned + v2 picks), then the variety rule: at most 2 of a kind, near-duplicates dropped, no two neighbours alike in palette or subject",
  "photos": [
   {
-   "title": "Iss072e030246 (Oct 7, 2024) --- The first rays of an orbital sunrise illuminate Earth's atmosphere in this photograph fr",
-   "author": "NASA Johnson Space Center",
+   "title": "Heart and Soul nebulae",
+   "author": "NASA/JPL-Caltech/UCLA",
    "licence": "Public domain",
-   "link": "https://commons.wikimedia.org/wiki/File:Iss072e030246_(Oct_7,_2024)_---_The_first_rays_of_an_orbital_sunrise_illuminate_Earth%27s_atmosphere_in_this_photograph_from_the_International_Space_Station_as_it_orbited_269_miles_above_the_Pacific_Ocean_near_Chile%27s_P.jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/6/6d/Iss072e030246_%28Oct_7%2C_2024%29_---_The_first_rays_of_an_orbital_sunrise_illuminate_Earth%27s_atmosphere_in_this_photograph_from_the_International_Space_Station_as_it_orbited_269_miles_above_the_Pacific_Ocean_near_Chile%27s_P.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 8256
+   "link": "https://commons.wikimedia.org/wiki/File:Heart_and_Soul_nebulae.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/a/ad/Heart_and_Soul_nebulae.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
   },
   {
-   "title": "ISS055-E-21 - View of the Moon and Earth's limb",
-   "author": "Earth Science and Remote Sensing Unit, NASA Johnson Space Center",
-   "licence": "Public domain",
-   "link": "https://commons.wikimedia.org/wiki/File:ISS055-E-21_-_View_of_the_Moon_and_Earth%27s_limb.jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/5/55/ISS055-E-21_-_View_of_the_Moon_and_Earth%27s_limb.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 5568
-  },
-  {
-   "title": "ISS-59 Waxing Gibbous Moon above the South Atlantic Ocean (2)",
+   "title": "ISS-38 Hawaiian Island chain",
    "author": "NASA",
    "licence": "Public domain",
-   "link": "https://commons.wikimedia.org/wiki/File:ISS-59_Waxing_Gibbous_Moon_above_the_South_Atlantic_Ocean_(2).jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/f/f5/ISS-59_Waxing_Gibbous_Moon_above_the_South_Atlantic_Ocean_%282%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 5568
+   "link": "https://commons.wikimedia.org/wiki/File:ISS-38_Hawaiian_Island_chain.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/1/1b/ISS-38_Hawaiian_Island_chain.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
   },
   {
-   "title": "ISS-59 Waxing Gibbous Moon above the South Atlantic Ocean (1)",
-   "author": "NASA",
+   "title": "M104 ngc4594 sombrero galaxy hi-res",
+   "author": "NASA/ESA and The Hubble Heritage Team (STScI/AURA)",
    "licence": "Public domain",
-   "link": "https://commons.wikimedia.org/wiki/File:ISS-59_Waxing_Gibbous_Moon_above_the_South_Atlantic_Ocean_(1).jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/8/80/ISS-59_Waxing_Gibbous_Moon_above_the_South_Atlantic_Ocean_%281%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 5568
-  },
-  {
-   "title": "ISS015-E-29976 - View of atmospheric limb",
-   "author": "Earth Science and Remote Sensing Unit , Lyndon B. Johnson Space Center",
-   "licence": "Public domain",
-   "link": "https://commons.wikimedia.org/wiki/File:ISS015-E-29976_-_View_of_atmospheric_limb.jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/3/3e/ISS015-E-29976_-_View_of_atmospheric_limb.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 3032
-  },
-  {
-   "title": "ISS-55 Waxing gibbous moon",
-   "author": "NASA",
-   "licence": "Public domain",
-   "link": "https://commons.wikimedia.org/wiki/File:ISS-55_Waxing_gibbous_moon.jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/1/10/ISS-55_Waxing_gibbous_moon.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 5568
-  },
-  {
-   "title": "ISS021-E-5824 - View of atmospheric limb",
-   "author": "Earth Science and Remote Sensing Unit , Lyndon B. Johnson Space Center",
-   "licence": "Public domain",
-   "link": "https://commons.wikimedia.org/wiki/File:ISS021-E-5824_-_View_of_atmospheric_limb.jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/4/48/ISS021-E-5824_-_View_of_atmospheric_limb.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 3072
-  },
-  {
-   "title": "ISS055-E-20 - View of the Moon and Earth's limb",
-   "author": "Earth Science and Remote Sensing Unit, NASA Johnson Space Center",
-   "licence": "Public domain",
-   "link": "https://commons.wikimedia.org/wiki/File:ISS055-E-20_-_View_of_the_Moon_and_Earth%27s_limb.jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/c/c5/ISS055-E-20_-_View_of_the_Moon_and_Earth%27s_limb.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 5568
-  },
-  {
-   "title": "ISS-59 Moon in its first quarter phase above the Earth's limb",
-   "author": "NASA",
-   "licence": "Public domain",
-   "link": "https://commons.wikimedia.org/wiki/File:ISS-59_Moon_in_its_first_quarter_phase_above_the_Earth%27s_limb.jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/8/80/ISS-59_Moon_in_its_first_quarter_phase_above_the_Earth%27s_limb.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 5568
-  },
-  {
-   "title": "ISS-59 Sun's first rays peek above Earth's limb",
-   "author": "NASA",
-   "licence": "Public domain",
-   "link": "https://commons.wikimedia.org/wiki/File:ISS-59_Sun%27s_first_rays_peek_above_Earth%27s_limb.jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/a/a8/ISS-59_Sun%27s_first_rays_peek_above_Earth%27s_limb.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 5568
-  },
-  {
-   "title": "ISS021-E-5825 - View of atmospheric limb",
-   "author": "Earth Science and Remote Sensing Unit , Lyndon B. Johnson Space Center",
-   "licence": "Public domain",
-   "link": "https://commons.wikimedia.org/wiki/File:ISS021-E-5825_-_View_of_atmospheric_limb.jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/8/88/ISS021-E-5825_-_View_of_atmospheric_limb.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 3072
-  },
-  {
-   "title": "ISS-62 Earth's glow and Aurora australis over the Indian Ocean",
-   "author": "NASA",
-   "licence": "Public domain",
-   "link": "https://commons.wikimedia.org/wiki/File:ISS-62_Earth%27s_glow_and_Aurora_australis_over_the_Indian_Ocean.jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/0/0d/ISS-62_Earth%27s_glow_and_Aurora_australis_over_the_Indian_Ocean.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 5568
-  },
-  {
-   "title": "ISS040-E-92675 - View of Earth and the Moon",
-   "author": "Earth Science and Remote Sensing Unit , Lyndon B. Johnson Space Center",
-   "licence": "Public domain",
-   "link": "https://commons.wikimedia.org/wiki/File:ISS040-E-92675_-_View_of_Earth_and_the_Moon.jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/0/0c/ISS040-E-92675_-_View_of_Earth_and_the_Moon.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 4256
-  },
-  {
-   "title": "ISS015-E-29975 - View of atmospheric limb",
-   "author": "Earth Science and Remote Sensing Unit , Lyndon B. Johnson Space Center",
-   "licence": "Public domain",
-   "link": "https://commons.wikimedia.org/wiki/File:ISS015-E-29975_-_View_of_atmospheric_limb.jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/d/de/ISS015-E-29975_-_View_of_atmospheric_limb.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 3032
-  },
-  {
-   "title": "ISS-61 Moon, first quarter, just above the Earth's limb",
-   "author": "NASA",
-   "licence": "Public domain",
-   "link": "https://commons.wikimedia.org/wiki/File:ISS-61_Moon,_first_quarter,_just_above_the_Earth%27s_limb.jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/f/fd/ISS-61_Moon%2C_first_quarter%2C_just_above_the_Earth%27s_limb.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 5568
-  },
-  {
-   "title": "ISS001-E-6779 - View of atmospheric limb",
-   "author": "Earth Science and Remote Sensing Unit , Lyndon B. Johnson Space Center",
-   "licence": "Public domain",
-   "link": "https://commons.wikimedia.org/wiki/File:ISS001-E-6779_-_View_of_atmospheric_limb.jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/c/c6/ISS001-E-6779_-_View_of_atmospheric_limb.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 3060
+   "link": "https://commons.wikimedia.org/wiki/File:M104_ngc4594_sombrero_galaxy_hi-res.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/5/5e/M104_ngc4594_sombrero_galaxy_hi-res.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
   },
   {
    "title": "ISS-66 Orbital sunrise above the coast of Venezuela",
@@ -144,12 +37,25 @@
    "source_width": 4928
   },
   {
-   "title": "ISS015-E-29977 - View of atmospheric limb",
-   "author": "Earth Science and Remote Sensing Unit , Lyndon B. Johnson Space Center",
+   "title": "Saturn during Equinox",
+   "author": "NASA / JPL / Space Science Institute",
    "licence": "Public domain",
-   "link": "https://commons.wikimedia.org/wiki/File:ISS015-E-29977_-_View_of_atmospheric_limb.jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/7/77/ISS015-E-29977_-_View_of_atmospheric_limb.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 3032
+   "link": "https://commons.wikimedia.org/wiki/File:Saturn_during_Equinox.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/c/c7/Saturn_during_Equinox.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+   "title": "NASA Unveils Celestial Fireworks as Official Hubble 25th Anniversary Image",
+   "author": "NASA , ESA , the Hubble Heritage Team ( STScI / AURA ), A. Nota ( ESA / STScI ), and the Westerlund 2 Science Team",
+   "licence": "Public domain",
+   "link": "https://commons.wikimedia.org/wiki/File:NASA_Unveils_Celestial_Fireworks_as_Official_Hubble_25th_Anniversary_Image.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/1/13/NASA_Unveils_Celestial_Fireworks_as_Official_Hubble_25th_Anniversary_Image.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+   "title": "ISS March 2009",
+   "author": "National Aeronautics and Space Administration",
+   "licence": "Public domain",
+   "link": "https://commons.wikimedia.org/wiki/File:ISS_March_2009.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/8/80/ISS_March_2009.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
   },
   {
    "title": "ISS-62 Aurora and airglow underneath a starry sky into orbital sunrise",
@@ -160,12 +66,33 @@
    "source_width": 5568
   },
   {
-   "title": "An orbital sunrise above the Tasman Sea",
-   "author": "NASA",
+   "title": "Messier83 - Heic1403a",
+   "author": "Credit: NASA, ESA, and the Hubble Heritage Team (STScI/AURA) Acknowledgement: William Blair (Johns Hopkins University)",
    "licence": "Public domain",
-   "link": "https://commons.wikimedia.org/wiki/File:An_orbital_sunrise_above_the_Tasman_Sea.jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/4/48/An_orbital_sunrise_above_the_Tasman_Sea.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 5568
+   "link": "https://commons.wikimedia.org/wiki/File:Messier83_-_Heic1403a.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/5/5e/Messier83_-_Heic1403a.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+   "title": "Iss072e029127 (Oct 8, 2024) --- Hurricane Milton, a Category 5 storm at the time of this photograph, is pictured in the ",
+   "author": "NASA/Michael Barratt",
+   "licence": "Public domain",
+   "link": "https://commons.wikimedia.org/wiki/File:Iss072e029127_(Oct_8,_2024)_---_Hurricane_Milton,_a_Category_5_storm_at_the_time_of_this_photograph,_is_pictured_in_the_Gulf_of_Mexico_off_the_coast_of_Yucatan_Peninsula_from_the_International_Space_Station_as_it_orbi_(cropped).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/d/db/Iss072e029127_%28Oct_8%2C_2024%29_---_Hurricane_Milton%2C_a_Category_5_storm_at_the_time_of_this_photograph%2C_is_pictured_in_the_Gulf_of_Mexico_off_the_coast_of_Yucatan_Peninsula_from_the_International_Space_Station_as_it_orbi_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+   "title": "Saturn eclipse",
+   "author": "NASA/JPL/Space Science Institute",
+   "licence": "Public domain",
+   "link": "https://commons.wikimedia.org/wiki/File:Saturn_eclipse.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/b/ba/Saturn_eclipse.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original"
+  },
+  {
+   "title": "Iss072e030246 (Oct 7, 2024) --- The first rays of an orbital sunrise illuminate Earth's atmosphere in this photograph fr",
+   "author": "NASA Johnson Space Center",
+   "licence": "Public domain",
+   "link": "https://commons.wikimedia.org/wiki/File:Iss072e030246_(Oct_7,_2024)_---_The_first_rays_of_an_orbital_sunrise_illuminate_Earth%27s_atmosphere_in_this_photograph_from_the_International_Space_Station_as_it_orbited_269_miles_above_the_Pacific_Ocean_near_Chile%27s_P.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/6/6d/Iss072e030246_%28Oct_7%2C_2024%29_---_The_first_rays_of_an_orbital_sunrise_illuminate_Earth%27s_atmosphere_in_this_photograph_from_the_International_Space_Station_as_it_orbited_269_miles_above_the_Pacific_Ocean_near_Chile%27s_P.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 8256
   }
  ]
 }
