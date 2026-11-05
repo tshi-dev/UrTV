@@ -1,0 +1,196 @@
+{
+ "id": "haramain",
+ "name": "الحرمين",
+ "name_en": "The Two Holy Mosques",
+ "source": "ويكيميديا كومنز: CC BY وBY-SA وCC0 وملكية عامة",
+ "source_en": "Wikimedia Commons: CC BY, BY-SA, CC0, public domain",
+ "allow_attribution": true,
+ "reviewed": true,
+ "review": "the owner allowed CC BY / BY-SA 2.0-4.0 as for Saudi cities (never NC or ND); each photo looked at on the CI sheets: Masjid al-Haram and the Kaaba, the Prophet's Mosque and Quba, day, dusk and night; distant worshippers only, no face or person as the subject, no text or watermark, no crane dominating, nothing sect-specific; at most 2 of a kind (from above, the Kaaba at night, the Green Dome, Quba, the umbrellas), Makkah and Madinah alternate; none of the Saudi cities photos (that pack would fall under 12 without its four)",
+ "photos": [
+  {
+   "title": "Roza Rasool, Masjid e Nabvi, Medina Munawara - panoramio (2)",
+   "author": "Najamuddin Shahwani",
+   "licence": "CC BY 3.0",
+   "link": "https://commons.wikimedia.org/wiki/File:Roza_Rasool,_Masjid_e_Nabvi,_Medina_Munawara_-_panoramio_(2).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/a/a8/Roza_Rasool%2C_Masjid_e_Nabvi%2C_Medina_Munawara_-_panoramio_%282%29.jpg",
+   "source_width": 4608,
+   "licence_url": "https://creativecommons.org/licenses/by/3.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080"
+  },
+  {
+   "title": "Great Mosque of Mecca1",
+   "author": "Saudipics.com",
+   "licence": "CC BY-SA 4.0",
+   "link": "https://commons.wikimedia.org/wiki/File:Great_Mosque_of_Mecca1.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/3/3f/Great_Mosque_of_Mecca1.jpg",
+   "source_width": 3891,
+   "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080"
+  },
+  {
+   "title": "Masjid e Nabawi Courtyard Umbrellas",
+   "author": "King Eliot",
+   "licence": "CC BY-SA 4.0",
+   "link": "https://commons.wikimedia.org/wiki/File:Masjid_e_Nabawi_Courtyard_Umbrellas.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/9/95/Masjid_e_Nabawi_Courtyard_Umbrellas.jpg",
+   "source_width": 4608,
+   "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080"
+  },
+  {
+   "title": "The Kaaba - Flickr - Al Jazeera English",
+   "author": "Al Jazeera English",
+   "licence": "CC BY-SA 2.0",
+   "link": "https://commons.wikimedia.org/wiki/File:The_Kaaba_-_Flickr_-_Al_Jazeera_English.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/d/db/The_Kaaba_-_Flickr_-_Al_Jazeera_English.jpg",
+   "source_width": 3264,
+   "licence_url": "https://creativecommons.org/licenses/by-sa/2.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080",
+   "focus": [
+    0.5,
+    0.4
+   ]
+  },
+  {
+   "title": "Quba Mosque - panoramio",
+   "author": "Tevfik Teker",
+   "licence": "CC BY 3.0",
+   "link": "https://commons.wikimedia.org/wiki/File:Quba_Mosque_-_panoramio.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/8/85/Quba_Mosque_-_panoramio.jpg",
+   "source_width": 5184,
+   "licence_url": "https://creativecommons.org/licenses/by/3.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080"
+  },
+  {
+   "title": "Kaaba, Never still",
+   "author": "omar_chatriwala",
+   "licence": "CC BY 2.0",
+   "link": "https://commons.wikimedia.org/wiki/File:Kaaba,_Never_still.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/f/f7/Kaaba%2C_Never_still.jpg",
+   "source_width": 3264,
+   "licence_url": "https://creativecommons.org/licenses/by/2.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080",
+   "focus": [
+    0.5,
+    0.4
+   ]
+  },
+  {
+   "title": "Almadina-AboaLana",
+   "author": "Vairus3",
+   "licence": "CC BY-SA 3.0",
+   "link": "https://commons.wikimedia.org/wiki/File:Almadina-AboaLana.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/c/ca/Almadina-AboaLana.jpg",
+   "source_width": 7646,
+   "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080"
+  },
+  {
+   "title": "Kaaba in macca",
+   "author": "Aiman titi",
+   "licence": "CC BY-SA 3.0",
+   "link": "https://commons.wikimedia.org/wiki/File:Kaaba_in_macca.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/9/94/Kaaba_in_macca.jpg",
+   "source_width": 2592,
+   "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080"
+  },
+  {
+   "title": "Umbrellas for the Piazza of the Prophet’s Holy Mosque, Madinah, SA",
+   "author": "Anaya Ki Family",
+   "licence": "CC BY-SA 3.0",
+   "link": "https://commons.wikimedia.org/wiki/File:Umbrellas_for_the_Piazza_of_the_Prophet%E2%80%99s_Holy_Mosque,_Madinah,_SA.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/2/29/Umbrellas_for_the_Piazza_of_the_Prophet%E2%80%99s_Holy_Mosque%2C_Madinah%2C_SA.jpg",
+   "source_width": 3508,
+   "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080"
+  },
+  {
+   "title": "Kaaba, Makkah5",
+   "author": "معتز توفيق اغبارية",
+   "licence": "CC BY-SA 3.0",
+   "link": "https://commons.wikimedia.org/wiki/File:Kaaba,_Makkah5.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/b/bd/Kaaba%2C_Makkah5.jpg",
+   "source_width": 5184,
+   "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080",
+   "focus": [
+    0.5,
+    0.4
+   ]
+  },
+  {
+   "title": "Madeena masjid nabavi 12122008230",
+   "author": "Bluemangoa2z at Malayalam Wikipedia",
+   "licence": "Public domain",
+   "link": "https://commons.wikimedia.org/wiki/File:Madeena_masjid_nabavi_12122008230.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/c/cd/Madeena_masjid_nabavi_12122008230.jpg",
+   "source_width": 2592
+  },
+  {
+   "title": "Mecca",
+   "author": "Ariandra 03",
+   "licence": "CC BY-SA 3.0",
+   "link": "https://commons.wikimedia.org/wiki/File:Mecca.JPG",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/2/2c/Mecca.JPG",
+   "source_width": 4608,
+   "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080",
+   "focus": [
+    0.5,
+    0.45
+   ]
+  },
+  {
+   "title": "The Historic Quba Mosque in Madinah (2025)",
+   "author": "Saudi Photos Hub by Saudi Press Agency (SPA)",
+   "licence": "CC BY-SA 4.0",
+   "link": "https://commons.wikimedia.org/wiki/File:The_Historic_Quba_Mosque_in_Madinah_(2025).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/1/12/The_Historic_Quba_Mosque_in_Madinah_%282025%29.jpg",
+   "source_width": 7000,
+   "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080"
+  },
+  {
+   "title": "Masjidul-HaramAerialView (cropped)",
+   "author": "Wurzelgnohm",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Masjidul-HaramAerialView_(cropped).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/c/cb/Masjidul-HaramAerialView_%28cropped%29.jpg",
+   "source_width": 2213
+  },
+  {
+   "title": "المسجد النبوي الشريف والصورة مأخوذة من الدور الرابع عشر فندق أنوار المدينة موفينبيك",
+   "author": "Imam Khairul Annas",
+   "licence": "CC BY-SA 4.0",
+   "link": "https://commons.wikimedia.org/wiki/File:%D8%A7%D9%84%D9%85%D8%B3%D8%AC%D8%AF_%D8%A7%D9%84%D9%86%D8%A8%D9%88%D9%8A_%D8%A7%D9%84%D8%B4%D8%B1%D9%8A%D9%81_%D9%88%D8%A7%D9%84%D8%B5%D9%88%D8%B1%D8%A9_%D9%85%D8%A3%D8%AE%D9%88%D8%B0%D8%A9_%D9%85%D9%86_%D8%A7%D9%84%D8%AF%D9%88%D8%B1_%D8%A7%D9%84%D8%B1%D8%A7%D8%A8%D8%B9_%D8%B9%D8%B4%D8%B1_%D9%81%D9%86%D8%AF%D9%82_%D8%A3%D9%86%D9%88%D8%A7%D8%B1_%D8%A7%D9%84%D9%85%D8%AF%D9%8A%D9%86%D8%A9_%D9%85%D9%88%D9%81%D9%8A%D9%86%D8%A8%D9%8A%D9%83.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/3/36/%D8%A7%D9%84%D9%85%D8%B3%D8%AC%D8%AF_%D8%A7%D9%84%D9%86%D8%A8%D9%88%D9%8A_%D8%A7%D9%84%D8%B4%D8%B1%D9%8A%D9%81_%D9%88%D8%A7%D9%84%D8%B5%D9%88%D8%B1%D8%A9_%D9%85%D8%A3%D8%AE%D9%88%D8%B0%D8%A9_%D9%85%D9%86_%D8%A7%D9%84%D8%AF%D9%88%D8%B1_%D8%A7%D9%84%D8%B1%D8%A7%D8%A8%D8%B9_%D8%B9%D8%B4%D8%B1_%D9%81%D9%86%D8%AF%D9%82_%D8%A3%D9%86%D9%88%D8%A7%D8%B1_%D8%A7%D9%84%D9%85%D8%AF%D9%8A%D9%86%D8%A9_%D9%85%D9%88%D9%81%D9%8A%D9%86%D8%A8%D9%8A%D9%83.jpg",
+   "source_width": 3264,
+   "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080"
+  },
+  {
+   "title": "Kaaba -Mecca -Saudi Arabia-1Aug2008",
+   "author": "deendotsg",
+   "licence": "CC BY 2.0",
+   "link": "https://commons.wikimedia.org/wiki/File:Kaaba_-Mecca_-Saudi_Arabia-1Aug2008.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/8/8f/Kaaba_-Mecca_-Saudi_Arabia-1Aug2008.jpg",
+   "source_width": 2048,
+   "licence_url": "https://creativecommons.org/licenses/by/2.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080",
+   "focus": [
+    0.5,
+    0.4
+   ]
+  },
+  {
+   "title": "Medium shot of the Green Dome at The Prophet's Mosque (Al Masjid-e-Nabawi)",
+   "author": "TheHadiRahim",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Medium_shot_of_the_Green_Dome_at_The_Prophet%27s_Mosque_(Al_Masjid-e-Nabawi).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Medium_shot_of_the_Green_Dome_at_The_Prophet%27s_Mosque_%28Al_Masjid-e-Nabawi%29.jpg",
+   "source_width": 5184
+  }
+ ]
+}
