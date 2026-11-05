@@ -1,4 +1,41 @@
 {
  "version": 1,
- "packs": []
+ "packs": [
+  {
+   "id": "space",
+   "name": "الفضاء",
+   "name_en": "Space",
+   "source": "ناسا وهابل، ملكية عامة",
+   "source_en": "NASA and Hubble, public domain",
+   "cover": "https://raw.githubusercontent.com/tshi-dev/UrTV/master/photos/covers/space.jpg",
+   "url": "https://github.com/tshi-dev/UrTV/releases/download/photos-space/space.zip",
+   "sha256": "920425fb42d8b754a390f0a1b693dfbffee408be6cf976542d8cad5cfd65f1cd",
+   "count": 19,
+   "bytes": 7075845
+  },
+  {
+   "id": "nature",
+   "name": "الطبيعة",
+   "name_en": "Nature",
+   "source": "ويكيميديا كومنز، ملكية عامة وCC0",
+   "source_en": "Wikimedia Commons, public domain and CC0",
+   "cover": "https://raw.githubusercontent.com/tshi-dev/UrTV/master/photos/covers/nature.jpg",
+   "url": "https://github.com/tshi-dev/UrTV/releases/download/photos-nature/nature.zip",
+   "sha256": "94b8795d60d3c5a27335511ee083baca89cf3ac1838f606decc0d445984020f7",
+   "count": 30,
+   "bytes": 15741534
+  },
+  {
+   "id": "sea",
+   "name": "البحر والشواطئ",
+   "name_en": "Sea and beaches",
+   "source": "ويكيميديا كومنز، ملكية عامة وCC0",
+   "source_en": "Wikimedia Commons, public domain and CC0",
+   "cover": "https://raw.githubusercontent.com/tshi-dev/UrTV/master/photos/covers/sea.jpg",
+   "url": "https://github.com/tshi-dev/UrTV/releases/download/photos-sea/sea.zip",
+   "sha256": "8ad738ddb4424bb933debbdcb4b82aa2ac0921270608526ddce80c538beac154",
+   "count": 30,
+   "bytes": 14929937
+  }
+ ]
 }
