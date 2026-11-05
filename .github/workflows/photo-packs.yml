@@ -1,0 +1,45 @@
+name: Photo packs
+
+# The screensaver's photo packs (docs/PHOTO-PACKS.md), made where Wikimedia Commons can be reached.
+# 1. candidates (.github/tools/pack_candidates.py): Public domain / CC0 files only, at least 1920x1080, none with a word the content rule leaves
+#    out; numbered contact sheets go to the branch data-photo-packs for a person to look at. Nothing is published.
+# 2. build: for each photos/packs-src/<id>.json (the photos a person picked from the sheets and looked at, "reviewed": true), the originals are
+#    downloaded, make_pack.py builds <id>.zip and the cover, and the zip goes up as the asset of the release photos-<id> (the only address the app
+#    follows). The pack's index line and cover go to data-photo-packs; photos/packs.json on master changes only by hand, after the owner's OK.
+on:
+  workflow_dispatch:
+  push:
+    branches: ['work/photo-packs']
+    paths: ['.github/tools/pack_candidates.py', '.github/tools/make_pack.py', '.github/workflows/photo-packs.yml', 'photos/packs-src/**']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: photo-packs
+  cancel-in-progress: false
+
+jobs:
+  packs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install pillow
+      - name: Candidates (only while no pack has been picked)
+        run: |
+          if ls photos/packs-src/*.json > /dev/null 2>&1; then echo "picks present: no new candidates"; else python3 -u .github/tools/pack_candidates.py; fi
+      - name: Build the picked packs and publish their zips
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 -u .github/tools/pack_build.py
+      - name: Push to data-photo-packs
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan data-photo-packs
+          git rm -rfq --cached .
+          git add -f packs-candidates packs-built 2> /dev/null || true
+          git commit -qm "Photo packs: candidates and builds" || exit 0
+          git push -f origin data-photo-packs
