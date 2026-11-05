@@ -1213,3 +1213,17 @@ Tadawul open during the whole test.
 `import`: nothing to change. Stocks the 5, updatechannel latest. Lang **en**, as the owner set it. `show` differs only in the build (198). Same: dock (reread after the note above), PIN and locked list, tasks, photos, adhan, family DNS, disabled (21), packages (177), Home holder, saver. Nothing playing. Muted. TV asleep as I found it. **restored: yes.**
 
 ### step 34 summary: ✓ pure black gone, «—» gone, seam gone, market loop, tray, card, «فرقك», dark pages. ✗ Cairo radio. Small: cold-start prayer minute flip, chart cut in the card, «delayed prices» wording. Open: 20-minute path, the next timer-started loop, near-black 1.3–1.9 s.
+
+## step 34m: 4 pictures ready (build 198; Thu 14:39–14:47; TV muted throughout)
+On the PC in `optimize/run/step34/marketing/`, none pushed; every picture opened and checked; the owner shares them as a zip. Demo-clean: Makkah, Umm al-Qura, 0 own photos, demo teams (Al-Ahli, Al-Taawoun), demo stocks, common apps on the tray, no holdings on screen. All 1920×1080, Arabic.
+- `x1-home-football.png`: look «رملي», football home, three cards, favourites tray
+- `x2-markets.png`: «السوق», whole TASI and market direction, dark. **TASI, the movers and the US row do not fit one screen**, so there's an extra: `x2b-markets-movers.png` with the S&P row and the movers. No stitching
+- `x3-matches.png`: match card open, dark; the group «فرقك» is behind it, dimmed. Extra: `x3b-matches-list.png`, the list with «فرقك» in full
+- `x4-screensaver.png`: verse card, markets, clock. Rocks photo, no person
+
+Things you may want before posting:
+- **Small ✗:** the S&P 500 row: percent and price touch with no gap («+1.58%7,688.62»), and when focused the price is pale grey on the white pill. Shown in `x2b`
+- `x2` header says «أسعار متأخرة» with 10 min old data (part 5 of step 34). It's visible in the picture
+- `x4` has only S&P as a US index, TASI, bitcoin and gold (the page's market strip), not my demo stocks: it doesn't show a stock list
+
+Restored: `import`, stocks, dock by hand; look, appearance and home layout by hand (the export doesn't change them). Lang **en**. `show` and `export` same as before these shots; dock, PIN, tasks, photos, adhan, family DNS, disabled (21), packages (177), Home holder, saver same. Muted, nothing playing, TV asleep as I found it. **restored: yes.**
