@@ -1,4 +1,4 @@
-«✅ GO — build 198» — run step 34 (end of this file). Mute first (the owner touched the remote). TV muted throughout. Keep lang en (the owner chose it).
+«✅ GO — build 200» — run step 35 (end of this file), short release check. TV muted. lang stays en.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -598,3 +598,13 @@ Report as «step 34» in REPORT.md and push. If all pass, write «step 34: ALL P
 3. `x3-matches.png` — «المباريات» with «فرقك» and a game card open (dark).
 4. `x4-screensaver.png` — the screensaver page with the verse card and the stocks/clock (pick the nicest photo, no person in it).
 Save in `optimize/run/step34/marketing/` on the PC, check each by eye, push none, and write «step 34m: 4 pictures ready» in REPORT.md. Restore lang en afterwards (the owner's choice).
+
+## step 35 — build 200, release check (update; TV muted; lang stays en; restore in Z)
+1. Update with «تحديث تلفزيوني» (channel next): no sound, home back in front, nothing else opened.
+2. Stations: Cairo gone (11 stations); station 0 and 1 play; a TV that had 11 saved falls back without error.
+3. Muhammad Ayyub in the reciters; one surah's playback state starts.
+4. «السوق» S&P 500 row: gap between percent and price; readable when focused.
+5. Stock card (2222, AAPL): the chart is whole on opening, no scroll needed; «رجوع» in the button row with first focus.
+6. Quick sweep: home, tray, matches, markets, settings hub, screensaver — no crash, no cut text (AR and EN).
+Z. Restore as in step 28b Z, except lang en.
+Write «step 35: ALL PASS» if all pass, else list problems. Push.
