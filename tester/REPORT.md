@@ -1258,3 +1258,31 @@ AAPL was added to the list for item 5 and removed.
 ## step 34p: pushed
 The owner confirmed in chat first, because the repo is public and the standing rule was no images. Rechecked by eye and metadata (only sRGB): Makkah and demo data only. Branch `work/marketing`, under `marketing/4.2/`: `x1-home-football.png`, `x2-markets.png`, `x3-matches.png`, `x4-screensaver.png`. One commit on top of next, only these 4 files. No TV work. The extras `x2b`, `x3b` stay on the PC and in the owner's zip.
 Note: `x2` shows the header with «أسعار متأخرة»; it was taken on build 198, before the S&P row fix, and that row is not in it.
+
+## step 37: pushed 10 pictures (build 205; Thu 22:03–22:35; TV muted throughout)
+The owner confirmed the push in chat first, the 10 as they are. Branch `work/marketing`, `marketing/4.2b/`. Demo-clean: Makkah, demo teams and stocks, common apps, demo tasks removed. Every picture checked by eye.
+**The TV came up as build 205, not 204.** Channel next gave 205; `show` says the newest release is 204.
+
+| file | what | note |
+|---|---|---|
+| `p1-phone-remote.png` | remote, «متصل» | see phones below |
+| `p2-phone-search.png` | typing «تلاوات خاشعة» | see phones below |
+| `t1-reciters.png` | reciters and letter index | **look glass, not «رملي»**, see 1 below. No favourites are set, so nothing is marked as one on top |
+| `t2-adhan.png` | adhan page, Makkah | I turned the adhan on for the shot, off right after. The next was Fajr, hours away. Two prayer rows show, the third is cut by the list |
+| `f1-parental.png` | parental, off | No PIN, no recovery code. It is the «off» state; I did not set a PIN |
+| `f2-control-center.png` | Wi-Fi and Bluetooth tiles | The network's name is blurred |
+| `r1-tasks.png` | 2 demo tasks, one with «ذكّرني» | **Two blurred rows are the owner's tasks,** see 2 below |
+| `r2-reminder.png` | reminder card on the home | A real one, demo task, about 16 s after it fired |
+| `b1-own-photos.png` | «صور شاشة التوقف» | Only «صورنا», «لا توجد مجموعات للتنزيل الآن». Reached by keys, Settings › البطاقات › شاشة التوقف |
+| `b2-screensaver.png` | saver, rocks, no person | `nightdim` off for the shot, on again |
+
+**Phones:** no phone or real pairing: I don't type pairing codes. These are the real page file (`assets/phone/index.html`) with the app's fonts, in headless Chrome at 390×844, 3x, against a local stub on 127.0.0.1 that gives demo answers. «متصل» and «بقي 25 دقيقة» are the stub's. So it shows the design, not a working session. Date and time fields hold demo values.
+
+### Things I found on the way
+1. **Small ✗: in «رملي» the letter index in «تلاوة» is nearly invisible,** cream on cream at the right of the list. In glass dark it's clear (`t1`). That's why `t1` is not in «رملي»
+2. The owner's 2 old match reminders stay in «المهام» after their time (`Match … starts Today 8:00 PM`, 20:00, seen at 22:10). I did not delete them, and scrolling doesn't hide them. If they are cleared, `r1` can be retaken clean
+3. **Small:** the reminder card sits over the home's clock, which shows above and beside it, cut (`r2`)
+4. The date field's empty placeholder came out as reversed letters in Chrome with `--lang=ar` («ةنس/رهش/موي»). I didn't check it on a phone, and filled the fields for the pictures
+
+### Z
+`import`: 3 settings back. Stocks, dock, look, appearance, home layout, night dim, adhan off, updatechannel latest, lang **en** by hand. `show` differs only in the build line. Same: dock (reread after the name lag seen in step 34), PIN and locked list, tasks (the owner's 2; all 3 demo gone), photos, adhan, family DNS, disabled (21), packages (177), Home holder, saver. Radio's saved station 0, nothing playing. Muted, `by=not us` 0. TV asleep as I found it. **restored: yes;** only the build differs (205).
