@@ -1,4 +1,4 @@
-«✅ GO — build 193» — run step 32 (end of this file). TV muted throughout. Owner asleep: quiet.
+«✅ GO — build 196» — run step 33 (end of this file). TV muted throughout.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -570,3 +570,13 @@ Report as «step 31» in REPORT.md and push.
 8. Greeting check if the time allows (evening / night rule).
 Z. Restore as in step 28b Z.
 Report as «step 32» in REPORT.md and push.
+
+## step 33 — build 196 (update; TV muted; restore in Z)
+1. Tray jank: the same gfxinfo script as steps 31/32 (10 ▶ + 10 ◀, 0.35 s, photo look on), 3 runs; compare with 19.6%/42 ms (191) and 31%/53 ms (193). Note the photo shown.
+2. Cairo Quran radio (station 11): plays within 20 s? Report `live feed from <host>` or `live feed <host>: <error>` lines. Also station 0 and one qurango station still play.
+3. Matches page and screensaver open with no blank/white flash: record with `screenrecord` (5 s each, open 3×), check frames; and nothing stays hidden (page shows within ~1.5 s).
+4. Stock card: the ring now has space from the text; «رجوع» label and first focus still OK.
+5. If US or Tadawul is open: `parsed = asked`.
+6. Evening greeting if the time allows.
+Z. Restore as in step 28b Z.
+Report as «step 33» in REPORT.md and push.
