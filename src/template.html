@@ -4256,7 +4256,7 @@ function mpDetailRender(){
     + `<div class="mdn" id="mp-note">${esc(MP.note)}</div></div>`);
   document.getElementById('mp-detail').hidden = false;
 }
-function mpOpen(ev){ MP.detail = ev; MP.btn = mpButtons(ev, Date.now())[0] && mpButtons(ev, Date.now())[0].k === 'watch' ? 0 : -1;
+function mpOpen(ev){ MP.detail = ev; MP.btn = mpButtons(ev, Date.now())[0] && mpButtons(ev, Date.now())[0].k === 'watch' ? 0 : -1;   // «شاهد على …» is ringed when it is there
    MP.note = ''; mpDetailRender(); }
 function mpBack(){   // the launcher's Back: closes the card first; 'out' when there is nothing to close
   if(!MP.detail) return 'out';

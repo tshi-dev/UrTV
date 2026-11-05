@@ -112,8 +112,8 @@ for cfg in config.findall("domain-config"):
     if cfg.get("cleartextTrafficPermitted") == "true":
         for domain in cfg.findall("domain"):
             allowed.append((domain.text, domain.get("includeSubdomains")))
-check("cleartext only for radiojar.com and subdomains",
-      allowed == [("radiojar.com", "true")], allowed)
+check("cleartext only for radiojar.com and subdomains, and this device's own 127.0.0.1 (LiveProxy; no subdomains), nothing else",
+      allowed == [("radiojar.com", "true"), ("127.0.0.1", "false")], allowed)
 
 # ---- manifest: nothing of «تلاوة» may show up among the apps
 manifest = ET.parse(APP / "AndroidManifest.xml").getroot()
