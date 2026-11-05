@@ -28,7 +28,7 @@ OUT = Path(os.environ.get("OUT", "packs-candidates"))
 FREE = {"public domain": "Public domain", "cc0": "CC0", "pdm-owner": "Public domain", "pd": "Public domain"}
 # the owner allowed attribution licences for «مدن السعودية» only (never NC or ND): their exact names, as make_pack.py's ATTRIBUTION
 BY = {f"cc {k} {v}": f"CC {k.upper()} {v}" for k in ("by", "by-sa") for v in ("2.0", "3.0", "4.0")}
-ATTRIBUTION_PACKS = {"ksa-cities"}
+ATTRIBUTION_PACKS = {"ksa-cities", "haramain"}   # the owner allowed the same for «الحرمين»
 MAX_PER_PACK = 220   # looked at for calm; the SHEET_N calmest go on the sheets
 SHEET_N = 60
 
@@ -55,6 +55,13 @@ PACKS = {
                    'Abha filetype:bitmap', 'Habala Asir filetype:bitmap', 'Khobar corniche filetype:bitmap', 'Khobar water tower filetype:bitmap',
                    'Taif Al Hada filetype:bitmap', 'Taif mountains filetype:bitmap', 'Tabuk mountains filetype:bitmap', 'Wadi Disah filetype:bitmap',
                    'Edge of the World Riyadh filetype:bitmap'],
+    # «الحرمين»: Masjid al-Haram and the Kaaba, the Prophet's Mosque (and Quba); day, dusk and night, wide views
+    "haramain": ['Masjid al-Haram filetype:bitmap', '"Masjid al-Haram" night filetype:bitmap', 'Kaaba filetype:bitmap', 'Kaaba night filetype:bitmap',
+                 'Mataf Masjid al-Haram filetype:bitmap', '"Great Mosque of Mecca" filetype:bitmap', 'Haram Makkah aerial filetype:bitmap',
+                 'Mecca Haram view from Abraj Al Bait filetype:bitmap', 'Al-Masjid an-Nabawi filetype:bitmap', '"Masjid an-Nabawi" night filetype:bitmap',
+                 '"Green Dome" Medina filetype:bitmap', "Prophet's Mosque umbrellas filetype:bitmap", "Prophet's Mosque minaret filetype:bitmap",
+                 "Prophet's Mosque courtyard filetype:bitmap", "Prophet's Mosque sunset filetype:bitmap", 'Masjid Nabawi Medina filetype:bitmap',
+                 'Quba Mosque Medina filetype:bitmap'],
 }
 
 # leave out, whatever the licence (the content rule; docs/PHOTO-PACKS.md and the owner's rules: no Israel locations, no Western Sahara maps)
@@ -94,6 +101,12 @@ def search(query, limit=200):
     return out[:limit]
 
 
+# «الحرمين»: distant worshippers are part of the place (the owner), so these words may be in a description or a category, never in the title
+# (make_pack.py refuses them there); a construction crane must not dominate the frame, so a photo filed under one is left out
+HARAMAIN_OK = {"crowd", "crowds", "pilgrim", "pilgrims", "hajj", "worshipper", "worshippers"}
+HARAMAIN_BAD = re.compile(r"\b(crane|cranes|construction|under construction|scaffolding|selfie|portrait|face|faces)\b", re.I)
+
+
 def accept(c, pack=""):
     ii, md = c["ii"], c["md"]
     lic = text((md.get("LicenseShortName") or {}).get("value")).lower()
@@ -114,7 +127,10 @@ def accept(c, pack=""):
     if w < 1920 or h < 1080 or w < h * 1.3:
         return None, "size"
     blob = " ".join([c["title"], text((md.get("ImageDescription") or {}).get("value")), text((md.get("ObjectName") or {}).get("value"))] + c["cats"])
-    m = BAD.search(blob)
+    if pack == "haramain":
+        m = BAD.search(c["title"]) or next((x for x in BAD.finditer(blob) if x.group(0).lower() not in HARAMAIN_OK), None) or HARAMAIN_BAD.search(blob)
+    else:
+        m = BAD.search(blob)
     if m:
         return None, "word " + m.group(0)
     title = text((md.get("ObjectName") or {}).get("value")) or re.sub(r"\.\w+$", "", c["title"].replace("File:", ""))
@@ -167,6 +183,11 @@ def main(which):
     summary = {}
     for pack in which:
         seen, cands, why = set(), [], {}
+        # a photo already in another picked pack is not offered again (no duplicates between packs)
+        for f in Path(__file__).resolve().parents[2].joinpath("photos/packs-src").glob("*.json"):
+            if f.stem != pack:
+                seen.update("File:" + urllib.parse.unquote(ph["link"].split("File:", 1)[1]).replace("_", " ")
+                            for ph in json.loads(f.read_text(encoding="utf-8"))["photos"] if "File:" in ph.get("link", ""))
         for q in PACKS[pack]:
             for c in search(q):
                 if c["title"] in seen:
