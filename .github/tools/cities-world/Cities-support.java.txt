@@ -39,11 +39,24 @@ final class Cities {
     static String country(String[] city) { return city.length > 5 ? city[5] : legacy(city.length > 3 ? city[3] : "Asia/Riyadh")[0]; }
     static String display(String[] city) { return city[0] + (city.length > 4 ? " · " + city[4] : ""); }
 
+    /**
+     * The built-in city with exactly this name and place, or null. A map built once, on the first ask: with 3,679 cities a scan of the whole list on
+     * every settings read (the home asks at every minute) lagged weak TVs (a user report on 4.1). The first of equal keys wins, as the scan did.
+     */
     static String[] find(String name, String lat, String lon) {
-        for (Region r : REGIONS) for (String[] c : r.cities)
-            if (c[0].equals(name) && c[1].equals(lat) && c[2].equals(lon)) return c;
-        return null;
+        if (name == null || lat == null || lon == null) return null;
+        java.util.Map<String, String[]> m = byPlace;
+        if (m == null) {
+            m = new java.util.HashMap<>();
+            for (Region r : REGIONS) for (String[] c : r.cities) {
+                String k = c[0] + "|" + c[1] + "|" + c[2];
+                if (!m.containsKey(k)) m.put(k, c);
+            }
+            byPlace = m;
+        }
+        return m.get(name + "|" + lat + "|" + lon);
     }
+    private static volatile java.util.Map<String, String[]> byPlace;
 
     static String[][] countries() {
         java.util.LinkedHashMap<String, java.util.List<String>> map = new java.util.LinkedHashMap<>();
