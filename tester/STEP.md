@@ -1,4 +1,4 @@
-«✅ GO — build 196» — run step 33 (end of this file). TV muted throughout.
+«✅ GO — build 198» — run step 34 (end of this file). Mute first (the owner touched the remote). TV muted throughout. Keep lang en (the owner chose it).
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -580,3 +580,13 @@ Report as «step 32» in REPORT.md and push.
 6. Evening greeting if the time allows.
 Z. Restore as in step 28b Z.
 Report as «step 33» in REPORT.md and push.
+
+## step 34 — build 198 (update; mute first; TV muted throughout; lang stays EN as the owner set it; restore everything else in Z)
+1. Cairo Quran radio (station 11) plays within 20 s via the local relay; log `live feed from …` and any proxy lines. Stations 0 and 1 still play.
+2. Screensaver page opened from the app: no pure-black second before it (recording, as in step 33). Real dream unchanged.
+3. Next-prayer card never shows «—» on a cold start (3 cold starts, frame after the page shows).
+4. English screensaver: no seam at x≈845 behind the date (shot + column brightness); Arabic still fine.
+5. Markets in session (if Tadawul or US open): screensaver/home quotes not older than ~20 min; «delayed»/«متأخر» shows only when old. Also check the market-prices workflow runs today on GitHub (loop runs every ~5 min in session).
+6. Quick regression: tray jank (one gfxinfo run), stock card, «فرقك», dark pages.
+Z. Restore as in step 28b Z, except lang stays en.
+Report as «step 34» in REPORT.md and push. If all pass, write «step 34: ALL PASS» on its own line.
