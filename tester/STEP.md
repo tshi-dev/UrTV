@@ -1,4 +1,4 @@
-«✅ GO — step 34p now: push the 4 marketing pictures (no TV work).»
+«✅ GO — step 36 now: check the Downloader code (PC only, no TV install).»
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -611,3 +611,9 @@ Write «step 35: ALL PASS» if all pass, else list problems. Push.
 
 ## step 34p — share the 4 X pictures (no TV work)
 The owner wants the 4 demo-clean pictures from step 34m. Check each by eye once more for personal data (none allowed), then commit ONLY these 4 files to a new branch `work/marketing` under `marketing/4.2/` (x1-home-football.png, x2-markets.png, x3-matches.png, x4-screensaver.png) and push. Write «step 34p: pushed» in REPORT.md.
+
+## step 36 — Downloader code check (PC only; nothing installed on the TV)
+1. `curl -sIL https://aftv.news/9378345`: report each hop (status + host only) and the final URL. It must end at `github.com/tshi-dev/UrTV/releases/download/apk-latest/urtv-home.apk` (then GitHub's object host).
+2. Download that final APK to a temp folder; report its size and `aapt dump badging` (or `apkanalyzer`) versionName/versionCode — expect 4.2 / 204 (or newer). Delete it after.
+3. Same for 2927902 (the screensaver fallback): final URL and its version.
+Report as «step 36» in REPORT.md and push.
