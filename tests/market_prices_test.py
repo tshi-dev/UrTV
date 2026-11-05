@@ -307,9 +307,13 @@ check("fx: the five-minute file does not carry the currencies (it stays under it
 mp.PREV = Path(PREV)
 
 wf = (ROOT / ".github/workflows/market-prices.yml").read_text()
-check("workflow: pushes only when something changed, never from a work branch", "steps.run.outputs.changed == 'true'" in wf and "branches: [master, next]" in wf)
-check("workflow: every 5 minutes while an exchange is open, off-hours every 30", all(c in wf for c in ["*/5 7-11 * * 0-4", "*/5 13-20 * * 1-5", "7,37 * * * *"]) and "*/15" not in wf, wf[:900])
-check("workflow: one force-pushed orphan commit, no history of snapshots", "git checkout --orphan data-markets" in wf and "git push -f origin data-markets" in wf)
+loop = (ROOT / ".github/tools/market_loop.sh").read_text()
+check("workflow: pushes only when something changed, never from a work branch", "grep -q '^changed=true$'" in loop and "branches: [master, next]" in wf)
+check("workflow: a timer at :00, :20 or :40 in the open hours starts a loop (timers get dropped), off-hours every 30 minutes",
+      all(c in wf for c in ["0,20,40 7-11 * * 0-4", "0,20,40 13-20 * * 1-5", "7,37 * * * *"]) and "*/5" not in wf and "bash .github/tools/market_loop.sh" in wf, wf[:900])
+check("workflow: the loop fetches every 5 minutes until two minutes before the next full hour, inside the open hours only, and the job's limit covers it",
+      'STEP="${LOOP_STEP:-300}"' in loop and "3600 - 120" in loop and "in_hours || break" in loop and "timeout-minutes: 65" in wf)
+check("workflow: one force-pushed parentless commit, no history of snapshots, the working tree untouched so the loop can push again", "git commit-tree" in loop and 'git push -f origin "$commit:refs/heads/data-markets"' in loop and "--orphan" not in loop)
 check("workflow: the fallback switch is visible and off", "MARKETS_PROVIDERS: yahoo" in wf and "stooq" in wf)
 print("\n%d failed" % failed if failed else "\nall market price tests passed")
 raise SystemExit(1 if failed else 0)

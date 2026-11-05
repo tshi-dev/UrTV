@@ -4706,6 +4706,28 @@ const CARD_KINDS_TEST = ['shows','prayers','forecast','hourly','prayerrow','next
   }
 }
 
+// the top veil (the dark corner behind the date block) fades out smoothly in Arabic AND English: its gradient centre goes with its side (in English it sat on the veil's inner edge: a hard seam at x = 44vw)
+for (const file of ['tv.html', 'tv-en.html']) {
+  const o = await open(file, '');
+  await o.p.addStyleTag({ content: '.stage,.photo,.veil,.grain,.bottom-veil,.dimmer,#credit{display:none!important} html,body{background:#808080!important}' });
+  await o.p.waitForTimeout(300);
+  const png = await o.p.screenshot({ animations: 'disabled' });
+  await o.ctx.close();
+  const c2 = await browser.newContext(), p2 = await c2.newPage();
+  const step = await p2.evaluate(async b64 => {
+    const i = new Image(); i.src = 'data:image/png;base64,' + b64; await i.decode();
+    const c = document.createElement('canvas'); c.width = i.width; c.height = i.height; const g = c.getContext('2d'); g.drawImage(i, 0, 0);
+    let worst = 0, at = 0;
+    for (const y of [4, 60, 150, 250, 340]) {   // rows through the veil's height
+      const row = g.getImageData(0, y, c.width, 1).data;
+      for (let x = 1; x < c.width; x++) { const d = Math.abs(row[x * 4] - row[(x - 1) * 4]); if (d > worst) { worst = d; at = x; } }
+    }
+    return { worst, at };
+  }, png.toString('base64'));
+  await c2.close();
+  check(`top veil, ${file}: no hard edge (the largest step between neighbouring columns is ${step.worst} of 255, at x ${step.at})`, step.worst <= 3, JSON.stringify(step));
+}
+
 await browser.close();
 console.log(failed ? `\n${failed} failed` : '\nall page tests passed');
 process.exit(failed ? 1 : 0);

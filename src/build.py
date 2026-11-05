@@ -394,6 +394,7 @@ def en_css(html):
     for k, w in enumerate(keep):
         css = css.replace(w, f"\0{k}\0")
     css = re.sub(r"\b(left|right)\b", lambda m: "right" if m.group(1) == "left" else "left", css)
+    css = re.sub(r"(radial-gradient\([^,)]*? at )(\d+)(% \d+%)", lambda m: m.group(1) + str(100 - int(m.group(2))) + m.group(3), css)   # a radial gradient's centre goes with its side (the top veil's darkest corner sat on its inner edge in English: a seam at x = 44vw)
     css = css.replace("linear-gradient(90deg", "linear-gradient(270deg").replace("direction:rtl", "direction:ltr")
     for k, w in enumerate(keep):
         css = css.replace(f"\0{k}\0", w)

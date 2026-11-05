@@ -125,4 +125,11 @@ check("33-2: the screensaver page opened as an activity has the page's ground (#
       "0xFF040E09" in text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/MainActivity.java"))
 check("33-3: the prayer cards have the computed times at once (not «—» until the network answers), and the answer replaces them",
       "if(!PRAYERS.length) try{ buildPrayers(computePrayers()); PRAYERS_DAY = want + '|calc'; tickPrayer();" in tp)
+
+# step 34
+import re as _re
+check("34-A: the English page's radial gradients go with their side (the top veil's centre at 100% 0% in English), checked by pixels in page.test",
+      "radial-gradient\\(" in text(ROOT / "src/build.py") and "100 - int(m.group(2))" in text(ROOT / "src/build.py") and "top veil, ${file}: no hard edge" in text(ROOT / "tests/page.test.mjs"))
+check("34-B: while a symbol's exchange is open a market file older than 20 minutes is not trusted (Yahoo is asked, the older file only when Yahoo refuses), and a quiet «متأخر» shows beside the time",
+      "LATE_MS = 20*60000" in tp and "(!lax && sesOpen(sym) ? LATE_MS : MARKET_TRUST_MS)" in tp and "directQuote(j) || fileQuote(j.key, 1)" in tp and "' · ' + 'متأخر'" in tp and "? 'متأخر' : ''" in tp)
 sys.exit(1 if failed else 0)

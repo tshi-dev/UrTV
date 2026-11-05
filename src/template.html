@@ -639,7 +639,7 @@
   .mlz{display:flex;align-items:center;justify-content:flex-end;margin-inline-start:calc(var(--u)*24);min-width:0}
   .fln + .fln{border-top:1px solid var(--fln)}
   .ftm{display:flex;align-items:center;gap:calc(var(--u)*12);min-width:0;font-weight:500}
-  .ftm .nm{white-space:normal;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-height:1.15;word-break:normal;overflow-wrap:anywhere}   /* a club's name takes two lines (build 179: «شباب الأه…» was cut), only a third is cut */
+  .ftm .nm{white-space:normal;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-height:1.15;word-break:normal;overflow-wrap:anywhere}
   .ftm.me{color:var(--fgr)}
   #fb .cr,#mp .cr,.ftm .crgap{width:calc(var(--u)*40);height:calc(var(--u)*40);object-fit:contain;flex:none;display:inline-block}
   .fx{font-style:normal;color:var(--fs);flex:none;font-size:.8em}
@@ -1242,7 +1242,7 @@ function computePrayers(forDay){
   const p = forDay || riyadhParts(), lng = CONFIG.longitude;
   let lat = CONFIG.latitude;
   const M = PRAYER_METHODS[CONFIG.prayerMethod] || PRAYER_METHODS[4];
-  const noonUtc = Date.UTC(p.y,p.mo-1,p.d,12), tz = tzOffsetMs(noonUtc - tzOffsetMs(noonUtc)) / 3600000;   // the city's offset at its local noon (a change of clocks the same day does not move the whole day)
+  const noonUtc = Date.UTC(p.y,p.mo-1,p.d,12), tz = tzOffsetMs(noonUtc - tzOffsetMs(noonUtc)) / 3600000;   // the city's offset at its local noon
   const rad = d => d*Math.PI/180, deg = r => r*180/Math.PI;
   const fix = (a,b) => { a = a - b*Math.floor(a/b); return a < 0 ? a + b : a; };
   const jd0 = Date.UTC(p.y,p.mo-1,p.d)/86400000 + 2440587.5 - lng/(15*24);
@@ -1311,7 +1311,7 @@ async function loadPrayers(){
   const url = `https://api.aladhan.com/v1/timings/${want}`
             + `?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}`
             + `&method=${CONFIG.prayerMethod}&latitudeAdjustmentMethod=3&timezonestring=${encodeURIComponent(CONFIG.timezone)}`;
-  if(!PRAYERS.length) try{ buildPrayers(computePrayers()); PRAYERS_DAY = want + '|calc'; tickPrayer(); renderPanel(false, 'prayers', 'adhkar', 'prayerrow', 'nextprayer'); }catch(_){}   // the computed times at once: the cards were «—» until the answer came
+  if(!PRAYERS.length) try{ buildPrayers(computePrayers()); PRAYERS_DAY = want + '|calc'; tickPrayer(); renderPanel(false, 'prayers', 'adhkar', 'prayerrow', 'nextprayer'); }catch(_){}   // computed times first, not «—»
   try{
     if(CONFIG.prayerMethod >= 100) throw 0;   // not an Aladhan method: computed only
     const r = await fetchT(url, 12000);
@@ -2161,7 +2161,7 @@ function renderMatches(turn){
     : [...games.map(g => g.html), ...CONFIG.events.map(k => eventSlot(k, now))].filter(Boolean);
   const row = document.getElementById('match-row');
   if(!slots.length){
-    if(!MATCHES_LOADED && row.firstElementChild && !row.querySelector('.none-week')) return;   // the saved games stay until the first answer
+    if(!MATCHES_LOADED && row.firstElementChild && !row.querySelector('.none-week')) return;
     setHTML(row, `<div class="none-week">${matchesEmptyText()}</div>`);
     return;
   }
@@ -2215,7 +2215,7 @@ function fitMatches(row){
 // row again (the names and the date keep their full form in data-full), so a card that gets smaller redoes it.
 const rowCut = row => {
   const r = row.getBoundingClientRect();
-  return [...row.children].some(c => { const b = c.getBoundingClientRect(); return b.width && (b.left < r.left - .05 || b.right > r.right + .05); });   // as strict as fits(): a game over by half a pixel is still cut
+  return [...row.children].some(c => { const b = c.getBoundingClientRect(); return b.width && (b.left < r.left - .05 || b.right > r.right + .05); });   // as strict as fits()
 };
 function fitGameRow(li){
   const row = li.firstElementChild;
@@ -2468,7 +2468,7 @@ function paintMkUp(){
   const stale = known.filter(t => staleMark(MK_LAST[t.key])).map(t => MK_LAST[t.key]).sort((a, b) => (a.at || 0) - (b.at || 0));
   up.hidden = false;
   up.classList.toggle('old', stale.length > 0);
-  setText(up, stale.length ? staleMark(stale[0]) : fmtAgo(Math.max(...known.map(t => MK_LAST[t.key].at || 0))));
+  setText(up, stale.length ? staleMark(stale[0]) : fmtAgo(Math.max(...known.map(t => MK_LAST[t.key].at || 0))) + (known.some(t => sesOpen(t.fk) && Date.now() - MK_LAST[t.key].at > LATE_MS) ? ' · ' + 'متأخر' : ''));
 }
 
 // The deadline covers the answer's headers and its body: the timer stops when the body has been read (or the request failed),
@@ -2495,9 +2495,11 @@ async function loadMarketFile(){
     if(r.ok){ const j = await r.json(); if(j && j.quotes && Date.parse(j.updated)) MARKET_FILE = j; }
   }catch(e){}                                  // offline: the copy from before, which fileQuote() trusts for 3 hours only
 }
-function fileQuote(sym){
+// GitHub drops cron runs: while its exchange is open a file older than 20 minutes is not trusted (Yahoo is asked)
+const LATE_MS = 20*60000, sesOpen = sym => /\.SR$/.test(sym) ? marketOpen(true) : /^(\^[A-Z]+|[A-Z]{1,5}(\.[A-Z])?)$/.test(sym) && marketOpen(false);
+function fileQuote(sym, lax){
   const q = MARKET_FILE && MARKET_FILE.quotes[sym], at = q ? Date.parse(q.t) : 0;
-  return q && typeof q.p === 'number' && Date.now() - at < MARKET_TRUST_MS ? {p:q.p, v:q.v || null, c:q.c || [], at} : null;
+  return q && typeof q.p === 'number' && Date.now() - at < (!lax && sesOpen(sym) ? LATE_MS : MARKET_TRUST_MS) ? {p:q.p, v:q.v || null, c:q.c || [], at} : null;
 }
 
 // Yahoo has no CORS headers: try it directly (works inside the app), then through public CORS gateways. The gateways are for a network
@@ -2576,7 +2578,7 @@ const loadMarkets = guarded('markets', async function(){
   let asked = 0;
   for(const j of jobs.values()){
     let q = fileQuote(j.key);
-    if(!q){ if(asked++) await sleep(CONFIG.queueGapMs); q = await directQuote(j); }
+    if(!q){ if(asked++) await sleep(CONFIG.queueGapMs); q = await directQuote(j) || fileQuote(j.key, 1); }
     for(const t of j.tk){
       if(q) paintMarket(t, typeof q.p === 'number' ? q.p * (t.mul || 1) : null,
         typeof q.pct === 'number' ? q.pct : q.v ? (q.p - q.v) / q.v * 100 : null, q.at);
@@ -2887,7 +2889,7 @@ function renderCard(card, animate, keepSize){
   else if(PANEL_TITLE[P]) paintHd(hd, PANEL_TITLE[P]);
   if(!rows.length){
     if(P === 'matches' && !MATCHES_LOADED && ul.firstElementChild && !ul.firstElementChild.classList.contains('empty')) return;
-    if(P === 'matches' && ul.firstElementChild && ul.firstElementChild.classList.contains('empty') && ul.firstElementChild.textContent === matchesEmptyText()) return;   // the saved games stay until the first answer
+    if(P === 'matches' && ul.firstElementChild && ul.firstElementChild.classList.contains('empty') && ul.firstElementChild.textContent === matchesEmptyText()) return;
     ul.classList.remove('flip');
     setHTML(ul, `<li class="empty">${P === 'matches' ? matchesEmptyText() : P === 'tasks' ? 'لا مهام اليوم' : 'لا تتوفر بيانات الآن'}</li>`);
     return;
@@ -3324,7 +3326,7 @@ function stocksCard(){
       + (pct === null ? '' : `<span class="chg ${cls}">${pct >= 0 ? '▲' : '▼'} ${CONFIG.stkChg === 'amount'
           ? num(Math.abs(d.p - v), 2) : num(Math.abs(pct), 2) + (LATIN ? '%' : '٪')}</span>`) + '</li>';
   });
-  const note = [allClosed ? 'السوق مغلق' : '', stale.length ? staleMark(stale[0]) : ''].filter(Boolean).join(' · ');   // the oldest price that is not current
+  const note = [allClosed ? 'السوق مغلق' : '', stale.length ? staleMark(stale[0]) : shown.some(k => marketOpen(isSA(k)) && Date.now() - STOCKS[k].at > LATE_MS) ? 'متأخر' : ''].filter(Boolean).join(' · ');   // the oldest price that is not current
   return {hd: '<span>الأسهم</span>' + (note ? `<span class="until near">${note}</span>` : ''), rows};
 }
 
@@ -4254,7 +4256,7 @@ function mpDetailRender(){
     + `<div class="mdn" id="mp-note">${esc(MP.note)}</div></div>`);
   document.getElementById('mp-detail').hidden = false;
 }
-function mpOpen(ev){ MP.detail = ev; MP.btn = mpButtons(ev, Date.now())[0] && mpButtons(ev, Date.now())[0].k === 'watch' ? 0 : -1;   // «شاهد على …» is ringed when it is there (OK opens an app, adds nothing); else the card itself is ringed and OK adds nothing
+function mpOpen(ev){ MP.detail = ev; MP.btn = mpButtons(ev, Date.now())[0] && mpButtons(ev, Date.now())[0].k === 'watch' ? 0 : -1;
    MP.note = ''; mpDetailRender(); }
 function mpBack(){   // the launcher's Back: closes the card first; 'out' when there is nothing to close
   if(!MP.detail) return 'out';
@@ -4389,7 +4391,7 @@ function boot(){
   if(cs) cs.textContent = clockSubText();
   const cn = document.getElementById('citynote');
   if(cn && CONFIG.cityNote){   // Location.note in the app says the same in the settings' top row
-    cn.textContent = 'المدينة: ' + CONFIG.city + '. لتغييرها: الإعدادات ثم الموقع';   // words, not «←» (not in Thmanyah) nor «‹›» (mirrored or not by the renderer)
+    cn.textContent = 'المدينة: ' + CONFIG.city + '. لتغييرها: الإعدادات ثم الموقع';   // words, not arrows (not in Thmanyah)
     cn.hidden = false;
     setTimeout(() => { cn.hidden = true; }, 10*60*1000);
   }
