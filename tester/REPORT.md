@@ -1147,3 +1147,69 @@ What a viewer gets: a price up to hours old during the session, with the true ti
 
 Mute note for the field report: muted at both shots. `UrTVMute` logged at 13:07:19 `mute changed: muted=false by=not us`, and the home came to the front about then, with the owner at the TV and nothing playing. Probably the owner's own remote; not proven. I did not mute over him; I will check again before the next test.
 At 12:59:50, when the TV woke, the log shows `ADJUST_UNMUTE` from android and from `com.tcl.tv`, each muted again by `sa.urtv.home` within about 1.4 s. So the guard worked there.
+
+## step 34 — build 198 (updated from 196, channel next; TV muted throughout; lang en as the owner set it; Thu 14:14–14:32)
+TV was asleep and muted when I came, so no mute key was pressed. Woken with a key. Both apps 198, «Done» pressed. Muted at every check, installs and playback included.
+**Not ALL PASS:** 1 ✗ plus 3 small.
+
+### 1 ✗ Cairo Quran radio (station 11) still does NOT play, through the relay too
+`playing=0`, pos 0 for all 45 s, session `ERROR(7)`. Stations 0 and 1 play (`playing=1` at 12 s each; both stopped by hand).
+```
+14:20:14.672 setDataSource1 (http://127.0.0.1:34205/live.mp3)   relay in use, NuPlayer GenericSource
+14:20:14.681 live feed from n0a.radiojar.com
+14:20:15.363 sniffing MP3 Extractor, newConfidence = 0.2 / MTK MP3 0.25
+14:20:15.366 SniffMPEG2PS:[IN]
+14:20:22.061 BinderMonitor IDataSource costTime=6690 ms         one read, 6.7 s
+14:20:22.066 ESExtractor: [VES]SniffVendorExtractor in
+14:20:34.284 station gave nothing from the resolved address in 20 s: n0a.radiojar.com; trying stream.radiojar.com as given
+14:20:35.853 live feed from stream.radiojar.com
+14:20:54.310 station gave nothing in 20 s: stream.radiojar.com
+```
+No `live feed <host>: <error>`, and the relay logs nothing of its own. So the relay works and the sniffers still wait, in the same place as step 33: past MPEG2PS, in VES, at the limit. The http path did not avoid it. Second try: I read its result, not its sniff lines.
+**The same log on station 1, which plays:** `sniffing MP3` 14:21:33.862, `[VES]…in` 33.967, `prepared` 34.021. All sniffers in 0.16 s, VES 54 ms.
+**The difference I can measure, from the PC, plain GET for 10 s:** station 1 39.7 KB/s (396,855 bytes); Cairo 13.2 KB/s (139,217 bytes).
+Reading this: the sniffers appear to want a fixed amount of data, more than Cairo gives in 20 s (about 260 KB), and station 1 gives it at once. **Not proven:** I did not measure station 1's first second, nor how many bytes VES asks for, nor lengthen the 20 s. Two tests would settle it: a longer limit (say 60 s), or a relay that holds its answer until it has several hundred KB. A log line in the relay with bytes served would help.
+
+### 2 ✓ Pure black is gone. A near-black ground stays 1.3–1.9 s
+No frame below 9.0 in any of 5 recordings, no white. Flat green-black (9.0, std 0–0.1) before the page:
+| | runs | flat frame |
+|---|---|---|
+| Page, cold | 3 | 1.27, 1.83, 1.89 s (step 33: 1.78–1.85 s, most of it pure black) |
+| Page, warm | 2 | 1.32, 1.35 s (step 33: 1.39, 1.62 s, black) |
+| Real dream, after the idle wait | 1 | 1.33 s (step 33: 1.19 s). Unchanged in kind |
+To the eye 9.0 is still nearly black, so cold can still pass the 1.5 s mark if that clock starts here. All ended on the full page.
+
+### 3 ✓ No «—», but small ✗: the time changes by one minute on a cold start
+«—» 0 of 3 cold starts, in the first frame after the page shows. **In all 3, the next prayer's time in that first frame is 1 minute earlier than in the recording's last frame (about 1–2 s later), and «in N min» goes up by 1.** Likely the computed time, then the fetched one. Warm: same time in both frames, 1 run looked at. Which minute is right: not checked. On 196 at 13:04 the card showed the earlier minute. Adhan is off here, so nothing depended on it in this run.
+
+### 4 ✓ Seam gone, English and Arabic
+- `dist/tv-en.html` line 86 now `at 100% 0%`
+- English: median step across x=842–847 over y 0–260 is 0.0 on 3 frames (page warm, page cold, real dream). The strongest straight line anywhere is x≈1017, 9 levels, a crack in that photo. By eye: dark in the top right corner only, no edge
+- These were not the photo of 13:04. Measured on what came up
+- Arabic: `saver.sh lang ar` for under a minute, then `lang en`. No straight step above 1 level at any column. Page warm only. Real dream in Arabic not rerun
+
+### 5 Market data: the loop works, «late» path not seen
+Tadawul open during the whole test.
+- ✓ `data-markets` commit times: 14:17:19, 14:22:43, 14:28:07, so about every 5 min 24 s. Before it, 10:20
+- Workflow today: 07:20:49 UTC schedule ✓, then 11:09:31 UTC event **push**, `in_progress` (the loop, started by the commit landing). **Still no scheduled run since 07:20 UTC.** So what's shown is the loop as started by a push. Whether a timer starts the next hour's loop is not shown yet, and needs a look after the US opens (13:00 UTC is 16:00 here)
+- ✓ Screensaver: «Updated 2:16 PM» at 14:23, 7 min old, TASI moved on from 10:20's number, no «late» word
+- ✓ Home: Aramco 26.08 ▼0.61% at 14:25, the same as the stock card at 14:26. The home card has no time on it
+- ✓ Markets page: «Tadawul open · closes in 33 min · Updated 2:22 PM» at 14:27
+- **Small ✗ against this step's wording:** that same header ends «· delayed prices» with data 5 min old, in «Normal» mode. It's the old wording for «not live» (`MarketsActivity` «أسعار متأخرة»), not the new age mark, and it does not depend on age. Your call whether it stays
+- **Not shown: the 20-minute path.** The file never got old in this run, so neither the Yahoo fallback nor the quiet «متأخر / late» was seen. I did not fake it
+
+### 6 Regression
+- Tray, one run: 623 frames, 3.85% janky, 50th 38 ms, 90th 40, 99th 53 (196: 4.4%, 32, 42–44, 48–53). Janky holds. Median a little higher, one run, a different photo, English
+- ✓ Stock card 2222, English: first focus «Back» with label, `[264,859,1656,970]`; OK returns to the same row; ▲ action, ▲ tabs
+- **Small ✗ new to me:** this card has Today/Week/Month/Year tabs (not in step 33's 07:50 shot; I don't know the rule). They push the chart down, so on opening its lowest part is cut at y≈660, and the line vanishes between x≈1190 and x≈1390 (S-1-up). ▼ scrolls to it
+- One read after ▼ from the tabs showed no focused node; the next ▼ was on the scroll body. One read, no effect seen
+- ✓ «فرقك»: matches page reopened 3× about 15 s apart, «Your teams» group with the team's game; those three identical in that area. (My old 2-row probe prints `1`, it no longer fits this layout; ignored)
+- ✓ Dark pages: markets and matches dark, look glass, shots
+
+### Other
+`UrTVMute` 0 lines and `by=not us` 0 at 14:30; log cleared at 14:20. Just after `lang en`, `dock.sh names` still gave Arabic tile names (`table`) for a short while; back to `own` within about a minute. Only seen because I switched for part 4.
+
+### Z
+`import`: nothing to change. Stocks the 5, updatechannel latest. Lang **en**, as the owner set it. `show` differs only in the build (198). Same: dock (reread after the note above), PIN and locked list, tasks, photos, adhan, family DNS, disabled (21), packages (177), Home holder, saver. Nothing playing. Muted. TV asleep as I found it. **restored: yes.**
+
+### step 34 summary: ✓ pure black gone, «—» gone, seam gone, market loop, tray, card, «فرقك», dark pages. ✗ Cairo radio. Small: cold-start prayer minute flip, chart cut in the card, «delayed prices» wording. Open: 20-minute path, the next timer-started loop, near-black 1.3–1.9 s.
