@@ -1117,3 +1117,30 @@ Prices:
 ### Z and a correction to step 33
 `مباشر` turned back off by hand in both runs. `export` and `show` the same as after step 33. Muted, `by=not us` 0, TV asleep as I found it.
 Correction to part 3: I looked at all 3 final frames by eye (matches, screensaver cold, screensaver warm), not 2 of 3. I looked at 3 frames, not one for every run; the other runs are by the numbers only.
+
+## field report from the owner — two things on the screensaver page, English (build 196; Thu 13:04–13:10; nothing changed on the TV)
+The owner set the language to English himself. It stays that way: **`lang: en` is the owner's choice, not a change to undo.** Muted. Two shots, 13:04 and 13:06, both show both things.
+
+### A ✗ Dark patch with a hard straight edge in the top middle, English only. Cause found
+What it looks like: a vertical line at **x=844/845** from the top of the screen down to about y=270. Left of it the photo is normal; right of it the photo goes much darker.
+Measured brightness step across the line (grey levels): 51 at the top, 36 at y=40, 32 at y=120, 18 at y=200, 8 at y=240, 0 by y=280.
+
+Cause, read from the built pages:
+- `dist/tv.html` line 85: `.top-veil{position:fixed;left:0;…width:56vw;height:34vh}`
+- `dist/tv-en.html` line 85: `right:0` instead. The English build flips the side
+- Line 86 in **both**: `radial-gradient(120% 100% at 0% 0%, rgba(2,9,6,.82) 0%, …)`. **The gradient's centre is not flipped**
+
+So in English the veil starts at 100−56 = 44vw = 844.8 px, which matches the line exactly, and its darkest corner (.82) sits on that inner edge rather than at the screen's corner. In Arabic the same corner is the screen's corner, so no edge shows.
+Likely fix: `at 100% 0%` in the English build, or a flip of the centre with the side. Not tried.
+Not new: my step 27 English shots have the same line at x=844 (`e-e11-saver-1m`, `-10m`). `-20m` does not, not looked into. Arabic runs of steps 31 and 33 have no line at 844 or at 1075. The real dream in Arabic neither. **Not checked: the real dream in English**, and the home app's own screens in English.
+
+### B ✗ Stock prices on the screen stopped at 10:20 while Tadawul is open. The TV is telling the truth: the source stopped
+The page: «Updated 10:20 AM», TASI 10,116, unchanged at 13:04 and 13:06. The weather on the same page was fresh («now», «2 min ago»), so the page itself is alive.
+- The file on `data-markets` says `updated 2026-11-05T07:20:56+00:00`, which is 10:20 TV time. Its last commit is 07:21:42 UTC, the only one today after midnight UTC by this log. Read at 13:08 TV time (10:08 UTC)
+- `market-prices.yml` asks for **every 5 min** in `7-11 UTC` Sun–Thu, plus `7,37 * * * *`
+- GitHub's list of that workflow's runs: 07:20:49 ✓, then before it 01:14:48, 00:59:48, 00:19:52. **No run at all, failed or otherwise, in the 2 h 48 min after 07:20**, and only one today inside the session so far. All listed runs are `success`
+- Yesterday the same: 11:30, 14:57, 18:51, 19:13 UTC, with gaps of hours (from the last 200 runs of the repo)
+
+So the schedule is not being fired, or not nearly as often as written. GitHub is known to delay or drop scheduled runs, but why here I can't tell from this list. Plain cause on the TV side: none seen.
+What a viewer gets: a price up to hours old during the session, with the true time beside it. The time is small, and the card has no sign that it is old.
+**Not watched:** the page's `MARKET_TRUST_MS` is 3 h, so about 13:20 today these quotes stop being trusted and the page tries its own route (from the source, not from a run). I did not stay to see what it shows then.
