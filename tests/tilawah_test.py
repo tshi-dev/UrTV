@@ -40,7 +40,7 @@ stations = load("stations.json")["stations"]
 surahs = load("surahs.json")["surahs"]
 
 # ---- the catalog the app ships
-check("forty-one reciters (Badr Al-Turki added from the 4.1 reports)", len(reciters) == 41, len(reciters))
+check("forty-two reciters (Badr Al-Turki and Muhammad Ayyub added from the field reports)", len(reciters) == 42, len(reciters))
 check("unique reciter ids", len({r["id"] for r in reciters}) == len(reciters))
 check("unique reciter names", len({r["name"] for r in reciters}) == len(reciters))
 check("every reciter has 114 surahs", all(r["surahs"] == 114 for r in reciters),

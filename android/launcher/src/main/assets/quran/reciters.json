@@ -286,6 +286,13 @@
    "en": "Badr Al-Turki",
    "server": "https://cdn.mp3quran.net/audio/badr-turki/r1/",
    "surahs": 114
+  },
+  {
+   "id": "ayyub",
+   "name": "محمد أيوب",
+   "en": "Muhammad Ayyub",
+   "server": "https://cdn.mp3quran.net/audio/muhammad-ayyub/r1/",
+   "surahs": 114
   }
  ]
 }

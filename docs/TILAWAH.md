@@ -1,7 +1,7 @@
 # Tilawah «تلاوة» — the Quran, the radio and the adhan
 
 The «تلاوة» screen is part of the **home app** (`sa.urtv.home`), not an app of its own: the pill in the top bar
-opens it, and it is never listed among the TV's apps. It plays the Quran only — forty-one reciters' Hafs
+opens it, and it is never listed among the TV's apps. It plays the Quran only — forty-two reciters' Hafs
 murattal (114 surahs each) and live Quran radio — plus the five daily adhans at Umm al-Qura times.
 There is no local/USB music, no Spotify or YouTube Music, no account, no ads and no analytics.
 
@@ -12,7 +12,7 @@ Package `sa.urtv.home` · classes `sa.urtv.home.tilawah` · label «تلاوة»
 | | |
 |---|---|
 | <img src="screenshots/02-tilawah-reciters.jpg" alt="The reciters tab" width="320"> | <img src="screenshots/03-adhan-times.jpg" alt="The adhan tab" width="320"> |
-| The **«القرّاء»** tab — forty-one reciters, 114 surahs each, and «متابعة التلاوة» when a surah is paused | The **«الأذان»** tab — today's five times at Umm al-Qura, the next one in gold with the time left |
+| The **«القرّاء»** tab — forty-two reciters, 114 surahs each, and «متابعة التلاوة» when a surah is paused | The **«الأذان»** tab — today's five times at Umm al-Qura, the next one in gold with the time left |
 | <img src="screenshots/05-muezzins.jpg" alt="The muezzins" width="320"> | <img src="screenshots/07-surah-grid.jpg" alt="The surah grid" width="320"> |
 | The **«المؤذن»** list — 21 named recordings; the chosen one in gold with its city | The **«سورة»** grid — the 114 surahs of a reciter, six columns, right to left |
 | <img src="screenshots/06-adhan-player.jpg" alt="The adhan in the player" width="320"> | <img src="screenshots/08-player.jpg" alt="A surah in the player" width="320"> |
@@ -31,7 +31,7 @@ Package `sa.urtv.home` · classes `sa.urtv.home.tilawah` · label «تلاوة»
   read from the right, like the rest of the app. Left/Right switches section from anywhere on the
   screen; Down (or OK on the tab) enters the list and
   Up from the first row goes back to the tabs. «القرّاء» holds «متابعة التلاوة» when a surah is
-  paused, then the forty-one reciters; «الإذاعات» holds the twelve live stations (and the resume row when
+  paused, then the forty-two reciters; «الإذاعات» holds the twelve live stations (and the resume row when
   a station was playing); «الأذان» holds today's five times (the next one in gold with the time left,
   OK plays that adhan now), «الأذان التلقائي» (OK switches it on or off), «المؤذن» (OK opens the 21
   recordings) and «صوت الأذان» (Left/Right set it in steps of 10, 10 % to 100 %, thirty by default, with a bar
@@ -177,7 +177,7 @@ python3 .github/tools/fetch_quran.py           # regenerate the three JSON files
 python3 .github/tools/fetch_quran.py --check   # ranged GET of every stream URL
 ```
 
-- **Reciters** are forty-one curated Hafs murattal entries from [mp3quran.net](https://mp3quran.net);
+- **Reciters** are forty-two curated Hafs murattal entries from [mp3quran.net](https://mp3quran.net);
   the app builds `server + 001.mp3 … 114.mp3` from the server field.
 - **Surahs** come from [api.alquran.cloud](https://alquran.cloud); names are stripped of the
   «سُورَةُ» prefix, vowel marks and tatweel.
