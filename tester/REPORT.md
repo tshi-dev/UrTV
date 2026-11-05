@@ -969,3 +969,66 @@ MemTotal 2,451,284 kB (2,394 MB, under the 2,560 limit); `ro.config.low_ram` emp
 ### step 31 summary: ✓ 1, 3, 5, 9, settings timing. ✗ 2 (part), 6b, 8. Not testable: 4, `UrTVType`, a live tick with moving prices.
 Problems (4 + 1 small): (1) stock card «رجوع» shows no label; (2) stock card first focus is on the content, not «رجوع», with no ring; (3) `cast status` calls this TCL a Chromecast; (4) `parsed=1` of `asked=6`; (small) pad zero looks like a Latin 0. Numbers to weigh: tray 19.59% janky, 8 frames in 190 s on unchanged live ticks.
 Shots: PC only, none pushed.
+
+## step 32 — build 193 (updated from 191 with «تحديث تلفزيوني», channel next; TV muted throughout; Thu 03:45–04:13)
+Both apps versionCode=193, «تم» → MainActivity. Muted at every check, playback included. No update watcher this time.
+
+### 1 ✓ Stock card (2222, 1120, 1211, AAPL)
+- ✓ First focus on «رجوع» with its label, all 4: white pill, `[264,859,1656,970]`, 111 px (was 61 and empty)
+- ✓ Action buttons full size: `[264,724,1656,835]`; 2222 has two, `[976,724,1656,835]` and `[264,724,944,835]`
+- ✓ OK on «رجوع» returns to the same row: 2222, 1211, AAPL (1120 not closed by OK: my script's time ran out in that run, and the next run replaced it)
+- ✓ ▲ goes «رجوع» → action → scroll body with a green ring; ▼ scrolls it once, then action, then «رجوع»
+- **Not shown: «only when it overflows».** All 4 cards overflow here (▼ scrolled each), so I never saw a card that fits with no ring
+- Small: the ring sits at the text's edge, so it touches «أرامكو» and the price on the right and «2222» on the left (shot S-1-up)
+- AAPL axis now says 9:30 ص نيويورك to 4:00. The rest of 30b's card problems not rechecked: US closed
+
+### 2 ✗ Tray jank is worse than step 31
+Same script and timing, photo look on: 3 runs.
+| | frames | janky | 50th | 90th | 99th |
+|---|---|---|---|---|---|
+| step 31 (191) | 725 | 19.59% | 42 ms | 53 | 69 |
+| 193 run 1 | 745 | 30.60% | 53 ms | 69 | 69 |
+| 193 run 2 | 704 | 30.68% | 53 ms | 69 | 69 |
+| 193 run 3 | 666 | 32.13% | 53 ms | 69 | 73 |
+The 193 runs agree with each other. But step 31 is one run, and I did not check it was the same photo or memory state. So this is a likely regression, not a proven one.
+
+### 3 ✓ Live tick with unchanged prices
+190 s on «قائمتي» in «مباشر», 03:57:13–04:00:23: **0 frames** (step 31: 8). Note that here no request was made at all (part 4), so no tick with an answer was measured.
+
+### 4 Live log: `reason=closed` ✓, `parsed = asked` not testable now
+`live closed=9 asked=0 reason=closed` at 03:58:06, 03:59:06, 04:00:06, every 60 s. 9 = TASI + the 8 stocks in the list (AAPL NVDA TSLA included). No `live status=` line, because both exchanges were closed. **`parsed = asked` needs a session:** Tadawul Sun–Thu 10:00–15:00, New York from 17:30 local TV time.
+
+### 5 ✓ Cast status
+«This TV is not a Google cast device … nothing to do.» Nothing changed: wizard still disabled, disabled list the same (21), no `cast.txt`. The stray `cast.txt` error line is gone.
+
+### 6 Field-report fixes
+- **✓ Badr al-Turki:** in `music.sh reciters` (40, `turki`). Surah 1 played: `playing=1`, `pos` 5743 → 14768 → 24794 of 40150, session `PLAYING(3)`. Stopped by hand. From the command, not from the on-screen list
+- **✗ Cairo Quran radio, station 11, did NOT play.** `playing=0` at all reads over 60 s, session `ERROR(7)`. Same on a second try. Log:
+  - `setDataSourceAsync … http://n0e.radiojar.com/8s5u5tpdtwzuv?…` (the redirect's address)
+  - `station gave nothing from the resolved address in 20 s: n0e.radiojar.com; trying stream.radiojar.com as given`
+  - `setDataSource(https://stream.radiojar.com/8s5u5tpdtwzuv)`
+  - `station gave nothing in 20 s: stream.radiojar.com`
+  - **The stream itself is up.** Plain GET from the PC: 302 to `http://n11.radiojar.com/…`, then 200 `audio/mpeg`, 148,768 bytes in 10 s. HEAD on the first address answers 404
+  - Control: station 0 (kwikmotion, not radiojar) played, `playing=1` at 15 s. Other stations not tried, and cleartext for radiojar.com is in the app's network config. Why the TV's player gets nothing is not known: no error text from the player in what I kept
+- **✓ Own-photos limit:** `photos.sh list` says `photos: 0 of 10`. Nothing added. Settings row «صوري» not opened
+- **✓ «صرف العملات» gold gram:** KWD «غرام الذهب ٤١٫٠٠», BHD «غرام الذهب ٤٩٫٦٢». Math: USD 131.97 × 3.75 = 494.9 SAR; ÷ 12.07 = 41.0; ÷ 9.97 = 49.6 ✓. Also on USD, AED, QAR, EGP, EUR, GBP. Picker opened and closed, nothing changed
+
+### 7 Unmapped keys: only half tested
+**No key on the real remote was pressed:** nobody was at the TV, and I can only inject keys. So there is no line yet for Video / Channel / Web, and no scan codes.
+- ✓ The log works: on the home, injected 256 and 257 give `UrTVKeys: unmapped key=256 scan=0` and `key=257 scan=0`, once per press, nothing opened. An injected 300 gave no line (probably beyond this Android's range)
+- The remote's device is `TCL_RC902V_MH` and the TV `G08`. Its key layout file is unreadable (Permission denied)
+- Needs someone to press them, then `logcat -d -s UrTVKeys`
+
+### 8 Greeting: night ✓, evening still not tested
+04:11, before Fajr: «تصبح على خير» ✓. The evening rule needs an evening run.
+
+### Mute log
+`UrTVMute` 0 lines and `by=not us` 0 at 04:12. I cleared the main log at 03:57, 04:03, 04:10 and 04:10:50, so this covers only the last minutes.
+
+### Z
+`import settings-before.json`: nothing to change. Stocks back to the 5 by hand (the export does not hold them), updatechannel latest. `show` before/after differs only in the build. Same: dock, PIN and locked list, tasks, photos, adhan, family DNS, disabled (21), packages (177), Home holder, saver. Nothing playing. Muted. **restored: yes**; only the build differs (193).
+
+### step 32 summary: ✓ 1, 3, 5, reason=closed, Badr al-Turki, photo limit, gold gram, night greeting. ✗ tray jank, Cairo radio.
+Problems (2 + 1 small): (1) tray jank about 31% and 53 ms median, against 19.59% and 42 ms; (2) station 11 never plays on the TV, though the stream answers from the PC; (small) the card's ring touches the text.
+Not tested yet: `parsed = asked` (needs an open market), real remote keys (needs a person), evening greeting, a card that does not overflow.
+Shots: PC only, none pushed.
