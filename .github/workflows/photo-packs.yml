@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
   push:
     branches: ['work/photo-packs']
-    paths: ['.github/tools/pack_candidates.py', '.github/tools/make_pack.py', '.github/workflows/photo-packs.yml', 'photos/packs-src/**']
+    paths: ['.github/tools/pack_candidates.py', '.github/tools/pack_build.py', '.github/tools/make_pack.py', '.github/workflows/photo-packs.yml', 'photos/packs-src/**']
 
 permissions:
   contents: write
