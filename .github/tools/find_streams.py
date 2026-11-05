@@ -18,7 +18,7 @@ from pathlib import Path
 OUT = Path(os.environ.get("STATIONS_OUT", "stations"))
 UA = {"User-Agent": "urtv-listening"}
 RB = "https://de1.api.radio-browser.info/json/stations/search?"
-RECITERS = ["بدر التركي"]
+RECITERS = ["بدر التركي", "محمد أيوب"]
 
 
 def get(url):
@@ -28,8 +28,9 @@ def get(url):
 
 def main():
     out = {"radios": [], "reciters": []}
-    for cc in ("EG", "KW"):
-        for term in ("quran", "قرآن", "القرآن"):
+    for cc, terms in (("EG", ("quran", "قرآن", "القرآن")), ("KW", ("quran", "قرآن", "القرآن")),
+                      ("SA", ("makkah", "mecca", "haram", "مكة", "الحرم", "quran"))):   # the Haram's live audio (4.1 reports)
+        for term in terms:
             try:
                 rows = get(RB + urllib.parse.urlencode({"countrycode": cc, "name": term, "hidebroken": "true", "limit": 40}))
             except Exception as e:   # noqa: BLE001 - a report, not a build
