@@ -1,4 +1,4 @@
-«✅ GO — step 36 now: check the Downloader code (PC only, no TV install).»
+«⏳ WAIT — step 36 cancelled (the owner checked the Downloader code himself: it serves 4.2). Keep polling.»
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
