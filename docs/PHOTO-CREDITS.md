@@ -102,7 +102,7 @@ From [Unsplash](https://unsplash.com), under the [Unsplash License](https://unsp
 ## Photo packs (`photos/packs.json`, downloaded on request)
 
 Each pack's zip holds `credits.json` with the same lines, and the app shows them in «حقوق الصور» (never on a photo). CC0 and public domain
-everywhere; «مدن السعودية» also takes CC BY and CC BY-SA 2.0 to 4.0 (the owner's choice for that pack only, never NC or ND), each with
+everywhere; «مدن السعودية» and «الحرمين» also take CC BY and CC BY-SA 2.0 to 4.0 (the owner's choice for those packs only, never NC or ND), each with
 its licence address and the changes made. All from Wikimedia Commons, the licence read from each file's own metadata; each photo was
 looked at before it was picked (`photos/covers/sheet-<id>.jpg` shows a pack as it is built).
 
@@ -187,3 +187,25 @@ looked at before it was picked (`photos/covers/sheet-<id>.jpg` shows a pack as i
 | 13 | [Mosque of the Prophet Muhammad at night](https://commons.wikimedia.org/wiki/File:Mosque_of_the_Prophet_Muhammad_at_night.jpg) | Wajahat Mahmood from Perth, Australia | CC BY-SA 2.0 ([licence](https://creativecommons.org/licenses/by-sa/2.0); cropped to 16:9 and resized to 1920×1080) |
 | 14 | [Landscape at al-Ula, Saudi Arabia (2)](https://commons.wikimedia.org/wiki/File:Landscape_at_al-Ula,_Saudi_Arabia_(2).jpg) | Richard Mortel | CC BY 2.0 ([licence](https://creativecommons.org/licenses/by/2.0); cropped to 16:9 and resized to 1920×1080) |
 | 15 | [Riyadh Skyline](https://commons.wikimedia.org/wiki/File:Riyadh_Skyline.jpg) | B.alotaby | CC BY-SA 4.0 ([licence](https://creativecommons.org/licenses/by-sa/4.0); cropped to 16:9 and resized to 1920×1080) |
+
+### «الحرمين» (`photos-haramain`)
+
+| # | Title | Author | Licence |
+|---|---|---|---|
+| 1 | [Roza Rasool, Masjid e Nabvi, Medina Munawara - panoramio (2)](https://commons.wikimedia.org/wiki/File:Roza_Rasool,_Masjid_e_Nabvi,_Medina_Munawara_-_panoramio_(2).jpg) | Najamuddin Shahwani | CC BY 3.0 ([licence](https://creativecommons.org/licenses/by/3.0); cropped to 16:9 and resized to 1920×1080) |
+| 2 | [Great Mosque of Mecca1](https://commons.wikimedia.org/wiki/File:Great_Mosque_of_Mecca1.jpg) | Saudipics.com | CC BY-SA 4.0 ([licence](https://creativecommons.org/licenses/by-sa/4.0); cropped to 16:9 and resized to 1920×1080) |
+| 3 | [Masjid e Nabawi Courtyard Umbrellas](https://commons.wikimedia.org/wiki/File:Masjid_e_Nabawi_Courtyard_Umbrellas.jpg) | King Eliot | CC BY-SA 4.0 ([licence](https://creativecommons.org/licenses/by-sa/4.0); cropped to 16:9 and resized to 1920×1080) |
+| 4 | [The Kaaba - Flickr - Al Jazeera English](https://commons.wikimedia.org/wiki/File:The_Kaaba_-_Flickr_-_Al_Jazeera_English.jpg) | Al Jazeera English | CC BY-SA 2.0 ([licence](https://creativecommons.org/licenses/by-sa/2.0); cropped to 16:9 and resized to 1920×1080) |
+| 5 | [Quba Mosque - panoramio](https://commons.wikimedia.org/wiki/File:Quba_Mosque_-_panoramio.jpg) | Tevfik Teker | CC BY 3.0 ([licence](https://creativecommons.org/licenses/by/3.0); cropped to 16:9 and resized to 1920×1080) |
+| 6 | [Kaaba, Never still](https://commons.wikimedia.org/wiki/File:Kaaba,_Never_still.jpg) | omar_chatriwala | CC BY 2.0 ([licence](https://creativecommons.org/licenses/by/2.0); cropped to 16:9 and resized to 1920×1080) |
+| 7 | [Almadina-AboaLana](https://commons.wikimedia.org/wiki/File:Almadina-AboaLana.jpg) | Vairus3 | CC BY-SA 3.0 ([licence](https://creativecommons.org/licenses/by-sa/3.0); cropped to 16:9 and resized to 1920×1080) |
+| 8 | [Kaaba in macca](https://commons.wikimedia.org/wiki/File:Kaaba_in_macca.jpg) | Aiman titi | CC BY-SA 3.0 ([licence](https://creativecommons.org/licenses/by-sa/3.0); cropped to 16:9 and resized to 1920×1080) |
+| 9 | [Umbrellas for the Piazza of the Prophet’s Holy Mosque, Madinah, SA](https://commons.wikimedia.org/wiki/File:Umbrellas_for_the_Piazza_of_the_Prophet%E2%80%99s_Holy_Mosque,_Madinah,_SA.jpg) | Anaya Ki Family | CC BY-SA 3.0 ([licence](https://creativecommons.org/licenses/by-sa/3.0); cropped to 16:9 and resized to 1920×1080) |
+| 10 | [Kaaba, Makkah5](https://commons.wikimedia.org/wiki/File:Kaaba,_Makkah5.jpg) | معتز توفيق اغبارية | CC BY-SA 3.0 ([licence](https://creativecommons.org/licenses/by-sa/3.0); cropped to 16:9 and resized to 1920×1080) |
+| 11 | [Madeena masjid nabavi 12122008230](https://commons.wikimedia.org/wiki/File:Madeena_masjid_nabavi_12122008230.jpg) | Bluemangoa2z at Malayalam Wikipedia | Public domain |
+| 12 | [Mecca](https://commons.wikimedia.org/wiki/File:Mecca.JPG) | Ariandra 03 | CC BY-SA 3.0 ([licence](https://creativecommons.org/licenses/by-sa/3.0); cropped to 16:9 and resized to 1920×1080) |
+| 13 | [The Historic Quba Mosque in Madinah (2025)](https://commons.wikimedia.org/wiki/File:The_Historic_Quba_Mosque_in_Madinah_(2025).jpg) | Saudi Photos Hub by Saudi Press Agency (SPA) | CC BY-SA 4.0 ([licence](https://creativecommons.org/licenses/by-sa/4.0); cropped to 16:9 and resized to 1920×1080) |
+| 14 | [Masjidul-HaramAerialView (cropped)](https://commons.wikimedia.org/wiki/File:Masjidul-HaramAerialView_(cropped).jpg) | Wurzelgnohm | CC0 |
+| 15 | [المسجد النبوي الشريف والصورة مأخوذة من الدور الرابع عشر فندق أنوار المدينة موفينبيك](https://commons.wikimedia.org/wiki/File:%D8%A7%D9%84%D9%85%D8%B3%D8%AC%D8%AF_%D8%A7%D9%84%D9%86%D8%A8%D9%88%D9%8A_%D8%A7%D9%84%D8%B4%D8%B1%D9%8A%D9%81_%D9%88%D8%A7%D9%84%D8%B5%D9%88%D8%B1%D8%A9_%D9%85%D8%A3%D8%AE%D9%88%D8%B0%D8%A9_%D9%85%D9%86_%D8%A7%D9%84%D8%AF%D9%88%D8%B1_%D8%A7%D9%84%D8%B1%D8%A7%D8%A8%D8%B9_%D8%B9%D8%B4%D8%B1_%D9%81%D9%86%D8%AF%D9%82_%D8%A3%D9%86%D9%88%D8%A7%D8%B1_%D8%A7%D9%84%D9%85%D8%AF%D9%8A%D9%86%D8%A9_%D9%85%D9%88%D9%81%D9%8A%D9%86%D8%A8%D9%8A%D9%83.jpg) | Imam Khairul Annas | CC BY-SA 4.0 ([licence](https://creativecommons.org/licenses/by-sa/4.0); cropped to 16:9 and resized to 1920×1080) |
+| 16 | [Kaaba -Mecca -Saudi Arabia-1Aug2008](https://commons.wikimedia.org/wiki/File:Kaaba_-Mecca_-Saudi_Arabia-1Aug2008.jpg) | deendotsg | CC BY 2.0 ([licence](https://creativecommons.org/licenses/by/2.0); cropped to 16:9 and resized to 1920×1080) |
+| 17 | [Medium shot of the Green Dome at The Prophet's Mosque (Al Masjid-e-Nabawi)](https://commons.wikimedia.org/wiki/File:Medium_shot_of_the_Green_Dome_at_The_Prophet%27s_Mosque_(Al_Masjid-e-Nabawi).jpg) | TheHadiRahim | CC0 |

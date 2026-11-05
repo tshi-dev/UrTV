@@ -48,6 +48,18 @@
    "sha256": "6e52a9c257c1901070c54e3003a3f431deccb7eec208aedbc3d77ffbbe25986b",
    "count": 15,
    "bytes": 6642128
+  },
+  {
+   "id": "haramain",
+   "name": "الحرمين",
+   "name_en": "The Two Holy Mosques",
+   "source": "ويكيميديا كومنز: CC BY وBY-SA وCC0 وملكية عامة",
+   "source_en": "Wikimedia Commons: CC BY, BY-SA, CC0, public domain",
+   "cover": "https://raw.githubusercontent.com/tshi-dev/UrTV/master/photos/covers/haramain.jpg",
+   "url": "https://github.com/tshi-dev/UrTV/releases/download/photos-haramain/haramain.zip",
+   "sha256": "879f3f5902293b7cd2f7d03231503924534ac6dfbd71c062435a18307dff6b97",
+   "count": 17,
+   "bytes": 7708482
   }
  ]
 }
