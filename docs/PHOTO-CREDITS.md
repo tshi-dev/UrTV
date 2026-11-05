@@ -101,9 +101,10 @@ From [Unsplash](https://unsplash.com), under the [Unsplash License](https://unsp
 
 ## Photo packs (`photos/packs.json`, downloaded on request)
 
-Each pack's zip holds `credits.json` with the same lines, and the app shows them in «حقوق الصور». Only CC0 and public domain, from
-Wikimedia Commons (licence read from each file's own metadata); each photo was looked at before it was picked
-(`photos/covers/sheet-<id>.jpg` shows a pack as it is built).
+Each pack's zip holds `credits.json` with the same lines, and the app shows them in «حقوق الصور» (never on a photo). CC0 and public domain
+everywhere; «مدن السعودية» also takes CC BY and CC BY-SA 2.0 to 4.0 (the owner's choice for that pack only, never NC or ND), each with
+its licence address and the changes made. All from Wikimedia Commons, the licence read from each file's own metadata; each photo was
+looked at before it was picked (`photos/covers/sheet-<id>.jpg` shows a pack as it is built).
 
 ### «الفضاء» (`photos-space`)
 
@@ -136,46 +137,62 @@ Wikimedia Commons (licence read from each file's own metadata); each photo was l
 |---|---|---|---|
 | 1 | [Snow covered mountains in Indio (Unsplash)](https://commons.wikimedia.org/wiki/File:Snow_covered_mountains_in_Indio_(Unsplash).jpg) | Andrew Ruiz andrewruiz | CC0 |
 | 2 | [Landscape-sunset-blue-sunrise (23958859769)](https://commons.wikimedia.org/wiki/File:Landscape-sunset-blue-sunrise_(23958859769).jpg) | www.Pixel.la Free Stock Photos | CC0 |
-| 3 | [Landscape-mountains-sky-sunset (24300570116)](https://commons.wikimedia.org/wiki/File:Landscape-mountains-sky-sunset_(24300570116).jpg) | www.Pixel.la Free Stock Photos | CC0 |
-| 4 | [Sand dunes before sunset, Lençóis Maranhenses](https://commons.wikimedia.org/wiki/File:Sand_dunes_before_sunset,_Len%C3%A7%C3%B3is_Maranhenses.jpg) | Gerda Arendt | CC0 |
-| 5 | [Evergreen forest wreathed in fog (Unsplash)](https://commons.wikimedia.org/wiki/File:Evergreen_forest_wreathed_in_fog_(Unsplash).jpg) | Milo McDowell milo_m | CC0 |
-| 6 | [Landscape-sunset-beach-sand (24030967210)](https://commons.wikimedia.org/wiki/File:Landscape-sunset-beach-sand_(24030967210).jpg) | www.Pixel.la Free Stock Photos | CC0 |
-| 7 | [Bohemia - Morning fog (52392410261)](https://commons.wikimedia.org/wiki/File:Bohemia_-_Morning_fog_(52392410261).jpg) | Ted Moravec | CC0 |
-| 8 | [Snow covered mountains with reflection (Unsplash)](https://commons.wikimedia.org/wiki/File:Snow_covered_mountains_with_reflection_(Unsplash).jpg) | Jake Hills jakehills | CC0 |
-| 9 | [Sand dunes landscape before sunset, Lençóis Maranhenses](https://commons.wikimedia.org/wiki/File:Sand_dunes_landscape_before_sunset,_Len%C3%A7%C3%B3is_Maranhenses.jpg) | Gerda Arendt | CC0 |
-| 10 | [Lake Mountain Landscape](https://commons.wikimedia.org/wiki/File:Lake_Mountain_Landscape.jpg) | Bonnie Moreland | CC0 |
-| 11 | [Great Sand Dunes - Candido 200 2](https://commons.wikimedia.org/wiki/File:Great_Sand_Dunes_-_Candido_200_2.jpg) | Magtbee | CC0 |
-| 12 | [Great Sand Dunes - Candido 200 7](https://commons.wikimedia.org/wiki/File:Great_Sand_Dunes_-_Candido_200_7.jpg) | Magtbee | CC0 |
-| 13 | [Mount Rainier - HCP - October 17, 2022 - 052 - Reflection Lake](https://commons.wikimedia.org/wiki/File:Mount_Rainier_-_HCP_-_October_17,_2022_-_052_-_Reflection_Lake.jpg) | Vulturesong | CC0 |
-| 14 | [Snow-capped mountain range](https://commons.wikimedia.org/wiki/File:Snow-capped_mountain_range.jpg) | Mshuang2 | CC0 |
-| 15 | [Lake Lilla 1](https://commons.wikimedia.org/wiki/File:Lake_Lilla_1.jpg) | Mx. Granger | CC0 |
-| 16 | [Meadow in Niederfinow 2021-07-17 30](https://commons.wikimedia.org/wiki/File:Meadow_in_Niederfinow_2021-07-17_30.jpg) | Leonhard Lenz | CC0 |
-| 17 | [Mount Rainier - HCP - October 17, 2022 - 064 - Reflection Lake](https://commons.wikimedia.org/wiki/File:Mount_Rainier_-_HCP_-_October_17,_2022_-_064_-_Reflection_Lake.jpg) | Vulturesong | CC0 |
-| 18 | [Deep winter fog (51854946690)](https://commons.wikimedia.org/wiki/File:Deep_winter_fog_(51854946690).jpg) | Ted Moravec | CC0 |
-| 19 | [Fog covered mountain forest (Unsplash)](https://commons.wikimedia.org/wiki/File:Fog_covered_mountain_forest_(Unsplash).jpg) | Emily Morter emilymorter | CC0 |
-| 20 | [Great Sand Dunes - Candido 200 5](https://commons.wikimedia.org/wiki/File:Great_Sand_Dunes_-_Candido_200_5.jpg) | Magtbee | CC0 |
+| 3 | [Sand dunes before sunset, Lençóis Maranhenses](https://commons.wikimedia.org/wiki/File:Sand_dunes_before_sunset,_Len%C3%A7%C3%B3is_Maranhenses.jpg) | Gerda Arendt | CC0 |
+| 4 | [Bohemia - Morning fog (52392410261)](https://commons.wikimedia.org/wiki/File:Bohemia_-_Morning_fog_(52392410261).jpg) | Ted Moravec | CC0 |
+| 5 | [Snow covered mountains with reflection (Unsplash)](https://commons.wikimedia.org/wiki/File:Snow_covered_mountains_with_reflection_(Unsplash).jpg) | Jake Hills jakehills | CC0 |
+| 6 | [Sand dunes landscape before sunset, Lençóis Maranhenses](https://commons.wikimedia.org/wiki/File:Sand_dunes_landscape_before_sunset,_Len%C3%A7%C3%B3is_Maranhenses.jpg) | Gerda Arendt | CC0 |
+| 7 | [Great Sand Dunes - Candido 200 2](https://commons.wikimedia.org/wiki/File:Great_Sand_Dunes_-_Candido_200_2.jpg) | Magtbee | CC0 |
+| 8 | [Great Sand Dunes - Candido 200 7](https://commons.wikimedia.org/wiki/File:Great_Sand_Dunes_-_Candido_200_7.jpg) | Magtbee | CC0 |
+| 9 | [Mount Rainier - HCP - October 17, 2022 - 052 - Reflection Lake](https://commons.wikimedia.org/wiki/File:Mount_Rainier_-_HCP_-_October_17,_2022_-_052_-_Reflection_Lake.jpg) | Vulturesong | CC0 |
+| 10 | [Snow-capped mountain range](https://commons.wikimedia.org/wiki/File:Snow-capped_mountain_range.jpg) | Mshuang2 | CC0 |
+| 11 | [Lake Lilla 1](https://commons.wikimedia.org/wiki/File:Lake_Lilla_1.jpg) | Mx. Granger | CC0 |
+| 12 | [Mount Rainier - HCP - October 17, 2022 - 064 - Reflection Lake](https://commons.wikimedia.org/wiki/File:Mount_Rainier_-_HCP_-_October_17,_2022_-_064_-_Reflection_Lake.jpg) | Vulturesong | CC0 |
+| 13 | [Deep winter fog (51854946690)](https://commons.wikimedia.org/wiki/File:Deep_winter_fog_(51854946690).jpg) | Ted Moravec | CC0 |
+| 14 | [Fog covered mountain forest (Unsplash)](https://commons.wikimedia.org/wiki/File:Fog_covered_mountain_forest_(Unsplash).jpg) | Emily Morter emilymorter | CC0 |
+| 15 | [Great Sand Dunes - Candido 200 5](https://commons.wikimedia.org/wiki/File:Great_Sand_Dunes_-_Candido_200_5.jpg) | Magtbee | CC0 |
 
 ### «البحر والشواطئ» (`photos-sea`)
 
 | # | Title | Author | Licence |
 |---|---|---|---|
 | 1 | [Kustaanmiekka view to the sea and Harmaja](https://commons.wikimedia.org/wiki/File:Kustaanmiekka_view_to_the_sea_and_Harmaja.jpg) | Ypsilon from Finland | CC0 |
-| 2 | [Still and clear sea](https://commons.wikimedia.org/wiki/File:Still_and_clear_sea.jpg) | Jdszekeres | CC0 |
-| 3 | [Calm-sea-haleiwa (Unsplash)](https://commons.wikimedia.org/wiki/File:Calm-sea-haleiwa_(Unsplash).jpg) | Jeremy Bishop tidesinourveins | CC0 |
-| 4 | [Yabucoa-Evening-Ocean-Clouds-Left](https://commons.wikimedia.org/wiki/File:Yabucoa-Evening-Ocean-Clouds-Left.jpg) | BrickLightning | CC0 |
-| 5 | [Desert mountain at sunset (Unsplash)](https://commons.wikimedia.org/wiki/File:Desert_mountain_at_sunset_(Unsplash).jpg) | Hannah Gut hannahgut | CC0 |
-| 6 | [South of Karavasta lagoon 1 (OSCAL19 trip)](https://commons.wikimedia.org/wiki/File:South_of_Karavasta_lagoon_1_(OSCAL19_trip).jpg) | albinfo | CC0 |
-| 7 | [Tranquil Horizons (Unsplash)](https://commons.wikimedia.org/wiki/File:Tranquil_Horizons_(Unsplash).jpg) | Sergei Akulich sakulich | CC0 |
-| 8 | [Sunset over Pangkor Island](https://commons.wikimedia.org/wiki/File:Sunset_over_Pangkor_Island.jpg) | Michael | Public domain |
-| 9 | [Sunset clouds over the sea, La Fajana, La Palma](https://commons.wikimedia.org/wiki/File:Sunset_clouds_over_the_sea,_La_Fajana,_La_Palma.jpg) | Gerda Arendt | CC0 |
-| 10 | [Ocean view towards the pale yellow horizon (Unsplash)](https://commons.wikimedia.org/wiki/File:Ocean_view_towards_the_pale_yellow_horizon_(Unsplash).jpg) | Colin Maynard invent | CC0 |
-| 11 | [Yabucoa-Evening-Ocean-Clouds-Right](https://commons.wikimedia.org/wiki/File:Yabucoa-Evening-Ocean-Clouds-Right.jpg) | BrickLightning | CC0 |
-| 12 | [Soft Sea Mist (Unsplash)](https://commons.wikimedia.org/wiki/File:Soft_Sea_Mist_(Unsplash).jpg) | Kate Chikina moho477 | CC0 |
-| 13 | [Tommy Beach, on Ishigakijima 2](https://commons.wikimedia.org/wiki/File:Tommy_Beach,_on_Ishigakijima_2.jpg) | Syced | CC0 |
-| 14 | [View form cliffs in UNSECO site Jasmund near Kolliner Bach 2021-09-14 07](https://commons.wikimedia.org/wiki/File:View_form_cliffs_in_UNSECO_site_Jasmund_near_Kolliner_Bach_2021-09-14_07.jpg) | Leonhard Lenz | CC0 |
-| 15 | [Tommy Beach, on Ishigakijima 18](https://commons.wikimedia.org/wiki/File:Tommy_Beach,_on_Ishigakijima_18.jpg) | Syced | CC0 |
-| 16 | [View form cliffs in UNSECO site Jasmund near Kolliner Bach 2021-09-14 16](https://commons.wikimedia.org/wiki/File:View_form_cliffs_in_UNSECO_site_Jasmund_near_Kolliner_Bach_2021-09-14_16.jpg) | Leonhard Lenz | CC0 |
-| 17 | [Early Sunset Over Hill And Ocean, New South Wales, Australia](https://commons.wikimedia.org/wiki/File:Early_Sunset_Over_Hill_And_Ocean,_New_South_Wales,_Australia.jpg) | Lunaseeker | CC0 |
-| 18 | [A serene view of labadi Beach, Accra](https://commons.wikimedia.org/wiki/File:A_serene_view_of_labadi_Beach,_Accra.jpg) | Siddique Hamad Nubania | CC0 |
-| 19 | [Kitaimaizumi beach 7](https://commons.wikimedia.org/wiki/File:Kitaimaizumi_beach_7.jpg) | Syced | CC0 |
-| 20 | [Sunset at Thalassery sea bridge](https://commons.wikimedia.org/wiki/File:Sunset_at_Thalassery_sea_bridge_.jpeg) | Shagil Kannur | CC0 |
+| 2 | [Yabucoa-Evening-Ocean-Clouds-Left](https://commons.wikimedia.org/wiki/File:Yabucoa-Evening-Ocean-Clouds-Left.jpg) | BrickLightning | CC0 |
+| 3 | [Desert mountain at sunset (Unsplash)](https://commons.wikimedia.org/wiki/File:Desert_mountain_at_sunset_(Unsplash).jpg) | Hannah Gut hannahgut | CC0 |
+| 4 | [Tranquil Horizons (Unsplash)](https://commons.wikimedia.org/wiki/File:Tranquil_Horizons_(Unsplash).jpg) | Sergei Akulich sakulich | CC0 |
+| 5 | [Ocean view towards the pale yellow horizon (Unsplash)](https://commons.wikimedia.org/wiki/File:Ocean_view_towards_the_pale_yellow_horizon_(Unsplash).jpg) | Colin Maynard invent | CC0 |
+| 6 | [Yabucoa-Evening-Ocean-Clouds-Right](https://commons.wikimedia.org/wiki/File:Yabucoa-Evening-Ocean-Clouds-Right.jpg) | BrickLightning | CC0 |
+| 7 | [Soft Sea Mist (Unsplash)](https://commons.wikimedia.org/wiki/File:Soft_Sea_Mist_(Unsplash).jpg) | Kate Chikina moho477 | CC0 |
+| 8 | [Tommy Beach, on Ishigakijima 2](https://commons.wikimedia.org/wiki/File:Tommy_Beach,_on_Ishigakijima_2.jpg) | Syced | CC0 |
+| 9 | [View form cliffs in UNSECO site Jasmund near Kolliner Bach 2021-09-14 07](https://commons.wikimedia.org/wiki/File:View_form_cliffs_in_UNSECO_site_Jasmund_near_Kolliner_Bach_2021-09-14_07.jpg) | Leonhard Lenz | CC0 |
+| 10 | [Early Sunset Over Hill And Ocean, New South Wales, Australia](https://commons.wikimedia.org/wiki/File:Early_Sunset_Over_Hill_And_Ocean,_New_South_Wales,_Australia.jpg) | Lunaseeker | CC0 |
+| 11 | [A serene view of labadi Beach, Accra](https://commons.wikimedia.org/wiki/File:A_serene_view_of_labadi_Beach,_Accra.jpg) | Siddique Hamad Nubania | CC0 |
+| 12 | [Kitaimaizumi beach 7](https://commons.wikimedia.org/wiki/File:Kitaimaizumi_beach_7.jpg) | Syced | CC0 |
+| 13 | [Sunset at Thalassery sea bridge](https://commons.wikimedia.org/wiki/File:Sunset_at_Thalassery_sea_bridge_.jpeg) | Shagil Kannur | CC0 |
+
+### «مدن السعودية» (`photos-ksa-cities`)
+
+| # | Title | Author | Licence |
+|---|---|---|---|
+| 1 | [Riyadh Skyline showing the King Abdullah Financial District (KAFD) and the famous Kingdom Tower](https://commons.wikimedia.org/wiki/File:Riyadh_Skyline_showing_the_King_Abdullah_Financial_District_(KAFD)_and_the_famous_Kingdom_Tower_.jpg) | B.alotaby | CC BY-SA 4.0 ([licence](https://creativecommons.org/licenses/by-sa/4.0); cropped to 16:9 and resized to 1920×1080) |
+| 2 | [Riyadh Skyline](https://commons.wikimedia.org/wiki/File:Riyadh_Skyline.jpg) | B.alotaby | CC BY-SA 4.0 ([licence](https://creativecommons.org/licenses/by-sa/4.0); cropped to 16:9 and resized to 1920×1080) |
+| 3 | [King Abdullah Financial District 184719](https://commons.wikimedia.org/wiki/File:King_Abdullah_Financial_District_184719.jpg) | Ahmed | CC BY-SA 4.0 ([licence](https://creativecommons.org/licenses/by-sa/4.0); cropped to 16:9 and resized to 1920×1080) |
+| 4 | [King Abdullah Financial District 20230411 114859](https://commons.wikimedia.org/wiki/File:King_Abdullah_Financial_District_20230411_114859.jpg) | Ahmed | CC BY-SA 4.0 ([licence](https://creativecommons.org/licenses/by-sa/4.0); cropped to 16:9 and resized to 1920×1080) |
+| 5 | [At-Turaif District in ad-Dir'iyah 2025](https://commons.wikimedia.org/wiki/File:At-Turaif_District_in_ad-Dir%27iyah_2025.jpg) | ほっきー | CC0 |
+| 6 | [At-Turaif District](https://commons.wikimedia.org/wiki/File:At-Turaif_District.jpg) | xiquinhosilva | CC BY 2.0 ([licence](https://creativecommons.org/licenses/by/2.0); cropped to 16:9 and resized to 1920×1080) |
+| 7 | [JadFauW](https://commons.wikimedia.org/wiki/File:JadFauW.JPG) | Mghamdi | CC BY-SA 3.0 ([licence](https://creativecommons.org/licenses/by-sa/3.0); cropped to 16:9 and resized to 1920×1080) |
+| 8 | [Old Jeddah (Al Balad), Saudi Arabia in November 2022](https://commons.wikimedia.org/wiki/File:Old_Jeddah_(Al_Balad),_Saudi_Arabia_in_November_2022.jpg) | Anne and David | Public domain |
+| 9 | [Green woodwork in old Jeddah (Al Balad) October 8 2021](https://commons.wikimedia.org/wiki/File:Green_woodwork_in_old_Jeddah_(Al_Balad)_October_8_2021.jpg) | Francisco Anzola | CC BY 2.0 ([licence](https://creativecommons.org/licenses/by/2.0); cropped to 16:9 and resized to 1920×1080) |
+| 10 | [Old Jeddah (Al Balad) architecture 3 Feb 2022](https://commons.wikimedia.org/wiki/File:Old_Jeddah_(Al_Balad)_architecture_3_Feb_2022.jpg) | Francisco Anzola | CC BY 2.0 ([licence](https://creativecommons.org/licenses/by/2.0); cropped to 16:9 and resized to 1920×1080) |
+| 11 | [AlBalad CoralHouses](https://commons.wikimedia.org/wiki/File:AlBalad_CoralHouses.JPG) | User:Jpatokal | CC BY-SA 4.0 ([licence](https://creativecommons.org/licenses/by-sa/4.0); cropped to 16:9 and resized to 1920×1080) |
+| 12 | [المسجد الحرام٣](https://commons.wikimedia.org/wiki/File:%D8%A7%D9%84%D9%85%D8%B3%D8%AC%D8%AF_%D8%A7%D9%84%D8%AD%D8%B1%D8%A7%D9%85%D9%A3.jpg) | saudipics | CC BY-SA 4.0 ([licence](https://creativecommons.org/licenses/by-sa/4.0); cropped to 16:9 and resized to 1920×1080) |
+| 13 | [Mecca at night](https://commons.wikimedia.org/wiki/File:Mecca_at_night.jpg) | عباد ديرانية | CC BY-SA 3.0 ([licence](https://creativecommons.org/licenses/by-sa/3.0); cropped to 16:9 and resized to 1920×1080) |
+| 14 | [Al Abraj al Bait ZamZam Tawer hotel - panoramio](https://commons.wikimedia.org/wiki/File:Al_Abraj_al_Bait_ZamZam_Tawer_hotel_-_panoramio.jpg) | khadim-un-nabi Rao | CC BY-SA 3.0 ([licence](https://creativecommons.org/licenses/by-sa/3.0); cropped to 16:9 and resized to 1920×1080) |
+| 15 | [Wide shot of the Green Dome at The Prophet's Mosque (Al Masjid-e-Nabawi)](https://commons.wikimedia.org/wiki/File:Wide_shot_of_the_Green_Dome_at_The_Prophet%27s_Mosque_(Al_Masjid-e-Nabawi).jpg) | TheHadiRahim | CC0 |
+| 16 | [Medium shot of the Green Dome at The Prophet's Mosque (Al Masjid-e-Nabawi)](https://commons.wikimedia.org/wiki/File:Medium_shot_of_the_Green_Dome_at_The_Prophet%27s_Mosque_(Al_Masjid-e-Nabawi).jpg) | TheHadiRahim | CC0 |
+| 17 | [Mosque of the Prophet Muhammad at night](https://commons.wikimedia.org/wiki/File:Mosque_of_the_Prophet_Muhammad_at_night.jpg) | Wajahat Mahmood from Perth, Australia | CC BY-SA 2.0 ([licence](https://creativecommons.org/licenses/by-sa/2.0); cropped to 16:9 and resized to 1920×1080) |
+| 18 | [Quba Mosque from Afar (2024)](https://commons.wikimedia.org/wiki/File:Quba_Mosque_from_Afar_(2024).jpg) | Kaliper1 | CC BY-SA 4.0 ([licence](https://creativecommons.org/licenses/by-sa/4.0); cropped to 16:9 and resized to 1920×1080) |
+| 19 | [Elephant rock, Al-'Ula](https://commons.wikimedia.org/wiki/File:Elephant_rock,_Al-%27Ula.jpg) | Uhooep | CC BY-SA 4.0 ([licence](https://creativecommons.org/licenses/by-sa/4.0); cropped to 16:9 and resized to 1920×1080) |
+| 20 | [Elephant Rock (6736168119)](https://commons.wikimedia.org/wiki/File:Elephant_Rock_(6736168119).jpg) | Sammy Six | CC BY 2.0 ([licence](https://creativecommons.org/licenses/by/2.0); cropped to 16:9 and resized to 1920×1080) |
+| 21 | [Landscape at al-Ula, Saudi Arabia (15)](https://commons.wikimedia.org/wiki/File:Landscape_at_al-Ula,_Saudi_Arabia_(15).jpg) | Richard Mortel | CC BY 2.0 ([licence](https://creativecommons.org/licenses/by/2.0); cropped to 16:9 and resized to 1920×1080) |
+| 22 | [Landscape at al-Ula, Saudi Arabia (2)](https://commons.wikimedia.org/wiki/File:Landscape_at_al-Ula,_Saudi_Arabia_(2).jpg) | Richard Mortel | CC BY 2.0 ([licence](https://creativecommons.org/licenses/by/2.0); cropped to 16:9 and resized to 1920×1080) |
+| 23 | [Riyadh, Saudi Arabia's capital and largest city (iss072e445326)](https://commons.wikimedia.org/wiki/File:Riyadh,_Saudi_Arabia%27s_capital_and_largest_city_(iss072e445326).jpg) | NASA Johnson Space Center | Public domain |

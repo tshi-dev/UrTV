@@ -21,9 +21,9 @@
    "source_en": "Wikimedia Commons, CC0",
    "cover": "https://raw.githubusercontent.com/tshi-dev/UrTV/master/photos/covers/nature.jpg",
    "url": "https://github.com/tshi-dev/UrTV/releases/download/photos-nature/nature.zip",
-   "sha256": "78a186c853c2f122467ed6a106f419234f78fdf77b27c16476bdd61cf8a8b8e5",
-   "count": 20,
-   "bytes": 7487453
+   "sha256": "635e9862e54039af83c1af1208a33693db5e1b5bdf7263454e648bbe07b6c100",
+   "count": 15,
+   "bytes": 5924631
   },
   {
    "id": "sea",
@@ -33,9 +33,21 @@
    "source_en": "Wikimedia Commons, CC0 and public domain",
    "cover": "https://raw.githubusercontent.com/tshi-dev/UrTV/master/photos/covers/sea.jpg",
    "url": "https://github.com/tshi-dev/UrTV/releases/download/photos-sea/sea.zip",
-   "sha256": "84c5b69303da6269e15d153be5c16aefbc824686e886ca2b3d49289f9a08a01b",
-   "count": 20,
-   "bytes": 6636197
+   "sha256": "31308db777da43c1741ccd7c2902ad8d8909d14842b0fe0e1e4698e1967d7b3f",
+   "count": 13,
+   "bytes": 4324124
+  },
+  {
+   "id": "ksa-cities",
+   "name": "مدن السعودية",
+   "name_en": "Saudi cities",
+   "source": "ويكيميديا كومنز: CC BY وBY-SA وCC0 وملكية عامة",
+   "source_en": "Wikimedia Commons: CC BY, BY-SA, CC0, public domain",
+   "cover": "https://raw.githubusercontent.com/tshi-dev/UrTV/master/photos/covers/ksa-cities.jpg",
+   "url": "https://github.com/tshi-dev/UrTV/releases/download/photos-ksa-cities/ksa-cities.zip",
+   "sha256": "c85182a3a2b36fdf1a39d90396cdbd8a75888a7100668be3457b5e11dd9cd1a5",
+   "count": 23,
+   "bytes": 9830268
   }
  ]
 }

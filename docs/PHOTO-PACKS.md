@@ -60,7 +60,9 @@ An entry that breaks a rule is left out of the list, never half shown. At most 1
 
 Written down here because it was not before (docs/PROPOSALS-NOV2.md):
 
-- only CC0 and public domain are taken as they are; CC BY and CC BY-SA only with their credit shown;
+- only CC0 and public domain are taken as they are; CC BY and CC BY-SA (2.0 to 4.0, never NC or ND) only for a pack the owner allowed
+  (`"allow_attribution": true`; today «مدن السعودية» only), each photo with its `licence_url` and `changes` (`make_pack.py` refuses it
+  otherwise), which the credit line in «حقوق الصور» shows after the licence;
 - no people (no faces or figures as the subject);
 - no religious buildings other than mosques shown as architecture, no statues or idols, no nudity; for artworks, landscapes, still lifes,
   calligraphy and patterns only;
