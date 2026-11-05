@@ -590,3 +590,11 @@ Report as «step 33» in REPORT.md and push.
 6. Quick regression: tray jank (one gfxinfo run), stock card, «فرقك», dark pages.
 Z. Restore as in step 28b Z, except lang stays en.
 Report as «step 34» in REPORT.md and push. If all pass, write «step 34: ALL PASS» on its own line.
+
+## step 34m — 4 marketing pictures for the 4.2 post on X (after step 34; build 198; demo-clean like before)
+1920×1080 screenshots, demo-clean (no personal data: demo city Makkah, no holdings of the owner, demo teams/stocks), Arabic, look «رملي» unless noted, the same style as the earlier `marketing/` shots:
+1. `x1-home-football.png` — football home with the three cards and the favourites tray.
+2. `x2-markets.png` — «الأسواق» on «السوق» with TASI, the movers and the US indices row; dark pages on.
+3. `x3-matches.png` — «المباريات» with «فرقك» and a game card open (dark).
+4. `x4-screensaver.png` — the screensaver page with the verse card and the stocks/clock (pick the nicest photo, no person in it).
+Save in `optimize/run/step34/marketing/` on the PC, check each by eye, push none, and write «step 34m: 4 pictures ready» in REPORT.md. Restore lang en afterwards (the owner's choice).
