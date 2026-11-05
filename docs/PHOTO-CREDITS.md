@@ -99,107 +99,83 @@ From [Unsplash](https://unsplash.com), under the [Unsplash License](https://unsp
 | `photos/_Fmibx42BVU.jpg` | YUNUS A KHALIFAH | [unsplash](https://unsplash.com/photos/panoramic-photography-of-desert-during-daytime-_Fmibx42BVU) |
 | `photos/rkRYbmPuhOE.jpg` | Stijn te Strake | [unsplash](https://unsplash.com/photos/birds-eye-photography-of-city-rkRYbmPuhOE) |
 
-## Photo packs («صور شاشة التوقف»)
-
-Each pack carries the credit of every photo in its own `credits.json` (author, licence, link), shown in the app under «حقوق الصور». Only
-CC0 and public domain are accepted without a credit line; a pack is listed here when it is published, with the same details
-(`docs/PHOTO-PACKS.md`). No pack is published yet.
-
 ## Photo packs (`photos/packs.json`, downloaded on request)
 
 Each pack's zip holds `credits.json` with the same lines, and the app shows them in «حقوق الصور». Only CC0 and public domain, from
-Wikimedia Commons (licence read from each file's own metadata); each photo was looked at before it was picked.
+Wikimedia Commons (licence read from each file's own metadata); each photo was looked at before it was picked
+(`photos/covers/sheet-<id>.jpg` shows a pack as it is built).
 
 ### «الفضاء» (`photos-space`)
 
 | # | Title | Author | Licence |
 |---|---|---|---|
-| 1 | [Heart and Soul nebulae](https://commons.wikimedia.org/wiki/File:Heart_and_Soul_nebulae.jpg) | NASA/JPL-Caltech/UCLA | Public domain |
-| 2 | [NASA Unveils Celestial Fireworks as Official Hubble 25th Anniversary Image](https://commons.wikimedia.org/wiki/File:NASA_Unveils_Celestial_Fireworks_as_Official_Hubble_25th_Anniversary_Image.jpg) | NASA , ESA , the Hubble Heritage Team ( STScI / AURA ), A. Nota ( ESA / STScI ), and the Westerlund 2 Science Team | Public domain |
-| 3 | [Messier83 - Heic1403a](https://commons.wikimedia.org/wiki/File:Messier83_-_Heic1403a.jpg) | Credit: NASA, ESA, and the Hubble Heritage Team (STScI/AURA) Acknowledgement: William Blair (Johns Hopkins University) | Public domain |
-| 4 | [Keyhole Nebula - Hubble 1999](https://commons.wikimedia.org/wiki/File:Keyhole_Nebula_-_Hubble_1999.jpg) | NASA, The Hubble Heritage Team (AURA/STScI) | Public domain |
-| 5 | [Supernova Remnant Cassiopeia A – March 2004 (2006-30-1945)](https://commons.wikimedia.org/wiki/File:Supernova_Remnant_Cassiopeia_A_%E2%80%93_March_2004_(2006-30-1945).jpg) | NASA, ESA, and the Hubble Heritage Team (STScI/AURA)-ESA/Hubble Collaboration | Public domain |
-| 6 | [Starburst in NGC 4449 (captured by the Hubble Space Telescope)](https://commons.wikimedia.org/wiki/File:Starburst_in_NGC_4449_(captured_by_the_Hubble_Space_Telescope).jpg) | NASA, ESA, A. Aloisi (STScI/ESA), and The Hubble Heritage (STScI/AURA)-ESA/Hubble Collaboration | Public domain |
-| 7 | [Hubble2005-01-barred-spiral-galaxy-NGC1300](https://commons.wikimedia.org/wiki/File:Hubble2005-01-barred-spiral-galaxy-NGC1300.jpg) | NASA, ESA, and The Hubble Heritage Team STScI/AURA) | Public domain |
-| 8 | [M104 ngc4594 sombrero galaxy hi-res](https://commons.wikimedia.org/wiki/File:M104_ngc4594_sombrero_galaxy_hi-res.jpg) | NASA/ESA and The Hubble Heritage Team (STScI/AURA) | Public domain |
-| 9 | [NGC2207+IC2163](https://commons.wikimedia.org/wiki/File:NGC2207%2BIC2163.jpg) | NASA/ESA and The Hubble Heritage Team (STScI) | Public domain |
-| 10 | [Sombrero Galaxy in infrared light (Hubble Space Telescope and Spitzer Space Telescope)](https://commons.wikimedia.org/wiki/File:Sombrero_Galaxy_in_infrared_light_(Hubble_Space_Telescope_and_Spitzer_Space_Telescope).jpg) | NASA/JPL-Caltech and The Hubble Heritage Team (STScI/AURA) | Public domain |
-| 11 | [ISS March 2009](https://commons.wikimedia.org/wiki/File:ISS_March_2009.jpg) | National Aeronautics and Space Administration | Public domain |
-| 12 | [ISS-38 Hawaiian Island chain](https://commons.wikimedia.org/wiki/File:ISS-38_Hawaiian_Island_chain.jpg) | NASA | Public domain |
-| 13 | [ISS-66 Atmospheric plume from 2022 Hunga Tonga eruption - edited](https://commons.wikimedia.org/wiki/File:ISS-66_Atmospheric_plume_from_2022_Hunga_Tonga_eruption_-_edited.jpg) | NASA / Kayla Barron | Public domain |
-| 14 | [Iss072e029127 (Oct 8, 2024) --- Hurricane Milton, a Category 5 storm at the time of this photograph, is pictured in the ](https://commons.wikimedia.org/wiki/File:Iss072e029127_(Oct_8,_2024)_---_Hurricane_Milton,_a_Category_5_storm_at_the_time_of_this_photograph,_is_pictured_in_the_Gulf_of_Mexico_off_the_coast_of_Yucatan_Peninsula_from_the_International_Space_Station_as_it_orbi_(cropped).jpg) | NASA/Michael Barratt | Public domain |
-| 15 | [Jovian Tempest](https://commons.wikimedia.org/wiki/File:Jovian_Tempest.tif) | NASA/JPL-Caltech/SwRI/MSSS | Public domain |
-| 16 | [Saturn eclipse](https://commons.wikimedia.org/wiki/File:Saturn_eclipse.jpg) | NASA/JPL/Space Science Institute | Public domain |
-| 17 | [Backlit Saturn from Cassini Orbiter 2007 May 9](https://commons.wikimedia.org/wiki/File:Backlit_Saturn_from_Cassini_Orbiter_2007_May_9.jpg) | NASA/JPL/Space Science Institute | Public domain |
-| 18 | [Saturn during Equinox](https://commons.wikimedia.org/wiki/File:Saturn_during_Equinox.jpg) | NASA / JPL / Space Science Institute | Public domain |
-| 19 | [Top view of the rings of Saturn by Cassini - October 10, 2013](https://commons.wikimedia.org/wiki/File:Top_view_of_the_rings_of_Saturn_by_Cassini_-_October_10,_2013.jpg) | NASA / JPL-Caltech / SSI / Cornell | Public domain |
+| 1 | [Iss072e030246 (Oct 7, 2024) --- The first rays of an orbital sunrise illuminate Earth's atmosphere in this photograph fr](https://commons.wikimedia.org/wiki/File:Iss072e030246_(Oct_7,_2024)_---_The_first_rays_of_an_orbital_sunrise_illuminate_Earth%27s_atmosphere_in_this_photograph_from_the_International_Space_Station_as_it_orbited_269_miles_above_the_Pacific_Ocean_near_Chile%27s_P.jpg) | NASA Johnson Space Center | Public domain |
+| 2 | [ISS055-E-21 - View of the Moon and Earth's limb](https://commons.wikimedia.org/wiki/File:ISS055-E-21_-_View_of_the_Moon_and_Earth%27s_limb.jpg) | Earth Science and Remote Sensing Unit, NASA Johnson Space Center | Public domain |
+| 3 | [ISS-59 Waxing Gibbous Moon above the South Atlantic Ocean (2)](https://commons.wikimedia.org/wiki/File:ISS-59_Waxing_Gibbous_Moon_above_the_South_Atlantic_Ocean_(2).jpg) | NASA | Public domain |
+| 4 | [ISS-59 Waxing Gibbous Moon above the South Atlantic Ocean (1)](https://commons.wikimedia.org/wiki/File:ISS-59_Waxing_Gibbous_Moon_above_the_South_Atlantic_Ocean_(1).jpg) | NASA | Public domain |
+| 5 | [ISS015-E-29976 - View of atmospheric limb](https://commons.wikimedia.org/wiki/File:ISS015-E-29976_-_View_of_atmospheric_limb.jpg) | Earth Science and Remote Sensing Unit , Lyndon B. Johnson Space Center | Public domain |
+| 6 | [ISS-55 Waxing gibbous moon](https://commons.wikimedia.org/wiki/File:ISS-55_Waxing_gibbous_moon.jpg) | NASA | Public domain |
+| 7 | [ISS021-E-5824 - View of atmospheric limb](https://commons.wikimedia.org/wiki/File:ISS021-E-5824_-_View_of_atmospheric_limb.jpg) | Earth Science and Remote Sensing Unit , Lyndon B. Johnson Space Center | Public domain |
+| 8 | [ISS055-E-20 - View of the Moon and Earth's limb](https://commons.wikimedia.org/wiki/File:ISS055-E-20_-_View_of_the_Moon_and_Earth%27s_limb.jpg) | Earth Science and Remote Sensing Unit, NASA Johnson Space Center | Public domain |
+| 9 | [ISS-59 Moon in its first quarter phase above the Earth's limb](https://commons.wikimedia.org/wiki/File:ISS-59_Moon_in_its_first_quarter_phase_above_the_Earth%27s_limb.jpg) | NASA | Public domain |
+| 10 | [ISS-59 Sun's first rays peek above Earth's limb](https://commons.wikimedia.org/wiki/File:ISS-59_Sun%27s_first_rays_peek_above_Earth%27s_limb.jpg) | NASA | Public domain |
+| 11 | [ISS021-E-5825 - View of atmospheric limb](https://commons.wikimedia.org/wiki/File:ISS021-E-5825_-_View_of_atmospheric_limb.jpg) | Earth Science and Remote Sensing Unit , Lyndon B. Johnson Space Center | Public domain |
+| 12 | [ISS-62 Earth's glow and Aurora australis over the Indian Ocean](https://commons.wikimedia.org/wiki/File:ISS-62_Earth%27s_glow_and_Aurora_australis_over_the_Indian_Ocean.jpg) | NASA | Public domain |
+| 13 | [ISS040-E-92675 - View of Earth and the Moon](https://commons.wikimedia.org/wiki/File:ISS040-E-92675_-_View_of_Earth_and_the_Moon.jpg) | Earth Science and Remote Sensing Unit , Lyndon B. Johnson Space Center | Public domain |
+| 14 | [ISS015-E-29975 - View of atmospheric limb](https://commons.wikimedia.org/wiki/File:ISS015-E-29975_-_View_of_atmospheric_limb.jpg) | Earth Science and Remote Sensing Unit , Lyndon B. Johnson Space Center | Public domain |
+| 15 | [ISS-61 Moon, first quarter, just above the Earth's limb](https://commons.wikimedia.org/wiki/File:ISS-61_Moon,_first_quarter,_just_above_the_Earth%27s_limb.jpg) | NASA | Public domain |
+| 16 | [ISS001-E-6779 - View of atmospheric limb](https://commons.wikimedia.org/wiki/File:ISS001-E-6779_-_View_of_atmospheric_limb.jpg) | Earth Science and Remote Sensing Unit , Lyndon B. Johnson Space Center | Public domain |
+| 17 | [ISS-66 Orbital sunrise above the coast of Venezuela](https://commons.wikimedia.org/wiki/File:ISS-66_Orbital_sunrise_above_the_coast_of_Venezuela.jpg) | NASA | Public domain |
+| 18 | [ISS015-E-29977 - View of atmospheric limb](https://commons.wikimedia.org/wiki/File:ISS015-E-29977_-_View_of_atmospheric_limb.jpg) | Earth Science and Remote Sensing Unit , Lyndon B. Johnson Space Center | Public domain |
+| 19 | [ISS-62 Aurora and airglow underneath a starry sky into orbital sunrise](https://commons.wikimedia.org/wiki/File:ISS-62_Aurora_and_airglow_underneath_a_starry_sky_into_orbital_sunrise.jpg) | NASA | Public domain |
+| 20 | [An orbital sunrise above the Tasman Sea](https://commons.wikimedia.org/wiki/File:An_orbital_sunrise_above_the_Tasman_Sea.jpg) | NASA | Public domain |
 
 ### «الطبيعة» (`photos-nature`)
 
 | # | Title | Author | Licence |
 |---|---|---|---|
-| 1 | [Suzuka Mountains from Mount Fujiwara 2011-02-19](https://commons.wikimedia.org/wiki/File:Suzuka_Mountains_from_Mount_Fujiwara_2011-02-19.jpg) | Alpsdake | CC0 |
-| 2 | [Lofoten, Norway (Unsplash)](https://commons.wikimedia.org/wiki/File:Lofoten,_Norway_(Unsplash).jpg) | Johannes Groll followhansi | CC0 |
-| 3 | [Krigsgiljan at Loddebo](https://commons.wikimedia.org/wiki/File:Krigsgiljan_at_Loddebo.jpg) | W.carter | CC0 |
-| 4 | [Mountains 736886](https://commons.wikimedia.org/wiki/File:Mountains_736886.jpg) | Bessi | CC0 |
-| 5 | [Mountains Landscape, Asturias, Spain, panoramic](https://commons.wikimedia.org/wiki/File:Mountains_Landscape,_Asturias,_Spain,_panoramic.jpg) | Joselodos | CC0 |
-| 6 | [Will Thrall Peak in the San Gabriel Mountain Range in California](https://commons.wikimedia.org/wiki/File:Will_Thrall_Peak_in_the_San_Gabriel_Mountain_Range_in_California.jpg) | Mojavellama | CC0 |
-| 7 | [Snowy Annapurna Range - panorama](https://commons.wikimedia.org/wiki/File:Snowy_Annapurna_Range_-_panorama.jpg) | Ali Sabbagh | CC0 |
-| 8 | [Taunus mountain range during fog](https://commons.wikimedia.org/wiki/File:Taunus_mountain_range_during_fog.png) | Greg200906 | CC0 |
-| 9 | [Taunus mountain range during dense fog](https://commons.wikimedia.org/wiki/File:Taunus_mountain_range_during_dense_fog.png) | Greg200906 | CC0 |
-| 10 | [Wright Mountain, San Gabriel Mountain Range, California](https://commons.wikimedia.org/wiki/File:Wright_Mountain,_San_Gabriel_Mountain_Range,_California.jpg) | Mojavellama | CC0 |
-| 11 | [Peaceful waterfall (Unsplash)](https://commons.wikimedia.org/wiki/File:Peaceful_waterfall_(Unsplash).jpg) | Jeffrey Workman jeffreyp | CC0 |
-| 12 | [Waterfall on a green cliff (Unsplash)](https://commons.wikimedia.org/wiki/File:Waterfall_on_a_green_cliff_(Unsplash).jpg) | veeterzy veeterzy | CC0 |
-| 13 | [Waterfall in forest](https://commons.wikimedia.org/wiki/File:Waterfall_in_forest.jpg) | Martin Eklund | CC0 |
-| 14 | [Blackwater Falls, West Virginia](https://commons.wikimedia.org/wiki/File:Blackwater_Falls,_West_Virginia.jpg) | Csassen13 | CC0 |
-| 15 | [Ebor Falls 2024 Aug](https://commons.wikimedia.org/wiki/File:Ebor_Falls_2024_Aug.jpg) | MapStaringEnthusiast | CC0 |
-| 16 | [Waterfall on Araroa River](https://commons.wikimedia.org/wiki/File:Waterfall_on_Araroa_River.jpg) | Gadfium | CC0 |
-| 17 | [Rangamati Shuvolong Waterfall natural Bangladesh](https://commons.wikimedia.org/wiki/File:Rangamati_Shuvolong_Waterfall_natural_Bangladesh.jpg) | Manna Barua | CC0 |
-| 18 | [Kuznetsk Alatau 1](https://commons.wikimedia.org/wiki/File:Kuznetsk_Alatau_1.jpg) | Dmitry A. Mottl | Public domain |
-| 19 | [Landscape of Mongolia 01](https://commons.wikimedia.org/wiki/File:Landscape_of_Mongolia_01.jpg) | Bernard Gagnon | CC0 |
-| 20 | [Bayanzag 02](https://commons.wikimedia.org/wiki/File:Bayanzag_02.jpg) | Bernard Gagnon | CC0 |
-| 21 | [Bayanzag 05](https://commons.wikimedia.org/wiki/File:Bayanzag_05.jpg) | Bernard Gagnon | CC0 |
-| 22 | [Bayanzag 10](https://commons.wikimedia.org/wiki/File:Bayanzag_10.jpg) | Bernard Gagnon | CC0 |
-| 23 | [Khongoryn Els 14](https://commons.wikimedia.org/wiki/File:Khongoryn_Els_14.jpg) | Bernard Gagnon | CC0 |
-| 24 | [Khongoryn Els 15](https://commons.wikimedia.org/wiki/File:Khongoryn_Els_15.jpg) | Bernard Gagnon | CC0 |
-| 25 | [Desert dunes](https://commons.wikimedia.org/wiki/File:Desert_dunes.jpg) | Wikigab | Public domain |
-| 26 | [Desert Dunes (Unsplash)](https://commons.wikimedia.org/wiki/File:Desert_Dunes_(Unsplash).jpg) | Joe Mania joemania | CC0 |
-| 27 | [Desert Dunes in New Mexico (Unsplash)](https://commons.wikimedia.org/wiki/File:Desert_Dunes_in_New_Mexico_(Unsplash).jpg) | Breanna Galley breannagalley | CC0 |
-| 28 | [Utah Dunes Landscape - West Desert District](https://commons.wikimedia.org/wiki/File:Utah_Dunes_Landscape_-_West_Desert_District.jpg) | Bureau of Land Management - Utah/Bob Wick | Public domain |
-| 29 | [Sossusvlei Dunes Namib](https://commons.wikimedia.org/wiki/File:Sossusvlei_Dunes_Namib.jpg) | Vicartb | CC0 |
-| 30 | [The Merzouga dunes of Morocco](https://commons.wikimedia.org/wiki/File:The_Merzouga_dunes_of_Morocco.jpg) | Mustang Joe | CC0 |
+| 1 | [Snow covered mountains in Indio (Unsplash)](https://commons.wikimedia.org/wiki/File:Snow_covered_mountains_in_Indio_(Unsplash).jpg) | Andrew Ruiz andrewruiz | CC0 |
+| 2 | [Landscape-sunset-blue-sunrise (23958859769)](https://commons.wikimedia.org/wiki/File:Landscape-sunset-blue-sunrise_(23958859769).jpg) | www.Pixel.la Free Stock Photos | CC0 |
+| 3 | [Landscape-mountains-sky-sunset (24300570116)](https://commons.wikimedia.org/wiki/File:Landscape-mountains-sky-sunset_(24300570116).jpg) | www.Pixel.la Free Stock Photos | CC0 |
+| 4 | [Sand dunes before sunset, Lençóis Maranhenses](https://commons.wikimedia.org/wiki/File:Sand_dunes_before_sunset,_Len%C3%A7%C3%B3is_Maranhenses.jpg) | Gerda Arendt | CC0 |
+| 5 | [Evergreen forest wreathed in fog (Unsplash)](https://commons.wikimedia.org/wiki/File:Evergreen_forest_wreathed_in_fog_(Unsplash).jpg) | Milo McDowell milo_m | CC0 |
+| 6 | [Landscape-sunset-beach-sand (24030967210)](https://commons.wikimedia.org/wiki/File:Landscape-sunset-beach-sand_(24030967210).jpg) | www.Pixel.la Free Stock Photos | CC0 |
+| 7 | [Bohemia - Morning fog (52392410261)](https://commons.wikimedia.org/wiki/File:Bohemia_-_Morning_fog_(52392410261).jpg) | Ted Moravec | CC0 |
+| 8 | [Snow covered mountains with reflection (Unsplash)](https://commons.wikimedia.org/wiki/File:Snow_covered_mountains_with_reflection_(Unsplash).jpg) | Jake Hills jakehills | CC0 |
+| 9 | [Sand dunes landscape before sunset, Lençóis Maranhenses](https://commons.wikimedia.org/wiki/File:Sand_dunes_landscape_before_sunset,_Len%C3%A7%C3%B3is_Maranhenses.jpg) | Gerda Arendt | CC0 |
+| 10 | [Lake Mountain Landscape](https://commons.wikimedia.org/wiki/File:Lake_Mountain_Landscape.jpg) | Bonnie Moreland | CC0 |
+| 11 | [Great Sand Dunes - Candido 200 2](https://commons.wikimedia.org/wiki/File:Great_Sand_Dunes_-_Candido_200_2.jpg) | Magtbee | CC0 |
+| 12 | [Great Sand Dunes - Candido 200 7](https://commons.wikimedia.org/wiki/File:Great_Sand_Dunes_-_Candido_200_7.jpg) | Magtbee | CC0 |
+| 13 | [Mount Rainier - HCP - October 17, 2022 - 052 - Reflection Lake](https://commons.wikimedia.org/wiki/File:Mount_Rainier_-_HCP_-_October_17,_2022_-_052_-_Reflection_Lake.jpg) | Vulturesong | CC0 |
+| 14 | [Snow-capped mountain range](https://commons.wikimedia.org/wiki/File:Snow-capped_mountain_range.jpg) | Mshuang2 | CC0 |
+| 15 | [Lake Lilla 1](https://commons.wikimedia.org/wiki/File:Lake_Lilla_1.jpg) | Mx. Granger | CC0 |
+| 16 | [Meadow in Niederfinow 2021-07-17 30](https://commons.wikimedia.org/wiki/File:Meadow_in_Niederfinow_2021-07-17_30.jpg) | Leonhard Lenz | CC0 |
+| 17 | [Mount Rainier - HCP - October 17, 2022 - 064 - Reflection Lake](https://commons.wikimedia.org/wiki/File:Mount_Rainier_-_HCP_-_October_17,_2022_-_064_-_Reflection_Lake.jpg) | Vulturesong | CC0 |
+| 18 | [Deep winter fog (51854946690)](https://commons.wikimedia.org/wiki/File:Deep_winter_fog_(51854946690).jpg) | Ted Moravec | CC0 |
+| 19 | [Fog covered mountain forest (Unsplash)](https://commons.wikimedia.org/wiki/File:Fog_covered_mountain_forest_(Unsplash).jpg) | Emily Morter emilymorter | CC0 |
+| 20 | [Great Sand Dunes - Candido 200 5](https://commons.wikimedia.org/wiki/File:Great_Sand_Dunes_-_Candido_200_5.jpg) | Magtbee | CC0 |
 
 ### «البحر والشواطئ» (`photos-sea`)
 
 | # | Title | Author | Licence |
 |---|---|---|---|
-| 1 | [Komos site baie Crète](https://commons.wikimedia.org/wiki/File:Komos_site_baie_Cr%C3%A8te.jpg) | Jebulon | CC0 |
-| 2 | [20190415 Yehliu geopark beach-2](https://commons.wikimedia.org/wiki/File:20190415_Yehliu_geopark_beach-2.jpg) | Balon Greyjoy | CC0 |
-| 3 | [20190415 Yehliu geopark beach-1](https://commons.wikimedia.org/wiki/File:20190415_Yehliu_geopark_beach-1.jpg) | Balon Greyjoy | CC0 |
-| 4 | [Tommy Beach, on Ishigakijima 2](https://commons.wikimedia.org/wiki/File:Tommy_Beach,_on_Ishigakijima_2.jpg) | Syced | CC0 |
-| 5 | [Tommy Beach, on Ishigakijima 7](https://commons.wikimedia.org/wiki/File:Tommy_Beach,_on_Ishigakijima_7.jpg) | Syced | CC0 |
-| 6 | [Tommy Beach, on Ishigakijima 8](https://commons.wikimedia.org/wiki/File:Tommy_Beach,_on_Ishigakijima_8.jpg) | Syced | CC0 |
-| 7 | [Tommy Beach, on Ishigakijima 11](https://commons.wikimedia.org/wiki/File:Tommy_Beach,_on_Ishigakijima_11.jpg) | Syced | CC0 |
-| 8 | [Tommy Beach, on Ishigakijima 17](https://commons.wikimedia.org/wiki/File:Tommy_Beach,_on_Ishigakijima_17.jpg) | Syced | CC0 |
-| 9 | [Tommy Beach, on Ishigakijima 21](https://commons.wikimedia.org/wiki/File:Tommy_Beach,_on_Ishigakijima_21.jpg) | Syced | CC0 |
-| 10 | [Tommy Beach, on Ishigakijima 22](https://commons.wikimedia.org/wiki/File:Tommy_Beach,_on_Ishigakijima_22.jpg) | Syced | CC0 |
-| 11 | [Rocks and sea Karystos Euboea Greece](https://commons.wikimedia.org/wiki/File:Rocks_and_sea_Karystos_Euboea_Greece.jpg) | Jebulon | CC0 |
-| 12 | [Схід сонця на узбережжі поблизу Тузловського ліману на околиці селища Лебедівка](https://commons.wikimedia.org/wiki/File:%D0%A1%D1%85%D1%96%D0%B4_%D1%81%D0%BE%D0%BD%D1%86%D1%8F_%D0%BD%D0%B0_%D1%83%D0%B7%D0%B1%D0%B5%D1%80%D0%B5%D0%B6%D0%B6%D1%96_%D0%BF%D0%BE%D0%B1%D0%BB%D0%B8%D0%B7%D1%83_%D0%A2%D1%83%D0%B7%D0%BB%D0%BE%D0%B2%D1%81%D1%8C%D0%BA%D0%BE%D0%B3%D0%BE_%D0%BB%D1%96%D0%BC%D0%B0%D0%BD%D1%83_%D0%BD%D0%B0_%D0%BE%D0%BA%D0%BE%D0%BB%D0%B8%D1%86%D1%96_%D1%81%D0%B5%D0%BB%D0%B8%D1%89%D0%B0_%D0%9B%D0%B5%D0%B1%D0%B5%D0%B4%D1%96%D0%B2%D0%BA%D0%B0.jpg) | Віктор Височин | CC0 |
-| 13 | [Схід сонця над морем поблизу Лебедівки](https://commons.wikimedia.org/wiki/File:%D0%A1%D1%85%D1%96%D0%B4_%D1%81%D0%BE%D0%BD%D1%86%D1%8F_%D0%BD%D0%B0%D0%B4_%D0%BC%D0%BE%D1%80%D0%B5%D0%BC_%D0%BF%D0%BE%D0%B1%D0%BB%D0%B8%D0%B7%D1%83_%D0%9B%D0%B5%D0%B1%D0%B5%D0%B4%D1%96%D0%B2%D0%BA%D0%B8.jpg) | Віктор Височин | CC0 |
-| 14 | [Руїни пірсу](https://commons.wikimedia.org/wiki/File:%D0%A0%D1%83%D1%97%D0%BD%D0%B8_%D0%BF%D1%96%D1%80%D1%81%D1%83.jpg) | Віктор Височин | CC0 |
-| 15 | [Black Sea coast (Anapa. High coast)](https://commons.wikimedia.org/wiki/File:Black_Sea_coast_(Anapa._High_coast).jpg) | SpartanDav | CC0 |
-| 16 | [Северная часть бухты Корал Бей](https://commons.wikimedia.org/wiki/File:%D0%A1%D0%B5%D0%B2%D0%B5%D1%80%D0%BD%D0%B0%D1%8F_%D1%87%D0%B0%D1%81%D1%82%D1%8C_%D0%B1%D1%83%D1%85%D1%82%D1%8B_%D0%9A%D0%BE%D1%80%D0%B0%D0%BB_%D0%91%D0%B5%D0%B9.jpg) | 74papa | CC0 |
-| 17 | [Sea sky and clouds, Ibiza, Spain](https://commons.wikimedia.org/wiki/File:Sea_sky_and_clouds,_Ibiza,_Spain.jpg) | Joselodos | CC0 |
-| 18 | [Waves+Rocks](https://commons.wikimedia.org/wiki/File:Waves%2BRocks.jpg) | Cole Patrick | CC0 |
-| 19 | [Drone view of ocean waves 1 (Unsplash)](https://commons.wikimedia.org/wiki/File:Drone_view_of_ocean_waves_1_(Unsplash).jpg) | Matthew Kane matthewkane | CC0 |
-| 20 | [Ocean Spray (Unsplash)](https://commons.wikimedia.org/wiki/File:Ocean_Spray_(Unsplash).jpg) | Levi Morsy levim | CC0 |
-| 21 | [Ocean waves on overcast day (Unsplash)](https://commons.wikimedia.org/wiki/File:Ocean_waves_on_overcast_day_(Unsplash).jpg) | Aleks Dahlberg aleksdahlberg | CC0 |
-| 22 | [Ocean Foam (Unsplash)](https://commons.wikimedia.org/wiki/File:Ocean_Foam_(Unsplash).jpg) | Jeremy Bishop tidesinourveins | CC0 |
-| 23 | [Ocean waves drone view of Palm Coast beach](https://commons.wikimedia.org/wiki/File:Ocean_waves_drone_view_of_Palm_Coast_beach.jpg) | Lance Asper lance_asper | CC0 |
-| 24 | [Big ocean surf wave (Unsplash)](https://commons.wikimedia.org/wiki/File:Big_ocean_surf_wave_(Unsplash).jpg) | Austin Schmid schmidy | CC0 |
-| 25 | [Ocean waves drone view (Unsplash)](https://commons.wikimedia.org/wiki/File:Ocean_waves_drone_view_(Unsplash).jpg) | Matthew Kane matthewkane | CC0 |
-| 26 | [Big ocean wave splash (Unsplash)](https://commons.wikimedia.org/wiki/File:Big_ocean_wave_splash_(Unsplash).jpg) | Riaan Myburgh movemeriaan | CC0 |
-| 27 | [Ocean Splashing on Rocks](https://commons.wikimedia.org/wiki/File:Ocean_Splashing_on_Rocks.jpg) | Wonderlane | CC0 |
-| 28 | [Coral Reef](https://commons.wikimedia.org/wiki/File:Coral_Reef.jpg) | Jerry Reid | Public domain |
-| 29 | [Coral Reef in the Red Sea](https://commons.wikimedia.org/wiki/File:Coral_Reef_in_the_Red_Sea.JPG) | Mahmoud Habeeb | Public domain |
-| 30 | [Sunset on the beach in Colonia del Sacramento](https://commons.wikimedia.org/wiki/File:Sunset_on_the_beach_in_Colonia_del_Sacramento.jpg) | Mx. Granger | CC0 |
+| 1 | [Kustaanmiekka view to the sea and Harmaja](https://commons.wikimedia.org/wiki/File:Kustaanmiekka_view_to_the_sea_and_Harmaja.jpg) | Ypsilon from Finland | CC0 |
+| 2 | [Still and clear sea](https://commons.wikimedia.org/wiki/File:Still_and_clear_sea.jpg) | Jdszekeres | CC0 |
+| 3 | [Calm-sea-haleiwa (Unsplash)](https://commons.wikimedia.org/wiki/File:Calm-sea-haleiwa_(Unsplash).jpg) | Jeremy Bishop tidesinourveins | CC0 |
+| 4 | [Yabucoa-Evening-Ocean-Clouds-Left](https://commons.wikimedia.org/wiki/File:Yabucoa-Evening-Ocean-Clouds-Left.jpg) | BrickLightning | CC0 |
+| 5 | [Desert mountain at sunset (Unsplash)](https://commons.wikimedia.org/wiki/File:Desert_mountain_at_sunset_(Unsplash).jpg) | Hannah Gut hannahgut | CC0 |
+| 6 | [South of Karavasta lagoon 1 (OSCAL19 trip)](https://commons.wikimedia.org/wiki/File:South_of_Karavasta_lagoon_1_(OSCAL19_trip).jpg) | albinfo | CC0 |
+| 7 | [Tranquil Horizons (Unsplash)](https://commons.wikimedia.org/wiki/File:Tranquil_Horizons_(Unsplash).jpg) | Sergei Akulich sakulich | CC0 |
+| 8 | [Sunset over Pangkor Island](https://commons.wikimedia.org/wiki/File:Sunset_over_Pangkor_Island.jpg) | Michael | Public domain |
+| 9 | [Sunset clouds over the sea, La Fajana, La Palma](https://commons.wikimedia.org/wiki/File:Sunset_clouds_over_the_sea,_La_Fajana,_La_Palma.jpg) | Gerda Arendt | CC0 |
+| 10 | [Ocean view towards the pale yellow horizon (Unsplash)](https://commons.wikimedia.org/wiki/File:Ocean_view_towards_the_pale_yellow_horizon_(Unsplash).jpg) | Colin Maynard invent | CC0 |
+| 11 | [Yabucoa-Evening-Ocean-Clouds-Right](https://commons.wikimedia.org/wiki/File:Yabucoa-Evening-Ocean-Clouds-Right.jpg) | BrickLightning | CC0 |
+| 12 | [Soft Sea Mist (Unsplash)](https://commons.wikimedia.org/wiki/File:Soft_Sea_Mist_(Unsplash).jpg) | Kate Chikina moho477 | CC0 |
+| 13 | [Tommy Beach, on Ishigakijima 2](https://commons.wikimedia.org/wiki/File:Tommy_Beach,_on_Ishigakijima_2.jpg) | Syced | CC0 |
+| 14 | [View form cliffs in UNSECO site Jasmund near Kolliner Bach 2021-09-14 07](https://commons.wikimedia.org/wiki/File:View_form_cliffs_in_UNSECO_site_Jasmund_near_Kolliner_Bach_2021-09-14_07.jpg) | Leonhard Lenz | CC0 |
+| 15 | [Tommy Beach, on Ishigakijima 18](https://commons.wikimedia.org/wiki/File:Tommy_Beach,_on_Ishigakijima_18.jpg) | Syced | CC0 |
+| 16 | [View form cliffs in UNSECO site Jasmund near Kolliner Bach 2021-09-14 16](https://commons.wikimedia.org/wiki/File:View_form_cliffs_in_UNSECO_site_Jasmund_near_Kolliner_Bach_2021-09-14_16.jpg) | Leonhard Lenz | CC0 |
+| 17 | [Early Sunset Over Hill And Ocean, New South Wales, Australia](https://commons.wikimedia.org/wiki/File:Early_Sunset_Over_Hill_And_Ocean,_New_South_Wales,_Australia.jpg) | Lunaseeker | CC0 |
+| 18 | [A serene view of labadi Beach, Accra](https://commons.wikimedia.org/wiki/File:A_serene_view_of_labadi_Beach,_Accra.jpg) | Siddique Hamad Nubania | CC0 |
+| 19 | [Kitaimaizumi beach 7](https://commons.wikimedia.org/wiki/File:Kitaimaizumi_beach_7.jpg) | Syced | CC0 |
+| 20 | [Sunset at Thalassery sea bridge](https://commons.wikimedia.org/wiki/File:Sunset_at_Thalassery_sea_bridge_.jpeg) | Shagil Kannur | CC0 |

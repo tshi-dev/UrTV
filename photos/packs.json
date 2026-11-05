@@ -5,37 +5,37 @@
    "id": "space",
    "name": "الفضاء",
    "name_en": "Space",
-   "source": "ناسا وهابل، ملكية عامة",
-   "source_en": "NASA and Hubble, public domain",
+   "source": "ناسا، ملكية عامة",
+   "source_en": "NASA, public domain",
    "cover": "https://raw.githubusercontent.com/tshi-dev/UrTV/master/photos/covers/space.jpg",
    "url": "https://github.com/tshi-dev/UrTV/releases/download/photos-space/space.zip",
-   "sha256": "920425fb42d8b754a390f0a1b693dfbffee408be6cf976542d8cad5cfd65f1cd",
-   "count": 19,
-   "bytes": 7075845
+   "sha256": "ef922bf4b8aeaf2ca1934514af6e6dd9a1643211a0544093c7412b9e5573f731",
+   "count": 20,
+   "bytes": 2724470
   },
   {
    "id": "nature",
    "name": "الطبيعة",
    "name_en": "Nature",
-   "source": "ويكيميديا كومنز، ملكية عامة وCC0",
-   "source_en": "Wikimedia Commons, public domain and CC0",
+   "source": "ويكيميديا كومنز، CC0",
+   "source_en": "Wikimedia Commons, CC0",
    "cover": "https://raw.githubusercontent.com/tshi-dev/UrTV/master/photos/covers/nature.jpg",
    "url": "https://github.com/tshi-dev/UrTV/releases/download/photos-nature/nature.zip",
-   "sha256": "94b8795d60d3c5a27335511ee083baca89cf3ac1838f606decc0d445984020f7",
-   "count": 30,
-   "bytes": 15741534
+   "sha256": "78a186c853c2f122467ed6a106f419234f78fdf77b27c16476bdd61cf8a8b8e5",
+   "count": 20,
+   "bytes": 7487453
   },
   {
    "id": "sea",
    "name": "البحر والشواطئ",
    "name_en": "Sea and beaches",
-   "source": "ويكيميديا كومنز، ملكية عامة وCC0",
-   "source_en": "Wikimedia Commons, public domain and CC0",
+   "source": "ويكيميديا كومنز، CC0 وملكية عامة",
+   "source_en": "Wikimedia Commons, CC0 and public domain",
    "cover": "https://raw.githubusercontent.com/tshi-dev/UrTV/master/photos/covers/sea.jpg",
    "url": "https://github.com/tshi-dev/UrTV/releases/download/photos-sea/sea.zip",
-   "sha256": "8ad738ddb4424bb933debbdcb4b82aa2ac0921270608526ddce80c538beac154",
-   "count": 30,
-   "bytes": 14929937
+   "sha256": "84c5b69303da6269e15d153be5c16aefbc824686e886ca2b3d49289f9a08a01b",
+   "count": 20,
+   "bytes": 6636197
   }
  ]
 }
