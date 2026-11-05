@@ -1,0 +1,171 @@
+{
+ "id": "nature",
+ "name": "الطبيعة",
+ "name_en": "Nature",
+ "source": "ويكيميديا كومنز، CC0",
+ "source_en": "Wikimedia Commons, CC0",
+ "reviewed": true,
+ "review": "curated for the owner's brief: each photo looked at on the CI sheets (calm clock zone, sharp, no text, no people, ≥2048 px wide source, one palette per pack); the owner reviews photos/covers/sheet-<id>.jpg before the index goes to master",
+ "photos": [
+  {
+   "title": "Snow covered mountains in Indio (Unsplash)",
+   "author": "Andrew Ruiz andrewruiz",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Snow_covered_mountains_in_Indio_(Unsplash).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/b/be/Snow_covered_mountains_in_Indio_%28Unsplash%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 3185
+  },
+  {
+   "title": "Landscape-sunset-blue-sunrise (23958859769)",
+   "author": "www.Pixel.la Free Stock Photos",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Landscape-sunset-blue-sunrise_(23958859769).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/f/fc/Landscape-sunset-blue-sunrise_%2823958859769%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 4288
+  },
+  {
+   "title": "Landscape-mountains-sky-sunset (24300570116)",
+   "author": "www.Pixel.la Free Stock Photos",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Landscape-mountains-sky-sunset_(24300570116).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/8/87/Landscape-mountains-sky-sunset_%2824300570116%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 5184
+  },
+  {
+   "title": "Sand dunes before sunset, Lençóis Maranhenses",
+   "author": "Gerda Arendt",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Sand_dunes_before_sunset,_Len%C3%A7%C3%B3is_Maranhenses.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/e/e9/Sand_dunes_before_sunset%2C_Len%C3%A7%C3%B3is_Maranhenses.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 4000
+  },
+  {
+   "title": "Evergreen forest wreathed in fog (Unsplash)",
+   "author": "Milo McDowell milo_m",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Evergreen_forest_wreathed_in_fog_(Unsplash).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/4/48/Evergreen_forest_wreathed_in_fog_%28Unsplash%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 4104
+  },
+  {
+   "title": "Landscape-sunset-beach-sand (24030967210)",
+   "author": "www.Pixel.la Free Stock Photos",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Landscape-sunset-beach-sand_(24030967210).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/d/db/Landscape-sunset-beach-sand_%2824030967210%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 5760
+  },
+  {
+   "title": "Bohemia - Morning fog (52392410261)",
+   "author": "Ted Moravec",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Bohemia_-_Morning_fog_(52392410261).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/b/bb/Bohemia_-_Morning_fog_%2852392410261%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 3200
+  },
+  {
+   "title": "Snow covered mountains with reflection (Unsplash)",
+   "author": "Jake Hills jakehills",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Snow_covered_mountains_with_reflection_(Unsplash).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/e/e3/Snow_covered_mountains_with_reflection_%28Unsplash%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 5299
+  },
+  {
+   "title": "Sand dunes landscape before sunset, Lençóis Maranhenses",
+   "author": "Gerda Arendt",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Sand_dunes_landscape_before_sunset,_Len%C3%A7%C3%B3is_Maranhenses.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/8/8a/Sand_dunes_landscape_before_sunset%2C_Len%C3%A7%C3%B3is_Maranhenses.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 4000
+  },
+  {
+   "title": "Lake Mountain Landscape",
+   "author": "Bonnie Moreland",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Lake_Mountain_Landscape.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/7/75/Lake_Mountain_Landscape.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 5184
+  },
+  {
+   "title": "Great Sand Dunes - Candido 200 2",
+   "author": "Magtbee",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Great_Sand_Dunes_-_Candido_200_2.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/b/b1/Great_Sand_Dunes_-_Candido_200_2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 3130
+  },
+  {
+   "title": "Great Sand Dunes - Candido 200 7",
+   "author": "Magtbee",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Great_Sand_Dunes_-_Candido_200_7.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Great_Sand_Dunes_-_Candido_200_7.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 3130
+  },
+  {
+   "title": "Mount Rainier - HCP - October 17, 2022 - 052 - Reflection Lake",
+   "author": "Vulturesong",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Mount_Rainier_-_HCP_-_October_17,_2022_-_052_-_Reflection_Lake.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/a/ad/Mount_Rainier_-_HCP_-_October_17%2C_2022_-_052_-_Reflection_Lake.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 4032
+  },
+  {
+   "title": "Snow-capped mountain range",
+   "author": "Mshuang2",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Snow-capped_mountain_range.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/f/f2/Snow-capped_mountain_range.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 4413
+  },
+  {
+   "title": "Lake Lilla 1",
+   "author": "Mx. Granger",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Lake_Lilla_1.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/8/87/Lake_Lilla_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 2696
+  },
+  {
+   "title": "Meadow in Niederfinow 2021-07-17 30",
+   "author": "Leonhard Lenz",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Meadow_in_Niederfinow_2021-07-17_30.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/6/61/Meadow_in_Niederfinow_2021-07-17_30.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 8384
+  },
+  {
+   "title": "Mount Rainier - HCP - October 17, 2022 - 064 - Reflection Lake",
+   "author": "Vulturesong",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Mount_Rainier_-_HCP_-_October_17,_2022_-_064_-_Reflection_Lake.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/2/22/Mount_Rainier_-_HCP_-_October_17%2C_2022_-_064_-_Reflection_Lake.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 4032
+  },
+  {
+   "title": "Deep winter fog (51854946690)",
+   "author": "Ted Moravec",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Deep_winter_fog_(51854946690).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/9/91/Deep_winter_fog_%2851854946690%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 3204
+  },
+  {
+   "title": "Fog covered mountain forest (Unsplash)",
+   "author": "Emily Morter emilymorter",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Fog_covered_mountain_forest_(Unsplash).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/0/00/Fog_covered_mountain_forest_%28Unsplash%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 3264
+  },
+  {
+   "title": "Great Sand Dunes - Candido 200 5",
+   "author": "Magtbee",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Great_Sand_Dunes_-_Candido_200_5.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/f/fb/Great_Sand_Dunes_-_Candido_200_5.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 3130
+  }
+ ]
+}

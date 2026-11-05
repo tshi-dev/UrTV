@@ -49,7 +49,7 @@ PACKS = {
 
 # leave out, whatever the licence (the content rule; docs/PHOTO-PACKS.md and the owner's rules: no Israel locations, no Western Sahara maps)
 BAD = re.compile(
-    r"\b(israel|israeli|jerusalem|tel aviv|haifa|eilat|golan|western sahara|map|maps|people|person|man|woman|men|women|boy|girl|child|children|"
+    r"\b(israel|israeli|jerusalem|tel aviv|haifa|eilat|golan|galilee|tiberias|negev|dead sea|jaffa|akko|nazareth|western sahara|map|maps|people|person|man|woman|men|women|boy|girl|child|children|"
     r"crowd|crowds|pilgrim|pilgrims|hajj|worshippers?|astronaut|astronauts|cosmonaut|crew|portrait|selfie|face|statue|statues|sculpture|idol|"
     r"buddha|church|cathedral|chapel|temple|synagogue|shrine|imamzadeh|mausoleum|tomb|karbala|najaf|mashhad|qom|husayn|hussain|ashura|"
     r"nude|naked|bikini|swimsuit|flag|flags|logo|insignia|patch|wedding|party|festival|concert|military|soldier|weapon|bomb|explosion|"
