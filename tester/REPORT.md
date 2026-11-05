@@ -1032,3 +1032,66 @@ The 193 runs agree with each other. But step 31 is one run, and I did not check 
 Problems (2 + 1 small): (1) tray jank about 31% and 53 ms median, against 19.59% and 42 ms; (2) station 11 never plays on the TV, though the stream answers from the PC; (small) the card's ring touches the text.
 Not tested yet: `parsed = asked` (needs an open market), real remote keys (needs a person), evening greeting, a card that does not overflow.
 Shots: PC only, none pushed.
+
+## step 33 — build 196 (updated from 193 with «تحديث تلفزيوني», channel next; TV muted throughout; Thu 07:43–08:02)
+Home app versionCode=196, `show` says build 196. «تم» pressed. Muted at every check, playback and installs included.
+
+### 1 ✓ Tray jank fixed: 4.4% janky, 32 ms
+Same script and timing as steps 31/32 (10 ◀ + 10 ▶, 2 rounds, 0.35 s), 3 runs.
+| | frames | janky | 50th | 90th | 99th |
+|---|---|---|---|---|---|
+| step 31 (191) | 725 | 19.59% | 42 ms | 53 | 69 |
+| step 32 (193, 3 runs) | 666–745 | 30.6–32.1% | 53 ms | 69 | 69–73 |
+| 196 run 1 | 805 | 4.35% | 32 ms | 42 | 48 |
+| 196 run 2 | 803 | 4.48% | 32 ms | 44 | 53 |
+| 196 run 3 | 798 | 4.39% | 32 ms | 44 | 48 |
+Photo: dunes, the same in all 3 runs. **Not the photo of step 32** (a person on rocks); step 31's was not recorded. So the photo was not held equal, but the gap is large and the runs agree. MemAvailable 975–994 MB before each run; no memory figure kept per run in the older steps. Morning, no one at the TV.
+
+### 2 ✗ Cairo Quran radio (station 11) still does NOT play. Found where it stalls
+`playing=0` for all of 52 s, then «تعذّر التشغيل». Station 0 and station 1 (qurango) both `playing=1` at 6, 14 and 22 s.
+Log, with the player's extractor service (pid 637) beside ours:
+- 07:50:11.065 `live feed from n02.radiojar.com`, so the GET worked. **No `live feed <host>: <error>` line**, either address
+- 07:50:11.079–11.530 the extractor sniffs the stream: `sniffing MP3 Extractor, newConfidence = 0.2`, `sniffing MTK MP3 Extractor, newConfidence = 0.25`. The first bytes are good MP3 (`ff fb 50 64`). Other formats refuse in ms
+- 07:50:11.530 `ESExtractor: [VES]SniffVendorExtractor in`, **then nothing from the extractor for 18.76 s**, only 6 slow `IDataSource` reads logged by BinderMonitor (`cost` 318–549 ms)
+- 07:50:30.286 our 20 s limit: `station gave nothing from the resolved address in 20 s: n02.radiojar.com; trying stream.radiojar.com as given`
+- 07:50:30.289, **3 ms later**: `[VES] SniffVendorExtractor 05f mime:video/vnd.mtk-ves_vc1 … confidence: 0.05`, then WAV, then `MP3Extractor: durationUs = -1`
+- Second try the same: `live feed from stream.radiojar.com` 07:50:31.698, `[VES]…in` 07:50:32.909, `station gave nothing in 20 s` 07:50:50.312, `[VES] … 05f` 07:50:50.315
+
+What this shows: both times MediaTek's vendor sniffer `ESExtractor` (VES) was still reading the live feed when the 20 s ran out, and it returned at once when the source closed. So prepare never got past sniffing, and MP3 was already the top candidate.
+What it does not show: whether VES would ever finish by itself on an endless stream. I can't lengthen the 20 s from here, and I did not try. The other stations don't go through LiveFeed, and I did not read their sniff lines.
+Stream rate from the PC in step 32: about 15 KB/s.
+
+### 3 No white flash ✓; dark blank before the page: measured
+`screenrecord` from the home, frames read by brightness. No frame near white in any run (white pixels 0% in every transition frame).
+| | runs | page drawn after a flat frame of | notes |
+|---|---|---|---|
+| Matches page | 4 | **0.29, 0.31, 0.44, 0.51 s** of one dark grey (mean 22, std 0.1–1.3) | `Displayed` +126–175 ms. Never black |
+| Screensaver page, cold (`MainActivity` after force-stop) | 3 | **1.78–1.85 s**: 1.1–1.25 s pure black (0.0), then 0.55–0.62 s green-black (9.0) | `Displayed` +712–798 ms |
+| Screensaver page, warm | 2 | **1.39, 1.62 s**, black | `Displayed` +179–198 ms. Green-black not seen |
+| Real screensaver (dream, after the idle wait) | 1 | **1.19 s** green-black (9.0), std 0.0 | Started by itself. No black |
+Nothing stayed hidden: all ended on the full page (2 of the 3 final frames looked at by eye, and every run's numbers match them). Rows in the matches page shown.
+**Small: the screensaver page opened as an activity shows pure black for 1.4–1.85 s**, longer than the 1.5 s safety limit if that clock starts at the fade; I could not line up the two clocks exactly. The ground→page part is under 1.5 s. The real dream, which is what a viewer normally sees, is fine.
+Seen in one cold frame, about 1.7 s after the page showed: next-prayer card reads «—», where a warm run has it filled. One frame, not followed up.
+Fade from the home takes 0.2–0.3 s and is part of the system's transition.
+
+### 4 ✓ Stock card (2222, 1211; the ring is the change here)
+- ✓ Ring has space: text starts at x=288 and ends at 1632, ring outer edge 264 and 1656, so 24 px less the ring's own stroke, on both sides. Nothing touches it (shot S-1-up)
+- ✓ First focus «رجوع» with its label, white pill, `[264,859,1656,970]`, 111 px, both cards
+- ✓ OK on «رجوع» returns to the same row, both cards
+- ✓ ▲ → action → scroll body with ring; ▼ scrolls, then action, then «رجوع»
+- Both overflow, so a card that fits with no ring is still not shown. 1120 and AAPL not rerun
+
+### 5 `parsed = asked`: not testable at the time of this run
+Tadawul opens 10:00 and New York 17:30 TV time. I intend to run this at about 10:05 today, and will add it below as «step 33b» if the TV is free.
+
+### 6 Greeting: evening not tested
+07:49: «صباح الخير» ✓. Evening needs an evening run. Not asked but open from step 32: real remote keys, which need a person.
+
+### Other
+- `UrTVMute` 0 lines, `by=not us` 0 at 08:00. I cleared the log at 07:50 and before each recording, so this covers only the last minutes
+- Log noise, harmless here: each `music.sh radio N` logs a `ClassCastException` warning at `MusicReceiver.java:122` (`station` read as String, sent as Integer). The right station still played
+
+### Z
+`import settings-before.json`: nothing to change. Stocks the 5 and updatechannel latest set by hand. `show` before/after differs only in the build. Same: dock, PIN and locked list, tasks, photos, adhan, family DNS, disabled (21), packages (177), Home holder, saver. Nothing playing. Muted. **restored: yes**; only the build differs (196).
+
+### step 33 summary: ✓ tray (31% → 4.4%), no white flash on 4 routes, card ring, stations 0 and 1, morning greeting. ✗ Cairo radio, with the stall now located. Small: 1.4–1.85 s black on the screensaver page. Open: `parsed = asked`, evening greeting.
