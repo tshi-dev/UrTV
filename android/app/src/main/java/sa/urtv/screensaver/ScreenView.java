@@ -30,12 +30,23 @@ final class ScreenView {
     private static WebView build(final Context c, String url, boolean screen, final Gone gone) {
         WebView w = new WebView(c);
         w.setBackgroundColor(screen ? 0xFF040E09 : 0);   // no white flash before the page paints (a preview is the card on the picker's own background)
+        final boolean hold = screen;   // the screen page is not shown until it has painted its first frame (alpha, not INVISIBLE: an undrawn view gets no visual-state callback); the dream's window is the page's colour meanwhile
+        if (hold) w.setAlpha(0f);
         w.setFocusable(false);
         w.setVerticalScrollBarEnabled(false);
         w.setHorizontalScrollBarEnabled(false);
         w.setOverScrollMode(View.OVER_SCROLL_NEVER);
         final Context app = c.getApplicationContext();   // the client must not keep the dream or activity alive
         w.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageFinished(final WebView v, String u) {
+                if (!hold) return;
+                if (android.os.Build.VERSION.SDK_INT >= 23) v.postVisualStateCallback(1, new WebView.VisualStateCallback() {
+                    @Override public void onComplete(long id) { v.setAlpha(1f); }
+                });
+                else v.setAlpha(1f);
+            }
+
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView v, WebResourceRequest r) {
                 WebResourceResponse res = PhotoCache.serve(app, r.getUrl().toString());
@@ -65,6 +76,10 @@ final class ScreenView {
         if (android.os.Build.VERSION.SDK_INT >= 23 && screen) s.setOffscreenPreRaster(true);   // draw before it is shown
         if (screen) w.addJavascriptInterface(new NowPlayingBridge(c), "UrtvNative");   // the «يُتلى الآن» card
         w.loadUrl(url);
+        if (hold) {
+            final WebView late = w;
+            w.postDelayed(new Runnable() { @Override public void run() { late.setAlpha(1f); } }, 2000);   // never stays hidden
+        }
         if (screen) {
             UpdateJob.schedule(c);
             Updater.checkIfDue(c);   // the page and version check, at most every 6 hours, here and not on a timer

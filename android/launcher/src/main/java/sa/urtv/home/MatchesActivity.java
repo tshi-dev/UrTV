@@ -43,8 +43,13 @@ public class MatchesActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        ConfigSnapshot cfg = ConfigSnapshot.read(this);
+        final int ground = cfg.pagesDark ? Color.rgb(0x17, 0x18, 0x1B) : Color.rgb(0xF4, 0xF2, 0xEC);   // the page's own ground (dark, or sand), before its first frame
+        getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(ground));   // and the window's, so no other colour shows while the view is not yet drawn
         web = new WebView(this);
-        web.setBackgroundColor(Color.rgb(0xF4, 0xF2, 0xEC));   // the page's sand, before its first frame
+        web.setBackgroundColor(ground);
+        web.setAlpha(0f);   // not shown (alpha, not INVISIBLE: a view that is not drawn gets no visual-state callback) until the page has painted its first frame
+        final Runnable reveal = () -> { if (web != null) web.setAlpha(1f); };
         web.setVerticalScrollBarEnabled(false);
         web.setHorizontalScrollBarEnabled(false);
         web.setOverScrollMode(View.OVER_SCROLL_NEVER);
@@ -58,6 +63,13 @@ public class MatchesActivity extends Activity {
         s.setTextZoom(100);   // as HomeCard: the TV's font size must not push the page out of its boxes
         web.addJavascriptInterface(new Bridge(getApplicationContext()), "UrtvMatches");
         web.setWebViewClient(new WebViewClient() {
+            @Override public void onPageFinished(WebView v, String u) {
+                if (android.os.Build.VERSION.SDK_INT >= 23) v.postVisualStateCallback(1, new WebView.VisualStateCallback() {
+                    @Override public void onComplete(long id) { reveal.run(); }
+                });
+                else reveal.run();
+            }
+
             @Override public boolean onRenderProcessGone(WebView v, RenderProcessGoneDetail detail) {
                 if (v == web) web = null;
                 v.destroy();
@@ -80,7 +92,7 @@ public class MatchesActivity extends Activity {
             }
         });
         setContentView(web);
-        ConfigSnapshot cfg = ConfigSnapshot.read(this);
+        web.postDelayed(reveal, 2000);   // a page that never finishes still shows what it has
         String event = getIntent().getStringExtra(EXTRA_EVENT);
         web.loadUrl(HomePage.fresh(this, HomeCardChoice.matchesUrl(cfg.fragment, event) + (cfg.pagesDark ? "&pagedark=1" : "")));   // «صفحات الأسهم والمباريات داكنة»: the page in its dark theme
         web.requestFocus();

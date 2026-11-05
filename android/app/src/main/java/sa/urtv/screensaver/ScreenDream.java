@@ -79,6 +79,7 @@ public class ScreenDream extends DreamService {
     /** start: the dream starting (counted for the first-run note), not a renderer's re-creation */
     private void show(boolean start) {
         web = ScreenView.create(this, this::gone, start);
+        if (getWindow() != null) getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(0xFF040E09));   // the page's ground, under the view until it has painted
         setContentView(web);
     }
 
