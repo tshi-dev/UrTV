@@ -56,7 +56,8 @@ RECITERS = [
     ("محمود عبدالحكم", "abdulhakim"),
     ("عبدالرحمن العوسي", "oosi"),
     ("عبدالله الكندري", "kandari"),
-    ("بدر التركي", "turki"),   # 4.1 reports; mp3quran's «حفص عن عاصم - مرتل», 114 surahs
+    ("بدر التركي", "turki"),
+    ("محمد أيوب", "ayyub"),   # field reports (Nov 5); mp3quran's «حفص عن عاصم - مرتل», 114 surahs   # 4.1 reports; mp3quran's «حفص عن عاصم - مرتل», 114 surahs
     ("عبدالعزيز الزهراني", "zahrani"),
     ("صالح الصاهود", "sahood"),
     ("مفتاح السلطني", "saltani"),
