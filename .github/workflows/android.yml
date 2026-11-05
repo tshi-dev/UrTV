@@ -5,7 +5,7 @@ on:
     branches: [master, next]   # next: a test build in apk-next, before anything reaches apk-latest
     paths: ['src/**', 'assets/**', 'android/**', 'VERSION', '.github/workflows/android.yml']
     # a release whose last commit touches none of these builds nothing (4.1's first try): its merge then needs a change here or in VERSION
-    # 4.2 too: a fix after the release merge that touches only .github/tools (the cities generator) builds nothing, and its own build is this line
+    # 4.2 too: a fix after the release merge that touches only .github/tools (the cities generator) builds nothing, and its own build is this line, and so is the veil test's CI tolerance after it
   workflow_dispatch:
 
 permissions:
