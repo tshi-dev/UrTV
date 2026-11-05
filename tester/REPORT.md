@@ -1286,3 +1286,7 @@ The owner confirmed the push in chat first, the 10 as they are. Branch `work/mar
 
 ### Z
 `import`: 3 settings back. Stocks, dock, look, appearance, home layout, night dim, adhan off, updatechannel latest, lang **en** by hand. `show` differs only in the build line. Same: dock (reread after the name lag seen in step 34), PIN and locked list, tasks (the owner's 2; all 3 demo gone), photos, adhan, family DNS, disabled (21), packages (177), Home holder, saver. Radio's saved station 0, nothing playing. Muted, `by=not us` 0. TV asleep as I found it. **restored: yes;** only the build differs (205).
+
+## step 37b: p2 pushed, r1 waiting
+- `p2-phone-search.png` redone, overwritten on `work/marketing`. The page has no separate typing screen: typing lives on the remote tab. So this is a keyboard-height viewport (390×500, 3x, so 1170×1500): «سورة الكهف» in the field, focused, and the page's own toast after «بحث», «فتحنا البحث في التطبيق بكلماتك». Same local stub as step 37, no real phone or YouTube. The page clears the field after sending, so my demo script puts the words back for the picture. No keyboard is drawn
+- `r1-tasks.png` **not redone yet.** «Delete every task» would delete the owner's 2 tasks, and I don't delete his data. He removes them himself. He told me he had, but `tasks list` still shows both at 22:52, TV asleep. I've asked him to look again. Nothing was changed on the TV
