@@ -6,7 +6,7 @@
  "source_en": "Wikimedia Commons: CC BY, BY-SA, CC0, public domain",
  "allow_attribution": true,
  "reviewed": true,
- "review": "the owner allowed CC BY / BY-SA 2.0-4.0 for this pack only (never NC or ND); each photo looked at on the CI sheets; every BY/BY-SA credit carries its licence address and the changes, shown in «حقوق الصور»; then the variety rule: at most 2 of a kind (skylines, Al-Balad, Makkah, the Prophet's Mosque, Diriyah), no near-duplicates, no two neighbours alike; the owner's last cut (Makkah under clouds at night: dark and blurry) and no two neighbours from the same city",
+ "review": "the owner allowed CC BY / BY-SA 2.0-4.0 for this pack only (never NC or ND); each photo looked at on the CI sheets; every BY/BY-SA credit carries its licence address and the changes, shown in «حقوق الصور»; then the variety rule: at most 2 of a kind (skylines, Al-Balad, Makkah, the Prophet's Mosque, Diriyah), no near-duplicates, no two neighbours alike; the owner's last cut (Makkah under clouds at night: dark and blurry) and no two neighbours from the same city; the Prophet's Mosque (Green Dome) and Quba left to «الحرمين», which has them (the owner)",
  "photos": [
   {
    "title": "Riyadh Skyline showing the King Abdullah Financial District (KAFD) and the famous Kingdom Tower",
@@ -17,14 +17,6 @@
    "source_width": 6000,
    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
    "changes": "cropped to 16:9 and resized to 1920×1080"
-  },
-  {
-   "title": "Wide shot of the Green Dome at The Prophet's Mosque (Al Masjid-e-Nabawi)",
-   "author": "TheHadiRahim",
-   "licence": "CC0",
-   "link": "https://commons.wikimedia.org/wiki/File:Wide_shot_of_the_Green_Dome_at_The_Prophet%27s_Mosque_(Al_Masjid-e-Nabawi).jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/4/44/Wide_shot_of_the_Green_Dome_at_The_Prophet%27s_Mosque_%28Al_Masjid-e-Nabawi%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 5184
   },
   {
    "title": "Green woodwork in old Jeddah (Al Balad) October 8 2021",
@@ -74,16 +66,6 @@
    "url": "https://upload.wikimedia.org/wikipedia/commons/6/67/JadFauW.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
    "source_width": 2592,
    "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
-   "changes": "cropped to 16:9 and resized to 1920×1080"
-  },
-  {
-   "title": "Quba Mosque from Afar (2024)",
-   "author": "Kaliper1",
-   "licence": "CC BY-SA 4.0",
-   "link": "https://commons.wikimedia.org/wiki/File:Quba_Mosque_from_Afar_(2024).jpg",
-   "url": "https://upload.wikimedia.org/wikipedia/commons/b/bf/Quba_Mosque_from_Afar_%282024%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
-   "source_width": 4000,
-   "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
    "changes": "cropped to 16:9 and resized to 1920×1080"
   },
   {
