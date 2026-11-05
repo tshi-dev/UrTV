@@ -1307,6 +1307,7 @@ public class MarketsActivity extends Activity {
             LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) bodyScroll.getLayoutParams();
             lp.height = Math.max(dp(96), room);
             bodyScroll.setLayoutParams(lp);
+            bodyScroll.setPadding(dp(12), dp(12), dp(12), dp(12));   // the ring is drawn over the edge: the text keeps 12 dp clear of it
             bodyScroll.setFocusable(true);   // ▲ ▼ scroll it only when it holds what the screen cannot show
             android.graphics.drawable.StateListDrawable ring = new android.graphics.drawable.StateListDrawable();
             android.graphics.drawable.GradientDrawable g = new android.graphics.drawable.GradientDrawable();

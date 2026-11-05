@@ -28,6 +28,7 @@ import android.os.PowerManager;
 import android.util.Log;
 
 import sa.urtv.home.R;
+import java.io.IOException;
 import java.io.File;
 import java.util.Locale;
 
@@ -673,8 +674,37 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             return true;
         });
         try {
-            player.setDataSource(url);
-            player.prepareAsync();
+            if (source == Prefs.SOURCE_RADIO && StreamUrl.cleartextAllowed(hostOf(url))) {   // radiojar: read by us (LiveFeed), one GET that spends its token; the platform's player got nothing from it (step 32)
+                final String addr = url;
+                final int g = gen;
+                new Thread(() -> {
+                    LiveFeed feed = new LiveFeed(addr, 10_000, StreamUrl::cleartextAllowed);
+                    try {
+                        feed.start();
+                    } catch (IOException | RuntimeException e) {
+                        feed.close();
+                        Log.w(TAG, "live feed " + hostOf(addr) + ": " + e.getMessage());
+                        handler.post(() -> { if (wish.current(g) && player != null && source == Prefs.SOURCE_RADIO && addr.equals(currentUrl)) onPlaybackError(-1, 0); });
+                        return;
+                    }
+                    handler.post(() -> {
+                        if (!wish.current(g) || player == null || source != Prefs.SOURCE_RADIO || !addr.equals(currentUrl)) { feed.close(); return; }
+                        try {
+                            liveSource = new LiveSource(feed);
+                            player.setDataSource(liveSource);
+                            player.prepareAsync();
+                            Log.i(TAG, "live feed from " + hostOf(addr));
+                        } catch (Exception e) {
+                            feed.close();
+                            Log.w(TAG, "live feed cannot play " + hostOf(addr), e);
+                            onPlaybackError(-1, 0);
+                        }
+                    });
+                }, "live-feed-open").start();
+            } else {
+                player.setDataSource(url);
+                player.prepareAsync();
+            }
             if (source == Prefs.SOURCE_RADIO) {   // a station that gives no sound and no error (step 28: station 0 stayed «جارٍ التحميل…» for minutes): said after 20 s
                 handler.postDelayed(() -> {
                     if (!wish.current(gen) || prepared || source != Prefs.SOURCE_RADIO || !url.equals(currentUrl)) return;
@@ -707,6 +737,9 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
 
     /** the resolved address of a station got no sound: its own address was given to the player once (reset by every pick) */
     private boolean radioDirectTried;
+
+    /** the audio of a radiojar station, read by us (closed with the player) */
+    private LiveSource liveSource;
 
     /** a station that has not started in this long is said to have failed */
     static final long RADIO_WAIT_MS = 20_000;
@@ -913,6 +946,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             try { louder.release(); } catch (RuntimeException ignored) {}
             louder = null;
         }
+        if (liveSource != null) { liveSource.close(); liveSource = null; }
         if (player != null) {
             try { player.reset(); } catch (Exception ignored) {}
             try { player.release(); } catch (Exception ignored) {}

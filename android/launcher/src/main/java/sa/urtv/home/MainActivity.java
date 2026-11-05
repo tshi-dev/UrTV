@@ -100,7 +100,8 @@ public class MainActivity extends Activity {
     private LinearLayout content, dockRow;
     private FrameLayout hero;
     private LinearLayout grid;
-    private View glow, glowBase, glowTop;
+    private View glow;
+    private GradientDrawable glowDrawable;   // the one gradient, its colours changed in place (no allocation per move)
     private float glowAlphaTo = -1f, shadeTo = 0f;
     private ImageView wallBack, wallFront;
     private View gridShade;
@@ -394,13 +395,7 @@ public class MainActivity extends Activity {
             wallpapers = getAssets().list("wallpapers");
         } catch (java.io.IOException ignored) { }
 
-        FrameLayout glowBox = new FrameLayout(this);   // two layers that cross-fade by alpha (the render thread's work): a colour change no longer builds a full-screen gradient on every frame
-        glowBase = new View(this);
-        glowTop = new View(this);
-        glowTop.setAlpha(0f);
-        glowBox.addView(glowBase, new FrameLayout.LayoutParams(-1, -1));
-        glowBox.addView(glowTop, new FrameLayout.LayoutParams(-1, -1));
-        glow = glowBox;
+        glow = new View(this);
         root.addView(glow, new FrameLayout.LayoutParams(-1, -1));
         setGlow(glowColor);
 
@@ -2725,29 +2720,24 @@ public class MainActivity extends Activity {
 
     // ---------------------------------------------------------------- glow
 
-    private GradientDrawable glowShape(int color) {
-        GradientDrawable g = new GradientDrawable();
-        g.setGradientType(GradientDrawable.RADIAL_GRADIENT);
-        g.setGradientCenter(0.5f, 0.78f);
-        g.setGradientRadius(getResources().getDisplayMetrics().widthPixels * GlowLook.RADIUS);
-        g.setColors(new int[]{withAlpha(color, GlowLook.CENTRE_ALPHA), withAlpha(color, GlowLook.MID_ALPHA), Color.TRANSPARENT});
-        return g;
-    }
-
     private void setGlow(int color) {
         glowColor = color;
-        glowBase.setBackground(glowShape(color));
+        if (glowDrawable == null) {
+            glowDrawable = new GradientDrawable();
+            glowDrawable.setGradientType(GradientDrawable.RADIAL_GRADIENT);
+            glowDrawable.setGradientCenter(0.5f, 0.78f);
+            glowDrawable.setGradientRadius(getResources().getDisplayMetrics().widthPixels * GlowLook.RADIUS);
+            glow.setBackground(glowDrawable);
+        }
+        glowDrawable.setColors(new int[]{withAlpha(color, GlowLook.CENTRE_ALPHA), withAlpha(color, GlowLook.MID_ALPHA), Color.TRANSPARENT});
     }
 
-    /** the glow takes the focused tile's colour: the new colour is laid over the old one and faded in (alpha only; the same colour again does nothing) */
+    /**
+     * The glow takes the focused tile's colour at once: ONE repaint per move. (Step 31 made it a 450 ms fade, a new full-screen gradient on every frame; the cross-fade of two
+     * full-screen layers that replaced it made the tray janky on 193: 31 % against 19.6 %. No fade, nothing stacked.) The same colour again does nothing.
+     */
     private void animateGlow(int to) {
-        if (to == glowColor && glowTop.getAlpha() == 0f) return;
-        glowTop.animate().cancel();
-        glowBase.setBackground(glowShape(glowColor));   // what the last fade was heading to is the ground now
-        glowTop.setBackground(glowShape(to));
-        glowTop.setAlpha(0f);
-        glowColor = to;
-        glowTop.animate().alpha(1f).setDuration(450).withEndAction(() -> { glowBase.setBackground(glowShape(glowColor)); glowTop.setAlpha(0f); }).start();
+        if (to != glowColor) setGlow(to);
     }
 
     private void fadeGlow(float alpha) {

@@ -106,9 +106,10 @@ check("30b-5: «السوق» has a small row of S&P 500, Nasdaq and Dow, asked l
 
 # step 31
 main31 = text(HOME / "MainActivity.java")
-check("31-3: the glow changes colour by cross-fading two layers (alpha), not by building a full-screen gradient on every frame, and does nothing for the colour it has; fadeGlow starts an animator only when its target changes",
-      "glowTop.animate().alpha(1f).setDuration(450)" in main31 and "ValueAnimator" not in main31 and "if (to == glowColor && glowTop.getAlpha() == 0f) return;" in main31
+check("31-3 (revised, step 32): the glow takes the focused tile's colour at once on ONE gradient whose colours change in place (no fade, no stacked layers: the cross-fade made the tray worse), the same colour does nothing; fadeGlow starts an animator only when its target changes",
+      "glowDrawable.setColors(" in main31 and "if (to != glowColor) setGlow(to);" in main31 and "glowTop" not in main31 and "ValueAnimator" not in main31
       and "if (glowAlphaTo != alpha)" in main31 and "if (shadeTo != shade)" in main31)
+check("32-3: the stock card's scroll view keeps its text 12 dp clear of its focus ring", "bodyScroll.setPadding(dp(12), dp(12), dp(12), dp(12));" in sc)
 check("31-4: a live tick that says the same header text draws nothing", "if (!shown.equals(lastHeader))" in mka and "contentEquals(cardNote.getText())" in mka)
 
 # step 32
