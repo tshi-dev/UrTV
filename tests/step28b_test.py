@@ -115,7 +115,7 @@ check("31-4: a live tick that says the same header text draws nothing", "if (!sh
 mt = text(HOME / "MatchesActivity.java")
 sv = text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/ScreenView.java")
 check("32: the matches page opens in its own ground (dark #17181B or sand) in the view and the window, and is shown only once its first frame is painted (visual-state callback, 2 s fallback)",
-      "cfg.pagesDark ? Color.rgb(0x17, 0x18, 0x1B)" in mt and "getWindow().setBackgroundDrawable" in mt and "web.setAlpha(0f);" in mt and "postVisualStateCallback" in mt and "web.postDelayed(reveal, 2000)" in mt)
+      "cfg.pagesDark ? Color.rgb(0x17, 0x18, 0x1B)" in mt and "getWindow().setBackgroundDrawable" in mt and "web.setAlpha(0f);" in mt and "postVisualStateCallback" in mt and "web.postDelayed(reveal, 1500)" in mt)
 check("32: the screensaver's page is shown only once painted, on a dream window of its own ground", "if (hold) w.setAlpha(0f);" in sv and "postVisualStateCallback" in sv
       and "0xFF040E09" in text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/ScreenDream.java"))
 sys.exit(1 if failed else 0)

@@ -92,7 +92,7 @@ public class MatchesActivity extends Activity {
             }
         });
         setContentView(web);
-        web.postDelayed(reveal, 2000);   // a page that never finishes still shows what it has
+        web.postDelayed(reveal, 1500);   // a page that never finishes still shows what it has
         String event = getIntent().getStringExtra(EXTRA_EVENT);
         web.loadUrl(HomePage.fresh(this, HomeCardChoice.matchesUrl(cfg.fragment, event) + (cfg.pagesDark ? "&pagedark=1" : "")));   // «صفحات الأسهم والمباريات داكنة»: the page in its dark theme
         web.requestFocus();

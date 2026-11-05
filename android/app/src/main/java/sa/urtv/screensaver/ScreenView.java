@@ -78,7 +78,7 @@ final class ScreenView {
         w.loadUrl(url);
         if (hold) {
             final WebView late = w;
-            w.postDelayed(new Runnable() { @Override public void run() { late.setAlpha(1f); } }, 2000);   // never stays hidden
+            w.postDelayed(new Runnable() { @Override public void run() { late.setAlpha(1f); } }, 1500);   // never stays hidden
         }
         if (screen) {
             UpdateJob.schedule(c);
