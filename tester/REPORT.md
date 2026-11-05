@@ -1095,3 +1095,25 @@ Tadawul opens 10:00 and New York 17:30 TV time. I intend to run this at about 10
 `import settings-before.json`: nothing to change. Stocks the 5 and updatechannel latest set by hand. `show` before/after differs only in the build. Same: dock, PIN and locked list, tasks, photos, adhan, family DNS, disabled (21), packages (177), Home holder, saver. Nothing playing. Muted. **restored: yes**; only the build differs (196).
 
 ### step 33 summary: ✓ tray (31% → 4.4%), no white flash on 4 routes, card ring, stations 0 and 1, morning greeting. ✗ Cairo radio, with the stall now located. Small: 1.4–1.85 s black on the screensaver page. Open: `parsed = asked`, evening greeting.
+
+## step 33b — part 5 of step 33, in the open session (build 196; TV muted; Thu 10:08–10:22)
+TV was asleep (off). I woke it with a key, ran this, and put it back to sleep. Muted at every check. Only `asked`, `parsed` and the prices were looked at; no public quote compared.
+
+### 5 ✓ `parsed = asked`, 7 of 7 ticks
+Tadawul open, «مباشر» on «قائمتي» (TASI + the 5 stocks):
+- 10:08:53, 10:09:54, 10:10:54, 10:11:54, 10:13:02: `live status=200 asked=6 parsed=6 reason=ok` (bytes 1341–1344)
+- 10:20:49, 10:21:49: `asked=6 parsed=6 reason=ok` (bytes 1618, 1703)
+
+The header read «تداول مفتوح · يغلق بعد …» and counted down.
+
+Prices:
+| | 10:08:56 | 10:13:45 | 10:20:52 | 10:22:10 |
+|---|---|---|---|---|
+| 2222 | ٢٦٫٢٤ +٠٫٠٠٪ | ٢٦٫٢٤ +٠٫٠٠٪ | ٢٦٫١٢ −٠٫٤٦٪ | ٢٦٫١٢ −٠٫٤٦٪ |
+| 1120 | ٦١٫٥٠ +٠٫٠٠٪ | ٦١٫٥٠ +٠٫٠٠٪ | ٦١٫٩٠ +٠٫٦٥٪ | ٦١٫٩٠ +٠٫٦٥٪ |
+| 7010 | ٤١٫٤٨ +٠٫٠٠٪ | ٤١٫٤٨ +٠٫٠٠٪ | ٤١٫٣٦ −٠٫٢٩٪ | ٤١٫٣٨ −٠٫٢٤٪ |
+✓ They move. Note: in the session's first minutes all rows read +٠٫٠٠٪ (seen up to 10:13:45), then real changes (by 10:20:52). This fits the source's ~15 min delay; I did not prove that is the cause, or find the exact minute.
+
+### Z and a correction to step 33
+`مباشر` turned back off by hand in both runs. `export` and `show` the same as after step 33. Muted, `by=not us` 0, TV asleep as I found it.
+Correction to part 3: I looked at all 3 final frames by eye (matches, screensaver cold, screensaver warm), not 2 of 3. I looked at 3 frames, not one for every run; the other runs are by the numbers only.
