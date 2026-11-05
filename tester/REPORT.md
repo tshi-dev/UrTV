@@ -1329,3 +1329,37 @@ Looked at all 79, at thumbnail size only (240×135), so small text or faces can'
 
 ### Z
 No packs were added. `import`, stocks, dock, look, appearance, night dim, photo interval by hand, lang **en**. `show` same as before. Same: dock (reread), PIN and locked list, tasks, photos, adhan, family DNS, disabled (21), packages (177), Home holder, saver. Muted, TV asleep as I found it. **restored: yes.**
+
+## step 38 — photo packs on the TV (build 205, packs on next; Fri 00:35–01:05; TV muted throughout; 3 pictures pushed)
+**Works: 5 packs list, download, show, delete and re-download. Not ALL PASS: 1 question on rotation and 3 small.** The owner confirmed the push in chat first.
+
+### 1 ✓ List
+5 packs with covers plus «صورنا». `marketing/4.2b/b1-packs.png`, after the downloads: all 6 cards, the top row's covers scrolled partly off.
+
+### 2 ✓ Download, ✓ credits, 2 small
+| pack | card | time on TV | free space used |
+|---|---|---|---|
+| الفضاء | 12 · 4 MB | 8.8 s | 4.0 MB |
+| الطبيعة | 16 · 7 MB | 5.5 s | 6.3 MB |
+| الحرمين | 17 · 8 MB | 5.4 s | 7.6 MB |
+| مدن السعودية | 13 · 6 MB | 5.4 s | 5.9 MB |
+| البحر والشواطئ | 19 · 8 MB | 5.5 s | 8.0 MB |
+No error. Times are from OK to «مفعّل» by my polling, so about ±3 s. 77 photos, 32 MB. مدن السعودية is now 13 photos (15 in my PC check an hour ago).
+«حقوق الصور»: مدن السعودية and الحرمين both there with author · licence · link, and «cropped to 16:9…» where it applies. The whole text is 13 KB, in a scrolling box.
+- **Small ✗: the file name is garbled in Arabic.** «1.jpg» shows as «jpg … .1», split to both ends of the line by the text direction (`cred0`)
+- **Small ✗: «إغلاق» looks almost invisible** when the dialog opens, pale on pale, one screenshot. Back closes it
+
+### 3 Saver for 10 min: question on rotation
+20 shots, 30 s apart, with the interval set to 30 s for the test: **space 2–12 in order, then nature 1–9 in order.** No «صورنا», no other pack. From the code, the packs are joined pack after pack (`packPhotos`). So they do go round, but **in blocks, not mixed.** At the owner's 30 min interval, space alone would run about 6 hours before nature starts. If mixed is meant, this is a ✗. I did not run it long enough to see the later packs or «صورنا» on the TV.
+- Those 20: nothing cropped badly, no text, no person. Clock and card readable, on nature 8 (snow) too. Sea and the rest were looked at only as thumbnails on the PC, findings as in the blocked report above (2 repeats may now be gone, not rechecked; crowds in الحرمين)
+- `FATAL`/`ANR` 0. Saver process 48 MB. Muted
+- `b2-pack-1.png` nature 4, `b3-pack-2.png` space 6, verse card replaced by «حديث اليوم» as it came up
+- **Small ✗: past midnight the saver's «المباريات» card still shows last evening's game** with its date (00:43–00:50, Thursday 8:00 PM, already played). It's in both pictures. The owner saw this before the push
+
+### 4 ✓ Delete and re-download, ✓ tray
+- «حذف» الفضاء: free 2,058,248 → 2,062,292 kB (4.0 MB), the card back to «نزّل». Download again 6.6 s, free back to 2,058,248
+- Deleting all 5 at the end gave free 2,058,244 → 2,090,056, the same as before the downloads to within 34 kB
+- Tray with all packs on: 498 frames, 4.82% janky, 50th 32 ms, 90th 44, 99th 48. **Two runs printed the same numbers, so count it as one.** An earlier run while the photo changed every 30 s: 448 frames, 18.53%, 32/65/93 ms. That interval isn't a setting people use for long, but it shows photo changes do cost. MemAvailable 781 MB, home 174 MB. After the packs were gone: not measured
+
+### Z
+The TV had no packs, so all 5 deleted by hand on the page; «صورنا» on. `import`, stocks, dock, look, appearance, night dim, photo interval 30, lang **en**. `show` same as before. Same: dock (reread), PIN and locked list, tasks (none), photos, adhan, family DNS, disabled (21), packages (177), Home holder, saver. Muted, `by=not us` 0. TV asleep as I found it. **restored: yes.**
