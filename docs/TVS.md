@@ -74,7 +74,7 @@ app's preview of the same page and `measure.sh` writes «not measured»). Times 
 | xangshi XS97 | not reported | not reported | not reported | not reported | – | not reported |
 | SHARP AQUOS | not reported | not reported | not reported | not reported | – | not reported |
 
-Chromecast with Google TV (sabrina, boreal) and the Google TV Streamer (kirkwood): the cast receiver reads its device credentials from the setup wizard (setupwraith). Setups before 4.2 turned the wizard off with the home switch, and after the next restart casting from a phone and the Google Home remote said «جهاز غير موثوق فيه» (untrusted device): the earlier «works» rows were never checked with a cast after a restart. From 4.2 the wizard stays on there; `optimize/dock.sh cast on|off` chooses between casting and our home as Home when the wizard keeps Home.
+Chromecast with Google TV (sabrina, boreal) and the Google TV Streamer (kirkwood): the cast receiver reads its device credentials from the setup wizard (setupwraith). Setups before 4.2 turned the wizard off with the home switch, and after the next restart casting from a phone and the Google Home remote said «جهاز غير موثوق فيه» (untrusted device): the earlier «works» rows were never checked with a cast after a restart. From 4.2 the wizard stays on there; `optimize/dock.sh cast on|off` chooses between casting and our home as Home when the wizard keeps Home. Such a device is told by the wizard's cast provider AND a Google maker (`ro.product.manufacturer` Google, or the codename sabrina, boreal or kirkwood): other makers' Google TV builds share the wizard and its provider (a TCL G07 has it), and there the setup turns the wizard off as before.
 
 ## When the setup wizard owns the Wi-Fi (TCL G08/G10/G14, Google TV sets)
 

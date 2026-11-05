@@ -52,6 +52,8 @@ check("D: Home does not open ours: the stock home and the role are back, the set
       got.get("D") == "D FAILED com.google.android.apps.tv.launcherx stockOff=false wizOff=false armed=1 disarmed=1 state=restored", got.get("D"))
 check("E: a TV that answers «illegal» to disabling its own home: skipped, put back as it was", got.get("E") == "E SKIPPED com.google.android.apps.tv.launcherx stockOff=false state=restored disarmed=1", got.get("E"))
 check("F: WebView too old, unknown, or no screensaver installed: skipped, not one setting written", got.get("F") == "F SKIPPED SKIPPED SKIPPED puts=0", got.get("F"))
+check("G6: a TCL whose wizard has the cast provider too (tester 4.2) is not a Google cast device: the wizard off as before; the rule: Google, or a Google codename, and the provider",
+      got.get("G6") == "G6 wizardDisabled=1 rule=truefalsetruefalse", got.get("G6"))
 check("G3-G5: a Chromecast (castinfo.CastInfoProvider in the wizard) keeps its wizard on even when the Wi-Fi is not its own, unless cast.txt says off; and no Wi-Fi question there",
       got.get("G3") == "G3 DONE wizardDisabled=0" and got.get("G4") == "G4 wizardDisabled=1" and got.get("G5") == "G5 asks=false", (got.get("G3"), got.get("G4"), got.get("G5")))
 check("G: the setup wizard owns the Wi-Fi: left on; another owner: turned off", got.get("G") == "G DONE wizardDisabled=0" and got.get("G2") == "G2 wizardDisabled=1", (got.get("G"), got.get("G2")))

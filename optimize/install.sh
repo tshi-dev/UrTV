@@ -289,15 +289,27 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
   # factory device credentials from a provider inside the wizard (…setupwraith.libs.castinfo.CastInfoProvider). With the wizard off,
   # after the next restart the phone says «جهاز غير موثوق فيه … برامج ثابتة قديمة» (untrusted device) and the Google Home remote
   # fails until the wizard is back (a user report on 4.1; CleanYourTV's TROUBLESHOOTING.md and its keep-cast list for this device, github.com/Gathin23/cleanyourtv).
-  # Such a TV is told by that provider, never by a model name. There the wizard stays on (casting kept) unless the person chose
+  # Such a TV is told by that provider AND a Google maker (cast_device below). There the wizard stays on (casting kept) unless the person chose
   # «البث من الجوال» off (optimize/dock.sh cast off: our home first, casting lost), recorded in cast.txt.
   CASTF="${URTV_RUN_DIR:-optimize/run}/cast.txt"
-  wraith_casts() {   # 0: the wizard holds the cast credentials (Chromecast); 1: it does not, or the TV did not say
-    "$PY" -I optimize/tv.py "dumpsys package $WRAITH 2> /dev/null | grep -m 1 castinfo.CastInfoProvider" 2> /dev/null \
-      | grep castinfo.CastInfoProvider > /dev/null
+  # A Chromecast-type device: the provider in the wizard AND a Google-made device. Google TV builds of other makers share the wizard and its
+  # provider (a TCL G07 has it, tester 4.2), and there the wizard goes as before. Google's own: ro.product.manufacturer «Google», or the
+  # codename of one (sabrina: Chromecast with Google TV 4K, boreal: its HD, kirkwood: Google TV Streamer). Input: the TV's answer to
+  # «getprop ro.product.manufacturer; getprop ro.product.device; dumpsys package <wizard> | grep -m 1 castinfo.CastInfoProvider».
+  cast_device() {
+    local maker device
+    maker=$(sed -n 1p <<< "$1" | tr -d '\r ' | tr '[:upper:]' '[:lower:]')
+    device=$(sed -n 2p <<< "$1" | tr -d '\r ' | tr '[:upper:]' '[:lower:]')
+    grep castinfo.CastInfoProvider <<< "$1" > /dev/null || return 1
+    [ "$maker" = google ] || [ "$device" = sabrina ] || [ "$device" = boreal ] || [ "$device" = kirkwood ]
+  }
+  wraith_casts() {   # 0: a Google cast device whose wizard holds the cast credentials; 1: anything else, or the TV did not say
+    local o
+    o=$("$PY" -I optimize/tv.py "getprop ro.product.manufacturer; getprop ro.product.device; dumpsys package $WRAITH 2> /dev/null | grep -m 1 castinfo.CastInfoProvider" 2> /dev/null) || return 1
+    cast_device "$o"
   }
   CAST_KEPT=no      # yes: the wizard stays on for the cast credentials
-  if [ "$(tr -d '\r\n ' < "$CASTF" 2> /dev/null)" != off ] && wraith_casts; then
+  if [ "$(tr -d '\r\n ' 2> /dev/null < "$CASTF")" != off ] && wraith_casts; then   # 2> first: a missing file says nothing
     if "$PY" -I optimize/tv.py "pm list packages -d" 2> /dev/null | tr -d '\r' | grep -x "package:$WRAITH" > /dev/null; then   # no grep -q (pipefail)
       echo "This TV's setup wizard holds its cast credentials (a Chromecast), but it is off (an earlier setup turned it off), so casting from a phone says «untrusted device». optimize/dock.sh cast on turns it back on."
     else

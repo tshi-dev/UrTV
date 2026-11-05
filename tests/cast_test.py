@@ -31,7 +31,8 @@ if [ "$1" = --batch ]; then
   exit 0
 fi
 case "$1" in
-  "dumpsys package com.google.android.tungsten.setupwraith"*) [ "$CAST" = yes ] && echo "  x/com.google.android.libraries.tv.setupwraith.libs.castinfo.CastInfoProvider" ;;
+  "getprop ro.product.manufacturer; getprop ro.product.device; dumpsys package com.google.android.tungsten.setupwraith"*)
+     echo "${MAKER:-Google}"; echo "${DEVICE:-sabrina}"; [ "$CAST" = yes ] && echo "  x/com.google.android.libraries.tv.setupwraith.libs.castinfo.CastInfoProvider" ;;
   "pm list packages -d; echo END_OF_LIST") [ -f "$T/wiz_off" ] && echo "package:com.google.android.tungsten.setupwraith"; echo END_OF_LIST ;;
   *resolve-activity*) echo "sa.urtv.home/.MainActivity" ;;
   *disable-user*) log DISABLED-SOMETHING ;;
@@ -40,7 +41,7 @@ exit 0
 '''
 
 
-def run(mode, cast="yes", wiz="off", drop="", stuck=""):
+def run(mode, cast="yes", wiz="off", drop="", stuck="", maker="", device=""):
     t = Path(tempfile.mkdtemp())
     tree = t / "tree"
     (tree / "optimize").mkdir(parents=True)
@@ -53,7 +54,7 @@ def run(mode, cast="yes", wiz="off", drop="", stuck=""):
     py.chmod(0o755)
     if wiz == "off":
         (t / "wiz_off").write_text("")
-    env = dict(os.environ, PY=str(py), T=str(t), CAST=cast, DROP=drop)
+    env = dict(os.environ, PY=str(py), T=str(t), CAST=cast, DROP=drop, MAKER=maker, DEVICE=device)
     r = subprocess.run(["bash", str(tree / "optimize" / "dock.sh"), "cast", mode], env=env, capture_output=True, text=True, cwd=tree)
     log = (t / "log").read_text().split("\n") if (t / "log").exists() else []
     return r.returncode, r.stdout + r.stderr, log
@@ -69,9 +70,13 @@ check("off: the choice recorded as off before the home switch (which alone may t
 c, o, l = run("status", wiz="on")
 check("status: read only (no install, nothing changed): the wizard, Home and the choice", c == 0 and "Wizard: on" in o and "Choice: on" in o and not [x for x in l if x], (o, l))
 c, o, l = run("on", cast="")
-check("not a Chromecast: it says so and changes nothing (exit 1 for on/off, 0 for status)", c == 1 and "not a Chromecast" in o and not [x for x in l if x], (c, o, l))
+check("not a Chromecast: it says so and changes nothing (exit 1 for on/off, 0 for status)", c == 1 and "not a Google cast device" in o and not [x for x in l if x], (c, o, l))
+c, o, l = run("on", maker="TCL", device="g07")
+check("a TCL G07 whose wizard has the provider too (tester 4.2): not a Google cast device, nothing changed", c == 1 and "not a Google cast device" in o and not [x for x in l if x], (c, o, l))
+c, o, l = run("status", wiz="on")
+check("status with no cast.txt yet: no «No such file or directory» (the 2> before the <), the choice «on»", "No such file" not in o and "Choice: on" in o, o)
 c, o, l = run("status", cast="")
-check("not a Chromecast, status: exit 0", c == 0 and "not a Chromecast" in o, (c, o))
+check("not a Chromecast, status: exit 0", c == 0 and "not a Google cast device" in o, (c, o))
 c, o, l = run("on", drop="yes")
 check("on, the TV does not answer: a !! line and no home switch", c == 1 and o.count("!!") == 1 and "install launcher" not in l, (c, o, l))
 c, o, l = run("on", stuck="yes")
@@ -79,11 +84,12 @@ check("on, the wizard did not come back on: a !! line and no home switch (never 
 c, o, l = run("maybe")
 check("anything else: usage, nothing changed", c == 1 and "usage" in o and not [x for x in l if x], (c, o))
 src = (ROOT / "optimize" / "cast.sh").read_text()
-check("cast.sh never turns the wizard off itself, and tells a Chromecast by the provider, not by the model name",
-      "disable-user" not in src and "castinfo.CastInfoProvider" in src and "sabrina" not in src and "ro.product" not in src)
+check("cast.sh never turns the wizard off itself, and tells a Google cast device by the provider AND a Google maker (or its codename)",
+      "disable-user" not in src and "castinfo.CastInfoProvider" in src and '[ "$maker" = google ] || [ "$device" = sabrina ] || [ "$device" = boreal ] || [ "$device" = kirkwood ]' in src)
 ins = (ROOT / "optimize" / "install.sh").read_text()
 check("install.sh: the cast check is the provider, a choice of «off» skips it, and wraith_off leaves the wizard on while casting is kept",
-      'dumpsys package $WRAITH 2> /dev/null | grep -m 1 castinfo.CastInfoProvider' in ins and '!= off ] && wraith_casts' in ins
+      'getprop ro.product.manufacturer; getprop ro.product.device; dumpsys package $WRAITH 2> /dev/null | grep -m 1 castinfo.CastInfoProvider' in ins
+      and '!= off ] && wraith_casts' in ins and 'tr -d \'\\r\\n \' 2> /dev/null < "$CASTF"' in ins
       and 'if [ "$CAST_KEPT" = yes ]; then echo "The setup wizard holds this TV' in ins)
 eng = (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/SetupEngine.java").read_text()
 check("the in-app setup keeps the wizard on a Chromecast too (the same provider, the same cast.txt choice), and asks nothing about the Wi-Fi there",

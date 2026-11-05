@@ -283,6 +283,12 @@ public class SetupEngineRun {
         line("G4 wizardDisabled=" + tco.count("pm disable-user --user 0 com.google.android.tungsten.setupwraith"));
         FakeTv tca = tv(); tca.wizardAnswersHome = true; tca.wizardOwnsWifi = true; tca.castInWizard = true;
         line("G5 asks=" + engine(tca, new Mem(), new Dead(), new ArrayList<>()).wizardOwnsWifi());
+        // G6: a TCL whose wizard has the same provider (tester 4.2, a G07): not a Google cast device, the wizard goes as before
+        FakeTv tct = tv(); tct.wizardAnswersHome = true; tct.wizardOwnsWifi = false; tct.castInWizard = true; tct.maker = "TCL";
+        engine(tct, new Mem(), new Dead(), new ArrayList<>()).home();
+        line("G6 wizardDisabled=" + tct.count("pm disable-user --user 0 com.google.android.tungsten.setupwraith")
+            + " rule=" + SetupEngine.castDevice("Google\nsabrina\n x/castinfo.CastInfoProvider") + SetupEngine.castDevice("TCL\ng07\n x/castinfo.CastInfoProvider")
+            + SetupEngine.castDevice("unknown\nkirkwood\n x/castinfo.CastInfoProvider") + SetupEngine.castDevice("Google\nsabrina\n"));
         // L: no alarm could be set: the home switch does not start, nothing on the TV changes
         FakeTv tl = tv(); Mem ml = new Mem(); Dead dl = new Dead(); dl.works = false;
         SetupEngine el = engine(tl, ml, dl, new ArrayList<>());

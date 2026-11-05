@@ -109,7 +109,9 @@ case "$1" in
        [ "$(cat "$T/home" 2>/dev/null)" = ours ] && echo sa.urtv.home/.MainActivity || echo stock/.Home ;;
   "cmd role get-role-holders"*) echo "$ROLE" ;;
   "pm list packages -d; echo D_END") [ "$DISABLED" = none ] && exit 0; [ "$DISABLED" = stock ] && echo "package:com.google.android.apps.tv.launcherx"; echo D_END ;;
-  "dumpsys package com.google.android.tungsten.setupwraith"*) log cast-read   # CAST=yes: a Chromecast, the wizard holds the cast credentials
+  "getprop ro.product.manufacturer; getprop ro.product.device; dumpsys package com.google.android.tungsten.setupwraith"*) log cast-read
+       # CAST=yes: the wizard holds the cast provider; MAKER/DEVICE: who made it (a Chromecast by default; a TCL G07 has the provider too)
+       echo "${MAKER:-Google}"; echo "${DEVICE:-sabrina}"
        [ "$CAST" = yes ] && echo "    com.google.android.tungsten.setupwraith/com.google.android.libraries.tv.setupwraith.libs.castinfo.CastInfoProvider" ;;
   "pm list packages -d") [ "$CAST_WIZ" = off ] && echo "package:com.google.android.tungsten.setupwraith" ;;
   *dumpsys*) n=$(( $(cat "$T/dumps" 2>/dev/null || echo 0) + 1 )); echo $n > "$T/dumps"
@@ -143,7 +145,7 @@ while [ $# -gt 0 ]; do [ "$1" = -o ] && : > "$2"; shift; done
 
 def run(name, fail_switches, first_drop, down_polls=0, verify="", verifier=None, curl_mode="", vanish="", illegal="", wraith_home="", wifi="", nohome="", install_mode="",
         watchdog="", restore_fail="", tcltv="", dialog="", verifier_empty="", pkgs="", stockless="", pkgextra="", query_extra="", seed=None, seed_home="", seed_marker=False, role="", resolve="", script="install.sh", args=("launcher",),
-        seed_ask="", wifi_after="", wifi_read="", start="", front="", drop_at="", seed_step=False, disabled="", cast="", cast_wiz="", seed_cast="", wifi_wait=None):
+        seed_ask="", wifi_after="", wifi_read="", start="", front="", drop_at="", seed_step=False, disabled="", cast="", cast_wiz="", seed_cast="", wifi_wait=None, maker="", device=""):
     t = Path(tempfile.mkdtemp())
     tree, bin_ = t / "tree", t / "bin"
     (tree / "optimize" / "lists").mkdir(parents=True); bin_.mkdir()
@@ -176,7 +178,7 @@ def run(name, fail_switches, first_drop, down_polls=0, verify="", verifier=None,
         (t / "verifier").write_text(verifier + "\n")
     env = dict(os.environ, QUERY_EXTRA=query_extra, PKGS=pkgs, STOCKLESS=stockless, PKGEXTRA=pkgextra, VERIFIER_EMPTY=verifier_empty, DIALOG=dialog, TCLTV=tcltv, RESTORE_FAIL=restore_fail, WATCHDOG=watchdog, ROLE=role, RESOLVE=resolve, INSTALL_MODE=install_mode, NOHOME=nohome, WRAITH_HOME=wraith_home, WIFI=wifi, ILLEGAL=illegal, VERIFY=verify, VANISH=vanish, CURL_MODE=curl_mode, PATH=f"{bin_}:{os.environ['PATH']}", PY=str(bin_ / "py"), T=str(t),
                FAIL_SWITCHES=str(fail_switches), FIRST_DROP=first_drop, DOWN_POLLS=str(down_polls),
-               WIFI_AFTER=wifi_after, WIFI_READ=wifi_read, START=start, FRONT=front, DROP_AT=drop_at, DISABLED=disabled, CAST=cast, CAST_WIZ=cast_wiz, **({"URTV_WIFI_WAIT": wifi_wait} if wifi_wait is not None else {}), J=str(tree / "optimize" / "run" / "home-switch.json"))
+               WIFI_AFTER=wifi_after, WIFI_READ=wifi_read, START=start, FRONT=front, DROP_AT=drop_at, DISABLED=disabled, CAST=cast, CAST_WIZ=cast_wiz, MAKER=maker, DEVICE=device, **({"URTV_WIFI_WAIT": wifi_wait} if wifi_wait is not None else {}), J=str(tree / "optimize" / "run" / "home-switch.json"))
     r = subprocess.run(["bash", str(tree / "optimize" / script), *args], env=env, capture_output=True, text=True)
     log = (t / "log").read_text().split() if (t / "log").exists() else []
     af = tree / "optimize" / "run" / "wifi-ask.txt"
@@ -251,6 +253,12 @@ cases = [
     ("a Chromecast set up before (the wizard already off): it says so and how to bring casting back; nothing else changes",
      run("cc5", 0, "", wifi="other", cast="yes", cast_wiz="off"),
      lambda c, o, l: c == 0 and "it is off (an earlier setup turned it off)" in o and "dock.sh cast on" in o and "Launcher is home" in o),
+    ("a TCL G07 whose wizard has the same cast provider (tester 4.2): NOT a Chromecast, the wizard off as before, nothing about casting",
+     run("cc7", 0, "", wraith_home="yes", wifi="other", cast="yes", maker="TCL", device="g07"),
+     lambda c, o, l: c == 0 and l.count("wraith-off") == 1 and "cast credentials" not in o and "Launcher is home" in o and "cast-read" in l),
+    ("a Google TV Streamer told by its codename (kirkwood) when the maker reads otherwise: casting kept",
+     run("cc8", 0, "", wraith_home="yes", wifi="other", cast="yes", maker="unknown", device="kirkwood"),
+     lambda c, o, l: c == 0 and "wraith-off" not in l and "holds its cast credentials" in o),
     ("not a Chromecast: the cast check changes nothing (the wizard off as before)",
      run("cc6", 0, "", wraith_home="yes", wifi="other"),
      lambda c, o, l: c == 0 and l.count("wraith-off") == 1 and "cast credentials" not in o),
