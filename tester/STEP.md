@@ -1,4 +1,4 @@
-«✅ GO — build 190» — run step 31 (end of this file). TV muted throughout. Owner asleep: do everything yourself, quietly.
+«✅ GO — build 193» — run step 32 (end of this file). TV muted throughout. Owner asleep: quiet.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -558,3 +558,15 @@ Re-check step 30's fixes plus the smoothness / low-RAM work:
 9. Mute log: any `mute changed: muted=false by=not us`.
 Z. Restore as in step 28b Z.
 Report as «step 31» in REPORT.md and push.
+
+## step 32 — build 193 (update; TV muted; restore in Z)
+1. Stock card (2222, 1120, 1211 + AAPL): «رجوع» shows its label, first focus on it with a ring; action button full size; ▼/▲ ring the scroll body only when it overflows.
+2. Tray jank: repeat step 31's gfxinfo measure (same keys, same timing, photo look on) and compare with 19.59% / 42 ms median.
+3. Live tick with unchanged prices: frames in 190 s (expect ~0 except the minute change).
+4. Markets live: `asked` now counts only open exchanges; log lines with `reason=closed` present; parsed = asked.
+5. `dock.sh cast status` on this TCL: «not a Google cast device», nothing changed.
+6. Field-report fixes: Badr al-Turki in the reciters list and one surah plays (muted check of playback state only); Cairo Quran radio (station 11) plays for 60 s (it's a radiojar redirect — report clearly); own-photos limit reads 10 on this 2 GB TV (low RAM); «صرف العملات» rows show «غرام الذهب …» for KWD/BHD.
+7. Unmapped keys: press the TCL remote's special keys (Video/Channel/Web if present) and report the `UrTVKeys unmapped key=` lines.
+8. Greeting check if the time allows (evening / night rule).
+Z. Restore as in step 28b Z.
+Report as «step 32» in REPORT.md and push.
