@@ -1,4 +1,4 @@
-«✅ GO — step 38 now: photo packs are live (build 204). TV muted.
+«✅ GO — step 38 again now: packs are on next too (0b4c47f), build 205 sees them. TV muted.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
