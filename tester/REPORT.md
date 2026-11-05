@@ -1144,3 +1144,6 @@ The page: «Updated 10:20 AM», TASI 10,116, unchanged at 13:04 and 13:06. The w
 So the schedule is not being fired, or not nearly as often as written. GitHub is known to delay or drop scheduled runs, but why here I can't tell from this list. Plain cause on the TV side: none seen.
 What a viewer gets: a price up to hours old during the session, with the true time beside it. The time is small, and the card has no sign that it is old.
 **Not watched:** the page's `MARKET_TRUST_MS` is 3 h, so about 13:20 today these quotes stop being trusted and the page tries its own route (from the source, not from a run). I did not stay to see what it shows then.
+
+Mute note for the field report: muted at both shots. `UrTVMute` logged at 13:07:19 `mute changed: muted=false by=not us`, and the home came to the front about then, with the owner at the TV and nothing playing. Probably the owner's own remote; not proven. I did not mute over him; I will check again before the next test.
+At 12:59:50, when the TV woke, the log shows `ADJUST_UNMUTE` from android and from `com.tcl.tv`, each muted again by `sa.urtv.home` within about 1.4 s. So the guard worked there.
