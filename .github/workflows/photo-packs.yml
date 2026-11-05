@@ -40,6 +40,6 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout --orphan data-photo-packs
           git rm -rfq --cached .
-          git add -f packs-candidates packs-built 2> /dev/null || true
+          for d in packs-candidates packs-built; do [ -d "$d" ] && git add -f "$d"; done
           git commit -qm "Photo packs: candidates and builds" || exit 0
           git push -f origin data-photo-packs
