@@ -81,7 +81,7 @@ check("13: a game the league's file also has is read from the league's copy (a f
 mka = text(HOME / "MarketsActivity.java")
 sc = mka.split("private void stockCard(")[1].split("/** «الأسعار متأخرة")[0]
 check("14: the stock card fits the safe area: its text part is a scroll view that shrinks when the card is taller than the screen minus 5 % top and bottom, the action buttons and «رجوع» are a fixed footer; the first focus is «رجوع», never an action; the chart is shorter",
-      "final ScrollView bodyScroll = new ScrollView(this);" in sc and "box.addView(bodyScroll, new LinearLayout.LayoutParams(-1, -2));" in sc and "max = h - 2 * Math.round(h * 0.05f), over = box.getHeight() - max" in sc
+      "final ScrollView bodyScroll = new ScrollView(this);" in sc and "box.addView(bodyScroll, new LinearLayout.LayoutParams(-1, -2));" in sc and "int room = screenH - 2 * Math.round(screenH * 0.05f)" in sc and "inner.measure(wide, any);" in sc and "bodyScroll.setForeground(ring);" in sc and "box.post(() -> back.requestFocus());" in sc
       and "back.requestFocus();" in sc and "(made.isEmpty() ? back : made.get(0)).requestFocus()" not in sc and "chartBlock(null, q, 40, 104, MarketData.symbol(code))" in sc and "made.get(0).requestFocus()" not in sc)
 check("14: after an action that draws the page again the focus is on the row that opened the card (its place is kept), not on «مباشر»", "focusIndexAfter = from == null ? -1 : all.indexOf(from);" in sc and "if (at < 0 && focusIndexAfter >= 0) at = focusIndexAfter;" in mka)
 check("15: both number pads' key rows are not baseline-aligned (the bigger «٫» pushed the other keys 8 px down and cut their bottoms)", mka.count("line.setBaselineAligned(false);") == 2)
@@ -103,4 +103,11 @@ check("30b-3: a US symbol's chart axis shows New York's hours, and its card show
 tp = text(ROOT / "src/template.html")
 check("30b-4: «تغيّر الأسهم» as an amount applies to every row, Saudi ones too", "CONFIG.stkChg === 'amount' && !isSA(k)" not in tp and "CONFIG.stkChg === 'amount'\n" in tp)
 check("30b-5: «السوق» has a small row of S&P 500, Nasdaq and Dow, asked live while New York is open", "private View usIndices()" in mka and '{"^GSPC", "^IXIC", "^DJI"}' in mka and "usIndices()" in mka.split("private void market()")[1].split("private View usIndices")[0])
+
+# step 31
+main31 = text(HOME / "MainActivity.java")
+check("31-3: the glow changes colour by cross-fading two layers (alpha), not by building a full-screen gradient on every frame, and does nothing for the colour it has; fadeGlow starts an animator only when its target changes",
+      "glowTop.animate().alpha(1f).setDuration(450)" in main31 and "ValueAnimator" not in main31 and "if (to == glowColor && glowTop.getAlpha() == 0f) return;" in main31
+      and "if (glowAlphaTo != alpha)" in main31 and "if (shadeTo != shade)" in main31)
+check("31-4: a live tick that says the same header text draws nothing", "if (!shown.equals(lastHeader))" in mka and "contentEquals(cardNote.getText())" in mka)
 sys.exit(1 if failed else 0)

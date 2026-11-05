@@ -1,7 +1,5 @@
 package sa.urtv.home;
 
-import android.animation.ArgbEvaluator;
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -102,7 +100,8 @@ public class MainActivity extends Activity {
     private LinearLayout content, dockRow;
     private FrameLayout hero;
     private LinearLayout grid;
-    private View glow;
+    private View glow, glowBase, glowTop;
+    private float glowAlphaTo = -1f, shadeTo = 0f;
     private ImageView wallBack, wallFront;
     private View gridShade;
     private String[] wallpapers = new String[0];
@@ -130,7 +129,6 @@ public class MainActivity extends Activity {
     // [/updates bell]
     private Greeting greetingLine;
     private int glowColor = 0xFF3A3A3A;
-    private ValueAnimator glowAnim;
     private int lastFocusedId = View.NO_ID;
     private boolean firstShow = true;
     private int packageSeq;
@@ -396,7 +394,13 @@ public class MainActivity extends Activity {
             wallpapers = getAssets().list("wallpapers");
         } catch (java.io.IOException ignored) { }
 
-        glow = new View(this);
+        FrameLayout glowBox = new FrameLayout(this);   // two layers that cross-fade by alpha (the render thread's work): a colour change no longer builds a full-screen gradient on every frame
+        glowBase = new View(this);
+        glowTop = new View(this);
+        glowTop.setAlpha(0f);
+        glowBox.addView(glowBase, new FrameLayout.LayoutParams(-1, -1));
+        glowBox.addView(glowTop, new FrameLayout.LayoutParams(-1, -1));
+        glow = glowBox;
         root.addView(glow, new FrameLayout.LayoutParams(-1, -1));
         setGlow(glowColor);
 
@@ -2721,28 +2725,37 @@ public class MainActivity extends Activity {
 
     // ---------------------------------------------------------------- glow
 
-    private void setGlow(int color) {
-        glowColor = color;
+    private GradientDrawable glowShape(int color) {
         GradientDrawable g = new GradientDrawable();
         g.setGradientType(GradientDrawable.RADIAL_GRADIENT);
         g.setGradientCenter(0.5f, 0.78f);
         g.setGradientRadius(getResources().getDisplayMetrics().widthPixels * GlowLook.RADIUS);
         g.setColors(new int[]{withAlpha(color, GlowLook.CENTRE_ALPHA), withAlpha(color, GlowLook.MID_ALPHA), Color.TRANSPARENT});
-        glow.setBackground(g);
+        return g;
     }
 
+    private void setGlow(int color) {
+        glowColor = color;
+        glowBase.setBackground(glowShape(color));
+    }
+
+    /** the glow takes the focused tile's colour: the new colour is laid over the old one and faded in (alpha only; the same colour again does nothing) */
     private void animateGlow(int to) {
-        if (glowAnim != null) glowAnim.cancel();
-        glowAnim = ValueAnimator.ofObject(new ArgbEvaluator(), glowColor, to);
-        glowAnim.setDuration(450);
-        glowAnim.addUpdateListener(a -> setGlow((int) a.getAnimatedValue()));
-        glowAnim.start();
+        if (to == glowColor && glowTop.getAlpha() == 0f) return;
+        glowTop.animate().cancel();
+        glowBase.setBackground(glowShape(glowColor));   // what the last fade was heading to is the ground now
+        glowTop.setBackground(glowShape(to));
+        glowTop.setAlpha(0f);
+        glowColor = to;
+        glowTop.animate().alpha(1f).setDuration(450).withEndAction(() -> { glowBase.setBackground(glowShape(glowColor)); glowTop.setAlpha(0f); }).start();
     }
 
     private void fadeGlow(float alpha) {
-        glow.animate().alpha(alpha).setDuration(300).start();
+        // each move between tiles asks again for the same values: an animator is started only when the target changes (a held arrow started two every step)
+        if (glowAlphaTo != alpha) { glowAlphaTo = alpha; glow.animate().alpha(alpha).setDuration(300).start(); }
         // The grid sits over the photo's busiest middle part, so dim it while browsing apps.
-        gridShade.animate().alpha(alpha < 1f ? 1f : 0f).setDuration(300).start();
+        float shade = alpha < 1f ? 1f : 0f;
+        if (shadeTo != shade) { shadeTo = shade; gridShade.animate().alpha(shade).setDuration(300).start(); }
     }
 
     // ---------------------------------------------------------------- wallpaper

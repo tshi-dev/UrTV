@@ -178,7 +178,7 @@ public class MarketsActivity extends Activity {
             }
         }
         if (shownLive != MarketData.liveFresh(liveOkAt, now)) redraw();   // «مباشر» to «الأسعار متأخرة» (or back) in the footer
-        if (cardNote != null) cardNote.setText(sourceText());
+        if (cardNote != null) { String t = sourceText(); if (!t.contentEquals(cardNote.getText())) cardNote.setText(t); }
         header();
         main.postDelayed(liveTick, MarketData.liveDelay(liveFails, Ram.low(this)));
     }
@@ -435,8 +435,11 @@ public class MarketsActivity extends Activity {
             String at = clock(k.get(Calendar.HOUR_OF_DAY), k.get(Calendar.MINUTE));
             s.append(live ? S.t("آخر تحديث %s", at) + " · " + S.t("مباشر") : S.t("آخر تحديث %s · أسعار متأخرة", at));
         }
-        state.setText(s);
+        String shown = s.toString();
+        if (!shown.equals(lastHeader)) { lastHeader = shown; state.setText(s); }   // a live tick that says the same draws nothing (the minute of «آخر تحديث» is all that changes)
     }
+
+    private String lastHeader;
 
     /** Tadawul's trading days, Sunday to Thursday (MarketData.nextOpen is always one of them) */
     private static final String[] DAYS = {S.n("الأحد"), S.n("الاثنين"), S.n("الثلاثاء"), S.n("الأربعاء"), S.n("الخميس")};
@@ -1289,16 +1292,33 @@ public class MarketsActivity extends Activity {
         // «رجوع» under the actions, like the other pages' buttons (the card had no button to leave it by: step 28b, the owner): ▼ reaches it, OK closes the card
         final View back = button(S.t("رجوع"), false, v -> d.dismiss());
         box.addView(back, gap(made.isEmpty() ? 20 : 12));
+        // too tall for the safe area (y 54 to 1026 at 1080p): the text part is given the height that is left once the buttons and «رجوع» have theirs, worked out BEFORE the window opens
+        // (build 191: the window clipped the box, the last child was squeezed to 61 px and «رجوع» showed no label). The text part then scrolls, and has a ring when it holds the focus.
+        int sw = Math.min(getResources().getDisplayMetrics().widthPixels - dp(48), dp(760)) - box.getPaddingLeft() - box.getPaddingRight();
+        int wide = View.MeasureSpec.makeMeasureSpec(sw, View.MeasureSpec.EXACTLY), any = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        inner.measure(wide, any);
+        int foot = 0;
+        if (!made.isEmpty()) { buttons.measure(wide, any); foot += buttons.getMeasuredHeight() + dp(20); }
+        back.measure(wide, any);
+        foot += back.getMeasuredHeight() + dp(made.isEmpty() ? 20 : 12);
+        int screenH = getResources().getDisplayMetrics().heightPixels;
+        int room = screenH - 2 * Math.round(screenH * 0.05f) - box.getPaddingTop() - box.getPaddingBottom() - foot;
+        if (inner.getMeasuredHeight() > room) {
+            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) bodyScroll.getLayoutParams();
+            lp.height = Math.max(dp(96), room);
+            bodyScroll.setLayoutParams(lp);
+            bodyScroll.setFocusable(true);   // ▲ ▼ scroll it only when it holds what the screen cannot show
+            android.graphics.drawable.StateListDrawable ring = new android.graphics.drawable.StateListDrawable();
+            android.graphics.drawable.GradientDrawable g = new android.graphics.drawable.GradientDrawable();
+            g.setCornerRadius(dp(12));
+            g.setStroke(dp(3), look.ring != 0 ? look.ring : ACCENT);   // a ring, never a fill over the text
+            ring.addState(new int[] {android.R.attr.state_focused}, g);
+            bodyScroll.setForeground(ring);
+        }
+        back.setMinimumHeight(back.getMeasuredHeight());
         d.show();
         back.requestFocus();   // never an action that changes the list: OK on a card just opened closes it (step 30: the only reachable button added a stock the person had not read)
-        box.post(() -> {   // too tall for the safe area: the text part shrinks (it scrolls, and takes the focus then so ▲ ▼ reach what is cut), the buttons stay whole
-            int h = getResources().getDisplayMetrics().heightPixels, max = h - 2 * Math.round(h * 0.05f), over = box.getHeight() - max;
-            if (over <= 0) return;
-            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) bodyScroll.getLayoutParams();
-            lp.height = Math.max(dp(96), bodyScroll.getHeight() - over);
-            bodyScroll.setLayoutParams(lp);
-            bodyScroll.setFocusable(true);
-        });
+        box.post(() -> back.requestFocus());   // and again after the first layout, which must not hand it to the scroll view
     }
 
     /** «الأسعار متأخرة · المصدر: Yahoo Finance»: small, in the footer's style, under the prices (the file says whose they are) */
