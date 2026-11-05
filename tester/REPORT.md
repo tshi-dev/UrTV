@@ -1295,3 +1295,37 @@ The owner confirmed the push in chat first, the 10 as they are. Branch `work/mar
 `r1-tasks.png` redone and overwritten on `work/marketing`: the 3 demo tasks («اشتر خبز», «موعد الطبيب» with its reminder, «اتصل بالوالدة»), look «رملي», no blur. The owner cleared his own 2 tasks himself first (`saver.sh tasks clear` on his side; `tasks list` said `no tasks` before I started). The 3 demo tasks are removed; list `no tasks`, so the TV has no tasks now. `p2` went up earlier. Demo city was Makkah.
 Note: on the classic home the tasks button looks like a microphone (label «المهام»); not looked into. One slip of mine: my walk opened the «المصادر» menu 2 times; closed with Back, no source chosen.
 Restored: `show` same as before these shots, lang **en**. Dock (reread after the name lag), PIN and locked list, tasks, photos, adhan, family DNS, disabled (21), packages (177), Home holder, saver same. Muted, nothing playing, TV asleep as I found it. **restored: yes.**
+
+## step 38 — BLOCKED on this TV: build 205 lists no packs (Fri 00:24–00:45; TV muted; nothing pushed to work/marketing)
+**The page shows only «صورنا» and «لا توجد مجموعات للتنزيل الآن». So items 1–4 could not run on the TV.**
+
+### Why
+- This TV is on **build 205, from channel next**, not 204. That's my doing: the steps asked for channel next. Its version code is above the release, so it cannot go back without an uninstall, which I won't do
+- `PackStore.INDEX_URL = PhotoCache.REPO + "photos/packs.json"`, and `REPO` uses `BuildConfig.BRANCH`
+- `photos/packs.json` by branch, plain GET: **next 200, 32 bytes** (no packs); **master 200, 2,695 bytes** (the 5). `0b4c47f8` is on master only
+- I inferred 205's `BRANCH` is next from this, and the page matches; I did not read it out of the APK
+
+### What would unblock it (your call)
+Either of: the master `photos/packs.json` on next, or a master build numbered above 205. **The same affects anyone on a next build.** Also: with channel latest, this TV won't take a master build until its number passes 205, so the owner's TV doesn't get packs by itself for now.
+
+### Checked from the PC instead (not on the TV)
+| pack | listed | zip bytes | sha256 | jpgs | download |
+|---|---|---|---|---|---|
+| space, الفضاء | 12 | 4,120,027 | ✓ | 12 | 2.4 s |
+| nature, الطبيعة | 16 | 6,400,415 | ✓ | 16 | 2.0 s |
+| sea, البحر والشواطئ | 19 | 8,175,528 | ✓ | 19 | 2.3 s |
+| ksa-cities, مدن السعودية | 15 | 6,642,128 | ✓ | 15 | 4.6 s |
+| haramain, الحرمين | 17 | 7,708,482 | ✓ | 17 | 2.2 s |
+79 photos, 33.0 MB. Every photo 1920×1080. Each zip holds only N.jpg and `credits.json`, and each credits file has entries with author, licence and link (read the first of each; I did not check all). Deleted from the PC after. This TV has 1.9–2.0 GB free. Times are the PC's network, not the TV's.
+
+Looked at all 79, at thumbnail size only (240×135), so small text or faces can't be ruled out:
+- **Repeats across packs:** ksa-cities 2 looks like haramain 17 (the Prophet's Mosque), and ksa-cities 8 like haramain 13 (Quba). With both packs on, the same place comes up twice
+- **People:** haramain 4, 6, 8, 10, 12, 16 are full of worshippers as a crowd, none as a single subject. Fits the place, but the page's note says «بلا أشخاص». Your call on those words
+- **Bright, for white text over them:** nature 13 (almost all white), also nature 8 and sea 7, 10. Needs a look on the TV with the clock over them, not done
+- **Very dark, little to see:** ksa-cities 9 (a city at night from space), space 8
+
+### Not done
+`b1-packs.png`, `b2-pack-1.png`, `b3-pack-2.png`; download on the TV, time and errors; «حقوق الصور» on the page; 10 min rotation; delete and re-download; tray and home with packs on. No pictures pushed.
+
+### Z
+No packs were added. `import`, stocks, dock, look, appearance, night dim, photo interval by hand, lang **en**. `show` same as before. Same: dock (reread), PIN and locked list, tasks, photos, adhan, family DNS, disabled (21), packages (177), Home holder, saver. Muted, TV asleep as I found it. **restored: yes.**
