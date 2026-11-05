@@ -690,8 +690,8 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
                     handler.post(() -> {
                         if (!wish.current(g) || player == null || source != Prefs.SOURCE_RADIO || !addr.equals(currentUrl)) { feed.close(); return; }
                         try {
-                            liveSource = new LiveSource(feed);
-                            player.setDataSource(liveSource);
+                            liveProxy = LiveProxy.start(feed);
+                            player.setDataSource(liveProxy.url());
                             player.prepareAsync();
                             Log.i(TAG, "live feed from " + hostOf(addr));
                         } catch (Exception e) {
@@ -738,8 +738,8 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     /** the resolved address of a station got no sound: its own address was given to the player once (reset by every pick) */
     private boolean radioDirectTried;
 
-    /** the audio of a radiojar station, read by us (closed with the player) */
-    private LiveSource liveSource;
+    /** the audio of a radiojar station, read by us and served to the player on 127.0.0.1 (closed with the player) */
+    private LiveProxy liveProxy;
 
     /** a station that has not started in this long is said to have failed */
     static final long RADIO_WAIT_MS = 20_000;
@@ -946,7 +946,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             try { louder.release(); } catch (RuntimeException ignored) {}
             louder = null;
         }
-        if (liveSource != null) { liveSource.close(); liveSource = null; }
+        if (liveProxy != null) { liveProxy.close(); liveProxy = null; }
         if (player != null) {
             try { player.reset(); } catch (Exception ignored) {}
             try { player.release(); } catch (Exception ignored) {}

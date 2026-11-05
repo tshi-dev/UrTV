@@ -44,6 +44,20 @@ public final class LiveFeedRun {
             check("the end of a stream that ended is -1", f.readAt(audio.length, buf, 0, 10, 3000) == -1, "");
             check("the first bytes can be read again (the player's probe)", f.readAt(0, buf, 0, 4, 3000) == 4 && buf[0] == audio[0], "");
             f.close();
+            // the proxy: an http stream on 127.0.0.1 of what the feed read, from its first byte
+            tokenGets.set(0);
+            LiveFeed pf = new LiveFeed(base + "/live", 3000, local);
+            pf.start();
+            LiveProxy px = LiveProxy.start(pf);
+            java.net.URL pu = new java.net.URL(px.url());
+            check("the proxy listens on this device only", "127.0.0.1".equals(pu.getHost()), pu.getHost());
+            java.net.HttpURLConnection hc = (java.net.HttpURLConnection) pu.openConnection();
+            hc.setReadTimeout(5000);
+            java.io.ByteArrayOutputStream bo = new java.io.ByteArrayOutputStream();
+            try (java.io.InputStream is = hc.getInputStream()) { byte[] tmp = new byte[8192]; int k; while (bo.size() < audio.length && (k = is.read(tmp)) > 0) bo.write(tmp, 0, k); }
+            check("the proxy answers audio/mpeg with every byte of the stream in order", "audio/mpeg".equals(hc.getContentType()) && java.util.Arrays.equals(java.util.Arrays.copyOf(bo.toByteArray(), audio.length), audio), bo.size());
+            check("a second connection gets the stream from its start too (the player may sniff, then play)", tokenGets.get() == 1, tokenGets.get());
+            px.close();
             LiveFeed g = new LiveFeed(base + "/gone", 3000, local);
             String err = "";
             try { g.start(); } catch (Exception e) { err = e.getMessage(); }

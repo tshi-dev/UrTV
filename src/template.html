@@ -1311,6 +1311,7 @@ async function loadPrayers(){
   const url = `https://api.aladhan.com/v1/timings/${want}`
             + `?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}`
             + `&method=${CONFIG.prayerMethod}&latitudeAdjustmentMethod=3&timezonestring=${encodeURIComponent(CONFIG.timezone)}`;
+  if(!PRAYERS.length) try{ buildPrayers(computePrayers()); PRAYERS_DAY = want + '|calc'; tickPrayer(); renderPanel(false, 'prayers', 'adhkar', 'prayerrow', 'nextprayer'); }catch(_){}   // the computed times at once: the cards were «—» until the answer came
   try{
     if(CONFIG.prayerMethod >= 100) throw 0;   // not an Aladhan method: computed only
     const r = await fetchT(url, 12000);

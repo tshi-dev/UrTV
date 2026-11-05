@@ -19,7 +19,7 @@ def check(name, ok, detail=""):
 
 if shutil.which("javac") and shutil.which("java"):
     tmp = tempfile.mkdtemp()
-    r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(T / "StreamUrl.java"), str(T / "LiveFeed.java"), str(ROOT / "tests/LiveFeedRun.java")], capture_output=True, text=True)
+    r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(T / "StreamUrl.java"), str(T / "LiveFeed.java"), str(T / "LiveProxy.java"), str(ROOT / "tests/LiveFeedRun.java")], capture_output=True, text=True)
     check("it compiles", r.returncode == 0, r.stderr)
     if r.returncode == 0:
         out = subprocess.run(["java", "-cp", tmp, "sa.urtv.home.tilawah.LiveFeedRun"], capture_output=True, text=True, timeout=120).stdout
@@ -32,7 +32,9 @@ else:
     print("SKIP the Java cases: no javac")
 
 svc = (T / "MusicService.java").read_text(encoding="utf-8")
-check("a radiojar station goes to the player as a MediaDataSource fed by LiveFeed; any other address as before",
-      "StreamUrl.cleartextAllowed(hostOf(url))" in svc and "player.setDataSource(liveSource);" in svc and "player.setDataSource(url);" in svc and "if (liveSource != null) { liveSource.close(); liveSource = null; }" in svc)
-check("LiveSource is a MediaDataSource of unknown size", "extends MediaDataSource" in (T / "LiveSource.java").read_text(encoding="utf-8") and "return -1;" in (T / "LiveSource.java").read_text(encoding="utf-8"))
+check("a radiojar station is served to the player as an http stream on 127.0.0.1 by LiveProxy (a MediaDataSource stalled the TV's sniffer); any other address as before",
+      "StreamUrl.cleartextAllowed(hostOf(url))" in svc and "liveProxy = LiveProxy.start(feed);" in svc and "player.setDataSource(liveProxy.url());" in svc and "player.setDataSource(url);" in svc
+      and "if (liveProxy != null) { liveProxy.close(); liveProxy = null; }" in svc and not (T / "LiveSource.java").exists() and "MediaDataSource" not in svc)
+nsc = (ROOT / "android/launcher/src/main/res/xml/network_security_config.xml").read_text(encoding="utf-8")
+check("cleartext is allowed for radiojar.com and for 127.0.0.1 (the proxy) only", '<domain includeSubdomains="false">127.0.0.1</domain>' in nsc and nsc.count("<domain ") == 2)
 sys.exit(1 if failed else 0)

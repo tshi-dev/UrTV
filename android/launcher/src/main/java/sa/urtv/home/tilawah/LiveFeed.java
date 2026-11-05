@@ -8,8 +8,7 @@ import java.net.URL;
 /**
  * A live station read by us, not by the platform's player (tester step 32: radiojar's Cairo station gave nothing to MediaPlayer.setDataSource(url) from either the
  * resolved http address or the https original). We make the one GET ourselves, redirects included (an https -> http step only to a host the app allows cleartext for),
- * so a single-use token is spent by the request that reads the audio, and keep the last KEEP bytes in a ring that the player reads through a MediaDataSource
- * (LiveSource). Plain Java: tests/live_feed_test.py runs it against a local server.
+ * so a single-use token is spent by the request that reads the audio, and keep the last KEEP bytes in a ring that LiveProxy serves to the player as a local http stream. Plain Java: tests/live_feed_test.py runs it against a local server.
  */
 final class LiveFeed {
     static final int KEEP = 1 << 20, MAX_REDIRECTS = 5;
@@ -100,6 +99,9 @@ final class LiveFeed {
         for (int i = 0; i < n; i++) buf[off + i] = ring[(int) ((position + i) % KEEP)];
         return n;
     }
+
+    /** where a new reader starts: the first byte while the ring still holds it, else the live edge */
+    synchronized long startPosition() { return end <= KEEP ? 0 : end; }
 
     synchronized void close() {
         closed = true;

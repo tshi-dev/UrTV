@@ -50,7 +50,7 @@ python3 tests/reminder_fixes_test.py   # reminders: the next repeat stays on the
 python3 tests/spacing_178_test.py   # build 178 alignment: footers inside y 1026, gaps on the 8 px scale, matches and markets by keys
 python3 tests/setup_i18n_test.py   # «إعداد تلفزيوني» in English: the start, plan and progress screens (build 178 GO)
 python3 tests/stream_url_test.py   # the live stations: radiojar's https -> http redirect, qurango's random 500 tried again
-python3 tests/live_feed_test.py   # a radiojar station is read by us (LiveFeed) and handed to the player as a MediaDataSource
+python3 tests/live_feed_test.py   # a radiojar station is read by us (LiveFeed) and served to the player on 127.0.0.1 (LiveProxy)
 python3 tests/reboot_test.py
 python3 tests/tv_identity_test.py
 python3 tests/tv_read_only_test.py

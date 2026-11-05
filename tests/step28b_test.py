@@ -119,4 +119,10 @@ check("32: the matches page opens in its own ground (dark #17181B or sand) in th
       "cfg.pagesDark ? Color.rgb(0x17, 0x18, 0x1B)" in mt and "getWindow().setBackgroundDrawable" in mt and "web.setAlpha(0f);" in mt and "postVisualStateCallback" in mt and "web.postDelayed(reveal, 1500)" in mt)
 check("32: the screensaver's page is shown only once painted, on a dream window of its own ground", "if (hold) w.setAlpha(0f);" in sv and "postVisualStateCallback" in sv
       and "0xFF040E09" in text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/ScreenDream.java"))
+
+# step 33
+check("33-2: the screensaver page opened as an activity has the page's ground (#040E09) as its window background, like the dream",
+      "0xFF040E09" in text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/MainActivity.java"))
+check("33-3: the prayer cards have the computed times at once (not «—» until the network answers), and the answer replaces them",
+      "if(!PRAYERS.length) try{ buildPrayers(computePrayers()); PRAYERS_DAY = want + '|calc'; tickPrayer();" in tp)
 sys.exit(1 if failed else 0)
