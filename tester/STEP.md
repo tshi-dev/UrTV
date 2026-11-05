@@ -1,4 +1,4 @@
-«✅ GO — step 37b now: redo 2 pictures (TV muted).»
+«✅ GO — step 38 now: photo packs are live (build 204). TV muted.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -634,3 +634,11 @@ Check each by eye, then commit ONLY these files to branch `work/marketing` under
 - `p2-phone-search.png`: it came out identical to the remote. Show the phone page's TYPING/search screen with a demo query typed (e.g. «سورة الكهف») sent to YouTube's search, not the remote pad.
 - `r1-tasks.png`: no blurred rows. Delete every task first, then add exactly 3 demo tasks («اشتر خبز», «موعد الطبيب» with a reminder time, «اتصل بالوالدة») and shoot; remove them after.
 Report «step 37b: pushed».
+
+## step 38 — photo packs live on master (build 204; TV muted; restore in Z)
+1. Settings › شاشة التوقف › «صور شاشة التوقف»: 5 packs listed with covers (الفضاء، الطبيعة، البحر والشواطئ، مدن السعودية، الحرمين) + «صورنا». Shot `b1-packs.png` (demo-clean) → push to work/marketing marketing/4.2b/ (overwrite b1-own-photos.png use is fine too).
+2. «نزّل» each pack: time, size, any error; all 5 on the TV. «حقوق الصور»: credits show for ksa-cities and haramain (author · licence · link).
+3. Start the screensaver for ~10 min: photos rotate across packs + «صورنا»; no photo with text/people as subject; note any that look bad or cropped wrong (pack + number). Shots `b2-pack-1.png`, `b3-pack-2.png` of two nice ones (clock + cards over a pack photo) → push to work/marketing.
+4. «حذف» one pack frees its space; re-download works. Low-RAM: no slowdown in tray/home after packs.
+Z. Delete the packs you added only if the TV had none before (keep it as found), «صورنا» on, lang en.
+Report «step 38» in REPORT.md and push.
