@@ -52,6 +52,7 @@ public final class AppsEditRun {
                     out.append(e.changed()).append('|').append(e.moved() ? str(e.order()) : "keep").append('|').append(str(e.hiddenNow()))
                        .append('|').append(str(e.shownNow())).append('|').append(str(e.toFavourites())).append('\n');
                     break;
+                case "topup": out.append(str(AppsEdit.topUp(list(f[1]), list(f[2]), Integer.parseInt(f[3])))).append('\n'); break;   // CHOSEN REST MIN
                 case "arrange": out.append(str(AppsEdit.arrange(list(f[1]), "-".equals(f[2]) ? null : f[2]))).append('\n'); break;
                 case "allowed": out.append(AppsEdit.allowed("1".equals(f[1])) ? "edit" : "no").append('\n'); break;
                 case "gate": {   // entering the mode asks the settings' question: ParentalPolicy.MENU_ARRANGE, the «قفل الإعدادات» target, as «تعديل المفضلة»

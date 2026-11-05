@@ -43,6 +43,8 @@ import sa.urtv.home.BuildConfig;
  * uninstalled. The approach (download, check the signer, PackageInstaller) is from itsAbdulelah's pull request #10.
  */
 public final class PhoneUpdater {
+    /** what the screensaver hold waits for during the update (SaverHold) */
+    private static final String HOLD = "update install questions";
     public static final String ACTION_RESULT = "sa.urtv.home.PHONE_INSTALL_RESULT";
     private static final String TAG = "UrTVUpdate";
 
@@ -88,6 +90,7 @@ public final class PhoneUpdater {
             error = reason;
             detail = d;
             why = w;
+            if (!s.equals("waiting_owner") && !s.equals("downloading")) sa.urtv.home.setup.SaverHold.endIf(HOLD);   // the update's install questions are answered (or it stopped): the screensaver is free
             since = System.currentTimeMillis();
             r = listener;
         }
@@ -300,6 +303,7 @@ public final class PhoneUpdater {
                 set("error", "need_permission", "");
                 return status();
             }
+            sa.urtv.home.setup.SaverHold.begin(app, sa.urtv.home.setup.SaverHoldRule.UPDATE_MS, HOLD);   // from «اضغط للتحديث» to the last answer, at most 5 minutes
             if (found) set("downloading", "", "");
             else startQueue();
         }
@@ -492,6 +496,7 @@ public final class PhoneUpdater {
             // the target is what the file says, not what version.txt said: the screen compares it with the build that is installed then
             long target = archiveCode(c, file);
             if (target < 0 || !UpdateRecords.begin(store, (int) Math.min(target, 999_999_999L), pkg)) { fail(c, "failed", pkg, "record"); return; }
+            sa.urtv.home.UpdateCarry.before(c, (int) Math.min(target, 999_999_999L));   // right before our own replace: the mute and our accessibility entry, put back if it loses them
         }
         PackageInstaller installer = null;
         int id = -1;

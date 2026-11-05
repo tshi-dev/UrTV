@@ -36,7 +36,7 @@ check("the launcher reads it, and an older screensaver without the column means 
       'getColumnIndex("listen_pill")' in snap and 'listenPill = true' in snap and '"0".equals(cur.getString(l))) listenPill = false' in snap)
 row = settings.split('row("زر تلاوة وأذان"')[1].split("});")[0]
 check("the screensaver's settings have a row for it, and its help line says where the screen opens from when it is hidden",
-      "prefs.listenPill()" in row and "مخفي" in row and "قائمة التطبيق" in row and "يُتلى الآن" in row, row)
+      "prefs.listenPill()" in row and "مخفي" in row and "«افتح تلاوة وأذان»" in row and "يُتلى الآن" in row, row)
 
 # ---- the home screen: out of the row, not just invisible
 apply = main.split("private void applyListenPill(boolean setting) {")[1].split("\n    }\n")[0]
@@ -50,8 +50,8 @@ check("a build without the listening part (R.bool.show_listening false) never sh
 tick = main.split("applyListenPill(cfg.listenPillOn);")
 check("the minute tick applies the setting", len(tick) == 2 and "updateAdhanBar(cfg);" in tick[0][-80:], "")
 menu = main.split("private void showAppMenuNow(")[1].split("showMenu(anchor, labels, actions);")[0]
-check("hidden: the app menu has «تلاوة وأذان…», behind the same family lock as the button, and only then",
-      "if (listenPillHidden()) {" in menu and 'launchGuarded(ParentalPolicy.PILL_LISTEN, new Intent(this, sa.urtv.home.tilawah.MainActivity.class), "تلاوة وأذان")' in menu, menu)
+check("hidden: the settings' «افتح تلاوة وأذان» opens the screen through the home, behind the same family lock as the button (the app's options are about the app only)",
+      'row("افتح تلاوة وأذان"' in settings and 'openHome("listen")' in settings and "تلاوة وأذان" not in menu)
 check("shown: the button itself is still behind that lock",
       'tilawah.setOnClickListener(v -> launchGuarded(ParentalPolicy.PILL_LISTEN, new Intent(this, sa.urtv.home.tilawah.MainActivity.class)' in main)
 check("the «يُتلى الآن» card still opens the player (long OK) behind the same lock",
@@ -64,13 +64,17 @@ check("«تلاوة وأذان» can open on its adhan tab (EXTRA_OPEN = adhan)"
 adhan_rows = til.split("KIND_ADHAN_TOGGLE, getString(R.string.adhan_auto)")[1].split("notifyDataSetChanged")[0] if "KIND_ADHAN_TOGGLE, getString(R.string.adhan_auto)" in til else ""
 check("that tab has everything: on or off, the voice, the Fajr voice, short, any key stops it, the volume",
       all(k in til for k in ("KIND_ADHAN_TOGGLE", "KIND_VOICE", "KIND_FAJR_VOICE", "KIND_SHORT", "KIND_STOPKEY", "KIND_VOLUME")), "")
-check("hidden: the app menu also has «إعدادات الأذان…», the same screen on that tab, behind the same family lock",
-      'labels.add("إعدادات الأذان…");' in menu and 'launchGuarded(ParentalPolicy.PILL_LISTEN, adhanSettingsIntent(), "إعدادات الأذان")' in menu
-      and menu.index("if (listenPillHidden()) {") < menu.index('labels.add("إعدادات الأذان…");'), menu)
+check("hidden: the settings' «الأذان» opens the same screen on its adhan tab, through the home, behind the same family lock",
+      "openAdhanSettings(); } });" in settings and 'launchGuarded(ParentalPolicy.PILL_LISTEN, adhanSettingsIntent(), S.t("إعدادات الأذان"))' in main)
 check("adhanSettingsIntent opens it on the adhan tab", 'putExtra(sa.urtv.home.tilawah.MainActivity.EXTRA_OPEN, "adhan")' in main)
 req = main.split("private void openRequested(Intent i) {")[1].split("\n    }\n")[0]
 check("the home opens the adhan settings when asked with open=adhan, behind the family lock (shown or hidden button), and forgets the request",
-      '"adhan".equals(i.getStringExtra("open"))' in req and 'i.removeExtra("open")' in req and "launchGuarded(ParentalPolicy.PILL_LISTEN, adhanSettingsIntent()" in req, req)
+      'String what = i == null ? null : i.getStringExtra("open");' in req and 'case "adhan":' in req and 'i.removeExtra("open")' in req
+      and req.index('i.removeExtra("open")') < req.index("switch (what)") and "launchGuarded(ParentalPolicy.PILL_LISTEN, adhanSettingsIntent()" in req.split('case "adhan":')[1].split("break;")[0], req)
+check("open=listen opens «تلاوة وأذان» behind the same lock as its button, open=center the panel behind its pill's lock (none in kids mode)",
+      'launchGuarded(ParentalPolicy.PILL_LISTEN, new Intent(this, sa.urtv.home.tilawah.MainActivity.class)' in req.split('case "listen":')[1].split("break;")[0]
+      and "guarded(ParentalPolicy.PILL_CENTER, null, ControlText.NAME, () -> control.open(centerPill))" in req.split('case "center":')[1].split("break;")[0]
+      and "!Parental.state(this).kids" in req.split('case "center":')[1].split("break;")[0], req)
 check("it asks on create and on a new intent (the home is singleTask)", "openRequested(getIntent());" in main and "openRequested(intent);" in main.split("protected void onNewIntent(Intent intent) {")[1].split("\n    }\n")[0])
 row2 = settings.split('row("الأذان"')[1].split("});")[0]
 check("the screensaver's settings have an «الأذان» row that brings the home up with open=adhan (the lock applies there, not here)",

@@ -38,20 +38,27 @@ leaked = [str(f.relative_to(ROOT)) for f in tracked("*Thmanyah*") + tracked("dis
 check("Thmanyah's files and the page that inlines them are not committed", not leaked, leaked)
 missing_fonts = [f for f in ("Thmanyah-Regular.woff2", "ThmanyahDisplay-Bold.woff2") if not (ROOT / "assets/fonts" / f).is_file()]
 check("Thmanyah is in place for the build (CI: the private urtv-fonts checkout; locally: your own copy)", not missing_fonts, missing_fonts)
-before = {n: (ROOT / "dist" / n).read_bytes() for n in ("tv.html",) if (ROOT / "dist" / n).is_file()}
+before = {n: (ROOT / "dist" / n).read_bytes() for n in ("tv.html", "tv-en.html") if (ROOT / "dist" / n).is_file()}
 r = subprocess.run([sys.executable, "src/build.py"], cwd=ROOT, capture_output=True, text=True)
 check("src/build.py runs", r.returncode == 0, r.stderr[-400:])
-for page, limit in (("urtv.html", 4_000_000), ("tv.html", 680_000)):   # tv.html: about 1000 verses and hadith (650 KB until the Gulf prayer methods and the checked Aladhan answer added 4 KB; 680 KB from the one release of 26 Oct: next-prayer card, crests, city line, adhan bar, then Wave 2 countries, Hijri offset and the 24-hour clock add about 11 KB)
+for page, limit in (("urtv.html", 4_000_000), ("tv.html", 740_000), ("tv-en.html", 740_000)):   # 740 KB with the football home and «المباريات» (docs/PROPOSALS-NOV2.md §1, about 42 KB), the reminder card and photo packs (about 7 KB) and the markets link; about 10 KB left. tv.html: about 1000 verses and hadith (650 KB until the Gulf prayer methods and the checked Aladhan answer added 4 KB; 680 KB from the one release of 26 Oct: next-prayer card, crests, city line, adhan bar, then Wave 2 countries, Hijri offset and the 24-hour clock add about 11 KB)
     html = (ROOT / "dist" / page).read_text(encoding="utf-8")
     left = sorted(set(re.findall(r"__[A-Z][A-Z_]+__", html)))
     check(f"{page}: every build token replaced", not left, left)
     check(f"{page}: size under {limit // 1000} KB", len(html.encode()) < limit, len(html.encode()))
+# Chromium breaks the joining of Arabic letters when letter-spacing is not 0, so the Arabic text under the clock (the subline, the panel and week labels) has none
+tv_page = (ROOT / "dist" / "tv.html").read_text(encoding="utf-8")
+def rule_of(selector):
+    m = re.search(re.escape(selector) + r"\{([^}]*)\}", tv_page)
+    return m.group(1) if m else ""
+cut = [sel for sel in (".subline", ".panel .label", ".week .hd") if re.search(r"letter-spacing:\s*[.0-9]*[1-9]", rule_of(sel))]
+check("Arabic text under the clock (.subline, .panel .label, .week .hd) has no letter-spacing: it cuts the letters apart", not cut and all(rule_of(s) for s in (".subline", ".panel .label", ".week .hd")), cut)
 # the build stamp is the time of the newest commit of the sources: a build before the commit carries the one before, so it is left out here
 unstamp = lambda b: re.sub(rb'(<meta name="urtv-build" content=")\d{14}', rb"\1", b)
 stale = [n for n, b in before.items() if unstamp((ROOT / "dist" / n).read_bytes()) != unstamp(b)]
 check("dist/tv.html carries the build stamp the app compares pages by (<meta name=\"urtv-build\">, 14 digits)",
       re.search(rb'<meta name="urtv-build" content="\d{14}">', (ROOT / "dist/tv.html").read_bytes()[:4096]) is not None)
-check("dist/ matched a fresh build (run src/build.py after editing src/)", len(before) == 1 and not stale, stale)
+check("dist/ matched a fresh build (run src/build.py after editing src/)", len(before) == 2 and not stale, stale)   # tv.html and tv-en.html («اللغة» English, its own 740 KB)
 
 
 # ---- the page must run on an old WebView (Chrome 66): no `?.` and no `??` (Chrome 80), no .flat() / .flatMap() (Chrome 69).
@@ -435,6 +442,10 @@ for f in texts:
     if re.search(r"(?i)tailscale|\.ts\.net", s):
         found.append(f"{f.relative_to(ROOT)}: tailscale")
 check("no private IPs, keys or network names", not found, found[:10])
+
+# «مباريات اليوم»'s broadcast marks (assets/shared/broadcast.json): every row with its source and seasons, none past its last season
+r = subprocess.run([sys.executable, ".github/tools/broadcast_check.py"], cwd=ROOT, capture_output=True, text=True)
+check("assets/shared/broadcast.json: each row has its source link and seasons, and none has outlived its deal", r.returncode == 0, r.stdout[-600:])
 
 print()
 print(f"{len(failures)} failed" if failures else "all checks passed")

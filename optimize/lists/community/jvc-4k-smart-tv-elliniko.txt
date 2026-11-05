@@ -1,0 +1,19 @@
+# UrTV community list: jvc-4k-smart-tv-elliniko
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/jvc-4k-smart-tv-elliniko/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: JVC
+# match-model: 4KSMARTTV KTCJVC4K24GV1
+# match-device: ELLINIKO
+
+tv.anoki.acr.controller
+com.google.android.feedback
+com.google.android.partnersetup
+android.autoinstalls.config.google.gtvpai
+com.mediatek.tv.retaildemo
+com.electronic.manual
+com.google.android.play.games
+com.google.android.apps.tv.dreamx
+com.google.android.katniss
+com.google.android.tungsten.setupwraith

@@ -1,0 +1,36 @@
+# UrTV community list: tcl-65c6k-google-tv
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/tcl-65c6k-google-tv/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: TCL
+# match-model: 65C6K G084KGB TCL9618
+# match-device: G08
+
+com.tcl.logkit
+com.tcl.usercenter
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+com.tcl.channelplus
+com.tcl.tv.tclhome_passive
+com.tcl.partnercustomizer
+com.tcl.interactive
+com.tcl.messagebox
+com.tcl.waterfall.overseas
+com.tcl.dashboard
+android.autoinstalls.config.google.gtvpai
+com.google.android.partnersetup
+com.tcl.exhibit
+com.tcl.esticker
+com.tcl.hotelmenu
+com.tcl.ocean.instructions
+com.tcl.repairguide
+com.tcl.smartalexa
+com.tcl.guard
+com.tcl.UpdatePeripheral
+com.google.android.play.games
+com.google.android.youtube.tvmusic
+com.google.android.katniss

@@ -1,0 +1,461 @@
+#!/usr/bin/env python3
+"""A rendered check of the favourites tray (owner, build 180: «the apps go out, the name is not in its place»). Nobody had looked at the drawn box before
+the tester did; this runs the real launcher on the CI emulator and reads the REAL bounds (uiautomator dump) and pixels (screencap).
+
+  tray_check.py OUT_DIR          on the emulator (adb on PATH, both apps installed, stub apps installed, the launcher set as Home)
+
+For each density (2.0 and 1.5), each language (ar, en), the focus on the first and on the last tile, and the football layout with the matches widget focused:
+  - the tray stays inside the safe area (x 96..1824, y 54..1026), at rest and lowered;
+  - every tile that shows is a whole tile, fully inside the tray (the focused one, lifted and grown, with at least 8 px to spare); no sliver of another;
+  - the app's name is in ONE place, whichever tile has the focus: its start edge (right in Arabic, left in English) is the tray's inner padding (24 px),
+    its top and bottom do not move between the first and the last tile;
+  - nothing of the tile row is drawn outside the tray: the strips left and right of the tray, over the tile row's height, are the same pixels with the
+    focus on the first tile and on the last (the tiles are different in the two, the background is not).
+Anything it measures is written to OUT_DIR/tray-report.json; the screencaps and the dumps stay there for the artifact. Exit 1 on a failed rule.
+The analysis is plain functions on text and pixels: tests/tray_check_test.py runs them on made-up dumps.
+"""
+import json
+import re
+import subprocess
+import sys
+import time
+import xml.etree.ElementTree as ET
+from pathlib import Path
+
+W, H = 1920, 1080
+SAFE = (96, 54, 1824, 1026)   # x0 y0 x1 y1: the 5 % safe area
+INSET = 24                    # the tray's padding on all four sides
+TILE_W, TILE_H = 304, 170
+
+
+def tile_size(n=5):
+    """a tile's width and height when n show whole (tray inner width 1616 at 1080p, 24 between): (1616 - (n-1) x 24) / n, 16:9 («تطبيقات في الشريط», FavBar.tileW)"""
+    w = (1616 - 24 * (n - 1)) // n
+    return w, w * 9 // 16
+
+
+def tray_height(n=5):
+    """the tray's height when n show: the tile's height with 24 above and below it (FavBar.trayH: 218 for five)"""
+    return round(tile_size(n)[0] * 170 / 304) + 48
+LIFT_ROOM = 8                 # the focused tile (lifted 6, grown 1.08, ringed) keeps at least this much between it and the tray's edge
+
+
+def rect(bounds):
+    m = re.match(r"\[(-?\d+),(-?\d+)\]\[(-?\d+),(-?\d+)\]", bounds or "")
+    return tuple(int(x) for x in m.groups()) if m else None
+
+
+def nodes(xml_text):
+    out = []
+    for n in ET.fromstring(xml_text).iter("node"):
+        r = rect(n.get("bounds"))
+        if r:
+            out.append({"cls": n.get("class", ""), "text": n.get("text", ""), "desc": n.get("content-desc", ""), "focusable": n.get("focusable") == "true",
+                        "focused": n.get("focused") == "true", "rect": r})
+    return out
+
+
+def find_tray(ns):
+    """the tray: the horizontal scroll view, 1664 wide at 1080p, in the lower half of the screen (the lowest one if the screen has more)"""
+    c = [n for n in ns if n["cls"].endswith("HorizontalScrollView") and n["rect"][2] - n["rect"][0] > 1200 and n["rect"][3] - n["rect"][1] < 400]
+    return max(c, key=lambda n: n["rect"][3])["rect"] if c else None
+
+
+def summary(xml_text):
+    """a few lines for the CI log (the artifact may not be readable where the log is): every scroll view, the focusable nodes and the texts in the lower half"""
+    out = []
+    for n in nodes(xml_text):
+        if n["cls"].endswith("HorizontalScrollView"):
+            out.append(f"  scroll {list(n['rect'])}")
+        elif n["focusable"] and n["rect"][1] > 500:
+            out.append(f"  focusable{'*' if n['focused'] else ''} {n['cls'].split('.')[-1]} {list(n['rect'])}")
+        elif n["text"].strip() and n["rect"][1] > 500:
+            out.append(f"  text '{n['text'][:20]}' {list(n['rect'])}")
+    for n in nodes(xml_text):   # whatever else has the focus, wherever it is (a focus that left the tray shows here)
+        if n["focused"] and not (n["focusable"] and n["rect"][1] > 500):
+            out.append(f"  FOCUSED {n['cls'].split('.')[-1]} '{(n['desc'] or n['text'])[:20]}' {list(n['rect'])}")
+    return "\n".join(out[:40])
+
+
+def tiles(ns, tray, n=None):
+    """the favourites that show: focusable nodes inside the tray's height whose height is a tile's (a sliver is as tall, but narrower).
+    n: how many show whole (the bar-size setting); None: any size from 10 to 5 (the walk only needs to know whether a tile has the focus)."""
+    t0, t1 = tray[1], tray[3]
+    tw, th = tile_size(n or 10)
+    lo, hi = 0.8 * th, 1.3 * (tile_size(n)[1] if n else tile_size(5)[1])
+    out = [x for x in ns if x["focusable"] and not x["cls"].endswith("HorizontalScrollView") and x["rect"][1] >= t0 - 40 and x["rect"][3] <= t1 + 40
+           and lo <= x["rect"][3] - x["rect"][1] <= hi and x["rect"][2] > tray[0] - tw and x["rect"][0] < tray[2] + tw]
+    return sorted(out, key=lambda n: n["rect"][0])
+
+
+def name_label(ns, tray):
+    """the app's name: the biggest text just above the tray (the hint beside it is smaller)"""
+    c = [n for n in ns if n["text"].strip() and tray[1] - 140 <= n["rect"][3] <= tray[1] + 2 and n["rect"][1] >= 0
+         and "للخيارات" not in n["text"] and "for options" not in n["text"]]   # the hint beside the name (16 sp, as large as the name) is not the name
+    return max(c, key=lambda n: n["rect"][3] - n["rect"][1]) if c else None
+
+
+def analyse(xml_text, lang, focus, lowered=False, label_required=True, n=5, favs=7):
+    """-> (failures, measurements) for one dump"""
+    ns = nodes(xml_text)
+    tray = find_tray(ns)
+    if not tray:
+        return ["no tray found in the dump"], {}
+    if lowered:   # the accessibility bounds are cut at the screen's safe-area clip (986) while the tray is moved 40 px down: judge it by its top (808) and its resting height
+        if tray[1] != 808:
+            return [f"lowered, the tray starts at {tray[1]}, not 808"], {"tray": list(tray)}
+        tray = (tray[0], tray[1], tray[2], tray[1] + (986 - 768))
+    fails, m = [], {"tray": list(tray)}
+    x0, y0, x1, y1 = SAFE
+    if tray[0] < x0 or tray[1] < y0 or tray[2] > x1 or tray[3] > y1:
+        fails.append(f"the tray {tray} is outside the safe area {SAFE}")
+    tw = tile_size(n)[0]
+    ts = tiles(ns, tray, n)
+    m["tiles"] = [list(t["rect"]) for t in ts]
+    if len(ts) < 3:
+        fails.append(f"only {len(ts)} tiles found")
+    inner = (tray[0] + INSET, tray[1] + INSET, tray[2] - INSET, tray[3] - INSET)
+    for t in ts:
+        r = t["rect"]
+        w = r[2] - r[0]
+        if w <= 0:
+            continue   # a tile entirely outside the tray: the dump gives it no width, it is not drawn
+        if t["focused"]:
+            if r[0] < tray[0] + LIFT_ROOM or r[2] > tray[2] - LIFT_ROOM or r[1] < tray[1] + LIFT_ROOM or r[3] > tray[3] - LIFT_ROOM:
+                fails.append(f"the focused tile {list(r)} is closer than {LIFT_ROOM} px to the tray {list(tray)}")
+        else:
+            if w < tw - 8:
+                fails.append(f"a tile cut to {w} px at {list(r)} (a sliver)")
+            elif r[0] < inner[0] - 2 or r[2] > inner[2] + 2 or (not lowered and (r[1] < inner[1] - 2 or r[3] > inner[3] + 2)):
+                fails.append(f"a tile {list(r)} is not inside the tray's inner rect {list(inner)}")
+    if not lowered:   # step 28: no empty band under small tiles: the tray is as high as its tiles with the same inset above and below
+        steady = [t["rect"] for t in ts if not t["focused"] and t["rect"][2] - t["rect"][0] >= tw - 8]
+        want_h = tray_height(n)
+        if abs((tray[3] - tray[1]) - want_h) > 4:
+            fails.append(f"the tray is {tray[3] - tray[1]} high, {want_h} fit {n} tiles")
+        if steady:
+            above, below = steady[0][1] - tray[1], tray[3] - steady[0][3]
+            m["inset"] = [above, below]
+            if abs(above - below) > 3 or abs(above - 24) > 4:
+                fails.append(f"the tiles sit {above} px under the tray's top and {below} above its bottom, not 24 and 24")
+    whole = sorted([t["rect"] for t in ts if t["rect"][2] - t["rect"][0] >= tw - 8], key=lambda r: r[0])
+    m["whole"] = len(whole)
+    if focus == "first" and not lowered and len(whole) < min(n, favs):
+        fails.append(f"only {len(whole)} whole tiles of {tw} px show, {min(n, favs)} were set")
+    still = sorted([t["rect"] for t in ts if t["rect"][2] - t["rect"][0] >= tw - 8 and not t["focused"]], key=lambda r: r[0])   # the focused one is drawn grown: its gaps are not the rest's
+    for a, b in zip(still, still[1:]):
+        if b[0] - a[2] < 60 and abs(b[0] - a[2] - 24) > 3:   # two neighbours: 24 apart
+            fails.append(f"two tiles {list(a)} {list(b)} are {b[0] - a[2]} px apart, not 24")
+    label = None if lowered else name_label(ns, tray)   # lowered, the focus is on the matches widget: the texts above the tray are the widget's
+    if label:
+        r = label["rect"]
+        m["label"] = list(r)
+        edge = r[2] if lang == "ar" else r[0]
+        want = tray[2] - INSET if lang == "ar" else tray[0] + INSET
+        m["label_edge"], m["label_want"] = edge, want
+        if abs(edge - want) > 2:
+            fails.append(f"the name's {'right' if lang == 'ar' else 'left'} edge is at {edge}, the tray's inner padding is at {want}")
+    elif label_required and not lowered:
+        fails.append("no name label above the tray")
+    return fails, m
+
+
+def same_place(first, last):
+    """the name's place with the focus on the first tile and on the last: the same edge and the same height (the words differ, so not the width)"""
+    fails = []
+    if not first or not last:
+        return ["the name label is missing in one of the two dumps"]
+    for i, name in ((1, "top"), (3, "bottom")):
+        if abs(first[i] - last[i]) > 2:
+            fails.append(f"the name's {name} moved from {first[i]} to {last[i]} between the first and the last tile")
+    return fails
+
+
+def strips_same(img_a, img_b, tray, tolerance=0.01):
+    """The strips left and right of the tray over the tile row's height, in two captures (the focus on the first tile, on the last): equal pixels, within a
+    small noise. A tile drawn outside the tray makes them differ (the tiles are different in the two)."""
+    fails = []
+    for name, box in (("left", (0, tray[1], tray[0], tray[3])), ("right", (tray[2], tray[1], W, tray[3]))):
+        if box[2] - box[0] <= 0:
+            continue
+        a, b = img_a.crop(box).convert("RGB"), img_b.crop(box).convert("RGB")
+        pa, pb = a.tobytes(), b.tobytes()
+        n = len(pa) // 3
+        diff = sum(1 for i in range(0, len(pa), 3) if abs(pa[i] - pb[i]) + abs(pa[i + 1] - pb[i + 1]) + abs(pa[i + 2] - pb[i + 2]) > 24)
+        if diff / max(1, n) > tolerance:
+            fails.append(f"{round(diff / n * 100, 1)} % of the pixels {name} of the tray differ between the two captures: something of the tile row is drawn outside it")
+    return fails
+
+
+# ---------------------------------------------------------------- the emulator side
+
+def adb(*a, check=False, text=True, timeout=60):
+    """one adb call that can never hang the job: after `timeout` seconds it gives up and answers nothing"""
+    try:
+        return subprocess.run(["adb", *a], capture_output=True, text=text, check=check, timeout=timeout)
+    except subprocess.TimeoutExpired:
+        print("adb timed out: " + " ".join(a)[:80])
+        return subprocess.CompletedProcess(a, 124, "" if text else b"", "" if text else b"")
+
+
+def shell(cmd):
+    return adb("shell", cmd).stdout
+
+
+def key(*ks):
+    for k in ks:
+        adb("shell", "input", "keyevent", k)
+        time.sleep(0.5)
+
+
+def dump(out, name):
+    adb("shell", "uiautomator", "dump", "/sdcard/d.xml")
+    p = Path(out) / f"{name}.xml"
+    p.write_bytes(adb("exec-out", "cat", "/sdcard/d.xml", text=False).stdout)
+    print(f"--- {name}: in front: " + " ".join(shell("dumpsys window | grep mCurrentFocus").split()[-2:]))
+    print(summary(p.read_text(encoding="utf-8", errors="replace")))
+    png = Path(out) / f"{name}.png"
+    png.write_bytes(adb("exec-out", "screencap", "-p", text=False).stdout)
+    return p.read_text(encoding="utf-8", errors="replace"), png
+
+
+def settled_dump(out, name, tries=4, need_tile=True):
+    """the tray after the keys and its 150 ms / 250 ms animations: wait, dump, and dump again while no favourite has the focus (the focus is out of the tray for a moment while it scrolls)"""
+    for i in range(tries):
+        time.sleep(1.5)
+        xml, png = dump(out, name)
+        if not need_tile:
+            return xml, png
+        try:
+            ns = nodes(xml)
+            tray = find_tray(ns)
+            if tray and any(t["focused"] for t in tiles(ns, tray)) and name_label(ns, tray):   # a favourite has the focus AND its name shows (the 150 ms fade is over)
+                return xml, png
+        except ET.ParseError:
+            pass
+    return xml, png
+
+
+def saver(*args):
+    shell("am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET " + " ".join(args))
+
+
+def seed_dock(n=7):
+    """the first n stub apps (urtv.stub*), then any others, as the favourites"""
+    pk = [l.split(":")[1].strip() for l in shell("pm list packages urtv.stub").splitlines() if ":" in l]
+    pk = sorted(pk)[:n]
+    if len(pk) < n:
+        raise SystemExit(f"only {len(pk)} stub apps are installed, {n} are needed")
+    shell(f"am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.SET_DOCK --es apps {','.join(pk)}")
+    return pk
+
+
+def focus_in_tray():
+    """press DOWN until a favourite has the focus (the home starts with it on the top row on some builds); False after six tries"""
+    for _ in range(6):
+        adb("shell", "uiautomator", "dump", "/sdcard/q.xml", timeout=40)
+        xml = adb("exec-out", "cat", "/sdcard/q.xml", text=False).stdout.decode("utf-8", "replace")
+        try:
+            ns = nodes(xml)
+            tray = find_tray(ns)
+            if tray and any(t["focused"] for t in tiles(ns, tray)):
+                return True
+            if not tray or tray[1] < 600:   # the home has scrolled to its apps (the pills row is what is left at the top): start it again, DOWN would go further
+                print("focus_in_tray: the tray is not in its place " + str(tray) + ", starting the home again")
+                shell("am force-stop sa.urtv.home")
+                go_home()
+                continue
+        except ET.ParseError:
+            pass
+        key("DPAD_DOWN")
+    return False
+
+
+def quick(name="q"):
+    """a dump kept in memory, without saving: (xml text or '')"""
+    adb("shell", "uiautomator", "dump", f"/sdcard/{name}.xml", timeout=40)
+    return adb("exec-out", "cat", f"/sdcard/{name}.xml", text=False).stdout.decode("utf-8", "replace")
+
+
+def home_direction(xml):
+    """'ar' or 'en' from where the app's name sits: at the tray's start edge (right in Arabic, left in English); None when no name shows"""
+    try:
+        ns = nodes(xml)
+        tray = find_tray(ns)
+        label = name_label(ns, tray) if tray else None
+    except ET.ParseError:
+        return None
+    if not label:
+        return None
+    return "ar" if (label["rect"][0] + label["rect"][2]) / 2 > (tray[0] + tray[2]) / 2 else "en"
+
+
+def start_in(lang, layout="classic", tries=4):
+    """sets the language and the layout, starts the home fresh, and waits until the home shows that language (the launcher reads the setting from the
+    screensaver when it starts; a broadcast not yet handled, or a process that kept the old one, shows the old direction). Prints how many tries it took."""
+    for attempt in range(1, tries + 1):
+        saver(f"--es lang {lang}", f"--es homelayout {layout}")
+        for _ in range(8):   # the screensaver says it has the new language before the home is started
+            if f"lang: {lang}" in shell("am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.GET"):
+                break
+            time.sleep(1)
+        shell("am force-stop sa.urtv.home")
+        go_home()
+        if layout != "classic" or (focus_in_tray() and home_direction(quick()) == lang):
+            print(f"{lang}/{layout}: the home shows the language after {attempt} start(s)")
+            return True
+    print(f"{lang}/{layout}: the home did NOT show the language after {tries} starts")
+    return False
+
+
+def in_front_home():
+    return "sa.urtv.home" in shell("dumpsys window | grep mCurrentFocus")
+
+
+def walk(keys_to_press, out, name, tries=4):
+    """puts the focus on a favourite (the home may have taken it back to the top row after it loaded), presses the keys, settles, and starts again when
+    the focus is not on a favourite afterwards (it left the tray on the way). Returns (xml, png)."""
+    for attempt in range(tries):
+        if not in_front_home():
+            go_home()
+        focus_in_tray()
+        key(*keys_to_press)
+        xml, png = settled_dump(out, name)
+        try:
+            ns = nodes(xml)
+            tray = find_tray(ns)
+            if tray and any(t["focused"] for t in tiles(ns, tray)):
+                return xml, png
+        except ET.ParseError:
+            pass
+        print(f"{name}: the focus was not on a favourite after the keys (try {attempt + 1}), starting this walk again")
+    return xml, png
+
+
+def go_home():
+    shell("am start -W --activity-clear-task -n sa.urtv.home/.MainActivity")
+    time.sleep(10)
+
+
+def shots(out, report, failures):
+    """the owner's question (more apps in the tray): the home at 1080p in the sand look and the dark glass look with the bar size 5, 7, 10 and all (12 apps),
+    each measured with the same rules as above (inside the safe area, a 24 inset, whole tiles 24 apart, the focused tile's ring inside the tray) and with no «…» in
+    the name above; the 8 pictures are in OUT_DIR/shots for docs/shots/tray. Arabic, the focus on the first favourite."""
+    d = out / "shots"
+    d.mkdir(parents=True, exist_ok=True)
+    shell("wm density 320")
+    seed_dock(12)
+    saver("--es lang ar", "--es homelayout classic")
+    for look in ("sand", "glass"):
+        for setting, n in (("5", 5), ("7", 7), ("10", 8), ("all", 8)):
+            tag = f"shot-{look}-{setting}"
+            saver(f"--es look {look}", f"--es favbar {setting}", "--es appearance dark" if look == "glass" else "--es appearance auto")
+            shell("am force-stop sa.urtv.home")   # the home reads the bar size and the look when it starts (a running one only at a later tick: each picture showed the one before)
+            go_home()
+            xa, pa = walk(["DPAD_RIGHT"] * 12, out, tag)
+            fa, ma = analyse(xa, "ar", "first", n=n, favs=12)
+            label = name_label(nodes(xa), tuple(ma["tray"])) if ma.get("tray") else None
+            if label and "…" in label["text"]:
+                fa.append(f"the app's name above the tray is cut with «…»: {label['text']}")
+            report[tag] = {"tray": ma.get("tray"), "whole": ma.get("whole"), "failures": fa}
+            failures += [f"{tag}: {f}" for f in fa]
+            (d / f"tray-{look}-{setting}.png").write_bytes(Path(pa).read_bytes())
+    saver("--es look glass", "--es favbar 5", "--es appearance dark")
+    seed_dock(7)
+
+
+def run(out):
+    from PIL import Image
+    import faulthandler
+    faulthandler.dump_traceback_later(2700, exit=True)   # a hang prints where it is stuck and ends the check after 45 minutes
+    out = Path(out)
+    out.mkdir(parents=True, exist_ok=True)
+    report, failures = {}, []
+    adb("wait-for-device")
+    shell("settings put global device_provisioned 1; settings put secure user_setup_complete 1; wm size 1920x1080")
+    shell("cmd package set-home-activity sa.urtv.home/.MainActivity")
+    seed_dock(7)
+    for density in (320, 240):
+        shell(f"wm density {density}")
+        for lang in ("ar", "en"):
+            fwd, back = ("DPAD_LEFT", "DPAD_RIGHT") if lang == "ar" else ("DPAD_RIGHT", "DPAD_LEFT")
+            if not start_in(lang):
+                failures.append(f"d{density}-{lang}: the home did not show the language {lang} (the layout stayed in the other direction)")
+            tag = f"d{density}-{lang}"
+            xa, pa = walk([back] * 10, out, f"{tag}-first")
+            fa, ma = analyse(xa, lang, "first")
+            xb, pb = walk([fwd] * 10, out, f"{tag}-last")
+            fb, mb = analyse(xb, lang, "last")
+            fs = same_place(ma.get("label"), mb.get("label"))
+            if ma.get("tray"):
+                fs += strips_same(Image.open(pa), Image.open(pb), ma["tray"])
+            report[tag] = {"first": ma, "last": mb, "failures": fa + fb + fs}
+            failures += [f"{tag}: {f}" for f in fa + fb + fs]
+    # «تطبيقات في الشريط»: 7 whole tiles (Arabic) and 10 (English), the tray's box and the name's place unchanged
+    shell("wm density 320")
+    for n, lang, favs in ((7, "ar", 7), (10, "en", 10)):
+        shown_n = min(n, 8)   # ten across were too small: eight show whole, the rest scroll (FavBar.MAX_SHOWN)
+        seed_dock(favs)
+        saver(f"--es favbar {n}")
+        tag = f"bar{n}-{lang}"
+        if not start_in(lang):
+            failures.append(f"{tag}: the home did not show the language {lang}")
+        fwd, back = ("DPAD_LEFT", "DPAD_RIGHT") if lang == "ar" else ("DPAD_RIGHT", "DPAD_LEFT")
+        xa, pa = walk([back] * 12, out, f"{tag}-first")
+        fa, ma = analyse(xa, lang, "first", n=shown_n, favs=favs)
+        xb, pb = walk([fwd] * 12, out, f"{tag}-last")
+        fb, mb = analyse(xb, lang, "last", n=shown_n, favs=favs)
+        fs = same_place(ma.get("label"), mb.get("label"))
+        report[tag] = {"first": ma, "last": mb, "failures": fa + fb + fs}
+        failures += [f"{tag}: {f}" for f in fa + fb + fs]
+    saver("--es favbar 5")
+    seed_dock(7)
+    # the football layout with the matches widget focused: the tray is lowered by 40 px (best effort: the widget needs the emulator to hold today's games)
+    shell("wm density 320")
+    start_in("ar", "football")
+    key(*["DPAD_UP"] * 4)
+    for step in range(12):   # from the top ▼ walks down to the tray; ▲ from the tray is the games (FootballFocus); each step is logged
+        focused = [n for n in nodes(quick()) if n["focused"]]
+        print(f"football step {step}: focus " + ", ".join(f"{n['cls'].split('.')[-1]} '{n['desc'][:20]}' {list(n['rect'])}" for n in focused))
+        if any("مباريات" in (n["desc"] or "") for n in focused):
+            break
+        low_focus = any(n["rect"][1] > 700 and n["rect"][3] - n["rect"][1] < 400 for n in focused)
+        key("DPAD_UP" if low_focus else "DPAD_DOWN")
+    xf, pf = settled_dump(out, "football-lowered", tries=1, need_tile=False)
+    nf = nodes(xf)
+    tf = find_tray(nf)
+    low = bool(tf) and tf[1] == 808
+    report["football"] = {"tray": list(tf) if tf else None, "lowered_seen": low, "failures": []}
+    if low:
+        ff = analyse(xf, "ar", "first", lowered=True, label_required=False)[0]   # the focus is on the widget: the name is hidden then
+        report["football"]["failures"] = ff
+        failures += [f"football: {f}" for f in ff]
+    else:
+        # the matches widget needs today's games; without them it takes no focus here and the tray is not lowered (or the home has scrolled): not measured, said so
+        print("football summary:\n" + summary(xf))
+        print(f"football: NOT MEASURED - the tray is at {tf}, not lowered to y 808 (no games on the emulator, so the matches widget did not take the focus)")
+    saver("--es homelayout classic")
+    # the markets page, for a person to look at (no assertions): the PNG is in the artifact
+    try:
+        shell("am start -W -n sa.urtv.home/.MarketsActivity")
+        time.sleep(8)
+        (out / "markets.png").write_bytes(adb("exec-out", "screencap", "-p", text=False).stdout)
+        print("markets page captured: markets.png")
+        key("DPAD_DOWN", "DPAD_DOWN")
+        (out / "markets-down.png").write_bytes(adb("exec-out", "screencap", "-p", text=False).stdout)
+        shell("input keyevent KEYCODE_HOME")
+    except Exception as e:   # a picture for the eyes, never a reason to fail
+        print("markets page not captured:", type(e).__name__)
+    try:
+        shots(out, report, failures)
+    except Exception as e:   # the pictures are for the eyes; a crash here must not hide the rules above
+        print("shots not completed:", type(e).__name__, str(e)[:200])
+    (out / "tray-report.json").write_text(json.dumps(report, indent=1), encoding="utf-8")
+    for f in failures:
+        print("FAIL " + f)
+    print("tray check:", "FAILED" if failures else "all rules held", json.dumps({k: v.get("failures") for k, v in report.items() if isinstance(v, dict)}, ensure_ascii=False)[:600])
+    return 1 if failures else 0
+
+
+if __name__ == "__main__":
+    sys.exit(run(sys.argv[1] if len(sys.argv) > 1 else "tray-out"))

@@ -19,6 +19,9 @@ import sa.urtv.home.R;
  * recordings are for Fajr only); «مؤذن الفجر» (EXTRA_FAJR) lists the four Fajr ones first and then the normal ones.
  */
 public class AdhanActivity extends Activity {
+    /** «اللغة» (docs/ENGLISH.md): with Arabic the context itself, with English an English one */
+    @Override protected void attachBaseContext(android.content.Context b) { super.attachBaseContext(sa.urtv.home.S.wrap(b)); }
+
     static final String EXTRA_FAJR = "fajr";
 
     /** the numbered voices of this list, in the order of its rows (after the person's own, when there is one) */
@@ -37,12 +40,13 @@ public class AdhanActivity extends Activity {
         super.onCreate(state);
         sa.urtv.home.Digits.init(this);   // the screensaver's «الأرقام» setting
         setContentView(R.layout.activity_adhan);
+        Ui.localize(this);   // «اللغة»: English reads left to right, the layout's words in English
         Ui.glassPage(this, R.id.bg);   // the glass page
         prefs = new Prefs(this);
         own = OwnAdhan.exists(this) ? 1 : 0;
         fajr = getIntent().getBooleanExtra(EXTRA_FAJR, false);
         voices = fajr ? AdhanVoices.fajrList() : AdhanVoices.normal();
-        if (fajr) ((TextView) findViewById(R.id.title)).setText(R.string.adhan_fajr_voices);
+        if (fajr) ((TextView) findViewById(R.id.title)).setText(Ui.str(this, R.string.adhan_fajr_voices));
 
         Ui.text((TextView) findViewById(R.id.title), "ThmanyahDisplay-Bold.otf", 40, R.color.sand);
         Ui.text((TextView) findViewById(R.id.hint), "Thmanyah-Regular.otf", 14, R.color.dim);
@@ -117,7 +121,7 @@ public class AdhanActivity extends Activity {
             int playing = chosenVoice();
             boolean chosen = voice == playing;
             detail.setText(chosen
-                    ? getString(R.string.adhan_chosen, Adhan.place(voice))
+                    ? Ui.str(AdhanActivity.this, R.string.adhan_chosen, Adhan.place(voice))
                     : Adhan.place(voice));
             detail.setTypeface(Ui.font(AdhanActivity.this, "Thmanyah-Light.otf"));
             detail.setTextColor(getColorStateList(chosen ? R.color.gold : R.color.dim));   // the focus ink when selected

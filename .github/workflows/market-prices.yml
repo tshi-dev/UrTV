@@ -1,23 +1,27 @@
 name: Market prices
 
 # The last price of every market and stock the screen offers (.github/tools/market_prices.py), one small JSON pushed to the
-# branch data-markets, which the page reads first from raw.githubusercontent.com. Every 15 minutes while an exchange is open
+# branch data-markets, which the page reads first from raw.githubusercontent.com. Every 5 minutes while an exchange is open: GitHub drops and delays timers (one run in 2 h 48 min was seen), so a run started by a timer at :00, :20 or :40 stays alive and fetches every 5 minutes until two minutes before the next hour (.github/tools/market_loop.sh); the TV shows «آخر تحديث» and, in a session, asks Yahoo itself for a file older than 20 minutes
 # (Tadawul Sun-Thu 10:00-15:00 Riyadh = 07:00-12:00 UTC; the US 09:30-16:00 New York time = 13:30-20:00 UTC in summer time,
-# 14:30-21:00 in winter, so the timer covers 13:00-21:00 UTC and the script decides what is open), and every 30 minutes
+# 14:30-21:00 in winter, so the loop covers 13:00-21:00 UTC and the script decides what is open), and every 30 minutes
 # otherwise, for gold, silver, Brent, Bitcoin and XRP, which are checked each run. GitHub delays timers on busy hours; the data is that much older.
-# A public repository's standard runners are free; each run takes about a minute: about 2,600 minutes a month (see the report).
+# A public repository's standard runners are free: about 30 hours of runner time a week in the open hours, in loops of at most an hour.
+# The branch holds ONE commit: every run replaces it (orphan commit, force push), so there is no public archive of snapshots. The file has only the fields
+# the page uses (the script's allowlist). MARKETS_PROVIDERS is the switch of the fallback source: "yahoo" (only Yahoo), "yahoo,stooq" (Stooq for
+# the US stocks Yahoo did not answer; check Stooq's terms before turning it on; it has no Tadawul).
 on:
   workflow_dispatch:
   schedule:
-    - cron: '*/15 7-11 * * 0-4'
+    - cron: '0,20,40 7-11 * * 0-4'
     - cron: '0 12 * * 0-4'
-    - cron: '*/15 13-20 * * 1-5'
+    - cron: '0,20,40 13-20 * * 1-5'
     - cron: '0 21 * * 1-5'
     - cron: '7,37 * * * *'
   push:
     branches: [master, next]
     paths:
       - '.github/tools/market_prices.py'
+      - '.github/tools/market_loop.sh'
       - '.github/workflows/market-prices.yml'
 
 permissions:
@@ -30,24 +34,10 @@ concurrency:
 jobs:
   prices:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 65
     steps:
       - uses: actions/checkout@v4
-      - name: The file of the last run, kept for a symbol that fails this time
-        run: |
-          mkdir -p prev
-          git fetch --depth=1 origin data-markets 2>/dev/null && git archive FETCH_HEAD | tar -x -C prev || true
-      - id: run
-        run: python3 -u .github/tools/market_prices.py
+      - name: Fetch and push (a loop of fetches in the open hours, one fetch otherwise)
+        run: bash .github/tools/market_loop.sh
         env:
-          MARKETS_PREV: prev/markets
-      - name: Push to data-markets
-        if: steps.run.outputs.changed == 'true'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout --orphan data-markets
-          git rm -rfq --cached .
-          git add -f markets
-          git commit -qm "Market prices"
-          git push -f origin data-markets
+          MARKETS_PROVIDERS: yahoo

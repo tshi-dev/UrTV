@@ -1,0 +1,37 @@
+# UrTV community list: nokia-r4
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/nokia-r4/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: NOKIA
+# match-model: R4SMARTTV
+# match-device: 
+
+com.google.android.tvrecommendations
+com.realtek.leanbacklauncher.partnercustomizer
+android.autoinstalls.config.scbc.device
+com.google.android.partnersetup
+com.google.android.feedback
+com.google.android.play.games
+com.google.android.syncadapters.calendar
+com.android.printspooler
+com.google.android.marvin.talkback
+com.google.android.tts
+com.vewd.core.service
+com.google.android.katniss
+com.google.android.apps.mediashell
+in.startv.hotstar
+com.sonyliv
+com.jio.jioplay.tv
+com.jio.media.stb.ondemand
+tv.airtel.xstream.tvapp
+com.spotify.tv.android
+com.amazon.amazonvideo.livingroom
+com.apps.networkspeed
+com.apps.esticker
+com.apps.eshow
+com.apps.clear
+com.realtek.factorytools
+com.apps.factory.ui
+com.google.android.backdrop
+com.google.android.tvlauncher

@@ -1,0 +1,41 @@
+# UrTV community list: nvidia-shield-tv-2017
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/nvidia-shield-tv-2017/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: NVIDIA
+# match-model: SHIELDTV2017
+# match-device: 
+
+com.nvidia.stats
+com.nvidia.feedback
+com.nvidia.diagtools
+com.google.android.feedback
+android.autoinstalls.config.nvidia
+com.nvidia.shield.welcome
+com.nvidia.factorybundling
+com.nvidia.shield.beta
+com.nvidia.shieldbeta
+com.nvidia.shield.registration
+com.nvidia.tegrazone3
+com.nvidia.nvgamecast
+com.nvidia.osc
+com.nvidia.factory
+com.nvidia.factorysyschecker
+com.nvidia.inputviewer
+com.nvidia.tegraprofiler.security
+com.nvidia.developerwidget
+com.android.printspooler
+com.google.android.apps.nbu.smartconnect.tv
+com.android.dynsystem
+com.android.hotspot2.osulogin
+com.android.bluetoothmidiservice
+com.android.cts.ctsshim
+com.android.cts.priv.ctsshim
+com.google.android.onetimeinitializer
+air.com.vudu.air.DownloaderTablet
+com.google.android.youtube.tvunplugged
+com.imdbtv.livingroom
+com.google.android.videos
+com.google.android.play.games
+com.google.android.tvlauncher

@@ -1,0 +1,21 @@
+# UrTV community list: sharp-aquos-tvx18
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/sharp-aquos-tvx18/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: SHARP
+# match-model: AQUOSTVX18 TCTH2UX
+# match-device: TCTH2UX
+
+com.sharplabs.dmt.aas.analyticsservice
+jp.co.sharp.av.android.storedemoapplication
+jp.co.sharp.av.android.emanual
+jp.co.sharp.av.android.emanual_a
+jp.co.sharp.av.android.emanual_b
+jp.co.sharp.av.android.shlegal
+jp.co.sharp.av.android.softwarecopyright
+com.google.android.feedback
+com.google.android.play.games
+com.google.android.videos
+com.google.android.music
+com.google.android.tvlauncher

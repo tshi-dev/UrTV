@@ -41,6 +41,9 @@ final class Versions {
     /** What the person reads: the release's name alone, «4.0» (the owner: «4.0, nothing else»); the build is for the agent (displayEn). */
     static String display(String marketing, int build) { return marketing; }
 
+    /** The settings' «الإصدار الحالي» line (tester V1): the name first, then the build, "4.2 (174)" (digits made Arabic by the caller). */
+    static String withBuild(String marketing, int build) { return marketing + " (" + build + ")"; }
+
     /** What the agent reads (saver.sh show): "4.0 (build 151)". */
     static String displayEn(String marketing, int build) { return marketing + " (build " + build + ")"; }
 

@@ -24,7 +24,7 @@ if not shutil.which("javac"):
     print("SKIP family dns: no javac here")
     sys.exit(0)
 with tempfile.TemporaryDirectory() as tmp:
-    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "android/launcher/src/main/java/sa/urtv/home/FamilyDns.java"),
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "tests/i18n_home_stub/S.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/FamilyDns.java"),
                     str(ROOT / "tests/FamilyDnsRun.java")], check=True, capture_output=True)
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-Dstdout.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.FamilyDnsRun"],
                          check=True, capture_output=True, text=True, encoding="utf-8").stdout.splitlines()

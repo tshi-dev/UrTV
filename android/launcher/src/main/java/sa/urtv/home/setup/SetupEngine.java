@@ -19,6 +19,8 @@ import java.util.regex.Pattern;
 final class SetupEngine {
     static final String SELF = "sa.urtv.home", SAVER = "sa.urtv.screensaver", OURS_DREAM = SAVER + "/.ScreenDream", HOME_ACTIVITY = SELF + "/.MainActivity";
     static final String WRAITH = "com.google.android.tungsten.setupwraith";
+    /** the person's choice on a Chromecast (optimize/cast.sh): «off» = our home first, the wizard may go; anything else = casting kept */
+    static final String CAST_CHOICE = "cast.txt";
     static final String LAUNCHERX = "com.google.android.apps.tv.launcherx", LAUNCHERX_HOME = LAUNCHERX + "/.home.HomeActivity";
     static final String TVLAUNCHER = "com.google.android.tvlauncher", TVLAUNCHER_HOME = TVLAUNCHER + "/.MainActivity";
     static final String NOTIFICATION_LISTENER = LAUNCHERX + "/.coreservices.notificationlistener.TvNotificationListenerService";
@@ -27,6 +29,8 @@ final class SetupEngine {
     static final Pattern PKG = Pattern.compile("[A-Za-z0-9_.]+");
     static final Pattern COMPONENT = Pattern.compile("[A-Za-z0-9_.]+/[A-Za-z0-9_.$]+");
     static final int MIN_WEBVIEW = 80, SAFETY_SECONDS = 300;
+    /** install.sh's wifi-ask.txt: the person was asked once to forget the Wi-Fi and join it again («wifi-changed» added when the safe order saw it change). */
+    static final String WIFI_ASK = "wifi-ask.txt";
 
     /** Runs one command in the TV's shell (an {@link AdbClient} on the TV, a fake in the tests). */
     interface Shell { AdbClient.Result run(String command) throws IOException; }
@@ -62,21 +66,6 @@ final class SetupEngine {
         this.sh = sh; this.store = store; this.out = out; this.deadman = deadman; this.sleeper = sleeper; this.stamp = stamp;
     }
 
-    // ---- the plan the screen shows before «ابدأ» ------------------------------------------------------------------------------------
-
-    /** What the run will do, in order, in words (the screen shows exactly this). */
-    static List<String> plan() {
-        List<String> p = new ArrayList<>();
-        p.add("نفحص أن الجهاز تلفزيون أندرويد، وأن التلفزيون يجاوب على أسئلتنا.");
-        p.add("نعطي تطبيق تلفزيونك الأذونات اللازمة (الموقع، المنبّهات الدقيقة للأذان، تثبيت التحديثات).");
-        p.add("نوقف " + safeCount() + " تطبيقاً من قائمة التطبيقات الآمنة (إعلانات وتتبّع وعروض)، ونسجّل ما أوقفناه لنرجعه بزر واحد. ما نلمس تطبيقاً كان موقوفاً من قبل، ولا النظام، ولا ما تحتاجه (البث، الإدخال، المتجر).");
-        p.add("نفعّل شاشة التوقف لو كانت مثبّتة ونسخة WebView تكفي، وإلا نتركها ونقول لك.");
-        p.add("نجعل تلفزيونك الشاشة الرئيسية. تنتظر الشاشة 5 دقائق: إن ما اشتغلت ترجع الشاشة الأصلية وحدها.");
-        return p;
-    }
-
-    static int safeCount() { return filterSafe(SetupLists.SAFE).size(); }
-
     /** One value for the TV's shell, in single quotes: a `$Inner` in a component name must not be expanded there. Never called with an apostrophe in it. */
     static String q(String v) {
         if (v.indexOf('\'') >= 0 || v.indexOf('\n') >= 0) throw new IllegalArgumentException("not a value the shell gets");
@@ -107,7 +96,7 @@ final class SetupEngine {
             if (!PKG.matcher(p).matches() || contains(SetupLists.KEEP, p)) continue;
             boolean core = false;
             for (String re : SetupLists.CORE) if (p.matches(re)) { core = true; break; }
-            if (!core && !out.contains(p)) out.add(p);
+            if (!core && !CommunityMatch.input(p) && !out.contains(p)) out.add(p);
         }
         return out;
     }
@@ -230,6 +219,16 @@ final class SetupEngine {
         }
         List<String> intended = new ArrayList<>();
         for (String p : pkgs) if (installed.contains(p) && !wasOff.contains(p)) intended.add(p);
+        if (!intended.isEmpty()) {   // disable.sh's input guard: what the TV says drives an HDMI input or is a keyboard stays on
+            InputGuard.Answer a = InputGuard.parse(text(InputGuard.command(intended)));
+            if (a == null) return failed("لم يقل التلفزيون أي التطبيقات تشغّل مداخل HDMI أو لوحة المفاتيح، فما أوقفنا شيئاً. جرّب مرة ثانية.");
+            if (a.hung) return failed("التلفزيون أوقف تقارير النظام (hung system process)، فما عرفنا أي التطبيقات تشغّل مداخل HDMI، وما أوقفنا شيئاً. أعد تشغيل التلفزيون ثم جرّب مرة ثانية.");
+            if (!a.left().isEmpty()) {
+                out.line("تركنا شغّالاً ما يشغّل مداخل التلفزيون (HDMI، الموالف) أو لوحة المفاتيح: " + String.join(" ", a.left()));
+                pkgs = InputGuard.without(pkgs, a.left());
+                intended = InputGuard.without(intended, a.left());
+            }
+        }
         List<String> prev = ledgerNames(store.get("disabled-by-us.txt"));
         remember(prev, intended);    // written BEFORE the commands: a run that dies half way is still undone by the undo
         for (String p : pkgs) sh.run("pm disable-user --user 0 " + p);
@@ -239,6 +238,15 @@ final class SetupEngine {
         for (String p : intended) if (nowOff.contains(p)) confirmed.add(p);
         remember(prev, confirmed);   // the ledger holds what the TV says is off now
         return done("أوقفنا " + confirmed.size() + " تطبيقاً من القائمة الآمنة" + (intended.size() > confirmed.size() ? " (" + (intended.size() - confirmed.size()) + " رفض التلفزيون إيقافها)." : "."));
+    }
+
+    /** What debloat would turn off on this TV now (installed, not off already): the start screen's count. Null when the TV did not say. */
+    List<String> safeToTurnOff() throws IOException {
+        Set<String> installed = packages("pm list packages"), wasOff = packages("pm list packages -d");
+        if (installed == null || wasOff == null) return null;
+        List<String> out = new ArrayList<>();
+        for (String p : filterSafe(SetupLists.SAFE)) if (installed.contains(p) && !wasOff.contains(p)) out.add(p);
+        return out;
     }
 
     private void remember(List<String> prev, List<String> add) throws IOException {
@@ -285,7 +293,17 @@ final class SetupEngine {
 
     private void journalWrite(String state, String stock, String holder, String wizard, String stockBefore, String safety) throws IOException {
         store.put("home-switch.json", "{\n  \"nonce\": \"" + "app" + "\",\n  \"state\": \"" + state + "\",\n  \"stock\": \"" + stock + "\",\n  \"role_holder_before\": \""
-            + holder + "\",\n  \"wizard_before\": \"" + wizard + "\",\n  \"stock_before\": \"" + stockBefore + "\",\n  \"safety_switch\": \"" + safety + "\",\n  \"written\": \"" + stamp + "\"\n}\n");
+            + holder + "\",\n  \"wizard_before\": \"" + wizard + "\",\n  \"stock_before\": \"" + stockBefore + "\",\n  \"safety_switch\": \"" + safety + "\",\n  \"written\": \"" + stamp
+            + "\",\n  \"step\": \"armed\"\n}\n");
+    }
+
+    /**
+     * home-journal.sh's jstep: the step of the switch that is about to act, written BEFORE it acts (armed, wizard_off, wifi_check, home_start, stock_off,
+     * switch, verify), so after a cut the journal says how far the switch got. A journal without the field (an older one) is left as it is.
+     */
+    void journalStep(String step) throws IOException {
+        String j = store.get("home-switch.json");
+        if (j != null && j.contains("  \"step\": \"")) store.put("home-switch.json", j.replaceAll("(?m)^  \"step\": \"[^\"]*\"", "  \"step\": \"" + step + "\""));
     }
 
     private void journalState(String state) throws IOException {
@@ -297,12 +315,93 @@ final class SetupEngine {
         return text("cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME 2> /dev/null").contains("setupwraith");
     }
 
+    /**
+     * install.sh's wraith_casts: on a Chromecast with Google TV (and the Google TV Streamer) the cast receiver reads its device credentials from a
+     * provider inside the setup wizard (…castinfo.CastInfoProvider); with the wizard off, casting from a phone and the Google Home remote say «untrusted
+     * device» after the next restart (a user report on 4.1). Told by that provider, never by the model name. The wizard is then never turned off here,
+     * unless the person chose our home first («cast.txt» = off, optimize/dock.sh cast off).
+     */
+    boolean castKeepsWizard() throws IOException {
+        String c = store.get(CAST_CHOICE);
+        if (c != null && c.trim().equals("off")) return false;
+        return castDevice(text("getprop ro.product.manufacturer; getprop ro.product.device; dumpsys package " + WRAITH + " 2> /dev/null | grep -m 1 castinfo.CastInfoProvider"));
+    }
+
+    /**
+     * install.sh's cast_device: the provider AND a Google-made device (ro.product.manufacturer «Google», or the codename sabrina, boreal or
+     * kirkwood). Other makers' Google TV builds share the wizard and its provider (a TCL G07 has it, tester 4.2): there the wizard goes as before.
+     */
+    static boolean castDevice(String answer) {
+        if (answer == null || !answer.contains("castinfo.CastInfoProvider")) return false;
+        String[] l = answer.replace("\r", "").split("\n", -1);
+        String maker = l.length > 0 ? l[0].trim().toLowerCase(java.util.Locale.ROOT) : "", device = l.length > 1 ? l[1].trim().toLowerCase(java.util.Locale.ROOT) : "";
+        return maker.equals("google") || device.equals("sabrina") || device.equals("boreal") || device.equals("kirkwood");
+    }
+
     /** owned: a saved network belongs to the setup wizard · other: none does · unknown: the TV did not say. */
     private String wifiOwner() throws IOException {
         Matcher m = Pattern.compile("cname=([^\\s]*)").matcher(text("dumpsys wifi"));
         boolean any = false, owned = false;
         while (m.find()) { any = true; if (m.group(1).contains("setupwraith")) owned = true; }
         return !any ? "unknown" : owned ? "owned" : "other";
+    }
+
+    /**
+     * install.sh's wifi_state: the TV's Wi-Fi, read only, as «<connected> <saved>» (connected yes|no|unknown; saved: how many networks are saved, or
+     * unknown). No network name is kept or said. Null when the TV did not answer (no end marker).
+     */
+    String wifiState() throws IOException {
+        String o = text("cmd wifi status 2> /dev/null; echo W_END; cmd wifi list-networks 2> /dev/null; echo L_END");
+        List<String> lines = new ArrayList<>();
+        for (String l : o.split("\n")) lines.add(l);
+        int w = lines.indexOf("W_END"), l = lines.indexOf("L_END");
+        if (w < 0 || l < w) return null;
+        String st = String.join("\n", lines.subList(0, w)).toLowerCase(java.util.Locale.ROOT);
+        List<String> ls = lines.subList(w + 1, l);
+        String c = st.contains("is connected to") ? "yes" : st.matches("(?s).*(not connected|disconnected|wifi is disabled).*") ? "no" : "unknown";
+        String joined = String.join("\n", ls).toLowerCase(java.util.Locale.ROOT), n;
+        if (joined.contains("network id")) {
+            int k = 0;
+            for (String x : ls) if (x.matches("^[ \t]*[0-9]+[ \t].*")) k++;
+            n = String.valueOf(k);
+        } else n = joined.contains("no networks") ? "0" : "unknown";
+        return c + " " + n;
+    }
+
+    /** install.sh's wifi_same: the Wi-Fi as it was (still connected if it was, no saved network fewer, at least one). */
+    static boolean wifiSame(String before, String now) {
+        if (before == null || now == null) return false;
+        String[] b = before.split(" "), n = now.split(" ");
+        if (b.length != 2 || n.length != 2) return false;
+        if (b[0].equals("yes") && !n[0].equals("yes")) return false;
+        if (!b[1].matches("[0-9]+") || !n[1].matches("[0-9]+")) return false;
+        int n0 = Integer.parseInt(b[1]), n1 = Integer.parseInt(n[1]);
+        return n1 >= n0 && n1 >= 1;
+    }
+
+    /**
+     * install.sh's step 0, before anything is changed: the setup wizard answers Home and owns the saved Wi-Fi (TCL G08/G10/G14, Google TV sets), so the
+     * person is asked ONCE to forget the network and join it again in the TV's Settings (wifi-ask.txt says it was asked; never twice). True: ask now
+     * (the run pauses; nothing was changed). We never forget, delete or change a network ourselves.
+     */
+    boolean askWifi() throws IOException {
+        String asked = store.get(WIFI_ASK);
+        if (asked != null && !asked.trim().isEmpty()) return false;
+        Set<String> pk = packages("pm list packages");
+        if (pk == null || !(pk.contains(LAUNCHERX) || pk.contains(TVLAUNCHER))) return false;
+        String res = resolveHome();
+        if (res.isEmpty() || res.startsWith(SELF + "/")) return false;
+        if (!wraithAnswersHome() || !wifiOwner().equals("owned") || castKeepsWizard()) return false;   // a Chromecast keeps its wizard anyway
+        store.put(WIFI_ASK, "asked " + stamp + "\n");
+        return true;
+    }
+
+    /** For the start screen: will the home switch ask the person about the Wi-Fi first? (the same reads as askWifi, nothing written) */
+    boolean wizardOwnsWifi() throws IOException {
+        String asked = store.get(WIFI_ASK);
+        if (asked != null && !asked.trim().isEmpty()) return false;
+        String res = resolveHome();
+        return !res.isEmpty() && !res.startsWith(SELF + "/") && wraithAnswersHome() && wifiOwner().equals("owned") && !castKeepsWizard();
     }
 
     private boolean ours(String top) { return top.contains(SELF + "/") && top.contains("MainActivity"); }
@@ -315,11 +414,30 @@ final class SetupEngine {
         String stockPkg = stock.substring(0, stock.indexOf('/'));
         String res = resolveHome();
         if (res.startsWith(SELF + "/") && !"switching".equals(journal("state"))) return done("تلفزيونك هو الشاشة الرئيسية أصلاً.");
-        boolean wizardListed = false;
-        if (wraithAnswersHome()) {
+        boolean wizardListed = false, safeOrder = false;
+        String wifiBefore = null, asked = store.get(WIFI_ASK);
+        boolean wasAsked = asked != null && !asked.trim().isEmpty();
+        if (castKeepsWizard()) {
+            out.line("وسيط الإعداد في هذا الجهاز يحمل شهادة البث (Chromecast)، فنتركه شغّالاً كي يشتغل البث من الجوال وريموت Google Home، ونحاول نخلي تلفزيونك الشاشة الرئيسية.");
+        } else if (wraithAnswersHome()) {
             String owner = wifiOwner();
-            if (owner.equals("other")) wizardListed = true;
-            else out.line("وسيط الإعداد الأول في التلفزيون يملك شبكة الواي فاي المحفوظة (أو لم نعرف)، فنتركه شغّالاً كي لا تضيع الشبكة.");
+            if (owner.equals("other")) {
+                wizardListed = true;
+                // the network moved off the wizard after the person was asked: the safe order, if the Wi-Fi can be read
+                if (wasAsked && !asked.contains("wifi-changed")) {
+                    wifiBefore = wifiState();
+                    if (wifiSame(wifiBefore, wifiBefore) && !wifiBefore.startsWith("unknown")) {
+                        safeOrder = true;
+                        out.line("شبكة الواي فاي ما عادت تتبع وسيط الإعداد: نوقف الوسيط أولاً، ثم نتأكد من الواي فاي، ثم نشغّل تلفزيونك، وبعدها فقط نوقف الشاشة الأصلية.");
+                    } else {
+                        out.line("شبكة الواي فاي ما عادت تتبع وسيط الإعداد، لكن التلفزيون لم يقل حالة الواي فاي الآن: نبدّل بالطريقة المعتادة.");
+                    }
+                }
+            } else if (owner.equals("owned") && wasAsked) {
+                out.line("شبكة الواي فاي ما زالت تتبع وسيط الإعداد (ما نُسيت ورجع الاتصال بها من الإعدادات): نتركه شغّالاً كي لا تضيع الشبكة، ونكمل التبديل كما كان.");
+            } else {
+                out.line("وسيط الإعداد الأول في التلفزيون يملك شبكة الواي فاي المحفوظة (أو لم نعرف)، فنتركه شغّالاً كي لا تضيع الشبكة.");
+            }
         }
         // who held Home before (the undo gives it back): the role, else the journal of an earlier try, else the app that answers Home now
         String holder = roleHolder();
@@ -344,6 +462,12 @@ final class SetupEngine {
         }
         if (!deadman.exact()) out.line("مفتاح الأمان قد يتأخر بضع دقائق على هذا التلفزيون (لا إذن للمنبّهات الدقيقة)، فلا تطفئه أثناء الإعداد.");
         out.line("الشاشة الأصلية سترجع وحدها بعد 5 دقائق إن لم تنجح الشاشة الجديدة.");
+        if (safeOrder) {
+            Result r = safeSwitch(stock, stockPkg, holder, wifiBefore);
+            if (r != null) return r;
+            return verifyAndFinish(stock, stockPkg, holder, pk, true);
+        }
+        journalStep("switch");
         AdbClient.Result role = sh.run("cmd role add-role-holder --user 0 android.app.role.HOME " + SELF);
         AdbClient.Result setHome = sh.run("cmd package set-home-activity --user 0 " + q(HOME_ACTIVITY));
         boolean roleOk = role.code == 0 || (sdk > 0 && sdk < 29);    // Android 9 and older have no `cmd role`
@@ -357,6 +481,59 @@ final class SetupEngine {
         sh.run("cmd package set-home-activity --user 0 " + q(HOME_ACTIVITY));
         sh.run("am force-stop com.android.tv.settings");
         sh.run("input keyevent KEYCODE_HOME");
+        return verifyAndFinish(stock, stockPkg, holder, pk, false);
+    }
+
+    /**
+     * install.sh's safe order (CleanYourTV, github.com/Gathin23/cleanyourtv, MIT; it held on a TCL G08 through three restarts), with the safety switch
+     * already armed: a. the wizard off first, while the stock home still answers Home; b. the Wi-Fi read again (still connected, no saved network
+     * fewer); c. our home started and confirmed in front; d. only then the stock home off, and the HOME role and the home activity ours. A changed
+     * Wi-Fi or our home not in front puts the wizard and the stock home back (checked) and never turns the stock home off. Null: go on to the check.
+     */
+    private Result safeSwitch(String stock, String stockPkg, String holder, String wifiBefore) throws IOException {
+        journalStep("wizard_off");
+        sh.run("pm disable-user --user 0 " + WRAITH);
+        journalStep("wifi_check");
+        boolean wok = false;
+        for (int i = 0; i < 4 && !wok; i++) {
+            sleeper.sleep(5000);
+            wok = wifiSame(wifiBefore, wifiState());
+        }
+        if (!wok) {
+            String a = store.get(WIFI_ASK);
+            store.put(WIFI_ASK, (a == null ? "" : a) + "wifi-changed " + stamp + "\n");   // the next run keeps the wizard on, as before, never this order again
+            return abort(stock, stockPkg, holder, "الواي فاي ما بقي كما كان بعد إيقاف وسيط الإعداد، فأوقفنا التبديل وشغّلنا الوسيط من جديد. إن انقطع الواي فاي فاتصل به من إعدادات التلفزيون ← الشبكة.", false);
+        }
+        journalStep("home_start");
+        String started = text("am start -W -a android.intent.action.MAIN -c android.intent.category.HOME -n " + q(HOME_ACTIVITY));
+        boolean front = false;
+        if (started.contains("Status: ok") && !Pattern.compile("(?mi)^Error").matcher(started).find()) {
+            for (int i = 0; i < 3 && !front; i++) {
+                sleeper.sleep(3000);
+                front = text("dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity|mFocusedApp'").contains(SELF + "/");
+            }
+        }
+        if (!front) {
+            return abort(stock, stockPkg, holder, "تلفزيونك ما ظهر في الواجهة لما شغّلناه، فما أوقفنا الشاشة الأصلية، ورجّعنا وسيط الإعداد. تلفزيونك يشتغل من أيقونة «تلفزيونك» في صف التطبيقات.", true);
+        }
+        journalStep("stock_off");
+        AdbClient.Result disable = sh.run("pm disable-user --user 0 " + stockPkg);
+        if (disable.output.toLowerCase().contains("illegal")) {
+            return abort(stock, stockPkg, holder, "هذا الجهاز لا يسمح بإيقاف شاشته الرئيسية الأصلية («This command is illegal»)، فبقيت كما هي. بقية الإعداد لا تحتاجها.", true);
+        }
+        if (disable.code != 0) return abort(stock, stockPkg, holder, "ما قبل التلفزيون إيقاف الشاشة الرئيسية الأصلية.", false);
+        AdbClient.Result role = sh.run("cmd role add-role-holder --user 0 android.app.role.HOME " + SELF);
+        AdbClient.Result setHome = sh.run("cmd package set-home-activity --user 0 " + q(HOME_ACTIVITY));
+        boolean roleOk = role.code == 0 || (sdk > 0 && sdk < 29);
+        if (!roleOk || setHome.code != 0) return abort(stock, stockPkg, holder, "ما قبل التلفزيون تعيين شاشتنا شاشةً رئيسية، فرجّعنا الأصلية.", false);
+        sh.run("am force-stop com.android.tv.settings");
+        sh.run("input keyevent KEYCODE_HOME");
+        return null;
+    }
+
+    /** Step 4 of the switch: Home really opens ours (two rounds), then the safety switch is disarmed; else everything is put back. */
+    private Result verifyAndFinish(String stock, String stockPkg, String holder, Set<String> pk, boolean safeOrder) throws IOException {
+        journalStep("verify");
         boolean ok = verifyHome();
         if (!ok) {
             out.line("الشاشة الرئيسية لم تفتح تلفزيونك: نسأل مرة ثانية.");
@@ -369,7 +546,9 @@ final class SetupEngine {
         deadman.disarm();
         clearDeadline();
         journalState("done");
+        store.put(WIFI_ASK, "");   // done: a later run starts afresh (install.sh removes wifi-ask.txt here)
         for (String h : SetupLists.HOME_HELPERS) if (pk.contains(h)) sh.run("pm disable-user --user 0 " + h);   // only now: the stock home's helpers are dead weight
+        if (safeOrder) out.line("وسيط الإعداد موقوف، والواي فاي بقي متصلاً وشبكته محفوظة (تأكدنا بعد إيقاف الوسيط وقبل إيقاف الشاشة الأصلية).");
         return done("تلفزيونك الآن هو الشاشة الرئيسية. اضغط زر الرئيسية في الريموت للتأكد.");
     }
 
@@ -471,7 +650,10 @@ final class SetupEngine {
 
     // ---- the undo (optimize/restore.sh) ---------------------------------------------------------------------------------------------
 
-    /** The home first (never leave the TV without one), then the apps in the ledger, the screensaver and the appops as they were. */
+    /**
+     * In optimize/reset.sh's order: the home first (never leave the TV without one), then the apps in the ledger, the protected features (keep.sh),
+     * the screensaver and the appops as they were, TCL's auto-start, the apps the setup installed (and nothing else), and the speed tweaks last.
+     */
     Result undo() throws IOException {
         List<String> problems = new ArrayList<>();
         String stock = journal("stock");
@@ -492,8 +674,9 @@ final class SetupEngine {
         } else {
             problems.add("ما عرفنا الشاشة الرئيسية الأصلية، فاضغط زر الرئيسية؛ وإن لم يفتح شيء فاختر الشاشة من إعدادات التلفزيون (التطبيقات، التطبيقات الافتراضية).");
         }
-        // the apps our run turned off
+        // the apps our run turned off: the ledger, and the community list's own record (optimize/reset.sh hands community-applied.txt to restore.sh)
         List<String> ledger = ledgerNames(store.get("disabled-by-us.txt"));
+        for (String p : ledgerNames(store.get("community-applied.txt"))) if (!ledger.contains(p)) ledger.add(p);
         for (String p : ledger) sh.run("pm enable " + p);
         Set<String> off = packages("pm list packages -d");
         if (off == null) {
@@ -507,8 +690,17 @@ final class SetupEngine {
             StringBuilder b = new StringBuilder();
             for (String p : keep) b.append(p).append('\n');
             store.put("disabled-by-us.txt", b.toString());
+            if (store.get("community-applied.txt") != null) {
+                StringBuilder cb = new StringBuilder();
+                for (String p : ledgerNames(store.get("community-applied.txt"))) if (keep.contains(p)) cb.append(p).append('\n');
+                store.put("community-applied.txt", cb.toString());
+            }
             if (!keep.isEmpty()) problems.add(keep.size() + " تطبيقاً لم يقبل التلفزيون تشغيله؛ جرّب «تراجع» مرة ثانية.");
         }
+        // the protected features (optimize/reset.sh runs optimize/keep.sh here): only ever turned on; its own lines say what it found. Only after a
+        // full setup (it saved backup.txt): the TV button's own setup never touched them, and its undo stays what it was
+        String backup = store.get(SetupPrep.BACKUP);
+        if (backup != null && !backup.isEmpty()) new SetupPrep(sh, store, out).keep();
         // the screensaver as the TV had it (null: it was never set)
         String before = store.get("screensaver-before.txt");
         if (before != null && !before.trim().isEmpty()) {
@@ -531,6 +723,14 @@ final class SetupEngine {
         }
         String mode = store.get("install-appop.txt");
         if (mode != null && mode.trim().matches("allow|ignore|deny|default|foreground")) sh.run("appops set " + SELF + " REQUEST_INSTALL_PACKAGES " + mode.trim());
+        // TCL's auto-start, back to what each op had (autostart-before.txt)
+        new SetupPrep(sh, store, out).autostartUndo();
+        // the screensaver timeout a measurement stretched (a run cut while it was), and what this setup installed (installed-by-us.txt): only that is removed
+        new SetupMeasure(sh, store, out, sleeper).putTimeoutBack();
+        List<String> stay = new SetupInstall(sh, null, null, store, out, sleeper).undo();
+        if (!stay.isEmpty()) problems.add("لم يقبل التلفزيون إزالة ما ثبّته الإعداد (" + String.join(" ", stay) + ")؛ اضغط «تراجع» مرة ثانية.");
+        // the tweaks last, as optimize/reset.sh does: exactly what the TV had (tweaks-journal.txt); nothing when the app never changed one
+        if (new SetupTweaks(sh, store, out).restore().status != Status.DONE) problems.add("لم يقبل التلفزيون إرجاع بعض إعدادات السرعة؛ اضغط «تراجع» مرة ثانية.");
         if (!problems.isEmpty()) return failed(String.join(" ", problems));
         return done("رجّعنا تلفزيونك كما كان. تطبيق تلفزيونك يبقى مثبتاً؛ تقدر تحذفه من إعدادات التلفزيون (التطبيقات).");
     }

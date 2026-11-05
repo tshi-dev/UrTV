@@ -24,6 +24,9 @@ public final class Schema {
     public static final int[] SAVER_IDLE = {1, 2, 5, 10, 15, 30};
     public static final String[] DO_OPS = {"screensaver", "sleep_cancel"};
     public static final String[] TOOLS = {"@tasks", "@saver", "@inputs", "@settings", "@listen"};
+    /** «محفظتي»: the buys of one holding (Holdings.MAX_BUYS), each a quantity and a price, Western digits and «.» */
+    public static final int MAX_BUYS = 20;
+    public static final String BUY = "\\d{1,9}(\\.\\d{1,4})?:\\d{1,9}(\\.\\d{1,4})?";
 
     /** A checked body: the allowed keys with their typed values, or why it was refused (a fixed word, never the input). */
     public static final class Clean {
@@ -62,8 +65,10 @@ public final class Schema {
                 return c;
             }
             case "text": {
-                Clean c = only(body, "text", "mode", "search");
+                Clean c = only(body, "text", "mode", "search", "due");
                 if (!c.ok()) return c;
+                // due: a reminder's appointment (epoch milliseconds), from the new-task form: this year or the next
+                if (body.containsKey("due") && !(body.get("due") instanceof Long && (Long) body.get("due") > 1_700_000_000_000L && (Long) body.get("due") < 4_000_000_000_000L)) return no("bad due");
                 if (!plainText(body.get("text"), MAX_TEXT, true)) return no("bad text");
                 if (body.containsKey("mode") && !"append".equals(body.get("mode")) && !"replace".equals(body.get("mode"))) return no("bad mode");
                 if (body.containsKey("search") && !(body.get("search") instanceof Boolean)) return no("bad search");
@@ -100,12 +105,21 @@ public final class Schema {
                 return c;
             }
             case "logout": return only(body);
+            case "portfolio": {   // «محفظتي» from the phone: one holding's buys, each "qty:price" (whole numbers only in the phone's JSON); none removes it
+                Clean c = only(body, "code", "buys");
+                if (!c.ok()) return c;
+                if (!(body.get("code") instanceof String) || !((String) body.get("code")).matches("\\d{4}|[A-Z][A-Z.\\-]{0,5}")) return no("bad code");
+                Object b = body.get("buys");
+                if (!(b instanceof List) || ((List<?>) b).size() > MAX_BUYS) return no("bad buys");
+                for (Object x : (List<?>) b) if (!(x instanceof String) || !((String) x).matches(BUY)) return no("bad buys");
+                return c;
+            }
             default: return no("unknown endpoint");
         }
     }
 
     private static Clean set(Map<String, Object> b) {
-        Clean c = only(b, "city", "home_cards", "adhan_on", "adhan_voice", "adhan_fajr_voice", "adhan_short", "adhan_stopkey", "adhan_volume", "sleep_minutes", "saver_idle", "pin");
+        Clean c = only(b, "city", "home_cards", "adhan_on", "adhan_voice", "adhan_fajr_voice", "adhan_short", "adhan_stopkey", "adhan_volume", "sleep_minutes", "saver_idle", "lang", "fav_bar", "pin");
         if (!c.ok()) return c;
         if (!pin(b)) return no("bad pin");
         boolean any = false;
@@ -129,6 +143,8 @@ public final class Schema {
                 case "adhan_volume": if (!range(v, 10, 100)) return no("bad adhan_volume"); break;
                 case "sleep_minutes": if (!oneOf(v, SLEEP_MINUTES)) return no("bad sleep_minutes"); break;
                 case "saver_idle": if (!oneOf(v, SAVER_IDLE)) return no("bad saver_idle"); break;
+                case "lang": if (!"ar".equals(v) && !"en".equals(v)) return no("bad lang"); break;   // «اللغة» (docs/ENGLISH.md)
+                case "fav_bar": if (!(v instanceof String) || !((String) v).matches("[5-9]|10|all")) return no("bad fav_bar"); break;   // «تطبيقات في الشريط»
                 default: return no("unknown key");
             }
         }

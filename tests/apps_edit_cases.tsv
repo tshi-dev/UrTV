@@ -112,6 +112,10 @@ up	0	FAVOURITES_FULL|a,c,d,f,g,h|1|c|-|e,b	ten is the most: «المفضلة م�
 back	0	CANCELLED|a,c,d,f,g,h|1|-|-|e,b	Back: c goes back
 saved	true|a,c,d,f,g,h|-|-|e,b	saved: two to the favourites
 # the order the grid shows (no saved order: by name, as always)
+topup	x.youtube,x.netflix,x.shahid	z.downloader,a.appletv,m.crunchy	5	a.appletv,m.crunchy	the dock is topped up from the other apps in the order of their package names (the same in Arabic and English, where labels sort differently)
+topup	x.youtube,x.netflix,x.shahid	a.appletv,z.downloader,m.crunchy	5	a.appletv,m.crunchy	the same answer whatever order the rest comes in
+topup	x.a,x.b,x.c,x.d,x.e	a.appletv	5	-	five favourites: nothing is added
+topup	x.a	a.b	5	a.b	fewer other apps than needed: all of them
 arrange	a,b,c,d	-	a,b,c,d	nothing saved: by name
 arrange	a,b,c,d	c,a	c,a,b,d	the saved order first, then the rest by name
 arrange	a,b,c,d,n	d,c,b,a	d,c,b,a,n	a new app: at the end

@@ -27,7 +27,7 @@
         android:paddingStart="56dp"
         android:paddingTop="34dp"
         android:paddingEnd="56dp"
-        android:paddingBottom="26dp">
+        android:paddingBottom="28dp">
 
         <Space
             android:layout_width="1dp"
@@ -53,7 +53,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:letterSpacing="0.18"
+            android:letterSpacing="0"
             android:text="@string/now_playing"
             android:textColor="@color/gold"
             android:textSize="15sp" />

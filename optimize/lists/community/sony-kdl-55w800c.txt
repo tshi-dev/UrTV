@@ -1,0 +1,31 @@
+# UrTV community list: sony-kdl-55w800c
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/sony-kdl-55w800c/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: SONY
+# match-model: BRAVIAKDL55W800C SVPDTV15
+# match-device: SVP
+
+com.qterics.da.product
+com.sony.dtv.da.service
+com.google.android.feedback
+com.google.android.tv.bugreportsender
+com.sony.dtv.b2b.vendorprotocol
+com.sony.dtv.discovery
+com.sony.dtv.bivlinfo
+com.sony.dtv.sonyselect
+com.sony.dtv.sonyshelf
+com.sony.dtv.recommendationservice
+com.sony.dtv.woprecommendation
+com.sony.dtv.networkrecommendation
+com.sony.dtv.watchtvrecommendation
+android.autoinstalls.config.sony.bravia
+com.sony.dtv.demomode
+com.sony.dtv.customersupport
+com.sony.dtv.smarthelp
+com.sony.dtv.imanual
+com.sony.dtv.bravialifehack
+com.sony.dtv.touchpad.tutorial
+com.amazon.amazonvideo.livingroom
+com.amazon.aiv.us

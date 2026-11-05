@@ -1,0 +1,92 @@
+# UrTV community list: tcl-32sf560-fire-tv
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/tcl-32sf560-fire-tv/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: TCL
+# match-model: 32SF560 AFTSHN02
+# match-device: 
+
+com.amazon.tv.acr
+com.amazon.hybridadidservice
+com.amazon.kso.blackbird
+com.amazon.dpcclient
+com.amazon.shoptv.client
+com.amazon.tv.democontent.provider
+com.amazon.tv.fw.metrics
+com.amazon.neo.minerva
+com.amazon.neo.minerva.logcat
+com.amazon.wirelessmetrics.service
+com.amazon.perfcollection
+com.amazon.perfc
+com.amazon.dp.logger
+com.amazon.client.metrics.api
+com.amazon.tcomm.jackson
+com.amazon.ceviche
+com.amazon.privacypassservice
+com.amazon.spiderpork
+com.amazon.neodelegate
+com.amazon.neopactservice
+com.amazon.csm.htmlruntime
+com.amazon.communication.discovery
+com.amazon.fireos.cirruscloud
+com.amazon.rtcsessioncontroller
+com.amazon.alta.h2clientservice
+com.amazon.audiolatencymeasurer
+com.amazon.livedeviceservice
+com.amazon.wifilocker
+com.amazon.whisperjoin.middleware.np
+com.amazon.storm.lightning.tutorial
+com.amazon.tmm.tutorial
+com.amazon.gamehub
+com.amazon.bueller.music
+com.amazon.bueller.photos
+com.amazon.minitv.android.app
+com.amazon.naatyam
+com.amazon.tahoe
+com.amazon.tv.localgallery
+com.amazon.sneakpeek
+com.amazon.tv.easyupgrade
+com.amazon.tv.releasenotes
+com.amazon.systemnotices
+com.amazon.uxnotification
+com.amazon.tv.notificationcenter
+com.amazon.tv.developer.dataservice
+com.amazon.tv.ffsprovisioneeclient
+com.amazon.media.recommendations
+com.amazon.hedwig
+com.amazon.providers.contentsupport
+com.amazon.ods.kindleconnect
+com.amazon.vizzini.ftvcds
+com.amazon.aria
+com.amazon.cardinal
+com.ivona.orchestrator
+com.ivona.tts.oem
+com.amazon.aca
+com.amazon.aiondec
+com.amazon.alexa.datastore.app
+com.amazon.alexadirectivebrokerservice
+com.amazon.alexa.externalmediaplayer.fireos
+com.amazon.alexamediaplayer.runtime.ftv
+com.amazon.tv.alexaalerts
+com.amazon.tv.alexanotifications
+com.amazon.audiohome
+com.amazon.firetv.androidskillconnectioncapability
+com.amazon.cast.sink
+com.amazon.awvflingreceiver
+com.amazon.dialservice
+com.amazon.tv.forcedotaupdater.v2
+com.android.bips
+com.android.printspooler
+com.amazon.cloud9
+com.amazon.tv.website_launcher
+com.amazon.sync.provider.ipc
+com.amazon.device_remote_config_sync_service
+com.amazon.spotify.mediabrowserservice
+com.amazon.wha.mediabrowserservice
+com.amazon.dummy.alarmclock
+com.amazon.dummy.calendar
+com.amazon.dummy.contacts
+com.amazon.dummy.gallery
+com.amazon.dummy.music
+com.amazon.dummy.settings

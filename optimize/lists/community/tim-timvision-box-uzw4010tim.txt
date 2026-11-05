@@ -1,0 +1,52 @@
+# UrTV community list: tim-timvision-box-uzw4010tim
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/tim-timvision-box-uzw4010tim/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: TIM
+# match-model: TIMVISIONBOX UZW4010TIM
+# match-device: 
+
+timvision.telemetry
+com.smarts.smartagentpassivestb
+com.movenda.omadm.tv
+com.movenda.p4mcore
+com.technicolor.android.BootupTraceQR
+com.technicolor.cputemperature
+com.google.android.feedback
+it.telecomitalia.iotcontroller
+it.telecomitalia.iotim
+com.technicolor.zwavereceiver
+com.google.android.katniss
+com.google.android.speech.pumpkin
+com.google.android.tvrecommendations
+com.google.android.leanbacklauncher.recommendations
+com.ionitech.airscreen
+com.apowersoft.mirror.tv
+com.instantbits.cast.receiver
+com.google.android.youtube.tvkids
+com.google.android.youtube.tvmusic
+com.sky.ott.client.androidtv.SkyIT
+tv.pluto.android
+com.wbd.stream
+com.cbs.ca
+com.upst.hayu
+com.google.android.videos
+com.google.android.music
+com.google.android.play.games
+com.gameloft.android.GAND.GloftMTHP
+com.gameloft.android.GAND.GloftPOHP
+it.telecomitalia.timmusic_tv
+it.telecomitalia.games
+it.telecomitalia.thefilmclub
+it.telecomitalia.calcio
+com.figc.vivoazzurrotv
+it.sensiunici_atv
+com.vativision.vativisionapp
+it.rds.androidtv.rdssocialtv
+ro.antenaplay.app
+ru.iptvremote.android.iptv
+com.mxtech.videoplayer.ad
+jp.co.rarity.tvweb
+com.google.android.tvtutorials
+com.google.android.backdrop

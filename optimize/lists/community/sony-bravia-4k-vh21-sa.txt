@@ -1,0 +1,23 @@
+# UrTV community list: sony-bravia-4k-vh21-sa
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/sony-bravia-4k-vh21-sa/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: SONY
+# match-model: BRAVIA4KVH21 BRAVIAVH21 BRAVIAVH21SA KD43X80K
+# match-device: BRAVIAVH21
+
+tv.samba.ssm
+tv.samba.ssm.ui
+com.qterics.da.product
+com.sony.dtv.da.service
+com.google.android.feedback
+com.sony.dtv.multiscreendemo
+com.sony.dtv.ecodashboard
+com.sony.dtv.gestureapp
+com.sony.dtv.livingfit
+com.google.android.play.games
+com.google.android.videos
+tv.pluto.android
+com.eltelon.zapping
+com.google.android.tungsten.setupwraith

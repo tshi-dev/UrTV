@@ -23,13 +23,14 @@ CASES = [
     ("-", "verse", "-", "-", B + "panel=prayers&widget=1"),                                            # half read, nothing saved
     ("-", "-", "city=Riyadh", "-", B + "panel=prayers&widget=1"),                                      # half saved: not used
     ("city=Riyadh&panel=old", "verse,hourly,year", "-", "-", B + "city=Riyadh&panel=verse&home_panel=verse,hourly,year&widget=1"),   # up to three: the first as panel=, all as home_panel=
-    ("-", "-", "city=Riyadh", "prayers,stocks", B + "city=Riyadh&panel=prayers&home_panel=prayers,stocks&widget=1"),  # unreadable: the last cards
+    ("-", "-", "city=Riyadh", "prayers,stocks", B + "city=Riyadh&panel=prayers&home_panel=prayers,stocks&widget=1&live=1"),  # unreadable: the last cards (the stocks card is a button: live=1)
     # «المهام» among the cards is a button on the home screen: the page is told (live=1), whichever place it has; no other card is
     ("city=Riyadh", "tasks", "-", "-", B + "city=Riyadh&panel=tasks&home_panel=tasks&widget=1&live=1"),
     ("city=Riyadh", "verse,tasks,year", "-", "-", B + "city=Riyadh&panel=verse&home_panel=verse,tasks,year&widget=1&live=1"),
     ("city=Riyadh", "verse,hourly,tasks", "-", "-", B + "city=Riyadh&panel=verse&home_panel=verse,hourly,tasks&widget=1&live=1"),
     ("-", "-", "city=Riyadh", "year,tasks", B + "city=Riyadh&panel=year&home_panel=year,tasks&widget=1&live=1"),    # unreadable: the last cards, live still
-    ("city=Riyadh", "today,smart,stocks", "-", "-", B + "city=Riyadh&panel=today&home_panel=today,smart,stocks&widget=1"),   # «يومك» and the smart card may show a task: not live
+    ("city=Riyadh", "today,smart,stocks", "-", "-", B + "city=Riyadh&panel=today&home_panel=today,smart,stocks&widget=1&live=1"),   # «يومك» and the smart card may show a task: not live; the stocks card opens «الأسواق»
+    ("city=Riyadh", "today,smart,year", "-", "-", B + "city=Riyadh&panel=today&home_panel=today,smart,year&widget=1"),   # no «المهام», no stocks: not live
     ("city=Riyadh", "none", "city=Riyadh", "tasks", "off"),                                                           # «بدون»: no card, so nothing live
 ]
 
@@ -37,8 +38,13 @@ CASES = [
 launcher = list((ROOT / "android/launcher/src/main/java").rglob("*.java"))
 makers = [p.name for p in launcher if "new WebView(" in p.read_text(encoding="utf-8")]
 timers = [p.name for p in launcher if "pauseTimers" in p.read_text(encoding="utf-8").replace("pauseTimers()/resumeTimers()", "")]
-card_ok = makers == ["HomeCard.java"] and timers == ["HomeCard.java"]
-print(("PASS " if card_ok else "FAIL ") + "the launcher has exactly one WebView (HomeCard), the only place that calls the process-wide pauseTimers()/resumeTimers()"
+# «المباريات» (MatchesActivity, docs/PROPOSALS-NOV2.md §1) is the second: never in front with the home, it resumes the timers in its onResume
+# and pauses them in its onPause, so whichever of the two comes in front last leaves them running
+ma = (ROOT / "android/launcher/src/main/java/sa/urtv/home/MatchesActivity.java").read_text(encoding="utf-8")
+ma_ok = ("protected void onResume() {\n        super.onResume();\n        if (web != null) { web.onResume(); web.resumeTimers(); }" in ma
+         and "protected void onPause() {\n        super.onPause();\n        if (web != null) { web.onPause(); web.pauseTimers(); }" in ma)
+card_ok = sorted(makers) == ["HomeCard.java", "MatchesActivity.java"] and sorted(timers) == ["HomeCard.java", "MatchesActivity.java"] and ma_ok
+print(("PASS " if card_ok else "FAIL ") + "the launcher's WebViews are HomeCard's and «المباريات»'s, each pausing the process-wide timers when it goes and resuming them when it comes"
       + ("" if card_ok else f"  -> WebViews: {makers}, pauseTimers in: {timers}; revisit HomeCard.pause()/refresh() before adding another"))
 
 javac, java = shutil.which("javac"), shutil.which("java")

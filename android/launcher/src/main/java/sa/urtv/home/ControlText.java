@@ -10,7 +10,7 @@ final class ControlText {
     private ControlText() {}
 
     /** The panel's name: on the pill, over the panel, and in the family lock's list. */
-    static final String NAME = "مركز التحكم";
+    static final String NAME = S.n("مركز التحكم");
 
     /**
      * «انعكاس الشاشة»: the TV's own screen-mirroring (Miracast) receiver, which our cleaning keeps on (optimize/lists/keep.txt) but people
@@ -25,11 +25,30 @@ final class ControlText {
         "com.xiaomi.mitv.smartshare",        // Xiaomi Mi TV
         "com.mediatek.wfd",                  // MediaTek's Wi-Fi Display (Miracast) receiver
     };
-    static final String MIRROR = "انعكاس الشاشة";
+    static final String MIRROR = S.n("انعكاس الشاشة");
     /** the one line under the tile's name: what the person does on the phone */
-    static final String MIRROR_HINT = "من الجوال: شارك الشاشة واختر التلفزيون";
+    static final String MIRROR_HINT = S.n("من الجوال: شارك الشاشة واختر التلفزيون");
 
-    /** Whether this TV can open a package (it is installed, enabled, and has a screen to open). */
+    /**
+     * «البلوتوث»: the TV's own screen for remotes and Bluetooth accessories, tried in this order: Android's Bluetooth settings action, then
+     * Android TV's «add an accessory» action (its pairing search). The tile opens the first one the TV can open and is not there when
+     * none can. Each one is in the manifest's <queries>, so Android 11+ shows the screen to the home.
+     */
+    static final String[] BLUETOOTH_ACTIONS = {
+        "android.settings.BLUETOOTH_SETTINGS",
+        "com.google.android.intent.action.CONNECT_INPUT",
+    };
+    static final String BLUETOOTH = S.n("البلوتوث");
+    /** the one line under the tile's name */
+    static final String BLUETOOTH_HINT = S.n("الريموت والملحقات");
+
+    /** The action the tile opens: the first of BLUETOOTH_ACTIONS this TV can open, or null (then there is no tile). */
+    static String bluetoothAction(Opens tv) {
+        for (String a : BLUETOOTH_ACTIONS) if (tv.opens(a)) return a;
+        return null;
+    }
+
+    /** Whether this TV can open a package (it is installed, enabled, and has a screen to open), or an action (the Bluetooth tile). */
     interface Opens { boolean opens(String pkg); }
 
     /** The mirroring app the tile opens: the first of MIRROR_APPS this TV can open, or null (then there is no tile). */
@@ -42,7 +61,7 @@ final class ControlText {
     static String mbps(double v) {
         if (Double.isNaN(v) || Double.isInfinite(v) || v < 0) v = 0;
         String n = v < 100 ? String.format(Locale.ROOT, "%.1f", v) : String.format(Locale.ROOT, "%.0f", v);
-        return n.replace('.', '٫') + " ميجابت/ث";
+        return S.t("%s ميجابت/ث", n.replace('.', '٫'));
     }
 
     /** the Wi-Fi's signal as 0..4 bars from its dBm; below -100 is 0, from -55 up is 4 (the system's own five-step scale) */
@@ -54,11 +73,11 @@ final class ControlText {
 
     static String signal(int level) {
         switch (Math.max(0, Math.min(4, level))) {
-            case 0: return "إشارة ضعيفة جدًا";
-            case 1: return "إشارة ضعيفة";
-            case 2: return "إشارة متوسطة";
-            case 3: return "إشارة جيدة";
-            default: return "إشارة ممتازة";
+            case 0: return S.t("إشارة ضعيفة جدًا");
+            case 1: return S.t("إشارة ضعيفة");
+            case 2: return S.t("إشارة متوسطة");
+            case 3: return S.t("إشارة جيدة");
+            default: return S.t("إشارة ممتازة");
         }
     }
 
@@ -67,9 +86,9 @@ final class ControlText {
 
     /** the second line: the signal when it is Wi-Fi and the TV says it (rssi 0 or more = unknown), else nothing */
     static String networkDetail(boolean wired, boolean wifi, int rssi) {
-        if (wired) return "اتصال ثابت";
-        if (!wifi) return "افتح إعدادات الشبكة";
-        return rssi >= 0 ? "افتح إعدادات الشبكة" : signal(signalLevel(rssi));
+        if (wired) return S.t("اتصال ثابت");
+        if (!wifi) return S.t("افتح إعدادات الشبكة");
+        return rssi >= 0 ? S.t("افتح إعدادات الشبكة") : signal(signalLevel(rssi));
     }
 
     // The values of android.media.AudioDeviceInfo.TYPE_*, so the names can be tested without Android.
@@ -79,16 +98,16 @@ final class ControlText {
     /** the name of an output the TV reports, or null for one the person would not call an output (telephony, the bus, and the like) */
     static String outputName(int type) {
         switch (type) {
-            case BUILTIN_SPEAKER: return "سماعات التلفزيون";
+            case BUILTIN_SPEAKER: return S.t("سماعات التلفزيون");
             case WIRED_HEADSET:
-            case WIRED_HEADPHONES: return "سماعة بسلك";
+            case WIRED_HEADPHONES: return S.t("سماعة بسلك");
             case LINE_ANALOG:
-            case LINE_DIGITAL: return "مخرج صوت خارجي";
+            case LINE_DIGITAL: return S.t("مخرج صوت خارجي");
             case BLUETOOTH_SCO:
-            case BLUETOOTH_A2DP: return "بلوتوث";
+            case BLUETOOTH_A2DP: return S.t("بلوتوث");
             case HDMI: return "HDMI";
             case HDMI_ARC:
-            case HDMI_EARC: return "HDMI ARC (مضخم أو ساوند بار)";
+            case HDMI_EARC: return S.t("HDMI ARC (مضخم أو ساوند بار)");
             case USB_DEVICE:
             case USB_ACCESSORY:
             case USB_HEADSET: return "USB";
@@ -139,7 +158,7 @@ final class ControlText {
             String n = outputLabel(t, products != null && i < products.length ? products[i] : null);
             if (n != null) seen.add(n);
         }
-        return seen.isEmpty() ? "لا يُعرف" : String.join("، ", seen);
+        return seen.isEmpty() ? S.t("لا يُعرف") : String.join(S.t("، "), seen);
     }
 
     private static boolean hasSpeaker(int[] types) {
@@ -150,6 +169,6 @@ final class ControlText {
     // ---- «أطفئ الآن»
 
     /** What the panel says before it does the fallback, when the sleep service is off (shown for {@link #NOTICE_MS}). */
-    static final String SLEEP_OFF_NOTICE = "خدمة الإطفاء مو شغّالة: نوقف الصوت ونشغّل شاشة التوقف. لإطفاء الشاشة فعّلها: اضغط مطوّلًا على «أطفئ الآن»";
+    static final String SLEEP_OFF_NOTICE = S.n("خدمة الإطفاء مو شغّالة: نوقف الصوت ونشغّل شاشة التوقف. لإطفاء الشاشة فعّلها من «مؤقت النوم»");
     static final long NOTICE_MS = 2200;
 }

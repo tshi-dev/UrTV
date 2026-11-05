@@ -7,6 +7,7 @@ ask	PILL_SAVER	sa.urtv.screensaver	GO
 ask	PILL_SAVER_SETTINGS	sa.urtv.screensaver	GO
 ask	INPUT_LIVE_TV	live.tv	GO
 ask	INPUT_PICKER	input.picker	GO
+ask	WIDGET_MATCHES		GO
 ask	PILL_INPUTS		GO
 ask	MENU_KEY		GO
 ask	PILL_WIFI	settings.pkg	GO
@@ -18,7 +19,7 @@ ask	PILL_LISTEN		GO
 ask	PILL_SLEEP		GO
 ask	MENU		GO
 ask	MENU_ARRANGE		GO
-ask	MENU_UPDATE		GO
+ask	MENU_APP	app	GO
 ask	ARRANGE_SCREEN		GO
 ask	UPDATE_SCREEN		GO
 ask	PARENTAL_SCREEN		GO
@@ -33,6 +34,7 @@ ask	PILL_SAVER	sa.urtv.screensaver	GO
 ask	PILL_SAVER_SETTINGS	sa.urtv.screensaver	GO
 ask	INPUT_LIVE_TV	live.tv	GO
 ask	INPUT_PICKER	input.picker	GO
+ask	WIDGET_MATCHES		GO
 ask	PILL_INPUTS		GO
 ask	MENU_KEY		GO
 ask	PILL_WIFI	settings.pkg	GO
@@ -44,7 +46,6 @@ ask	PILL_LISTEN		GO
 ask	PILL_SLEEP		GO
 ask	MENU		GO
 ask	MENU_ARRANGE		GO
-ask	MENU_UPDATE		GO
 ask	ARRANGE_SCREEN		GO
 ask	UPDATE_SCREEN		GO
 ask	PARENTAL_SCREEN		GO
@@ -57,6 +58,7 @@ ask	PILL_SAVER	sa.urtv.screensaver	GO
 ask	PILL_SAVER_SETTINGS	sa.urtv.screensaver	GO
 ask	INPUT_LIVE_TV	live.tv	GO
 ask	INPUT_PICKER	input.picker	GO
+ask	WIDGET_MATCHES		GO
 ask	PILL_INPUTS		GO
 ask	MENU_KEY		GO
 ask	PILL_WIFI	settings.pkg	GO
@@ -68,7 +70,6 @@ ask	PILL_LISTEN		GO
 ask	PILL_SLEEP		GO
 ask	MENU		GO
 ask	MENU_ARRANGE		GO
-ask	MENU_UPDATE		GO
 ask	ARRANGE_SCREEN		GO
 ask	UPDATE_SCREEN		GO
 ask	PARENTAL_SCREEN		ASK
@@ -85,6 +86,7 @@ ask	PILL_INPUTS		GO
 state	1	0	live.tv,input.picker		-
 ask	INPUT_LIVE_TV	live.tv	ASK
 ask	INPUT_PICKER	input.picker	ASK
+ask	WIDGET_MATCHES		GO
 ask	PILL_INPUTS		GO
 # 4. each pill, by its own lock
 state	1	0	@inputs		-
@@ -95,6 +97,7 @@ ask	PILL_SAVER		GO
 ask	PILL_SAVER_SETTINGS		GO
 ask	INPUT_LIVE_TV		GO
 ask	INPUT_PICKER		GO
+ask	WIDGET_MATCHES		GO
 ask	MENU_KEY		ASK
 ask	PILL_WIFI		GO
 ask	PILL_TV_SETTINGS		GO
@@ -105,7 +108,6 @@ ask	PILL_LISTEN		GO
 ask	PILL_SLEEP		GO
 ask	MENU		GO
 ask	MENU_ARRANGE		GO
-ask	MENU_UPDATE		GO
 ask	ARRANGE_SCREEN		GO
 ask	UPDATE_SCREEN		GO
 state	1	0	@inputs		-
@@ -116,6 +118,7 @@ ask	PILL_SAVER		GO
 ask	PILL_SAVER_SETTINGS		GO
 ask	INPUT_LIVE_TV		GO
 ask	INPUT_PICKER		GO
+ask	WIDGET_MATCHES		GO
 ask	PILL_INPUTS		ASK
 ask	PILL_WIFI		GO
 ask	PILL_TV_SETTINGS		GO
@@ -126,7 +129,6 @@ ask	PILL_LISTEN		GO
 ask	PILL_SLEEP		GO
 ask	MENU		GO
 ask	MENU_ARRANGE		GO
-ask	MENU_UPDATE		GO
 ask	ARRANGE_SCREEN		GO
 ask	UPDATE_SCREEN		GO
 state	1	0	@wifi		-
@@ -137,6 +139,7 @@ ask	PILL_SAVER		GO
 ask	PILL_SAVER_SETTINGS		GO
 ask	INPUT_LIVE_TV		GO
 ask	INPUT_PICKER		GO
+ask	WIDGET_MATCHES		GO
 ask	PILL_INPUTS		GO
 ask	MENU_KEY		GO
 ask	PILL_TV_SETTINGS		GO
@@ -147,7 +150,6 @@ ask	PILL_LISTEN		GO
 ask	PILL_SLEEP		GO
 ask	MENU		GO
 ask	MENU_ARRANGE		GO
-ask	MENU_UPDATE		GO
 ask	ARRANGE_SCREEN		GO
 ask	UPDATE_SCREEN		GO
 state	1	0	@tvsettings		-
@@ -158,6 +160,7 @@ ask	PILL_SAVER		GO
 ask	PILL_SAVER_SETTINGS		GO
 ask	INPUT_LIVE_TV		GO
 ask	INPUT_PICKER		GO
+ask	WIDGET_MATCHES		GO
 ask	PILL_INPUTS		GO
 ask	MENU_KEY		GO
 ask	PILL_WIFI		GO
@@ -168,7 +171,6 @@ ask	PILL_LISTEN		GO
 ask	PILL_SLEEP		GO
 ask	MENU		GO
 ask	MENU_ARRANGE		GO
-ask	MENU_UPDATE		GO
 ask	ARRANGE_SCREEN		GO
 ask	UPDATE_SCREEN		GO
 state	1	0	@tvsettings		-
@@ -179,6 +181,7 @@ ask	PILL_SAVER		GO
 ask	PILL_SAVER_SETTINGS		GO
 ask	INPUT_LIVE_TV		GO
 ask	INPUT_PICKER		GO
+ask	WIDGET_MATCHES		GO
 ask	PILL_INPUTS		GO
 ask	MENU_KEY		GO
 ask	PILL_WIFI		GO
@@ -189,7 +192,6 @@ ask	PILL_LISTEN		GO
 ask	PILL_SLEEP		GO
 ask	MENU		GO
 ask	MENU_ARRANGE		GO
-ask	MENU_UPDATE		GO
 ask	ARRANGE_SCREEN		GO
 ask	UPDATE_SCREEN		GO
 state	1	0	@tasks		-
@@ -200,6 +202,7 @@ ask	PILL_SAVER		GO
 ask	PILL_SAVER_SETTINGS		GO
 ask	INPUT_LIVE_TV		GO
 ask	INPUT_PICKER		GO
+ask	WIDGET_MATCHES		GO
 ask	PILL_INPUTS		GO
 ask	MENU_KEY		GO
 ask	PILL_WIFI		GO
@@ -210,7 +213,6 @@ ask	PILL_LISTEN		GO
 ask	PILL_SLEEP		GO
 ask	MENU		GO
 ask	MENU_ARRANGE		GO
-ask	MENU_UPDATE		GO
 ask	ARRANGE_SCREEN		GO
 ask	UPDATE_SCREEN		GO
 state	1	0	@tasks		-
@@ -221,6 +223,7 @@ ask	PILL_SAVER		GO
 ask	PILL_SAVER_SETTINGS		GO
 ask	INPUT_LIVE_TV		GO
 ask	INPUT_PICKER		GO
+ask	WIDGET_MATCHES		GO
 ask	PILL_INPUTS		GO
 ask	MENU_KEY		GO
 ask	PILL_WIFI		GO
@@ -231,7 +234,6 @@ ask	PILL_LISTEN		GO
 ask	PILL_SLEEP		GO
 ask	MENU		GO
 ask	MENU_ARRANGE		GO
-ask	MENU_UPDATE		GO
 ask	ARRANGE_SCREEN		GO
 ask	UPDATE_SCREEN		GO
 state	1	0	@saver		-
@@ -241,6 +243,7 @@ ask	GRID	app	GO
 ask	PILL_SAVER_SETTINGS	sa.urtv.screensaver	ASK
 ask	INPUT_LIVE_TV		GO
 ask	INPUT_PICKER		GO
+ask	WIDGET_MATCHES		GO
 ask	PILL_INPUTS		GO
 ask	MENU_KEY		GO
 ask	PILL_WIFI		GO
@@ -252,7 +255,6 @@ ask	PILL_LISTEN		GO
 ask	PILL_SLEEP		GO
 ask	MENU		GO
 ask	MENU_ARRANGE		GO
-ask	MENU_UPDATE		GO
 ask	ARRANGE_SCREEN		GO
 ask	UPDATE_SCREEN		GO
 state	1	0	@saver		-
@@ -262,6 +264,7 @@ ask	GRID	app	GO
 ask	PILL_SAVER	sa.urtv.screensaver	ASK
 ask	INPUT_LIVE_TV		GO
 ask	INPUT_PICKER		GO
+ask	WIDGET_MATCHES		GO
 ask	PILL_INPUTS		GO
 ask	MENU_KEY		GO
 ask	PILL_WIFI		GO
@@ -273,7 +276,6 @@ ask	PILL_LISTEN		GO
 ask	PILL_SLEEP		GO
 ask	MENU		GO
 ask	MENU_ARRANGE		GO
-ask	MENU_UPDATE		GO
 ask	ARRANGE_SCREEN		GO
 ask	UPDATE_SCREEN		GO
 state	1	0	@listen		-
@@ -284,6 +286,7 @@ ask	PILL_SAVER		GO
 ask	PILL_SAVER_SETTINGS		GO
 ask	INPUT_LIVE_TV		GO
 ask	INPUT_PICKER		GO
+ask	WIDGET_MATCHES		GO
 ask	PILL_INPUTS		GO
 ask	MENU_KEY		GO
 ask	PILL_WIFI		GO
@@ -294,7 +297,6 @@ ask	CARD_TASKS		GO
 ask	PILL_SLEEP		GO
 ask	MENU		GO
 ask	MENU_ARRANGE		GO
-ask	MENU_UPDATE		GO
 ask	ARRANGE_SCREEN		GO
 ask	UPDATE_SCREEN		GO
 state	1	0	@sleep		-
@@ -305,6 +307,7 @@ ask	PILL_SAVER		GO
 ask	PILL_SAVER_SETTINGS		GO
 ask	INPUT_LIVE_TV		GO
 ask	INPUT_PICKER		GO
+ask	WIDGET_MATCHES		GO
 ask	PILL_INPUTS		GO
 ask	MENU_KEY		GO
 ask	PILL_WIFI		GO
@@ -315,14 +318,12 @@ ask	CARD_TASKS		GO
 ask	PILL_LISTEN		GO
 ask	MENU		GO
 ask	MENU_ARRANGE		GO
-ask	MENU_UPDATE		GO
 ask	ARRANGE_SCREEN		GO
 ask	UPDATE_SCREEN		GO
 # 5. «قفل الإعدادات»: the long-press menu, its arrange row and the arrange screen
 state	1	0	@urtv		-
 ask	MENU		ASK
 ask	MENU_ARRANGE		ASK
-ask	MENU_UPDATE		ASK
 ask	ARRANGE_SCREEN		ASK
 ask	UPDATE_SCREEN		ASK
 ask	TILE	app	GO
@@ -330,7 +331,6 @@ ask	PILL_TV_SETTINGS	settings.pkg	GO
 state	1	0			-
 ask	MENU		GO
 ask	MENU_ARRANGE		GO
-ask	MENU_UPDATE		GO
 ask	ARRANGE_SCREEN		GO
 ask	UPDATE_SCREEN		GO
 # 6. the parental screen always asks once a PIN is set (it has no toggle), and once opened with the PIN not again until the home screen is back
@@ -370,10 +370,21 @@ targets	PILL_LISTEN		@listen
 targets	PILL_SLEEP		@sleep
 targets	MENU		@urtv
 targets	MENU_ARRANGE		@urtv
+targets	MENU_APP	com.netflix.ninja	@urtv,@tvsettings,com.netflix.ninja
 targets	ARRANGE_SCREEN		@urtv
 targets	PARENTAL_SCREEN		@parental
 targets	INPUT_LIVE_TV	live.tv	live.tv
 targets	MENU_KEY		@inputs
+# the app menu's «تفاصيل التطبيق» and «حذف التطبيق» (MENU_APP): «قفل الإعدادات», the TV's settings' lock or the app's own lock each ask
+state	1	0	@tvsettings		-
+ask	MENU_APP	app	ASK
+state	1	0	@urtv		-
+ask	MENU_APP	app	ASK
+state	1	0	app		-
+ask	MENU_APP	app	ASK
+ask	MENU_APP	other	GO
+state	1	0			-
+ask	MENU_APP	app	GO
 # 9. kids mode: only the allowed apps; off, every app
 state	1	1		a,c	-
 visible	a,b,c,d			a,c
@@ -441,7 +452,7 @@ ask	PILL_CENTER		GO
 state	1	0	@center		-
 targets	PILL_CENTER			@center
 
-paths				ARRANGE_SCREEN,CARD_TASKS,GRID,INPUT_LIVE_TV,INPUT_PICKER,MENU,MENU_ARRANGE,MENU_KEY,MENU_UPDATE,OUR_SETTINGS,PARENTAL_SCREEN,PILL_CENTER,PILL_INPUTS,PILL_LISTEN,PILL_SAVER,PILL_SAVER_SETTINGS,PILL_SLEEP,PILL_TASKS,PILL_TV_SETTINGS,PILL_UPDATES,PILL_WIFI,REMOTE_APP,REMOTE_SETTINGS,SLEEP_ACCESSIBILITY,TILE,UPDATE_SCREEN
+paths				ARRANGE_SCREEN,CARD_TASKS,GRID,INPUT_LIVE_TV,INPUT_PICKER,MENU,MENU_APP,MENU_ARRANGE,MENU_KEY,OUR_SETTINGS,PARENTAL_SCREEN,PILL_CENTER,PILL_INPUTS,PILL_LISTEN,PILL_SAVER,PILL_SAVER_SETTINGS,PILL_SLEEP,PILL_TASKS,PILL_TV_SETTINGS,PILL_UPDATES,PILL_WIFI,REMOTE_APP,REMOTE_SETTINGS,SLEEP_ACCESSIBILITY,TILE,UPDATE_SCREEN,WIDGET_MATCHES
 # `dock.sh pin lock/unlock`: what may be named, and what `pin status` says about a kept list
 state	1	0	com.netflix.ninja,@wifi		-
 lockedline					@wifi,com.netflix.ninja

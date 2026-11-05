@@ -1,0 +1,79 @@
+# The words of the home's plain-Java classes in Arabic, as they were before «اللغة» (written once from origin/next dc268d4 with
+# tests/I18nHomeRun.java): tests/i18n_home_test.py runs the classes in Arabic and must get exactly these lines. key<TAB>value
+control.name	مركز التحكم
+control.mirror	انعكاس الشاشة / من الجوال: شارك الشاشة واختر التلفزيون
+control.bluetooth	البلوتوث / الريموت والملحقات
+control.mbps	12٫3 ميجابت/ث / 150 ميجابت/ث
+control.signal.0	إشارة ضعيفة جدًا
+control.signal.1	إشارة ضعيفة
+control.signal.2	إشارة متوسطة
+control.signal.3	إشارة جيدة
+control.signal.4	إشارة ممتازة
+control.net.wired	اتصال ثابت
+control.net.none	افتح إعدادات الشبكة
+control.net.wifi	إشارة ممتازة
+control.out.speaker	سماعات التلفزيون
+control.out.two	بلوتوث: JBL Flip، HDMI ARC (مضخم أو ساوند بار)، سماعة بسلك
+control.out.none	لا يُعرف
+control.sleepoff	خدمة الإطفاء مو شغّالة: نوقف الصوت ونشغّل شاشة التوقف. لإطفاء الشاشة فعّلها من «مؤقت النوم»
+pill.saver	شاشة التوقف · مطوّلًا: الإعدادات
+pill.sleep	مؤقت النوم / مؤقت النوم ٢٣ د
+pill.net	شبكة سلكية / غير متصل / واي فاي / Home
+greeting.0	صباح الخير
+greeting.1	طاب يومك
+greeting.2	مساء الخير
+greeting.3	تصبح على خير
+sky.0	سماء صافية
+sky.1	سماء صافية غالبًا
+sky.2	غائم جزئيًا
+sky.3	سماء غائمة
+sky.45	ضباب
+sky.51	رذاذ
+sky.61	أمطار
+sky.65	أمطار غزيرة
+sky.66	مطر متجمد
+sky.71	ثلوج
+sky.95	عواصف رعدية
+sky.96	عواصف رعدية وبرد
+sky.dust	سماء صافية وغبار / سماء صافية وغبار كثيف / عواصف رعدية وبرد وغبار
+weather	سماء صافية في Riyadh، 31° / عواصف رعدية وبرد في Riyadh، ٣٠° / أمطار وغبار كثيف في Riyadh، 25°
+clock	7:30 م / ٧:٠٥ ص / 19:30
+bar.before	أذان الفجر بعد 8 دقائق
+bar.iqama	إقامة الفجر بعد ١٢ دقيقة
+bar.friday	أذان الجمعة بعد دقيقتين
+bar.playing	أذان المغرب  ·  أي زر يوقف الأذان / أذان الجمعة  ·  اختيار: إيقاف الأذان / الأذان  ·  اختيار: إيقاف الأذان
+bar.minutes	1 دقيقة / دقيقتين / 3 دقائق / 4 دقائق / 5 دقائق / 6 دقائق / 7 دقائق / 8 دقائق / 9 دقائق / 10 دقائق / 11 دقيقة / 12 دقيقة
+zone	بتوقيت Dubai / بتوقيت المدينة · حساب الخليج / بتوقيت Cairo · الحساب الجعفري
+tvrows	أكمل المشاهدة / الموسم 2 · الحلقة 1 · Netflix
+input	HDMI 1 · وضع الاستعداد
+familydns.ENABLED	تصفية المواقع مفعّلة
+familydns.ALREADY_ON_BY_OTHER	الحماية شغّالة من قبل بإعداد ثاني، ما غيّرنا شي
+familydns.NEEDS_GRANT	يحتاج تفعيل من الكمبيوتر
+familydns.NO_ROUTE	ما قدرنا نوصل لخدمة الحماية، ما تغيّر شي
+familydns.UNREADABLE_VALUE	ما قدرنا نقرأ إعداد التلفزيون الحالي، ما تغيّر شي
+familydns.NOT_RECORDED	ما قدرنا نحفظ الإعداد القديم، ما تغيّر شي
+familydns.NOT_TAKEN	الإعداد ما انحفظ فرجّعنا القديم
+familydns.REVERTED	الإنترنت وقف فرجّعنا الإعداد القديم
+familydns.RESTORED	تصفية المواقع متوقفة، رجع الإعداد القديم
+familydns.NOTHING_TO_RESTORE	تصفية المواقع متوقفة
+familydns.RESTORE_FAILED	ما قدرنا نرجّع الإعداد القديم، جرّب مرة ثانية
+familydns.UNSUPPORTED	غير مدعومة في هذا التلفزيون (أندرويد قديم)
+familydns.CHANGED_BY_SOMEONE_ELSE	الإعداد تغيّر من مكان آخر، تركناه كما هو
+now.title	سورة Al-Fatihah / Station
+now.who	بث مباشر / Reciter
+now.sub	بث مباشر  ·  نوم ٢٣ د / جارٍ التحميل…  ·  Reciter
+now.hint	اختيار: إيقاف/تشغيل  ·  مطولًا: فتح / اختيار: إيقاف/تشغيل  ·  يمين/يسار: السورة  ·  مطولًا: فتح
+notice.-1	حان وقت الصلاة
+notice.0	حان وقت صلاة الفجر
+notice.1	حان وقت الصلاة
+notice.2	حان وقت صلاة الظهر
+notice.3	حان وقت صلاة العصر
+notice.4	حان وقت صلاة المغرب
+notice.5	حان وقت صلاة العشاء
+notice.6	حان وقت الصلاة
+fault.io	تعذّر الاتصال بالبث، تحقق من الإنترنت / تعذّر تحميل السورة، تحقق من الإنترنت
+fault.timeout	تعذّر الاتصال بالبث، تحقق من الإنترنت / تعذّر تحميل السورة، تحقق من الإنترنت
+fault.malformed	صيغة البث غير مدعومة / ملف السورة غير صالح
+fault.server_died	توقف المشغّل / توقف المشغّل
+fault.unknown	تعذّر تشغيل البث / تعذّر تشغيل السورة
+own	أذان من ملفي / تسجيلك على هذا التلفزيون فقط

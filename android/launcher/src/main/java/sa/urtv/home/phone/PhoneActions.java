@@ -55,9 +55,9 @@ final class PhoneActions implements Actions {
         }
         AudioManager audio = (AudioManager) app.getSystemService(Context.AUDIO_SERVICE);
         switch (key) {
-            case "vol_up": audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI); return Result.ok("done");
-            case "vol_down": audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI); return Result.ok("done");
-            case "mute": audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_TOGGLE_MUTE, AudioManager.FLAG_SHOW_UI); return Result.ok("done");
+            case "vol_up": audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI); sa.urtv.home.MuteKeep.ours(app, "phone_vol_up"); return Result.ok("done");
+            case "vol_down": audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI); sa.urtv.home.MuteKeep.ours(app, "phone_vol_down"); return Result.ok("done");
+            case "mute": audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_TOGGLE_MUTE, AudioManager.FLAG_SHOW_UI); sa.urtv.home.MuteKeep.ours(app, "phone_mute_toggle"); return Result.ok("done");
             case "home":
                 if (PhoneApps.keysEverywhere() && RemoteNav.DONE.equals(PhoneApps.pressKey("home"))) return Result.ok("done");   // the service's Home: right from any app
                 try {
@@ -104,6 +104,21 @@ final class PhoneActions implements Actions {
     }
 
     // ---- text
+
+    /** A task with a time, from the phone's new-task form: added to «المهام» through the screensaver app, whatever is on the TV's screen; «task» or «failed» (full list, empty text, an older screensaver app). */
+    @Override public Result text(String text, String mode, boolean search, long due) {
+        android.content.ContentValues v = new android.content.ContentValues();
+        v.put("t", text);
+        v.put("due", due);
+        v.put("bf", 0);
+        try {
+            boolean ok = app.getContentResolver().insert(android.net.Uri.parse("content://sa.urtv.screensaver.config/tasks"), v) != null;
+            if (ok) sa.urtv.home.ReminderScheduler.schedule(app);
+            return ok ? Result.ok("task") : Result.fail("failed");
+        } catch (RuntimeException e) {
+            return Result.fail("failed");
+        }
+    }
 
     @Override public Result text(final String text, String mode, boolean search) {
         // the typing log (tag UrTVType): fixed words and the length only, never the text or a package name
@@ -161,6 +176,13 @@ final class PhoneActions implements Actions {
         }
     }
 
+    /** «اللغة» as the screensaver holds it now (no cached copy: the page asked right after its link was pressed has the new one); the home's
+     *  kept value when the screensaver does not answer. Each page load asks (PhoneHost). */
+    String lang() {
+        Bundle b = saver("phone_state", null, null);
+        return b == null ? sa.urtv.home.S.lang() : sa.urtv.home.Tr.norm(b.getString("lang"));
+    }
+
     @Override public Map<String, Object> state() {
         Map<String, Object> m = new LinkedHashMap<>();
         Bundle b = saver("phone_state", null, null);
@@ -178,6 +200,8 @@ final class PhoneActions implements Actions {
                 panels.add(p);
             }
             m.put("panels", panels);
+            m.put("lang", sa.urtv.home.Tr.norm(b.getString("lang")));
+            m.put("fav_bar", b.getString("fav_bar") == null ? "5" : b.getString("fav_bar"));   // an older screensaver says nothing: 5, as always   // «اللغة»: an older screensaver says nothing: ar
         }
         m.putAll(PhoneBridge.state(app));
         PhoneBridge.addAdhanLive(app, m);
@@ -211,6 +235,8 @@ final class PhoneActions implements Actions {
             extras.putString("home_panel", cards.length() == 0 ? "none" : cards.toString());
         }
         if (v.containsKey("saver_idle")) extras.putString("idle", String.valueOf((Long) v.get("saver_idle")));
+        if (v.containsKey("lang")) extras.putString("lang", (String) v.get("lang"));   // «اللغة»: the screensaver holds it (SaverReceiver.set checks it again)
+        if (v.containsKey("fav_bar")) extras.putString("favbar", (String) v.get("fav_bar"));   // «تطبيقات في الشريط»: the screensaver holds it (SaverReceiver.set checks it again)
         if (v.containsKey("sleep_minutes") && !PhoneApps.setSleep(app, ((Long) v.get("sleep_minutes")).intValue())) return Result.fail("refused");
         if (!extras.isEmpty()) {
             Bundle r = saver("phone_set", null, extras);
@@ -284,6 +310,18 @@ final class PhoneActions implements Actions {
     }
 
     @Override public Map<String, Object> family() { return PhoneApps.family(app); }
+
+    // ---- «محفظتي»: only while the TV is editing it (PortfolioPhone)
+
+    @Override public Map<String, Object> portfolio() {
+        sa.urtv.home.S.init(app);
+        return sa.urtv.home.PortfolioPhone.read(app, sa.urtv.home.PortfolioPhone.now());
+    }
+
+    @Override public Result portfolioSave(String code, List<String> buys) {
+        String r = sa.urtv.home.PortfolioPhone.save(app, sa.urtv.home.PortfolioPhone.now(), code, buys);
+        return "saved".equals(r) ? Result.ok(r) : Result.fail(r);
+    }
 
     @Override public Map<String, Object> update(String op) {
         return "install".equals(op) ? PhoneUpdater.install(app, true) : PhoneUpdater.checkVersion(app);   // «افحص التحديث» reads version.txt only; the files come with «ثبّت»

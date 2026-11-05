@@ -40,7 +40,7 @@ stations = load("stations.json")["stations"]
 surahs = load("surahs.json")["surahs"]
 
 # ---- the catalog the app ships
-check("forty reciters", len(reciters) == 40, len(reciters))
+check("forty-two reciters (Badr Al-Turki and Muhammad Ayyub added from the field reports)", len(reciters) == 42, len(reciters))
 check("unique reciter ids", len({r["id"] for r in reciters}) == len(reciters))
 check("unique reciter names", len({r["name"] for r in reciters}) == len(reciters))
 check("every reciter has 114 surahs", all(r["surahs"] == 114 for r in reciters),
@@ -179,7 +179,7 @@ check("the continue row is «متابعة التلاوة»",
       labels.get("continue_listening") == "متابعة التلاوة", labels.get("continue_listening"))
 
 home = text(JAVA / "MainActivity.java")
-check("the home screen has the «تلاوة وأذان» pill", 'pill("تلاوة وأذان"' in home and "tilawah.MainActivity" in home)
+check("the home screen has the «تلاوة وأذان» pill", 'pill(S.t("تلاوة وأذان")' in home and "tilawah.MainActivity" in home)
 
 card = text(JAVA / "HomeCard.java")
 check("the home card reads the screensaver's settings",
@@ -234,7 +234,7 @@ check("the tilawah screens are laid out right to left",
       all('android:layoutDirection="rtl"' in text(APP / ("res/layout/" + f))
           for f in ("activity_main.xml", "activity_surah.xml", "activity_adhan.xml",
                     "activity_player.xml")))
-check("the right key moves to the right", "KEYCODE_DPAD_RIGHT ? -1 : 1" in main)
+check("the right key moves to the right (in English the left: Dir.backKey)", "int delta = keyCode == sa.urtv.home.Dir.backKey() ? -1 : 1;" in main)
 check("the home is laid out right to left",
       "LAYOUT_DIRECTION_RTL" in text(JAVA / "MainActivity.java"))
 check("the home walks its rows by hand",

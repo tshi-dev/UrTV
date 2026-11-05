@@ -1,0 +1,25 @@
+# UrTV community list: coocaa-p9-projector
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/coocaa-p9-projector/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: COOCAA
+# match-model: P9PROJECTOR
+# match-device: 
+
+com.tianci.ad
+com.tianci.push
+com.tianci.autoinstaller
+com.coocaa.sysreport
+com.coocaa.messageprovider
+com.coocaa.screensaver
+com.coocaa.app_browser
+com.coocaa.mitee.tv
+com.coocaa.miitee.guard
+com.coocaa.tvmanager
+com.coocaa.guide
+com.tianci.appstore
+com.coocaa.os.thememanager
+com.coocaa.theme_package_starry_night
+com.coocaa.theme_world_cup
+com.skyworth.angel.voice

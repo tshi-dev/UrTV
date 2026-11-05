@@ -1,9 +1,10 @@
-# kind, then: key: keyCode action(0 down,1 up) repeat front(home|other) stockHome(on|off) | filter: front stockHome | stock: packages; then expected, note
+# kind, then: key: keyCode action(0 down,1 up) repeat front(home|other) stockHome(on|off) | filter: front stockHome | stock: packages; then expected, note; a key on our home may add how long it has been down (ms)
 reset						-	
-key	83	0	0	home	off	OUR_SETTINGS	our home in front: the Settings key (83, TCL) opens OUR settings (the home's own path)
-key	83	1	0	home	off	HOME_EAT	its release is the home's
-key	176	0	0	home	off	OUR_SETTINGS	176 on our home: our settings too
-key	176	1	0	home	off	HOME_EAT	its release
+key	83	0	0	home	off	HOME_EAT	our home in front: the Settings key (83, TCL) is the home's own path, its press waits for short or long	0
+key	83	1	0	home	off	HOME_TV_SETTINGS	a short press on our home: the TV's own settings	100
+key	176	0	0	home	off	HOME_EAT	176 on our home: the same	0
+key	176	0	1	home	off	OUR_SETTINGS	held 600 ms: OUR settings	600
+key	176	1	0	home	off	HOME_EAT	its release	700
 reset						-	
 key	83	0	0	other	off	TV_SETTINGS	another app in front (HDMI): 83 opens the TV's settings
 key	83	0	1	other	off	EAT	its repeats are consumed
@@ -37,7 +38,8 @@ key	83	1	0	other	off	PASS	a release with no press that acted: not ours
 reset						-	
 key	83	0	0	other	off	TV_SETTINGS	pressed in another app
 key	83	1	0	home	off	EAT	released after our home came up: still eaten (the press acted)
-key	83	0	0	home	off	OUR_SETTINGS	then on our home: our settings
+key	83	0	0	home	off	HOME_EAT	then on our home: the press waits	0
+key	83	1	0	home	off	OUR_SETTINGS	released after 700 ms: our settings	700
 filter	other	off				on	another app, no stock home: the service asks for keys
 filter	home	off				off	our home in front: no key goes through the service
 filter	other	on				off	a stock home is enabled: no key goes through the service
@@ -49,3 +51,25 @@ stock	sa.urtv.home,com.google.android.tungsten.setupwraith					no	the setup wiza
 stock	com.android.tv.settings,com.android.settings,sa.urtv.home					no	the settings apps' fallback homes
 stock	com.tcl.launcher.example,sa.urtv.home					yes	another maker's home
 stock						no	nothing
+reset						-	
+key	4077	0	0	other	off	TV_SETTINGS	TCL G05 vendor Settings key (4077) in another app: the TV's settings
+key	4077	0	1	other	off	EAT	its repeats are consumed
+key	4077	1	0	other	off	EAT	its release is consumed
+key	4077	0	0	home	off	HOME_EAT	on our home: the press waits, as 83 and 176	0
+key	4077	1	0	home	off	HOME_TV_SETTINGS	short: the TV's settings	100
+key	4062	0	0	other	off	PASS	a TCL app key (4062) is not the Settings key: untouched
+reset						-	
+lost	83	0	0	home	off	TO_HOME:HOME_EAT	Haier MatrixTV: the system keeps the key from our home; the service hands the press to the home's path	0
+lost	83	1	0	home	off	TO_HOME:HOME_TV_SETTINGS	a short press: the TV's own settings, as on any home	100
+lost	176	0	0	home	off	TO_HOME:HOME_EAT	176: the same	0
+lost	176	0	1	home	off	TO_HOME:OUR_SETTINGS	held 600 ms: OUR settings	600
+lost	176	1	0	home	off	TO_HOME:HOME_EAT	its release	700
+lost	20	0	0	home	off	PASS	any other key on our home: untouched
+lost	83	0	0	other	off	TV_SETTINGS	another app in front: as before
+lost	83	1	0	other	off	EAT	its release
+filter4	home	off	ok	lost		on	the home in front on such a TV: the service listens
+filter4	home	off	ok	ok		off	any other TV: not while our home is in front, as before
+filter4	other	off	ok	ok		on	another app: as before
+filter4	other	on	ok	ok		off	a stock home on: as before
+filter4	home	off	low	lost		off	a weak TV: never (Ram.low)
+filter4	other	off	low	ok		off	a weak TV, another app: never

@@ -1,0 +1,34 @@
+# UrTV community list: xiaomi-tv-a43-2025
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/xiaomi-tv-a43-2025/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: XIAOMI
+# match-model: MITVMOOQ1 TVA432025
+# match-device: 
+
+com.miui.tv.analytics
+com.xiaomi.statistic
+com.xiaomi.tvqs.overseas
+com.mitv.tvhome.atv
+com.mitv.tvhome.michannel
+com.mitv.tvhome.mitvplus
+com.xm.webcontent
+com.xiaomi.mitv.tvmanager
+com.xiaomi.mitv.smartshare
+com.mitv.milinkservice
+com.xiaomi.amazon.alexa
+android.autoinstalls.config.xiaomi.amelie
+fusion.android.tv.demo
+com.xiaomi.mimusic2
+com.google.android.feedback
+com.netflix.ninja
+com.amazon.amazonvideo.livingroom
+com.google.android.youtube.tv
+com.google.android.youtube.tvmusic
+com.google.android.videos
+ru.more.play
+com.vk.tv
+com.yandex.browser.tv
+com.google.android.tvlauncher
+com.google.android.tungsten.setupwraith

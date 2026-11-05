@@ -1,0 +1,18 @@
+# UrTV community list: marq-4k-android-tv
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/marq-4k-android-tv/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: MARQ
+# match-model: 4KANDROIDTV
+# match-device: BANGBAE
+
+tv.anoki.acr.controller
+com.google.android.tvrecommendations
+com.google.android.feedback
+com.google.android.partnersetup
+com.google.android.play.games
+com.mstar.android.tv.disclaimercustomization
+android.autoinstalls.config.JVC
+com.google.android.videos
+com.google.android.backdrop

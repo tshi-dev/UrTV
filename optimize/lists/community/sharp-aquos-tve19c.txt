@@ -1,0 +1,19 @@
+# UrTV community list: sharp-aquos-tve19c
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/sharp-aquos-tve19c/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: SHARP
+# match-model: AQUOSTVE19C
+# match-device: 
+
+tv.anoki.acr.controller
+fusion.android.tv.demo
+com.google.android.feedback
+com.mediatek.dmp.mediaplayer
+umc.com.emanual
+com.google.android.katniss
+com.google.android.apps.nbu.smartconnect.tv
+com.google.android.backdrop
+com.google.android.tvlauncher
+com.google.android.tvrecommendations

@@ -18,10 +18,17 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <!-- «إعداد تلفزيوني»: SetupService holds the setup run as a foreground service; from targetSdk 34 every foreground service names its type, and
+         a TV setting itself up over its own adb fits no other type than specialUse (see the property on SetupService) -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- the adhan alarm, put back after a reboot or a clock change -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <!-- the adhan at its minute (an alarm clock for the prayer times): from targetSdk 33, Android 14 no longer gives SCHEDULE_EXACT_ALARM to a new
+         install, so a TV set up from Downloader would hear the adhan minutes late until the setup's appops ran. USE_EXACT_ALARM (Android 13+, a
+         normal permission) keeps it exact as it was on 30; Android 12 still reads SCHEDULE_EXACT_ALARM above. -->
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <!-- the adhan sets the TV's volume to its own level and puts it back afterwards -->
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
@@ -32,6 +39,8 @@
     <uses-permission android:name="sa.urtv.screensaver.PHONE_SETTINGS" />
     <!-- «تحديث تلفزيونك» from the phone: hands the APKs it downloaded to Android's own install screen, where the owner confirms -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <!-- «حذف التطبيق» in the app menu: hands the app to Android's own uninstall, which asks the person to confirm (a normal permission) -->
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
 
     <!-- the screensaver (same signing key) asks what is playing, for its «يُتلى الآن» card -->
     <permission
@@ -53,10 +62,19 @@
         android:name="sa.urtv.home.OPEN_UPDATE"
         android:protectionLevel="signature" />
 
+    <!-- «تحكم من الجوال»: only our two apps (same signing key) may open the pairing screen from outside (the screensaver's settings) -->
+    <permission
+        android:name="sa.urtv.home.OPEN_PHONE"
+        android:protectionLevel="signature" />
+
     <uses-feature android:name="android.software.leanback" android:required="false" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 
     <queries>
+        <!-- the Settings key's SystemUI handler: whether it resolves (SettingsKey.NOTIFICATION_PANEL_ACTION, a Haier MatrixTV has none) -->
+        <intent>
+            <action android:name="android.app.action.TOGGLE_NOTIFICATION_HANDLER_PANEL" />
+        </intent>
         <intent>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
@@ -75,13 +93,34 @@
         <intent>
             <action android:name="android.speech.action.RECOGNIZE_SPEECH" />
         </intent>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
         <!-- the remote's Settings key outside our home (TypeService, SettingsKey.TV_SETTINGS_ACTIONS): on Android 11+ the TV's settings
              screen must be visible, or resolveActivity finds nothing and the family lock cannot name its package -->
+        <!-- «البلوتوث» in «مركز التحكم» (ControlText.BLUETOOTH_ACTIONS): the tile is there only when one of these resolves -->
+        <intent>
+            <action android:name="android.settings.BLUETOOTH_SETTINGS" />
+        </intent>
+        <intent>
+            <action android:name="com.google.android.intent.action.CONNECT_INPUT" />
+        </intent>
         <intent>
             <action android:name="android.settings.SETTINGS" />
         </intent>
+        <!-- «شاهد على ثمانية» on a game's card: Thmanyah's apps (the TV build first), so the page can tell whether one is installed -->
+        <package android:name="com.thmanyah.shasha.tv" />
+        <package android:name="com.thmanyah.shasha" />
+        <!-- «المصادر»: the TVs' live TV apps and source pickers (TvVendor.LIVE_TV, TvVendor.PICKERS), found on the TV when the menu opens -->
         <package android:name="com.tcl.tv" />
         <package android:name="com.tcl.suspension" />
+        <package android:name="com.cultraview.livetv" />
+        <package android:name="com.cultraview.setting" />
+        <package android:name="com.mediatek.wwtv.tvcenter" />
+        <package android:name="com.mstar.tv.tvplayer.ui" />
+        <package android:name="com.sony.dtv.tvx" />
+        <package android:name="org.droidtv.playtv" />
+        <package android:name="com.google.android.tv" />
         <package android:name="sa.urtv.screensaver" />
         <!-- «انعكاس الشاشة» in «مركز التحكم»: the TVs' mirroring apps (ControlText.MIRROR_APPS), seen even when one has no launcher entry -->
         <package android:name="com.tcl.miracast" />
@@ -96,6 +135,7 @@
     </queries>
 
     <application
+        android:name=".HomeApp"
         android:label="تلفزيونك"
         android:icon="@mipmap/ic_launcher"
         android:banner="@drawable/banner"
@@ -157,6 +197,12 @@
             </intent-filter>
         </activity>
 
+        <!-- a setup run holds the process while it goes (it outlives the setup screen); not exported, it stops itself at the end -->
+        <service android:name=".setup.SetupService" android:exported="false" android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="The TV sets itself up over its own local adb (settings, the home switch); the run outlives the setup screen and stops itself at the end." />
+        </service>
         <!-- the in-app safety switch of the home switch: puts the stock home back after 5 minutes unless it was confirmed (ours only) -->
         <receiver android:name=".setup.SetupRevertReceiver" android:exported="false" />
         <!-- the TV started again in the middle of a home switch: the safety switch comes back and the stock home is put back (only the system sends this) -->
@@ -175,6 +221,15 @@
             android:name=".DockActivity"
             android:exported="true"
             android:label="ترتيب المفضلة"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Material.NoActionBar" />
+
+        <!-- «المباريات»: the page of the games (docs/PROPOSALS-NOV2.md §1), from the football home and from the screensaver's settings
+             («المزيد ← مباريات اليوم»); exported only for that, as DockActivity -->
+        <activity
+            android:name=".MatchesActivity"
+            android:exported="true"
+            android:label="المباريات"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Material.NoActionBar" />
 
@@ -204,10 +259,11 @@
             android:theme="@android:style/Theme.Material.NoActionBar" />
 
         <!-- «تحكم من الجوال»: the owner's switch and the pairing screen. Nothing listens until «تشغيل» is pressed there. Exported only so the
-             screensaver's settings can open it, as with DockActivity. -->
+             screensaver's settings can open it, behind a signature permission (same key) as UpdateActivity: no other app can. -->
         <activity
             android:name=".PhoneActivity"
             android:exported="true"
+            android:permission="sa.urtv.home.OPEN_PHONE"
             android:label="تحكم من الجوال"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Material.NoActionBar" />
@@ -219,6 +275,14 @@
             android:exported="true"
             android:permission="sa.urtv.home.OPEN_UPDATE"
             android:label="تحديث تلفزيوني"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Material.NoActionBar" />
+
+        <!-- «أرسل تقرير» of the screensaver's settings: a few lines (the versions, Android, WebView) and a QR code to docs/share; nothing personal, nothing sent from here -->
+        <activity
+            android:name=".ReportActivity"
+            android:exported="true"
+            android:label="أرسل تقرير"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Material.NoActionBar" />
 
@@ -239,7 +303,24 @@
         <activity
             android:name=".TasksActivity"
             android:exported="true"
+            android:windowSoftInputMode="stateHidden"
             android:label="المهام"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Material.NoActionBar" />
+
+        <!-- one task's reminder page, opened from «ذكّرني» in «المهام» -->
+        <activity
+            android:name=".TaskReminderActivity"
+            android:exported="false"
+            android:label="مهمة"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Material.NoActionBar" />
+
+        <!-- «الأسواق»: the markets page (the home's stocks card, the settings); «محفظتي» on it stays in this app's private prefs -->
+        <activity
+            android:name=".MarketsActivity"
+            android:exported="true"
+            android:label="الأسواق"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Material.NoActionBar" />
 
@@ -257,6 +338,7 @@
                 <action android:name="sa.urtv.home.HIDE" />
                 <action android:name="sa.urtv.home.SHOW" />
                 <action android:name="sa.urtv.home.FAMILY_DNS" />
+                <action android:name="sa.urtv.home.BACK_SAVER" />
                 <action android:name="sa.urtv.home.PIN_SET" />
                 <action android:name="sa.urtv.home.PIN_LOCK" />
                 <action android:name="sa.urtv.home.PIN_UNLOCK" />
@@ -357,7 +439,11 @@
                 <action android:name="sa.urtv.home.VOICE" />
                 <action android:name="sa.urtv.home.FAJR_VOICE" />
                 <action android:name="sa.urtv.home.ADHAN_SHORT" />
+                <action android:name="sa.urtv.home.ADHAN_TAKBIR" />
                 <action android:name="sa.urtv.home.ADHAN_STOPKEY" />
+                <action android:name="sa.urtv.home.ADHAN_SAVERONLY" />
+                <action android:name="sa.urtv.home.ADHAN_NOTICE" />
+                <action android:name="sa.urtv.home.ADHAN_SAVERAT" />
                 <action android:name="sa.urtv.home.STOP_ADHAN" />
                 <action android:name="sa.urtv.home.ADHAN_OWN" />
             </intent-filter>
@@ -397,6 +483,23 @@
                 <action android:name="android.intent.action.TIME_SET" />
                 <action android:name="android.intent.action.TIMEZONE_CHANGED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- «المهام» with a time: the alarm of the next reminder (it names this receiver itself, action REMINDER_ALARM), put back after a reboot, a clock
+             change or an update (the same auto-start a TCL needs for the adhan's alarms: optimize/autostart.sh), and when the tasks change (the shell's
+             REMINDER_RESCHEDULE); DUMP = only the shell and the system can send these -->
+        <receiver
+            android:name=".ReminderReceiver"
+            android:exported="true"
+            android:permission="android.permission.DUMP">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="sa.urtv.home.REMINDER_RESCHEDULE" />
             </intent-filter>
         </receiver>
 

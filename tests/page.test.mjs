@@ -358,8 +358,63 @@ for (const [hash, on] of [['panel=verse', false], ['panel=verse&tafsir=1', true]
   }
 }
 
-// ---- photo interval: #photos=N (5 10 15 30 60), anything else 30; the photo changes on that slot
-for (const [hash, want] of [['', 30], ['photos=5', 5], ['photos=60', 60], ['photos=7', 30], ['photos=abc', 30], ['photos=0', 30]]) {
+// ---- «تبديل الآية والحديث»: #versemin=3 a new verse or hadith every 3 minutes (verse, hadith, verse…) titled «آية كريمة» / «حديث شريف»;
+// anything else is one a day as always («آية اليوم» / «حديث اليوم», the same text all day)
+for (const [hash, every] of [['panel=verse', 0], ['panel=verse&versemin=3', 3], ['panel=verse&versemin=5', 0], ['panel=verse&versemin=x', 0]]) {
+  const { p, ctx, errors } = await open('tv.html', hash);
+  const r = await p.evaluate(() => {
+    const real = Date.now, base = 180000 * 2000;   // the start of an even 3-minute slot
+    const at = ms => { Date.now = () => base + ms; renderPanel(false);
+      return [document.getElementById('week-hd').textContent, document.querySelector('#week-list li.quote').textContent]; };
+    const a = at(0), b = at(179000), c = at(180000), d = at(360000);
+    Date.now = real;
+    return { every: CONFIG.verseMin, a, b, c, d };
+  });
+  const ok = every
+    ? r.every === 3 && r.a[0] === 'آية كريمة' && r.b[1] === r.a[1] && r.c[0] === 'حديث شريف' && r.d[0] === 'آية كريمة' && r.d[1] !== r.a[1]
+    : r.every === 0 && ['آية اليوم', 'حديث اليوم'].includes(r.a[0]) && r.a[1] === r.c[1] && r.c[1] === r.d[1];
+  check(`link #${hash} → ${every ? 'a new verse or hadith every 3 minutes, verse then hadith' : 'one a day, as always'}`,
+    !errors.length && ok, JSON.stringify(r).slice(0, 400) + errors.join('; '));
+  await ctx.close();
+}
+
+// ---- «الآية والحديث»: #versekind=verse verses only, #versekind=hadith hadith only, a new one each turn; anything else a verse then a hadith,
+// as always (the same texts as before for the default)
+{
+  const runs = {};
+  for (const hash of ['panel=verse&versemin=3', 'panel=verse&versemin=3&versekind=both', 'panel=verse&versemin=3&versekind=verse',
+    'panel=verse&versemin=3&versekind=hadith', 'panel=verse&versemin=3&versekind=Verse', 'panel=verse&versekind=verse']) {
+    const { p, ctx, errors } = await open('tv.html', hash);
+    runs[hash] = await p.evaluate(() => {
+      const real = Date.now, base = 180000 * 2000;
+      const at = ms => { Date.now = () => base + ms; renderPanel(false);
+        return [document.getElementById('week-hd').textContent, document.querySelector('#week-list li.quote').textContent]; };
+      const turns = [0, 1, 2, 3].map(k => at(k * 180000));
+      Date.now = real;
+      return { kind: CONFIG.verseKind, turns };
+    });
+    runs[hash].errors = errors;
+    await ctx.close();
+  }
+  const titles = h => runs[h].turns.map(x => x[0]).join(',');
+  const texts = h => runs[h].turns.map(x => x[1]);
+  const plain = 'panel=verse&versemin=3';
+  check('versekind: none or both is a verse, then a hadith, the very texts of before',
+    titles(plain) === 'آية كريمة,حديث شريف,آية كريمة,حديث شريف' && JSON.stringify(texts(plain)) === JSON.stringify(texts(plain + '&versekind=both'))
+    && runs[plain].kind === 'both' && runs[plain + '&versekind=Verse'].kind === 'both' && titles(plain + '&versekind=Verse') === titles(plain),
+    JSON.stringify(runs).slice(0, 500));
+  const v = plain + '&versekind=verse', hd = plain + '&versekind=hadith';
+  check('versekind=verse: a verse every turn, a new one each time', titles(v) === 'آية كريمة,آية كريمة,آية كريمة,آية كريمة'
+    && new Set(texts(v)).size === 4 && texts(v)[0] === texts(plain)[0], JSON.stringify(runs[v]).slice(0, 400));
+  check('versekind=hadith: a hadith every turn, a new one each time', titles(hd) === 'حديث شريف,حديث شريف,حديث شريف,حديث شريف'
+    && new Set(texts(hd)).size === 4, JSON.stringify(runs[hd]).slice(0, 400));
+  check('versekind=verse, one a day: «آية اليوم»', runs['panel=verse&versekind=verse'].turns.every(x => x[0] === 'آية اليوم'),
+    JSON.stringify(runs['panel=verse&versekind=verse']).slice(0, 300));
+  check('versekind: no page errors', Object.values(runs).every(r => !r.errors.length), Object.values(runs).flatMap(r => r.errors).join('; '));
+}
+
+// ---- photo interval: #photos=N (5 10 15 30 60, and 1), anything else 30; the photo changes on that slot
+for (const [hash, want] of [['', 30], ['photos=5', 5], ['photos=60', 60], ['photos=1', 1], ['photos=7', 30], ['photos=abc', 30], ['photos=0', 30], ['photos=0.25', 30]]) {
   const { p, ctx, errors } = await open('tv.html', hash);
   const r = await p.evaluate(() => {
     const real = riyadhParts;
@@ -370,6 +425,19 @@ for (const [hash, want] of [['', 30], ['photos=5', 5], ['photos=60', 60], ['phot
   const got = [r[1] !== r[2], r[3] !== r[4], r[5] !== r[6]];
   check(`link #${hash || '(empty)'} → CONFIG.photoMinutes ${want}, photo changes on that slot`,
     !errors.length && r[0] === want && JSON.stringify(got) === JSON.stringify(changes), JSON.stringify([r, changes]) + errors.join('; '));
+  await ctx.close();
+}
+
+// ---- 30-second photos: #photos=0.5 (the app sends it only on a TV with 2 GB): a new slot every 30 s, the same one within it
+{
+  const { p, ctx, errors } = await open('tv.html', 'photos=0.5');
+  const r = await p.evaluate(() => {
+    const real = riyadhParts;
+    const at = (h, mi, s) => { window.riyadhParts = () => ({ ...real(), h, mi, s }); BG_SLOT = -1; applyBackground(true); return BG_SLOT; };
+    return [CONFIG.photoMinutes, at(10, 4, 0), at(10, 4, 29), at(10, 4, 30), at(10, 4, 59), at(10, 5, 0)];
+  });
+  check('link #photos=0.5 → CONFIG.photoMinutes 0.5, the photo changes at :00 and :30 of each minute, not in between',
+    !errors.length && r[0] === 0.5 && r[1] === r[2] && r[2] !== r[3] && r[3] === r[4] && r[4] !== r[5] && r[5] - r[1] === 2, JSON.stringify(r) + errors.join('; '));
   await ctx.close();
 }
 
@@ -389,6 +457,32 @@ for (const [hash, latin] of [['', false], ['digits=hindi', false], ['digits=lati
                    : r.east > 10 && r.lat === 0;
   check(`link #${hash || '(empty)'} → ${latin ? '0-9' : '٠-٩'} in clock, dates, countdown and matches`, !errors.length && ok, JSON.stringify(r) + errors.join('; '));
   await ctx.close();
+}
+
+// ---- «المناسبة القادمة» hidden (#occasion=0: its place stays, empty, nothing else moves) and «تعتيم الليل» off (#nightdim=0: no dimmer
+// at midnight); anything else is shown and dimmed as always
+{
+  const base = {};
+  for (const [hash, occ, dim] of [['', true, true], ['occasion=0', false, true], ['nightdim=0', true, false], ['occasion=0&nightdim=0', false, false],
+                                   ['occasion=no&nightdim=1', true, true]]) {
+    const { p, ctx, errors } = await open('tv.html', hash, { now: '2026-10-23T21:00:00Z' });   // midnight in Riyadh: the darkest
+    await p.evaluate(async () => {   // the page's entrance (a 3 s transform transition of the stage) is over before a position is measured: getBoundingClientRect includes transforms, and a slot read mid-way was 1 px off (about one run in three)
+      await document.fonts.ready;
+      await Promise.all(document.getAnimations().filter(a => a.transitionProperty === 'transform').map(a => a.finished.catch(() => {})));
+    });
+    const r = await p.evaluate(() => {
+      applyNight();
+      const mid = document.querySelector('.p-mid'), box = q => document.querySelector(q).getBoundingClientRect();
+      return { vis: getComputedStyle(mid).visibility, w: Math.round(box('.p-mid').width), op: +document.getElementById('dimmer').style.opacity,
+               prayer: Math.round(box('.p-prayer').left), slot: Math.round(box('.p-match').left), cfg: [CONFIG.occasion, CONFIG.nightDim] };
+    });
+    if (!hash) Object.assign(base, r);
+    const ok = r.vis === (occ ? 'visible' : 'hidden') && r.w > 0 && (dim ? r.op > 0.4 : r.op === 0) && r.prayer === base.prayer && r.slot === base.slot
+      && r.cfg[0] === occ && r.cfg[1] === dim;
+    check(`link #${hash || '(empty)'} → occasion ${occ ? 'shown' : 'hidden, its place kept'}, night dimming ${dim ? 'on' : 'off'}`,
+      !errors.length && ok, JSON.stringify([r, base]) + errors.join('; '));
+    await ctx.close();
+  }
 }
 
 // ---- «المناسبة القادمة»: each occasion counts down, then shows its own day (dates as Umm al-Qura gives them)
@@ -790,6 +884,22 @@ const stkRows = p => p.evaluate(() => ({ hd: document.getElementById('week-hd').
   await p.waitForTimeout(600);
   check('stocks: offline keeps the last values on screen', before.length > 10 && await prices() === before);
   check('stocks: no Latin digits in the card', !/[0-9]/.test(await p.evaluate(() => document.getElementById('week-list').textContent)));
+  for (const cls of ['', 'cs-dark3', 'cs-glass3', 'widget cs-dark3', 'cs-dark1']) {   // step 28: the card styles' own paddings made it 50, not 24, on every side
+    const pad = await p.evaluate(c => { document.documentElement.className = c; const cs = getComputedStyle(document.querySelector('.week.stocks')); return [cs.paddingTop, cs.paddingRight, cs.paddingBottom, cs.paddingLeft].join(' '); }, cls);
+    check(`stocks: 24 px inside on every side (style «${cls || 'plain'}»)`, pad.split(' ').every(v => Math.abs(parseFloat(v) - 24) < 0.5), pad);   // 2.2222vh at 1080p
+  }
+  await ctx.close();
+}
+// «تغيّر الأسهم»: #stkchg=amount shows every stock's change as an amount, Saudi ones too
+for (const [hash, aapl, sa] of [['panel=stocks&stocks=2222,AAPL&stkchg=amount', '▲ ٢٫٢٥', '▲ ٠٫٣٠'], ['panel=stocks&stocks=2222,AAPL', '▲ ٠٫٩١٪', '▲ ١٫١٥٪']]) {
+  const state = {};
+  const { p, ctx, errors } = await open('tv.html', hash, { net: stockNet(state) });
+  await p.evaluate(at('2026-10-22T08:00:00Z'));
+  await p.waitForTimeout(800);
+  await p.evaluate('renderPanel(false)');
+  const r = await stkRows(p);
+  check(`stocks (${hash.includes('amount') ? 'amount' : 'percentage, the default'}): AAPL «${aapl}», أرامكو «${sa}»`,
+    !errors.length && r.rows[0].chg === sa && r.rows[1].chg === aapl && r.rows[1].up, JSON.stringify(r.rows) + errors.join('; '));
   await ctx.close();
 }
 for (const [market, mk] of [['open', 'panel=stocks&stocks=2222'], ['closed', 'panel=verse&stocks=2222']]) {
@@ -1927,7 +2037,7 @@ for (const [width, height] of [[1920, 1080], [1280, 720], [960, 540]]) {
     seen.length = 0;
     await p.clock.setFixedTime(LEAGUE_NOW);
     await p.goto(page('tv.html') + '#gap=0&teams=136013&leagues=' + encodeURIComponent('Saudi-Arabian Pro League') + '&panel=matches');
-    await p.waitForTimeout(1200);
+    await Promise.all([p.waitForTimeout(1200), p.waitForFunction(() => typeof MATCHES_LOADED !== 'undefined' && MATCHES_LOADED === true, null, { timeout: 15000 }).catch(() => {})]);   // at least the 1200 ms as before, and until the loader has answered (a slow 960x540 run counted the requests before the last one was made)
     const tag = `league round at ${width}x${height}`;
     const asked = seen.filter(u => /thesportsdb|data-leagues/.test(u));
     check(`${tag}: one request for the league's file, two for the one followed club, nothing per club of the league`,
@@ -3490,6 +3600,33 @@ for (const [cards, W] of [['tasks', 1920], ['tasks,prayerrow,hourly', 1920], ['p
     await on.ctx.close(); await off.ctx.close();
   }
 }
+{   // the stocks card is a button too (OK opens «الأسواق»): the ring and no mark; with no kind, the calls still mean «المهام» (an older launcher)
+  for (const cards of ['stocks', 'tasks,stocks', 'prayerrow,stocks,hourly']) {
+    const on = await homeCards(cards, 1920, { extra: LIVE_EXTRA + '&live=1' }), off = await homeCards(cards, 1920, { extra: LIVE_EXTRA });
+    const a = await liveRead(on.p), b = await liveRead(off.p);
+    const at = a.kinds.indexOf('stocks'), tk = a.kinds.indexOf('tasks'), tag = `home card ${cards}: the stocks card`;
+    const tap = await on.p.evaluate(() => CARDS.map(c => c.el.classList.contains('tap')));
+    check(`${tag} is a button (tap), with no mic mark; nothing changes size`,
+      !on.errors.length && tap[at] && tap.filter(Boolean).length === 1 && a.marks[at] === 0 && JSON.stringify(a.cards) === JSON.stringify(b.cards) && a.mid === b.mid,
+      JSON.stringify([tap, a.marks]));
+    const rect = await on.p.evaluate(() => liveRect('stocks'));
+    check(`${tag}: liveRect('stocks') is where it is; liveRect() is still «المهام»'s (or '')`,
+      rect === [a.cards[at].l, a.cards[at].t, a.cards[at].r - a.cards[at].l, a.cards[at].b - a.cards[at].t].map(v => v.toFixed(1)).join(',')
+      && (tk < 0 ? a.rect === '' : a.rect !== rect), rect + ' / ' + a.rect);
+    await on.p.evaluate(() => setLiveFocus(true, 'stocks'));
+    const f1 = await liveRead(on.p);
+    await on.p.evaluate(() => setLiveFocus(true));
+    const f2 = await liveRead(on.p);
+    await on.p.evaluate(() => setLiveFocus(false, 'stocks'));
+    const f0 = await liveRead(on.p);
+    check(`${tag}: setLiveFocus(true, 'stocks') rings it alone; setLiveFocus(true) rings «المهام» alone; false takes it off`,
+      f1.lf[at] && f1.lf.filter(Boolean).length === 1 && /inset/.test(f1.shadow[at]) && !f2.lf[at] && f2.lf.filter(Boolean).length === (tk < 0 ? 0 : 1)
+      && !f0.lf.some(Boolean), JSON.stringify([f1.lf, f2.lf, f0.lf]));
+    const nb = await off.p.evaluate(() => CARDS.some(c => c.el.classList.contains('tap')));
+    check(`${tag}: without live=1 it is no button`, !nb);
+    await on.ctx.close(); await off.ctx.close();
+  }
+}
 {   // no «المهام» among the cards: nothing live, whatever live=1 says; the screensaver's own page never has a mark
   const o = await homeCards('prayerrow,hourly', 1920, { extra: LIVE_EXTRA + '&live=1' });
   const a = await liveRead(o.p);
@@ -3984,6 +4121,58 @@ const CARD_KINDS_TEST = ['shows','prayers','forecast','hourly','prayerrow','next
   const { p, ctx } = await open('tv.html', 'clocksize=huge');
   check('clocksize: anything else is large', await p.evaluate(() => CONFIG.clockSize === 'large' && !/ck-/.test(document.documentElement.className)));
   await ctx.close();
+}
+
+// ---- «إظهار الثواني»: #seconds=1 the seconds beside the minutes, in every clock size and screen size: nothing overlaps or goes off screen,
+// and the clock is exactly as wide at every second (fixed boxes: no re-layout when a second turns); without it, no seconds at all
+{
+  for (const [w, h] of [[960, 540], [1280, 720], [1920, 1080]]) {
+    for (const size of ['large', 'medium', 'small']) {
+      const bad = [], errs = [];
+      for (const [panel, extra] of [['prayers', ''], ['verse', ''], ['matches', ''], ['verse', '&panel2=prayers'], ['prayers', '&clock=24'], ['prayers', '&digits=latin']]) {
+        const { p, ctx, errors } = await open('tv.html', `teams=136013&panel=${panel}&slot=weather&seconds=1&clocksize=${size}${extra}`, { width: w, height: h, now: HOME_NOW });
+        if (SAMPLE[panel]) await p.evaluate(`(${SAMPLE[panel]})(); renderPanel(false);`);
+        const r = await p.evaluate(() => {
+          const box = e => { const b = e.getBoundingClientRect(); return { l: b.left, r: b.right, t: b.top, b: b.bottom, w: b.width }; };
+          const vis = s => { const e = document.querySelector(s); return e && getComputedStyle(e).display !== 'none' && e.getBoundingClientRect().width ? e : null; };
+          const parts = ['.top', '.clock', '.bottom'].map(s => [s, vis(s)]).filter(x => x[1]).map(x => [x[0], box(x[1])])
+            .concat([...document.querySelectorAll('.week')].filter(e => getComputedStyle(e).display !== 'none' && e.getBoundingClientRect().width).map((e, i) => ['.week' + i, box(e)]));
+          const hit = [];
+          for (let i = 0; i < parts.length; i++) for (let j = i + 1; j < parts.length; j++) {
+            const a = parts[i][1], b = parts[j][1];
+            if (a.l < b.r - 1 && b.l < a.r - 1 && a.t < b.b - 1 && b.t < a.b - 1) hit.push(parts[i][0] + '×' + parts[j][0]);
+          }
+          const off = parts.filter(([, b]) => b.l < -1 || b.r > innerWidth + 1 || b.b > innerHeight + 1).map(x => x[0]);
+          const sec = document.getElementById('ck-s'), clock = document.querySelector('.clock');
+          const inClock = sec && sec.getBoundingClientRect().right <= clock.getBoundingClientRect().right + 0.5;
+          // every second of a minute, written as the tick writes it: the clock's width and every part's place stay the same
+          const where = () => JSON.stringify([...document.querySelectorAll('.clock, .week, .bottom, .top')].map(e => { const b = e.getBoundingClientRect(); return [b.left, b.top, b.width, b.height]; }));
+          const first = where(), widths = new Set();
+          let moved = 0;
+          for (let s = 0; s < 60; s++) {
+            const d = ar(pad(s)); sec.children[0].textContent = d[0]; sec.children[1].textContent = d[1];
+            widths.add(clock.getBoundingClientRect().width);
+            if (where() !== first) moved++;
+          }
+          return { hit, off, inClock, shown: sec && sec.textContent.length === 2, widths: widths.size, moved };
+        });
+        if (r.hit.length || r.off.length || !r.inClock || !r.shown || r.widths !== 1 || r.moved) bad.push(panel + extra + ':' + JSON.stringify(r));
+        errs.push(...errors);
+        await ctx.close();
+      }
+      check(`seconds, clock ${size} at ${w}x${h}: fits beside every card, nothing moves as the seconds turn`, !bad.length && !errs.length, bad.join(' | ') + errs.join('; '));
+    }
+  }
+  const { p, ctx, errors } = await open('tv.html', 'panel=verse');
+  check('no #seconds: no seconds on the clock, as always', !errors.length && await p.evaluate(() => !CONFIG.seconds && !document.getElementById('ck-s')));
+  await ctx.close();
+  const o = await open('tv.html', 'seconds=1', { now: new Date('2026-10-22T09:15:07Z') });
+  const s = await o.p.evaluate(() => document.getElementById('ck-s').textContent);
+  check('#seconds=1: the seconds of the clock, in Arabic digits', !o.errors.length && s === '٠٧', s);
+  await o.ctx.close();
+  const wd = await open('tv.html', 'seconds=1&widget=1&home_panel=verse');
+  check('the home\'s cards (widget): no seconds', !wd.errors.length && await wd.p.evaluate(() => !document.getElementById('ck-s')));
+  await wd.ctx.close();
 }
 
 // ---- the weather at the top left: the condition and the dust are two facts, and the source with the reading's age is a small line
@@ -4515,6 +4704,28 @@ const CARD_KINDS_TEST = ['shows','prayers','forecast','hourly','prayerrow','next
       await ctx.close();
     }
   }
+}
+
+// the top veil (the dark corner behind the date block) fades out smoothly in Arabic AND English: its gradient centre goes with its side (in English it sat on the veil's inner edge: a hard seam at x = 44vw)
+for (const file of ['tv.html', 'tv-en.html']) {
+  const o = await open(file, '');
+  await o.p.addStyleTag({ content: '.stage,.photo,.veil,.grain,.bottom-veil,.dimmer,#credit{display:none!important} html,body{background:#808080!important}' });
+  await o.p.waitForTimeout(300);
+  const png = await o.p.screenshot({ animations: 'disabled' });
+  await o.ctx.close();
+  const c2 = await browser.newContext(), p2 = await c2.newPage();
+  const step = await p2.evaluate(async b64 => {
+    const i = new Image(); i.src = 'data:image/png;base64,' + b64; await i.decode();
+    const c = document.createElement('canvas'); c.width = i.width; c.height = i.height; const g = c.getContext('2d'); g.drawImage(i, 0, 0);
+    let worst = 0, at = 0;
+    for (const y of [4, 60, 150, 250, 340]) {   // rows through the veil's height
+      const row = g.getImageData(0, y, c.width, 1).data;
+      for (let x = 1; x < c.width; x++) { const d = Math.abs(row[x * 4] - row[(x - 1) * 4]); if (d > worst) { worst = d; at = x; } }
+    }
+    return { worst, at };
+  }, png.toString('base64'));
+  await c2.close();
+  check(`top veil, ${file}: no hard edge (the largest step between neighbouring columns is ${step.worst} of 255, at x ${step.at})`, step.worst <= 3, JSON.stringify(step));
 }
 
 await browser.close();

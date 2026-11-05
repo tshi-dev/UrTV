@@ -40,7 +40,7 @@
 <sub>`optimize/reset.sh`</sub>
 
 #### نزلت نسخة جديدة؟
-حدّث التطبيقين وإعداداتك كلها باقية. الشاشة نفسها تتحدّث لحالها. آخر الإعدادات، تحت «تحديث الشاشة الآن»، ثلاثة أسطر: الإصدار الحالي، والإصدار المتاح، وطريقة التحديث.
+حدّث التطبيقين وإعداداتك كلها باقية. الشاشة نفسها تتحدّث لحالها. آخر الإعدادات، تحت «تحديث صفحة شاشة التوقف»، ثلاثة أسطر: الإصدار الحالي، والإصدار المتاح، وطريقة التحديث.
 <sub>`optimize/install.sh all`</sub>
 
 #### نزل تحديث للنظام وقفل تطبيقنا؟
@@ -104,7 +104,7 @@ screen: [docs/RECREATE-PROMPT.md](docs/RECREATE-PROMPT.md).
 Every build is also kept as a numbered release (`v4.0.N`: the version and the build; the older ones are `v3.N`), to go back
 to one: `APK_TAG=v4.0.N optimize/install.sh all`.
 
-The home screen carries «تلاوة وأذان»: forty reciters (114 surahs each), live Quran radio, and the five daily
+The home screen carries «تلاوة وأذان»: forty-two reciters (114 surahs each), live Quran radio, and the five daily
 adhans at Umm al-Qura times with a choice of 21 recordings.
 Nothing to install apart from the home app; [docs/TILAWAH.md](docs/TILAWAH.md) has the screens, the
 remote keys and the ADB controls.
@@ -255,7 +255,7 @@ the windows (morning: Fajr to Dhuhr, evening: Asr to Maghrib).
 Photos: Unsplash photographers, listed in [docs/PHOTO-CREDITS.md](docs/PHOTO-CREDITS.md). Fonts: Thmanyah, and
 Noto Naskh Arabic for ﷺ ﴿﴾ (OFL, `assets/fonts/`). Quran text: KFGQPC Uthmanic Hafs 3.0 font and text, King Fahd Glorious Quran Printing Complex (free to use and distribute unmodified, [notice](assets/fonts/UthmanicHafs-NOTICE.txt)); «التفسير الميسر» (King Fahd Complex) via api.alquran.cloud.
 Quran recitations and live streams: [mp3quran.net](https://mp3quran.net) and [qurango.net](https://qurango.net);
-the Saudi Quran Radio stream is via [radiojar](https://www.radiojar.com/). Adhan recordings: the
+the Saudi Quran Radio stream is the Saudi Broadcasting Authority's own ([Radio+](https://radioplus.sba.sa/)). Adhan recordings: the
 [Azaan of World Mosques](https://archive.org/details/azaan-of-world-mosques_202608) collection on Archive.org
 (Public Domain Mark 1.0).
 Home screen adapted from [mihirgupta0900/tv-home](https://github.com/mihirgupta0900/tv-home) (MIT,

@@ -1,0 +1,27 @@
+# UrTV community list: hotack-l018
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/hotack-l018/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: HOTACK
+# match-model: L018SMARTPROJECTOR SUN50IW12P1
+# match-device: 
+
+com.hotack.screensaversdk
+com.htc.clearmemory
+com.android.music
+com.mobisystems.office
+com.htc.storeos
+com.android.egg
+com.android.htmlviewer
+com.android.printspooler
+com.android.bips
+com.android.printservice.recommendation
+com.mphotool.airplay
+com.mphotool.dlna
+com.mphotool.usbcastserver
+com.softwinner.miracastReceiver
+com.htc.samescreen
+com.toofifi.lineserver
+com.android.toofifi
+com.google.android.katniss

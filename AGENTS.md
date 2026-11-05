@@ -16,7 +16,9 @@ real reports. Each one cost somebody their setup.
 - Override a guard: a `!!` line means stop and do what it says, then run the same command again. Do not work around it, do
   not copy a command out of a script to run it by hand without its check.
 - Turn the TV's setup wizard (`setupwraith`) off by hand, delete a saved Wi-Fi network or its files, or touch the Wi-Fi
-  settings: two TVs lost their Wi-Fi password that way.
+  settings: two TVs lost their Wi-Fi password that way. When `install.sh launcher` pauses («Home switch paused»: the wizard
+  owns the saved Wi-Fi), send the person its Arabic line, wait for «كمّل», and run the same command again: only the person
+  forgets and rejoins the network, in the TV's Settings.
 - Skip, disable or quarantine a test to make it pass, or `git add` the font files (they come from a private repo in CI).
 - Put an IP address, serial, Wi-Fi name, user name or file path in code, reports, docs or tests.
 - Restart the TV with a plain `reboot`: use `optimize/venv/bin/python -I optimize/tv.py --reboot`.
@@ -28,3 +30,16 @@ real reports. Each one cost somebody their setup.
 
 **Stable first:** small, safe changes; defaults unchanged unless it is a bug; nothing that can break a setup in progress
 or an installed TV. Run `bash tests/run.sh` before you push (about 15 minutes).
+
+**PIN recovery (maintainer only; never tell the person, never put it in their docs, the phone page or a screen)**
+- A build may carry the maintainer's recovery code for a forgotten parental PIN: 5 to 8 digits typed where the PIN is asked open
+  «رمز جديد» directly (the locks, the allowed apps and kids mode stay), never counted as a wrong try. `PinRecovery`, `PinGate` and
+  `PinKeys` in `android/launcher/.../home/`; tests in `tests/pin_recovery_test.py`.
+- The code is in no file, no commit and no APK: the build gets only its salted PBKDF2 record (`1:rounds:salt:hash`), as
+  `BuildConfig.PIN_RECOVERY`, from the env `URTV_PIN_RECOVERY` (CI: the repository secret `PIN_RECOVERY_RECORD`) or, on the
+  maintainer's machine, the untracked `android/pin-recovery.local`. Neither = no recovery code in that build (the keypad stops at
+  four digits as before). A malformed record stops the build.
+- Make the record with `python3 .github/tools/make_pin_recovery.py` (`--local` writes the file, `--gh` sets the secret). The record
+  is in the shipped APK and the code is short, so it keeps a child out, not someone who takes the APK apart.
+- Do not write a code, a record or a hint of either in a commit, a report or a test (the tests make their own). The full reset stays
+  `dock.sh pin reset` (docs/SETTINGS.md).

@@ -67,12 +67,12 @@ class Tv:
 # 1. nothing was set on the TV (freezer and process limit): restore deletes them, it does not write a default
 tv = Tv(window_animation_scale="1.0", transition_animation_scale="1.0", animator_duration_scale="1.0")
 rc, out = tv.run("apply")
-check("apply: the original values are recorded first (an unset one as null)", rc == 0 and "cached_apps_freezer=null" in tv.journal()
+check("apply: the original values are recorded first (an unset one as null); the cached-apps freezer is not part of it any more", rc == 0 and "cached_apps_freezer" not in tv.journal()
       and "window_animation_scale=1.0" in tv.journal() and "max_cached_processes=null" in tv.journal(), f"{out} {tv.journal()}")
-check("apply: the TV has the new values and nothing is flagged", tv.get("window_animation_scale") == "0.5" and tv.get("cached_apps_freezer") == "enabled"
-      and "!!" not in out, out)
+check("apply: the TV has the new values and nothing is flagged", tv.get("window_animation_scale") == "0.5" and tv.get("cached_apps_freezer") == "null"
+      and "freezer" not in out and "enabled" not in tv.t.joinpath("batch").read_text() and "!!" not in out, out)
 rc, out = tv.run("restore")
-check("restore of an unset original: deleted, not written as device_default", rc == 0 and tv.get("cached_apps_freezer") == "null"
+check("restore: the freezer stays unset (never written), the others are put back", rc == 0 and tv.get("cached_apps_freezer") == "null"
       and tv.get("max_cached_processes") == "null" and tv.get("window_animation_scale") == "1.0" and "!!" not in out, f"{out} {tv.get('cached_apps_freezer')}")
 check("restore: the journal is used up (a later apply records afresh)", tv.journal() is None)
 
@@ -81,7 +81,7 @@ tv = Tv(window_animation_scale="0.8", transition_animation_scale="0.8", animator
 tv.run("apply")
 check("a limit the TV had is replaced by apply (Android's own) and recorded", tv.get("max_cached_processes") == "null" and "max_cached_processes=64" in tv.journal(), tv.journal())
 tv.run("restore")
-check("restore after apply: its own scales, freezer and limit, exactly",
+check("restore after apply: its own scales and limit, exactly, and the freezer it had is never touched",
       (tv.get("window_animation_scale"), tv.get("transition_animation_scale"), tv.get("animator_duration_scale"), tv.get("cached_apps_freezer"), tv.get("max_cached_processes"))
       == ("0.8", "0.8", "0", "disabled", "64"), str([tv.get(k) for k in ("window_animation_scale", "animator_duration_scale", "cached_apps_freezer", "max_cached_processes")]))
 
@@ -92,9 +92,9 @@ check("a second apply keeps the first record (the TV is not 'as it came' any mor
 
 # 4. a TV that refuses a value
 tv = Tv(window_animation_scale="1.0", transition_animation_scale="1.0", animator_duration_scale="1.0")
-rc, out = tv.run("apply", refuse="cached_apps_freezer")
+rc, out = tv.run("apply", refuse="animator_duration_scale")
 check("apply: a value the TV does not take gets a !! line (and the setup goes on: exit 0)", rc == 0
-      and "!! cached_apps_freezer: this TV did not take the value (asked for enabled, it says null)" in out and "!! window_animation_scale" not in out, out)
+      and "!! animator_duration_scale: this TV did not take the value (asked for 0.5, it says 1.0)" in out and "!! window_animation_scale" not in out, out)
 rc, out = tv.run("restore", refuse="window_animation_scale")
 check("restore: a value the TV does not take is flagged and the journal is kept for another try", "!! window_animation_scale" in out and tv.journal() is not None, out)
 
@@ -112,7 +112,22 @@ check("restore with no journal: Android's defaults, and it says so", rc == 0 and
 # 7. status: what it was and what it is
 tv = Tv(window_animation_scale="1.0", transition_animation_scale="1.0", animator_duration_scale="1.0")
 tv.run("apply"); rc, out = tv.run("status")
-check("status: was and now, beside each other", "- tweak window_animation_scale: was 1.0, now 0.5" in out and "- tweak cached_apps_freezer: was null, now enabled" in out, out)
+check("status: was and now, beside each other", "- tweak window_animation_scale: was 1.0, now 0.5" in out and "cached_apps_freezer" not in out, out)
+
+# 7b. a TV an older version set to «enabled» (its journal has the original): restore, status and a new apply put it back; nothing sets it again
+def old_run_tv(freezer_now="enabled", original="null"):
+    tv = Tv(window_animation_scale="0.5", transition_animation_scale="0.5", animator_duration_scale="0.5", cached_apps_freezer=freezer_now)
+    (tv.tree / "optimize" / "run").mkdir(parents=True)
+    (tv.tree / "optimize" / "run" / "tweaks-journal.txt").write_text(f"window_animation_scale=1.0\ntransition_animation_scale=1.0\nanimator_duration_scale=1.0\ncached_apps_freezer={original}\nmax_cached_processes=null\nstandby_bucket=active\nappop_RUN_IN_BACKGROUND=default\nappop_RUN_ANY_IN_BACKGROUND=default\n")
+    return tv
+tv = old_run_tv()
+rc, out = tv.run("status")
+check("older run: status still lists the freezer", "- tweak cached_apps_freezer: was null, now enabled" in out, out)
+rc, out = tv.run("restore")
+check("older run: restore deletes the freezer setting the old run made (its original was unset)", rc == 0 and tv.get("cached_apps_freezer") == "null" and "!!" not in out, out)
+tv = old_run_tv(original="disabled")
+rc, out = tv.run("apply")
+check("older run: a new apply puts the freezer back to its recorded original and never sets it to enabled", rc == 0 and tv.get("cached_apps_freezer") == "disabled" and "!!" not in out, out)
 
 # 8. the Play Store's standby bucket and background appops: recorded, restored exactly, read back
 tv = Tv(window_animation_scale="1.0", transition_animation_scale="1.0", animator_duration_scale="1.0", standby_bucket="30", op_RUN_IN_BACKGROUND="ignore")
@@ -190,14 +205,22 @@ check("a normal build still gets the !! line", "!! standby_bucket: this TV did n
 
 # ---- the Android a TV runs: device_config is Android 10 (SDK 29) and newer; standby buckets Android 9 (28) and newer, «restricted» Android 11 (30) and newer
 def batch_of(tv): return (tv.t / "batch").read_text() if (tv.t / "batch").exists() else ""
-for sdk, want_dc, want_bucket in (("28", False, "40"), ("29", True, "40"), ("30", True, "45"), ("34", True, "45")):
+for sdk, want_dc, want_bucket in (("28", False, "null"), ("29", True, "null"), ("30", True, "45"), ("34", True, "45")):
     tv = Tv(); rc, out = tv.run("apply", sdk=sdk); b = batch_of(tv); j = tv.journal() or ""
-    check(f"SDK {sdk}: device_config {'is used' if want_dc else 'is never called'}; the standby bucket is {'restricted' if want_bucket == '45' else 'rare'}; no !! line, no refused bucket",
+    check(f"SDK {sdk}: device_config {'is used' if want_dc else 'is never called'}; the standby bucket is {'restricted' if want_bucket == '45' else 'not asked for (Android 9 and 10)'}; no !! line, no refused bucket",
           rc == 0 and ("device_config" in b) == want_dc and tv.get("standby_bucket") == want_bucket and "!!" not in out and not (tv.t / "errors").exists(), f"{rc} {out} {b}")
     if not want_dc:
         check(f"SDK {sdk}: the journal says what was skipped and why", "skipped_max_cached_processes=" in j and "max_cached_processes=" not in j.replace("skipped_max_cached_processes=", ""), j)
+    if want_bucket == "null":
+        check(f"SDK {sdk}: the bucket is skipped with one journal line and no !!, and it is not recorded as something to put back",
+              "skipped_standby_bucket=" in j and "\nstandby_bucket=" not in j and "set-standby-bucket" not in b and "!!" not in out and out.count("standby bucket") <= 1, f"{j} {out}")
     rc, out = tv.run("restore", sdk=sdk); b2 = batch_of(tv)
     check(f"SDK {sdk}: restore puts back the bucket and the others and never calls device_config below SDK 29", rc == 0 and "!!" not in out and (want_dc or "device_config" not in b2), f"{rc} {out}")
+# a TV an older version already set (journal with standby_bucket=frequent) on Android 10: restore still puts the bucket back
+tv = Tv(standby_bucket="40"); (tv.tree / "optimize" / "run").mkdir(parents=True)
+(tv.tree / "optimize" / "run" / "tweaks-journal.txt").write_text("window_animation_scale=1.0\ntransition_animation_scale=1.0\nanimator_duration_scale=1.0\ncached_apps_freezer=null\nmax_cached_processes=null\nstandby_bucket=frequent\nappop_RUN_IN_BACKGROUND=default\nappop_RUN_ANY_IN_BACKGROUND=default\n")
+rc, out = tv.run("restore", sdk="29")
+check("SDK 29, journal from an older run: restore still puts the Play Store's bucket back", rc == 0 and tv.get("standby_bucket") == "30" and "!!" not in out, f"{rc} {out}")
 tv = Tv(); rc, out = tv.run("apply", sdk="27"); b = batch_of(tv)
 check("SDK 27: no standby bucket at all (Android 8 has none), no device_config", rc == 0 and "set-standby-bucket" not in b and "device_config" not in b and "!!" not in out and "skipped_standby_bucket=" in (tv.journal() or ""), f"{rc} {out} {b}")
 tv = Tv(); rc, out = tv.run("apply", sdk=""); b = batch_of(tv)

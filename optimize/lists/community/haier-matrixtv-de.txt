@@ -1,0 +1,23 @@
+# UrTV community list: haier-matrixtv-de
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/haier-matrixtv-de/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: HAIER
+# match-model: HR9676EUF MATRIXTVDE
+# match-device: OMONIA
+
+it.hon.service
+com.haier.apps
+com.haier.tvhousekeeper
+com.haier.emanual9603
+com.haier.oemtabprovider
+com.haier.launcher.haiermatrix
+com.google.android.feedback
+tv.anoki.acr.controller
+com.mediatek.tv.launcher.partner
+com.mediatek.tv.retaildemo
+com.google.android.play.games
+com.haier.overseastv.bluetoothspeaker
+com.google.android.marvin.talkback
+com.google.android.tungsten.setupwraith

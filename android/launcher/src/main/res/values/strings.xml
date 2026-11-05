@@ -9,6 +9,9 @@
     <string name="surah_count">%1$s سورة</string>
     <string name="choose_surah">اختر سورة</string>
     <string name="live">بث مباشر</string>
+    <string name="haram_live">البث المباشر من الحرم</string>
+    <string name="haram_live_detail">يفتح صفحة القناة الرسمية في تطبيقها أو المتصفح</string>
+    <string name="haram_live_none">ما في تطبيق يفتح الرابط على هذا التلفزيون</string>
     <string name="now_playing">يُتلى الآن</string>
     <string name="buffering">جارٍ التحميل…</string>
     <string name="no_connection">تعذر الاتصال</string>
@@ -48,9 +51,13 @@
     <string name="adhan_short">أذان مختصر</string>
     <string name="adhan_short_on">مفعّل  •  يتوقف بعد دقيقة</string>
     <string name="adhan_short_off">متوقف  •  الأذان كاملًا</string>
+    <string name="adhan_takbir">تكبير فقط</string>
     <string name="adhan_stopkey">إيقاف الأذان بأي زر</string>
     <string name="adhan_stopkey_on">مفعّل  •  أي زر يوقف الأذان (ما عدا الصوت والطاقة)</string>
     <string name="adhan_stopkey_off">متوقف  •  «اختيار» على شريط الأذان يوقفه</string>
+    <string name="adhan_saver_only">الأذان على شاشة التوقف فقط</string>
+    <string name="adhan_notice">تنبيه عند الأذان</string>
+    <string name="adhan_saver_at">شاشة التوقف وقت الأذان</string>
     <string name="adhan_volume">صوت الأذان</string>
     <string name="adhan_exact_title">قد يتأخر الأذان دقائق</string>
     <string name="adhan_exact_detail">فعّل المنبّهات الدقيقة  •  اختيار يفتح الإعداد</string>

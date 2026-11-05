@@ -29,7 +29,7 @@ import java.util.List;
 
 /**
  * «مركز التحكم»: the panel the home screen's round pill opens: the sleep timer, turn the TV off now, the network, the speed
- * test, the sound output, screen mirroring (when the TV has a mirroring app), the screensaver, our own settings and the TV's settings, as big tiles you walk with the D-pad (OK acts, Back closes, the focus goes
+ * test, the sound output, screen mirroring (when the TV has a mirroring app), Bluetooth (when the TV's accessories screen opens), the screensaver, our own settings and the TV's settings, as big tiles you walk with the D-pad (OK acts, Back closes, the focus goes
  * back to the pill). Opening it is behind the family lock's «@center»; the tiles that open something keep their own locks (the sleep
  * timer's, the Wi-Fi's, the screensaver's, our settings' «@urtv», the TV's settings') through the host.
  *
@@ -50,7 +50,7 @@ final class ControlCenter {
 
     // the glass look the home shows (GlassSource.look, when the panel opens): the panel opaque over the look's solid colour (it sits over the
     // home's photo as it is), the tiles a glass panel on it, the focused one the solid focus fill; GlassStyle checks each of them
-    private int PANEL, LINE, FOCUSED, TILE, TEXT, SUB, ON, ON_SUB, ACCENT;
+    private int PANEL, LINE, FOCUSED, TILE, TEXT, SUB, ON, ON_SUB, ACCENT, RING;
 
     private final Activity act;
     private final Host host;
@@ -80,11 +80,24 @@ final class ControlCenter {
         if (showing()) return;
         GlassStyle.Look l = GlassSource.look(act);   // the look of now, before any tile is made
         PANEL = GlassStyle.over(l.dialog, l.base); LINE = l.line; FOCUSED = l.focus; TILE = l.panel; TEXT = l.text; SUB = l.sub;
-        ON = l.onFocus; ON_SUB = l.onFocusSub; ACCENT = l.accent;
+        ON = l.onFocus; ON_SUB = l.onFocusSub; ACCENT = l.accent; RING = l.ring;
         List<Tile> tiles = new ArrayList<>();
 
-        tiles.add(tile("sleep", "مؤقت النوم", sleepLine(), R.drawable.ic_sleep, () -> { dismiss(); host.openSleep(anchor); }));
-        Tile off = tile("off", "أطفئ الآن", SleepService.enabled() ? "تُطفأ الشاشة فورًا" : "الخدمة مطفأة: تظهر شاشة التوقف بدل الإطفاء. مطوّلًا: تفعيلها",
+        // the order (docs/UX-REVIEW.md): Wi-Fi and Bluetooth side by side first, then the sound, the speed test, the sleep timer, «أطفئ الآن», mirroring
+        Tile net = tile("net", S.t("الشبكة"), "", R.drawable.ic_wifi, () -> { dismiss(); host.launchGuarded(ParentalPolicy.PILL_WIFI, new Intent(Settings.ACTION_WIFI_SETTINGS), "واي فاي"); });
+        networkLines(net);
+        tiles.add(net);
+        // «البلوتوث»: the TV's remotes-and-accessories screen, only when an action for it resolves; locked as the TV's settings are
+        final Intent bluetooth = bluetoothIntent();
+        if (bluetooth != null)
+            tiles.add(tile("bluetooth", ControlText.BLUETOOTH, ControlText.BLUETOOTH_HINT, R.drawable.ic_bluetooth,
+                    () -> { dismiss(); host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, bluetooth, ControlText.BLUETOOTH); }));
+        tiles.add(tile("sound", S.t("مخرج الصوت"), outputLine(), R.drawable.ic_sound, () -> { dismiss(); host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, soundIntent(), S.t("إعدادات الصوت")); }));
+        Tile test = tile("speed", S.t("اختبار السرعة"), S.t("اضغط اختيار للبدء"), R.drawable.ic_speed, null);
+        test.action = () -> speedTest(test);
+        tiles.add(test);
+        tiles.add(tile("sleep", S.t("مؤقت النوم"), sleepLine(), R.drawable.ic_sleep, () -> { dismiss(); host.openSleep(anchor); }));
+        Tile off = tile("off", S.t("أطفئ الآن"), SleepService.enabled() ? S.t("تُطفأ الشاشة فورًا") : S.t("الخدمة مطفأة: تظهر شاشة التوقف بدل الإطفاء"),
                 R.drawable.ic_power, null);
         off.action = () -> turnOffNow();
         off.setOnLongClickListener(v -> {   // a long OK: where the sleep service is turned on, behind the same lock as the sleep timer's own line
@@ -93,30 +106,23 @@ final class ControlCenter {
             return true;
         });
         tiles.add(off);
-        Tile net = tile("net", "الشبكة", "", R.drawable.ic_wifi, () -> { dismiss(); host.launchGuarded(ParentalPolicy.PILL_WIFI, new Intent(Settings.ACTION_WIFI_SETTINGS), "واي فاي"); });
-        networkLines(net);
-        tiles.add(net);
-        Tile test = tile("speed", "اختبار السرعة", "اضغط اختيار للبدء", R.drawable.ic_speed, null);
-        test.action = () -> speedTest(test);
-        tiles.add(test);
-        tiles.add(tile("sound", "مخرج الصوت", outputLine(), R.drawable.ic_sound, () -> { dismiss(); host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, soundIntent(), "إعدادات الصوت"); }));
         // «انعكاس الشاشة»: the TV's own mirroring app (ControlText.MIRROR_APPS), only when one is installed; locked as that app's own tile is
         final Intent mirror = mirrorIntent();
         if (mirror != null)
             tiles.add(tile("mirror", ControlText.MIRROR, ControlText.MIRROR_HINT, R.drawable.ic_cast,
                     () -> { dismiss(); host.launchGuarded(ParentalPolicy.TILE, mirror, ControlText.MIRROR); }));
         if (host.saverInstalled()) {
-            Tile saver = tile("saver", "شاشة التوقف", "مطوّلًا: الإعدادات", R.drawable.ic_screensaver, () -> { dismiss(); host.openSaver(); });
-            saver.setOnLongClickListener(v -> { dismiss(); host.openSaverSettings(); return true; });
+            Tile saver = tile("saver", S.t("شاشة التوقف"), S.t("ابدأها الآن"), R.drawable.ic_screensaver, () -> { dismiss(); host.openSaver(); });
+            saver.setOnLongClickListener(v -> { dismiss(); host.openSaverSettings(); return true; });   // a shortcut: its settings are in «إعدادات تلفزيونك» ← البطاقات
             tiles.add(saver);
-            tiles.add(tile("ours", "إعدادات تلفزيونك", "الأذان والمفضلة والمظهر", R.drawable.ic_home, () -> { dismiss(); host.openOurSettings(); }));
+            tiles.add(tile("ours", S.t("إعدادات تلفزيونك"), S.t("الأذان والمفضلة والمظهر"), R.drawable.ic_home, () -> { dismiss(); host.openOurSettings(); }));
         }
-        tiles.add(tile("tv", "الإعدادات", "إعدادات التلفزيون", R.drawable.ic_settings,
+        tiles.add(tile("tv", S.t("الإعدادات"), S.t("إعدادات التلفزيون"), R.drawable.ic_settings,
                 () -> { dismiss(); host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون"); }));
 
         LinearLayout panel = new LinearLayout(act);
         panel.setOrientation(LinearLayout.VERTICAL);
-        panel.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);   // the home is built in code: the popup's own window has no direction either
+        panel.setLayoutDirection(Dir.layout());   // the home is built in code: the popup's own window has no direction either
         panel.setPadding(dp(18), dp(14), dp(18), dp(18));
         GradientDrawable bg = new GradientDrawable();
         bg.setCornerRadius(dp(22));
@@ -125,11 +131,11 @@ final class ControlCenter {
         panel.setBackground(bg);
 
         title = new TextView(act);
-        title.setText(ControlText.NAME);
+        title.setText(S.tv(ControlText.NAME));
         title.setTextColor(TEXT);
         title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
         title.setTypeface(host.font("sans-serif-medium"));
-        title.setGravity(Gravity.RIGHT);
+        title.setGravity(Dir.start());
         panel.addView(title, new LinearLayout.LayoutParams(-1, -2));
         ((LinearLayout.LayoutParams) title.getLayoutParams()).bottomMargin = dp(12);
 
@@ -159,12 +165,15 @@ final class ControlCenter {
         scroller.setFillViewport(false);
         scroller.addView(grid, new ScrollView.LayoutParams(-2, -2));
         panel.addView(scroller, new LinearLayout.LayoutParams(-2, -2));
-        // D-pad: right and left along a row (the row reads from the right: the first tile is the rightmost), up and down by row, no wrapping
+        // D-pad: right and left along a row (the row reads from the right in Arabic: the first tile is the rightmost; from the left in
+        // English), up and down by row, no wrapping
         for (int i = 0; i < tiles.size(); i++) {
             Tile t = tiles.get(i);
             int col = i % cols;
-            t.setNextFocusRightId(col == 0 ? t.getId() : tiles.get(i - 1).getId());
-            t.setNextFocusLeftId(col == cols - 1 || i == tiles.size() - 1 ? t.getId() : tiles.get(i + 1).getId());
+            int before = col == 0 ? t.getId() : tiles.get(i - 1).getId();
+            int after = col == cols - 1 || i == tiles.size() - 1 ? t.getId() : tiles.get(i + 1).getId();
+            t.setNextFocusRightId(Dir.rtl() ? before : after);
+            t.setNextFocusLeftId(Dir.rtl() ? after : before);
             t.setNextFocusUpId(i < cols ? t.getId() : tiles.get(i - cols).getId());
             t.setNextFocusDownId(i + cols < tiles.size() ? tiles.get(i + cols).getId()
                     : i / cols < (tiles.size() - 1) / cols ? tiles.get(tiles.size() - 1).getId() : t.getId());
@@ -239,9 +248,9 @@ final class ControlCenter {
             value.setGravity(Gravity.CENTER);
             value.setTextDirection(View.TEXT_DIRECTION_FIRST_STRONG);
             addView(value, new LayoutParams(-1, -2));
-            name.setText(title);
-            value.setText(line);
-            setContentDescription(title);
+            name.setText(S.tv(title));   // a name or line given as our Arabic words (ControlText's) is said in «اللغة»; one already said stays
+            value.setText(S.tv(line));
+            setContentDescription(S.tv(title));
             paint();
         }
 
@@ -268,6 +277,7 @@ final class ControlCenter {
         private void paint() {
             boolean f = hasFocus();
             fill.setColor(f ? FOCUSED : TILE);
+            if (RING != 0) fill.setStroke(f ? dp(3) : Math.max(1, dp(1)), f ? RING : LINE);   // «رملي»: a calm focus, a green line round a soft fill
             name.setTextColor(f ? ON : TEXT);
             value.setTextColor(f ? ON_SUB : SUB);
             glyph.getDrawable().setTint(f ? ON : TEXT);
@@ -278,7 +288,7 @@ final class ControlCenter {
 
     private String sleepLine() {
         int left = SleepTimer.minutesLeft(act);
-        return Digits.of(left > 0 ? "يعمل: باقي " + left + " د" : "١٥ إلى ٩٠ دقيقة");
+        return Digits.of(left > 0 ? S.t("يعمل: باقي %s د", left) : S.t("١٥ إلى ٩٠ دقيقة"));
     }
 
     /** the network by name, its signal when it is Wi-Fi, as the TV reports them; read now, once (no polling) */
@@ -337,6 +347,15 @@ final class ControlCenter {
         }
     }
 
+    /** the first Bluetooth / accessories screen this TV can open (ControlText.bluetoothAction), or null when none resolves */
+    private Intent bluetoothIntent() {
+        android.content.pm.PackageManager pm = act.getPackageManager();
+        String action = ControlText.bluetoothAction(a -> {
+            try { return pm.resolveActivity(new Intent(a), 0) != null; } catch (RuntimeException e) { return false; }
+        });
+        return action == null ? null : new Intent(action);
+    }
+
     /** the sound settings if this TV has them (the public action), else the TV's settings: never an intent that does not resolve */
     private Intent soundIntent() {
         Intent sound = new Intent(Settings.ACTION_SOUND_SETTINGS);
@@ -353,7 +372,7 @@ final class ControlCenter {
         if (SleepService.enabled()) { dismiss(); SleepTimer.turnOff(act); return; }
         if (title == null || offPending) return;
         offPending = true;
-        title.setText(ControlText.SLEEP_OFF_NOTICE);
+        title.setText(S.tv(ControlText.SLEEP_OFF_NOTICE));
         title.setTextColor(ACCENT);
         title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         title.setLineSpacing(0, 1.1f);
@@ -372,24 +391,24 @@ final class ControlCenter {
         if (speed != null) {
             speed.cancel();
             speed = null;
-            t.setValue("أُلغي · اضغط اختيار للبدء");
+            t.setValue(S.t("أُلغي · اضغط اختيار للبدء"));
             return;
         }
         final SpeedTest test = new SpeedTest();
         speed = test;
-        t.setValue("جارٍ القياس…");
+        t.setValue(S.t("جارٍ القياس…"));
         new Thread(() -> {
             String said;
             try {
                 said = Digits.of(ControlText.mbps(test.downloadMbps()));
             } catch (java.io.IOException | RuntimeException e) {
-                said = test.cancelled() ? null : "تعذّر القياس: تأكد من الشبكة";
+                said = test.cancelled() ? null : S.t("تعذّر القياس: تأكد من الشبكة");
             }
             final String result = said;
             ui.post(() -> {
                 if (speed != test || !showing()) return;   // cancelled, or the panel closed meanwhile
                 speed = null;
-                t.setValue(result + "\nاضغط اختيار للإعادة");
+                t.setValue(result + "\n" + S.t("اضغط اختيار للإعادة"));
             });
         }, "speed-test").start();
     }

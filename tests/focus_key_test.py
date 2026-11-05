@@ -20,8 +20,8 @@ render = st[st.index("    private void render() {"):]
 render = render[:render.index("\n    }\n")]
 check("settings: render reads the focused row, its place and the scroll before it empties the list (unless a screen was just opened)",
       render.index("View had = entering ? null : focusedRow();") < render.index("list.removeAllViews();") and "scroll.getScrollY()" in render.split("list.removeAllViews();")[0])
-check("settings: only a screen just opened starts at its top (its first row; on the categories the tile last opened), no other focus in render",
-      "final String want = entering ? (screen == null ? (hubAt != null ? \"hub:\" + hubAt : null) : lastRow.get(screen))" in render and ").requestFocus();" not in render
+check("settings: only a screen just opened starts at its top (its first row; on a screen of buttons the one last opened), no other focus in render",
+      "final String want = entering ? (tiles ? (hubAt != null ? \"hub:\" + hubAt : null) : lastRow.get(screen))" in render and ").requestFocus();" not in render
       and "int at = want == null ? (now.isEmpty() ? -1 : 0) : FocusKey.pick(keys, want, wasIndex);" in st)
 check("settings: render ends by putting the focus back (restoreFocus), the scroll first, after the layout (post)",
       render.rstrip().endswith("restoreFocus(want, wasIndex, scrollY);   // a screen just opened: its first row") and "scroll.post(() -> {" in st

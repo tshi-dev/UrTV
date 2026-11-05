@@ -35,8 +35,9 @@ final class ParentalPolicy {
     /** Where the home screen can be asked to open something from. */
     static final int TILE = 0, GRID = 1, MENU_ARRANGE = 2, MENU = 3, PILL_INPUTS = 4, PILL_WIFI = 5, PILL_TV_SETTINGS = 6, PILL_TASKS = 7,
             CARD_TASKS = 8, PILL_SAVER = 9, PILL_SAVER_SETTINGS = 10, PILL_LISTEN = 11, PILL_SLEEP = 12, INPUT_LIVE_TV = 13,
-            INPUT_PICKER = 14, SLEEP_ACCESSIBILITY = 15, MENU_KEY = 16, PARENTAL_SCREEN = 17, ARRANGE_SCREEN = 18, MENU_UPDATE = 19, UPDATE_SCREEN = 20,
-            REMOTE_APP = 21, REMOTE_SETTINGS = 22, PILL_CENTER = 23, PILL_UPDATES = 24, OUR_SETTINGS = 25;
+            INPUT_PICKER = 14, SLEEP_ACCESSIBILITY = 15, MENU_KEY = 16, PARENTAL_SCREEN = 17, ARRANGE_SCREEN = 18, UPDATE_SCREEN = 20,   // 19 was the app menu's «تحديث تلفزيوني» (the update is in the settings now)
+            REMOTE_APP = 21, REMOTE_SETTINGS = 22, PILL_CENTER = 23, PILL_UPDATES = 24, OUR_SETTINGS = 25, MENU_APP = 26,
+            WIDGET_MATCHES = 27;   // OK on the football home's games: «المباريات», our own page of them
 
     /**
      * The targets a launch path asks about. pkg: the app it opens, where it knows it (a tile, a row, a package the pill opens); the TV's
@@ -53,10 +54,13 @@ final class ParentalPolicy {
             case MENU:
             case MENU_ARRANGE:
             case ARRANGE_SCREEN:
-            case MENU_UPDATE:
             case UPDATE_SCREEN:
             case OUR_SETTINGS:   // the «إعدادات تلفزيونك» tile of «مركز التحكم» and the remote's Settings key: our settings screen, behind «قفل الإعدادات»
                 t.add(OWN_SETTINGS);
+                break;
+            case MENU_APP:   // the menu's «تفاصيل التطبيق» and «حذف التطبيق»: Android's own screens for that app, so «قفل الإعدادات», the TV's settings' lock and the app's own
+                t.add(OWN_SETTINGS);
+                t.add(TV_SETTINGS);
                 break;
             case PARENTAL_SCREEN:
                 t.add(PARENTAL);
@@ -92,6 +96,7 @@ final class ParentalPolicy {
                 break;
             case INPUT_LIVE_TV:
             case INPUT_PICKER:
+            case WIDGET_MATCHES:   // the games and their times, as the home's widget shows them: nothing a lock names
                 break;
             default:
                 break;

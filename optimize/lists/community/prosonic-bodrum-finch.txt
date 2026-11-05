@@ -1,0 +1,36 @@
+# UrTV community list: prosonic-bodrum-finch
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/prosonic-bodrum-finch/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: PROSONIC
+# match-model: ANDROIDTV
+# match-device: FINCH
+
+com.vestel.vestelreporter
+com.vestel.smartlogger
+com.vestel.tv.speedup
+com.vestel.smartcenter
+android.autoinstalls.config.vestel.malin
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+com.google.android.partnersetup
+com.google.android.feedback
+com.android.tv.feedbackconsent
+com.google.android.videos
+com.google.android.play.games
+com.google.android.apps.tachyon
+com.dsi.ant.plugins.antplus
+com.dsi.ant.service.socket
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore
+com.android.managedprovisioning
+com.android.dynsystem
+com.android.cts.ctsshim
+com.android.cts.priv.ctsshim
+com.google.android.syncadapters.calendar
+com.android.htmlviewer
+com.android.backupconfirm
+com.android.se
+com.mediatek.wwtv.mediaplayer

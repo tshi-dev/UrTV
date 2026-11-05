@@ -1,0 +1,23 @@
+# UrTV community list: xiaomi-smart-projector-l1-pro-tianshan
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/xiaomi-smart-projector-l1-pro-tianshan/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: XIAOMI
+# match-model: SMARTPROJECTORL1PRO
+# match-device: 
+
+com.google.android.feedback
+com.google.android.partnersetup
+android.autoinstalls.config.fomovie
+com.android.htmlviewer
+com.android.wallpaperbackup
+com.android.sharedstoragebackup
+com.android.backupconfirm
+com.android.hotspot2.osulogin
+com.google.android.syncadapters.calendar
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+com.android.healthconnect.controller
+com.android.health.connect.backuprestore

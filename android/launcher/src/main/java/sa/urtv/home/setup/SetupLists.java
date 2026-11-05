@@ -22,7 +22,6 @@ final class SetupLists {
         "com.tcl.ocean.instructions",
         "com.tcl.initsetup",
         "com.tcl.copydatatotv",
-        "com.tcl.xian.StartandroidService",
         "com.google.android.tvrecommendations",
         "com.google.android.feedback",
         "com.google.android.partnersetup",
@@ -56,6 +55,8 @@ final class SetupLists {
         "com.tcl.systemserver",
         "com.tcl.versionUpdateApp",
         "com.tcl.providers.config",
+        "com.tcl.xian.StartandroidService",
+        "com.xiaomi.android.tvsetup.partnercustomizer",
         "com.tcl.android.webview",
         "com.google.android.webview",
         "com.android.systemui",
@@ -74,12 +75,27 @@ final class SetupLists {
     /** never turned off: Android's own core, regular expressions matched against the whole name (optimize/lists/core.txt) */
     static final String[] CORE = {
         "android",
-        "com\\.android\\.(systemui|settings|shell|phone|packageinstaller|permissioncontroller|externalstorage|inputdevices|keychain|certinstaller|defcontainer|mtp|storagemanager|location\\.fused|bluetooth|nfc|server\\..*|networkstack.*|tethering|wifi\\..*|ext\\..*|modulemetadata|providers\\..*)",
+        "com\\.android\\.(systemui|settings|shell|phone|packageinstaller|permissioncontroller|externalstorage|inputdevices|keychain|certinstaller|defcontainer|mtp|storagemanager|location\\.fused|sdksandbox|bluetooth|nfc|server\\..*|networkstack.*|tethering|wifi\\..*|ext\\..*|modulemetadata|providers\\..*)",
         "com\\.google\\.android\\.(permissioncontroller|packageinstaller|ext\\.services|ext\\.shared|modulemetadata|overlay\\..*|networkstack.*|gms|gsf|tv\\.settings|tvsettings)",
         ".*webview.*",
         "com\\.cltv\\.mal",
         "com\\.mediatek\\.(tis|tv\\.service|tv\\.agent)",
         "android\\.ext\\.(services|shared)",
+    };
+
+    /** never turned off: the TV's inputs (HDMI, AV, sources, the tuner) and keyboards, regular expressions matched against the whole name (optimize/lists/inputs.txt) */
+    static final String[] INPUTS = {
+        ".*tvinput.*",
+        ".*hdmi.*",
+        ".*tuner.*",
+        ".*livetv.*",
+        ".*([._]|^)(input)?sources?([._]|$).*",
+        ".*sourcemanager.*",
+        ".*([._]|^)cec([._]|$).*",
+        ".*inputmethod.*",
+        ".*keyboard.*",
+        "com\\.google\\.android\\.tv",
+        "com\\.mediatek\\.(dtv|tvinput|tvcm|mtkdtv).*",
     };
 
     /** the stock home's helpers, turned off after our home is confirmed and back on with the stock home (optimize/lists/home-replaced.txt) */

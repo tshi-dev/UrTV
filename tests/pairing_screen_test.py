@@ -18,14 +18,16 @@ on = act[act.index("private View renderOn()"):].split("\n    }\n")[0]
 offer = on[on.index("shownToken = o.token;"):on.index("update();")]
 check("two columns, right to left: the address and the code first (the right), then the QR code (the left)",
       "body.setOrientation(LinearLayout.HORIZONTAL);" in offer and offer.index("body.addView(info") < offer.index("body.addView(qrCol"))
-check("the address stands out: large (28), gold, in its own framed box", 'boxed(ltr(control.address() + "/p"), 28, GOLD, 0f)' in offer)
+check("the address stands out: large (28), gold, in its own framed box (/p, or /m from «محفظتي»'s «أسهل من الجوال»)",
+      'boxed(ltr(control.address() + (portfolioShown() ? "/m" : "/p")), 28, GOLD, 0f)' in offer
+      and 'QrCode.encode(portfolioShown() ? control.pairUrl(o).replace("/p#", "/m#") : control.pairUrl(o))' in offer)
 check("the code stands out: very large (48), in its own framed box, its six digits read as two threes", "boxed(ltr(spaced(o.code)), 48, TEXT, 0.08f)" in offer
       and 'code.substring(0, 3) + " " + code.substring(3)' in act)
 check("a value's box: a glass panel of its own (GlassPaint.panel, the glass look), one line", "t.setBackground(GlassPaint.panel(this, look, 16));" in act and "t.setSingleLine(true);" in act)
 check("the QR code a little smaller (240 dp), beside the values, not over them", "new LinearLayout.LayoutParams(dp(240), dp(240))" in offer and "dp(300), dp(300)" not in act)
 check("the screen is wide enough for both on one TV screen (up to 1000 dp, the screen less 96 dp), with less room above and below",
       "Math.min(Math.round(getResources().getDisplayMetrics().widthPixels / getResources().getDisplayMetrics().density) - 96, 1000)" in act
-      and "col.setPadding(0, dp(20), 0, dp(16));" in act)
+      and "col.setPadding(0, dp(28), 0, dp(16));" in act)
 # a rough height at 1080p and 720p (both 540 dp tall): text is about 1.4 times its size; the taller of the two columns, with one phone
 txt = lambda sp: sp * 1.4
 info = (txt(15) + 6) + (txt(28) + 22 + 14) + (txt(15) + 6) + (txt(48) + 22 + 8) + (txt(13) + 14) + (txt(16) + 4) + (46 + 8) + (4 + 52 + 8)

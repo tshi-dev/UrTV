@@ -14,10 +14,10 @@ import java.util.List;
  */
 final class AppsEdit {
     /** the line at the top of the screen while the mode is on */
-    static final String HINT = "اختر تطبيقًا لتحريكه · × للإخفاء · ارفعه للمفضلة · رجوع للإنهاء";
+    static final String HINT = S.n("اختر تطبيقًا لتحريكه · × للإخفاء · ارفعه للمفضلة · رجوع للإنهاء");
 
     /** «المخفية»: the last place of the grid while something is hidden */
-    static final String HIDDEN_TITLE = "المخفية";
+    static final String HIDDEN_TITLE = S.n("المخفية");
 
     /** what a key did, for the screen to redraw */
     static final int NOTHING = 0, FOCUS = 1, PICKED = 2, MOVED = 3, DROPPED = 4, CANCELLED = 5, HIDDEN = 6, UNDONE = 7, EXIT = 8,
@@ -78,6 +78,14 @@ final class AppsEdit {
      * The grid as it shows: the owner's saved order first (the apps still there), then the rest as they come (by name), so a new app
      * goes at the end and one that went is simply not there. Nothing saved: the rest alone, by name, as always.
      */
+    static List<String> topUp(List<String> chosen, List<String> rest, int min) {
+        List<String> add = new ArrayList<>(), pool = new ArrayList<>(rest);
+        java.util.Collections.sort(pool);   // package names: the same on every language (labels follow it, build 180: Downloader in Arabic, Apple TV in English)
+        for (int n = chosen.size(); n < min && !pool.isEmpty(); n++) add.add(pool.remove(0));
+        return add;
+    }
+
+    /** (the favourites' top-up, above) the order the grid shows */
     static List<String> arrange(List<String> byName, String saved) {
         List<String> out = new ArrayList<>();
         if (saved != null) for (String p : saved.split(",")) if (!p.isEmpty() && byName.contains(p) && !out.contains(p)) out.add(p);

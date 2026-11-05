@@ -1,0 +1,54 @@
+# UrTV community list: philips-google-tv-ta1
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/philips-google-tv-ta1/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: PHILIPS
+# match-model: 65PUS872960 GOOGLETVTA1 PH1MWW9972
+# match-device: 
+
+org.droidtv.candeebug
+org.droidtv.gel
+com.google.android.partnersetup
+android.autoinstalls.config.google.gtvpai
+com.google.android.onetimeinitializer
+com.google.android.syncadapters.calendar
+com.google.android.play.games
+com.netflix.ninja
+com.amazon.amazonvideo.livingroom
+com.google.android.videos
+com.google.android.youtube.tvmusic
+ru.ivi.client
+com.vewd.core.browser
+org.droidtv.demome
+org.droidtv.amazonalexa
+com.phorus.playfi.softap
+com.phorus.playfi.tv
+com.tpv.nftgallery
+tv.samba.ssm
+org.droidtv.control4app
+org.droidtv.control4sddp
+org.droidtv.control4adapterservice
+org.droidtv.control4UcService
+com.mediatek.airplaydaemon
+com.mediatek.partner.airplay_sys
+org.droidtv.hbbtvopapp
+com.google.android.tts
+org.droidtv.customautologservice
+com.android.adservices.api
+com.android.ondevicepersonalization.services
+com.android.federatedcompute.services
+com.android.tv.feedbackconsent
+com.mediatek.AirplayAPK
+org.droidtv.matter
+com.tpv.screenshotshare
+com.android.printspooler
+com.google.android.apps.tv.dreamx
+org.droidtv.multiview
+org.droidtv.hidwizard
+org.droidtv.sunrise
+org.droidtv.calmancalibrator
+org.droidtv.personalisedsound
+io.mimi.sdk.service
+com.google.android.tungsten.setupwraith
+com.google.android.apps.tv.launcherx

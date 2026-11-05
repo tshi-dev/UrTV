@@ -1,0 +1,33 @@
+# UrTV community list: tcl-32es570f
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/tcl-32es570f/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: TCL
+# match-model: 32ES570F
+# match-device: C06
+
+com.tcl.guard
+com.tcl.partnercustomizer
+com.tcl.waterfall.overseas
+com.tcl.esticker
+android.autoinstalls.config.tcl.device
+com.tcl.dashboard
+com.tcl.suspension
+com.tcl.t_solo
+com.google.android.feedback
+com.google.android.play.games
+com.google.android.videos
+com.google.android.youtube.tvmusic
+com.google.android.syncadapters.calendar
+com.google.android.partnersetup
+com.google.android.tvrecommendations
+com.google.android.katniss
+com.google.android.tts
+com.google.android.marvin.talkback
+com.google.android.backdrop
+com.google.android.apps.mediashell
+com.tcl.ui_mediaCenter
+com.tcl.audioplayer
+com.tcl.videoplayer
+com.tcl.imageplayer

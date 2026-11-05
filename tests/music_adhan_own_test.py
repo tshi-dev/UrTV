@@ -174,6 +174,38 @@ check("stopkey off", rc == 0 and sent == [STOPKEY + "--ez on false"], (out, sent
 for bad in ("yes", "", "on off"):
     rc, out, sent, ff = run("adhan", "stopkey", bad) if bad else run("adhan", "stopkey")
     check(f"stopkey {bad!r}: refused, nothing sent", rc != 0 and not sent, (out, sent))
+SAVERONLY = "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.ADHAN_SAVERONLY "
+rc, out, sent, ff = run("adhan", "saver-only", "on")
+check("saver-only on", rc == 0 and sent == [SAVERONLY + "--ez on true"] and "screensaver" in out, (out, sent))
+rc, out, sent, ff = run("adhan", "saver-only", "off")
+check("saver-only off", rc == 0 and sent == [SAVERONLY + "--ez on false"], (out, sent))
+for bad in ("yes", "", "on off"):
+    rc, out, sent, ff = run("adhan", "saver-only", bad) if bad else run("adhan", "saver-only")
+    check(f"saver-only {bad!r}: refused, nothing sent", rc != 0 and not sent, (out, sent))
+NOTICE = "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.ADHAN_NOTICE "
+rc, out, sent, ff = run("adhan", "notice", "on")
+check("notice on", rc == 0 and sent == [NOTICE + "--ez on true"] and "5-second" in out, (out, sent))
+rc, out, sent, ff = run("adhan", "notice", "off")
+check("notice off", rc == 0 and sent == [NOTICE + "--ez on false"], (out, sent))
+for bad in ("yes", "", "on off"):
+    rc, out, sent, ff = run("adhan", "notice", bad) if bad else run("adhan", "notice")
+    check(f"notice {bad!r}: refused, nothing sent", rc != 0 and not sent, (out, sent))
+TAKBIR = "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.ADHAN_TAKBIR "
+rc, out, sent, ff = run("adhan", "takbir", "on")
+check("takbir on", rc == 0 and sent == [TAKBIR + "--ez on true"] and "takbir" in out, (out, sent))
+rc, out, sent, ff = run("adhan", "takbir", "off")
+check("takbir off", rc == 0 and sent == [TAKBIR + "--ez on false"], (out, sent))
+for bad in ("yes", "", "on off"):
+    rc, out, sent, ff = run("adhan", "takbir", bad) if bad else run("adhan", "takbir")
+    check(f"takbir {bad!r}: refused, nothing sent", rc != 0 and not sent, (out, sent))
+SAVERAT = "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.ADHAN_SAVERAT "
+rc, out, sent, ff = run("adhan", "saver-at", "on")
+check("saver-at on", rc == 0 and sent == [SAVERAT + "--ez on true"] and "home screen" in out, (out, sent))
+rc, out, sent, ff = run("adhan", "saver-at", "off")
+check("saver-at off", rc == 0 and sent == [SAVERAT + "--ez on false"], (out, sent))
+for bad in ("yes", "", "on off"):
+    rc, out, sent, ff = run("adhan", "saver-at", bad) if bad else run("adhan", "saver-at")
+    check(f"saver-at {bad!r}: refused, nothing sent", rc != 0 and not sent, (out, sent))
 rc, out, sent, ff = run("adhan", "stop")
 check("adhan stop sends STOP_ADHAN only", rc == 0 and sent == ["am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.STOP_ADHAN"], (out, sent))
 

@@ -1,0 +1,25 @@
+# UrTV community list: dyon-2k-android-tv
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/dyon-2k-android-tv/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: DYON
+# match-model: 2KANDROIDTV
+# match-device: 
+
+tv.anoki.acr.controller
+android.autoinstalls.config.JVC
+com.google.android.leanbacklauncher.partnercustomizer
+com.google.android.tvrecommendations
+com.google.android.feedback
+com.android.printspooler
+com.cltv.fast
+com.google.android.youtube.tvmusic
+com.google.android.videos
+com.google.android.play.games
+com.mobisystems.fileman
+com.zdf.android.mediathek
+de.rtli.tvnow
+com.google.android.katniss
+com.google.android.tv.remote.service
+com.google.android.backdrop

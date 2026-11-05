@@ -3,9 +3,10 @@
 #   optimize/tweaks.sh apply     - animations at half length
 #                                - Play Store kept from running in the background (it stays installed and opens
 #                                  normally; on one set its idle CPU fell 31% -> 6%)
-#                                - closed apps frozen while cached (no CPU in the background)
 #                                - app caches trimmed, only when the free storage is low (under 1 GB or 10%): the
 #                                  caches (thumbnails, app data to load) are useful while there is room
+#                                - our two apps compiled ahead of time from their profile (cmd package compile -m speed-profile,
+#                                  Android 7 and newer): a sideloaded app runs on the JIT until Android's idle job compiles it
 #   optimize/tweaks.sh restore   back to the values the TV had before (the journal optimize/run/tweaks-journal.txt, written
 #                                by the first apply: a value that was not set is deleted, not written); a TV with no journal
 #                                gets Android's defaults
@@ -23,13 +24,18 @@ PY="${PY:-optimize/venv/bin/python}"
 CACHED="${CACHED_LIMIT:-}"
 JOURNAL="${URTV_RUN_DIR:-optimize/run}/tweaks-journal.txt"
 KEYS="window_animation_scale transition_animation_scale animator_duration_scale cached_apps_freezer max_cached_processes"
+# cached_apps_freezer is no longer set (one report linked it to apps hanging after standby; Android 14 has it on anyway, on 11-13 it is experimental):
+# apply leaves it at the TV's own value and does not record it. It stays in KEYS for restore and status, so a TV an older run set to «enabled»
+# (its journal has the line) gets its original back, by restore and by the next apply.
 # What this Android has: `device_config` is Android 10 (SDK 29) and newer, `am set-standby-bucket` is Android 9 (SDK 28) and newer, and the «restricted» bucket
 # is Android 11 (SDK 30) and newer (Android 9 and 10 take «rare»). An SDK the TV did not say counts as «too old to be sure»: those two settings are left alone.
 SDK=$("$PY" -I optimize/tv.py "getprop ro.build.version.sdk" 2> /dev/null | tr -dc '0-9') || SDK=""
 SDK_SAY=${SDK:-unknown}; SDK=${SDK:-0}
 SKIPPED=()   # "key: why", written to the journal so the record says what was not touched and why
 if [ "$SDK" -lt 29 ]; then KEYS=${KEYS/ max_cached_processes/}; SKIPPED+=("max_cached_processes: device_config needs Android 10 (this TV is SDK $SDK_SAY)"); fi
+OURS="sa.urtv.home sa.urtv.screensaver"   # compiled ahead of time by apply (journaled as compiled_<package>), back to «as installed» by restore
 BUCKET=restricted; [ "$SDK" -ge 30 ] || BUCKET=rare
+AKEYS=" $KEYS "; AKEYS=${AKEYS/ cached_apps_freezer / }; AKEYS=$(echo $AKEYS)   # what apply records and sets (after the SDK trimming above)
 getcmd() { case "$1" in max_cached_processes) echo "device_config get activity_manager $1" ;; *) echo "settings get global $1" ;; esac; }
 putcmd() {   # key value: a value that was not set (null) is deleted
   case "$1" in
@@ -59,6 +65,10 @@ original() {   # key tv|ps: what the journal has; an «unknown» one is read aga
 PS=com.android.vending
 PSKEYS="standby_bucket appop_RUN_IN_BACKGROUND appop_RUN_ANY_IN_BACKGROUND"
 if [ "$SDK" -lt 28 ]; then PSKEYS=${PSKEYS/standby_bucket /}; SKIPPED+=("standby_bucket: standby buckets need Android 9 (this TV is SDK $SDK_SAY)"); fi
+# Android 9 and 10 (SDK < 30) are not asked for a bucket at all: 6 of 7 Android 9 reports still warned because the Play Store went back to «active» (the
+# «restricted» bucket is Android 11's; «rare» did not hold). Only apply skips it; restore still puts back a bucket an older run recorded.
+if [ "${1:-}" = apply ] && [ "$SDK" -lt 30 ] && [ "$SDK" -ge 28 ]; then PSKEYS=${PSKEYS/standby_bucket /}; SKIPPED+=("standby_bucket: the Play Store's standby bucket is only set on Android 11 and newer (this TV is SDK $SDK_SAY)"); fi
+if [ "$SDK" -lt 24 ]; then SKIPPED+=("compile: cmd package compile needs Android 7 (this TV is SDK $SDK_SAY)"); fi
 has_key() { case " $KEYS $PSKEYS " in *" $1 "*) return 0 ;; esac; return 1; }
 bucket_name() { case "$1" in 5) echo exempted ;; 10) echo active ;; 20) echo working_set ;; 30) echo frequent ;; 40) echo rare ;; 45) echo restricted ;; 50) echo never ;; *) echo unknown ;; esac; }
 psget() {
@@ -94,8 +104,9 @@ case "${1:?usage: optimize/tweaks.sh apply|restore|status}" in
       else echo "Tweaks: none recorded (nothing was changed by optimize/tweaks.sh apply)"; fi
       exit 0
     fi
-    for k in $KEYS; do echo "- tweak $k: was $(jget "$k"), now $(tvget "$k")"; done
+    for k in $KEYS; do [ "$k" != cached_apps_freezer ] || [ -n "$(jget "$k")" ] || continue; echo "- tweak $k: was $(jget "$k"), now $(tvget "$k")"; done
     for k in $PSKEYS; do echo "- tweak $k: was $(jget "$k"), now $(psget "$k")"; done
+    for p in $OURS; do [ -z "$(jget "compiled_$p")" ] || echo "- tweak compiled_$p: $(jget "compiled_$p") (undo: cmd package compile --reset)"; done
     exit 0 ;;
   *) echo "usage: optimize/tweaks.sh apply|restore|status"; exit 1 ;;
 esac
@@ -107,7 +118,7 @@ if [ "$1" = apply ]; then
   if [ ! -f "$JOURNAL" ]; then
     mkdir -p "$(dirname "$JOURNAL")"; rm -f "$JOURNAL_DONE"
     { echo "# what the TV had before optimize/tweaks.sh apply (null: it was not set; unknown: it could not be read, so it was not changed); optimize/tweaks.sh restore puts exactly this back"
-      for k in $KEYS; do echo "$k=$(tvget "$k")"; done
+      for k in $AKEYS; do echo "$k=$(tvget "$k")"; done
       for k in $PSKEYS; do echo "$k=$(psget "$k")"; done
       for sk in "${SKIPPED[@]+"${SKIPPED[@]}"}"; do echo "skipped_${sk%%:*}=${sk#*: }"; done; } > "$JOURNAL.tmp" && mv "$JOURNAL.tmp" "$JOURNAL"
   fi
@@ -125,7 +136,7 @@ if [ "$1" = apply ]; then
       unknown) echo "!! standby_bucket: could not read what this TV has for the Play Store, so it is left as it is (nothing to put back)" ;;
       *) cmds+=("$(psput standby_bucket "$BUCKET")"); pswant+=("standby_bucket=$BUCKET") ;;
     esac
-  else echo "Play Store standby bucket: left alone (Android 9 is the first with standby buckets; this TV is SDK $SDK_SAY)"; fi
+  else echo "Play Store standby bucket: left alone (it is set on Android 11 and newer; this TV is SDK $SDK_SAY)"; fi
   for op in RUN_IN_BACKGROUND RUN_ANY_IN_BACKGROUND; do
     if [ "$(original "appop_$op" ps)" = unknown ]; then echo "!! appop_$op: could not read what this TV has for the Play Store, so it is left as it is (nothing to put back)"
     else cmds+=("$(psput "appop_$op" deny)"); pswant+=("appop_$op=deny"); fi
@@ -144,7 +155,9 @@ if [ "$1" = apply ]; then
   else
     change max_cached_processes null   # Android's own limit (undoes an older run; the journal has the original)
   fi
-  change cached_apps_freezer enabled
+  # a TV an older run set (its journal has the freezer's original): put that back now; a TV that never had it set is not touched
+  o=$(jget cached_apps_freezer)
+  if [[ "$o" =~ ^(null|[A-Za-z0-9_.-]+)$ ]] && [ "$o" != unknown ]; then cmds+=("$(putcmd cached_apps_freezer "$o")"); want+=("cached_apps_freezer=$o"); fi
   # trimming throws away every app's cache (thumbnails, things apps would load again): only worth it when storage is short
   space=$("$PY" -I optimize/tv.py "df -k /data 2> /dev/null | tail -n 1" | tr -d '\r' | awk '{print $2, $4}') || space=""
   read -r total avail <<< "$space" || true
@@ -161,13 +174,15 @@ if [ "$1" = apply ]; then
 elif [ -f "$JOURNAL" ]; then
   for k in $KEYS; do
     o=$(jget "$k")
-    if [ "$o" = unknown ] || [ -z "$o" ]; then echo "!! $k: what the TV had was not recorded (it could not be read), so it is left as it is"
+    if [ "$k" = cached_apps_freezer ] && [ -z "$o" ]; then :   # not set by this version (no line in the journal): nothing to put back
+    elif [ "$o" = unknown ] || [ -z "$o" ]; then echo "!! $k: what the TV had was not recorded (it could not be read), so it is left as it is"
     elif [[ "$o" =~ ^(null|[A-Za-z0-9_.-]+)$ ]]; then cmds+=("$(putcmd "$k" "$o")"); want+=("$k=$o")
     else echo "!! $k: the recorded value is not one this script puts back; left as it is"; fi
   done
   for k in $PSKEYS; do
     o=$(jget "$k")
-    if [ "$o" = exempted ]; then :   # the system's own exemption: never changed by apply, nothing to put back
+    if [ "$k" = standby_bucket ] && [ -z "$o" ] && [ -n "$(jget skipped_standby_bucket)" ]; then :   # apply never touched it (Android 9 and 10): nothing to put back
+    elif [ "$o" = exempted ]; then :   # the system's own exemption: never changed by apply, nothing to put back
     elif [[ "$o" =~ ^[a-z_]+$ ]] && [ "$o" != unknown ]; then cmds+=("$(psput "$k" "$o")"); pswant+=("$k=$o")
     else   # the original could not be read: apply left it alone, so there is nothing to put back (an older apply may have changed it: said)
       echo "!! $k: the TV's own value was not recorded (this firmware did not say), so it is left as it is; if an older version of these tools changed it, set it in the TV's settings"
@@ -190,12 +205,32 @@ bad=0
 for kv in "${want[@]+"${want[@]}"}"; do verify "${kv%%=*}" "${kv#*=}" || bad=1; done
 for kv in "${pswant[@]+"${pswant[@]}"}"; do   # the standby bucket is the system's to move, so a mismatch is said, not fatal
   got=$(psget "${kv%%=*}")
-  if [ "$got" != "${kv#*=}" ]; then
+  # an appop put back to «allow» that the TV reads as «default» is the same thing (allow IS the default for these two): not a problem (step 27: two !! on every reset)
+  if [ "$got" != "${kv#*=}" ] && ! { case "${kv%%=*}" in appop_*) [ "${kv#*=}" = allow ] && [ "$got" = default ] ;; *) false ;; esac; }; then
     if [ "${kv%%=*}" = standby_bucket ] && test_build; then   # a test build (userdebug, test-keys) keeps its own bucket: not a problem to report
       echo "info: standby_bucket stays $got on this test build (userdebug / test-keys): the system keeps its own standby bucket"
     else echo "!! ${kv%%=*}: this TV did not take the value (asked for ${kv#*=}, it says $got)"; bad=1; fi
   fi
 done
+# Our two apps, compiled ahead of time from their profile (Android 7 / SDK 24 and newer; the same commands as SetupTweaks.java). Only an app that
+# is on the TV, and only a «Success» is journaled; anything else is said and left to Android's own idle job (nothing to put back).
+if [ "$1" = apply ]; then
+  if [ "$SDK" -lt 24 ]; then echo "Our apps: not compiled ahead of time (cmd package compile needs Android 7; this TV is SDK $SDK_SAY)"
+  else
+    for p in $OURS; do
+      "$PY" -I optimize/tv.py "pm list packages $p" 2> /dev/null | tr -d '\r' | grep -qx "package:$p" || continue
+      r=$("$PY" -I optimize/tv.py "cmd package compile -m speed-profile -f $p 2>&1" 2> /dev/null | tr -d '\r') || r=""
+      if grep -qx Success <<< "$r"; then jset "compiled_$p" speed-profile; echo "Compiled ahead of time: $p"
+      else echo "info: $p was not compiled ahead of time (the TV said: $(tail -n 1 <<< "${r:-nothing}")); Android compiles it later by itself"; fi
+    done
+  fi
+elif [ -f "$JOURNAL" ]; then   # the undo: back to how it was installed
+  for p in $OURS; do
+    [ -n "$(jget "compiled_$p")" ] || continue
+    "$PY" -I optimize/tv.py "cmd package compile --reset $p 2>&1" > /dev/null 2>&1 || true
+    echo "Back to as installed: $p"
+  done
+fi
 if [ "$1" = restore ] && [ -f "$JOURNAL" ] && [ "$bad" = 0 ]; then mv -f "$JOURNAL" "$JOURNAL_DONE"; fi   # kept when the TV refused something
-if [ "$1" = apply ]; then echo "Animation scale $v, Play Store background: $bg, cached-app freezer: on"
+if [ "$1" = apply ]; then echo "Animation scale $v, Play Store background: $bg"
 else echo "Tweaks undone, Play Store background: $bg"; fi

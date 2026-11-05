@@ -52,8 +52,9 @@ for bad in st.get("refuse", []):          # a value the TV refuses (answers erro
         out("error: refused by the fake TV: " + bad)
 ENUM = {"digits": ["hindi", "latin"], "clocksize": ["large", "medium", "small"], "mkstyle": ["arrows", "prices"],
         "cardstyle": ["current", "dark1", "glass1", "dark3", "glass3"], "prayermethod": ["auto", "gulf", "jafari"],
-        "sunrise": ["on", "off"], "prayerbar": ["on", "off"], "wxmore": ["on", "off"], "months": ["default", "levant"],
-        "greeting": ["on", "off"], "listenpill": ["on", "off"], "updatebell": ["on", "off"], "adhanbar": ["on", "off"], "clock24": ["on", "off"], "mkbar": ["on", "off"], "prayeradj": ["on", "off"]}
+        "sunrise": ["on", "off"], "prayerbar": ["on", "off"], "wxmore": ["on", "off"], "pagesdark": ["on", "off"], "months": ["default", "levant"],
+        "greeting": ["on", "off"], "listenpill": ["on", "off"], "updatebell": ["on", "off"], "adhanbar": ["on", "off"], "clock24": ["on", "off"], "mkbar": ["on", "off"], "prayeradj": ["on", "off"],
+        "favbar": ["5", "6", "7", "8", "9", "10", "all"]}
 if "SaverReceiver" in cmd and cmd.endswith(".GET"):
     s = st["saver"]
     adj = " ".join(f"{k}={'+' if v > 0 else ''}{v}" for k, v in s["adj"].items())
@@ -65,10 +66,10 @@ if "SaverReceiver" in cmd and cmd.endswith(".GET"):
         f"clock24: {s['clock24']}", "national: auto", f"cardstyle: {s['cardstyle']}",
         "markets: " + ("" if s["mkbar"] == "on" else "off ") + ",".join(s["markets"]), f"clocksize: {s['clocksize']}",
         f"mkstyle: {s['mkstyle']}", "stocks: 2222", "slot: matches", "countdown: none", "idle: 10", "genres: ", "langs: ", "events: ",
-        "leagues: ", "autoupdate: on", "pin: 4321", "wifi: HomeNet", "tasks: buy milk", "updatechannel: " + s.get("updatechannel", "stable")]
+        "leagues: ", "autoupdate: on", "pin: 4321", "wifi: HomeNet", "tasks: buy milk", "updatechannel: " + s.get("updatechannel", "stable"), "favbar: " + s.get("favbar", "5")]
         + ([f"country: {s['country']}"] if "country" in s else [])
         + ([] if st.get("old_app") else [f"panel2: {s['panel2']}", f"sunrise: {s['sunrise']}", f"prayerbar: {s['prayerbar']}",
-                                          f"wxmore: {s['wxmore']}", f"months: {s['months']}"])))
+                                          f"wxmore: {s['wxmore']}", f"pagesdark: {s.get('pagesdark', 'on')}", f"months: {s['months']}"])))
 if "SaverReceiver" in cmd and re.search(r"screensaver\.SET( |$)", cmd):
     s, extras = st["saver"], dict(re.findall(r"--es (\w+) '([^']*)'", cmd))
     assert cmd.count("--es ") == len(extras), "an unquoted value was sent: " + cmd
@@ -103,7 +104,12 @@ if "MusicReceiver" in cmd:
     if cmd.endswith(".GET_PLAYER"):
         out("|".join(["playing=false", "adhan=" + a["on"], "voice=" + str(a["voice"]), "fajr_voice=" + str(a["fajr_voice"]),
                       "adhan_short=" + a["short"], "adhan_stopkey=" + a["stopkey"], "adhan_volume=" + str(a["volume"]),
-                      "own_bytes=" + str(st.get("own_bytes", 0)), "error="]))
+                      "own_bytes=" + str(st.get("own_bytes", 0)), "reciter_favs=" + ",".join(st.get("favs", [])), "error="]))
+    mf = re.search(r"RECITER_FAVS --es ids (\S+)$", cmd)
+    if mf:   # the whole list at once ("-" = none)
+        st["favs"] = [] if mf.group(1) == "-" else mf.group(1).split(",")
+        json.dump(st, open(st_path, "w"))
+        out("saved\nreciter_favs=" + ",".join(st["favs"]))
     m = re.search(r"\.(\w+)(?: --e[iz] (\w+) (\w+))?$", cmd)
     act, val = m.group(1), m.group(3)
     ans = None
@@ -130,7 +136,7 @@ BASE = {
               "panel": "verse", "home_panel": "none", "greeting": "on", "listenpill": "on", "updatebell": "on", "adhanbar": "on", "prayermethod": "auto", "prayeradj": "off",
               "adj": {"fajr": 0, "dhuhr": 0, "asr": 0, "maghrib": 0, "isha": 0}, "hijri": "0", "digits": "hindi", "clock24": "off",
               "cardstyle": "current", "markets": ["tasi", "spx", "btc"], "mkbar": "on", "clocksize": "large", "mkstyle": "arrows",
-              "panel2": "none", "sunrise": "off", "prayerbar": "off", "wxmore": "off", "months": "default", "updatechannel": "stable"},
+              "panel2": "none", "sunrise": "off", "prayerbar": "off", "wxmore": "off", "pagesdark": "on", "months": "default", "updatechannel": "stable", "favbar": "5"},
     "adhan": {"on": "on", "voice": 1, "fajr_voice": 10, "short": "off", "stopkey": "on", "volume": 70},
 }
 CONFIGURED = copy.deepcopy(BASE)
@@ -138,8 +144,9 @@ CONFIGURED["saver"].update({"city": ["الدوحة", "25.2854", "51.531"], "tz":
                             "panel": "prayers", "home_panel": "verse,hourly", "greeting": "off", "listenpill": "off", "updatebell": "off", "adhanbar": "off",
                             "prayermethod": "jafari", "prayeradj": "on", "hijri": "-1", "digits": "latin", "clock24": "on",
                             "cardstyle": "glass1", "markets": ["gold", "btc"], "mkbar": "off", "clocksize": "medium", "mkstyle": "prices",
-                            "panel2": "hourly", "sunrise": "on", "prayerbar": "on", "wxmore": "on", "months": "levant"})
+                            "panel2": "hourly", "sunrise": "on", "prayerbar": "on", "wxmore": "on", "pagesdark": "off", "months": "levant", "favbar": "7"})
 CONFIGURED["saver"]["adj"] = {"fajr": 2, "dhuhr": 0, "asr": -3, "maghrib": 1, "isha": 0}
+CONFIGURED["favs"] = ["afasy", "sudais"]
 CONFIGURED["adhan"] = {"on": "off", "voice": 3, "fajr_voice": 13, "short": "on", "stopkey": "off", "volume": 40}
 
 
@@ -184,6 +191,8 @@ def write(name, obj):
 a = Tv("a", CONFIGURED)
 rc, out, err = a.run("export")
 check("export: exits 0 and prints JSON only on stdout", rc == 0 and json.loads(out)["schema"] == 1, (rc, out[:100], err))
+check("export: the ★ reciters are in the file (reciter_favs), in the order they were marked", json.loads(out).get("reciter_favs") == ["afasy", "sudais"], out[-300:])
+check("export: «تطبيقات في الشريط» is in the file (fav_bar), and the round trip below carries it", json.loads(out).get("fav_bar") == "7", out[:300])
 exp = json.loads(out)
 b = Tv("b", BASE)
 f = write("moved.json", out)
@@ -194,6 +203,8 @@ check("preview: old → new, one line per changed setting", "  digits: hindi →
       and "  markets.list: tasi,spx,btc → gold,btc" in out and "  city: الرياض (24.6877, 46.7219) Asia/Riyadh → الدوحة (25.2854, 51.531) Asia/Qatar" in out, out)
 check("preview: the «تلاوة وأذان» button's setting is one more line", "  listen_pill: on \u2192 off" in out, out)
 check("preview: the «جرس التحديثات» setting is one more line", "  update_bell: on \u2192 off" in out, out)
+check("preview: «تطبيقات في الشريط» is one more line (5 → 7)", "  fav_bar: 5 \u2192 7" in out, out)
+check("preview: the ★ reciters are one more line (none -> afasy,sudais)", "  reciter_favs:  \u2192 afasy,sudais" in out or "reciter_favs" in out, out)
 check("preview: unchanged settings are absent", "prayer.adjust.dhuhr" not in out and "prayer.adjust.isha" not in out, out)
 rc, out, err = b.run("import", f, "--yes")
 check("import --yes: applied (exit 0)", rc == 0 and "Done" in out, (rc, out, err))
@@ -271,6 +282,11 @@ refused("clock size unknown", lambda d: d.update(clock_size="huge"), "clock_size
 refused("clock24 not a boolean", lambda d: d.update(clock24="on"), "clock24 must be true or false")
 refused("greeting not a boolean", lambda d: d.update(greeting=1), "greeting must be true or false")
 refused("listen_pill not a boolean", lambda d: d.update(listen_pill="off"), "listen_pill must be true or false")
+refused("reciter_favs not a list", lambda d: d.update(reciter_favs="afasy"), "reciter_favs must be a list")
+refused("reciter_favs a bad id", lambda d: d.update(reciter_favs=["a b"]), "reciter_favs must be a list")
+refused("reciter_favs twice", lambda d: d.update(reciter_favs=["a", "a"]), "reciter_favs must be a list")
+refused("fav_bar unknown", lambda d: d.update(fav_bar="11"), "fav_bar must be one of")
+refused("fav_bar a number", lambda d: d.update(fav_bar=7), "fav_bar must be one of")
 refused("prayer method unknown", lambda d: d["prayer"].update(method="mwl"), "prayer.method must be one of auto gulf jafari")
 refused("prayer adjust 21", lambda d: d["prayer"]["adjust"].update(fajr=21), "prayer.adjust.fajr must be a whole number from -20 to 20")
 refused("prayer adjust -21", lambda d: d["prayer"]["adjust"].update(isha=-21), "prayer.adjust.isha")
@@ -406,7 +422,7 @@ tv = Tv("r7", BASE)
 tv.edit(no_home=True)
 rc, out, err = tv.run("export")
 check("export with the home app silent: the rest is exported, a note says why", rc == 0 and "adhan" in json.loads(out) and "volume" not in json.loads(out)["adhan"] and "note" in err, (out[-200:], err))
-rc, out, err = tv.run("import", write("noadhan.json", {k: v for k, v in GOOD.items() if k != "adhan"}), "--yes")
+rc, out, err = tv.run("import", write("noadhan.json", {k: v for k, v in GOOD.items() if k not in ("adhan", "reciter_favs")}), "--yes")
 check("...and a file without adhan settings imports fine onto that TV", rc == 0 and "Done" in out, (rc, out, err))
 
 # ---- quoting: text is data
@@ -516,6 +532,7 @@ rc, out, err = rd.run("import", deep)
 check("a file nested too deeply is refused, not a traceback", rc != 0 and "nested too deeply" in err and "Traceback" not in err and not rd.sent(), (rc, err[-200:]))
 
 # ---- today's settings: the second card, the sunrise, the prayer bar, the humidity and wind, the month names (and never the update channel)
+check("«صفحات الأسهم والمباريات داكنة»: export carries pagesdark as the TV reports it (off here), and the default TV exports on", exp["pagesdark"] is False, exp.get("pagesdark"))
 check("export carries cards.panel2, sunrise, prayerbar, wxmore and months as the TV reports them",
       exp["cards"]["panel2"] == "hourly" and exp["sunrise"] is True and exp["prayerbar"] is True and exp["wxmore"] is True and exp["months"] == "levant", exp)
 check("the hidden update-channel switch is never exported, never allow-listed, and never sent",

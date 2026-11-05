@@ -25,6 +25,8 @@ public final class PhoneControl {
     public interface Page {
         String html();
         byte[] font(String name);
+        /** «محفظتي»'s own page (/m), in the language of «اللغة»; null when this build has none */
+        default String portfolioHtml() { return null; }
     }
 
     public enum Start { OK, NO_WIFI, FAILED, ALREADY_ON }
@@ -134,7 +136,18 @@ public final class PhoneControl {
         return Start.OK;
     }
 
+    private volatile Runnable onSessionEnd;
+
+    /** Told when a phone's session ends here (revoked, logged out, its fifth wrong PIN) or control stops: «محفظتي»'s window closes. */
+    public void setOnSessionEnd(Runnable r) { onSessionEnd = r; }
+
+    private void sessionEnded() {
+        Runnable r = onSessionEnd;
+        if (r != null) r.run();
+    }
+
     public void stop(String reason) {
+        sessionEnded();
         synchronized (this) {
             if (server == null) return;
             server.close();
@@ -227,6 +240,7 @@ public final class PhoneControl {
             if (sessions == null) return;
             sessions.revoke(id);
         }
+        sessionEnded();
         tick();
     }
 
@@ -299,6 +313,7 @@ public final class PhoneControl {
             String id = sessions.idOf(secret, clock.now());
             if (id != null) sessions.revoke(id);
         }
+        sessionEnded();
         tick();
     }
 
@@ -315,7 +330,10 @@ public final class PhoneControl {
             row[1] = String.valueOf(Integer.parseInt(row[1]) + 1);
             if (Integer.parseInt(row[1]) >= 5) { sessions.revoke(id); ended = true; }
         }
-        if (ended) tick();
+        if (ended) {
+            sessionEnded();
+            tick();
+        }
         return ended;
     }
 }

@@ -29,6 +29,36 @@ import sa.urtv.home.phone.UpdateText;
  * sa.urtv.home.OPEN_UPDATE, so `am start` from a shell is refused).
  */
 public class UpdateActivity extends Activity {
+    /**
+     * The words of UpdateText and UpdateOrder (plain Java, so they cannot mark their own), marked here for the table (i18n/en/home.tsv):
+     * this screen says each with S.tv. tests/i18n_home_test.py keeps this list equal to theirs.
+     */
+    static final String[] UPDATE_WORDS = {
+        S.n("تحديث تلفزيوني"),
+        S.n("تحقق من التحديث"),
+        S.n("ما فيه اتصال بالإنترنت"),
+        S.n("التحديث من التلفزيون ما يشتغل على هذا الجهاز.\nاطلب من مساعد الذكاء الاصطناعي على جهازك:\nحدّث تلفزيوني"),
+        S.n("لازم تسمح لتطبيق تلفزيونك بتثبيت التحديثات."),
+        S.n("فتح شاشة السماح"),
+        S.n("جارٍ التحقق…"),
+        S.n("جارٍ تنزيل التحديث والتحقق منه…"),
+        S.n("أكّد التثبيت على شاشة أندرويد بالريموت."),
+        S.n("اعرض شاشة التثبيت"),
+        S.n("ما اكتمل التحديث"),
+        S.n("ألغيت التثبيت."),
+        S.n("الإصدار المثبّت %s"),
+        S.n("تلفزيونك محدّث: %s"),
+        S.n("تحديث جديد %s · اضغط للتحديث"),
+        S.n("تم التحديث ✓ %s"),
+        S.n("الخطوة: %s"),
+        S.n("تحديث تطبيق الحافظة"),
+        S.n("تحديث الواجهة الرئيسية"),
+        S.n("التحقق من الملفات"),
+    };
+
+    /** «اللغة» (docs/ENGLISH.md): with Arabic the context itself, with English an English one */
+    @Override protected void attachBaseContext(android.content.Context b) { super.attachBaseContext(S.wrap(b)); }
+
     private int GOLD, INK, TEXT, DIM, RED;   // from the glass look (glass(), before anything is drawn)
     private GlassStyle.Look look;
 
@@ -84,8 +114,8 @@ public class UpdateActivity extends Activity {
 
     private void render() {
         col.removeAllViews();
-        col.addView(text(UpdateText.TITLE, 26, "Medium", TEXT, Gravity.RIGHT), right(0));
-        col.addView(text(UpdateText.installed(PhoneUpdater.installedName(this)), 16, "Regular", DIM, Gravity.RIGHT), right(dp(22)));
+        col.addView(text(S.tv(UpdateText.TITLE), 26, "Medium", TEXT, Dir.start()), right(0));
+        col.addView(text(UpdateText.installed(PhoneUpdater.installedName(this), S::tv), 16, "Regular", DIM, Dir.start()), right(dp(22)));
         View focus;
         if (result != null) {
             focus = renderRecord();
@@ -100,10 +130,11 @@ public class UpdateActivity extends Activity {
 
     private View renderRecord() {
         if (result.kind == UpdateRecords.Kind.SUCCESS) {
-            col.addView(text(UpdateText.done(UpdateText.versionOf(BuildConfig.MARKETING, result.target)), 22, "Medium", GOLD, Gravity.RIGHT), right(dp(18)));
+            col.addView(text(UpdateText.done(UpdateText.versionOf(BuildConfig.MARKETING, result.target), S::tv), 22, "Medium", GOLD, Dir.start()), right(dp(18)));
+            return doneButton();
         } else {
-            col.addView(text(UpdateText.NOT_DONE, 22, "Medium", RED, Gravity.RIGHT), right(dp(6)));
-            col.addView(text(UpdateText.failedStep(UpdateOrder.label(result.step)), 15, "Regular", DIM, Gravity.RIGHT), right(dp(14)));
+            col.addView(text(S.tv(UpdateText.NOT_DONE), 22, "Medium", RED, Dir.start()), right(dp(6)));
+            col.addView(text(UpdateText.failedStep(S.tv(UpdateOrder.label(result.step)), S::tv), 15, "Regular", DIM, Dir.start()), right(dp(14)));
             aiMessage();
         }
         return checkButton();
@@ -118,17 +149,17 @@ public class UpdateActivity extends Activity {
         String newest = UpdateText.versionOf(BuildConfig.MARKETING, b == null ? 0 : ((Long) b).intValue());
         switch (s) {
             case "checking":
-                col.addView(text(UpdateText.WORKING, 18, "Medium", GOLD, Gravity.RIGHT), right(dp(8)));
+                col.addView(text(S.tv(UpdateText.WORKING), 18, "Medium", GOLD, Dir.start()), right(dp(8)));
                 return null;
             case "downloading":
-                col.addView(text(UpdateText.DOWNLOADING, 18, "Medium", GOLD, Gravity.RIGHT), right(dp(8)));
+                col.addView(text(S.tv(UpdateText.DOWNLOADING), 18, "Medium", GOLD, Dir.start()), right(dp(8)));
                 return null;
             case "uptodate":
-                col.addView(text(UpdateText.upToDate(PhoneUpdater.installedName(this)), 20, "Medium", GOLD, Gravity.RIGHT), right(dp(16)));
+                col.addView(text(UpdateText.upToDate(PhoneUpdater.installedName(this), S::tv), 20, "Medium", GOLD, Dir.start()), right(dp(16)));
                 return checkButton();
             case "found":       // the phone page only read version.txt: pressing downloads, checks, then installs
             case "available":
-                return button(UpdateText.available(newest), GOLD, new View.OnClickListener() {
+                return button(UpdateText.available(newest, S::tv), GOLD, new View.OnClickListener() {
                     @Override public void onClick(View v) {
                         // with a family PIN set and «قفل الإعدادات» on, an install from the TV's own screen asks for it too (the phone's does, PhoneApi)
                         Parental.guard(UpdateActivity.this, Parental.adhanFirst(UpdateActivity.this), "تحديث تلفزيوني",
@@ -138,20 +169,20 @@ public class UpdateActivity extends Activity {
                     }
                 }, 60);
             case "waiting_owner":
-                col.addView(text(UpdateText.CONFIRM, 20, "Medium", GOLD, Gravity.RIGHT), right(dp(6)));
-                if (!detail.isEmpty()) col.addView(text(UpdateOrder.label(detail), 15, "Regular", DIM, Gravity.RIGHT), right(dp(14)));
+                col.addView(text(S.tv(UpdateText.CONFIRM), 20, "Medium", GOLD, Dir.start()), right(dp(6)));
+                if (!detail.isEmpty()) col.addView(text(S.tv(UpdateOrder.label(detail)), 15, "Regular", DIM, Dir.start()), right(dp(14)));
                 if (PhoneUpdater.confirmWaiting()) {
                     getWindow().getDecorView().post(new Runnable() { @Override public void run() { if (PhoneUpdater.confirmWaiting()) PhoneUpdater.showConfirm(UpdateActivity.this); } });
                 }
                 if (PhoneUpdater.confirmKnown()) {
-                    return button(UpdateText.SHOW_CONFIRM, GOLD, new View.OnClickListener() {
+                    return button(S.tv(UpdateText.SHOW_CONFIRM), GOLD, new View.OnClickListener() {
                         @Override public void onClick(View v) { PhoneUpdater.showConfirm(UpdateActivity.this); }
                     }, 52);
                 }
                 return null;
             case "done":
-                col.addView(text(UpdateText.done(newest), 22, "Medium", GOLD, Gravity.RIGHT), right(dp(16)));
-                return null;
+                col.addView(text(UpdateText.done(newest, S::tv), 22, "Medium", GOLD, Dir.start()), right(dp(16)));
+                return doneButton();
             case "error":
                 return renderError(why, detail);
             default:
@@ -162,23 +193,23 @@ public class UpdateActivity extends Activity {
     private View renderError(String why, String detail) {
         switch (why) {
             case "offline":
-                col.addView(text(UpdateText.OFFLINE, 20, "Medium", RED, Gravity.RIGHT), right(dp(16)));
+                col.addView(text(S.tv(UpdateText.OFFLINE), 20, "Medium", RED, Dir.start()), right(dp(16)));
                 return checkButton();
             case "need_permission":
-                col.addView(text(UpdateText.NEED_PERMISSION, 18, "Medium", TEXT, Gravity.RIGHT), right(dp(14)));
-                return button(UpdateText.OPEN_PERMISSION, GOLD, new View.OnClickListener() {
+                col.addView(text(S.tv(UpdateText.NEED_PERMISSION), 18, "Medium", TEXT, Dir.start()), right(dp(14)));
+                return button(S.tv(UpdateText.OPEN_PERMISSION), GOLD, new View.OnClickListener() {
                     @Override public void onClick(View v) {
                         if (PhoneUpdater.openPermissionScreen(UpdateActivity.this)) askedPermission = true;
                         else PhoneUpdater.permissionScreenFailed();   // the screen isn't there: the TV can't do this itself
                     }
                 }, 52);
             case "declined":
-                col.addView(text(UpdateText.NOT_DONE, 22, "Medium", RED, Gravity.RIGHT), right(dp(6)));
-                col.addView(text(UpdateText.DECLINED, 15, "Regular", DIM, Gravity.RIGHT), right(dp(16)));
+                col.addView(text(S.tv(UpdateText.NOT_DONE), 22, "Medium", RED, Dir.start()), right(dp(6)));
+                col.addView(text(S.tv(UpdateText.DECLINED), 15, "Regular", DIM, Dir.start()), right(dp(16)));
                 return checkButton();
             case "failed":
-                col.addView(text(UpdateText.NOT_DONE, 22, "Medium", RED, Gravity.RIGHT), right(dp(6)));
-                col.addView(text(UpdateText.failedStep(UpdateOrder.label(detail)), 15, "Regular", DIM, Gravity.RIGHT), right(dp(14)));
+                col.addView(text(S.tv(UpdateText.NOT_DONE), 22, "Medium", RED, Dir.start()), right(dp(6)));
+                col.addView(text(UpdateText.failedStep(S.tv(UpdateOrder.label(detail)), S::tv), 15, "Regular", DIM, Dir.start()), right(dp(14)));
                 aiMessage();
                 return checkButton();
             default:   // "cannot", and anything this screen doesn't know: the same message
@@ -189,13 +220,32 @@ public class UpdateActivity extends Activity {
 
     /** The message that sends the owner to their AI assistant, with the repository address small under it. */
     private void aiMessage() {
-        col.addView(text(UpdateText.AI_MESSAGE, 20, "Medium", TEXT, Gravity.RIGHT), right(dp(8)));
-        TextView repo = text("⁦" + UpdateText.REPO + "⁩", 12, "Regular", DIM, Gravity.RIGHT);
+        col.addView(text(S.tv(UpdateText.AI_MESSAGE), 20, "Medium", TEXT, Dir.start()), right(dp(8)));
+        TextView repo = text("⁦" + UpdateText.REPO + "⁩", 12, "Regular", DIM, Dir.start());
         col.addView(repo, right(dp(18)));
     }
 
+    /** «تم»: the end of an update goes to the home itself (the screen that stayed in front after the home install was this one, not the home; step 27) */
+    private View doneButton() {
+        return button(S.t("تم"), GOLD, new View.OnClickListener() {
+            @Override public void onClick(View v) { toHome(); }
+        }, 52);
+    }
+
+    private void toHome() {
+        startActivity(new android.content.Intent(this, MainActivity.class).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK | android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        finish();
+    }
+
+    /** Back from the screen that says the update is done leaves for the home, not for whatever app was in front before */
+    @Override
+    public void onBackPressed() {
+        boolean done = (result != null && result.kind == UpdateRecords.Kind.SUCCESS) || "done".equals(PhoneUpdater.status().get("status"));
+        if (done) toHome(); else super.onBackPressed();
+    }
+
     private View checkButton() {
-        return button(UpdateText.CHECK, GOLD, new View.OnClickListener() {
+        return button(S.tv(UpdateText.CHECK), GOLD, new View.OnClickListener() {
             @Override public void onClick(View v) {
                 result = null;
                 PhoneUpdater.reset();

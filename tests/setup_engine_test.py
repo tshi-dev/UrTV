@@ -23,7 +23,7 @@ if not shutil.which("javac"):
     sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
     # (the Android-facing classes of the folder are compiled by tests/android_compile.sh; here only the pure ones)
-    pure = [p for p in sorted(SETUP.glob("*.java")) if "import android." not in p.read_text(encoding="utf-8")]
+    pure = [p for p in sorted(SETUP.glob("*.java")) if "import android." not in p.read_text(encoding="utf-8")] + [SETUP.parent / "phone/UpdateRules.java"]   # (read only: its rule for updates)
     r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, *map(str, pure), str(ROOT / "tests/SetupEngineRun.java")], capture_output=True, text=True)
     check("the pure classes compile", r.returncode == 0, r.stderr)
     if r.returncode:
@@ -52,6 +52,10 @@ check("D: Home does not open ours: the stock home and the role are back, the set
       got.get("D") == "D FAILED com.google.android.apps.tv.launcherx stockOff=false wizOff=false armed=1 disarmed=1 state=restored", got.get("D"))
 check("E: a TV that answers «illegal» to disabling its own home: skipped, put back as it was", got.get("E") == "E SKIPPED com.google.android.apps.tv.launcherx stockOff=false state=restored disarmed=1", got.get("E"))
 check("F: WebView too old, unknown, or no screensaver installed: skipped, not one setting written", got.get("F") == "F SKIPPED SKIPPED SKIPPED puts=0", got.get("F"))
+check("G6: a TCL whose wizard has the cast provider too (tester 4.2) is not a Google cast device: the wizard off as before; the rule: Google, or a Google codename, and the provider",
+      got.get("G6") == "G6 wizardDisabled=1 rule=truefalsetruefalse", got.get("G6"))
+check("G3-G5: a Chromecast (castinfo.CastInfoProvider in the wizard) keeps its wizard on even when the Wi-Fi is not its own, unless cast.txt says off; and no Wi-Fi question there",
+      got.get("G3") == "G3 DONE wizardDisabled=0" and got.get("G4") == "G4 wizardDisabled=1" and got.get("G5") == "G5 asks=false", (got.get("G3"), got.get("G4"), got.get("G5")))
 check("G: the setup wizard owns the Wi-Fi: left on; another owner: turned off", got.get("G") == "G DONE wizardDisabled=0" and got.get("G2") == "G2 wizardDisabled=1", (got.get("G"), got.get("G2")))
 check("H: a switch cut off (journal «switching», Home not ours) is undone; nothing to do when there is no cut-off switch", got.get("H") == "H DONE restored com.google.android.apps.tv.launcherx" and got.get("H2") == "H2 true", (got.get("H"), got.get("H2")))
 check("L: no alarm could be set: the home switch does not start (journal «aborted»), not one change on the TV, no deadline left behind", got.get("L") == "L FAILED state=aborted changes=0 deadline=[]", got.get("L"))
@@ -90,6 +94,8 @@ if a[0] == "--batch":
         if w[:3] == ["pm", "disable-user", "--user"] and w[4] in [s.lstrip("-") for s in st]:
             st = [("-" + s.lstrip("-")) if s.lstrip("-") == w[4] else s for s in st]
     open(os.environ["STATE"], "w").write("\\n".join(st) + "\\n")
+elif "dumpsys package" in a[0]:   # disable.sh's input guard: no input driver here
+    print("END_OF_LIST")
 elif a[0].startswith("pm list packages -d"):
     print("".join("package:%s\\n" % s[1:] for s in st if s.startswith("-")) + "END_OF_LIST")
 elif a[0].startswith("pm list packages"):
@@ -107,10 +113,13 @@ elif a[0].startswith("pm list packages"):
 
 # the home journal's field names: the app writes the ones optimize/home-journal.sh reads
 hj = (ROOT / "optimize/home-journal.sh").read_text(encoding="utf-8")
-sh_fields = re.findall(r'"([a-z_]+)": "', hj[hj.index("jwrite()"):hj.index("jstate()")])[:8]
+sh_fields = re.findall(r'"([a-z_]+)": "', hj[hj.index("jwrite()"):hj.index("jstate()")])
 src_ = (SETUP / "SetupEngine.java").read_text(encoding="utf-8")
-app_fields = re.findall(r'\\"([a-z_]+)\\": \\"', src_[src_.index("private void journalWrite"):src_.index("private void journalState")])
-check("PARITY: the journal fields of the app are the shell's, in the same order", app_fields == sh_fields == ["nonce", "state", "stock", "role_holder_before", "wizard_before", "stock_before", "safety_switch", "written"], (app_fields, sh_fields))
+app_fields = re.findall(r'\\"([a-z_]+)\\": \\"', src_[src_.index("private void journalWrite"):src_.index("void journalStep")])
+check("PARITY: the journal fields of the app are the shell's, in the same order, «step» last (home-journal.sh's jstep)",
+      app_fields == sh_fields == ["nonce", "state", "stock", "role_holder_before", "wizard_before", "stock_before", "safety_switch", "written", "step"], (app_fields, sh_fields))
+jstep = src_[src_.index("void journalStep"):src_.index("void journalStep") + 600]
+check("PARITY: the app writes the step the way jstep does (the line «step», before the step acts)", '"(?m)^  \\"step\\": \\"[^\\"]*\\""' in jstep, jstep)
 engine_src = (SETUP / "SetupEngine.java").read_text(encoding="utf-8")
 adb_src = (SETUP / "AdbClient.java").read_text(encoding="utf-8")
 act_src = (SETUP / "SetupActivity.java").read_text(encoding="utf-8")
@@ -119,12 +128,21 @@ check("the ADB client and the engine are package-private (nothing outside the se
 check("the ADB client says the truth about port 5555 (adbd listens on the LAN; a device there can raise the prompt, not get in)", "listens on TCP 5555 on the whole LAN" in adb_src and "cannot get in unless the person accepts" in adb_src, "")
 check("the safety switch survives a restart: a BOOT_COMPLETED receiver (system only) re-arms it from the saved deadline and tries at once; the setup screen does the same at its start",
       ".setup.SetupBootReceiver" in manifest and "BOOT_COMPLETED" in manifest[manifest.index(".setup.SetupBootReceiver"):][:500] and "SetupRecovery.rearmFromDisk" in act_src and "SetupRecovery.attempt" in act_src, "")
-check("the buttons ask for the family PIN when one is set, and ignore touches through another window", "SetupGate.guard" in act_src and act_src.count("setFilterTouchesWhenObscured(true)") >= 2, "")
-check("the ADB key is deleted when the job is finished (setup done, or undone) and nothing is pending", "deleteKeyIfFinished" in act_src and "AdbKeys.delete" in (SETUP / "SetupSession.java").read_text(encoding="utf-8"), "")
+btn = act_src[act_src.index("private TextView button("):]
+btn = btn[:btn.index("\n    }\n")]
+check("the buttons ask for the family PIN when one is set, and ignore touches through another window (every button is made by button(), which sets it)",
+      "SetupGate.guard" in act_src and "setFilterTouchesWhenObscured(true)" in btn and act_src.count("setFocusable(true)") == 1 and "setFocusable(true)" in btn, "")
+runner_src = (SETUP / "SetupRunner.java").read_text(encoding="utf-8")
+host_src = (SETUP / "SetupHost.java").read_text(encoding="utf-8")
+check("the ADB key is deleted when the job is finished (setup done, or undone) and nothing is pending (the runner's host, after every end)",
+      "SetupSession.deleteKeyIfFinished(app)" in host_src and "AdbKeys.delete" in (SETUP / "SetupSession.java").read_text(encoding="utf-8"), "")
 main_src = (ROOT / "android/launcher/src/main/java/sa/urtv/home/MainActivity.java").read_text(encoding="utf-8")
 hook_src = (SETUP / "SetupHook.java").read_text(encoding="utf-8")
 check("the home screen re-arms a cut-off switch at its start with ONE call that never throws (a Force-stop, then Home)", main_src.count("SetupHook.atHomeStart(this)") == 1 and "catch (RuntimeException ignored)" in hook_src and "rearmFromDisk" in hook_src and "SetupRecovery.attempt" in hook_src, "")
-check("the key is deleted after EVERY end of a run (it refuses by itself while a switch is pending)", "deleteKeyIfFinished(SetupActivity.this)" in act_src and "if (finished)" not in act_src, "")
+fin = runner_src[runner_src.index("private void run(Kind k"):runner_src.index("private End runSteps")]
+check("the key is deleted after EVERY end of a run (it refuses by itself while a switch is pending): host.finished() after the try, outside every catch",
+      "host.finished()" in fin and fin.index("host.finished()") > fin.rindex("catch (RuntimeException ex)") and "if (finished)" not in fin
+      and "SetupRunner.awaiting(new FileStore(c))" in (SETUP / "SetupSession.java").read_text(encoding="utf-8"), "")
 check("after the automatic attempts run out the person is told at every start (the home and the setup screen)", "GAVE_UP_NOTICE" in hook_src and "GAVE_UP_NOTICE" in act_src, "")
 check("the setup screen is not in the home screen's own app grid (Dock.catalogue skips this package)", "p.equals(c.getPackageName())" in (ROOT / "android/launcher/src/main/java/sa/urtv/home/Dock.java").read_text(encoding="utf-8"), "")
 check("the engine runs only fixed commands: none is built from text the TV sent, except package names that matched [A-Za-z0-9_.]+",

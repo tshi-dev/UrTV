@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- our own mark of «مفعّل» (the owner's choice I, notes/settings-proto/v5-toggle-I.png): three triangles stacked like the edge of a Sadu
+     weaving, pointing into the row; tinted DGA green by the code (OnOff.green) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="9dp" android:height="28dp" android:viewportWidth="18" android:viewportHeight="54">
+    <path android:fillColor="#FF25935F" android:pathData="M18,0L4,9L18,18zM18,18L4,27L18,36zM18,36L4,45L18,54z"/>
+</vector>

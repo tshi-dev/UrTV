@@ -62,9 +62,10 @@ public class TypeService extends AccessibilityService {
     /** Ask Android for key events only while the Settings key could be ours to answer (SettingsKey.filterWanted). */
     private void filterKeys() {
         try {
-            boolean front = homeFront;
-            if (!front) stockHome = stockHomeOn(this);   // one package query, only when the home leaves
-            boolean want = SettingsKey.filterWanted(front, stockHome);
+            boolean front = homeFront, lowRam = Ram.low(this);
+            if (!front && !lowRam) stockHome = stockHomeOn(this);   // one package query, only when the home leaves (none on a weak TV: no filter there)
+            if (homeKeyLost == null) homeKeyLost = homeKeyLost(this);   // once per service: it does not change while the TV runs
+            boolean want = SettingsKey.filterWanted(front, stockHome, lowRam, homeKeyLost);
             AccessibilityServiceInfo info = getServiceInfo();
             if (info == null) return;
             boolean has = (info.flags & AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS) != 0;
@@ -80,8 +81,14 @@ public class TypeService extends AccessibilityService {
 
     /** Every key, while the filter is on. Anything but the Settings key goes back to Android untouched: nothing is read, kept or logged. */
     @Override protected boolean onKeyEvent(KeyEvent e) {
-        int d = settingsKey.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), homeFront, stockHome);
+        Boolean lost = homeKeyLost;
+        int d = settingsKey.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), homeFront, stockHome, lost != null && lost);
         if (d == SettingsKey.PASS) return false;
+        if (d == SettingsKey.TO_HOME) {   // the home's own key path, on its thread: a short press the TV's settings, a long one ours (RemoteKeys)
+            final KeyEvent copy = new KeyEvent(e);
+            main.post(() -> MainActivity.keyFromService(copy));
+            return true;
+        }
         if (d == SettingsKey.OPEN_TV_SETTINGS) main.post(this::openTvSettings);   // after the key is answered: the TV does not wait on us
         return true;
     }
@@ -111,6 +118,19 @@ public class TypeService extends AccessibilityService {
         }
     }
 
+    /** this TV's system takes the Settings key before our home: SettingsKey.NOTIFICATION_PANEL_ACTION resolves to no activity (Haier MatrixTV) */
+    private volatile Boolean homeKeyLost;
+
+    static boolean homeKeyLost(Context c) {
+        try {
+            boolean lost = c.getPackageManager().queryIntentActivities(new Intent(SettingsKey.NOTIFICATION_PANEL_ACTION), 0).isEmpty();
+            if (lost) log("settings key=homelost"); else log("settings key=homeok");
+            return lost;
+        } catch (RuntimeException e) {
+            return false;   // could not tell: as before
+        }
+    }
+
     /** An enabled stock home answers HOME (queryIntentActivities leaves disabled packages out). */
     private static boolean stockHomeOn(Context c) {
         List<String> pkgs = new ArrayList<>();
@@ -125,6 +145,12 @@ public class TypeService extends AccessibilityService {
 
     /** Is the service on? (the owner or ADB enabled it, and Android has started it) */
     static boolean enabled() { return running != null; }
+
+    /** HOME pressed for the person (our carry-over after an update of ours): allowed from the background because it is the system's own action; false when the service is not bound */
+    static boolean goHome() {
+        TypeService s = running;
+        return s != null && s.performGlobalAction(GLOBAL_ACTION_HOME);
+    }
 
     /** The words typeText answers with; the phone gets nothing else of what it saw. */
     static final String TYPED = "typed_other", TYPED_NO_SEARCH = "typed_other_nosearch", OFF = "service_off", LOCKED = "locked", REFUSED = "refused",

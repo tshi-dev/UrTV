@@ -33,7 +33,7 @@ def run(df, mode="apply"):
 
 GB = 1024 * 1024
 rc, out, batch = run(f"/dev/block/dm-5 {16 * GB} {4 * GB} {12 * GB} 25% /data")
-check("plenty of room: caches are not trimmed, and it says so", rc == 0 and "trim-caches" not in batch and "left alone" in out and "cached_apps_freezer enabled" in batch, f"{rc} {out}")
+check("plenty of room: caches are not trimmed, and it says so", rc == 0 and "trim-caches" not in batch and "left alone" in out and "cached_apps_freezer" not in batch, f"{rc} {out}")
 rc, out, batch = run(f"/dev/block/dm-5 {16 * GB} {15 * GB} {600 * 1024} 98% /data")
 check("under 1 GB free: trimmed, and it says so", rc == 0 and "pm trim-caches 999G" in batch and "storage is low" in out, f"{rc} {out}")
 rc, out, batch = run(f"/dev/block/dm-5 {64 * GB} {59 * GB} {4 * GB} 94% /data")

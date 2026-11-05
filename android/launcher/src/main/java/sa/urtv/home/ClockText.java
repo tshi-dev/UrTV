@@ -21,7 +21,7 @@ public final class ClockText {
 
     /** «ص» or «م», nothing on a 24-hour clock (the home screen hides the little label then) */
     public static String suffix(int h, boolean clock24) {
-        return clock24 ? "" : Math.floorMod(h, 24) < 12 ? "ص" : "م";
+        return clock24 ? "" : Math.floorMod(h, 24) < 12 ? S.t("ص") : S.t("م");
     }
 
     /** «٧:٣٠ م», or «١٩:٣٠» */

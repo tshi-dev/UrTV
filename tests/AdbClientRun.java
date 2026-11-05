@@ -30,7 +30,12 @@ public class AdbClientRun {
         final List<BigInteger[]> known = new CopyOnWriteArrayList<>();   // {modulus, exponent}
         final AtomicInteger prompts = new AtomicInteger(), connections = new AtomicInteger();
         final List<String> commands = new CopyOnWriteArrayList<>();
-        volatile boolean refuseShell;
+        volatile boolean refuseShell, closeEarly;
+        /** A whole fake TV behind this adbd (SetupRunnerRun's end-to-end run): its answer and exit code for each shell command, and what an install delivered. */
+        volatile java.util.function.Function<String, AdbClient.Result> tv;
+        volatile java.util.function.Consumer<byte[]> installed;
+        volatile int maxData = AdbClient.MAX_DATA, biggestPiece;
+        final java.io.ByteArrayOutputStream received = new java.io.ByteArrayOutputStream();
 
         FakeAdbd(String scenario) throws IOException {
             this.scenario = scenario;
@@ -126,11 +131,12 @@ public class AdbClientRun {
                     in_ = true;
                 }
             }
-            out.write(frame(AdbClient.CNXN, AdbClient.VERSION, AdbClient.MAX_DATA, "device::\0".getBytes(StandardCharsets.US_ASCII))); out.flush();
+            out.write(frame(AdbClient.CNXN, AdbClient.VERSION, maxData, "device::\0".getBytes(StandardCharsets.US_ASCII))); out.flush();
             while (true) {
                 m = read(in);
                 if (m.command == AdbClient.OPEN) {
                     String cmd = new String(m.data, StandardCharsets.UTF_8);
+                    if (cmd.startsWith("exec:")) { exec(cmd.substring(5, cmd.indexOf('\0')), m.arg0, in, out); continue; }
                     cmd = cmd.substring("shell:".length(), cmd.indexOf('\0'));
                     commands.add(cmd);
                     int remote = 77;
@@ -153,8 +159,45 @@ public class AdbClientRun {
             }
         }
 
+        /** `exec:cmd package install -S <n>`: reads n bytes from the stream (each piece acknowledged), then says Success and closes. */
+        void exec(String cmd, int local, DataInputStream in, OutputStream out) throws IOException {
+            commands.add("exec:" + cmd);
+            int remote = 91;
+            java.util.regex.Matcher sm = java.util.regex.Pattern.compile("-S (\\d+)").matcher(cmd);
+            long size = sm.find() ? Long.parseLong(sm.group(1)) : 0;
+            out.write(frame(AdbClient.OKAY, remote, local, null)); out.flush();
+            long got = 0;
+            java.io.ByteArrayOutputStream mine = new java.io.ByteArrayOutputStream();
+            while (got < size) {
+                AdbClient.Message w = read(in);
+                if (w.command != AdbClient.WRTE) continue;
+                biggestPiece = Math.max(biggestPiece, w.data.length);
+                received.write(w.data);
+                mine.write(w.data);
+                got += w.data.length;
+                if (closeEarly && got >= size / 2) {
+                    out.write(frame(AdbClient.WRTE, remote, local, "Failure [INSTALL_FAILED_INSUFFICIENT_STORAGE]\n".getBytes(StandardCharsets.UTF_8)));
+                    out.write(frame(AdbClient.CLSE, remote, local, null)); out.flush();
+                    return;
+                }
+                out.write(frame(AdbClient.OKAY, remote, local, null)); out.flush();
+            }
+            if (installed != null) installed.accept(mine.toByteArray());
+            out.write(frame(AdbClient.WRTE, remote, local, ("Success\n").getBytes(StandardCharsets.UTF_8))); out.flush();
+            read(in);   // the client's OKAY
+            out.write(frame(AdbClient.CLSE, remote, local, null)); out.flush();
+            read(in);   // its CLSE
+        }
+
         /** The text of a command: «echo hello» and friends; a trailing «echo URTV_RC=$?» gets the code of the line before it. */
         String answer(String cmd) {
+            if (tv != null) {
+                int k = cmd.lastIndexOf("\necho URTV_RC=$?");
+                AdbClient.Result r = tv.apply(k < 0 ? cmd : cmd.substring(0, k));
+                String o = r.output;
+                if (k < 0) return o;
+                return o + (o.isEmpty() || o.endsWith("\n") ? "" : "\n") + "URTV_RC=" + r.code + "\n";
+            }
             String rc = "";
             int i = cmd.lastIndexOf("\necho URTV_RC=$?");
             String body = cmd;
@@ -206,6 +249,9 @@ public class AdbClientRun {
             && BigInteger.valueOf(n0inv & 0xffffffffL).multiply(n).add(BigInteger.ONE).mod(BigInteger.ONE.shiftLeft(32)).signum() == 0
             && new BigInteger(1, rrBig).equals(BigInteger.ONE.shiftLeft(4096).mod(n));
         line("blob " + named + " " + keyOk + " " + (blob.length == text.length()));
+        // 3b the same blob for tests/adb_client_test.py's independent check (AOSP's android_pubkey_encode, in Python): the modulus, then the bytes
+        line("blobraw " + ((java.security.interfaces.RSAPublicKey) keys.getPublic()).getModulus().toString(16) + " "
+            + ((java.security.interfaces.RSAPublicKey) keys.getPublic()).getPublicExponent() + " " + java.util.Base64.getEncoder().encodeToString(blob));
         // 4 an unknown key, accepted on the TV: the prompt is announced, the command runs, the code is read
         FakeAdbd d = new FakeAdbd("accept");
         final boolean[] waited = {false};
@@ -258,6 +304,37 @@ public class AdbClientRun {
             line("refused " + e.getMessage());
         }
         c3.close();
+        // 8b exec: an APK's bytes streamed to `cmd package install -S`, in pieces no bigger than the TV's message size, each acknowledged
+        FakeAdbd small = new FakeAdbd("accept");
+        small.maxData = 4096;
+        AdbClient c5 = AdbClient.connect("127.0.0.1", small.port(), keys, 34, 5000, null, B64);
+        byte[] apk = new byte[100_003];
+        new java.util.Random(7).nextBytes(apk);
+        String said = c5.exec("cmd package install -r -S " + apk.length, new java.io.ByteArrayInputStream(apk), apk.length);
+        AdbClient.Result after = c5.run("echo after");
+        line("exec " + said.trim() + " " + java.util.Arrays.equals(small.received.toByteArray(), apk) + " " + small.biggestPiece + " " + c5.maxPayload() + " "
+            + small.commands.contains("exec:cmd package install -r -S 100003") + " " + after.code);
+        c5.close();
+        // 8c the TV closes the stream half way (it ran out of room): an error that carries what it said, not a success
+        FakeAdbd early = new FakeAdbd("accept");
+        early.maxData = 4096; early.closeEarly = true;
+        AdbClient c6 = AdbClient.connect("127.0.0.1", early.port(), keys, 34, 5000, null, B64);
+        try {
+            c6.exec("cmd package install -r -S " + apk.length, new java.io.ByteArrayInputStream(apk), apk.length);
+            line("execEarly answered");
+        } catch (IOException e) {
+            line("execEarly " + e.getMessage().contains("INSUFFICIENT_STORAGE"));
+        }
+        c6.close();
+        // 8d a file shorter than the size it claimed: an error, never a half install called done
+        AdbClient c7 = AdbClient.connect("127.0.0.1", d.port(), keys, 34, 5000, null, B64);
+        try {
+            c7.exec("cmd package install -r -S 5000", new java.io.ByteArrayInputStream(new byte[1000]), 5000);
+            line("execShort answered");
+        } catch (IOException e) {
+            line("execShort " + e.getMessage());
+        }
+        c7.close();
         // 9 Android 8 to 10: the first connection hangs, a new one that only signs gets in
         FakeAdbd legacy = new FakeAdbd("legacy");
         long t0 = System.currentTimeMillis();

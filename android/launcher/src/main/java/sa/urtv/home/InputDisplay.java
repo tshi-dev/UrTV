@@ -8,7 +8,7 @@ package sa.urtv.home;
  */
 final class InputDisplay {
     static final int CEC_MAX = 40;   // characters (code points) kept of a device's own name
-    static final String STANDBY = " · وضع الاستعداد";
+    static final String STANDBY = S.n(" · وضع الاستعداد");
 
     private InputDisplay() {}
 
@@ -35,6 +35,6 @@ final class InputDisplay {
     /** What the row shows: the name, and the standby mark when the input is in standby (whoever gave the name). */
     static String label(String custom, String cecRaw, String own, boolean standby) {
         String n = name(custom, cecRaw, own);
-        return standby ? n + STANDBY : n;
+        return standby ? n + S.tv(STANDBY) : n;
     }
 }

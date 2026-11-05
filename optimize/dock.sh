@@ -15,14 +15,16 @@
 #   optimize/dock.sh sleep 30              «مؤقت النوم» for the whole TV: 15 30 60 90, or any 1 to 600 minutes; then the TV goes to sleep
 #   optimize/dock.sh sleep                 how the timer stands: minutes left, and what its end will do
 #   optimize/dock.sh sleep cancel          stop it
+#   optimize/dock.sh backsaver on|off        «الرجوع يفتح شاشة التوقف»: Back on our home starts the screensaver (off by default; the TV row in «الشاشة الرئيسية» is set too); no argument says how it stands
 #   optimize/dock.sh familydns on|off|status|grant   «حماية العائلة (DNS)»: Private DNS to AdGuard Family, checked and undone by optimize/familydns.sh
+#   optimize/dock.sh cast on|off|status    «البث من الجوال» on a Chromecast with Google TV: casting and the Google Home remote kept (on, the default) or our home first (off); optimize/cast.sh
 #   optimize/dock.sh sleep-setup           turn on the sleep service (an accessibility service, once) so the end turns the screen off
 #   optimize/dock.sh type-setup            turn on the remote-and-typing service (a second accessibility service, once) so the phone remote can press keys and type in other apps
 #   optimize/dock.sh pin set 1234         «الرقابة الأبوية»: the master PIN (4 digits), set or changed from here without the old one; never printed back
 #   optimize/dock.sh pin lock PKG          lock one app (its package, e.g. com.netflix.ninja), a pill (@inputs @wifi @tvsettings @tasks @saver @listen @sleep @center) or @urtv (our settings); `pin unlock PKG` opens it again
 #   optimize/dock.sh pin status            what is set: PIN or not, what is locked, kids mode, wrong tries (never the PIN)
 #   optimize/dock.sh pin off               no PIN: nothing asks, kids mode ends; the apps chosen stay for the next PIN
-#   optimize/dock.sh pin reset             the PIN was forgotten: everything parental back to nothing (the PIN, the locks, kids mode, the wrong tries)
+#   optimize/dock.sh pin reset             the PIN was forgotten: everything parental back to nothing (the PIN, the locks, kids mode, the wrong tries), and «محفظتي» is wiped
 # The home screen redraws at once; the sleep timer's pill too. Only ADB can do this (sa.urtv.home/.DockReceiver needs the shell's DUMP).
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -41,6 +43,7 @@ send() {   # $1 action, $2 extra arguments; prints the receiver's answer (the "d
 }
 case "${1:-}:$#" in
   familydns:*) shift; exec optimize/familydns.sh "$@" ;;
+  cast:*) shift; exec optimize/cast.sh "$@" ;;
   show:1) send GET_DOCK ;;
   apps:*)  send LIST_APPS ;;
   reset:*) send RESET_DOCK ;;
@@ -56,6 +59,10 @@ case "${1:-}:$#" in
     [ $# -gt 0 ] || { echo "usage: optimize/dock.sh set PKG1 PKG2 ..."; exit 1; }
     for p in "$@"; do [[ "$p" =~ ^[A-Za-z0-9_.]+$ ]] || { echo "not a package name: $p"; exit 1; }; done
     send SET_DOCK "--es apps $(IFS=,; echo "$*")" ;;
+  backsaver:1) send BACK_SAVER "--es mode status" ;;
+  backsaver:2)
+    # the home's switch, then the same on the screensaver's row (its settings show it; the home follows that row only when it changes)
+    case "$2" in on|off) send BACK_SAVER "--es mode $2"; "$PY" -I optimize/tv.py "am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET --es backsaver $2" > /dev/null 2>&1 || true ;; *) echo "usage: optimize/dock.sh backsaver [on|off]"; exit 1 ;; esac ;;
   sleep:1) send SLEEP_TV ;;
   sleep:2)
     case "$2" in
@@ -141,5 +148,5 @@ case "${1:-}:$#" in
     esc=$(printf '%s' "$3" | sed "s/'/'\\\\''/g")   # an apostrophe inside the quotes, as optimize/type.sh does; the app decides whether the name is kept
     send SET_INPUT_NAME "--es id '$2' --es name '$esc'" ;;
   input-name:*) echo "usage: optimize/dock.sh input-name ID 'الاسم'   (ID from: optimize/dock.sh input-names; '' = the TV's own name)"; exit 1 ;;
-  *) sed -n '2,25p' "$0"; exit 1 ;;
+  *) sed -n '2,27p' "$0"; exit 1 ;;
 esac

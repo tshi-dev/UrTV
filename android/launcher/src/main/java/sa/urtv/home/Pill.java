@@ -24,6 +24,8 @@ final class Pill extends LinearLayout {
     private static final long MS = 150;
     /** the row's height in dp: every pill, the circles and the one with the focus, is this tall, so they share one centre line */
     static final int HEIGHT = 34;
+    /** dp between two buttons of the top row (and the now-playing card): 12 dp = 24 px at 1080p, on the 8 px scale */
+    static final int GAP = 12;
 
     private final float density;
     private final ImageView icon;
@@ -57,10 +59,10 @@ final class Pill extends LinearLayout {
         name.setIncludeFontPadding(false);
         name.setTypeface(face);
         name.setSingleLine(true);
-        name.setGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT);
+        name.setGravity(Gravity.CENTER_VERTICAL | Dir.start());
         clip = new FrameLayout(c);
         clip.setClipChildren(true);
-        clip.addView(name, new FrameLayout.LayoutParams(-2, -1, Gravity.RIGHT));   // wider than its window: the start of the name shows first
+        clip.addView(name, new FrameLayout.LayoutParams(-2, -1, Dir.start()));   // wider than its window: the start of the name shows first
         addView(clip, new LayoutParams(0, -1));
 
         setLabel(label);
@@ -69,6 +71,7 @@ final class Pill extends LinearLayout {
 
     /** the full name (the focused pill shows it); the sleep and network pills change theirs */
     void setLabel(String text) {
+        text = S.tv(text);   // a name given as our Arabic words (ControlText.NAME) is said in «اللغة»; one already said stays
         label = text;
         setContentDescription(text);
         apply();
@@ -88,9 +91,31 @@ final class Pill extends LinearLayout {
         anim.start();
     }
 
+    /**
+     * «رملي» (a look with a focus line, GlassStyle.Look.ring): a rounded rectangle, not a circle, on the look's panel with its hairline,
+     * the icon in the look's green; focused, the look's soft fill with the green line round it. Any other look: the smoked circles as ever.
+     */
+    void look(GlassStyle.Look l) {
+        GlassStyle.Look was = sand;
+        sand = l != null && l.ring != 0 ? l : null;
+        if (was == sand) return;
+        bg.setCornerRadius(dp(sand != null ? 10 : HEIGHT / 2f));
+        paint();
+    }
+
+    private GlassStyle.Look sand;
+
     private void paint() {
         boolean f = hasFocus();
+        if (sand != null) {
+            bg.setColor(f ? sand.focus : sand.panel);
+            bg.setStroke(f ? dp(2) : dp(1), f ? sand.ring : sand.line);
+            name.setTextColor(f ? sand.onFocus : sand.text);
+            glyph.setTint(accent ? sand.accent : sand.ring);
+            return;
+        }
         bg.setColor(f ? 0xF2FFFFFF : 0x66000000);
+        bg.setStroke(dp(1), 0x33FFFFFF);
         name.setTextColor(f ? FOCUSED : ON);
         glyph.setTint(f ? FOCUSED : accent ? GOLD : ON);
     }

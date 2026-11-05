@@ -22,6 +22,8 @@ final class PhotoCache {
         FONTS = REPO + "assets/fonts/";
     /** the owner's own photos (Own): not a real address, the page asks for N.jpg here and only this app answers */
     static final String OWN = "https://own.urtv.invalid/";
+    /** the downloaded photo packs (PackStore): not a real address either; the page asks for ID/N.jpg and ID/credits.json here */
+    static final String PACKS = "https://packs.urtv.invalid/";
     private static final int KEEP = 12;   // the 5-photo set plus room for the next one
 
     private PhotoCache() {}
@@ -44,6 +46,7 @@ final class PhotoCache {
                 File f = Own.file(c, Integer.parseInt(name.substring(0, name.indexOf('.'))));
                 return f.isFile() ? jpeg(new FileInputStream(f)) : null;
             }
+            if (url.startsWith(PACKS)) return pack(c, url.substring(PACKS.length()));
             if (url.startsWith(BUNDLED)) {
                 String name = safeName(url.substring(BUNDLED.length()));
                 return name == null ? null : jpeg(c.getAssets().open("backgrounds/" + name));
@@ -56,6 +59,26 @@ final class PhotoCache {
             }
         } catch (Exception ignored) { }
         return null;
+    }
+
+    /** ID/N.jpg from the pack's folder, or ID/credits.json ("1": "author · licence") for the page; nothing else, and nothing for a pack not on the TV */
+    private static WebResourceResponse pack(Context c, String rest) {
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("([a-z][a-z0-9-]{1,30})/([1-9][0-9]{0,2}\\.jpg|credits\\.json)").matcher(rest);
+        if (!m.matches()) return null;
+        String id = m.group(1), name = m.group(2);
+        try {
+            if (name.equals("credits.json")) {
+                String json = PackStore.creditsJson(c, id);
+                if (json == null) return null;
+                java.util.Map<String, String> h = new java.util.HashMap<>();
+                h.put("Access-Control-Allow-Origin", "*");
+                return new WebResourceResponse("application/json", "UTF-8", 200, "OK", h, new java.io.ByteArrayInputStream(json.getBytes("UTF-8")));
+            }
+            File f = PackStore.photo(c, id, Integer.parseInt(name.substring(0, name.indexOf('.'))));
+            return f.isFile() ? jpeg(new FileInputStream(f)) : null;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private static String safeName(String s) {

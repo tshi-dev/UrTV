@@ -1,0 +1,22 @@
+# UrTV community list: asus-m1g
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/asus-m1g/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: ASUS
+# match-model: M1GGOOGLETV
+# match-device: DAHU
+
+com.google.android.feedback
+com.realtek.leanbacklauncher.partnercustomizer
+com.aiconnx.app.stream.tv044
+com.realtek.officeweb
+com.realtek.userguide
+com.instagram.airwave
+com.haystack.android
+com.realtek.miracast
+com.rtk.mediabrowser
+com.google.android.katniss
+com.google.android.apps.tv.dreamx
+com.google.android.tungsten.setupwraith
+com.google.android.apps.tv.launcherx

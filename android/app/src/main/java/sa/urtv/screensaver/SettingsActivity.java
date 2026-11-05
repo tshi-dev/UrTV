@@ -58,9 +58,14 @@ public class SettingsActivity extends Activity {
     private LinearLayout side;       // a category's screen: its title and its line on the right, the rows on the left (hidden on the first)
     private final java.util.Map<String, String> lastRow = new java.util.HashMap<>();   // each category's row last focused, for the way back in
 
-    /** Arabic locale for this screen, so every dialog title, list and button is laid out right-to-left. */
+    /**
+     * Arabic locale for this screen, so every dialog title, list and button is laid out right-to-left. With «اللغة» English (S.wrap) an
+     * English one instead, left to right; with Arabic, the default, S.wrap gives base back and the screen is set up as it always was.
+     */
     @Override
     protected void attachBaseContext(android.content.Context base) {
+        android.content.Context en = S.wrap(base);
+        if (S.en()) { super.attachBaseContext(en); return; }
         android.content.res.Configuration c = new android.content.res.Configuration(base.getResources().getConfiguration());
         c.setLocale(new java.util.Locale("ar"));
         c.setLayoutDirection(new java.util.Locale("ar"));
@@ -77,10 +82,11 @@ public class SettingsActivity extends Activity {
         getWindow().setWindowAnimations(0);
         overridePendingTransition(0, 0);
         prefs = new Prefs(this);
+        if (getIntent().hasExtra("hubAt")) { screen = getIntent().getStringExtra("screen"); hubAt = getIntent().getStringExtra("hubAt"); }   // pickLang: back on its button
         UpdateJob.schedule(this);
         // the glass look of all our screens: the home's photo, small and blurred once (GlassSource), under its veil; glass tiles and rows
         root = new FrameLayout(this);
-        root.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        root.setLayoutDirection(Dir.layout());
         look = GlassSource.page(this, root);
         scroll = new UpDownScroll(this);
         scroll.setVerticalScrollBarEnabled(false);
@@ -88,17 +94,17 @@ public class SettingsActivity extends Activity {
         FrameLayout frame = new FrameLayout(this);
         list = new LinearLayout(this);
         list.setOrientation(LinearLayout.VERTICAL);
-        list.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
-        list.setPadding(dp(8), dp(40), dp(8), dp(16));
+        list.setLayoutDirection(Dir.layout());
+        list.setPadding(dp(8), dp(32), dp(8), dp(16));   // 64 px above the first line: with the group header (32 + its text) the first row is not 124 px down
         int width = Math.min(getResources().getDisplayMetrics().widthPixels - dp(144), dp(1100));
         frame.addView(list, new FrameLayout.LayoutParams(-1, -2));
         scroll.addView(frame);
         LinearLayout panes = new LinearLayout(this);   // right to left: the side (a category's title), then the rows
         panes.setOrientation(LinearLayout.HORIZONTAL);
-        panes.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        panes.setLayoutDirection(Dir.layout());
         side = new LinearLayout(this);
         side.setOrientation(LinearLayout.VERTICAL);
-        side.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        side.setLayoutDirection(Dir.layout());
         side.setPadding(dp(8), dp(48), dp(8), dp(16));
         // fixed widths, worked out once (no weights): the side and the rows never move sideways (the TV test of 3.147: after 5 down and
         // 5 up the list went from the left half to the right half and back); the rows' width changes only between the categories and a category
@@ -118,8 +124,10 @@ public class SettingsActivity extends Activity {
         hint.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         hint.setTypeface(font("Thmanyah-Regular"));
         hint.setGravity(Gravity.CENTER);
-        hint.setPadding(dp(72), dp(10), dp(72), dp(18));
-        column.addView(hint, new LinearLayout.LayoutParams(-1, -2));
+        hint.setPadding(dp(72), dp(10), dp(72), dp(8));
+        LinearLayout.LayoutParams hintLp = new LinearLayout.LayoutParams(-1, -2);
+        hintLp.bottomMargin = Math.round(getResources().getDisplayMetrics().heightPixels * 0.05f);   // the 5 % safe area: the hint ends at y 1026 of 1080
+        column.addView(hint, hintLp);
         root.addView(column, new FrameLayout.LayoutParams(-1, -1));
         setContentView(root);
         render();
@@ -143,24 +151,24 @@ public class SettingsActivity extends Activity {
     @Override
     protected void onResume() {   // back in front (from the TV's settings, or opened again over itself): show what is set now
         super.onResume();
+        adhanAsked = false;
         look = GlassSource.page(this, root);   // the home's photo or «المظهر» may have changed meanwhile
         hint.setTextColor(look.sub);
         render();
     }
 
-    /** Back on a category's rows goes back to the categories, the focus on its tile; on the categories it leaves. */
+    /** Back on a category's rows (or on «البطاقات», «المزيد») goes back to the screen its button is on, the focus on that button; on the first screen it leaves. */
     @Override
     public void onBackPressed() {
         if (screen == null) { super.onBackPressed(); return; }
         View f = focusedRow();
         if (f != null) lastRow.put(screen, (String) f.getTag());   // the way back in starts there
         hubAt = screen;
-        open(null);
+        open(SettingsHub.parent(screen));
     }
 
-    /** Shows the categories (null) or one category's rows, from the top. */
+    /** Shows the first screen (null), a screen of buttons, or one category's rows, from the top. */
     private void open(String category) {
-        if (category != null) hubAt = category;
         screen = category;
         entering = true;
         scroll.scrollTo(0, 0);   // the new screen from its top at once, never drawn at the old one's place first
@@ -174,12 +182,13 @@ public class SettingsActivity extends Activity {
     }
 
     /**
-     * The first row (on the categories: the first line of tiles) brings the page back to its very top, so the title and the line over
+     * The first row (on a screen of buttons: its first line) brings the page back to its very top, so the title and the line over
      * it show again (the TV test: after going down and up again, the header stayed out of sight). After the scroll view's own move.
      */
     private void topWhenFirst(View v) {
         int at = rows().indexOf(v);
-        if (at == 0 || (screen == null && at == 1)) scroll.post(() -> scroll.smoothScrollTo(0, 0));
+        boolean pairs = SettingsHub.hasTiles(screen) && !SettingsHub.wide(screen);   // a first line of two buttons (the first screen's is the wide one alone)
+        if (at == 0 || (pairs && at == 1)) scroll.post(() -> scroll.smoothScrollTo(0, 0));
     }
 
     private boolean on(String category) { return screen != null && screen.equals(category); }
@@ -193,37 +202,39 @@ public class SettingsActivity extends Activity {
         latinDigits = DigitsText.isLatin(prefs.digits());
         List<View> before = rows();
         View had = entering ? null : focusedRow();
-        final String want = entering ? (screen == null ? (hubAt != null ? "hub:" + hubAt : null) : lastRow.get(screen)) : had == null ? null : (String) had.getTag();
+        final boolean tiles = SettingsHub.hasTiles(screen);   // the first screen, «البطاقات», «المزيد»: buttons, not rows
+        final String want = entering ? (tiles ? (hubAt != null ? "hub:" + hubAt : null) : lastRow.get(screen)) : had == null ? null : (String) had.getTag();
         final int wasIndex = had == null ? 0 : before.indexOf(had), scrollY = entering ? 0 : scroll.getScrollY();
         entering = false;
         groupCat = null;
         pendingHeader = null;
-        hint.setText(screen == null ? "الأسهم بين الأقسام  •  اختيار لفتح القسم  •  رجوع للخروج"
-            : "أعلى/أسفل بين الصفوف  •  اختيار لفتح الصف  •  رجوع للأقسام");
+        hint.setText(Words.of(screen == null ? "الأسهم بين الأقسام  •  اختيار لفتح القسم  •  رجوع للخروج"
+            : tiles ? "الأسهم بين الأقسام  •  اختيار لفتح القسم  •  رجوع"
+            : "أعلى/أسفل بين الصفوف  •  اختيار لفتح الصف  •  رجوع للأقسام"));
         list.removeAllViews();
         sidePane();
         LinearLayout head = new LinearLayout(this);
         head.setOrientation(LinearLayout.HORIZONTAL);
         head.setGravity(Gravity.CENTER_VERTICAL);
-        head.setPadding(0, 0, 0, dp(14));
+        head.setPadding(0, 0, 0, dp(16));
         TextView title = new TextView(this);
-        title.setText("تلفزيونك");
+        title.setText(Words.of("تلفزيونك"));
         title.setTextColor(look.text);
         title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 44);
         title.setTypeface(font("ThmanyahDisplay-Bold"));
         head.addView(title);
         TextView sub = new TextView(this);
-        sub.setText(screen == null ? "الإعدادات" : SettingsHub.name(screen));
+        sub.setText(Words.of(screen == null ? "الإعدادات" : SettingsHub.name(screen)));
         sub.setTextColor(look.sub);
         sub.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
         sub.setTypeface(font("Thmanyah-Regular"));
         LinearLayout.LayoutParams sp0 = new LinearLayout.LayoutParams(-2, -2);
         sp0.setMarginStart(dp(20));
         head.addView(sub, sp0);
-        if (screen == null) list.addView(head);   // a category's screen has its title on the side instead
+        if (tiles) list.addView(head);   // a category's screen has its title on the side instead
         if (screen == null || on(SettingsHub.PLACE))   // on the categories and on «الموقع والصلاة»
-            if (prefs.cityNoteDue()) line(Location.note(prefs.city()[0]), look.accent, dp(14));   // still the install's Riyadh: say where to change it
-        if (screen == null) { hub(want, wasIndex); return; }
+            if (prefs.cityNoteDue()) line(Location.note(Words.city(prefs.city())), look.accent, dp(14));   // still the install's Riyadh: say where to change it
+        actions.clear();
 
         row("معاينة الشاشة", "شاهد الشاشة الآن", R.drawable.ic_play, new Runnable() { public void run() {
             startActivity(new Intent(SettingsActivity.this, MainActivity.class)); } });
@@ -231,7 +242,7 @@ public class SettingsActivity extends Activity {
         // the place, then how its times are worked out, then the minutes of one's own mosque; the line under them says which is which
         header("الموقع");
         row("الدولة", Location.countryLabel(prefs.cityCountry(), prefs.cityTz()), R.drawable.ic_place, new Runnable() { public void run() { pickCountry(); } });
-        row("المدينة", prefs.city()[0], R.drawable.ic_place, new Runnable() { public void run() { pickCity(); } });
+        row("المدينة", Words.city(prefs.city()), R.drawable.ic_place, new Runnable() { public void run() { pickCity(); } });
 
         row("طريقة الحساب", PrayerMethod.label(prefs.prayerMethod(), prefs.cityCountry(), prefs.cityTz()), R.drawable.ic_place,
             new Runnable() { public void run() { pickPrayerMethod(); } });
@@ -241,6 +252,8 @@ public class SettingsActivity extends Activity {
         if (on(SettingsHub.PLACE)) line(Location.HELP, look.sub, 0);
 
         header("المباريات");
+        // «المباريات»: the home app's page of the games (docs/PROPOSALS-NOV2.md §1), the days and the leagues, the followed teams first
+        row("مباريات اليوم", "الأيام والدوريات، وفرقك أولاً", R.drawable.ic_trophy, new Runnable() { public void run() { openMatches(); } });
         row("الفرق المتابعة (" + arabicNum(prefs.teams().size()) + "/" + arabicNum(Prefs.MAX_TEAMS) + ")", teamsLabel(),
             R.drawable.ic_trophy, new Runnable() { public void run() { manageTeams(); } });
 
@@ -268,6 +281,11 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { prefs.setMonths("levant".equals(prefs.months()) ? "default" : "levant"); render(); } });
         row("شريط السنة تحت الساعة", prefs.yearStrip() ? "يعمل · نقاط السنة تحت الساعة، واليوم يلمع" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setYearStrip(!prefs.yearStrip()); render(); } });
+        // shown by default as always; OK hides it (and shows it again)
+        row("المناسبة القادمة", prefs.occasion() ? "ظاهرة · أسفل الشاشة في الوسط: كم باقي على رمضان والأعياد، والإفطار والإمساك في رمضان" : "مخفية", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setOccasion(!prefs.occasion()); render(); } });
+        row("تعتيم الليل", prefs.nightDim() ? "يعمل · تغمق الشاشة من ٩ مساءً، وأغمق من ١١ إلى ٥ الفجر، وترجع ٧ الصباح" : "متوقف · نفس الإضاءة طول الليل", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setNightDim(!prefs.nightDim()); render(); } });
         row("المناسبات الوطنية", Prefs.nationalLabel(prefs.national()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickNational(); } });
         row("حجم الساعة", Prefs.clockSizeLabel(prefs.clockSize()), R.drawable.ic_eye,
@@ -275,11 +293,19 @@ public class SettingsActivity extends Activity {
         // «نظام الساعة»: 12 or 24 hours, the same setting as `saver.sh clock24`; the page (screensaver and the home's cards) and the home's clock follow it
         row("نظام الساعة", ClockSetting.label(prefs.clock24()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickClock24(); } });
+        // «إظهار الثواني» (off by default): the seconds on the screensaver's clock, small beside the minutes
+        row("إظهار الثواني", prefs.seconds() ? "يعمل" : "متوقف", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setSeconds(!prefs.seconds()); render(); } });
         row("الخانة اليسرى", Prefs.slotLabel(prefs.slot()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickSlot(); } });
         if ("countdown".equals(prefs.slot()) || !prefs.countdownDate().isEmpty())
             row("العدّ التنازلي", countdownLabel(), R.drawable.ic_eye,
                 new Runnable() { public void run() { manageCountdown(); } });
+
+        // «الأسواق»: the home's own page (docs/PROPOSALS-NOV2.md §6, §7): TASI, the watchlist, gold and the pegs, and «محفظتي» on this TV only
+        header("صفحة الأسواق");
+        row("صفحة الأسواق", "تاسي وقائمتك والذهب والعملات، ومحفظتك", R.drawable.ic_trophy,
+            new Runnable() { public void run() { openMarkets(); } });
 
         header("الأسواق (أعلى اليسار)");
         row("شريط الأسواق", prefs.marketsOn() ? "يعمل" : "مخفي · يبقى طقس اليوم فقط", R.drawable.ic_eye,
@@ -296,11 +322,21 @@ public class SettingsActivity extends Activity {
             row("بطاقة ثانية", Prefs.panelLabel(prefs.panel2(), "بدون"), R.drawable.ic_eye, new Runnable() { public void run() { pickPanel2(); } });
         row("شكل البطاقة", Prefs.cardStyleLabel(prefs.cardStyle()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickCardStyle(); } });
+        // «تبديل الآية والحديث»: only while the verse-or-hadith card is shown somewhere (here, as the second card, or on the home screen)
+        if ("verse".equals(prefs.panel()) || "verse".equals(prefs.panel2()) || prefs.homePanels().contains("verse"))
+            row("تبديل الآية والحديث", QuoteEvery.label(prefs.quoteEvery()), R.drawable.ic_sync,
+                new Runnable() { public void run() { pickQuoteEvery(); } });
+        // «الآية والحديث»: both (the default), verses only or hadith only; shown with the row above
+        if ("verse".equals(prefs.panel()) || "verse".equals(prefs.panel2()) || prefs.homePanels().contains("verse"))
+            row("الآية والحديث", VerseKind.label(prefs.verseKind()), R.drawable.ic_eye,
+                new Runnable() { public void run() { pickVerseKind(); } });
 
         header("الشاشة الرئيسية (تلفزيونك)");
         // «المظهر», the first row: «الشكل» (glass, graphite, navy, clean) and «الإضاءة» (dark, light, auto), each picked with a live preview
         row("المظهر", Prefs.lookLabel(prefs.look()) + " · " + Prefs.appearanceLabel(prefs.appearance()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickLook(); } });
+        row("صفحات الأسهم والمباريات داكنة", prefs.pagesDark() ? "مفعّل · بالمظهر الداكن دائمًا" : "متوقف · تتبع مظهر الرئيسية", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setPagesDark(!prefs.pagesDark()); render(); } });
         // up to three cards left of the clock; each place takes any card, or «بدون» (the ones after it move up)
         for (int k = 0; k < Prefs.HOME_CARDS; k++) {
             final int place = k;
@@ -313,12 +349,26 @@ public class SettingsActivity extends Activity {
         // opened through the home (behind its family lock), so they are reachable with the «تلاوة وأذان» button hidden too
         row("الأذان", "تشغيله وصوته وصوت الفجر والمختصر والإيقاف بأي زر والمستوى", R.drawable.ic_settings,
             new Runnable() { public void run() { openAdhanSettings(); } });
+        // «تلاوة وأذان» itself, through the home (behind its family lock), as its button there opens it
+        row("افتح تلاوة وأذان", "القرآن والإذاعات ومواقيت الأذان", R.drawable.ic_play,
+            new Runnable() { public void run() { openHome("listen"); } });
         // hiding removes only the button; the help line says where the screen opens from then
-        row("زر تلاوة وأذان", prefs.listenPill() ? "ظاهر" : "مخفي  •  الأذان والتلاوة تعمل، وتفتح الشاشة من قائمة التطبيق (اختيار مطوّلة) أو من بطاقة «يُتلى الآن»", R.drawable.ic_eye,
+        row("زر تلاوة وأذان", prefs.listenPill() ? "ظاهر" : "مخفي  •  الأذان والتلاوة تعمل، وتفتح الشاشة من «افتح تلاوة وأذان» هنا أو من بطاقة «يُتلى الآن»", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setListenPill(!prefs.listenPill()); render(); } });
+        // hiding removes only the button: the list stays in the «المهام» card and on the phone
+        row("زر المهام", prefs.tasksPill() ? "ظاهر" : "مخفي  •  المهام تبقى في بطاقة «المهام» ومن الجوال", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setTasksPill(!prefs.tasksPill()); render(); } });
+        // Back on our home (nothing to go back to) starts the screensaver; the home takes it on its next tick or return (Dock.followBackSaver)
+        row("الرجوع يفتح شاشة التوقف", prefs.backSaver() ? "مفعّل" : "متوقف", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setBackSaver(!prefs.backSaver()); render(); } });
+        // «الخروج من تلفزيونك»: only where the TV keeps its own home (ours opened from its tile); one Back as always, a long Back or three
+        row("الخروج من تلفزيونك", HomeExit.label(prefs.homeExit()), R.drawable.ic_eye,
+            new Runnable() { public void run() { pickHomeExit(); } });
         // the bell shows only while the Play Store has updates waiting (the home screen asks on return, at most every 6 hours)
         row("جرس التحديثات", prefs.updateBell() ? "ظاهر عند وجود تحديثات للتطبيقات" : "مخفي", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setUpdateBell(!prefs.updateBell()); render(); } });
+        row("تطبيقات في الشريط", Prefs.favBarLabel(prefs.favBar()), R.drawable.ic_star,
+            new Runnable() { public void run() { pickFavBar(); } });
         row("ترتيب التطبيقات المفضلة", "قائمة ترتّب فيها المفضلة بالأسهم", R.drawable.ic_star,
             new Runnable() { public void run() { openDockSettings(); } });
         // «أكمل المشاهدة»: on or off; turned on while the home app may not read the TV's list yet, it opens the home app's one question
@@ -339,13 +389,29 @@ public class SettingsActivity extends Activity {
         // «كل التطبيقات»: the home screen's «تعديل التطبيقات», or the order by name again (what is hidden stays hidden)
         row("ترتيب كل التطبيقات", "تحريكها وإخفاؤها على الشاشة الرئيسية، أو الرجوع للترتيب الأصلي", R.drawable.ic_star,
             new Runnable() { public void run() { pickAppsOrder(); } });
-        row("تحديث تلفزيوني", "يعرض الإصدار ويتحقق من التحديث", R.drawable.ic_sync,
+        // what an app's options box does (a long OK or Menu on the app, docs/UX-REVIEW.md) is here too: move, hide and the favourites
+        // above, the locks and the app's details here
+        row("قفل التطبيقات", "اختر التطبيقات التي تطلب الرمز", R.drawable.ic_lock,
+            new Runnable() { public void run() { openParental(); } });
+        row("تفاصيل التطبيقات", "قائمة التلفزيون: التخزين والأذونات والحذف", R.drawable.ic_settings,
+            new Runnable() { public void run() { openAppDetails(); } });
+        row("تحديث تلفزيوني", "تحديث التطبيقين: يعرض الإصدار ويتحقق من التحديث", R.drawable.ic_sync,
             new Runnable() { public void run() { openUpdate(); } });
+        // two buttons of the first screen that do one thing (SettingsHub.direct): the home's «مركز التحكم», and the report's QR code
+        row("مركز التحكم", "مؤقت النوم والشبكة والصوت وإعدادات التلفزيون", R.drawable.ic_settings,
+            new Runnable() { public void run() { openHome("center"); } });
+        row("أرسل تقرير", "رمز QR يفتح صفحة الإرسال في جوالك", R.drawable.ic_settings,
+            new Runnable() { public void run() { openReport(); } });
 
-        row("حماية العائلة", "تفعيل أو إيقاف، ويرجع الإعداد القديم تلقائياً", R.drawable.ic_eye,
+        // «الرقابة الأبوية» (docs/UX-REVIEW.md): the home's own page (the PIN, the locked apps, kids mode); it asks for the PIN itself
+        row("الرقابة الأبوية", "رمز يقفل التطبيقات والإعدادات، ووضع الأطفال", R.drawable.ic_lock,
+            new Runnable() { public void run() { openParental(); } });
+        row("تصفية المواقع", "تفعيل أو إيقاف، ويرجع الإعداد القديم تلقائياً", R.drawable.ic_eye,
             new Runnable() { public void run() { openFamilyDns(); } });
+        // «اللغة» (docs/ENGLISH.md): العربية, the default, or English; a button of «المزيد» that opens its two choices at once
+        row("اللغة", langLabel(), R.drawable.ic_language, new Runnable() { public void run() { pickLang(); } });
 
-        if ("shows".equals(prefs.panel()) || prefs.homePanels().contains("shows")) {   // only matter for the shows card
+        if (on(SettingsHub.SHOWS) || "shows".equals(prefs.panel()) || prefs.homePanels().contains("shows")) {   // only matter for the shows card; always on its own screen
         header("جديد المسلسلات");
         row("التصنيفات", labels(Prefs.GENRES, prefs.list("genres"), "الكل"),
             R.drawable.ic_category, new Runnable() { public void run() { pickMany("genres", "التصنيفات", Prefs.GENRES); } });
@@ -360,12 +426,16 @@ public class SettingsActivity extends Activity {
         header("الأسهم");
         row("قائمة الأسهم (" + arabicNum(prefs.stocks().size()) + "/" + arabicNum(Prefs.MAX_STOCKS) + ")", stocksLabel(),
             R.drawable.ic_star, new Runnable() { public void run() { askStocks(); } });
+        row("تغيّر الأسهم", labelOf(Prefs.STK_CHG, prefs.stkChg()), R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setStkChg("amount".equals(prefs.stkChg()) ? "pct" : "amount"); render(); } });
         }
 
         header("التوقيت");
-        row("تبديل الصورة كل", minutesLabel(Integer.parseInt(prefs.photoMinutes())), R.drawable.ic_sync,
+        row("تبديل الصورة كل", PhotoInterval.label(prefs.photoMinutes()), R.drawable.ic_sync,
             new Runnable() { public void run() { pickPhotoMinutes(); } });
-        row("صوري (" + arabicNum(Own.count(this)) + "/" + arabicNum(Own.MAX) + ")", ownLabel(), R.drawable.ic_eye,
+        row("صور شاشة التوقف", packsLabel(), R.drawable.ic_eye,
+            new Runnable() { public void run() { startActivity(new Intent(SettingsActivity.this, PhotoPacksActivity.class)); } });
+        row("صوري (" + arabicNum(Own.count(this)) + "/" + arabicNum(Own.max(this)) + ")", ownLabel(), R.drawable.ic_eye,
             new Runnable() { public void run() { pickOwn(); } });
         row("بدء شاشة التوقف بعد", idleLabel(), R.drawable.ic_screensaver,
             new Runnable() { public void run() { pickIdle(); } });
@@ -373,24 +443,29 @@ public class SettingsActivity extends Activity {
         header("التطبيق");
         row("التحديث التلقائي للصفحة", prefs.autoUpdate() ? "يعمل · عند بدء الشاشة، كل ٦ ساعات" : "متوقف", R.drawable.ic_sync, new Runnable() { public void run() {
             prefs.setAutoUpdate(!prefs.autoUpdate()); render(); } });
-        View last = row("تحديث الشاشة الآن", "ينزّل أحدث نسخة من الشاشة", R.drawable.ic_sync, new Runnable() { public void run() { updateNow(); } });
+        // the page only, never the apps: people took it for the app update (rows 421, 441), so its line points to «تحديث تلفزيوني»
+        View last = row("تحديث صفحة شاشة التوقف", "ينزّل أحدث صفحة للشاشة فقط · لتحديث التطبيقين: «تحديث تلفزيوني» في نفس القسم", R.drawable.ic_sync, new Runnable() { public void run() { updateNow(); } });
         if (last.getParent() == list) note(last, Updater.versionLines(this));
+        if (tiles) { hub(want, wasIndex); return; }   // a screen of buttons: after the rows were made (none of them is shown on it)
         restoreFocus(want, wasIndex, scrollY);   // a screen just opened: its first row
     }
+
+    /** Each row's action by its FocusKey, made by render on every screen: a DIRECT button (SettingsHub.direct) runs its row's. */
+    private final java.util.Map<String, Runnable> actions = new java.util.HashMap<>();
 
     /** The side of a category's screen: its icon, its name, its line, and the way back; nothing on the first screen. */
     private void sidePane() {
         side.removeAllViews();
-        side.setVisibility(screen == null ? View.GONE : View.VISIBLE);
-        int rowsWidth = screen == null ? pageWidth : pageWidth - sideWidth - dp(36);   // the categories: the whole width; a category: beside the side
+        final boolean tiles = SettingsHub.hasTiles(screen);
+        side.setVisibility(tiles ? View.GONE : View.VISIBLE);
+        int rowsWidth = tiles ? pageWidth : pageWidth - sideWidth - dp(36);   // the buttons: the whole width; a category: beside the side
         if (scroll.getLayoutParams() != null && scroll.getLayoutParams().width != rowsWidth) {
             scroll.getLayoutParams().width = rowsWidth;
             scroll.requestLayout();
         }
-        if (screen == null) return;
-        int at = SettingsHub.index(screen);
+        if (tiles) return;
         final ImageView ic = new ImageView(this);
-        final android.graphics.drawable.Drawable d = getDrawable(at >= 0 && at < HUB_ICONS.length ? HUB_ICONS[at] : R.drawable.ic_settings).mutate();
+        final android.graphics.drawable.Drawable d = getDrawable(hubIcon(screen)).mutate();
         d.setTint(look.accent);
         ic.setImageDrawable(d);
         side.addView(ic, new LinearLayout.LayoutParams(dp(52), dp(52)));
@@ -407,10 +482,10 @@ public class SettingsActivity extends Activity {
         a.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
         a.setTypeface(font("Thmanyah-Regular"));
         a.setLineSpacing(dp(4), 1f);
-        a.setTextDirection(View.TEXT_DIRECTION_RTL);
+        a.setTextDirection(Dir.text());
         side.addView(a);
         TextView up = new TextView(this);
-        up.setText("رجوع إلى الأقسام");   // words, not «‹›» (mirrored or not by the renderer)
+        up.setText(Words.of(SettingsHub.parent(screen) == null ? "رجوع إلى الأقسام" : "رجوع إلى " + SettingsHub.name(SettingsHub.parent(screen))));   // words, not «‹›» (mirrored or not by the renderer)
         up.setTextColor(look.sub);
         up.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         up.setTypeface(font("Thmanyah-Regular"));
@@ -418,45 +493,89 @@ public class SettingsActivity extends Activity {
         side.addView(up);
     }
 
-    private static final int[] HUB_ICONS = {R.drawable.ic_place, R.drawable.ic_settings, R.drawable.ic_screensaver, R.drawable.ic_category,
-        R.drawable.ic_trophy, R.drawable.ic_star, R.drawable.ic_eye, R.drawable.ic_sync};   // in the order of SettingsHub.CATEGORIES
+    /** Each button's icon. */
+    private static int hubIcon(String cat) {
+        switch (cat) {
+            case SettingsHub.ADHAN: return R.drawable.ic_bell;
+            case SettingsHub.PLACE: return R.drawable.ic_place;
+            case SettingsHub.CLOCK: return R.drawable.ic_clock;
+            case SettingsHub.LISTEN: return R.drawable.ic_listen;
+            case SettingsHub.CARDS: return R.drawable.ic_category;
+            case SettingsHub.LOOK: return R.drawable.ic_eye;
+            case SettingsHub.CONTROL: return R.drawable.ic_center;
+            case SettingsHub.PHONE: return R.drawable.ic_phone;
+            case SettingsHub.UPDATE: return R.drawable.ic_sync;
+            case SettingsHub.REPORT: return R.drawable.ic_report;
+            case SettingsHub.MORE: return R.drawable.ic_more;
+            case SettingsHub.SAVER: return R.drawable.ic_screensaver;
+            case SettingsHub.HOME: return R.drawable.ic_star;
+            case SettingsHub.CONTENT: return R.drawable.ic_trophy;
+            case SettingsHub.APPS: return R.drawable.ic_star;
+            case SettingsHub.SHOWS: return R.drawable.ic_play;
+            case SettingsHub.PARENTAL: return R.drawable.ic_lock;
+            case SettingsHub.FAMILY: return R.drawable.ic_shield;
+            case SettingsHub.LANG: return R.drawable.ic_language;
+            default: return R.drawable.ic_settings;
+        }
+    }
 
-    /** The first screen: the categories, two big tiles to a row from the right, each with what is set in it now. */
+    /**
+     * A screen of buttons (the first, «البطاقات», «المزيد»): two big buttons to a row from the right, each with what is set in it now; on the
+     * first screen «الأذان» is wide, alone on the top line.
+     */
     private void hub(String want, int wasIndex) {
-        final String[][] cats = SettingsHub.CATEGORIES;
+        final String[] cats = SettingsHub.tiles(screen);
+        final boolean wide = SettingsHub.wide(screen);
         final List<View> tiles = new ArrayList<>();
         LinearLayout line = null;
+        int inLine = 0;
         for (int i = 0; i < cats.length; i++) {
-            if (i % 2 == 0) {
+            boolean alone = wide && i == 0;
+            if (alone || inLine == 0) {
                 line = new LinearLayout(this);
                 line.setOrientation(LinearLayout.HORIZONTAL);
-                line.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+                line.setLayoutDirection(Dir.layout());
                 list.addView(line, new LinearLayout.LayoutParams(-1, -2));
             }
-            final String cat = cats[i][0];
-            View t = tile(cat, cats[i][1], i < HUB_ICONS.length ? HUB_ICONS[i] : R.drawable.ic_settings, hubSummary(cat));
+            final String cat = cats[i];
+            View t = tile(cat, SettingsHub.name(cat), hubIcon(cat), hubSummary(cat));
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, -2, 1f);
             lp.bottomMargin = dp(12);
-            if (i % 2 == 0) lp.setMarginEnd(dp(12));
+            if (!alone && inLine == 0) lp.setMarginEnd(dp(12));
             line.addView(t, lp);
             tiles.add(t);
+            inLine = alone ? 0 : (inLine + 1) % 2;
         }
-        if (cats.length % 2 == 1) line.addView(new View(this), new LinearLayout.LayoutParams(0, 0, 1f));   // a last tile alone keeps its width
+        if (inLine == 1) line.addView(new View(this), new LinearLayout.LayoutParams(0, 0, 1f));   // a last button alone keeps its width
+        // SettingsHub.next counts the rows from the right (2 left, 3 right); an English screen runs from the left: the two sides swap
+        final int left = Dir.rtl() ? 2 : 3, right = Dir.rtl() ? 3 : 2;
         for (int i = 0; i < tiles.size(); i++) {   // explicit ways (SettingsHub.next): nothing wraps, and right is right in the RTL rows
             View t = tiles.get(i);
-            t.setNextFocusUpId(tiles.get(SettingsHub.next(i, tiles.size(), 0)).getId());
-            t.setNextFocusDownId(tiles.get(SettingsHub.next(i, tiles.size(), 1)).getId());
-            t.setNextFocusLeftId(tiles.get(SettingsHub.next(i, tiles.size(), 2)).getId());
-            t.setNextFocusRightId(tiles.get(SettingsHub.next(i, tiles.size(), 3)).getId());
+            t.setNextFocusUpId(tiles.get(SettingsHub.next(i, tiles.size(), 0, wide)).getId());
+            t.setNextFocusDownId(tiles.get(SettingsHub.next(i, tiles.size(), 1, wide)).getId());
+            t.setNextFocusLeftId(tiles.get(SettingsHub.next(i, tiles.size(), left, wide)).getId());
+            t.setNextFocusRightId(tiles.get(SettingsHub.next(i, tiles.size(), right, wide)).getId());
         }
         restoreFocus(want, wasIndex, 0);
     }
 
-    /** What is set now in a category, on one line under its name. */
+    /** What is set now in a category, on one line under its name ("" for nothing to say). */
     private String hubSummary(String cat) {
         switch (cat) {
-            case SettingsHub.PLACE: return prefs.city()[0] + " · " + PrayerMethod.label(prefs.prayerMethod(), prefs.cityCountry(), prefs.cityTz());
-            case SettingsHub.ADHAN: return "صوته ومستواه · التنبيه قبل الأذان " + (prefs.adhanBar() ? "يعمل" : "متوقف");
+            case SettingsHub.ADHAN: {
+                Boolean on = homeAdhanSeen();   // the home's switch as last known; null when the home cannot say (not installed, or older)
+                return on == null ? "تشغيله وصوته ومؤذن الفجر" : on ? OnOff.ON_WORD : OnOff.OFF_WORD;
+            }
+            case SettingsHub.PLACE: return Words.city(prefs.city()) + " · " + PrayerMethod.label(prefs.prayerMethod(), prefs.cityCountry(), prefs.cityTz());
+            case SettingsHub.CLOCK: return ClockSetting.label(prefs.clock24()) + " · " + Prefs.digitsLabel(prefs.digits());
+            case SettingsHub.LISTEN: return "زرها " + (prefs.listenPill() ? "ظاهر" : "مخفي");
+            case SettingsHub.CARDS: return "شاشة التوقف · الشاشة الرئيسية";
+            case SettingsHub.LOOK: return Prefs.lookLabel(prefs.look()) + " · " + Prefs.appearanceLabel(prefs.appearance());
+            case SettingsHub.CONTROL: return "مؤقت النوم والشبكة والصوت";
+            case SettingsHub.PHONE: return "تشغيله وإيقافه وربط جوال";
+            case SettingsHub.UPDATE: return Updater.versionLines(this)[0];
+            case SettingsHub.REPORT: return "";
+            case SettingsHub.MORE: return "";
             case SettingsHub.SAVER: return (Prefs.idleMs(this) <= 0 ? "يبدأ وقت ما يحدده التلفاز" : "تبدأ بعد " + idleLabel()) + " · " + Prefs.panelLabel(prefs.panel());
             case SettingsHub.HOME: {
                 List<String> cards = new ArrayList<>();
@@ -465,50 +584,140 @@ public class SettingsActivity extends Activity {
             }
             case SettingsHub.CONTENT: return "الفرق " + arabicNum(prefs.teams().size()) + " · الأسواق " + (prefs.marketsOn() ? arabicNum(prefs.markets().size()) : "مخفية");
             case SettingsHub.APPS: return "ترتيب المفضلة وتعديلها، وأسماء المصادر";
-            case SettingsHub.FAMILY: return "حماية العائلة: تفعيل أو إيقاف";
-            case SettingsHub.PHONE: return "التحكم من الجوال · " + Updater.versionLines(this)[0];
+            case SettingsHub.SHOWS: return labels(Prefs.GENRES, prefs.list("genres"), "الكل");
+            case SettingsHub.PARENTAL: return "الرمز والتطبيقات المقفلة";
+            case SettingsHub.FAMILY: return "تفعيل أو إيقاف";
+            case SettingsHub.LANG: return langLabel();
             default: return "";
         }
     }
 
-    /** A category tile: a big icon, the name, the value now; gold when focused, OK opens the category. */
+    /**
+     * The home's adhan switch (its «الأذان التلقائي»), read from the home (NowPlayingProvider .../adhan_on, the same permission as «يُتلى الآن»):
+     * null when the home cannot say (not installed, older than this question, or it refused).
+     */
+    private Boolean adhanSeen;       // what the hub shows: the last answer (kept on disk too), so opening the settings never waits for the other app
+    private boolean adhanAsked;      // asked once per time the settings come to the front
+
+    /**
+     * The adhan tile's state without a call to the home on the UI thread (the call may start the home's process: seconds on a weak TV): the copy kept from the
+     * last time, and one question asked on a thread each time the settings come to the front; the tile is drawn again only when the answer differs.
+     */
+    private Boolean homeAdhanSeen() {
+        if (adhanSeen == null) {
+            int v = getSharedPreferences("hub_seen", MODE_PRIVATE).getInt("adhan_on", -1);
+            adhanSeen = v < 0 ? null : v == 1;
+        }
+        if (!adhanAsked) {
+            adhanAsked = true;
+            new Thread(() -> {
+                final Boolean now = homeAdhanOn();
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()) return;
+                    boolean changed = !java.util.Objects.equals(now, adhanSeen);
+                    adhanSeen = now;
+                    getSharedPreferences("hub_seen", MODE_PRIVATE).edit().putInt("adhan_on", now == null ? -1 : now ? 1 : 0).apply();
+                    if (changed) render();
+                });
+            }, "hub-adhan").start();
+        }
+        return adhanSeen;
+    }
+
+    private Boolean homeAdhanOn() {
+        android.database.Cursor c = null;
+        try {
+            c = getContentResolver().query(Uri.parse("content://sa.urtv.home.nowplaying/adhan_on"), null, null, null, null);
+            if (c == null || !c.moveToFirst() || c.getColumnIndex("on") < 0) return null;
+            return c.getInt(c.getColumnIndex("on")) == 1;
+        } catch (RuntimeException e) {
+            return null;
+        } finally {
+            if (c != null) c.close();
+        }
+    }
+
+    /**
+     * A button: its icon and its name with the value now under it, on one line from the right; the focus fill when focused. OK opens its
+     * screen, or does its one thing (SettingsHub.direct: the row's own action). An on/off value («مفعّل», «متوقف») is drawn as every
+     * on/off row is (OnOff): the three green triangles at its start while it is on, the word in green.
+     */
     private View tile(final String cat, String name, int icon, String summary) {
         final LinearLayout card = new LinearLayout(this);
-        card.setOrientation(LinearLayout.VERTICAL);
-        card.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
-        card.setGravity(Gravity.START);
-        card.setPadding(dp(26), dp(22), dp(26), dp(22));
+        card.setOrientation(LinearLayout.HORIZONTAL);
+        card.setLayoutDirection(Dir.layout());
+        card.setGravity(Gravity.CENTER_VERTICAL);
+        card.setPadding(dp(16), dp(18), dp(26), dp(18));
         card.setFocusable(true);
         card.setClickable(true);
         card.setId(View.generateViewId());
         card.setTag("hub:" + cat);
+        final int state = OnOff.state(summary);
+        final ImageView mark = onMark(state);
+        card.addView(mark, new LinearLayout.LayoutParams(dp(10), dp(30)));
         final ImageView ic = new ImageView(this);
         final android.graphics.drawable.Drawable d = getDrawable(icon).mutate();
         d.setTint(look.accent);
         ic.setImageDrawable(d);
         ic.setTag(GlassPaint.ICON);
-        card.addView(ic, new LinearLayout.LayoutParams(dp(40), dp(40)));
+        LinearLayout.LayoutParams ip = new LinearLayout.LayoutParams(dp(36), dp(36));
+        ip.setMarginStart(dp(8));
+        card.addView(ic, ip);
+        LinearLayout texts = new LinearLayout(this);
+        texts.setOrientation(LinearLayout.VERTICAL);
         TextView n = new TextView(this);
         n.setText(conv(name));
         n.setTextColor(look.text);
         n.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
         n.setTypeface(font("Thmanyah-Medium"));
         n.setSingleLine(true);
-        n.setPadding(0, dp(12), 0, dp(2));
-        card.addView(n);
-        TextView v = new TextView(this);
-        v.setText(conv(summary));
-        v.setTextColor(look.sub);
-        v.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-        v.setTypeface(font("Thmanyah-Regular"));
-        v.setSingleLine(true);
-        v.setEllipsize(android.text.TextUtils.TruncateAt.END);
-        v.setTextDirection(View.TEXT_DIRECTION_RTL);
-        card.addView(v);
-        card.setOnClickListener(x -> open(cat));
-        card.setOnFocusChangeListener((x, has) -> { if (has) topWhenFirst(x); });
+        texts.addView(n);
+        final TextView v = new TextView(this);
+        if (!summary.isEmpty()) {
+            v.setTextColor(look.sub);
+            v.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+            v.setTypeface(font("Thmanyah-Regular"));
+            v.setSingleLine(true);
+            v.setEllipsize(android.text.TextUtils.TruncateAt.END);
+            v.setTextDirection(Dir.text());
+            texts.addView(v);
+        }
+        LinearLayout.LayoutParams tp = new LinearLayout.LayoutParams(0, -2, 1f);
+        tp.setMarginStart(dp(18));
+        card.addView(texts, tp);
+        final String shown = conv(summary);
+        paintState(v, mark, shown, state, false);
+        card.setOnClickListener(x -> {
+            String row = SettingsHub.direct(cat);
+            Runnable act = row == null ? null : actions.get(row);
+            if (act != null) { act.run(); return; }
+            hubAt = cat;
+            open(cat);
+        });
+        card.setOnFocusChangeListener((x, has) -> { paintState(v, mark, shown, state, has); if (has) topWhenFirst(x); });
         glassCard(card);
         return card;
+    }
+
+    /** The mark of an on/off value: the three triangles, shown while it is on, an empty place of the same size otherwise (the icons stay in line). */
+    private ImageView onMark(int state) {
+        ImageView mark = new ImageView(this);
+        mark.setImageDrawable(getDrawable(R.drawable.ic_on).mutate());
+        mark.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        mark.setVisibility(state == 1 ? View.VISIBLE : View.INVISIBLE);
+        return mark;
+    }
+
+    /** An on/off value's word in the green that reads on what is under it (the panel at rest, the focus fill while focused), and its mark the same. */
+    private void paintState(TextView v, ImageView mark, String text, int state, boolean focused) {
+        if (state < 0) { if (!text.isEmpty()) v.setText(text); return; }
+        int bg = focused ? look.focus : (look.light ? 0xFFFFFFFF : 0xFF000000);
+        int green = OnOff.green(bg);
+        if (mark.getDrawable() != null) mark.getDrawable().setTint(green);
+        if (state == 0) { v.setText(text); return; }
+        android.text.SpannableString sp = new android.text.SpannableString(text);
+        sp.setSpan(new android.text.style.ForegroundColorSpan(green), 0, OnOff.wordEnd(text), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        v.setText(sp);
     }
 
     /** The rows of the list now (the views row() made: their tag is their FocusKey; the categories' tiles, two to a line), in order. */
@@ -574,7 +783,7 @@ public class SettingsActivity extends Activity {
         final Cities.Region[] regions = country < 0 ? Cities.REGIONS : Location.regions(country);
         if (country > 0 && regions.length == 1) { pickCityIn(regions[0], country); return; }   // any other country is one region: its cities
         String[] labels = new String[regions.length + 1];
-        labels[0] = "بحث عن مدينة أو قرية…";
+        labels[0] = "بحث عن مدينة أو قرية";
         for (int i = 0; i < regions.length; i++) labels[i + 1] = regions[i].name + "  (" + regions[i].cities.length + ")";
         new Dlg(this).setTitle(country < 0 ? "المنطقة" : Location.COUNTRIES[country][1])
             .setItems(labels, (d, i) -> { if (i == 0) searchCity(country); else pickCityIn(regions[i - 1], country); })
@@ -585,7 +794,7 @@ public class SettingsActivity extends Activity {
         String[] names = new String[r.cities.length];
         int sel = -1;
         for (int i = 0; i < names.length; i++) {
-            names[i] = Cities.display(r.cities[i]);
+            names[i] = Words.display(r.cities[i]);
             if (r.cities[i][0].equals(prefs.city()[0]) && r.cities[i][1].equals(prefs.city()[1]) && r.cities[i][2].equals(prefs.city()[2])) sel = i;
         }
         AlertDialog.Builder b = new Dlg(this).setTitle(r.name)
@@ -601,7 +810,7 @@ public class SettingsActivity extends Activity {
     // Any searchable country, or the one country picked, from Open-Meteo's GeoNames search.
     // Without a country filter, ask for the world's hundred best matches; PS keeps its checked list.
     private void searchCity(final int country) {
-        ask("اسم المدينة أو القرية", q -> fetch("https://geocoding-api.open-meteo.com/v1/search?count=100&language=ar&name="
+        ask("اسم المدينة أو القرية", q -> fetch("https://geocoding-api.open-meteo.com/v1/search?count=100&language=" + (S.en() ? "en" : "ar") + "&name="
             + Uri.encode(q) + (country < 0 ? "" : "&countryCode=" + Location.COUNTRIES[country][0]), json -> {
                 JSONArray all = new JSONObject(json).optJSONArray("results"), a = new JSONArray();
                 for (int k = 0; all != null && k < all.length() && a.length() < 20; k++)
@@ -630,7 +839,7 @@ public class SettingsActivity extends Activity {
         final List<String> cur = prefs.teams();
         String[] labels = new String[cur.size()];
         final boolean[] keep = new boolean[cur.size()];
-        for (int i = 0; i < cur.size(); i++) { labels[i] = cur.get(i).split("\\|", 2)[1]; keep[i] = true; }
+        for (int i = 0; i < cur.size(); i++) { labels[i] = teamName(cur.get(i)); keep[i] = true; }
         AlertDialog.Builder b = new Dlg(this).multi(() -> {
                 List<String> v = new ArrayList<>();
                 for (int i = 0; i < cur.size(); i++) if (keep[i]) v.add(cur.get(i));
@@ -653,9 +862,9 @@ public class SettingsActivity extends Activity {
         final List<String[]> opts = new ArrayList<>();
         for (String[] t : Prefs.TEAM_PRESETS) opts.add(t);
         String[] labels = new String[opts.size() + 2];
-        for (int i = 0; i < opts.size(); i++) labels[i] = opts.get(i)[1];
-        labels[opts.size()] = "تصفح الدوريات…";
-        labels[opts.size() + 1] = "بحث عن أي فريق أو منتخب…";
+        for (int i = 0; i < opts.size(); i++) labels[i] = teamName(opts.get(i)[0] + "|" + opts.get(i)[1]);
+        labels[opts.size()] = "تصفح الدوريات";
+        labels[opts.size() + 1] = "بحث عن أي فريق أو منتخب";
         new Dlg(this).setTitle("إضافة فريق")
             .setItems(labels, (d, i) -> {
                 if (i < opts.size()) addTeam(opts.get(i)[0], opts.get(i)[1]);
@@ -837,7 +1046,7 @@ public class SettingsActivity extends Activity {
         }));
     }
 
-    /** «حماية العائلة (DNS)» lives in the launcher too: it holds the permission to write the Private DNS setting. */
+    /** «تصفية المواقع (DNS)» lives in the launcher too: it holds the permission to write the Private DNS setting. */
     private void openFamilyDns() {
         try {
             startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.FamilyDnsActivity"));
@@ -845,10 +1054,38 @@ public class SettingsActivity extends Activity {
             boolean installed = true;
             try { getPackageManager().getPackageInfo("sa.urtv.home", 0); }
             catch (android.content.pm.PackageManager.NameNotFoundException gone) { installed = false; }
-            toast(installed ? "ما قدرنا نفتح حماية العائلة: حدّث الواجهة الرئيسية «تلفزيونك»" : "ثبّت الواجهة الرئيسية «تلفزيونك» أولاً");
+            toast(installed ? "ما قدرنا نفتح تصفية المواقع: حدّث الواجهة الرئيسية «تلفزيونك»" : "ثبّت الواجهة الرئيسية «تلفزيونك» أولاً");
         } catch (RuntimeException e) {
             toast("ثبّت الواجهة الرئيسية «تلفزيونك» أولاً");
         }
+    }
+
+    /** «صفحة الأسواق» lives in the launcher, with «محفظتي» (kept there only; its own lock asks for the PIN). */
+    private void openMarkets() {
+        try {
+            startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.MarketsActivity"));
+        } catch (ActivityNotFoundException e) {
+            toast("حدّث الواجهة الرئيسية «تلفزيونك» لتظهر صفحة الأسواق");
+        } catch (RuntimeException e) {
+            toast("ثبّت الواجهة الرئيسية «تلفزيونك» أولاً");
+        }
+    }
+
+    /** «الرقابة الأبوية» lives in the launcher (it keeps the PIN); its page asks for the PIN itself once one is set. */
+    private void openParental() {
+        try {
+            startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.ParentalActivity"));
+        } catch (RuntimeException e) {
+            toast("ثبّت الواجهة الرئيسية «تلفزيونك» أولاً");
+        }
+    }
+
+    /** «تفاصيل التطبيقات»: Android's own list of apps, where each app's details and its uninstall are. */
+    private void openAppDetails() {
+        for (String action : new String[] {android.provider.Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS, android.provider.Settings.ACTION_APPLICATION_SETTINGS}) {
+            try { startActivity(new Intent(action)); return; } catch (RuntimeException ignored) { }
+        }
+        toast("ما قدرنا نفتح قائمة التطبيقات في التلفزيون");
     }
 
     /** «ترتيب المفضلة» lives in the launcher (it owns the row). */
@@ -934,6 +1171,27 @@ public class SettingsActivity extends Activity {
         }
     }
 
+    /**
+     * Something of the home's own, opened through it (behind its family lock, as its own button there): open=center its «مركز التحكم»,
+     * open=listen «تلاوة وأذان». An older home that does not know the word just comes to the front.
+     */
+    private void openHome(String what) {
+        try {
+            startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.MainActivity").putExtra("open", what));
+        } catch (RuntimeException e) {
+            toast("ثبّت الواجهة الرئيسية «تلفزيونك» أولاً");
+        }
+    }
+
+    /** «أرسل تقرير»: the home's report screen (a QR code to docs/share with a few lines, nothing personal; ReportActivity). */
+    private void openReport() {
+        try {
+            startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.ReportActivity"));
+        } catch (RuntimeException e) {   // not installed, or an older home without the screen
+            toast("حدّث الواجهة الرئيسية «تلفزيونك» أو ثبّتها أولاً");
+        }
+    }
+
     /** «تحكم من الجوال» lives in the launcher (it holds the server and the pairing screen). */
     private void openPhoneControl() {
         try {
@@ -999,11 +1257,11 @@ public class SettingsActivity extends Activity {
         final int previewW = 480, viewH = 300, pad = 22;   // dp: the page is laid out in a box like the home screen's, 480 wide
         final LinearLayout box = new LinearLayout(this);
         box.setOrientation(LinearLayout.HORIZONTAL);
-        box.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        box.setLayoutDirection(Dir.layout());
         box.setPadding(dp(12), dp(4), dp(12), dp(4));
         final android.widget.ListView lv = new android.widget.ListView(this);
         lv.setDividerHeight(0);
-        lv.setSelector(GlassPaint.fill(this, look.focus, 12, 0));
+        lv.setSelector(GlassPaint.focused(this, look, 12));
         lv.setAdapter(new android.widget.BaseAdapter() {
             @Override public int getCount() { return values.length; }
             @Override public Object getItem(int i) { return values[i]; }
@@ -1159,28 +1417,33 @@ public class SettingsActivity extends Activity {
             .show();
     }
 
-    private String stocksLabel() { return Prefs.join(prefs.stocks(), "، "); }
+    private String stocksLabel() {
+        List<String> out = new ArrayList<>();
+        for (String k : prefs.stocks()) out.add(Stocks.label(k, S.en()));   // «أرامكو 2222»: the code and the company it is
+        return Prefs.join(out, S.en() ? ", " : "، ");
+    }
 
-    /** Codes (2222 = أرامكو) and US tickers (AAPL), separated by spaces or commas. */
+    /** Codes (2222 = أرامكو, also ٢٢٢٢), company names (الراجحي) and US tickers (AAPL), separated by spaces or commas (Stocks). */
     private void askStocks() {
         final EditText in = new EditText(this);
-        in.setHint("مثال: \u20662222 1120 AAPL NVDA\u2069");
+        in.setHint(Words.of("مثال: \u20662222 1120 AAPL NVDA\u2069"));
         in.setText(Prefs.join(prefs.stocks(), " "));
         in.setSingleLine(true);
         in.setInputType(InputType.TYPE_CLASS_TEXT);
-        new Dlg(this).setTitle("قائمة الأسهم (رمز تداول من ٤ أرقام أو رمز أمريكي، حتى " + arabicNum(Prefs.MAX_STOCKS) + ")")
+        new Dlg(this).setTitle("قائمة الأسهم (رمز تداول من ٤ أرقام أو اسم الشركة أو رمز أمريكي، حتى " + arabicNum(Prefs.MAX_STOCKS) + ")")
             .setView(in)
             .setPositiveButton("حفظ", (d, w) -> {
-                List<String> v = new ArrayList<>();
-                for (String s : in.getText().toString().split("[\\s,،]+")) {
-                    s = s.trim().toUpperCase(java.util.Locale.ROOT);
-                    if (s.isEmpty()) continue;
-                    if (!s.matches(Prefs.STOCK_PATTERN)) { toast("رمز غير صالح: " + s); return; }
-                    if (!v.contains(s)) v.add(s);
-                }
+                Stocks.Parsed got = Stocks.parse(in.getText().toString());
+                if (got.bad != null) { toast("رمز غير صالح: " + got.bad); return; }
+                List<String> v = got.codes;
                 if (v.isEmpty() || v.size() > Prefs.MAX_STOCKS) {
                     toast("أدخل من رمز إلى " + arabicNum(Prefs.MAX_STOCKS) + " رموز");
                     return;
+                }
+                if (!got.matched.isEmpty()) {   // a name or ٢٢٢٢ was typed: say what it was taken as
+                    List<String> shown = new ArrayList<>();
+                    for (String k : got.matched) shown.add(Stocks.label(k, S.en()));
+                    toast("الأسهم: " + Prefs.join(shown, S.en() ? ", " : "، "));
                 }
                 prefs.setStocks(v);
                 render();
@@ -1218,6 +1481,27 @@ public class SettingsActivity extends Activity {
         new Dlg(this).setTitle("نظام الساعة")
             .setSingleChoiceItems(ClockSetting.CHOICES, ClockSetting.choice(prefs.clock24()),
                 (d, i) -> { prefs.setClock24(ClockSetting.fromChoice(i)); d.dismiss(); render(); })
+            .show();
+    }
+
+    private void pickQuoteEvery() {
+        new Dlg(this).setTitle("تبديل الآية والحديث")
+            .setSingleChoiceItems(QuoteEvery.CHOICES, QuoteEvery.choice(prefs.quoteEvery()),
+                (d, i) -> { prefs.setQuoteEvery(QuoteEvery.fromChoice(i)); d.dismiss(); render(); })
+            .show();
+    }
+
+    private void pickVerseKind() {
+        new Dlg(this).setTitle("الآية والحديث")
+            .setSingleChoiceItems(VerseKind.CHOICES, VerseKind.choice(prefs.verseKind()),
+                (d, i) -> { prefs.setVerseKind(VerseKind.fromChoice(i)); d.dismiss(); render(); })
+            .show();
+    }
+
+    private void pickHomeExit() {
+        new Dlg(this).setTitle("الخروج من تلفزيونك")
+            .setSingleChoiceItems(HomeExit.CHOICES, HomeExit.choice(prefs.homeExit()),
+                (d, i) -> { prefs.setHomeExit(HomeExit.fromChoice(i)); d.dismiss(); render(); })
             .show();
     }
 
@@ -1267,6 +1551,27 @@ public class SettingsActivity extends Activity {
             .setNegativeButton("إلغاء", null).show();
     }
 
+    /** «اللغة» as its row and button say it: the language in use, in its own words; with Arabic, English beside it to be found */
+    private String langLabel() { return Tr.EN.equals(prefs.lang()) ? "English" : "العربية · English"; }
+
+    /**
+     * «اللغة»: العربية or English, each in its own language. The choice is kept (Prefs.setLang: the page and the home follow it at their
+     * next start), and this screen is made again in it at once, on the same button.
+     */
+    private void pickLang() {
+        final String[] values = {Tr.AR, Tr.EN};
+        new Dlg(this).raw().own().setTitle(S.en() ? "Language · اللغة" : "اللغة · Language")
+            .setSingleChoiceItems(new String[] {"العربية", "English"}, Tr.EN.equals(prefs.lang()) ? 1 : 0, (d, i) -> {
+                d.dismiss();
+                if (values[i].equals(prefs.lang())) return;
+                prefs.setLang(values[i]);
+                // the screen again in the new language (its direction and words are set when it starts), on the same button
+                startActivity(new Intent(this, SettingsActivity.class).putExtra("screen", screen).putExtra("hubAt", SettingsHub.LANG));
+                finish();
+            })
+            .show();
+    }
+
     private void pickDigits() {
         String[] labels = new String[Prefs.DIGITS.length];
         int sel = 0;
@@ -1300,16 +1605,26 @@ public class SettingsActivity extends Activity {
             .show();
     }
 
+    /** The choices of this TV (PhotoInterval.choices: 30 seconds only with 2 GB of memory), the one in use checked. */
     private void pickPhotoMinutes() {
-        String[] labels = new String[Prefs.PHOTO_MINUTES.length];
+        final String[] values = PhotoInterval.choices(Prefs.ramMb(this));
+        String[] labels = new String[values.length];
         int sel = 0;
-        for (int i = 0; i < labels.length; i++) {
-            labels[i] = minutesLabel(Integer.parseInt(Prefs.PHOTO_MINUTES[i]));
-            if (Prefs.PHOTO_MINUTES[i].equals(prefs.photoMinutes())) sel = i;
+        for (int i = 0; i < values.length; i++) {
+            labels[i] = conv(PhotoInterval.label(values[i]));
+            if (values[i].equals(prefs.photoMinutes())) sel = i;
         }
         new Dlg(this).setTitle("تبديل الصورة كل")
-            .setSingleChoiceItems(labels, sel, (d, i) -> { prefs.setPhotoMinutes(Prefs.PHOTO_MINUTES[i]); d.dismiss(); render(); })
+            .setSingleChoiceItems(labels, sel, (d, i) -> { prefs.setPhotoMinutes(values[i]); d.dismiss(); render(); })
             .show();
+    }
+
+    /** «صورنا» and the packs that are on and on the TV: «صورنا» · ٢ مجموعات */
+    private String packsLabel() {
+        int n = 0;
+        java.util.Map<String, Integer> have = PackStore.installed(this);
+        for (String id : prefs.packsOn()) if (have.containsKey(id)) n++;
+        return n == 0 ? "صورنا" : n == 1 ? "صورنا · مجموعة واحدة" : n == 2 ? "صورنا · مجموعتان" : "صورنا · " + n + (n <= 10 ? " مجموعات" : " مجموعة");
     }
 
     private String ownLabel() {
@@ -1414,25 +1729,33 @@ public class SettingsActivity extends Activity {
 
     private static String leagueAr(String en) {
         for (String[] l : Prefs.LEAGUES) if (l[0].equalsIgnoreCase(en)) return l[1];
-        return Arabic.translit(en);
+        return S.en() ? en : Arabic.translit(en);   // English: the league's own name, not a transliteration of it
     }
 
     private static String labelOf(String[][] options, String key) {
         for (String[] o : options) if (o[0].equalsIgnoreCase(key)) return o[1];
-        return Arabic.translit(key);
+        return S.en() ? key : Arabic.translit(key);
     }
 
     private String teamsLabel() {
         List<String> names = new ArrayList<>();
-        for (String t : prefs.teams()) names.add(t.split("\\|", 2)[1]);
+        for (String t : prefs.teams()) names.add(teamName(t));
         return names.isEmpty() ? "لا شيء" : Prefs.join(names, "، ");
+    }
+
+    /** A followed team ("id|Arabic name") as shown: its Arabic name, or with «اللغة» English the English one of our list (data, not the table). */
+    private String teamName(String saved) {
+        String[] p = saved.split("\\|", 2);
+        if (!S.en() || p.length < 2) return p.length < 2 ? saved : p[1];
+        TeamSearch.Team t = Teams.byId(this, p[0]);
+        return t != null && !t.en.isEmpty() ? t.en : p[1];
     }
 
     /** the «الأرقام» setting as this screen draws it (read at every render): every number and label goes through conv() */
     private static volatile boolean latinDigits;
     private boolean noConv;   // the «الأرقام» row itself says «هندية ١٢٣» and «عربية 123»: both stay as they are
 
-    private static String conv(String s) { return DigitsText.convert(s, latinDigits); }
+    private static String conv(String s) { s = Words.of(s); return DigitsText.convert(s, latinDigits); }   // «اللغة» first (Words: the text itself in Arabic)
 
     private static String arabicNum(int n) { return conv(String.valueOf(n)); }
 
@@ -1475,9 +1798,47 @@ public class SettingsActivity extends Activity {
     /** «المظهر»: which of the two to choose; each opens its own list, the focused choice drawn beside it. */
     private void pickLook() {
         new Dlg(this).setTitle("المظهر")
-            .setItems(new String[] {"الشكل: " + Prefs.lookLabel(prefs.look()), "الإضاءة: " + Prefs.appearanceLabel(prefs.appearance())},
-                (d, i) -> pickLookPart(i == 0))
+            .setItems(new String[] {"الشكل: " + Prefs.lookLabel(prefs.look()), "الإضاءة: " + Prefs.appearanceLabel(prefs.appearance()),
+                    "الواجهة: " + Prefs.homeLayoutLabel(prefs.homeLayout())},
+                (d, i) -> { if (i == 2) pickHomeLayout(); else pickLookPart(i == 0); })
             .show();
+    }
+
+    /** «تطبيقات في الشريط»: how many favourites the tray shows whole at once (5 as always, up to 10, or all of them); more scroll inside the tray */
+    private void pickFavBar() {
+        final String[] labels = new String[Prefs.FAV_BARS.length];
+        for (int i = 0; i < labels.length; i++) labels[i] = Prefs.favBarLabel(Prefs.FAV_BARS[i]);
+        new Dlg(this).setTitle("تطبيقات في الشريط")
+            .setSingleChoiceItems(labels, java.util.Arrays.asList(Prefs.FAV_BARS).indexOf(prefs.favBar()), (d, i) -> {
+                prefs.setFavBar(Prefs.FAV_BARS[i]);
+                d.dismiss();
+                render();
+            })
+            .setNegativeButton("إلغاء", null)
+            .show();
+    }
+
+    /** «الواجهة»: the home's layout, «العادية» (the default) or «كرة القدم» (the weather, the prayers and today's games over the same favourites bar). */
+    private void pickHomeLayout() {
+        final String[] labels = new String[Prefs.HOME_LAYOUTS.length];
+        for (int i = 0; i < labels.length; i++) labels[i] = Prefs.HOME_LAYOUT_NAMES[i];
+        new Dlg(this).setTitle("المظهر: الواجهة")
+            .setSingleChoiceItems(labels, java.util.Arrays.asList(Prefs.HOME_LAYOUTS).indexOf(prefs.homeLayout()), (d, i) -> {
+                prefs.setHomeLayout(Prefs.HOME_LAYOUTS[i]);
+                d.dismiss();
+                render();
+            })
+            .setNegativeButton("إلغاء", null)
+            .show();
+    }
+
+    /** «مباريات اليوم» lives in the home app (the page of the games, docs/PROPOSALS-NOV2.md §1). */
+    private void openMatches() {
+        try {
+            startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.MatchesActivity"));
+        } catch (RuntimeException e) {
+            toast("حدّث الواجهة الرئيسية «تلفزيونك» أو ثبّتها أولاً");
+        }
     }
 
     /**
@@ -1487,15 +1848,15 @@ public class SettingsActivity extends Activity {
     private void pickLookPart(final boolean shape) {
         final String[] values = shape ? GlassStyle.LOOKS : Prefs.APPEARANCES;
         final String[] labels = new String[values.length];
-        for (int i = 0; i < values.length; i++) labels[i] = shape ? GlassStyle.LOOK_NAMES[i] : Prefs.appearanceLabel(values[i]).split(" · ")[0];
+        for (int i = 0; i < values.length; i++) labels[i] = Words.of(shape ? GlassStyle.LOOK_NAMES[i] : Prefs.appearanceLabel(values[i]).split(" · ")[0]);
         final String current = shape ? prefs.look() : prefs.appearance();
         final LinearLayout box = new LinearLayout(this);
         box.setOrientation(LinearLayout.HORIZONTAL);
-        box.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        box.setLayoutDirection(Dir.layout());
         box.setPadding(dp(12), dp(4), dp(12), dp(4));
         final android.widget.ListView lv = new android.widget.ListView(this);
         lv.setDividerHeight(0);
-        lv.setSelector(GlassPaint.fill(this, look.focus, 12, 0));
+        lv.setSelector(GlassPaint.focused(this, look, 12));
         lv.setAdapter(new android.widget.ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, labels) {
             @Override public View getView(int i, View old, android.view.ViewGroup parent) {
                 TextView t = (TextView) super.getView(i, old, parent);
@@ -1564,31 +1925,31 @@ public class SettingsActivity extends Activity {
         });
         LinearLayout col = new LinearLayout(this);
         col.setOrientation(LinearLayout.VERTICAL);
-        col.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        col.setLayoutDirection(Dir.layout());
         col.setPadding(dp(14), dp(12), dp(14), dp(12));
         TextView title = new TextView(this);
-        title.setText(half ? (l.light ? "فاتح" : "داكن") : "الإعدادات");
+        title.setText(Words.of(half ? (l.light ? "فاتح" : "داكن") : "الإعدادات"));
         title.setTextColor(l.text);
         title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         title.setTypeface(font("ThmanyahDisplay-Bold"));
         col.addView(title);
         LinearLayout tiles = new LinearLayout(this);
-        tiles.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        tiles.setLayoutDirection(Dir.layout());
         for (int k = 0; k < (half ? 1 : 2); k++) {
             TextView t = new TextView(this);
-            t.setText(k == 0 ? "الموقع" : "الأذان");
+            t.setText(Words.of(k == 0 ? "الموقع" : "الأذان"));
             t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
             t.setTypeface(font("Thmanyah-Medium"));
             t.setGravity(Gravity.CENTER);
             t.setTextColor(k == 0 ? l.onFocus : l.text);
-            t.setBackground(k == 0 ? GlassPaint.fill(this, l.focus, 10, 0) : GlassPaint.panel(this, l, 10));
+            t.setBackground(k == 0 ? GlassPaint.focused(this, l, 10) : GlassPaint.panel(this, l, 10));
             LinearLayout.LayoutParams tp = new LinearLayout.LayoutParams(0, dp(48), 1f);
             if (k == 0) tp.setMarginEnd(dp(8));
             tiles.addView(t, tp);
         }
         col.addView(tiles, llp(-1, -2, dp(8)));
         TextView row = new TextView(this);
-        row.setText("المدينة · الرياض");
+        row.setText(Words.of("المدينة · الرياض"));
         row.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11);
         row.setTypeface(font("Thmanyah-Regular"));
         row.setTextColor(l.sub);
@@ -1606,13 +1967,15 @@ public class SettingsActivity extends Activity {
     }
 
     /** the dialogs of this screen: the glass theme (styles.xml), and Thmanyah on every word of them once they show */
-    private static final class Dlg extends AlertDialog.Builder {
+    private static final class Dlg extends WordsBuilder {   // its words in «اللغة» (WordsBuilder)
         private final SettingsActivity owner;
         private boolean raw;   // its words keep their own digits (the «الأرقام» picker shows both kinds)
 
         Dlg(SettingsActivity a) { super(a, a.look.light ? R.style.UrDialogLight : R.style.UrDialog); owner = a; }   // the glass of now
 
         Dlg raw() { raw = true; return this; }
+
+        @Override Dlg own() { super.own(); return this; }
 
         private Runnable save;   // multi(): a list of choices with «حفظ»
 
@@ -1683,8 +2046,8 @@ public class SettingsActivity extends Activity {
         d.getWindow().setBackgroundDrawable(GlassPaint.fill(this, GlassStyle.over(look.dialog, look.base), 22, look.line));
         if (d.getListView() != null) {
             android.graphics.drawable.StateListDrawable sel = new android.graphics.drawable.StateListDrawable();
-            sel.addState(new int[] {android.R.attr.state_focused}, GlassPaint.fill(this, look.focus, 12, 0));
-            sel.addState(new int[] {android.R.attr.state_pressed}, GlassPaint.fill(this, look.focus, 12, 0));
+            sel.addState(new int[] {android.R.attr.state_focused}, GlassPaint.focused(this, look, 12));
+            sel.addState(new int[] {android.R.attr.state_pressed}, GlassPaint.focused(this, look, 12));
             sel.addState(new int[] {}, new android.graphics.drawable.ColorDrawable(0));
             d.getListView().setSelector(sel);
         }
@@ -1746,7 +2109,7 @@ public class SettingsActivity extends Activity {
         t.setTextColor(look.accent);
         t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
         t.setTypeface(font("Thmanyah-Medium"));
-        t.setPadding(dp(10), dp(18), dp(10), dp(6));
+        t.setPadding(dp(10), dp(16), dp(10), dp(8));   // 32 above and 16 under a group's header: on the 8 px scale
         list.addView(t);
     }
 
@@ -1758,7 +2121,7 @@ public class SettingsActivity extends Activity {
         t.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         t.setTypeface(font("Thmanyah-Regular"));
         t.setGravity(Gravity.START);
-        t.setTextDirection(View.TEXT_DIRECTION_RTL);
+        t.setTextDirection(Dir.text());
         t.setPadding(dp(10), dp(8), dp(10), bottom);
         list.addView(t);
     }
@@ -1772,7 +2135,7 @@ public class SettingsActivity extends Activity {
         t.setTypeface(font("Thmanyah-Regular"));   // a version line has digits and Latin letters: Thmanyah has them
         t.setLineSpacing(dp(4), 1f);
         t.setGravity(Gravity.START);
-        t.setTextDirection(View.TEXT_DIRECTION_RTL);
+        t.setTextDirection(Dir.text());
         t.setPadding(dp(6), dp(18), dp(6), dp(24));
         list.addView(t);
         final View.OnFocusChangeListener was = last.getOnFocusChangeListener();
@@ -1786,15 +2149,15 @@ public class SettingsActivity extends Activity {
 
     /**
      * One prayer of «تعديل وقت الصلاة»: «الفجر +٢ د». Left adds a minute and right takes one off (the reading direction of an Arabic
-     * screen runs leftwards), from −20 to +20; OK puts it back to zero. The text changes where it is, so the focus and the scroll stay.
+     * screen runs leftwards; an English one rightwards: Dir.forwardKey), from −20 to +20; OK puts it back to zero. The text changes where it is, so the focus and the scroll stay.
      */
     private void adjRow(final int k) {
         final View card = row(PrayerAdj.label(k, prefs.prayerAdj()[k]), "يسار + · يمين − · موافق للتصفير", R.drawable.ic_eye, null);
-        final TextView name = (TextView) ((LinearLayout) ((LinearLayout) card).getChildAt(1)).getChildAt(0);
+        final TextView name = (TextView) card.findViewWithTag("name");
         final Runnable show = new Runnable() { public void run() { name.setText(conv(PrayerAdj.label(k, prefs.prayerAdj()[k]))); } };
         card.setOnClickListener(v -> { int[] a = prefs.prayerAdj(); a[k] = 0; prefs.setPrayerAdj(a); show.run(); });
         card.setOnKeyListener((v, code, ev) -> {
-            int d = code == android.view.KeyEvent.KEYCODE_DPAD_LEFT ? 1 : code == android.view.KeyEvent.KEYCODE_DPAD_RIGHT ? -1 : 0;
+            int d = code == Dir.forwardKey() ? 1 : code == Dir.backKey() ? -1 : 0;
             if (d == 0) return false;
             if (ev.getAction() == android.view.KeyEvent.ACTION_DOWN) {
                 int[] a = prefs.prayerAdj();
@@ -1806,41 +2169,52 @@ public class SettingsActivity extends Activity {
         });
     }
 
-    /** A card row: icon, label and its current value on a second line, chevron; gold when focused. */
+    /**
+     * A card row: icon, label and its current value on a second line, chevron; the focus fill when focused. An on/off value (OnOff: «يعمل»,
+     * «متوقف», «ظاهر»…) is drawn the same way everywhere: three green triangles at the row's start while it is on, and its first word in green.
+     */
     private View row(String label, String value, int icon, final Runnable onClick) {
         final LinearLayout card = new LinearLayout(this);
         card.setOrientation(LinearLayout.HORIZONTAL);
         card.setGravity(Gravity.CENTER_VERTICAL);
-        card.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        card.setLayoutDirection(Dir.layout());
         card.setPadding(dp(24), dp(14), dp(20), dp(14));
         card.setFocusable(true);
         card.setClickable(true);
         card.setTag(FocusKey.key(label));   // which row it is when the list is built again (render keeps the focus on it)
         final String cat = SettingsHub.of(FocusKey.key(label), groupCat);   // made on every screen, added only on its own
+        if (onClick != null) actions.put(FocusKey.key(label), onClick);
 
+        final int state = OnOff.state(value);
+        final ImageView mark = onMark(state);
+        card.addView(mark, new LinearLayout.LayoutParams(dp(9), dp(28)));
         final android.widget.ImageView ic = new android.widget.ImageView(this);
         final android.graphics.drawable.Drawable d = getDrawable(icon).mutate();
         d.setTint(look.accent);
         ic.setImageDrawable(d);
         ic.setTag(GlassPaint.ICON);
-        card.addView(ic, new LinearLayout.LayoutParams(dp(28), dp(28)));
+        LinearLayout.LayoutParams ip = new LinearLayout.LayoutParams(dp(28), dp(28));
+        ip.setMarginStart(dp(6));
+        card.addView(ic, ip);
 
         LinearLayout texts = new LinearLayout(this);
         texts.setOrientation(LinearLayout.VERTICAL);
         final TextView name = new TextView(this);
-        name.setText(noConv ? label : conv(label));
+        name.setTag("name");   // adjRow changes it in place
+        name.setText(noConv ? Words.of(label) : conv(label));
         name.setTextColor(look.text);
         name.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
         name.setTypeface(font("Thmanyah-Medium"));
         name.setSingleLine(true);
         texts.addView(name);
         final TextView val = new TextView(this);
+        final String shown = value == null ? "" : noConv ? Words.of(value) : conv(value);
         if (value != null) {
-            val.setText(noConv ? value : conv(value));
+            val.setText(shown);
             val.setTextColor(look.sub);
             val.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
             val.setTypeface(font("Thmanyah-Regular"));
-            val.setSingleLine(true);
+            val.setMaxLines(2);   // a long line wraps to a second one instead of being cut with «..» (tester S7); only a third is cut
             val.setEllipsize(android.text.TextUtils.TruncateAt.END);
             texts.addView(val);
         }
@@ -1855,13 +2229,15 @@ public class SettingsActivity extends Activity {
         card.addView(chevron);
 
         if (onClick != null) card.setOnClickListener(v -> onClick.run());
+        paintState(val, mark, shown, state, false);
         card.setOnFocusChangeListener((v, has) -> {
             // No scaling: a scaled rounded card overlapped its neighbours and blurred the text. The glass changes by itself (glassCard).
+            paintState(val, mark, shown, state, has);
             if (has) topWhenFirst(v);
         });
         glassCard(card);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
-        lp.bottomMargin = dp(9);
+        lp.bottomMargin = dp(8);
         if (!on(cat)) return card;
         if (pendingHeader != null && cat.equals(groupCat)) { drawHeader(pendingHeader); pendingHeader = null; }
         list.addView(card, lp);
@@ -1873,7 +2249,7 @@ public class SettingsActivity extends Activity {
 
     private void ask(String hint, final Text then) {
         final EditText in = new EditText(this);
-        in.setHint(hint);
+        in.setHint(Words.of(hint));
         in.setSingleLine(true);
         in.setInputType(InputType.TYPE_CLASS_TEXT);
         new Dlg(this).setTitle("بحث").setView(in)

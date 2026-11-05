@@ -2,459 +2,573 @@
  "surahs": [
   {
    "n": 1,
-   "name": "الفاتحة"
+   "name": "الفاتحة",
+   "en": "Al-Fatihah"
   },
   {
    "n": 2,
-   "name": "البقرة"
+   "name": "البقرة",
+   "en": "Al-Baqarah"
   },
   {
    "n": 3,
-   "name": "آل عمران"
+   "name": "آل عمران",
+   "en": "Aal-Imran"
   },
   {
    "n": 4,
-   "name": "النساء"
+   "name": "النساء",
+   "en": "An-Nisa"
   },
   {
    "n": 5,
-   "name": "المائدة"
+   "name": "المائدة",
+   "en": "Al-Maidah"
   },
   {
    "n": 6,
-   "name": "الأنعام"
+   "name": "الأنعام",
+   "en": "Al-Anam"
   },
   {
    "n": 7,
-   "name": "الأعراف"
+   "name": "الأعراف",
+   "en": "Al-Araf"
   },
   {
    "n": 8,
-   "name": "الأنفال"
+   "name": "الأنفال",
+   "en": "Al-Anfal"
   },
   {
    "n": 9,
-   "name": "التوبة"
+   "name": "التوبة",
+   "en": "At-Tawbah"
   },
   {
    "n": 10,
-   "name": "يونس"
+   "name": "يونس",
+   "en": "Yunus"
   },
   {
    "n": 11,
-   "name": "هود"
+   "name": "هود",
+   "en": "Hud"
   },
   {
    "n": 12,
-   "name": "يوسف"
+   "name": "يوسف",
+   "en": "Yusuf"
   },
   {
    "n": 13,
-   "name": "الرعد"
+   "name": "الرعد",
+   "en": "Ar-Rad"
   },
   {
    "n": 14,
-   "name": "إبراهيم"
+   "name": "إبراهيم",
+   "en": "Ibrahim"
   },
   {
    "n": 15,
-   "name": "الحجر"
+   "name": "الحجر",
+   "en": "Al-Hijr"
   },
   {
    "n": 16,
-   "name": "النحل"
+   "name": "النحل",
+   "en": "An-Nahl"
   },
   {
    "n": 17,
-   "name": "الإسراء"
+   "name": "الإسراء",
+   "en": "Al-Isra"
   },
   {
    "n": 18,
-   "name": "الكهف"
+   "name": "الكهف",
+   "en": "Al-Kahf"
   },
   {
    "n": 19,
-   "name": "مريم"
+   "name": "مريم",
+   "en": "Maryam"
   },
   {
    "n": 20,
-   "name": "طه"
+   "name": "طه",
+   "en": "Taha"
   },
   {
    "n": 21,
-   "name": "الأنبياء"
+   "name": "الأنبياء",
+   "en": "Al-Anbiya"
   },
   {
    "n": 22,
-   "name": "الحج"
+   "name": "الحج",
+   "en": "Al-Hajj"
   },
   {
    "n": 23,
-   "name": "المؤمنون"
+   "name": "المؤمنون",
+   "en": "Al-Muminun"
   },
   {
    "n": 24,
-   "name": "النور"
+   "name": "النور",
+   "en": "An-Nur"
   },
   {
    "n": 25,
-   "name": "الفرقان"
+   "name": "الفرقان",
+   "en": "Al-Furqan"
   },
   {
    "n": 26,
-   "name": "الشعراء"
+   "name": "الشعراء",
+   "en": "Ash-Shuara"
   },
   {
    "n": 27,
-   "name": "النمل"
+   "name": "النمل",
+   "en": "An-Naml"
   },
   {
    "n": 28,
-   "name": "القصص"
+   "name": "القصص",
+   "en": "Al-Qasas"
   },
   {
    "n": 29,
-   "name": "العنكبوت"
+   "name": "العنكبوت",
+   "en": "Al-Ankabut"
   },
   {
    "n": 30,
-   "name": "الروم"
+   "name": "الروم",
+   "en": "Ar-Rum"
   },
   {
    "n": 31,
-   "name": "لقمان"
+   "name": "لقمان",
+   "en": "Luqman"
   },
   {
    "n": 32,
-   "name": "السجدة"
+   "name": "السجدة",
+   "en": "As-Sajdah"
   },
   {
    "n": 33,
-   "name": "الأحزاب"
+   "name": "الأحزاب",
+   "en": "Al-Ahzab"
   },
   {
    "n": 34,
-   "name": "سبإ"
+   "name": "سبإ",
+   "en": "Saba"
   },
   {
    "n": 35,
-   "name": "فاطر"
+   "name": "فاطر",
+   "en": "Fatir"
   },
   {
    "n": 36,
-   "name": "يس"
+   "name": "يس",
+   "en": "Ya-Sin"
   },
   {
    "n": 37,
-   "name": "الصافات"
+   "name": "الصافات",
+   "en": "As-Saffat"
   },
   {
    "n": 38,
-   "name": "ص"
+   "name": "ص",
+   "en": "Sad"
   },
   {
    "n": 39,
-   "name": "الزمر"
+   "name": "الزمر",
+   "en": "Az-Zumar"
   },
   {
    "n": 40,
-   "name": "غافر"
+   "name": "غافر",
+   "en": "Ghafir"
   },
   {
    "n": 41,
-   "name": "فصلت"
+   "name": "فصلت",
+   "en": "Fussilat"
   },
   {
    "n": 42,
-   "name": "الشورى"
+   "name": "الشورى",
+   "en": "Ash-Shura"
   },
   {
    "n": 43,
-   "name": "الزخرف"
+   "name": "الزخرف",
+   "en": "Az-Zukhruf"
   },
   {
    "n": 44,
-   "name": "الدخان"
+   "name": "الدخان",
+   "en": "Ad-Dukhan"
   },
   {
    "n": 45,
-   "name": "الجاثية"
+   "name": "الجاثية",
+   "en": "Al-Jathiyah"
   },
   {
    "n": 46,
-   "name": "الأحقاف"
+   "name": "الأحقاف",
+   "en": "Al-Ahqaf"
   },
   {
    "n": 47,
-   "name": "محمد"
+   "name": "محمد",
+   "en": "Muhammad"
   },
   {
    "n": 48,
-   "name": "الفتح"
+   "name": "الفتح",
+   "en": "Al-Fath"
   },
   {
    "n": 49,
-   "name": "الحجرات"
+   "name": "الحجرات",
+   "en": "Al-Hujurat"
   },
   {
    "n": 50,
-   "name": "ق"
+   "name": "ق",
+   "en": "Qaf"
   },
   {
    "n": 51,
-   "name": "الذاريات"
+   "name": "الذاريات",
+   "en": "Adh-Dhariyat"
   },
   {
    "n": 52,
-   "name": "الطور"
+   "name": "الطور",
+   "en": "At-Tur"
   },
   {
    "n": 53,
-   "name": "النجم"
+   "name": "النجم",
+   "en": "An-Najm"
   },
   {
    "n": 54,
-   "name": "القمر"
+   "name": "القمر",
+   "en": "Al-Qamar"
   },
   {
    "n": 55,
-   "name": "الرحمن"
+   "name": "الرحمن",
+   "en": "Ar-Rahman"
   },
   {
    "n": 56,
-   "name": "الواقعة"
+   "name": "الواقعة",
+   "en": "Al-Waqiah"
   },
   {
    "n": 57,
-   "name": "الحديد"
+   "name": "الحديد",
+   "en": "Al-Hadid"
   },
   {
    "n": 58,
-   "name": "المجادلة"
+   "name": "المجادلة",
+   "en": "Al-Mujadilah"
   },
   {
    "n": 59,
-   "name": "الحشر"
+   "name": "الحشر",
+   "en": "Al-Hashr"
   },
   {
    "n": 60,
-   "name": "الممتحنة"
+   "name": "الممتحنة",
+   "en": "Al-Mumtahanah"
   },
   {
    "n": 61,
-   "name": "الصف"
+   "name": "الصف",
+   "en": "As-Saff"
   },
   {
    "n": 62,
-   "name": "الجمعة"
+   "name": "الجمعة",
+   "en": "Al-Jumuah"
   },
   {
    "n": 63,
-   "name": "المنافقون"
+   "name": "المنافقون",
+   "en": "Al-Munafiqun"
   },
   {
    "n": 64,
-   "name": "التغابن"
+   "name": "التغابن",
+   "en": "At-Taghabun"
   },
   {
    "n": 65,
-   "name": "الطلاق"
+   "name": "الطلاق",
+   "en": "At-Talaq"
   },
   {
    "n": 66,
-   "name": "التحريم"
+   "name": "التحريم",
+   "en": "At-Tahrim"
   },
   {
    "n": 67,
-   "name": "الملك"
+   "name": "الملك",
+   "en": "Al-Mulk"
   },
   {
    "n": 68,
-   "name": "القلم"
+   "name": "القلم",
+   "en": "Al-Qalam"
   },
   {
    "n": 69,
-   "name": "الحاقة"
+   "name": "الحاقة",
+   "en": "Al-Haqqah"
   },
   {
    "n": 70,
-   "name": "المعارج"
+   "name": "المعارج",
+   "en": "Al-Maarij"
   },
   {
    "n": 71,
-   "name": "نوح"
+   "name": "نوح",
+   "en": "Nuh"
   },
   {
    "n": 72,
-   "name": "الجن"
+   "name": "الجن",
+   "en": "Al-Jinn"
   },
   {
    "n": 73,
-   "name": "المزمل"
+   "name": "المزمل",
+   "en": "Al-Muzzammil"
   },
   {
    "n": 74,
-   "name": "المدثر"
+   "name": "المدثر",
+   "en": "Al-Muddaththir"
   },
   {
    "n": 75,
-   "name": "القيامة"
+   "name": "القيامة",
+   "en": "Al-Qiyamah"
   },
   {
    "n": 76,
-   "name": "الإنسان"
+   "name": "الإنسان",
+   "en": "Al-Insan"
   },
   {
    "n": 77,
-   "name": "المرسلات"
+   "name": "المرسلات",
+   "en": "Al-Mursalat"
   },
   {
    "n": 78,
-   "name": "النبإ"
+   "name": "النبإ",
+   "en": "An-Naba"
   },
   {
    "n": 79,
-   "name": "النازعات"
+   "name": "النازعات",
+   "en": "An-Naziat"
   },
   {
    "n": 80,
-   "name": "عبس"
+   "name": "عبس",
+   "en": "Abasa"
   },
   {
    "n": 81,
-   "name": "التكوير"
+   "name": "التكوير",
+   "en": "At-Takwir"
   },
   {
    "n": 82,
-   "name": "الانفطار"
+   "name": "الانفطار",
+   "en": "Al-Infitar"
   },
   {
    "n": 83,
-   "name": "المطففين"
+   "name": "المطففين",
+   "en": "Al-Mutaffifin"
   },
   {
    "n": 84,
-   "name": "الانشقاق"
+   "name": "الانشقاق",
+   "en": "Al-Inshiqaq"
   },
   {
    "n": 85,
-   "name": "البروج"
+   "name": "البروج",
+   "en": "Al-Buruj"
   },
   {
    "n": 86,
-   "name": "الطارق"
+   "name": "الطارق",
+   "en": "At-Tariq"
   },
   {
    "n": 87,
-   "name": "الأعلى"
+   "name": "الأعلى",
+   "en": "Al-Ala"
   },
   {
    "n": 88,
-   "name": "الغاشية"
+   "name": "الغاشية",
+   "en": "Al-Ghashiyah"
   },
   {
    "n": 89,
-   "name": "الفجر"
+   "name": "الفجر",
+   "en": "Al-Fajr"
   },
   {
    "n": 90,
-   "name": "البلد"
+   "name": "البلد",
+   "en": "Al-Balad"
   },
   {
    "n": 91,
-   "name": "الشمس"
+   "name": "الشمس",
+   "en": "Ash-Shams"
   },
   {
    "n": 92,
-   "name": "الليل"
+   "name": "الليل",
+   "en": "Al-Layl"
   },
   {
    "n": 93,
-   "name": "الضحى"
+   "name": "الضحى",
+   "en": "Ad-Duha"
   },
   {
    "n": 94,
-   "name": "الشرح"
+   "name": "الشرح",
+   "en": "Ash-Sharh"
   },
   {
    "n": 95,
-   "name": "التين"
+   "name": "التين",
+   "en": "At-Tin"
   },
   {
    "n": 96,
-   "name": "العلق"
+   "name": "العلق",
+   "en": "Al-Alaq"
   },
   {
    "n": 97,
-   "name": "القدر"
+   "name": "القدر",
+   "en": "Al-Qadr"
   },
   {
    "n": 98,
-   "name": "البينة"
+   "name": "البينة",
+   "en": "Al-Bayyinah"
   },
   {
    "n": 99,
-   "name": "الزلزلة"
+   "name": "الزلزلة",
+   "en": "Az-Zalzalah"
   },
   {
    "n": 100,
-   "name": "العاديات"
+   "name": "العاديات",
+   "en": "Al-Adiyat"
   },
   {
    "n": 101,
-   "name": "القارعة"
+   "name": "القارعة",
+   "en": "Al-Qariah"
   },
   {
    "n": 102,
-   "name": "التكاثر"
+   "name": "التكاثر",
+   "en": "At-Takathur"
   },
   {
    "n": 103,
-   "name": "العصر"
+   "name": "العصر",
+   "en": "Al-Asr"
   },
   {
    "n": 104,
-   "name": "الهمزة"
+   "name": "الهمزة",
+   "en": "Al-Humazah"
   },
   {
    "n": 105,
-   "name": "الفيل"
+   "name": "الفيل",
+   "en": "Al-Fil"
   },
   {
    "n": 106,
-   "name": "قريش"
+   "name": "قريش",
+   "en": "Quraysh"
   },
   {
    "n": 107,
-   "name": "الماعون"
+   "name": "الماعون",
+   "en": "Al-Maun"
   },
   {
    "n": 108,
-   "name": "الكوثر"
+   "name": "الكوثر",
+   "en": "Al-Kawthar"
   },
   {
    "n": 109,
-   "name": "الكافرون"
+   "name": "الكافرون",
+   "en": "Al-Kafirun"
   },
   {
    "n": 110,
-   "name": "النصر"
+   "name": "النصر",
+   "en": "An-Nasr"
   },
   {
    "n": 111,
-   "name": "المسد"
+   "name": "المسد",
+   "en": "Al-Masad"
   },
   {
    "n": 112,
-   "name": "الإخلاص"
+   "name": "الإخلاص",
+   "en": "Al-Ikhlas"
   },
   {
    "n": 113,
-   "name": "الفلق"
+   "name": "الفلق",
+   "en": "Al-Falaq"
   },
   {
    "n": 114,
-   "name": "الناس"
+   "name": "الناس",
+   "en": "An-Nas"
   }
  ]
 }

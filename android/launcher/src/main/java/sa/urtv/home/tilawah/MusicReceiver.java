@@ -3,6 +3,8 @@ package sa.urtv.home.tilawah;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ADB control for agents and optimize/music.sh: GET_PLAYER state, play, pause, next, sleep, and the
@@ -12,7 +14,11 @@ import android.content.Intent;
  *   VOICE --ei voice 1..21 (a recording of ours, not a Fajr one) or 0 (the person's own, when there is one): the other prayers' muezzin
  *   FAJR_VOICE --ei voice 1..21 or 0: «مؤذن الفجر», the one for Fajr (the four Fajr recordings and the normal ones)
  *   ADHAN_SHORT --ez on true|false: «أذان مختصر»
+ *   ADHAN_TAKBIR --ez on true|false: «تكبير فقط» (turns «أذان مختصر» off)
  *   ADHAN_STOPKEY --ez on true|false: «إيقاف الأذان بأي زر»
+ *   ADHAN_SAVERONLY --ez on true|false: «الأذان على شاشة التوقف فقط»
+ *   ADHAN_NOTICE --ez on true|false: «تنبيه عند الأذان»
+ *   ADHAN_SAVERAT --ez on true|false: «شاشة التوقف وقت الأذان»
  *   STOP_ADHAN: stop the adhan that is playing (nothing else)
  */
 public class MusicReceiver extends BroadcastReceiver {
@@ -32,6 +38,22 @@ public class MusicReceiver extends BroadcastReceiver {
                 int voice = intent.getIntExtra(MusicService.EXTRA_VOICE, prefs.playVoiceFor(context, intent.getBooleanExtra("fajr", false)));
                 if (voice == Prefs.OWN && !OwnAdhan.exists(context)) return;   // nothing of theirs to play
                 MusicService.adhan(context, voice, null, 0, intent.getBooleanExtra("fajr", false) ? PrayerTimes.FAJR : -1);
+                return;
+            }
+            case "sa.urtv.home.RECITER_FAV": {   // optimize/saver.sh reciter-fav add|remove <id>: a reciter ★ or not (an id the catalogue has)
+                String id = intent.getStringExtra("id"), op = intent.getStringExtra("op");
+                if (id == null || catalogIndex(context, id) < 0) { setResultData("error: unknown reciter"); return; }
+                if (!"add".equals(op) && !"remove".equals(op)) { setResultData("error: op is add or remove"); return; }
+                prefs.setReciterFavs(ReciterOrder.toggle(prefs.reciterFavs(), id, "add".equals(op)));
+                setResultData("saved\nreciter_favs=" + prefs.reciterFavs());
+                return;
+            }
+            case "sa.urtv.home.RECITER_FAVS": {   // settings import: the whole list at once ("-" = none); all ids must be in the catalogue, or nothing changes
+                String ids = intent.getStringExtra("ids");
+                List<String> want = "-".equals(ids) ? new ArrayList<String>() : ReciterOrder.parse(ids);
+                for (String id : want) if (catalogIndex(context, id) < 0) { setResultData("error: unknown reciter"); return; }
+                prefs.setReciterFavs(String.join(",", want));
+                setResultData("saved\nreciter_favs=" + prefs.reciterFavs());
                 return;
             }
             case "sa.urtv.home.ADHAN_RESCHEDULE":   // optimize/saver.sh prayeradj: the alarm for the minutes as they are now
@@ -59,9 +81,27 @@ public class MusicReceiver extends BroadcastReceiver {
                 prefs.setAdhanShort(intent.getBooleanExtra("on", false));
                 setResultData("saved\nshort=" + (prefs.adhanShort() ? "on" : "off"));
                 return;
+            case "sa.urtv.home.ADHAN_TAKBIR":   // optimize/music.sh adhan takbir on|off
+                prefs.setAdhanTakbir(intent.getBooleanExtra("on", false));
+                setResultData("saved\ntakbir=" + (prefs.adhanTakbir() ? "on" : "off") + "\nshort=" + (prefs.adhanShort() ? "on" : "off"));
+                return;
             case "sa.urtv.home.ADHAN_STOPKEY":   // optimize/music.sh adhan stopkey on|off
                 prefs.setAdhanStopKey(intent.getBooleanExtra("on", false));
                 setResultData("saved\nstopkey=" + (prefs.adhanStopKey() ? "on" : "off"));
+                return;
+            case "sa.urtv.home.ADHAN_SAVERONLY":   // optimize/music.sh adhan saver-only on|off
+                prefs.setAdhanSaverOnly(intent.getBooleanExtra("on", false));
+                setResultData("saved\nsaver_only=" + (prefs.adhanSaverOnly() ? "on" : "off"));
+                return;
+            case "sa.urtv.home.ADHAN_NOTICE":   // optimize/music.sh adhan notice on|off
+                prefs.setAdhanNotice(intent.getBooleanExtra("on", false));
+                AdhanScheduler.schedule(context);   // the alarm is wanted for the notice alone, too
+                setResultData("saved\nnotice=" + (prefs.adhanNotice() ? "on" : "off"));
+                return;
+            case "sa.urtv.home.ADHAN_SAVERAT":   // optimize/music.sh adhan saver-at on|off
+                prefs.setAdhanSaverAt(intent.getBooleanExtra("on", false));
+                AdhanScheduler.schedule(context);   // the alarm is wanted for the screensaver alone, too
+                setResultData("saved\nsaver_at=" + (prefs.adhanSaverAt() ? "on" : "off"));
                 return;
             case "sa.urtv.home.ADHAN_OWN":
                 setResultData(own(context, prefs, intent));
@@ -142,6 +182,8 @@ public class MusicReceiver extends BroadcastReceiver {
         return normal && fajr ? "in use" : normal ? "in use, not at Fajr" : fajr ? "in use at Fajr only" : "kept, not in use";
     }
 
+    private static int catalogIndex(Context c, String id) { return Catalog.get(c).reciterIndex(id); }
+
     private String status(Context context) {
         Catalog cat = Catalog.get(context);
         Prefs prefs = new Prefs(context);
@@ -189,11 +231,17 @@ public class MusicReceiver extends BroadcastReceiver {
                 + "|voice=" + (prefs.playVoice(context) == Prefs.OWN ? "own" : String.valueOf(prefs.voice()))
                 + "|fajr_voice=" + (prefs.playFajrVoice(context) == Prefs.OWN ? "own" : String.valueOf(prefs.fajrVoice()))
                 + "|adhan_short=" + (prefs.adhanShort() ? "on" : "off")
+                + "|adhan_takbir=" + (prefs.adhanTakbir() ? "on" : "off")
                 + "|adhan_stopkey=" + (prefs.adhanStopKey() ? "on" : "off")
+                + "|adhan_saver_only=" + (prefs.adhanSaverOnly() ? "on" : "off")
+                + "|adhan_saver_at=" + (prefs.adhanSaverAt() ? "on" : "off")
+                + "|adhan_notice=" + (prefs.adhanNotice() ? "on" : "off")
+                + "|adhan_alarm_last=" + prefs.lastAlarmNoteAt() + (prefs.lastAlarmNote().isEmpty() ? "" : " " + prefs.lastAlarmNote().replace('|', '/'))
                 + "|adhan_live=" + (MusicService.adhanLive() ? 1 : 0)
                 + "|adhan_volume=" + prefs.adhanVolume()
                 + "|adhan_exact=" + (AdhanScheduler.exactAllowed(context) ? 1 : 0)
                 + "|own_bytes=" + (OwnAdhan.exists(context) ? OwnAdhan.bytes(context) : 0)
+                + "|reciter_favs=" + prefs.reciterFavs()
                 + "|adhan_next=" + (next == null ? 0 : next.at)
                 + "|adhan_next_name=" + (next == null ? "" : next.name())
                 + "|adhan_next_clock=" + (next == null ? "" : next.clock)

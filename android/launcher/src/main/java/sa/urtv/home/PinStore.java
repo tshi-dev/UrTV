@@ -61,7 +61,44 @@ public final class PinStore {
         if (record == null) return new Result(NOT_SET, 0, 0);
         long wait = waitLeft(now);
         if (wait > 0) return new Result(LOCKED, wait, 0);
-        if (PinCrypto.verify(pin, record)) {
+        return outcome(PinCrypto.verify(pin, record), now);
+    }
+
+    /**
+     * The keypad's look at the first four digits when a longer code may follow (PinRecovery): the four digits are a try, counted here and
+     * now as verify would, whatever the keypad does next (submitted, abandoned with Back, the dialog dismissed, the answer coming back too
+     * late), so a look is never a free try. The charge it returns lets {@link PinGate} settle the entry once: four digits submitted are
+     * this try; a recovery code or a longer entry is {@link #refund}ed first (the recovery code counts nothing, a longer entry is its own try).
+     */
+    public synchronized Charge charge(String four, long now) {
+        String before = store.get(LOCK);
+        Result r = verify(four, now);
+        boolean counted = r.kind == OK || r.kind == WRONG;
+        return new Charge(four, r, before, store.get(LOCK), counted);
+    }
+
+    /** Undoes a {@link #charge}, only when nothing was counted since (else the charge stands). */
+    public synchronized void refund(Charge c) {
+        if (c == null || !c.counted || c.refunded || !java.util.Objects.equals(store.get(LOCK), c.after)) return;
+        c.refunded = true;
+        if (c.before == null) store.remove(LOCK); else store.put(LOCK, c.before);
+    }
+
+    /** One four-digit look, already counted. */
+    public static final class Charge {
+        public final String four;
+        public final Result result;
+        final String before, after;
+        final boolean counted;
+        boolean refunded;
+        Charge(String four, Result result, String before, String after, boolean counted) {
+            this.four = four; this.result = result; this.before = before; this.after = after; this.counted = counted;
+        }
+        public boolean right() { return result.kind == OK; }
+    }
+
+    private Result outcome(boolean right, long now) {
+        if (right) {
             store.remove(LOCK);
             return new Result(OK, 0, TRIES);
         }

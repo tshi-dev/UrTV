@@ -26,6 +26,9 @@ public interface Actions {
      */
     Result text(String text, String mode, boolean search);
 
+    /** The text as a new task with a reminder at `due` (epoch ms, > 0): «task», or a failure. An implementation that knows no reminders refuses. */
+    default Result text(String text, String mode, boolean search, long due) { return text(text, mode, search); }
+
     /** What the page shows: settings and player state. Nothing secret. */
     Map<String, Object> state();
 
@@ -61,4 +64,13 @@ public interface Actions {
 
     /** «تحديث تلفزيونك»: op check or install; a map with a status word the page explains. */
     Map<String, Object> update(String op);
+
+    /**
+     * «محفظتي» for the phone's portfolio page (sa.urtv.home.PortfolioPhone.read): the holdings, the names and codes the search offers; null
+     * when the TV is not editing them (the tab open on the TV, or «أسهل من الجوال», within its window), and the API then refuses.
+     */
+    default Map<String, Object> portfolio() { return null; }
+
+    /** One holding's buys ("qty:price" each; none removes it), only while the TV is editing: ok "saved", else a fixed failure. */
+    default Result portfolioSave(String code, List<String> buys) { return Result.fail("portfolio_closed"); }
 }

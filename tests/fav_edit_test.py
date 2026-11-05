@@ -29,7 +29,7 @@ check("dock.sh's SET_DOCK saves through Dock.save", re.search(r"Dock\.save\(c, r
 check("Dock.save keeps the order in the \"dock\" preference and tells the home screen", 'putString("dock"' in dock.split("static void save")[1] and "CHANGED" in dock.split("static void save")[1])
 check("an unchanged row is not saved (no top-up kept by a visit)", "if (e.changed())" in leave)
 check("the mode asks the settings' lock before it starts (ParentalPolicy.MENU_ARRANGE, «قفل الإعدادات»); in kids mode it does not start",
-      re.search(r"private void beginEdit\(String pkg\) \{\s*if \(kidsNoEdit\(\)\) return;\s*guarded\(ParentalPolicy\.MENU_ARRANGE, null, \"تعديل المفضلة\", \(\) -> startEdit\(pkg\)\);", main) is not None)
+      re.search(r"private void beginEdit\(String pkg\) \{\s*if \(kidsNoEdit\(\)\) return;\s*guarded\(ParentalPolicy\.MENU_ARRANGE, null, S\.t\(\"تعديل المفضلة\"\), \(\) -> startEdit\(pkg\)\);", main) is not None)
 check("startEdit is reached only through beginEdit", len(re.findall(r"startEdit\(", main)) == 2)
 check("the adhan rule is asked before the mode sees a key",
       main.index("if (adhanTakes(e)) return true;") < main.index("if (edit != null && editKey(e)) return true;"))
@@ -45,8 +45,8 @@ check("the row changing under the mode (an app installed, dock.sh) ends it witho
 check("another screen coming up (onPause) or Home leaves the mode, saving", main.split("protected void onPause()")[1].split("\n    }\n")[0].count("leaveEdit()") == 1 and "if (edit != null) leaveEdit();   // Home while editing" in main)
 # the old arrange screen: from the settings only
 check("the long-press menu no longer opens the old arrange screen", "DockActivity" not in main)
-check("the long-press menu has «تعديل المفضلة» for a favourite and not «ترتيب المفضلة…»",
-      '"تعديل المفضلة"' in main.split("private void showAppMenuNow")[1].split("showMenu(anchor")[0] and "ترتيب المفضلة…" not in main)
+check("the app's options: «انقل» on a favourite is «تعديل المفضلة», and no «ترتيب المفضلة…»",
+      "beginEdit(pkg)" in main.split("private void showAppMenuNow")[1].split("AppOptions.show(")[0] and "ترتيب المفضلة…" not in main)
 others = [p.name for p in HOME.glob("*.java") if p.name not in ("DockActivity.java",) and re.search(r"\bDockActivity\b", src(p).replace("`am start -n sa.urtv.home/.DockActivity`", ""))]
 check("no launcher code starts DockActivity (only the manifest and the settings reach it)", not [n for n in others if re.search(r"DockActivity\.class|\.DockActivity\"", src(HOME / n))], others)
 check("the settings' «ترتيب التطبيقات المفضلة» opens the old arrange screen", "sa.urtv.home.DockActivity" in settings and 'row("ترتيب التطبيقات المفضلة"' in settings)
@@ -57,8 +57,8 @@ d = main[main.index("public boolean dispatchKeyEvent"):]
 check("keys: the adhan rule first, then the remote's shortcut keys (one that acts ends the edit, saved), then «تعديل المفضلة»",
       d.index("if (adhanTakes(e)) return true;") < d.index("remoteKeys.decide(") < d.index("if (edit != null && editKey(e)) return true;")
       and "if (edit != null) leaveEdit();   // a shortcut key" in d)
-check("the long-press menu: «تعديل المفضلة» on a favourite, and no «ترتيب المفضلة…» (that list is the settings' only)",
-      'labels.add("تعديل المفضلة")' in main and "ترتيب المفضلة…" not in main)
+check("the app's options: «انقل» on a favourite starts «تعديل المفضلة», and no «ترتيب المفضلة…» (that list is the settings' only)",
+      "o.move = () -> { if (inDock) beginEdit(pkg); else beginAppsEdit(pkg); };" in main and "ترتيب المفضلة…" not in main)
 # ---- «تراجع» from the TV test: UP from the tile row did not reach the chip and the seconds ran out. The keys are the mode's own (editKey),
 # and under them Android's own focus search is wired so that no key that reaches the views can leave the row or miss the chip
 fn = lambda name: main.split(name)[1].split("\n    }\n")[0]
@@ -90,7 +90,7 @@ if not shutil.which("javac"):
     sys.exit(1 if failed else 0)
 cases = [l.split("\t") for l in src(ROOT / "tests/fav_edit_cases.tsv").split("\n") if l and not l.startswith("#")]
 with tempfile.TemporaryDirectory() as tmp:
-    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "FavEdit.java"), str(HOME / "ParentalPolicy.java"), str(HOME / "AdhanKeys.java"),
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "tests/i18n_home_stub/S.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java"), str(HOME / "FavEdit.java"), str(HOME / "ParentalPolicy.java"), str(HOME / "AdhanKeys.java"),
                     str(ROOT / "tests/FavEditRun.java")], check=True)
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.FavEditRun", str(ROOT / "tests/fav_edit_cases.tsv")],
                          check=True, capture_output=True).stdout.decode("utf-8").split("\n")

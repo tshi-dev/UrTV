@@ -1,0 +1,41 @@
+# UrTV community list: xiaomi-mitv-moor0
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/xiaomi-mitv-moor0/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: XIAOMI
+# match-model: MITVMOOR0
+# match-device: 
+
+com.miui.tv.analytics
+com.xiaomi.statistic
+com.xiaomi.tvqs.overseas
+com.google.android.feedback
+com.google.android.partnersetup
+com.mitv.tvhome.oemtab
+com.mitv.tvhome.michannel
+com.mitv.tvhome.mitvplus
+com.mitv.tvhome.atv
+com.xm.webcontent
+android.autoinstalls.config.xiaomi.amelie
+fusion.android.tv.demo
+com.xiaomi.mitv.tvmanager
+com.mitv.toolhouse
+com.xiaomi.mitv.manualhelp
+com.xiaomo.tv.milegal
+com.mstar.android.tv.disclaimercustomization
+com.mediatek.wwtv.webview
+com.duokan.factorytest
+mediatek.factorymenu.ui
+com.xiaomi.mitv.smartshare
+com.xiaomi.wfdsinkhelperservice
+com.google.android.katniss
+com.google.android.tv.assistant
+com.xiaomi.mitv.mediaexplorer
+com.mitv.videoplayer
+com.mitv.gallery
+com.xiaomi.mimusic2
+com.google.android.play.games
+com.google.android.videos
+com.google.android.youtube.tvmusic
+com.google.android.tungsten.setupwraith

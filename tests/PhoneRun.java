@@ -89,6 +89,19 @@ public final class PhoneRun {
             return m;
         }
         @Override public Map<String, Object> update(String op) { calls.add("update:" + op); Map<String, Object> m = new LinkedHashMap<>(); m.put("status", "idle"); return m; }
+        /** the TV's «محفظتي» window (Portfolio.editing): the tab open on the TV, or «أسهل من الجوال» */
+        boolean editing;
+        @Override public Map<String, Object> portfolio() {
+            calls.add("portfolio");
+            if (!editing) return null;
+            Map<String, Object> m = new LinkedHashMap<>();
+            m.put("holdings", new ArrayList<Object>(Arrays.asList("2222|7319:48.3517")));
+            return m;
+        }
+        @Override public Result portfolioSave(String code, List<String> buys) {
+            calls.add("portfolioSave:" + code + ":" + buys);
+            return editing ? Result.ok("saved") : Result.fail("portfolio_closed");
+        }
     }
 
     static final class Env {
@@ -220,8 +233,51 @@ public final class PhoneRun {
         http();
         controller();
         remoteV2();
+        portfolio();
         System.out.println(failed == 0 ? "ALL PASS" : failed + " FAILED");
         System.exit(failed == 0 ? 0 : 1);
+    }
+
+    /**
+     * «محفظتي» (docs/PROPOSALS-NOV2.md §7): the holdings go only to a paired phone, and only while the TV is editing them; a save is checked by
+     * Schema first; /m (the page) needs no session, like /p, and carries no holding.
+     */
+    static void portfolio() throws Exception {
+        Env e = started();
+        Reply r0 = send(e, "GET", "/api/portfolio", null);
+        check("portfolio: no session -> 401, and the TV is never asked", r0.status == 401 && !e.actions.calls.contains("portfolio"), r0.status + " " + e.actions.calls);
+        Reply p0 = send(e, "POST", "/api/portfolio", "{\"code\":\"2222\",\"buys\":[\"10:27.4\"]}");
+        check("portfolio: a save with no session -> 401, nothing saved", p0.status == 401 && e.actions.calls.isEmpty(), p0.status + " " + e.actions.calls);
+        Reply m = send(e, "GET", "/m", null);
+        check("portfolio: /m needs no session (like /p) and a build without the page answers 404, never a holding", m.status == 404 && !m.body.contains("7319"), m.status + " " + m.body);
+        String sess = pair(e);
+        e.actions.editing = false;
+        Reply r1 = authed(e, "GET", "/api/portfolio", null, sess);
+        check("portfolio: paired but the TV is not editing -> 403 portfolio_closed, no holding in the answer",
+            r1.status == 403 && "portfolio_closed".equals(r1.json().get("error")) && !r1.body.contains("7319") && !r1.body.contains("holdings"), r1.status + " " + r1.body);
+        e.actions.editing = true;
+        Reply r2 = authed(e, "GET", "/api/portfolio", null, sess);
+        check("portfolio: paired and editing -> the holdings", r2.status == 200 && r2.body.contains("\"holdings\"") && r2.body.contains("7319"), r2.status + " " + r2.body);
+        Reply s1 = authed(e, "POST", "/api/portfolio", "{\"code\":\"1120\",\"buys\":[\"80:50.9\",\"40:54.5\"]}", sess);
+        check("portfolio: a save while editing reaches the TV, buys as sent", s1.status == 200 && "saved".equals(s1.json().get("result"))
+            && e.actions.calls.contains("portfolioSave:1120:[80:50.9, 40:54.5]"), s1.body + " " + e.actions.calls);
+        Reply rm = authed(e, "POST", "/api/portfolio", "{\"code\":\"AAPL\",\"buys\":[]}", sess);
+        check("portfolio: no buys removes a holding (a US ticker too)", rm.status == 200 && e.actions.calls.contains("portfolioSave:AAPL:[]"), rm.body);
+        int before = e.actions.calls.size();
+        String[] bad = {"{\"code\":\"12345\",\"buys\":[]}", "{\"code\":\"2222\",\"buys\":[\"1:2:3\"]}", "{\"code\":\"2222\",\"buys\":[10]}",
+            "{\"code\":\"2222\",\"buys\":[\"-1:2\"]}", "{\"code\":\"2222\",\"buys\":[],\"x\":1}", "{\"code\":\"aapl\",\"buys\":[]}",
+            "{\"buys\":[\"1:2\"]}", "{\"code\":\"2222\",\"buys\":[\"1.12345:2\"]}"};
+        boolean all400 = true;
+        for (String b : bad) all400 &= authed(e, "POST", "/api/portfolio", b, sess).status == 400;
+        StringBuilder many = new StringBuilder("{\"code\":\"2222\",\"buys\":[");
+        for (int i = 0; i < 21; i++) many.append(i == 0 ? "" : ",").append("\"1:2\"");
+        all400 &= authed(e, "POST", "/api/portfolio", many.append("]}").toString(), sess).status == 400;
+        check("portfolio: Schema refuses a bad code, a bad buy, a number, a negative, an unknown key, more than 20 buys; nothing reaches the TV",
+            all400 && e.actions.calls.size() == before, e.actions.calls.toString());
+        e.actions.editing = false;
+        Reply s2 = authed(e, "POST", "/api/portfolio", "{\"code\":\"2222\",\"buys\":[\"1:2\"]}", sess);
+        check("portfolio: a save after the window closed is refused (portfolio_closed)", s2.status == 200 && "portfolio_closed".equals(s2.json().get("error")), s2.body);
+        e.ctl.stop("test");
     }
 
     /** The phone remote's newer endpoints: apps, icons, launch, adhan stop, do, family, the new settings. Each needs the session, validates, and stays inside the limits. */
@@ -302,12 +358,12 @@ public final class PhoneRun {
 
         e.now[0] += 6_000;
         boolean setBad = true;
-        for (String body : new String[] {"{\"sleep_minutes\":45}", "{\"sleep_minutes\":-5}", "{\"sleep_minutes\":\"30\"}", "{\"saver_idle\":7}", "{\"saver_idle\":0}", "{\"saver_idle\":\"10\"}", "{\"sleep_minutes\":true}"}) setBad &= authed(e, "POST", "/api/set", body, sess).status == 400;
-        check("v2: set refuses a sleep or idle value that is not one of the lists", setBad && e.actions.calls.isEmpty(), e.actions.calls.toString());
+        for (String body : new String[] {"{\"sleep_minutes\":45}", "{\"sleep_minutes\":-5}", "{\"sleep_minutes\":\"30\"}", "{\"saver_idle\":7}", "{\"saver_idle\":0}", "{\"saver_idle\":\"10\"}", "{\"sleep_minutes\":true}", "{\"lang\":\"fr\"}", "{\"lang\":\"EN\"}", "{\"lang\":1}", "{\"lang\":true}"}) setBad &= authed(e, "POST", "/api/set", body, sess).status == 400;
+        check("v2: set refuses a sleep, idle or lang value that is not one of the lists", setBad && e.actions.calls.isEmpty(), e.actions.calls.toString());
         e.now[0] += 6_000;
         boolean setOk = true;
-        for (String body : new String[] {"{\"sleep_minutes\":0}", "{\"sleep_minutes\":15}", "{\"sleep_minutes\":90}", "{\"saver_idle\":1}", "{\"saver_idle\":30}"}) setOk &= authed(e, "POST", "/api/set", body, sess).status == 200;
-        check("v2: set takes the sleep minutes (0 cancels) and the idle minutes of the lists", setOk && e.actions.calls.size() == 5, e.actions.calls.toString());
+        for (String body : new String[] {"{\"sleep_minutes\":0}", "{\"sleep_minutes\":15}", "{\"sleep_minutes\":90}", "{\"saver_idle\":1}", "{\"saver_idle\":30}", "{\"lang\":\"ar\"}", "{\"lang\":\"en\"}"}) setOk &= authed(e, "POST", "/api/set", body, sess).status == 200;
+        check("v2: set takes the sleep minutes (0 cancels), the idle minutes of the lists and lang ar or en", setOk && e.actions.calls.size() == 7, e.actions.calls.toString());
         e.actions.calls.clear();
         // the owner's TV test (fix7/8): a card, then «بدون» (an empty list) and «لا شيء» (none): each reaches the actions as it was sent
         e.now[0] += 6_000;

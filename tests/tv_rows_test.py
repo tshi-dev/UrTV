@@ -25,28 +25,30 @@ load = fn(main, "private void loadTvRows()")
 check("only the TV's Watch Next list is read: no apps' rows, no chooser of rows (ChannelsActivity is gone)",
       "PreviewPrograms" not in rows and "TvContract.Channels" not in rows and "arrange" not in rows and "arrange" not in pick
       and not (HOME / "ChannelsActivity.java").exists() and "ChannelsActivity" not in manifest and "ChannelsActivity" not in settings)
-check("the row's name is Arabic whatever the apps call it", "name.setText(TvRowsPick.WATCH_NEXT_TITLE);" in main and 'WATCH_NEXT_TITLE = "أكمل المشاهدة"' in pick)
+check("the row's name is ours whatever the apps call it (Arabic, or English with «اللغة»)", "name.setText(S.tv(TvRowsPick.WATCH_NEXT_TITLE));" in main and 'WATCH_NEXT_TITLE = S.n("أكمل المشاهدة")' in pick)
 show = fn(main, "private void showTvRows(List<TvRows.Row> rows)")
-check("the row sits in the first screen, right under the favourites, inside the same band padding (not under it, below the clock's screen)",
-      "bottom.addView(tvRowsBox, new LinearLayout.LayoutParams(-1, -2));" in main and "content.addView(tvRowsBox" not in main
-      and main.index("bottom.addView(dockRow") < main.index("bottom.addView(tvRowsBox") and "tvRowsBox.setPadding(dp(20), 0, dp(20), 0);" in main
-      and "dockRow.setPadding(dp(20), dp(22), dp(20), dp(22));" in main)
-check("no card is cut: no horizontal scroll, at most as many cards as favourites, each a favourite's width (rowCell, the dock's own rule)",
-      "HorizontalScrollView" not in main and "int n = TvRowsPick.cells(dockCards.size(), MIN_DOCK);" in show and "line.addView(box, rowCell(i, n, -2));" in show
-      and "int shown = Math.min(n, r.items.size());" in show and "line.addView(new View(this), rowCell(i, n, 1));" in show)
+check("the row is its own row below the first screen (the owner: the tray never moves for it), with the tray's sides and padding",
+      "content.addView(tvRowsBox, llp(-1, -2, bar(FavBar.SIDE), 0, bar(FavBar.SIDE), 0));" in main and "bottom.addView(tvRowsBox" not in main
+      and main.index("content.addView(hero") < main.index("content.addView(tvRowsBox") < main.index("content.addView(appsLabel")
+      and "tvRowsBox.setPadding(bar(FavBar.PAD_SIDE), 0, bar(FavBar.PAD_SIDE), 0);" in main
+      and "dockRow.setPadding(bar(FavBar.PAD_SIDE), bar(FavBar.PAD_TOP), bar(FavBar.PAD_SIDE), bar(FavBar.PAD_TOP));" in main)
+check("no card is cut: no horizontal scroll, at most as many cards as favourites, at most the cells a tray shows (the bar-size setting, 5 by default, FavBar.shown), each a favourite tile (FavBar)",
+      "HorizontalScrollView" not in show and "int n = Math.min(barShown(), TvRowsPick.cells(dockCards.size(), MIN_DOCK));" in show and "line.addView(box, dockCell(i, n, dockCards.size()));" in show
+      and "int shown = Math.min(n, r.items.size());" in show and "line.addView(new View(this), dockCell(i, n, dockCards.size()));" in show
+      and "private int barShown() { return FavBar.shown(barSetting, dockCards.size()); }" in main)   # the same width as the tray's tiles, whatever N is: 5 to 10 whole cards
 check("tight: the name 14 dp under the favourites and 10 dp over its cards, one row only", "tvRowsBox.addView(name, llp(-2, -2, 0, dp(14), 0, dp(10)));" in show
       and "TvRows.Row row = new Row();" not in show)
 card = fn(main, "private View tvCard(TvRows.Item it)")
-check("on a card the clock and the photo stay: the page stays at the top, nothing dims, the episode's name is the line above the favourites",
-      "glideTo(0);" in card and "fadeGlow(1f);" in card and "title.setText(it.meta.isEmpty() ? it.title : it.title" in card
-      and "fadeGlow(0.35f)" not in card and "title.animate().alpha(1f)" in card and "scrollToTvRow" not in main)
+check("▼ from the tray to a card slides the home up to the row (▲ to a favourite slides it back, glideTo(0)); the episode's name is in the row's own line",
+      "scrollToTvRow(line);" in card and "fadeGlow(1f);" in card and "tvNames.get(at).setText(" in card and "fadeGlow(0.35f)" not in card
+      and "glideTo(0);" in main.split("private View tile(App app, boolean inDock)")[1].split("cardByPkg.put(app.pkg, card);")[0])
 check("a card grows as a favourite does (1.12, the same spring)", "scaleTo(v, has ? 1.12f : 1f);" in card)
 wire = fn(main, "private void wireFocus()")
 check("▼ from the favourites goes to the row; ▲ from the first apps row comes from it; ▲ from it to the favourites",
       "c.setNextFocusDownId(!tvCards.isEmpty() ? tvCards.get(0).get(" in wire and "lastTv != null ? lastTv.get(Math.min(col, lastTv.size() - 1)).getId()" in wire
       and ": d > 0 ? dockCards.get(Math.min(i, d - 1)).getId() : topId);" in wire)
 check("the card's picture: its title on a plain card until it comes; how far in as a gold line from the right",
-      "tvPics.put(it, img);" in card and "plain.setText(it.title);" in card and "Gravity.BOTTOM | Gravity.RIGHT" in card and "it.progress" in card)
+      "tvPics.put(it, img);" in card and "plain.setText(it.title);" in card and "Gravity.BOTTOM | Dir.start()" in card and "it.progress" in card)
 
 # ---- the setting: on/off
 prefs_s, provider, recv, snap = (read(ROOT / "android/app/src/main/java/sa/urtv/screensaver" / n) for n in ("Prefs.java", "ConfigProvider.java", "SaverReceiver.java")), None, None, None
@@ -72,7 +74,7 @@ check("the launcher declares the TV listings permissions", '<uses-permission and
       and '<uses-permission android:name="com.android.providers.tv.permission.READ_EPG_DATA" />' in manifest)
 check("without the permission nothing is read and the home has no row, as before", "if (!allowed(c)) return out;" in fn(rows, "static List<Row> load(Context c)"))
 check("the permission is asked only in WatchNextActivity, by the owner pressing «السماح» (never by the home on its own); allowed already, it closes",
-      'card("السماح", v -> requestPermissions(new String[]{TvRows.PERMISSION, TvRows.EPG}, ASK))' in screen and "requestPermissions" not in main
+      'card(S.t("السماح"), v -> requestPermissions(new String[]{TvRows.PERMISSION, TvRows.EPG}, ASK))' in screen and "requestPermissions" not in main
       and "if (TvRows.allowed(this)) { finish(); return; }" in screen and 'android:name=".WatchNextActivity"' in manifest)
 check("…behind «قفل الإعدادات» like «ترتيب المفضلة»", "ParentalPolicy.targets(ParentalPolicy.ARRANGE_SCREEN, null)" in screen and "Parental.guard(this" in screen)
 check("a card opens only into the app that published it (TvRowsPick.linkAllowed), a plain link pinned to it (setPackage); else that app itself",
@@ -112,7 +114,7 @@ if not shutil.which("javac"):
     print("SKIP tv rows: no javac here")
     sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
-    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "TvRowsPick.java"), str(HOME / "DigitsText.java"), str(ROOT / "tests/TvRowsRun.java")], check=True)
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "tests/i18n_home_stub/S.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java"), str(HOME / "TvRowsPick.java"), str(HOME / "DigitsText.java"), str(ROOT / "tests/TvRowsRun.java")], check=True)
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.TvRowsRun"], check=True, capture_output=True).stdout.decode("utf-8")
 r = dict(l.split(" = ", 1) for l in out.split("\n") if " = " in l)
 check("«أكمل المشاهدة» is called so", r["watchnext_title"] == "أكمل المشاهدة", r["watchnext_title"])
@@ -136,20 +138,15 @@ check("«أكمل المشاهدة» is never one cell: before the favourites ar
       r["cells_before"] == "5" and r["cells_after"] == "7", (r["cells_before"], r["cells_after"]))
 check("at 960x540 dp a card is a favourite tile's size: 148.8x83.7 dp with 5 favourites, 64.4x36.2 with 10 (one cell would be 824x463.5)",
       r["card_5"] == "148.8x83.7" and r["card_10"] == "64.4x36.2" and r["card_1"] == "824.0x463.5", (r["card_5"], r["card_10"], r["card_1"]))
-check("…cut like the favourites (the dock band's 20 dp padding, rowCell) and built again when their number changes",
-      "tvRowsBox.setPadding(dp(20), 0, dp(20), 0);" in main and "dockRow.setPadding(dp(20), dp(22), dp(20), dp(22));" in main
+check("…cut like the favourites (the tray's padding, FavBar's cell) and built again when their number changes",
+      "tvRowsBox.setPadding(bar(FavBar.PAD_SIDE), 0, bar(FavBar.PAD_SIDE), 0);" in main
       and "if (!tvShown.isEmpty() && tvCells != dockCards.size()) showTvRows(tvShown);" in main)
-# the first screen at 960x540 dp with the row (the tallest case, 5 favourites): estimated as the home lays it out (sp ~ dp x 1.2 for a line)
-card5 = float(r["card_5"].split("x")[1])
-header = 36 + (15 * 1.2 + 4) + (12 * 1.2 + 5) + (58 * 1.25 - 2) + (14 * 1.2 - 2)        # top, greeting, weather, clock, date
-bottom = 30 + (11 * 1.2 + 24 + card5 * 1.12) + (22 + card5 * 1.12 + 22) + (34 * 1.2 + 14)  # margin, row (label, focused card), dock band, title
-check(f"at 960x540 dp the favourites and the row stay under the clock: the clock block ends at ~{header:.0f} dp, the favourites' block starts at ~{540 - bottom:.0f} dp",
-      540 - bottom > header + 8, (header, 540 - bottom))
+# the row is below the first screen: the first screen is the clock block and the tray only (FavBar's geometry, tests/fav_bar_test.py)
 check("how far in: a fraction up to 1, unknown without a position or a length",
       r["progress_half"] == "0.5" and r["progress_over"] == "1.0" and r["progress_unknown"] == "-1.0 -1.0", (r["progress_half"], r["progress_over"], r["progress_unknown"]))
 sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
-    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "TvRowsPick.java"), str(HOME / "DigitsText.java"), str(ROOT / "tests/TvRowsRun.java")], check=True)
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "tests/i18n_home_stub/S.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java"), str(HOME / "TvRowsPick.java"), str(HOME / "DigitsText.java"), str(ROOT / "tests/TvRowsRun.java")], check=True)
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.TvRowsRun"], check=True, capture_output=True).stdout.decode("utf-8")
 r = dict(l.split(" = ", 1) for l in out.split("\n") if " = " in l)
 check("«أكمل المشاهدة» is called so", r["watchnext_title"] == "أكمل المشاهدة", r["watchnext_title"])

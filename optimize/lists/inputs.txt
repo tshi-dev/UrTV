@@ -1,0 +1,17 @@
+# NEVER disable, on any TV, from any list: the TV's inputs (HDMI, AV, sources, the tuner) and its keyboards. Regular expressions, one per line,
+# matched against the whole package name, as core.txt is. A package under the HDMI, AV or tuner inputs, once disabled, leaves a port that
+# notices the cable and stays black («No Signal»), and turning the pieces back on one by one does not bring the picture back: a full restore
+# and a cold boot do (Clean Your TV issue #321, github.com/Gathin23/cleanyourtv, MIT). Without a keyboard nobody can type a Wi-Fi password.
+# optimize/disable.sh refuses a list that names one; optimize/community.sh and the setup on the TV leave them out. disable.sh also asks the
+# TV itself (dumpsys package) and leaves on any package that asks for TV_INPUT_HARDWARE or serves a TV input or a keyboard, whatever its name.
+.*tvinput.*
+.*hdmi.*
+.*tuner.*
+.*livetv.*
+.*([._]|^)(input)?sources?([._]|$).*
+.*sourcemanager.*
+.*([._]|^)cec([._]|$).*
+.*inputmethod.*
+.*keyboard.*
+com\.google\.android\.tv
+com\.mediatek\.(dtv|tvinput|tvcm|mtkdtv).*

@@ -1,0 +1,61 @@
+# UrTV community list: hisense-fire-tv-55qd6qf
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/hisense-fire-tv-55qd6qf/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: HISENSE
+# match-model: 55QD6QFFIRETV AFTOLCBC82
+# match-device: 
+
+com.amazon.ceviche
+com.amazon.client.metrics.api
+com.amazon.device.telemetry.emitter
+com.amazon.dp.logger
+com.amazon.perfc
+com.amazon.perfcollection
+com.amazon.wirelessmetrics.service
+com.amazon.livedeviceservice
+com.amazon.privacypassservice
+com.amazon.tv.developer.dataservice
+com.amazon.wifilocker
+com.amazon.tv.acr
+com.amazon.hybridadidservice
+com.amazon.kso.blackbird
+com.amazon.media.recommendations
+com.amazon.sneakpeek
+com.amazon.providers.contentsupport
+com.amazon.shoptv.client
+com.amazon.tv.democontent.provider
+com.amazon.tv.easyupgrade
+com.amazon.systemnotices
+com.amazon.uxnotification
+com.amazon.tv.releasenotes
+com.amazon.hedwig
+com.amazon.storm.lightning.tutorial
+com.amazon.tmm.tutorial
+com.amazon.bueller.music
+com.amazon.bueller.photos
+com.amazon.tahoe
+com.amazon.gamehub
+com.amazon.spiderpork
+com.amazon.minitv.android.app
+com.amazon.naatyam
+com.tubitv.ott
+com.amazon.tv.localgallery
+com.amazon.smarthomemapviewapp
+com.amazon.ods.kindleconnect
+com.amazon.cast.sink
+com.amazon.vizzini
+com.amazon.alexamediaplayer.runtime.ftv
+com.amazon.alexa.externalmediaplayer.fireos
+com.amazon.aca
+com.amazon.aiondec
+com.amazon.audiohome
+com.amazon.tv.alexaalerts
+com.amazon.tv.alexanotifications
+com.amazon.rtcsessioncontroller
+com.amazon.spotify.mediabrowserservice
+com.amazon.tv.mattercohost
+com.amazon.tv.ffsprovisioneeclient
+com.amazon.whisperjoin.middleware.np
+com.amazon.whisperjoin.middleware.v2.np

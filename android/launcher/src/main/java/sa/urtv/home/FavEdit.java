@@ -14,7 +14,7 @@ final class FavEdit {
     static final int KEYCODE_BACK = 4, KEYCODE_DPAD_UP = 19, KEYCODE_DPAD_DOWN = 20, KEYCODE_DPAD_LEFT = 21, KEYCODE_DPAD_RIGHT = 22;
 
     /** the line at the top of the screen while the mode is on */
-    static final String HINT = "اختر تطبيقًا لتحريكه · × للحذف · رجوع للإنهاء";
+    static final String HINT = S.n("اختر تطبيقًا لتحريكه · × للحذف · رجوع للإنهاء");
 
     /** how long «تراجع» stays */
     static final long UNDO_MS = 5000;

@@ -59,7 +59,7 @@ if not shutil.which("javac"):
     sys.exit(1 if failed else 0)
 cases = [l.split("\t") for l in read("tests/input_display_cases.tsv").split("\n") if l and not l.startswith("#")]
 with tempfile.TemporaryDirectory() as tmp:
-    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "InputDisplay.java"), str(HOME / "InputNames.java"),
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "tests/i18n_home_stub/S.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java"), str(HOME / "InputDisplay.java"), str(HOME / "InputNames.java"),
                     str(ROOT / "tests/InputNamesRun.java"), str(ROOT / "tests/InputDisplayRun.java")], check=True, capture_output=True)
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.InputDisplayRun", str(ROOT / "tests/input_display_cases.tsv")],
                          check=True, capture_output=True).stdout

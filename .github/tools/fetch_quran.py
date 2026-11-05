@@ -56,6 +56,8 @@ RECITERS = [
     ("محمود عبدالحكم", "abdulhakim"),
     ("عبدالرحمن العوسي", "oosi"),
     ("عبدالله الكندري", "kandari"),
+    ("بدر التركي", "turki"),
+    ("محمد أيوب", "ayyub"),   # field reports (Nov 5); mp3quran's «حفص عن عاصم - مرتل», 114 surahs   # 4.1 reports; mp3quran's «حفص عن عاصم - مرتل», 114 surahs
     ("عبدالعزيز الزهراني", "zahrani"),
     ("صالح الصاهود", "sahood"),
     ("مفتاح السلطني", "saltani"),
@@ -64,10 +66,11 @@ RECITERS = [
     ("وديع اليمني", "yamani"),
 ]
 
-# Continuous streams. The Saudi Quran Radio (radiojar) redirects to http, which the app permits
-# for *.radiojar.com only (res/xml/network_security_config.xml). The rest are https.
+# Continuous streams, all https. The Saudi Quran Radio is the Saudi Broadcasting Authority's own HLS on its CDN (KWIKmotion, the
+# player of radioplus.sba.sa): https end to end, no redirect, no token. Its radiojar address (an https -> http redirect with a one-use
+# token) never played on the owner's TV (step 182); radiojar.com keeps its cleartext permission in case it is used again.
 STATIONS = [
-    ("إذاعة القرآن الكريم - السعودية", "https://stream.radiojar.com/0tpy1h0kxtzuv"),
+    ("إذاعة القرآن الكريم - السعودية", "https://live.kwikmotion.com/sbrksaquranradiolive/ksaquranradio/playlist.m3u8"),
     ("الشيخ أبو بكر الشاطري", "radio/shaik_abu_bakr_al_shatri"),
     ("عبدالرحمن السديس", "radio/abdulrahman_alsudaes"),
     ("سعود الشريم", "radio/saud_alshuraim"),
@@ -78,6 +81,7 @@ STATIONS = [
     ("عبدالباسط عبدالصمد", "radio/abdulbasit_abdulsamad"),
     ("محمد صديق المنشاوي", "radio/mohammed_siddiq_alminshawi"),
     ("أحمد العجمي", "radio/ahmad_alajmy"),
+    ("إذاعة القرآن الكريم - القاهرة", "https://stream.radiojar.com/8s5u5tpdtwzuv"),   # 4.1 reports: Maspero's own (maspero.eg/stream/7), radiojar like the Saudi one used to be; last, so saved station indices stay
 ]
 
 

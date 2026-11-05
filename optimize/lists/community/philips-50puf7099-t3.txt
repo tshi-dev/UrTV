@@ -1,0 +1,24 @@
+# UrTV community list: philips-50puf7099-t3
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/philips-50puf7099-t3/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: PHILIPS
+# match-model: 50PUF7099T3CHINAMARKETSET
+# match-device: 
+
+com.tpv.asc.aiot
+com.hpplay.happyplay.aw
+org.droidtv.camera.cn
+com.tpv.asc.videocall.cn
+tv.fun.bugreporter
+org.droidtv.usagelogger
+com.tpv.asc.taadserver
+com.tianci.ad
+com.tpv.app.recommendation
+com.funshion.publicity
+tv.fun.master
+tv.fun.ottsecurity
+tv.newtv.loginservice
+tv.fun.appstore
+tv.fun.sdkmanager

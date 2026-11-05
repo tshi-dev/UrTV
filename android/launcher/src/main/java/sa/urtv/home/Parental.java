@@ -102,10 +102,14 @@ final class Parental {
         return status(c);
     }
 
-    /** {@code dock.sh pin reset}: the PIN was forgotten. Everything goes: the PIN, its tries, the locks, the allowed apps, kids mode. */
+    /**
+     * {@code dock.sh pin reset}: the PIN was forgotten. Everything goes: the PIN, its tries, the locks, the allowed apps, kids mode, and «محفظتي»
+     * (docs/PROPOSALS-NOV2.md §7: a holding behind a forgotten PIN is not left on the TV for whoever resets it).
+     */
     static String adbReset(Context c) {
         pin(c).clear();
         prefs(c).edit().clear().commit();
+        Portfolio.wipe(c);
         SESSION.clear();
         changed(c);
         return status(c);
@@ -169,19 +173,37 @@ final class Parental {
             cancelled.run();
             return;
         }
-        PinPrompt.ask(a, "أدخل الرمز", name == null || name.isEmpty() ? "هذا مقفل بالرمز الأبوي" : "«" + name + "» مقفل بالرمز الأبوي", before, code ->
+        // name: a screen's or an app's name; the screens pass their Arabic words (S.tv says them in «اللغة»), an app its own label
+        // a build with a recovery code (PinRecovery, AGENTS.md) lets the keypad listen past four digits; the screen is the same
+        String recovery = BuildConfig.PIN_RECOVERY;
+        boolean longer = PinRecovery.on(recovery);
+        // one owner for this keypad's tries (PinGate): its look at four digits is counted when made, so Back, a dismissed keypad or a
+        // look answered after it closed is still a try, and the entry it gives up is settled once
+        PinGate gate = new PinGate(pin(a), recovery);
+        PinPrompt.Probe probe = !longer ? null : (four, answer) -> WORK.execute(() -> {
+            boolean right = gate.look(four, System.currentTimeMillis());
+            a.runOnUiThread(() -> answer.accept(right));
+        });
+        PinPrompt.ask(a, S.t("أدخل الرمز"), name == null || name.isEmpty() ? S.t("هذا مقفل بالرمز الأبوي") : S.t("«%s» مقفل بالرمز الأبوي", S.tv(name)), before,
+                PinRecovery.LONGEST, probe, code ->
                 WORK.execute(() -> {
-                    PinStore.Result r = pin(a).verify(code, System.currentTimeMillis());
+                    PinStore.Result r = gate.submit(code, System.currentTimeMillis());
                     a.runOnUiThread(() -> {
                         if (a.isFinishing() || a.isDestroyed()) return;
-                        if (r.kind == PinStore.OK || r.kind == PinStore.NOT_SET) {
+                        if (r.kind == PinGate.RECOVER) {
+                            // straight to «رمز جديد»: the locks, the allowed apps and kids mode stay, only the PIN is replaced
+                            choose(a, before, () -> {
+                                SESSION.unlock(targets);
+                                allowed.run();
+                            }, cancelled);
+                        } else if (r.kind == PinStore.OK || r.kind == PinStore.NOT_SET) {
                             SESSION.unlock(targets);
                             allowed.run();
                         } else if (r.waitMs > 0) {
                             toast(a, tooMany(r.waitMs));
                             cancelled.run();
                         } else {
-                            toast(a, "الرمز غير صحيح" + (r.triesLeft > 0 && r.triesLeft < PinStore.TRIES ? "، بقي " + Digits.of(String.valueOf(r.triesLeft)) + " محاولات" : ""));
+                            toast(a, r.triesLeft > 0 && r.triesLeft < PinStore.TRIES ? S.t("الرمز غير صحيح، بقي %s محاولات", Digits.of(String.valueOf(r.triesLeft))) : S.t("الرمز غير صحيح"));
                             ask(a, before, name, targets, allowed, cancelled);
                         }
                     });
@@ -190,10 +212,10 @@ final class Parental {
 
     /** A new PIN, typed twice. */
     static void choose(Activity a, PinPrompt.Before before, Runnable saved, Runnable cancelled) {
-        PinPrompt.ask(a, "رمز جديد", "اختر رمزاً من أربعة أرقام", before, first ->
-                PinPrompt.ask(a, "تأكيد الرمز", "أعد إدخال الرمز نفسه", before, second -> {
+        PinPrompt.ask(a, S.t("رمز جديد"), S.t("اختر رمزاً من أربعة أرقام"), before, first ->
+                PinPrompt.ask(a, S.t("تأكيد الرمز"), S.t("أعد إدخال الرمز نفسه"), before, second -> {
                     if (!first.equals(second)) {
-                        toast(a, "الرمزان غير متطابقين، لم يتغير شيء");
+                        toast(a, S.t("الرمزان غير متطابقين، لم يتغير شيء"));
                         cancelled.run();
                         return;
                     }
@@ -211,8 +233,8 @@ final class Parental {
     /** Wrong or too many: «انتظر دقيقة». */
     static String tooMany(long waitMs) {
         long s = (waitMs + 999) / 1000;
-        String t = s >= 60 ? Digits.of(String.valueOf((s + 59) / 60)) + " دقيقة" : Digits.of(String.valueOf(s)) + " ثانية";
-        return "محاولات كثيرة، انتظر " + t;
+        String t = s >= 60 ? S.t("%s دقيقة", Digits.of(String.valueOf((s + 59) / 60))) : S.t("%s ثانية", Digits.of(String.valueOf(s)));
+        return S.t("محاولات كثيرة، انتظر %s", t);
     }
 
     static void toast(Context c, String s) { Toast.makeText(c, s, Toast.LENGTH_LONG).show(); }

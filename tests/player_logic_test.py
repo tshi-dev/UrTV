@@ -44,7 +44,7 @@ check("choosing a voice for one never moves the other (the Fajr choice is writte
 check("the usual voice is never a Fajr recording", "AdhanVoices.normalVoice(" in prefs)
 
 # the short adhan: not for previews
-check("the short adhan is set only for a real adhan and cut by its own timer", "adhanShortNow = previewSeconds == 0 && prefs.adhanShort();" in service and "shortTick" in service)
+check("the short adhan is set only for a real adhan and cut by its own timer", "previewSeconds == 0 ? AdhanVoices.length(prefs.adhanTakbir(), prefs.adhanShort()) : AdhanVoices.FULL;" in service and "shortTick" in service)
 
 # the sleep timer's rows show where the focus is (a report: no highlight on them)
 R = ROOT / "android/launcher/src/main/res"
@@ -65,7 +65,7 @@ if not shutil.which("javac"):
     print("SKIP player logic: no javac here")
     sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
-    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp] + [str(T / n) for n in ("PlayIntent.java", "AdhanVoices.java", "AdhanVolume.java", "PlayerFault.java", "SeekPace.java")]
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "tests/i18n_home_stub/S.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java")] + [str(T / n) for n in ("PlayIntent.java", "AdhanVoices.java", "AdhanVolume.java", "PlayerFault.java", "SeekPace.java")]
                    + [str(ROOT / "tests/PlayerLogicRun.java")], check=True, capture_output=True)
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.tilawah.PlayerLogicRun"], check=True, capture_output=True).stdout.decode("utf-8")
 rows = [l.split("\t") for l in out.split("\n") if l]

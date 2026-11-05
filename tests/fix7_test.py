@@ -46,8 +46,8 @@ check("the update screen keeps it on from onResume and clears it in onPause",
       re.search(r"void onResume\(\).*?addFlags\([^)]*" + KEEP, ua, re.S) and re.search(r"void onPause\(\).*?clearFlags\([^)]*" + KEEP, ua, re.S))
 check("setup keeps it on only while it is running (not from onCreate)", su.count("addFlags(WindowManager.LayoutParams." + KEEP + ")") == 1
       and su.index("running = true;") < su.index(KEEP) and "clearFlags" in su and su.index("running = false;") < su.index("clearFlags"))
-others = [f.name for f in (ROOT / HOME).rglob("*.java") if f.name not in ("PhoneActivity.java", "UpdateActivity.java", "SetupActivity.java", "PlayerActivity.java") and KEEP in f.read_text(encoding="utf-8")]
-# (the Quran player screen kept it on before this change; it is not one of the screens of the owner's report)
+others = [f.name for f in (ROOT / HOME).rglob("*.java") if f.name not in ("PhoneActivity.java", "UpdateActivity.java", "SetupActivity.java", "PlayerActivity.java", "MarketsActivity.java") and KEEP in f.read_text(encoding="utf-8")]
+# (the Quran player screen kept it on before this change; it is not one of the screens of the owner's report; the markets page keeps it on only in live mode, step 27)
 check("no other screen of the launcher keeps the screen awake", not others, others)
 
 # 3. the cards saved from the phone reach the home that is in front
@@ -81,7 +81,7 @@ check("the cards save is asked back of the screensaver: what it holds is what wa
 
 # 4. the Settings key
 rk = text(HOME + "RemoteKeys.java")
-check("176 and 83 both open our settings; 176 is kept for TVs that pass it on", "case KEYCODE_SETTINGS:\n            case KEYCODE_NOTIFICATION: return new Decision(OPEN_OUR_SETTINGS, null);" in rk
+check("176 and 83 are both the Settings key (a long press opens our settings, a short one the TV's); 176 is kept for TVs that pass it on", "return keyCode == KEYCODE_SETTINGS || keyCode == KEYCODE_NOTIFICATION || keyCode == TCL_SETTINGS;" in rk
       and "The system itself takes 176" in rk)
 
 print("ALL PASS" if not failed else f"{failed} FAILED")

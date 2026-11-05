@@ -18,6 +18,9 @@ final class ConfigSnapshot {
     final boolean greetingOn, adhanBarOn, listenPillOn, updateBellOn;
     /** «أكمل المشاهدة» under the favourites; an older screensaver does not say: on (the row still needs the TV listings permission) */
     final boolean watchNextOn;
+    /** «تطبيقات في الشريط»: "5" to "10" or "all"; an older screensaver does not say: 5, as the tray always was */
+    String favBar = "5";
+    boolean pagesDark = true;   // «صفحات الأسهم والمباريات داكنة»: an older screensaver says nothing: on, the default
     /** «المظهر»: auto, light or dark (Look.mode); an older screensaver does not say: dark, as the home always was */
     private final String appearance;
     private final String look;   // «المظهر ← الشكل» (GlassStyle.look): an older screensaver says nothing: glass
@@ -41,7 +44,7 @@ final class ConfigSnapshot {
     }
 
     /** The same values, marked as an old copy. */
-    ConfigSnapshot asStale() { return new ConfigSnapshot(fragment, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, true, placeTicket); }
+    ConfigSnapshot asStale() { ConfigSnapshot c = new ConfigSnapshot(fragment, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, true, placeTicket); c.favBar = favBar; c.pagesDark = pagesDark; return c; }
 
     /**
      * The settings fragment for the PRAYER PLACE (Place, the adhan alarm, the day parts): null when this is an old copy, so that only a real
@@ -84,7 +87,8 @@ final class ConfigSnapshot {
         long ticket = sa.urtv.home.tilawah.PlaceTicket.next();   // before the provider is asked
         String fragment = null;
         boolean greeting = true, bar = true, listenPill = true, updateBell = true, watchNext = true;
-        String appearance = null, look = null;
+        String appearance = null, look = null, favBar = "5";
+        boolean pagesDark = true;
         try (Cursor cur = c.getContentResolver().query(URI, null, null, null, null)) {
             if (cur != null && cur.moveToFirst()) {
                 fragment = cur.getString(0);
@@ -102,11 +106,18 @@ final class ConfigSnapshot {
                 if (a >= 0) appearance = cur.getString(a);
                 int k = cur.getColumnIndex("look");
                 if (k >= 0) look = cur.getString(k);
+                int pd = cur.getColumnIndex("pages_dark");
+                if (pd >= 0 && "0".equals(cur.getString(pd))) pagesDark = false;
+                int fb = cur.getColumnIndex("fav_bar");   // an older screensaver does not say: 5
+                if (fb >= 0 && cur.getString(fb) != null) favBar = cur.getString(fb);
             }
         } catch (RuntimeException ignored) {
             // the screensaver is missing or signed with another key: the defaults (Riyadh, on)
         }
-        return new ConfigSnapshot(fragment, greeting, bar, listenPill, updateBell, appearance, watchNext, look, false, ticket);
+        ConfigSnapshot made = new ConfigSnapshot(fragment, greeting, bar, listenPill, updateBell, appearance, watchNext, look, false, ticket);
+        made.favBar = favBar;
+        made.pagesDark = pagesDark;
+        return made;
     }
 
     /** {city, zone id}; null when the screensaver gave nothing: the TV's own zone then */
@@ -114,6 +125,18 @@ final class ConfigSnapshot {
 
     /** «&clock=24» is in the fragment only while the setting is on; an older screensaver says nothing: the 12-hour clock */
     boolean clock24() { return fragment != null && (fragment.contains("&clock=24") || fragment.startsWith("clock=24")); }
+
+    /** «اللغة»: «&lang=en» is in the fragment only for English; an older screensaver (or none) says nothing: ar, as always (Tr.fromFragment) */
+    String lang() { return Tr.fromFragment(fragment); }
+
+    /** «زر المهام»: «&taskspill=0» is in the fragment only while the button is hidden; an older screensaver (or none) says nothing: shown */
+    boolean tasksPillOn() { return fragment == null || !(fragment.contains("&taskspill=0") || fragment.startsWith("taskspill=0")); }
+
+    /**
+     * «الرجوع يفتح شاشة التوقف» on the screensaver's settings: «&backsaver=1» only while on. null when there is no real answer (an old copy,
+     * or no screensaver), so nothing is moved on a guess; Dock.followBackSaver moves the home's switch only when this one changes.
+     */
+    Boolean backSaver() { return stale || fragment == null ? null : (fragment.contains("&backsaver=1") || fragment.startsWith("backsaver=1")); }
 
     boolean latin() { return fragment != null && (fragment.contains("&digits=latin") || fragment.startsWith("digits=latin")); }
 }

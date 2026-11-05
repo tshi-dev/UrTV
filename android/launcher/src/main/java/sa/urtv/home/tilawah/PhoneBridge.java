@@ -63,15 +63,16 @@ public final class PhoneBridge {
 
     /** Adds what the phone's «يعمل الآن» shows about the adhan: adhan_live, adhan_prayer (while it plays) and next_adhan {prayer, in_seconds}. */
     public static void addAdhanLive(Context c, Map<String, Object> out) {
+        sa.urtv.home.S.init(c);   // «اللغة»: the prayer's name as the TV says it (English with English)
         boolean live = MusicService.adhanLive();
         out.put("adhan_live", live);
         int p = MusicService.adhanPrayer();
-        out.put("adhan_prayer", live && p >= 0 && p < PrayerTimes.NAMES.length ? PrayerTimes.NAMES[p] : "");
+        out.put("adhan_prayer", live && p >= 0 && p < PrayerTimes.NAMES.length ? sa.urtv.home.S.tv(PrayerTimes.NAMES[p]) : "");
         try {
             PrayerTimes.Next n = PrayerTimes.nextAlarm(c);
             if (n != null) {
                 Map<String, Object> m = new LinkedHashMap<>();
-                m.put("prayer", n.name());
+                m.put("prayer", sa.urtv.home.S.tv(n.name()));
                 m.put("in_seconds", Math.max(0L, (n.at - System.currentTimeMillis()) / 1000));
                 out.put("next_adhan", m);
             }

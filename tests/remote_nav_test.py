@@ -89,7 +89,7 @@ code = ts[ts.index("static String press(String key)"):ts.index("private static S
 check("no window content is read into a string, logged or returned by a key press", not re.search(r"getText\(|getContentDescription\(|getPackageName\(|getClassName\(|toString\(\)", code))
 # no new capability
 man = text("android/launcher/src/main/AndroidManifest.xml")
-check("no permission was added (the launcher declares the same ones)", man.count("<uses-permission") == 18)
+check("no permission was added (the launcher declares the same ones)", man.count("<uses-permission") == 21)   # 19 since REQUEST_DELETE_PACKAGES («حذف التطبيق» in the app menu); 21 since targetSdk 34: FOREGROUND_SERVICE_SPECIAL_USE (SetupService must name its type) and USE_EXACT_ALARM (the adhan stays exact on a new install)
 for xml in ("android/launcher/src/main/res/xml/type_service.xml", "android/launcher/src/main/res/xml/sleep_service.xml"):
     x = re.sub(r"<!--.*?-->", "", text(xml), flags=re.S)
     # the typing service may ASK for key events (the Settings key outside our home, SettingsKey: tests/settings_key_test.py); the flag is set

@@ -69,8 +69,8 @@ final class Prefs {
 
     static final String[] MIN_RATINGS = {"0", "6", "6.5", "7", "7.5", "8"};
 
-    // minutes between background photos (sent to the page as #photos=; 30 is what it always did)
-    static final String[] PHOTO_MINUTES = {"5", "10", "15", "30", "60"};
+    // the time between background photos (PhotoInterval: minutes, or 30s on a TV with 2 GB; sent to the page as #photos=; 30 is what it always did)
+    static final String[] PHOTO_MINUTES = PhotoInterval.ALL;
 
     // digits on the screen (sent to the page as #digits=; hindi is what it always showed)
     static final String[][] DIGITS = {{"hindi", "هندية ١٢٣"}, {"latin", "عربية 123"}};
@@ -92,6 +92,8 @@ final class Prefs {
 
     // how the markets are shown (#mkstyle=; arrows is what it always showed)
     static final String[][] MK_STYLES = {{"arrows", "الاتجاه فقط ▲▼"}, {"prices", "السعر والنسبة"}};
+    // how the stocks card shows every stock's change (#stkchg=amount; the percentage is what it always showed).
+    static final String[][] STK_CHG = {{"pct", "بالنسبة ٪"}, {"amount", "بالمبلغ"}};
     // the size of the screensaver's clock (sent as #clocksize=; large is what it always was)
     static final String[][] CLOCK_SIZES = {{"large", "كبيرة"}, {"medium", "متوسطة"}, {"small", "صغيرة"}};
     // what the bottom-left slot shows (sent to the page as #slot=; matches is what it always showed)
@@ -141,7 +143,10 @@ final class Prefs {
         String code = sp.getString("cityCountry", "");
         if (!code.isEmpty()) return code;
         String[] c = city(), builtin = Cities.find(c[0], c[1], c[2]);
-        return builtin != null ? Cities.country(builtin) : Location.codeOf(cityTz());
+        if (builtin == null) return Location.codeOf(cityTz());   // a place of one's own: from its zone, never saved (the TV's zone may change)
+        code = Cities.country(builtin);
+        if (!code.isEmpty()) sp.edit().putString("cityCountry", code).apply();   // a city saved before 4.1 has none: found once, kept (a user report on 4.1: lag)
+        return code;
     }
 
     /** The time zone the page shows: Asia/Riyadh for a built-in Saudi city, the country's own for a Gulf one; a place of your own gets the one given
@@ -149,10 +154,8 @@ final class Prefs {
     String cityTz() {
         String own = sp.getString("cityTz", "");
         if (!own.isEmpty()) return own;
-        String[] c = city();
-        for (Cities.Region r : Cities.REGIONS)
-            for (String[] x : r.cities)
-                if (x[0].equals(c[0]) && x[1].equals(c[1]) && x[2].equals(c[2])) return x.length > 3 ? x[3] : TZ;   // the Gulf cities carry their own
+        String[] c = city(), x = Cities.find(c[0], c[1], c[2]);   // the map, not a scan of every city (Cities.find)
+        if (x != null) return x.length > 3 && x[3] != null ? x[3] : TZ;   // the Gulf and world cities carry their own
         return java.util.TimeZone.getDefault().getID();
     }
 
@@ -205,6 +208,14 @@ final class Prefs {
         v.add(id + "|" + name.replace("|", " ").replace(";", " "));
         setList("teams", v);
         return true;
+    }
+
+    /** «أزل … من فرقي» on a game's card: false when the team was not followed */
+    boolean removeTeam(String id) {
+        List<String> v = teams();
+        boolean had = v.removeIf(t -> t.startsWith(id + "|"));
+        if (had) setList("teams", v);
+        return had;
     }
 
     // The card beside the clock: value sent to the page (#panel=), Arabic label
@@ -301,7 +312,15 @@ final class Prefs {
     boolean clock24() { return sp.getBoolean("clock24", false); }
     void setClock24(boolean v) { sp.edit().putBoolean("clock24", v).apply(); }
 
-    String digits() { return sp.getString("digits", "hindi"); }
+    /**
+     * «اللغة» (docs/ENGLISH.md): ar (the default, as always) or en. Sent to the page and the home as &lang=en, only for English (Tr.fragment),
+     * so with Arabic the fragment and every screen are exactly what they were. S reads it for the words, Dir for the direction.
+     */
+    String lang() { return Tr.norm(sp.getString("lang", Tr.AR)); }
+    void setLang(String v) { sp.edit().putString("lang", Tr.norm(v)).apply(); S.set(v); }
+
+    /** «الأرقام»: hindi (١٢٣, the default) or latin; with «اللغة» English and the digits never chosen, latin (123) */
+    String digits() { return sp.getString("digits", Tr.EN.equals(lang()) ? "latin" : "hindi"); }
     void setDigits(String v) { sp.edit().putString("digits", v).apply(); }
 
     static String digitsLabel(String v) {
@@ -343,6 +362,8 @@ final class Prefs {
         return CLOCK_SIZES[0][1];
     }
 
+    String stkChg() { return "amount".equals(sp.getString("stkChg", "pct")) ? "amount" : "pct"; }
+    void setStkChg(String v) { sp.edit().putString("stkChg", v).apply(); }
     String mkStyle() { return sp.getString("mkStyle", "arrows"); }
     void setMkStyle(String v) { sp.edit().putString("mkStyle", v).apply(); }
 
@@ -380,7 +401,35 @@ final class Prefs {
     String countdownName() { return sp.getString("cdName", ""); }
     void setCountdown(String date, String name) { sp.edit().putString("cd", date).putString("cdName", name).apply(); }
 
-    String photoMinutes() { return sp.getString("photoMinutes", "30"); }
+    /** the value in use on this TV: "30s" saved on a TV under 2 GB (or moved from one) is 1 minute here (PhotoInterval.read) */
+    String photoMinutes() { return PhotoInterval.read(sp.getString("photoMinutes", PhotoInterval.DEFAULT), ramMb(ctx)); }
+
+    private static long ramMb = -1;
+    /** The TV's memory in MB (MemTotal, what the setup reports' «free of 2048» counts); read once, it does not change. 0 when unknown. */
+    static long ramMb(Context c) {
+        if (ramMb < 0) {
+            long mb = 0;
+            try {
+                android.app.ActivityManager am = (android.app.ActivityManager) c.getSystemService(Context.ACTIVITY_SERVICE);
+                android.app.ActivityManager.MemoryInfo mi = new android.app.ActivityManager.MemoryInfo();
+                am.getMemoryInfo(mi);
+                mb = mi.totalMem / (1024 * 1024);
+            } catch (RuntimeException ignored) { }
+            ramMb = mb;
+        }
+        return ramMb;
+    }
+    /** A weak TV, the same rule as the home's Ram.low: Android's low-RAM flag, or under 2.5 GB in all (2560 MB; 0 = unknown: not weak). Read once. */
+    static boolean lowRam(Context c) {
+        if (lowRam == null) {
+            boolean flag = false;
+            try { flag = ((android.app.ActivityManager) c.getSystemService(Context.ACTIVITY_SERVICE)).isLowRamDevice(); } catch (RuntimeException ignored) { }
+            long mb = ramMb(c);
+            lowRam = flag || (mb > 0 && mb < 2560);
+        }
+        return lowRam;
+    }
+    private static Boolean lowRam;
     void setPhotoMinutes(String v) { sp.edit().putString("photoMinutes", v).apply(); }
 
     /**
@@ -415,7 +464,43 @@ final class Prefs {
     /** The Gregorian month's names: "default" («أكتوبر») or "levant" («تشرين الأول»), on the screensaver and the home screen; #months=levant. */
     String months() { return "levant".equals(sp.getString("months", "default")) ? "levant" : "default"; }
     void setMonths(String v) { sp.edit().putString("months", "levant".equals(v) ? "levant" : "default").apply(); }
-    static String monthsLabel(String v) { return "levant".equals(v) ? "كانون الثاني، شباط، آذار…" : "يناير، فبراير، مارس…"; }
+    static String monthsLabel(String v) { return "levant".equals(v) ? "كانون الثاني، شباط، آذار" : "يناير، فبراير، مارس"; }
+
+    /**
+     * Three parts of the screens that can be hidden, each shown by default as it always was, and sent only when hidden so the fragment is
+     * otherwise as it was: «المناسبة القادمة» at the bottom middle of the screensaver (the countdown to Ramadan and the feasts, the iftar and
+     * suhoor in Ramadan; #occasion=0), «تعتيم الليل» (the screensaver darkens from 21:00, most from 23:00 to 05:00; #nightdim=0) and the
+     * «المهام» button on the home screen (#taskspill=0: the home reads it, the page ignores it).
+     */
+    boolean occasion() { return sp.getBoolean("occasion", true); }
+    void setOccasion(boolean v) { sp.edit().putBoolean("occasion", v).apply(); }
+    boolean nightDim() { return sp.getBoolean("nightDim", true); }
+    void setNightDim(boolean v) { sp.edit().putBoolean("nightDim", v).apply(); }
+    boolean tasksPill() { return sp.getBoolean("tasksPill", true); }
+    void setTasksPill(boolean v) { sp.edit().putBoolean("tasksPill", v).apply(); }
+
+    /**
+     * «الرجوع يفتح شاشة التوقف» (off by default): Back on our home starts the screensaver. The home keeps its own switch (Dock.back_saver,
+     * the one `dock.sh backsaver` sets) and moves it when this one changes (Dock.followBackSaver); #backsaver=1 only while on.
+     */
+    boolean backSaver() { return sp.getBoolean("backSaver", false); }
+    void setBackSaver(boolean v) { sp.edit().putBoolean("backSaver", v).apply(); }
+
+    /** «تبديل الآية والحديث»: the verse-or-hadith card once a day (default, as always) or every 3 minutes (QuoteEvery); #versemin=3 only then. */
+    String quoteEvery() { return QuoteEvery.read(sp.getString("quoteEvery", QuoteEvery.DAY)); }
+    void setQuoteEvery(String v) { sp.edit().putString("quoteEvery", QuoteEvery.read(v)).apply(); }
+
+    /** «الآية والحديث»: the verse-or-hadith card with both (default, as always), verses only or hadith only (VerseKind); #versekind= only then. */
+    String verseKind() { return VerseKind.read(sp.getString("verseKind", VerseKind.BOTH)); }
+    void setVerseKind(String v) { sp.edit().putString("verseKind", VerseKind.read(v)).apply(); }
+
+    /** «إظهار الثواني» (off by default): the seconds on the screensaver's clock; #seconds=1 only while on, so the page is otherwise as it was. */
+    boolean seconds() { return sp.getBoolean("seconds", false); }
+    void setSeconds(boolean v) { sp.edit().putBoolean("seconds", v).apply(); }
+
+    /** «الخروج من تلفزيونك»: one Back (default, as always), a long Back or three Backs leave our home opened from its tile (HomeExit). */
+    String homeExit() { return HomeExit.read(sp.getString("homeExit", HomeExit.PRESS)); }
+    void setHomeExit(String v) { sp.edit().putString("homeExit", HomeExit.read(v)).apply(); }
 
     /** The slim year strip under the clock, on the screensaver only (default off); sent to the page as #yearstrip=. */
     boolean yearStrip() { return sp.getBoolean("yearStrip", false); }
@@ -468,6 +553,8 @@ final class Prefs {
      * and used to win for hours.
      */
     private String pageBase(Context c) {
+        String own = Updater.pageBase(c, lang(), autoUpdate());   // «اللغة» English: tv-en.html (Updater.pageBase); null for Arabic
+        if (own != null) return own;
         File remote = Updater.pageFile(c);
         boolean useRemote = false;
         if (autoUpdate() && remote.isFile()) {
@@ -482,7 +569,7 @@ final class Prefs {
         String[] city = city();
         List<String> ids = new ArrayList<>();
         for (String s : shows()) ids.add(s.split("\\|", 2)[0]);
-        return "city=" + Uri.encode(city[0]) + "&lat=" + city[1] + "&lon=" + city[2]
+        return "city=" + Uri.encode(pageCity(city)) + "&lat=" + city[1] + "&lon=" + city[2]
             + "&tz=" + Uri.encode(cityTz())
             + "&teams=" + join(teamIds(), ",")
             + "&events=" + join(list("events"), ",")
@@ -494,9 +581,17 @@ final class Prefs {
             + "&langs=" + Uri.encode(join(list("langs"), ","))
             + "&shows=" + join(ids, ",")
             + "&minrating=" + minRating()
-            + "&photos=" + photoMinutes()
+            + "&photos=" + PhotoInterval.fragmentValue(photoMinutes())
             + "&digits=" + digits()
             + ClockSetting.fragment(clock24())
+            + Tr.fragment(lang())
+            + QuoteEvery.fragment(quoteEvery())
+            + VerseKind.fragment(verseKind())
+            + (seconds() ? "&seconds=1" : "")
+            + (lowRam(ctx) ? "&lowram=1" : "")   // a weak TV (a user report on 4.1, lag): the page's slower timers, no seconds, no transitions
+            + HomeExit.fragment(homeExit())
+            + (occasion() ? "" : "&occasion=0") + (nightDim() ? "" : "&nightdim=0") + (tasksPill() ? "" : "&taskspill=0")
+            + (backSaver() ? "&backsaver=1" : "")
             + "&cardstyle=" + cardStyle()
             + "&adhanbar=" + (adhanBar() ? "1" : "0")
             + "&yearstrip=" + (yearStrip() ? "1" : "0")
@@ -511,17 +606,39 @@ final class Prefs {
             + "&mkbar=" + (marketsOn() ? "on" : "off")
             + "&clocksize=" + clockSize()
             + "&stocks=" + join(stocks(), ",")
+            + ("amount".equals(stkChg()) ? "&stkchg=amount" : "")   // only when chosen: the link is what it was otherwise
             + "&slot=" + slot()
             + "&cd=" + countdownDate()
             + "&cdname=" + Uri.encode(countdownName())
-            + openTasksParam()
-            + ownParam();
+            + openTasksParam() + remindersParam()
+            + ownParam()
+            + packsParam();
+    }
+
+    /** The city's name for the page and the home: as saved, or with «اللغة» English the built-in city's English name (Places; a place of one's own keeps its name) */
+    private String pageCity(String[] city) {
+        if (!Tr.EN.equals(lang())) return city[0];
+        String en = Places.city(city[0], city[1], city[2]);
+        return en != null ? en : city[0];
     }
 
     /** The owner's own photos: how many and mix/only; nothing at all while there are none, so the page is as before. */
     private String ownParam() {
         int n = Own.count(ctx);
         return n == 0 ? "" : "&own=" + n + "&ownmode=" + Own.mode(ctx);
+    }
+
+    /** «صور شاشة التوقف»: the packs that are on (ids), and whether our own set («صورنا», on by default) is. Sent as #packs=id:count,... and #ours=0 only when set, so the fragment is as before. */
+    java.util.Set<String> packsOn() { return PhotoPacks.parseOn(sp.getString("packsOn", "")); }
+    void setPacksOn(java.util.Set<String> v) { sp.edit().putString("packsOn", PhotoPacks.joinOn(v)).apply(); }
+    boolean oursOn() { return sp.getBoolean("oursOn", true); }
+    void setOursOn(boolean v) { sp.edit().putBoolean("oursOn", v).apply(); }
+
+    private String packsParam() {
+        java.util.Map<String, Integer> have = PackStore.installed(ctx);
+        // «صورنا» off counts only while a pack that is on is on the TV: a pack deleted meanwhile brings ours back (nothing is left blank)
+        boolean ours = oursOn() || !PhotoPacks.mayTurnOursOff(packsOn(), have);
+        return PhotoPacks.fragment(packsOn(), have) + (ours ? "" : "&ours=0");
     }
 
     String ownMode() { return sp.getString("ownMode", Own.MIX); }
@@ -544,10 +661,12 @@ final class Prefs {
     List<Task> tasks() {
         synchronized (TASKS_LOCK) {
             List<Task> v = parseTasks(sp.getString("tasks", "[]"));
-            if (TaskList.needsIds(v)) {
-                v = TaskList.withIds(v, sp.getLong("taskSeq", 0));
-                setTasks(v);
-            }
+            long now = System.currentTimeMillis();
+            boolean ids = TaskList.needsIds(v);
+            if (ids) v = TaskList.withIds(v, sp.getLong("taskSeq", 0));
+            boolean roll = Reminders.needsRoll(v, now);   // a repeating reminder nobody answered moves to its next time
+            if (roll) v = Reminders.roll(v, now, Reminders.zone(cityTz()));   // whole days in the TV's city (summer time keeps the hour)
+            if (ids || roll) setTasks(v);
             return v;
         }
     }
@@ -560,7 +679,9 @@ final class Prefs {
             for (int k = 0; k < a.length(); k++) {
                 try {
                     JSONObject o = a.getJSONObject(k);
-                    out.add(new Task(o.getString("t"), o.optBoolean("done"), o.optLong("at"), o.optLong("id")));
+                    out.add(new Task(o.getString("t"), o.optBoolean("done"), o.optLong("at"), o.optLong("id"), Math.max(0, o.optLong("due")),
+                        Reminders.beforeOf(o.optInt("bf")), Math.max(0, Math.min(2, o.optInt("rp"))), o.optBoolean("snd"), Math.max(0, Math.min(2, o.optInt("wh"))),
+                        Math.max(0, o.optLong("sn"))));
                 } catch (JSONException bad) {
                     // one entry that is not a task is skipped; the others are kept (the list is saved back whole)
                 }
@@ -574,7 +695,12 @@ final class Prefs {
     private void setTasks(List<Task> v) {
         JSONArray a = new JSONArray();
         try {
-            for (Task t : v) a.put(new JSONObject().put("t", t.text).put("done", t.done).put("at", t.at).put("id", t.id));
+            for (Task t : v) {
+                JSONObject o = new JSONObject().put("t", t.text).put("done", t.done).put("at", t.at).put("id", t.id);
+                if (t.due > 0) o.put("due", t.due).put("bf", t.before).put("rp", t.repeat).put("snd", t.sound).put("wh", t.where);   // a task with no reminder is saved as it always was
+                if (t.snooze > 0) o.put("sn", t.snooze);
+                a.put(o);
+            }
         } catch (JSONException ignored) { }
         sp.edit().putString("tasks", a.toString()).putLong("taskSeq", TaskList.lastId(v, sp.getLong("taskSeq", 0))).apply();
     }
@@ -599,6 +725,40 @@ final class Prefs {
         }
     }
 
+    /** null when added; otherwise why not. A reminder is a task with its due time (epoch ms), the minutes before it, repeat 0/1/2, a chime and where it shows. */
+    String addReminder(String raw, long due, int before, int repeat, boolean sound, int where) {
+        String text = cleanTask(raw);
+        if (text.isEmpty()) return "the task is empty";
+        synchronized (TASKS_LOCK) {
+            List<Task> v = tasks();
+            List<Task> out = TaskList.addReminder(v, text, System.currentTimeMillis(), TaskList.lastId(v, sp.getLong("taskSeq", 0)) + 1, MAX_TASKS,
+                due, Reminders.beforeOf(before), Math.max(0, Math.min(2, repeat)), sound, Math.max(0, Math.min(2, where)));
+            if (out == null) return "at most " + MAX_TASKS + " tasks; finish or delete one first";
+            setTasks(out);
+            return null;
+        }
+    }
+
+    /** this task's reminder is set (due 0 takes it off); false when it is gone */
+    boolean remindTaskId(long id, long due, int before, int repeat, boolean sound, int where) {
+        synchronized (TASKS_LOCK) {
+            List<Task> out = TaskList.remind(tasks(), id, Math.max(0, due), Reminders.beforeOf(before), Math.max(0, Math.min(2, repeat)), sound, Math.max(0, Math.min(2, where)));
+            if (out == null) return false;
+            setTasks(out);
+            return true;
+        }
+    }
+
+    /** the card for this task comes again in `minutes`; false when it is gone */
+    boolean snoozeTaskId(long id, int minutes) {
+        synchronized (TASKS_LOCK) {
+            List<Task> out = TaskList.snooze(tasks(), id, System.currentTimeMillis() + Math.max(1, minutes) * Reminders.MINUTE);
+            if (out == null) return false;
+            setTasks(out);
+            return true;
+        }
+    }
+
     /** n counts from 1 (what `list` shows); false when there is no such task */
     boolean doneTask(int n) {
         synchronized (TASKS_LOCK) {
@@ -617,7 +777,7 @@ final class Prefs {
     /** the task with this id is marked done; false when it is gone */
     boolean doneTaskId(long id) {
         synchronized (TASKS_LOCK) {
-            List<Task> out = TaskList.markDone(tasks(), id);
+            List<Task> out = TaskList.markDone(tasks(), id, System.currentTimeMillis(), Reminders.zone(cityTz()));   // a repeating reminder is done for this time only
             if (out == null) return false;
             setTasks(out);
             return true;
@@ -642,6 +802,18 @@ final class Prefs {
         List<String> open = new ArrayList<>();
         for (Task t : tasks()) if (!t.done) open.add(t.text);
         return open.isEmpty() ? "" : "&tasks=" + Uri.encode(join(open, "\n"));
+    }
+
+    /**
+     * "&rem=" and the open reminders for the page's card, one per line, URL-encoded: id|card time|appointment|repeat|chime|where|text (epoch
+     * milliseconds). The page shows the card by its own clock, so a reminder set while a screen is up reaches it on the next load (the screen
+     * starts over when the settings change); nothing when there are none.
+     */
+    private String remindersParam() {
+        List<String> lines = new ArrayList<>();
+        for (Task t : tasks())
+            if (Reminders.has(t) && t.where != 2) lines.add(t.id + "|" + Reminders.fireAt(t) + "|" + t.due + "|" + t.repeat + "|" + (t.sound ? 1 : 0) + "|" + t.where + "|" + t.text.replace('|', ' '));
+        return lines.isEmpty() ? "" : "&rem=" + Uri.encode(join(lines, "\n"));
     }
 
     /** The cards on the launcher's home screen: up to HOME_CARDS of PANELS, none until the user picks one. */
@@ -712,6 +884,23 @@ final class Prefs {
     /** «جرس التحديثات» on the home screen: on by default (it shows only on evidence of waiting updates, so it cannot hurt) */
     boolean updateBell() { return sp.getBoolean("updateBell", true); }
     /** «أكمل المشاهدة» under the home screen's favourites (default on; it shows only once the home app may read the TV's Watch Next list). */
+    /** «المظهر ← الواجهة»: the home's layout, classic (the default, the home as it always was) or football (docs/PROPOSALS-NOV2.md §1) */
+    static final String[] HOME_LAYOUTS = {"classic", "football"};
+    static final String[] HOME_LAYOUT_NAMES = {"العادية", "كرة القدم"};
+    String homeLayout() { String v = sp.getString("homeLayout", HOME_LAYOUTS[0]); return java.util.Arrays.asList(HOME_LAYOUTS).contains(v) ? v : HOME_LAYOUTS[0]; }
+    void setHomeLayout(String v) { if (java.util.Arrays.asList(HOME_LAYOUTS).contains(v)) sp.edit().putString("homeLayout", v).apply(); }
+    static String homeLayoutLabel(String v) { int i = java.util.Arrays.asList(HOME_LAYOUTS).indexOf(v); return HOME_LAYOUT_NAMES[Math.max(0, i)]; }
+    /** «تطبيقات في الشريط»: how many favourites the home's tray shows whole at once, 5 (the default, as always) to 10, or "all" (up to 10, never a scroll) */
+    static final String[] FAV_BARS = {"5", "6", "7", "8", "all"};
+    /** 9 and 10 were offered once; ten tiles across were too small to read (step 28), so they mean 8 (eight in view, the rest scroll) */
+    static String favBarFix(String v) { return "9".equals(v) || "10".equals(v) ? "8" : v; }
+    String favBar() { String v = favBarFix(sp.getString("favBar", "5")); return java.util.Arrays.asList(FAV_BARS).contains(v) ? v : "5"; }
+    void setFavBar(String v) { v = favBarFix(v); if (java.util.Arrays.asList(FAV_BARS).contains(v)) sp.edit().putString("favBar", v).apply(); }
+    /** the choice as the settings row says it */
+    static String favBarLabel(String v) { return "all".equals(v) ? "كل المفضلة" : v; }
+    /** «صفحات الأسهم والمباريات داكنة»: the home's markets and matches pages in the dark look whatever the home's look (on, the default), or in the home's look as before (off) */
+    boolean pagesDark() { return sp.getBoolean("pagesDark", true); }
+    void setPagesDark(boolean v) { sp.edit().putBoolean("pagesDark", v).apply(); }
     boolean watchNext() { return sp.getBoolean("watchNext", true); }
     void setWatchNext(boolean v) { sp.edit().putBoolean("watchNext", v).apply(); }
     void setUpdateBell(boolean v) { sp.edit().putBoolean("updateBell", v).apply(); }

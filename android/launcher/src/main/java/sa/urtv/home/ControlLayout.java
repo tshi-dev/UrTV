@@ -10,7 +10,7 @@ final class ControlLayout {
 
     static final float MAX_W = 0.82f, MAX_H = 0.90f;
     /** dp: the panel's own padding on the sides, the gap between tiles, and what the title, its notice line and the padding take above and below the rows */
-    static final int SIDE_PAD = 36, GAP = 10, CHROME = 100;
+    static final int SIDE_PAD = 36, GAP = 12, CHROME = 100;
     /** dp: a tile at its best, and the least that still reads (icon, name, one line) */
     static final int TILE_W = 170, TILE_H = 116, MIN_W = 80, MIN_H = 72;
     /** dp: below these a tile is «compact» (smaller icon and text, one line under the name) */
@@ -76,8 +76,8 @@ final class ControlLayout {
         int tw = px(wDp, density), th = px(hDp, density);
         boolean tiny = hDp < MIN_H;
         int panelW = tw * c + px(GAP, density) * (c - 1) + px(SIDE_PAD, density);
-        // each tile rounded up by half a pixel adds up on a row of five: never past MAX_W of the screen by more than a pixel
-        int over = panelW - ((int) Math.ceil(screenW * MAX_W) + 1);
+        // each tile rounded up by half a pixel adds up on a row of five: never past MAX_W of the screen by more than the rounding of the limit itself
+        int over = panelW - ((int) Math.ceil(screenW * MAX_W));
         if (over > 0) {
             tw -= (over + c - 1) / c;
             panelW = tw * c + px(GAP, density) * (c - 1) + px(SIDE_PAD, density);

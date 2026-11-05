@@ -2,6 +2,16 @@ plugins {
     id 'com.android.application'
 }
 
+// «1:rounds:salt:hash» (PinCrypto's form) or ''; anything else stops the build, so a mistyped secret never ships a code that cannot work
+def pinRecoveryRecord() {
+    def local = rootProject.file('pin-recovery.local')
+    def r = (System.getenv('URTV_PIN_RECOVERY') ?: (local.exists() ? local.text : '')).trim()
+    if (r && !(r ==~ /1:[0-9]{5,7}:[0-9a-f]{32}:[0-9a-f]{64}/)) {
+        throw new GradleException('the PIN recovery record is not «1:rounds:salt:hash»: make it with .github/tools/make_pin_recovery.py')
+    }
+    return r
+}
+
 android {
     namespace 'sa.urtv.home'
     compileSdk 34
@@ -9,11 +19,16 @@ android {
     defaultConfig {
         applicationId 'sa.urtv.home'
         minSdk 26
-        targetSdk 30   // Android 11 TVs only show the Wi-Fi name to apps targeting 30 with location granted
+        // 34 (Android 14): Play Protect blocks an app built for an older Android («Unsafe app blocked … built for an older version of Android») when it is
+        // installed from Downloader; it was 30. The Wi-Fi name still needs ACCESS_FINE_LOCATION, granted over ADB at install, as on 30 (any target 29+).
+        targetSdk 34
         // the same version as the screensaver (see android/app/build.gradle)
         versionCode((System.getenv('GITHUB_RUN_NUMBER') ?: '1') as int)
         versionName file('../../VERSION').text.trim()
         buildConfigField "String", "MARKETING", "\"${file('../../VERSION').text.trim()}\""
+        // the PIN recovery code's salted PBKDF2 record, never the code (AGENTS.md, «PIN recovery»): from URTV_PIN_RECOVERY (CI: the
+        // PIN_RECOVERY_RECORD secret) or the untracked android/pin-recovery.local; neither = no recovery code in this build
+        buildConfigField "String", "PIN_RECOVERY", "\"${pinRecoveryRecord()}\""
     }
 
     buildFeatures {
@@ -42,7 +57,7 @@ android {
 
     // wallpapers are the screensaver's Saudi photos, copied in at build time
     sourceSets {
-        main { assets.srcDirs += ["$buildDir/generated/wallpapers", "$buildDir/generated/web"] }
+        main { assets.srcDirs += ["$buildDir/generated/wallpapers", "$buildDir/generated/web", "$buildDir/generated/i18n"] }
     }
 
     compileOptions {
@@ -61,8 +76,15 @@ preBuild.dependsOn copyWallpapers
 
 // the optional home-screen card is the screensaver's page in card-only mode, with its woff2 fonts
 def copyWeb = tasks.register('copyWeb', Copy) {
-    from('../../dist') { include 'tv.html'; into 'web' }
+    from('../../dist') { include 'tv.html', 'tv-en.html'; into 'web' }   // tv-en.html: «اللغة» English (docs/ENGLISH.md)
     from('../../assets/fonts') { include '*.woff2'; into 'fonts' }
     into "$buildDir/generated/web"
 }
 preBuild.dependsOn copyWeb
+
+// «اللغة»: the translation table (i18n/en/*.tsv, docs/ENGLISH.md) as assets/i18n/en/, read by S only when the setting is English
+def copyI18n = tasks.register('copyI18n', Copy) {
+    from('../../i18n') { include 'en/*.tsv' }
+    into "$buildDir/generated/i18n/i18n"
+}
+preBuild.dependsOn copyI18n

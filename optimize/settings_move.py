@@ -44,7 +44,8 @@ MIGRATIONS = {}
 # into the file.
 # TODO(parental PIN, branch work/parental): the PIN must NEVER be added here, and must never be exported by any other way.
 ALLOWED_TOP = ("schema", "city", "digits", "prayer", "hijri_offset", "clock24", "clock_size", "card_style", "cards",
-               "greeting", "listen_pill", "update_bell", "markets", "teams", "adhan", "sunrise", "prayerbar", "wxmore", "months")
+               "greeting", "listen_pill", "update_bell", "markets", "teams", "adhan", "sunrise", "prayerbar", "wxmore", "months",
+               "lang", "fav_bar", "reciter_favs", "pagesdark")
 # NEVER here: the hidden update-channel switch (updatechannel) and the parental PIN. tests/settings_move_test.py checks both.
 
 # The same lists the apps validate (android/app/src/main/java/sa/urtv/screensaver/Prefs.java; tests/settings_move_test.py
@@ -55,7 +56,10 @@ CARD_STYLES = ("current", "dark1", "glass1", "dark3", "glass3")
 CLOCK_SIZES = ("large", "medium", "small")
 MK_STYLES = ("arrows", "prices")
 MONTHS = ("default", "levant")
-SWITCHES = ("greeting", "sunrise", "prayerbar", "wxmore")   # on/off switches the TV reports as «on» / «off»
+LANGS = ("ar", "en")   # «اللغة» (Tr.java: ar, the default, or en)
+RECITER_ID = re.compile(r"[A-Za-z0-9_-]{1,60}")   # a reciter's id in quran/reciters.json
+FAV_BARS = ("5", "6", "7", "8", "9", "10", "all")   # «تطبيقات في الشريط»: how many favourites the home tray shows whole (Prefs.FAV_BARS)
+SWITCHES = ("greeting", "sunrise", "prayerbar", "wxmore", "pagesdark")   # on/off switches the TV reports as «on» / «off»
 MARKETS = ("tasi", "aramco", "spx", "btc", "gold", "silver", "oil", "xrp")
 MAX_MARKETS = 4
 PANELS = ("shows", "prayers", "forecast", "hourly", "prayerrow", "nextprayer", "matches", "verse", "wisdom", "adhkar",
@@ -159,10 +163,14 @@ def read_tv(keep_own=False):
             s[k] = g[k] == "on"
     if g.get("months") in MONTHS:
         s["months"] = g["months"]
+    if g.get("lang") in LANGS:   # an older screensaver does not say: absent, never guessed
+        s["lang"] = g["lang"]
     if g.get("listenpill") in ("on", "off"):   # an older screensaver does not say; the key is then left out of the file
         s["listen_pill"] = g["listenpill"] == "on"
     if g.get("updatebell") in ("on", "off"):   # likewise
         s["update_bell"] = g["updatebell"] == "on"
+    if g.get("favbar") in FAV_BARS:   # «تطبيقات في الشريط»; an older screensaver does not say: left out of the file
+        s["fav_bar"] = g["favbar"]
     prayer = {}
     if "prayermethod" in g:
         prayer["method"] = g["prayermethod"]
@@ -207,11 +215,26 @@ def read_tv(keep_own=False):
                 teams.append({"id": tid.strip(), "name": "" if name.strip() == "#" + tid.strip() else name.strip()})
         s["teams"] = teams
     adhan = read_adhan(keep_own)
+    favs = read_reciter_favs()
+    if favs is not None:
+        s["reciter_favs"] = favs
     if g.get("adhanbar"):
         adhan["bar"] = g["adhanbar"] == "on"
     if adhan:
         s["adhan"] = adhan
     return s
+
+
+def read_reciter_favs():
+    """The reciters marked ★ on the home app («القرّاء» in «تلاوة وأذان»), a list of ids; None when that app does not answer or is older and says nothing."""
+    try:
+        data = tv(HOME + "GET_PLAYER")
+    except TvError:
+        return None
+    f = dict(p.partition("=")[::2] for p in data.split("|") if "=" in p)
+    if "reciter_favs" not in f:
+        return None
+    return [x for x in f["reciter_favs"].strip().strip('"').split(",") if RECITER_ID.fullmatch(x)]
 
 
 def read_adhan(keep_own=False):
@@ -249,7 +272,8 @@ def flat(s):
         out["city"] = (c["name"], float(c["lat"]), float(c["lon"]), c["tz"])
         if "country" in c:
             out["city"] += (c["country"],)
-    for k in ("digits", "clock24", "clock_size", "card_style", "greeting", "listen_pill", "update_bell", "hijri_offset", "sunrise", "prayerbar", "wxmore", "months"):
+    for k in ("digits", "clock24", "clock_size", "card_style", "greeting", "listen_pill", "update_bell", "hijri_offset", "sunrise", "prayerbar", "wxmore", "months",
+              "lang", "fav_bar", "pagesdark"):
         if k in s:
             out[k] = s[k]
     for k, v in s.get("prayer", {}).items():
@@ -271,6 +295,8 @@ def flat(s):
         out["teams"] = tuple(t["id"] for t in s["teams"])
     for k, v in s.get("adhan", {}).items():
         out["adhan." + k] = v
+    if "reciter_favs" in s:
+        out["reciter_favs"] = tuple(s["reciter_favs"])
     return out
 
 
@@ -427,7 +453,11 @@ def validate(d):
             out[key] = d[key]
     if "months" in d and choice(d["months"], MONTHS, "months", errs):
         out["months"] = d["months"]
-    for key in ("clock24", "greeting", "listen_pill", "update_bell", "sunrise", "prayerbar", "wxmore"):
+    if "lang" in d and choice(d["lang"], LANGS, "lang", errs):
+        out["lang"] = d["lang"]
+    if "fav_bar" in d and choice(d["fav_bar"], FAV_BARS, "fav_bar", errs):
+        out["fav_bar"] = d["fav_bar"]
+    for key in ("clock24", "greeting", "listen_pill", "update_bell", "sunrise", "prayerbar", "wxmore", "pagesdark"):
         if key in d:
             n = len(errs)
             boolean(d[key], key, errs)
@@ -511,6 +541,12 @@ def validate(d):
                 errs.append("teams has a club twice")
             if len(errs) == n:
                 out["teams"] = clean
+    if "reciter_favs" in d:
+        v = d["reciter_favs"]
+        if isinstance(v, list) and len(v) <= 200 and all(isinstance(x, str) and RECITER_ID.fullmatch(x) for x in v) and len(set(v)) == len(v):
+            out["reciter_favs"] = v
+        else:
+            errs.append("reciter_favs must be a list of reciter ids (letters, digits, - and _), none twice")
     if "adhan" in d:
         a = obj(d["adhan"], "adhan", ("on", "voice", "fajr_voice", "short", "stopkey", "volume", "bar"), errs, notes)
         if a is not None:
@@ -634,10 +670,14 @@ def ops(values, names):
             es("clocksize", v)
         elif p == "card_style":
             es("cardstyle", v)
-        elif p in ("greeting", "sunrise", "prayerbar", "wxmore"):
+        elif p in ("greeting", "sunrise", "prayerbar", "wxmore", "pagesdark"):
             es(p, flag(v))
         elif p == "months":
             es("months", v)
+        elif p == "lang":
+            es("lang", v)
+        elif p == "fav_bar":
+            es("favbar", v)
         elif p == "cards.panel2":
             es("panel2", v)
         elif p == "listen_pill":
@@ -664,6 +704,8 @@ def ops(values, names):
             es("mkstyle", v)
         elif p == "teams":
             es("teams", ",".join(f"{i}:{names.get(i, '')}" for i in v))
+        elif p == "reciter_favs":
+            home.append(HOME + "RECITER_FAVS --es ids " + (",".join(v) if v else "-"))
         elif p == "adhan.bar":
             es("adhanbar", flag(v))
         elif p == "adhan.on":

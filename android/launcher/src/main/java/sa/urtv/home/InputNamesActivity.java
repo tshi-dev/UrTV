@@ -28,6 +28,9 @@ import java.util.Map;
  * «قفل الإعدادات» as «ترتيب المفضلة» is.
  */
 public class InputNamesActivity extends Activity {
+    /** «اللغة» (docs/ENGLISH.md): with Arabic the context itself, with English an English one */
+    @Override protected void attachBaseContext(android.content.Context b) { super.attachBaseContext(S.wrap(b)); }
+
     private int GOLD, INK, TEXT, DIM;   // from the glass look (glass(), before anything is drawn)
     private GlassStyle.Look look;
 
@@ -49,12 +52,13 @@ public class InputNamesActivity extends Activity {
         col.setOrientation(LinearLayout.VERTICAL);
         col.setPadding(0, dp(36), 0, dp(48));
         frame.addView(col, new FrameLayout.LayoutParams(dp(600), -2, Gravity.CENTER_HORIZONTAL));
-        col.addView(text("أسماء المصادر", 26, "Medium", TEXT, false), right(0));
-        col.addView(text("اختيار على مصدر لتغيير اسمه في قائمة «المصادر» (مثل PS5). اترك الاسم فارغاً لرجوع اسم التلفزيون.", 14, "Regular", DIM, false), right(dp(24)));
+        col.addView(text(S.t("أسماء المصادر"), 26, "Medium", TEXT, false), right(0));
+        col.addView(text(S.t("اختيار على مصدر لتغيير اسمه في قائمة «المصادر» (مثل PS5). اترك الاسم فارغاً لرجوع اسم التلفزيون."), 14, "Regular", DIM, false), right(dp(24)));
         list = new LinearLayout(this);
         list.setOrientation(LinearLayout.VERTICAL);
         col.addView(list, new LinearLayout.LayoutParams(-1, -2));
-        scroll.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);   // pinned like DockActivity: a TV set to Arabic does not mirror the rows under the D-pad
+        // pinned like DockActivity: a TV set to Arabic does not mirror the rows under the D-pad; English is the mirror of the Arabic screen
+        scroll.setLayoutDirection(Dir.layout(!Dir.rtl()));
         setContentView(scroll);
         screen = scroll;
         render(0);
@@ -101,7 +105,7 @@ public class InputNamesActivity extends Activity {
             list.addView(c, rowParams());
         }
         if (cards.isEmpty()) {
-            list.addView(text("التلفزيون ما أبلغ عن مصادر (HDMI أو غيرها).", 15, "Medium", DIM, false), right(0));
+            list.addView(text(S.t("التلفزيون ما أبلغ عن مصادر (HDMI أو غيرها)."), 15, "Medium", DIM, false), right(0));
             return;
         }
         for (int i = 0; i < cards.size(); i++) {
@@ -116,7 +120,7 @@ public class InputNamesActivity extends Activity {
     private View card(String own, String saved, View.OnClickListener click) {
         LinearLayout c = new LinearLayout(this);
         c.setOrientation(LinearLayout.HORIZONTAL);
-        c.setGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT);
+        c.setGravity(Gravity.CENTER_VERTICAL | Dir.start());
         c.setPadding(dp(16), dp(12), dp(16), dp(12));
         c.setFocusable(true);
         c.setClickable(true);
@@ -146,20 +150,20 @@ public class InputNamesActivity extends Activity {
         in.setSelection(in.getText().length());
         in.setTextDirection(View.TEXT_DIRECTION_FIRST_STRONG);
         editor = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert)
-            .setTitle("اسم المصدر: " + own)
+            .setTitle(S.t("اسم المصدر: %s", own))
             .setView(in)
-            .setPositiveButton("حفظ", null)   // set below: a name that can't be kept leaves the box open
-            .setNegativeButton("إلغاء", null)
+            .setPositiveButton(S.t("حفظ"), null)   // set below: a name that can't be kept leaves the box open
+            .setNegativeButton(S.t("إلغاء"), null)
             .create();
         editor.setOnDismissListener(d -> editor = null);
         editor.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         editor.show();
         editor.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             String name = InputNames.clean(in.getText().toString());
-            if (name == null) { toast("الاسم حتى " + Digits.of(String.valueOf(InputNames.MAX_LEN)) + " حرفاً في سطر واحد"); return; }
+            if (name == null) { toast(S.t("الاسم حتى %s حرفاً في سطر واحد", Digits.of(String.valueOf(InputNames.MAX_LEN)))); return; }
             InputLabels.set(this, id, name);
             editor.dismiss();
-            toast(name.isEmpty() ? "رجع اسم التلفزيون" : "تم حفظ الاسم");
+            toast(name.isEmpty() ? S.t("رجع اسم التلفزيون") : S.t("تم حفظ الاسم"));
             render(indexOf(id));
         });
         in.requestFocus();
@@ -178,7 +182,7 @@ public class InputNamesActivity extends Activity {
         t.setText(s);
         t.setTextSize(TypedValue.COMPLEX_UNIT_SP, sp);
         t.setTextColor(color);
-        t.setGravity(Gravity.RIGHT);
+        t.setGravity(Dir.start());
         if (ownDirection) t.setTextDirection(View.TEXT_DIRECTION_FIRST_STRONG);   // «BN Sport» reads left to right inside the Arabic row
         try { t.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/Thmanyah-" + weight + ".otf")); }
         catch (RuntimeException ignored) { }

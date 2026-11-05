@@ -1,0 +1,46 @@
+# UrTV community list: tcl-65ep68
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/tcl-65ep68/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: TCL
+# match-model: 65EP68
+# match-device: 
+
+com.tcl.bi
+com.tcl.tv.tclhome_passive
+com.tcl.dashboard
+com.tcl.waterfall.overseas
+com.tcl.overseasappshow
+com.tcl.partnercustomizer
+com.tcl.esticker
+com.tcl.copydatatotv
+com.tcl.common.shortcutmenu
+com.tcl.messagebox
+com.tcl.useragreement
+com.google.android.tvrecommendations
+com.google.android.backdrop
+com.google.android.feedback
+com.google.android.play.games
+com.google.android.partnersetup
+com.google.android.onetimeinitializer
+com.google.android.syncadapters.calendar
+com.google.android.marvin.talkback
+com.google.android.tts
+android.autoinstalls.config.tcl.device
+com.tcl.assistant
+com.tcl.micmanager
+com.google.android.katniss
+com.google.android.tv.assistant
+com.google.android.apps.mediashell
+com.tcl.miracast
+com.tcl.MultiScreenInteraction_TV
+com.tcl.ui_mediaCenter
+com.amazon.amazonvideo.livingroom
+com.disney.disneyplus
+com.hbo.hbonow
+com.netflix.ninja
+tv.pluto.android
+com.google.android.videos
+com.google.android.youtube.tv
+com.google.android.youtube.tvmusic

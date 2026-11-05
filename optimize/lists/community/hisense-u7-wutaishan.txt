@@ -1,0 +1,25 @@
+# UrTV community list: hisense-u7-wutaishan
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/hisense-u7-wutaishan/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: HISENSE
+# match-model: U755U7SG
+# match-device: WUTAISHAN
+
+com.vt.tv.evservice
+com.google.android.partnersetup
+android.autoinstalls.config.google.gtvpai
+com.google.android.feedback
+com.google.android.syncadapters.calendar
+com.vidaa.oemtabcontentprovider
+net.vidaatv.hisense.android.tv
+com.vt.hishow
+com.vt.storemode
+com.vt.tv.b2b
+com.vt.fte
+com.vt.tv.protector
+com.vt.alexa
+com.vt.tv.dlna
+com.vt.tv.ai_sense
+com.google.android.tungsten.setupwraith

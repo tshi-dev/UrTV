@@ -7,7 +7,7 @@
 com.tcl.bi                             # telemetry (over a thousand events a day)
 com.tcl.logkit                         # log collection
 com.tcl.usercenter                     # TCL account / phone binding
-com.tcl.partnercustomizer              # partner app rows and promos
+com.tcl.partnercustomizer              # partner app rows and promos, the T key's promo page; our home answers the remote's app keys itself
 com.tcl.overseasappshow                # preinstalled-app showcase
 com.tcl.messagebox                     # promo pop-ups
 com.tcl.esticker                       # on-screen promo stickers
@@ -20,7 +20,6 @@ com.tcl.repairguide
 com.tcl.ocean.instructions             # e-manual
 com.tcl.initsetup                      # first-run setup (already done)
 com.tcl.copydatatotv
-com.tcl.xian.StartandroidService       # boot helper, ~70 MB, no visible purpose
 
 # Google extras
 com.google.android.tvrecommendations   # sponsored / recommendation rows

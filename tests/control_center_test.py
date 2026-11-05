@@ -38,15 +38,15 @@ check("the sound output opens an intent that resolves, falling back to the TV's 
 check("the sleep timer's tile and «أطفئ الآن» end the same way (SleepTimer.turnOff: the service, else sound off and the screensaver)",
       "SleepTimer.turnOff(act)" in center and "static String turnOff(Context c)" in src("SleepTimer.java") and "String done = turnOff(c);" in src("SleepTimer.java")
       and "SleepService.sleepNow()" in src("SleepTimer.java").split("static String turnOff")[1])
-check("«أطفئ الآن» with the service off shows the notice first, then does the fallback after a moment (not if the panel closed meanwhile); a long OK opens the service's screen behind the sleep lock",
-      "SleepService.enabled()" in center and "ParentalPolicy.SLEEP_ACCESSIBILITY" in center and "title.setText(ControlText.SLEEP_OFF_NOTICE)" in center
+check("«أطفئ الآن» with the service off shows the notice first, then does the fallback after a moment (not if the panel closed meanwhile); a long OK (a shortcut) opens the service's screen behind the sleep lock; the notice points to «مؤقت النوم», whose menu has the visible row",
+      "SleepService.enabled()" in center and "ParentalPolicy.SLEEP_ACCESSIBILITY" in center and "title.setText(S.tv(ControlText.SLEEP_OFF_NOTICE))" in center
       and center.index("ControlText.SLEEP_OFF_NOTICE") < center.index("SleepTimer.turnOff(act);", center.index("ui.postDelayed")) and "ui.postDelayed(" in center
       and "if (!showing()) return;" in center.split("ui.postDelayed(")[1].split("ControlText.NOTICE_MS")[0] and "ui.removeCallbacksAndMessages(null)" in center
-      and "مو شغّالة" in text and "اضغط مطوّلًا" in text)
+      and "مو شغّالة" in text and "«مؤقت النوم»" in text)
 check("«إعدادات تلفزيونك» opens our settings (the screensaver app's SettingsActivity) through «قفل الإعدادات» (@urtv), the tile only when that app is there",
       "host.openOurSettings()" in center and "ParentalPolicy.OUR_SETTINGS, null" in main and 'SAVER_PKG + ".SettingsActivity"' in main
       and "case OUR_SETTINGS:" in policy and "t.add(OWN_SETTINGS)" in policy.split("case OUR_SETTINGS:")[1][:200]
-      and center.index("if (host.saverInstalled())") < center.index('"إعدادات تلفزيونك"') < center.index('"tv", "الإعدادات"'))
+      and center.index("if (host.saverInstalled())") < center.index('"إعدادات تلفزيونك"') < center.index('"tv", S.t("الإعدادات")'))
 check("the tiles' size comes from ControlLayout (width and height), the popup gets its size, and what still does not fit scrolls",
       "ControlLayout.plan(dm.widthPixels, dm.heightPixels" in center and "new PopupWindow(panel, plan.panelW, Math.min(plan.panelH, ControlLayout.maxHeight(dm.heightPixels)), true)" in center
       and "new ScrollView(act)" in center and "dp(104)" not in center)
@@ -66,8 +66,9 @@ check("the pill follows the row's walk: it is in `pills` and in the row's childr
       "pills.add(at, centerPill);" in main and "pillRow.addView(centerPill, at + 1," in main)
 check("the home closing or coming back closes the panel (its test stops with it)", main.count("control.dismiss()") >= 3 and "speed.cancel()" in center.split("setOnDismissListener")[1])
 check("the panel is for the remote: no touch handling beyond the outside dismiss", "setOnTouchListener" not in center and "setOutsideTouchable(true)" in center and "new PopupWindow(panel, plan.panelW," in center)
-check("RTL: the panel's own direction is set, and the tiles walk right to left with explicit focus",
-      "LAYOUT_DIRECTION_RTL" in center and "setNextFocusRightId(col == 0" in center and "setNextFocusLeftId(" in center)
+check("RTL: the panel's own direction is set (Dir: English left to right), and the tiles walk right to left with explicit focus (English mirrored)",
+      "panel.setLayoutDirection(Dir.layout());" in center and "int before = col == 0 ? t.getId() : tiles.get(i - 1).getId();" in center
+      and "t.setNextFocusRightId(Dir.rtl() ? before : after);" in center and "t.setNextFocusLeftId(Dir.rtl() ? after : before);" in center)
 check("focus goes back to the pill when it closes, and a tile has it when it opens", "anchor.requestFocus()" in center and "focusFirst.requestFocus()" in center)
 
 # ---- «انعكاس الشاشة»: the TV's own mirroring app, only when one is installed
@@ -87,13 +88,30 @@ check("the tile is there only when the TV can open one of them (an app missing, 
       and "ControlText.mirrorApp(p -> launchIntent(pm, p) != null)" in center
       and "pm.getLeanbackLaunchIntentForPackage(pkg)" in center and "pm.getLaunchIntentForPackage(pkg)" in center)
 check("its name «انعكاس الشاشة», its one line «من الجوال: شارك الشاشة واختر التلفزيون», its own icon",
-      'MIRROR = "انعكاس الشاشة"' in text and 'MIRROR_HINT = "من الجوال: شارك الشاشة واختر التلفزيون"' in text
+      'MIRROR = S.n("انعكاس الشاشة")' in text and 'MIRROR_HINT = S.n("من الجوال: شارك الشاشة واختر التلفزيون")' in text
       and 'tile("mirror", ControlText.MIRROR, ControlText.MIRROR_HINT, R.drawable.ic_cast,' in center
       and (ROOT / "android/launcher/src/main/res/drawable/ic_cast.xml").exists())
 check("OK opens it through the host, locked as that app's own tile is (ParentalPolicy.TILE: the app's package)",
       "host.launchGuarded(ParentalPolicy.TILE, mirror, ControlText.MIRROR)" in center and "case TILE:" in policy)
 check("the tile comes after «مخرج الصوت» and before the screensaver's, so the panel's first tiles stay where they were",
       center.index('tile("sound"') < center.index('tile("mirror"') < center.index('tile("saver"'))
+# ---- «البلوتوث»: the TV's remotes-and-accessories screen, only when one of its actions resolves
+bt_block = text[text.index("static final String[] BLUETOOTH_ACTIONS = {"):text.index("};", text.index("static final String[] BLUETOOTH_ACTIONS = {"))]
+check("the Bluetooth actions, in order: Android's BLUETOOTH_SETTINGS, then Android TV's accessories action",
+      re.findall(r'"([A-Za-z0-9_.]+)"', bt_block) == ["android.settings.BLUETOOTH_SETTINGS", "com.google.android.intent.action.CONNECT_INPUT"], bt_block)
+check("…each one in the manifest's <queries> (Android 11+ resolves only what it may see)",
+      all(f'<action android:name="{a}" />' in manifest.split("<queries>")[1].split("</queries>")[0] for a in ("android.settings.BLUETOOTH_SETTINGS", "com.google.android.intent.action.CONNECT_INPUT")))
+check("the tile is there only when one resolves, opens it behind the TV's settings' lock, and has its own icon",
+      "final Intent bluetooth = bluetoothIntent();" in center and "if (bluetooth != null)" in center
+      and "pm.resolveActivity(new Intent(a), 0) != null" in center
+      and "host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, bluetooth, ControlText.BLUETOOTH)" in center
+      and 'BLUETOOTH = S.n("البلوتوث")' in text and 'BLUETOOTH_HINT = S.n("الريموت والملحقات")' in text
+      and (ROOT / "android/launcher/src/main/res/drawable/ic_bluetooth.xml").exists())
+check("Wi-Fi and Bluetooth side by side, first (docs/UX-REVIEW.md): the network tile, then Bluetooth, then the rest",
+      center.index('tile("net"') < center.index('tile("bluetooth"') < center.index('tile("sound"') < center.index('tile("speed"')
+      < center.index('tile("sleep"') < center.index('tile("off"') < center.index('tile("mirror"') < center.index('tile("saver"'))
+check("at most ten tiles: sleep, off, network, speed, sound, mirroring, Bluetooth, screensaver, ours, the TV's settings",
+      len(re.findall(r'tile\("[a-z]+"', center)) == 10, re.findall(r'tile\("[a-z]+"', center))
 check("nine tiles may go five to a row; eight or fewer are laid out as before", "static final int FIVE_AFTER = 8;" in src("ControlLayout.java")
       and "for (int cols : columns(n))" in src("ControlLayout.java"))
 
@@ -121,7 +139,7 @@ if not shutil.which("javac"):
     sys.exit(1 if failed else 0)
 cases = [l.split("\t") for l in (ROOT / "tests/control_center_cases.tsv").read_text(encoding="utf-8").split("\n") if l and not l.startswith("#")]
 with tempfile.TemporaryDirectory() as tmp:
-    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "ControlText.java"), str(HOME / "ControlLayout.java"), str(HOME / "PillText.java"), str(HOME / "DigitsText.java"),
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "tests/i18n_home_stub/S.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java"), str(HOME / "ControlText.java"), str(HOME / "ControlLayout.java"), str(HOME / "PillText.java"), str(HOME / "DigitsText.java"),
                     str(HOME / "SpeedTest.java"), str(ROOT / "tests/ControlTextRun.java"), str(ROOT / "tests/SpeedTestRun.java")], check=True, capture_output=True)
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.ControlTextRun", str(ROOT / "tests/control_center_cases.tsv")],
                          check=True, capture_output=True).stdout
@@ -138,6 +156,7 @@ with tempfile.TemporaryDirectory() as tmp:
         check(f"layout {W}x{H} @{d}: {n} tiles in {cols}x{rows}, the panel inside the screen",
               cols * rows >= n and pw <= W * 0.82 + 1 and ph <= H * 0.90 + 1 and th >= 54 * d - 1, g)
     check("the layout cases cover nine tiles («انعكاس الشاشة») on 1080p, 720p and 540p", {(c[1], c[2]) for c in cases if c[0] == "layout" and c[4] == "9"} >= {("1920", "1080"), ("1280", "720"), ("960", "540")})
+    check("…and ten tiles («البلوتوث» too) on 1080p, 720p and 540p", {(c[1], c[2]) for c in cases if c[0] == "layout" and c[4] == "10"} >= {("1920", "1080"), ("1280", "720"), ("960", "540")})
     check("every case answered", len(got) > len(cases), (len(got), len(cases)))
     r = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.SpeedTestRun"], capture_output=True, text=True)
     for l in r.stdout.splitlines():

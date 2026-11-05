@@ -1,0 +1,56 @@
+# UrTV community list: sony-kd-49x8000g-hk
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/sony-kd-49x8000g-hk/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: SONY
+# match-model: BRAVIAATV34K BRAVIAKD49X8000G
+# match-device: BRAVIAATV34K
+
+tv.samba.ssm
+com.sony.dtv.sonyselect
+com.sony.dtv.sonyselect.overlay
+com.sony.dtv.discovery
+com.sony.dtv.bivlinfo
+com.sony.dtv.tvlaunchercustomizer
+com.sony.dtv.tvlaunchercustomizer.overlay.apporder
+com.google.android.tvrecommendations
+android.autoinstalls.config.sony.bravia
+com.sony.dtv.demomode
+com.sony.dtv.demosupport
+com.sony.dtv.multiscreendemo
+com.sony.dtv.da.service
+com.qterics.da.product
+com.sony.dtv.sonybugreportsys
+com.google.android.tv.bugreportsender
+com.google.android.feedback
+com.mediatek.agent
+com.mediatek.dmagent
+com.sony.dtv.sonyloglevelsettingsys
+com.sony.dtv.sonyloglevelsettingvnd
+com.sony.dtv.b2b.vendorprotocol
+com.sony.dtv.b2b.rs232csupport
+com.sony.dtv.b2b.hotelmode
+com.sony.dtv.b2b.noderuntime.normal
+com.sony.dtv.b2b.noderuntime.privilege
+com.sony.dtv.b2b.frameworkextension
+com.sony.dtv.b2b.prosettings
+com.sony.dtv.b2b.importexport
+com.sony.dtv.b2b.webappruntimedrm
+com.sony.dtv.browser.webappruntimeextension
+com.sony.dtv.tuningconfirmation_dvbt
+com.sony.dtv.serviceinformation
+com.sony.dtv.customersupport
+com.sony.dtv.smarthelp
+com.sony.dtv.imanual
+com.google.android.backdrop
+com.benq.instaqlive
+com.aospstudio.tvsearch
+com.tcl.browser
+screnmirroring.com
+com.nero.swiftlink.mirror.tv
+com.smartdevice.tv.aircast
+com.sony.dtv.networkapp.wifidirect
+com.sony.huey.dlna.module
+com.sony.huey.dlna.renderersettings
+com.sonyericsson.dlna

@@ -42,7 +42,7 @@ check("only the owner's button can turn it on: PhoneHost.turnOn is called from P
 act = text(JAVA / "PhoneActivity.java")
 on_create = act.split("protected void onCreate")[1].split("protected void onResume")[0]
 check("opening the screen starts nothing (no turnOn or start in onCreate)", "turnOn" not in on_create and ".start(" not in on_create, "")
-click = re.search(r'button\("تشغيل".*?\}\s*\}\);', act, re.S)
+click = re.search(r'button\(S\.t\("تشغيل"\).*?\}\s*\}\);', act, re.S)
 check("«تشغيل» is a button the owner presses with the remote", bool(click) and "turnOn()" in click.group(0), "")
 others = [f.name for f in all_java if re.search(r"PhoneHost\.|\bPhoneControl\b", text(f)) and "/phone/" not in str(f) and f.name not in ("PhoneActivity.java",)]
 check("no other screen, receiver or boot code touches the phone control", others == [], others)
@@ -70,7 +70,7 @@ check("the screen the owner answers on is out of the phone's reach (PrivateScree
 check("the city and the home cards go through SaverReceiver.set, the code optimize/saver.sh uses", "SaverReceiver.set(" in text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/ConfigProvider.java"), "")
 check("the provider's phone calls need the signature permission", "checkCallingPermission(PHONE_PERMISSION)" in text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/ConfigProvider.java")
       and 'sa.urtv.screensaver.PHONE_SETTINGS"\n        android:protectionLevel="signature"' in text(ROOT / "android/app/src/main/AndroidManifest.xml"), "")
-check("the provider lets the phone set only the city, the home cards and the idle time", re.search(r'for \(String k : new String\[\] \{"city", "home_panel", "idle"\}\)', text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/ConfigProvider.java")) is not None, "")
+check("the provider lets the phone set only the city, the home cards, the idle time, «اللغة» and «تطبيقات في الشريط»", re.search(r'for \(String k : new String\[\] \{"city", "home_panel", "idle", "lang", "favbar"\}\)', text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/ConfigProvider.java")) is not None, "")
 til = JAVA / "tilawah"
 check("the adhan goes through AdhanSettings, for the ADB receiver and for the phone alike", "AdhanSettings." in text(til / "MusicReceiver.java") and "AdhanSettings." in text(til / "PhoneBridge.java"), "")
 voices = re.search(r"COUNT = (\d+)", text(til / "AdhanVoices.java"))
@@ -102,8 +102,15 @@ check("the page sends the session in X-UrTV-Session and the cookie goes with it"
 check("the page takes the token out of the address bar at once", "history.replaceState" in page and page.index("history.replaceState") < page.index("pair({ token: h })"), "")
 api = text(PHONE / "PhoneApi.java")
 served = set(re.findall(r'case "(/api/[a-z_/]+)"', api)) | {"/api/state"} | ({"/api/icon/"} if 'startsWith("/api/icon/")' in api else set())
-used = set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", page))
-check("every call of the page is an endpoint the server has, and the reverse", used == served, (used ^ served))
+# «محفظتي»'s own page (/m): the same rules as the main page
+pf = text(ROOT / "android/launcher/src/main/assets/phone/portfolio.html")
+check("portfolio.html builds no HTML from data, has one script with the nonce, sends the session the same way",
+      not re.search(r"innerHTML|outerHTML|insertAdjacentHTML|document\.write|\beval\(|new Function|setTimeout\(\s*['\"]", pf)
+      and pf.count("<script") == 1 and '<script nonce="__NONCE__">' in pf and "'X-UrTV-Session'" in pf and "credentials: 'same-origin'" in pf, "")
+check("portfolio.html takes the token out of the address bar before pairing, and keeps no holding (no localStorage write, the form cleared after saving)",
+      pf.index("history.replaceState") < pf.index("pairToken(m[1])") and "localStorage.setItem" not in pf and "$('buys').textContent = '';" in pf, "")
+used = set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", page)) | set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", pf))
+check("every call of the page (and of portfolio.html) is an endpoint the server has, and the reverse", used == served, (used ^ served))
 check("the page says plainly what it cannot do: keys to other apps, and text outside our screens",
       "فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال»" in page and "تحتاج أندرويد ١٣" in page and "يُكتب في حقلها بعد تفعيل خدمة إمكانية الوصول" in page and "/api/text" in page, "")
 check("the page has no reset, uninstall, ADB or PIN-changing control", not re.search(r"reset|uninstall|adb|إعادة ضبط|حذف التطبيق", page, re.I), "")

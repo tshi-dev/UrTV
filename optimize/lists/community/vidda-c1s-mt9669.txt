@@ -1,0 +1,28 @@
+# UrTV community list: vidda-c1s-mt9669
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/vidda-c1s-mt9669/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: VIDDA
+# match-model: C1S4KLASERPROJECTOR
+# match-device: MT9669
+
+com.hisense.hitv.das
+com.hisense.logupload
+com.hisense.service.hproxy
+com.hisense.service.message
+com.hisense.business.ad
+com.hisense.service.ad
+com.hisense.tv.weather
+com.hisense.cloudfalcon
+com.hisense.demonstrate
+com.hisense.hotelmenu
+com.hisense.autotest
+com.hisense.electronictutorial
+com.hisense.ar.baike
+com.jamdeo.tv.fte
+fusion.android.tv.demo
+com.hisense.tv.foodmanage
+com.jamdeo.calendar
+com.jamdeo.screensaver
+com.android.printspooler

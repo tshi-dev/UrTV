@@ -38,6 +38,39 @@ final class NowPlayingBridge {
         return o;
     }
 
+    /**
+     * The launcher's «إعداد تلفزيوني» is waiting for the TV's «السماح بتصحيح USB؟» (a prompt sent under the screensaver stays stuck until a
+     * restart): the screensaver ends at once while this is true. False when the launcher does not say (an older one, not installed, refused).
+     */
+    static boolean setupWaiting(Context c) {
+        Cursor cur = null;
+        try {
+            cur = c.getApplicationContext().getContentResolver().query(Uri.parse("content://sa.urtv.home.nowplaying/setup_hold"), null, null, null, null);
+            if (cur == null || cur.getColumnIndex("held") < 0 || !cur.moveToFirst()) return false;   // an older launcher answers with another row
+            return cur.getInt(cur.getColumnIndex("held")) == 1;
+        } catch (Exception e) {
+            return false;
+        } finally {
+            if (cur != null) try { cur.close(); } catch (Exception ignored) { }
+        }
+    }
+
+    /**
+     * «إعداد تلفزيوني» is running a setup in the launcher (its TV prompt, its steps): the dream steps aside then (ScreenDream). False when the
+     * launcher does not say (an older launcher, or not installed): the screensaver works as always.
+     */
+    static boolean setupRunning(Context c) {
+        Cursor cur = null;
+        try {
+            cur = c.getApplicationContext().getContentResolver().query(Uri.parse("content://sa.urtv.home.nowplaying/setup"), null, null, null, null);
+            return cur != null && cur.getColumnIndex("running") >= 0 && cur.moveToFirst() && cur.getInt(cur.getColumnIndex("running")) == 1;
+        } catch (Exception ignored) {
+            return false;
+        } finally {
+            if (cur != null) try { cur.close(); } catch (Exception ignored) { }
+        }
+    }
+
     /** Ends the adhan that is playing in the launcher (it checks our signature, and stops only an adhan). */
     static void stopAdhan(Context c) {
         try {
@@ -50,6 +83,35 @@ final class NowPlayingBridge {
     public String adhan() {
         JSONObject o = adhanState(app);
         return o.optBoolean("live") ? o.toString() : "";
+    }
+
+    /** true while the reminder's card is on the screen: ScreenDream then gives the keys to it (ReminderKeys) */
+    private static volatile boolean card;
+
+    static boolean reminderCard() { return card; }
+
+    /** the screen is gone: no card is up any more */
+    static void clearCard() { card = false; }
+
+    @JavascriptInterface
+    public void reminderShown(boolean on) { card = on; }
+
+    /** «تم» on the card: that task is done (a repeating reminder moves to its next time) */
+    @JavascriptInterface
+    public void reminderDone(long id) { new Prefs(app).doneTaskId(id); }
+
+    /** «ذكّرني بعد ١٠ دقائق» */
+    @JavascriptInterface
+    public void reminderSnooze(long id, int minutes) { new Prefs(app).snoozeTaskId(id, minutes); }
+
+    /** the soft chime of «صوت خفيف»: one short two-note tone at a low volume, no file and no permission */
+    @JavascriptInterface
+    public void reminderChime() {
+        try {
+            final android.media.ToneGenerator g = new android.media.ToneGenerator(android.media.AudioManager.STREAM_NOTIFICATION, 35);
+            g.startTone(android.media.ToneGenerator.TONE_PROP_ACK, 400);
+            new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(g::release, 900);
+        } catch (RuntimeException ignored) { }
     }
 
     @JavascriptInterface

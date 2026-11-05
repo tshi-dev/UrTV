@@ -1,0 +1,26 @@
+# UrTV community list: skyworth-sw-22hk-nf
+# Packages only, from the CleanYourTV project's tested debloat list for this model: https://github.com/Gathin23/cleanyourtv
+# MIT licence, Copyright (c) 2026 Gathin: see LICENSE-CleanYourTV.txt in this folder.
+# Source: examples/skyworth-sw-22hk-nf/debloat.txt at commit 3cd274f866b71ec15e4f7d8c796514b0baa8033c, taken 2026-11-02.
+# Made by .github/tools/community_lists.py. Used only when this TV is matched (optimize/community.py): never for another model.
+# match-brand: SKYWORTH
+# match-model: SW22HKNF
+# match-device: SW6H
+
+com.smartdevice.recommendation
+com.smartdevice.leanbacklauncher.customizer
+com.smartdevice.epopplayer
+fusion.android.tv.demo
+com.coocaa.demonow.lightining
+com.smartdevice.myapp
+com.smartdevice.aftersale
+com.smartdevice.dailymanage
+com.google.android.feedback
+com.security.SwaiotTV
+com.amazon.amazonvideo.livingroom
+com.google.android.videos
+com.google.android.youtube.tvmusic
+com.google.android.play.games
+com.smartdevice.dtv.icast
+com.google.android.tungsten.setupwraith
+com.google.android.apps.tv.launcherx

@@ -43,7 +43,7 @@ check("MainActivity: ◀ is the previous surah and ▶ the next while the card h
       "NowPlaying.prev(this); else NowPlaying.next(this)" in main and "if (s.show && !s.radio) {" in main and "KEYCODE_DPAD_LEFT) NowPlaying.prev" in main)
 check("MainActivity: it is the first child of the pills row, hung evenly over its top and bottom so the row stays a pill's height,"
       " hidden until something plays: the pills do not move",
-      "int hang = dp((NowCard.HEIGHT - Pill.HEIGHT) / 2f);" in main and "right.addView(nowCard, 0, llp(-2, dp(NowCard.HEIGHT), dp(10), -hang, 0, -hang))" in main
+      "int hang = dp((NowCard.HEIGHT - Pill.HEIGHT) / 2f);" in main and "right.addView(nowCard, 0, sideLlp(-2, dp(NowCard.HEIGHT), 0, -hang, dp(Pill.GAP), -hang))" in main
       and "nowCard.setVisibility(View.GONE);" in main)
 import re
 num = lambda pat, src: float(re.search(pat, src).group(1))
@@ -80,7 +80,7 @@ check("screen card: the provider needs a signature permission only the screensav
       and 'android:authorities="sa.urtv.home.nowplaying"' in manifest_h and 'android:readPermission="sa.urtv.home.READ_NOW_PLAYING"' in manifest_h
       and 'uses-permission android:name="sa.urtv.home.READ_NOW_PLAYING"' in manifest_s)
 check("screen card: the page gets two read-only calls, window.UrtvNative.nowPlaying() and adhan() (the adhan bar), on the screen only (not on the settings' previews); errors give an empty answer",
-      '@JavascriptInterface' in bridge and bridge.count("@JavascriptInterface") == 2 and "public String adhan()" in bridge and "catch (Exception ignored)" in bridge
+      '@JavascriptInterface' in bridge and bridge.count("@JavascriptInterface") == 6   # nowPlaying, adhan, and the reminder card's four (tests/reminders_test.py) and "public String adhan()" in bridge and "catch (Exception ignored)" in bridge
       and 'if (screen) w.addJavascriptInterface(new NowPlayingBridge(c), "UrtvNative")' in screenview)
 check("screen card: the page asks once at the start and then once a minute, no faster",
       "nowPlayingTick();\n  setInterval(nowPlayingTick, 60*1000);" in (ROOT / "src/template.html").read_text(encoding="utf-8"))
@@ -92,7 +92,7 @@ if not shutil.which("javac"):
     sys.exit(1 if failed else 0)
 cases = [l.split("\t") for l in (ROOT / "tests/now_playing_cases.tsv").read_text(encoding="utf-8").split("\n") if l and not l.startswith("#")]
 with tempfile.TemporaryDirectory() as tmp:
-    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(TIL / "NowPlayingText.java"), str(HOME / "DigitsText.java"), str(ROOT / "tests/NowPlayingTextRun.java")], check=True, capture_output=True)
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "tests/i18n_home_stub/S.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java"), str(TIL / "NowPlayingText.java"), str(HOME / "DigitsText.java"), str(ROOT / "tests/NowPlayingTextRun.java")], check=True, capture_output=True)
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.tilawah.NowPlayingTextRun", str(ROOT / "tests/now_playing_cases.tsv")],
                          check=True, capture_output=True).stdout
 got = out.decode("utf-8").split("\n")

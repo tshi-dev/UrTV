@@ -26,6 +26,17 @@ final class TaskVoice {
 
     private TaskVoice() { }
 
+    /** A task typed in the field (or dictated by the keyboard's mic): spaces tidied, cut to {@code max} characters; "" when there is nothing to add. */
+    static String typed(String raw, int max) {
+        String s = (raw == null ? "" : raw).replaceAll("\\s+", " ").trim();
+        return s.length() > max ? s.substring(0, max).trim() : s;
+    }
+
+    /** The speech window came back at once with nothing and no result code at all: it never listened (Google TV's search), so the mic goes. */
+    static boolean micDead(boolean cancelledEmpty, long millisOpen) {
+        return cancelledEmpty && millisOpen >= 0 && millisOpen < 1000;
+    }
+
     static String letters(String s) {   // أ إ آ ٱ -> ا, ة -> ه, ى ئ -> ي, ؤ -> و
         StringBuilder b = new StringBuilder(s.length());
         for (char c : s.toCharArray()) {

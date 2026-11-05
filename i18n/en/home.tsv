@@ -1,0 +1,581 @@
+# Phase 3: the home app (android/launcher) but its setup/ and phone/ screens
+# arabic<TAB>english, one per line, as docs/ENGLISH.md says. tests/i18n_test.py checks every entry.
+مركز التحكم	Control Center
+انعكاس الشاشة	Screen mirroring
+من الجوال: شارك الشاشة واختر التلفزيون	On your phone: share the screen, pick this TV
+البلوتوث	Bluetooth
+الريموت والملحقات	Remotes and accessories
+%s ميجابت/ث	%s Mbps
+إشارة ضعيفة جدًا	Very weak signal
+إشارة ضعيفة	Weak signal
+إشارة متوسطة	Fair signal
+إشارة جيدة	Good signal
+إشارة ممتازة	Excellent signal
+اتصال ثابت	Wired connection
+افتح إعدادات الشبكة	Open network settings
+سماعات التلفزيون	TV speakers
+سماعة بسلك	Wired headphones
+مخرج صوت خارجي	External audio out
+بلوتوث	Bluetooth
+HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
+لا يُعرف	Unknown
+، 	, 
+خدمة الإطفاء مو شغّالة: نوقف الصوت ونشغّل شاشة التوقف. لإطفاء الشاشة فعّلها من «مؤقت النوم»	The sleep service is off: muting and showing the screensaver instead. To turn the screen off, turn it on in “Sleep timer”
+شاشة التوقف · مطوّلًا: الإعدادات	Screensaver · hold OK: settings
+مؤقت النوم	Sleep timer
+مؤقت النوم %s د	Sleep timer %s min
+شبكة سلكية	Wired network
+غير متصل	Not connected
+واي فاي	Wi-Fi
+الفجر	Fajr
+الظهر	Dhuhr
+العصر	Asr
+المغرب	Maghrib
+العشاء	Isha
+أذان %s بعد %s	%s adhan in %s
+إقامة %s بعد %s	%s iqama in %s
+اختيار: إيقاف الأذان	OK stops the adhan
+أي زر يوقف الأذان	Any button stops the adhan
+الجمعة	Jumuah
+الأذان	Adhan
+أذان %s	%s adhan
+دقيقتين	2 min
+%s دقائق	%s min
+%s دقيقة	%s min
+صباح الخير	Good morning
+طاب يومك	Good afternoon
+مساء الخير	Good evening
+تصبح على خير	Good night
+سماء صافية	Clear sky
+سماء صافية غالبًا	Mostly clear
+غائم جزئيًا	Partly cloudy
+سماء غائمة	Cloudy
+ضباب	Fog
+رذاذ	Drizzle
+أمطار	Rain
+أمطار غزيرة	Heavy rain
+مطر متجمد	Freezing rain
+ثلوج	Snow
+عواصف رعدية	Thunderstorms
+عواصف رعدية وبرد	Thunderstorms and hail
+غبار كثيف	Heavy dust
+غبار	Dust
+%s و%s	%s and %s
+%s في %s	%s in %s
+ص	AM
+م	PM
+ · وضع الاستعداد	 · standby
+أكمل المشاهدة	Continue watching
+الموسم %s	Season %s
+الحلقة %s	Episode %s
+تفاصيل التطبيق	App info
+حذف التطبيق	Uninstall
+اختر تطبيقًا لتحريكه · × للإخفاء · ارفعه للمفضلة · رجوع للإنهاء	Pick an app to move it · × to hide · up to Favorites · Back when done
+المخفية	Hidden
+اختر تطبيقًا لتحريكه · × للحذف · رجوع للإنهاء	Pick an app to move it · × to remove · Back when done
+أرسل تقرير	Send a report
+امسح الرمز بكاميرا الجوال: تفتح صفحة فيها هذا التقرير، ولا يوصلنا شيء إلا إذا ضغطت «أرسل» فيها. اكتب فيها المشكلة بكلماتك.	Scan the code with your phone’s camera: it opens a page with this report, and nothing reaches us unless you press “Send” there. Describe the problem there in your own words.
+ما في التقرير:	What the report contains:
+رجوع للإعدادات	Back to settings
+المهام	Tasks
+كل التطبيقات	All apps
+المصادر	Inputs
+تلاوة وأذان	Quran and Adhan
+تحديثات التطبيقات	App updates
+متجر Play	Play Store
+إعدادات التلفزيون	TV settings
+تحديث تلفزيوني	Update Your TV
+تراجع	Undo
+تعديل المفضلة	Edit favorites
+ما فيه تعديل في وضع الأطفال	No editing in kids mode
+المفضلة لا تقل عن %s تطبيقات	Favorites need at least %s apps
+ترتيب كل التطبيقات	Arrange all apps
+رجع ترتيب «كل التطبيقات» للأصل (حسب الاسم)	“All apps” is back in its first order (by name)
+تعديل التطبيقات	Edit apps
+كل تطبيقاتك في المفضلة	All your apps are in Favorites
+المفضلة ممتلئة (%s تطبيقات): احذف واحدًا منها بـ«تعديل المفضلة» أولاً	Favorites are full (%s apps): remove one with “Edit favorites” first
+أُضيف إلى المفضلة: %s	Added to Favorites: %s
+قائمة التطبيق	App menu
+المفضلة لا تقل عن %s	At least %s favorites
+الرقابة الأبوية	Parental controls
+البث التلفزيوني	Live TV
+كل المصادر	All inputs
+الإعدادات	Settings
+إلغاء	Cancel
+إعدادات تلفزيونك	Your TV settings
+لإطفاء الشاشة: فعّل «%s»	To turn the screen off, enable “%s”
+أدخل الرمز	Enter PIN
+هذا مقفل بالرمز الأبوي	This is locked with the parental PIN
+«%s» مقفل بالرمز الأبوي	“%s” is locked with the parental PIN
+الرمز غير صحيح، بقي %s محاولات	Wrong PIN, %s tries left
+الرمز غير صحيح	Wrong PIN
+رمز جديد	New PIN
+اختر رمزاً من أربعة أرقام	Choose a 4-digit PIN
+تأكيد الرمز	Confirm PIN
+أعد إدخال الرمز نفسه	Enter the same PIN again
+الرمزان غير متطابقين، لم يتغير شيء	The PINs don’t match, nothing changed
+%s ثانية	%s sec
+محاولات كثيرة، انتظر %s	Too many tries, wait %s
+يُفتح تلقائياً بعد الرقم الرابع\nاستخدم أرقام الريموت أو الأسهم	Opens by itself after the fourth digit\nUse the remote’s number keys or the arrows
+مسح	Clear
+حذف	Delete
+أطفئ الآن	Turn off now
+تُطفأ الشاشة فورًا	The screen turns off at once
+الخدمة مطفأة: تظهر شاشة التوقف بدل الإطفاء	The service is off: the screensaver shows instead
+الشبكة	Network
+اختبار السرعة	Speed test
+اضغط اختيار للبدء	Press OK to start
+مخرج الصوت	Sound output
+إعدادات الصوت	Sound settings
+شاشة التوقف	Screensaver
+ابدأها الآن	Start it now
+الأذان والمفضلة والمظهر	Adhan, favorites, look
+يعمل: باقي %s د	On: %s min left
+١٥ إلى ٩٠ دقيقة	15 to 90 minutes
+أُلغي · اضغط اختيار للبدء	Cancelled · press OK to start
+جارٍ القياس…	Measuring…
+تعذّر القياس: تأكد من الشبكة	Couldn’t measure: check the network
+اضغط اختيار للإعادة	Press OK to run again
+اختيار على مهمة لإنجازها. اكتب مهمة جديدة في الخانة ثم «إضافة». أو اضغط «تكلّم» وقل: أضف مهمة … / خلصت … / احذف …	Press OK on a task to mark it done. Type a new task in the box, then “Add”. Or press “Speak” and say, in Arabic: add a task, done or delete
+اكتب المهمة هنا أو أملها بميكروفون لوحة المفاتيح	Type the task here, or dictate it with the keyboard’s mic
+إضافة	Add
+🎤 تكلّم	🎤 Speak
+نعم	Yes
+لا	No
+الإدخال الصوتي غير متاح في هذا التلفزيون. اكتب المهمة في الخانة، أو استعمل ميكروفون لوحة المفاتيح	Voice input isn’t available on this TV. Type the task in the box, or use the keyboard’s mic
+تطبيق شاشة التوقف غير مثبّت أو قديم	The screensaver app is missing or out of date
+لا مهام اليوم	No tasks today
+أحذف «%s»؟	Delete “%s”?
+هذي المهمة منجزة	This task is already done
+تم: %s	Done: %s
+حُذفت: %s	Deleted: %s
+اكتب المهمة أولاً	Type the task first
+أُضيفت: %s	Added: %s
+ما أضفت المهمة: القائمة ممتلئة (%s) أو النص فاضي	Not added: the list is full (%s) or the text is empty
+تعذّر التعديل، افتح المهام من جديد	Couldn’t change it, open Tasks again
+الإدخال الصوتي غير متاح في هذا التلفزيون. اكتب المهمة في الخانة	Voice input isn’t available on this TV. Type the task in the box
+الإدخال الصوتي غير متاح في هذا التلفزيون (فتح وأغلق بلا صوت). اكتب المهمة في الخانة، أو استعمل ميكروفون لوحة المفاتيح	Voice input isn’t available on this TV (it opened and closed with no sound). Type the task in the box, or use the keyboard’s mic
+سمعت: %s	Heard: %s
+أضيف «%s»؟	Add “%s”?
+أعلّم «%s» منجزة؟	Mark “%s” done?
+ما لقيت مهمة تطابق «%s»	No task matches “%s”
+أكثر من مهمة تطابق «%s»، قل جزءاً أوضح	More than one task matches “%s”, say a clearer part
+ما فهمت. قل: أضف مهمة … أو خلصت … أو احذف …	Didn’t catch that. Say, in Arabic: add a task, done or delete
+قفل عائلي على ما تفتحه شاشة تلفزيونك الرئيسية، وليس قفلاً كاملاً للتلفزيون.	A family lock on what the Your TV home screen opens, not a lock on the whole TV.
+إيقاف الرقابة الأبوية	Turn off parental controls
+إيقاف	Off
+أُوقفت الرقابة الأبوية	Parental controls are off
+قفل الإعدادات	Lock settings
+مقفل	Locked
+مفتوح	Open
+وضع الأطفال	Kids mode
+يُظهر في الشاشة الرئيسية التطبيقات المعلَّمة «يظهر للأطفال» فقط، والخروج منه يحتاج الرمز.	The home screen shows only the apps marked “Shown to kids”, and leaving kids mode needs the PIN.
+الأزرار في الأعلى	Buttons at the top
+التطبيقات	Apps
+يظهر للأطفال	Shown to kids
+مخفي عن الأطفال	Hidden from kids
+تغيّر الرمز	PIN changed
+عُيّن الرمز	PIN set
+الخروج من وضع الأطفال	Leave kids mode
+علّم تطبيقاً واحداً على الأقل «يظهر للأطفال» أولاً	Mark at least one app “Shown to kids” first
+ترتيب المفضلة	Arrange favorites
+اختيار على تطبيق لتحريكه بالأسهم (أعلى/أسفل) ثم اختيار لتثبيته. من %s إلى %s تطبيقات.	Press OK on an app, move it with the arrows (up/down), then OK to drop it. %s to %s apps.
+المفضلة %s من %s	Favorites: %s of %s
+إضافة تطبيق	Add an app
+الترتيب الافتراضي	Default order
+رجعت المفضلة للترتيب الافتراضي	Favorites are back in the default order
+إزالة	Remove
+أُضيف %s	Added %s
+أسماء المصادر	Input names
+اختيار على مصدر لتغيير اسمه في قائمة «المصادر» (مثل PS5). اترك الاسم فارغاً لرجوع اسم التلفزيون.	Press OK on an input to rename it in the “Inputs” list (like PS5). Leave the name empty to bring back the TV’s name.
+التلفزيون ما أبلغ عن مصادر (HDMI أو غيرها).	The TV reported no inputs (HDMI or others).
+اسم المصدر: %s	Input name: %s
+حفظ	Save
+الاسم حتى %s حرفاً في سطر واحد	A name of up to %s characters, on one line
+رجع اسم التلفزيون	The TV’s name is back
+تم حفظ الاسم	Name saved
+تحكم من الجوال	Phone control
+يشغّل هذا الخيار خادمًا صغيرًا يعمل على شبكة الواي فاي في بيتك فقط. لا يعمل شيء حتى تضغط «تشغيل»، ويتوقف وحده عندما ينتهي آخر جوال.	This starts a small server that works only on your home Wi-Fi. Nothing runs until you press “Turn on”, and it stops by itself when the last phone is done.
+تمسح رمز الاستجابة السريعة بالجوال، ثم تضغط «سماح» هنا بالريموت.	Scan the QR code with your phone, then press “Allow” here with the remote.
+تشغيل	Turn on
+جوال جديد يطلب التحكم	A new phone asks for control
+العنوان: %s. اضغط «سماح» فقط إذا كان هذا جوالك.	Address: %s. Press “Allow” only if this is your phone.
+رفض	Deny
+سماح	Allow
+لا يوجد رمز جاهز.	No code is ready.
+افتح هذا العنوان في متصفح الجوال	Open this address in your phone’s browser
+واكتب هذا الرمز	and type this code
+أو امسح الرمز بكاميرا الجوال	Or scan the code with your phone’s camera
+الجوالات المتصلة	Connected phones
+لا يوجد جوال متصل.	No phone is connected.
+أُلغي اتصال الجوال	Phone disconnected
+جوال %s، %s	Phone %s, %s
+إيقاف التحكم من الجوال	Turn off phone control
+الجلسة تنتهي بعد %s دقيقة بلا استخدام أو %s ساعات كحد أقصى، ولا يُحفظ شيء بعد إعادة التشغيل.	A session ends after %s minutes unused, or %s hours at most, and nothing is kept after a restart.
+ينتهي هذا الرمز بعد %s ويتجدد وحده، ويصلح لجوال واحد مرة واحدة.	This code ends in %s and renews itself; it works once, for one phone.
+اتصل بشبكة واي فاي أولًا: هذا الخيار يعمل على الواي فاي فقط	Connect to Wi-Fi first: this works only on Wi-Fi
+تعذّر التشغيل، حاول من جديد	Couldn’t turn it on, try again
+توقف التحكم من الجوال لأن الرمز أُدخل خطأ خمس مرات.	Phone control stopped: the code was entered wrong five times.
+توقف التحكم من الجوال لأن آخر جوال انتهت جلسته.	Phone control stopped: the last phone’s session ended.
+توقف التحكم من الجوال لأنه لم يتصل أي جوال.	Phone control stopped: no phone connected.
+تصفية المواقع مفعّلة	Site filter is on
+الحماية شغّالة من قبل بإعداد ثاني، ما غيّرنا شي	Protection was already on with another setting, nothing changed
+يحتاج تفعيل من الكمبيوتر	Needs to be enabled from the computer
+ما قدرنا نوصل لخدمة الحماية، ما تغيّر شي	Couldn’t reach the protection service, nothing changed
+ما قدرنا نقرأ إعداد التلفزيون الحالي، ما تغيّر شي	Couldn’t read the TV’s current setting, nothing changed
+ما قدرنا نحفظ الإعداد القديم، ما تغيّر شي	Couldn’t save the old setting, nothing changed
+الإعداد ما انحفظ فرجّعنا القديم	The setting didn’t stick, so the old one is back
+الإنترنت وقف فرجّعنا الإعداد القديم	The internet stopped, so the old setting is back
+تصفية المواقع متوقفة، رجع الإعداد القديم	Site filter is off, the old setting is back
+تصفية المواقع متوقفة	Site filter is off
+غير مدعومة في هذا التلفزيون (أندرويد قديم)	Not supported on this TV (old Android)
+الإعداد تغيّر من مكان آخر، تركناه كما هو	The setting was changed elsewhere, so it was left as it is
+ما قدرنا نرجّع الإعداد القديم، جرّب مرة ثانية	Couldn’t bring back the old setting, try again
+غير معروفة	unknown
+مفعّلة	On
+متوقفة	Off
+تصفية المواقع (DNS)	Site filter (DNS)
+يرجع الإعداد القديم تلقائياً فقط أثناء الفحص (٢٠ ثانية). بعدها توقفها من هنا، وتشتغل بدون إنترنت.	The old setting comes back by itself only during the check (20 seconds). After that you turn it off here, and it works without internet.
+غير متاح	Not available
+اطلب من وكيلك تشغيل: optimize/dock.sh familydns grant	Ask your agent to run: optimize/dock.sh familydns grant
+جارٍ الفحص…	Checking…
+انتظر	Wait
+مفعّلة من الكمبيوتر، أوقفها من هناك	Turned on from the computer, turn it off there
+الحالة: %s	Status: %s
+إيقاف الحماية	Turn protection off
+تفعيل الحماية	Turn protection on
+الرياض	Riyadh
+يُتلى الآن، %s، %s	Now playing, %s, %s
+إعداد تلفزيوني	Your TV setup
+تحت المفضلة: ما وقفته في نصه والحلقة الجاية، من تطبيقاتك. تحتاج الواجهة إذن قراءة هذه القائمة من التلفزيون مرة واحدة، ولا يُرسل شيء خارج التلفزيون.	Under your favorites: what you stopped halfway and the next episode, from your apps. The home needs the TV’s permission to read this list once, and nothing leaves the TV.
+السماح	Allow
+سورة %s	Surah %s
+الصوت مشغول	The sound is busy
+تلاوة	Recitation
+القرآن الكريم	The Holy Quran
+حان وقت الصلاة	Time for prayer
+حان وقت صلاة %s	Time for %s prayer
+أذان من ملفي	Adhan from my file
+تسجيلك على هذا التلفزيون فقط	Your recording, on this TV only
+الشروق	Sunrise
+الغروب	Sunset
+تعذّر الاتصال بالبث، تحقق من الإنترنت	Couldn’t reach the stream, check the internet
+تعذّر تحميل السورة، تحقق من الإنترنت	Couldn’t load the surah, check the internet
+صيغة البث غير مدعومة	The stream’s format isn’t supported
+ملف السورة غير صالح	The surah’s file is broken
+توقف المشغّل	The player stopped
+تعذّر تشغيل البث	Couldn’t play the stream
+تعذّر التشغيل	Couldn’t play
+تعذّر تشغيل السورة	Couldn’t play the surah
+بث مباشر	Live
+جارٍ التحميل…	Loading…
+%s  ·  نوم %s د	%s  ·  sleep %s min
+اختيار: إيقاف/تشغيل  ·  مطولًا: فتح	OK: pause/play  ·  hold: open
+اختيار: إيقاف/تشغيل  ·  يمين/يسار: السورة  ·  مطولًا: فتح	OK: pause/play  ·  left/right: surah  ·  hold: open
+الآن	Now
+بعد %s	in %s
+القرآن الكريم، بلا إعلانات	The Holy Quran, with no ads
+القرّاء	Reciters
+الإذاعات	Radio
+متابعة التلاوة	Continue listening
+سورة %1$s — %2$s	Surah %1$s — %2$s
+%1$s سورة	%1$s surahs
+اختر سورة	Choose a surah
+البث المباشر من الحرم	Live from the Haram
+يفتح صفحة القناة الرسمية في تطبيقها أو المتصفح	Opens the official channel’s page in its app or the browser
+ما في تطبيق يفتح الرابط على هذا التلفزيون	No app on this TV can open the link
+يُتلى الآن	Now playing
+تعذر الاتصال	Couldn’t connect
+انقطع البث، جارٍ إعادة المحاولة…	The stream dropped, trying again…
+سيتوقف الصوت بهدوء	The sound will fade out
+إيقاف المؤقت	Turn off the timer
+٣٠ دقيقة	30 min
+٦٠ دقيقة	60 min
+٩٠ دقيقة	90 min
+إيقاف التشغيل الآن	Stop now
+يتوقف بعد %1$s دقيقة	Stops in %1$s min
+يمين/يسار بين الأقسام  •  اختيار للفتح  •  رجوع للواجهة	Left/right: sections  •  OK: open  •  Back: home
+اختيار: تشغيل/إيقاف  •  يمين/يسار: ١٠ ثوانٍ  •  أسفل مؤقت النوم  •  رجوع للقائمة	OK: play/pause  •  Left/right: 10 seconds  •  Down: sleep timer  •  Back: list
+اختيار: إيقاف/تشغيل  •  أسفل مؤقت النوم  •  رجوع للقائمة	OK: stop/play  •  Down: sleep timer  •  Back: list
+رجوع	Back
+تشغيل أو إيقاف	Play or pause
+السابق	Previous
+التالي	Next
+تلفزيونك: إطفاء الشاشة	Your TV: screen off
+يطفئ شاشة التلفزيون عند انتهاء «مؤقت النوم»، ويضغط «رجوع» و«الرئيسية» (وفي أندرويد ١٣ وما فوق الأسهم والاختيار) عندما ترسل جوالك ذلك. لا يقرأ شيئًا من الشاشة ولا يسجّل ما تكتب، وهذا كل ما يفعله.	Turns the TV’s screen off when the sleep timer ends, and presses Back and Home (and on Android 13 and up the arrows and OK) when your phone sends them. It reads nothing on the screen and records nothing you type; that is all it does.
+تلفزيونك: التحكم والكتابة من الجوال	Your TV: phone control and typing
+يضغط الأسهم والاختيار والرجوع والرئيسية التي ترسلها من جوالك داخل التطبيق الذي أمامك على التلفزيون، ويكتب النص الذي ترسله في حقل النص فيه. يطلب من أندرويد خبر تغيّر النافذة فقط ليعرف أي تطبيق أمامك ولا يقرأ منه شيئاً، ولا ينظر في الشاشة إلا لحظة وصول نص أو زر من جوالك (ليجد الحقل أو ليحرّك التركيز قبل أندرويد ١٣)، ولا يحفظ ولا يسجّل ولا يرسل لجوالك أي شيء مما يراه، ولا يكتب في حقل كلمة مرور ولا في تطبيق مقفول بالرقم السري. وحين تكون خارج الشاشة الرئيسية (رسيفر على HDMI مثلاً) يجعل زر الإعدادات في الريموت يفتح إعدادات التلفزيون، ويترك كل زر غيره كما هو دون أن يقرأه أو يسجّله.	Presses the arrows, OK, Back and Home you send from your phone inside the app in front of you on the TV, and types the text you send into its text field. It asks Android only to be told when the window changes, to know which app is in front, and reads nothing from it; it looks at the screen only the moment a text or a button arrives from your phone (to find the field, or to move the focus before Android 13), and keeps, records or sends your phone nothing it sees. It never types into a password field or into an app locked with the PIN. Outside the home screen (a receiver on HDMI, say) it makes the remote’s settings button open the TV’s settings, and leaves every other button as it is, without reading or recording it.
+التشغيل	Playback
+الأذان التلقائي	Automatic adhan
+مفعّل	On
+متوقف	Off
+المؤذن	Muezzin
+اختر المؤذن	Choose the muezzin
+مؤذن الفجر	Fajr muezzin
+اختر مؤذن الفجر	Choose the Fajr muezzin
+أذان مختصر	Short adhan
+مفعّل  •  يتوقف بعد دقيقة	On  •  stops after a minute
+متوقف  •  الأذان كاملًا	Off  •  the whole adhan
+تكبير فقط	Takbir only
+إيقاف الأذان بأي زر	Any button stops the adhan
+مفعّل  •  أي زر يوقف الأذان (ما عدا الصوت والطاقة)	On  •  any button stops it (not volume or power)
+متوقف  •  «اختيار» على شريط الأذان يوقفه	Off  •  OK on the adhan bar stops it
+الأذان على شاشة التوقف فقط	Adhan on the screensaver only
+تنبيه عند الأذان	Notice at adhan time
+شاشة التوقف وقت الأذان	Screensaver at adhan time
+صوت الأذان	Adhan volume
+قد يتأخر الأذان دقائق	The adhan may be minutes late
+فعّل المنبّهات الدقيقة  •  اختيار يفتح الإعداد	Allow exact alarms  •  OK opens the setting
+%1$s  •  الصوت المختار	%1$s  •  chosen voice
+اختيار يجرّب ١٢ ثانية ويحفظ الاختيار  •  التسجيلات: أرشيف الإنترنت، ملكية عامة  •  رجوع	OK plays 12 seconds and keeps the choice  •  Recordings: Internet Archive, public domain  •  Back
+بتوقيت %s	Time in %s
+المدينة	City
+تحجب المواقع غير المناسبة للعائلة على كل التلفزيون. قبل التفعيل نتأكد أن الخدمة تشتغل، وإذا وقف الإنترنت نرجّع الإعداد القديم تلقائياً.	Blocks sites not suitable for the family on the whole TV. Before turning it on we check that the service works, and if the internet stops we bring back the old setting by itself.
+تحقق من التحديث	Check for updates
+ما فيه اتصال بالإنترنت	No internet connection
+التحديث من التلفزيون ما يشتغل على هذا الجهاز.\nاطلب من مساعد الذكاء الاصطناعي على جهازك:\nحدّث تلفزيوني	Updating from the TV doesn’t work on this device.\nAsk the AI assistant on your computer:\nUpdate Your TV
+لازم تسمح لتطبيق تلفزيونك بتثبيت التحديثات.	Allow the Your TV app to install updates.
+فتح شاشة السماح	Open the permission screen
+جارٍ التحقق…	Checking…
+جارٍ تنزيل التحديث والتحقق منه…	Downloading and checking the update…
+أكّد التثبيت على شاشة أندرويد بالريموت.	Confirm the install on Android’s screen with the remote.
+اعرض شاشة التثبيت	Show the install screen
+ما اكتمل التحديث	The update didn’t finish
+ألغيت التثبيت.	You cancelled the install.
+الإصدار المثبّت %s	Installed version %s
+تلفزيونك محدّث: %s	Your TV is up to date: %s
+تحديث جديد %s · اضغط للتحديث	New update %s · press to update
+تم التحديث ✓ %s	Updated ✓ %s
+الخطوة: %s	Step: %s
+تحديث تطبيق الحافظة	Updating the screensaver app
+تحديث الواجهة الرئيسية	Updating the home screen
+التحقق من الملفات	Checking the files
+انقل	Move
+أخفِ	Hide
+اقفل	Lock
+افتح القفل	Unlock
+أضف للمفضلة	Add to favorites
+أزل من المفضلة	Remove from favorites
+أُخفي، ويرجع من «تعديل التطبيقات»	Hidden. Bring it back from “Edit apps”
+فُتح القفل	Unlocked
+قُفل، ويطلب الرمز	Locked: it asks for the PIN
+الرقابة الأبوية متوقفة	Parental controls are off
+ضع رمزًا من أربعة أرقام، ثم اختر ما يُقفل. بدون رمز لا يُقفل شيء، والشاشة الرئيسية كما هي.	Set a four-digit PIN, then choose what to lock. Without a PIN nothing is locked and the home screen stays as it is.
+ما الذي يُقفل؟	What gets locked?
+فعّل الرقابة الأبوية	Turn on parental controls
+الرقابة الأبوية مفعّلة	Parental controls are on
+غيّر الرمز	Change the PIN
+التطبيقات المقفلة	Locked apps
+يقفل إعدادات تلفزيونك، وخيارات التطبيقات، وترتيب المفضلة.	Locks Your TV’s settings, the app options, and the favorites order.
+التطبيقات التي تختارها، وإعدادات تلفزيونك وخيارات التطبيقات، والأزرار في الأعلى إن أردت، ووضع الأطفال الذي لا يُظهر إلا ما تسمح به. التلفزيون نفسه يبقى كما هو.	The apps you choose, Your TV’s settings and the app options, the buttons at the top if you like, and kids mode, which shows only what you allow. The TV itself stays as it is.
+لا تطبيق مقفل	No app locked
+تطبيق واحد مقفل	One app locked
+تطبيقان مقفلان	Two apps locked
+%s تطبيقات مقفلة	%s apps locked
+%s تطبيقًا مقفلًا	%s apps locked
+%s، %s، %s.	%s, %s, %s.
+والإعدادات مقفلة	settings locked
+والإعدادات مفتوحة	settings open
+ووضع الأطفال مفعّل	kids mode on
+ووضع الأطفال متوقف	kids mode off
+اضغط مطوّلاً للخيارات	Hold OK for options
+إعدادات الأذان	Adhan settings
+للخروج من تلفزيونك اضغط رجوع ثلاث مرات	To leave Your TV, press Back three times
+للخروج من تلفزيونك اضغط رجوع مطوّلًا	To leave Your TV, hold Back
+بعد التحديث توقفت خدمة الكتابة من الجوال. شغّلها من إعدادات التلفزيون: إمكانية الوصول، تلفزيونك.	After the update, typing from the phone stopped. Turn it on in the TV settings: Accessibility, Your TV.
+مكة المكرمة · قناة القرآن الكريم	Makkah · Quran channel
+المدينة المنورة · قناة السنة النبوية	Madinah · Sunnah channel
+مهمة	Task
+ذكّرني	Remind me
+التاريخ	Date
+الساعة	Time
+قبلها بـ	Before
+يتكرر	Repeats
+يومياً	Daily
+أسبوعياً	Weekly
+صوت خفيف	Soft chime
+أين يظهر	Shown on
+في وقت الموعد	At the time
+شاشة التوقف والرئيسية	Screensaver and home
+شاشة التوقف فقط	Screensaver only
+الرئيسية فقط	Home only
+◀ ▶ تغيّر القيمة، واختيار يتقدم بها. التغييرات تُحفظ فوراً.	◀ ▶ change the value, OK steps it on. Changes are saved at once.
+تم	Done
+الساعة %s	At %s
+، الآن	, now
+، بعد %s	, in %s
+ذكّرني بعد %s	Remind me in %s
+# «الأسواق» and «محفظتي» (MarketsActivity, docs/PROPOSALS-NOV2.md §6 and §7)
+السوق	Market
+قائمتي	My list
+محفظتي	My portfolio
+الأخبار	News
+تداول مفتوح	Tadawul open
+تداول مغلق	Tadawul closed
+يغلق بعد %s	closes in %s
+يفتح %s %s	Opens %s %s
+لا أسعار بعد: يلزم اتصال بالإنترنت	No prices yet: the TV needs the internet
+آخر تحديث %s · أسعار متأخرة	Updated %s · delayed prices
+الأحد	Sunday
+الاثنين	Monday
+الثلاثاء	Tuesday
+الأربعاء	Wednesday
+الخميس	Thursday
+%s س و%s د	%s h %s min
+%s د	%s min
+اتجاه السوق	Market direction
+أكبر %s شركة	Largest %s companies
+%s مرتفعة	%s up
+%s دون تغيير	%s unchanged
+%s منخفضة	%s down
+الجلسة	Session
+الأحد إلى الخميس	Sunday to Thursday
+%s · مزاد الإغلاق إلى %s	%s · closing auction to %s
+الأكثر ارتفاعًا وانخفاضًا	Top gainers and losers
+لا تغيير بعد اليوم	No change yet today
+الأكثر نشاطًا	Most active
+بالكمية، من أكبر %s شركة	By volume, of the largest %s companies
+الخط المتقطع: إغلاق أمس	Dashed line: yesterday’s close
+السهم	Stock
+السعر	Price
+التغيّر	Change
+قائمتك فارغة. افتح سهمًا من «السوق» واختر «أضف إلى قائمتي».	Your list is empty. Open a stock in “Market” and choose “Add to my list”.
+الذهب والنفط	Gold and oil
+الذهب، للغرام	Gold, per gram
+الذهب، للأونصة	Gold, per ounce
+الفضة، للغرام	Silver, per gram
+برنت	Brent
+العملات	Currencies
+بالريال	In riyals
+ربط ثابت	Fixed peg
+الدولار	US dollar
+الدرهم الإماراتي	UAE dirham
+الريال القطري	Qatari riyal
+الدينار البحريني	Bahraini dinar
+أظهر المبالغ	Show amounts
+أخفِ المبالغ	Hide amounts
+أضف سهمًا	Add a stock
+خيارات محفظتي	Portfolio options
+لا أسهم في محفظتك بعد	No stocks in your portfolio yet
+اضغط «أضف سهمًا»، أو أضفها من الجوال: افتح «التحكم من الجوال» وامسح الرمز، ثم «محفظتي».	Press “Add a stock”, or add them from your phone: open “Phone control”, scan the code, then “My portfolio”.
+القيمة الإجمالية	Total value
+الربح الكلي	Total gain
+الكمية	Quantity
+متوسط التكلفة	Average cost
+القيمة	Value
+الربح	Gain
+الأسهم الأمريكية بالدولار، والمجموع بالريال على سعر الربط %s	US stocks in dollars; the total in riyals at the %s peg
+%s · بالدولار	%s · in dollars
+تبقى في هذا التلفزيون فقط، ولا تُرسل في أي تقرير ولا تنتقل مع الإعدادات	Kept on this TV only: never in a report, never moved with the settings
+مؤشر السوق الرئيسية · تداول	Main market index · Tadawul
+%s · تداول · ر.س	%s · Tadawul · SAR
+الافتتاح	Open
+نطاق اليوم	Day’s range
+نطاق ٥٢ أسبوعًا	52-week range
+%s مليون	%s million
+لا سعر لهذا الرمز في ملف الأسعار بعد	No price for this code in the price file yet
+عدّل	Edit
+احذف	Delete
+أحذف «%s» من محفظتك؟	Delete “%s” from your portfolio?
+أزل من قائمتي	Remove from my list
+أضف إلى قائمتي	Add to my list
+أخفه من شريط الأسواق	Hide from the markets bar
+أظهره في شريط الأسواق	Show in the markets bar
+تبقى في قائمتك سهم واحد على الأقل	Your list keeps at least one stock
+قائمتك ممتلئة: %s أسهم	Your list is full: %s stocks
+تم الحفظ	Saved
+يبقى في الشريط سوق واحد على الأقل	The bar keeps at least one market
+الشريط ممتلئ: %s أسواق. أخفِ واحدًا أولًا	The bar is full: %s markets. Hide one first
+ما حُفظ: حدّث تطبيق «شاشة تلفزيونك»	Not saved: update the UrTV screensaver app
+أسهم أكبر %s شركة في تداول. لسهم أمريكي أو رمز آخر: «أسهل من الجوال».	The largest %s companies on Tadawul. For a US stock or another code: “Easier from the phone”.
+أسهل من الجوال	Easier from the phone
+%s · ر.س	%s · SAR
+احفظ	Save
+اكتب الكمية ومتوسط التكلفة	Type the quantity and the average cost
+المحفظة ممتلئة: %s سهمًا	The portfolio is full: %s stocks
+ما حُفظ	Not saved
+ما قدرنا نفتح «التحكم من الجوال»	Could not open “Phone control”
+اقفل محفظتي	Lock my portfolio
+مفعّل · تسأل عن الرقم السري قبل فتحها	On · asks for the PIN before it opens
+متوقف · ضع رقمًا سريًا من الرقابة الأبوية أولًا	Off · set a PIN in parental controls first
+ضع رقمًا سريًا من الرقابة الأبوية أولًا	Set a PIN in parental controls first
+احذف المحفظة	Delete the portfolio
+كل الأسهم وعمليات الشراء، من هذا التلفزيون	Every stock and buy, from this TV
+أحذف المحفظة كلها من هذا التلفزيون؟ لا يمكن التراجع.	Delete the whole portfolio from this TV? This cannot be undone.
+حُذفت المحفظة	Portfolio deleted
+%s م سهم	%s M shares
+أسبوع	Week
+شهر	Month
+سنة	Year
+قبل أسبوع	A week ago
+قبل شهر	A month ago
+الخط المتقطع: أول الفترة	Dashed line: the start of the range
+الأسعار متأخرة · المصدر: %s	Delayed prices · Source: %s
+عادي	Normal
+مباشر · المصدر: %s	Live · Source: %s
+متأخرة ~%s د	~%s min delayed
+صرف العملات	Currency exchange
+الأسعار مقابل الريال السعودي	Rates against the Saudi riyal
+مربوط بالدولار	Pegged to the dollar
+غرام الذهب %s	Gold per gram %s
+حوّل	Convert
+حوّل العملات	Convert currencies
+اختر العملات	Choose currencies
+اختر العملة	Choose a currency
+أسعار يومية · المصدر: Yahoo Finance. الريال والدرهم والريال القطري والدينار البحريني والريال العماني والدينار الأردني مربوطة بالدولار.	Daily rates · Source: Yahoo Finance. The riyal, dirham, Qatari riyal, Bahraini dinar, Omani rial and Jordanian dinar are pegged to the dollar.
+دولار أمريكي	US dollar
+ريال سعودي	Saudi riyal
+دينار كويتي	Kuwaiti dinar
+درهم إماراتي	UAE dirham
+ريال قطري	Qatari riyal
+دينار بحريني	Bahraini dinar
+ريال عماني	Omani rial
+دينار أردني	Jordanian dinar
+جنيه مصري	Egyptian pound
+يورو	Euro
+جنيه إسترليني	British pound
+ليرة تركية	Turkish lira
+روبية هندية	Indian rupee
+روبية باكستانية	Pakistani rupee
+دينار عراقي	Iraqi dinar
+درهم مغربي	Moroccan dirham
+دينار جزائري	Algerian dinar
+دينار تونسي	Tunisian dinar
+دينار ليبي	Libyan dinar
+جنيه سوداني	Sudanese pound
+ريال يمني	Yemeni rial
+ليرة لبنانية	Lebanese pound
+ليرة سورية	Syrian pound
+أوقية موريتانية	Mauritanian ouguiya
+بيزو فلبيني	Philippine peso
+روبية إندونيسية	Indonesian rupiah
+تاكا بنغلاديشية	Bangladeshi taka
+روبية سريلانكية	Sri Lankan rupee
+روبية نيبالية	Nepalese rupee
+رينغيت ماليزي	Malaysian ringgit
+بر إثيوبي	Ethiopian birr
+شلن كيني	Kenyan shilling
+ين ياباني	Japanese yen
+يوان صيني	Chinese yuan
+فرنك سويسري	Swiss franc
+دولار كندي	Canadian dollar
+دولار أسترالي	Australian dollar
+دولار سنغافوري	Singapore dollar
+دولار هونغ كونغ	Hong Kong dollar
+وون كوري	South Korean won
+روبل روسي	Russian ruble
+راند جنوب أفريقي	South African rand
+آخر تحديث %s	Updated %s
+اكتمل التحديث. اضغط للعودة إلى الشاشة الرئيسية.	The update is done. Press to go back to the home screen.
+اكتب الكمية	Type the quantity
+اكتب متوسط التكلفة	Type the average cost
+%s مهمة كحد أقصى	At most %s tasks
+الأسواق	Markets
+المباريات	Matches
+%s كحد أقصى	%s at most
+المفضلون	Favorites
+اسمح بالإشعارات ليظهر ما يُتلى في إشعارات التلفزيون. وإن رفضت، تبقى التلاوة كما هي.	Allow notifications to see what is playing in the TV's notifications. If you say no, playback works the same.
+السوق الأمريكي مفتوح	US market open
+%s · نيويورك	%s · New York
+ناسداك	Nasdaq
+داو جونز	Dow Jones

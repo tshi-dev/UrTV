@@ -1,18 +1,18 @@
 # Tilawah «تلاوة» — the Quran, the radio and the adhan
 
 The «تلاوة» screen is part of the **home app** (`sa.urtv.home`), not an app of its own: the pill in the top bar
-opens it, and it is never listed among the TV's apps. It plays the Quran only — forty reciters' Hafs
+opens it, and it is never listed among the TV's apps. It plays the Quran only — forty-two reciters' Hafs
 murattal (114 surahs each) and live Quran radio — plus the five daily adhans at Umm al-Qura times.
 There is no local/USB music, no Spotify or YouTube Music, no account, no ads and no analytics.
 
-Package `sa.urtv.home` · classes `sa.urtv.home.tilawah` · label «تلاوة» · minSdk 26, targetSdk 30.
+Package `sa.urtv.home` · classes `sa.urtv.home.tilawah` · label «تلاوة» · minSdk 26, targetSdk 34.
 
 ## What is in here
 
 | | |
 |---|---|
 | <img src="screenshots/02-tilawah-reciters.jpg" alt="The reciters tab" width="320"> | <img src="screenshots/03-adhan-times.jpg" alt="The adhan tab" width="320"> |
-| The **«القرّاء»** tab — forty reciters, 114 surahs each, and «متابعة التلاوة» when a surah is paused | The **«الأذان»** tab — today's five times at Umm al-Qura, the next one in gold with the time left |
+| The **«القرّاء»** tab — forty-two reciters, 114 surahs each, and «متابعة التلاوة» when a surah is paused | The **«الأذان»** tab — today's five times at Umm al-Qura, the next one in gold with the time left |
 | <img src="screenshots/05-muezzins.jpg" alt="The muezzins" width="320"> | <img src="screenshots/07-surah-grid.jpg" alt="The surah grid" width="320"> |
 | The **«المؤذن»** list — 21 named recordings; the chosen one in gold with its city | The **«سورة»** grid — the 114 surahs of a reciter, six columns, right to left |
 | <img src="screenshots/06-adhan-player.jpg" alt="The adhan in the player" width="320"> | <img src="screenshots/08-player.jpg" alt="A surah in the player" width="320"> |
@@ -31,7 +31,7 @@ Package `sa.urtv.home` · classes `sa.urtv.home.tilawah` · label «تلاوة»
   read from the right, like the rest of the app. Left/Right switches section from anywhere on the
   screen; Down (or OK on the tab) enters the list and
   Up from the first row goes back to the tabs. «القرّاء» holds «متابعة التلاوة» when a surah is
-  paused, then the forty reciters; «الإذاعات» holds the eleven live stations (and the resume row when
+  paused, then the forty-two reciters; «الإذاعات» holds the eleven live stations (and the resume row when
   a station was playing); «الأذان» holds today's five times (the next one in gold with the time left,
   OK plays that adhan now), «الأذان التلقائي» (OK switches it on or off), «المؤذن» (OK opens the 21
   recordings) and «صوت الأذان» (Left/Right set it in steps of 10, 10 % to 100 %, thirty by default, with a bar
@@ -143,6 +143,10 @@ optimize/music.sh adhan off | on
 optimize/music.sh adhan voice 7            # the recording used at Dhuhr, Asr, Maghrib and Isha (not the Fajr ones: 10 13 17 20)
 optimize/music.sh adhan fajr-voice 10      # «مؤذن الفجر»: Fajr's own muezzin (default 10)
 optimize/music.sh adhan short on|off       # «أذان مختصر»: stops after the first minute, 3-second fade
+optimize/music.sh adhan takbir on|off      # «تكبير فقط»: only the opening takbir (14 s, 2-second fade); turns short off
+optimize/music.sh adhan saver-only on|off  # «الأذان على شاشة التوقف فقط»: plays only over the screensaver or our home
+optimize/music.sh adhan notice on|off      # «تنبيه عند الأذان»: a 5-second «حان وقت صلاة …» at the prayer's time
+optimize/music.sh adhan saver-at on|off    # «شاشة التوقف وقت الأذان»: starts the screensaver at the prayer's time if our home is in front
 optimize/music.sh adhan stopkey on|off     # «إيقاف الأذان بأي زر»: ON by default, any key stops the adhan (volume keys and Power excepted); off: only OK on the adhan bar
 optimize/music.sh adhan stop               # stop the adhan that is playing
 optimize/music.sh adhan volume 60          # its own volume, 10-100
@@ -173,14 +177,29 @@ python3 .github/tools/fetch_quran.py           # regenerate the three JSON files
 python3 .github/tools/fetch_quran.py --check   # ranged GET of every stream URL
 ```
 
-- **Reciters** are forty curated Hafs murattal entries from [mp3quran.net](https://mp3quran.net);
+- **Reciters** are forty-two curated Hafs murattal entries from [mp3quran.net](https://mp3quran.net);
   the app builds `server + 001.mp3 … 114.mp3` from the server field.
 - **Surahs** come from [api.alquran.cloud](https://alquran.cloud); names are stripped of the
   «سُورَةُ» prefix, vowel marks and tatweel.
-- **Stations** are eleven live streams from mp3quran/qurango.net, with the Saudi Quran Radio first.
+- **Stations** are eleven live streams: the Saudi Quran Radio first (the Saudi Broadcasting Authority's own) and ten from mp3quran/qurango.net. (Cairo's Quran Radio on radiojar was tried and removed: the TV's player never played it, neither from the resolved address nor through a local relay; it was the last, so the saved station numbers stay. A saved number past the end falls back to the first.)
 - Streams move or go quiet; the `--check` run verifies one kilobyte of each URL. At the time of
-  writing all 51 URLs answered with `audio/mpeg`. A station that fails may be temporarily down;
-  the app retries and reports it.
+  writing all 50 URLs answered with `audio/mpeg`. A station that fails may be temporarily down;
+  the app retries and reports it. The Saudi Quran Radio is the Saudi Broadcasting Authority's own HLS
+  (`live.kwikmotion.com`, the CDN of radioplus.sba.sa): https, no redirect, no token. Its former radiojar
+  address never played on the owner's TV (step 182). `.github/workflows/stations-check.yml` checks every
+  station in CI (ffprobe, then 60 s of audio; the table goes to the `data-stations` branch). Before the
+  player gets a station, the app follows its redirects itself (radiojar sent https to its CDN over plain
+  http, which the TV's player did not follow) and
+  tries a server error (backup.qurango.net's random 500) three times, 2 s then 4 s apart, before it says
+  it cannot play (`StreamUrl`, `tests/stream_url_test.py`).
+- **«البث المباشر من الحرم»** is two links, not streams: rows after the stations that open the Saudi
+  Broadcasting Authority's own YouTube channels live, Makkah on the Quran channel
+  (`https://www.youtube.com/@SaudiQuranTv/live`) and Madinah on the Sunnah channel
+  (`https://www.youtube.com/@SaudiSunnahTv/live`), both linked from sba.sa's footer. The `/live` address
+  follows whatever the channel broadcasts now (a video id would change). OK opens it in the YouTube app,
+  else SmartTube, else the browser (`ACTION_VIEW`). Nothing is played, copied or re-hosted here, and no
+  aggregator is used. The links are `HaramLive.LIVE` (https, on `sba.sa`, `aloula.sa` or `youtube.com`
+  only). `tests/haram_live_test.py`.
 
 The assets live in `android/launcher/src/main/assets/quran/` (`reciters.json`, `stations.json`,
 `surahs.json`). `tests/tilawah_test.py` checks the catalog, the adhan, the cleartext
@@ -191,9 +210,9 @@ scope and the manifest.
 - Runtime requests are the audio streams and their redirects, the adhan recordings
   (`archive.org`), and one Aladhan call a day (`api.aladhan.com`, method 4). There is no account,
   upload, analytics or ad SDK.
-- `res/xml/network_security_config.xml` sets `cleartextTrafficPermitted="false"` globally. The Saudi
-  Quran Radio (`stream.radiojar.com`) redirects to its CDN over `http://n0X.radiojar.com`; cleartext
-  is allowed only for `radiojar.com` and its subdomains. Nothing else may use HTTP.
+- `res/xml/network_security_config.xml` sets `cleartextTrafficPermitted="false"` globally. Every
+  station is https now; cleartext stays allowed only for `radiojar.com` and its subdomains (the former
+  Saudi Quran Radio address redirected to `http://n0X.radiojar.com`). Nothing else may use HTTP.
 - Permissions: internet, network/Wi-Fi state (Wi-Fi lock), wake lock, foreground media playback,
   notifications, boot completed (the adhan alarm), exact alarms, and modify audio settings (the
   adhan's own volume). There is no storage permission and no access to local media.
@@ -218,3 +237,9 @@ CI builds the home app with the screensaver, renames it to `urtv-home.apk`, and 
   calendar: Umm al-Qura for a place outside the Gulf, which is the project's choice. `تعديل وقت الصلاة` moves them to a mosque's minutes.
 - The UI is Arabic/RTL; the transport buttons are intentionally LTR so the previous/next arrows match
   every other player.
+
+## الأذان والتلفزيون المكتوم (قرار المالك، step 28b)
+
+إذا كان التلفزيون **مكتومًا** وقت الأذان: يرفع التطبيق الكتم، يشغّل الأذان بمستواه الخاص، ثم **يكتم التلفزيون من جديد** عند نهايته، وكذلك إذا أُوقف أو رجعتَ (Back) أو انطفأت الشاشة أو توقفت الخدمة؛ ولو مات التطبيق في الوسط، يرجع الكتم والمستوى أول ما تبدأ الخدمة من جديد. الكتم يُقرأ **قبل** أي رفع. في السجل (`UrTVAdhan`): `adhan start: … tv_muted_before=<true|false>` ثم `adhan volume: the TV was muted, unmuted for the adhan` ثم عند النهاية `adhan end: re-mute done` (أو `FAILED`، أو `not done: the volume was changed during the adhan` إذا غيّر الشخص الصوت بنفسه فيبقى كما اختار).
+
+**سجل الكتم (`UrTVMute`، step 29):** كل تغيير في الصوت أو الكتم نسببه نحن يُكتب: `mute keep stage=ours why=<adhan_unmute|adhan_volume_set|adhan_volume_back|adhan_remute|phone_mute_toggle|phone_vol_up|phone_vol_down|restore_mute> muted_now=… vol=…`؛ وكل تغيّر في كتم الموسيقى يسجّله النظام يُكتب `mute changed: muted=… by=us` أو `by=not us (the system, the TV or another app)`. هكذا يُعرف من فكّ الكتم إذا وُجد التلفزيون غير مكتوم.

@@ -15,6 +15,17 @@ public final class HomeBackRun {
         check("…but Back in the scrolled grid goes to the dock first", !HomeBack.leaves(false, true));
         check("the default home is the app the HOME intent resolves to", HomeBack.isDefaultHome("sa.urtv.home", "sa.urtv.home"));
         check("another home, no home, or a chooser (no package) is not ours", !HomeBack.isDefaultHome("com.google.android.apps.tv.launcherx", "sa.urtv.home") && !HomeBack.isDefaultHome(null, "sa.urtv.home") && !HomeBack.isDefaultHome("android", "sa.urtv.home"));
+        check("«الرجوع يفتح شاشة التوقف» off (the default): Back never starts the screensaver", !HomeBack.startsSaver(false, true, false, true));
+        check("on, as the default home, at the top, with the screensaver app: Back starts it", HomeBack.startsSaver(true, true, false, true));
+        check("on, but opened from its tile (not the default home): Back leaves instead, no screensaver", !HomeBack.startsSaver(true, false, false, true));
+        check("on, but the grid is scrolled: Back goes to the dock first", !HomeBack.startsSaver(true, true, true, true));
+        check("on, but the screensaver app is missing: nothing", !HomeBack.startsSaver(true, true, false, false));
+        check("the TV row says nothing (an old copy, no screensaver, an older one before it had the row): the switch stays",
+              !HomeBack.rowChanged(false, null) && !HomeBack.rowChanged(true, null));
+        check("the TV row turned on (never taken, or taken as off): the switch takes on", HomeBack.rowChanged(false, Boolean.TRUE));
+        check("the TV row turned off after on: the switch takes off", HomeBack.rowChanged(true, Boolean.FALSE));
+        check("the TV row as it was last taken: the switch stays (dock.sh backsaver on with the row still off keeps on)",
+              !HomeBack.rowChanged(false, Boolean.FALSE) && !HomeBack.rowChanged(true, Boolean.TRUE));
         System.out.println(failed == 0 ? "ALL PASS" : "FAILED " + failed);
         if (failed != 0) System.exit(1);
     }
