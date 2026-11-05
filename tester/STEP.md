@@ -1,4 +1,4 @@
-«⏳ WAIT — step 36 cancelled (the owner checked the Downloader code himself: it serves 4.2). Keep polling.»
+«✅ GO — step 37 now: 8 demo-clean pictures for a post today (build 204). TV muted. Restore lang en after.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -617,3 +617,15 @@ The owner wants the 4 demo-clean pictures from step 34m. Check each by eye once 
 2. Download that final APK to a temp folder; report its size and `aapt dump badging` (or `apkanalyzer`) versionName/versionCode — expect 4.2 / 204 (or newer). Delete it after.
 3. Same for 2927902 (the screensaver fallback): final URL and its version.
 Report as «step 36» in REPORT.md and push.
+
+## step 37 — pictures for a second X post (today; build 204 = 4.2 release; TV muted; Arabic, look «رملي» unless noted; restore everything in Z incl. lang en)
+Demo-clean exactly as step 34m (Makkah, no owner data, no PIN/code/QR/Wi-Fi name/IP/serial, demo favourites). 1920×1080 TV shots; phone shots from the phone page in a desktop browser at phone size (390×844, 3x) if no phone is handy.
+1. `p1-phone-remote.png` — the phone page's remote screen (paired, demo).
+2. `p2-phone-search.png` — the phone page typing a YouTube search (no real query history).
+3. `t1-reciters.png` — «تلاوة»: the reciters list with favourites on top and the letter index visible.
+4. `t2-adhan.png` — the adhan settings/page (times visible, Makkah).
+5. `f1-parental.png` — «الرقابة الأبوية» page (no PIN shown; recovery code NEVER shown).
+6. `f2-control-center.png` — «مركز التحكم» with Wi-Fi and Bluetooth tiles (blur or hide the Wi-Fi network name if shown).
+7. `r1-tasks.png` — «المهام» with 2 demo tasks, one with «ذكّرني» time; plus `r2-reminder.png` the reminder card showing over the screensaver/home if you can trigger it with a demo task 1–2 min ahead.
+8. `b1-own-photos.png` — Settings › شاشة التوقف › «صور شاشة التوقف» / «صوري» screen (packs list may be empty: shoot it anyway), and `b2-screensaver.png` — the screensaver with a nice built-in photo, no person.
+Check each by eye, then commit ONLY these files to branch `work/marketing` under `marketing/4.2b/` and push. Remove the demo tasks. Report «step 37: pushed N pictures».
