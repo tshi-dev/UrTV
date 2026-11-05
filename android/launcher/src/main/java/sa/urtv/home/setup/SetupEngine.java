@@ -324,7 +324,18 @@ final class SetupEngine {
     boolean castKeepsWizard() throws IOException {
         String c = store.get(CAST_CHOICE);
         if (c != null && c.trim().equals("off")) return false;
-        return text("dumpsys package " + WRAITH + " 2> /dev/null | grep -m 1 castinfo.CastInfoProvider").contains("castinfo.CastInfoProvider");
+        return castDevice(text("getprop ro.product.manufacturer; getprop ro.product.device; dumpsys package " + WRAITH + " 2> /dev/null | grep -m 1 castinfo.CastInfoProvider"));
+    }
+
+    /**
+     * install.sh's cast_device: the provider AND a Google-made device (ro.product.manufacturer «Google», or the codename sabrina, boreal or
+     * kirkwood). Other makers' Google TV builds share the wizard and its provider (a TCL G07 has it, tester 4.2): there the wizard goes as before.
+     */
+    static boolean castDevice(String answer) {
+        if (answer == null || !answer.contains("castinfo.CastInfoProvider")) return false;
+        String[] l = answer.replace("\r", "").split("\n", -1);
+        String maker = l.length > 0 ? l[0].trim().toLowerCase(java.util.Locale.ROOT) : "", device = l.length > 1 ? l[1].trim().toLowerCase(java.util.Locale.ROOT) : "";
+        return maker.equals("google") || device.equals("sabrina") || device.equals("boreal") || device.equals("kirkwood");
     }
 
     /** owned: a saved network belongs to the setup wizard · other: none does · unknown: the TV did not say. */

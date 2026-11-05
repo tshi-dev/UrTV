@@ -8,7 +8,8 @@
 #                                  UrTV opens from its «تلفزيونك» tile)
 #   optimize/dock.sh cast off      our home first: the choice is recorded, then the usual home switch, which may turn the wizard off with
 #                                  its Wi-Fi guard (never when it owns the saved Wi-Fi). Casting from a phone then says «untrusted device».
-# Only on a TV whose wizard holds the cast credentials (told by the provider, never by the model name); anywhere else it says so and stops.
+# Only on a Google cast device whose wizard holds the cast credentials (the provider AND a Google-made device: cast_device); anywhere else,
+# a TCL or Sony Google TV whose wizard has the same provider included, it says so and stops.
 # The wizard is only ever turned ON here; turning it off is install.sh's job, with its checks.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -17,17 +18,28 @@ RUN="${URTV_RUN_DIR:-optimize/run}"
 CASTF="$RUN/cast.txt"
 WRAITH=com.google.android.tungsten.setupwraith
 tv() { "$PY" -I optimize/tv.py "$@"; }
-casts() { tv "dumpsys package $WRAITH 2> /dev/null | grep -m 1 castinfo.CastInfoProvider" 2> /dev/null | grep castinfo.CastInfoProvider > /dev/null; }
+# A Chromecast-type device: the provider in the wizard AND a Google-made device. Google TV builds of other makers share the wizard and its
+# provider (a TCL G07 has it, tester 4.2), and there the wizard goes as before. Google's own: ro.product.manufacturer «Google», or the
+# codename of one (sabrina: Chromecast with Google TV 4K, boreal: its HD, kirkwood: Google TV Streamer). Input: the TV's answer to
+# «getprop ro.product.manufacturer; getprop ro.product.device; dumpsys package <wizard> | grep -m 1 castinfo.CastInfoProvider».
+cast_device() {
+  local maker device
+  maker=$(sed -n 1p <<< "$1" | tr -d '\r ' | tr '[:upper:]' '[:lower:]')
+  device=$(sed -n 2p <<< "$1" | tr -d '\r ' | tr '[:upper:]' '[:lower:]')
+  grep castinfo.CastInfoProvider <<< "$1" > /dev/null || return 1
+  [ "$maker" = google ] || [ "$device" = sabrina ] || [ "$device" = boreal ] || [ "$device" = kirkwood ]
+}
+casts() { local o; o=$(tv "getprop ro.product.manufacturer; getprop ro.product.device; dumpsys package $WRAITH 2> /dev/null | grep -m 1 castinfo.CastInfoProvider" 2> /dev/null) || return 1; cast_device "$o"; }
 wizard() {   # on | off | unknown
   local d; d=$(tv "pm list packages -d; echo END_OF_LIST" 2> /dev/null | tr -d '\r') || { echo unknown; return; }
   [ "$(tail -n 1 <<< "$d")" = END_OF_LIST ] || { echo unknown; return; }
   if grep -x "package:$WRAITH" <<< "$d" > /dev/null; then echo off; else echo on; fi
 }
-choice() { local c; c=$(tr -d '\r\n ' < "$CASTF" 2> /dev/null || true); echo "${c:-on}"; }
+choice() { local c; c=$(tr -d '\r\n ' 2> /dev/null < "$CASTF" || true); echo "${c:-on}"; }   # 2> before <: a missing cast.txt says nothing
 mode="${1:-status}"
 case "$mode" in status|on|off) ;; *) echo "usage: optimize/dock.sh cast on|off|status"; exit 1 ;; esac
 if ! casts; then
-  echo "This TV's setup wizard does not hold cast credentials (not a Chromecast with Google TV), or the TV did not say: nothing to do. Casting does not depend on the home switch here."
+  echo "This TV is not a Google cast device (a Chromecast with Google TV or a Google TV Streamer whose setup wizard holds the cast credentials), or it did not say: nothing to do. Casting does not depend on the home switch here."
   [ "$mode" = status ] && exit 0
   exit 1
 fi
