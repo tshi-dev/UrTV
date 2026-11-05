@@ -12,6 +12,7 @@ for photos/packs.json), packs-built/covers/<id>.jpg, packs-built/<id>-sheet.jpg 
 """
 import io
 import json
+import re
 import subprocess
 import sys
 import time
@@ -32,6 +33,13 @@ def get(url):
         except Exception:  # noqa: BLE001
             time.sleep(5 * (attempt + 1))
     raise SystemExit(f"could not download {url}")
+
+
+def scaled(url):
+    """A Commons original as Commons' own 3840-px-wide rendering (Special:FilePath?width=): plenty for 1920x1080, and a 200-megapixel Hubble
+    original is never downloaded or opened (Pillow refuses it as a decompression bomb). Any other address as it is."""
+    m = re.match(r"https://upload\.wikimedia\.org/wikipedia/commons/[0-9a-f]/[0-9a-f]{2}/([^/?#]+)$", url)
+    return f"https://commons.wikimedia.org/wiki/Special:FilePath/{m.group(1)}?width=3840" if m else url
 
 
 def sheet(zpath, path):
@@ -65,9 +73,8 @@ def main():
         work.mkdir(parents=True, exist_ok=True)
         photos = []
         for i, ph in enumerate(pk["photos"], 1):
-            ext = ".png" if ph["url"].lower().endswith(".png") else ".jpg"
-            name = f"src{i:03d}{ext}"
-            (work / name).write_bytes(get(ph["url"]))
+            name = f"src{i:03d}.img"   # Pillow reads the format from the bytes
+            (work / name).write_bytes(get(scaled(ph["url"])))
             photos.append({"file": name, "title": ph["title"], "author": ph["author"], "licence": ph["licence"], "link": ph["link"]})
         (work / "manifest.json").write_text(json.dumps({"reviewed": pk.get("reviewed") is True, "photos": photos}, ensure_ascii=False, indent=1),
                                             encoding="utf-8")
