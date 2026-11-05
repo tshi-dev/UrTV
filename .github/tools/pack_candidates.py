@@ -189,7 +189,7 @@ def main(which):
         for i, c in enumerate(cands, 1):
             c["n"] = i
         (OUT / f"{pack}.json").write_text(json.dumps(cands, ensure_ascii=False, indent=1), encoding="utf-8")
-        for k in range(0, min(len(cands), SHEET_N), 20):
+        for k in range(0, min(len(cands), MAX_PER_PACK if pack in ATTRIBUTION_PACKS else SHEET_N), 20):   # a city is never «calm»: every one on the sheets
             sheet(cands[k:k + 20], OUT / f"{pack}-{k // 20 + 1}.jpg")
         summary[pack] = {"looked_at": len(seen), "candidates": len(cands), "left_out": why}
         print(pack, summary[pack], flush=True)
