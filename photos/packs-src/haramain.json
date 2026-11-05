@@ -16,7 +16,11 @@
    "url": "https://upload.wikimedia.org/wikipedia/commons/a/a8/Roza_Rasool%2C_Masjid_e_Nabvi%2C_Medina_Munawara_-_panoramio_%282%29.jpg",
    "source_width": 4608,
    "licence_url": "https://creativecommons.org/licenses/by/3.0",
-   "changes": "cropped to 16:9 and resized to 1920×1080"
+   "changes": "cropped to 16:9 and resized to 1920×1080",
+   "focus": [
+    0.5,
+    0.8
+   ]
   },
   {
    "title": "Great Mosque of Mecca1",
@@ -49,7 +53,7 @@
    "changes": "cropped to 16:9 and resized to 1920×1080",
    "focus": [
     0.5,
-    0.4
+    0.75
    ]
   },
   {
@@ -117,7 +121,7 @@
    "changes": "cropped to 16:9 and resized to 1920×1080",
    "focus": [
     0.5,
-    0.4
+    0.75
    ]
   },
   {
@@ -190,7 +194,11 @@
    "licence": "CC0",
    "link": "https://commons.wikimedia.org/wiki/File:Medium_shot_of_the_Green_Dome_at_The_Prophet%27s_Mosque_(Al_Masjid-e-Nabawi).jpg",
    "url": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Medium_shot_of_the_Green_Dome_at_The_Prophet%27s_Mosque_%28Al_Masjid-e-Nabawi%29.jpg",
-   "source_width": 5184
+   "source_width": 5184,
+   "focus": [
+    0.5,
+    0.8
+   ]
   }
  ]
 }
