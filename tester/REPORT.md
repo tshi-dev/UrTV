@@ -1227,3 +1227,30 @@ Things you may want before posting:
 - `x4` has only S&P as a US index, TASI, bitcoin and gold (the page's market strip), not my demo stocks: it doesn't show a stock list
 
 Restored: `import`, stocks, dock by hand; look, appearance and home layout by hand (the export doesn't change them). Lang **en**. `show` and `export` same as before these shots; dock, PIN, tasks, photos, adhan, family DNS, disabled (21), packages (177), Home holder, saver same. Muted, nothing playing, TV asleep as I found it. **restored: yes.**
+
+## step 35 — build 200, release check (updated from 198, channel next; TV muted throughout; lang en; Thu 16:32–16:46)
+**Not ALL PASS: 2 small problems (both English only), and one question on item 2.** Nothing blocks by itself as far as I saw: no crash, no sound.
+
+### Problems
+1. **Small, English: matches page cuts «Started 4:25…».** A game that has begun, in the time column of its row. Arabic has room: «بدأت 4:25 م» whole. Seen on one row, the only game running then
+2. **Small, English: stock card with 3 buttons is uneven.** On 2222 «Show in the markets bar» wraps to 2 lines, so that button is 154 px tall, `[736,816,1184,970]`, beside 111 px ones at `[…816…927]`. Nothing is cut. Arabic one line, all 111 px, `y 859–970`
+
+### Question on item 2
+«Falls back without error»: with `station=11` saved from build 198 there is no error and no crash, **but it doesn't move to another station.** `status` says `station=11`, empty name, `error=`. `music.sh resume` and `music.sh radio 11`: `playing=0`, still 11, no error. So a press does nothing, silently. If that's the design, ✓. I had no way to re-create the saved 11 after playing another station, so **the «تلاوة» page with a saved 11 was not opened**; the home did run with it, and line 543 of its `MainActivity` guards the number.
+
+### Items
+1. ✓ Update: both apps 200. Muted at every check, no session playing. After «Done» the top is `sa.urtv.home/.MainActivity`, nothing else opened. («No sound» is by these readings; the TV is muted.)
+2. ✓ Cairo gone: `music.sh stations` lists 0–10, 11 stations. Station 0 and 1 `playing=1` at 9 s each. Saved 11: see above.
+3. ✓ Muhammad Ayyub: reciter 41, `ayyub`, «محمد أيوب». Surah 1 `playing=1`, pos 2739 → 9753 of 59037. By command, not the on-screen list. Stopped by hand.
+4. ✓ S&P 500 row, both languages: «7,688.62  +1.58%» with a gap; when focused the price is dark on the white pill.
+5. ✓ Stock card (2222, AAPL; EN and AR, 4 opens): chart whole with its axis on opening, no scroll; «Back»/«رجوع» in the button row with first focus, `y 816–927` EN 2222, otherwise `y 859–970`. Back key returns to the same row, all 4. The scroll body no longer takes focus: ▲ from «Back» goes to the range tabs.
+6. Sweep, EN and AR: home, tray (5 steps along), matches, markets, settings hub, screensaver page. `FATAL` 0 and `ANR` 0 both runs. No «…» in any dump, whole tiles in the tray; matches and screensaver checked by eye only (WebView). Problems 1 and 2 above are the only cuts or unevenness I saw. Sheets opened at reduced size, details zoomed where something looked off. The measure's «outside safe area» on the hub's hint line is its full-width box, the text is inside.
+
+Not swept: the inner settings pages, «تلاوة», the real dream. Also still as in step 34: «delayed prices» on the markets header (now with «Tadawul closed», `Updated 2:54 PM`).
+
+### Other
+`by=not us` 0 at 16:45, log cleared at 16:40ish by the last sweep. Mute held for all of it.
+AAPL was added to the list for item 5 and removed.
+
+### Z
+`import`: nothing to change. Stocks the 5, updatechannel latest, lang **en** (AR only for the sweep, about 5 min). `show` differs only in the build (200). Same: dock, PIN and locked list, tasks, photos, adhan, family DNS, disabled (21), packages (177), Home holder, saver. Radio's saved station back to 0, nothing playing. Muted. TV asleep as I found it. **restored: yes.**
