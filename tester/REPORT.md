@@ -1254,3 +1254,7 @@ AAPL was added to the list for item 5 and removed.
 
 ### Z
 `import`: nothing to change. Stocks the 5, updatechannel latest, lang **en** (AR only for the sweep, about 5 min). `show` differs only in the build (200). Same: dock, PIN and locked list, tasks, photos, adhan, family DNS, disabled (21), packages (177), Home holder, saver. Radio's saved station back to 0, nothing playing. Muted. TV asleep as I found it. **restored: yes.**
+
+## step 34p: pushed
+The owner confirmed in chat first, because the repo is public and the standing rule was no images. Rechecked by eye and metadata (only sRGB): Makkah and demo data only. Branch `work/marketing`, under `marketing/4.2/`: `x1-home-football.png`, `x2-markets.png`, `x3-matches.png`, `x4-screensaver.png`. One commit on top of next, only these 4 files. No TV work. The extras `x2b`, `x3b` stay on the PC and in the owner's zip.
+Note: `x2` shows the header with «أسعار متأخرة»; it was taken on build 198, before the S&P row fix, and that row is not in it.
