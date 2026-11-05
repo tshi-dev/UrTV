@@ -1,0 +1,232 @@
+{
+ "id": "ksa-cities",
+ "name": "مدن السعودية",
+ "name_en": "Saudi cities",
+ "source": "ويكيميديا كومنز: CC BY وBY-SA وCC0 وملكية عامة",
+ "source_en": "Wikimedia Commons: CC BY, BY-SA, CC0, public domain",
+ "allow_attribution": true,
+ "reviewed": true,
+ "review": "the owner allowed CC BY / BY-SA 2.0-4.0 for this pack only (never NC or ND); each photo looked at on the CI sheets; every BY/BY-SA credit carries its licence address and the changes, shown in «حقوق الصور»",
+ "photos": [
+  {
+   "title": "Riyadh Skyline showing the King Abdullah Financial District (KAFD) and the famous Kingdom Tower",
+   "author": "B.alotaby",
+   "licence": "CC BY-SA 4.0",
+   "link": "https://commons.wikimedia.org/wiki/File:Riyadh_Skyline_showing_the_King_Abdullah_Financial_District_(KAFD)_and_the_famous_Kingdom_Tower_.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Riyadh_Skyline_showing_the_King_Abdullah_Financial_District_%28KAFD%29_and_the_famous_Kingdom_Tower_.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 6000,
+   "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080"
+  },
+  {
+   "title": "Riyadh Skyline",
+   "author": "B.alotaby",
+   "licence": "CC BY-SA 4.0",
+   "link": "https://commons.wikimedia.org/wiki/File:Riyadh_Skyline.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/2/20/Riyadh_Skyline.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 4109,
+   "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080"
+  },
+  {
+   "title": "King Abdullah Financial District 184719",
+   "author": "Ahmed",
+   "licence": "CC BY-SA 4.0",
+   "link": "https://commons.wikimedia.org/wiki/File:King_Abdullah_Financial_District_184719.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/8/85/King_Abdullah_Financial_District_184719.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 3648,
+   "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080"
+  },
+  {
+   "title": "King Abdullah Financial District 20230411 114859",
+   "author": "Ahmed",
+   "licence": "CC BY-SA 4.0",
+   "link": "https://commons.wikimedia.org/wiki/File:King_Abdullah_Financial_District_20230411_114859.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/6/64/King_Abdullah_Financial_District_20230411_114859.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 5120,
+   "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080"
+  },
+  {
+   "title": "At-Turaif District in ad-Dir'iyah 2025",
+   "author": "ほっきー",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:At-Turaif_District_in_ad-Dir%27iyah_2025.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/9/99/At-Turaif_District_in_ad-Dir%27iyah_2025.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 5712
+  },
+  {
+   "title": "At-Turaif District",
+   "author": "xiquinhosilva",
+   "licence": "CC BY 2.0",
+   "link": "https://commons.wikimedia.org/wiki/File:At-Turaif_District.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/7/75/At-Turaif_District.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 3000,
+   "licence_url": "https://creativecommons.org/licenses/by/2.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080"
+  },
+  {
+   "title": "JadFauW",
+   "author": "Mghamdi",
+   "licence": "CC BY-SA 3.0",
+   "link": "https://commons.wikimedia.org/wiki/File:JadFauW.JPG",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/6/67/JadFauW.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 2592,
+   "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080"
+  },
+  {
+   "title": "Old Jeddah (Al Balad), Saudi Arabia in November 2022",
+   "author": "Anne and David",
+   "licence": "Public domain",
+   "link": "https://commons.wikimedia.org/wiki/File:Old_Jeddah_(Al_Balad),_Saudi_Arabia_in_November_2022.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/7/7b/Old_Jeddah_%28Al_Balad%29%2C_Saudi_Arabia_in_November_2022.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 6000
+  },
+  {
+   "title": "Green woodwork in old Jeddah (Al Balad) October 8 2021",
+   "author": "Francisco Anzola",
+   "licence": "CC BY 2.0",
+   "link": "https://commons.wikimedia.org/wiki/File:Green_woodwork_in_old_Jeddah_(Al_Balad)_October_8_2021.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/c/c7/Green_woodwork_in_old_Jeddah_%28Al_Balad%29_October_8_2021.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 5926,
+   "licence_url": "https://creativecommons.org/licenses/by/2.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080"
+  },
+  {
+   "title": "Old Jeddah (Al Balad) architecture 3 Feb 2022",
+   "author": "Francisco Anzola",
+   "licence": "CC BY 2.0",
+   "link": "https://commons.wikimedia.org/wiki/File:Old_Jeddah_(Al_Balad)_architecture_3_Feb_2022.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/d/db/Old_Jeddah_%28Al_Balad%29_architecture_3_Feb_2022.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 2048,
+   "licence_url": "https://creativecommons.org/licenses/by/2.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080"
+  },
+  {
+   "title": "AlBalad CoralHouses",
+   "author": "User:Jpatokal",
+   "licence": "CC BY-SA 4.0",
+   "link": "https://commons.wikimedia.org/wiki/File:AlBalad_CoralHouses.JPG",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/e/eb/AlBalad_CoralHouses.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 3008,
+   "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080"
+  },
+  {
+   "title": "المسجد الحرام٣",
+   "author": "saudipics",
+   "licence": "CC BY-SA 4.0",
+   "link": "https://commons.wikimedia.org/wiki/File:%D8%A7%D9%84%D9%85%D8%B3%D8%AC%D8%AF_%D8%A7%D9%84%D8%AD%D8%B1%D8%A7%D9%85%D9%A3.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/9/95/%D8%A7%D9%84%D9%85%D8%B3%D8%AC%D8%AF_%D8%A7%D9%84%D8%AD%D8%B1%D8%A7%D9%85%D9%A3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 5184,
+   "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080"
+  },
+  {
+   "title": "Mecca at night",
+   "author": "عباد ديرانية",
+   "licence": "CC BY-SA 3.0",
+   "link": "https://commons.wikimedia.org/wiki/File:Mecca_at_night.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/9/93/Mecca_at_night.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 4272,
+   "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080"
+  },
+  {
+   "title": "Al Abraj al Bait ZamZam Tawer hotel - panoramio",
+   "author": "khadim-un-nabi Rao",
+   "licence": "CC BY-SA 3.0",
+   "link": "https://commons.wikimedia.org/wiki/File:Al_Abraj_al_Bait_ZamZam_Tawer_hotel_-_panoramio.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/4/41/Al_Abraj_al_Bait_ZamZam_Tawer_hotel_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 4816,
+   "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080"
+  },
+  {
+   "title": "Wide shot of the Green Dome at The Prophet's Mosque (Al Masjid-e-Nabawi)",
+   "author": "TheHadiRahim",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Wide_shot_of_the_Green_Dome_at_The_Prophet%27s_Mosque_(Al_Masjid-e-Nabawi).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/4/44/Wide_shot_of_the_Green_Dome_at_The_Prophet%27s_Mosque_%28Al_Masjid-e-Nabawi%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 5184
+  },
+  {
+   "title": "Medium shot of the Green Dome at The Prophet's Mosque (Al Masjid-e-Nabawi)",
+   "author": "TheHadiRahim",
+   "licence": "CC0",
+   "link": "https://commons.wikimedia.org/wiki/File:Medium_shot_of_the_Green_Dome_at_The_Prophet%27s_Mosque_(Al_Masjid-e-Nabawi).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Medium_shot_of_the_Green_Dome_at_The_Prophet%27s_Mosque_%28Al_Masjid-e-Nabawi%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 5184
+  },
+  {
+   "title": "Mosque of the Prophet Muhammad at night",
+   "author": "Wajahat Mahmood from Perth, Australia",
+   "licence": "CC BY-SA 2.0",
+   "link": "https://commons.wikimedia.org/wiki/File:Mosque_of_the_Prophet_Muhammad_at_night.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/a/a7/Mosque_of_the_Prophet_Muhammad_at_night.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 4284,
+   "licence_url": "https://creativecommons.org/licenses/by-sa/2.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080"
+  },
+  {
+   "title": "Quba Mosque from Afar (2024)",
+   "author": "Kaliper1",
+   "licence": "CC BY-SA 4.0",
+   "link": "https://commons.wikimedia.org/wiki/File:Quba_Mosque_from_Afar_(2024).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/b/bf/Quba_Mosque_from_Afar_%282024%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 4000,
+   "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080"
+  },
+  {
+   "title": "Elephant rock, Al-'Ula",
+   "author": "Uhooep",
+   "licence": "CC BY-SA 4.0",
+   "link": "https://commons.wikimedia.org/wiki/File:Elephant_rock,_Al-%27Ula.jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/8/86/Elephant_rock%2C_Al-%27Ula.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 5184,
+   "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080"
+  },
+  {
+   "title": "Elephant Rock (6736168119)",
+   "author": "Sammy Six",
+   "licence": "CC BY 2.0",
+   "link": "https://commons.wikimedia.org/wiki/File:Elephant_Rock_(6736168119).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/0/01/Elephant_Rock_%286736168119%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 4608,
+   "licence_url": "https://creativecommons.org/licenses/by/2.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080"
+  },
+  {
+   "title": "Landscape at al-Ula, Saudi Arabia (15)",
+   "author": "Richard Mortel",
+   "licence": "CC BY 2.0",
+   "link": "https://commons.wikimedia.org/wiki/File:Landscape_at_al-Ula,_Saudi_Arabia_(15).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/9/90/Landscape_at_al-Ula%2C_Saudi_Arabia_%2815%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 4032,
+   "licence_url": "https://creativecommons.org/licenses/by/2.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080"
+  },
+  {
+   "title": "Landscape at al-Ula, Saudi Arabia (2)",
+   "author": "Richard Mortel",
+   "licence": "CC BY 2.0",
+   "link": "https://commons.wikimedia.org/wiki/File:Landscape_at_al-Ula,_Saudi_Arabia_(2).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/e/e4/Landscape_at_al-Ula%2C_Saudi_Arabia_%282%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 5995,
+   "licence_url": "https://creativecommons.org/licenses/by/2.0",
+   "changes": "cropped to 16:9 and resized to 1920×1080"
+  },
+  {
+   "title": "Riyadh, Saudi Arabia's capital and largest city (iss072e445326)",
+   "author": "NASA Johnson Space Center",
+   "licence": "Public domain",
+   "link": "https://commons.wikimedia.org/wiki/File:Riyadh,_Saudi_Arabia%27s_capital_and_largest_city_(iss072e445326).jpg",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/b/b6/Riyadh%2C_Saudi_Arabia%27s_capital_and_largest_city_%28iss072e445326%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "source_width": 8256
+  }
+ ]
+}
