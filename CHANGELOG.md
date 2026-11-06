@@ -2,6 +2,10 @@
 
 Newest first. `next` is where changes land first; a release is what was tested there.
 
+## 4.2.1
+
+- **The in-app setup «جهّز كل شي» goes on after its restart** (a user report on 4.2: it stopped at «قياس الذاكرة قبل» and the TV restarted). The «resume after restart» mark is now saved before the restart (the app is closed with the TV, so the old order never wrote it); the restart is announced first; each memory reading has a time limit and a failed reading is skipped with «تعذّر القياس، كمّلنا.» instead of stopping the setup. tests/setup_runner_test.py R31, R32.
+
 ## 4.2
 
 - **Chromecast with Google TV: casting and the Google Home remote kept** (a user report on 4.1: «جهاز غير موثوق فيه — تعذّر التحقق من الجلسة… برامج ثابتة قديمة» until the Google TV home came back). The cast receiver reads its device credentials from the setup wizard (setupwraith), which the home switch used to turn off. Where the wizard holds them (`castinfo.CastInfoProvider` AND a Google-made device: the maker Google, or the codename sabrina, boreal or kirkwood; a TCL G07's wizard has the provider too, so the provider alone was not enough) it now stays on, in `install.sh` and in the in-app setup, and our home is still asked to be Home; if the wizard keeps Home there, `optimize/dock.sh cast off` puts our home first (casting lost) and `cast on` brings casting back (optimize/cast.sh). docs/TVS.md corrected. Tests: tests/cast_test.py, tests/install_retry_test.py, tests/setup_engine_test.py.
