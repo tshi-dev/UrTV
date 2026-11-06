@@ -4725,7 +4725,8 @@ for (const file of ['tv.html', 'tv-en.html']) {
     return { worst, at };
   }, png.toString('base64'));
   await c2.close();
-  check(`top veil, ${file}: no hard edge (the largest step between neighbouring columns is ${step.worst} of 255, at x ${step.at})`, step.worst <= 3, JSON.stringify(step));
+  // ≤ 8: near the veil's own corner the gradient is steepest (3 at x 33 in Arabic, 4 at x 1874 in English on CI); the seam this guards against measured 101
+  check(`top veil, ${file}: no hard edge (the largest step between neighbouring columns is ${step.worst} of 255, at x ${step.at})`, step.worst <= 8, JSON.stringify(step));
 }
 
 await browser.close();
