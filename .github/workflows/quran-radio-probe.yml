@@ -1,0 +1,40 @@
+name: Quran Radio probe
+
+# Why station 0 (Saudi Quran Radio, SBA's HLS) stutters on the TV (.github/tools/hls_probe.py): its playlists, variants and segments, five minutes of
+# live play per variant, ffmpeg on the same and on other candidate addresses. The report goes to the data-quran-probe branch (one commit, replaced).
+on:
+  workflow_dispatch:
+  push:
+    branches: ['work/quran-radio']
+    paths: ['.github/tools/hls_probe.py', '.github/workflows/quran-radio-probe.yml']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: quran-radio-probe
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      CANDIDATES: >-
+        https://stream.radiojar.com/0tpy1h0kxtzuv
+        https://edge.mixlr.com/channel/rwumx
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo timeout 600 apt-get update -qq && sudo timeout 600 apt-get install -y -qq ffmpeg
+        timeout-minutes: 12
+      - run: python3 -u .github/tools/hls_probe.py $CANDIDATES
+      - name: Push to data-quran-probe
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan data-quran-probe
+          git rm -rfq --cached .
+          git add -f probe
+          git commit -qm "Quran Radio probe"
+          git push -f origin data-quran-probe
