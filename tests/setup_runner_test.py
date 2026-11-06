@@ -116,6 +116,16 @@ check("R15: the screensaver was downloaded from apk-latest and streamed to `cmd 
       "installedByUs=[sa.urtv.screensaver, com.phlox.tvwebbrowser, org.smarttube.stable] saver=sa.urtv.screensaver/.ScreenDream timeout=1800000->back", got.get("R15i"))
 check("R15: the screensaver timeout was stretched for the reading and put back exactly; the ADB key would stay only while it waits for the restart",
       (got.get("R15t") or "") == "R15t timeoutFile=[] value=null awaitAfter=false", got.get("R15t"))
+FULL_SKIPPED_MEASURE = FULL_DONE.replace("before:DONE", "before:SKIPPED").replace("after:DONE", "after:SKIPPED")
+check("R32 (4.2.1): the run is marked as waiting for the restart BEFORE `reboot` is sent (this app dies as the TV goes down), so the TV's start resumes it "
+      "and the reading is taken after the boot; the restart is said before the 15 s wait, not after it",
+      got.get("R32") == "R32 resumesAtBoot=true saidBeforeWait=true resumed=true precheck:DONE,backup:DONE,keep:DONE,before:DONE kinds=[before restart]", got.get("R32"))
+check("R31 (4.2.1): a measurement command that hangs is cut by the TV's own timeout (toybox, 20 s) and the setup goes on to the end",
+      got.get("R31limit") == f"R31limit {FULL_DONE} bad=false said=0 bounded=true unbounded=0 sysMeminfo=4 skipped=false timeout=null row=true", got.get("R31limit"))
+check("R31: without a timeout on the TV the read gives up, both readings say «تعذّر القياس، كمّلنا.» and the setup still goes on to the end; the screensaver timeout is put back",
+      got.get("R31nolimit") == f"R31nolimit {FULL_SKIPPED_MEASURE} bad=false said=2 bounded=false unbounded=2 sysMeminfo=2 skipped=false timeout=null row=false", got.get("R31nolimit"))
+check("R31: a low-memory TV (under about 1 GB) is never asked for the whole system's `dumpsys meminfo`; the reading is still taken",
+      got.get("R31lowram") == f"R31lowram {FULL_DONE} bad=false said=0 bounded=true unbounded=0 sysMeminfo=0 skipped=true timeout=null row=true", got.get("R31lowram"))
 check("R16: a TV whose adb would not come back on 5555 after a restart: no restart at all, both readings «بدون إعادة تشغيل», the run in one go",
       got.get("R16") == f"R16 {FULL_DONE} reboots=0 kinds=[before now|after now]", got.get("R16"))
 check("R17: the TV ignored the restart (the same boot after the resume): it is NOT asked again; the reading is taken without one",

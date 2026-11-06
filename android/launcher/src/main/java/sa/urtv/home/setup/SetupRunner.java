@@ -203,7 +203,7 @@ final class SetupRunner {
         p.add(new Def("precheck", true, c -> c.runner.precheckAndAsk(c)));
         p.add(new Def("backup", true, c -> new SetupPrep(c.shell, c.store, c.out).backup()));
         p.add(new Def("keep", true, c -> new SetupPrep(c.shell, c.store, c.out).keep()));
-        p.add(new Def("before", true, c -> measure(c).measure("before", !switching(c.store))));
+        p.add(new Def("before", true, c -> measureOrGoOn(c, "before")));
         p.add(new Def("grants", true, c -> c.engine.grants()));
         p.add(new Def("safe", true, c -> c.engine.debloat()));
         p.add(new Def("community", true, c -> community(c).apply()));
@@ -218,7 +218,7 @@ final class SetupRunner {
             c.runner.wantScreen();   // the stock home and then ours come in front: our home opens this screen again
             return r;
         }));
-        p.add(new Def("after", true, c -> measure(c).measure("after", !switching(c.store))));
+        p.add(new Def("after", true, c -> measureOrGoOn(c, "after")));
         p.add(new Def("report", true, c -> report(c)));
         return p;
     }
@@ -355,7 +355,29 @@ final class SetupRunner {
         if (say) line(PROMPT_LATE);
     }
 
-    static SetupMeasure measure(Context c) { return new SetupMeasure(c.shell, c.store, c.out, c.host::sleep); }
+    static SetupMeasure measure(Context c) { return new SetupMeasure(c.shell, c.store, c.out, c.host::sleep, () -> markRestart(c.store)); }
+
+    /**
+     * A reading never stops the run (4.2.1): one that fails (a command the TV did not answer in time) is said and left, and the setup goes on. The
+     * restart it asks for still ends the run here (Restarting: it goes on after the boot).
+     */
+    static SetupEngine.Result measureOrGoOn(Context c, String label) throws IOException {
+        try {
+            return measure(c).measure(label, !switching(c.store));
+        } catch (Restarting r) {
+            throw r;
+        } catch (IOException e) {
+            c.out.line(SetupMeasure.FAILED);
+            return new SetupEngine.Result(SetupEngine.Status.SKIPPED, SetupMeasure.FAILED);
+        }
+    }
+
+    /** runner.txt says the run waits for the TV's restart (the TV's start resumes it): written BEFORE `reboot`, which this app does not outlive. */
+    static void markRestart(SetupEngine.Store store) throws IOException {
+        String st = store.get(STATE_FILE);
+        if (st == null || st.isEmpty() || st.contains("\nawait=restart\n")) return;   // no full run (a reading on its own) or already said
+        store.put(STATE_FILE, (st.endsWith("\n") ? st : st + "\n") + "await=restart\n");
+    }
 
     static SetupInstall install(Context c) { return new SetupInstall(c.shell, c.session::exec, c.host.apks(), c.store, c.out, c.host::sleep); }
 
@@ -583,10 +605,7 @@ final class SetupRunner {
             complete = true;
         } catch (Restarting r) {
             e = null;   // the TV is restarting on purpose: the run goes on after the boot (runner.txt says where), nothing ends here
-            try {
-                String st = host.store().get(STATE_FILE);
-                host.store().put(STATE_FILE, (st == null ? "" : st) + "await=restart\n");
-            } catch (IOException ignored) { }
+            try { markRestart(host.store()); } catch (IOException ignored) { }   // (said already before `reboot`; here only if it was not)
         } catch (Paused p) {
             e = new End(WIFI_ASK_TEXT, false, true);   // the person is asked; «كمّل» resumes the run at the home switch
             try {
