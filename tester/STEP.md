@@ -1,4 +1,4 @@
-«✅ GO — step 38 again now: packs are on next too (0b4c47f), build 205 sees them. TV muted.
+«✅ GO — build 205 (4.2.1)» — run step 39 (end of this file). TV muted.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -642,3 +642,12 @@ Report «step 37b: pushed».
 4. «حذف» one pack frees its space; re-download works. Low-RAM: no slowdown in tray/home after packs.
 Z. Delete the packs you added only if the TV had none before (keep it as found), «صورنا» on, lang en.
 Report «step 38» in REPORT.md and push.
+
+## step 39 — 4.2.1 setup fix (TV muted; restore everything in Z)
+The bug (4.2): «جهّز كل شي» restarts the TV at «قياس الذاكرة قبل» and never resumes. Fix: the resume mark is saved before the restart.
+1. Update to this build (channel next). Version shows 4.2.1.
+2. Open «إعداد تلفزيوني», press «جهّز كل شي», and let it run with NO help: the restart line must show BEFORE the TV restarts; after the restart the setup must resume BY ITSELF (screen comes back, reading taken, continues); the second restart before «قياس الذاكرة بعد» likewise; it ends on the done screen. Log times of each restart and resume (`UrTVSetup`).
+3. Report every step ✓/✗/skipped, and whether any «تعذّر القياس، كمّلنا.» appeared.
+4. Nothing on the TV should differ from before except what the setup is meant to do (same as step 28 D1b).
+Z. Restore as in step 28b Z (lang en).
+Report «step 39» in REPORT.md; write «step 39: ALL PASS» if so. Push.
