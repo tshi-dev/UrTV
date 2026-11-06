@@ -36,9 +36,13 @@ check("every state and button is still there (checking, downloading, uptodate, f
 check("PhoneUpdater only counts bytes for the bar (read-only: progress(), told at most four times a second); no decision changed",
       "public static long[] progress()" in pu and "if (now - dlAt < 250) return;" in pu and "dlDone += n;" in pu and "verifying = true;" in pu and "verifying = false;" in pu)
 check("the picture hook is for debug builds: the extra is read only when BuildConfig.DEBUG, the receiver lives in src/debug",
-      "if (BuildConfig.DEBUG) preview = getIntent().getStringExtra(\"preview\");" in ua and (ROOT / "android/launcher/src/debug/java/sa/urtv/home/DebugUpdateShot.java").exists()
+      "if (BuildConfig.DEBUG) preview = getIntent().getStringExtra(\"preview\");" in ua and "extends Activity" in text(ROOT / "android/launcher/src/debug/java/sa/urtv/home/DebugUpdateShot.java")
       and "DebugUpdateShot" not in text(ROOT / "android/launcher/src/main/AndroidManifest.xml"))
 wf = text(ROOT / ".github/workflows/update-shots.yml")
+sh = text(ROOT / ".github/screens/update_shots.sh")
+check("a picture is taken only while UpdateActivity is the resumed activity (else the script fails), and only a successful run commits, and only all 32 pictures",
+      'grep -q "sa.urtv.home/.UpdateActivity"' in sh and "topResumedActivity" in sh and sh.count("exit 1") >= 2 and "am start -n sa.urtv.home/.DebugUpdateShot" in sh
+      and "if: success() && contains(github.event.head_commit.message, '[shots]')" in wf and "= 32" in wf)
 check("the pictures workflow: this branch and master with the hook, glass and sand, Arabic and English, committed on «[shots]»",
       "branches: ['work/update-ui', 'work/fix-182']" in wf and "update_before_patch.py" in wf and "contains(github.event.head_commit.message, '[shots]')" in wf
       and "for look in glass sand" in text(ROOT / ".github/screens/update_shots.sh") and "for lang in ar en" in text(ROOT / ".github/screens/update_shots.sh"))

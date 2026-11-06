@@ -1,12 +1,18 @@
 package sa.urtv.home;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 
-/** Debug builds only: `am broadcast -n sa.urtv.home/.DebugUpdateShot --es preview downloading` shows «تحديث تلفزيوني» in that state (available, downloading, waiting_owner, done). */
-public class DebugUpdateShot extends BroadcastReceiver {
-    @Override public void onReceive(Context c, Intent i) {
-        c.startActivity(new Intent(c, UpdateActivity.class).putExtra("preview", i.getStringExtra("preview")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+/**
+ * Debug builds only: `am start -n sa.urtv.home/.DebugUpdateShot --es preview downloading` shows «تحديث تلفزيوني» in that state (available, downloading, waiting_owner, done)
+ * without the network. An activity, not a receiver: a broadcast may not start an activity from the background on API 34, and a shell may not start UpdateActivity itself
+ * (its signature permission), but this app may.
+ */
+public class DebugUpdateShot extends Activity {
+    @Override protected void onCreate(Bundle b) {
+        super.onCreate(b);
+        startActivity(new Intent(this, UpdateActivity.class).putExtra("preview", getIntent().getStringExtra("preview")));
+        finish();
     }
 }
