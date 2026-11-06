@@ -84,7 +84,7 @@ jobs:
           name: update-shots
           path: update-out
       - name: Commit the pictures
-        if: success() && contains(github.event.head_commit.message, '[shots]')
+        if: success() && contains(join(github.event.commits.*.message, ' '), '[shots]')
         run: |
           pip install pillow
           test "$(ls update-out/*.png | wc -l)" = 72 || { echo 'not all 72 pictures: nothing is committed'; exit 1; }

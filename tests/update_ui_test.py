@@ -42,9 +42,9 @@ wf = text(ROOT / ".github/workflows/update-shots.yml")
 sh = text(ROOT / ".github/screens/update_shots.sh")
 check("a picture is taken only while UpdateActivity is the resumed activity (else the script fails), and only a successful run commits, and only all 72 pictures",
       'grep -q "$expect"' in sh and "topResumedActivity" in sh and sh.count("exit 1") >= 2 and "sa.urtv.home/.DebugUpdateShot" in sh and "sa.urtv.home/.setup.DebugSetupShot" in sh
-      and "if: success() && contains(github.event.head_commit.message, '[shots]')" in wf and "= 72" in wf)
+      and "if: success() && contains(join(github.event.commits.*.message, ' '), '[shots]')" in wf and "= 72" in wf)
 check("the pictures workflow: this branch and master with the hook, glass and sand, Arabic and English, committed on «[shots]»",
-      "branches: ['work/update-ui', 'work/fix-182']" in wf and "update_before_patch.py" in wf and "contains(github.event.head_commit.message, '[shots]')" in wf
+      "branches: ['work/update-ui', 'work/fix-182']" in wf and "update_before_patch.py" in wf and "contains(join(github.event.commits.*.message, ' '), '[shots]')" in wf
       and "for look in glass sand" in text(ROOT / ".github/screens/update_shots.sh") and "for lang in ar en" in text(ROOT / ".github/screens/update_shots.sh"))
 
 # the setup screen in the same language (4.3)
