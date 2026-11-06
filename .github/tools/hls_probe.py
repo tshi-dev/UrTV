@@ -14,6 +14,7 @@ Out: probe/report.md and probe/report.json. Nothing but the addresses is sent an
 
     python3 .github/tools/hls_probe.py [extra_url ...]
 """
+import http.client
 import json
 import os
 import re
@@ -36,11 +37,25 @@ def station0():
     return d["stations"][0]["url"]
 
 
+TRUNCATED = {"count": 0, "of": 0, "examples": []}   # responses whose chunked body ended without its last chunk (the server cut it)
+_tl = threading.Lock()
+
+
 def get(url, timeout=20):
     t = time.time()
     req = urllib.request.Request(url, headers={"User-Agent": UA})
     with urllib.request.urlopen(req, timeout=timeout) as r:
-        body = r.read()
+        cut = False
+        try:
+            body = r.read()
+        except http.client.IncompleteRead as e:   # the 1st CI run: the master playlist's chunked body ended after 137 bytes, no last chunk
+            body, cut = e.partial, True
+        with _tl:
+            TRUNCATED["of"] += 1
+            if cut:
+                TRUNCATED["count"] += 1
+                if len(TRUNCATED["examples"]) < 5:
+                    TRUNCATED["examples"].append(f"{url.split('?')[0]} ({len(body)} bytes, {r.headers.get('Transfer-Encoding')}, {r.headers.get('Server')})")
         return body, r.geturl(), round((time.time() - t) * 1000), dict(r.headers)
 
 
@@ -203,10 +218,14 @@ def main(extra):
         rep["master_again"] = body2.decode("utf-8", "replace")[:4000]
     except Exception as e:  # noqa: BLE001
         rep["stable"] = f"error {e}"
+    rep["truncated"] = TRUNCATED
+    rep["master_headers"] = h
     (OUT / "report.json").write_text(json.dumps(rep, ensure_ascii=False, indent=1), encoding="utf-8")
 
     md = [f"# Station 0 probe ({WATCH_S} s)", "", f"master: `{url}` -> `{final}` ({ms} ms, {rep['master']['content_type']})", "", "```", text[:2000], "```", "",
-          f"variant addresses the same at the end: **{rep['stable']}**", "", "| variant | bandwidth | codecs | target s | seg s | segs | disc | seg kbps | streams |",
+          f"variant addresses the same at the end: **{rep['stable']}**", "",
+          f"responses cut before their end (chunked, no last chunk): **{TRUNCATED['count']} of {TRUNCATED['of']}** {TRUNCATED['examples']}", "",
+          f"master headers: {json.dumps(h)}", "", "| variant | bandwidth | codecs | target s | seg s | segs | disc | seg kbps | streams |",
           "|---|---|---|---|---|---|---|---|---|"]
     for v in variants + renditions:
         d = rep["detail"].get(v["uri"], {})
