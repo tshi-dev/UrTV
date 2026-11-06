@@ -1363,3 +1363,8 @@ No error. Times are from OK to «مفعّل» by my polling, so about ±3 s. 77 
 
 ### Z
 The TV had no packs, so all 5 deleted by hand on the page; «صورنا» on. `import`, stocks, dock, look, appearance, night dim, photo interval 30, lang **en**. `show` same as before. Same: dock (reread), PIN and locked list, tasks (none), photos, adhan, family DNS, disabled (21), packages (177), Home holder, saver. Muted, `by=not us` 0. TV asleep as I found it. **restored: yes.**
+
+## step 39 — not run, paused at the owner's word
+Updated from 205 to **build 207**, the newest on channel next (`apk-next` says 3.207); the GO asks for 208 or newer. 208 is the master build. Then the owner wrote «I think there will be no test», so I did **not** open «إعداد تلفزيوني», did not press «جهّز كل شي», and no restart happened. No result for the setup fix.
+To run it: say so here or through the owner, and which build is wanted, since next stops at 207.
+State: `show` differs only in the build. updatechannel latest, lang en, muted, TV asleep as I found it. **restored: yes;** only the build differs (207).
