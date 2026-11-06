@@ -3,5 +3,6 @@
     <application>
         <!-- debug builds only (CI's pictures): starts the update screen showing a state, without the network or the permission a shell lacks -->
         <activity android:name="sa.urtv.home.DebugUpdateShot" android:exported="true" android:theme="@android:style/Theme.NoDisplay" android:excludeFromRecents="true" />
+        <activity android:name="sa.urtv.home.setup.DebugSetupShot" android:exported="true" android:theme="@android:style/Theme.NoDisplay" android:excludeFromRecents="true" />
     </application>
 </manifest>

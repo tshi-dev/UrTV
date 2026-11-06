@@ -246,7 +246,7 @@ public final class GlassStyle {
     }
 
     /** A colour laid over another (both ARGB; the result is opaque when the one under it is). */
-    static int over(int top, int under) {
+    public static int over(int top, int under) {
         float a = (top >>> 24) / 255f;
         int r = Math.round(((top >> 16) & 255) * a + ((under >> 16) & 255) * (1 - a));
         int g = Math.round(((top >> 8) & 255) * a + ((under >> 8) & 255) * (1 - a));

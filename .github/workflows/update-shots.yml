@@ -1,7 +1,7 @@
 name: Update screen (rendered, before and after)
 
-# «تحديث تلفزيوني» drawn by the real launcher on an Android TV emulator (1920x1080), master's layout and this branch's, in the glass and sand looks, Arabic and English,
-# in four states (available, downloading, waiting for the install's confirmation, done). Debug builds only (the activity DebugUpdateShot draws a state without the network). A picture is taken only while UpdateActivity is on top, and only pictures of a run that succeeded are committed. The pictures
+# «تحديث تلفزيوني» and «إعداد تلفزيوني» drawn by the real launcher on an Android TV emulator (1920x1080), master's layout and this branch's, in the glass and sand looks, Arabic and English,
+# in four states (update: available, downloading, waiting for the install's confirmation, done) and five (setup: start, plan, progress, restart, done). Debug builds only (the activities DebugUpdateShot and DebugSetupShot draw a state without the network). A picture is taken only while the screen is on top, and only pictures of a run that succeeded are committed. The pictures
 # are committed to docs/shots/update/{before,after} when the pushed commit's message says «[shots]» (the artifact is a zip not every reader can fetch).
 on:
   push:
@@ -87,18 +87,18 @@ jobs:
         if: success() && contains(github.event.head_commit.message, '[shots]')
         run: |
           pip install pillow
-          test "$(ls update-out/*.png | wc -l)" = 32 || { echo 'not all 32 pictures: nothing is committed'; exit 1; }
+          test "$(ls update-out/*.png | wc -l)" = 72 || { echo 'not all 72 pictures: nothing is committed'; exit 1; }
           python3 - <<'PY'
           import glob, os
           from PIL import Image
           for f in sorted(glob.glob('update-out/*.png')):
-              which, rest = os.path.basename(f).split('-', 1)
-              os.makedirs(f'docs/shots/update/{which}', exist_ok=True)
+              which, screen, rest = os.path.basename(f).split('-', 2)
+              os.makedirs(f'docs/shots/{screen}/{which}', exist_ok=True)
               im = Image.open(f).convert('RGB')
-              im.resize((1280, 720), Image.LANCZOS).save(f'docs/shots/update/{which}/{rest}', optimize=True)
+              im.resize((1280, 720), Image.LANCZOS).save(f'docs/shots/{screen}/{which}/{rest}', optimize=True)
           PY
           git config user.name tshi-dev
           git config user.email 272740088+tshi-dev@users.noreply.github.com
-          git add docs/shots/update
+          git add docs/shots/update docs/shots/setup
           git commit -m "Update screen pictures from CI: before (master) and after, glass and sand, Arabic and English [skip ci]" || exit 0
           git push origin "HEAD:${GITHUB_REF_NAME}"

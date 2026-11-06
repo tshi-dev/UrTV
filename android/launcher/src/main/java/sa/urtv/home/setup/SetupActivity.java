@@ -7,6 +7,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -43,7 +44,12 @@ public class SetupActivity extends Activity {
     private boolean running;     // a run is shown as going (this screen's thread only)
     private boolean extras = true;
     private String mode = "";
-    private final List<TextView> stepViews = new ArrayList<>();
+    private final List<TextView> stepViews = new ArrayList<>();       // each step's label
+    private final List<TextView> stepSubs = new ArrayList<>();        // the line under the step in progress
+    private final List<StepMark> stepMarks = new ArrayList<>();       // its dot on the rail
+    private TextView count;                                            // «٧ من ١٥»
+    private sa.urtv.home.CalmBar countBar;
+    private TextView notice;                                           // «سيعيد التلفزيون التشغيل الآن، وسيكمل بنفسه»
     private static SetupRunner.End dismissed;
     /** the done screen's QR code: a multiple of 8 dp (the packed report needs a small code, tester step 18) */
     static final int QR_DP = 224;   // a done screen the person closed with «تم»: the start screen again
@@ -58,11 +64,19 @@ public class SetupActivity extends Activity {
         ScrollView scroll = new ScrollView(this);
         glass(scroll);   // the glass look: the home's photo, small and blurred once, under its veil
         scroll.setVerticalScrollBarEnabled(false);
+        scroll.setFillViewport(true);
+        // one card on a solid surface, in the 5 % safe area and 16 dp more, as the update screen
+        FrameLayout frame = new FrameLayout(this);
+        scroll.addView(frame, new FrameLayout.LayoutParams(-1, -1));
+        int sw = getResources().getDisplayMetrics().widthPixels, sh = getResources().getDisplayMetrics().heightPixels;
+        frame.setPadding(Math.round(sw * 0.05f), Math.round(sh * 0.05f) + dp(16), Math.round(sw * 0.05f), Math.round(sh * 0.05f) + dp(16));
         LinearLayout col = new LinearLayout(this);
         col.setOrientation(LinearLayout.VERTICAL);
-        col.setPadding(dp(120), dp(36), dp(120), dp(48));
-        scroll.addView(col);
-        col.addView(text(S.t("إعداد تلفزيوني"), 26, "Medium", TEXT), right(dp(12)));
+        col.setLayoutDirection(Dir.layout());
+        col.setPadding(dp(40), dp(32), dp(40), dp(32));
+        col.setBackground(sa.urtv.home.GlassPaint.fill(this, sa.urtv.home.GlassStyle.over(look.dialog, look.base), 22, look.line));
+        frame.addView(col, new FrameLayout.LayoutParams(Math.min(dp(880), sw - 2 * Math.round(sw * 0.05f)), -2, Gravity.CENTER));
+        col.addView(text(S.t("إعداد تلفزيوني"), 28, "Medium", TEXT), right(dp(16)));
         body = new LinearLayout(this);
         body.setOrientation(LinearLayout.VERTICAL);
         col.addView(body, right(0));
@@ -101,6 +115,11 @@ public class SetupActivity extends Activity {
             mode = want;
             body.removeAllViews();
             stepViews.clear();
+            stepSubs.clear();
+            stepMarks.clear();
+            count = null;
+            countBar = null;
+            notice = null;
             detail.setText("");
             if (want.equals("plan")) buildPlan(r);
             else if (want.equals("progress")) buildProgress(r);
@@ -135,7 +154,7 @@ public class SetupActivity extends Activity {
         start = button(S.t("جهّز كل شي"));
         start.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(false); } });
         add(start, dp(12));
-        undo = button(S.t("تراجع (يرجّع التلفزيون كما كان)"));
+        undo = quiet(S.t("تراجع (يرجّع التلفزيون كما كان)"));
         undo.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(true); } });
         add(undo, dp(16));
         // «جهّز كل شي» has the focus once the screen is laid out (asked before that, the TV's first OK only put the focus on it: nothing happened)
@@ -218,7 +237,7 @@ public class SetupActivity extends Activity {
         final TextView begin = button(S.t("ابدأ"));
         begin.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { SetupRunner.get().confirm(extras); } });
         add(begin, dp(12));
-        TextView no = button(S.t("إلغاء"));
+        TextView no = quiet(S.t("إلغاء"));
         no.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { SetupRunner.get().cancel(); } });
         add(no, dp(12));
         begin.post(new Runnable() { @Override public void run() { begin.requestFocus(); } });
@@ -226,35 +245,151 @@ public class SetupActivity extends Activity {
     }
 
     private void buildProgress(SetupRunner r) {
-        add(text(r.kind() == SetupRunner.Kind.UNDO ? S.t("نرجّع التلفزيون كما كان:") : S.t("الإعداد يعمل. لا تطفئ التلفزيون، وقد يُعاد تشغيله وحده ويكمل."), 15, "Medium", TEXT), dp(12));
-        for (SetupRunner.Step s : r.steps()) {
-            TextView t = text("", 15, "Regular", DIM);
+        add(text(r.kind() == SetupRunner.Kind.UNDO ? S.t("نرجّع التلفزيون كما كان:") : S.t("الإعداد يعمل. لا تطفئ التلفزيون، وقد يُعاد تشغيله وحده ويكمل."), 16, "Medium", TEXT), dp(16));
+        stepsList(r);
+    }
+
+    /** «٧ من ١٥» with a calm bar, then the steps as a vertical rail: done (a tick), now (a ring, its line under it), next (hollow); a notice when the TV is about to restart */
+    private void stepsList(SetupRunner r) {
+        List<SetupRunner.Step> steps = r.steps();
+        count = text("", 15, "Medium", GOLD);
+        add(count, dp(8));
+        countBar = new sa.urtv.home.CalmBar(this, look.line, GOLD);
+        body.addView(countBar, right(dp(24)));
+        notice = text("", 15, "Medium", TEXT);
+        notice.setPadding(dp(16), dp(12), dp(16), dp(12));
+        notice.setBackground(sa.urtv.home.GlassPaint.panel(this, look, 14));
+        notice.setVisibility(View.GONE);
+        add(notice, dp(16));
+        for (int i = 0; i < steps.size(); i++) {
+            LinearLayout row = new LinearLayout(this);
+            row.setOrientation(LinearLayout.HORIZONTAL);
+            row.setLayoutDirection(Dir.layout());
+            StepMark mark = new StepMark(i == 0, i == steps.size() - 1);
+            stepMarks.add(mark);
+            row.addView(mark, new LinearLayout.LayoutParams(dp(32), -1));
+            LinearLayout words = new LinearLayout(this);
+            words.setOrientation(LinearLayout.VERTICAL);
+            TextView t = text("", 16, "Regular", DIM);
             stepViews.add(t);
-            add(t, dp(4));
+            words.addView(t, right(0));
+            TextView sub = text("", 13, "Regular", DIM);
+            sub.setVisibility(View.GONE);
+            stepSubs.add(sub);
+            words.addView(sub, right(0));
+            words.setPadding(dp(8), dp(4), 0, dp(12));
+            row.addView(words, new LinearLayout.LayoutParams(0, -2, 1f));
+            body.addView(row, right(0));
+        }
+    }
+
+    /** one step's dot on the rail, drawn: a tick (done), a ring with a dot (now), a hollow circle (next), a dash (left out), a cross (failed); the rail is the accent colour as far as the work has come */
+    private final class StepMark extends View {
+        private final boolean first, last;
+        private SetupRunner.State state = SetupRunner.State.PENDING;
+        private boolean before;   // the step above is done
+        private final android.graphics.Paint paint = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
+
+        StepMark(boolean first, boolean last) {
+            super(SetupActivity.this);
+            this.first = first;
+            this.last = last;
+        }
+
+        void set(SetupRunner.State s, boolean doneAbove) {
+            if (s == state && doneAbove == before) return;
+            state = s;
+            before = doneAbove;
+            invalidate();
+        }
+
+        @Override protected void onDraw(android.graphics.Canvas c) {
+            float x = getWidth() / 2f, y = dp(14), r = dp(7);
+            boolean done = state == SetupRunner.State.DONE || state == SetupRunner.State.SKIPPED;
+            paint.setStyle(android.graphics.Paint.Style.STROKE);
+            paint.setStrokeWidth(dp(2));
+            if (!first) { paint.setColor(before ? GOLD : look.line); c.drawLine(x, 0, x, y - r - dp(2), paint); }
+            if (!last) { paint.setColor(done ? GOLD : look.line); c.drawLine(x, y + r + dp(2), x, getHeight(), paint); }
+            switch (state) {
+                case DONE:
+                    paint.setStyle(android.graphics.Paint.Style.FILL);
+                    paint.setColor(GOLD);
+                    c.drawCircle(x, y, r, paint);
+                    paint.setStyle(android.graphics.Paint.Style.STROKE);
+                    paint.setStrokeWidth(dp(2));
+                    paint.setColor(sa.urtv.home.GlassStyle.over(look.dialog, look.base));
+                    c.drawLines(new float[] {x - dp(3), y, x - dp(1), y + dp(2), x - dp(1), y + dp(2), x + dp(3), y - dp(2)}, paint);
+                    break;
+                case RUNNING:
+                    paint.setColor(GOLD);
+                    c.drawCircle(x, y, r + dp(1), paint);
+                    paint.setStyle(android.graphics.Paint.Style.FILL);
+                    c.drawCircle(x, y, dp(3), paint);
+                    break;
+                case FAILED:
+                    paint.setColor(RED);
+                    c.drawCircle(x, y, r, paint);
+                    c.drawLines(new float[] {x - dp(3), y - dp(3), x + dp(3), y + dp(3), x - dp(3), y + dp(3), x + dp(3), y - dp(3)}, paint);
+                    break;
+                case SKIPPED:
+                    paint.setColor(DIM);
+                    c.drawCircle(x, y, r, paint);
+                    c.drawLine(x - dp(3), y, x + dp(3), y, paint);
+                    break;
+                default:
+                    paint.setColor(look.line);
+                    c.drawCircle(x, y, r, paint);
+            }
         }
     }
 
     private void updateProgress(SetupRunner r) {
         List<SetupRunner.Step> steps = r.steps();
+        int finished = 0;
+        SetupRunner.Step now = null;
         for (int i = 0; i < steps.size() && i < stepViews.size(); i++) {
             SetupRunner.Step s = steps.get(i);
-            String mark, tail = "";
+            if (s.state != SetupRunner.State.PENDING && s.state != SetupRunner.State.RUNNING) finished++;
+            if (s.state == SetupRunner.State.RUNNING) now = s;
+            String tail = "";
             int color;
             switch (s.state) {
-                case DONE: mark = "✓"; color = TEXT; break;
-                case SKIPPED: mark = "–"; color = DIM; tail = " " + S.t("(تُرك)") + why(s.reason); break;
-                case FAILED: mark = "✕"; color = RED; tail = why(s.reason); break;
-                case RUNNING: mark = "…"; color = GOLD; break;
-                default: mark = "·"; color = DIM; break;
+                case DONE: color = TEXT; break;
+                case SKIPPED: color = DIM; tail = " " + S.t("(تُرك)") + why(s.reason); break;
+                case FAILED: color = RED; tail = why(s.reason); break;
+                case RUNNING: color = TEXT; break;
+                default: color = DIM; break;
             }
-            stepViews.get(i).setText(digits(mark + " " + S.tv(SetupRunner.label(s.id)) + tail));
-            stepViews.get(i).setTextColor(color);
+            TextView label = stepViews.get(i);
+            label.setText(digits(S.tv(SetupRunner.label(s.id)) + tail));
+            label.setTextColor(color);
+            label.setTypeface(typeface(s.state == SetupRunner.State.RUNNING ? "Medium" : "Regular"));
+            boolean above = i > 0 && (steps.get(i - 1).state == SetupRunner.State.DONE || steps.get(i - 1).state == SetupRunner.State.SKIPPED);
+            stepMarks.get(i).set(s.state, above);
+            stepSubs.get(i).setVisibility(View.GONE);
+        }
+        if (count != null) {
+            count.setText(digits(S.t("%s من %s", String.valueOf(finished), String.valueOf(steps.size()))));
+            countBar.setShare(steps.isEmpty() ? 0 : finished / (double) steps.size());
         }
         if (r.promptLate()) say(S.tv(SetupRunner.PROMPT_LATE), RED);
         else if (r.promptWaiting()) say(S.tv(SetupRunner.PROMPT_LINE), GOLD);
         else say(r.kind() == SetupRunner.Kind.UNDO ? S.t("جارٍ الرجوع…") : S.t("جارٍ الإعداد… لا تطفئ التلفزيون."), GOLD);
         List<SetupRunner.Line> lines = r.linesSince(Math.max(0, r.lastSeq() - 1));
-        detail.setText(lines.isEmpty() ? "" : digits(lines.get(lines.size() - 1).text));
+        String said = lines.isEmpty() ? "" : digits(lines.get(lines.size() - 1).text);
+        if (now != null && !said.isEmpty()) {   // the line the work is saying goes under the step in progress, not at the bottom of the card
+            TextView sub = stepSubs.get(steps.indexOf(now));
+            sub.setText(said);
+            sub.setVisibility(View.VISIBLE);
+            detail.setText("");
+        } else detail.setText(said);
+        // the TV restarts inside the two measuring steps, on a TV that survives it (the plan said so): said plainly, before it happens
+        SetupRunner.Preview pv = r.preview();
+        boolean restarting = now != null && ("before".equals(now.id) || "after".equals(now.id)) && pv != null && pv.restarts;
+        if (notice != null) {
+            notice.setVisibility(restarting ? View.VISIBLE : View.GONE);
+            if (restarting) notice.setText(S.t("سيعيد التلفزيون التشغيل الآن، وسيكمل بنفسه."));
+        }
     }
 
     private static String why(String reason) { return reason == null || reason.isEmpty() ? "" : " — " + reason; }
@@ -265,7 +400,7 @@ public class SetupActivity extends Activity {
         final TextView more = button(S.t("كمّل"));
         more.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(false); } });
         add(more, dp(12));
-        undo = button(S.t("تراجع (يرجّع التلفزيون كما كان)"));
+        undo = quiet(S.t("تراجع (يرجّع التلفزيون كما كان)"));
         undo.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(true); } });
         add(undo, dp(16));
         more.post(new Runnable() { @Override public void run() { more.requestFocus(); } });
@@ -327,11 +462,7 @@ public class SetupActivity extends Activity {
         final SetupRunner.End e = r.end();
         say(S.tv(e.text), e.bad ? RED : GOLD);
         if (r.kind() == SetupRunner.Kind.FULL) {
-            for (SetupRunner.Step s : r.steps()) {
-                TextView t = text("", 14, "Regular", DIM);
-                stepViews.add(t);
-                add(t, dp(4));
-            }
+            stepsList(r);
             mode = "progress";   // the step lines are drawn the same way, once
             updateProgress(r);
             mode = "done";
@@ -377,9 +508,6 @@ public class SetupActivity extends Activity {
         add(text(S.t("• تطبيق تحتاجه صار موقوفاً: «تراجع» يرجّع كل ما أوقفناه."), 14, "Regular", TEXT), dp(4));
         add(text(S.t("• انقطع الواي فاي: اتصل به من إعدادات التلفزيون ← الشبكة."), 14, "Regular", TEXT), dp(4));
         add(text(S.t("• تبي التلفزيون كما كان: فعّل «تصحيح USB» واضغط «تراجع»."), 14, "Regular", TEXT), dp(12));
-        undo = button(S.t("تراجع (يرجّع التلفزيون كما كان)"));
-        undo.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(true); } });
-        add(undo, dp(12));
         final TextView ok = button(S.t("تم"));
         ok.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -388,6 +516,9 @@ public class SetupActivity extends Activity {
             }
         });
         add(ok, dp(12));
+        undo = quiet(S.t("تراجع (يرجّع التلفزيون كما كان)"));
+        undo.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { go(true); } });
+        add(undo, dp(12));
         ok.post(new Runnable() { @Override public void run() { ok.requestFocus(); } });
     }
 
@@ -468,6 +599,7 @@ public class SetupActivity extends Activity {
         TextView t = text(label, 18, "Medium", TEXT);
         t.setGravity(Gravity.CENTER);
         t.setPadding(dp(16), dp(14), dp(16), dp(14));
+        t.setMinHeight(dp(56));   // 56 dp: the main button of a screen
         t.setFocusable(true);
         t.setClickable(true);
         t.setFilterTouchesWhenObscured(true);
@@ -482,8 +614,25 @@ public class SetupActivity extends Activity {
         t.setTextColor(color);
         t.setGravity(Dir.start());   // right in Arabic, left in English («اللغة»)
         t.setTextDirection(Dir.text());
-        try { t.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/Thmanyah-" + weight + ".otf")); }
-        catch (RuntimeException ignored) { }
+        Typeface f = typeface(weight);
+        if (f != null) t.setTypeface(f);
+        return t;
+    }
+
+    private Typeface typeface(String weight) {
+        try { return Typeface.createFromAsset(getAssets(), "fonts/Thmanyah-" + weight + ".otf"); }
+        catch (RuntimeException ignored) { return null; }
+    }
+
+    /** a second choice beside the primary button: no panel at rest, the dim words; the focus fill and its ink when focused (the one filled button of a screen is the main one) */
+    private TextView quiet(String label) {
+        final TextView t = button(label);
+        final android.graphics.drawable.StateListDrawable bg = new android.graphics.drawable.StateListDrawable();
+        bg.addState(new int[] {android.R.attr.state_focused}, sa.urtv.home.GlassPaint.focused(this, look, 14));
+        bg.addState(new int[] {}, new android.graphics.drawable.ColorDrawable(0));
+        t.setBackground(bg);
+        t.setTextColor(DIM);
+        t.setOnFocusChangeListener(new View.OnFocusChangeListener() { public void onFocusChange(View v, boolean has) { t.setTextColor(has ? INK : DIM); } });
         return t;
     }
 

@@ -3,7 +3,6 @@ package sa.urtv.home;
 import android.app.Activity;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -297,21 +296,8 @@ public class UpdateActivity extends Activity {
     private void bar(long done, long total) {
         if (total <= 0) return;
         double share = Math.max(0, Math.min(1, done / (double) total));
-        View track = new View(this) {
-            private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            @Override protected void onDraw(Canvas c) {
-                RectF r = new RectF(0, 0, getWidth(), getHeight());
-                float rad = getHeight() / 2f;
-                paint.setColor(look.line);
-                c.drawRoundRect(r, rad, rad, paint);
-                float w = (float) (getWidth() * share);
-                if (w > 0) {
-                    paint.setColor(GOLD);
-                    float left = Dir.rtl() ? getWidth() - Math.max(w, getHeight()) : 0;
-                    c.drawRoundRect(new RectF(left, 0, left + Math.max(w, getHeight()), getHeight()), rad, rad, paint);
-                }
-            }
-        };
+        CalmBar track = new CalmBar(this, look.line, GOLD);
+        track.setShare(share);
         col.addView(track, new LinearLayout.LayoutParams(-1, dp(8)));
         String mb = S.t("%s من %s م.ب", MarketData.show(MarketData.num(done / 1e6, 1), Digits.latin()), MarketData.show(MarketData.num(total / 1e6, 1), Digits.latin()));
         String pct = Digits.of(String.valueOf(Math.round(share * 100))) + (Digits.latin() ? "%" : "٪");
