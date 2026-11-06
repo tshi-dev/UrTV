@@ -1368,3 +1368,35 @@ The TV had no packs, so all 5 deleted by hand on the page; «صورنا» on. `i
 Updated from 205 to **build 207**, the newest on channel next (`apk-next` says 3.207); the GO asks for 208 or newer. 208 is the master build. Then the owner wrote «I think there will be no test», so I did **not** open «إعداد تلفزيوني», did not press «جهّز كل شي», and no restart happened. No result for the setup fix.
 To run it: say so here or through the owner, and which build is wanted, since next stops at 207.
 State: `show` differs only in the build. updatechannel latest, lang en, muted, TV asleep as I found it. **restored: yes;** only the build differs (207).
+
+## step 39 — build 208: the setup ran to the end, but the restart fix was NOT tested on this TV (Fri 19:18–20:08; muted, see below)
+Replaces «step 39 not run» above: the owner then told me to go on. **Not ALL PASS: the two restarts this step is about never happened.**
+
+### Why no restart here
+The plan said «We measure memory before and after the setup (no restart on this TV).» `SetupMeasure` restarts only when adb would come back on port 5555 (`adbSurvivesRestart`). Here `persist.adb.tcp.port` is empty: port 5555 is only for the session. So it takes the no-restart branch. I did not set the property: it's a system setting and no step asks for it.
+**To test the fix:** either a TV with `persist.adb.tcp.port=5555` (your call whether I set it here, then clear it), or a real user's TV.
+
+### Items
+1. ✓ Update. Channel next stopped at 207 (`apk-next` 3.207), so I took **208 from channel latest** as the GO says. `show`: «4.2 (build 208)», as the version stays 4.2 (`ef362101`), not 4.2.1
+2. Restart items **skipped by the app**:
+   - «the restart line before the restart»: not shown, no restart
+   - «resumes by itself», first and second: not exercised
+   - ✓ Ends on the done screen, by itself, no key pressed after «Start»
+3. Step lines, all ✓: Checking the TV, Backing up, Protected features, Measuring memory before, Permissions, Safe list, Community list, Speeding up, Installing the screensaver, Turning on the screensaver, TV Bro and SmartTube, Auto-start, Home screen, Measuring memory after, Report. Start 20:05:00, done by 20:05:32. **«تعذّر القياس، كمّلنا.» / its English: not seen** in any of the 3 screens I sampled or on the done screen. My samples were 6–12 s apart, and it could pass between them
+4. ✓ Nothing differs from before except the build: `show`, dock, PIN and locked list, tasks, photos, adhan, family DNS, disabled (21), packages (177), Home holder, saver, screen size. `import` had nothing to change. This TV was already set up, so this says little about a fresh one
+
+### USB prompt, one restart by me
+- 1st press 20:00:32: **no prompt in 100 s** («No message? Restart the TV…»), as in step 28. Log: `waiting for the debugging prompt: screensaver held back`
+- I restarted once, as step 18 row 4b allows, 20:02:36, back by 20:03:32
+- 2nd press 20:03:56: the prompt in 2 s; ticked «Always allow from this computer», Allow. Plan 10 lines, safe list «none of it is running», TV Bro and SmartTube kept
+
+`UrTVSetup` has only: `adb key: deleted exists=false` (20:03:56, 20:05:26), `waiting for the debugging prompt` 20:03:57, `debugging prompt answered or given up` 20:04:26. **Setup steps aren't logged by name, so this log can't show the restart times you asked for.** Worth a line in the app before a real test.
+
+### Mute: not muted after the restart
+Watcher, every 5–12 s: `Muted: false` at 20:03:10 (uptime 23 s) and 20:03:22 (36 s). True from 20:03:30 on. Nothing was playing, adhan off, home in front. My watcher pressed the mute key at each. **Two presses of a toggle key while the home's guard may also mute, so I can't say who fixed it**, and the log from before was cleared by my own `logcat -c`. Noise possible for about 20 s after boot only if something plays.
+
+### Small
+«Done» at 20:07 left `SetupActivity` in front after 3 s. It seems the done screen asks for Home: its own last line says so. The button named «Done» did nothing I could see. One press.
+
+### Z
+updatechannel latest, lang en, adhan off. Same as item 4. Muted. TV asleep as I found it. **restored: yes;** only the build differs (208). USB debugging left on, as it was; the setup's advice to turn it off not followed, since I need it.
