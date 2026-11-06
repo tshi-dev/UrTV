@@ -25,8 +25,12 @@ jobs:
         https://edge.mixlr.com/channel/rwumx
     steps:
       - uses: actions/checkout@v4
-      - run: sudo timeout 600 apt-get update -qq && sudo timeout 600 apt-get install -y -qq ffmpeg
-        timeout-minutes: 12
+      - name: ffmpeg (the runner's own, else a static build from pip; a stuck apt mirror held the first run for 10 min)
+        timeout-minutes: 8
+        run: |
+          if ! command -v ffmpeg > /dev/null || ! command -v ffprobe > /dev/null; then
+            pip install -q static-ffmpeg && static_ffmpeg_paths > /dev/null && d=$(python3 -c "import static_ffmpeg.run as r; import os; print(os.path.dirname(r.get_or_fetch_platform_executables_else_raise()[0]))") && echo "$d" >> "$GITHUB_PATH"
+          fi
       - run: python3 -u .github/tools/hls_probe.py $CANDIDATES
       - name: Push to data-quran-probe
         if: always()
@@ -35,6 +39,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout --orphan data-quran-probe
           git rm -rfq --cached .
+          [ -d probe ] || exit 0
           git add -f probe
           git commit -qm "Quran Radio probe"
           git push -f origin data-quran-probe
