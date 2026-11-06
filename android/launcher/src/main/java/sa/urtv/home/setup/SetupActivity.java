@@ -512,7 +512,9 @@ public class SetupActivity extends Activity {
         ok.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 dismissed = e;
-                show();
+                // «تم» ends the setup: the home opens and this screen goes (build 208: nothing happened, the screen stayed in front)
+                startActivity(new android.content.Intent(SetupActivity.this, sa.urtv.home.MainActivity.class).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK | android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                finish();
             }
         });
         add(ok, dp(12));

@@ -30,6 +30,9 @@ check("the adhan is asked (MusicService.carryAdhanActive) and the volume compare
 check("a newer wake cancels the checks of an older one", "if (mine != wake) return;" in keep)
 check("started with the process (Application), declared in the manifest", "MuteKeep.start(this);" in app and 'android:name=".HomeApp"' in man)
 check("no key is read for this (the accessibility service stays blind to everything but the Settings key)", "onKeyEvent" not in keep and "KeyEvent" not in keep)
+check("the boot wake logs its uptime, the window and every check and the system's mute changes with their uptime (step 39: when did the guard start, when did the TV unmute)",
+      'stage=wake why=" + why + " uptime_ms="' in keep and '" uptime_ms=" + now' in keep and '"mute changed: muted=" + m + " uptime_ms="' in keep)
+check("the boot's window is MuteKeepRule.windowFor (from the boot), with its own checks", "MuteKeepRule.windowFor(boot, at)" in keep and "MuteKeepRule.BOOT_CHECKS_MS" in keep)
 if not shutil.which("javac"):
     print("SKIP mute keep rule: no javac here")
     sys.exit(1 if failed else 0)

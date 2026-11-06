@@ -57,4 +57,6 @@ check("setup: the restart notice is said before the TV restarts (the measuring s
 check("setup: the behaviour is the runner's, untouched: the same go/confirm/cancel calls", all(w in sa_ for w in ("SetupRunner.get().confirm(extras)", "SetupRunner.get().cancel()", "go(false)", "go(true)", "dismissed = e;")))
 dbg = text(ROOT / "android/launcher/src/debug/java/sa/urtv/home/setup/DebugSetupShot.java")
 check("setup: the picture hook is debug only (src/debug), and sets the runner's fields, nothing runs", "SetupRunner.class.getDeclaredField(name)" in dbg and "DebugSetupShot" not in text(ROOT / "android/launcher/src/main/AndroidManifest.xml"))
+check("setup: «تم» on the done screen opens the home and closes the screen (build 208: nothing happened, the screen stayed in front)",
+      "dismissed = e;\n                // «تم» ends the setup" in sa_ and "sa.urtv.home.MainActivity.class).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK | android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP));\n                finish();" in sa_)
 sys.exit(1 if failed else 0)

@@ -44,7 +44,7 @@ public final class MuteKeep {
                 @Override public void onReceive(Context c, Intent i) {
                     if (i.getIntExtra("android.media.EXTRA_VOLUME_STREAM_TYPE", -1) != AudioManager.STREAM_MUSIC) return;
                     boolean m = i.getBooleanExtra("android.media.EXTRA_STREAM_VOLUME_MUTED", false);
-                    Log.i(TAG, "mute changed: muted=" + m + " by=" + (SystemClock.elapsedRealtime() - oursAt < 3000 ? "us" : "not us (the system, the TV or another app)"));
+                    Log.i(TAG, "mute changed: muted=" + m + " uptime_ms=" + SystemClock.elapsedRealtime() + " by=" + (SystemClock.elapsedRealtime() - oursAt < 3000 ? "us" : "not us (the system, the TV or another app)"));
                 }
             }, new IntentFilter("android.media.STREAM_MUTE_CHANGED_ACTION"));
         } catch (RuntimeException ignored) { }
@@ -84,22 +84,27 @@ public final class MuteKeep {
         final int mine;
         synchronized (MuteKeep.class) { mine = ++wake; }
         final long at = SystemClock.elapsedRealtime();
+        final boolean boot = "boot".equals(why);
+        final long window = MuteKeepRule.windowFor(boot, at);
         SharedPreferences sp = app.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         sp.edit().putBoolean("done", false).apply();   // a new wake: at most once for it
-        for (final long delay : MuteKeepRule.CHECKS_MS) {
+        // uptime in the log: the boot's guard started this long after the TV did, and the checks run this long (step 39: was the unmute before the guard or after its window?)
+        Log.i(TAG, "mute keep stage=wake why=" + why + " uptime_ms=" + at + " window_ms=" + window + " muted_now=" + muted(app));
+        for (final long delay : boot ? MuteKeepRule.BOOT_CHECKS_MS : MuteKeepRule.CHECKS_MS) {
+            if (delay > window) continue;
             MAIN.postDelayed(new Runnable() {
-                @Override public void run() { check(app, why, mine, at); }
+                @Override public void run() { check(app, why, mine, at, window); }
             }, delay);
         }
     }
 
-    private static void check(Context app, String why, int mine, long wakeAt) {
+    private static void check(Context app, String why, int mine, long wakeAt, long window) {
         synchronized (MuteKeep.class) {
             if (mine != wake) return;   // a newer wake took over
             SharedPreferences sp = app.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
             long now = SystemClock.elapsedRealtime();
             String d = MuteKeepRule.decide(sp.getBoolean("has", false), sp.getBoolean("muted", false), sp.getInt("vol", -1), sp.getBoolean("done", false), wakeAt, now,
-                muted(app), volume(app), sa.urtv.home.tilawah.MusicService.carryAdhanActive());
+                muted(app), volume(app), sa.urtv.home.tilawah.MusicService.carryAdhanActive(), window);
             if (MuteKeepRule.STILL_MUTED.equals(d)) return;   // nothing to do yet: the next check looks again
             if (MuteKeepRule.MUTE.equals(d)) {
                 boolean ok;
@@ -111,10 +116,10 @@ public final class MuteKeep {
                     ok = false;
                 }
                 sp.edit().putBoolean("done", true).apply();
-                Log.i(TAG, "mute keep stage=restore why=" + why + " result=" + (ok ? "muted_again" : "failed") + " after_ms=" + (now - wakeAt));
+                Log.i(TAG, "mute keep stage=restore why=" + why + " result=" + (ok ? "muted_again" : "failed") + " after_ms=" + (now - wakeAt) + " uptime_ms=" + now);
                 return;
             }
-            Log.i(TAG, "mute keep stage=check why=" + why + " result=" + d);
+            Log.i(TAG, "mute keep stage=check why=" + why + " result=" + d + " uptime_ms=" + now);
         }
     }
 }
