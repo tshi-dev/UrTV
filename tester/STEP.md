@@ -1,4 +1,4 @@
-«⏳ WAIT — step 39 needs the NEXT build (the setup fix); build 205 does not have it. Keep polling.»
+«✅ GO — build 208 or newer» — run step 39 (the setup restart fix, now released). TV muted.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
