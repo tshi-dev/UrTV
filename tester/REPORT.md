@@ -1400,3 +1400,37 @@ Watcher, every 5–12 s: `Muted: false` at 20:03:10 (uptime 23 s) and 20:03:22 (
 
 ### Z
 updatechannel latest, lang en, adhan off. Same as item 4. Muted. TV asleep as I found it. **restored: yes;** only the build differs (208). USB debugging left on, as it was; the setup's advice to turn it off not followed, since I need it.
+
+## step 40 baseline — build 208, nothing installed or changed (Mon 08:14–08:24)
+**Sound: the TV was NOT muted for this whole run, my fault.** When I woke it (08:14:52) the system unmuted the music stream (`STREAM_NOTIFICATION unmuting by muteAliasStreams`), speaker volume 28. My first check printed `Muted: false` and I did not act on it. Muted again by key at 08:24:24. During those 9.5 min YouTube was opened 3 times and the screensaver ran; I can't tell whether anything sounded. The home's guard did not re-mute after the wake this time (in step 32 it did, `muted_again`); its log for the wake is gone, cleared by my own `logcat -c`.
+Setup: lang ar (as found), look glass, dark, classic home, 2 GB TV, MemAvailable 811 MB at the start.
+
+| what | run 1 | run 2 | run 3 |
+|---|---|---|---|
+| 1. YouTube → Home key: first change after the key | ~0.35 s | ~0.35 s | ~1.07 s |
+| 1. flat (blank) frames | 0 | 0 | **1, at mean 9.0 (dark), between YouTube and the home** |
+| 1. white frames | 0 | 0 | 0 |
+| 2. tray: frames, janky | 811, 4.44% | 802, 4.61% | 806, 4.34% |
+| 2. tray 50th / 90th / 99th | 32 / 42 / 48 ms | 32 / 44 / 48 | 32 / 44 / 48 |
+| 3. PSS idle home: home / saver app | 193.7 / 45.4 MB | 176.3 / 37.2 | 175.6 / 34.6 |
+| 3. PSS after 2 min of screensaver: home / saver | 163.7 / 68.5 MB | 158.9 / 67.9 | 158.9 / 67.9 |
+| 4. screensaver page: `Displayed` | 1031 ms (cold) | 229 (warm) | 232 (warm) |
+| 4. ground frame until the page | 1.48 s | 1.49 s | 0.97 s |
+| 5. settings hub `TotalTime` / `WaitTime` | 931 / 943 ms (cold) | 431 / 446 (warm) | 433 / 454 (warm) |
+| 6. matches page `TotalTime` / `WaitTime` | 165 / 192 ms | 132 / 156 | 123 / 144 |
+| 6. markets page `TotalTime` / `WaitTime` | 528 / 547 ms | 495 / 511 | 485 / 507 |
+
+Notes:
+- 1: the home is resumed, not started, so there is no `Displayed` line. Times are from the screen recording: the key goes 1.2 s after recording starts, and «first change» is the first frame whose brightness moved by more than 2. Rough, ±0.1 s. My check that YouTube was in front failed to print (empty), but every recording starts on a YouTube frame
+- 4: run 1 after `am force-stop sa.urtv.screensaver`. «Ground» is the flat green-black frame (mean 9.0, std ≤1.6) before the page draws
+- 6: matches and markets are in the home app, which was running, so all warm. No cold run, to keep the home process alive
+- PSS: home's first idle reading is higher (194 MB), settling to 176
+
+Commands (to repeat after 4.3), all through `optimize/tv.py`, script `optimize/run/step40/m.py` (local):
+- 1: `monkey -p com.google.android.youtube.tv -c android.intent.category.LEANBACK_LAUNCHER 1`, wait 10 s, `screenrecord --time-limit 6 /sdcard/r.mp4 & sleep 1.2; input keyevent HOME; wait`. Frames read on the PC with OpenCV at 160×90: mean, std, % above 235, % below 12
+- 2: step 31's `t.py`: HOME; `dumpsys gfxinfo sa.urtv.home reset`; 2 × (10 × DPAD_LEFT, then 10 × DPAD_RIGHT, 0.35 s apart, in one shell line each); `dumpsys gfxinfo sa.urtv.home`
+- 3: HOME, 20 s, `dumpsys meminfo <pkg> | grep -m1 'TOTAL PSS'` × 3, 5 s apart; then `am start -n sa.urtv.screensaver/.MainActivity`, 120 s, the same × 3
+- 4: as 1, with `am start -n sa.urtv.screensaver/.MainActivity` instead of HOME; `logcat -c` before, `Displayed` after
+- 5, 6: `am start -W -n <component>`, from the home, Back after 3 s. Hub cold = `am force-stop sa.urtv.screensaver` first
+
+Nothing else changed. Muted from 08:24:24.
