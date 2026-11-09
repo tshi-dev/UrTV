@@ -1,4 +1,4 @@
-«✅ GO — step 44 (4.3 candidate, build 212)» — run step 44 (end of this file). TV muted. lang ar stays.
+«✅ GO — step 46 (build 214), then step 45 with Player v0.9.1» — run step 46 (end of this file), then step 45 as amended there. The owner is ASLEEP: TV muted, no questions to him, skip 45b (Jellyfin needs him). lang ar stays.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -733,3 +733,27 @@ Take clean full-screen captures with `adb exec-out screencap -p` (1920×1080, no
 - UrTV: home (glass look, a nice pack wallpaper), «المظهر» page, control center (new side panel when it lands; else skip), setup plan + progress screens if reachable without starting, screensaver with cards, «تطبيقات مقترحة».
 - UrTV Player: home with Continue watching, live list + preview, guide, player OSD, appearance/themes, and the home-server home (only if the library shown has no personal items — otherwise skip server shots).
 Rules: NO personal data in any picture — no names, Wi-Fi name (hide/crop the network value), IPs/addresses, Jellyfin user/server names, phone codes/QRs that are live, family PIN screens, notifications. Arabic UI. Push the PNGs to branch work/marketing under readme-shots/urtv/ and readme-shots/player/ with a short INDEX.md (file → what it shows). Mention them in the report.
+
+
+## step 46 — 4.3 candidate, build 214 (channel next; TV muted; owner asleep: do not wait for him; restore in Z)
+Thanks for step 44. Update to build 214 (or newer on apk-next), then:
+1. Update: is another app (Play Store last time) still in front for seconds while the home is replaced? Time it.
+2. Control center: opens as a narrow side panel (not full screen); toggles and short rows; «تخصيص» ticks and reorder; focus never lost; Back closes. Light and dark.
+3. Home: small Wi-Fi mark next to the greeting; quick buttons collapsed (2-3) and expand smoothly on focus; cards and apps bar the same glass; no «·» anywhere you see.
+4. Loading: open the home after a force-stop, and start the screensaver: is the LAST picture shown at once instead of a blank page, then fades to live? Screenshots at 0.2 s / 1 s / 3 s.
+5. «مباريات»: a match sheet (no overlapping text on the «مع الصلاة» line; try 3 games at different hours); a postponed/cancelled game if one exists today is NOT shown as live/upcoming (followed team card says «تأجلت»/«أُلغيت»); a followed team's last result matches its league table/result (pick a team that played in the last 2 days, compare with the league list).
+6. «الدوريات كاملة» → «كل الدوريات…»: does the catalogue load (it may still be empty/partial: say what you see), pick one league, its games come; unpick; the cap message at 8.
+7. Settings: «اجعل UrTV الشاشة الرئيسية» row shows «✓ UrTV هو الشاشة الرئيسية»; «تطبيق المباريات» row exists (auto/none/app); «أرسل تقرير» asks what it is about (7 topics) and the lines/QR change with the pick (do NOT send).
+8. «تطبيقات مقترحة»: tiles in two columns; an installed app says «✓ مثبّت»; UrTV Player tile is NOT shown yet (no player-<version> release exists) — confirm absent.
+9. «مخرج الصوت» tile in the control center opens the TV's sound settings and Back returns (no crash).
+10. «المظهر والخلفيات»: bottom row and «رجوع» inside the safe area on FIRST focus (step 44 note) — still out?
+11. Speed + weight: step 40 items 1 and 2 again; plus screensaver idle CPU (top, 60 s average) and PSS of both apps, home and saver; compare with step 41 numbers.
+Z. Restore as step 44 Z. Report «step 46».
+
+### step 45 amendments (run after 46, same night)
+- Use the SIGNED pre-release **v0.9.1** from https://github.com/tshi-dev/UrTV-Player/releases (urtv-player-0.9.1.apk + .sha256; private repo, use the owner's gh login as before). Check: sha256 matches the .sha256 file; `apksigner verify --print-certs` SHA-256 = 13ade7d009a07f5ba5bab0b7734bd449df10dd47b53868dfa28e44cd8069dfea; package com.urtv.player (not .debug).
+- Language: with UrTV in ar the Player starts Arabic by itself; switch UrTV to en → Player follows on next start; Player's own manual language setting overrides. Put UrTV back to ar.
+- «شاهد المباراة»: with the 3-channel M3U loaded, open a match sheet in «مباريات» → «شاهد المباراة» appears (Player installed) → it opens the Player: with no matching channel expect «ما لقينا قناة لهذه المباراة في قوائمك» + «ابحث في القنوات». Then `adb shell am start -a sa.urtv.player.action.FIND_MATCH -n com.urtv.player/...` from the shell must be IGNORED/closed (caller is not UrTV): confirm.
+- Tamper/update check: say what the Player's «حول/التحديث» screen shows (official build ✓).
+- 45b (Jellyfin): SKIP tonight (needs the owner). README photos section still applies.
+Z as written (uninstall, restore). Report «step 45».
