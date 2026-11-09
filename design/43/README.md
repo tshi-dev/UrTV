@@ -41,3 +41,8 @@ A 560 px panel in the TV's glass, flush with the safe area on the start edge (ri
 ## Games round 2 and the four-window entry (mockups only)
 `games2-01…20-*.png` (`games2.py`): each game owns the whole screen with its own mood and much bigger type (main word or letter 96 px and up, secondary 36 px and up, the play area 80 to 90 % of the screen). Hex board: a real 28-letter board, 4 rows of 7, every letter once. Word game: the grid large on one side, the keyboard big on the other. Hub titles fit on one line.
 `hub4-01…08-*.png` (`hub4.py`): the entry window of «تلفزيونك» with four windows (الأسواق ومحفظتي، المباريات، الألعاب، الإعدادات): 01/03/05 a row of four (Arabic dark, light, English), 02/04/06 a 2x2; 07 the four marks (the app icon's gold screen on a dark square, one picture inside each); 08 where every existing entry lands.
+
+## Live quiz «المسابقة» (quiz-*, mockups only)
+`python3 design/43/quiz.py /tmp/qz && node design/43/render.js /tmp/qz design/43`. Our own look: answers told apart by a letter (أ ب ج د / A B C D) on identical tiles, colours belong to the players, one amber accent, solid-white focus.
+TV: 01 lobby (QR + room code, players pop in), 02 setup (category, level, 5/10/15, kids), 03 question, 04 reveal (bars of who chose what), 05 leaderboard (movement), 06 podium. `b` files are English.
+Phone (360 px, ar and en, dark and light on one sheet): 07 join, 08 waiting, 09 four answers, 10 sent, 11 right, 12 wrong, 13 final rank. 14 motion strip (join pop, timer, reveal, rank swap).
