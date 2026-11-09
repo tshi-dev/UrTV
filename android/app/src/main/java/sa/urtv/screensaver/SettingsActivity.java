@@ -341,11 +341,9 @@ public class SettingsActivity extends Activity {
         final boolean isHome = isOurHome();
         row("اجعل UrTV الشاشة الرئيسية", isHome ? "✓ UrTV هو الشاشة الرئيسية" : "اضغط وكمّل إعداد تلفزيوني (دقيقتان)", R.drawable.ic_eye,
             new Runnable() { public void run() { if (!isHome) openSetup(); } });
-        row("المظهر والخلفيات", "شكل الشاشتين وصورهما، كلٌّ على حدة", R.drawable.ic_eye,
-            new Runnable() { public void run() { startActivity(new Intent(SettingsActivity.this, AppearanceActivity.class)); } });
-        // «المظهر», the first row: «الشكل» (glass, graphite, navy, clean) and «الإضاءة» (dark, light, auto), each picked with a live preview
+        // «المظهر»: one page for everything about the look of both apps (AppearanceActivity), each choice with its picture
         row("المظهر", Prefs.lookLabel(prefs.look()) + " · " + Prefs.appearanceLabel(prefs.appearance()), R.drawable.ic_eye,
-            new Runnable() { public void run() { pickLook(); } });
+            new Runnable() { public void run() { startActivity(new Intent(SettingsActivity.this, AppearanceActivity.class)); } });
         row("صفحات الأسهم والمباريات داكنة", prefs.pagesDark() ? "مفعّل · بالمظهر الداكن دائمًا" : "متوقف · تتبع مظهر الرئيسية", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPagesDark(!prefs.pagesDark()); render(); } });
         // up to three cards left of the clock; each place takes any card, or «بدون» (the ones after it move up)
@@ -1845,14 +1843,6 @@ public class SettingsActivity extends Activity {
     // ---------- «المظهر»: «الشكل» and «الإضاءة», each with a live preview ----------
 
     /** «المظهر»: which of the two to choose; each opens its own list, the focused choice drawn beside it. */
-    private void pickLook() {
-        new Dlg(this).setTitle("المظهر")
-            .setItems(new String[] {"الشكل: " + Prefs.lookLabel(prefs.look()), "الإضاءة: " + Prefs.appearanceLabel(prefs.appearance()),
-                    "الواجهة: " + Prefs.homeLayoutLabel(prefs.homeLayout())},
-                (d, i) -> { if (i == 2) pickHomeLayout(); else pickLookPart(i == 0); })
-            .show();
-    }
-
     /** «تطبيقات في الشريط»: how many favourites the tray shows whole at once (5 as always, up to 10, or all of them); more scroll inside the tray */
     private void pickFavBar() {
         final String[] labels = new String[Prefs.FAV_BARS.length];

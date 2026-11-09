@@ -177,7 +177,7 @@ check("the version lines show under «تحديث صفحة شاشة التوقف�
 check("the tiles and the rows are found again by their tag after a rebuild (the focus stays on the tile, as on a row)",
       'card.setTag("hub:" + cat);' in st and "if (all.contains(v)) return v;" in st)
 for fn_ in ("openAdhanSettings()", "openDockSettings()", "openInputNames()", "openDockEdit()", "openUpdate()", "openPhoneControl()", "openFamilyDns()",
-            "pickCity()", "updateNow()", 'openHome("center")', 'openHome("listen")', "openReport()", "pickLook()"):
+            "pickCity()", "updateNow()", 'openHome("center")', 'openHome("listen")', "openReport()", "AppearanceActivity.class"):
     check(f"the row's own action is kept: {fn_}", fn_ in render)
 
 # ---- TV6 row 21: «تحكم من الجوال» must be findable (a tester on 3.145 did not find it and phone control stayed on): now its own button
