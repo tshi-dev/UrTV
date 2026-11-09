@@ -77,6 +77,9 @@ public interface Actions {
     /** 4.3 #53: a short message from the phone, shown on the TV for 20 s (PhoneMessage). */
     default Result message(String text) { return Result.fail("message_off"); }
 
+    /** 4.3 «ارسم»: a checked batch of strokes over the TV's screen (PhoneDraw), or clear = «امسح». */
+    default Result draw(java.util.List<?> strokes, boolean clear) { return Result.fail("message_off"); }
+
     /** 4.3: one photo for «صوري», a JPEG the phone re-encoded (no camera or location data); the screensaver keeps it (Own). */
     default Result photoAdd(byte[] jpeg) { return Result.fail("failed"); }
 }

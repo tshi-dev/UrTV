@@ -29,6 +29,8 @@ public final class PhoneControl {
         default String portfolioHtml() { return null; }
         /** 4.3: «صوري» from the phone (assets/phone/photos.html) */
         default String photosHtml() { return null; }
+        /** 4.3 «ارسم» from the phone (assets/phone/draw.html) */
+        default String drawHtml() { return null; }
     }
 
     public enum Start { OK, NO_WIFI, FAILED, ALREADY_ON }

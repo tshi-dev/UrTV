@@ -22,8 +22,8 @@ check("the route is behind the session (after «everything below needs a phone t
 m = re.search(r'<activity\s+android:name="\.MessageActivity"(.*?)/>', man, re.S)
 check("MessageActivity: not exported, see-through, no recents, one at a time", m is not None and 'android:exported="false"' in m.group(1)
       and "Theme.Translucent" in m.group(1) and 'excludeFromRecents="true"' in m.group(1) and 'launchMode="singleTop"' in m.group(1), m and m.group(1))
-check("the message shows 20 s, a new one replaces it, Back hides it and is used up",
-      "handler.postDelayed(close, PhoneMessage.SHOW_MS);" in act and "onNewIntent" in act and "if (code == KeyEvent.KEYCODE_BACK) { finish(); return true; }" in act
+check("the message shows 20 s, a new one replaces it, Back hides it (and a drawing) and is used up",
+      "handler.postDelayed(close, PhoneMessage.SHOW_MS);" in act and "onNewIntent" in act and "if (code == KeyEvent.KEYCODE_BACK) { PhoneDraw.TV.clear(); finish(); return true; }" in act
       and "SHOW_MS = 20_000" in read(P / "PhoneMessage.java"))
 check("the TV decides with the two switches and whether our screen is in front; only a SHOW opens the screen",
       "MESSAGES.decide(text, sa.urtv.home.MessageActivity.on(app), sa.urtv.home.MessageActivity.overApps(app), ours" in acts
@@ -42,8 +42,8 @@ if not shutil.which("javac"):
     print("SKIP the rules' run: no javac")
 else:
     with tempfile.TemporaryDirectory() as tmp:
-        r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(P / "PhoneMessage.java"), str(P / "Schema.java"), str(ROOT / "tests/PhoneMessageRun.java")], capture_output=True, text=True)
-        check("PhoneMessage and Schema compile on their own (plain Java)", r.returncode == 0, r.stderr[-600:])
+        r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(P / "PhoneMessage.java"), str(P / "PhoneDraw.java"), str(P / "Schema.java"), str(ROOT / "tests/PhoneMessageRun.java")], capture_output=True, text=True)
+        check("PhoneMessage, PhoneDraw and Schema compile on their own (plain Java)", r.returncode == 0, r.stderr[-600:])
         if r.returncode == 0:
             out = subprocess.run(["java", "-cp", tmp, "sa.urtv.home.phone.PhoneMessageRun"], capture_output=True, text=True).stdout
             for line in out.splitlines():

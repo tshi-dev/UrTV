@@ -27,6 +27,10 @@
 #   optimize/saver.sh pillshidden markets,matches   home screen: hide quick buttons at the top (markets, matches, center, phone; a comma list), or none (default)
 #   optimize/saver.sh homephotos own               home screen: the wallpaper's photos: same (default, the screensaver's packs) or own (its own set, below)
 #   optimize/saver.sh homepacks nature,sea         home screen, with homephotos own: the photo packs it rotates (their ids, a comma list), or none
+#   optimize/saver.sh accent teal                  all our screens: «لون التمييز», default (the look's own) or amber gold green teal sky violet rose coral
+#   optimize/saver.sh baropacity 70                home: «شفافية الشريط», the tray's and cards' fill, 30 to 100 (100 = as it was, the default)
+#   optimize/saver.sh walldim 30                   «تعتيم الخلفية»: more black over the photo, 0 to 90 (0 = as it was, the default)
+#   optimize/saver.sh focusstyle frame             «شكل التركيز»: solid (the default), frame or glow
 #   optimize/saver.sh albummode minute             «ألبوم صوري» (card album): a photo every 4 s (seconds, default) or one a minute (minute)
 #   optimize/saver.sh albumdate off                «ألبوم صوري»: the day each photo was added, under it: on (default) or off
 #   optimize/saver.sh homeours off                 home screen, with homephotos own: «صورنا» among its photos: on (default) or off
@@ -220,6 +224,10 @@ case "${1:-}" in
   pillshidden) set1 pillshidden "${2:?usage: optimize/saver.sh pillshidden markets,matches,center,phone | none}" ;;
   homephotos) set1 homephotos "${2:?usage: optimize/saver.sh homephotos same|own}" ;;
   homepacks) set1 homepacks "${2:?usage: optimize/saver.sh homepacks nature,sea | none   (pack ids: docs/PHOTO-PACKS.md; a pack is downloaded on the TV)}" ;;
+  accent) set1 accent "${2:?usage: optimize/saver.sh accent default|amber|gold|green|teal|sky|violet|rose|coral}" ;;
+  baropacity) set1 baropacity "${2:?usage: optimize/saver.sh baropacity 30..100}" ;;
+  walldim) set1 walldim "${2:?usage: optimize/saver.sh walldim 0..90}" ;;
+  focusstyle) set1 focusstyle "${2:?usage: optimize/saver.sh focusstyle solid|frame|glow}" ;;
   albummode) set1 albummode "${2:?usage: optimize/saver.sh albummode seconds|minute}" ;;
   albumdate) set1 albumdate "${2:?usage: optimize/saver.sh albumdate on|off}" ;;
   homeours) set1 homeours "${2:?usage: optimize/saver.sh homeours on|off}" ;;

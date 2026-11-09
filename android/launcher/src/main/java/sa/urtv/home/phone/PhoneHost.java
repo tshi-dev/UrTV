@@ -33,6 +33,7 @@ public final class PhoneHost {
                 @Override public byte[] font(String name) { return fontAsset(app, name); }
                 @Override public String portfolioHtml() { sa.urtv.home.S.init(app); return portfolioPage(app, actions.lang()); }
                 @Override public String photosHtml() { return photosPage(app, actions.lang()); }
+                @Override public String drawHtml() { return onePage(app, "phone/draw.html", actions.lang()); }
             }, new java.util.function.Predicate<java.net.InetAddress>() {
                 @Override public boolean test(java.net.InetAddress a) { return Guard.privateClient(a); }
             }, new SecureRandom());
@@ -72,6 +73,16 @@ public final class PhoneHost {
         if (text != null) return text;
         String ar = sa.urtv.home.Tr.phonePageName(sa.urtv.home.Tr.AR);
         return name.equals(ar) ? "<!doctype html><title>x</title>" : page(c, sa.urtv.home.Tr.AR);
+    }
+
+    /** 4.3 «ارسم»'s page, like «صوري»'s: one file for both languages, English by <html lang="en">. */
+    private static synchronized String onePage(Context c, String name, String lang) {
+        if (!pages.containsKey(name)) {
+            byte[] b = asset(c, name);
+            pages.put(name, b == null ? null : new String(b, StandardCharsets.UTF_8));
+        }
+        String text = pages.get(name);
+        return text == null || !sa.urtv.home.Tr.EN.equals(lang) ? text : text.replace("<html lang=\"ar\" dir=\"rtl\">", "<html lang=\"en\" dir=\"ltr\">");
     }
 
     /** 4.3 «صوري»'s page: one file for both languages; «اللغة» English sets <html lang="en"> and its script picks the English words. */

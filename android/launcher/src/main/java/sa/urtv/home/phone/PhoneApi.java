@@ -22,6 +22,8 @@ final class PhoneApi implements PhoneServer.Handler {
     private final String ip;
     private final int port;
     private final Guard.Rate general = new Guard.Rate(100, 5_000), pairing = new Guard.Rate(12, 60_000);
+    /** 4.3 «ارسم»: the live strokes (about 20 batches a second) have their own budget, so drawing never starves the rest of the page */
+    private final Guard.Rate drawing = new Guard.Rate(160, 5_000);
 
     PhoneApi(PhoneControl control, String ip, int port) {
         this.control = control;
@@ -31,7 +33,7 @@ final class PhoneApi implements PhoneServer.Handler {
 
     @Override public PhoneServer.Response handle(PhoneServer.Request r) {
         long now = control.now();
-        if (!general.allow(r.client, now)) return json(429, err("slow_down"));
+        if (!(DRAW_PATH.equals(r.path) ? drawing : general).allow(r.client, now)) return json(429, err("slow_down"));
         if (!Guard.hostOk(r.header("host"), ip, port)) return json(403, err("bad_host"));   // DNS rebinding, or a stray name for this address
         boolean post = r.method.equals("POST");
         if (!post && !r.method.equals("GET")) return json(405, err("method"));
@@ -41,6 +43,8 @@ final class PhoneApi implements PhoneServer.Handler {
         if (r.path.equals("/m")) return post ? json(405, err("method")) : portfolioPage();
         // 4.3 «صوري» from the phone: its own small page, words and code only like /m; the photo goes to /api/photo behind the session
         if (r.path.equals("/u")) return post ? json(405, err("method")) : photosPage();
+        // 4.3 «ارسم»: the drawing's own page; the strokes go to /api/draw behind the session
+        if (r.path.equals("/d")) return post ? json(405, err("method")) : drawPage();
         // the fonts are no secret, and CSS asks for them without the X-UrTV-Session header: no session, like the page itself
         if (r.path.startsWith("/fonts/")) return post ? json(405, err("method")) : font(r.path.substring("/fonts/".length()));
 
@@ -96,6 +100,7 @@ final class PhoneApi implements PhoneServer.Handler {
             case "/api/logout": endpoint = "logout"; break;
             case "/api/portfolio": endpoint = "portfolio"; break;
             case "/api/message": endpoint = "message"; break;   // 4.3 #53: a short message shown on the TV
+            case DRAW_PATH: endpoint = "draw"; break;   // 4.3 #53 «ارسم»: live strokes over the TV's screen
             default: return json(404, err("not_found"));
         }
         Schema.Clean c = body(endpoint, r);
@@ -133,6 +138,7 @@ final class PhoneApi implements PhoneServer.Handler {
             }
             case "quran": return result(a.quran(v));
             case "message": return result(a.message((String) v.get("text")));
+            case "draw": return result(a.draw((List<?>) v.get("s"), Boolean.TRUE.equals(v.get("clear"))));
             case "cities": {
                 Map<String, Object> out = ok();
                 out.put("cities", a.cities((String) v.get("q")));
@@ -263,6 +269,13 @@ final class PhoneApi implements PhoneServer.Handler {
     }
 
     private PhoneServer.Response page() { return page(control.page().html()); }
+
+    static final String DRAW_PATH = "/api/draw";
+
+    private PhoneServer.Response drawPage() {
+        String html = control.page().drawHtml();
+        return html == null ? json(404, err("not_found")) : page(html);
+    }
 
     private PhoneServer.Response photosPage() {
         String html = control.page().photosHtml();
