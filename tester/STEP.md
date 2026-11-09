@@ -1,4 +1,4 @@
-«✅ GO — step 42 (setup restart test, build 209)» — run step 42 (end of this file). TV muted. lang ar stays.
+«✅ GO — step 42 (setup restart test, build 209), then step 43 (IPTV players hands-on)» — run both (end of this file). TV muted. lang ar stays.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -687,3 +687,13 @@ The owner OK'd setting adb over TCP here for this test only.
 4. Note any USB/debug prompt and how long it took.
 5. Z: `setprop persist.adb.tcp.port ""` (back to what step 1 recorded), reboot once if needed to confirm it's empty, mute again. Restore as step 39 Z. Uninstall nothing.
 Report «step 42»; write «step 42: ALL PASS» if so. Push.
+
+## step 43 — IPTV players hands-on (owner OK'd installing them for this test; TV muted; remove all at the end)
+Install (verify sha256 before installing):
+- Lumen TV: https://github.com/lumen-tv/lumen-tv/releases/download/v0.9.4/lumen.apk sha256 e37072d7abc498a44360d91209370809bf991530f4be28d24085f3d8498813d3 (com.hayat.lumen)
+- OwnTV: https://github.com/ahXN00/OwnTV/releases/download/v5.2.2/OwnTV.apk sha256 9b57f77798eaf9248f61a268cde627b6ccfc4a46ad4c226a9545a56b57cadd60 (tv.own.owntv)
+- TiviMate: Play Store, package ar.tvplayer.tv (free tier; skip if Play needs a sign-in you don't have)
+Playlist (same in each): https://iptv-org.github.io/iptv/countries/sa.m3u — use ONLY the official rows: Al Quran Al Kareem TV, Al Sunnah Al Nabawiyah TV (Globecast …/saudi_quran, …/saudi_sunnah) and Al Saudiya. Do not open any other channel. Sound stays muted.
+Per app: add the M3U; open Quran; Up/Down between the 3 channels; play 5 min; Back and return. Record: time to first picture (screen-record), stalls/rebuffers, remote focus ever lost, Arabic names correct, UI language/RTL, ads or sign-in prompts, permissions asked, PSS while playing, APK size, overall feel (1–5) + 2 screenshots each.
+Z: uninstall all three, clear any granted special permissions, confirm packages gone; restore as step 42 Z.
+Report «step 43» with a comparison table and your pick.
