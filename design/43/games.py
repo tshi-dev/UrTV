@@ -178,7 +178,7 @@ def tile_dom(a, b, w=96, vertical=False, foc=False, hide=False):
     return s + '</svg>'
 def board_chain():
     seq = [(3, 6), (6, 6), (6, 1), (1, 4), (4, 4), (4, 0), (0, 2)]
-    return '<div class="row" style="gap:8px;justify-content:center">' + "".join(tile_dom(a, b) for a, b in seq) + '</div>'
+    return '<div class="row" style="gap:8px;justify-content:center">' + "".join(tile_dom(b, a) for a, b in seq) + '</div>'
 def g6_board():
     return screen(team_bar("سعد", "٢ قطع", "نورة", "٥ قطع", 0, "دور سعد") + title("دومينو", "اللوحة على الشاشة، واليد سرّية") + f'<div class="abs panel col" style="left:96px;right:96px;top:260px;height:320px;padding:32px;gap:16px;justify-content:center;border-radius:32px">{board_chain()}<div class="sub" style="text-align:center;font-size:26px">الطرفان المفتوحان: ٣ و٢</div></div><div class="abs row" style="left:0;right:0;bottom:130px;justify-content:center;gap:16px">{big_btn("سعد: اكشف يدك", True, 480, "eye")}{big_btn("اسحب من الكومة", False, 400, "dom")}</div>' + keys(("اختيار", "اكشف اليد"), ("رجوع", "اترك اللعبة")))
 def g6_hand():

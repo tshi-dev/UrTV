@@ -7,23 +7,23 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 GOLD = "#E0BA74"
-INNER = {
- "markets": '<path d="M6 16l4-4 3 3 5-6" /><path d="M14 9h4v4"/>',
- "matches": '<circle cx="12" cy="11.5" r="4.6"/><path d="M12 6.9l2.2 1.6-.8 2.6h-2.8l-.8-2.6zM9.4 13.6l-2 1M14.6 13.6l2 1"/>',
- "games": '<path d="M12 6l4.6 2.7v5.3L12 16.7 7.4 14V8.7z"/><circle cx="12" cy="11.4" r="1" fill="currentColor"/>',
- "settings": '<path d="M7 9h6M16 9h1M7 14h1M11 14h6"/><circle cx="14.5" cy="9" r="1.5"/><circle cx="9.5" cy="14" r="1.5"/>',
+SOLID = {   # the four marks as built (android/app res/drawable ic_hub_*): solid silhouettes that read from 3 m: bars, a ball, a die, a gear
+ "markets": "M3 21V13h5v8zM9.5 21V8h5v13zM16 21V3h5v18z",
+ "matches": "M12 2a10 10 0 100 20 10 10 0 000-20zM12 3.8a8.2 8.2 0 110 16.4 8.2 8.2 0 010-16.4zM12 8.2l3.4 2.5-1.3 4h-4.2l-1.3-4z",
+ "games": "M6 3h12a3 3 0 013 3v12a3 3 0 01-3 3H6a3 3 0 01-3-3V6a3 3 0 013-3zM6.5 5A1.5 1.5 0 005 6.5v11A1.5 1.5 0 006.5 19h11a1.5 1.5 0 001.5-1.5v-11A1.5 1.5 0 0017.5 5zM8 6.8a1.6 1.6 0 110 3.2 1.6 1.6 0 010-3.2zM12 10.4a1.6 1.6 0 110 3.2 1.6 1.6 0 010-3.2zM16 14a1.6 1.6 0 110 3.2 1.6 1.6 0 010-3.2z",
+ "settings": "M19.14,12.94c0.04,-0.3 0.06,-0.61 0.06,-0.94c0,-0.32 -0.02,-0.64 -0.07,-0.94l2.03,-1.58c0.18,-0.14 0.23,-0.41 0.12,-0.61l-1.92,-3.32c-0.12,-0.22 -0.37,-0.29 -0.59,-0.22l-2.39,0.96c-0.5,-0.38 -1.03,-0.7 -1.62,-0.94L14.4,2.81c-0.04,-0.24 -0.24,-0.41 -0.48,-0.41h-3.84c-0.24,0 -0.43,0.17 -0.47,0.41L9.25,5.35C8.66,5.59 8.12,5.92 7.63,6.29L5.24,5.33c-0.22,-0.08 -0.47,0 -0.59,0.22L2.74,8.87C2.62,9.08 2.66,9.34 2.86,9.48l2.03,1.58C4.84,11.36 4.8,11.69 4.8,12s0.02,0.64 0.07,0.94l-2.03,1.58c-0.18,0.14 -0.23,0.41 -0.12,0.61l1.92,3.32c0.12,0.22 0.37,0.29 0.59,0.22l2.39,-0.96c0.5,0.38 1.03,0.7 1.62,0.94l0.36,2.54c0.05,0.24 0.24,0.41 0.48,0.41h3.84c0.24,0 0.44,-0.17 0.47,-0.41l0.36,-2.54c0.59,-0.24 1.13,-0.56 1.62,-0.94l2.39,0.96c0.22,0.08 0.47,0 0.59,-0.22l1.92,-3.32c0.12,-0.22 0.07,-0.47 -0.12,-0.61L19.14,12.94zM12,15.6c-1.98,0 -3.6,-1.62 -3.6,-3.6s1.62,-3.6 3.6,-3.6s3.6,1.62 3.6,3.6S13.98,15.6 12,15.6z",
 }
-def mark(kind, size=160, bg="#0F2A1F", stroke=GOLD, radius=0.22):
+def mark(kind, size=160, bg="#0F2A1F", stroke="#fff", radius=0.22):
     r = int(size * radius)
-    return f'<div style="width:{size}px;height:{size}px;border-radius:{r}px;background:{bg};display:flex;align-items:center;justify-content:center;flex:none"><svg width="{size*0.74:.0f}" height="{size*0.74:.0f}" viewBox="0 0 24 24" fill="none" stroke="{stroke}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13.5" rx="2.6"/><path d="M8.5 20.5h7M12 17.5v3"/>{INNER[kind].replace("currentColor", stroke)}</svg></div>'
+    return f'<div style="width:{size}px;height:{size}px;border-radius:{r}px;background:{bg};display:flex;align-items:center;justify-content:center;flex:none"><svg width="{size*0.6:.0f}" height="{size*0.6:.0f}" viewBox="0 0 24 24"><path fill-rule="evenodd" fill="#fff" d="{SOLID[kind]}"/></svg></div>'
 
-MOOD = {"markets": ("linear-gradient(150deg,#14705A,#0A3A33)", "#0F2A1F"), "matches": ("linear-gradient(150deg,#1F5FBF,#0E2D66)", "#0B1B3B"),
-        "games": ("linear-gradient(150deg,#7B3FC9,#32135F)", "#1E0F3A"), "settings": ("linear-gradient(150deg,#5B6677,#242B36)", "#161B23")}
+MOOD = {"markets": ("linear-gradient(150deg,#14705A,#0A3A33)", "#14705A"), "matches": ("linear-gradient(150deg,#1F5FBF,#0E2D66)", "#1F5FBF"),
+        "games": ("linear-gradient(150deg,#7B3FC9,#32135F)", "#7B3FC9"), "settings": ("linear-gradient(150deg,#5B6677,#242B36)", "#5B6677")}
 TX = {
  "ar": dict(t="تلفزيونك", sub="اختر نافذة: اختيار تفتحها", hint=[("اختيار", "افتح"), ("رجوع", "الرئيسية")],
-            w=[("markets", "الأسواق ومحفظتي", "تاسي ١١٬٢٤٠ صاعد ٠٫٦٪، السوق مفتوح"), ("matches", "المباريات", "التالية: الهلال والنصر ٧:٣٠ م"), ("games", "الألعاب", "آخر لعبة: دومينو، فاز سعد"), ("settings", "الإعدادات", "الشكل زجاجي، الواي فاي متصل")]),
+            w=[("markets", "الأسواق", "تاسي ١١٬٢٤٠ صاعد ٠٫٦٪، السوق مفتوح"), ("matches", "المباريات", "التالية: الهلال والنصر ٧:٣٠ م"), ("games", "الألعاب", "آخر لعبة: دومينو، فاز سعد"), ("settings", "الإعدادات", "الشكل زجاجي، الواي فاي متصل")]),
  "en": dict(t="Your TV", sub="Pick a window: OK opens it", hint=[("OK", "open"), ("Back", "home")],
-            w=[("markets", "Markets and portfolio", "TASI 11,240 up 0.6%, market open"), ("matches", "Matches", "Next: Al-Hilal v Al-Nassr 7:30 PM"), ("games", "Games", "Last game: dominoes, Saad won"), ("settings", "Settings", "Look: glass, Wi-Fi connected")]),
+            w=[("markets", "Markets", "TASI 11,240 up 0.6%, market open"), ("matches", "Matches", "Next: Al-Hilal v Al-Nassr 7:30 PM"), ("games", "Games", "Last game: dominoes, Saad won"), ("settings", "Settings", "Look: glass, Wi-Fi connected")]),
 }
 def shell(body, light, en):
     bg = "linear-gradient(160deg,#F4F1EA,#DAD5C8)" if light else "linear-gradient(160deg,#17181B,#0B0C0E)"
@@ -56,7 +56,7 @@ def layout(kind, lang, light=False):
 def marks_page():
     items = "".join(f'<div class="col" style="align-items:center;gap:24px;width:360px">{mark(k, 280, MOOD[k][1])}<div style="font-size:44px;font-weight:700">{n}</div></div>' for k, n, _ in TX["ar"]["w"])
     small = "".join(f'<div class="col" style="align-items:center;gap:12px">{mark(k, s, MOOD[k][1])}<div style="font-size:28px;opacity:.7">{s} px</div></div>' for k in ("markets",) for s in (96, 64, 48))
-    body = f'<div class="abs" style="right:96px;top:54px;font-size:56px;font-weight:700">علامات النوافذ الأربع</div><div class="abs" style="right:96px;top:130px;font-size:34px;opacity:.7">شاشة بإطار ذهبي على مربع داكن، مثل أيقونة التطبيق، وفي داخلها رسم واحد</div><div class="abs row" style="left:96px;right:96px;top:260px;gap:48px;justify-content:center">{items}</div><div class="abs row" style="left:96px;right:96px;bottom:96px;gap:48px;justify-content:center">{small}</div>'
+    body = f'<div class="abs" style="right:96px;top:54px;font-size:56px;font-weight:700">علامات النوافذ الأربع</div><div class="abs" style="right:96px;top:130px;font-size:34px;opacity:.7">أشكال صلبة بيضاء على مربع بلون النافذة: أعمدة، كرة، نرد، ترس، كل واحدة بهيئة مختلفة تُقرأ من ٣ أمتار</div><div class="abs row" style="left:96px;right:96px;top:260px;gap:48px;justify-content:center">{items}</div><div class="abs row" style="left:96px;right:96px;bottom:96px;gap:48px;justify-content:center">{small}</div>'
     return shell(body, False, False)
 
 def placement_page():
