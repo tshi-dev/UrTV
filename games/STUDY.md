@@ -42,3 +42,37 @@ general knowledge, geography, science and nature, animals, history, Islamic gene
 ## Delivery
 
 One JSON file per game type under `games/data/`, fetched online on demand (each file well under 500 KB), never packed in the APK.
+
+## What families in Saudi Arabia actually play
+
+Sources opened: Arab News (2025, board games returning to Saudi homes), Saudipedia (Saudi Committee for Traditional Games; the Ramadan games list), App Store listings of Saudi card and board apps, ar.wikipedia (بلوت). No official popularity ranking exists; the order below is our judgement from these. "Traditional" = a folk game with no owner, we may implement it under its own name. "Product" = someone's game: we build our own game of that genre with our own name, rules wording, look and content, and never use their name, questions, art or sounds.
+
+| Game | How it is played | Players | Why it is loved | TV, one remote, optional phones | Status |
+|---|---|---|---|---|---|
+| بلوت | trick-taking cards, 32 cards, 2 teams of 2, bid صن or حكم, first to 152 | 4 | the Gulf majlis game, skill and banter | hands are secret: phones are the hands, TV shows the table and score; without phones, a pass-the-remote hot seat with a "hide" screen | traditional |
+| جاكارو | cards decide the moves of 4 marbles per player on a board, partners help each other | 4 (2 teams) | loud, tactical, cutting the partner's rival | board on TV, hands on phones | traditional |
+| دومينو (ضومنة) | match the ends of 28 tiles | 2 to 4 | easy, old, all ages | TV table, hands on phones or hot seat | traditional |
+| كيرم | flick discs into pockets | 2 to 4 | a physical board game | a screen version loses what makes it fun | traditional, skip |
+| اسم حيوان نبات جماد بلاد | one letter, name one item per category, 60 seconds | 2 to 8 | no equipment, everyone can answer | phones as answer pads, TV shows letter, timer and scoring; remote-only: say answers out loud and press OK to score | traditional, the best first addition |
+| بدون كلام (charades) | act a word without speaking, team guesses | 4 to 12 | physical comedy, ages 6 to 60 | TV shows the word to the actor only (a phone or a "look away" step), timer, teams | traditional genre |
+| وصف الكلمة (describe, no forbidden words) | say clues for a word without the listed words | 4 to 12 | fast team shouting | same as above, forbidden words shown | genre, own name |
+| الكلمة المفقودة | guess the missing word of a sentence or saying | 2+ | grandparents and kids both know it | quiz-like, remote picks | genre |
+| برا السالفة | everyone knows the topic but one person; talk, vote the odd one out | 3 to 8 | the biggest party game of recent years | phones show the secret word, TV runs the timer and the vote | product (La Tagool and Barra Alsalfa): make our own, name e.g. «واحد مو معنا», our own topic lists |
+| حروف (TV quiz show, hex grid) | two teams claim hexagons by answering a question starting with a letter | 2 teams | TV-show feel, teams argue | perfect on a TV, the remote picks the hexagon | product genre: our own name, look and questions |
+| من سيربح (ladder quiz) | ladder of questions with rising points and lifelines | 1 to 4 | suspense, family argues | remote picks, lifelines | product genre: our own name and questions |
+| أونو-style card shedding | match colour or number, special cards | 2 to 6 | simple, kids love it | hands on phones | product: our own deck design and name |
+| المافيا (social deduction) | hidden roles, night and day votes | 6 to 12 | pure talking | phones deal roles | traditional genre, free |
+| Sequence, Saudi Deal, ألعاب بالخمس and similar | board and card products from the Arab News list | 2 to 4 | the revival of the family board game | | products: do not copy |
+
+## Ranking of additions (fit with the TV and one remote, then effort)
+
+1. اسم حيوان نبات جماد بلاد: fits perfectly, effort low (letter and category data).
+2. بدون كلام and وصف الكلمة: fits perfectly, effort low (word lists by level and age).
+3. «واحد مو معنا» (برا السالفة genre): fits with phones, effort low to medium (topic lists, 12 words each).
+4. Letter-grid team quiz (حروف genre): fits the TV best, effort medium (questions keyed by letter).
+5. دومينو: effort medium, a clear rules sheet is in `games/RULES.md`.
+6. بلوت: the most wanted traditional game, effort high (bidding, projects, bots); rules sheet in `games/RULES.md`.
+7. جاكارو: effort high.
+8. أونو-style: effort medium, only with phones.
+
+The data files for items 1 to 3 are started under `games/data/` with the same schema where facts need verifying; word lists that carry no fact (describe-the-word, charades) are a different file kind, see `games/VERIFY.md`.
