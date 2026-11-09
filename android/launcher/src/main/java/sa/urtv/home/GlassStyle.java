@@ -90,9 +90,24 @@ public final class GlassStyle {
     public static final Look SAND_DARK = new Look(false, 0xFF151A17, 0x151A17, 0.80f, 0xFFF2F1EC, 0xFFB8BDB9, 0xFF54C08A, 0xFFFFB4A0,
             0xE61E2420, 0x1AFFFFFF, 0xFF1E2420, 0xFF1F3A2C, 0xFFF2F1EC, 0xFFC9D6CE, 0xF21E2420, 0xFF54C08A);
 
+    // ---------------------------------------------------------------- 4.3: four more looks (docs: design/43), dark ones; their light is the glass light
+
+    /** سينمائي: near black, a red accent, a white ring round the focus */
+    public static final Look CINEMA_DARK = new Look(false, 0xFF0A0A0C, 0x0A0A0C, 0.86f, 0xFFF5F1EA, 0xFFB4AEA5, 0xFFE5484D, 0xFFFFB4A0,
+            0xF20B0B0D, 0x14FFFFFF, 0xFF141417, 0xFF2A2A2F, 0xFFF5F1EA, 0xFFD8D2C8, 0xF2141417, 0xFFFFFFFF);
+    /** أفق: a deep blue night with an amber horizon; the focus is a warm solid with an amber ring */
+    public static final Look HORIZON_DARK = new Look(false, 0xFF0E1424, 0x0E1424, 0.78f, 0xFFFFF6EA, 0xFFD2C6B6, 0xFFF2A65A, 0xFFFFB4A0,
+            0xE0101828, 0x4DF2A65A, 0xFF141C30, 0xFF3A2E24, 0xFFFFF6EA, 0xFFE6D8C4, 0xF2141C30, 0xFFF2A65A);
+    /** شفق: violet to teal, white glass, the focus a solid white */
+    public static final Look DAWN_DARK = new Look(false, 0xFF1E1536, 0x1E1536, 0.80f, 0xFFFFFFFF, 0xFFE2DCF0, 0xFFB7A6FF, 0xFFFFB4A0,
+            0xD92A2050, 0x33FFFFFF, 0xFF2A2050, 0xFFFFFFFF, 0xFF241A3E, 0xFF4A4066, 0xF22A2050);
+    /** بسيط: black, nothing but text and a line, the focus a thin white ring */
+    public static final Look MINIMAL_DARK = new Look(false, 0xFF000000, 0x000000, 0.55f, 0xFFFFFFFF, 0xFFE6E6E6, 0xFFFFFFFF, 0xFFFFB4A0,
+            0x66000000, 0x1FFFFFFF, 0xFF121212, 0xFF2C2C2C, 0xFFFFFFFF, 0xFFE0E0E0, 0xCC000000, 0xFFFFFFFF);
+
     /** the looks «المظهر ← الشكل» offers, in its order; the first is the default */
-    public static final String[] LOOKS = {"glass", "graphite", "navy", "clean", "sand"};
-    public static final String[] LOOK_NAMES = {"زجاجي", "فحمي", "كحلي", "نظيف", "رملي"};
+    public static final String[] LOOKS = {"glass", "graphite", "navy", "clean", "sand", "cinema", "horizon", "dawn", "minimal"};
+    public static final String[] LOOK_NAMES = {"زجاجي", "فحمي", "كحلي", "نظيف", "رملي", "سينمائي", "أفق", "شفق", "بسيط"};
 
     /** A look's key as kept; anything else (an older app, nothing set) is the glass look. */
     public static String look(String raw) {
@@ -100,13 +115,79 @@ public final class GlassStyle {
         return LOOKS[0];
     }
 
+    // ---------------------------------------------------------------- 4.3: the owner's own touches on a look (design/43: «اللون والتحكم»)
+    // One string, "accent=teal;bar=70;dim=30;focus=frame", the same in both apps (the screensaver keeps it, the launcher reads it from the provider); empty = the look as it is.
+
+    /** the eight accent colours: key, Arabic name, colour */
+    public static final String[][] ACCENTS = {{"amber", "كهرماني", "#F0A64A"}, {"gold", "ذهبي", "#E0BA74"}, {"green", "أخضر", "#54C08A"}, {"teal", "فيروزي", "#2FB5A3"},
+            {"sky", "سماوي", "#5AA9F0"}, {"violet", "بنفسجي", "#9B8CF5"}, {"rose", "وردي", "#F07A9A"}, {"coral", "مرجاني", "#F2705A"}};
+    /** the focus: solid (as every look had it), a frame round the tile, or a glow */
+    public static final String[] FOCUS_STYLES = {"solid", "frame", "glow"};
+
+    private static volatile String tweakAccent = "";
+    private static volatile int tweakBar = 100, tweakDim = 0;
+    private static volatile String tweakFocus = "solid";
+
+    /** Set from the settings string; anything unknown is left out (the look as it is). */
+    public static void setTweaks(String s) {
+        String accent = "", focus = "solid";
+        int bar = 100, dim = 0;
+        if (s != null) for (String kv : s.split(";")) {
+            int e = kv.indexOf('=');
+            if (e < 1) continue;
+            String k = kv.substring(0, e), v = kv.substring(e + 1);
+            try {
+                if ("accent".equals(k)) { for (String[] a : ACCENTS) if (a[0].equals(v)) accent = v; }
+                else if ("bar".equals(k)) bar = Math.max(30, Math.min(100, Integer.parseInt(v)));
+                else if ("dim".equals(k)) dim = Math.max(0, Math.min(90, Integer.parseInt(v)));
+                else if ("focus".equals(k)) { for (String f : FOCUS_STYLES) if (f.equals(v)) focus = v; }
+            } catch (NumberFormatException ignored) { }
+        }
+        tweakAccent = accent; tweakBar = bar; tweakDim = dim; tweakFocus = focus;
+    }
+
+    /** the tray's and the cards' fill strength, 30..100 percent (100: as the look has it) */
+    public static int barPercent() { return tweakBar; }
+    /** extra dimming of the wallpaper, 0..90 percent (0: as it is) */
+    public static int dimPercent() { return tweakDim; }
+    public static String focusStyle() { return tweakFocus; }
+
+    private static int accentColor(String key) {
+        for (String[] a : ACCENTS) if (a[0].equals(key)) return 0xFF000000 | Integer.parseInt(a[2].substring(1), 16);
+        return 0;
+    }
+
+    /** the look with the chosen accent: its accent colour, and where the focus was the solid accent (graphite, navy, clean) that too; light looks get a darker one that still reads */
+    private static Look tinted(Look l) {
+        int a = accentColor(tweakAccent);
+        if (a == 0) return l;
+        int text = a;
+        if (l.light) for (int i = 0; i < 12 && contrast(text, over(l.dialog, l.base)) < MIN_CONTRAST; i++) text = darker(text);
+        boolean solid = l.focus == l.accent;
+        int focus = solid ? a : l.focus;
+        int onFocus = solid ? (contrast(0xFF14161A, a) >= contrast(0xFFFFFFFF, a) ? 0xFF14161A : 0xFFFFFFFF) : l.onFocus;   // the ink that reads better on this accent
+        int onSub = solid ? onFocus : l.onFocusSub;
+        int ring = l.ring == l.accent && l.ring != 0 ? a : l.ring;
+        return new Look(l.light, l.base, l.scrim, l.scrimMin, l.text, l.sub, text, l.warn, l.panel, l.line, l.dialog, focus, onFocus, onSub, l.hint, ring);
+    }
+
+    private static int darker(int c) {
+        return 0xFF000000 | (((c >> 16) & 255) * 85 / 100) << 16 | (((c >> 8) & 255) * 85 / 100) << 8 | ((c & 255) * 85 / 100);
+    }
+
     /** The colours of a look in the dark or the light. */
-    public static Look of(String look, boolean light) {
+    public static Look of(String look, boolean light) { return tinted(plain(look, light)); }
+
+    private static Look plain(String look, boolean light) {
         switch (look(look)) {
             case "graphite": return light ? GRAPHITE_LIGHT : GRAPHITE_DARK;
             case "navy": return light ? NAVY_LIGHT : NAVY_DARK;
             case "clean": return light ? CLEAN_LIGHT : GRAPHITE_DARK;
             case "sand": return light ? SAND_LIGHT : SAND_DARK;
+            case "cinema": return light ? LIGHT : CINEMA_DARK;
+            case "horizon": return light ? LIGHT : HORIZON_DARK;
+            case "dawn": return light ? LIGHT : DAWN_DARK;
+            case "minimal": return light ? LIGHT : MINIMAL_DARK;
             default: return light ? LIGHT : DARK;
         }
     }

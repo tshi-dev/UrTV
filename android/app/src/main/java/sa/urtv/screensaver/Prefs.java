@@ -122,7 +122,7 @@ final class Prefs {
     /** sent (to this app only) when a SET from ADB or the launcher saved something: a screensaver that is already showing starts over with it */
     static final String CHANGED = "sa.urtv.screensaver.SETTINGS_CHANGED";
 
-    Prefs(Context c) { ctx = c; sp = c.getSharedPreferences("settings", Context.MODE_PRIVATE); }
+    Prefs(Context c) { ctx = c; sp = c.getSharedPreferences("settings", Context.MODE_PRIVATE); GlassStyle.setTweaks(tweaks()); }
 
     /** {name, latitude, longitude}; Riyadh until the user picks */
     String[] city() {
@@ -615,6 +615,7 @@ final class Prefs {
             + "&cd=" + countdownDate()
             + "&cdname=" + Uri.encode(countdownName())
             + openTasksParam() + remindersParam()
+            + (wallDim() > 0 ? "&walldim=" + wallDim() : "")
             + ownParam()
             + packsParam();
     }
@@ -896,6 +897,22 @@ final class Prefs {
     /** «المظهر ← الشكل» of all our screens: glass (the default), graphite, navy or clean (GlassStyle.LOOKS); anything else is glass. */
     String look() { return GlassStyle.look(sp.getString("look", GlassStyle.LOOKS[0])); }
     void setLook(String v) { if (java.util.Arrays.asList(GlassStyle.LOOKS).contains(v)) sp.edit().putString("look", v).apply(); }
+    // 4.3 «اللون والتحكم»: the accent (one of GlassStyle.ACCENTS, "" = the look's own), the tray's and cards' fill strength 30..100, the wallpaper's extra dimming 0..90, the focus style; each default is the look as it was
+    String accent() { String v = sp.getString("accent", ""); for (String[] a : GlassStyle.ACCENTS) if (a[0].equals(v)) return v; return ""; }
+    int barPercent() { return Math.max(30, Math.min(100, sp.getInt("barPercent", 100))); }
+    int wallDim() { return Math.max(0, Math.min(90, sp.getInt("wallDim", 0))); }
+    String focusStyle() { String v = sp.getString("focusStyle", "solid"); return java.util.Arrays.asList(GlassStyle.FOCUS_STYLES).contains(v) ? v : "solid"; }
+    void setAccent(String v) { sp.edit().putString("accent", v).apply(); GlassStyle.setTweaks(tweaks()); }
+    void setBarPercent(int v) { sp.edit().putInt("barPercent", Math.max(30, Math.min(100, v))).apply(); GlassStyle.setTweaks(tweaks()); }
+    void setWallDim(int v) { sp.edit().putInt("wallDim", Math.max(0, Math.min(90, v))).apply(); GlassStyle.setTweaks(tweaks()); }
+    void setFocusStyle(String v) { if (java.util.Arrays.asList(GlassStyle.FOCUS_STYLES).contains(v)) { sp.edit().putString("focusStyle", v).apply(); GlassStyle.setTweaks(tweaks()); } }
+    /** the one string both apps read (GlassStyle.setTweaks): empty while nothing was touched */
+    String tweaks() {
+        String a = accent(), f = focusStyle();
+        int b = barPercent(), d = wallDim();
+        if (a.isEmpty() && b == 100 && d == 0 && "solid".equals(f)) return "";
+        return "accent=" + a + ";bar=" + b + ";dim=" + d + ";focus=" + f;
+    }
     static String lookLabel(String v) { return GlassStyle.LOOK_NAMES[java.util.Arrays.asList(GlassStyle.LOOKS).indexOf(GlassStyle.look(v))]; }
 
     /** The greeting and the weather line on the launcher's home screen (default on). Off: the plain good-morning it had. */

@@ -43,10 +43,10 @@ check("the sun is up while «الغروب» is next (the prayer times' DayParts,
       and "if (!Look.AUTO.equals(cfg.appearance())) return null;" in sun)
 apply = main[main.index("private void applyLook(boolean light)"):].split("\n    }\n")[0]
 check("the look is applied only when it changes; the home is built in the dark look and starts there (dark is exactly as it was)",
-      "if (light == lightNow && lookNow.equals(paletteLook)) return;" in apply and "private boolean lightNow;" in main)
+      "if (light == lightNow && key.equals(paletteLook)) return;" in apply and "private boolean lightNow;" in main)
 for part in ("clock.setTextColor(p.text)", "title.setTextColor(p.ink)", "t.setTextColor(p.soft)", "t.setTextColor(p.gold)", "t.setShadowLayer(dp(3), 0, dp(1), p.shadow)",
              "for (TextView t : gridLabels) t.setTextColor(p.ink);", "scrim.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, p.scrim));",
-             "gridShade.setBackgroundColor(p.shade);", "dockBand.setColor(light ? FavBar.FILL_LIGHT : FavBar.FILL_DARK);"):
+             "gridShade.setBackgroundColor(p.shade);", "dockBand.setColor(scaled(light ? FavBar.FILL_LIGHT : FavBar.FILL_DARK, GlassStyle.barPercent()));"):
     check(f"the light and dark looks recolour: {part}", part in apply)
 check("a grid name made while the light look is on is made in it, and the list is emptied when the grid is built again",
       "if (lightNow || \"sand\".equals(lookNow)) label.setTextColor(palette().ink);" in main and "gridCards.clear();\n        gridLabels.clear();" in main)
@@ -107,7 +107,7 @@ main_src = (ROOT / "android/launcher/src/main/java/sa/urtv/home/MainActivity.jav
 gs = (ROOT / "android/launcher/src/main/java/sa/urtv/home/GlassStyle.java").read_text(encoding="utf-8")
 gsrc = (ROOT / "android/launcher/src/main/java/sa/urtv/home/GlassSource.java").read_text(encoding="utf-8")
 gsrc_app = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/GlassSource.java").read_text(encoding="utf-8")
-check("the five looks, glass first: an unknown or missing value is glass", 'LOOKS = {"glass", "graphite", "navy", "clean", "sand"};' in gs
+check("the nine looks, glass first (the five, then سينمائي أفق شفق بسيط): an unknown or missing value is glass", 'LOOKS = {"glass", "graphite", "navy", "clean", "sand", "cinema", "horizon", "dawn", "minimal"};' in gs
       and "for (String k : LOOKS) if (k.equals(raw)) return k;\n        return LOOKS[0];" in gs)
 check("«نظيف» has no dark of its own: its dark is graphite's (the mockup's note)", 'case "clean": return light ? CLEAN_LIGHT : GRAPHITE_DARK;' in gs)
 check("the screensaver keeps it (glass by default), and the provider gives it as a column of its own after the others",
