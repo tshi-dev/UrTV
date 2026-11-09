@@ -21,6 +21,7 @@ final class ConfigSnapshot {
     /** «تطبيقات في الشريط»: "5" to "10" or "all"; an older screensaver does not say: 5, as the tray always was */
     String favBar = "5";
     String pillsHidden = "";   // the quick buttons hidden in the settings (#52): markets, matches, center
+    String matchApp = "auto";   // 4.3 «تطبيق المباريات»: auto (UrTV Player when installed), none, or a package
     boolean pillHidden(String key) { return ("," + pillsHidden + ",").contains("," + key + ","); }
     String tweaks = "";   // «اللون والتحكم» (GlassStyle.setTweaks); an older screensaver says nothing: the look as it is
     boolean pagesDark = true;   // «صفحات الأسهم والمباريات داكنة»: an older screensaver says nothing: on, the default
@@ -47,7 +48,7 @@ final class ConfigSnapshot {
     }
 
     /** The same values, marked as an old copy. */
-    ConfigSnapshot asStale() { ConfigSnapshot c = new ConfigSnapshot(fragment, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, true, placeTicket); c.favBar = favBar; c.tweaks = tweaks; c.pagesDark = pagesDark; c.pillsHidden = pillsHidden; return c; }
+    ConfigSnapshot asStale() { ConfigSnapshot c = new ConfigSnapshot(fragment, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, true, placeTicket); c.favBar = favBar; c.tweaks = tweaks; c.pagesDark = pagesDark; c.pillsHidden = pillsHidden; c.matchApp = matchApp; return c; }
 
     /**
      * The settings fragment for the PRAYER PLACE (Place, the adhan alarm, the day parts): null when this is an old copy, so that only a real
@@ -92,7 +93,7 @@ final class ConfigSnapshot {
         boolean greeting = true, bar = true, listenPill = true, updateBell = true, watchNext = true;
         String appearance = null, look = null, favBar = "5", tweaks = "";
         boolean pagesDark = true;
-        String pillsHidden = "";
+        String pillsHidden = "", matchApp = "auto";
         try (Cursor cur = c.getContentResolver().query(URI, null, null, null, null)) {
             if (cur != null && cur.moveToFirst()) {
                 fragment = cur.getString(0);
@@ -116,6 +117,8 @@ final class ConfigSnapshot {
                 if (ph >= 0 && cur.getString(ph) != null) pillsHidden = cur.getString(ph);
                 int tw = cur.getColumnIndex("look_tweaks");
                 if (tw >= 0 && cur.getString(tw) != null) tweaks = cur.getString(tw);
+                int ma = cur.getColumnIndex("match_app");   // an older screensaver does not say: auto
+                if (ma >= 0 && cur.getString(ma) != null) matchApp = cur.getString(ma);
                 int fb = cur.getColumnIndex("fav_bar");   // an older screensaver does not say: 5
                 if (fb >= 0 && cur.getString(fb) != null) favBar = cur.getString(fb);
             }
@@ -128,6 +131,7 @@ final class ConfigSnapshot {
         GlassStyle.setTweaks(tweaks);   // the glass of every home piece reads it (accent, focus style, bar strength, dimming)
         made.pagesDark = pagesDark;
         made.pillsHidden = pillsHidden;
+        made.matchApp = matchApp;
         return made;
     }
 

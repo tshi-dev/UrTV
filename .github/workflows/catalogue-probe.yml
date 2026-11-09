@@ -1,0 +1,33 @@
+name: Catalogue probe
+
+# 4.3, report only: how many competitions TheSportsDB's free key gives (.github/tools/catalogue_probe.py), before «الدوريات» grows to
+# every competition. The report goes to the data-catalogue-probe branch. Nothing in the apps changes.
+on:
+  workflow_dispatch:
+  push:
+    branches: ['work/**']
+    paths:
+      - '.github/tools/catalogue_probe.py'
+      - '.github/workflows/catalogue-probe.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -u .github/tools/catalogue_probe.py
+      - name: Push to data-catalogue-probe
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan data-catalogue-probe
+          git rm -rfq --cached .
+          [ -d catalogue-probe ] || exit 0
+          git add -f catalogue-probe
+          git commit -qm "Catalogue probe"
+          git push -f origin data-catalogue-probe

@@ -261,6 +261,8 @@ public class SaverReceiver extends BroadcastReceiver {
         String greeting = i.getStringExtra("greeting");
         if (greeting != null && !"on".equals(greeting) && !"off".equals(greeting))
             return "error: greeting is one of on off";
+        String matchApp = i.getStringExtra("matchapp");   // 4.3 «تطبيق المباريات»: auto, none or an app's package
+        if (matchApp != null && !Prefs.matchAppOk(matchApp)) return "error: matchapp is auto, none or an app's package name";
         String pillsHidden = i.getStringExtra("pillshidden");   // the home's quick buttons to hide: markets, matches, center (comma list), or none
         if (pillsHidden != null && !"none".equals(pillsHidden)) {
             for (String k : pillsHidden.split(",")) if (!java.util.Arrays.asList(Prefs.QUICK_BUTTONS).contains(k)) return "error: pillshidden is none or a list of " + android.text.TextUtils.join(" ", Prefs.QUICK_BUTTONS);
@@ -409,6 +411,7 @@ public class SaverReceiver extends BroadcastReceiver {
         if (greeting != null) p.setGreeting("on".equals(greeting));
         if (listenPill != null) p.setListenPill("on".equals(listenPill));
         if (pillsHidden != null) p.setPillsHidden(pillsHidden);
+        if (matchApp != null) p.setMatchApp(matchApp);
         if (homePhotos != null) p.setHomePhotosSame("same".equals(homePhotos));
         if (homePacks != null) p.setHomePacksOn("none".equals(homePacks) ? new java.util.LinkedHashSet<String>() : PhotoPacks.parseOn(homePacks));
         if (homeOurs != null) p.setHomeOursOn("on".equals(homeOurs));
@@ -600,7 +603,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\ngreeting: " + (p.greeting() ? "on" : "off")
             + "\nlistenpill: " + (p.listenPill() ? "on" : "off")
             + "\nhomephotos: " + (p.homePhotosSame() ? "same" : "own") + "\nhomepacks: " + (p.homePacksOn().isEmpty() ? "none" : PhotoPacks.joinOn(p.homePacksOn())) + "\nhomeours: " + (p.homeOursOn() ? "on" : "off") + "\nalbummode: " + (p.albumMinute() ? "minute" : "seconds") + "\nalbumdate: " + (p.albumDate() ? "on" : "off")
-            + "\npillshidden: " + (p.pillsHidden().isEmpty() ? "none" : p.pillsHidden())
+            + "\npillshidden: " + (p.pillsHidden().isEmpty() ? "none" : p.pillsHidden()) + "\nmatchapp: " + p.matchApp()
             + "\nupdatebell: " + (p.updateBell() ? "on" : "off")
             + "\nwatchnext: " + (p.watchNext() ? "on" : "off")
             + "\nappearance: " + p.appearance()

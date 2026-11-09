@@ -50,7 +50,7 @@ public class SuggestedAppsActivity extends Activity {
     /** SuggestedApps' why lines, marked for «اللغة» here (the catalog is plain Java); S.tv says them */
     static final String[] WHY = {
         S.n("يوتيوب بلا إعلانات، مصمَّم للريموت"), S.n("متصفح إنترنت يشتغل بالريموت"), S.n("يشغّل الفيديو والصوت من ذاكرة USB ومن الشبكة"),
-        S.n("مشغّل IPTV فارغ من متجر Play: تضيف قائمتك أنت، وما فيه ولا نعطي أي قنوات"),
+        S.n("مشغّل IPTV فارغ من متجر Play: تضيف قائمتك أنت، وما فيه ولا نعطي أي قنوات"), S.n("مشغّل تلفزيونك للفيديو والقوائم، من إصدارات تلفزيونك نفسها"),
     };
 
     private GlassStyle.Look look;
@@ -89,7 +89,11 @@ public class SuggestedAppsActivity extends Activity {
         View first = null;
         // design/43: tiles in two columns, each the app's icon (its own once installed, else a coloured initial), its name, one line, and its state; the whole tile is the button
         final java.util.List<SuggestedApps.App> shown = new java.util.ArrayList<>();
-        for (SuggestedApps.App a : SuggestedApps.forTv(Build.VERSION.SDK_INT)) shown.add(a);
+        for (SuggestedApps.App a : SuggestedApps.forTv(Build.VERSION.SDK_INT)) {
+            // a MIRROR app (UrTV Player) gets a tile only once a release of it is really there: never a tile that cannot install
+            if (a.kind == SuggestedApps.Kind.MIRROR && !SuggestedApps.mirrorShown(mirrorAnswer(a), System.currentTimeMillis())) { checkMirror(a); continue; }
+            shown.add(a);
+        }
         for (int i = 0; i < shown.size(); i += 2) {
             LinearLayout row = new LinearLayout(this);
             row.setOrientation(LinearLayout.HORIZONTAL);
@@ -139,7 +143,7 @@ public class SuggestedAppsActivity extends Activity {
     }
 
     private void refresh() {
-        for (SuggestedApps.App a : SuggestedApps.ALL) {
+        for (SuggestedApps.App a : SuggestedApps.all()) {
             TextView b = buttons.get(a.id);
             if (b == null) continue;
             boolean on = installed(a.pkg);
@@ -164,6 +168,7 @@ public class SuggestedAppsActivity extends Activity {
     private String install(SuggestedApps.App a) {
         File f = new File(getCacheDir(), "suggested.apk");
         try {
+            if (a.kind == SuggestedApps.Kind.MIRROR) return mirror(a, f);
             String json = fetch(a.address(), 2 * 1024 * 1024);
             String url = json == null ? null : SuggestedApps.pickAsset(a.file, String.join(",", Build.SUPPORTED_ABIS), json);
             if (url == null || !SuggestedApps.githubOk(a, url)) return S.t("ما لقينا نسخة تناسب هذا التلفزيون");
@@ -177,6 +182,56 @@ public class SuggestedAppsActivity extends Activity {
             Log.w(TAG, "install: " + e.getClass().getSimpleName());
             return S.t("ما قدرنا نثبّته. جرّب مرة ثانية");
         }
+    }
+
+    /** the last answer about a MIRROR app's releases: "1|<time>" a valid release was there, "0|<time>" none; "" never asked */
+    private String mirrorAnswer(SuggestedApps.App a) {
+        return getSharedPreferences("suggested", MODE_PRIVATE).getString("mirror_" + a.id, "");
+    }
+
+    /** Asks GitHub (in the background) whether a valid release is there, at most every SuggestedApps.MIRROR_CHECK_MS; shows the rows when it is. */
+    private void checkMirror(final SuggestedApps.App a) {
+        final long now = System.currentTimeMillis();
+        if (!SuggestedApps.mirrorAskAgain(mirrorAnswer(a), now)) return;
+        new Thread(() -> {
+            String json = null;
+            try { json = fetch(a.address(), 2 * 1024 * 1024); } catch (Exception e) { Log.w(TAG, "mirror: " + e.getClass().getSimpleName()); }
+            if (json == null) return;   // no answer: asked again next time, nothing kept
+            final boolean there = SuggestedApps.pickMirror(a, json) != null;
+            getSharedPreferences("suggested", MODE_PRIVATE).edit().putString("mirror_" + a.id, (there ? "1|" : "0|") + now).apply();
+            if (there) runOnUiThread(() -> { if (!isFinishing() && !isDestroyed()) recreate(); });   // the screen again, now with its tile
+        }, "suggested-mirror").start();
+    }
+
+    /**
+     * A MIRROR app (UrTV Player): the newest «player-…» release of this repository, its published SHA-256, then the file; installed only when
+     * the file has that SHA-256, is that package and is signed by exactly the pinned certificate (SuggestedApps.mirrorFileOk). null when Android's
+     * install screen was asked for.
+     */
+    private String mirror(SuggestedApps.App a, File f) throws Exception {
+        if (!SuggestedApps.mirrorReady(a)) return S.t("ما قدرنا نثبّته. جرّب مرة ثانية");
+        String json = fetch(a.address(), 2 * 1024 * 1024);
+        String[] urls = json == null ? null : SuggestedApps.pickMirror(a, json);
+        if (urls == null || !SuggestedApps.mirrorOk(a, urls[0]) || !SuggestedApps.mirrorOk(a, urls[1])) return S.t("ما لقينا نسخة تناسب هذا التلفزيون");
+        String published = SuggestedApps.parseSha(fetch(urls[1], 4096));
+        if (published == null) return S.t("ما قدرنا ننزّله. جرّب مرة ثانية");
+        String sha = download(urls[0], f);
+        if (sha == null) return S.t("ما قدرنا ننزّله. جرّب مرة ثانية");
+        int flags = Build.VERSION.SDK_INT >= 28 ? PackageManager.GET_SIGNING_CERTIFICATES | PackageManager.GET_SIGNATURES : PackageManager.GET_SIGNATURES;
+        PackageInfo info = getPackageManager().getPackageArchiveInfo(f.getAbsolutePath(), flags);
+        java.util.Set<String> signers = new java.util.HashSet<>();
+        if (info != null) {
+            android.content.pm.Signature[] sigs = null;
+            if (Build.VERSION.SDK_INT >= 28 && info.signingInfo != null) sigs = info.signingInfo.getApkContentsSigners();
+            if ((sigs == null || sigs.length == 0) && info.signatures != null) sigs = info.signatures;
+            if (sigs != null) for (android.content.pm.Signature s : sigs) signers.add(SuggestedApps.hex(MessageDigest.getInstance("SHA-256").digest(s.toByteArray())));
+        }
+        if (!SuggestedApps.mirrorFileOk(a, sha, published, info == null ? null : info.packageName, signers)) {
+            f.delete();
+            return S.t("الملف ليس هذا التطبيق، فما ثبّتناه");
+        }
+        commit(f, a.pkg);
+        return null;
     }
 
     private void commit(File f, String pkg) throws Exception {

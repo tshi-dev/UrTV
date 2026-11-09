@@ -313,7 +313,7 @@ final class SetupRunner {
         p.saverInstalled = tv.installed(SetupEngine.SAVER);
         p.tvbro = tv.installed(SetupInstall.TVBRO);
         p.smarttube = tv.installed(SetupInstall.SMARTTUBE);
-        for (sa.urtv.home.SuggestedApps.App a : sa.urtv.home.SuggestedApps.ALL) if (a.inSetup() && tv.installed(a.pkg)) p.have.add(a.id);
+        for (sa.urtv.home.SuggestedApps.App a : sa.urtv.home.SuggestedApps.all()) if (a.inSetup() && tv.installed(a.pkg)) p.have.add(a.id);
         p.tcl = new SetupPrep(c.shell, c.store, s -> { }).isTcl();
         p.restarts = !switching(c.store) && new SetupMeasure(c.shell, c.store, s -> { }, c.host::sleep).adbSurvivesRestart();
         p.homeOurs = c.engine.resolveHome().startsWith(SetupEngine.SELF + "/");

@@ -257,6 +257,9 @@ public class SettingsActivity extends Activity {
         row("الفرق المتابعة (" + arabicNum(prefs.teams().size()) + "/" + arabicNum(Prefs.MAX_TEAMS) + ")", teamsLabel(),
             R.drawable.ic_trophy, new Runnable() { public void run() { manageTeams(); } });
 
+        // 4.3 «تطبيق المباريات»: «شاهد المباراة» on a game opens it (UrTV Player is told which game; another app just opens)
+        row("تطبيق المباريات", matchAppLabel(), R.drawable.ic_play, new Runnable() { public void run() { pickMatchApp(); } });
+
         row("الدوريات كاملة", leaguesLabel(), R.drawable.ic_trophy,
             new Runnable() { public void run() { pickLeagues(); } });
 
@@ -1844,6 +1847,38 @@ public class SettingsActivity extends Activity {
 
     /** «المظهر»: which of the two to choose; each opens its own list, the focused choice drawn beside it. */
     /** «تطبيقات في الشريط»: how many favourites the tray shows whole at once (5 as always, up to 10, or all of them); more scroll inside the tray */
+    /** «تطبيق المباريات»: «تلقائي» (UrTV Player when it is installed), «بدون», or one of the TV's apps */
+    private String matchAppLabel() {
+        String v = prefs.matchApp();
+        if (Prefs.MATCH_NONE.equals(v)) return "بدون";
+        if (Prefs.MATCH_AUTO.equals(v)) return "تلقائي (UrTV Player إن كان مثبّتاً)";
+        try { return String.valueOf(getPackageManager().getApplicationLabel(getPackageManager().getApplicationInfo(v, 0))); }
+        catch (Exception e) { return v; }
+    }
+
+    private void pickMatchApp() {
+        final java.util.List<String> values = new java.util.ArrayList<>(java.util.Arrays.asList(Prefs.MATCH_AUTO, Prefs.MATCH_NONE));
+        final java.util.List<String> labels = new java.util.ArrayList<>(java.util.Arrays.asList("تلقائي (UrTV Player إن كان مثبّتاً)", "بدون"));
+        android.content.pm.PackageManager pm = getPackageManager();
+        java.util.TreeMap<String, String> apps = new java.util.TreeMap<>();
+        for (String cat : new String[] {android.content.Intent.CATEGORY_LEANBACK_LAUNCHER, android.content.Intent.CATEGORY_LAUNCHER}) {
+            for (android.content.pm.ResolveInfo r : pm.queryIntentActivities(new android.content.Intent(android.content.Intent.ACTION_MAIN).addCategory(cat), 0)) {
+                String pkg = r.activityInfo.packageName;
+                if (pkg.startsWith("sa.urtv.") || apps.containsValue(pkg)) continue;
+                apps.put(String.valueOf(r.loadLabel(pm)) + "\u0000" + pkg, pkg);
+            }
+        }
+        for (java.util.Map.Entry<String, String> e : apps.entrySet()) { values.add(e.getValue()); labels.add(e.getKey().substring(0, e.getKey().indexOf('\u0000'))); }
+        new Dlg(this).setTitle("تطبيق المباريات")
+            .setSingleChoiceItems(labels.toArray(new String[0]), Math.max(0, values.indexOf(prefs.matchApp())), (d, i) -> {
+                prefs.setMatchApp(values.get(i));
+                d.dismiss();
+                render();
+            })
+            .setNegativeButton("إلغاء", null)
+            .show();
+    }
+
     private void pickFavBar() {
         final String[] labels = new String[Prefs.FAV_BARS.length];
         for (int i = 0; i < labels.length; i++) labels[i] = Prefs.favBarLabel(Prefs.FAV_BARS[i]);

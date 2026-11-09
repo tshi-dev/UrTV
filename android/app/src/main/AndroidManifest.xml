@@ -40,6 +40,15 @@
     <!-- opens the launcher's «ترتيب المفضلة» from settings -->
     <queries>
         <package android:name="sa.urtv.home" />
+        <!-- 4.3 «تطبيق المباريات»: the TV's apps, to choose the one «شاهد المباراة» opens -->
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
         <!-- «اجعل UrTV الشاشة الرئيسية»: who answers the Home key now -->
         <intent>
             <action android:name="android.intent.action.MAIN" />
