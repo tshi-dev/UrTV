@@ -33,7 +33,7 @@ final class SetupApks implements SetupInstall.Apks {
     static boolean allowed(String url) {
         if (UpdateRules.isReleaseUrl(url)) return true;
         for (String[] x : SetupInstall.EXTRAS) if (url.startsWith("https://github.com/" + x[0] + "/releases/download/") && url.endsWith(".apk") && !url.contains("..")) return true;
-        for (sa.urtv.home.SuggestedApps.App a : sa.urtv.home.SuggestedApps.ALL) {   // 4.3: «تطبيقات مقترحة», each only from its own place
+        for (sa.urtv.home.SuggestedApps.App a : sa.urtv.home.SuggestedApps.all()) {   // 4.3: «تطبيقات مقترحة», each only from its own place
             if (sa.urtv.home.SuggestedApps.githubOk(a, url)) return true;
         }
         return false;

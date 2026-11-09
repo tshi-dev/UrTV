@@ -11,6 +11,10 @@ import java.util.List;
  * - GITHUB: the newest release of the app's own GitHub repository, the file that fits the TV's processor (the pattern), checked to be that package
  *   (SmartTube and TV Bro, as install.sh and the setup always did).
  * - STORE: no file at all: the app's Play Store page opens and the owner installs it there.
+ * - MIRROR: our own app built elsewhere (UrTV Player, com.urtv.player, another signing key) copied into a public release of this repository, tag
+ *   «player-<version>», files «urtv-player.apk» and «urtv-player.apk.sha256». The newest such release is read; the file must have the published
+ *   SHA-256, be that package, AND be signed by exactly the pinned certificate (its SHA-256). Until the certificate is pinned the entry is not
+ *   offered at all and nothing is installed (mirrorReady).
  *
  * The IPTV player is a player only, offered as its Play Store page: it comes with no channels, films or playlists, and we give no links (the owner
  * adds their own provider).
@@ -19,7 +23,7 @@ import java.util.List;
 public final class SuggestedApps {
     private SuggestedApps() { }
 
-    public enum Kind { GITHUB, STORE }
+    public enum Kind { GITHUB, STORE, MIRROR }
 
     public static final class App {
         public final String id, pkg, name, why, repo, file;
@@ -34,17 +38,28 @@ public final class SuggestedApps {
             this.minSdk = minSdk; this.setupDefault = setupDefault;
         }
 
+        /** MIRROR: the signing certificate's SHA-256 (lower-case hex) the file must carry; "" = not pinned yet */
+        public String cert = "";
+        /** MIRROR: the tag prefix of its releases here */
+        public String tagPrefix = "";
+
         /** the setup installs it over the TV's own connection (a file it can check); a Play Store app is only offered in the settings */
-        public boolean inSetup() { return kind != Kind.STORE; }
+        public boolean inSetup() { return kind == Kind.GITHUB; }   // a Play Store app or a MIRROR one (UrTV Player): the settings only
 
         /** GITHUB: the releases list it is picked from; STORE: the Play Store page */
         public String address() {
             switch (kind) {
                 case GITHUB: return "https://api.github.com/repos/" + repo + "/releases/latest";
+                case MIRROR: return "https://api.github.com/repos/" + repo + "/releases?per_page=30";
                 default: return "https://play.google.com/store/apps/details?id=" + pkg;
             }
         }
     }
+
+    /** UrTV Player's signing certificate, SHA-256 of the certificate (lower-case hex, 64 digits). PLACEHOLDER: the owner has not made the key yet;
+     *  while it is empty the Player is not offered and never installed. */
+    public static final String PLAYER_CERT = "";
+    public static final String PLAYER = "com.urtv.player", PLAYER_REPO = "tshi-dev/UrTV", PLAYER_FILE = "urtv-player.apk", PLAYER_TAG = "player-";
 
     public static final String SMARTTUBE = "org.smarttube.stable", TVBRO = "com.phlox.tvwebbrowser", VLC = "org.videolan.vlc", TIVIMATE = "ar.tvplayer.tv";
 
@@ -60,18 +75,38 @@ public final class SuggestedApps {
         new App("tivimate", TIVIMATE, "TiviMate", "مشغّل IPTV فارغ من متجر Play: تضيف قائمتك أنت، وما فيه ولا نعطي أي قنوات", Kind.STORE, null, null, 21, false),
     };
 
+    /** UrTV Player: a MIRROR entry, after the others; offered only once its certificate is pinned (mirrorReady) */
+    public static final App PLAYER_APP;
+
+    static {
+        App p = new App("player", PLAYER, "UrTV Player", "مشغّل تلفزيونك للفيديو والقوائم، من إصدارات تلفزيونك نفسها", Kind.MIRROR, PLAYER_REPO, PLAYER_FILE, 21, false);
+        p.cert = PLAYER_CERT;
+        p.tagPrefix = PLAYER_TAG;
+        PLAYER_APP = p;
+    }
+
     /** at most this many IPTV players are ever suggested */
     public static final int MAX_IPTV = 2;
 
+    /** the catalog with UrTV Player after the others */
+    public static List<App> all() {
+        List<App> out = new ArrayList<>(java.util.Arrays.asList(ALL));
+        out.add(PLAYER_APP);
+        return out;
+    }
+
     public static App byId(String id) {
-        for (App a : ALL) if (a.id.equals(id)) return a;
+        for (App a : all()) if (a.id.equals(id)) return a;
         return null;
     }
+
+    /** a MIRROR app may be offered and installed only with a real certificate pinned (64 hex digits) */
+    public static boolean mirrorReady(App a) { return a != null && a.kind == Kind.MIRROR && a.cert != null && a.cert.matches("[0-9a-f]{64}"); }
 
     /** the ones this TV can run (its Android API level) */
     public static List<App> forTv(int sdk) {
         List<App> out = new ArrayList<>();
-        for (App a : ALL) if (sdk >= a.minSdk) out.add(a);
+        for (App a : all()) if (sdk >= a.minSdk && (a.kind != Kind.MIRROR || mirrorReady(a))) out.add(a);
         return out;
     }
 
@@ -94,7 +129,7 @@ public final class SuggestedApps {
         List<String> out = new ArrayList<>();
         if (saved == null) return out;
         List<String> given = java.util.Arrays.asList(saved.split(","));
-        for (App a : ALL) if (a.inSetup() && given.contains(a.id)) out.add(a.id);
+        for (App a : all()) if (a.inSetup() && given.contains(a.id)) out.add(a.id);
         return out;
     }
 
@@ -124,6 +159,46 @@ public final class SuggestedApps {
             }
         }
         return null;
+    }
+
+    /**
+     * MIRROR: from the releases list (newest first, as GitHub gives it), the newest release whose tag is the app's prefix and a version, not a draft
+     * or a pre-release: {the file's address, its .sha256's address}, both on this repository's own releases; null when there is none.
+     */
+    public static String[] pickMirror(App a, String releasesJson) {
+        if (a == null || a.kind != Kind.MIRROR || releasesJson == null) return null;
+        String[] parts = releasesJson.split("\"tag_name\"\\s*:\\s*\"", -1);
+        for (int i = 1; i < parts.length; i++) {
+            String seg = parts[i];
+            int end = seg.indexOf('"');
+            if (end < 0) continue;
+            String tag = seg.substring(0, end);
+            if (!tag.matches(java.util.regex.Pattern.quote(a.tagPrefix) + "[0-9][0-9A-Za-z.\\-]{0,30}")) continue;
+            if (seg.matches("(?s).*\"draft\"\\s*:\\s*true.*") || seg.matches("(?s).*\"prerelease\"\\s*:\\s*true.*")) continue;
+            String base = "https://github.com/" + a.repo + "/releases/download/" + tag + "/" + a.file;
+            if (seg.contains("\"" + base + "\"") && seg.contains("\"" + base + ".sha256\"")) return new String[] {base, base + ".sha256"};
+        }
+        return null;
+    }
+
+    /** MIRROR: an address of this repository's own «<prefix><version>» release files, nothing else */
+    public static boolean mirrorOk(App a, String url) {
+        return a != null && a.kind == Kind.MIRROR && url != null
+            && url.matches(java.util.regex.Pattern.quote("https://github.com/" + a.repo + "/releases/download/" + a.tagPrefix) + "[0-9][0-9A-Za-z.\\-]{0,30}/"
+                + java.util.regex.Pattern.quote(a.file) + "(\\.sha256)?") && !url.contains("..");
+    }
+
+    /** the .sha256 file's answer: its first 64 hex digits (sha256sum's form «<hash>  <name>» too), lower case; null when there are none */
+    public static String parseSha(String body) {
+        if (body == null) return null;
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("(?i)\\b([0-9a-f]{64})\\b").matcher(body.trim());
+        return m.find() ? m.group(1).toLowerCase(java.util.Locale.ROOT) : null;
+    }
+
+    /** MIRROR: the file is the published one, that package, and signed by exactly the pinned certificate (one signer, the same SHA-256) */
+    public static boolean mirrorFileOk(App a, String fileSha, String publishedSha, String pkg, java.util.Set<String> signers) {
+        return mirrorReady(a) && fileSha != null && fileSha.equalsIgnoreCase(publishedSha == null ? "" : publishedSha) && a.pkg.equals(pkg)
+            && signers != null && signers.size() == 1 && a.cert.equalsIgnoreCase(signers.iterator().next());
     }
 
     /** lower-case hex of a digest */

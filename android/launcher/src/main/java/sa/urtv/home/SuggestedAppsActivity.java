@@ -49,7 +49,7 @@ public class SuggestedAppsActivity extends Activity {
     /** SuggestedApps' why lines, marked for «اللغة» here (the catalog is plain Java); S.tv says them */
     static final String[] WHY = {
         S.n("يوتيوب بلا إعلانات، مصمَّم للريموت"), S.n("متصفح إنترنت يشتغل بالريموت"), S.n("يشغّل الفيديو والصوت من ذاكرة USB ومن الشبكة"),
-        S.n("مشغّل IPTV فارغ من متجر Play: تضيف قائمتك أنت، وما فيه ولا نعطي أي قنوات"),
+        S.n("مشغّل IPTV فارغ من متجر Play: تضيف قائمتك أنت، وما فيه ولا نعطي أي قنوات"), S.n("مشغّل تلفزيونك للفيديو والقوائم، من إصدارات تلفزيونك نفسها"),
     };
 
     private GlassStyle.Look look;
@@ -115,7 +115,7 @@ public class SuggestedAppsActivity extends Activity {
     }
 
     private void refresh() {
-        for (SuggestedApps.App a : SuggestedApps.ALL) {
+        for (SuggestedApps.App a : SuggestedApps.all()) {
             TextView b = buttons.get(a.id);
             if (b == null) continue;
             b.setText(installed(a.pkg) ? S.t("افتح") : a.kind == SuggestedApps.Kind.STORE ? S.t("افتح المتجر") : S.t("ثبّت"));
@@ -139,6 +139,7 @@ public class SuggestedAppsActivity extends Activity {
     private String install(SuggestedApps.App a) {
         File f = new File(getCacheDir(), "suggested.apk");
         try {
+            if (a.kind == SuggestedApps.Kind.MIRROR) return mirror(a, f);
             String json = fetch(a.address(), 2 * 1024 * 1024);
             String url = json == null ? null : SuggestedApps.pickAsset(a.file, String.join(",", Build.SUPPORTED_ABIS), json);
             if (url == null || !SuggestedApps.githubOk(a, url)) return S.t("ما لقينا نسخة تناسب هذا التلفزيون");
@@ -152,6 +153,37 @@ public class SuggestedAppsActivity extends Activity {
             Log.w(TAG, "install: " + e.getClass().getSimpleName());
             return S.t("ما قدرنا نثبّته. جرّب مرة ثانية");
         }
+    }
+
+    /**
+     * A MIRROR app (UrTV Player): the newest «player-…» release of this repository, its published SHA-256, then the file; installed only when
+     * the file has that SHA-256, is that package and is signed by exactly the pinned certificate (SuggestedApps.mirrorFileOk). null when Android's
+     * install screen was asked for.
+     */
+    private String mirror(SuggestedApps.App a, File f) throws Exception {
+        if (!SuggestedApps.mirrorReady(a)) return S.t("ما قدرنا نثبّته. جرّب مرة ثانية");
+        String json = fetch(a.address(), 2 * 1024 * 1024);
+        String[] urls = json == null ? null : SuggestedApps.pickMirror(a, json);
+        if (urls == null || !SuggestedApps.mirrorOk(a, urls[0]) || !SuggestedApps.mirrorOk(a, urls[1])) return S.t("ما لقينا نسخة تناسب هذا التلفزيون");
+        String published = SuggestedApps.parseSha(fetch(urls[1], 4096));
+        if (published == null) return S.t("ما قدرنا ننزّله. جرّب مرة ثانية");
+        String sha = download(urls[0], f);
+        if (sha == null) return S.t("ما قدرنا ننزّله. جرّب مرة ثانية");
+        int flags = Build.VERSION.SDK_INT >= 28 ? PackageManager.GET_SIGNING_CERTIFICATES | PackageManager.GET_SIGNATURES : PackageManager.GET_SIGNATURES;
+        PackageInfo info = getPackageManager().getPackageArchiveInfo(f.getAbsolutePath(), flags);
+        java.util.Set<String> signers = new java.util.HashSet<>();
+        if (info != null) {
+            android.content.pm.Signature[] sigs = null;
+            if (Build.VERSION.SDK_INT >= 28 && info.signingInfo != null) sigs = info.signingInfo.getApkContentsSigners();
+            if ((sigs == null || sigs.length == 0) && info.signatures != null) sigs = info.signatures;
+            if (sigs != null) for (android.content.pm.Signature s : sigs) signers.add(SuggestedApps.hex(MessageDigest.getInstance("SHA-256").digest(s.toByteArray())));
+        }
+        if (!SuggestedApps.mirrorFileOk(a, sha, published, info == null ? null : info.packageName, signers)) {
+            f.delete();
+            return S.t("الملف ليس هذا التطبيق، فما ثبّتناه");
+        }
+        commit(f, a.pkg);
+        return null;
     }
 
     private void commit(File f, String pkg) throws Exception {
