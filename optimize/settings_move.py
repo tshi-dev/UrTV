@@ -45,7 +45,7 @@ MIGRATIONS = {}
 # TODO(parental PIN, branch work/parental): the PIN must NEVER be added here, and must never be exported by any other way.
 ALLOWED_TOP = ("schema", "city", "digits", "prayer", "hijri_offset", "clock24", "clock_size", "card_style", "cards",
                "greeting", "listen_pill", "update_bell", "markets", "teams", "adhan", "sunrise", "prayerbar", "wxmore", "months",
-               "lang", "fav_bar", "reciter_favs", "pagesdark")
+               "lang", "fav_bar", "reciter_favs", "pagesdark", "pills_hidden", "home_photos", "home_packs", "home_ours")
 # NEVER here: the hidden update-channel switch (updatechannel) and the parental PIN. tests/settings_move_test.py checks both.
 
 # The same lists the apps validate (android/app/src/main/java/sa/urtv/screensaver/Prefs.java; tests/settings_move_test.py
@@ -59,6 +59,10 @@ MONTHS = ("default", "levant")
 LANGS = ("ar", "en")   # «اللغة» (Tr.java: ar, the default, or en)
 RECITER_ID = re.compile(r"[A-Za-z0-9_-]{1,60}")   # a reciter's id in quran/reciters.json
 FAV_BARS = ("5", "6", "7", "8", "9", "10", "all")   # «تطبيقات في الشريط»: how many favourites the home tray shows whole (Prefs.FAV_BARS)
+QUICK_BUTTONS = ("markets", "matches", "center", "phone")   # the home's quick buttons that can be hidden (Prefs.QUICK_BUTTONS)
+HOME_PHOTOS = ("same", "own")   # the home's wallpaper: the screensaver's packs (same) or a set of its own (own)
+PACK_ID = re.compile(r"[a-z][a-z0-9-]{1,30}")   # a photo pack's id (PhotoPacks.validId)
+MAX_HOME_PACKS = 12   # docs/PHOTO-PACKS.md: at most 12 packs
 SWITCHES = ("greeting", "sunrise", "prayerbar", "wxmore", "pagesdark")   # on/off switches the TV reports as «on» / «off»
 MARKETS = ("tasi", "aramco", "spx", "btc", "gold", "silver", "oil", "xrp")
 MAX_MARKETS = 4
@@ -169,6 +173,17 @@ def read_tv(keep_own=False):
         s["listen_pill"] = g["listenpill"] == "on"
     if g.get("updatebell") in ("on", "off"):   # likewise
         s["update_bell"] = g["updatebell"] == "on"
+    # 4.3 «المظهر والخلفيات» and the hidden quick buttons; an older screensaver does not say: left out of the file, never guessed
+    if "pillshidden" in g:
+        v = g["pillshidden"]
+        s["pills_hidden"] = [] if v in ("none", "") else [k for k in v.split(",") if k in QUICK_BUTTONS]
+    if g.get("homephotos") in HOME_PHOTOS:
+        s["home_photos"] = g["homephotos"]
+    if "homepacks" in g:
+        v = g["homepacks"]
+        s["home_packs"] = [] if v in ("none", "") else [k for k in v.split(",") if PACK_ID.fullmatch(k)]
+    if g.get("homeours") in ("on", "off"):
+        s["home_ours"] = g["homeours"] == "on"
     if g.get("favbar") in FAV_BARS:   # «تطبيقات في الشريط»; an older screensaver does not say: left out of the file
         s["fav_bar"] = g["favbar"]
     prayer = {}
@@ -273,9 +288,12 @@ def flat(s):
         if "country" in c:
             out["city"] += (c["country"],)
     for k in ("digits", "clock24", "clock_size", "card_style", "greeting", "listen_pill", "update_bell", "hijri_offset", "sunrise", "prayerbar", "wxmore", "months",
-              "lang", "fav_bar", "pagesdark"):
+              "lang", "fav_bar", "pagesdark", "home_photos", "home_ours"):
         if k in s:
             out[k] = s[k]
+    for k in ("pills_hidden", "home_packs"):
+        if k in s:
+            out[k] = tuple(s[k])
     for k, v in s.get("prayer", {}).items():
         if k == "adjust":
             for p, n in v.items():
@@ -457,7 +475,22 @@ def validate(d):
         out["lang"] = d["lang"]
     if "fav_bar" in d and choice(d["fav_bar"], FAV_BARS, "fav_bar", errs):
         out["fav_bar"] = d["fav_bar"]
-    for key in ("clock24", "greeting", "listen_pill", "update_bell", "sunrise", "prayerbar", "wxmore", "pagesdark"):
+    if "home_photos" in d and choice(d["home_photos"], HOME_PHOTOS, "home_photos", errs):
+        out["home_photos"] = d["home_photos"]
+    if "pills_hidden" in d:
+        v = d["pills_hidden"]
+        if not isinstance(v, list) or len(set(map(str, v))) != len(v) or not all(isinstance(x, str) and x in QUICK_BUTTONS for x in v):
+            errs.append(f"pills_hidden must be a list of different ones of {' '.join(QUICK_BUTTONS)} (empty: none hidden)")
+        else:
+            out["pills_hidden"] = v
+    if "home_packs" in d:
+        v = d["home_packs"]
+        if not isinstance(v, list) or len(v) > MAX_HOME_PACKS or len(set(map(str, v))) != len(v) \
+                or not all(isinstance(x, str) and PACK_ID.fullmatch(x) for x in v):
+            errs.append(f"home_packs must be a list of up to {MAX_HOME_PACKS} different photo pack ids (empty: none)")
+        else:
+            out["home_packs"] = v
+    for key in ("clock24", "greeting", "listen_pill", "update_bell", "sunrise", "prayerbar", "wxmore", "pagesdark", "home_ours"):
         if key in d:
             n = len(errs)
             boolean(d[key], key, errs)
@@ -680,6 +713,14 @@ def ops(values, names):
             es("lang", v)
         elif p == "fav_bar":
             es("favbar", v)
+        elif p == "pills_hidden":
+            es("pillshidden", ",".join(v) or "none")
+        elif p == "home_photos":
+            es("homephotos", v)
+        elif p == "home_packs":
+            es("homepacks", ",".join(v) or "none")
+        elif p == "home_ours":
+            es("homeours", flag(v))
         elif p == "cards.panel2":
             es("panel2", v)
         elif p == "listen_pill":

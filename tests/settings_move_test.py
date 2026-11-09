@@ -54,7 +54,7 @@ ENUM = {"digits": ["hindi", "latin"], "clocksize": ["large", "medium", "small"],
         "cardstyle": ["current", "dark1", "glass1", "dark3", "glass3"], "prayermethod": ["auto", "gulf"],
         "sunrise": ["on", "off"], "prayerbar": ["on", "off"], "wxmore": ["on", "off"], "pagesdark": ["on", "off"], "months": ["default", "levant"],
         "greeting": ["on", "off"], "listenpill": ["on", "off"], "updatebell": ["on", "off"], "adhanbar": ["on", "off"], "clock24": ["on", "off"], "mkbar": ["on", "off"], "prayeradj": ["on", "off"],
-        "favbar": ["5", "6", "7", "8", "9", "10", "all"]}
+        "favbar": ["5", "6", "7", "8", "9", "10", "all"], "homephotos": ["same", "own"], "homeours": ["on", "off"]}
 if "SaverReceiver" in cmd and cmd.endswith(".GET"):
     s = st["saver"]
     adj = " ".join(f"{k}={'+' if v > 0 else ''}{v}" for k, v in s["adj"].items())
@@ -68,6 +68,7 @@ if "SaverReceiver" in cmd and cmd.endswith(".GET"):
         f"mkstyle: {s['mkstyle']}", "stocks: 2222", "slot: matches", "countdown: none", "idle: 10", "genres: ", "langs: ", "events: ",
         "leagues: ", "autoupdate: on", "pin: 4321", "wifi: HomeNet", "tasks: buy milk", "updatechannel: " + s.get("updatechannel", "stable"), "favbar: " + s.get("favbar", "5")]
         + ([f"country: {s['country']}"] if "country" in s else [])
+        + [f"{k}: {s[k]}" for k in ("homephotos", "homepacks", "homeours", "pillshidden") if k in s]   # 4.3: only a screensaver that has them says them
         + ([] if st.get("old_app") else [f"panel2: {s['panel2']}", f"sunrise: {s['sunrise']}", f"prayerbar: {s['prayerbar']}",
                                           f"wxmore: {s['wxmore']}", f"pagesdark: {s.get('pagesdark', 'on')}", f"months: {s['months']}"])))
 if "SaverReceiver" in cmd and re.search(r"screensaver\.SET( |$)", cmd):
@@ -136,7 +137,8 @@ BASE = {
               "panel": "verse", "home_panel": "none", "greeting": "on", "listenpill": "on", "updatebell": "on", "adhanbar": "on", "prayermethod": "auto", "prayeradj": "off",
               "adj": {"fajr": 0, "dhuhr": 0, "asr": 0, "maghrib": 0, "isha": 0}, "hijri": "0", "digits": "hindi", "clock24": "off",
               "cardstyle": "current", "markets": ["tasi", "spx", "btc"], "mkbar": "on", "clocksize": "large", "mkstyle": "arrows",
-              "panel2": "none", "sunrise": "off", "prayerbar": "off", "wxmore": "off", "pagesdark": "on", "months": "default", "updatechannel": "stable", "favbar": "5"},
+              "panel2": "none", "sunrise": "off", "prayerbar": "off", "wxmore": "off", "pagesdark": "on", "months": "default", "updatechannel": "stable", "favbar": "5",
+              "homephotos": "same", "homepacks": "none", "homeours": "on", "pillshidden": "none"},
     "adhan": {"on": "on", "voice": 1, "fajr_voice": 10, "short": "off", "stopkey": "on", "volume": 70},
 }
 CONFIGURED = copy.deepcopy(BASE)
@@ -144,7 +146,8 @@ CONFIGURED["saver"].update({"city": ["الدوحة", "25.2854", "51.531"], "tz":
                             "panel": "prayers", "home_panel": "verse,hourly", "greeting": "off", "listenpill": "off", "updatebell": "off", "adhanbar": "off",
                             "prayermethod": "gulf", "prayeradj": "on", "hijri": "-1", "digits": "latin", "clock24": "on",
                             "cardstyle": "glass1", "markets": ["gold", "btc"], "mkbar": "off", "clocksize": "medium", "mkstyle": "prices",
-                            "panel2": "hourly", "sunrise": "on", "prayerbar": "on", "wxmore": "on", "pagesdark": "off", "months": "levant", "favbar": "7"})
+                            "panel2": "hourly", "sunrise": "on", "prayerbar": "on", "wxmore": "on", "pagesdark": "off", "months": "levant", "favbar": "7",
+                            "homephotos": "own", "homepacks": "nature,sea", "homeours": "off", "pillshidden": "markets,center"})
 CONFIGURED["saver"]["adj"] = {"fajr": 2, "dhuhr": 0, "asr": -3, "maghrib": 1, "isha": 0}
 CONFIGURED["favs"] = ["afasy", "sudais"]
 CONFIGURED["adhan"] = {"on": "off", "voice": 3, "fajr_voice": 13, "short": "on", "stopkey": "off", "volume": 40}
@@ -235,7 +238,7 @@ check("a pin or key in a file is reported and ignored, never sent", rc == 0 and 
 t = Tv("pin2", BASE)
 t.run("import", write("pin2.json", {"schema": 1, "pin": "1234", "digits": "latin"}), "--yes")
 check("...and nothing with the pin went to the TV", t.writes() and not any("1234" in l or "pin" in l for l in t.sent()), t.writes())
-check("the sources of the exported settings do not include the own adhan or photos paths", "own_bytes" not in text and "photos" not in text, text)
+check("the sources of the exported settings do not include the own adhan or photos paths", "own_bytes" not in text and "photos" not in text.replace('"home_photos"', ""), text)   # the key home_photos is a choice, not a path
 
 # ---- own adhan voice: left out of an export, kept in the before-file
 o = Tv("own", BASE)
@@ -600,4 +603,39 @@ rc, out, err = world_tv.run('import', write('world-bad-country.json', world_expo
 check('malformed country codes are rejected before any write', rc != 0 and 'city.country' in out + err and len(world_tv.writes()) == before_world_writes, (rc, out, err))
 
 print("\nall settings move checks passed" if not failed else f"\n{failed} failed")
+# ---- 4.3: the hidden quick buttons and the home's own photos («المظهر والخلفيات»)
+import re as _re
+prefs_src = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/Prefs.java").read_text(encoding="utf-8")
+packs_src = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/PhotoPacks.java").read_text(encoding="utf-8")
+qb = _re.search(r"QUICK_BUTTONS = \{([^}]*)\}", prefs_src)
+check("QUICK_BUTTONS is Prefs.QUICK_BUTTONS and PACK_ID is PhotoPacks.validId's pattern",
+      qb and tuple(_re.findall(r'"(\w+)"', qb.group(1))) == sm.QUICK_BUTTONS and 'id.matches("' + sm.PACK_ID.pattern + '")' in packs_src, (qb and qb.group(1), sm.PACK_ID.pattern))
+exp = json.loads(Tv("q1", CONFIGURED).run("export")[1])
+check("export: pills_hidden, home_photos, home_packs and home_ours are in the file",
+      exp.get("pills_hidden") == ["markets", "center"] and exp.get("home_photos") == "own" and exp.get("home_packs") == ["nature", "sea"] and exp.get("home_ours") is False, exp)
+t = Tv("q2", BASE)
+rc, out, err = t.run("import", write("q2.json", {"schema": 1, "pills_hidden": ["markets", "center"], "home_photos": "own", "home_packs": ["nature", "sea"], "home_ours": False}), "--yes")
+d = t.data()["saver"]
+check("import: the four reach the TV as pillshidden, homephotos, homepacks and homeours",
+      rc == 0 and d["pillshidden"] == "markets,center" and d["homephotos"] == "own" and d["homepacks"] == "nature,sea" and d["homeours"] == "off", (rc, out, err, d))
+t = Tv("q3", CONFIGURED)
+rc, out, err = t.run("import", write("q3.json", {"schema": 1, "pills_hidden": [], "home_packs": []}), "--yes")
+d = t.data()["saver"]
+check("import: an empty list is «none» on the TV (nothing hidden, no pack)", rc == 0 and d["pillshidden"] == "none" and d["homepacks"] == "none", (rc, out, err, d))
+refused("pills_hidden unknown", lambda d: d.update(pills_hidden=["markets", "weather"]), "pills_hidden must be a list")
+refused("pills_hidden twice", lambda d: d.update(pills_hidden=["markets", "markets"]), "pills_hidden must be a list")
+refused("pills_hidden text", lambda d: d.update(pills_hidden="markets"), "pills_hidden must be a list")
+refused("home_photos unknown", lambda d: d.update(home_photos="mine"), "home_photos must be one of")
+refused("home_packs bad id", lambda d: d.update(home_packs=["Nature!"]), "home_packs must be a list")
+refused("home_packs too many", lambda d: d.update(home_packs=[f"p{i:02d}" for i in range(sm.MAX_HOME_PACKS + 1)]), "home_packs must be a list")
+refused("home_ours text", lambda d: d.update(home_ours="off"), "home_ours must be true or false")
+old = copy.deepcopy(BASE)
+for k in ("homephotos", "homepacks", "homeours", "pillshidden"): old["saver"].pop(k)
+exp_old = json.loads(Tv("q4", old).run("export")[1])
+check("an older screensaver that does not say them: left out of the file, never guessed", not any(k in exp_old for k in ("pills_hidden", "home_photos", "home_packs", "home_ours")), exp_old)
+saver_src = (ROOT / "optimize/saver.sh").read_text(encoding="utf-8")
+check("saver.sh: pillshidden, homephotos, homepacks and homeours are commands, each in the usage",
+      all(f"  {k}) set1 {k} " in saver_src and f"optimize/saver.sh {k} " in saver_src.split("set -euo")[0] for k in ("pillshidden", "homephotos", "homepacks", "homeours")))
+docs = (ROOT / "docs/SETTINGS.md").read_text(encoding="utf-8")
+check("docs/SETTINGS.md: a row says each command", all(f"optimize/saver.sh {k} " in docs for k in ("pillshidden", "homephotos", "homepacks", "homeours")))
 sys.exit(1 if failed else 0)
