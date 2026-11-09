@@ -26,7 +26,7 @@ import sa.urtv.home.phone.PhoneMessage;
  */
 public class MessageActivity extends Activity {
     private final Handler handler = new Handler(Looper.getMainLooper());
-    private final Runnable close = this::finish;
+    private final Runnable close = new Runnable() { @Override public void run() { finish(); } };   // not this::finish: check.py type-checks without the SDK
     private TextView text;
 
     static SharedPreferences prefs(Context c) { return c.getSharedPreferences("MainActivity", Context.MODE_PRIVATE); }   // the launcher's file (Dock.prefs)

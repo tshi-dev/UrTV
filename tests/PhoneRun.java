@@ -254,10 +254,10 @@ public final class PhoneRun {
         Pairing.Offer o = f.ctl.offer();
         Object[] first = f.ctl.pair(o.token, false, "127.0.0.1");
         f.ctl.approve();   // answered, and the phone never asks for its answer
-        Object[] busy = f.ctl.pair(f.ctl.offer().token, false, "127.0.0.2");
+        Object[] busy = f.ctl.pair(f.ctl.offer().token, false, "192.0.2.7");
         f.now[0] += PhoneControl.PENDING_MS + 1;
         f.ctl.tick();
-        Object[] again = f.ctl.pair(f.ctl.offer().token, false, "127.0.0.2");
+        Object[] again = f.ctl.pair(f.ctl.offer().token, false, "192.0.2.7");
         String[] late = f.ctl.pairStatus((String) first[1], "127.0.0.1");
         check("S11: an answered request blocks a second phone only for a minute, then expires (and its late reader gets no session)",
             first[0] == PhoneControl.Pair.OK && busy[0] == PhoneControl.Pair.BUSY && again[0] == PhoneControl.Pair.OK && "gone".equals(late[0]),
