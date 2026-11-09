@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application>
         <!-- debug builds only (CI's pictures): starts the update screen showing a state, without the network or the permission a shell lacks -->
+        <activity android:name="sa.urtv.home.DebugCleanShot" android:exported="true" android:theme="@android:style/Theme.NoDisplay" android:excludeFromRecents="true" />
         <activity android:name="sa.urtv.home.DebugControlShot" android:exported="true" android:theme="@android:style/Theme.NoDisplay" android:excludeFromRecents="true" />
         <activity android:name="sa.urtv.home.DebugSnapShot" android:exported="true" android:theme="@android:style/Theme.NoDisplay" android:excludeFromRecents="true" />
         <activity android:name="sa.urtv.home.DebugBarShot" android:exported="true" android:theme="@android:style/Theme.NoDisplay" android:excludeFromRecents="true" />

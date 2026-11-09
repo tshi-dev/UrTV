@@ -44,6 +44,7 @@ public class CleanActivity extends Activity {
         col.setPadding(dp(40), dp(32), dp(40), dp(32));
         col.setBackground(GlassPaint.fill(this, GlassStyle.over(look.dialog, look.base), 22, look.line));
         frame.addView(col, new FrameLayout.LayoutParams(Math.min(dp(880), w - 2 * Math.round(w * 0.05f)), -2, Gravity.CENTER));
+        if (BuildConfig.DEBUG && "customise".equals(getIntent().getStringExtra("preview"))) customising = true;   // CI's picture of the sheet (DebugCleanShot)
         setContentView(scroll);
         render();
     }
@@ -75,6 +76,10 @@ public class CleanActivity extends Activity {
             buttons.addView(back, bw(false));
             buttons.addView(button(S.t("تخصيص"), v -> { customising = true; render(); }), bw(true));
             buttons.addView(button(S.t("تم"), v -> finish()), bw(true));
+            // the second step is offered only here, inside clean mode
+            LinearLayout.LayoutParams factory = lp(0);
+            factory.topMargin = dp(16);
+            col.addView(button(S.t("تخلّص من واجهة المصنع"), v -> startActivity(new android.content.Intent().setClassName(getPackageName(), "sa.urtv.home.setup.FactoryActivity"))), factory);
             cancel = back;   // the focus of an «on» screen starts on the way back
         } else {
             View turnOn = button(S.t("فعّل"), v -> pin(() -> { CleanMode.setOn(this, true); finish(); }));

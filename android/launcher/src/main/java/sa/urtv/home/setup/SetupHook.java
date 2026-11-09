@@ -32,4 +32,18 @@ public final class SetupHook {
             // the home screen comes first
         }
     }
+
+    /** Our home reached the screen (MainActivity.onResume): while the stock interface is off, this boot is fine and BootGuard's count starts again. One small read; a write only when it changes. */
+    public static void homeUp(Context c) {
+        try {
+            FileStore store = new FileStore(c.getApplicationContext());
+            String f = store.get(SetupEngine.FACTORY);
+            if (f == null || !f.startsWith("on")) return;
+            BootGuard.State s = BootGuard.State.parse(store.get(BootGuard.FILE));
+            if (s.up && s.failed == 0) return;
+            store.put(BootGuard.FILE, BootGuard.homeUp(s).text());
+        } catch (Exception ignored) {
+            // the home screen comes first
+        }
+    }
 }

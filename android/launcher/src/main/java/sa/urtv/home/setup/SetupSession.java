@@ -37,9 +37,10 @@ final class SetupSession implements Closeable {
      * key and the TV asks again.
      */
     static void deleteKeyIfFinished(Context c) {
-        boolean pending = SetupRecovery.pending(c), awaiting = SetupRunner.awaiting(new FileStore(c));
+        String factory = new FileStore(c).get(SetupEngine.FACTORY);
+        boolean pending = SetupRecovery.pending(c) || (factory != null && factory.startsWith("on")), awaiting = SetupRunner.awaiting(new FileStore(c));   // the factory step keeps the key: its restore needs it
         if (!pending && !awaiting) AdbKeys.delete(c);
-        android.util.Log.i("UrTVSetup", "adb key: " + (!pending && !awaiting ? "deleted" : "kept (" + (pending ? "home switch pending" : "run waiting") + ")")
+        android.util.Log.i("UrTVSetup", "adb key: " + (!pending && !awaiting ? "deleted" : "kept (" + (pending ? "home switch or factory step pending" : "run waiting") + ")")
             + " exists=" + AdbKeys.exists(c));
     }
 }

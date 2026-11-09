@@ -291,6 +291,14 @@
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Material.NoActionBar" />
 
+        <!-- «تخلّص من واجهة المصنع»: the second step of «UrTV النظيف»; opened only from CleanActivity -->
+        <activity
+            android:name=".setup.FactoryActivity"
+            android:exported="false"
+            android:label="تخلّص من واجهة المصنع"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Material.NoActionBar" />
+
         <!-- «تحديث تلفزيوني»: the version, the check and the update. Exported only so the screensaver's settings can open it, behind a signature
              permission (same key): no other app can. -->
         <activity

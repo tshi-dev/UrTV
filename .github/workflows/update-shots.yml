@@ -1,7 +1,7 @@
 name: Update screen (rendered, before and after)
 
 # «تحديث تلفزيوني» and «إعداد تلفزيوني» drawn by the real launcher on an Android TV emulator (1920x1080), master's layout and this branch's, in the glass and sand looks, Arabic and English,
-# in four states (update: available, downloading, waiting for the install's confirmation, done) and five (setup: start, plan, progress, restart, done), 72 pictures; and, from this branch only, the redesigned setup in the glass look, dark and light, Arabic, in seven states (start, plan, progress, restart, prompt, promptlate, done), 14 more, and 4 of «مركز التحكم» (rest, focus, «تخصيص», light), and 2 of the home's stand-in picture: 96 in all. Debug builds only (the activities DebugUpdateShot and DebugSetupShot draw a state without the network). A picture is taken only while the screen is on top, and only pictures of a run that succeeded are committed. The pictures
+# in four states (update: available, downloading, waiting for the install's confirmation, done) and five (setup: start, plan, progress, restart, done), 72 pictures; and, from this branch only, the redesigned setup in the glass look, dark and light, Arabic, in seven states (start, plan, progress, restart, prompt, promptlate, done), 14 more, and 4 of «مركز التحكم» (rest, focus, «تخصيص», light), and 2 of the home's stand-in picture: 100 in all. Debug builds only (the activities DebugUpdateShot and DebugSetupShot draw a state without the network). A picture is taken only while the screen is on top, and only pictures of a run that succeeded are committed. The pictures
 # are committed to docs/shots/update/{before,after} when the pushed commit's message says «[shots]» (the artifact is a zip not every reader can fetch).
 on:
   push:
@@ -87,7 +87,7 @@ jobs:
         if: success() && contains(join(github.event.commits.*.message, ' '), '[shots]')
         run: |
           pip install pillow
-          test "$(ls update-out/*.png | wc -l)" = 96 || { echo 'not all 96 pictures: nothing is committed'; exit 1; }
+          test "$(ls update-out/*.png | wc -l)" = 100 || { echo 'not all 100 pictures: nothing is committed'; exit 1; }
           python3 - <<'PY'
           import glob, os
           from PIL import Image

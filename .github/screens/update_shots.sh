@@ -79,4 +79,10 @@ for spec in "glass ar dark" "glass ar light" "glass en dark" "sand ar light"; do
   shoot "after-hub-$1-$3-$2" sa.urtv.screensaver/.YourTvHubActivity sa.urtv.screensaver/.YourTvHubActivity hub
 done
 saver --es look glass --es lang ar --es appearance dark
+# «UrTV النظيف»: the confirmation (focus on «إلغاء»), the sheet «تخصيص», the «on» screen, the second step (a CI emulator has no debugging on: its refusal); then everything back off
+saver --es look glass --es lang ar --es appearance dark
+for state in describe customise on factory; do
+  shoot "after-clean-glass-dark-ar-$state" sa.urtv.home/.DebugCleanShot "$([ "$state" = factory ] && echo sa.urtv.home/.setup.FactoryActivity || echo sa.urtv.home/.CleanActivity)" "$state"
+done
+adb shell am start -n sa.urtv.home/.DebugCleanShot --es preview off > /dev/null || true
 

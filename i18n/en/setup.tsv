@@ -84,3 +84,29 @@ TV Bro و SmartTube مثبّتان من قبل: نتركهما.	TV Bro and Smart
 نجهّز تلفزيونك	Setting up your TV
 نرجّع التلفزيون كما كان	Putting your TV back as it was
 اختيار	OK
+نفحص هذا التلفزيون…	Checking this TV…
+قد يظهر على الشاشة سؤال «السماح بتصحيح USB؟»: اضغط «سماح».	A question may appear on the screen: «Allow USB debugging?». Press «Allow».
+اضغط «سماح» في سؤال تصحيح USB على الشاشة.	Press «Allow» in the USB debugging question on the screen.
+تصحيح USB مطفأ في هذا التلفزيون، وهذه الخطوة تحتاجه (وتحتاجه الاستعادة). فعّله من إعدادات المطوّرين ثم جرّب.	USB debugging is off on this TV, and this step needs it (and so does the restore). Turn it on in the developer options, then try again.
+ما قدرنا نكلّم التلفزيون: تأكد من تفعيل تصحيح USB ومن «السماح» ثم جرّب.	We could not talk to the TV: make sure USB debugging is on and you pressed «Allow», then try again.
+ما نقدر نسوّيها هنا	We can't do this here
+تخلّص من واجهة المصنع	Get rid of the factory interface
+تعطيل لا حذف: ما يُحذف شيء، وكل ما نعطّله يرجع بضغطة وحدة.	Turned off, not deleted: nothing is removed, and everything we turn off comes back with one press.
+هذا اللي بنعطّله في هذا التلفزيون بالضبط:	This is exactly what we will turn off on this TV:
+يبقى محميًّا ولا نلمسه: الواي فاي والبلوتوث والصوت والبث (Chromecast وAirPlay) ومداخل HDMI ولوحات المفاتيح وكل ما في قائمة الخصائص المحمية.	Stays protected and untouched: Wi-Fi, Bluetooth, sound, casting (Chromecast and AirPlay), the HDMI inputs, the keyboards and everything on the protected list.
+للتراجع: «رجّع واجهة المصنع» في هذي الشاشة نفسها، ويرجع تلقائيًا لو توقف تلفزيونك مرتين عند التشغيل. اترك تصحيح USB شغّالًا ما دام هذا مفعّلًا.	To undo: «Bring back the factory interface» on this same screen, and it comes back by itself if your UrTV stops twice at start-up. Keep USB debugging on while this is on.
+متابعة	Continue
+متأكد؟	Are you sure?
+بنعطّل %s من تطبيقات واجهة المصنع في هذا التلفزيون ونفتح على تلفزيونك مباشرة. تقدر ترجّعها بضغطة وحدة.	We will turn off %s of the factory interface's apps on this TV and open straight on UrTV. You can bring them back with one press.
+نعم، عطّل	Yes, turn off
+نعطّل واجهة المصنع…	Turning off the factory interface…
+لا تطفئ التلفزيون. الشاشة الأصلية سترجع وحدها لو ما نجح شيء.	Do not turn the TV off. The original screen comes back by itself if anything fails.
+انقطع الاتصال بالتلفزيون أثناء التعطيل. «رجّع واجهة المصنع» يرجّع كل ما تغيّر.	The connection to the TV was cut while turning off. «Bring back the factory interface» puts back everything that changed.
+ما اكتمل	It did not finish
+واجهة المصنع معطّلة	The factory interface is off
+اللي عطّلناه (تعطيل لا حذف):	What we turned off (turned off, not deleted):
+رجّع واجهة المصنع	Bring back the factory interface
+نرجّع واجهة المصنع…	Bringing back the factory interface…
+ما قدرنا نكلّم التلفزيون. تأكد من تصحيح USB وجرّب مرة ثانية.	We could not talk to the TV. Check USB debugging and try again.
+رجعت واجهة المصنع	The factory interface is back
+لا شيء يحتاج تعطيل	Nothing needs turning off

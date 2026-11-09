@@ -35,6 +35,7 @@ public class SetupEngineRun {
         String otherHomes = "";              // 4.3 A3: more lines of query-activities (another maker's home, a FallbackHome)
         String top;                 // what `am start` put in front (null: what Home shows)
         long dfTotal = 16777216, dfAvail = 12582912;
+        final Set<String> stuck = new LinkedHashSet<>();   // a package the TV will not turn on again (factory_test)
         final List<String> log = new ArrayList<>();
 
         String home() {
@@ -135,7 +136,7 @@ public class SetupEngineRun {
                 if (p.equals("com.google.android.tungsten.setupwraith") && wifiGoesWithWizard) { savedNetworks = 0; wifiConnected = false; }   // Android removes the wizard's networks
                 return "Package " + p + " new state: disabled-user\n";
             }
-            if (c.startsWith("pm enable ")) { String p = c.substring(c.lastIndexOf(' ') + 1); off.remove(p); return "Package " + p + " new state: enabled\n"; }
+            if (c.startsWith("pm enable ")) { String p = c.substring(c.lastIndexOf(' ') + 1); if (!stuck.contains(p)) off.remove(p); return "Package " + p + " new state: enabled\n"; }
             if (c.startsWith("pm grant ")) return "";
             if (c.startsWith("appops get sa.urtv.home SCHEDULE_EXACT_ALARM")) return "SCHEDULE_EXACT_ALARM: " + exactAlarm + "; time=+1d\n";
             if (c.startsWith("appops set sa.urtv.home SCHEDULE_EXACT_ALARM ")) { if (!appopRefused) exactAlarm = c.substring(c.lastIndexOf(' ') + 1); return ""; }

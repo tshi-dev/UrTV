@@ -783,4 +783,101 @@ final class SetupEngine {
         if (!problems.isEmpty()) return failed(String.join(" ", problems));
         return done("رجّعنا تلفزيونك كما كان. تطبيق تلفزيونك يبقى مثبتاً؛ تقدر تحذفه من إعدادات التلفزيون (التطبيقات).");
     }
+    // ---- «تخلّص من واجهة المصنع» (UrTV النظيف, the second step): turning the stock interface off from the TV, and giving it back --------------------------
+
+    /** what the step wrote: «on <stamp>» while the stock interface is off by this step, «off <stamp>» after the one-press restore */
+    static final String FACTORY = "factory-off.txt";
+
+    /** What the step would do on this TV (nothing changed): the reason it refuses, or the plan. */
+    static final class FactoryOffer {
+        final String refusal;          // null: it may go on
+        final String stock;            // the stock home's component ("" when unknown)
+        final List<String> packages;   // what would be turned off, in the order it is done: the stock home first, then the safe list on this TV
+        FactoryOffer(String refusal, String stock, List<String> packages) { this.refusal = refusal; this.stock = stock; this.packages = packages; }
+    }
+
+    /**
+     * Offered only when it is safe, else the reason in plain words: the setup wizard owns the saved Wi-Fi (turning it off would lose the network: the person forgets and
+     * rejoins it in the TV's settings first, as for the home switch); the safety switch cannot be set (an alarm that puts the stock home back); the stock home is not known;
+     * the TV did not say what is installed. Never touches the protected features (SetupLists.KEEP): the list is the safe list and the stock home, nothing else.
+     */
+    FactoryOffer factoryOffer() throws IOException {
+        Set<String> pk = packages("pm list packages"), off = packages("pm list packages -d");
+        if (pk == null || off == null) return new FactoryOffer("التلفزيون لم يقل أي تطبيقاته مثبّتة وأيها موقوف، فما نقدر نقول وش بنوقف. جرّب مرة ثانية.", "", new ArrayList<String>());
+        String stock = pk.contains(LAUNCHERX) ? LAUNCHERX_HOME : pk.contains(TVLAUNCHER) ? TVLAUNCHER_HOME : otherHome(pk);
+        if (stock == null || stock.isEmpty()) return new FactoryOffer("ما عرفنا ما الشاشة الرئيسية الأصلية لهذا التلفزيون، فما نعطّل شيئاً.", "", new ArrayList<String>());
+        if (wizardOwnsWifi())
+            return new FactoryOffer("وسيط الإعداد في هذا التلفزيون يملك شبكة الواي فاي المحفوظة، وتعطيله يضيّع الشبكة. انسَ الشبكة وأعد الاتصال بها من إعدادات التلفزيون، ثم جرّب.", stock, new ArrayList<String>());
+        if (!deadman.arm(30)) return new FactoryOffer("ما نقدر نضبط مفتاح الأمان (منبّه يرجّع الشاشة الأصلية) على هذا التلفزيون، فما نعطّلها.", stock, new ArrayList<String>());
+        deadman.disarm();
+        List<String> plan = new ArrayList<>();
+        String stockPkg = stock.substring(0, stock.indexOf('/'));
+        if (!off.contains(stockPkg)) plan.add(stockPkg);
+        for (String p : filterSafe(SetupLists.SAFE)) if (pk.contains(p) && !off.contains(p) && !plan.contains(p)) plan.add(p);
+        return new FactoryOffer(null, stock, plan);
+    }
+
+    /** true while the step's mark says the stock interface is off by it */
+    boolean factoryIsOff() { String f = store.get(FACTORY); return f != null && f.startsWith("on"); }
+
+    /**
+     * Turns the stock interface off, in this order: the offer is checked again; the home is switched to ours (home(): its own safety switch, wizard rules and journal); the stock
+     * home, if it is still on, is written into the ledger BEFORE it is turned off; then the safe list (debloat(): its input guard, its ledger). «disabled-by-us.txt» is the
+     * ledger of everything this step and the setup turned off, and the one list the restore turns back on. Disable only: nothing is ever uninstalled.
+     */
+    Result factoryOff() throws IOException {
+        FactoryOffer o = factoryOffer();
+        if (o.refusal != null) return failed(o.refusal);
+        String stockPkg = o.stock.substring(0, o.stock.indexOf('/'));
+        boolean stockWasOn = o.packages.contains(stockPkg);   // the offer lists it only when it was on: what this step turns off is in the ledger, whoever runs the command
+        if (stockWasOn) remember(ledgerNames(store.get("disabled-by-us.txt")), java.util.Collections.singletonList(stockPkg));   // written BEFORE any command
+        Result h = home();
+        if (h.status == Status.FAILED) return h;
+        Set<String> off = packages("pm list packages -d");
+        if (off != null && !off.contains(stockPkg)) {
+            sh.run("pm disable-user --user 0 " + stockPkg);
+            off = packages("pm list packages -d");
+            if (off == null || !off.contains(stockPkg)) return failed("ما قبل التلفزيون إيقاف الشاشة الأصلية. ما تغيّر شيء مهم؛ «رجّع واجهة المصنع» يرجّع كل ما أوقفناه.");
+        }
+        Result d = debloat();
+        if (d.status == Status.FAILED) return d;
+        store.put(FACTORY, "on " + stamp + "\n");
+        return done("عطّلنا واجهة المصنع (تعطيل لا حذف). «رجّع واجهة المصنع» يرجّعها بضغطة وحدة.");
+    }
+
+    /**
+     * «رجّع واجهة المصنع»: EXACTLY the ledger comes back, and the stock home: the stock home is given Home again and checked, then every package of «disabled-by-us.txt» is
+     * enabled and the list is read back from the TV (one that did not come back stays in the ledger for the next try). Nothing else is touched: no app of ours is
+     * removed, the protected features and the tweaks are left as they are (this is not the setup's full undo).
+     */
+    Result restoreFactory() throws IOException {
+        List<String> problems = new ArrayList<>();
+        String stock = journal("stock");
+        if (stock.isEmpty() || !COMPONENT.matcher(stock).matches()) {
+            Set<String> pk = packages("pm list packages");
+            if (pk == null) return failed("لم يقل التلفزيون قائمة تطبيقاته، فلم نمسّ شيئاً. جرّب «رجّع واجهة المصنع» مرة ثانية.");
+            stock = pk.contains(LAUNCHERX) ? LAUNCHERX_HOME : pk.contains(TVLAUNCHER) ? TVLAUNCHER_HOME : otherHome(pk);
+            if (stock == null) stock = "";
+        }
+        if (!stock.isEmpty()) {
+            String pkg = stock.substring(0, stock.indexOf('/'));
+            if (putStockBack(stock, pkg, journalHolder(), true)) { deadman.disarm(); clearDeadline(); if (store.get("home-switch.json") != null) journalState("restored"); }
+            else problems.add("لم نتأكد من رجوع الشاشة الأصلية؛ تركنا مفتاح الأمان يعيد المحاولة.");
+        } else {
+            problems.add("ما عرفنا الشاشة الأصلية؛ اضغط زر الرئيسية، وإن لم يفتح شيء فاختر الشاشة من إعدادات التلفزيون.");
+        }
+        List<String> ledger = ledgerNames(store.get("disabled-by-us.txt"));
+        for (String p : ledger) sh.run("pm enable " + p);
+        Set<String> off = packages("pm list packages -d");
+        List<String> keep = new ArrayList<>();
+        if (off == null) { keep.addAll(ledger); problems.add("أرجعنا التطبيقات لكن التلفزيون لم يؤكد القائمة؛ اضغط «رجّع واجهة المصنع» مرة ثانية."); }
+        else for (String p : ledger) if (off.contains(p)) keep.add(p);
+        StringBuilder b = new StringBuilder();
+        for (String p : keep) b.append(p).append('\n');
+        store.put("disabled-by-us.txt", b.toString());
+        if (!keep.isEmpty() && off != null) problems.add(keep.size() + " تطبيقاً لم يقبل التلفزيون تشغيله؛ جرّب مرة ثانية.");
+        if (problems.isEmpty()) store.put(FACTORY, "off " + stamp + "\n");
+        if (!problems.isEmpty()) return failed(String.join(" ", problems));
+        return done("رجّعنا واجهة المصنع وكل ما أوقفناه.");
+    }
 }
