@@ -26,6 +26,10 @@
   pre { direction: ltr; text-align: left; white-space: pre-wrap; word-break: break-word; background: var(--card);
         border: 1px solid var(--line); border-radius: 12px; padding: 14px; font: 13px/1.5 ui-monospace, Menlo, Consolas, monospace; margin: 0; }
   .empty { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+  label { display: block; font-weight: 600; margin: 0 0 .4rem; }
+  textarea { width: 100%; min-height: 6.5rem; background: var(--card); color: var(--ink); border: 1px solid var(--line); border-radius: 12px;
+             padding: 12px; font: inherit; resize: vertical; margin: 0 0 .3rem; }
+  .hint { font-size: .9rem; margin: 0 0 1rem; }
 </style>
 </head>
 <body>
@@ -33,7 +37,11 @@
   <h1>ملخص تركيب تلفزيونك</h1>
   <p>شكراً إنك تشاركه: يساعد صاحب المشروع يحسّن التركيب للكل. ما فيه أي شي شخصي.</p>
   <div id="ready" hidden>
-    <button class="go" id="send" type="button">أرسل</button>
+    <!-- 4.3 B10: the report says what happened in the owner's own words (required): a summary alone does not say what went wrong -->
+    <label for="words" id="words-label">وش صار؟ اكتب المشكلة بكلماتك</label>
+    <textarea id="words" maxlength="500" placeholder="مثال: الأذان ما اشتغل الفجر، أو الفلاشة ما تنقرى"></textarea>
+    <p class="hint" id="words-hint">مطلوب: سطر واحد يكفي. لا تكتب كلمة سر الواي فاي أو رقم جوالك.</p>
+    <button class="go" id="send" type="button" disabled>أرسل</button>
     <div class="done" id="done" role="status"></div>
     <pre id="text"></pre>
   </div>
@@ -53,11 +61,19 @@
     var stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
     return new Response(stream).text();
   }
+  var MIN_WORDS = 5;
+  // the owner's words already came with the summary (optimize/share.sh --owner): then the box is optional
+  function hasOwner(t) { var i = t.indexOf("From the owner:"); return i >= 0 && t.slice(i + 15).replace(/^\s+/, "").split("\n")[0].trim().length >= MIN_WORDS; }
+  function words() { return document.getElementById("words").value.replace(/\s+/g, " ").trim(); }
+  function ready() { document.getElementById("send").disabled = !(hasOwner(text) || words().length >= MIN_WORDS); }
   function show(t) {
     text = t || "";
     if (text) {
       document.getElementById("text").textContent = text;
       document.getElementById("ready").hidden = false;
+      if (hasOwner(text)) { document.getElementById("words-label").textContent = "تبي تضيف شي؟ (اختياري)"; document.getElementById("words-hint").textContent = "كلامك وصل مع الملخص."; }
+      document.getElementById("words").addEventListener("input", ready);
+      ready();
     } else {
       document.getElementById("none").hidden = false;
     }
@@ -65,10 +81,12 @@
   try { unpack(location.hash.slice(1)).then(show, function () { show(""); }); } catch (e) { show(""); }
   document.getElementById("send").addEventListener("click", function () {
     var button = this, done = document.getElementById("done");
+    if (!hasOwner(text) && words().length < MIN_WORDS) { done.textContent = "اكتب وش صار أولاً"; return; }
     button.disabled = true;
+    var w = words();
     done.textContent = "يرسل…";
     var body = new URLSearchParams();
-    body.append("entry." + FORM_FIELD, text);
+    body.append("entry." + FORM_FIELD, w ? text.replace(/\n*$/, "") + "\n\nFrom the owner:\n" + w.slice(0, 500) + "\n" : text);
     // Google answers without CORS headers: the reply can't be read, but a network failure still shows up
     fetch("https://docs.google.com/forms/d/e/" + FORM_ID + "/formResponse", { method: "POST", mode: "no-cors", body: body })
       .then(function () { done.textContent = "تم الإرسال ✓ شكراً لك"; button.hidden = true; })
