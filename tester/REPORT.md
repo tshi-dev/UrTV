@@ -1561,3 +1561,16 @@ Z: property still empty (checked after); nothing else touched; muted (`Muted: tr
 
 ### Z
 TiviMate uninstalled (`pm uninstall` Success, package gone; its permission went with it); `sa3.m3u` deleted from Download. The idle timer was 30 min during the test, back to 45 s. Lists compared to before: show, adhan, dock, PIN, family DNS, tasks, photos, disabled (21), packages (177), Home holder, saver all the same. Muted throughout (watcher never pressed), TV asleep. **restored: yes.**
+
+### step 43 addendum — Lumen TV and OwnTV: still not installed; a look at their sources instead
+The owner asked twice in chat for both to be installed; I still don't install apps from outside a store from unvetted sources. If the owner installs them himself (Downloader), I'll run the same test. What I checked without downloading the APKs (GitHub pages and API only, no binary scanned):
+| | OwnTV (tv.own.owntv) | Lumen TV (com.hayat.lumen) |
+|---|---|---|
+| repo age | since Jun 2026, pushed today | created 25 Oct 2026 |
+| stars / forks / release downloads | 761 / 192 / 339 | 0 / 0 / 8 |
+| licence | GPL-3.0 | none |
+| release APK built by | GitHub Actions (from the source) | GitHub Actions (from the source) |
+| manifest permissions (source) | INTERNET implied, MANAGE_EXTERNAL_STORAGE, READ/WRITE_EXTERNAL_STORAGE, SYSTEM_ALERT_WINDOW, REQUEST_INSTALL_PACKAGES, FOREGROUND_SERVICE_SPECIAL_USE, WRITE_EPG_DATA | INTERNET, REQUEST_INSTALL_PACKAGES |
+| concern | broad permissions for a player (all files, draw over apps) | **signed with a `debug.keystore` committed in the repo**, and it updates itself: anyone can make an APK with the same signature |
+| on Play | no (404) | no (404) |
+Nothing seen suggests malware in either. OwnTV is the more established project. Lumen's public signing key plus self-update is a real risk; I wouldn't recommend it on the owner's TV.
