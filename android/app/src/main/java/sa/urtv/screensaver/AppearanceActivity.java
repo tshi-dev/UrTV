@@ -58,10 +58,14 @@ public class AppearanceActivity extends Activity {
         col = new LinearLayout(this);
         col.setOrientation(LinearLayout.VERTICAL);
         col.setLayoutDirection(Dir.layout());
-        int safe = Math.round(getResources().getDisplayMetrics().heightPixels * 0.05f) + dp(8);   // the TV's safe area: the first line and «رجوع» stay 5 % in from the edges
-        col.setPadding(dp(16), Math.max(dp(40), safe), dp(16), Math.max(dp(40), safe));
+        int safe = Math.round(getResources().getDisplayMetrics().heightPixels * 0.05f);   // the TV's safe area: 5 % in from the top and the bottom edge
+        col.setPadding(dp(16), dp(16), dp(16), dp(16));
         scroll.addView(col, new FrameLayout.LayoutParams(-1, -2));
+        // the scroll's own viewport ends inside the safe area (a margin, not padding of what scrolls): a row below the first screen is cut at y 1026 and comes in with the focus,
+        // it is never drawn out to y 1080 (the tester's step 44: «رجوع» and the last row reached the edge until one more DOWN)
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(Math.min(getResources().getDisplayMetrics().widthPixels - dp(96), dp(1100)), -1);
+        lp.topMargin = safe;
+        lp.bottomMargin = safe;
         lp.gravity = Gravity.CENTER_HORIZONTAL;
         root.addView(scroll, lp);
         setContentView(root);

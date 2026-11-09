@@ -55,4 +55,7 @@ check("design/43: the home's cards wear the tray's glass (FavBar's fill and line
 check("design/43: the top row is closed by default (the phone control, the control center and the network status), opens in about 220 ms with the focus in it, closes after it leaves; nothing is removed or hidden (index logic as it was), the network status is a bar member of the same square",
       "static final long OPEN_MS = 220" in bar and "void mains(View... v)" in bar and "void member(View v)" in bar and "v.setFocusable(open > 0.5f);" in bar and "right.mains(centerPill, phonePill);" in mainsrc and "right.member(netIcon)" not in mainsrc
       and "pillBar.focusInside(v == pillBar);" in mainsrc and "greetRow.addView(netIcon, sideLlp(dp(NET_ICON), dp(NET_ICON), dp(8), 0, 0, 0));" in mainsrc and (ROOT / "android/launcher/src/debug/java/sa/urtv/home/DebugBarShot.java").is_file())
+ap = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/AppearanceActivity.java").read_text(encoding="utf-8")
+check("«المظهر»: the scroll's viewport sits inside the 5 % safe area (a margin top and bottom), so the first screen never draws a row or «رجوع» out to y 1080; what scrolls has only a small padding",
+      "lp.topMargin = safe;" in ap and "lp.bottomMargin = safe;" in ap and "heightPixels * 0.05f" in ap and "col.setPadding(dp(16), dp(16), dp(16), dp(16));" in ap and "Math.max(dp(40), safe)" not in ap)
 sys.exit(1 if failed else 0)
