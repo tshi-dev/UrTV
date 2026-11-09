@@ -45,8 +45,8 @@ check("markets CI: fx.json is carried by every run (the one-commit branch is reb
 
 # ---- items 14-19 (the owner's TV photos)
 main = text(HOME / "MainActivity.java")
-check("item 14: two more round buttons in the top row, «الأسواق» and «المباريات», the same Pill (size and 12 dp = 24 px gap) and the same focus", 'pill(S.t("الأسواق"), R.drawable.ic_markets)' in main and 'pill(S.t("المباريات"), R.drawable.ic_matches)' in main
-      and "row.add(marketsBtn);" in main and "row.add(matchesBtn);" in main and "static final int GAP = 12;" in text(HOME / "Pill.java").replace("    static final int GAP = 12;", "static final int GAP = 12;"))
+check("item 14: two more round buttons in the top row, «الأسواق» and «المباريات», the same Pill (size and, since design/43, a 4 dp = 8 px gap) and the same focus", 'pill(S.t("الأسواق"), R.drawable.ic_markets)' in main and 'pill(S.t("المباريات"), R.drawable.ic_matches)' in main
+      and "row.add(marketsBtn);" in main and "row.add(matchesBtn);" in main and "static final int GAP = 4;" in text(HOME / "Pill.java"))
 act = text(HOME / "MarketsActivity.java")
 check("item 15/19: the title, then ONE controls row (the live switch, «صرف العملات», «أخفِ المبالغ» on «محفظتي»), then one quiet 12 sp status line, then the tabs", "controls.addView(liveSwitch()" in act and "controls.addView(fxBtn" in act and "ctl.addView(hideBtn" in act
       and act.index("page.addView(controls") < act.index("page.addView(state") < act.index("page.addView(tabRow"))
@@ -69,7 +69,7 @@ prov = text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/ConfigProvider
 snap = text(HOME / "ConfigSnapshot.java")
 check("bar size: 5 (default) to 8 or all (9 and 10 are taken as 8: ten tiles across were too small, step 28); a bad value keeps 5; the command checks the word before anything is set, and `show` says it", 'FAV_BARS = {"5", "6", "7", "8", "all"}' in prefs and 'return "9".equals(v) || "10".equals(v) ? "8" : v;' in prefs and 'sp.getString("favBar", "5")' in prefs
       and 'error: favbar is one of' in rcv and "if (favBar != null) p.setFavBar(favBar);" in rcv and '"\\nfavbar: " + p.favBar()' in rcv)
-check("bar size: the provider gives the home fav_bar, the home reads it (5 for an older screensaver) and the phone API sets and states it", '"home_layout", "fav_bar", "pages_dark", "pills_hidden"}' in prov and 'out.putString("fav_bar", p.favBar())' in prov
+check("bar size: the provider gives the home fav_bar, the home reads it (5 for an older screensaver) and the phone API sets and states it", '"home_layout", "fav_bar", "pages_dark", "pills_hidden", "look_tweaks"}' in prov and 'out.putString("fav_bar", p.favBar())' in prov
       and 'cur.getColumnIndex("fav_bar")' in snap and 'case "fav_bar":' in text(HOME / "phone/Schema.java") and 'm.put("fav_bar"' in text(HOME / "phone/PhoneActions.java"))
 mn = text(HOME / "MainActivity.java")
 check("bar size: every favourite's cell is as wide as FavBar.tileW(h, shown) says (the tray keeps its box, the insets and the gap), the watch-next rows share the tray's cells, a changed setting resizes the cells", "FavBar.tileW(getResources().getDisplayMetrics().heightPixels, FavBar.shown(barSetting, favs), i)" in mn
