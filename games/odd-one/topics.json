@@ -1,0 +1,886 @@
+{
+"topics": [
+{
+"id": "fruits",
+"ar": "فواكه",
+"en": "Fruits",
+"age": "all",
+"words": [
+{
+"ar": "تفاح",
+"en": "apple",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q89"
+},
+{
+"ar": "موز",
+"en": "banana",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q503"
+},
+{
+"ar": "برتقال",
+"en": "orange",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q13191"
+},
+{
+"ar": "عنب",
+"en": "grape",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q10978"
+},
+{
+"ar": "فراولة",
+"en": "strawberry",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q13158"
+},
+{
+"ar": "أناناس",
+"en": "pineapple",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q10817602"
+},
+{
+"ar": "رمان",
+"en": "pomegranate",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q13188"
+},
+{
+"ar": "تين",
+"en": "fig",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q2746643"
+},
+{
+"ar": "كمثرى",
+"en": "pear",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q13099586"
+},
+{
+"ar": "كرز",
+"en": "cherry",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q196"
+},
+{
+"ar": "ليمون",
+"en": "lemon",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q1093742"
+},
+{
+"ar": "جوافة",
+"en": "guava",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q3181909"
+},
+{
+"ar": "بلح",
+"en": "date",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q1652093"
+},
+{
+"ar": "مشمش",
+"en": "apricot",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q3733836"
+},
+{
+"ar": "توت",
+"en": "berries",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q16128920"
+},
+{
+"ar": "كيوي",
+"en": "kiwifruit",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q13194"
+},
+{
+"ar": "نارجيل",
+"en": "coconut",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q3342808"
+}
+]
+},
+{
+"id": "food",
+"ar": "أطعمة",
+"en": "Foods",
+"age": "all",
+"words": [
+{
+"ar": "خبز",
+"en": "bread",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q7802"
+},
+{
+"ar": "رز",
+"en": "rice",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q5090"
+},
+{
+"ar": "جبن",
+"en": "cheese",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q10943"
+},
+{
+"ar": "عسل",
+"en": "honey",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q10987"
+},
+{
+"ar": "حليب",
+"en": "milk",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q8495"
+},
+{
+"ar": "زبدة",
+"en": "butter",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q34172"
+},
+{
+"ar": "شوربة",
+"en": "soup",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q41415"
+},
+{
+"ar": "معكرونة",
+"en": "pasta",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q178"
+},
+{
+"ar": "شوكولاتة",
+"en": "chocolate",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q195"
+},
+{
+"ar": "بسكويت",
+"en": "biscuit",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q13270"
+},
+{
+"ar": "سمك",
+"en": "fish",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q152"
+},
+{
+"ar": "دجاج",
+"en": "chicken",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q780"
+},
+{
+"ar": "لحم",
+"en": "meat",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q10990"
+},
+{
+"ar": "حمص",
+"en": "hummus",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q241987"
+},
+{
+"ar": "فلافل",
+"en": "falafel",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q188788"
+},
+{
+"ar": "شاورما",
+"en": "shawarma",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q3412448"
+},
+{
+"ar": "سمبوسة",
+"en": "samosa",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q491517"
+},
+{
+"ar": "هريس",
+"en": "harees",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q16841203"
+}
+]
+},
+{
+"id": "jobs",
+"ar": "مهن",
+"en": "Jobs",
+"age": "all",
+"words": [
+{
+"ar": "طبيب",
+"en": "doctor",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q39631"
+},
+{
+"ar": "معلم",
+"en": "teacher",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q37226"
+},
+{
+"ar": "مهندس",
+"en": "engineer",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q81096"
+},
+{
+"ar": "ممرض",
+"en": "nurse",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q186360"
+},
+{
+"ar": "نجار",
+"en": "carpenter",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q154549"
+},
+{
+"ar": "خباز",
+"en": "baker",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q160131"
+},
+{
+"ar": "طباخ",
+"en": "cook",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q156839"
+},
+{
+"ar": "فلاح",
+"en": "farmer",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q131512"
+},
+{
+"ar": "سائق",
+"en": "driver",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q352388"
+},
+{
+"ar": "رسام",
+"en": "painter",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q1028181"
+},
+{
+"ar": "شرطي",
+"en": "police officer",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q384593"
+},
+{
+"ar": "قاض",
+"en": "judge",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q16533"
+},
+{
+"ar": "صيدلي",
+"en": "pharmacist",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q105186"
+},
+{
+"ar": "مزارع",
+"en": "farmer",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q131512"
+},
+{
+"ar": "طبيب أسنان",
+"en": "dentist",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q27349"
+},
+{
+"ar": "خياط",
+"en": "tailor",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q242468"
+}
+]
+},
+{
+"id": "sports",
+"ar": "رياضات",
+"en": "Sports",
+"age": "all",
+"words": [
+{
+"ar": "كرة القدم",
+"en": "football",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q2736"
+},
+{
+"ar": "كرة السلة",
+"en": "basketball",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q5372"
+},
+{
+"ar": "كرة الطائرة",
+"en": "volleyball",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q1734"
+},
+{
+"ar": "التنس",
+"en": "tennis",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q847"
+},
+{
+"ar": "الجودو",
+"en": "judo",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q11420"
+},
+{
+"ar": "الفروسية",
+"en": "horse riding",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q179226"
+},
+{
+"ar": "رمي الرمح",
+"en": "javelin",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q178108"
+},
+{
+"ar": "ركوب الدراجات",
+"en": "cycling",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q53121"
+},
+{
+"ar": "الغولف",
+"en": "golf",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q5377"
+},
+{
+"ar": "الجمباز",
+"en": "gymnastics",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q43450"
+},
+{
+"ar": "رفع الأثقال",
+"en": "weightlifting",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q83462"
+},
+{
+"ar": "التجديف",
+"en": "rowing",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q159354"
+}
+]
+},
+{
+"id": "tools",
+"ar": "أدوات",
+"en": "Tools",
+"age": "all",
+"words": [
+{
+"ar": "مطرقة",
+"en": "hammer",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q25294"
+},
+{
+"ar": "منشار",
+"en": "saw",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q125356"
+},
+{
+"ar": "مسمار",
+"en": "nail",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q37077"
+},
+{
+"ar": "مقص",
+"en": "scissors",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q40847"
+},
+{
+"ar": "إبرة",
+"en": "needle",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q13079101"
+},
+{
+"ar": "فأس",
+"en": "axe",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q39397"
+},
+{
+"ar": "مفتاح",
+"en": "key",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q132041"
+},
+{
+"ar": "قفل",
+"en": "lock",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q228039"
+},
+{
+"ar": "سلم",
+"en": "ladder",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q168639"
+},
+{
+"ar": "فرشاة",
+"en": "brush",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q614467"
+},
+{
+"ar": "مقلاة",
+"en": "frying pan",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q127666"
+},
+{
+"ar": "ملعقة",
+"en": "spoon",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q81895"
+},
+{
+"ar": "شوكة",
+"en": "fork",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q81881"
+},
+{
+"ar": "ساعة",
+"en": "clock",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q376"
+}
+]
+},
+{
+"id": "places",
+"ar": "أماكن",
+"en": "Places",
+"age": "all",
+"words": [
+{
+"ar": "مسجد",
+"en": "mosque",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q32815"
+},
+{
+"ar": "مستشفى",
+"en": "hospital",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q16917"
+},
+{
+"ar": "مطار",
+"en": "airport",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q1248784"
+},
+{
+"ar": "سوق",
+"en": "market",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q37654"
+},
+{
+"ar": "شاطئ",
+"en": "beach",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q40080"
+},
+{
+"ar": "جبل",
+"en": "mountain",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q8502"
+},
+{
+"ar": "صحراء",
+"en": "desert",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q8514"
+},
+{
+"ar": "نهر",
+"en": "river",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q4022"
+},
+{
+"ar": "بحر",
+"en": "sea",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q165"
+},
+{
+"ar": "جزيرة",
+"en": "island",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q23442"
+},
+{
+"ar": "غابة",
+"en": "forest",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q4421"
+},
+{
+"ar": "قلعة",
+"en": "castle",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q23413"
+},
+{
+"ar": "متحف",
+"en": "museum",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q33506"
+},
+{
+"ar": "ملعب",
+"en": "stadium",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q483110"
+},
+{
+"ar": "مزرعة",
+"en": "farm",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q131596"
+},
+{
+"ar": "مطعم",
+"en": "restaurant",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q11707"
+},
+{
+"ar": "بنك",
+"en": "bank",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q22687"
+}
+]
+},
+{
+"id": "saudi_cities",
+"ar": "مدن سعودية",
+"en": "Saudi cities",
+"age": "all",
+"words": [
+{
+"ar": "الرياض",
+"en": "Riyadh",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q3692"
+},
+{
+"ar": "جدة",
+"en": "Jeddah",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q374365"
+},
+{
+"ar": "مكة المكرمة",
+"en": "Mecca",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q5806"
+},
+{
+"ar": "المدينة المنورة",
+"en": "Medina",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q35484"
+},
+{
+"ar": "الدمام",
+"en": "Dammam",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q160320"
+},
+{
+"ar": "تبوك",
+"en": "Tabuk",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q244232"
+},
+{
+"ar": "أبها",
+"en": "Abha",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q190948"
+},
+{
+"ar": "نجران",
+"en": "Najran",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q27174"
+},
+{
+"ar": "جازان",
+"en": "Jazan",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q6168048"
+},
+{
+"ar": "الخبر",
+"en": "Khobar",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q311266"
+},
+{
+"ar": "الجبيل",
+"en": "Jubail",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q27430"
+},
+{
+"ar": "ينبع",
+"en": "Yanbu",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q466027"
+}
+]
+},
+{
+"id": "nature",
+"ar": "طبيعة",
+"en": "Nature",
+"age": "all",
+"words": [
+{
+"ar": "شمس",
+"en": "Sun",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q525"
+},
+{
+"ar": "قمر",
+"en": "Moon",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q405"
+},
+{
+"ar": "نجم",
+"en": "star",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q523"
+},
+{
+"ar": "مطر",
+"en": "rain",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q7925"
+},
+{
+"ar": "ثلج",
+"en": "snow",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q7561"
+},
+{
+"ar": "رعد",
+"en": "thunder",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q83301"
+},
+{
+"ar": "برق",
+"en": "lightning",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q33741"
+},
+{
+"ar": "قوس قزح",
+"en": "rainbow",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q1052"
+},
+{
+"ar": "ريح",
+"en": "wind",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q8094"
+},
+{
+"ar": "بحيرة",
+"en": "lake",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q23397"
+},
+{
+"ar": "واحة",
+"en": "oasis",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q43742"
+},
+{
+"ar": "وادي",
+"en": "valley",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q39816"
+},
+{
+"ar": "شلال",
+"en": "waterfall",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q34038"
+},
+{
+"ar": "بركان",
+"en": "volcano",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q8072"
+},
+{
+"ar": "كهف",
+"en": "cave",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q35509"
+}
+]
+},
+{
+"id": "wild_animals",
+"ar": "حيوانات برية",
+"en": "Wild animals",
+"age": "all",
+"words": [
+{
+"ar": "أسد",
+"en": "lion",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q140"
+},
+{
+"ar": "فيل",
+"en": "elephant",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q7378"
+},
+{
+"ar": "زرافة",
+"en": "giraffe",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q862089"
+},
+{
+"ar": "نمر",
+"en": "leopard",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q34706"
+},
+{
+"ar": "ذئب",
+"en": "wolf",
+"difficulty": 1,
+"source": "https://www.wikidata.org/wiki/Q3711329"
+},
+{
+"ar": "ثعلب",
+"en": "fox",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q8331"
+},
+{
+"ar": "دب",
+"en": "bear",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q1019010"
+},
+{
+"ar": "غزال",
+"en": "gazelle",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q29001815"
+},
+{
+"ar": "فهد",
+"en": "cheetah",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q23907"
+},
+{
+"ar": "وحيد القرن",
+"en": "rhinoceros",
+"difficulty": 2,
+"source": "https://www.wikidata.org/wiki/Q34718"
+},
+{
+"ar": "كنغر",
+"en": "kangaroo",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q5070208"
+},
+{
+"ar": "سنجاب",
+"en": "squirrel",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q9482"
+},
+{
+"ar": "قنفذ",
+"en": "hedgehog",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q6120"
+},
+{
+"ar": "أرنب",
+"en": "rabbit",
+"difficulty": 3,
+"source": "https://www.wikidata.org/wiki/Q9394"
+}
+]
+}
+]
+}

@@ -1,0 +1,6005 @@
+[
+{
+"id": "mw-geo-cap-Q1000",
+"deck": "fact",
+"text": {
+"ar": "عاصمة الغابون هي ___",
+"en": "The capital of Gabon is ___"
+},
+"answer": {
+"ar": "ليبرفيل",
+"en": "Libreville"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1000",
+"https://www.wikidata.org/wiki/Q3825"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q1005",
+"deck": "fact",
+"text": {
+"ar": "عاصمة غامبيا هي ___",
+"en": "The capital of Gambia is ___"
+},
+"answer": {
+"ar": "بانجول",
+"en": "Banjul"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1005",
+"https://www.wikidata.org/wiki/Q3726"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q1006",
+"deck": "fact",
+"text": {
+"ar": "عاصمة غينيا هي ___",
+"en": "The capital of Guinea is ___"
+},
+"answer": {
+"ar": "كوناكري",
+"en": "Conakry"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1006",
+"https://www.wikidata.org/wiki/Q3733"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q1007",
+"deck": "fact",
+"text": {
+"ar": "عاصمة غينيا بيساو هي ___",
+"en": "The capital of Guinea-Bissau is ___"
+},
+"answer": {
+"ar": "بيساو",
+"en": "Bissau"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1007",
+"https://www.wikidata.org/wiki/Q3739"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q1009",
+"deck": "fact",
+"text": {
+"ar": "عاصمة الكاميرون هي ___",
+"en": "The capital of Cameroon is ___"
+},
+"answer": {
+"ar": "ياوندي",
+"en": "Yaoundé"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1009",
+"https://www.wikidata.org/wiki/Q3808"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q1011",
+"deck": "fact",
+"text": {
+"ar": "عاصمة الرأس الأخضر هي ___",
+"en": "The capital of Cape Verde is ___"
+},
+"answer": {
+"ar": "برايا",
+"en": "Praia"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1011",
+"https://www.wikidata.org/wiki/Q3751"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q1013",
+"deck": "fact",
+"text": {
+"ar": "عاصمة ليسوتو هي ___",
+"en": "The capital of Lesotho is ___"
+},
+"answer": {
+"ar": "ماسيرو",
+"en": "Maseru"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1013",
+"https://www.wikidata.org/wiki/Q3909"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q1014",
+"deck": "fact",
+"text": {
+"ar": "عاصمة ليبيريا هي ___",
+"en": "The capital of Liberia is ___"
+},
+"answer": {
+"ar": "مونروفيا",
+"en": "Monrovia"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1014",
+"https://www.wikidata.org/wiki/Q3748"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q1016",
+"deck": "fact",
+"text": {
+"ar": "عاصمة ليبيا هي ___",
+"en": "The capital of Libya is ___"
+},
+"answer": {
+"ar": "طرابلس",
+"en": "Tripoli"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q1016",
+"https://www.wikidata.org/wiki/Q3579"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q1019",
+"deck": "fact",
+"text": {
+"ar": "عاصمة مدغشقر هي ___",
+"en": "The capital of Madagascar is ___"
+},
+"answer": {
+"ar": "أنتانانريفو",
+"en": "Antananarivo"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1019",
+"https://www.wikidata.org/wiki/Q3915"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q1020",
+"deck": "fact",
+"text": {
+"ar": "عاصمة ملاوي هي ___",
+"en": "The capital of Malawi is ___"
+},
+"answer": {
+"ar": "ليلونغوي",
+"en": "Lilongwe"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1020",
+"https://www.wikidata.org/wiki/Q3876"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q1025",
+"deck": "fact",
+"text": {
+"ar": "عاصمة موريتانيا هي ___",
+"en": "The capital of Mauritania is ___"
+},
+"answer": {
+"ar": "نواكشوط",
+"en": "Nouakchott"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1025",
+"https://www.wikidata.org/wiki/Q3688"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q1027",
+"deck": "fact",
+"text": {
+"ar": "عاصمة موريشيوس هي ___",
+"en": "The capital of Mauritius is ___"
+},
+"answer": {
+"ar": "بورت لويس",
+"en": "Port Louis"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1027",
+"https://www.wikidata.org/wiki/Q3929"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q1028",
+"deck": "fact",
+"text": {
+"ar": "عاصمة المغرب هي ___",
+"en": "The capital of Morocco is ___"
+},
+"answer": {
+"ar": "الرباط",
+"en": "Rabat"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q1028",
+"https://www.wikidata.org/wiki/Q3551"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q1029",
+"deck": "fact",
+"text": {
+"ar": "عاصمة موزمبيق هي ___",
+"en": "The capital of Mozambique is ___"
+},
+"answer": {
+"ar": "مابوتو",
+"en": "Maputo"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1029",
+"https://www.wikidata.org/wiki/Q3889"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q1030",
+"deck": "fact",
+"text": {
+"ar": "عاصمة ناميبيا هي ___",
+"en": "The capital of Namibia is ___"
+},
+"answer": {
+"ar": "ويندهوك",
+"en": "Windhoek"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1030",
+"https://www.wikidata.org/wiki/Q3935"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q1032",
+"deck": "fact",
+"text": {
+"ar": "عاصمة النيجر هي ___",
+"en": "The capital of Niger is ___"
+},
+"answer": {
+"ar": "نيامي",
+"en": "Niamey"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1032",
+"https://www.wikidata.org/wiki/Q3674"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q1033",
+"deck": "fact",
+"text": {
+"ar": "عاصمة نيجيريا هي ___",
+"en": "The capital of Nigeria is ___"
+},
+"answer": {
+"ar": "أبوجا",
+"en": "Abuja"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1033",
+"https://www.wikidata.org/wiki/Q3787"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q1036",
+"deck": "fact",
+"text": {
+"ar": "عاصمة أوغندا هي ___",
+"en": "The capital of Uganda is ___"
+},
+"answer": {
+"ar": "كامبالا",
+"en": "Kampala"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1036",
+"https://www.wikidata.org/wiki/Q3894"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q1037",
+"deck": "fact",
+"text": {
+"ar": "عاصمة رواندا هي ___",
+"en": "The capital of Rwanda is ___"
+},
+"answer": {
+"ar": "كيغالي",
+"en": "Kigali"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1037",
+"https://www.wikidata.org/wiki/Q3859"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q1039",
+"deck": "fact",
+"text": {
+"ar": "عاصمة ساو تومي وبرينسيب هي ___",
+"en": "The capital of São Tomé and Príncipe is ___"
+},
+"answer": {
+"ar": "ساو تومي",
+"en": "São Tomé"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1039",
+"https://www.wikidata.org/wiki/Q3932"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q1041",
+"deck": "fact",
+"text": {
+"ar": "عاصمة السنغال هي ___",
+"en": "The capital of Senegal is ___"
+},
+"answer": {
+"ar": "دكار",
+"en": "Dakar"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1041",
+"https://www.wikidata.org/wiki/Q3718"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q1042",
+"deck": "fact",
+"text": {
+"ar": "عاصمة سيشل هي ___",
+"en": "The capital of Seychelles is ___"
+},
+"answer": {
+"ar": "فكتوريا",
+"en": "Victoria"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1042",
+"https://www.wikidata.org/wiki/Q3940"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q1044",
+"deck": "fact",
+"text": {
+"ar": "عاصمة سيراليون هي ___",
+"en": "The capital of Sierra Leone is ___"
+},
+"answer": {
+"ar": "فريتاون",
+"en": "Freetown"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1044",
+"https://www.wikidata.org/wiki/Q3780"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q1045",
+"deck": "fact",
+"text": {
+"ar": "عاصمة الصومال هي ___",
+"en": "The capital of Somalia is ___"
+},
+"answer": {
+"ar": "مقديشو",
+"en": "Mogadishu"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1045",
+"https://www.wikidata.org/wiki/Q2449"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q1049",
+"deck": "fact",
+"text": {
+"ar": "عاصمة السودان هي ___",
+"en": "The capital of Sudan is ___"
+},
+"answer": {
+"ar": "الخرطوم",
+"en": "Khartoum"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q1049",
+"https://www.wikidata.org/wiki/Q1963"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q114",
+"deck": "fact",
+"text": {
+"ar": "عاصمة كينيا هي ___",
+"en": "The capital of Kenya is ___"
+},
+"answer": {
+"ar": "نيروبي",
+"en": "Nairobi"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q114",
+"https://www.wikidata.org/wiki/Q3870"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q115",
+"deck": "fact",
+"text": {
+"ar": "عاصمة إثيوبيا هي ___",
+"en": "The capital of Ethiopia is ___"
+},
+"answer": {
+"ar": "أديس أبابا",
+"en": "Addis Ababa"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q115",
+"https://www.wikidata.org/wiki/Q3624"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q117",
+"deck": "fact",
+"text": {
+"ar": "عاصمة غانا هي ___",
+"en": "The capital of Ghana is ___"
+},
+"answer": {
+"ar": "أكرا",
+"en": "Accra"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q117",
+"https://www.wikidata.org/wiki/Q3761"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q142",
+"deck": "fact",
+"text": {
+"ar": "عاصمة فرنسا هي ___",
+"en": "The capital of France is ___"
+},
+"answer": {
+"ar": "باريس",
+"en": "Paris"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q142",
+"https://www.wikidata.org/wiki/Q90"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q145",
+"deck": "fact",
+"text": {
+"ar": "عاصمة المملكة المتحدة هي ___",
+"en": "The capital of United Kingdom is ___"
+},
+"answer": {
+"ar": "لندن",
+"en": "London"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q145",
+"https://www.wikidata.org/wiki/Q84"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q148",
+"deck": "fact",
+"text": {
+"ar": "عاصمة الصين هي ___",
+"en": "The capital of China is ___"
+},
+"answer": {
+"ar": "بكين",
+"en": "Beijing"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q148",
+"https://www.wikidata.org/wiki/Q956"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q155",
+"deck": "fact",
+"text": {
+"ar": "عاصمة البرازيل هي ___",
+"en": "The capital of Brazil is ___"
+},
+"answer": {
+"ar": "برازيليا",
+"en": "Brasília"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q155",
+"https://www.wikidata.org/wiki/Q2844"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q159",
+"deck": "fact",
+"text": {
+"ar": "عاصمة روسيا هي ___",
+"en": "The capital of Russia is ___"
+},
+"answer": {
+"ar": "موسكو",
+"en": "Moscow"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q159",
+"https://www.wikidata.org/wiki/Q649"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q16",
+"deck": "fact",
+"text": {
+"ar": "عاصمة كندا هي ___",
+"en": "The capital of Canada is ___"
+},
+"answer": {
+"ar": "أوتاوا",
+"en": "Ottawa"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q16",
+"https://www.wikidata.org/wiki/Q1930"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q17",
+"deck": "fact",
+"text": {
+"ar": "عاصمة اليابان هي ___",
+"en": "The capital of Japan is ___"
+},
+"answer": {
+"ar": "طوكيو",
+"en": "Tokyo"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q17",
+"https://www.wikidata.org/wiki/Q1490"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q183",
+"deck": "fact",
+"text": {
+"ar": "عاصمة ألمانيا هي ___",
+"en": "The capital of Germany is ___"
+},
+"answer": {
+"ar": "برلين",
+"en": "Berlin"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q183",
+"https://www.wikidata.org/wiki/Q64"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q184",
+"deck": "fact",
+"text": {
+"ar": "عاصمة بيلاروس هي ___",
+"en": "The capital of Belarus is ___"
+},
+"answer": {
+"ar": "مينسك",
+"en": "Minsk"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q184",
+"https://www.wikidata.org/wiki/Q2280"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q189",
+"deck": "fact",
+"text": {
+"ar": "عاصمة آيسلندا هي ___",
+"en": "The capital of Iceland is ___"
+},
+"answer": {
+"ar": "ريكيافيك",
+"en": "Reykjavík"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q189",
+"https://www.wikidata.org/wiki/Q1764"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q191",
+"deck": "fact",
+"text": {
+"ar": "عاصمة إستونيا هي ___",
+"en": "The capital of Estonia is ___"
+},
+"answer": {
+"ar": "تالين",
+"en": "Tallinn"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q191",
+"https://www.wikidata.org/wiki/Q1770"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q20",
+"deck": "fact",
+"text": {
+"ar": "عاصمة النرويج هي ___",
+"en": "The capital of Norway is ___"
+},
+"answer": {
+"ar": "أوسلو",
+"en": "Oslo"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q20",
+"https://www.wikidata.org/wiki/Q585"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q211",
+"deck": "fact",
+"text": {
+"ar": "عاصمة لاتفيا هي ___",
+"en": "The capital of Latvia is ___"
+},
+"answer": {
+"ar": "ريغا",
+"en": "Riga"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q211",
+"https://www.wikidata.org/wiki/Q1773"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q212",
+"deck": "fact",
+"text": {
+"ar": "عاصمة أوكرانيا هي ___",
+"en": "The capital of Ukraine is ___"
+},
+"answer": {
+"ar": "كييف",
+"en": "Kyiv"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q212",
+"https://www.wikidata.org/wiki/Q1899"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q213",
+"deck": "fact",
+"text": {
+"ar": "عاصمة جمهورية التشيك هي ___",
+"en": "The capital of Czech Republic is ___"
+},
+"answer": {
+"ar": "براغ",
+"en": "Prague"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q213",
+"https://www.wikidata.org/wiki/Q1085"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q214",
+"deck": "fact",
+"text": {
+"ar": "عاصمة سلوفاكيا هي ___",
+"en": "The capital of Slovakia is ___"
+},
+"answer": {
+"ar": "براتيسلافا",
+"en": "Bratislava"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q214",
+"https://www.wikidata.org/wiki/Q1780"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q215",
+"deck": "fact",
+"text": {
+"ar": "عاصمة سلوفينيا هي ___",
+"en": "The capital of Slovenia is ___"
+},
+"answer": {
+"ar": "لبلانة",
+"en": "Ljubljana"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q215",
+"https://www.wikidata.org/wiki/Q437"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q217",
+"deck": "fact",
+"text": {
+"ar": "عاصمة مولدوفا هي ___",
+"en": "The capital of Moldova is ___"
+},
+"answer": {
+"ar": "كيشيناو",
+"en": "Chișinău"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q217",
+"https://www.wikidata.org/wiki/Q21197"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q218",
+"deck": "fact",
+"text": {
+"ar": "عاصمة رومانيا هي ___",
+"en": "The capital of Romania is ___"
+},
+"answer": {
+"ar": "بوخارست",
+"en": "Bucharest"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q218",
+"https://www.wikidata.org/wiki/Q19660"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q219",
+"deck": "fact",
+"text": {
+"ar": "عاصمة بلغاريا هي ___",
+"en": "The capital of Bulgaria is ___"
+},
+"answer": {
+"ar": "صوفيا",
+"en": "Sofia"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q219",
+"https://www.wikidata.org/wiki/Q472"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q221",
+"deck": "fact",
+"text": {
+"ar": "عاصمة مقدونيا الشمالية هي ___",
+"en": "The capital of North Macedonia is ___"
+},
+"answer": {
+"ar": "إسكوبية",
+"en": "Skopje"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q221",
+"https://www.wikidata.org/wiki/Q384"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q222",
+"deck": "fact",
+"text": {
+"ar": "عاصمة ألبانيا هي ___",
+"en": "The capital of Albania is ___"
+},
+"answer": {
+"ar": "تيرانا",
+"en": "Tirana"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q222",
+"https://www.wikidata.org/wiki/Q19689"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q224",
+"deck": "fact",
+"text": {
+"ar": "عاصمة كرواتيا هي ___",
+"en": "The capital of Croatia is ___"
+},
+"answer": {
+"ar": "زغرب",
+"en": "Zagreb"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q224",
+"https://www.wikidata.org/wiki/Q1435"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q225",
+"deck": "fact",
+"text": {
+"ar": "عاصمة البوسنة والهرسك هي ___",
+"en": "The capital of Bosnia and Herzegovina is ___"
+},
+"answer": {
+"ar": "سراييفو",
+"en": "Sarajevo"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q225",
+"https://www.wikidata.org/wiki/Q11194"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q227",
+"deck": "fact",
+"text": {
+"ar": "عاصمة أذربيجان هي ___",
+"en": "The capital of Azerbaijan is ___"
+},
+"answer": {
+"ar": "باكو",
+"en": "Baku"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q227",
+"https://www.wikidata.org/wiki/Q9248"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q228",
+"deck": "fact",
+"text": {
+"ar": "عاصمة أندورا هي ___",
+"en": "The capital of Andorra is ___"
+},
+"answer": {
+"ar": "أندورا لا فيلا",
+"en": "Andorra la Vella"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q228",
+"https://www.wikidata.org/wiki/Q1863"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q229",
+"deck": "fact",
+"text": {
+"ar": "عاصمة قبرص هي ___",
+"en": "The capital of Cyprus is ___"
+},
+"answer": {
+"ar": "نيقوسيا",
+"en": "Nicosia"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q229",
+"https://www.wikidata.org/wiki/Q3856"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q232",
+"deck": "fact",
+"text": {
+"ar": "عاصمة كازاخستان هي ___",
+"en": "The capital of Kazakhstan is ___"
+},
+"answer": {
+"ar": "أستانة",
+"en": "Astana"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q232",
+"https://www.wikidata.org/wiki/Q1520"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q233",
+"deck": "fact",
+"text": {
+"ar": "عاصمة مالطا هي ___",
+"en": "The capital of Malta is ___"
+},
+"answer": {
+"ar": "البلد",
+"en": "Valletta"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q233",
+"https://www.wikidata.org/wiki/Q23800"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q235",
+"deck": "fact",
+"text": {
+"ar": "عاصمة موناكو هي ___",
+"en": "The capital of Monaco is ___"
+},
+"answer": {
+"ar": "موناكو",
+"en": "Monaco"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q235",
+"https://www.wikidata.org/wiki/Q235"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q238",
+"deck": "fact",
+"text": {
+"ar": "عاصمة سان مارينو هي ___",
+"en": "The capital of San Marino is ___"
+},
+"answer": {
+"ar": "مدينة سان مارينو",
+"en": "San Marino"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q238",
+"https://www.wikidata.org/wiki/Q1848"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q241",
+"deck": "fact",
+"text": {
+"ar": "عاصمة كوبا هي ___",
+"en": "The capital of Cuba is ___"
+},
+"answer": {
+"ar": "هافانا",
+"en": "Havana"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q241",
+"https://www.wikidata.org/wiki/Q1563"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q242",
+"deck": "fact",
+"text": {
+"ar": "عاصمة بليز هي ___",
+"en": "The capital of Belize is ___"
+},
+"answer": {
+"ar": "بلموبان",
+"en": "Belmopan"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q242",
+"https://www.wikidata.org/wiki/Q3043"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q244",
+"deck": "fact",
+"text": {
+"ar": "عاصمة باربادوس هي ___",
+"en": "The capital of Barbados is ___"
+},
+"answer": {
+"ar": "بريدج تاون",
+"en": "Bridgetown"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q244",
+"https://www.wikidata.org/wiki/Q36168"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q252",
+"deck": "fact",
+"text": {
+"ar": "عاصمة إندونيسيا هي ___",
+"en": "The capital of Indonesia is ___"
+},
+"answer": {
+"ar": "جاكرتا",
+"en": "Jakarta"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q252",
+"https://www.wikidata.org/wiki/Q3630"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q262",
+"deck": "fact",
+"text": {
+"ar": "عاصمة الجزائر هي ___",
+"en": "The capital of Algeria is ___"
+},
+"answer": {
+"ar": "الجزائر العاصمة",
+"en": "Algiers"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q262",
+"https://www.wikidata.org/wiki/Q3561"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q265",
+"deck": "fact",
+"text": {
+"ar": "عاصمة أوزبكستان هي ___",
+"en": "The capital of Uzbekistan is ___"
+},
+"answer": {
+"ar": "طشقند",
+"en": "Tashkent"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q265",
+"https://www.wikidata.org/wiki/Q269"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q27",
+"deck": "fact",
+"text": {
+"ar": "عاصمة أيرلندا هي ___",
+"en": "The capital of Ireland is ___"
+},
+"answer": {
+"ar": "دبلن",
+"en": "Dublin"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q27",
+"https://www.wikidata.org/wiki/Q1761"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q28",
+"deck": "fact",
+"text": {
+"ar": "عاصمة المجر هي ___",
+"en": "The capital of Hungary is ___"
+},
+"answer": {
+"ar": "بودابست",
+"en": "Budapest"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q28",
+"https://www.wikidata.org/wiki/Q1781"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q29",
+"deck": "fact",
+"text": {
+"ar": "عاصمة إسبانيا هي ___",
+"en": "The capital of Spain is ___"
+},
+"answer": {
+"ar": "مدريد",
+"en": "Madrid"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q29",
+"https://www.wikidata.org/wiki/Q2807"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q298",
+"deck": "fact",
+"text": {
+"ar": "عاصمة تشيلي هي ___",
+"en": "The capital of Chile is ___"
+},
+"answer": {
+"ar": "سانتياغو",
+"en": "Santiago"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q298",
+"https://www.wikidata.org/wiki/Q2887"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q30",
+"deck": "fact",
+"text": {
+"ar": "عاصمة الولايات المتحدة هي ___",
+"en": "The capital of United States is ___"
+},
+"answer": {
+"ar": "واشنطن العاصمة",
+"en": "Washington, D.C."
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q30",
+"https://www.wikidata.org/wiki/Q61"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q31",
+"deck": "fact",
+"text": {
+"ar": "عاصمة بلجيكا هي ___",
+"en": "The capital of Belgium is ___"
+},
+"answer": {
+"ar": "مدينة بروكسل",
+"en": "Brussels"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q31",
+"https://www.wikidata.org/wiki/Q239"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q32",
+"deck": "fact",
+"text": {
+"ar": "عاصمة لوكسمبورغ هي ___",
+"en": "The capital of Luxembourg is ___"
+},
+"answer": {
+"ar": "مدينة لوكسمبورغ",
+"en": "Luxembourg"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q32",
+"https://www.wikidata.org/wiki/Q1842"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q33",
+"deck": "fact",
+"text": {
+"ar": "عاصمة فنلندا هي ___",
+"en": "The capital of Finland is ___"
+},
+"answer": {
+"ar": "هلسنكي",
+"en": "Helsinki"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q33",
+"https://www.wikidata.org/wiki/Q1757"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q334",
+"deck": "fact",
+"text": {
+"ar": "عاصمة سنغافورة هي ___",
+"en": "The capital of Singapore is ___"
+},
+"answer": {
+"ar": "سنغافورة",
+"en": "Singapore"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q334",
+"https://www.wikidata.org/wiki/Q334"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q34",
+"deck": "fact",
+"text": {
+"ar": "عاصمة السويد هي ___",
+"en": "The capital of Sweden is ___"
+},
+"answer": {
+"ar": "ستوكهولم",
+"en": "Stockholm"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q34",
+"https://www.wikidata.org/wiki/Q1754"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q347",
+"deck": "fact",
+"text": {
+"ar": "عاصمة ليختنشتاين هي ___",
+"en": "The capital of Liechtenstein is ___"
+},
+"answer": {
+"ar": "فادوتس",
+"en": "Vaduz"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q347",
+"https://www.wikidata.org/wiki/Q1844"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q36",
+"deck": "fact",
+"text": {
+"ar": "عاصمة بولندا هي ___",
+"en": "The capital of Poland is ___"
+},
+"answer": {
+"ar": "وارسو",
+"en": "Warsaw"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q36",
+"https://www.wikidata.org/wiki/Q270"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q37",
+"deck": "fact",
+"text": {
+"ar": "عاصمة لتوانيا هي ___",
+"en": "The capital of Lithuania is ___"
+},
+"answer": {
+"ar": "فيلنيوس",
+"en": "Vilnius"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q37",
+"https://www.wikidata.org/wiki/Q216"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q38",
+"deck": "fact",
+"text": {
+"ar": "عاصمة إيطاليا هي ___",
+"en": "The capital of Italy is ___"
+},
+"answer": {
+"ar": "روما",
+"en": "Rome"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q38",
+"https://www.wikidata.org/wiki/Q220"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q398",
+"deck": "fact",
+"text": {
+"ar": "عاصمة البحرين هي ___",
+"en": "The capital of Bahrain is ___"
+},
+"answer": {
+"ar": "المنامة",
+"en": "Manama"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q398",
+"https://www.wikidata.org/wiki/Q3882"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q399",
+"deck": "fact",
+"text": {
+"ar": "عاصمة أرمينيا هي ___",
+"en": "The capital of Armenia is ___"
+},
+"answer": {
+"ar": "يريفان",
+"en": "Yerevan"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q399",
+"https://www.wikidata.org/wiki/Q1953"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q40",
+"deck": "fact",
+"text": {
+"ar": "عاصمة النمسا هي ___",
+"en": "The capital of Austria is ___"
+},
+"answer": {
+"ar": "فيينا",
+"en": "Vienna"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q40",
+"https://www.wikidata.org/wiki/Q1741"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q403",
+"deck": "fact",
+"text": {
+"ar": "عاصمة صربيا هي ___",
+"en": "The capital of Serbia is ___"
+},
+"answer": {
+"ar": "بلغراد",
+"en": "Belgrade"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q403",
+"https://www.wikidata.org/wiki/Q3711"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q408",
+"deck": "fact",
+"text": {
+"ar": "عاصمة أستراليا هي ___",
+"en": "The capital of Australia is ___"
+},
+"answer": {
+"ar": "كانبرا",
+"en": "Canberra"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q408",
+"https://www.wikidata.org/wiki/Q3114"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q41",
+"deck": "fact",
+"text": {
+"ar": "عاصمة اليونان هي ___",
+"en": "The capital of Greece is ___"
+},
+"answer": {
+"ar": "أثينا",
+"en": "Athens"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q41",
+"https://www.wikidata.org/wiki/Q1524"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q414",
+"deck": "fact",
+"text": {
+"ar": "عاصمة الأرجنتين هي ___",
+"en": "The capital of Argentina is ___"
+},
+"answer": {
+"ar": "بوينس آيرس",
+"en": "Buenos Aires"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q414",
+"https://www.wikidata.org/wiki/Q1486"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q419",
+"deck": "fact",
+"text": {
+"ar": "عاصمة بيرو هي ___",
+"en": "The capital of Peru is ___"
+},
+"answer": {
+"ar": "ليما",
+"en": "Lima"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q419",
+"https://www.wikidata.org/wiki/Q2868"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q423",
+"deck": "fact",
+"text": {
+"ar": "عاصمة كوريا الشمالية هي ___",
+"en": "The capital of North Korea is ___"
+},
+"answer": {
+"ar": "بيونغيانغ",
+"en": "Pyongyang"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q423",
+"https://www.wikidata.org/wiki/Q18808"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q424",
+"deck": "fact",
+"text": {
+"ar": "عاصمة كمبوديا هي ___",
+"en": "The capital of Cambodia is ___"
+},
+"answer": {
+"ar": "بنوم بنه",
+"en": "Phnom Penh"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q424",
+"https://www.wikidata.org/wiki/Q1850"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q43",
+"deck": "fact",
+"text": {
+"ar": "عاصمة تركيا هي ___",
+"en": "The capital of Turkey is ___"
+},
+"answer": {
+"ar": "أنقرة",
+"en": "Ankara"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q43",
+"https://www.wikidata.org/wiki/Q3640"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q45",
+"deck": "fact",
+"text": {
+"ar": "عاصمة البرتغال هي ___",
+"en": "The capital of Portugal is ___"
+},
+"answer": {
+"ar": "لشبونة",
+"en": "Lisbon"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q45",
+"https://www.wikidata.org/wiki/Q597"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q574",
+"deck": "fact",
+"text": {
+"ar": "عاصمة تيمور الشرقية هي ___",
+"en": "The capital of Timor-Leste is ___"
+},
+"answer": {
+"ar": "ديلي",
+"en": "Dili"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q574",
+"https://www.wikidata.org/wiki/Q9310"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q657",
+"deck": "fact",
+"text": {
+"ar": "عاصمة تشاد هي ___",
+"en": "The capital of Chad is ___"
+},
+"answer": {
+"ar": "انجمينا",
+"en": "N'Djamena"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q657",
+"https://www.wikidata.org/wiki/Q3659"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q664",
+"deck": "fact",
+"text": {
+"ar": "عاصمة نيوزيلندا هي ___",
+"en": "The capital of New Zealand is ___"
+},
+"answer": {
+"ar": "ويلينغتون",
+"en": "Wellington"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q664",
+"https://www.wikidata.org/wiki/Q23661"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q668",
+"deck": "fact",
+"text": {
+"ar": "عاصمة الهند هي ___",
+"en": "The capital of India is ___"
+},
+"answer": {
+"ar": "نيو دلهي",
+"en": "New Delhi"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q668",
+"https://www.wikidata.org/wiki/Q987"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q672",
+"deck": "fact",
+"text": {
+"ar": "عاصمة توفالو هي ___",
+"en": "The capital of Tuvalu is ___"
+},
+"answer": {
+"ar": "فونافوتي",
+"en": "Funafuti"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q672",
+"https://www.wikidata.org/wiki/Q34126"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q678",
+"deck": "fact",
+"text": {
+"ar": "عاصمة تونغا هي ___",
+"en": "The capital of Tonga is ___"
+},
+"answer": {
+"ar": "نوكو ألوفا",
+"en": "Nukuʻalofa"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q678",
+"https://www.wikidata.org/wiki/Q38834"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q683",
+"deck": "fact",
+"text": {
+"ar": "عاصمة ساموا هي ___",
+"en": "The capital of Samoa is ___"
+},
+"answer": {
+"ar": "أبيا",
+"en": "Apia"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q683",
+"https://www.wikidata.org/wiki/Q36260"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q685",
+"deck": "fact",
+"text": {
+"ar": "عاصمة جزر سليمان هي ___",
+"en": "The capital of Solomon Islands is ___"
+},
+"answer": {
+"ar": "هونيارا",
+"en": "Honiara"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q685",
+"https://www.wikidata.org/wiki/Q40921"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q686",
+"deck": "fact",
+"text": {
+"ar": "عاصمة فانواتو هي ___",
+"en": "The capital of Vanuatu is ___"
+},
+"answer": {
+"ar": "بورت فيلا",
+"en": "Port Vila"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q686",
+"https://www.wikidata.org/wiki/Q37806"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q691",
+"deck": "fact",
+"text": {
+"ar": "عاصمة بابوا غينيا الجديدة هي ___",
+"en": "The capital of Papua New Guinea is ___"
+},
+"answer": {
+"ar": "بورت مورسبي",
+"en": "Port Moresby"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q691",
+"https://www.wikidata.org/wiki/Q36526"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q695",
+"deck": "fact",
+"text": {
+"ar": "عاصمة بالاو هي ___",
+"en": "The capital of Palau is ___"
+},
+"answer": {
+"ar": "نغيرولمود",
+"en": "Ngerulmud"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q695",
+"https://www.wikidata.org/wiki/Q515229"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q697",
+"deck": "fact",
+"text": {
+"ar": "عاصمة ناورو هي ___",
+"en": "The capital of Nauru is ___"
+},
+"answer": {
+"ar": "ضاحية يارين",
+"en": "Yaren District"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q697",
+"https://www.wikidata.org/wiki/Q31026"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q702",
+"deck": "fact",
+"text": {
+"ar": "عاصمة ولايات ميكرونيسيا المتحدة هي ___",
+"en": "The capital of Federated States of Micronesia is ___"
+},
+"answer": {
+"ar": "باليكير",
+"en": "Palikir"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q702",
+"https://www.wikidata.org/wiki/Q42751"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q709",
+"deck": "fact",
+"text": {
+"ar": "عاصمة جزر مارشال هي ___",
+"en": "The capital of Marshall Islands is ___"
+},
+"answer": {
+"ar": "ماجورو",
+"en": "Majuro"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q709",
+"https://www.wikidata.org/wiki/Q12919"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q710",
+"deck": "fact",
+"text": {
+"ar": "عاصمة كيريباتي هي ___",
+"en": "The capital of Kiribati is ___"
+},
+"answer": {
+"ar": "جنوب تاراوا",
+"en": "South Tarawa"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q710",
+"https://www.wikidata.org/wiki/Q131233"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q711",
+"deck": "fact",
+"text": {
+"ar": "عاصمة منغوليا هي ___",
+"en": "The capital of Mongolia is ___"
+},
+"answer": {
+"ar": "أولان باتور",
+"en": "Ulaanbaatar"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q711",
+"https://www.wikidata.org/wiki/Q23430"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q712",
+"deck": "fact",
+"text": {
+"ar": "عاصمة فيجي هي ___",
+"en": "The capital of Fiji is ___"
+},
+"answer": {
+"ar": "سوفا",
+"en": "Suva"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q712",
+"https://www.wikidata.org/wiki/Q38807"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q717",
+"deck": "fact",
+"text": {
+"ar": "عاصمة فنزويلا هي ___",
+"en": "The capital of Venezuela is ___"
+},
+"answer": {
+"ar": "كراكاس",
+"en": "Caracas"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q717",
+"https://www.wikidata.org/wiki/Q1533"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q730",
+"deck": "fact",
+"text": {
+"ar": "عاصمة سورينام هي ___",
+"en": "The capital of Suriname is ___"
+},
+"answer": {
+"ar": "باراماريبو",
+"en": "Paramaribo"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q730",
+"https://www.wikidata.org/wiki/Q3001"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q733",
+"deck": "fact",
+"text": {
+"ar": "عاصمة باراغواي هي ___",
+"en": "The capital of Paraguay is ___"
+},
+"answer": {
+"ar": "أسونسيون",
+"en": "Asunción"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q733",
+"https://www.wikidata.org/wiki/Q2933"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q734",
+"deck": "fact",
+"text": {
+"ar": "عاصمة غيانا هي ___",
+"en": "The capital of Guyana is ___"
+},
+"answer": {
+"ar": "جورج تاون",
+"en": "Georgetown"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q734",
+"https://www.wikidata.org/wiki/Q10717"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q736",
+"deck": "fact",
+"text": {
+"ar": "عاصمة الإكوادور هي ___",
+"en": "The capital of Ecuador is ___"
+},
+"answer": {
+"ar": "كيتو",
+"en": "Quito"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q736",
+"https://www.wikidata.org/wiki/Q2900"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q739",
+"deck": "fact",
+"text": {
+"ar": "عاصمة كولومبيا هي ___",
+"en": "The capital of Colombia is ___"
+},
+"answer": {
+"ar": "بوغوتا",
+"en": "Bogotá"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q739",
+"https://www.wikidata.org/wiki/Q2841"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q754",
+"deck": "fact",
+"text": {
+"ar": "عاصمة ترينيداد وتوباغو هي ___",
+"en": "The capital of Trinidad and Tobago is ___"
+},
+"answer": {
+"ar": "بورت أوف سبين",
+"en": "Port of Spain"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q754",
+"https://www.wikidata.org/wiki/Q39178"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q757",
+"deck": "fact",
+"text": {
+"ar": "عاصمة سانت فينسنت والغرينادين هي ___",
+"en": "The capital of Saint Vincent and the Grenadines is ___"
+},
+"answer": {
+"ar": "كينغستاون",
+"en": "Kingstown"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q757",
+"https://www.wikidata.org/wiki/Q41474"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q760",
+"deck": "fact",
+"text": {
+"ar": "عاصمة سانت لوسيا هي ___",
+"en": "The capital of Saint Lucia is ___"
+},
+"answer": {
+"ar": "كاستريس",
+"en": "Castries"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q760",
+"https://www.wikidata.org/wiki/Q41699"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q763",
+"deck": "fact",
+"text": {
+"ar": "عاصمة سانت كيتس ونيفيس هي ___",
+"en": "The capital of Saint Kitts and Nevis is ___"
+},
+"answer": {
+"ar": "باستير",
+"en": "Basseterre"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q763",
+"https://www.wikidata.org/wiki/Q41295"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q766",
+"deck": "fact",
+"text": {
+"ar": "عاصمة جامايكا هي ___",
+"en": "The capital of Jamaica is ___"
+},
+"answer": {
+"ar": "كينغستون",
+"en": "Kingston"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q766",
+"https://www.wikidata.org/wiki/Q34692"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q769",
+"deck": "fact",
+"text": {
+"ar": "عاصمة غرنادة هي ___",
+"en": "The capital of Grenada is ___"
+},
+"answer": {
+"ar": "سانت جورجز",
+"en": "St. George's"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q769",
+"https://www.wikidata.org/wiki/Q41547"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q77",
+"deck": "fact",
+"text": {
+"ar": "عاصمة الأوروغواي هي ___",
+"en": "The capital of Uruguay is ___"
+},
+"answer": {
+"ar": "مونتفيدو",
+"en": "Montevideo"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q77",
+"https://www.wikidata.org/wiki/Q1335"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q774",
+"deck": "fact",
+"text": {
+"ar": "عاصمة غواتيمالا هي ___",
+"en": "The capital of Guatemala is ___"
+},
+"answer": {
+"ar": "غواتيمالا العاصمة",
+"en": "Guatemala City"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q774",
+"https://www.wikidata.org/wiki/Q1555"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q778",
+"deck": "fact",
+"text": {
+"ar": "عاصمة جزر البهاما هي ___",
+"en": "The capital of Bahamas is ___"
+},
+"answer": {
+"ar": "ناساو",
+"en": "Nassau"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q778",
+"https://www.wikidata.org/wiki/Q2467"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q783",
+"deck": "fact",
+"text": {
+"ar": "عاصمة هندوراس هي ___",
+"en": "The capital of Honduras is ___"
+},
+"answer": {
+"ar": "تيغوسيغالبا",
+"en": "Tegucigalpa"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q783",
+"https://www.wikidata.org/wiki/Q3238"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q784",
+"deck": "fact",
+"text": {
+"ar": "عاصمة دومينيكا هي ___",
+"en": "The capital of Dominica is ___"
+},
+"answer": {
+"ar": "روسو",
+"en": "Roseau"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q784",
+"https://www.wikidata.org/wiki/Q36281"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q786",
+"deck": "fact",
+"text": {
+"ar": "عاصمة جمهورية الدومينيكان هي ___",
+"en": "The capital of Dominican Republic is ___"
+},
+"answer": {
+"ar": "سانتو دومينغو",
+"en": "Santo Domingo"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q786",
+"https://www.wikidata.org/wiki/Q34820"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q79",
+"deck": "fact",
+"text": {
+"ar": "عاصمة مصر هي ___",
+"en": "The capital of Egypt is ___"
+},
+"answer": {
+"ar": "القاهرة",
+"en": "Cairo"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q79",
+"https://www.wikidata.org/wiki/Q85"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q790",
+"deck": "fact",
+"text": {
+"ar": "عاصمة هايتي هي ___",
+"en": "The capital of Haiti is ___"
+},
+"answer": {
+"ar": "بورت أو برانس",
+"en": "Port-au-Prince"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q790",
+"https://www.wikidata.org/wiki/Q34261"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q792",
+"deck": "fact",
+"text": {
+"ar": "عاصمة السلفادور هي ___",
+"en": "The capital of El Salvador is ___"
+},
+"answer": {
+"ar": "سان سلفادور",
+"en": "San Salvador"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q792",
+"https://www.wikidata.org/wiki/Q3110"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q794",
+"deck": "fact",
+"text": {
+"ar": "عاصمة إيران هي ___",
+"en": "The capital of Iran is ___"
+},
+"answer": {
+"ar": "طهران",
+"en": "Tehran"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q794",
+"https://www.wikidata.org/wiki/Q3616"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q796",
+"deck": "fact",
+"text": {
+"ar": "عاصمة العراق هي ___",
+"en": "The capital of Iraq is ___"
+},
+"answer": {
+"ar": "بغداد",
+"en": "Baghdad"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q796",
+"https://www.wikidata.org/wiki/Q1530"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q800",
+"deck": "fact",
+"text": {
+"ar": "عاصمة كوستاريكا هي ___",
+"en": "The capital of Costa Rica is ___"
+},
+"answer": {
+"ar": "سان خوسيه",
+"en": "San José"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q800",
+"https://www.wikidata.org/wiki/Q3070"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q804",
+"deck": "fact",
+"text": {
+"ar": "عاصمة بنما هي ___",
+"en": "The capital of Panama is ___"
+},
+"answer": {
+"ar": "مدينة بنما",
+"en": "Panama City"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q804",
+"https://www.wikidata.org/wiki/Q3306"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q810",
+"deck": "fact",
+"text": {
+"ar": "عاصمة الأردن هي ___",
+"en": "The capital of Jordan is ___"
+},
+"answer": {
+"ar": "عَمَّان",
+"en": "Amman"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q810",
+"https://www.wikidata.org/wiki/Q3805"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q811",
+"deck": "fact",
+"text": {
+"ar": "عاصمة نيكاراغوا هي ___",
+"en": "The capital of Nicaragua is ___"
+},
+"answer": {
+"ar": "ماناغوا",
+"en": "Managua"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q811",
+"https://www.wikidata.org/wiki/Q131546626"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q813",
+"deck": "fact",
+"text": {
+"ar": "عاصمة قرغيزستان هي ___",
+"en": "The capital of Kyrgyzstan is ___"
+},
+"answer": {
+"ar": "بيشكك",
+"en": "Bishkek"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q813",
+"https://www.wikidata.org/wiki/Q9361"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q817",
+"deck": "fact",
+"text": {
+"ar": "عاصمة الكويت هي ___",
+"en": "The capital of Kuwait is ___"
+},
+"answer": {
+"ar": "مدينة الكويت",
+"en": "Kuwait City"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q817",
+"https://www.wikidata.org/wiki/Q35178"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q819",
+"deck": "fact",
+"text": {
+"ar": "عاصمة لاوس هي ___",
+"en": "The capital of Laos is ___"
+},
+"answer": {
+"ar": "فيينتيان",
+"en": "Vientiane"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q819",
+"https://www.wikidata.org/wiki/Q9326"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q822",
+"deck": "fact",
+"text": {
+"ar": "عاصمة لبنان هي ___",
+"en": "The capital of Lebanon is ___"
+},
+"answer": {
+"ar": "بيروت",
+"en": "Beirut"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q822",
+"https://www.wikidata.org/wiki/Q3820"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q826",
+"deck": "fact",
+"text": {
+"ar": "عاصمة المالديف هي ___",
+"en": "The capital of Maldives is ___"
+},
+"answer": {
+"ar": "ماليه",
+"en": "Malé"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q826",
+"https://www.wikidata.org/wiki/Q9347"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q836",
+"deck": "fact",
+"text": {
+"ar": "عاصمة ميانمار هي ___",
+"en": "The capital of Myanmar is ___"
+},
+"answer": {
+"ar": "نايبيداو",
+"en": "Naypyidaw"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q836",
+"https://www.wikidata.org/wiki/Q37400"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q837",
+"deck": "fact",
+"text": {
+"ar": "عاصمة نيبال هي ___",
+"en": "The capital of Nepal is ___"
+},
+"answer": {
+"ar": "كتمندو",
+"en": "Kathmandu"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q837",
+"https://www.wikidata.org/wiki/Q3037"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q842",
+"deck": "fact",
+"text": {
+"ar": "عاصمة سلطنة عمان هي ___",
+"en": "The capital of Oman is ___"
+},
+"answer": {
+"ar": "مسقط",
+"en": "Muscat"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q842",
+"https://www.wikidata.org/wiki/Q3826"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q843",
+"deck": "fact",
+"text": {
+"ar": "عاصمة باكستان هي ___",
+"en": "The capital of Pakistan is ___"
+},
+"answer": {
+"ar": "إسلام آباد",
+"en": "Islamabad"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q843",
+"https://www.wikidata.org/wiki/Q1362"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q846",
+"deck": "fact",
+"text": {
+"ar": "عاصمة قطر هي ___",
+"en": "The capital of Qatar is ___"
+},
+"answer": {
+"ar": "الدوحة",
+"en": "Doha"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q846",
+"https://www.wikidata.org/wiki/Q3861"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q851",
+"deck": "fact",
+"text": {
+"ar": "عاصمة السعودية هي ___",
+"en": "The capital of Saudi Arabia is ___"
+},
+"answer": {
+"ar": "الرياض",
+"en": "Riyadh"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q851",
+"https://www.wikidata.org/wiki/Q3692"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q858",
+"deck": "fact",
+"text": {
+"ar": "عاصمة سوريا هي ___",
+"en": "The capital of Syria is ___"
+},
+"answer": {
+"ar": "دمشق",
+"en": "Damascus"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q858",
+"https://www.wikidata.org/wiki/Q3766"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q863",
+"deck": "fact",
+"text": {
+"ar": "عاصمة طاجيكستان هي ___",
+"en": "The capital of Tajikistan is ___"
+},
+"answer": {
+"ar": "دوشنبة",
+"en": "Dushanbe"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q863",
+"https://www.wikidata.org/wiki/Q9365"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q869",
+"deck": "fact",
+"text": {
+"ar": "عاصمة تايلاند هي ___",
+"en": "The capital of Thailand is ___"
+},
+"answer": {
+"ar": "بانكوك",
+"en": "Bangkok"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q869",
+"https://www.wikidata.org/wiki/Q1861"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q874",
+"deck": "fact",
+"text": {
+"ar": "عاصمة تركمانستان هي ___",
+"en": "The capital of Turkmenistan is ___"
+},
+"answer": {
+"ar": "عشق آباد",
+"en": "Ashgabat"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q874",
+"https://www.wikidata.org/wiki/Q23438"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q878",
+"deck": "fact",
+"text": {
+"ar": "عاصمة الإمارات العربية المتحدة هي ___",
+"en": "The capital of United Arab Emirates is ___"
+},
+"answer": {
+"ar": "أبو ظبي",
+"en": "Abu Dhabi"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q878",
+"https://www.wikidata.org/wiki/Q1519"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q881",
+"deck": "fact",
+"text": {
+"ar": "عاصمة فيتنام هي ___",
+"en": "The capital of Vietnam is ___"
+},
+"answer": {
+"ar": "هانوي",
+"en": "Hanoi"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q881",
+"https://www.wikidata.org/wiki/Q1858"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q884",
+"deck": "fact",
+"text": {
+"ar": "عاصمة كوريا الجنوبية هي ___",
+"en": "The capital of South Korea is ___"
+},
+"answer": {
+"ar": "سول",
+"en": "Seoul"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q884",
+"https://www.wikidata.org/wiki/Q8684"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q889",
+"deck": "fact",
+"text": {
+"ar": "عاصمة أفغانستان هي ___",
+"en": "The capital of Afghanistan is ___"
+},
+"answer": {
+"ar": "كابل",
+"en": "Kabul"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q889",
+"https://www.wikidata.org/wiki/Q5838"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q902",
+"deck": "fact",
+"text": {
+"ar": "عاصمة بنغلاديش هي ___",
+"en": "The capital of Bangladesh is ___"
+},
+"answer": {
+"ar": "دكا",
+"en": "Dhaka"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q902",
+"https://www.wikidata.org/wiki/Q1354"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q912",
+"deck": "fact",
+"text": {
+"ar": "عاصمة مالي هي ___",
+"en": "The capital of Mali is ___"
+},
+"answer": {
+"ar": "باماكو",
+"en": "Bamako"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q912",
+"https://www.wikidata.org/wiki/Q3703"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q916",
+"deck": "fact",
+"text": {
+"ar": "عاصمة أنغولا هي ___",
+"en": "The capital of Angola is ___"
+},
+"answer": {
+"ar": "لواندا",
+"en": "Luanda"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q916",
+"https://www.wikidata.org/wiki/Q3897"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q917",
+"deck": "fact",
+"text": {
+"ar": "عاصمة بوتان هي ___",
+"en": "The capital of Bhutan is ___"
+},
+"answer": {
+"ar": "تيمفو",
+"en": "Thimphu"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q917",
+"https://www.wikidata.org/wiki/Q9270"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q921",
+"deck": "fact",
+"text": {
+"ar": "عاصمة بروناي هي ___",
+"en": "The capital of Brunei is ___"
+},
+"answer": {
+"ar": "بندر سري بكاوان",
+"en": "Bandar Seri Begawan"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q921",
+"https://www.wikidata.org/wiki/Q9279"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q928",
+"deck": "fact",
+"text": {
+"ar": "عاصمة الفلبين هي ___",
+"en": "The capital of Philippines is ___"
+},
+"answer": {
+"ar": "مانيلا",
+"en": "Manila"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q928",
+"https://www.wikidata.org/wiki/Q1461"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q929",
+"deck": "fact",
+"text": {
+"ar": "عاصمة جمهورية إفريقيا الوسطى هي ___",
+"en": "The capital of Central African Republic is ___"
+},
+"answer": {
+"ar": "بنغي",
+"en": "Bangui"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q929",
+"https://www.wikidata.org/wiki/Q3832"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q945",
+"deck": "fact",
+"text": {
+"ar": "عاصمة توغو هي ___",
+"en": "The capital of Togo is ___"
+},
+"answer": {
+"ar": "لومي",
+"en": "Lomé"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q945",
+"https://www.wikidata.org/wiki/Q3792"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q948",
+"deck": "fact",
+"text": {
+"ar": "عاصمة تونس هي ___",
+"en": "The capital of Tunisia is ___"
+},
+"answer": {
+"ar": "تونس",
+"en": "Tunis"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q948",
+"https://www.wikidata.org/wiki/Q3572"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q953",
+"deck": "fact",
+"text": {
+"ar": "عاصمة زامبيا هي ___",
+"en": "The capital of Zambia is ___"
+},
+"answer": {
+"ar": "لوساكا",
+"en": "Lusaka"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q953",
+"https://www.wikidata.org/wiki/Q3881"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q954",
+"deck": "fact",
+"text": {
+"ar": "عاصمة زيمبابوي هي ___",
+"en": "The capital of Zimbabwe is ___"
+},
+"answer": {
+"ar": "هراري",
+"en": "Harare"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q954",
+"https://www.wikidata.org/wiki/Q3921"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q958",
+"deck": "fact",
+"text": {
+"ar": "عاصمة جنوب السودان هي ___",
+"en": "The capital of South Sudan is ___"
+},
+"answer": {
+"ar": "جوبا",
+"en": "Juba"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q958",
+"https://www.wikidata.org/wiki/Q1947"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q96",
+"deck": "fact",
+"text": {
+"ar": "عاصمة المكسيك هي ___",
+"en": "The capital of Mexico is ___"
+},
+"answer": {
+"ar": "مدينة مكسيكو",
+"en": "Mexico City"
+},
+"accept": [],
+"difficulty": 1,
+"age": "kids",
+"source": [
+"https://www.wikidata.org/wiki/Q96",
+"https://www.wikidata.org/wiki/Q1489"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q963",
+"deck": "fact",
+"text": {
+"ar": "عاصمة بوتسوانا هي ___",
+"en": "The capital of Botswana is ___"
+},
+"answer": {
+"ar": "غابورون",
+"en": "Gaborone"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q963",
+"https://www.wikidata.org/wiki/Q3919"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q965",
+"deck": "fact",
+"text": {
+"ar": "عاصمة بوركينا فاسو هي ___",
+"en": "The capital of Burkina Faso is ___"
+},
+"answer": {
+"ar": "واغادوغو",
+"en": "Ouagadougou"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q965",
+"https://www.wikidata.org/wiki/Q3777"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q967",
+"deck": "fact",
+"text": {
+"ar": "عاصمة بوروندي هي ___",
+"en": "The capital of Burundi is ___"
+},
+"answer": {
+"ar": "غيتيغا",
+"en": "Gitega"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q967",
+"https://www.wikidata.org/wiki/Q167551"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q970",
+"deck": "fact",
+"text": {
+"ar": "عاصمة جزر القمر هي ___",
+"en": "The capital of Comoros is ___"
+},
+"answer": {
+"ar": "موروني",
+"en": "Moroni"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q970",
+"https://www.wikidata.org/wiki/Q3901"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q971",
+"deck": "fact",
+"text": {
+"ar": "عاصمة جمهورية الكونغو هي ___",
+"en": "The capital of Republic of the Congo is ___"
+},
+"answer": {
+"ar": "برازافيل",
+"en": "Brazzaville"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q971",
+"https://www.wikidata.org/wiki/Q3844"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q974",
+"deck": "fact",
+"text": {
+"ar": "عاصمة جمهورية الكونغو الديمقراطية هي ___",
+"en": "The capital of DR Congo is ___"
+},
+"answer": {
+"ar": "كينشاسا",
+"en": "Kinshasa"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q974",
+"https://www.wikidata.org/wiki/Q3838"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q977",
+"deck": "fact",
+"text": {
+"ar": "عاصمة جيبوتي هي ___",
+"en": "The capital of Djibouti is ___"
+},
+"answer": {
+"ar": "جيبوتي",
+"en": "Djibouti"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q977",
+"https://www.wikidata.org/wiki/Q3604"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q983",
+"deck": "fact",
+"text": {
+"ar": "عاصمة غينيا الاستوائية هي ___",
+"en": "The capital of Equatorial Guinea is ___"
+},
+"answer": {
+"ar": "سيوداد دي لا باز",
+"en": "Ciudad de la Paz"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q983",
+"https://www.wikidata.org/wiki/Q1140136"
+],
+"verified": true
+},
+{
+"id": "mw-geo-cap-Q986",
+"deck": "fact",
+"text": {
+"ar": "عاصمة إرتريا هي ___",
+"en": "The capital of Eritrea is ___"
+},
+"answer": {
+"ar": "أسمرة",
+"en": "Asmara"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q986",
+"https://www.wikidata.org/wiki/Q3642"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-1",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر هيدروجين هو ___",
+"en": "The chemical symbol of hydrogen is ___"
+},
+"answer": {
+"ar": "H",
+"en": "H"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q556",
+"https://en.wikipedia.org/wiki/hydrogen"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-2",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر هيليوم هو ___",
+"en": "The chemical symbol of helium is ___"
+},
+"answer": {
+"ar": "He",
+"en": "He"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q560",
+"https://en.wikipedia.org/wiki/helium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-3",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر ليثيوم هو ___",
+"en": "The chemical symbol of lithium is ___"
+},
+"answer": {
+"ar": "Li",
+"en": "Li"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q568",
+"https://en.wikipedia.org/wiki/lithium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-4",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر بيريليوم هو ___",
+"en": "The chemical symbol of beryllium is ___"
+},
+"answer": {
+"ar": "Be",
+"en": "Be"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q569",
+"https://en.wikipedia.org/wiki/beryllium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-5",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر بورون هو ___",
+"en": "The chemical symbol of boron is ___"
+},
+"answer": {
+"ar": "B",
+"en": "B"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q618",
+"https://en.wikipedia.org/wiki/boron"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-6",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر كربون هو ___",
+"en": "The chemical symbol of carbon is ___"
+},
+"answer": {
+"ar": "C",
+"en": "C"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q623",
+"https://en.wikipedia.org/wiki/carbon"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-7",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر نيتروجين هو ___",
+"en": "The chemical symbol of nitrogen is ___"
+},
+"answer": {
+"ar": "N",
+"en": "N"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q627",
+"https://en.wikipedia.org/wiki/nitrogen"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-9",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر فلور هو ___",
+"en": "The chemical symbol of fluorine is ___"
+},
+"answer": {
+"ar": "F",
+"en": "F"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q650",
+"https://en.wikipedia.org/wiki/fluorine"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-12",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر مغنسيوم هو ___",
+"en": "The chemical symbol of magnesium is ___"
+},
+"answer": {
+"ar": "Mg",
+"en": "Mg"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q660",
+"https://en.wikipedia.org/wiki/magnesium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-13",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر ألومنيوم هو ___",
+"en": "The chemical symbol of aluminium is ___"
+},
+"answer": {
+"ar": "Al",
+"en": "Al"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q663",
+"https://en.wikipedia.org/wiki/aluminium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-14",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر سيليكون هو ___",
+"en": "The chemical symbol of silicon is ___"
+},
+"answer": {
+"ar": "Si",
+"en": "Si"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q670",
+"https://en.wikipedia.org/wiki/silicon"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-15",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر فسفور هو ___",
+"en": "The chemical symbol of phosphorus is ___"
+},
+"answer": {
+"ar": "P",
+"en": "P"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q674",
+"https://en.wikipedia.org/wiki/phosphorus"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-16",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر كبريت هو ___",
+"en": "The chemical symbol of sulfur is ___"
+},
+"answer": {
+"ar": "S",
+"en": "S"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q682",
+"https://en.wikipedia.org/wiki/sulfur"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-17",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر كلور هو ___",
+"en": "The chemical symbol of chlorine is ___"
+},
+"answer": {
+"ar": "Cl",
+"en": "Cl"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q688",
+"https://en.wikipedia.org/wiki/chlorine"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-18",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر أرغون هو ___",
+"en": "The chemical symbol of argon is ___"
+},
+"answer": {
+"ar": "Ar",
+"en": "Ar"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q696",
+"https://en.wikipedia.org/wiki/argon"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-20",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر كالسيوم هو ___",
+"en": "The chemical symbol of calcium is ___"
+},
+"answer": {
+"ar": "Ca",
+"en": "Ca"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q706",
+"https://en.wikipedia.org/wiki/calcium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-21",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر سكانديوم هو ___",
+"en": "The chemical symbol of scandium is ___"
+},
+"answer": {
+"ar": "Sc",
+"en": "Sc"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q713",
+"https://en.wikipedia.org/wiki/scandium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-23",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر فاناديوم هو ___",
+"en": "The chemical symbol of vanadium is ___"
+},
+"answer": {
+"ar": "V",
+"en": "V"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q722",
+"https://en.wikipedia.org/wiki/vanadium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-24",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر كروم هو ___",
+"en": "The chemical symbol of chromium is ___"
+},
+"answer": {
+"ar": "Cr",
+"en": "Cr"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q725",
+"https://en.wikipedia.org/wiki/chromium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-25",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر منغنيز هو ___",
+"en": "The chemical symbol of manganese is ___"
+},
+"answer": {
+"ar": "Mn",
+"en": "Mn"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q731",
+"https://en.wikipedia.org/wiki/manganese"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-27",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر كوبالت هو ___",
+"en": "The chemical symbol of cobalt is ___"
+},
+"answer": {
+"ar": "Co",
+"en": "Co"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q740",
+"https://en.wikipedia.org/wiki/cobalt"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-28",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر نيكل هو ___",
+"en": "The chemical symbol of nickel is ___"
+},
+"answer": {
+"ar": "Ni",
+"en": "Ni"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q744",
+"https://en.wikipedia.org/wiki/nickel"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-30",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر زنك هو ___",
+"en": "The chemical symbol of zinc is ___"
+},
+"answer": {
+"ar": "Zn",
+"en": "Zn"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q758",
+"https://en.wikipedia.org/wiki/zinc"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-31",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر غاليوم هو ___",
+"en": "The chemical symbol of gallium is ___"
+},
+"answer": {
+"ar": "Ga",
+"en": "Ga"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q861",
+"https://en.wikipedia.org/wiki/gallium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-32",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر جرمانيوم هو ___",
+"en": "The chemical symbol of germanium is ___"
+},
+"answer": {
+"ar": "Ge",
+"en": "Ge"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q867",
+"https://en.wikipedia.org/wiki/germanium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-33",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر زرنيخ هو ___",
+"en": "The chemical symbol of arsenic is ___"
+},
+"answer": {
+"ar": "As",
+"en": "As"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q871",
+"https://en.wikipedia.org/wiki/arsenic"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-34",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر سيلينيوم هو ___",
+"en": "The chemical symbol of selenium is ___"
+},
+"answer": {
+"ar": "Se",
+"en": "Se"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q876",
+"https://en.wikipedia.org/wiki/selenium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-36",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر كريبتون هو ___",
+"en": "The chemical symbol of krypton is ___"
+},
+"answer": {
+"ar": "Kr",
+"en": "Kr"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q888",
+"https://en.wikipedia.org/wiki/krypton"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-37",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر روبيديوم هو ___",
+"en": "The chemical symbol of rubidium is ___"
+},
+"answer": {
+"ar": "Rb",
+"en": "Rb"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q895",
+"https://en.wikipedia.org/wiki/rubidium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-38",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر سترونتيوم هو ___",
+"en": "The chemical symbol of strontium is ___"
+},
+"answer": {
+"ar": "Sr",
+"en": "Sr"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q938",
+"https://en.wikipedia.org/wiki/strontium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-39",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر إتريوم هو ___",
+"en": "The chemical symbol of yttrium is ___"
+},
+"answer": {
+"ar": "Y",
+"en": "Y"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q941",
+"https://en.wikipedia.org/wiki/yttrium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-40",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر زركونيوم هو ___",
+"en": "The chemical symbol of zirconium is ___"
+},
+"answer": {
+"ar": "Zr",
+"en": "Zr"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1038",
+"https://en.wikipedia.org/wiki/zirconium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-42",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر موليبدنوم هو ___",
+"en": "The chemical symbol of molybdenum is ___"
+},
+"answer": {
+"ar": "Mo",
+"en": "Mo"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1053",
+"https://en.wikipedia.org/wiki/molybdenum"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-43",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر تكنيشيوم هو ___",
+"en": "The chemical symbol of technetium is ___"
+},
+"answer": {
+"ar": "Tc",
+"en": "Tc"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1054",
+"https://en.wikipedia.org/wiki/technetium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-44",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر روثينيوم هو ___",
+"en": "The chemical symbol of ruthenium is ___"
+},
+"answer": {
+"ar": "Ru",
+"en": "Ru"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1086",
+"https://en.wikipedia.org/wiki/ruthenium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-45",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر روديوم هو ___",
+"en": "The chemical symbol of rhodium is ___"
+},
+"answer": {
+"ar": "Rh",
+"en": "Rh"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1087",
+"https://en.wikipedia.org/wiki/rhodium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-46",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر بلاديوم هو ___",
+"en": "The chemical symbol of palladium is ___"
+},
+"answer": {
+"ar": "Pd",
+"en": "Pd"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1089",
+"https://en.wikipedia.org/wiki/palladium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-48",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر كادميوم هو ___",
+"en": "The chemical symbol of cadmium is ___"
+},
+"answer": {
+"ar": "Cd",
+"en": "Cd"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1091",
+"https://en.wikipedia.org/wiki/cadmium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-52",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر تيلوريوم هو ___",
+"en": "The chemical symbol of tellurium is ___"
+},
+"answer": {
+"ar": "Te",
+"en": "Te"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1100",
+"https://en.wikipedia.org/wiki/tellurium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-53",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر يود هو ___",
+"en": "The chemical symbol of iodine is ___"
+},
+"answer": {
+"ar": "I",
+"en": "I"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1103",
+"https://en.wikipedia.org/wiki/iodine"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-54",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر زينون هو ___",
+"en": "The chemical symbol of xenon is ___"
+},
+"answer": {
+"ar": "Xe",
+"en": "Xe"
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1106",
+"https://en.wikipedia.org/wiki/xenon"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-55",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر سيزيوم هو ___",
+"en": "The chemical symbol of caesium is ___"
+},
+"answer": {
+"ar": "Cs",
+"en": "Cs"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1108",
+"https://en.wikipedia.org/wiki/caesium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-56",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر باريوم هو ___",
+"en": "The chemical symbol of barium is ___"
+},
+"answer": {
+"ar": "Ba",
+"en": "Ba"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1112",
+"https://en.wikipedia.org/wiki/barium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-57",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر لانثانوم هو ___",
+"en": "The chemical symbol of lanthanum is ___"
+},
+"answer": {
+"ar": "La",
+"en": "La"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1801",
+"https://en.wikipedia.org/wiki/lanthanum"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-58",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر سيريوم هو ___",
+"en": "The chemical symbol of cerium is ___"
+},
+"answer": {
+"ar": "Ce",
+"en": "Ce"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1385",
+"https://en.wikipedia.org/wiki/cerium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-59",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر براسوديميوم هو ___",
+"en": "The chemical symbol of praseodymium is ___"
+},
+"answer": {
+"ar": "Pr",
+"en": "Pr"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1386",
+"https://en.wikipedia.org/wiki/praseodymium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-60",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر نيوديميوم هو ___",
+"en": "The chemical symbol of neodymium is ___"
+},
+"answer": {
+"ar": "Nd",
+"en": "Nd"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1388",
+"https://en.wikipedia.org/wiki/neodymium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-61",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر بروميثيوم هو ___",
+"en": "The chemical symbol of promethium is ___"
+},
+"answer": {
+"ar": "Pm",
+"en": "Pm"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1809",
+"https://en.wikipedia.org/wiki/promethium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-62",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر ساماريوم هو ___",
+"en": "The chemical symbol of samarium is ___"
+},
+"answer": {
+"ar": "Sm",
+"en": "Sm"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1819",
+"https://en.wikipedia.org/wiki/samarium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-63",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر يوروبيوم هو ___",
+"en": "The chemical symbol of europium is ___"
+},
+"answer": {
+"ar": "Eu",
+"en": "Eu"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1396",
+"https://en.wikipedia.org/wiki/europium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-64",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر غادولينيوم هو ___",
+"en": "The chemical symbol of gadolinium is ___"
+},
+"answer": {
+"ar": "Gd",
+"en": "Gd"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1832",
+"https://en.wikipedia.org/wiki/gadolinium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-65",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر تربيوم هو ___",
+"en": "The chemical symbol of terbium is ___"
+},
+"answer": {
+"ar": "Tb",
+"en": "Tb"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1838",
+"https://en.wikipedia.org/wiki/terbium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-66",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر ديسبروسيوم هو ___",
+"en": "The chemical symbol of dysprosium is ___"
+},
+"answer": {
+"ar": "Dy",
+"en": "Dy"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1843",
+"https://en.wikipedia.org/wiki/dysprosium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-67",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر هولميوم هو ___",
+"en": "The chemical symbol of holmium is ___"
+},
+"answer": {
+"ar": "Ho",
+"en": "Ho"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1846",
+"https://en.wikipedia.org/wiki/holmium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-68",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر إربيوم هو ___",
+"en": "The chemical symbol of erbium is ___"
+},
+"answer": {
+"ar": "Er",
+"en": "Er"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1849",
+"https://en.wikipedia.org/wiki/erbium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-69",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر ثوليوم هو ___",
+"en": "The chemical symbol of thulium is ___"
+},
+"answer": {
+"ar": "Tm",
+"en": "Tm"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1853",
+"https://en.wikipedia.org/wiki/thulium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-70",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر إتيربيوم هو ___",
+"en": "The chemical symbol of ytterbium is ___"
+},
+"answer": {
+"ar": "Yb",
+"en": "Yb"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1855",
+"https://en.wikipedia.org/wiki/ytterbium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-71",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر لوتيشيوم هو ___",
+"en": "The chemical symbol of lutetium is ___"
+},
+"answer": {
+"ar": "Lu",
+"en": "Lu"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1857",
+"https://en.wikipedia.org/wiki/lutetium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-72",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر هافنيوم هو ___",
+"en": "The chemical symbol of hafnium is ___"
+},
+"answer": {
+"ar": "Hf",
+"en": "Hf"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1119",
+"https://en.wikipedia.org/wiki/hafnium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-73",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر تانتالوم هو ___",
+"en": "The chemical symbol of tantalum is ___"
+},
+"answer": {
+"ar": "Ta",
+"en": "Ta"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1123",
+"https://en.wikipedia.org/wiki/tantalum"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-75",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر رينيوم هو ___",
+"en": "The chemical symbol of rhenium is ___"
+},
+"answer": {
+"ar": "Re",
+"en": "Re"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q737",
+"https://en.wikipedia.org/wiki/rhenium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-76",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر أوزميوم هو ___",
+"en": "The chemical symbol of osmium is ___"
+},
+"answer": {
+"ar": "Os",
+"en": "Os"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q751",
+"https://en.wikipedia.org/wiki/osmium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-77",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر إريديوم هو ___",
+"en": "The chemical symbol of iridium is ___"
+},
+"answer": {
+"ar": "Ir",
+"en": "Ir"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q877",
+"https://en.wikipedia.org/wiki/iridium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-78",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر بلاتين هو ___",
+"en": "The chemical symbol of platinum is ___"
+},
+"answer": {
+"ar": "Pt",
+"en": "Pt"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q880",
+"https://en.wikipedia.org/wiki/platinum"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-81",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر ثاليوم هو ___",
+"en": "The chemical symbol of thallium is ___"
+},
+"answer": {
+"ar": "Tl",
+"en": "Tl"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q932",
+"https://en.wikipedia.org/wiki/thallium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-83",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر بزموت هو ___",
+"en": "The chemical symbol of bismuth is ___"
+},
+"answer": {
+"ar": "Bi",
+"en": "Bi"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q942",
+"https://en.wikipedia.org/wiki/bismuth"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-84",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر بولونيوم هو ___",
+"en": "The chemical symbol of polonium is ___"
+},
+"answer": {
+"ar": "Po",
+"en": "Po"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q979",
+"https://en.wikipedia.org/wiki/polonium"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-85",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر أستاتين هو ___",
+"en": "The chemical symbol of astatine is ___"
+},
+"answer": {
+"ar": "At",
+"en": "At"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q999",
+"https://en.wikipedia.org/wiki/astatine"
+],
+"verified": true
+},
+{
+"id": "mw-el-sym-86",
+"deck": "fact",
+"text": {
+"ar": "الرمز الكيميائي لعنصر رادون هو ___",
+"en": "The chemical symbol of radon is ___"
+},
+"answer": {
+"ar": "Rn",
+"en": "Rn"
+},
+"accept": [],
+"difficulty": 3,
+"age": "all",
+"source": [
+"https://www.wikidata.org/wiki/Q1133",
+"https://en.wikipedia.org/wiki/radon"
+],
+"verified": true
+},
+{
+"id": "mw-wis-0",
+"deck": "saying",
+"text": {
+"ar": "الصبر مفتاح ___",
+"en": ""
+},
+"answer": {
+"ar": "الفرج",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-1",
+"deck": "saying",
+"text": {
+"ar": "الجار قبل ___",
+"en": ""
+},
+"answer": {
+"ar": "الدار",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-2",
+"deck": "saying",
+"text": {
+"ar": "الرفيق قبل ___",
+"en": ""
+},
+"answer": {
+"ar": "الطريق",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-3",
+"deck": "saying",
+"text": {
+"ar": "الصديق وقت ___",
+"en": ""
+},
+"answer": {
+"ar": "الضيق",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-4",
+"deck": "saying",
+"text": {
+"ar": "ما حكَّ جلدَك مثلُ ___",
+"en": ""
+},
+"answer": {
+"ar": "ظفرِك",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-6",
+"deck": "saying",
+"text": {
+"ar": "لكلِّ مقامٍ ___",
+"en": ""
+},
+"answer": {
+"ar": "مقال",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-7",
+"deck": "saying",
+"text": {
+"ar": "الطيور على ___ تقع",
+"en": ""
+},
+"answer": {
+"ar": "أشكالها",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-8",
+"deck": "saying",
+"text": {
+"ar": "الحاجة تفتق ___",
+"en": ""
+},
+"answer": {
+"ar": "الحيلة",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-9",
+"deck": "saying",
+"text": {
+"ar": "إذا عُرف السبب بطل ___",
+"en": ""
+},
+"answer": {
+"ar": "العجب",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-10",
+"deck": "saying",
+"text": {
+"ar": "ربَّ أخٍ لك لم ___ أمُّك",
+"en": ""
+},
+"answer": {
+"ar": "تلده",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-11",
+"deck": "saying",
+"text": {
+"ar": "الصيف ضيَّعتِ ___",
+"en": ""
+},
+"answer": {
+"ar": "اللبن",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-12",
+"deck": "saying",
+"text": {
+"ar": "على نفسها جنت ___",
+"en": ""
+},
+"answer": {
+"ar": "براقش",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-13",
+"deck": "saying",
+"text": {
+"ar": "أسمع جعجعةً ولا أرى ___",
+"en": ""
+},
+"answer": {
+"ar": "طحنًا",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-14",
+"deck": "saying",
+"text": {
+"ar": "اليد الواحدة لا ___",
+"en": ""
+},
+"answer": {
+"ar": "تصفِّق",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-15",
+"deck": "saying",
+"text": {
+"ar": "في التأني السلامة وفي العجلة ___",
+"en": ""
+},
+"answer": {
+"ar": "الندامة",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-16",
+"deck": "saying",
+"text": {
+"ar": "من حفر حفرةً لأخيه وقع ___",
+"en": ""
+},
+"answer": {
+"ar": "فيها",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-17",
+"deck": "saying",
+"text": {
+"ar": "الحرُّ تكفيه ___",
+"en": ""
+},
+"answer": {
+"ar": "الإشارة",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-18",
+"deck": "saying",
+"text": {
+"ar": "ما لا يُدرَك كلُّه لا ___ كلُّه",
+"en": ""
+},
+"answer": {
+"ar": "يُترك",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-19",
+"deck": "saying",
+"text": {
+"ar": "الباب الذي يأتيك منه الريح سدَّه ___",
+"en": ""
+},
+"answer": {
+"ar": "واستَرِح",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-20",
+"deck": "saying",
+"text": {
+"ar": "كلُّ إناءٍ بما فيه ___",
+"en": ""
+},
+"answer": {
+"ar": "ينضح",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-21",
+"deck": "saying",
+"text": {
+"ar": "رمتني بدائها ___",
+"en": ""
+},
+"answer": {
+"ar": "وانسلَّت",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-22",
+"deck": "saying",
+"text": {
+"ar": "أعطِ الخبزَ لخبَّازه ولو أكل ___",
+"en": ""
+},
+"answer": {
+"ar": "نصفه",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-23",
+"deck": "saying",
+"text": {
+"ar": "عند الامتحان يُكرَم المرء أو ___",
+"en": ""
+},
+"answer": {
+"ar": "يُهان",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-24",
+"deck": "saying",
+"text": {
+"ar": "___ من ذهب",
+"en": ""
+},
+"answer": {
+"ar": "الوقت",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-25",
+"deck": "saying",
+"text": {
+"ar": "إن كان الكلام من فضة ___ من ذهب",
+"en": ""
+},
+"answer": {
+"ar": "فالسكوت",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-26",
+"deck": "saying",
+"text": {
+"ar": "العلم في الصغر كالنقش على ___",
+"en": ""
+},
+"answer": {
+"ar": "الحجر",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-27",
+"deck": "saying",
+"text": {
+"ar": "من شبَّ على شيءٍ شاب ___",
+"en": ""
+},
+"answer": {
+"ar": "عليه",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-29",
+"deck": "saying",
+"text": {
+"ar": "ربَّ ضارةٍ ___",
+"en": ""
+},
+"answer": {
+"ar": "نافعة",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-30",
+"deck": "saying",
+"text": {
+"ar": "الغائب ___ معه",
+"en": ""
+},
+"answer": {
+"ar": "حجَّته",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-32",
+"deck": "saying",
+"text": {
+"ar": "ما ضاع حقٌّ وراءه ___",
+"en": ""
+},
+"answer": {
+"ar": "مطالب",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-33",
+"deck": "saying",
+"text": {
+"ar": "لا ___ بلا نار",
+"en": ""
+},
+"answer": {
+"ar": "دخان",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-34",
+"deck": "saying",
+"text": {
+"ar": "البعيد عن العين بعيد عن ___",
+"en": ""
+},
+"answer": {
+"ar": "القلب",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-35",
+"deck": "saying",
+"text": {
+"ar": "كثرة الطباخين تحرق ___",
+"en": ""
+},
+"answer": {
+"ar": "الطبيخ",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-36",
+"deck": "saying",
+"text": {
+"ar": "___ يُقلُّ ما جمع",
+"en": ""
+},
+"answer": {
+"ar": "الطمع",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-37",
+"deck": "saying",
+"text": {
+"ar": "أول الغيث ___",
+"en": ""
+},
+"answer": {
+"ar": "قطرة",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-39",
+"deck": "saying",
+"text": {
+"ar": "القرد في عين أمه ___",
+"en": ""
+},
+"answer": {
+"ar": "غزال",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-41",
+"deck": "saying",
+"text": {
+"ar": "لكلِّ جوادٍ ___",
+"en": ""
+},
+"answer": {
+"ar": "كبوة",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-42",
+"deck": "saying",
+"text": {
+"ar": "لكلِّ ساقطةٍ ___",
+"en": ""
+},
+"answer": {
+"ar": "لاقطة",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-43",
+"deck": "saying",
+"text": {
+"ar": "ليس كلُّ ما يلمع ___",
+"en": ""
+},
+"answer": {
+"ar": "ذهبًا",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-44",
+"deck": "saying",
+"text": {
+"ar": "الحاجة أم ___",
+"en": ""
+},
+"answer": {
+"ar": "الاختراع",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-45",
+"deck": "saying",
+"text": {
+"ar": "درهم وقاية خيرٌ من قنطار ___",
+"en": ""
+},
+"answer": {
+"ar": "علاج",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-49",
+"deck": "saying",
+"text": {
+"ar": "الطبع يغلب ___",
+"en": ""
+},
+"answer": {
+"ar": "التطبع",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-50",
+"deck": "saying",
+"text": {
+"ar": "الجزاء من جنس ___",
+"en": ""
+},
+"answer": {
+"ar": "العمل",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-51",
+"deck": "saying",
+"text": {
+"ar": "كلُّ ممنوعٍ ___",
+"en": ""
+},
+"answer": {
+"ar": "مرغوب",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-52",
+"deck": "saying",
+"text": {
+"ar": "عِش رجبًا ترَ ___",
+"en": ""
+},
+"answer": {
+"ar": "عجبًا",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-53",
+"deck": "saying",
+"text": {
+"ar": "ما كلُّ بيضاءَ شحمة ولا كلُّ سوداءَ ___",
+"en": ""
+},
+"answer": {
+"ar": "تمرة",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-54",
+"deck": "saying",
+"text": {
+"ar": "دوام الحال من ___",
+"en": ""
+},
+"answer": {
+"ar": "المحال",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-55",
+"deck": "saying",
+"text": {
+"ar": "الباطل لا ___",
+"en": ""
+},
+"answer": {
+"ar": "يدوم",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-56",
+"deck": "saying",
+"text": {
+"ar": "خير البرِّ ___",
+"en": ""
+},
+"answer": {
+"ar": "عاجله",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-57",
+"deck": "saying",
+"text": {
+"ar": "الحذر لا يمنع ___",
+"en": ""
+},
+"answer": {
+"ar": "القدر",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-58",
+"deck": "saying",
+"text": {
+"ar": "التكرار يعلِّم ___",
+"en": ""
+},
+"answer": {
+"ar": "الشطَّار",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-59",
+"deck": "saying",
+"text": {
+"ar": "اللبيب بالإشارة ___",
+"en": ""
+},
+"answer": {
+"ar": "يفهم",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-60",
+"deck": "saying",
+"text": {
+"ar": "آخر الدواء ___",
+"en": ""
+},
+"answer": {
+"ar": "الكيّ",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-61",
+"deck": "saying",
+"text": {
+"ar": "جاء يكحِّلها ___",
+"en": ""
+},
+"answer": {
+"ar": "فأعماها",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-62",
+"deck": "saying",
+"text": {
+"ar": "حبل الكذب ___",
+"en": ""
+},
+"answer": {
+"ar": "قصير",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-63",
+"deck": "saying",
+"text": {
+"ar": "من تأنَّى نال ما ___",
+"en": ""
+},
+"answer": {
+"ar": "تمنَّى",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+},
+{
+"id": "mw-wis-64",
+"deck": "saying",
+"text": {
+"ar": "لا ناقة لي ___ ولا جمل",
+"en": ""
+},
+"answer": {
+"ar": "فيها",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"repo:assets/shared/wisdom.json"
+],
+"verified": "repo"
+}
+]

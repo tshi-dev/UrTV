@@ -1,0 +1,1182 @@
+[
+{
+"word": "جوافه",
+"display": "جوافة",
+"en": "guava",
+"category": "fruits",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Q3181909",
+"verified": true
+},
+{
+"word": "طماطم",
+"display": "طماطم",
+"en": "tomato",
+"category": "vegetables",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q23501",
+"verified": true
+},
+{
+"word": "بطاطس",
+"display": "بطاطس",
+"en": "potato",
+"category": "vegetables",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q10998",
+"verified": true
+},
+{
+"word": "شوربه",
+"display": "شوربة",
+"en": "soup",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q41415",
+"verified": true
+},
+{
+"word": "فلافل",
+"display": "فلافل",
+"en": "falafel",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Q188788",
+"verified": true
+},
+{
+"word": "التنس",
+"display": "التنس",
+"en": "tennis",
+"category": "sports",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q847",
+"verified": true
+},
+{
+"word": "حافله",
+"display": "حافلة",
+"en": "bus",
+"category": "vehicles",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q5638",
+"verified": true
+},
+{
+"word": "سفينه",
+"display": "سفينة",
+"en": "ship",
+"category": "vehicles",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q11446",
+"verified": true
+},
+{
+"word": "شاحنه",
+"display": "شاحنة",
+"en": "truck",
+"category": "vehicles",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q43193",
+"verified": true
+},
+{
+"word": "صاروخ",
+"display": "صاروخ",
+"en": "rocket",
+"category": "vehicles",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q41291",
+"verified": true
+},
+{
+"word": "غواصه",
+"display": "غواصة",
+"en": "submarine",
+"category": "vehicles",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q2811",
+"verified": true
+},
+{
+"word": "فستان",
+"display": "فستان",
+"en": "dress",
+"category": "clothes",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Q200539",
+"verified": true
+},
+{
+"word": "طاوله",
+"display": "طاولة",
+"en": "table",
+"category": "furniture",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q14748",
+"verified": true
+},
+{
+"word": "اريكه",
+"display": "أريكة",
+"en": "couch",
+"category": "furniture",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Q131514",
+"verified": true
+},
+{
+"word": "وساده",
+"display": "وسادة",
+"en": "pillow",
+"category": "furniture",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q99895",
+"verified": true
+},
+{
+"word": "ستاره",
+"display": "ستارة",
+"en": "curtain",
+"category": "furniture",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Q49005",
+"verified": true
+},
+{
+"word": "مطرقه",
+"display": "مطرقة",
+"en": "hammer",
+"category": "tools",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q25294",
+"verified": true
+},
+{
+"word": "منشار",
+"display": "منشار",
+"en": "saw",
+"category": "tools",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q125356",
+"verified": true
+},
+{
+"word": "مسمار",
+"display": "مسمار",
+"en": "nail",
+"category": "tools",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q37077",
+"verified": true
+},
+{
+"word": "مفتاح",
+"display": "مفتاح",
+"en": "key",
+"category": "tools",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q132041",
+"verified": true
+},
+{
+"word": "فرشاه",
+"display": "فرشاة",
+"en": "brush",
+"category": "tools",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Q614467",
+"verified": true
+},
+{
+"word": "مقلاه",
+"display": "مقلاة",
+"en": "frying pan",
+"category": "tools",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q127666",
+"verified": true
+},
+{
+"word": "ملعقه",
+"display": "ملعقة",
+"en": "spoon",
+"category": "tools",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q81895",
+"verified": true
+},
+{
+"word": "مسطره",
+"display": "مسطرة",
+"en": "ruler",
+"category": "school",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Q104555",
+"verified": true
+},
+{
+"word": "ممحاه",
+"display": "ممحاة",
+"en": "eraser",
+"category": "school",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Q171888",
+"verified": true
+},
+{
+"word": "مدرسه",
+"display": "مدرسة",
+"en": "school",
+"category": "school",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q3914",
+"verified": true
+},
+{
+"word": "مكتبه",
+"display": "مكتبة",
+"en": "library",
+"category": "school",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q7075",
+"verified": true
+},
+{
+"word": "خريطه",
+"display": "خريطة",
+"en": "map",
+"category": "school",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q4006",
+"verified": true
+},
+{
+"word": "حاسوب",
+"display": "حاسوب",
+"en": "computer",
+"category": "school",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q68",
+"verified": true
+},
+{
+"word": "جزيره",
+"display": "جزيرة",
+"en": "island",
+"category": "places",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q23442",
+"verified": true
+},
+{
+"word": "مزرعه",
+"display": "مزرعة",
+"en": "farm",
+"category": "places",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q131596",
+"verified": true
+},
+{
+"word": "بحيره",
+"display": "بحيرة",
+"en": "lake",
+"category": "nature",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q23397",
+"verified": true
+},
+{
+"word": "بركان",
+"display": "بركان",
+"en": "volcano",
+"category": "nature",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q8072",
+"verified": true
+},
+{
+"word": "دجاجه",
+"display": "دجاجة",
+"en": "chicken",
+"category": "animals_farm",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q780",
+"verified": true
+},
+{
+"word": "زرافه",
+"display": "زرافة",
+"en": "giraffe",
+"category": "wild_animals",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q862089",
+"verified": true
+},
+{
+"word": "سنجاب",
+"display": "سنجاب",
+"en": "squirrel",
+"category": "wild_animals",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q9482",
+"verified": true
+},
+{
+"word": "بطريق",
+"display": "بطريق",
+"en": "penguin",
+"category": "birds_hand",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q9147",
+"verified": true
+},
+{
+"word": "طاووس",
+"display": "طاووس",
+"en": "peafowl",
+"category": "birds_hand",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Q201251",
+"verified": true
+},
+{
+"word": "دلفين",
+"display": "دلفين",
+"en": "dolphin",
+"category": "sea_and_reptiles",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Q7369",
+"verified": true
+},
+{
+"word": "ابريق",
+"display": "إبريق",
+"en": "jug",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1232396",
+"verified": true
+},
+{
+"word": "اسبوع",
+"display": "أسبوع",
+"en": "week",
+"category": "time",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L5308",
+"verified": true
+},
+{
+"word": "اسطبل",
+"display": "إسطبل",
+"en": "stable",
+"category": "places",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1476435",
+"verified": true
+},
+{
+"word": "اقليم",
+"display": "إقليم",
+"en": "region",
+"category": "places",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1487729",
+"verified": true
+},
+{
+"word": "انسان",
+"display": "إنسان",
+"en": "human",
+"category": "people",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1214573",
+"verified": true
+},
+{
+"word": "بازار",
+"display": "بازار",
+"en": "bazaar",
+"category": "places",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1257607",
+"verified": true
+},
+{
+"word": "بوابه",
+"display": "بوابة",
+"en": "gate",
+"category": "places",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1498694",
+"verified": true
+},
+{
+"word": "بيانو",
+"display": "بيانو",
+"en": "piano",
+"category": "things",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1489134",
+"verified": true
+},
+{
+"word": "تاريخ",
+"display": "تاريخ",
+"en": "history",
+"category": "school",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1374969",
+"verified": true
+},
+{
+"word": "تجربه",
+"display": "تجربة",
+"en": "experiment",
+"category": "school",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L52284",
+"verified": true
+},
+{
+"word": "حديقه",
+"display": "حديقة",
+"en": "garden",
+"category": "places",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1488259",
+"verified": true
+},
+{
+"word": "حقيبه",
+"display": "حقيبة",
+"en": "bag",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1479209",
+"verified": true
+},
+{
+"word": "حلزون",
+"display": "حلزون",
+"en": "snail",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1489111",
+"verified": true
+},
+{
+"word": "جامعه",
+"display": "جامعة",
+"en": "university",
+"category": "places",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1372755",
+"verified": true
+},
+{
+"word": "دقيقه",
+"display": "دقيقة",
+"en": "minute",
+"category": "time",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L5330",
+"verified": true
+},
+{
+"word": "دينار",
+"display": "دينار",
+"en": "dinar",
+"category": "things",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L5748",
+"verified": true
+},
+{
+"word": "ديوان",
+"display": "ديوان",
+"en": "divan",
+"category": "things",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1160595",
+"verified": true
+},
+{
+"word": "راديو",
+"display": "راديو",
+"en": "radio",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1488770",
+"verified": true
+},
+{
+"word": "رساله",
+"display": "رسالة",
+"en": "letter",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1420290",
+"verified": true
+},
+{
+"word": "رمضان",
+"display": "رمضان",
+"en": "Ramadan",
+"category": "time",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1311621",
+"verified": true
+},
+{
+"word": "زلزله",
+"display": "زلزلة",
+"en": "earthquake",
+"category": "nature",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1484432",
+"verified": true
+},
+{
+"word": "زيتون",
+"display": "زيتون",
+"en": "olive",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L2353",
+"verified": true
+},
+{
+"word": "سجاده",
+"display": "سجادة",
+"en": "prayer rug",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1499011",
+"verified": true
+},
+{
+"word": "سياره",
+"display": "سيارة",
+"en": "car",
+"category": "vehicles",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1144410",
+"verified": true
+},
+{
+"word": "صابون",
+"display": "صابون",
+"en": "soap",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1370821",
+"verified": true
+},
+{
+"word": "صنبور",
+"display": "صنبور",
+"en": "tap",
+"category": "things",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1484637",
+"verified": true
+},
+{
+"word": "ضيافه",
+"display": "ضيافة",
+"en": "hospitality",
+"category": "culture",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1174154",
+"verified": true
+},
+{
+"word": "طياره",
+"display": "طيارة",
+"en": "airplane",
+"category": "vehicles",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1499042",
+"verified": true
+},
+{
+"word": "طبيعه",
+"display": "طبيعة",
+"en": "nature",
+"category": "nature",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1491082",
+"verified": true
+},
+{
+"word": "طحينه",
+"display": "طحينة",
+"en": "tahini",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1484303",
+"verified": true
+},
+{
+"word": "طريقه",
+"display": "طريقة",
+"en": "way",
+"category": "school",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1407480",
+"verified": true
+},
+{
+"word": "عصفور",
+"display": "عصفور",
+"en": "sparrow",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1489034",
+"verified": true
+},
+{
+"word": "عنقود",
+"display": "عنقود",
+"en": "bunch of grapes",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1477614",
+"verified": true
+},
+{
+"word": "فيضان",
+"display": "فيضان",
+"en": "flood",
+"category": "nature",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1496946",
+"verified": true
+},
+{
+"word": "قاموس",
+"display": "قاموس",
+"en": "dictionary",
+"category": "school",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L41674",
+"verified": true
+},
+{
+"word": "قصيده",
+"display": "قصيدة",
+"en": "poem",
+"category": "culture",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1477473",
+"verified": true
+},
+{
+"word": "قلاده",
+"display": "قلادة",
+"en": "necklace",
+"category": "things",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1499086",
+"verified": true
+},
+{
+"word": "قنطره",
+"display": "قنطرة",
+"en": "bridge",
+"category": "places",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1159040",
+"verified": true
+},
+{
+"word": "كتابه",
+"display": "كتابة",
+"en": "writing",
+"category": "school",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1496933",
+"verified": true
+},
+{
+"word": "كراسه",
+"display": "كراسة",
+"en": "exercise book",
+"category": "school",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1495858",
+"verified": true
+},
+{
+"word": "كزبره",
+"display": "كزبرة",
+"en": "coriander",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1489127",
+"verified": true
+},
+{
+"word": "مدينه",
+"display": "مدينة",
+"en": "city",
+"category": "places",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1372440",
+"verified": true
+},
+{
+"word": "منديل",
+"display": "منديل",
+"en": "tissue",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1487790",
+"verified": true
+},
+{
+"word": "منتزه",
+"display": "منتزه",
+"en": "park",
+"category": "places",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1486707",
+"verified": true
+},
+{
+"word": "مهندس",
+"display": "مهندس",
+"en": "engineer",
+"category": "jobs",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1475268",
+"verified": true
+},
+{
+"word": "ميزان",
+"display": "ميزان",
+"en": "scale",
+"category": "things",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1319228",
+"verified": true
+},
+{
+"word": "ملفوف",
+"display": "ملفوف",
+"en": "cabbage",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1477400",
+"verified": true
+},
+{
+"word": "نتيجه",
+"display": "نتيجة",
+"en": "result",
+"category": "school",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1225982",
+"verified": true
+},
+{
+"word": "نموذج",
+"display": "نموذج",
+"en": "model",
+"category": "school",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1488757",
+"verified": true
+},
+{
+"word": "نهايه",
+"display": "نهاية",
+"en": "end",
+"category": "school",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1377921",
+"verified": true
+},
+{
+"word": "هندسه",
+"display": "هندسة",
+"en": "geometry",
+"category": "school",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1487262",
+"verified": true
+},
+{
+"word": "وسيله",
+"display": "وسيلة",
+"en": "means",
+"category": "school",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1478967",
+"verified": true
+},
+{
+"word": "وظيفه",
+"display": "وظيفة",
+"en": "job",
+"category": "jobs",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1491087",
+"verified": true
+},
+{
+"word": "يقطين",
+"display": "يقطين",
+"en": "pumpkin",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1486901",
+"verified": true
+},
+{
+"word": "ينبوع",
+"display": "ينبوع",
+"en": "spring",
+"category": "nature",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1478911",
+"verified": true
+},
+{
+"word": "منضده",
+"display": "منضدة",
+"en": "desk",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1491246",
+"verified": true
+},
+{
+"word": "مروحه",
+"display": "مروحة",
+"en": "fan",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1491051",
+"verified": true
+},
+{
+"word": "مرحله",
+"display": "مرحلة",
+"en": "stage",
+"category": "school",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1491251",
+"verified": true
+},
+{
+"word": "محفظه",
+"display": "محفظة",
+"en": "wallet",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1495939",
+"verified": true
+},
+{
+"word": "مصروف",
+"display": "مصروف",
+"en": "allowance",
+"category": "things",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1502837",
+"verified": true
+},
+{
+"word": "مشروب",
+"display": "مشروب",
+"en": "drink",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1491104",
+"verified": true
+},
+{
+"word": "محصول",
+"display": "محصول",
+"en": "crop",
+"category": "nature",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1491292",
+"verified": true
+},
+{
+"word": "مختبر",
+"display": "مختبر",
+"en": "laboratory",
+"category": "places",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1477387",
+"verified": true
+},
+{
+"word": "مخترع",
+"display": "مخترع",
+"en": "inventor",
+"category": "jobs",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1478256",
+"verified": true
+},
+{
+"word": "مجموع",
+"display": "مجموع",
+"en": "total",
+"category": "school",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1478426",
+"verified": true
+},
+{
+"word": "مكنسه",
+"display": "مكنسة",
+"en": "broom",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1491238",
+"verified": true
+},
+{
+"word": "مقياس",
+"display": "مقياس",
+"en": "measure",
+"category": "school",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1487923",
+"verified": true
+},
+{
+"word": "مسلسل",
+"display": "مسلسل",
+"en": "series",
+"category": "things",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1479229",
+"verified": true
+},
+{
+"word": "غساله",
+"display": "غسالة",
+"en": "washing machine",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1499010",
+"verified": true
+},
+{
+"word": "ثلاجه",
+"display": "ثلاجة",
+"en": "refrigerator",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1501468",
+"verified": true
+},
+{
+"word": "بندقه",
+"display": "بندقة",
+"en": "hazelnut",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1187856",
+"verified": true
+},
+{
+"word": "بصيره",
+"display": "بصيرة",
+"en": "insight",
+"category": "culture",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1486077",
+"verified": true
+},
+{
+"word": "بلوره",
+"display": "بلورة",
+"en": "crystal",
+"category": "things",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1158722",
+"verified": true
+},
+{
+"word": "جريده",
+"display": "جريدة",
+"en": "newspaper",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1484620",
+"verified": true
+},
+{
+"word": "جراحه",
+"display": "جراحة",
+"en": "surgery",
+"category": "school",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1500982",
+"verified": true
+},
+{
+"word": "خزانه",
+"display": "خزانة",
+"en": "cupboard",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1491314",
+"verified": true
+},
+{
+"word": "دراجه",
+"display": "دراجة",
+"en": "bicycle",
+"category": "vehicles",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1501393",
+"verified": true
+},
+{
+"word": "سلسله",
+"display": "سلسلة",
+"en": "chain",
+"category": "things",
+"difficulty": 2,
+"age": "all",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1486023",
+"verified": true
+},
+{
+"word": "سبوره",
+"display": "سبورة",
+"en": "blackboard",
+"category": "school",
+"difficulty": 1,
+"age": "kids",
+"source": "https://www.wikidata.org/wiki/Lexeme:L1144298",
+"verified": true
+}
+]

@@ -1,0 +1,2690 @@
+[
+{
+"id": "ch-Q140",
+"ar": "أسد",
+"en": "lion",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q140",
+"verified": true
+},
+{
+"id": "ch-Q7378",
+"ar": "فيل",
+"en": "elephant",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q7378",
+"verified": true
+},
+{
+"id": "ch-Q862089",
+"ar": "زرافة",
+"en": "giraffe",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q862089",
+"verified": true
+},
+{
+"id": "ch-Q34706",
+"ar": "نمر",
+"en": "leopard",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q34706",
+"verified": true
+},
+{
+"id": "ch-Q3711329",
+"ar": "ذئب",
+"en": "wolf",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q3711329",
+"verified": true
+},
+{
+"id": "ch-Q8331",
+"ar": "ثعلب",
+"en": "fox",
+"category": "animals",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q8331",
+"verified": true
+},
+{
+"id": "ch-Q1019010",
+"ar": "دب",
+"en": "bear",
+"category": "animals",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q1019010",
+"verified": true
+},
+{
+"id": "ch-Q29001815",
+"ar": "غزال",
+"en": "gazelle",
+"category": "animals",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q29001815",
+"verified": true
+},
+{
+"id": "ch-Q23907",
+"ar": "فهد",
+"en": "cheetah",
+"category": "animals",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q23907",
+"verified": true
+},
+{
+"id": "ch-Q34718",
+"ar": "وحيد القرن",
+"en": "rhinoceros",
+"category": "animals",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q34718",
+"verified": true
+},
+{
+"id": "ch-Q5070208",
+"ar": "كنغر",
+"en": "kangaroo",
+"category": "animals",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q5070208",
+"verified": true
+},
+{
+"id": "ch-Q9482",
+"ar": "سنجاب",
+"en": "squirrel",
+"category": "animals",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q9482",
+"verified": true
+},
+{
+"id": "ch-Q6120",
+"ar": "قنفذ",
+"en": "hedgehog",
+"category": "animals",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q6120",
+"verified": true
+},
+{
+"id": "ch-Q9394",
+"ar": "أرنب",
+"en": "rabbit",
+"category": "animals",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q9394",
+"verified": true
+},
+{
+"id": "ch-Q43489",
+"ar": "صقر",
+"en": "falcon",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q43489",
+"verified": true
+},
+{
+"id": "ch-Q31431",
+"ar": "ببغاء",
+"en": "parrot",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q31431",
+"verified": true
+},
+{
+"id": "ch-Q9147",
+"ar": "بطريق",
+"en": "penguin",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q9147",
+"verified": true
+},
+{
+"id": "ch-Q201251",
+"ar": "طاووس",
+"en": "peafowl",
+"category": "animals",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q201251",
+"verified": true
+},
+{
+"id": "ch-Q28507",
+"ar": "لقلق",
+"en": "stork",
+"category": "animals",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q28507",
+"verified": true
+},
+{
+"id": "ch-Q16034852",
+"ar": "عصفور",
+"en": "sparrow",
+"category": "animals",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q16034852",
+"verified": true
+},
+{
+"id": "ch-Q3736439",
+"ar": "بطة",
+"en": "duck",
+"category": "animals",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q3736439",
+"verified": true
+},
+{
+"id": "ch-Q2216236",
+"ar": "ديك",
+"en": "rooster",
+"category": "animals",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q2216236",
+"verified": true
+},
+{
+"id": "ch-Q2535664",
+"ar": "تمساح",
+"en": "crocodile",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q2535664",
+"verified": true
+},
+{
+"id": "ch-Q3116510",
+"ar": "ضفدع",
+"en": "frog",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q3116510",
+"verified": true
+},
+{
+"id": "ch-Q7369",
+"ar": "دلفين",
+"en": "dolphin",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q7369",
+"verified": true
+},
+{
+"id": "ch-Q1865281",
+"ar": "حوت",
+"en": "whale",
+"category": "animals",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q1865281",
+"verified": true
+},
+{
+"id": "ch-Q152",
+"ar": "سمكة",
+"en": "fish",
+"category": "animals",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q152",
+"verified": true
+},
+{
+"id": "ch-Q25349",
+"ar": "نجم البحر",
+"en": "starfish",
+"category": "animals",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q25349",
+"verified": true
+},
+{
+"id": "ch-Q30178",
+"ar": "قنديل البحر",
+"en": "jellyfish",
+"category": "animals",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q30178",
+"verified": true
+},
+{
+"id": "ch-Q11748378",
+"ar": "بقرة",
+"en": "cow",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q11748378",
+"verified": true
+},
+{
+"id": "ch-Q7368",
+"ar": "خروف",
+"en": "sheep",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q7368",
+"verified": true
+},
+{
+"id": "ch-Q2934",
+"ar": "ماعز",
+"en": "goat",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q2934",
+"verified": true
+},
+{
+"id": "ch-Q726",
+"ar": "حصان",
+"en": "horse",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q726",
+"verified": true
+},
+{
+"id": "ch-Q19707",
+"ar": "حمار",
+"en": "donkey",
+"category": "animals",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q19707",
+"verified": true
+},
+{
+"id": "ch-Q441595",
+"ar": "جمل",
+"en": "camel",
+"category": "animals",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q441595",
+"verified": true
+},
+{
+"id": "ch-Q780",
+"ar": "دجاجة",
+"en": "chicken",
+"category": "animals",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q780",
+"verified": true
+},
+{
+"id": "ch-Q144",
+"ar": "كلب",
+"en": "dog",
+"category": "animals",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q144",
+"verified": true
+},
+{
+"id": "ch-Q89",
+"ar": "تفاح",
+"en": "apple",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q89",
+"verified": true
+},
+{
+"id": "ch-Q503",
+"ar": "موز",
+"en": "banana",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q503",
+"verified": true
+},
+{
+"id": "ch-Q13191",
+"ar": "برتقال",
+"en": "orange",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q13191",
+"verified": true
+},
+{
+"id": "ch-Q10978",
+"ar": "عنب",
+"en": "grape",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q10978",
+"verified": true
+},
+{
+"id": "ch-Q13158",
+"ar": "فراولة",
+"en": "strawberry",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q13158",
+"verified": true
+},
+{
+"id": "ch-Q10817602",
+"ar": "أناناس",
+"en": "pineapple",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q10817602",
+"verified": true
+},
+{
+"id": "ch-Q13188",
+"ar": "رمان",
+"en": "pomegranate",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q13188",
+"verified": true
+},
+{
+"id": "ch-Q2746643",
+"ar": "تين",
+"en": "fig",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q2746643",
+"verified": true
+},
+{
+"id": "ch-Q13099586",
+"ar": "كمثرى",
+"en": "pear",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q13099586",
+"verified": true
+},
+{
+"id": "ch-Q196",
+"ar": "كرز",
+"en": "cherry",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q196",
+"verified": true
+},
+{
+"id": "ch-Q1093742",
+"ar": "ليمون",
+"en": "lemon",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q1093742",
+"verified": true
+},
+{
+"id": "ch-Q3181909",
+"ar": "جوافة",
+"en": "guava",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q3181909",
+"verified": true
+},
+{
+"id": "ch-Q1652093",
+"ar": "بلح",
+"en": "date",
+"category": "food",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q1652093",
+"verified": true
+},
+{
+"id": "ch-Q3733836",
+"ar": "مشمش",
+"en": "apricot",
+"category": "food",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q3733836",
+"verified": true
+},
+{
+"id": "ch-Q16128920",
+"ar": "توت",
+"en": "berries",
+"category": "food",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q16128920",
+"verified": true
+},
+{
+"id": "ch-Q13194",
+"ar": "كيوي",
+"en": "kiwifruit",
+"category": "food",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q13194",
+"verified": true
+},
+{
+"id": "ch-Q3342808",
+"ar": "نارجيل",
+"en": "coconut",
+"category": "food",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q3342808",
+"verified": true
+},
+{
+"id": "ch-Q23501",
+"ar": "طماطم",
+"en": "tomato",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q23501",
+"verified": true
+},
+{
+"id": "ch-Q23485",
+"ar": "بصل",
+"en": "onion",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q23485",
+"verified": true
+},
+{
+"id": "ch-Q21546392",
+"ar": "ثوم",
+"en": "garlic",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q21546392",
+"verified": true
+},
+{
+"id": "ch-Q10998",
+"ar": "بطاطس",
+"en": "potato",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q10998",
+"verified": true
+},
+{
+"id": "ch-Q12533094",
+"ar": "باذنجان",
+"en": "eggplant",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q12533094",
+"verified": true
+},
+{
+"id": "ch-Q7533",
+"ar": "كوسا",
+"en": "zucchini",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q7533",
+"verified": true
+},
+{
+"id": "ch-Q14328596",
+"ar": "ملفوف",
+"en": "cabbage",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q14328596",
+"verified": true
+},
+{
+"id": "ch-Q47722",
+"ar": "بروكلي",
+"en": "broccoli",
+"category": "food",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q47722",
+"verified": true
+},
+{
+"id": "ch-Q3916957",
+"ar": "لفت",
+"en": "turnip",
+"category": "food",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q3916957",
+"verified": true
+},
+{
+"id": "ch-Q165308",
+"ar": "قرع",
+"en": "pumpkin",
+"category": "food",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q165308",
+"verified": true
+},
+{
+"id": "ch-Q7802",
+"ar": "خبز",
+"en": "bread",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q7802",
+"verified": true
+},
+{
+"id": "ch-Q5090",
+"ar": "رز",
+"en": "rice",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q5090",
+"verified": true
+},
+{
+"id": "ch-Q10943",
+"ar": "جبن",
+"en": "cheese",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q10943",
+"verified": true
+},
+{
+"id": "ch-Q10987",
+"ar": "عسل",
+"en": "honey",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q10987",
+"verified": true
+},
+{
+"id": "ch-Q8495",
+"ar": "حليب",
+"en": "milk",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q8495",
+"verified": true
+},
+{
+"id": "ch-Q34172",
+"ar": "زبدة",
+"en": "butter",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q34172",
+"verified": true
+},
+{
+"id": "ch-Q41415",
+"ar": "شوربة",
+"en": "soup",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q41415",
+"verified": true
+},
+{
+"id": "ch-Q178",
+"ar": "معكرونة",
+"en": "pasta",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q178",
+"verified": true
+},
+{
+"id": "ch-Q195",
+"ar": "شوكولاتة",
+"en": "chocolate",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q195",
+"verified": true
+},
+{
+"id": "ch-Q13270",
+"ar": "بسكويت",
+"en": "biscuit",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q13270",
+"verified": true
+},
+{
+"id": "ch-Q10990",
+"ar": "لحم",
+"en": "meat",
+"category": "food",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q10990",
+"verified": true
+},
+{
+"id": "ch-Q241987",
+"ar": "حمص",
+"en": "hummus",
+"category": "food",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q241987",
+"verified": true
+},
+{
+"id": "ch-Q188788",
+"ar": "فلافل",
+"en": "falafel",
+"category": "food",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q188788",
+"verified": true
+},
+{
+"id": "ch-Q3412448",
+"ar": "شاورما",
+"en": "shawarma",
+"category": "food",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q3412448",
+"verified": true
+},
+{
+"id": "ch-Q491517",
+"ar": "سمبوسة",
+"en": "samosa",
+"category": "food",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q491517",
+"verified": true
+},
+{
+"id": "ch-Q16841203",
+"ar": "هريس",
+"en": "harees",
+"category": "food",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q16841203",
+"verified": true
+},
+{
+"id": "ch-Q2736",
+"ar": "كرة القدم",
+"en": "football",
+"category": "sports",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q2736",
+"verified": true
+},
+{
+"id": "ch-Q5372",
+"ar": "كرة السلة",
+"en": "basketball",
+"category": "sports",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q5372",
+"verified": true
+},
+{
+"id": "ch-Q1734",
+"ar": "كرة الطائرة",
+"en": "volleyball",
+"category": "sports",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q1734",
+"verified": true
+},
+{
+"id": "ch-Q847",
+"ar": "التنس",
+"en": "tennis",
+"category": "sports",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q847",
+"verified": true
+},
+{
+"id": "ch-Q11420",
+"ar": "الجودو",
+"en": "judo",
+"category": "sports",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q11420",
+"verified": true
+},
+{
+"id": "ch-Q179226",
+"ar": "الفروسية",
+"en": "horse riding",
+"category": "sports",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q179226",
+"verified": true
+},
+{
+"id": "ch-Q178108",
+"ar": "رمي الرمح",
+"en": "javelin",
+"category": "sports",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q178108",
+"verified": true
+},
+{
+"id": "ch-Q53121",
+"ar": "ركوب الدراجات",
+"en": "cycling",
+"category": "sports",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q53121",
+"verified": true
+},
+{
+"id": "ch-Q5377",
+"ar": "الغولف",
+"en": "golf",
+"category": "sports",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q5377",
+"verified": true
+},
+{
+"id": "ch-Q43450",
+"ar": "الجمباز",
+"en": "gymnastics",
+"category": "sports",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q43450",
+"verified": true
+},
+{
+"id": "ch-Q83462",
+"ar": "رفع الأثقال",
+"en": "weightlifting",
+"category": "sports",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q83462",
+"verified": true
+},
+{
+"id": "ch-Q159354",
+"ar": "التجديف",
+"en": "rowing",
+"category": "sports",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q159354",
+"verified": true
+},
+{
+"id": "ch-Q39631",
+"ar": "طبيب",
+"en": "doctor",
+"category": "jobs",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q39631",
+"verified": true
+},
+{
+"id": "ch-Q37226",
+"ar": "معلم",
+"en": "teacher",
+"category": "jobs",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q37226",
+"verified": true
+},
+{
+"id": "ch-Q81096",
+"ar": "مهندس",
+"en": "engineer",
+"category": "jobs",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q81096",
+"verified": true
+},
+{
+"id": "ch-Q186360",
+"ar": "ممرض",
+"en": "nurse",
+"category": "jobs",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q186360",
+"verified": true
+},
+{
+"id": "ch-Q154549",
+"ar": "نجار",
+"en": "carpenter",
+"category": "jobs",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q154549",
+"verified": true
+},
+{
+"id": "ch-Q160131",
+"ar": "خباز",
+"en": "baker",
+"category": "jobs",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q160131",
+"verified": true
+},
+{
+"id": "ch-Q156839",
+"ar": "طباخ",
+"en": "cook",
+"category": "jobs",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q156839",
+"verified": true
+},
+{
+"id": "ch-Q131512",
+"ar": "فلاح",
+"en": "farmer",
+"category": "jobs",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q131512",
+"verified": true
+},
+{
+"id": "ch-Q352388",
+"ar": "سائق",
+"en": "driver",
+"category": "jobs",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q352388",
+"verified": true
+},
+{
+"id": "ch-Q1028181",
+"ar": "رسام",
+"en": "painter",
+"category": "jobs",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q1028181",
+"verified": true
+},
+{
+"id": "ch-Q384593",
+"ar": "شرطي",
+"en": "police officer",
+"category": "jobs",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q384593",
+"verified": true
+},
+{
+"id": "ch-Q16533",
+"ar": "قاض",
+"en": "judge",
+"category": "jobs",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q16533",
+"verified": true
+},
+{
+"id": "ch-Q105186",
+"ar": "صيدلي",
+"en": "pharmacist",
+"category": "jobs",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q105186",
+"verified": true
+},
+{
+"id": "ch-Q27349",
+"ar": "طبيب أسنان",
+"en": "dentist",
+"category": "jobs",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q27349",
+"verified": true
+},
+{
+"id": "ch-Q242468",
+"ar": "خياط",
+"en": "tailor",
+"category": "jobs",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q242468",
+"verified": true
+},
+{
+"id": "ch-Q5638",
+"ar": "حافلة",
+"en": "bus",
+"category": "vehicles",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q5638",
+"verified": true
+},
+{
+"id": "ch-Q870",
+"ar": "قطار",
+"en": "train",
+"category": "vehicles",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q870",
+"verified": true
+},
+{
+"id": "ch-Q11446",
+"ar": "سفينة",
+"en": "ship",
+"category": "vehicles",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q11446",
+"verified": true
+},
+{
+"id": "ch-Q35872",
+"ar": "قارب",
+"en": "boat",
+"category": "vehicles",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q35872",
+"verified": true
+},
+{
+"id": "ch-Q43193",
+"ar": "شاحنة",
+"en": "truck",
+"category": "vehicles",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q43193",
+"verified": true
+},
+{
+"id": "ch-Q34486",
+"ar": "هليكوبتر",
+"en": "helicopter",
+"category": "vehicles",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q34486",
+"verified": true
+},
+{
+"id": "ch-Q34493",
+"ar": "دراجة نارية",
+"en": "motorcycle",
+"category": "vehicles",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q34493",
+"verified": true
+},
+{
+"id": "ch-Q41291",
+"ar": "صاروخ",
+"en": "rocket",
+"category": "vehicles",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q41291",
+"verified": true
+},
+{
+"id": "ch-Q2811",
+"ar": "غواصة",
+"en": "submarine",
+"category": "vehicles",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q2811",
+"verified": true
+},
+{
+"id": "ch-Q39495",
+"ar": "جرار",
+"en": "tractor",
+"category": "vehicles",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q39495",
+"verified": true
+},
+{
+"id": "ch-Q180481",
+"ar": "سيارة إسعاف",
+"en": "ambulance",
+"category": "vehicles",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q180481",
+"verified": true
+},
+{
+"id": "ch-Q76768",
+"ar": "قميص",
+"en": "shirt",
+"category": "clothes",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q76768",
+"verified": true
+},
+{
+"id": "ch-Q39908",
+"ar": "بنطلون",
+"en": "trousers",
+"category": "clothes",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q39908",
+"verified": true
+},
+{
+"id": "ch-Q22676",
+"ar": "حذاء",
+"en": "shoe",
+"category": "clothes",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q22676",
+"verified": true
+},
+{
+"id": "ch-Q80151",
+"ar": "قبعة",
+"en": "hat",
+"category": "clothes",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q80151",
+"verified": true
+},
+{
+"id": "ch-Q152574",
+"ar": "معطف",
+"en": "coat",
+"category": "clothes",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q152574",
+"verified": true
+},
+{
+"id": "ch-Q200539",
+"ar": "فستان",
+"en": "dress",
+"category": "clothes",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q200539",
+"verified": true
+},
+{
+"id": "ch-Q305718",
+"ar": "عباءة",
+"en": "abaya",
+"category": "clothes",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q305718",
+"verified": true
+},
+{
+"id": "ch-Q463298",
+"ar": "شماغ",
+"en": "shemagh",
+"category": "clothes",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q463298",
+"verified": true
+},
+{
+"id": "ch-Q15026",
+"ar": "كرسي",
+"en": "chair",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q15026",
+"verified": true
+},
+{
+"id": "ch-Q14748",
+"ar": "طاولة",
+"en": "table",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q14748",
+"verified": true
+},
+{
+"id": "ch-Q42177",
+"ar": "سرير",
+"en": "bed",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q42177",
+"verified": true
+},
+{
+"id": "ch-Q131514",
+"ar": "أريكة",
+"en": "couch",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q131514",
+"verified": true
+},
+{
+"id": "ch-Q1064858",
+"ar": "مكتب",
+"en": "desk",
+"category": "things",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q1064858",
+"verified": true
+},
+{
+"id": "ch-Q45242859",
+"ar": "رف",
+"en": "shelf",
+"category": "things",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q45242859",
+"verified": true
+},
+{
+"id": "ch-Q35197",
+"ar": "مرآة",
+"en": "mirror",
+"category": "things",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q35197",
+"verified": true
+},
+{
+"id": "ch-Q99895",
+"ar": "وسادة",
+"en": "pillow",
+"category": "things",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q99895",
+"verified": true
+},
+{
+"id": "ch-Q49005",
+"ar": "ستارة",
+"en": "curtain",
+"category": "things",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q49005",
+"verified": true
+},
+{
+"id": "ch-Q1138737",
+"ar": "مصباح",
+"en": "lamp",
+"category": "things",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q1138737",
+"verified": true
+},
+{
+"id": "ch-Q25294",
+"ar": "مطرقة",
+"en": "hammer",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q25294",
+"verified": true
+},
+{
+"id": "ch-Q125356",
+"ar": "منشار",
+"en": "saw",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q125356",
+"verified": true
+},
+{
+"id": "ch-Q37077",
+"ar": "مسمار",
+"en": "nail",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q37077",
+"verified": true
+},
+{
+"id": "ch-Q40847",
+"ar": "مقص",
+"en": "scissors",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q40847",
+"verified": true
+},
+{
+"id": "ch-Q13079101",
+"ar": "إبرة",
+"en": "needle",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q13079101",
+"verified": true
+},
+{
+"id": "ch-Q39397",
+"ar": "فأس",
+"en": "axe",
+"category": "things",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q39397",
+"verified": true
+},
+{
+"id": "ch-Q132041",
+"ar": "مفتاح",
+"en": "key",
+"category": "things",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q132041",
+"verified": true
+},
+{
+"id": "ch-Q228039",
+"ar": "قفل",
+"en": "lock",
+"category": "things",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q228039",
+"verified": true
+},
+{
+"id": "ch-Q168639",
+"ar": "سلم",
+"en": "ladder",
+"category": "things",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q168639",
+"verified": true
+},
+{
+"id": "ch-Q614467",
+"ar": "فرشاة",
+"en": "brush",
+"category": "things",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q614467",
+"verified": true
+},
+{
+"id": "ch-Q127666",
+"ar": "مقلاة",
+"en": "frying pan",
+"category": "things",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q127666",
+"verified": true
+},
+{
+"id": "ch-Q81895",
+"ar": "ملعقة",
+"en": "spoon",
+"category": "things",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q81895",
+"verified": true
+},
+{
+"id": "ch-Q81881",
+"ar": "شوكة",
+"en": "fork",
+"category": "things",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q81881",
+"verified": true
+},
+{
+"id": "ch-Q376",
+"ar": "ساعة",
+"en": "clock",
+"category": "things",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q376",
+"verified": true
+},
+{
+"id": "ch-Q165447",
+"ar": "قلم",
+"en": "pen",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q165447",
+"verified": true
+},
+{
+"id": "ch-Q571",
+"ar": "كتاب",
+"en": "book",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q571",
+"verified": true
+},
+{
+"id": "ch-Q43013",
+"ar": "دفتر",
+"en": "notebook",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q43013",
+"verified": true
+},
+{
+"id": "ch-Q104555",
+"ar": "مسطرة",
+"en": "ruler",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q104555",
+"verified": true
+},
+{
+"id": "ch-Q171888",
+"ar": "ممحاة",
+"en": "eraser",
+"category": "things",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q171888",
+"verified": true
+},
+{
+"id": "ch-Q235585",
+"ar": "سبورة",
+"en": "blackboard",
+"category": "things",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q235585",
+"verified": true
+},
+{
+"id": "ch-Q3914",
+"ar": "مدرسة",
+"en": "school",
+"category": "things",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q3914",
+"verified": true
+},
+{
+"id": "ch-Q7075",
+"ar": "مكتبة",
+"en": "library",
+"category": "things",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q7075",
+"verified": true
+},
+{
+"id": "ch-Q4006",
+"ar": "خريطة",
+"en": "map",
+"category": "things",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q4006",
+"verified": true
+},
+{
+"id": "ch-Q68",
+"ar": "حاسوب",
+"en": "computer",
+"category": "things",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q68",
+"verified": true
+},
+{
+"id": "ch-Q32815",
+"ar": "مسجد",
+"en": "mosque",
+"category": "places",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q32815",
+"verified": true
+},
+{
+"id": "ch-Q16917",
+"ar": "مستشفى",
+"en": "hospital",
+"category": "places",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q16917",
+"verified": true
+},
+{
+"id": "ch-Q1248784",
+"ar": "مطار",
+"en": "airport",
+"category": "places",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q1248784",
+"verified": true
+},
+{
+"id": "ch-Q37654",
+"ar": "سوق",
+"en": "market",
+"category": "places",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q37654",
+"verified": true
+},
+{
+"id": "ch-Q40080",
+"ar": "شاطئ",
+"en": "beach",
+"category": "places",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q40080",
+"verified": true
+},
+{
+"id": "ch-Q8502",
+"ar": "جبل",
+"en": "mountain",
+"category": "places",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q8502",
+"verified": true
+},
+{
+"id": "ch-Q8514",
+"ar": "صحراء",
+"en": "desert",
+"category": "places",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q8514",
+"verified": true
+},
+{
+"id": "ch-Q4022",
+"ar": "نهر",
+"en": "river",
+"category": "places",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q4022",
+"verified": true
+},
+{
+"id": "ch-Q165",
+"ar": "بحر",
+"en": "sea",
+"category": "places",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q165",
+"verified": true
+},
+{
+"id": "ch-Q23442",
+"ar": "جزيرة",
+"en": "island",
+"category": "places",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q23442",
+"verified": true
+},
+{
+"id": "ch-Q4421",
+"ar": "غابة",
+"en": "forest",
+"category": "places",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q4421",
+"verified": true
+},
+{
+"id": "ch-Q23413",
+"ar": "قلعة",
+"en": "castle",
+"category": "places",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q23413",
+"verified": true
+},
+{
+"id": "ch-Q33506",
+"ar": "متحف",
+"en": "museum",
+"category": "places",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q33506",
+"verified": true
+},
+{
+"id": "ch-Q483110",
+"ar": "ملعب",
+"en": "stadium",
+"category": "places",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q483110",
+"verified": true
+},
+{
+"id": "ch-Q131596",
+"ar": "مزرعة",
+"en": "farm",
+"category": "places",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q131596",
+"verified": true
+},
+{
+"id": "ch-Q11707",
+"ar": "مطعم",
+"en": "restaurant",
+"category": "places",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q11707",
+"verified": true
+},
+{
+"id": "ch-Q22687",
+"ar": "بنك",
+"en": "bank",
+"category": "places",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q22687",
+"verified": true
+},
+{
+"id": "ch-Q525",
+"ar": "شمس",
+"en": "Sun",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q525",
+"verified": true
+},
+{
+"id": "ch-Q405",
+"ar": "قمر",
+"en": "Moon",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q405",
+"verified": true
+},
+{
+"id": "ch-Q523",
+"ar": "نجم",
+"en": "star",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q523",
+"verified": true
+},
+{
+"id": "ch-Q7925",
+"ar": "مطر",
+"en": "rain",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q7925",
+"verified": true
+},
+{
+"id": "ch-Q7561",
+"ar": "ثلج",
+"en": "snow",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q7561",
+"verified": true
+},
+{
+"id": "ch-Q83301",
+"ar": "رعد",
+"en": "thunder",
+"category": "things",
+"difficulty": 1,
+"age": "kids",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q83301",
+"verified": true
+},
+{
+"id": "ch-Q33741",
+"ar": "برق",
+"en": "lightning",
+"category": "things",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q33741",
+"verified": true
+},
+{
+"id": "ch-Q1052",
+"ar": "قوس قزح",
+"en": "rainbow",
+"category": "things",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q1052",
+"verified": true
+},
+{
+"id": "ch-Q8094",
+"ar": "ريح",
+"en": "wind",
+"category": "things",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q8094",
+"verified": true
+},
+{
+"id": "ch-Q23397",
+"ar": "بحيرة",
+"en": "lake",
+"category": "things",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q23397",
+"verified": true
+},
+{
+"id": "ch-Q43742",
+"ar": "واحة",
+"en": "oasis",
+"category": "things",
+"difficulty": 2,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q43742",
+"verified": true
+},
+{
+"id": "ch-Q39816",
+"ar": "وادي",
+"en": "valley",
+"category": "things",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q39816",
+"verified": true
+},
+{
+"id": "ch-Q34038",
+"ar": "شلال",
+"en": "waterfall",
+"category": "things",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q34038",
+"verified": true
+},
+{
+"id": "ch-Q8072",
+"ar": "بركان",
+"en": "volcano",
+"category": "things",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q8072",
+"verified": true
+},
+{
+"id": "ch-Q35509",
+"ar": "كهف",
+"en": "cave",
+"category": "things",
+"difficulty": 3,
+"age": "all",
+"modes": [
+"act",
+"describe"
+],
+"source": "https://www.wikidata.org/wiki/Q35509",
+"verified": true
+}
+]

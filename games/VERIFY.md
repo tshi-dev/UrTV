@@ -31,3 +31,24 @@ Left out on purpose, never asked: Israel and Taiwan (not listed as a country), P
 - **Wrong options** for countries are other real capitals, but a few Arabic transliterations of small capitals are not the only spelling in use.
 - **Rules sheets** (`RULES.md`) rely on rule summaries from search results because the rule sites were not reachable from the build environment; numbers marked [open] or [variant] there are not settled.
 - The owner's three links (two online game shops and a Drive file) could not be opened from this environment, so they are not reflected in the Saudi games study.
+
+## Word and game data (second batch)
+
+Files per game, each with a SPEC.md next to it; all pass `python3 games/check_words.py` (`tests/games_words_test.py`).
+
+| Game | Data | Count | How checked |
+|---|---|---|---|
+| خانات | `khanat/letters.json` | 25 letters, 286 sample answers | Wikidata labels; samples are advisory only (the group decides) |
+| واحد مو معنا | `odd-one/topics.json` | 9 topics, 135 words | hand-written lists; a pair is kept only if one Wikidata item carries exactly this Arabic label (or alias) and this English label |
+| بدون كلام / وصّف | `charades/words.json` | 192 words | same pair check; blocklist for anything not family-safe |
+| الكلمة المفقودة | `missing-word/items.json` | 246 facts, 57 sayings | facts are built from the verified bank; sayings come from `assets/shared/wisdom.json`, which the repo's own tests check (marked `verified: "repo"`, not re-verified against the book by us) |
+| خلية الحروف | `letter-hive/index.json` | 16 letters with 8 or more questions | derived from the verified quiz bank; a 5 by 5 board needs 25 letters, so the board is 4 by 4 until the bank grows |
+| خمّن الكلمة | `word5/answers.json`, `accepted.json` | 118 answers, 2377 accepted words | answers: topic words or curated common words that are also Wikidata Arabic lexemes; accepted: Wikidata Arabic lexemes (noun, verb, adjective) of five letters in the 28-letter alphabet |
+| دومينو | none | | rules only |
+
+Honest limits of this batch:
+- Roughly half of the hand-written words did not match a Wikidata item by exact label and were dropped (for example سيارة, طائرة, جزر, خيار: Wikidata spells or labels them differently). The kept words are real; the lists are shorter than planned (odd-one has 9 topics, not 20).
+- Wikidata lexemes are a partial dictionary (we asked for 20000 entries): the accepted-guesses list is 2377 words, so some valid Arabic words will be refused. A bigger source (a word list with a licence we can use) would help; none was reachable.
+- The word5 answers are family-safe by our choice of topics and a blocklist, but a native reader should skim the lists.
+- Wikipedia (and Wikidata) wording for the sayings deck is the repo's; no new proverbs were added because no reachable page lists Arabic proverbs.
+- بلوت and جاكارو: notes only (`RULES.md`), no spec, by the owner's decision.
