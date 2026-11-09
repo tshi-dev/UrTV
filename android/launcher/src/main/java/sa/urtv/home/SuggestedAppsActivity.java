@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -82,37 +83,56 @@ public class SuggestedAppsActivity extends Activity {
         col.setOrientation(LinearLayout.VERTICAL);
         col.setLayoutDirection(Dir.layout());
         col.setPadding(0, dp(48), 0, dp(48));
-        frame.addView(col, new FrameLayout.LayoutParams(dp(820), -2, Gravity.CENTER_HORIZONTAL));
+        frame.addView(col, new FrameLayout.LayoutParams(dp(1000), -2, Gravity.CENTER_HORIZONTAL));
         col.addView(text(S.t("تطبيقات مقترحة"), 30, "Medium", look.text), lp(dp(10)));
         col.addView(text(S.t("تطبيقات نرشّحها لتلفزيونك. كل تطبيق من مصدره هو، ويسألك أندرويد قبل التثبيت."), 16, "Regular", look.sub), lp(dp(24)));
-        TextView first = null;
-        for (final SuggestedApps.App a : SuggestedApps.forTv(Build.VERSION.SDK_INT)) {
-            // a MIRROR app (UrTV Player) is shown only once a release of it is really there (mirrorRelease): never a button that cannot install
-            boolean hidden = a.kind == SuggestedApps.Kind.MIRROR && !SuggestedApps.mirrorShown(mirrorAnswer(a), System.currentTimeMillis());
-            TextView name = text(a.name, 20, "Medium", look.text), why = text(S.tv(a.why), 15, "Regular", look.sub);
-            col.addView(name, lp(dp(2)));
-            col.addView(why, lp(dp(8)));
-            TextView btn = text("", 17, "Medium", look.text);
-            btn.setFocusable(true);
-            btn.setClickable(true);
-            btn.setPadding(dp(22), dp(10), dp(22), dp(10));
-            GlassPaint.card(btn, look, 14);
-            btn.setOnClickListener(v -> act(a));
-            LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(-2, -2);
-            bp.bottomMargin = dp(22);
-            col.addView(btn, bp);
-            buttons.put(a.id, btn);
-            if (hidden) {
-                for (android.view.View v : new android.view.View[] {name, why, btn}) v.setVisibility(android.view.View.GONE);
-                checkMirror(a, new android.view.View[] {name, why, btn});
-                continue;
+        View first = null;
+        // design/43: tiles in two columns, each the app's icon (its own once installed, else a coloured initial), its name, one line, and its state; the whole tile is the button
+        final java.util.List<SuggestedApps.App> shown = new java.util.ArrayList<>();
+        for (SuggestedApps.App a : SuggestedApps.forTv(Build.VERSION.SDK_INT)) {
+            // a MIRROR app (UrTV Player) gets a tile only once a release of it is really there: never a tile that cannot install
+            if (a.kind == SuggestedApps.Kind.MIRROR && !SuggestedApps.mirrorShown(mirrorAnswer(a), System.currentTimeMillis())) { checkMirror(a); continue; }
+            shown.add(a);
+        }
+        for (int i = 0; i < shown.size(); i += 2) {
+            LinearLayout row = new LinearLayout(this);
+            row.setOrientation(LinearLayout.HORIZONTAL);
+            row.setLayoutDirection(Dir.layout());
+            for (int j = 0; j < 2; j++) {
+                if (i + j >= shown.size()) { row.addView(new View(this), new LinearLayout.LayoutParams(0, 1, 1f)); continue; }
+                final SuggestedApps.App a = shown.get(i + j);
+                LinearLayout tile = new LinearLayout(this);
+                tile.setOrientation(LinearLayout.VERTICAL);
+                tile.setLayoutDirection(Dir.layout());
+                tile.setPadding(dp(16), dp(16), dp(16), dp(16));
+                tile.setFocusable(true);
+                tile.setClickable(true);
+                tile.setOnClickListener(v -> act(a));
+                LinearLayout head = new LinearLayout(this);
+                head.setLayoutDirection(Dir.layout());
+                head.setGravity(Gravity.CENTER_VERTICAL);
+                head.addView(iconFor(a), new LinearLayout.LayoutParams(dp(36), dp(36)));
+                TextView name = text(a.name, 20, "Medium", look.text);
+                LinearLayout.LayoutParams np = new LinearLayout.LayoutParams(0, -2, 1f);
+                np.setMarginStart(dp(12));
+                head.addView(name, np);
+                tile.addView(head, lp(dp(8)));
+                tile.addView(text(S.tv(a.why), 15, "Regular", look.sub), lp(dp(12)));
+                TextView state = text("", 17, "Medium", look.accent);
+                tile.addView(state, lp(0));
+                GlassPaint.card(tile, look, 14);
+                LinearLayout.LayoutParams tp = new LinearLayout.LayoutParams(0, -2, 1f);
+                tp.setMargins(dp(8), dp(8), dp(8), dp(8));
+                row.addView(tile, tp);
+                buttons.put(a.id, state);
+                if (first == null) first = tile;
             }
-            if (first == null) first = btn;
+            col.addView(row, lp(0));
         }
         setContentView(scroll);
         InternalReceivers.register(this, result, new IntentFilter(RESULT));
         refresh();
-        if (first != null) { final TextView f = first; f.post(f::requestFocus); }
+        if (first != null) { final View f = first; f.post(f::requestFocus); }
     }
 
     @Override protected void onResume() { super.onResume(); if (!busy) refresh(); }
@@ -126,7 +146,8 @@ public class SuggestedAppsActivity extends Activity {
         for (SuggestedApps.App a : SuggestedApps.all()) {
             TextView b = buttons.get(a.id);
             if (b == null) continue;
-            b.setText(installed(a.pkg) ? S.t("افتح") : a.kind == SuggestedApps.Kind.STORE ? S.t("افتح المتجر") : S.t("ثبّت"));
+            boolean on = installed(a.pkg);
+            b.setText(on ? "✓ " + S.t("مثبّت") + " · " + S.t("افتح") : a.kind == SuggestedApps.Kind.STORE ? S.t("افتح المتجر") : S.t("ثبّت"));
         }
     }
 
@@ -169,7 +190,7 @@ public class SuggestedAppsActivity extends Activity {
     }
 
     /** Asks GitHub (in the background) whether a valid release is there, at most every SuggestedApps.MIRROR_CHECK_MS; shows the rows when it is. */
-    private void checkMirror(final SuggestedApps.App a, final android.view.View[] rows) {
+    private void checkMirror(final SuggestedApps.App a) {
         final long now = System.currentTimeMillis();
         if (!SuggestedApps.mirrorAskAgain(mirrorAnswer(a), now)) return;
         new Thread(() -> {
@@ -178,7 +199,7 @@ public class SuggestedAppsActivity extends Activity {
             if (json == null) return;   // no answer: asked again next time, nothing kept
             final boolean there = SuggestedApps.pickMirror(a, json) != null;
             getSharedPreferences("suggested", MODE_PRIVATE).edit().putString("mirror_" + a.id, (there ? "1|" : "0|") + now).apply();
-            if (there) runOnUiThread(() -> { for (android.view.View v : rows) v.setVisibility(android.view.View.VISIBLE); refresh(); });
+            if (there) runOnUiThread(() -> { if (!isFinishing() && !isDestroyed()) recreate(); });   // the screen again, now with its tile
         }, "suggested-mirror").start();
     }
 
@@ -301,6 +322,23 @@ public class SuggestedAppsActivity extends Activity {
         } catch (RuntimeException e) {
             try { startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + pkg)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)); }
             catch (RuntimeException ignored) { }
+        }
+    }
+
+    /** the app's own icon when it is on the TV, else a square in a colour of its own with its first letter */
+    private android.view.View iconFor(SuggestedApps.App a) {
+        try {
+            android.widget.ImageView v = new android.widget.ImageView(this);
+            v.setImageDrawable(getPackageManager().getApplicationIcon(a.pkg));
+            return v;
+        } catch (PackageManager.NameNotFoundException e) {
+            TextView t = text(a.name.substring(0, 1), 18, "Medium", 0xFFFFFFFF);
+            t.setGravity(Gravity.CENTER);
+            android.graphics.drawable.GradientDrawable g = new android.graphics.drawable.GradientDrawable();
+            g.setColor(0xFF000000 | (Math.abs(a.id.hashCode()) % 0x808080) + 0x303030);
+            g.setCornerRadius(dp(8));
+            t.setBackground(g);
+            return t;
         }
     }
 

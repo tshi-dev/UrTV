@@ -34,7 +34,7 @@ check("1. only with the automatic update on, and only a downloaded page newer th
       "new Prefs(c).autoUpdate()" in sp and "PageStamp.newer(Updater.fileStamp(f), Updater.assetStamp(c, lang))" in sp and "Updater.pageFile(c, lang)" in sp)
 check("1. the provider is behind its signature read permission", 'android:readPermission="sa.urtv.screensaver.READ_CONFIG"' in man)
 
-check("2. the home card opens HomePage.fresh of the url it chose", "return HomePage.fresh(activity, HomeCardChoice.liveUrl(choice));" in card)
+check("2. the home card opens HomePage.fresh of the url it chose", "return withGlass(HomePage.fresh(activity, HomeCardChoice.liveUrl(choice)));" in card)
 cp = page.split("private static File copy(")[1]
 check("2. newer than the launcher's own page by build stamp, else its own (and old copies go)",
       'PageStamp.read(c.getAssets().open("web/" + name))' in cp and "if (!PageStamp.newer(theirs, own)) { clean(dir, prefix, null); return null; }" in cp)

@@ -126,7 +126,9 @@ final class HomeCard {
     View footballTarget(String key) { return footballFocus == null ? null : footballFocus.target(key); }
 
     /** The home's look changed: the widgets' glass follows (the cards keep theirs). */
-    void light(boolean on) { if (footballFocus != null) footballFocus.light(on); }
+    void light(boolean on) { lightNow = on; if (footballFocus != null) footballFocus.light(on); }
+
+    private volatile boolean lightNow;
 
     /** The focus target over the «المهام» card, or null when it is not among the cards. */
     View live() { return target; }
@@ -255,12 +257,29 @@ final class HomeCard {
         // before this app): keep the last cards chosen, «بدون» included. Only with nothing remembered, the prayers.
         String[] choice = HomeCardChoice.pick(frag, panel, sp.getString("frag", null), sp.getString("panel", null));
         football = "football".equals(layout) && footballHost != null && choice != null;
-        if (football) { cards = 0; tasks = false; stocks = false; stocksFirst = false; return HomePage.fresh(activity, HomeCardChoice.footballUrl(choice)); }
+        if (football) { cards = 0; tasks = false; stocks = false; stocksFirst = false; return withGlass(HomePage.fresh(activity, HomeCardChoice.footballUrl(choice))); }
         cards = HomeCardChoice.count(choice);
         tasks = HomeCardChoice.hasTasks(choice);
         stocks = HomeCardChoice.hasStocks(choice);
         stocksFirst = HomeCardChoice.stocksFirst(choice);
-        return HomePage.fresh(activity, HomeCardChoice.liveUrl(choice));   // the screensaver's newer page when it has one
+        return withGlass(HomePage.fresh(activity, HomeCardChoice.liveUrl(choice)));   // the screensaver's newer page when it has one
+    }
+
+    /**
+     * design/43: the cards wear the apps tray's glass: its fill and line (FavBar's, as thin as «شفافية الشريط» makes the tray), so the stocks, the prayers, the games and the tasks are one
+     * family with the tray in every look. The page reads them as #hpanel= and #hline= (CSS html.hcard); in the light look the tray is white and the cards' words are light, so there
+     * they take a neutral dark glass instead, never a tint of their own.
+     */
+    private String withGlass(String u) {
+        if (u == null || !u.contains("#")) return u;
+        int pct = GlassStyle.barPercent();
+        int fill = lightNow ? 0xA014161A : FavBar.FILL_DARK, line = lightNow ? 0x33FFFFFF : FavBar.LINE_DARK;
+        return u + "&hpanel=" + rgba(fill, pct) + "&hline=" + rgba(line, pct);
+    }
+
+    private static String rgba(int argb, int pct) {
+        float a = (argb >>> 24) / 255f * pct / 100f;
+        return String.format(java.util.Locale.US, "rgba(%d,%d,%d,%.3f)", (argb >> 16) & 255, (argb >> 8) & 255, argb & 255, a);
     }
 
     @SuppressLint("SetJavaScriptEnabled")

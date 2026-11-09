@@ -117,6 +117,8 @@ public class MainActivity extends Activity {
     private View scrim;
     private GradientDrawable dockBand;
     private View wallDimView;
+    private PillBar pillBar;
+    private boolean barHeld;   // the debug picture of the open row (extra bar=open): it stays open
     private final List<TextView> gridLabels = new ArrayList<>();
     private String lookNow = GlassStyle.LOOKS[0];   // «المظهر ← الشكل» as the minute tick last read it (the glass of the home's own pieces)
     private boolean lightNow;   // the look on screen now: dark until a light one is asked for
@@ -213,6 +215,12 @@ public class MainActivity extends Activity {
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         setContentView(buildUi());
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((was, now) -> placeName());   // FavBar: the name only in the bar
+        getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((was, now) -> {   // design/43: the top row opens while the focus is in it, and closes after
+            if (pillBar == null || barHeld) return;
+            View v = now;
+            while (v != null && v != pillBar && v.getParent() instanceof View) v = (View) v.getParent();
+            pillBar.focusInside(v == pillBar);
+        });
         // started by the screensaver's «الأذان» row; not again after a restore (the system hands back the same intent)
         if (b == null && (getIntent().getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) == 0) {
             openRequested(getIntent());
@@ -269,6 +277,7 @@ public class MainActivity extends Activity {
         View last = lastFocusedId == View.NO_ID ? null : findViewById(lastFocusedId);
         if (last == null && !dockCards.isEmpty()) last = dockCards.get(0);
         if (last != null) last.requestFocus();
+        if ("open".equals(getIntent().getStringExtra("bar")) && pillBar != null) { barHeld = true; pillBar.focusInside(true); }   // a picture of the open row (DebugBarShot); nothing else sets it
         updateHomeNudge(true);   // not the TV's Home yet: one card says so, and OK opens «إعداد تلفزيوني»
         // Catch installs/removals that happened while another app was in front.
         if (getPackageManager().getChangedPackages(packageSeq) != null) buildApps();
@@ -640,7 +649,8 @@ public class MainActivity extends Activity {
         header.addView(left, new FrameLayout.LayoutParams(-2, -2, Dir.start() | Gravity.TOP));
         clockBlock = left;
 
-        LinearLayout right = new LinearLayout(this);
+        final PillBar right = new PillBar(this);   // the top row: one bar behind its buttons (design/43)
+        pillBar = right;
         right.setGravity(Gravity.CENTER_VERTICAL);
         right.setClipChildren(false);
         Pill inputs = pill(S.t("المصادر"), R.drawable.ic_input);
@@ -706,7 +716,10 @@ public class MainActivity extends Activity {
         netIcon.setImageResource(R.drawable.ic_wifi);
         netIcon.setContentDescription(S.t("الاتصال بالشبكة"));
         netIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        right.addView(netIcon, sideLlp(dp(22), dp(Pill.HEIGHT), 0, 0, 0, 0));
+        netIcon.setPadding(dp(7), dp(7), dp(7), dp(7));   // the same square as a button (30 dp, a 16 dp icon), on the same bar: no longer bare at the end of the row
+        right.addView(netIcon, sideLlp(dp(Pill.HEIGHT), dp(Pill.HEIGHT), 0, 0, 0, 0));
+        right.member(netIcon);
+        right.mains(centerPill, phonePill);   // the row is closed to these and the network status until the focus comes in
         header.addView(right, new FrameLayout.LayoutParams(-2, -2, Dir.end() | Gravity.TOP));
         return header;
     }
@@ -2818,6 +2831,7 @@ public class MainActivity extends Activity {
         applyLook(Look.light(cfg.appearance(), dayBySun(cfg), h * 60 + now.get(Calendar.MINUTE)));
         GlassStyle.Look glassNow = homeGlass();
         for (Pill p : new Pill[] {inputsPill, tasksPill, tilawahPill, centerPill, marketsPill, matchesPill, phonePill, updatePill, bellPill}) if (p != null) p.look(glassNow);   // «رملي»: its own buttons
+        if (pillBar != null) pillBar.look(glassNow);
         for (View v : pills) if (v instanceof Pill) ((Pill) v).look(glassNow);   // and every pill of the row, whatever else is added to it: six buttons, one style (step 28: two stayed grey circles)
         boolean h24 = cfg.clock24();   // «ساعة ٢٤»: off (12-hour with the ص or م) unless the owner turned it on
         clock.setText(ClockText.face(h, now.get(Calendar.MINUTE), h24, Digits.latin()));

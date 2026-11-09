@@ -23,10 +23,11 @@ check("saver.sh homelayout: refused unless classic or football, saved, and said 
       'return "error: homelayout is one of "' in recv and "if (homeLayout != null) p.setHomeLayout(homeLayout);" in recv
       and '"\\nhomelayout: " + p.homeLayout()' in recv and 'homelayout) set1 homelayout "${2:?usage: optimize/saver.sh homelayout classic|football}" ;;' in read(ROOT / "optimize/saver.sh"))
 check("the home reads it as a column of its own after the others (an older screensaver has none: classic)",
-      '"watch_next", "look", "home_layout", "fav_bar", "pages_dark", "pills_hidden"});' in prov and "p.look(), p.homeLayout(), p.favBar(), p.pagesDark()" in prov
+      '"watch_next", "look", "home_layout", "fav_bar", "pages_dark", "pills_hidden", "look_tweaks"});' in prov and "p.look(), p.homeLayout(), p.favBar(), p.pagesDark()" in prov
       and 'layout = l >= 0 && c.getString(l) != null ? c.getString(l) : "classic";' in read(HOME / "HomeCard.java"))
-check("on the TV: «المظهر» has a third choice, «الواجهة», and «المباريات والأسواق» a row that opens the page of the games",
-      '"الواجهة: " + Prefs.homeLayoutLabel(prefs.homeLayout())' in st and "if (i == 2) pickHomeLayout();" in st
+appr = read(ROOT / "android/app/src/main/java/sa/urtv/screensaver/AppearanceActivity.java")
+check("on the TV: «المظهر» (its one page, since design/43) has the «الواجهة» choice, and «المباريات والأسواق» a row that opens the page of the games",
+      'w("الواجهة")' in appr and "prefs.setHomeLayout(key)" in appr
       and 'row("مباريات اليوم", "الأيام والدوريات، وفرقك أولاً"' in st and 'setClassName("sa.urtv.home", "sa.urtv.home.MatchesActivity")' in st)
 check("SETTINGS.md names the command", "`optimize/saver.sh homelayout football`" in read(ROOT / "docs/SETTINGS.md"))
 check("«تابع» goes through the screensaver's provider, the launcher's own permission, the same list as «الفرق المتابعة»",
@@ -36,7 +37,7 @@ check("«تابع» goes through the screensaver's provider, the launcher's own 
 card, main, ff, ma = read(HOME / "HomeCard.java"), read(HOME / "MainActivity.java"), read(HOME / "FootballFocus.java"), read(HOME / "MatchesActivity.java")
 check("HomeCard: football only when the setting says so (and something is known), its page instead of the cards",
       'football = "football".equals(layout) && footballHost != null && choice != null;' in card
-      and "return HomePage.fresh(activity, HomeCardChoice.footballUrl(choice));" in card)
+      and "return withGlass(HomePage.fresh(activity, HomeCardChoice.footballUrl(choice)));" in card)
 check("HomeCard: the widgets' box is the screen's width from its top, 832 high at 1080p, and the cards' own place comes back without them",
       "params.width = dm.widthPixels;" in card and "FootballFocus.HEIGHT_1080 * dm.heightPixels / 1080f" in card and "static final int HEIGHT_1080 = 832;" in ff
       and "params.gravity = gravity0; params.leftMargin = left0; params.topMargin = top0; params.rightMargin = right0;" in card)

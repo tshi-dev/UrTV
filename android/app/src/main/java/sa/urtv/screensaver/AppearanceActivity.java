@@ -3,6 +3,7 @@ package sa.urtv.screensaver;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
@@ -10,12 +11,15 @@ import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -72,48 +76,197 @@ public class AppearanceActivity extends Activity {
 
     // ---- drawing ----
 
+    /** null: the page of six categories; else the one open (look, accent, light, cards, wall, density) */
+    private String sub;
+    private static final String[][] CATS = {{"look", "الشكل"}, {"accent", "اللون"}, {"light", "الإضاءة"}, {"cards", "البطاقات"}, {"wall", "الخلفية والصور"}, {"density", "الحجم والكثافة"}};
+
+    @Override public void onBackPressed() {
+        if (sub != null) { String was = sub; sub = null; render(); View t = col.findViewWithTag("cat:" + was); if (t != null) t.requestFocus(); }
+        else super.onBackPressed();
+    }
+
     private void render() {
         View focused = getCurrentFocus();
         Object want = focused == null ? null : focused.getTag();
         col.removeAllViews();
-        col.addView(text(w("المظهر والخلفيات"), 28, "Medium", look.text), line(dp(8)));
-        col.addView(text(w("شكل شاشة التوقف وشكل الشاشة الرئيسية وصورهما، كلٌّ على حدة."), 16, "Regular", look.sub), line(dp(24)));
-
-        // ---- the screensaver
-        col.addView(text(w("شاشة التوقف"), 22, "Medium", look.text), line(dp(8)));
-        col.addView(text(w("شكل البطاقات"), 16, "Regular", look.sub), line(dp(8)));
-        LinearLayout styles = tiles();
-        for (String[] c : Prefs.CARD_STYLES) {
-            final String key = c[0];
-            styles.addView(tile("style:" + key, new Mock(Mock.CARD, key, GlassStyle.of(prefs.look(), false)), w(c[1]), key.equals(prefs.cardStyle()), v -> { prefs.setCardStyle(key); render(); }), tileParams());
-        }
-        col.addView(styles, line(dp(16)));
-        col.addView(text(w("الصور"), 16, "Regular", look.sub), line(dp(8)));
-        col.addView(photosRow(), line(dp(32)));
-
-        // ---- the home
-        col.addView(text(w("الشاشة الرئيسية"), 22, "Medium", look.text), line(dp(8)));
-        col.addView(text(w("الشكل"), 16, "Regular", look.sub), line(dp(8)));
-        LinearLayout looks = tiles();
-        boolean light = "light".equals(prefs.appearance());
-        for (int i = 0; i < GlassStyle.LOOKS.length; i++) {
-            final String key = GlassStyle.LOOKS[i];
-            looks.addView(tile("look:" + key, new Mock(Mock.HOME, key, GlassStyle.of(key, light)), w(GlassStyle.LOOK_NAMES[i]), key.equals(prefs.look()), v -> { prefs.setLook(key); render(); }), tileParams());
-        }
-        col.addView(looks, line(dp(16)));
-        col.addView(text(w("الإضاءة"), 16, "Regular", look.sub), line(dp(8)));
-        LinearLayout lights = tiles();
-        for (final String a : Prefs.APPEARANCES) {
-            lights.addView(tile("light:" + a, new Mock(Mock.HOME, prefs.look(), GlassStyle.of(prefs.look(), "light".equals(a)), "auto".equals(a) ? GlassStyle.of(prefs.look(), true) : null), w(shortLight(a)), a.equals(prefs.appearance()), v -> { prefs.setAppearance(a); render(); }), tileParams());
-        }
-        col.addView(lights, line(dp(16)));
-        col.addView(text(w("الصور في الشاشة الرئيسية"), 16, "Regular", look.sub), line(dp(8)));
-        col.addView(homePhotosRow(), line(dp(16)));
-
-        View back = button(w("رجوع"), v -> finish());
+        if (sub == null) renderMain(); else renderSub();
+        View back = button(w("رجوع"), v -> onBackPressed());
         back.setTag("back");
         col.addView(back, line(dp(8)));
         restoreFocus(want);
+    }
+
+    /** «المظهر»: one place for the look of both apps; each category is a tile with a picture of what is chosen now */
+    private void renderMain() {
+        col.addView(text(w("المظهر"), 28, "Medium", look.text), line(dp(8)));
+        col.addView(text(w("كل ما يخص شكل التلفزيون في مكان واحد، وكل خيار يظهر قبل أن تختاره."), 16, "Regular", look.sub), line(dp(24)));
+        boolean light = "light".equals(prefs.appearance());
+        List<View> cells = new ArrayList<>();
+        for (final String[] c : CATS) {
+            Mock m; String value;
+            switch (c[0]) {
+                case "look": m = new Mock(Mock.HOME, prefs.look(), GlassStyle.of(prefs.look(), light)); value = Prefs.lookLabel(prefs.look()); break;
+                case "accent": m = new Mock(Mock.DOTS, "all", look); value = prefs.accent().isEmpty() ? w("حسب الشكل") : accentName(prefs.accent()); break;
+                case "light": m = new Mock(Mock.HOME, prefs.look(), GlassStyle.of(prefs.look(), false), GlassStyle.of(prefs.look(), true)); value = Prefs.appearanceLabel(prefs.appearance()); break;
+                case "cards": m = new Mock(Mock.CARD, prefs.cardStyle(), GlassStyle.of(prefs.look(), false)); value = w(cardStyleName()); break;
+                case "wall": m = new Mock(Mock.PHOTOS, "own", look); value = w("تعتيم الخلفية") + " " + prefs.wallDim() + "٪"; break;
+                default: m = new Mock(Mock.BARS, prefs.favBar(), look); value = Prefs.favBarLabel(prefs.favBar()); break;
+            }
+            cells.add(category("cat:" + c[0], m, w(c[1]), conv(value), v -> { sub = c[0]; render(); }));
+        }
+        grid(cells, 3);
+    }
+
+    private String cardStyleName() { for (String[] c : Prefs.CARD_STYLES) if (c[0].equals(prefs.cardStyle())) return c[1]; return Prefs.CARD_STYLES[0][1]; }
+
+    private String accentName(String key) { for (String[] a : GlassStyle.ACCENTS) if (a[0].equals(key)) return w(a[1]); return ""; }
+
+    private void renderSub() {
+        String title = "";
+        for (String[] c : CATS) if (c[0].equals(sub)) title = c[1];
+        col.addView(text(w("المظهر") + " ‹ " + w(title), 28, "Medium", look.text), line(dp(24)));
+        boolean light = "light".equals(prefs.appearance());
+        List<View> cells = new ArrayList<>();
+        switch (sub) {
+            case "look": {
+                for (int i = 0; i < GlassStyle.LOOKS.length; i++) {
+                    final String key = GlassStyle.LOOKS[i];
+                    cells.add(tile("look:" + key, new Mock(Mock.HOME, key, GlassStyle.of(key, light)), w(GlassStyle.LOOK_NAMES[i]) + (i == 0 ? " · " + w("الافتراضي") : ""), key.equals(prefs.look()), v -> { prefs.setLook(key); render(); }));
+                }
+                grid(cells, 5);
+                col.addView(text(w("الواجهة"), 16, "Regular", look.sub), line(dp(8)));
+                List<View> layouts = new ArrayList<>();
+                for (int i = 0; i < Prefs.HOME_LAYOUTS.length; i++) {
+                    final String key = Prefs.HOME_LAYOUTS[i];
+                    layouts.add(tile("layout:" + key, new Mock(Mock.HOME, prefs.look(), GlassStyle.of(prefs.look(), light)), w(Prefs.HOME_LAYOUT_NAMES[i]), key.equals(prefs.homeLayout()), v -> { prefs.setHomeLayout(key); render(); }));
+                }
+                grid(layouts, 5);
+                break;
+            }
+            case "accent": {
+                cells.add(tile("accent:", new Mock(Mock.DOTS, "all", look), w("حسب الشكل"), prefs.accent().isEmpty(), v -> { prefs.setAccent(""); render(); }));
+                for (final String[] a : GlassStyle.ACCENTS) cells.add(tile("accent:" + a[0], new Mock(Mock.DOTS, a[2], look), w(a[1]), a[0].equals(prefs.accent()), v -> { prefs.setAccent(a[0]); render(); }));
+                grid(cells, 5);
+                break;
+            }
+            case "light": {
+                for (final String a : Prefs.APPEARANCES) {
+                    cells.add(tile("light:" + a, new Mock(Mock.HOME, prefs.look(), GlassStyle.of(prefs.look(), "light".equals(a)), "auto".equals(a) ? GlassStyle.of(prefs.look(), true) : null), w(shortLight(a)), a.equals(prefs.appearance()), v -> { prefs.setAppearance(a); render(); }));
+                }
+                grid(cells, 3);
+                break;
+            }
+            case "cards": {
+                col.addView(text(w("شكل البطاقات"), 16, "Regular", look.sub), line(dp(8)));
+                for (String[] c : Prefs.CARD_STYLES) {
+                    final String key = c[0];
+                    cells.add(tile("style:" + key, new Mock(Mock.CARD, key, GlassStyle.of(prefs.look(), false)), w(c[1]), key.equals(prefs.cardStyle()), v -> { prefs.setCardStyle(key); render(); }));
+                }
+                grid(cells, 4);
+                col.addView(text(w("بطاقات الشاشة الرئيسية وشريطها من لون الشكل نفسه، فتتناسق في كل شكل."), 16, "Regular", look.sub), line(dp(8)));
+                break;
+            }
+            case "wall": {
+                col.addView(text(w("شاشة التوقف"), 16, "Regular", look.sub), line(dp(8)));
+                col.addView(photosRow(), line(dp(16)));
+                col.addView(text(w("الصور في الشاشة الرئيسية"), 16, "Regular", look.sub), line(dp(8)));
+                col.addView(homePhotosRow(), line(dp(16)));
+                col.addView(stepper("dim", w("تعتيم الخلفية"), prefs.wallDim(), 0, 90, 10, v -> { prefs.setWallDim(v); render(); }), line(dp(16)));
+                break;
+            }
+            default: {
+                col.addView(text(w("تطبيقات في الشريط"), 16, "Regular", look.sub), line(dp(8)));
+                for (final String n : Prefs.FAV_BARS) cells.add(tile("fav:" + n, new Mock(Mock.BARS, n, look), conv(Prefs.favBarLabel(n)), n.equals(prefs.favBar()), v -> { prefs.setFavBar(n); render(); }));
+                grid(cells, 5);
+                col.addView(stepper("bar", w("شفافية الشريط"), prefs.barPercent(), 30, 100, 10, v -> { prefs.setBarPercent(v); render(); }), line(dp(16)));
+                col.addView(text(w("شكل التركيز"), 16, "Regular", look.sub), line(dp(8)));
+                List<View> fs = new ArrayList<>();
+                String[] names = {"ممتلئ", "إطار", "توهّج"};
+                for (int i = 0; i < GlassStyle.FOCUS_STYLES.length; i++) {
+                    final String key = GlassStyle.FOCUS_STYLES[i];
+                    fs.add(tile("focus:" + key, new Mock(Mock.FOCUS, key, look), w(names[i]), key.equals(prefs.focusStyle()), v -> { prefs.setFocusStyle(key); render(); }));
+                }
+                grid(fs, 3);
+                break;
+            }
+        }
+    }
+
+    /** a left-right control: ◀ less, ▶ more, in steps; the value is shown with its bar */
+    private View stepper(String tag, String name, final int value, final int min, final int max, final int step, final IntChange change) {
+        LinearLayout t = new LinearLayout(this);
+        t.setOrientation(LinearLayout.VERTICAL);
+        t.setLayoutDirection(Dir.layout());
+        t.setPadding(dp(16), dp(12), dp(16), dp(12));
+        t.setFocusable(true);
+        t.setClickable(true);
+        t.setTag("step:" + tag);
+        LinearLayout head = new LinearLayout(this);
+        head.setLayoutDirection(Dir.layout());
+        TextView n = text(name, 18, "Medium", look.text);
+        head.addView(n, new LinearLayout.LayoutParams(0, -2, 1f));
+        head.addView(text(conv(String.valueOf(value)) + "٪", 18, "Medium", look.accent), new LinearLayout.LayoutParams(-2, -2));
+        t.addView(head, new LinearLayout.LayoutParams(-1, -2));
+        final float frac = (value - min) / (float) (max - min);
+        View bar = new View(this) {
+            private final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+            @Override protected void onDraw(Canvas c) {
+                float w = getWidth(), h = getHeight(), r = h / 2;
+                p.setColor(look.line);
+                c.drawRoundRect(new RectF(0, 0, w, h), r, r, p);
+                p.setColor(look.accent);
+                boolean rtl = Dir.rtl();
+                float fill = w * frac;
+                c.drawRoundRect(rtl ? new RectF(w - fill, 0, w, h) : new RectF(0, 0, fill, h), r, r, p);
+            }
+        };
+        LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(-1, dp(8));
+        bp.topMargin = dp(8);
+        t.addView(bar, bp);
+        t.setOnKeyListener((v, code, ev) -> {
+            if (ev.getAction() != android.view.KeyEvent.ACTION_DOWN) return false;
+            boolean left = code == android.view.KeyEvent.KEYCODE_DPAD_LEFT, right = code == android.view.KeyEvent.KEYCODE_DPAD_RIGHT;
+            if (!left && !right) return false;
+            boolean more = Dir.rtl() ? left : right;   // in Arabic the bar fills toward the left
+            change.to(Math.max(min, Math.min(max, value + (more ? step : -step))));
+            return true;
+        });
+        GlassPaint.card(t, look, 14);
+        return t;
+    }
+
+    private interface IntChange { void to(int v); }
+
+    /** the tiles of one choice in rows of {@code per}; the first tile carries the tag "first" for the focus when the screen opens */
+    private void grid(List<View> cells, int per) {
+        for (int i = 0; i < cells.size(); i += per) {
+            LinearLayout row = tiles();
+            for (int j = 0; j < per; j++) {
+                if (i + j < cells.size()) row.addView(cells.get(i + j), tileParams());
+                else row.addView(new View(this), tileParams());
+            }
+            col.addView(row, line(dp(8)));
+        }
+    }
+
+    /** a big tile of the main page: the picture of what is chosen, the category and its value */
+    private View category(String tag, Mock mock, String name, String value, View.OnClickListener click) {
+        LinearLayout t = new LinearLayout(this);
+        t.setOrientation(LinearLayout.VERTICAL);
+        t.setLayoutDirection(Dir.layout());
+        t.setPadding(dp(16), dp(16), dp(16), dp(16));
+        t.setFocusable(true);
+        t.setClickable(true);
+        t.setTag(tag);
+        t.setOnClickListener(click);
+        t.addView(mock, new LinearLayout.LayoutParams(-1, dp(104)));
+        TextView n = text(name, 20, "Medium", look.text);
+        LinearLayout.LayoutParams np = new LinearLayout.LayoutParams(-1, -2);
+        np.topMargin = dp(8);
+        t.addView(n, np);
+        t.addView(text(value, 16, "Regular", look.sub), new LinearLayout.LayoutParams(-1, -2));
+        GlassPaint.card(t, look, 14);
+        return t;
     }
 
     private static String shortLight(String a) { return "light".equals(a) ? "فاتح" : "auto".equals(a) ? "تلقائي" : "داكن"; }
@@ -216,9 +369,18 @@ public class AppearanceActivity extends Activity {
         return t;
     }
 
+    private static View firstFocusable(ViewGroup g) {
+        for (int i = 0; i < g.getChildCount(); i++) {
+            View v = g.getChildAt(i);
+            if (v.isFocusable() && v.getTag() != null && !"back".equals(v.getTag())) return v;
+            if (v instanceof ViewGroup) { View f = firstFocusable((ViewGroup) v); if (f != null) return f; }
+        }
+        return null;
+    }
+
     private void restoreFocus(Object tag) {
         View target = tag == null ? null : col.findViewWithTag(tag);
-        if (target == null) target = col.findViewWithTag("style:" + prefs.cardStyle());
+        if (target == null) target = firstFocusable(col);
         if (target != null) target.requestFocus();
     }
 
@@ -227,7 +389,7 @@ public class AppearanceActivity extends Activity {
      * screensaver's card in that style over a dark photo; PHOTOS is a stack of photo frames (a different tint for each source).
      */
     private final class Mock extends View {
-        static final int HOME = 0, CARD = 1, PHOTOS = 2;
+        static final int HOME = 0, CARD = 1, PHOTOS = 2, DOTS = 3, BARS = 4, FOCUS = 5;
         private final int kind;
         private final String key;
         private final GlassStyle.Look l;
@@ -298,6 +460,31 @@ public class AppearanceActivity extends Activity {
                 c.drawRoundRect(new RectF(card.left + dp(12), card.top + dp(12), card.left + dp(60), card.top + dp(20)), dp(3), dp(3), paint);
                 paint.setColor(0x99F6EFE0);
                 c.drawRoundRect(new RectF(card.left + dp(12), card.top + dp(28), card.right - dp(12), card.top + dp(34)), dp(3), dp(3), paint);
+            } else if (kind == DOTS) {   // the accents: all eight in a row, or the one colour
+                int n = "all".equals(key) ? GlassStyle.ACCENTS.length : 1;
+                float d = Math.min(dp(22), (w - dp(16)) / (n * 1.4f));
+                for (int i = 0; i < n; i++) {
+                    paint.setColor("all".equals(key) ? Color.parseColor(GlassStyle.ACCENTS[i][2]) : key.startsWith("#") ? Color.parseColor(key) : look.accent);
+                    float cx = w / 2 + (i - (n - 1) / 2f) * d * 1.4f;
+                    c.drawRoundRect(new RectF(cx - d / 2, h / 2 - d / 2, cx + d / 2, h / 2 + d / 2), dp(6), dp(6), paint);
+                }
+            } else if (kind == BARS) {   // the tray: as many tiles as the choice shows
+                int n = "all".equals(key) ? 9 : Math.max(1, Integer.parseInt(key));
+                paint.setColor(GlassStyle.over(l.panel, l.base));
+                c.drawRoundRect(new RectF(dp(8), h * 0.3f, w - dp(8), h * 0.8f), dp(8), dp(8), paint);
+                float tw = (w - dp(32)) / n;
+                for (int i = 0; i < n; i++) {
+                    paint.setColor(i == n / 2 ? l.focus : GlassStyle.over(l.dialog, l.base));
+                    c.drawRoundRect(new RectF(dp(16) + i * tw + dp(1), h * 0.36f, dp(16) + (i + 1) * tw - dp(1), h * 0.74f), dp(3), dp(3), paint);
+                }
+            } else if (kind == FOCUS) {   // one tile with the focus line in its style
+                paint.setColor(l.focus);
+                RectF tile = new RectF(w * 0.25f, h * 0.2f, w * 0.75f, h * 0.8f);
+                c.drawRoundRect(tile, dp(10), dp(10), paint);
+                paint.setStyle(Paint.Style.STROKE);
+                if ("frame".equals(key)) { paint.setStrokeWidth(dp(4)); paint.setColor(l.accent); c.drawRoundRect(tile, dp(10), dp(10), paint); }
+                else if ("glow".equals(key)) { paint.setStrokeWidth(dp(8)); paint.setColor((l.accent & 0x00FFFFFF) | 0x66000000); c.drawRoundRect(tile, dp(10), dp(10), paint); }
+                paint.setStyle(Paint.Style.FILL);
             } else {
                 int[] tints = {0xFF2B4A3B, 0xFF3B3A4F, 0xFF4F3F2B};
                 for (int i = 2; i >= 0; i--) {   // frames, the nearest in front

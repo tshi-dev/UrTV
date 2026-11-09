@@ -61,15 +61,26 @@ TV Bro و SmartTube مثبّتان من قبل: نتركهما.	TV Bro and Smart
 جهّز كل شي	Set everything up
 هذا ما سنفعله في تلفزيونك، بالترتيب. ما تغيّر شيء بعد:	This is what we will do on your TV, in order. Nothing has changed yet:
 ابدأ	Start
-نرجّع التلفزيون كما كان:	Putting the TV back as it was:
-الإعداد يعمل. لا تطفئ التلفزيون، وقد يُعاد تشغيله وحده ويكمل.	The setup is running. Do not turn the TV off; it may restart by itself and carry on.
 جارٍ الرجوع…	Undoing…
 جارٍ الإعداد… لا تطفئ التلفزيون.	Setting up… do not turn the TV off.
 خطوة منك قبل الشاشة الرئيسية	A step from you before the home screen
 كمّل	Continue
-(تُرك)	(skipped)
 الإعداد يعمل… لا تطفئ التلفزيون.	Setting up… do not turn the TV off.
-%s من %s	%s of %s
 سيعيد التلفزيون التشغيل الآن، وسيكمل بنفسه.	The TV will restart now and carry on by itself.
 تطبيقات مقترحة: علّم ما تبي نثبّته معها	Suggested apps: tick the ones to install too
 مثبّت من قبل: نتركه	already installed: left as it is
+%s تطبيقات مختارة	%s apps chosen
+فحص	Check
+تجهيز	Prepare
+تثبيت	Install
+تفعيل	Activate
+تقرير	Report
+مرّ %s	Elapsed %s
+استغرق %s	Took %s
+%s من %s خطوة	%s of %s steps
+السماح بتصحيح USB؟	Allow USB debugging?
+السماح دائماً	Always allow
+اضغط «اختيار» بالريموت على «السماح دائماً»	Press Select on the remote on “Always allow”
+نجهّز تلفزيونك	Setting up your TV
+نرجّع التلفزيون كما كان	Putting your TV back as it was
+اختيار	OK

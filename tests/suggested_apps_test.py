@@ -39,13 +39,14 @@ check("UrTV Player in the screen: the newest «player-» release, its published 
       and act.index("SuggestedApps.mirrorFileOk(a, sha, published") < act.split("private String mirror(")[1].index("commit(f, a.pkg);") + act.index("private String mirror(")
       and "GET_SIGNING_CERTIFICATES" in act and 'PLAYER_CERT = "13ade7d009a07f5ba5bab0b7734bd449df10dd47b53868dfa28e44cd8069dfea";' in cat)
 check("the Player's rows stay hidden until a valid release is seen (checked in the background, kept for 6 hours): never a button that cannot install",
-      "boolean hidden = a.kind == SuggestedApps.Kind.MIRROR && !SuggestedApps.mirrorShown(mirrorAnswer(a), System.currentTimeMillis());" in act
-      and "v.setVisibility(android.view.View.GONE)" in act and "SuggestedApps.mirrorAskAgain(mirrorAnswer(a), now)" in act
+      "if (a.kind == SuggestedApps.Kind.MIRROR && !SuggestedApps.mirrorShown(mirrorAnswer(a), System.currentTimeMillis())) { checkMirror(a); continue; }" in act
+      and "recreate();" in act and "SuggestedApps.mirrorAskAgain(mirrorAnswer(a), now)" in act
       and "final boolean there = SuggestedApps.pickMirror(a, json) != null;" in act and "if (json == null) return;" in act)
 check("the setup installs from the same catalog: GitHub releases only, a Play Store app never", "SuggestedApps.githubOk(a, url)" in inst and "if (a == null || !a.inSetup()) continue;" in inst)
 act_setup = (HOME / "setup/SetupActivity.java").read_text(encoding="utf-8")
-check("the setup's boxes: one per suggested app, the on/off look of the screen's other rows (paintLang), OK ticks or unticks, one already on the TV left",
-      "SuggestedApps.forSetup(android.os.Build.VERSION.SDK_INT)" in act_setup and "paintLang(box, picks.contains(a.id), box.hasFocus());" in act_setup
+check("the setup's rows (design/43): one per suggested app with a tick box in the accent, the look's focus fill on the row, OK ticks or unticks, one already on the TV left, the count of those chosen under them",
+      "SuggestedApps.forSetup(android.os.Build.VERSION.SDK_INT)" in act_setup and "if (!picks.remove(a.id)) picks.add(a.id);" in act_setup and "new TickBox(on, look.accent" in act_setup and "final TextView row = button(" in act_setup
+      and 'S.t("%s تطبيقات مختارة"' in act_setup
       and 'S.t("مثبّت من قبل: نتركه")' in act_setup and "☑" not in act_setup)
 rows = re.findall(r'\{"([^"]+)", (TVBRO|SMARTTUBE), "([^"]+)"\}', inst)
 check("SmartTube and TV Bro: the same repositories and file patterns as the setup's (install.sh's)",

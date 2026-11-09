@@ -51,4 +51,12 @@ for which in before after; do
     done
   done
 done
-saver --es look glass --es lang ar
+# the redesigned setup (design/43) in the glass look, dark and light, Arabic: every state, including the USB prompt card (prompt) and its 20 s notice (promptlate); this branch only (master has no such states)
+for appearance in dark light; do
+  saver --es look glass --es lang ar --es appearance "$appearance"
+  sleep 2
+  for state in start plan progress restart prompt promptlate done; do
+    shoot "after-setup-glass-$appearance-ar-$state" sa.urtv.home/.setup.DebugSetupShot sa.urtv.home/.setup.SetupActivity "$state"
+  done
+done
+saver --es look glass --es lang ar --es appearance dark
