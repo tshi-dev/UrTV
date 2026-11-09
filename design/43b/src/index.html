@@ -1,0 +1,7 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>design 43b</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}html,body{width:1920px;height:1080px;overflow:hidden;background:#000}
+body{font-family:'Thmanyah Sans','Thmanyah','Noto Sans Arabic','DejaVu Sans',system-ui,sans-serif;direction:rtl;color:#fff}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden}</style></head>
+<body><div id="stage"></div>
+<script src="lib.js"></script><script src="looks.js"></script><script src="games.js"></script><script src="studies.js"></script><script src="screens.js"></script>
+<script>const q = new URLSearchParams(location.search).get('s') || Object.keys(SCREENS)[0]; document.getElementById('stage').innerHTML = SCREENS[q]();</script></body></html>

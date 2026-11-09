@@ -1,0 +1,20 @@
+/* index.html?s=<name> renders one screen; the names are the keys here. */
+const SCREENS = {
+  '01-lawh-glass-depth': () => lawh(),
+  '02-majlis-paper-brass': () => majlis(),
+  '03-cinema-hero-shelf': () => cinema(),
+  '04-frame-art-on-the-wall': () => frame(),
+  '05-day-dial-maghrib': () => dial({ ph: 2 }),
+  '06-day-phases-fajr-to-isha': () => `<div style="position:absolute;inset:0;background:#000;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:0">${[0, 1, 2, 3].map(i => `<div style="position:relative;overflow:hidden"><div style="position:absolute;left:0;top:0;width:1920px;height:1080px;transform:scale(.5);transform-origin:top left">${dial({ ph: i, small: 1 })}</div></div>`).join('')}</div>`,
+  '07-dots-matrix': () => dots(),
+  '08-blocks-playful': () => blocks(),
+  '09-focus-motion-strip': () => focusStrip(),
+  '10-games-hub': () => gamesHub(),
+  '11-quiz-question': () => quiz(),
+  '12-quiz-reveal': () => quiz({ reveal: true }),
+  '13-quiz-score-animation': () => scoreStrip(),
+  '14-memory-pairs': () => memory(),
+  '15-word-game': () => wordGame(),
+  's-01-lawh': () => studySheet('lawh'), 's-02-majlis': () => studySheet('majlis'), 's-03-cinema': () => studySheet('cinema'), 's-04-frame': () => studySheet('frame'),
+  's-05-dial': () => studySheet('dial'), 's-06-dots': () => studySheet('dots'), 's-07-blocks': () => studySheet('blocks'),
+};
