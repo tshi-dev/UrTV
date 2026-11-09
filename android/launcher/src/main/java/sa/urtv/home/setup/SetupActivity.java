@@ -239,7 +239,7 @@ public class SetupActivity extends Activity {
             n.setMinWidth(dp(32));
             line.addView(n, new LinearLayout.LayoutParams(-2, -2));
             line.addView(text(digits(plan.get(i)), 15, "Regular", TEXT), new LinearLayout.LayoutParams(0, -2, 1f));
-            planBox.addView(line, right(dp(10)));
+            planBox.addView(line, right(dp(8)));
         }
         add(planBox, dp(16));
         // 4.3: a box per suggested app the setup can install (OK ticks or unticks it); one already on the TV says so and is left
@@ -320,7 +320,7 @@ public class SetupActivity extends Activity {
         long ms = (total && last > first ? last : System.currentTimeMillis()) - first;
         long sec = Math.max(0, ms / 1000);
         String t = String.format(java.util.Locale.ROOT, "%02d:%02d", sec / 60, sec % 60);
-        return digits(S.t(total ? "استغرق %s" : "مرّ %s", t));
+        return digits(total ? S.t("استغرق %s", t) : S.t("مرّ %s", t));
     }
 
     /** one look at the run for the progress view: the phases, the step in hand, the line it is saying, the share, the time, and (the TV is asking for USB debugging) the instruction card */
@@ -336,7 +336,7 @@ public class SetupActivity extends Activity {
             int ps = st == SetupRunner.State.RUNNING ? SetupProgressView.NOW : st == SetupRunner.State.FAILED ? SetupProgressView.FAILED : st == SetupRunner.State.PENDING ? SetupProgressView.WAIT : SetupProgressView.DONE;
             m.phases.add(new SetupProgressView.Phase(S.tv(SetupRunner.label(steps.isEmpty() ? "undo" : steps.get(0).id)), ps));
         } else {
-            for (String[] ph : PHASES) m.phases.add(new SetupProgressView.Phase(S.t(ph[0]), SetupProgressView.WAIT));
+            for (String[] ph : PHASES) m.phases.add(new SetupProgressView.Phase(S.tv(ph[0]), SetupProgressView.WAIT));
         }
         for (SetupRunner.Step s : steps) {
             boolean fin = s.state != SetupRunner.State.PENDING && s.state != SetupRunner.State.RUNNING;
@@ -423,6 +423,7 @@ public class SetupActivity extends Activity {
         S.n("قائمة المجتمع"),
         S.n("تسريع التلفزيون"),
         S.n("تثبيت شاشة التوقف"),
+        S.n("فحص"), S.n("تجهيز"), S.n("تثبيت"), S.n("تفعيل"), S.n("تقرير"),   // the phases of the progress screen
         S.n("تفعيل شاشة التوقف"),
         S.n("TV Bro و SmartTube"),
         S.n("التشغيل التلقائي"),
