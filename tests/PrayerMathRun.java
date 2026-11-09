@@ -117,7 +117,7 @@ public final class PrayerMathRun {
         System.out.println("NOTE reference: " + (rebased == 0 ? "every row at the offset it was written at" : rebased + " rows re-based for this machine's time-zone data, not formula errors"));
         check("reference: the file was read", countries >= 1, String.valueOf(countries));
 
-        // which method a place gets: its country's by the zone, the Ja'fari when asked, Umm al-Qura for anything else
+        // which method a place gets: its country's by the zone, the Gulf one when asked, Umm al-Qura for anything else
         check("methods: Riyadh 4, Kuwait 9, Qatar 10, Dubai 16, Bahrain 8, Muscat 100 (Oman's ministry), Cairo 5, an unknown zone 4",
                 PrayerMath.methodFor("Asia/Riyadh", null) == 4 && PrayerMath.methodFor("Asia/Kuwait", null) == 9 && PrayerMath.methodFor("Asia/Qatar", null) == 10
                 && PrayerMath.methodFor("Asia/Dubai", null) == 16 && PrayerMath.methodFor("Asia/Bahrain", null) == 8 && PrayerMath.methodFor("Asia/Muscat", "auto") == 100
@@ -135,7 +135,8 @@ public final class PrayerMathRun {
                 minutes(muscat.split(" ")[2]) - minutes(muscatGulf.split(" ")[2]) == 5 && minutes(muscat.split(" ")[3]) - minutes(muscatGulf.split(" ")[3]) == 5
                 && minutes(muscat.split(" ")[4]) - minutes(muscatGulf.split(" ")[4]) == 5 && muscat.split(" ")[1].equals(muscatGulf.split(" ")[1])
                 && minutes(muscat.split(" ")[0]) > minutes(muscatGulf.split(" ")[0]) && minutes(muscat.split(" ")[5]) < minutes(muscatGulf.split(" ")[5]), muscat + " / " + muscatGulf);
-        check("methods: pm=jafari is the Ja'fari everywhere, 0", PrayerMath.methodFor("Asia/Riyadh", "jafari") == 0 && PrayerMath.methodFor("Asia/Kuwait", "jafari") == 0, "");
+        check("methods (4.3 A4): an old pm=jafari is the country's own (the Ja'fari is no longer offered), and id 0 is no method",
+                PrayerMath.methodFor("Asia/Riyadh", "jafari") == 4 && PrayerMath.methodFor("Asia/Kuwait", "jafari") == 9 && PrayerMath.methodFor("Asia/Kuwait", "0") == 9 && PrayerMath.method(0).id == 4, "");
         check("methods: the Ramadan half hour of Isha is Umm al-Qura's alone",
                 PrayerMath.ishaDelayMillis(true, 4) == 120 * 60_000L && PrayerMath.ishaDelayMillis(true, 10) == 90 * 60_000L && PrayerMath.ishaDelayMillis(true, 8) == 90 * 60_000L, "");
 
@@ -159,11 +160,6 @@ public final class PrayerMathRun {
         long[] dubaiRaw = PrayerMath.compute(2026, 10, 12, 25.2048, 55.2708, "Asia/Dubai", false, 4);
         check("UAE: sunrise 3 minutes earlier, Dhuhr and Asr 3 minutes later than the untuned sun", dubai[1] < dubaiRaw[1] && dubai[2] - dubaiRaw[2] == 3 * 60_000L, row(dubai, "Asia/Dubai"));
 
-        // the Ja'fari: Fajr 16° (later than 18.5°), Maghrib at 4° (well after sunset), Isha 14° (earlier than Maghrib + 90)
-        long[] sa = PrayerMath.compute(2026, 10, 23, 24.6877, 46.7219, "Asia/Riyadh", false, 4);
-        long[] ja = PrayerMath.compute(2026, 10, 23, 24.6877, 46.7219, "Asia/Riyadh", false, 0);
-        check("Ja'fari: Fajr later, Maghrib 12-20 minutes after sunset, Dhuhr and Asr unchanged, Isha 14° after Maghrib",
-                ja[0] > sa[0] && ja[4] - sa[4] >= 12 * 60_000L && ja[4] - sa[4] <= 20 * 60_000L && ja[2] == sa[2] && ja[3] == sa[3] && ja[5] > ja[4] && ja[5] < ja[4] + 90 * 60_000L, row(ja, "Asia/Riyadh"));
 
         // F28: on the day the clocks change, every time is where the clock says, not an hour off (8 March 2026 spring forward, 1 November 2026 back)
         String ny8 = row(PrayerMath.compute(2026, 3, 8, 40.7128, -74.0060, "America/New_York", false), "America/New_York");
@@ -195,13 +191,13 @@ public final class PrayerMathRun {
         check("identity: another city differs", !id.equals(PrayerMath.identity(21.4266, 39.8256, "Asia/Riyadh", "0,0,0,0,0", 4)), id);
         check("identity: another zone differs", !id.equals(PrayerMath.identity(24.6877, 46.7219, "Asia/Kuwait", "0,0,0,0,0", 4)), id);
         check("identity: other adjustments differ", !id.equals(PrayerMath.identity(24.6877, 46.7219, "Asia/Riyadh", "0,0,0,2,0", 4)), id);
-        check("identity: another method differs", !id.equals(PrayerMath.identity(24.6877, 46.7219, "Asia/Riyadh", "0,0,0,0,0", 0)), id);
+        check("identity: another method differs", !id.equals(PrayerMath.identity(24.6877, 46.7219, "Asia/Riyadh", "0,0,0,0,0", 8)), id);
 
         // the saved copy is per method: Umm al-Qura's key is as it always was, another method's has its own
         long t0 = Instant.parse("2026-10-23T09:00:00Z").toEpochMilli();
         String k4 = PrayerMath.key(t0, 24.6877, 46.7219, "Asia/Riyadh", 4);
-        check("key: Umm al-Qura's key is unchanged, the Ja'fari's is another", k4.equals(PrayerMath.key(t0, 24.6877, 46.7219, "Asia/Riyadh"))
-                && !k4.equals(PrayerMath.key(t0, 24.6877, 46.7219, "Asia/Riyadh", 0)) && PrayerMath.key(t0, 24.6877, 46.7219, "Asia/Riyadh", 0).endsWith("_m0"), k4);
+        check("key: Umm al-Qura's key is unchanged, the Gulf method's is another", k4.equals(PrayerMath.key(t0, 24.6877, 46.7219, "Asia/Riyadh"))
+                && !k4.equals(PrayerMath.key(t0, 24.6877, 46.7219, "Asia/Riyadh", 8)) && PrayerMath.key(t0, 24.6877, 46.7219, "Asia/Riyadh", 8).endsWith("_m8"), k4);
         System.exit(failed == 0 ? 0 : 1);
     }
 

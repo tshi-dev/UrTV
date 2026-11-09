@@ -9,7 +9,7 @@
 //
 // What it checks and what it does not: the astronomy, the rounding, the time zone / summer-time handling and the wiring of a zone to its
 // method. The angles and margins of each method are the ones docs/SETTINGS.md and PrayerMath.java state (Aladhan's ids); adhan has Umm
-// al-Qura, Dubai, Qatar, Kuwait and Egyptian of its own, and for the other methods (Gulf, Oman's ministry, Jordan, Morocco, Algeria, Tunisia, Ja'fari) the
+// al-Qura, Dubai, Qatar, Kuwait and Egyptian of its own, and for the other methods (Gulf, Oman's ministry, Jordan, Morocco, Algeria, Tunisia) the
 // same numbers are fed to the same formulas, so those numbers themselves are not independently confirmed here (Aladhan's list is not
 // reachable from the cloud container that wrote this). adhan's +1 minute on Dhuhr for the Egyptian method is left out: Aladhan's method 5
 // has no such margin and neither does the app (see docs/VERIFY-2026-10.md).
@@ -65,8 +65,8 @@ const CHANGE = {
   'Africa/Casablanca': ['2026-02-14', '2026-02-15', '2026-03-21', '2026-03-22', '2026-09-19', '2026-09-20'],
 };
 const RAMADAN_EDGES = ['2026-02-17', '2026-02-18', '2026-03-19', '2026-03-20', '2027-02-07', '2027-02-08', '2027-03-08', '2027-03-09'];
-// a handful of Saudi cities also get the Ramadan edges and the Ja'fari method (the 194 would only repeat each other)
-const JAFARI_CITIES = ['الرياض', 'مكة المكرمة', 'الدمام', 'أبها', 'تبوك', 'عرعر'];
+// a handful of Saudi cities also get the Ramadan edges (the 194 would only repeat each other; 4.3 A4: no Ja'fari rows)
+const RAMADAN_CITIES = ['الرياض', 'مكة المكرمة', 'الدمام', 'أبها', 'تبوك', 'عرعر'];
 
 // ---- the reference's instants as the clock of the city
 const fmt = new Map();
@@ -94,8 +94,7 @@ const add = (c, date, method) => {
 for (const c of cities) {
   const m = ZONE_METHOD[c.zone];
   if (!m) throw new Error('no method for ' + c.zone);
-  for (const date of [...SPREAD, ...(CHANGE[c.zone] || []), ...(m === 4 && JAFARI_CITIES.includes(c.name) ? RAMADAN_EDGES : [])]) add(c, date, m);
-  if (JAFARI_CITIES.includes(c.name) && c.zone === 'Asia/Riyadh') for (const date of SPREAD) add(c, date, 0);
+  for (const date of [...SPREAD, ...(CHANGE[c.zone] || []), ...(m === 4 && RAMADAN_CITIES.includes(c.name) ? RAMADAN_EDGES : [])]) add(c, date, m);
   if (c.zone === 'Asia/Muscat') for (const date of SPREAD) add(c, date, 8);   // Oman's older default, still there as #pm=gulf
 }
 

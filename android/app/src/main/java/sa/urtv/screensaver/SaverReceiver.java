@@ -26,7 +26,7 @@ import java.util.Locale;
  *       [--es cardstyle current|dark1|glass1|dark3|glass3] [--es national auto|off]
  *       [--es markets tasi,gold,btc] [--es mkstyle arrows|prices] [--es mkbar on|off] [--es clocksize large|medium|small] [--es stocks 2222,1120,AAPL] [--es stkchg pct|amount]
  *       [--es leagues 'Saudi-Arabian Pro League,NBA']
- *       [--es prayermethod jafari|gulf|auto]   («طريقة الحساب»: auto = the country's own, gulf = the Gulf method for any place, jafari = Shia Ithna-Ashari)
+ *       [--es prayermethod gulf|auto]   («طريقة الحساب»: auto = the country's own, gulf = the Gulf method for any place; an old «jafari» is taken as auto, 4.3 A4)
  *       [--es prayeradj on|off] [--es adj_fajr +2 --es adj_dhuhr 0 --es adj_asr 0 --es adj_maghrib -1 --es adj_isha 0]   («تعديل وقت الصلاة», minutes -20..20)
  *       [--es slot matches|weather|fasting|countdown|markets|none] [--es countdown 2026-12-01|clear --es cdname 'رحلة الصيف']
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.UPDATE
@@ -217,7 +217,7 @@ public class SaverReceiver extends BroadcastReceiver {
             return "error: prayeradj is one of on off";
         String prayerMethod = i.getStringExtra("prayermethod");
         if (prayerMethod != null && PrayerMethod.parse(prayerMethod) == null)
-            return "error: prayermethod is one of jafari gulf auto";
+            return "error: prayermethod is one of gulf auto";
         int[] adj = null;   // «تعديل وقت الصلاة»: each given prayer is a whole number of minutes, −20..20; the rest stay
         for (int k = 0; k < PrayerAdj.COUNT; k++) {
             String v = i.getStringExtra("adj_" + PrayerAdj.KEYS[k]);

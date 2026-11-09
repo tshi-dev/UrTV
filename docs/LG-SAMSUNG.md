@@ -76,7 +76,7 @@ instead of the screen: the page cannot run in those browsers.
 Press **OK** on the remote. Up and Down choose a row; **Left** goes on in the list and **Right** goes back (the screen is right to
 left); OK runs a row such as «تجربة الأذان الآن»; **Back** saves and closes (the page starts again with the new settings, a few
 seconds). Rows: country or region, city (the same list as the Android screensaver, with each city's time zone), the calculation
-(automatic by country, or Ja'fari), «تعديل الفجر» … «تعديل العشاء» (each prayer moved by whole minutes, −20 to +20, as in the Android
+(automatic by country), «تعديل الفجر» … «تعديل العشاء» (each prayer moved by whole minutes, −20 to +20, as in the Android
 app: Left adds a minute, Right takes one off; the times, the countdown and the adhan move with it), the card beside the clock, the clock size, 24 hours, digits, the bar before the adhan, the adhan
 (on or off, the muezzin, Fajr's muezzin, the volume).
 

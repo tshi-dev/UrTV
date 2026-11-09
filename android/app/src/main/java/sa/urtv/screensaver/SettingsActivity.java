@@ -1585,10 +1585,10 @@ public class SettingsActivity extends Activity {
     }
 
     private void pickPrayerMethod() {
-        final String[] values = {PrayerMethod.AUTO, PrayerMethod.GULF, PrayerMethod.JAFARI};
-        String[] labels = {PrayerMethod.label(PrayerMethod.AUTO, prefs.cityCountry(), prefs.cityTz()), PrayerMethod.label(PrayerMethod.GULF, prefs.cityCountry(), prefs.cityTz()), PrayerMethod.label(PrayerMethod.JAFARI, prefs.cityCountry(), prefs.cityTz())};
+        final String[] values = {PrayerMethod.AUTO, PrayerMethod.GULF};   // 4.3 A4: the Ja'fari is no longer offered
+        String[] labels = {PrayerMethod.label(PrayerMethod.AUTO, prefs.cityCountry(), prefs.cityTz()), PrayerMethod.label(PrayerMethod.GULF, prefs.cityCountry(), prefs.cityTz())};
         new Dlg(this).raw().setTitle("طريقة الحساب")
-            .setSingleChoiceItems(labels, PrayerMethod.JAFARI.equals(prefs.prayerMethod()) ? 2 : PrayerMethod.GULF.equals(prefs.prayerMethod()) ? 1 : 0,
+            .setSingleChoiceItems(labels, PrayerMethod.GULF.equals(prefs.prayerMethod()) ? 1 : 0,
                 (d, i) -> { prefs.setPrayerMethod(values[i]); d.dismiss(); render(); })
             .show();
     }

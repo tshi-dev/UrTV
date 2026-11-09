@@ -20,11 +20,11 @@ def check(name, ok, detail=""):
     failed += not ok
 
 
-EXPECTED_METHODS = 22   # Ja'fari, Umm al-Qura, the four Gulf ones, Egypt, Jordan, Morocco, Algeria, Tunisia, and Oman's ministry (100, ours: Aladhan has none)
+EXPECTED_METHODS = 21   # (4.3 A4: no Ja'fari) Umm al-Qura, the four Gulf ones, Egypt, Jordan, Morocco, Algeria, Tunisia, and Oman's ministry (100, ours: Aladhan has none)
 EXPECTED_ZONES = 16   # the zones that have a method of their own: the Gulf's five, Cairo, Amman, Damascus, Beirut, Gaza, Hebron, Jerusalem (hand-entered), Casablanca, El_Aaiun (hand-entered), Algiers, Tunis
-# the page: CONFIG.prayerMethod = pm=jafari ? 0 : ({'Asia/Kuwait':9, ...})[zone] || 4
+# the page: CONFIG.prayerMethod = pm=gulf ? 8 : the id sent, else ({'Asia/Kuwait':9, ...})[zone] || 4
 tpl = (ROOT / "src/template.html").read_text(encoding="utf-8")
-m = re.search(r"CONFIG\.prayerMethod = _Q\.get\('pm'\) === 'jafari' \? 0 : _Q\.get\('pm'\) === 'gulf' \? 8\s*:\s*RESOLVED_METHOD !== null \? RESOLVED_METHOD : \(\{([^}]*)\}\)\[CONFIG\.timezone\] \|\| 4;", tpl)
+m = re.search(r"CONFIG\.prayerMethod = _Q\.get\('pm'\) === 'gulf' \? 8\s*:\s*RESOLVED_METHOD !== null \? RESOLVED_METHOD : \(\{([^}]*)\}\)\[CONFIG\.timezone\] \|\| 4;", tpl)
 check("page: CONFIG.prayerMethod is worked out from #pm= and the zone", bool(m))
 page = {z: int(i) for z, i in re.findall(r"'([A-Za-z_/]+)':\s*(\d+)", m.group(1))} if m else {}
 
@@ -59,9 +59,11 @@ cal_home = {}
 for zs, label in re.findall(r"((?:case \"[A-Za-z_/]+\": )+)return \"([^\"]+)\";", cz):
     for z in re.findall(r'"([A-Za-z_/]+)"', zs):
         cal_home[z] = label
-jaf = re.search(r'"jafari"\.equals\(pm\)\) return "([^"]+)"', cz)
 check("the clock's city line: the same calculation names on the screensaver and the home screen, none for Umm al-Qura",
-      cal_home == {z: cal_page.get(i) for z, i in page.items()} and jaf and jaf.group(1) == cal_page.get(0) and 4 not in cal_page, f"{cal_page} vs {cal_home}")
+      cal_home == {z: cal_page.get(i) for z, i in page.items()} and 4 not in cal_page, f"{cal_page} vs {cal_home}")
+check("4.3 A4: the Ja'fari is gone from the page, the launcher and the app (no method 0, no name, no choice; an old «jafari» is auto)",
+      0 not in cal_page and "jafari" not in tpl and '"jafari".equals' not in cz and "JAFARI" not in pm_src and "new Method(0" not in pm_src
+      and 'static final String AUTO = "auto", GULF = "gulf";' in app_src and '"&pm=jafari"' not in app_src and 'if (OLD_JAFARI.equals(v)) return AUTO;' in app_src)
 
 # every method the page and the launcher know has the same parameters in both
 js = re.findall(r"^\s+(\d+):\s*\{fajr:([\d.]+),\s*isha:([\d.]+),\s*ishaMin:(\d+),\s*maghrib:([\d.]+),\s*tune:\[([-\d,]+)\]\}", tpl, re.M)

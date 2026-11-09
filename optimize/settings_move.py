@@ -51,7 +51,7 @@ ALLOWED_TOP = ("schema", "city", "digits", "prayer", "hijri_offset", "clock24", 
 # The same lists the apps validate (android/app/src/main/java/sa/urtv/screensaver/Prefs.java; tests/settings_move_test.py
 # reads that file and fails if these drift from it).
 DIGITS = ("hindi", "latin")
-PRAYER_METHODS = ("auto", "gulf", "jafari")
+PRAYER_METHODS = ("auto", "gulf")   # 4.3 A4: an older file's «jafari» is imported as «auto» (no longer offered)
 CARD_STYLES = ("current", "dark1", "glass1", "dark3", "glass3")
 CLOCK_SIZES = ("large", "medium", "small")
 MK_STYLES = ("arrows", "prices")
@@ -469,7 +469,9 @@ def validate(d):
         p = obj(d["prayer"], "prayer", ("method", "adjust_on", "adjust"), errs, notes)
         if p is not None:
             o = {}
-            if "method" in p and choice(p["method"], PRAYER_METHODS, "prayer.method", errs):
+            if "method" in p and p["method"] == "jafari":
+                o["method"] = "auto"   # no longer offered (4.3 A4): the city's country's own
+            elif "method" in p and choice(p["method"], PRAYER_METHODS, "prayer.method", errs):
                 o["method"] = p["method"]
             if "adjust_on" in p:
                 n = len(errs)

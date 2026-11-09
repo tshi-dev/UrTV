@@ -10,10 +10,10 @@ public final class PrayerMethodRun {
     }
 
     public static void main(String[] args) {
-        check("parse: jafari and auto, in any case and with spaces", "jafari".equals(PrayerMethod.parse(" Jafari ")) && "auto".equals(PrayerMethod.parse("AUTO")), "");
+        check("parse: auto in any case and with spaces; 4.3 A4: an old «jafari» (no longer offered) is auto", "auto".equals(PrayerMethod.parse(" Jafari ")) && "auto".equals(PrayerMethod.parse("AUTO")), "");
         check("parse: anything else is null", PrayerMethod.parse("shia") == null && PrayerMethod.parse("") == null && PrayerMethod.parse(null) == null && PrayerMethod.parse("4") == null, "");
-        check("fragment: nothing for auto (the page is then as it was), #pm=jafari for the Ja'fari",
-                PrayerMethod.fragment("auto").isEmpty() && PrayerMethod.fragment(null).isEmpty() && "&pm=jafari".equals(PrayerMethod.fragment("jafari")) && "&pm=gulf".equals(PrayerMethod.fragment("gulf")), "");
+        check("fragment: nothing for auto (the page is then as it was), never #pm=jafari (4.3 A4), #pm=gulf for the Gulf",
+                PrayerMethod.fragment("auto").isEmpty() && PrayerMethod.fragment(null).isEmpty() && PrayerMethod.fragment("jafari").isEmpty() && "&pm=gulf".equals(PrayerMethod.fragment("gulf")), "");
         check("gulf: the Gulf method can be chosen by hand (parse, label), and Oman's own default is its ministry's",
                 "gulf".equals(PrayerMethod.parse("gulf")) && "gulf".equals(PrayerMethod.parse(" GULF ")) && PrayerMethod.label("gulf", "Asia/Muscat").equals("الخليج")
                 && PrayerMethod.label("auto", "Asia/Muscat").equals("تلقائي · وزارة الأوقاف والشؤون الدينية العُمانية") && PrayerMethod.label("auto", "Asia/Bahrain").equals("تلقائي · الخليج"), "");
@@ -22,10 +22,10 @@ public final class PrayerMethodRun {
                 && PrayerMethod.searchable("AE") && PrayerMethod.searchable("OM") && PrayerMethod.searchable("EG") && PrayerMethod.searchable("jo") && PrayerMethod.searchable("SY")
                 && PrayerMethod.searchable("LB") && PrayerMethod.searchable("MA") && PrayerMethod.searchable("DZ") && PrayerMethod.searchable("TN") && !PrayerMethod.searchable("PS")
                 && !PrayerMethod.searchable("IL") && !PrayerMethod.searchable("il") && !PrayerMethod.searchable("EH") && PrayerMethod.searchable("LY") && PrayerMethod.searchable("US") && PrayerMethod.searchable("NO") && !PrayerMethod.searchable("") && !PrayerMethod.searchable(null), "");
-        check("label: auto names the country's calculation by the zone; the Ja'fari names itself",
+        check("label: auto names the country's calculation by the zone; an old «jafari» is labelled as auto (4.3 A4)",
                 PrayerMethod.label("auto", "Asia/Riyadh").equals("تلقائي · أم القرى") && PrayerMethod.label("auto", "Asia/Kuwait").equals("تلقائي · الكويت")
                 && PrayerMethod.label("auto", "Asia/Qatar").equals("تلقائي · قطر") && PrayerMethod.label("auto", "Asia/Dubai").equals("تلقائي · الإمارات")
-                && PrayerMethod.label("auto", "Asia/Bahrain").equals("تلقائي · الخليج") && PrayerMethod.label("auto", "Africa/Cairo").equals("تلقائي · الهيئة المصرية للمساحة") && PrayerMethod.label("auto", "Asia/Beirut").equals("تلقائي · الهيئة المصرية للمساحة") && PrayerMethod.label("auto", "Africa/Casablanca").equals("تلقائي · وزارة الأوقاف المغربية") && PrayerMethod.label("auto", "Africa/Algiers").equals("تلقائي · وزارة الشؤون الدينية الجزائرية") && PrayerMethod.label("auto", "Africa/Tunis").equals("تلقائي · وزارة الشؤون الدينية التونسية") && PrayerMethod.label("auto", "Asia/Amman").equals("تلقائي · وزارة الأوقاف الأردنية") && PrayerMethod.label("jafari", "Asia/Kuwait").startsWith("جعفري"), "");
+                && PrayerMethod.label("auto", "Asia/Bahrain").equals("تلقائي · الخليج") && PrayerMethod.label("auto", "Africa/Cairo").equals("تلقائي · الهيئة المصرية للمساحة") && PrayerMethod.label("auto", "Asia/Beirut").equals("تلقائي · الهيئة المصرية للمساحة") && PrayerMethod.label("auto", "Africa/Casablanca").equals("تلقائي · وزارة الأوقاف المغربية") && PrayerMethod.label("auto", "Africa/Algiers").equals("تلقائي · وزارة الشؤون الدينية الجزائرية") && PrayerMethod.label("auto", "Africa/Tunis").equals("تلقائي · وزارة الشؤون الدينية التونسية") && PrayerMethod.label("auto", "Asia/Amman").equals("تلقائي · وزارة الأوقاف الأردنية") && PrayerMethod.label("jafari", "Asia/Kuwait").equals("تلقائي · الكويت"), "");
         check("label: a hand-entered Asia/Jerusalem gets the Egyptian authority's, Africa/El_Aaiun Morocco's (not Umm al-Qura)",
                 PrayerMethod.label("auto", "Asia/Jerusalem").equals("تلقائي · الهيئة المصرية للمساحة") && PrayerMethod.label("auto", "Africa/El_Aaiun").equals("تلقائي · وزارة الأوقاف المغربية"), "");
         // the cities of the list that are not Saudi: each has its country's zone, in its country's box, and that zone has a method of its own

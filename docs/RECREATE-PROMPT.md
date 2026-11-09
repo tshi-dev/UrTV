@@ -52,7 +52,7 @@ All three are built identically — small gold label, big value, small sub-line 
 
 ## Data (all free, no API keys)
 
-- **Prayer times** — Aladhan, method 4 (Umm al-Qura; 9 Kuwait, 10 Qatar, 16 the UAE, 8 Bahrain and Oman, 0 Ja'fari — chosen by the city's zone, see docs/SETTINGS.md):
+- **Prayer times** — Aladhan, method 4 (Umm al-Qura; 9 Kuwait, 10 Qatar, 16 the UAE, 8 Bahrain and Oman — chosen by the city's zone, see docs/SETTINGS.md):
   `https://api.aladhan.com/v1/timings/DD-MM-YYYY?latitude=24.7136&longitude=46.6753&method=4&timezonestring=Asia/Riyadh`
   Only Fajr, Dhuhr, Asr, Maghrib, Isha. Refresh every 6 hours; recompute the countdown every second.
 - **Ramadan** — never hard-code the date: walk forward day by day with

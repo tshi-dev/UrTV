@@ -117,7 +117,7 @@ for (const platform of ['webos', 'tizen']) {
     check(L('OK opens the settings screen'), await p.evaluate(() => UrtvTV.panelOpen()));
     const box = await p.evaluate(() => { const r = document.getElementById('urtv-tv-settings').getBoundingClientRect(); return { l: r.left, t: r.top, r: r.right, b: r.bottom }; });
     check(L('the settings screen fits the 1920x1080 screen'), box.l >= 0 && box.t >= 0 && box.r <= 1920 && box.b <= 1080, JSON.stringify(box));
-    check(L('the settings screen is Arabic and right to left'), await p.evaluate(() => { const e = document.getElementById('urtv-tv-settings'); return e.dir === 'rtl' && /الدولة/.test(e.textContent) && /المدينة/.test(e.textContent) && /طريقة الحساب/.test(e.textContent); }));
+    check(L('the settings screen is Arabic and right to left'), await p.evaluate(() => { const e = document.getElementById('urtv-tv-settings'); return e.dir === 'rtl' && /الدولة/.test(e.textContent) && /المدينة/.test(e.textContent) && !/طريقة الحساب/.test(e.textContent); }));   // 4.3 A4: no calculation row
     const goRow = async label => { for (let i = 0; i < 20 && (await text(p, '.r.on .l')) !== label; i++) await key(p, 40); return (await text(p, '.r.on .l')) === label; };
     await key(p, 40);   // down: المدينة
     check(L('Down moves to the next row'), (await text(p, '.r.on .l')) === 'المدينة', await text(p, '.r.on .l'));
@@ -132,17 +132,14 @@ for (const platform of ['webos', 'tizen']) {
     check(L('the clock row: 12-hour to 24-hour'), await goRow('ساعة ٢٤') && (await text(p, '.r.on .v')).includes('لا'), await text(p, '.r.on .v'));
     await key(p, 37);
     check(L('and it says نعم'), (await text(p, '.r.on .v')).includes('نعم'), await text(p, '.r.on .v'));
-    check(L('the calculation row: تلقائي to الجعفري'), await goRow('طريقة الحساب') && (await text(p, '.r.on .v')).includes('تلقائي'), await text(p, '.r.on .v'));
-    await key(p, 37);
-    check(L('and it says الجعفري'), (await text(p, '.r.on .v')).includes('الجعفري'), await text(p, '.r.on .v'));
     const stored = await p.evaluate(() => JSON.parse(localStorage.getItem('urtv.tv.settings.v1')));
-    check(L('the settings are kept in localStorage'), stored && stored.clock24 === true && stored.pm === 'jafari', JSON.stringify(stored));
+    check(L('the settings are kept in localStorage'), stored && stored.clock24 === true && stored.pm === 'auto', JSON.stringify(stored));
     const nav = p.waitForNavigation({ timeout: 8000 }).catch(() => null);
     await key(p, back);   // Back: save and close; the page starts again
     await nav;
     await p.waitForFunction(() => document.documentElement.classList.contains('ready'), null, { timeout: 8000 }).catch(() => errors.push('never revealed (2)'));
     const hash = await p.evaluate(() => location.hash);
-    check(L('the page starts again with the new settings in its link'), /clock=24/.test(hash) && /pm=jafari/.test(hash) && /gap=0/.test(hash) && /city=/.test(hash), hash);
+    check(L('the page starts again with the new settings in its link'), /clock=24/.test(hash) && !/pm=/.test(hash) && /gap=0/.test(hash) && /city=/.test(hash), hash);
     check(L('the 24-hour clock shows (no ص / م)'), await p.evaluate(() => getComputedStyle(document.getElementById('ck-ap')).display === 'none'));
     check(L('the Ja\'fari calculation is named under the clock'), /الجعفري/.test((await text(p, '#clock-sub')) || ''), await text(p, '#clock-sub'));
     check(L('no script error after the restart'), errors.length === 0, errors.join(' | '));

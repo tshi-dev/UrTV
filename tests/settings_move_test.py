@@ -51,7 +51,7 @@ for bad in st.get("refuse", []):          # a value the TV refuses (answers erro
     if bad in cmd:
         out("error: refused by the fake TV: " + bad)
 ENUM = {"digits": ["hindi", "latin"], "clocksize": ["large", "medium", "small"], "mkstyle": ["arrows", "prices"],
-        "cardstyle": ["current", "dark1", "glass1", "dark3", "glass3"], "prayermethod": ["auto", "gulf", "jafari"],
+        "cardstyle": ["current", "dark1", "glass1", "dark3", "glass3"], "prayermethod": ["auto", "gulf"],
         "sunrise": ["on", "off"], "prayerbar": ["on", "off"], "wxmore": ["on", "off"], "pagesdark": ["on", "off"], "months": ["default", "levant"],
         "greeting": ["on", "off"], "listenpill": ["on", "off"], "updatebell": ["on", "off"], "adhanbar": ["on", "off"], "clock24": ["on", "off"], "mkbar": ["on", "off"], "prayeradj": ["on", "off"],
         "favbar": ["5", "6", "7", "8", "9", "10", "all"]}
@@ -142,7 +142,7 @@ BASE = {
 CONFIGURED = copy.deepcopy(BASE)
 CONFIGURED["saver"].update({"city": ["الدوحة", "25.2854", "51.531"], "tz": "Asia/Qatar", "teams": ["136022|النصر", "133738|ريال مدريد"],
                             "panel": "prayers", "home_panel": "verse,hourly", "greeting": "off", "listenpill": "off", "updatebell": "off", "adhanbar": "off",
-                            "prayermethod": "jafari", "prayeradj": "on", "hijri": "-1", "digits": "latin", "clock24": "on",
+                            "prayermethod": "gulf", "prayeradj": "on", "hijri": "-1", "digits": "latin", "clock24": "on",
                             "cardstyle": "glass1", "markets": ["gold", "btc"], "mkbar": "off", "clocksize": "medium", "mkstyle": "prices",
                             "panel2": "hourly", "sunrise": "on", "prayerbar": "on", "wxmore": "on", "pagesdark": "off", "months": "levant", "favbar": "7"})
 CONFIGURED["saver"]["adj"] = {"fajr": 2, "dhuhr": 0, "asr": -3, "maghrib": 1, "isha": 0}
@@ -198,7 +198,7 @@ b = Tv("b", BASE)
 f = write("moved.json", out)
 rc, out, err = b.run("import", f)
 check("import without --yes: a preview, nothing sent", rc == 0 and "Preview:" in out and not b.writes() and "--yes" in out, (rc, out, err, b.sent()))
-check("preview: old → new, one line per changed setting", "  digits: hindi → latin" in out and "  prayer.method: auto → jafari" in out
+check("preview: old → new, one line per changed setting", "  digits: hindi → latin" in out and "  prayer.method: auto → gulf" in out
       and "  prayer.adjust.fajr: 0 → +2" in out and "  hijri_offset: 0 → -1" in out and "  adhan.volume: 70 → 40" in out
       and "  markets.list: tasi,spx,btc → gold,btc" in out and "  city: الرياض (24.6877, 46.7219) Asia/Riyadh → الدوحة (25.2854, 51.531) Asia/Qatar" in out, out)
 check("preview: the «تلاوة وأذان» button's setting is one more line", "  listen_pill: on \u2192 off" in out, out)
@@ -287,7 +287,12 @@ refused("reciter_favs a bad id", lambda d: d.update(reciter_favs=["a b"]), "reci
 refused("reciter_favs twice", lambda d: d.update(reciter_favs=["a", "a"]), "reciter_favs must be a list")
 refused("fav_bar unknown", lambda d: d.update(fav_bar="11"), "fav_bar must be one of")
 refused("fav_bar a number", lambda d: d.update(fav_bar=7), "fav_bar must be one of")
-refused("prayer method unknown", lambda d: d["prayer"].update(method="mwl"), "prayer.method must be one of auto gulf jafari")
+d_old = copy.deepcopy(GOOD); d_old["prayer"]["method"] = "jafari"
+tv_old = Tv("j", BASE)
+rc, out, err = tv_old.run("import", write("old-jafari.json", d_old), "--yes")
+check("4.3 A4: an older file's «jafari» (no longer offered) is imported as «auto», never refused and never sent as jafari",
+      rc == 0 and "prayermethod jafari" not in " ".join(tv_old.sent()), (rc, out, err, tv_old.sent()))
+refused("prayer method unknown", lambda d: d["prayer"].update(method="mwl"), "prayer.method must be one of auto gulf")
 refused("prayer adjust 21", lambda d: d["prayer"]["adjust"].update(fajr=21), "prayer.adjust.fajr must be a whole number from -20 to 20")
 refused("prayer adjust -21", lambda d: d["prayer"]["adjust"].update(isha=-21), "prayer.adjust.isha")
 refused("prayer adjust a fraction", lambda d: d["prayer"]["adjust"].update(asr=1.5), "prayer.adjust.asr")

@@ -81,7 +81,7 @@ right and the left arrow to the left.
 
 ## The adhan
 
-- **The times** are the calculation of the city's country (Umm al-Qura for Saudi Arabia and anywhere outside the Gulf; Kuwait, Qatar, the UAE, Bahrain and Oman each their own; the Shia Ja'fari one when «طريقة الحساب» says so: `docs/SETTINGS.md`), computed on the TV with no network. For Umm al-Qura: Fajr at 18.5°, Maghrib at
+- **The times** are the calculation of the city's country (Umm al-Qura for Saudi Arabia and anywhere outside the Gulf; Kuwait, Qatar, the UAE, Bahrain and Oman each their own; the Gulf one for any city when «طريقة الحساب» says so: `docs/SETTINGS.md`), computed on the TV with no network. For Umm al-Qura: Fajr at 18.5°, Maghrib at
   sunset, Asr at shadow factor 1, Isha 90 minutes after Maghrib (120 in Ramadan, from the
   Umm al-Qura calendar) — an absolute moment, so a Maghrib near midnight at a high latitude gives an Isha after midnight,
   never an hour that has already gone. This is the same arithmetic as the screensaver's page and the same method

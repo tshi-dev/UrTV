@@ -60,13 +60,12 @@ final class PrayerMath {
         boolean ishaIsDelay() { return ishaMinutes > 0; }
     }
 
-    static final int JAFARI = 0, UMM_AL_QURA = 4, GULF = 8, KUWAIT = 9, QATAR = 10, DUBAI = 16, EGYPT = 5, JORDAN = 23, MOROCCO = 21, ALGERIA = 19, TUNISIA = 18;
+    static final int UMM_AL_QURA = 4, GULF = 8, KUWAIT = 9, QATAR = 10, DUBAI = 16, EGYPT = 5, JORDAN = 23, MOROCCO = 21, ALGERIA = 19, TUNISIA = 18;
     /** our own id for Oman's ministry: Aladhan has none, so ids from here up are never sent to it (see {@link #aladhanKnows}) */
     static final int OMAN = 100;
     static final int KARACHI = 1, ISNA = 2, MWL = 3, SINGAPORE = 11, FRANCE_UOIF = 12,
             DIYANET = 13, RUSSIA = 14, MOONSIGHTING = 15, JAKIM = 17, KEMENAG = 20;
     private static final Method[] METHODS = {
-        new Method(JAFARI, 16, 14, 0, 4),
         new Method(UMM_AL_QURA, 18.5, 0, 90, .833),
         new Method(GULF, 19.5, 0, 90, .833),
         new Method(KUWAIT, 18, 17.5, 0, .833),
@@ -95,7 +94,8 @@ final class PrayerMath {
 
     static Method method(int id) {
         for (Method m : METHODS) if (m.id == id) return m;
-        return METHODS[1];
+        for (Method m : METHODS) if (m.id == UMM_AL_QURA) return m;   // an unknown id (an old 0 among them) is Umm al-Qura
+        return METHODS[0];
     }
 
     /**
@@ -104,13 +104,13 @@ final class PrayerMath {
      * say the same; tests/prayer_method_test.py compares the three.
      */
     static int methodFor(String tz, String pm) {
-        if ("jafari".equals(pm)) return JAFARI;
+        // 4.3 A4: «jafari» (no longer offered) falls through to the country's own, as «تلقائي»
         if ("gulf".equals(pm)) return GULF;   // «الخليج» chosen by hand, for Oman or anywhere
         // The screensaver resolves the city's country and sends its numeric id.
-        // Validate against METHODS, including id 0 only as the existing explicit choice.
+        // Validate against METHODS (the Ja'fari, id 0, is not one since 4.3 A4).
         if (pm != null && pm.matches("[0-9]{1,3}")) {
             int id = Integer.parseInt(pm);
-            for (Method m : METHODS) if (m.id == id && id != JAFARI) return id;
+            for (Method m : METHODS) if (m.id == id) return id;
         }
         if (tz == null) return UMM_AL_QURA;
         switch (tz) {

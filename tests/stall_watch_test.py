@@ -28,7 +28,7 @@ check("ExoPlayback keeps https on https, keeps the CPU and Wi-Fi up, and gives M
       "setAllowCrossProtocolRedirects(false)" in exo and "C.WAKE_MODE_NETWORK" in exo and "MEDIA_INFO_BUFFERING_START" in exo and "MEDIA_INFO_BUFFERING_END" in exo)
 check("Gradle: Media3 exoplayer and hls 1.4.1, the exo sources added, AndroidX on",
       "implementation 'androidx.media3:media3-exoplayer:1.4.1'" in gradle and "implementation 'androidx.media3:media3-exoplayer-hls:1.4.1'" in gradle
-      and "java.srcDirs += ['src/exo/java']" in gradle and "android.useAndroidX=true" in props)
+      and "main.java.srcDirs += ['src/exo/java']" in gradle and "android.useAndroidX=true" in props)
 check("the 1 s tick asks the watchdog; a restart is the station's own address again, quietly; the fourth is said as a failure",
       "if (watchStall()) return;" in svc and "startRadio(radioAddress, 0);\n            return true;" in svc and "onPlaybackError(MediaPlayer.MEDIA_ERROR_UNKNOWN, -110);" in svc)
 check("a pick of a station clears the count; a new player keeps it", "stall.reset();   // the person's pick" in svc and "stall.newPlayer();" in svc)

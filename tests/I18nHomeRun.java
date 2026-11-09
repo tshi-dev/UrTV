@@ -43,7 +43,7 @@ public final class I18nHomeRun {
         for (int i = 1; i <= 12; i++) mins.append(i > 1 ? " / " : "").append(AdhanBarText.minutes(i, true));
         p("bar.minutes", mins.toString());
         p("zone", ClockZone.label("Dubai", "") + " / " + ClockZone.label("", ClockZone.calendar("Asia/Bahrain", null)) + " / "
-                + ClockZone.label("Cairo", ClockZone.calendar(null, "jafari")));
+                + ClockZone.label("Cairo", ClockZone.calendar("Africa/Cairo", null)));
         p("tvrows", S.tv(TvRowsPick.WATCH_NEXT_TITLE) + " / " + TvRowsPick.meta("2", "1", null, null, null, "Netflix", true));
         p("input", InputDisplay.label(null, null, "HDMI 1", true));
         for (FamilyDns.Result r : FamilyDns.Result.values()) p("familydns." + r, S.tv(FamilyDns.arabic(r)));

@@ -23,7 +23,7 @@ line	الدوحة	Asia/Qatar		0	بتوقيت الدوحة · حساب قطر	Qat
 line	مدينة الكويت	Asia/Kuwait		0	بتوقيت مدينة الكويت · حساب الكويت	Kuwait
 line	دبي	Asia/Dubai		1	بتوقيت دبي · حساب الإمارات	the UAE, another zone
 line	مسقط	Asia/Muscat		0	بتوقيت مسقط · حساب عُمان	Oman
-line	القطيف	Asia/Riyadh	jafari	0	بتوقيت القطيف · الحساب الجعفري	the Ja'fari method, anywhere
+line	القطيف	Asia/Riyadh	jafari	0	-	4.3 A4: an old pm=jafari is the country's own (Umm al-Qura: nothing named)
 line	القاهرة	Africa/Cairo		0	بتوقيت القاهرة · حساب الهيئة المصرية	Egypt: the Egyptian Authority's, named
 line	بيروت	Asia/Beirut		1	بتوقيت بيروت · حساب الهيئة المصرية	Lebanon: the Egyptian method too
 line	عمان	Asia/Amman		1	بتوقيت عمان · حساب الأردن	Jordan

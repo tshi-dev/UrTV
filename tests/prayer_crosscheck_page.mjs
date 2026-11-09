@@ -17,9 +17,9 @@ const browser = await chromium.launch(process.env.CHROMIUM ? { executablePath: p
 let failed = 0;
 const check = (name, ok, detail = '') => { console.log((ok ? 'PASS ' : 'FAIL ') + name + (ok ? '' : '  -> ' + detail)); if (!ok) failed++; };
 
-// one page per zone and method kind (the Ja'fari and Omani Gulf-method rows are the same zone with #pm=jafari / #pm=gulf)
+// one page per zone and method kind (the Omani Gulf-method rows are the same zone with #pm=gulf)
 const groups = new Map();
-const pmOf = r => r[6] === '0' ? 'jafari' : (r[6] === '8' && r[0] === 'Asia/Muscat') ? 'gulf' : '';   // the rows chosen by hand (#pm=): the others are the zone's own
+const pmOf = r => (r[6] === '8' && r[0] === 'Asia/Muscat') ? 'gulf' : '';   // the rows chosen by hand (#pm=): the others are the zone's own
 for (const r of rows) { const k = r[0] + '|' + pmOf(r); (groups.get(k) || groups.set(k, []).get(k)).push(r); }
 let done = 0, skipped = 0, badRows = 0, wrongMethod = 0, wrongRamadan = 0, rebased = 0;
 const driftZones = new Set();

@@ -160,7 +160,7 @@ final class Prefs {
     }
 
     /** «طريقة الحساب»: auto resolves the saved country to a numeric #pm; explicit legacy choices retain their existing values. */
-    String prayerMethod() { String v = sp.getString("prayerMethod", "auto"); return PrayerMethod.JAFARI.equals(v) ? PrayerMethod.JAFARI : PrayerMethod.GULF.equals(v) ? PrayerMethod.GULF : PrayerMethod.AUTO; }
+    String prayerMethod() { String v = sp.getString("prayerMethod", "auto"); return PrayerMethod.GULF.equals(v) ? PrayerMethod.GULF : PrayerMethod.AUTO; }   // 4.3 A4: a saved «jafari» is «تلقائي»
     void setPrayerMethod(String v) { sp.edit().putString("prayerMethod", v).apply(); }
 
     static final int MAX_TEAMS = 20;

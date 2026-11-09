@@ -74,8 +74,7 @@ cities of Bahrain, Kuwait, Qatar, the UAE, Oman, Egypt, Jordan, Syria, Lebanon, 
 in it, each with its country's time zone and its prayer calculation, so a city by name (`city الدوحة`, `city القاهرة`) just works. If it isn't there, step 4 sets it with its coordinates
 and time zone (`city <name> <lat> <lon> <zone>`) without asking me again; the zone of a place in those countries picks
 that country's calculation (`Asia/Kuwait`, `Asia/Qatar`, `Asia/Dubai`, `Asia/Bahrain`, `Asia/Muscat`, `Africa/Cairo`, `Asia/Amman`,
-`Asia/Damascus`, `Asia/Beirut`, `Asia/Hebron` or `Asia/Gaza`, `Africa/Casablanca`, `Africa/Algiers`, `Africa/Tunis`), so give the right one. If I ask for the Shia
-Ja'fari times: `optimize/saver.sh prayermethod jafari`. Oman gets its Ministry of Awqaf's method by itself; `optimize/saver.sh prayermethod gulf` gives the older Gulf method.
+`Asia/Damascus`, `Asia/Beirut`, `Asia/Hebron` or `Asia/Gaza`, `Africa/Casablanca`, `Africa/Algiers`, `Africa/Tunis`), so give the right one. Oman gets its Ministry of Awqaf's method by itself; `optimize/saver.sh prayermethod gulf` gives the older Gulf method.
 
 ## 0. Can you reach my TV? (check this first, 1 minute)
 
@@ -410,7 +409,7 @@ Every setting, and what to say when I ask for something else: `docs/SETTINGS.md`
 
 ```
 optimize/saver.sh cities                          # find my city (Saudi Arabia, the Gulf, Egypt, the Levant, North Africa), then: optimize/saver.sh city <name>, even for Riyadh (until a city is set the screensaver shows a «change your city» note)   (not listed: city <name> <lat> <lon> <time zone, e.g. Asia/Riyadh, Asia/Kuwait or Africa/Cairo; a place that is not in the list is refused without it>)
-optimize/saver.sh prayermethod jafari             # only if I asked for the Shia Ja'fari times (auto = my country's own, the default; gulf = the Gulf method for any place, Oman's older one)
+optimize/saver.sh prayermethod gulf               # only if I asked for the Gulf method (auto = my country's own, the default; gulf = the Gulf method for any place, Oman's older one)
 optimize/saver.sh find-team <club as I wrote it>  # Arabic is fine (الهلال): one call per club, Saudi clubs first;
                                                   # then: optimize/saver.sh teams <id:Name> <id:Name> ...  (my order); «لا شي»: optimize/saver.sh teams none
 optimize/saver.sh card <one of: verse, wisdom, adhkar, stocks, tasks, year, shows, prayers, forecast, matches, none>   # beside the clock (verse unless I said otherwise)

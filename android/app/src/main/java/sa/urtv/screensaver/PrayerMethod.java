@@ -5,10 +5,13 @@ package sa.urtv.screensaver;
  * «تلقائي» resolves the country retained with the city. Cities.Region carries each country's method; the resolved numeric
  * id goes to the page and launcher through the existing pm fragment. Old explicit choices are preserved. Iran uses MWL;
  * no world country introduces a Shia method. Legacy zone-only labels remain for old fragments and documentation.
+ * 4.3 A4: the Ja'fari method is no longer offered (the house rule: nothing sect-specific); a saved or typed «jafari» is read as «تلقائي».
  * tests/prayer_method_test.py keeps method parameters and labels equal across the three consumers.
  */
 final class PrayerMethod {
-    static final String AUTO = "auto", JAFARI = "jafari", GULF = "gulf";
+    static final String AUTO = "auto", GULF = "gulf";
+    /** 4.3 A4: an older choice, read as AUTO wherever it is met (a saved setting, saver.sh, a backup) */
+    static final String OLD_JAFARI = "jafari";
     /**
      * The app's listed countries offered by the search. Search results from any valid country code are accepted.
      * Palestine ("PS") is left out on purpose: GeoNames may put a place of East Jerusalem or Bethlehem in Asia/Jerusalem, which
@@ -24,15 +27,16 @@ final class PrayerMethod {
 
     private PrayerMethod() { }
 
-    /** "jafari" or "auto"; null when it is neither (a typo from the shell). */
+    /** "auto" or "gulf" ("jafari", no longer offered, is "auto"); null when it is none of them (a typo from the shell). */
     static String parse(String s) {
         if (s == null) return null;
         String v = s.trim().toLowerCase(java.util.Locale.ROOT);
-        return AUTO.equals(v) || JAFARI.equals(v) || GULF.equals(v) ? v : null;
+        if (OLD_JAFARI.equals(v)) return AUTO;
+        return AUTO.equals(v) || GULF.equals(v) ? v : null;
     }
 
     /** What goes in the settings fragment: nothing for «تلقائي» (the page is then as it was). */
-    static String fragment(String saved) { return JAFARI.equals(saved) ? "&pm=jafari" : GULF.equals(saved) ? "&pm=gulf" : ""; }
+    static String fragment(String saved) { return GULF.equals(saved) ? "&pm=gulf" : ""; }
 
     /** Automatic selection is resolved here, by country, and sent to both renderers.
      * The page needs no country table, and a shared zone cannot change the method. */
@@ -72,13 +76,13 @@ final class PrayerMethod {
     }
 
     static String label(String saved, String tz) {
-        return JAFARI.equals(saved) ? "جعفري · معهد ليفا، قم" : GULF.equals(saved) ? "الخليج" : "تلقائي · " + authority(tz);
+        return GULF.equals(saved) ? "الخليج" : "تلقائي · " + authority(tz);
     }
 
     static String authority(String country, String tz) { return authority(methodId(country, tz)); }
 
     static String label(String saved, String country, String tz) {
-        return JAFARI.equals(saved) || GULF.equals(saved) ? label(saved, tz) : "تلقائي · " + authority(country, tz);
+        return GULF.equals(saved) ? label(saved, tz) : "تلقائي · " + authority(country, tz);
     }
 
     static String authority(int method) {

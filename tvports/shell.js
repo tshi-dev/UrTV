@@ -70,7 +70,7 @@
     s.lat = num(s.lat, -90, 90, DEFAULTS.lat);
     s.lon = num(s.lon, -180, 180, DEFAULTS.lon);
     s.volume = Math.round(num(s.volume, 10, 100, DEFAULTS.volume) / 10) * 10;
-    if (['auto', 'jafari'].indexOf(s.pm) < 0) s.pm = 'auto';
+    s.pm = 'auto';   // 4.3 A4: the country's own calculation only (an older saved «jafari» too)
     if (['large', 'medium', 'small'].indexOf(s.clocksize) < 0) s.clocksize = 'large';
     if (['hindi', 'latin'].indexOf(s.digits) < 0) s.digits = 'hindi';
     var kinds = DATA.cards.map(function (c) { return c.id; });
@@ -95,7 +95,6 @@
     add('panel', s.panel); add('clocksize', s.clocksize);
     if (s.clock24) add('clock', '24');
     if (s.digits === 'latin') add('digits', 'latin');
-    if (s.pm === 'jafari') add('pm', 'jafari');
     if (!s.adhanbar) add('adhanbar', '0');
     if (s.adj.some(function (v) { return v !== 0; })) add('adj', s.adj.join(','));   // the page's own #adj (CONFIG.prayerAdj); none while all are 0
     add('teams', '');   // no followed clubs here: the team picker is the Android app's
@@ -206,8 +205,6 @@
         var i = cycle(r.cities, indexOfBy(r.cities, 'name', S.city), d), c = r.cities[i];
         S.city = c.name; S.lat = c.lat; S.lon = c.lon; S.tz = c.tz;
       }, page: true },
-    { id: 'pm', label: 'طريقة الحساب', show: function () { return S.pm === 'jafari' ? 'الجعفري' : 'تلقائي (حسب بلد المدينة)'; },
-      change: function () { S.pm = S.pm === 'jafari' ? 'auto' : 'jafari'; }, page: true },
     adjRow(0), adjRow(1), adjRow(2), adjRow(3), adjRow(4),
     { id: 'panel', label: 'البطاقة بجانب الساعة', show: function () { return DATA.cards[indexOfBy(DATA.cards, 'id', S.panel)].name; },
       change: function (d) { S.panel = DATA.cards[cycle(DATA.cards, indexOfBy(DATA.cards, 'id', S.panel), d)].id; }, page: true },

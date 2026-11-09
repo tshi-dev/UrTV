@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261105115229">
+<meta name="urtv-build" content="20261109045414">
 <title>Your TV Screen</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -973,13 +973,13 @@ const CONFIG = {
 if((CONFIG.football || CONFIG.matchPage) && !CONFIG.leagues.length) CONFIG.leagues = ['Saudi-Arabian Pro League'];
 // The cards on this page: the screensaver's one (#panel=); the launcher's up to three (#home_panel=a,b,c, none or empty = no card;
 // an older launcher sends the one card as #panel=). Each kind once, in order.
-// the prayer calculation (Aladhan's id; 100 = Oman's ministry, ours): #pm=jafari or #pm=gulf everywhere, else the country's by the zone, else Umm al-Qura 4; PrayerMath.methodFor
+// the prayer calculation (Aladhan's id; 100 = Oman's ministry, ours): #pm=gulf everywhere (4.3 A4: nothing sect-specific; another word is the country's own), else the country's by the zone, else Umm al-Qura 4; PrayerMath.methodFor
 // (launcher) and PrayerMethod (app) say the same, tests/prayer_method_test.py compares them
 const RESOLVED_METHOD = [1,2,3,4,5,8,9,10,11,12,13,14,15,16,17,18,19,20,21,23,100].includes(+_Q.get('pm')) ? +_Q.get('pm') : null;
-CONFIG.prayerMethod = _Q.get('pm') === 'jafari' ? 0 : _Q.get('pm') === 'gulf' ? 8
+CONFIG.prayerMethod = _Q.get('pm') === 'gulf' ? 8
   : RESOLVED_METHOD !== null ? RESOLVED_METHOD : ({'Asia/Kuwait':9, 'Asia/Qatar':10, 'Asia/Dubai':16, 'Asia/Bahrain':8, 'Asia/Muscat':100, 'Africa/Cairo':5, 'Asia/Amman':23, 'Asia/Damascus':5, 'Asia/Beirut':5, 'Asia/Gaza':5, 'Asia/Hebron':5, 'Asia/Jerusalem':5, 'Africa/Casablanca':21, 'Africa/El_Aaiun':21, 'Africa/Algiers':19, 'Africa/Tunis':18})[CONFIG.timezone] || 4;
 // the calculation's name under the clock, none for Umm al-Qura (ClockZone.calendar says the same on the home screen)
-const CAL_LABEL = {1:'University of Islamic Sciences, Karachi',2:'ISNA',3:'Muslim World League',11:'MUIS Singapore',12:'UOIF France',13:'Diyanet Turkey',14:'Spiritual Administration of Muslims of Russia',15:'Moonsighting Committee',17:'JAKIM Malaysia',20:'Kemenag Indonesia',0:'Jafari method', 8:'Gulf method', 100:'Oman method', 9:'Kuwait method', 10:'Qatar method', 16:'UAE method', 5:'Egyptian method', 23:'Jordan method', 21:'Morocco method', 19:'Algeria method', 18:'Tunisia method'};
+const CAL_LABEL = {1:'University of Islamic Sciences, Karachi',2:'ISNA',3:'Muslim World League',11:'MUIS Singapore',12:'UOIF France',13:'Diyanet Turkey',14:'Spiritual Administration of Muslims of Russia',15:'Moonsighting Committee',17:'JAKIM Malaysia',20:'Kemenag Indonesia', 8:'Gulf method', 100:'Oman method', 9:'Kuwait method', 10:'Qatar method', 16:'UAE method', 5:'Egyptian method', 23:'Jordan method', 21:'Morocco method', 19:'Algeria method', 18:'Tunisia method'};
 const clockSubText = () => 'Time in ' + CONFIG.city + (CAL_LABEL[CONFIG.prayerMethod] ? ' · ' + CAL_LABEL[CONFIG.prayerMethod] : '');
 // «بطاقة ثانية» (#panel2=): a second card beside the small clock only; with a larger clock, on the launcher, without a first card,
 // or when it is the first card again or the next prayer (the bottom-right panel says it already), there is none
@@ -1242,7 +1242,6 @@ const PRAYER_METHODS = {
   15: {fajr:0, isha:0, ishaMin:0, maghrib:.833, tune:[0,0,0,0]}, // seasonal twilight below
   17: {fajr:20, isha:18, ishaMin:0, maghrib:.833, tune:[0,0,0,0]},
   20: {fajr:20, isha:18, ishaMin:0, maghrib:.833, tune:[0,0,0,0]},
-  0:  {fajr:16,   isha:14,   ishaMin:0,  maghrib:4,    tune:[0,0,0,0]},      // Ja'fari (Leva, Qum)
   4:  {fajr:18.5, isha:0,    ishaMin:90, maghrib:.833, tune:[0,0,0,0]},      // Umm al-Qura
   8:  {fajr:19.5, isha:0,    ishaMin:90, maghrib:.833, tune:[0,0,0,0]},      // Gulf (Bahrain; Oman by #pm=gulf)
   9:  {fajr:18,   isha:17.5, ishaMin:0,  maghrib:.833, tune:[0,0,0,0]},      // Kuwait

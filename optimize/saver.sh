@@ -80,7 +80,7 @@
 #   optimize/saver.sh leagues 'Saudi-Arabian Pro League'   whole leagues, up to 5, by English or Arabic name (دوري روشن السعودي);
 #                                                  every game of every club in them joins the teams' games ("" = none)
 #   optimize/saver.sh events f1,ufc               other sports beside the teams' games: f1 ufc boxing  ("" = none)
-#   optimize/saver.sh prayermethod jafari|gulf|auto  «طريقة الحساب»: auto (the default) = the city's country's own, gulf = the Gulf method (Fajr 19.5°, Isha 90 min) for any place, jafari = Shia Ithna-Ashari (Leva, Qum)
+#   optimize/saver.sh prayermethod gulf|auto       «طريقة الحساب»: auto (the default) = the city's country's own, gulf = the Gulf method (Fajr 19.5°, Isha 90 min) for any place
 #   optimize/saver.sh prayeradj on|off             «تعديل وقت الصلاة» (off by default): each prayer moved by its own whole minutes, -20..20
 #   optimize/saver.sh prayeradj fajr +2 maghrib -1   the minutes of fajr dhuhr asr maghrib isha (the others stay); sunrise is never moved
 #   optimize/saver.sh export > settings.json       the settings to move to a second TV (city, prayer method, cards, markets, teams, adhan…;
@@ -321,8 +321,8 @@ case "${1:-}" in
   prayermethod)
     shift
     case "${1:-}" in
-      jafari|gulf|auto) [ $# -eq 1 ] || { echo "usage: optimize/saver.sh prayermethod jafari|gulf|auto"; exit 1; } ;;
-      *) echo "usage: optimize/saver.sh prayermethod jafari|gulf|auto   (auto = the city's country's own method)"; exit 1 ;;
+      gulf|auto) [ $# -eq 1 ] || { echo "usage: optimize/saver.sh prayermethod gulf|auto"; exit 1; } ;;
+      *) echo "usage: optimize/saver.sh prayermethod gulf|auto   (auto = the city's country's own method)"; exit 1 ;;
     esac
     rc=0; send SET "--es prayermethod $1" || rc=$?
     # the home app's adhan alarm was set for the old times: set it again now (no launcher, no harm)
