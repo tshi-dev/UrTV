@@ -13,7 +13,7 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-BASE = "https://www.thesportsdb.com/api/v1/json/3/"
+BASE = "https://www.thesportsdb.com/api/v1/json/123/"   # the free key the page and team_ids.py use
 GAP = 2.5
 OUT = Path("catalogue-probe")
 stats = {"requests": 0, "429": 0, "errors": 0}
@@ -33,9 +33,11 @@ def get(path, **q):
                 time.sleep(30)
                 continue
             stats["errors"] += 1
+            stats.setdefault("http", []).append(e.code)
             return None
-        except Exception:   # noqa: BLE001 - a probe reports
+        except Exception as e:   # noqa: BLE001 - a probe reports
             stats["errors"] += 1
+            stats.setdefault("other", []).append(type(e).__name__)
             return None
     return None
 
