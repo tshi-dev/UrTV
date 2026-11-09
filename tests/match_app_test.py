@@ -36,6 +36,11 @@ check("the setting: the screensaver's Prefs.matchApp (auto by default), its row,
       and '  matchapp) set1 matchapp ' in read(ROOT / "optimize/saver.sh") and "optimize/saver.sh matchapp auto" in read(ROOT / "docs/SETTINGS.md")
       and "optimize/saver.sh matchapp auto" in read(ROOT / "docs/FEATURES.md"))
 check("the launcher may see UrTV Player (Android 11+)", '<package android:name="com.urtv.player" />' in read(ROOT / "android/launcher/src/main/AndroidManifest.xml"))
+ma, mact = read(H / "MatchApp.java"), read(H / "MatchesActivity.java")
+check("the Player is started for a result from the activity, never with NEW_TASK (it knows its caller by getCallingPackage)",
+      "static boolean open(Activity c," in ma and "c.startActivityForResult(i, REQUEST)" in ma and "addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)" not in ma)
+check("the page's bridge hands «شاهد المباراة» to the activity's UI thread", "new Bridge(getApplicationContext(), this)" in mact
+      and "a.runOnUiThread(" in mact and "MatchApp.open(a, setting, facts)" in mact)
 if not shutil.which("javac"):
     print("SKIP the facts' run: no javac")
 else:

@@ -61,7 +61,7 @@ public class MatchesActivity extends Activity {
         s.setAllowUniversalAccessFromFileURLs(true);
         s.setCacheMode(WebSettings.LOAD_NO_CACHE);
         s.setTextZoom(100);   // as HomeCard: the TV's font size must not push the page out of its boxes
-        web.addJavascriptInterface(new Bridge(getApplicationContext()), "UrtvMatches");
+        web.addJavascriptInterface(new Bridge(getApplicationContext(), this), "UrtvMatches");
         web.setWebViewClient(new WebViewClient() {
             @Override public void onPageFinished(WebView v, String u) {
                 if (android.os.Build.VERSION.SDK_INT >= 23) v.postVisualStateCallback(1, new WebView.VisualStateCallback() {
@@ -124,7 +124,9 @@ public class MatchesActivity extends Activity {
     /** What the page may ask of the app: nothing else is reachable from it. */
     static final class Bridge {
         private final Context c;
-        Bridge(Context c) { this.c = c; }
+        /** «شاهد المباراة» starts the Player from this activity, for a result (MatchApp's contract); held weakly, the page may outlive it */
+        private final java.lang.ref.WeakReference<android.app.Activity> act;
+        Bridge(Context c, android.app.Activity a) { this.c = c; this.act = new java.lang.ref.WeakReference<>(a); }
 
         @JavascriptInterface public boolean remind(String text, double at) { return MatchReminder.add(c, text, (long) at); }
 
@@ -148,7 +150,12 @@ public class MatchesActivity extends Activity {
             MatchFacts f;
             try { f = MatchFacts.of(sa.urtv.home.phone.Json.parseObject(json == null ? "" : json), System.currentTimeMillis()); }
             catch (sa.urtv.home.phone.Json.Bad e) { return false; }
-            return f != null && MatchApp.open(c, ConfigSnapshot.read(c).matchApp, f);
+            final android.app.Activity a = act.get();
+            final String setting = ConfigSnapshot.read(c).matchApp;
+            if (f == null || a == null || a.isFinishing() || MatchApp.chosen(c, setting) == null) return false;
+            final MatchFacts facts = f;
+            a.runOnUiThread(new Runnable() { public void run() { if (!a.isFinishing()) MatchApp.open(a, setting, facts); } });   // the bridge's thread is not the UI's
+            return true;
         }
 
         @JavascriptInterface public boolean unfollow(String id) {
