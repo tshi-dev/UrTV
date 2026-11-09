@@ -20,7 +20,7 @@ import java.util.Locale;
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.CITIES
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET
  *       [--es city 'الرس'] [--es lat 25.86 --es lon 43.49 --es tz Asia/Kuwait]   (tz is needed for a place that is not in the list) [--es teams '136013:Al-Hilal,150643:Al-Zulfi']
- *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es homelayout classic|football] [--es favbar 5|6|7|8|all] [--es pagesdark on|off] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
+ *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es pillshidden markets,matches,center|none] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es homelayout classic|football] [--es favbar 5|6|7|8|all] [--es pagesdark on|off] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
  *       [--es sunrise on|off] [--es prayerbar on|off] [--es wxmore on|off] [--es months default|levant] [--es verse day|3] [--es versekind both|verse|hadith] [--es seconds on|off] [--es backexit press|hold|three] [--es occasion on|off] [--es nightdim on|off] [--es taskspill on|off] [--es backsaver on|off] [--es genres Drama,Comedy] [--es langs English]
  *       [--es photos 30] [--es idle 10] [--es digits hindi|latin] [--es hijrioffset -2..2] [--es clock24 on|off] [--es lang ar|en]
  *       [--es cardstyle current|dark1|glass1|dark3|glass3] [--es national auto|off]
@@ -256,6 +256,10 @@ public class SaverReceiver extends BroadcastReceiver {
         String greeting = i.getStringExtra("greeting");
         if (greeting != null && !"on".equals(greeting) && !"off".equals(greeting))
             return "error: greeting is one of on off";
+        String pillsHidden = i.getStringExtra("pillshidden");   // the home's quick buttons to hide: markets, matches, center (comma list), or none
+        if (pillsHidden != null && !"none".equals(pillsHidden)) {
+            for (String k : pillsHidden.split(",")) if (!java.util.Arrays.asList(Prefs.QUICK_BUTTONS).contains(k)) return "error: pillshidden is none or a list of " + android.text.TextUtils.join(" ", Prefs.QUICK_BUTTONS);
+        }
         String listenPill = i.getStringExtra("listenpill");
         if (listenPill != null && !"on".equals(listenPill) && !"off".equals(listenPill))
             return "error: listenpill is one of on off";
@@ -382,6 +386,7 @@ public class SaverReceiver extends BroadcastReceiver {
         if (homeCards != null) p.setHomePanels(homeCards);
         if (greeting != null) p.setGreeting("on".equals(greeting));
         if (listenPill != null) p.setListenPill("on".equals(listenPill));
+        if (pillsHidden != null) p.setPillsHidden(pillsHidden);
         if (updateBell != null) p.setUpdateBell("on".equals(updateBell));
         if (watchNext != null) p.setWatchNext("on".equals(watchNext));
         if (appearance != null) p.setAppearance(appearance);
@@ -557,6 +562,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nhome_panel: " + p.homePanel()
             + "\ngreeting: " + (p.greeting() ? "on" : "off")
             + "\nlistenpill: " + (p.listenPill() ? "on" : "off")
+            + "\npillshidden: " + (p.pillsHidden().isEmpty() ? "none" : p.pillsHidden())
             + "\nupdatebell: " + (p.updateBell() ? "on" : "off")
             + "\nwatchnext: " + (p.watchNext() ? "on" : "off")
             + "\nappearance: " + p.appearance()

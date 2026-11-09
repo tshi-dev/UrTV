@@ -71,6 +71,8 @@
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 
     <queries>
+        <!-- «صفحته في المتجر» only when the Play Store is on the TV -->
+        <package android:name="com.android.vending" />
         <!-- the Settings key's SystemUI handler: whether it resolves (SettingsKey.NOTIFICATION_PANEL_ACTION, a Haier MatrixTV has none) -->
         <intent>
             <action android:name="android.app.action.TOGGLE_NOTIFICATION_HANDLER_PANEL" />

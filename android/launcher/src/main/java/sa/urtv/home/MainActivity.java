@@ -826,7 +826,10 @@ public class MainActivity extends Activity {
     // ---- «مركز التحكم»: the pill's row membership and what the panel may ask of this screen
 
     /** Kids mode has no «مركز التحكم»: neither its pill nor its panel (the other pills' functions stay behind their locks, outside kids mode). */
-    private boolean centerWanted() { return !Parental.state(this).kids; }
+    private boolean centerWanted() { return !Parental.state(this).kids && !hiddenQuick.contains("center"); }
+
+    /** the quick buttons hidden in the settings (#52), read with the minute tick */
+    private final java.util.Set<String> hiddenQuick = new java.util.HashSet<>();
 
     /**
      * The pill comes into the row or leaves it as kids mode changes (the minute tick and a return to the home): it goes out of the row and out
@@ -837,7 +840,7 @@ public class MainActivity extends Activity {
         boolean want = centerWanted(), has = centerPill.getParent() == pillRow;
         if (want == has) return;
         if (want) {
-            int at = pills.contains(tilawahPill) ? pills.indexOf(tilawahPill) : pills.size();
+            int at = quickIndex(marketsPill, matchesPill, tilawahPill);   // before «الأسواق» and «المباريات» (and «تلاوة وأذان»): where it always was
             pills.add(at, centerPill);
             pillRow.addView(centerPill, at + 1, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(Pill.GAP), 0));   // child 0 is «يُتلى الآن»
         } else {
@@ -846,6 +849,32 @@ public class MainActivity extends Activity {
             int at = pills.indexOf(centerPill);
             pills.remove(centerPill);
             pillRow.removeView(centerPill);
+            if (hadFocus && !pills.isEmpty()) pills.get(Math.max(0, Math.min(at, pills.size()) - 1)).requestFocus();
+        }
+        wireFocus();
+    }
+
+    /** where a quick button comes back in the row: before the first of the buttons that follow it which is in the row, else at the end */
+    private int quickIndex(View... later) {
+        int at = pills.size();
+        for (View l : later) if (l != null && pills.contains(l)) at = Math.min(at, pills.indexOf(l));
+        return at;
+    }
+
+    /** «الأسواق» and «المباريات» in or out of the row by the setting (#52): out of the row and out of `pills` (a hidden view would stop the walk), back before the buttons that follow them */
+    private void applyQuickPill(View p, boolean want, View... later) {
+        if (p == null || pillRow == null) return;
+        boolean has = p.getParent() == pillRow;
+        if (want == has) return;
+        if (want) {
+            int at = quickIndex(later);
+            pills.add(at, p);
+            pillRow.addView(p, at + 1, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(Pill.GAP), 0));   // child 0 is «يُتلى الآن»
+        } else {
+            boolean hadFocus = p.hasFocus();
+            int at = pills.indexOf(p);
+            pills.remove(p);
+            pillRow.removeView(p);
             if (hadFocus && !pills.isEmpty()) pills.get(Math.max(0, Math.min(at, pills.size()) - 1)).requestFocus();
         }
         wireFocus();
@@ -2341,7 +2370,13 @@ public class MainActivity extends Activity {
             }
         };
         Intent details = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", pkg, null));
-        o.info = () -> guarded(ParentalPolicy.MENU_APP, pkg, AppActions.DETAILS, () -> launch(details));   // its uninstall is there too
+        o.info = () -> guarded(ParentalPolicy.MENU_APP, pkg, AppActions.DETAILS, () -> launch(details));
+        if (!kids && AppActions.canUninstall(this, pkg)) {   // «إلغاء التثبيت»: Android's own question (never for a system app, ours, or in kids mode); the family PIN first when it asks
+            Intent del = new Intent(Intent.ACTION_DELETE, Uri.fromParts("package", pkg, null)).putExtra(Intent.EXTRA_RETURN_RESULT, false);
+            o.uninstall = () -> guarded(ParentalPolicy.MENU_APP, pkg, S.t("إلغاء التثبيت"), () -> launch(del));
+        }
+        Intent shop = AppActions.storeIntent(this, pkg);
+        if (!kids && shop != null) o.store = () -> guarded(ParentalPolicy.MENU_APP, pkg, S.t("صفحته في المتجر"), () -> launch(shop));
         if (appOptions != null) appOptions.dismiss();
         appOptions = AppOptions.show(this, anchor, inDock ? 1.12f : 1.1f, homeGlass(), font("sans-serif-medium"), o);
     }
@@ -2679,7 +2714,11 @@ public class MainActivity extends Activity {
         Dock.followBackSaver(this, cfg.backSaver());   // «الرجوع يفتح شاشة التوقف» changed in the screensaver's settings: read at the next Back
         applyUpdateBell(cfg.updateBellOn);   // [updates bell]
         applyBarSize(cfg.favBar);   // «تطبيقات في الشريط»
-        applyCenterPill();   // kids mode may have been turned on or off
+        hiddenQuick.clear();
+        for (String k : new String[] {"markets", "matches", "center"}) if (cfg.pillHidden(k)) hiddenQuick.add(k);
+        applyQuickPill(marketsPill, !hiddenQuick.contains("markets"), matchesPill, tilawahPill);
+        applyQuickPill(matchesPill, !hiddenQuick.contains("matches"), tilawahPill);
+        applyCenterPill();   // kids mode may have been turned on or off, or the button hidden
         sa.urtv.home.tilawah.AdhanSync.onConfig(this, cfg.placeFragment(), cfg.placeTicket());   // «تعديل وقت الصلاة» changed on the TV: the alarm follows
         updateSleepPill();
     }
@@ -3371,9 +3410,15 @@ public class MainActivity extends Activity {
             case RemoteKeys.OPEN_OUR_SETTINGS:   // a long press of the Settings key: OUR settings (the TV's own if our app is missing)
                 openOurSettings(true);
                 break;
-            case RemoteKeys.OPEN_SETTINGS:   // a short press of the Settings key: the TV's own settings, behind @tvsettings
-                launchGuarded(ParentalPolicy.REMOTE_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون");
+            case RemoteKeys.OPEN_SETTINGS: {   // a short press of the Settings / Quick Settings key: the TV's own quick panel when it has one (behind @tvsettings), else OUR Control Center (#51), else the TV's settings
+                Intent panel = new Intent(SettingsKey.NOTIFICATION_PANEL_ACTION);
+                if (getPackageManager().resolveActivity(panel, 0) != null) launchGuarded(ParentalPolicy.REMOTE_SETTINGS, panel, "إعدادات التلفزيون");
+                else if (control != null && centerPill != null && !Parental.state(this).kids) {
+                    final View anchor = centerPill.getParent() == pillRow || pills.isEmpty() ? centerPill : pills.get(0);   // the pill may be hidden (#52): the first pill holds the place
+                    guarded(ParentalPolicy.PILL_CENTER, null, ControlText.NAME, () -> control.open(anchor));
+                } else launchGuarded(ParentalPolicy.REMOTE_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون");
                 break;
+            }
             case RemoteKeys.OPEN_INPUTS:
                 if (!pills.isEmpty()) showInputs(pills.get(0), ParentalPolicy.MENU_KEY);
                 break;
