@@ -39,19 +39,18 @@ public class SetupActivity extends Activity {
     private int GOLD, INK, TEXT, DIM, RED;   // from the glass look (glass(), before anything is drawn)
     private sa.urtv.home.GlassStyle.Look look;
 
-    private LinearLayout body;
+    private LinearLayout body, col;
+    private FrameLayout.LayoutParams colLp;
+    private int screenW;
     private TextView status, detail, start, undo;
     private boolean running;     // a run is shown as going (this screen's thread only)
     private boolean extras = true;
     /** 4.3 «تطبيقات مقترحة»: the ticked boxes (SuggestedApps ids), SmartTube and TV Bro at first as before */
     private final List<String> picks = new java.util.ArrayList<>(sa.urtv.home.SuggestedApps.defaults(android.os.Build.VERSION.SDK_INT));
     private String mode = "";
-    private final List<TextView> stepViews = new ArrayList<>();       // each step's label
-    private final List<TextView> stepSubs = new ArrayList<>();        // the line under the step in progress
-    private final List<StepMark> stepMarks = new ArrayList<>();       // its dot on the rail
-    private TextView count;                                            // «٧ من ١٥»
-    private sa.urtv.home.CalmBar countBar;
-    private TextView notice;                                           // «سيعيد التلفزيون التشغيل الآن، وسيكمل بنفسه»
+    private SetupProgressView progress;                                // design/43: the phases and the main area of the progress and done screens
+    private final android.os.Handler clock = new android.os.Handler(android.os.Looper.getMainLooper());
+    private boolean ticking;
     private static SetupRunner.End dismissed;
     /** the done screen's QR code: a multiple of 8 dp (the packed report needs a small code, tester step 18) */
     static final int QR_DP = 224;   // a done screen the person closed with «تم»: the start screen again
@@ -77,7 +76,10 @@ public class SetupActivity extends Activity {
         col.setLayoutDirection(Dir.layout());
         col.setPadding(dp(40), dp(32), dp(40), dp(32));
         col.setBackground(sa.urtv.home.GlassPaint.fill(this, sa.urtv.home.GlassStyle.over(look.dialog, look.base), 22, look.line));
-        frame.addView(col, new FrameLayout.LayoutParams(Math.min(dp(880), sw - 2 * Math.round(sw * 0.05f)), -2, Gravity.CENTER));
+        screenW = sw;
+        colLp = new FrameLayout.LayoutParams(Math.min(dp(880), sw - 2 * Math.round(sw * 0.05f)), -2, Gravity.CENTER);
+        this.col = col;
+        frame.addView(col, colLp);
         col.addView(text(S.t("إعداد تلفزيوني"), 28, "Medium", TEXT), right(dp(16)));
         body = new LinearLayout(this);
         body.setOrientation(LinearLayout.VERTICAL);
@@ -116,12 +118,12 @@ public class SetupActivity extends Activity {
         if (!want.equals(mode)) {
             mode = want;
             body.removeAllViews();
-            stepViews.clear();
-            stepSubs.clear();
-            stepMarks.clear();
-            count = null;
-            countBar = null;
-            notice = null;
+            progress = null;
+            clock.removeCallbacks(secondTick);
+            ticking = false;
+            colLp.width = want.equals("progress") || want.equals("done") ? Math.max(dp(880), screenW - 2 * Math.round(screenW * 0.05f)) : Math.min(dp(880), screenW - 2 * Math.round(screenW * 0.05f));   // the progress and the result use the whole safe width
+            colLp.width = Math.min(colLp.width, screenW - 2 * Math.round(screenW * 0.05f));
+            col.setLayoutParams(colLp);
             detail.setText("");
             if (want.equals("plan")) buildPlan(r);
             else if (want.equals("progress")) buildProgress(r);
@@ -221,9 +223,25 @@ public class SetupActivity extends Activity {
     private void buildPlan(SetupRunner r) {
         SetupRunner.Preview p = r.preview();
         if (p == null) p = new SetupRunner.Preview();
-        add(text(S.t("هذا ما سنفعله في تلفزيونك، بالترتيب. ما تغيّر شيء بعد:"), 15, "Medium", TEXT), dp(8));
+        add(text(S.t("هذا ما سنفعله في تلفزيونك، بالترتيب. ما تغيّر شيء بعد:"), 20, "Medium", TEXT), dp(12));
+        // design/43: the plan in one glass panel, each line numbered by a quiet accent number, not a wall of plain lines
         List<String> plan = SetupRunner.planLines(p, TR);
-        for (int i = 0; i < plan.size(); i++) add(text(digits((i + 1) + ". " + plan.get(i)), 14, "Regular", TEXT), dp(8));
+        LinearLayout planBox = new LinearLayout(this);
+        planBox.setOrientation(LinearLayout.VERTICAL);
+        planBox.setLayoutDirection(Dir.layout());
+        planBox.setPadding(dp(24), dp(16), dp(24), dp(8));
+        planBox.setBackground(sa.urtv.home.GlassPaint.panel(this, look, 18));
+        for (int i = 0; i < plan.size(); i++) {
+            LinearLayout line = new LinearLayout(this);
+            line.setOrientation(LinearLayout.HORIZONTAL);
+            line.setLayoutDirection(Dir.layout());
+            TextView n = text(digits(String.valueOf(i + 1)), 16, "Medium", GOLD);
+            n.setMinWidth(dp(32));
+            line.addView(n, new LinearLayout.LayoutParams(-2, -2));
+            line.addView(text(digits(plan.get(i)), 15, "Regular", TEXT), new LinearLayout.LayoutParams(0, -2, 1f));
+            planBox.addView(line, right(dp(10)));
+        }
+        add(planBox, dp(16));
         // 4.3: a box per suggested app the setup can install (OK ticks or unticks it); one already on the TV says so and is left
         add(text(S.t("تطبيقات مقترحة: علّم ما تبي نثبّته معها"), 15, "Medium", TEXT), dp(8));
         final TextView summary = text("", 14, "Regular", DIM);
@@ -262,151 +280,121 @@ public class SetupActivity extends Activity {
     }
 
     private void buildProgress(SetupRunner r) {
-        add(text(r.kind() == SetupRunner.Kind.UNDO ? S.t("نرجّع التلفزيون كما كان:") : S.t("الإعداد يعمل. لا تطفئ التلفزيون، وقد يُعاد تشغيله وحده ويكمل."), 16, "Medium", TEXT), dp(16));
-        stepsList(r);
+        progress = new SetupProgressView(this, look, typeface("Medium"), typeface("Regular"));
+        body.addView(progress, right(0));
+        updateProgress(r);
     }
 
-    /** «٧ من ١٥» with a calm bar, then the steps as a vertical rail: done (a tick), now (a ring, its line under it), next (hollow); a notice when the TV is about to restart */
-    private void stepsList(SetupRunner r) {
+    /** the five phases of the full run and which steps belong to each (the undo has one of its own); the screen shows phases, not the fourteen steps */
+    private static final String[][] PHASES = {
+        {"فحص", "precheck", "backup", "keep", "before"},
+        {"تجهيز", "grants", "safe", "community", "tweaks"},
+        {"تثبيت", "install-saver", "screensaver", "extras"},
+        {"تفعيل", "autostart", "home", "after"},
+        {"تقرير", "report"},
+    };
+
+    private static int phaseOf(String id) {
+        for (int i = 0; i < PHASES.length; i++) for (int j = 1; j < PHASES[i].length; j++) if (PHASES[i][j].equals(id)) return i;
+        return -1;
+    }
+
+    /** every second while the work is shown: only the elapsed time moves */
+    private final Runnable secondTick = new Runnable() {
+        @Override public void run() {
+            SetupRunner r = SetupRunner.get();
+            if (progress != null && mode.equals("progress") && r.running()) {
+                progress.tick(elapsedText(r, false));
+                clock.postDelayed(this, 1000);
+            } else ticking = false;
+        }
+    };
+
+    private String elapsedText(SetupRunner r, boolean total) {
+        long first = 0, last = 0;
+        for (SetupRunner.Step s : r.steps()) {
+            if (s.startedMs > 0 && (first == 0 || s.startedMs < first)) first = s.startedMs;
+            if (s.endedMs > last) last = s.endedMs;
+        }
+        if (first == 0) return "";
+        long ms = (total && last > first ? last : System.currentTimeMillis()) - first;
+        long sec = Math.max(0, ms / 1000);
+        String t = String.format(java.util.Locale.ROOT, "%02d:%02d", sec / 60, sec % 60);
+        return digits(S.t(total ? "استغرق %s" : "مرّ %s", t));
+    }
+
+    /** one look at the run for the progress view: the phases, the step in hand, the line it is saying, the share, the time, and (the TV is asking for USB debugging) the instruction card */
+    private SetupProgressView.Model modelOf(SetupRunner r, boolean finished) {
         List<SetupRunner.Step> steps = r.steps();
-        count = text("", 15, "Medium", GOLD);
-        add(count, dp(8));
-        countBar = new sa.urtv.home.CalmBar(this, look.line, GOLD);
-        body.addView(countBar, right(dp(24)));
-        notice = text("", 15, "Medium", TEXT);
-        notice.setPadding(dp(16), dp(12), dp(16), dp(12));
-        notice.setBackground(sa.urtv.home.GlassPaint.panel(this, look, 14));
-        notice.setVisibility(View.GONE);
-        add(notice, dp(16));
-        for (int i = 0; i < steps.size(); i++) {
-            LinearLayout row = new LinearLayout(this);
-            row.setOrientation(LinearLayout.HORIZONTAL);
-            row.setLayoutDirection(Dir.layout());
-            StepMark mark = new StepMark(i == 0, i == steps.size() - 1);
-            stepMarks.add(mark);
-            row.addView(mark, new LinearLayout.LayoutParams(dp(32), -1));
-            LinearLayout words = new LinearLayout(this);
-            words.setOrientation(LinearLayout.VERTICAL);
-            TextView t = text("", 16, "Regular", DIM);
-            stepViews.add(t);
-            words.addView(t, right(0));
-            TextView sub = text("", 13, "Regular", DIM);
-            sub.setVisibility(View.GONE);
-            stepSubs.add(sub);
-            words.addView(sub, right(0));
-            words.setPadding(dp(8), dp(4), 0, dp(12));
-            row.addView(words, new LinearLayout.LayoutParams(0, -2, 1f));
-            body.addView(row, right(0));
+        boolean undoRun = r.kind() == SetupRunner.Kind.UNDO || r.kind() == SetupRunner.Kind.ANSWERS;
+        SetupProgressView.Model m = new SetupProgressView.Model();
+        m.phases = new ArrayList<>();
+        int done = 0;
+        SetupRunner.Step now = null;
+        if (undoRun) {
+            SetupRunner.State st = steps.isEmpty() ? SetupRunner.State.PENDING : steps.get(0).state;
+            int ps = st == SetupRunner.State.RUNNING ? SetupProgressView.NOW : st == SetupRunner.State.FAILED ? SetupProgressView.FAILED : st == SetupRunner.State.PENDING ? SetupProgressView.WAIT : SetupProgressView.DONE;
+            m.phases.add(new SetupProgressView.Phase(S.tv(SetupRunner.label(steps.isEmpty() ? "undo" : steps.get(0).id)), ps));
+        } else {
+            for (String[] ph : PHASES) m.phases.add(new SetupProgressView.Phase(S.t(ph[0]), SetupProgressView.WAIT));
         }
-    }
-
-    /** one step's dot on the rail, drawn: a tick (done), a ring with a dot (now), a hollow circle (next), a dash (left out), a cross (failed); the rail is the accent colour as far as the work has come */
-    private final class StepMark extends View {
-        private final boolean first, last;
-        private SetupRunner.State state = SetupRunner.State.PENDING;
-        private boolean before;   // the step above is done
-        private final android.graphics.Paint paint = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
-
-        StepMark(boolean first, boolean last) {
-            super(SetupActivity.this);
-            this.first = first;
-            this.last = last;
+        for (SetupRunner.Step s : steps) {
+            boolean fin = s.state != SetupRunner.State.PENDING && s.state != SetupRunner.State.RUNNING;
+            if (fin) done++;
+            if (s.state == SetupRunner.State.RUNNING) now = s;
         }
-
-        void set(SetupRunner.State s, boolean doneAbove) {
-            if (s == state && doneAbove == before) return;
-            state = s;
-            before = doneAbove;
-            invalidate();
-        }
-
-        @Override protected void onDraw(android.graphics.Canvas c) {
-            float x = getWidth() / 2f, y = dp(14), r = dp(7);
-            boolean done = state == SetupRunner.State.DONE || state == SetupRunner.State.SKIPPED;
-            paint.setStyle(android.graphics.Paint.Style.STROKE);
-            paint.setStrokeWidth(dp(2));
-            if (!first) { paint.setColor(before ? GOLD : look.line); c.drawLine(x, 0, x, y - r - dp(2), paint); }
-            if (!last) { paint.setColor(done ? GOLD : look.line); c.drawLine(x, y + r + dp(2), x, getHeight(), paint); }
-            switch (state) {
-                case DONE:
-                    paint.setStyle(android.graphics.Paint.Style.FILL);
-                    paint.setColor(GOLD);
-                    c.drawCircle(x, y, r, paint);
-                    paint.setStyle(android.graphics.Paint.Style.STROKE);
-                    paint.setStrokeWidth(dp(2));
-                    paint.setColor(sa.urtv.home.GlassStyle.over(look.dialog, look.base));
-                    c.drawLines(new float[] {x - dp(3), y, x - dp(1), y + dp(2), x - dp(1), y + dp(2), x + dp(3), y - dp(2)}, paint);
-                    break;
-                case RUNNING:
-                    paint.setColor(GOLD);
-                    c.drawCircle(x, y, r + dp(1), paint);
-                    paint.setStyle(android.graphics.Paint.Style.FILL);
-                    c.drawCircle(x, y, dp(3), paint);
-                    break;
-                case FAILED:
-                    paint.setColor(RED);
-                    c.drawCircle(x, y, r, paint);
-                    c.drawLines(new float[] {x - dp(3), y - dp(3), x + dp(3), y + dp(3), x - dp(3), y + dp(3), x + dp(3), y - dp(3)}, paint);
-                    break;
-                case SKIPPED:
-                    paint.setColor(DIM);
-                    c.drawCircle(x, y, r, paint);
-                    c.drawLine(x - dp(3), y, x + dp(3), y, paint);
-                    break;
-                default:
-                    paint.setColor(look.line);
-                    c.drawCircle(x, y, r, paint);
+        if (!undoRun) {
+            for (int i = 0; i < PHASES.length; i++) {
+                int total = 0, fin = 0;
+                boolean running = false, failed = false;
+                for (SetupRunner.Step s : steps) {
+                    if (phaseOf(s.id) != i) continue;
+                    total++;
+                    if (s.state == SetupRunner.State.FAILED) failed = true;
+                    if (s.state == SetupRunner.State.RUNNING) running = true;
+                    if (s.state != SetupRunner.State.PENDING && s.state != SetupRunner.State.RUNNING) fin++;
+                }
+                m.phases.get(i).state = failed ? SetupProgressView.FAILED : running ? SetupProgressView.NOW : total > 0 && fin == total ? SetupProgressView.DONE : SetupProgressView.WAIT;
             }
+            boolean anyNow = false;
+            for (SetupProgressView.Phase p : m.phases) anyNow |= p.state == SetupProgressView.NOW;
+            if (!anyNow && !finished) for (SetupProgressView.Phase p : m.phases) if (p.state == SetupProgressView.WAIT) { p.state = SetupProgressView.NOW; break; }   // between two steps: the next phase is the one in hand
         }
+        m.percent = steps.isEmpty() ? 0 : 100 * done / steps.size();
+        m.counts = digits(S.t("%s من %s خطوة", String.valueOf(done), String.valueOf(steps.size())));
+        m.elapsed = elapsedText(r, finished);
+        m.stepName = now == null ? (r.kind() == SetupRunner.Kind.UNDO ? S.t("نرجّع التلفزيون كما كان") : S.t("نجهّز تلفزيونك")) : S.tv(SetupRunner.label(now.id));
+        List<SetupRunner.Line> lines = r.linesSince(Math.max(0, r.lastSeq() - 1));
+        m.doing = lines.isEmpty() ? "" : digits(lines.get(lines.size() - 1).text);
+        SetupRunner.Preview pv = r.preview();
+        boolean restarting = now != null && ("before".equals(now.id) || "after".equals(now.id)) && pv != null && pv.restarts;
+        m.restart = restarting ? S.t("سيعيد التلفزيون التشغيل الآن، وسيكمل بنفسه.") : "";
+        m.prompt = r.promptWaiting();
+        m.promptLate = r.promptLate();
+        m.promptTitle = S.tv(SetupRunner.PROMPT_LINE);
+        m.promptHint = S.t("اضغط «اختيار» بالريموت على «السماح دائماً»");
+        m.artOk = S.t("اختيار");
+        m.promptLateText = S.tv(SetupRunner.PROMPT_LATE);
+        m.artTitle = S.t("السماح بتصحيح USB؟");
+        m.artCancel = S.t("إلغاء");
+        m.artAllow = S.t("السماح دائماً");
+        m.finished = finished;
+        SetupRunner.End e = r.end();
+        m.bad = e != null && e.bad;
+        m.result = e == null ? "" : S.tv(e.text);
+        return m;
     }
 
     private void updateProgress(SetupRunner r) {
-        List<SetupRunner.Step> steps = r.steps();
-        int finished = 0;
-        SetupRunner.Step now = null;
-        for (int i = 0; i < steps.size() && i < stepViews.size(); i++) {
-            SetupRunner.Step s = steps.get(i);
-            if (s.state != SetupRunner.State.PENDING && s.state != SetupRunner.State.RUNNING) finished++;
-            if (s.state == SetupRunner.State.RUNNING) now = s;
-            String tail = "";
-            int color;
-            switch (s.state) {
-                case DONE: color = TEXT; break;
-                case SKIPPED: color = DIM; tail = " " + S.t("(تُرك)") + why(s.reason); break;
-                case FAILED: color = RED; tail = why(s.reason); break;
-                case RUNNING: color = TEXT; break;
-                default: color = DIM; break;
-            }
-            TextView label = stepViews.get(i);
-            label.setText(digits(S.tv(SetupRunner.label(s.id)) + tail));
-            label.setTextColor(color);
-            label.setTypeface(typeface(s.state == SetupRunner.State.RUNNING ? "Medium" : "Regular"));
-            boolean above = i > 0 && (steps.get(i - 1).state == SetupRunner.State.DONE || steps.get(i - 1).state == SetupRunner.State.SKIPPED);
-            stepMarks.get(i).set(s.state, above);
-            stepSubs.get(i).setVisibility(View.GONE);
-        }
-        if (count != null) {
-            count.setText(digits(S.t("%s من %s", String.valueOf(finished), String.valueOf(steps.size())) + " · " + (steps.isEmpty() ? 0 : 100 * finished / steps.size()) + (Dir.rtl() ? "٪" : "%")));   // design/43: the share beside the count
-            countBar.setShare(steps.isEmpty() ? 0 : finished / (double) steps.size());
-        }
-        if (r.promptLate()) say(S.tv(SetupRunner.PROMPT_LATE), RED);
-        else if (r.promptWaiting()) say(S.tv(SetupRunner.PROMPT_LINE), GOLD);
+        if (progress == null) return;
+        progress.show(modelOf(r, false));
+        // the status line under the card keeps the TV's one-line state (the same words as before), except where the card already says it
+        SetupRunner rr = r;
+        if (rr.promptLate()) say("", GOLD);
+        else if (rr.promptWaiting()) say("", GOLD);
         else say(r.kind() == SetupRunner.Kind.UNDO ? S.t("جارٍ الرجوع…") : S.t("جارٍ الإعداد… لا تطفئ التلفزيون."), GOLD);
-        List<SetupRunner.Line> lines = r.linesSince(Math.max(0, r.lastSeq() - 1));
-        String said = lines.isEmpty() ? "" : digits(lines.get(lines.size() - 1).text);
-        if (now != null && !said.isEmpty()) {   // the line the work is saying goes under the step in progress, not at the bottom of the card
-            TextView sub = stepSubs.get(steps.indexOf(now));
-            sub.setText(said);
-            sub.setVisibility(View.VISIBLE);
-            detail.setText("");
-        } else detail.setText(said);
-        // the TV restarts inside the two measuring steps, on a TV that survives it (the plan said so): said plainly, before it happens
-        SetupRunner.Preview pv = r.preview();
-        boolean restarting = now != null && ("before".equals(now.id) || "after".equals(now.id)) && pv != null && pv.restarts;
-        if (notice != null) {
-            notice.setVisibility(restarting ? View.VISIBLE : View.GONE);
-            if (restarting) notice.setText(S.t("سيعيد التلفزيون التشغيل الآن، وسيكمل بنفسه."));
-        }
+        detail.setText("");
+        if (!ticking && r.running()) { ticking = true; clock.postDelayed(secondTick, 1000); }
     }
 
     private static String why(String reason) { return reason == null || reason.isEmpty() ? "" : " — " + reason; }
@@ -479,11 +467,10 @@ public class SetupActivity extends Activity {
         final SetupRunner.End e = r.end();
         say(S.tv(e.text), e.bad ? RED : GOLD);
         if (r.kind() == SetupRunner.Kind.FULL) {
-            stepsList(r);
-            mode = "progress";   // the step lines are drawn the same way, once
-            updateProgress(r);
-            mode = "done";
-            say(S.tv(e.text), e.bad ? RED : GOLD);
+            progress = new SetupProgressView(this, look, typeface("Medium"), typeface("Regular"));   // the same phases as the progress, all settled, and the result in the main area
+            body.addView(progress, right(dp(24)));
+            progress.show(modelOf(r, true));
+            say("", GOLD);
             String report = new FileStore(this).get(SetupReport.FILE);
             String url = report == null || report.isEmpty() ? null : SetupRunner.shareUrl(report);
             if (url != null) {

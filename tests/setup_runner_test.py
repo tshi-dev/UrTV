@@ -37,7 +37,10 @@ check("one way to set up: the screen starts only the full run or the undo (the o
 check("the screen: «جهّز كل شي», the plan with «ابدأ» and «إلغاء», a box per suggested app (4.3; SmartTube and TV Bro ticked at first), «كمّل» for the Wi-Fi, the QR of the report, «تراجع»",
       all(w in act for w in ('button(S.t("جهّز كل شي"))', 'S.t("ابدأ")', 'S.t("إلغاء")', 'S.t("كمّل")', "private boolean extras = true;", "QrCode.encodeLarge(url)",
                              '"تراجع (يرجّع التلفزيون كما كان)"', "SetupRunner.get().confirm(new java.util.ArrayList<>(picks))", "SuggestedApps.forSetup(android.os.Build.VERSION.SDK_INT)", "SetupRunner.get().cancel()", "SetupRunner.PROMPT_LATE", "SetupRunner.WIFI_ASK_TEXT")))
-check("the progress screen: one row per step on a rail, a tick done, a dash تُرك, a cross not done", all(w in act for w in ("private final class StepMark", "case DONE:", "case SKIPPED:", "case FAILED:", "case RUNNING:", 'S.t("(تُرك)")')))
+pv = (HOME / "setup/SetupProgressView.java").read_text(encoding="utf-8")
+check("the progress screen (design/43): five phases on a rail (a tick done, the accent now, dim next, a cross failed) and the step in hand big, with its line, share and time; the USB prompt is one card that replaces the main area",
+      all(w in act for w in ("private static final String[][] PHASES", "SetupProgressView.Model modelOf(", "progress.show(modelOf(r, false))", "m.prompt = r.promptWaiting();", "m.promptLate = r.promptLate();"))
+      and all(w in pv for w in ("private final class Mark extends View", "private final class DialogArt extends View", "promptCard.setVisibility(showPrompt ? VISIBLE : GONE);", "running.setVisibility(!showPrompt && !m.finished ? VISIBLE : GONE);")))
 check("the counts follow the person's digits setting (the screens' DigitsText)", "DigitsText.convert(s, Digits.latin())" in act)
 check("the 20 s notice is the owner's wording", 'PROMPT_LATE = "ما ظهرت الرسالة؟ أعد تشغيل التلفزيون وافتح «إعداد تلفزيوني» واضغط «جهّز كل شي» وخلك عند التلفزيون"' in runner)
 check("a run lives in a foreground service (it outlives the screen), not exported", 'android:name=".setup.SetupService" android:exported="false"' in manifest

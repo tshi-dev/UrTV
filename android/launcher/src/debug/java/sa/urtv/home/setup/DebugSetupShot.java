@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Debug builds only (CI's pictures): `am start -n sa.urtv.home/.setup.DebugSetupShot --es preview progress` shows «إعداد تلفزيوني» in a state (start, plan, progress, restart, done)
+ * Debug builds only (CI's pictures): `am start -n sa.urtv.home/.setup.DebugSetupShot --es preview progress` shows «إعداد تلفزيوني» in a state (start, plan, progress, restart, prompt, promptlate, done)
  * without a TV to set up: the runner's own fields are set to what that state looks like (nothing runs), then SetupActivity is started.
  */
 public class DebugSetupShot extends Activity {
@@ -41,16 +41,20 @@ public class DebugSetupShot extends Activity {
         if ("start".equals(state)) return;
         set(r, "kind", SetupRunner.Kind.FULL);
         if ("plan".equals(state)) { set(r, "running", true); set(r, "awaitingConfirm", true); return; }
-        int upTo = "progress".equals(state) ? 7 : "restart".equals(state) ? 3 : steps.size();
+        boolean prompt = "prompt".equals(state) || "promptlate".equals(state);
+        int upTo = "progress".equals(state) ? 7 : "restart".equals(state) ? 3 : prompt ? 0 : steps.size();
+        long now0 = System.currentTimeMillis();
+        for (int i = 0; i < steps.size(); i++) { steps.get(i).startedMs = now0 - (steps.size() - i) * 11_000L - 5_000L; steps.get(i).endedMs = steps.get(i).startedMs + 9_000L; }   // a plausible two minutes
         for (int i = 0; i < steps.size(); i++) steps.get(i).state = i < upTo ? SetupRunner.State.DONE : SetupRunner.State.PENDING;
-        if ("progress".equals(state) || "restart".equals(state)) {
+        if ("progress".equals(state) || "restart".equals(state) || prompt) {
             steps.get(upTo).state = SetupRunner.State.RUNNING;
             set(r, "running", true);
             Field ring = SetupRunner.class.getDeclaredField("ring");
             ring.setAccessible(true);
             @SuppressWarnings("unchecked") java.util.ArrayDeque<SetupRunner.Line> q = (java.util.ArrayDeque<SetupRunner.Line>) ring.get(r);
             q.clear();
-            q.add(new SetupRunner.Line(1, "progress".equals(state) ? "نثبّت شاشة التوقف…" : "نقيس الذاكرة قبل الإعداد…"));
+            q.add(new SetupRunner.Line(1, prompt ? "نتصل بالتلفزيون…" : "progress".equals(state) ? "نثبّت شاشة التوقف…" : "نقيس الذاكرة قبل الإعداد…"));
+            if (prompt) { set(r, "promptSince", now0 - ("promptlate".equals(state) ? 25_000L : 2_000L)); set(r, "promptLate", "promptlate".equals(state)); }
             set(r, "seq", 1L);
         } else {
             set(r, "end", new SetupRunner.End("اكتمل الإعداد.", false));
