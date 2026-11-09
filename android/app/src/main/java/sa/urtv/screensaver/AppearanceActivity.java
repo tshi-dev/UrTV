@@ -54,7 +54,8 @@ public class AppearanceActivity extends Activity {
         col = new LinearLayout(this);
         col.setOrientation(LinearLayout.VERTICAL);
         col.setLayoutDirection(Dir.layout());
-        col.setPadding(dp(16), dp(40), dp(16), dp(40));
+        int safe = Math.round(getResources().getDisplayMetrics().heightPixels * 0.05f) + dp(8);   // the TV's safe area: the first line and «رجوع» stay 5 % in from the edges
+        col.setPadding(dp(16), Math.max(dp(40), safe), dp(16), Math.max(dp(40), safe));
         scroll.addView(col, new FrameLayout.LayoutParams(-1, -2));
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(Math.min(getResources().getDisplayMetrics().widthPixels - dp(96), dp(1100)), -1);
         lp.gravity = Gravity.CENTER_HORIZONTAL;
@@ -103,7 +104,7 @@ public class AppearanceActivity extends Activity {
         col.addView(text(w("الإضاءة"), 16, "Regular", look.sub), line(dp(8)));
         LinearLayout lights = tiles();
         for (final String a : Prefs.APPEARANCES) {
-            lights.addView(tile("light:" + a, new Mock(Mock.HOME, prefs.look(), GlassStyle.of(prefs.look(), "light".equals(a))), w(shortLight(a)), a.equals(prefs.appearance()), v -> { prefs.setAppearance(a); render(); }), tileParams());
+            lights.addView(tile("light:" + a, new Mock(Mock.HOME, prefs.look(), GlassStyle.of(prefs.look(), "light".equals(a)), "auto".equals(a) ? GlassStyle.of(prefs.look(), true) : null), w(shortLight(a)), a.equals(prefs.appearance()), v -> { prefs.setAppearance(a); render(); }), tileParams());
         }
         col.addView(lights, line(dp(16)));
         col.addView(text(w("الصور في الشاشة الرئيسية"), 16, "Regular", look.sub), line(dp(8)));
@@ -156,9 +157,10 @@ public class AppearanceActivity extends Activity {
             LinearLayout set = tiles();
             Map<String, Integer> have = PackStore.installed(this);
             final Set<String> mine = prefs.homePacksOn();
+            final Map<String, String> names = PackStore.names(this);   // the pack's name, not its id («space»)
             for (final String id : have.keySet()) {
                 final boolean on = mine.contains(id);
-                set.addView(tile("home:pack:" + id, new Mock(Mock.PHOTOS, id, look), id, on, v -> { prefs.setHomePacksOn(PhotoPacks.toggled(prefs.homePacksOn(), id, !on)); render(); }), tileParams());
+                set.addView(tile("home:pack:" + id, new Mock(Mock.PHOTOS, id, look), names.containsKey(id) ? names.get(id) : id, on, v -> { prefs.setHomePacksOn(PhotoPacks.toggled(prefs.homePacksOn(), id, !on)); render(); }), tileParams());
             }
             final boolean ours = prefs.homeOursOn() || prefs.homePacks().isEmpty();
             set.addView(tile("home:ours", new Mock(Mock.PHOTOS, "ours", look), w("صورنا"), ours, v -> { prefs.setHomeOursOn(!ours); render(); }), tileParams());
@@ -229,31 +231,55 @@ public class AppearanceActivity extends Activity {
         private final int kind;
         private final String key;
         private final GlassStyle.Look l;
+        private final GlassStyle.Look l2;   // «تلقائي»: the home in the light look on the other half, so it shows it follows the time of day
         boolean on;
         private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-        Mock(int kind, String key, GlassStyle.Look l) {
+        Mock(int kind, String key, GlassStyle.Look l) { this(kind, key, l, null); }
+
+        Mock(int kind, String key, GlassStyle.Look l, GlassStyle.Look l2) {
             super(AppearanceActivity.this);
             this.kind = kind;
             this.key = key;
             this.l = l;
+            this.l2 = l2;
+        }
+
+        /** the home in one look; a glass look's cards are nearly the ground's colour, so each one also gets a hairline, or it would be missing on a dark ground */
+        private void drawHome(Canvas c, GlassStyle.Look l, float w, float h, float r) {
+            RectF all = new RectF(0, 0, w, h);
+            paint.setColor(GlassStyle.over(l.base, 0xFF000000));
+            c.drawRoundRect(all, r, r, paint);
+            paint.setColor(l.text);
+            c.drawRoundRect(new RectF(dp(12), dp(12), dp(52), dp(22)), dp(3), dp(3), paint);   // the clock
+            RectF[] cards = new RectF[7];
+            for (int i = 0; i < 3; i++) cards[i] = new RectF(w - dp(16) - (i + 1) * dp(18) - i * dp(6), dp(12), w - dp(16) - i * dp(24), dp(24));   // the round buttons
+            cards[3] = new RectF(dp(12), dp(36), w * 0.5f, h - dp(12));   // a card
+            for (int i = 0; i < 3; i++) cards[4 + i] = new RectF(w * 0.55f + i * (w * 0.15f), h - dp(34), w * 0.55f + i * (w * 0.15f) + w * 0.12f, h - dp(12));   // the favourites
+            for (int i = 0; i < cards.length; i++) {
+                float cr = i < 3 ? dp(6) : i == 3 ? dp(8) : dp(4);
+                paint.setStyle(Paint.Style.FILL);
+                paint.setColor(GlassStyle.over(i < 4 ? l.panel : l.dialog, l.base));
+                c.drawRoundRect(cards[i], cr, cr, paint);
+                paint.setStyle(Paint.Style.STROKE);
+                paint.setStrokeWidth(Math.max(1, dp(1)));
+                paint.setColor(l.line);
+                c.drawRoundRect(cards[i], cr, cr, paint);
+            }
+            paint.setStyle(Paint.Style.FILL);
+            paint.setColor(l.accent);
+            c.drawCircle(dp(24), h - dp(24), dp(4), paint);
         }
 
         @Override protected void onDraw(Canvas c) {
             float w = getWidth(), h = getHeight(), r = dp(8);
             RectF all = new RectF(0, 0, w, h);
             if (kind == HOME) {
-                paint.setColor(GlassStyle.over(l.base, 0xFF000000));
-                c.drawRoundRect(all, r, r, paint);
-                paint.setColor(l.text);
-                c.drawRoundRect(new RectF(dp(12), dp(12), dp(52), dp(22)), dp(3), dp(3), paint);   // the clock
-                paint.setColor(GlassStyle.over(l.panel, l.base));
-                for (int i = 0; i < 3; i++) c.drawRoundRect(new RectF(w - dp(16) - (i + 1) * dp(18) - i * dp(6), dp(12), w - dp(16) - i * dp(24), dp(24)), dp(6), dp(6), paint);   // the round buttons
-                c.drawRoundRect(new RectF(dp(12), dp(36), w * 0.5f, h - dp(12)), dp(8), dp(8), paint);   // a card
-                paint.setColor(l.accent);
-                c.drawCircle(dp(24), h - dp(24), dp(4), paint);
-                paint.setColor(GlassStyle.over(l.dialog, l.base));
-                for (int i = 0; i < 3; i++) c.drawRoundRect(new RectF(w * 0.55f + i * (w * 0.15f), h - dp(34), w * 0.55f + i * (w * 0.15f) + w * 0.12f, h - dp(12)), dp(4), dp(4), paint);   // the favourites
+                if (l2 == null) drawHome(c, l, w, h, r);
+                else {
+                    c.save(); c.clipRect(0, 0, w / 2, h); drawHome(c, l, w, h, r); c.restore();
+                    c.save(); c.clipRect(w / 2, 0, w, h); drawHome(c, l2, w, h, r); c.restore();
+                }
             } else if (kind == CARD) {
                 paint.setColor(0xFF1C2A24);
                 c.drawRoundRect(all, r, r, paint);   // the photo

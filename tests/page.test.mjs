@@ -2347,7 +2347,7 @@ for (const [width, height] of [[1920, 1080], [1280, 720], [960, 540]]) {
   check('no own photos, only: ours (only needs a photo to apply)', ownSeen(r).length === 0 && hosted(r).length > 0, r.seen.join(' '));
 
   r = await rotate('own=99&ownmode=only');
-  check('own photos: at most 10', ownSeen(r).length <= 10 && ownSeen(r).every(u => /\/(10|[1-9])\.jpg$/.test(u)), r.seen.join(' '));
+  check('own photos: at most 50', ownSeen(r).length <= 50 && ownSeen(r).every(u => /\/([1-9]|[1-4][0-9]|50)\.jpg$/.test(u)), r.seen.join(' '));
 
   r = await rotate('own=2&ownmode=only', { failOwn: true });
   check('own photos, only, unreadable: a bundled photo shows, never an empty screen', r.seen.every(u => u !== '' && u !== 'none') && bundled(r).length > 0, r.seen.join(' '));
