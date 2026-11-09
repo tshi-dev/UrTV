@@ -718,3 +718,12 @@ Playlist: the same 3 official rows as step 43 (Al Quran Al Kareem TV, Al Sunnah 
 Check & report: install size; launch animation smooth and short; cold start time (am start -W); Arabic RTL everywhere; D-pad focus never lost; live list + preview pane; zap Up/Down time (stats overlay: Settings → Playback → stats: time to first frame + zap avg); 5 min Quran playback stalls/dropped frames/resolution/fps; guide; settings (start screen, home rows, themes/accents switch live, text size); PIN; backup screen opens (don't export); PSS idle/playing; any crash/ANR (logcat). Screenshots of home, live, player OSD, appearance.
 Z: uninstall com.urtv.player, delete the M3U, restore as step 44 Z.
 Report «step 45». 
+
+### step 45b — UrTV Player × the owner's own Jellyfin (same session as 45, before Z)
+The owner has a Jellyfin server on the home LAN. Use the app's «خادم المنزل» section:
+1. Discovery: does the server appear by itself? (else enter its LAN address — ask the owner, never guess).
+2. Login with **Quick Connect** only: the TV shows a code, the OWNER approves it in his Jellyfin (web/phone). Never type or store his password; never write the server address, user name or tokens in the report (say «owner's server»).
+3. Home rows (Continue / Next up / Recently added), a library grid, a show page (title once), a movie page with tech badges.
+4. Play one movie and one episode (muted): direct play vs transcode (stats overlay), start time, seek, audio track, **Arabic subtitles** (embedded or external SRT/ASS): shaping RTL correct, style change, sync offset ±; skip intro if offered; stop at ~5 min and confirm the resume point shows on the server (and in Continue watching).
+5. Report what failed with logcat lines (redact tokens/hosts).
+Then at Z also: sign out of the server in the app (revokes the device), uninstall as planned; tell the owner to remove the «UrTV Player» device from Jellyfin → Dashboard → Devices if it remains.
