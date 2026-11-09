@@ -137,6 +137,12 @@
         <package android:name="com.google.android.leanbacklauncher" />
     </queries>
 
+    <!-- 4.3: lets our other app (UrTV Player, signed with another key) read «اللغة», ar or en, and nothing else (LangProvider). Normal level:
+         the player asks for it in its manifest; it gives no other access -->
+    <permission
+        android:name="sa.urtv.permission.READ_LANG"
+        android:protectionLevel="normal" />
+
     <application
         android:name=".HomeApp"
         android:label="تلفزيونك"
@@ -477,6 +483,13 @@
             android:authorities="sa.urtv.home.nowplaying"
             android:exported="true"
             android:readPermission="sa.urtv.home.READ_NOW_PLAYING" />
+
+        <!-- 4.3 «اللغة» for UrTV Player (another key): content://sa.urtv.home.lang/lang, one row {lang: ar|en}, read only (LangProvider) -->
+        <provider
+            android:name=".LangProvider"
+            android:authorities="sa.urtv.home.lang"
+            android:exported="true"
+            android:permission="sa.urtv.permission.READ_LANG" />
 
         <!-- the glass backdrop for the screensaver app's settings: read only, signature permission -->
         <provider
