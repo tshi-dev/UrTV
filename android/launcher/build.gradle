@@ -57,7 +57,11 @@ android {
 
     // wallpapers are the screensaver's Saudi photos, copied in at build time
     sourceSets {
-        main { assets.srcDirs += ["$buildDir/generated/wallpapers", "$buildDir/generated/web", "$buildDir/generated/i18n"] }
+        main {
+            assets.srcDirs += ["$buildDir/generated/wallpapers", "$buildDir/generated/web", "$buildDir/generated/i18n"]
+            // 4.3 A2: the live HLS station's player (ExoPlayback, Media3 ExoPlayer); apart so tests/android_compile.sh compiles the rest without Media3
+            java.srcDirs += ['src/exo/java']
+        }
     }
 
     compileOptions {
@@ -88,3 +92,10 @@ def copyI18n = tasks.register('copyI18n', Copy) {
     into "$buildDir/generated/i18n/i18n"
 }
 preBuild.dependsOn copyI18n
+
+// 4.3 A2: Media3 ExoPlayer for the live HLS stations only (Playback.create; everything else stays on the TV's MediaPlayer). 1.4.x builds with
+// compileSdk 34 (1.5 asks for 35).
+dependencies {
+    implementation 'androidx.media3:media3-exoplayer:1.4.1'
+    implementation 'androidx.media3:media3-exoplayer-hls:1.4.1'
+}

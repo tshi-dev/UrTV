@@ -136,6 +136,7 @@ python3 tests/music_adhan_own_test.py
 python3 tests/own_adhan_test.py
 python3 tests/own_adhan_keep_test.py
 python3 tests/player_logic_test.py
+python3 tests/stall_watch_test.py   # 4.3 A2: the live station's stall watchdog and ExoPlayer for HLS
 python3 tests/loudness_test.py   # the recitation and the adhan lifted inside the player (LoudnessEnhancer), never the TV volume or mute
 python3 tests/seek_burst_test.py
 python3 tests/pill_text_test.py

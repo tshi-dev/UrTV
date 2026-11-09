@@ -79,10 +79,15 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     private static volatile int rebuffers, errors;
     private static volatile long rebufferMs, lastErrorAt;
     private static volatile String lastError = "";
+    /** which player plays now ("exo" for a live HLS station, else "mediaplayer") and how many quiet restarts the stall watchdog made */
+    private static volatile String playerKind = "";
+    private static volatile int stallRestarts;
+    /** 4.3 A2: a station that stalls is restarted quietly (StallWatch), at most three times in two minutes */
+    private final StallWatch stall = new StallWatch();
 
     private Catalog cat;
     private Prefs prefs;
-    private MediaPlayer player;
+    private Playback player;   // the TV's MediaPlayer, or ExoPlayer for a live HLS station (4.3 A2)
     /** the player's own gain with a limiter (Loudness): the recordings are quiet next to TV sound; null where the TV has no such effect */
     private LoudnessEnhancer louder;
     private MediaSession session;
@@ -147,6 +152,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
                     updateSession();   // (the place is saved when it stops or pauses, not every few seconds: the disk is flash)
                 } catch (IllegalStateException ignored) {}
             }
+            if (watchStall()) return;   // a stalled station was restarted (its own tick starts again with it)
             handler.postDelayed(this, 1000);
         }
     };
@@ -209,6 +215,10 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     static boolean adhanLive() { return adhanLive && source == Prefs.SOURCE_ADHAN; }
     static int adhanPrayer() { return adhanPrayer; }
     static int rebufferCount() { return rebuffers; }
+    /** "exo" or "mediaplayer": what plays now (4.3 A2) */
+    static String playerKind() { return playerKind; }
+    /** quiet restarts of a stalled station since the app started (4.3 A2) */
+    static int stallRestartCount() { return stallRestarts; }
     static int errorCount() { return errors; }
     static long rebufferMillis() { return rebufferMs; }
     static String lastErrorCode() { return lastError; }
@@ -381,6 +391,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         wish.ask();
         prefs.save(source, "", surah, station, 0);
         radioAddress = cat.stations.get(index).url;
+        stall.reset();   // the person's pick: no quiet restart of an earlier one is held against it
         startRadio(radioAddress, 0);
     }
 
@@ -607,7 +618,9 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         duration = 0;
         foreground();
 
-        player = new MediaPlayer();
+        player = Playback.create(this, url, source == Prefs.SOURCE_RADIO);
+        playerKind = player.kind();
+        stall.newPlayer();
         player.setAudioAttributes(MEDIA_ATTRS);   // minSdk 26; USAGE_MEDIA is STREAM_MUSIC, the stream the adhan's own volume (adhanVolumeUp) sets
         player.setWakeMode(this, PowerManager.PARTIAL_WAKE_LOCK);
         player.setVolume(1f, 1f);
@@ -708,6 +721,29 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     /** the resolved address of a station got no sound: its own address was given to the player once (reset by every pick) */
     private boolean radioDirectTried;
 
+
+    /**
+     * 4.3 A2: a live station that ran dry for 12 s, or stands still for 15 s while it says it plays, is started again quietly from its own address
+     * (the person hears it come back, no error is shown); a fourth stall in two minutes is a failure, said as before. True when it acted.
+     */
+    private boolean watchStall() {
+        boolean live = source == Prefs.SOURCE_RADIO && radioAddress != null && wish.wants();
+        StallWatch.Verdict v = stall.check(SystemClock.elapsedRealtime(), live, prepared, playing, rebufferStart, position);
+        if (v == StallWatch.Verdict.OK) return false;
+        if (v == StallWatch.Verdict.RESTART) {
+            stallRestarts++;
+            Log.w(TAG, "station stalled (" + (rebufferStart > 0 ? "dry " + (SystemClock.elapsedRealtime() - rebufferStart) / 1000 + " s" : "position still") + ", " + playerKind + ", host " + hostOf(currentUrl) + "): started again quietly");
+            if (rebufferStart > 0) rebufferMs += SystemClock.elapsedRealtime() - rebufferStart;
+            rebufferStart = 0;
+            ticking = false;
+            startRadio(radioAddress, 0);
+            return true;
+        }
+        Log.w(TAG, "station stalled again (" + StallWatch.MAX_RESTARTS + " quiet restarts in " + StallWatch.WINDOW_MS / 60_000 + " min): said as a failure");
+        stall.reset();
+        onPlaybackError(MediaPlayer.MEDIA_ERROR_UNKNOWN, -110);   // -110: timed out (PlayerFault)
+        return false;
+    }
 
     /** a station that has not started in this long is said to have failed */
     static final long RADIO_WAIT_MS = 20_000;

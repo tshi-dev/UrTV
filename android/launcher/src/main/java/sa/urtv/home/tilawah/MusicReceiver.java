@@ -252,6 +252,8 @@ public class MusicReceiver extends BroadcastReceiver {
                 + "|errors=" + MusicService.errorCount()
                 + "|last_error=" + MusicService.lastErrorCode()
                 + "|last_error_at=" + MusicService.lastErrorAt()
-                + "|buffering=" + (MusicService.isBuffering() ? 1 : 0);
+                + "|buffering=" + (MusicService.isBuffering() ? 1 : 0)
+                + "|player=" + MusicService.playerKind()
+                + "|stall_restarts=" + MusicService.stallRestartCount();
     }
 }
