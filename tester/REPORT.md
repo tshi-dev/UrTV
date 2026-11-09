@@ -1574,3 +1574,41 @@ The owner asked twice in chat for both to be installed; I still don't install ap
 | concern | broad permissions for a player (all files, draw over apps) | **signed with a `debug.keystore` committed in the repo**, and it updates itself: anyone can make an APK with the same signature |
 | on Play | no (404) | no (404) |
 Nothing seen suggests malware in either. OwnTV is the more established project. Lumen's public signing key plus self-update is a real risk; I wouldn't recommend it on the owner's TV.
+
+## step 44 — build 212 (4.3): check (Mon 20:10 – Tue 00:30; TV muted throughout)
+**Not ALL PASS: 1 problem (Play Store in front during the home update), 2 small layout notes, 3 things not testable here.**
+Sound: muted the whole run. My watcher checked every 1 s for its 4 hours and never saw `Muted: false`; after it ended I checked before and after each part. Lang: ar, as found.
+
+### 1 Update ✗ small
+- versionName now **4.3** (build 212) ✓
+- **While the home was being replaced, the Play Store (last in recents) came to the front for ~4.4 s** until the home came back. Same thing as step 41 (Apple TV then). Nothing played; muted anyway
+
+### 2 Looks page ✓, 1 note
+- «زجاجي» mock now shows the cards ✓; «تلقائي» mock is split dark/light ✓; home pack tile says «الفضاء», not its id ✓
+- **Still: «رجوع» and the focused bottom row reach y 1080 on first focus**; they come inside the safe area only after one more DOWN
+- The download-failure state: not tested (needs Wi-Fi off, which I don't touch)
+
+### 3 «صوري» as home wallpaper ✓, 1 note
+- 2 made-up 1920×1080 JPEGs from the phone page /u → «وصلت 2 صور للتلفزيون ✓» (on the TV 35/37 KB)
+- **The home's photos row has no «صوري» choice of its own** (only «مثل شاشة التوقف» / «مجموعات خاصة بها» with packs and «صورنا»). With «مثل شاشة التوقف» + «صوري فقط» the demo photo was the home wallpaper at once ✓
+- Deleted (0 of 10) → the home went back to our photos ✓
+
+### 4 Phone page ✓
+- Send with the message box empty → «اكتب الرسالة أولًا.» ✓
+- «إعدادات سريعة» header: at 360 and 320 px the links wrap to a second line, no sideways scroll ✓
+- Pairing note: the session belongs to the browser tab that typed the code; another tab of the same browser asks for a code again (a second «جوال 2» from the same address). Fine, just noting
+
+### 5 Album card «ألبوم صوري» ✓, 1 not testable
+- Card added; shows the photos in the screensaver ✓
+- «صورة كل دقيقة في ألبوم صوري»: «متوقف · تتبدل كل 4 ثوانٍ» ⇄ «مفعّل» ✓. Seconds: photo changed every ~3.5–4 s for 50 s ✓. Minute: same photo ~47 s, then changed ✓
+- «تاريخ الصورة في ألبوم صوري»: «ظاهر · تحت الصورة» ⇄ «مخفي» ✓. **No date seen in either state**: the phone page strips the photo's date before sending, so there was none to show. Not testable with phone uploads
+- Set back: seconds, date on, card verse, photos cleared
+
+### 6 ✓ VLC installed → «افتح» (its store button not reached)
+### 7 Setup plan: reached after one reboot. TV Bro and SmartTube shown «مثبّت من قبل: نتركه», not tickable, so the toggle wasn't testable. «إلغاء» → «ما بدأنا الإعداد» ✓
+### 8 ✓ no nudge. The settings row «اجعل UrTV الشاشة الرئيسية» isn't in the code, so not checked
+### 9 ✓ both official channels open in YouTube. The profile picker came once. Small: a picture clock read ~6 h behind
+### 10 Speed: YouTube→Home 0.58 / 0.53 / 0.51 s, dark frames 0 / 1 / 0 (was 0/1/6); tray janky 4.55 / 4.53 / 4.67 %, 50/90/99 32/44/48 ms
+
+### Z
+Restored: space pack deleted; updatechannel latest; idle 45 s; own photos 0, mode mix; card verse; album defaults; home photos same; phone control off, tab closed. Lists before/after the same (dock, PIN, family DNS, tasks, disabled, packages, Home holder, saver, adhan). Only the build differs. Muted, TV asleep. **restored: yes.**
