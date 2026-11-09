@@ -6,6 +6,7 @@ SettingsHub.HEADERS; the map has no stale names; the categories, the D-pad on th
 tile, and the wiring of render are checked from the source and, for SettingsHub and FocusKey, run for real (tests/SettingsHubRun.java).
 Needs javac for the JVM part.   Run: python3 tests/settings_hub_test.py"""
 import re, shutil, subprocess, sys, tempfile
+unesc = lambda t: re.sub(r'\\u([0-9a-fA-F]{4})', lambda m: chr(int(m.group(1), 16)), t)   # a row named with isolates (\u2066UrTV\u2069 ...) as javac reads it
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -29,11 +30,11 @@ for m in re.finditer(r'\bheader\("([^"]+)"\)|\brow\(("(?:[^"\\]|\\.)*"|HOME_CARD
         calls.append(("header", header, ""))
     elif m.group(2) == "HOME_CARD_NAMES[k]":
         names = re.search(r'HOME_CARD_NAMES = \{([^}]*)\}', st).group(1)
-        for n in re.findall(r'"([^"]+)"', names): calls.append(("row", n, header))
+        for n in re.findall(r'"([^"]+)"', names): calls.append(("row", unesc(n), header))
     elif m.group(2) == "PrayerAdj.label(":
         pass   # adjRow: the prayers' own rows, by their names and minutes; checked below with the header they are made under
     else:
-        calls.append(("row", m.group(2)[1:-1], header))
+        calls.append(("row", unesc(m.group(2)[1:-1]), header))
 rows = [c for c in calls if c[0] == "row"]
 heads = [c for c in calls if c[0] == "header"]
 check("the source has the settings' rows and headers (the test reads what it should)", len(rows) >= 45 and len(heads) >= 9, (len(rows), len(heads)))
@@ -42,7 +43,7 @@ check("no row is made outside render, adjRow and the home cards' loop (so the sc
 
 cat_names = dict(re.findall(r'\{(ADHAN|PLACE|CLOCK|LISTEN|CARDS|LOOK|CONTROL|PHONE|UPDATE|REPORT|MORE|SAVER|HOME|CONTENT|APPS|SHOWS|PARENTAL|FAMILY|LANG), "([^"]+)"', hub))
 rows_block = hub[hub.index("static final String[][] ROWS"):hub.index("static final String[][] HEADERS")]
-mapped = re.findall(r'\{"([^"]+)", (ADHAN|PLACE|CLOCK|LISTEN|CARDS|LOOK|CONTROL|PHONE|UPDATE|REPORT|MORE|SAVER|HOME|CONTENT|APPS|SHOWS|FAMILY|LANG)\}', rows_block)
+mapped = [(unesc(a), b) for a, b in re.findall(r'\{"([^"]+)", (ADHAN|PLACE|CLOCK|LISTEN|CARDS|LOOK|CONTROL|PHONE|UPDATE|REPORT|MORE|SAVER|HOME|CONTENT|APPS|SHOWS|FAMILY|LANG)\}', rows_block)]
 
 if not shutil.which("javac"):
     print("SKIP settings hub: no javac here")

@@ -345,7 +345,7 @@ public class SettingsActivity extends Activity {
         row("اجعل UrTV الشاشة الرئيسية", isHome ? "✓ UrTV هو الشاشة الرئيسية" : "اضغط وكمّل إعداد تلفزيوني (دقيقتان)", R.drawable.ic_eye,
             new Runnable() { public void run() { if (!isHome) openSetup(); } });
         // «UrTV النظيف»: the essentials only; the launcher's CleanActivity says what it does first and asks for the confirmation (and the family PIN)
-        row("UrTV النظيف", "الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة", R.drawable.ic_eye, new Runnable() { public void run() { openClean(); } });
+        row("\u2066UrTV\u2069 النظيف", "الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة", R.drawable.ic_eye, new Runnable() { public void run() { openClean(); } });
         // «المظهر»: one page for everything about the look of both apps (AppearanceActivity), each choice with its picture
         row("المظهر", Prefs.lookLabel(prefs.look()) + " · " + Prefs.appearanceLabel(prefs.appearance()), R.drawable.ic_eye,
             new Runnable() { public void run() { startActivity(new Intent(SettingsActivity.this, AppearanceActivity.class)); } });

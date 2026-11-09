@@ -58,7 +58,7 @@ public class CleanActivity extends Activity {
         col.removeAllViews();
         if (customising) { sheet(); return; }
         final boolean on = CleanMode.on(this);
-        col.addView(text(on ? S.t("UrTV النظيف مفعّل") : S.t("تفعيل UrTV النظيف؟"), 30, "Medium", look.text), lp(dp(16)));
+        col.addView(text(on ? S.t("\u2066UrTV\u2069 النظيف مفعّل") : S.t("تفعيل UrTV النظيف؟"), 30, "Medium", look.text), lp(dp(16)));
         for (String line : on ? new String[] {S.t("الشاشة الرئيسية تعرض الأساسيات فقط الآن."), S.t("ضغطة وحدة على «رجّع الشاشة الكاملة» ترجّع كل شيء كما اخترته أنت.")}
                 : new String[] {S.t("يبقى: الساعة والتاريخ وشريط التطبيقات، وزر الإعدادات."), S.t("يختفي: الأزرار الإضافية ومركز التحكم والتنبيهات والصفوف الزائدة."),
                                 S.t("ما يُحذف شيء، وما يتغيّر شيء من إعداداتك. كل ما أخفيناه يرجع بضغطة وحدة من نفس هالشاشة.")})
@@ -124,7 +124,7 @@ public class CleanActivity extends Activity {
     /** the family PIN first when one is set; then {@code go} (a wrong or cancelled PIN leaves everything as it was) */
     private void pin(final Runnable go) {
         if (!Parental.state(this).pinSet) { go.run(); return; }
-        Parental.confirm(this, Parental.adhanFirst(this), S.tv("UrTV النظيف"), go, () -> { });
+        Parental.confirm(this, Parental.adhanFirst(this), S.tv("\u2066UrTV\u2069 النظيف"), go, () -> { });
     }
 
     // ---------------------------------------------------------------- pieces

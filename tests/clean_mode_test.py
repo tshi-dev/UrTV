@@ -43,7 +43,7 @@ check("the top row stays closed with one button (the settings, in the control ce
 check("the greeting only when kept, never its weather line; the Wi-Fi mark only when kept",
       "CleanMode.keep(this).contains(CleanMode.GREETING) ? View.VISIBLE : View.GONE" in main and "netIcon.setVisibility(on && !keep.contains(CleanMode.WIFI) ? View.GONE : View.VISIBLE)" in main)
 check("the settings' row (UrTV النظيف, in «الشاشة الرئيسية») opens the launcher's screen; nothing is set from there",
-      'row("UrTV النظيف"' in saver and 'setClassName("sa.urtv.home", "sa.urtv.home.CleanActivity")' in saver and "CleanMode" not in saver)
+      'row("\\u2066UrTV\\u2069 النظيف"' in saver and 'setClassName("sa.urtv.home", "sa.urtv.home.CleanActivity")' in saver and "CleanMode" not in saver)
 if not shutil.which("javac"):
     print("SKIP clean keep rules: no javac"); sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
