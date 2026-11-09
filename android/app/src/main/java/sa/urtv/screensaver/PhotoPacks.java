@@ -40,6 +40,9 @@ final class PhotoPacks {
         }
     }
 
+    /** a file name inside Arabic text, kept left to right (an isolate: «IMG_2041.jpg» does not reorder its dots and digits) */
+    static String isolate(String name) { return "\u2066" + name + "\u2069"; }
+
     /** a pack's id: lowercase letters, digits and dashes (it is a folder name and part of the address) */
     static boolean validId(String id) { return id != null && id.matches("[a-z][a-z0-9-]{1,30}"); }
 
