@@ -167,8 +167,7 @@ SHOTS = {}
 
 # 01/02 the quick buttons at rest and focused
 def quick_variants():
-    note = lambda t: f'<div class="abs sub" style="left:96px;bottom:312px;font-size:22px;max-width:760px;line-height:1.7;text-shadow:0 1px 8px rgba(0,0,0,.5)">{t}</div>'
-    SHOTS["01-quick-buttons-rest"] = home("glass", focus=-1, extra_body=note("الصف في شريط واحد: الأزرار مربعات ٧٢ بفراغ ٨، ومحاذٍ لأعلى التحية والساعة عند ٥٤، فلا شيء يتحرك عند التنقل."))
+    SHOTS["01-quick-buttons-rest"] = home("glass", focus=-1)
     SHOTS["02-quick-buttons-focus"] = home("glass", focus=-1, qfocus=1)
 
 
@@ -199,11 +198,11 @@ def appearance_main():
 
 
 def appearance_open():
-    looks = ["glass", "graphite", "navy", "clean", "sand", "cinema", "horizon", "dawn"]
+    looks = ["glass", "graphite", "navy", "sand", "cinema", "horizon", "dawn", "minimal"]
     tiles = []
     for i, k in enumerate(looks[:8]):
-        f = " foc" if k == "horizon" else ""
-        tiles.append(f'<div class="panel col{f}" style="width:408px;height:300px;padding:16px;gap:8px;border-radius:24px">{mini(k, None, 376, 211, False)}<div style="font-size:24px;font-weight:600;margin-top:8px">{LOOKS[k]["ar"]}</div></div>')
+        f = " foc" if k == "glass" else ""
+        tiles.append(f'<div class="panel col{f}" style="width:408px;height:300px;padding:16px;gap:8px;border-radius:24px">{mini(k, None, 376, 211, False)}<div style="font-size:24px;font-weight:600;margin-top:8px">{LOOKS[k]["ar"]}{" · الافتراضي" if k == "glass" else ""}</div></div>')
     acc = "".join(f'<div class="btn" style="width:64px;height:64px;background:{c};border-radius:16px;color:#14161A;{"box-shadow:0 0 0 4px #fff;" if n=="كهرماني" else ""}">{ic("check", 28, 2.4) if n=="كهرماني" else ""}</div>' for n, c in ACCENTS)
     body = f'<div class="abs row" style="right:96px;top:54px;gap:16px;font-size:40px;font-weight:600">المظهر <span class="sub" style="font-size:28px;font-weight:400">‹ الشكل</span></div>' \
            f'<div class="abs" style="left:96px;right:96px;top:140px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;justify-items:center">{"".join(tiles)}</div>' \
@@ -214,14 +213,14 @@ def appearance_open():
 
 # 05 more looks, preview grid (new ones first)
 def looks_grid():
-    order = ["cinema", "horizon", "dawn", "minimal", "glass", "graphite", "navy", "sand"]
+    order = ["glass", "graphite", "navy", "sand", "cinema", "horizon", "dawn", "minimal"]
     notes = {"cinema": "أسود عميق، بطاقات عريضة، تركيز بإطار أبيض", "horizon": "توهّج الأفق خلف الشريط، تركيز متوهّج", "dawn": "تدرّج بنفسجي فيروزي بلا حدود", "minimal": "بلا زجاج: كلام فوق الصورة، تركيز بخط تحته",
-             "glass": "زجاج مدخّن (الحالي)", "graphite": "فحم وكهرمان (الحالي)", "navy": "كحلي وذهب (الحالي)", "sand": "أبيض على رمل (الحالي)"}
+             "glass": "الافتراضي: زجاج مدخّن كما هو الآن", "graphite": "فحم وكهرمان", "navy": "كحلي وذهب", "sand": "أبيض على رمل"}
     tiles = []
     for k in order:
-        f = " foc" if k == "cinema" else ""
+        f = " foc" if k == "glass" else ""
         tiles.append(f'<div class="panel col{f}" style="width:408px;height:344px;padding:16px;gap:8px;border-radius:24px">{mini(k, None, 376, 188, True)}<div style="font-size:24px;font-weight:600;margin-top:8px">{LOOKS[k]["ar"]}</div><div style="font-size:18px;opacity:.78;line-height:1.5">{notes[k]}</div></div>')
-    body = '<div class="abs" style="right:96px;top:54px;font-size:40px;font-weight:600">الشكل</div><div class="abs sub" style="right:96px;top:112px;font-size:22px">أربعة أشكال جديدة، وخمسة نعرفها.</div>' \
+    body = '<div class="abs" style="right:96px;top:54px;font-size:40px;font-weight:600">الشكل</div><div class="abs sub" style="right:96px;top:112px;font-size:22px">الزجاجي هو الشكل الافتراضي، والباقي خيارات.</div>' \
            f'<div class="abs" style="left:96px;right:96px;top:176px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;justify-items:center">{"".join(tiles)}</div>'
     return page(body, "glass")
 
@@ -301,7 +300,7 @@ def suggested():
 
 # 14 the banner
 def banner():
-    nudge = '<div class="abs col" style="left:50%;transform:translateX(-50%);top:54px;align-items:center;gap:8px"><div class="panel foc" style="padding:16px 24px;text-align:center;font-size:24px;line-height:1.6;border-radius:16px;max-width:560px"><b>خلّ تلفزيونك يفتح على UrTV</b><br><span style="font-size:20px">اضغط هنا وكمّل إعداد تلفزيوني (دقيقتين)</span></div><div class="panel" style="padding:8px 24px;font-size:20px;border-radius:12px">لاحقًا</div></div>'
+    nudge = '<div class="abs col" style="left:50%;transform:translateX(-50%);top:54px;align-items:center;gap:8px"><div class="panel foc" style="padding:16px 24px;text-align:center;font-size:24px;line-height:1.6;border-radius:16px;max-width:560px"><b>خلّ تلفزيونك يفتح على UrTV</b><br><span style="font-size:20px">اضغط هنا وكمّل إعداد تلفزيوني (دقيقتين)</span></div><div class="panel btn" style="height:56px;padding:0 32px;font-size:22px;border-radius:16px">لاحقًا</div></div>'
     return page(quick_row("glass", None) .replace("left:96px;top:54px", "left:96px;top:54px") + greeting("glass") + tray("glass", -1) + nudge, "glass")
 
 
