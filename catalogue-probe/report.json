@@ -1,0 +1,873 @@
+{
+ "report": {
+  "all_leagues": {
+   "total": 10,
+   "soccer": 10,
+   "fields": [
+    "idLeague",
+    "strLeague",
+    "strSport"
+   ],
+   "sports": [
+    "Soccer"
+   ]
+  },
+  "countries": 50,
+  "search_by_country": {
+   "countries_asked": 50,
+   "leagues_found": 83,
+   "with_badge": 83,
+   "max_in_one_country": 5,
+   "countries_with_none": 18,
+   "stopped_at": null
+  },
+  "most_per_country": [
+   [
+    "Argentina",
+    5
+   ],
+   [
+    "Austria",
+    5
+   ],
+   [
+    "Australia",
+    5
+   ],
+   [
+    "Belgium",
+    5
+   ],
+   [
+    "Brazil",
+    5
+   ],
+   [
+    "Switzerland",
+    5
+   ],
+   [
+    "Chile",
+    5
+   ],
+   [
+    "China",
+    4
+   ],
+   [
+    "Colombia",
+    4
+   ],
+   [
+    "Andorra",
+    3
+   ],
+   [
+    "United Arab Emirates",
+    3
+   ],
+   [
+    "Armenia",
+    3
+   ],
+   [
+    "Azerbaijan",
+    3
+   ],
+   [
+    "Bosnia and Herzegovina",
+    3
+   ],
+   [
+    "Belarus",
+    3
+   ]
+  ],
+  "lookup_sample": [
+   {
+    "id": "4328",
+    "name": "English Premier League",
+    "badge": true,
+    "season": "2026-2027"
+   },
+   {
+    "id": "4329",
+    "name": "English League Championship",
+    "badge": true,
+    "season": "2026-2027"
+   },
+   {
+    "id": "4330",
+    "name": "Scottish Premier League",
+    "badge": true,
+    "season": "2026-2027"
+   },
+   {
+    "id": "4331",
+    "name": "German Bundesliga",
+    "badge": true,
+    "season": "2026-2027"
+   },
+   {
+    "id": "4332",
+    "name": "Italian Serie A",
+    "badge": true,
+    "season": "2026-2027"
+   }
+  ],
+  "stats": {
+   "requests": 69,
+   "429": 16,
+   "errors": 0
+  }
+ },
+ "leagues": [
+  {
+   "id": "4618",
+   "name": "Andorran 1a Divisió",
+   "alt": "Primera Divisió, Lliga Multisegur Assegurances",
+   "country": "Andorra",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4905",
+   "name": "Andorran Cup",
+   "alt": "Copa Constitució",
+   "country": "Andorra",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4904",
+   "name": "Andorran Segona Divisió",
+   "alt": "Andorran 2a Divisió, Andorran Second Division, Lliga UNIDA",
+   "country": "Andorra",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5972",
+   "name": "UAE First Division League",
+   "alt": "دوري الدرجة الأولى الإماراتي",
+   "country": "United Arab Emirates",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5198",
+   "name": "UAE League Cup",
+   "alt": "كأس رابطة المحترفين الإماراتية",
+   "country": "United Arab Emirates",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4678",
+   "name": "UAE Pro League",
+   "alt": "ADNOC Pro League, دوري المحترفين الإماراتي",
+   "country": "United Arab Emirates",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5886",
+   "name": "Antigua and Barbuda Premier League",
+   "alt": "Antigua and Barbuda Premier Division",
+   "country": "Antigua and Barbuda",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4907",
+   "name": "Albanian Kategoria e Parë",
+   "alt": "Albanian Second Division",
+   "country": "Albania",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4617",
+   "name": "Albanian Superliga",
+   "alt": "Superliga, Kategoria Superiore",
+   "country": "Albania",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4909",
+   "name": "Armenian Cup",
+   "alt": "Հայաստանի Անկախության Գավաթ, VBET Armenian Cup",
+   "country": "Armenia",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4908",
+   "name": "Armenian First League",
+   "alt": "Հայաստանի ֆուտբոլի առաջնություն (Առաջին խումբ)",
+   "country": "Armenia",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4619",
+   "name": "Armenian Premier League",
+   "alt": "Հայաստանի Պրեմիեր Լիգա, Armenian Fastex Premier League",
+   "country": "Armenia",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5229",
+   "name": "Angolan Girabola",
+   "alt": "Campeonato Nacional de Futebol em Séniores Masculinos",
+   "country": "Angola",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5215",
+   "name": "Argentina Primera B Metropolitana",
+   "alt": "B Metro",
+   "country": "Argentina",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5523",
+   "name": "Argentina Torneo Federal A",
+   "alt": "",
+   "country": "Argentina",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5428",
+   "name": "Argentinian Copa de la Liga Profesional",
+   "alt": "",
+   "country": "Argentina",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4616",
+   "name": "Argentinian Primera B Nacional",
+   "alt": "Nacional B, Primera Nacional",
+   "country": "Argentina",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5524",
+   "name": "Argentinian Primera C",
+   "alt": "Argentina Primera C Metropolitana",
+   "country": "Argentina",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4621",
+   "name": "Austrian Bundesliga",
+   "alt": "Austrian Football Bundesliga, Österreichische Fußball-Bundesliga, ÖFB, OeFB",
+   "country": "Austria",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5883",
+   "name": "Austrian Cup",
+   "alt": "ÖFB-Cup",
+   "country": "Austria",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4796",
+   "name": "Austrian Erste Liga",
+   "alt": "Austrian Football Second League, 2. Liga",
+   "country": "Austria",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5318",
+   "name": "Austrian Regionalliga Mitte",
+   "alt": "Fußball-Regionalliga Österreich",
+   "country": "Austria",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5934",
+   "name": "Austrian Regionalliga Nord",
+   "alt": "Regionalliga North",
+   "country": "Austria",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4620",
+   "name": "Australia ACT NPL",
+   "alt": "National Premier Leagues Australian Capital Territory",
+   "country": "Australia",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5013",
+   "name": "Australia Brisbane Premier League",
+   "alt": "",
+   "country": "Australia",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5180",
+   "name": "Australia Cup",
+   "alt": "Australia FFA Cup",
+   "country": "Australia",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5011",
+   "name": "Australia New South Wales NPL",
+   "alt": "National Premier Leagues NSW",
+   "country": "Australia",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5010",
+   "name": "Australia Northern NSW NPL",
+   "alt": "National Premier Leagues Northern NSW",
+   "country": "Australia",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5230",
+   "name": "Aruban Division di Honor",
+   "alt": "Campeonato AVB Aruba Bank",
+   "country": "Aruba",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4915",
+   "name": "Azerbaijan Cup",
+   "alt": "Azərbaycan Kuboku",
+   "country": "Azerbaijan",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4914",
+   "name": "Azerbaijan First Division",
+   "alt": "Azərbaycan Birinci Divizionu",
+   "country": "Azerbaijan",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4693",
+   "name": "Azerbaijani Premier League",
+   "alt": "Azerbaijan Premier League, Azərbaycan Premyer Liqası",
+   "country": "Azerbaijan",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4911",
+   "name": "Bosnian First League",
+   "alt": "M:tel First League of the Federation of Bosnia and Herzegovina,  m:tel Prva liga Federacije Bosne i Hercegovine, м:тел Прва лига Федерације Босне и Херцеговине",
+   "country": "Bosnia and Herzegovina",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4912",
+   "name": "Bosnian First League of Srpska",
+   "alt": "Prva liga Republike Srpske, Прва лига Републике Српске",
+   "country": "Bosnia and Herzegovina",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4624",
+   "name": "Bosnian Premier Liga",
+   "alt": "Premier League of Bosnia and Herzegovina,  BH Telecom Premijer liga Bosne i Hercegovine,  БХ Телеком Премијер лига Босне и Херцеговине, Liga 12, Wwin League",
+   "country": "Bosnia and Herzegovina",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5860",
+   "name": "Barbados Premier League",
+   "alt": "Digicel Premier League",
+   "country": "Barbados",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5078",
+   "name": "Bangladesh Premier League",
+   "alt": "BFL, বাংলাদেশ ফুটবল লিগ",
+   "country": "Bangladesh",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4623",
+   "name": "Belgian Challenger Pro League",
+   "alt": "Belgian First Division B",
+   "country": "Belgium",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5831",
+   "name": "Belgian Cup",
+   "alt": "Croky Cup, Coupe de Belgique, Beker van België, Belgischer Fußballpokal",
+   "country": "Belgium",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4338",
+   "name": "Belgian Pro League",
+   "alt": "Belgium Jupiler Pro League",
+   "country": "Belgium",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5923",
+   "name": "Belgian Super Cup",
+   "alt": "Belgische Supercup, Supercoupe de Belgique, Belgischer Fußball-Super Cup",
+   "country": "Belgium",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5942",
+   "name": "Belgian Womens Pro League",
+   "alt": "Lotto Womens Pro League, Championnat de Belgique de football féminin, Belgische Women's Pro League, Belgische Frauen-Pro-League",
+   "country": "Belgium",
+   "badge": true,
+   "type": "season",
+   "gender": "Female"
+  },
+  {
+   "id": "5234",
+   "name": "Burkina Faso 1ere Division",
+   "alt": "Fasofoot D1",
+   "country": "Burkina Faso",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4826",
+   "name": "Bahrain Premier League",
+   "alt": "الدوري البحريني الممتاز, Bahraini Premier League, Nasser bin Hamad Premier League",
+   "country": "Bahrain",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5235",
+   "name": "Burundi Ligue A",
+   "alt": "Primus Ligue",
+   "country": "Burundi",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5231",
+   "name": "Benin Championnat National",
+   "alt": "Benin Premier League",
+   "country": "Benin",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5232",
+   "name": "Bermuda Premier League",
+   "alt": "Bermudian Premier Division",
+   "country": "Bermuda",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4910",
+   "name": "Bolivian Nacional B Copa Simón Bolívar",
+   "alt": "Nacional B Bolivia, Copa Simón Bolívar - Nacional B",
+   "country": "Bolivia",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4685",
+   "name": "Bolivian Primera División",
+   "alt": "Primera División de Bolivia, División Profesional del Fútbol Boliviano",
+   "country": "Bolivia",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5201",
+   "name": "Brazil Brasileiro Women",
+   "alt": "Série A1, Campeonato Brasileiro Feminino Série A1",
+   "country": "Brazil",
+   "badge": true,
+   "type": "season",
+   "gender": "Female"
+  },
+  {
+   "id": "5079",
+   "name": "Brazil Serie D",
+   "alt": "Campeonato Brasileiro Série D, Brasileirão Serie D",
+   "country": "Brazil",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5676",
+   "name": "Brazilian Campeonato Acreano",
+   "alt": "Campeonato Acreano de Futebol",
+   "country": "Brazil",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5677",
+   "name": "Brazilian Campeonato Alagoano",
+   "alt": "Campeonato Alagoano de Futebol",
+   "country": "Brazil",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5678",
+   "name": "Brazilian Campeonato Amapaense",
+   "alt": "Amapazão",
+   "country": "Brazil",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5233",
+   "name": "Botswana Premier League",
+   "alt": "BTC Premiership",
+   "country": "Botswana",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4622",
+   "name": "Belarus Vyscha Liga",
+   "alt": "Belarusian Premier League, Vysheyshaya Liga, Belarusbank Vyšejšaja Liha",
+   "country": "Belarus",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4813",
+   "name": "Belarusian Cup",
+   "alt": "Belarus Coppa",
+   "country": "Belarus",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4812",
+   "name": "Belarusian First League",
+   "alt": "Першая ліга чэмпіянату Беларусі па футболе, Pershaya liha chempiyanatu Byelarusi pa futbole, ",
+   "country": "Belarus",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5922",
+   "name": "Canadian Championship",
+   "alt": "Championnat canadien",
+   "country": "Canada",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5602",
+   "name": "Canadian Northern Super League",
+   "alt": "Super Ligue du Nord-SLN",
+   "country": "Canada",
+   "badge": true,
+   "type": "season",
+   "gender": "Female"
+  },
+  {
+   "id": "4820",
+   "name": "Canadian Premier League",
+   "alt": "CPL, CanPL, Première ligue canadienne",
+   "country": "Canada",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4955",
+   "name": "DR Congo Ligue 1",
+   "alt": "Linafoot, Vodacom Ligue 1",
+   "country": "DR Congo",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5936",
+   "name": "Swiss 1. Liga Classic Group 1",
+   "alt": "Erste Liga Gruppe 1, Première Ligue Groupe 1, Prima Lega Girone 1",
+   "country": "Switzerland",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5937",
+   "name": "Swiss 1. Liga Classic Group 2",
+   "alt": "Erste Liga Gruppe 2, Première Ligue Groupe 2, Prima Lega Girone 2",
+   "country": "Switzerland",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5938",
+   "name": "Swiss 1. Liga Classic Group 3",
+   "alt": "Erste Liga Gruppe 3, Première Ligue Groupe 3, Prima Lega Girone 3",
+   "country": "Switzerland",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4713",
+   "name": "Swiss Challenge League",
+   "alt": "Brack.ch Challenge League, Dieci Challenge League",
+   "country": "Switzerland",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5489",
+   "name": "Swiss Cup",
+   "alt": "Schweizer Cup, Coupe de Suisse, Coppa Svizzera",
+   "country": "Switzerland",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4899",
+   "name": "Chile Primera B",
+   "alt": "Chilean Primera B División, Liga de Ascenso",
+   "country": "Chile",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4627",
+   "name": "Chile Primera Division",
+   "alt": "Chilean Primera División, Liga de Primera",
+   "country": "Chile",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5481",
+   "name": "Chile Segunda División",
+   "alt": "Segunda División Profesional del Fútbol Profesional Chileno, Liga Segunda División",
+   "country": "Chile",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5858",
+   "name": "Chilean Copa de la Liga",
+   "alt": "",
+   "country": "Chile",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5378",
+   "name": "Copa Chile",
+   "alt": "",
+   "country": "Chile",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5975",
+   "name": "Cameroonian Elite One",
+   "alt": "Championnat du Cameroun, MTN Elite One",
+   "country": "Cameroon",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5525",
+   "name": "China FA Cup",
+   "alt": "Chinese FA Cup, 中国足协杯, CFA Cup",
+   "country": "China",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4628",
+   "name": "China League One",
+   "alt": "Chinese Jia League, 中国足球甲级联赛, Zhōngguó Zúqiú Xiéhuì Jiǎjí Liánsài",
+   "country": "China",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5310",
+   "name": "China league Two",
+   "alt": "China League Two, Chinese Football League 2, 中国足球乙级联赛",
+   "country": "China",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4359",
+   "name": "Chinese Super League",
+   "alt": "中国足球超级联赛, Zhōngguó Zúqiú Chāojí Liánsài, CSL",
+   "country": "China",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4497",
+   "name": "Colombian Liga DIMAYOR",
+   "alt": "Colombia Categoría Primera A",
+   "country": "Colombia",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4951",
+   "name": "Colombian Torneo DIMAYOR",
+   "alt": "Torneo BetPlay Dimayor, Torneo Águila, Categoría Primera B",
+   "country": "Colombia",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5183",
+   "name": "Copa Colombia",
+   "alt": "Copa BetPlay Dimayor",
+   "country": "Colombia",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5804",
+   "name": "Superliga Colombiana",
+   "alt": "Superliga BetPlay Dimayor",
+   "country": "Colombia",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "4815",
+   "name": "Costa-Rica Liga FPD",
+   "alt": "Liga Promérica, Liga de Fútbol de Primera División",
+   "country": "Costa Rica",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  },
+  {
+   "id": "5926",
+   "name": "Supercopa de Costa Rica",
+   "alt": "",
+   "country": "Costa Rica",
+   "badge": true,
+   "type": "season",
+   "gender": "Male"
+  }
+ ]
+}
