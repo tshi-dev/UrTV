@@ -1,4 +1,4 @@
-«✅ GO — build 208 or newer» — run step 39 (the setup restart fix, now released). TV muted.
+«✅ GO — step 40 now: speed baseline on the current build (no install). TV muted.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -651,3 +651,13 @@ The bug (4.2): «جهّز كل شي» restarts the TV at «قياس الذاكر
 4. Nothing on the TV should differ from before except what the setup is meant to do (same as step 28 D1b).
 Z. Restore as in step 28b Z (lang en).
 Report «step 39» in REPORT.md; write «step 39: ALL PASS» if so. Push.
+
+## step 40 — speed BASELINE for 4.3 (current build, nothing installed or changed; TV muted)
+Measure 3 runs each, same method we will repeat after 4.3, and save the exact commands in the report:
+1. Return to home from YouTube (Home key): time to first frame + any visible flicker (screenrecord 5 s, count blank/flash frames).
+2. Tray: gfxinfo janky % and 50/90/99th with the step 31 key script.
+3. Memory: `dumpsys meminfo sa.urtv.home` and `sa.urtv.screensaver` (PSS) at idle home, and with the screensaver running 2 min.
+4. Screensaver: time from start to the page shown (as step 33).
+5. Settings hub open (Displayed, cold and warm).
+6. Matches page and markets page open (Displayed).
+Report «step 40 baseline» with a table. Nothing else.
