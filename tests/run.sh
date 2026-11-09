@@ -191,6 +191,7 @@ python3 tests/settings_hub_test.py
 python3 tests/on_off_test.py   # on/off rows: the owner's choice I (green triangles and word), both apps
 python3 tests/parental_text_test.py   # «الرقابة الأبوية»: the card and its two buttons, the count of locked apps (docs/UX-REVIEW.md)
 python3 tests/fav_bar_test.py   # the favourites bar: the tray, five tiles, the focus inside it, the one 40 px move (docs/PROPOSALS-NOV2.md §1)
+python3 tests/called_off_test.py   # 4.3 A1: PST/ABD/AWD games are never shown as live
 python3 tests/football_test.py   # the football home and «المباريات»: the setting, the pages, the widgets' focus, the tray's move, the broadcast table (docs/PROPOSALS-NOV2.md §1)
 python3 tests/settings_report_test.py   # «أرسل تقرير»: share.py's allowlist, nothing personal
 python3 tests/dialog_fit_test.py

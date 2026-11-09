@@ -1949,7 +1949,7 @@ function leagueGames(){
   });
   return out;
 }
-const CALLED_OFF = /^(CANC|POSTP|ABAN|SUSP|WO)/i;
+const CALLED_OFF = /^(CANC|POSTP|PST|ABAN|ABD|SUSP|WO|AWD)/i;   // TheSportsDB's short codes too: PST postponed, ABD abandoned, AWD awarded (4.3 A1: they showed as live)
 // The league's games the screen shows: a result of the last day, a game under way, a game of the coming week.
 // -> [{t, ev, done}] in time order; shown holds the ids already taken by a followed team, so no game appears twice.
 function leagueShow(now, shown){
@@ -2090,7 +2090,7 @@ function eventInfo(key, ev){
 }
 // the events of key still to come (or running) within the window, soonest first
 function eventsOf(key, now){
-  const over = e => /^(FT|AET|PEN|FINISHED|MATCH FINISHED|CANCELLED|POSTPONED)$/i.test(e.strStatus || '');
+  const over = e => /^(FT|AET|PEN|FINISHED|MATCH FINISHED|CANCELLED|POSTPONED)$/i.test(e.strStatus || '') || CALLED_OFF.test(e.strStatus || '');
   return (EVENT_NEXT[key] || []).filter(e => e && e.idEvent && !over(e))
     .map(e => ({e, i: eventInfo(key, e)}))
     .filter(x => !isNaN(x.i.t) && now < x.i.t + x.i.dur && x.i.t - now <= CONFIG.eventWindowDays * 86400000)
