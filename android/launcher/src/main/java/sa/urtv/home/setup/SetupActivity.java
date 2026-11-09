@@ -227,15 +227,19 @@ public class SetupActivity extends Activity {
         // 4.3: a box per suggested app the setup can install (OK ticks or unticks it); one already on the TV says so and is left
         add(text(S.t("تطبيقات مقترحة: علّم ما تبي نثبّته معها"), 15, "Medium", TEXT), dp(8));
         for (final sa.urtv.home.SuggestedApps.App a : sa.urtv.home.SuggestedApps.forSetup(android.os.Build.VERSION.SDK_INT)) {
+            // the on/off look of every row here (paintLang: three green triangles and green words when ticked, plain when not)
             final boolean have = p.have.contains(a.id);
-            final TextView box = button("");
-            final String words = a.name + " · " + TR.apply(a.why);
-            box.setText(have ? a.name + " · " + S.t("مثبّت من قبل: نتركه") : (picks.contains(a.id) ? "☑ " : "☐ ") + words);
+            final TextView box = button(have ? a.name + " · " + S.t("مثبّت من قبل: نتركه") : a.name + " · " + TR.apply(a.why));
+            box.setContentDescription(a.name);
+            paintLang(box, !have && picks.contains(a.id), false);
+            box.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                public void onFocusChange(View v, boolean has) { paintLang(box, !have && picks.contains(a.id), has); }
+            });
             box.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     if (have) return;
                     if (!picks.remove(a.id)) picks.add(a.id);
-                    box.setText((picks.contains(a.id) ? "☑ " : "☐ ") + words);
+                    paintLang(box, picks.contains(a.id), box.hasFocus());
                 }
             });
             add(box, dp(8));

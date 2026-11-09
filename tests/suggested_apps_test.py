@@ -34,6 +34,10 @@ check("the screen is declared, and the screensaver's settings open it under «ا
       and st.index('row("تطبيقات في الشريط"') < st.index('row("تطبيقات مقترحة"'))
 check("the setup installs from the same catalog, a pinned file refused unless its SHA-256 matches", "SuggestedApps.pinnedOk(a, url, sha256(apk))" in inst
       and "said = installWithVerifier(apk, pkg);" in inst[inst.index("SuggestedApps.pinnedOk(a, url, sha256(apk))"):] and "SuggestedApps.githubOk(a, url)" in inst)
+act_setup = (HOME / "setup/SetupActivity.java").read_text(encoding="utf-8")
+check("the setup's boxes: one per suggested app, the on/off look of the screen's other rows (paintLang), OK ticks or unticks, one already on the TV left",
+      "SuggestedApps.forSetup(android.os.Build.VERSION.SDK_INT)" in act_setup and "paintLang(box, picks.contains(a.id), box.hasFocus());" in act_setup
+      and 'S.t("مثبّت من قبل: نتركه")' in act_setup and "☑" not in act_setup)
 check("the setup's downloader allows a pinned file only at its exact address", "a.kind == sa.urtv.home.SuggestedApps.Kind.PINNED && a.address().equals(url)" in apks)
 rows = re.findall(r'\{"([^"]+)", (TVBRO|SMARTTUBE), "([^"]+)"\}', inst)
 check("SmartTube and TV Bro: the same repositories and file patterns as the setup's (install.sh's)",
