@@ -6,7 +6,7 @@ Rules shown: no capsules (rounded rectangles of 12–24 px, circles only for dot
 
 | # | File | What it shows |
 |---|------|---------------|
-| 1 | 01-quick-buttons-rest, 02-quick-buttons-focus | the top-left buttons as one bar of six 72 px squares, top-aligned with the greeting at y 54; focus = solid fill + its name below |
+| 1 | 01-quick-buttons-rest, 02-quick-buttons-focus | the top-left buttons as one bar of five 56 px squares, top-aligned with the greeting at y 54; focus = solid fill + its name below |
 | 2 | 03-appearance-main, 04-appearance-looks-open | one «المظهر» page: six category tiles each with a live preview; then «الشكل» open (8 looks), the accent row and light/dark/auto under it |
 | 3 | 05-new-looks-grid, 06-accents-and-controls | 4 new looks (سينمائي، أفق، شفق، بسيط) beside our 4 (the current glass look stays the default); the 8 accent colours; bar opacity, wallpaper dim, focus style |
 | 4 | 07-home-graphite, 08-home-sand, 09-home-horizon | cards and apps bar from the same tokens (panel, line, tile, focus) in three looks |

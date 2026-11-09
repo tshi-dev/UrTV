@@ -103,14 +103,14 @@ body{{color:var(--text)}}
 
 # ---------------------------------------------------------------- shared home pieces
 def quick_row(look, focus=None, labels=True):
-    """the top-left quick buttons: one bar, six 72 px squares (radius 16) on an 8 px grid, the icons 32 px; the focused one is solid with its name under it"""
-    items = [("book", "تلاوة وأذان"), ("chart", "الأسواق"), ("phone", "الجوال"), ("wifi", "الشبكة"), ("sliders", "الإعدادات"), ("mic", "الصوت")]
+    """the top-left quick buttons: one bar, five 56 px squares (radius 16) on an 8 px grid, the icons 32 px; the focused one is solid with its name under it"""
+    items = [("book", "تلاوة وأذان"), ("chart", "الأسواق"), ("phone", "التحكم من الجوال"), ("wifi", "الشبكة"), ("sliders", "الإعدادات")]
     out = []
     for i, (n, name) in enumerate(items):
         f = " foc" if focus == i else ""
-        out.append(f'<div class="btn{f}" style="width:72px;height:72px;color:var(--text);position:relative">{ic(n, 32)}'
-                   + (f'<div style="position:absolute;top:84px;right:50%;transform:translateX(50%);white-space:nowrap;font-size:20px;color:var(--text);text-shadow:0 1px 8px rgba(0,0,0,.55)">{name}</div>' if focus == i and labels else '') + '</div>')
-    return f'<div class="panel row" style="position:absolute;left:96px;top:54px;height:88px;padding:8px;gap:8px;border-radius:24px">{"".join(out)}</div>'
+        out.append(f'<div class="btn{f}" style="width:56px;height:56px;color:var(--text);position:relative">{ic(n, 28, 1.8)}'
+                   + (f'<div style="position:absolute;top:68px;right:50%;transform:translateX(50%);white-space:nowrap;font-size:20px;color:var(--text);text-shadow:0 1px 8px rgba(0,0,0,.55)">{name}</div>' if focus == i and labels else '') + '</div>')
+    return f'<div class="panel row" style="position:absolute;left:96px;top:54px;height:72px;padding:8px;gap:8px;border-radius:20px">{"".join(out)}</div>'
 
 
 def greeting(look):
@@ -168,7 +168,7 @@ SHOTS = {}
 # 01/02 the quick buttons at rest and focused
 def quick_variants():
     SHOTS["01-quick-buttons-rest"] = home("glass", focus=-1)
-    SHOTS["02-quick-buttons-focus"] = home("glass", focus=-1, qfocus=1)
+    SHOTS["02-quick-buttons-focus"] = home("glass", focus=-1, qfocus=2)
 
 
 # 03/04 the one «المظهر» page
