@@ -1,4 +1,4 @@
-«✅ GO — step 40 now: speed baseline on the current build (no install). TV muted.
+«✅ GO — build 209 (4.3 candidate)» — run step 41 (end of this file). TV muted. lang en stays.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -661,3 +661,20 @@ Measure 3 runs each, same method we will repeat after 4.3, and save the exact co
 5. Settings hub open (Displayed, cold and warm).
 6. Matches page and markets page open (Displayed).
 Report «step 40 baseline» with a table. Nothing else.
+
+## step 41 — 4.3 candidate, full check + speed AFTER (TV muted; lang en stays; restore in Z)
+A. Update via «تحديث تلفزيوني» (channel next): new update screen design, no sound, home back in front.
+B. New: «المظهر والخلفيات» page (both looks; packs for home + saver, «صورنا», «صوري»), packs on the HOME wallpaper, shuffled rotation (no pack-after-pack blocks), «حقوق الصور» (file names LTR, «إغلاق» readable).
+C. Quick buttons: hide markets via settings; «الجوال» button opens the phone page; Wi-Fi icon; Settings/Quick Settings key opens TV panel or our Control Center; fav focus ring gold on dark looks.
+D. App options: «إلغاء التثبيت» (open dialog only, then Cancel — uninstall nothing), «صفحته في المتجر».
+E. Matches: UCL, AFC Champions League Elite, Iraq Stars League in the league list; postponed games not «مباشر»; saver matches card after midnight.
+F. Quran: Saudi station (station 0) plays 10 min with no stutter; log player=exo and restart count.
+G. Phone: «صوري» upload 2 demo photos from the phone page (/u), shown, then delete; #53 message from the phone shows ~20 s, Back hides it, `dock.sh message off` stops it.
+H. Second own adhan for Fajr: skip unless a file is at hand (report).
+I. Prayer method list has no Ja'fari.
+J. «تحديث جديد» pill: shows only when relevant (report state).
+K. Control Center sound tile: no crash; `UrTVControl` log lines.
+L. Security sanity: the home card page still works; any `file://` other than the page answers 403 (logcat if visible).
+M. Speed AFTER: repeat step 40 exactly (same commands), table next to step 40's numbers.
+Z. Restore as in step 28b Z (lang en), remove demo photos/messages.
+Report «step 41»; write «step 41: ALL PASS» if so. Push.
