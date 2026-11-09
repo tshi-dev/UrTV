@@ -1875,6 +1875,9 @@ function gameBlock(ev, now, big){
   const d = toDate(ev), diff = d - now;
   if(pendingResult(ev, now))   // over, no result yet: the teams and when they played
     return `<div class="mblock"><div class="big"><span><span class="tm">${home}</span> × <span class="tm">${away}</span></span></div><div class="sub">${matchWhen(d)}</div></div>`;
+  // kicked off long ago and the data still says «not started» with no score (the file is old): not «مباشر» and never «بعد …», the game as «over, no result yet» (its day and time say it was last night's)
+  if(diff < -20*60000 && ev.intHomeScore == null && /^(NS|TBD|NOT STARTED|)$/.test((ev.strStatus || '').toUpperCase()) && diff >= -durMs(ev))
+    return `<div class="mblock"><div class="big"><span><span class="tm">${home}</span> × <span class="tm">${away}</span></span></div><div class="sub">${matchWhen(d)}</div></div>`;
   if(diff < -durMs(ev) || diff > CONFIG.weekWindowDays * 86400000) return '';   // in progress stays on screen
   const p = hmParts(d);
   const clk = ar(fmtTime(+p.hour % 24, +p.minute));

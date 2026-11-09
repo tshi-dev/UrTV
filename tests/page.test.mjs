@@ -2413,13 +2413,16 @@ for (const [width, height] of [[1920, 1080], [1280, 720], [960, 540]]) {
   }
   {   // mix: at an hour whose turn is one of theirs (the pool is our 5 hosted photos, then theirs), a slow photo is waited for too
     const riyadhDay = Math.floor(Date.UTC(2026, 9, 23) / 864e5);
-    const hour = [...Array(24).keys()].find(h => (riyadhDay * 24 + h) % 7 >= 5);
+    // the rotation is shuffled (a new order each round of 7: the page's own `shuf`), so the hour is found by the same shuffle
+    const shuf = (a, seed) => { const r = a.slice(); let x = (seed + 1) * 2654435761 >>> 0 || 1; for (let i = r.length - 1; i > 0; i--) { x = (x * 1664525 + 1013904223) >>> 0; const j = x % (i + 1); [r[i], r[j]] = [r[j], r[i]]; } return r; };
+    const turn = h => { const slot = riyadhDay * 24 + h; return shuf([0, 1, 2, 3, 4, 5, 6], Math.floor(slot / 7))[slot % 7]; };
+    const hour = [...Array(24).keys()].find(h => turn(h) >= 5);
     const now = new Date(Date.UTC(2026, 9, 23, hour - 3, 10));
     const slow = await start('own=2&ownmode=mix&photos=60', () => 2000, now);
     const log = await slow.log(3200);
     check(`own photos, mix, at an hour of theirs (${hour}:10 Riyadh) and slow: theirs first, no flash of ours`, !slow.errors.length && log.length >= 1 && isOwn(log[0]) && !ours(log).length, log.join(' | '));
     await slow.ctx.close();
-    const ourTurn = [...Array(24).keys()].find(h => (riyadhDay * 24 + h) % 7 < 5);
+    const ourTurn = [...Array(24).keys()].find(h => turn(h) < 5);
     const o = await start('own=2&ownmode=mix&photos=60', () => 2000, new Date(Date.UTC(2026, 9, 23, ourTurn - 3, 10)));
     const log2 = await o.log(1800);
     check(`own photos, mix, at an hour of ours (${ourTurn}:10): ours at once, theirs do not hold it back`, log2.length >= 1 && !isOwn(log2[0]) && /\/photos\//.test(log2[0]), log2.join(' | '));

@@ -60,7 +60,7 @@ check("«حرّر الذاكرة» is gone: no tile, no kill call, no permission
 check("the sound tile reads the real devices with their product names", "d[i].getProductName()" in center and "ControlText.outputs(types, products)" in center)
 check("the remote's Settings key opens our settings with a fallback to the TV's own", "OPEN_OUR_SETTINGS" in keys and "case RemoteKeys.OPEN_OUR_SETTINGS:" in main and "openOurSettings(true)" in main
       and "orTvSettings" in main and "ParentalPolicy.REMOTE_SETTINGS" in main.split("private void openOurSettings")[1].split("\n    }\n")[0])
-check("kids mode: no pill and no panel (the row's own check, and the panel closes when it goes)", "private boolean centerWanted() { return !Parental.state(this).kids; }" in main
+check("kids mode: no pill and no panel (the row's own check, and the panel closes when it goes)", "private boolean centerWanted() { return !Parental.state(this).kids && !hiddenQuick.contains(\"center\"); }" in main
       and "control.dismiss();" in main.split("private void applyCenterPill")[1].split("wireFocus();")[0])
 check("the pill follows the row's walk: it is in `pills` and in the row's children together, at the same place",
       "pills.add(at, centerPill);" in main and "pillRow.addView(centerPill, at + 1," in main)

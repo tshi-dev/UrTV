@@ -2400,11 +2400,11 @@ public class MainActivity extends Activity {
         };
         Intent details = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", pkg, null));
         o.info = () -> guarded(ParentalPolicy.MENU_APP, pkg, AppActions.DETAILS, () -> launch(details));
-        if (!kids && AppActions.canUninstall(this, pkg)) {   // «إلغاء التثبيت»: Android's own question (never for a system app, ours, or in kids mode); the family PIN first when it asks
+        if (!kids && AppStore.canUninstall(this, pkg)) {   // «إلغاء التثبيت»: Android's own question (never for a system app, ours, or in kids mode); the family PIN first when it asks
             Intent del = new Intent(Intent.ACTION_DELETE, Uri.fromParts("package", pkg, null)).putExtra(Intent.EXTRA_RETURN_RESULT, false);
             o.uninstall = () -> guarded(ParentalPolicy.MENU_APP, pkg, S.t("إلغاء التثبيت"), () -> launch(del));
         }
-        Intent shop = AppActions.storeIntent(this, pkg);
+        Intent shop = AppStore.storeIntent(this, pkg);
         if (!kids && shop != null) o.store = () -> guarded(ParentalPolicy.MENU_APP, pkg, S.t("صفحته في المتجر"), () -> launch(shop));
         if (appOptions != null) appOptions.dismiss();
         appOptions = AppOptions.show(this, anchor, inDock ? 1.12f : 1.1f, homeGlass(), font("sans-serif-medium"), o);

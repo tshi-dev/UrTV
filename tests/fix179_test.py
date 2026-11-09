@@ -24,7 +24,7 @@ main = text(HOME / "MainActivity.java")
 pills = re.findall(r"sideLlp\(-2, dp\((?:Pill|NowCard)\.HEIGHT\), 0, [-\w]+, dp\(([\w.]+)\), [-\w]+\)", main)
 gap = int(re.search(r"static final int GAP = (\d+);", text(HOME / "Pill.java")).group(1))
 check("the round buttons at the top of the home: every one (and the now-playing card) is added with the one gap Pill.GAP, which is 24 px at 1080p (12 dp at density 2) and on the 8 px scale",
-      len(pills) == 6 and set(pills) == {"Pill.GAP"} and gap * 2 == 24 and (gap * 2) % 8 == 0, (pills, gap))
+      len(pills) == 7 and set(pills) == {"Pill.GAP"} and gap * 2 == 24 and (gap * 2) % 8 == 0, (pills, gap))
 row = text(RES / "layout/item_row.xml")
 check("Tilawah rows: 32 px of padding above and below the text (16 dp), 32 at the start, 32 at the end; rows 16 px apart",
       'android:paddingTop="16dp"' in row and 'android:paddingBottom="16dp">' in row and 'android:paddingEnd="16dp"' in row
