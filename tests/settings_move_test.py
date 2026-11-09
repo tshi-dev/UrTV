@@ -54,7 +54,7 @@ ENUM = {"digits": ["hindi", "latin"], "clocksize": ["large", "medium", "small"],
         "cardstyle": ["current", "dark1", "glass1", "dark3", "glass3"], "prayermethod": ["auto", "gulf"],
         "sunrise": ["on", "off"], "prayerbar": ["on", "off"], "wxmore": ["on", "off"], "pagesdark": ["on", "off"], "months": ["default", "levant"],
         "greeting": ["on", "off"], "listenpill": ["on", "off"], "updatebell": ["on", "off"], "adhanbar": ["on", "off"], "clock24": ["on", "off"], "mkbar": ["on", "off"], "prayeradj": ["on", "off"],
-        "favbar": ["5", "6", "7", "8", "9", "10", "all"], "homephotos": ["same", "own"], "homeours": ["on", "off"]}
+        "favbar": ["5", "6", "7", "8", "9", "10", "all"], "homephotos": ["same", "own"], "homeours": ["on", "off"], "albummode": ["seconds", "minute"], "albumdate": ["on", "off"]}
 if "SaverReceiver" in cmd and cmd.endswith(".GET"):
     s = st["saver"]
     adj = " ".join(f"{k}={'+' if v > 0 else ''}{v}" for k, v in s["adj"].items())
@@ -68,7 +68,7 @@ if "SaverReceiver" in cmd and cmd.endswith(".GET"):
         f"mkstyle: {s['mkstyle']}", "stocks: 2222", "slot: matches", "countdown: none", "idle: 10", "genres: ", "langs: ", "events: ",
         "leagues: ", "autoupdate: on", "pin: 4321", "wifi: HomeNet", "tasks: buy milk", "updatechannel: " + s.get("updatechannel", "stable"), "favbar: " + s.get("favbar", "5")]
         + ([f"country: {s['country']}"] if "country" in s else [])
-        + [f"{k}: {s[k]}" for k in ("homephotos", "homepacks", "homeours", "pillshidden") if k in s]   # 4.3: only a screensaver that has them says them
+        + [f"{k}: {s[k]}" for k in ("homephotos", "homepacks", "homeours", "pillshidden", "albummode", "albumdate") if k in s]   # 4.3: only a screensaver that has them says them
         + ([] if st.get("old_app") else [f"panel2: {s['panel2']}", f"sunrise: {s['sunrise']}", f"prayerbar: {s['prayerbar']}",
                                           f"wxmore: {s['wxmore']}", f"pagesdark: {s.get('pagesdark', 'on')}", f"months: {s['months']}"])))
 if "SaverReceiver" in cmd and re.search(r"screensaver\.SET( |$)", cmd):
@@ -138,7 +138,7 @@ BASE = {
               "adj": {"fajr": 0, "dhuhr": 0, "asr": 0, "maghrib": 0, "isha": 0}, "hijri": "0", "digits": "hindi", "clock24": "off",
               "cardstyle": "current", "markets": ["tasi", "spx", "btc"], "mkbar": "on", "clocksize": "large", "mkstyle": "arrows",
               "panel2": "none", "sunrise": "off", "prayerbar": "off", "wxmore": "off", "pagesdark": "on", "months": "default", "updatechannel": "stable", "favbar": "5",
-              "homephotos": "same", "homepacks": "none", "homeours": "on", "pillshidden": "none"},
+              "homephotos": "same", "homepacks": "none", "homeours": "on", "pillshidden": "none", "albummode": "seconds", "albumdate": "on"},
     "adhan": {"on": "on", "voice": 1, "fajr_voice": 10, "short": "off", "stopkey": "on", "volume": 70},
 }
 CONFIGURED = copy.deepcopy(BASE)
@@ -147,7 +147,7 @@ CONFIGURED["saver"].update({"city": ["الدوحة", "25.2854", "51.531"], "tz":
                             "prayermethod": "gulf", "prayeradj": "on", "hijri": "-1", "digits": "latin", "clock24": "on",
                             "cardstyle": "glass1", "markets": ["gold", "btc"], "mkbar": "off", "clocksize": "medium", "mkstyle": "prices",
                             "panel2": "hourly", "sunrise": "on", "prayerbar": "on", "wxmore": "on", "pagesdark": "off", "months": "levant", "favbar": "7",
-                            "homephotos": "own", "homepacks": "nature,sea", "homeours": "off", "pillshidden": "markets,center"})
+                            "homephotos": "own", "homepacks": "nature,sea", "homeours": "off", "pillshidden": "markets,center", "albummode": "minute", "albumdate": "off"})
 CONFIGURED["saver"]["adj"] = {"fajr": 2, "dhuhr": 0, "asr": -3, "maghrib": 1, "isha": 0}
 CONFIGURED["favs"] = ["afasy", "sudais"]
 CONFIGURED["adhan"] = {"on": "off", "voice": 3, "fajr_voice": 13, "short": "on", "stopkey": "off", "volume": 40}
@@ -638,4 +638,20 @@ check("saver.sh: pillshidden, homephotos, homepacks and homeours are commands, e
       all(f"  {k}) set1 {k} " in saver_src and f"optimize/saver.sh {k} " in saver_src.split("set -euo")[0] for k in ("pillshidden", "homephotos", "homepacks", "homeours")))
 docs = (ROOT / "docs/SETTINGS.md").read_text(encoding="utf-8")
 check("docs/SETTINGS.md: a row says each command", all(f"optimize/saver.sh {k} " in docs for k in ("pillshidden", "homephotos", "homepacks", "homeours")))
+# ---- C17 «ألبوم صوري»: the card kind album and its two settings
+exp = json.loads(Tv("al1", CONFIGURED).run("export")[1])
+check("export: album_mode and album_date are in the file", exp.get("album_mode") == "minute" and exp.get("album_date") is False, exp)
+t = Tv("al2", BASE)
+rc, out, err = t.run("import", write("al2.json", {"schema": 1, "album_mode": "minute", "album_date": False, "cards": {"panel": "album", "home": ["album", "verse"]}}), "--yes")
+d = t.data()["saver"]
+check("import: albummode, albumdate and the album card reach the TV", rc == 0 and d["albummode"] == "minute" and d["albumdate"] == "off" and d["panel"] == "album" and d["home_panel"] == "album,verse", (rc, out, err, d))
+refused("album_mode unknown", lambda d: d.update(album_mode="hour"), "album_mode must be one of")
+refused("album_date text", lambda d: d.update(album_date="on"), "album_date must be true or false")
+old = copy.deepcopy(BASE)
+for k in ("albummode", "albumdate"): old["saver"].pop(k)
+exp_old = json.loads(Tv("al3", old).run("export")[1])
+check("an older screensaver without the album: the two are left out of the file", "album_mode" not in exp_old and "album_date" not in exp_old, exp_old)
+saver_now = (ROOT / "optimize/saver.sh").read_text(encoding="utf-8")
+check("saver.sh: albummode and albumdate are commands in the usage, and album is in the card list",
+      all(f"  {k}) set1 {k} " in saver_now and f"optimize/saver.sh {k} " in saver_now.split("set -euo")[0] for k in ("albummode", "albumdate")) and "smart today album none" in saver_now)
 sys.exit(1 if failed else 0)

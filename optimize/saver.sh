@@ -12,7 +12,7 @@
 #   optimize/saver.sh find-team الهلال             a club's id (Arabic or English name): id:Name | league
 #   optimize/saver.sh teams 136013:Al-Hilal 150643:Al-Zulfi    followed teams in order (up to 20; more are left out and listed);
 #                                                  `teams none` (or `teams ""`) follows no team: the defaults (الهلال، المنتخب السعودي) go
-#   optimize/saver.sh card prayers                 beside the clock: shows prayers forecast hourly prayerrow matches verse wisdom adhkar stocks tasks year smart today none
+#   optimize/saver.sh card prayers                 beside the clock: shows prayers forecast hourly prayerrow matches verse wisdom adhkar stocks tasks year smart today album none
 #   optimize/saver.sh card2 hourly                 a second card beside the clock, shown only while the clock is small (clocksize small):
 #                                                  the same choices but nextprayer and the first card; card2 none = one card (default)
 #   optimize/saver.sh home-card verse,hourly,year  on the home screen (launcher): up to 3 cards, same choices and nextprayer (home only), in this order
@@ -27,6 +27,8 @@
 #   optimize/saver.sh pillshidden markets,matches   home screen: hide quick buttons at the top (markets, matches, center, phone; a comma list), or none (default)
 #   optimize/saver.sh homephotos own               home screen: the wallpaper's photos: same (default, the screensaver's packs) or own (its own set, below)
 #   optimize/saver.sh homepacks nature,sea         home screen, with homephotos own: the photo packs it rotates (their ids, a comma list), or none
+#   optimize/saver.sh albummode minute             «ألبوم صوري» (card album): a photo every 4 s (seconds, default) or one a minute (minute)
+#   optimize/saver.sh albumdate off                «ألبوم صوري»: the day each photo was added, under it: on (default) or off
 #   optimize/saver.sh homeours off                 home screen, with homephotos own: «صورنا» among its photos: on (default) or off
 #   optimize/saver.sh appearance auto              home screen: «المظهر ← الإضاءة», dark (default), light, or auto (light from sunrise until Maghrib in the city)
 #   optimize/saver.sh look navy                    all our screens: «المظهر ← الشكل», glass (default), graphite, navy, clean, or sand
@@ -218,6 +220,8 @@ case "${1:-}" in
   pillshidden) set1 pillshidden "${2:?usage: optimize/saver.sh pillshidden markets,matches,center,phone | none}" ;;
   homephotos) set1 homephotos "${2:?usage: optimize/saver.sh homephotos same|own}" ;;
   homepacks) set1 homepacks "${2:?usage: optimize/saver.sh homepacks nature,sea | none   (pack ids: docs/PHOTO-PACKS.md; a pack is downloaded on the TV)}" ;;
+  albummode) set1 albummode "${2:?usage: optimize/saver.sh albummode seconds|minute}" ;;
+  albumdate) set1 albumdate "${2:?usage: optimize/saver.sh albumdate on|off}" ;;
   homeours) set1 homeours "${2:?usage: optimize/saver.sh homeours on|off}" ;;
   appearance) set1 appearance "${2:?usage: optimize/saver.sh appearance dark|light|auto}" ;;
   look) set1 look "${2:?usage: optimize/saver.sh look glass|graphite|navy|clean|sand}" ;;
