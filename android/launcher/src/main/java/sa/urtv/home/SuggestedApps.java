@@ -56,9 +56,8 @@ public final class SuggestedApps {
         }
     }
 
-    /** UrTV Player's signing certificate, SHA-256 of the certificate (lower-case hex, 64 digits). PLACEHOLDER: the owner has not made the key yet;
-     *  while it is empty the Player is not offered and never installed. */
-    public static final String PLAYER_CERT = "";
+    /** UrTV Player's signing certificate: the SHA-256 of the certificate (lower-case hex, 64 digits; public). Empty would hide the Player. */
+    public static final String PLAYER_CERT = "13ade7d009a07f5ba5bab0b7734bd449df10dd47b53868dfa28e44cd8069dfea";
     public static final String PLAYER = "com.urtv.player", PLAYER_REPO = "tshi-dev/UrTV", PLAYER_FILE = "urtv-player.apk", PLAYER_TAG = "player-";
 
     public static final String SMARTTUBE = "org.smarttube.stable", TVBRO = "com.phlox.tvwebbrowser", VLC = "org.videolan.vlc", TIVIMATE = "ar.tvplayer.tv";

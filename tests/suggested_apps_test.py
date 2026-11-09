@@ -34,10 +34,10 @@ check("a Play Store app opens its page (the store, else the web page); an instal
 check("the screen is declared, and the screensaver's settings open it under «التطبيقات والمفضلة»", 'android:name=".SuggestedAppsActivity"' in mf
       and 'row("تطبيقات مقترحة"' in st and '"sa.urtv.home.SuggestedAppsActivity"' in st
       and st.index('row("تطبيقات في الشريط"') < st.index('row("تطبيقات مقترحة"'))
-check("UrTV Player in the screen: the newest «player-» release, its published SHA-256, the package and the pinned certificate before the install; refused while not pinned",
+check("UrTV Player in the screen: the newest «player-» release, its published SHA-256, the package and the pinned certificate before the install; refused unless pinned",
       "if (a.kind == SuggestedApps.Kind.MIRROR) return mirror(a, f);" in act and "if (!SuggestedApps.mirrorReady(a))" in act
       and act.index("SuggestedApps.mirrorFileOk(a, sha, published") < act.split("private String mirror(")[1].index("commit(f, a.pkg);") + act.index("private String mirror(")
-      and "GET_SIGNING_CERTIFICATES" in act and 'PLAYER_CERT = "";' in cat)
+      and "GET_SIGNING_CERTIFICATES" in act and 'PLAYER_CERT = "13ade7d009a07f5ba5bab0b7734bd449df10dd47b53868dfa28e44cd8069dfea";' in cat)
 check("the setup installs from the same catalog: GitHub releases only, a Play Store app never", "SuggestedApps.githubOk(a, url)" in inst and "if (a == null || !a.inSetup()) continue;" in inst)
 act_setup = (HOME / "setup/SetupActivity.java").read_text(encoding="utf-8")
 check("the setup's boxes: one per suggested app, the on/off look of the screen's other rows (paintLang), OK ticks or unticks, one already on the TV left",
@@ -57,5 +57,5 @@ else:
             out = subprocess.run(["java", "-cp", tmp, "sa.urtv.home.SuggestedAppsRun"], capture_output=True, text=True).stdout
             lines = [l.split("\t") for l in out.splitlines() if "\t" in l]
             bad = [n for n, v in lines if v != "ok"]
-            check(f"SuggestedApps: every case ({len(lines)})", len(lines) == 16 and not bad, bad or out)
+            check(f"SuggestedApps: every case ({len(lines)})", len(lines) == 17 and not bad, bad or out)
 sys.exit(1 if failed else 0)

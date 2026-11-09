@@ -17,7 +17,7 @@ public final class SuggestedAppsRun {
             && !SuggestedApps.githubOk(tube, "http://github.com/yuliskov/SmartTube/releases/download/29.1/a.apk") && !SuggestedApps.githubOk(tivi, "https://github.com/x/y/releases/download/1/a.apk"));
         check("a Play Store app has no file: its page only, and is not in the setup", vlc.kind == SuggestedApps.Kind.STORE && vlc.file == null && !vlc.inSetup()
             && vlc.address().equals("https://play.google.com/store/apps/details?id=org.videolan.vlc"));
-        check("every suggestion runs on any TV we support (Android 5+)", SuggestedApps.forTv(21).size() == SuggestedApps.ALL.length);
+        check("every suggestion runs on any TV we support (Android 5+)", SuggestedApps.forTv(21).size() == SuggestedApps.all().size());
         check("the setup's first ticks are TV Bro and SmartTube, as the one box was", SuggestedApps.defaults(34).equals(Arrays.asList("tvbro", "smarttube")));
         check("the setup's boxes: the two it can install, TV Bro then SmartTube (no store app)", SuggestedApps.forSetup(34).size() == 2 && SuggestedApps.forSetup(34).get(1) == tube);
         check("saved ticks read back: known setup ids, once, in order; a store app or a stranger dropped", SuggestedApps.parse("smarttube,vlc,x,tivimate,tvbro,smarttube").equals(Arrays.asList("tvbro", "smarttube"))
@@ -31,9 +31,12 @@ public final class SuggestedAppsRun {
 
         // 4.3 UrTV Player: a MIRROR entry, from this repository's own «player-<version>» releases
         SuggestedApps.App pl = SuggestedApps.PLAYER_APP;
-        check("UrTV Player: not offered and never installed while its certificate is not pinned (the placeholder)", SuggestedApps.PLAYER_CERT.isEmpty()
-            && !SuggestedApps.mirrorReady(pl) && !SuggestedApps.forTv(34).contains(pl) && !pl.inSetup()
-            && !SuggestedApps.mirrorFileOk(pl, "ab".repeat(32), "ab".repeat(32), "com.urtv.player", new java.util.HashSet<>(java.util.Collections.singleton("cd".repeat(32)))));
+        check("UrTV Player: its certificate pinned (the owner's key), offered in the settings, never in the setup", SuggestedApps.PLAYER_CERT.equals("13ade7d009a07f5ba5bab0b7734bd449df10dd47b53868dfa28e44cd8069dfea")
+            && SuggestedApps.mirrorReady(pl) && SuggestedApps.forTv(34).contains(pl) && !pl.inSetup() && !SuggestedApps.forSetup(34).contains(pl));
+        SuggestedApps.App unpinned = new SuggestedApps.App("player", "com.urtv.player", "UrTV Player", "x", SuggestedApps.Kind.MIRROR, "tshi-dev/UrTV", "urtv-player.apk", 21, false);
+        unpinned.tagPrefix = "player-";
+        check("a MIRROR entry without a pinned certificate is never ready and never installs", !SuggestedApps.mirrorReady(unpinned)
+            && !SuggestedApps.mirrorFileOk(unpinned, "ab".repeat(32), "ab".repeat(32), "com.urtv.player", new java.util.HashSet<>(java.util.Collections.singleton("cd".repeat(32)))));
         SuggestedApps.App t = new SuggestedApps.App("player", "com.urtv.player", "UrTV Player", "x", SuggestedApps.Kind.MIRROR, "tshi-dev/UrTV", "urtv-player.apk", 21, false);
         t.tagPrefix = "player-"; t.cert = "cd".repeat(32);
         String base = "https://github.com/tshi-dev/UrTV/releases/download/";
