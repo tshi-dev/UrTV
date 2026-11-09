@@ -40,6 +40,9 @@ final class Prefs {
         {"Egyptian Premier League", "الدوري المصري"},
         {"UAE Pro League", "الدوري الإماراتي"},
         {"Qatar Stars League", "الدوري القطري"},
+        {"Iraqi Premier League", "دوري نجوم العراق"},   // 4.3: TheSportsDB 5056 («Iraq Stars League»)
+        {"AFC Champions League Elite", "دوري أبطال آسيا للنخبة"},   // 4.3: 4719; a cup: its clubs come from their own leagues
+        {"UEFA Champions League", "دوري أبطال أوروبا"},   // 4.3: 4480
         {"American Major League Soccer", "الدوري الأمريكي"},
         {"NBA", "دوري كرة السلة الأمريكي (NBA)"},
         {"NFL", "دوري كرة القدم الأمريكية (NFL)"},

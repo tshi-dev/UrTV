@@ -3926,7 +3926,8 @@ const FB_EN = document.documentElement.lang === 'en';
 // the leagues of Prefs.LEAGUES by TheSportsDB's id (.github/tools/teams-cache.json), with the short name the page shows
 const FB_LEAGUES = {'4668':'Roshn League', '5627':'Yelo League', '4328':'Premier League', '4335':'La Liga', '4332':'Serie A',
   '4331':'Bundesliga', '4334':'Ligue 1', '4344':'Primeira Liga', '4337':'Eredivisie', '4339':'Süper Lig',
-  '4829':'Egyptian Premier League', '4678':'UAE Pro League', '4663':'Qatar Stars League', '4346':'MLS', '4387':'NBA', '4391':'NFL'};
+  '4829':'Egyptian Premier League', '4678':'UAE Pro League', '4663':'Qatar Stars League', '4346':'MLS', '4387':'NBA', '4391':'NFL',
+  '5056':'Iraq Stars League', '4719':'AFC Champions League Elite', '4480':'Champions League'};   // 4.3
 const FB_LEAGUE_ORDER = Object.keys(FB_LEAGUES);
 const leagueName = ev => FB_LEAGUES[String(ev.idLeague || '')] || String(ev.strLeague || '');
 // «مباريات اليوم»'s marks (assets/shared/broadcast.json): plain text, never a logo; a row counts only while it is high, whole (every game),

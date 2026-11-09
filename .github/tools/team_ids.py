@@ -89,6 +89,11 @@ LEAGUES = {
     "Egyptian Premier League": {"country": "Egypt", "wd": {"Q79"}, "adj": "المصري", "min": 18},
     "UAE Pro League": {"country": "United Arab Emirates", "wd": {"Q878"}, "adj": "الإماراتي", "min": 14},
     "Qatar Stars League": {"country": "Qatar", "wd": {"Q846"}, "adj": "القطري", "min": 12},
+    "Iraqi Premier League": {"country": "Iraq", "wd": {"Q796"}, "adj": "العراقي", "min": 18},   # 4.3; TheSportsDB 5056, «Iraq Stars League»
+    # 4.3: the continental cups. "cup": followable as a competition (its games, league_fixtures.py), but no club list of its own: their
+    # clubs are the national leagues' (a qualifying round's Faroese or Maltese club is not one to follow), so no club is collected for them
+    "AFC Champions League Elite": {"country": "Worldwide", "wd": set(), "adj": "", "min": 0, "cup": True},
+    "UEFA Champions League": {"country": "Europe", "wd": set(), "adj": "", "min": 0, "cup": True},
     "American Major League Soccer": {"country": "United States", "wd": {"Q30", "Q16"}, "adj": "الأمريكي", "min": 30,
                                      "calendar": True},
     # other sports: "sport" is TheSportsDB's strSport. The NBA names its seasons "2025-2026", the NFL "2025"; both
@@ -104,7 +109,8 @@ SPORT_AR = {"Soccer": "كرة القدم", "Basketball": "كرة السلة", "A
 SPORT_WORDS = {"Soccer": re.compile(r"football|soccer", re.I), "Basketball": re.compile(r"basketball", re.I),
                "American Football": re.compile(r"american football|gridiron|national football league", re.I)}
 SPORT_CLASS = {"Soccer": "Q476028", "Basketball": "Q13393265", "American Football": "Q17156793"}
-GUESSES = {"Portuguese Primeira Liga": "4344", "Turkish Super Lig": "4339", "NBA": "4387", "NFL": "4391"}   # used only if the name matches
+GUESSES = {"Portuguese Primeira Liga": "4344", "Turkish Super Lig": "4339", "NBA": "4387", "NFL": "4391",
+           "Iraqi Premier League": "5056", "AFC Champions League Elite": "4719", "UEFA Champions League": "4480"}   # 4.3: read by .github/tools/league_probe.py   # used only if the name matches
 ALIASES = {"United States": ["USA", "United States of America"], "Jordan": ["Jordan national football team"],
            "South Korea": ["Korea Republic"], "Iran": ["IR Iran"], "China": ["China PR"]}
 NATIONAL = {   # national teams: TheSportsDB's English name -> our Arabic name
@@ -912,7 +918,9 @@ def collect_part(part, today, cache, listed):
             report["problems"].append(f"{part} is in Prefs.LEAGUES but not in team_ids.py's LEAGUES (country, minimum)")
         else:
             ids = league_ids([part], cache["leagues"])
-            if part in ids:
+            if part in ids and LEAGUES[part].get("cup"):
+                print(f"{part}: a cup, its id only ({ids[part]}): no clubs of its own", flush=True)   # 4.3: its clubs are the national leagues'
+            elif part in ids:
                 collect_league(part, ids[part], today, teams, report, report["problems"])
                 if len(report["clubs per league"][part]["seasons"]) < 2 and part in cache["leagues"]:
                     ids = league_ids([part])   # a reused league id that no longer answers: find it again

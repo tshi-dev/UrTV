@@ -309,8 +309,9 @@ with tempfile.TemporaryDirectory() as tmp:
     lookups = [c for c in calls if "lookupteam.php" in c]
     every = len(json.loads((tmp / "one/teams.json").read_text(encoding="utf-8")))
     parts = len(ti.plan())
-    check("full run: every team looked up (and one probe per part that has teams)", len(lookups) == every + parts - 1,
-          (len(lookups), every, parts))
+    cups = sum(1 for n in ti.LEAGUES if ti.LEAGUES[n].get("cup"))   # 4.3: a cup has no clubs of its own, so no probe
+    check("full run: every team looked up (and one probe per part that has teams)", len(lookups) == every + parts - 1 - cups,
+          (len(lookups), every, parts, cups))
     teams_out = {t["id"]: t for t in json.loads((tmp / "one/teams.json").read_text(encoding="utf-8"))}
     sports = {t["sport"] for t in teams_out.values()}
     check("full run: every team has its sport (football, basketball, American football)",
@@ -347,7 +348,7 @@ with tempfile.TemporaryDirectory() as tmp:
     out = {t["id"]: t for t in json.loads((tmp / "two/teams.json").read_text(encoding="utf-8"))}
     check("incremental: the new club is in, the renamed one has its new name",
           new_club[0] in out and out[renamed]["en"] == "Renamed Eagles", out.get(renamed))
-    check("incremental: far fewer requests", report["requests"]["thesportsdb"] < 100, report["requests"])
+    check("incremental: far fewer requests", report["requests"]["thesportsdb"] < 25 + 5 * len(ti.LEAGUES), report["requests"])   # a few per league (4.3: 19 of them)
     # the workflow's way: each part on its own (one runner each), then the merge; the same list as one process
     (tmp / "split").mkdir()
     for part in ti.plan():

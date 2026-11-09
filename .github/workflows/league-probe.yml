@@ -3,10 +3,7 @@ name: League probe
 # 4.3: TheSportsDB's names and ids of the UEFA Champions League, the AFC Champions League (Elite) and the Iraqi league, read before they go
 # into Prefs.LEAGUES (.github/tools/league_probe.py). The report goes to the data-league-probe branch. Nothing else is changed.
 on:
-  workflow_dispatch:
-  push:
-    branches: ['work/data-182']
-    paths: ['.github/tools/league_probe.py', '.github/workflows/league-probe.yml']
+  workflow_dispatch:   # by hand, when a competition is to be added (4.3 used it once)
 
 permissions:
   contents: write
