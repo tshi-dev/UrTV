@@ -14,11 +14,23 @@ import java.util.regex.Pattern;
  * sees a new boot and reads. It never restarts the TV twice for one reading: the same boot after a resume means it reads at once, without a restart.
  * A TV whose adb would not be on port 5555 after a restart (opened only for this session, as `adb tcpip` does, or Wireless debugging) is not restarted:
  * it is read at once, and the report says «بدون إعادة تشغيل». Plain Java.
+ *
+ * 4.2.1 (a TV that restarted at «قياس الذاكرة قبل» and never went on): the run is marked as waiting for the restart (beforeRestart: runner.txt's
+ * await=restart) BEFORE `reboot` is sent. This app runs on the TV it restarts, so it is killed while the TV goes down and nothing after `reboot`
+ * runs; without the mark the TV's start did not resume the run. The restart line is said before the wait, not after it. A reading is never a
+ * reason to stop: each heavy command has a time limit where the TV can set one (toybox timeout), a reading that fails ends the step with
+ * «تعذّر القياس، كمّلنا.» (SetupRunner), and a low-memory TV is not asked for the whole system's `dumpsys meminfo`.
  */
 final class SetupMeasure {
     static final String PHASE = "measure-phase.txt", SUMMARY = "summary.md", KINDS = "measure-kinds.txt", TIMEOUT = "screen-off-timeout.txt";
     static final String NO_RESTART = "بدون إعادة تشغيل";
     static final int SETTLE_MS = 180_000, PACKAGE_SETTLE_MS = 15_000;
+    /** A heavy command's limit, in seconds, where the TV has toybox's timeout (killed with SIGKILL: what it printed so far is kept). */
+    static final int COMMAND_LIMIT_S = 20;
+    /** A TV with less than this (kB of MemTotal, about 1 GB) is not asked for the whole system's `dumpsys meminfo` (read from the first line, no extra command). */
+    static final long LOW_RAM_KB = 1_100_000;
+    static final String FAILED = "تعذّر القياس، كمّلنا.";
+    static final String LOW_RAM_SKIP = "(skipped: a low-memory TV)";
     /** measure.sh's batch, line for line. */
     static final String[] READ = {
         "echo '== memory'; grep -E 'MemTotal|MemAvailable|SwapTotal|SwapFree' /proc/meminfo",
@@ -36,12 +48,19 @@ final class SetupMeasure {
     private final SetupEngine.Store store;
     private final SetupEngine.Out out;
     private final SetupEngine.Sleeper sleeper;
+    private final BeforeRestart beforeRestart;
 
-    SetupMeasure(SetupEngine.Shell sh, SetupEngine.Store store, SetupEngine.Out out, SetupEngine.Sleeper sleeper) {
+    /** Written to disk just before `reboot` is sent: after it, nothing of this run may run (SetupRunner: runner.txt's await=restart). */
+    interface BeforeRestart { void mark() throws IOException; }
+
+    SetupMeasure(SetupEngine.Shell sh, SetupEngine.Store store, SetupEngine.Out out, SetupEngine.Sleeper sleeper) { this(sh, store, out, sleeper, () -> { }); }
+
+    SetupMeasure(SetupEngine.Shell sh, SetupEngine.Store store, SetupEngine.Out out, SetupEngine.Sleeper sleeper, BeforeRestart beforeRestart) {
         this.tv = new SetupTv(sh);
         this.store = store;
         this.out = out;
         this.sleeper = sleeper;
+        this.beforeRestart = beforeRestart;
     }
 
     private SetupEngine.Result done(String m) { out.line(m); return new SetupEngine.Result(SetupEngine.Status.DONE, m); }
@@ -78,11 +97,13 @@ final class SetupMeasure {
             if (boot.isEmpty()) {
                 out.line("لم يقل التلفزيون رقم تشغيله، فلن نعيد تشغيله: نقيس الآن " + NO_RESTART + ".");
             } else {
+                // said first: the wait below is 15 s with nothing else on the screen (4.2: it looked stuck, then the TV went off)
+                out.line("نعيد تشغيل التلفزيون للقياس الدقيق بعد ثوانٍ. الإعداد يكمل وحده بعد التشغيل (حوالي 5 دقائق)؛ لا تطفئه.");
                 // Android writes what was disabled about 10 s after a change: a restart before that can lose it (optimize/settle.sh)
                 sleeper.sleep(PACKAGE_SETTLE_MS);
-                tv.run("sync");
                 store.put(PHASE, label + " " + boot + "\n");   // BEFORE the restart: the resumed run knows it was sent, and never sends it twice
-                out.line("نعيد تشغيل التلفزيون للقياس الدقيق. الإعداد يكمل وحده بعد التشغيل (حوالي 5 دقائق)؛ لا تطفئه.");
+                beforeRestart.mark();                           // and the TV's start knows to resume it: this app is killed as the TV goes down
+                try { tv.run("sync"); } catch (IOException slow) { /* init syncs again on the way down */ }
                 try { tv.run("reboot"); } catch (IOException gone) { /* the connection drops as the TV goes down */ }
                 throw new SetupRunner.Restarting();
             }
@@ -109,8 +130,16 @@ final class SetupMeasure {
                 out.line("نترك التلفزيون 3 دقائق على الشاشة الرئيسية ثم نقيس…");
                 sleeper.sleep(SETTLE_MS);
             }
+            boolean limit = SetupTv.tail1of(tv.text("toybox timeout 2 true 2> /dev/null && echo limit=yes")).trim().equals("limit=yes");
             StringBuilder b = new StringBuilder();
-            for (String l : READ) b.append("$ ").append(l).append('\n').append(SetupPrep.rstrip(tv.text(l))).append('\n');
+            boolean low = false;
+            for (int i = 0; i < READ.length; i++) {
+                String l = READ[i], got;
+                if (low && l.contains("dumpsys meminfo |")) got = LOW_RAM_SKIP;   // the whole system's: seconds of work on every process, on a TV short of memory
+                else got = SetupPrep.rstrip(tv.text(limit ? limited(l) : l));
+                b.append("$ ").append(l).append('\n').append(got).append('\n');
+                if (i == 0) low = lowRam(got);
+            }
             text = b.toString();
         } finally {
             if (stretched) putTimeoutBack();
@@ -125,6 +154,17 @@ final class SetupMeasure {
         String row = row(label, text);
         String[] c = row.split("\\|");
         return done("قِسنا الذاكرة " + (label.startsWith("before") ? "قبل" : "بعد") + " الإعداد" + (restarted ? " بعد إعادة التشغيل" : " (" + NO_RESTART + ")") + ": " + c[2].trim() + " ميغابايت فاضية.");
+    }
+
+    /** The line with each heavy command (dumpsys, top, pm, device_config) under toybox's timeout: killed after COMMAND_LIMIT_S, the rest goes on. */
+    static String limited(String line) {
+        return line.replaceAll("(^|; |\\| |\\$\\()(dumpsys|top|pm|device_config) ", "$1toybox timeout -s 9 " + COMMAND_LIMIT_S + " $2 ");
+    }
+
+    /** /proc/meminfo's MemTotal under about 1 GB. */
+    static boolean lowRam(String meminfo) {
+        long total = kb(meminfo, "MemTotal");
+        return total > 0 && total < LOW_RAM_KB;
     }
 
     /** The TV's own screensaver timeout, exactly as it was (null: deleted); also after a run that died while it was stretched. */

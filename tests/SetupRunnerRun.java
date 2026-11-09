@@ -481,6 +481,85 @@ public class SetupRunnerRun {
         go(r30u, h30, SetupRunner.Kind.UNDO, new SetupRunner.Options());
         line("R30 " + full30.equals(FULLDONE(r30)) + " " + saver30 + " execs=" + h30.execs.size() + " prompts=" + promptsAfterRun + "/" + adbd.prompts.get() + " " + states(r30u)
             + " same=" + (SetupEngineRun.snapshot(t30) + "|" + new java.util.TreeSet<>(t30.installed)).equals(before30) + " shellCmds=" + (adbd.commands.size() > 100));
+        // 31. a measurement command that hangs (4.2: «قياس الذاكرة قبل» looked stuck): with the TV's toybox timeout it is cut and the run goes on;
+        // without one the read times out, the step says «تعذّر القياس، كمّلنا.» and the run still goes on; a low-memory TV is not asked for the whole system's meminfo
+        for (String mode : new String[] {"limit", "nolimit", "lowram"}) {
+            SetupEngineRun.FakeTv t31 = SetupEngineRun.tv(); t31.installed.remove("sa.urtv.screensaver");
+            SetupEngineRun.Mem m31 = new SetupEngineRun.Mem();
+            final List<String> sent31 = new ArrayList<>();
+            Host h31 = new Host(t31, m31) {
+                @Override public SetupRunner.Session open(int approvalMs, AdbClient.Approval approval, SetupEngine.Out out) throws IOException {
+                    final SetupRunner.Session base = super.open(approvalMs, approval, out);
+                    final SetupEngine.Shell sh = cmd -> {
+                        sent31.add(cmd);
+                        if (cmd.startsWith("toybox timeout 2 true")) return new AdbClient.Result(mode.equals("nolimit") ? "" : "limit=yes\n", 0);
+                        if (cmd.contains("dumpsys meminfo |")) {   // the whole system's meminfo never answers on this TV
+                            if (cmd.contains("toybox timeout -s 9 " + SetupMeasure.COMMAND_LIMIT_S + " dumpsys meminfo |")) return new AdbClient.Result(cmd.contains("== android") ? "== android\n" : "== biggest\n", 0);
+                            throw new java.net.SocketTimeoutException("Read timed out");
+                        }
+                        String plain = cmd.replace("toybox timeout -s 9 " + SetupMeasure.COMMAND_LIMIT_S + " ", "");
+                        AdbClient.Result r = t31.run(plain);
+                        if (mode.equals("lowram") && plain.contains("grep -E 'MemTotal")) return new AdbClient.Result(r.output.replace("2048000", "903000"), r.code);
+                        return r;
+                    };
+                    return new SetupRunner.Session() {
+                        public SetupEngine engine() { return base.engine(); }
+                        public SetupEngine.Shell shell() { return sh; }
+                        public String exec(String command, java.io.InputStream data, long size) throws IOException { return base.exec(command, data, size); }
+                        public void close() { base.close(); }
+                    };
+                }
+            };
+            SetupRunner r31 = new SetupRunner();
+            go(r31, h31, SetupRunner.Kind.FULL, new SetupRunner.Options());
+            int bounded = 0, unbounded = 0, sysMem = 0;
+            for (String c : sent31) {
+                if (c.contains("toybox timeout -s 9 " + SetupMeasure.COMMAND_LIMIT_S + " dumpsys")) bounded++;
+                else if (c.contains("dumpsys meminfo")) unbounded++;
+                if (c.contains("dumpsys meminfo |")) sysMem++;
+            }
+            String ram = m31.get("ram-before.txt") == null ? "" : m31.get("ram-before.txt");
+            line("R31" + mode + " " + states(r31) + " bad=" + (r31.end() != null && r31.end().bad) + " said=" + count(r31.linesSince(0), SetupMeasure.FAILED)
+                + " bounded=" + (bounded > 0) + " unbounded=" + unbounded + " sysMeminfo=" + sysMem + " skipped=" + ram.contains(SetupMeasure.LOW_RAM_SKIP)
+                + " timeout=" + t31.settings.getOrDefault("system/screen_off_timeout", "null") + " row=" + (m31.get("summary.md") != null && m31.get("summary.md").contains("| before |")));
+        }
+        // 32. the restart for the measurement: this app runs on the TV it restarts and is killed as it goes down, so what is on disk when `reboot` is
+        // sent is all the TV's start has. 4.2 wrote «await=restart» only after `reboot` came back (never, on a real TV): the run never went on.
+        SetupEngineRun.FakeTv t32 = SetupEngineRun.tv(); t32.installed.remove("sa.urtv.screensaver"); t32.adbPort = "5555";
+        SetupEngineRun.Mem m32 = new SetupEngineRun.Mem();
+        final SetupEngineRun.Mem disk32 = new SetupEngineRun.Mem();
+        final boolean[] saidFirst = {false};
+        final SetupRunner[] cur32 = new SetupRunner[1];
+        Host h32 = new Host(t32, m32) {
+            @Override public SetupRunner.Session open(int approvalMs, AdbClient.Approval approval, SetupEngine.Out out) throws IOException {
+                final SetupRunner.Session base = super.open(approvalMs, approval, out);
+                final SetupEngine.Shell sh = cmd -> {
+                    if (cmd.equals("reboot") && disk32.files.isEmpty()) disk32.files.putAll(store.files);   // the app dies here: the disk as it is now
+                    return base.shell().run(cmd);
+                };
+                return new SetupRunner.Session() {
+                    public SetupEngine engine() { return base.engine(); }
+                    public SetupEngine.Shell shell() { return sh; }
+                    public String exec(String command, java.io.InputStream data, long size) throws IOException { return base.exec(command, data, size); }
+                    public void close() { base.close(); }
+                };
+            }
+            @Override public void sleep(int ms) {
+                if (ms == SetupMeasure.PACKAGE_SETTLE_MS && cur32[0] != null && count(cur32[0].linesSince(0), "نعيد تشغيل التلفزيون") > 0) saidFirst[0] = true;
+                super.sleep(ms);
+            }
+        };
+        SetupRunner r32 = new SetupRunner(); cur32[0] = r32;
+        go(r32, h32, SetupRunner.Kind.FULL, new SetupRunner.Options());
+        boolean resumes = SetupRunner.awaitingRestart(disk32);
+        t32.bootId = "boot-2";
+        SetupEngineRun.Mem after32 = new SetupEngineRun.Mem(); after32.files.putAll(disk32.files);
+        Host h32b = new Host(t32, after32);
+        SetupRunner r32b = new SetupRunner();
+        boolean resumed = SetupRunner.awaitingRestart(after32) && resume(r32b, h32b);
+        String st32 = states(r32b);
+        line("R32 resumesAtBoot=" + resumes + " saidBeforeWait=" + saidFirst[0] + " resumed=" + resumed + " " + st32.substring(0, st32.indexOf(",grants"))
+            + " kinds=[" + (after32.get("measure-kinds.txt") == null ? "" : after32.get("measure-kinds.txt").trim().split("\n")[0]) + "]");
         line("R12 " + states(r12) + " backup=" + m12.get("backup.txt") + " changes=" + (t12.count("pm disable-user") + t12.count("settings put") + t12.count("cmd role add") + t12.count("appops set") + t12.count("pm grant") + t12.count("pm enable"))
             + " " + r12.end().bad + " " + r12.end().text);
     }
