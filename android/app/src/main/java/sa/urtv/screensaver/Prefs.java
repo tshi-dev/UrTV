@@ -634,6 +634,24 @@ final class Prefs {
     boolean oursOn() { return sp.getBoolean("oursOn", true); }
     void setOursOn(boolean v) { sp.edit().putBoolean("oursOn", v).apply(); }
 
+    /** 4.3 «الصور في الشاشة الرئيسية»: the home's wallpaper uses the same packs as the screensaver («مثل شاشة التوقف», the default) or a set of its own */
+    boolean homePhotosSame() { return sp.getBoolean("homeSame", true); }
+    void setHomePhotosSame(boolean v) { sp.edit().putBoolean("homeSame", v).apply(); }
+    java.util.Set<String> homePacksOn() { return PhotoPacks.parseOn(sp.getString("homePacksOn", "")); }
+    void setHomePacksOn(java.util.Set<String> v) { sp.edit().putString("homePacksOn", PhotoPacks.joinOn(v)).apply(); }
+    boolean homeOursOn() { return sp.getBoolean("homeOursOn", true); }
+    void setHomeOursOn(boolean v) { sp.edit().putBoolean("homeOursOn", v).apply(); }
+
+    /** the packs the home rotates (id -> photos), and whether «صورنا» (the bundled photos) is in its rotation */
+    java.util.Map<String, Integer> homePacks() { return PhotoPacks.homeSet(homePhotosSame(), packsOn(), homePacksOn(), PackStore.installed(ctx)); }
+    boolean homeOurs() {
+        java.util.Map<String, Integer> have = PackStore.installed(ctx);
+        boolean on = homePhotosSame() ? oursOn() : homeOursOn();
+        return on || homePacks().isEmpty();
+    }
+    /** changes whenever what the home rotates does, so the home chooses a photo again at once */
+    String homePacksRev() { return homePacks() + "|" + homeOurs() + "|" + homePhotosSame(); }
+
     private String packsParam() {
         java.util.Map<String, Integer> have = PackStore.installed(ctx);
         // «صورنا» off counts only while a pack that is on is on the TV: a pack deleted meanwhile brings ours back (nothing is left blank)

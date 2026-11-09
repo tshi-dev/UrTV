@@ -151,6 +151,16 @@ final class PhotoPacks {
         return false;
     }
 
+    /**
+     * The packs the HOME's wallpaper rotates (4.3), as "id:count" in the order of the set, each installed with its photos: the same set as the screensaver's («مثل شاشة التوقف», the
+     * default) or the home's own. ours: whether the bundled photos are in the rotation, which counts only while a pack is on (nothing is ever left blank).
+     */
+    static Map<String, Integer> homeSet(boolean same, Set<String> screensaverOn, Set<String> homeOn, Map<String, Integer> installed) {
+        Map<String, Integer> out = new java.util.LinkedHashMap<>();
+        for (String id : same ? screensaverOn : homeOn) { Integer n = installed.get(id); if (n != null && n > 0) out.put(id, n); }
+        return out;
+    }
+
     /** the size a person reads: megabytes, rounded up so a pack is never bigger than it says */
     static long megabytes(long bytes) { return Math.max(1, (bytes + (1L << 20) - 1) >> 20); }
 

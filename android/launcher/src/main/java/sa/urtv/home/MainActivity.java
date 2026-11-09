@@ -2944,11 +2944,35 @@ public class MainActivity extends Activity {
         return new Object[] {0, "mix", 0L};
     }
 
-    /** Off the main thread: when the owner's photos changed since the wallpaper was last chosen, show one now. */
+    // 4.3: the packs the home's wallpaper rotates (the screensaver app's «المظهر والخلفيات»): which packs and how many photos each, whether «صورنا» is in, and a revision
+    static final Uri HOME_PACKS = Uri.parse("content://sa.urtv.screensaver.config/homepacks");
+    static final Uri HOME_PACK = Uri.parse("content://sa.urtv.screensaver.config/homepack");
+
+    /** {id -> photos (LinkedHashMap), ours (Boolean), rev (String)}; no packs, ours on and no revision when the screensaver app is older or does not answer */
+    private Object[] homePackInfo() {
+        java.util.Map<String, Integer> packs = new java.util.LinkedHashMap<>();
+        boolean ours = true;
+        String rev = "";
+        try (Cursor c = getContentResolver().query(HOME_PACKS, null, null, null, null)) {
+            if (c != null && c.getColumnIndex("id") >= 0) {   // an older screensaver answers any path with its settings: no such column
+                int id = c.getColumnIndex("id"), n = c.getColumnIndex("n"), o = c.getColumnIndex("ours"), r = c.getColumnIndex("rev");
+                while (c.moveToNext()) {
+                    String pack = c.getString(id);
+                    if (pack != null && !pack.isEmpty() && c.getInt(n) > 0) packs.put(pack, c.getInt(n));
+                    ours = c.getInt(o) != 0;
+                    rev = c.getString(r);
+                }
+            }
+        } catch (RuntimeException ignored) { }
+        return new Object[] {packs, ours, rev};
+    }
+
+    /** Off the main thread: when the owner's photos or the home's packs changed since the wallpaper was last chosen, show one now. */
     private void checkOwnChanged() {
         new Thread(() -> {
             long rev = (Long) ownInfo()[2];
-            if (rev != prefs().getLong("ownRev", 0)) runOnUiThread(() -> { if (!isDestroyed() && resumed) nextWallpaper(); });
+            String packsRev = (String) homePackInfo()[2];
+            if (rev != prefs().getLong("ownRev", 0) || !packsRev.equals(prefs().getString("homePacksRev", ""))) runOnUiThread(() -> { if (!isDestroyed() && resumed) nextWallpaper(); });
         }).start();
     }
 
@@ -2959,27 +2983,44 @@ public class MainActivity extends Activity {
         final Object[] own = ownInfo();
         final int ownCount = (Integer) own[0];
         final boolean only = ownCount > 0 && "only".equals(own[1]);
-        prefs().edit().putLong("ownRev", (Long) own[2]).apply();
+        final Object[] hp = homePackInfo();
+        @SuppressWarnings("unchecked") final java.util.Map<String, Integer> packs = only ? new java.util.LinkedHashMap<String, Integer>() : (java.util.Map<String, Integer>) hp[0];
+        prefs().edit().putLong("ownRev", (Long) own[2]).putString("homePacksRev", (String) hp[2]).apply();
         final String[] remote = only ? new String[0] : remotePhotos();
-        final int base = only ? 0 : wallpapers.length + remote.length;   // ours come first, then the owner's
-        final int total = only ? ownCount : base + ownCount;
+        int packSum = 0;
+        for (int n : packs.values()) packSum += n;
+        // ours (bundled and hosted) come first, then the owner's, then the packs'; ours is out when the setting says so, but never when nothing else is there
+        final int base = only ? 0 : ((Boolean) hp[1] || ownCount + packSum == 0) ? wallpapers.length + remote.length : 0;
+        final int packBase = base + ownCount;
+        final int total = only ? ownCount : packBase + packSum;
         if (wallIndex < 0) wallIndex = prefs().getInt("wallpaper", -1);
-        wallIndex = (wallIndex + 1) % total;
+        wallIndex = (wallIndex + 1) % (total * 4096);   // a counter: the position inside a round, and the round
         prefs().edit().putInt("wallpaper", wallIndex).apply();
         wallChangedAt = SystemClock.elapsedRealtime();
-        final int idx = wallIndex;
+        final int idx = only ? wallIndex % total : WallShuffle.of(total, wallIndex / total)[wallIndex % total];
         final String fallback = "wallpapers/" + wallpapers[idx % wallpapers.length];
         final int gen = ++wallGen;   // a photo that arrives after a newer request is not shown
         new Thread(() -> {
             // 1. what is on the device now, at once: the owner's photo, the hosted one already kept, else the bundled one
             Bitmap bm = null;
             java.io.File f = null;
-            if (idx >= base) {
+            String packKey = null;
+            if (!only && idx >= packBase) {   // a pack's photo: the screensaver app's provider serves it (read only)
+                int k = idx - packBase;
+                for (java.util.Map.Entry<String, Integer> e : packs.entrySet()) {
+                    if (k < e.getValue()) {
+                        final Uri photo = HOME_PACK.buildUpon().appendPath(e.getKey()).appendPath(String.valueOf(k + 1)).build();
+                        try { bm = decode(() -> getContentResolver().openInputStream(photo)); packKey = "pack:" + e.getKey() + ":" + (k + 1); } catch (java.io.IOException | RuntimeException ignored) { }
+                        break;
+                    }
+                    k -= e.getValue();
+                }
+            } else if (idx >= base) {
                 final Uri photo = OWN.buildUpon().appendPath(String.valueOf(idx - base + 1)).build();
                 try {
                     bm = decode(() -> getContentResolver().openInputStream(photo));
                 } catch (java.io.IOException | RuntimeException ignored) { }
-            } else if (idx >= wallpapers.length) {
+            } else if (idx >= wallpapers.length && idx - wallpapers.length < remote.length) {
                 f = new java.io.File(getFilesDir(), "photos/" + remote[idx - wallpapers.length]);
                 if (f.isFile()) {
                     final java.io.File kept = f;
@@ -2987,7 +3028,7 @@ public class MainActivity extends Activity {
                 }
             }
             final boolean needsDownload = f != null && bm == null;
-            String key = bm == null ? null : idx >= base ? "own:" + (idx - base + 1) + ":" + own[2] : f != null ? "photo:" + f.getName() : null;
+            String key = bm == null ? null : packKey != null ? packKey : idx >= base ? "own:" + (idx - base + 1) + ":" + own[2] : f != null ? "photo:" + f.getName() : null;
             if (bm == null) {
                 try { bm = decode(() -> getAssets().open(fallback)); key = "bundled:" + fallback; }
                 catch (java.io.IOException ignored) { }

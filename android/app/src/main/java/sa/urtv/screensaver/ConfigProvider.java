@@ -35,6 +35,8 @@ import java.util.List;
  * else can be read or written there. .../own-in takes the next photo from the shell (`content write`), which the
  * manifest lets in with DUMP, as for SaverReceiver; SaverReceiver PHOTOS then checks and keeps it.
  *
+ * 4.3: query .../homepacks gives the packs the home's wallpaper rotates (id, n, ours, rev; id "" and n 0 when none); openFile .../homepack/ID/N opens photo N of one of them, read only.
+ *
  * .../dreaming: one row (dreaming 1|0), whether the dream or its preview is on the screen (the home's «الأذان على شاشة التوقف فقط»).
  *
  * «تحكم من الجوال» (the launcher's phone control) uses call(), and only with PHONE_SETTINGS (signature, same key):
@@ -55,6 +57,14 @@ public class ConfigProvider extends ContentProvider {
             return d;
         }
         Prefs p = new Prefs(getContext());
+        if (uri != null && uri.getPathSegments().size() == 1 && "homepacks".equals(uri.getPathSegments().get(0))) {   // the home's wallpaper: which packs (id, photos), whether ours is in, and a revision that moves with the set
+            MatrixCursor h = new MatrixCursor(new String[] {"id", "n", "ours", "rev"});
+            java.util.Map<String, Integer> set = p.homePacks();
+            String rev = String.valueOf(p.homePacksRev().hashCode());
+            if (set.isEmpty()) h.addRow(new Object[] {"", 0, p.homeOurs() ? 1 : 0, rev});
+            for (java.util.Map.Entry<String, Integer> e : set.entrySet()) h.addRow(new Object[] {e.getKey(), e.getValue(), p.homeOurs() ? 1 : 0, rev});
+            return h;
+        }
         if (isOwn(uri)) {
             MatrixCursor o = new MatrixCursor(new String[] {"n", "mode", "rev"});
             o.addRow(new Object[] {Own.count(getContext()), Own.mode(getContext()), p.ownRev()});
@@ -152,6 +162,16 @@ public class ConfigProvider extends ContentProvider {
             try { n = Integer.parseInt(seg.get(1)); } catch (NumberFormatException e) { throw new FileNotFoundException(); }
             if (n < 1 || n > Own.count(c)) throw new FileNotFoundException();
             return ParcelFileDescriptor.open(Own.file(c, n), ParcelFileDescriptor.MODE_READ_ONLY);
+        }
+        if (seg.size() == 3 && "homepack".equals(seg.get(0)) && "r".equals(mode)) {   // .../homepack/ID/N: photo N of a pack the home rotates, read only
+            String id = seg.get(1);
+            int n;
+            try { n = Integer.parseInt(seg.get(2)); } catch (NumberFormatException e) { throw new FileNotFoundException(); }
+            Integer count = new Prefs(c).homePacks().get(id);
+            if (count == null || n < 1 || n > count) throw new FileNotFoundException();
+            File f = PackStore.photo(c, id, n);
+            if (!f.isFile()) throw new FileNotFoundException();
+            return ParcelFileDescriptor.open(f, ParcelFileDescriptor.MODE_READ_ONLY);
         }
         if (seg.size() == 2 && "page".equals(seg.get(0)) && "r".equals(mode)) {   // the home card's page (the launcher's HomePage)
             File f = sharedPage(c, seg.get(1));
