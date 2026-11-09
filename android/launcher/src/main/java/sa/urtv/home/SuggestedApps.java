@@ -10,57 +10,54 @@ import java.util.List;
  * How each comes, never from anywhere else:
  * - GITHUB: the newest release of the app's own GitHub repository, the file that fits the TV's processor (the pattern), checked to be that package
  *   (SmartTube and TV Bro, as install.sh and the setup always did).
- * - PINNED: one exact file of the app's own GitHub release, checked against its SHA-256 before anything is installed (a changed file is refused).
  * - STORE: no file at all: the app's Play Store page opens and the owner installs it there.
  *
- * The IPTV player is a player only: it comes with no channels, films or playlists, and we give no links (the owner adds their own provider).
+ * The IPTV player is a player only, offered as its Play Store page: it comes with no channels, films or playlists, and we give no links (the owner
+ * adds their own provider).
  * Plain Java: tests/suggested_apps_test.py runs it on a JVM.
  */
 public final class SuggestedApps {
     private SuggestedApps() { }
 
-    public enum Kind { GITHUB, PINNED, STORE }
+    public enum Kind { GITHUB, STORE }
 
     public static final class App {
-        public final String id, pkg, name, why, repo, file, sha256;
+        public final String id, pkg, name, why, repo, file;
         public final Kind kind;
         /** the oldest Android (API level) it runs on */
         public final int minSdk;
         /** ticked at first in the setup's list (the owner's choice: SmartTube and TV Bro, as before) */
         public final boolean setupDefault;
 
-        App(String id, String pkg, String name, String why, Kind kind, String repo, String file, String sha256, int minSdk, boolean setupDefault) {
-            this.id = id; this.pkg = pkg; this.name = name; this.why = why; this.kind = kind; this.repo = repo; this.file = file; this.sha256 = sha256;
+        App(String id, String pkg, String name, String why, Kind kind, String repo, String file, int minSdk, boolean setupDefault) {
+            this.id = id; this.pkg = pkg; this.name = name; this.why = why; this.kind = kind; this.repo = repo; this.file = file;
             this.minSdk = minSdk; this.setupDefault = setupDefault;
         }
 
         /** the setup installs it over the TV's own connection (a file it can check); a Play Store app is only offered in the settings */
         public boolean inSetup() { return kind != Kind.STORE; }
 
-        /** PINNED: the one address of the file; GITHUB: the releases list it is picked from; STORE: the Play Store page */
+        /** GITHUB: the releases list it is picked from; STORE: the Play Store page */
         public String address() {
             switch (kind) {
-                case PINNED: return "https://github.com/" + repo + "/releases/download/" + file;
                 case GITHUB: return "https://api.github.com/repos/" + repo + "/releases/latest";
                 default: return "https://play.google.com/store/apps/details?id=" + pkg;
             }
         }
     }
 
-    public static final String SMARTTUBE = "org.smarttube.stable", TVBRO = "com.phlox.tvwebbrowser", VLC = "org.videolan.vlc", LUMEN = "com.hayat.lumen";
+    public static final String SMARTTUBE = "org.smarttube.stable", TVBRO = "com.phlox.tvwebbrowser", VLC = "org.videolan.vlc", TIVIMATE = "ar.tvplayer.tv";
 
     /** In the order shown. The why lines are Arabic; i18n/en/home.tsv has their English. */
     public static final App[] ALL = {
         new App("tvbro", TVBRO, "TV Bro", "متصفح إنترنت يشتغل بالريموت", Kind.GITHUB,
-            "truefedex/tv-bro", "tvbro-[0-9.]+-generic-geckoExcluded\\.apk", null, 21, true),
+            "truefedex/tv-bro", "tvbro-[0-9.]+-generic-geckoExcluded\\.apk", 21, true),
         new App("smarttube", SMARTTUBE, "SmartTube", "يوتيوب بلا إعلانات، مصمَّم للريموت", Kind.GITHUB,
-            "yuliskov/SmartTube", "SmartTube_stable_[0-9.]+_{abi}\\.apk", null, 21, true),
-        new App("vlc", VLC, "VLC", "يشغّل الفيديو والصوت من ذاكرة USB ومن الشبكة", Kind.STORE, null, null, null, 21, false),
-        // the IPTV player (the owner asked for Lumen TV): its source is public on GitHub (no licence file), no ads, no analytics; it asks only for
-        // INTERNET and to install its own updates (a later version comes from its author, not this pin); it reads programme data from public TV APIs.
-        // It ships with no channels or playlists and we give none. Android 10 or newer. File v0.9.4, read and hashed on 2026-11-09.
-        new App("lumen", LUMEN, "Lumen TV", "مشغّل IPTV فارغ: تضيف قائمتك أنت، وما فيه ولا نعطي أي قنوات", Kind.PINNED,
-            "lumen-tv/lumen-tv", "v0.9.4/lumen.apk", "e37072d7abc498a44360d91209370809bf991530f4be28d24085f3d8498813d3", 29, false),
+            "yuliskov/SmartTube", "SmartTube_stable_[0-9.]+_{abi}\\.apk", 21, true),
+        new App("vlc", VLC, "VLC", "يشغّل الفيديو والصوت من ذاكرة USB ومن الشبكة", Kind.STORE, null, null, 21, false),
+        // the IPTV player: its Play Store page only (never a file from us), unticked, not in the setup. A player only: no channels or playlists,
+        // and we give none (the owner adds their own provider). TiviMate (Armobsoft, ar.tvplayer.tv), made for the TV remote.
+        new App("tivimate", TIVIMATE, "TiviMate", "مشغّل IPTV فارغ من متجر Play: تضيف قائمتك أنت، وما فيه ولا نعطي أي قنوات", Kind.STORE, null, null, 21, false),
     };
 
     /** at most this many IPTV players are ever suggested */
@@ -92,7 +89,7 @@ public final class SuggestedApps {
         return out;
     }
 
-    /** "smarttube,lumen" read back: known setup ids only, each once, in the catalog's order */
+    /** "tvbro,smarttube" read back: known setup ids only, each once, in the catalog's order */
     public static List<String> parse(String saved) {
         List<String> out = new ArrayList<>();
         if (saved == null) return out;
@@ -102,11 +99,6 @@ public final class SuggestedApps {
     }
 
     public static String join(List<String> ids) { return String.join(",", ids); }
-
-    /** PINNED: the file's address must be exactly this, and its SHA-256 (lower-case hex) exactly the pinned one */
-    public static boolean pinnedOk(App a, String url, String sha256Hex) {
-        return a != null && a.kind == Kind.PINNED && a.address().equals(url) && a.sha256.equalsIgnoreCase(sha256Hex == null ? "" : sha256Hex);
-    }
 
     /** GITHUB: a file of that repository's own releases, an .apk, no way out of the path */
     public static boolean githubOk(App a, String url) {

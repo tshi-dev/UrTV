@@ -91,7 +91,7 @@ public class SetupRunnerRun {
             return new SetupInstall.Apks() {
                 public SetupInstall.Apk download(String url) {
                     downloads.add(url);
-                    String pkg = url.endsWith("urtv-screensaver.apk") ? "sa.urtv.screensaver" : url.contains("tv-bro") ? "com.phlox.tvwebbrowser" : url.contains("SmartTube") ? "org.smarttube.stable" : url.contains("lumen-tv") ? "com.hayat.lumen" : "x";
+                    String pkg = url.endsWith("urtv-screensaver.apk") ? "sa.urtv.screensaver" : url.contains("tv-bro") ? "com.phlox.tvwebbrowser" : url.contains("SmartTube") ? "org.smarttube.stable" : "x";
                     final byte[] bytes = pkg.getBytes(java.nio.charset.StandardCharsets.UTF_8);
                     return new SetupInstall.Apk(pkg, 200, new java.util.HashSet<>(java.util.Collections.singleton(pkg.startsWith("sa.") ? apkSig : "cd".repeat(32))), bytes.length,
                         () -> { lastApk = bytes; return new java.io.ByteArrayInputStream(bytes); }, () -> { });
@@ -347,14 +347,14 @@ public class SetupRunnerRun {
         go(r20, h20, SetupRunner.Kind.FULL, o20);
         String st20 = states(r20);
         line("R20 " + st20.substring(st20.indexOf("extras:"), st20.indexOf(",", st20.indexOf("extras:"))) + " downloads=" + h20.downloads.size());
-        // 20b. 4.3 «تطبيقات مقترحة»: only the IPTV player ticked; the file that came is not the pinned one (its SHA-256): refused, nothing installed
+        // 20b. 4.3 «تطبيقات مقترحة»: only TV Bro ticked (and a store app's id, which the setup never installs): TV Bro alone is fetched and installed
         SetupEngineRun.FakeTv t20b = SetupEngineRun.tv(); SetupEngineRun.Mem m20b = new SetupEngineRun.Mem(); Host h20b = new Host(t20b, m20b);
-        SetupRunner.Options o20b = new SetupRunner.Options(); o20b.picks = new ArrayList<>(java.util.Collections.singletonList("lumen"));
+        SetupRunner.Options o20b = new SetupRunner.Options(); o20b.picks = new ArrayList<>(java.util.Arrays.asList("tvbro", "tivimate"));
         SetupRunner r20b = new SetupRunner();
         go(r20b, h20b, SetupRunner.Kind.FULL, o20b);
         String st20b = states(r20b);
-        line("R20b " + st20b.substring(st20b.indexOf("extras:"), st20b.indexOf(",", st20b.indexOf("extras:"))) + " downloads=" + h20b.downloads
-            + " lumenInstalled=" + t20b.installed.contains("com.hayat.lumen") + " recorded=" + SetupEngine.ledgerNames(m20b.get("installed-by-us.txt")).contains("com.hayat.lumen"));
+        line("R20b " + st20b.substring(st20b.indexOf("extras:"), st20b.indexOf(",", st20b.indexOf("extras:"))) + " github=" + h20b.downloads.stream().filter(u -> !u.contains("tshi-dev")).collect(java.util.stream.Collectors.toList())
+            + " tvbro=" + t20b.installed.contains("com.phlox.tvwebbrowser") + " smarttube=" + t20b.installed.contains("org.smarttube.stable") + " tivimate=" + t20b.installed.contains("ar.tvplayer.tv"));
         // 20c. nothing ticked: no extras at all
         SetupEngineRun.FakeTv t20c = SetupEngineRun.tv(); SetupEngineRun.Mem m20c = new SetupEngineRun.Mem(); Host h20c = new Host(t20c, m20c);
         SetupRunner.Options o20c = new SetupRunner.Options(); o20c.picks = new ArrayList<>(); o20c.extras = false;

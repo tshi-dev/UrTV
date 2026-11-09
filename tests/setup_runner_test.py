@@ -135,10 +135,8 @@ check("R18: a fresh install is refused unless the APK is signed with this app's 
 check("R19: the undo after the full run removes exactly what the setup installed (the screensaver, TV Bro, SmartTube), never this app",
       got.get("R19") == "R19 undo:DONE saver=false tvbro=false smarttube=false home=true record=[]", got.get("R19"))
 check("R20: «no extras» (the person unticked them): skipped, nothing downloaded for them", got.get("R20") == "R20 extras:SKIPPED downloads=1", got.get("R20"))
-lumen_url = "https://github.com/lumen-tv/lumen-tv/releases/download/v0.9.4/lumen.apk"
-check("R20b (4.3): only the IPTV player ticked: its pinned file is downloaded, and a file whose SHA-256 is not the pinned one is refused (FAILED, nothing installed or recorded)",
-      got.get("R20b", "").startswith("R20b extras:FAILED downloads=[") and lumen_url in got.get("R20b", "") and "tv-bro" not in got.get("R20b", "") and "SmartTube" not in got.get("R20b", "")
-      and got.get("R20b", "").endswith("lumenInstalled=false recorded=false"), got.get("R20b"))
+check("R20b (4.3): only TV Bro ticked (and a Play Store app's id): TV Bro alone is fetched and installed, the store app never",
+      got.get("R20b") == "R20b extras:DONE github=[https://github.com/truefedex/tv-bro/releases/download/v2.0.1/tvbro-2.0.1-generic-geckoExcluded.apk] tvbro=true smarttube=false tivimate=false", got.get("R20b"))
 check("4.3: the ticks are saved with the run and read back at a resume (a run saved before 4.3 has none: the first ticks)",
       '(o.picks == null ? "" : "\\npicks=" + sa.urtv.home.SuggestedApps.join(o.picks))' in runner
       and 'if (saved.containsKey("picks")) o.picks = sa.urtv.home.SuggestedApps.parse(saved.get("picks"));' in runner)
