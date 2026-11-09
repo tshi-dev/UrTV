@@ -13,6 +13,7 @@ Newest first. `next` is where changes land first; a release is what was tested t
 - **الإذاعات:** البث المباشر أثبت، وإذا علِق يرجع وحده بهدوء.
 - **ذاكرة USB:** عارض الملفات في التلفزيون يبقى شغّالًا دائمًا.
 - **تحديث تلفزيوني:** أمتن، وما يطلع تطبيق قديم قدّامك وقت تحديث الشاشة الرئيسية.
+- **تطبيقات مقترحة:** في الإعدادات ← المزيد ← التطبيقات والمفضلة: SmartTube وTV Bro وVLC ومشغّل IPTV فارغ (Lumen TV)، لكل تطبيق سطر يقول ليش وزر تثبيت (أندرويد يسألك قبل التثبيت). وفي الإعداد من التلفزيون تعلّم أكثر من تطبيق تبي نثبّته مرة وحدة. مشغّل الـ IPTV يجي فاضي: تضيف قائمتك أنت، وما نعطي أي قنوات أو روابط.
 - **أُزيل** الحساب الجعفري من طرق حساب الصلاة (من كان عليه يرجع لحساب بلده).
 
 **In English, in short:**
@@ -24,6 +25,7 @@ Newest first. `next` is where changes land first; a release is what was tested t
 - **Radio:** live stations hold up better and restart quietly when they stall.
 - **USB sticks:** the TV's own file viewer is always kept on.
 - **«تحديث تلفزيوني»:** sturdier, and the app you used before no longer comes to the front while the home screen updates itself.
+- **Suggested apps:** Settings ← More ← Apps and favourites: SmartTube, TV Bro, VLC and an empty IPTV player (Lumen TV), each with one line on why and an install button (Android asks before it installs). The in-app setup lets you tick several to install at once. The IPTV player comes empty: you add your own list; we give no channels or links.
 - **Removed:** the Ja'fari prayer calculation (a saved choice becomes the country's own).
 
 ## 4.2
