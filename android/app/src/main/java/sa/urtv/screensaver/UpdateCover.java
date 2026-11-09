@@ -21,7 +21,8 @@ import android.widget.TextView;
  * one startActivities call from the screen in front), so after the replace this is what shows, not the last app.
  *
  * It ends itself (CoverRule decides; nothing waits on the owner):
- * - the home app was replaced: the TV's Home is pressed from here (this screen is in front, so Android lets it start Home) and it closes;
+ * - the home app was replaced: the TV's Home is pressed from here (this screen is in front, so Android lets it start Home) and it STAYS until the new home says it is up (CLOSE, sent by
+ *   the home's own start, PhoneUpdater.homeIsUp) or HOME_WAIT_MS passed: closing at once left the app used before on the screen for ~4 s while the new process started (step 44);
  * - the home app says the install was declined or failed (CLOSE, a broadcast only a holder of PHONE_SETTINGS, our home app, can send): it closes, and the update
  *   screen under it says why;
  * - Back, or LIMIT_MS without either: Home if the home app changed since this opened, else it closes.
@@ -81,13 +82,27 @@ public class UpdateCover extends Activity {
 
     @Override protected void onDestroy() {
         handler.removeCallbacks(limit);
+        handler.removeCallbacks(homeLate);
         try { unregisterReceiver(replaced); } catch (RuntimeException ignored) { }
         try { unregisterReceiver(close); } catch (RuntimeException ignored) { }
         super.onDestroy();
     }
 
+    private boolean homePressed;
+    private final Runnable homeLate = new Runnable() { @Override public void run() { end(CoverRule.CLOSE); } };
+
     private void end(int what) {
         if (ended || what == CoverRule.STAY) return;
+        if (what == CoverRule.HOME_WAIT) {   // the new home is installed: press Home once and STAY in front until it says it is up (the app used before never shows)
+            if (homePressed) return;
+            homePressed = true;
+            try {
+                startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            } catch (RuntimeException ignored) { }
+            handler.removeCallbacks(limit);
+            handler.postDelayed(homeLate, CoverRule.HOME_WAIT_MS);   // it never waits for ever
+            return;
+        }
         ended = true;
         if (what == CoverRule.HOME) {
             try {

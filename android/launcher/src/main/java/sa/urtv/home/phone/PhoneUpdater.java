@@ -699,6 +699,20 @@ public final class PhoneUpdater {
         try { c.sendBroadcast(new Intent(COVER_CLOSE).setPackage(COVER_PKG)); } catch (RuntimeException ignored) { }
     }
 
+    private static boolean upSent;
+
+    /**
+     * The home app is up (MainActivity.onResume, once per process): the screensaver app's update cover, if it is waiting in front for this home, closes (the broadcast does nothing when no
+     * cover is open). The process that replaced itself is gone, so this is sent by the NEW one: this is what lets the cover stay until the home is really on the screen.
+     */
+    public static void homeIsUp(Context c) {
+        synchronized (PhoneUpdater.class) {
+            if (upSent) return;
+            upSent = true;
+        }
+        try { c.sendBroadcast(new Intent(COVER_CLOSE).setPackage(COVER_PKG)); } catch (RuntimeException ignored) { }
+    }
+
     /** True when the installer's confirm screen is waiting and nobody has opened it yet. */
     public static synchronized boolean confirmWaiting() { return confirm != null && !confirmShown; }
 
