@@ -68,7 +68,7 @@ input[type=range]{padding:0;border:0;background:none;accent-color:var(--gold)}
 .hd{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:0 10px;margin:20px 4px 0}
 .hd h2{margin:0}
 .h{font-size:24px}
-.lnk{background:none;border:0;color:var(--gt);font-size:15px;min-height:48px;padding:0 6px}
+.lnk{background:none;border:0;color:var(--gt);font-size:15px;min-height:48px;min-width:48px;padding:0 6px}
 .rnd{width:56px;height:56px;padding:0;border-radius:50%}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
 .chips button{flex:1 1 0;min-height:48px;border-radius:24px;padding:6px 10px;white-space:nowrap;font-size:15px}
@@ -186,7 +186,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 <div id="svcNote" class="note warn hidden"><div>فعّل خدمة "تلفزيونك: التحكم والكتابة من الجوال" في إعدادات التلفزيون لتكتب في التطبيقات الأخرى</div><div>الإعدادات ← إمكانية الوصول ← تلفزيونك: التحكم والكتابة من الجوال</div></div>
 <details><summary>أين يُكتب النص؟</summary><p>يُكتب النص في الحقل النصي المفتوح، ويُضاف مهمةً إذا كانت شاشة «المهام» مفتوحة، وفي التطبيقات الأخرى يُكتب في حقلها بعد تفعيل خدمة إمكانية الوصول. ومن دون الخدمة: أندرويد لا يسمح لتطبيق بالكتابة داخل تطبيق آخر، فيُنسخ النص إلى حافظة التلفزيون.</p></details>
 <div class="card" id="msgCard">
-<h2>رسالة على الشاشة <a class="lnk" href="/d">ارسم</a></h2>
+<div class="hd"><h2>رسالة على الشاشة</h2><a class="lnk" href="/d">ارسم</a></div>
 <input id="msgT" dir="auto" maxlength="200" aria-label="رسالة للتلفزيون">
 <button id="msgGo" class="gold wide" data-i="send">اعرضها على التلفزيون</button>
 </div>
