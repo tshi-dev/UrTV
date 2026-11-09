@@ -94,7 +94,7 @@ for m in metas:
     if not models or com.choose({"ro.product.manufacturer": raw_values(m["path"], "match-brand")[0], "ro.product.model": models[0]}, metas)[0] is not m:
         continue
     pk = com.load(m["path"])[1]
-    ask = [p for p in pk if any(re.search(a, p) for a in [l for l in (ROOT / "optimize/lists/community-ask.txt").read_text().splitlines() if l and l[0] not in "# \t"])]
+    ask = [p for p in pk if p not in keep and any(re.search(a, p) for a in [l for l in (ROOT / "optimize/lists/community-ask.txt").read_text().splitlines() if l and l[0] not in "# \t"])]   # a kept one (4.3 B8: a USB viewer) is never asked: it stays on
     plain = [p for p in pk if p not in ask and not com.NOT_FOR_US.search(p) and p not in keep and not any(re.fullmatch(c, p) for c in
              [l.split()[0] for l in (ROOT / "optimize/lists/core.txt").read_text().splitlines() if l.strip() and not l.startswith("#")])]
     if ask and len(plain) >= 4:

@@ -113,6 +113,7 @@ final class Dock {
                         : shown.contains(p) ? null
                         : config.contains(p) ? "hidden in config.xml"
                         : homes.contains(p) ? "a home screen"
+                        : UsbViewers.is(p) ? null   // 4.3 B8: the TV's viewer of a USB stick is always in the row (issue #50)
                         : googleHome && category.equals(Intent.CATEGORY_LAUNCHER)
                                 ? "no TV activity, and the TV's own home lists only TV apps" : null;
                 if (reason == null) out.put(p, ri);

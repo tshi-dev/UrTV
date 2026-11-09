@@ -45,6 +45,27 @@ com.google.android.tvlauncher          # Android TV home (older sets)
 com.google.android.tungsten.setupwraith
 com.tcl.keycustomfunctionservice       # provides a fallback home on some sets
 
+# USB sticks and drives (4.3 B8, issue #50: «the flash drive is not read» after setup): the TV's own file and media viewer for a USB
+# stick; community lists turned some of them off. keep.sh turns them back on.
+com.android.documentsui                # Android's Files (opens a USB stick)
+com.google.android.documentsui         # the same, Google's build
+com.tcl.ui_mediaCenter                 # TCL's media center (USB photos, videos, music)
+com.xiaomi.mitv.mediaexplorer          # Xiaomi's media explorer
+com.mediatek.wwtv.mediaplayer          # MediaTek sets' USB media player
+com.gdch.wwtv.mediaplayer              # the same on BenQ and other MediaTek sets
+com.homwee.mmp.fileexplorer            # Homwee (RCA, Haier) USB files
+com.homwee.mmp.imageplayer             # Homwee USB photos
+com.softwinner.TvdFileManager          # Allwinner projectors' file manager
+com.cxinventor.file.explorer           # File Explorer (Sharp)
+com.alphainventor.filemanager          # File Manager+ (Sony)
+com.apps.usbmediaplayer                # USB media player (Vestel-made sets)
+com.rtk.mediabrowser                   # Realtek sets' media browser
+com.tianci.localmedia                  # Skyworth/Coocaa local media
+com.jamdeo.tv.mediacenter              # Hisense media center
+com.vt.tv.mediacenter                  # media center (VT boards)
+com.heytap.tv.filebrowser              # OnePlus/Oppo file browser
+com.xgimi.filemanager                  # XGIMI file manager
+
 # Accessibility and sound
 com.tcl.hearaid
 com.google.android.marvin.talkback
