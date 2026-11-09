@@ -100,7 +100,25 @@ final class ControlCenter {
     void dismiss() { if (pw != null) pw.dismiss(); }
 
     /** The home screen is in front again (from an app, or Home pressed): the next opening starts on the first item. */
-    void forgetLast() { lastKey = null; }
+    void forgetLast() {
+        lastKey = null;
+        soundReturned();
+    }
+
+    /**
+     * TCL Smart TV G07 (Android 11): the TV's settings crash opening the sound screen (its SoundActivity class is missing in that build) and the home
+     * comes straight back. A return within SOUND_FAIL_MS of «مخرج الصوت» opening it is read as that: from then on the row opens the TV's general
+     * settings, which every TV has, and never the sound screen again (no crash loop). The mark is kept on this TV.
+     */
+    static final long SOUND_FAIL_MS = 3500;
+
+    private void soundReturned() {
+        long t = prefs().getLong("sound_t", 0);
+        if (t == 0) return;
+        SharedPreferences.Editor e = prefs().edit().remove("sound_t");
+        if (System.currentTimeMillis() - t < SOUND_FAIL_MS) e.putBoolean("sound_bad", true);
+        e.apply();
+    }
 
     /** one thing the panel can show: a round toggle or a row */
     private static final class Item {
@@ -137,7 +155,9 @@ final class ControlCenter {
         tile("sound", S.t("مخرج الصوت"), outputLine(), R.drawable.ic_sound, () -> {
             dismiss();
             try {
-                host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, soundIntent(), S.t("إعدادات الصوت"));
+                Intent sound = soundIntent();
+                if (Settings.ACTION_SOUND_SETTINGS.equals(sound.getAction())) prefs().edit().putLong("sound_t", System.currentTimeMillis()).apply();   // soundReturned reads it
+                host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, sound, S.t("إعدادات الصوت"));
             } catch (RuntimeException e) {   // A6: the TCL G07 crashed here: the tile must never take the home down; the log says what it was
                 android.util.Log.w("UrTVControl", "sound tile failed " + e.getClass().getSimpleName());
             }
@@ -773,6 +793,7 @@ final class ControlCenter {
     /** the sound settings if this TV has them (the public action), else the TV's settings: never an intent that does not resolve */
     private Intent soundIntent() {
         Intent sound = new Intent(Settings.ACTION_SOUND_SETTINGS);
+        if (prefs().getBoolean("sound_bad", false)) return new Intent(Settings.ACTION_SETTINGS);   // this TV's sound screen crashed: never again
         try {
             return act.getPackageManager().resolveActivity(sound, 0) != null ? sound : new Intent(Settings.ACTION_SETTINGS);
         } catch (RuntimeException e) {

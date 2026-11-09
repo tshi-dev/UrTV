@@ -43,4 +43,11 @@ odd = next(l[4:] for l in out if l.startswith("odd "))
 check("odd values are cut to letters, digits, dots and dashes (no new line, no field of another kind), «?» for none",
       odd == "Versions: home 4.0betarm-rf, screensaver ? | Device: Android 11TVme, API 30 | WebView: ?", odd)
 check("a report too long for the QR code drops its last lines until it fits", "cut true" in out)
+topic = next(l[6:] for l in out if l.startswith("topic ")).split("|")
+check("a report says what it is about and the screen's state (look, light or dark, layout) and the exception class names of the home's own log: three more lines, each one share.py allows",
+      topic == ["Extras: about=sound", "Home: look=glass, appearance=dark, layout=football", "Extras: errors=java.lang.IllegalStateException,abTVme,x.Y"], topic)
+check("…and share.py keeps every one of them", share.restrict("\n".join(topic) + "\n") == "\n".join(topic) + "\n")
+check("the seven topics are on the screen as rows (the home screen, the screensaver, prayer and adhan, matches, sound, phone control, something else); a pick regenerates the lines and the QR code; the errors are class names only",
+      [t[0] for t in re.findall(r'\{"(\w+)", S\.n\("([^"]+)"\)\}', src)] == ["home", "saver", "prayer", "matches", "sound", "phone", "other"]
+      and "refresh[0].run()" in act and "topic = Report.TOPICS[at][0]" in act and "logcat" in act and "--pid=" in act and "Exception|Error" in act)
 sys.exit(1 if failed else 0)

@@ -353,6 +353,15 @@ for (const [why, rows] of [['the shipped table', null], ['medium confidence', [{
   check('English matches page: no script error, its own words in English', !errors.length && !own.length, errors.join(' | ') + own.join(','));
   await ctx.close();
 }
+{
+  // English, the football home: the row of games opens at the start (left) edge, whole, with the fade at its far (right) end only (the mask was mirrored twice: the cards at x 120 came up clipped and faded)
+  const { p, ctx } = await open('teams=136013&widget=1&football=1&lang=en', { file: 'tv-en.html', rows: ROWS });
+  await p.evaluate(() => fbFocus('mt'));
+  await p.waitForTimeout(500);
+  const g = await p.evaluate(() => ({ mask: getComputedStyle(document.querySelector('.fbv')).maskImage, first: document.querySelector('.fcd').getBoundingClientRect().left, view: document.querySelector('.fbv').getBoundingClientRect().left }));
+  check('English football home: the row\'s fade is at its right end (to right), the first card starts at the row\'s left edge, not shifted', /to right/.test(g.mask) && !/to left/.test(g.mask) && Math.abs(g.first - g.view) < 1, JSON.stringify(g));
+  await ctx.close();
+}
 await browser.close();
 console.log(failed ? `${failed} failed` : 'all football page tests passed');
 process.exit(failed ? 1 : 0);

@@ -122,6 +122,8 @@ final class PhotoCache {
     }
 
     private static final Object DOWNLOAD = new Object();
+    /** a weak TV (Prefs.lowRam): the long side of a kept photo */
+    static final int LOW_PX = 1280;
     private static final long TOUCH_EVERY_MS = 3600_000L;
 
     /** S9: a kept photo is answered at once, without the lock (the lock is for downloads: one at a time); P6: its time is renewed at most once an hour, not at every hit */
@@ -155,7 +157,7 @@ final class PhotoCache {
             byte[] data;
             try (InputStream in = con.getInputStream()) { data = Bounded.readAll(in, Bounded.IMAGE_MAX); }
             if (!validImage(data)) return null;   // an error page or a cut download is not kept as a photo
-            data = PhotoShrink.toScreen(data);   // P8: kept at screen size
+            data = Prefs.lowRam(c) ? PhotoShrink.toSize(data, LOW_PX) : PhotoShrink.toScreen(data);   // P8: kept at screen size (a weak TV: 1280 on the long side, a third fewer pixels to decode and draw)
             try (FileOutputStream out = new FileOutputStream(tmp)) { out.write(data); }
             if (!tmp.renameTo(f)) return null;
         } finally {

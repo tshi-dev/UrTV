@@ -102,6 +102,8 @@ final class HomeCard {
      * from the screen's top to above the favourites' tray, and FootballFocus puts a focus target over each. Nothing else changes.
      */
     private volatile boolean football;
+    /** the layout the home showed last, for the report (a word, nothing else) */
+    static volatile boolean footballShown;
     private FootballFocus.Host footballHost;
     private FootballFocus footballFocus;
     /** the cards' own place, put back when the home leaves the football layout */
@@ -261,6 +263,7 @@ final class HomeCard {
         // before this app): keep the last cards chosen, «بدون» included. Only with nothing remembered, the prayers.
         String[] choice = HomeCardChoice.pick(frag, panel, sp.getString("frag", null), sp.getString("panel", null));
         football = "football".equals(layout) && footballHost != null && choice != null;
+        footballShown = football;   // «أرسل تقرير» says which layout the home had
         if (football) { cards = 0; tasks = false; stocks = false; stocksFirst = false; return withGlass(HomePage.fresh(activity, HomeCardChoice.footballUrl(choice))); }
         cards = HomeCardChoice.count(choice);
         tasks = HomeCardChoice.hasTasks(choice);

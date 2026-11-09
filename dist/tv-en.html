@@ -662,7 +662,6 @@
   html.fb-open #fb-row{visibility:visible;opacity:1}
   html.fb-open #fb-mt{visibility:hidden}
   .fbv{height:100%;overflow:hidden;-webkit-mask-image:linear-gradient(to right,#000 88%,transparent);mask-image:linear-gradient(to right,#000 88%,transparent)}
-  html[dir=ltr] .fbv{-webkit-mask-image:linear-gradient(to left,#000 88%,transparent);mask-image:linear-gradient(to left,#000 88%,transparent)}
   .fbr{display:flex;gap:calc(var(--u)*24);height:100%;transition:transform .25s ease-in-out}
   .fcd{flex:none;width:calc(var(--u)*300);height:100%;background:var(--fbg);border:1px solid var(--fln);border-radius:calc(var(--u)*24);padding:calc(var(--u)*16);
     display:flex;flex-direction:column;justify-content:space-between;font-size:calc(var(--u)*24)}
@@ -754,6 +753,8 @@
   html.mpdark #mp,html.mpdark #mp-detail{--fi:#FFFFFF;--fs:#DADCE0;--fgr:#8FE0B4;--fam:#F0B35A;--fring:#8FE0B4;--fln:rgba(255,255,255,.16);--fbg:#202227;--chip:rgba(255,255,255,.08);--rowf:rgba(143,224,180,.14);--dlg:#1D1F24;--btn:#2A2D33;--pri:#1B8354;--veil:rgba(0,0,0,.66);--shd:rgba(0,0,0,.5)}
 /* #lowram=1 (a weak TV): no transitions, the moves happen at once */
 html.lowram *, html.lowram *::before, html.lowram *::after { transition: none !important; }
+/* …and no animation either: the photo's minute-long settle redraws the whole screen every frame, the cards' fade-ins are the same (a weak TV's CPU stayed busy: reports on C05 and two 1.5 GB sets) */
+html.lowram .photo.settle, html.lowram .week ul.flip li, html.lowram .mrow.flip .mblock, html.lowram .week li.yr.fill .r { animation: none !important; }
   .clock .ampm{order:1;margin-inline-end:0;margin-inline-start:.25em}
   .week li.quote,.week li.src,.week li.tafsir,.week li.adf .s{direction:rtl}
 </style>

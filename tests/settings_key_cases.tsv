@@ -71,5 +71,6 @@ filter4	home	off	ok	lost		on	the home in front on such a TV: the service listens
 filter4	home	off	ok	ok		off	any other TV: not while our home is in front, as before
 filter4	other	off	ok	ok		on	another app: as before
 filter4	other	on	ok	ok		off	a stock home on: as before
-filter4	home	off	low	lost		off	a weak TV: never (Ram.low)
+filter4	home	off	low	lost		on	a weak TV whose system takes the key before our home (Haier MatrixTV BE): the service listens while our home is in front
 filter4	other	off	low	ok		off	a weak TV, another app: never
+filter4	other	off	low	lost		off	a weak TV, another app: never (only our own home is filtered there)

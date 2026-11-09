@@ -86,6 +86,9 @@ check("RTL: the panel sits at the start edge (right in Arabic, left in English),
       and "c.setNextFocusRightId(Dir.rtl() ? before : after);" in center and "c.setNextFocusLeftId(Dir.rtl() ? after : before);" in center and "plp.setMarginStart(margin);" in center)
 check("focus goes back to the pill when it closes, and a tile has it when it opens", "anchor.requestFocus()" in center and "focusFirst.requestFocus()" in center)
 
+'check("TCL G07: a return within 3.5 s of the sound screen opening is read as its crash; the row then opens the TV's general settings for good (no crash loop)",
+      "SOUND_FAIL_MS = 3500" in center and 'putLong("sound_t"' in center and 'putBoolean("sound_bad", true)' in center and 'if (prefs().getBoolean("sound_bad", false)) return new Intent(Settings.ACTION_SETTINGS);' in center
+      and "soundReturned();" in center.split("void forgetLast()")[1][:80])
 # ---- «انعكاس الشاشة»: the TV's own mirroring app, only when one is installed
 mirror_block = text[text.index("static final String[] MIRROR_APPS = {"):text.index("};", text.index("static final String[] MIRROR_APPS = {"))]
 mirror_apps = re.findall(r'"([A-Za-z0-9_.]+)"', mirror_block)

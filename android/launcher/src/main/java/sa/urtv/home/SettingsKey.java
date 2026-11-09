@@ -99,8 +99,12 @@ final class SettingsKey {
         return filterWanted(homeFront, stockHome, lowRam, false);
     }
 
-    /** ... and on a TV whose system takes the key before our home (homeKeyLost), also while our home is in front (never on a weak TV) */
+    /**
+     * ... and on a TV whose system takes the key before our home (homeKeyLost), also while our home is in front, weak TV or not: with our home in front the key goes to
+     * our own code only (nothing lags in another app), and without it the Settings key does nothing at all there (Haier MatrixTV BE, 1.8 GB, reported twice)
+     */
     static boolean filterWanted(boolean homeFront, boolean stockHome, boolean lowRam, boolean homeKeyLost) {
+        if (homeFront && homeKeyLost) return true;
         if (lowRam) return false;
         return homeFront ? homeKeyLost : filterWanted(false, stockHome);
     }
