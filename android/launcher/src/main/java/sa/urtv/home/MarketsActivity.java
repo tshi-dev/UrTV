@@ -1604,6 +1604,7 @@ public class MarketsActivity extends Activity {
         box.addView(lock, gap(16));
         View wipe = settingRow(S.t("احذف المحفظة"), S.t("كل الأسهم وعمليات الشراء، من هذا التلفزيون"), false, v -> confirm(S.t("أحذف المحفظة كلها من هذا التلفزيون؟ لا يمكن التراجع."), () -> {
             Portfolio.wipe(this);
+            HomeSnapshot.clear(this);
             d.dismiss();
             redraw();
             toast(S.t("حُذفت المحفظة"));

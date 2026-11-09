@@ -110,6 +110,7 @@ final class Parental {
         pin(c).clear();
         prefs(c).edit().clear().commit();
         Portfolio.wipe(c);
+        HomeSnapshot.clear(c);   // the home's last picture may show what was wiped
         SESSION.clear();
         changed(c);
         return status(c);

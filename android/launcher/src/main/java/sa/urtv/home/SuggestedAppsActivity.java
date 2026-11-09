@@ -143,7 +143,7 @@ public class SuggestedAppsActivity extends Activity {
             TextView b = buttons.get(a.id);
             if (b == null) continue;
             boolean on = installed(a.pkg);
-            b.setText(on ? "✓ " + S.t("مثبّت") + " · " + S.t("افتح") : a.kind == SuggestedApps.Kind.STORE ? S.t("افتح المتجر") : S.t("ثبّت"));
+            b.setText(on ? "✓ " + S.t("افتح") : a.kind == SuggestedApps.Kind.STORE ? S.t("افتح المتجر") : S.t("ثبّت"));
         }
     }
 

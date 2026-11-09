@@ -7,6 +7,8 @@ import android.content.IntentFilter;
 import android.service.dreams.DreamService;
 import android.view.KeyEvent;
 import android.webkit.WebView;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 /** The system screensaver: starts on the TV's own idle timer, any key wakes it. */
 public class ScreenDream extends DreamService {
@@ -84,7 +86,27 @@ public class ScreenDream extends DreamService {
         web = ScreenView.create(this, this::gone, start);
         shownUrl = new Prefs(this).screenUrl(this, false);
         if (getWindow() != null) getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(0xFF040E09));   // the page's ground, under the view until it has painted
-        setContentView(web);
+        // the last picture of the page (else the ground colour) in front until the live page has painted, then 220 ms of fade (SaverSnapshot)
+        FrameLayout box = new FrameLayout(this);
+        box.addView(web, new FrameLayout.LayoutParams(-1, -1));
+        android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+        android.graphics.Bitmap last = SaverSnapshot.load(this, shownUrl, dm.widthPixels, dm.heightPixels);
+        if (last != null) {
+            final ImageView cover = new ImageView(this);
+            cover.setScaleType(ImageView.ScaleType.FIT_XY);
+            cover.setImageBitmap(last);
+            box.addView(cover, new FrameLayout.LayoutParams(-1, -1));
+            final WebView page = web;
+            final long since = android.os.SystemClock.elapsedRealtime();
+            cover.postDelayed(new Runnable() {
+                @Override public void run() {
+                    boolean live = page.getAlpha() >= 1f || android.os.SystemClock.elapsedRealtime() - since >= SaverSnapshot.LIVE_WAIT_MS;
+                    if (!live) { cover.postDelayed(this, 100); return; }
+                    cover.animate().alpha(0f).setDuration(SaverSnapshot.FADE_MS).withEndAction(() -> box.removeView(cover)).start();
+                }
+            }, 100);
+        }
+        setContentView(box);
     }
 
     /** The page's renderer died: the dead view is thrown away; a new one at most twice in ten minutes, else the dream ends (the system starts it again later). */
@@ -103,6 +125,7 @@ public class ScreenDream extends DreamService {
         if (attached) Showing.leave();
         attached = false;
         try { unregisterReceiver(changed); } catch (IllegalArgumentException ignored) { }
+        if (web != null) SaverSnapshot.capture(this, web, shownUrl);   // the picture the next start draws first
         ScreenView.release(web);
         web = null;
         super.onDetachedFromWindow();
