@@ -27,7 +27,11 @@ final class AdhanSettings {
 
     /** «مؤذن الفجر»: 1..COUNT, or 0 for the person's own. */
     static String fajrVoice(Context c, Prefs prefs, int voice) {
-        if (voice == Prefs.OWN) {
+        if (voice == Prefs.OWN_FAJR) {   // 4.3 C16: the second recording
+            if (!OwnAdhan.fajrExists(c)) return "error: no Fajr recording of your own yet (optimize/music.sh adhan add --fajr FILE)";
+            prefs.setFajrOwn(true);
+            prefs.setFajrOwnSecond(true);
+        } else if (voice == Prefs.OWN) {
             if (!OwnAdhan.exists(c)) return "error: no recording of your own yet (optimize/music.sh adhan add FILE)";
             prefs.setFajrOwn(true);
         } else if (voice < 1 || voice > Adhan.VOICES) {

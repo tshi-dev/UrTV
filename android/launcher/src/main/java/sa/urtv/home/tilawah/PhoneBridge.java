@@ -22,7 +22,7 @@ public final class PhoneBridge {
         Map<String, Object> adhan = new LinkedHashMap<>();
         adhan.put("on", prefs.adhanOn());
         adhan.put("voice", (long) (prefs.playVoice(c) == Prefs.OWN ? 0 : prefs.voice()));
-        adhan.put("fajr_voice", (long) (prefs.playFajrVoice(c) == Prefs.OWN ? 0 : prefs.fajrVoice()));
+        adhan.put("fajr_voice", (long) (OwnAdhan.isOwn(prefs.playFajrVoice(c)) ? 0 : prefs.fajrVoice()));
         adhan.put("short", prefs.adhanShort());
         adhan.put("stopkey", prefs.adhanStopKey());
         adhan.put("volume", (long) prefs.adhanVolume());

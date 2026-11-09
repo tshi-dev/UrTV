@@ -30,6 +30,8 @@
 #                                          48 kbps, at most 5 minutes; needs ffmpeg on this computer), put on the TV, and made the voice.
 #                                          One file only: a new one replaces it. It stays on the TV; nothing bundled, nothing sent anywhere
 #   optimize/music.sh adhan voice own      use it again (voice 1-21 switches back); optimize/music.sh adhan own-clear removes it
+#   optimize/music.sh adhan add --fajr FILE   a second recording of their own, for Fajr only («أذاني للفجر», 4.3); the other prayers keep theirs.
+#                                          adhan fajr-voice own-fajr uses it again; adhan own-clear --fajr removes it
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -55,7 +57,7 @@ own_send() {   # $1 = the extras after -a ...ADHAN_OWN or VOICE; prints the rece
   echo "$out"
   [[ "$out" != error:* ]]
 }
-own_add() {   # $1 = the person's file: made small, uploaded, kept by the app, made the voice
+own_add() {   # $1 = the person's file: made small, uploaded, kept by the app, made the voice; OWN_FAJR=1: the second recording, for Fajr (4.3 C16)
   local f=$1 work secs bytes sent note=
   [ -f "$f" ] || { echo "error: $f is not a file" >&2; exit 1; }
   if ! command -v "$FFMPEG" > /dev/null 2>&1; then
@@ -89,9 +91,10 @@ own_add() {   # $1 = the person's file: made small, uploaded, kept by the app, m
   tv --push-b64 "$work/own.m4a" "$OWN_STAGE/in.m4a" | tail -1
   # the shell streams it into the app (its folder is private); where this TV lacks `content write`, the app reads it itself
   tv "content write --uri content://sa.urtv.home.adhan/own-in < $OWN_STAGE/in.m4a" > /dev/null 2>&1 || true
-  sent=$(own_send "sa.urtv.home.ADHAN_OWN --es op add --ei size $bytes" || true)
+  local fj=""; [ "${OWN_FAJR:-}" != 1 ] || fj=" --ez fajr true"
+  sent=$(own_send "sa.urtv.home.ADHAN_OWN --es op add --ei size $bytes$fj" || true)
   case "$sent" in error:*)
-    sent=$(own_send "sa.urtv.home.ADHAN_OWN --es op add --ei size $bytes --es path $OWN_STAGE/in.m4a" || true) ;;
+    sent=$(own_send "sa.urtv.home.ADHAN_OWN --es op add --ei size $bytes$fj --es path $OWN_STAGE/in.m4a" || true) ;;
   esac
   tv "rm -f $OWN_STAGE/in.m4a" > /dev/null || true
   tv "rmdir $OWN_STAGE" > /dev/null 2>&1 || true
@@ -222,13 +225,19 @@ PY
         fi
         ;;
       add)
+        if [ $# -eq 3 ] && [ "$2" = --fajr ]; then OWN_FAJR=1 own_add "$3"; exit 0; fi   # 4.3 C16: a second recording, for Fajr only
         [ $# -eq 2 ] || usage
         own_add "$2"
         ;;
       own-clear)
+        if [ $# -eq 2 ] && [ "$2" = --fajr ]; then
+          own_send "sa.urtv.home.ADHAN_OWN --es op clear-fajr" || exit 1
+          echo "Your Fajr recording is removed."
+          exit 0
+        fi
         [ $# -eq 1 ] || usage
         own_send "sa.urtv.home.ADHAN_OWN --es op clear" || exit 1
-        echo "Your own recording is removed."
+        echo "Your own recordings are removed."
         ;;
       now)
         [ $# -le 2 ] || usage
@@ -262,6 +271,11 @@ PY
       fajr-voice)
         [ $# -eq 2 ] || usage
         voice=$2
+        if [ "$voice" = own-fajr ]; then   # 4.3 C16: the second recording
+          own_send "sa.urtv.home.FAJR_VOICE --ei voice 100" > /dev/null || { echo "There is no Fajr recording of your own on the TV yet (optimize/music.sh adhan add --fajr FILE)." >&2; exit 1; }
+          echo "Fajr voice: your own Fajr recording."
+          exit 0
+        fi
         [ "$voice" != own ] || voice=0
         case "$voice" in ''|*[!0-9]*) usage;; esac
         { [ "$voice" -le 21 ] && { [ "$voice" -ge 1 ] || [ "$2" = own ]; }; } || { echo "The voice is 1-21, or own." >&2; exit 2; }

@@ -45,6 +45,10 @@ final class Prefs {
 
     /** The voice number that stands for the person's own recording (OwnAdhan); the numbered ones are 1..21. */
     static final int OWN = 0;
+    /** 4.3 C16: the person's second recording, for Fajr only (OwnAdhan.fajrFile); never a numbered voice (those are 1..21) */
+    static final int OWN_FAJR = 100;
+    boolean fajrOwnSecond() { return sp.getBoolean("adhan_fajr_own_second", false); }
+    void setFajrOwnSecond(boolean on) { sp.edit().putBoolean("adhan_fajr_own_second", on).apply(); }
     boolean ownChosen() { return sp.getBoolean("adhan_own", false); }
     void setOwnChosen(boolean on) { freezeFajr(); sp.edit().putBoolean("adhan_own", on).apply(); }
     /** What plays at the prayers other than Fajr: OWN when the recording is chosen and still on the TV, else the numbered voice. */
@@ -59,12 +63,15 @@ final class Prefs {
         return AdhanVoices.fajrVoice(sp.contains("adhan_fajr_voice") ? sp.getInt("adhan_fajr_voice", -1) : -1,
                 sp.getInt("adhan_voice", AdhanVoices.DEFAULT));
     }
-    void setFajrVoice(int voice) { freezeFajr(); sp.edit().putInt("adhan_fajr_voice", voice).putBoolean("adhan_fajr_own", false).apply(); }
+    void setFajrVoice(int voice) { freezeFajr(); sp.edit().putInt("adhan_fajr_voice", voice).putBoolean("adhan_fajr_own", false).putBoolean("adhan_fajr_own_second", false).apply(); }
     /** The person's own recording at Fajr: until it is chosen apart it follows the one for the other prayers (as it did before there was a Fajr voice). */
     boolean fajrOwn() { return sp.contains("adhan_fajr_own") ? sp.getBoolean("adhan_fajr_own", false) : ownChosen(); }
-    void setFajrOwn(boolean on) { freezeFajr(); sp.edit().putBoolean("adhan_fajr_own", on).apply(); }
+    void setFajrOwn(boolean on) { freezeFajr(); sp.edit().putBoolean("adhan_fajr_own", on).putBoolean("adhan_fajr_own_second", false).apply(); }
     /** What plays at Fajr: OWN when the recording is chosen for it and still on the TV, else the Fajr voice. */
-    int playFajrVoice(Context c) { return fajrOwn() && OwnAdhan.exists(c) ? OWN : fajrVoice(); }
+    int playFajrVoice(Context c) {
+        if (fajrOwnSecond() && OwnAdhan.fajrExists(c)) return OWN_FAJR;   // 4.3 C16: the second recording, chosen for Fajr
+        return fajrOwn() && OwnAdhan.exists(c) ? OWN : fajrVoice();
+    }
     /** What plays at a prayer: Fajr has its own voice. */
     int playVoiceFor(Context c, boolean fajr) { return fajr ? playFajrVoice(c) : playVoice(c); }
 

@@ -20,6 +20,14 @@ final class OwnAdhan {
 
     static File file(Context c) { return new File(c.getFilesDir(), "adhan-own.m4a"); }
 
+    /** 4.3 C16: the second recording, for Fajr only («أذاني للفجر»: optimize/music.sh adhan add --fajr FILE) */
+    static File fajrFile(Context c) { return new File(c.getFilesDir(), "adhan-own-fajr.m4a"); }
+    static boolean fajrExists(Context c) { return fajrFile(c).length() > 0; }
+    /** the file a voice number plays: the first recording (Prefs.OWN), the Fajr one (Prefs.OWN_FAJR) */
+    static File fileOf(Context c, int voice) { return voice == Prefs.OWN_FAJR ? fajrFile(c) : file(c); }
+    static boolean isOwn(int voice) { return voice == Prefs.OWN || voice == Prefs.OWN_FAJR; }
+    static boolean existsOf(Context c, int voice) { return voice == Prefs.OWN_FAJR ? fajrExists(c) : exists(c); }
+
     /** where OwnAdhanProvider lets the shell write the next one before MusicReceiver keeps it */
     static File incoming(Context c) { return new File(c.getFilesDir(), "adhan-own-in.tmp"); }
 
@@ -55,9 +63,12 @@ final class OwnAdhan {
      * Keeps src as the one recording, replacing the old. null when done, else why not; src is gone either way if it is in.tmp.
      * The old recording stays until the new one is whole and in place (SafeReplace): a refusal or a failure leaves it playing.
      */
-    static synchronized String keep(Context c, File src) {
+    static synchronized String keep(Context c, File src) { return keep(c, src, false); }
+
+    /** fajr: the second recording, for Fajr (4.3 C16); the first stays as it is. */
+    static synchronized String keep(Context c, File src, boolean fajr) {
         String why = check(src);
-        if (why.isEmpty()) why = SafeReplace.replace(src, file(c), src.equals(incoming(c)), SafeReplace.FILES);
+        if (why.isEmpty()) why = SafeReplace.replace(src, fajr ? fajrFile(c) : file(c), src.equals(incoming(c)), SafeReplace.FILES);
         if (src.equals(incoming(c)) && src.exists()) src.delete();   // never leave a refused file to be taken for the next one
         return why.isEmpty() ? null : why;
     }
@@ -67,5 +78,13 @@ final class OwnAdhan {
         new File(c.getFilesDir(), "adhan-own.m4a.new").delete();
         new File(c.getFilesDir(), "adhan-own.m4a.old").delete();
         incoming(c).delete();
+        clearFajr(c);
+    }
+
+    /** only the Fajr recording (4.3 C16) */
+    static synchronized void clearFajr(Context c) {
+        fajrFile(c).delete();
+        new File(c.getFilesDir(), "adhan-own-fajr.m4a.new").delete();
+        new File(c.getFilesDir(), "adhan-own-fajr.m4a.old").delete();
     }
 }

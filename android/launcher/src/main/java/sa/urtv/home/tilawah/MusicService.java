@@ -471,7 +471,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             // a second adhan on top of the first is ignored (two alarms); a preview gives way to the real one
             if (!adhanPreview || previewSeconds > 0) return;
         }
-        final boolean gone = wanted == Prefs.OWN && !OwnAdhan.exists(this);   // the recording was removed: a numbered voice
+        final boolean gone = OwnAdhan.isOwn(wanted) && !OwnAdhan.existsOf(this, wanted);   // the recording was removed: a numbered voice
         final int voice = gone ? prefs.voice() : wanted;
         int length = previewSeconds == 0 ? AdhanVoices.length(prefs.adhanTakbir(), prefs.adhanShort()) : AdhanVoices.FULL;
         adhanCutMs = AdhanVoices.cutMs(length, voice);
@@ -492,9 +492,9 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         pendingSeek = 0;
         wish.ask();
         prefs.setLastAdhan(System.currentTimeMillis());   // for `music.sh adhan`; the duplicate guard is the alarm's own (AdhanReceiver)
-        File cached = voice == Prefs.OWN ? OwnAdhan.file(this) : Adhan.cached(this, voice);
-        // the person's own file is always on the TV: nothing to fetch, nothing to retry from the network
-        if (voice == Prefs.OWN || Adhan.isCached(this, voice)) {
+        File cached = OwnAdhan.isOwn(voice) ? OwnAdhan.fileOf(this, voice) : Adhan.cached(this, voice);
+        // the person's own files are always on the TV: nothing to fetch, nothing to retry from the network
+        if (OwnAdhan.isOwn(voice) || Adhan.isCached(this, voice)) {
             adhanFromCache = true;
             startUrl(cached.getAbsolutePath());
         } else {

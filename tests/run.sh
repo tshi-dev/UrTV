@@ -197,6 +197,7 @@ python3 tests/usb_test.py   # 4.3 B8: the USB viewers are never off and always i
 python3 tests/report_words_test.py   # 4.3 B10: the report page asks what happened, required
 python3 tests/phone_message_test.py   # 4.3 #53: a short message from a paired phone on the TV's screen
 python3 tests/photos_phone_test.py   # 4.3 «صوري»: 50, and from a paired phone (no camera data)
+python3 tests/own_adhan_fajr_test.py   # 4.3 C16: a second own adhan, for Fajr
 python3 tests/football_test.py   # the football home and «المباريات»: the setting, the pages, the widgets' focus, the tray's move, the broadcast table (docs/PROPOSALS-NOV2.md §1)
 python3 tests/settings_report_test.py   # «أرسل تقرير»: share.py's allowlist, nothing personal
 python3 tests/dialog_fit_test.py

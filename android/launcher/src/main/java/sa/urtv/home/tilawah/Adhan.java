@@ -136,10 +136,10 @@ final class Adhan {
     static String url(int voice) { return URLS[clamp(voice) - 1]; }
 
     /** The muezzin, e.g. «فاروق حضراوي». */
-    static String name(int voice) { return voice == Prefs.OWN ? sa.urtv.home.S.tv(OwnAdhanText.NAME) : (sa.urtv.home.S.en() ? NAMES_EN : NAMES)[clamp(voice) - 1]; }
+    static String name(int voice) { return voice == Prefs.OWN_FAJR ? sa.urtv.home.S.tv(OwnAdhanText.NAME_FAJR) : voice == Prefs.OWN ? sa.urtv.home.S.tv(OwnAdhanText.NAME) : (sa.urtv.home.S.en() ? NAMES_EN : NAMES)[clamp(voice) - 1]; }
 
     /** Where it was recorded, e.g. «الحرم المكي». */
-    static String place(int voice) { return voice == Prefs.OWN ? sa.urtv.home.S.tv(OwnAdhanText.PLACE) : (sa.urtv.home.S.en() ? PLACES_EN : PLACES)[clamp(voice) - 1]; }
+    static String place(int voice) { return OwnAdhan.isOwn(voice) ? sa.urtv.home.S.tv(OwnAdhanText.PLACE) : (sa.urtv.home.S.en() ? PLACES_EN : PLACES)[clamp(voice) - 1]; }
 
     /** Both, for the row that opens this list: «فاروق حضراوي — الحرم المكي». */
     static String label(int voice) { return name(voice) + " — " + place(voice); }

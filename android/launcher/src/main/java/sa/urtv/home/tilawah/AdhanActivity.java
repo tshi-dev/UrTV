@@ -34,6 +34,8 @@ public class AdhanActivity extends Activity {
     private View lastSelected;
     /** 1 when the list starts with the person's own recording, else 0 */
     private int own;
+    /** 4.3 C16: 1 when «مؤذن الفجر» starts with the person's Fajr recording (OwnAdhan.fajrFile), else 0; before the first one */
+    private int ownFajr;
 
     @Override protected void onCreate(Bundle state) {
         setTheme(Ui.theme(this));   // «المظهر»: the look and the light of now, before anything is drawn
@@ -45,6 +47,7 @@ public class AdhanActivity extends Activity {
         prefs = new Prefs(this);
         own = OwnAdhan.exists(this) ? 1 : 0;
         fajr = getIntent().getBooleanExtra(EXTRA_FAJR, false);
+        ownFajr = fajr && OwnAdhan.fajrExists(this) ? 1 : 0;
         voices = fajr ? AdhanVoices.fajrList() : AdhanVoices.normal();
         if (fajr) ((TextView) findViewById(R.id.title)).setText(Ui.str(this, R.string.adhan_fajr_voices));
 
@@ -63,7 +66,8 @@ public class AdhanActivity extends Activity {
         list.setOnItemClickListener((parent, view, position, id) -> {
             int voice = voiceAt(position);
             if (fajr) {
-                if (voice == Prefs.OWN) prefs.setFajrOwn(true); else prefs.setFajrVoice(voice);
+                if (voice == Prefs.OWN_FAJR) { prefs.setFajrOwn(true); prefs.setFajrOwnSecond(true); }
+                else if (voice == Prefs.OWN) prefs.setFajrOwn(true); else prefs.setFajrVoice(voice);
                 Adhan.prefetchChosen(this);   // the new Fajr recording is on the TV before Fajr
             } else if (voice == Prefs.OWN) prefs.setOwnChosen(true);
             else { prefs.setVoice(voice); prefs.setOwnChosen(false); }
@@ -73,7 +77,7 @@ public class AdhanActivity extends Activity {
 
         int current = chosenVoice();
         int selected = 0;
-        for (int i = 0; i < voices.length + own; i++) if (voiceAt(i) == current) selected = i;
+        for (int i = 0; i < voices.length + own + ownFajr; i++) if (voiceAt(i) == current) selected = i;
         list.setSelection(selected);
         list.post(() -> {
             list.requestFocus();
@@ -82,7 +86,11 @@ public class AdhanActivity extends Activity {
     }
 
     /** the voice a row stands for: 0 (the person's own), or 1..21 */
-    private int voiceAt(int position) { return own == 1 && position == 0 ? Prefs.OWN : voices[position - own]; }
+    private int voiceAt(int position) {
+        if (ownFajr == 1 && position == 0) return Prefs.OWN_FAJR;
+        position -= ownFajr;
+        return own == 1 && position == 0 ? Prefs.OWN : voices[position - own];
+    }
 
     /** the voice in use for the prayers this list is for */
     private int chosenVoice() { return fajr ? prefs.playFajrVoice(this) : prefs.playVoice(this); }
@@ -105,7 +113,7 @@ public class AdhanActivity extends Activity {
     }
 
     private final class Voices extends BaseAdapter {
-        @Override public int getCount() { return voices.length + own; }
+        @Override public int getCount() { return voices.length + own + ownFajr; }
         @Override public Object getItem(int position) { return voiceAt(position); }
         @Override public long getItemId(int position) { return position; }
 

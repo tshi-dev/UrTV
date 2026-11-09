@@ -152,29 +152,41 @@ public class MusicReceiver extends BroadcastReceiver {
                     src = new java.io.File(path);
                 }
                 int size = intent.getIntExtra("size", -1);   // what the shell sent: a short or stale file is refused
+                boolean forFajr = intent.getBooleanExtra("fajr", false);   // 4.3 C16: the second recording, for Fajr only
                 String why = size >= 0 && src.length() != size
                         ? "the file is not the one sent (" + src.length() + " of " + size + " bytes)"
-                        : OwnAdhan.keep(context, src);
+                        : OwnAdhan.keep(context, src, forFajr);
                 if (why != null && src.equals(OwnAdhan.incoming(context))) src.delete();
                 if (why != null) return "error: " + why;
-                prefs.setOwnChosen(true);   // a recording just added is the one the person wants, at Fajr too
-                prefs.setFajrOwn(true);
+                if (forFajr) {   // only Fajr changes: the other prayers keep what they had
+                    prefs.setFajrOwn(true);
+                    prefs.setFajrOwnSecond(true);
+                } else {
+                    prefs.setOwnChosen(true);   // a recording just added is the one the person wants, at Fajr too (unless a Fajr one is chosen)
+                    if (!prefs.fajrOwnSecond()) prefs.setFajrOwn(true);
+                }
                 return "saved\n" + ownListing(context, prefs);
             }
             case "clear":
-                OwnAdhan.clear(context);
+                OwnAdhan.clear(context);   // both recordings
                 prefs.setOwnChosen(false);
                 prefs.setFajrOwn(false);
                 return "saved\n" + ownListing(context, prefs);
+            case "clear-fajr":   // 4.3 C16: only the Fajr one; Fajr goes back to the first recording if it had it, else its voice
+                OwnAdhan.clearFajr(context);
+                prefs.setFajrOwnSecond(false);
+                return "saved\n" + ownListing(context, prefs);
             default:
-                return "error: op is one of info add clear";
+                return "error: op is one of info add clear clear-fajr";
         }
     }
 
     private static String ownListing(Context context, Prefs prefs) {
-        return OwnAdhan.exists(context)
+        return (OwnAdhan.exists(context)
                 ? "own: " + OwnAdhanText.size(OwnAdhan.bytes(context)) + " (" + inUse(context, prefs) + ")"
-                : "own: none";
+                : "own: none")
+                + (OwnAdhan.fajrExists(context) ? "\nown_fajr: " + OwnAdhanText.size(OwnAdhan.fajrFile(context).length())
+                        + (prefs.playFajrVoice(context) == Prefs.OWN_FAJR ? " (in use at Fajr)" : " (kept, not in use)") : "");
     }
 
     private static String inUse(Context context, Prefs prefs) {
@@ -229,7 +241,7 @@ public class MusicReceiver extends BroadcastReceiver {
                 + "|sleep=" + sleepLeft
                 + "|adhan=" + (prefs.adhanOn() ? "on" : "off")
                 + "|voice=" + (prefs.playVoice(context) == Prefs.OWN ? "own" : String.valueOf(prefs.voice()))
-                + "|fajr_voice=" + (prefs.playFajrVoice(context) == Prefs.OWN ? "own" : String.valueOf(prefs.fajrVoice()))
+                + "|fajr_voice=" + (prefs.playFajrVoice(context) == Prefs.OWN_FAJR ? "own_fajr" : prefs.playFajrVoice(context) == Prefs.OWN ? "own" : String.valueOf(prefs.fajrVoice()))
                 + "|adhan_short=" + (prefs.adhanShort() ? "on" : "off")
                 + "|adhan_takbir=" + (prefs.adhanTakbir() ? "on" : "off")
                 + "|adhan_stopkey=" + (prefs.adhanStopKey() ? "on" : "off")
