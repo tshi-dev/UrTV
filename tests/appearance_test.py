@@ -43,4 +43,9 @@ check("4.3 «المظهر»: a main page of six category tiles (look, accent, li
       all(w in act for w in ('CATS = {{"look", "الشكل"}', '"accent", "اللون"', "private void renderMain()", "private void renderSub()", "public void onBackPressed()", "if (sub != null)")))
 check("the accent, tray strength, wallpaper dimming and focus style have their controls here (a left-right stepper, tiles with their own picture), the nine looks and the layout too",
       all(w in act for w in ("prefs.setAccent(", "prefs.setBarPercent(", "prefs.setWallDim(", "prefs.setFocusStyle(", "prefs.setHomeLayout(key)", "private View stepper(", "DOTS = 3, BARS = 4, FOCUS = 5")))
+HOMEDIR = ROOT / "android/launcher/src/main/java/sa/urtv/home"
+pill, bar, mainsrc = text(HOMEDIR / "Pill.java"), text(HOMEDIR / "PillBar.java"), text(HOMEDIR / "MainActivity.java")
+check("4.3 the home's top row: squares of 30 dp (60 px) 4 dp (8 px) apart with a 16 dp icon, standing on ONE bar of the look's glass (PillBar), the focus the look's solid fill in the focus style, the same on every look",
+      "static final int HEIGHT = 30;" in pill and "static final int GAP = 4;" in pill and "new LayoutParams(dp(16), dp(16))" in pill and "bg.setCornerRadius(dp(8));" in pill
+      and "final PillBar right = new PillBar(this);" in mainsrc and "pillBar.look(glassNow);" in mainsrc and "c.drawRoundRect(r, 12 * dp, 12 * dp, fill);" in bar and "GlassStyle.barPercent()" in bar)
 sys.exit(1 if failed else 0)

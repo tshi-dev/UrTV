@@ -20,12 +20,11 @@ import android.widget.TextView;
  * comes out to its left; PillText says what the name is. The name is always the pill's content description.
  */
 final class Pill extends LinearLayout {
-    private static final int ON = 0xE6FFFFFF, FOCUSED = 0xFF111111, GOLD = 0xFFD4AF6A;
-    private static final long MS = 150;
+        private static final long MS = 150;
     /** the row's height in dp: every pill, the circles and the one with the focus, is this tall, so they share one centre line */
-    static final int HEIGHT = 34;
-    /** dp between two buttons of the top row (and the now-playing card): 12 dp = 24 px at 1080p, on the 8 px scale */
-    static final int GAP = 12;
+    static final int HEIGHT = 30;
+    /** dp between two buttons of the top row (and the now-playing card): 4 dp = 8 px at 1080p, on the 8 px scale (design/43: one bar of squares, 8 px apart) */
+    static final int GAP = 4;
 
     private final float density;
     private final ImageView icon;
@@ -44,15 +43,13 @@ final class Pill extends LinearLayout {
         setOrientation(HORIZONTAL);
         setGravity(Gravity.CENTER_VERTICAL);
         setFocusable(true);
-        bg.setCornerRadius(dp(HEIGHT / 2f));
-        bg.setColor(0x66000000);
-        bg.setStroke(dp(1), 0x33FFFFFF);
+        bg.setCornerRadius(dp(8));   // a rounded square of 60 px at 1080p, no longer a circle; the bar behind the row is PillBar's
         setBackground(bg);
 
         glyph = c.getDrawable(iconRes).mutate();
         icon = new ImageView(c);
         icon.setImageDrawable(glyph);
-        addView(icon, new LayoutParams(dp(18), dp(18)));
+        addView(icon, new LayoutParams(dp(16), dp(16)));
 
         name = new TextView(c);
         name.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
@@ -92,39 +89,36 @@ final class Pill extends LinearLayout {
     }
 
     /**
-     * «رملي» (a look with a focus line, GlassStyle.Look.ring): a rounded rectangle, not a circle, on the look's panel with its hairline,
-     * the icon in the look's green; focused, the look's soft fill with the green line round it. Any other look: the smoked circles as ever.
+     * The look of the home now (design/43): at rest nothing of its own (the bar behind the row, PillBar, is the panel), focused the look's solid focus fill
+     * with its line in the focus style, the words and the icon in the look's ink. The same for every look.
      */
     void look(GlassStyle.Look l) {
-        GlassStyle.Look was = sand;
-        sand = l != null && l.ring != 0 ? l : null;
-        if (was == sand) return;
-        bg.setCornerRadius(dp(sand != null ? 10 : HEIGHT / 2f));
+        if (l == null) return;
+        look = l;
         paint();
     }
 
-    private GlassStyle.Look sand;
+    private GlassStyle.Look look = GlassStyle.DARK;
 
     private void paint() {
         boolean f = hasFocus();
-        if (sand != null) {
-            bg.setColor(f ? sand.focus : sand.panel);
-            bg.setStroke(f ? dp(2) : dp(1), f ? sand.ring : sand.line);
-            name.setTextColor(f ? sand.onFocus : sand.text);
-            glyph.setTint(accent ? sand.accent : sand.ring);
-            return;
-        }
-        bg.setColor(f ? 0xF2FFFFFF : 0x66000000);
-        bg.setStroke(dp(1), 0x33FFFFFF);
-        name.setTextColor(f ? FOCUSED : ON);
-        glyph.setTint(f ? FOCUSED : accent ? GOLD : ON);
+        GlassStyle.Look l = look;
+        bg.setColor(f ? l.focus : 0);
+        String style = GlassStyle.focusStyle();
+        if (!f) bg.setStroke(0, 0);
+        else if ("frame".equals(style)) bg.setStroke(dp(3), l.accent);
+        else if ("glow".equals(style)) bg.setStroke(dp(4), (l.accent & 0x00FFFFFF) | 0x80000000);
+        else if (l.ring != 0) bg.setStroke(dp(2), l.ring);
+        else bg.setStroke(0, 0);
+        name.setTextColor(f ? l.onFocus : l.text);
+        glyph.setTint(f ? l.onFocus : accent ? l.accent : l.text);
     }
 
     /** the width of the name's window now: nothing when closed, the name and the gap to the icon when open */
     private void apply() {
         float textWidth = name.getPaint().measureText(label == null ? "" : label);
         int full = Math.round(dp(9) + textWidth) + dp(2);
-        int pad = Math.round(dp(8) + dp(8) * open);   // a 34 dp circle closed (18 dp icon, 8 dp around), 16 dp of room on each side open
+        int pad = Math.round(dp(7) + dp(9) * open);   // a 30 dp square closed (16 dp icon, 7 dp around), 16 dp of room on each side open
         setPadding(pad, 0, pad, 0);
         LayoutParams lp = (LayoutParams) clip.getLayoutParams();
         int w = Math.round(full * open);

@@ -117,6 +117,7 @@ public class MainActivity extends Activity {
     private View scrim;
     private GradientDrawable dockBand;
     private View wallDimView;
+    private PillBar pillBar;
     private final List<TextView> gridLabels = new ArrayList<>();
     private String lookNow = GlassStyle.LOOKS[0];   // «المظهر ← الشكل» as the minute tick last read it (the glass of the home's own pieces)
     private boolean lightNow;   // the look on screen now: dark until a light one is asked for
@@ -640,7 +641,8 @@ public class MainActivity extends Activity {
         header.addView(left, new FrameLayout.LayoutParams(-2, -2, Dir.start() | Gravity.TOP));
         clockBlock = left;
 
-        LinearLayout right = new LinearLayout(this);
+        final PillBar right = new PillBar(this);   // the top row: one bar behind its buttons (design/43)
+        pillBar = right;
         right.setGravity(Gravity.CENTER_VERTICAL);
         right.setClipChildren(false);
         Pill inputs = pill(S.t("المصادر"), R.drawable.ic_input);
@@ -2818,6 +2820,7 @@ public class MainActivity extends Activity {
         applyLook(Look.light(cfg.appearance(), dayBySun(cfg), h * 60 + now.get(Calendar.MINUTE)));
         GlassStyle.Look glassNow = homeGlass();
         for (Pill p : new Pill[] {inputsPill, tasksPill, tilawahPill, centerPill, marketsPill, matchesPill, phonePill, updatePill, bellPill}) if (p != null) p.look(glassNow);   // «رملي»: its own buttons
+        if (pillBar != null) pillBar.look(glassNow);
         for (View v : pills) if (v instanceof Pill) ((Pill) v).look(glassNow);   // and every pill of the row, whatever else is added to it: six buttons, one style (step 28: two stayed grey circles)
         boolean h24 = cfg.clock24();   // «ساعة ٢٤»: off (12-hour with the ص or م) unless the owner turned it on
         clock.setText(ClockText.face(h, now.get(Calendar.MINUTE), h24, Digits.latin()));

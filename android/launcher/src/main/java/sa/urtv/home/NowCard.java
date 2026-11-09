@@ -25,7 +25,7 @@ import sa.urtv.home.tilawah.NowPlaying;
  */
 final class NowCard extends LinearLayout {
     private static final int ON = 0xE6FFFFFF, FOCUSED = 0xFF111111, GOLD = 0xFFD4AF6A, DIM = 0xFFC6BBA4;
-    /** dp: the card's height (a pill is Pill.HEIGHT, 34), and how wide a line may be before it ends in «…» */
+    /** dp: the card's height (a pill is Pill.HEIGHT, 30), and how wide a line may be before it ends in «…» */
     static final int HEIGHT = 44, LINE_MAX = 200, HINT_MAX = 270;
     /** sp: the first line as a pill's name, the second smaller */
     static final float TITLE_SP = 14, SUB_SP = 12;
