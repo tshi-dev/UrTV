@@ -5,7 +5,7 @@ work every time and leave nothing behind. It takes 45 minutes to 2 hours (a TCL 
 need you, at the start. Paste this to an agent that runs commands on a computer on the same Wi-Fi as the TV
 (Codex: choose «Approve for me»):
 
-> Stress-test my TV with the `next` branch of https://github.com/tshi-dev/UrTV and follow its `docs/CYCLE-TEST-PROMPT.md`. You are on a computer on the same Wi-Fi as the TV.
+> Stress-test my TV with the `next` branch of https://github.com/tshi-dev/UrTV and follow its `notes/CYCLE-TEST-PROMPT.md`. You are on a computer on the same Wi-Fi as the TV.
 
 ---
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pick clubs at random from our list, for docs/CYCLE-TEST-PROMPT.md: names to try with find-team, the way people
+"""Pick clubs at random from our list, for notes/CYCLE-TEST-PROMPT.md: names to try with find-team, the way people
 would write them. Always one Saudi club in Arabic, one national team, and one club abroad in English; the rest at
 random, Arabic or English. Prints the seed first, so a run can be repeated.
 

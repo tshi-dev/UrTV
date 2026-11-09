@@ -4,7 +4,7 @@ A quick check that the tools work with your TV and computer, for the developer. 
 installs, nothing disabled, no settings (only a tiny test file, deleted right after). Paste this to an agent that
 runs commands on a computer on the same Wi-Fi as the TV (Codex: choose «Approve for me»):
 
-> Test my TV with the `next` branch of https://github.com/tshi-dev/UrTV and follow its `docs/TEST-PROMPT.md`. You are on a computer on the same Wi-Fi as the TV.
+> Test my TV with the `next` branch of https://github.com/tshi-dev/UrTV and follow its `notes/TEST-PROMPT.md`. You are on a computer on the same Wi-Fi as the TV.
 
 `next` is where changes wait until a test like this passes; only then do they go to `master`, which everyone's
 setup uses.

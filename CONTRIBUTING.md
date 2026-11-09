@@ -27,4 +27,4 @@ Thank you. Small, safe changes are the best ones: a fix, a test, a clearer line 
 
 The screens and docs are in plain Saudi-leaning Arabic, short and warm, the way [docs/FEATURES.md](docs/FEATURES.md) is written:
 what it is, where to change it, what to tell the agent. Keep the same voice. Religious texts (verses, hadith, adhkar) are never
-typed by hand; they come from the checked sources described in [docs/CONTENT-REVIEW.md](docs/CONTENT-REVIEW.md).
+typed by hand; they come from the checked sources described in [notes/CONTENT-REVIEW.md](notes/CONTENT-REVIEW.md).

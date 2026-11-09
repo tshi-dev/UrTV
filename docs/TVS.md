@@ -163,7 +163,7 @@ once, or the person in the TV's accessibility settings.
 What is not known yet (needs the TV): whether a TCL lets the accessibility filter see 83 while `com.tcl.tv` / the HDMI input is in front
 (a key the system consumes before apps is never given to the filter: Android passes only keys meant for the user); whether the TV's
 settings opened over HDMI change that input's picture mode. A known intent for the TV's own picture / quick settings of the input in front
-is not in our lists (TCL's `com.tcl.settings.SHOW_WINDOW` service in VERIFY-2026-10.md is known for «Audio Only» only, and is not used
+is not in our lists (TCL's `com.tcl.settings.SHOW_WINDOW` service in notes/VERIFY-2026-10.md is known for «Audio Only» only, and is not used
 for anything else here): to look on the TV, `cmd package query-activities --brief -a android.intent.action.MAIN com.tcl.settings` and
 `dumpsys package com.tcl.settings | grep -iE 'picture|quick'`. A found action goes in front of `SettingsKey.TV_SETTINGS_ACTIONS` (one
 line) and in the manifest's `<queries>`.

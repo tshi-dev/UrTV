@@ -67,7 +67,7 @@ Written down here because it was not before (docs/PROPOSALS-NOV2.md):
 - no religious buildings other than mosques shown as architecture, no statues or idols, no nudity; for artworks, landscapes, still lifes,
   calligraphy and patterns only;
 - no logos, flags or insignia, and nothing by a third party inside a public-domain image;
-- a person looks at every photo of a pack once before it is published, the way `docs/CONTENT-REVIEW.md` does for the verses.
+- a person looks at every photo of a pack once before it is published, the way `notes/CONTENT-REVIEW.md` does for the verses.
 
 `.github/tools/make_pack.py` enforces what a script can (licence allow-list, words in a title or note, size) and refuses a pack until the
 manifest says `"reviewed": true`.

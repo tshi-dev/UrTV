@@ -12,7 +12,7 @@
 // al-Qura, Dubai, Qatar, Kuwait and Egyptian of its own, and for the other methods (Gulf, Oman's ministry, Jordan, Morocco, Algeria, Tunisia) the
 // same numbers are fed to the same formulas, so those numbers themselves are not independently confirmed here (Aladhan's list is not
 // reachable from the cloud container that wrote this). adhan's +1 minute on Dhuhr for the Egyptian method is left out: Aladhan's method 5
-// has no such margin and neither does the app (see docs/VERIFY-2026-10.md).
+// has no such margin and neither does the app (see notes/VERIFY-2026-10.md).
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';

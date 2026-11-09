@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Read-only checks of the TV tools on this TV and computer (docs/TEST-PROMPT.md): an upload, Arabic text, the
+# Read-only checks of the TV tools on this TV and computer (notes/TEST-PROMPT.md): an upload, Arabic text, the
 # screensaver from ADB, and the apps a home screen can list. Everything runs in here, so an agent passes no quotes,
 # pipes or semicolons through its own shell (PowerShell runs those itself). Leaves nothing behind.
 #   optimize/selftest.sh
