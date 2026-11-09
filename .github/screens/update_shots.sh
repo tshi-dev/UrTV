@@ -71,3 +71,12 @@ saver --es look glass --es lang ar --es appearance dark
 # the home's stand-in picture (HomeSnapshot): held in front (the skeleton on a fresh emulator), then the live home
 shoot "after-snapshot-held" sa.urtv.home/.DebugSnapShot sa.urtv.home/.MainActivity hold
 shoot "after-snapshot-live" sa.urtv.home/.DebugSnapShot sa.urtv.home/.MainActivity live
+# «تلفزيونك»: the app's entry (YourTvHubActivity, exported: started as the launcher does): four windows; Arabic dark and light, English, and the sand look
+for spec in "glass ar dark" "glass ar light" "glass en dark" "sand ar light"; do
+  set -- $spec
+  saver --es look "$1" --es lang "$2" --es appearance "$3"
+  sleep 2
+  shoot "after-hub-$1-$3-$2" sa.urtv.screensaver/.YourTvHubActivity sa.urtv.screensaver/.YourTvHubActivity hub
+done
+saver --es look glass --es lang ar --es appearance dark
+

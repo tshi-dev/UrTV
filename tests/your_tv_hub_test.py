@@ -1,0 +1,64 @@
+#!/usr/bin/env python3
+"""«تلفزيونك» (YourTvHubActivity): what opening the app shows: four windows (the markets, the matches, the games, the settings) in two lines, the same page, grid and focus as the
+settings' first screen. The pins: the launcher entry, the four windows and their marks, the games' «قريبًا» flag, the settings' door unchanged (the Settings key, the control center and the
+home's button open SettingsActivity, not the hub), the grid's explicit focus ways in both directions, no «·» in what it says, its words in the table, and the market's hours on a JVM.
+Run: python3 tests/your_tv_hub_test.py"""
+import re, shutil, subprocess, sys, tempfile
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+APP = ROOT / "android/app/src/main/java/sa/urtv/screensaver"
+failed = 0
+def check(name, ok, detail=""):
+    global failed
+    print(("PASS " if ok else "FAIL ") + name + ("" if ok else f"  -> {detail}"))
+    failed += not ok
+
+hub = (APP / "YourTvHubActivity.java").read_text(encoding="utf-8")
+man = (ROOT / "android/app/src/main/AndroidManifest.xml").read_text(encoding="utf-8")
+words = (APP / "Words.java").read_text(encoding="utf-8")
+tsv = (ROOT / "i18n/en/saver.tsv").read_text(encoding="utf-8")
+home = (ROOT / "android/launcher/src/main/java/sa/urtv/home/MainActivity.java").read_text(encoding="utf-8")
+res = ROOT / "android/app/src/main/res/drawable"
+
+hub_block = man.split('android:name=".YourTvHubActivity"')[1].split("</activity>")[0]
+check("opening the app shows the hub: it is the launcher (and the leanback launcher) entry; SettingsActivity no longer is, and stays exported for the home, the remote's key and the control center",
+      "android.intent.category.LAUNCHER" in hub_block and "LEANBACK_LAUNCHER" in hub_block
+      and "LAUNCHER" not in man.split('android:name=".SettingsActivity"')[1].split("/>")[0].split("</activity>")[0]
+      and re.search(r'android:name="\.SettingsActivity"\s+android:exported="true"', man) is not None)
+check("four windows in this order (from the start side): الأسواق, المباريات, الألعاب, الإعدادات, each with a mark and a colour",
+      [w for w in re.findall(r'\{"(\w+)", "([^"]+)", "(\w+)", "(#[0-9A-F]{6})"\}', hub)] == [("markets", "الأسواق", "ic_hub_markets", "#14705A"), ("matches", "المباريات", "ic_hub_matches", "#1F5FBF"), ("games", "الألعاب", "ic_hub_games", "#7B3FC9"), ("settings", "الإعدادات", "ic_settings", "#5B6677")])
+check("the marks are different silhouettes (bars, a ball, a die, a gear), solid, white, each a file of its own",
+      all((res / f"{n}.xml").is_file() for n in ("ic_hub_markets", "ic_hub_matches", "ic_hub_games", "ic_settings"))
+      and len({(res / f"{n}.xml").read_text() for n in ("ic_hub_markets", "ic_hub_matches", "ic_hub_games")}) == 3)
+check("«الألعاب» says «قريبًا» and shows a short notice until the games land (GAMES_READY off), and is still a window with its focus",
+      "static final boolean GAMES_READY = false;" in hub and '"قريبًا"' in hub and "Toast.makeText(this, Words.of(\"قريبًا\")" in hub)
+check("the markets and the matches open the home app's own pages (class names as the settings' rows use), the fourth window the settings",
+      'setClassName("sa.urtv.home", "sa.urtv.home.MarketsActivity")' in hub and 'setClassName("sa.urtv.home", "sa.urtv.home.MatchesActivity")' in hub
+      and "new Intent(this, SettingsActivity.class)" in hub)
+check("no second hub: the home's settings paths still open SettingsActivity itself (not the hub)",
+      'SAVER_PKG + ".SettingsActivity"' in home and "YourTvHub" not in home)
+check("the same page as the settings: GlassSource.page, the 44 sp title «تلفزيونك», 8 dp inside, 5 % under the hint, 12 dp between the tiles, the glass tile's focus (GlassPaint.card 14)",
+      "GlassSource.page(this, root)" in hub and "TypedValue.COMPLEX_UNIT_SP, 44" in hub and "page.setPadding(dp(8), dp(32), dp(8), dp(16))" in hub
+      and "heightPixels * 0.05f" in hub and "GlassPaint.card(card, look, 14)" in hub and "setMarginEnd(dp(12))" in hub and "bottomMargin = dp(12)" in hub)
+check("the grid walks by explicit focus ways in both directions (index 0 is the start side: right in Arabic, left in English), no wrapping",
+      all(f in hub for f in ("c.setNextFocusUpId(", "c.setNextFocusDownId(", "c.setNextFocusLeftId(cards.get(rtl ? toEnd : toStart).getId());", "c.setNextFocusRightId(cards.get(rtl ? toStart : toEnd).getId());")))
+check("every word it says is in the English table and in Words (the settings' own mechanism)",
+      all(f'S.n("{w}")' in words for w in ("الألعاب", "قريبًا", "السوق مفتوح", "السوق مغلق", "اختر فرقك", "فرقك أولًا", "تعذّر الفتح"))
+      and all(re.search(rf"(?m)^{w}\t", tsv) for w in ("الألعاب", "قريبًا", "السوق مفتوح", "السوق مغلق", "اختر فرقك", "فرقك أولًا", "تعذّر الفتح", "الأسواق", "المباريات", "الإعدادات", "تلفزيونك")))
+check("no «·» between texts in what it shows", "·" not in re.sub(r"/\*.*?\*/|//[^\n]*", "", hub, flags=re.S))
+if not shutil.which("javac"):
+    print("SKIP market hours: no javac")
+    sys.exit(1 if failed else 0)
+with tempfile.TemporaryDirectory() as tmp:
+    subprocess.run(["javac", "-d", tmp, str(APP / "MarketHours.java"), str(ROOT / "tests/MarketHoursRun.java")], check=True, capture_output=True)
+    cases = [("2026-11-08T07:30:00Z", "open"),    # Sunday 10:30 in Riyadh
+             ("2026-11-08T06:59:00Z", "closed"),  # 09:59
+             ("2026-11-08T11:59:00Z", "open"),    # 14:59
+             ("2026-11-08T12:00:00Z", "closed"),  # 15:00
+             ("2026-11-12T08:00:00Z", "open"),    # Thursday 11:00
+             ("2026-11-13T08:00:00Z", "closed"),  # Friday
+             ("2026-11-14T08:00:00Z", "closed")]  # Saturday
+    out = subprocess.run(["java", "-cp", tmp, "sa.urtv.screensaver.MarketHoursRun"] + [c[0] for c in cases], check=True, capture_output=True, text=True).stdout.split()
+    check("the market's state: Sunday to Thursday 10:00 to 15:00 in Riyadh, closed Friday and Saturday and outside the hours", out == [c[1] for c in cases], out)
+sys.exit(1 if failed else 0)

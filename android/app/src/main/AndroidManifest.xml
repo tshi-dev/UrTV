@@ -67,9 +67,9 @@
         android:allowBackup="false"
         android:theme="@android:style/Theme.Material.NoActionBar">
 
-        <!-- opening the app shows its settings -->
+        <!-- opening the app shows «تلفزيونك»: four windows (the markets, the matches, the games, the settings) -->
         <activity
-            android:name=".SettingsActivity"
+            android:name=".YourTvHubActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -77,6 +77,11 @@
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- the settings: the hub's fourth window, and where the remote's Settings key, the control center and the home's settings button go -->
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="true" />
 
         <!-- «صور شاشة التوقف»: the photo packs, opened from the settings only -->
         <activity android:name=".PhotoPacksActivity" android:exported="false" />
