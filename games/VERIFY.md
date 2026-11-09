@@ -2,7 +2,7 @@
 
 ## Status
 
-**923 verified items** in `games/data/` (quiz 735, true/false 188). The target of 1500 was **not reached**. Categories with nothing yet: Arabic language and proverbs, maths and logic, sports, kids-only, riddles, estimation, word game, charades and describe-the-word lists, topics for the odd-one-out game. They are not faked: nothing is shipped that was not checked.
+**1057 verified items** in `games/data/` (quiz 841, true/false 188, riddle 18, estimate 10): geography 663, science 143, maths and logic 124, Islamic 75, Saudi and Gulf 25, animals 18, food 5, history 4. The target of 1500 was **not reached**. Categories with nothing yet: Arabic language and proverbs, maths and logic, sports, kids-only, riddles, estimation, word game, charades and describe-the-word lists, topics for the odd-one-out game. They are not faked: nothing is shipped that was not checked.
 
 | Category | Kept | Dropped | How checked |
 |---|---|---|---|
@@ -11,7 +11,8 @@
 | Islamic general knowledge | 75 | 0 | Quran order and name from api.alquran.cloud (Tanzil text); verse counts also require the surah's ar.wikipedia intro to state the same number (86 of 114 surahs agreed, 28 left out); seerah and worship facts from English Wikipedia, with a regular expression that must match the page |
 | Saudi and Gulf | 25 | 0 | Wikipedia (city intros), Wikidata |
 | animals / food / history | 8 / 5 / 4 | 1 (planet count, second source did not say it) | Wikipedia intro regex |
-| maths and logic, language, proverbs, sports, kids | 0 | 0 | not started |
+| maths and logic | 124 | 0 | computed: the script calculates every answer (tables, sums, fractions, percentages, sequences, handshakes, ages, clock angles) and riddles are solved by a search that must find exactly one solution; sources read `computed:<rule>` and are allowed only in this category |
+| language, proverbs, sports | 0 | 0 | not started: no reachable page lists Arabic proverbs or sports facts that do not go stale |
 
 Left out on purpose, never asked: Israel and Taiwan (not listed as a country), Palestine and Western Sahara (no entry), countries with more than one capital or a disputed seat (Bolivia, South Africa, Sri Lanka, Eswatini, Ivory Coast, Benin, Tanzania, Malaysia, Switzerland, Montenegro, Netherlands), and Georgia (the name also means a US state). Left out for staleness: current leaders, champions, prices, population, records that change (tallest, longest, largest by area).
 
@@ -52,3 +53,7 @@ Honest limits of this batch:
 - The word5 answers are family-safe by our choice of topics and a blocklist, but a native reader should skim the lists.
 - Wikipedia (and Wikidata) wording for the sayings deck is the repo's; no new proverbs were added because no reachable page lists Arabic proverbs.
 - بلوت and جاكارو: notes only (`RULES.md`), no spec, by the owner's decision.
+
+## Rebalance (third batch)
+
+Maths and logic (124) and animal classes (16 new: Wikidata taxonomy puts the species under exactly one of mammals, birds, reptiles, amphibians, fish; unclear ones are dropped) were added to move the bank away from geography. Geography is still 63 percent of the bank. More science, animals, history and Arabic language need more reachable sources (a second encyclopaedia, a proverb list); the builders are ready, only sources are missing. Screens against the specs: `games/SCREENS.md`.

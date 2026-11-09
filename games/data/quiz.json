@@ -25023,5 +25023,3503 @@
 "cooked, mashed chickpeas"
 ],
 "verified": true
+},
+{
+"id": "mt-mul-6x7",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٦ × ٧؟",
+"en": "What is 6 × 7?"
+},
+"answer": {
+"ar": "٤٢",
+"en": "42"
+},
+"wrong": [
+{
+"ar": "٣٤",
+"en": "34"
+},
+{
+"ar": "٤٣",
+"en": "43"
+},
+{
+"ar": "٥٠",
+"en": "50"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-mul-7x8",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٧ × ٨؟",
+"en": "What is 7 × 8?"
+},
+"answer": {
+"ar": "٥٦",
+"en": "56"
+},
+"wrong": [
+{
+"ar": "٤٦",
+"en": "46"
+},
+{
+"ar": "٥٧",
+"en": "57"
+},
+{
+"ar": "٦٤",
+"en": "64"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-mul-8x9",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٨ × ٩؟",
+"en": "What is 8 × 9?"
+},
+"answer": {
+"ar": "٧٢",
+"en": "72"
+},
+"wrong": [
+{
+"ar": "٦٢",
+"en": "62"
+},
+{
+"ar": "٧٨",
+"en": "78"
+},
+{
+"ar": "٨٢",
+"en": "82"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-mul-6x8",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٦ × ٨؟",
+"en": "What is 6 × 8?"
+},
+"answer": {
+"ar": "٤٨",
+"en": "48"
+},
+"wrong": [
+{
+"ar": "٣٨",
+"en": "38"
+},
+{
+"ar": "٥٤",
+"en": "54"
+},
+{
+"ar": "٥٦",
+"en": "56"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-mul-9x9",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٩ × ٩؟",
+"en": "What is 9 × 9?"
+},
+"answer": {
+"ar": "٨١",
+"en": "81"
+},
+"wrong": [
+{
+"ar": "٧٧",
+"en": "77"
+},
+{
+"ar": "٨٥",
+"en": "85"
+},
+{
+"ar": "٨٩",
+"en": "89"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-mul-7x7",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٧ × ٧؟",
+"en": "What is 7 × 7?"
+},
+"answer": {
+"ar": "٤٩",
+"en": "49"
+},
+"wrong": [
+{
+"ar": "٤٣",
+"en": "43"
+},
+{
+"ar": "٤٥",
+"en": "45"
+},
+{
+"ar": "٥٩",
+"en": "59"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-mul-12x5",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ١٢ × ٥؟",
+"en": "What is 12 × 5?"
+},
+"answer": {
+"ar": "٦٠",
+"en": "60"
+},
+"wrong": [
+{
+"ar": "٥٠",
+"en": "50"
+},
+{
+"ar": "٦١",
+"en": "61"
+},
+{
+"ar": "٧٠",
+"en": "70"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-mul-11x6",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ١١ × ٦؟",
+"en": "What is 11 × 6?"
+},
+"answer": {
+"ar": "٦٦",
+"en": "66"
+},
+"wrong": [
+{
+"ar": "٥٦",
+"en": "56"
+},
+{
+"ar": "٦٢",
+"en": "62"
+},
+{
+"ar": "٧٠",
+"en": "70"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-mul-9x6",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٩ × ٦؟",
+"en": "What is 9 × 6?"
+},
+"answer": {
+"ar": "٥٤",
+"en": "54"
+},
+"wrong": [
+{
+"ar": "٥٨",
+"en": "58"
+},
+{
+"ar": "٦٢",
+"en": "62"
+},
+{
+"ar": "٦٤",
+"en": "64"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-mul-8x8",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٨ × ٨؟",
+"en": "What is 8 × 8?"
+},
+"answer": {
+"ar": "٦٤",
+"en": "64"
+},
+"wrong": [
+{
+"ar": "٥٨",
+"en": "58"
+},
+{
+"ar": "٦٢",
+"en": "62"
+},
+{
+"ar": "٧٠",
+"en": "70"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-mul-12x12",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ١٢ × ١٢؟",
+"en": "What is 12 × 12?"
+},
+"answer": {
+"ar": "١٤٤",
+"en": "144"
+},
+"wrong": [
+{
+"ar": "١٣٨",
+"en": "138"
+},
+{
+"ar": "١٤٢",
+"en": "142"
+},
+{
+"ar": "١٤٥",
+"en": "145"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-mul-7x9",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٧ × ٩؟",
+"en": "What is 7 × 9?"
+},
+"answer": {
+"ar": "٦٣",
+"en": "63"
+},
+"wrong": [
+{
+"ar": "٦٢",
+"en": "62"
+},
+{
+"ar": "٦٥",
+"en": "65"
+},
+{
+"ar": "٦٧",
+"en": "67"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-mul-6x9",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٦ × ٩؟",
+"en": "What is 6 × 9?"
+},
+"answer": {
+"ar": "٥٤",
+"en": "54"
+},
+"wrong": [
+{
+"ar": "٥٢",
+"en": "52"
+},
+{
+"ar": "٥٣",
+"en": "53"
+},
+{
+"ar": "٥٥",
+"en": "55"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-mul-13x4",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ١٣ × ٤؟",
+"en": "What is 13 × 4?"
+},
+"answer": {
+"ar": "٥٢",
+"en": "52"
+},
+"wrong": [
+{
+"ar": "٤٢",
+"en": "42"
+},
+{
+"ar": "٥٤",
+"en": "54"
+},
+{
+"ar": "٥٨",
+"en": "58"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-mul-15x3",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ١٥ × ٣؟",
+"en": "What is 15 × 3?"
+},
+"answer": {
+"ar": "٤٥",
+"en": "45"
+},
+"wrong": [
+{
+"ar": "٤١",
+"en": "41"
+},
+{
+"ar": "٤٣",
+"en": "43"
+},
+{
+"ar": "٤٤",
+"en": "44"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-mul-14x5",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ١٤ × ٥؟",
+"en": "What is 14 × 5?"
+},
+"answer": {
+"ar": "٧٠",
+"en": "70"
+},
+"wrong": [
+{
+"ar": "٦٦",
+"en": "66"
+},
+{
+"ar": "٧٢",
+"en": "72"
+},
+{
+"ar": "٧٨",
+"en": "78"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-mul-25x4",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٢٥ × ٤؟",
+"en": "What is 25 × 4?"
+},
+"answer": {
+"ar": "١٠٠",
+"en": "100"
+},
+"wrong": [
+{
+"ar": "٩٢",
+"en": "92"
+},
+{
+"ar": "١٠١",
+"en": "101"
+},
+{
+"ar": "١٠٤",
+"en": "104"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-mul-16x5",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ١٦ × ٥؟",
+"en": "What is 16 × 5?"
+},
+"answer": {
+"ar": "٨٠",
+"en": "80"
+},
+"wrong": [
+{
+"ar": "٧٠",
+"en": "70"
+},
+{
+"ar": "٧٨",
+"en": "78"
+},
+{
+"ar": "٧٩",
+"en": "79"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-div-48-6",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٤٨ ÷ ٦؟",
+"en": "What is 48 ÷ 6?"
+},
+"answer": {
+"ar": "٨",
+"en": "8"
+},
+"wrong": [
+{
+"ar": "٧",
+"en": "7"
+},
+{
+"ar": "١٠",
+"en": "10"
+},
+{
+"ar": "١٢",
+"en": "12"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-div-72-8",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٧٢ ÷ ٨؟",
+"en": "What is 72 ÷ 8?"
+},
+"answer": {
+"ar": "٩",
+"en": "9"
+},
+"wrong": [
+{
+"ar": "٥",
+"en": "5"
+},
+{
+"ar": "٨",
+"en": "8"
+},
+{
+"ar": "١١",
+"en": "11"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-div-56-7",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٥٦ ÷ ٧؟",
+"en": "What is 56 ÷ 7?"
+},
+"answer": {
+"ar": "٨",
+"en": "8"
+},
+"wrong": [
+{
+"ar": "٥",
+"en": "5"
+},
+{
+"ar": "٦",
+"en": "6"
+},
+{
+"ar": "٩",
+"en": "9"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-div-81-9",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٨١ ÷ ٩؟",
+"en": "What is 81 ÷ 9?"
+},
+"answer": {
+"ar": "٩",
+"en": "9"
+},
+"wrong": [
+{
+"ar": "٦",
+"en": "6"
+},
+{
+"ar": "١٢",
+"en": "12"
+},
+{
+"ar": "١٣",
+"en": "13"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-div-144-12",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ١٤٤ ÷ ١٢؟",
+"en": "What is 144 ÷ 12?"
+},
+"answer": {
+"ar": "١٢",
+"en": "12"
+},
+"wrong": [
+{
+"ar": "٩",
+"en": "9"
+},
+{
+"ar": "١٣",
+"en": "13"
+},
+{
+"ar": "١٦",
+"en": "16"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-div-63-7",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٦٣ ÷ ٧؟",
+"en": "What is 63 ÷ 7?"
+},
+"answer": {
+"ar": "٩",
+"en": "9"
+},
+"wrong": [
+{
+"ar": "٨",
+"en": "8"
+},
+{
+"ar": "١١",
+"en": "11"
+},
+{
+"ar": "١٣",
+"en": "13"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-div-96-8",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٩٦ ÷ ٨؟",
+"en": "What is 96 ÷ 8?"
+},
+"answer": {
+"ar": "١٢",
+"en": "12"
+},
+"wrong": [
+{
+"ar": "١٠",
+"en": "10"
+},
+{
+"ar": "١٤",
+"en": "14"
+},
+{
+"ar": "١٦",
+"en": "16"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-div-120-10",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ١٢٠ ÷ ١٠؟",
+"en": "What is 120 ÷ 10?"
+},
+"answer": {
+"ar": "١٢",
+"en": "12"
+},
+"wrong": [
+{
+"ar": "٨",
+"en": "8"
+},
+{
+"ar": "١٤",
+"en": "14"
+},
+{
+"ar": "١٥",
+"en": "15"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-div-45-5",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٤٥ ÷ ٥؟",
+"en": "What is 45 ÷ 5?"
+},
+"answer": {
+"ar": "٩",
+"en": "9"
+},
+"wrong": [
+{
+"ar": "٦",
+"en": "6"
+},
+{
+"ar": "٨",
+"en": "8"
+},
+{
+"ar": "١٢",
+"en": "12"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-add-47-38",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٤٧ + ٣٨؟",
+"en": "What is 47 + 38?"
+},
+"answer": {
+"ar": "٨٥",
+"en": "85"
+},
+"wrong": [
+{
+"ar": "٧٥",
+"en": "75"
+},
+{
+"ar": "٨٣",
+"en": "83"
+},
+{
+"ar": "١٠٥",
+"en": "105"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-add-56-29",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٥٦ + ٢٩؟",
+"en": "What is 56 + 29?"
+},
+"answer": {
+"ar": "٨٥",
+"en": "85"
+},
+"wrong": [
+{
+"ar": "٧٥",
+"en": "75"
+},
+{
+"ar": "٨٧",
+"en": "87"
+},
+{
+"ar": "٩٥",
+"en": "95"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-add-68-17",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٦٨ + ١٧؟",
+"en": "What is 68 + 17?"
+},
+"answer": {
+"ar": "٨٥",
+"en": "85"
+},
+"wrong": [
+{
+"ar": "٧٥",
+"en": "75"
+},
+{
+"ar": "٨٣",
+"en": "83"
+},
+{
+"ar": "٨٤",
+"en": "84"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-add-95-26",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٩٥ + ٢٦؟",
+"en": "What is 95 + 26?"
+},
+"answer": {
+"ar": "١٢١",
+"en": "121"
+},
+"wrong": [
+{
+"ar": "١١٩",
+"en": "119"
+},
+{
+"ar": "١٣١",
+"en": "131"
+},
+{
+"ar": "١٤١",
+"en": "141"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-add-134-59",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ١٣٤ + ٥٩؟",
+"en": "What is 134 + 59?"
+},
+"answer": {
+"ar": "١٩٣",
+"en": "193"
+},
+"wrong": [
+{
+"ar": "١٧٣",
+"en": "173"
+},
+{
+"ar": "١٩٥",
+"en": "195"
+},
+{
+"ar": "٢٠٣",
+"en": "203"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-add-205-98",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٢٠٥ + ٩٨؟",
+"en": "What is 205 + 98?"
+},
+"answer": {
+"ar": "٣٠٣",
+"en": "303"
+},
+"wrong": [
+{
+"ar": "٣٠١",
+"en": "301"
+},
+{
+"ar": "٣٠٢",
+"en": "302"
+},
+{
+"ar": "٣٠٥",
+"en": "305"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-add-76-87",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٧٦ + ٨٧؟",
+"en": "What is 76 + 87?"
+},
+"answer": {
+"ar": "١٦٣",
+"en": "163"
+},
+"wrong": [
+{
+"ar": "١٤٣",
+"en": "143"
+},
+{
+"ar": "١٦١",
+"en": "161"
+},
+{
+"ar": "١٨٣",
+"en": "183"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-add-350-275",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٣٥٠ + ٢٧٥؟",
+"en": "What is 350 + 275?"
+},
+"answer": {
+"ar": "٦٢٥",
+"en": "625"
+},
+"wrong": [
+{
+"ar": "٦١٥",
+"en": "615"
+},
+{
+"ar": "٦٢٣",
+"en": "623"
+},
+{
+"ar": "٦٢٦",
+"en": "626"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-sub-91-38",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٩١ − ٣٨؟",
+"en": "What is 91 − 38?"
+},
+"answer": {
+"ar": "٥٣",
+"en": "53"
+},
+"wrong": [
+{
+"ar": "٥٢",
+"en": "52"
+},
+{
+"ar": "٥٤",
+"en": "54"
+},
+{
+"ar": "٥٥",
+"en": "55"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-sub-100-47",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ١٠٠ − ٤٧؟",
+"en": "What is 100 − 47?"
+},
+"answer": {
+"ar": "٥٣",
+"en": "53"
+},
+"wrong": [
+{
+"ar": "٣٣",
+"en": "33"
+},
+{
+"ar": "٥٤",
+"en": "54"
+},
+{
+"ar": "٥٥",
+"en": "55"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-sub-83-29",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٨٣ − ٢٩؟",
+"en": "What is 83 − 29?"
+},
+"answer": {
+"ar": "٥٤",
+"en": "54"
+},
+"wrong": [
+{
+"ar": "٥٦",
+"en": "56"
+},
+{
+"ar": "٦٤",
+"en": "64"
+},
+{
+"ar": "٧٤",
+"en": "74"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-sub-250-175",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٢٥٠ − ١٧٥؟",
+"en": "What is 250 − 175?"
+},
+"answer": {
+"ar": "٧٥",
+"en": "75"
+},
+"wrong": [
+{
+"ar": "٧٣",
+"en": "73"
+},
+{
+"ar": "٨٥",
+"en": "85"
+},
+{
+"ar": "٩٥",
+"en": "95"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-sub-500-123",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٥٠٠ − ١٢٣؟",
+"en": "What is 500 − 123?"
+},
+"answer": {
+"ar": "٣٧٧",
+"en": "377"
+},
+"wrong": [
+{
+"ar": "٣٥٧",
+"en": "357"
+},
+{
+"ar": "٣٦٧",
+"en": "367"
+},
+{
+"ar": "٣٧٩",
+"en": "379"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-sub-72-45",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٧٢ − ٤٥؟",
+"en": "What is 72 − 45?"
+},
+"answer": {
+"ar": "٢٧",
+"en": "27"
+},
+"wrong": [
+{
+"ar": "٢٥",
+"en": "25"
+},
+{
+"ar": "٢٦",
+"en": "26"
+},
+{
+"ar": "٣٧",
+"en": "37"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-sub-64-38",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما ناتج ٦٤ − ٣٨؟",
+"en": "What is 64 − 38?"
+},
+"answer": {
+"ar": "٢٦",
+"en": "26"
+},
+"wrong": [
+{
+"ar": "٢٥",
+"en": "25"
+},
+{
+"ar": "٢٧",
+"en": "27"
+},
+{
+"ar": "٢٨",
+"en": "28"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-frac-80-12",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم يساوي نصف العدد ٨٠؟",
+"en": "What is half of 80?"
+},
+"answer": {
+"ar": "٤٠",
+"en": "40"
+},
+"wrong": [
+{
+"ar": "٣٠",
+"en": "30"
+},
+{
+"ar": "٤٢",
+"en": "42"
+},
+{
+"ar": "٤٥",
+"en": "45"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-frac-80-14",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم يساوي ربع العدد ٨٠؟",
+"en": "What is a quarter of 80?"
+},
+"answer": {
+"ar": "٢٠",
+"en": "20"
+},
+"wrong": [
+{
+"ar": "١٠",
+"en": "10"
+},
+{
+"ar": "٢٢",
+"en": "22"
+},
+{
+"ar": "٢٥",
+"en": "25"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-frac-60-13",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم يساوي ثلث العدد ٦٠؟",
+"en": "What is a third of 60?"
+},
+"answer": {
+"ar": "٢٠",
+"en": "20"
+},
+"wrong": [
+{
+"ar": "١٥",
+"en": "15"
+},
+{
+"ar": "١٧",
+"en": "17"
+},
+{
+"ar": "٢٥",
+"en": "25"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-frac-200-15",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم يساوي خُمس العدد ٢٠٠؟",
+"en": "What is a fifth of 200?"
+},
+"answer": {
+"ar": "٤٠",
+"en": "40"
+},
+"wrong": [
+{
+"ar": "٣٥",
+"en": "35"
+},
+{
+"ar": "٤٢",
+"en": "42"
+},
+{
+"ar": "٥٠",
+"en": "50"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-frac-90-110",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم يساوي عُشر العدد ٩٠؟",
+"en": "What is a tenth of 90?"
+},
+"answer": {
+"ar": "٩",
+"en": "9"
+},
+"wrong": [
+{
+"ar": "٧",
+"en": "7"
+},
+{
+"ar": "١٢",
+"en": "12"
+},
+{
+"ar": "١٤",
+"en": "14"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-frac-120-34",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم يساوي ثلاثة أرباع العدد ١٢٠؟",
+"en": "What is three quarters of 120?"
+},
+"answer": {
+"ar": "٩٠",
+"en": "90"
+},
+"wrong": [
+{
+"ar": "٨٨",
+"en": "88"
+},
+{
+"ar": "٩٥",
+"en": "95"
+},
+{
+"ar": "١٠٠",
+"en": "100"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-frac-48-23",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم يساوي ثلثا العدد ٤٨؟",
+"en": "What is two thirds of 48?"
+},
+"answer": {
+"ar": "٣٢",
+"en": "32"
+},
+"wrong": [
+{
+"ar": "٢٧",
+"en": "27"
+},
+{
+"ar": "٢٩",
+"en": "29"
+},
+{
+"ar": "٣٠",
+"en": "30"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-pct-200-10",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم يساوي ١٠٪ من ٢٠٠؟",
+"en": "What is 10% of 200?"
+},
+"answer": {
+"ar": "٢٠",
+"en": "20"
+},
+"wrong": [
+{
+"ar": "١٠",
+"en": "10"
+},
+{
+"ar": "١٥",
+"en": "15"
+},
+{
+"ar": "٣٠",
+"en": "30"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-pct-50-20",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم يساوي ٢٠٪ من ٥٠؟",
+"en": "What is 20% of 50?"
+},
+"answer": {
+"ar": "١٠",
+"en": "10"
+},
+"wrong": [
+{
+"ar": "٥",
+"en": "5"
+},
+{
+"ar": "٨",
+"en": "8"
+},
+{
+"ar": "١٢",
+"en": "12"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-pct-80-25",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم يساوي ٢٥٪ من ٨٠؟",
+"en": "What is 25% of 80?"
+},
+"answer": {
+"ar": "٢٠",
+"en": "20"
+},
+"wrong": [
+{
+"ar": "١٠",
+"en": "10"
+},
+{
+"ar": "٢٢",
+"en": "22"
+},
+{
+"ar": "٣٠",
+"en": "30"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-pct-300-50",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم يساوي ٥٠٪ من ٣٠٠؟",
+"en": "What is 50% of 300?"
+},
+"answer": {
+"ar": "١٥٠",
+"en": "150"
+},
+"wrong": [
+{
+"ar": "١٤٨",
+"en": "148"
+},
+{
+"ar": "١٥٥",
+"en": "155"
+},
+{
+"ar": "١٦٠",
+"en": "160"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-pct-40-5",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم يساوي ٥٪ من ٤٠؟",
+"en": "What is 5% of 40?"
+},
+"answer": {
+"ar": "٢",
+"en": "2"
+},
+"wrong": [
+{
+"ar": "٤",
+"en": "4"
+},
+{
+"ar": "٧",
+"en": "7"
+},
+{
+"ar": "١٢",
+"en": "12"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-pct-250-10",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم يساوي ١٠٪ من ٢٥٠؟",
+"en": "What is 10% of 250?"
+},
+"answer": {
+"ar": "٢٥",
+"en": "25"
+},
+"wrong": [
+{
+"ar": "٢٣",
+"en": "23"
+},
+{
+"ar": "٢٧",
+"en": "27"
+},
+{
+"ar": "٣٠",
+"en": "30"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-pct-120-25",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم يساوي ٢٥٪ من ١٢٠؟",
+"en": "What is 25% of 120?"
+},
+"answer": {
+"ar": "٣٠",
+"en": "30"
+},
+"wrong": [
+{
+"ar": "٢٠",
+"en": "20"
+},
+{
+"ar": "٢٥",
+"en": "25"
+},
+{
+"ar": "٢٨",
+"en": "28"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-pct-60-50",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "كم يساوي ٥٠٪ من ٦٠؟",
+"en": "What is 50% of 60?"
+},
+"answer": {
+"ar": "٣٠",
+"en": "30"
+},
+"wrong": [
+{
+"ar": "٢٨",
+"en": "28"
+},
+{
+"ar": "٣٥",
+"en": "35"
+},
+{
+"ar": "٤٠",
+"en": "40"
+}
+],
+"source": [
+"computed:arithmetic"
+],
+"verified": true
+},
+{
+"id": "mt-seq-arith2_3",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "ما العدد التالي في المتتالية: ٢، ٥، ٨، ١١، ...؟",
+"en": "What number comes next: 2, 5, 8, 11, ...?"
+},
+"answer": {
+"ar": "١٤",
+"en": "14"
+},
+"wrong": [
+{
+"ar": "١١",
+"en": "11"
+},
+{
+"ar": "١٥",
+"en": "15"
+},
+{
+"ar": "٢٠",
+"en": "20"
+}
+],
+"source": [
+"computed:sequence"
+],
+"verified": true
+},
+{
+"id": "mt-seq-arith5_5",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "ما العدد التالي في المتتالية: ٥، ١٠، ١٥، ٢٠، ...؟",
+"en": "What number comes next: 5, 10, 15, 20, ...?"
+},
+"answer": {
+"ar": "٢٥",
+"en": "25"
+},
+"wrong": [
+{
+"ar": "٢٣",
+"en": "23"
+},
+{
+"ar": "٢٨",
+"en": "28"
+},
+{
+"ar": "٢٩",
+"en": "29"
+}
+],
+"source": [
+"computed:sequence"
+],
+"verified": true
+},
+{
+"id": "mt-seq-arith10_7",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "ما العدد التالي في المتتالية: ١٠، ١٧، ٢٤، ٣١، ...؟",
+"en": "What number comes next: 10, 17, 24, 31, ...?"
+},
+"answer": {
+"ar": "٣٨",
+"en": "38"
+},
+"wrong": [
+{
+"ar": "٣٤",
+"en": "34"
+},
+{
+"ar": "٣٩",
+"en": "39"
+},
+{
+"ar": "٤٤",
+"en": "44"
+}
+],
+"source": [
+"computed:sequence"
+],
+"verified": true
+},
+{
+"id": "mt-seq-arith3_4",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "ما العدد التالي في المتتالية: ٣، ٧، ١١، ١٥، ...؟",
+"en": "What number comes next: 3, 7, 11, 15, ...?"
+},
+"answer": {
+"ar": "١٩",
+"en": "19"
+},
+"wrong": [
+{
+"ar": "١٨",
+"en": "18"
+},
+{
+"ar": "٢٠",
+"en": "20"
+},
+{
+"ar": "٢٣",
+"en": "23"
+}
+],
+"source": [
+"computed:sequence"
+],
+"verified": true
+},
+{
+"id": "mt-seq-arith1_9",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "ما العدد التالي في المتتالية: ١، ١٠، ١٩، ٢٨، ...؟",
+"en": "What number comes next: 1, 10, 19, 28, ...?"
+},
+"answer": {
+"ar": "٣٧",
+"en": "37"
+},
+"wrong": [
+{
+"ar": "٣٦",
+"en": "36"
+},
+{
+"ar": "٤١",
+"en": "41"
+},
+{
+"ar": "٤٣",
+"en": "43"
+}
+],
+"source": [
+"computed:sequence"
+],
+"verified": true
+},
+{
+"id": "mt-seq-arith100_-8",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "ما العدد التالي في المتتالية: ١٠٠، ٩٢، ٨٤، ٧٦، ...؟",
+"en": "What number comes next: 100, 92, 84, 76, ...?"
+},
+"answer": {
+"ar": "٦٨",
+"en": "68"
+},
+"wrong": [
+{
+"ar": "٦٦",
+"en": "66"
+},
+{
+"ar": "٧١",
+"en": "71"
+},
+{
+"ar": "٧٤",
+"en": "74"
+}
+],
+"source": [
+"computed:sequence"
+],
+"verified": true
+},
+{
+"id": "mt-seq-arith50_-6",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "ما العدد التالي في المتتالية: ٥٠، ٤٤، ٣٨، ٣٢، ...؟",
+"en": "What number comes next: 50, 44, 38, 32, ...?"
+},
+"answer": {
+"ar": "٢٦",
+"en": "26"
+},
+"wrong": [
+{
+"ar": "٢٢",
+"en": "22"
+},
+{
+"ar": "٢٨",
+"en": "28"
+},
+{
+"ar": "٣٠",
+"en": "30"
+}
+],
+"source": [
+"computed:sequence"
+],
+"verified": true
+},
+{
+"id": "mt-seq-arith7_11",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "ما العدد التالي في المتتالية: ٧، ١٨، ٢٩، ٤٠، ...؟",
+"en": "What number comes next: 7, 18, 29, 40, ...?"
+},
+"answer": {
+"ar": "٥١",
+"en": "51"
+},
+"wrong": [
+{
+"ar": "٥٣",
+"en": "53"
+},
+{
+"ar": "٥٤",
+"en": "54"
+},
+{
+"ar": "٥٧",
+"en": "57"
+}
+],
+"source": [
+"computed:sequence"
+],
+"verified": true
+},
+{
+"id": "mt-seq-geo1_2",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما العدد التالي في المتتالية: ١، ٢، ٤، ٨، ...؟",
+"en": "What number comes next: 1, 2, 4, 8, ...?"
+},
+"answer": {
+"ar": "١٦",
+"en": "16"
+},
+"wrong": [
+{
+"ar": "١٠",
+"en": "10"
+},
+{
+"ar": "٢٠",
+"en": "20"
+},
+{
+"ar": "٢٢",
+"en": "22"
+}
+],
+"source": [
+"computed:sequence"
+],
+"verified": true
+},
+{
+"id": "mt-seq-geo3_2",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما العدد التالي في المتتالية: ٣، ٦، ١٢، ٢٤، ...؟",
+"en": "What number comes next: 3, 6, 12, 24, ...?"
+},
+"answer": {
+"ar": "٤٨",
+"en": "48"
+},
+"wrong": [
+{
+"ar": "٤٢",
+"en": "42"
+},
+{
+"ar": "٤٥",
+"en": "45"
+},
+{
+"ar": "٥٤",
+"en": "54"
+}
+],
+"source": [
+"computed:sequence"
+],
+"verified": true
+},
+{
+"id": "mt-seq-geo2_3",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما العدد التالي في المتتالية: ٢، ٦، ١٨، ٥٤، ...؟",
+"en": "What number comes next: 2, 6, 18, 54, ...?"
+},
+"answer": {
+"ar": "١٦٢",
+"en": "162"
+},
+"wrong": [
+{
+"ar": "١٦٣",
+"en": "163"
+},
+{
+"ar": "١٦٤",
+"en": "164"
+},
+{
+"ar": "١٦٨",
+"en": "168"
+}
+],
+"source": [
+"computed:sequence"
+],
+"verified": true
+},
+{
+"id": "mt-seq-geo5_2",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما العدد التالي في المتتالية: ٥، ١٠، ٢٠، ٤٠، ...؟",
+"en": "What number comes next: 5, 10, 20, 40, ...?"
+},
+"answer": {
+"ar": "٨٠",
+"en": "80"
+},
+"wrong": [
+{
+"ar": "٧٦",
+"en": "76"
+},
+{
+"ar": "٧٨",
+"en": "78"
+},
+{
+"ar": "٧٩",
+"en": "79"
+}
+],
+"source": [
+"computed:sequence"
+],
+"verified": true
+},
+{
+"id": "mt-seq-geo1_3",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما العدد التالي في المتتالية: ١، ٣، ٩، ٢٧، ...؟",
+"en": "What number comes next: 1, 3, 9, 27, ...?"
+},
+"answer": {
+"ar": "٨١",
+"en": "81"
+},
+"wrong": [
+{
+"ar": "٨٣",
+"en": "83"
+},
+{
+"ar": "٨٥",
+"en": "85"
+},
+{
+"ar": "٨٧",
+"en": "87"
+}
+],
+"source": [
+"computed:sequence"
+],
+"verified": true
+},
+{
+"id": "mt-seq-squares",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "ما العدد التالي في المتتالية: ١، ٤، ٩، ١٦، ...؟",
+"en": "What number comes next: 1, 4, 9, 16, ...?"
+},
+"answer": {
+"ar": "٢٥",
+"en": "25"
+},
+"wrong": [
+{
+"ar": "٢١",
+"en": "21"
+},
+{
+"ar": "٢٣",
+"en": "23"
+},
+{
+"ar": "٢٩",
+"en": "29"
+}
+],
+"source": [
+"computed:sequence"
+],
+"verified": true
+},
+{
+"id": "mt-seq-cubes",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما العدد التالي في المتتالية: ١، ٨، ٢٧، ٦٤، ...؟",
+"en": "What number comes next: 1, 8, 27, 64, ...?"
+},
+"answer": {
+"ar": "١٢٥",
+"en": "125"
+},
+"wrong": [
+{
+"ar": "١٢٤",
+"en": "124"
+},
+{
+"ar": "١٢٨",
+"en": "128"
+},
+{
+"ar": "١٣١",
+"en": "131"
+}
+],
+"source": [
+"computed:sequence"
+],
+"verified": true
+},
+{
+"id": "mt-seq-fib",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما العدد التالي في المتتالية: ١، ١، ٢، ٣، ٥، ٨، ...؟",
+"en": "What number comes next: 1, 1, 2, 3, 5, 8, ...?"
+},
+"answer": {
+"ar": "١٣",
+"en": "13"
+},
+"wrong": [
+{
+"ar": "٩",
+"en": "9"
+},
+{
+"ar": "١٥",
+"en": "15"
+},
+{
+"ar": "١٦",
+"en": "16"
+}
+],
+"source": [
+"computed:sequence"
+],
+"verified": true
+},
+{
+"id": "mt-seq-tri",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما العدد التالي في المتتالية: ١، ٣، ٦، ١٠، ١٥، ...؟",
+"en": "What number comes next: 1, 3, 6, 10, 15, ...?"
+},
+"answer": {
+"ar": "٢١",
+"en": "21"
+},
+"wrong": [
+{
+"ar": "١٧",
+"en": "17"
+},
+{
+"ar": "١٩",
+"en": "19"
+},
+{
+"ar": "٢٠",
+"en": "20"
+}
+],
+"source": [
+"computed:sequence"
+],
+"verified": true
+},
+{
+"id": "mt-seq-pow10",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما العدد التالي في المتتالية: ١، ١٠، ١٠٠، ١٠٠٠، ...؟",
+"en": "What number comes next: 1, 10, 100, 1000, ...?"
+},
+"answer": {
+"ar": "١٠٠٠٠",
+"en": "10000"
+},
+"wrong": [
+{
+"ar": "١٠٠٠١",
+"en": "10001"
+},
+{
+"ar": "١٠٠٠٤",
+"en": "10004"
+},
+{
+"ar": "١٠٠٠٦",
+"en": "10006"
+}
+],
+"source": [
+"computed:sequence"
+],
+"verified": true
+},
+{
+"id": "mt-sides-triangle",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "كم ضلعًا في الشكل المثلث؟",
+"en": "How many sides does a triangle have?"
+},
+"answer": {
+"ar": "٣",
+"en": "3"
+},
+"wrong": [
+{
+"ar": "٤",
+"en": "4"
+},
+{
+"ar": "٥",
+"en": "5"
+},
+{
+"ar": "٦",
+"en": "6"
+}
+],
+"source": [
+"computed:definition"
+],
+"verified": true
+},
+{
+"id": "mt-sides-pentagon",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "kids",
+"question": {
+"ar": "كم ضلعًا في الشكل الخماسي؟",
+"en": "How many sides does a pentagon have?"
+},
+"answer": {
+"ar": "٥",
+"en": "5"
+},
+"wrong": [
+{
+"ar": "٣",
+"en": "3"
+},
+{
+"ar": "٤",
+"en": "4"
+},
+{
+"ar": "٨",
+"en": "8"
+}
+],
+"source": [
+"computed:definition"
+],
+"verified": true
+},
+{
+"id": "mt-sides-hexagon",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "kids",
+"question": {
+"ar": "كم ضلعًا في الشكل السداسي؟",
+"en": "How many sides does a hexagon have?"
+},
+"answer": {
+"ar": "٦",
+"en": "6"
+},
+"wrong": [
+{
+"ar": "٣",
+"en": "3"
+},
+{
+"ar": "٤",
+"en": "4"
+},
+{
+"ar": "٧",
+"en": "7"
+}
+],
+"source": [
+"computed:definition"
+],
+"verified": true
+},
+{
+"id": "mt-sides-octagon",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "kids",
+"question": {
+"ar": "كم ضلعًا في الشكل الثماني؟",
+"en": "How many sides does a octagon have?"
+},
+"answer": {
+"ar": "٨",
+"en": "8"
+},
+"wrong": [
+{
+"ar": "٥",
+"en": "5"
+},
+{
+"ar": "٩",
+"en": "9"
+},
+{
+"ar": "١٠",
+"en": "10"
+}
+],
+"source": [
+"computed:definition"
+],
+"verified": true
+},
+{
+"id": "mt-sides-square",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "كم ضلعًا في الشكل المربع؟",
+"en": "How many sides does a square have?"
+},
+"answer": {
+"ar": "٤",
+"en": "4"
+},
+"wrong": [
+{
+"ar": "٥",
+"en": "5"
+},
+{
+"ar": "٦",
+"en": "6"
+},
+{
+"ar": "٧",
+"en": "7"
+}
+],
+"source": [
+"computed:definition"
+],
+"verified": true
+},
+{
+"id": "mt-perim-5",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما محيط مربع طول ضلعه ٥ سم؟",
+"en": "What is the perimeter of a square with side 5 cm?"
+},
+"answer": {
+"ar": "٢٠",
+"en": "20"
+},
+"wrong": [
+{
+"ar": "١٢",
+"en": "12"
+},
+{
+"ar": "١٨",
+"en": "18"
+},
+{
+"ar": "٢٤",
+"en": "24"
+}
+],
+"source": [
+"computed:geometry"
+],
+"verified": true
+},
+{
+"id": "mt-area-5",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "kids",
+"question": {
+"ar": "ما مساحة مربع طول ضلعه ٥ سم (بالسم المربع)؟",
+"en": "What is the area of a square with side 5 cm (in square cm)?"
+},
+"answer": {
+"ar": "٢٥",
+"en": "25"
+},
+"wrong": [
+{
+"ar": "١٥",
+"en": "15"
+},
+{
+"ar": "١٧",
+"en": "17"
+},
+{
+"ar": "٣٥",
+"en": "35"
+}
+],
+"source": [
+"computed:geometry"
+],
+"verified": true
+},
+{
+"id": "mt-perim-7",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما محيط مربع طول ضلعه ٧ سم؟",
+"en": "What is the perimeter of a square with side 7 cm?"
+},
+"answer": {
+"ar": "٢٨",
+"en": "28"
+},
+"wrong": [
+{
+"ar": "٢٤",
+"en": "24"
+},
+{
+"ar": "٢٦",
+"en": "26"
+},
+{
+"ar": "٣٢",
+"en": "32"
+}
+],
+"source": [
+"computed:geometry"
+],
+"verified": true
+},
+{
+"id": "mt-area-7",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "kids",
+"question": {
+"ar": "ما مساحة مربع طول ضلعه ٧ سم (بالسم المربع)؟",
+"en": "What is the area of a square with side 7 cm (in square cm)?"
+},
+"answer": {
+"ar": "٤٩",
+"en": "49"
+},
+"wrong": [
+{
+"ar": "٣٩",
+"en": "39"
+},
+{
+"ar": "٤٥",
+"en": "45"
+},
+{
+"ar": "٤٧",
+"en": "47"
+}
+],
+"source": [
+"computed:geometry"
+],
+"verified": true
+},
+{
+"id": "mt-perim-9",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما محيط مربع طول ضلعه ٩ سم؟",
+"en": "What is the perimeter of a square with side 9 cm?"
+},
+"answer": {
+"ar": "٣٦",
+"en": "36"
+},
+"wrong": [
+{
+"ar": "٣٢",
+"en": "32"
+},
+{
+"ar": "٣٤",
+"en": "34"
+},
+{
+"ar": "٣٨",
+"en": "38"
+}
+],
+"source": [
+"computed:geometry"
+],
+"verified": true
+},
+{
+"id": "mt-area-9",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "kids",
+"question": {
+"ar": "ما مساحة مربع طول ضلعه ٩ سم (بالسم المربع)؟",
+"en": "What is the area of a square with side 9 cm (in square cm)?"
+},
+"answer": {
+"ar": "٨١",
+"en": "81"
+},
+"wrong": [
+{
+"ar": "٧٧",
+"en": "77"
+},
+{
+"ar": "٧٩",
+"en": "79"
+},
+{
+"ar": "٩١",
+"en": "91"
+}
+],
+"source": [
+"computed:geometry"
+],
+"verified": true
+},
+{
+"id": "mt-perim-12",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما محيط مربع طول ضلعه ١٢ سم؟",
+"en": "What is the perimeter of a square with side 12 cm?"
+},
+"answer": {
+"ar": "٤٨",
+"en": "48"
+},
+"wrong": [
+{
+"ar": "٤٦",
+"en": "46"
+},
+{
+"ar": "٥٠",
+"en": "50"
+},
+{
+"ar": "٥٦",
+"en": "56"
+}
+],
+"source": [
+"computed:geometry"
+],
+"verified": true
+},
+{
+"id": "mt-area-12",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 2,
+"age": "kids",
+"question": {
+"ar": "ما مساحة مربع طول ضلعه ١٢ سم (بالسم المربع)؟",
+"en": "What is the area of a square with side 12 cm (in square cm)?"
+},
+"answer": {
+"ar": "١٤٤",
+"en": "144"
+},
+"wrong": [
+{
+"ar": "١٤٠",
+"en": "140"
+},
+{
+"ar": "١٤٨",
+"en": "148"
+},
+{
+"ar": "١٥٤",
+"en": "154"
+}
+],
+"source": [
+"computed:geometry"
+],
+"verified": true
+},
+{
+"id": "mt-unit-7212e0",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "كم ثانية في الدقيقة الواحدة؟",
+"en": "How many seconds are in one minute?"
+},
+"answer": {
+"ar": "٦٠",
+"en": "60"
+},
+"wrong": [
+{
+"ar": "٣٠",
+"en": "30"
+},
+{
+"ar": "٥٠",
+"en": "50"
+},
+{
+"ar": "٩٠",
+"en": "90"
+}
+],
+"source": [
+"computed:definition"
+],
+"verified": true
+},
+{
+"id": "mt-unit-242832",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "كم دقيقة في الساعة؟",
+"en": "How many minutes are in an hour?"
+},
+"answer": {
+"ar": "٦٠",
+"en": "60"
+},
+"wrong": [
+{
+"ar": "٣٠",
+"en": "30"
+},
+{
+"ar": "١٠٠",
+"en": "100"
+},
+{
+"ar": "١١٠",
+"en": "110"
+}
+],
+"source": [
+"computed:definition"
+],
+"verified": true
+},
+{
+"id": "mt-unit-e83eaa",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "كم ساعة في اليوم؟",
+"en": "How many hours are in a day?"
+},
+"answer": {
+"ar": "٢٤",
+"en": "24"
+},
+"wrong": [
+{
+"ar": "١٤",
+"en": "14"
+},
+{
+"ar": "٥٤",
+"en": "54"
+},
+{
+"ar": "٦٤",
+"en": "64"
+}
+],
+"source": [
+"computed:definition"
+],
+"verified": true
+},
+{
+"id": "mt-unit-fab83e",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "كم يومًا في الأسبوع؟",
+"en": "How many days are in a week?"
+},
+"answer": {
+"ar": "٧",
+"en": "7"
+},
+"wrong": [
+{
+"ar": "٦",
+"en": "6"
+},
+{
+"ar": "٤٧",
+"en": "47"
+},
+{
+"ar": "٥٧",
+"en": "57"
+}
+],
+"source": [
+"computed:definition"
+],
+"verified": true
+},
+{
+"id": "mt-unit-db43db",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "كم متر في الكيلومتر؟",
+"en": "How many metres are in a kilometre?"
+},
+"answer": {
+"ar": "١٠٠٠",
+"en": "1000"
+},
+"wrong": [
+{
+"ar": "٩٦٠",
+"en": "960"
+},
+{
+"ar": "٩٩٧",
+"en": "997"
+},
+{
+"ar": "١٠١٠",
+"en": "1010"
+}
+],
+"source": [
+"computed:definition"
+],
+"verified": true
+},
+{
+"id": "mt-unit-53533d",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "كم سنتيمتر في المتر؟",
+"en": "How many centimetres are in a metre?"
+},
+"answer": {
+"ar": "١٠٠",
+"en": "100"
+},
+"wrong": [
+{
+"ar": "٩٠",
+"en": "90"
+},
+{
+"ar": "١١٠",
+"en": "110"
+},
+{
+"ar": "١٥٠",
+"en": "150"
+}
+],
+"source": [
+"computed:definition"
+],
+"verified": true
+},
+{
+"id": "mt-unit-100578",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "كم جرام في الكيلوجرام؟",
+"en": "How many grams are in a kilogram?"
+},
+"answer": {
+"ar": "١٠٠٠",
+"en": "1000"
+},
+"wrong": [
+{
+"ar": "٩٥٠",
+"en": "950"
+},
+{
+"ar": "١٠١٠",
+"en": "1010"
+},
+{
+"ar": "١٠٤٠",
+"en": "1040"
+}
+],
+"source": [
+"computed:definition"
+],
+"verified": true
+},
+{
+"id": "mt-unit-adb3a1",
+"type": "quiz",
+"category": "maths-logic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "كم أسبوع في السنة تقريبًا؟",
+"en": "About how many weeks are in a year?"
+},
+"answer": {
+"ar": "٥٢",
+"en": "52"
+},
+"wrong": [
+{
+"ar": "٢",
+"en": "2"
+},
+{
+"ar": "٢٢",
+"en": "22"
+},
+{
+"ar": "٥١",
+"en": "51"
+}
+],
+"source": [
+"computed:definition"
+],
+"verified": true
+},
+{
+"id": "an-class-Q140",
+"type": "quiz",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "إلى أي مجموعة ينتمي حيوان أسد؟",
+"en": "Which group does the lion belong to?"
+},
+"answer": {
+"ar": "ثدييات",
+"en": "mammals"
+},
+"wrong": [
+{
+"ar": "طيور",
+"en": "birds"
+},
+{
+"ar": "برمائيات",
+"en": "amphibians"
+},
+{
+"ar": "زواحف",
+"en": "reptiles"
+}
+],
+"source": [
+"https://www.wikidata.org/wiki/Q140"
+],
+"verified": true
+},
+{
+"id": "an-class-Q152",
+"type": "quiz",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "إلى أي مجموعة ينتمي حيوان سمكة؟",
+"en": "Which group does the fish belong to?"
+},
+"answer": {
+"ar": "أسماك",
+"en": "fish"
+},
+"wrong": [
+{
+"ar": "ثدييات",
+"en": "mammals"
+},
+{
+"ar": "طيور",
+"en": "birds"
+},
+{
+"ar": "زواحف",
+"en": "reptiles"
+}
+],
+"source": [
+"https://www.wikidata.org/wiki/Q152"
+],
+"verified": true
+},
+{
+"id": "an-class-Q2934",
+"type": "quiz",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "إلى أي مجموعة ينتمي حيوان ماعز؟",
+"en": "Which group does the goat belong to?"
+},
+"answer": {
+"ar": "ثدييات",
+"en": "mammals"
+},
+"wrong": [
+{
+"ar": "أسماك",
+"en": "fish"
+},
+{
+"ar": "طيور",
+"en": "birds"
+},
+{
+"ar": "برمائيات",
+"en": "amphibians"
+}
+],
+"source": [
+"https://www.wikidata.org/wiki/Q2934"
+],
+"verified": true
+},
+{
+"id": "an-class-Q34706",
+"type": "quiz",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "إلى أي مجموعة ينتمي حيوان نمر؟",
+"en": "Which group does the leopard belong to?"
+},
+"answer": {
+"ar": "ثدييات",
+"en": "mammals"
+},
+"wrong": [
+{
+"ar": "برمائيات",
+"en": "amphibians"
+},
+{
+"ar": "أسماك",
+"en": "fish"
+},
+{
+"ar": "زواحف",
+"en": "reptiles"
+}
+],
+"source": [
+"https://www.wikidata.org/wiki/Q34706"
+],
+"verified": true
+},
+{
+"id": "an-class-Q19707",
+"type": "quiz",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "إلى أي مجموعة ينتمي حيوان حمار؟",
+"en": "Which group does the donkey belong to?"
+},
+"answer": {
+"ar": "ثدييات",
+"en": "mammals"
+},
+"wrong": [
+{
+"ar": "زواحف",
+"en": "reptiles"
+},
+{
+"ar": "طيور",
+"en": "birds"
+},
+{
+"ar": "أسماك",
+"en": "fish"
+}
+],
+"source": [
+"https://www.wikidata.org/wiki/Q19707"
+],
+"verified": true
+},
+{
+"id": "an-class-Q9482",
+"type": "quiz",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "إلى أي مجموعة ينتمي حيوان سنجاب؟",
+"en": "Which group does the squirrel belong to?"
+},
+"answer": {
+"ar": "ثدييات",
+"en": "mammals"
+},
+"wrong": [
+{
+"ar": "برمائيات",
+"en": "amphibians"
+},
+{
+"ar": "أسماك",
+"en": "fish"
+},
+{
+"ar": "زواحف",
+"en": "reptiles"
+}
+],
+"source": [
+"https://www.wikidata.org/wiki/Q9482"
+],
+"verified": true
+},
+{
+"id": "an-class-Q34718",
+"type": "quiz",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "إلى أي مجموعة ينتمي حيوان وحيد القرن؟",
+"en": "Which group does the rhinoceros belong to?"
+},
+"answer": {
+"ar": "ثدييات",
+"en": "mammals"
+},
+"wrong": [
+{
+"ar": "أسماك",
+"en": "fish"
+},
+{
+"ar": "برمائيات",
+"en": "amphibians"
+},
+{
+"ar": "زواحف",
+"en": "reptiles"
+}
+],
+"source": [
+"https://www.wikidata.org/wiki/Q34718"
+],
+"verified": true
+},
+{
+"id": "an-class-Q23907",
+"type": "quiz",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "إلى أي مجموعة ينتمي حيوان فهد؟",
+"en": "Which group does the cheetah belong to?"
+},
+"answer": {
+"ar": "ثدييات",
+"en": "mammals"
+},
+"wrong": [
+{
+"ar": "برمائيات",
+"en": "amphibians"
+},
+{
+"ar": "زواحف",
+"en": "reptiles"
+},
+{
+"ar": "أسماك",
+"en": "fish"
+}
+],
+"source": [
+"https://www.wikidata.org/wiki/Q23907"
+],
+"verified": true
+},
+{
+"id": "an-class-Q862089",
+"type": "quiz",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "إلى أي مجموعة ينتمي حيوان زرافة؟",
+"en": "Which group does the giraffe belong to?"
+},
+"answer": {
+"ar": "ثدييات",
+"en": "mammals"
+},
+"wrong": [
+{
+"ar": "أسماك",
+"en": "fish"
+},
+{
+"ar": "زواحف",
+"en": "reptiles"
+},
+{
+"ar": "برمائيات",
+"en": "amphibians"
+}
+],
+"source": [
+"https://www.wikidata.org/wiki/Q862089"
+],
+"verified": true
+},
+{
+"id": "an-class-Q6120",
+"type": "quiz",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "إلى أي مجموعة ينتمي حيوان قنفذ؟",
+"en": "Which group does the hedgehog belong to?"
+},
+"answer": {
+"ar": "ثدييات",
+"en": "mammals"
+},
+"wrong": [
+{
+"ar": "برمائيات",
+"en": "amphibians"
+},
+{
+"ar": "زواحف",
+"en": "reptiles"
+},
+{
+"ar": "أسماك",
+"en": "fish"
+}
+],
+"source": [
+"https://www.wikidata.org/wiki/Q6120"
+],
+"verified": true
 }
 ]

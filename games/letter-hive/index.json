@@ -3,6 +3,7 @@
 "ا",
 "ب",
 "ت",
+"ث",
 "ج",
 "د",
 "ر",
@@ -232,7 +233,8 @@
 "is-adhan",
 "sg-asir",
 "gk-everest",
-"hi-wright"
+"hi-wright",
+"an-class-Q152"
 ],
 "ب": [
 "geo-cap-Q1005",
@@ -329,6 +331,20 @@
 "el-name-73",
 "is-ramadan-9",
 "sg-tabuk"
+],
+"ث": [
+"el-name-69",
+"el-name-81",
+"is-badr-year",
+"an-class-Q140",
+"an-class-Q2934",
+"an-class-Q34706",
+"an-class-Q19707",
+"an-class-Q9482",
+"an-class-Q34718",
+"an-class-Q23907",
+"an-class-Q862089",
+"an-class-Q6120"
 ],
 "ج": [
 "geo-rev-Q213",
@@ -652,10 +668,10 @@
 ]
 },
 "coverage": {
-"ا": 214,
+"ا": 215,
 "ب": 72,
 "ت": 20,
-"ث": 3,
+"ث": 12,
 "ج": 20,
 "ح": 1,
 "خ": 2,

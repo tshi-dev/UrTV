@@ -67,6 +67,7 @@ def check_item(f, it, ftype):
                 if len(x["ar"]) > A_MAX: err(f, i, "wrong option ar too long")
         elif it.get("wrong"):
             err(f, i, f"{t} has no wrong options")
+        if t == "estimate" and not isinstance(it.get("value"), (int, float)): err(f, i, "estimate needs a numeric value")
     blob = json.dumps(it, ensure_ascii=False).lower()
     for b in BANNED:
         if b in blob: err(f, i, f"banned text {b!r}")
