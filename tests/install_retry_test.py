@@ -144,7 +144,7 @@ while [ $# -gt 0 ]; do [ "$1" = -o ] && : > "$2"; shift; done
 
 
 def run(name, fail_switches, first_drop, down_polls=0, verify="", verifier=None, curl_mode="", vanish="", illegal="", wraith_home="", wifi="", nohome="", install_mode="",
-        watchdog="", restore_fail="", tcltv="", dialog="", verifier_empty="", pkgs="", stockless="", pkgextra="", query_extra="", seed=None, seed_home="", seed_marker=False, role="", resolve="", script="install.sh", args=("launcher",),
+        watchdog="", restore_fail="", tcltv="", dialog="", verifier_empty="", pkgs="", stockless="", pkgextra="", query_extra="", seed=None, seed_nostock=False, seed_home="", seed_marker=False, role="", resolve="", script="install.sh", args=("launcher",),
         seed_ask="", wifi_after="", wifi_read="", start="", front="", drop_at="", seed_step=False, disabled="", cast="", cast_wiz="", seed_cast="", wifi_wait=None, maker="", device=""):
     t = Path(tempfile.mkdtemp())
     tree, bin_ = t / "tree", t / "bin"
@@ -159,8 +159,8 @@ def run(name, fail_switches, first_drop, down_polls=0, verify="", verifier=None,
         (tree / "optimize" / "run").mkdir()
         (tree / "optimize" / "run" / "home-switch.json").write_text(
             '{\n  "nonce": "old1",\n  "state": "%s",\n' % seed[0] + ""
-            + '  "stock": "com.google.android.apps.tv.launcherx/com.google.android.apps.tv.launcherx.home.HomeActivity",\n'
-            '  "role_holder_before": "%s",\n  "wizard_before": "enabled",\n  "stock_before": "enabled",\n  "written": "x"' % seed[1] + (',\n  "step": "stock_off"' if seed_step else "") + '\n}\n')
+            + ('' if seed_nostock else '  "stock": "com.google.android.apps.tv.launcherx/com.google.android.apps.tv.launcherx.home.HomeActivity",\n')
+            + '  "role_holder_before": "%s",\n  "wizard_before": "enabled",\n  "stock_before": "enabled",\n  "written": "x"' % seed[1] + (',\n  "step": "stock_off"' if seed_step else "") + '\n}\n')
     if seed_ask:   # an earlier run asked the person to forget the Wi-Fi network and join it again
         (tree / "optimize" / "run").mkdir(exist_ok=True)
         (tree / "optimize" / "run" / "wifi-ask.txt").write_text(seed_ask + "\n")
@@ -367,6 +367,9 @@ cases += [
     ("restore-home.sh without a journal: the way restore.sh does it, and says so",
      run("ae", 0, "", script="restore-home.sh", args=()),
      lambda c, o, l: c == 0 and "No journal" in o and "restore-stock" in l),
+    ("restore-home.sh with a journal that has no stock home (cut off while written): the way restore.sh does it, never «the TV did not answer»",
+     run("af2", 0, "", seed=("switching", ""), seed_nostock=True, script="restore-home.sh", args=()),
+     lambda c, o, l: c == 0 and "has no stock home in it" in o and "restore-stock" in l and "did not answer" not in o),
 ]
 
 # The wizard owns the saved Wi-Fi: ask the person once (forget the network, join it again), then read the owner again.

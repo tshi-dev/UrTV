@@ -487,6 +487,12 @@ public class SaverReceiver extends BroadcastReceiver {
                         return "error: path must be a file in /data/local/tmp/urtv-own/";
                     src = new java.io.File(path);
                 }
+                // 4.3 S11: `--es size 123` is a string, which getIntExtra reads as «none» and would skip the check: refused instead
+                Object given = i.getExtras() == null ? null : i.getExtras().get("size");
+                if (given != null && !(given instanceof Integer)) {
+                    if (src.equals(Own.incoming(c))) src.delete();
+                    return "error: size must be a number (--ei size BYTES)";
+                }
                 int size = i.getIntExtra("size", -1);   // what the shell sent: a short or stale file is refused
                 String why = size >= 0 && src.length() != size ? "the file is not the one sent (" + src.length() + " of " + size + " bytes)"
                     : Own.add(c, src);

@@ -7,6 +7,8 @@ Universal Android Debloater Next Generation (github.com/Universal-Debloater-Alli
 
 Ratings: Recommended (safe) / Advanced / Expert / Unsafe. UAD-ng is phone-focused, so most TV packages
 are "unknown" — that is not a green light, only "Unsafe" is a hard stop.
+
+Exit: 0 rated, nothing Unsafe; 2 the list could not be read; 3 at least one package is Unsafe.
 """
 import json
 import os
@@ -16,7 +18,7 @@ import sys
 import urllib.request
 
 UAD = ("https://raw.githubusercontent.com/Universal-Debloater-Alliance/"
-       "universal-android-debloater-next-generation/main/resources/assets/uad_lists.json")
+       "universal-android-debloater-next-generation/9fcad87bf78c52c4270504bc8880139d95a27a29/resources/assets/uad_lists.json")
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -32,8 +34,12 @@ def list_packages(path):
 
 def main():
     pkgs = list_packages(sys.argv[1]) if len(sys.argv) > 1 else tv_packages()
-    with urllib.request.urlopen(UAD, timeout=60) as r:
-        uad = json.load(r)
+    try:
+        with urllib.request.urlopen(UAD, timeout=60) as r:
+            uad = json.load(r)
+    except (OSError, ValueError) as e:   # 4.3 S10: no network, a timeout, a broken answer: said, not a traceback
+        print(f"!! UAD-ng's list could not be read ({e.__class__.__name__}): nothing was rated; try again when the computer is online.")
+        sys.exit(2)
     unsafe = 0
     for p in pkgs:
         e = uad.get(p) or {}
@@ -43,6 +49,7 @@ def main():
         print(f"{rating:12} {p:55} {desc}")
     if unsafe:
         print(f"\n!! {unsafe} package(s) rated Unsafe by UAD-ng — do not disable them.")
+        sys.exit(3)   # 4.3 S10: a script that runs this can stop on it
 
 
 if __name__ == "__main__":

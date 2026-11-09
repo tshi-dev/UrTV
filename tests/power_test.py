@@ -20,13 +20,14 @@ def summary(name):
 
 rc, out = summary("quiet.txt")
 check("a quiet TV: Doze, no allowlist, no UrTV lock, alarm or job", rc == 0 and "Doze: deep IDLE, light IDLE" in out and "no UrTV app is on the Doze allowlist" in out
-      and "Wake locks: 2 held by anything, 0 owned by UrTV" in out and "Wi-Fi locks: none owned by UrTV" in out and "Alarms: none naming UrTV" in out and "Jobs: none naming UrTV" in out, out)
+      and "Wake locks: 2 held by anything, 0 owned by UrTV" in out and "Wi-Fi locks: none owned by UrTV" in out and "Alarms: none seen naming UrTV" in out and "Jobs: none seen naming UrTV" in out, out)
 rc, out = summary("busy.txt")
 check("a TV with UrTV holds: the wake lock, the two alarms (one wakes the TV) and the update job are listed", rc == 0 and "Wake locks: 3 held by anything, 2 owned by UrTV" in out
       and "MediaPlayer-WakeLock" in out and "AudioMix" in out and "RILJ_ACK_WL" not in out and "Wi-Fi locks: UrTV holds one" in out and "Alarms: 2 line(s) naming UrTV (1 of them wake the TV up)" in out
       and "Jobs: 1 line(s) naming UrTV (sa.urtv.screensaver/.UpdateJob)" in out and "Doze allowlist (sa.urtv.home)" in out and "deep ACTIVE" in out, out)
 rc, out = summary("empty.txt")
-check("a TV that shows nothing: it says it did not say, and never claims nothing is held", rc == 0 and "Doze: the TV did not say" in out and "Wake locks: ? held" in out, out)
+check("a TV that shows nothing: it says it did not say, and never claims nothing is held", rc == 0 and "Doze: the TV did not say" in out and "Wake locks: ? held" in out
+      and all(f"- {k}: not seen" in out for k in ("Battery optimisation", "Wi-Fi locks")) and "Alarms: none seen" in out and "none naming UrTV" not in out and "no UrTV app is on" not in out, out)
 check("it says what it is: a moment's reading, not watts", "not a power measurement" in out)
 
 # measure.sh power is the same thing, and everything it sends the TV only reads

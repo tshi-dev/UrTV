@@ -38,10 +38,12 @@ def run(**env):
     return r, (d / "log").read_text() if (d / "log").exists() else ""
 
 r, log = run()
-check("a computer: a plain venv (no system packages), the whole requirements.txt", "-m venv venv" in log and "--system-site-packages" not in log and "REQS adb-shell rsa cryptography certifi pillow" in log.replace("\n", " "), log)
+check("a computer: a plain venv (no system packages), the whole requirements.txt with its hashes (--require-hashes)", "-m venv venv" in log and "--system-site-packages" not in log
+      and "--require-hashes -r requirements.txt" in log and all(f"{n}==" in log for n in ("adb-shell", "rsa", "cryptography", "certifi", "pillow")), log)
 r, log = run(URTV_SYSTEM_SITE="1")
 check("URTV_SYSTEM_SITE=1: the venv sees the system's packages, and Pillow is not in the list pip must satisfy", "--system-site-packages" in log and "REQS adb-shell rsa cryptography certifi" in log.replace("\n", " ")
-      and "pillow" not in [l for l in log.splitlines() if l.startswith("REQS")][0].lower(), log)
+      and "pillow" not in [l for l in log.splitlines() if l.startswith("REQS")][0].lower()
+      and "--require-hashes" not in log and "==" not in [l for l in log.splitlines() if l.startswith("REQS")][0], log)
 r, log = run(PREFIX="/data/data/com.termux/files/usr")
 check("Termux is recognised by its PREFIX", "--system-site-packages" in log, log)
 r, log = run(URTV_SYSTEM_SITE="1", PIL_BUILD="fail")

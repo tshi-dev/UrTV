@@ -112,8 +112,9 @@ tv --check
 . optimize/home-journal.sh
 
 check_list() {   # never disable what UAD-ng rates Unsafe; show everything that is not "Recommended"
-  local out
-  out=$("$PY" -I optimize/check-packages.py "$1")
+  local out rc=0
+  out=$("$PY" -I optimize/check-packages.py "$1") || rc=$?   # 3: something is Unsafe (said below); 2 or other: it could not rate
+  if [ "$rc" != 0 ] && [ "$rc" != 3 ]; then echo "$out"; echo "!! $1 could not be checked against UAD-ng's list (needs the internet). Run again when online."; exit 1; fi
   echo "$out" | grep -v '^Recommended' | sed 's/^/   /' || true
   if echo "$out" | grep -q '^Unsafe'; then echo "!! $1 has a package rated Unsafe. Take it out and run again."; exit 1; fi
 }

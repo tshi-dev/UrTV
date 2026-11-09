@@ -234,6 +234,7 @@ public final class PhoneRun {
         controller();
         remoteV2();
         portfolio();
+        hardening43();
         System.out.println(failed == 0 ? "ALL PASS" : failed + " FAILED");
         System.exit(failed == 0 ? 0 : 1);
     }
@@ -242,6 +243,28 @@ public final class PhoneRun {
      * «محفظتي» (docs/PROPOSALS-NOV2.md §7): the holdings go only to a paired phone, and only while the TV is editing them; a save is checked by
      * Schema first; /m (the page) needs no session, like /p, and carries no holding.
      */
+    /** 4.3 S2 and S11: a throwing session-end callback never keeps the server up; an answered pairing request the phone never reads expires. */
+    static void hardening43() throws Exception {
+        Env e = started();
+        e.ctl.setOnSessionEnd(() -> { throw new RuntimeException("the screen failed"); });
+        boolean threw = false;
+        try { e.ctl.stop("owner"); } catch (RuntimeException x) { threw = true; }
+        check("S2: a session-end callback that throws: stop() still closes the server (and does not throw)", !threw && !e.ctl.isOn() && e.ctl.address() == null, "");
+        Env f = started();
+        Pairing.Offer o = f.ctl.offer();
+        Object[] first = f.ctl.pair(o.token, false, "127.0.0.1");
+        f.ctl.approve();   // answered, and the phone never asks for its answer
+        Object[] busy = f.ctl.pair(f.ctl.offer().token, false, "127.0.0.2");
+        f.now[0] += PhoneControl.PENDING_MS + 1;
+        f.ctl.tick();
+        Object[] again = f.ctl.pair(f.ctl.offer().token, false, "127.0.0.2");
+        String[] late = f.ctl.pairStatus((String) first[1], "127.0.0.1");
+        check("S11: an answered request blocks a second phone only for a minute, then expires (and its late reader gets no session)",
+            first[0] == PhoneControl.Pair.OK && busy[0] == PhoneControl.Pair.BUSY && again[0] == PhoneControl.Pair.OK && "gone".equals(late[0]),
+            first[0] + " " + busy[0] + " " + again[0] + " " + late[0]);
+        f.ctl.stop("owner");
+    }
+
     static void portfolio() throws Exception {
         Env e = started();
         Reply r0 = send(e, "GET", "/api/portfolio", null);

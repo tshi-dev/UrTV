@@ -24,7 +24,7 @@ final class SetupCommunity {
     /** Written when the list was left unapplied because UAD-ng's rating could not be fetched: the report says so. */
     static final String OFFLINE = "community-offline.txt";
     static final String OFFLINE_SAID = "تُرك: ما قدرنا نتأكد من القائمة بدون إنترنت";
-    static final String UAD = "https://raw.githubusercontent.com/Universal-Debloater-Alliance/universal-android-debloater-next-generation/main/resources/assets/uad_lists.json";
+    static final String UAD = "https://raw.githubusercontent.com/Universal-Debloater-Alliance/universal-android-debloater-next-generation/9fcad87bf78c52c4270504bc8880139d95a27a29/resources/assets/uad_lists.json";
     static final int UAD_MAX = 8 * 1024 * 1024;
     static final Pattern HOME_LINE = Pattern.compile("^[ \\t]*([A-Za-z0-9_.]*)/.*$", Pattern.MULTILINE);
 

@@ -161,6 +161,11 @@ final class PhoneActions implements Actions {
         try {
             String r = job.get(2, TimeUnit.SECONDS);
             return r == null ? Result.fail("failed") : Result.ok(otherNoField[0] && "copied".equals(r) ? "copied_other" : r);
+        } catch (java.util.concurrent.TimeoutException e) {
+            // 4.3 S7: a busy main thread would still run it later, after the phone was told «failed» and sent it again: typed twice.
+            // Cancelled without interrupting: if it has not started it never will; if it is running it finishes once
+            job.cancel(false);
+            return Result.fail("failed");
         } catch (Exception e) {
             return Result.fail("failed");
         }

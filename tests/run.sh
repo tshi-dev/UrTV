@@ -27,6 +27,7 @@ python3 tests/run_lock_test.py
 python3 tests/run_identity_test.py
 python3 tests/run_report_test.py
 python3 tests/setup_phone_test.py
+python3 tests/requirements_pin_test.py   # optimize/requirements.txt: exact versions with hashes; UAD-ng at a fixed commit; check-packages exit codes
 python3 tests/phone_userland_test.py
 python3 tests/adb_client_test.py
 python3 tests/setup_engine_test.py

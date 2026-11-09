@@ -41,6 +41,9 @@ check("/u: re-drawn at 1920 px at most and sent as a new JPEG (no camera data), 
       "createImageBitmap(file)" in page and "MAX = 1920, LIMIT = 900000" in page and "c.toBlob(res, 'image/jpeg', q[i])" in page
       and "'X-UrTV-Session'" in page and "fetch('/api/photo'" in page and "var EN = document.documentElement.lang === 'en';" in page
       and '<script nonce="__NONCE__">' in page and 'href="/u"' in read(L / "assets/phone/index.html"))
+sr = read(A / "SaverReceiver.java")
+check("4.3 S11: a photo add whose size came as a string (--es) is refused, never taken as «no size given»",
+      'if (given != null && !(given instanceof Integer)) {' in sr and sr.index("instanceof Integer") < sr.index('int size = i.getIntExtra("size", -1);'))
 if not shutil.which("javac"):
     print("SKIP JpegMeta's run: no javac")
 else:

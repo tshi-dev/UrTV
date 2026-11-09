@@ -18,13 +18,17 @@ if [ ! -e venv/bin/python ] && [ -e venv/Scripts/python.exe ]; then
   printf '#!/usr/bin/env bash\nexec "$(dirname "$0")/../Scripts/python.exe" "$@"\n' > venv/bin/python
   chmod +x venv/bin/python
 fi
+# requirements.txt: exact versions with every file's sha256 (.github/tools/pin_requirements.py), so pip refuses a changed file. A phone's
+# system packages are other versions with no hash to match: there pip gets the names alone, and installs only what the system lacks.
 reqs=requirements.txt
+hashes=--require-hashes
 if [ -n "$system_site" ]; then   # Pillow only serves photos.sh: it must not stop the rest where it cannot be built
-  reqs=$(mktemp); grep -vi '^pillow' requirements.txt > "$reqs" || true
+  hashes=
+  reqs=$(mktemp); sed -n 's/^\([A-Za-z][A-Za-z0-9_.-]*\)==.*/\1/p' requirements.txt | grep -vi '^pillow$' > "$reqs" || true
   venv/bin/python -c "import PIL" > /dev/null 2>&1 || venv/bin/python -m pip install -q --no-cache-dir pillow > /dev/null 2>&1 \
     || echo "(Pillow is not here: photos.sh needs it; Termux: pkg install python-pillow, Alpine / iSH: apk add py3-pillow, then optimize/setup.sh again)"
 fi
-if ! venv/bin/python -m pip install -q --no-cache-dir -r "$reqs"; then
+if ! venv/bin/python -m pip install -q --no-cache-dir ${hashes:+"$hashes"} -r "$reqs"; then
   echo "!! Couldn't install the Python packages into optimize/venv (pip's error is above). If it is a network"
   echo "   error, allow this terminal network access (pypi.org), then run optimize/setup.sh again."
   [ -z "$system_site" ] || echo "   On a phone or an iPad the packages that need building come from the system: Termux: pkg install python-cryptography; Alpine / iSH: apk add py3-cryptography (docs/PHONE-SETUP.md)."

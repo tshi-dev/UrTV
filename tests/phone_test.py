@@ -133,7 +133,7 @@ check("the gate asks PinStore.verify (the shared lockout), never a PIN of its ow
 if not shutil.which("javac"):
     print("SKIP phone control logic: no javac here")
     sys.exit(1 if failed else 0)
-pure = ["Json", "Schema", "Pairing", "Sessions", "Guard", "QrCode", "UpdateRules", "PinGate", "PinStoreGate", "Actions", "PhoneServer", "PhoneControl", "PhoneApi"]
+pure = ["Json", "Schema", "PhoneMessage", "Pairing", "Sessions", "Guard", "QrCode", "UpdateRules", "PinGate", "PinStoreGate", "Actions", "PhoneServer", "PhoneControl", "PhoneApi"]
 family = [str(JAVA / "PinStore.java"), str(JAVA / "PinCrypto.java")]   # the family lock's PIN store, which the gate stands on
 with tempfile.TemporaryDirectory() as tmp:
     subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp] + [str(PHONE / f"{n}.java") for n in pure] + family + [str(ROOT / "tests/PhoneRun.java")], check=True)
@@ -141,6 +141,8 @@ with tempfile.TemporaryDirectory() as tmp:
 out = run.stdout.decode("utf-8")
 print(out, end="")
 
+check("4.3 S7: a text job that timed out is cancelled (never typed later, after the phone was told it failed and sent it again)",
+      "job.cancel(false);" in text(PHONE / "PhoneActions.java") and "catch (java.util.concurrent.TimeoutException e)" in text(PHONE / "PhoneActions.java"))
 # the remote's newer parts: apps, icons, launch, adhan stop, do, family
 apps_src = text(JAVA / "PhoneApps.java")
 main_src = text(JAVA / "MainActivity.java")

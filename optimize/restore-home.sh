@@ -9,7 +9,11 @@ cd "$(dirname "$0")/.."
 PY="${PY:-optimize/venv/bin/python}"
 . optimize/home-journal.sh
 echo "استرجاع الشاشة الرئيسية: this needs ADB (the TV on, on Wi-Fi, this computer on the same network). It cannot be done from the TV itself."
-if [ -f "$(jfile)" ]; then
+# a journal without the stock home in it (cut off while written) cannot restore anything: «the TV did not answer» would be wrong (4.3 S10)
+if [ -f "$(jfile)" ] && [ -z "$(jget stock)" ]; then
+  echo "The journal $(jfile) has no stock home in it: restoring the way optimize/restore.sh does."
+  exec bash optimize/restore.sh
+elif [ -f "$(jfile)" ]; then
   jrestore full || { echo "!! The TV did not answer. Check it is on and on Wi-Fi (optimize/find-tv.sh if its address changed), then run the same command again."; exit 1; }
   echo "Restored from the journal. Press Home on the remote. The home switch can be done again with optimize/install.sh launcher."
 else

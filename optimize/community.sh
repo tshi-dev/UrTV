@@ -58,7 +58,8 @@ fi
 # already off before we came: not ours (reset.sh would turn it on)
 grep -vxFf <(sed 's/^package://' <<< "$disabled") "$tmp/pkgs" > "$tmp/todo" || true
 if [ -s "$tmp/todo" ]; then   # never what UAD-ng rates Unsafe; offline (the check cannot run) NOTHING from the community list is applied
-  if rated=$("$PY" -I optimize/check-packages.py "$tmp/todo" 2> /dev/null); then
+  rc=0; rated=$("$PY" -I optimize/check-packages.py "$tmp/todo" 2> /dev/null) || rc=$?
+  if [ "$rc" = 0 ] || [ "$rc" = 3 ]; then   # 3: rated, and something is Unsafe (left on below); any other: it could not rate
     unsafe=$(awk '$1 == "Unsafe" {print $2}' <<< "$rated")
     if [ -n "$unsafe" ]; then
       echo "   left on, rated Unsafe: $(paste -sd' ' - <<< "$unsafe")"

@@ -27,6 +27,8 @@ while [ $i -lt "$LIMIT" ]; do
   sleep 1
   i=$((i + 1))
 done
+# the marker can land in the last second of the wait: looked at once more before the stock home is put back (4.3 S10)
+[ -f "$OK" ] && exit 0
 
 pm enable "${STOCK%%/*}"
 pm enable com.google.android.tungsten.setupwraith

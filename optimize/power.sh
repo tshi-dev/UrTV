@@ -39,7 +39,9 @@ echo "What UrTV holds right now (read-only; a moment's reading, not a power meas
 # Doze
 deep=$(sed -n 's/.*mState=\([A-Z_]*\).*/\1/p' <<< "$idle" | head -n 1); light=$(sed -n 's/.*mLightState=\([A-Z_]*\).*/\1/p' <<< "$idle" | head -n 1)
 if [ -n "$deep$light" ]; then echo "- Doze: deep ${deep:-?}, light ${light:-?}"; else echo "- Doze: the TV did not say"; fi
-if grep -qE "$PKG" <<< "$idle"; then echo "- Battery optimisation: an UrTV app is on the Doze allowlist ($(grep -oE "$PKG[A-Za-z0-9_.]*" <<< "$idle" | sort -u | paste -sd' ' -))"
+NS="not seen: the TV showed nothing for it (or no permission), which does not mean none"   # 4.3 S10: an empty section claims nothing
+if [ -z "$idle" ]; then echo "- Battery optimisation: $NS"
+elif grep -qE "$PKG" <<< "$idle"; then echo "- Battery optimisation: an UrTV app is on the Doze allowlist ($(grep -oE "$PKG[A-Za-z0-9_.]*" <<< "$idle" | sort -u | paste -sd' ' -))"
 else echo "- Battery optimisation: no UrTV app is on the Doze allowlist"; fi
 # wake locks: the total the TV reports, and the ones that name us
 total=$(sed -n 's/.*Wake Locks: size=\([0-9]*\).*/\1/p' <<< "$locks" | head -n 1)
@@ -48,7 +50,8 @@ ours=$(grep -c . <<< "$held" || true)
 echo "- Wake locks: ${total:-?} held by anything, $ours owned by UrTV (by name or by its user id)"
 grep . <<< "$held" | sed 's/^ */    /' | head -n 5 || true
 wl=$(mine <<< "$wifilocks")
-if [ -n "$wl" ]; then echo "- Wi-Fi locks: UrTV holds one ($(grep -c . <<< "$wl") line(s))"; grep . <<< "$wl" | sed 's/^ */    /' | head -n 3
+if [ -z "$wifilocks" ]; then echo "- Wi-Fi locks: $NS"
+elif [ -n "$wl" ]; then echo "- Wi-Fi locks: UrTV holds one ($(grep -c . <<< "$wl") line(s))"; grep . <<< "$wl" | sed 's/^ */    /' | head -n 3
 else echo "- Wi-Fi locks: none owned by UrTV"; fi
 # alarms
 na=$(grep -cE "$PKG" <<< "$alarms" || true)
@@ -56,10 +59,10 @@ if [ "$na" -gt 0 ]; then
   wake=$(grep -cE "RTC_WAKEUP|ELAPSED_WAKEUP|type 0|type 2" <<< "$alarms" || true)
   echo "- Alarms: $na line(s) naming UrTV ($wake of them wake the TV up)"
   sed 's/^ */    /' <<< "$alarms" | head -n 6
-else echo "- Alarms: none naming UrTV"; fi
+else echo "- Alarms: none seen naming UrTV (the TV lists only those; not shown and none look the same)"; fi
 # jobs
 nj=$(grep -cE "$PKG" <<< "$jobs" || true)
 if [ "$nj" -gt 0 ]; then
   echo "- Jobs: $nj line(s) naming UrTV ($(grep -oE "$PKG[A-Za-z0-9_.]*/[.A-Za-z0-9_]*" <<< "$jobs" | sort -u | paste -sd' ' -))"
-else echo "- Jobs: none naming UrTV"; fi
+else echo "- Jobs: none seen naming UrTV (the TV lists only those; not shown and none look the same)"; fi
 echo "- The 6-hour update job and the adhan alarm are expected (docs/POWER.md says why each exists)."

@@ -12,5 +12,6 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 PY="${PY:-optimize/venv/bin/python}"
 [ -x "$PY" ] || PY="$(command -v python3 || command -v python)"   # a problem from a computer without the setup's venv
-"$PY" -c "import segno" 2> /dev/null || "$PY" -m pip install -q segno || true   # the QR code (older setups)
+# the QR code (older setups): installed only into the setup's own venv, never into the computer's Python (4.3 S10)
+if ! "$PY" -c "import segno" 2> /dev/null && [ "$PY" = optimize/venv/bin/python ]; then "$PY" -m pip install -q segno || true; fi
 "$PY" -I optimize/share.py "$@"

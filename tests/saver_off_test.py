@@ -32,6 +32,19 @@ def says(stock, ours):
     return heavy.verdict(table(stock, ours))
 
 check("light: 700 MB vs 680 MB, idle 90 vs 88", says((700, 90), (680, 88)) is None)
+# 4.3 S10: decimals are readings, and --status always says one line
+check("decimals: 92.5% vs 34.5% idle is heavy, and the line has no «.0»", (says((700, "92.5"), (690, "34.5")) or "").count("34.5% with ours, 92.5%") == 1
+      and ".0 " not in says((700.0, 92), (690, 34)), str(says((700, "92.5"), (690, "34.5"))))
+check("--status: ok with both readings", heavy.status(table((700, 90), (680, 88))) == "screensaver weight: ok (free RAM 680 MB with ours, 700 MB with the TV's own, CPU idle 88% with ours, 90% with the TV's own)", heavy.status(table((700, 90), (680, 88))))
+check("--status: heavy is the !! line", heavy.status(table((700, 92), (690, 34))).startswith("!! the screensaver may slow this TV"))
+check("--status: a row not measured is said, never «ok»", heavy.status(table(None, (680, 88))).startswith("screensaver weight: not measured") and "ok" not in heavy.status(table(None, (680, 88))))
+import subprocess, sys as _s, tempfile as _t
+with _t.NamedTemporaryFile("w", suffix=".md", delete=False) as f: f.write(table((700, 90), (680, 88)))
+r1 = subprocess.run([_s.executable, os.path.join(here, "..", "optimize", "heavy.py"), "--status", f.name], capture_output=True, text=True)
+r2 = subprocess.run([_s.executable, os.path.join(here, "..", "optimize", "heavy.py"), f.name], capture_output=True, text=True)
+r3 = subprocess.run([_s.executable, os.path.join(here, "..", "optimize", "heavy.py"), "--status", f.name + ".gone"], capture_output=True, text=True)
+check("heavy.py --status FILE prints the ok line; without --status a light one prints nothing; a missing file is «not measured»; exit 0 each",
+      r1.stdout.startswith("screensaver weight: ok") and r2.stdout == "" and r3.stdout.startswith("screensaver weight: not measured") and r1.returncode == r2.returncode == r3.returncode == 0, r1.stdout + r2.stdout + r3.stdout + r1.stderr)
 check("normal cost, top of the field range: 150 MB less, still 550 free", says((700, 90), (550, 88)) is None)
 check("200 MB below is the limit, not over it", says((800, 90), (600, 90)) is None)
 check("201 MB below: heavy", says((800, 90), (599, 90)) is not None)

@@ -145,11 +145,16 @@ public final class PhoneControl {
 
     private void sessionEnded() {
         Runnable r = onSessionEnd;
-        if (r != null) r.run();
+        if (r == null) return;
+        try {
+            r.run();
+        } catch (RuntimeException e) {   // 4.3 S2: whatever the screen does with it, the server's own teardown is never stopped by it
+            System.err.println("UrTVPhone: session end callback failed: " + e);
+        }
     }
 
+    /** 4.3 S2: the server is torn down FIRST, then the callback (inside try/catch): the LAN server never stays up because a callback threw. */
     public void stop(String reason) {
-        sessionEnded();
         synchronized (this) {
             if (server == null) return;
             server.close();
@@ -164,6 +169,7 @@ public final class PhoneControl {
             pinFails.clear();
             lastStop = reason;
         }
+        sessionEnded();
         changed();
     }
 
@@ -177,8 +183,17 @@ public final class PhoneControl {
         }
     }
 
-    /** What the timer does every few seconds (public so a test can run it at a chosen time). */
+    /** What the timer does every few seconds (public so a test can run it at a chosen time). 4.3 S2: anything it throws stops the server. */
     public void tick() {
+        try {
+            tickOnce();
+        } catch (RuntimeException e) {
+            System.err.println("UrTVPhone: tick failed, phone control stops: " + e);
+            stop("error");
+        }
+    }
+
+    private void tickOnce() {
         String stop = null;
         boolean redraw = false;
         synchronized (this) {
@@ -187,7 +202,7 @@ public final class PhoneControl {
             int live = sessions.count(now);
             if (live != lastLive) { lastLive = live; redraw = true; }
             if (live > 0) hadSession = true;
-            if (pending != null && now - pending.createdAt >= PENDING_MS && pending.state == Pending.WAITING) { pending = null; redraw = true; }
+            if (pending != null && pending.expired(now)) { pending = null; redraw = true; }
             if (hadSession && live == 0) stop = "ended";
             else if (!hadSession && now - startedAt >= START_WINDOW_MS) stop = "unused";
         }
@@ -219,17 +234,17 @@ public final class PhoneControl {
     }
 
     public synchronized Pending pending() {
-        if (pending != null && pending.state == Pending.WAITING && clock.now() - pending.createdAt >= PENDING_MS) pending = null;
+        if (pending != null && pending.expired(clock.now())) pending = null;
         return pending;
     }
 
     public synchronized void approve() {
-        if (pending != null && pending.state == Pending.WAITING) pending.state = Pending.APPROVED;
+        if (pending != null && pending.state == Pending.WAITING) { pending.state = Pending.APPROVED; pending.answeredAt = clock.now(); }
         changed();
     }
 
     public synchronized void deny() {
-        if (pending != null && pending.state == Pending.WAITING) pending.state = Pending.DENIED;
+        if (pending != null && pending.state == Pending.WAITING) { pending.state = Pending.DENIED; pending.answeredAt = clock.now(); }
         changed();
     }
 
@@ -254,8 +269,11 @@ public final class PhoneControl {
         public final String id, ip;
         final long createdAt;
         int state = WAITING;
+        /** 4.3 S11: when the TV answered; an answer the phone never comes to read goes after PENDING_MS (it no longer blocks a new phone) */
+        long answeredAt = -1;
         Pending(String id, String ip, long createdAt) { this.id = id; this.ip = ip; this.createdAt = createdAt; }
         public boolean waiting() { return state == WAITING; }
+        boolean expired(long now) { return state == WAITING ? now - createdAt >= PENDING_MS : answeredAt >= 0 && now - answeredAt >= PENDING_MS; }
     }
 
     enum Pair { OK, WRONG, LOCKED, BUSY, OFF }
@@ -264,7 +282,8 @@ public final class PhoneControl {
     synchronized Object[] pair(String given, boolean isCode, String clientIp) {
         if (server == null) return new Object[] {Pair.OFF, null};
         long now = clock.now();
-        if (pending != null && (pending.state != Pending.WAITING || now - pending.createdAt < PENDING_MS)) return new Object[] {Pair.BUSY, null};
+        if (pending != null && pending.expired(now)) pending = null;   // 4.3 S11: an unread answer expires too
+        if (pending != null) return new Object[] {Pair.BUSY, null};
         Pairing.Result r = pairing.redeem(given, isCode, now);
         if (r == Pairing.Result.LOCKED) { stopSoon("locked"); return new Object[] {Pair.LOCKED, null}; }
         if (r != Pairing.Result.OK) return new Object[] {Pair.WRONG, null};
@@ -280,10 +299,8 @@ public final class PhoneControl {
     synchronized String[] pairStatus(String id, String clientIp) {
         if (server == null || pending == null || !Pairing.same(pending.id, id) || !pending.ip.equals(clientIp)) return new String[] {"gone", null};
         long now = clock.now();
-        if (pending.state == Pending.WAITING) {
-            if (now - pending.createdAt >= PENDING_MS) { pending = null; return new String[] {"gone", null}; }
-            return new String[] {"waiting", null};
-        }
+        if (pending.expired(now)) { pending = null; changed(); return new String[] {"gone", null}; }   // 4.3 S11: an old approval issues no session
+        if (pending.state == Pending.WAITING) return new String[] {"waiting", null};
         boolean approved = pending.state == Pending.APPROVED;
         pending = null;   // an answer is read once
         if (!approved) { changed(); return new String[] {"denied", null}; }
