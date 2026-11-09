@@ -726,7 +726,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
   // 4.3 #53: a message on the TV's screen
   $('msgGo').onclick = function () {
     var t = $('msgT').value.replace(/\s+/g, ' ').trim();
-    if (!t) { $('msgT').focus(); return; }
+    if (!t) { toast('Type your message first.'); $('msgT').focus(); return; }
     api('/api/message', { text: t.slice(0, 200) }).then(function (j) { if (say(j)) $('msgT').value = ''; });
   };
   $('txtSearch').onclick = function () { sendText(true); };

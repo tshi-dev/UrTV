@@ -48,6 +48,7 @@ public class PhotoPacksActivity extends Activity {
     private List<PhotoPacks.Pack> packs = new ArrayList<>();
     private boolean loaded;
     private final java.util.Set<String> busy = new java.util.HashSet<>();   // being downloaded now
+    private final java.util.Set<String> failed = new java.util.HashSet<>();   // the last download of these did not work: their tile says so and tries again on OK
     private final Map<String, Typeface> fonts = new java.util.HashMap<>();
 
     @Override
@@ -146,7 +147,7 @@ public class PhotoPacksActivity extends Activity {
 
     private View packCard(PhotoPacks.Pack p, Map<String, Integer> have, Set<String> on) {
         boolean there = have.containsKey(p.id), active = there && on.contains(p.id);
-        String state = busy.contains(p.id) ? "downloading" : there ? (active ? "on" : "off") : "get";
+        String state = busy.contains(p.id) ? "downloading" : failed.contains(p.id) && !there ? "failed" : there ? (active ? "on" : "off") : "get";
         String name = S.en() ? p.nameEn : p.name, source = S.en() ? p.sourceEn : p.source;
         String meta = conv(w("%s صورة · %s م.ب", String.valueOf(p.count), String.valueOf(PhotoPacks.megabytes(p.bytes))));
         return card("pack:" + p.id, p, name, active, meta, source, state, v -> {
@@ -188,7 +189,7 @@ public class PhotoPacksActivity extends Activity {
         np.setMarginStart(dp(8));
         head.addView(n, np);
         body.addView(head, new LinearLayout.LayoutParams(-1, -2));
-        String word = state == null ? (active ? "مفعّل" : "متوقف") : "downloading".equals(state) ? "جارٍ التنزيل…" : "on".equals(state) ? "مفعّل" : "off".equals(state) ? "متوقف" : "نزّل";
+        String word = state == null ? (active ? "مفعّل" : "متوقف") : "downloading".equals(state) ? "جارٍ التنزيل…" : "failed".equals(state) ? "تعذّر التنزيل، حاول مرة ثانية" : "on".equals(state) ? "مفعّل" : "off".equals(state) ? "متوقف" : "نزّل";
         TextView st = text(w(word), 16, "Medium", active ? OnOff.green(look.light ? 0xFFFFFFFF : 0xFF000000) : look.accent);
         body.addView(st, line(dp(8)));
         body.addView(text(meta, 14, "Regular", look.sub), line(dp(4)));
@@ -233,12 +234,14 @@ public class PhotoPacksActivity extends Activity {
 
     private void download(PhotoPacks.Pack p) {
         busy.add(p.id);
+        failed.remove(p.id);
         render();
         final android.content.Context app = getApplicationContext();
         new Thread(() -> {
             final String why = PackStore.download(app, p);
             runOnUiThread(() -> {
                 busy.remove(p.id);
+                if (why != null) failed.add(p.id);   // the tile says so and stays a button: OK tries again
                 if (why == null) { prefs.setPacksOn(PhotoPacks.toggled(prefs.packsOn(), p.id, true)); }
                 if (!isFinishing()) {
                     toast(why == null ? w("تم التنزيل، والمجموعة مفعّلة")

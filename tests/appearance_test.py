@@ -32,4 +32,11 @@ check("the activity is declared, not exported; the settings' «المظهر وا
 rcv = text(SAVER / "SaverReceiver.java")
 check("an agent can set the home's photos (homephotos same|own, homepacks, homeours) and the hidden quick buttons (pillshidden), and `show` says them",
       all(w in rcv for w in ('getStringExtra("homephotos")', 'getStringExtra("homepacks")', 'getStringExtra("homeours")', 'getStringExtra("pillshidden")', '"\\nhomephotos: "', '"\\npillshidden: "')))
+packs = text(SAVER / "PhotoPacksActivity.java")
+check("step 41: the page stays 5 % inside the top and bottom edges (the last tile and «رجوع» too), the home's pack tiles carry the pack's name, not its id",
+      "heightPixels * 0.05f" in act and "PackStore.names(this)" in act and "names.containsKey(id)" in act)
+check("step 41: the «تلقائي» mock shows both lights (split) and a glass card has its hairline, so it is not missing on a dark ground",
+      '"auto".equals(a) ? GlassStyle.of(prefs.look(), true)' in act and "c.clipRect(w / 2, 0, w, h)" in act and "paint.setColor(l.line);" in act)
+check("step 41: a pack that failed to download says «تعذّر التنزيل، حاول مرة ثانية» on its tile and stays a button that tries again",
+      "failed.add(p.id)" in packs and '"failed".equals(state)' in packs and "تعذّر التنزيل، حاول مرة ثانية" in text(SAVER / "Words.java"))
 sys.exit(1 if failed else 0)
