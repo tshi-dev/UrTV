@@ -23024,5 +23024,2004 @@
 ],
 "numeric": true,
 "verified": true
+},
+{
+"id": "is-pillars-count",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "كم عدد أركان الإسلام؟",
+"en": "How many pillars of Islam are there?"
+},
+"answer": {
+"ar": "5",
+"en": "5"
+},
+"wrong": [
+{
+"ar": "3",
+"en": "3"
+},
+{
+"ar": "4",
+"en": "4"
+},
+{
+"ar": "6",
+"en": "6"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Five_Pillars_of_Islam",
+"https://en.wikipedia.org/wiki/Zakat"
+],
+"numeric": true,
+"evidence": [
+"shahada.*salah.*zakat.*sawm.*hajj",
+"one of the Five Pillars"
+],
+"verified": true
+},
+{
+"id": "is-ramadan-9",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما ترتيب شهر رمضان في السنة الهجرية؟",
+"en": "Which number is Ramadan among the Islamic months?"
+},
+"answer": {
+"ar": "التاسع",
+"en": "Ninth"
+},
+"wrong": [
+{
+"ar": "السابع",
+"en": "Seventh"
+},
+{
+"ar": "العاشر",
+"en": "Tenth"
+},
+{
+"ar": "الثاني عشر",
+"en": "Twelfth"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Ramadan",
+"https://en.wikipedia.org/wiki/Eid_al-Fitr"
+],
+"numeric": true,
+"evidence": [
+"ninth month of the Islamic calendar",
+"Shawwal, the tenth month"
+],
+"verified": true
+},
+{
+"id": "is-fitr-month",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "في أي شهر هجري يقع عيد الفطر؟",
+"en": "In which Islamic month is Eid al-Fitr?"
+},
+"answer": {
+"ar": "شوال",
+"en": "Shawwal"
+},
+"wrong": [
+{
+"ar": "ذو الحجة",
+"en": "Dhu al-Hijjah"
+},
+{
+"ar": "رجب",
+"en": "Rajab"
+},
+{
+"ar": "شعبان",
+"en": "Shaban"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Eid_al-Fitr"
+],
+"evidence": [
+"first day of Shawwal"
+],
+"verified": true
+},
+{
+"id": "is-adha-month",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "في أي شهر هجري يقع عيد الأضحى؟",
+"en": "In which Islamic month is Eid al-Adha?"
+},
+"answer": {
+"ar": "ذو الحجة",
+"en": "Dhu al-Hijjah"
+},
+"wrong": [
+{
+"ar": "شوال",
+"en": "Shawwal"
+},
+{
+"ar": "رجب",
+"en": "Rajab"
+},
+{
+"ar": "محرم",
+"en": "Muharram"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Eid_al-Adha",
+"https://en.wikipedia.org/wiki/Eid_al-Adha"
+],
+"evidence": [
+"10th of Dhu.l-Hijja",
+"twelfth and final month"
+],
+"verified": true
+},
+{
+"id": "is-hajj-mecca",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "إلى أي مدينة يتوجه الحجاج لأداء الحج؟",
+"en": "To which city do pilgrims travel for Hajj?"
+},
+"answer": {
+"ar": "مكة المكرمة",
+"en": "Mecca"
+},
+"wrong": [
+{
+"ar": "المدينة المنورة",
+"en": "Medina"
+},
+{
+"ar": "جدة",
+"en": "Jeddah"
+},
+{
+"ar": "الطائف",
+"en": "Taif"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Hajj"
+],
+"evidence": [
+"pilgrimage to Mecca"
+],
+"verified": true
+},
+{
+"id": "is-kaaba-mosque",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "في أي مسجد تقع الكعبة المشرفة؟",
+"en": "In which mosque is the Kaaba?"
+},
+"answer": {
+"ar": "المسجد الحرام",
+"en": "Masjid al-Haram"
+},
+"wrong": [
+{
+"ar": "المسجد النبوي",
+"en": "The Prophet's Mosque"
+},
+{
+"ar": "مسجد قباء",
+"en": "Quba Mosque"
+},
+{
+"ar": "مسجد نمرة",
+"en": "Namirah Mosque"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Kaaba"
+],
+"evidence": [
+"Masjid al-Haram in Mecca"
+],
+"verified": true
+},
+{
+"id": "is-hijrah-to",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "إلى أي مدينة هاجر النبي محمد ﷺ من مكة؟",
+"en": "To which city did the Prophet migrate from Mecca?"
+},
+"answer": {
+"ar": "المدينة المنورة",
+"en": "Medina"
+},
+"wrong": [
+{
+"ar": "الطائف",
+"en": "Taif"
+},
+{
+"ar": "جدة",
+"en": "Jeddah"
+},
+{
+"ar": "ينبع",
+"en": "Yanbu"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Hijrah"
+],
+"evidence": [
+"from Mecca to Medina"
+],
+"verified": true
+},
+{
+"id": "is-badr-year",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "في أي سنة هجرية وقعت غزوة بدر؟",
+"en": "In which year of the Hijri calendar was the Battle of Badr?"
+},
+"answer": {
+"ar": "الثانية",
+"en": "The second"
+},
+"wrong": [
+{
+"ar": "الأولى",
+"en": "The first"
+},
+{
+"ar": "الثالثة",
+"en": "The third"
+},
+{
+"ar": "الخامسة",
+"en": "The fifth"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Battle_of_Badr",
+"https://en.wikipedia.org/wiki/Hijrah"
+],
+"numeric": true,
+"evidence": [
+"2 AH",
+"622"
+],
+"verified": true
+},
+{
+"id": "is-badr-month",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "في أي شهر وقعت غزوة بدر؟",
+"en": "In which month was the Battle of Badr?"
+},
+"answer": {
+"ar": "رمضان",
+"en": "Ramadan"
+},
+"wrong": [
+{
+"ar": "شوال",
+"en": "Shawwal"
+},
+{
+"ar": "محرم",
+"en": "Muharram"
+},
+{
+"ar": "ذو القعدة",
+"en": "Dhu al-Qadah"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Battle_of_Badr"
+],
+"evidence": [
+"17 Ramadan"
+],
+"verified": true
+},
+{
+"id": "is-hira",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "في أي غار نزل الوحي أول مرة على النبي ﷺ؟",
+"en": "In which cave did the first revelation come to the Prophet?"
+},
+"answer": {
+"ar": "غار حراء",
+"en": "Cave of Hira"
+},
+"wrong": [
+{
+"ar": "غار ثور",
+"en": "Cave of Thawr"
+},
+{
+"ar": "جبل أحد",
+"en": "Mount Uhud"
+},
+{
+"ar": "جبل عرفات",
+"en": "Mount Arafat"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Cave_of_Hira"
+],
+"evidence": [
+"first revelation"
+],
+"verified": true
+},
+{
+"id": "is-nabawi-city",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "في أي مدينة يقع المسجد النبوي؟",
+"en": "In which city is the Prophet's Mosque?"
+},
+"answer": {
+"ar": "المدينة المنورة",
+"en": "Medina"
+},
+"wrong": [
+{
+"ar": "مكة المكرمة",
+"en": "Mecca"
+},
+{
+"ar": "جدة",
+"en": "Jeddah"
+},
+{
+"ar": "تبوك",
+"en": "Tabuk"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Al-Masjid_an-Nabawi"
+],
+"evidence": [
+"heart of Medina"
+],
+"verified": true
+},
+{
+"id": "is-before-nabawi",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "أي مسجد بناه النبي ﷺ في المدينة قبل المسجد النبوي؟",
+"en": "Which mosque did the Prophet build in Medina before his own mosque?"
+},
+"answer": {
+"ar": "مسجد قباء",
+"en": "Quba Mosque"
+},
+"wrong": [
+{
+"ar": "مسجد القبلتين",
+"en": "Masjid al-Qiblatayn"
+},
+{
+"ar": "مسجد الغمامة",
+"en": "Al-Ghamama Mosque"
+},
+{
+"ar": "مسجد الفتح",
+"en": "Al-Fath Mosque"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Al-Masjid_an-Nabawi"
+],
+"evidence": [
+"after the Quba Mosque"
+],
+"verified": true
+},
+{
+"id": "is-zamzam",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "بئر زمزم موجودة داخل أي مسجد؟",
+"en": "Inside which mosque is the Zamzam well?"
+},
+"answer": {
+"ar": "المسجد الحرام",
+"en": "Masjid al-Haram"
+},
+"wrong": [
+{
+"ar": "المسجد النبوي",
+"en": "The Prophet's Mosque"
+},
+{
+"ar": "مسجد قباء",
+"en": "Quba Mosque"
+},
+{
+"ar": "مسجد نمرة",
+"en": "Namirah Mosque"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Zamzam_Well"
+],
+"evidence": [
+"within the Masjid al-Haram in Mecca"
+],
+"verified": true
+},
+{
+"id": "is-months-12",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "كم شهرًا في السنة الهجرية؟",
+"en": "How many months are in the Hijri year?"
+},
+"answer": {
+"ar": "12",
+"en": "12"
+},
+"wrong": [
+{
+"ar": "10",
+"en": "10"
+},
+{
+"ar": "11",
+"en": "11"
+},
+{
+"ar": "13",
+"en": "13"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Islamic_calendar",
+"https://en.wikipedia.org/wiki/Eid_al-Adha"
+],
+"numeric": true,
+"evidence": [
+"12 lunar months",
+"twelfth and final month"
+],
+"verified": true
+},
+{
+"id": "is-birthplace",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "في أي مدينة وُلد النبي محمد ﷺ؟",
+"en": "In which city was the Prophet Muhammad born?"
+},
+"answer": {
+"ar": "مكة المكرمة",
+"en": "Mecca"
+},
+"wrong": [
+{
+"ar": "المدينة المنورة",
+"en": "Medina"
+},
+{
+"ar": "الطائف",
+"en": "Taif"
+},
+{
+"ar": "جدة",
+"en": "Jeddah"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Mecca"
+],
+"evidence": [
+"birthplace of Islam and the Islamic prophet Muhammad"
+],
+"verified": true
+},
+{
+"id": "is-second-holy",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 1,
+"age": "all",
+"question": {
+"ar": "ما ثاني أقدس مدينة في الإسلام بعد مكة المكرمة؟",
+"en": "Which city is second holiest in Islam after Mecca?"
+},
+"answer": {
+"ar": "المدينة المنورة",
+"en": "Medina"
+},
+"wrong": [
+{
+"ar": "جدة",
+"en": "Jeddah"
+},
+{
+"ar": "الطائف",
+"en": "Taif"
+},
+{
+"ar": "الرياض",
+"en": "Riyadh"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Medina"
+],
+"evidence": [
+"second holiest city in Islam after Mecca"
+],
+"verified": true
+},
+{
+"id": "is-zakat-def",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "أي ركن من أركان الإسلام معناه إعطاء جزء من المال للمحتاجين؟",
+"en": "Which pillar of Islam means giving to those in need?"
+},
+"answer": {
+"ar": "الزكاة",
+"en": "Zakat"
+},
+"wrong": [
+{
+"ar": "الصوم",
+"en": "Fasting"
+},
+{
+"ar": "الحج",
+"en": "Hajj"
+},
+{
+"ar": "الصلاة",
+"en": "Prayer"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Zakat"
+],
+"evidence": [
+"giving to charity"
+],
+"verified": true
+},
+{
+"id": "is-sawm-month",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "في أي شهر يصوم المسلمون الصيام المفروض؟",
+"en": "In which month do Muslims observe the obligatory fast?"
+},
+"answer": {
+"ar": "رمضان",
+"en": "Ramadan"
+},
+"wrong": [
+{
+"ar": "رجب",
+"en": "Rajab"
+},
+{
+"ar": "شعبان",
+"en": "Shaban"
+},
+{
+"ar": "شوال",
+"en": "Shawwal"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Ramadan"
+],
+"evidence": [
+"fasting \\(sawm\\)"
+],
+"verified": true
+},
+{
+"id": "is-adhan",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ماذا نسمّي النداء الذي يُرفع للإعلام بدخول وقت الصلاة؟",
+"en": "What is the call that announces prayer time called?"
+},
+"answer": {
+"ar": "الأذان",
+"en": "Adhan"
+},
+"wrong": [
+{
+"ar": "الإقامة",
+"en": "Iqama"
+},
+{
+"ar": "التسبيح",
+"en": "Tasbih"
+},
+{
+"ar": "الخطبة",
+"en": "Khutbah"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Adhan"
+],
+"evidence": [
+"call to prayer"
+],
+"verified": true
+},
+{
+"id": "sg-riyadh",
+"type": "quiz",
+"category": "saudi-gulf",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما عاصمة المملكة العربية السعودية؟",
+"en": "What is the capital of Saudi Arabia?"
+},
+"answer": {
+"ar": "الرياض",
+"en": "Riyadh"
+},
+"wrong": [
+{
+"ar": "جدة",
+"en": "Jeddah"
+},
+{
+"ar": "مكة المكرمة",
+"en": "Mecca"
+},
+{
+"ar": "الدمام",
+"en": "Dammam"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Riyadh"
+],
+"evidence": [
+"capital and largest city of Saudi Arabia"
+],
+"verified": true
+},
+{
+"id": "sg-jeddah",
+"type": "quiz",
+"category": "saudi-gulf",
+"difficulty": 1,
+"age": "all",
+"question": {
+"ar": "أي مدينة سعودية على البحر الأحمر هي أكبر مدينة في منطقة مكة وثاني أكبر مدينة في المملكة؟",
+"en": "Which Red Sea city is the second-largest in Saudi Arabia?"
+},
+"answer": {
+"ar": "جدة",
+"en": "Jeddah"
+},
+"wrong": [
+{
+"ar": "الدمام",
+"en": "Dammam"
+},
+{
+"ar": "أبها",
+"en": "Abha"
+},
+{
+"ar": "تبوك",
+"en": "Tabuk"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Jeddah"
+],
+"evidence": [
+"second-largest city in Saudi Arabia after Riyadh"
+],
+"verified": true
+},
+{
+"id": "sg-oryx",
+"type": "quiz",
+"category": "animals",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "ما اسم الظبي الأبيض ذو القرنين الطويلين المنتشر في صحاري الجزيرة العربية؟",
+"en": "Which pale antelope with long straight horns lives in Arabian deserts?"
+},
+"answer": {
+"ar": "المها العربي",
+"en": "Arabian oryx"
+},
+"wrong": [
+{
+"ar": "الغزال",
+"en": "Gazelle"
+},
+{
+"ar": "الوعل",
+"en": "Ibex"
+},
+{
+"ar": "الأيل",
+"en": "Deer"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Arabian_oryx"
+],
+"evidence": [
+"antelope.*long, straight horns"
+],
+"verified": true
+},
+{
+"id": "sg-camel-hump",
+"type": "quiz",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "كم سنامًا للجمل العربي (الهجين)؟",
+"en": "How many humps does the Arabian camel have?"
+},
+"answer": {
+"ar": "سنام واحد",
+"en": "One"
+},
+"wrong": [
+{
+"ar": "سنامان",
+"en": "Two"
+},
+{
+"ar": "ثلاثة أسنمة",
+"en": "Three"
+},
+{
+"ar": "بلا سنام",
+"en": "None"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Dromedary",
+"https://en.wikipedia.org/wiki/Dromedary"
+],
+"evidence": [
+"one-humped",
+"one hump on its back"
+],
+"verified": true
+},
+{
+"id": "sg-date-palm",
+"type": "quiz",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما اسم الشجرة التي تعطي التمر؟",
+"en": "Which tree gives dates?"
+},
+"answer": {
+"ar": "النخلة",
+"en": "Date palm"
+},
+"wrong": [
+{
+"ar": "شجرة الزيتون",
+"en": "Olive tree"
+},
+{
+"ar": "شجرة التين",
+"en": "Fig tree"
+},
+{
+"ar": "شجرة الرمان",
+"en": "Pomegranate tree"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Date_palm"
+],
+"evidence": [
+"edible sweet fruit"
+],
+"verified": true
+},
+{
+"id": "sg-halala",
+"type": "quiz",
+"category": "saudi-gulf",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "ما اسم الوحدة الصغرى للريال السعودي؟",
+"en": "What is the smaller unit of the Saudi riyal called?"
+},
+"answer": {
+"ar": "الهللة",
+"en": "Halala"
+},
+"wrong": [
+{
+"ar": "القرش",
+"en": "Qirsh"
+},
+{
+"ar": "الفلس",
+"en": "Fils"
+},
+{
+"ar": "البيزة",
+"en": "Baisa"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Saudi_riyal"
+],
+"evidence": [
+"100 halala"
+],
+"verified": true
+},
+{
+"id": "sg-hegra",
+"type": "quiz",
+"category": "saudi-gulf",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "ما الاسم الآخر لموقع الحِجر الأثري في العلا؟",
+"en": "What is the other name of the Hegra archaeological site in AlUla?"
+},
+"answer": {
+"ar": "مدائن صالح",
+"en": "Mada'in Salih"
+},
+"wrong": [
+{
+"ar": "وادي الدواسر",
+"en": "Wadi ad-Dawasir"
+},
+{
+"ar": "جبة",
+"en": "Jubbah"
+},
+{
+"ar": "تيماء",
+"en": "Tayma"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Hegra"
+],
+"evidence": [
+"Mada'in Salih"
+],
+"verified": true
+},
+{
+"id": "sg-empty-quarter",
+"type": "quiz",
+"category": "geography",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "ما الصحراء التي تغطي معظم الثلث الجنوبي من شبه الجزيرة العربية؟",
+"en": "Which desert covers most of the southern third of the Arabian Peninsula?"
+},
+"answer": {
+"ar": "الربع الخالي",
+"en": "Empty Quarter"
+},
+"wrong": [
+{
+"ar": "النفود الكبير",
+"en": "Great Nafud"
+},
+{
+"ar": "الدهناء",
+"en": "Ad-Dahna"
+},
+{
+"ar": "الصمان",
+"en": "As-Summan"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Rub'_al_Khali"
+],
+"evidence": [
+"southern third of the Arabian Peninsula"
+],
+"verified": true
+},
+{
+"id": "sg-kabsa",
+"type": "quiz",
+"category": "food",
+"difficulty": 1,
+"age": "all",
+"question": {
+"ar": "ما اسم الطبق الذي يُعرف أيضًا بالمكبوس أو المجبوس في الخليج؟",
+"en": "Which rice dish is also called makboos or machboos in the Gulf?"
+},
+"answer": {
+"ar": "الكبسة",
+"en": "Kabsa"
+},
+"wrong": [
+{
+"ar": "الجريش",
+"en": "Jareesh"
+},
+{
+"ar": "المطازيز",
+"en": "Matazeez"
+},
+{
+"ar": "الحنيني",
+"en": "Hanini"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Kabsa"
+],
+"evidence": [
+"Makboos.*Machboos"
+],
+"verified": true
+},
+{
+"id": "sg-falcon",
+"type": "quiz",
+"category": "saudi-gulf",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "الصقارة هي الصيد بواسطة أي نوع من الطيور؟",
+"en": "Falconry is hunting with which kind of bird?"
+},
+"answer": {
+"ar": "طائر جارح مدرّب",
+"en": "A trained bird of prey"
+},
+"wrong": [
+{
+"ar": "حمامة",
+"en": "A pigeon"
+},
+{
+"ar": "ببغاء",
+"en": "A parrot"
+},
+{
+"ar": "بطة",
+"en": "A duck"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Falconry"
+],
+"evidence": [
+"trained bird of prey"
+],
+"verified": true
+},
+{
+"id": "sg-gcc-hq",
+"type": "quiz",
+"category": "saudi-gulf",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "في أي مدينة المقر الرئيسي لمجلس التعاون لدول الخليج العربية؟",
+"en": "In which city is the headquarters of the GCC?"
+},
+"answer": {
+"ar": "الرياض",
+"en": "Riyadh"
+},
+"wrong": [
+{
+"ar": "الدوحة",
+"en": "Doha"
+},
+{
+"ar": "أبوظبي",
+"en": "Abu Dhabi"
+},
+{
+"ar": "مسقط",
+"en": "Muscat"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Gulf_Cooperation_Council"
+],
+"evidence": [
+"headquarters is located in Riyadh"
+],
+"verified": true
+},
+{
+"id": "sg-redsea",
+"type": "quiz",
+"category": "geography",
+"difficulty": 1,
+"age": "all",
+"question": {
+"ar": "أي بحر يقع بين شبه الجزيرة العربية وأفريقيا؟",
+"en": "Which sea lies between the Arabian Peninsula and Africa?"
+},
+"answer": {
+"ar": "البحر الأحمر",
+"en": "Red Sea"
+},
+"wrong": [
+{
+"ar": "البحر الأسود",
+"en": "Black Sea"
+},
+{
+"ar": "بحر قزوين",
+"en": "Caspian Sea"
+},
+{
+"ar": "البحر الأبيض المتوسط",
+"en": "Mediterranean Sea"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Red_Sea"
+],
+"evidence": [
+"between the Arabian Peninsula and Africa"
+],
+"verified": true
+},
+{
+"id": "sg-eastern",
+"type": "quiz",
+"category": "saudi-gulf",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "ما مركز المنطقة الشرقية في السعودية؟",
+"en": "Which city is the seat of the Eastern Province?"
+},
+"answer": {
+"ar": "الدمام",
+"en": "Dammam"
+},
+"wrong": [
+{
+"ar": "الأحساء",
+"en": "Al-Ahsa"
+},
+{
+"ar": "جدة",
+"en": "Jeddah"
+},
+{
+"ar": "حائل",
+"en": "Hail"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Dammam"
+],
+"evidence": [
+"seat and largest city of the Eastern Province"
+],
+"verified": true
+},
+{
+"id": "sg-qassim",
+"type": "quiz",
+"category": "saudi-gulf",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "ما عاصمة منطقة القصيم؟",
+"en": "What is the capital of Al-Qassim Province?"
+},
+"answer": {
+"ar": "بريدة",
+"en": "Buraydah"
+},
+"wrong": [
+{
+"ar": "عنيزة",
+"en": "Unaizah"
+},
+{
+"ar": "الرس",
+"en": "Ar Rass"
+},
+{
+"ar": "المجمعة",
+"en": "Al Majmaah"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Buraydah"
+],
+"evidence": [
+"capital and largest city of Al-Qassim Province"
+],
+"verified": true
+},
+{
+"id": "sg-najran",
+"type": "quiz",
+"category": "saudi-gulf",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "ما عاصمة منطقة نجران؟",
+"en": "What is the capital of Najran Province?"
+},
+"answer": {
+"ar": "نجران",
+"en": "Najran"
+},
+"wrong": [
+{
+"ar": "جازان",
+"en": "Jazan"
+},
+{
+"ar": "أبها",
+"en": "Abha"
+},
+{
+"ar": "الباحة",
+"en": "Al Bahah"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Najran"
+],
+"evidence": [
+"capital of Najran Province"
+],
+"verified": true
+},
+{
+"id": "sg-bahah",
+"type": "quiz",
+"category": "saudi-gulf",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "ما عاصمة منطقة الباحة؟",
+"en": "What is the capital of Al-Baha Province?"
+},
+"answer": {
+"ar": "الباحة",
+"en": "Al Bahah"
+},
+"wrong": [
+{
+"ar": "نجران",
+"en": "Najran"
+},
+{
+"ar": "أبها",
+"en": "Abha"
+},
+{
+"ar": "الطائف",
+"en": "Taif"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Al_Bahah"
+],
+"evidence": [
+"capital and administrative center of Al-Baha Province"
+],
+"verified": true
+},
+{
+"id": "sg-jawf",
+"type": "quiz",
+"category": "saudi-gulf",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما عاصمة منطقة الجوف؟",
+"en": "What is the capital of Al-Jawf Province?"
+},
+"answer": {
+"ar": "سكاكا",
+"en": "Sakakah"
+},
+"wrong": [
+{
+"ar": "دومة الجندل",
+"en": "Dumat al-Jandal"
+},
+{
+"ar": "طبرجل",
+"en": "Tabarjal"
+},
+{
+"ar": "القريات",
+"en": "Qurayyat"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Sakakah"
+],
+"evidence": [
+"capital of Al-Jawf Province"
+],
+"verified": true
+},
+{
+"id": "sg-tabuk",
+"type": "quiz",
+"category": "saudi-gulf",
+"difficulty": 1,
+"age": "all",
+"question": {
+"ar": "ما عاصمة منطقة تبوك؟",
+"en": "What is the capital of Tabuk Province?"
+},
+"answer": {
+"ar": "تبوك",
+"en": "Tabuk"
+},
+"wrong": [
+{
+"ar": "ضباء",
+"en": "Duba"
+},
+{
+"ar": "أملج",
+"en": "Umluj"
+},
+{
+"ar": "حقل",
+"en": "Haql"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Tabuk,_Saudi_Arabia"
+],
+"evidence": [
+"capital of Tabuk Province"
+],
+"verified": true
+},
+{
+"id": "sg-asir",
+"type": "quiz",
+"category": "saudi-gulf",
+"difficulty": 1,
+"age": "all",
+"question": {
+"ar": "ما عاصمة منطقة عسير؟",
+"en": "What is the capital of Asir Province?"
+},
+"answer": {
+"ar": "أبها",
+"en": "Abha"
+},
+"wrong": [
+{
+"ar": "خميس مشيط",
+"en": "Khamis Mushait"
+},
+{
+"ar": "بيشة",
+"en": "Bisha"
+},
+{
+"ar": "جازان",
+"en": "Jazan"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Abha"
+],
+"evidence": [
+"capital of Asir Province"
+],
+"verified": true
+},
+{
+"id": "an-cheetah",
+"type": "quiz",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما أسرع حيوان بري في العالم؟",
+"en": "What is the fastest land animal?"
+},
+"answer": {
+"ar": "الفهد الصياد",
+"en": "Cheetah"
+},
+"wrong": [
+{
+"ar": "الأسد",
+"en": "Lion"
+},
+{
+"ar": "الحصان",
+"en": "Horse"
+},
+{
+"ar": "النمر",
+"en": "Tiger"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Cheetah"
+],
+"evidence": [
+"fastest land animal"
+],
+"verified": true
+},
+{
+"id": "an-giraffe",
+"type": "quiz",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما أطول حيوان بري حي؟",
+"en": "What is the tallest living land animal?"
+},
+"answer": {
+"ar": "الزرافة",
+"en": "Giraffe"
+},
+"wrong": [
+{
+"ar": "الفيل",
+"en": "Elephant"
+},
+{
+"ar": "الجمل",
+"en": "Camel"
+},
+{
+"ar": "النعامة",
+"en": "Ostrich"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Giraffe"
+],
+"evidence": [
+"tallest living terrestrial animals"
+],
+"verified": true
+},
+{
+"id": "an-ostrich",
+"type": "quiz",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما أكبر طائر حي في العالم؟",
+"en": "What is the largest living bird?"
+},
+"answer": {
+"ar": "النعامة",
+"en": "Ostrich"
+},
+"wrong": [
+{
+"ar": "النسر",
+"en": "Eagle"
+},
+{
+"ar": "البطريق",
+"en": "Penguin"
+},
+{
+"ar": "الصقر",
+"en": "Falcon"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Ostrich"
+],
+"evidence": [
+"heaviest and largest living birds"
+],
+"verified": true
+},
+{
+"id": "an-bee-honey",
+"type": "quiz",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "أي حشرة تصنع العسل؟",
+"en": "Which insect makes honey?"
+},
+"answer": {
+"ar": "النحل",
+"en": "Bee"
+},
+"wrong": [
+{
+"ar": "النمل",
+"en": "Ant"
+},
+{
+"ar": "الذباب",
+"en": "Fly"
+},
+{
+"ar": "الفراشة",
+"en": "Butterfly"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Honey"
+],
+"evidence": [
+"made by several species of bees"
+],
+"verified": true
+},
+{
+"id": "sc-photo",
+"type": "quiz",
+"category": "science",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "ما العملية التي تحوّل بها النباتات ضوء الشمس إلى طاقة كيميائية؟",
+"en": "By what process do plants turn sunlight into chemical energy?"
+},
+"answer": {
+"ar": "البناء الضوئي",
+"en": "Photosynthesis"
+},
+"wrong": [
+{
+"ar": "التنفس",
+"en": "Respiration"
+},
+{
+"ar": "الهضم",
+"en": "Digestion"
+},
+{
+"ar": "التبخر",
+"en": "Evaporation"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Photosynthesis"
+],
+"evidence": [
+"convert light energy"
+],
+"verified": true
+},
+{
+"id": "sc-moon",
+"type": "quiz",
+"category": "science",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما القمر الطبيعي الوحيد للأرض؟",
+"en": "What is Earth's only natural satellite?"
+},
+"answer": {
+"ar": "القمر",
+"en": "The Moon"
+},
+"wrong": [
+{
+"ar": "المريخ",
+"en": "Mars"
+},
+{
+"ar": "الزهرة",
+"en": "Venus"
+},
+{
+"ar": "الشمس",
+"en": "The Sun"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Moon"
+],
+"evidence": [
+"only natural satellite of Earth"
+],
+"verified": true
+},
+{
+"id": "sc-jupiter",
+"type": "quiz",
+"category": "science",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما أكبر كواكب المجموعة الشمسية؟",
+"en": "Which is the largest planet in the Solar System?"
+},
+"answer": {
+"ar": "المشتري",
+"en": "Jupiter"
+},
+"wrong": [
+{
+"ar": "زحل",
+"en": "Saturn"
+},
+{
+"ar": "الأرض",
+"en": "Earth"
+},
+{
+"ar": "نبتون",
+"en": "Neptune"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Jupiter"
+],
+"evidence": [
+"largest in the Solar System"
+],
+"verified": true
+},
+{
+"id": "sc-saturn-second",
+"type": "quiz",
+"category": "science",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "ما ثاني أكبر كواكب المجموعة الشمسية بعد المشتري؟",
+"en": "Which planet is second largest after Jupiter?"
+},
+"answer": {
+"ar": "زحل",
+"en": "Saturn"
+},
+"wrong": [
+{
+"ar": "أورانوس",
+"en": "Uranus"
+},
+{
+"ar": "الأرض",
+"en": "Earth"
+},
+{
+"ar": "المريخ",
+"en": "Mars"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Saturn"
+],
+"evidence": [
+"second largest planet in the Solar System, after Jupiter"
+],
+"verified": true
+},
+{
+"id": "sc-jupiter-order",
+"type": "quiz",
+"category": "science",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما ترتيب المشتري بين الكواكب بعدًا عن الشمس؟",
+"en": "Which position from the Sun is Jupiter?"
+},
+"answer": {
+"ar": "الخامس",
+"en": "Fifth"
+},
+"wrong": [
+{
+"ar": "الثالث",
+"en": "Third"
+},
+{
+"ar": "السابع",
+"en": "Seventh"
+},
+{
+"ar": "الثامن",
+"en": "Eighth"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Jupiter",
+"https://en.wikipedia.org/wiki/Saturn"
+],
+"numeric": true,
+"evidence": [
+"fifth planet from the Sun",
+"sixth planet from the Sun"
+],
+"verified": true
+},
+{
+"id": "gk-everest",
+"type": "quiz",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما أعلى جبل في العالم فوق سطح البحر؟",
+"en": "What is the highest mountain above sea level?"
+},
+"answer": {
+"ar": "إيفرست",
+"en": "Mount Everest"
+},
+"wrong": [
+{
+"ar": "كليمنجارو",
+"en": "Kilimanjaro"
+},
+{
+"ar": "جبل طارق",
+"en": "Gibraltar"
+},
+{
+"ar": "مونت بلانك",
+"en": "Mont Blanc"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Mount_Everest"
+],
+"evidence": [
+"highest mountain on Earth above sea level"
+],
+"verified": true
+},
+{
+"id": "gk-sahara",
+"type": "quiz",
+"category": "geography",
+"difficulty": 1,
+"age": "all",
+"question": {
+"ar": "ما أكبر صحراء حارة في العالم؟",
+"en": "What is the largest hot desert in the world?"
+},
+"answer": {
+"ar": "الصحراء الكبرى",
+"en": "Sahara"
+},
+"wrong": [
+{
+"ar": "صحراء غوبي",
+"en": "Gobi"
+},
+{
+"ar": "الربع الخالي",
+"en": "Empty Quarter"
+},
+{
+"ar": "صحراء كالاهاري",
+"en": "Kalahari"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Sahara"
+],
+"evidence": [
+"largest hot desert in the world"
+],
+"verified": true
+},
+{
+"id": "gk-pacific",
+"type": "quiz",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما أكبر المحيطات؟",
+"en": "What is the largest ocean?"
+},
+"answer": {
+"ar": "المحيط الهادئ",
+"en": "Pacific Ocean"
+},
+"wrong": [
+{
+"ar": "المحيط الأطلسي",
+"en": "Atlantic Ocean"
+},
+{
+"ar": "المحيط الهندي",
+"en": "Indian Ocean"
+},
+{
+"ar": "المحيط المتجمد الشمالي",
+"en": "Arctic Ocean"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Pacific_Ocean"
+],
+"evidence": [
+"largest and deepest of Earth.s five oceanic divisions"
+],
+"verified": true
+},
+{
+"id": "hi-giza",
+"type": "quiz",
+"category": "history",
+"difficulty": 1,
+"age": "all",
+"question": {
+"ar": "في أي دولة تقع الهرم الأكبر في الجيزة؟",
+"en": "In which country is the Great Pyramid of Giza?"
+},
+"answer": {
+"ar": "مصر",
+"en": "Egypt"
+},
+"wrong": [
+{
+"ar": "السودان",
+"en": "Sudan"
+},
+{
+"ar": "العراق",
+"en": "Iraq"
+},
+{
+"ar": "المكسيك",
+"en": "Mexico"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Great_Pyramid_of_Giza"
+],
+"evidence": [
+"Giza, Egypt"
+],
+"verified": true
+},
+{
+"id": "hi-battuta",
+"type": "quiz",
+"category": "history",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "من أي بلد الرحّالة ابن بطوطة؟",
+"en": "Which country was the traveller Ibn Battuta from?"
+},
+"answer": {
+"ar": "المغرب",
+"en": "Morocco"
+},
+"wrong": [
+{
+"ar": "مصر",
+"en": "Egypt"
+},
+{
+"ar": "العراق",
+"en": "Iraq"
+},
+{
+"ar": "الأندلس",
+"en": "Al-Andalus"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Ibn_Battuta"
+],
+"evidence": [
+"Tangier, Morocco"
+],
+"verified": true
+},
+{
+"id": "hi-haytham",
+"type": "quiz",
+"category": "history",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "بأي علم اشتهر العالم ابن الهيثم؟",
+"en": "Ibn al-Haytham is best known for which science?"
+},
+"answer": {
+"ar": "البصريات",
+"en": "Optics"
+},
+"wrong": [
+{
+"ar": "الكيمياء",
+"en": "Chemistry"
+},
+{
+"ar": "الجغرافيا",
+"en": "Geography"
+},
+{
+"ar": "الطب",
+"en": "Medicine"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Ibn_al-Haytham"
+],
+"evidence": [
+"father of modern optics"
+],
+"verified": true
+},
+{
+"id": "hi-wright",
+"type": "quiz",
+"category": "history",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "من الأخوان اللذان صنعا وطيّرا أول طائرة ناجحة؟",
+"en": "Which brothers built and flew the first successful airplane?"
+},
+"answer": {
+"ar": "الأخوان رايت",
+"en": "Wright brothers"
+},
+"wrong": [
+{
+"ar": "الأخوان لوميير",
+"en": "Lumière brothers"
+},
+{
+"ar": "الأخوان غريم",
+"en": "Brothers Grimm"
+},
+{
+"ar": "الأخوان مونتغولفيه",
+"en": "Montgolfier brothers"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Wright_brothers"
+],
+"evidence": [
+"first successful"
+],
+"verified": true
+},
+{
+"id": "fo-hummus",
+"type": "quiz",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "من أي حبوب يُصنع الحمص بالطحينة؟",
+"en": "Which legume is hummus made from?"
+},
+"answer": {
+"ar": "الحمّص",
+"en": "Chickpeas"
+},
+"wrong": [
+{
+"ar": "العدس",
+"en": "Lentils"
+},
+{
+"ar": "الفول",
+"en": "Fava beans"
+},
+{
+"ar": "الفاصولياء",
+"en": "Kidney beans"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Hummus"
+],
+"evidence": [
+"cooked, mashed chickpeas"
+],
+"verified": true
 }
 ]

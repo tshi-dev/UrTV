@@ -3007,5 +3007,214 @@
 "https://www.wikidata.org/wiki/Q3642"
 ],
 "verified": true
+},
+{
+"id": "is-tf-kaaba",
+"type": "truefalse",
+"category": "islamic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "الكعبة المشرفة تقع في المدينة المنورة.",
+"en": "The Kaaba is in Medina."
+},
+"answer": false,
+"source": [
+"https://en.wikipedia.org/wiki/Kaaba"
+],
+"evidence": [
+"Masjid al-Haram in Mecca"
+],
+"verified": true
+},
+{
+"id": "is-tf-ramadan-fast",
+"type": "truefalse",
+"category": "islamic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "الصيام المفروض على المسلمين يكون في شهر رمضان.",
+"en": "The obligatory fast is in the month of Ramadan."
+},
+"answer": true,
+"source": [
+"https://en.wikipedia.org/wiki/Ramadan"
+],
+"evidence": [
+"fasting \\(sawm\\)"
+],
+"verified": true
+},
+{
+"id": "is-tf-hajj",
+"type": "truefalse",
+"category": "islamic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "الحج عبادة تُؤدّى في مكة المكرمة.",
+"en": "Hajj is performed in Mecca."
+},
+"answer": true,
+"source": [
+"https://en.wikipedia.org/wiki/Hajj"
+],
+"evidence": [
+"pilgrimage to Mecca"
+],
+"verified": true
+},
+{
+"id": "is-tf-badr-ramadan",
+"type": "truefalse",
+"category": "islamic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "وقعت غزوة بدر في شهر رمضان.",
+"en": "The Battle of Badr took place in Ramadan."
+},
+"answer": true,
+"source": [
+"https://en.wikipedia.org/wiki/Battle_of_Badr"
+],
+"evidence": [
+"17 Ramadan"
+],
+"verified": true
+},
+{
+"id": "is-tf-nabawi-mecca",
+"type": "truefalse",
+"category": "islamic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "المسجد النبوي في مكة المكرمة.",
+"en": "The Prophet's Mosque is in Mecca."
+},
+"answer": false,
+"source": [
+"https://en.wikipedia.org/wiki/Al-Masjid_an-Nabawi"
+],
+"evidence": [
+"heart of Medina"
+],
+"verified": true
+},
+{
+"id": "is-tf-zamzam",
+"type": "truefalse",
+"category": "islamic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "بئر زمزم داخل المسجد الحرام.",
+"en": "The Zamzam well is inside Masjid al-Haram."
+},
+"answer": true,
+"source": [
+"https://en.wikipedia.org/wiki/Zamzam_Well"
+],
+"evidence": [
+"within the Masjid al-Haram in Mecca"
+],
+"verified": true
+},
+{
+"id": "is-tf-fitr",
+"type": "truefalse",
+"category": "islamic",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عيد الفطر في أول يوم من شوال.",
+"en": "Eid al-Fitr is on the first day of Shawwal."
+},
+"answer": true,
+"source": [
+"https://en.wikipedia.org/wiki/Eid_al-Fitr"
+],
+"evidence": [
+"first day of Shawwal"
+],
+"verified": true
+},
+{
+"id": "an-penguin",
+"type": "truefalse",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "البطريق طائر لا يستطيع الطيران.",
+"en": "Penguins are birds that cannot fly."
+},
+"answer": true,
+"source": [
+"https://en.wikipedia.org/wiki/Penguin"
+],
+"evidence": [
+"flightless"
+],
+"verified": true
+},
+{
+"id": "an-blue-whale",
+"type": "truefalse",
+"category": "animals",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "الحوت الأزرق من الثدييات وليس من الأسماك.",
+"en": "The blue whale is a mammal, not a fish."
+},
+"answer": true,
+"source": [
+"https://en.wikipedia.org/wiki/Blue_whale"
+],
+"evidence": [
+"marine mammal"
+],
+"verified": true
+},
+{
+"id": "fo-falafel",
+"type": "truefalse",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "الفلافل كرات مقلية تُصنع من الفول أو الحمص المطحون.",
+"en": "Falafel is made from ground fava beans or chickpeas."
+},
+"answer": true,
+"source": [
+"https://en.wikipedia.org/wiki/Falafel"
+],
+"evidence": [
+"ground fava beans, ch"
+],
+"verified": true
+},
+{
+"id": "fo-coffee",
+"type": "truefalse",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "القهوة مشروب يُحضَّر من حبوب البن المحمّصة والمطحونة.",
+"en": "Coffee is brewed from roasted, ground coffee beans."
+},
+"answer": true,
+"source": [
+"https://en.wikipedia.org/wiki/Coffee"
+],
+"evidence": [
+"roasted, ground coffee beans"
+],
+"verified": true
 }
 ]
