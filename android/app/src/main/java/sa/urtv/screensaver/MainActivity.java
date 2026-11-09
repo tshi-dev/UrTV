@@ -48,11 +48,11 @@ public class MainActivity extends Activity {
 
     /** The page's renderer died: the dead view is thrown away; a new one at most twice in ten minutes, else the preview closes. */
     private void gone(WebView dead) {
-        guard.gone(System.currentTimeMillis());
+        guard.gone(android.os.SystemClock.elapsedRealtime());
         ScreenView.release(dead);
         if (dead != web) return;
         web = null;
-        if (alive && guard.mayCreate(System.currentTimeMillis())) show();
+        if (alive && guard.mayCreate(android.os.SystemClock.elapsedRealtime())) show();
         else finish();
     }
 

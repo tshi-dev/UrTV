@@ -41,7 +41,7 @@ home_main = (HOME / "MainActivity.java").read_text(encoding="utf-8")
 card = (HOME / "HomeCard.java").read_text(encoding="utf-8")
 check("the home follows it: its clock reads it at every tick, the cards load a fresh page when the fragment changed, the Java screens' times through Digits",
       "boolean h24 = cfg.clock24();" in home_main and "Digits.remember(this, cfg);" in home_main
-      and "if (!want.equals(url)) {" in card and "frag = c.getString(0);" in card
+      and "if (want.equals(url)) return;" in card and "frag = c.getString(0);" in card
       and 'fragment.contains("&clock=24")' in (HOME / "ConfigSnapshot.java").read_text(encoding="utf-8")
       and "clock24 = now24;" in (HOME / "Digits.java").read_text(encoding="utf-8"))
 check("the page reads #clock=24", "clock24: _Q.get('clock') === '24'," in (ROOT / "src/template.html").read_text(encoding="utf-8"))

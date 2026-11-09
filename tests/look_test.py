@@ -34,7 +34,7 @@ check("«المظهر» is the first row of «الشاشة الرئيسية»: �
       and home_at < settings.index('row("المظهر"') < settings.index("row(HOME_CARD_NAMES[k]") and "prefs.setAppearance(values[pos])" in settings
       and "prefs.setLook(values[pos])" in settings)
 check("the launcher reads the column; an older screensaver says nothing: dark", 'cur.getColumnIndex("appearance")' in snap and "this.appearance = Look.mode(appearance);" in snap)
-tick = main[main.index("private void updateClock()"):].split("\n    }\n")[0]
+tick = main[main.index("private void updateClock(ConfigSnapshot cfg)"):].split("\n    }\n")[0]
 check("the home asks for the look at each minute tick (and on coming back), with the sun when it is automatic",
       "applyLook(Look.light(cfg.appearance(), dayBySun(cfg), h * 60 + now.get(Calendar.MINUTE)));" in tick)
 sun = main[main.index("private Boolean dayBySun(ConfigSnapshot cfg)"):].split("\n    }\n")[0]

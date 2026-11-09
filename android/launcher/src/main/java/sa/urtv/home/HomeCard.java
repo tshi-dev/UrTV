@@ -54,14 +54,14 @@ final class HomeCard {
     private final Sizer sizer;
     private WebView web;
     private String url;
-    private int cards;   // how many the page in `web` shows
-    private boolean tasks;   // «المهام» is one of them: `target` exists
+    private volatile int cards;   // how many the page in `web` shows
+    private volatile boolean tasks;   // «المهام» is one of them: `target` exists
     private View target;
     private FrameLayout.LayoutParams targetParams;
-    private boolean stocks;   // «الأسهم» is one of them: `market` exists
+    private volatile boolean stocks;   // «الأسهم» is one of them: `market` exists
     private View market;
     private FrameLayout.LayoutParams marketParams;
-    private boolean stocksFirst;   // the stocks card comes before «المهام» among the cards
+    private volatile boolean stocksFirst;   // the stocks card comes before «المهام» among the cards
     private final Live live;
     private final RenderGuard guard = new RenderGuard();
     private boolean resumed;
@@ -69,7 +69,7 @@ final class HomeCard {
      * «المظهر ← الواجهة» is «كرة القدم» (docs/PROPOSALS-NOV2.md §1): the page shows the football home's three widgets instead of the cards,
      * from the screen's top to above the favourites' tray, and FootballFocus puts a focus target over each. Nothing else changes.
      */
-    private boolean football;
+    private volatile boolean football;
     private FootballFocus.Host footballHost;
     private FootballFocus footballFocus;
     /** the cards' own place, put back when the home leaves the football layout */
@@ -123,20 +123,47 @@ final class HomeCard {
         placeMarket();
     }
 
-    /** onResume: follow the current settings; a changed choice gets a fresh page. */
+    /**
+     * onResume: follow the current settings; a changed choice gets a fresh page. P1: the settings, the page's address and the copy of the screensaver's newer page are read OFF the UI
+     * thread (they were a provider query and a file read in onResume, the TCL's flicker with B7): the card that is there goes on at once, with the last frame it drew, and a changed
+     * address is applied when it comes.
+     */
     void refresh() {
         resumed = true;
-        String want = readUrl();
+        idle.removeCallbacks(drop);
+        if (web != null) resumeWeb();
+        final int gen = ++refreshGen;
+        new Thread(new Runnable() {
+            @Override public void run() {
+                final String want = readUrl();
+                activity.runOnUiThread(new Runnable() {
+                    @Override public void run() { if (gen == refreshGen && resumed) applyUrl(want); }
+                });
+            }
+        }, "homecard-url").start();
+    }
+
+    private int refreshGen;
+
+    /** P9 (weak TVs only): the card's page is let go after this long behind another app; the return builds it again (a page is some tens of MB of the renderer's memory) */
+    static final long IDLE_DROP_MS = 10 * 60 * 1000;
+    private final android.os.Handler idle = new android.os.Handler(android.os.Looper.getMainLooper());
+    private final Runnable drop = new Runnable() { @Override public void run() { if (!resumed) destroy(); } };
+
+    private void applyUrl(String want) {
         if (want == null) { destroy(); return; }
-        if (!want.equals(url)) {
-            destroy();
-            if (!guard.mayCreate(System.currentTimeMillis())) return;   // its renderer keeps dying: the cards stay off for now
-            create(want);
-        }
+        if (want.equals(url)) return;
+        destroy();
+        if (!guard.mayCreate(android.os.SystemClock.elapsedRealtime())) return;   // its renderer keeps dying: the cards stay off for now
+        create(want);
         web.onResume();
         web.resumeTimers();
-        // B7 (first-frame guard): on a return from another app the card flickered (a blank or half-drawn frame before the page painted again): it is shown
-        // once the page has drawn its first frame after the return (visual state), at the latest after 700 ms; a first start is the page's own load, not held
+    }
+
+    /** the page runs again; B7 (first-frame guard): after another app the card flickered (a blank or half-drawn frame before the page painted again): it is shown once the page has drawn its first frame after the return (visual state), at the latest after 700 ms */
+    private void resumeWeb() {
+        web.onResume();
+        web.resumeTimers();
         if (guardNext && android.os.Build.VERSION.SDK_INT >= 23) {
             final WebView w = web;
             w.setAlpha(0f);
@@ -158,6 +185,7 @@ final class HomeCard {
         resumed = false;
         guardNext = web != null;
         if (web != null) { web.onPause(); web.pauseTimers(); }
+        if (web != null && Ram.low(activity)) idle.postDelayed(drop, IDLE_DROP_MS);   // P9: a weak TV does not keep a page it is not showing for long
     }
 
     void destroy() {
@@ -186,8 +214,9 @@ final class HomeCard {
             // the screensaver's settings are out of reach
         }
         SharedPreferences sp = activity.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        if (frag != null && panel != null) {   // remember what was read, for when it can't be read
-            sp.edit().putString("frag", frag).putString("panel", panel).putString("layout", layout).apply();
+        if (frag != null && panel != null) {   // remember what was read, for when it can't be read; P6: written only when it changed, not at every return
+            if (!frag.equals(sp.getString("frag", null)) || !panel.equals(sp.getString("panel", null)) || (layout != null && !layout.equals(sp.getString("layout", null))))
+                sp.edit().putString("frag", frag).putString("panel", panel).putString("layout", layout).apply();
         }
         if (layout == null) layout = sp.getString("layout", "classic");
         // Unreadable settings (the screensaver is missing, too old, or signed with another key, e.g. reinstalled
@@ -218,7 +247,7 @@ final class HomeCard {
             @Override
             public boolean onRenderProcessGone(WebView v, RenderProcessGoneDetail detail) {
                 if (v != web) { v.destroy(); return true; }
-                guard.gone(System.currentTimeMillis());
+                guard.gone(android.os.SystemClock.elapsedRealtime());
                 destroy();
                 if (resumed) refresh();
                 return true;
@@ -243,6 +272,9 @@ final class HomeCard {
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView v, WebResourceRequest r) {
                 String s = r.getUrl().toString();
+                if ("file".equals(r.getUrl().getScheme()) && !FileGate.allowed(r.getUrl().getPath(), url == null ? null : Uri.parse(url).getPath())) {   // S1: the page reads its own file and the assets, nothing of the app's folders
+                    return new WebResourceResponse("text/plain", "UTF-8", 403, "Forbidden", Collections.<String, String>emptyMap(), new java.io.ByteArrayInputStream(new byte[0]));
+                }
                 if (s.startsWith(FONTS)) {
                     String name = s.substring(FONTS.length());
                     if (name.matches("[A-Za-z0-9_-]+\\.woff2")) {
@@ -337,6 +369,10 @@ final class HomeCard {
                 String[] r = value == null ? new String[0] : value.replace("\"", "").split(",");
                 if (r.length != 4) return;
                 try {
+                    for (String n : r) {   // S11: «NaN», «Infinity» or an absurd size from the page is no place
+                        float f = Float.parseFloat(n);
+                        if (Float.isNaN(f) || Float.isInfinite(f) || Math.abs(f) > 20000f) return;
+                    }
                     float d = activity.getResources().getDisplayMetrics().density;   // the page's px are dp
                     if (Dir.rtl()) targetParams.leftMargin = params.leftMargin + Math.round(Float.parseFloat(r[0]) * d);
                     else targetParams.rightMargin = params.rightMargin + params.width   // English: the card hangs from the right (Dir.end())

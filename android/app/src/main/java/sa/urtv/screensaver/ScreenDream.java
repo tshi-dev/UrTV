@@ -13,12 +13,15 @@ public class ScreenDream extends DreamService {
     private WebView web;
     private final RenderGuard guard = new RenderGuard();
     private boolean attached;
+    private String shownUrl;   // the address the page was opened with (S6)
     private final AdhanKeys adhanKeys = new AdhanKeys();
     private final ReminderKeys reminderKeys = new ReminderKeys();
     /** settings were saved while this dream is on (an agent's `saver.sh city`): start the page over with them, not at the next dream */
     private final BroadcastReceiver changed = new BroadcastReceiver() {
         @Override public void onReceive(Context c, Intent i) {
             if (!attached || web == null) return;
+            // S6 (P4): the page is built again only when what it is opened with changed; a setting that does not reach it (the phone's, the home's) left the dream as it was
+            if (new Prefs(c).screenUrl(c, false).equals(shownUrl)) return;
             WebView old = web;
             web = null;
             ScreenView.release(old);
@@ -79,17 +82,18 @@ public class ScreenDream extends DreamService {
     /** start: the dream starting (counted for the first-run note), not a renderer's re-creation */
     private void show(boolean start) {
         web = ScreenView.create(this, this::gone, start);
+        shownUrl = new Prefs(this).screenUrl(this, false);
         if (getWindow() != null) getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(0xFF040E09));   // the page's ground, under the view until it has painted
         setContentView(web);
     }
 
     /** The page's renderer died: the dead view is thrown away; a new one at most twice in ten minutes, else the dream ends (the system starts it again later). */
     private void gone(WebView dead) {
-        guard.gone(System.currentTimeMillis());
+        guard.gone(android.os.SystemClock.elapsedRealtime());
         ScreenView.release(dead);
         if (dead != web) return;
         web = null;
-        if (attached && guard.mayCreate(System.currentTimeMillis())) show(false);
+        if (attached && guard.mayCreate(android.os.SystemClock.elapsedRealtime())) show(false);
         else finish();
     }
 

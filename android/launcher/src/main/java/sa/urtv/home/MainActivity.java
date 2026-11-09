@@ -180,11 +180,14 @@ public class MainActivity extends Activity {
         @Override public void onReceive(Context c, Intent i) { updateSleepPill(); }
     };
     private final BroadcastReceiver packages = new BroadcastReceiver() {
-        @Override public void onReceive(Context c, Intent i) { PhoneApps.invalidate(); buildApps(); }   // buildApps ends «تعديل المفضلة» and «تعديل التطبيقات» without saving: what they edit is stale
+        @Override public void onReceive(Context c, Intent i) { PhoneApps.invalidate(); if (!resumed) { appsStale = true; return; } buildApps(); }   // P2: while another app is in front the rows are built at the return, once; buildApps ends «تعديل المفضلة» and «تعديل التطبيقات» without saving: what they edit is stale
     };
+    /** the apps changed while the home was not in front: the rows are built again at the return (P2) */
+    private boolean appsStale;
+
     // favourites changed in «ترتيب المفضلة» or from ADB while the home screen is up
     private final BroadcastReceiver dockChanged = new BroadcastReceiver() {
-        @Override public void onReceive(Context c, Intent i) { PhoneApps.invalidate(); dockApps = loadDock(); buildApps(); }
+        @Override public void onReceive(Context c, Intent i) { PhoneApps.invalidate(); dockApps = loadDock(); if (!resumed) { appsStale = true; return; } buildApps(); }
     };
 
     // the cards were changed from the phone while the home screen is in front: follow now, not at the next return
@@ -253,6 +256,7 @@ public class MainActivity extends Activity {
         tf.addAction(Intent.ACTION_TIMEZONE_CHANGED);
         tf.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
         registerReceiver(tick, tf);
+        if (appsStale) { appsStale = false; buildApps(); }   // an app was installed, removed or the favourites changed while another app was in front
         updateClock();
         updateNowPlaying();
         homeCard.refresh();
@@ -2342,7 +2346,8 @@ public class MainActivity extends Activity {
     private void saveDock(List<String> dock, String focusPkg) {
         List<String> installed = new ArrayList<>();
         for (String p : dock) if (isInstalled(p)) installed.add(p);
-        prefs().edit().putString("dock", android.text.TextUtils.join(",", installed)).apply();
+        String dockNow = android.text.TextUtils.join(",", installed);
+        if (!dockNow.equals(prefs().getString("dock", null))) prefs().edit().putString("dock", dockNow).apply();   // P6: written when it changed, not at every build
         dockApps = installed.toArray(new String[0]);
         focusPkgAfter = focusPkg;
         buildApps();
@@ -2680,12 +2685,35 @@ public class MainActivity extends Activity {
         if (football) weatherLine.setVisibility(View.GONE);
     }
 
+    /**
+     * The minute tick. P3: the screensaver's settings are read off the UI thread (a cross-process query that starts its process again when the TV killed it), one read at a time, and
+     * the tick runs with them when they come; the first tick of this screen reads at once (nothing is drawn yet). A tick asked while one is being read is that one.
+     */
+    private boolean clockReading, clockFirstDone;
+
     private void updateClock() {
+        if (!clockFirstDone) { clockFirstDone = true; updateClock(ConfigSnapshot.read(this)); return; }
+        if (clockReading) return;
+        clockReading = true;
+        final android.content.Context app = getApplicationContext();
+        new Thread(new Runnable() {
+            @Override public void run() {
+                final ConfigSnapshot got = ConfigSnapshot.read(app);
+                runOnUiThread(new Runnable() {
+                    @Override public void run() {
+                        clockReading = false;
+                        if (!isDestroyed() && !isFinishing()) updateClock(got);
+                    }
+                });
+            }
+        }, "home-config").start();
+    }
+
+    private void updateClock(ConfigSnapshot cfg) {
         long ms = System.currentTimeMillis();
         clockDrawnAt = ms;
         String tvTz = java.util.TimeZone.getDefault().getID();
         // one read of the screensaver's settings (its ConfigProvider, same signing key) for the whole tick; null zone = it is missing: the TV's own
-        ConfigSnapshot cfg = ConfigSnapshot.read(this);
         Digits.remember(this, cfg);   // a change of the setting reaches the next tick
         if (langBuilt != null && !langBuilt.equals(S.lang())) {   // «اللغة» changed while this screen was up (tester step 20: the words, the
             langBuilt = S.lang();                                 // favourites' direction and the names stayed as built): built again in it
@@ -2985,7 +3013,7 @@ public class MainActivity extends Activity {
         final boolean only = ownCount > 0 && "only".equals(own[1]);
         final Object[] hp = homePackInfo();
         @SuppressWarnings("unchecked") final java.util.Map<String, Integer> packs = only ? new java.util.LinkedHashMap<String, Integer>() : (java.util.Map<String, Integer>) hp[0];
-        prefs().edit().putLong("ownRev", (Long) own[2]).putString("homePacksRev", (String) hp[2]).apply();
+        if ((Long) own[2] != prefs().getLong("ownRev", 0) || !((String) hp[2]).equals(prefs().getString("homePacksRev", ""))) prefs().edit().putLong("ownRev", (Long) own[2]).putString("homePacksRev", (String) hp[2]).apply();
         final String[] remote = only ? new String[0] : remotePhotos();
         int packSum = 0;
         for (int n : packs.values()) packSum += n;
@@ -3049,6 +3077,7 @@ public class MainActivity extends Activity {
                 java.io.File dir = f.getParentFile();
                 if (dir.isDirectory() || dir.mkdirs()) {
                     java.io.File tmp = new java.io.File(dir, f.getName() + ".tmp");
+                    data = PhotoShrink.toScreen(data);   // P8: kept at screen size
                     try (java.io.FileOutputStream out = new java.io.FileOutputStream(tmp)) { out.write(data); }
                     if (!tmp.renameTo(f)) tmp.delete();
                 }

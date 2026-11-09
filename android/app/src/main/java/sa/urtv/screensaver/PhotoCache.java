@@ -54,8 +54,10 @@ final class PhotoCache {
             if (url.startsWith(HOSTED)) {
                 String name = safeName(url.substring(HOSTED.length()));
                 if (name == null) return null;   // index.json and anything else go to the network
-                File f = hosted(c, url, name);
-                return f == null ? null : jpeg(new FileInputStream(f));
+                File f;
+                try { f = hosted(c, url, name); } catch (java.io.IOException e) { f = null; }
+                // S4: a photo that could not be had is an empty 404, not null: null made the WebView ask the network again itself, a second download of what just failed
+                return f == null ? notFound() : jpeg(new FileInputStream(f));
             }
         } catch (Exception ignored) { }
         return null;
@@ -85,18 +87,37 @@ final class PhotoCache {
         return s.matches("[A-Za-z0-9_-]+\\.jpg") ? s : null;
     }
 
+    private static WebResourceResponse notFound() {
+        return new WebResourceResponse("image/jpeg", null, 404, "Not Found", new java.util.HashMap<String, String>(), new java.io.ByteArrayInputStream(new byte[0]));
+    }
+
     private static WebResourceResponse jpeg(InputStream in) {
         return new WebResourceResponse("image/jpeg", null, in);
     }
 
-    /** Runs on the WebView's network thread, so a blocking download is fine. */
-    private static synchronized File hosted(Context c, String url, String name) throws java.io.IOException {
+    private static final Object DOWNLOAD = new Object();
+    private static final long TOUCH_EVERY_MS = 3600_000L;
+
+    /** S9: a kept photo is answered at once, without the lock (the lock is for downloads: one at a time); P6: its time is renewed at most once an hour, not at every hit */
+    private static File hosted(Context c, String url, String name) throws java.io.IOException {
         File dir = new File(c.getFilesDir(), "photos");
         File f = new File(dir, name);
-        if (f.isFile() && f.length() > 0) {
-            f.setLastModified(System.currentTimeMillis());   // served now: the next prune keeps it (it keeps the newest, by this time)
-            return f;
+        if (kept(f)) return f;
+        synchronized (DOWNLOAD) {
+            if (kept(f)) return f;   // another request fetched it while this one waited
+            return download(c, url, name, dir, f);
         }
+    }
+
+    private static boolean kept(File f) {
+        if (!f.isFile() || f.length() <= 0) return false;
+        long now = System.currentTimeMillis();
+        if (now - f.lastModified() > TOUCH_EVERY_MS) f.setLastModified(now);   // served: the next prune keeps it (it keeps the newest, by this time)
+        return true;
+    }
+
+    /** Runs on the WebView's network thread, so a blocking download is fine. */
+    private static File download(Context c, String url, String name, File dir, File f) throws java.io.IOException {
         if (!dir.isDirectory() && !dir.mkdirs()) return null;
         HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
         con.setConnectTimeout(15000);
@@ -108,6 +129,7 @@ final class PhotoCache {
             byte[] data;
             try (InputStream in = con.getInputStream()) { data = Bounded.readAll(in, Bounded.IMAGE_MAX); }
             if (!validImage(data)) return null;   // an error page or a cut download is not kept as a photo
+            data = PhotoShrink.toScreen(data);   // P8: kept at screen size
             try (FileOutputStream out = new FileOutputStream(tmp)) { out.write(data); }
             if (!tmp.renameTo(f)) return null;
         } finally {
