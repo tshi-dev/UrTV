@@ -156,5 +156,5 @@ case "${1:-}:$#" in
     esc=$(printf '%s' "$3" | sed "s/'/'\\\\''/g")   # an apostrophe inside the quotes, as optimize/type.sh does; the app decides whether the name is kept
     send SET_INPUT_NAME "--es id '$2' --es name '$esc'" ;;
   input-name:*) echo "usage: optimize/dock.sh input-name ID 'الاسم'   (ID from: optimize/dock.sh input-names; '' = the TV's own name)"; exit 1 ;;
-  *) sed -n '2,27p' "$0"; exit 1 ;;
+  *) sed -n '2,29p' "$0"; exit 1 ;;
 esac

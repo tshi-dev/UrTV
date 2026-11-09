@@ -42,7 +42,7 @@ public class MessageActivity extends Activity {
 
     @Override protected void onCreate(Bundle b) {
         super.onCreate(b);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);   // not KEEP_SCREEN_ON: 20 s over what plays never holds the TV awake
         FrameLayout root = new FrameLayout(this);
         text = new TextView(this);
         text.setTextColor(Color.WHITE);
