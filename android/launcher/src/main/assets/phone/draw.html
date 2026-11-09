@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="dark light">
+<title>ارسم</title>
+<style>
+/* 4.3 #53 «ارسم»: draw with a finger; the strokes go to the TV live (POST /api/draw about every 50 ms, points scaled to 0..1000) and draw over its
+   screen; «امسح» clears both; the TV lets the drawing fade 8 s after the last stroke, and so does this page. Only a phone the owner allowed (the
+   session of the main page) can draw. «اللغة» English: the TV sends <html lang="en"> and the words below switch. */
+:root { --bg:#17181b; --card:#22252b; --line:rgba(255,255,255,.12); --acc:#54c08a; --text:#fff; --dim:#dadce0; --ink:#14161a }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --bg:#f6f4ef; --card:#2a2d33; --line:#e3dfd5; --acc:#166a45; --text:#1b1f1d; --dim:#545a57; --ink:#fff } }
+:root[data-theme="light"] { --bg:#f6f4ef; --card:#2a2d33; --line:#e3dfd5; --acc:#166a45; --text:#1b1f1d; --dim:#545a57; --ink:#fff }
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+@font-face{font-family:'Thmanyah';font-weight:400;font-display:swap;src:url(/fonts/Thmanyah-Regular.woff2) format("woff2")}
+html,body{margin:0;color:var(--text);background:var(--bg);font:16px/1.45 'Thmanyah',system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif}
+body{max-width:720px;margin:0 auto;padding:16px 16px calc(24px + env(safe-area-inset-bottom))}
+h1{font-size:22px;margin:8px 0}
+p{margin:6px 0;color:var(--dim);font-size:14px}
+.hidden{display:none !important}
+#pad{display:block;width:100%;aspect-ratio:16/9;background:var(--card);border:1px solid var(--line);border-radius:16px;touch-action:none}
+.row{display:flex;gap:10px;align-items:center;margin:12px 0;flex-wrap:wrap}
+.c{width:40px;height:40px;border-radius:50%;border:3px solid transparent;cursor:pointer;padding:0}
+.c.on{border-color:var(--acc)}
+#clr{margin-inline-start:auto;min-height:44px;padding:0 18px;border:0;border-radius:14px;background:var(--acc);color:var(--ink);font:inherit;font-weight:700;cursor:pointer}
+#state{font-weight:700;color:var(--text);min-height:1.5em}
+a{color:var(--acc)}
+</style>
+</head>
+<body>
+<h1 id="t1">ارسم على التلفزيون</h1>
+<p id="t2">ارسم بإصبعك، ويظهر الرسم على الشاشة وأنت ترسم، ويختفي بعد ٨ ثوانٍ من آخر خط.</p>
+<div id="go" class="hidden">
+<canvas id="pad" aria-label="لوحة الرسم"></canvas>
+<div class="row" id="cols"><button id="clr">امسح</button></div>
+</div>
+<p id="state" role="status"></p>
+<p id="none" class="hidden"><span id="t4">افتح صفحة الجوال وامسح الرمز من «أسهل من الجوال» على التلفزيون أولاً.</span> <a href="/" id="t5">صفحة الجوال</a></p>
+<script nonce="__NONCE__">
+(function () {
+  try { var th = localStorage.getItem('urtvTheme'); if (th === 'light' || th === 'dark') document.documentElement.setAttribute('data-theme', th); } catch (e) { }
+  var EN = document.documentElement.lang === 'en';
+  var W = EN ? {
+    t1: 'Draw on the TV', t2: 'Draw with your finger: the drawing shows on the screen as you draw, and fades 8 s after the last line.',
+    t4: 'Open the phone page and scan the code from «Easier from the phone» on the TV first.', t5: 'Phone page', clr: 'Clear',
+    colours: ['White', 'Yellow', 'Red', 'Green', 'Blue', 'Pink'],
+    message_off: 'Phone messages are off on the TV.', message_busy_app: 'The TV is showing an app now.', slow_down: 'Slow down a little.',
+    draw_full: 'The drawing is full: clear it first.', no_session: 'The session ended.', failed: 'Not sent: check the Wi-Fi.'
+  } : {
+    colours: ['أبيض', 'أصفر', 'أحمر', 'أخضر', 'أزرق', 'وردي'],
+    message_off: 'رسائل الجوال موقوفة في التلفزيون.', message_busy_app: 'التلفزيون يعرض تطبيقاً الآن.', slow_down: 'مهلًا، شوي شوي.',
+    draw_full: 'امتلأ الرسم: امسحه أولاً.', no_session: 'انتهت الجلسة.', failed: 'ما انرسل: تأكد من الواي فاي.'
+  };
+  var $ = function (id) { return document.getElementById(id); };
+  if (EN) ['t1', 't2', 't4', 't5', 'clr'].forEach(function (k) { $(k).textContent = W[k]; });
+  var sess = null;
+  try { sess = sessionStorage.getItem('urtv'); } catch (e) { }
+  $(sess ? 'go' : 'none').classList.remove('hidden');
+  if (!sess) return;
+
+  // PhoneDraw: colours in this order; at most 30 points an entry, 8 entries and 240 points a batch; coordinates 0..1000
+  var COLS = ['#ffffff', '#ffd54f', '#ef5350', '#66bb6a', '#42a5f5', '#f06292'], ENTRY = 30, ENTRIES = 8, BATCH = 240, FADE = 9000;
+  var colour = 0, id = 0, pending = [], strokes = [], cur = null, busy = false, stopped = '', last = 0;
+  var pad = $('pad'), g = pad.getContext('2d');
+  COLS.forEach(function (c, i) {
+    var b = document.createElement('button');
+    b.className = 'c' + (i ? '' : ' on'); b.style.background = c; b.setAttribute('aria-label', W.colours[i]);
+    b.onclick = function () { colour = i; Array.prototype.forEach.call(document.querySelectorAll('.c'), function (x) { x.classList.remove('on'); }); b.classList.add('on'); };
+    $('cols').insertBefore(b, $('clr'));
+  });
+  function fit() { var r = pad.getBoundingClientRect(); pad.width = Math.round(r.width * devicePixelRatio); pad.height = Math.round(r.height * devicePixelRatio); paint(); }
+  function paint() {
+    g.clearRect(0, 0, pad.width, pad.height);
+    g.lineCap = g.lineJoin = 'round'; g.lineWidth = 4 * devicePixelRatio;
+    strokes.forEach(function (s) {
+      g.strokeStyle = COLS[s.c]; g.beginPath();
+      for (var i = 0; i < s.p.length; i += 2) { var x = s.p[i] / 1000 * pad.width, y = s.p[i + 1] / 1000 * pad.height; if (i) g.lineTo(x, y); else g.moveTo(x, y); }
+      if (s.p.length === 2) g.lineTo(s.p[0] / 1000 * pad.width + 0.5, s.p[1] / 1000 * pad.height);
+      g.stroke();
+    });
+  }
+  function at(e) {
+    var r = pad.getBoundingClientRect();
+    var x = Math.round(Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * 1000), y = Math.round(Math.max(0, Math.min(1, (e.clientY - r.top) / r.height)) * 1000);
+    return [x, y];
+  }
+  function point(e) {
+    var p = at(e), n = cur.p.length;
+    if (n && Math.abs(cur.p[n - 2] - p[0]) + Math.abs(cur.p[n - 1] - p[1]) < 3) return;   // the same spot: not sent again
+    cur.p.push(p[0], p[1]); pending.push([cur.id, cur.c, p[0], p[1]]); last = Date.now(); paint();
+  }
+  pad.addEventListener('pointerdown', function (e) {
+    if (stopped) return;
+    pad.setPointerCapture(e.pointerId); id = (id + 1) % 10000; cur = { id: id, c: colour, p: [] }; strokes.push(cur); point(e);
+  });
+  pad.addEventListener('pointermove', function (e) { if (cur) point(e); });
+  ['pointerup', 'pointercancel'].forEach(function (t) { pad.addEventListener(t, function () { cur = null; }); });
+  function say(t) { $('state').textContent = t || ''; }
+  function post(body) {
+    var h = { 'Content-Type': 'application/json', 'X-UrTV-Session': sess };
+    return fetch('/api/draw', { method: 'POST', credentials: 'same-origin', headers: h, body: JSON.stringify(body), cache: 'no-store' })
+      .then(function (r) { return r.json(); }).catch(function () { return { ok: false, error: 'failed' }; });
+  }
+  // about every 50 ms: the new points, joined per stroke, at most ENTRY points an entry and BATCH a batch; the rest waits for the next one
+  setInterval(function () {
+    if (busy || !pending.length) {
+      if (!pending.length && strokes.length && !cur && Date.now() - last > FADE) { strokes = []; paint(); }   // faded on the TV too
+      return;
+    }
+    var out = [], n = 0;
+    while (pending.length && n < BATCH) {
+      var q = pending[0], e = out[out.length - 1];
+      if (e && e[0] === q[0] && (e.length - 2) / 2 < ENTRY) { e.push(q[2], q[3]); }
+      else if (out.length < ENTRIES) { out.push([q[0], q[1], q[2], q[3]]); }
+      else break;
+      pending.shift(); n++;
+    }
+    busy = true;
+    post({ s: out }).then(function (j) {
+      busy = false;
+      if (j && j.ok) { if (!stopped) say(''); return; }
+      var e = j && j.error;
+      if (e === 'slow_down') return;   // the next tick carries on
+      pending = []; say(W[e] || W.failed);
+      if (e === 'no_session') { stopped = e; }
+    });
+  }, 50);
+  $('clr').onclick = function () {
+    strokes = []; pending = []; cur = null; paint(); say('');
+    post({ clear: true }).then(function (j) { if (!(j && j.ok)) say(W[j && j.error] || W.failed); });
+  };
+  addEventListener('resize', fit);
+  fit();
+})();
+</script>
+</body>
+</html>

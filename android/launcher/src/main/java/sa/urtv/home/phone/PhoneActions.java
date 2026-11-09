@@ -346,6 +346,26 @@ final class PhoneActions implements Actions {
         }
     }
 
+    // ---- 4.3 #53 «ارسم»: live strokes over the TV's screen (PhoneDraw decides and holds them, MessageActivity draws them)
+
+    @Override public Result draw(List<?> strokes, boolean clear) {
+        boolean ours = Foreground.current() != null;
+        PhoneDraw.Verdict v = PhoneDraw.TV.decide(sa.urtv.home.MessageActivity.on(app), sa.urtv.home.MessageActivity.overApps(app), ours, android.os.SystemClock.elapsedRealtime());
+        if (v != PhoneDraw.Verdict.SHOW) return Result.fail(PhoneDraw.code(v));
+        if (clear) { PhoneDraw.TV.clear(); return Result.ok("draw_cleared"); }
+        v = PhoneDraw.TV.add(strokes, android.os.SystemClock.elapsedRealtime());
+        if (v != PhoneDraw.Verdict.SHOW) return Result.fail(PhoneDraw.code(v));
+        if (!sa.urtv.home.MessageActivity.drawing()) {   // the overlay is not up yet: once, the strokes follow it by themselves
+            try {
+                app.startActivity(new Intent().setClassName(app.getPackageName(), "sa.urtv.home.MessageActivity").putExtra("draw", true)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION));
+            } catch (RuntimeException e) {
+                return Result.fail("failed");
+            }
+        }
+        return Result.ok(PhoneDraw.code(v));
+    }
+
     // ---- «محفظتي»: only while the TV is editing it (PortfolioPhone)
 
     @Override public Map<String, Object> portfolio() {

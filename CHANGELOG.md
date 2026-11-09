@@ -7,6 +7,7 @@ Newest first. `next` is where changes land first; a release is what was tested t
 **بالعربي، باختصار:**
 - **ألبوم صوري:** بطاقة لصورك من «صوري» تتبدل بتلاشٍ ناعم (كل ٤ ثوانٍ أو كل دقيقة) وتحتها تاريخ الصورة، على شاشة التوقف والشاشة الرئيسية. و«صوري» صارت تتسع لـ ٥٠ صورة، وتقدر ترسلها من جوالك (تُصغّر في الجوال وما يوصل معها مكان التصوير ولا وقته).
 - **رسالة من الجوال:** اكتب سطرًا قصيرًا في صفحة الجوال ويظهر على الشاشة ٢٠ ثانية.
+- **ارسم من الجوال:** من صفحة الجوال («ارسم» جنب الرسالة) ترسم بإصبعك ويظهر الرسم على شاشة التلفزيون وأنت ترسم، بستة ألوان، و«امسح» يمسحه من الجهتين، ويختفي وحده بعد ٨ ثوانٍ من آخر خط. نفس مفتاحي «رسائل الجوال» و«فوق التطبيقات»، وزر الرجوع يخفيه.
 - **أذان للفجر من ملفك:** تسجيل ثانٍ لك يُؤذَّن به الفجر وحده.
 - **المظهر والخلفيات:** شكل شاشة التوقف والشاشة الرئيسية وصورهما في صفحة واحدة؛ وللشاشة الرئيسية صور خاصة بها إن أردت، وتقدر تخفي أزرار الأسواق والمباريات والجوال ومركز التحكم.
 - **دوريات جديدة:** دوري أبطال أوروبا، ودوري أبطال آسيا للنخبة، ودوري نجوم العراق.
@@ -20,6 +21,7 @@ Newest first. `next` is where changes land first; a release is what was tested t
 **In English, in short:**
 - **My photo album:** a card of the photos in «صوري», crossfading every 4 s or one a minute, with the day each was added, on the screensaver and the home screen. «صوري» holds up to 50 photos, and you can send them from your phone (made smaller there, without where or when they were taken).
 - **A message from the phone:** type a short line on the phone page; the TV shows it for 20 s.
+- **Draw from the phone:** on the phone page («Draw» beside the message) you draw with a finger and the drawing shows on the TV as you draw, in six colours; «Clear» clears both sides, and it fades by itself 8 s after the last line. The same «Phone messages» and «Over apps» switches; Back hides it.
 - **A Fajr adhan of your own:** a second recording, for Fajr only.
 - **Look and wallpapers:** the screensaver's and the home's look and photos on one page; the home can have photos of its own, and the markets, matches, phone and Control Center buttons can be hidden.
 - **New leagues:** the UEFA Champions League, the AFC Champions League Elite and the Iraq Stars League.

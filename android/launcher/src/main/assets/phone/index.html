@@ -186,7 +186,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 <div id="svcNote" class="note warn hidden"><div>فعّل خدمة "تلفزيونك: التحكم والكتابة من الجوال" في إعدادات التلفزيون لتكتب في التطبيقات الأخرى</div><div>الإعدادات ← إمكانية الوصول ← تلفزيونك: التحكم والكتابة من الجوال</div></div>
 <details><summary>أين يُكتب النص؟</summary><p>يُكتب النص في الحقل النصي المفتوح، ويُضاف مهمةً إذا كانت شاشة «المهام» مفتوحة، وفي التطبيقات الأخرى يُكتب في حقلها بعد تفعيل خدمة إمكانية الوصول. ومن دون الخدمة: أندرويد لا يسمح لتطبيق بالكتابة داخل تطبيق آخر، فيُنسخ النص إلى حافظة التلفزيون.</p></details>
 <div class="card" id="msgCard">
-<h2>رسالة على الشاشة</h2>
+<h2>رسالة على الشاشة <a class="lnk" href="/d">ارسم</a></h2>
 <input id="msgT" dir="auto" maxlength="200" aria-label="رسالة للتلفزيون">
 <button id="msgGo" class="gold wide" data-i="send">اعرضها على التلفزيون</button>
 </div>
@@ -348,7 +348,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
       var fr = new FileReader();
       fr.onload = function () {
         if (typeof fr.result !== 'string' || fr.result.indexOf('data:image/png') !== 0) return;
-        var im = document.createElement('img'); im.alt = '';   // as the icons: our own PNG, read as data, nothing from elsewhere
+        var im = document.createElement('img'); im.alt = '';
         im.setAttribute('src', fr.result);
         $('glassbg').textContent = '';
         $('glassbg').appendChild(im);
@@ -387,7 +387,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     network: 'التلفزيون غير متصل بالواي فاي أو الإيثرنت.', space: 'لا توجد مساحة كافية.', blocked: 'نظام التلفزيون يمنع التثبيت.', invalid: 'رفض مثبّت أندرويد الملف.',
     conflict: 'يتعارض مع نسخة مثبّتة.', incompatible: 'لا يناسب هذا الجهاز.', record: 'تعذّر حفظ سجل التحديث.'
   };
-  var TXT = {   // the words of the text box (the same codes mean other things elsewhere)
+  var TXT = {
     service_off: 'فعّل خدمة "تلفزيونك: التحكم والكتابة من الجوال" في إعدادات التلفزيون لتكتب في التطبيقات الأخرى', refused: 'ما أقدر أكتب في هذا التطبيق', locked: 'التطبيق الأمامي مقفول بالرقم السري، افتحه على التلفزيون أولاً',
     password_field: 'ما أكتب في حقل كلمة المرور', failed: 'ما نجحت الكتابة.'
   };
@@ -459,7 +459,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     document.body.classList.toggle('login', !app);
   }
   function leave() {
-    glass({ glass_stamp: 0 }); glassStamp = -1;   // signed out: the home's photo goes from the page
+    glass({ glass_stamp: 0 }); glassStamp = -1;
     sess = null; state = null; apps = null; cardsDirty = false; pinVal = ''; icons = {}; iconQ = []; iconWait = {}; svcOff = false; famSeen = false;
     clearInterval(tick); tick = null; stopRep();
     try { sessionStorage.removeItem('urtv'); } catch (e) { }
@@ -598,7 +598,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     }
     $('saverCard').classList.toggle('hidden', !s.saver_idle_options);
     if (s.family) famDraw(s.family); else if (!famSeen) $('famCard').classList.add('hidden');
-    $('ver').textContent = s.version ? 'إصدار تلفزيونك: ' + s.version : '';   // «4.0», as the TV words it; an older TV app does not say
+    $('ver').textContent = s.version ? 'إصدار تلفزيونك: ' + s.version : '';
     $('phones').textContent = typeof s.phones === 'number' ? 'الجوالات المتصلة: ' + s.phones : '';
     upText(s.update);
     if (!full) return;
@@ -645,7 +645,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
   }
   function cards(s) {
     var box = $('cards'), hc = s.home_cards || [], k = JSON.stringify(s.panels || []);
-    if (box.getAttribute('data-p') !== k) {   // built once per list of cards: a select is never replaced while its picker may be open
+    if (box.getAttribute('data-p') !== k) {
       box.textContent = ''; box.setAttribute('data-p', k); cardsDirty = false;
       for (var i = 0; i < 3; i++) {
         var sel = document.createElement('select'); sel.setAttribute('data-card', i); sel.setAttribute('aria-label', 'بطاقة ' + (i + 1));
@@ -716,7 +716,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
         if (j.result === 'typed_other' || j.result === 'typed_other_nosearch' || j.result === 'searched' || j.result === 'copied_other') { svcOff = false; $('svcNote').classList.add('hidden'); }
         say(j); $('txt').value = $('dd').value = $('tt').value = ''; return;
       }
-      var e = j && j.error;   // the text stays: the person can fix the cause and send again
+      var e = j && j.error;
       if (e === 'service_off') { svcOff = true; $('svcNote').classList.remove('hidden'); }
       toast(TXT[e] || MSG[e] || MSG.failed);
     });
@@ -811,7 +811,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     if (!u) return;
     var t = UP[u.status] || '';
     if (u.status === 'error' && u.reason) t += ' ' + (UPWHY[u.reason] || '');
-    if (u.status === 'error') { var w = UPWHY[u.why] || UPWHY[u.detail]; if (w && w !== UPWHY[u.reason]) t += ' ' + w; }   // the specific word: storage, installer, download…
+    if (u.status === 'error') { var w = UPWHY[u.why] || UPWHY[u.detail]; if (w && w !== UPWHY[u.reason]) t += ' ' + w; }
     if ((u.status === 'available' || u.status === 'found') && u.build) t += ' (' + (u.version || 'الإصدار ' + u.build) + ')';
     $('upState').textContent = t;
     $('upGo').classList.toggle('hidden', u.status !== 'available' && u.status !== 'found');
@@ -830,21 +830,21 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
   document.querySelectorAll('[data-k]').forEach(function (b) {
     var k = b.getAttribute('data-k'), rep = b.getAttribute('data-rep');
     b.addEventListener('contextmenu', function (e) { e.preventDefault(); });
-    b.addEventListener('keydown', function (e) { if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) { e.preventDefault(); press(k); } });   // keyboard users
-    if (b.id === 'padOk') return;   // «اختيار» in the pad: the pad's tap sends it
+    b.addEventListener('keydown', function (e) { if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) { e.preventDefault(); press(k); } });
+    if (b.id === 'padOk') return;
     b.addEventListener('pointerdown', function (e) { e.preventDefault(); press(k); stopRep(); if (rep) holdRep(k); });
     ['pointerup', 'pointerleave', 'pointercancel'].forEach(function (ev) { b.addEventListener(ev, stopRep); });
   });
   var pad = $('pad'), ps = null;
   pad.addEventListener('pointerdown', function (e) {
     var t = e.target.closest && e.target.closest('[data-k]');
-    if (t && t.id !== 'padOk') return;   // an arrow on the pad's edge presses by itself
+    if (t && t.id !== 'padOk') return;
     e.preventDefault();
     try { pad.setPointerCapture(e.pointerId); } catch (x) { }
     ps = { x: e.clientX, y: e.clientY, t: Date.now(), moved: false };
   });
   pad.addEventListener('pointermove', function (e) {
-    if (!ps || ps.moved) return;   // one swipe = one step, however long; the finger held after it repeats that step
+    if (!ps || ps.moved) return;
     var dx = e.clientX - ps.x, dy = e.clientY - ps.y;
     if (Math.max(Math.abs(dx), Math.abs(dy)) < 40) return;
     var d = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');

@@ -187,7 +187,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 <div id="svcNote" class="note warn hidden"><div>To type in other apps, turn on the “Your TV: phone control and typing” service in the TV’s settings</div><div>Settings → Accessibility → Your TV: phone control and typing</div></div>
 <details><summary>Where does the text go?</summary><p>It goes into the open text field, or becomes a task when Tasks is open. In other apps it goes into their field once the accessibility service is on. Without it, Android doesn’t let one app type into another, so the text is copied to the TV’s clipboard.</p></details>
 <div class="card" id="msgCard">
-<h2>A message on the screen</h2>
+<h2>A message on the screen <a class="lnk" href="/d">Draw</a></h2>
 <input id="msgT" dir="auto" maxlength="200" aria-label="Message for the TV">
 <button id="msgGo" class="gold wide" data-i="send">Show it on the TV</button>
 </div>
@@ -349,7 +349,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
       var fr = new FileReader();
       fr.onload = function () {
         if (typeof fr.result !== 'string' || fr.result.indexOf('data:image/png') !== 0) return;
-        var im = document.createElement('img'); im.alt = '';   // as the icons: our own PNG, read as data, nothing from elsewhere
+        var im = document.createElement('img'); im.alt = '';
         im.setAttribute('src', fr.result);
         $('glassbg').textContent = '';
         $('glassbg').appendChild(im);
@@ -388,7 +388,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     network: 'The TV isn’t on Wi-Fi or Ethernet.', space: 'Not enough storage.', blocked: 'The TV’s system blocks installs.', invalid: 'Android’s installer refused the file.',
     conflict: 'It conflicts with an installed version.', incompatible: 'Not compatible with this device.', record: 'Couldn’t save the update record.'
   };
-  var TXT = {   // the words of the text box (the same codes mean other things elsewhere)
+  var TXT = {
     service_off: 'To type in other apps, turn on the UrTV phone control service in the TV’s settings', refused: 'Can’t type in this app', locked: 'The app on screen is PIN-locked. Unlock it on the TV first',
     password_field: 'Won’t type into a password field', failed: 'Typing didn’t work.'
   };
@@ -460,7 +460,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     document.body.classList.toggle('login', !app);
   }
   function leave() {
-    glass({ glass_stamp: 0 }); glassStamp = -1;   // signed out: the home's photo goes from the page
+    glass({ glass_stamp: 0 }); glassStamp = -1;
     sess = null; state = null; apps = null; cardsDirty = false; pinVal = ''; icons = {}; iconQ = []; iconWait = {}; svcOff = false; famSeen = false;
     clearInterval(tick); tick = null; stopRep();
     try { sessionStorage.removeItem('urtv'); } catch (e) { }
@@ -599,7 +599,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     }
     $('saverCard').classList.toggle('hidden', !s.saver_idle_options);
     if (s.family) famDraw(s.family); else if (!famSeen) $('famCard').classList.add('hidden');
-    $('ver').textContent = s.version ? 'Your TV version: ' + s.version : '';   // «4.0», as the TV words it; an older TV app does not say
+    $('ver').textContent = s.version ? 'Your TV version: ' + s.version : '';
     $('phones').textContent = typeof s.phones === 'number' ? 'Connected phones: ' + s.phones : '';
     upText(s.update);
     if (!full) return;
@@ -646,7 +646,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
   }
   function cards(s) {
     var box = $('cards'), hc = s.home_cards || [], k = JSON.stringify(s.panels || []);
-    if (box.getAttribute('data-p') !== k) {   // built once per list of cards: a select is never replaced while its picker may be open
+    if (box.getAttribute('data-p') !== k) {
       box.textContent = ''; box.setAttribute('data-p', k); cardsDirty = false;
       for (var i = 0; i < 3; i++) {
         var sel = document.createElement('select'); sel.setAttribute('data-card', i); sel.setAttribute('aria-label', 'Card ' + (i + 1));
@@ -717,7 +717,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
         if (j.result === 'typed_other' || j.result === 'typed_other_nosearch' || j.result === 'searched' || j.result === 'copied_other') { svcOff = false; $('svcNote').classList.add('hidden'); }
         say(j); $('txt').value = $('dd').value = $('tt').value = ''; return;
       }
-      var e = j && j.error;   // the text stays: the person can fix the cause and send again
+      var e = j && j.error;
       if (e === 'service_off') { svcOff = true; $('svcNote').classList.remove('hidden'); }
       toast(TXT[e] || MSG[e] || MSG.failed);
     });
@@ -812,7 +812,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     if (!u) return;
     var t = UP[u.status] || '';
     if (u.status === 'error' && u.reason) t += ' ' + (UPWHY[u.reason] || '');
-    if (u.status === 'error') { var w = UPWHY[u.why] || UPWHY[u.detail]; if (w && w !== UPWHY[u.reason]) t += ' ' + w; }   // the specific word: storage, installer, download…
+    if (u.status === 'error') { var w = UPWHY[u.why] || UPWHY[u.detail]; if (w && w !== UPWHY[u.reason]) t += ' ' + w; }
     if ((u.status === 'available' || u.status === 'found') && u.build) t += ' (' + (u.version || 'build ' + u.build) + ')';
     $('upState').textContent = t;
     $('upGo').classList.toggle('hidden', u.status !== 'available' && u.status !== 'found');
@@ -831,21 +831,21 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
   document.querySelectorAll('[data-k]').forEach(function (b) {
     var k = b.getAttribute('data-k'), rep = b.getAttribute('data-rep');
     b.addEventListener('contextmenu', function (e) { e.preventDefault(); });
-    b.addEventListener('keydown', function (e) { if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) { e.preventDefault(); press(k); } });   // keyboard users
-    if (b.id === 'padOk') return;   // «اختيار» in the pad: the pad's tap sends it
+    b.addEventListener('keydown', function (e) { if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) { e.preventDefault(); press(k); } });
+    if (b.id === 'padOk') return;
     b.addEventListener('pointerdown', function (e) { e.preventDefault(); press(k); stopRep(); if (rep) holdRep(k); });
     ['pointerup', 'pointerleave', 'pointercancel'].forEach(function (ev) { b.addEventListener(ev, stopRep); });
   });
   var pad = $('pad'), ps = null;
   pad.addEventListener('pointerdown', function (e) {
     var t = e.target.closest && e.target.closest('[data-k]');
-    if (t && t.id !== 'padOk') return;   // an arrow on the pad's edge presses by itself
+    if (t && t.id !== 'padOk') return;
     e.preventDefault();
     try { pad.setPointerCapture(e.pointerId); } catch (x) { }
     ps = { x: e.clientX, y: e.clientY, t: Date.now(), moved: false };
   });
   pad.addEventListener('pointermove', function (e) {
-    if (!ps || ps.moved) return;   // one swipe = one step, however long; the finger held after it repeats that step
+    if (!ps || ps.moved) return;
     var dx = e.clientX - ps.x, dy = e.clientY - ps.y;
     if (Math.max(Math.abs(dx), Math.abs(dy)) < 40) return;
     var d = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');

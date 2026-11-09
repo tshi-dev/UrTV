@@ -111,6 +111,15 @@ public final class Schema {
                 if (!plainText(body.get("text"), PhoneMessage.MAX, true)) return no("bad text");   // one line: the page joins its lines
                 return c;
             }
+            case "draw": {   // 4.3 «ارسم»: a batch of strokes {"s": [[id, colour, x, y, …], …]} (PhoneDraw.valid), or {"clear": true}
+                Clean c = only(body, "s", "clear");
+                if (!c.ok()) return c;
+                boolean clear = Boolean.TRUE.equals(body.get("clear"));
+                if (body.containsKey("clear") && !clear) return no("bad clear");
+                if (clear == body.containsKey("s")) return no("strokes or clear");
+                if (!clear && !PhoneDraw.valid(body.get("s"))) return no("bad strokes");
+                return c;
+            }
             case "portfolio": {   // «محفظتي» from the phone: one holding's buys, each "qty:price" (whole numbers only in the phone's JSON); none removes it
                 Clean c = only(body, "code", "buys");
                 if (!c.ok()) return c;
