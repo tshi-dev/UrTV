@@ -104,7 +104,7 @@ body{{color:var(--text)}}
 # ---------------------------------------------------------------- shared home pieces
 def quick_row(look, focus=None, labels=True):
     """the top-left quick buttons: one bar, five 56 px squares (radius 16) on an 8 px grid, the icons 32 px; the focused one is solid with its name under it"""
-    items = [("book", "تلاوة وأذان"), ("chart", "الأسواق"), ("phone", "التحكم من الجوال"), ("wifi", "الشبكة"), ("sliders", "الإعدادات")]
+    items = [("book", "تلاوة وأذان"), ("chart", "الأسواق"), ("phone", "التحكم من الجوال"), ("sliders", "مركز التحكم")]
     out = []
     for i, (n, name) in enumerate(items):
         f = " foc" if focus == i else ""
@@ -114,8 +114,9 @@ def quick_row(look, focus=None, labels=True):
 
 
 def greeting(look):
-    return """<div class="abs col" style="right:96px;top:54px;align-items:flex-end;gap:8px;text-shadow:0 2px 14px rgba(0,0,0,.35)">
-<div class="acc" style="font-size:32px;font-weight:600">صباح الخير</div>
+    WIFI = ic("wifi", 22, 1.8)
+    return f"""<div class="abs col" style="right:96px;top:54px;align-items:flex-end;gap:8px;text-shadow:0 2px 14px rgba(0,0,0,.35)">
+<div class="row" style="align-items:center;gap:12px"><span style="color:var(--sub);display:flex" title="الاتصال بالشبكة">{WIFI}</span><div class="acc" style="font-size:32px;font-weight:600">صباح الخير</div></div>
 <div style="font-size:22px;color:var(--sub)">سماء صافية في الرياض، ٢٨°</div>
 <div style="font-size:112px;font-weight:300;line-height:1.05;margin-top:8px">٩:٥٧</div>
 <div style="font-size:22px;color:var(--sub)">الأربعاء، ٢٤ جمادى الأولى ١٤٤٨ هـ</div></div>"""

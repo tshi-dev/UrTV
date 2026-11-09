@@ -31,7 +31,7 @@ const APPS = [
   ['يوتيوب', 'movie', '#E5484D'], ['التلفزيون', 'tv', '#3B82F6'], ['الموسيقى', 'music', '#14B8A6'], ['ألعاب العائلة', 'game', '#F59E0B'],
   ['الصور', 'photo', '#8B5CF6'], ['البث', 'cast', '#10B981'], ['المفضلة', 'star', '#EC4899'],
 ];
-const QUICK = ['book', 'chart', 'phone', 'wifi', 'sliders'];
+const QUICK = ['book', 'chart', 'phone', 'sliders'];   // the Wi-Fi is a status next to the greeting, not a button
 const PRAYERS = [['الفجر', '٤:٣٨'], ['الشروق', '٥:٥٩'], ['الظهر', '١١:٥٢'], ['العصر', '٢:٤٦'], ['المغرب', '٥:١١'], ['العشاء', '٦:٤١']];
 
 /* absolute-position shorthand */

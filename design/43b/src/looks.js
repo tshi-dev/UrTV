@@ -24,7 +24,7 @@ function lawh(o = {}) {
   <div style="position:absolute;inset:0;background:${photo('blue-ridges')} center/cover;transform:scale(1.06)"></div>
   <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,12,34,.50) 0%,rgba(6,12,34,.05) 38%,rgba(6,12,34,.10) 62%,rgba(4,8,24,.78) 100%)"></div>
   ${at('left:96px;top:54px;padding:8px;display:flex;gap:8px;' + glass.replace('border-radius:32px', 'border-radius:28px'), quick)}
-  ${at(dirCss, `<div style="font-size:30px;font-weight:500;color:#FFD9B8;text-shadow:0 2px 14px rgba(0,0,0,.4)">صباح الخير · الرياض ٢٨°</div>
+  ${at(dirCss, `<div style="font-size:30px;font-weight:500;color:#FFD9B8;text-shadow:0 2px 14px rgba(0,0,0,.4);display:flex;align-items:center;gap:12px;justify-content:inherit"><span style="display:flex;color:rgba(255,255,255,.78)">${ic('wifi', 24, 1.8)}</span>صباح الخير · الرياض ٢٨°</div>
       <div style="font-size:216px;font-weight:200;line-height:1;margin-top:6px;color:#fff;text-shadow:0 0 90px rgba(180,210,255,.45),0 8px 40px rgba(0,0,0,.35)">٩:٥٧</div>
       <div style="font-size:32px;font-weight:300;color:rgba(255,255,255,.92);margin-top:4px;text-shadow:0 2px 14px rgba(0,0,0,.4)">الأربعاء · ٢٤ جمادى الأولى ١٤٤٨</div>`)}
   ${at('left:96px;top:178px;width:560px;height:318px;padding:32px;display:flex;flex-direction:column;justify-content:space-between;color:#fff;' + glass,
