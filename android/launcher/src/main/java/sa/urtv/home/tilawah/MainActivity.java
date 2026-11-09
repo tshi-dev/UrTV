@@ -213,10 +213,11 @@ public class MainActivity extends Activity {
     /** One live channel (HaramLive.LIVE[which]): in the YouTube app, else SmartTube, else the browser (HaramLive.openOrder). */
     private void openHaramLive(int which) {
         if (which < 0 || which >= HaramLive.LIVE.length || !HaramLive.shown(HaramLive.LIVE[which][1])) return;
-        Uri link = Uri.parse(HaramLive.LIVE[which][1]);
         for (String pkg : HaramLive.openOrder(p -> {
             try { getPackageManager().getPackageInfo(p, 0); return true; } catch (Exception e) { return false; }
         })) {
+            Uri link = Uri.parse(HaramLive.linkFor(which, pkg));   // the browser gets SBA's own Aloula page (4.3)
+            if (!HaramLive.shown(link.toString())) continue;
             Intent i = new Intent(Intent.ACTION_VIEW, link).addCategory(Intent.CATEGORY_BROWSABLE);
             if (pkg != null) i.setPackage(pkg);
             try {

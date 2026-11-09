@@ -7,7 +7,7 @@ import java.util.List;
  * «البث المباشر من الحرم»: LINKS in «تلاوة وأذان» ← الإذاعات to the Saudi Broadcasting Authority's own YouTube channels, live: Makkah on the Quran
  * channel (@SaudiQuranTv), Madinah on the Sunnah channel (@SaudiSunnahTv), both linked from sba.sa's own footer («القنوات التلفزيونية»). The
  * channel's /live address follows whatever it broadcasts now (a video id would change). Nothing is streamed, copied or re-hosted in this app:
- * OK opens the link in the installed YouTube app, else in SmartTube, else in the browser (ACTION_VIEW). A row shows only while its link is
+ * OK opens the link in the installed YouTube app, else in SmartTube, else SBA's own Aloula page in the browser (ACTION_VIEW). A row shows only while its link is
  * https on one of OFFICIAL_HOSTS. Plain Java on purpose: tests/haram_live_test.py runs it on a JVM.
  */
 final class HaramLive {
@@ -18,6 +18,16 @@ final class HaramLive {
         {"مكة المكرمة · قناة القرآن الكريم", "https://www.youtube.com/@SaudiQuranTv/live"},
         {"المدينة المنورة · قناة السنة النبوية", "https://www.youtube.com/@SaudiSunnahTv/live"},
     };
+
+    /**
+     * 4.3: the same two channels on SBA's own platform (Aloula, «البث المباشر»), for the browser when neither YouTube nor SmartTube is on the TV: its
+     * page plays in a TV browser, where youtube.com does not. Aloula's channel list (read by .github/tools/aloula_probe.py in CI) gives no stream
+     * address of its own (its player asks for one each time), so nothing is played inside our app.
+     */
+    static final String[] PAGES = {"https://aloula.sba.sa/live/quran", "https://aloula.sba.sa/live/sunna"};
+
+    /** The address for one way of opening: an app (YouTube, SmartTube) gets the YouTube /live page, the browser (null) gets Aloula's own page. */
+    static String linkFor(int which, String pkg) { return pkg == null ? PAGES[which] : LIVE[which][1]; }
 
     /** SBA's own sites and the YouTube app that holds its official channels; a link anywhere else is never shown */
     static final String[] OFFICIAL_HOSTS = {"sba.sa", "aloula.sa", "youtube.com"};
