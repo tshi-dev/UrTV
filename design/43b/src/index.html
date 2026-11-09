@@ -3,5 +3,5 @@
 body{font-family:'Thmanyah Sans','Thmanyah','Noto Sans Arabic','DejaVu Sans',system-ui,sans-serif;direction:rtl;color:#fff}
 #stage{position:relative;width:1920px;height:1080px;overflow:hidden}</style></head>
 <body><div id="stage"></div>
-<script src="lib.js"></script><script src="looks.js"></script><script src="games.js"></script><script src="studies.js"></script><script src="screens.js"></script>
+<script src="lib.js"></script><script src="looks.js"></script><script src="games.js"></script><script src="studies.js"></script><script src="screens.js"></script><script src="control.js"></script>
 <script>const q = new URLSearchParams(location.search).get('s') || Object.keys(SCREENS)[0]; document.getElementById('stage').innerHTML = SCREENS[q]();</script></body></html>

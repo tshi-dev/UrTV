@@ -27,3 +27,7 @@ Glass stays the default. Genuinely different looks (own card shape, bar, clock a
 | 15 / 16 / 17 | full homes: نقش، سينما، باستيل |
 | 18 / 19 | settings «اجعل UrTV الشاشة الرئيسية»: not the Home (opens the setup) and the Home («✓ UrTV هو الشاشة الرئيسية») |
 | 20 / 21 / 22 | «ألعاب العائلة»: the hub (سؤال وجواب، ذاكرة الأزواج، خمّن الكلمة), a quiz screen with four teams, and the home card + bar tile |
+
+## Round 3: «مركز التحكم» as a compact side panel (23–26)
+A 560 px panel in the TV's glass, flush with the safe area on the start edge (right in Arabic), full height; the home stays visible. A row of four round toggles (Bluetooth, screensaver now, sleep timer, power off), then five rows: icon, one short label, the current value as a small word («الشبكة  ATS5G»), no sentences. «تخصيص» at the top opens a list with a tick per item, arrows to reorder and «٥ من ٦» (default at most six). Focus is the solid accent with the look's ink (readable), 150–200 ms ease-out; the panel slides in 220 ms.
+23 rest · 24 focused row · 25 customise · 26 light look. Source: `design/43b/src/control.js`.

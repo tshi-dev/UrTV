@@ -8,7 +8,7 @@ const { chromium } = require('playwright'); const path = require('path'), fs = r
   for (const n of names) {
     if (only && !n.includes(only)) continue;
     await pg.goto('file://' + path.join(__dirname, 'src/index.html') + '?s=' + encodeURIComponent(n)); await pg.waitForTimeout(400);
-    await pg.screenshot({ path: path.join(n.startsWith('s-') ? path.join(__dirname, 'studies') : out, n + '.png') }); console.log('wrote', n);
+    await pg.screenshot({ path: n.startsWith('c-') ? path.join(__dirname, '../43', '2' + (3 + parseInt(n.slice(2, 4)) - 1) + n.slice(4) + '.png') : path.join(n.startsWith('s-') ? path.join(__dirname, 'studies') : out, n + '.png') }); console.log('wrote', n);
   }
   await b.close();
 })();
