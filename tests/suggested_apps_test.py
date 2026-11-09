@@ -36,8 +36,9 @@ check("the screen is declared, and the screensaver's settings open it under «ا
       and st.index('row("تطبيقات في الشريط"') < st.index('row("تطبيقات مقترحة"'))
 check("the setup installs from the same catalog: GitHub releases only, a Play Store app never", "SuggestedApps.githubOk(a, url)" in inst and "if (a == null || !a.inSetup()) continue;" in inst)
 act_setup = (HOME / "setup/SetupActivity.java").read_text(encoding="utf-8")
-check("the setup's boxes: one per suggested app, the on/off look of the screen's other rows (paintLang), OK ticks or unticks, one already on the TV left",
-      "SuggestedApps.forSetup(android.os.Build.VERSION.SDK_INT)" in act_setup and "paintLang(box, picks.contains(a.id), box.hasFocus());" in act_setup
+check("the setup's rows (design/43): one per suggested app with a tick box in the accent, the look's focus fill on the row, OK ticks or unticks, one already on the TV left, the count of those chosen under them",
+      "SuggestedApps.forSetup(android.os.Build.VERSION.SDK_INT)" in act_setup and "if (!picks.remove(a.id)) picks.add(a.id);" in act_setup and "new TickBox(on, look.accent" in act_setup and "final TextView row = button(" in act_setup
+      and 'S.t("%s تطبيقات مختارة"' in act_setup
       and 'S.t("مثبّت من قبل: نتركه")' in act_setup and "☑" not in act_setup)
 rows = re.findall(r'\{"([^"]+)", (TVBRO|SMARTTUBE), "([^"]+)"\}', inst)
 check("SmartTube and TV Bro: the same repositories and file patterns as the setup's (install.sh's)",

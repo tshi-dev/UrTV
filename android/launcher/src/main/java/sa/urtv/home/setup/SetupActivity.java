@@ -226,24 +226,31 @@ public class SetupActivity extends Activity {
         for (int i = 0; i < plan.size(); i++) add(text(digits((i + 1) + ". " + plan.get(i)), 14, "Regular", TEXT), dp(8));
         // 4.3: a box per suggested app the setup can install (OK ticks or unticks it); one already on the TV says so and is left
         add(text(S.t("تطبيقات مقترحة: علّم ما تبي نثبّته معها"), 15, "Medium", TEXT), dp(8));
+        final TextView summary = text("", 14, "Regular", DIM);
         for (final sa.urtv.home.SuggestedApps.App a : sa.urtv.home.SuggestedApps.forSetup(android.os.Build.VERSION.SDK_INT)) {
-            // the on/off look of every row here (paintLang: three green triangles and green words when ticked, plain when not)
+            // design/43: a row per app (a button(): its guard against overlays, the look's focus fill), a tick box at its start in the accent when ticked, its name and its line; OK ticks or unticks
             final boolean have = p.have.contains(a.id);
-            final TextView box = button(have ? a.name + " · " + S.t("مثبّت من قبل: نتركه") : a.name + " · " + TR.apply(a.why));
-            box.setContentDescription(a.name);
-            paintLang(box, !have && picks.contains(a.id), false);
-            box.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                public void onFocusChange(View v, boolean has) { paintLang(box, !have && picks.contains(a.id), has); }
-            });
-            box.setOnClickListener(new View.OnClickListener() {
+            final TextView row = button(a.name + "\n" + (have ? S.t("مثبّت من قبل: نتركه") : TR.apply(a.why)));
+            row.setGravity(Gravity.CENTER_VERTICAL | Dir.start());
+            row.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+            row.setContentDescription(a.name);
+            row.setCompoundDrawablePadding(dp(16));
+            final Runnable paint = new Runnable() { public void run() {
+                boolean on = !have && picks.contains(a.id);
+                row.setCompoundDrawablesRelativeWithIntrinsicBounds(new TickBox(on, look.accent, look.sub, look.light ? 0xFFFFFFFF : 0xFF14161A), null, null, null);
+                summary.setText(digits(S.t("%s تطبيقات مختارة", String.valueOf(picks.size()))));
+            } };
+            paint.run();
+            row.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     if (have) return;
                     if (!picks.remove(a.id)) picks.add(a.id);
-                    paintLang(box, picks.contains(a.id), box.hasFocus());
+                    paint.run();
                 }
             });
-            add(box, dp(8));
+            body.addView(row, right(dp(8)));
         }
+        add(summary, dp(8));
         final TextView begin = button(S.t("ابدأ"));
         begin.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { SetupRunner.get().confirm(new java.util.ArrayList<>(picks)); } });
         add(begin, dp(12));
@@ -379,7 +386,7 @@ public class SetupActivity extends Activity {
             stepSubs.get(i).setVisibility(View.GONE);
         }
         if (count != null) {
-            count.setText(digits(S.t("%s من %s", String.valueOf(finished), String.valueOf(steps.size()))));
+            count.setText(digits(S.t("%s من %s", String.valueOf(finished), String.valueOf(steps.size())) + " · " + (steps.isEmpty() ? 0 : 100 * finished / steps.size()) + (Dir.rtl() ? "٪" : "%")));   // design/43: the share beside the count
             countBar.setShare(steps.isEmpty() ? 0 : finished / (double) steps.size());
         }
         if (r.promptLate()) say(S.tv(SetupRunner.PROMPT_LATE), RED);
@@ -618,6 +625,38 @@ public class SetupActivity extends Activity {
         t.setFilterTouchesWhenObscured(true);
         sa.urtv.home.GlassPaint.card(t, look, 14);
         return t;
+    }
+
+    /** the tick box at the start of a row: a rounded square, filled with the accent and a tick when on, only its line when off */
+    private final class TickBox extends android.graphics.drawable.Drawable {
+        private final boolean on;
+        private final int fill, line, ink;
+        private final android.graphics.Paint p = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
+        TickBox(boolean on, int fill, int line, int ink) { this.on = on; this.fill = fill; this.line = line; this.ink = ink; }
+        @Override public int getIntrinsicWidth() { return dp(28); }
+        @Override public int getIntrinsicHeight() { return dp(28); }
+        @Override public void draw(android.graphics.Canvas c) {
+            android.graphics.Rect b = getBounds();
+            android.graphics.RectF r = new android.graphics.RectF(b.left + dp(1), b.top + dp(1), b.right - dp(1), b.bottom - dp(1));
+            p.setStyle(on ? android.graphics.Paint.Style.FILL : android.graphics.Paint.Style.STROKE);
+            p.setStrokeWidth(dp(2));
+            p.setColor(on ? fill : line);
+            c.drawRoundRect(r, dp(8), dp(8), p);
+            if (!on) return;
+            p.setStyle(android.graphics.Paint.Style.STROKE);
+            p.setStrokeWidth(dp(3));
+            p.setStrokeCap(android.graphics.Paint.Cap.ROUND);
+            p.setColor(ink);
+            float w = b.width(), h = b.height();
+            android.graphics.Path path = new android.graphics.Path();
+            path.moveTo(b.left + w * 0.26f, b.top + h * 0.52f);
+            path.lineTo(b.left + w * 0.43f, b.top + h * 0.69f);
+            path.lineTo(b.left + w * 0.74f, b.top + h * 0.32f);
+            c.drawPath(path, p);
+        }
+        @Override public void setAlpha(int a) { }
+        @Override public void setColorFilter(android.graphics.ColorFilter f) { }
+        @Override public int getOpacity() { return android.graphics.PixelFormat.TRANSLUCENT; }
     }
 
     private TextView text(String s, float sp, String weight, int color) {
