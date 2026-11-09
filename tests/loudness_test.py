@@ -27,8 +27,8 @@ prefs = (T / "Prefs.java").read_text(encoding="utf-8")
 check("Loudness is pure: no android import", "import android" not in loud)
 start = service.split("private void startUrl(")[1].split("\n    }\n")[0]
 check("every player gets the lift, on its own session, for what it plays",
-      service.count("new MediaPlayer()") == 1 and "louder = lift(player.getAudioSessionId(), Loudness.targetMb(source));" in start
-      and start.index("new MediaPlayer()") < start.index("lift(") < start.index("prepareAsync") if "prepareAsync" in start else False)
+      service.count("Playback.create(") == 1 and "louder = lift(player.getAudioSessionId(), Loudness.targetMb(source));" in start   # 4.3 A2: MediaPlayer or ExoPlayer (Playback)
+      and start.index("Playback.create(") < start.index("lift(") < start.index("prepareAsync") if "prepareAsync" in start else False)
 rel = service.split("private void releasePlayer(")[1].split("\n    }\n")[0]
 check("the effect is released with the player (startUrl releases the old one first)", "louder.release()" in rel and "louder = null;" in rel
       and start.index("releasePlayer();") < start.index("lift("))
