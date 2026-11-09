@@ -90,7 +90,7 @@ public final class PhoneUpdater {
 
     /** the screen is told of the bytes at most four times a second */
     private static void tickProgress() {
-        long now = System.currentTimeMillis();
+        long now = SystemClock.elapsedRealtime();   // an interval: the monotonic clock (4.3 A5)
         if (now - dlAt < 250) return;
         dlAt = now;
         Runnable r = listener();
