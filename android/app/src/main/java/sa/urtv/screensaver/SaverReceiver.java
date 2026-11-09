@@ -273,6 +273,8 @@ public class SaverReceiver extends BroadcastReceiver {
         if (homePacks != null && !"none".equals(homePacks)) for (String id : homePacks.split(",")) if (!PhotoPacks.validId(id)) return "error: homepacks is none or pack ids separated by commas";
         String homeOurs = i.getStringExtra("homeours");
         if (homeOurs != null && !"on".equals(homeOurs) && !"off".equals(homeOurs)) return "error: homeours is one of on off";
+        String homeMine = i.getStringExtra("homemine");   // «صوري» for the home alone: with ours (mix), only, none (off), or as the screensaver's (same, the default)
+        if (homeMine != null && !"same".equals(homeMine) && !"mix".equals(homeMine) && !"only".equals(homeMine) && !"off".equals(homeMine)) return "error: homemine is one of same mix only off";
         String albumMode = i.getStringExtra("albummode");   // «ألبوم صوري»: a photo every few seconds (seconds, the default) or one a minute
         if (albumMode != null && !"seconds".equals(albumMode) && !"minute".equals(albumMode)) return "error: albummode is one of seconds minute";
         String albumDate = i.getStringExtra("albumdate");
@@ -419,6 +421,7 @@ public class SaverReceiver extends BroadcastReceiver {
         if (homePhotos != null) p.setHomePhotosSame("same".equals(homePhotos));
         if (homePacks != null) p.setHomePacksOn("none".equals(homePacks) ? new java.util.LinkedHashSet<String>() : PhotoPacks.parseOn(homePacks));
         if (homeOurs != null) p.setHomeOursOn("on".equals(homeOurs));
+        if (homeMine != null) p.setHomeMine("same".equals(homeMine) ? null : homeMine);
         if (albumMode != null) p.setAlbumMinute("minute".equals(albumMode));
         if (albumDate != null) p.setAlbumDate("on".equals(albumDate));
         if (updateBell != null) p.setUpdateBell("on".equals(updateBell));
@@ -606,7 +609,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nhome_panel: " + p.homePanel()
             + "\ngreeting: " + (p.greeting() ? "on" : "off")
             + "\nlistenpill: " + (p.listenPill() ? "on" : "off")
-            + "\nhomephotos: " + (p.homePhotosSame() ? "same" : "own") + "\nhomepacks: " + (p.homePacksOn().isEmpty() ? "none" : PhotoPacks.joinOn(p.homePacksOn())) + "\nhomeours: " + (p.homeOursOn() ? "on" : "off") + "\nalbummode: " + (p.albumMinute() ? "minute" : "seconds") + "\nalbumdate: " + (p.albumDate() ? "on" : "off")
+            + "\nhomephotos: " + (p.homePhotosSame() ? "same" : "own") + "\nhomepacks: " + (p.homePacksOn().isEmpty() ? "none" : PhotoPacks.joinOn(p.homePacksOn())) + "\nhomeours: " + (p.homeOursOn() ? "on" : "off") + "\nhomemine: " + (p.homeMine() == null ? "same" : p.homeMine()) + "\nalbummode: " + (p.albumMinute() ? "minute" : "seconds") + "\nalbumdate: " + (p.albumDate() ? "on" : "off")
             + "\npillshidden: " + (p.pillsHidden().isEmpty() ? "none" : p.pillsHidden()) + "\nmatchapp: " + p.matchApp()
             + "\nupdatebell: " + (p.updateBell() ? "on" : "off")
             + "\nwatchnext: " + (p.watchNext() ? "on" : "off")

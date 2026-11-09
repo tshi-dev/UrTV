@@ -66,10 +66,10 @@ public class ConfigProvider extends ContentProvider {
             return h;
         }
         if (isOwn(uri)) {
-            MatrixCursor o = new MatrixCursor(new String[] {"n", "mode", "rev", "dates"});
+            MatrixCursor o = new MatrixCursor(new String[] {"n", "mode", "rev", "dates", "home"});
             StringBuilder dates = new StringBuilder();   // «ألبوم صوري»: the day each photo was added, comma separated, in the list's order
             for (int k = 1; k <= Own.count(getContext()); k++) dates.append(k > 1 ? "," : "").append(Own.date(getContext(), k));
-            o.addRow(new Object[] {Own.count(getContext()), Own.mode(getContext()), p.ownRev(), dates.toString()});
+            o.addRow(new Object[] {Own.count(getContext()), Own.mode(getContext()), p.ownRev(), dates.toString(), p.homeMineEffective()});   // «home»: what the HOME does with «صوري» (its own choice, else the mode above)
             return o;
         }
         if (isTasks(uri)) {

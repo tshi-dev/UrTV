@@ -310,6 +310,16 @@ public class AppearanceActivity extends Activity {
         row.addView(tile("home:same", new Mock(Mock.PHOTOS, "same", look), w("مثل شاشة التوقف"), same, v -> { prefs.setHomePhotosSame(true); render(); }), tileParams());
         row.addView(tile("home:own", new Mock(Mock.PHOTOS, "set", look), w("مجموعات خاصة بها"), !same, v -> { prefs.setHomePhotosSame(false); render(); }), tileParams());
         all.addView(row, line(dp(8)));
+        // «صوري» of the home's own: with ours, only, or none (never chosen: as the screensaver's), one tile that goes round
+        LinearLayout mineRow = tiles();
+        final String mode = prefs.homeMineEffective();
+        String mineName = Own.count(this) == 0 ? w("صوري") : "only".equals(mode) ? w("صوري فقط") : "off".equals(mode) ? w("بدون صوري") : w("صوري مع صورنا");
+        mineRow.addView(tile("home:mine", new Mock(Mock.PHOTOS, "own", look), mineName, !"off".equals(mode) && Own.count(this) > 0, v -> {
+            if (Own.count(this) == 0) { toast(w("لا صور لك بعد. تضاف من الجوال.")); return; }
+            prefs.setHomeMine("mix".equals(mode) ? "only" : "only".equals(mode) ? "off" : "mix");
+            render();
+        }), tileParams());
+        all.addView(mineRow, line(dp(8)));
         if (!same) {
             LinearLayout set = tiles();
             Map<String, Integer> have = PackStore.installed(this);

@@ -35,6 +35,7 @@
 #   optimize/saver.sh albummode minute             «ألبوم صوري» (card album): a photo every 4 s (seconds, default) or one a minute (minute)
 #   optimize/saver.sh albumdate off                «ألبوم صوري»: the day each photo was added, under it: on (default) or off
 #   optimize/saver.sh homeours off                 home screen, with homephotos own: «صورنا» among its photos: on (default) or off
+#   optimize/saver.sh homemine only                home screen: «صوري» with ours (mix), only them (only), none (off), or as the screensaver's (same, the default)
 #   optimize/saver.sh appearance auto              home screen: «المظهر ← الإضاءة», dark (default), light, or auto (light from sunrise until Maghrib in the city)
 #   optimize/saver.sh look navy                    all our screens: «المظهر ← الشكل», glass (default), graphite, navy, clean, or sand
 #   optimize/saver.sh homelayout football         the home screen's layout («المظهر ← الواجهة»): classic (default) or football (weather, prayers, today's games)
@@ -233,6 +234,7 @@ case "${1:-}" in
   albummode) set1 albummode "${2:?usage: optimize/saver.sh albummode seconds|minute}" ;;
   albumdate) set1 albumdate "${2:?usage: optimize/saver.sh albumdate on|off}" ;;
   homeours) set1 homeours "${2:?usage: optimize/saver.sh homeours on|off}" ;;
+  homemine) set1 homemine "${2:?usage: optimize/saver.sh homemine same|mix|only|off}" ;;
   appearance) set1 appearance "${2:?usage: optimize/saver.sh appearance dark|light|auto}" ;;
   look) set1 look "${2:?usage: optimize/saver.sh look glass|graphite|navy|clean|sand}" ;;
   homelayout) set1 homelayout "${2:?usage: optimize/saver.sh homelayout classic|football}" ;;

@@ -689,6 +689,12 @@ final class Prefs {
         return PhotoPacks.fragment(packsOn(), have) + (ours ? "" : "&ours=0");
     }
 
+    /** the home's own choice for «صوري»: "mix" (with ours), "only", "off"; null (never chosen) follows the screensaver's own mode, as before */
+    String homeMine() { return sp.getString("homeMine", null); }
+    void setHomeMine(String v) { if (v == null) sp.edit().remove("homeMine").apply(); else sp.edit().putString("homeMine", v).apply(); bumpOwnRev(); }   // the home chooses its photo again at once
+    /** what the home uses now: its own choice, else the screensaver's mode */
+    String homeMineEffective() { String v = homeMine(); return v != null ? v : ownMode(); }
+
     String ownMode() { return sp.getString("ownMode", Own.MIX); }
     void setOwnMode(String v) { sp.edit().putString("ownMode", v).apply(); }
 

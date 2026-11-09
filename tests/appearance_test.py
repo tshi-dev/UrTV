@@ -58,4 +58,9 @@ check("design/43: the top row is closed by default (the phone control, the contr
 ap = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/AppearanceActivity.java").read_text(encoding="utf-8")
 check("«المظهر»: the scroll's viewport sits inside the 5 % safe area (a margin top and bottom), so the first screen never draws a row or «رجوع» out to y 1080; what scrolls has only a small padding",
       "lp.topMargin = safe;" in ap and "lp.bottomMargin = safe;" in ap and "heightPixels * 0.05f" in ap and "col.setPadding(dp(16), dp(16), dp(16), dp(16));" in ap and "Math.max(dp(40), safe)" not in ap)
+rcv2 = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/SaverReceiver.java").read_text(encoding="utf-8")
+prv = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/ConfigProvider.java").read_text(encoding="utf-8")
+check("the home has «صوري» of its own (with ours, only, none; never chosen = as the screensaver's): the tile, the saver.sh command, the provider's «home» column, and the home reads it (none = no own photos)",
+      '"home:mine"' in ap and 'getStringExtra("homemine")' in rcv2 and "homeMineEffective()" in prv and 'c.getColumnIndex("home")' in (ROOT / "android/launcher/src/main/java/sa/urtv/home/MainActivity.java").read_text(encoding="utf-8")
+      and "  homemine) set1 homemine " in (ROOT / "optimize/saver.sh").read_text(encoding="utf-8"))
 sys.exit(1 if failed else 0)

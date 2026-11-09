@@ -3191,7 +3191,11 @@ public class MainActivity extends Activity {
     private Object[] ownInfo() {
         try (Cursor c = getContentResolver().query(OWN, null, null, null, null)) {
             // an older screensaver app answers any path with its settings instead: no "n" column, no photos
-            if (c != null && c.getColumnIndex("n") == 0 && c.moveToFirst()) return new Object[] {c.getInt(0), c.getString(1), c.getLong(2)};
+            if (c != null && c.getColumnIndex("n") == 0 && c.moveToFirst()) {
+                int h = c.getColumnIndex("home");   // the home's own choice for «صوري» («مع صورنا», «فقط», «بدون»); an older screensaver says only the mode
+                String home = h >= 0 && c.getString(h) != null ? c.getString(h) : c.getString(1);
+                return new Object[] {"off".equals(home) ? 0 : c.getInt(0), "off".equals(home) ? "mix" : home, c.getLong(2)};
+            }
         } catch (RuntimeException ignored) { }
         return new Object[] {0, "mix", 0L};
     }
