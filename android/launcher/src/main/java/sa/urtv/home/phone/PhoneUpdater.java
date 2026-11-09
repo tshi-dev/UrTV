@@ -589,6 +589,7 @@ public final class PhoneUpdater {
 
     /** A failure ends the update: nothing more is handed to the installer, and the record (if one was written) is removed, since the screen says it now. */
     private static void fail(Context c, String reason, String pkg, String why) {
+        closeCover(c);
         new UpdateStore(c).clear();
         cleanDownloads();
         Log.w(TAG, "update stopped at " + pkg + ": " + why);
@@ -638,6 +639,7 @@ public final class PhoneUpdater {
         } else {
             String why = UpdateFlow.failure(status);
             if (UpdateFlow.isDeclined(why)) {
+                closeCover(c);
                 new UpdateStore(c).clear();
                 cleanDownloads();
                 synchronized (PhoneUpdater.class) { queue.clear(); queuePackages.clear(); installing = ""; confirm = null; }
@@ -652,13 +654,49 @@ public final class PhoneUpdater {
     public static synchronized boolean showConfirm(Context c) {
         if (confirm == null) return false;
         try {
-            c.startActivity(new Intent(confirm).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            Intent screen = new Intent(confirm).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            // step 41 (build 209): over our own replace the screensaver's cover goes under the confirm screen, so the app used before does not come to
+            // the front while this process is gone; an older screensaver app without it, or one Android refuses: the confirm screen alone, as before
+            if (UpdateOrder.replacesUs(installing) && coverThere(c)) {
+                try {
+                    c.startActivities(new Intent[] {cover(), screen});
+                    coverShown = true;
+                    confirmShown = true;
+                    return true;
+                } catch (RuntimeException e) {
+                    Log.w(TAG, "update cover: " + e.getClass().getSimpleName());
+                }
+            }
+            c.startActivity(screen);
             confirmShown = true;
             return true;
         } catch (RuntimeException e) {
             Log.w(TAG, "confirm screen: " + e);
             return false;
         }
+    }
+
+    /** the screensaver app's UpdateCover (step 41) */
+    static final String COVER_PKG = "sa.urtv.screensaver", COVER = "sa.urtv.screensaver.UpdateCover", COVER_CLOSE = "sa.urtv.screensaver.UPDATE_COVER_CLOSE",
+        COVER_PERMISSION = "sa.urtv.screensaver.UPDATE_COVER";
+    private static boolean coverShown;
+
+    private static Intent cover() {
+        return new Intent().setClassName(COVER_PKG, COVER).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    }
+
+    private static boolean coverThere(Context c) {
+        try { return c.getPackageManager().resolveActivity(cover(), 0) != null; } catch (RuntimeException e) { return false; }
+    }
+
+    /** the install of our own build was declined or failed: the cover closes, and the update screen under it says why */
+    private static void closeCover(Context c) {
+        synchronized (PhoneUpdater.class) {
+            if (!coverShown) return;
+            coverShown = false;
+        }
+        // only to the screensaver app; its cover takes it only from a holder of COVER_PERMISSION (this app)
+        try { c.sendBroadcast(new Intent(COVER_CLOSE).setPackage(COVER_PKG)); } catch (RuntimeException ignored) { }
     }
 
     /** True when the installer's confirm screen is waiting and nobody has opened it yet. */

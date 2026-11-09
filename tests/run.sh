@@ -191,6 +191,7 @@ python3 tests/a11y_heal_test.py
 python3 tests/saver_cards_test.py
 python3 tests/phone_qr_test.py
 python3 tests/update_test.py
+python3 tests/update_cover_test.py   # step 41: the screensaver's cover over the home app's own replace (no last app in front)
 python3 tests/update_channel_test.py
 python3 tests/android_compile_test.py
 bash tests/android_compile.sh   # both apps against android-all API 34; SKIP (not a failure) when offline or the jar is not cached

@@ -37,6 +37,8 @@
     <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
     <!-- «تحكم من الجوال»: changes the city and the home cards through the screensaver's provider (signature permission, same key) -->
     <uses-permission android:name="sa.urtv.screensaver.PHONE_SETTINGS" />
+    <!-- step 41: «تحديث تلفزيوني» opens the screensaver's cover over our own replace and closes it on a decline (UpdateCover, same key) -->
+    <uses-permission android:name="sa.urtv.screensaver.UPDATE_COVER" />
     <!-- «تحديث تلفزيونك» from the phone: hands the APKs it downloaded to Android's own install screen, where the owner confirms -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <!-- «حذف التطبيق» in the app menu: hands the app to Android's own uninstall, which asks the person to confirm (a normal permission) -->
