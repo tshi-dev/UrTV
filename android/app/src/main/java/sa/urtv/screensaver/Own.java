@@ -13,14 +13,20 @@ import java.io.OutputStream;
 /**
  * The owner's own photos (up to MAX), kept in this app's private folder files/own as 1.jpg, 2.jpg, ... with no
  * gaps. The screensaver page gets them through PhotoCache; the launcher reads them through ConfigProvider (read
- * only, READ_CONFIG). They only arrive through ADB (SaverReceiver PHOTOS, optimize/photos.sh).
+ * only, READ_CONFIG). They arrive through ADB (SaverReceiver PHOTOS, optimize/photos.sh) and, since 4.3, from a paired phone (the launcher's
+ * /u page, ConfigProvider «phone_photo_add»: resized on the phone, no camera or location data).
  *
  * Every file is checked before it is kept, so the screen never decodes more than it can hold: a JPEG, at most
  * MAX_BYTES, at most MAX_SIDE a side and MAX_PIXELS in all (optimize/photos.sh sends 1920 px wide).
  */
 final class Own {
-    /** the most kept (4.1 reports asked for more than 10); a weak TV (Prefs.lowRam) keeps MAX_LOW: each photo is decoded at full screen size */
-    static final int MAX = 30, MAX_LOW = 10;
+    /**
+     * the most kept (4.1 reports asked for more than 10; 4.3: 50); a weak TV (Prefs.lowRam) keeps MAX_LOW: each photo is decoded at full screen size.
+     * Memory does not grow with the count: the page decodes one photo at a time (and the next), so 50 cost only flash: about 0.4 MB each
+     * as optimize/photos.sh and the phone send them (1920 px, JPEG 85), 20 MB for 50; FREE_KEEP stays free on the TV after each one.
+     */
+    static final int MAX = 50, MAX_LOW = 10;
+    static final long FREE_KEEP = 200L << 20;
 
     /** how many this TV keeps */
     static int max(Context c) { return Prefs.lowRam(c) ? MAX_LOW : MAX; }
@@ -79,6 +85,7 @@ final class Own {
         if (count(c) >= max(c)) return "already " + max(c) + " photos (delete one first)";
         String why = check(src);
         if (!why.isEmpty()) return why;
+        if (c.getFilesDir().getUsableSpace() < FREE_KEEP) return "the TV is nearly full (less than " + (FREE_KEEP >> 20) + " MB free)";
         File dir = dir(c);
         if (!dir.isDirectory() && !dir.mkdirs()) return "no room to keep it";
         File dest = file(c, count(c) + 1), tmp = new File(dir, "add.tmp");
@@ -101,6 +108,9 @@ final class Own {
         new Prefs(c).bumpOwnRev();
         return null;
     }
+
+    /** 4.3: see JpegMeta.cameraData */
+    static boolean cameraData(byte[] jpeg) { return JpegMeta.cameraData(jpeg); }
 
     /** Removes photo n (from 1); the ones after it move up. */
     static synchronized boolean delete(Context c, int n) {

@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="dark light">
+<title>صوري</title>
+<style>
+/* 4.3 «صوري» from the phone: its own page (the main phone page keeps its 64 KB). Each photo is drawn again on the phone at 1920 px at most and
+   sent as a new JPEG: the camera's data (where and when it was taken) is not in it, and the TV refuses a file that still has it. Only a phone
+   the owner allowed (the session of the main page) can send one. «اللغة» English: the TV sends <html lang="en"> and the words below switch. */
+:root { --bg:#17181b; --card:rgba(30,33,39,.92); --line:rgba(255,255,255,.1); --acc:#54c08a; --text:#fff; --dim:#dadce0; --ink:#14161a; --tile:rgba(255,255,255,.07) }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --bg:#f6f4ef; --card:#fff; --line:#e3dfd5; --acc:#166a45; --text:#1b1f1d; --dim:#545a57; --ink:#fff; --tile:#fff } }
+:root[data-theme="light"] { --bg:#f6f4ef; --card:#fff; --line:#e3dfd5; --acc:#166a45; --text:#1b1f1d; --dim:#545a57; --ink:#fff; --tile:#fff }
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+@font-face{font-family:'Thmanyah';font-weight:400;font-display:swap;src:url(/fonts/Thmanyah-Regular.woff2) format("woff2")}
+html,body{margin:0;color:var(--text);background:var(--bg);font:16px/1.45 'Thmanyah',system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif}
+body{max-width:560px;margin:0 auto;padding:24px 16px calc(32px + env(safe-area-inset-bottom))}
+h1{font-size:24px;margin:16px 0}
+p{margin:8px 0;color:var(--dim);font-size:14px}
+.hidden{display:none !important}
+label.main{display:block;text-align:center;min-height:56px;line-height:56px;background:var(--acc);color:var(--ink);font-weight:700;border-radius:16px;margin:16px 0 8px;cursor:pointer}
+input[type=file]{position:absolute;opacity:0;width:1px;height:1px}
+#state{font-weight:700;color:var(--text);min-height:1.5em}
+a{color:var(--acc)}
+</style>
+</head>
+<body>
+<h1 id="t1">صوري على التلفزيون</h1>
+<p id="t2">اختر صوراً من جوالك: تُصغَّر هنا قبل إرسالها، وما يوصل معها مكان التصوير ولا وقته. تظهر في شاشة التوقف مع صور «صوري».</p>
+<div id="go" class="hidden">
+<label class="main" for="pick" id="t3">اختر الصور</label>
+<input id="pick" type="file" accept="image/*" multiple>
+</div>
+<p id="state" role="status"></p>
+<p id="none" class="hidden"><span id="t4">افتح صفحة الجوال وامسح الرمز من «أسهل من الجوال» على التلفزيون أولاً.</span> <a href="/" id="t5">صفحة الجوال</a></p>
+<script nonce="__NONCE__">
+(function () {
+  try { var th = localStorage.getItem('urtvTheme'); if (th === 'light' || th === 'dark') document.documentElement.setAttribute('data-theme', th); } catch (e) { }
+  var EN = document.documentElement.lang === 'en';
+  var W = EN ? {
+    t1: 'My photos on the TV', t2: 'Pick photos from your phone: they are made smaller here before they are sent, without where or when they were taken. The screensaver shows them with «My photos».',
+    t3: 'Pick photos', t4: 'Open the phone page and scan the code from «Easier from the phone» on the TV first.', t5: 'Phone page',
+    sending: 'Sending {n} of {all}…', done: '{n} photos are on the TV ✓', full: 'The TV holds as many photos as it can. Delete some on the TV first.',
+    camera: 'This photo still had its camera data and was not sent.', refused: 'The TV did not take a photo.', failed: 'Not sent: check the Wi-Fi and try again.', no_session: 'The session ended.'
+  } : {
+    sending: 'يرسل {n} من {all}…', done: 'وصلت {n} صور للتلفزيون ✓', full: 'التلفزيون فيه أكثر عدد يقدر عليه من الصور. احذف بعضها من التلفزيون أولاً.',
+    camera: 'هذه الصورة فيها بيانات الكاميرا، فما أرسلناها.', refused: 'التلفزيون ما قبل صورة.', failed: 'ما انرسلت: تأكد من الواي فاي وجرّب مرة ثانية.', no_session: 'انتهت الجلسة.'
+  };
+  var $ = function (id) { return document.getElementById(id); };
+  if (EN) ['t1', 't2', 't3', 't4', 't5'].forEach(function (k) { $(k).textContent = W[k]; });
+  var sess = null;
+  try { sess = sessionStorage.getItem('urtv'); } catch (e) { }
+  $(sess ? 'go' : 'none').classList.remove('hidden');
+  var MAX = 1920, LIMIT = 900000;
+  function say(t, n, all) { $('state').textContent = t.replace('{n}', n).replace('{all}', all); }
+  // drawn again at 1920 px at most: a new JPEG carries none of the camera's data
+  function shrink(file) {
+    return createImageBitmap(file).then(function (img) {
+      var k = Math.min(1, MAX / Math.max(img.width, img.height)), c = document.createElement('canvas');
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      var q = [0.85, 0.75, 0.65];
+      function enc(i) {
+        return new Promise(function (res) { c.toBlob(res, 'image/jpeg', q[i]); }).then(function (b) {
+          return b && b.size > LIMIT && i + 1 < q.length ? enc(i + 1) : b;
+        });
+      }
+      return enc(0);
+    });
+  }
+  function send(blob) {
+    var h = { 'Content-Type': 'image/jpeg' };
+    if (sess) h['X-UrTV-Session'] = sess;
+    return fetch('/api/photo', { method: 'POST', credentials: 'same-origin', headers: h, body: blob, cache: 'no-store' })
+      .then(function (r) { return r.json(); }, function () { return { ok: false, error: 'failed' }; })
+      .catch(function () { return { ok: false, error: 'failed' }; });
+  }
+  $('pick').onchange = function () {
+    var files = Array.prototype.slice.call(this.files || []), sent = 0;
+    this.value = '';
+    function next(i) {
+      if (i >= files.length) { if (sent) say(W.done, sent, files.length); return; }
+      say(W.sending, i + 1, files.length);
+      shrink(files[i]).then(function (b) {
+        if (!b || b.size > LIMIT) return { ok: false, error: 'photo_refused' };
+        return send(b);
+      }, function () { return { ok: false, error: 'photo_refused' }; }).then(function (j) {
+        if (j && j.ok) { sent++; next(i + 1); return; }
+        var e = j && j.error;
+        say(e === 'photo_full' ? W.full : e === 'photo_camera' ? W.camera : e === 'no_session' ? W.no_session : e === 'photo_refused' ? W.refused : W.failed, i + 1, files.length);
+      });
+    }
+    next(0);
+  };
+})();
+</script>
+</body>
+</html>

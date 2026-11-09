@@ -43,8 +43,11 @@ public final class PhoneServer {
     public static final class Request {
         public final String method, path, body, client;
         public final Map<String, String> headers;   // names in lower case
-        Request(String method, String path, Map<String, String> headers, String body, String client) {
-            this.method = method; this.path = path; this.headers = headers; this.body = body; this.client = client;
+        /** 4.3: the raw body of POST /api/photo (a JPEG; body is then ""), else null */
+        public final byte[] raw;
+        Request(String method, String path, Map<String, String> headers, String body, String client) { this(method, path, headers, body, client, null); }
+        Request(String method, String path, Map<String, String> headers, String body, String client, byte[] raw) {
+            this.method = method; this.path = path; this.headers = headers; this.body = body; this.client = client; this.raw = raw;
         }
         public String header(String name) { return headers.get(name.toLowerCase(Locale.ROOT)); }
     }
@@ -61,6 +64,9 @@ public final class PhoneServer {
     }
 
     public static final int MAX_LINE = 4096, MAX_HEADERS = 40, MAX_HEADER_BYTES = 8192, MAX_BODY = 4096;
+    /** 4.3: «صوري» from the phone, one JPEG the phone resized (1920 px): only on POST /api/photo, only as image/jpeg */
+    public static final String PHOTO_PATH = "/api/photo";
+    public static final int MAX_PHOTO_BODY = 1_000_000;
     static final int READ_TIMEOUT_MS = 3000;
     static final long TOTAL_MS = 8000;
 
@@ -180,9 +186,10 @@ public final class PhoneServer {
         String body = "";
         if (p[0].equals("POST")) {
             String cl = h.get("content-length");
-            if (cl == null || !cl.matches("[0-9]{1,5}")) fail(411);
+            boolean photo = target.equals(PHOTO_PATH) && "image/jpeg".equals(String.valueOf(h.get("content-type")).toLowerCase(Locale.ROOT).trim());
+            if (cl == null || !cl.matches(photo ? "[0-9]{1,7}" : "[0-9]{1,5}")) fail(411);
             int n = Integer.parseInt(cl);
-            if (n > MAX_BODY) fail(413);
+            if (n > (photo ? MAX_PHOTO_BODY : MAX_BODY)) fail(413);
             byte[] buf = new byte[n];
             int got = 0;
             while (got < n) {
@@ -191,6 +198,7 @@ public final class PhoneServer {
                 if (r < 0) fail(400);
                 got += r;
             }
+            if (photo) return new Request(p[0], target, h, "", s.getInetAddress().getHostAddress(), buf);
             body = new String(buf, StandardCharsets.UTF_8);
         } else if (h.containsKey("content-length") && !"0".equals(h.get("content-length"))) {
             fail(400);

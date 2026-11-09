@@ -90,6 +90,27 @@ public class ConfigProvider extends ContentProvider {
         Prefs p = new Prefs(c);
         Bundle out = new Bundle();
         switch (method) {
+            case "phone_photo_add": {   // 4.3: «صوري» from a paired phone (the launcher's /api/photo): a JPEG the phone re-encoded
+                byte[] jpeg = extras == null ? null : extras.getByteArray("jpeg");
+                String why = jpeg == null || jpeg.length == 0 ? "no photo" : jpeg.length > Own.MAX_BYTES ? "too large"
+                        : Own.cameraData(jpeg) ? "camera data" : Own.count(c) >= Own.max(c) ? "full" : null;
+                if (why == null) {
+                    File dir = Own.dir(c);
+                    try {
+                        if (!dir.isDirectory() && !dir.mkdirs()) throw new java.io.IOException("no folder");
+                        try (java.io.OutputStream o = new java.io.FileOutputStream(Own.incoming(c))) { o.write(jpeg); }
+                        why = Own.add(c, Own.incoming(c));
+                    } catch (java.io.IOException e) {
+                        Own.incoming(c).delete();
+                        why = "no room";
+                    }
+                }
+                out.putString("result", why == null ? "photo_added" : "photo_refused");
+                out.putString("why", why == null ? "" : why);
+                out.putInt("count", Own.count(c));
+                out.putInt("max", Own.max(c));
+                return out;
+            }
             case "phone_state": {
                 ArrayList<String> codes = new ArrayList<>(), names = new ArrayList<>();
                 for (String[] x : Prefs.PANELS) { codes.add(x[0]); names.add(x[1]); }

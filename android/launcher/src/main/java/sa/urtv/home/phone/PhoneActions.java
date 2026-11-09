@@ -311,6 +311,18 @@ final class PhoneActions implements Actions {
 
     @Override public Map<String, Object> family() { return PhoneApps.family(app); }
 
+    // ---- 4.3 «صوري» from the phone: the screensaver keeps it (its provider checks it: a JPEG, its size, no camera data, room)
+
+    @Override public Result photoAdd(byte[] jpeg) {
+        Bundle in = new Bundle();
+        in.putByteArray("jpeg", jpeg);
+        Bundle out = saver("phone_photo_add", null, in);
+        if (out == null) return Result.fail("failed");
+        String r = out.getString("result", "photo_refused"), why = out.getString("why", "");
+        if (r.equals("photo_added")) return Result.ok("photo_added");
+        return Result.fail(why.equals("full") ? "photo_full" : why.equals("camera data") ? "photo_camera" : "photo_refused");
+    }
+
     // ---- 4.3 #53 «اكتب وارسم»: a short message on the TV's screen (PhoneMessage decides, MessageActivity shows)
 
     private static final PhoneMessage MESSAGES = PhoneMessage.limiter();

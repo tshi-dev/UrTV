@@ -39,12 +39,20 @@ final class PhoneApi implements PhoneServer.Handler {
         if (r.path.equals("/p") || r.path.equals("/")) return post ? json(405, err("method")) : page();
         // «محفظتي»'s own page: words and code only, like /p; the holdings come from /api/portfolio, behind the session and the TV's window
         if (r.path.equals("/m")) return post ? json(405, err("method")) : portfolioPage();
+        // 4.3 «صوري» from the phone: its own small page, words and code only like /m; the photo goes to /api/photo behind the session
+        if (r.path.equals("/u")) return post ? json(405, err("method")) : photosPage();
         // the fonts are no secret, and CSS asks for them without the X-UrTV-Session header: no session, like the page itself
         if (r.path.startsWith("/fonts/")) return post ? json(405, err("method")) : font(r.path.substring("/fonts/".length()));
 
         if (post) {
             if (!Guard.originOk(r.header("origin"), ip, port) || !Guard.fetchSiteOk(r.header("sec-fetch-site"))) return json(403, err("bad_origin"));
             String type = r.header("content-type");
+            if (r.path.equals(PhoneServer.PHOTO_PATH)) {   // 4.3: the one route that takes a JPEG, never JSON; read only as raw bytes
+                if (r.raw == null || type == null || !type.toLowerCase().trim().equals("image/jpeg")) return json(415, err("jpeg_only"));
+                String secret = session(r);
+                if (secret == null) return json(401, err("no_session"));
+                return result(control.actions().photoAdd(r.raw));
+            }
             if (type == null || !type.toLowerCase().replace(" ", "").matches("application/json(;charset=utf-8)?")) return json(415, err("json_only"));
         }
 
@@ -255,6 +263,11 @@ final class PhoneApi implements PhoneServer.Handler {
     }
 
     private PhoneServer.Response page() { return page(control.page().html()); }
+
+    private PhoneServer.Response photosPage() {
+        String html = control.page().photosHtml();
+        return html == null ? json(404, err("not_found")) : page(html);
+    }
 
     private PhoneServer.Response portfolioPage() {
         String html = control.page().portfolioHtml();

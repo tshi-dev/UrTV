@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # The owner's own photos for the screensaver and the home screen: 1 to 30 (10 on a weak TV, under 2.5 GB), from their agent. No remote, no menus.
 #   optimize/photos.sh add FILE...       make each ready on this computer (upright, at the TV's screen size, at most 1920 px wide,
-#                                        JPEG 85, no location or camera data) and put it on the TV (up to 30 in all; 10 on a weak TV)
+#                                        JPEG 85, no location or camera data) and put it on the TV (up to 50 in all; 10 on a weak TV)
 #   optimize/photos.sh list              how many, the mode, each one's size
 #   optimize/photos.sh del N             remove photo N (N from 'list'); the ones after it move up
 #   optimize/photos.sh clear             remove them all: the TV is as before

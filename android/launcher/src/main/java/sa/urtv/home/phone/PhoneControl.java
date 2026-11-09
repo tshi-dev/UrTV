@@ -27,6 +27,8 @@ public final class PhoneControl {
         byte[] font(String name);
         /** «محفظتي»'s own page (/m), in the language of «اللغة»; null when this build has none */
         default String portfolioHtml() { return null; }
+        /** 4.3: «صوري» from the phone (assets/phone/photos.html) */
+        default String photosHtml() { return null; }
     }
 
     public enum Start { OK, NO_WIFI, FAILED, ALREADY_ON }
