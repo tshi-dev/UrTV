@@ -18,7 +18,7 @@ final class Place {
     final String tz;
     /** «تعديل وقت الصلاة»: minutes added to the five prayers (see PrayerAdjust); zeros unless the settings say so */
     final int[] adj;
-    /** the calculation (PrayerMath.Method id): the settings' {@code pm=jafari}, else the city's country's, told by its zone */
+    /** the calculation (PrayerMath.Method id): the city's country's (4.3 A4: an old {@code pm=jafari} is that too), told by its zone */
     final int method;
 
     /** the values of res/values/config.xml (nothing was ever read): the alarm set from it is marked in the identity, so any real place differs */

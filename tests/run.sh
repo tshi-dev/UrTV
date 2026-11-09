@@ -28,6 +28,7 @@ python3 tests/run_identity_test.py
 python3 tests/run_report_test.py
 python3 tests/setup_phone_test.py
 python3 tests/requirements_pin_test.py   # optimize/requirements.txt: exact versions with hashes; UAD-ng at a fixed commit; check-packages exit codes
+python3 tests/saver_city_input_test.py   # 4.3 R1-2/R1-3: lat and lon go together and stay on the Earth
 python3 tests/phone_userland_test.py
 python3 tests/adb_client_test.py
 python3 tests/setup_engine_test.py

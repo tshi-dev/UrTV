@@ -142,6 +142,8 @@ public class SaverReceiver extends BroadcastReceiver {
                 return "error: country is a two-letter code with city, lat, lon and tz";
             cityCountry = cityCountry.toUpperCase(java.util.Locale.ROOT);
         }
+        // 4.3 R1-2: one of the two alone was dropped while the answer said «saved»
+        if ((lat == null) != (lon == null)) return "error: lat and lon go together (both, with city)";
         if (tz != null && (name == null || lat == null || lon == null))
             return "error: tz goes with city, lat and lon (a built-in city is Asia/Riyadh)";
         if (tz != null && !Arrays.asList(java.util.TimeZone.getAvailableIDs()).contains(tz))
@@ -150,6 +152,9 @@ public class SaverReceiver extends BroadcastReceiver {
             if (lat != null && lon != null) {
                 if (!lat.matches("-?\\d{1,2}(\\.\\d+)?") || !lon.matches("-?\\d{1,3}(\\.\\d+)?"))
                     return "error: lat/lon must be numbers like 25.86 / 43.49";
+                // 4.3 R1-3: on the Earth: latitude -90..90, longitude -180..180
+                if (Math.abs(Double.parseDouble(lat)) > 90 || Math.abs(Double.parseDouble(lon)) > 180)
+                    return "error: lat is -90 to 90 and lon is -180 to 180";
                 // a place of your own has its own time zone, and a missing one would be guessed (the TV's, Riyadh's): ask for it
                 if (tz == null && !inList(name))
                     return "error: add the time zone for a place that is not in the list, e.g. --es tz Asia/Riyadh or Asia/Kuwait";

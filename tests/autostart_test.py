@@ -32,6 +32,7 @@ elif cmd.startswith("pm list packages "):
 elif cmd.startswith("appops get "):
     _, _, p, op = cmd.split()[:4]
     if S.get("silent"): sys.exit(0)   # the TV says nothing at all
+    if op in S.get("silent_ops", []): sys.exit(0)   # the TV says nothing about this op only
     if op in S["ops"] and p in S["ops"][op]: out("%s: %s; time=+1d\n" % (op, S["ops"][op][p]))
     elif op not in S["ops"]:
         (out if "2>&1" in cmd else lambda t: sys.stderr.write(t))("Error: Unknown operation string: %s\n" % op)   # stderr, as on the TV
@@ -86,6 +87,11 @@ rc, out, log, st = run(ops=json.loads(json.dumps(both)), honour=False)
 check("ASSOC_START that stays ignore is a !! line naming it", "!! Auto-start (TCL)" in out and "assoc-ignore" in out, out)
 rc, out, log, st = run("check", ops={"AUTO_START": {"sa.urtv.home": "allow", "sa.urtv.screensaver": "allow"}, "APP_AUTO_START": {}, "ASSOC_START": {"sa.urtv.home": "ignore", "sa.urtv.screensaver": "allow"}})
 check("check: AUTO_START allowed but ASSOC_START ignore is still refused", "sa.urtv.home(allow/assoc-ignore)" in out and "appops set" not in log, out)
+# 4.3 R2-2: AUTO_START allowed, ASSOC_START answered with nothing at all: not known, never «allow» (an empty answer was «none»)
+rc, out, log, st = run("check", ops={"AUTO_START": {"sa.urtv.home": "allow", "sa.urtv.screensaver": "allow"}, "APP_AUTO_START": {}, "ASSOC_START": {}}, silent_ops=["ASSOC_START"])
+check("check: ASSOC_START not answered: «the TV did not answer», not allowed", "!! Auto-start (TCL): the TV did not answer" in out and "allow" not in out.split("answer")[0], out)
+rc, out, log, st = run("check", ops={"AUTO_START": {"sa.urtv.home": "ignore", "sa.urtv.screensaver": "allow"}, "APP_AUTO_START": {}, "ASSOC_START": {}}, silent_ops=["ASSOC_START"])
+check("check: ASSOC_START not answered but AUTO_START ignore: still refused by name", "sa.urtv.home(ignore)" in out and "not allowed for" in out, out)
 
 print("\nall auto-start checks passed" if not failed else f"\n{failed} failed")
 sys.exit(1 if failed else 0)

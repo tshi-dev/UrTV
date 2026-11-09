@@ -32,11 +32,12 @@ state() {   # what the TV says for this package: allow, ignore, deny, default…
   done
   if [ "$silent" = 1 ]; then echo unknown; else echo none; fi
 }
-assoc() {   # TCL's second op (ASSOC_START): allow, ignore…, or none when this build has no such op
+assoc() {   # TCL's second op (ASSOC_START): allow, ignore…, none when this build has no such op, unknown when the TV did not say
   local out got
   out=$(tv "appops get $1 ASSOC_START 2>&1" | tr -d '\r' || true)
   got=$(sed -n "s/^ASSOC_START: \([a-z_]*\).*/\1/p" <<< "$out" | head -1)
-  echo "${got:-none}"
+  # 4.3 R2-2: as in state(): only an explicit «unknown operation» (or «no operations») is «none»; an empty answer is not «allowed»
+  if [ -n "$got" ]; then echo "$got"; elif grep -qiE 'unknown operation|no operations' <<< "$out"; then echo none; else echo unknown; fi
 }
 
 mode="${1:-allow}"
@@ -51,7 +52,11 @@ line=; bad=; silent=
 for p in "${PKGS[@]}"; do
   installed "$p" || continue
   st=$(state "$p"); as=$(assoc "$p")
-  case "$as" in allow|none) ;; *) [ "$st" = unknown ] || st="$st/assoc-$as" ;; esac   # either op left at ignore blocks the app
+  case "$as" in
+    allow|none) ;;
+    unknown) case "$st" in allow|none) st=unknown ;; esac ;;   # the second op not said: not known, unless the first already blocks it
+    *) [ "$st" = unknown ] || st="$st/assoc-$as" ;;   # either op left at ignore blocks the app
+  esac
   line="$line${line:+, }$p $st"
   case "$st" in allow|none) ;; */assoc-*) bad="$bad $p($st)" ;; unknown) silent="$silent $p" ;; *) bad="$bad $p($st)" ;; esac   # none: this TCL build has no such op
 done
