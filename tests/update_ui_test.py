@@ -40,9 +40,9 @@ check("the picture hook is for debug builds: the extra is read only when BuildCo
       and "DebugUpdateShot" not in text(ROOT / "android/launcher/src/main/AndroidManifest.xml"))
 wf = text(ROOT / ".github/workflows/update-shots.yml")
 sh = text(ROOT / ".github/screens/update_shots.sh")
-check("a picture is taken only while UpdateActivity is the resumed activity (else the script fails), and only a successful run commits, and only all 72 pictures",
+check("a picture is taken only while UpdateActivity is the resumed activity (else the script fails), and only a successful run commits, and only all 86 pictures (72, and 14 of the redesigned setup)",
       'grep -q "$expect"' in sh and "topResumedActivity" in sh and sh.count("exit 1") >= 2 and "sa.urtv.home/.DebugUpdateShot" in sh and "sa.urtv.home/.setup.DebugSetupShot" in sh
-      and "if: success() && contains(join(github.event.commits.*.message, ' '), '[shots]')" in wf and "= 72" in wf)
+      and "if: success() && contains(join(github.event.commits.*.message, ' '), '[shots]')" in wf and "= 86" in wf)
 check("the pictures workflow: this branch and master with the hook, glass and sand, Arabic and English, committed on «[shots]»",
       "branches: ['work/update-ui', 'work/fix-182']" in wf and "update_before_patch.py" in wf and "contains(join(github.event.commits.*.message, ' '), '[shots]')" in wf
       and "for look in glass sand" in text(ROOT / ".github/screens/update_shots.sh") and "for lang in ar en" in text(ROOT / ".github/screens/update_shots.sh"))
@@ -59,4 +59,6 @@ dbg = text(ROOT / "android/launcher/src/debug/java/sa/urtv/home/setup/DebugSetup
 check("setup: the picture hook is debug only (src/debug), and sets the runner's fields, nothing runs", "SetupRunner.class.getDeclaredField(name)" in dbg and "DebugSetupShot" not in text(ROOT / "android/launcher/src/main/AndroidManifest.xml"))
 check("setup: «تم» on the done screen opens the home and closes the screen (build 208: nothing happened, the screen stayed in front)",
       "dismissed = e;\n                // «تم» ends the setup" in sa_ and "sa.urtv.home.MainActivity.class).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK | android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP));\n                finish();" in sa_)
+check("the redesigned setup is shot in the glass look, dark and light, Arabic, in seven states, including the USB prompt card and its 20 s notice",
+      'for state in start plan progress restart prompt promptlate done; do' in sh and 'for appearance in dark light; do' in sh and '"after-setup-glass-$appearance-ar-$state"' in sh)
 sys.exit(1 if failed else 0)

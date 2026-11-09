@@ -37,7 +37,7 @@ check("«تابع» goes through the screensaver's provider, the launcher's own 
 card, main, ff, ma = read(HOME / "HomeCard.java"), read(HOME / "MainActivity.java"), read(HOME / "FootballFocus.java"), read(HOME / "MatchesActivity.java")
 check("HomeCard: football only when the setting says so (and something is known), its page instead of the cards",
       'football = "football".equals(layout) && footballHost != null && choice != null;' in card
-      and "return HomePage.fresh(activity, HomeCardChoice.footballUrl(choice));" in card)
+      and "return withGlass(HomePage.fresh(activity, HomeCardChoice.footballUrl(choice)));" in card)
 check("HomeCard: the widgets' box is the screen's width from its top, 832 high at 1080p, and the cards' own place comes back without them",
       "params.width = dm.widthPixels;" in card and "FootballFocus.HEIGHT_1080 * dm.heightPixels / 1080f" in card and "static final int HEIGHT_1080 = 832;" in ff
       and "params.gravity = gravity0; params.leftMargin = left0; params.topMargin = top0; params.rightMargin = right0;" in card)
