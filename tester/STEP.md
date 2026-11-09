@@ -1,4 +1,4 @@
-«✅ GO — step 42 (setup restart test, build 209), then step 43 (IPTV players hands-on)» — run both (end of this file). TV muted. lang ar stays.
+«✅ GO — step 44 (4.3 candidate, build 212)» — run step 44 (end of this file). TV muted. lang ar stays.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -697,3 +697,17 @@ Playlist (same in each): https://iptv-org.github.io/iptv/countries/sa.m3u — us
 Per app: add the M3U; open Quran; Up/Down between the 3 channels; play 5 min; Back and return. Record: time to first picture (screen-record), stalls/rebuffers, remote focus ever lost, Arabic names correct, UI language/RTL, ads or sign-in prompts, permissions asked, PSS while playing, APK size, overall feel (1–5) + 2 screenshots each.
 Z: uninstall all three, clear any granted special permissions, confirm packages gone; restore as step 42 Z.
 Report «step 43» with a comparison table and your pick.
+
+## step 44 — 4.3 candidate re-check, build 212 (channel next; TV muted; lang ar stays; restore in Z)
+1. Update to 212 via «تحديث تلفزيوني»: does our cover stay in front (no Apple TV / recents app flash) until the new home is up? versionName now 4.3?
+2. «المظهر والخلفيات»: bottom row + «رجوع» inside the safe area; glass mock shows cards; auto mock split dark/light; home pack tiles show Arabic names; pack download failure state (if you can force one, e.g. Wi-Fi off briefly during a download): «تعذّر التنزيل، حاول مرة ثانية» and OK retries.
+3. «صوري» as HOME wallpaper: upload 2 demo photos from the phone page, set the home's photos to «صوري», confirm they show on the home; then delete.
+4. Phone page: send with empty message → «اكتب الرسالة أولًا.»; quick-settings header on the phone wraps fine.
+5. Album card C17: add «ألبوم صوري» card, both rows («صورة كل دقيقة في ألبوم صوري», «تاريخ الصورة في ألبوم صوري») toggle and behave.
+6. «تطبيقات مقترحة» (Settings ← المزيد ← التطبيقات والمفضلة): list shows TV Bro, SmartTube, VLC (store), TiviMate (store); store entries open Play; do NOT install anything.
+7. Setup plan screen (open «إعداد تلفزيوني», stop at the plan, don't start): per-app ticks TV Bro + SmartTube, both ticked, toggling works. Back out.
+8. Home nudge card: only if we're not the Home on this TV (we are, so expect NOT shown) — confirm not shown. Settings row «اجعل UrTV الشاشة الرئيسية» if present shows «✓ UrTV هو الشاشة الرئيسية».
+9. Quran/Sunnah live buttons (tilawah / HaramLive): open each, confirm it opens SBA's official channel (YouTube/SmartTube) — muted, then back.
+10. Speed: repeat step 40 item 1 (YouTube → Home, 3 runs) and item 2 (tray jank, 3 runs): are the dark frames gone?
+Z. Restore as step 41 Z.
+Report «step 44»; write «step 44: ALL PASS» if so. Push.
