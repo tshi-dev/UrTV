@@ -278,8 +278,8 @@ public class MainActivity extends Activity {
         if (appsStale) { appsStale = false; buildApps(); }   // an app was installed, removed or the favourites changed while another app was in front
         updateClock();
         updateNowPlaying();
-        applyClean();   // «UrTV النظيف» changed while another screen was in front
         homeCard.refresh();
+        applyClean();   // «UrTV النظيف» changed while another screen was in front (after the card refresh: applyClean may hide the card)
         if (reminder != null) { reminder.refresh(); ReminderScheduler.schedule(this); }   // a card that came due while another app was in front; the alarm follows the tasks
         readAnimationScale();
         loadTvRows();   // what one watched since: «أكمل المشاهدة» moves on
