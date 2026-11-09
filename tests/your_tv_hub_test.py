@@ -47,6 +47,11 @@ check("every word it says is in the English table and in Words (the settings' ow
       all(f'S.n("{w}")' in words for w in ("الألعاب", "قريبًا", "السوق مفتوح", "السوق مغلق", "اختر فرقك", "فرقك أولًا", "تعذّر الفتح"))
       and all(re.search(rf"(?m)^{w}\t", tsv) for w in ("الألعاب", "قريبًا", "السوق مفتوح", "السوق مغلق", "اختر فرقك", "فرقك أولًا", "تعذّر الفتح", "الأسواق", "المباريات", "الإعدادات", "تلفزيونك")))
 check("no «·» between texts in what it shows", "·" not in re.sub(r"/\*.*?\*/|//[^\n]*", "", hub, flags=re.S))
+nm = (APP / "NextMatch.java").read_text(encoding="utf-8")
+check("«المباريات» shows the real next match of the followed teams (NextMatch, cached 30 min), the generic line stays when nothing is known",
+      "nextMatchLine(v)" in hub and "NextMatch.cached(" in hub and "KEEP_MS = 30L * 60 * 1000" in nm and "TEAMS_MAX = 3" in nm
+      and "if (!same || when <= now) return null;" in nm and 'status.matches(".*(postp|cancel|abandon|suspend).*")' in nm)
+check("the next-match line has no «·»", "·" not in re.sub(r"/\*.*?\*/|//[^\n]*", "", (APP / "NextMatchTime.java").read_text(encoding="utf-8"), flags=re.S))
 if not shutil.which("javac"):
     print("SKIP market hours: no javac")
     sys.exit(1 if failed else 0)
@@ -60,5 +65,13 @@ with tempfile.TemporaryDirectory() as tmp:
              ("2026-11-13T08:00:00Z", "closed"),  # Friday
              ("2026-11-14T08:00:00Z", "closed")]  # Saturday
     out = subprocess.run(["java", "-cp", tmp, "sa.urtv.screensaver.MarketHoursRun"] + [c[0] for c in cases], check=True, capture_output=True, text=True).stdout.split()
+    subprocess.run(["javac", "-nowarn", "-d", tmp, str(APP / "NextMatchTime.java"), str(ROOT / "tests/NextMatchTimeRun.java")], check=True, capture_output=True)
+    def nmt(*a):
+        return subprocess.run(["java", "-cp", tmp, "sa.urtv.screensaver.NextMatchTimeRun", *a], check=True, capture_output=True, text=True, encoding="utf-8").stdout.strip()
+    check("the next match's time is read as UTC and shown in the city's zone: today, tomorrow, a weekday; 12 or 24 h",
+          nmt("2026-11-12T16:00:00", "2026-11-12T08:00:00Z", "Asia/Riyadh", "0", "1") == "Next: A vs B, today 7:00 PM"
+          and nmt("2026-11-13T16:00:00", "2026-11-12T08:00:00Z", "Asia/Riyadh", "1", "1") == "Next: A vs B, tomorrow 19:00"
+          and nmt("2026-11-16T16:00:00", "2026-11-12T08:00:00Z", "Asia/Riyadh", "0", "1") == "Next: A vs B, Monday 7:00 PM"
+          and nmt("2026-11-12T23:30:00", "2026-11-12T08:00:00Z", "Asia/Riyadh", "1", "0").startswith("التالية: A ضد B، غدًا"))
     check("the market's state: Sunday to Thursday 10:00 to 15:00 in Riyadh, closed Friday and Saturday and outside the hours", out == [c[1] for c in cases], out)
 sys.exit(1 if failed else 0)

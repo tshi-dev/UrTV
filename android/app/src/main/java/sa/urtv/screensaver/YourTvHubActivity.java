@@ -158,6 +158,7 @@ public class YourTvHubActivity extends Activity {
         texts.addView(n);
         TextView v = new TextView(this);
         v.setText(Words.of(live(w[0])));
+        if ("matches".equals(w[0])) nextMatchLine(v);
         v.setTextColor(look.sub);
         v.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
         v.setTypeface(font("Thmanyah-Regular"));
@@ -174,6 +175,16 @@ public class YourTvHubActivity extends Activity {
         card.setOnClickListener(x -> open(w[0]));
         GlassPaint.card(card, look, 14);
         return card;
+    }
+
+    /** «المباريات»: the real next match of the followed teams when it is known (NextMatch: cached 30 min, fetched in the background);
+     *  until then, or when nothing is known, the generic line stays */
+    private void nextMatchLine(final TextView v) {
+        String now = NextMatch.cached(this, prefs, () -> runOnUiThread(() -> {
+            String l = NextMatch.cached(this, prefs, null);
+            if (l != null && !isFinishing()) v.setText(l);
+        }));
+        if (now != null) v.setText(now);
     }
 
     /** the one line of what is true now: the market's state (MarketHours), what the matches show, «قريبًا», the look */
