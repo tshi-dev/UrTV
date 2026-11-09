@@ -305,6 +305,7 @@ def banner():
 
 
 def build():
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
     quick_variants()
     SHOTS["03-appearance-main"] = appearance_main()
     SHOTS["04-appearance-looks-open"] = appearance_open()
@@ -316,6 +317,16 @@ def build():
     SHOTS["12-setup-done"] = setup_done()
     SHOTS["13-suggested-apps"] = suggested()
     SHOTS["14-home-banner"] = banner()
+    import looks2 as L2
+    SHOTS["05-new-looks-grid"] = L2.looks_grid2()
+    SHOTS["15-home-naqsh-warm-arabic"] = L2.full("naqsh")
+    SHOTS["16-home-cinema-big-artwork"] = L2.full("cinema")
+    SHOTS["17-home-pastel-family"] = L2.full("pastel")
+    SHOTS["18-settings-make-home-row"] = L2.settings_row(False)
+    SHOTS["19-settings-make-home-row-done"] = L2.settings_row(True)
+    SHOTS["20-family-games-hub"] = L2.games_hub()
+    SHOTS["21-family-games-quiz"] = L2.game_quiz()
+    SHOTS["22-home-family-games-card"] = L2.home_games()
 
 
 if __name__ == "__main__":

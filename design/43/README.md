@@ -18,3 +18,12 @@ Rules shown: no capsules (rounded rectangles of 12–24 px, circles only for dot
 Taken: more named looks (its cinematic, minimal, aurora and ambient-glow/horizon skins → سينمائي، بسيط، شفق، أفق); **dock opacity 30–100** (شفافية الشريط); **wallpaper dim 0–90** (تعتيم الخلفية); **focus style** (its glass/rim/halo → ممتلئ، إطار، توهّج); apps-per-row 4–7 (we have 5–8, kept as «الحجم والكثافة»).
 Not in the pictures, worth a later round: wallpaper rotation minutes and shuffle/sequential, wallpaper by time of day (morning/evening/night), reduce-motion switch, rows below the dock.
 Left out: festival skins, Shamsi/lunar dates, stats overlay, an accent that only works with skins (ours is global, 8 colours).
+
+## Round 2
+Glass stays the default. Genuinely different looks (own card shape, bar, clock and focus), not recolours: هدوء (type only), نقش (sand and wood, star lattice, small corners, gold frame), سينما (big posters, no bar), باستيل (soft light, round cards, lifted focus), حاد (black and yellow, thick frames, inverted focus), ليل (dim amber only, for late hours), plus أفق.
+| File | What |
+|---|---|
+| 05-new-looks-grid | glass (default) + 7 looks, each tile a live mini of its own home |
+| 15 / 16 / 17 | full homes: نقش، سينما، باستيل |
+| 18 / 19 | settings «اجعل UrTV الشاشة الرئيسية»: not the Home (opens the setup) and the Home («✓ UrTV هو الشاشة الرئيسية») |
+| 20 / 21 / 22 | «ألعاب العائلة»: the hub (سؤال وجواب، ذاكرة الأزواج، خمّن الكلمة), a quiz screen with four teams, and the home card + bar tile |
