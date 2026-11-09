@@ -77,6 +77,16 @@ final class PackStore {
         return new ArrayList<>();
     }
 
+    /** id → the pack's name in the app's language, from the copy of the index kept on the TV (never the network: the screens call this on the UI thread); empty when none is kept */
+    static Map<String, String> names(Context c) {
+        Map<String, String> out = new java.util.HashMap<>();
+        try (InputStream in = new FileInputStream(new File(root(c), "index.json"))) {
+            List<PhotoPacks.Pack> v = parse(new String(Bounded.readAll(in, Bounded.JSON_MAX), "UTF-8"));
+            if (v != null) for (PhotoPacks.Pack p : v) out.put(p.id, S.en() ? p.nameEn : p.name);
+        } catch (IOException | RuntimeException ignored) { }
+        return out;
+    }
+
     /** null when the text is not an index at all */
     static List<PhotoPacks.Pack> parse(String json) {
         try {
