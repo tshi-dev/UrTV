@@ -54,7 +54,8 @@ ENUM = {"digits": ["hindi", "latin"], "clocksize": ["large", "medium", "small"],
         "cardstyle": ["current", "dark1", "glass1", "dark3", "glass3"], "prayermethod": ["auto", "gulf"],
         "sunrise": ["on", "off"], "prayerbar": ["on", "off"], "wxmore": ["on", "off"], "pagesdark": ["on", "off"], "months": ["default", "levant"],
         "greeting": ["on", "off"], "listenpill": ["on", "off"], "updatebell": ["on", "off"], "adhanbar": ["on", "off"], "clock24": ["on", "off"], "mkbar": ["on", "off"], "prayeradj": ["on", "off"],
-        "favbar": ["5", "6", "7", "8", "9", "10", "all"], "homephotos": ["same", "own"], "homeours": ["on", "off"], "albummode": ["seconds", "minute"], "albumdate": ["on", "off"]}
+        "favbar": ["5", "6", "7", "8", "9", "10", "all"], "homephotos": ["same", "own"], "homeours": ["on", "off"], "albummode": ["seconds", "minute"], "albumdate": ["on", "off"],
+        "accent": ["default", "amber", "gold", "green", "teal", "sky", "violet", "rose", "coral"], "focusstyle": ["solid", "frame", "glow"]}
 if "SaverReceiver" in cmd and cmd.endswith(".GET"):
     s = st["saver"]
     adj = " ".join(f"{k}={'+' if v > 0 else ''}{v}" for k, v in s["adj"].items())
@@ -68,7 +69,7 @@ if "SaverReceiver" in cmd and cmd.endswith(".GET"):
         f"mkstyle: {s['mkstyle']}", "stocks: 2222", "slot: matches", "countdown: none", "idle: 10", "genres: ", "langs: ", "events: ",
         "leagues: ", "autoupdate: on", "pin: 4321", "wifi: HomeNet", "tasks: buy milk", "updatechannel: " + s.get("updatechannel", "stable"), "favbar: " + s.get("favbar", "5")]
         + ([f"country: {s['country']}"] if "country" in s else [])
-        + [f"{k}: {s[k]}" for k in ("homephotos", "homepacks", "homeours", "pillshidden", "albummode", "albumdate") if k in s]   # 4.3: only a screensaver that has them says them
+        + [f"{k}: {s[k]}" for k in ("homephotos", "homepacks", "homeours", "pillshidden", "albummode", "albumdate", "accent", "baropacity", "walldim", "focusstyle") if k in s]   # 4.3: only a screensaver that has them says them
         + ([] if st.get("old_app") else [f"panel2: {s['panel2']}", f"sunrise: {s['sunrise']}", f"prayerbar: {s['prayerbar']}",
                                           f"wxmore: {s['wxmore']}", f"pagesdark: {s.get('pagesdark', 'on')}", f"months: {s['months']}"])))
 if "SaverReceiver" in cmd and re.search(r"screensaver\.SET( |$)", cmd):
@@ -138,7 +139,8 @@ BASE = {
               "adj": {"fajr": 0, "dhuhr": 0, "asr": 0, "maghrib": 0, "isha": 0}, "hijri": "0", "digits": "hindi", "clock24": "off",
               "cardstyle": "current", "markets": ["tasi", "spx", "btc"], "mkbar": "on", "clocksize": "large", "mkstyle": "arrows",
               "panel2": "none", "sunrise": "off", "prayerbar": "off", "wxmore": "off", "pagesdark": "on", "months": "default", "updatechannel": "stable", "favbar": "5",
-              "homephotos": "same", "homepacks": "none", "homeours": "on", "pillshidden": "none", "albummode": "seconds", "albumdate": "on"},
+              "homephotos": "same", "homepacks": "none", "homeours": "on", "pillshidden": "none", "albummode": "seconds", "albumdate": "on",
+              "accent": "default", "baropacity": "100", "walldim": "0", "focusstyle": "solid"},
     "adhan": {"on": "on", "voice": 1, "fajr_voice": 10, "short": "off", "stopkey": "on", "volume": 70},
 }
 CONFIGURED = copy.deepcopy(BASE)
@@ -147,7 +149,8 @@ CONFIGURED["saver"].update({"city": ["الدوحة", "25.2854", "51.531"], "tz":
                             "prayermethod": "gulf", "prayeradj": "on", "hijri": "-1", "digits": "latin", "clock24": "on",
                             "cardstyle": "glass1", "markets": ["gold", "btc"], "mkbar": "off", "clocksize": "medium", "mkstyle": "prices",
                             "panel2": "hourly", "sunrise": "on", "prayerbar": "on", "wxmore": "on", "pagesdark": "off", "months": "levant", "favbar": "7",
-                            "homephotos": "own", "homepacks": "nature,sea", "homeours": "off", "pillshidden": "markets,center", "albummode": "minute", "albumdate": "off"})
+                            "homephotos": "own", "homepacks": "nature,sea", "homeours": "off", "pillshidden": "markets,center", "albummode": "minute", "albumdate": "off",
+                            "accent": "teal", "baropacity": "70", "walldim": "30", "focusstyle": "frame"})
 CONFIGURED["saver"]["adj"] = {"fajr": 2, "dhuhr": 0, "asr": -3, "maghrib": 1, "isha": 0}
 CONFIGURED["favs"] = ["afasy", "sudais"]
 CONFIGURED["adhan"] = {"on": "off", "voice": 3, "fajr_voice": 13, "short": "on", "stopkey": "off", "volume": 40}
@@ -654,4 +657,29 @@ check("an older screensaver without the album: the two are left out of the file"
 saver_now = (ROOT / "optimize/saver.sh").read_text(encoding="utf-8")
 check("saver.sh: albummode and albumdate are commands in the usage, and album is in the card list",
       all(f"  {k}) set1 {k} " in saver_now and f"optimize/saver.sh {k} " in saver_now.split("set -euo")[0] for k in ("albummode", "albumdate")) and "smart today album none" in saver_now)
+# ---- 4.3 «اللون والتحكم»: accent, baropacity, walldim, focusstyle
+glass = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/GlassStyle.java").read_text(encoding="utf-8")
+recv = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/SaverReceiver.java").read_text(encoding="utf-8")
+acc = re.findall(r'\{"([a-z]+)", "[^"]+", "#[0-9A-Fa-f]{6}"\}', glass.split("ACCENTS = {")[1].split("};")[0])
+foc = re.findall(r'"([a-z]+)"', glass.split("FOCUS_STYLES = {")[1].split("};")[0])
+check("ACCENTS and FOCUS_STYLES are GlassStyle's, the ranges the receiver's (30..100, 0..90)", sm.ACCENTS == ("default",) + tuple(acc) and sm.FOCUS_STYLES == tuple(foc)
+      and sm.BAR_OPACITY == (30, 100) and sm.WALL_DIM == (0, 90) and '"(100|[3-9][0-9])"' in recv and '"([0-9]|[1-8][0-9]|90)"' in recv, (acc, foc))
+exp = json.loads(Tv("lk1", CONFIGURED).run("export")[1])
+check("export: accent, bar_opacity, wall_dim and focus_style are in the file", exp.get("accent") == "teal" and exp.get("bar_opacity") == 70 and exp.get("wall_dim") == 30 and exp.get("focus_style") == "frame", exp)
+t = Tv("lk2", BASE)
+rc, out, err = t.run("import", write("lk2.json", {"schema": 1, "accent": "rose", "bar_opacity": 55, "wall_dim": 90, "focus_style": "glow"}), "--yes")
+d = t.data()["saver"]
+check("import: the four reach the TV", rc == 0 and d["accent"] == "rose" and d["baropacity"] == "55" and d["walldim"] == "90" and d["focusstyle"] == "glow", (rc, out, err, d))
+refused("accent unknown", lambda d: d.update(accent="purple"), "accent must be one of")
+refused("focus_style unknown", lambda d: d.update(focus_style="neon"), "focus_style must be one of")
+refused("bar_opacity too low", lambda d: d.update(bar_opacity=29), "bar_opacity must be a whole number from 30 to 100")
+refused("wall_dim too high", lambda d: d.update(wall_dim=91), "wall_dim must be a whole number from 0 to 90")
+refused("wall_dim as text", lambda d: d.update(wall_dim="30"), "wall_dim must be a whole number")
+old = copy.deepcopy(BASE)
+for k in ("accent", "baropacity", "walldim", "focusstyle"): old["saver"].pop(k)
+exp_old = json.loads(Tv("lk3", old).run("export")[1])
+check("an older screensaver that does not say them: left out of the file", not any(k in exp_old for k in ("accent", "bar_opacity", "wall_dim", "focus_style")), exp_old)
+saver_now = (ROOT / "optimize/saver.sh").read_text(encoding="utf-8")
+check("saver.sh: accent, baropacity, walldim and focusstyle are commands, each in the usage",
+      all(f"  {k}) set1 {k} " in saver_now and f"optimize/saver.sh {k} " in saver_now.split("set -euo")[0] for k in ("accent", "baropacity", "walldim", "focusstyle")))
 sys.exit(1 if failed else 0)
