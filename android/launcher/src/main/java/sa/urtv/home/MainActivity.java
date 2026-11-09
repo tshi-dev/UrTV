@@ -214,6 +214,7 @@ public class MainActivity extends Activity {
                 View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         setContentView(buildUi());
+        showSnapshot();   // the home's last picture (or its skeleton) at once; it fades out when the live views have painted
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((was, now) -> placeName());   // FavBar: the name only in the bar
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((was, now) -> {   // design/43: the top row opens while the focus is in it, and closes after
             if (pillBar == null || barHeld) return;
@@ -245,9 +246,16 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    protected void onRestart() {
+        super.onRestart();
+        showSnapshot();   // coming back from an app: the last picture covers the moment before the cards paint
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         resumed = true;
+        handler.postDelayed(snapTick, HomeSnapshot.IDLE_MS);
         if (sa.urtv.home.setup.SetupReopen.take()) {   // «إعداد تلفزيوني» was left behind by the home switch: its progress and its done screen come back (once)
             try { guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t("إعداد تلفزيوني"), () -> launch(new Intent(this, sa.urtv.home.setup.SetupActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT))); } catch (RuntimeException ignored) { }   // the person opened this screen already (its own lock was passed then)
         }
@@ -305,6 +313,8 @@ public class MainActivity extends Activity {
         if (edit != null) leaveEdit();   // another screen came up: what was arranged is saved
         if (appsEdit != null) leaveAppsEdit();   // the same for «تعديل التطبيقات»
         handler.removeCallbacks(rotateWallpaper);
+        handler.removeCallbacks(snapTick);
+        if (snapOverlay == null) HomeSnapshot.capture(this, homeRoot, null);   // the picture the next start draws first
         unregisterReceiver(tick);
         if (inputsPopup != null) inputsPopup.dismiss();
         if (control != null) control.dismiss();   // its speed test stops with it
@@ -326,6 +336,55 @@ public class MainActivity extends Activity {
         wallTrimmed = true;
         firstWallpaper = true;   // the short fade when it comes back
     }
+    // ---------------------------------------------------------------- the last picture (HomeSnapshot)
+
+    private FrameLayout homeRoot;
+    private View snapOverlay;   // the picture or skeleton in front while the live views load
+    private long snapShownAt;
+    private final Runnable snapTick = new Runnable() {   // while the home is in front and idle: a fresh picture every ten minutes
+        @Override public void run() {
+            if (resumed && snapOverlay == null) HomeSnapshot.capture(MainActivity.this, homeRoot, null);
+            handler.postDelayed(this, HomeSnapshot.IDLE_MS);
+        }
+    };
+    private final Runnable snapCheck = new Runnable() {
+        @Override public void run() {
+            if (snapOverlay == null) return;
+            long waited = android.os.SystemClock.elapsedRealtime() - snapShownAt;
+            boolean live = waited >= HomeSnapshot.MIN_MS && !(homeCard != null && homeCard.loading());
+            if (getIntent() != null && "hold".equals(getIntent().getStringExtra("snap"))) { handler.postDelayed(this, 500); return; }   // DebugSnapShot: the picture stays for a picture of it
+            if (live || waited >= HomeSnapshot.LIVE_WAIT_MS) hideSnapshot();
+            else handler.postDelayed(this, 120);
+        }
+    };
+
+    /** the last picture of the home (half size, from the cache), else the skeleton in the look's colours, over everything until the live frame is there */
+    private void showSnapshot() {
+        if (snapOverlay != null || homeRoot == null) return;
+        android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+        Bitmap b = HomeSnapshot.load(this, dm.widthPixels, dm.heightPixels);
+        View v;
+        if (b != null) {
+            ImageView iv = new ImageView(this);
+            iv.setScaleType(ImageView.ScaleType.FIT_XY);
+            iv.setImageBitmap(b);
+            v = iv;
+        } else v = HomeSnapshot.skeleton(this, GlassSource.look(this));
+        v.setFocusable(false);
+        homeRoot.addView(v, new FrameLayout.LayoutParams(-1, -1));
+        snapOverlay = v;
+        snapShownAt = android.os.SystemClock.elapsedRealtime();
+        handler.removeCallbacks(snapCheck);
+        handler.postDelayed(snapCheck, 120);
+    }
+
+    private void hideSnapshot() {
+        final View v = snapOverlay;
+        if (v == null) return;
+        snapOverlay = null;
+        v.animate().alpha(0f).setDuration(HomeSnapshot.FADE_MS).withEndAction(() -> { if (homeRoot != null) homeRoot.removeView(v); }).start();
+    }
+
     /** both wallpaper bitmaps are let go; the one in front leaves a 160 px copy (about 100 KB), which CENTER_CROP stretches soft until the next photo fades in over it */
     private void thinWallpaper() {
         android.graphics.drawable.Drawable d = wallFront == null ? null : wallFront.getDrawable();
@@ -401,7 +460,8 @@ public class MainActivity extends Activity {
 
     private View buildUi() {
         FrameLayout root = new FrameLayout(this);
-        root.setBackgroundColor(Color.BLACK);
+        root.setBackgroundColor(GlassSource.look(this).base);   // the look's own solid colour, never black while something loads
+        homeRoot = root;
         // The home is built in code, so it inherits no direction from the window: set it here and
         // the pills, the favourites and the app rows all read from right to left.
         root.setLayoutDirection(Dir.layout());
@@ -615,7 +675,17 @@ public class MainActivity extends Activity {
         // Top right (top left in English), stacked tight: greeting, clock, date. Dir.start(), not START: the views' own direction is not always ours.
         greeting = text(15, "medium", GOLD);
         greeting.setSingleLine(true);
-        left.addView(greeting, sideLlp(-2, -2, dp(4), 0, 0, 0));
+        // the connection is a small status next to the greeting on its line (not a button: it takes no focus, a press does nothing)
+        netIcon = new ImageView(this);
+        netIcon.setImageResource(R.drawable.ic_wifi);
+        netIcon.setContentDescription(S.t("الاتصال بالشبكة"));
+        netIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        LinearLayout greetRow = new LinearLayout(this);
+        greetRow.setOrientation(LinearLayout.HORIZONTAL);
+        greetRow.setGravity(Gravity.CENTER_VERTICAL);
+        greetRow.addView(greeting, new LinearLayout.LayoutParams(-2, -2));
+        greetRow.addView(netIcon, sideLlp(dp(NET_ICON), dp(NET_ICON), dp(8), 0, 0, 0));
+        left.addView(greetRow, sideLlp(-2, -2, dp(4), 0, 0, 0));
         // under it: the weather of the city and the next sunrise or sunset (shown only when the greeting is on and there is an answer)
         weatherLine = text(12, "regular", 0xFFC6BBA4);
         weatherLine.setMaxLines(2);
@@ -711,15 +781,7 @@ public class MainActivity extends Activity {
         // reaches from 31 to 75 dp down, clear of the adhan bar (to 26) and the cards (from 84)
         int hang = dp((NowCard.HEIGHT - Pill.HEIGHT) / 2f);
         right.addView(nowCard, 0, sideLlp(-2, dp(NowCard.HEIGHT), 0, -hang, dp(Pill.GAP), -hang));
-        // C15: the connection, a small icon at the end of the row (not a button: it takes no focus and is not in `pills`)
-        netIcon = new ImageView(this);
-        netIcon.setImageResource(R.drawable.ic_wifi);
-        netIcon.setContentDescription(S.t("الاتصال بالشبكة"));
-        netIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        netIcon.setPadding(dp(7), dp(7), dp(7), dp(7));   // the same square as a button (30 dp, a 16 dp icon), on the same bar: no longer bare at the end of the row
-        right.addView(netIcon, sideLlp(dp(Pill.HEIGHT), dp(Pill.HEIGHT), 0, 0, 0, 0));
-        right.member(netIcon);
-        right.mains(centerPill, phonePill);   // the row is closed to these and the network status until the focus comes in
+        right.mains(centerPill, phonePill);   // the row is closed to these until the focus comes in
         header.addView(right, new FrameLayout.LayoutParams(-2, -2, Dir.end() | Gravity.TOP));
         return header;
     }
@@ -747,8 +809,11 @@ public class MainActivity extends Activity {
                     handler.post(() -> launchGuarded(ParentalPolicy.PILL_LISTEN, new Intent(this, sa.urtv.home.tilawah.MainActivity.class), "تلاوة وأذان"));
                 break;
             case "center":   // the settings' «مركز التحكم» button: the panel, behind the same lock as its pill; the focus goes back to the pill
-                if (control != null && centerPill != null && !Parental.state(this).kids)   // kids mode has no pill, so no panel either
-                    handler.post(() -> guarded(ParentalPolicy.PILL_CENTER, null, ControlText.NAME, () -> control.open(centerPill)));
+                if (control != null && centerPill != null && !Parental.state(this).kids) {   // kids mode has no pill, so no panel either
+                    final String ccview = i.getStringExtra("ccview");   // DebugControlShot only: an item or "custom" to start on
+                    i.removeExtra("ccview");
+                    handler.post(() -> guarded(ParentalPolicy.PILL_CENTER, null, ControlText.NAME, () -> control.open(centerPill, ccview)));
+                }
                 break;
             default:
                 break;
@@ -906,6 +971,8 @@ public class MainActivity extends Activity {
         wireFocus();
     }
 
+    private static final int NET_ICON = 22, NET_OFFLINE = 0xFFFF6B5E;   // dp; the offline colour
+
     /** C15: the Wi-Fi icon says whether the TV is online (a wired TV counts as online too), with the minute tick */
     private void updateNetIcon() {
         if (netIcon == null) return;
@@ -916,8 +983,8 @@ public class MainActivity extends Activity {
             online = nc != null && nc.hasCapability(android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET);
         } catch (RuntimeException ignored) { }
         netIcon.setImageResource(online ? R.drawable.ic_wifi : R.drawable.ic_wifi_off);
-        netIcon.setColorFilter(lightNow || "sand".equals(lookNow) ? (palette().ink & 0x00FFFFFF) | 0xE6000000 : 0xE6FFFFFF);
-        netIcon.setAlpha(online ? 1f : 0.7f);
+        netIcon.setColorFilter(online ? palette().soft : NET_OFFLINE);   // the look's secondary ink; red when the TV is off the network
+        netIcon.setAlpha(online ? 1f : 0.85f);
     }
 
     /** where a quick button comes back in the row: before the first of the buttons that follow it which is in the row, else at the end */
@@ -2776,6 +2843,7 @@ public class MainActivity extends Activity {
         if (wallDimView != null) wallDimView.setAlpha(GlassStyle.dimPercent() / 100f);
         for (View c : dockCards) { GradientDrawable r = ringByCard.get(c); if (r != null) r.setStroke(bar(FavBar.RING), FavBar.ring(light)); }
         if (homeCard != null) homeCard.light(light);   // the football home's widgets: the same light or dark glass
+        updateNetIcon();   // its colour is the look's secondary ink
     }
 
     /** The football home: the weather has its own card and the clock sits higher, so the greeting and its weather line are not shown. */

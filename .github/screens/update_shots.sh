@@ -60,3 +60,14 @@ for appearance in dark light; do
   done
 done
 saver --es look glass --es lang ar --es appearance dark
+# «مركز التحكم» (design/43 23-26): the side panel at rest, with the focus on a row, in «تخصيص», and in the light look; the panel is a popup of the home, which stays the resumed activity
+for state in rest focus customise; do
+  shoot "after-control-glass-dark-ar-$state" sa.urtv.home/.DebugControlShot sa.urtv.home/.MainActivity "$state"
+done
+saver --es look glass --es lang ar --es appearance light
+sleep 2
+shoot "after-control-glass-light-ar-rest" sa.urtv.home/.DebugControlShot sa.urtv.home/.MainActivity rest
+saver --es look glass --es lang ar --es appearance dark
+# the home's stand-in picture (HomeSnapshot): held in front (the skeleton on a fresh emulator), then the live home
+shoot "after-snapshot-held" sa.urtv.home/.DebugSnapShot sa.urtv.home/.MainActivity hold
+shoot "after-snapshot-live" sa.urtv.home/.DebugSnapShot sa.urtv.home/.MainActivity live

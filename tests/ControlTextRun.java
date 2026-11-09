@@ -6,7 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 /**
- * For tests/control_center_test.py: ControlText.java and ControlLayout.java on tests/control_center_cases.tsv. A line is
+ * For tests/control_center_test.py: ControlText.java on tests/control_center_cases.tsv. A line is
  *   mbps       VALUE                       -> the speed test's answer
  *   signal     RSSI                        -> the bars (0..4) of a dBm
  *   network    wired(0|1) wifi(0|1) SSID RSSI -> the network tile's two lines, joined with «|»
@@ -50,11 +50,7 @@ public final class ControlTextRun {
                     out.append(a == null ? "none" : a);
                     break;
                 }
-                default: {   // layout
-                    ControlLayout.Plan p = ControlLayout.plan(Integer.parseInt(f[1]), Integer.parseInt(f[2]), Float.parseFloat(f[3]), Integer.parseInt(f[4]));
-                    out.append(p.cols).append(' ').append(p.rows).append(' ').append(p.tileW).append(' ').append(p.tileH).append(' ')
-                            .append(p.panelW).append(' ').append(p.panelH).append(' ').append(p.compact).append(' ').append(p.tiny);
-                }
+                default: throw new IllegalArgumentException(f[0]);
             }
             out.append('\n');
         }

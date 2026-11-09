@@ -43,8 +43,10 @@ cell = main[main.index("private LinearLayout.LayoutParams rowCell("):main.index(
 check("home rows of cards: 6 + 6 dp = 24 px apart, like the tray", "dp(6)" in cell and "dp(10)" not in cell)
 check("dockCell keeps FavBar.GAP in two halves (24 px)", "p.setMarginStart(i == 0 ? 0 : bar(FavBar.GAP) / 2);" in main
       and "p.setMarginEnd(i == n - 1 ? 0 : bar(FavBar.GAP) - bar(FavBar.GAP) / 2);" in main)
-cl = text(HOME / "ControlLayout.java")
-check("Control Center: tiles 24 px apart (GAP 12 dp)", re.search(r"GAP = 12,", cl) is not None)
+cc = text(HOME / "ControlCenter.java")
+check("Control Center: the side panel inside the 5 % safe area (x from 96, y 54 to 1026 at 1080p), 560 px wide; every margin and size a multiple of 4 dp",
+      "SAFE = 0.05f" in cc and "PANEL_W = 560f / 1920f" in cc and "panelH = H - 2 * top" in cc and "Math.round(H * SAFE)" in cc
+      and all(int(n) % 4 == 0 for n in re.findall(r"dp\((\d+)\)", cc) if int(n) not in (1, 2, 3, 6, 24, 16, 8, 12)) and "dp(10)" not in cc and "dp(20)" not in cc)
 pin = text(HOME / "PinPrompt.java")
 gaps = [int(n) for n in re.findall(r"(?:topMargin|leftMargin|bottomMargin) = dp\(a, (\d+)\)", pin)]
 check("PIN pad: every margin is a multiple of 4 dp (keys, rows, «إلغاء» 24 px apart)", gaps and all(n % 4 == 0 for n in gaps) and gaps.count(12) >= 5, gaps)

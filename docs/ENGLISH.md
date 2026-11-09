@@ -49,7 +49,7 @@ Phase 0 (this file's commit) is the plumbing only. Nothing a person sees changes
    | `View.TEXT_DIRECTION_RTL` | `Dir.text()` |
    | `KEYCODE_DPAD_LEFT` meaning "next in reading order" | `Dir.forwardKey()` (and `Dir.backKey()`) |
 
-   Each has a `(boolean rtl)` form for pure layout math (as `ControlLayout` is tested). Combined gravities keep their other half:
+   Each has a `(boolean rtl)` form for pure layout math (as `PillText` is tested). Combined gravities keep their other half:
    `Gravity.RIGHT | Gravity.CENTER_VERTICAL` → `Dir.start() | Gravity.CENTER_VERTICAL`.
 4. **Each Activity** of a converted screen gets
    `@Override protected void attachBaseContext(Context b) { super.attachBaseContext(S.wrap(b)); }`. A service or receiver that shows

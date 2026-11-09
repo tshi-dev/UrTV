@@ -73,7 +73,7 @@ check("the home opens the adhan settings when asked with open=adhan, behind the 
       and req.index('i.removeExtra("open")') < req.index("switch (what)") and "launchGuarded(ParentalPolicy.PILL_LISTEN, adhanSettingsIntent()" in req.split('case "adhan":')[1].split("break;")[0], req)
 check("open=listen opens «تلاوة وأذان» behind the same lock as its button, open=center the panel behind its pill's lock (none in kids mode)",
       'launchGuarded(ParentalPolicy.PILL_LISTEN, new Intent(this, sa.urtv.home.tilawah.MainActivity.class)' in req.split('case "listen":')[1].split("break;")[0]
-      and "guarded(ParentalPolicy.PILL_CENTER, null, ControlText.NAME, () -> control.open(centerPill))" in req.split('case "center":')[1].split("break;")[0]
+      and "guarded(ParentalPolicy.PILL_CENTER, null, ControlText.NAME, () -> control.open(centerPill, ccview))" in req.split('case "center":')[1].split("break;")[0]
       and "!Parental.state(this).kids" in req.split('case "center":')[1].split("break;")[0], req)
 check("it asks on create and on a new intent (the home is singleTask)", "openRequested(getIntent());" in main and "openRequested(intent);" in main.split("protected void onNewIntent(Intent intent) {")[1].split("\n    }\n")[0])
 row2 = settings.split('row("الأذان"')[1].split("});")[0]

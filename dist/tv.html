@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261109174536">
+<meta name="urtv-build" content="20261109194708">
 <title>شاشة تلفزيونك</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -670,6 +670,7 @@
   .fct{display:flex;justify-content:space-between;align-items:center;gap:calc(var(--u)*8);color:var(--fs);font-size:calc(var(--u)*20)}
   .fct span:first-child{overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-height:1.15;white-space:normal}   /* «AFC Champions League Elite» on two lines, not cut */
   .fct .fmk{white-space:nowrap}
+  .rd{font-size:.78em;opacity:.7;margin-inline-start:calc(var(--u)*8);white-space:nowrap}   /* the round after the competition: smaller, 70 % ink, a gap (no middle dot) */
   .fcm{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:calc(var(--u)*8)}
   .fcm .ftm{flex-direction:column;gap:calc(var(--u)*4);font-size:calc(var(--u)*24)}
   .fcm .ftm .nm{max-width:100%}
@@ -3971,7 +3972,7 @@ const FB_W = {
   weather:'الطقس', prayers:'أوقات الصلاة', today:'مباريات اليوم', upcoming:'المباريات القادمة', title:'المباريات', yours:'فرقك', none:'لا مباريات اليوم', back:'رجوع',
   feels:'المحسوسة', hum:'الرطوبة', wind:'الرياح', kmh:'%s كم/س', pct:'٪%s', live:'مباشر', ended:'انتهت', vs:'×',
   yesterday:'أمس', tday:'اليوم', tomorrow:'غدًا', g1:'مباراة واحدة', g2:'مباراتان', gFew:'%s مباريات', gMany:'%s مباراة',
-  allOn:'كلها على %s', round:'%s · الجولة %s', venue:'الملعب', channel:'القناة', withPrayer:'مع الصلاة', game:'المباراة',
+  allOn:'كلها على %s', round:'الجولة %s', venue:'الملعب', channel:'القناة', withPrayer:'مع الصلاة', game:'المباراة',
   remind:'ذكّرني قبلها بنصف ساعة', reminded:'أُضيفت إلى المهام', follow:'أضف %s لفرقي', unfollow:'أزل %s من فرقي', followed:'أُضيف %s إلى فرقك', unfollowed:'أُزيل %s من فرقك', watch:'شاهد على %s', failed:'ما قدرنا، جرّب مرة ثانية',
   startsAfter:'تبدأ بعد %s %s', startsBefore:'تبدأ قبل %s %s', adhanAt:'أذان %s في الدقيقة %s منها', ago:'قبل %s', nextIn:'%s بعد %s',
   h1:'بساعة', h2:'بساعتين', hFew:'ب%s ساعات', hMany:'ب%s ساعة', m1:'بدقيقة', m2:'بدقيقتين', mFew:'ب%s دقائق', mMany:'ب%s دقيقة',
@@ -4072,7 +4073,10 @@ const fbTeam = (ev, side) => {
   return `<span class="ftm${fbFollowed(id) ? ' me' : ''}">${crestImg(ev, side) || '<span class="crgap"></span>'}<span class="nm">${esc(nbName(teamAr(ev['str' + side + 'Team'], id)))}</span></span>`;
 };
 const fbMarkChip = ev => { const m = markOf(ev); return m ? `<span class="fmk">${esc(m.mark)}</span>` : ''; };
-const fbRound = ev => leagueName(ev) && +ev.intRound > 0 ? fw(FB_W.round, fbIso(leagueName(ev)), ar(+ev.intRound)) : fbIso(leagueName(ev));   // no round 0, none when unknown
+const fbRoundNo = ev => +ev.intRound > 0 && leagueName(ev) ? fw(FB_W.round, ar(+ev.intRound)) : '';   // no round 0, none when unknown
+const fbRound = ev => fbIso(leagueName(ev)) + (fbRoundNo(ev) ? ' ' + fbRoundNo(ev) : '');   // plain text: the competition, a space, the round
+/* the same as markup: the competition on the line, the round after a gap, smaller and in 70 % ink (no «·» between texts) */
+const fbRoundHtml = ev => esc(fbIso(leagueName(ev))) + (fbRoundNo(ev) ? ' <small class="rd">' + esc(fbRoundNo(ev)) + '</small>' : '');
 // the day a game is on, said the short way: «اليوم», «غدًا», «الخميس»
 function fbDayWord(day){
   const t = cityToday();
@@ -4142,7 +4146,7 @@ function fbLine(ev, now){
   return fbMatchLine(ev, now, 'fln', '', fbWhen(ev, now), c ? `<span class="fnote">${esc(fbNote(c))}</span>` : '', '');
 }
 function fbCard(ev, now, i){
-  return `<div class="fcd${i === FB.at ? ' sel' : ''}" data-i="${i}"><div class="fct"><span>${esc(fbRound(ev))}</span>${fbMarkChip(ev)}</div>`
+  return `<div class="fcd${i === FB.at ? ' sel' : ''}" data-i="${i}"><div class="fct"><span>${fbRoundHtml(ev)}</span>${fbMarkChip(ev)}</div>`
     + `<div class="fcm">${fbTeam(ev, 'Home')}${fbMid(ev, now)}${fbTeam(ev, 'Away')}</div><div class="fcw">${fbWhen(ev, now)}</div></div>`;
 }
 function fbAllOn(list){   // «كلها على ثمانية» when every game has the same mark
@@ -4251,7 +4255,7 @@ function mpGroups(){   // [{key, name, games}] of the chosen day: «فرقك», 
   const out = mine.length ? [{key: 'mine', name: FB_W.yours, games: mine, count: mine.length}] : [];
   keys.forEach(k => {
     const rest = by[k].filter(ev => !fbMine(ev)).sort((a, b) => fbKick(a) - fbKick(b));
-    if(rest.length) out.push({key: k, name: fbRound(rest[0]), side: leagueName(rest[0]) || fbRound(rest[0]), games: rest, count: by[k].length});
+    if(rest.length) out.push({key: k, name: fbRound(rest[0]), nameHtml: fbRoundHtml(rest[0]), side: leagueName(rest[0]) || fbRound(rest[0]), games: rest, count: by[k].length});
   });
   return out;
 }
@@ -4291,7 +4295,7 @@ function mpRender(){
   setHTML(document.getElementById('mp-side'), groups.length ? groups.map((g, i) =>
     `<li class="${i === MP.l ? 'on' : ''}${MP.zone === 'leagues' && i === MP.l ? ' f' : ''}"><span>${esc(g.side || g.name)}</span><i>${ar(g.count)}</i></li>`).join('') : '');
   let n = 0;
-  setHTML(document.getElementById('mp-list'), groups.length ? groups.map(g => `<section data-g="${esc(g.key)}"><h2>${esc(g.name)}</h2><ul>`
+  setHTML(document.getElementById('mp-list'), groups.length ? groups.map(g => `<section data-g="${esc(g.key)}"><h2>${g.nameHtml || esc(g.name)}</h2><ul>`
     + g.games.map(ev => mpRow(ev, now, n++)).join('') + '</ul></section>').join('')
     : `<div class="fnone">${MATCHES_LOADED ? FB_W.none : matchesEmptyText()}</div>`);
   fillCrests(document.getElementById('mp'));
@@ -4340,7 +4344,7 @@ function mpDetailRender(){
     `<li class="mdp"><div><span>${FB_W.withPrayer}</span><i class="mds">${esc(fbLive(ev, now) ? fbStatus(ev, now) : fbDone(ev, now) ? FB_W.ended : fbSentence(ev))}</i></div>${mpLine(ev)}</li>`].join('');
   const btns = mpButtons(ev, now);
   MP.btn = Math.max(-1, Math.min(MP.btn, btns.length));   // btns.length is «رجوع», the row under the actions
-  setHTML(document.getElementById('mp-detail'), `<div class="mdx${MP.btn < 0 ? ' f' : ''}"><div class="mdh"><span>${esc(fbRound(ev))}</span>${fbMarkChip(ev)}</div>`
+  setHTML(document.getElementById('mp-detail'), `<div class="mdx${MP.btn < 0 ? ' f' : ''}"><div class="mdh"><span>${fbRoundHtml(ev)}</span>${fbMarkChip(ev)}</div>`
     + `<div class="mdm">${big('Home')}<div class="mdk">${mid}</div>${big('Away')}</div><ul class="mdr">${rows}</ul>`
     + `<div class="mdb">${btns.map((b, i) => `<button tabindex="-1" class="${i === 0 ? 'pri' : ''}${i === MP.btn ? ' f' : ''}" data-k="${b.k}">${b.icon ? fbGlyph('bell') : ''}<span>${esc(b.t)}</span></button>`).join('')}</div>`
     + `<div class="mdq"><button tabindex="-1" class="${MP.btn === btns.length ? 'f' : ''}" data-k="back"><span>${FB_W.back}</span></button></div>`

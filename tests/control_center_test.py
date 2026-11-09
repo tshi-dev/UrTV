@@ -47,11 +47,26 @@ check("«إعدادات تلفزيونك» opens our settings (the screensaver a
       "host.openOurSettings()" in center and "ParentalPolicy.OUR_SETTINGS, null" in main and 'SAVER_PKG + ".SettingsActivity"' in main
       and "case OUR_SETTINGS:" in policy and "t.add(OWN_SETTINGS)" in policy.split("case OUR_SETTINGS:")[1][:200]
       and center.index("if (host.saverInstalled())") < center.index('"إعدادات تلفزيونك"') < center.index('"tv", S.t("الإعدادات")'))
-check("the tiles' size comes from ControlLayout (width and height), the popup gets its size, and what still does not fit scrolls",
-      "ControlLayout.plan(dm.widthPixels, dm.heightPixels" in center and "new PopupWindow(panel, plan.panelW, Math.min(plan.panelH, ControlLayout.maxHeight(dm.heightPixels)), true)" in center
-      and "new ScrollView(act)" in center and "dp(104)" not in center)
+check("the side panel: 560 px of 1920 wide inside the 5 % safe area, a clear full-screen popup it slides across for 220 ms (ease-out), a press outside closes it, what does not fit scrolls",
+      "PANEL_W = 560f / 1920f, SAFE = 0.05f" in center and "SLIDE_MS = 220" in center and "new PopupWindow(root, W, H, true)" in center and "root.setOnClickListener(v -> dismiss());" in center
+      and "panel.animate().translationX(0).setDuration(SLIDE_MS).setInterpolator(new DecelerateInterpolator())" in center and "Dir.start() | Gravity.TOP" in center
+      and "new ScrollView(act)" in center and "ControlLayout" not in center and not (HOME / "ControlLayout.java").exists())
+check("four round toggles on top (Bluetooth, mirroring, the sleep timer, «أطفئ الآن»), then rows with a short value each (network, sound, speed, the TV's settings, ours); ellipsized one-line values",
+      'TOGGLES = {"bluetooth", "mirror", "sleep", "off"}' in center and 'ROWS = {"net", "sound", "speed", "tv", "ours", "saver"}' in center and "GradientDrawable.OVAL" in center
+      and "t.setSingleLine(true);" in center and "TruncateAt.END" in center and "ControlText.networkDetail" not in center)
+check("the focus: a solid fill in the look's colours with its ink, coming in over 170 ms (ease-out)",
+      "FOCUS_MS = 170" in center and "ValueAnimator.ofArgb(shown, target)" in center and "anim.setDuration(FOCUS_MS)" in center and "int target = f ? FOCUSED : " in center and "ON_SUB" in center)
+check("«تخصيص»: a tick per item, the arrows move a row (Left/Right by the reading direction), at most six rows, «إعادة الضبط» (the defaults), «تم»; Back goes back to the panel's main view; kept on this TV",
+      "MAX_ROWS = 6" in center and "tickedRows(now) >= MAX_ROWS" in center and "KeyEvent.KEYCODE_DPAD_RIGHT : KeyEvent.KEYCODE_DPAD_LEFT" in center and "private void reset()" in center
+      and 'getSharedPreferences("control"' in center and "if (code == KeyEvent.KEYCODE_BACK) { if (e.getAction() == KeyEvent.ACTION_UP) showMain(); return true; }" in center
+      and all(f'"{w}"' in center for w in ("تخصيص", "تم", "إعادة الضبط", "اختر ما يظهر ورتّبه بالأسهم")))
+check("«شاشة التوقف» is unticked until asked for (its pill is on the home); a toggle or a row that does not exist on this TV is not in the list",
+      'DEFAULT_OFF = {"saver"}' in center and "for (String k : TOGGLES) { Item it = find(k); if (it != null) out.add(it); }" in center)
+check("the Wi-Fi status is next to the greeting (a small icon on its line, no focus, no press), not in the quick-button bar",
+      "greetRow.addView(netIcon, sideLlp(dp(NET_ICON), dp(NET_ICON), dp(8), 0, 0, 0));" in main and "NET_ICON = 22" in main and "right.member(netIcon)" not in main
+      and "right.addView(netIcon" not in main and "netIcon.setColorFilter(online ? palette().soft : NET_OFFLINE);" in main and "setFocusable" not in main.split("netIcon = new ImageView(this);")[1].split("left.addView(greetRow")[0])
 check("the panel opens on the tile used last while the home is in front (the first tile of the reading order otherwise), and it is forgotten when the home comes back",
-      "lastKey = key" in center and "t.key.equals(lastKey)" in center and "Tile start = tiles.get(0)" in center and "void forgetLast()" in center
+      "lastKey = item.key" in center and "item.key.equals(lastKey)" in center and "private void focusStart(" in center and "void forgetLast()" in center
       and "control.forgetLast()" in main.split("protected void onResume()")[1].split("\n    }\n")[0]
       and "control.forgetLast()" in main.split("protected void onNewIntent")[1].split("\n    }\n")[0])
 check("«حرّر الذاكرة» is gone: no tile, no kill call, no permission (Android 14 gives a normal app nothing useful to do there)",
@@ -65,10 +80,10 @@ check("kids mode: no pill and no panel (the row's own check, and the panel close
 check("the pill follows the row's walk: it is in `pills` and in the row's children together, at the same place",
       "pills.add(at, centerPill);" in main and "pillRow.addView(centerPill, at + 1," in main)
 check("the home closing or coming back closes the panel (its test stops with it)", main.count("control.dismiss()") >= 3 and "speed.cancel()" in center.split("setOnDismissListener")[1])
-check("the panel is for the remote: no touch handling beyond the outside dismiss", "setOnTouchListener" not in center and "setOutsideTouchable(true)" in center and "new PopupWindow(panel, plan.panelW," in center)
-check("RTL: the panel's own direction is set (Dir: English left to right), and the tiles walk right to left with explicit focus (English mirrored)",
-      "panel.setLayoutDirection(Dir.layout());" in center and "int before = col == 0 ? t.getId() : tiles.get(i - 1).getId();" in center
-      and "t.setNextFocusRightId(Dir.rtl() ? before : after);" in center and "t.setNextFocusLeftId(Dir.rtl() ? after : before);" in center)
+check("the panel is for the remote: no touch handling beyond the press outside it", "setOnTouchListener" not in center and "root.setOnClickListener(v -> dismiss());" in center and "panel.setClickable(true);" in center)
+check("RTL: the panel sits at the start edge (right in Arabic, left in English), its own direction is set (Dir), and the toggles walk right to left with explicit focus (English mirrored)",
+      "root.setLayoutDirection(Dir.layout());" in center and "int before = i == 0 ? c.getId() : toggleCells.get(i - 1).getId()" in center
+      and "c.setNextFocusRightId(Dir.rtl() ? before : after);" in center and "c.setNextFocusLeftId(Dir.rtl() ? after : before);" in center and "plp.setMarginStart(margin);" in center)
 check("focus goes back to the pill when it closes, and a tile has it when it opens", "anchor.requestFocus()" in center and "focusFirst.requestFocus()" in center)
 
 # ---- «انعكاس الشاشة»: the TV's own mirroring app, only when one is installed
@@ -112,9 +127,6 @@ check("Wi-Fi and Bluetooth side by side, first (docs/UX-REVIEW.md): the network 
       < center.index('tile("sleep"') < center.index('tile("off"') < center.index('tile("mirror"') < center.index('tile("saver"'))
 check("at most ten tiles: sleep, off, network, speed, sound, mirroring, Bluetooth, screensaver, ours, the TV's settings",
       len(re.findall(r'tile\("[a-z]+"', center)) == 10, re.findall(r'tile\("[a-z]+"', center))
-check("nine tiles may go five to a row; eight or fewer are laid out as before", "static final int FIVE_AFTER = 8;" in src("ControlLayout.java")
-      and "for (int cols : columns(n))" in src("ControlLayout.java"))
-
 # ---- no traffic before OK
 check("the only network code is the speed test's, and it is started by the tile's OK on a worker thread",
       "new SpeedTest()" in center and "HttpURLConnection" not in center and "new Thread(" in center.split("private void speedTest")[1]
@@ -139,7 +151,7 @@ if not shutil.which("javac"):
     sys.exit(1 if failed else 0)
 cases = [l.split("\t") for l in (ROOT / "tests/control_center_cases.tsv").read_text(encoding="utf-8").split("\n") if l and not l.startswith("#")]
 with tempfile.TemporaryDirectory() as tmp:
-    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "tests/i18n_home_stub/S.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java"), str(HOME / "ControlText.java"), str(HOME / "ControlLayout.java"), str(HOME / "PillText.java"), str(HOME / "DigitsText.java"),
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "tests/i18n_home_stub/S.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java"), str(HOME / "ControlText.java"), str(HOME / "PillText.java"), str(HOME / "DigitsText.java"),
                     str(HOME / "SpeedTest.java"), str(ROOT / "tests/ControlTextRun.java"), str(ROOT / "tests/SpeedTestRun.java")], check=True, capture_output=True)
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.ControlTextRun", str(ROOT / "tests/control_center_cases.tsv")],
                          check=True, capture_output=True).stdout
@@ -149,14 +161,6 @@ with tempfile.TemporaryDirectory() as tmp:
         # the digits of the answers in the table are written hindi for reading; the class writes western ones
         g_hindi = g.translate(str.maketrans("0123456789", "٠١٢٣٤٥٦٧٨٩"))
         check(f"control center {c[0]}: {c[6] if len(c) > 6 else ''}", g == want or (c[0] == "mbps" and g_hindi.replace(".", "٫") == want), f"{g!r}, wanted {want!r}")
-    for c, g in zip(cases, got):   # the layout, whatever the numbers: nothing wider or taller than the screen allows, every tile at least readable
-        if c[0] != "layout": continue
-        W, H, d, n = int(c[1]), int(c[2]), float(c[3]), int(c[4])
-        cols, rows, tw, th, pw, ph = (int(x) for x in g.split()[:6])
-        check(f"layout {W}x{H} @{d}: {n} tiles in {cols}x{rows}, the panel inside the screen",
-              cols * rows >= n and pw <= W * 0.82 + 1 and ph <= H * 0.90 + 1 and th >= 54 * d - 1, g)
-    check("the layout cases cover nine tiles («انعكاس الشاشة») on 1080p, 720p and 540p", {(c[1], c[2]) for c in cases if c[0] == "layout" and c[4] == "9"} >= {("1920", "1080"), ("1280", "720"), ("960", "540")})
-    check("…and ten tiles («البلوتوث» too) on 1080p, 720p and 540p", {(c[1], c[2]) for c in cases if c[0] == "layout" and c[4] == "10"} >= {("1920", "1080"), ("1280", "720"), ("960", "540")})
     check("every case answered", len(got) > len(cases), (len(got), len(cases)))
     r = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.SpeedTestRun"], capture_output=True, text=True)
     for l in r.stdout.splitlines():

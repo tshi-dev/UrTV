@@ -41,7 +41,7 @@ check("…and the walk turns round with the direction the row is drawn in (Dir.l
 # every hand-written ◀▶ pair keeps its Arabic ids and swaps them in English
 pairs = {
     "MainActivity.java": ["b.setNextFocusRightId(Dir.rtl() ? before : after);", "b.setNextFocusLeftId(Dir.rtl() ? after : before);"],
-    "ControlCenter.java": ["t.setNextFocusRightId(Dir.rtl() ? before : after);", "t.setNextFocusLeftId(Dir.rtl() ? after : before);"],
+    "ControlCenter.java": ["c.setNextFocusRightId(Dir.rtl() ? before : after);", "c.setNextFocusLeftId(Dir.rtl() ? after : before);"],
     "ParentalActivity.java": ["cs[j].setNextFocusLeftId(Dir.rtl() ? before : after);", "cs[j].setNextFocusRightId(Dir.rtl() ? after : before);"],
     "DockActivity.java": ["if (Dir.rtl()) c.setNextFocusLeftId(remove.getId()); else c.setNextFocusRightId(remove.getId());",
                           "if (Dir.rtl()) remove.setNextFocusRightId(c.getId()); else remove.setNextFocusLeftId(c.getId());"],

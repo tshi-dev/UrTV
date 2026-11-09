@@ -135,7 +135,6 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 أُلغي · اضغط اختيار للبدء	Cancelled · press OK to start
 جارٍ القياس…	Measuring…
 تعذّر القياس: تأكد من الشبكة	Couldn’t measure: check the network
-اضغط اختيار للإعادة	Press OK to run again
 اختيار على مهمة لإنجازها. اكتب مهمة جديدة في الخانة ثم «إضافة». أو اضغط «تكلّم» وقل: أضف مهمة … / خلصت … / احذف …	Press OK on a task to mark it done. Type a new task in the box, then “Add”. Or press “Speak” and say, in Arabic: add a task, done or delete
 اكتب المهمة هنا أو أملها بميكروفون لوحة المفاتيح	Type the task here, or dictate it with the keyboard’s mic
 إضافة	Add
@@ -609,3 +608,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 اضغط هنا وكمّل إعداد تلفزيوني (دقيقتين)	Press here and finish Set Up Your TV (two minutes)
 لاحقاً	Later
 مثبّت	Installed
+تخصيص	Customise
+اختر ما يظهر ورتّبه بالأسهم	Pick what shows and move it with the arrows
+إعادة الضبط	Reset
+%s من %s	%s of %s

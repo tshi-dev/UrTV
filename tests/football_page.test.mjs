@@ -166,7 +166,7 @@ for (const [why, rows] of [['the shipped table', null], ['medium confidence', [{
   const side = await p.$$eval('#mp-side li', l => l.map(x => x.textContent));
   check('matches page: «فرقك» first in the leagues, each with its count', side[0].startsWith('فرقك') && side[0].endsWith('١') && /دوري روشن/.test(side[1]) && side[1].endsWith('٤'), side.join(','));
   const heads = await p.$$eval('#mp-list h2', h => h.map(x => x.textContent));
-  check('matches page: the followed team first, then the league with its round', heads[0] === 'فرقك' && heads[1] === 'دوري روشن · الجولة ١٣', heads.join(','));
+  check('matches page: the followed team first, then the league with its round', heads[0] === 'فرقك' && heads[1] === 'دوري روشن الجولة ١٣', heads.join(','));
   check('matches page: a live game shows its minute and score', /الدقيقة ٦٧/.test(await p.textContent('#mp-list section:first-child')) && /٢ - ١/.test(await p.textContent('#mp-list section:first-child')));
   check('matches page: text at least 16 px inside the rows and the leagues', !(await crowded(p, '#mp-list ul, #mp-side', 16)).length, (await crowded(p, '#mp-list ul, #mp-side', 16)).join(' | '));
   check('matches page: the mark on every row of the league', await p.$$eval('#mp-list .mpg .fmk', m => m.length === 4));
@@ -179,7 +179,7 @@ for (const [why, rows] of [['the shipped table', null], ['medium confidence', [{
   check('matches page: ▼ walks the rows', await p.$eval('.mpg.f', x => /الأهلي/.test(x.textContent)));
   await p.keyboard.press('Enter');
   const card = await p.textContent('#mp-detail');
-  check('matches page: OK opens the game\'s card: the round, the venue, the channel, the prayers', /دوري روشن · الجولة ١٣/.test(card) && /مدينة الملك عبدالله الرياضية/.test(card)
+  check('matches page: OK opens the game\'s card: the round, the venue, the channel, the prayers', /دوري روشن الجولة ١٣/.test(card) && /مدينة الملك عبدالله الرياضية/.test(card)
     && /ثمانية، أو تطبيق ثمانية/.test(card) && /مع الصلاة/.test(card) && /تبدأ بعد العشاء/.test(card), card);
   check('matches page: the card\'s two buttons: remind and follow', await p.$$eval('.mdb button', b => b.length === 2 && /ذكّرني قبلها بنصف ساعة/.test(b[0].textContent) && /أضف الأهلي لفرقي/.test(b[1].textContent)));
   check('matches page: the game a green bar on the prayers\' line, the prayers marked', await p.$$eval('.mpline .mpk', k => k.length >= 1) && (await p.$$('.mpbar')).length === 1);
@@ -265,7 +265,7 @@ for (const [why, rows] of [['the shipped table', null], ['medium confidence', [{
     const r = [say({ strLeague: 'International Friendlies', idLeague: '99999', intRound: '0', strVenue: 'Prince Faisal bin Fahd Stadium' }), say({ strLeague: 'International Friendlies', idLeague: '99999', intRound: null, strVenue: 'Some Unknown Ground' }), say({ strLeague: 'International Friendlies', idLeague: '99999', intRound: '3', strVenue: 'Prince Faisal bin Fahd Stadium' })];
     MP.detail = keep; mpDetailRender(); return r; });
   check('matches page: «International Friendlies» is «مباريات ودية دولية», round 0 or unknown is not shown, a known ground is in Arabic and an unknown one is isolated left to right',
-    head[0][0] === 'مباريات ودية دولية' && head[0][1] === 'استاد الأمير فيصل بن فهد' && head[1][0] === 'مباريات ودية دولية' && head[1][1] === '\u2066Some Unknown Ground\u2069' && head[2][0] === 'مباريات ودية دولية · الجولة ٣' && !/،/.test(head[2][0]), JSON.stringify(head));
+    head[0][0] === 'مباريات ودية دولية' && head[0][1] === 'استاد الأمير فيصل بن فهد' && head[1][0] === 'مباريات ودية دولية' && head[1][1] === '\u2066Some Unknown Ground\u2069' && head[2][0] === 'مباريات ودية دولية الجولة ٣' && !/،/.test(head[2][0]), JSON.stringify(head));
   // a live game's "with prayer" line says the minute, not «تبدأ بعد العشاء…»; the hyphen of a Latin club name does not break
   const liveLine = await p.evaluate(() => { const ev = { ...MP.detail, strStatus: '2H', strProgress: '67', intHomeScore: '1', intAwayScore: '0', dateEvent: MP.detail.dateEvent, strTimestamp: new Date(Date.now() - 67 * 60000).toISOString().slice(0, 19) };
     const keep = MP.detail; MP.detail = ev; mpDetailRender(); const t = document.querySelector('.mds').textContent; MP.detail = keep; mpDetailRender(); return t; });

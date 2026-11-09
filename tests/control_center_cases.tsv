@@ -31,36 +31,6 @@ output	2,10	TCL 4K TV|			HDMI ARC (مضخم أو ساوند بار)	ARC connecte
 output	11	   			USB	a blank name is no name
 output	11	Logitech Z407 Speaker System Extra Long Name Here			USB: Logitech Z407 Speaker Sy…	a long name is cut
 output	8,22	Buds|Headset X			بلوتوث: Buds، USB: Headset X	two devices, each with its name
-layout	1920	1080	1.0	8	4 2 170 116 752 344 false false	1080p at density 1
-layout	1920	1080	2.0	8	4 2 340 232 1504 688 false false	1080p at density 2 (960x540 dp)
-layout	1920	1080	3.0	8	4 2 339 318 1572 972 true false	1080p at density 3 (640x360 dp)
-layout	1280	720	1.0	8	4 2 170 116 752 344 false false	720p at density 1
-layout	1280	720	1.333	8	4 2 227 155 1004 459 false false	720p at tvdpi
-layout	1280	720	2.0	8	4 2 226 212 1048 648 true false	720p at density 2 (640x360 dp)
-layout	960	540	1.0	8	4 2 170 116 752 344 false false	540p at density 1
-layout	960	540	2.0	8	4 2 161 131 788 486 true true	540p at density 2 (480x270 dp)
-layout	1920	1080	2.0	7	4 2 340 232 1504 688 false false	7 tiles (no screensaver app)
-layout	1920	1080	2.0	9	4 3 340 232 1504 944 false false	9 tiles
-layout	600	700	1.0	8	3 3 144 116 492 472 false false	a narrow tall screen: 3 columns
-layout	1920	1080	1.0	9	4 3 170 116 752 472 false false	9 tiles («انعكاس الشاشة») at density 1
-layout	1920	1080	1.5	9	4 3 255 174 1128 708 false false	9 tiles, 1080p at 1.5
-layout	1920	1080	3.0	9	5 2 264 318 1572 972 true false	9 tiles on 640x360 dp: five to a row, two rows, the line under the name kept
-layout	1280	720	1.333	9	4 3 227 155 1004 630 false false	9 tiles, 720p at tvdpi
-layout	1280	720	2.0	9	5 2 176 212 1048 648 true false	9 tiles, 720p at density 2 (640x360 dp): five to a row
-layout	960	540	2.0	9	5 2 124 131 788 486 true true	9 tiles on 480x270 dp: two rows of five, inside the screen
-layout	3840	2160	4.0	9	4 3 680 464 3008 1888 false false	9 tiles, 4K at density 4
-layout	600	700	1.0	9	3 3 144 116 492 472 false false	9 tiles on a narrow tall screen: 3 columns
-layout	1920	1080	1.0	10	4 3 170 116 752 472 false false	ten tiles («البلوتوث» too) at density 1
-layout	1920	1080	1.5	10	4 3 255 174 1128 708 false false	ten tiles, 1080p at 1.5
-layout	1920	1080	2.0	10	4 3 340 232 1504 944 false false	ten tiles, 1080p at density 2
-layout	1920	1080	3.0	10	5 2 264 318 1572 972 true false	ten tiles on 640x360 dp: two rows of five
-layout	1280	720	1.0	10	4 3 170 116 752 472 false false	ten tiles, 720p at density 1
-layout	1280	720	1.333	10	4 3 227 155 1004 630 false false	ten tiles, 720p at tvdpi
-layout	1280	720	2.0	10	5 2 176 212 1048 648 true false	ten tiles, 720p at density 2: two rows of five
-layout	960	540	1.0	10	4 3 170 116 752 472 false false	ten tiles, 540p at density 1
-layout	960	540	2.0	10	5 2 124 131 788 486 true true	ten tiles on 480x270 dp: two rows of five, inside the screen
-layout	3840	2160	4.0	10	4 3 680 464 3008 1888 false false	ten tiles, 4K at density 4
-layout	600	700	1.0	10	3 4 144 116 492 600 false false	ten tiles on a narrow tall screen: 3 columns, 4 rows
 bluetooth	android.settings.BLUETOOTH_SETTINGS,com.google.android.intent.action.CONNECT_INPUT				android.settings.BLUETOOTH_SETTINGS	both resolve: Android's Bluetooth settings first
 bluetooth	com.google.android.intent.action.CONNECT_INPUT				com.google.android.intent.action.CONNECT_INPUT	no Bluetooth settings action: Android TV's accessories action
 bluetooth	android.settings.BLUETOOTH_SETTINGS				android.settings.BLUETOOTH_SETTINGS	only the Bluetooth settings

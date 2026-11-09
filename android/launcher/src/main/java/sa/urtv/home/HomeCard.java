@@ -120,6 +120,10 @@ final class HomeCard {
     void football(FootballFocus.Host host) { footballHost = host; }
 
     /** The football layout is on (the page in the WebView shows its widgets). */
+    /** a page is being loaded now: the home's last picture (HomeSnapshot) stays in front of it until it has painted */
+    boolean loading() { return loading; }
+    private boolean loading;
+
     boolean isFootball() { return web != null && footballFocus != null; }
 
     /** A football widget's focus target ("wx", "pr", "mt"), null when the layout is off. */
@@ -307,6 +311,7 @@ final class HomeCard {
             // the page asks GitHub for its fonts; answer from the APK
             @Override
             public void onPageFinished(WebView v, String u) {
+                loading = false;
                 if (footballFocus != null) {   // the widgets are laid out once the page is: where they start, the look, the targets
                     footballFocus.fit();
                     v.postDelayed(() -> { if (footballFocus != null) footballFocus.fit(); }, 1500);
@@ -368,6 +373,7 @@ final class HomeCard {
         if (tasks) addTarget();
         if (stocks) addMarket();
         url = u;
+        loading = true;   // HomeSnapshot's picture stays until the page has painted (onPageFinished)
         web.loadUrl(u);
     }
 

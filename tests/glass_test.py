@@ -56,8 +56,8 @@ old = [str(p.relative_to(ROOT)) for p, s in java.items() if "0xFF0A2016, 0xFF041
 check("no screen keeps the old dark green page", not old, old)
 cc = read(HOME / "ControlCenter.java")
 check("«مركز التحكم»: the glass look of now, opaque over the look's solid colour (it sits over the home's photo), glass tiles, the solid focus fill",
-      "GlassStyle.Look l = GlassSource.look(act);" in cc and "PANEL = GlassStyle.over(l.dialog, l.base);" in cc and "fill.setColor(f ? FOCUSED : TILE);" in cc
-      and "name.setTextColor(f ? ON : TEXT);" in cc and "0xF0242428" not in cc)
+      "GlassStyle.Look l = GlassSource.look(act);" in cc and "PANEL = GlassStyle.over(l.dialog, l.base);" in cc and "int target = f ? FOCUSED : kind == TOGGLE ? TILE" in cc
+      and "int ink = f ? ON : TEXT;" in cc and "0xF0242428" not in cc)
 icons = re.findall(r"R\.drawable\.(ic_\w+)", cc)
 square = [i for i in icons if re.search(r'pathData="M0,0h24v24h-24z"|fillColor="#(FF)?000000"', read(ROOT / f"android/launcher/src/main/res/drawable/{i}.xml"))]
 check("«مركز التحكم»: no tile icon has a filled square behind it (tinted, «إعدادات تلفزيونك»'s was a plain white square)", icons and not square, square)
