@@ -36,6 +36,7 @@
     <!-- opens the launcher's «تحديث تلفزيوني» from settings (signature permission, same key) -->
     <uses-permission android:name="sa.urtv.home.OPEN_UPDATE" />
     <uses-permission android:name="sa.urtv.home.OPEN_PHONE" />
+    <uses-permission android:name="sa.urtv.home.OPEN_CLEAN" />
 
     <!-- opens the launcher's «ترتيب المفضلة» from settings -->
     <queries>

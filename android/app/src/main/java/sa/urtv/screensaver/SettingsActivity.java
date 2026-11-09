@@ -344,6 +344,8 @@ public class SettingsActivity extends Activity {
         final boolean isHome = isOurHome();
         row("اجعل UrTV الشاشة الرئيسية", isHome ? "✓ UrTV هو الشاشة الرئيسية" : "اضغط وكمّل إعداد تلفزيوني (دقيقتان)", R.drawable.ic_eye,
             new Runnable() { public void run() { if (!isHome) openSetup(); } });
+        // «UrTV النظيف»: the essentials only; the launcher's CleanActivity says what it does first and asks for the confirmation (and the family PIN)
+        row("UrTV النظيف", "الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة", R.drawable.ic_eye, new Runnable() { public void run() { openClean(); } });
         // «المظهر»: one page for everything about the look of both apps (AppearanceActivity), each choice with its picture
         row("المظهر", Prefs.lookLabel(prefs.look()) + " · " + Prefs.appearanceLabel(prefs.appearance()), R.drawable.ic_eye,
             new Runnable() { public void run() { startActivity(new Intent(SettingsActivity.this, AppearanceActivity.class)); } });
@@ -1360,6 +1362,15 @@ public class SettingsActivity extends Activity {
         try {
             startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.ReportActivity"));
         } catch (RuntimeException e) {   // not installed, or an older home without the screen
+            toast("حدّث الواجهة الرئيسية «تلفزيونك» أو ثبّتها أولاً");
+        }
+    }
+
+    /** «UrTV النظيف» lives in the launcher (it holds the home it masks and the family PIN) */
+    private void openClean() {
+        try {
+            startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.CleanActivity"));
+        } catch (RuntimeException e) {
             toast("حدّث الواجهة الرئيسية «تلفزيونك» أو ثبّتها أولاً");
         }
     }

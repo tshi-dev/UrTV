@@ -31,7 +31,7 @@ final class Pill extends LinearLayout {
     private final TextView name;
     private final FrameLayout clip;   // the name's window: its width is what the animation changes
     private final GradientDrawable bg = new GradientDrawable();
-    private final Drawable glyph;
+    private Drawable glyph;
     private String label;
     private float open;   // 0 = icon only, 1 = the name out
     private boolean accent;   // gold icon: something is running (the sleep timer)
@@ -73,6 +73,9 @@ final class Pill extends LinearLayout {
         setContentDescription(text);
         apply();
     }
+
+    /** another icon (the control center's pill is the settings button in «UrTV النظيف») */
+    void setIcon(int res) { glyph = getContext().getDrawable(res).mutate(); icon.setImageDrawable(glyph); paint(); }
 
     /** the icon in gold while something runs (the sleep timer), so an unfocused pill still says so */
     void setAccent(boolean on) { accent = on; paint(); }

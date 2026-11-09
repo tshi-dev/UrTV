@@ -276,6 +276,7 @@ public class MainActivity extends Activity {
         if (appsStale) { appsStale = false; buildApps(); }   // an app was installed, removed or the favourites changed while another app was in front
         updateClock();
         updateNowPlaying();
+        applyClean();   // «UrTV النظيف» changed while another screen was in front
         homeCard.refresh();
         if (reminder != null) { reminder.refresh(); ReminderScheduler.schedule(this); }   // a card that came due while another app was in front; the alarm follows the tasks
         readAnimationScale();
@@ -734,7 +735,10 @@ public class MainActivity extends Activity {
         // ---- «مركز التحكم» (ControlCenter): the sleep timer, the screensaver, the network and the TV's settings pills went into its panel
         control = new ControlCenter(this, controlHost());
         centerPill = pill(ControlText.NAME, R.drawable.ic_center);
-        centerPill.setOnClickListener(v -> guarded(ParentalPolicy.PILL_CENTER, null, ControlText.NAME, () -> control.open(v)));
+        centerPill.setOnClickListener(v -> {
+            if (cleanShown) openOurSettings(false);   // «UrTV النظيف»: the one button that stays is the settings
+            else guarded(ParentalPolicy.PILL_CENTER, null, ControlText.NAME, () -> control.open(v));
+        });
         // ---- end «مركز التحكم»
         // «الأسواق» and «المباريات»: the markets page and the games page, two more round buttons (step 27, the owner's TV photos)
         Pill marketsBtn = pill(S.t("الأسواق"), R.drawable.ic_markets);
@@ -1040,6 +1044,7 @@ public class MainActivity extends Activity {
     /** Shows or hides the «يُتلى الآن» card by what «تلاوة» is doing: a surah or a station (playing or paused), else nothing. */
     private void updateNowPlaying() {
         if (nowCard == null) return;
+        if (cleanShown) { nowCard.setVisibility(View.GONE); return; }   // «UrTV النظيف»
         NowPlaying.State s = NowPlaying.read(this);
         if (!s.show) {
             if (nowCard.getVisibility() == View.VISIBLE && nowCard.hasFocus() && !pills.isEmpty()) pills.get(0).requestFocus();   // it went with the playback
@@ -1568,7 +1573,7 @@ public class MainActivity extends Activity {
 
     /** The rows' words first (quick), shown; then their pictures as they come, within TV_PICTURES_MS. */
     private void loadTvRows() {
-        if (tvRowsBox == null) return;
+        if (tvRowsBox == null || cleanShown) return;   // «UrTV النظيف»: no extra rows
         if (!TvRows.allowed(this) || !ConfigSnapshot.read(this).watchNextOn) {   // not allowed, or turned off in the settings: no row
             if (tvRowsBox.getChildCount() > 0) { tvShownSig = ""; showTvRows(new ArrayList<>()); }
             return;
@@ -1873,6 +1878,7 @@ public class MainActivity extends Activity {
     /** as the home comes to the front: show or hide the card; {@code takeFocus} puts the focus on it the first time it appears, so OK is all it takes */
     private void updateHomeNudge(boolean takeFocus) {
         if (nudge == null) return;
+        if (cleanShown) { nudge.setVisibility(View.GONE); return; }   // «UrTV النظيف»: no notices
         boolean show = HomeNudgeRule.show(isDefaultHome(), Parental.state(this).kids, getSharedPreferences(NUDGE_PREFS, MODE_PRIVATE).getLong("later_until", 0), System.currentTimeMillis());
         boolean was = nudge.getVisibility() == View.VISIBLE;
         if (show && !was) {
@@ -2846,9 +2852,54 @@ public class MainActivity extends Activity {
         updateNetIcon();   // its colour is the look's secondary ink
     }
 
+    // ---------------------------------------------------------------- «UrTV النظيف» (CleanMode)
+
+    private boolean cleanShown;   // the mask is on the screen now
+
+    /**
+     * «UrTV النظيف»: the home shows the essentials only, as a mask over what is there (nothing is deleted or written over): the clock, the date and the apps bar always;
+     * by the person's «تخصيص» one card, the Wi-Fi mark, the greeting and the settings button. Off: every one of them comes back as the person had it. Idempotent.
+     */
+    private void applyClean() {
+        boolean on = CleanMode.on(this);
+        if (!on && !cleanShown) return;
+        boolean was = cleanShown;
+        cleanShown = on;
+        java.util.Set<String> keep = CleanMode.keep(this);
+        if (pillBar != null) pillBar.lock(on);   // the row stays closed: only the one button
+        if (phonePill != null) phonePill.setVisibility(on ? View.GONE : View.VISIBLE);
+        if (nowCard != null && on) nowCard.setVisibility(View.GONE);
+        if (centerPill != null) {   // the control center's pill is the settings button while the mask is on
+            centerPill.setIcon(on ? R.drawable.ic_settings : R.drawable.ic_center);
+            centerPill.setLabel(on ? S.t("الإعدادات") : ControlText.NAME);
+            centerPill.setVisibility(on && !keep.contains(CleanMode.SETTINGS) ? View.GONE : View.VISIBLE);
+        }
+        if (netIcon != null) netIcon.setVisibility(on && !keep.contains(CleanMode.WIFI) ? View.GONE : View.VISIBLE);
+        if (on) {
+            if (weatherLine != null) weatherLine.setVisibility(View.GONE);
+            if (zoneLine != null) zoneLine.setVisibility(View.GONE);
+            if (nudge != null) nudge.setVisibility(View.GONE);
+            footballHeader();
+        }
+        if (tvRowsBox != null) tvRowsBox.setVisibility(on ? View.GONE : View.VISIBLE);
+        if (homeCard != null) homeCard.hide(on && !keep.contains(CleanMode.CARD));
+        if (was && !on) {   // back to the full home: what the mask hid is drawn again from the person's own settings
+            updateClock();
+            loadTvRows();
+            updateHomeNudge(false);
+            updateNowPlaying();
+            wireFocus();
+        }
+    }
+
     /** The football home: the weather has its own card and the clock sits higher, so the greeting and its weather line are not shown. */
     private void footballHeader() {
         if (greeting == null) return;
+        if (cleanShown) {   // «UrTV النظيف»: the greeting only when the person kept it, never its weather line
+            greeting.setVisibility(CleanMode.keep(this).contains(CleanMode.GREETING) ? View.VISIBLE : View.GONE);
+            weatherLine.setVisibility(View.GONE);
+            return;
+        }
         boolean football = homeCard != null && homeCard.isFootball();
         greeting.setVisibility(football ? View.GONE : View.VISIBLE);
         if (football) weatherLine.setVisibility(View.GONE);
@@ -2952,6 +3003,7 @@ public class MainActivity extends Activity {
         applyCenterPill();   // kids mode may have been turned on or off, or the button hidden
         sa.urtv.home.tilawah.AdhanSync.onConfig(this, cfg.placeFragment(), cfg.placeTicket());   // «تعديل وقت الصلاة» changed on the TV: the alarm follows
         updateSleepPill();
+        applyClean();   // «UrTV النظيف» (a mask over what the settings above just applied)
     }
 
     /** Once a minute with the clock: the bar before the adhan shows in the last 10 minutes, and until the iqama. */

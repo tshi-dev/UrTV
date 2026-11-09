@@ -190,8 +190,12 @@ final class HomeCard {
     private final android.os.Handler idle = new android.os.Handler(android.os.Looper.getMainLooper());
     private final Runnable drop = new Runnable() { @Override public void run() { if (!resumed) destroy(); } };
 
+    /** «UrTV النظيف» without the card: its page is not made (and the one that was is let go) */
+    void hide(boolean on) { hidden = on; if (on) destroy(); }
+    private volatile boolean hidden;
+
     private void applyUrl(String want) {
-        if (want == null) { destroy(); return; }
+        if (want == null || hidden) { destroy(); return; }
         if (want.equals(url)) return;
         destroy();
         if (!guard.mayCreate(android.os.SystemClock.elapsedRealtime())) return;   // its renderer keeps dying: the cards stay off for now

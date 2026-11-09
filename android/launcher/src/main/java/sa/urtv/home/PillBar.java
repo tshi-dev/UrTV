@@ -48,10 +48,19 @@ final class PillBar extends LinearLayout {
     /** a part of the bar that is not a Pill (the network status): drawn on the bar, always shown */
     void member(View v) { members.add(v); }
 
+    private boolean locked;
+
+    /** «UrTV النظيف»: the row stays closed whatever has the focus (only the one button that stays shows) */
+    void lock(boolean on) {
+        locked = on;
+        if (on) { removeCallbacks(closer); if (anim != null) anim.cancel(); open = 0f; apply(); }
+    }
+
     boolean isOpen() { return open >= 1f; }
 
     /** the focus came into the bar (true) or went out of it (false) */
     void focusInside(boolean inside) {
+        if (locked) return;
         removeCallbacks(closer);
         if (inside) animateTo(1f); else postDelayed(closer, CLOSE_DELAY_MS);   // a short wait: moving from one button to the next is not leaving
     }
