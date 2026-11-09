@@ -12,6 +12,7 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.Uri;
 import android.os.Build;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
 
@@ -51,7 +52,8 @@ public final class PhoneUpdater {
     private static final long STUCK_MS = 10 * 60_000L;   // an install screen nobody answers for ten minutes no longer blocks a new try
     private static String state = "idle", error = "", detail = "", why = "";
     private static int build;
-    private static long since;
+    private static long since;   // SystemClock.elapsedRealtime() (4.3 A5): a TV's wall clock jumps when it first syncs, and «stuck» must not move with it
+    private static File dir;      // the downloads' folder, emptied when an update ends however it ends (4.3 A5)
     private static final List<File> ready = new ArrayList<>();           // downloaded and checked, in install order
     private static final List<String> readyPackages = new ArrayList<>();
     private static final List<File> queue = new ArrayList<>();           // still to hand to the installer
@@ -91,14 +93,14 @@ public final class PhoneUpdater {
             detail = d;
             why = w;
             if (!s.equals("waiting_owner") && !s.equals("downloading")) sa.urtv.home.setup.SaverHold.endIf(HOLD);   // the update's install questions are answered (or it stopped): the screensaver is free
-            since = System.currentTimeMillis();
+            since = SystemClock.elapsedRealtime();
             r = listener;
         }
         if (r != null) r.run();
     }
 
     private static boolean busy() {
-        return (state.equals("checking") || state.equals("downloading") || state.equals("waiting_owner")) && System.currentTimeMillis() - since < STUCK_MS;
+        return (state.equals("checking") || state.equals("downloading") || state.equals("waiting_owner")) && SystemClock.elapsedRealtime() - since < STUCK_MS;
     }
 
     /** The word for the state the screen shows. */
@@ -118,16 +120,7 @@ public final class PhoneUpdater {
             set("checking", "", "");
         }
         final Context app = c.getApplicationContext();
-        new Thread(new Runnable() {
-            @Override public void run() {
-                try {
-                    prepare(app, download);
-                } catch (Exception e) {
-                    Log.w(TAG, "check failed: " + e);
-                    cannot(UpdateFlow.crashed().reason);   // no network was already told by version.txt; this is something else
-                }
-            }
-        }, "tv-update-check").start();
+        guarded("tv-update-check", app, () -> prepare(app, download));   // no network was already told by version.txt; anything thrown is something else
         return status();
     }
 
@@ -176,6 +169,7 @@ public final class PhoneUpdater {
         }
         File dir = new File(c.getFilesDir(), "phone-update");
         if (!dir.isDirectory() && !dir.mkdirs()) { cannot("storage"); return false; }
+        synchronized (PhoneUpdater.class) { PhoneUpdater.dir = dir; }
         clean(dir);
         UpdateFlow.Verdict v = UpdateFlow.room(wifiOrEthernet(c), dir.getUsableSpace(), sizes);
         if (v.result == UpdateFlow.Result.CANNOT) { cannot(v.reason); return false; }
@@ -213,6 +207,40 @@ public final class PhoneUpdater {
         }
         set("available", "", "");
         return true;
+    }
+
+    interface Job { void run() throws Exception; }
+
+    /**
+     * 4.3 A5: every thread of the update runs behind one barrier: whatever it throws (an Error too: out of memory on an 80 MB copy, a missing
+     * class on an old TV) is logged and said as «can't update», the downloads are removed, and the launcher's process is never brought down by it.
+     */
+    private static void guarded(String name, final Context app, final Job job) {
+        Thread t = new Thread(() -> {
+            try {
+                job.run();
+            } catch (Throwable e) {
+                Log.w(TAG, name + " failed: " + e);
+                cleanDownloads();
+                try { cannot(UpdateFlow.crashed().reason); } catch (Throwable ignored) { }
+            }
+        }, name);
+        t.setUncaughtExceptionHandler((th, e) -> Log.w(TAG, name + " uncaught: " + e));   // the barrier's own last line
+        t.start();
+    }
+
+    /** The downloaded APKs go when the update ends (done, failed, declined): nothing of 80 MB is left on a full TV (4.3 A5). */
+    private static void cleanDownloads() {
+        File d;
+        synchronized (PhoneUpdater.class) { d = dir; }
+        if (d != null) clean(d);
+    }
+
+    /** The downloaded file of a package in this update, or null. */
+    private static synchronized File fileFor(String pkg) {
+        if (pkg == null) return null;
+        int i = readyPackages.indexOf(pkg);
+        return i >= 0 && i < ready.size() ? ready.get(i) : null;
     }
 
     /** The TV can't update itself: the screen shows the message about the AI assistant. The reason goes to the log. */
@@ -312,17 +340,10 @@ public final class PhoneUpdater {
                 app.startActivity(new Intent().setClassName(app.getPackageName(), "sa.urtv.home.UpdateActivity").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             } catch (RuntimeException ignored) { }
         }
-        new Thread(new Runnable() {
-            @Override public void run() {
-                try {
-                    if (found && !downloadAndVerify(app, true)) return;   // stopped on an error, which is already on the screen
-                    installNext(app);
-                } catch (Exception e) {
-                    Log.w(TAG, "install failed: " + e);
-                    cannot(UpdateFlow.crashed().reason);
-                }
-            }
-        }, "tv-update").start();
+        guarded("tv-update", app, () -> {
+            if (found && !downloadAndVerify(app, true)) return;   // stopped on an error, which is already on the screen
+            installNext(app);
+        });
         return status();
     }
 
@@ -371,8 +392,11 @@ public final class PhoneUpdater {
 
     private static void clean(File dir) {
         File[] all = dir.listFiles();
-        if (all != null) for (File f : all) f.delete();
+        if (all != null) for (File f : all) gone(f);
     }
+
+    /** The one place a file is deleted: a file of the update's own folder (clean, or one just installed). */
+    private static void gone(File f) { f.delete(); }
 
     private static boolean fetch(String url, File out) throws Exception {
         if (!UpdateRules.isReleaseUrl(url)) return false;
@@ -477,6 +501,7 @@ public final class PhoneUpdater {
             if (queue.isEmpty()) {
                 if (installing.isEmpty()) return;   // a late answer in a restarted process: the launcher's start reads the record and tells the owner
                 installing = "";
+                cleanDownloads();
                 set("done", "", "");
                 return;
             }
@@ -536,6 +561,7 @@ public final class PhoneUpdater {
     /** A failure ends the update: nothing more is handed to the installer, and the record (if one was written) is removed, since the screen says it now. */
     private static void fail(Context c, String reason, String pkg, String why) {
         new UpdateStore(c).clear();
+        cleanDownloads();
         Log.w(TAG, "update stopped at " + pkg + ": " + why);
         synchronized (PhoneUpdater.class) {
             queue.clear();
@@ -550,6 +576,15 @@ public final class PhoneUpdater {
     static void onResult(Context c, Intent intent) {
         int status = intent.getIntExtra(PackageInstaller.EXTRA_STATUS, Integer.MIN_VALUE);
         String pkg = intent.getStringExtra("pkg");
+        // 4.3 A5: only the answer for the package whose session is open now counts (a late answer of an earlier try, or one for another
+        // package, is not ours); the installer's own package name, when it says one, must be the same
+        String said = intent.getStringExtra(PackageInstaller.EXTRA_PACKAGE_NAME);
+        synchronized (PhoneUpdater.class) {
+            if (!UpdateRules.answerIsOurs(installing, pkg, said)) {
+                Log.w(TAG, "installer answer ignored: not the package being installed");
+                return;
+            }
+        }
         Log.i(TAG, "installer answered: status=" + status + " (-1 = the confirm screen is needed, 0 = installed without one)");   // a number only: tells a silent step from a confirmed one
         if (status == PackageInstaller.STATUS_PENDING_USER_ACTION) {
             Intent screen = intent.getParcelableExtra(Intent.EXTRA_INTENT);
@@ -567,12 +602,15 @@ public final class PhoneUpdater {
             }
         } else if (status == PackageInstaller.STATUS_SUCCESS) {
             // the next install (an APK parse, a signature check, a copy of up to 80 MB) never runs inside the receiver's answer: it finishes first
-            final Context app = c;
-            new Thread(new Runnable() { @Override public void run() { installNext(app); } }, "tv-update-next").start();
+            final Context app = c.getApplicationContext();
+            File done = fileFor(pkg);
+            if (done != null) gone(done);   // installed: its copy is not kept (4.3 A5)
+            guarded("tv-update-next", app, () -> installNext(app));
         } else {
             String why = UpdateFlow.failure(status);
             if (UpdateFlow.isDeclined(why)) {
                 new UpdateStore(c).clear();
+                cleanDownloads();
                 synchronized (PhoneUpdater.class) { queue.clear(); queuePackages.clear(); installing = ""; confirm = null; }
                 set("error", "declined", pkg == null ? "" : pkg);
             } else {

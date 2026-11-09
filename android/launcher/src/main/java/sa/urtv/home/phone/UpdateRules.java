@@ -36,6 +36,14 @@ public final class UpdateRules {
     }
 
     /** The build number in version.txt ("3.51" gives 51), or -1 for anything else. */
+    /**
+     * 4.3 A5: is an installer's answer for the update that runs now? Only when a package is being installed, the answer names it, and the
+     * installer's own package name (when it gives one) is the same. A late answer of an earlier try or one for another package changes nothing.
+     */
+    public static boolean answerIsOurs(String installing, String pkg, String installerSaid) {
+        return installing != null && !installing.isEmpty() && installing.equals(pkg) && (installerSaid == null || installerSaid.equals(pkg));
+    }
+
     public static int buildOf(String versionText) {
         if (versionText == null) return -1;
         String t = versionText.trim();

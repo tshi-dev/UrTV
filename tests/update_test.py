@@ -65,7 +65,7 @@ check("PackageInstaller sessions with a status callback, and the owner confirms 
       "PackageInstaller.SessionParams" in upd and "session.commit(" in upd and "STATUS_PENDING_USER_ACTION" in upd and "STATUS_SUCCESS" in upd
       and "pm install" not in upd and "INSTALL_PACKAGES" not in manifest.replace("REQUEST_INSTALL_PACKAGES", ""), "")
 check("the next app is handed over only after the answer of the one before (STATUS_SUCCESS calls installNext)",
-      re.search(r"STATUS_SUCCESS\)\s*\{.*?new Thread\(.*?installNext\(app\)", upd, re.S) is not None, "")   # on its own thread: see the checks at the end
+      re.search(r"STATUS_SUCCESS\)\s*\{.*?guarded\(\"tv-update-next\".*?installNext\(app\)", upd, re.S) is not None, "")   # on its own thread: see the checks at the end
 check("a failure empties the queue and clears the record, so nothing more is installed", "queue.clear()" in upd.split("private static void fail")[1] and "new UpdateStore(c).clear()" in upd.split("private static void fail")[1], "")
 check("the failure words come from UpdateFlow.failure", "UpdateFlow.failure(status)" in upd, "")
 check("the files are downloaded only from our two release addresses (latest, and the test channel's next)", upd.count("if (!UpdateRules.isReleaseUrl(url))") == 2 and "startsWith(UpdateRules.BASE)" not in upd, "")
@@ -202,7 +202,7 @@ check("the engine's status goes through UpdateFlow.shown, so a stale «waiting»
 check("«offline» is set only from the answer of version.txt (UpdateFlow.versionRead / first), nowhere else in the engine",
       len(re.findall(r'"offline"', upd)) == 2 and 'set("error", "offline", "")' in prepare and '"offline"' not in download, upd.count('"offline"'))
 check("a failed fetch is cannot(download), and an exception is cannot(exception)",
-      "UpdateFlow.fetchFailed().reason" in download and upd.count("UpdateFlow.crashed().reason") == 2 and 'set("error", "offline", "");\n                }' not in upd, "")
+      "UpdateFlow.fetchFailed().reason" in download and upd.count("UpdateFlow.crashed().reason") == 1 and "cannot(UpdateFlow.crashed().reason)" in upd.split("private static void guarded")[1][:900] and 'set("error", "offline", "");\n                }' not in upd, "")
 check("a fetch that throws (a dropped connection) is caught in the download loop, not turned into «offline»", "catch (java.io.IOException e)" in download and "fetchFailed" in download, "")
 check("a non-200 version.txt is read as «reached» with its code (readVersion), not as no network", "v.code = con.getResponseCode();" in upd and "v.reached = true;" in upd, "")
 check("the receiver answers on a worker thread with goAsync(), and finish() is in a finally",
@@ -231,6 +231,17 @@ doc_above = main.split("private void showUpdateResult()")[0].rstrip().rsplit("\n
 check("the dock javadoc sits on loadDock, not above showUpdateResult", "/** The user's dock if they edited it, else res/values/config.xml. */\n    private String[] loadDock()" in main
       and "/** The user's dock if they edited it" not in main.split("private void showUpdateResult()")[0], "")
 
+
+# 4.3 A5: the update engine's own robustness, read from the source
+upd = (PHONE / "PhoneUpdater.java").read_text(encoding="utf-8")
+check("4.3 A5: every update thread runs behind one barrier (Throwable caught, said as «can't update», the downloads removed); no bare thread is left",
+      upd.count('guarded("tv-update') == 3 and "catch (Throwable e)" in upd and "setUncaughtExceptionHandler" in upd and "new Thread(new Runnable()" not in upd)
+check("4.3 A5: «stuck» is timed by elapsedRealtime, not the wall clock (a TV's first time sync moves it)",
+      "since = SystemClock.elapsedRealtime();" in upd and "SystemClock.elapsedRealtime() - since < STUCK_MS" in upd and "currentTimeMillis" not in upd)
+check("4.3 A5: the downloaded APKs go when the update ends: done, failed, declined, crashed; an installed one at once",
+      upd.count("cleanDownloads();") >= 4 and "if (done != null) gone(done);" in upd)
+check("4.3 A5: an installer answer for another package (or a late one) changes nothing",
+      "if (!UpdateRules.answerIsOurs(installing, pkg, said)) {" in upd and "PackageInstaller.EXTRA_PACKAGE_NAME" in upd)
 sys.exit(1 if failed else 0)
 
 

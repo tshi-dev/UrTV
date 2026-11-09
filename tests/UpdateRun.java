@@ -104,6 +104,11 @@ public final class UpdateRun {
         check("an app that is not ours is dropped", UpdateOrder.order(Arrays.asList("com.example.x", UpdateOrder.LAUNCHER)).equals(Arrays.asList(UpdateOrder.LAUNCHER))
             && UpdateOrder.order(null).isEmpty(), "");
         check("only the launcher's step replaces the running app", UpdateOrder.replacesUs(UpdateOrder.LAUNCHER) && !UpdateOrder.replacesUs(UpdateOrder.SAVER), "");
+        check("4.3 A5: an installer's answer counts only for the package being installed (and the installer's own name, when said, the same)",
+            UpdateRules.answerIsOurs("sa.urtv.home", "sa.urtv.home", null) && UpdateRules.answerIsOurs("sa.urtv.home", "sa.urtv.home", "sa.urtv.home")
+            && !UpdateRules.answerIsOurs("", "sa.urtv.home", null) && !UpdateRules.answerIsOurs(null, "sa.urtv.home", null)
+            && !UpdateRules.answerIsOurs("sa.urtv.screensaver", "sa.urtv.home", null) && !UpdateRules.answerIsOurs("sa.urtv.home", null, null)
+            && !UpdateRules.answerIsOurs("sa.urtv.home", "sa.urtv.home", "com.evil.app"), "");
         check("the order is the one of UpdateRules.APKS (screensaver, then home)", UpdateRules.APKS[0][0].equals(UpdateOrder.SAVER) && UpdateRules.APKS[1][0].equals(UpdateOrder.LAUNCHER), "");
 
         // ---- the record: written before the launcher is replaced, read after the restart
