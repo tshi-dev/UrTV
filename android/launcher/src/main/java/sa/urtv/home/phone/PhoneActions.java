@@ -311,6 +311,24 @@ final class PhoneActions implements Actions {
 
     @Override public Map<String, Object> family() { return PhoneApps.family(app); }
 
+    // ---- 4.3 #53 «اكتب وارسم»: a short message on the TV's screen (PhoneMessage decides, MessageActivity shows)
+
+    private static final PhoneMessage MESSAGES = PhoneMessage.limiter();
+
+    @Override public Result message(String text) {
+        boolean ours = Foreground.current() != null;   // our home, one of our screens, or a message already shown
+        PhoneMessage.Verdict v = MESSAGES.decide(text, sa.urtv.home.MessageActivity.on(app), sa.urtv.home.MessageActivity.overApps(app), ours, android.os.SystemClock.elapsedRealtime());
+        if (v != PhoneMessage.Verdict.SHOW) return Result.fail(PhoneMessage.code(v));
+        try {
+            app.startActivity(new Intent().setClassName(app.getPackageName(), "sa.urtv.home.MessageActivity")
+                .putExtra("text", PhoneMessage.clean(text))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION));
+            return Result.ok(PhoneMessage.code(v));
+        } catch (RuntimeException e) {
+            return Result.fail("failed");
+        }
+    }
+
     // ---- «محفظتي»: only while the TV is editing it (PortfolioPhone)
 
     @Override public Map<String, Object> portfolio() {

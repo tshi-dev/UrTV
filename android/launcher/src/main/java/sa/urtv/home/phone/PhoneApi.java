@@ -87,6 +87,7 @@ final class PhoneApi implements PhoneServer.Handler {
             case "/api/do": endpoint = "do"; break;
             case "/api/logout": endpoint = "logout"; break;
             case "/api/portfolio": endpoint = "portfolio"; break;
+            case "/api/message": endpoint = "message"; break;   // 4.3 #53: a short message shown on the TV
             default: return json(404, err("not_found"));
         }
         Schema.Clean c = body(endpoint, r);
@@ -123,6 +124,7 @@ final class PhoneApi implements PhoneServer.Handler {
                 return result(a.portfolioSave((String) v.get("code"), buys));
             }
             case "quran": return result(a.quran(v));
+            case "message": return result(a.message((String) v.get("text")));
             case "cities": {
                 Map<String, Object> out = ok();
                 out.put("cities", a.cities((String) v.get("q")));

@@ -105,6 +105,12 @@ public final class Schema {
                 return c;
             }
             case "logout": return only(body);
+            case "message": {   // 4.3 #53: a short message for the TV's screen (up to 200 characters, a few lines)
+                Clean c = only(body, "text");
+                if (!c.ok()) return c;
+                if (!plainText(body.get("text"), PhoneMessage.MAX, true)) return no("bad text");   // one line: the page joins its lines
+                return c;
+            }
             case "portfolio": {   // «محفظتي» from the phone: one holding's buys, each "qty:price" (whole numbers only in the phone's JSON); none removes it
                 Clean c = only(body, "code", "buys");
                 if (!c.ok()) return c;

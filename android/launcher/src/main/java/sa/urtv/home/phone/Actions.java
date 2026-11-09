@@ -73,4 +73,7 @@ public interface Actions {
 
     /** One holding's buys ("qty:price" each; none removes it), only while the TV is editing: ok "saved", else a fixed failure. */
     default Result portfolioSave(String code, List<String> buys) { return Result.fail("portfolio_closed"); }
+
+    /** 4.3 #53: a short message from the phone, shown on the TV for 20 s (PhoneMessage). */
+    default Result message(String text) { return Result.fail("message_off"); }
 }

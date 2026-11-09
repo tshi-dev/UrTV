@@ -279,6 +279,15 @@
             android:theme="@android:style/Theme.Material.NoActionBar" />
 
         <!-- «أرسل تقرير» of the screensaver's settings: a few lines (the versions, Android, WebView) and a QR code to docs/share; nothing personal, nothing sent from here -->
+        <!-- 4.3 #53: a paired phone's short message, over what plays (see-through), 20 s; not exported: only the phone code starts it -->
+        <activity
+            android:name=".MessageActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTop"
+            android:taskAffinity="sa.urtv.home.message"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
         <activity
             android:name=".ReportActivity"
             android:exported="true"
@@ -339,6 +348,7 @@
                 <action android:name="sa.urtv.home.SHOW" />
                 <action android:name="sa.urtv.home.FAMILY_DNS" />
                 <action android:name="sa.urtv.home.BACK_SAVER" />
+                <action android:name="sa.urtv.home.PHONE_MESSAGE" />
                 <action android:name="sa.urtv.home.PIN_SET" />
                 <action android:name="sa.urtv.home.PIN_LOCK" />
                 <action android:name="sa.urtv.home.PIN_UNLOCK" />

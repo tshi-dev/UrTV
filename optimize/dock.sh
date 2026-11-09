@@ -16,6 +16,8 @@
 #   optimize/dock.sh sleep                 how the timer stands: minutes left, and what its end will do
 #   optimize/dock.sh sleep cancel          stop it
 #   optimize/dock.sh backsaver on|off        «الرجوع يفتح شاشة التوقف»: Back on our home starts the screensaver (off by default; the TV row in «الشاشة الرئيسية» is set too); no argument says how it stands
+#   optimize/dock.sh message on|off          «رسائل الجوال» (4.3 #53): a paired phone's short message shown on the screen for 20 s (on by default); no argument says how it stands
+#   optimize/dock.sh message overapps on|off «فوق التطبيقات»: also over a film or a match (on by default); off = only on our home and the screensaver
 #   optimize/dock.sh familydns on|off|status|grant   «حماية العائلة (DNS)»: Private DNS to AdGuard Family, checked and undone by optimize/familydns.sh
 #   optimize/dock.sh cast on|off|status    «البث من الجوال» on a Chromecast with Google TV: casting and the Google Home remote kept (on, the default) or our home first (off); optimize/cast.sh
 #   optimize/dock.sh sleep-setup           turn on the sleep service (an accessibility service, once) so the end turns the screen off
@@ -63,6 +65,12 @@ case "${1:-}:$#" in
   backsaver:2)
     # the home's switch, then the same on the screensaver's row (its settings show it; the home follows that row only when it changes)
     case "$2" in on|off) send BACK_SAVER "--es mode $2"; "$PY" -I optimize/tv.py "am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET --es backsaver $2" > /dev/null 2>&1 || true ;; *) echo "usage: optimize/dock.sh backsaver [on|off]"; exit 1 ;; esac ;;
+  message:1) send PHONE_MESSAGE "--es mode status" ;;
+  message:2)
+    case "$2" in on|off) send PHONE_MESSAGE "--es mode $2" ;; *) echo "usage: optimize/dock.sh message [on|off] | message overapps on|off"; exit 1 ;; esac ;;
+  message:3)
+    [ "$2" = overapps ] || { echo "usage: optimize/dock.sh message overapps on|off"; exit 1; }
+    case "$3" in on|off) send PHONE_MESSAGE "--es mode status --es overapps $3" ;; *) echo "usage: optimize/dock.sh message overapps on|off"; exit 1 ;; esac ;;
   sleep:1) send SLEEP_TV ;;
   sleep:2)
     case "$2" in

@@ -127,6 +127,15 @@ public class DockReceiver extends BroadcastReceiver {
                 setResultData("back-saver: " + (Dock.backSaver(c) ? "on" : "off"));
                 return;
             }
+            case "sa.urtv.home.PHONE_MESSAGE": {   // 4.3 #53 «رسائل الجوال»: --es mode on|off|status, --es overapps on|off
+                String m = String.valueOf(i.getStringExtra("mode")), o = i.getStringExtra("overapps");
+                if (!m.equals("on") && !m.equals("off") && !m.equals("status")) { setResultData("error: add --es mode on|off|status"); return; }
+                if (o != null && !o.equals("on") && !o.equals("off")) { setResultData("error: overapps is on or off"); return; }
+                if (!m.equals("status")) MessageActivity.setOn(c, m.equals("on"));
+                if (o != null) MessageActivity.setOverApps(c, o.equals("on"));
+                setResultData("phone-message: " + (MessageActivity.on(c) ? "on" : "off") + ", over apps: " + (MessageActivity.overApps(c) ? "on" : "off"));
+                return;
+            }
             case "sa.urtv.home.SLEEP_TV": {   // the sleep timer: no extra = how it stands; minutes = start it; 0 = cancel
                 if (i.hasExtra("minutes")) {
                     int m = i.getIntExtra("minutes", -1);

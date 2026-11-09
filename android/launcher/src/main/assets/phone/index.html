@@ -7,7 +7,7 @@
 <meta name="color-scheme" content="dark light">
 <title>تحكم من الجوال</title>
 <style>
-/* GlassStyle's words (tests/glass_test.py) over the TV's blurred photo (/api/backdrop) and its veil (--vd/--vl) */
+/* GlassStyle's words over the TV's photo */
 :root { --bg:#17181b; --card:rgba(30,33,39,.86); --line:rgba(255,255,255,.09); --gold:#d6af6b; --gt:#e2c084; --text:#ffffff; --dim:#dadce0; --red:#ffc2b3; --ink:#14161a; --tile:rgba(255,255,255,.07); --bar:#15191a; --veil:#070e0b; --glow:rgba(214,175,107,.16); --on:#54c08a; --y:"مفعّل"; --n:"متوقف"; --va:var(--vd,.95); }
 :root[data-theme="light"] { --bg:#ecedef; --card:rgba(255,255,255,.9); --line:rgba(80,60,20,.13); --gold:#8d6220; --gt:#7a5418; --text:#14161a; --dim:#3a3e46; --red:#8e2a10; --ink:#ffffff; --tile:rgba(141,98,32,.1); --bar:#fdfbf7; --veil:#f4f0e8; --glow:rgba(169,120,44,.12); --on:#1b8354; --va:var(--vl,.95); }
 :root[data-look="graphite"] { --bg:#121314; --card:rgba(32,33,36,.9); --line:rgba(255,255,255,.08); --gold:#f0a64a; --gt:#f0a64a; --text:#f2f0ec; --dim:#b9b6b0; --red:#ffb4a0; --ink:#1a1206; --tile:rgba(32,33,36,.9); --bar:#1e1f22; --veil:#121314; --va:var(--vd,.95); }
@@ -185,6 +185,11 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 <div class="row"><div id="modes" role="group" aria-label="طريقة الكتابة"><button data-mode="replace" class="on">استبدال</button><button data-mode="append">إضافة</button></div><button id="txtSearch" data-i="search">بحث</button></div>
 <div id="svcNote" class="note warn hidden"><div>فعّل خدمة "تلفزيونك: التحكم والكتابة من الجوال" في إعدادات التلفزيون لتكتب في التطبيقات الأخرى</div><div>الإعدادات ← إمكانية الوصول ← تلفزيونك: التحكم والكتابة من الجوال</div></div>
 <details><summary>أين يُكتب النص؟</summary><p>يُكتب النص في الحقل النصي المفتوح، ويُضاف مهمةً إذا كانت شاشة «المهام» مفتوحة، وفي التطبيقات الأخرى يُكتب في حقلها بعد تفعيل خدمة إمكانية الوصول. ومن دون الخدمة: أندرويد لا يسمح لتطبيق بالكتابة داخل تطبيق آخر، فيُنسخ النص إلى حافظة التلفزيون.</p></details>
+<div class="card" id="msgCard">
+<h2>رسالة على الشاشة</h2>
+<input id="msgT" dir="auto" maxlength="200" aria-label="رسالة للتلفزيون">
+<button id="msgGo" class="gold wide" data-i="send">اعرضها على التلفزيون</button>
+</div>
 </div>
 
 <div id="t-apps" class="hidden">
@@ -312,7 +317,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
   function el(t, c, x) { var e = document.createElement(t); if (c) e.className = c; if (x !== undefined) e.textContent = x; return e; }
   try { sess = sessionStorage.getItem('urtv'); } catch (e) { sess = null; }
 
-  // ---- theme: dark by default; the button switches every screen, the phone remembers it
+  // ---- theme
   function theme(t) {
     if (t) document.documentElement.setAttribute('data-theme', t);
     $('theme').textContent = document.documentElement.getAttribute('data-theme') === 'light' ? 'الوضع الداكن' : 'الوضع الفاتح';
@@ -325,7 +330,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
   };
 
   $('lang').onclick = function () { gated('/api/set', { lang: 'en' }).then(function (j) { if (j.ok) location.reload(); else say(j); }); };
-  // ---- the glass look: the home's photo, blurred once on the TV, under its veil
+  // ---- the glass look
   var glassStamp = -1;
   function glass(s) {
     var st = document.documentElement.style;
@@ -357,6 +362,9 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     a11y_stuck: STK,
     other_app: 'تطبيق آخر أمام الشاشة: فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال» في إعدادات إمكانية الوصول بالتلفزيون لتصله الأزرار. الصوت وتشغيل/إيقاف تعمل دائمًا.',
     other_app_limited: 'ما قدرنا نحرك التركيز أو نضغط في هذا التطبيق الآن. جرّب «رجوع» أو افتح ما تريد بريموت التلفزيون.',
+    message_shown: 'ظهرت على التلفزيون ✓',
+    message_off: 'رسائل الجوال موقوفة.',
+    message_busy_app: 'التلفزيون يعرض تطبيقاً الآن.',
     private_screen: 'شاشة السماح لا تُحرَّك من الجوال، استعمل ريموت التلفزيون.',
     failed: 'ما نجح الأمر.', refused: 'ما قبل التلفزيون هذه القيمة.', saver_missing: 'حدّث تطبيق «شاشة تلفزيونك» على التلفزيون.', not_saved: 'التلفزيون ما حفظ البطاقات. أعد المحاولة، وإن تكرر حدّث تطبيق «شاشة تلفزيونك».',
     pin_required: 'اكتب الرقم السري أولًا.', pin_wrong: 'الرقم السري غير صحيح.', slow_down: 'مهلًا، طلبات كثيرة.', no_session: 'انتهت الجلسة.',
@@ -392,7 +400,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
   }
   function digits(s) { return String(s).replace(/[٠-٩]/g, function (d) { return d.charCodeAt(0) - 0x660; }).replace(/[۰-۹]/g, function (d) { return d.charCodeAt(0) - 0x6f0; }); }
   function mmss(x) { x = Math.max(0, Math.floor(x)); return Math.floor(x / 60) + ':' + ('0' + x % 60).slice(-2); }
-  // Arabic counting: ساعة, ساعتين, 3 to 10 ساعات, 11 and more ساعة (or w[3]); the same for دقيقة, ثانية, تطبيق
+  // Arabic counting (hours, minutes, seconds, apps)
   var HR = ['ساعة', 'ساعتين', 'ساعات'], MN = ['دقيقة', 'دقيقتين', 'دقائق'];
   function nn(n, w) { var r = n % 100; return n === 1 ? w[0] : n === 2 ? w[1] : n + ' ' + (r > 2 && r < 11 ? w[2] : w[3] || w[0]); }
   function dur(sec) {
@@ -420,7 +428,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     return false;
   }
 
-  // ---- the PIN: asked only when the TV answers pin_required, then the same request goes again with it
+  // ---- the PIN, when the TV asks for it
   var pinAsk = null;
   function askPin(wrong) {
     return new Promise(function (res) {
@@ -489,7 +497,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
   };
 
   // ---- the app: four tabs
-  // the icons: our line drawings (#ico) in the text's colour, no emoji; a copy of one each
+  // the icons (#ico)
   function icon(name) {
     var s = $('ico').cloneNode(false);
     s.removeAttribute('id'); s.removeAttribute('class');
@@ -548,7 +556,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     var n = p.surah && s.surahs ? s.surahs[p.surah - 1] : '', r = recName(s, p.reciter);
     return (n ? 'سورة ' + n : 'تلاوة') + (r ? ' · ' + r : '');
   }
-  // the parts that change by themselves (every poll), then the forms (only when the person arrives or has just saved)
+  // the polled parts, then the forms
   function render(s, full) {
     glass(s);
     var live = !!s.adhan_live, p = s.player || {};
@@ -628,7 +636,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
       if (f && typeof f.pin_set !== 'undefined') famDraw(f);
     });
   }
-  // The cards being chosen are not redrawn from a TV answer still on its way (it would put the old one back and the save would send that).
+  // cards being chosen: not redrawn by a late answer
   var cardsDirty = false;
   function chosenCards() {
     var out = [], sels = $('cards').children;
@@ -666,7 +674,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
   };
   $('cardsGo').onclick = function () {
     var out = chosenCards();
-    // saved: the TV's cards are drawn again, unless changed since the press
+    // saved: redraw unless changed
     set({ home_cards: out }).then(function () { if (chosenCards().join() === out.join()) cardsDirty = false; refresh(); });
   };
   $('aOn').onchange = function () { set({ adhan_on: this.checked }); };
@@ -714,12 +722,18 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
     });
   }
   $('txtGo').onclick = function () { sendText(false); };
+  // 4.3 #53: a message on the TV's screen
+  $('msgGo').onclick = function () {
+    var t = $('msgT').value.replace(/\s+/g, ' ').trim();
+    if (!t) { $('msgT').focus(); return; }
+    api('/api/message', { text: t.slice(0, 200) }).then(function (j) { if (say(j)) $('msgT').value = ''; });
+  };
   $('txtSearch').onclick = function () { sendText(true); };
   $('txt').onkeydown = function (e) { if (e.key === 'Enter') { e.preventDefault(); sendText(false); } };
 
   // ---- the apps
   function iconUrl(pkg) { return '/api/icon/' + encodeURIComponent(pkg); }
-  // an image element cannot send the session header: each icon is fetched, read as a blob, shown as data:
+  // icons: fetched with the session header
   var icons = {}, iconQ = [], iconRun = 0, iconWait = {};
   function iconGet(pkg, done) {
     if (pkg in icons) { done(icons[pkg]); return; }
@@ -806,7 +820,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
   $('upCheck').onclick = function () { api('/api/update', { op: 'check' }).then(function (j) { if (j.ok) { upText(j); upPoll(); } else say(j); }); };
   $('upGo').onclick = function () { gated('/api/update', { op: 'install' }).then(function (j) { if (j.ok) { upText(j); upPoll(); } else say(j); }); };
 
-  // ---- the remote: a press sends one key; a held arrow or volume key repeats; the pad: swipe = arrow, tap = OK
+  // ---- the remote
   function press(k) {
     try { if (navigator.vibrate && navigator.userActivation && navigator.userActivation.isActive) navigator.vibrate(k === 'ok' ? 30 : 12); } catch (e) { }
     api('/api/key', { key: k }).then(function (j) { if (!j.ok) { toast(MSG[j.error] || MSG.failed); stopRep(); } });
@@ -843,7 +857,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 
   $('out').onclick = function () { api('/api/logout', {}).then(function () { leave(); $('loginState').textContent = 'تم الخروج.'; }); };
 
-  // ---- start: a token in the address (the QR code), then no session yet, or one we already have
+  // ---- start
   var h = location.hash.replace(/^#/, '');
   if (h) { try { history.replaceState(null, '', location.pathname); } catch (e) { } }
   if (/^[0-9a-f]{32}$/.test(h)) { show(false); pair({ token: h }); }

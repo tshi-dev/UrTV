@@ -30,6 +30,7 @@ final class Dock {
 
     /** «الرجوع يفتح شاشة التوقف»: Back on our home starts the screensaver (HomeBack.startsSaver). Off until it is turned on (`dock.sh backsaver on`). */
     static boolean backSaver(Context c) { return prefs(c).getBoolean("back_saver", false); }
+
     static void setBackSaver(Context c, boolean on) { prefs(c).edit().putBoolean("back_saver", on).apply(); }
     /**
      * The row in the screensaver's settings (ConfigSnapshot.backSaver; null = no real answer): when it changes, the switch above takes its

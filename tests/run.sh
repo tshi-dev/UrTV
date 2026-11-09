@@ -195,6 +195,7 @@ python3 tests/fav_bar_test.py   # the favourites bar: the tray, five tiles, the 
 python3 tests/called_off_test.py   # 4.3 A1: PST/ABD/AWD games are never shown as live
 python3 tests/usb_test.py   # 4.3 B8: the USB viewers are never off and always in the apps row (issue #50)
 python3 tests/report_words_test.py   # 4.3 B10: the report page asks what happened, required
+python3 tests/phone_message_test.py   # 4.3 #53: a short message from a paired phone on the TV's screen
 python3 tests/football_test.py   # the football home and «المباريات»: the setting, the pages, the widgets' focus, the tray's move, the broadcast table (docs/PROPOSALS-NOV2.md §1)
 python3 tests/settings_report_test.py   # «أرسل تقرير»: share.py's allowlist, nothing personal
 python3 tests/dialog_fit_test.py
