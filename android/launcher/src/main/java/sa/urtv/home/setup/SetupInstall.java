@@ -182,8 +182,8 @@ final class SetupInstall {
     SetupEngine.Result extras(boolean wanted, SetupRunner.Host host) throws IOException { return extras(wanted, null, host); }
 
     /**
-     * 4.3: the apps the person ticked of «تطبيقات مقترحة» (SuggestedApps; null = the ones ticked at first, SmartTube and TV Bro as before). A GitHub
-     * one is the newest release's file for this processor; a pinned one (the IPTV player) is its one file, refused unless its SHA-256 is the pinned one.
+     * 4.3: the apps the person ticked of «تطبيقات مقترحة» (SuggestedApps; null = the ones ticked at first, SmartTube and TV Bro as before), each the
+     * newest release's file of its own GitHub repository for this processor. A Play Store app is never installed here.
      */
     SetupEngine.Result extras(boolean wanted, List<String> picks, SetupRunner.Host host) throws IOException {
         List<String> ids = picks == null ? SuggestedApps.defaults(Integer.MAX_VALUE) : picks;
@@ -201,9 +201,7 @@ final class SetupInstall {
                 if (sdk > 0 && sdk < a.minSdk) { out.line(name + " يحتاج إصدار أندرويد أحدث من هذا التلفزيون: تركناه."); continue; }
             }
             String url;
-            if (a.kind == SuggestedApps.Kind.PINNED) {
-                url = a.address();
-            } else {
+            {
                 String body = host.fetch(a.address(), 2 * 1024 * 1024);
                 if (body == null) { out.line("لم تعطنا GitHub قائمة إصدارات " + name + " (الإنترنت أو حدّ الطلبات): تركناه. جرّب لاحقاً."); bad = true; continue; }
                 url = null;
@@ -222,9 +220,6 @@ final class SetupInstall {
             Apk apk = apks.download(url);
             if (apk == null) { out.line("ما قدرنا ننزّل " + name + ": تركناه."); bad = true; continue; }
             try {
-                if (a.kind == SuggestedApps.Kind.PINNED && !SuggestedApps.pinnedOk(a, url, sha256(apk))) {
-                    out.line("الملف الذي نزل ليس نسخة " + name + " التي فحصناها، فما ثبّتناه."); bad = true; continue;
-                }
                 if (!pkg.equals(apk.pkg)) { out.line("الملف الذي نزل ليس " + name + "، فما ثبّتناه."); bad = true; continue; }
                 remember(pkg);   // before the install
                 String said;
@@ -243,19 +238,6 @@ final class SetupInstall {
         }
         if (bad) return new SetupEngine.Result(SetupEngine.Status.FAILED, "لم نثبّت كل التطبيقات الإضافية (التفاصيل فوق). بقية الإعداد تمّت.");
         return new SetupEngine.Result(SetupEngine.Status.DONE, got.isEmpty() ? "لا تطبيقات إضافية تناسب هذا التلفزيون." : "التطبيقات الإضافية: " + String.join(" و", got) + ".");
-    }
-
-    /** The SHA-256 of a downloaded file, lower-case hex ("" when it cannot be read). */
-    static String sha256(Apk apk) {
-        try (InputStream in = apk.opener.open()) {
-            java.security.MessageDigest md = java.security.MessageDigest.getInstance("SHA-256");
-            byte[] buf = new byte[64 * 1024];
-            int n;
-            while ((n = in.read(buf)) > 0) md.update(buf, 0, n);
-            return SuggestedApps.hex(md.digest());
-        } catch (IOException | java.security.NoSuchAlgorithmException e) {
-            return "";
-        }
     }
 
     // ---- the undo -------------------------------------------------------------------------------------------------------------------

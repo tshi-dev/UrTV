@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """4.3 «تطبيقات مقترحة»: the catalog (SuggestedApps, run for real by tests/SuggestedAppsRun.java), the settings screen that installs from it
-(SuggestedAppsActivity: each file from its own place, a pinned one refused unless its SHA-256 matches, the package checked, Android's install screen
-asks), the row in the screensaver's settings, and the IPTV player: one, a player only, no channels or links of ours.   python3 tests/suggested_apps_test.py"""
+(SuggestedAppsActivity: each file from its own GitHub releases, the package checked, Android's install screen
+asks), the row in the screensaver's settings, and the IPTV player: one, its Play Store page only, a player only, no channels or links of ours.   python3 tests/suggested_apps_test.py"""
 import re, shutil, subprocess, sys, tempfile
 from pathlib import Path
 
@@ -20,11 +20,13 @@ st = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsActivity.jav
 inst = (HOME / "setup/SetupInstall.java").read_text(encoding="utf-8")
 apks = (HOME / "setup/SetupApks.java").read_text(encoding="utf-8")
 
-check("the catalog says the IPTV player is a player only: no channels, and we give none", "it comes with no channels, films or playlists, and we give no links" in cat
-      and "وما فيه ولا نعطي أي قنوات" in cat)
+check("the catalog says the IPTV player is a player only, its store page: no channels, and we give none", "it comes with no channels, films or playlists, and we give no links" in cat
+      and "وما فيه ولا نعطي أي قنوات" in cat and 'new App("tivimate", TIVIMATE, "TiviMate"' in cat and "Kind.STORE, null, null, 21, false)," in cat.split('new App("tivimate"')[1][:200])
+check("Lumen is gone everywhere (the owner's decision): no entry, no pinned file, no hash, no words", not any("lumen" in t.lower() for t in (cat, act, inst, apks,
+      (ROOT / "i18n/en/home.tsv").read_text(encoding="utf-8"), (ROOT / "CHANGELOG.md").read_text(encoding="utf-8"))) and "PINNED" not in cat + act + inst + apks)
 check("no playlist, stream or IPTV address anywhere in the catalog or the screen", not re.search(r"\.m3u8?\b|get\.php|xtream|/playlist", cat + act, re.I))
-check("the screen: the pinned SHA-256 and the package are checked before Android's install screen; https only; the size limit",
-      act.index("SuggestedApps.pinnedOk(a, url, sha)") < act.index("commit(f, a.pkg);") and act.index("!a.pkg.equals(info.packageName)") < act.index("commit(f, a.pkg);")
+check("the screen: the file from the app's own GitHub releases and the package checked before Android's install screen; https only; the size limit",
+      act.index("!a.pkg.equals(info.packageName)") < act.index("commit(f, a.pkg);")
       and '"https".equals(con.getURL().getProtocol())' in act and "UpdateRules.MAX_APK_BYTES" in act and "SuggestedApps.githubOk(a, url)" in act)
 check("the screen asks Android's own install screen (PackageInstaller, the owner confirms), the file goes after", "STATUS_PENDING_USER_ACTION" in act
       and "session.commit(" in act and "f.delete();" in act.split("private void commit(")[1])
@@ -32,13 +34,11 @@ check("a Play Store app opens its page (the store, else the web page); an instal
 check("the screen is declared, and the screensaver's settings open it under «التطبيقات والمفضلة»", 'android:name=".SuggestedAppsActivity"' in mf
       and 'row("تطبيقات مقترحة"' in st and '"sa.urtv.home.SuggestedAppsActivity"' in st
       and st.index('row("تطبيقات في الشريط"') < st.index('row("تطبيقات مقترحة"'))
-check("the setup installs from the same catalog, a pinned file refused unless its SHA-256 matches", "SuggestedApps.pinnedOk(a, url, sha256(apk))" in inst
-      and "said = installWithVerifier(apk, pkg);" in inst[inst.index("SuggestedApps.pinnedOk(a, url, sha256(apk))"):] and "SuggestedApps.githubOk(a, url)" in inst)
+check("the setup installs from the same catalog: GitHub releases only, a Play Store app never", "SuggestedApps.githubOk(a, url)" in inst and "if (a == null || !a.inSetup()) continue;" in inst)
 act_setup = (HOME / "setup/SetupActivity.java").read_text(encoding="utf-8")
 check("the setup's boxes: one per suggested app, the on/off look of the screen's other rows (paintLang), OK ticks or unticks, one already on the TV left",
       "SuggestedApps.forSetup(android.os.Build.VERSION.SDK_INT)" in act_setup and "paintLang(box, picks.contains(a.id), box.hasFocus());" in act_setup
       and 'S.t("مثبّت من قبل: نتركه")' in act_setup and "☑" not in act_setup)
-check("the setup's downloader allows a pinned file only at its exact address", "a.kind == sa.urtv.home.SuggestedApps.Kind.PINNED && a.address().equals(url)" in apks)
 rows = re.findall(r'\{"([^"]+)", (TVBRO|SMARTTUBE), "([^"]+)"\}', inst)
 check("SmartTube and TV Bro: the same repositories and file patterns as the setup's (install.sh's)",
       all(f'"{repo}", "{pat}"' in cat.replace("\n            ", " ").replace(",\n", ",") or (repo in cat and pat.replace("\\\\", "\\") in cat.replace("\\\\", "\\")) for repo, _, pat in rows) and len(rows) == 2, rows)

@@ -37,8 +37,8 @@ import sa.urtv.home.phone.UpdateRules;
 /**
  * 4.3 «تطبيقات مقترحة», opened from the screensaver's settings (الإعدادات ← المزيد ← التطبيقات والمفضلة): each suggested app (SuggestedApps) with its
  * one line, and one button. Installed: «افتح». A Play Store app: «افتح المتجر» (its page; the owner installs it there). Otherwise «ثبّت»: the file
- * is downloaded into this app's cache from its own place only (SuggestedApps), at most UpdateRules.MAX_APK_BYTES, over https; a pinned one is refused
- * unless its SHA-256 is the pinned one; the file must be that package; then Android's own install screen asks the owner (PackageInstaller). Back closes.
+ * is downloaded into this app's cache from its own GitHub releases only (SuggestedApps), at most UpdateRules.MAX_APK_BYTES, over https; the file must
+ * be that package; then Android's own install screen asks the owner (PackageInstaller). Back closes.
  */
 public class SuggestedAppsActivity extends Activity {
     private static final String TAG = "UrTVSuggested", RESULT = "sa.urtv.home.SUGGESTED_RESULT";
@@ -49,7 +49,7 @@ public class SuggestedAppsActivity extends Activity {
     /** SuggestedApps' why lines, marked for «اللغة» here (the catalog is plain Java); S.tv says them */
     static final String[] WHY = {
         S.n("يوتيوب بلا إعلانات، مصمَّم للريموت"), S.n("متصفح إنترنت يشتغل بالريموت"), S.n("يشغّل الفيديو والصوت من ذاكرة USB ومن الشبكة"),
-        S.n("مشغّل IPTV فارغ: تضيف قائمتك أنت، وما فيه ولا نعطي أي قنوات"),
+        S.n("مشغّل IPTV فارغ من متجر Play: تضيف قائمتك أنت، وما فيه ولا نعطي أي قنوات"),
     };
 
     private GlassStyle.Look look;
@@ -139,17 +139,11 @@ public class SuggestedAppsActivity extends Activity {
     private String install(SuggestedApps.App a) {
         File f = new File(getCacheDir(), "suggested.apk");
         try {
-            String url;
-            if (a.kind == SuggestedApps.Kind.PINNED) {
-                url = a.address();
-            } else {
-                String json = fetch(a.address(), 2 * 1024 * 1024);
-                url = json == null ? null : SuggestedApps.pickAsset(a.file, String.join(",", Build.SUPPORTED_ABIS), json);
-                if (url == null || !SuggestedApps.githubOk(a, url)) return S.t("ما لقينا نسخة تناسب هذا التلفزيون");
-            }
+            String json = fetch(a.address(), 2 * 1024 * 1024);
+            String url = json == null ? null : SuggestedApps.pickAsset(a.file, String.join(",", Build.SUPPORTED_ABIS), json);
+            if (url == null || !SuggestedApps.githubOk(a, url)) return S.t("ما لقينا نسخة تناسب هذا التلفزيون");
             String sha = download(url, f);
             if (sha == null) return S.t("ما قدرنا ننزّله. جرّب مرة ثانية");
-            if (a.kind == SuggestedApps.Kind.PINNED && !SuggestedApps.pinnedOk(a, url, sha)) return S.t("الملف ليس النسخة التي فحصناها، فما ثبّتناه");
             PackageInfo info = getPackageManager().getPackageArchiveInfo(f.getAbsolutePath(), 0);
             if (info == null || !a.pkg.equals(info.packageName)) return S.t("الملف ليس هذا التطبيق، فما ثبّتناه");
             commit(f, a.pkg);
