@@ -311,9 +311,22 @@ public class MainActivity extends Activity {
         super.onTrimMemory(level);
         if (level < TRIM_MEMORY_UI_HIDDEN || resumed || !Ram.low(this)) return;
         homeCard.destroy();
-        for (ImageView v : new ImageView[] {wallFront, wallBack}) if (v != null) v.setImageDrawable(null);   // both photos (not the fade's end: tilawah_test)
+        thinWallpaper();   // the photos go, one tiny stand-in stays so the way back is not black until the next photo decodes
         wallTrimmed = true;
         firstWallpaper = true;   // the short fade when it comes back
+    }
+    /** both wallpaper bitmaps are let go; the one in front leaves a 160 px copy (about 100 KB), which CENTER_CROP stretches soft until the next photo fades in over it */
+    private void thinWallpaper() {
+        android.graphics.drawable.Drawable d = wallFront == null ? null : wallFront.getDrawable();
+        Bitmap thumb = null;
+        try {
+            if (d instanceof android.graphics.drawable.BitmapDrawable) {
+                Bitmap b = ((android.graphics.drawable.BitmapDrawable) d).getBitmap();
+                if (b != null && b.getWidth() > 0 && b.getHeight() > 0) thumb = Bitmap.createScaledBitmap(b, 160, Math.max(1, 160 * b.getHeight() / b.getWidth()), true);
+            }
+        } catch (RuntimeException | OutOfMemoryError ignored) { thumb = null; }
+        for (ImageView v : new ImageView[] {wallFront, wallBack}) if (v != null) v.setImageDrawable(null);   // both photos (not the fade's end: tilawah_test)
+        if (thumb != null) wallFront.setImageBitmap(thumb);
     }
     /** the photos were let go (onTrimMemory): the next onResume shows one at once */
     private boolean wallTrimmed;
