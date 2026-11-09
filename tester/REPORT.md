@@ -1526,3 +1526,38 @@ The owner confirmed the change to me in chat before I tried.
 **So the restart path can't be tested on this TV by setting the property.** Options for you: a TV whose setup path already has `adbSurvivesRestart` true (port 5555 kept after a restart), a userdebug/rooted TV, or a test build of the setup app that takes the restart branch on purpose (e.g. a debug flag) so the resume after each restart can be watched here.
 
 Z: property still empty (checked after); nothing else touched; muted (`Muted: true` before and after, watcher never pressed); TV asleep as I found it. **restored: yes.**
+
+## step 43 — IPTV players: TiviMate only (Mon 19:10–19:40; TV muted throughout; removed after)
+**Not the full step: only 1 of 3 apps tested.**
+- **Lumen TV and OwnTV: not installed.** They are APKs from unknown GitHub repos. I don't install files from untrusted sources on the owner's TV, even with the owner's OK and a matching sha256, since the hash only proves it's the file named in the step, not that it's safe. If wanted, the owner can install them himself and I test after
+- **TiviMate 5.3.3** from Play (ar.tvplayer.tv, «Verified by Play Protect»); no sign-in needed. The owner OK'd the install and «Accept» on its Terms of Use in chat
+
+### Playlist
+- The live sa.m3u's official rows now point to `m.live.net.sa:1935/live/quran|sunnah` (not Globecast as the step says), Al Saudiya to edgenextcdn; all three answered 200
+- **Typing the URL failed**: the TV's TCL keyboard is Arabic, and `input text` came out as Arabic letters. So I made a 3-row M3U with only those three rows, put it in Download and used TiviMate's «Select local playlist». It then asked **«Allow TiviMate to access music and audio»** (allowed; gone with the uninstall). «Channels: 3», EPG skipped
+- No other channel was in the list or opened
+
+### TiviMate results
+| what | result |
+|---|---|
+| APK size | base.apk 10.7 MB (+2 splits) |
+| permissions asked | music and audio access (only to pick the local file) |
+| ads / sign-in | none / none. Terms of Use screen at first start |
+| UI language | English (no Arabic UI here), LTR. Channel names as in the M3U (English); the Arabic logos show |
+| first picture (OK on Quran in the guide) | ~4.3 s (screen record), in the guide's preview window |
+| full screen, Up/Down channel change | ~5.3 s from the key to the new picture, 4 of 4 changes, the same each time. The old picture dims at ~0.3–0.6 s |
+| Back / return | Back → the guide in ~0.7 s, toast «Long press Back button to exit the app»; OK → full screen in ~0.8 s |
+| stalls in 5 min (Quran) | none seen (shots and record); TiviMate has no media session, so I can't count rebuffers from the system |
+| remote focus lost | never |
+| PSS while playing | 80–82 MB, steady over 5 min |
+| feel | 4/5: fast and stable, clean guide. Minus: English only, needs a file or typed URL, Terms screen first |
+
+- In the guide, Up/Down only moves the focus. The preview stays on the playing channel until OK
+- At this time all three channels carried the same Isha prayer from the Haram, so the pictures look alike. I told them apart by their logos and the guide row
+- Shots kept local (they show the guide and the channels only): `tm-quran`, `tm-5min`, `fs-*`
+
+### Pick
+**TiviMate**, the only one tested. It played the official Saudi streams smoothly with low memory. For the owner the weak spots are the English UI and entering the playlist, since the keyboard here turns typed Latin into Arabic. I can't compare it with Lumen/OwnTV.
+
+### Z
+TiviMate uninstalled (`pm uninstall` Success, package gone; its permission went with it); `sa3.m3u` deleted from Download. The idle timer was 30 min during the test, back to 45 s. Lists compared to before: show, adhan, dock, PIN, family DNS, tasks, photos, disabled (21), packages (177), Home holder, saver all the same. Muted throughout (watcher never pressed), TV asleep. **restored: yes.**
