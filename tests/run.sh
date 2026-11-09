@@ -51,6 +51,7 @@ python3 tests/spacing_178_test.py   # build 178 alignment: footers inside y 1026
 python3 tests/setup_i18n_test.py   # «إعداد تلفزيوني» in English: the start, plan and progress screens (build 178 GO)
 python3 tests/stream_url_test.py   # the live stations: radiojar's https -> http redirect, qurango's random 500 tried again
 python3 tests/update_ui_test.py   # the update screen: card, steps, bar, one button
+python3 tests/update_notice_test.py   # the home offers the update screen when the screensaver is older or a newer build is out
 python3 tests/shuffle_test.py   # the photo rotation is shuffled across «صورنا» and the packs
 python3 tests/reboot_test.py
 python3 tests/tv_identity_test.py
