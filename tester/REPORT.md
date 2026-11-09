@@ -1434,3 +1434,85 @@ Commands (to repeat after 4.3), all through `optimize/tv.py`, script `optimize/r
 - 5, 6: `am start -W -n <component>`, from the home, Back after 3 s. Hub cold = `am force-stop sa.urtv.screensaver` first
 
 Nothing else changed. Muted from 08:24:24.
+
+## step 41 — build 209 (4.3 candidate): full check + speed AFTER (Mon 10:31–13:25; TV muted throughout)
+**Not ALL PASS: 1 item not done (D uninstall dialog), 1 not testable here (L), and small findings. 1 mistake of mine: «أرسل تقرير» opened, nothing sent (see the end).**
+Sound: muted the whole run. My watcher checked every ~6 s from 10:31 to 13:20 and never saw `Muted: false`; every part also checked before and after.
+Lang: **ar**, as I found it (the owner changed it himself before step 40), so not set to en.
+
+### A ✓ Update, small notes
+- Channel next: «تحديث جديد 4.2 · اضغط للتحديث» → download → the system's «Do you want to update this app?» twice → «تم التحديث ✓ 4.2» → «تم» → home in front. Both apps versionCode 209
+- New card design seen after the update: title, «الإصدار المثبّت 4.2», the four-step line تنزيل · تحقق · تثبيت · تم, one wide «تم» button
+- **Small: the name still says 4.2** everywhere (versionName 4.2 for build 209). If it's meant to be 4.3, it isn't yet
+- **Small: while the home was being replaced, the last app in recents (Apple TV, paused) came to the front for ~5 s** (10:36:24.9 → 10:36:29.9) until the home came back. It stayed paused; muted anyway
+- No sound: muted throughout; no audio start in the log
+
+### B ✓ «المظهر والخلفيات», packs, shuffle, credits; small notes
+- Page opens from the hub: شاشة التوقف (شكل البطاقات 5 tiles, الصور: مجموعات الصور · صورنا · صوري), الشاشة الرئيسية (الشكل 5 looks, الإضاءة داكن/فاتح/تلقائي, الصور: مثل شاشة التوقف / مجموعات خاصة بها), رجوع
+- **Small: the bottom row of tiles and the «رجوع» button sit on the screen's bottom edge** (focused tile bounds end at y 1080), outside the safe area
+- **Small: the «زجاجي» home mock on the dark look is nearly empty** (cards don't show), and the «تلقائي» mock looks the same as «داكن»
+- **From the code, not seen: with «مجموعات خاصة بها», each pack tile is labelled with its id** (`tile(..., id, ...)` in `homePhotosRow`: «space», not «الفضاء»). I didn't switch the home to its own set
+- Download: space 16 s, 4.0 MB used, «مفعّل». **nature failed**: GitHub answered 504 for the release zip at that time, from the PC too (`photos-nature/nature.zip`, 3 tries), not the app's fault. The page gave no state change I could see (a toast, too short for my dumps)
+- **Shuffle ✓**: 20 saver shots 30 s apart with space + «صورنا»: صورنا, صورنا, space, space, space, space, space, صورنا, space ×3, صورنا, space, صورنا, space ×6. Mixed, no pack-after-pack block. One note: the same canyon photo of «صورنا» came twice within 11 shots (1 and 12)
+- **Home wallpaper ✓**: showed a space-pack photo; it didn't change in 2.5 min, which matches `WALLPAPER_INTERVAL_MS` = 10 min
+- **«حقوق الصور» ✓**: «1.jpg» … «12.jpg» now whole, isolated LTR; «إغلاق» readable (light on dark). Ends with «صورنا: Unsplash، وكل صورة في docs/PHOTO-CREDITS.md»
+- Deleted space at the end: free space back to within 56 kB of before
+
+### C ✓ Quick buttons
+- «زر الأسواق» → «مخفي» in settings: the markets button gone from the home's top row; set back to «ظاهر» (`pillshidden: none`)
+- «الجوال» button opens «تحكم من الجوال» ✓
+- Wi-Fi icon at the row's start ✓
+- Settings key: `input keyevent 176` (Android's) did nothing from the home; **83 (what this TCL's key sends, as in docs/TVS.md) opened our «مركز التحكم»** ✓
+- Favourites focus ring: thin gold ring on the dark glass look ✓
+
+### D Half done
+- Options box: انقل · أخفِ · اقفل · صفحته في المتجر · إلغاء التثبيت ✓
+- «صفحته في المتجر» → Play Store page of the app ✓
+- **«إلغاء التثبيت»: not opened.** My tool refused the press (its safety check), so the dialog wasn't tested. Nothing was uninstalled
+
+### E ✓ list; 2 parts not testable now
+- «الدوريات كاملة»: دوري نجوم العراق, دوري أبطال آسيا للنخبة, دوري أبطال أوروبا are there. Nothing chosen (`leagues:` still empty)
+- Postponed games not «مباشر», saver card after midnight: no postponed game in the data, and it's daytime. Not seen on the TV
+
+### F ✓ Saudi station 11 min
+`radio 0` 11:01–11:12 under the screensaver: `player=exo`, `stall_restarts=0`, `rebuffers=0`, `errors=0`. Stopped after.
+
+### G ✓ Phone (owner's PC Chrome, he typed the code)
+- Pairing: the owner typed the code in the PC's Chrome; I pressed «سماح»
+- #53 message: shown ~20 s (MessageActivity t+2 to t+19, gone by t+22) ✓; Back hides it ✓; `dock.sh message off` → nothing shown, the page says «رسائل الجوال موقوفة.» ✓; set back on
+- Small: after a send the field empties, and pressing send again with it empty does nothing and says nothing
+- «صوري» /u: 2 made-up 1920×1080 JPEGs (48 KB each) → «وصلت 2 صور للتلفزيون ✓»; on the TV 29 KB each (re-drawn); shown in the screensaver ✓. Cleared after (0 of 10)
+- «إيقاف التحكم من الجوال» at the end; the tab closed
+
+### H Skipped: no Fajr recording at hand.
+### I ✓ «طريقة الحساب»: only «تلقائي · أم القرى» and «الخليج» for this city. No Ja'fari.
+### J ✓ «تحديث جديد» pill: not shown. Right here: the TV is on 209, latest has 208, the two apps the same build.
+### K ✓ «مخرج الصوت» → the TV's Display & Sound page. No crash, home process the same pid, no `UrTVControl` line (it logs only on a failure).
+### L Partly: the home card (stocks) draws ✓. **The file:// gate can't be reached from outside** (no WebView debugging, no java here to run `tests/FileGateRun.java`). No 403 line in the log.
+
+### M Speed AFTER (step 40's commands, same scripts; idle timer 45 s as then)
+| what | 208 (step 40) | 209 run 1 | run 2 | run 3 |
+|---|---|---|---|---|
+| YouTube → Home: first change | 0.35 / 0.35 / 1.07 s | 0.76 s | 0.28 s | 0.13 s |
+| dark flat frames | 0 / 0 / 1 | 0 | 1 | **6 (~0.25 s dark)** |
+| tray janky | 4.44 / 4.61 / 4.34 % | 4.80 % | 4.98 % | 5.10 % |
+| tray 50/90/99 ms | 32/42/48, 32/44/48, 32/44/48 | 32/42/48 | 32/44/53 | 32/44/48 |
+| PSS idle home / saver app | 193.7/45.4, 176.3/37.2, 175.6/34.6 MB | **96.2 / 34.7** | **94.5 / 31.6** | **94.5 / 31.5** |
+| PSS after 2 min saver: home / saver | 163.7/68.5, 158.9/67.9, 158.9/67.9 | **82.7 / 63.5** | **78.2 / 63.2** | **78.2 / 61.9** |
+| saver `Displayed` | 1031 / 229 / 232 ms | 907 (cold) | 281 | 232 |
+| saver ground frame | 1.48 / 1.49 / 0.97 s | 1.81 s | 1.46 s | 1.39 s |
+| hub Total/Wait | 931/943, 431/446, 433/454 | 806/834 (cold) | 429/442 | 448/463 |
+| matches | 165/192, 132/156, 123/144 | 140/174 | 132/159 | 134/162 |
+| markets | 528/547, 495/511, 485/507 | **153/173** | 502/523 | 525/555 |
+
+- The home's memory is about half (≈95 MB idle, was ≈176)
+- Tray a bit worse (4.8–5.1 % vs 4.3–4.6 %)
+- YouTube→Home: run 3 shows six dark frames
+- Saver cold faster; warm the same
+- One fast markets run (153 ms), the rest as before
+
+### My mistake
+At 10:50 my script looked for «الشاشة الرئيسية» in the hub (it's inside «البطاقات»), didn't find it, and pressed OK anyway on **«أرسل تقرير»**. The report screen opened (a QR with versions, nothing personal). **Nothing was sent**: it only sends when a phone scans the QR and presses «أرسل». The next OK pressed «رجوع للإعدادات». My scripts now stop when the focus isn't the item they want.
+
+### Z
+Restored: updatechannel latest; idle 45 s (I set 10 min for a while, the dream kept eating my keys); photos 30; pills none; packs none (space deleted); own photos 0; messages on; phone control off; lang ar (as found). Same as before: dock, PIN, family DNS, tasks, disabled (21), packages (177), Home holder, saver. Only the build differs (209). Muted, TV asleep as I found it. **restored: yes.**
