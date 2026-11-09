@@ -711,3 +711,10 @@ Report «step 43» with a comparison table and your pick.
 10. Speed: repeat step 40 item 1 (YouTube → Home, 3 runs) and item 2 (tray jank, 3 runs): are the dark frames gone?
 Z. Restore as step 41 Z.
 Report «step 44»; write «step 44: ALL PASS» if so. Push.
+
+## step 45 — UrTV Player (our own new app, repo tshi-dev/UrTV-Player) first device test — run AFTER step 44; TV muted; uninstall at the end
+The owner OK'd installing our own UrTV Player debug build. Source: GitHub Actions artifact «urtv-player-debug» from https://github.com/tshi-dev/UrTV-Player/actions/runs/42684384141 (or the newest green run on main) — our repo, built by CI from source; record its sha256.
+Playlist: the same 3 official rows as step 43 (Al Quran Al Kareem TV, Al Sunnah Al Nabawiyah TV, Al Saudiya) as a local M3U — add it via the app's «إضافة من الجوال» flow if you can reach the LAN page from the PC (best), else typing/local file. No other channels.
+Check & report: install size; launch animation smooth and short; cold start time (am start -W); Arabic RTL everywhere; D-pad focus never lost; live list + preview pane; zap Up/Down time (stats overlay: Settings → Playback → stats: time to first frame + zap avg); 5 min Quran playback stalls/dropped frames/resolution/fps; guide; settings (start screen, home rows, themes/accents switch live, text size); PIN; backup screen opens (don't export); PSS idle/playing; any crash/ANR (logcat). Screenshots of home, live, player OSD, appearance.
+Z: uninstall com.urtv.player, delete the M3U, restore as step 44 Z.
+Report «step 45». 
