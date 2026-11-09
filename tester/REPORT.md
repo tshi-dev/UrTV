@@ -1516,3 +1516,13 @@ At 10:50 my script looked for «الشاشة الرئيسية» in the hub (it's
 
 ### Z
 Restored: updatechannel latest; idle 45 s (I set 10 min for a while, the dream kept eating my keys); photos 30; pills none; packs none (space deleted); own photos 0; messages on; phone control off; lang ar (as found). Same as before: dock, PIN, family DNS, tasks, disabled (21), packages (177), Home holder, saver. Only the build differs (209). Muted, TV asleep as I found it. **restored: yes.**
+
+## step 42 — BLOCKED: this TV refuses persist.adb.tcp.port (Mon; TV muted throughout; nothing changed)
+The owner confirmed the change to me in chat before I tried.
+1. `getprop persist.adb.tcp.port` = empty (as expected); `service.adb.tcp.port` = 5555 (this session only)
+2. `setprop persist.adb.tcp.port 5555` from adb shell (uid 2000) → **«Failed to set property 'persist.adb.tcp.port' to '5555'»**, rc 1. `ro.debuggable=0`, `ro.build.type=user`: no adb root on this TV, and shell may not write `persist.adb.*` (SELinux). dmesg isn't readable from shell, so I can't quote the reason
+3. As the step says, I stopped there: the setup was not run, no restart, no USB prompt
+
+**So the restart path can't be tested on this TV by setting the property.** Options for you: a TV whose setup path already has `adbSurvivesRestart` true (port 5555 kept after a restart), a userdebug/rooted TV, or a test build of the setup app that takes the restart branch on purpose (e.g. a debug flag) so the resume after each restart can be watched here.
+
+Z: property still empty (checked after); nothing else touched; muted (`Muted: true` before and after, watcher never pressed); TV asleep as I found it. **restored: yes.**
