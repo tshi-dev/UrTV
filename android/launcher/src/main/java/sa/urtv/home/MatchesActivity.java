@@ -140,6 +140,17 @@ public class MatchesActivity extends Activity {
             try { c.startActivity(i.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)); return true; } catch (RuntimeException e) { return false; }
         }
 
+        /** 4.3 «شاهد المباراة»: true when «تطبيق المباريات» names an app that is there now (UrTV Player only when it is ours) */
+        @JavascriptInterface public boolean matchApp() { return MatchApp.chosen(c, ConfigSnapshot.read(c).matchApp) != null; }
+
+        /** «شاهد المباراة»: the game's facts (MatchFacts checks them) to the chosen app; false when refused or nothing opened */
+        @JavascriptInterface public boolean findMatch(String json) {
+            MatchFacts f;
+            try { f = MatchFacts.of(sa.urtv.home.phone.Json.parseObject(json == null ? "" : json), System.currentTimeMillis()); }
+            catch (sa.urtv.home.phone.Json.Bad e) { return false; }
+            return f != null && MatchApp.open(c, ConfigSnapshot.read(c).matchApp, f);
+        }
+
         @JavascriptInterface public boolean unfollow(String id) {
             if (id == null || !id.matches("\\d{1,9}")) return false;
             try {

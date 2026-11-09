@@ -27,6 +27,7 @@
 #   optimize/saver.sh pillshidden markets,matches   home screen: hide quick buttons at the top (markets, matches, center, phone; a comma list), or none (default)
 #   optimize/saver.sh homephotos own               home screen: the wallpaper's photos: same (default, the screensaver's packs) or own (its own set, below)
 #   optimize/saver.sh homepacks nature,sea         home screen, with homephotos own: the photo packs it rotates (their ids, a comma list), or none
+#   optimize/saver.sh matchapp auto               «تطبيق المباريات»: «شاهد المباراة» opens it; auto (UrTV Player when installed, the default), none, or an app's package
 #   optimize/saver.sh accent teal                  all our screens: «لون التمييز», default (the look's own) or amber gold green teal sky violet rose coral
 #   optimize/saver.sh baropacity 70                home: «شفافية الشريط», the tray's and cards' fill, 30 to 100 (100 = as it was, the default)
 #   optimize/saver.sh walldim 30                   «تعتيم الخلفية»: more black over the photo, 0 to 90 (0 = as it was, the default)
@@ -224,6 +225,7 @@ case "${1:-}" in
   pillshidden) set1 pillshidden "${2:?usage: optimize/saver.sh pillshidden markets,matches,center,phone | none}" ;;
   homephotos) set1 homephotos "${2:?usage: optimize/saver.sh homephotos same|own}" ;;
   homepacks) set1 homepacks "${2:?usage: optimize/saver.sh homepacks nature,sea | none   (pack ids: docs/PHOTO-PACKS.md; a pack is downloaded on the TV)}" ;;
+  matchapp) set1 matchapp "${2:?usage: optimize/saver.sh matchapp auto|none|<package>}" ;;
   accent) set1 accent "${2:?usage: optimize/saver.sh accent default|amber|gold|green|teal|sky|violet|rose|coral}" ;;
   baropacity) set1 baropacity "${2:?usage: optimize/saver.sh baropacity 30..100}" ;;
   walldim) set1 walldim "${2:?usage: optimize/saver.sh walldim 0..90}" ;;

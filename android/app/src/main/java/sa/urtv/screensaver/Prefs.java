@@ -956,6 +956,12 @@ final class Prefs {
     static final String[] FAV_BARS = {"5", "6", "7", "8", "all"};
     /** 9 and 10 were offered once; ten tiles across were too small to read (step 28), so they mean 8 (eight in view, the rest scroll) */
     static String favBarFix(String v) { return "9".equals(v) || "10".equals(v) ? "8" : v; }
+    /** 4.3 «تطبيق المباريات»: "auto" (UrTV Player when installed, the default), "none", or an app's package; «شاهد المباراة» on a game hands it over */
+    static final String MATCH_AUTO = "auto", MATCH_NONE = "none";
+    static boolean matchAppOk(String v) { return MATCH_AUTO.equals(v) || MATCH_NONE.equals(v) || (v != null && v.matches("[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z0-9_]+)+") && v.length() <= 120); }
+    String matchApp() { String v = sp.getString("matchApp", MATCH_AUTO); return matchAppOk(v) ? v : MATCH_AUTO; }
+    void setMatchApp(String v) { if (matchAppOk(v)) sp.edit().putString("matchApp", v).apply(); }
+
     String favBar() { String v = favBarFix(sp.getString("favBar", "5")); return java.util.Arrays.asList(FAV_BARS).contains(v) ? v : "5"; }
     void setFavBar(String v) { v = favBarFix(v); if (java.util.Arrays.asList(FAV_BARS).contains(v)) sp.edit().putString("favBar", v).apply(); }
     /** the choice as the settings row says it */

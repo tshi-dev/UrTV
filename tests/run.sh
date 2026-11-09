@@ -197,6 +197,7 @@ python3 tests/update_cover_test.py   # step 41: the screensaver's cover over the
 python3 tests/suggested_apps_test.py   # 4.3 «تطبيقات مقترحة»: the catalog, the pinned IPTV player, the settings screen, the setup boxes
 python3 tests/phone_draw_test.py   # 4.3 #53 «ارسم»: live strokes from the phone over the TV's screen
 python3 tests/lang_provider_test.py   # 4.3: «اللغة» read only for UrTV Player (content://sa.urtv.home.lang/lang)
+python3 tests/match_app_test.py   # 4.3 «شاهد المباراة»: the match app and the FIND_MATCH contract
 python3 tests/update_channel_test.py
 python3 tests/android_compile_test.py
 bash tests/android_compile.sh   # both apps against android-all API 34; SKIP (not a failure) when offline or the jar is not cached
