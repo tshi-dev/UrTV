@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261109210138">
+<meta name="urtv-build" content="20261109211737">
 <title>Your TV Screen</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -866,8 +866,11 @@ const CONFIG = {
             : [_Q.has('team1') ? _Q.get('team1') : '136013', _Q.has('team2') ? _Q.get('team2') : '136137'])
     .map(x=>(x||'').trim()).filter(x=>/^\d+$/.test(x)).slice(0, 20),
   sportsKey: '123',
-  // whole leagues: #leagues=Saudi-Arabian Pro League,NBA
-  leagues: _list('leagues').filter(x => /^[A-Za-z0-9 \-]{2,40}$/.test(x)).slice(0, 5),
+  // whole leagues: #leagues=Saudi-Arabian Pro League,NBA; 4.3 a league of the settings' catalogue by its id: id4719, its name in
+  // #lgn=4719~name|… (the settings' language). At most 8: a catalogue league is asked of TheSportsDB itself (2 requests every 30 minutes)
+  leagues: _list('leagues').filter(x => /^[A-Za-z0-9 \-]{2,40}$/.test(x) || /^id\d{1,6}$/.test(x)).slice(0, 8),
+  leagueNames: Object.fromEntries((_Q.get('lgn') || '').split('|').map(x => x.split('~')).filter(x => x.length === 2 && /^\d{1,6}$/.test(x[0]) && x[1].trim())
+    .map(x => [x[0], x[1].trim().slice(0, 60)])),
   // other sports beside the teams' games: #events=f1,ufc,boxing (default none)
   events: _list('events').filter(k => ['f1','ufc','boxing'].includes(k)),
   eventWindowDays: 14,
@@ -1983,17 +1986,40 @@ const leagueSlug = n => String(n).toLowerCase().replace(/[^a-z0-9]+/g, '-').repl
 let LEAGUE_DATA = (()=>{ try{ return JSON.parse(localStorage.getItem('leagueData') || '{}') || {}; }catch(e){ return {}; } })();   // name -> its file
 const STALE_ASK_H = 6, STALE_ASKED = new Set();   // a past game with no result: asked for once, 6 h after its kick-off
 let LIVE_PATCH = {};   // idEvent -> {at, ev}: lookupevent's newer word on a game, used while newer than the league's file
-async function loadLeagues(){
+const catId = name => (/^id(\d{1,6})$/.exec(name) || [])[1];   // a catalogue league: its TheSportsDB id
+// 4.3 a catalogue league (#leagues=id…): its next and last games from TheSportsDB, one request after the other (step: the queue's
+// gap); the answer kept like a file's, so a failed refresh keeps the last one. -> 1 when it answered
+async function loadCatalogueLeague(name, step){
+  const id = catId(name), evs = [];
+  let ok = 0;
+  for(const path of ['eventsnextleague', 'eventspastleague']){
+    await step();
+    try{
+      const r = await fetchT(`https://www.thesportsdb.com/api/v1/json/${CONFIG.sportsKey}/${path}.php?id=${id}`, 12000);
+      if(!r.ok) continue;
+      const j = await r.json();
+      ok++;
+      ((j && (j.events || j.results)) || []).forEach(ev => { if(ev && ev.idEvent && String(ev.idLeague || id) === id) evs.push(ev); });
+    }catch(e){}
+  }
+  if(!ok) return 0;
+  LEAGUE_DATA[name] = {updated: new Date().toISOString(), events: evs};
+  return 1;
+}
+// the files at once; the catalogue's leagues once ready (the teams asked: one queue to the sports server)
+async function loadLeagues(step, ready){
   let got = 0;
-  await Promise.all(CONFIG.leagues.map(async name => {
+  Object.keys(LEAGUE_DATA).forEach(k => { if(!CONFIG.leagues.includes(k)) delete LEAGUE_DATA[k]; });   // a league no longer picked: its copy goes
+  const cat = (async () => { await ready; for(const name of CONFIG.leagues.filter(catId)) got += await loadCatalogueLeague(name, step); })();
+  await Promise.all([cat, ...CONFIG.leagues.filter(n => !catId(n)).map(async name => {
     try{
       const r = await fetchT(LEAGUE_BASE + leagueSlug(name) + '.json', 12000);
       if(!r.ok) return;
       const j = await r.json();
       if(j && Array.isArray(j.events)){ LEAGUE_DATA[name] = {updated: j.updated, events: j.events}; got++; }
     }catch(e){}
-  }));
-  if(got) try{ localStorage.setItem('leagueData', JSON.stringify(LEAGUE_DATA)); }catch(e){}
+  })]);
+  try{ localStorage.setItem('leagueData', JSON.stringify(LEAGUE_DATA)); }catch(e){}
   return got;
 }
 // every game of the followed leagues, once each
@@ -2332,8 +2358,11 @@ async function fetchLast(id){
 const loadMatches = guarded('matches', async function(){
   // never throw away a good fixture or result on a failed refresh
   let answered = 0, asked = 0;
-  const leagues = CONFIG.leagues.length ? loadLeagues() : 0;   // a file on GitHub, not the sports server
   const step = async () => { if(asked++) await sleep(CONFIG.queueGapMs); };
+  // a file on GitHub, not the sports server; a catalogue league is the sports server's, after the teams' (the same queue)
+  let teamsDone, leagues = 0;
+  const teamsAsked = new Promise(r => { teamsDone = r; });
+  if(CONFIG.leagues.length) leagues = loadLeagues(step, teamsAsked);
   const failed = [];
   for(const id of CONFIG.teamIds){
     let got = 0;
@@ -2349,6 +2378,7 @@ const loadMatches = guarded('matches', async function(){
     try{ const l = await fetchLast(id); answered++; got++; if(l.length) RESULTS[id] = l; }catch(e){}
     if(!got) failed.push(id);
   }
+  teamsDone();
   if(failed.length && !MATCH_RETRIED){ MATCH_RETRIED = true; setTimeout(loadMatches, 20000); }   // a team the server refused is asked again once
   answered += await leagues;
   if(!answered && (CONFIG.teamIds.length || CONFIG.leagues.length)){   // no answer: keep what is shown, and say so when there is nothing else
@@ -4030,7 +4060,7 @@ const FB_LEAGUES = {'4668':'Roshn League', '5627':'Yelo League', '4328':'Premier
   '4829':'Egyptian Premier League', '4678':'UAE Pro League', '4663':'Qatar Stars League', '4346':'MLS', '4387':'NBA', '4391':'NFL',
   '5056':'Iraq Stars League', '4719':'AFC Champions League Elite', '4480':'Champions League'};   // 4.3
 const FB_LEAGUE_ORDER = Object.keys(FB_LEAGUES);
-const leagueName = ev => FB_LEAGUES[String(ev.idLeague || '')] || String(ev.strLeague || '');
+const leagueName = ev => FB_LEAGUES[String(ev.idLeague || '')] || CONFIG.leagueNames[String(ev.idLeague || '')] || String(ev.strLeague || '');
 // «مباريات اليوم»'s marks (assets/shared/broadcast.json)
 // verified and in season, so an unknown, doubtful or partial holder shows nothing
 const BROADCAST = [{"idLeague":"4668","competition":"Saudi Pro League","ar":"ثمانية","en":"Thmanyah","detail_ar":"ثمانية، أو تطبيق ثمانية","detail_en":"Thmanyah, or the Thmanyah app","from":"2025-26","until":"2030-31","source":"https://www.sportcal.com/media/srmgs-thmanyah-secures-exclusive-saudi-league-rights-until-2031/","confidence":"high","whole":true,"verified":"2026-11-03","app":["com.thmanyah.shasha.tv","com.thmanyah.shasha"]}];

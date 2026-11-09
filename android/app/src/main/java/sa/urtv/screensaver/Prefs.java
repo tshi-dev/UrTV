@@ -167,8 +167,11 @@ final class Prefs {
     void setPrayerMethod(String v) { sp.edit().putString("prayerMethod", v).apply(); }
 
     static final int MAX_TEAMS = 20;
-    /** Whole leagues followed (#leagues=): the page downloads one small file for each, every 30 minutes. */
-    static final int MAX_LEAGUES = 5;
+    /**
+     * Whole leagues followed (#leagues=): the page downloads one small file for each built-in one, every 30 minutes; a league of the
+     * catalogue (CatalogueLeagues) is asked of TheSportsDB itself, 2 requests every 30 minutes: 8 in all keeps the free key's rate.
+     */
+    static final int MAX_LEAGUES = 8;
 
     /** The league of LEAGUES that name (English as TheSportsDB spells it, the Arabic label, or its slug) means, else null. */
     static String[] leagueByName(String name) {
@@ -179,14 +182,29 @@ final class Prefs {
         return null;
     }
 
-    /** Followed leagues, by their English names (default none). */
+    /** Followed leagues: a built-in one by its English name, a catalogue one as "id4719|ar|en" (CatalogueLeagues); default none. */
     List<String> leagues() {
         List<String> v = new ArrayList<>();
         for (String s : list("leagues")) {
+            if (v.size() >= MAX_LEAGUES) break;
+            if (CatalogueLeagues.parse(s) != null) {
+                boolean dup = false;
+                for (String x : v) dup |= CatalogueLeagues.same(x, s);
+                if (!dup) v.add(s);
+                continue;
+            }
             String[] l = leagueByName(s);
-            if (l != null && !v.contains(l[0]) && v.size() < MAX_LEAGUES) v.add(l[0]);
+            if (l != null && !v.contains(l[0])) v.add(l[0]);
         }
         return v;
+    }
+
+    /** What #leagues= and #lgn= carry (CatalogueLeagues.pageToken, names). */
+    String leaguesFragment() {
+        List<String> all = leagues(), tokens = new ArrayList<>();
+        for (String s : all) tokens.add(CatalogueLeagues.pageToken(s));
+        String names = CatalogueLeagues.names(all, Tr.EN.equals(lang()));
+        return "&leagues=" + Uri.encode(join(tokens, ",")) + (names.isEmpty() ? "" : "&lgn=" + Uri.encode(names));
     }
 
     /** Followed teams in priority order, "id|name". Migrates the old two team fields once. */
@@ -577,7 +595,7 @@ final class Prefs {
             + "&tz=" + Uri.encode(cityTz())
             + "&teams=" + join(teamIds(), ",")
             + "&events=" + join(list("events"), ",")
-            + "&leagues=" + Uri.encode(join(leagues(), ","))
+            + leaguesFragment()
             + "&panel=" + panel()
             + SecondCard.fragment(panel2(), SAVER_PANELS)
             + "&week=" + ("none".equals(panel()) ? "0" : "1")   // for a page older than #panel

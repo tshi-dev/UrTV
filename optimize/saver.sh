@@ -88,7 +88,7 @@
 #   optimize/saver.sh slot fasting                 the bottom-left slot: matches (default; the weather when no team is followed)
 #                                                  weather fasting countdown markets none
 #   optimize/saver.sh countdown 2026-12-01 'رحلة الصيف'    the date and name slot=countdown counts down to ("clear" removes it)
-#   optimize/saver.sh leagues 'Saudi-Arabian Pro League'   whole leagues, up to 5, by English or Arabic name (دوري روشن السعودي);
+#   optimize/saver.sh leagues 'Saudi-Arabian Pro League'   whole leagues, up to 8, by English or Arabic name (دوري روشن السعودي) or a catalogue id (id4719);
 #                                                  every game of every club in them joins the teams' games ("" = none)
 #   optimize/saver.sh events f1,ufc               other sports beside the teams' games: f1 ufc boxing  ("" = none)
 #   optimize/saver.sh prayermethod gulf|auto       «طريقة الحساب»: auto (the default) = the city's country's own, gulf = the Gulf method (Fajr 19.5°, Isha 90 min) for any place

@@ -60,7 +60,7 @@ reads; machine-only, people see «4.0») and a numbered `v4.0.N` release (the na
 urtv.html#city=جدة&lat=21.5433&lon=39.1728&tz=Asia/Riyadh&teams=136013,136137&panel=prayers
 ```
 
-`teams`: up to 20 TheSportsDB ids in priority order. `leagues`: whole leagues, up to 5, by TheSportsDB's name (`leagues=Saudi-Arabian Pro League,NBA`, default none): every game of every club in them joins the followed teams' games. `panel`: the card beside the clock: `shows`, `prayers`,
+`teams`: up to 20 TheSportsDB ids in priority order. `leagues`: whole leagues, up to 8, by TheSportsDB's name (`leagues=Saudi-Arabian Pro League,NBA`, default none), or a catalogue league by its TheSportsDB id (`id4719`, named in `lgn=4719~name|…`; the page asks TheSportsDB for its next and last games itself): every game of every club in them joins the followed teams' games. `panel`: the card beside the clock: `shows`, `prayers`,
 `forecast`, `matches`, `verse`, `wisdom`, `adhkar`, `stocks`, `tasks`, `year` (a dot for every day of the year) or `none`. `events`: other sports beside the teams' games, `f1`, `ufc`, `boxing` (default none; their league ids come from `assets/shared/events.json`, written by CI). `stocks`: the watchlist of the stocks card, up to 8
 (`2222,1120,AAPL,NVDA`: 4 digits is a Tadawul code, letters a US ticker). Also `genres`, `langs`, `shows`, `minrating` for the episodes card,
 `digits`: `hindi` (١٢٣, the default) or `latin` (123), `national`: `auto` (default; on National Day, 21–25 September, and Founding Day, 20–24 February, the accent turns Saudi green with a small line under the dates, and the day itself greets «كل عام والوطن بخير») or `off`, and `cardstyle`: the card's look, `current` (default), `dark1`,
