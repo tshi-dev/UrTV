@@ -268,6 +268,7 @@ public class MainActivity extends Activity {
         View last = lastFocusedId == View.NO_ID ? null : findViewById(lastFocusedId);
         if (last == null && !dockCards.isEmpty()) last = dockCards.get(0);
         if (last != null) last.requestFocus();
+        updateHomeNudge(true);   // not the TV's Home yet: one card says so, and OK opens «إعداد تلفزيوني»
         // Catch installs/removals that happened while another app was in front.
         if (getPackageManager().getChangedPackages(packageSeq) != null) buildApps();
         if (firstShow) {   // the entrance plays once the favourites are on screen (they come from the loader thread)
@@ -311,9 +312,22 @@ public class MainActivity extends Activity {
         super.onTrimMemory(level);
         if (level < TRIM_MEMORY_UI_HIDDEN || resumed || !Ram.low(this)) return;
         homeCard.destroy();
-        for (ImageView v : new ImageView[] {wallFront, wallBack}) if (v != null) v.setImageDrawable(null);   // both photos (not the fade's end: tilawah_test)
+        thinWallpaper();   // the photos go, one tiny stand-in stays so the way back is not black until the next photo decodes
         wallTrimmed = true;
         firstWallpaper = true;   // the short fade when it comes back
+    }
+    /** both wallpaper bitmaps are let go; the one in front leaves a 160 px copy (about 100 KB), which CENTER_CROP stretches soft until the next photo fades in over it */
+    private void thinWallpaper() {
+        android.graphics.drawable.Drawable d = wallFront == null ? null : wallFront.getDrawable();
+        Bitmap thumb = null;
+        try {
+            if (d instanceof android.graphics.drawable.BitmapDrawable) {
+                Bitmap b = ((android.graphics.drawable.BitmapDrawable) d).getBitmap();
+                if (b != null && b.getWidth() > 0 && b.getHeight() > 0) thumb = Bitmap.createScaledBitmap(b, 160, Math.max(1, 160 * b.getHeight() / b.getWidth()), true);
+            }
+        } catch (RuntimeException | OutOfMemoryError ignored) { thumb = null; }
+        for (ImageView v : new ImageView[] {wallFront, wallBack}) if (v != null) v.setImageDrawable(null);   // both photos (not the fade's end: tilawah_test)
+        if (thumb != null) wallFront.setImageBitmap(thumb);
     }
     /** the photos were let go (onTrimMemory): the next onResume shows one at once */
     private boolean wallTrimmed;
@@ -429,6 +443,7 @@ public class MainActivity extends Activity {
         adhanBar.setVisibility(View.GONE);
         root.addView(adhanBar, new FrameLayout.LayoutParams(-1, dp(26), Gravity.TOP));
         buildEditViews(root);
+        buildHomeNudge(root);
 
         // Hero: exactly one screen tall, header on top, title + dock at the bottom.
         hero = new FrameLayout(this);
@@ -1724,6 +1739,67 @@ public class MainActivity extends Activity {
         appsUndoChip = undoChipView();   // «تعديل التطبيقات»: under the hint line, UP from the grid's first row
         appsUndoChip.setOnClickListener(v -> { if (appsEdit != null) applyAppsEdit(appsEdit.undo(SystemClock.uptimeMillis())); });
         root.addView(appsUndoChip, lp(-2, -2, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, dp(78), 0, 0));
+    }
+
+    // ---------------------------------------------------------------- «خلّ تلفزيونك يفتح على UrTV»
+
+    private static final String NUDGE_PREFS = "home_nudge";
+    private LinearLayout nudge;
+    private TextView nudgeCard, nudgeLater;
+
+    /** the card at the top while we are not the TV's Home (HomeNudgeRule): it opens «إعداد تلفزيوني» (behind its lock like every way in), «لاحقاً» hides it for 3 days */
+    private void buildHomeNudge(FrameLayout root) {
+        nudge = new LinearLayout(this);
+        nudge.setOrientation(LinearLayout.VERTICAL);
+        nudge.setGravity(Gravity.CENTER_HORIZONTAL);
+        nudgeCard = text(18, "sans-serif-medium", 0xFFFFFFFF);
+        nudgeCard.setText(S.t("خلّ تلفزيونك يفتح على UrTV") + "\n" + S.t("اضغط هنا وكمّل إعداد تلفزيوني (دقيقتين)"));
+        nudgeCard.setGravity(Gravity.CENTER);
+        nudgeCard.setLineSpacing(dp(4), 1f);
+        nudgeCard.setPadding(dp(24), dp(14), dp(24), dp(14));
+        nudgeCard.setMaxWidth(dp(520));
+        nudgeCard.setFocusable(true);
+        nudgeCard.setClickable(true);
+        nudgeCard.setId(View.generateViewId());
+        nudgeCard.setOnClickListener(v -> {
+            try { guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t("إعداد تلفزيوني"), () -> launch(new Intent(this, sa.urtv.home.setup.SetupActivity.class))); } catch (RuntimeException ignored) { }
+        });
+        nudgeLater = text(14, "sans-serif-medium", 0xFFFFFFFF);
+        nudgeLater.setText(S.t("لاحقاً"));
+        nudgeLater.setGravity(Gravity.CENTER);
+        nudgeLater.setPadding(dp(22), dp(8), dp(22), dp(8));
+        nudgeLater.setFocusable(true);
+        nudgeLater.setClickable(true);
+        nudgeLater.setId(View.generateViewId());
+        nudgeLater.setOnClickListener(v -> {
+            getSharedPreferences(NUDGE_PREFS, MODE_PRIVATE).edit().putLong("later_until", HomeNudgeRule.laterUntil(System.currentTimeMillis())).apply();
+            updateHomeNudge(false);
+        });
+        nudgeCard.setNextFocusDownId(nudgeLater.getId());
+        nudgeLater.setNextFocusUpId(nudgeCard.getId());
+        nudge.addView(nudgeCard, new LinearLayout.LayoutParams(-2, -2));
+        LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(-2, -2);
+        lp2.topMargin = dp(8);
+        nudge.addView(nudgeLater, lp2);
+        nudge.setVisibility(View.GONE);
+        root.addView(nudge, lp(-2, -2, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, dp(30), 0, 0));
+    }
+
+    /** as the home comes to the front: show or hide the card; {@code takeFocus} puts the focus on it the first time it appears, so OK is all it takes */
+    private void updateHomeNudge(boolean takeFocus) {
+        if (nudge == null) return;
+        boolean show = HomeNudgeRule.show(isDefaultHome(), Parental.state(this).kids, getSharedPreferences(NUDGE_PREFS, MODE_PRIVATE).getLong("later_until", 0), System.currentTimeMillis());
+        boolean was = nudge.getVisibility() == View.VISIBLE;
+        if (show && !was) {
+            GlassStyle.Look l = homeGlass();
+            nudgeCard.setBackground(opaqueTile(18));
+            nudgeCard.setTextColor(GlassPaint.focusColors(l.text, l.onFocus));
+            nudgeLater.setBackground(opaqueTile(20));
+            nudgeLater.setTextColor(GlassPaint.focusColors(l.text, l.onFocus));
+        }
+        nudge.setVisibility(show ? View.VISIBLE : View.GONE);
+        if (show && !was && takeFocus) nudgeCard.requestFocus();
+        else if (!show && was && (nudgeCard.hasFocus() || nudgeLater.hasFocus()) && !dockCards.isEmpty()) dockCards.get(0).requestFocus();
     }
 
     /** «تراجع»: a gold chip, filled while it has the focus. */
