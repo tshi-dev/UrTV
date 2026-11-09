@@ -103,6 +103,8 @@ python3 tests/home_card_test.py
 python3 tests/home_page_test.py   # the home's cards on the screensaver's newer page (its stocks stayed stale on the APK's own)
 python3 tests/perf_idle_test.py
 python3 tests/league_fixtures_test.py
+python3 tests/league_catalogue_test.py   # 4.3 «كل الدوريات»: the CI catalogue (the walk, the content rules, the Arabic names)
+python3 tests/catalogue_leagues_test.py   # 4.3 «كل الدوريات» on the TV: read only when the picker opens, picked ones only, 8 at most
 python3 tests/market_prices_test.py
 python3 tests/markets_page_test.py   # «الأسواق»: the data and the sums on a JVM, only the sources we have, «الأخبار» off, the ways in
 python3 tests/portfolio_privacy_test.py   # «محفظتي» stays on the TV: share.py, Report, settings_move, ConfigProvider, the commands
@@ -208,7 +210,7 @@ python3 tests/settings_hub_test.py
 python3 tests/on_off_test.py   # on/off rows: the owner's choice I (green triangles and word), both apps
 python3 tests/parental_text_test.py   # «الرقابة الأبوية»: the card and its two buttons, the count of locked apps (docs/UX-REVIEW.md)
 python3 tests/fav_bar_test.py   # the favourites bar: the tray, five tiles, the focus inside it, the one 40 px move (docs/PROPOSALS-NOV2.md §1)
-python3 tests/called_off_test.py   # 4.3 A1: PST/ABD/AWD games are never shown as live
+python3 tests/called_off_test.py   # 4.3 A1-A3: a called-off game is never live or upcoming; a team's game read from the copy further on
 python3 tests/usb_test.py   # 4.3 B8: the USB viewers are never off and always in the apps row (issue #50)
 python3 tests/report_words_test.py   # 4.3 B10: the report page asks what happened, required
 python3 tests/phone_message_test.py   # 4.3 #53: a short message from a paired phone on the TV's screen

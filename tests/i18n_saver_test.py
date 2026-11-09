@@ -131,7 +131,7 @@ CASES = [  # what the screen builds, and its English (the digits are turned afte
     ("الفرق ٣ · الأسواق مخفية", "Teams: ٣ · Markets: Hidden"),
     ("الفرق ٣ · الأسواق ٥", "Teams: ٣ · Markets: ٥"),
     ("تلقائي · أم القرى", "Auto · Umm al-Qura"),
-    ("الدوريات كاملة (حتى ٥، بدون اختيار = بدون)", "Whole leagues (up to ٥, none picked = none)"),
+    ("الدوريات كاملة (حتى ٨، بدون اختيار = بدون)", "Whole leagues (up to ٨, none picked = none)"),
     ("رياضات أخرى (بدون اختيار = بدون)", "Other sports (none picked = none)"),
     ("التصنيفات (بدون اختيار = الكل)", "Genres (none picked = all)"),
     ("الفجر +٢ د", "Fajr +٢ min"),
@@ -143,7 +143,7 @@ CASES = [  # what the screen builds, and its English (the digits are turned afte
     ("5 دقائق", "5 min"),
     ("١٥ دقيقة", "15 min"),   # an entry of its own (the phone page's option) wins over «%s دقيقة»
     ("45 ثانية", "45 sec"),
-    ("حتى ٥ دوريات", "Up to ٥ leagues"),
+    ("حتى ٨ دوريات", "Up to ٨ leagues"),
     ("اختر من سوق إلى ٤ أسواق", "Pick 1 to ٤ markets"),
     ("رمز غير صالح: XYZ!", "Invalid code: XYZ!"),
     ("الأسهم: Aramco 2222, Al Rajhi 1120", "Stocks: Aramco 2222, Al Rajhi 1120"),

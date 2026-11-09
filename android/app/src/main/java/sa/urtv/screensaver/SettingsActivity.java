@@ -999,24 +999,146 @@ public class SettingsActivity extends Activity {
     /** Whole leagues: every game of every club in them is shown, up to Prefs.MAX_LEAGUES leagues. */
     private String leaguesLabel() {
         List<String> out = new ArrayList<>();
-        for (String en : prefs.leagues()) out.add(leagueAr(en));
+        for (String s : prefs.leagues()) out.add(leagueLabel(s));
         return out.isEmpty() ? "بدون" : Prefs.join(out, "، ");
     }
 
+    /** A built-in league's Arabic, a catalogue one's name in the setting's language (CatalogueLeagues). */
+    private static String leagueLabel(String stored) {
+        String[] e = CatalogueLeagues.parse(stored);
+        return e == null ? leagueAr(stored) : CatalogueLeagues.name(e, S.en());
+    }
+
+    /**
+     * The built-in leagues, then the catalogue ones already picked (to unpick them here too); «كل الدوريات…» opens the catalogue
+     * (CatalogueLeagues: read from the internet only now). Up to Prefs.MAX_LEAGUES in all.
+     */
     private void pickLeagues() {
         final List<String> cur = prefs.leagues();
-        final String[] labels = new String[Prefs.LEAGUES.length];
-        final boolean[] on = new boolean[Prefs.LEAGUES.length];
-        for (int i = 0; i < labels.length; i++) { labels[i] = Prefs.LEAGUES[i][1]; on[i] = cur.contains(Prefs.LEAGUES[i][0]); }
+        final List<String> keys = new ArrayList<>();
+        final List<String> labels = new ArrayList<>();
+        for (String[] l : Prefs.LEAGUES) { keys.add(l[0]); labels.add(l[1]); }
+        for (String s : cur) if (CatalogueLeagues.parse(s) != null) { keys.add(s); labels.add(leagueLabel(s)); }
+        final boolean[] on = new boolean[keys.size()];
+        for (int i = 0; i < on.length; i++) on[i] = cur.contains(keys.get(i));
         new Dlg(this).multi(() -> {   // «حفظ», and Back too: the list is long, the buttons under it (DialogFit)
-                List<String> v = new ArrayList<>();
-                for (int i = 0; i < on.length; i++) if (on[i]) v.add(Prefs.LEAGUES[i][0]);
+                List<String> v = ticked(keys, on);
                 prefs.setList("leagues", v);
                 render();
             })
+            .setNeutralButton("كل الدوريات…", (d, w) -> { prefs.setList("leagues", ticked(keys, on)); render(); openCatalogue(); })   // what is ticked is kept
             .setTitle("الدوريات كاملة (حتى " + arabicNum(Prefs.MAX_LEAGUES) + "، بدون اختيار = بدون)")
+            .setMultiChoiceItems(labels.toArray(new String[0]), on, (d, i, checked) -> {
+                int n = 0;
+                for (boolean b : on) if (b) n++;
+                if (checked && n > Prefs.MAX_LEAGUES) {
+                    on[i] = false;
+                    ((AlertDialog) d).getListView().setItemChecked(i, false);
+                    toast("حتى " + arabicNum(Prefs.MAX_LEAGUES) + " دوريات");
+                }
+            })
+            .show();
+    }
+
+    private static List<String> ticked(List<String> keys, boolean[] on) {
+        List<String> v = new ArrayList<>();
+        for (int i = 0; i < on.length; i++) if (on[i]) v.add(keys.get(i));
+        return v;
+    }
+
+    /** 4.3 «كل الدوريات»: the catalogue, fresh from the internet, else the copy of the last time; nothing is fetched until now. */
+    private void openCatalogue() {
+        toast("جارٍ التنزيل…");
+        final java.io.File cache = new java.io.File(getCacheDir(), "league-catalogue.json");
+        new Thread(() -> {
+            String body = null;
+            HttpURLConnection con = null;
+            try {
+                con = (HttpURLConnection) new URL(CatalogueLeagues.URL).openConnection();
+                con.setConnectTimeout(12000);
+                con.setReadTimeout(20000);
+                try (InputStream in = con.getInputStream()) {
+                    body = new String(Bounded.readAll(in, Bounded.JSON_MAX), "UTF-8");
+                }
+                new JSONObject(body).getJSONArray("leagues");   // a whole answer before it replaces the copy
+                try (java.io.FileOutputStream out = new java.io.FileOutputStream(cache)) { out.write(body.getBytes("UTF-8")); }
+            } catch (Exception e) {
+                body = null;
+                try (InputStream in = new java.io.FileInputStream(cache)) {
+                    body = new String(Bounded.readAll(in, Bounded.JSON_MAX), "UTF-8");
+                } catch (Exception ignored) { }
+            } finally {
+                if (con != null) con.disconnect();
+            }
+            final String got = body;
+            runOnUiThread(() -> {
+                if (isFinishing()) return;
+                List<String[]> rows = new ArrayList<>();
+                try {
+                    JSONArray a = new JSONObject(got).getJSONArray("leagues");
+                    for (int i = 0; i < a.length(); i++) {
+                        JSONObject o = a.getJSONObject(i);
+                        String id = o.optString("id", "");
+                        if (!id.matches("\\d{1,6}")) continue;
+                        rows.add(new String[] {id, o.optString("en", ""), o.optString("ar", ""), o.optString("country", ""),
+                            o.optString("country_ar", ""), o.optString("sport", ""), o.optBoolean("top", false) ? "1" : ""});
+                    }
+                } catch (Exception e) { rows.clear(); }
+                if (rows.isEmpty()) { toast("لا يوجد اتصال"); return; }
+                catalogueGroups(rows);
+            });
+        }).start();
+    }
+
+    /** The first list: «الأشهر» (the hand-named ones), then each country. */
+    private void catalogueGroups(final List<String[]> rows) {
+        final List<String[]> groups = new ArrayList<>();
+        groups.add(new String[] {"", "الأشهر"});
+        groups.addAll(CatalogueLeagues.countries(rows, S.en()));
+        String[] labels = new String[groups.size()];
+        for (int i = 0; i < labels.length; i++) labels[i] = groups.get(i)[1];
+        new Dlg(this).setTitle("كل الدوريات")
+            .setItems(labels, (d, i) -> {
+                List<String[]> in = new ArrayList<>();
+                for (String[] r : rows) if (i == 0 ? !r[6].isEmpty() : r[3].equalsIgnoreCase(groups.get(i)[0])) in.add(r);
+                catalogueLeagues(labels[i], in);
+            })
+            .setNegativeButton("إلغاء", null).show();
+    }
+
+    /** The leagues of one group, those picked checked; «حفظ» keeps the built-in ones and the other groups' as they were. */
+    private void catalogueLeagues(String title, final List<String[]> rows) {
+        final List<String> cur = prefs.leagues();
+        final String[] labels = new String[rows.size()];
+        final boolean[] on = new boolean[rows.size()];
+        for (int i = 0; i < labels.length; i++) {
+            String[] r = rows.get(i);
+            String n = S.en() || r[2].isEmpty() ? r[1] : r[2];
+            labels[i] = r[6].isEmpty() || r[4].isEmpty() && r[3].isEmpty() ? n : n + "  ·  " + (S.en() || r[4].isEmpty() ? r[3] : r[4]);
+            for (String s : cur) on[i] |= CatalogueLeagues.same(s, "id" + r[0]);
+        }
+        new Dlg(this).multi(() -> {
+                List<String> v = new ArrayList<>();
+                for (String s : cur) {   // what is not in this group stays
+                    boolean here = false;
+                    for (String[] r : rows) here |= CatalogueLeagues.same(s, "id" + r[0]);
+                    if (!here) v.add(s);
+                }
+                for (int i = 0; i < on.length; i++) {
+                    String e = on[i] ? CatalogueLeagues.entry(rows.get(i)[0], rows.get(i)[2], rows.get(i)[1]) : null;
+                    if (e != null && v.size() < Prefs.MAX_LEAGUES) v.add(e);
+                }
+                prefs.setList("leagues", v);
+                render();
+            })
+            .setTitle(title)
             .setMultiChoiceItems(labels, on, (d, i, checked) -> {
                 int n = 0;
+                for (String s : cur) {
+                    boolean here = false;
+                    for (String[] r : rows) here |= CatalogueLeagues.same(s, "id" + r[0]);
+                    if (!here) n++;
+                }
                 for (boolean b : on) if (b) n++;
                 if (checked && n > Prefs.MAX_LEAGUES) {
                     on[i] = false;

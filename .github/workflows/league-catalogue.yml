@@ -1,0 +1,47 @@
+name: League catalogue
+
+# 4.3 «كل الدوريات»: the competitions the leagues picker offers beyond Prefs.LEAGUES (.github/tools/league_catalogue.py walks
+# TheSportsDB's league ids with the free key, gently, and goes on next week where it stopped). Pushed to the branch data-catalogue;
+# the settings read catalogue/catalogue.json only when the leagues picker opens. Weekly at most; by hand; or when its own files
+# change (a work branch too, so a change shows its data at once).
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '41 2 * * 3'
+  push:
+    branches: [master, next, 'work/**']
+    paths:
+      - '.github/tools/league_catalogue.py'
+      - '.github/workflows/league-catalogue.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: league-catalogue
+  cancel-in-progress: false
+
+jobs:
+  catalogue:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - name: Where the last run stopped
+        run: |
+          mkdir -p prev
+          git fetch --depth=1 origin data-catalogue 2>/dev/null && git archive FETCH_HEAD | tar -x -C prev || true
+      - run: python3 -u .github/tools/league_catalogue.py
+        env:
+          CATALOGUE_PREV: prev/catalogue
+      - name: The content rules on what is pushed
+        run: python3 tests/league_catalogue_test.py catalogue/catalogue.json
+      - name: Push to data-catalogue
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan data-catalogue
+          git rm -rfq --cached .
+          git add -f catalogue
+          git commit -qm "League catalogue"
+          git push -f origin data-catalogue

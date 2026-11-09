@@ -183,7 +183,7 @@ if not (javac and java):
 else:
     src = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/Prefs.java").read_text(encoding="utf-8")
     table = "static final String[][] LEAGUES = {" + src.split("static final String[][] LEAGUES = {")[1].split("};")[0] + "};"
-    fn = src[src.index("    static String[] leagueByName"):src.index("    /** Followed leagues, by their English names")]
+    fn = src[src.index("    static String[] leagueByName"):src.index("    /** Followed leagues: a built-in one by its English name")]
     cases = [("Saudi-Arabian Pro League", "Saudi-Arabian Pro League"), ("saudi-arabian-pro-league", "Saudi-Arabian Pro League"),
              ("  SAUDI ARABIAN PRO LEAGUE ", "Saudi-Arabian Pro League"), ("دوري روشن السعودي", "Saudi-Arabian Pro League"),
              ("الدوري الإنجليزي", "English Premier League"), ("nba", "NBA"), ("دوري كرة السلة الأمريكي (NBA)", "NBA"),

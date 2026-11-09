@@ -388,8 +388,12 @@ public class SaverReceiver extends BroadcastReceiver {
             leagues = new ArrayList<>();
             for (String s : i.getStringExtra("leagues").split(",")) {
                 if (s.trim().isEmpty()) continue;
+                if (s.trim().matches("id\\d{1,6}")) {   // 4.3 a catalogue league by its TheSportsDB id (the page names it from its games)
+                    if (!leagues.contains(s.trim())) leagues.add(s.trim());
+                    continue;
+                }
                 String[] l = Prefs.leagueByName(s);
-                if (l == null) return "error: leagues are (English or Arabic name) " + names(Prefs.LEAGUES);
+                if (l == null) return "error: leagues are (English or Arabic name) " + names(Prefs.LEAGUES) + ", or a catalogue league's id as id4719";
                 if (!leagues.contains(l[0])) leagues.add(l[0]);
             }
             if (leagues.size() > Prefs.MAX_LEAGUES) return "error: at most " + Prefs.MAX_LEAGUES + " leagues";

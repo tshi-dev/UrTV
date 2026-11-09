@@ -75,7 +75,9 @@ check("12: every volume or mute change of ours is logged (UrTVMute stage=ours: w
       "public static void ours(Context c, String why)" in mk and '"android.media.STREAM_MUTE_CHANGED_ACTION"' in mk and 'by=" + (SystemClock.elapsedRealtime() - oursAt < 3000 ? "us"' in mk
       and all(w in ms + text(HOME / "phone/PhoneActions.java") for w in ('ours(this, "adhan_unmute")', 'ours(this, "adhan_volume_set")', 'ours(this, "adhan_volume_back")', 'ours(this, "adhan_remute")', '"phone_mute_toggle"', '"phone_vol_up"')))
 check("13: a game the league's file also has is read from the league's copy (a followed team's own copy of it may carry another day or status: «فرقك» was lost after «أضف لفرقي»)",
-      "const lg = new Map(leagueGames().map(e => [String(e.idEvent), e]));" in tpl and "Object.assign({}, ev, lg.get(String(ev.idEvent)))" in tpl)
+      # 4.3 A2: through fresher() (matchEvents): the league's copy, unless the team's is further on (a score, a later minute); tests/called_off_test.py runs it
+      "const leagueMap = () => CONFIG.leagues.length ? new Map(leagueGames().map(e => [String(e.idEvent), e])) : new Map();" in tpl
+      and "? Object.assign({}, l, ev) : Object.assign({}, ev, l);" in tpl and "return matchEvents().filter(" in tpl)
 
 # step 30
 mka = text(HOME / "MarketsActivity.java")

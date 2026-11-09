@@ -1,5 +1,6 @@
 package sa.urtv.home;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -19,9 +20,14 @@ import java.security.MessageDigest;
  *   action  sa.urtv.player.action.FIND_MATCH
  *   extras  home_ar, home_en, away_ar, away_en, competition_ar, competition_en (String; "" when unknown), kickoff (long, epoch ms),
  *           channels (String[]; the broadcaster's channel names we know, else empty)
+ *   sent    with startActivityForResult from an Activity of ours (sa.urtv.home), no FLAG_ACTIVITY_NEW_TASK, never from a service or the
+ *           dream: the Player knows its caller by getCallingPackage(), which only a for-result start from an activity gives
+ *   result  RESULT_OK something played, RESULT_CANCELED nothing (the Player says so itself: nothing for us to show)
  */
 final class MatchApp {
     static final String ACTION = "sa.urtv.player.action.FIND_MATCH";
+    /** the request code of the Player's start (its result needs nothing from us) */
+    static final int REQUEST = 0x4d41;
 
     private MatchApp() { }
 
@@ -52,8 +58,11 @@ final class MatchApp {
         }
     }
 
-    /** «شاهد المباراة»: the Player with the game (the checked facts), another app just opened. False when nothing could be started. */
-    static boolean open(Context c, String setting, MatchFacts f) {
+    /**
+     * «شاهد المباراة», from the activity on screen (on its UI thread): the Player with the game (the checked facts), for a result, so it sees
+     * who asks; another app just opened, as before. False when nothing could be started.
+     */
+    static boolean open(Activity c, String setting, MatchFacts f) {
         String pkg = chosen(c, setting);
         if (pkg == null || f == null) return false;
         Intent i;
@@ -68,6 +77,12 @@ final class MatchApp {
             if (i == null) i = pm.getLaunchIntentForPackage(pkg);
             if (i == null) return false;
         }
-        try { c.startActivity(i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)); return true; } catch (RuntimeException e) { return false; }
+        try {
+            if (SuggestedApps.PLAYER.equals(pkg)) c.startActivityForResult(i, REQUEST);   // no NEW_TASK: that would drop the caller
+            else c.startActivity(i);
+            return true;
+        } catch (RuntimeException e) {
+            return false;
+        }
     }
 }

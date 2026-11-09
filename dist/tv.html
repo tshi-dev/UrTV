@@ -868,8 +868,11 @@ const CONFIG = {
             : [_Q.has('team1') ? _Q.get('team1') : '136013', _Q.has('team2') ? _Q.get('team2') : '136137'])
     .map(x=>(x||'').trim()).filter(x=>/^\d+$/.test(x)).slice(0, 20),
   sportsKey: '123',
-  // whole leagues: #leagues=Saudi-Arabian Pro League,NBA
-  leagues: _list('leagues').filter(x => /^[A-Za-z0-9 \-]{2,40}$/.test(x)).slice(0, 5),
+  // whole leagues: #leagues=Saudi-Arabian Pro League,NBA; 4.3 a league of the settings' catalogue by its id: id4719, its name in
+  // #lgn=4719~name|… (the settings' language). At most 8: a catalogue league is asked of TheSportsDB itself (2 requests every 30 minutes)
+  leagues: _list('leagues').filter(x => /^[A-Za-z0-9 \-]{2,40}$/.test(x) || /^id\d{1,6}$/.test(x)).slice(0, 8),
+  leagueNames: Object.fromEntries((_Q.get('lgn') || '').split('|').map(x => x.split('~')).filter(x => x.length === 2 && /^\d{1,6}$/.test(x[0]) && x[1].trim())
+    .map(x => [x[0], x[1].trim().slice(0, 60)])),
   // other sports beside the teams' games: #events=f1,ufc,boxing (default none)
   events: _list('events').filter(k => ['f1','ufc','boxing'].includes(k)),
   eventWindowDays: 14,
@@ -1824,12 +1827,14 @@ const teamAr = (s, id) => arName(s, 'team', id);
 // a Latin club name never breaks inside a hyphenated word (non-breaking hyphen)
 const nbName = s => String(s).replace(/([A-Za-z])-(?=[A-Za-z])/g, '$1\u2011');
 
+const NEXT_EMPTY = {};   // team id -> empty «next games» answers in a row
 async function fetchNext(id){
   const r = await fetchT(`https://www.thesportsdb.com/api/v1/json/${CONFIG.sportsKey}/eventsnext.php?id=${id}`, 12000);
   if(!r.ok) throw 0;
   const j = await r.json();
   if(j && j.events) NEXT_LIST[id] = j.events;
-  return ((j && j.events) || [])[0] || null;
+  const evs = (j && j.events) || [];
+  return evs.find(ev => ev && !calledOff(ev)) || evs[0] || null;   // a postponed game first in the list does not hide the next real one
 }
 function toDate(ev){
   const s = ev.strTimestamp || `${ev.dateEvent}T${ev.strTime || '00:00:00'}`;
@@ -1839,11 +1844,19 @@ function toDate(ev){
 // one slot per picked team: a result from the last 24h, else a fixture this week, else hidden
 // A game is over once its status says so, or 2.5 h after kick-off
 const FINAL = ['FT','AET','PEN','MATCH FINISHED'];
+// called off: TheSportsDB's short codes (PST postponed, CANC cancelled, ABD abandoned, SUSP suspended, INT interrupted, AWD awarded, WO walk-over)
+// and its long forms («Match Postponed», «Postponed», «Cancelled»…), or strPostponed "yes" (4.3 A1: they showed as upcoming or live)
+const CALLED_OFF = /^(MATCH\s+)?(CANC|POSTP|PST|POST$|ABAN|ABD|SUSP|INT$|INTERR|WO$|W\.O|WALK|AWD|AWARD)/i;
+const calledOff = ev => !!ev && (CALLED_OFF.test(String(ev.strStatus || '').trim()) || /^y/i.test(String(ev.strPostponed || '')));
+// the word on a called-off game in a followed team's card
+const offWord = ev => /^(MATCH\s+)?(CANC|AWD|AWARD|WO$|W\.O|WALK)/i.test(String(ev.strStatus || '').trim()) ? 'أُلغيت' : /^(MATCH\s+)?(ABAN|ABD|SUSP|INT)/i.test(String(ev.strStatus || '').trim()) ? 'توقفت' : 'تأجلت';
+// the time is not set yet («TBD»): a date, never a game under way
+const timeTbd = ev => /^(TBD|TIME TO BE DEFINED)$/i.test(String(ev.strStatus || '').trim());
 // how long a game lasts, by sport, before it counts as over without a final status
 const DUR_H = {Soccer:2.5, Basketball:3, 'American Football':3.75};
 const durMs = ev => (DUR_H[ev.strSport] || 2.5) * 3600000;
 function finishedRecently(ev, now){
-  if(!ev || ev.intHomeScore == null || ev.intAwayScore == null) return false;
+  if(!ev || ev.intHomeScore == null || ev.intAwayScore == null || calledOff(ev)) return false;
   const k = toDate(ev).getTime(), end = k + durMs(ev);
   const over = FINAL.includes((ev.strStatus || '').toUpperCase()) ? now >= k : now >= end;
   return over && now - end < 86400000;
@@ -1853,7 +1866,7 @@ function finishedRecently(ev, now){
 function pendingResult(ev, now){
   if(!ev || ev.intHomeScore != null && ev.intAwayScore != null) return false;
   const st = (ev.strStatus || '').toUpperCase(), k = toDate(ev).getTime(), end = k + durMs(ev);
-  return !FINAL.includes(st) && !CALLED_OFF.test(st) && !isNaN(k) && now >= end && now - end < 86400000;
+  return !FINAL.includes(st) && !calledOff(ev) && !timeTbd(ev) && !isNaN(k) && now >= end && now - end < 86400000;
 }
 // the order of the screen: results (and a past game with no result yet) in time order, then live, then the rest by time
 const gameRank = (ev, now) => finishedRecently(ev, now) || pendingResult(ev, now) ? 0 : now >= toDate(ev).getTime() ? 1 : 2;
@@ -1866,11 +1879,29 @@ function keepResult(id, ev){
   KEPT[id] = [ev, ...(KEPT[id] || []).filter(x => x.idEvent !== ev.idEvent && finishedRecently(x, Date.now()))];
   try{ localStorage.setItem('keptResults', JSON.stringify(KEPT)); }catch(e){}
 }
-function resultsFor(id){
-  const seen = new Set();
-  return [...(RESULTS[id] || []), ...(KEPT[id] || []), MATCHES[id]]
-    .filter(ev => ev && ev.idEvent && !seen.has(ev.idEvent) && seen.add(ev.idEvent));
+// 4.3 A2: a followed team's «last games» (eventslast) lags the league's file by hours: when the team's league is followed, each game is
+// read from whichever copy is further on (finished with a score > under way with a score > not started; under way: the later minute).
+// Otherwise the league file's copy, as before (step 29: a team's own copy, another day or «postponed», must not take a league's game away);
+// the team's copy that wins keeps the league file's other fields (the crests, the venue)
+const scoredEv = ev => ev.intHomeScore != null && ev.intAwayScore != null && ev.intHomeScore !== '' && ev.intAwayScore !== '';
+const evStage = ev => calledOff(ev) || !scoredEv(ev) ? 1 : FINAL.includes(String(ev.strStatus || '').toUpperCase()) ? 3 : 2;
+const evMinute = ev => (+ev.intHomeScore || 0) + (+ev.intAwayScore || 0) + (parseInt(ev.strProgress, 10) || 0) / 1000;
+const leagueMap = () => CONFIG.leagues.length ? new Map(leagueGames().map(e => [String(e.idEvent), e])) : new Map();
+function fresher(ev, lg){
+  const l = ev && ev.idEvent && lg.get(String(ev.idEvent));
+  if(!l) return ev;
+  const a = evStage(ev), b = evStage(l);
+  return a > b || a === b && a === 2 && evMinute(ev) > evMinute(l) ? Object.assign({}, l, ev) : Object.assign({}, ev, l);
 }
+// a followed team's games in the league files it is in (a result there that eventslast does not have yet)
+const leagueOf = (id, lg) => [...lg.values()].filter(e => String(e.idHomeTeam) === String(id) || String(e.idAwayTeam) === String(id));
+function resultsFor(id, lg = leagueMap()){
+  const seen = new Set();
+  return [...(RESULTS[id] || []), ...(KEPT[id] || []), MATCHES[id], ...leagueOf(id, lg)]
+    .filter(ev => ev && ev.idEvent && !seen.has(ev.idEvent) && seen.add(ev.idEvent)).map(ev => fresher(ev, lg));
+}
+// a followed team's coming games, each the newer copy
+const teamNext = (id, lg = leagueMap()) => [MATCHES[id], ...(NEXT_LIST[id] || [])].map(ev => fresher(ev, lg));
 
 // «السبت ٢٤ أكتوبر · ٩:١٦ م»: the small line under an upcoming game, in the slot and in the card beside the clock
 function matchWhen(d){
@@ -1899,6 +1930,12 @@ function resultBlock(done){
 function gameBlock(ev, now, big){
   const home = esc(teamAr(ev.strHomeTeam, ev.idHomeTeam)), away = esc(teamAr(ev.strAwayTeam, ev.idAwayTeam));
   const d = toDate(ev), diff = d - now;
+  if(calledOff(ev))   // 4.3 A1: postponed, cancelled, abandoned: said so, for a day after its date, never «مباشر»
+    return diff < -86400000 || diff > CONFIG.weekWindowDays * 86400000 ? ''
+      : `<div class="mblock"><div class="big"><span><span class="tm">${home}</span> × <span class="tm">${away}</span></span></div><div class="sub">${offWord(ev)} · ${matchDay(d)}</div></div>`;
+  if(timeTbd(ev))   // the time is not set: the day only
+    return diff < -86400000 || diff > CONFIG.weekWindowDays * 86400000 ? ''
+      : `<div class="mblock"><div class="big"><span><span class="tm">${home}</span> × <span class="tm">${away}</span></span></div><div class="sub">${matchDay(d)}</div></div>`;
   if(pendingResult(ev, now))   // over, no result yet: the teams and when they played
     return `<div class="mblock"><div class="big"><span><span class="tm">${home}</span> × <span class="tm">${away}</span></span></div><div class="sub">${matchWhen(d)}</div></div>`;
   // kicked off long ago and the data still says «not started» with no score
@@ -1919,13 +1956,15 @@ function gameBlock(ev, now, big){
 }
 // -> {t, html} or null. t (kick-off) puts a league's games and the teams' in one time order.
 function matchSlot(id, now, shown){
-  const done = resultsFor(id).filter(ev => finishedRecently(ev, now)).sort((a,b)=>toDate(b)-toDate(a))[0];
+  const lg = leagueMap();
+  const done = resultsFor(id, lg).filter(ev => finishedRecently(ev, now)).sort((a,b)=>toDate(b)-toDate(a))[0];
   if(done){
     if(shown.has(done.idEvent)) return null;          // both teams in the same game
     shown.add(done.idEvent);
     return {t: toDate(done).getTime(), r: 0, html: resultBlock(done)};
   }
-  const ev = MATCHES[id];
+  const next = teamNext(id, lg).filter(e => e && e.idEvent && !finishedRecently(e, now));
+  const ev = next.find(e => !calledOff(e) && gameBlock(e, now)) || next[0];
   if(!ev || shown.has(ev.idEvent)) return null;
   const html = gameBlock(ev, now);
   if(!html) return null;
@@ -1944,17 +1983,40 @@ const leagueSlug = n => String(n).toLowerCase().replace(/[^a-z0-9]+/g, '-').repl
 let LEAGUE_DATA = (()=>{ try{ return JSON.parse(localStorage.getItem('leagueData') || '{}') || {}; }catch(e){ return {}; } })();   // name -> its file
 const STALE_ASK_H = 6, STALE_ASKED = new Set();   // a past game with no result: asked for once, 6 h after its kick-off
 let LIVE_PATCH = {};   // idEvent -> {at, ev}: lookupevent's newer word on a game, used while newer than the league's file
-async function loadLeagues(){
+const catId = name => (/^id(\d{1,6})$/.exec(name) || [])[1];   // a catalogue league: its TheSportsDB id
+// 4.3 a catalogue league (#leagues=id…): its next and last games from TheSportsDB, one request after the other (step: the queue's
+// gap); the answer kept like a file's, so a failed refresh keeps the last one. -> 1 when it answered
+async function loadCatalogueLeague(name, step){
+  const id = catId(name), evs = [];
+  let ok = 0;
+  for(const path of ['eventsnextleague', 'eventspastleague']){
+    await step();
+    try{
+      const r = await fetchT(`https://www.thesportsdb.com/api/v1/json/${CONFIG.sportsKey}/${path}.php?id=${id}`, 12000);
+      if(!r.ok) continue;
+      const j = await r.json();
+      ok++;
+      ((j && (j.events || j.results)) || []).forEach(ev => { if(ev && ev.idEvent && String(ev.idLeague || id) === id) evs.push(ev); });
+    }catch(e){}
+  }
+  if(!ok) return 0;
+  LEAGUE_DATA[name] = {updated: new Date().toISOString(), events: evs};
+  return 1;
+}
+// the files at once; the catalogue's leagues once ready (the teams asked: one queue to the sports server)
+async function loadLeagues(step, ready){
   let got = 0;
-  await Promise.all(CONFIG.leagues.map(async name => {
+  Object.keys(LEAGUE_DATA).forEach(k => { if(!CONFIG.leagues.includes(k)) delete LEAGUE_DATA[k]; });   // a league no longer picked: its copy goes
+  const cat = (async () => { await ready; for(const name of CONFIG.leagues.filter(catId)) got += await loadCatalogueLeague(name, step); })();
+  await Promise.all([cat, ...CONFIG.leagues.filter(n => !catId(n)).map(async name => {
     try{
       const r = await fetchT(LEAGUE_BASE + leagueSlug(name) + '.json', 12000);
       if(!r.ok) return;
       const j = await r.json();
       if(j && Array.isArray(j.events)){ LEAGUE_DATA[name] = {updated: j.updated, events: j.events}; got++; }
     }catch(e){}
-  }));
-  if(got) try{ localStorage.setItem('leagueData', JSON.stringify(LEAGUE_DATA)); }catch(e){}
+  })]);
+  try{ localStorage.setItem('leagueData', JSON.stringify(LEAGUE_DATA)); }catch(e){}
   return got;
 }
 // every game of the followed leagues, once each
@@ -1973,11 +2035,10 @@ function leagueGames(){
   });
   return out;
 }
-const CALLED_OFF = /^(CANC|POSTP|PST|ABAN|ABD|SUSP|WO|AWD)/i;   // TheSportsDB's short codes too: PST postponed, ABD abandoned, AWD awarded (4.3 A1: they showed as live)
 // The league's games the screen shows: a result of the last day, a game under way, a game of the coming week.
 // -> [{t, ev, done}] in time order; shown holds the ids already taken by a followed team, so no game appears twice.
 function leagueShow(now, shown){
-  return leagueGames().filter(ev => !CALLED_OFF.test(ev.strStatus || '') && !shown.has(ev.idEvent)).map(ev => {
+  return leagueGames().filter(ev => !calledOff(ev) && !shown.has(ev.idEvent)).map(ev => {
     const done = finishedRecently(ev, now);
     const html = done ? resultBlock(ev) : FINAL.includes((ev.strStatus || '').toUpperCase()) ? '' : gameBlock(ev, now);
     return html ? {t: toDate(ev).getTime(), r: gameRank(ev, now), ev, done, html} : null;
@@ -1996,7 +2057,7 @@ function liveStatus(ev, clk){
 const loadLive = guarded('live', async function(){
   const now = Date.now();
   let asked = false;
-  const live = ev => { const k = toDate(ev).getTime(); return ev && ev.idEvent && now >= k - 5*60000 && now <= k + durMs(ev); };
+  const live = ev => { if(!ev || !ev.idEvent || calledOff(ev) || timeTbd(ev)) return false; const k = toDate(ev).getTime(); return now >= k - 5*60000 && now <= k + durMs(ev); };
   const own = new Set(Object.values(MATCHES).filter(Boolean).map(ev => ev.idEvent));   // already asked for as a team's
   const look = async ev => {
     asked = true;
@@ -2114,7 +2175,7 @@ function eventInfo(key, ev){
 }
 // the events of key still to come (or running) within the window, soonest first
 function eventsOf(key, now){
-  const over = e => /^(FT|AET|PEN|FINISHED|MATCH FINISHED|CANCELLED|POSTPONED)$/i.test(e.strStatus || '') || CALLED_OFF.test(e.strStatus || '');
+  const over = e => /^(FT|AET|PEN|FINISHED|MATCH FINISHED|CANCELLED|POSTPONED)$/i.test(e.strStatus || '') || calledOff(e);
   return (EVENT_NEXT[key] || []).filter(e => e && e.idEvent && !over(e))
     .map(e => ({e, i: eventInfo(key, e)}))
     .filter(x => !isNaN(x.i.t) && now < x.i.t + x.i.dur && x.i.t - now <= CONFIG.eventWindowDays * 86400000)
@@ -2294,20 +2355,27 @@ async function fetchLast(id){
 const loadMatches = guarded('matches', async function(){
   // never throw away a good fixture or result on a failed refresh
   let answered = 0, asked = 0;
-  const leagues = CONFIG.leagues.length ? loadLeagues() : 0;   // a file on GitHub, not the sports server
   const step = async () => { if(asked++) await sleep(CONFIG.queueGapMs); };
+  // a file on GitHub, not the sports server; a catalogue league is the sports server's, after the teams' (the same queue)
+  let teamsDone, leagues = 0;
+  const teamsAsked = new Promise(r => { teamsDone = r; });
+  if(CONFIG.leagues.length) leagues = loadLeagues(step, teamsAsked);
   const failed = [];
   for(const id of CONFIG.teamIds){
     let got = 0;
     await step();
     try{
       const ev = await fetchNext(id); answered++; got++;
-      if(ev){ if(MATCHES[id] && MATCHES[id].idEvent !== ev.idEvent) keepResult(id, MATCHES[id]); MATCHES[id] = ev; }
+      if(ev){ if(MATCHES[id] && MATCHES[id].idEvent !== ev.idEvent) keepResult(id, MATCHES[id]); MATCHES[id] = ev; NEXT_EMPTY[id] = 0; }
+      // 4.3 A3: the server says twice in a row (30 min apart) that there is no next game: a kept fixture that has not kicked off is
+      // an old date (a national team's game moved), not shown on; one empty answer alone may be the free key's hiccup
+      else if((NEXT_EMPTY[id] = (NEXT_EMPTY[id] || 0) + 1) >= 2 && MATCHES[id] && !(Date.now() >= toDate(MATCHES[id]).getTime())){ delete MATCHES[id]; NEXT_LIST[id] = []; }
     }catch(e){}
     await step();
     try{ const l = await fetchLast(id); answered++; got++; if(l.length) RESULTS[id] = l; }catch(e){}
     if(!got) failed.push(id);
   }
+  teamsDone();
   if(failed.length && !MATCH_RETRIED){ MATCH_RETRIED = true; setTimeout(loadMatches, 20000); }   // a team the server refused is asked again once
   answered += await leagues;
   if(!answered && (CONFIG.teamIds.length || CONFIG.leagues.length)){   // no answer: keep what is shown, and say so when there is nothing else
@@ -2783,11 +2851,12 @@ const LISTS = ['matches', 'stocks', 'tasks', 'shows'];   // the kinds that page 
 // occasion. A line with nothing to say is left out.
 function nextFollowedGame(now){
   const seen = new Set(), all = [];
-  CONFIG.teamIds.forEach(id => [MATCHES[id], ...(NEXT_LIST[id] || [])].forEach(ev => {
+  const lg = leagueMap();
+  CONFIG.teamIds.forEach(id => teamNext(id, lg).forEach(ev => {
     if(!ev || !ev.idEvent || seen.has(ev.idEvent)) return;
     seen.add(ev.idEvent);
     const k = toDate(ev).getTime(), st = (ev.strStatus || '').toUpperCase();
-    if(isNaN(k) || FINAL.includes(st) || CALLED_OFF.test(st) || now >= k + durMs(ev) || k - now > CONFIG.weekWindowDays * 86400000) return;
+    if(isNaN(k) || FINAL.includes(st) || calledOff(ev) || now >= k + durMs(ev) || k - now > CONFIG.weekWindowDays * 86400000) return;
     all.push({ev, k});
   }));
   all.sort((a, b) => a.k - b.k);
@@ -2849,11 +2918,12 @@ const SMART_GAME_MIN = 60, SMART_PRAYER_MIN = 15;
 // the followed teams' games that are live now, or
 function focusGames(now, liveOnly){
   const seen = new Set(), out = [];
-  CONFIG.teamIds.forEach(id => [MATCHES[id], ...(NEXT_LIST[id] || [])].forEach(ev => {
+  const lg = leagueMap();
+  CONFIG.teamIds.forEach(id => teamNext(id, lg).forEach(ev => {
     if(!ev || !ev.idEvent || seen.has(ev.idEvent)) return;
     seen.add(ev.idEvent);
     const k = toDate(ev).getTime(), st = (ev.strStatus || '').toUpperCase();
-    if(isNaN(k) || FINAL.includes(st) || CALLED_OFF.test(st)) return;
+    if(isNaN(k) || FINAL.includes(st) || calledOff(ev) || timeTbd(ev)) return;
     const live = now >= k && now < k + durMs(ev), soon = now < k && k - now <= SMART_GAME_MIN * 60000;
     if(live || (soon && !liveOnly)) out.push(ev);
   }));
@@ -3306,14 +3376,14 @@ function hourlyRows(){
 
 // every followed team's games this week, plus results from the last day
 function matchEvents(){
-  const seen = new Set(), evs = [];
+  const seen = new Set(), evs = [], lg = leagueMap();
   CONFIG.teamIds.forEach(id => {
     const next = NEXT_LIST[id] || (MATCHES[id] ? [MATCHES[id]] : []);
-    next.forEach(ev => { if(ev && ev.idEvent && !seen.has(ev.idEvent)){ seen.add(ev.idEvent); evs.push(MATCHES[id] && MATCHES[id].idEvent === ev.idEvent ? MATCHES[id] : ev); } });
-    resultsFor(id).forEach(ev => { if(!seen.has(ev.idEvent)){ seen.add(ev.idEvent); evs.push(ev); } });
+    next.forEach(ev => { if(ev && ev.idEvent && !seen.has(ev.idEvent)){ seen.add(ev.idEvent); const e = fresher(MATCHES[id] && MATCHES[id].idEvent === ev.idEvent ? MATCHES[id] : ev, lg); if(!calledOff(e)) evs.push(e); } });
+    resultsFor(id, lg).forEach(ev => { if(!seen.has(ev.idEvent)){ seen.add(ev.idEvent); if(!calledOff(ev)) evs.push(ev); } });
   });
   if(CONFIG.leagues.length) leagueGames().forEach(ev => {   // after the teams': a game both follow is the team's copy
-    if(!seen.has(ev.idEvent) && !CALLED_OFF.test(ev.strStatus || '')){ seen.add(ev.idEvent); evs.push(ev); }
+    if(!seen.has(ev.idEvent) && !calledOff(ev)){ seen.add(ev.idEvent); evs.push(ev); }
   });
   return evs;
 }
@@ -3992,7 +4062,7 @@ const LEAGUE_BY_NAME = {'international friendlies':'مباريات ودية دو
   'afc asian cup':'كأس آسيا', 'fifa world cup':'كأس العالم', 'world cup qualifying':'تصفيات كأس العالم', 'fifa world cup qualifying':'تصفيات كأس العالم', 'afc asian cup qualifying':'تصفيات كأس آسيا', 'arab cup':'كأس العرب',
   'gulf cup':'كأس الخليج', 'saudi pro league':'دوري روشن', 'king\'s cup':'كأس الملك', 'saudi super cup':'كأس السوبر السعودي', 'concacaf nations league':'دوري أمم كونكاكاف'};
 const fbIso = t => /[\u0600-\u06FF]/.test(t) || !/[A-Za-z]/.test(t) ? t : '\u2066' + t + '\u2069';
-const leagueName = ev => FB_LEAGUES[String(ev.idLeague || '')] || LEAGUE_BY_NAME[String(ev.strLeague || '').trim().toLowerCase()] || String(ev.strLeague || '');
+const leagueName = ev => FB_LEAGUES[String(ev.idLeague || '')] || CONFIG.leagueNames[String(ev.idLeague || '')] || LEAGUE_BY_NAME[String(ev.strLeague || '').trim().toLowerCase()] || String(ev.strLeague || '');
 // the Saudi grounds in Arabic when the feed gives them in English (an unknown ground is kept in Latin, isolated)
 const STADIUM_AR = {'prince faisal bin fahd stadium':'استاد الأمير فيصل بن فهد', 'king fahd international stadium':'استاد الملك فهد الدولي', 'king abdullah sports city':'مدينة الملك عبدالله الرياضية', 'king abdullah sport city':'مدينة الملك عبدالله الرياضية',
   'king abdullah sports city stadium':'مدينة الملك عبدالله الرياضية', 'mrsool park':'استاد مرسول بارك', 'al-awwal park':'استاد الأول بارك', 'kingdom arena':'كينغدوم أرينا', 'prince abdullah al faisal stadium':'استاد الأمير عبدالله الفيصل',
@@ -4019,12 +4089,12 @@ const fbKick = ev => toDate(ev).getTime();
 const fbFollowed = id => CONFIG.teamIds.includes(String(id || ''));
 const fbMine = ev => fbFollowed(ev.idHomeTeam) || fbFollowed(ev.idAwayTeam);
 const fbDone = (ev, now) => FINAL.includes((ev.strStatus || '').toUpperCase()) || now >= fbKick(ev) + durMs(ev);
-const fbLive = (ev, now) => now >= fbKick(ev) && !fbDone(ev, now);
+const fbLive = (ev, now) => now >= fbKick(ev) && !fbDone(ev, now) && !timeTbd(ev);
 const fbScored = ev => ev.intHomeScore != null && ev.intAwayScore != null && ev.intHomeScore !== '' && ev.intAwayScore !== '';
 function fbGames(){
   // a game the league's file has is read from its copy (a team's own may differ and won: «فرقك» was lost)
-  const lg = new Map(leagueGames().map(e => [String(e.idEvent), e]));
-  return matchEvents().map(ev => lg.has(String(ev.idEvent)) ? Object.assign({}, ev, lg.get(String(ev.idEvent))) : ev).filter(ev => ev && ev.idEvent && !isNaN(fbKick(ev)) && !CALLED_OFF.test(ev.strStatus || ''))
+  // (matchEvents reads each game from the copy further on, fresher(): a followed team's live minute is no longer undone by the 6-hourly file)
+  return matchEvents().filter(ev => ev && ev.idEvent && !isNaN(fbKick(ev)) && !calledOff(ev))
     .sort((a, b) => (fbMine(b) - fbMine(a)) || fbKick(a) - fbKick(b));
 }
 const fbDayOf = ms => cityToday(ms);
