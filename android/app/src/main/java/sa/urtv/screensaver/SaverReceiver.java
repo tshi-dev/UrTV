@@ -105,8 +105,8 @@ public class SaverReceiver extends BroadcastReceiver {
                 final PendingResult pending = goAsync();   // a download: off the main thread
                 final Context app = c.getApplicationContext();
                 new Thread(() -> {
-                    pending.setResultData("update: " + Updater.check(app, true));
-                    pending.finish();
+                    try { pending.setResultData("update: " + Updater.check(app, true)); }
+                    finally { pending.finish(); }   // S5: the broadcast is finished even when the check throws
                 }).start();
                 return;
             }
@@ -384,8 +384,8 @@ public class SaverReceiver extends BroadcastReceiver {
 
         if (idle != null) {   // first: a refusal here leaves everything else unsaved
             try {
-                Settings.System.putInt(c.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT,
-                    Integer.parseInt(idle) * 60000);
+                if (!Settings.System.putInt(c.getContentResolver(), Settings.System.SCREEN_OFF_TIMEOUT, Integer.parseInt(idle) * 60000))
+                    return "error: idle not allowed: the TV did not take the change";   // S11: putInt says false when it was not written
             } catch (SecurityException e) {
                 return "error: idle not allowed: the TV refused the change";
             }

@@ -327,7 +327,7 @@ check("the sleep timer's fade is one Runnable that cancelling stops",
       "private final Runnable fade" in service_src and "handler.removeCallbacks(fade)" in service_src and "this::fadeOut" not in service_src)
 home = text(JAVA / "MainActivity.java")
 update_clock = home[home.index("private void updateClock()"):home.index("private void updateAdhanBar(")]
-check("the minute tick reads the screensaver's settings once", update_clock.count("ConfigSnapshot.read(") == 1 and "cityZone()" in update_clock
+check("the minute tick reads the screensaver's settings once (the first tick at once, the others off the UI thread: P3)", update_clock.count("ConfigSnapshot.read(") == 2 and "cityZone()" in update_clock
       and "getContentResolver" not in update_clock)
 check("the tick's date formats are made once", "new android.icu.text.SimpleDateFormat" in update_clock and "if (gregFormat == null)" in update_clock)
 check("the day's prayer times are kept in memory", "todayCopy" in prayers and "forgetToday()" in prayers)

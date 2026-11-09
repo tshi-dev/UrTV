@@ -40,6 +40,7 @@ final class HomePage {
     private static File copy(Context c, String name) {
         String own;
         try { own = PageStamp.read(c.getAssets().open("web/" + name)); } catch (Exception e) { own = ""; }
+        if (!providerIsOurs(c)) return null;   // S1: a page is taken only from the screensaver app that carries our signature, never from another app that claimed the authority
         Uri uri = Uri.parse(PAGE + name);
         String theirs;
         try { theirs = PageStamp.read(c.getContentResolver().openInputStream(uri)); }
@@ -64,6 +65,17 @@ final class HomePage {
         }
         clean(dir, prefix, want);
         return want;
+    }
+
+    /** the app that answers sa.urtv.screensaver.config is sa.urtv.screensaver and is signed with the key this home is signed with */
+    static boolean providerIsOurs(Context c) {
+        try {
+            android.content.pm.ProviderInfo pi = c.getPackageManager().resolveContentProvider("sa.urtv.screensaver.config", 0);
+            return pi != null && "sa.urtv.screensaver".equals(pi.packageName)
+                    && c.getPackageManager().checkSignatures(c.getPackageName(), pi.packageName) == android.content.pm.PackageManager.SIGNATURE_MATCH;
+        } catch (RuntimeException e) {
+            return false;
+        }
     }
 
     private static String fileStamp(File f) {

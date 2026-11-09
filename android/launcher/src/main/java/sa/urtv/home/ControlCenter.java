@@ -310,12 +310,15 @@ final class ControlCenter {
             wifi = nc != null && !wired && nc.hasTransport(android.net.NetworkCapabilities.TRANSPORT_WIFI);
             if (wifi) {
                 WifiManager wm = (WifiManager) act.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                if (wm != null && wm.getConnectionInfo() != null) {
-                    ssid = wm.getConnectionInfo().getSSID();
-                    rssi = wm.getConnectionInfo().getRssi();
+                android.net.wifi.WifiInfo info = wm == null ? null : wm.getConnectionInfo();   // one snapshot: two calls could answer two different networks (S8)
+                if (info != null) {
+                    ssid = info.getSSID();
+                    rssi = info.getRssi();
                 }
             }
-        } catch (SecurityException ignored) { }
+        } catch (RuntimeException e) {   // S8 (A6, the TCL G07): any failure of the network services leaves the tile with what it has; the panel must open
+            android.util.Log.w("UrTVControl", "network tile failed " + e.getClass().getSimpleName());
+        }
         t.setValue(ControlText.network(wired, wifi, ssid) + "\n" + Digits.of(ControlText.networkDetail(wired, wifi, rssi)));
     }
 

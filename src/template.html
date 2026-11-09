@@ -835,7 +835,7 @@ __BG_SET__
 const _Q = new URLSearchParams((location.hash || '').replace(/^#/, ''));
 const _list = k => (_Q.get(k) || '').split(',').map(x=>x.trim()).filter(Boolean);
 const _num = (k, d) => { const v = parseFloat(_Q.get(k)); return isNaN(v) ? d : v; };
-// the city's time zone, #tz=: the clock, prayers, matches and dates all go by it; one this browser does not know is Riyadh
+// the city's time zone, #tz=: the clock, prayers, matches and dates all go by it
 const _tzOk = z => { try{ new Intl.DateTimeFormat('en',{timeZone:z}); return true; }catch(e){ return false; } };
 // the cards a slot can show (Prefs.PANELS in the app is the same list); «none» is the absence of one
 const CARD_KINDS = ['shows','prayers','forecast','hourly','prayerrow','nextprayer','matches','verse','wisdom','adhkar','stocks','tasks','year','smart','today'];
@@ -850,13 +850,13 @@ const CONFIG = {
             : [_Q.has('team1') ? _Q.get('team1') : '136013', _Q.has('team2') ? _Q.get('team2') : '136137'])
     .map(x=>(x||'').trim()).filter(x=>/^\d+$/.test(x)).slice(0, 20),
   sportsKey: '123',
-  // whole leagues: #leagues=Saudi-Arabian Pro League,NBA (default none; up to 5): every game of every club in them
+  // whole leagues: #leagues=Saudi-Arabian Pro League,NBA
   leagues: _list('leagues').filter(x => /^[A-Za-z0-9 \-]{2,40}$/.test(x)).slice(0, 5),
   // other sports beside the teams' games: #events=f1,ufc,boxing (default none)
   events: _list('events').filter(k => ['f1','ufc','boxing'].includes(k)),
   eventWindowDays: 14,
   // the card beside the clock: one of CARD_KINDS or none (#week=0 from older builds = none)
-  // nextprayer is the launcher's only (the screensaver's bottom-right panel says the same): on the screensaver it is the verse
+  // nextprayer is the launcher's only (the screensaver's bottom-right panel says the same)
   panel: (p => (CARD_KINDS.includes(p) && !(p === 'nextprayer' && _Q.get('widget') !== '1')) || p === 'none' ? p : 'verse')
          (_Q.get('panel') || (_Q.get('week') === '0' ? 'none' : 'verse')),
   // #tasks=: the open tasks, one per line (the app drops done ones), at most 12 of 60 characters
@@ -882,7 +882,7 @@ const CONFIG = {
   weekWindowDays: 7,
   // minutes between background photos: #photos=5|10|15|30|60, 1, or 0.5
   photoMinutes: (m => [0.5,1,5,10,15,30,60].includes(m) ? m : 30)(_num('photos', 30)),
-  // the owner's own photos («صوري»): #own=how many (0-10) and #ownmode=mix (join ours, the default) or only
+  // the owner's own photos («صوري»): #own=how many
   own: Math.max(0, Math.min(10, Math.floor(_num('own', 0)))),
   ownMode: _Q.get('ownmode') === 'only' ? 'only' : 'mix',
   // the photo packs («صور شاشة التوقف»): #packs=id:count,id:count
@@ -891,31 +891,31 @@ const CONFIG = {
   ours: _Q.get('ours') !== '0',
   // digits everywhere: #digits=hindi (١٢٣, the default) or latin (123); anything else = hindi
   digits: _Q.get('digits') === 'latin' ? 'latin' : 'hindi',
-  // «ساعة ٢٤»: #clock=24 shows every time of day as 24-hour (١٩:٣٠); anything else, or nothing, is the 12-hour clock (٧:٣٠ م)
+  // «ساعة ٢٤»: #clock=24 shows every time of day as 24-hour
   clock24: _Q.get('clock') === '24',
-  // the look of the card beside the clock: #cardstyle=current|dark1|glass1|dark3|glass3 (anything else = current)
+  // the look of the card beside the clock: #cardstyle=current|dark1|glass1|dark3|glass3
   // the size of the clock: #clocksize=large|medium|small (anything else = large)
   clockSize: (v => ['medium','small'].includes(v) ? v : 'large')(_Q.get('clocksize')),
   cardStyle: (v => ['dark1','glass1','dark3','glass3'].includes(v) ? v : 'current')(_Q.get('cardstyle')),
-  // the markets at the top left: #markets=tasi,spx,btc (up to 4 of tasi aramco spx btc gold silver oil xrp; anything else = the default)
+  // the markets at the top left: #markets=tasi,spx,btc
   // and #mkstyle=arrows (a ▲/▼ only, the default) or prices (the price and the day's change)
   markets: (l => l.length ? l : ['tasi','spx','btc'])(
     _list('markets').filter((k, i, a) => ['tasi','aramco','spx','btc','gold','silver','oil','xrp'].includes(k) && a.indexOf(k) === i).slice(0, 4)),
   mkStyle: _Q.get('mkstyle') === 'prices' ? 'prices' : 'arrows',
-  // «تغيّر الأسهم»: #stkchg=amount shows every stock's change as an amount (▲ 2.25) instead of a percentage
+  // «تغيّر الأسهم»: #stkchg=amount shows every stock's change as an amount
   stkChg: _Q.get('stkchg') === 'amount' ? 'amount' : 'pct',
-  // #mkbar=off hides the markets line at the top (the weather stays); the list above is kept and no request is made for it
+  // #mkbar=off hides the markets line at the top
   mkBar: _Q.get('mkbar') !== 'off',
   // the national days (23 September, 22 February): #national=auto (the default) or off
   national: _Q.get('national') === 'off' ? 'off' : 'auto',
-  // the stocks card's watchlist: #stocks=2222,1120,AAPL,NVDA (up to 8; 4 digits = a Tadawul code, letters = a US ticker)
+  // the stocks card's watchlist: #stocks=2222,1120,AAPL,NVDA
   stocks: _list('stocks').map(x => x.toUpperCase()).filter((x, i, a) => /^(\d{4}|[A-Z][A-Z.\-]{0,5})$/.test(x) && a.indexOf(x) === i).slice(0, 8),
   // the bottom-left slot: #slot=matches|weather|fasting|countdown|none (anything else = matches)
   slot: (v => ['weather','fasting','countdown','markets','none'].includes(v) ? v : 'matches')(_Q.get('slot')),
   // #cd=YYYY-MM-DD&cdname=...: the date and name for slot=countdown (a bad date = none)
   cd: (v => /^\d{4}-\d{2}-\d{2}$/.test(v) && !isNaN(Date.parse(v + 'T00:00:00Z')) && new Date(v + 'T00:00:00Z').toISOString().slice(0, 10) === v ? v : '')(_Q.get('cd') || ''),
   cdName: (_Q.get('cdname') || '').trim().slice(0, 40),
-  // shown as always unless hidden in the settings: #occasion=0 empties «المناسبة القادمة»
+  // shown as always unless hidden in the settings
   // suhoor; the place stays, so nothing else moves) and #nightdim=0 keeps the night as bright as the day (no dimmer)
   occasion: _Q.get('occasion') !== '0',
   nightDim: _Q.get('nightdim') !== '0',
@@ -923,7 +923,7 @@ const CONFIG = {
   verseMin: _Q.get('versemin') === '3' ? 3 : 0,
   // «الآية والحديث»: #versekind=verse only verses, #versekind=hadith only hadith
   verseKind: (v => v === 'verse' || v === 'hadith' ? v : 'both')(_Q.get('versekind')),
-  // «إظهار الثواني»: #seconds=1 the seconds on the screensaver's clock, small beside the minutes; anything else = none, as always
+  // «إظهار الثواني»: #seconds=1 the seconds on the screensaver's clock, small beside the minutes
   // #lowram=1: the app says this TV is weak (Ram.low: Android's low-RAM flag, or under 2.5 GB; a user report on 4.1, lag): no seconds, slower timers
   // (the markets every 15 minutes, the adhan check every 15 s, the reminders' countdown every 5 s), no CSS transitions
   lowram: _Q.get('lowram') === '1',
@@ -931,7 +931,7 @@ const CONFIG = {
   // «التفسير الميسر» under the verse of the day: #tafsir=1 (anything else = off)
   tafsir: _Q.get('tafsir') === '1',
   // from PR #28, each off unless asked for: #sunrise=1 the panel at the bottom right counts to the sunrise after Fajr's iqama and tells
-  // it for half an hour after; #prayerbar=1 a thin bar under it, how far the time has come from the last prayer to the next; #wxmore=1
+  // it for half an hour after; #prayerbar=1 a thin bar under it, how far the time has come from the last prayer to the next
   // the humidity and the wind under the city at the top left (asked in the same weather request)
   sunrise: _Q.get('sunrise') === '1',
   prayerBar: _Q.get('prayerbar') === '1',
@@ -945,19 +945,19 @@ const CONFIG = {
   prayerAdj: (a => a.length === 5 && a.every(x => /^-?\d{1,2}$/.test(x.trim())) ? a.map(x => Math.max(-20, Math.min(20, parseInt(x, 10)))) : [0,0,0,0,0])(
     (_Q.get('adj') || '').split(',')),
   // «فرق التاريخ الهجري»: #hijri=-2..2 moves every Hijri date by that many days, for places that start the month by moon sighting
-  // (Egypt, Jordan, the Levant, Morocco). The screensaver sends it only when it is not 0; anything else here = 0 = Umm al-Qura as it is.
+  // (Egypt, Jordan, the Levant, Morocco). The screensaver sends it only when it is not 0
   hijri: (v => /^-?[0-2]$/.test(v) ? +v || 0 : 0)(_Q.get('hijri') || ''),
-  // the slim year strip under the clock: #yearstrip=1 turns it on (anything else = off); the screensaver only, never the widget
+  // the slim year strip under the clock: #yearstrip=1 turns it on
   yearStrip: _Q.get('yearstrip') === '1',
-  // #live=1 (the launcher): the «المهام» card is a button there (OK opens the list with the mic ready), so it carries a mic mark and
+  // #live=1 (the launcher): the «المهام» card is a button there
   // a ring while it has the focus. Only on the launcher's page; the screensaver never has it.
   live: _Q.get('live') === '1',
-  // #citynote=1: the screensaver's first starts while the city is still the install's Riyadh (Prefs.screenUrl); never the widget
+  // #citynote=1: the screensaver's first starts while the city is still the install's Riyadh
   cityNote: _Q.get('citynote') === '1' && _Q.get('widget') !== '1',
   // #widget=1: only the cards, on a transparent page (the launcher's home screen shows them)
   widget: _Q.get('widget') === '1',
-  // #football=1 (with #widget=1): the launcher's football home, the weather, the prayers and today's games (docs/PROPOSALS-NOV2.md §1);
-  // #matchpage=1: «المباريات», the launcher's page of the games (#event= opens one game's card). Neither is ever the screensaver.
+  // #football=1 (with #widget=1): the launcher's football home, the weather, the prayers and today's games
+  // #matchpage=1: «المباريات», the launcher's page of the games
   football: _Q.get('football') === '1' && _Q.get('widget') === '1',
   matchPage: _Q.get('matchpage') === '1',
   // #pagedark=1 with #matchpage=1: the dark theme
@@ -965,7 +965,7 @@ const CONFIG = {
 };
 // the football home and «المباريات» show a league even when none is followed
 if((CONFIG.football || CONFIG.matchPage) && !CONFIG.leagues.length) CONFIG.leagues = ['Saudi-Arabian Pro League'];
-// The cards on this page: the screensaver's one (#panel=); the launcher's up to three (#home_panel=a,b,c, none or empty = no card;
+// The cards on this page: the screensaver's one
 // an older launcher sends the one card as #panel=). Each kind once, in order.
 // the prayer calculation (Aladhan's id; 100 = Oman's ministry, ours)
 // (launcher) and PrayerMethod (app) say the same, tests/prayer_method_test.py compares them
@@ -975,8 +975,8 @@ CONFIG.prayerMethod = _Q.get('pm') === 'gulf' ? 8
 // the calculation's name under the clock, none for Umm al-Qura (ClockZone.calendar says the same on the home screen)
 const CAL_LABEL = {1:'جامعة العلوم الإسلامية بكراتشي',2:'الجمعية الإسلامية لأمريكا الشمالية',3:'رابطة العالم الإسلامي',11:'المجلس الإسلامي السنغافوري',12:'اتحاد المنظمات الإسلامية في فرنسا',13:'رئاسة الشؤون الدينية التركية',14:'الإدارة الدينية لمسلمي روسيا',15:'لجنة رصد الهلال العالمية',17:'إدارة التنمية الإسلامية الماليزية',20:'وزارة الشؤون الدينية الإندونيسية', 8:'حساب الخليج', 100:'حساب عُمان', 9:'حساب الكويت', 10:'حساب قطر', 16:'حساب الإمارات', 5:'حساب الهيئة المصرية', 23:'حساب الأردن', 21:'حساب المغرب', 19:'حساب الجزائر', 18:'حساب تونس'};
 const clockSubText = () => 'بتوقيت ' + CONFIG.city + (CAL_LABEL[CONFIG.prayerMethod] ? ' · ' + CAL_LABEL[CONFIG.prayerMethod] : '');
-// «بطاقة ثانية» (#panel2=): a second card beside the small clock only; with a larger clock, on the launcher, without a first card,
-// or when it is the first card again or the next prayer (the bottom-right panel says it already), there is none
+// «بطاقة ثانية» (#panel2=): a second card beside the small clock only
+// or when it is the first card again or the next prayer
 CONFIG.panel2 = (p => CARD_KINDS.includes(p) && p !== 'nextprayer' && p !== CONFIG.panel ? p : 'none')(_Q.get('panel2') || '');
 const PAIR = !CONFIG.widget && CONFIG.clockSize === 'small' && CONFIG.panel !== 'none' && CONFIG.panel2 !== 'none';
 CONFIG.cards = (CONFIG.widget && _Q.has('home_panel') ? _list('home_panel') : PAIR ? [CONFIG.panel, CONFIG.panel2] : [CONFIG.panel])
@@ -987,16 +987,16 @@ CONFIG.panel = CONFIG.cards[0] || 'none';   // the first one, for what only need
 const USES_OF = {smart:['matches','adhkar','prayers','prayerrow','hourly'], today:['prayers','matches','tasks'], nextprayer:['prayers']};
 const USES = k => ((CONFIG.football || CONFIG.matchPage) && (k === 'matches' || k === 'prayers')) || CONFIG.cards.some(c => c === k || (USES_OF[c] || []).includes(k));
 
-// The panels' snapshot is keyed by the link without the settings that only change how things look (the card's style and place, the clock's
+// The panels' snapshot is keyed by the link without the settings that only change how things look
 // size, the strips, the photo timing): changing one of those offline must not lose the games already on screen. What changes the words or
 // the markup inside the saved panels (the teams, leagues, digits, slot, markets, their style and switch…) stays in the key.
 const SNAP_LOOK = ['citynote', 'cardstyle', 'panel', 'panel2', 'week', 'clocksize', 'adhanbar', 'yearstrip', 'national', 'photos', 'adj', 'own', 'ownmode', 'packs', 'ours', 'gap'];
 function snapLink(){
   return location.hash.replace(/^#/, '').split('&').filter(kv => kv && !SNAP_LOOK.includes(kv.split('=')[0])).join('&');
 }
-// What the page keeps in localStorage is keyed by what it is for, not by the whole link (which changes with every setting and left a
+// What the page keeps in localStorage is keyed by what it is for, not by the whole link
 // copy behind each time): the weather by the city, the prices by the symbols, the games' time by the clubs. The panels' snapshot
-// is the one that depends on the whole link; pruneStorage() below keeps the few newest of those and drops the old link-keyed copies.
+// is the one that depends on the whole link
 const LS = {
   forecast: 'forecast:' + CONFIG.latitude.toFixed(3) + ',' + CONFIG.longitude.toFixed(3),
   hourly: 'hourly:' + CONFIG.latitude.toFixed(3) + ',' + CONFIG.longitude.toFixed(3),
@@ -1023,7 +1023,7 @@ const FMT_ALL = new Intl.DateTimeFormat('en-GB',{
 });
 const FMT_HM = new Intl.DateTimeFormat('en-GB',{timeZone:CONFIG.timezone,hour:'2-digit',minute:'2-digit',hour12:false});   // the city's clock
 const FMT_DATE = new Intl.DateTimeFormat('en-CA',{timeZone:CONFIG.timezone});   // YYYY-MM-DD in the city
-// #months=levant: every Gregorian month the page writes in the Levant's names (MonthNames.java on the home screen says the same)
+// #months=levant: every Gregorian month the page writes in the Levant's names
 const LEVANT_MONTHS = {'يناير':'كانون الثاني', 'فبراير':'شباط', 'مارس':'آذار', 'أبريل':'نيسان', 'مايو':'أيار', 'يونيو':'حزيران',
   'يوليو':'تموز', 'أغسطس':'آب', 'سبتمبر':'أيلول', 'أكتوبر':'تشرين الأول', 'نوفمبر':'تشرين الثاني', 'ديسمبر':'كانون الأول'};
 const LEVANT_RE = new RegExp(Object.keys(LEVANT_MONTHS).join('|'), 'g');
@@ -1036,7 +1036,7 @@ function riyadhParts(d = new Date()){
   const f = FMT_ALL.formatToParts(d).reduce((a,p)=>(a[p.type]=p.value,a),{});
   return { y:+f.year, mo:+f.month, d:+f.day, h:(+f.hour)%24, mi:+f.minute, s:+f.second };
 }
-// how far the city's clock is ahead of UTC at that moment, in ms (Riyadh +3 h all year; Cairo changes with summer time)
+// how far the city's clock is ahead of UTC at that moment, in ms
 function tzOffsetMs(ms){
   const p = riyadhParts(new Date(ms));
   return Date.UTC(p.y, p.mo - 1, p.d, p.h, p.mi, p.s) - Math.floor(ms / 1000) * 1000;
@@ -1079,7 +1079,7 @@ function tickClock(){
   if(CONFIG.yearStrip) renderYearStrip();   // the day may have turned; the clock's width may have changed
 }
 
-// National Day (23 September, shown 21-25) and Founding Day (22 February, shown 20-24), by the Riyadh date.
+// National Day (23 September, shown 21-25) and Founding Day
 // n = the year count shown; today = the day itself. Null when off or outside the days.
 const NATIONAL = [
   {mo:9, d:23, name:'اليوم الوطني السعودي', short:'اليوم الوطني', since:1930, unit:''},
@@ -1096,7 +1096,7 @@ function nationalNow(){
 }
 
 // «فرق التاريخ الهجري»: the instant to give the Umm al-Qura calendar
-// plus CONFIG.hijri days. At 0 it is `d` itself; otherwise noon of that day (the time of day does not matter to a date).
+// plus CONFIG.hijri days. At 0 it is `d` itself
 function hijriAt(d){
   const k = CONFIG.hijri;
   if(!k) return d;
@@ -1104,7 +1104,7 @@ function hijriAt(d){
   const t = Date.UTC(p.y, p.mo - 1, p.d + k, 12);   // noon of the target day: a spring-forward at midnight cannot move it off its day
   return new Date(t - tzOffsetMs(t));
 }
-// the same for a date held as UTC noon of a day (formatted with timeZone UTC): whole days, no summer time there
+// the same for a date held as UTC noon of a day
 const hijriUtc = d => CONFIG.hijri ? new Date(d.getTime() + CONFIG.hijri*86400000) : d;
 
 function tickDates(){
@@ -1139,7 +1139,7 @@ let PRAYERS = [];
 
 let DAY_TIMES = null, BASE_DAY_TIMES = null, BASE_PRAYERS = [], NIGHT_PRAYERS = [], NIGHT_STATE = null, BASE_DAY = '';
 // «تعديل وقت الصلاة»: the five prayers moved by their minutes
-// time reads PRAYERS and DAY_TIMES, so this is the one place. The sunrise stays. A time past midnight (an Isha at «24:10») stays absolute.
+// time reads PRAYERS and DAY_TIMES, so this is the one place
 function adjustedTimes(t){
   if(!CONFIG.prayerAdj.some(Boolean)) return t;
   const out = Object.assign({}, t);
@@ -1211,8 +1211,8 @@ function nightPrayers(){
   carry.forEach(x => { DAY_TIMES[x.key] = pad(x.h)+':'+pad(x.mi); });
 }
 
-// By Aladhan's id, as PrayerMath.METHODS in the launcher: Fajr/Isha angles, or Isha minutes after Maghrib (+30 in Ramadan for 4 alone), the
-// Maghrib angle, minutes added to sunrise/Dhuhr/Asr/Maghrib. Sources: aladhan.com/calculation-methods, Batoul Apps adhan (Dubai margins)
+// By Aladhan's id, as PrayerMath.METHODS in the launcher
+// Maghrib angle, minutes added to sunrise/Dhuhr/Asr/Maghrib
 const PRAYER_METHODS = {
   1: {fajr:18, isha:18, ishaMin:0, maghrib:.833, tune:[0,0,0,0]},
   2: {fajr:15, isha:15, ishaMin:0, maghrib:.833, tune:[0,0,0,0]},
@@ -1234,7 +1234,7 @@ const PRAYER_METHODS = {
   21:  {fajr:19, isha:17, ishaMin:0, maghrib:.833, tune:[0,5,0,5]},  // Morocco (the Awqaf ministry): Dhuhr and Maghrib +5
   19:  {fajr:18, isha:17, ishaMin:0, maghrib:.833, tune:[0,0,0,0]},  // Algeria (Ministry of Religious Affairs)
   18:  {fajr:18, isha:18, ishaMin:0, maghrib:.833, tune:[0,0,0,0]},  // Tunisia (Ministry of Religious Affairs)
-  // 100 is ours (Aladhan has none): Oman's ministry, fitted to its 2026 timetable (PrayerMath.java says more)
+  // 100 is ours (Aladhan has none): Oman's ministry, fitted to its 2026 timetable
   100: {fajr:18, isha:18, ishaMin:0, maghrib:.833, tune:[0,5,5,5]},
 };
 function computePrayers(forDay){
@@ -1367,11 +1367,11 @@ function prayerName(x){ return x.key === 'Dhuhr' && isFriday() ? 'الجمعة' 
 // ---- the bar before the adhan: the last 10 minutes «أذان المغرب بعد ٨ دقائق», then to the iqama «إقامة المغرب بعد ١٢ دقيقة»
 // none for a Friday's Dhuhr, «أذان الجمعة»). #adhanbar=0 turns it off.
 const ADHAN_BAR_MIN = 10;
-// «٤ دقائق»: what is left to an adhan, in the same words at the same second on the bar and in the panel below (whole minutes of the
+// «٤ دقائق»: what is left to an adhan, in the same words at the same second on the bar and in the panel below
 // rounded second; never less than one)
 const untilAdhan = leftMin => humanRemaining(Math.max(60, Math.round(leftMin * 60)));
 // while the adhan plays in the launcher (the screensaver only: window.UrtvNative.adhan() answers {"live":true,"prayer":4,"any":false}, "" otherwise)
-// the bar names it and says how to stop it: «أذان المغرب  ·  أي زر يوقف الأذان»
+// the bar names it and says how to stop it
 // as the launcher's bar (AdhanBarText.playing). Any key
 let ADHAN_LIVE = null;
 const ADHAN_PRAYER_NAMES = {0:'الفجر', 2:'الظهر', 3:'العصر', 4:'المغرب', 5:'العشاء'};
@@ -1517,7 +1517,7 @@ function tickPrayer(){
   setHTML(elC, 'بعد <b>' + untilAdhan(leftM) + '</b>');
 }
 
-// #prayerbar=1: how far the time has come from one prayer to the next, as one measure all day (the iqama is inside it, so the bar never
+// #prayerbar=1: how far the time has come from one prayer to the next, as one measure all day
 // jumps back when the iqama ends); with #sunrise=1 the sunrise is one of the points, as the panel counts to it
 function prayerBarFraction(mins){
   const at = PRAYERS.map(x => x.h*60 + x.mi);
@@ -1551,9 +1551,9 @@ function sunrisePanel(mins, elL, elN, elT, elC){
 }
 
 // ---- «المناسبة القادمة»: the card in the middle of the bottom row follows the Hijri year ----
-// All the wording is here. hm/hd: the Hijri month and day it begins (Umm al-Qura); days: how long it lasts;
+// All the wording is here. hm/hd: the Hijri month and day it begins
 // name: the label; year: the Hijri year follows the name; today: the big text on its days;
-// note: a small second line while counting down. Ramadan itself shows iftar and suhoor (see tickOccasion).
+// note: a small second line while counting down
 const OCCASIONS = [
   {hm:9,  hd:1,  days:30, name:'رمضان',             year:true, today:'رمضان مبارك'},
   {hm:10, hd:1,  days:3,  name:'عيد الفطر',          today:'عيد مبارك'},
@@ -1565,7 +1565,7 @@ const OCCASIONS = [
 ];
 const OCC_TEXT = {unit:'يوم', expected:'متوقّع'};   // the moon decides the day, so the date is only expected
 
-// Today's occasion, or the next one with the days left and its day: one pass over the coming year, once a day.
+// Today's occasion, or the next one with the days left and its day
 let OCC_CACHE = {day:'', val:null};
 function occasionNow(){
   const dayKey = FMT_DATE.format(new Date());
@@ -1602,7 +1602,7 @@ function hijriMonthNow(raw){
   }catch(e){}
   return tabularHijriMonth(at);   // fail closed: no Umm al-Qura calendar here is not «not Ramadan»
 }
-// The Hijri month by the tabular (arithmetic) Islamic calendar, for a browser without Umm al-Qura's: the city's date as a Julian day,
+// The Hijri month by the tabular (arithmetic) Islamic calendar, for a browser without Umm al-Qura's
 // then the civil Hijri date. It can be a day off Umm al-Qura at a month's turn, never a month.
 function tabularHijriMonth(d){
   const p = riyadhParts(d), a = Math.floor((14 - p.mo) / 12), y = p.y + 4800 - a, mo = p.mo + 12 * a - 3;
@@ -1693,7 +1693,7 @@ const guarded = (name, fn) => async (...a) => {
   BUSY[name] = true;
   try{ return await fn(...a); }finally{ BUSY[name] = false; }
 };
-// 0-29 minutes, drawn once per TV and kept: TVs that boot or cross midnight together do not call the services in the same minute
+// 0-29 minutes, drawn once per TV and kept
 const JITTER_MS = (()=>{
   try{
     let v = parseInt(localStorage.getItem('jitter'), 10);
@@ -1701,7 +1701,7 @@ const JITTER_MS = (()=>{
     return v * 60000;
   }catch(e){ return 0; }
 })();
-// the offset never exceeds the task's own period: a 2-minute task starts within 2 minutes of its period, a 30-minute or slower one
+// the offset never exceeds the task's own period
 // keeps the whole 0-29 (scaled, so TVs stay spread over the period)
 const spread = ms => Math.floor(JITTER_MS * Math.min(ms, 30*60000) / (30*60000));
 const periodic = (fn, ms) => setTimeout(() => { fn(); setInterval(fn, ms); }, ms + spread(ms));   // the first periodic run is late by the offset
@@ -1712,7 +1712,7 @@ const fmtAgo = ms => { const p = riyadhParts(new Date(ms)); return 'آخر تح�
 // 1) built-in table, 2) the Arabic label on Wikidata (cached on the device), 3) transliteration meanwhile
 const AR_NAMES = (()=>{ try{ return JSON.parse(localStorage.getItem('arNames') || '{}'); }catch(e){ return {}; } })();
 const AR_PENDING = new Set();
-// a lookup that failed (offline, Wikidata slow) is not repeated for an hour; kept on the device with its time
+// a lookup that failed (offline, Wikidata slow) is not repeated for an hour
 const AR_FAIL = (()=>{ try{ return JSON.parse(localStorage.getItem('arFail') || '{}') || {}; }catch(e){ return {}; } })();
 const AR_RETRY_MS = 3600000;
 const AR_KIND = {team:/football|soccer|club|team|منتخب|نادي/i, show:/television|series|sitcom|anime|miniseries|show|مسلسل/i};
@@ -1810,7 +1810,7 @@ function toDate(ev){
 }
 
 // one slot per picked team: a result from the last 24h, else a fixture this week, else hidden
-// A game is over once its status says so, or 2.5 h after kick-off; its score stays up for a day after that.
+// A game is over once its status says so, or 2.5 h after kick-off
 const FINAL = ['FT','AET','PEN','MATCH FINISHED'];
 // how long a game lasts, by sport, before it counts as over without a final status
 const DUR_H = {Soccer:2.5, Basketball:3, 'American Football':3.75};
@@ -1821,8 +1821,8 @@ function finishedRecently(ev, now){
   const over = FINAL.includes((ev.strStatus || '').toUpperCase()) ? now >= k : now >= end;
   return over && now - end < 86400000;
 }
-// A game past its end with no result in the data (the CI file is refreshed every 6 h and the API is slow to post a score): it stays,
-// at its own time among the results and with no score, for a day after its end. Asked for once, 6 h after kick-off (loadLive).
+// A game past its end with no result in the data
+// at its own time among the results and with no score, for a day after its end
 function pendingResult(ev, now){
   if(!ev || ev.intHomeScore != null && ev.intAwayScore != null) return false;
   const st = (ev.strStatus || '').toUpperCase(), k = toDate(ev).getTime(), end = k + durMs(ev);
@@ -1874,14 +1874,14 @@ function gameBlock(ev, now, big){
   const d = toDate(ev), diff = d - now;
   if(pendingResult(ev, now))   // over, no result yet: the teams and when they played
     return `<div class="mblock"><div class="big"><span><span class="tm">${home}</span> × <span class="tm">${away}</span></span></div><div class="sub">${matchWhen(d)}</div></div>`;
-  // kicked off long ago and the data still says «not started» with no score (the file is old): not «مباشر» and never «بعد …», the game as «over, no result yet» (its day and time say it was last night's)
+  // kicked off long ago and the data still says «not started» with no score
   if(diff < -20*60000 && ev.intHomeScore == null && /^(NS|TBD|NOT STARTED|)$/.test((ev.strStatus || '').toUpperCase()) && diff >= -durMs(ev))
     return `<div class="mblock"><div class="big"><span><span class="tm">${home}</span> × <span class="tm">${away}</span></span></div><div class="sub">${matchWhen(d)}</div></div>`;
   if(diff < -durMs(ev) || diff > CONFIG.weekWindowDays * 86400000) return '';   // in progress stays on screen
   const p = hmParts(d);
   const clk = ar(fmtTime(+p.hour % 24, +p.minute));
   const live = diff <= 0 && ev.intHomeScore != null && ev.intAwayScore != null;
-  // «بعد ٣ أيام» and under it the date and time, small: «السبت ٢٤ أكتوبر · ٩:١٦ م»
+  // «بعد ٣ أيام» and under it the date and time, small
   const dateLine = matchWhen(d);
   const sub = diff > 0 ? `بعد ${shortRemaining(diff)}</div><div class="sub when">${dateLine}` : `<span class="live">مباشر</span> · ${liveStatus(ev, clk)}`;
   const mid = live ? ` <span class="sc">${ar(+ev.intHomeScore)} - ${ar(+ev.intAwayScore)}</span> ` : ' × ';
@@ -1907,9 +1907,9 @@ function matchSlot(id, now, shown){
 }
 
 // ---------- whole leagues: #leagues= ----------
-// CI writes each league's games of the coming week and the last day into one small file (.github/tools/league_fixtures.py,
+// CI writes each league's games of the coming week and the last day into one small file
 // branch data-leagues); the page downloads one file per followed league every 30 minutes and no more: that is the
-// whole cost of a league, however many clubs it has. A game in progress is refreshed by lookupevent.php like a followed
+// whole cost of a league, however many clubs it has
 // team's (loadLive), at most LEAGUE_LIVE_MAX of them at a time.
 const LEAGUE_BASE = 'https://raw.githubusercontent.com/tshi-dev/UrTV/data-leagues/leagues/';
 const LEAGUE_LIVE_MAX = 6;
@@ -1930,7 +1930,7 @@ async function loadLeagues(){
   if(got) try{ localStorage.setItem('leagueData', JSON.stringify(LEAGUE_DATA)); }catch(e){}
   return got;
 }
-// every game of the followed leagues, once each (two leagues can list one game), with a live update laid over the file's
+// every game of the followed leagues, once each
 function leagueGames(){
   const seen = new Set(), out = [];
   CONFIG.leagues.forEach(name => {
@@ -1965,7 +1965,7 @@ function liveStatus(ev, clk){
   return isNaN(m) || (ev.strSport && ev.strSport !== 'Soccer') ? `بدأت ${clk}` : `الدقيقة ${ar(m)}`;   // minutes are football's
 }
 
-// while a picked team is playing, refresh that event every 2 minutes; so is a game of a followed league (a few at most)
+// while a picked team is playing, refresh that event every 2 minutes
 const loadLive = guarded('live', async function(){
   const now = Date.now();
   let asked = false;
@@ -1981,7 +1981,7 @@ const loadLive = guarded('live', async function(){
     }catch(e){ return null; }
   };
   const theirs = CONFIG.leagues.length ? leagueGames().filter(ev => live(ev) && !own.has(ev.idEvent)).slice(0, LEAGUE_LIVE_MAX) : [];
-  // a game 6 h past kick-off with no result: ask once; the answer (or none) is what the screen shows from then on
+  // a game 6 h past kick-off with no result: ask once
   const stale = matchEvents().filter(ev => !STALE_ASKED.has(ev.idEvent) && now - toDate(ev).getTime() > STALE_ASK_H * 3600000 && pendingResult(ev, now)).slice(0, LEAGUE_LIVE_MAX);
   stale.forEach(ev => STALE_ASKED.add(ev.idEvent));
   const jobs = [   // one lookup at a time, a pause between
@@ -2013,7 +2013,7 @@ const loadLive = guarded('live', async function(){
 });
 
 // ---------- other sports: Formula 1, UFC, boxing (events, not teams) ----------
-// Each has TheSportsDB leagues, found by CI (assets/shared/events.json); the next events of each are asked for every
+// Each has TheSportsDB leagues, found by CI
 // 30 minutes with the matches, and shown beside the followed teams' games: the event's name, not «فريق × فريق».
 const EVENT_LEAGUES = __EVENTS__;
 let EVENT_NEXT = {};   // key -> upcoming events, as the leagues answered
@@ -2026,7 +2026,7 @@ const COUNTRY_AR = {'saudi arabia':'السعودية','bahrain':'البحرين'
   'azerbaijan':'أذربيجان','singapore':'سنغافورة','mexico':'المكسيك','brazil':'البرازيل','france':'فرنسا','germany':'ألمانيا',
   'portugal':'البرتغال','turkey':'تركيا','russia':'روسيا','south korea':'كوريا الجنوبية','malaysia':'ماليزيا','india':'الهند',
   'argentina':'الأرجنتين','egypt':'مصر','morocco':'المغرب'};
-// the place in «X Grand Prix» as Arabic writes it (the country, or the city for Miami, Las Vegas, Monaco…)
+// the place in «X Grand Prix» as Arabic writes it
 const GP_AR = {'saudi arabian':'السعودية','saudi arabia':'السعودية','bahrain':'البحرين','australian':'أستراليا','japanese':'اليابان',
   'chinese':'الصين','miami':'ميامي','emilia romagna':'إميليا رومانيا','emilia-romagna':'إميليا رومانيا','monaco':'موناكو',
   'canadian':'كندا','spanish':'إسبانيا','barcelona':'إسبانيا','austrian':'النمسا','british':'بريطانيا','hungarian':'المجر',
@@ -2059,7 +2059,7 @@ function eventInfo(key, ev){
     if(!session) session = 'السباق';
     const gpName = gp ? 'جائزة ' + (GP_AR[place] || trl(gp[1].trim())) + ' الكبرى' : trl(name);
     title = gpName + ' · ' + session;
-    // the session goes under it, so the big line stays short; tighter still: «جائزة السعودية»
+    // the session goes under it, so the big line stays short
     head = gp ? `<span class="tm" data-short="${esc(gpName.replace(/ الكبرى$/, ''))}">${esc(gpName)}</span>` : esc(gpName);
     pre = session;
     card = head + ' · ' + esc(session);
@@ -2153,7 +2153,7 @@ function packPages(slots, per){
   }
   return pages;
 }
-// loading, failed and empty are three different things: «لا مباريات» only after an answer that had none
+// loading, failed and empty are three different things
 function matchesEmptyText(){
   return MATCHES_LOADED ? 'لا مباريات هذا الأسبوع' : MATCH_FAIL_AT ? 'تعذّر التحديث' : 'جارٍ التحميل…';
 }
@@ -2189,9 +2189,9 @@ function renderMatches(turn){
   if(turn && pages.length > 1){ row.classList.remove('flip'); void row.offsetWidth; row.classList.add('flip'); }
 }
 
-// Two games side by side leave little room: «مانشستر سيتي» came out «مانشستر سـ…». A game always stays on one line:
-// the row steps down in size until every game fits; still too long, the long club names take their usual short
-// form (only then); still too long, renderMatches shows the two games one to a page; the ellipsis stays a last
+// Two games side by side leave little room
+// the row steps down in size until every game fits
+// form (only then); still too long, renderMatches shows the two games one to a page
 // resort for a single game. Both games keep one size.
 const TEAM_SHORT = {
   'مانشستر سيتي':'السيتي', 'مانشستر يونايتد':'اليونايتد', 'ريال مدريد':'الريال', 'أتلتيكو مدريد':'أتلتيكو',
@@ -2263,7 +2263,7 @@ async function fetchLast(id){
   const j = await r.json();
   return j.results || [];
 }
-// One request at a time, CONFIG.queueGapMs apart, and never two runs at once (a slow answer would pile them up).
+// One request at a time, CONFIG.queueGapMs apart, and never two runs at once
 const loadMatches = guarded('matches', async function(){
   // never throw away a good fixture or result on a failed refresh
   let answered = 0, asked = 0;
@@ -2299,7 +2299,7 @@ const loadMatches = guarded('matches', async function(){
 });
 
 // what the top-left can show: Yahoo symbol or CoinGecko id, decimals for the price, unit after it, and for
-// gold and silver the factor from USD per troy ounce to riyals per gram (3.75 riyals to the dollar, 31.1035 g)
+// gold and silver the factor from USD per troy ounce to riyals per gram
 const GRAM = 3.75 / 31.1035;
 const MARKETS = {
   tasi:   {name:'تاسي',     sym:'^TASI.SR', dec:0},
@@ -2316,7 +2316,7 @@ const TICKERS = CONFIG.markets.map(k => Object.assign({key:k, chg:k + '-chg', px
   .map(t => Object.assign(t, {fk: t.sym || CG_YAHOO[t.cg]}));
 const PRICES = CONFIG.mkStyle === 'prices';
 
-// the default list with arrows is the markup in the page; anything else is made here, before the saved copy is put back
+// the default list with arrows is the markup in the page
 function buildMarkets(){
   const mk = document.querySelector('.mk');
   mk.hidden = !CONFIG.mkBar;
@@ -2452,7 +2452,7 @@ function paintDir(t, up, label){
   if(chEl.className !== cls) chEl.className = cls;
 }
 
-// price (in the market's own unit, or null) and the day's change in percent (or null); only what is known is shown.
+// price (in the market's own unit, or null) and the day's change in percent
 // at = when the price was fetched: the last one stays on screen when a refresh fails, dimmed and marked with that time.
 const MK_LAST = (()=>{ try{ return JSON.parse(localStorage.getItem(LS.mk) || '{}') || {}; }catch(e){ return {}; } })();   // market -> {price, pct, at, bad}
 const saveMarkets = () => { try{ localStorage.setItem(LS.mk, JSON.stringify(MK_LAST)); }catch(e){} };
@@ -2479,8 +2479,8 @@ function paintMkUp(){
   setText(up, stale.length ? staleMark(stale[0]) : fmtAgo(Math.max(...known.map(t => MK_LAST[t.key].at || 0))) + (known.some(t => sesOpen(t.fk) && Date.now() - MK_LAST[t.key].at > LATE_MS) ? ' · ' + 'متأخر' : ''));
 }
 
-// The deadline covers the answer's headers and its body: the timer stops when the body has been read (or the request failed),
-// so a server that sends headers and then stalls ends in an error like a slow one. The answer has what the callers use:
+// The deadline covers the answer's headers and its body
+// so a server that sends headers and then stalls ends in an error like a slow one
 // ok, status, json(), text(), blob().
 async function fetchT(url, ms){
   const c = new AbortController(); const id = setTimeout(()=>c.abort(), ms||12000);
@@ -2492,8 +2492,8 @@ async function fetchT(url, ms){
   return {ok:r.ok, status:r.status, json:body('json'), text:body('text'), blob:body('blob')};
 }
 
-// ---- prices. First the file CI keeps (.github/tools/market_prices.py, branch data-markets): one download holds every market and the
-// common stocks, so the TVs do not each ask Yahoo. A symbol that is not in it, or a file older than 3 hours, is asked of Yahoo itself.
+// ---- prices. First the file CI keeps (.github/tools/market_prices.py, branch data-markets)
+// common stocks, so the TVs do not each ask Yahoo
 const MARKET_URL = 'https://raw.githubusercontent.com/tshi-dev/UrTV/data-markets/markets/markets.json';
 const MARKET_TRUST_MS = 3*3600000;
 let MARKET_FILE = null;   // {updated, quotes: {symbol: {p, v, c, t}}}
@@ -2503,14 +2503,14 @@ async function loadMarketFile(){
     if(r.ok){ const j = await r.json(); if(j && j.quotes && Date.parse(j.updated)) MARKET_FILE = j; }
   }catch(e){}                                  // offline: the copy from before, which fileQuote() trusts for 3 hours only
 }
-// GitHub drops cron runs: while its exchange is open a file older than 20 minutes is not trusted (Yahoo is asked)
+// GitHub drops cron runs: while its exchange is open a file older than 20 minutes is not trusted
 const LATE_MS = 20*60000, sesOpen = sym => /\.SR$/.test(sym) ? marketOpen(true) : /^(\^[A-Z]+|[A-Z]{1,5}(\.[A-Z])?)$/.test(sym) && marketOpen(false);
 function fileQuote(sym, lax){
   const q = MARKET_FILE && MARKET_FILE.quotes[sym], at = q ? Date.parse(q.t) : 0;
   return q && typeof q.p === 'number' && Date.now() - at < (!lax && sesOpen(sym) ? LATE_MS : MARKET_TRUST_MS) ? {p:q.p, v:q.v || null, c:q.c || [], at} : null;
 }
 
-// Yahoo has no CORS headers: try it directly (works inside the app), then through public CORS gateways. The gateways are for a network
+// Yahoo has no CORS headers: try it directly
 // or CORS error (a TypeError) only: an answer, 404 for a symbol that does not exist or 429 for too many requests, is final, and
 // the gateways would only repeat the request. A symbol that answered 404 is not asked again for a day.
 const YH_404 = (()=>{ try{ return JSON.parse(localStorage.getItem('yh404') || '{}') || {}; }catch(e){ return {}; } })();
@@ -2537,8 +2537,8 @@ async function yahooChart(sym, q = 'interval=1d&range=5d'){
   throw 0;
 }
 
-// What one symbol is now, from its own source: {p: price, v: the close before (or null), c: the day's closes, pct: the day's change when the
-// source says it, at: now}, or null. intra = 15-minute closes of today (the stocks card draws them); else the daily closes of five days
+// What one symbol is now, from its own source
+// source says it, at: now}, or null. intra = 15-minute closes of today
 // (the markets line only needs the change).
 async function directQuote(j){
   try{
@@ -2569,7 +2569,7 @@ function staleMark(v){
   return v.at && !old ? fmtAgo(v.at) : 'غير محدّث';
 }
 
-// One tick for the markets line and the stocks card: each symbol once (a stock on both is asked once), one request at a time.
+// One tick for the markets line and the stocks card
 const WITH_LINE = !CONFIG.widget && (CONFIG.mkBar || CONFIG.slot === 'markets');   // no line in the launcher's page; hidden = no requests (unless the slot shows them)
 const loadMarkets = guarded('markets', async function(){
   const jobs = new Map();   // Yahoo symbol -> {key, cg, intra, tk: its markets, sk: its stocks}
@@ -2608,7 +2608,7 @@ const loadStocks = loadMarkets, loadTickers = loadMarkets;
 
 const SKIP_TYPES = ['News','Talk Show','Sports','Game Show'];
 let WEEK_OK_AT = 0, WEEK_FAIL_AT = 0;   // the last refresh that kept its answer, and the last one that failed (0 = never)
-// TVmaze, one request at a time CONFIG.weekGapMs apart. null = no answer (a failed request), [] = an answer with nothing in it.
+// TVmaze, one request at a time CONFIG.weekGapMs apart
 const loadWeek = guarded('week', async function(){
   const F = CONFIG.shows, seen = new Set(), out = [];
   let asked = 0, failed = 0, answered = 0;
@@ -2660,7 +2660,7 @@ const loadWeek = guarded('week', async function(){
     });
   }
 
-  // The pool is replaced only when every day answered: a list made of some days is a wrong list. With no list yet, some is better than none.
+  // The pool is replaced only when every day answered
   const whole = answered > 0 && failed === 0;
   if(!whole && !(answered > 0 && !WEEK_POOL.length && out.length)){
     WEEK_FAIL_AT = Date.now();
@@ -2679,7 +2679,7 @@ const WEEK_ROWS = 5;
 const MATCH_ROWS = 4;   // the games card: each game takes two lines (teams, date and time)
 let WEEK_POOL = [], WEEK_LOADED = false;
 
-// «جديد المسلسلات»: this card's page of the pool (card.page counts pages of card.cap, or WEEK_ROWS, rows)
+// «جديد المسلسلات»: this card's page of the pool
 function renderWeekPage(card, animate){
   const ul = card.ul;
   if(!WEEK_POOL.length){
@@ -2705,9 +2705,9 @@ function renderWeekPage(card, animate){
   if(animate){ void ul.offsetWidth; ul.classList.add('flip'); }
 }
 
-// ---- the cards: the screensaver has one beside the clock, the launcher's page up to three (CONFIG.cards, one kind each).
-// Each is its own element with its own page, timers and size: renderCard(card) draws one kind into that card, nothing else is shared
-// but the data the kinds load. card.z is its text size (1 = full), card.cap the rows a page of a list may hold; the launcher
+// ---- the cards: the screensaver has one beside the clock, the launcher's page up to three
+// Each is its own element with its own page, timers and size
+// but the data the kinds load. card.z is its text size
 // steps both down until the cards fit their box (fitCards).
 const CARDS = [];
 function buildCards(){
@@ -2728,8 +2728,8 @@ function buildCards(){
   markLive();
 }
 
-// The launcher's «المهام» card is a button (#live=1): the page draws its mic mark and its ring; Android owns the focus and OK.
-// setLiveFocus(true|false) is called by the launcher when the card gets or loses the focus; liveRect() says where the card is
+// The launcher's «المهام» card is a button
+// setLiveFocus(true|false) is called by the launcher when the card gets or loses the focus
 // ("left,top,width,height" in CSS px, '' when no card is live) so the launcher can put its focus target over it.
 // The stocks card too (tap: OK opens «الأسواق»; the ring, no mark): (on, 'stocks'), ('stocks'). No kind: «المهام».
 const MIC_MARK = '<span class="micmark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11z"/></svg></span>';
@@ -2752,7 +2752,7 @@ try{ FORECAST = JSON.parse(localStorage.getItem(LS.forecast) || '[]') || []; }ca
 const PANEL_TITLE = {today:'يومك', shows:'هذا الأسبوع', prayers:'مواقيت اليوم', nextprayer:'الصلاة القادمة', forecast:'الأيام القادمة', hourly:'الساعات القادمة', matches:CONFIG.leagues.length ? 'المباريات' : 'مباريات فرقك', tasks:'المهام', year:'السنة'};
 const LISTS = ['matches', 'stocks', 'tasks', 'shows'];   // the kinds that page through their rows
 
-// ---- «يومك» (today): the day in one card: the next prayer, the next game of a followed team, the first open task, the next
+// ---- «يومك» (today): the day in one card
 // occasion. A line with nothing to say is left out.
 function nextFollowedGame(now){
   const seen = new Set(), all = [];
@@ -2790,8 +2790,8 @@ function todayCard(){
   return {title: 'يومك', rows};
 }
 
-// ---- a followed team's game under way, big: its score, the minute and «مباشر» (item 2). The matches card and the bottom slot
-// show it alone, with both crests where there are crests (on both match surfaces), until it ends; then they go back to the list.
+// ---- a followed team's game under way, big
+// show it alone, with both crests where there are crests
 function liveWhen(ev){   // «مباشر» and «الدقيقة ٦٧» / «استراحة» / «بدأت ٦:٣٠ م»
   const p = hmParts(toDate(ev));
   return `<span class="live">مباشر</span> · ${liveStatus(ev, ar(fmtTime(+p.hour % 24, +p.minute)))}`;
@@ -2801,7 +2801,7 @@ function liveRow(ev){   // a row of the card: «الهلال [شعار] ٢ - ١ 
   return `<li class="lv"><div class="lvm">${liveWhen(ev)}</div><div class="lvt"><span class="tm"><span class="nm">${esc(teamAr(ev.strHomeTeam, ev.idHomeTeam))}</span>${crestImg(ev, 'Home')}</span>`
     + `${liveScore(ev)}<span class="tm">${crestImg(ev, 'Away')}<span class="nm">${esc(teamAr(ev.strAwayTeam, ev.idAwayTeam))}</span></span></div></li>`;
 }
-// one line, always: the names step down in size, then take their short forms, then lose their crests (as the list's rows do)
+// one line, always: the names step down in size, then take their short forms, then lose their crests
 function fitLive(ul){
   ul.querySelectorAll('.lvt').forEach(t => {
     const ok = () => t.scrollWidth <= t.clientWidth + .5;
@@ -2817,9 +2817,9 @@ function fitLive(ul){
     // ---- «البطاقة الذكية» (smart): what matters now, picked again with every redraw
     //  1. a followed team's game is live or starts within 60 minutes: the matches card with that game;
     //  2. within 15 minutes of a prayer: the prayers' row, minutes left in its title
-    //  3. the adhkar window (morning Fajr to Dhuhr, evening Asr to Maghrib): the adhkar card;   4. otherwise: the next hours' weather.
+    //  3. the adhkar window (morning Fajr to Dhuhr, evening Asr to Maghrib)
 const SMART_GAME_MIN = 60, SMART_PRAYER_MIN = 15;
-// the followed teams' games that are live now, or (not liveOnly) start within SMART_GAME_MIN minutes: [ev] in time order
+// the followed teams' games that are live now, or
 function focusGames(now, liveOnly){
   const seen = new Set(), out = [];
   CONFIG.teamIds.forEach(id => [MATCHES[id], ...(NEXT_LIST[id] || [])].forEach(ev => {
@@ -2845,12 +2845,12 @@ function smartKind(now = Date.now()){
 }
 
 
-// the header: HTML when the kind has icons or a note in it, else its title (the two never share a stale copy)
+// the header: HTML when the kind has icons or a note in it, else its title
 function paintHd(hd, title, html){
   if(html) setHTML(hd, html); else { setText(hd, title); hd.__h = null; }
 }
 
-// Draw the cards of these kinds (none given = all). A kind may sit in a smart or «يومك» card, which follow the same data.
+// Draw the cards of these kinds (none given = all)
 function renderPanel(animate, ...kinds){
   for(const c of CARDS){
     if(kinds.length && !kinds.includes(c.kind) && c.kind !== 'smart' && c.kind !== 'today') continue;
@@ -2923,17 +2923,17 @@ function renderCard(card, animate, keepSize){
 
     // ---- sizing in the launcher: the cards share the box of the WebView
     // per page (a list, card.ri), then picks a shorter text
-    // changed. A quote comes down to .82 before a shorter text; a card too wide (a name ending in «…») can only give text size.
+    // changed. A quote comes down to .82 before a shorter text
 const Z_STEPS = [1, .94, .88, .82, .76, .7, .64];
 function cardCut(card){   // a name or a cell wider than its place: it would end in «…» or run into the next
   for(const e of card.el.querySelectorAll('li, li *, .hd > span')){
     if(e.clientWidth > 0 && e.scrollWidth > e.clientWidth + 1) return true;
-    // the screensaver's pair is measured to the fraction of a pixel (fits()): a source line over by half a pixel ended in «…» there
+    // the screensaver's pair is measured to the fraction of a pixel
     if(!CONFIG.widget && e.clientWidth > 0 && e.scrollWidth >= e.clientWidth && getComputedStyle(e).textOverflow === 'ellipsis' && !fits(e)) return true;
   }
   return false;
 }
-// The screensaver's pair is read from the sofa: its text never goes below a floor (a row's text 2.1vh, every other line 1.45vh);
+// The screensaver's pair is read from the sofa
 // at the floor a verse or a dhikr takes a shorter text and a list fewer rows, as the home screen's cards do, instead of a smaller size.
 const PAIR_FLOOR = {row: .021, small: .0145};
 // (a text that is smaller than its floor at full size is not made smaller at all)
@@ -2968,7 +2968,7 @@ function shrinkCard(c, tooWide){   // false when there is no step left
   if(cap !== c.cap || maxLen !== c.maxLen){ c.cap = cap; c.maxLen = maxLen; renderCard(c, false, true); }
   return true;
 }
-// at the pair's floor: fewer rows of a list, a shorter verse or dhikr; false when neither is left (the card is then as it is)
+// at the pair's floor: fewer rows of a list, a shorter verse or dhikr
 function shrinkByContent(c){
   const list = LISTS.includes(c.eff), quote = c.eff === 'verse' || c.eff === 'adhkar';
   if(list && c.ri < c.base - 1) c.ri++;
@@ -2978,8 +2978,8 @@ function shrinkByContent(c){
   if(cap !== c.cap || maxLen !== c.maxLen){ c.cap = cap; c.maxLen = maxLen; renderCard(c, false, true); }
   return true;
 }
-// The screensaver's pair beside the small clock (#panel2=) is fitted the same way: its box is the middle row, which may not push
-// the bottom row down (and keeps 2vh of air); the pair is drawn the same height, so while it is fitted each card has its own.
+// The screensaver's pair beside the small clock
+// the bottom row down (and keeps 2vh of air)
 function fitCards(){
   if(CARDS.length < 2) return;
   const mid = document.querySelector('.mid');
@@ -3003,7 +3003,7 @@ function pairTooTall(){
   return Math.max(...CARDS.map(c => c.el.offsetHeight)) > room + .5;
 }
 
-// the year's numbers, shared by the card and the strip: the Gregorian year in Riyadh time, its days, today's number
+// the year's numbers, shared by the card and the strip
 function yearFacts(){
   const p = riyadhParts(new Date(Date.now())), y = p.y;
   const total = (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0 ? 366 : 365;
@@ -3012,7 +3012,7 @@ function yearFacts(){
   return {y, total, day, pct, text: `اليوم <b>${ar(day)}</b> من ${ar(total)} · ${ar(pct)}${LATIN ? '%' : '٪'}`};
 }
 
-// ---- «السنة»: a dot for every day of this Gregorian year (Riyadh time). Drawn again only when the day changes.
+// ---- «السنة»: a dot for every day of this Gregorian year
 function yearCard(card){
   const {y, total, day, pct, text} = yearFacts();
   const COLS = 36, ROWS = Math.ceil(total / COLS), PITCH = 10, R = 3.2;
@@ -3036,9 +3036,9 @@ function yearCard(card){
        + `<div class="yt">${text}</div></li>`;
 }
 
-// ---- the slim year strip under the clock (#yearstrip=1): 365/366 dots in 7 rows of 53, from the right, top row first;
-// the passed days light up toward gold, today glows, the rest stay faint. No text line. Drawn again only when the day changes;
-// fitYearStrip() runs after every clock redraw: no wider than the clock, hidden when the room under it is too small.
+// ---- the slim year strip under the clock
+// the passed days light up toward gold, today glows, the rest stay faint
+// fitYearStrip() runs after every clock redraw
 function renderYearStrip(){
   const el = document.getElementById('ystrip');
   if(!el || !CONFIG.yearStrip || CONFIG.widget) return;
@@ -3074,8 +3074,8 @@ function prayerRows(){
   if(!DAY_TIMES) return [];
   const p = riyadhParts(), mins = p.h * 60 + p.mi + p.s / 60;
   const names = {Fajr:'الفجر', Sunrise:'الشروق', Dhuhr:isFriday() ? 'الجمعة' : 'الظهر', Asr:'العصر', Maghrib:'المغرب', Isha:'العشاء'};
-  // The lit box is the one the bottom panel names (tickPrayer): during the iqama wait the prayer that has just been called, else the next
-  // of the five, and after Isha tomorrow's Fajr. The sunrise is not a prayer and is never lit. Before Fajr nothing is past.
+  // The lit box is the one the bottom panel names
+  // of the five, and after Isha tomorrow's Fajr
   const at = k => { const [h, mi] = String(DAY_TIMES[k]).split(':').map(Number); return h * 60 + mi; };
   const cur = PRAYERS.find(x => { const gap = x.key === 'Dhuhr' && isFriday() ? 0 : (CONFIG.iqama[x.key] || 0); return mins >= at(x.key) && mins < at(x.key) + gap; });
   const lit = cur ? cur.key : (PRAYERS.find(x => at(x.key) > mins) || PRAYERS[0] || {}).key;
@@ -3104,9 +3104,9 @@ function forecastRows(){
 }
 
 // ---- club crests on match cards: TheSportsDB's badge, which the events already carry
-// (strHomeTeamBadge / strAwayTeamBadge, with idHomeTeam / idAwayTeam). No request of its own except the picture,
+// (strHomeTeamBadge / strAwayTeamBadge, with idHomeTeam / idAwayTeam)
 // once per club: kept as a 48 px copy in localStorage and fetched again only when the badge's address changes.
-// The launcher's page is a file:// document and the badge host may send no Access-Control-Allow-Origin: fetch() is then refused (or
+// The launcher's page is a file:// document and the badge host may send no Access-Control-Allow-Origin
 // the answer is no picture). The club keeps its address alone and the row shows a plain <img> of it, which needs no CORS.
 const CRESTS_ON = USES('matches');
 const CREST_PX = 48, CREST_KEEP = 60, CREST_PER_ROUND = 10;
@@ -3191,7 +3191,7 @@ function nextPrayerRows(){
   const p = riyadhParts(), mins = p.h * 60 + p.mi + p.s / 60;
   let n = PRAYERS.find(x => x.h * 60 + x.mi > mins), tomorrow = false;
   if(!n){ n = PRAYERS[0]; tomorrow = true; }
-  // in the words of the bar and of the screensaver's own «الصلاة القادمة» (untilAdhan): the same minutes at the same second
+  // in the words of the bar and of the screensaver's own «الصلاة القادمة»
   const left = untilAdhan(n.h * 60 + n.mi + (tomorrow ? 1440 : 0) - mins);
   return [`<li class="np"><b>${prayerName(n)}</b><span class="t">${fmtTime(n.h, n.mi)}،</span><span class="r">بعد ${left}</span></li>`];   // «،», not «·»: beside «م» it reads as «٠»
 }
@@ -3209,7 +3209,7 @@ function prayerRowCard(){
   };
 }
 
-// ---- «الساعات القادمة»: the next six hours, from the same Open-Meteo request as the forecast (see loadWeather)
+// ---- «الساعات القادمة»: the next six hours, from the same Open-Meteo request as the forecast
 let HOURLY = [], SUN = {};   // [{t: '2026-10-23T18:00' (the city's time), code, temp}], and date -> [sunrise, sunset] as 'HH:MM'
 try{ const c = JSON.parse(localStorage.getItem(LS.hourly) || 'null'); if(c){ HOURLY = c.h || []; SUN = c.s || {}; } }catch(e){}
 const hourKey = () => { const p = riyadhParts(); return `${p.y}-${pad(p.mo)}-${pad(p.d)}T${pad(p.h)}:00`; };
@@ -3273,7 +3273,7 @@ function matchRows(card){
       || (now < x.t + durMs(x.ev) && !FINAL.includes((x.ev.strStatus || '').toUpperCase())
           && x.t - now <= CONFIG.weekWindowDays * 86400000))
     .sort(byRank);
-  // a club with no crest keeps a crest-wide empty space, but only in a card where other rows have crests (the rows line up);
+  // a club with no crest keeps a crest-wide empty space, but only in a card where other rows have crests
   // a card with no crest at all is as it was
   const anyCrest = shown.some(x => crestImg(x.ev, 'Home') || crestImg(x.ev, 'Away'));
   const crestOrGap = (ev, side) => crestImg(ev, side) || (anyCrest ? '<span class="crgap"></span>' : '');
@@ -3286,7 +3286,7 @@ function matchRows(card){
         : pending ? ''   // over with no result yet: no score, no «بعد …»
         : now >= t ? '<span class="live">مباشر</span>'
         : 'بعد ' + shortRemaining(t - now).split(' و ')[0];   // one unit: the date says the rest
-      // the date is always there but for a game under way: the day and time of a game to come or one with no result yet, the day of a finished one
+      // the date is always there but for a game under way
       const date = upcoming || pending ? matchWhen(d) : done ? matchDay(d) : '';
       const dateEl = date ? `<i class="mwhen" data-s="${esc(matchWhenShort(d, now, done))}">${date}</i>` : '';
       const club = (id, name, home) => `<span class="tm">${home ? '' : crestOrGap(ev, 'Away')}<span class="nm">${esc(teamAr(name, id))}</span>${home ? crestOrGap(ev, 'Home') : ''}</span>`;
@@ -3294,7 +3294,7 @@ function matchRows(card){
     }), ...others.map(o => ({...o, r: o.t <= now ? 1 : 2}))].sort(byRank).map(x => x.html);
 }
 
-// ---- «الأسهم»: the watchlist card. A Tadawul code (4 digits) is asked of Yahoo as CODE.SR, letters are a US ticker.
+// ---- «الأسهم»: the watchlist card. A Tadawul code
 const TADAWUL = {   // Arabic short names of the 30 largest companies; any other code shows as the number
   '2222':'أرامكو', '1120':'الراجحي', '1180':'الأهلي', '2010':'سابك', '7010':'stc', '1211':'معادن', '2082':'أكوا',
   '5110':'كهرباء السعودية', '1150':'الإنماء', '1060':'ساب', '1010':'بنك الرياض', '1050':'السعودي الفرنسي', '1140':'البلاد',
@@ -3311,7 +3311,7 @@ function marketOpen(sa, ms = Date.now()){
   const p = NY_CLOCK.formatToParts(new Date(ms)).reduce((a, x) => (a[x.type] = x.value, a), {}), m = (+p.hour % 24) * 60 + +p.minute;
   return p.weekday !== 'Sat' && p.weekday !== 'Sun' && m >= 570 && m < 960;   // New York's own clock, summer time and winter time alike
 }
-let STOCKS = {};   // code -> {p: price, v: previous close or null, c: the day's closes, at: when it was fetched, bad: the last refresh failed}
+let STOCKS = {};   // code -> {p: price, v: previous close or null, c
 try{ STOCKS = JSON.parse(localStorage.getItem(LS.stocks) || '{}') || {}; }catch(e){}
 // a small line of the day's closes, 60 x 16, drawn only when the card's markup changes
 function spark(c, up){
@@ -3338,12 +3338,12 @@ function stocksCard(){
   return {hd: '<span>الأسهم</span>' + (note ? `<span class="until near">${note}</span>` : ''), rows};
 }
 
-// verse one day, hadith the next. Verse texts come from the Quran API via CI (.github/tools/fetch_verses.py), never typed.
+// verse one day, hadith the next. Verse texts come from the Quran API via CI
 const VERSES = __VERSES__;   // assets/shared/verses.json
 // hadith: only those .github/tools/verify_hadith.py found in the six books, each shown in full as the book has it,
-// isnad and all: parts are ["n", narration] and ["q", the Prophet's words]; source is the book and its number
+// isnad and all: parts are ["n", narration] and ["q", the Prophet's words]
 const HADITH = __HADITH__;   // assets/shared/hadith.json, through src/build.py
-// the text's size steps down with its length (characters): up to 180 as it was, then three smaller steps
+// the text's size steps down with its length
 const quoteSize = n => n > 420 ? ' q3' : n > 300 ? ' q2' : n > 180 ? ' q1' : '';
 // a long text steps down one size more (q1..q4) until the card has 4 px to spare under its 42% and above the bottom bar
 function fitQuote(ul){
@@ -3358,7 +3358,7 @@ function fitQuote(ul){
     li.classList.add('q' + ++at);
   }
 }
-// the tafsir cut at a word, «…» after it, until it fits three lines (the build already limits its length); on a card
+// the tafsir cut at a word, «…» after it, until it fits three lines
 // that is already full (a long verse on a small screen) fewer lines, none at all if not even one fits
 function fitTafsir(ul){
   const el = ul.querySelector('li.tafsir');
@@ -3378,7 +3378,7 @@ function fitTafsir(ul){
   }
   el.remove();
 }
-// A card in a small place (the launcher's second or third) asks for a text no longer than card.maxLen: the first that short from the
+// A card in a small place (the launcher's second or third) asks for a text no longer than card.maxLen
 // day's own, going on from it; none that short, the shortest.
 function pickShort(list, at, len, card){
   card = card || {};
@@ -3393,10 +3393,10 @@ function pickShort(list, at, len, card){
   card.len = len(best);
   return best;
 }
-// The verse card's turn: the day as always, or with #versemin=3 the 3-minute slot of the clock (even = a verse, odd = a hadith)
+// The verse card's turn: the day as always, or with #versemin=3 the 3-minute slot of the clock
 const quoteTurn = () => CONFIG.verseMin ? Math.floor(Date.now() / (CONFIG.verseMin * 60000)) : riyadhDayNumber();
 function quoteOfDay(card){
-  // both (the default): even turns a verse, odd a hadith, each list a step every two turns; verse or hadith alone: that list, a step every turn
+  // both (the default): even turns a verse, odd a hadith, each list a step every two turns
   const n = quoteTurn(), kind = CONFIG.verseKind, half = kind === 'both' ? Math.floor(n / 2) : n;
   if(VERSES.length && (kind === 'verse' || (kind === 'both' && n % 2 === 0))){
     const v = pickShort(VERSES, half, x => x.text.length, card);
@@ -3409,7 +3409,7 @@ function quoteOfDay(card){
   return {title:CONFIG.verseMin ? 'حديث شريف' : 'حديث اليوم', rows:[`<li class="quote hadith${quoteSize(h.parts.reduce((n, [, t]) => n + t.length, 0))}">${body}</li>`, `<li class="src">${esc(h.source)}</li>`]};
 }
 
-// «حكمة اليوم»: one saying a day by the Riyadh day number, proverbs and classical sayings only (assets/shared/wisdom.json)
+// «حكمة اليوم»: one saying a day by the Riyadh day number, proverbs and classical sayings only
 const WISDOM = __WISDOM__;
 function wisdomOfDay(){
   if(!WISDOM.length) return quoteOfDay();
@@ -3417,8 +3417,8 @@ function wisdomOfDay(){
   return {title:'حكمة اليوم', rows:[`<li class="quote${quoteSize(w.text.length)}">${esc(w.text)}</li>`, `<li class="src">${esc(w.source)}</li>`]};
 }
 
-// «أذكار الصباح والمساء» (from حصن المسلم): only those .github/tools/verify_adhkar.py found in the six books or the Quran.
-// Morning: Fajr to Dhuhr; evening: Asr to Maghrib; night (the end of al-Baqara): Isha to Fajr. Between them the «both» ones,
+// «أذكار الصباح والمساء» (from حصن المسلم)
+// Morning: Fajr to Dhuhr; evening: Asr to Maghrib
 // under when the next begin («أذكار المساء · مع العصر ٣:٠٠ م»), never the verse or hadith of the day
 // (the night verse is too long for the screen) falls back to the evening ones, «late»
 const ADHKAR = __ADHKAR__;   // assets/shared/adhkar.json, through src/build.py
@@ -3468,7 +3468,7 @@ function adhkarCard(card){
   ad.n = list.length;
   if(!ad.t) ad.t = setTimeout(() => adhkarNext(card), Math.min(60, 20 + .1 * d.text.length) * 1000);
   const dots = Math.min(list.length, 12), on = Math.floor(i * dots / list.length);
-  // the ayah-end signs of a surah carry their number inside the ornament in Arabic-Indic digits (the font draws only those inside it);
+  // the ayah-end signs of a surah carry their number inside the ornament in Arabic-Indic digits
   // with Western digits chosen the number goes and the ornament stays empty, rather than a «1» outside the circle
   const qt = d.quran && LATIN ? d.text.replace(/(\u06DD)[\u0660-\u0669]+/g, '$1') : d.text;
   const text = d.quran ? `<span class="orn">﴿</span><span class="qt">${esc(qt)}</span><span class="orn">﴾</span>` : esc(d.text);
@@ -3490,7 +3490,7 @@ const WX_CODES = {
   80:'زخات خفيفة',81:'زخات مطر',82:'زخات غزيرة',85:'زخات ثلج',86:'زخات ثلج',
   95:'عواصف رعدية',96:'عواصف مصحوبة ببرد',99:'عواصف قوية'
 };
-// When the current reading was fetched, and the last dust reading (µg/m³): both are kept on the device. A reading older than 3 hours is
+// When the current reading was fetched, and the last dust reading
 // not shown as «now» (the temperature, the word and the day's range at the top left go blank until a new one arrives).
 const WX_STALE_MS = 3*3600000;
 let WX = {at: 0, pm: 0, pmAt: 0, vis: null};
@@ -3500,7 +3500,7 @@ function wxExpire(){
   if(Date.now() - WX.at < WX_STALE_MS) return;
   ['wx-temp', 'wx-desc', 'wx-dust', 'wx-range', 'wx-src'].forEach(id => { const el = document.getElementById(id); if(el) setText(el, ''); });
 }
-// «Open-Meteo · قبل ١٥ د»: where the weather comes from and how old the reading is (kept up to date with the clock, no request)
+// «Open-Meteo · قبل ١٥ د»: where the weather comes from and how old the reading is
 function wxAgeText(ms){
   const m = Math.floor(ms / 60000);
   return m < 1 ? 'الآن' : m < 60 ? 'قبل ' + ar(m) + ' د' : 'قبل ' + ar(Math.floor(m / 60)) + ' س';
@@ -3601,17 +3601,17 @@ function pixelShift(){
   if(st) st.style.transform = `translate(${dx}px,${dy}px)`;
 }
 
-// Background photos: the hosted set in photos/ (photos/index.json in the repo). A hosted photo is used only
+// Background photos: the hosted set in photos/
 // once it has loaded; offline, or if it fails, a bundled one is shown, so the screen is never empty.
 const PHOTO_BASE = 'https://raw.githubusercontent.com/tshi-dev/UrTV/master/photos/';
 let REMOTE_BGS = (()=>{ try{ return JSON.parse(localStorage.getItem('photoIndex') || '[]'); }catch(e){ return []; } })();
 
-// The owner's own photos: the app answers OWN_BASE N.jpg (1..CONFIG.own) from its own folder, never from the network.
+// The owner's own photos: the app answers OWN_BASE N.jpg
 const OWN_BASE = 'https://own.urtv.invalid/';
 const OWN_ONLY = () => CONFIG.own > 0 && CONFIG.ownMode === 'only';
 const ownPhotos = () => Array.from({length: CONFIG.own}, (_, k) => ({url: OWN_BASE + (k + 1) + '.jpg', b: {}}));   // no credit: they are not ours
 
-// The downloaded packs: the app answers PACK_BASE ID/N.jpg (1..count) and ID/credits.json from its own folder. Each photo carries its credit
+// The downloaded packs: the app answers PACK_BASE ID/N.jpg
 // (author · licence) once the pack's credits arrive; one that has not yet is shown without it.
 const PACK_BASE = 'https://packs.urtv.invalid/';
 const PACK_CREDITS = {};
@@ -3660,7 +3660,7 @@ function showBackground(url, b){
 
 // ---- card style blur: a copy of the photo behind the card, blurred once per photo, never a live backdrop-filter ----
 // Made only after the photo has settled (it drifts for 60 s, then holds still) and thrown away when the photo
-// changes, so nothing repaints while the screen is idle. Any failure leaves the card on its plain tint.
+// changes, so nothing repaints while the screen is idle
 const CARD_FILTER = {   // blur px, then the CSS filter functions, as in the approved designs
   dark1:[6,'saturate(140%)'], glass1:[9,'saturate(170%) brightness(.62)'],
   dark3:[6,'saturate(140%)'], glass3:[9,'saturate(160%) brightness(.55)'],
@@ -3735,7 +3735,7 @@ addEventListener('resize', () => {
   }, 400);
 });
 
-// Every 4 days a new random set of 5 hosted photos (same draw as the launcher: Park-Miller generator seeded
+// Every 4 days a new random set of 5 hosted photos
 // by the 4-day period), rotating every CONFIG.photoMinutes (30 unless the owner changed it). Only the photo on screen is downloaded.
 const PHOTO_SET = 5, PHOTO_PERIOD_DAYS = 4;
 function riyadhDayNumber(){
@@ -3754,8 +3754,8 @@ function photoSet(n){
   return pick;
 }
 // One of the owner's photos is due. The app answers it from disk, yet on a cold start that can take more than the 1.2 s the page gives
-// a hosted photo, and a photo of ours must not show first (only) or in its place (mix). So it is waited for, up to OWN_WAIT_MS; one that
-// fails gives way to the next of theirs; none loads, or none in time: a bundled one, so the screen is never empty (theirs still replace
+// a hosted photo, and a photo of ours must not show first
+// fails gives way to the next of theirs; none loads, or none in time
 // it when they arrive).
 const OWN_WAIT_MS = 6000;
 let BG_SLOT = -1, PREFETCHED = false, BG_TURN = 0;
@@ -3782,14 +3782,14 @@ function applyBackground(force){
     const only = OWN_ONLY(), own = ownPhotos(), packs = only ? [] : packPhotos(), mine = own.concat(packs);   // theirs: their own photos, then the packs'
     const set = !only && REMOTE_BGS.length ? photoSet(REMOTE_BGS.length).map(k => REMOTE_BGS[k]) : [];
     const local = BGS[slot % BGS.length];
-    // what rotates: ours (the hosted set, else the bundled photos once the owner has some), then the owner's; only = theirs alone
+    // what rotates: ours (the hosted set, else the bundled photos once the owner has some), then the owner's
     let pool = own;
     if(!only){
       const ours = !CONFIG.ours ? [] : set.length ? set.map(b => ({url: PHOTO_BASE + b.f, b})) : mine.length ? BGS.map(b => ({url: b.u, b, bundled: true})) : [];
       pool = ours.concat(mine);
     }
     if(!pool.length){ showBackground(local.u, local); return; }
-    // «صورنا» and every pack take turns in a shuffled order, a new one for each round (it was the packs one after another)
+    // «صورنا» and every pack take turns in a shuffled order, a new one for each round
     const shuf = (a, seed) => { const r = a.slice(); let x = (seed + 1) * 2654435761 >>> 0 || 1; for(let i = r.length - 1; i > 0; i--){ x = (x * 1664525 + 1013904223) >>> 0; const j = x % (i + 1); [r[i], r[j]] = [r[j], r[i]]; } return r; };
     const pick = (only ? pool : shuf(pool, Math.floor(slot / pool.length)))[slot % pool.length], url = pick.url, b = pick.b;
     if(mine.includes(pick)){ showOwn(pick, mine, local); return; }
@@ -3832,7 +3832,7 @@ function restoreSnap(){
   }catch(e){}
 }
 
-// What the cards need to be redrawn on, one place for the screensaver and the launcher: pages turn every 25 s, the clock-driven kinds
+// What the cards need to be redrawn on, one place for the screensaver and the launcher
 // every 15 s (prayers, the row, the hours, the smart card, «يومك»), the windows and markets every minute.
 function cardTimers(){
   const clocked = ['prayers', 'hourly', 'prayerrow', 'nextprayer', 'smart', 'today'];
@@ -3847,7 +3847,7 @@ function cardTimers(){
     fitCards();
   }, 25*1000);
   setInterval(() => renderPanel(false, 'adhkar', 'stocks', ...clocked), 60*1000);   // a window may have opened; a market opened or closed
-  if(CONFIG.verseMin){   // #versemin=3: the verse card turns when its 3 minutes are up (checked every 10 s), not only once a day
+  if(CONFIG.verseMin){   // #versemin=3: the verse card turns when its 3 minutes are up
     let turn = quoteTurn();
     setInterval(() => {
       if(quoteTurn() === turn) return;
@@ -3858,9 +3858,9 @@ function cardTimers(){
   }
 }
 
-// Drops what this page no longer needs from localStorage, at boot. Only the families named here are looked at (other keys are not
+// Drops what this page no longer needs from localStorage, at boot
 // this function's to judge): a copy keyed by a whole link, which an older version left behind for each setting change, goes at once;
-// a copy for another city, symbol list or link goes after two weeks without being used; of the link-keyed snapshots the newest 6 stay.
+// a copy for another city, symbol list or link goes after two weeks without being used
 const LS_FAMILIES = ['forecast:', 'hourly:', 'wx:', 'stocks:', 'mk:', 'matchesOk:'], LS_IDLE_MS = 14*DAY_MS, LS_SNAPS = 6;
 function pruneStorage(){
   try{
@@ -3890,7 +3890,7 @@ function pruneStorage(){
 }
 
 // «يُتلى الآن» (the screensaver only): the app answers window.UrtvNative.nowPlaying() with {"title":"سورة الكهف","who":"ماهر المعيقلي"} while the
-// Quran or a station plays in the launcher, and "" otherwise. Asked once at the start and then every minute, and the card goes when the
+// Quran or a station plays in the launcher, and "" otherwise
 // answer is empty. The words go in as text. One line: a long one steps down in size (never «…»).
 function nowPlayingTick(){
   const card = document.getElementById('np');
@@ -3907,10 +3907,10 @@ function nowPlayingTick(){
   FIT_STEPS.concat([.64, .56]).find(k => { line.style.fontSize = k === 1 ? '' : k + 'em'; return card.getBoundingClientRect().width <= innerWidth * .42; });
 }
 
-// ---------- the football home (#widget=1&football=1) and «المباريات» (#matchpage=1): docs/PROPOSALS-NOV2.md §1 ----------
-// No request of their own but the weather's: the games are the ones the matches card loads (the followed teams, the followed leagues'
+// ---------- the football home (#widget=1&football=1) and «المباريات»
+// No request of their own but the weather's
 // files on data-leagues, the Saudi Pro League's when none is followed), the prayers are computed or Aladhan's, as everywhere on the page.
-// The launcher owns the focus (FootballFocus.java): it calls fbTop(), fbLight(), fbFocus(), fbMove(), fbPick() and reads fbRects().
+// The launcher owns the focus (FootballFocus.java)
 const FB_W = {
   weather:'الطقس', prayers:'أوقات الصلاة', today:'مباريات اليوم', upcoming:'المباريات القادمة', title:'المباريات', yours:'فرقك', none:'لا مباريات اليوم', back:'رجوع',
   feels:'المحسوسة', hum:'الرطوبة', wind:'الرياح', kmh:'%s كم/س', pct:'٪%s', live:'مباشر', ended:'انتهت', vs:'×',
@@ -3923,7 +3923,7 @@ const FB_W = {
 };
 const fw = (s, ...a) => { let i = 0; return String(s).replace(/%(\d)\$s|%s|%%/g, (m, n) => m === '%%' ? '%' : String(n ? a[+n - 1] : a[i++])); };
 const FB_EN = document.documentElement.lang === 'en';
-// the leagues of Prefs.LEAGUES by TheSportsDB's id (.github/tools/teams-cache.json), with the short name the page shows
+// the leagues of Prefs.LEAGUES by TheSportsDB's id
 const FB_LEAGUES = {'4668':'دوري روشن', '5627':'دوري يلو', '4328':'الدوري الإنجليزي', '4335':'الدوري الإسباني', '4332':'الدوري الإيطالي',
   '4331':'الدوري الألماني', '4334':'الدوري الفرنسي', '4344':'الدوري البرتغالي', '4337':'الدوري الهولندي', '4339':'الدوري التركي',
   '4829':'الدوري المصري', '4678':'الدوري الإماراتي', '4663':'الدوري القطري', '4346':'الدوري الأمريكي', '4387':'NBA', '4391':'NFL',
@@ -3931,7 +3931,7 @@ const FB_LEAGUES = {'4668':'دوري روشن', '5627':'دوري يلو', '4328'
 const FB_LEAGUE_ORDER = Object.keys(FB_LEAGUES);
 const leagueName = ev => FB_LEAGUES[String(ev.idLeague || '')] || String(ev.strLeague || '');
 // «مباريات اليوم»'s marks (assets/shared/broadcast.json)
-// verified and in season, so an unknown, doubtful or partial holder shows nothing (a wrong channel is worse than none)
+// verified and in season, so an unknown, doubtful or partial holder shows nothing
 const BROADCAST = __BROADCAST__;
 function seasonBound(s, end){   // «2027-28»: 1 August 2027 to 31 July 2028; «2026»: the calendar year; NaN when unreadable
   const m = /^(\d{4})(?:-(\d{2}))?$/.exec(String(s || ''));
@@ -3962,7 +3962,7 @@ const fbDayOf = ms => cityToday(ms);
 const fbDayAdd = (day, n) => new Date(Date.parse(day + 'T12:00:00Z') + n * DAY_MS).toISOString().slice(0, 10);
 function fbCount(n){ return fw(n === 1 ? FB_W.g1 : n === 2 ? FB_W.g2 : n <= 10 ? FB_W.gFew : FB_W.gMany, ar(n)); }
 function fbClock(ms){ const p = hmParts(new Date(ms)); return fmtTime(+p.hour % 24, +p.minute); }
-// the five prayers of a city day, each with its moment: today's as the page has them, another day's computed the same way
+// the five prayers of a city day, each with its moment
 function fbPrayers(day){
   const [y, mo, d] = day.split('-').map(Number);
   let t = day === cityToday() && BASE_DAY_TIMES ? BASE_DAY_TIMES : null;
@@ -3975,7 +3975,7 @@ function fbPrayers(day){
     return {key: k, name: k === 'Dhuhr' && friday ? 'الجمعة' : PRAYER_NAMES[k], h: +m[1], mi: +m[2], at: local - tzOffsetMs(local - tzOffsetMs(local))};
   }).filter(Boolean);
 }
-// a prayer called while the game is on (from 10 minutes before the kick-off to its end): the amber note «المغرب ٥:١٧»
+// a prayer called while the game is on (from 10 minutes before the kick-off to its end)
 function fbClash(ev){
   const k = fbKick(ev);
   return fbPrayers(fbDayOf(k)).find(p => p.at >= k - 10 * 60000 && p.at <= k + FB_DUR) || null;
@@ -3988,7 +3988,7 @@ function fbDur(min, lead){   // «بساعة و١٣ دقيقة»
     : fw(m === 1 ? FB_W.m1 : m === 2 ? FB_W.m2 : m <= 10 ? FB_W.mFew : FB_W.mMany, ar(m));
   return [hs, ms].filter(Boolean).join(' ') || (lead || '');
 }
-// one sentence placing the game against the prayers: «تبدأ بعد العشاء بساعة و١٣ دقيقة», or the adhan that falls in it
+// one sentence placing the game against the prayers
 function fbSentence(ev){
   const k = fbKick(ev), list = fbPrayers(fbDayOf(k)), c = fbClash(ev);
   if(c && c.at >= k) return fw(FB_W.adhanAt, c.name, ar(Math.max(1, Math.round((c.at - k) / 60000))));
@@ -4036,7 +4036,7 @@ function fbHome(now){   // today's games, the followed teams' first; with none t
   }
   return list;
 }
-function fbWhen(ev, now){   // the time column: the minute of a live game (green), «انتهت», else the kick-off («الخميس ٨:٠٠ م» on another day)
+function fbWhen(ev, now){   // the time column: the minute of a live game
   if(fbLive(ev, now)) return `<span class="flv">${fbStatus(ev, now)}</span>`;
   if(fbDone(ev, now)) return FB_W.ended;
   const d = fbDayOf(fbKick(ev));
@@ -4174,7 +4174,7 @@ function bootFootball(){
   reveal();
 }
 
-// ---- «المباريات»: a page of its own on the light look; the days, the leagues, the followed teams first, a game's card over it
+// ---- «المباريات»: a page of its own on the light look
 const MP = {day: '', picked: false, zone: 'rows', d: 1, l: 0, r: 0, detail: null, btn: 0, rows: [], leagues: [], days: [], note: ''};
 function mpGroups(){   // [{key, name, games}] of the chosen day: «فرقك», then each league in Prefs.LEAGUES' order
   const games = fbGames().filter(ev => fbDayOf(fbKick(ev)) === MP.day), mine = games.filter(fbMine);
@@ -4203,7 +4203,7 @@ function mpRender(){
   if(!document.getElementById('mp')) return;
   const now = Date.now(), t = cityToday(now);
   MP.days = [-1, 0, 1, 2, 3, 4, 5].map(n => fbDayAdd(t, n));
-  if(!MP.picked){   // the day the widget shows (fbHome): today's games, else the next day that has games, in the city's zone; until the person picks a day
+  if(!MP.picked){   // the day the widget shows (fbHome): today's games, else the next day that has games, in the city's zone
     let day = t;
     if(!fbGames().some(ev => fbDayOf(fbKick(ev)) === t)){
       const next = fbGames().filter(ev => fbKick(ev) > now).sort((a, b) => fbKick(a) - fbKick(b))[0];
@@ -4275,7 +4275,7 @@ function mpBack(){   // the launcher's Back: closes the card first; 'out' when t
   return 'closed';
 }
 function mpAct(){
-  // one focus: OK acts on the button that is RINGED on screen (the one drawn with .f), and on nothing when the card itself is ringed
+  // one focus: OK acts on the button that is RINGED on screen
   const ev = MP.detail, ringed = document.querySelector('#mp-detail .mdb button.f, #mp-detail .mdq button.f');
   if(ringed && ringed.dataset.k === 'back'){ mpBack(); return; }   // «رجوع»: the card closes, the focus is on the game's row again
   const b = ringed && mpButtons(ev, Date.now()).find(x => x.k === ringed.dataset.k);
@@ -4379,14 +4379,14 @@ function boot(){
   if(!SLOT_MATCHES) document.getElementById('match-row').textContent = '';   // not «لا شيء هذا الأسبوع»: that is the matches slot's
   if(CONFIG.cardStyle !== 'current') document.documentElement.classList.add('cs-' + CONFIG.cardStyle);
   if(CONFIG.clockSize !== 'large') document.documentElement.classList.add('ck-' + CONFIG.clockSize);
-  // the small clock's column: its widest time of day in ems, every minute measured in Thmanyah Display (١٢:٣٣ م is 2.60 of them, 10:00 م
+  // the small clock's column: its widest time of day in ems, every minute measured in Thmanyah Display
   // in Latin digits 3.25), so the cards beside it and the panels under it never move
-  // with the seconds, their two boxes and the space before them: .28em × (.3 + 2 × .62) = .43 of the clock's em more, at any time
+  // with the seconds, their two boxes and the space before them
   if(CONFIG.clockSize === 'small') document.documentElement.style.setProperty('--ckk', ((LATIN ? 3.26 : 2.62) + (CONFIG.seconds ? .44 : 0)).toFixed(2));
   if(CONFIG.seconds && !CONFIG.widget) document.getElementById('ck-m').insertAdjacentHTML('afterend', '<span class="sec" id="ck-s"><i></i><i></i></span>');
   buildMarkets();
   restoreSnap();
-  // #wxmore=1: its line under the city, once (the saved copy of the top left may bring one back: keep that one); off, none at all
+  // #wxmore=1: its line under the city, once
   const wxMoreEl = document.getElementById('wx-more');
   if(CONFIG.wxMore && !wxMoreEl) document.getElementById('wx-src').insertAdjacentHTML('beforebegin', '<div class="wxmore" id="wx-more" hidden></div>');
   if(!CONFIG.wxMore && wxMoreEl) wxMoreEl.remove();
@@ -4394,7 +4394,7 @@ function boot(){
   setTimeout(saveSnap, 15*1000);   // the dream can be killed before pagehide
   setInterval(saveSnap, 60*1000);
   addEventListener('pagehide', saveSnap);
-  // the parts of the choices that are off by default are made only when chosen: off, the page is as it was, element for element
+  // the parts of the choices that are off by default are made only when chosen
   if(CONFIG.prayerBar) document.getElementById('prayer-count').insertAdjacentHTML('afterend', '<div class="pbar" id="pbar"><i id="pbar-fill"></i></div>');
   const wxCity = document.getElementById('wx-city');
   if(wxCity) wxCity.textContent = CONFIG.city;
@@ -4421,14 +4421,14 @@ function boot(){
   setInterval(nowPlayingTick, 60*1000);
   setInterval(adhanLiveTick, CONFIG.lowram ? 15000 : 3000);
   if(REMS.length){ remDraw(); setInterval(remDraw, CONFIG.lowram ? 5000 : 1000); }
-  if(CONFIG.seconds){   // the seconds turn on the second, not a drifting interval's moment (one could be shown twice or skipped)
+  if(CONFIG.seconds){   // the seconds turn on the second, not a drifting interval's moment
     const onSecond = () => { tickClock(); setTimeout(onSecond, 1000 - Date.now() % 1000 + 15); };
     setTimeout(onSecond, 1000 - Date.now() % 1000 + 15);
   } else setInterval(tickClock, 1000);
   setInterval(()=>{ tickDates(); tickPrayer(); tickOccasion(); wxExpire(); wxSource(); if(!SLOT_MATCHES) renderSlot(); }, 15000);
   if(SLOT_MATCHES){   // the matches timers run only while the slot shows matches
     setInterval(() => renderMatches(false), 60000);
-    // 15 s a page (two games), 10 s once a league makes more than 3 pages: a round of 9 games passes in 50 s, not 75
+    // 15 s a page (two games), 10 s once a league makes more than 3 pages
     const turn = () => { renderMatches(true); setTimeout(turn, CONFIG.leagues.length && MATCH_PAGES > 3 ? CONFIG.matchPageFastMs : CONFIG.matchPageMs); };
     setTimeout(turn, CONFIG.matchPageMs);
   }
@@ -4450,7 +4450,7 @@ function boot(){
   }, 60*1000);
 }
 
-// The launcher's cards: the chosen ones only (up to three), refreshed like on the screensaver, nothing else loaded.
+// The launcher's cards: the chosen ones only
 function bootWidget(){
   document.documentElement.classList.add('widget');
   if(CONFIG.lowram) document.documentElement.classList.add('lowram');

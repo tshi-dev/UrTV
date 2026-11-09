@@ -20,8 +20,8 @@ check("Prefs.tasks: parsed by a static method that takes the JSON", "parseTasks(
 updater = text(APP / "Updater.java")
 check("Updater compares by BUILD (version.txt's \"3.<build>\" against the app's versionCode), never the name: 4.0 builds only grow by build", "Versions.buildOf(new Prefs(c).latestVersion())" in updater and "int mine = BuildConfig.VERSION_CODE;" in updater and "newest <= mine" in updater and "Versions.compare(latest, mine)" not in updater)
 cache = text(APP / "PhotoCache.java")
-check("PhotoCache: a photo that is served is touched, so the prune keeps the ones in use", "f.setLastModified(System.currentTimeMillis())" in cache
-      and cache.index("setLastModified") < cache.index("return f;"))
+check("PhotoCache: a photo that is served is touched (at most hourly), so the prune keeps the ones in use", "f.setLastModified(now)" in cache and "TOUCH_EVERY_MS" in cache
+      and cache.index("setLastModified") < cache.index("return true;"))
 saver = text(APP / "SaverReceiver.java")
 check("a place of your own without its time zone is refused, a built-in city is not",
       "tz == null && !inList(name)" in saver and "add the time zone" in saver and "private static boolean inList" in saver)
