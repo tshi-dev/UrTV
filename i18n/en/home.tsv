@@ -479,8 +479,8 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 أحذف «%s» من محفظتك؟	Delete “%s” from your portfolio?
 أزل من قائمتي	Remove from my list
 أضف إلى قائمتي	Add to my list
-أخفه من شريط الأسواق	Hide from the markets bar
-أظهره في شريط الأسواق	Show in the markets bar
+أخفه من شريط الأسواق	Hide from markets bar
+أظهره في شريط الأسواق	Show in markets bar
 تبقى في قائمتك سهم واحد على الأقل	Your list keeps at least one stock
 قائمتك ممتلئة: %s أسهم	Your list is full: %s stocks
 تم الحفظ	Saved
@@ -587,3 +587,5 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 صفحته في المتجر	Its store page
 الجوال	Phone
 الاتصال بالشبكة	Network connection
+الأسعار غير مباشرة · المصدر: %s	Prices not live · Source: %s
+غير مباشرة	Not live

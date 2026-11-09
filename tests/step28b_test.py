@@ -124,7 +124,7 @@ check("32: the screensaver's page is shown only once painted, on a dream window 
 check("33-2: the screensaver page opened as an activity has the page's ground (#040E09) as its window background, like the dream",
       "0xFF040E09" in text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/MainActivity.java"))
 check("33-3: the prayer cards have the computed times at once (not «—» until the network answers), and the answer replaces them",
-      "if(!PRAYERS.length) try{ buildPrayers(computePrayers()); PRAYERS_DAY = want + '|calc'; tickPrayer();" in tp)
+      "if(!PRAYERS.length) try{" in tp and "buildPrayers(computePrayers()); PRAYERS_DAY = want + '|calc'; }" in tp and "if(kept && kept.d === want){ buildPrayers(kept.t);" in tp and "localStorage.setItem(PT, JSON.stringify({d: want, t}))" in tp)
 
 # step 34
 import re as _re

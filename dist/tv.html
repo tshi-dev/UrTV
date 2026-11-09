@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261105115229">
+<meta name="urtv-build" content="20261109045523">
 <title>شاشة تلفزيونك</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -1315,7 +1315,12 @@ async function loadPrayers(){
   const url = `https://api.aladhan.com/v1/timings/${want}`
             + `?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}`
             + `&method=${CONFIG.prayerMethod}&latitudeAdjustmentMethod=3&timezonestring=${encodeURIComponent(CONFIG.timezone)}`;
-  if(!PRAYERS.length) try{ buildPrayers(computePrayers()); PRAYERS_DAY = want + '|calc'; tickPrayer(); renderPanel(false, 'prayers', 'adhkar', 'prayerrow', 'nextprayer'); }catch(_){}   // computed times first, not «—»
+  const PT = 'ptimes:' + CONFIG.latitude + ',' + CONFIG.longitude + ',' + CONFIG.prayerMethod;   // today's answer, kept: the next start shows the same minutes, not the computed ones
+  if(!PRAYERS.length) try{
+    let kept = null; try{ kept = JSON.parse(localStorage.getItem(PT) || 'null'); }catch(_){}
+    if(kept && kept.d === want){ buildPrayers(kept.t); PRAYERS_DAY = want + '|api'; } else { buildPrayers(computePrayers()); PRAYERS_DAY = want + '|calc'; }   // else computed: not «—»
+    tickPrayer(); renderPanel(false, 'prayers', 'adhkar', 'prayerrow', 'nextprayer');
+  }catch(_){}
   try{
     if(CONFIG.prayerMethod >= 100) throw 0;   // not an Aladhan method: computed only
     const r = await fetchT(url, 12000);
@@ -1323,6 +1328,7 @@ async function loadPrayers(){
     if(!t) throw 0;
     buildPrayers(t);
     PRAYERS_DAY = want + '|api';
+    try{ localStorage.setItem(PT, JSON.stringify({d: want, t})); }catch(_){}
   }catch(e){
     if(!PRAYERS.length || PRAYERS_DAY.slice(0, 10) !== want){   // today's times already here are kept
       try{ buildPrayers(computePrayers()); PRAYERS_DAY = want + '|calc'; }catch(_){}

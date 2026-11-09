@@ -92,7 +92,14 @@ final class ControlCenter {
         if (bluetooth != null)
             tiles.add(tile("bluetooth", ControlText.BLUETOOTH, ControlText.BLUETOOTH_HINT, R.drawable.ic_bluetooth,
                     () -> { dismiss(); host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, bluetooth, ControlText.BLUETOOTH); }));
-        tiles.add(tile("sound", S.t("مخرج الصوت"), outputLine(), R.drawable.ic_sound, () -> { dismiss(); host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, soundIntent(), S.t("إعدادات الصوت")); }));
+        tiles.add(tile("sound", S.t("مخرج الصوت"), outputLine(), R.drawable.ic_sound, () -> {
+            dismiss();
+            try {
+                host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, soundIntent(), S.t("إعدادات الصوت"));
+            } catch (RuntimeException e) {   // A6: the TCL G07 crashed here: the tile must never take the home down; the log says what it was
+                android.util.Log.w("UrTVControl", "sound tile failed " + e.getClass().getSimpleName());
+            }
+        }));
         Tile test = tile("speed", S.t("اختبار السرعة"), S.t("اضغط اختيار للبدء"), R.drawable.ic_speed, null);
         test.action = () -> speedTest(test);
         tiles.add(test);
@@ -325,7 +332,8 @@ final class ControlCenter {
                 products[i] = p == null ? null : p.toString();
             }
             return ControlText.outputs(types, products);
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | LinkageError e) {   // A6 (TCL G07): the audio service may answer with anything, or an old class: the line says «غير معروف» and the panel stays
+            android.util.Log.w("UrTVControl", "output line failed " + e.getClass().getSimpleName());
             return ControlText.outputs(new int[0], null);
         }
     }
@@ -359,7 +367,11 @@ final class ControlCenter {
     /** the sound settings if this TV has them (the public action), else the TV's settings: never an intent that does not resolve */
     private Intent soundIntent() {
         Intent sound = new Intent(Settings.ACTION_SOUND_SETTINGS);
-        return act.getPackageManager().resolveActivity(sound, 0) != null ? sound : new Intent(Settings.ACTION_SETTINGS);
+        try {
+            return act.getPackageManager().resolveActivity(sound, 0) != null ? sound : new Intent(Settings.ACTION_SETTINGS);
+        } catch (RuntimeException e) {
+            return new Intent(Settings.ACTION_SETTINGS);
+        }
     }
 
     // ---------------------------------------------------------------- «أطفئ الآن»

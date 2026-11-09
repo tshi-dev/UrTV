@@ -196,7 +196,7 @@ public class MarketsActivity extends Activity {
     private String sourceText() {
         shownLive = liveOn && MarketData.liveFresh(liveOkAt, System.currentTimeMillis());
         String name = data == null ? "Yahoo Finance" : data.sourceName();
-        return shownLive ? S.t("مباشر · المصدر: %s", name) : S.t("الأسعار متأخرة · المصدر: %s", name);
+        return shownLive ? S.t("مباشر · المصدر: %s", name) : liveOn ? S.t("الأسعار متأخرة · المصدر: %s", name) : S.t("الأسعار غير مباشرة · المصدر: %s", name);   // «عادي» is a choice, not a delay
     }
 
     /** a row's live label: Tadawul's «متأخرة ~١٥ د» (delayed at the source), any other market its quote's time; nothing when it is not live */
@@ -433,7 +433,7 @@ public class MarketsActivity extends Activity {
             Calendar k = Calendar.getInstance(TimeZone.getTimeZone(zone()));
             k.setTimeInMillis(live ? liveOkAt : data.updated);
             String at = clock(k.get(Calendar.HOUR_OF_DAY), k.get(Calendar.MINUTE));
-            s.append(live ? S.t("آخر تحديث %s", at) + " · " + S.t("مباشر") : S.t("آخر تحديث %s · أسعار متأخرة", at));
+            s.append(live ? S.t("آخر تحديث %s", at) + " · " + S.t("مباشر") : liveOn ? S.t("آخر تحديث %s · أسعار متأخرة", at) : S.t("آخر تحديث %s", at) + " · " + S.t("غير مباشرة"));
         }
         String shown = s.toString();
         if (!shown.equals(lastHeader)) { lastHeader = shown; state.setText(s); }   // a live tick that says the same draws nothing (the minute of «آخر تحديث» is all that changes)
