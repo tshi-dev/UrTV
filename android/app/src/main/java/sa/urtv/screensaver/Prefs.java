@@ -878,8 +878,8 @@ final class Prefs {
      * any-key stop, the «يُتلى الآن» card and a Quran that was started elsewhere go on; the screen opens from the app menu (long OK on an
      * app) or from the «يُتلى الآن» card instead.
      */
-    /** the home's quick buttons the person hid (#52): any of markets, matches, center (the others have their own switch: «زر المهام», «زر تلاوة وأذان»); "" = all shown */
-    static final String[] QUICK_BUTTONS = {"markets", "matches", "center"};
+    /** the home's quick buttons the person hid (#52): any of markets, matches, center, phone (the others have their own switch: «زر المهام», «زر تلاوة وأذان»); "" = all shown */
+    static final String[] QUICK_BUTTONS = {"markets", "matches", "center", "phone"};
     String pillsHidden() {
         java.util.List<String> out = new java.util.ArrayList<>();
         for (String k : sp.getString("pillsHidden", "").split(",")) if (java.util.Arrays.asList(QUICK_BUTTONS).contains(k) && !out.contains(k)) out.add(k);

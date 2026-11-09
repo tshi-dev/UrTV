@@ -360,6 +360,8 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { prefs.setPillHidden("markets", !prefs.pillHidden("markets")); render(); } });
         row("زر المباريات", prefs.pillHidden("matches") ? "مخفي" : "ظاهر", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPillHidden("matches", !prefs.pillHidden("matches")); render(); } });
+        row("زر الجوال", prefs.pillHidden("phone") ? "مخفي" : "ظاهر", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setPillHidden("phone", !prefs.pillHidden("phone")); render(); } });
         row("زر مركز التحكم", prefs.pillHidden("center") ? "مخفي  •  يفتح من زر الإعدادات السريعة في الريموت" : "ظاهر", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPillHidden("center", !prefs.pillHidden("center")); render(); } });
         // hiding removes only the button: the list stays in the «المهام» card and on the phone

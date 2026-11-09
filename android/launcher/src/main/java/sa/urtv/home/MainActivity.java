@@ -136,7 +136,8 @@ public class MainActivity extends Activity {
     private PopupWindow inputsPopup;
     private HomeCard homeCard;
     private NowCard nowCard;   // «يُتلى الآن»: at the right end of the pills row while a surah or a station is on
-    private Pill marketsPill, matchesPill;   // «الأسواق» and «المباريات»: they take the look like the others («رملي»: they stayed grey, step 28)
+    private Pill marketsPill, matchesPill, phonePill;   // «الجوال» (C14): the phone remote's page
+    private ImageView netIcon;   // C15: the connection in the top row (Wi-Fi, none)   // «الأسواق» and «المباريات»: they take the look like the others («رملي»: they stayed grey, step 28)
     private Pill centerPill;   // «مركز التحكم»: gold while the sleep timer runs; in the row except in kids mode (applyCenterPill)
     private ControlCenter control;   // the panel it opens
     private TextView adhanBar;   // «أذان المغرب بعد ٨ دقائق», over the top edge; while the adhan plays «أذان المغرب · أي زر يوقف الأذان»
@@ -638,12 +639,16 @@ public class MainActivity extends Activity {
         Pill matchesBtn = pill(S.t("المباريات"), R.drawable.ic_matches);
         matchesPill = matchesBtn;
         matchesBtn.setOnClickListener(v -> launchGuarded(ParentalPolicy.WIDGET_MATCHES, new Intent(this, MatchesActivity.class), "المباريات"));
+        // «الجوال» (C14): a round button to the phone remote's page (the QR and the pairing), after «المباريات»
+        phonePill = pill(S.t("الجوال"), R.drawable.ic_phone);
+        phonePill.setOnClickListener(v -> launchGuarded(ParentalPolicy.OUR_SETTINGS, new Intent(this, PhoneActivity.class), "الجوال"));
         List<Pill> row = new ArrayList<>(Arrays.asList(inputs));
         tasksPill = tasks;
         if (isInstalled(SAVER_PKG) && ConfigSnapshot.read(this).tasksPillOn()) row.add(tasks);   // «زر المهام»: hidden in the screensaver's settings, it is not in the row
         if (centerWanted()) row.add(centerPill);
         row.add(marketsBtn);
         row.add(matchesBtn);
+        row.add(phonePill);
         tilawahPill = tilawah;
         pillRow = right;
         // [updates bell] built here, put in the row by applyUpdateBell only while it has a reason to be there
@@ -668,6 +673,12 @@ public class MainActivity extends Activity {
         // reaches from 31 to 75 dp down, clear of the adhan bar (to 26) and the cards (from 84)
         int hang = dp((NowCard.HEIGHT - Pill.HEIGHT) / 2f);
         right.addView(nowCard, 0, sideLlp(-2, dp(NowCard.HEIGHT), 0, -hang, dp(Pill.GAP), -hang));
+        // C15: the connection, a small icon at the end of the row (not a button: it takes no focus and is not in `pills`)
+        netIcon = new ImageView(this);
+        netIcon.setImageResource(R.drawable.ic_wifi);
+        netIcon.setContentDescription(S.t("الاتصال بالشبكة"));
+        netIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        right.addView(netIcon, sideLlp(dp(22), dp(Pill.HEIGHT), 0, 0, 0, 0));
         header.addView(right, new FrameLayout.LayoutParams(-2, -2, Dir.end() | Gravity.TOP));
         return header;
     }
@@ -840,7 +851,7 @@ public class MainActivity extends Activity {
         boolean want = centerWanted(), has = centerPill.getParent() == pillRow;
         if (want == has) return;
         if (want) {
-            int at = quickIndex(marketsPill, matchesPill, tilawahPill);   // before «الأسواق» and «المباريات» (and «تلاوة وأذان»): where it always was
+            int at = quickIndex(marketsPill, matchesPill, phonePill, tilawahPill);   // before «الأسواق» and «المباريات» (and «تلاوة وأذان»): where it always was
             pills.add(at, centerPill);
             pillRow.addView(centerPill, at + 1, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(Pill.GAP), 0));   // child 0 is «يُتلى الآن»
         } else {
@@ -852,6 +863,20 @@ public class MainActivity extends Activity {
             if (hadFocus && !pills.isEmpty()) pills.get(Math.max(0, Math.min(at, pills.size()) - 1)).requestFocus();
         }
         wireFocus();
+    }
+
+    /** C15: the Wi-Fi icon says whether the TV is online (a wired TV counts as online too), with the minute tick */
+    private void updateNetIcon() {
+        if (netIcon == null) return;
+        boolean online = false;
+        try {
+            android.net.ConnectivityManager cm = (android.net.ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+            android.net.NetworkCapabilities nc = cm == null || cm.getActiveNetwork() == null ? null : cm.getNetworkCapabilities(cm.getActiveNetwork());
+            online = nc != null && nc.hasCapability(android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET);
+        } catch (RuntimeException ignored) { }
+        netIcon.setImageResource(online ? R.drawable.ic_wifi : R.drawable.ic_wifi_off);
+        netIcon.setColorFilter(lightNow || "sand".equals(lookNow) ? (palette().ink & 0x00FFFFFF) | 0xE6000000 : 0xE6FFFFFF);
+        netIcon.setAlpha(online ? 1f : 0.7f);
     }
 
     /** where a quick button comes back in the row: before the first of the buttons that follow it which is in the row, else at the end */
@@ -1174,7 +1199,7 @@ public class MainActivity extends Activity {
         ring.setCornerRadius(inDock ? bar(FavBar.TILE_RADIUS) : dp(10));
         ring.setStroke(inDock ? bar(FavBar.RING) : dp(2), inDock ? FavBar.ring(lightNow) : 0xE6FFFFFF);
         ring.setOrientation(GradientDrawable.Orientation.TL_BR);
-        ring.setColors(new int[]{0x26FFFFFF, 0x00FFFFFF, 0x00FFFFFF});
+        ring.setColors(inDock && !lightNow ? new int[]{0x38FFE9B8, 0x00FFE9B8, 0x00FFE9B8} : new int[]{0x26FFFFFF, 0x00FFFFFF, 0x00FFFFFF});   // the widgets' glow inside the ring (gold-hi) on the dark looks
         View shine = new View(this);
         shine.setBackground(ring);
         shine.setAlpha(0f);
@@ -2672,7 +2697,7 @@ public class MainActivity extends Activity {
         lookNow = cfg.look();
         applyLook(Look.light(cfg.appearance(), dayBySun(cfg), h * 60 + now.get(Calendar.MINUTE)));
         GlassStyle.Look glassNow = homeGlass();
-        for (Pill p : new Pill[] {inputsPill, tasksPill, tilawahPill, centerPill, marketsPill, matchesPill, bellPill}) if (p != null) p.look(glassNow);   // «رملي»: its own buttons
+        for (Pill p : new Pill[] {inputsPill, tasksPill, tilawahPill, centerPill, marketsPill, matchesPill, phonePill, bellPill}) if (p != null) p.look(glassNow);   // «رملي»: its own buttons
         for (View v : pills) if (v instanceof Pill) ((Pill) v).look(glassNow);   // and every pill of the row, whatever else is added to it: six buttons, one style (step 28: two stayed grey circles)
         boolean h24 = cfg.clock24();   // «ساعة ٢٤»: off (12-hour with the ص or م) unless the owner turned it on
         clock.setText(ClockText.face(h, now.get(Calendar.MINUTE), h24, Digits.latin()));
@@ -2715,9 +2740,11 @@ public class MainActivity extends Activity {
         applyUpdateBell(cfg.updateBellOn);   // [updates bell]
         applyBarSize(cfg.favBar);   // «تطبيقات في الشريط»
         hiddenQuick.clear();
-        for (String k : new String[] {"markets", "matches", "center"}) if (cfg.pillHidden(k)) hiddenQuick.add(k);
-        applyQuickPill(marketsPill, !hiddenQuick.contains("markets"), matchesPill, tilawahPill);
-        applyQuickPill(matchesPill, !hiddenQuick.contains("matches"), tilawahPill);
+        for (String k : new String[] {"markets", "matches", "center", "phone"}) if (cfg.pillHidden(k)) hiddenQuick.add(k);
+        applyQuickPill(marketsPill, !hiddenQuick.contains("markets"), matchesPill, phonePill, tilawahPill);
+        applyQuickPill(matchesPill, !hiddenQuick.contains("matches"), phonePill, tilawahPill);
+        applyQuickPill(phonePill, !hiddenQuick.contains("phone"), tilawahPill);
+        updateNetIcon();
         applyCenterPill();   // kids mode may have been turned on or off, or the button hidden
         sa.urtv.home.tilawah.AdhanSync.onConfig(this, cfg.placeFragment(), cfg.placeTicket());   // «تعديل وقت الصلاة» changed on the TV: the alarm follows
         updateSleepPill();
