@@ -20,7 +20,7 @@ import java.util.Locale;
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.CITIES
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET
  *       [--es city 'الرس'] [--es lat 25.86 --es lon 43.49 --es tz Asia/Kuwait]   (tz is needed for a place that is not in the list) [--es teams '136013:Al-Hilal,150643:Al-Zulfi']
- *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es homephotos same|own] [--es homepacks id,id|none] [--es homeours on|off] [--es albummode seconds|minute] [--es albumdate on|off] [--es pillshidden markets,matches,center|none] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es homelayout classic|football] [--es favbar 5|6|7|8|all] [--es pagesdark on|off] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
+ *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es homephotos same|own] [--es homepacks id,id|none] [--es homeours on|off] [--es accent amber|gold|green|teal|sky|violet|rose|coral|default] [--es baropacity 30..100] [--es walldim 0..90] [--es focusstyle solid|frame|glow] [--es albummode seconds|minute] [--es albumdate on|off] [--es pillshidden markets,matches,center|none] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es homelayout classic|football] [--es favbar 5|6|7|8|all] [--es pagesdark on|off] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
  *       [--es sunrise on|off] [--es prayerbar on|off] [--es wxmore on|off] [--es months default|levant] [--es verse day|3] [--es versekind both|verse|hadith] [--es seconds on|off] [--es backexit press|hold|three] [--es occasion on|off] [--es nightdim on|off] [--es taskspill on|off] [--es backsaver on|off] [--es genres Drama,Comedy] [--es langs English]
  *       [--es photos 30] [--es idle 10] [--es digits hindi|latin] [--es hijrioffset -2..2] [--es clock24 on|off] [--es lang ar|en]
  *       [--es cardstyle current|dark1|glass1|dark3|glass3] [--es national auto|off]
@@ -293,6 +293,13 @@ public class SaverReceiver extends BroadcastReceiver {
         String look = i.getStringExtra("look");
         if (look != null && !Arrays.asList(GlassStyle.LOOKS).contains(look))
             return "error: look is one of " + Prefs.join(Arrays.asList(GlassStyle.LOOKS), " ");
+        String accentX = i.getStringExtra("accent");   // 4.3 «اللون والتحكم»
+        if (accentX != null && !"default".equals(accentX)) { boolean known = false; for (String[] a : GlassStyle.ACCENTS) known |= a[0].equals(accentX); if (!known) return "error: accent is default or one of amber gold green teal sky violet rose coral"; }
+        String barX = i.getStringExtra("baropacity"), dimX = i.getStringExtra("walldim");
+        if (barX != null && !barX.matches("(100|[3-9][0-9])")) return "error: baropacity is a number from 30 to 100";
+        if (dimX != null && !dimX.matches("([0-9]|[1-8][0-9]|90)")) return "error: walldim is a number from 0 to 90";
+        String focusX = i.getStringExtra("focusstyle");
+        if (focusX != null && !Arrays.asList(GlassStyle.FOCUS_STYLES).contains(focusX)) return "error: focusstyle is one of solid frame glow";
         String homeLayout = i.getStringExtra("homelayout");
         if (homeLayout != null && !Arrays.asList(Prefs.HOME_LAYOUTS).contains(homeLayout))
             return "error: homelayout is one of " + Prefs.join(Arrays.asList(Prefs.HOME_LAYOUTS), " ");
@@ -411,6 +418,10 @@ public class SaverReceiver extends BroadcastReceiver {
         if (watchNext != null) p.setWatchNext("on".equals(watchNext));
         if (appearance != null) p.setAppearance(appearance);
         if (look != null) p.setLook(look);
+        if (accentX != null) p.setAccent("default".equals(accentX) ? "" : accentX);
+        if (barX != null) p.setBarPercent(Integer.parseInt(barX));
+        if (dimX != null) p.setWallDim(Integer.parseInt(dimX));
+        if (focusX != null) p.setFocusStyle(focusX);
         if (homeLayout != null) p.setHomeLayout(homeLayout);
         if (favBar != null) p.setFavBar(favBar);
         if (pagesDark != null) p.setPagesDark("on".equals(pagesDark));
@@ -594,6 +605,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nwatchnext: " + (p.watchNext() ? "on" : "off")
             + "\nappearance: " + p.appearance()
             + "\nlook: " + p.look()
+            + "\naccent: " + (p.accent().isEmpty() ? "default" : p.accent()) + "\nbaropacity: " + p.barPercent() + "\nwalldim: " + p.wallDim() + "\nfocusstyle: " + p.focusStyle()
             + "\nhomelayout: " + p.homeLayout()
             + "\nfavbar: " + p.favBar()
             + "\npagesdark: " + (p.pagesDark() ? "on" : "off")

@@ -55,6 +55,7 @@ python3 tests/stream_url_test.py   # the live stations: radiojar's https -> http
 python3 tests/update_ui_test.py   # the update screen: card, steps, bar, one button
 python3 tests/album_card_test.py   # «ألبوم صوري»: the card of the own photos (page, saver, home)
 python3 tests/home_nudge_test.py   # «خلّ تلفزيونك يفتح على UrTV»: the card while we are not the Home
+python3 tests/look_tweaks_test.py   # «اللون والتحكم»: accents, tray strength, wallpaper dimming, focus style
 python3 tests/security_43_test.py   # 4.3 security and speed round
 python3 tests/appearance_test.py   # the look and backgrounds page
 python3 tests/home_packs_test.py   # photo packs on the home, shuffled

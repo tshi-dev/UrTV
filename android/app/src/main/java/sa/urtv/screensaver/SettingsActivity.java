@@ -337,6 +337,10 @@ public class SettingsActivity extends Activity {
                 new Runnable() { public void run() { pickVerseKind(); } });
 
         header("الشاشة الرئيسية (تلفزيونك)");
+        // «اجعل UrTV الشاشة الرئيسية»: not the Home yet, OK opens «إعداد تلفزيوني» (the launcher's, the one place the switch is done); the Home already, it says so
+        final boolean isHome = isOurHome();
+        row("اجعل UrTV الشاشة الرئيسية", isHome ? "✓ UrTV هو الشاشة الرئيسية" : "اضغط وكمّل إعداد تلفزيوني (دقيقتان)", R.drawable.ic_eye,
+            new Runnable() { public void run() { if (!isHome) openSetup(); } });
         row("المظهر والخلفيات", "شكل الشاشتين وصورهما، كلٌّ على حدة", R.drawable.ic_eye,
             new Runnable() { public void run() { startActivity(new Intent(SettingsActivity.this, AppearanceActivity.class)); } });
         // «المظهر», the first row: «الشكل» (glass, graphite, navy, clean) and «الإضاءة» (dark, light, auto), each picked with a live preview
@@ -1063,6 +1067,23 @@ public class SettingsActivity extends Activity {
                     render();
                 }).show();
         }));
+    }
+
+    /** is our home app the one the Home key opens now? (HomeBack's rule, in the launcher: the resolved Home activity's package is ours) */
+    private boolean isOurHome() {
+        android.content.pm.ResolveInfo ri = getPackageManager().resolveActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), android.content.pm.PackageManager.MATCH_DEFAULT_ONLY);
+        return ri != null && ri.activityInfo != null && "sa.urtv.home".equals(ri.activityInfo.packageName);
+    }
+
+    /** «إعداد تلفزيوني» is the launcher's screen; the home switch is its step, so the run is the full setup (nothing here touches the TV's settings) */
+    private void openSetup() {
+        try {
+            startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.setup.SetupActivity"));
+        } catch (SecurityException | ActivityNotFoundException e) {
+            toast("ثبّت الواجهة الرئيسية «تلفزيونك» أولاً");
+        } catch (RuntimeException e) {
+            toast("ثبّت الواجهة الرئيسية «تلفزيونك» أولاً");
+        }
     }
 
     /** «تصفية المواقع (DNS)» lives in the launcher too: it holds the permission to write the Private DNS setting. */

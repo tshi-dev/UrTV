@@ -116,6 +116,7 @@ public class MainActivity extends Activity {
     // «المظهر» (Look): the parts a light look recolours; built in the dark look's colours, so dark is exactly as it was
     private View scrim;
     private GradientDrawable dockBand;
+    private View wallDimView;
     private final List<TextView> gridLabels = new ArrayList<>();
     private String lookNow = GlassStyle.LOOKS[0];   // «المظهر ← الشكل» as the minute tick last read it (the glass of the home's own pieces)
     private boolean lightNow;   // the look on screen now: dark until a light one is asked for
@@ -405,6 +406,10 @@ public class MainActivity extends Activity {
         scrim = new View(this);
         scrim.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
                 new int[]{0xB3000000, 0x40000000, 0x26000000, 0x8C000000, 0xE6000000}));
+        wallDimView = new View(this);   // «تعتيم الخلفية»: extra black over the photo, 0 as it was
+        wallDimView.setBackgroundColor(Color.BLACK);
+        wallDimView.setAlpha(0f);
+        root.addView(wallDimView, new FrameLayout.LayoutParams(-1, -1));
         root.addView(scrim, new FrameLayout.LayoutParams(-1, -1));
         gridShade = new View(this);
         gridShade.setBackgroundColor(0xB3000000);
@@ -2731,11 +2736,17 @@ public class MainActivity extends Activity {
     /** the look applyLook last painted (a change of look repaints even when the light stays) */
     private String paletteLook = "";
 
+    /** an ARGB colour with its alpha at this percent of what it was */
+    private static int scaled(int argb, int percent) {
+        return (Math.round((argb >>> 24) * percent / 100f) << 24) | (argb & 0x00FFFFFF);
+    }
+
     private void applyLook(boolean light) {
         GlassSource.setHomeLight(this, light);   // «تلقائي» on the other screens follows the home (kept only when it changes)
-        if (light == lightNow && lookNow.equals(paletteLook)) return;
+        String key = lookNow + "|" + GlassStyle.barPercent() + "|" + GlassStyle.dimPercent() + "|" + GlassStyle.focusStyle() + "|" + GlassStyle.of(lookNow, false).accent;   // a touch of «اللون والتحكم» repaints too
+        if (light == lightNow && key.equals(paletteLook)) return;
         lightNow = light;
-        paletteLook = lookNow;
+        paletteLook = key;
         Look.Palette p = palette();
         clock.setTextColor(p.text);
         title.setTextColor(p.ink);
@@ -2747,8 +2758,9 @@ public class MainActivity extends Activity {
         for (TextView t : tvNames) { t.setTextColor(p.gold); t.setShadowLayer(dp(3), 0, dp(1), p.shadow); }
         scrim.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, p.scrim));
         gridShade.setBackgroundColor(p.shade);
-        dockBand.setColor(light ? FavBar.FILL_LIGHT : FavBar.FILL_DARK);   // FavBar: the same tray on every look
-        dockBand.setStroke(Math.max(1, bar(1)), light ? FavBar.LINE_LIGHT : FavBar.LINE_DARK);
+        dockBand.setColor(scaled(light ? FavBar.FILL_LIGHT : FavBar.FILL_DARK, GlassStyle.barPercent()));   // FavBar: the same tray on every look; «شفافية الشريط» thins it (100: as it was)
+        dockBand.setStroke(Math.max(1, bar(1)), scaled(light ? FavBar.LINE_LIGHT : FavBar.LINE_DARK, GlassStyle.barPercent()));
+        if (wallDimView != null) wallDimView.setAlpha(GlassStyle.dimPercent() / 100f);
         for (View c : dockCards) { GradientDrawable r = ringByCard.get(c); if (r != null) r.setStroke(bar(FavBar.RING), FavBar.ring(light)); }
         if (homeCard != null) homeCard.light(light);   // the football home's widgets: the same light or dark glass
     }

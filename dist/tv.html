@@ -64,7 +64,7 @@
     transform:scale(1.03);   /* edges stay covered while it settles */
   }
   /* each photo's darkness as a plain black layer: same look as filter:brightness, nothing to recompute */
-  .photo::after{content:'';position:absolute;inset:0;background:#000;opacity:var(--dim,.05)}
+  .photo::after{content:'';position:absolute;inset:0;background:#000;opacity:calc(1 - (1 - var(--dim,.05)) * (1 - var(--walldim,0)))}   /* «تعتيم الخلفية»: 0 leaves the photo's own dimming exactly as it was */
   .veil{
     position:fixed;inset:0;z-index:1;
     background:
@@ -896,6 +896,7 @@ const CONFIG = {
   own: Math.max(0, Math.min(50, Math.floor(_num('own', 0)))),
   albumMs: _Q.get('albummode') === 'minute' ? 60000 : 4000,   // «ألبوم الصور»: a photo each minute, or a crossfade every 4 s
   albumDate: _Q.get('albumdate') !== '0',
+  wallDim: Math.max(0, Math.min(90, parseInt(_Q.get('walldim'), 10) || 0)),   // «تعتيم الخلفية» (0..90 %), more black over the photo
   ownMode: _Q.get('ownmode') === 'only' ? 'only' : 'mix',
   // the photo packs («صور شاشة التوقف»): #packs=id:count,id:count
   // and #ours=0 when our own set is off (the app sends that only while a pack gives the screen something else)
@@ -975,6 +976,7 @@ const CONFIG = {
   // #pagedark=1 with #matchpage=1: the dark theme
   pageDark: _Q.get('pagedark') === '1',
 };
+document.documentElement.style.setProperty('--walldim', (CONFIG.wallDim / 100).toFixed(2));   // 0 by default: the photo's own dimming alone
 // the football home and «المباريات» show a league even when none is followed
 if((CONFIG.football || CONFIG.matchPage) && !CONFIG.leagues.length) CONFIG.leagues = ['Saudi-Arabian Pro League'];
 // The cards on this page: the screensaver's one

@@ -50,7 +50,11 @@ public final class GlassPaint {
     /** The same over a fill of the caller's own (a focus colour laid over a dialog): the line is the look's ring, 3 dp, when it has one. */
     public static GradientDrawable focused(Context c, GlassStyle.Look l, int fill, float radiusDp) {
         GradientDrawable d = fill(c, fill, radiusDp, 0);
-        if (l.ring != 0) d.setStroke(Math.max(2, dp(c, 3)), l.ring);
+        // 4.3 «شكل التركيز»: the fill always stays (the words on it keep their contrast); solid is the look's own ring, frame a thick accent line, glow a soft wide one
+        String style = GlassStyle.focusStyle();
+        if ("frame".equals(style)) d.setStroke(Math.max(3, dp(c, 4)), l.accent);
+        else if ("glow".equals(style)) d.setStroke(Math.max(4, dp(c, 6)), (l.accent & 0x00FFFFFF) | 0x80000000);
+        else if (l.ring != 0) d.setStroke(Math.max(2, dp(c, 3)), l.ring);
         return d;
     }
 
