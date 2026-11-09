@@ -728,13 +728,15 @@
   .mdr li.mdp > div{display:flex;justify-content:space-between;gap:calc(var(--u)*24)}
   .mdr li.mdp > div span{font-weight:700}
   .mds{font-style:normal;color:var(--fgr)}
-  .mpline{position:relative;height:calc(var(--u)*72);margin:calc(var(--u)*24) calc(var(--u)*8) 0;border-top:calc(var(--u)*2) solid var(--fln)}
+  .mpline{position:relative;height:calc(var(--u)*112);margin:calc(var(--u)*60) calc(var(--u)*8) 0;border-top:calc(var(--u)*2) solid var(--fln)}
   .mpbar{position:absolute;top:calc(var(--u)*-8);height:calc(var(--u)*14);border-radius:calc(var(--u)*7);background:var(--fgr)}
   .mpk{position:absolute;top:calc(var(--u)*-14);transform:translateX(50%);display:flex;flex-direction:column;align-items:center}
   html[dir=ltr] .mpk,html[dir=ltr] .mpgl{transform:translateX(-50%)}
   .mpk i{width:calc(var(--u)*2);height:calc(var(--u)*24);background:var(--fi);opacity:.6}
   .mpk b,.mpgl{font-weight:400;font-size:calc(var(--u)*22);color:var(--fs);white-space:nowrap;margin-top:calc(var(--u)*8)}
-  .mpgl{position:absolute;top:calc(var(--u)*16);color:var(--fgr);transform:translateX(50%)}
+  .mpgl{position:absolute;top:calc(var(--u)*-54);margin-top:0;color:var(--fgr);transform:translateX(50%)}   /* the game's range: its own row above the bar */
+  .mpk.r2 i{height:calc(var(--u)*58)}
+  .mpk.r2 b{margin-top:calc(var(--u)*8)}
   .mdb,.mdq{display:flex;gap:calc(var(--u)*24);margin-top:calc(var(--u)*32)}
   .mdq{margin-top:calc(var(--u)*16)}
   .mdb button,.mdq button{flex:1;display:flex;align-items:center;justify-content:center;gap:calc(var(--u)*12);font:inherit;color:var(--fi);background:var(--btn);border:1px solid var(--fln);
@@ -3965,7 +3967,7 @@ const FB_W = {
   weather:'الطقس', prayers:'أوقات الصلاة', today:'مباريات اليوم', upcoming:'المباريات القادمة', title:'المباريات', yours:'فرقك', none:'لا مباريات اليوم', back:'رجوع',
   feels:'المحسوسة', hum:'الرطوبة', wind:'الرياح', kmh:'%s كم/س', pct:'٪%s', live:'مباشر', ended:'انتهت', vs:'×',
   yesterday:'أمس', tday:'اليوم', tomorrow:'غدًا', g1:'مباراة واحدة', g2:'مباراتان', gFew:'%s مباريات', gMany:'%s مباراة',
-  allOn:'كلها على %s', round:'%s، الجولة %s', venue:'الملعب', channel:'القناة', withPrayer:'مع الصلاة', game:'المباراة',
+  allOn:'كلها على %s', round:'%s · الجولة %s', venue:'الملعب', channel:'القناة', withPrayer:'مع الصلاة', game:'المباراة',
   remind:'ذكّرني قبلها بنصف ساعة', reminded:'أُضيفت إلى المهام', follow:'أضف %s لفرقي', unfollow:'أزل %s من فرقي', followed:'أُضيف %s إلى فرقك', unfollowed:'أُزيل %s من فرقك', watch:'شاهد على %s', failed:'ما قدرنا، جرّب مرة ثانية',
   startsAfter:'تبدأ بعد %s %s', startsBefore:'تبدأ قبل %s %s', adhanAt:'أذان %s في الدقيقة %s منها', ago:'قبل %s', nextIn:'%s بعد %s',
   h1:'بساعة', h2:'بساعتين', hFew:'ب%s ساعات', hMany:'ب%s ساعة', m1:'بدقيقة', m2:'بدقيقتين', mFew:'ب%s دقائق', mMany:'ب%s دقيقة',
@@ -3979,7 +3981,18 @@ const FB_LEAGUES = {'4668':'دوري روشن', '5627':'دوري يلو', '4328'
   '4829':'الدوري المصري', '4678':'الدوري الإماراتي', '4663':'الدوري القطري', '4346':'الدوري الأمريكي', '4387':'NBA', '4391':'NFL',
   '5056':'دوري نجوم العراق', '4719':'أبطال آسيا للنخبة', '4480':'أبطال أوروبا'};   // 4.3
 const FB_LEAGUE_ORDER = Object.keys(FB_LEAGUES);
-const leagueName = ev => FB_LEAGUES[String(ev.idLeague || '')] || String(ev.strLeague || '');
+// a competition the feed names in English only: its Arabic name (the common ones); anything else is kept, and a Latin name is isolated so the punctuation round it cannot flip (fbIso)
+const LEAGUE_BY_NAME = {'international friendlies':'مباريات ودية دولية', 'friendlies':'مباريات ودية', 'club friendlies':'مباريات ودية للأندية', 'uefa nations league':'دوري الأمم الأوروبية',
+  'afc asian cup':'كأس آسيا', 'fifa world cup':'كأس العالم', 'world cup qualifying':'تصفيات كأس العالم', 'fifa world cup qualifying':'تصفيات كأس العالم', 'afc asian cup qualifying':'تصفيات كأس آسيا', 'arab cup':'كأس العرب',
+  'gulf cup':'كأس الخليج', 'saudi pro league':'دوري روشن', 'king\'s cup':'كأس الملك', 'saudi super cup':'كأس السوبر السعودي', 'concacaf nations league':'دوري أمم كونكاكاف'};
+const fbIso = t => /[\u0600-\u06FF]/.test(t) || !/[A-Za-z]/.test(t) ? t : '\u2066' + t + '\u2069';
+const leagueName = ev => FB_LEAGUES[String(ev.idLeague || '')] || LEAGUE_BY_NAME[String(ev.strLeague || '').trim().toLowerCase()] || String(ev.strLeague || '');
+// the Saudi grounds in Arabic when the feed gives them in English (an unknown ground is kept in Latin, isolated)
+const STADIUM_AR = {'prince faisal bin fahd stadium':'استاد الأمير فيصل بن فهد', 'king fahd international stadium':'استاد الملك فهد الدولي', 'king abdullah sports city':'مدينة الملك عبدالله الرياضية', 'king abdullah sport city':'مدينة الملك عبدالله الرياضية',
+  'king abdullah sports city stadium':'مدينة الملك عبدالله الرياضية', 'mrsool park':'استاد مرسول بارك', 'al-awwal park':'استاد الأول بارك', 'kingdom arena':'كينغدوم أرينا', 'prince abdullah al faisal stadium':'استاد الأمير عبدالله الفيصل',
+  'prince abdullah al-faisal stadium':'استاد الأمير عبدالله الفيصل', 'prince mohamed bin fahd stadium':'استاد الأمير محمد بن فهد', 'prince sultan bin abdulaziz stadium':'استاد الأمير سلطان بن عبدالعزيز', 'king saud university stadium':'استاد جامعة الملك سعود',
+  'al-shabab club stadium':'استاد نادي الشباب', 'alinma bank stadium':'ملعب الإنماء', 'al-rabie stadium':'استاد الربيع', 'prince saud bin jalawi stadium':'استاد الأمير سعود بن جلوي', 'prince hamad bin abdulaziz stadium':'استاد الأمير حمد بن عبدالعزيز'};
+const venueName = v => { const t = String(v || '').trim(); return STADIUM_AR[t.toLowerCase()] || fbIso(t); };
 // «مباريات اليوم»'s marks (assets/shared/broadcast.json)
 // verified and in season, so an unknown, doubtful or partial holder shows nothing
 const BROADCAST = __BROADCAST__;
@@ -4055,7 +4068,7 @@ const fbTeam = (ev, side) => {
   return `<span class="ftm${fbFollowed(id) ? ' me' : ''}">${crestImg(ev, side) || '<span class="crgap"></span>'}<span class="nm">${esc(nbName(teamAr(ev['str' + side + 'Team'], id)))}</span></span>`;
 };
 const fbMarkChip = ev => { const m = markOf(ev); return m ? `<span class="fmk">${esc(m.mark)}</span>` : ''; };
-const fbRound = ev => leagueName(ev) && ev.intRound ? fw(FB_W.round, leagueName(ev), ar(ev.intRound)) : leagueName(ev);
+const fbRound = ev => leagueName(ev) && +ev.intRound > 0 ? fw(FB_W.round, fbIso(leagueName(ev)), ar(+ev.intRound)) : fbIso(leagueName(ev));   // no round 0, none when unknown
 // the day a game is on, said the short way: «اليوم», «غدًا», «الخميس»
 function fbDayWord(day){
   const t = cityToday();
@@ -4290,7 +4303,20 @@ function mpLine(ev){   // «مع الصلاة»: the prayers around the game on 
   const marks = list.filter(p => p.at >= from && p.at <= to).map(p =>
     `<span class="mpk" style="inset-inline-start:${pos(p.at)}"><i></i><b>${esc(p.name)} ${fmtTime(p.h, p.mi)}</b></span>`).join('');
   return `<div class="mpline"><span class="mpbar" style="inset-inline-start:${pos(k)};width:${((FB_DUR) / (to - from) * 100).toFixed(2)}%"></span>${marks}`
-    + `<span class="mpgl" style="inset-inline-start:${pos(k)}">${FB_W.game} ${fbClock(k)} – ${fbClock(k + FB_DUR)}</span></div>`;
+    + `<span class="mpgl" style="inset-inline-start:${pos(k + FB_DUR / 2)}">${FB_W.game} ${fbClock(k)} – ${fbClock(k + FB_DUR)}</span></div>`;
+}
+// the line's words never overlap: the game's range sits in a row of its own above the bar; the prayers' names are below it, and one that would touch another goes to a second row (checked on the real boxes)
+function mpFixLine(root){
+  (root || document).querySelectorAll('.mpline').forEach(line => {
+    const rows = [[], []], hit = (a, b) => a.left < b.right + 8 && b.left < a.right + 8;
+    line.querySelectorAll('.mpk').forEach(k => {
+      k.classList.remove('r2');
+      const r = k.querySelector('b').getBoundingClientRect();
+      let row = rows[0].some(o => hit(o, r)) ? 1 : 0;
+      if(row === 1) k.classList.add('r2');
+      rows[row].push(r);
+    });
+  });
 }
 function mpButtons(ev, now){   // «شاهد على …» (the broadcaster's app is installed) first, then «ذكّرني», then «أضف … لفرقي» / «أزل … من فرقي»
   const out = [], m = markOf(ev, now), host = window.UrtvMatches;
@@ -4306,7 +4332,7 @@ function mpDetailRender(){
   const big = side => { const c = crestOf(ev, side); return `<div class="mdt">${c ? `<img class="mdc" src="${esc(c.u)}" alt="">` : '<span class="mdc"></span>'}<b>${esc(nbName(teamAr(ev['str' + side + 'Team'], ev['id' + side + 'Team'])))}</b></div>`; };
   const mid = (fbLive(ev, now) || fbDone(ev, now)) && fbScored(ev) ? `<b>${ar(+ev.intHomeScore)} - ${ar(+ev.intAwayScore)}</b><i>${fbWhen(ev, now)}</i>`
     : `<b>${fbClock(k)}</b><i>${fbDayWord(fbDayOf(k))}</i>`;
-  const rows = [ev.strVenue ? `<li><span>${FB_W.venue}</span><i>${esc(ev.strVenue)}</i></li>` : '', m ? `<li><span>${FB_W.channel}</span><i>${esc(m.detail)}</i></li>` : '',
+  const rows = [ev.strVenue ? `<li><span>${FB_W.venue}</span><i>${esc(venueName(ev.strVenue))}</i></li>` : '', m ? `<li><span>${FB_W.channel}</span><i>${esc(m.detail)}</i></li>` : '',
     `<li class="mdp"><div><span>${FB_W.withPrayer}</span><i class="mds">${esc(fbLive(ev, now) ? fbStatus(ev, now) : fbDone(ev, now) ? FB_W.ended : fbSentence(ev))}</i></div>${mpLine(ev)}</li>`].join('');
   const btns = mpButtons(ev, now);
   MP.btn = Math.max(-1, Math.min(MP.btn, btns.length));   // btns.length is «رجوع», the row under the actions
@@ -4316,6 +4342,7 @@ function mpDetailRender(){
     + `<div class="mdq"><button tabindex="-1" class="${MP.btn === btns.length ? 'f' : ''}" data-k="back"><span>${FB_W.back}</span></button></div>`
     + `<div class="mdn" id="mp-note">${esc(MP.note)}</div></div>`);
   document.getElementById('mp-detail').hidden = false;
+  mpFixLine(document.getElementById('mp-detail'));
 }
 function mpOpen(ev){ MP.detail = ev; MP.btn = mpButtons(ev, Date.now())[0] && mpButtons(ev, Date.now())[0].k === 'watch' ? 0 : -1;   // «شاهد على …» is ringed when it is there
    MP.note = ''; mpDetailRender(); }

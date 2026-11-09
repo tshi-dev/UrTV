@@ -728,13 +728,15 @@
   .mdr li.mdp > div{display:flex;justify-content:space-between;gap:calc(var(--u)*24)}
   .mdr li.mdp > div span{font-weight:700}
   .mds{font-style:normal;color:var(--fgr)}
-  .mpline{position:relative;height:calc(var(--u)*72);margin:calc(var(--u)*24) calc(var(--u)*8) 0;border-top:calc(var(--u)*2) solid var(--fln)}
+  .mpline{position:relative;height:calc(var(--u)*112);margin:calc(var(--u)*60) calc(var(--u)*8) 0;border-top:calc(var(--u)*2) solid var(--fln)}
   .mpbar{position:absolute;top:calc(var(--u)*-8);height:calc(var(--u)*14);border-radius:calc(var(--u)*7);background:var(--fgr)}
   .mpk{position:absolute;top:calc(var(--u)*-14);transform:translateX(50%);display:flex;flex-direction:column;align-items:center}
   html[dir=ltr] .mpk,html[dir=ltr] .mpgl{transform:translateX(-50%)}
   .mpk i{width:calc(var(--u)*2);height:calc(var(--u)*24);background:var(--fi);opacity:.6}
   .mpk b,.mpgl{font-weight:400;font-size:calc(var(--u)*22);color:var(--fs);white-space:nowrap;margin-top:calc(var(--u)*8)}
-  .mpgl{position:absolute;top:calc(var(--u)*16);color:var(--fgr);transform:translateX(50%)}
+  .mpgl{position:absolute;top:calc(var(--u)*-54);margin-top:0;color:var(--fgr);transform:translateX(50%)}   /* the game's range: its own row above the bar */
+  .mpk.r2 i{height:calc(var(--u)*58)}
+  .mpk.r2 b{margin-top:calc(var(--u)*8)}
   .mdb,.mdq{display:flex;gap:calc(var(--u)*24);margin-top:calc(var(--u)*32)}
   .mdq{margin-top:calc(var(--u)*16)}
   .mdb button,.mdq button{flex:1;display:flex;align-items:center;justify-content:center;gap:calc(var(--u)*12);font:inherit;color:var(--fi);background:var(--btn);border:1px solid var(--fln);
@@ -3976,7 +3978,7 @@ const FB_W = {
   weather:'Weather', prayers:'Prayer times', today:'Today’s matches', upcoming:'Upcoming matches', title:'Matches', yours:'Your teams', none:'No matches today', back:'Back',
   feels:'Feels like', hum:'Humidity', wind:'Wind', kmh:'%s km/h', pct:'%s%%', live:'Live', ended:'Final', vs:'×',
   yesterday:'Yesterday', tday:'Today', tomorrow:'Tomorrow', g1:'1 match', g2:'2 matches', gFew:'%s matches', gMany:'%s matches',
-  allOn:'all on %s', round:'%s, round %s', venue:'Venue', channel:'Channel', withPrayer:'With the prayers', game:'Match',
+  allOn:'all on %s', round:'%s · round %s', venue:'Venue', channel:'Channel', withPrayer:'With the prayers', game:'Match',
   remind:'Remind me 30 min before', reminded:'Added to your tasks', follow:'Add %s to my teams', unfollow:'Remove %s from my teams', followed:'%s was added to your teams', unfollowed:'%s was removed from your teams', watch:'Watch on %s', failed:'That didn’t work, try again',
   startsAfter:'Starts %2$s after %1$s', startsBefore:'Starts %2$s before %1$s', adhanAt:'The %s adhan comes in its minute %s', ago:'%s ago', nextIn:'%s in %s',
   h1:'1 hour', h2:'2 hours', hFew:'%s hours', hMany:'%s hours', m1:'1 min', m2:'2 min', mFew:'%s min', mMany:'%s min',
@@ -3990,7 +3992,18 @@ const FB_LEAGUES = {'4668':'Roshn League', '5627':'Yelo League', '4328':'Premier
   '4829':'Egyptian Premier League', '4678':'UAE Pro League', '4663':'Qatar Stars League', '4346':'MLS', '4387':'NBA', '4391':'NFL',
   '5056':'Iraq Stars League', '4719':'AFC Champions League Elite', '4480':'Champions League'};   // 4.3
 const FB_LEAGUE_ORDER = Object.keys(FB_LEAGUES);
-const leagueName = ev => FB_LEAGUES[String(ev.idLeague || '')] || String(ev.strLeague || '');
+// a competition the feed names in English only: its Arabic name (the common ones); anything else is kept, and a Latin name is isolated so the punctuation round it cannot flip (fbIso)
+const LEAGUE_BY_NAME = {'international friendlies':'International friendlies', 'friendlies':'Friendlies', 'club friendlies':'Club friendlies', 'uefa nations league':'UEFA Nations League',
+  'afc asian cup':'AFC Asian Cup', 'fifa world cup':'FIFA World Cup', 'world cup qualifying':'World Cup qualifiers', 'fifa world cup qualifying':'World Cup qualifiers', 'afc asian cup qualifying':'Asian Cup qualifiers', 'arab cup':'Arab Cup',
+  'gulf cup':'Gulf Cup', 'saudi pro league':'Roshn League', 'king\'s cup':'King’s Cup', 'saudi super cup':'Saudi Super Cup', 'concacaf nations league':'CONCACAF Nations League'};
+const fbIso = t => /[\u0600-\u06FF]/.test(t) || !/[A-Za-z]/.test(t) ? t : '\u2066' + t + '\u2069';
+const leagueName = ev => FB_LEAGUES[String(ev.idLeague || '')] || LEAGUE_BY_NAME[String(ev.strLeague || '').trim().toLowerCase()] || String(ev.strLeague || '');
+// the Saudi grounds in Arabic when the feed gives them in English (an unknown ground is kept in Latin, isolated)
+const STADIUM_AR = {'prince faisal bin fahd stadium':'Prince Faisal bin Fahd Stadium', 'king fahd international stadium':'King Fahd International Stadium', 'king abdullah sports city':'King Abdullah Sports City', 'king abdullah sport city':'King Abdullah Sports City',
+  'king abdullah sports city stadium':'King Abdullah Sports City', 'mrsool park':'Mrsool Park', 'al-awwal park':'Al-Awwal Park', 'kingdom arena':'Kingdom Arena', 'prince abdullah al faisal stadium':'Prince Abdullah Al-Faisal Stadium',
+  'prince abdullah al-faisal stadium':'Prince Abdullah Al-Faisal Stadium', 'prince mohamed bin fahd stadium':'Prince Mohamed bin Fahd Stadium', 'prince sultan bin abdulaziz stadium':'Prince Sultan bin Abdulaziz Stadium', 'king saud university stadium':'King Saud University Stadium',
+  'al-shabab club stadium':'Al-Shabab Club Stadium', 'alinma bank stadium':'Alinma Bank Stadium', 'al-rabie stadium':'Al-Rabie Stadium', 'prince saud bin jalawi stadium':'Prince Saud bin Jalawi Stadium', 'prince hamad bin abdulaziz stadium':'Prince Hamad bin Abdulaziz Stadium'};
+const venueName = v => { const t = String(v || '').trim(); return STADIUM_AR[t.toLowerCase()] || fbIso(t); };
 // «مباريات اليوم»'s marks (assets/shared/broadcast.json)
 // verified and in season, so an unknown, doubtful or partial holder shows nothing
 const BROADCAST = [{"idLeague":"4668","competition":"Saudi Pro League","ar":"ثمانية","en":"Thmanyah","detail_ar":"ثمانية، أو تطبيق ثمانية","detail_en":"Thmanyah, or the Thmanyah app","from":"2025-26","until":"2030-31","source":"https://www.sportcal.com/media/srmgs-thmanyah-secures-exclusive-saudi-league-rights-until-2031/","confidence":"high","whole":true,"verified":"2026-11-03","app":["com.thmanyah.shasha.tv","com.thmanyah.shasha"]}];
@@ -4066,7 +4079,7 @@ const fbTeam = (ev, side) => {
   return `<span class="ftm${fbFollowed(id) ? ' me' : ''}">${crestImg(ev, side) || '<span class="crgap"></span>'}<span class="nm">${esc(nbName(teamAr(ev['str' + side + 'Team'], id)))}</span></span>`;
 };
 const fbMarkChip = ev => { const m = markOf(ev); return m ? `<span class="fmk">${esc(m.mark)}</span>` : ''; };
-const fbRound = ev => leagueName(ev) && ev.intRound ? fw(FB_W.round, leagueName(ev), ar(ev.intRound)) : leagueName(ev);
+const fbRound = ev => leagueName(ev) && +ev.intRound > 0 ? fw(FB_W.round, fbIso(leagueName(ev)), ar(+ev.intRound)) : fbIso(leagueName(ev));   // no round 0, none when unknown
 // the day a game is on, said the short way: «اليوم», «غدًا», «الخميس»
 function fbDayWord(day){
   const t = cityToday();
@@ -4301,7 +4314,20 @@ function mpLine(ev){   // «مع الصلاة»: the prayers around the game on 
   const marks = list.filter(p => p.at >= from && p.at <= to).map(p =>
     `<span class="mpk" style="inset-inline-start:${pos(p.at)}"><i></i><b>${esc(p.name)} ${fmtTime(p.h, p.mi)}</b></span>`).join('');
   return `<div class="mpline"><span class="mpbar" style="inset-inline-start:${pos(k)};width:${((FB_DUR) / (to - from) * 100).toFixed(2)}%"></span>${marks}`
-    + `<span class="mpgl" style="inset-inline-start:${pos(k)}">${FB_W.game} ${fbClock(k)} – ${fbClock(k + FB_DUR)}</span></div>`;
+    + `<span class="mpgl" style="inset-inline-start:${pos(k + FB_DUR / 2)}">${FB_W.game} ${fbClock(k)} – ${fbClock(k + FB_DUR)}</span></div>`;
+}
+// the line's words never overlap: the game's range sits in a row of its own above the bar; the prayers' names are below it, and one that would touch another goes to a second row (checked on the real boxes)
+function mpFixLine(root){
+  (root || document).querySelectorAll('.mpline').forEach(line => {
+    const rows = [[], []], hit = (a, b) => a.left < b.right + 8 && b.left < a.right + 8;
+    line.querySelectorAll('.mpk').forEach(k => {
+      k.classList.remove('r2');
+      const r = k.querySelector('b').getBoundingClientRect();
+      let row = rows[0].some(o => hit(o, r)) ? 1 : 0;
+      if(row === 1) k.classList.add('r2');
+      rows[row].push(r);
+    });
+  });
 }
 function mpButtons(ev, now){   // «شاهد على …» (the broadcaster's app is installed) first, then «ذكّرني», then «أضف … لفرقي» / «أزل … من فرقي»
   const out = [], m = markOf(ev, now), host = window.UrtvMatches;
@@ -4317,7 +4343,7 @@ function mpDetailRender(){
   const big = side => { const c = crestOf(ev, side); return `<div class="mdt">${c ? `<img class="mdc" src="${esc(c.u)}" alt="">` : '<span class="mdc"></span>'}<b>${esc(nbName(teamAr(ev['str' + side + 'Team'], ev['id' + side + 'Team'])))}</b></div>`; };
   const mid = (fbLive(ev, now) || fbDone(ev, now)) && fbScored(ev) ? `<b>${ar(+ev.intHomeScore)} - ${ar(+ev.intAwayScore)}</b><i>${fbWhen(ev, now)}</i>`
     : `<b>${fbClock(k)}</b><i>${fbDayWord(fbDayOf(k))}</i>`;
-  const rows = [ev.strVenue ? `<li><span>${FB_W.venue}</span><i>${esc(ev.strVenue)}</i></li>` : '', m ? `<li><span>${FB_W.channel}</span><i>${esc(m.detail)}</i></li>` : '',
+  const rows = [ev.strVenue ? `<li><span>${FB_W.venue}</span><i>${esc(venueName(ev.strVenue))}</i></li>` : '', m ? `<li><span>${FB_W.channel}</span><i>${esc(m.detail)}</i></li>` : '',
     `<li class="mdp"><div><span>${FB_W.withPrayer}</span><i class="mds">${esc(fbLive(ev, now) ? fbStatus(ev, now) : fbDone(ev, now) ? FB_W.ended : fbSentence(ev))}</i></div>${mpLine(ev)}</li>`].join('');
   const btns = mpButtons(ev, now);
   MP.btn = Math.max(-1, Math.min(MP.btn, btns.length));   // btns.length is «رجوع», the row under the actions
@@ -4327,6 +4353,7 @@ function mpDetailRender(){
     + `<div class="mdq"><button tabindex="-1" class="${MP.btn === btns.length ? 'f' : ''}" data-k="back"><span>${FB_W.back}</span></button></div>`
     + `<div class="mdn" id="mp-note">${esc(MP.note)}</div></div>`);
   document.getElementById('mp-detail').hidden = false;
+  mpFixLine(document.getElementById('mp-detail'));
 }
 function mpOpen(ev){ MP.detail = ev; MP.btn = mpButtons(ev, Date.now())[0] && mpButtons(ev, Date.now())[0].k === 'watch' ? 0 : -1;   // «شاهد على …» is ringed when it is there
    MP.note = ''; mpDetailRender(); }

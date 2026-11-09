@@ -430,7 +430,7 @@
 %s مباريات	%s matches
 %s مباراة	%s matches
 كلها على %s	all on %s
-%s، الجولة %s	%s, round %s
+%s · الجولة %s	%s · round %s
 الملعب	Venue
 القناة	Channel
 مع الصلاة	With the prayers
@@ -468,3 +468,31 @@
 متأخر	delayed
 ألبوم صوري	My photo album
 أضف صورك من صفحة الجوال ← صوري	Add your photos from the phone page › My photos
+مباريات ودية دولية	International friendlies
+مباريات ودية	Friendlies
+مباريات ودية للأندية	Club friendlies
+دوري الأمم الأوروبية	UEFA Nations League
+كأس آسيا	AFC Asian Cup
+كأس العالم	FIFA World Cup
+تصفيات كأس العالم	World Cup qualifiers
+تصفيات كأس آسيا	Asian Cup qualifiers
+كأس العرب	Arab Cup
+كأس الخليج	Gulf Cup
+كأس الملك	King’s Cup
+كأس السوبر السعودي	Saudi Super Cup
+دوري أمم كونكاكاف	CONCACAF Nations League
+استاد الأمير فيصل بن فهد	Prince Faisal bin Fahd Stadium
+استاد الملك فهد الدولي	King Fahd International Stadium
+مدينة الملك عبدالله الرياضية	King Abdullah Sports City
+استاد مرسول بارك	Mrsool Park
+استاد الأول بارك	Al-Awwal Park
+كينغدوم أرينا	Kingdom Arena
+استاد الأمير عبدالله الفيصل	Prince Abdullah Al-Faisal Stadium
+استاد الأمير محمد بن فهد	Prince Mohamed bin Fahd Stadium
+استاد الأمير سلطان بن عبدالعزيز	Prince Sultan bin Abdulaziz Stadium
+استاد جامعة الملك سعود	King Saud University Stadium
+استاد نادي الشباب	Al-Shabab Club Stadium
+ملعب الإنماء	Alinma Bank Stadium
+استاد الربيع	Al-Rabie Stadium
+استاد الأمير سعود بن جلوي	Prince Saud bin Jalawi Stadium
+استاد الأمير حمد بن عبدالعزيز	Prince Hamad bin Abdulaziz Stadium

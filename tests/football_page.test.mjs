@@ -166,7 +166,7 @@ for (const [why, rows] of [['the shipped table', null], ['medium confidence', [{
   const side = await p.$$eval('#mp-side li', l => l.map(x => x.textContent));
   check('matches page: «فرقك» first in the leagues, each with its count', side[0].startsWith('فرقك') && side[0].endsWith('١') && /دوري روشن/.test(side[1]) && side[1].endsWith('٤'), side.join(','));
   const heads = await p.$$eval('#mp-list h2', h => h.map(x => x.textContent));
-  check('matches page: the followed team first, then the league with its round', heads[0] === 'فرقك' && heads[1] === 'دوري روشن، الجولة ١٣', heads.join(','));
+  check('matches page: the followed team first, then the league with its round', heads[0] === 'فرقك' && heads[1] === 'دوري روشن · الجولة ١٣', heads.join(','));
   check('matches page: a live game shows its minute and score', /الدقيقة ٦٧/.test(await p.textContent('#mp-list section:first-child')) && /٢ - ١/.test(await p.textContent('#mp-list section:first-child')));
   check('matches page: text at least 16 px inside the rows and the leagues', !(await crowded(p, '#mp-list ul, #mp-side', 16)).length, (await crowded(p, '#mp-list ul, #mp-side', 16)).join(' | '));
   check('matches page: the mark on every row of the league', await p.$$eval('#mp-list .mpg .fmk', m => m.length === 4));
@@ -179,7 +179,7 @@ for (const [why, rows] of [['the shipped table', null], ['medium confidence', [{
   check('matches page: ▼ walks the rows', await p.$eval('.mpg.f', x => /الأهلي/.test(x.textContent)));
   await p.keyboard.press('Enter');
   const card = await p.textContent('#mp-detail');
-  check('matches page: OK opens the game\'s card: the round, the venue, the channel, the prayers', /دوري روشن، الجولة ١٣/.test(card) && /King Abdullah Sports City/.test(card)
+  check('matches page: OK opens the game\'s card: the round, the venue, the channel, the prayers', /دوري روشن · الجولة ١٣/.test(card) && /مدينة الملك عبدالله الرياضية/.test(card)
     && /ثمانية، أو تطبيق ثمانية/.test(card) && /مع الصلاة/.test(card) && /تبدأ بعد العشاء/.test(card), card);
   check('matches page: the card\'s two buttons: remind and follow', await p.$$eval('.mdb button', b => b.length === 2 && /ذكّرني قبلها بنصف ساعة/.test(b[0].textContent) && /أضف الأهلي لفرقي/.test(b[1].textContent)));
   check('matches page: the game a green bar on the prayers\' line, the prayers marked', await p.$$eval('.mpline .mpk', k => k.length >= 1) && (await p.$$('.mpbar')).length === 1);
@@ -244,6 +244,28 @@ for (const [why, rows] of [['the shipped table', null], ['medium confidence', [{
     await cf.close();
   }
   await shot(p, 'football-matches-detail.png');
+  // the «مع الصلاة» line: the game's range and the prayers' names never overlap, whatever the kick-off (within 30 minutes of a prayer included), and the header and the ground are said properly
+  const lineBoxes = await p.evaluate(() => {
+    const keep = MP.detail, out = [], hit = (a, b) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+    const day = fbDayOf(fbKick(keep)), list = fbPrayers(day);
+    for (const pr of list) for (const off of [-30, -20, -10, 0, 10, 20, 30]) {
+      const ev = { ...keep, strTimestamp: new Date(pr.at + off * 60000).toISOString().slice(0, 19), strStatus: 'NS', intHomeScore: null, intAwayScore: null };
+      MP.detail = ev; mpDetailRender();
+      const boxes = [...document.querySelectorAll('#mp-detail .mpk b, #mp-detail .mpgl')].map(e => [e.className || 'prayer', e.getBoundingClientRect()]);
+      let bad = '';
+      for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) if (hit(boxes[i][1], boxes[j][1])) bad += `${boxes[i][0]}×${boxes[j][0]} `;
+      out.push([pr.name, off, boxes.length, bad.trim()]);
+    }
+    MP.detail = keep; mpDetailRender();
+    return out;
+  });
+  check('matches page: the «مع الصلاة» labels never overlap, with the kick-off from 30 minutes before to 30 after each prayer (' + lineBoxes.length + ' cases)', lineBoxes.length > 20 && lineBoxes.every(c => !c[3]), JSON.stringify(lineBoxes.filter(c => c[3]).slice(0, 3)));
+  const head = await p.evaluate(() => { const keep = MP.detail;
+    const say = o => { MP.detail = { ...keep, ...o }; mpDetailRender(); return [document.querySelector('.mdh span').textContent, [...document.querySelectorAll('.mdr li > i')][0] ? document.querySelector('.mdr li > i').textContent : '']; };
+    const r = [say({ strLeague: 'International Friendlies', idLeague: '99999', intRound: '0', strVenue: 'Prince Faisal bin Fahd Stadium' }), say({ strLeague: 'International Friendlies', idLeague: '99999', intRound: null, strVenue: 'Some Unknown Ground' }), say({ strLeague: 'International Friendlies', idLeague: '99999', intRound: '3', strVenue: 'Prince Faisal bin Fahd Stadium' })];
+    MP.detail = keep; mpDetailRender(); return r; });
+  check('matches page: «International Friendlies» is «مباريات ودية دولية», round 0 or unknown is not shown, a known ground is in Arabic and an unknown one is isolated left to right',
+    head[0][0] === 'مباريات ودية دولية' && head[0][1] === 'استاد الأمير فيصل بن فهد' && head[1][0] === 'مباريات ودية دولية' && head[1][1] === '\u2066Some Unknown Ground\u2069' && head[2][0] === 'مباريات ودية دولية · الجولة ٣' && !/،/.test(head[2][0]), JSON.stringify(head));
   // a live game's "with prayer" line says the minute, not «تبدأ بعد العشاء…»; the hyphen of a Latin club name does not break
   const liveLine = await p.evaluate(() => { const ev = { ...MP.detail, strStatus: '2H', strProgress: '67', intHomeScore: '1', intAwayScore: '0', dateEvent: MP.detail.dateEvent, strTimestamp: new Date(Date.now() - 67 * 60000).toISOString().slice(0, 19) };
     const keep = MP.detail; MP.detail = ev; mpDetailRender(); const t = document.querySelector('.mds').textContent; MP.detail = keep; mpDetailRender(); return t; });
@@ -314,6 +336,19 @@ for (const [why, rows] of [['the shipped table', null], ['medium confidence', [{
   const { p, ctx, errors } = await open('teams=136013&matchpage=1&lang=en', { file: 'tv-en.html', rows: ROWS, height: 1080 });
   await p.evaluate(() => mpRender());
   const own = await p.evaluate(() => [...document.querySelectorAll('#mp-days li, #mp-list h2, #mp h1, #mp-side li span')].map(x => x.textContent).filter(t => /[؀-ۿ]/.test(t) && !/الجولة/.test(t)));
+  const enLine = await p.evaluate(() => {
+    const ev0 = (MP.rows && MP.rows[0] && (MP.rows[0].ev || MP.rows[0])) || null;
+    if (!ev0 || !ev0.idHomeTeam) return null;
+    const hit = (a, b) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom, out = [];
+    const list = fbPrayers(fbDayOf(fbKick(ev0)));
+    for (const pr of list) for (const off of [-30, -10, 0, 10, 30]) {
+      MP.detail = { ...ev0, strTimestamp: new Date(pr.at + off * 60000).toISOString().slice(0, 19), strStatus: 'NS', intHomeScore: null, intAwayScore: null }; mpDetailRender();
+      const boxes = [...document.querySelectorAll('#mp-detail .mpk b, #mp-detail .mpgl')].map(e => e.getBoundingClientRect());
+      for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) if (hit(boxes[i], boxes[j])) out.push([pr.name, off]);
+    }
+    return out;
+  });
+  check('English matches page: the «With prayer» labels never overlap either', enLine !== null && enLine.length === 0, JSON.stringify(enLine));
   checkLineGeo('English matches page: the match line (left to right)', await lineGeo(p, '#mp-list .mpg'));
   check('English matches page: no script error, its own words in English', !errors.length && !own.length, errors.join(' | ') + own.join(','));
   await ctx.close();
