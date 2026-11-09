@@ -6,7 +6,7 @@
 
 | Category | Kept | Dropped | How checked |
 |---|---|---|---|
-| geography (capitals, continents, true/false) | 663 | 31 countries left out | Wikidata (current UN member states with exactly one capital, Arabic and English labels from Wikidata) |
+| geography (capitals, continents, true/false) | 663 | 16 of 193 countries left out (177 kept) | Wikidata (current UN member states with exactly one capital, Arabic and English labels from Wikidata) |
 | science (chemical elements, planets, nature) | 143 | 17 elements | each element: Wikidata symbol and atomic number must equal the "symbol X and atomic number N" sentence of its English Wikipedia intro |
 | Islamic general knowledge | 75 | 0 | Quran order and name from api.alquran.cloud (Tanzil text); verse counts also require the surah's ar.wikipedia intro to state the same number (86 of 114 surahs agreed, 28 left out); seerah and worship facts from English Wikipedia, with a regular expression that must match the page |
 | Saudi and Gulf | 25 | 0 | Wikipedia (city intros), Wikidata |
