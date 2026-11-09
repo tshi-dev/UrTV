@@ -4477,7 +4477,9 @@ const CARD_KINDS_TEST = ['shows','prayers','forecast','hourly','prayerrow','next
     // that moves nothing (offline, the games' failed load redraws the cards) now and then repaints a tile a little apart, 900-950 px
     // at most 21/255 at 960x540 between two seams, in next's own page before and after it. It landed in one of the two pages and
     // not the other, even after a wait for the loaders and one more redraw. The photo's placement is the same code in both pages.
-    await o.p.addStyleTag({ content: '.photo{background-image:none!important;background-color:#4a4238!important}' });
+    // the photo's own dimming (--dim, set per photo from its brightness) is pinned too: the rotation is shuffled now, so which photo comes first at this moment is not the same in the two
+    // pages, and its dimming moved every pixel of the frame by a few levels (the 15 checks of 4.3: 1,994,324 px at most 9/255). The layout is what is compared.
+    await o.p.addStyleTag({ content: '.photo{background-image:none!important;background-color:#4a4238!important;--dim:.5!important}' });
     await o.p.evaluate(() => document.fonts.ready);
     await o.p.waitForFunction(() => typeof BUSY !== 'object' || !Object.values(BUSY).some(Boolean), null, { timeout: 8000 }).catch(() => {});
     let png = await o.p.screenshot({ animations: 'disabled' });
