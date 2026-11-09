@@ -31,7 +31,7 @@ check("the page gets the tokens and the names (leaguesFragment)", '+ leaguesFrag
 uses = [m.start() for m in re.finditer(r"CatalogueLeagues\.URL", st)]
 check("the catalogue is read in one place only: openCatalogue, from the picker's «كل الدوريات…»", len(uses) == 1
       and st.rfind("private void openCatalogue()", 0, uses[0]) > st.rfind("\n    private void ", 0, uses[0]) - 1
-      and 'setNeutralButton("كل الدوريات…", (d, w) -> { save.run(); openCatalogue(); })' in st)
+      and 'setNeutralButton("كل الدوريات…", (d, w) -> { prefs.setList("leagues", ticked(keys, on)); render(); openCatalogue(); })' in st)
 check("nothing else in the apps reads the catalogue", not any("data-catalogue" in read(p) for p in (ROOT / "android").rglob("*.java") if p.name != "CatalogueLeagues.java")
       and "data-catalogue" not in read(ROOT / "src/template.html"))
 check("a failed read falls back on the last copy, which only a whole answer replaces", 'new JSONObject(body).getJSONArray("leagues");' in st and "league-catalogue.json" in st)

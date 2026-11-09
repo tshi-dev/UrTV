@@ -1021,14 +1021,12 @@ public class SettingsActivity extends Activity {
         for (String s : cur) if (CatalogueLeagues.parse(s) != null) { keys.add(s); labels.add(leagueLabel(s)); }
         final boolean[] on = new boolean[keys.size()];
         for (int i = 0; i < on.length; i++) on[i] = cur.contains(keys.get(i));
-        final Runnable save = () -> {
-            List<String> v = new ArrayList<>();
-            for (int i = 0; i < on.length; i++) if (on[i]) v.add(keys.get(i));
-            prefs.setList("leagues", v);
-            render();
-        };
-        new Dlg(this).multi(save)   // «حفظ», and Back too: the list is long, the buttons under it (DialogFit)
-            .setNeutralButton("كل الدوريات…", (d, w) -> { save.run(); openCatalogue(); })
+        new Dlg(this).multi(() -> {   // «حفظ», and Back too: the list is long, the buttons under it (DialogFit)
+                List<String> v = ticked(keys, on);
+                prefs.setList("leagues", v);
+                render();
+            })
+            .setNeutralButton("كل الدوريات…", (d, w) -> { prefs.setList("leagues", ticked(keys, on)); render(); openCatalogue(); })   // what is ticked is kept
             .setTitle("الدوريات كاملة (حتى " + arabicNum(Prefs.MAX_LEAGUES) + "، بدون اختيار = بدون)")
             .setMultiChoiceItems(labels.toArray(new String[0]), on, (d, i, checked) -> {
                 int n = 0;
@@ -1040,6 +1038,12 @@ public class SettingsActivity extends Activity {
                 }
             })
             .show();
+    }
+
+    private static List<String> ticked(List<String> keys, boolean[] on) {
+        List<String> v = new ArrayList<>();
+        for (int i = 0; i < on.length; i++) if (on[i]) v.add(keys.get(i));
+        return v;
     }
 
     /** 4.3 «كل الدوريات»: the catalogue, fresh from the internet, else the copy of the last time; nothing is fetched until now. */
