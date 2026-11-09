@@ -2,21 +2,44 @@
 
 <h1 align="center">تلفزيونك · UrTV</h1>
 
-<p align="center" dir="rtl">واجهة رئيسية عربية وشاشة توقف سعودية لتلفزيونات Android TV و Google TV، وتسريع آمن للتلفزيون.<br>يركّبها لك مساعد ذكاء اصطناعي بأمر واحد.</p>
+<p align="center" dir="rtl">واجهة رئيسية عربية وشاشة توقف سعودية لتلفزيونات Android TV و Google TV، وتسريع آمن للتلفزيون.<br>تركّبها من التلفزيون نفسه بزر واحد، أو من جوالك أو كمبيوترك.</p>
 
-<p align="center">An Arabic home screen and a Saudi screensaver for Android TV / Google TV, and a safe speed-up.<br>Your AI agent sets it all up.</p>
+<p align="center">An Arabic home screen and a Saudi screensaver for Android TV / Google TV, and a safe speed-up.<br>Set it up from the TV itself with one button, or from your phone or computer.</p>
 
 <p align="center"><img src=".github/screens/before-after-home.jpg" alt="Before: Google TV home. After: the تلفزيونك home screen" width="100%"></p>
 <p align="center"><img src=".github/screens/before-after-screensaver.jpg" alt="Before: the Google screensaver. After: شاشة تلفزيونك" width="100%"></p>
 
 <div dir="rtl">
 
-## ركّبه في 3 خطوات
+## التثبيت: اختر طريقة
 
-### ① التلفزيون
-الإعدادات ← حول ← اضغط OK على **Build** سبع مرات. بعدها روح إلى **خيارات المطوّر** ← شغّل **USB debugging**.
+| الطريقة | تحتاج | المدة |
+|---|---|---|
+| **① التلفزيون وحده** (الأسهل) | التلفزيون والريموت | ١٠–٢٠ دقيقة |
+| **② من جوال** أندرويد أو آيفون | جوال على نفس الواي فاي | مثل الكمبيوتر (الآيفون أبطأ) |
+| **③ من كمبيوتر** | كمبيوتر على نفس الواي فاي ومساعد ذكي | ٤٠ دقيقة |
 
-### ② كمبيوتر على نفس الواي فاي، وعليه واحد من هذي
+> **مهم:** تثبيت التطبيق وحده **ما يخلّيه الشاشة الرئيسية**. اللي يحوّل التلفزيون ويسرّعه هو **الإعداد** («جهّز كل شي» أو الأوامر)، وتقدر ترجع كل شي مثل ما كان بأي وقت.
+
+### ① التلفزيون وحده
+1. **فعّل التصحيح:** الإعدادات ← تفضيلات الجهاز ← حول ← اضغط OK على **Build** سبع مرات، ثم **خيارات المطوّر** ← شغّل **تصحيح USB**.
+2. **ثبّت تطبيق Downloader** من متجر التلفزيون، واكتب فيه الرمز **9378345** ← **تثبيت** (اسمح له بتثبيت التطبيقات لو سألك).
+3. **افتح «إعداد تلفزيوني»** من صف التطبيقات ← اضغط **«جهّز كل شي»**.
+4. التلفزيون يسألك «السماح بتصحيح USB؟» ← **السماح دائماً**. تطلع لك الخطة بأرقام تلفزيونك قبل أي تغيير ← **«ابدأ»**، وخلّه يكمل (يعيد التشغيل مرتين ويكمل وحده).
+
+| الشاشة الأولى | الخطة قبل أي تغيير | النهاية |
+|---|---|---|
+| <img src="docs/shots/setup/after/glass-ar-start.png" alt="«جهّز كل شي»" width="260"> | <img src="docs/shots/setup/after/glass-ar-plan.png" alt="الخطة" width="260"> | <img src="docs/shots/setup/after/glass-ar-done.png" alt="تم" width="260"> |
+
+### ② من جوال أندرويد أو آيفون
+- **التلفزيون:** فعّل التصحيح مثل الخطوة ١ فوق.
+- **أندرويد:** ثبّت **Termux** وشغّل نفس أوامر الكمبيوتر من الجوال.
+- **آيفون / آيباد:** ثبّت **iSH** (أبطأ).
+- الخطوات كاملة: [`docs/PHONE-SETUP.md`](docs/PHONE-SETUP.md).
+
+### ③ من كمبيوتر (مع مساعد ذكي)
+1. **التلفزيون:** فعّل التصحيح مثل الخطوة ١ فوق.
+2. **الكمبيوتر**، على نفس الواي فاي، وعليه واحد من هذي:
 
 | **Codex** (OpenAI) | **Claude Code** (Anthropic) |
 |---|---|
@@ -26,9 +49,7 @@
 
 <sub>ويندوز: ركّب Git وPython أول (`winget install --source winget Git.Git Python.Python.3.12`). Gemini CLI مجاني وناس قالوا يشتغل؛ ما جرّبناه.</sub>
 
-> **ما عندك كمبيوتر؟** تقدر تجهّز التلفزيون من **التلفزيون نفسه** (حمّل التطبيقين بتطبيق Downloader وافتح «إعداد تلفزيوني»)، أو من **جوال أندرويد** (Termux) أو **آيفون/آيباد** (iSH). التفاصيل: [`docs/PHONE-SETUP.md`](docs/PHONE-SETUP.md).
-
-### ③ الصق هذا
+3. **الصق هذا:**
 
 > ركّب تلفزيوني من https://github.com/tshi-dev/UrTV: انسخ المستودع واتبع `docs/SETUP-PROMPT.md` خطوة بخطوة. أنت على كمبيوتر متصل بنفس شبكة الواي فاي حقت التلفزيون.
 
@@ -49,12 +70,33 @@
 
 </div>
 
-## Set it up in 3 steps
+## Install: pick a way
 
-### ① The TV
-Settings → About → press OK on **Build** 7 times. Then go to **Developer options** → turn on **USB debugging**.
+| Way | You need | Time |
+|---|---|---|
+| **① The TV alone** (easiest) | the TV and its remote | 10–20 min |
+| **② From a phone**, Android or iPhone | a phone on the same Wi-Fi | like the computer (an iPhone is slower) |
+| **③ From a computer** | a computer on the same Wi-Fi and an AI agent | 40 min |
 
-### ② A computer on the same Wi-Fi, with one of these
+> **Important:** installing the app alone does **not** make it the Home screen. The **setup** («جهّز كل شي», or the commands) switches the TV over and speeds it up, and you can put everything back as it was at any time.
+
+### ① The TV alone
+1. **Turn on debugging:** Settings → Device Preferences → About → press OK on **Build** 7 times, then **Developer options** → turn on **USB debugging**.
+2. **Install the Downloader app** from the TV's store, type the code **9378345** → **Install** (allow it to install apps if it asks).
+3. **Open «إعداد تلفزيوني»** from the apps row → press **«جهّز كل شي»** (Set up everything).
+4. The TV asks «Allow USB debugging?» → **Always allow**. The plan with this TV's own numbers shows before anything changes → **«ابدأ»** (Start), then let it run (it restarts twice and carries on by itself).
+
+The screens are shown above (start, the plan, done).
+
+### ② From an Android phone or an iPhone
+- **The TV:** turn on debugging as in step 1 above.
+- **Android:** install **Termux** and run the same commands as on a computer, from the phone.
+- **iPhone / iPad:** install **iSH** (slower).
+- All the steps: [`docs/PHONE-SETUP.md`](docs/PHONE-SETUP.md).
+
+### ③ From a computer (with an AI agent)
+1. **The TV:** turn on debugging as in step 1 above.
+2. **A computer** on the same Wi-Fi, with one of these:
 
 | **Codex** (OpenAI) | **Claude Code** (Anthropic) |
 |---|---|
@@ -64,9 +106,7 @@ Settings → About → press OK on **Build** 7 times. Then go to **Developer opt
 
 <sub>Windows: install Git and Python first (`winget install --source winget Git.Git Python.Python.3.12`). Gemini CLI is free and reported to work; not tested by us.</sub>
 
-> **No computer?** Set the TV up from **the TV itself** (install the two apps with the Downloader app and open «إعداد تلفزيوني»), from an **Android phone** (Termux) or from an **iPhone/iPad** (iSH). Details: [`docs/PHONE-SETUP.md`](docs/PHONE-SETUP.md).
-
-### ③ Paste this
+3. **Paste this:**
 
 > Set up my TV with https://github.com/tshi-dev/UrTV: clone it and follow `docs/SETUP-PROMPT.md` step by step. You are on a computer on the same Wi-Fi as the TV.
 
