@@ -831,7 +831,7 @@ EVENT_LEAGUES = {
 }
 EVENT_LOOSE = re.compile(r"formula|ufc|mma|boxing|\batp\b|\bwta\b|tennis|grand slam", re.I)   # for the report
 EVENT_FIELDS = ("strEvent", "strEventAlternate", "strLeague", "strHomeTeam", "strAwayTeam", "dateEvent", "strTime",
-                "strTimestamp", "strVenue", "strCity", "strCountry", "strStatus", "strSeason", "intRound")
+                "strTimestamp", "strVenue", "strCity", "strCountry", "strStatus", "strPostponed", "strSeason", "intRound")
 MAX_TENNIS = 3
 # TheSportsDB league ids around the ones events live at (Formula 1 4370, UFC 4443, ATP/WTA 4464/4517...): which is
 # which is read from what each answers, never assumed

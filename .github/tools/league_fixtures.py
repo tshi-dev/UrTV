@@ -35,7 +35,7 @@ PREV = Path(os.environ["LEAGUES_PREV"]) if os.environ.get("LEAGUES_PREV") else N
 BACK_H, AHEAD_DAYS = 36, 7   # results of the last day and a half, fixtures of the coming week
 KEEP = ("idEvent", "idLeague", "idHomeTeam", "idAwayTeam", "strHomeTeam", "strAwayTeam", "intHomeScore",
         "intAwayScore", "strStatus", "strTimestamp", "dateEvent", "strTime", "strSport", "strSeason", "intRound",
-        "strProgress", "strHomeTeamBadge", "strAwayTeamBadge", "strVenue")   # the badges: the launcher's matches card shows the clubs'
+        "strProgress", "strPostponed", "strHomeTeamBadge", "strAwayTeamBadge", "strVenue")   # the badges: the launcher's matches card shows the clubs'
 #                                         crests; the venue: «مباريات اليوم» says where a game is played (docs/PROPOSALS-NOV2.md §1)
 CAP_GUESS = 15   # what the free league calls seem to hold; the report says if a call returned exactly this
 
