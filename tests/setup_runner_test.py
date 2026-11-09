@@ -34,9 +34,9 @@ check("the screen keeps the PIN gate and the buttons' guard against overlays (ev
       "SetupGate.guard" in act and "setFilterTouchesWhenObscured(true)" in btn and act.count("setFocusable(true)") == 1)
 check("one way to set up: the screen starts only the full run or the undo (the old five-step run is gone from the runner too)",
       "SetupRunner.Kind.FULL" in act and "Kind.SETUP" not in act and "SETUP" not in runner[runner.index("enum Kind"):runner.index("enum State")] and "SetupEngine.plan()" not in act)
-check("the screen: «جهّز كل شي», the plan with «ابدأ» and «إلغاء», the extras box on by default, «كمّل» for the Wi-Fi, the QR of the report, «تراجع»",
+check("the screen: «جهّز كل شي», the plan with «ابدأ» and «إلغاء», a box per suggested app (4.3; SmartTube and TV Bro ticked at first), «كمّل» for the Wi-Fi, the QR of the report, «تراجع»",
       all(w in act for w in ('button(S.t("جهّز كل شي"))', 'S.t("ابدأ")', 'S.t("إلغاء")', 'S.t("كمّل")', "private boolean extras = true;", "QrCode.encodeLarge(url)",
-                             '"تراجع (يرجّع التلفزيون كما كان)"', "SetupRunner.get().confirm(extras)", "SetupRunner.get().cancel()", "SetupRunner.PROMPT_LATE", "SetupRunner.WIFI_ASK_TEXT")))
+                             '"تراجع (يرجّع التلفزيون كما كان)"', "SetupRunner.get().confirm(new java.util.ArrayList<>(picks))", "SuggestedApps.forSetup(android.os.Build.VERSION.SDK_INT)", "SetupRunner.get().cancel()", "SetupRunner.PROMPT_LATE", "SetupRunner.WIFI_ASK_TEXT")))
 check("the progress screen: one row per step on a rail, a tick done, a dash تُرك, a cross not done", all(w in act for w in ("private final class StepMark", "case DONE:", "case SKIPPED:", "case FAILED:", "case RUNNING:", 'S.t("(تُرك)")')))
 check("the counts follow the person's digits setting (the screens' DigitsText)", "DigitsText.convert(s, Digits.latin())" in act)
 check("the 20 s notice is the owner's wording", 'PROMPT_LATE = "ما ظهرت الرسالة؟ أعد تشغيل التلفزيون وافتح «إعداد تلفزيوني» واضغط «جهّز كل شي» وخلك عند التلفزيون"' in runner)
@@ -61,7 +61,7 @@ if not shutil.which("javac"):
     print("SKIP the runner on a JVM: no javac on this machine")
     sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
-    pure = [p for p in sorted(SETUP.glob("*.java")) if "import android." not in p.read_text(encoding="utf-8")] + [SETUP.parent / "phone/UpdateRules.java"]   # (read only: its rule for updates)
+    pure = [p for p in sorted(SETUP.glob("*.java")) if "import android." not in p.read_text(encoding="utf-8")] + [SETUP.parent / "phone/UpdateRules.java", SETUP.parent / "SuggestedApps.java"]   # (read only: its rule for updates)
     r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, *map(str, pure), str(ROOT / "tests/SetupEngineRun.java"), str(ROOT / "tests/SetupRunnerRun.java"), str(ROOT / "tests/AdbClientRun.java")], capture_output=True, text=True)
     check("the pure classes and the runner's harness compile", r.returncode == 0, r.stderr)
     if r.returncode:
@@ -135,6 +135,14 @@ check("R18: a fresh install is refused unless the APK is signed with this app's 
 check("R19: the undo after the full run removes exactly what the setup installed (the screensaver, TV Bro, SmartTube), never this app",
       got.get("R19") == "R19 undo:DONE saver=false tvbro=false smarttube=false home=true record=[]", got.get("R19"))
 check("R20: «no extras» (the person unticked them): skipped, nothing downloaded for them", got.get("R20") == "R20 extras:SKIPPED downloads=1", got.get("R20"))
+lumen_url = "https://github.com/lumen-tv/lumen-tv/releases/download/v0.9.4/lumen.apk"
+check("R20b (4.3): only the IPTV player ticked: its pinned file is downloaded, and a file whose SHA-256 is not the pinned one is refused (FAILED, nothing installed or recorded)",
+      got.get("R20b", "").startswith("R20b extras:FAILED downloads=[") and lumen_url in got.get("R20b", "") and "tv-bro" not in got.get("R20b", "") and "SmartTube" not in got.get("R20b", "")
+      and got.get("R20b", "").endswith("lumenInstalled=false recorded=false"), got.get("R20b"))
+check("4.3: the ticks are saved with the run and read back at a resume (a run saved before 4.3 has none: the first ticks)",
+      '(o.picks == null ? "" : "\\npicks=" + sa.urtv.home.SuggestedApps.join(o.picks))' in runner
+      and 'if (saved.containsKey("picks")) o.picks = sa.urtv.home.SuggestedApps.parse(saved.get("picks"));' in runner)
+check("R20c (4.3): nothing ticked: the extras are skipped and nothing is fetched from GitHub for them", got.get("R20c") == "R20c extras:SKIPPED github=0", got.get("R20c"))
 check("R21: the start screen: after the precheck the run reads this TV (the safe list's real count, the screensaver missing) with not one change, waits for «ابدأ», then runs it all",
       got.get("R21") == "R21 plan=true safe=true saver=false homeOurs=false wifiAsk=false changesBefore=0 asked=true line=true saverLine=true true", got.get("R21"))
 check("R22: «إلغاء», or no answer for ten minutes (1200 waits of 0.5 s): the run ends, not one change, nothing to resume, the key let go, not in red",

@@ -35,6 +35,8 @@ check("the words: where it opens, and the line when it cannot; the titles marked
 check("the links are SBA's two official /live channel pages (no aggregator, no stream address, no video id)",
       '"https://www.youtube.com/@SaudiQuranTv/live"' in live and '"https://www.youtube.com/@SaudiSunnahTv/live"' in live
       and "m3u8" not in live.lower() and "makkahlive" not in live.lower() and "watch?v=" not in live)
+check("4.3: the browser gets SBA's own Aloula live page; still no stream address, nothing played in our app",
+      '"https://aloula.sba.sa/live/quran", "https://aloula.sba.sa/live/sunna"' in live and "HaramLive.linkFor(which, pkg)" in opener)
 if not shutil.which("javac"):
     print("SKIP haram live: no javac here")
     sys.exit(1 if failed else 0)

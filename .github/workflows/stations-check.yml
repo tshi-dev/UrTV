@@ -12,6 +12,7 @@ on:
       - '.github/tools/check_stations.py'
       - '.github/workflows/stations-check.yml'
       - '.github/tools/find_streams.py'
+      - '.github/tools/aloula_probe.py'
 
 permissions:
   contents: write
@@ -34,6 +35,7 @@ jobs:
       - run: python3 -u .github/tools/find_streams.py || true   # a report of candidates (radio-browser, mp3quran), nothing changed
       - run: sudo timeout 600 apt-get update -qq && sudo timeout 600 apt-get install -y -qq ffmpeg   # a stuck mirror once held a run for 30 min
         timeout-minutes: 12
+      - run: python3 -u .github/tools/aloula_probe.py || true   # 4.3: the addresses Aloula's own Quran and Sunnah pages play (stations/aloula.md)
       - run: python3 -u .github/tools/check_stations.py $CANDIDATES
       - name: Push to data-stations
         if: always()

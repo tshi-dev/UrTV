@@ -54,7 +54,7 @@ check("setup: one card on a solid surface in the safe area (880 dp at most), tit
       and 'S.t("%s من %s"' in sa_ and "new sa.urtv.home.CalmBar(this, look.line, GOLD)" in sa_ and "stepSubs.get(steps.indexOf(now))" in sa_)
 check("setup: the restart notice is said before the TV restarts (the measuring steps, on a TV that survives it), one primary button of 56 dp and the other choices quiet",
       'S.t("سيعيد التلفزيون التشغيل الآن، وسيكمل بنفسه.")' in sa_ and "pv.restarts" in sa_ and "t.setMinHeight(dp(56));" in sa_ and sa_.count("quiet(S.t(") >= 4)
-check("setup: the behaviour is the runner's, untouched: the same go/confirm/cancel calls", all(w in sa_ for w in ("SetupRunner.get().confirm(extras)", "SetupRunner.get().cancel()", "go(false)", "go(true)", "dismissed = e;")))
+check("setup: the behaviour is the runner's, untouched: the same go/confirm/cancel calls", all(w in sa_ for w in ("SetupRunner.get().confirm(new java.util.ArrayList<>(picks))", "SetupRunner.get().cancel()", "go(false)", "go(true)", "dismissed = e;")))
 dbg = text(ROOT / "android/launcher/src/debug/java/sa/urtv/home/setup/DebugSetupShot.java")
 check("setup: the picture hook is debug only (src/debug), and sets the runner's fields, nothing runs", "SetupRunner.class.getDeclaredField(name)" in dbg and "DebugSetupShot" not in text(ROOT / "android/launcher/src/main/AndroidManifest.xml"))
 check("setup: «تم» on the done screen opens the home and closes the screen (build 208: nothing happened, the screen stayed in front)",

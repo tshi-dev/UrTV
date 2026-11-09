@@ -1,0 +1,272 @@
+package sa.urtv.home;
+
+import android.app.Activity;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageInstaller;
+import android.content.pm.PackageManager;
+import android.graphics.Typeface;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.security.MessageDigest;
+import java.util.HashMap;
+import java.util.Map;
+
+import sa.urtv.home.phone.UpdateRules;
+
+/**
+ * 4.3 «تطبيقات مقترحة», opened from the screensaver's settings (الإعدادات ← المزيد ← التطبيقات والمفضلة): each suggested app (SuggestedApps) with its
+ * one line, and one button. Installed: «افتح». A Play Store app: «افتح المتجر» (its page; the owner installs it there). Otherwise «ثبّت»: the file
+ * is downloaded into this app's cache from its own place only (SuggestedApps), at most UpdateRules.MAX_APK_BYTES, over https; a pinned one is refused
+ * unless its SHA-256 is the pinned one; the file must be that package; then Android's own install screen asks the owner (PackageInstaller). Back closes.
+ */
+public class SuggestedAppsActivity extends Activity {
+    private static final String TAG = "UrTVSuggested", RESULT = "sa.urtv.home.SUGGESTED_RESULT";
+
+    /** «اللغة» (docs/ENGLISH.md): with Arabic the context itself, with English an English one */
+    @Override protected void attachBaseContext(android.content.Context b) { super.attachBaseContext(S.wrap(b)); }
+
+    /** SuggestedApps' why lines, marked for «اللغة» here (the catalog is plain Java); S.tv says them */
+    static final String[] WHY = {
+        S.n("يوتيوب بلا إعلانات، مصمَّم للريموت"), S.n("متصفح إنترنت يشتغل بالريموت"), S.n("يشغّل الفيديو والصوت من ذاكرة USB ومن الشبكة"),
+        S.n("مشغّل IPTV فارغ: تضيف قائمتك أنت، وما فيه ولا نعطي أي قنوات"),
+    };
+
+    private GlassStyle.Look look;
+    private final Map<String, TextView> buttons = new HashMap<>();
+    private volatile boolean busy;
+
+    private final BroadcastReceiver result = new BroadcastReceiver() {
+        @Override public void onReceive(Context c, Intent i) {
+            int status = i.getIntExtra(PackageInstaller.EXTRA_STATUS, Integer.MIN_VALUE);
+            if (status == PackageInstaller.STATUS_PENDING_USER_ACTION) {
+                Intent screen = i.getParcelableExtra(Intent.EXTRA_INTENT);
+                if (screen != null) {
+                    try { startActivity(screen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)); } catch (RuntimeException e) { Log.w(TAG, "confirm: " + e.getClass().getSimpleName()); }
+                }
+                return;
+            }
+            busy = false;
+            refresh();
+        }
+    };
+
+    @Override protected void onCreate(Bundle b) {
+        super.onCreate(b);
+        Digits.init(this);
+        ScrollView scroll = new ScrollView(this);
+        look = GlassSource.page(this, scroll);
+        FrameLayout frame = new FrameLayout(this);
+        scroll.addView(frame);
+        LinearLayout col = new LinearLayout(this);
+        col.setOrientation(LinearLayout.VERTICAL);
+        col.setLayoutDirection(Dir.layout());
+        col.setPadding(0, dp(48), 0, dp(48));
+        frame.addView(col, new FrameLayout.LayoutParams(dp(820), -2, Gravity.CENTER_HORIZONTAL));
+        col.addView(text(S.t("تطبيقات مقترحة"), 30, "Medium", look.text), lp(dp(10)));
+        col.addView(text(S.t("تطبيقات نرشّحها لتلفزيونك. كل تطبيق من مصدره هو، ويسألك أندرويد قبل التثبيت."), 16, "Regular", look.sub), lp(dp(24)));
+        TextView first = null;
+        for (final SuggestedApps.App a : SuggestedApps.forTv(Build.VERSION.SDK_INT)) {
+            col.addView(text(a.name, 20, "Medium", look.text), lp(dp(2)));
+            col.addView(text(S.tv(a.why), 15, "Regular", look.sub), lp(dp(8)));
+            TextView btn = text("", 17, "Medium", look.text);
+            btn.setFocusable(true);
+            btn.setClickable(true);
+            btn.setPadding(dp(22), dp(10), dp(22), dp(10));
+            GlassPaint.card(btn, look, 14);
+            btn.setOnClickListener(v -> act(a));
+            LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(-2, -2);
+            bp.bottomMargin = dp(22);
+            col.addView(btn, bp);
+            buttons.put(a.id, btn);
+            if (first == null) first = btn;
+        }
+        setContentView(scroll);
+        InternalReceivers.register(this, result, new IntentFilter(RESULT));
+        refresh();
+        if (first != null) { final TextView f = first; f.post(f::requestFocus); }
+    }
+
+    @Override protected void onResume() { super.onResume(); if (!busy) refresh(); }
+
+    @Override protected void onDestroy() {
+        try { unregisterReceiver(result); } catch (RuntimeException ignored) { }
+        super.onDestroy();
+    }
+
+    private void refresh() {
+        for (SuggestedApps.App a : SuggestedApps.ALL) {
+            TextView b = buttons.get(a.id);
+            if (b == null) continue;
+            b.setText(installed(a.pkg) ? S.t("افتح") : a.kind == SuggestedApps.Kind.STORE ? S.t("افتح المتجر") : S.t("ثبّت"));
+        }
+    }
+
+    private void act(SuggestedApps.App a) {
+        if (installed(a.pkg)) { open(a.pkg); return; }
+        if (a.kind == SuggestedApps.Kind.STORE) { store(a.pkg); return; }
+        if (busy) return;
+        busy = true;
+        final TextView b = buttons.get(a.id);
+        if (b != null) b.setText(S.t("ينزّل…"));
+        new Thread(() -> {
+            String why = install(a);
+            if (why != null) runOnUiThread(() -> { busy = false; if (b != null) b.setText(why); });
+        }, "suggested-install").start();
+    }
+
+    /** null when Android's install screen was asked for; else the words for the button (it did not go) */
+    private String install(SuggestedApps.App a) {
+        File f = new File(getCacheDir(), "suggested.apk");
+        try {
+            String url;
+            if (a.kind == SuggestedApps.Kind.PINNED) {
+                url = a.address();
+            } else {
+                String json = fetch(a.address(), 2 * 1024 * 1024);
+                url = json == null ? null : SuggestedApps.pickAsset(a.file, String.join(",", Build.SUPPORTED_ABIS), json);
+                if (url == null || !SuggestedApps.githubOk(a, url)) return S.t("ما لقينا نسخة تناسب هذا التلفزيون");
+            }
+            String sha = download(url, f);
+            if (sha == null) return S.t("ما قدرنا ننزّله. جرّب مرة ثانية");
+            if (a.kind == SuggestedApps.Kind.PINNED && !SuggestedApps.pinnedOk(a, url, sha)) return S.t("الملف ليس النسخة التي فحصناها، فما ثبّتناه");
+            PackageInfo info = getPackageManager().getPackageArchiveInfo(f.getAbsolutePath(), 0);
+            if (info == null || !a.pkg.equals(info.packageName)) return S.t("الملف ليس هذا التطبيق، فما ثبّتناه");
+            commit(f, a.pkg);
+            return null;
+        } catch (Exception e) {
+            Log.w(TAG, "install: " + e.getClass().getSimpleName());
+            return S.t("ما قدرنا نثبّته. جرّب مرة ثانية");
+        }
+    }
+
+    private void commit(File f, String pkg) throws Exception {
+        PackageInstaller installer = getPackageManager().getPackageInstaller();
+        PackageInstaller.SessionParams params = new PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL);
+        params.setAppPackageName(pkg);
+        int id = installer.createSession(params);
+        try (PackageInstaller.Session session = installer.openSession(id)) {
+            try (OutputStream out = session.openWrite("base.apk", 0, f.length()); InputStream in = new FileInputStream(f)) {
+                byte[] buf = new byte[64 * 1024];
+                int n;
+                while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
+                session.fsync(out);
+            }
+            Intent back = new Intent(RESULT).setPackage(getPackageName());
+            int flags = PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= 31 ? PendingIntent.FLAG_MUTABLE : 0);
+            session.commit(PendingIntent.getBroadcast(this, 9300, back, flags).getIntentSender());
+        } catch (Exception e) {
+            try { installer.abandonSession(id); } catch (Exception ignored) { }
+            throw e;
+        } finally {
+            f.delete();
+        }
+    }
+
+    /** The file into f: https only, from an allowed place (SuggestedApps), at most UpdateRules.MAX_APK_BYTES. Its SHA-256, or null. */
+    private static String download(String url, File f) throws Exception {
+        HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
+        con.setConnectTimeout(10_000);
+        con.setReadTimeout(30_000);
+        try {
+            if (con.getResponseCode() != HttpURLConnection.HTTP_OK || !"https".equals(con.getURL().getProtocol())) return null;
+            if (con.getContentLength() > UpdateRules.MAX_APK_BYTES) return null;
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            long total = 0;
+            try (InputStream in = con.getInputStream(); OutputStream o = new FileOutputStream(f)) {
+                byte[] buf = new byte[64 * 1024];
+                int n;
+                while ((n = in.read(buf)) > 0) {
+                    total += n;
+                    if (total > UpdateRules.MAX_APK_BYTES) { f.delete(); return null; }
+                    md.update(buf, 0, n);
+                    o.write(buf, 0, n);
+                }
+            }
+            if (total == 0) { f.delete(); return null; }
+            return SuggestedApps.hex(md.digest());
+        } finally {
+            con.disconnect();
+        }
+    }
+
+    private static String fetch(String url, int max) throws Exception {
+        HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
+        con.setConnectTimeout(10_000);
+        con.setReadTimeout(20_000);
+        con.setRequestProperty("Accept", "application/vnd.github+json");
+        try {
+            if (con.getResponseCode() != HttpURLConnection.HTTP_OK) return null;
+            try (InputStream in = con.getInputStream()) {
+                java.io.ByteArrayOutputStream b = new java.io.ByteArrayOutputStream();
+                byte[] buf = new byte[16 * 1024];
+                int n;
+                while ((n = in.read(buf)) > 0) { if (b.size() + n > max) return null; b.write(buf, 0, n); }
+                return b.toString("UTF-8");
+            }
+        } finally {
+            con.disconnect();
+        }
+    }
+
+    private boolean installed(String pkg) {
+        try { getPackageManager().getPackageInfo(pkg, 0); return true; } catch (PackageManager.NameNotFoundException e) { return false; }
+    }
+
+    private void open(String pkg) {
+        PackageManager pm = getPackageManager();
+        Intent i = pm.getLeanbackLaunchIntentForPackage(pkg);
+        if (i == null) i = pm.getLaunchIntentForPackage(pkg);
+        if (i == null) return;
+        try { startActivity(i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)); } catch (RuntimeException ignored) { }
+    }
+
+    /** the app's Play Store page: the store app, else its web page */
+    private void store(String pkg) {
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + pkg)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        } catch (RuntimeException e) {
+            try { startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + pkg)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)); }
+            catch (RuntimeException ignored) { }
+        }
+    }
+
+    private TextView text(String s, float sp, String weight, int color) {
+        TextView t = new TextView(this);
+        t.setText(s);
+        t.setTextSize(TypedValue.COMPLEX_UNIT_SP, sp);
+        t.setTextColor(color);
+        t.setLineSpacing(dp(4), 1f);
+        try { t.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/Thmanyah-" + weight + ".otf")); }
+        catch (RuntimeException ignored) { }
+        return t;
+    }
+
+    private LinearLayout.LayoutParams lp(int bottom) {
+        LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(-1, -2);
+        p.bottomMargin = bottom;
+        return p;
+    }
+
+    private int dp(float v) { return Math.round(v * getResources().getDisplayMetrics().density); }
+}

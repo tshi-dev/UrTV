@@ -28,7 +28,7 @@ need.append("".join(re.findall(r'"((?:[^"\\]|\\.)*)"', re.search(r"WIFI_ASK_TEXT
 missing = [w for w in need if w not in words]
 check("every fixed sentence of SetupRunner's labels, plan, extras line and prompt/Wi-Fi texts is in SetupActivity.WORDS", not missing, missing[:3])
 check("the screen shows them through the table", all(x in act for x in ("S.tv(SetupRunner.label(s.id))", "S.tv(SetupRunner.PROMPT_LATE)", "S.tv(SetupRunner.PROMPT_LINE)",
-      "S.tv(SetupRunner.WIFI_ASK_TEXT)", "SetupRunner.planLines(p, TR)", "SetupRunner.extrasLine(p, TR)", "say(S.tv(e.text)")))
+      "S.tv(SetupRunner.WIFI_ASK_TEXT)", "SetupRunner.planLines(p, TR)", "TR.apply(a.why)", "say(S.tv(e.text)")))
 body = act[act.index("private void buildStart"):act.index("private void buildDone")]
 bare = [l.strip() for l in body.splitlines() if re.search(r'(text|button|say)\([^S\n]*"[^"]*[؀-ۿ]', l) and "S.t" not in l]
 check("no Arabic literal of the start, plan, progress or wait screens is shown without S.t", not bare, bare[:3])

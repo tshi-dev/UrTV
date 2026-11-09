@@ -15,6 +15,10 @@ public final class HaramLiveRun {
                 && HaramLive.shown(HaramLive.LIVE[0][1]) && HaramLive.shown(HaramLive.LIVE[1][1]), "");
         java.util.Set<String> all = new java.util.HashSet<>(java.util.Arrays.asList(HaramLive.YOUTUBE, HaramLive.SMARTTUBE, HaramLive.SMARTTUBE_BETA));
         check("opened in YouTube, then SmartTube, then the browser (null at the end)", java.util.Arrays.asList(HaramLive.YOUTUBE, HaramLive.SMARTTUBE, HaramLive.SMARTTUBE_BETA, null).equals(HaramLive.openOrder(all::contains)), "" + HaramLive.openOrder(all::contains));
+        check("4.3: the browser gets SBA's own Aloula page (Makkah: quran, Madinah: sunna), an app the YouTube /live page; both may be shown",
+                HaramLive.linkFor(0, null).equals("https://aloula.sba.sa/live/quran") && HaramLive.linkFor(1, null).equals("https://aloula.sba.sa/live/sunna")
+                && HaramLive.linkFor(0, HaramLive.YOUTUBE).equals(HaramLive.LIVE[0][1]) && HaramLive.linkFor(1, HaramLive.SMARTTUBE).equals(HaramLive.LIVE[1][1])
+                && HaramLive.shown(HaramLive.PAGES[0]) && HaramLive.shown(HaramLive.PAGES[1]), "");
         check("no YouTube: SmartTube first; neither: the browser alone", java.util.Arrays.asList(HaramLive.SMARTTUBE, null).equals(HaramLive.openOrder(HaramLive.SMARTTUBE::equals))
                 && java.util.Collections.singletonList((String) null).equals(HaramLive.openOrder(p -> false)) && java.util.Collections.singletonList((String) null).equals(HaramLive.openOrder(null)), "");
         check("an https page of the broadcaster's own hosts would show",

@@ -291,6 +291,13 @@
             android:taskAffinity="sa.urtv.home.message"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+        <!-- 4.3 «تطبيقات مقترحة», opened from the screensaver's settings: each app from its own place, Android's install screen asks the owner -->
+        <activity
+            android:name=".SuggestedAppsActivity"
+            android:exported="true"
+            android:label="تطبيقات مقترحة"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Material.NoActionBar" />
         <activity
             android:name=".ReportActivity"
             android:exported="true"

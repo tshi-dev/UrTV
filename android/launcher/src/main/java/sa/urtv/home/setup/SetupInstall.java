@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import sa.urtv.home.SuggestedApps;
 import sa.urtv.home.phone.UpdateRules;
 
 /**
@@ -175,51 +176,55 @@ final class SetupInstall {
     // ---- TV Bro and SmartTube -------------------------------------------------------------------------------------------------------
 
     /** install.sh's pick_asset: the first file (by name) of the best processor type that fits the pattern, then «universal», then any. */
-    static String pickAsset(String pattern, String abis, String releaseJson) {
-        Map<String, String> assets = new LinkedHashMap<>();
-        Matcher m = Pattern.compile("\"browser_download_url\"\\s*:\\s*\"([^\"]+)\"").matcher(releaseJson == null ? "" : releaseJson);
-        while (m.find()) assets.put(m.group(1).substring(m.group(1).lastIndexOf('/') + 1), m.group(1));
-        List<String> order = new ArrayList<>();
-        for (String a : abis.split(",")) if (!a.isEmpty()) order.add(a);
-        order.add("universal");
-        order.add("");
-        for (String abi : order) {
-            Pattern p = Pattern.compile(pattern.replace("{abi}", Pattern.quote(abi)) + "$");
-            List<String> hit = new ArrayList<>();
-            for (String n : assets.keySet()) if (p.matcher(n).find()) hit.add(n);
-            if (!hit.isEmpty()) {
-                java.util.Collections.sort(hit);
-                return assets.get(hit.get(0));
-            }
-        }
-        return null;
-    }
+    static String pickAsset(String pattern, String abis, String releaseJson) { return SuggestedApps.pickAsset(pattern, abis, releaseJson); }
 
     /** The extras, as install.sh extras does them: one that is already on the TV is left, one that fails never holds the setup up. */
-    SetupEngine.Result extras(boolean wanted, SetupRunner.Host host) throws IOException {
-        if (!wanted) return skipped("تركنا TV Bro و SmartTube كما طلبت (تقدر تضيفهما لاحقاً).");
+    SetupEngine.Result extras(boolean wanted, SetupRunner.Host host) throws IOException { return extras(wanted, null, host); }
+
+    /**
+     * 4.3: the apps the person ticked of «تطبيقات مقترحة» (SuggestedApps; null = the ones ticked at first, SmartTube and TV Bro as before). A GitHub
+     * one is the newest release's file for this processor; a pinned one (the IPTV player) is its one file, refused unless its SHA-256 is the pinned one.
+     */
+    SetupEngine.Result extras(boolean wanted, List<String> picks, SetupRunner.Host host) throws IOException {
+        List<String> ids = picks == null ? SuggestedApps.defaults(Integer.MAX_VALUE) : picks;
+        if (!wanted || ids.isEmpty()) return skipped("تركنا التطبيقات المقترحة كما طلبت (تقدر تضيفها لاحقاً من الإعدادات).");
         boolean bad = false;
         List<String> got = new ArrayList<>();
-        for (String[] x : EXTRAS) {
-            String repo = x[0], pkg = x[1], pattern = x[2], name = pkg.equals(TVBRO) ? "TV Bro" : "SmartTube";
+        int sdk = -1;
+        for (String id : ids) {
+            SuggestedApps.App a = SuggestedApps.byId(id);
+            if (a == null || !a.inSetup()) continue;
+            String pkg = a.pkg, name = a.name;
             if (tv.installed(pkg)) { out.line(name + " مثبّت من قبل: تركناه كما هو (يتحدّث وحده)."); got.add(name); continue; }
-            String body = host.fetch("https://api.github.com/repos/" + repo + "/releases/latest", 2 * 1024 * 1024);
-            if (body == null) { out.line("لم تعطنا GitHub قائمة إصدارات " + name + " (الإنترنت أو حدّ الطلبات): تركناه. جرّب لاحقاً."); bad = true; continue; }
-            String url = null;
-            String abis = "";
-            for (int attempt = 0; attempt < 3 && url == null; attempt++) {   // a flaky TV answered nothing about its processor once
-                for (String prop : new String[] {"ro.product.cpu.abilist", "ro.product.cpu.abilist32", "ro.product.cpu.abi"}) {
-                    abis = tv.text("getprop " + prop).replaceAll("[\\s]", "");
-                    if (!abis.isEmpty()) break;
-                }
-                url = pickAsset(pattern, abis, body);
-                if (url == null && attempt < 2) sleeper.sleep(3000);
+            if (a.minSdk > 21) {
+                if (sdk < 0) { try { sdk = Integer.parseInt(tv.text("getprop ro.build.version.sdk").trim()); } catch (NumberFormatException e) { sdk = 0; } }
+                if (sdk > 0 && sdk < a.minSdk) { out.line(name + " يحتاج إصدار أندرويد أحدث من هذا التلفزيون: تركناه."); continue; }
             }
-            if (url == null) { out.line("لا نسخة من " + name + " تناسب معالج هذا التلفزيون: تركناه."); continue; }
-            if (!url.startsWith("https://github.com/" + repo + "/releases/download/")) { out.line("رابط " + name + " ليس من إصداراته على GitHub، فما نزّلناه."); bad = true; continue; }
+            String url;
+            if (a.kind == SuggestedApps.Kind.PINNED) {
+                url = a.address();
+            } else {
+                String body = host.fetch(a.address(), 2 * 1024 * 1024);
+                if (body == null) { out.line("لم تعطنا GitHub قائمة إصدارات " + name + " (الإنترنت أو حدّ الطلبات): تركناه. جرّب لاحقاً."); bad = true; continue; }
+                url = null;
+                String abis = "";
+                for (int attempt = 0; attempt < 3 && url == null; attempt++) {   // a flaky TV answered nothing about its processor once
+                    for (String prop : new String[] {"ro.product.cpu.abilist", "ro.product.cpu.abilist32", "ro.product.cpu.abi"}) {
+                        abis = tv.text("getprop " + prop).replaceAll("[\\s]", "");
+                        if (!abis.isEmpty()) break;
+                    }
+                    url = pickAsset(a.file, abis, body);
+                    if (url == null && attempt < 2) sleeper.sleep(3000);
+                }
+                if (url == null) { out.line("لا نسخة من " + name + " تناسب معالج هذا التلفزيون: تركناه."); continue; }
+                if (!SuggestedApps.githubOk(a, url)) { out.line("رابط " + name + " ليس من إصداراته على GitHub، فما نزّلناه."); bad = true; continue; }
+            }
             Apk apk = apks.download(url);
             if (apk == null) { out.line("ما قدرنا ننزّل " + name + ": تركناه."); bad = true; continue; }
             try {
+                if (a.kind == SuggestedApps.Kind.PINNED && !SuggestedApps.pinnedOk(a, url, sha256(apk))) {
+                    out.line("الملف الذي نزل ليس نسخة " + name + " التي فحصناها، فما ثبّتناه."); bad = true; continue;
+                }
                 if (!pkg.equals(apk.pkg)) { out.line("الملف الذي نزل ليس " + name + "، فما ثبّتناه."); bad = true; continue; }
                 remember(pkg);   // before the install
                 String said;
@@ -238,6 +243,19 @@ final class SetupInstall {
         }
         if (bad) return new SetupEngine.Result(SetupEngine.Status.FAILED, "لم نثبّت كل التطبيقات الإضافية (التفاصيل فوق). بقية الإعداد تمّت.");
         return new SetupEngine.Result(SetupEngine.Status.DONE, got.isEmpty() ? "لا تطبيقات إضافية تناسب هذا التلفزيون." : "التطبيقات الإضافية: " + String.join(" و", got) + ".");
+    }
+
+    /** The SHA-256 of a downloaded file, lower-case hex ("" when it cannot be read). */
+    static String sha256(Apk apk) {
+        try (InputStream in = apk.opener.open()) {
+            java.security.MessageDigest md = java.security.MessageDigest.getInstance("SHA-256");
+            byte[] buf = new byte[64 * 1024];
+            int n;
+            while ((n = in.read(buf)) > 0) md.update(buf, 0, n);
+            return SuggestedApps.hex(md.digest());
+        } catch (IOException | java.security.NoSuchAlgorithmException e) {
+            return "";
+        }
     }
 
     // ---- the undo -------------------------------------------------------------------------------------------------------------------
