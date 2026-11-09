@@ -17,4 +17,10 @@ final class InternalReceivers {
         if (Build.VERSION.SDK_INT >= 33) c.registerReceiver(r, f, Context.RECEIVER_NOT_EXPORTED);
         else c.registerReceiver(r, f);
     }
+
+    /** Step 41: an action our home app sends (UpdateCover's close): reachable from other apps on API 33+, but only from a holder of the signature permission. */
+    static void registerFromHome(Context c, BroadcastReceiver r, IntentFilter f, String signaturePermission) {
+        if (Build.VERSION.SDK_INT >= 33) c.registerReceiver(r, f, signaturePermission, null, Context.RECEIVER_EXPORTED);
+        else c.registerReceiver(r, f, signaturePermission, null);
+    }
 }

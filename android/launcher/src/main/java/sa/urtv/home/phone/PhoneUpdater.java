@@ -678,7 +678,7 @@ public final class PhoneUpdater {
 
     /** the screensaver app's UpdateCover (step 41) */
     static final String COVER_PKG = "sa.urtv.screensaver", COVER = "sa.urtv.screensaver.UpdateCover", COVER_CLOSE = "sa.urtv.screensaver.UPDATE_COVER_CLOSE",
-        COVER_PERMISSION = "sa.urtv.screensaver.UPDATE_COVER";
+        COVER_PERMISSION = "sa.urtv.screensaver.PHONE_SETTINGS";   // held already (same key): the cover asks for it
     private static boolean coverShown;
 
     private static Intent cover() {

@@ -22,11 +22,6 @@
         android:name="sa.urtv.screensaver.PHONE_SETTINGS"
         android:protectionLevel="signature" />
 
-    <!-- step 41: the home app opens the cover over its own replace and closes it when the install is declined or fails (UpdateCover) -->
-    <permission
-        android:name="sa.urtv.screensaver.UPDATE_COVER"
-        android:protectionLevel="signature" />
-
     <!-- the launcher says what it is playing, for the screen's «يُتلى الآن» card (same signing key) -->
     <!-- the glass look: the home's small blurred backdrop for the settings (signature permission, same key). Declared here too, the same
          as in the home app: this app is installed first, and Android grants a permission only from an app that declared it already -->
@@ -76,7 +71,7 @@
         <activity
             android:name=".UpdateCover"
             android:exported="true"
-            android:permission="sa.urtv.screensaver.UPDATE_COVER"
+            android:permission="sa.urtv.screensaver.PHONE_SETTINGS"
             android:launchMode="singleTask"
             android:taskAffinity="sa.urtv.screensaver.cover"
             android:excludeFromRecents="true"

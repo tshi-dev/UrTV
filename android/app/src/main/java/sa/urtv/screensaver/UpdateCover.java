@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -23,14 +22,15 @@ import android.widget.TextView;
  *
  * It ends itself (CoverRule decides; nothing waits on the owner):
  * - the home app was replaced: the TV's Home is pressed from here (this screen is in front, so Android lets it start Home) and it closes;
- * - the home app says the install was declined or failed (CLOSE, a broadcast only a holder of UPDATE_COVER can send): it closes, and the update
+ * - the home app says the install was declined or failed (CLOSE, a broadcast only a holder of PHONE_SETTINGS, our home app, can send): it closes, and the update
  *   screen under it says why;
  * - Back, or LIMIT_MS without either: Home if the home app changed since this opened, else it closes.
  */
 public class UpdateCover extends Activity {
     static final String HOME_PKG = CoverRule.HOME_PKG;
     static final String CLOSE = "sa.urtv.screensaver.UPDATE_COVER_CLOSE";
-    static final String PERMISSION = "sa.urtv.screensaver.UPDATE_COVER";
+    /** the signature permission our home app already holds for «تحكم من الجوال» (same key): no new permission for the cover */
+    static final String PERMISSION = "sa.urtv.screensaver.PHONE_SETTINGS";
     /** the longest it stays: an install that never answers must not leave the TV on this screen */
     static final long LIMIT_MS = 120_000;
 
@@ -69,13 +69,8 @@ public class UpdateCover extends Activity {
         pf.addAction(Intent.ACTION_PACKAGE_ADDED);
         pf.addDataScheme("package");
         IntentFilter cf = new IntentFilter(CLOSE);
-        if (Build.VERSION.SDK_INT >= 33) {
-            registerReceiver(replaced, pf, Context.RECEIVER_EXPORTED);   // the system's package broadcasts
-            registerReceiver(close, cf, PERMISSION, null, Context.RECEIVER_EXPORTED);   // only our home app (signature permission)
-        } else {
-            registerReceiver(replaced, pf);
-            registerReceiver(close, cf, PERMISSION, null);
-        }
+        registerReceiver(replaced, pf);   // the system's package broadcasts need no flag
+        InternalReceivers.registerFromHome(this, close, cf, PERMISSION);   // only our home app (signature permission)
         handler.postDelayed(limit, LIMIT_MS);
     }
 
