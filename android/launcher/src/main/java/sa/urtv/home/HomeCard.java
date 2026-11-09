@@ -37,6 +37,38 @@ import java.util.Collections;
 final class HomeCard {
     private static final Uri CONFIG = Uri.parse("content://sa.urtv.screensaver.config");
     private static final String PREFS = "homecard";   // the last settings read from the screensaver
+    /** «ألبوم صوري»: not a real address; the page asks for N.jpg?s=900 and dates.json here and the screensaver app's provider answers (READ_CONFIG, read-only) */
+    private static final String OWN_BASE = "https://own.urtv.invalid/";
+    private static final Uri OWN_URI = Uri.parse("content://sa.urtv.screensaver.config/own");
+
+    private WebResourceResponse ownPhoto(String name) {
+        try {
+            if ("dates.json".equals(name)) {
+                StringBuilder b = new StringBuilder("[");
+                try (Cursor c = activity.getContentResolver().query(OWN_URI, null, null, null, null)) {
+                    String d = c != null && c.moveToFirst() ? c.getString(c.getColumnIndex("dates")) : "";
+                    if (d != null && !d.isEmpty()) {
+                        String[] all = d.split(",");
+                        for (int k = 0; k < all.length; k++) if (all[k].matches("[0-9-]{10}")) b.append(k > 0 ? "," : "").append('"').append(all[k]).append('"');
+                    }
+                }
+                return new WebResourceResponse("application/json", "UTF-8", new java.io.ByteArrayInputStream(b.append(']').toString().getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+            }
+            java.util.regex.Matcher m = java.util.regex.Pattern.compile("([1-9]|[1-4][0-9]|50)\\.jpg(\\?s=([0-9]{3,4}))?").matcher(name);
+            if (!m.matches()) return null;
+            int n = Integer.parseInt(m.group(1)), max = m.group(3) == null ? 1920 : Math.min(1920, Integer.parseInt(m.group(3)));
+            // one photo at a time, decoded smaller than the screen when the card is small: the album never holds two big bitmaps
+            try (java.io.InputStream in = new java.io.FileInputStream(activity.getContentResolver().openFileDescriptor(Uri.withAppendedPath(OWN_URI, String.valueOf(n)), "r").getFileDescriptor())) {
+                java.io.ByteArrayOutputStream o = new java.io.ByteArrayOutputStream(1 << 18);
+                byte[] buf = new byte[16384];
+                for (int r; (r = in.read(buf)) > 0; ) o.write(buf, 0, r);
+                return new WebResourceResponse("image/jpeg", null, new java.io.ByteArrayInputStream(PhotoShrink.toSize(o.toByteArray(), max)));
+            }
+        } catch (Exception | OutOfMemoryError e) {
+            return new WebResourceResponse("image/jpeg", null, 404, "Not Found", Collections.<String, String>emptyMap(), new java.io.ByteArrayInputStream(new byte[0]));
+        }
+    }
+
     private static final String FONTS = "https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/";
 
     /** Sent inside the app when the cards were changed from the phone: the home screen in front follows at once. */
@@ -285,6 +317,7 @@ final class HomeCard {
                         } catch (java.io.IOException ignored) { }
                     }
                 }
+                if (s.startsWith(OWN_BASE)) return ownPhoto(s.substring(OWN_BASE.length()));
                 return super.shouldInterceptRequest(v, r);
             }
         });

@@ -15,20 +15,23 @@ final class PhotoShrink {
     static final int MAX = 1920, QUALITY = 88;
 
     /** the photo's bytes, or smaller ones (a JPEG at most MAX px on the long side) when it was larger; the bytes as given when it cannot be read or is already small */
-    static byte[] toScreen(byte[] data) {
+    static byte[] toScreen(byte[] data) { return toSize(data, MAX); }
+
+    /** the same, to at most max px on the long side (the album card asks for 900) */
+    static byte[] toSize(byte[] data, int max) {
         try {
             BitmapFactory.Options o = new BitmapFactory.Options();
             o.inJustDecodeBounds = true;
             BitmapFactory.decodeByteArray(data, 0, data.length, o);
             int w = o.outWidth, h = o.outHeight, longSide = Math.max(w, h);
-            if (w <= 0 || h <= 0 || longSide <= MAX) return data;
+            if (w <= 0 || h <= 0 || longSide <= max) return data;
             int sample = 1;
-            while (longSide / (sample * 2) >= MAX) sample *= 2;   // decode no larger than twice the target
+            while (longSide / (sample * 2) >= max) sample *= 2;   // decode no larger than twice the target
             o = new BitmapFactory.Options();
             o.inSampleSize = sample;
             Bitmap big = BitmapFactory.decodeByteArray(data, 0, data.length, o);
             if (big == null) return data;
-            float k = MAX / (float) Math.max(big.getWidth(), big.getHeight());
+            float k = max / (float) Math.max(big.getWidth(), big.getHeight());
             Bitmap small = k < 1f ? Bitmap.createScaledBitmap(big, Math.round(big.getWidth() * k), Math.round(big.getHeight() * k), true) : big;
             if (small != big) big.recycle();
             ByteArrayOutputStream out = new ByteArrayOutputStream(Math.max(1024, data.length / 3));

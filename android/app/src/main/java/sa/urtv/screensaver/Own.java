@@ -128,6 +128,11 @@ final class Own {
         new Prefs(c).bumpOwnRev();
     }
 
+    /** the day photo n was added, "2026-03-14" (the file's time; a photo is not renamed when the list moves, so it keeps it) */
+    static String date(Context c, int n) {
+        return new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US).format(new java.util.Date(file(c, n).lastModified()));
+    }
+
     /** "245 KB 1920x1080" */
     static String describe(Context c, int n) {
         File f = file(c, n);

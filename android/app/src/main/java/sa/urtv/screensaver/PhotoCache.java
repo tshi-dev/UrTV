@@ -42,9 +42,17 @@ final class PhotoCache {
             }
             if (url.startsWith(OWN)) {
                 String name = url.substring(OWN.length());
-                if (!name.matches("([1-9]|10)\\.jpg")) return null;
-                File f = Own.file(c, Integer.parseInt(name.substring(0, name.indexOf('.'))));
-                return f.isFile() ? jpeg(new FileInputStream(f)) : null;
+                if ("dates.json".equals(name)) return ownDates(c);
+                java.util.regex.Matcher m = java.util.regex.Pattern.compile("([1-9]|[1-4][0-9]|50)\\.jpg(\\?s=([0-9]{3,4}))?").matcher(name);
+                if (!m.matches()) return null;
+                File f = Own.file(c, Integer.parseInt(m.group(1)));
+                if (!f.isFile()) return null;
+                // «ألبوم صوري»: one photo at a time at the card's size (?s= the long side), so a weak TV decodes a small one, not the whole photo
+                if (m.group(3) != null) {
+                    byte[] small = PhotoShrink.toSize(readAll(f), Math.min(1920, Integer.parseInt(m.group(3))));
+                    return jpeg(new java.io.ByteArrayInputStream(small));
+                }
+                return jpeg(new FileInputStream(f));
             }
             if (url.startsWith(PACKS)) return pack(c, url.substring(PACKS.length()));
             if (url.startsWith(BUNDLED)) {
@@ -89,6 +97,24 @@ final class PhotoCache {
 
     private static WebResourceResponse notFound() {
         return new WebResourceResponse("image/jpeg", null, 404, "Not Found", new java.util.HashMap<String, String>(), new java.io.ByteArrayInputStream(new byte[0]));
+    }
+
+    /** dates.json: ["2026-03-14", ...], the day each own photo was added (Own.date), in the list's order; the album card shows it under the photo */
+    private static WebResourceResponse ownDates(Context c) {
+        StringBuilder b = new StringBuilder("[");
+        int n = Own.count(c);
+        for (int k = 1; k <= n; k++) b.append(k > 1 ? "," : "").append('"').append(Own.date(c, k)).append('"');
+        byte[] out = b.append(']').toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        return new WebResourceResponse("application/json", "UTF-8", new java.io.ByteArrayInputStream(out));
+    }
+
+    private static byte[] readAll(File f) throws java.io.IOException {
+        try (InputStream in = new FileInputStream(f)) {
+            java.io.ByteArrayOutputStream o = new java.io.ByteArrayOutputStream((int) Math.max(1024, f.length()));
+            byte[] buf = new byte[16384];
+            for (int r; (r = in.read(buf)) > 0; ) o.write(buf, 0, r);
+            return o.toByteArray();
+        }
     }
 
     private static WebResourceResponse jpeg(InputStream in) {

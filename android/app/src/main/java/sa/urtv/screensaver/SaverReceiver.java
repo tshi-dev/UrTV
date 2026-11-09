@@ -20,7 +20,7 @@ import java.util.Locale;
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.CITIES
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET
  *       [--es city 'الرس'] [--es lat 25.86 --es lon 43.49 --es tz Asia/Kuwait]   (tz is needed for a place that is not in the list) [--es teams '136013:Al-Hilal,150643:Al-Zulfi']
- *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es homephotos same|own] [--es homepacks id,id|none] [--es homeours on|off] [--es pillshidden markets,matches,center|none] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es homelayout classic|football] [--es favbar 5|6|7|8|all] [--es pagesdark on|off] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
+ *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es homephotos same|own] [--es homepacks id,id|none] [--es homeours on|off] [--es albummode seconds|minute] [--es albumdate on|off] [--es pillshidden markets,matches,center|none] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es homelayout classic|football] [--es favbar 5|6|7|8|all] [--es pagesdark on|off] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
  *       [--es sunrise on|off] [--es prayerbar on|off] [--es wxmore on|off] [--es months default|levant] [--es verse day|3] [--es versekind both|verse|hadith] [--es seconds on|off] [--es backexit press|hold|three] [--es occasion on|off] [--es nightdim on|off] [--es taskspill on|off] [--es backsaver on|off] [--es genres Drama,Comedy] [--es langs English]
  *       [--es photos 30] [--es idle 10] [--es digits hindi|latin] [--es hijrioffset -2..2] [--es clock24 on|off] [--es lang ar|en]
  *       [--es cardstyle current|dark1|glass1|dark3|glass3] [--es national auto|off]
@@ -271,6 +271,10 @@ public class SaverReceiver extends BroadcastReceiver {
         if (homePacks != null && !"none".equals(homePacks)) for (String id : homePacks.split(",")) if (!PhotoPacks.validId(id)) return "error: homepacks is none or pack ids separated by commas";
         String homeOurs = i.getStringExtra("homeours");
         if (homeOurs != null && !"on".equals(homeOurs) && !"off".equals(homeOurs)) return "error: homeours is one of on off";
+        String albumMode = i.getStringExtra("albummode");   // «ألبوم صوري»: a photo every few seconds (seconds, the default) or one a minute
+        if (albumMode != null && !"seconds".equals(albumMode) && !"minute".equals(albumMode)) return "error: albummode is one of seconds minute";
+        String albumDate = i.getStringExtra("albumdate");
+        if (albumDate != null && !"on".equals(albumDate) && !"off".equals(albumDate)) return "error: albumdate is one of on off";
         String listenPill = i.getStringExtra("listenpill");
         if (listenPill != null && !"on".equals(listenPill) && !"off".equals(listenPill))
             return "error: listenpill is one of on off";
@@ -401,6 +405,8 @@ public class SaverReceiver extends BroadcastReceiver {
         if (homePhotos != null) p.setHomePhotosSame("same".equals(homePhotos));
         if (homePacks != null) p.setHomePacksOn("none".equals(homePacks) ? new java.util.LinkedHashSet<String>() : PhotoPacks.parseOn(homePacks));
         if (homeOurs != null) p.setHomeOursOn("on".equals(homeOurs));
+        if (albumMode != null) p.setAlbumMinute("minute".equals(albumMode));
+        if (albumDate != null) p.setAlbumDate("on".equals(albumDate));
         if (updateBell != null) p.setUpdateBell("on".equals(updateBell));
         if (watchNext != null) p.setWatchNext("on".equals(watchNext));
         if (appearance != null) p.setAppearance(appearance);
@@ -582,7 +588,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nhome_panel: " + p.homePanel()
             + "\ngreeting: " + (p.greeting() ? "on" : "off")
             + "\nlistenpill: " + (p.listenPill() ? "on" : "off")
-            + "\nhomephotos: " + (p.homePhotosSame() ? "same" : "own") + "\nhomepacks: " + (p.homePacksOn().isEmpty() ? "none" : PhotoPacks.joinOn(p.homePacksOn())) + "\nhomeours: " + (p.homeOursOn() ? "on" : "off")
+            + "\nhomephotos: " + (p.homePhotosSame() ? "same" : "own") + "\nhomepacks: " + (p.homePacksOn().isEmpty() ? "none" : PhotoPacks.joinOn(p.homePacksOn())) + "\nhomeours: " + (p.homeOursOn() ? "on" : "off") + "\nalbummode: " + (p.albumMinute() ? "minute" : "seconds") + "\nalbumdate: " + (p.albumDate() ? "on" : "off")
             + "\npillshidden: " + (p.pillsHidden().isEmpty() ? "none" : p.pillsHidden())
             + "\nupdatebell: " + (p.updateBell() ? "on" : "off")
             + "\nwatchnext: " + (p.watchNext() ? "on" : "off")

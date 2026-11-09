@@ -226,7 +226,7 @@ final class Prefs {
         {"shows", "جديد المسلسلات"}, {"prayers", "مواقيت الصلاة اليوم"}, {"forecast", "طقس الأيام القادمة"}, {"hourly", "طقس الساعات القادمة"}, {"prayerrow", "الصلوات في صف"}, {"nextprayer", "الصلاة القادمة"},
         {"matches", "مباريات فرقك القادمة"}, {"verse", "آية أو حديث اليوم"}, {"wisdom", "حكمة اليوم"},
         {"adhkar", "أذكار الصباح والمساء"}, {"stocks", "الأسهم"}, {"tasks", "المهام"}, {"year", "السنة"},
-        {"smart", "البطاقة الذكية"}, {"today", "يومك"},
+        {"smart", "البطاقة الذكية"}, {"today", "يومك"}, {"album", "ألبوم صوري"},
         {"none", "لا شيء"},
     };
 
@@ -268,6 +268,7 @@ final class Prefs {
         {"tasks", "قائمة مهامك"},
         {"year", "٣٦٥ نقطة، الأيام اللي راحت تولّع من الغامق للذهبي"},
         {"smart", "تختار لك البطاقة المناسبة للوقت"},
+        {"album", "صورك واحدة بعد الأخرى بتلاشٍ ناعم، وتاريخ الصورة تحتها"},
         {"today", "الصلاة القادمة ووقتها، والمباراة القادمة لفرقك، وأول مهمة مفتوحة، والمناسبة القادمة وكم يوم باقي"},
         {"none", "بدون بطاقة"},
     };
@@ -625,11 +626,18 @@ final class Prefs {
         return en != null ? en : city[0];
     }
 
-    /** The owner's own photos: how many and mix/only; nothing at all while there are none, so the page is as before. */
+    /** The owner's own photos: how many and mix/only; nothing at all while there are none, so the page is as before. «ألبوم صوري» adds its two choices only when they are not the defaults. */
     private String ownParam() {
         int n = Own.count(ctx);
-        return n == 0 ? "" : "&own=" + n + "&ownmode=" + Own.mode(ctx);
+        return n == 0 ? "" : "&own=" + n + "&ownmode=" + Own.mode(ctx) + albumParam();
     }
+
+    /** «ألبوم صوري» (card album): a photo every 4 s with a crossfade (the default) or one a minute; the photo's date under it (on by default). */
+    boolean albumMinute() { return sp.getBoolean("albumMinute", false); }
+    void setAlbumMinute(boolean v) { sp.edit().putBoolean("albumMinute", v).apply(); }
+    boolean albumDate() { return sp.getBoolean("albumDate", true); }
+    void setAlbumDate(boolean v) { sp.edit().putBoolean("albumDate", v).apply(); }
+    private String albumParam() { return (albumMinute() ? "&albummode=minute" : "") + (albumDate() ? "" : "&albumdate=0"); }
 
     /** «صور شاشة التوقف»: the packs that are on (ids), and whether our own set («صورنا», on by default) is. Sent as #packs=id:count,... and #ours=0 only when set, so the fragment is as before. */
     java.util.Set<String> packsOn() { return PhotoPacks.parseOn(sp.getString("packsOn", "")); }

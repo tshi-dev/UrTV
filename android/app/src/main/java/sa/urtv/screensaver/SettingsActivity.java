@@ -281,6 +281,11 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { prefs.setMonths("levant".equals(prefs.months()) ? "default" : "levant"); render(); } });
         row("شريط السنة تحت الساعة", prefs.yearStrip() ? "يعمل · نقاط السنة تحت الساعة، واليوم يلمع" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setYearStrip(!prefs.yearStrip()); render(); } });
+        // «ألبوم صوري» (the card): how fast the photos change, and the date under each
+        row("سرعة ألبوم صوري", prefs.albumMinute() ? "صورة كل دقيقة" : "تتبدل كل ٤ ثوانٍ بتلاشٍ ناعم", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setAlbumMinute(!prefs.albumMinute()); render(); } });
+        row("تاريخ الصورة في ألبوم صوري", prefs.albumDate() ? "يظهر تحت الصورة" : "مخفي", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setAlbumDate(!prefs.albumDate()); render(); } });
         // shown by default as always; OK hides it (and shows it again)
         row("المناسبة القادمة", prefs.occasion() ? "ظاهرة · أسفل الشاشة في الوسط: كم باقي على رمضان والأعياد، والإفطار والإمساك في رمضان" : "مخفية", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setOccasion(!prefs.occasion()); render(); } });
