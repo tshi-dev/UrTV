@@ -332,6 +332,8 @@ public class SettingsActivity extends Activity {
                 new Runnable() { public void run() { pickVerseKind(); } });
 
         header("الشاشة الرئيسية (تلفزيونك)");
+        row("المظهر والخلفيات", "شكل الشاشتين وصورهما، كلٌّ على حدة", R.drawable.ic_eye,
+            new Runnable() { public void run() { startActivity(new Intent(SettingsActivity.this, AppearanceActivity.class)); } });
         // «المظهر», the first row: «الشكل» (glass, graphite, navy, clean) and «الإضاءة» (dark, light, auto), each picked with a live preview
         row("المظهر", Prefs.lookLabel(prefs.look()) + " · " + Prefs.appearanceLabel(prefs.appearance()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickLook(); } });
