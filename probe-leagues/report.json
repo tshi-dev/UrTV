@@ -1,0 +1,270 @@
+{
+ "all_leagues": [],
+ "searched": {
+  "Iraq": [
+   {
+    "idLeague": "5056",
+    "strLeague": "Iraqi Premier League",
+    "strLeagueAlternate": "Iraq Stars League",
+    "strCountry": "Iraq",
+    "strCurrentSeason": "2026-2027",
+    "intFormedYear": "1974"
+   }
+  ],
+  "Asia": [],
+  "Europe": [
+   {
+    "idLeague": "4480",
+    "strLeague": "UEFA Champions League",
+    "strLeagueAlternate": "Champions League, UCL, Ligue des Champions",
+    "strCountry": "Europe",
+    "strCurrentSeason": "2026-2027",
+    "intFormedYear": "1955"
+   },
+   {
+    "idLeague": "5071",
+    "strLeague": "UEFA Conference League",
+    "strLeagueAlternate": "UECL, UEFA Conference League",
+    "strCountry": "Europe",
+    "strCurrentSeason": "2026-2027",
+    "intFormedYear": "2021"
+   },
+   {
+    "idLeague": "4524",
+    "strLeague": "UEFA Cup",
+    "strLeagueAlternate": "",
+    "strCountry": "Europe",
+    "strCurrentSeason": "",
+    "intFormedYear": "1971"
+   }
+  ],
+  "World": [
+   {
+    "idLeague": "5971",
+    "strLeague": "CAF Womens Champions League",
+    "strLeagueAlternate": "Ligue des Champions Féminine de la CAF, دوري أبطال إفريقيا للسيدات",
+    "strCountry": "World",
+    "strCurrentSeason": "2026",
+    "intFormedYear": "2020"
+   }
+  ]
+ },
+ "lookups": {
+  "4480": {
+   "name": "UEFA Champions League",
+   "alt": "Champions League, UCL, Ligue des Champions",
+   "country": "Europe",
+   "sport": "Soccer",
+   "season": "2026-2027",
+   "season_events": 15,
+   "next": 1,
+   "teams": [
+    "Ararat-Armenia",
+    "Bodø/Glimt",
+    "Borac Banja Luka",
+    "Flora Tallinn",
+    "Floriana",
+    "Kairat Almaty",
+    "Kauno Žalgiris",
+    "KÍ Klaksvík",
+    "Lincoln Red Imps",
+    "Maxline Vitebsk",
+    "Petrocub Hîncești",
+    "Sabah Baku",
+    "The New Saints",
+    "Tre Fiori",
+    "Vardar",
+    "Víkingur Reykjavík"
+   ]
+  },
+  "4524": {
+   "name": "UEFA Cup",
+   "alt": "",
+   "country": "Europe",
+   "sport": "Soccer",
+   "season": "",
+   "season_events": 0,
+   "next": 0,
+   "teams": []
+  },
+  "4719": {
+   "name": "AFC Champions League Elite",
+   "alt": "ACL",
+   "country": "Worldwide",
+   "sport": "Soccer",
+   "season": "2026-2027",
+   "season_events": 15,
+   "next": 1,
+   "teams": [
+    "Adelaide United",
+    "Al Jazira",
+    "Al-Ahli",
+    "Al-Qadsiah",
+    "Al-Shamal",
+    "Beijing Guoan",
+    "Daejeon Hana Citizen",
+    "Esteghlal",
+    "Gamba Osaka",
+    "Gangwon FC",
+    "Kashima Antlers",
+    "Neftchi Fergana",
+    "Pakhtakor",
+    "Ratchaburi",
+    "Shabab Al-Ahli Dubai"
+   ]
+  },
+  "4720": {
+   "name": "CAF Champions League",
+   "alt": "CAF Champions League",
+   "country": "Worldwide",
+   "sport": "Soccer",
+   "season": "2026-2027",
+   "season_events": 15,
+   "next": 1,
+   "teams": [
+    "AS Port",
+    "Aigle Noir",
+    "Aiglons",
+    "Al-Merrikh",
+    "Asswehly",
+    "CFFA",
+    "Canchungo",
+    "Club Africain",
+    "El Merriekh Bentiu",
+    "FC San Pédro",
+    "Gaborone United",
+    "JS Saoura",
+    "Mangasport",
+    "RS Berkane",
+    "Star Sport Academy",
+    "Vipers"
+   ]
+  },
+  "4790": {
+   "name": "Indonesian Super League",
+   "alt": "Liga 1 Indonesia, BRI Liga 1",
+   "country": "Indonesia",
+   "sport": "Soccer",
+   "season": "2026-2027",
+   "season_events": 15,
+   "next": 1,
+   "teams": [
+    "Arema",
+    "Bali United",
+    "Bhayangkara Presisi Lampung",
+    "Borneo Samarinda",
+    "Dewa United Banten",
+    "Garudayaksa",
+    "Java United",
+    "Madura United",
+    "PSIM Yogyakarta",
+    "PSS Sleman",
+    "Persib Bandung",
+    "Persija Jakarta",
+    "Persijap Jepara",
+    "Persik Kediri"
+   ]
+  },
+  "4914": {
+   "name": "Azerbaijan First Division",
+   "alt": "Azərbaycan Birinci Divizionu",
+   "country": "Azerbaijan",
+   "sport": "Soccer",
+   "season": "2026-2027",
+   "season_events": 15,
+   "next": 1,
+   "teams": [
+    "Baku Sportinq",
+    "Gəncəbasar",
+    "Karvan",
+    "Mingəçevir",
+    "Ordu",
+    "Səbail",
+    "Xankəndi",
+    "Zaqatala",
+    "Şahdağ Qusar",
+    "Şi̇mal"
+   ]
+  },
+  "5056": {
+   "name": "Iraqi Premier League",
+   "alt": "Iraq Stars League",
+   "country": "Iraq",
+   "sport": "Soccer",
+   "season": "2026-2027",
+   "season_events": 15,
+   "next": 1,
+   "teams": [
+    "Al-Jolan",
+    "Al-Karma",
+    "Al-Minaa",
+    "Al-Mosul",
+    "Al-Naft",
+    "Al-Shorta",
+    "Al-Zawraa",
+    "Diyala",
+    "Duhok",
+    "Erbil",
+    "Ghaz Al-Shamal",
+    "Naft Maysan",
+    "Newroz",
+    "Zakho"
+   ]
+  },
+  "5071": {
+   "name": "UEFA Conference League",
+   "alt": "UECL, UEFA Conference League",
+   "country": "Europe",
+   "sport": "Soccer",
+   "season": "2026-2027",
+   "season_events": 15,
+   "next": 1,
+   "teams": [
+    "Alashkert",
+    "Caernarfon Town",
+    "Connah's Quay Nomads",
+    "Differdange 03",
+    "Dinamo City",
+    "Dinamo Minsk",
+    "Elbasani",
+    "FK Sarajevo",
+    "Kairat Almaty",
+    "Mondorf-les-Bains",
+    "NSÍ Runavík",
+    "Nõmme Kalju",
+    "Pen-y-Bont",
+    "UNA Strassen",
+    "Vllaznia Shkodër",
+    "Zirə"
+   ]
+  },
+  "5144": {
+   "name": "Olympics Snowboarding",
+   "alt": "",
+   "country": "Worldwide",
+   "sport": "Skiing",
+   "season": "2026",
+   "season_events": 15,
+   "next": 0,
+   "teams": []
+  },
+  "5971": {
+   "name": "CAF Womens Champions League",
+   "alt": "Ligue des Champions Féminine de la CAF, دوري أبطال إفريقيا للسيدات",
+   "country": "World",
+   "sport": "Soccer",
+   "season": "2026",
+   "season_events": 11,
+   "next": 0,
+   "teams": [
+    "Edo Queens",
+    "FAR Rabat Women",
+    "FUS Rabat Féminines",
+    "Kawempe Muslim Ladies",
+    "Lekié FF",
+    "Mamelodi Sundowns Ladies",
+    "Masar Women"
+   ]
+  }
+ }
+}
