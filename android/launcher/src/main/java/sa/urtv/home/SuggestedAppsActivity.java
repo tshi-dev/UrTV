@@ -87,8 +87,11 @@ public class SuggestedAppsActivity extends Activity {
         col.addView(text(S.t("تطبيقات نرشّحها لتلفزيونك. كل تطبيق من مصدره هو، ويسألك أندرويد قبل التثبيت."), 16, "Regular", look.sub), lp(dp(24)));
         TextView first = null;
         for (final SuggestedApps.App a : SuggestedApps.forTv(Build.VERSION.SDK_INT)) {
-            col.addView(text(a.name, 20, "Medium", look.text), lp(dp(2)));
-            col.addView(text(S.tv(a.why), 15, "Regular", look.sub), lp(dp(8)));
+            // a MIRROR app (UrTV Player) is shown only once a release of it is really there (mirrorRelease): never a button that cannot install
+            boolean hidden = a.kind == SuggestedApps.Kind.MIRROR && !SuggestedApps.mirrorShown(mirrorAnswer(a), System.currentTimeMillis());
+            TextView name = text(a.name, 20, "Medium", look.text), why = text(S.tv(a.why), 15, "Regular", look.sub);
+            col.addView(name, lp(dp(2)));
+            col.addView(why, lp(dp(8)));
             TextView btn = text("", 17, "Medium", look.text);
             btn.setFocusable(true);
             btn.setClickable(true);
@@ -99,6 +102,11 @@ public class SuggestedAppsActivity extends Activity {
             bp.bottomMargin = dp(22);
             col.addView(btn, bp);
             buttons.put(a.id, btn);
+            if (hidden) {
+                for (android.view.View v : new android.view.View[] {name, why, btn}) v.setVisibility(android.view.View.GONE);
+                checkMirror(a, new android.view.View[] {name, why, btn});
+                continue;
+            }
             if (first == null) first = btn;
         }
         setContentView(scroll);
@@ -153,6 +161,25 @@ public class SuggestedAppsActivity extends Activity {
             Log.w(TAG, "install: " + e.getClass().getSimpleName());
             return S.t("ما قدرنا نثبّته. جرّب مرة ثانية");
         }
+    }
+
+    /** the last answer about a MIRROR app's releases: "1|<time>" a valid release was there, "0|<time>" none; "" never asked */
+    private String mirrorAnswer(SuggestedApps.App a) {
+        return getSharedPreferences("suggested", MODE_PRIVATE).getString("mirror_" + a.id, "");
+    }
+
+    /** Asks GitHub (in the background) whether a valid release is there, at most every SuggestedApps.MIRROR_CHECK_MS; shows the rows when it is. */
+    private void checkMirror(final SuggestedApps.App a, final android.view.View[] rows) {
+        final long now = System.currentTimeMillis();
+        if (!SuggestedApps.mirrorAskAgain(mirrorAnswer(a), now)) return;
+        new Thread(() -> {
+            String json = null;
+            try { json = fetch(a.address(), 2 * 1024 * 1024); } catch (Exception e) { Log.w(TAG, "mirror: " + e.getClass().getSimpleName()); }
+            if (json == null) return;   // no answer: asked again next time, nothing kept
+            final boolean there = SuggestedApps.pickMirror(a, json) != null;
+            getSharedPreferences("suggested", MODE_PRIVATE).edit().putString("mirror_" + a.id, (there ? "1|" : "0|") + now).apply();
+            if (there) runOnUiThread(() -> { for (android.view.View v : rows) v.setVisibility(android.view.View.VISIBLE); refresh(); });
+        }, "suggested-mirror").start();
     }
 
     /**

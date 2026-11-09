@@ -180,6 +180,26 @@ public final class SuggestedApps {
         return null;
     }
 
+    /** how long the answer «is a Player release there?» is kept before the screen asks GitHub again */
+    public static final long MIRROR_CHECK_MS = 6 * 3600_000L;
+
+    /** the screen shows a MIRROR app only when the kept answer says a valid release was there (and it is not older than a day) */
+    public static boolean mirrorShown(String answer, long now) {
+        long at = answerAt(answer);
+        return answer != null && answer.startsWith("1|") && at > 0 && now >= at && now - at < 24 * 3600_000L;
+    }
+
+    /** ask again: never asked, or the answer is older than MIRROR_CHECK_MS (a clock set back too) */
+    public static boolean mirrorAskAgain(String answer, long now) {
+        long at = answerAt(answer);
+        return at <= 0 || now < at || now - at >= MIRROR_CHECK_MS;
+    }
+
+    private static long answerAt(String answer) {
+        if (answer == null || !answer.matches("[01]\\|\\d{1,15}")) return -1;
+        return Long.parseLong(answer.substring(2));
+    }
+
     /** MIRROR: an address of this repository's own «<prefix><version>» release files, nothing else */
     public static boolean mirrorOk(App a, String url) {
         return a != null && a.kind == Kind.MIRROR && url != null

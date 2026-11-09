@@ -35,6 +35,12 @@ public final class SuggestedAppsRun {
             && SuggestedApps.mirrorReady(pl) && SuggestedApps.forTv(34).contains(pl) && !pl.inSetup() && !SuggestedApps.forSetup(34).contains(pl));
         SuggestedApps.App unpinned = new SuggestedApps.App("player", "com.urtv.player", "UrTV Player", "x", SuggestedApps.Kind.MIRROR, "tshi-dev/UrTV", "urtv-player.apk", 21, false);
         unpinned.tagPrefix = "player-";
+        long now = 1_800_000_000_000L, h = 3600_000L;
+        check("the Player's row is shown only after a valid release was seen, for a day at most; never asked, none there, or an odd answer: hidden",
+            SuggestedApps.mirrorShown("1|" + (now - h), now) && !SuggestedApps.mirrorShown("1|" + (now - 25 * h), now) && !SuggestedApps.mirrorShown("0|" + (now - h), now)
+            && !SuggestedApps.mirrorShown("", now) && !SuggestedApps.mirrorShown(null, now) && !SuggestedApps.mirrorShown("1|x", now) && !SuggestedApps.mirrorShown("1|" + (now + h), now));
+        check("GitHub is asked again only after 6 hours (or never asked, or a clock set back)", !SuggestedApps.mirrorAskAgain("0|" + (now - 5 * h), now)
+            && SuggestedApps.mirrorAskAgain("0|" + (now - 6 * h), now) && SuggestedApps.mirrorAskAgain("", now) && SuggestedApps.mirrorAskAgain("1|" + (now + h), now));
         check("a MIRROR entry without a pinned certificate is never ready and never installs", !SuggestedApps.mirrorReady(unpinned)
             && !SuggestedApps.mirrorFileOk(unpinned, "ab".repeat(32), "ab".repeat(32), "com.urtv.player", new java.util.HashSet<>(java.util.Collections.singleton("cd".repeat(32)))));
         SuggestedApps.App t = new SuggestedApps.App("player", "com.urtv.player", "UrTV Player", "x", SuggestedApps.Kind.MIRROR, "tshi-dev/UrTV", "urtv-player.apk", 21, false);
