@@ -47,6 +47,10 @@
   html.widget .mid.n2,html.widget .mid.n3{grid-template-columns:minmax(0,560fr) minmax(0,540fr)}
   html.widget .mid .week.w3{grid-column:1/-1}
   html.widget .week{width:100%}
+  /* the home's cards take the apps tray's glass (#hpanel= and #hline= from the launcher: FavBar's fill and line, as thin as «شفافية الشريط» says): one family in every look, no per-card tint */
+  html.hcard .week{background:var(--hpanel)!important;border-color:var(--hline)!important}
+  html.hcard[class*="cs-"] .week{background:none!important}
+  html.hcard[class*="cs-"] .week::before{background:var(--hpanel)!important}
   html.widget .week.boxes{padding:max(1.7vh,10px) max(1.4vw,14px)}   /* the prayer boxes keep a clear, even distance from the card's edge */
   html,body{
     height:100%;overflow:hidden;background:#040E09;color:var(--sand);
@@ -978,7 +982,12 @@ const CONFIG = {
   // #pagedark=1 with #matchpage=1: the dark theme
   pageDark: _Q.get('pagedark') === '1',
 };
-document.documentElement.style.setProperty('--walldim', (CONFIG.wallDim / 100).toFixed(2));   // 0 by default: the photo's own dimming alone
+document.documentElement.style.setProperty('--walldim', (CONFIG.wallDim / 100).toFixed(2));
+(() => {   // the home's cards in the tray's glass (see html.hcard); nothing without the two values, so every other page is as it was
+  const ok = v => /^rgba\(\d{1,3},\d{1,3},\d{1,3},(0|1|0?\.\d{1,3})\)$/.test(v || '');
+  const p = _Q.get('hpanel'), l = _Q.get('hline');
+  if (ok(p) && ok(l)) { const r = document.documentElement; r.style.setProperty('--hpanel', p); r.style.setProperty('--hline', l); r.classList.add('hcard'); }
+})();   // 0 by default: the photo's own dimming alone
 // the football home and «المباريات» show a league even when none is followed
 if((CONFIG.football || CONFIG.matchPage) && !CONFIG.leagues.length) CONFIG.leagues = ['Saudi-Arabian Pro League'];
 // The cards on this page: the screensaver's one

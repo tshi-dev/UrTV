@@ -44,8 +44,15 @@ check("4.3 «المظهر»: a main page of six category tiles (look, accent, li
 check("the accent, tray strength, wallpaper dimming and focus style have their controls here (a left-right stepper, tiles with their own picture), the nine looks and the layout too",
       all(w in act for w in ("prefs.setAccent(", "prefs.setBarPercent(", "prefs.setWallDim(", "prefs.setFocusStyle(", "prefs.setHomeLayout(key)", "private View stepper(", "DOTS = 3, BARS = 4, FOCUS = 5")))
 HOMEDIR = ROOT / "android/launcher/src/main/java/sa/urtv/home"
+page_src = text(ROOT / "src/template.html")
 pill, bar, mainsrc = text(HOMEDIR / "Pill.java"), text(HOMEDIR / "PillBar.java"), text(HOMEDIR / "MainActivity.java")
 check("4.3 the home's top row: squares of 30 dp (60 px) 4 dp (8 px) apart with a 16 dp icon, standing on ONE bar of the look's glass (PillBar), the focus the look's solid fill in the focus style, the same on every look",
       "static final int HEIGHT = 30;" in pill and "static final int GAP = 4;" in pill and "new LayoutParams(dp(16), dp(16))" in pill and "bg.setCornerRadius(dp(8));" in pill
       and "final PillBar right = new PillBar(this);" in mainsrc and "pillBar.look(glassNow);" in mainsrc and "c.drawRoundRect(r, 12 * dp, 12 * dp, fill);" in bar and "GlassStyle.barPercent()" in bar)
+hc = text(HOMEDIR / "HomeCard.java")
+check("design/43: the home's cards wear the tray's glass (FavBar's fill and line, scaled by «شفافية الشريط»; a neutral dark one in the light look), and the page takes them as #hpanel= and #hline=, validated, with no tint of its own",
+      "return u + \"&hpanel=\" + rgba(fill, pct) + \"&hline=\" + rgba(line, pct);" in hc and "FavBar.FILL_DARK" in hc and "html.hcard .week{background:var(--hpanel)!important;border-color:var(--hline)!important}" in page_src and "_Q.get('hpanel')" in page_src)
+check("design/43: the top row is closed by default (the phone control, the control center and the network status), opens in about 220 ms with the focus in it, closes after it leaves; nothing is removed or hidden (index logic as it was), the network status is a bar member of the same square",
+      "static final long OPEN_MS = 220" in bar and "void mains(View... v)" in bar and "void member(View v)" in bar and "v.setFocusable(open > 0.5f);" in bar and "right.mains(centerPill, phonePill);" in mainsrc and "right.member(netIcon);" in mainsrc
+      and "pillBar.focusInside(v == pillBar);" in mainsrc and "right.addView(netIcon, sideLlp(dp(Pill.HEIGHT), dp(Pill.HEIGHT), 0, 0, 0, 0));" in mainsrc and (ROOT / "android/launcher/src/debug/java/sa/urtv/home/DebugBarShot.java").is_file())
 sys.exit(1 if failed else 0)
