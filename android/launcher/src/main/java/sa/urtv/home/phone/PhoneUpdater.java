@@ -79,6 +79,24 @@ public final class PhoneUpdater {
     /** The screen showing the update wants to hear about changes (any thread); null to stop. */
     public static synchronized void setListener(Runnable r) { listener = r; }
 
+    // ---- what the TV's update screen draws while the files come: read-only counters, they decide nothing
+    private static volatile long dlDone, dlTotal, dlAt;
+    private static volatile boolean verifying;
+
+    /** {bytes received, bytes expected (0: not known), 1 while a file is being checked else 0}: for UpdateActivity's progress bar */
+    public static long[] progress() { return new long[] {dlDone, dlTotal, verifying ? 1 : 0}; }
+
+    private static synchronized Runnable listener() { return listener; }
+
+    /** the screen is told of the bytes at most four times a second */
+    private static void tickProgress() {
+        long now = System.currentTimeMillis();
+        if (now - dlAt < 250) return;
+        dlAt = now;
+        Runnable r = listener();
+        if (r != null) r.run();
+    }
+
     /** The update screen is in front: the installer's confirm screen may be opened from it. */
     public static synchronized void setVisible(boolean v) { visible = v; }
 
@@ -163,10 +181,17 @@ public final class PhoneUpdater {
         for (String[] apk : UpdateRules.APKS) if (installedCode(c, apk[0]) >= 0) have.add(apk[0]);
         List<String> order = UpdateOrder.order(have);
         long[] sizes = new long[order.size()];
+        long sum = 0;
+        boolean known = true;
         for (int i = 0; i < sizes.length; i++) {
             long n = sizeOf(base + fileOf(order.get(i)));
             sizes[i] = n > 0 ? n : UpdateRules.MAX_APK_BYTES;   // unknown: the most a file may be
+            sum += n;
+            known &= n > 0;
         }
+        dlDone = 0;
+        dlTotal = known ? sum : 0;
+        verifying = false;
         File dir = new File(c.getFilesDir(), "phone-update");
         if (!dir.isDirectory() && !dir.mkdirs()) { cannot("storage"); return false; }
         synchronized (PhoneUpdater.class) { PhoneUpdater.dir = dir; }
@@ -188,7 +213,9 @@ public final class PhoneUpdater {
                 got = false;
             }
             if (!got) { clean(dir); cannot(UpdateFlow.fetchFailed().reason); return false; }   // version.txt was read: this is not «no connection»
+            verifying = true;
             String why = verify(c, pkg, f);
+            verifying = false;
             verdicts.put(pkg, why);
             if (why == null) { files.add(f); pkgs.add(pkg); }
         }
@@ -417,6 +444,8 @@ public final class PhoneUpdater {
                     total += n;
                     if (total > UpdateRules.MAX_APK_BYTES) return false;
                     o.write(buf, 0, n);
+                    dlDone += n;
+                    tickProgress();
                 }
             } finally {
                 o.close();

@@ -73,7 +73,7 @@ cats = [l.split("\t") for l in rest if l.startswith("category ")]
 C = {c[0].split(" ")[1]: {"name": c[1], "index": int(c[2]), "parent": c[3], "direct": c[4], "tiles": c[5] == "true"} for c in cats}
 first = sorted([k for k, v in C.items() if v["parent"] == "-"], key=lambda k: C[k]["index"])
 check("the first screen: «الأذان» first (the wide one), then the buttons of the prototype in its order",
-      [C[k]["name"] for k in first] == ["الأذان", "الموقع والصلاة", "الساعة والأرقام", "تلاوة وأذان", "البطاقات", "المظهر", "مركز التحكم",
+      [C[k]["name"] for k in first] == ["الأذان", "الموقع والصلاة", "الساعة والأرقام", "تلاوة وأذان", "البطاقات", "المظهر والخلفيات", "مركز التحكم",
                                        "التحكم من الجوال", "تحديث تلفزيوني", "أرسل تقرير", "المزيد"], [C[k]["name"] for k in first])
 check("«البطاقات» holds «شاشة التوقف» and «الشاشة الرئيسية»; «المزيد» the matches and markets, the apps, the shows, «الرقابة الأبوية», «تصفية المواقع» (and «اللغة» once LANG_TILE is on)",
       sorted((C[k]["index"], C[k]["name"]) for k in C if C[k]["parent"] == "cards") == [(0, "شاشة التوقف"), (1, "الشاشة الرئيسية")]
@@ -83,8 +83,8 @@ check("«البطاقات» holds «شاشة التوقف» and «الشاشة �
 check("only the first screen, «البطاقات» and «المزيد» are screens of buttons, and nothing is deeper than that",
       {k for k, v in C.items() if v["tiles"]} == {"cards", "more"} and all(C[v["parent"]]["parent"] == "-" for v in C.values() if v["parent"] != "-"))
 direct = {k: v["direct"] for k, v in C.items() if v["direct"] != "-"}
-check("the buttons that do one thing at once, each by its one row: «الأذان», «المظهر», «مركز التحكم», «التحكم من الجوال», «أرسل تقرير», «الرقابة الأبوية», «تصفية المواقع», «اللغة»",
-      direct == {"adhan": "الأذان", "look": "المظهر", "control": "مركز التحكم", "phone": "تحكم من الجوال", "report": "أرسل تقرير", "parental": "الرقابة الأبوية", "family": "تصفية المواقع",
+check("the buttons that do one thing at once, each by its one row: «الأذان», «مركز التحكم», «التحكم من الجوال», «أرسل تقرير», «الرقابة الأبوية», «تصفية المواقع», «اللغة»",
+      direct == {"adhan": "الأذان", "control": "مركز التحكم", "phone": "تحكم من الجوال", "report": "أرسل تقرير", "parental": "الرقابة الأبوية", "family": "تصفية المواقع",
                  "lang": "اللغة"}
       and all(by.get(k) == [r] for k, r in direct.items()), {k: (r, by.get(k)) for k, r in direct.items()})
 check("every other category has rows of its own (no empty screen), a screen of buttons none",

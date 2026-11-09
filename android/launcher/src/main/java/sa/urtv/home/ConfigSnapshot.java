@@ -20,6 +20,8 @@ final class ConfigSnapshot {
     final boolean watchNextOn;
     /** «تطبيقات في الشريط»: "5" to "10" or "all"; an older screensaver does not say: 5, as the tray always was */
     String favBar = "5";
+    String pillsHidden = "";   // the quick buttons hidden in the settings (#52): markets, matches, center
+    boolean pillHidden(String key) { return ("," + pillsHidden + ",").contains("," + key + ","); }
     boolean pagesDark = true;   // «صفحات الأسهم والمباريات داكنة»: an older screensaver says nothing: on, the default
     /** «المظهر»: auto, light or dark (Look.mode); an older screensaver does not say: dark, as the home always was */
     private final String appearance;
@@ -44,7 +46,7 @@ final class ConfigSnapshot {
     }
 
     /** The same values, marked as an old copy. */
-    ConfigSnapshot asStale() { ConfigSnapshot c = new ConfigSnapshot(fragment, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, true, placeTicket); c.favBar = favBar; c.pagesDark = pagesDark; return c; }
+    ConfigSnapshot asStale() { ConfigSnapshot c = new ConfigSnapshot(fragment, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, true, placeTicket); c.favBar = favBar; c.pagesDark = pagesDark; c.pillsHidden = pillsHidden; return c; }
 
     /**
      * The settings fragment for the PRAYER PLACE (Place, the adhan alarm, the day parts): null when this is an old copy, so that only a real
@@ -89,6 +91,7 @@ final class ConfigSnapshot {
         boolean greeting = true, bar = true, listenPill = true, updateBell = true, watchNext = true;
         String appearance = null, look = null, favBar = "5";
         boolean pagesDark = true;
+        String pillsHidden = "";
         try (Cursor cur = c.getContentResolver().query(URI, null, null, null, null)) {
             if (cur != null && cur.moveToFirst()) {
                 fragment = cur.getString(0);
@@ -108,6 +111,8 @@ final class ConfigSnapshot {
                 if (k >= 0) look = cur.getString(k);
                 int pd = cur.getColumnIndex("pages_dark");
                 if (pd >= 0 && "0".equals(cur.getString(pd))) pagesDark = false;
+                int ph = cur.getColumnIndex("pills_hidden");   // an older screensaver does not say: none hidden
+                if (ph >= 0 && cur.getString(ph) != null) pillsHidden = cur.getString(ph);
                 int fb = cur.getColumnIndex("fav_bar");   // an older screensaver does not say: 5
                 if (fb >= 0 && cur.getString(fb) != null) favBar = cur.getString(fb);
             }
@@ -117,6 +122,7 @@ final class ConfigSnapshot {
         ConfigSnapshot made = new ConfigSnapshot(fragment, greeting, bar, listenPill, updateBell, appearance, watchNext, look, false, ticket);
         made.favBar = favBar;
         made.pagesDark = pagesDark;
+        made.pillsHidden = pillsHidden;
         return made;
     }
 

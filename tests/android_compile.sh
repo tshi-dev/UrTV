@@ -69,7 +69,7 @@ PY
 bad=0
 for m in launcher app; do
   mkdir -p "$W/out_$m"
-  err=$(javac -encoding UTF-8 -proc:none -cp "$JAR" -d "$W/out_$m" $(find "$ROOT/android/$m/src/main/java" -name '*.java') $(find "$W/stub_$m" -name '*.java') 2>&1 | grep -v '^Picked up\|^Note:')
+  err=$(javac -encoding UTF-8 -proc:none -cp "$JAR" -d "$W/out_$m" $(find "$ROOT/android/$m/src/main/java" "$ROOT/android/$m/src/debug/java" -name '*.java' 2>/dev/null) $(find "$W/stub_$m" -name '*.java') 2>&1 | grep -v '^Picked up\|^Note:')
   if [ -n "$err" ] && echo "$err" | grep -q 'error'; then
     echo "FAIL android compile: the $m module does not compile against $KIND"; echo "$err"; bad=1
   else

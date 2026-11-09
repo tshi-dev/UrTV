@@ -40,6 +40,9 @@ final class PhotoPacks {
         }
     }
 
+    /** a file name inside Arabic text, kept left to right (an isolate: «IMG_2041.jpg» does not reorder its dots and digits) */
+    static String isolate(String name) { return "\u2066" + name + "\u2069"; }
+
     /** a pack's id: lowercase letters, digits and dashes (it is a folder name and part of the address) */
     static boolean validId(String id) { return id != null && id.matches("[a-z][a-z0-9-]{1,30}"); }
 
@@ -146,6 +149,16 @@ final class PhotoPacks {
     static boolean mayTurnOursOff(Set<String> on, Map<String, Integer> installed) {
         for (String id : on) { Integer n = installed.get(id); if (n != null && n > 0) return true; }
         return false;
+    }
+
+    /**
+     * The packs the HOME's wallpaper rotates (4.3), as "id:count" in the order of the set, each installed with its photos: the same set as the screensaver's («مثل شاشة التوقف», the
+     * default) or the home's own. ours: whether the bundled photos are in the rotation, which counts only while a pack is on (nothing is ever left blank).
+     */
+    static Map<String, Integer> homeSet(boolean same, Set<String> screensaverOn, Set<String> homeOn, Map<String, Integer> installed) {
+        Map<String, Integer> out = new java.util.LinkedHashMap<>();
+        for (String id : same ? screensaverOn : homeOn) { Integer n = installed.get(id); if (n != null && n > 0) out.put(id, n); }
+        return out;
     }
 
     /** the size a person reads: megabytes, rounded up so a pack is never bigger than it says */

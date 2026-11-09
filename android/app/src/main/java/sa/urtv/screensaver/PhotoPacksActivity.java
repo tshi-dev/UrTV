@@ -193,6 +193,8 @@ public class PhotoPacksActivity extends Activity {
         body.addView(st, line(dp(8)));
         body.addView(text(meta, 14, "Regular", look.sub), line(dp(4)));
         body.addView(text(source, 14, "Regular", look.sub), line(0));
+        // «بلا أشخاص» on each card (haramain: the mosques' own people are not in the picture's front, so «في الواجهة»)
+        body.addView(text(w(p != null && "haramain".equals(p.id) ? "بلا أشخاص في الواجهة" : "بلا أشخاص"), 14, "Regular", look.sub), line(dp(4)));
         card.addView(body, new LinearLayout.LayoutParams(-1, -2));
         GlassPaint.card(card, look, 14);
         return card;
@@ -270,7 +272,7 @@ public class PhotoPacksActivity extends Activity {
             List<String[]> rows = PackStore.creditRows(this, p.id);
             if (rows.isEmpty()) continue;
             sb.append(S.en() ? p.nameEn : p.name).append('\n');
-            for (String[] r : rows) sb.append("  ").append(r[0]).append(" · ").append(PhotoPacks.creditLine(r[1], r[2])).append(" · ").append(r[3]).append('\n');
+            for (String[] r : rows) sb.append("  ").append(PhotoPacks.isolate(r[0])).append(" · ").append(PhotoPacks.creditLine(r[1], r[2])).append(" · ").append(r[3]).append('\n');
             sb.append('\n');
         }
         sb.append(w("صورنا: Unsplash، وكل صورة في docs/PHOTO-CREDITS.md"));
@@ -278,8 +280,11 @@ public class PhotoPacksActivity extends Activity {
         body.setPadding(dp(24), dp(16), dp(24), dp(8));
         ScrollView sv = new ScrollView(this);
         sv.addView(body);
-        new WordsBuilder(this, look.light ? R.style.UrDialogLight : R.style.UrDialog).setTitle(w("حقوق الصور")).setView(sv)
-            .setPositiveButton(w("إغلاق"), null).show();
+        android.app.AlertDialog d = new WordsBuilder(this, look.light ? R.style.UrDialogLight : R.style.UrDialog).setTitle(w("حقوق الصور")).setView(sv)
+            .setPositiveButton(w("إغلاق"), null).create();
+        d.show();
+        android.widget.Button close = d.getButton(android.content.DialogInterface.BUTTON_POSITIVE);
+        if (close != null) close.setTextColor(look.text);   // «إغلاق» in the page's text colour: the dialog's own accent was pale on its fill
     }
 
     // ---- small things ----

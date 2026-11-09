@@ -92,7 +92,7 @@ check("C10: the link carries the packed report (raw deflate, base64url, «z.»)"
 sys.path.insert(0, str(ROOT / "tests"))
 setup_tsv = dict(l.split("\t", 1) for l in text(ROOT / "i18n/en/setup.tsv").splitlines() if l and not l.startswith("#"))
 home_tsv = dict(l.split("\t", 1) for l in text(ROOT / "i18n/en/home.tsv").splitlines() if l and not l.startswith("#"))
-fixed = re.findall(r'(?:text|button)\((?:digits\()?S\.t\("([^"]+)"\)', done)
+fixed = re.findall(r'(?:text|button|quiet)\((?:digits\()?S\.t\("([^"]+)"\)', done)
 check("E17: the done screen's 13 fixed lines go through S.t (none left as a bare Arabic literal)", len(fixed) == 12 and 'add(text("' not in done and 'button("' not in done, (len(fixed), fixed))
 check("E17: every one has its English in i18n/en/setup.tsv (the title in home.tsv)", all(f in setup_tsv for f in fixed) and "إعداد تلفزيوني" in home_tsv
       and 'text(S.t("إعداد تلفزيوني")' in act, [f for f in fixed if f not in setup_tsv])

@@ -886,12 +886,12 @@ const CONFIG = {
     minRating: _num('minrating', 7),
   },
   weekWindowDays: 7,
-  // minutes between background photos: #photos=5|10|15|30|60, 1, or 0.5 (30 seconds: the app sends it only on a TV with 2 GB); anything else = 30
+  // minutes between background photos: #photos=5|10|15|30|60, 1, or 0.5
   photoMinutes: (m => [0.5,1,5,10,15,30,60].includes(m) ? m : 30)(_num('photos', 30)),
   // the owner's own photos («صوري»): #own=how many (0-10) and #ownmode=mix (join ours, the default) or only
   own: Math.max(0, Math.min(10, Math.floor(_num('own', 0)))),
   ownMode: _Q.get('ownmode') === 'only' ? 'only' : 'mix',
-  // the photo packs («صور شاشة التوقف»): #packs=id:count,id:count (downloaded and on; the screensaver app alone answers them, so only there)
+  // the photo packs («صور شاشة التوقف»): #packs=id:count,id:count
   // and #ours=0 when our own set is off (the app sends that only while a pack gives the screen something else)
   packs: window.UrtvNative ? (_Q.get('packs') || '').split(',').map(x => x.split(':')).filter(x => /^[a-z][a-z0-9-]{1,30}$/.test(x[0]) && +x[1] >= 1).map(x => [x[0], Math.min(200, Math.floor(+x[1]))]).slice(0, 12) : [],
   ours: _Q.get('ours') !== '0',
@@ -921,13 +921,13 @@ const CONFIG = {
   // #cd=YYYY-MM-DD&cdname=...: the date and name for slot=countdown (a bad date = none)
   cd: (v => /^\d{4}-\d{2}-\d{2}$/.test(v) && !isNaN(Date.parse(v + 'T00:00:00Z')) && new Date(v + 'T00:00:00Z').toISOString().slice(0, 10) === v ? v : '')(_Q.get('cd') || ''),
   cdName: (_Q.get('cdname') || '').trim().slice(0, 40),
-  // shown as always unless hidden in the settings: #occasion=0 empties «المناسبة القادمة» (bottom middle: Ramadan, the feasts, iftar and
+  // shown as always unless hidden in the settings: #occasion=0 empties «المناسبة القادمة»
   // suhoor; the place stays, so nothing else moves) and #nightdim=0 keeps the night as bright as the day (no dimmer)
   occasion: _Q.get('occasion') !== '0',
   nightDim: _Q.get('nightdim') !== '0',
-  // «تبديل الآية والحديث»: #versemin=3 a new verse or hadith every 3 minutes (a verse, then a hadith); anything else = one a day as always
+  // «تبديل الآية والحديث»: #versemin=3 a new verse or hadith every 3 minutes
   verseMin: _Q.get('versemin') === '3' ? 3 : 0,
-  // «الآية والحديث»: #versekind=verse only verses, #versekind=hadith only hadith; anything else = a verse, then a hadith, as always
+  // «الآية والحديث»: #versekind=verse only verses, #versekind=hadith only hadith
   verseKind: (v => v === 'verse' || v === 'hadith' ? v : 'both')(_Q.get('versekind')),
   // «إظهار الثواني»: #seconds=1 the seconds on the screensaver's clock, small beside the minutes; anything else = none, as always
   // #lowram=1: the app says this TV is weak (Ram.low: Android's low-RAM flag, or under 2.5 GB; a user report on 4.1, lag): no seconds, slower timers
@@ -942,11 +942,11 @@ const CONFIG = {
   sunrise: _Q.get('sunrise') === '1',
   prayerBar: _Q.get('prayerbar') === '1',
   wxMore: _Q.get('wxmore') === '1',
-  // the Gregorian month's name: #months=levant «تشرين الأول» (the Levant's, as many people read them), anything else «أكتوبر» as always
+  // the Gregorian month's name: #months=levant «تشرين الأول»
   months: _Q.get('months') === 'levant' ? 'levant' : 'default',
   // the slim bar before the adhan: #adhanbar=0 turns it off (anything else = on)
   adhanBar: _Q.get('adhanbar') !== '0',
-  // «تعديل وقت الصلاة»: #adj=0,2,0,0,-1 = minutes added to الفجر الظهر العصر المغرب العشاء (each -20..20, whole minutes; anything that is not five
+  // «تعديل وقت الصلاة»: #adj=0,2,0,0,-1 = minutes added to الفجر الظهر العصر المغرب العشاء
   // such numbers = none). The sunrise is not a prayer and is never moved. The screensaver sends it only while the setting is on.
   prayerAdj: (a => a.length === 5 && a.every(x => /^-?\d{1,2}$/.test(x.trim())) ? a.map(x => Math.max(-20, Math.min(20, parseInt(x, 10)))) : [0,0,0,0,0])(
     (_Q.get('adj') || '').split(',')),
@@ -969,11 +969,11 @@ const CONFIG = {
   // #pagedark=1 with #matchpage=1: the dark theme
   pageDark: _Q.get('pagedark') === '1',
 };
-// the football home and «المباريات» show a league even when none is followed: the Saudi Pro League's file (no request to the sports server)
+// the football home and «المباريات» show a league even when none is followed
 if((CONFIG.football || CONFIG.matchPage) && !CONFIG.leagues.length) CONFIG.leagues = ['Saudi-Arabian Pro League'];
 // The cards on this page: the screensaver's one (#panel=); the launcher's up to three (#home_panel=a,b,c, none or empty = no card;
 // an older launcher sends the one card as #panel=). Each kind once, in order.
-// the prayer calculation (Aladhan's id; 100 = Oman's ministry, ours): #pm=gulf everywhere (4.3 A4: nothing sect-specific; another word is the country's own), else the country's by the zone, else Umm al-Qura 4; PrayerMath.methodFor
+// the prayer calculation (Aladhan's id; 100 = Oman's ministry, ours)
 // (launcher) and PrayerMethod (app) say the same, tests/prayer_method_test.py compares them
 const RESOLVED_METHOD = [1,2,3,4,5,8,9,10,11,12,13,14,15,16,17,18,19,20,21,23,100].includes(+_Q.get('pm')) ? +_Q.get('pm') : null;
 CONFIG.prayerMethod = _Q.get('pm') === 'gulf' ? 8
@@ -1119,7 +1119,7 @@ function nationalNow(){
   return null;
 }
 
-// «فرق التاريخ الهجري»: the instant to give the Umm al-Qura calendar (formatted in the city's zone) so that it answers for the city's day
+// «فرق التاريخ الهجري»: the instant to give the Umm al-Qura calendar
 // plus CONFIG.hijri days. At 0 it is `d` itself; otherwise noon of that day (the time of day does not matter to a date).
 function hijriAt(d){
   const k = CONFIG.hijri;
@@ -1156,7 +1156,7 @@ const PRAYER_NAMES = {Fajr:'Fajr',Dhuhr:'Dhuhr',Asr:'Asr',Maghrib:'Maghrib',Isha
 let PRAYERS = [];
 
 let DAY_TIMES = null, BASE_DAY_TIMES = null, BASE_PRAYERS = [], NIGHT_PRAYERS = [], NIGHT_STATE = null, BASE_DAY = '';
-// «تعديل وقت الصلاة»: the five prayers moved by their minutes (CONFIG.prayerAdj); everything on the page that shows or acts on a prayer
+// «تعديل وقت الصلاة»: the five prayers moved by their minutes
 // time reads PRAYERS and DAY_TIMES, so this is the one place. The sunrise stays. A time past midnight (an Isha at «24:10») stays absolute.
 function adjustedTimes(t){
   if(!CONFIG.prayerAdj.some(Boolean)) return t;
@@ -1176,7 +1176,7 @@ function clockText(v){
   const h = +m[1], mi = +m[2];
   return h < 24 && mi < 60 ? pad(h) + ':' + pad(mi) : null;
 }
-// An Aladhan answer for that day (DD-MM-YYYY) whole, or null: five valid times and the day asked. An Isha before Maghrib is after midnight: «24:10»
+// An Aladhan answer for that day (DD-MM-YYYY) whole, or null
 function checkedTimings(j, want){
   const t = j && j.data && j.data.timings, got = j && j.data && j.data.date && j.data.date.gregorian && j.data.date.gregorian.date;
   if(!t || got !== want) return null;   // fail closed: an answer that does not say it is today's (a cached or captive page) is not used
@@ -1328,7 +1328,12 @@ async function loadPrayers(){
   const url = `https://api.aladhan.com/v1/timings/${want}`
             + `?latitude=${CONFIG.latitude}&longitude=${CONFIG.longitude}`
             + `&method=${CONFIG.prayerMethod}&latitudeAdjustmentMethod=3&timezonestring=${encodeURIComponent(CONFIG.timezone)}`;
-  if(!PRAYERS.length) try{ buildPrayers(computePrayers()); PRAYERS_DAY = want + '|calc'; tickPrayer(); renderPanel(false, 'prayers', 'adhkar', 'prayerrow', 'nextprayer'); }catch(_){}   // computed times first, not «—»
+  const PT = 'ptimes:' + CONFIG.latitude + ',' + CONFIG.longitude + ',' + CONFIG.prayerMethod;   // today's answer, kept: the next start shows the same minutes, not the computed ones
+  if(!PRAYERS.length) try{
+    let kept = null; try{ kept = JSON.parse(localStorage.getItem(PT) || 'null'); }catch(_){}
+    if(kept && kept.d === want){ buildPrayers(kept.t); PRAYERS_DAY = want + '|api'; } else { buildPrayers(computePrayers()); PRAYERS_DAY = want + '|calc'; }   // else computed: not «—»
+    tickPrayer(); renderPanel(false, 'prayers', 'adhkar', 'prayerrow', 'nextprayer');
+  }catch(_){}
   try{
     if(CONFIG.prayerMethod >= 100) throw 0;   // not an Aladhan method: computed only
     const r = await fetchT(url, 12000);
@@ -1336,6 +1341,7 @@ async function loadPrayers(){
     if(!t) throw 0;
     buildPrayers(t);
     PRAYERS_DAY = want + '|api';
+    try{ localStorage.setItem(PT, JSON.stringify({d: want, t})); }catch(_){}
   }catch(e){
     if(!PRAYERS.length || PRAYERS_DAY.slice(0, 10) !== want){   // today's times already here are kept
       try{ buildPrayers(computePrayers()); PRAYERS_DAY = want + '|calc'; }catch(_){}
@@ -1368,15 +1374,15 @@ function isFriday(){
 }
 function prayerName(x){ return x.key === 'Dhuhr' && isFriday() ? 'Jumuah' : x.name; }
 
-// ---- the bar before the adhan: the last 10 minutes «أذان المغرب بعد ٨ دقائق», then to the iqama «إقامة المغرب بعد ١٢ دقيقة» (CONFIG.iqama;
+// ---- the bar before the adhan: the last 10 minutes «أذان المغرب بعد ٨ دقائق», then to the iqama «إقامة المغرب بعد ١٢ دقيقة»
 // none for a Friday's Dhuhr, «أذان الجمعة»). #adhanbar=0 turns it off.
 const ADHAN_BAR_MIN = 10;
 // «٤ دقائق»: what is left to an adhan, in the same words at the same second on the bar and in the panel below (whole minutes of the
 // rounded second; never less than one)
 const untilAdhan = leftMin => humanRemaining(Math.max(60, Math.round(leftMin * 60)));
 // while the adhan plays in the launcher (the screensaver only: window.UrtvNative.adhan() answers {"live":true,"prayer":4,"any":false}, "" otherwise)
-// the bar names it and says how to stop it: «أذان المغرب  ·  أي زر يوقف الأذان» (the default; «اختيار: إيقاف الأذان» when «إيقاف الأذان بأي زر» is off). The same words
-// as the launcher's bar (AdhanBarText.playing). Any key (or only OK, when the setting is off) is handled by the app, which also keeps the dream open.
+// the bar names it and says how to stop it: «أذان المغرب  ·  أي زر يوقف الأذان»
+// as the launcher's bar (AdhanBarText.playing). Any key
 let ADHAN_LIVE = null;
 const ADHAN_PRAYER_NAMES = {0:'Fajr', 2:'Dhuhr', 3:'Asr', 4:'Maghrib', 5:'Isha'};
 function adhanLiveText(){
@@ -1386,7 +1392,7 @@ function adhanLiveText(){
 }
 function adhanLiveTick(){
   if(CONFIG.widget || !CONFIG.adhanBar || !(window.UrtvNative && window.UrtvNative.adhan)) return;
-  // asked every 3 s whenever the app answers (a call to the app's provider, about a millisecond): an adhan started by hand has no time to wait for
+  // asked every 3 s whenever the app answers (a call to the app's provider, about a millisecond)
   let s = null;
   try{ const raw = window.UrtvNative.adhan(); s = raw ? JSON.parse(raw) : null; }catch(e){}
   ADHAN_LIVE = s && s.live && typeof s.prayer === 'number' && isFinite(s.prayer) ? {prayer: +s.prayer, any: !!s.any} : null;
@@ -1412,9 +1418,9 @@ function tickAdhanBar(){
   if(t) setText(bar, t);
 }
 
-// ---- «المهام» with a time: the card at the time asked («قبلها بـ» minutes ahead of the appointment, then «الآن» at it). The app gives the open
-// reminders as #rem= (one per line: id|card time|appointment|repeat|chime|where|text, epoch milliseconds); the page shows the card by its own clock.
-// «تم» marks the task done and «ذكّرني بعد ١٠ دقائق» asks again then, both through window.UrtvNative (the screensaver app; without it the card only goes
+// ---- «المهام» with a time: the card at the time asked
+// reminders as #rem= (one per line: id|card time|appointment|repeat|chime|where|text, epoch milliseconds)
+// «تم» marks the task done and «ذكّرني بعد ١٠ دقائق» asks again then, both through window.UrtvNative
 // away); any other key puts the card away until the appointment changes. It waits while the adhan plays. The app takes the keys while the card is up
 // (reminderKey) so the first press goes to the card and the screensaver stays.
 const REM_GRACE = 30*60000, REM_SNOOZE = 10;
@@ -1532,8 +1538,8 @@ function prayerBarFraction(mins){
   return Math.max(0, Math.min(1, (mins - from) / Math.max(1, to - from)));
 }
 
-// #sunrise=1 (from PR #28): after Fajr's iqama the panel counts to the sunrise («الشروق» · «٦:٠٥ ص» · «بعد ٢٣ دقيقة»), and for half an hour
-// after it says how long ago it was; then the Dhuhr countdown as always. The sunrise is not a prayer: the label says «الشروق», not «الصلاة
+// #sunrise=1 (from PR #28): after Fajr's iqama the panel counts to the sunrise
+// after it says how long ago it was; then the Dhuhr countdown as always
 // القادمة». True when it painted the panel.
 const SUNRISE_AFTER_MIN = 30;
 function sunrisePanel(mins, elL, elN, elT, elC){
@@ -1597,7 +1603,7 @@ function occasionNow(){
   return val;
 }
 
-// `raw`: the calendar's own month, without «فرق التاريخ الهجري»: prayer times never follow the offset (only what is shown does)
+// `raw`: the calendar's own month, without «فرق التاريخ الهجري»
 function hijriMonthNow(raw){
   const at = raw ? new Date() : hijriAt(new Date());
   try{
@@ -1860,7 +1866,7 @@ function matchWhen(d){
 // «الخميس ٢٢ أكتوبر»: the day of a finished game
 const matchDay = d => FMT_DAY_MONTH.format(d).replace(',','');
 const FMT_DM = gregFmt({timeZone:CONFIG.timezone,day:'numeric',month:'long'});
-// the short form of matchWhen: «الجمعة ٩:٠٠ م» for a game this week, «٢٤ أكتوبر» for any other (and for a game already played)
+// the short form of matchWhen: «الجمعة ٩:٠٠ م» for a game this week, «٢٤ أكتوبر» for any other
 function matchWhenShort(d, now, done){
   const p = hmParts(d), ahead = d - now;
   return !done && ahead > 0 && ahead < 6 * 86400000 ? FMT_WEEKDAY.format(d) + ' ' + fmtTime(+p.hour % 24, +p.minute) : FMT_DM.format(d);
@@ -1878,6 +1884,9 @@ function gameBlock(ev, now, big){
   const home = esc(teamAr(ev.strHomeTeam, ev.idHomeTeam)), away = esc(teamAr(ev.strAwayTeam, ev.idAwayTeam));
   const d = toDate(ev), diff = d - now;
   if(pendingResult(ev, now))   // over, no result yet: the teams and when they played
+    return `<div class="mblock"><div class="big"><span><span class="tm">${home}</span> × <span class="tm">${away}</span></span></div><div class="sub">${matchWhen(d)}</div></div>`;
+  // kicked off long ago and the data still says «not started» with no score (the file is old): not «مباشر» and never «بعد …», the game as «over, no result yet» (its day and time say it was last night's)
+  if(diff < -20*60000 && ev.intHomeScore == null && /^(NS|TBD|NOT STARTED|)$/.test((ev.strStatus || '').toUpperCase()) && diff >= -durMs(ev))
     return `<div class="mblock"><div class="big"><span><span class="tm">${home}</span> × <span class="tm">${away}</span></span></div><div class="sub">${matchWhen(d)}</div></div>`;
   if(diff < -durMs(ev) || diff > CONFIG.weekWindowDays * 86400000) return '';   // in progress stays on screen
   const p = hmParts(d);
@@ -1964,7 +1973,7 @@ function liveStatus(ev, clk){
   if(st === 'HT') return 'Half-time';
   if(['FT','AET','PEN'].includes(st)) return 'Final';
   const m = parseInt(ev.strProgress, 10);
-  return isNaN(m) || (ev.strSport && ev.strSport !== 'Soccer') ? `Started ${clk}` : `${ar(m)}'`;   // minutes are football's
+  return isNaN(m) || (ev.strSport && ev.strSport !== 'Soccer') ? `Since ${clk}` : `${ar(m)}'`;   // minutes are football's
 }
 
 // while a picked team is playing, refresh that event every 2 minutes; so is a game of a followed league (a few at most)
@@ -2220,8 +2229,8 @@ function fitMatches(row){
   size(FIT_STEPS[FIT_STEPS.length - 1]);
   return false;   // the caller may show these games apart
 }
-// A game is one line (clubs, crests, score, date, «بعد …»), and never ends in «…». When it is too long for the card the steps are, in this
-// order: no crests on that row (the full names stay), the clubs' short names, the date's short form, a slightly smaller size. Every step starts from the full
+// A game is one line (clubs, crests, score, date, «بعد …»), and never ends in «…»
+// order: no crests on that row (the full names stay), the clubs' short names, the date's short form, a slightly smaller size
 // row again (the names and the date keep their full form in data-full), so a card that gets smaller redoes it.
 const rowCut = row => {
   const r = row.getBoundingClientRect();
@@ -2467,7 +2476,7 @@ function paintMarket(t, price, pct, at){
   if(okP){ px.hidden = false; setText(px, num(price, t.dec)); } else { px.hidden = true; setText(px, ''); }
   paintDir(t, okC ? pct >= 0 : null, okC ? num(Math.abs(pct), 2) + (LATIN ? '%' : '%') : '');
 }
-// the dim state of each market and the line under them: «آخر تحديث ٣:١٥ م» (the oldest price that is not current), or «غير محدّث»
+// the dim state of each market and the line under them
 function paintMkUp(){
   if(!CONFIG.mkBar) return;
   const known = TICKERS.filter(t => MK_LAST[t.key]);
@@ -2562,7 +2571,7 @@ async function directQuote(j){
   }catch(e){ return null; }
 }
 
-// How old a price is, for the screen: '' while it is current, else «آخر تحديث ٣:١٥ م» (its fetch time), and «غير محدّث» past 24 hours.
+// How old a price is, for the screen: '' while it is current, else «آخر تحديث ٣:١٥ م»
 const DAY_MS = 86400000;
 function staleMark(v){
   if(!v) return '';
@@ -2816,9 +2825,9 @@ function fitLive(ul){
   });
 }
 
-    // ---- «البطاقة الذكية» (smart): what matters now, picked again with every redraw (the clock timers draw it every 15 s); no request of its own. In order:
+    // ---- «البطاقة الذكية» (smart): what matters now, picked again with every redraw
     //  1. a followed team's game is live or starts within 60 minutes: the matches card with that game;
-    //  2. within 15 minutes of a prayer: the prayers' row, minutes left in its title (before the adhkar, whose last quarter hour is the wait for the prayer);
+    //  2. within 15 minutes of a prayer: the prayers' row, minutes left in its title
     //  3. the adhkar window (morning Fajr to Dhuhr, evening Asr to Maghrib): the adhkar card;   4. otherwise: the next hours' weather.
 const SMART_GAME_MIN = 60, SMART_PRAYER_MIN = 15;
 // the followed teams' games that are live now, or (not liveOnly) start within SMART_GAME_MIN minutes: [ev] in time order
@@ -2923,8 +2932,8 @@ function renderCard(card, animate, keepSize){
   if(animate){ void ul.offsetWidth; ul.classList.add('flip'); }
 }
 
-    // ---- sizing in the launcher: the cards share the box of the WebView. A card that does not fit steps down in text size (Z_STEPS, card.zi), then in rows
-    // per page (a list, card.ri), then picks a shorter text (a verse, a hadith, a dhikr); the one cut off or tallest goes first; one card keeps the box and is never
+    // ---- sizing in the launcher: the cards share the box of the WebView
+    // per page (a list, card.ri), then picks a shorter text
     // changed. A quote comes down to .82 before a shorter text; a card too wide (a name ending in «…») can only give text size.
 const Z_STEPS = [1, .94, .88, .82, .76, .7, .64];
 function cardCut(card){   // a name or a cell wider than its place: it would end in «…» or run into the next
@@ -3091,7 +3100,7 @@ function prayerRows(){
 
 // the city's date as YYYY-MM-DD, and the one after it
 const cityToday = (ms = Date.now()) => FMT_DATE.format(new Date(ms));
-// A saved forecast can be days old: the rows are the days from today in the city's zone, named by their date («اليوم» is today's, not the
+// A saved forecast can be days old: the rows are the days from today in the city's zone, named by their date
 // first row), and a forecast that has no today is not shown (its first row would be named «اليوم»).
 function forecastRows(){
   const today = cityToday(), tomorrow = new Date(Date.parse(today + 'T12:00:00Z') + DAY_MS).toISOString().slice(0, 10);
@@ -3187,7 +3196,7 @@ function shortHM(sec){   // «١ س و ٥ د», «٢ س», «٥ د»
   const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60);
   return [h ? ar(h) + ' h' : '', m || !h ? ar(Math.max(m, 1)) + ' m' : ''].filter(Boolean).join(', ');
 }
-// ---- «الصلاة القادمة»: one line, «المغرب ٥:٢١ م، بعد ١ ساعة و ٩ دقائق», the calm one of the prayer cards (after Isha: tomorrow's Fajr)
+// ---- «الصلاة القادمة»: one line, «المغرب ٥:٢١ م، بعد ١ ساعة و ٩ دقائق», the calm one of the prayer cards
 function nextPrayerRows(){
   if(!PRAYERS.length) return [];
   const p = riyadhParts(), mins = p.h * 60 + p.mi + p.s / 60;
@@ -3306,7 +3315,7 @@ const TADAWUL = {   // Arabic short names of the 30 largest companies; any other
 };
 const isSA = k => /^\d/.test(k);
 const stockName = k => isSA(k) ? (TADAWUL[k] || ar(k)) : k;
-// The exchanges keep their own hours whatever the city: Tadawul Sun-Thu 10:00-15:00 (Riyadh is UTC+3 all year); the US Mon-Fri 09:30-16:00 New York time (holidays are ignored)
+// The exchanges keep their own hours whatever the city
 const NY_CLOCK = new Intl.DateTimeFormat('en-US', {timeZone:'America/New_York', weekday:'short', hour:'2-digit', minute:'2-digit', hourCycle:'h23'});
 function marketOpen(sa, ms = Date.now()){
   if(sa){ const d = new Date(ms + 3*3600000), day = d.getUTCDay(), m = d.getUTCHours() * 60 + d.getUTCMinutes(); return day <= 4 && m >= 600 && m < 900; }
@@ -3421,8 +3430,8 @@ function wisdomOfDay(){
 
 // «أذكار الصباح والمساء» (from حصن المسلم): only those .github/tools/verify_adhkar.py found in the six books or the Quran.
 // Morning: Fajr to Dhuhr; evening: Asr to Maghrib; night (the end of al-Baqara): Isha to Fajr. Between them the «both» ones,
-// under when the next begin («أذكار المساء · مع العصر ٣:٠٠ م»), never the verse or hadith of the day. A set with no dhikr
-// (the night verse is too long for the screen) falls back to the evening ones, «late»: a dhikr always shows. One timer, 20 s + 0.1 s per character, at most 60 s.
+// under when the next begin («أذكار المساء · مع العصر ٣:٠٠ م»), never the verse or hadith of the day
+// (the night verse is too long for the screen) falls back to the evening ones, «late»
 const ADHKAR = [{"when":"both","text":"ٱللَّهُ لَآ إِلَٰهَ إِلَّا هُوَ ٱلۡحَيُّ ٱلۡقَيُّومُۚ لَا تَأۡخُذُهُۥ سِنَةٞ وَلَا نَوۡمٞۚ لَّهُۥ مَا فِي ٱلسَّمَٰوَٰتِ وَمَا فِي ٱلۡأَرۡضِۗ مَن ذَا ٱلَّذِي يَشۡفَعُ عِندَهُۥٓ إِلَّا بِإِذۡنِهِۦۚ يَعۡلَمُ مَا بَيۡنَ أَيۡدِيهِمۡ وَمَا خَلۡفَهُمۡۖ وَلَا يُحِيطُونَ بِشَيۡءٖ مِّنۡ عِلۡمِهِۦٓ إِلَّا بِمَا شَآءَۚ وَسِعَ كُرۡسِيُّهُ ٱلسَّمَٰوَٰتِ وَٱلۡأَرۡضَۖ وَلَا يَـُٔودُهُۥ حِفۡظُهُمَاۚ وَهُوَ ٱلۡعَلِيُّ ٱلۡعَظِيمُ","count":1,"source":"سورة البقرة · 255","quran":true},{"when":"both","text":"قُلۡ هُوَ ٱللَّهُ أَحَدٌ ۝١ ٱللَّهُ ٱلصَّمَدُ ۝٢ لَمۡ يَلِدۡ وَلَمۡ يُولَدۡ ۝٣ وَلَمۡ يَكُن لَّهُۥ كُفُوًا أَحَدُۢ ۝٤","count":3,"source":"سورة الإخلاص · 1–4","quran":true},{"when":"both","text":"قُلۡ أَعُوذُ بِرَبِّ ٱلۡفَلَقِ ۝١ مِن شَرِّ مَا خَلَقَ ۝٢ وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ ۝٣ وَمِن شَرِّ ٱلنَّفَّٰثَٰتِ فِي ٱلۡعُقَدِ ۝٤ وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ ۝٥","count":3,"source":"سورة الفلق · 1–5","quran":true},{"when":"both","text":"قُلۡ أَعُوذُ بِرَبِّ ٱلنَّاسِ ۝١ مَلِكِ ٱلنَّاسِ ۝٢ إِلَٰهِ ٱلنَّاسِ ۝٣ مِن شَرِّ ٱلۡوَسۡوَاسِ ٱلۡخَنَّاسِ ۝٤ ٱلَّذِي يُوَسۡوِسُ فِي صُدُورِ ٱلنَّاسِ ۝٥ مِنَ ٱلۡجِنَّةِ وَٱلنَّاسِ ۝٦","count":3,"source":"سورة الناس · 1–6","quran":true},{"when":"morning","text":"اللَّهُمَّ بِكَ أَصْبَحْنَا وَبِكَ أَمْسَيْنَا وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ النُّشُورُ","count":1,"source":"سنن أبي داود · 5068"},{"when":"evening","text":"أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ وَالْحَمْدُ لِلَّهِ لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ","count":1,"source":"صحيح مسلم · 2723"},{"when":"evening","text":"رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ","count":1,"source":"صحيح مسلم · 2723"},{"when":"both","text":"بِسْمِ اللَّهِ الَّذِي لاَ يَضُرُّ مَعَ اسْمِهِ شَىْءٌ فِي الأَرْضِ وَلاَ فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ","count":3,"source":"سنن أبي داود · 5088"},{"when":"both","text":"سُبْحَانَ اللَّهِ وَبِحَمْدِهِ","count":100,"source":"صحيح مسلم · 2692"},{"when":"evening","text":"أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ","count":1,"source":"صحيح مسلم · 2709"},{"when":"morning","text":"سُبْحَانَ اللَّهِ وَبِحَمْدِهِ عَدَدَ خَلْقِهِ وَرِضَا نَفْسِهِ وَزِنَةَ عَرْشِهِ وَمِدَادَ كَلِمَاتِهِ","count":3,"source":"صحيح مسلم · 2726"},{"when":"morning","text":"لاَ إِلَهَ إِلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ، وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَىْءٍ قَدِيرٌ","count":100,"source":"صحيح البخاري · 3293"},{"when":"morning","text":"اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلاً مُتَقَبَّلاً","count":1,"source":"سنن ابن ماجه · 925"},{"when":"both","text":"اللَّهُمَّ أَنْتَ رَبِّي، لاَ إِلَهَ إِلاَّ أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَىَّ وَأَبُوءُ لَكَ بِذَنْبِي، فَاغْفِرْ لِي، فَإِنَّهُ لاَ يَغْفِرُ الذُّنُوبَ إِلاَّ أَنْتَ","count":1,"source":"صحيح البخاري · 6306"},{"when":"evening","text":"اللَّهُمَّ بِكَ أَمْسَيْنَا وَبِكَ أَصْبَحْنَا وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ النُّشُورُ","count":1,"source":"جامع الترمذي · 3391"},{"when":"both","text":"اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالآخِرَةِ اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي وَدُنْيَاىَ وَأَهْلِي وَمَالِي اللَّهُمَّ اسْتُرْ عَوْرَاتِي وَآمِنْ رَوْعَاتِي وَاحْفَظْنِي مِنْ بَيْنِ يَدَىَّ وَمِنْ خَلْفِي وَعَنْ يَمِينِي وَعَنْ شِمَالِي وَمِنْ فَوْقِي وَأَعُوذُ بِكَ أَنْ أُغْتَالَ مِنْ تَحْتِي","count":1,"source":"سنن ابن ماجه · 3871"},{"when":"both","text":"اللَّهُمَّ عَالِمَ الْغَيْبِ وَالشَّهَادَةِ فَاطِرَ السَّمَوَاتِ وَالأَرْضِ رَبَّ كُلِّ شَيْءٍ وَمَلِيكَهُ أَشْهَدُ أَنْ لاَ إِلَهَ إِلاَّ أَنْتَ أَعُوذُ بِكَ مِنْ شَرِّ نَفْسِي وَمِنْ شَرِّ الشَّيْطَانِ وَشِرْكِهِ","count":1,"source":"جامع الترمذي · 3392"},{"when":"evening","text":"رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذِهِ اللَّيْلَةِ وَخَيْرَ مَا بَعْدَهَا وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذِهِ اللَّيْلَةِ وَشَرِّ مَا بَعْدَهَا","count":1,"source":"صحيح مسلم · 2723"}];   // assets/shared/adhkar.json, through src/build.py
 const ADHKAR_COUNT = {1:'Once', 2:'Twice', 3:'Three times', 4:'Four times', 7:'Seven times', 10:'Ten times', 33:'33 times', 100:'100 times'};
 const ADHKAR_ICON = {
@@ -3791,7 +3800,9 @@ function applyBackground(force){
       pool = ours.concat(mine);
     }
     if(!pool.length){ showBackground(local.u, local); return; }
-    const pick = pool[slot % pool.length], url = pick.url, b = pick.b;
+    // «صورنا» and every pack take turns in a shuffled order, a new one for each round (it was the packs one after another)
+    const shuf = (a, seed) => { const r = a.slice(); let x = (seed + 1) * 2654435761 >>> 0 || 1; for(let i = r.length - 1; i > 0; i--){ x = (x * 1664525 + 1013904223) >>> 0; const j = x % (i + 1); [r[i], r[j]] = [r[j], r[i]]; } return r; };
+    const pick = (only ? pool : shuf(pool, Math.floor(slot / pool.length)))[slot % pool.length], url = pick.url, b = pick.b;
     if(mine.includes(pick)){ showOwn(pick, mine, local); return; }
     if(pick.bundled){ showBackground(url, b); return; }
     // First photo: wait briefly for the hosted one (the app serves it from disk at once) so the screen
@@ -3930,7 +3941,7 @@ const FB_LEAGUES = {'4668':'Roshn League', '5627':'Yelo League', '4328':'Premier
   '5056':'Iraq Stars League', '4719':'AFC Champions League Elite', '4480':'Champions League'};   // 4.3
 const FB_LEAGUE_ORDER = Object.keys(FB_LEAGUES);
 const leagueName = ev => FB_LEAGUES[String(ev.idLeague || '')] || String(ev.strLeague || '');
-// «مباريات اليوم»'s marks (assets/shared/broadcast.json): plain text, never a logo; a row counts only while it is high, whole (every game),
+// «مباريات اليوم»'s marks (assets/shared/broadcast.json)
 // verified and in season, so an unknown, doubtful or partial holder shows nothing (a wrong channel is worse than none)
 const BROADCAST = [{"idLeague":"4668","competition":"Saudi Pro League","ar":"ثمانية","en":"Thmanyah","detail_ar":"ثمانية، أو تطبيق ثمانية","detail_en":"Thmanyah, or the Thmanyah app","from":"2025-26","until":"2030-31","source":"https://www.sportcal.com/media/srmgs-thmanyah-secures-exclusive-saudi-league-rights-until-2031/","confidence":"high","whole":true,"verified":"2026-11-03","app":["com.thmanyah.shasha.tv","com.thmanyah.shasha"]}];
 function seasonBound(s, end){   // «2027-28»: 1 August 2027 to 31 July 2028; «2026»: the calendar year; NaN when unreadable
@@ -4061,8 +4072,8 @@ function fbPrayersHtml(){
     + `<b>${prayerName(x)}</b><span class="fpt">${fmtTime(x.h, x.mi)}</span></li>`).join('') + '</ul>'
     + `<div class="fpn">${fw(FB_W.nextIn, prayerName(n), shortHM(Math.max(0, Math.round(left * 60))))}</div>`;
 }
-// ONE match line for the home widget and the «المباريات» list (the owner's screenshots: the crests, names and time floated apart with no shared axis):
-// [time column at the start] [home: crest + name, hugging the ×] [×, 32 px each side] [away: name + crest, hugging the ×] [note / mark]. The × (or the score) is the axis.
+// ONE match line for the home widget and the «المباريات» list
+// [time column at the start] [home: crest + name, hugging the ×] [×, 32 px each side] [away
 const fbTeamLine = (ev, side) => {
   const id = ev['id' + side + 'Team'];
   const cr = crestImg(ev, side) || '<span class="crgap"></span>', nm = `<span class="nm">${esc(nbName(teamAr(ev['str' + side + 'Team'], id)))}</span>`;
@@ -4304,7 +4315,7 @@ function mpAct(){
   MP.note = ok ? (b.k === 'remind' ? FB_W.reminded : fw(b.k === 'unfollow' ? FB_W.unfollowed : FB_W.followed, teamAr(ev['str' + b.side + 'Team'], ev['id' + b.side + 'Team']))) : FB_W.failed;
   mpDetailRender();
 }
-// the remote: ◀ ▶ ▲ ▼ OK and Back as the WebView hands them over; ◀ is «forward» in Arabic (the next day, the list beside the leagues)
+// the remote: ◀ ▶ ▲ ▼ OK and Back as the WebView hands them over
 function mpKey(e){
   const fwd = Dir_rtl() ? 'ArrowLeft' : 'ArrowRight', back = Dir_rtl() ? 'ArrowRight' : 'ArrowLeft', k = e.key;
   const ok = k === 'Enter' || k === ' ';

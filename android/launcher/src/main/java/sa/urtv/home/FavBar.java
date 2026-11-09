@@ -29,7 +29,7 @@ final class FavBar {
     /** the tray's glass: white at 14 % with a 28 % line over a photo (a dark look), at 72 % with an 85 % line on a light look */
     static final int FILL_DARK = 0x24FFFFFF, LINE_DARK = 0x47FFFFFF, FILL_LIGHT = 0xB8FFFFFF, LINE_LIGHT = 0xD9FFFFFF;
     /** the focus ring: DGA green on a light look, a light green over a photo */
-    static final int RING_LIGHT = 0xFF1B8354, RING_DARK = 0xFF8FE0B4;
+    static final int RING_LIGHT = 0xFF1B8354, RING_DARK = 0xFFFFE9B8;   // C12: the dark looks' ring is the widgets' (the page's --gold-hi, 3 px, with a soft glow inside); the light looks keep the green
 
     static int ring(boolean light) { return light ? RING_LIGHT : RING_DARK; }
 

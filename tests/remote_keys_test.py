@@ -23,10 +23,11 @@ check("dispatchKeyEvent asks the adhan rule first, then RemoteKeys, then the Men
 check("the key numbers are written out (no Android in RemoteKeys)", "import android" not in keys and "KeyEvent." not in re.sub(r"//.*|/\*.*?\*/", "", keys, flags=re.S))
 check("the apps open through the family lock (REMOTE_APP / REMOTE_SETTINGS), the star through the Menu key's path",
       "ParentalPolicy.REMOTE_APP" in main and "ParentalPolicy.REMOTE_SETTINGS" in main and "ParentalPolicy.MENU_KEY" in body)
-check("the Settings key (176, 83 and TCL's 4077): a short press opens the TV's own settings behind @tvsettings (REMOTE_SETTINGS), a long one OUR settings behind «قفل الإعدادات» (OUR_SETTINGS), falling back to the TV's settings when our app is missing",
+check("the Settings key (176, 83 and TCL's 4077): a short press opens the TV's own quick panel when it has one, else our Control Center, else the TV's settings (REMOTE_SETTINGS, #51), a long one OUR settings behind «قفل الإعدادات» (OUR_SETTINGS), falling back to the TV's settings when our app is missing",
       "return keyCode == KEYCODE_SETTINGS || keyCode == KEYCODE_NOTIFICATION || keyCode == TCL_SETTINGS;" in keys and "static final long LONG_MS = 500;" in keys
       and "heldMs >= LONG_MS ? OPEN_OUR_SETTINGS : OPEN_SETTINGS" in keys and "ParentalPolicy.OUR_SETTINGS" in main
-      and "case RemoteKeys.OPEN_SETTINGS:   // a short press of the Settings key: the TV's own settings, behind @tvsettings\n                launchGuarded(ParentalPolicy.REMOTE_SETTINGS, new Intent(Settings.ACTION_SETTINGS)" in main
+      and "case RemoteKeys.OPEN_SETTINGS: {" in main and "new Intent(SettingsKey.NOTIFICATION_PANEL_ACTION)" in main and "launchGuarded(ParentalPolicy.REMOTE_SETTINGS, panel," in main
+      and "guarded(ParentalPolicy.PILL_CENTER, null, ControlText.NAME, () -> control.open(anchor))" in main and "launchGuarded(ParentalPolicy.REMOTE_SETTINGS, new Intent(Settings.ACTION_SETTINGS)" in main
       and "case RemoteKeys.OPEN_OUR_SETTINGS:   // a long press of the Settings key: OUR settings (the TV's own if our app is missing)\n                openOurSettings(true);" in main
       and "SETTINGS" not in keys.split("private static Decision map")[1].split("default:")[0])
 check("MainActivity hands RemoteKeys how long the key has been down", "e.getRepeatCount(), e.getEventTime() - e.getDownTime()," in body)

@@ -637,6 +637,24 @@ final class Prefs {
     boolean oursOn() { return sp.getBoolean("oursOn", true); }
     void setOursOn(boolean v) { sp.edit().putBoolean("oursOn", v).apply(); }
 
+    /** 4.3 «الصور في الشاشة الرئيسية»: the home's wallpaper uses the same packs as the screensaver («مثل شاشة التوقف», the default) or a set of its own */
+    boolean homePhotosSame() { return sp.getBoolean("homeSame", true); }
+    void setHomePhotosSame(boolean v) { sp.edit().putBoolean("homeSame", v).apply(); }
+    java.util.Set<String> homePacksOn() { return PhotoPacks.parseOn(sp.getString("homePacksOn", "")); }
+    void setHomePacksOn(java.util.Set<String> v) { sp.edit().putString("homePacksOn", PhotoPacks.joinOn(v)).apply(); }
+    boolean homeOursOn() { return sp.getBoolean("homeOursOn", true); }
+    void setHomeOursOn(boolean v) { sp.edit().putBoolean("homeOursOn", v).apply(); }
+
+    /** the packs the home rotates (id -> photos), and whether «صورنا» (the bundled photos) is in its rotation */
+    java.util.Map<String, Integer> homePacks() { return PhotoPacks.homeSet(homePhotosSame(), packsOn(), homePacksOn(), PackStore.installed(ctx)); }
+    boolean homeOurs() {
+        java.util.Map<String, Integer> have = PackStore.installed(ctx);
+        boolean on = homePhotosSame() ? oursOn() : homeOursOn();
+        return on || homePacks().isEmpty();
+    }
+    /** changes whenever what the home rotates does, so the home chooses a photo again at once */
+    String homePacksRev() { return homePacks() + "|" + homeOurs() + "|" + homePhotosSame(); }
+
     private String packsParam() {
         java.util.Map<String, Integer> have = PackStore.installed(ctx);
         // «صورنا» off counts only while a pack that is on is on the TV: a pack deleted meanwhile brings ours back (nothing is left blank)
@@ -881,6 +899,22 @@ final class Prefs {
      * any-key stop, the «يُتلى الآن» card and a Quran that was started elsewhere go on; the screen opens from the app menu (long OK on an
      * app) or from the «يُتلى الآن» card instead.
      */
+    /** the home's quick buttons the person hid (#52): any of markets, matches, center, phone (the others have their own switch: «زر المهام», «زر تلاوة وأذان»); "" = all shown */
+    static final String[] QUICK_BUTTONS = {"markets", "matches", "center", "phone"};
+    String pillsHidden() {
+        java.util.List<String> out = new java.util.ArrayList<>();
+        for (String k : sp.getString("pillsHidden", "").split(",")) if (java.util.Arrays.asList(QUICK_BUTTONS).contains(k) && !out.contains(k)) out.add(k);
+        return android.text.TextUtils.join(",", out);
+    }
+    void setPillsHidden(String csv) { sp.edit().putString("pillsHidden", csv == null || csv.equals("none") ? "" : csv).apply(); }
+    boolean pillHidden(String key) { return java.util.Arrays.asList(pillsHidden().split(",")).contains(key); }
+    void setPillHidden(String key, boolean hidden) {
+        java.util.List<String> l = new java.util.ArrayList<>(java.util.Arrays.asList(pillsHidden().split(",")));
+        l.remove("");
+        l.remove(key);
+        if (hidden) l.add(key);
+        setPillsHidden(android.text.TextUtils.join(",", l));
+    }
     boolean listenPill() { return sp.getBoolean("listenPill", true); }
     void setListenPill(boolean v) { sp.edit().putBoolean("listenPill", v).apply(); }
 

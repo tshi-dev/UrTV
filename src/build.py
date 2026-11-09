@@ -368,7 +368,7 @@ const qty = (n, u) => `${ar(n)} ${n === 1 ? u.one : u.many}`;""", 1),
     # the games
     ("`<div class=\"sub\">النتيجة النهائية · ${day}</div></div>`", "`<div class=\"sub\">Final · ${day}</div></div>`", 1),
     ("`بعد ${shortRemaining(diff)}</div>", "`In ${shortRemaining(diff)}</div>", 1),
-    ("`بدأت ${clk}` : `الدقيقة ${ar(m)}`", "`Started ${clk}` : `${ar(m)}'`", 1),
+    ("`بدأت ${clk}` : `الدقيقة ${ar(m)}`", "`Since ${clk}` : `${ar(m)}'`", 1),
     ("· بدأ ${clk}`", "· started ${clk}`", 1),
     # «Saudi Arabian Grand Prix», short «Saudi Arabian GP»: the event's own name
     ("const gpName = gp ? 'جائزة ' + (GP_AR[place] || trl(gp[1].trim())) + ' الكبرى' : trl(name);",

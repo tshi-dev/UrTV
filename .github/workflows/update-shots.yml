@@ -1,0 +1,104 @@
+name: Update screen (rendered, before and after)
+
+# «تحديث تلفزيوني» and «إعداد تلفزيوني» drawn by the real launcher on an Android TV emulator (1920x1080), master's layout and this branch's, in the glass and sand looks, Arabic and English,
+# in four states (update: available, downloading, waiting for the install's confirmation, done) and five (setup: start, plan, progress, restart, done). Debug builds only (the activities DebugUpdateShot and DebugSetupShot draw a state without the network). A picture is taken only while the screen is on top, and only pictures of a run that succeeded are committed. The pictures
+# are committed to docs/shots/update/{before,after} when the pushed commit's message says «[shots]» (the artifact is a zip not every reader can fetch).
+on:
+  push:
+    branches: ['work/update-ui', 'work/fix-182']
+    paths: ['android/**', '.github/workflows/update-shots.yml', '.github/screens/update_*', 'i18n/**']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-shots-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  shots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+          path: before-tree
+      # Thmanyah comes from the private fonts repository, as in android.yml: built in, never committed
+      - uses: actions/checkout@v4
+        with:
+          repository: tshi-dev/urtv-fonts
+          token: ${{ secrets.FONTS_TOKEN }}
+          path: .fonts-private
+      - name: Private fonts
+        run: |
+          for t in . before-tree; do
+            mkdir -p "$t/android/launcher/src/main/assets/fonts"
+            cp .fonts-private/android/*.otf "$t/android/launcher/src/main/assets/fonts/"
+          done
+          cp .fonts-private/web/*.woff2 assets/fonts/
+          cp .fonts-private/web/*.woff2 before-tree/assets/fonts/
+          rm -rf .fonts-private
+      - name: Build the page
+        run: |
+          python3 src/build.py
+          (cd before-tree && python3 src/build.py)
+      - name: The picture hook in master's tree
+        run: python3 .github/screens/update_before_patch.py before-tree .
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Build debug APKs (this branch, then master with the hook)
+        run: |
+          gradle -p android assembleDebug --no-daemon
+          mkdir -p apks
+          cp android/app/build/outputs/apk/debug/app-debug.apk apks/saver.apk
+          cp android/launcher/build/outputs/apk/debug/launcher-debug.apk apks/after.apk
+          gradle -p before-tree/android :launcher:assembleDebug --no-daemon
+          cp before-tree/android/launcher/build/outputs/apk/debug/launcher-debug.apk apks/before.apk
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Draw the screen on an Android TV emulator
+        timeout-minutes: 40
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: android-tv
+          arch: x86
+          profile: tv_1080p
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          script: bash .github/screens/update_shots.sh apks/saver.apk apks/before.apk apks/after.apk update-out
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: update-shots
+          path: update-out
+      - name: Commit the pictures
+        if: success() && contains(join(github.event.commits.*.message, ' '), '[shots]')
+        run: |
+          pip install pillow
+          test "$(ls update-out/*.png | wc -l)" = 72 || { echo 'not all 72 pictures: nothing is committed'; exit 1; }
+          python3 - <<'PY'
+          import glob, os
+          from PIL import Image
+          for f in sorted(glob.glob('update-out/*.png')):
+              which, screen, rest = os.path.basename(f).split('-', 2)
+              os.makedirs(f'docs/shots/{screen}/{which}', exist_ok=True)
+              im = Image.open(f).convert('RGB')
+              im.resize((1280, 720), Image.LANCZOS).save(f'docs/shots/{screen}/{which}/{rest}', optimize=True)
+          PY
+          git config user.name tshi-dev
+          git config user.email 272740088+tshi-dev@users.noreply.github.com
+          git add docs/shots/update docs/shots/setup
+          git commit -m "Update screen pictures from CI: before (master) and after, glass and sand, Arabic and English [skip ci]" || exit 0
+          git push origin "HEAD:${GITHUB_REF_NAME}"

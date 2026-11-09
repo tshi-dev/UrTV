@@ -31,11 +31,14 @@ final class AppOptions {
 
     /** the words: the rows, and the two icon buttons' names for a screen reader */
     static final String MOVE = S.n("انقل"), HIDE = S.n("أخفِ"), LOCK = S.n("اقفل"), UNLOCK = S.n("افتح القفل"),
-            ADD_FAV = S.n("أضف للمفضلة"), REMOVE_FAV = S.n("أزل من المفضلة"), INFO = S.n("تفاصيل التطبيق");
+            ADD_FAV = S.n("أضف للمفضلة"), REMOVE_FAV = S.n("أزل من المفضلة"), INFO = S.n("تفاصيل التطبيق"),
+            UNINSTALL = S.n("إلغاء التثبيت"), STORE = S.n("صفحته في المتجر");
 
     /** What the box offers for this app, and what each does (null: the row is not there; kids mode moves and hides nothing). */
     static final class Spec {
         Runnable move, hide, lock, favourite, info;
+        Runnable uninstall;   // null: not offered (a system app, or ours)
+        Runnable store;       // null: not offered (no Play Store on this TV)
         boolean locked, favouriteNow;
     }
 
@@ -65,6 +68,8 @@ final class AppOptions {
         if (s.move != null) rows.add(row(a, d, l, dialog, medium, R.drawable.ic_move, MOVE, s.move, pw));
         if (s.hide != null) rows.add(row(a, d, l, dialog, medium, R.drawable.ic_hide, HIDE, s.hide, pw));
         if (s.lock != null) rows.add(row(a, d, l, dialog, medium, R.drawable.ic_lock, s.locked ? UNLOCK : LOCK, s.lock, pw));
+        if (s.store != null) rows.add(row(a, d, l, dialog, medium, R.drawable.ic_store, STORE, s.store, pw));
+        if (s.uninstall != null) rows.add(row(a, d, l, dialog, medium, R.drawable.ic_delete, UNINSTALL, s.uninstall, pw));
         for (int i = 0; i < rows.size(); i++) {
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, px(BUTTON_H, d));
             if (i > 0) lp.topMargin = px(GAP, d);

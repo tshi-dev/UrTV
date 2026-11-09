@@ -23,7 +23,7 @@ check("saver.sh homelayout: refused unless classic or football, saved, and said 
       'return "error: homelayout is one of "' in recv and "if (homeLayout != null) p.setHomeLayout(homeLayout);" in recv
       and '"\\nhomelayout: " + p.homeLayout()' in recv and 'homelayout) set1 homelayout "${2:?usage: optimize/saver.sh homelayout classic|football}" ;;' in read(ROOT / "optimize/saver.sh"))
 check("the home reads it as a column of its own after the others (an older screensaver has none: classic)",
-      '"watch_next", "look", "home_layout", "fav_bar", "pages_dark"});' in prov and "p.look(), p.homeLayout(), p.favBar(), p.pagesDark()" in prov
+      '"watch_next", "look", "home_layout", "fav_bar", "pages_dark", "pills_hidden"});' in prov and "p.look(), p.homeLayout(), p.favBar(), p.pagesDark()" in prov
       and 'layout = l >= 0 && c.getString(l) != null ? c.getString(l) : "classic";' in read(HOME / "HomeCard.java"))
 check("on the TV: «المظهر» has a third choice, «الواجهة», and «المباريات والأسواق» a row that opens the page of the games",
       '"الواجهة: " + Prefs.homeLayoutLabel(prefs.homeLayout())' in st and "if (i == 2) pickHomeLayout();" in st

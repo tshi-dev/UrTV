@@ -1,6 +1,8 @@
 package sa.urtv.home;
 
 import android.app.Activity;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -12,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import sa.urtv.home.phone.PhoneUpdater;
@@ -62,7 +65,8 @@ public class UpdateActivity extends Activity {
     private int GOLD, INK, TEXT, DIM, RED;   // from the glass look (glass(), before anything is drawn)
     private GlassStyle.Look look;
 
-    private LinearLayout col;
+    private LinearLayout col;              // the card: title, steps, progress, the message, one button
+    private String preview;                // debug builds only: draw a state without the network (CI's pictures of this screen)
     private UpdateRecords.Outcome result;   // what the record of an earlier update says, until the owner checks again
     private boolean askedPermission;
 
@@ -70,15 +74,21 @@ public class UpdateActivity extends Activity {
     protected void onCreate(Bundle b) {
         super.onCreate(b);
         Digits.init(this);
+        if (BuildConfig.DEBUG) preview = getIntent().getStringExtra("preview");
         ScrollView scroll = new ScrollView(this);
         glass(scroll);   // the glass look: the home's photo, small and blurred once, under its veil
         scroll.setVerticalScrollBarEnabled(false);
+        scroll.setFillViewport(true);
         FrameLayout frame = new FrameLayout(this);
-        scroll.addView(frame);
+        scroll.addView(frame, new FrameLayout.LayoutParams(-1, -1));
+        int w = getResources().getDisplayMetrics().widthPixels, h = getResources().getDisplayMetrics().heightPixels;
+        frame.setPadding(Math.round(w * 0.05f), Math.round(h * 0.05f) + dp(16), Math.round(w * 0.05f), Math.round(h * 0.05f) + dp(16));   // inside the 5 % safe area, 16 dp more
         col = new LinearLayout(this);
         col.setOrientation(LinearLayout.VERTICAL);
-        col.setPadding(0, dp(36), 0, dp(48));
-        frame.addView(col, new FrameLayout.LayoutParams(dp(640), -2, Gravity.CENTER_HORIZONTAL));
+        col.setLayoutDirection(Dir.layout());
+        col.setPadding(dp(40), dp(32), dp(40), dp(32));
+        col.setBackground(GlassPaint.fill(this, GlassStyle.over(look.dialog, look.base), 22, look.line));   // a solid surface, like the page's dialogs
+        frame.addView(col, new FrameLayout.LayoutParams(Math.min(dp(760), w - 2 * Math.round(w * 0.05f)), -2, Gravity.CENTER));
         setContentView(scroll);
         // the record of an update that replaced the launcher: shown here once, then removed
         UpdateRecords.Outcome o = UpdateRecords.take(new UpdateStore(this), PhoneUpdater.installedCode(this, getPackageName()));
@@ -114,8 +124,8 @@ public class UpdateActivity extends Activity {
 
     private void render() {
         col.removeAllViews();
-        col.addView(text(S.tv(UpdateText.TITLE), 26, "Medium", TEXT, Dir.start()), right(0));
-        col.addView(text(UpdateText.installed(PhoneUpdater.installedName(this), S::tv), 16, "Regular", DIM, Dir.start()), right(dp(22)));
+        col.addView(text(S.tv(UpdateText.TITLE), 28, "Medium", TEXT, Dir.start()), right(dp(8)));
+        col.addView(text(UpdateText.installed(PhoneUpdater.installedName(this), S::tv), 16, "Regular", DIM, Dir.start()), right(dp(24)));
         View focus;
         if (result != null) {
             focus = renderRecord();
@@ -130,7 +140,8 @@ public class UpdateActivity extends Activity {
 
     private View renderRecord() {
         if (result.kind == UpdateRecords.Kind.SUCCESS) {
-            col.addView(text(UpdateText.done(UpdateText.versionOf(BuildConfig.MARKETING, result.target), S::tv), 22, "Medium", GOLD, Dir.start()), right(dp(18)));
+            steps(4);
+            col.addView(text(UpdateText.done(UpdateText.versionOf(BuildConfig.MARKETING, result.target), S::tv), 22, "Medium", GOLD, Dir.start()), right(dp(8)));
             return doneButton();
         } else {
             col.addView(text(S.tv(UpdateText.NOT_DONE), 22, "Medium", RED, Dir.start()), right(dp(6)));
@@ -141,7 +152,7 @@ public class UpdateActivity extends Activity {
     }
 
     private View renderState() {
-        Map<String, Object> st = PhoneUpdater.status();
+        Map<String, Object> st = status();
         String s = (String) st.get("status");
         String why = st.containsKey("reason") ? (String) st.get("reason") : "";
         String detail = st.containsKey("detail") ? (String) st.get("detail") : "";
@@ -151,14 +162,19 @@ public class UpdateActivity extends Activity {
             case "checking":
                 col.addView(text(S.tv(UpdateText.WORKING), 18, "Medium", GOLD, Dir.start()), right(dp(8)));
                 return null;
-            case "downloading":
-                col.addView(text(S.tv(UpdateText.DOWNLOADING), 18, "Medium", GOLD, Dir.start()), right(dp(8)));
+            case "downloading": {
+                long[] pr = progress();
+                steps(pr[2] == 1 ? 1 : 0);
+                col.addView(text(S.tv(UpdateText.DOWNLOADING), 18, "Medium", GOLD, Dir.start()), right(dp(16)));
+                bar(pr[0], pr[1]);
                 return null;
+            }
             case "uptodate":
                 col.addView(text(UpdateText.upToDate(PhoneUpdater.installedName(this), S::tv), 20, "Medium", GOLD, Dir.start()), right(dp(16)));
                 return checkButton();
             case "found":       // the phone page only read version.txt: pressing downloads, checks, then installs
             case "available":
+                steps(-1);
                 return button(UpdateText.available(newest, S::tv), GOLD, new View.OnClickListener() {
                     @Override public void onClick(View v) {
                         // with a family PIN set and «قفل الإعدادات» on, an install from the TV's own screen asks for it too (the phone's does, PhoneApi)
@@ -167,21 +183,23 @@ public class UpdateActivity extends Activity {
                                     @Override public void run() { PhoneUpdater.install(UpdateActivity.this, false); }
                                 }, new Runnable() { @Override public void run() { } });
                     }
-                }, 60);
+                });
             case "waiting_owner":
+                steps(2);
                 col.addView(text(S.tv(UpdateText.CONFIRM), 20, "Medium", GOLD, Dir.start()), right(dp(6)));
                 if (!detail.isEmpty()) col.addView(text(S.tv(UpdateOrder.label(detail)), 15, "Regular", DIM, Dir.start()), right(dp(14)));
                 if (PhoneUpdater.confirmWaiting()) {
                     getWindow().getDecorView().post(new Runnable() { @Override public void run() { if (PhoneUpdater.confirmWaiting()) PhoneUpdater.showConfirm(UpdateActivity.this); } });
                 }
-                if (PhoneUpdater.confirmKnown()) {
+                if (preview != null || PhoneUpdater.confirmKnown()) {
                     return button(S.tv(UpdateText.SHOW_CONFIRM), GOLD, new View.OnClickListener() {
                         @Override public void onClick(View v) { PhoneUpdater.showConfirm(UpdateActivity.this); }
-                    }, 52);
+                    });
                 }
                 return null;
             case "done":
-                col.addView(text(UpdateText.done(newest, S::tv), 22, "Medium", GOLD, Dir.start()), right(dp(16)));
+                steps(4);
+                col.addView(text(UpdateText.done(newest, S::tv), 22, "Medium", GOLD, Dir.start()), right(dp(8)));
                 return doneButton();
             case "error":
                 return renderError(why, detail);
@@ -202,7 +220,7 @@ public class UpdateActivity extends Activity {
                         if (PhoneUpdater.openPermissionScreen(UpdateActivity.this)) askedPermission = true;
                         else PhoneUpdater.permissionScreenFailed();   // the screen isn't there: the TV can't do this itself
                     }
-                }, 52);
+                });
             case "declined":
                 col.addView(text(S.tv(UpdateText.NOT_DONE), 22, "Medium", RED, Dir.start()), right(dp(6)));
                 col.addView(text(S.tv(UpdateText.DECLINED), 15, "Regular", DIM, Dir.start()), right(dp(16)));
@@ -229,7 +247,7 @@ public class UpdateActivity extends Activity {
     private View doneButton() {
         return button(S.t("تم"), GOLD, new View.OnClickListener() {
             @Override public void onClick(View v) { toHome(); }
-        }, 52);
+        });
     }
 
     private void toHome() {
@@ -252,19 +270,109 @@ public class UpdateActivity extends Activity {
                 PhoneUpdater.check(UpdateActivity.this);
                 render();
             }
-        }, 52);
+        });
+    }
+
+    // ---------------------------------------------------------------- the steps and the progress
+
+    /** the status of the update: PhoneUpdater's, or in a debug build asked for a picture, the state named by the extra "preview" */
+    private Map<String, Object> status() {
+        if (preview == null) return PhoneUpdater.status();
+        Map<String, Object> m = new HashMap<>();
+        m.put("status", preview);
+        m.put("build", 1L);
+        return m;
+    }
+
+    private long[] progress() { return preview == null ? PhoneUpdater.progress() : new long[] {12_600_000L, 28_000_000L, 0}; }
+
+    /** «تنزيل · تحقق · تثبيت · تم»: where the update is. at: the step in progress (0 to 3), 4: all done, -1: none begun. A line and four dots, no pills. */
+    private void steps(int at) {
+        String[] names = {S.t("تنزيل"), S.t("تحقق"), S.t("تثبيت"), S.t("تم")};
+        col.addView(new Stepper(names, at), right(dp(24)));
+    }
+
+    /** the calm bar: a 8 dp track, the share received in the accent colour, and under it «٤٥٪ · ١٢٫٦ من ٢٨٫٠ م.ب» (nothing under it when the size is not known) */
+    private void bar(long done, long total) {
+        if (total <= 0) return;
+        double share = Math.max(0, Math.min(1, done / (double) total));
+        CalmBar track = new CalmBar(this, look.line, GOLD);
+        track.setShare(share);
+        col.addView(track, new LinearLayout.LayoutParams(-1, dp(8)));
+        String mb = S.t("%s من %s م.ب", MarketData.show(MarketData.num(done / 1e6, 1), Digits.latin()), MarketData.show(MarketData.num(total / 1e6, 1), Digits.latin()));
+        String pct = Digits.of(String.valueOf(Math.round(share * 100))) + (Digits.latin() ? "%" : "٪");
+        TextView t = text(pct + " · " + mb, 15, "Regular", DIM, Dir.start());
+        t.setTextDirection(View.TEXT_DIRECTION_FIRST_STRONG);
+        col.addView(t, right(0));
+    }
+
+    /** the four steps: dots on one line, the labels under them, laid out the way the language reads */
+    private final class Stepper extends View {
+        private final String[] names;
+        private final int at;
+        private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Typeface regular, medium;
+
+        Stepper(String[] names, int at) {
+            super(UpdateActivity.this);
+            this.names = names;
+            this.at = at;
+            Typeface r = null, m = null;
+            try { r = Typeface.createFromAsset(getAssets(), "fonts/Thmanyah-Regular.otf"); m = Typeface.createFromAsset(getAssets(), "fonts/Thmanyah-Medium.otf"); }
+            catch (RuntimeException ignored) { }
+            regular = r;
+            medium = m;
+        }
+
+        @Override protected void onMeasure(int w, int h) { setMeasuredDimension(MeasureSpec.getSize(w), dp(56)); }
+
+        @Override protected void onDraw(Canvas c) {
+            int n = names.length;
+            float col = getWidth() / (float) n, y = dp(8), dot = dp(5);
+            boolean rtl = Dir.rtl();
+            float first = col / 2, last = getWidth() - col / 2;
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(dp(2));
+            paint.setColor(look.line);
+            c.drawLine(first, y, last, y, paint);   // the rail
+            if (at > 0) {   // and the part of it that has been travelled, from the first dot to the one in progress
+                float reach = Math.min(at, n - 1) * col;
+                paint.setColor(GOLD);
+                if (rtl) c.drawLine(last, y, last - reach, y, paint);
+                else c.drawLine(first, y, first + reach, y, paint);
+            }
+            for (int i = 0; i < n; i++) {
+                float x = rtl ? getWidth() - (i + 0.5f) * col : (i + 0.5f) * col;
+                boolean done = i < at, now = i == at;
+                paint.setStyle(Paint.Style.FILL);
+                paint.setColor(GlassStyle.over(look.dialog, look.base));
+                c.drawCircle(x, y, dot + dp(3), paint);   // the rail does not run through a dot
+                paint.setColor(done || now ? GOLD : look.line);
+                c.drawCircle(x, y, now ? dot + dp(1) : dot, paint);
+                if (!done && !now) {
+                    paint.setColor(GlassStyle.over(look.dialog, look.base));
+                    c.drawCircle(x, y, dot - dp(2), paint);
+                }
+                paint.setStyle(Paint.Style.FILL);
+                paint.setTextAlign(Paint.Align.CENTER);
+                paint.setTextSize(android.util.TypedValue.applyDimension(android.util.TypedValue.COMPLEX_UNIT_SP, 14, getResources().getDisplayMetrics()));
+                paint.setTypeface(now ? medium : regular);
+                paint.setColor(now ? TEXT : done ? TEXT : DIM);
+                c.drawText(names[i], x, y + dp(34), paint);
+            }
+        }
     }
 
     // ---------------------------------------------------------------- helpers
 
-    private View button(String label, final int accent, View.OnClickListener click, int heightDp) {
+    private View button(String label, final int accent, View.OnClickListener click) {
         final TextView p = text(label, 18, "Medium", accent == RED ? RED : TEXT, Gravity.CENTER);   // the warning colour for RED
         p.setFocusable(true);
         p.setClickable(true);
         GlassPaint.card(p, look, 14);   // the panel, the solid focus fill and its ink while focused
         p.setOnClickListener(click);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, dp(heightDp));
-        lp.bottomMargin = dp(8);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, dp(56));   // the one button of a state: 56 dp, full width, 24 dp below what it answers
+        lp.topMargin = dp(24);
         col.addView(p, lp);
         return p;
     }

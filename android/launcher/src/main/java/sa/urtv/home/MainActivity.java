@@ -136,7 +136,8 @@ public class MainActivity extends Activity {
     private PopupWindow inputsPopup;
     private HomeCard homeCard;
     private NowCard nowCard;   // «يُتلى الآن»: at the right end of the pills row while a surah or a station is on
-    private Pill marketsPill, matchesPill;   // «الأسواق» and «المباريات»: they take the look like the others («رملي»: they stayed grey, step 28)
+    private Pill marketsPill, matchesPill, phonePill, updatePill;   // «تحديث»: an update is worth opening the update screen for (UpdateNotice)   // «الجوال» (C14): the phone remote's page
+    private ImageView netIcon;   // C15: the connection in the top row (Wi-Fi, none)   // «الأسواق» and «المباريات»: they take the look like the others («رملي»: they stayed grey, step 28)
     private Pill centerPill;   // «مركز التحكم»: gold while the sleep timer runs; in the row except in kids mode (applyCenterPill)
     private ControlCenter control;   // the panel it opens
     private TextView adhanBar;   // «أذان المغرب بعد ٨ دقائق», over the top edge; while the adhan plays «أذان المغرب · أي زر يوقف الأذان»
@@ -638,12 +639,20 @@ public class MainActivity extends Activity {
         Pill matchesBtn = pill(S.t("المباريات"), R.drawable.ic_matches);
         matchesPill = matchesBtn;
         matchesBtn.setOnClickListener(v -> launchGuarded(ParentalPolicy.WIDGET_MATCHES, new Intent(this, MatchesActivity.class), "المباريات"));
+        // «الجوال» (C14): a round button to the phone remote's page (the QR and the pairing), after «المباريات»
+        phonePill = pill(S.t("الجوال"), R.drawable.ic_phone);
+        phonePill.setOnClickListener(v -> launchGuarded(ParentalPolicy.OUR_SETTINGS, new Intent(this, PhoneActivity.class), "الجوال"));
+        // 4.3: the update screen's pill, in the row only while UpdateNotice says so (the screensaver is older than this home, or a newer build is out)
+        updatePill = pill(S.t("تحديث جديد"), R.drawable.ic_update);
+        updatePill.setAccent(true);
+        updatePill.setOnClickListener(v -> launchGuarded(ParentalPolicy.PILL_UPDATES, new Intent(this, UpdateActivity.class), "تحديث تلفزيوني"));
         List<Pill> row = new ArrayList<>(Arrays.asList(inputs));
         tasksPill = tasks;
         if (isInstalled(SAVER_PKG) && ConfigSnapshot.read(this).tasksPillOn()) row.add(tasks);   // «زر المهام»: hidden in the screensaver's settings, it is not in the row
         if (centerWanted()) row.add(centerPill);
         row.add(marketsBtn);
         row.add(matchesBtn);
+        row.add(phonePill);
         tilawahPill = tilawah;
         pillRow = right;
         // [updates bell] built here, put in the row by applyUpdateBell only while it has a reason to be there
@@ -668,6 +677,12 @@ public class MainActivity extends Activity {
         // reaches from 31 to 75 dp down, clear of the adhan bar (to 26) and the cards (from 84)
         int hang = dp((NowCard.HEIGHT - Pill.HEIGHT) / 2f);
         right.addView(nowCard, 0, sideLlp(-2, dp(NowCard.HEIGHT), 0, -hang, dp(Pill.GAP), -hang));
+        // C15: the connection, a small icon at the end of the row (not a button: it takes no focus and is not in `pills`)
+        netIcon = new ImageView(this);
+        netIcon.setImageResource(R.drawable.ic_wifi);
+        netIcon.setContentDescription(S.t("الاتصال بالشبكة"));
+        netIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        right.addView(netIcon, sideLlp(dp(22), dp(Pill.HEIGHT), 0, 0, 0, 0));
         header.addView(right, new FrameLayout.LayoutParams(-2, -2, Dir.end() | Gravity.TOP));
         return header;
     }
@@ -826,7 +841,10 @@ public class MainActivity extends Activity {
     // ---- «مركز التحكم»: the pill's row membership and what the panel may ask of this screen
 
     /** Kids mode has no «مركز التحكم»: neither its pill nor its panel (the other pills' functions stay behind their locks, outside kids mode). */
-    private boolean centerWanted() { return !Parental.state(this).kids; }
+    private boolean centerWanted() { return !Parental.state(this).kids && !hiddenQuick.contains("center"); }
+
+    /** the quick buttons hidden in the settings (#52), read with the minute tick */
+    private final java.util.Set<String> hiddenQuick = new java.util.HashSet<>();
 
     /**
      * The pill comes into the row or leaves it as kids mode changes (the minute tick and a return to the home): it goes out of the row and out
@@ -837,7 +855,7 @@ public class MainActivity extends Activity {
         boolean want = centerWanted(), has = centerPill.getParent() == pillRow;
         if (want == has) return;
         if (want) {
-            int at = pills.contains(tilawahPill) ? pills.indexOf(tilawahPill) : pills.size();
+            int at = quickIndex(marketsPill, matchesPill, phonePill, updatePill, tilawahPill);   // before «الأسواق» and «المباريات» (and «تلاوة وأذان»): where it always was
             pills.add(at, centerPill);
             pillRow.addView(centerPill, at + 1, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(Pill.GAP), 0));   // child 0 is «يُتلى الآن»
         } else {
@@ -846,6 +864,46 @@ public class MainActivity extends Activity {
             int at = pills.indexOf(centerPill);
             pills.remove(centerPill);
             pillRow.removeView(centerPill);
+            if (hadFocus && !pills.isEmpty()) pills.get(Math.max(0, Math.min(at, pills.size()) - 1)).requestFocus();
+        }
+        wireFocus();
+    }
+
+    /** C15: the Wi-Fi icon says whether the TV is online (a wired TV counts as online too), with the minute tick */
+    private void updateNetIcon() {
+        if (netIcon == null) return;
+        boolean online = false;
+        try {
+            android.net.ConnectivityManager cm = (android.net.ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+            android.net.NetworkCapabilities nc = cm == null || cm.getActiveNetwork() == null ? null : cm.getNetworkCapabilities(cm.getActiveNetwork());
+            online = nc != null && nc.hasCapability(android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET);
+        } catch (RuntimeException ignored) { }
+        netIcon.setImageResource(online ? R.drawable.ic_wifi : R.drawable.ic_wifi_off);
+        netIcon.setColorFilter(lightNow || "sand".equals(lookNow) ? (palette().ink & 0x00FFFFFF) | 0xE6000000 : 0xE6FFFFFF);
+        netIcon.setAlpha(online ? 1f : 0.7f);
+    }
+
+    /** where a quick button comes back in the row: before the first of the buttons that follow it which is in the row, else at the end */
+    private int quickIndex(View... later) {
+        int at = pills.size();
+        for (View l : later) if (l != null && pills.contains(l)) at = Math.min(at, pills.indexOf(l));
+        return at;
+    }
+
+    /** «الأسواق» and «المباريات» in or out of the row by the setting (#52): out of the row and out of `pills` (a hidden view would stop the walk), back before the buttons that follow them */
+    private void applyQuickPill(View p, boolean want, View... later) {
+        if (p == null || pillRow == null) return;
+        boolean has = p.getParent() == pillRow;
+        if (want == has) return;
+        if (want) {
+            int at = quickIndex(later);
+            pills.add(at, p);
+            pillRow.addView(p, at + 1, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(Pill.GAP), 0));   // child 0 is «يُتلى الآن»
+        } else {
+            boolean hadFocus = p.hasFocus();
+            int at = pills.indexOf(p);
+            pills.remove(p);
+            pillRow.removeView(p);
             if (hadFocus && !pills.isEmpty()) pills.get(Math.max(0, Math.min(at, pills.size()) - 1)).requestFocus();
         }
         wireFocus();
@@ -1145,7 +1203,7 @@ public class MainActivity extends Activity {
         ring.setCornerRadius(inDock ? bar(FavBar.TILE_RADIUS) : dp(10));
         ring.setStroke(inDock ? bar(FavBar.RING) : dp(2), inDock ? FavBar.ring(lightNow) : 0xE6FFFFFF);
         ring.setOrientation(GradientDrawable.Orientation.TL_BR);
-        ring.setColors(new int[]{0x26FFFFFF, 0x00FFFFFF, 0x00FFFFFF});
+        ring.setColors(inDock && !lightNow ? new int[]{0x38FFE9B8, 0x00FFE9B8, 0x00FFE9B8} : new int[]{0x26FFFFFF, 0x00FFFFFF, 0x00FFFFFF});   // the widgets' glow inside the ring (gold-hi) on the dark looks
         View shine = new View(this);
         shine.setBackground(ring);
         shine.setAlpha(0f);
@@ -2341,7 +2399,13 @@ public class MainActivity extends Activity {
             }
         };
         Intent details = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", pkg, null));
-        o.info = () -> guarded(ParentalPolicy.MENU_APP, pkg, AppActions.DETAILS, () -> launch(details));   // its uninstall is there too
+        o.info = () -> guarded(ParentalPolicy.MENU_APP, pkg, AppActions.DETAILS, () -> launch(details));
+        if (!kids && AppStore.canUninstall(this, pkg)) {   // «إلغاء التثبيت»: Android's own question (never for a system app, ours, or in kids mode); the family PIN first when it asks
+            Intent del = new Intent(Intent.ACTION_DELETE, Uri.fromParts("package", pkg, null)).putExtra(Intent.EXTRA_RETURN_RESULT, false);
+            o.uninstall = () -> guarded(ParentalPolicy.MENU_APP, pkg, S.t("إلغاء التثبيت"), () -> launch(del));
+        }
+        Intent shop = AppStore.storeIntent(this, pkg);
+        if (!kids && shop != null) o.store = () -> guarded(ParentalPolicy.MENU_APP, pkg, S.t("صفحته في المتجر"), () -> launch(shop));
         if (appOptions != null) appOptions.dismiss();
         appOptions = AppOptions.show(this, anchor, inDock ? 1.12f : 1.1f, homeGlass(), font("sans-serif-medium"), o);
     }
@@ -2637,7 +2701,7 @@ public class MainActivity extends Activity {
         lookNow = cfg.look();
         applyLook(Look.light(cfg.appearance(), dayBySun(cfg), h * 60 + now.get(Calendar.MINUTE)));
         GlassStyle.Look glassNow = homeGlass();
-        for (Pill p : new Pill[] {inputsPill, tasksPill, tilawahPill, centerPill, marketsPill, matchesPill, bellPill}) if (p != null) p.look(glassNow);   // «رملي»: its own buttons
+        for (Pill p : new Pill[] {inputsPill, tasksPill, tilawahPill, centerPill, marketsPill, matchesPill, phonePill, updatePill, bellPill}) if (p != null) p.look(glassNow);   // «رملي»: its own buttons
         for (View v : pills) if (v instanceof Pill) ((Pill) v).look(glassNow);   // and every pill of the row, whatever else is added to it: six buttons, one style (step 28: two stayed grey circles)
         boolean h24 = cfg.clock24();   // «ساعة ٢٤»: off (12-hour with the ص or م) unless the owner turned it on
         clock.setText(ClockText.face(h, now.get(Calendar.MINUTE), h24, Digits.latin()));
@@ -2679,7 +2743,15 @@ public class MainActivity extends Activity {
         Dock.followBackSaver(this, cfg.backSaver());   // «الرجوع يفتح شاشة التوقف» changed in the screensaver's settings: read at the next Back
         applyUpdateBell(cfg.updateBellOn);   // [updates bell]
         applyBarSize(cfg.favBar);   // «تطبيقات في الشريط»
-        applyCenterPill();   // kids mode may have been turned on or off
+        hiddenQuick.clear();
+        for (String k : new String[] {"markets", "matches", "center", "phone"}) if (cfg.pillHidden(k)) hiddenQuick.add(k);
+        applyQuickPill(marketsPill, !hiddenQuick.contains("markets"), matchesPill, phonePill, updatePill, tilawahPill);
+        applyQuickPill(matchesPill, !hiddenQuick.contains("matches"), phonePill, updatePill, tilawahPill);
+        applyQuickPill(phonePill, !hiddenQuick.contains("phone"), updatePill, tilawahPill);
+        applyQuickPill(updatePill, !Parental.state(this).kids && UpdateNotice.wanted(this), tilawahPill);
+        UpdateNotice.checkIfDue(getApplicationContext(), () -> runOnUiThread(() -> applyQuickPill(updatePill, !Parental.state(this).kids && UpdateNotice.wanted(this), tilawahPill)));
+        updateNetIcon();
+        applyCenterPill();   // kids mode may have been turned on or off, or the button hidden
         sa.urtv.home.tilawah.AdhanSync.onConfig(this, cfg.placeFragment(), cfg.placeTicket());   // «تعديل وقت الصلاة» changed on the TV: the alarm follows
         updateSleepPill();
     }
@@ -2872,11 +2944,35 @@ public class MainActivity extends Activity {
         return new Object[] {0, "mix", 0L};
     }
 
-    /** Off the main thread: when the owner's photos changed since the wallpaper was last chosen, show one now. */
+    // 4.3: the packs the home's wallpaper rotates (the screensaver app's «المظهر والخلفيات»): which packs and how many photos each, whether «صورنا» is in, and a revision
+    static final Uri HOME_PACKS = Uri.parse("content://sa.urtv.screensaver.config/homepacks");
+    static final Uri HOME_PACK = Uri.parse("content://sa.urtv.screensaver.config/homepack");
+
+    /** {id -> photos (LinkedHashMap), ours (Boolean), rev (String)}; no packs, ours on and no revision when the screensaver app is older or does not answer */
+    private Object[] homePackInfo() {
+        java.util.Map<String, Integer> packs = new java.util.LinkedHashMap<>();
+        boolean ours = true;
+        String rev = "";
+        try (Cursor c = getContentResolver().query(HOME_PACKS, null, null, null, null)) {
+            if (c != null && c.getColumnIndex("id") >= 0) {   // an older screensaver answers any path with its settings: no such column
+                int id = c.getColumnIndex("id"), n = c.getColumnIndex("n"), o = c.getColumnIndex("ours"), r = c.getColumnIndex("rev");
+                while (c.moveToNext()) {
+                    String pack = c.getString(id);
+                    if (pack != null && !pack.isEmpty() && c.getInt(n) > 0) packs.put(pack, c.getInt(n));
+                    ours = c.getInt(o) != 0;
+                    rev = c.getString(r);
+                }
+            }
+        } catch (RuntimeException ignored) { }
+        return new Object[] {packs, ours, rev};
+    }
+
+    /** Off the main thread: when the owner's photos or the home's packs changed since the wallpaper was last chosen, show one now. */
     private void checkOwnChanged() {
         new Thread(() -> {
             long rev = (Long) ownInfo()[2];
-            if (rev != prefs().getLong("ownRev", 0)) runOnUiThread(() -> { if (!isDestroyed() && resumed) nextWallpaper(); });
+            String packsRev = (String) homePackInfo()[2];
+            if (rev != prefs().getLong("ownRev", 0) || !packsRev.equals(prefs().getString("homePacksRev", ""))) runOnUiThread(() -> { if (!isDestroyed() && resumed) nextWallpaper(); });
         }).start();
     }
 
@@ -2887,27 +2983,44 @@ public class MainActivity extends Activity {
         final Object[] own = ownInfo();
         final int ownCount = (Integer) own[0];
         final boolean only = ownCount > 0 && "only".equals(own[1]);
-        prefs().edit().putLong("ownRev", (Long) own[2]).apply();
+        final Object[] hp = homePackInfo();
+        @SuppressWarnings("unchecked") final java.util.Map<String, Integer> packs = only ? new java.util.LinkedHashMap<String, Integer>() : (java.util.Map<String, Integer>) hp[0];
+        prefs().edit().putLong("ownRev", (Long) own[2]).putString("homePacksRev", (String) hp[2]).apply();
         final String[] remote = only ? new String[0] : remotePhotos();
-        final int base = only ? 0 : wallpapers.length + remote.length;   // ours come first, then the owner's
-        final int total = only ? ownCount : base + ownCount;
+        int packSum = 0;
+        for (int n : packs.values()) packSum += n;
+        // ours (bundled and hosted) come first, then the owner's, then the packs'; ours is out when the setting says so, but never when nothing else is there
+        final int base = only ? 0 : ((Boolean) hp[1] || ownCount + packSum == 0) ? wallpapers.length + remote.length : 0;
+        final int packBase = base + ownCount;
+        final int total = only ? ownCount : packBase + packSum;
         if (wallIndex < 0) wallIndex = prefs().getInt("wallpaper", -1);
-        wallIndex = (wallIndex + 1) % total;
+        wallIndex = (wallIndex + 1) % (total * 4096);   // a counter: the position inside a round, and the round
         prefs().edit().putInt("wallpaper", wallIndex).apply();
         wallChangedAt = SystemClock.elapsedRealtime();
-        final int idx = wallIndex;
+        final int idx = only ? wallIndex % total : WallShuffle.of(total, wallIndex / total)[wallIndex % total];
         final String fallback = "wallpapers/" + wallpapers[idx % wallpapers.length];
         final int gen = ++wallGen;   // a photo that arrives after a newer request is not shown
         new Thread(() -> {
             // 1. what is on the device now, at once: the owner's photo, the hosted one already kept, else the bundled one
             Bitmap bm = null;
             java.io.File f = null;
-            if (idx >= base) {
+            String packKey = null;
+            if (!only && idx >= packBase) {   // a pack's photo: the screensaver app's provider serves it (read only)
+                int k = idx - packBase;
+                for (java.util.Map.Entry<String, Integer> e : packs.entrySet()) {
+                    if (k < e.getValue()) {
+                        final Uri photo = HOME_PACK.buildUpon().appendPath(e.getKey()).appendPath(String.valueOf(k + 1)).build();
+                        try { bm = decode(() -> getContentResolver().openInputStream(photo)); packKey = "pack:" + e.getKey() + ":" + (k + 1); } catch (java.io.IOException | RuntimeException ignored) { }
+                        break;
+                    }
+                    k -= e.getValue();
+                }
+            } else if (idx >= base) {
                 final Uri photo = OWN.buildUpon().appendPath(String.valueOf(idx - base + 1)).build();
                 try {
                     bm = decode(() -> getContentResolver().openInputStream(photo));
                 } catch (java.io.IOException | RuntimeException ignored) { }
-            } else if (idx >= wallpapers.length) {
+            } else if (idx >= wallpapers.length && idx - wallpapers.length < remote.length) {
                 f = new java.io.File(getFilesDir(), "photos/" + remote[idx - wallpapers.length]);
                 if (f.isFile()) {
                     final java.io.File kept = f;
@@ -2915,7 +3028,7 @@ public class MainActivity extends Activity {
                 }
             }
             final boolean needsDownload = f != null && bm == null;
-            String key = bm == null ? null : idx >= base ? "own:" + (idx - base + 1) + ":" + own[2] : f != null ? "photo:" + f.getName() : null;
+            String key = bm == null ? null : packKey != null ? packKey : idx >= base ? "own:" + (idx - base + 1) + ":" + own[2] : f != null ? "photo:" + f.getName() : null;
             if (bm == null) {
                 try { bm = decode(() -> getAssets().open(fallback)); key = "bundled:" + fallback; }
                 catch (java.io.IOException ignored) { }
@@ -3371,9 +3484,15 @@ public class MainActivity extends Activity {
             case RemoteKeys.OPEN_OUR_SETTINGS:   // a long press of the Settings key: OUR settings (the TV's own if our app is missing)
                 openOurSettings(true);
                 break;
-            case RemoteKeys.OPEN_SETTINGS:   // a short press of the Settings key: the TV's own settings, behind @tvsettings
-                launchGuarded(ParentalPolicy.REMOTE_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون");
+            case RemoteKeys.OPEN_SETTINGS: {   // a short press of the Settings / Quick Settings key: the TV's own quick panel when it has one (behind @tvsettings), else OUR Control Center (#51), else the TV's settings
+                Intent panel = new Intent(SettingsKey.NOTIFICATION_PANEL_ACTION);
+                if (getPackageManager().resolveActivity(panel, 0) != null) launchGuarded(ParentalPolicy.REMOTE_SETTINGS, panel, "إعدادات التلفزيون");
+                else if (control != null && centerPill != null && !Parental.state(this).kids) {
+                    final View anchor = centerPill.getParent() == pillRow || pills.isEmpty() ? centerPill : pills.get(0);   // the pill may be hidden (#52): the first pill holds the place
+                    guarded(ParentalPolicy.PILL_CENTER, null, ControlText.NAME, () -> control.open(anchor));
+                } else launchGuarded(ParentalPolicy.REMOTE_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون");
                 break;
+            }
             case RemoteKeys.OPEN_INPUTS:
                 if (!pills.isEmpty()) showInputs(pills.get(0), ParentalPolicy.MENU_KEY);
                 break;

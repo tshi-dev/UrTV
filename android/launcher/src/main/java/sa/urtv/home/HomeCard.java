@@ -135,12 +135,28 @@ final class HomeCard {
         }
         web.onResume();
         web.resumeTimers();
+        // B7 (first-frame guard): on a return from another app the card flickered (a blank or half-drawn frame before the page painted again): it is shown
+        // once the page has drawn its first frame after the return (visual state), at the latest after 700 ms; a first start is the page's own load, not held
+        if (guardNext && android.os.Build.VERSION.SDK_INT >= 23) {
+            final WebView w = web;
+            w.setAlpha(0f);
+            w.postVisualStateCallback(++guardId, new WebView.VisualStateCallback() {
+                @Override public void onComplete(long id) { if (w.getAlpha() < 1f) w.setAlpha(1f); }
+            });
+            w.postDelayed(new Runnable() { @Override public void run() { w.setAlpha(1f); } }, 700);
+        }
+        guardNext = false;
     }
+
+    /** the card was paused (an app was in front): the next return holds the card until its first frame (B7) */
+    private boolean guardNext;
+    private long guardId;
 
     /** onPause: no timers or network while an app is in front. pauseTimers()/resumeTimers() are process-wide: safe here only because this card is the
      *  launcher's only WebView (tests/home_card_test.py checks it), so whoever adds a second WebView has to revisit both. */
     void pause() {
         resumed = false;
+        guardNext = web != null;
         if (web != null) { web.onPause(); web.pauseTimers(); }
     }
 
