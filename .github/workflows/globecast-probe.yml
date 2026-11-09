@@ -1,0 +1,35 @@
+name: Globecast probe
+
+# 4.3, report only: are the Globecast addresses public lists give for SBA's Quran and Sunnah channels SBA's own distribution, stable for 10 minutes,
+# and free of tokens (.github/tools/globecast_probe.py)? The report goes to the data-globecast-probe branch. Nothing in the apps uses them.
+on:
+  workflow_dispatch:
+  push:
+    branches: ['work/**']
+    paths:
+      - '.github/tools/globecast_probe.py'
+      - '.github/workflows/globecast-probe.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo timeout 600 apt-get update -qq && sudo timeout 600 apt-get install -y -qq ffmpeg
+        timeout-minutes: 12
+      - run: python3 -u .github/tools/globecast_probe.py
+      - name: Push to data-globecast-probe
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan data-globecast-probe
+          git rm -rfq --cached .
+          [ -d globecast ] || exit 0
+          git add -f globecast
+          git commit -qm "Globecast probe"
+          git push -f origin data-globecast-probe
