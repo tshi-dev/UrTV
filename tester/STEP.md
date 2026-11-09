@@ -727,3 +727,9 @@ The owner has a Jellyfin server on the home LAN. Use the app's «خادم الم
 4. Play one movie and one episode (muted): direct play vs transcode (stats overlay), start time, seek, audio track, **Arabic subtitles** (embedded or external SRT/ASS): shaping RTL correct, style change, sync offset ±; skip intro if offered; stop at ~5 min and confirm the resume point shows on the server (and in Continue watching).
 5. Report what failed with logcat lines (redact tokens/hosts).
 Then at Z also: sign out of the server in the app (revokes the device), uninstall as planned; tell the owner to remove the «UrTV Player» device from Jellyfin → Dashboard → Devices if it remains.
+
+### README photos (owner asked) — during steps 44/45, TV muted
+Take clean full-screen captures with `adb exec-out screencap -p` (1920×1080, not phone photos) of the polished screens for the READMEs:
+- UrTV: home (glass look, a nice pack wallpaper), «المظهر» page, control center (new side panel when it lands; else skip), setup plan + progress screens if reachable without starting, screensaver with cards, «تطبيقات مقترحة».
+- UrTV Player: home with Continue watching, live list + preview, guide, player OSD, appearance/themes, and the home-server home (only if the library shown has no personal items — otherwise skip server shots).
+Rules: NO personal data in any picture — no names, Wi-Fi name (hide/crop the network value), IPs/addresses, Jellyfin user/server names, phone codes/QRs that are live, family PIN screens, notifications. Arabic UI. Push the PNGs to branch work/marketing under readme-shots/urtv/ and readme-shots/player/ with a short INDEX.md (file → what it shows). Mention them in the report.
