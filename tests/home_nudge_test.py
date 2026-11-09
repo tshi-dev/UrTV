@@ -39,4 +39,8 @@ check("its words are in the English table, and the card sits inside the safe are
 check("a debug shot starts it without a setup (DebugNudgeShot, declared in the debug manifest only)",
       (ROOT / "android/launcher/src/debug/java/sa/urtv/home/DebugNudgeShot.java").is_file() and "DebugNudgeShot" in (ROOT / "android/launcher/src/debug/AndroidManifest.xml").read_text(encoding="utf-8")
       and "DebugNudgeShot" not in (ROOT / "android/launcher/src/main/AndroidManifest.xml").read_text(encoding="utf-8"))
+saver = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsActivity.java").read_text(encoding="utf-8")
+check("settings: «اجعل UrTV الشاشة الرئيسية» opens the launcher's «إعداد تلفزيوني» when we are not the Home and says «✓ UrTV هو الشاشة الرئيسية» when we are; the manifest lets the app see the Home resolver",
+      'row("اجعل UrTV الشاشة الرئيسية", isHome ? "✓ UrTV هو الشاشة الرئيسية"' in saver and '"sa.urtv.home.setup.SetupActivity"' in saver and "if (!isHome) openSetup();" in saver
+      and "android.intent.category.HOME" in (ROOT / "android/app/src/main/AndroidManifest.xml").read_text(encoding="utf-8"))
 sys.exit(1 if failed else 0)
