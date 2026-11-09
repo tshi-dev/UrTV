@@ -1,4 +1,4 @@
-«✅ GO — build 209 (4.3 candidate)» — run step 41 (end of this file). TV muted. lang en stays.
+«✅ GO — step 42 (setup restart test, build 209)» — run step 42 (end of this file). TV muted. lang ar stays.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -678,3 +678,12 @@ L. Security sanity: the home card page still works; any `file://` other than the
 M. Speed AFTER: repeat step 40 exactly (same commands), table next to step 40's numbers.
 Z. Restore as in step 28b Z (lang en), remove demo photos/messages.
 Report «step 41»; write «step 41: ALL PASS» if so. Push.
+
+## step 42 — setup-restart fix (owner chose A), build 209, TV muted, lang ar stays
+The owner OK'd setting adb over TCP here for this test only.
+1. Record `getprop persist.adb.tcp.port` (expected empty). `setprop persist.adb.tcp.port 5555` (via adb root/shell as allowed; if refused, report and stop).
+2. Run the setup from the phone/PC as in step 39, to the end. Keep a mute watcher running; after EACH restart mute within 5 s (step 39 showed the TV unmutes on boot).
+3. Check: the restart line shows before each restart; the setup resumes by itself after each restart (first and second); ends on the done screen with no key press; every step line ✓; memory before/after numbers shown.
+4. Note any USB/debug prompt and how long it took.
+5. Z: `setprop persist.adb.tcp.port ""` (back to what step 1 recorded), reboot once if needed to confirm it's empty, mute again. Restore as step 39 Z. Uninstall nothing.
+Report «step 42»; write «step 42: ALL PASS» if so. Push.
