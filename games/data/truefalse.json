@@ -1,0 +1,3011 @@
+[
+{
+"id": "geo-tf-Q1000",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة الغابون هي ماليه.",
+"en": "The capital of Gabon is Malé."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q1000",
+"https://www.wikidata.org/wiki/Q3825"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q1005",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة غامبيا هي بانجول.",
+"en": "The capital of Gambia is Banjul."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q1005",
+"https://www.wikidata.org/wiki/Q3726"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q1006",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة غينيا هي مينسك.",
+"en": "The capital of Guinea is Minsk."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q1006",
+"https://www.wikidata.org/wiki/Q3733"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q1007",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة غينيا بيساو هي ياوندي.",
+"en": "The capital of Guinea-Bissau is Yaoundé."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q1007",
+"https://www.wikidata.org/wiki/Q3739"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q1009",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة الكاميرون هي ياوندي.",
+"en": "The capital of Cameroon is Yaoundé."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q1009",
+"https://www.wikidata.org/wiki/Q3808"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q1011",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة الرأس الأخضر هي تيمفو.",
+"en": "The capital of Cape Verde is Thimphu."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q1011",
+"https://www.wikidata.org/wiki/Q3751"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q1013",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة ليسوتو هي طشقند.",
+"en": "The capital of Lesotho is Tashkent."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q1013",
+"https://www.wikidata.org/wiki/Q3909"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q1014",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة ليبيريا هي وارسو.",
+"en": "The capital of Liberia is Warsaw."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q1014",
+"https://www.wikidata.org/wiki/Q3748"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q1016",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة ليبيا هي أنتانانريفو.",
+"en": "The capital of Libya is Antananarivo."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q1016",
+"https://www.wikidata.org/wiki/Q3579"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q1019",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة مدغشقر هي أنتانانريفو.",
+"en": "The capital of Madagascar is Antananarivo."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q1019",
+"https://www.wikidata.org/wiki/Q3915"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q1020",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة ملاوي هي ليلونغوي.",
+"en": "The capital of Malawi is Lilongwe."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q1020",
+"https://www.wikidata.org/wiki/Q3876"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q1025",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة موريتانيا هي نواكشوط.",
+"en": "The capital of Mauritania is Nouakchott."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q1025",
+"https://www.wikidata.org/wiki/Q3688"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q1027",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة موريشيوس هي بورت لويس.",
+"en": "The capital of Mauritius is Port Louis."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q1027",
+"https://www.wikidata.org/wiki/Q3929"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q1028",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة المغرب هي كابل.",
+"en": "The capital of Morocco is Kabul."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q1028",
+"https://www.wikidata.org/wiki/Q3551"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q1029",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة موزمبيق هي مابوتو.",
+"en": "The capital of Mozambique is Maputo."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q1029",
+"https://www.wikidata.org/wiki/Q3889"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q1030",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة ناميبيا هي بنوم بنه.",
+"en": "The capital of Namibia is Phnom Penh."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q1030",
+"https://www.wikidata.org/wiki/Q3935"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q1032",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة النيجر هي نيامي.",
+"en": "The capital of Niger is Niamey."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q1032",
+"https://www.wikidata.org/wiki/Q3674"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q1033",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة نيجيريا هي ريغا.",
+"en": "The capital of Nigeria is Riga."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q1033",
+"https://www.wikidata.org/wiki/Q3787"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q1036",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة أوغندا هي كامبالا.",
+"en": "The capital of Uganda is Kampala."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q1036",
+"https://www.wikidata.org/wiki/Q3894"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q1037",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة رواندا هي كيغالي.",
+"en": "The capital of Rwanda is Kigali."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q1037",
+"https://www.wikidata.org/wiki/Q3859"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q1039",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة ساو تومي وبرينسيب هي ساو تومي.",
+"en": "The capital of São Tomé and Príncipe is São Tomé."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q1039",
+"https://www.wikidata.org/wiki/Q3932"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q1041",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة السنغال هي الرياض.",
+"en": "The capital of Senegal is Riyadh."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q1041",
+"https://www.wikidata.org/wiki/Q3718"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q1042",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة سيشل هي زغرب.",
+"en": "The capital of Seychelles is Zagreb."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q1042",
+"https://www.wikidata.org/wiki/Q3940"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q1044",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة سيراليون هي فريتاون.",
+"en": "The capital of Sierra Leone is Freetown."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q1044",
+"https://www.wikidata.org/wiki/Q3780"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q1045",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة الصومال هي مقديشو.",
+"en": "The capital of Somalia is Mogadishu."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q1045",
+"https://www.wikidata.org/wiki/Q2449"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q1049",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة السودان هي الخرطوم.",
+"en": "The capital of Sudan is Khartoum."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q1049",
+"https://www.wikidata.org/wiki/Q1963"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q114",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة كينيا هي بوينس آيرس.",
+"en": "The capital of Kenya is Buenos Aires."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q114",
+"https://www.wikidata.org/wiki/Q3870"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q115",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة إثيوبيا هي بنوم بنه.",
+"en": "The capital of Ethiopia is Phnom Penh."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q115",
+"https://www.wikidata.org/wiki/Q3624"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q117",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة غانا هي أكرا.",
+"en": "The capital of Ghana is Accra."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q117",
+"https://www.wikidata.org/wiki/Q3761"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q142",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة فرنسا هي باريس.",
+"en": "The capital of France is Paris."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q142",
+"https://www.wikidata.org/wiki/Q90"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q145",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة المملكة المتحدة هي لندن.",
+"en": "The capital of United Kingdom is London."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q145",
+"https://www.wikidata.org/wiki/Q84"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q148",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة الصين هي زغرب.",
+"en": "The capital of China is Zagreb."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q148",
+"https://www.wikidata.org/wiki/Q956"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q155",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة البرازيل هي برازيليا.",
+"en": "The capital of Brazil is Brasília."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q155",
+"https://www.wikidata.org/wiki/Q2844"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q159",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة روسيا هي موسكو.",
+"en": "The capital of Russia is Moscow."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q159",
+"https://www.wikidata.org/wiki/Q649"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q16",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة كندا هي أوتاوا.",
+"en": "The capital of Canada is Ottawa."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q16",
+"https://www.wikidata.org/wiki/Q1930"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q17",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة اليابان هي مينسك.",
+"en": "The capital of Japan is Minsk."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q17",
+"https://www.wikidata.org/wiki/Q1490"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q183",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة ألمانيا هي برلين.",
+"en": "The capital of Germany is Berlin."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q183",
+"https://www.wikidata.org/wiki/Q64"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q184",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة بيلاروس هي الجزائر العاصمة.",
+"en": "The capital of Belarus is Algiers."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q184",
+"https://www.wikidata.org/wiki/Q2280"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q189",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة آيسلندا هي ريكيافيك.",
+"en": "The capital of Iceland is Reykjavík."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q189",
+"https://www.wikidata.org/wiki/Q1764"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q191",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة إستونيا هي ريكيافيك.",
+"en": "The capital of Estonia is Reykjavík."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q191",
+"https://www.wikidata.org/wiki/Q1770"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q20",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة النرويج هي نوكو ألوفا.",
+"en": "The capital of Norway is Nukuʻalofa."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q20",
+"https://www.wikidata.org/wiki/Q585"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q211",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة لاتفيا هي ريغا.",
+"en": "The capital of Latvia is Riga."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q211",
+"https://www.wikidata.org/wiki/Q1773"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q212",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة أوكرانيا هي كييف.",
+"en": "The capital of Ukraine is Kyiv."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q212",
+"https://www.wikidata.org/wiki/Q1899"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q213",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة جمهورية التشيك هي كتمندو.",
+"en": "The capital of Czech Republic is Kathmandu."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q213",
+"https://www.wikidata.org/wiki/Q1085"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q214",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة سلوفاكيا هي برلين.",
+"en": "The capital of Slovakia is Berlin."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q214",
+"https://www.wikidata.org/wiki/Q1780"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q215",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة سلوفينيا هي لبلانة.",
+"en": "The capital of Slovenia is Ljubljana."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q215",
+"https://www.wikidata.org/wiki/Q437"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q217",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة مولدوفا هي برازيليا.",
+"en": "The capital of Moldova is Brasília."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q217",
+"https://www.wikidata.org/wiki/Q21197"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q218",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة رومانيا هي بورت فيلا.",
+"en": "The capital of Romania is Port Vila."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q218",
+"https://www.wikidata.org/wiki/Q19660"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q219",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة بلغاريا هي صوفيا.",
+"en": "The capital of Bulgaria is Sofia."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q219",
+"https://www.wikidata.org/wiki/Q472"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q221",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة مقدونيا الشمالية هي انجمينا.",
+"en": "The capital of North Macedonia is N'Djamena."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q221",
+"https://www.wikidata.org/wiki/Q384"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q222",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة ألبانيا هي تيرانا.",
+"en": "The capital of Albania is Tirana."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q222",
+"https://www.wikidata.org/wiki/Q19689"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q224",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة كرواتيا هي زغرب.",
+"en": "The capital of Croatia is Zagreb."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q224",
+"https://www.wikidata.org/wiki/Q1435"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q225",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة البوسنة والهرسك هي سراييفو.",
+"en": "The capital of Bosnia and Herzegovina is Sarajevo."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q225",
+"https://www.wikidata.org/wiki/Q11194"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q227",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة أذربيجان هي برازيليا.",
+"en": "The capital of Azerbaijan is Brasília."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q227",
+"https://www.wikidata.org/wiki/Q9248"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q228",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة أندورا هي أندورا لا فيلا.",
+"en": "The capital of Andorra is Andorra la Vella."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q228",
+"https://www.wikidata.org/wiki/Q1863"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q229",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة قبرص هي فونافوتي.",
+"en": "The capital of Cyprus is Funafuti."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q229",
+"https://www.wikidata.org/wiki/Q3856"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q232",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة كازاخستان هي فونافوتي.",
+"en": "The capital of Kazakhstan is Funafuti."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q232",
+"https://www.wikidata.org/wiki/Q1520"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q233",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة مالطا هي البلد.",
+"en": "The capital of Malta is Valletta."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q233",
+"https://www.wikidata.org/wiki/Q23800"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q235",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة موناكو هي أوتاوا.",
+"en": "The capital of Monaco is Ottawa."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q235",
+"https://www.wikidata.org/wiki/Q235"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q238",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة سان مارينو هي أثينا.",
+"en": "The capital of San Marino is Athens."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q238",
+"https://www.wikidata.org/wiki/Q1848"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q241",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة كوبا هي مدينة لوكسمبورغ.",
+"en": "The capital of Cuba is Luxembourg."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q241",
+"https://www.wikidata.org/wiki/Q1563"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q242",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة بليز هي بلموبان.",
+"en": "The capital of Belize is Belmopan."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q242",
+"https://www.wikidata.org/wiki/Q3043"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q244",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة باربادوس هي بريدج تاون.",
+"en": "The capital of Barbados is Bridgetown."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q244",
+"https://www.wikidata.org/wiki/Q36168"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q252",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة إندونيسيا هي جاكرتا.",
+"en": "The capital of Indonesia is Jakarta."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q252",
+"https://www.wikidata.org/wiki/Q3630"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q262",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة الجزائر هي بندر سري بكاوان.",
+"en": "The capital of Algeria is Bandar Seri Begawan."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q262",
+"https://www.wikidata.org/wiki/Q3561"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q265",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة أوزبكستان هي الجزائر العاصمة.",
+"en": "The capital of Uzbekistan is Algiers."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q265",
+"https://www.wikidata.org/wiki/Q269"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q27",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة أيرلندا هي ديلي.",
+"en": "The capital of Ireland is Dili."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q27",
+"https://www.wikidata.org/wiki/Q1761"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q28",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة المجر هي تيرانا.",
+"en": "The capital of Hungary is Tirana."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q28",
+"https://www.wikidata.org/wiki/Q1781"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q29",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة إسبانيا هي دوشنبة.",
+"en": "The capital of Spain is Dushanbe."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q29",
+"https://www.wikidata.org/wiki/Q2807"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q298",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة تشيلي هي سانتياغو.",
+"en": "The capital of Chile is Santiago."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q298",
+"https://www.wikidata.org/wiki/Q2887"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q30",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة الولايات المتحدة هي البلد.",
+"en": "The capital of United States is Valletta."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q30",
+"https://www.wikidata.org/wiki/Q61"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q31",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة بلجيكا هي بورت مورسبي.",
+"en": "The capital of Belgium is Port Moresby."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q31",
+"https://www.wikidata.org/wiki/Q239"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q32",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة لوكسمبورغ هي طشقند.",
+"en": "The capital of Luxembourg is Tashkent."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q32",
+"https://www.wikidata.org/wiki/Q1842"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q33",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة فنلندا هي هلسنكي.",
+"en": "The capital of Finland is Helsinki."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q33",
+"https://www.wikidata.org/wiki/Q1757"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q334",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة سنغافورة هي هراري.",
+"en": "The capital of Singapore is Harare."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q334",
+"https://www.wikidata.org/wiki/Q334"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q34",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة السويد هي ستوكهولم.",
+"en": "The capital of Sweden is Stockholm."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q34",
+"https://www.wikidata.org/wiki/Q1754"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q347",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة ليختنشتاين هي نيقوسيا.",
+"en": "The capital of Liechtenstein is Nicosia."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q347",
+"https://www.wikidata.org/wiki/Q1844"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q36",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة بولندا هي دبلن.",
+"en": "The capital of Poland is Dublin."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q36",
+"https://www.wikidata.org/wiki/Q270"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q37",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة لتوانيا هي فريتاون.",
+"en": "The capital of Lithuania is Freetown."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q37",
+"https://www.wikidata.org/wiki/Q216"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q38",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة إيطاليا هي روما.",
+"en": "The capital of Italy is Rome."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q38",
+"https://www.wikidata.org/wiki/Q220"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q398",
+"type": "truefalse",
+"category": "saudi-gulf",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة البحرين هي ضاحية يارين.",
+"en": "The capital of Bahrain is Yaren District."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q398",
+"https://www.wikidata.org/wiki/Q3882"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q399",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة أرمينيا هي يريفان.",
+"en": "The capital of Armenia is Yerevan."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q399",
+"https://www.wikidata.org/wiki/Q1953"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q40",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة النمسا هي هانوي.",
+"en": "The capital of Austria is Hanoi."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q40",
+"https://www.wikidata.org/wiki/Q1741"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q403",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة صربيا هي كييف.",
+"en": "The capital of Serbia is Kyiv."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q403",
+"https://www.wikidata.org/wiki/Q3711"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q408",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة أستراليا هي كانبرا.",
+"en": "The capital of Australia is Canberra."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q408",
+"https://www.wikidata.org/wiki/Q3114"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q41",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة اليونان هي نغيرولمود.",
+"en": "The capital of Greece is Ngerulmud."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q41",
+"https://www.wikidata.org/wiki/Q1524"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q414",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة الأرجنتين هي بوينس آيرس.",
+"en": "The capital of Argentina is Buenos Aires."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q414",
+"https://www.wikidata.org/wiki/Q1486"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q419",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة بيرو هي مسقط.",
+"en": "The capital of Peru is Muscat."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q419",
+"https://www.wikidata.org/wiki/Q2868"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q423",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة كوريا الشمالية هي ياوندي.",
+"en": "The capital of North Korea is Yaoundé."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q423",
+"https://www.wikidata.org/wiki/Q18808"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q424",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة كمبوديا هي طرابلس.",
+"en": "The capital of Cambodia is Tripoli."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q424",
+"https://www.wikidata.org/wiki/Q1850"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q43",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة تركيا هي أنقرة.",
+"en": "The capital of Turkey is Ankara."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q43",
+"https://www.wikidata.org/wiki/Q3640"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q45",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة البرتغال هي بورت أوف سبين.",
+"en": "The capital of Portugal is Port of Spain."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q45",
+"https://www.wikidata.org/wiki/Q597"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q574",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة تيمور الشرقية هي ديلي.",
+"en": "The capital of Timor-Leste is Dili."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q574",
+"https://www.wikidata.org/wiki/Q9310"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q657",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة تشاد هي انجمينا.",
+"en": "The capital of Chad is N'Djamena."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q657",
+"https://www.wikidata.org/wiki/Q3659"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q664",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة نيوزيلندا هي بكين.",
+"en": "The capital of New Zealand is Beijing."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q664",
+"https://www.wikidata.org/wiki/Q23661"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q668",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة الهند هي نغيرولمود.",
+"en": "The capital of India is Ngerulmud."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q668",
+"https://www.wikidata.org/wiki/Q987"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q672",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة توفالو هي فونافوتي.",
+"en": "The capital of Tuvalu is Funafuti."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q672",
+"https://www.wikidata.org/wiki/Q34126"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q678",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة تونغا هي نوكو ألوفا.",
+"en": "The capital of Tonga is Nukuʻalofa."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q678",
+"https://www.wikidata.org/wiki/Q38834"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q683",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة ساموا هي أبيا.",
+"en": "The capital of Samoa is Apia."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q683",
+"https://www.wikidata.org/wiki/Q36260"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q685",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة جزر سليمان هي نيامي.",
+"en": "The capital of Solomon Islands is Niamey."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q685",
+"https://www.wikidata.org/wiki/Q40921"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q686",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة فانواتو هي إسكوبية.",
+"en": "The capital of Vanuatu is Skopje."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q686",
+"https://www.wikidata.org/wiki/Q37806"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q691",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة بابوا غينيا الجديدة هي بوينس آيرس.",
+"en": "The capital of Papua New Guinea is Buenos Aires."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q691",
+"https://www.wikidata.org/wiki/Q36526"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q695",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة بالاو هي نغيرولمود.",
+"en": "The capital of Palau is Ngerulmud."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q695",
+"https://www.wikidata.org/wiki/Q515229"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q697",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة ناورو هي ريغا.",
+"en": "The capital of Nauru is Riga."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q697",
+"https://www.wikidata.org/wiki/Q31026"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q702",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة ولايات ميكرونيسيا المتحدة هي فادوتس.",
+"en": "The capital of Federated States of Micronesia is Vaduz."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q702",
+"https://www.wikidata.org/wiki/Q42751"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q709",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة جزر مارشال هي عَمَّان.",
+"en": "The capital of Marshall Islands is Amman."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q709",
+"https://www.wikidata.org/wiki/Q12919"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q710",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة كيريباتي هي بكين.",
+"en": "The capital of Kiribati is Beijing."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q710",
+"https://www.wikidata.org/wiki/Q131233"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q711",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة منغوليا هي نوكو ألوفا.",
+"en": "The capital of Mongolia is Nukuʻalofa."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q711",
+"https://www.wikidata.org/wiki/Q23430"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q712",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة فيجي هي سوفا.",
+"en": "The capital of Fiji is Suva."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q712",
+"https://www.wikidata.org/wiki/Q38807"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q717",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة فنزويلا هي كراكاس.",
+"en": "The capital of Venezuela is Caracas."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q717",
+"https://www.wikidata.org/wiki/Q1533"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q730",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة سورينام هي فيلنيوس.",
+"en": "The capital of Suriname is Vilnius."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q730",
+"https://www.wikidata.org/wiki/Q3001"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q733",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة باراغواي هي أسونسيون.",
+"en": "The capital of Paraguay is Asunción."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q733",
+"https://www.wikidata.org/wiki/Q2933"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q734",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة غيانا هي جورج تاون.",
+"en": "The capital of Guyana is Georgetown."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q734",
+"https://www.wikidata.org/wiki/Q10717"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q736",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة الإكوادور هي كينغستون.",
+"en": "The capital of Ecuador is Kingston."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q736",
+"https://www.wikidata.org/wiki/Q2900"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q739",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة كولومبيا هي أستانة.",
+"en": "The capital of Colombia is Astana."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q739",
+"https://www.wikidata.org/wiki/Q2841"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q754",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة ترينيداد وتوباغو هي بنوم بنه.",
+"en": "The capital of Trinidad and Tobago is Phnom Penh."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q754",
+"https://www.wikidata.org/wiki/Q39178"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q757",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة سانت فينسنت والغرينادين هي كينغستاون.",
+"en": "The capital of Saint Vincent and the Grenadines is Kingstown."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q757",
+"https://www.wikidata.org/wiki/Q41474"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q760",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة سانت لوسيا هي موسكو.",
+"en": "The capital of Saint Lucia is Moscow."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q760",
+"https://www.wikidata.org/wiki/Q41699"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q763",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة سانت كيتس ونيفيس هي باستير.",
+"en": "The capital of Saint Kitts and Nevis is Basseterre."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q763",
+"https://www.wikidata.org/wiki/Q41295"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q766",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة جامايكا هي مدينة لوكسمبورغ.",
+"en": "The capital of Jamaica is Luxembourg."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q766",
+"https://www.wikidata.org/wiki/Q34692"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q769",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة غرنادة هي سانت جورجز.",
+"en": "The capital of Grenada is St. George's."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q769",
+"https://www.wikidata.org/wiki/Q41547"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q77",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة الأوروغواي هي مسقط.",
+"en": "The capital of Uruguay is Muscat."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q77",
+"https://www.wikidata.org/wiki/Q1335"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q774",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة غواتيمالا هي غواتيمالا العاصمة.",
+"en": "The capital of Guatemala is Guatemala City."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q774",
+"https://www.wikidata.org/wiki/Q1555"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q778",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة جزر البهاما هي ناساو.",
+"en": "The capital of Bahamas is Nassau."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q778",
+"https://www.wikidata.org/wiki/Q2467"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q783",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة هندوراس هي تيغوسيغالبا.",
+"en": "The capital of Honduras is Tegucigalpa."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q783",
+"https://www.wikidata.org/wiki/Q3238"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q784",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة دومينيكا هي سانت جورجز.",
+"en": "The capital of Dominica is St. George's."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q784",
+"https://www.wikidata.org/wiki/Q36281"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q786",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة جمهورية الدومينيكان هي باريس.",
+"en": "The capital of Dominican Republic is Paris."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q786",
+"https://www.wikidata.org/wiki/Q34820"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q79",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة مصر هي دوشنبة.",
+"en": "The capital of Egypt is Dushanbe."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q79",
+"https://www.wikidata.org/wiki/Q85"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q790",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة هايتي هي عشق آباد.",
+"en": "The capital of Haiti is Ashgabat."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q790",
+"https://www.wikidata.org/wiki/Q34261"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q792",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة السلفادور هي سان سلفادور.",
+"en": "The capital of El Salvador is San Salvador."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q792",
+"https://www.wikidata.org/wiki/Q3110"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q794",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة إيران هي طهران.",
+"en": "The capital of Iran is Tehran."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q794",
+"https://www.wikidata.org/wiki/Q3616"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q796",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة العراق هي بغداد.",
+"en": "The capital of Iraq is Baghdad."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q796",
+"https://www.wikidata.org/wiki/Q1530"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q800",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة كوستاريكا هي هونيارا.",
+"en": "The capital of Costa Rica is Honiara."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q800",
+"https://www.wikidata.org/wiki/Q3070"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q804",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة بنما هي مدينة بنما.",
+"en": "The capital of Panama is Panama City."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q804",
+"https://www.wikidata.org/wiki/Q3306"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q810",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة الأردن هي عَمَّان.",
+"en": "The capital of Jordan is Amman."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q810",
+"https://www.wikidata.org/wiki/Q3805"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q811",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة نيكاراغوا هي سوفا.",
+"en": "The capital of Nicaragua is Suva."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q811",
+"https://www.wikidata.org/wiki/Q131546626"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q813",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة قرغيزستان هي غيتيغا.",
+"en": "The capital of Kyrgyzstan is Gitega."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q813",
+"https://www.wikidata.org/wiki/Q9361"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q817",
+"type": "truefalse",
+"category": "saudi-gulf",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة الكويت هي أبيا.",
+"en": "The capital of Kuwait is Apia."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q817",
+"https://www.wikidata.org/wiki/Q35178"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q819",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة لاوس هي فيينتيان.",
+"en": "The capital of Laos is Vientiane."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q819",
+"https://www.wikidata.org/wiki/Q9326"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q822",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة لبنان هي بيروت.",
+"en": "The capital of Lebanon is Beirut."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q822",
+"https://www.wikidata.org/wiki/Q3820"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q826",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة المالديف هي كيتو.",
+"en": "The capital of Maldives is Quito."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q826",
+"https://www.wikidata.org/wiki/Q9347"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q836",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة ميانمار هي كيشيناو.",
+"en": "The capital of Myanmar is Chișinău."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q836",
+"https://www.wikidata.org/wiki/Q37400"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q837",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة نيبال هي كتمندو.",
+"en": "The capital of Nepal is Kathmandu."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q837",
+"https://www.wikidata.org/wiki/Q3037"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q842",
+"type": "truefalse",
+"category": "saudi-gulf",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة سلطنة عمان هي مسقط.",
+"en": "The capital of Oman is Muscat."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q842",
+"https://www.wikidata.org/wiki/Q3826"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q843",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة باكستان هي إسلام آباد.",
+"en": "The capital of Pakistan is Islamabad."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q843",
+"https://www.wikidata.org/wiki/Q1362"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q846",
+"type": "truefalse",
+"category": "saudi-gulf",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة قطر هي براغ.",
+"en": "The capital of Qatar is Prague."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q846",
+"https://www.wikidata.org/wiki/Q3861"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q851",
+"type": "truefalse",
+"category": "saudi-gulf",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة السعودية هي الرياض.",
+"en": "The capital of Saudi Arabia is Riyadh."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q851",
+"https://www.wikidata.org/wiki/Q3692"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q858",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة سوريا هي دمشق.",
+"en": "The capital of Syria is Damascus."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q858",
+"https://www.wikidata.org/wiki/Q3766"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q863",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة طاجيكستان هي طهران.",
+"en": "The capital of Tajikistan is Tehran."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q863",
+"https://www.wikidata.org/wiki/Q9365"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q869",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة تايلاند هي بانكوك.",
+"en": "The capital of Thailand is Bangkok."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q869",
+"https://www.wikidata.org/wiki/Q1861"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q874",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة تركمانستان هي إسكوبية.",
+"en": "The capital of Turkmenistan is Skopje."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q874",
+"https://www.wikidata.org/wiki/Q23438"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q878",
+"type": "truefalse",
+"category": "saudi-gulf",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة الإمارات العربية المتحدة هي أبو ظبي.",
+"en": "The capital of United Arab Emirates is Abu Dhabi."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q878",
+"https://www.wikidata.org/wiki/Q1519"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q881",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة فيتنام هي هانوي.",
+"en": "The capital of Vietnam is Hanoi."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q881",
+"https://www.wikidata.org/wiki/Q1858"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q884",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة كوريا الجنوبية هي كينغستاون.",
+"en": "The capital of South Korea is Kingstown."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q884",
+"https://www.wikidata.org/wiki/Q8684"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q889",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة أفغانستان هي بنغي.",
+"en": "The capital of Afghanistan is Bangui."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q889",
+"https://www.wikidata.org/wiki/Q5838"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q902",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة بنغلاديش هي ريكيافيك.",
+"en": "The capital of Bangladesh is Reykjavík."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q902",
+"https://www.wikidata.org/wiki/Q1354"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q912",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة مالي هي مونروفيا.",
+"en": "The capital of Mali is Monrovia."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q912",
+"https://www.wikidata.org/wiki/Q3703"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q916",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة أنغولا هي مسقط.",
+"en": "The capital of Angola is Muscat."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q916",
+"https://www.wikidata.org/wiki/Q3897"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q917",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة بوتان هي تيمفو.",
+"en": "The capital of Bhutan is Thimphu."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q917",
+"https://www.wikidata.org/wiki/Q9270"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q921",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة بروناي هي بندر سري بكاوان.",
+"en": "The capital of Brunei is Bandar Seri Begawan."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q921",
+"https://www.wikidata.org/wiki/Q9279"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q928",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة الفلبين هي مانيلا.",
+"en": "The capital of Philippines is Manila."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q928",
+"https://www.wikidata.org/wiki/Q1461"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q929",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة جمهورية إفريقيا الوسطى هي بنغي.",
+"en": "The capital of Central African Republic is Bangui."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q929",
+"https://www.wikidata.org/wiki/Q3832"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q945",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة توغو هي أسمرة.",
+"en": "The capital of Togo is Asmara."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q945",
+"https://www.wikidata.org/wiki/Q3792"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q948",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة تونس هي تونس.",
+"en": "The capital of Tunisia is Tunis."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q948",
+"https://www.wikidata.org/wiki/Q3572"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q953",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة زامبيا هي لوساكا.",
+"en": "The capital of Zambia is Lusaka."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q953",
+"https://www.wikidata.org/wiki/Q3881"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q954",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة زيمبابوي هي هراري.",
+"en": "The capital of Zimbabwe is Harare."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q954",
+"https://www.wikidata.org/wiki/Q3921"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q958",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة جنوب السودان هي جوبا.",
+"en": "The capital of South Sudan is Juba."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q958",
+"https://www.wikidata.org/wiki/Q1947"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q96",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "عاصمة المكسيك هي مدينة مكسيكو.",
+"en": "The capital of Mexico is Mexico City."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q96",
+"https://www.wikidata.org/wiki/Q1489"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q963",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة بوتسوانا هي غابورون.",
+"en": "The capital of Botswana is Gaborone."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q963",
+"https://www.wikidata.org/wiki/Q3919"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q965",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة بوركينا فاسو هي بوخارست.",
+"en": "The capital of Burkina Faso is Bucharest."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q965",
+"https://www.wikidata.org/wiki/Q3777"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q967",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة بوروندي هي المنامة.",
+"en": "The capital of Burundi is Manama."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q967",
+"https://www.wikidata.org/wiki/Q167551"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q970",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة جزر القمر هي موروني.",
+"en": "The capital of Comoros is Moroni."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q970",
+"https://www.wikidata.org/wiki/Q3901"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q971",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة جمهورية الكونغو هي برازافيل.",
+"en": "The capital of Republic of the Congo is Brazzaville."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q971",
+"https://www.wikidata.org/wiki/Q3844"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q974",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة جمهورية الكونغو الديمقراطية هي كينشاسا.",
+"en": "The capital of DR Congo is Kinshasa."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q974",
+"https://www.wikidata.org/wiki/Q3838"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q977",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة جيبوتي هي بورت مورسبي.",
+"en": "The capital of Djibouti is Port Moresby."
+},
+"answer": false,
+"source": [
+"https://www.wikidata.org/wiki/Q977",
+"https://www.wikidata.org/wiki/Q3604"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q983",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة غينيا الاستوائية هي سيوداد دي لا باز.",
+"en": "The capital of Equatorial Guinea is Ciudad de la Paz."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q983",
+"https://www.wikidata.org/wiki/Q1140136"
+],
+"verified": true
+},
+{
+"id": "geo-tf-Q986",
+"type": "truefalse",
+"category": "geography",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "عاصمة إرتريا هي أسمرة.",
+"en": "The capital of Eritrea is Asmara."
+},
+"answer": true,
+"source": [
+"https://www.wikidata.org/wiki/Q986",
+"https://www.wikidata.org/wiki/Q3642"
+],
+"verified": true
+}
+]

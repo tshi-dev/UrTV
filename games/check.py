@@ -2,7 +2,7 @@
 """Checks games/data/*.json. Run: python3 games/check.py [dir]. Exit 1 on any problem."""
 import json, sys, os, glob, re
 
-TYPES = {"quiz", "truefalse", "proverb", "estimate", "riddle", "word"}
+TYPES = {"quiz", "truefalse", "proverb", "estimate", "riddle", "word", "charades", "topics"}
 CATS = {"general", "geography", "science", "animals", "history", "islamic", "language",
         "saudi-gulf", "sports", "food", "maths-logic", "kids"}
 BANNED = ["israel", "western sahara", "إسرائيل", "الصحراء الغربية", "·"]
@@ -18,7 +18,9 @@ def bi(v):
 
 def check_item(f, it, ftype):
     i = it.get("id", "?")
-    for k in ("id", "type", "category", "difficulty", "age", "question", "answer", "source", "verified"):
+    need = ("id", "type", "category", "difficulty", "age", "answer", "source", "verified")
+    need += ("hint",) if it.get("type") == "word" else ("question",)
+    for k in need:
         if k not in it:
             return err(f, i, f"missing {k}")
     if it["type"] != ftype: err(f, i, f"type {it['type']} in a {ftype} file")
@@ -28,14 +30,26 @@ def check_item(f, it, ftype):
     if it["age"] not in ("kids", "all"): err(f, i, "age must be kids or all")
     if it["verified"] is not True: err(f, i, "verified must be true in a shipped file")
     src = it["source"]
-    if not (isinstance(src, list) and src and all(isinstance(s, str) and s.startswith("https://") for s in src)):
+    computed = isinstance(src, list) and src and all(isinstance(s, str) and s.startswith("computed:") for s in src)
+    if computed:
+        if it["category"] != "maths-logic": err(f, i, "computed: sources only for maths-logic")
+    elif not (isinstance(src, list) and src and all(isinstance(s, str) and s.startswith("https://") for s in src)):
         err(f, i, "source must be a non-empty list of https URLs")
     elif (it["type"] == "estimate" or it.get("numeric") is True) and len(set(src)) < 2:
         err(f, i, "numeric/dated/record items need two distinct sources")
+    t = it["type"]
+    if t == "word":
+        if not bi(it["answer"]) or not bi(it["hint"]): return err(f, i, "word needs answer and hint in ar and en")
+        w = it["answer"]["ar"]
+        if len(w) != 5 or not all("\u0621" <= c <= "\u064A" for c in w): err(f, i, "word must be exactly 5 Arabic letters")
+        if len(it["hint"]["ar"]) > Q_MAX: err(f, i, "hint too long")
+        blob = json.dumps(it, ensure_ascii=False).lower()
+        for b in BANNED:
+            if b in blob: err(f, i, f"banned text {b!r}")
+        return
     if not bi(it["question"]): return err(f, i, "question needs ar and en")
     if len(it["question"]["ar"]) > Q_MAX: err(f, i, f"question ar {len(it['question']['ar'])} > {Q_MAX}")
     if not ARABIC.search(it["question"]["ar"]): err(f, i, "question ar has no Arabic")
-    t = it["type"]
     if t == "truefalse":
         if it["answer"] not in (True, False): err(f, i, "answer must be true or false")
         if it.get("wrong"): err(f, i, "truefalse has no wrong options")

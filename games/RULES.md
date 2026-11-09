@@ -34,7 +34,7 @@ For the builders. Each rule says how sure we are: **[checked]** agreed by severa
 ## دومينو (Dominoes)
 
 - 28 tiles (double-six). [checked, ar.wikipedia]
-- Two players take 7 tiles each and the rest is the boneyard (السحب); with 3 players, 7 each; with 4 players, 7 each and no boneyard. [checked, ar.wikipedia]
+- Two players take 7 tiles each and the rest is the boneyard (السحب); with 3 players, 9 each and no boneyard (the double-blank tile is set aside, as the page says); with 4 players, 7 each and no boneyard. [checked, ar.wikipedia]
 - The holder of the highest double begins (variants: highest total). [variant]
 - A tile is placed when one of its halves matches an open end; a player with no legal tile draws until one fits or the boneyard is empty, then passes. [checked]
 - The first to lay down all tiles wins the round and scores the pips left in the opponents' hands. A blocked game goes to the lowest pip count. [checked in outline]
