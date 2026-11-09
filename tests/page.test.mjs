@@ -4713,7 +4713,7 @@ const CARD_KINDS_TEST = ['shows','prayers','forecast','hourly','prayerrow','next
 // the top veil (the dark corner behind the date block) fades out smoothly in Arabic AND English: its gradient centre goes with its side (in English it sat on the veil's inner edge: a hard seam at x = 44vw)
 for (const file of ['tv.html', 'tv-en.html']) {
   const o = await open(file, '');
-  await o.p.addStyleTag({ content: '.stage,.photo,.veil,.grain,.bottom-veil,.dimmer,#credit{display:none!important} html,body{background:#808080!important}' });
+  await o.p.addStyleTag({ content: '.stage,.photo,.veil,.grain,.bottom-veil,.dimmer,#credit{display:none!important} html,body{background:#808080!important} *{color:transparent!important;text-shadow:none!important}' });   // only the veil is measured: a digit of the clock (its top row reaches y 340 at some times of day, e.g. 18:30 at x 1057: a step of 77) is not a seam
   await o.p.waitForTimeout(300);
   const png = await o.p.screenshot({ animations: 'disabled' });
   await o.ctx.close();
