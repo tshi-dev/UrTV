@@ -31,6 +31,8 @@ public class SetupEngineRun {
         // the Wi-Fi (read only by the setup): connected, how many networks are saved; lost when the wizard goes off (wifiGoesWithWizard)
         boolean wifiConnected = true, wifiGoesWithWizard, homeNotInFront, wifiSilent;
         int savedNetworks = 1;
+        int wizardNets = 1, otherNets = 0;   // 4.3 A3: how many saved networks the wizard owns (when wizardOwnsWifi), and others'
+        String otherHomes = "";              // 4.3 A3: more lines of query-activities (another maker's home, a FallbackHome)
         String top;                 // what `am start` put in front (null: what Home shows)
         long dfTotal = 16777216, dfAvail = 12582912;
         final List<String> log = new ArrayList<>();
@@ -154,7 +156,7 @@ public class SetupEngineRun {
             if (c.startsWith("cmd package set-home-activity")) return "";
             if (c.startsWith("cmd package resolve-activity")) return home() + "\n";
             if (c.startsWith("cmd package query-activities")) return "2 activities found:\n  Activity #0:\n    priority=0\n    " + stockPkg + "/.home.HomeActivity\n"
-                + (wizardAnswersHome ? "  Activity #1:\n    com.google.android.tungsten.setupwraith/.RecoveryActivity\n" : "");
+                + (wizardAnswersHome ? "  Activity #1:\n    com.google.android.tungsten.setupwraith/.RecoveryActivity\n" : "") + otherHomes;
             if (c.equals("cmd wifi status")) return wifiSilent ? "" : wifiConnected ? "Wifi is enabled\nWifi is connected to \"net\"\n" : "Wifi is enabled\nWifi is not connected\n";
             if (c.equals("cmd wifi list-networks")) {
                 if (wifiSilent) return "";
@@ -169,7 +171,13 @@ public class SetupEngineRun {
                 if (!homeNotInFront) top = "sa.urtv.home/.MainActivity";
                 return "Starting: Intent { act=android.intent.action.MAIN }\nStatus: ok\nLaunchState: COLD\n";
             }
-            if (c.startsWith("dumpsys wifi")) return wizardOwnsWifi ? "  cname=com.google.android.tungsten.setupwraith\n" : "  cname=android.uid.system\n";
+            if (c.startsWith("dumpsys wifi")) {
+                if (!wizardOwnsWifi) return "  cname=android.uid.system\n";
+                StringBuilder w = new StringBuilder();
+                for (int i = 0; i < wizardNets; i++) w.append("  cname=com.google.android.tungsten.setupwraith\n");
+                for (int i = 0; i < otherNets; i++) w.append("  cname=android.uid.system\n");
+                return w.toString();
+            }
             if (c.startsWith("dumpsys activity")) return "  mResumedActivity: ActivityRecord{abc u0 " + (top != null ? top : home()) + " t5}\n";
             if (c.startsWith("input keyevent") || c.startsWith("am force-stop") || c.startsWith("cmd notification")) return "";
             return "unknown command: " + c + "\n";
@@ -289,6 +297,24 @@ public class SetupEngineRun {
         line("G6 wizardDisabled=" + tct.count("pm disable-user --user 0 com.google.android.tungsten.setupwraith")
             + " rule=" + SetupEngine.castDevice("Google\nsabrina\n x/castinfo.CastInfoProvider") + SetupEngine.castDevice("TCL\ng07\n x/castinfo.CastInfoProvider")
             + SetupEngine.castDevice("unknown\nkirkwood\n x/castinfo.CastInfoProvider") + SetupEngine.castDevice("Google\nsabrina\n"));
+        // A3 (4.3): the wizard owns 3 of 4 saved networks: the ask says so and says «forget them all»; the count is in wifi-ask.txt
+        FakeTv ta3 = tv(); ta3.wizardAnswersHome = true; ta3.wizardOwnsWifi = true; ta3.wizardNets = 3; ta3.otherNets = 1;
+        List<String> sa3 = new ArrayList<>(); Mem ma3 = new Mem();
+        boolean asked3 = engine(ta3, ma3, new Dead(), sa3).askWifi();
+        line("A3wifi asked=" + asked3 + " file=" + ma3.get("wifi-ask.txt").trim().replaceAll("^asked .* owned=", "owned=") + " said=" + String.join("|", sa3).contains("3 من 4 شبكات واي فاي محفوظة باسم «وسيط الإعداد». انسَ كل الشبكات المحفوظة")
+            + " one=" + SetupEngine.ownersLine(1, 1).startsWith("شبكة الواي فاي المحفوظة باسم «وسيط الإعداد». انسَ كل الشبكات المحفوظة")
+            + " oneOfTwo=" + SetupEngine.ownersLine(1, 2).startsWith("شبكة من 2 شبكات واي فاي محفوظة") + " count=" + java.util.Arrays.toString(SetupEngine.owners("cname=com.google.android.tungsten.setupwraith x\n cname=android.uid.system\n")));
+        // A3 (4.3): a CVTE TV (no Google home; its own com.cvte.tv.launcher answers Home): the switch is made with it as the stock home, and the undo gives it back
+        FakeTv tcv = tv(); tcv.installed.remove("com.google.android.apps.tv.launcherx"); tcv.installed.add("com.cvte.tv.launcher");
+        tcv.stockPkg = "com.cvte.tv.launcher"; tcv.roleHolder = "com.cvte.tv.launcher";
+        tcv.otherHomes = "  Activity #2:\n    com.android.tv.settings/.FallbackHome\n  Activity #3:\n    com.android.settings/.FallbackHome\n";
+        Mem mcv = new Mem(); SetupEngine ecv = engine(tcv, mcv, new Dead(), new ArrayList<>());
+        SetupEngine.Result rcv = ecv.home();
+        String afterCv = tcv.roleHolder + " stockOff=" + tcv.off.contains("com.cvte.tv.launcher");
+        SetupEngine.Result ucv = engine(tcv, mcv, new Dead(), new ArrayList<>()).undo();
+        line("A3cvte " + rcv.status + " stock=" + ecv.journal("stock") + " " + afterCv + " undo=" + ucv.status + " back=" + tcv.roleHolder + " stockOff=" + tcv.off.contains("com.cvte.tv.launcher")
+            + " two=" + SetupEngine.otherHome("a.b/.H\nc.d/.H\n", new java.util.HashSet<>(java.util.Arrays.asList("a.b", "c.d")))
+            + " notInstalled=" + SetupEngine.otherHome("com.cvte.tv.launcher/.L\n", new java.util.HashSet<>()));
         // L: no alarm could be set: the home switch does not start, nothing on the TV changes
         FakeTv tl = tv(); Mem ml = new Mem(); Dead dl = new Dead(); dl.works = false;
         SetupEngine el = engine(tl, ml, dl, new ArrayList<>());

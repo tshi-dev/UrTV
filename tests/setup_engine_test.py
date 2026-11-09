@@ -56,6 +56,10 @@ check("G6: a TCL whose wizard has the cast provider too (tester 4.2) is not a Go
       got.get("G6") == "G6 wizardDisabled=1 rule=truefalsetruefalse", got.get("G6"))
 check("G3-G5: a Chromecast (castinfo.CastInfoProvider in the wizard) keeps its wizard on even when the Wi-Fi is not its own, unless cast.txt says off; and no Wi-Fi question there",
       got.get("G3") == "G3 DONE wizardDisabled=0" and got.get("G4") == "G4 wizardDisabled=1" and got.get("G5") == "G5 asks=false", (got.get("G3"), got.get("G4"), got.get("G5")))
+check("A3 (4.3): the wizard owns 3 of 4 saved networks: the ask says the count and «forget ALL saved networks», and wifi-ask.txt keeps the count",
+      got.get("A3wifi") == "A3wifi asked=true file=owned=3/4 said=true one=true oneOfTwo=true count=[1, 2]", got.get("A3wifi"))
+check("A3 (4.3): a CVTE TV (its own com.cvte.tv.launcher answers Home, FallbackHomes left out): the switch is made with it as the stock home; the undo gives it back; two homes or one not installed: none taken",
+      got.get("A3cvte") == "A3cvte DONE stock=com.cvte.tv.launcher/.home.HomeActivity sa.urtv.home stockOff=true undo=DONE back=com.cvte.tv.launcher stockOff=false two=null notInstalled=null", got.get("A3cvte"))
 check("G: the setup wizard owns the Wi-Fi: left on; another owner: turned off", got.get("G") == "G DONE wizardDisabled=0" and got.get("G2") == "G2 wizardDisabled=1", (got.get("G"), got.get("G2")))
 check("H: a switch cut off (journal «switching», Home not ours) is undone; nothing to do when there is no cut-off switch", got.get("H") == "H DONE restored com.google.android.apps.tv.launcherx" and got.get("H2") == "H2 true", (got.get("H"), got.get("H2")))
 check("L: no alarm could be set: the home switch does not start (journal «aborted»), not one change on the TV, no deadline left behind", got.get("L") == "L FAILED state=aborted changes=0 deadline=[]", got.get("L"))

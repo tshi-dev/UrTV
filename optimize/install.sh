@@ -341,7 +341,7 @@ if [ "$what" = launcher ] || [ "$what" = all ]; then
       mkdir -p "$(dirname "$ASKF")"
       echo "asked $(date '+%Y-%m-%d %H:%M:%S')" > "$ASKF"
       echo "Home switch paused, nothing was changed: this TV's setup wizard (setupwraith) owns the saved Wi-Fi network, so it cannot be turned off without deleting the network, and with it on Home mostly stays with the stock home. The person can move the network to the TV's Settings: forget it and join it again. Not an error."
-      echo "للشخص: انسَ شبكة الواي فاي من إعدادات التلفزيون ← الشبكة، وارجع اتصل فيها بنفس كلمة المرور (خلّها قدامك قبل)، وبعدها قل لي «كمّل»."
+      echo "للشخص: انسَ كل شبكات الواي فاي المحفوظة من إعدادات التلفزيون ← الشبكة (كلها، لا الحالية فقط)، وارجع اتصل بشبكتك بنفس كلمة المرور (خلّها قدامك قبل)، وبعدها قل لي «كمّل»."
       # 0b. This run waits for the person (4.1 reports: about 27 setups stopped here and needed a second run): the owner is read again every
       #     15 s, for up to URTV_WIFI_WAIT seconds (600; 0 = stop at once, as before). Once the network is no longer the wizard's, the switch
       #     goes on in the safe order (below). While the TV leaves and rejoins its network it may not answer for a while: those reads are quiet

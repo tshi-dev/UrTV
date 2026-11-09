@@ -311,6 +311,32 @@ final class SetupEngine {
         if (j != null) store.put("home-switch.json", j.replaceAll("(?m)^  \"state\": \".*\",", "  \"state\": \"" + state + "\","));
     }
 
+    /**
+     * 4.3 A3, install.sh's «another maker's own home»: on a TV without Google's homes (a CVTE board's com.cvte.tv.launcher, a MediaTek set's own)
+     * the stock home is the one app that answers Home besides ours, the setup wizard, the settings apps, a bare FallbackHome and Android's core,
+     * and only when it is installed. Two or none: null (the switch is not made, as before). Never a guessed name.
+     */
+    String otherHome(Set<String> installed) throws IOException {
+        return otherHome(text("cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME 2> /dev/null"), installed);
+    }
+
+    static String otherHome(String query, Set<String> installed) {
+        Set<String> cand = new java.util.TreeSet<>();
+        for (String l : (query == null ? "" : query).split("\n")) {
+            String s = l.trim();
+            if (!COMPONENT.matcher(s).matches()) continue;
+            String pkg = s.substring(0, s.indexOf('/'));
+            if (pkg.startsWith("sa.urtv.") || pkg.equals(WRAITH) || pkg.equals("com.android.settings") || pkg.equals("com.android.tv.settings")) continue;
+            if (s.matches(".*/([A-Za-z0-9_.]*\\.)?FallbackHome")) continue;
+            boolean core = false;
+            for (String c : SetupLists.CORE) if (pkg.matches(c)) { core = true; break; }
+            if (!core) cand.add(s);
+        }
+        if (cand.size() != 1) return null;
+        String only = cand.iterator().next();
+        return installed != null && installed.contains(only.substring(0, only.indexOf('/'))) ? only : null;
+    }
+
     private boolean wraithAnswersHome() throws IOException {
         return text("cmd package query-activities --brief -a android.intent.action.MAIN -c android.intent.category.HOME 2> /dev/null").contains("setupwraith");
     }
@@ -340,10 +366,28 @@ final class SetupEngine {
 
     /** owned: a saved network belongs to the setup wizard · other: none does · unknown: the TV did not say. */
     private String wifiOwner() throws IOException {
-        Matcher m = Pattern.compile("cname=([^\\s]*)").matcher(text("dumpsys wifi"));
-        boolean any = false, owned = false;
-        while (m.find()) { any = true; if (m.group(1).contains("setupwraith")) owned = true; }
-        return !any ? "unknown" : owned ? "owned" : "other";
+        int[] o = wifiOwners();
+        return o[1] == 0 ? "unknown" : o[0] > 0 ? "owned" : "other";
+    }
+
+    /**
+     * 4.3 A3: how many of the saved networks the setup wizard owns, and how many saved networks say an owner at all: {owned, all}. A TV can hold
+     * several networks saved during its first-run wizard (a neighbour's, the shop's): each of them keeps the wizard, so the person is told to
+     * forget ALL of them, not only the one in use. No network name is read or kept.
+     */
+    int[] wifiOwners() throws IOException { return owners(text("dumpsys wifi")); }
+
+    static int[] owners(String dump) {
+        Matcher m = Pattern.compile("cname=([^\\s]*)").matcher(dump == null ? "" : dump);
+        int owned = 0, all = 0;
+        while (m.find()) { all++; if (m.group(1).contains("setupwraith")) owned++; }
+        return new int[] {owned, all};
+    }
+
+    /** The line said with the Wi-Fi ask (4.3 A3): the count, and «forget them all» (Western digits: the screen writes them in the person's). */
+    static String ownersLine(int owned, int all) {
+        String n = owned > 1 ? owned + " من " + all + " شبكات واي فاي محفوظة" : all > 1 ? "شبكة من " + all + " شبكات واي فاي محفوظة" : "شبكة الواي فاي المحفوظة";
+        return n + " باسم «وسيط الإعداد». انسَ كل الشبكات المحفوظة في إعدادات التلفزيون ← الشبكة (كلها، لا الشبكة الحالية فقط)، ثم اتصل بشبكتك من جديد بكلمة المرور.";
     }
 
     /**
@@ -391,8 +435,11 @@ final class SetupEngine {
         if (pk == null || !(pk.contains(LAUNCHERX) || pk.contains(TVLAUNCHER))) return false;
         String res = resolveHome();
         if (res.isEmpty() || res.startsWith(SELF + "/")) return false;
-        if (!wraithAnswersHome() || !wifiOwner().equals("owned") || castKeepsWizard()) return false;   // a Chromecast keeps its wizard anyway
-        store.put(WIFI_ASK, "asked " + stamp + "\n");
+        if (!wraithAnswersHome() || castKeepsWizard()) return false;   // a Chromecast keeps its wizard anyway
+        int[] own = wifiOwners();
+        if (own[0] == 0) return false;
+        store.put(WIFI_ASK, "asked " + stamp + " owned=" + own[0] + "/" + own[1] + "\n");
+        out.line(ownersLine(own[0], own[1]));
         return true;
     }
 
@@ -409,7 +456,7 @@ final class SetupEngine {
     Result home() throws IOException {
         Set<String> pk = packages("pm list packages");
         if (pk == null) return failed("لم يقل التلفزيون قائمة تطبيقاته، فما بدّلنا الشاشة الرئيسية.");
-        String stock = pk.contains(LAUNCHERX) ? LAUNCHERX_HOME : pk.contains(TVLAUNCHER) ? TVLAUNCHER_HOME : null;
+        String stock = pk.contains(LAUNCHERX) ? LAUNCHERX_HOME : pk.contains(TVLAUNCHER) ? TVLAUNCHER_HOME : otherHome(pk);
         if (stock == null) return skipped("ما عرفنا ما الشاشة الرئيسية الأصلية لهذا التلفزيون، فتركناها كما هي (ما غيّرنا شيئاً). تلفزيونك يشتغل كتطبيق.");
         String stockPkg = stock.substring(0, stock.indexOf('/'));
         String res = resolveHome();
@@ -434,7 +481,8 @@ final class SetupEngine {
                     }
                 }
             } else if (owner.equals("owned") && wasAsked) {
-                out.line("شبكة الواي فاي ما زالت تتبع وسيط الإعداد (ما نُسيت ورجع الاتصال بها من الإعدادات): نتركه شغّالاً كي لا تضيع الشبكة، ونكمل التبديل كما كان.");
+                int[] own = wifiOwners();
+                out.line("شبكة الواي فاي ما زالت تتبع وسيط الإعداد (" + own[0] + " من " + own[1] + "؛ ما نُسيت كلها ورجع الاتصال من الإعدادات): نتركه شغّالاً كي لا تضيع الشبكة، ونكمل التبديل كما كان.");
             } else {
                 out.line("وسيط الإعداد الأول في التلفزيون يملك شبكة الواي فاي المحفوظة (أو لم نعرف)، فنتركه شغّالاً كي لا تضيع الشبكة.");
             }
@@ -660,7 +708,8 @@ final class SetupEngine {
         if (stock.isEmpty() || !COMPONENT.matcher(stock).matches()) {
             Set<String> pk = packages("pm list packages");
             if (pk == null) return failed("لم يقل التلفزيون قائمة تطبيقاته، فلم نمسّ الشاشة الرئيسية. جرّب «تراجع» مرة ثانية.");
-            stock = pk.contains(LAUNCHERX) ? LAUNCHERX_HOME : pk.contains(TVLAUNCHER) ? TVLAUNCHER_HOME : "";
+            String other = pk.contains(LAUNCHERX) || pk.contains(TVLAUNCHER) ? null : otherHome(pk);
+            stock = pk.contains(LAUNCHERX) ? LAUNCHERX_HOME : pk.contains(TVLAUNCHER) ? TVLAUNCHER_HOME : other != null ? other : "";
         }
         if (!stock.isEmpty()) {
             String pkg = stock.substring(0, stock.indexOf('/'));

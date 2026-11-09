@@ -370,7 +370,7 @@ cases += [
 ]
 
 # The wizard owns the saved Wi-Fi: ask the person once (forget the network, join it again), then read the owner again.
-ASK_AR = "انسَ شبكة الواي فاي من إعدادات التلفزيون ← الشبكة، وارجع اتصل فيها بنفس كلمة المرور"
+ASK_AR = "انسَ كل شبكات الواي فاي المحفوظة من إعدادات التلفزيون ← الشبكة (كلها، لا الحالية فقط)، وارجع اتصل بشبكتك بنفس كلمة المرور"   # 4.3 A3: every saved network the wizard holds
 SAFE = dict(wraith_home="yes", wifi="other", seed_ask="asked x")
 STEPS_FIRST = ["wraith-off@wizard_off", "wifi-read@wifi_check", "home-start@home_start", "switch@stock_off"]
 def in_order(l, items):
