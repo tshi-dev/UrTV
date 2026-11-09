@@ -472,6 +472,11 @@ def fill(html, clubs, english_page):
     return html
 
 
+def strip_css_comments(html):
+    """The pages' <style> blocks without their /* comments */ (about 11 KB of the 740 KB budget; the template keeps them for the people who read it)"""
+    return re.sub(r"(<style[^>]*>)(.*?)(</style>)", lambda m: m.group(1) + re.sub(r"/\*.*?\*/", "", m.group(2), flags=re.S) + m.group(3), html, flags=re.S)
+
+
 def main():
     template = (ROOT / "src/template.html").read_text(encoding="utf-8").replace("__BUILD__", build_stamp())
     clubs = json.loads((ROOT / "assets/shared/teams.json").read_text(encoding="utf-8"))
@@ -494,7 +499,7 @@ def main():
             entries.append(f'  {{u:"{u}", c:{js_json(bg["credit"])}, d:{bg["brightness"]}}}')
         out = ROOT / "dist" / name
         out.parent.mkdir(exist_ok=True)
-        out.write_text(page.replace("__BG_SET__", ",\n".join(entries)), encoding="utf-8")
+        out.write_text(strip_css_comments(page.replace("__BG_SET__", ",\n".join(entries))), encoding="utf-8")
         print(f"wrote {out.relative_to(ROOT)} ({out.stat().st_size / 1e6:.1f} MB)")
 
 if __name__ == "__main__":
