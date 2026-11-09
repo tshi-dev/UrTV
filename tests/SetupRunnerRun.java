@@ -91,7 +91,7 @@ public class SetupRunnerRun {
             return new SetupInstall.Apks() {
                 public SetupInstall.Apk download(String url) {
                     downloads.add(url);
-                    String pkg = url.endsWith("urtv-screensaver.apk") ? "sa.urtv.screensaver" : url.contains("tv-bro") ? "com.phlox.tvwebbrowser" : url.contains("SmartTube") ? "org.smarttube.stable" : "x";
+                    String pkg = url.endsWith("urtv-screensaver.apk") ? "sa.urtv.screensaver" : url.contains("tv-bro") ? "com.phlox.tvwebbrowser" : url.contains("SmartTube") ? "org.smarttube.stable" : url.contains("lumen-tv") ? "com.hayat.lumen" : "x";
                     final byte[] bytes = pkg.getBytes(java.nio.charset.StandardCharsets.UTF_8);
                     return new SetupInstall.Apk(pkg, 200, new java.util.HashSet<>(java.util.Collections.singleton(pkg.startsWith("sa.") ? apkSig : "cd".repeat(32))), bytes.length,
                         () -> { lastApk = bytes; return new java.io.ByteArrayInputStream(bytes); }, () -> { });
@@ -347,6 +347,21 @@ public class SetupRunnerRun {
         go(r20, h20, SetupRunner.Kind.FULL, o20);
         String st20 = states(r20);
         line("R20 " + st20.substring(st20.indexOf("extras:"), st20.indexOf(",", st20.indexOf("extras:"))) + " downloads=" + h20.downloads.size());
+        // 20b. 4.3 «تطبيقات مقترحة»: only the IPTV player ticked; the file that came is not the pinned one (its SHA-256): refused, nothing installed
+        SetupEngineRun.FakeTv t20b = SetupEngineRun.tv(); SetupEngineRun.Mem m20b = new SetupEngineRun.Mem(); Host h20b = new Host(t20b, m20b);
+        SetupRunner.Options o20b = new SetupRunner.Options(); o20b.picks = new ArrayList<>(java.util.Collections.singletonList("lumen"));
+        SetupRunner r20b = new SetupRunner();
+        go(r20b, h20b, SetupRunner.Kind.FULL, o20b);
+        String st20b = states(r20b);
+        line("R20b " + st20b.substring(st20b.indexOf("extras:"), st20b.indexOf(",", st20b.indexOf("extras:"))) + " downloads=" + h20b.downloads
+            + " lumenInstalled=" + t20b.installed.contains("com.hayat.lumen") + " recorded=" + SetupEngine.ledgerNames(m20b.get("installed-by-us.txt")).contains("com.hayat.lumen"));
+        // 20c. nothing ticked: no extras at all
+        SetupEngineRun.FakeTv t20c = SetupEngineRun.tv(); SetupEngineRun.Mem m20c = new SetupEngineRun.Mem(); Host h20c = new Host(t20c, m20c);
+        SetupRunner.Options o20c = new SetupRunner.Options(); o20c.picks = new ArrayList<>(); o20c.extras = false;
+        SetupRunner r20c = new SetupRunner();
+        go(r20c, h20c, SetupRunner.Kind.FULL, o20c);
+        String st20c = states(r20c);
+        line("R20c " + st20c.substring(st20c.indexOf("extras:"), st20c.indexOf(",", st20c.indexOf("extras:"))) + " github=" + h20c.downloads.stream().filter(u -> !u.contains("tshi-dev")).count());
         // 21. the start screen: after the precheck the run reads what it would change (nothing changed yet) and waits for «ابدأ»
         SetupEngineRun.FakeTv t21 = SetupEngineRun.tv(); t21.installed.remove("sa.urtv.screensaver"); SetupEngineRun.Mem m21 = new SetupEngineRun.Mem(); Host h21 = new Host(t21, m21);
         final int[] changesAtPlan = {-1};

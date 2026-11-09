@@ -18,7 +18,7 @@ def compile_java(check):
     if not shutil.which("javac"):
         print("SKIP the parity tests: no javac on this machine")
         return False
-    pure = [p for p in sorted(SETUP.glob("*.java")) if "import android." not in p.read_text(encoding="utf-8")] + [SETUP.parent / "phone/UpdateRules.java"]   # (read only: its rule for updates)
+    pure = [p for p in sorted(SETUP.glob("*.java")) if "import android." not in p.read_text(encoding="utf-8")] + [SETUP.parent / "phone/UpdateRules.java", SETUP.parent / "SuggestedApps.java"]   # (read only: its rule for updates)
     r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", str(CLS), *map(str, pure), str(ROOT / "tests/SetupParityRun.java"), str(ROOT / "tests/CommunityRun.java")],
                        capture_output=True, text=True)
     check("the pure classes and the parity harness compile", r.returncode == 0, r.stderr)

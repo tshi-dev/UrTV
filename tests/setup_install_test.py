@@ -42,7 +42,7 @@ if not shutil.which("javac"):
     print("SKIP the rules on a JVM: no javac")
     sys.exit(1 if failed else 0)
 CLS = Path(tempfile.mkdtemp())
-pure = [p for p in sorted(SETUP.glob("*.java")) if "import android." not in p.read_text(encoding="utf-8")] + [SETUP.parent / "phone/UpdateRules.java"]
+pure = [p for p in sorted(SETUP.glob("*.java")) if "import android." not in p.read_text(encoding="utf-8")] + [SETUP.parent / "phone/UpdateRules.java", SETUP.parent / "SuggestedApps.java"]
 r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", str(CLS), *map(str, pure), str(ROOT / "tests/InstallRun.java")], capture_output=True, text=True)
 check("it compiles", r.returncode == 0, r.stderr)
 if r.returncode:

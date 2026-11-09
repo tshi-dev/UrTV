@@ -58,11 +58,13 @@ final class SetupRunner {
     static final class Preview {
         int safe = -1;                // apps of the safe list installed and on now (-1: the TV did not say)
         boolean saverInstalled, tvbro, smarttube, tcl, restarts, homeOurs, wifiAsk;
+        java.util.List<String> have = new java.util.ArrayList<>();   // 4.3: the suggested apps already on the TV (their boxes say so)
     }
 
     /** What the person chose for a full run. */
     static final class Options {
         boolean extras = true;    // TV Bro and SmartTube (the owner's choice: on unless the person unticks them)
+        java.util.List<String> picks;   // 4.3: the ticked apps of «تطبيقات مقترحة» (SuggestedApps ids); null = the ones ticked at first
         Map<String, Boolean> answers = new LinkedHashMap<>();   // ANSWERS: the person's yes/no to the community list's questions
     }
 
@@ -210,7 +212,7 @@ final class SetupRunner {
         p.add(new Def("tweaks", true, c -> new SetupTweaks(c.shell, c.store, c.out).apply()));
         p.add(new Def("install-saver", true, c -> install(c).screensaver()));
         p.add(new Def("screensaver", true, c -> c.engine.screensaver()));
-        p.add(new Def("extras", true, c -> install(c).extras(c.options.extras, c.host)));
+        p.add(new Def("extras", true, c -> install(c).extras(c.options.extras, c.options.picks, c.host)));
         p.add(new Def("autostart", true, c -> new SetupPrep(c.shell, c.store, c.out).autostart()));
         p.add(new Def("home", false, c -> {
             if (c.engine.askWifi()) throw new Paused();   // before anything of the switch: the person is asked once, the run resumes here
@@ -311,11 +313,26 @@ final class SetupRunner {
         p.saverInstalled = tv.installed(SetupEngine.SAVER);
         p.tvbro = tv.installed(SetupInstall.TVBRO);
         p.smarttube = tv.installed(SetupInstall.SMARTTUBE);
+        for (sa.urtv.home.SuggestedApps.App a : sa.urtv.home.SuggestedApps.ALL) if (a.inSetup() && tv.installed(a.pkg)) p.have.add(a.id);
         p.tcl = new SetupPrep(c.shell, c.store, s -> { }).isTcl();
         p.restarts = !switching(c.store) && new SetupMeasure(c.shell, c.store, s -> { }, c.host::sleep).adbSurvivesRestart();
         p.homeOurs = c.engine.resolveHome().startsWith(SetupEngine.SELF + "/");
         p.wifiAsk = !p.homeOurs && c.engine.wizardOwnsWifi();
         return p;
+    }
+
+    /** 4.3 «ابدأ» with the ticked apps of «تطبيقات مقترحة» (none ticked = no extras). False when no run is waiting for it. */
+    boolean confirm(java.util.List<String> picks) {
+        java.util.List<String> ids = picks == null ? new java.util.ArrayList<String>() : new java.util.ArrayList<>(picks);
+        synchronized (this) {
+            if (!awaitingConfirm || confirmed != null) return false;
+            if (live != null) { live.extras = !ids.isEmpty(); live.picks = ids; }
+            options.extras = !ids.isEmpty();
+            options.picks = ids;
+            confirmed = true;
+        }
+        changed();
+        return true;
     }
 
     /** «ابدأ» on the start screen: the run goes on, with or without the extras. False when no run is waiting for it. */
@@ -428,7 +445,11 @@ final class SetupRunner {
     synchronized void screenShown() { reopen = false; }
     /** true once: and the flag is down (the home opens the screen now) */
     synchronized boolean takeReopen() { boolean r = reopen; reopen = false; return r; }
-    synchronized Options options() { Options o = new Options(); o.extras = options.extras; o.answers.putAll(options.answers); return o; }
+    synchronized Options options() {
+        Options o = new Options(); o.extras = options.extras; o.answers.putAll(options.answers);
+        o.picks = options.picks == null ? null : new java.util.ArrayList<>(options.picks);
+        return o;
+    }
 
     synchronized List<Step> steps() {
         List<Step> out = new ArrayList<>();
@@ -525,6 +546,7 @@ final class SetupRunner {
         if (!"FULL".equals(saved.get("kind"))) return false;
         Options o = new Options();
         o.extras = !"0".equals(saved.get("extras"));
+        if (saved.containsKey("picks")) o.picks = sa.urtv.home.SuggestedApps.parse(saved.get("picks"));   // a run saved before 4.3 has none: the first ticks
         synchronized (this) {
             if (running) return false;
             running = true;
@@ -586,7 +608,7 @@ final class SetupRunner {
 
     /** The pointer and every finished step, written before a step starts and after it ends (all or nothing: FileStore). */
     private void writeState(SetupEngine.Store store, Options o, String at, String phase) throws IOException {
-        StringBuilder b = new StringBuilder("kind=FULL\nextras=" + (o.extras ? "1" : "0") + "\nat=" + at + "\nphase=" + phase + "\ntime=" + System.currentTimeMillis() + "\n");
+        StringBuilder b = new StringBuilder("kind=FULL\nextras=" + (o.extras ? "1" : "0") + (o.picks == null ? "" : "\npicks=" + sa.urtv.home.SuggestedApps.join(o.picks)) + "\nat=" + at + "\nphase=" + phase + "\ntime=" + System.currentTimeMillis() + "\n");
         for (Step s : steps()) {
             if (s.state == State.DONE || s.state == State.SKIPPED || s.state == State.FAILED) b.append("s.").append(s.id).append('=').append(s.state).append('\t').append(oneLine(s.reason)).append('\n');
         }

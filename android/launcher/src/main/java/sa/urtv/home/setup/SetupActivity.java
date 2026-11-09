@@ -43,6 +43,8 @@ public class SetupActivity extends Activity {
     private TextView status, detail, start, undo;
     private boolean running;     // a run is shown as going (this screen's thread only)
     private boolean extras = true;
+    /** 4.3 «تطبيقات مقترحة»: the ticked boxes (SuggestedApps ids), SmartTube and TV Bro at first as before */
+    private final List<String> picks = new java.util.ArrayList<>(sa.urtv.home.SuggestedApps.defaults(android.os.Build.VERSION.SDK_INT));
     private String mode = "";
     private final List<TextView> stepViews = new ArrayList<>();       // each step's label
     private final List<TextView> stepSubs = new ArrayList<>();        // the line under the step in progress
@@ -222,20 +224,24 @@ public class SetupActivity extends Activity {
         add(text(S.t("هذا ما سنفعله في تلفزيونك، بالترتيب. ما تغيّر شيء بعد:"), 15, "Medium", TEXT), dp(8));
         List<String> plan = SetupRunner.planLines(p, TR);
         for (int i = 0; i < plan.size(); i++) add(text(digits((i + 1) + ". " + plan.get(i)), 14, "Regular", TEXT), dp(8));
-        final boolean already = p.tvbro && p.smarttube;
-        final TextView box = button("");
-        final String words = SetupRunner.extrasLine(p, TR);
-        box.setText(already ? words : (extras ? "☑ " : "☐ ") + words);
-        box.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (already) return;
-                extras = !extras;
-                box.setText((extras ? "☑ " : "☐ ") + words);
-            }
-        });
-        add(box, dp(12));
+        // 4.3: a box per suggested app the setup can install (OK ticks or unticks it); one already on the TV says so and is left
+        add(text(S.t("تطبيقات مقترحة: علّم ما تبي نثبّته معها"), 15, "Medium", TEXT), dp(8));
+        for (final sa.urtv.home.SuggestedApps.App a : sa.urtv.home.SuggestedApps.forSetup(android.os.Build.VERSION.SDK_INT)) {
+            final boolean have = p.have.contains(a.id);
+            final TextView box = button("");
+            final String words = a.name + " · " + TR.apply(a.why);
+            box.setText(have ? a.name + " · " + S.t("مثبّت من قبل: نتركه") : (picks.contains(a.id) ? "☑ " : "☐ ") + words);
+            box.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    if (have) return;
+                    if (!picks.remove(a.id)) picks.add(a.id);
+                    box.setText((picks.contains(a.id) ? "☑ " : "☐ ") + words);
+                }
+            });
+            add(box, dp(8));
+        }
         final TextView begin = button(S.t("ابدأ"));
-        begin.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { SetupRunner.get().confirm(extras); } });
+        begin.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { SetupRunner.get().confirm(new java.util.ArrayList<>(picks)); } });
         add(begin, dp(12));
         TextView no = quiet(S.t("إلغاء"));
         no.setOnClickListener(new View.OnClickListener() { public void onClick(View v) { SetupRunner.get().cancel(); } });
@@ -537,6 +543,7 @@ public class SetupActivity extends Activity {
         // the run itself is the runner's (one at a time, on a thread that outlives this screen): this screen starts it and shows what it says
         SetupRunner.Options o = new SetupRunner.Options();
         o.extras = extras;
+        o.picks = new java.util.ArrayList<>(picks);
         SetupRunner.Start s = SetupRunner.get().start(undoIt ? SetupRunner.Kind.UNDO : SetupRunner.Kind.FULL, o, new SetupHost(this));
         if (s != SetupRunner.Start.STARTED) {
             say("يعمل إعداد آخر الآن؛ انتظر حتى ينتهي.", GOLD);

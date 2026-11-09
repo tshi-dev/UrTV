@@ -387,6 +387,9 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { pickFavBar(); } });
         row("ترتيب التطبيقات المفضلة", "قائمة ترتّب فيها المفضلة بالأسهم", R.drawable.ic_star,
             new Runnable() { public void run() { openDockSettings(); } });
+        // 4.3 «تطبيقات مقترحة»: SmartTube, TV Bro, VLC and an empty IPTV player, each with why and its install (the home app's screen)
+        row("تطبيقات مقترحة", "تطبيقات نرشّحها، وتثبّتها من هنا", R.drawable.ic_star,
+            new Runnable() { public void run() { openSuggested(); } });
         // «أكمل المشاهدة»: on or off; turned on while the home app may not read the TV's list yet, it opens the home app's one question
         row("أكمل المشاهدة", watchNextLabel(), R.drawable.ic_play,
             new Runnable() { public void run() {
@@ -1196,6 +1199,15 @@ public class SettingsActivity extends Activity {
             startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.MainActivity").putExtra("open", what));
         } catch (RuntimeException e) {
             toast("ثبّت الواجهة الرئيسية «تلفزيونك» أولاً");
+        }
+    }
+
+    /** 4.3 «تطبيقات مقترحة»: the home app's screen (SuggestedAppsActivity) */
+    private void openSuggested() {
+        try {
+            startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.SuggestedAppsActivity"));
+        } catch (RuntimeException e) {   // not installed, or an older home without the screen
+            toast("حدّث الواجهة الرئيسية «تلفزيونك» أو ثبّتها أولاً");
         }
     }
 
