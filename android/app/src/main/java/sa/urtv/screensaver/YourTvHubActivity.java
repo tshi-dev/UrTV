@@ -39,6 +39,29 @@ public class YourTvHubActivity extends Activity {
         {"settings", "الإعدادات", "ic_settings", "#5B6677"},
     };
 
+    private String madeLang = "", madeLook = "";   // what this screen was made with: a change (the settings, the phone) makes it again
+    private final android.content.BroadcastReceiver changed = new android.content.BroadcastReceiver() {
+        @Override public void onReceive(Context c, Intent i) { staleCheck(); }
+    };
+
+    /** «اللغة» or the look changed while the hub was open or behind another screen: it is built again in the new one (step 47: it kept its old language) */
+    private void staleCheck() {
+        if (prefs == null || isFinishing()) return;
+        if (!madeLang.equals(prefs.lang()) || !madeLook.equals(prefs.look() + "|" + prefs.appearance())) recreate();
+    }
+
+    /** the remote's Settings key (176, TCL's 83 and 4077) opens our settings here (nothing else answered it on the hub) */
+    @Override public boolean onKeyDown(int code, android.view.KeyEvent e) {
+        if (e.getRepeatCount() == 0 && (code == 176 || code == 83 || code == 4077)) { open("settings"); return true; }
+        return super.onKeyDown(code, e);
+    }
+
+    @Override protected void onResume() { super.onResume(); staleCheck(); }
+    @Override protected void onDestroy() {
+        try { unregisterReceiver(changed); } catch (IllegalArgumentException ignored) { }
+        super.onDestroy();
+    }
+
     private Prefs prefs;
     private GlassStyle.Look look = GlassStyle.DARK;
     private final Map<String, Typeface> fonts = new HashMap<>();
@@ -58,6 +81,9 @@ public class YourTvHubActivity extends Activity {
         super.onCreate(b);
         getWindow().setWindowAnimations(0);
         prefs = new Prefs(this);
+        madeLang = prefs.lang();
+        madeLook = prefs.look() + "|" + prefs.appearance();
+        InternalReceivers.register(this, changed, new android.content.IntentFilter(Prefs.CHANGED));
         FrameLayout root = new FrameLayout(this);
         root.setLayoutDirection(Dir.layout());
         look = GlassSource.page(this, root);
@@ -89,7 +115,9 @@ public class YourTvHubActivity extends Activity {
                 line = new LinearLayout(this);
                 line.setOrientation(LinearLayout.HORIZONTAL);
                 line.setLayoutDirection(Dir.layout());
-                page.addView(line, new LinearLayout.LayoutParams(-1, dp(188)));
+                // the two lines share the height that is left above the hint (a weight, not 188 dp each: on a 1080p TV the fixed lines ran under the hint and hid the bottom row's own lines)
+                line.setMinimumHeight(dp(120));
+                page.addView(line, new LinearLayout.LayoutParams(-1, 0, 1f));
                 ((LinearLayout.LayoutParams) line.getLayoutParams()).bottomMargin = dp(12);
             }
             View c = card(WINDOWS[i]);
@@ -113,7 +141,7 @@ public class YourTvHubActivity extends Activity {
         column.addView(page, new LinearLayout.LayoutParams(width, 0, 1f));
         ((LinearLayout.LayoutParams) page.getLayoutParams()).gravity = Gravity.CENTER_HORIZONTAL;
         TextView hint = new TextView(this);
-        hint.setText(Words.of("الأسهم بين الأقسام  •  اختيار لفتح القسم  •  رجوع للخروج"));
+        hint.setText(Words.of("الأسهم للتنقل، واختيار للفتح، ورجوع للخروج"));   // in words: no separator sign
         hint.setTextColor(look.sub);
         hint.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         hint.setTypeface(font("Thmanyah-Regular"));
@@ -190,7 +218,7 @@ public class YourTvHubActivity extends Activity {
     /** the one line of what is true now: the market's state (MarketHours), what the matches show, «قريبًا», the look */
     private String live(String key) {
         switch (key) {
-            case "markets": return MarketHours.open(System.currentTimeMillis()) ? "السوق مفتوح" : "السوق مغلق";
+            case "markets": return MarketHours.open(System.currentTimeMillis()) ? "السوق السعودي مفتوح" : "السوق السعودي مغلق";
             case "matches": return prefs.teams().isEmpty() ? "اختر فرقك" : "فرقك أولًا";
             case "games": return GAMES_READY ? QuizActivity.NAME : "قريبًا";
             default: return Prefs.lookLabel(prefs.look());

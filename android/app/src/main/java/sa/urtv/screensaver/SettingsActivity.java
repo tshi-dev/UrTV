@@ -345,7 +345,8 @@ public class SettingsActivity extends Activity {
         row("اجعل UrTV الشاشة الرئيسية", isHome ? "✓ UrTV هو الشاشة الرئيسية" : "اضغط وكمّل إعداد تلفزيوني (دقيقتان)", R.drawable.ic_eye,
             new Runnable() { public void run() { if (!isHome) openSetup(); } });
         // «UrTV النظيف»: the essentials only; the launcher's CleanActivity says what it does first and asks for the confirmation (and the family PIN)
-        row("\u2066UrTV\u2069 النظيف", "الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة", R.drawable.ic_eye, new Runnable() { public void run() { openClean(); } });
+        // the line says «مفعّل» (the on/off rule: the value starts with the state word) while the mask is on; the home answers (read once per visit, the last answer kept)
+        row("\u2066UrTV\u2069 النظيف", Boolean.TRUE.equals(homeCleanSeen()) ? "مفعّل الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة" : "الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة", R.drawable.ic_eye, new Runnable() { public void run() { openClean(); } });
         // «المظهر»: one page for everything about the look of both apps (AppearanceActivity), each choice with its picture
         row("المظهر", Prefs.lookLabel(prefs.look()) + " · " + Prefs.appearanceLabel(prefs.appearance()), R.drawable.ic_eye,
             new Runnable() { public void run() { startActivity(new Intent(SettingsActivity.this, AppearanceActivity.class)); } });
@@ -648,6 +649,38 @@ public class SettingsActivity extends Activity {
             }, "hub-adhan").start();
         }
         return adhanSeen;
+    }
+
+    private Boolean cleanSeen;
+    private boolean cleanAsked;
+
+    /** «UrTV النظيف» is on in the home: the last answer at once, one question on a thread each time the settings come to the front (as the adhan's) */
+    private Boolean homeCleanSeen() {
+        if (cleanSeen == null) {
+            int v = getSharedPreferences("hub_seen", MODE_PRIVATE).getInt("clean_on", -1);
+            cleanSeen = v < 0 ? null : v == 1;
+        }
+        if (!cleanAsked) {
+            cleanAsked = true;
+            new Thread(() -> {
+                Boolean now = null;
+                android.database.Cursor c = null;
+                try {
+                    c = getContentResolver().query(Uri.parse("content://sa.urtv.home.nowplaying/clean_on"), null, null, null, null);
+                    if (c != null && c.moveToFirst() && c.getColumnIndex("on") >= 0) now = c.getInt(c.getColumnIndex("on")) == 1;
+                } catch (RuntimeException ignored) {
+                } finally { if (c != null) c.close(); }
+                final Boolean answer = now;
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()) return;
+                    boolean changed = !java.util.Objects.equals(answer, cleanSeen);
+                    cleanSeen = answer;
+                    getSharedPreferences("hub_seen", MODE_PRIVATE).edit().putInt("clean_on", answer == null ? -1 : answer ? 1 : 0).apply();
+                    if (changed) render();
+                });
+            }, "hub-clean").start();
+        }
+        return cleanSeen;
     }
 
     private Boolean homeAdhanOn() {

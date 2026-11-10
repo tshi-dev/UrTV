@@ -291,7 +291,8 @@ public class AppearanceActivity extends Activity {
         }), tileParams());
         int own = Own.count(this);
         final boolean only = Own.ONLY.equals(Own.mode(this));
-        String ownName = own == 0 ? w("صوري") : only ? w("صوري فقط") : w("صوري مع صورنا");
+        // named by where they show: the screensaver's and the home's tiles sit one above the other and were both «صوري» (step 47: the wrong one was pressed)
+        String ownName = own == 0 ? w("صوري في شاشة التوقف") : only ? w("صوري فقط في شاشة التوقف") : w("صوري مع صورنا في شاشة التوقف");
         row.addView(tile("own", new Mock(Mock.PHOTOS, "own", look), ownName, own > 0, v -> {
             if (Own.count(this) == 0) { toast(w("لا صور لك بعد. تضاف من الجوال.")); return; }
             prefs.setOwnMode(only ? Own.MIX : Own.ONLY);
@@ -313,7 +314,7 @@ public class AppearanceActivity extends Activity {
         // «صوري» of the home's own: with ours, only, or none (never chosen: as the screensaver's), one tile that goes round
         LinearLayout mineRow = tiles();
         final String mode = prefs.homeMineEffective();
-        String mineName = Own.count(this) == 0 ? w("صوري") : "only".equals(mode) ? w("صوري فقط") : "off".equals(mode) ? w("بدون صوري") : w("صوري مع صورنا");
+        String mineName = Own.count(this) == 0 ? w("صوري في الرئيسية") : "only".equals(mode) ? w("صوري فقط في الرئيسية") : "off".equals(mode) ? w("بدون صوري في الرئيسية") : w("صوري مع صورنا في الرئيسية");
         mineRow.addView(tile("home:mine", new Mock(Mock.PHOTOS, "own", look), mineName, !"off".equals(mode) && Own.count(this) > 0, v -> {
             if (Own.count(this) == 0) { toast(w("لا صور لك بعد. تضاف من الجوال.")); return; }
             prefs.setHomeMine("mix".equals(mode) ? "only" : "only".equals(mode) ? "off" : "mix");

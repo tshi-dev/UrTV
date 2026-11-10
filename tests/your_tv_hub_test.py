@@ -44,14 +44,36 @@ check("the same page as the settings: GlassSource.page, the 44 sp title «تلف
 check("the grid walks by explicit focus ways in both directions (index 0 is the start side: right in Arabic, left in English), no wrapping",
       all(f in hub for f in ("c.setNextFocusUpId(", "c.setNextFocusDownId(", "c.setNextFocusLeftId(cards.get(rtl ? toEnd : toStart).getId());", "c.setNextFocusRightId(cards.get(rtl ? toStart : toEnd).getId());")))
 check("every word it says is in the English table and in Words (the settings' own mechanism)",
-      all(f'S.n("{w}")' in words for w in ("الألعاب", "قريبًا", "السوق مفتوح", "السوق مغلق", "اختر فرقك", "فرقك أولًا", "تعذّر الفتح"))
-      and all(re.search(rf"(?m)^{w}\t", tsv) for w in ("الألعاب", "قريبًا", "السوق مفتوح", "السوق مغلق", "اختر فرقك", "فرقك أولًا", "تعذّر الفتح", "الأسواق", "المباريات", "الإعدادات", "تلفزيونك")))
+      all(f'S.n("{w}")' in words for w in ("الألعاب", "قريبًا", "السوق السعودي مفتوح", "السوق السعودي مغلق", "اختر فرقك", "فرقك أولًا", "تعذّر الفتح"))
+      and all(re.search(rf"(?m)^{w}\t", tsv) for w in ("الألعاب", "قريبًا", "السوق السعودي مفتوح", "السوق السعودي مغلق", "اختر فرقك", "فرقك أولًا", "تعذّر الفتح", "الأسواق", "المباريات", "الإعدادات", "تلفزيونك")))
 check("no «·» between texts in what it shows", "·" not in re.sub(r"/\*.*?\*/|//[^\n]*", "", hub, flags=re.S))
 nm = (APP / "NextMatch.java").read_text(encoding="utf-8")
 check("«المباريات» shows the real next match of the followed teams (NextMatch, cached 30 min), the generic line stays when nothing is known",
       "nextMatchLine(v)" in hub and "NextMatch.cached(" in hub and "KEEP_MS = 30L * 60 * 1000" in nm and "TEAMS_MAX = 3" in nm
       and "if (!same || when <= now) return null;" in nm and 'status.matches(".*(postp|cancel|abandon|suspend).*")' in nm)
 check("the next-match line has no «·»", "·" not in re.sub(r"/\*.*?\*/|//[^\n]*", "", (APP / "NextMatchTime.java").read_text(encoding="utf-8"), flags=re.S))
+# ---- step 47 (a real TCL): the bottom row was cut by the hint; the language did not follow; the Settings key did nothing; the markets line named no market
+check("the two lines share the height above the hint (weights, not 188 dp each); the hint is in words, with no separator sign",
+      "page.addView(line, new LinearLayout.LayoutParams(-1, 0, 1f));" in hub and "line.setMinimumHeight(dp(120));" in hub and "LayoutParams(-1, dp(188))" not in hub
+      and 'Words.of("الأسهم للتنقل، واختيار للفتح، ورجوع للخروج")' in hub and "•" not in hub.replace("// the 5 % safe area", ""))
+def fits(h_px, density):   # the arithmetic of the page's boxes at one screen: where the hint starts, the title block, what each of the two lines gets, the smallest a card needs
+    sp = density
+    hint = 14 * sp * 1.3 + (10 + 8) * density + h_px * 0.05
+    title = 32 * density + 44 * sp * 1.3 + 16 * density + 16 * density
+    gaps = 2 * 12 * density
+    each = (h_px - hint - title - gaps) / 2
+    need = (20 + 20 + 96) * density   # a card: 20 dp above and below its 96 dp mark
+    return each, need, h_px - hint
+ok = True
+for h, d in ((1080, 2.0), (720, 1.0), (720, 1.333), (1080, 1.0)):
+    each, need, bottom = fits(h, d)
+    ok = ok and each >= need and bottom <= h * 0.95 + 1
+check("at 1920x1080 (density 2), 1280x720 (density 1 and 1.33) the two lines each get at least the 136 dp a card needs, and the last ends above the hint, inside the 5 % safe area: " + str([tuple(round(v) for v in fits(h, d)) for h, d in ((1080, 2.0), (720, 1.0), (720, 1.333))]), ok)
+check("the hub is made again when «اللغة» or the look changes (the broadcast, and on return), and the remote's Settings key (176, 83, 4077) opens our settings there",
+      "madeLang" in hub and "InternalReceivers.register(this, changed, new android.content.IntentFilter(Prefs.CHANGED))" in hub and "if (!madeLang.equals(prefs.lang())" in hub and "recreate();" in hub
+      and "code == 176 || code == 83 || code == 4077" in hub and 'open("settings")' in hub)
+check("«الأسواق» names the market it means (the Saudi one: Sunday to Thursday 10:00 to 15:00), as its line says", '"السوق السعودي مفتوح" : "السوق السعودي مغلق"' in hub)
+
 if not shutil.which("javac"):
     print("SKIP market hours: no javac")
     sys.exit(1 if failed else 0)

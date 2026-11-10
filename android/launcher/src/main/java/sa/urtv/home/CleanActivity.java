@@ -49,6 +49,12 @@ public class CleanActivity extends Activity {
         render();
     }
 
+    /** Home pressed (or another app asked for): this screen is done, not left behind the home to come back to the front when Settings opens later (step 47) */
+    @Override protected void onUserLeaveHint() {
+        super.onUserLeaveHint();
+        finish();
+    }
+
     @Override
     public void onBackPressed() {
         if (customising) { customising = false; render(); return; }   // Back from the sheet goes back to the description

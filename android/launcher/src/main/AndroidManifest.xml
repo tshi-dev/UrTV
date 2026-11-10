@@ -287,6 +287,7 @@
             android:name=".CleanActivity"
             android:exported="true"
             android:permission="sa.urtv.home.OPEN_CLEAN"
+            android:excludeFromRecents="true"
             android:label="UrTV النظيف"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Material.NoActionBar" />
@@ -295,6 +296,7 @@
         <activity
             android:name=".setup.FactoryActivity"
             android:exported="false"
+            android:excludeFromRecents="true"
             android:label="تخلّص من واجهة المصنع"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Material.NoActionBar" />
@@ -303,6 +305,7 @@
              permission (same key): no other app can. -->
         <activity
             android:name=".UpdateActivity"
+            android:launchMode="singleTop"
             android:exported="true"
             android:permission="sa.urtv.home.OPEN_UPDATE"
             android:label="تحديث تلفزيوني"

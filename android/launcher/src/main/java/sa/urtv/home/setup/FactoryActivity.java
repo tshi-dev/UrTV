@@ -29,6 +29,12 @@ import sa.urtv.home.S;
  * «نعم». When it is on, the same screen shows the ledger and «رجّع واجهة المصنع» (one press, the PIN when set). It never uninstalls and never touches the protected features.
  */
 public class FactoryActivity extends Activity {
+    /** Home pressed: the screen is done, not left behind the home (step 47: a clean-mode screen came back to the front when Settings opened later) */
+    @Override protected void onUserLeaveHint() {
+        super.onUserLeaveHint();
+        finish();
+    }
+
     @Override protected void attachBaseContext(android.content.Context b) { super.attachBaseContext(S.wrap(b)); }
 
     private GlassStyle.Look look;

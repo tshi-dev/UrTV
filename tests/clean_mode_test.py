@@ -41,7 +41,10 @@ check("the top row stays closed with one button (the settings, in the control ce
       and "if (cleanShown) openOurSettings(false);" in main and "applyClean();   // «UrTV النظيف» (a mask over what the settings above just applied)" in main
       and "if (tvRowsBox == null || cleanShown) return;" in main and "if (cleanShown) { nudge.setVisibility(View.GONE); return; }" in main and "if (cleanShown) { nowCard.setVisibility(View.GONE); return; }" in main)
 check("the greeting only when kept, never its weather line; the Wi-Fi mark only when kept",
-      "CleanMode.keep(this).contains(CleanMode.GREETING) ? View.VISIBLE : View.GONE" in main and "netIcon.setVisibility(on && !keep.contains(CleanMode.WIFI) ? View.GONE : View.VISIBLE)" in main)
+      "CleanMode.keep(this).contains(CleanMode.GREETING) ? View.VISIBLE : View.GONE" in main and "maskVis(netIcon, on && !keep.contains(CleanMode.WIFI) ? View.GONE : (on ? View.VISIBLE : null))" in main)
+check("«off» puts every masked view back exactly as it was (step 47: the quick-buttons box was narrower after: x 96-240, was 104-264): each view's visibility is remembered the first time the mask touches it and restored, never set to «visible» by default; the bar is unlocked, measured again and laid out",
+      "private final java.util.Map<View, Integer> cleanWas" in main and "if (!cleanWas.containsKey(v)) cleanWas.put(v, v.getVisibility());" in main and "for (java.util.Map.Entry<View, Integer> e : cleanWas.entrySet()) e.getKey().setVisibility(e.getValue());" in main
+      and "pillBar.lock(false); pillBar.requestLayout();" in main and "phonePill.setVisibility(on ? View.GONE : View.VISIBLE)" not in main and "else apply();" in (HOME / "PillBar.java").read_text(encoding="utf-8"))
 check("the settings' row (UrTV النظيف, in «الشاشة الرئيسية») opens the launcher's screen; nothing is set from there",
       'row("\\u2066UrTV\\u2069 النظيف"' in saver and 'setClassName("sa.urtv.home", "sa.urtv.home.CleanActivity")' in saver and "CleanMode" not in saver)
 if not shutil.which("javac"):

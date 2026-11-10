@@ -54,6 +54,7 @@ final class PillBar extends LinearLayout {
     void lock(boolean on) {
         locked = on;
         if (on) { removeCallbacks(closer); if (anim != null) anim.cancel(); open = 0f; apply(); }
+        else apply();   // unlocked: every button measured again at the openness of now (the row is as it was before the mask)
     }
 
     boolean isOpen() { return open >= 1f; }

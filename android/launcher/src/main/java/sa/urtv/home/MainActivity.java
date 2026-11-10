@@ -1782,13 +1782,17 @@ public class MainActivity extends Activity {
      * After «تحديث تلفزيوني» replaced this app, the first start finds the «update in progress» record: the update screen opens once and says how it
      * went (it removes the record). Nothing happens without a record, so a normal start costs one missing-file check.
      */
+    private static long updateResultAt;   // when the update screen was last opened from here (the singleTop UpdateActivity is the other half: step 47 saw two within 0.16 s)
+
     private void showUpdateResult() {
         try {
+            if (android.os.SystemClock.elapsedRealtime() - updateResultAt < 3000) return;   // asked twice in a row (a resume and the one after it): once
             if (sa.urtv.home.phone.PhoneUpdater.isBusy()) return;   // an update running in this very process: its own screen says how it goes
             if (sa.urtv.home.phone.PhoneUpdater.confirmKnown()) return;   // an install confirm is still pending: the record stays unread until it is answered
             long mine = sa.urtv.home.phone.PhoneUpdater.installedCode(this, getPackageName());
             if (sa.urtv.home.phone.UpdateRecords.peek(new sa.urtv.home.phone.UpdateStore(this), mine).kind != sa.urtv.home.phone.UpdateRecords.Kind.NONE) {
-                launchGuarded(ParentalPolicy.UPDATE_SCREEN, new Intent(this, UpdateActivity.class), S.t("تحديث تلفزيوني"));   // the result of an update: behind «قفل الإعدادات» like the rest of the screen
+                updateResultAt = android.os.SystemClock.elapsedRealtime();
+                launchGuarded(ParentalPolicy.UPDATE_SCREEN, new Intent(this, UpdateActivity.class).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), S.t("تحديث تلفزيوني"));   // the result of an update: behind «قفل الإعدادات» like the rest of the screen
             }
         } catch (RuntimeException ignored) { }
     }
@@ -2877,29 +2881,48 @@ public class MainActivity extends Activity {
         cleanShown = on;
         java.util.Set<String> keep = CleanMode.keep(this);
         if (pillBar != null) pillBar.lock(on);   // the row stays closed: only the one button
-        if (phonePill != null) phonePill.setVisibility(on ? View.GONE : View.VISIBLE);
-        if (nowCard != null && on) nowCard.setVisibility(View.GONE);
+        maskVis(phonePill, on ? View.GONE : null);
+        if (nowCard != null && on) maskVis(nowCard, View.GONE);
         if (centerPill != null) {   // the control center's pill is the settings button while the mask is on
             centerPill.setIcon(on ? R.drawable.ic_settings : R.drawable.ic_center);
             centerPill.setLabel(on ? S.t("الإعدادات") : ControlText.NAME);
-            centerPill.setVisibility(on && !keep.contains(CleanMode.SETTINGS) ? View.GONE : View.VISIBLE);
+            maskVis(centerPill, on && !keep.contains(CleanMode.SETTINGS) ? View.GONE : (on ? View.VISIBLE : null));
         }
-        if (netIcon != null) netIcon.setVisibility(on && !keep.contains(CleanMode.WIFI) ? View.GONE : View.VISIBLE);
+        maskVis(netIcon, on && !keep.contains(CleanMode.WIFI) ? View.GONE : (on ? View.VISIBLE : null));
         if (on) {
-            if (weatherLine != null) weatherLine.setVisibility(View.GONE);
-            if (zoneLine != null) zoneLine.setVisibility(View.GONE);
-            if (nudge != null) nudge.setVisibility(View.GONE);
+            maskVis(weatherLine, View.GONE);
+            maskVis(zoneLine, View.GONE);
+            maskVis(nudge, View.GONE);
             footballHeader();
         }
-        if (tvRowsBox != null) tvRowsBox.setVisibility(on ? View.GONE : View.VISIBLE);
+        maskVis(tvRowsBox, on ? View.GONE : null);
         if (homeCard != null) homeCard.hide(on && !keep.contains(CleanMode.CARD));
         if (was && !on) {   // back to the full home: what the mask hid is drawn again from the person's own settings
+            restoreClean();
             updateClock();
             loadTvRows();
             updateHomeNudge(false);
             updateNowPlaying();
             wireFocus();
         }
+    }
+
+    /** what every view the mask touches showed before it: put back exactly (not «visible» by default: a button the person had hidden stays hidden), so the home is as it was */
+    private final java.util.Map<View, Integer> cleanWas = new java.util.LinkedHashMap<>();
+
+    /** hide or show a view for the mask (vis != null), remembering what it showed the first time; null = leave it (restoreClean puts it back) */
+    private void maskVis(View v, Integer vis) {
+        if (v == null || vis == null) return;
+        if (!cleanWas.containsKey(v)) cleanWas.put(v, v.getVisibility());
+        v.setVisibility(vis);
+    }
+
+    /** the mask comes off: every view as it was before, the quick-button bar measured again (its width is its buttons' own) */
+    private void restoreClean() {
+        for (java.util.Map.Entry<View, Integer> e : cleanWas.entrySet()) e.getKey().setVisibility(e.getValue());
+        cleanWas.clear();
+        if (pillBar != null) { pillBar.lock(false); pillBar.requestLayout(); }
+        if (pillRow != null) pillRow.requestLayout();
     }
 
     /** The football home: the weather has its own card and the clock sits higher, so the greeting and its weather line are not shown. */

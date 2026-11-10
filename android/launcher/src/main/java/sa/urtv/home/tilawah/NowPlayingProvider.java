@@ -39,6 +39,11 @@ public class NowPlayingProvider extends ContentProvider {
             a.addRow(new Object[]{new Prefs(getContext()).adhanOn() ? 1 : 0});
             return a;
         }
+        if (uri != null && "clean_on".equals(uri.getLastPathSegment())) {   // the settings' «UrTV النظيف» row says when it is on (read only; CleanActivity changes it)
+            MatrixCursor a = new MatrixCursor(new String[]{"on"});
+            a.addRow(new Object[]{getContext().getSharedPreferences("clean_mode", android.content.Context.MODE_PRIVATE).getBoolean("on", false) ? 1 : 0   /* CleanMode.PREFS / ON, read only */});
+            return a;
+        }
         if (uri != null && "adhan".equals(uri.getLastPathSegment())) {
             MatrixCursor a = new MatrixCursor(new String[]{"prayer", "any_key"});
             if (MusicService.adhanLive()) a.addRow(new Object[]{MusicService.adhanPrayer(), new Prefs(getContext()).adhanStopKey() ? 1 : 0});
