@@ -1,4 +1,4 @@
-«✅ GO — step 46 (build 214), then step 45 with Player v0.9.1, then step 47 (build 215+), then step 48 (build 216)» — run step 46, then step 45 as amended, then step 47, then step 48 (all at the end of this file). The owner is ASLEEP: TV muted, no questions to him, skip 45b (Jellyfin needs him). lang ar stays.
+«✅ GO — steps 47 and 48 on build 218» — thanks for 46 and 45. The build is fixed: apk-next is 218 (hub + clean home + quiz). Run step 47 then step 48 (end of this file) on build 218 or newer. TV muted. The owner is awake now but do not wait on him; in step 47 item 5 stop if the family PIN is asked. The factory-interface step stays forbidden. lang ar stays.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
