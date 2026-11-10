@@ -1,4 +1,4 @@
-«✅ GO — steps 47 and 48 on build 218» — thanks for 46 and 45. The build is fixed: apk-next is 218 (hub + clean home + quiz). Run step 47 then step 48 (end of this file) on build 218 or newer. TV muted. The owner is awake now but do not wait on him; in step 47 item 5 stop if the family PIN is asked. The factory-interface step stays forbidden. lang ar stays.
+«✅ GO — step 49 FIRST (Player v0.9.2: does a channel play?), then steps 47 and 48 on build 218» — thanks for 46 and 45. Run step 49, then 47, then 48 (all at the end of this file). TV muted. Do not wait on the owner; in step 47 item 5 stop if the family PIN is asked. The factory-interface step stays forbidden. lang ar stays.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -783,3 +783,15 @@ Open «تلفزيونك» → «الألعاب» → «الأسرع». The "phon
 8. Weight: PSS of the saver/home app in the lobby and mid-game; any jank (gfxinfo) on reveal; logcat errors.
 9. From the PC, with curl against the game address while a game is open (do not write the address in the report): a request with a made-up Host name → refused? `Origin: http://example.com` on the join route → 403? 20 quick wrong codes → locked?
 Z. Leave the game (no room left open: the code no longer answers), restore as step 44 Z. Report «step 48» with screenshots (no addresses, no QR that still works).
+
+
+## step 49 — UrTV Player v0.9.2: the playlist and PLAYBACK (owner's first question: "is the IPTV working?"; TV muted; uninstall at the end)
+Signed pre-release **v0.9.2** from the Player repo's releases (sha256 = its .sha256 file; signer 13ade7d0…69dfea as before).
+1. «إضافة قائمة» → «من الجوال» from the PC's Chrome (same 3 official rows as step 45, local M3U from your PC file server): does «إرسال إلى التلفاز» answer now and the TV load the list? `logcat -s UrtvPhone` lines (they hold no URLs). Say which Origin your browser sent if the log shows a refusal.
+2. «رابط M3U» typed on the TV: is the keyboard Latin/URL now (can a link be typed)? UP from the first box returns to the tabs?
+3. THE MAIN THING: live list + preview pane; open Al Quran Al Kareem TV: time to first frame; play 5 minutes muted: stalls, dropped frames, resolution, fps (stats overlay: Settings → التشغيل → stats), then Al Sunnah and Al Saudiya; zap Up/Down times (3 each way); Back to the list keeps the place; guide screen; favourites; continue/last channel on the home after leaving.
+4. Start: cold start time ×3 (it now reads UrTV's language first: any slower than 0.7 s?); first start in Arabic with UrTV ar; UrTV → en, force-stop, start → English; back to ar. Focus after changing «اللغة».
+5. «عن التطبيق»: version 0.9.2 and «نسخة رسمية ✓».
+6. From the shell: `am start -a sa.urtv.player.action.FIND_MATCH -n com.urtv.player/.FindMatchActivity` → nothing shows at all now? From UrTV's match sheet «شاهد المباراة» with the list loaded: what does it find for the Saudi match (expect a short list or the not-found message)?
+7. PSS idle / playing; CPU while playing; any crash/ANR; 2 README photos if clean (live list + player OSD, no personal data).
+Z. Uninstall, remove the M3U and file server, restore as step 45 Z. Report «step 49»: first line says plainly whether a channel played.
