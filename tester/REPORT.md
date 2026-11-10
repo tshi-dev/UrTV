@@ -2011,3 +2011,59 @@ From TCL's picker «TV» → OK:
 
 ### 3 No tuner set up
 `TVActivity` opens on TCL's consent page («Enjoy free fast channels. By using Live TV, you agree to our terms and policy.» with «Exit» / «Agree»). **I did not press «Agree»** (my rule: no legal consent without the owner). A screenshot of it comes back empty (protected). So no tuner picture or scan screen was seen.
+
+## step 52 — re-check on build 228 (TV muted during the tests; the owner used the TV for 40 min in the middle and I stopped)
+**Most of steps 47/48 is fixed. Not ALL PASS: 6 problems (a question still ends early with a background phone, screensaver still starts blank, tray jank unchanged, English country names, a shadow box under the home card, 2 quiz drawing faults the owner photographed), small notes.**
+
+### A Quiz «الأسرع»
+Players: the PC's Chrome page (real page, its window in the background the whole time) + 2 scripted phones (same calls as the page; the answer call now carries the question tag `x`, without it the TV says `closed`).
+1. ✓ Lobby: the full address with the room code, large, under the QR. Opening it in Chrome gave the join page
+2. ✓ 6 wrong codes: 5 × 404, the 6th `429` with a real page «محاولات كثيرة، جرّب بعد دقيقة / Too many tries, try again in a minute». 40 quick join requests while locked: **40 of 40 answered (429, `{"ok":false,"e":"locked"}`), no reset**
+3. **✗ Background phone, partly.** Questions nobody answered waited the full 20 s (4 of them) ✓. **But question 3 of the first round ended 10 s in, when the 2 scripted phones had answered and Omar (Chrome, in the room: `pl 3`, `ans 2 of 3`) had not.** His page at the next look showed «Question 4 / 5». No phantom points: Omar ended on 0 ✓ (step 48: +809)
+   - Small: after «العب مرة أخرى» Omar (no answer all round) was dropped and his page went back to the join form with no message; the round then ran with 2
+   - Small: the podium says «الفائز: Omar» when all three have 0
+4. ✓ Reveal: ج and د fully visible above the hint line; who-chose-what squares visible (two players on two different wrong answers: a red square on أ, an orange one on ب); reveal 4 s, then ranking 4 s. Small: «انتهى الوقت» is shown also when the question ended early
+5. ✓ Podium: winner in the middle and tallest, 2nd on the left, 3rd on the right, all inside the safe area (blocks end at y 960), «الترتيب الكامل» below them
+6. ✓ Digits: questions and answers in 0-9 («ما ناتج 56 + 29؟», 95/85/75/73), the duplicate name «سارة 2». Note: the phone page in Arabic writes the room code in Arabic-Indic digits («الغرفة ٦٩١٢»)
+   - Small: «ما ناتج 250 - 175؟» is laid out as `؟175 – 250 ما ناتج`, so the eye can read 175 − 250
+7. ✓ HOME mid-game → the phones' state is `paused`; back in the game the card «اللعبة متوقفة» is there. ✓ Podium kept the screen on for 3 minutes with idle at 45 s (awake, no screensaver). ✓ «ع / EN» on the join page flips the page (`?l=ar`)
+8. ✓ No Wi-Fi drop during or after this run. The only disconnect in the TV's log is step 48's: `11-10 20:34:10 NETWORK_DISCONNECTION_EVENT local_gen=true reason=3:DEAUTH_LEAVING`, back at 20:36:43 (my ADB had been failing since about 20:23)
+- **✗ Two drawing faults the owner photographed, measured here:**
+  - Ranking: the orange rank box of place 1 has no black line on its right edge (orange up to x 1823, then the page colour; 6 px of black above and below). Places 2 and 3 are black boxes, so it only shows on place 1
+  - Answer letters are not centred in their 96 px tags, vertically: أ 7 px high, د 7.5 px low, ب 18 px low, ج 19 px low (its tail ends 3 px from the tag's bottom). Horizontally they are centred (0–1.5 px)
+- Setup page: the choices of the last game are remembered ✓; a picked choice under the focus now shows both ✓
+- «إنهاء اللعبة» on the pause card goes to the podium; Back from there closes the room (the code then gets no answer) ✓
+
+### B ✓ Hub
+Both rows fully above the hint (the lines of «الألعاب» and «الإعدادات» end at y 827, hint at 940); no «•» («الأسهم للتنقل، واختيار للفتح، ورجوع للخروج»); «السوق السعودي مغلق»; the open hub followed ar → en at once; Settings key (83) from the hub → our settings.
+
+### C ✓ Clean home
+- The settings row says «مفعّل …» when on ✓. Small: it changes only after the page is opened again (right after «فعّل», and right after turning off, the old line is still there)
+- After turning it off the quick-buttons box is back at x 104–264 ✓
+- A clean screen left open, then HOME, then Settings: the settings came, not the clean screen ✓
+
+### D Memory tier
+`ramtier: auto (in use: mid)` ✓ (as expected).
+| | low | mid |
+|---|---|---|
+| tray scroll janky | 8.6 % (40/48/65 ms) | 8.4 % (40/48/65 ms) |
+| screensaver idle CPU (6 samples, 60 s) | 7 % avg (one 42 %, five 0) | 11 % avg (3–6 %, one 47 %) |
+| screensaver PSS | 48 MB | 46 MB |
+| home PSS (front / behind) | 78 / 65 MB | 77 / 64 MB |
+- Transitions, the photo cross-fade and clock seconds: **not judged** (two screenshots 1.2 s apart were identical in both tiers; the clock shows no seconds in either with this TV's «seconds: off»). Needs eyes on the TV or a recording
+- Put back to `auto` on both apps
+
+### E Step 46 leftovers
+- **✗ Screensaver start still shows a blank dark page:** cold ≈1.9 s (0.8 → 2.7 s after the start), warm 1.3 s and ≈0.05 s
+- Screensaver idle CPU: 11 % (was 27 %) ✓ better
+- **✗ Tray jank 8.4 % (was 8.4 %; step 41: ≈5 %)**
+- «تطبيقات مقترحة» inside the screen ✓ (x 96 … 1824)
+- Catalogue «كل الدوريات…»: **3.5 s** (was 54 s) ✓. **✗ Many country names are English** now («United Kingdom», Albania, Andorra, Angola, Armenia, Azerbaijan, Bangladesh, Belarus, Bolivia, Costa Rica… 20+ seen)
+- Control center: not re-checked
+
+### Found on the way
+- **✗ Home: a darker box under the stocks card** (the owner asked about it). Below the card, in the card's own width (x 96 … 1018, straight side edges), the wallpaper is ≈9 % darker just under the glass and fades out by y ≈650. The card's focus box ends at y 668, the glass at 508: the shadow is drawn for the whole box. Clear on light wallpapers
+- The update page: «التحديث التلقائي للصفحة» sits right under «تحديث تلفزيوني» and one OK flips it with no question (I flipped it by mistake and put it back)
+
+### Z
+Room closed, scripted phones stopped, lang ar, updatechannel latest, ramtier auto, idle 45 s, TV muted and asleep. Settings lists as before step 47, **except two the owner seems to have changed while he used the TV (not by me, left as they are): `homeours` on → off, `walldim` 0 → 40.** No screenshots, tokens or addresses kept.
