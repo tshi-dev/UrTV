@@ -1,4 +1,4 @@
-«✅ GO — step 46 (build 214), then step 45 with Player v0.9.1» — run step 46 (end of this file), then step 45 as amended there. The owner is ASLEEP: TV muted, no questions to him, skip 45b (Jellyfin needs him). lang ar stays.
+«✅ GO — step 46 (build 214), then step 45 with Player v0.9.1, then step 47 (build 215)» — run step 46, then step 45 as amended, then step 47 (all at the end of this file). The owner is ASLEEP: TV muted, no questions to him, skip 45b (Jellyfin needs him). lang ar stays.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -757,3 +757,15 @@ Z. Restore as step 44 Z. Report «step 46».
 - Tamper/update check: say what the Player's «حول/التحديث» screen shows (official build ✓).
 - 45b (Jellyfin): SKIP tonight (needs the owner). README photos section still applies.
 Z as written (uninstall, restore). Report «step 45».
+
+
+## step 47 — build 215 (channel next; after steps 46 and 45; TV muted; owner asleep; restore in Z)
+Update to build 215 (or newer) via «تحديث تلفزيوني», then:
+1. Update cover: while the HOME app is replaced, does OUR cover stay in front until the new home is up (no Play Store/recents app visible)? Time any gap; logcat lines of the cover if it fails.
+2. «تلفزيونك» hub: open the app from the apps list: four windows الأسواق, المباريات, الألعاب, الإعدادات in a 2×2 like the settings' first screen; each opens the right place (الألعاب says «قريبًا»); D-pad moves in all four directions in ar and en; the المباريات line shows the real next match of the followed teams (compare with «مباريات»); الأسواق line open/closed matches the hour; the remote's Settings key and the control center's settings row still open the settings directly. Screenshots ar dark/light + en.
+3. «المظهر والخلفيات»: bottom row and «رجوع» inside the safe area on FIRST focus.
+4. Home photos row: its own «صوري» choice (with ours / only mine / none) works with 2 demo photos from the phone page; delete them after.
+5. «UrTV النظيف» PART A ONLY: the settings row opens a description first; focus starts on «إلغاء»; «فعّل» asks the family PIN if one is set (do NOT type the owner's PIN: if it asks, stop here and report «needs the owner»); if no PIN: turn it on, screenshot the clean home in the current look + one other look + light; «تخصيص» ticks change what stays; turn it off → the home is exactly as before (compare screenshots and the settings lists before/after).
+   **Do NOT open or run «تخلّص من واجهة المصنع» (the factory-interface step) tonight, and do not turn on USB debugging prompts for it. That drill waits for the owner.** Only screenshot its entry row if visible.
+6. Low-RAM cut is automatic only on weak TVs: just report Ram.low for this TV from logcat/`dumpsys` if printed.
+Z. Restore as step 44 Z (clean mode OFF, photos deleted, lang ar, updatechannel as found). Report «step 47».
