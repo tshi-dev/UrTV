@@ -159,7 +159,7 @@ final class QuizServer {
         if (post && path.equals("/api/answer")) {
             Map<String, String> p = form(body);
             if (!room.code.equals(p.get("c"))) { wrongCode(ip); json(c, "{\"ok\":false,\"e\":\"code\"}"); return; }
-            String e = room.answer(p.get("t"), num(p.get("q"), -1), num(p.get("a"), -1));
+            String e = room.answer(p.get("t"), num(p.get("q"), -1), num(p.get("a"), -1), p.get("x"));
             json(c, e == null ? "{\"ok\":true}" : "{\"ok\":false,\"e\":\"" + e + "\"}");
             return;
         }

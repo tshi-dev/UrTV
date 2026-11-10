@@ -386,7 +386,7 @@ function answer(i) {
   var q = st && st.q;
   if (!q || st.ph !== 'question' || q.wait || pickOf(q) >= 0 || remaining() <= 0) return;
   locked[q.i] = i; render(true);
-  api('/api/answer', { c: code, t: token, q: q.i, a: i }).then(function (r) {
+  api('/api/answer', { c: code, t: token, q: q.i, a: i, x: q.x || '' }).then(function (r) {
     if (r && r.ok) return;
     if (r && r.e === 'rate') { delete locked[q.i]; render(true); }
   }, function () { delete locked[q.i]; render(true); });

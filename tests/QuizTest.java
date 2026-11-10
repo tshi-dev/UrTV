@@ -17,12 +17,52 @@ public final class QuizTest {
     static QuizRoom.Player join(QuizRoom r, String name) { QuizRoom.Result x = r.join("1234", name, -1, null); return x.player; }
     static List<QuizRoom.Q> qs(int n) { List<QuizRoom.Q> v = new ArrayList<>(); for (int i = 0; i < n; i++) v.add(q(i % 4)); return v; }
 
+    static boolean tickReveal(QuizRoom r) { r.tick(); return r.phase == QuizRoom.Phase.REVEAL; }
+
     public static void main(String[] a) throws Exception {
         // scoring
         check("scoring: an instant right answer is 1000, one at the last second about 500, a late one never below 500",
             QuizRoom.points(0, 1) == 1000 && QuizRoom.points(20000, 1) == 500 && QuizRoom.points(10000, 1) == 750 && QuizRoom.points(25000, 1) == 500);
         check("scoring: the streak adds +50 from the 3rd right answer in a row, +100 the 4th, +150 from the 5th",
             QuizRoom.points(20000, 2) == 500 && QuizRoom.points(20000, 3) == 550 && QuizRoom.points(20000, 4) == 600 && QuizRoom.points(20000, 5) == 650 && QuizRoom.points(20000, 9) == 650);
+
+
+        // step 48: who counts for «everyone answered», and an answer must carry its own question's nonce
+        {
+        QuizRoom r = room(); QuizRoom.Player p1 = join(r, "A"), p2 = join(r, "B"), p3 = join(r, "C");
+        r.start(qs(4));
+        String x0 = r.nonce();
+        now[0] += 3000; r.answer(p1.token, 0, 0, x0); r.answer(p2.token, 0, 0, x0);
+        now[0] += 7000;   // p3 (a tab in the background) has been silent 10 s: its phone is not polling
+        check("everyone answered: a quiet third player (a background tab, silent 10 s) is still waited for: the question stays open after the other two answered",
+            r.phase == QuizRoom.Phase.QUESTION && r.answeredCount() == 2);
+        r.tick();
+        check("everyone answered: ... and it closes at 20 s as always, and the player who did not tap gets 0 points and no streak",
+            (now[0] += 10000) > 0 && (r.leftMs() == 0) && tickReveal(r) && p3.score == 0 && p3.lastPoints == 0 && p3.lastOk == null && p1.score > 0);
+        r = room(); p1 = join(r, "A"); p2 = join(r, "B"); p3 = join(r, "C"); r.start(qs(4)); x0 = r.nonce();
+        r.answer(p1.token, 0, 0, x0); r.answer(p2.token, 0, 0, x0);
+        now[0] += 5000; r.touch(p1.token); r.touch(p2.token);
+        check("everyone answered: the third answering closes the question at once", r.answer(p3.token, 0, 1, x0) == null && r.phase == QuizRoom.Phase.REVEAL);
+        r = room(); p1 = join(r, "A"); p2 = join(r, "B"); p3 = join(r, "C"); now[0] += 50000; r.touch(p1.token); r.touch(p2.token); r.start(qs(4)); x0 = r.nonce();
+        now[0] += 15000; r.touch(p1.token); r.touch(p2.token);
+        r.answer(p1.token, 0, 0, x0); r.answer(p2.token, 0, 0, x0);
+        check("everyone answered: a phone silent for over a minute (gone) is not waited for", r.phase == QuizRoom.Phase.REVEAL);
+        r = room(); p1 = join(r, "A"); p2 = join(r, "B"); p3 = join(r, "C"); r.start(qs(4)); x0 = r.nonce();
+        check("nonce: an answer without one, or with a wrong one, is refused and nobody is credited",
+            "closed".equals(r.answer(p1.token, 0, 0, null)) && "closed".equals(r.answer(p1.token, 0, 0, "zzz")) && "closed".equals(r.answer(p1.token, 0, 0, "")) && r.answeredCount() == 0);
+        r.answer(p1.token, 0, 0, x0); r.answer(p2.token, 0, 0, x0); r.answer(p3.token, 0, 0, x0);
+        r.skipReveal(); String x1 = r.nonce();
+        check("nonce: every question has its own (never the one before)", !x1.equals(x0) && !x1.isEmpty());
+        check("nonce: the retried or queued answer of question 0 (its index AND its nonce) cannot answer question 1",
+            "closed".equals(r.answer(p3.token, 0, 2, x0)) && "closed".equals(r.answer(p3.token, 1, 2, x0)) && r.answeredCount() == 0 && p3.answer < 0);
+        check("nonce: the old nonce with the new index is refused too; the new pair is taken", "closed".equals(r.answer(p3.token, 1, 2, x0)) && r.answer(p3.token, 1, 2, x1) == null && p3.answer == 2);
+        check("nonce: an answer sent with one player's token is only ever that player's (the others stay unanswered)", p1.answer < 0 && p2.answer < 0 && r.answeredCount() == 1);
+        r.finish(); r.playAgain(); r.start(qs(4)); String x2 = r.nonce();
+        check("nonce: a new game starts with a nonce never used in the last one; the old one is refused", !x2.equals(x0) && !x2.equals(x1) && "closed".equals(r.answer(p1.token, 0, 0, x0)) && "closed".equals(r.answer(p1.token, 0, 0, x1)));
+        check("state: the question carries its nonce for the phone (q.x)", r.stateFor(p1.token).contains("\"x\":\"" + x2 + "\""));
+        r = room(); r.latinDigits = true; join(r, "سارة"); QuizRoom.Player l2 = join(r, "سارة"), l3 = join(r, "سارة");
+        check("join: with Latin digits set, the number after a duplicate Arabic name is Latin (سارة 2), not Arabic-Indic", l2.name.equals("سارة 2") && l3.name.equals("سارة 3"));
+        }
 
         // join rules
         QuizRoom r = room();
@@ -211,9 +251,9 @@ public final class QuizTest {
             check("server: a body over 1 KB is refused", http(port, "POST", "/api/join", big.toString()).contains("413"));
             String j2 = http(port, "POST", "/api/join", "c=4321&n=Ben&k=1&t=");
             check("server: a second phone joins; answers are validated by the TV (closed before the game, bad index, bad token)",
-                j2.contains("\"ok\":true") && http(port, "POST", "/api/answer", "c=4321&t=" + tok + "&q=0&a=1").contains("\"e\":\"closed\"") && http(port, "POST", "/api/answer", "c=4321&t=nope&q=0&a=1").contains("\"e\":\"token\""));
+                j2.contains("\"ok\":true") && http(port, "POST", "/api/answer", "c=4321&t=" + tok + "&q=0&a=1&x=" + r.nonce()).contains("\"e\":\"closed\"") && http(port, "POST", "/api/answer", "c=4321&t=nope&q=0&a=1&x=" + r.nonce()).contains("\"e\":\"token\""));
             r.start(qs(2));
-            check("server: a right answer is taken once, the second tap says done", http(port, "POST", "/api/answer", "c=4321&t=" + tok + "&q=0&a=0").contains("\"ok\":true") && http(port, "POST", "/api/answer", "c=4321&t=" + tok + "&q=0&a=2").contains("\"e\":\"done\""));
+            check("server: a right answer is taken once, the second tap says done", http(port, "POST", "/api/answer", "c=4321&t=" + tok + "&q=0&a=0&x=" + r.nonce()).contains("\"ok\":true") && http(port, "POST", "/api/answer", "c=4321&t=" + tok + "&q=0&a=2&x=" + r.nonce()).contains("\"e\":\"done\""));
             check("server: the question state a phone reads has no right answer and shows its pick", http(port, "GET", "/api/state?c=4321&t=" + tok, null).contains("\"pick\":0") && !http(port, "GET", "/api/state?c=4321&t=" + tok, null).contains("\"rv\""));
             http(port, "POST", "/api/leave", "c=4321&t=" + tok);
             check("server: leave marks the player as gone", r.byToken(tok).left);

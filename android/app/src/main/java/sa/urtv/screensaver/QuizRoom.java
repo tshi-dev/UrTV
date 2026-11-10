@@ -16,7 +16,7 @@ final class QuizRoom {
     static final int MAX_PLAYERS = 12, NAME_MAX = 12, COLORS = 8;
     static final int QUESTION_MS = 20000, REVEAL_MS = 6000;
     static final int BASE = 500, BONUS = 500;
-    static final long CONNECTED_MS = 6000, DROP_LOBBY_MS = 120000, CODE_LIFE_AFTER_END_MS = 10 * 60 * 1000;
+    static final long GONE_MS = 60000, CONNECTED_MS = 6000, DROP_LOBBY_MS = 120000, CODE_LIFE_AFTER_END_MS = 10 * 60 * 1000;
     static final int JOIN_PER_MIN = 20, WRONG_CODE_LOCK = 5; static final long LOCK_MS = 60000;
     static final int ANSWER_PER_SEC = 5;
 
@@ -45,7 +45,7 @@ final class QuizRoom {
     private final List<Player> players = new ArrayList<>(); private long nextOrder;
     private List<Q> questions = new ArrayList<>(); int index = -1; private long qStart, qLeftWhenPaused; private Phase pausedFrom;
     private long revealAt, endAt, lockedUntil; private int wrongCodes; private final ArrayDeque<Long> joins = new ArrayDeque<>();
-    int[] counts = new int[4];
+    int[] counts = new int[4]; private String nonce = "";
 
     QuizRoom(String code, LongSupplier clock, Random rnd) { this.code = code; this.clock = clock; this.rnd = rnd; }
 
@@ -107,11 +107,15 @@ final class QuizRoom {
         return s;
     }
 
+    /** the person's digits setting (Latin 0-9): the number after a duplicate name is written in it. Set by the TV before anyone joins. */
+    volatile boolean latinDigits;
+    synchronized String nonce() { return nonce; }
+
     private String uniqueName(String n) {
         boolean ar = false;
         for (int i = 0; i < n.length(); i++) if (n.charAt(i) >= 0x0600 && n.charAt(i) <= 0x06FF) ar = true;
         String cand = n; int k = 1;
-        while (nameTaken(cand)) { k++; cand = n + " " + (ar ? arabicDigits(k) : String.valueOf(k)); }
+        while (nameTaken(cand)) { k++; cand = n + " " + (ar && !latinDigits ? arabicDigits(k) : String.valueOf(k)); }
         return cand;
     }
     private boolean nameTaken(String n) { for (Player p : players) if (p.name.equals(n)) return true; return false; }
@@ -142,7 +146,7 @@ final class QuizRoom {
     synchronized void next() {
         if (phase != Phase.REVEAL && phase != Phase.LOBBY) return;
         if (index + 1 >= questions.size()) { phase = Phase.END; endAt = clock.getAsLong(); bump(); return; }
-        index++; phase = Phase.QUESTION; qStart = clock.getAsLong();
+        index++; phase = Phase.QUESTION; qStart = clock.getAsLong(); nonce = Long.toString(rnd.nextLong() >>> 1, 36);   // a new one for every question, never reused (also across «العب مرة أخرى»)
         for (Player p : players) { p.answer = -1; p.answerMs = -1; p.waiting = false; p.lastOk = null; p.lastPoints = 0; }
         counts = new int[4]; bump();
     }
@@ -153,6 +157,15 @@ final class QuizRoom {
         return Math.max(0, QUESTION_MS - (clock.getAsLong() - qStart));
     }
     synchronized long revealLeftMs() { return phase == Phase.REVEAL ? Math.max(0, revealAt + REVEAL_MS - clock.getAsLong()) : 0; }
+
+    /** the question's own nonce (state q.x): an answer must carry it, so a late or retried one from another question, or another game, is refused */
+    synchronized String answer(String token, int q, int a, String x) {
+        if (x == null || !x.equals(nonce) || nonce.isEmpty()) {
+            Player p = byToken(token);
+            return p == null ? "token" : "closed";
+        }
+        return answer(token, q, a);
+    }
 
     /** a phone's answer: valid only for the open question, once, with an index of 0 to 3, five messages a second at most */
     synchronized String answer(String token, int q, int a) {
@@ -171,10 +184,12 @@ final class QuizRoom {
         return null;
     }
 
+    /** every player still in the game has answered. A phone that is quiet (a tab in the background polls no more, a locked screen) is still waited for: only one
+     *  that has left, or has been silent for GONE_MS, is not (step 48: a question closed under a real player whose tab was in the background). */
     private boolean allAnswered() {
         int n = 0;
         long now = clock.getAsLong();
-        for (Player p : players) if (!p.left && !p.waiting && now - p.lastSeen <= CONNECTED_MS) { n++; if (p.answer < 0) return false; }
+        for (Player p : players) if (!p.left && !p.waiting && now - p.lastSeen <= GONE_MS) { n++; if (p.answer < 0) return false; }
         return n > 0;
     }
 
@@ -282,7 +297,7 @@ final class QuizRoom {
         Q q = current();
         if ((phase == Phase.QUESTION || phase == Phase.REVEAL || phase == Phase.PAUSED) && q != null) {
             boolean open = phase == Phase.QUESTION || phase == Phase.PAUSED;
-            b.append(",\"q\":{\"i\":").append(index).append(",\"n\":").append(total()).append(",\"t\":").append(esc(q.text)).append(",\"o\":[");
+            b.append(",\"q\":{\"x\":").append(esc(nonce)).append(",\"i\":").append(index).append(",\"n\":").append(total()).append(",\"t\":").append(esc(q.text)).append(",\"o\":[");
             for (int i = 0; i < 4; i++) { if (i > 0) b.append(','); b.append(esc(q.opts[i])); }
             b.append("],\"ms\":").append(open ? leftMs() : 0).append(",\"dur\":").append(QUESTION_MS).append(",\"ans\":").append(answeredCount()).append(",\"of\":").append(playingCount())
                 .append(",\"pick\":").append(p.answer).append(",\"wait\":").append(p.waiting).append('}');
