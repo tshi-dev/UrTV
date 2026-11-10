@@ -28,7 +28,10 @@ def text(p):
 
 STUBS = {
     "android/content/Context.java": "package android.content;\npublic abstract class Context { public static final String ACTIVITY_SERVICE = \"activity\";"
-                                    " public abstract Context getApplicationContext(); public abstract Object getSystemService(String n); }\n",
+                                    " public static final int MODE_PRIVATE = 0; public abstract Context getApplicationContext(); public abstract Object getSystemService(String n);"
+                                    " public abstract android.content.SharedPreferences getSharedPreferences(String n, int m); }\n",
+    "android/content/SharedPreferences.java": "package android.content;\npublic interface SharedPreferences { String getString(String k, String d); Editor edit();"
+                                              " interface Editor { Editor putString(String k, String v); boolean commit(); } }\n",
     "android/app/ActivityManager.java": "package android.app;\npublic class ActivityManager { public boolean isLowRamDevice() { return false; }"
                                         " public void getMemoryInfo(MemoryInfo m) { } public static class MemoryInfo { public long totalMem; } }\n",
 }
@@ -82,21 +85,22 @@ check("the clock's tick: the minute guard for Wi-Fi broadcasts, the settings rea
       and "if (isDestroyed() || !resumed) return;" in tick and "clockDrawnAt = ms;" in ma and "clockReads.shutdownNow();" in ma)
 trim = ma[ma.index("public void onTrimMemory(int level)"):ma.index("private boolean wallTrimmed;")]
 check("onTrimMemory: only on a weak TV, only with another app in front (UI_HIDDEN or more): the card page and both photos let go; onResume shows a photo at once",
-      "if (level < TRIM_MEMORY_UI_HIDDEN || resumed || !Ram.low(this)) return;" in trim and "homeCard.destroy();" in trim and "thinWallpaper();" in trim and "wallFront.setImageBitmap(thumb)" in ma and "v.setImageDrawable(null);   // both photos" in ma
+      "if (level < TRIM_MEMORY_UI_HIDDEN || resumed || !Ram.tight(this)) return;" in trim and "homeCard.destroy();" in trim and "thinWallpaper();" in trim and "wallFront.setImageBitmap(thumb)" in ma and "v.setImageDrawable(null);   // both photos" in ma
       and "if (wallTrimmed || wallIndex < 0" in ma)
 mk = text(HOME / "MarketsActivity.java")
-check("markets: «عادي» at first on a weak TV, and the live pace from liveDelay(…, Ram.low(this))", "if (Ram.low(this)) liveOn = false;" in mk
-      and mk.count("MarketData.liveDelay(") == mk.count(", Ram.low(this)))") == 2)
+check("markets: «عادي» at first on a LOW TV, and the live pace from liveDelay(…, Ram.tier(this))", "if (Ram.low(this)) liveOn = false;" in mk
+      and mk.count("MarketData.liveDelay(") == mk.count(", Ram.tier(this)))") == 2)
 pf = text(SAVER / "Prefs.java")
-check("the screensaver sends #lowram=1 on a weak TV (the same rule: the flag, or under 2560 MB)", '(lowRam(ctx) ? "&lowram=1" : "")' in pf and "mb > 0 && mb < 2560" in pf
-      and "isLowRamDevice()" in pf and "LOW_MB = 2560" in text(HOME / "Ram.java"))
+check("the screensaver sends #lowram=1 on a LOW TV and #midram=1 on a MID one (the same rule: the flag, or under 2000 MB is LOW; under 2600 MB MID)",
+      '(lowRam(ctx) ? "&lowram=1" : midRam(ctx) ? "&midram=1" : "")' in pf and "mb > 0 && mb < LOW_MB" in pf and "mb > 0 && mb < MID_MB" in pf
+      and "isLowRamDevice()" in pf and "LOW_MB = 2000, MID_MB = 2600" in pf and "LOW_MB = 2000, MID_MB = 2600" in text(HOME / "Ram.java"))
 check("a city saved before 4.1 gets its country found once and kept; cityTz uses the map, not a scan", 'sp.edit().putString("cityCountry", code).apply();' in pf
       and "for (Cities.Region r : Cities.REGIONS)" not in pf[pf.index("String cityTz()"):pf.index("String cityTz()") + 600])
 for name in ("src/template.html", "dist/tv.html", "dist/tv-en.html"):
     t = text(ROOT / name)
     check(f"{name}: #lowram=1: no seconds, the markets every 15 min, the adhan check every 15 s, reminders every 5 s, no transitions; else as before",
           "lowram: _Q.get('lowram') === '1'," in t and "seconds: _Q.get('seconds') === '1' && _Q.get('lowram') !== '1'," in t
-          and t.count("(CONFIG.lowram ? 15 : 5)*60*1000") == 2 and "setInterval(adhanLiveTick, CONFIG.lowram ? 15000 : 3000);" in t
+          and t.count("(CONFIG.lowram ? 15 : CONFIG.midram ? 10 : 5)*60*1000") == 2 and "setInterval(adhanLiveTick, CONFIG.lowram ? 15000 : 3000);" in t
           and "setInterval(remDraw, CONFIG.lowram ? 5000 : 1000)" in t and "html.lowram *, html.lowram *::before, html.lowram *::after { transition: none !important; }" in t
           and t.count("if(CONFIG.lowram) document.documentElement.classList.add('lowram');") == 2)
 check("the photo's minute-long settle is drawn in 60 steps (one frame a second), not 60 frames a second: the page's idle cost on a TV that is not weak",

@@ -71,6 +71,7 @@
 #   optimize/saver.sh digits latin                 numbers: hindi = ١٢٣ (default), latin = 123
 #   optimize/saver.sh hijrioffset -1               the Hijri date moved by whole days, -2..2 (default 0 = Umm al-Qura as it is): where the month
 #                                                  starts by moon sighting (Egypt, Jordan, the Levant, Morocco); the page and the home screen both follow
+#   optimize/saver.sh ramtier low|mid|normal|auto   a test switch: the memory tier the screensaver uses (auto = the TV's real one); counts from the next start of the app
 #   optimize/saver.sh clock24 on                   every time of day as 24-hour (١٩:٣٠) instead of 12-hour (٧:٣٠ م): on | off (default off)
 #   optimize/saver.sh seconds on                   the seconds on the screensaver's clock, small beside the minutes: on | off (default off)
 #   optimize/saver.sh backexit hold                «الخروج من تلفزيونك», where the TV keeps its own home: press (default: one Back leaves ours), hold (a long Back) or three (three Backs)
@@ -295,6 +296,7 @@ case "${1:-}" in
     [[ "${2:-}" =~ ^[+-]?[0-2]$ ]] || { echo "usage: optimize/saver.sh hijrioffset -2|-1|0|+1|+2   (days; 0 = Umm al-Qura as it is)"; exit 1; }
     v=$(quote "$2") || exit 1
     send SET "--es hijrioffset $v" ;;   # the offset moves what is shown, never a prayer time: no adhan alarm to set again
+  ramtier)  case "${2:-}" in low|mid|normal|auto) set1 ramtier "$2" ;; *) echo "usage: optimize/saver.sh ramtier low|mid|normal|auto"; exit 1 ;; esac ;;
   clock24)  case "${2:-}" in on|off) set1 clock24 "$2" ;; *) echo "usage: optimize/saver.sh clock24 on|off"; exit 1 ;; esac ;;
   lang)     case "${2:-}" in ar|en) set1 lang "$2" ;; *) echo "usage: optimize/saver.sh lang ar|en"; exit 1 ;; esac ;;
   idle)

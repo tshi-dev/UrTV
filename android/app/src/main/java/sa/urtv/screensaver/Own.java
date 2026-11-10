@@ -25,11 +25,11 @@ final class Own {
      * Memory does not grow with the count: the page decodes one photo at a time (and the next), so 50 cost only flash: about 0.4 MB each
      * as optimize/photos.sh and the phone send them (1920 px, JPEG 85), 20 MB for 50; FREE_KEEP stays free on the TV after each one.
      */
-    static final int MAX = 50, MAX_LOW = 10;
+    static final int MAX = 50, MAX_MID = 25, MAX_LOW = 10;
     static final long FREE_KEEP = 200L << 20;
 
     /** how many this TV keeps */
-    static int max(Context c) { return Prefs.lowRam(c) ? MAX_LOW : MAX; }
+    static int max(Context c) { return Prefs.lowRam(c) ? MAX_LOW : Prefs.midRam(c) ? MAX_MID : MAX; }
     static final long MAX_BYTES = 3L << 20;
     static final int MAX_SIDE = 3840, MAX_PIXELS = 3840 * 2160;
     static final String MIX = "mix", ONLY = "only";

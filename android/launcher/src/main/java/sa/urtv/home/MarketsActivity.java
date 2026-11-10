@@ -153,7 +153,7 @@ public class MarketsActivity extends Activity {
             if (!MarketData.openFor(it.next(), at0)) { it.remove(); closed++; }
         }
         if (closed > 0) android.util.Log.i("UrTVMarkets", "live closed=" + closed + " asked=" + syms.size() + " reason=closed");
-        if (syms.isEmpty() || data == null) { main.postDelayed(liveTick, MarketData.liveDelay(0, Ram.low(this))); return; }
+        if (syms.isEmpty() || data == null) { main.postDelayed(liveTick, MarketData.liveDelay(0, Ram.tier(this))); return; }
         new Thread(() -> {
             java.util.Map<String, MarketData.Live> m = MarketFile.live(syms);   // one request for all of them
             main.post(() -> liveDone(run, m));
@@ -180,7 +180,7 @@ public class MarketsActivity extends Activity {
         if (shownLive != MarketData.liveFresh(liveOkAt, now)) redraw();   // «مباشر» to «الأسعار متأخرة» (or back) in the footer
         if (cardNote != null) { String t = sourceText(); if (!t.contentEquals(cardNote.getText())) cardNote.setText(t); }
         header();
-        main.postDelayed(liveTick, MarketData.liveDelay(liveFails, Ram.low(this)));
+        main.postDelayed(liveTick, MarketData.liveDelay(liveFails, Ram.tier(this)));
     }
 
     /** the live prices a data object holds, as a map (to put them over a newer file) */

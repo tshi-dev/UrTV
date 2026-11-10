@@ -441,17 +441,44 @@ final class Prefs {
         }
         return ramMb;
     }
-    /** A weak TV, the same rule as the home's Ram.low: Android's low-RAM flag, or under 2.5 GB in all (2560 MB; 0 = unknown: not weak). Read once. */
-    static boolean lowRam(Context c) {
-        if (lowRam == null) {
+    /** the tiers, the same as the home's Ram: LOW does every cut, MID the cheap memory ones, NORMAL none */
+    static final int RAM_LOW = 0, RAM_MID = 1, RAM_NORMAL = 2;
+    /** the same numbers as the home's Ram.LOW_MB and MID_MB (tests/ram_tier_test.py keeps them equal) */
+    static final long LOW_MB = 2000, MID_MB = 2600;
+
+    /** The rule, with no Android in it: the low-RAM flag or a known total under LOW_MB is LOW, under MID_MB MID; 0 = unknown: NORMAL. */
+    static int ramTier(boolean lowRamFlag, long mb) {
+        if (lowRamFlag || (mb > 0 && mb < LOW_MB)) return RAM_LOW;
+        return mb > 0 && mb < MID_MB ? RAM_MID : RAM_NORMAL;
+    }
+
+    static int ramNamed(String n) { return "low".equals(n) ? RAM_LOW : "mid".equals(n) ? RAM_MID : "normal".equals(n) ? RAM_NORMAL : -1; }
+
+    /** This TV's tier, read once (a forced tier from `saver.sh ramtier` wins, from the next start of the app). The one place that decides. */
+    static int ramTier(Context c) {
+        if (ramTier < 0) {
             boolean flag = false;
             try { flag = ((android.app.ActivityManager) c.getSystemService(Context.ACTIVITY_SERVICE)).isLowRamDevice(); } catch (RuntimeException ignored) { }
-            long mb = ramMb(c);
-            lowRam = flag || (mb > 0 && mb < 2560);
+            int t = ramTier(flag, ramMb(c));
+            try {
+                int f = ramNamed(c.getSharedPreferences("settings", Context.MODE_PRIVATE).getString("ramtier", ""));
+                if (f >= 0) t = f;
+            } catch (RuntimeException ignored) { }
+            ramTier = t;
         }
-        return lowRam;
+        return ramTier;
     }
-    private static Boolean lowRam;
+    private static int ramTier = -1;
+
+    /** LOW: every cut */
+    static boolean lowRam(Context c) { return ramTier(c) == RAM_LOW; }
+    /** MID: only the cheap memory cuts (photos at 1280, own photos 25, the markets a little slower) */
+    static boolean midRam(Context c) { return ramTier(c) == RAM_MID; }
+    /** LOW or MID */
+    static boolean tightRam(Context c) { return ramTier(c) != RAM_NORMAL; }
+    /** the debug switch: low | mid | normal | auto (auto = the real tier) */
+    void setRamTier(String v) { sp.edit().putString("ramtier", "auto".equals(v) ? "" : v).apply(); }
+    String ramTierSetting() { String v = sp.getString("ramtier", ""); return v.isEmpty() ? "auto" : v; }
     void setPhotoMinutes(String v) { sp.edit().putString("photoMinutes", v).apply(); }
 
     /**
@@ -610,7 +637,7 @@ final class Prefs {
             + QuoteEvery.fragment(quoteEvery())
             + VerseKind.fragment(verseKind())
             + (seconds() ? "&seconds=1" : "")
-            + (lowRam(ctx) ? "&lowram=1" : "")   // a weak TV (a user report on 4.1, lag): the page's slower timers, no seconds, no transitions
+            + (lowRam(ctx) ? "&lowram=1" : midRam(ctx) ? "&midram=1" : "")   // a weak TV (a user report on 4.1, lag): the page's slower timers, no seconds, no transitions
             + HomeExit.fragment(homeExit())
             + (occasion() ? "" : "&occasion=0") + (nightDim() ? "" : "&nightdim=0") + (tasksPill() ? "" : "&taskspill=0")
             + (backSaver() ? "&backsaver=1" : "")

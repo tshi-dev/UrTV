@@ -27,6 +27,7 @@
 #   optimize/dock.sh pin status            what is set: PIN or not, what is locked, kids mode, wrong tries (never the PIN)
 #   optimize/dock.sh pin off               no PIN: nothing asks, kids mode ends; the apps chosen stay for the next PIN
 #   optimize/dock.sh pin reset             the PIN was forgotten: everything parental back to nothing (the PIN, the locks, kids mode, the wrong tries), and «محفظتي» is wiped
+#   optimize/dock.sh ramtier low|mid|normal|auto   a test switch: the memory tier the home uses (auto = the TV's real one); counts from the next start of the home
 # The home screen redraws at once; the sleep timer's pill too. Only ADB can do this (sa.urtv.home/.DockReceiver needs the shell's DUMP).
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -49,6 +50,8 @@ case "${1:-}:$#" in
   show:1) send GET_DOCK ;;
   apps:*)  send LIST_APPS ;;
   reset:*) send RESET_DOCK ;;
+  ramtier:2) case "$2" in low|mid|normal|auto) send RAM_TIER "--es tier $2" ;; *) echo "usage: optimize/dock.sh ramtier low|mid|normal|auto"; exit 1 ;; esac ;;
+  ramtier:*) echo "usage: optimize/dock.sh ramtier low|mid|normal|auto"; exit 1 ;;
   hidden:*) send HIDDEN ;;
   hide:*|show:*)
     what=$(tr '[:lower:]' '[:upper:]' <<< "$1")

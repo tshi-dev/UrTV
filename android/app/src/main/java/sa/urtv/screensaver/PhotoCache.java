@@ -157,7 +157,7 @@ final class PhotoCache {
             byte[] data;
             try (InputStream in = con.getInputStream()) { data = Bounded.readAll(in, Bounded.IMAGE_MAX); }
             if (!validImage(data)) return null;   // an error page or a cut download is not kept as a photo
-            data = Prefs.lowRam(c) ? PhotoShrink.toSize(data, LOW_PX) : PhotoShrink.toScreen(data);   // P8: kept at screen size (a weak TV: 1280 on the long side, a third fewer pixels to decode and draw)
+            data = Prefs.tightRam(c) ? PhotoShrink.toSize(data, LOW_PX) : PhotoShrink.toScreen(data);   // P8: kept at screen size (a weak TV: 1280 on the long side, a third fewer pixels to decode and draw)
             try (FileOutputStream out = new FileOutputStream(tmp)) { out.write(data); }
             if (!tmp.renameTo(f)) return null;
         } finally {

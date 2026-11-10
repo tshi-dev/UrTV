@@ -91,6 +91,9 @@ final class MarketData {
     /** the same on a weak TV (Ram.low; a user report on 4.1, lag): never more often than every 60 s */
     static long liveDelay(int fails, boolean lowRam) { return lowRam ? Math.max(60_000, liveDelay(fails)) : liveDelay(fails); }
 
+    /** by tier (Ram.LOW 0, MID 1, NORMAL 2): LOW as above, MID never more often than every 45 s, NORMAL as it was */
+    static long liveDelay(int fails, int tier) { return tier == 0 ? liveDelay(fails, true) : tier == 1 ? Math.max(45_000, liveDelay(fails)) : liveDelay(fails); }
+
     /** «مباشر» is said only while the last good live answer is younger than this (two asks of the slowest pace would have passed otherwise) */
     static boolean liveFresh(long okAt, long now) { return okAt > 0 && now >= okAt && now - okAt <= 150_000; }
 

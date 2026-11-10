@@ -76,7 +76,7 @@ check("only the update's own downloaded files are deleted, inside its own folder
 
 # ---- the screens
 act = text(JAVA / "UpdateActivity.java")
-check("the screen is in the manifest, exported like the other settings screens", re.search(r'android:name="\.UpdateActivity"\s+android:exported="true"', manifest) is not None, "")
+check("the screen is in the manifest, exported like the other settings screens", re.search(r'android:name="\.UpdateActivity"\s+(?:android:launchMode="singleTop"\s+)?android:exported="true"', manifest) is not None, "")
 check("the screen shows the installed version and the button «تحقق من التحديث»", "UpdateText.installed(" in act and "UpdateText.CHECK" in act, "")
 check("every branch has its sentence: up to date, offline, available, permission, blocked, failed, done",
       all(w in act for w in ["UpdateText.upToDate(", "UpdateText.OFFLINE", "UpdateText.available(", "UpdateText.NEED_PERMISSION", "UpdateText.AI_MESSAGE", "UpdateText.NOT_DONE", "UpdateText.done("]), "")
@@ -221,7 +221,7 @@ launcher_manifest = manifest
 saver_manifest = text(ROOT / "android/app/src/main/AndroidManifest.xml")
 check("the update screen needs a signature permission that only our two apps hold: defined by the launcher, used by the screensaver app",
       re.search(r'<permission\s+android:name="sa\.urtv\.home\.OPEN_UPDATE"\s+android:protectionLevel="signature"', launcher_manifest) is not None
-      and re.search(r'android:name="\.UpdateActivity"\s+android:exported="true"\s+android:permission="sa\.urtv\.home\.OPEN_UPDATE"', launcher_manifest) is not None
+      and re.search(r'android:name="\.UpdateActivity"\s+(?:android:launchMode="singleTop"\s+)?android:exported="true"\s+android:permission="sa\.urtv\.home\.OPEN_UPDATE"', launcher_manifest) is not None
       and '<uses-permission android:name="sa.urtv.home.OPEN_UPDATE" />' in saver_manifest, "")
 check("the launcher opens its own screen without the permission question (own app), and the settings' row still starts it by class name",
       'setClassName("sa.urtv.home", "sa.urtv.home.UpdateActivity")' in saver and 'new Intent(this, UpdateActivity.class)' in main, "")

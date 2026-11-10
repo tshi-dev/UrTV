@@ -946,9 +946,10 @@ const CONFIG = {
   // «الآية والحديث»: #versekind=verse only verses, #versekind=hadith only hadith
   verseKind: (v => v === 'verse' || v === 'hadith' ? v : 'both')(_Q.get('versekind')),
   // «إظهار الثواني»: #seconds=1 the seconds on the screensaver's clock, small beside the minutes
-  // #lowram=1: the app says this TV is weak (Ram.low: Android's low-RAM flag, or under 2.5 GB; a user report on 4.1, lag): no seconds, slower timers
+  // #lowram=1: the app says this TV is weak (Ram tier LOW: Android's low-RAM flag, or under 2000 MB; a user report on 4.1, lag): no seconds, slower timers
   // (the markets every 15 minutes, the adhan check every 15 s, the reminders' countdown every 5 s), no CSS transitions
   lowram: _Q.get('lowram') === '1',
+  midram: _Q.get('midram') === '1',   // a middle TV (2.0 to 2.6 GB): only the markets a little slower; the rest as on any TV
   seconds: _Q.get('seconds') === '1' && _Q.get('lowram') !== '1',
   // «التفسير الميسر» under the verse of the day: #tafsir=1 (anything else = off)
   tafsir: _Q.get('tafsir') === '1',
@@ -4601,7 +4602,7 @@ function boot(){
   }
   if(NEEDS_MATCHES){ periodic(loadLive, 2*60000); periodic(loadMatches, 30*60*1000); }
   periodic(loadPrayers, 6*3600*1000);
-  periodic(loadMarkets, (CONFIG.lowram ? 15 : 5)*60*1000);
+  periodic(loadMarkets, (CONFIG.lowram ? 15 : CONFIG.midram ? 10 : 5)*60*1000);
   if(USES('shows')) periodic(loadWeek, 6*3600*1000);
   periodic(loadWeather, 30*60*1000);
   cardTimers();
@@ -4636,7 +4637,7 @@ function bootWidget(){
   if(USES('adhkar') || USES('prayers') || USES('prayerrow')){ loadPrayers(); periodic(loadPrayers, 6*3600*1000); }
   if(USES('forecast') || USES('hourly')){ loadWeather(); periodic(loadWeather, 30*60*1000); }
   if(USES('matches')){ loadMatches(); periodic(loadMatches, 30*60*1000); periodic(loadLive, 2*60000); }
-  if(USES('stocks')){ loadMarkets(); periodic(loadMarkets, (CONFIG.lowram ? 15 : 5)*60*1000); }
+  if(USES('stocks')){ loadMarkets(); periodic(loadMarkets, (CONFIG.lowram ? 15 : CONFIG.midram ? 10 : 5)*60*1000); }
   cardTimers();
   let lastDay = riyadhDayNumber();
   setInterval(() => { if(riyadhDayNumber() !== lastDay){ lastDay = riyadhDayNumber(); renderPanel(false); if(USES('prayers') || USES('prayerrow') || USES('adhkar')) later(loadPrayers); } }, 60*1000);

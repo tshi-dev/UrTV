@@ -18,7 +18,7 @@ def check(name, ok, detail=""):
 read = lambda p: p.read_text(encoding="utf-8")
 
 own, prov = read(A / "Own.java"), read(A / "ConfigProvider.java")
-check("Own: 50 photos, 10 on a weak TV, 200 MB left free after each", "static final int MAX = 50, MAX_LOW = 10;" in own and "FREE_KEEP = 200L << 20" in own
+check("Own: 50 photos, 10 on a weak TV, 200 MB left free after each", "static final int MAX = 50, MAX_MID = 25, MAX_LOW = 10;" in own and "FREE_KEEP = 200L << 20" in own
       and "getUsableSpace() < FREE_KEEP" in own)
 check("photos.sh says 50", "up to 50 in all; 10 on a weak TV" in read(ROOT / "optimize/photos.sh"))
 call = prov[prov.index('case "phone_photo_add"'):]

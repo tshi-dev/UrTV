@@ -229,7 +229,7 @@ final class HomeCard {
         resumed = false;
         guardNext = web != null;
         if (web != null) { web.onPause(); web.pauseTimers(); }
-        if (web != null && Ram.low(activity)) idle.postDelayed(drop, IDLE_DROP_MS);   // P9: a weak TV does not keep a page it is not showing for long
+        if (web != null && Ram.tight(activity)) idle.postDelayed(drop, IDLE_DROP_MS);   // P9: a weak TV does not keep a page it is not showing for long
     }
 
     void destroy() {

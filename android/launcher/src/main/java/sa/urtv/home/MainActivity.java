@@ -327,13 +327,13 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * A weak TV (Ram.low) with another app in front: the home's photos and its card page let go, so the app in front has that memory (a user report
+     * A tight TV (Ram.tight: LOW or MID) with another app in front: the home's photos and its card page let go, so the app in front has that memory (a user report
      * on 4.1: lag). onResume brings them back (a fresh photo at once, the card page through HomeCard.refresh). On other TVs nothing changes.
      */
     @Override
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
-        if (level < TRIM_MEMORY_UI_HIDDEN || resumed || !Ram.low(this)) return;
+        if (level < TRIM_MEMORY_UI_HIDDEN || resumed || !Ram.tight(this)) return;
         homeCard.destroy();
         thinWallpaper();   // the photos go, one tiny stand-in stays so the way back is not black until the next photo decodes
         wallTrimmed = true;

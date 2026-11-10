@@ -55,5 +55,5 @@ check("P2: the apps' rows are built again at the return, not while another app i
 check("P3: the minute tick reads the screensaver's settings off the UI thread, one read at a time", "private void updateClock(ConfigSnapshot cfg)" in main and '"home-config"' in main and "if (clockReading) return;" in main)
 check("P6: the card's and the dock's prefs are written when they changed, not at every return", 'if (!frag.equals(sp.getString("frag", null))' in card and 'if (!dockNow.equals(prefs().getString("dock", null)))' in main)
 check("P8: a hosted photo is kept at screen size (1920 on the long side) in both apps", "PhotoShrink.toScreen(data)" in pc and "PhotoShrink.toSize(data, LOW_PX)" in pc and "LOW_PX = 1280" in pc and "PhotoShrink.toScreen(data)" in main and "static final int MAX = 1920" in text(SAVER / "PhotoShrink.java"))
-check("P9: a weak TV lets go of the card's page after ten minutes behind another app", "Ram.low(activity)) idle.postDelayed(drop, IDLE_DROP_MS)" in card and "IDLE_DROP_MS = 10 * 60 * 1000" in card)
+check("P9: a weak TV lets go of the card's page after ten minutes behind another app", "Ram.tight(activity)) idle.postDelayed(drop, IDLE_DROP_MS)" in card and "IDLE_DROP_MS = 10 * 60 * 1000" in card)
 sys.exit(1 if failed else 0)

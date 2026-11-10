@@ -22,7 +22,7 @@ import java.util.Locale;
  *       [--es city 'الرس'] [--es lat 25.86 --es lon 43.49 --es tz Asia/Kuwait]   (tz is needed for a place that is not in the list) [--es teams '136013:Al-Hilal,150643:Al-Zulfi']
  *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es homephotos same|own] [--es homepacks id,id|none] [--es homeours on|off] [--es accent amber|gold|green|teal|sky|violet|rose|coral|default] [--es baropacity 30..100] [--es walldim 0..90] [--es focusstyle solid|frame|glow] [--es albummode seconds|minute] [--es albumdate on|off] [--es pillshidden markets,matches,center|none] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es homelayout classic|football] [--es favbar 5|6|7|8|all] [--es pagesdark on|off] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
  *       [--es sunrise on|off] [--es prayerbar on|off] [--es wxmore on|off] [--es months default|levant] [--es verse day|3] [--es versekind both|verse|hadith] [--es seconds on|off] [--es backexit press|hold|three] [--es occasion on|off] [--es nightdim on|off] [--es taskspill on|off] [--es backsaver on|off] [--es genres Drama,Comedy] [--es langs English]
- *       [--es photos 30] [--es idle 10] [--es digits hindi|latin] [--es hijrioffset -2..2] [--es clock24 on|off] [--es lang ar|en]
+ *       [--es photos 30] [--es idle 10] [--es digits hindi|latin] [--es hijrioffset -2..2] [--es clock24 on|off] [--es ramtier low|mid|normal|auto] [--es lang ar|en]
  *       [--es cardstyle current|dark1|glass1|dark3|glass3] [--es national auto|off]
  *       [--es markets tasi,gold,btc] [--es mkstyle arrows|prices] [--es mkbar on|off] [--es clocksize large|medium|small] [--es stocks 2222,1120,AAPL] [--es stkchg pct|amount]
  *       [--es leagues 'Saudi-Arabian Pro League,NBA']
@@ -323,6 +323,9 @@ public class SaverReceiver extends BroadcastReceiver {
         String clock24 = i.getStringExtra("clock24");
         if (clock24 != null && !ClockSetting.valid(clock24))
             return "error: clock24 is one of on off";
+        String ramtier = i.getStringExtra("ramtier");
+        if (ramtier != null && !"auto".equals(ramtier) && Prefs.ramNamed(ramtier) < 0)
+            return "error: ramtier is one of low mid normal auto";
         String lang = i.getStringExtra("lang");
         if (lang != null && !Tr.valid(lang))
             return "error: lang is one of ar en";
@@ -461,6 +464,7 @@ public class SaverReceiver extends BroadcastReceiver {
         if (photos != null) p.setPhotoMinutes(photos);
         if (digits != null) p.setDigits(digits);
         if (clock24 != null) p.setClock24("on".equals(clock24));
+        if (ramtier != null) p.setRamTier(ramtier);
         if (lang != null) p.setLang(lang);
         if (national != null) p.setNational(national);
         if (cardStyle != null) p.setCardStyle(cardStyle);
@@ -634,6 +638,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nphotos: " + p.photoMinutes() + (PhotoInterval.fast(Prefs.ramMb(c)) ? "" : " (30s needs 2 GB; " + Prefs.ramMb(c) + " MB here)")
             + "\ndigits: " + p.digits()
             + "\nclock24: " + ClockSetting.describe(p.clock24())
+            + "\nramtier: " + p.ramTierSetting() + " (in use: " + new String[] {"low", "mid", "normal"}[Prefs.ramTier(c)] + ")"
             + "\nlang: " + p.lang()
             + "\nnational: " + p.national()
             + "\ncardstyle: " + p.cardStyle()

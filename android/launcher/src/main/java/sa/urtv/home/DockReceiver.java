@@ -25,6 +25,7 @@ import java.util.Map;
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.CLEAR_NAMES
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.INPUT_NAMES            id | shown | the TV's name | ours   («أسماء المصادر»)
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.SET_INPUT_NAME --es id com.x/.Svc/HDMI1 --es name 'PS5'   (empty: the TV's name)
+ *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.RAM_TIER --es tier low|mid|normal|auto   (a test switch: the memory tier, from the next start)
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.PIN_SET --es pin 1234   «الرقابة الأبوية»: the master PIN (never printed back)
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.PIN_LOCK --es target com.example.app   (PIN_UNLOCK to open it again; a pill: @wifi...)
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.PIN_STATUS            what is set
@@ -190,6 +191,12 @@ public class DockReceiver extends BroadcastReceiver {
             case "sa.urtv.home.GET_DOCK":
                 setResultData("dock: " + String.join(",", Dock.shown(c, apps)));
                 return;
+            case "sa.urtv.home.RAM_TIER": {
+                String tn = i.getStringExtra("tier");
+                if (tn == null || !Ram.force(c, tn)) { setResultData("error: add --es tier low|mid|normal|auto"); return; }
+                setResultData("ramtier: " + tn + " (in use now: " + new String[] {"low", "mid", "normal"}[Ram.tier(c)] + "; a forced tier counts from the next start of the home)");
+                return;
+            }
             case "sa.urtv.home.RESET_DOCK":
                 Dock.reset(c);
                 setResultData("dock: " + String.join(",", Dock.shown(c, apps)) + " (defaults)");
