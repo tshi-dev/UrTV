@@ -1739,3 +1739,87 @@ Pushed to `work/marketing` (commit 09820b6a): `readme-shots/urtv/` home, control
 
 ## Z (after 46 and 45)
 Restored: updatechannel latest; idle 45 s; leagues none; appearance dark; lang ar; control-center rows as found; Player uninstalled; my timeline script removed from the TV. Lists before/after the same (dock, PIN, family DNS, tasks, photos, disabled, packages, Home holder, saver). Differences: the build (214) and new settings keys with their defaults in `show` (matchapp auto, accent default, baropacity 100, walldim 0, focusstyle solid). Muted, TV asleep. **restored: yes.**
+
+## step 49 — UrTV Player v0.9.2 → v0.9.3 (Tue; TV muted throughout; uninstalled at the end)
+**YES, channels play.** Al Quran Al Kareem TV, Al Sunnah Al Nabawiyah TV and Al Saudiya all played, on v0.9.2 and on v0.9.3, from the 3-row list and from the owner's big list. 5 min of Quran with no stall, twice. 8 of 8 channels tried from the big list played. The phone page now works. Not ALL PASS: 7 problems (below), 3 items not done.
+
+### Build ✓
+- v0.9.2: sha256 = .sha256 ✓, signer `13ade7d0…69dfea` ✓, versionCode 80. Items 1–3 were run on it first.
+- v0.9.3 (came out mid-run): sha256 `8cd0b919…2096` = .sha256 ✓, signer `13ade7d0…69dfea` (v2+v3) ✓, versionCode 82. Installed over 0.9.2 (`pm install -r`): the list and the recent channels stayed ✓. Items 2 and 4–8 and the owner's list were run on 0.9.3.
+
+### 1 ✓ «من الجوال»
+- «إرسال إلى التلفاز» now answers: `UrtvPhone: phone: POST /add -> 200 7ms` (0.9.2) and `-> 200 8ms` (0.9.3). The TV fetched the list right after (my PC server saw the GET) and went back to its own screen. No refusal line, so no Origin to report (the browser was the PC's Chrome on the same LAN).
+- Log lines hold no URLs ✓ (`GET / -> 200`, `POST /add -> 200`, `idle connection closed`).
+- **✗ The page closes after 10 minutes, as its text says, and then «إعادة المحاولة» does not open a new page: OK on it moved the focus to the «Xtream» tab.** Moving to another tab and back to «من الجوال» gives a new address and code.
+- Small: after the send, the TV lands on Settings with the focus on the «خادم المنزل» tab.
+
+### 2 ✓ / small ✗ «رابط M3U» typed on the TV (0.9.3)
+- The link box now opens a **Latin keyboard** (q w e r t y, «/», «.com», «www.») ✓. `input text 'http://example.test/a.m3u'` arrived as `http://xample.test/a.m3u` (the first letter after `//` was lost once: may be the keyboard's word suggestions).
+- The name box opens the Arabic keyboard (fine for a name).
+- UP from the first box (after Back closes the keyboard) reaches the tabs ✓. **Small: it lands on «Xtream» (and switches to it), not on the tab you were in.**
+- **✗ Focus on any text box opens the keyboard at once.** A D-pad user who moves DOWN through the form gets the keyboard on every box, and the next OK types the key under the cursor (twice I got a stray «ذ» or «1» in a box).
+
+### 3 Playback
+**3-row list (0.9.2):**
+- The list and the preview pane are live: the focused channel plays small on the left ✓, with the «مباشر» tag and logos.
+- Al Quran full screen, **5 min muted: the picture changed at every 1-minute sample, no stall, no error**. PSS 53 → 55 MB (flat), CPU ≈ 22–28 %.
+- Al Saudiya ✓, Al Sunnah ✓.
+- Zap with CH+/CH− (from screen recordings, time from the key to the new picture): up 3.6 / 1.8 / 1.5 s, down 1.7 / 3.2 / 1.6 s. No black frame in any of the 6.
+- Back from full screen returns to the list with the focus on the same channel ✓. «الأخيرة» counts them ✓.
+- OK while playing opens a channel side list on the right ✓.
+- Guide: «لا يوجد دليل برامج» + how to add XMLTV (no XMLTV in this list) ✓.
+
+**Owner's list** (`languages/ara.m3u`, the link the owner sent in chat, sent from the PC's Chrome through «من الجوال» so the TV fetched it itself):
+- **Loaded: 360 channels, 30 groups** (the same counts as the file). It was ready between ≈35 s and ≈90 s after the send (the screen still showed placeholders at 35 s; I didn't catch the exact end).
+- Groups show the M3U names as they are, in English, and mixed ones stay joined: «Documentary;News», «Business;News», «Kids;Religious»… (30 rows instead of ≈20 real ones).
+- Number keys jump to a channel (typing 4 9 opened channel 49) ✓.
+- Plays / does not play, time from the last digit to the new picture (includes the digit-entry wait):
+
+| channel (group) | plays | first picture |
+|---|---|---|
+| Al Quran Al Kareem TV (Religious) | ✓, then 5 min clean | already on it |
+| Al Sunnah Al Nabawiyah TV (Religious) | ✓ 1 min | ≈3.8 s |
+| Al Saudiya (General) | ✓ 1 min | ≈4.7 s |
+| Al Jazeera (News) | ✓ | ≈3.7 s |
+| Jordan Kitchen (Cooking) | ✓ | ≈5.9 s |
+| Atfal & Mawaheb TV (Kids) | ✓ | (dark start, not measured) |
+| Cartoon Network Arabic (Animation;Kids) | ✓ | ≈4.8 s |
+| Asharq Documentary (Documentary) | ✓ but slow: ≈30 s, after «إعادة الاتصال 2/8» | — |
+
+  Dead links: 0 of 8.
+- 5 min of Quran on this list: the picture changed at every sample, PSS 127 MB at the start then ≈86 MB flat, CPU 24–35 %, no error.
+- **✗ While a channel is loading, the old channel's last picture stays frozen on screen with only a small spinner, and no name or banner for the new one.** With Asharq Documentary this lasted ≈30 s, so it looked like Cartoon Network had frozen.
+- **✗ «إعادة الاتصال 2/8» is thin white text over the picture, hard to read on a light picture.**
+- **✗ List scroll (50 DOWN + 50 UP, 0.1 s apart): 29 % janky, frames p50 38 / p90 69 / p99 109 ms.** The preview pane changes channel on every focused row while scrolling.
+- **✗ Search: the box opens the Arabic keyboard, and every channel name is in Latin letters.** Typing «quran» gave «ضعقشى» → «ما لقينا نتائج». The live filter itself works ✓.
+- **✗ Getting from the list to the tabs:** UP from the first channel goes to the search box, which opens the keyboard. A second UP stays there. You need Back, then UP.
+- Back from the list leaves the app (to the TV home), not to the Player's tabs (small).
+- **Favourites: not found by remote.** Long OK on a channel just plays it, and Menu does nothing. «المفضّلة» stayed 0.
+- Continue / last channel ✓: «متابعة آخر قناة عند الفتح» is on and the app opens on the last channel. The Player's home shows «آخر القنوات» with the channels watched.
+- **Stats overlay (Settings → التشغيل): not done.** I lost the way twice in the D-pad and ran out of time, so there are no resolution/fps/dropped-frame numbers. Resolution as named in the list: 720p Quran/Sunnah, 1080p Saudiya.
+
+### 4 Start / language (0.9.3)
+- Cold start (`am start -W`, after force-stop): **636 / 635 / 623 ms** ✓ (under 0.7 s). 766 ms once right after the language change.
+- First start was Arabic with UrTV ar ✓ (also on 0.9.2).
+- **UrTV → en, force-stop, start → English UI** («Home Channels Guide Settings Home server», «Recent channels») ✓. Fixed since 0.9.1. UrTV back to ar → Arabic again ✓.
+- Focus after changing «اللغة»: not re-tested (I didn't change the Player's own setting this time).
+
+### 5 ✓ «عن التطبيق»: «الإصدار 0.9.3» and «نسخة رسمية ✓» (blue)
+
+### 6 FIND_MATCH
+- `am start -a sa.urtv.player.action.FIND_MATCH -n com.urtv.player/.FindMatchActivity` from the shell: nothing shows; UrTV home stays in front ✓ (in 0.9.1 the Player's main screen came forward).
+- «شاهد المباراة» from UrTV's match sheet with the list loaded: **not done** (time).
+
+### 7 Weight
+- PSS: idle on the list screen ≈58 MB (big list); playing 53–55 MB (3-row list), ≈86 MB (360-row list).
+- CPU while playing: 22–35 % of one core.
+- No crash, no ANR for com.urtv.player in the log.
+- README photos: not taken.
+
+### 8 «تقرير أو اقتراح» (0.9.3)
+- It shows two buttons: «أرسل تقرير», «اطلب ميزة». **«أرسل تقرير» not pressed** (my standing rule from the owner: never press «أرسل تقرير»).
+- «اطلب ميزة» → a QR, «امسح الكود بجوالك… التلفاز نفسه لا يرسل شيئًا» and «رجوع». Decoded on the PC: `https://tshi-dev.github.io/UrTV/share/#z.…` (deflate). Its lines: report title + Player 0.9.3, «official», Android 14 (API 34), «TCL, tv, ram normal», language/theme/accent, «playlists 2 (m3u 2, xtream 0), home servers 0». **No playlist name (I named the list «Zebra7» to look for it), no link, no host, no login, no channel name** ✓. The form was not submitted. No QR screenshot kept.
+- Small: when the focus moves to «اطلب ميزة», «أرسل تقرير» also stays white, so both look selected (only a slight size/shadow difference).
+
+### Z
+Player data cleared (`pm clear`: both lists gone) and the Player uninstalled (0 packages). My local M3U copy, file server, APK, recordings and stream frames deleted; the Chrome tab closed; no stream kept. UrTV lang ar. TV muted.
