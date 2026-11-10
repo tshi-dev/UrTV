@@ -1,4 +1,4 @@
-«✅ GO — step 49 FIRST (Player v0.9.5 (release «latest» in the Player repo): does a channel play? use the owner's playlist link at the end of the file), then steps 47 and 48 on build 222 or newer» — run step 49, then 47, then 48 (all at the end of this file). TV muted. Do not wait on the owner; in step 47 item 5 stop if the family PIN is asked. The factory-interface step stays forbidden. lang ar stays.
+«✅ GO — step 47 and step 48 on build 222 or newer, then step 50 (Player v0.9.6 re-measure)» — thanks for step 49 (channels play). Run 47, 48, then 50 (all at the end of this file). TV muted. Do not wait on the owner; in step 47 item 5 stop if the family PIN is asked. The factory-interface step stays forbidden. lang ar stays.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -807,3 +807,20 @@ Z: delete the playlist from the app before uninstalling; nothing of it stays on 
 11. «قناة بديلة تلقائيًا» (opt-in): turn on, open a dead channel that has a same-name twin in the list: does it switch and say so? Turn off again.
 12. Big list feel: with the owner's list loaded (say its size), scroll the whole list holding DOWN for 20 s and search 3 words: jank % (gfxinfo), PSS, any ANR.
 13. «عن التطبيق»: version 0.9.5 «نسخة رسمية ✓»; the update row says what when nothing newer exists? (The repo is still private, so the self-update check will fail quietly: confirm no error is shown and nothing blocks.)
+
+
+## step 50 — UrTV Player v0.9.6: re-measure what step 49 found (release «latest» in the Player repo; TV muted; uninstall at the end)
+Same big public list as step 49 (sent as a link through «من الجوال»). Report each with a number:
+1. Playlist load: time from the send to a usable list; the stats line «list N ch: fetch+parse X ms, cache Y ms» (Settings → التشغيل → إحصائيات, or the player's OK panel «إحصائيات»); PSS peak during/after the load.
+2. List scroll (50 DOWN + 50 UP as before): jank % and p50/p90/p99; is the preview quiet while moving and starts ≈0.5 s after resting? Target ≤5 %.
+3. Channel change: black-out + banner (number, name, logo, «جارٍ الفتح…») at once, no frozen old picture; zap ×3 each way and the stats' per-channel line (dns / connect / manifest / media / decode); «إعادة الاتصال» readable inside the banner (use a slow channel).
+4. Text boxes: moving through «رابط M3U»/Xtream with the D-pad opens NO keyboard until OK; UP returns to the tab you were in.
+5. Search: Arabic keyboard «ضعقشى» finds Quran; «قرآن» finds it; the «ع/EN» chip flips the keyboard; UP from the box reaches the tabs.
+6. Long OK (or Menu/Info) on a row opens the channel menu (مفضّلة، إخفاء، معلومات); add 2 favourites → «المفضّلة» shows them; the player's OK panel has a star and «إحصائيات»: give resolution, fps, dropped frames for the Quran channel over 5 minutes.
+7. Groups: «Documentary;News» split; Arabic group names.
+8. «من الجوال»: after the page's 10 minutes, «إعادة المحاولة» gives a new address + code; after a send you land on the new list.
+9. Back from a tab goes to the Player's home first.
+10. «ليش يقطّع؟» line, «اختبار القائمة» (result + how long), «قناة بديلة تلقائيًا» as in step 49 items 9–11 (not run then).
+11. «شاهد المباراة» from UrTV's match sheet with the list loaded.
+12. 2–3 clean README photos (live list + preview, player with banner, the Player's home), no personal data.
+Z as step 49. Report «step 50».
