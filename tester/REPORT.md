@@ -1612,3 +1612,130 @@ Sound: muted the whole run. My watcher checked every 1 s for its 4 hours and nev
 
 ### Z
 Restored: space pack deleted; updatechannel latest; idle 45 s; own photos 0, mode mix; card verse; album defaults; home photos same; phone control off, tab closed. Lists before/after the same (dock, PIN, family DNS, tasks, disabled, packages, Home holder, saver, adhan). Only the build differs. Muted, TV asleep. **restored: yes.**
+
+## step 46 — build 214 (Tue 10:08–11:40; TV muted throughout)
+**Not ALL PASS: 4 problems (screensaver blank at start, suggested-apps page too wide, «رجوع» still on the bottom edge, tray scroll janky ×2), 1 item not done (report topics), small notes.**
+Sound: muted the whole run (watcher every 1 s; it fixed one unmute right after I woke the TV). Lang ar, as found.
+
+### 1 ✓ Update cover
+212 → 214 (both apps). Timeline of the app in front (0.3 s samples): our «UpdateActivity» → the system installer → **«UpdateCover» in front for 4.6 s while the home was replaced** → the new home. No Play Store or other app showed. One empty sample (≈0.6 s) between the new home and the update card coming back
+
+### 2 ✓ Control center, small notes
+- Opens as a side panel on the right (≈ 1/3 of the width), the home visible beside it, dark and light ✓
+- Focus never lost (walked all four directions); Back closes ✓
+- «تخصيص»: «5 من 6», ticks change the count (6 من 6 and back) ✓; arrows move a row up/down (moved «الإعدادات» up and back) ✓; the Bluetooth toggle keeps its place (as the code says) ✓
+- **Small: the last row's title is cut to «إعدا…»** («إعدادات تلفزيونك») in the panel, and to «إعدادات تلفزيون..» in «تخصيص»
+- Small: in «تخصيص» the list starts scrolled: the first row («الشبكة») is half hidden under the subtitle, and focus starts on the last row
+- Small: Back inside «تخصيص» closes the whole panel (I expected the panel's main list)
+
+### 3 ✓ Home
+- Small Wi-Fi mark beside «صباح الخير» ✓
+- Quick buttons collapsed to 2 (الجوال, مركز التحكم); on focus they open to 8 with the focused one labelled — already open in my first frame at 0.15 s (no visible animation to judge) ✓
+- Stocks card and apps bar the same glass ✓; no «·» in any home text ✓
+
+### 4 Loading: home ✓, screensaver ✗
+- Home after force-stop: at 0.2 s the last picture is already there (old stock values, focus as before), live by 1 s ✓
+- **Screensaver: not the last picture. Blank dark page from ≈1.0 s to 3.2 s (cold) and 0.6–1.9 s (warm)**, then the live page. At 0.2 s the home is still showing
+
+### 5 Matches, partly
+- Sheet (السعودية × كوريا الجنوبية, Fri 5:30 م): «مع الصلاة» line «أذان العشاء في الدقيقة 67 منها», timeline with العصر/المغرب/العشاء and the match bar: no overlapping text ✓
+- **Only one game in the 7 days** for the followed teams (الهلال has none this week: international break), so I couldn't try 3 games at different hours
+- No postponed/cancelled game in the data; no team played in the last 2 days → result vs table not testable today
+- Small: every empty day says «لا مباريات اليوم», also on «غدًا» and later days
+
+### 6 «كل الدوريات…» ✓, small notes
+- The catalogue loads, **but slowly: 54 s** after the press the first time I timed it (the file itself is 113 KB and answers fast from the PC). Until then only a short toast
+- Groups: الأشهر then 23 countries. **3 names not in Arabic: «Czechia», «The Netherlands», «United Kingdom»**
+- Picked «دوري البطولة الإنجليزية» (Back saves) → saved (`leagues: id4329|…`) ✓. It has no games this week (break), so I couldn't see its games come
+- Cap: with 8 picked, ticking a 9th («كأس خادم الحرمين») is refused and a toast shows ✓
+- Small: in the long catalogue list «حفظ» can't be reached with the D-pad (59 DOWNs stayed in the list); Back saves, so it works
+- Small: if the leagues dialog is open twice (I pressed while the catalogue was loading), Back on the older one saved its old ticks and dropped the catalogue pick
+- Unpicked all at the end (`leagues:` empty, as found)
+
+### 7 Settings, 1 not done
+- «اجعل UrTV الشاشة الرئيسية» → «✓ UrTV هو الشاشة الرئيسية» ✓
+- «تطبيق المباريات» row: «تلقائي (UrTV Player إن كان مثبّتاً)» ✓
+- **«أرسل تقرير»: not opened.** My tool's safety check refused the press (as with the uninstall dialog in step 41). Nothing was sent
+
+### 8 «تطبيقات مقترحة» ✓ / ✗
+- Two columns ✓; installed apps say «✓ مثبّت» (TV Bro, SmartTube, VLC) ✓; TiviMate «افتح المتجر»; no UrTV Player tile ✓
+- **✗ The page is wider than the screen: tiles touch both edges, the title «تطبيقات مقترحة» and the intro line are cut on the right**
+
+### 9 ✓ «مخرج الصوت» → the TV's Display & Sound; Back → home; same home process, no crash
+
+### 10 ✗ «المظهر والخلفيات» (now 6 tiles: الشكل, اللون, الإضاءة, البطاقات, الخلفية والصور, الحجم والكثافة)
+**«رجوع» still ends at y 1080 on first focus** (bottom edge). The second row of tiles is fine once scrolled
+
+### 11 Speed + weight
+| what | step 41 (209) | 214 run 1 | run 2 | run 3 |
+|---|---|---|---|---|
+| YouTube → Home first change | 0.76 / 0.28 / 0.13 s | 1.20 s | 0.18 s | 0.12 s |
+| dark flat frames | 0 / 1 / 6 | 0 | 0 | 0 |
+| tray janky | 4.8 / 5.0 / 5.1 % | **8.6 %** | **8.3 %** | **8.3 %** |
+| tray 50/90/99 ms | 32/42–44/48–53 | **40/48/65** | 40/48/65 | 40/48/65 |
+| PSS idle home / saver app | 96 / 35 MB | 84 / 46 | 67 / 44 | 67 / 44 |
+| PSS after 2 min saver | 83 / 64 MB | 69 / 52 | 64 / 50 | 64 / 49 |
+| hub Total/Wait | 806/834 cold, 429–448 warm | 745/763 cold | 453/464 | 454/467 |
+| matches | 140/174 | 127/162 | 151/175 | 145/169 |
+| markets | 153/173, 502–525 | 514/525 | 173/192 | 510/521 |
+- **Tray scroll is worse: ≈8.4 % janky and p50 40 ms (was ≈5 % / 32 ms)**
+- Memory lower (home ≈67 MB idle)
+- Screensaver page idle CPU: ≈27 % average (6 samples over a minute); home 0 %. Its PSS while showing: 53 MB; home 83 MB
+
+## step 45 — UrTV Player v0.9.1 (Tue 11:39–12:05; TV muted; 45b skipped as asked)
+**Not ALL PASS: the playlist never loaded (the phone page's send fails), so the live list, zap, playback, guide and stats were not testable. 3 more problems (language follow, focus lost, version text).**
+
+### Build ✓
+- `urtv-player-0.9.1.apk` from release v0.9.1: sha256 `80ca0f7b…3eee` = the .sha256 file ✓
+- Signing cert SHA-256 (v2 and v3 blocks, read from the APK's signing block; no apksigner here) = `13ade7d0…69dfea` ✓. No v1 signature
+- Package `com.urtv.player`, versionName 0.9.1, versionCode 79 ✓. Installed size 2.86 MB (the APK)
+
+### Start
+- Cold start (`am start -W`): 774 ms, then 689 ms. The logo screen is short; nothing janky I could see
+- **First start was in English** although UrTV was ar; from the second start on it was Arabic
+- RTL ✓ everywhere I looked (tabs, settings list on the right, panes on the left, Arabic text)
+
+### Playlist ✗ (blocker)
+- «إضافة قائمة» → «من الجوال»: QR + address + 6-digit code. The owner typed the code in the PC's Chrome; the page then showed the form (name, M3U URL, Xtream, XMLTV)
+- **«إرسال إلى التلفاز» fails: the POST to `/add` gets no answer (Chrome's error page; a `fetch` from the page says "Failed to fetch"), the page's server stops answering, the TV stays on the code screen and never fetches the M3U** (my PC log shows no request from the TV). Same result twice, with two codes. No log line from the app
+- «رابط M3U» on the TV: the TV's own keyboard (TCL, Arabic) turns typed Latin text into Arabic letters, so I couldn't type the link
+- **Focus trap: in «رابط M3U», from the first text box UP doesn't go back to the tabs** (Back leaves the screen)
+- So: no live list, preview, zap times, 5-min Quran playback, guide, stats overlay, PSS while playing
+
+### Settings
+- Sections: خادم المنزل, عام, القوائم, التشغيل, المظهر, الرئيسية والبداية, الرقابة الأبوية, نسخ احتياطي, عن التطبيق ✓
+- «المظهر»: 6 themes, 8 accent colours, focus style, corners; **switching is live** (tried أزرق منتصف الليل and فاتح, back to داكن) ✓
+- «الرئيسية والبداية»: شاشة البداية, تخصيص الرئيسية ✓ (not changed)
+- «الرقابة الأبوية»: الرمز السري «غير مضبوط» (not set by me)
+- «نسخ احتياطي»: opens (encrypted file, to/from phone); nothing exported
+- **«عن التطبيق» says «الإصدار 0.1.0»** (the app is 0.9.1). It says «لا تحديث ذاتي»; no "official build ✓" line anywhere I found
+- **Focus lost**: after changing «اللغة», no item has focus until a key press, which then lands on the top bar
+
+### Language
+- Setting «اللغة» = «تلقائي (حسب UrTV)»
+- **UrTV → en, Player force-stopped and started again: still Arabic** (did not follow). UrTV back to ar
+- Manual override ✓: set the Player to English → English UI while UrTV is ar. Put back to «تلقائي»
+
+### «شاهد المباراة» ✓
+- With the Player installed, the match sheet (السعودية × كوريا الجنوبية) shows «شاهد المباراة» first ✓ → opens the Player's FindMatch screen: «ما لقينا قناة لهذه المباراة في قوائمك» + «ابحث في القنوات» + «رجوع» ✓ (no list loaded at all, so this is the expected answer)
+- `am start -a sa.urtv.player.action.FIND_MATCH -n com.urtv.player/.FindMatchActivity` from the shell: the screen finished at once ✓ (ignored). Small: the Player's main screen came to the front instead
+
+### Other
+- PSS idle (home screen, no list): 39 MB
+- No crash, no ANR in the log
+- 45b (Jellyfin): skipped as asked
+
+### Z
+Uninstalled `com.urtv.player` (gone from the package list); the M3U copy and my local file server removed; Chrome tab closed. UrTV lang ar.
+
+## step 47 — blocked: build 215 doesn't exist
+«تحديث تلفزيوني» on channel next said «تلفزيونك محدّث: 4.3»; `apk-next` still has 214 (`version.txt` 3.214). The newest «Build APKs» run on next (06:09 UTC) failed in `:app:mergeReleaseResources`:
+`Error while processing …/res/drawable/ic_hub_games.xml : Index 5 out of bounds` and the same for `ic_hub_matches.xml` (Index 12). So nothing of step 47 was run. (Items I could see on 214: the update cover is step 46 item 1; the looks page safe area is step 46 item 10.)
+
+## step 48 — blocked: needs build 216 (same failed build), not run
+
+## README photos
+Pushed to `work/marketing` (commit 09820b6a): `readme-shots/urtv/` home, control-center, appearance, suggested-apps; `readme-shots/player/` appearance; `readme-shots/INDEX.md`. Weather/location lines and the network name blurred. Not taken: screensaver (shows the city), setup screens, Player live/guide/OSD (no playlist).
+
+## Z (after 46 and 45)
+Restored: updatechannel latest; idle 45 s; leagues none; appearance dark; lang ar; control-center rows as found; Player uninstalled; my timeline script removed from the TV. Lists before/after the same (dock, PIN, family DNS, tasks, photos, disabled, packages, Home holder, saver). Differences: the build (214) and new settings keys with their defaults in `show` (matchapp auto, accent default, baropacity 100, walldim 0, focusstyle solid). Muted, TV asleep. **restored: yes.**
