@@ -64,6 +64,8 @@
   var MIN_WORDS = 5;
   // the owner's words already came with the summary (optimize/share.sh --owner): then the box is optional
   function hasOwner(t) { var i = t.indexOf("From the owner:"); return i >= 0 && t.slice(i + 15).replace(/^\s+/, "").split("\n")[0].trim().length >= MIN_WORDS; }
+  // «UrTV Player feature request, …»: a request, not a problem; the Player sends no words of its own, so the person types theirs (the same minimum as a problem's)
+  function isRequest(t) { return /^UrTV Player feature request, /.test(t); }
   function words() { return document.getElementById("words").value.replace(/\s+/g, " ").trim(); }
   function ready() { document.getElementById("send").disabled = !(hasOwner(text) || words().length >= MIN_WORDS); }
   function show(t) {
@@ -71,6 +73,10 @@
     if (text) {
       document.getElementById("text").textContent = text;
       document.getElementById("ready").hidden = false;
+      if (isRequest(text) && !hasOwner(text)) {
+        document.getElementById("words-label").textContent = "وش تبي نضيف أو نغيّر؟ اكتب طلبك بكلماتك";
+        document.getElementById("words").placeholder = "مثال: أبي أقدر أبدّل الصوت من الجوال";
+      }
       if (hasOwner(text)) { document.getElementById("words-label").textContent = "تبي تضيف شي؟ (اختياري)"; document.getElementById("words-hint").textContent = "كلامك وصل مع الملخص."; }
       document.getElementById("words").addEventListener("input", ready);
       ready();
@@ -81,7 +87,7 @@
   try { unpack(location.hash.slice(1)).then(show, function () { show(""); }); } catch (e) { show(""); }
   document.getElementById("send").addEventListener("click", function () {
     var button = this, done = document.getElementById("done");
-    if (!hasOwner(text) && words().length < MIN_WORDS) { done.textContent = "اكتب وش صار أولاً"; return; }
+    if (!hasOwner(text) && words().length < MIN_WORDS) { done.textContent = isRequest(text) ? "اكتب طلبك أولاً" : "اكتب وش صار أولاً"; return; }
     button.disabled = true;
     var w = words();
     done.textContent = "يرسل…";

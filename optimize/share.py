@@ -50,13 +50,15 @@ PACKED = "z."   # a packed text after the # (pack()); docs/share/ still reads a 
 
 
 # --- what a report may contain -------------------------------------------------------------------------------------
+# (the first line says what kind of report it is, so the sheet tells them apart: «UrTV problem report, …» and «UrTV setup report, …» from the TV's apps and this
+#  script, «UrTV Player problem report, …» and «UrTV Player feature request, …» from UrTV Player)
 # 1. ALLOWLIST: every line the script builds must start like one of these (the fields above: TV, computer, steps, ADB,
 #    memory, checks). A line that does not is dropped, whatever it says. Only the agent's notes and the owner's words are
 #    free text, after their own heading.
 # 2. scrub(): a second net over everything, free text included, for what still slips through.
 FREE_HEADINGS = ("Notes from the agent:", "From the owner:")
 ALLOWED_LINE = re.compile(
-    r"UrTV (problem|setup) report, |TV: |Computer: |Steps, minutes:seconds:$|Memory:$|Checks:$|Setup results: |ADB: "
+    r"UrTV (problem|setup) report, |UrTV Player (problem report|feature request), |TV: |Computer: |Steps, minutes:seconds:$|Memory:$|Checks:$|Setup results: |ADB: "
     r"|Protected features on: |(Device|WebView|Home|Home switch|Screensaver|Versions|Extras):|Auto-start|Optional picks|!! |- |  (off|on): "
     r"|home hides|[\w-]+: \d+ off, |\(no steps\.log: an older run\.sh\)$|\(not measured\)$|\(no report\.md yet: the setup didn't finish\)$|\d+ min in all$|\[\d+:\d\d until it was run again\]$"
     r"|[A-Za-z0-9_.-]+ \d+:\d\d( STOPPED.*)?(, [A-Za-z0-9_.-]+ \d+:\d\d( STOPPED.*)?)*(, \[.*\])?$")
