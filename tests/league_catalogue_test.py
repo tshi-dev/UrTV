@@ -32,6 +32,8 @@ def rules(cat, where):
     check(f"{where}: every entry has a numeric id and a name; an Arabic name is Arabic", all(re.fullmatch(r"\d{1,6}", e.get("id", "")) and e.get("en")
           and (not e.get("ar") or ARABIC.search(e["ar"])) for e in lg))
     check(f"{where}: no id twice", len({e["id"] for e in lg}) == len(lg))
+    bare = sorted({e.get("country") for e in lg if not ARABIC.search(e.get("country_ar") or "")})
+    check(f"{where}: every country has its Arabic name (Czechia, The Netherlands, United Kingdom were English on the TV)", not bare, bare)
     tops = [e.get("top") for e in lg]
     check(f"{where}: the hand-named come first", tops == sorted(tops, reverse=True))
 
@@ -105,6 +107,27 @@ check("a busy server ends the run where it is; the next run goes on from there",
 st2, _ = lc.walk({"cursor": 4330, "seen": {"4400": None, "4328": {"id": "4328", "en": "English Premier League", "country": "England", "sport": "Soccer"}}, "high": 4407},
                  budget_s=60, ask=lambda i: None)
 check("an id that did not answer keeps what was known of it", "4328" in st2["seen"])
+# every country in Arabic, or the file is not pushed
+check("TheSportsDB's spellings the TV showed in English have Arabic: Czechia, The Netherlands, United Kingdom",
+      all(lc.COUNTRY_AR.get(c) for c in ("Czechia", "The Netherlands", "United Kingdom")))
+check("the app's own country list is in the table (Bosnia and Herzegovina, Kazakhstan, Vietnam...)",
+      all(ARABIC.search(lc.COUNTRY_AR.get(c, "")) for c in ("Bosnia and Herzegovina", "Kazakhstan", "Vietnam", "Albania", "Andorra", "Costa Rica")))
+narnia = lc.build({"9": {"id": "9", "en": "Narnian League", "country": "Narnia", "sport": "Soccer"}})
+check("a country with no Arabic name is found", lc.no_arabic(narnia) == ["Narnia"])
+import tempfile
+with tempfile.TemporaryDirectory() as tmp:
+    out0, walk0 = lc.OUT, lc.walk
+    lc.OUT = Path(tmp)
+    lc.walk = lambda st: ({"cursor": 10, "seen": {"9": {"id": "9", "en": "Narnian League", "country": "Narnia", "sport": "Soccer"}}, "high": 9}, {"asked": 1, "stop": "time"})
+    import contextlib, io
+    with contextlib.redirect_stdout(io.StringIO()):
+        rc = lc.main()
+    rep = (Path(tmp) / "report.md").read_text(encoding="utf-8")
+    lc.walk = lambda st: ({"cursor": 10, "seen": {"4328": {"id": "4328", "en": "English Premier League", "country": "England", "sport": "Soccer"}}, "high": 9}, {"asked": 1, "stop": "time"})
+    with contextlib.redirect_stdout(io.StringIO()):
+        rc2 = lc.main()
+    lc.OUT, lc.walk = out0, walk0
+check("the build fails (nothing pushed) while a country has no Arabic name, and the report says which", rc == 1 and "- Narnia" in rep and rc2 == 0, (rc, rc2))
 miss = lc.unmatched(cat)
 check("the report lists the hand names that matched nothing", "Spanish La Liga 2" in miss and "4328" not in miss)
 src = (ROOT / ".github/tools/league_catalogue.py").read_text(encoding="utf-8")
