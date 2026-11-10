@@ -41,8 +41,8 @@ with tempfile.TemporaryDirectory() as t2:
           mqb.verify(str(Path(t2) / "h.json"), 40) and bad(lambda d: d[0]["w"][0].__setitem__(0, d[0]["a"][0]), "a.json") and bad(lambda d: d[1].__setitem__("i", d[0]["i"]), "b.json")
           and bad(lambda d: d[0].__setitem__("d", 4), "c.json") and bad(lambda d: d[0].__setitem__("x", 1), "d.json") and bad(lambda d: d.__delitem__(slice(10, None)), "e.json"))
 bank_src = (APP / "QuizBank.java").read_text(encoding="utf-8")
-check("the app checks what it downloads before it keeps it: size cap, no redirects, the whole-file check, a temporary file renamed, the last good copy kept; no org.json in the quiz",
-      "QuizBankCheck.parse(b)" in bank_src and "setInstanceFollowRedirects(false)" in bank_src and "getContentLengthLong() > QuizBankCheck.BYTES_MAX" in bank_src and "tmp.renameTo(f)" in bank_src
+check("the app checks what it downloads before it keeps it: through Net (a size cap, no redirect), the whole-file check, a temporary file renamed, the last good copy kept; no org.json in the quiz",
+      "QuizBankCheck.parse(b)" in bank_src and "Net.get(URL, null, 15000, 20000, QuizBankCheck.BYTES_MAX)" in bank_src and "r.status != 200" in bank_src and "tmp.renameTo(f)" in bank_src
       and "org.json" not in bank_src + (APP / "QuizBankCheck.java").read_text(encoding="utf-8"))
 check("the room code and the tokens come from a SecureRandom", "new java.security.SecureRandom()" in (APP / "QuizActivity.java").read_text(encoding="utf-8"))
 
