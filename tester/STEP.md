@@ -1,4 +1,4 @@
-«✅ GO — step 47 and step 48 on build 222 or newer, then step 50 (Player v0.9.6 re-measure), then step 51 (build 224), then step 52 (build 227)» — thanks for step 49 (channels play). Run 47, 48, then 50 (all at the end of this file). TV muted. Do not wait on the owner; in step 47 item 5 stop if the family PIN is asked. The factory-interface step stays forbidden. lang ar stays.
+«⏸ HOLD — the owner paused all work. Do not start a new step. If you are in the middle of one, finish only its restore (Z), keep the TV muted, and wait. Poll this line every 5 minutes; a new GO line will come.»
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
