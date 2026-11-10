@@ -1926,3 +1926,66 @@ Category, level, questions, kids, sound: arrows move, OK picks; focus never lost
 
 ### Z
 Room closed (Back on the lobby; the code no longer answers; nothing listens on the old port). Lang ar, updatechannel latest, idle back to 45 s, look/appearance as found, settings lists the same as before step 47. Mute watcher stopped. No screenshots, tokens or addresses kept.
+
+## step 50 — UrTV Player v0.9.6 re-measure (TV muted throughout; uninstalled at the end)
+**Most of step 49 is fixed. Not ALL PASS: 5 problems (retry → Xtream again, scroll 12.6 %, «ع/EN» chip not reachable, «ابحث في القنوات» goes to the wrong screen, fps reads 0), 4 items not done or not found.**
+
+Build: `urtv-player-0.9.6.apk` from release v0.9.6 (latest), sha256 `7a8bb73c…ced72` = its .sha256 ✓, signer `13ade7d0…69dfea` (v2+v3) ✓, versionCode 94. Cold start 976 ms (first start after install).
+The list: the same public `languages/ara.m3u`. **Loaded by typing the link on the TV («رابط M3U»), not through «من الجوال»**: the phone page needs a code only the owner types, and the step says not to wait for him.
+
+### 1 ✓ Playlist load
+- Save → usable list (360 channels, groups shown): **under 7 s** (my first look was at 7 s; step 49: 35–90 s)
+- Stats line: **«list 360 ch: fetch+parse 1151 ms, cache 1263 ms»**
+- PSS: 71 MB just after the load; no higher value seen (I did not sample during the 7 s)
+
+### 2 List scroll (50 DOWN + 50 UP)
+- With 0.1 s between keys (as in step 49): **12.6 % janky, p50 24 / p90 40 / p99 48 ms** (step 49: 29 %, 38/69/109). Better, **not at the ≤5 % target**
+- Keys back to back (no gap): 39.9 %, 44/81/150 ms
+- Preview while moving: quiet ✓ (the old channel keeps playing, no switching). After resting: the pane changes ≈2.0 s later and the new picture is there at ≈3.5 s (not 0.5 s)
+
+### 3 ✓ Channel change
+- Old picture dimmed almost to black at once, spinner, banner with number, name, logo and «جارٍ الفتح…» ✓ (old picture is still faintly visible under the dim)
+- Zap up: 3.11 s, 3.12 s, third not open within 7 s (a slow channel). Zap down: 1.28 s, 0.91 s, 1.55 s
+- Per-channel lines: up `dns 1503 connect 268 manifest 1966 media 96 decode 554 = 3111 ms (4 req)`, `dns 1233 connect 386 manifest 1952 media 122 decode 738 = 3117 ms`; down `dns 0 connect 0 manifest 125 media 124 decode 641 = 1282 ms`, `… = 911 ms`, `dns 0 connect 191 manifest 550 media 178 decode 331 = 1550 ms`. The slow ones are DNS + manifest
+- «إعادة الاتصال» inside the banner: not seen (no channel reconnected while I watched)
+
+### 4 ✓ Text boxes
+Moving through the Xtream form with the D-pad (3 boxes down, 3 up): keyboard never opened; OK opens it. UP returns to the tab I was in (Xtream) ✓.
+Small: `input text` of the whole link still lost 2 letters (`htts://ptv-org…`); typed in short pieces it was right. May be the keyboard, not the app.
+Small: after typing, Back closes the keyboard but the box stays in edit mode (DOWN does nothing; LEFT/RIGHT move the caret); a second Back is needed.
+
+### 5 Search
+- «ضعقشى» (Arabic keyboard, the keys of "quran") → 9 Quran channels ✓. «قران» → the same ✓
+- UP from the box reaches the tabs ✓
+- **✗ The «ع» chip beside the box: I could not reach it with the D-pad** (from the box LEFT/RIGHT move the caret), so the keyboard flip was not tested
+
+### 6 Favourites / stats
+- Menu key on a row → channel menu: «إضافة إلى المفضّلة», «إخفاء القناة», «معلومات القناة» ✓. Long OK: not testable from the shell (a shell long-press counts as a short one: it played the channel)
+- 2 favourites added (one from the player's OK panel, one from the menu) → «المفضّلة 2» and the Player's home shows them ✓. Small: after adding from the menu the focus jumped to the «خادم المنزل» tab
+- Player's OK panel: «إضافة إلى المفضّلة» + «إحصاءات التشغيل» ✓
+- **Quran channel, 5 minutes: 1280x720, avc, video 902 kbit/s, buffer 10–20 s, dropped frames 1, picture changed at every 1-minute sample, no error.** PSS 97 → 75 MB, CPU ≈22 %. First frame 1353 ms
+- **✗ fps reads «0 fps» on every channel** (720p and 1080p)
+
+### 7 ✓ Groups
+Arabic names and split: عام 80, موسيقى 28, ديني 76, أخبار 78, أفلام 10, تعليم 6, أعمال 5, وثائقي 5, رياضة 19, أخرى 35, أطفال 10, مسلسلات 5, رسوم متحركة 2… Small: «Family» stays English.
+
+### 8 «من الجوال»
+- **✗ After the page's 10 minutes («أُغلقت الصفحة»), OK on «إعادة المحاولة» still goes to the Xtream tab; no new address or code** (same as step 49)
+- After a save (by link) I landed on the new list ✓. A send from the phone: not done (needs the owner's code)
+
+### 9 ✓ Back from a tab → the Player's home first, then out
+
+### 10
+- «اختبار القائمة» (Settings → القوائم): **≈15 s**: «القائمة تبدو جيدة، وصلت 93٪ من العيّنة (30 قناة)، زمن أول بايت: الوسيط 1.0 ث، و٩٠٪ أقل من 2.0 ث، لم تصل: لا ترد 0، خطأ من المصدر 1، قناة غير موجودة 1» ✓. Small: «٩٠٪» in Arabic-Indic digits beside «93٪»
+- «قناة بديلة تلقائيًا»: the switch is there (off by default); not exercised (needs a dead channel with a same-name twin)
+- «ليش يقطّع؟»: not found (no stall happened; I did not see the line anywhere)
+
+### 11 «شاهد المباراة»
+From UrTV's match sheet (السعودية × كوريا الجنوبية) with the list loaded → the Player's FindMatch screen: «ما لقينا قناة لهذه المباراة في قوائمك» + «ابحث في القنوات» + «رجوع» ✓ (plausible for this list).
+**✗ «ابحث في القنوات» opened the Player on the last screen I had left (Settings, the playlist-test result), not the channel search.**
+
+### 12 README photos: not taken
+Every clean frame of the list or the player carries a third party's live picture, and my rule is to keep no stream. Needs the owner's word, or a test pattern channel.
+
+### Z
+`pm clear` (list and favourites gone) + uninstall (0 packages); APK and recordings deleted; no stream frame kept. UrTV lang ar, TV muted.
