@@ -28,8 +28,8 @@ import java.util.Map;
  * and the home's settings button open that one, not this hub). One press opens a window; Back leaves.
  */
 public class YourTvHubActivity extends Activity {
-    /** off: «الألعاب» is in the hub and says «قريبًا»; on, with the games' own activity, its OK opens them */
-    static final boolean GAMES_READY = false;
+    /** on: «الألعاب» opens the games list (QuizGamesActivity: «الأسرع» for now, the others «قريبًا»); off: it says «قريبًا» */
+    static final boolean GAMES_READY = true;
 
     /** the windows, first to last (from the right in Arabic, from the left in English): key, name, the mark, the mark's colour */
     static final String[][] WINDOWS = {
@@ -192,7 +192,7 @@ public class YourTvHubActivity extends Activity {
         switch (key) {
             case "markets": return MarketHours.open(System.currentTimeMillis()) ? "السوق مفتوح" : "السوق مغلق";
             case "matches": return prefs.teams().isEmpty() ? "اختر فرقك" : "فرقك أولًا";
-            case "games": return GAMES_READY ? "ألعاب العائلة" : "قريبًا";
+            case "games": return GAMES_READY ? QuizActivity.NAME : "قريبًا";
             default: return Prefs.lookLabel(prefs.look());
         }
     }
@@ -203,7 +203,7 @@ public class YourTvHubActivity extends Activity {
                 case "markets": startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.MarketsActivity")); break;
                 case "matches": startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.MatchesActivity")); break;
                 case "games":
-                    if (GAMES_READY) break;   // the games' own screen goes here when it lands
+                    if (GAMES_READY) { startActivity(new Intent(this, QuizGamesActivity.class)); break; }
                     Toast.makeText(this, Words.of("قريبًا"), Toast.LENGTH_SHORT).show();
                     break;
                 default: startActivity(new Intent(this, SettingsActivity.class));

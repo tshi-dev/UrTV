@@ -84,6 +84,17 @@
             android:name=".SettingsActivity"
             android:exported="true" />
 
+        <!-- «الألعاب»: the hub's third window, the games list, and «الأسرع» (the live quiz: the TV side; its game-only server is not the remote's pairing) -->
+        <activity
+            android:name=".QuizGamesActivity"
+            android:exported="false"
+            android:screenOrientation="landscape" />
+        <activity
+            android:name=".QuizActivity"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|uiMode" />
+
         <!-- «صور شاشة التوقف»: the photo packs, opened from the settings only -->
         <activity android:name=".PhotoPacksActivity" android:exported="false" />
         <activity android:name=".AppearanceActivity" android:exported="false" />

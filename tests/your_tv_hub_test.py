@@ -31,8 +31,8 @@ check("four windows in this order (from the start side): الأسواق, الم�
 check("the marks are different silhouettes (bars, a ball, a die, a gear), solid, white, each a file of its own",
       all((res / f"{n}.xml").is_file() for n in ("ic_hub_markets", "ic_hub_matches", "ic_hub_games", "ic_settings"))
       and len({(res / f"{n}.xml").read_text() for n in ("ic_hub_markets", "ic_hub_matches", "ic_hub_games")}) == 3)
-check("«الألعاب» says «قريبًا» and shows a short notice until the games land (GAMES_READY off), and is still a window with its focus",
-      "static final boolean GAMES_READY = false;" in hub and '"قريبًا"' in hub and "Toast.makeText(this, Words.of(\"قريبًا\")" in hub)
+check("«الألعاب» opens the games list (GAMES_READY on: «الأسرع» for now, the others «قريبًا»), and the notice stays for a build with it off",
+      "static final boolean GAMES_READY = true;" in hub and '"قريبًا"' in hub and "Toast.makeText(this, Words.of(\"قريبًا\")" in hub and "startActivity(new Intent(this, QuizGamesActivity.class))" in hub)
 check("the markets and the matches open the home app's own pages (class names as the settings' rows use), the fourth window the settings",
       'setClassName("sa.urtv.home", "sa.urtv.home.MarketsActivity")' in hub and 'setClassName("sa.urtv.home", "sa.urtv.home.MatchesActivity")' in hub
       and "new Intent(this, SettingsActivity.class)" in hub)

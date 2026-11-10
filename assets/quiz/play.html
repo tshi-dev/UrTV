@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Quiz</title>
+<style>
+@font-face{font-family:Th;font-weight:400;font-display:swap;src:url(/f/Thmanyah-Regular.woff2) format("woff2")}
+@font-face{font-family:Th;font-weight:500;font-display:swap;src:url(/f/Thmanyah-Medium.woff2) format("woff2")}
+@font-face{font-family:Th;font-weight:700;font-display:swap;src:url(/f/ThmanyahDisplay-Bold.woff2) format("woff2")}
+:root{--bg:#EFE8DA;--tile:#FBF8F1;--ink:#16140F;--bd:#16140F;--tab:#16140F;--tabt:#EFE8DA;--deep:#0E5A45;--saff:#F2A93B;--coral:#F08A6E;--err:#B3321A;--ok:#0E5A45;--dash:rgba(22,20,15,.45);--sel:#16140F;--selt:#EFE8DA;--dim:rgba(22,20,15,.75)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14130F;--tile:#1E1C16;--ink:#EFE8DA;--bd:#EFE8DA;--tab:#EFE8DA;--tabt:#14130F;--ok:#1B7A5C;--err:#F08A6E;--dash:rgba(239,232,218,.5);--sel:#EFE8DA;--selt:#14130F;--dim:rgba(239,232,218,.78)}}
+:root[data-theme="dark"]{--bg:#14130F;--tile:#1E1C16;--ink:#EFE8DA;--bd:#EFE8DA;--tab:#EFE8DA;--tabt:#14130F;--ok:#1B7A5C;--err:#F08A6E;--dash:rgba(239,232,218,.5);--sel:#EFE8DA;--selt:#14130F;--dim:rgba(239,232,218,.78)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font:400 18px/1.4 Th,system-ui,"Segoe UI",Tahoma,sans-serif;min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;text-align:inherit}
+.app{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;max-width:520px;margin:0 auto}
+.scr{display:flex;flex-direction:column;flex:1;animation:in .2s ease-out}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.hd{background:var(--deep);color:#fff;padding:20px 16px 16px}
+.brand{font-weight:700;font-size:40px;line-height:1.15}
+.sub{color:var(--saff);font-weight:700;font-size:20px;margin-top:4px}
+.body{padding:20px 16px;display:flex;flex-direction:column;gap:12px;flex:1}
+.lab{font-size:18px;color:var(--dim);margin-top:8px}
+.inp{width:100%;height:64px;border:4px solid var(--bd);background:var(--tile);padding:0 14px;font-size:24px;font-weight:700;border-radius:0;outline:none}
+.inp:focus{outline:4px solid var(--saff);outline-offset:2px}
+.sw{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.swb{height:56px;min-width:44px;border:3px solid var(--bd);border-radius:0;position:relative}
+.swb[aria-checked="true"]{outline:4px solid var(--saff);outline-offset:2px;border-width:5px}
+.err{color:var(--err);font-weight:700;font-size:20px;min-height:28px}
+.btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:64px;border:4px solid var(--bd);background:var(--saff);color:#16140F;font-size:28px;font-weight:700;border-radius:0;transition:transform .1s}
+.btn:active{transform:scale(.98)}
+.btn[disabled]{opacity:.6}
+.foot{margin-top:auto;padding-top:12px;display:flex;flex-direction:column;gap:8px}
+.lnk{min-height:56px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:500;text-decoration:underline;text-underline-offset:4px;color:var(--ink);width:100%}
+.chip{display:flex;align-items:center;gap:12px;border:4px solid var(--bd);background:var(--tile);padding:12px 14px;min-height:64px}
+.chip i{width:28px;height:28px;border:3px solid var(--bd);flex:none}
+.chip b{font-size:26px;font-weight:700;overflow-wrap:anywhere}
+.big{font-size:32px;font-weight:700;line-height:1.25}
+.dim{color:var(--dim);font-size:20px}
+.qrow{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.qn{color:var(--saff);font-weight:700;font-size:18px;padding-top:2px}
+.timer{background:var(--saff);color:#16140F;min-width:76px;height:60px;padding:0 10px;display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:700;direction:ltr;flex:none}
+.qt{font-size:22px;font-weight:700;line-height:1.35;margin:8px 0 12px;overflow-wrap:anywhere}
+.ticks{display:flex;gap:3px;height:14px}
+.tk{flex:1;background:#0A4A39}
+.tk.on{background:var(--saff)}
+.stat{color:var(--saff);font-weight:700;font-size:20px;margin-top:10px;min-height:28px}
+.sub2{color:#fff;opacity:.85;font-size:18px;min-height:26px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px}
+.stamp{position:relative;display:flex;align-items:flex-end;min-height:clamp(120px,27vh,200px);width:100%;padding:12px 10px 12px 10px;border:4px solid var(--bd);background:var(--tile);color:var(--ink);border-radius:0;text-align:start;transition:background-color .15s,transform .1s}
+button.stamp:active{transform:scale(.97)}
+.tab{position:absolute;top:-4px;inset-inline-start:-4px;width:56px;height:56px;display:flex;align-items:center;justify-content:center;background:var(--tab);color:var(--tabt);font-size:34px;font-weight:700;line-height:1}
+.at{width:100%;font-size:28px;font-weight:700;line-height:1.25;overflow-wrap:anywhere;word-break:normal}
+.stamp.pick{background:var(--sel);color:var(--selt)}
+.stamp.pick .tab{background:var(--selt);color:var(--sel)}
+.stamp.off{background:transparent;border:3px dashed var(--dash);color:var(--dim)}
+.stamp.off .tab{opacity:.65}
+.stamp.ok{background:var(--ok);color:#fff}
+.cnt{position:absolute;top:6px;inset-inline-end:8px;min-width:28px;text-align:center;font-size:22px;font-weight:700;line-height:1.2}
+.rvg .stamp{min-height:112px;padding-top:44px}
+.rvg .tab{width:40px;height:40px;font-size:24px}
+.rvg .at{font-size:22px}
+.hero{padding:20px 16px;display:flex;flex-direction:column;gap:6px;color:#16140F}
+.hero.r{background:var(--saff)}.hero.w{background:var(--coral)}.hero.n{background:var(--tile);color:var(--ink);border-bottom:4px solid var(--bd)}
+.ic{width:56px;height:56px;background:#16140F;display:flex;align-items:center;justify-content:center}
+.hero.r .ic{color:var(--saff)}.hero.w .ic{color:var(--coral)}.hero.n .ic{color:#EFE8DA}
+.hero .dim{color:inherit}
+.res{font-size:32px;font-weight:700;line-height:1.2}
+.pts{font-size:64px;font-weight:700;line-height:1.05;direction:ltr;unicode-bidi:isolate;text-align:start}
+.rank{margin:0 16px 16px;background:var(--tab);color:var(--tabt);display:flex;align-items:center;gap:16px;padding:12px 16px}
+.rnum{font-size:88px;font-weight:700;line-height:1}
+.rk{display:flex;flex-direction:column;gap:2px;font-size:20px}
+.arr{display:inline-block;width:16px;height:14px;background:currentColor;vertical-align:middle;margin-inline-end:6px}
+.arr.u{clip-path:polygon(50% 0,100% 100%,0 100%)}.arr.d{clip-path:polygon(0 0,100% 0,50% 100%)}
+.endn{background:var(--saff);color:#16140F;border:4px solid var(--bd);font-size:150px;font-weight:700;line-height:1;padding:20px;text-align:center}
+.msg{border:4px solid var(--bd);background:var(--tile);padding:20px 16px;text-align:center}
+#net{position:fixed;left:0;right:0;bottom:0;padding:10px 16px;text-align:center;font-size:20px;font-weight:700;z-index:9;display:none;color:#16140F;background:var(--coral);border-top:4px solid #16140F}
+#net.b{background:var(--deep);color:#fff}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<div id="net" role="status" aria-live="polite"></div>
+<script>
+(function () {
+'use strict';
+var NAME = { ar: 'الأسرع', en: 'Fastest' };
+var T = {
+  ar: { room: 'الغرفة {0}', yourName: 'اسمك', yourColour: 'لونك', join: 'ادخل', joining: 'لحظة', loading: 'لحظة',
+    inn: 'أنت داخل', ready: 'جاهزين؟', waitStart: 'ننتظر أن تبدأ اللعبة', inRoom: 'في الغرفة: {0}',
+    leave: 'خروج', leaveSure: 'اضغط مرة ثانية للخروج', qn: 'السؤال {0} / {1}', go: 'انطلقوا', saved: 'سجّلنا جوابك',
+    timeup: 'انتهى الوقت', answered: 'أجاب {0} من {1}', waitNext: 'انتظر السؤال التالي', waitNextSub: 'دخلت بعد بداية السؤال',
+    right: 'صح', wrong: 'غلط', streak: '{0} صح ورا بعض', yourRank: 'ترتيبك من {0}', same: 'نفس الترتيب', up: 'صعدت {0}', down: 'نزلت {0}',
+    paused: 'اللعبة متوقفة', pausedSub: 'نكمل بعد لحظات', over: 'انتهت اللعبة', you: 'أنت {0}', score: 'نقاطك {0}', outOf: 'من {0} لاعبين',
+    rankN: 'ترتيبك {0}', closed: 'أُغلقت الغرفة', closedSub: 'شكرًا للعب', bad: 'الرمز غير صحيح',
+    lost: 'انقطع', back: 'رجعنا',
+    e_name0: 'اكتب اسمك أولًا', e_full: 'الغرفة ممتلئة', e_locked: 'محاولات كثيرة، انتظر دقيقة', e_name: 'اكتب اسمًا آخر',
+    e_rate: 'بسرعة شوي، حاول مرة ثانية', e_net: 'تعذّر الاتصال، حاول مرة ثانية',
+    ord: ['', 'الأول', 'الثاني', 'الثالث', 'الرابع', 'الخامس', 'السادس', 'السابع', 'الثامن', 'التاسع', 'العاشر', 'الحادي عشر', 'الثاني عشر'],
+    letters: ['أ', 'ب', 'ج', 'د'] },
+  en: { room: 'Room {0}', yourName: 'Your name', yourColour: 'Your colour', join: 'Join', joining: 'One moment', loading: 'One moment',
+    inn: "You're in", ready: 'Ready?', waitStart: 'Waiting for the game to start', inRoom: 'In the room: {0}',
+    leave: 'Leave', leaveSure: 'Tap again to leave', qn: 'Question {0} / {1}', go: 'Go', saved: 'Answer saved',
+    timeup: "Time's up", answered: '{0} of {1} answered', waitNext: 'Wait for the next question', waitNextSub: 'You joined after this question began',
+    right: 'Right', wrong: 'Wrong', streak: '{0} right in a row', yourRank: 'Your rank of {0}', same: 'Same rank', up: 'Up {0}', down: 'Down {0}',
+    paused: 'Game paused', pausedSub: 'Back in a moment', over: 'Game over', you: "You're {0}", score: 'Your score {0}', outOf: 'of {0} players',
+    rankN: 'Your rank {0}', closed: 'The room is closed', closedSub: 'Thanks for playing', bad: 'The code is not right',
+    lost: 'Connection lost', back: 'Back',
+    e_name0: 'Type your name first', e_full: 'The room is full', e_locked: 'Too many tries, wait a minute', e_name: 'Pick another name',
+    e_rate: 'Too fast, try again', e_net: 'Could not connect, try again',
+    ord: null, letters: ['A', 'B', 'C', 'D'] }
+};
+var COLORS = ['#5AA9F0', '#F2705A', '#7BD88F', '#C28BFF', '#FFD15C', '#4FD1C5', '#FFB86B', '#8FD6FF'];
+var CHECK = '<svg viewBox="0 0 24 24" width="36" height="36" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="currentColor" stroke-width="3.5"/></svg>';
+var CROSS = '<svg viewBox="0 0 24 24" width="36" height="36" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" fill="none" stroke="currentColor" stroke-width="3.5"/></svg>';
+
+var qs = new URLSearchParams(location.search);
+var L = qs.get('l') === 'en' ? 'en' : qs.get('l') === 'ar' ? 'ar' : /^en/i.test(navigator.language || '') ? 'en' : 'ar';
+var AR = L === 'ar', S = T[L], H = document.documentElement;
+H.lang = L; H.dir = AR ? 'rtl' : 'ltr';
+var th = qs.get('theme'); if (th === 'dark' || th === 'light') H.setAttribute('data-theme', th);
+document.title = NAME[L];
+
+function D(x) { x = String(x); return AR ? x.replace(/\d/g, function (d) { return '٠١٢٣٤٥٦٧٨٩'.charAt(d); }) : x; }
+function fmt(s) { var a = arguments; return s.replace(/\{(\d)\}/g, function (m, i) { return D(a[+i + 1]); }); }
+function ordinal(n) {
+  if (AR) return S.ord[n] || null;
+  var m = n % 100, s = (m >= 11 && m <= 13) ? 'th' : ({ 1: 'st', 2: 'nd', 3: 'rd' })[n % 10] || 'th';
+  return n + s;
+}
+function h(tag, cls, kids, attrs) {
+  var e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (attrs) for (var k in attrs) e.setAttribute(k, attrs[k]);
+  [].concat(kids == null ? [] : kids).forEach(function (c) {
+    if (c == null || c === false) return;
+    e.appendChild(typeof c === 'object' ? c : document.createTextNode(String(c)));
+  });
+  return e;
+}
+function sg(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+function ss(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
+
+var cm = location.pathname.match(/(\d{4})/);
+var code = cm ? cm[1] : '';
+var TK = 'urtv.quiz.t.' + code, PK = 'urtv.quiz.me';
+var token = code ? (sg(TK) || '') : '';
+var prof = { n: '', k: Math.floor(Math.random() * 8) };
+try { var pp = JSON.parse(sg(PK) || 'null'); if (pp && typeof pp.n === 'string') { prof.n = pp.n.slice(0, 12); if (pp.k >= 0 && pp.k < 8) prof.k = pp.k | 0; } } catch (e) {}
+
+var app = document.getElementById('app'), net = document.getElementById('net');
+var mode = 'loading', st = null, running = false, inflight = false, timer = 0;
+var joinErr = '', busy = false, locked = {}, deadline = 0, zero = false, lastKey = '';
+var conn = 'ok', fails = 0, backUntil = 0, hiddenAt = 0, confirmT = 0, confirming = false, refs = {};
+
+function api(path, body, ms) {
+  var ctl = typeof AbortController === 'function' ? new AbortController() : null;
+  var tm = setTimeout(function () { if (ctl) ctl.abort(); }, ms || 5000);
+  var o = { cache: 'no-store' };
+  if (ctl) o.signal = ctl.signal;
+  if (body) {
+    o.method = 'POST';
+    o.headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
+    o.body = new URLSearchParams(body).toString();
+  }
+  return fetch(path, o).then(function (r) { clearTimeout(tm); return r.json(); }, function (e) { clearTimeout(tm); throw e; });
+}
+function remaining() { return Math.max(0, deadline - performance.now()); }
+function pickOf(q) { return q.pick >= 0 ? q.pick : (locked[q.i] != null ? locked[q.i] : -1); }
+
+/* ---------- screens ---------- */
+function head(sub) { return h('div', 'hd', [h('div', 'brand', NAME[L]), sub ? h('div', 'sub', sub) : null]); }
+function scr(name, kids) { var e = h('div', 'scr', kids); app.textContent = ''; app.appendChild(e); app.setAttribute('data-s', name); return e; }
+function msgScreen(name, title, sub) {
+  scr(name, [head(code && name !== 'bad' ? fmt(S.room, code) : null), h('div', 'body', [h('div', 'msg', [h('div', 'big', title), sub ? h('div', 'dim', sub) : null])])]);
+}
+function leaveBtn() {
+  return h('button', 'lnk', confirming ? S.leaveSure : S.leave, { type: 'button', id: 'leave' });
+}
+
+function joinScreen() {
+  var inp = h('input', 'inp', null, { type: 'text', id: 'nm', maxlength: '12', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', 'aria-label': S.yourName, enterkeyhint: 'go' });
+  inp.value = prof.n;
+  inp.addEventListener('input', function () { prof.n = inp.value.slice(0, 12); });
+  var sw = h('div', 'sw', COLORS.map(function (c, i) {
+    var b = h('button', 'swb', null, { type: 'button', role: 'radio', 'aria-checked': String(i === prof.k), 'aria-label': String(i + 1), 'data-k': i });
+    b.style.background = c;
+    return b;
+  }), { role: 'radiogroup' });
+  sw.addEventListener('click', function (ev) {
+    var b = ev.target.closest('.swb'); if (!b) return;
+    prof.k = +b.getAttribute('data-k');
+    [].forEach.call(sw.children, function (x, i) { x.setAttribute('aria-checked', String(i === prof.k)); });
+  });
+  var go = h('button', 'btn', busy ? S.joining : S.join, { type: 'submit', id: 'go' });
+  if (busy) go.disabled = true;
+  var form = h('form', 'body', [
+    h('label', 'lab', S.yourName, { for: 'nm' }), inp,
+    h('div', 'lab', S.yourColour), sw,
+    h('div', 'err', joinErr ? (S['e_' + joinErr] || S.e_net) : '', { role: 'alert' }),
+    h('div', 'foot', [go])
+  ], { novalidate: '' });
+  form.addEventListener('submit', function (ev) { ev.preventDefault(); doJoin(); });
+  scr('join', [head(code ? fmt(S.room, code) : null), form]);
+}
+
+function lobbyScreen() {
+  var me = st.me || {};
+  scr('lobby', [head(S.inn), h('div', 'body', [
+    h('div', 'chip', [(function () { var i = h('i'); i.style.background = COLORS[me.k] || COLORS[prof.k]; return i; })(), h('b', null, me.n || prof.n)]),
+    h('div', 'big', S.ready), h('div', 'dim', S.waitStart),
+    h('div', 'dim', fmt(S.inRoom, st.pl || 0)),
+    h('div', 'foot', [leaveBtn()])
+  ])]);
+}
+
+function fit(root, start) {
+  [].forEach.call(root.querySelectorAll('.at'), function (t) {
+    var fs = start; t.style.fontSize = fs + 'px';
+    while (fs > 18 && t.getBoundingClientRect().height > fs * 1.25 * 3 + 2) { fs -= 1; t.style.fontSize = fs + 'px'; }
+  });
+}
+function stamps(q, rv) {
+  var pick = pickOf(q);
+  var g = h('div', 'grid' + (rv ? ' rvg' : ''));
+  q.o.forEach(function (txt, i) {
+    var cls = 'stamp';
+    if (rv) cls += i === rv.c ? ' ok' : i === pick ? ' pick' : ' off';
+    else if (pick >= 0) cls += i === pick ? ' pick' : ' off';
+    g.appendChild(h(rv ? 'div' : 'button', cls, [
+      h('span', 'tab', S.letters[i]),
+      rv && rv.cnt ? h('span', 'cnt', D(rv.cnt[i] || 0)) : null,
+      h('span', 'at', txt)
+    ], rv ? { 'data-i': i } : { type: 'button', 'data-i': i, 'aria-pressed': String(i === pick) }));
+  });
+  return g;
+}
+function qHead(q, withTicks) {
+  var ts = h('div', 'ticks'), tks = [];
+  for (var i = 0; i < 20; i++) { var t = h('div', 'tk'); tks.push(t); ts.appendChild(t); }
+  var sec = h('div', 'timer', '0');
+  var statEl = h('div', 'stat'), sub = h('div', 'sub2', fmt(S.answered, q.ans || 0, q.of || 0));
+  refs = { tks: tks, sec: sec, stat: statEl, q: q, ticks: withTicks };
+  return h('div', 'hd', [
+    h('div', 'qrow', [h('div', 'qn', fmt(S.qn, (q.i || 0) + 1, q.n || 0)), withTicks ? sec : null]),
+    h('div', 'qt', q.t), withTicks ? ts : null, statEl, sub
+  ]);
+}
+function questionScreen() {
+  var q = st.q, pick = pickOf(q);
+  if (q.wait) {
+    refs = {};
+    scr('wait', [qHead(q, false), h('div', 'body', [h('div', 'msg', [h('div', 'big', S.waitNext), h('div', 'dim', S.waitNextSub)])])]);
+    return;
+  }
+  var e = scr(pick >= 0 ? 'locked' : 'question', [qHead(q, true), stamps(q, null)]);
+  fit(e, 28);
+  zero = remaining() <= 0;
+  tick(true);
+}
+function revealScreen() {
+  var q = st.q, rv = st.rv || {}, me = st.me || {};
+  var cls = rv.ok === true ? 'r' : rv.ok === false ? 'w' : 'n';
+  var pts = [h('div', 'ic', null), h('div', 'res', rv.ok === true ? S.right : rv.ok === false ? S.wrong : S.timeup),
+    h('div', 'pts', '+' + D(rv.p || 0))];
+  pts[0].innerHTML = rv.ok === true ? CHECK : CROSS;
+  if (rv.st >= 2) pts.push(h('div', 'dim', fmt(S.streak, rv.st)));
+  var d = rv.d | 0, r = rv.r || me.r || 0;
+  var dl = h('div', null, d > 0 ? [h('i', 'arr u'), fmt(S.up, d)] : d < 0 ? [h('i', 'arr d'), fmt(S.down, -d)] : S.same);
+  dl.style.fontWeight = '700';
+  var rank = h('div', 'rank', [h('div', 'rnum', r ? D(r) : '-'), h('div', 'rk', [fmt(S.yourRank, me.of || st.pl || 0), dl])]);
+  var e = scr('reveal', [h('div', 'hero ' + cls, pts), stamps(q, rv), rank]);
+  e.className += '';
+  fit(e, 22);
+}
+function endScreen() {
+  var en = st.end || {}, r = en.r || 0, o = r ? ordinal(r) : null;
+  var title = r ? (o ? fmt(S.you, o) : fmt(S.rankN, r)) : S.over;
+  scr('end', [head(S.over), h('div', 'body', [
+    h('div', 'big', title),
+    r ? h('div', 'endn', D(r)) : null,
+    h('div', 'big', fmt(S.score, en.s != null ? en.s : 0)),
+    h('div', 'dim', fmt(S.outOf, en.of || st.pl || 0)),
+    h('div', 'foot', [leaveBtn()])
+  ])]);
+}
+
+function render(force) {
+  var key = mode;
+  if (mode === 'join') key += '|' + joinErr + '|' + busy;
+  else if (mode === 'game') {
+    var q = st.q;
+    key += '|' + (st.v != null ? st.v : JSON.stringify(st)) + '|' + st.ph + '|' + (q ? pickOf(q) : '') + '|' + zero + '|' + confirming;
+  }
+  if (!force && key === lastKey) return;
+  lastKey = key; refs = {};
+  if (mode === 'join') joinScreen();
+  else if (mode === 'bad') msgScreen('bad', S.bad);
+  else if (mode === 'closed') msgScreen('closed', S.closed, S.closedSub);
+  else if (mode === 'loading') msgScreen('loading', S.loading);
+  else {
+    var ph = st.ph;
+    if (ph === 'question' && st.q) questionScreen();
+    else if (ph === 'reveal' && st.q) revealScreen();
+    else if (ph === 'end') endScreen();
+    else if (ph === 'paused') msgScreen('paused', S.paused, S.pausedSub);
+    else lobbyScreen();
+  }
+}
+function tick(first) {
+  if (!refs.ticks || !refs.q) return;
+  var q = refs.q, dur = q.dur || 20000, l = remaining();
+  var n = Math.ceil(l / dur * 20);
+  refs.tks.forEach(function (t, i) { t.classList.toggle('on', i < n); });
+  refs.sec.textContent = D(Math.ceil(l / 1000));
+  var pick = pickOf(q);
+  refs.stat.textContent = pick >= 0 ? S.saved : l <= 0 ? S.timeup : (dur - l < 1500 ? S.go : '');
+  var z = l <= 0;
+  if (z !== zero) { zero = z; render(true); }
+}
+
+/* ---------- banner ---------- */
+function banner() {
+  var t = conn === 'lost' ? S.lost : Date.now() < backUntil ? S.back : '';
+  net.textContent = t; net.className = conn === 'lost' ? '' : 'b'; net.style.display = t ? 'block' : 'none';
+}
+function flashBack() { backUntil = Date.now() + 2000; banner(); setTimeout(banner, 2050); }
+
+/* ---------- network ---------- */
+function toJoin() {
+  token = ''; ss(TK, null); running = false; st = null; mode = 'join'; confirming = false; render(true);
+}
+function onState(r) {
+  if (!r || r.ok !== true) {
+    var e = r && r.e;
+    if (e === 'token') return toJoin();
+    if (e === 'code') { running = false; mode = 'bad'; render(); return; }
+    if (e === 'closed') { running = false; mode = 'closed'; render(); return; }
+    return onFail();
+  }
+  fails = 0;
+  if (conn === 'lost') { conn = 'ok'; flashBack(); }
+  if (r.me && r.me.left) return toJoin();
+  st = r;
+  if (r.q && r.q.ms != null) deadline = performance.now() + r.q.ms;
+  if (r.ph === 'closed') { running = false; mode = 'closed'; render(); return; }
+  mode = 'game';
+  render();
+}
+function onFail() {
+  if (++fails >= 2 && conn !== 'lost') { conn = 'lost'; banner(); }
+}
+function poll() {
+  clearTimeout(timer);
+  if (!running || document.hidden || inflight) return;
+  inflight = true;
+  api('/api/state?c=' + encodeURIComponent(code) + '&t=' + encodeURIComponent(token), null, 4000)
+    .then(onState, onFail).catch(function () {})
+    .then(function () { inflight = false; if (running && !document.hidden) timer = setTimeout(poll, 700); });
+}
+function doJoin() {
+  if (busy) return;
+  var n = prof.n.trim();
+  if (!n) { joinErr = 'name0'; render(true); return; }
+  busy = true; joinErr = ''; render(true);
+  api('/api/join', { c: code, n: n, k: prof.k, t: token || '', l: L }, 6000).then(function (r) {
+    busy = false;
+    if (r && r.ok) {
+      token = r.t || ''; ss(TK, token);
+      prof.n = (r.n || n).slice(0, 12); if (r.k >= 0 && r.k < 8) prof.k = r.k | 0;
+      ss(PK, JSON.stringify({ n: prof.n, k: prof.k }));
+      mode = 'loading'; running = true; fails = 0; render(true); poll();
+      return;
+    }
+    var e = r && r.e;
+    if (e === 'code') mode = 'bad'; else if (e === 'closed') mode = 'closed'; else joinErr = e || 'net';
+    render(true);
+  }, function () { busy = false; joinErr = 'net'; render(true); });
+}
+function answer(i) {
+  var q = st && st.q;
+  if (!q || st.ph !== 'question' || q.wait || pickOf(q) >= 0 || remaining() <= 0) return;
+  locked[q.i] = i; render(true);
+  api('/api/answer', { c: code, t: token, q: q.i, a: i }).then(function (r) {
+    if (r && r.ok) return;
+    if (r && r.e === 'rate') { delete locked[q.i]; render(true); }
+  }, function () { delete locked[q.i]; render(true); });
+}
+function doLeave() {
+  try { api('/api/leave', { c: code, t: token }).catch(function () {}); } catch (e) {}
+  toJoin();
+}
+
+app.addEventListener('click', function (ev) {
+  var s = ev.target.closest && ev.target.closest('button.stamp');
+  if (s) { answer(+s.getAttribute('data-i')); return; }
+  if (ev.target.closest && ev.target.closest('#leave')) {
+    if (!confirming) {
+      confirming = true; render(true);
+      clearTimeout(confirmT); confirmT = setTimeout(function () { confirming = false; if (mode === 'game') render(true); }, 4000);
+    } else { clearTimeout(confirmT); doLeave(); }
+  }
+});
+
+/* ---------- wake lock and visibility ---------- */
+function wake() {
+  try { if (navigator.wakeLock && !document.hidden) navigator.wakeLock.request('screen').then(function () {}, function () {}); } catch (e) {}
+}
+document.addEventListener('visibilitychange', function () {
+  if (document.hidden) { hiddenAt = Date.now(); clearTimeout(timer); return; }
+  wake();
+  if (hiddenAt && running) flashBack();
+  hiddenAt = 0;
+  poll();
+});
+setInterval(tick, 200);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { if (mode === 'game') render(true); });
+
+/* ---------- start ---------- */
+wake();
+if (!code) { mode = 'bad'; render(true); }
+else if (token) { mode = 'loading'; running = true; render(true); poll(); }
+else { mode = 'join'; render(true); }
+})();
+</script>
+</body>
+</html>
