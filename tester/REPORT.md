@@ -1870,3 +1870,59 @@ Not printed by the app. By its rule (low-RAM flag, or under 2560 MB): flag not s
 
 ### Z
 Clean mode off, demo photos deleted, look graphite / dark, lang ar. updatechannel stays next for step 48 (put back after it).
+
+## step 48 — the phone quiz «الأسرع», build 222 (TV muted throughout; game sound set to «صامت»)
+**Not ALL PASS: 6 problems (address without the code, raw JSON when locked, podium drawn wrong, hint line over the answers, Arabic-Indic digits, connection resets while locked), 3 things I could not settle, small notes.**
+
+**The "phones":** only one was a real page at the end. Phone A = the desktop app's browser pane (it joined, then the pane was hidden, so its page stopped), phone B = the PC's Chrome (a real page, 657 px wide: Chrome won't go to 360), and three scripted phones that make the same calls as the page (`/api/join`, `/api/state` every 0.7 s, `/api/answer`, `/api/leave`). One browser profile = one player (the token is in localStorage), so tabs can't be separate players. A real iPhone/Android run is still needed.
+
+### 1 Lobby
+- Setup page first («جهّز اللعبة»), then «افتح الغرفة» → 4-digit code, QR, address, «0 لاعبين», «ابدأ (لاعبان على الأقل)» greyed ✓
+- **✗ The address on screen is cut: it shows `<address>:<port>/` without the code** (the screen's own text has `…/<code>`; the RTL layout drops the last part). Typing what is shown gives no room
+- The QR's link opens the join page from the PC ✓ (name, 8 colours, Join)
+- Players on the TV: «سارة», «Omar», a 27-letter name cut to 12 («عبدالرحمن بن», no «…»), the same name again → «سارة ٢» ✓. Count goes up ✓
+- Wrong code: a 404 page «الرمز غير صحيح / Wrong code» ✓. After 5 wrong codes even the right link is refused for about a minute ✓, **✗ but the page then shows raw text `{"ok":false,"e":"locked"}`**, no message
+- A player whose page stops asking (hidden tab) turns grey, and after about 2 minutes is dropped ✓. Small: the bottom hint keeps «ابدأ (لاعبان على الأقل)» when 4 are in
+
+### 2 ✓ Round setup with the remote
+Category, level, questions, kids, sound: arrows move, OK picks; focus never lost; UP/DOWN lands on the row's picked choice. With «سهل», «جغرافيا» turns dashed (not offered). Small: the focused choice is black whether picked or not, so you can't see the pick while standing on it.
+
+### 3 Play (two rounds of 5)
+- TV question readable, 20 ticks, one per second, counter beside ✓. Phone: «Question 1 / 5», counter, tick bar, 4 answers with text, «1 of 4 answered» ✓
+- First tap locks («Answer saved»; a second tap on another answer changed nothing) ✓
+- A late answer after the time: `{"ok":false,"e":"closed"}` ✓
+- Reveal: right answer green, «الأسرع: نورة، 16.4 ثانية» or «انتهى الوقت» ✓. **Coloured squares of who chose what: not seen** in my two reveal frames (two players had picked two different wrong answers) — could not settle, the reveal is short
+- **✗ On the reveal, the hint line («اختيار الترتيب · رجوع إيقاف مؤقت») is drawn on top of the bottom answers (ج, د)**
+- Leaderboard ✓ (rank, colour, +points, ▲▼). Small: the gain reads «591+» / «0+» (plus on the wrong side); after the last question the hint still says «السؤال التالي»; ▲/▼ shown between two players on 0
+- **✗ Podium («انتهت اللعبة»): the 2nd place block is the tallest and the winner's is lower; the blocks run to the bottom edge (y 1080); «الترتيب الكامل ▼» is drawn over the «3»**
+- «العب مرة أخرى» → lobby, same code, the 3 active players kept ✓ (the grey one dropped). Phone end screen: «Game over, You're 1st, Your score…» ✓
+- Could not settle: a question ended as soon as the two scripted phones answered, while Omar (Chrome, a real page) had not; and Omar got 809 points on a question I did not tap. Chrome was in the background, so I can't say which side is wrong
+
+### 4 Robustness
+- Phone closed mid-question, reopened with its saved token: same player, same score ✓. Small: its state then said rank 4 of 3
+- A 4th player joined mid-question: told to wait, plays from the next one ✓
+- A player leaves: count drops ✓
+- TV Back mid-question: pause card «اللعبة متوقفة» (متابعة / إنهاء اللعبة / الرئيسية), phones go to «paused», «متابعة» carries on ✓
+- HOME mid-game: the game freezes and is there again when reopened ✓. Small: the phones are not told (they stay on the last screen)
+
+### 5 ✓ Screensaver (idle 45 s)
+2 minutes in the lobby and 2 minutes on a paused question: no screensaver, TV awake. (The timer can't be left on a live question: it ends after 20 s.) Note: the end screen does not hold the screen on.
+
+### 6 Digits / English
+- **✗ Digits: with the TV on English digits, the duplicate name gets «٢» and one question's answers were «٩٦٠ ١٠١٠ ١٠٠٠ ٩٩٧».** The counter, code and scores are English digits
+- UrTV en → games page, setup and lobby all English ✓. The phone page follows the phone's own language (or `?l=`), not the TV's: English in my browsers with the TV in Arabic
+
+### 7 ✓ Sound: the setup has «الصوت: يعمل / صامت»; it toggles. Kept on «صامت», TV muted
+
+### 8 Weight
+- PSS: screensaver app (hosts the game) 42 MB in the lobby, 44 MB mid-game; home 101 MB
+- gfxinfo over a round: 409 frames, 1.5 % janky, 50th 6 ms, 90th 8 ms ✓. No error lines from the app
+- The TV left the Wi-Fi for about 13 minutes right after test 9 (log: `CTRL-EVENT-DISCONNECTED … locally_generated=1`), no restart; when it came back the game was on its setup page and the room was gone. I did not touch Wi-Fi; I can't tie it to the game
+
+### 9 curl (address not written)
+- Made-up `Host:` → 403 on the page and on `/api/state` ✓
+- `Origin: http://example.com` on `/api/join` → 403 ✓
+- 20 quick wrong codes → locked ✓ (`{"ok":false,"e":"locked"}`), **✗ but while locked about half the requests end in a connection reset or no answer (curl 56 / 000) instead of the reply**
+
+### Z
+Room closed (Back on the lobby; the code no longer answers; nothing listens on the old port). Lang ar, updatechannel latest, idle back to 45 s, look/appearance as found, settings lists the same as before step 47. Mute watcher stopped. No screenshots, tokens or addresses kept.
