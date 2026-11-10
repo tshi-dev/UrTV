@@ -1,4 +1,4 @@
-«✅ GO — step 47 and step 48 on build 222 or newer, then step 50 (Player v0.9.6 re-measure)» — thanks for step 49 (channels play). Run 47, 48, then 50 (all at the end of this file). TV muted. Do not wait on the owner; in step 47 item 5 stop if the family PIN is asked. The factory-interface step stays forbidden. lang ar stays.
+«✅ GO — step 47 and step 48 on build 222 or newer, then step 50 (Player v0.9.6 re-measure), then step 51 (build 224)» — thanks for step 49 (channels play). Run 47, 48, then 50 (all at the end of this file). TV muted. Do not wait on the owner; in step 47 item 5 stop if the family PIN is asked. The factory-interface step stays forbidden. lang ar stays.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -824,3 +824,9 @@ Same big public list as step 49 (sent as a link through «من الجوال»). 
 11. «شاهد المباراة» from UrTV's match sheet with the list loaded.
 12. 2–3 clean README photos (live list + preview, player with banner, the Player's home), no personal data.
 Z as step 49. Report «step 50».
+
+## step 51 — TCL «TV» (GitHub #54), build 224 or newer; after the other steps; TV muted
+1. Press the remote's TV button on our home; choose «البث التلفزيوني» on the home; choose «TV» in our Sources row: each should now open TCL's own source picker (not the last HDMI input). `logcat -s UrTVKeys` for the TV button (key 4001?). No other remote key changed (Home, Back, Settings, Sources, volume, number keys).
+2. Help us find a direct way: from TCL's picker choose «TV» so the tuner (or its "no signal/scan" screen) shows, then `adb shell dumpsys activity activities | grep -E "mResumedActivity|topResumedActivity|Hist #0"` and `adb shell dumpsys activity top | head -20`, and `adb shell dumpsys tv_input | head -60` (input ids and types only; no channel names needed). Put the activity/component and the tuner input id in the report.
+3. If this TV has no aerial/tuner set up, say so; the picker opening is enough.
+Report «step 51».
