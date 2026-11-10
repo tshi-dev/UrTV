@@ -1,4 +1,4 @@
-«✅ GO — step 49 FIRST (Player v0.9.3: does a channel play? use the owner's playlist link at the end of the file), then steps 47 and 48 on build 218 or newer» — run step 49, then 47, then 48 (all at the end of this file). TV muted. Do not wait on the owner; in step 47 item 5 stop if the family PIN is asked. The factory-interface step stays forbidden. lang ar stays.
+«✅ GO — step 49 FIRST (Player v0.9.5 (release «latest» in the Player repo): does a channel play? use the owner's playlist link at the end of the file), then steps 47 and 48 on build 222 or newer» — run step 49, then 47, then 48 (all at the end of this file). TV muted. Do not wait on the owner; in step 47 item 5 stop if the family PIN is asked. The factory-interface step stays forbidden. lang ar stays.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -800,3 +800,10 @@ Z. Uninstall, remove the M3U and file server, restore as step 45 Z. Report «ste
 ### step 49 — the owner's test playlist (he sent it himself; use it for this test only)
 Playlist for items 1 and 3: `https://iptv-org.github.io/iptv/regions/arab.m3u` (a public list the owner chose; sent as a LINK through «من الجوال», so the TV fetches it itself; no local file server needed). Report: how many channels and groups load and in how long; list scroll smooth with a big list (jank %, PSS); search; then play, muted: Al Quran Al Kareem TV, Al Sunnah Al Nabawiyah TV, Al Saudiya (or the nearest Saudi channels in the list) 5 minutes for the first and 1 minute each for the others, plus 5 more channels picked from different groups: for each say plays / does not play (dead links in a public list are expected: count them, they are not our bug unless the same link plays in VLC on the PC) with time to first frame; zap times. Keep to family-safe channels; do not record or keep any stream. If you already finished step 49 with the 3-row list, run only this part.
 Z: delete the playlist from the app before uninstalling; nothing of it stays on the TV or the PC.
+
+### step 49 — use Player **v0.9.5** (newest; replaces v0.9.3 everywhere above). Extra items:
+9. While a channel plays: the info panel's «ليش يقطّع؟» line — what does it say on a good channel, on a dead link, and on a slow one (if you meet one)? A dead/frozen channel shows a message, never a frozen frame; it reconnects by itself when the stream comes back (pull the PC file server for the local list for 20 s, or use a channel that stalls).
+10. Settings → «اختبار القائمة» on the owner's list: reachable %, median time; how long it takes; it must not hammer (watch the request rate in your PC proxy/log if you route through one; else just time it).
+11. «قناة بديلة تلقائيًا» (opt-in): turn on, open a dead channel that has a same-name twin in the list: does it switch and say so? Turn off again.
+12. Big list feel: with the owner's list loaded (say its size), scroll the whole list holding DOWN for 20 s and search 3 words: jank % (gfxinfo), PSS, any ANR.
+13. «عن التطبيق»: version 0.9.5 «نسخة رسمية ✓»; the update row says what when nothing newer exists? (The repo is still private, so the self-update check will fail quietly: confirm no error is shown and nothing blocks.)
