@@ -234,6 +234,73 @@ def motion():
     return page(f'<div class="abs" style="left:48px;right:48px;top:30px;font-size:40px;font-weight:700">حركة المسابقة: A «لوحة» يسارًا، B «ورقة» يمينًا</div><div class="abs col" style="left:48px;top:130px;gap:34px">{rows}</div><div class="abs" style="left:48px;bottom:16px;font-size:22px;opacity:.6">{NOTE}</div>', "#24262B", "#fff", False, 1920, 1100)
 S["quiz-C1-motion-keyframes"] = motion()
 
+# =============================================================== B, the rest of the set (the owner picked B): lobby, setup, phone join, phone waiting. Working name «الأسرع» is ONE string (NAME).
+NAME = ("الأسرع", "Fastest")
+def B_lobby(en):
+    st, ed = sides(en); t = T(en)
+    names = ["سلمان", "نورة", "خالد", "ريم", "فهد", "هند"]
+    pl = "".join(f'<div class="row" style="height:104px;border:6px solid {INK};background:#FBF8F1;gap:20px;padding-inline-start:20px;{"box-shadow:0 0 0 6px "+SAFF+";transform:scale(1.04)" if p == "هند" else ""}"><div style="width:40px;height:40px;background:{col(p)};box-shadow:0 0 0 3px {INK}"></div><div style="font-size:52px;font-weight:700;white-space:nowrap">{nm(p, en)}</div></div>' for p in names)
+    code = "7429" if en else "٧٤٢٩"
+    return page(f'<div class="abs" style="left:0;right:0;top:0;height:300px;background:{DEEP}"></div>'
+      f'<div class="abs" style="{st}:96px;top:54px;font-size:128px;font-weight:700;color:#fff;line-height:1.1">{NAME[1 if en else 0]}</div>'
+      f'<div class="abs" style="{st}:96px;top:214px;font-size:40px;color:{SAFF};font-weight:700">{t("الكل يجاوب من جواله، والأسرع يكسب","Everyone answers on their phone, the fastest wins")}</div>'
+      f'<div class="abs btn" style="{ed}:96px;top:54px;width:232px;height:200px;background:{SAFF};color:{INK};flex-direction:column"><div class="tn" style="font-size:112px;font-weight:700;line-height:1">{N(6, en)}</div><div style="font-size:36px;font-weight:700">{t("لاعبين","players")}</div></div>'
+      f'<div class="abs col" style="{st}:96px;top:330px;gap:20px;width:620px"><div style="font-size:36px;opacity:.7">{t("اكتب الرمز في صفحة الألعاب، أو امسح","Type the code on the games page, or scan")}</div>'
+      f'<div class="btn" style="height:208px;background:{SAFF};border:6px solid {INK};color:{INK};font-size:168px;font-weight:700;letter-spacing:12px;line-height:1"><span class="tn">{code}</span></div>'
+      f'<div class="row" style="gap:24px"><div style="width:288px;height:288px;background:#fff;border:6px solid {INK};padding:14px">{qr_svg(250)}</div><div style="font-size:36px;line-height:1.4;opacity:.8">{t("كاميرا الجوال تفتح الصفحة مباشرة","The phone camera opens the page")}</div></div></div>'
+      f'<div class="abs" style="{ed}:96px;top:336px;width:1000px;display:grid;grid-template-columns:1fr 1fr;gap:16px">{pl}</div>'
+      f'<div class="abs btn" style="{ed}:96px;top:728px;width:1000px;height:120px;background:{INK};color:{PAPER};font-size:56px;font-weight:700;box-shadow:0 0 0 6px rgba(22,20,15,.25)">{t("ابدأ","Start")}</div>'
+      f'<div class="abs row" style="left:96px;right:96px;bottom:54px;gap:48px;height:48px;color:#16140F"><div class="row" style="gap:12px"><div class="btn" style="min-width:64px;height:48px;padding:0 16px;border-radius:8px;background:rgba(22,20,15,.14);font-size:30px;font-weight:700">{"OK" if en else "اختيار"}</div><div style="font-size:32px;opacity:.85">{t("ابدأ (لاعبان على الأقل)","Start (2 players at least)")}</div></div><div class="row" style="gap:12px"><div class="btn" style="min-width:64px;height:48px;padding:0 16px;border-radius:8px;background:rgba(22,20,15,.14);font-size:30px;font-weight:700">{"Back" if en else "رجوع"}</div><div style="font-size:32px;opacity:.85">{t("أغلق الغرفة","Close the room")}</div></div></div>', PAPER, "#16140F", en)
+
+def qr_svg(size):
+    import random
+    r = random.Random(7); n = 25; c = size // n; cells = ""
+    for y in range(n):
+        for x in range(n):
+            fnd = (x < 7 and y < 7) or (x > n - 8 and y < 7) or (x < 7 and y > n - 8)
+            if fnd:
+                a, b = (x - (n - 7) if x > n - 8 else x), (y - (n - 7) if y > n - 8 else y)
+                on = a in (0, 6) or b in (0, 6) or (2 <= a <= 4 and 2 <= b <= 4)
+            else: on = r.random() < .48
+            if on: cells += f'<rect x="{x*c}" y="{y*c}" width="{c}" height="{c}"/>'
+    return f'<svg width="{size}" height="{size}" fill="{INK}">{cells}</svg>'
+
+def B_setup(en):
+    st, ed = sides(en); t = T(en)
+    def seg(label, opts, sel, focus=False):
+        o = "".join(f'<div class="btn" style="min-width:{w}px;height:104px;padding:0 28px;font-size:44px;font-weight:700;border:6px solid {INK};' + (f"background:{INK};color:{PAPER};box-shadow:0 0 0 6px rgba(22,20,15,.3)" if (focus and i == sel) else (f"background:{SAFF};color:{INK}" if i == sel else "background:#FBF8F1")) + f'">{n}</div>' for i, (n, w) in enumerate(opts))
+        return f'<div class="row" style="gap:32px"><div style="font-size:44px;font-weight:700;width:260px;flex:none">{label}</div><div class="row" style="gap:16px">{o}</div></div>'
+    cats = [(t("عام", "General"), 170), (t("رياضة", "Sport"), 170), (t("تاريخ", "History"), 170), (t("علوم", "Science"), 170), (t("أفلام", "Films"), 170)]
+    lv = [(t("سهل", "Easy"), 170), (t("وسط", "Medium"), 170), (t("صعب", "Hard"), 170)]
+    ct = [(N(5, en), 120), (N(10, en), 120), (N(15, en), 120)]
+    kd = [(t("عادي", "Normal"), 200), (t("للأطفال", "Kids"), 200)]
+    return page(f'<div class="abs" style="left:0;right:0;top:0;height:200px;background:{DEEP}"></div><div class="abs" style="{st}:96px;top:54px;font-size:96px;font-weight:700;color:#fff;line-height:1.1">{t("جهّز اللعبة","Set up the game")}</div><div class="abs" style="{ed}:96px;top:84px;font-size:40px;color:{SAFF};font-weight:700">{t("٦ لاعبين جاهزين","6 players ready")}</div>'
+      f'<div class="abs col" style="{st}:96px;top:240px;gap:28px">{seg(t("القسم","Category"), cats, 1, True)}{seg(t("المستوى","Level"), lv, 1)}{seg(t("الأسئلة","Questions"), ct, 1)}{seg(t("النمط","Mode"), kd, 0)}</div>'
+      f'<div class="abs btn" style="{st}:96px;top:824px;width:640px;height:120px;background:{INK};color:{PAPER};font-size:52px;font-weight:700;opacity:.9">{t("ابدأ اللعبة","Start the game")}</div>'
+      f'<div class="abs row" style="left:96px;right:96px;bottom:54px;gap:48px;height:48px"><div class="row" style="gap:12px"><div class="btn" style="min-width:64px;height:48px;padding:0 16px;border-radius:8px;background:rgba(22,20,15,.14);font-size:30px;font-weight:700">▲ ▼</div><div style="font-size:32px;opacity:.85">{t("السطر","Row")}</div></div><div class="row" style="gap:12px"><div class="btn" style="min-width:64px;height:48px;padding:0 16px;border-radius:8px;background:rgba(22,20,15,.14);font-size:30px;font-weight:700">◀ ▶</div><div style="font-size:32px;opacity:.85">{t("الاختيار","Choice")}</div></div><div class="row" style="gap:12px"><div class="btn" style="min-width:64px;height:48px;padding:0 16px;border-radius:8px;background:rgba(22,20,15,.14);font-size:30px;font-weight:700">{"OK" if en else "اختيار"}</div><div style="font-size:32px;opacity:.85">{t("ابدأ","Start")}</div></div></div>', PAPER, "#16140F", en)
+
+def B_join(light, en, state="join"):
+    t = T(en)
+    bg, tx, fld, bd = (PAPER, "#16140F", "#FBF8F1", INK) if light else ("#14130F", PAPER, "#1E1C16", PAPER)
+    pal = list(PL.values()) + [("", "#FFB86B"), ("", "#8FD6FF")]
+    sw = "".join(f'<div style="width:64px;height:64px;background:{c};border:{"6px solid "+bd if i == 3 else "3px solid "+bd};{"box-shadow:0 0 0 4px "+SAFF if i == 3 else ""}"></div>' for i, (_, c) in enumerate(pal))
+    head = f'<div class="abs" style="left:0;right:0;top:0;height:160px;background:{DEEP}"></div><div class="abs" style="left:24px;right:24px;top:28px;font-size:44px;font-weight:700;color:#fff;line-height:1.1">{NAME[1 if en else 0]}</div><div class="abs" style="left:24px;right:24px;top:92px;font-size:20px;color:{SAFF};font-weight:700">{t("الغرفة","Room")} {"7429" if en else "٧٤٢٩"}</div>'
+    if state == "join":
+        body = (f'<div class="abs col" style="left:20px;right:20px;top:190px;gap:10px"><div style="font-size:20px;opacity:.75">{t("اسمك","Your name")}</div><div class="row" style="height:72px;border:4px solid {bd};background:{fld};padding:0 20px;font-size:32px;font-weight:700">{t("ريم","Reem")}</div></div>'
+                f'<div class="abs col" style="left:20px;right:20px;top:324px;gap:12px"><div style="font-size:20px;opacity:.75">{t("لونك","Your colour")}</div><div style="display:grid;grid-template-columns:repeat(4,64px);gap:16px;justify-content:space-between">{sw}</div></div>'
+                f'<div class="abs btn" style="left:20px;right:20px;bottom:28px;height:76px;background:{SAFF};border:4px solid {bd};color:{INK};font-size:30px;font-weight:700">{t("ادخل","Join")}</div>')
+    else:
+        body = (f'<div class="abs col" style="left:20px;right:20px;top:200px;gap:16px"><div class="row" style="height:104px;border:6px solid {bd};background:{fld};gap:20px;padding:0 20px"><div style="width:44px;height:44px;background:{PL["ريم"][1]};box-shadow:0 0 0 3px {bd}"></div><div style="font-size:44px;font-weight:700">{t("ريم","Reem")}</div></div>'
+                f'<div style="font-size:34px;font-weight:700;margin-top:12px">{t("أنت داخل","You are in")}</div><div style="font-size:22px;line-height:1.5;opacity:.8">{t("٦ لاعبين. ننتظر أن تبدأ اللعبة على التلفزيون","6 players. Waiting for the game to start on the TV")}</div></div>'
+                f'<div class="abs row" style="left:20px;right:20px;bottom:36px;gap:8px">' + "".join(f'<div style="flex:1;height:20px;background:{c}"></div>' for _, c in list(PL.values())) + '</div>')
+    return ph(head + body, bg, tx, en)
+
+S["quiz-B7-tv-lobby"] = B_lobby(False); S["quiz-B7-tv-lobby-en"] = B_lobby(True)
+S["quiz-B8-tv-setup"] = B_setup(False); S["quiz-B8-tv-setup-en"] = B_setup(True)
+for st_, nm_, ttl_ in (("join", "quiz-B9-phone-join", "B «ورقة»: الجوال، الدخول"), ("wait", "quiz-B10-phone-waiting", "B «ورقة»: الجوال، الانتظار")):
+    S[nm_] = sheet(ttl_, [(B_join(True, False, st_), "عربي فاتح"), (B_join(False, False, st_), "عربي داكن"), (B_join(True, True, st_), "English light"), (B_join(False, True, st_), "English dark")], NOTE)
+
+
 if __name__ == "__main__":
     d = Path(sys.argv[1] if len(sys.argv) > 1 else "_html"); d.mkdir(exist_ok=True, parents=True)
     for n, h in sorted(S.items()): (d / f"{n}.html").write_text(h, encoding="utf-8")
