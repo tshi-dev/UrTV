@@ -49,63 +49,63 @@ COUNTRY_FIX = {"Western Sahara": "Morocco"}
 # loosely: case, punctuation and spaces aside). The report lists any key that matched nothing, to fix by hand.
 AR = [
     ("4668", "دوري روشن السعودي"), ("5627", "دوري يلو (الدرجة الأولى)"), ("Saudi King Cup", "كأس خادم الحرمين الشريفين"),
-    ("Saudi Super Cup", "كأس السوبر السعودي"), ("Saudi Second Division", "دوري الدرجة الثانية السعودي"),
+    ("Saudi Super Cup", "كأس السوبر السعودي"), 
     ("4328", "الدوري الإنجليزي"), ("4329", "دوري البطولة الإنجليزية"), ("English League 1", "دوري الدرجة الأولى الإنجليزي"),
-    ("English League 2", "دوري الدرجة الثانية الإنجليزي"), ("English FA Cup", "كأس الاتحاد الإنجليزي"), ("English League Cup", "كأس الرابطة الإنجليزية"),
+    ("English League 2", "دوري الدرجة الثانية الإنجليزي"), ("4482", "كأس الاتحاد الإنجليزي"), ("4570", "كأس الرابطة الإنجليزية"),
     ("FA Community Shield", "درع المجتمع الإنجليزي"), ("English Womens Super League", "الدوري الإنجليزي للسيدات"),
-    ("4335", "الدوري الإسباني"), ("Spanish La Liga 2", "الدوري الإسباني الدرجة الثانية"), ("Spanish Copa del Rey", "كأس ملك إسبانيا"),
-    ("Spanish Super Cup", "كأس السوبر الإسباني"),
-    ("4332", "الدوري الإيطالي"), ("Italian Serie B", "الدوري الإيطالي الدرجة الثانية"), ("Italian Coppa Italia", "كأس إيطاليا"),
-    ("Italian Super Cup", "كأس السوبر الإيطالي"),
-    ("4331", "الدوري الألماني"), ("German 2. Bundesliga", "الدوري الألماني الدرجة الثانية"), ("German DFB Pokal", "كأس ألمانيا"),
+    ("4335", "الدوري الإسباني"), ("Spanish La Liga 2", "الدوري الإسباني الدرجة الثانية"), ("4483", "كأس ملك إسبانيا"),
+    ("4511", "كأس السوبر الإسباني"),
+    ("4332", "الدوري الإيطالي"), ("Italian Serie B", "الدوري الإيطالي الدرجة الثانية"), ("4506", "كأس إيطاليا"),
+    ("4507", "كأس السوبر الإيطالي"),
+    ("4331", "الدوري الألماني"), ("German 2. Bundesliga", "الدوري الألماني الدرجة الثانية"), ("4485", "كأس ألمانيا"),
     ("German Super Cup", "كأس السوبر الألماني"),
-    ("4334", "الدوري الفرنسي"), ("French Ligue 2", "الدوري الفرنسي الدرجة الثانية"), ("French Coupe de France", "كأس فرنسا"),
+    ("4334", "الدوري الفرنسي"), ("French Ligue 2", "الدوري الفرنسي الدرجة الثانية"), ("4484", "كأس فرنسا"),
     ("French Trophée des Champions", "كأس الأبطال الفرنسي"),
-    ("4344", "الدوري البرتغالي"), ("Portuguese Taca de Portugal", "كأس البرتغال"), ("4337", "الدوري الهولندي"), ("Dutch KNVB Cup", "كأس هولندا"),
+    ("4344", "الدوري البرتغالي"), ("4510", "كأس البرتغال"), ("4337", "الدوري الهولندي"), ("Dutch KNVB Cup", "كأس هولندا"),
     ("4339", "الدوري التركي"), ("Turkish Cup", "كأس تركيا"), ("4330", "الدوري الإسكتلندي"), ("Belgian Pro League", "الدوري البلجيكي"),
-    ("Greek Superleague Greece", "الدوري اليوناني"), ("Russian Football Premier League", "الدوري الروسي"), ("Swiss Super League", "الدوري السويسري"),
-    ("Austrian Football Bundesliga", "الدوري النمساوي"), ("Danish Superliga", "الدوري الدنماركي"), ("Norwegian Eliteserien", "الدوري النرويجي"),
+    ("4336", "الدوري اليوناني"), ("Russian Football Premier League", "الدوري الروسي"), ("Swiss Super League", "الدوري السويسري"),
+    ("4621", "الدوري النمساوي"), ("Danish Superliga", "الدوري الدنماركي"), ("Norwegian Eliteserien", "الدوري النرويجي"),
     ("Swedish Allsvenskan", "الدوري السويدي"), ("Ukrainian Premier League", "الدوري الأوكراني"), ("Croatian First Football League", "الدوري الكرواتي"),
     ("Serbian SuperLiga", "الدوري الصربي"), ("Polish Ekstraklasa", "الدوري البولندي"), ("Czech First League", "الدوري التشيكي"),
     ("4480", "دوري أبطال أوروبا"), ("UEFA Europa League", "الدوري الأوروبي"), ("UEFA Conference League", "دوري المؤتمر الأوروبي"),
-    ("UEFA Europa Conference League", "دوري المؤتمر الأوروبي"), ("UEFA Super Cup", "كأس السوبر الأوروبي"), ("UEFA Nations League", "دوري الأمم الأوروبية"),
+    ("UEFA Super Cup", "كأس السوبر الأوروبي"), ("UEFA Nations League", "دوري الأمم الأوروبية"),
     ("UEFA European Championships", "كأس الأمم الأوروبية"), ("UEFA European Championship Qualifying", "تصفيات كأس الأمم الأوروبية"),
     ("UEFA Womens Champions League", "دوري أبطال أوروبا للسيدات"),
-    ("FIFA World Cup", "كأس العالم"), ("FIFA World Cup Qualifying UEFA", "تصفيات كأس العالم (أوروبا)"),
-    ("FIFA World Cup Qualifying AFC", "تصفيات كأس العالم (آسيا)"), ("FIFA World Cup Qualifying CAF", "تصفيات كأس العالم (أفريقيا)"),
-    ("FIFA World Cup Qualifying CONMEBOL", "تصفيات كأس العالم (أمريكا الجنوبية)"), ("FIFA World Cup Qualifying CONCACAF", "تصفيات كأس العالم (الكونكاكاف)"),
+    ("FIFA World Cup", "كأس العالم"), ("5518", "تصفيات كأس العالم (أوروبا)"),
+    ("5513", "تصفيات كأس العالم (آسيا)"), ("5514", "تصفيات كأس العالم (أفريقيا)"),
+    ("5515", "تصفيات كأس العالم (أمريكا الجنوبية)"), ("5516", "تصفيات كأس العالم (الكونكاكاف)"),
     ("FIFA Club World Cup", "كأس العالم للأندية"), ("FIFA Intercontinental Cup", "كأس القارات للأندية"), ("FIFA Womens World Cup", "كأس العالم للسيدات"),
     ("FIFA U-20 World Cup", "كأس العالم للشباب"), ("FIFA U-17 World Cup", "كأس العالم للناشئين"), ("FIFA Arab Cup", "كأس العرب"),
     ("Olympics Soccer", "كرة القدم في الألعاب الأولمبية"), ("International Friendlies", "مباريات ودية دولية"), ("Club Friendlies", "مباريات ودية للأندية"),
     ("4719", "دوري أبطال آسيا للنخبة"), ("AFC Champions League Two", "دوري أبطال آسيا 2"), ("AFC Asian Cup", "كأس آسيا"),
     ("AFC Asian Cup Qualifying", "تصفيات كأس آسيا"), ("AFC U23 Asian Cup", "كأس آسيا تحت 23 سنة"), ("AFC Challenge League", "دوري التحدي الآسيوي"),
-    ("Arabian Gulf Cup", "كأس الخليج العربي"), ("Arab Club Champions Cup", "البطولة العربية للأندية"), ("WAFF Championship", "بطولة غرب آسيا"),
-    ("Africa Cup of Nations", "كأس الأمم الأفريقية"), ("Africa Cup of Nations Qualifying", "تصفيات كأس الأمم الأفريقية"),
+    ("Arabian Gulf Cup", "كأس الخليج العربي"), ("5974", "دوري أبطال الخليج للأندية"), ("4723", "كأس الاتحاد الإسكتلندي"), ("4888", "كأس الرابطة الإسكتلندية"), ("Arab Club Champions Cup", "البطولة العربية للأندية"), ("WAFF Championship", "بطولة غرب آسيا"),
+    ("Africa Cup of Nations", "كأس الأمم الأفريقية"), ("5520", "تصفيات كأس الأمم الأفريقية"),
     ("CAF Champions League", "دوري أبطال أفريقيا"), ("CAF Confederation Cup", "كأس الكونفدرالية الأفريقية"), ("CAF Super Cup", "كأس السوبر الأفريقي"),
     ("African Nations Championship", "بطولة أمم أفريقيا للمحليين"),
     ("Copa America", "كوبا أمريكا"), ("Copa Libertadores", "كأس ليبرتادوريس"), ("Copa Sudamericana", "كأس سود أمريكانا"),
     ("CONCACAF Champions Cup", "دوري أبطال الكونكاكاف"), ("CONCACAF Gold Cup", "الكأس الذهبية"), ("CONCACAF Nations League", "دوري أمم الكونكاكاف"),
     ("4678", "الدوري الإماراتي"), ("UAE League Cup", "كأس رابطة المحترفين الإماراتية"), ("UAE First Division League", "دوري الدرجة الأولى الإماراتي"),
-    ("UAE Presidents Cup", "كأس رئيس الدولة الإماراتي"), ("4663", "الدوري القطري"), ("Qatari Emir Cup", "كأس أمير قطر"), ("Qatar Cup", "كأس قطر"),
-    ("Qatari Second Division", "دوري الدرجة الثانية القطري"), ("Kuwaiti Premier League", "الدوري الكويتي"), ("Kuwait Emir Cup", "كأس أمير الكويت"),
-    ("Bahraini Premier League", "الدوري البحريني"), ("Omani Professional League", "الدوري العماني"), ("Oman Professional League", "الدوري العماني"),
+    ("UAE Presidents Cup", "كأس رئيس الدولة الإماراتي"), ("4663", "الدوري القطري"), ("4971", "كأس أمير قطر"), ("5192", "كأس قطر"),
+    ("Qatari Second Division", "دوري الدرجة الثانية القطري"), ("4823", "الدوري الكويتي"), ("Kuwait Emir Cup", "كأس أمير الكويت"), ("5189", "كأس ولي العهد الكويتي"), ("4657", "الدوري المغربي الدرجة الثانية"),
+    ("4826", "الدوري البحريني"), ("5961", "كأس عُمان"), ("Oman Professional League", "الدوري العماني"),
     ("5056", "دوري نجوم العراق"), ("Jordanian Pro League", "الدوري الأردني"), ("Jordan Premier League", "الدوري الأردني"),
-    ("Lebanese Premier League", "الدوري اللبناني"), ("Syrian Premier League", "الدوري السوري"), ("Palestinian West Bank Premier League", "الدوري الفلسطيني"),
+    ("5243", "الدوري اللبناني"), ("Syrian Premier League", "الدوري السوري"), ("Palestinian West Bank Premier League", "الدوري الفلسطيني"),
     ("Yemeni League", "الدوري اليمني"),
-    ("4829", "الدوري المصري"), ("Egypt Cup", "كأس مصر"), ("Egyptian Super Cup", "كأس السوبر المصري"), ("Moroccan Botola Pro", "الدوري المغربي"),
-    ("Moroccan Championship", "الدوري المغربي"), ("Algerian Ligue 1", "الدوري الجزائري"), ("Algerian Ligue Professionnelle 1", "الدوري الجزائري"),
-    ("Tunisian Ligue Professionnelle 1", "الدوري التونسي"), ("Libyan Premier League", "الدوري الليبي"), ("Sudan Premier League", "الدوري السوداني"),
-    ("South African Premier Soccer League", "الدوري الجنوب أفريقي"), ("Nigerian Professional Football League", "الدوري النيجيري"),
+    ("4829", "الدوري المصري"), ("5185", "كأس الرابطة المصرية"), ("Egyptian Super Cup", "كأس السوبر المصري"), ("Moroccan Botola Pro", "الدوري المغربي"),
+    ("Moroccan Championship", "الدوري المغربي"), ("Algerian Ligue 1", "الدوري الجزائري"), ("4753", "الدوري الجزائري"),
+    ("4828", "الدوري التونسي"), ("Libyan Premier League", "الدوري الليبي"), ("5255", "الدوري السوداني"),
+    ("South African Premier Soccer League", "الدوري الجنوب أفريقي"), ("4827", "الدوري النيجيري"),
     ("Iranian Persian Gulf Pro League", "الدوري الإيراني"), ("Japanese J1 League", "الدوري الياباني"), ("South Korean K League 1", "الدوري الكوري الجنوبي"),
     ("Chinese Super League", "الدوري الصيني"), ("Australian A-League", "الدوري الأسترالي"), ("Indian Super League", "الدوري الهندي"),
-    ("Uzbekistan Super League", "الدوري الأوزبكي"), ("Thai League 1", "الدوري التايلاندي"),
-    ("4346", "الدوري الأمريكي"), ("US Open Cup", "كأس الولايات المتحدة المفتوحة"), ("Mexican Primera League", "الدوري المكسيكي"),
+    ("Uzbekistan Super League", "الدوري الأوزبكي"), ("4743", "الدوري التايلاندي"),
+    ("4346", "الدوري الأمريكي"), ("US Open Cup", "كأس الولايات المتحدة المفتوحة"), ("4350", "الدوري المكسيكي"),
     ("Brazilian Serie A", "الدوري البرازيلي"), ("Brazilian Serie B", "الدوري البرازيلي الدرجة الثانية"), ("Copa do Brasil", "كأس البرازيل"),
-    ("Argentinian Primera Division", "الدوري الأرجنتيني"), ("Copa Argentina", "كأس الأرجنتين"), ("Chilean Primera Division", "الدوري التشيلي"),
-    ("Colombian Primera A", "الدوري الكولومبي"), ("Uruguayan Primera Division", "الدوري الأوروغوياني"),
+    ("Argentinian Primera Division", "الدوري الأرجنتيني"), ("Copa Argentina", "كأس الأرجنتين"), ("4627", "الدوري التشيلي"),
+    ("4497", "الدوري الكولومبي"), ("Uruguayan Primera Division", "الدوري الأوروغوياني"),
     ("4387", "دوري كرة السلة الأمريكي (NBA)"), ("4391", "دوري كرة القدم الأمريكية (NFL)"), ("Euroleague Basketball", "الدوري الأوروبي لكرة السلة"),
     ("FIBA Basketball World Cup", "كأس العالم لكرة السلة"), ("Saudi Basketball League", "الدوري السعودي لكرة السلة"), ("NCAA Division I Basketball Mens", "دوري الجامعات الأمريكية لكرة السلة"),
-    ("WNBA", "دوري كرة السلة الأمريكي للسيدات"), ("NCAA Division 1", "دوري الجامعات الأمريكية لكرة القدم الأمريكية"),
+    ("WNBA", "دوري كرة السلة الأمريكي للسيدات"), ("4479", "دوري الجامعات الأمريكية لكرة القدم الأمريكية"),
 ]
 
 COUNTRY_AR = {
@@ -123,7 +123,34 @@ COUNTRY_AR = {
     "Peru": "بيرو", "Ecuador": "الإكوادور", "Paraguay": "باراغواي", "South Africa": "جنوب أفريقيا", "Nigeria": "نيجيريا", "Senegal": "السنغال",
     "Ghana": "غانا", "Cameroon": "الكاميرون", "Ivory Coast": "ساحل العاج", "Worldwide": "عالمي", "Europe": "أوروبا", "Asia": "آسيا",
     "Africa": "أفريقيا", "South America": "أمريكا الجنوبية", "North America": "أمريكا الشمالية",
+    # TheSportsDB's own spellings, and those the app's list has under another name or not at all
+    "World": "عالمي", "International": "دولي", "The Netherlands": "هولندا", "Czechia": "التشيك", "United Kingdom": "المملكة المتحدة",
+    "Macedonia": "مقدونيا الشمالية", "Swaziland": "إسواتيني", "DR Congo": "الكونغو الديمقراطية", "Antigua and Barbuda": "أنتيغوا وباربودا",
+    "Guinea": "غينيا", "Jamaica": "جامايكا", "Liechtenstein": "ليختنشتاين", "Macau": "ماكاو", "Maldives": "جزر المالديف", "Panama": "بنما",
 }
+ROOT = Path(__file__).resolve().parents[2]
+
+
+def app_countries(root=ROOT):
+    """English -> Arabic for every country the app lists: Places.java's English names by ISO code, cities-world's reviewed Arabic
+    (the same names the city picker shows; neither lists «إسرائيل» or Western Sahara). {} when the files are not there."""
+    try:
+        src = (root / "android/app/src/main/java/sa/urtv/screensaver/Places.java").read_text(encoding="utf-8")
+        rows = json.loads((root / ".github/tools/cities-world/cities-world.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    ar = {}
+    for r in rows:
+        ar.setdefault(r.get("country"), r.get("country_ar"))
+    return {en: ar[code] for code, en in re.findall(r'"([A-Z]{2})", "([^"]+)"', src) if ar.get(code)}
+
+
+COUNTRY_AR = {**app_countries(), **COUNTRY_AR}   # ours above win (عُمان, the regions)
+
+
+def no_arabic(cat):
+    """The countries of a catalogue with no Arabic name: the file is not pushed while there is one (main)."""
+    return sorted({e["country"] for e in cat if not e.get("country_ar")})
 
 stats = {"requests": 0, "429": 0, "errors": 0}
 
@@ -258,9 +285,12 @@ def main():
            f"- this run: {run['asked']} ids asked, ended by {run['stop']}; next from id {state['cursor']}; highest league id {state['high']}",
            f"- requests {stats['requests']}, 429s {stats['429']}, errors {stats['errors']}", "",
            "Hand names that matched nothing (fix the key in AR):", ""] + [f"- {k}" for k in miss]
+    bare = no_arabic(cat)
+    if bare:
+        rep += ["", "!! Countries with no Arabic name (add them to COUNTRY_AR; the catalogue is not pushed until then):", ""] + [f"- {c}" for c in bare]
     (OUT / "report.md").write_text("\n".join(rep) + "\n", encoding="utf-8")
     print("\n".join(rep))
-    return 0
+    return 1 if bare else 0
 
 
 if __name__ == "__main__":
