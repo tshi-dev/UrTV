@@ -2,7 +2,7 @@
 
 ## Status
 
-**1057 verified items** in `games/data/` (quiz 841, true/false 188, riddle 18, estimate 10): geography 663, science 143, maths and logic 124, Islamic 75, Saudi and Gulf 25, animals 18, food 5, history 4. The target of 1500 was **not reached**. Categories with nothing yet: Arabic language and proverbs, maths and logic, sports, kids-only, riddles, estimation, word game, charades and describe-the-word lists, topics for the odd-one-out game. They are not faked: nothing is shipped that was not checked.
+**1450 verified items** in `games/data/` (quiz 1234, true/false 188, riddle 18, estimate 10): geography 896, science 212, Islamic 166, maths and logic 124, Saudi and Gulf 25, animals 18, food 5, history 4. Geography is 62 percent. The target of 1500 was **not reached**. Categories with nothing yet: Arabic language and proverbs, maths and logic, sports, kids-only, riddles, estimation, word game, charades and describe-the-word lists, topics for the odd-one-out game. They are not faked: nothing is shipped that was not checked.
 
 | Category | Kept | Dropped | How checked |
 |---|---|---|---|

@@ -58,10 +58,10 @@ The game **needs phones**. If fewer than 2 phones have joined after 60 seconds (
 
 ## Data
 Uses the verified quiz bank (`games/data/quiz.json`, items of type `quiz`). To avoid repeats the engine needs **at least 40 questions per category and level**. What qualifies today (quiz items, count in brackets):
-- Qualify at a single level: **جغرافيا** (سهل ٦٨، متوسط ١٣٥، صعب ٢٨٩), **علوم** (متوسط ٤٣، صعب ٩٨), **رياضيات ومنطق** (متوسط ٤٩).
-- Qualify only as a whole category (all levels mixed, total in brackets), so the level chip is hidden for them: **إسلامية** (٦٨), **رياضيات ومنطق** (سهل ٣٨، قريب)، **حيوانات** (١٦, only kids level 1; below 40, shown only inside «مزيج»), **السعودية والخليج** (١٩, below 40, only inside «مزيج»), food, history and the rest (below 40).
-- **مزيج** with any level or the kids filter always works (the whole bank is 800 or more quiz items).
-- For the kids filter: 66 geography, 63 maths and logic, 15 Islamic and 15 animal items are `kids`; the engine mixes them.
+- Qualify at a single level: **جغرافيا** (سهل ٦٨، متوسط ٣٦٨، صعب ٢٨٩), **علوم** (متوسط ٤٣، صعب ١٦٧), **إسلامية** (صعب ١١٨), **رياضيات ومنطق** (متوسط ٤٩).
+- Qualify only as a whole category (all levels mixed), so the level chip is hidden for them: **إسلامية** (١٥٩ in all), **رياضيات ومنطق** (سهل ٣٨, close). Below 40 in any level and shown only inside «مزيج»: **حيوانات** (١٦), **السعودية والخليج** (١٩), food, history.
+- **مزيج** with any level or the kids filter always works (the bank has 1,200 or more quiz items).
+- For the kids filter: 171 quiz items are `kids` (mostly geography, maths and logic, Islamic and animal items); the engine mixes them.
 The engine rule: a category chip is offered only when it holds at least 40 items for the chosen level and filter; otherwise it is grayed with «قريبًا». The question bank is expected to grow, and nothing in this spec changes when it does.
 
 ## Security and privacy
