@@ -263,7 +263,7 @@ final class QuizRoom {
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             if (c == '"' || c == '\\') b.append('\\').append(c);
-            else if (c < 0x20) b.append(String.format("\\u%04x", (int) c));
+            else if (c < 0x20) b.append(String.format(java.util.Locale.ROOT, "\\u%04x", (int) c));
             else b.append(c);
         }
         return b.append('"').toString();

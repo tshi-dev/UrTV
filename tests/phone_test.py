@@ -33,7 +33,10 @@ phone_java = sorted(PHONE.glob("*.java"))
 
 # ---- where it listens, and who may start it
 makers = [f"{f.relative_to(ROOT)}" for f in all_java if re.search(r"new\s+ServerSocket\s*\(", text(f))]
-check("the only `new ServerSocket` in the apps is PhoneServer.DefaultBinder", makers == ["android/launcher/src/main/java/sa/urtv/home/phone/PhoneServer.java"], makers)
+check("the only `new ServerSocket` in the apps are PhoneServer.DefaultBinder (the remote) and QuizServer (the quiz's game-only server, docs/QUIZ.md, bound to the TV's private address, answering local addresses only)",
+      makers == ["android/app/src/main/java/sa/urtv/screensaver/QuizServer.java", "android/launcher/src/main/java/sa/urtv/home/phone/PhoneServer.java"]
+      and re.findall(r"new\s+ServerSocket\s*\(([^)]*)\)", text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/QuizServer.java")) == ["0, 16, bind"]
+      and "lanOnly && !local(c.getInetAddress())" in text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/QuizServer.java"), makers)
 check("it is always bound to a given address and port (never the one-argument form that listens on every address)",
       re.findall(r"new\s+ServerSocket\s*\(([^)]*)\)", text(PHONE / "PhoneServer.java")) == ["port, 8, address"], "")
 check("no wildcard address in the phone code", not any(re.search(r"0\.0\.0\.0|getByName\(\s*\"0|INADDR_ANY|anyLocalAddress\(\)\s*[^.]", text(f).replace("isAnyLocalAddress", "")) for f in phone_java), "")
