@@ -1,4 +1,4 @@
-«✅ GO — step 46 (build 214), then step 45 with Player v0.9.1, then step 47 (build 215)» — run step 46, then step 45 as amended, then step 47 (all at the end of this file). The owner is ASLEEP: TV muted, no questions to him, skip 45b (Jellyfin needs him). lang ar stays.
+«✅ GO — step 46 (build 214), then step 45 with Player v0.9.1, then step 47 (build 215+), then step 48 (build 216)» — run step 46, then step 45 as amended, then step 47, then step 48 (all at the end of this file). The owner is ASLEEP: TV muted, no questions to him, skip 45b (Jellyfin needs him). lang ar stays.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -769,3 +769,17 @@ Update to build 215 (or newer) via «تحديث تلفزيوني», then:
    **Do NOT open or run «تخلّص من واجهة المصنع» (the factory-interface step) tonight, and do not turn on USB debugging prompts for it. That drill waits for the owner.** Only screenshot its entry row if visible.
 6. Low-RAM cut is automatic only on weak TVs: just report Ram.low for this TV from logcat/`dumpsys` if printed.
 Z. Restore as step 44 Z (clean mode OFF, photos deleted, lang ar, updatechannel as found). Report «step 47».
+
+
+## step 48 — the phone quiz «الأسرع» (build 216 or newer; after step 47; TV muted for the run, see item 7; owner asleep; restore in Z)
+Open «تلفزيونك» → «الألعاب» → «الأسرع». The "phones" are 2-3 separate browser profiles/windows on the PC (same LAN), each at 360 px wide (device toolbar): the real iPhone/Android test waits for the owner.
+1. Lobby: QR + 4-digit code shown; the QR's address opens the join page from the PC; join 3 players (Arabic name, English name, a long name, the same name twice): what the TV shows; a wrong code 5 times → locked for a minute (say what the page says).
+2. Round setup with the remote (category, level, kids, 5 questions): focus never lost; start.
+3. Play 5 questions: the question on the TV is readable (screenshot), 20 ticks fall one per second, phones show 4 answers with text, first tap locks, a late answer after time is refused; reveal shows the right answer + coloured squares of who chose what; leaderboard; podium; «نلعب مرة ثانية» keeps the players.
+4. Robustness: close one "phone" tab mid-question and reopen its link (same score?); a 4th player joins between questions; one player leaves; TV Back in the middle (pause card?); HOME then back to the game.
+5. The screensaver must NOT start during a game left on a question for longer than the idle time (idle is 45 s on this TV: wait 2 minutes in the lobby and on a question).
+6. Digits: with the digits setting on English, are the game's numbers English too? Language en: TV + phone page in English.
+7. Sound: the game has 4 short tones. Keep the TV muted; only report whether the in-game sound switch exists and toggles.
+8. Weight: PSS of the saver/home app in the lobby and mid-game; any jank (gfxinfo) on reveal; logcat errors.
+9. From the PC, with curl against the game address while a game is open (do not write the address in the report): a request with a made-up Host name → refused? `Origin: http://example.com` on the join route → 403? 20 quick wrong codes → locked?
+Z. Leave the game (no room left open: the code no longer answers), restore as step 44 Z. Report «step 48» with screenshots (no addresses, no QR that still works).
