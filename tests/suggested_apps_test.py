@@ -36,7 +36,7 @@ check("a Play Store app opens its page (the store, else the web page); an instal
 check("the screen is declared, and the screensaver's settings open it under «التطبيقات والمفضلة»", 'android:name=".SuggestedAppsActivity"' in mf
       and 'row("تطبيقات مقترحة"' in st and '"sa.urtv.home.SuggestedAppsActivity"' in st
       and st.index('row("تطبيقات في الشريط"') < st.index('row("تطبيقات مقترحة"'))
-check("UrTV Player in the screen: the newest «player-» release, its published SHA-256, the package and the pinned certificate before the install; refused unless pinned",
+check("UrTV Player in the screen: the newest release of its own repository, its published SHA-256, the package and the pinned certificate before the install; refused unless pinned",
       "if (a.kind == SuggestedApps.Kind.MIRROR) return MirrorInstall.mirror(this, a, f, RESULT, 0);" in act and "if (!SuggestedApps.mirrorReady(a))" in mi
       and mi.index("SuggestedApps.mirrorFileOk(a, sha, published") < mi.index("commit(c, f, a.pkg, resultAction);")
       and "GET_SIGNING_CERTIFICATES" in mi and 'PLAYER_CERT = "13ade7d009a07f5ba5bab0b7734bd449df10dd47b53868dfa28e44cd8069dfea";' in cat)

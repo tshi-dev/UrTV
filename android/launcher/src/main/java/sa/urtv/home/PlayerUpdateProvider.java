@@ -11,7 +11,7 @@ import android.os.Binder;
  * 4.3 UrTV Player asks whether a newer Player is published, so it can offer «تحديث» from inside (the owner never uninstalls or reinstalls).
  * content://sa.urtv.home.player/update, read only, behind the normal permission sa.urtv.permission.READ_LANG (as LangProvider), and answered
  * ONLY when the caller is com.urtv.player signed by exactly its pinned certificate (PlayerUpdate.callerOk); anyone else gets null.
- * One row {version_code INTEGER, version_name TEXT, notes TEXT} when the newest «player-<version>» release of our repository that passed the
+ * One row {version_code INTEGER, version_name TEXT, notes TEXT (empty: the file has none)} when the newest release of tshi-dev/UrTV-Player that passed the
  * mirror checks says, in its urtv-player.version, a versionCode newer than the installed Player's; no row when nothing newer is known or nothing
  * is verified. The answer is the cached one (MirrorInstall); a cache older than 6 h is refreshed in the background for next time, never waited for.
  */

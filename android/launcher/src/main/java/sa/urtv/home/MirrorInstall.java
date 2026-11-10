@@ -107,7 +107,7 @@ final class MirrorInstall {
     }
 
     /**
-     * A MIRROR app (UrTV Player): the newest «player-…» release, its published SHA-256, then the file; handed to the installer only when the file
+     * A MIRROR app (UrTV Player): the newest release of its own repository (SuggestedApps.pickMirror), its published SHA-256, then the file; handed to the installer only when the file
      * has that SHA-256, is that package and is signed by exactly the pinned certificate (SuggestedApps.mirrorFileOk). expectCode > 0 (the
      * Player's own «تحديث»): the release's urtv-player.version must say that version, newer than the installed one (PlayerUpdate.installOk).
      * null when Android's installer was given the file; else the words to show.

@@ -60,7 +60,7 @@ check("the Player's install keeps every check: published SHA-256, the package, t
 check("the tile: «تحديث متوفر» for an installed Player when a newer one is known, and OK installs it over", 'b.setText(S.t("تحديث متوفر"))' in sa
       and "MirrorInstall.known(this) != null" in sa and "if (installed(a.pkg) && !update) { open(a.pkg); return; }" in sa)
 docs = read(ROOT / "docs/SETTINGS.md") + read(ROOT / "docs/FEATURES.md")
-check("SETTINGS and FEATURES say it, with the release file's format", "sa.urtv.home.player/update" in docs and "urtv-player.version" in docs and "version_code=" in docs
+check("SETTINGS and FEATURES say it, with the release file's format", "sa.urtv.home.player/update" in docs and "urtv-player.version" in docs and "`12 0.9.3`" in docs and "tshi-dev/UrTV-Player" in docs
       and "INSTALL_PLAYER" in docs)
 if not shutil.which("javac"):
     print("SKIP the run: no javac")
@@ -73,5 +73,5 @@ else:
             out = subprocess.run(["java", "-cp", tmp, "sa.urtv.home.PlayerUpdateRun"], capture_output=True, text=True).stdout
             lines = [l.split("\t") for l in out.splitlines() if "\t" in l]
             bad = [n for n, v in lines if v != "ok"]
-            check(f"PlayerUpdate: every case ({len(lines)})", len(lines) == 17 and not bad, bad or out)
+            check(f"PlayerUpdate: every case ({len(lines)})", len(lines) == 22 and not bad, bad or out)
 sys.exit(1 if failed else 0)

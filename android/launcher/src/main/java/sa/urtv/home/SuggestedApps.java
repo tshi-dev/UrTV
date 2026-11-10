@@ -11,10 +11,11 @@ import java.util.List;
  * - GITHUB: the newest release of the app's own GitHub repository, the file that fits the TV's processor (the pattern), checked to be that package
  *   (SmartTube and TV Bro, as install.sh and the setup always did).
  * - STORE: no file at all: the app's Play Store page opens and the owner installs it there.
- * - MIRROR: our own app built elsewhere (UrTV Player, com.urtv.player, another signing key) copied into a public release of this repository, tag
- *   «player-<version>», files «urtv-player.apk» and «urtv-player.apk.sha256». The newest such release is read; the file must have the published
+ * - MIRROR: our own app built elsewhere (UrTV Player, com.urtv.player, another signing key), from its own public repository's releases
+ *   (tshi-dev/UrTV-Player, tags «<version>» or «v<version>»), files «urtv-player.apk», «urtv-player.apk.sha256» and «urtv-player.version»
+ *   (PlayerUpdate). The newest full release with both files is read, else (before 1.0) the newest pre-release; the file must have the published
  *   SHA-256, be that package, AND be signed by exactly the pinned certificate (its SHA-256). Until the certificate is pinned the entry is not
- *   offered at all and nothing is installed (mirrorReady).
+ *   offered at all and nothing is installed (mirrorReady). While that repository cannot be read (private), nothing is offered.
  *
  * The IPTV player is a player only, offered as its Play Store page: it comes with no channels, films or playlists, and we give no links (the owner
  * adds their own provider).
@@ -58,7 +59,7 @@ public final class SuggestedApps {
 
     /** UrTV Player's signing certificate: the SHA-256 of the certificate (lower-case hex, 64 digits; public). Empty would hide the Player. */
     public static final String PLAYER_CERT = "13ade7d009a07f5ba5bab0b7734bd449df10dd47b53868dfa28e44cd8069dfea";
-    public static final String PLAYER = "com.urtv.player", PLAYER_REPO = "tshi-dev/UrTV", PLAYER_FILE = "urtv-player.apk", PLAYER_TAG = "player-";
+    public static final String PLAYER = "com.urtv.player", PLAYER_REPO = "tshi-dev/UrTV-Player", PLAYER_FILE = "urtv-player.apk", PLAYER_TAG = "";
 
     public static final String SMARTTUBE = "org.smarttube.stable", TVBRO = "com.phlox.tvwebbrowser", VLC = "org.videolan.vlc", TIVIMATE = "ar.tvplayer.tv";
 
@@ -161,24 +162,31 @@ public final class SuggestedApps {
     }
 
     /**
-     * MIRROR: from the releases list (newest first, as GitHub gives it), the newest release whose tag is the app's prefix and a version, not a draft
-     * or a pre-release: {the file's address, its .sha256's address}, both on this repository's own releases; null when there is none.
+     * MIRROR: from the releases list (newest first, as GitHub gives it), the newest full release (not a draft, not a pre-release) whose tag is the
+     * app's prefix and a version and that has both files; when there is none, the newest such pre-release (the Player before its 1.0):
+     * {the file's address, its .sha256's address}, both on the app's own repository's releases; null when there is none.
      */
     public static String[] pickMirror(App a, String releasesJson) {
         if (a == null || a.kind != Kind.MIRROR || releasesJson == null) return null;
         String[] parts = releasesJson.split("\"tag_name\"\\s*:\\s*\"", -1);
+        String[] pre = null;   // the newest pre-release with both files: counts only while there is no full release (the Player before 1.0)
         for (int i = 1; i < parts.length; i++) {
             String seg = parts[i];
             int end = seg.indexOf('"');
             if (end < 0) continue;
             String tag = seg.substring(0, end);
-            if (!tag.matches(java.util.regex.Pattern.quote(a.tagPrefix) + "[0-9][0-9A-Za-z.\\-]{0,30}")) continue;
-            if (seg.matches("(?s).*\"draft\"\\s*:\\s*true.*") || seg.matches("(?s).*\"prerelease\"\\s*:\\s*true.*")) continue;
+            if (!tag.matches(java.util.regex.Pattern.quote(a.tagPrefix) + TAG_VERSION)) continue;
+            if (seg.matches("(?s).*\"draft\"\\s*:\\s*true.*")) continue;
             String base = "https://github.com/" + a.repo + "/releases/download/" + tag + "/" + a.file;
-            if (seg.contains("\"" + base + "\"") && seg.contains("\"" + base + ".sha256\"")) return new String[] {base, base + ".sha256"};
+            if (!seg.contains("\"" + base + "\"") || !seg.contains("\"" + base + ".sha256\"")) continue;
+            if (!seg.matches("(?s).*\"prerelease\"\\s*:\\s*true.*")) return new String[] {base, base + ".sha256"};
+            if (pre == null) pre = new String[] {base, base + ".sha256"};
         }
-        return null;
+        return pre;
     }
+
+    /** a release tag after the prefix: a version, «v» first or not */
+    static final String TAG_VERSION = "v?[0-9][0-9A-Za-z.\\-]{0,30}";
 
     /** how long the answer «is a Player release there?» is kept before the screen asks GitHub again */
     public static final long MIRROR_CHECK_MS = 6 * 3600_000L;
@@ -203,7 +211,7 @@ public final class SuggestedApps {
     /** MIRROR: an address of this repository's own «<prefix><version>» release files, nothing else */
     public static boolean mirrorOk(App a, String url) {
         return a != null && a.kind == Kind.MIRROR && url != null
-            && url.matches(java.util.regex.Pattern.quote("https://github.com/" + a.repo + "/releases/download/" + a.tagPrefix) + "[0-9][0-9A-Za-z.\\-]{0,30}/"
+            && url.matches(java.util.regex.Pattern.quote("https://github.com/" + a.repo + "/releases/download/" + a.tagPrefix) + TAG_VERSION + "/"
                 + java.util.regex.Pattern.quote(a.file) + "(\\.sha256)?") && !url.contains("..");
     }
 

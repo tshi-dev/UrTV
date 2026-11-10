@@ -3,16 +3,15 @@ package sa.urtv.home;
 import java.util.Set;
 
 /**
- * 4.3 UrTV Player's updates from inside the Player (the owner never uninstalls or reinstalls): what a newer Player is, read from our own mirror
- * (SuggestedApps' MIRROR entry: the newest «player-<version>» release of this repository whose urtv-player.apk and .sha256 are both there), and
- * who may ask. Plain Java: tests/player_update_test.py runs it on a JVM.
+ * 4.3 UrTV Player's updates from inside the Player (the owner never uninstalls or reinstalls): what a newer Player is, read from the Player's own
+ * public repository (SuggestedApps' MIRROR entry, tshi-dev/UrTV-Player: the newest full release with urtv-player.apk and its .sha256, else before
+ * 1.0 the newest pre-release), and who may ask. Plain Java: tests/player_update_test.py runs it on a JVM.
  *
- * The release asset (the Player's release job writes it beside the two files; docs/SETTINGS.md says the same):
- *   urtv-player.version   UTF-8 text, one "key=value" per line, in any order, nothing else needed:
- *     version_code=<the APK's versionCode, a whole number 1..2100000000>
- *     version_name=<its versionName, at most 40 characters>
- *     notes=<what is new, Arabic, one line, at most 120 characters; may be empty or missing>
- *   A release without it, or with an unreadable version_code, is "nothing known": no row, no «تحديث متوفر».
+ * The release asset, beside the two files, in every Player release (docs/SETTINGS.md says the same):
+ *   urtv-player.version   one line, UTF-8: the APK's versionCode (a whole number 1..2100000000), a space, its versionName (at most 40
+ *                         characters), e.g. «12 0.9.3». The notes column stays empty (the file has none).
+ *   A release without it, or with an unreadable versionCode, is "nothing known": no row, no «تحديث متوفر».
+ *   While the repository cannot be read (private) every call fails: no tile, no row, as designed.
  *
  * Who may ask (PlayerUpdateProvider, InstallPlayerActivity): the calling package is com.urtv.player AND it is signed by exactly one certificate,
  * the pinned one (SuggestedApps.PLAYER_CERT).
@@ -32,26 +31,17 @@ public final class PlayerUpdate {
         Version(int code, String name, String notes) { this.code = code; this.name = name; this.notes = notes; }
     }
 
-    /** the version file's answer; null when version_code is missing or not 1..2100000000 */
+    /** the version file's answer: its first line «<versionCode> <versionName>»; null when the code is missing or not 1..2100000000 */
     public static Version parse(String body) {
         if (body == null) return null;
-        Integer code = null;
-        String name = "", notes = "";
-        for (String line : body.replace("\r", "").split("\n")) {
-            int eq = line.indexOf('=');
-            if (eq <= 0) continue;
-            String k = line.substring(0, eq).trim(), v = line.substring(eq + 1).trim();
-            if (k.startsWith("﻿")) k = k.substring(1);
-            switch (k) {
-                case "version_code":
-                    if (v.matches("[0-9]{1,10}")) { long n = Long.parseLong(v); if (n >= 1 && n <= 2_100_000_000L) code = (int) n; }
-                    break;
-                case "version_name": name = clean(v, NAME_MAX); break;
-                case "notes": notes = clean(v, NOTES_MAX); break;
-                default: break;
-            }
-        }
-        return code == null ? null : new Version(code, name, notes);
+        String first = body.replace("\uFEFF", "").replace("\r", "").trim();
+        int nl = first.indexOf('\n');
+        if (nl >= 0) first = first.substring(0, nl).trim();
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("([0-9]{1,10})(?:[ \t]+(.*))?").matcher(first);
+        if (!m.matches()) return null;
+        long n = Long.parseLong(m.group(1));
+        if (n < 1 || n > 2_100_000_000L) return null;
+        return new Version((int) n, clean(m.group(2) == null ? "" : m.group(2), NAME_MAX), "");
     }
 
     /** one line of printable text, at most max characters (a control character or a line break goes) */
