@@ -30,7 +30,31 @@ final class TvVendor {
             "com.cultraview.setting/.SourceActivity",   // CultraView
     };
 
+    /** TvInputInfo.TYPE_TUNER and the types of the physical inputs (their numbers written out: no Android in here) */
+    static final int TYPE_TUNER = 0, TYPE_HDMI = 1007;
+
+    /**
+     * Live TV apps that, when they are only opened, go to whatever input was used LAST: on a TCL G10 (Android 12) that is the last HDMI, not the tuner (GitHub #54:
+     * «Live TV» on our home and «TV» in our Sources row opened the last HDMI input). The TV's own source picker is the way to the tuner there.
+     */
+    static final String[] RESUMES_LAST_INPUT = {"com.tcl.tv"};
+
     interface Probe { boolean usable(String candidate); }
+
+    /** The place of the tuner among the TV's inputs (their TvInputInfo types, in the list's order): the first one of type TUNER, -1 when there is none. Never «the last input used». */
+    static int tunerIndex(int[] types) {
+        for (int i = 0; i < types.length; i++) if (types[i] == TYPE_TUNER) return i;
+        return -1;
+    }
+
+    /** What opening «the TV» (the tuner) does: "live" (the live TV app), "picker" (the TV's own source picker) or "settings", the first of these the TV has, in this order. */
+    static String tvStep(String livePackage, boolean havePicker, boolean haveLive) {
+        boolean resumes = false;
+        for (String r : RESUMES_LAST_INPUT) if (r.equals(livePackage)) resumes = true;
+        if (haveLive && !(resumes && havePicker)) return "live";
+        if (havePicker) return "picker";
+        return haveLive ? "live" : "settings";
+    }
 
     private TvVendor() {}
 

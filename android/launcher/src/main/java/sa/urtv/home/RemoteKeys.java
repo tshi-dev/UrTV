@@ -33,6 +33,8 @@ final class RemoteKeys {
      * background, our adhan among them. On our home it does nothing: the press, its repeats and its release are consumed.
      */
     private static final int TCL_GUARD = 4140;
+    /** the TV button of a TCL remote (UrTVKeys logged «unmapped key=4001 scan=365», GitHub #54; scan 365 is Linux's KEY_EPG, which TCL's key map turns into this vendor code) */
+    private static final int TCL_TV = 4001;
     /** the Settings key of a TCL G05 remote (UrTVKeys logged key=4077) */
     private static final int TCL_SETTINGS = 4077;
     /** Linux KEY_JOURNAL (0x242): the star key of a TCL G08 remote. Android's generic key map has no name for it, so the keycode may be 0. */
@@ -54,6 +56,9 @@ final class RemoteKeys {
     static final int OPEN_INPUTS = 4;
     /** open OUR settings (the screensaver app's settings screen): a long press of the Settings key */
     static final int OPEN_OUR_SETTINGS = 5;
+
+    /** open the TV's tuner (live TV), as «البث التلفزيوني» of the inputs list does: the TV button of a TCL remote */
+    static final int OPEN_LIVE_TV = 6;
 
     /** ms the Settings key is held for a long press (Android's own long-press time is 400 to 500) */
     static final long LONG_MS = 500;
@@ -140,6 +145,7 @@ final class RemoteKeys {
             case KEYCODE_BUTTON_4:
             case TCL_NETFLIX: return app(NETFLIX, installed);
             case TCL_PRIME: return app(PRIME, installed);
+            case TCL_TV: return new Decision(OPEN_LIVE_TV, null);   // once we are the home the system no longer hands this key to TCL's receiver: it opens the tuner here
             case TCL_GUARD: return EAT_IT;   // TCL's cleaner would kill our adhan: nothing opens
             default: break;   // the Settings key is decided in decide(): short or long
         }

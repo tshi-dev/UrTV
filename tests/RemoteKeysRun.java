@@ -33,6 +33,7 @@ public final class RemoteKeysRun {
                 case RemoteKeys.OPEN_OUR_SETTINGS: r = "OUR_SETTINGS"; break;
                 case RemoteKeys.OPEN_SETTINGS: r = "TV_SETTINGS"; break;
                 case RemoteKeys.OPEN_INPUTS: r = "INPUTS"; break;
+                case RemoteKeys.OPEN_LIVE_TV: r = "LIVE_TV"; break;
                 default: r = "PASS";
             }
             out.append(r).append('\n');

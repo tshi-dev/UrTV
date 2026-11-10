@@ -124,3 +124,10 @@ key	4077	0	0	1		OUR_SETTINGS	held 520 ms: OUR settings	520
 key	4077	0	1	0		EAT	release consumed	600
 reset							-
 key	190	0	0	0	Prime	PASS	Prime Video alone: the Google TV YouTube key still passes
+reset							-
+key	4001	365	0	0		LIVE_TV	the TV button of a TCL remote (unmapped key=4001 scan=365, GitHub #54) opens the tuner
+key	4001	365	0	2		EAT	its repeats are consumed
+key	4001	365	1	0		EAT	its release is consumed
+reset							-
+key	4001	365	0	0	YouTube,Netflix	LIVE_TV	whatever is installed
+key	0	365	0	0		PASS	the same scan code with no key code is not guessed at (only the TCL vendor code is mapped)

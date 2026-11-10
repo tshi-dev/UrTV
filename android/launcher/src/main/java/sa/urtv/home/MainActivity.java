@@ -2730,9 +2730,10 @@ public class MainActivity extends Activity {
         List<TvInputInfo> inputs = InputLabels.reported(this);   // in the TV's own names' order, so a name the owner gave moves nothing
         Map<String, String> given = InputLabels.given(this);
         for (TvInputInfo t : inputs) {
-            rows.add(inputRow(InputLabels.rowLabel(this, t, given), () -> openPassthroughInput(t)));   // + the CEC device's name and its standby mark
+            // the tuner is not an HDMI input: opened as a passthrough link it ended on the last HDMI (TCL G10), so «the TV» has its own way (openLiveTv)
+            rows.add(inputRow(InputLabels.rowLabel(this, t, given), () -> { if (t.getType() == TvInputInfo.TYPE_TUNER) openLiveTv(); else openPassthroughInput(t); }));   // + the CEC device's name and its standby mark
         }
-        if (liveTvPkg != null) rows.add(inputRow(S.t("البث التلفزيوني"), () -> guarded(ParentalPolicy.INPUT_LIVE_TV, TvVendor.pkg(liveTvPkg), "البث التلفزيوني", () -> openPackage(liveTvPkg))));
+        if (liveTvPkg != null) rows.add(inputRow(S.t("البث التلفزيوني"), () -> openLiveTv()));
         if (inputs.isEmpty() && inputPickerPkg != null) rows.add(inputRow(S.t("كل المصادر"), () -> guarded(ParentalPolicy.INPUT_PICKER, TvVendor.pkg(inputPickerPkg), "كل المصادر", () -> openPackage(inputPickerPkg))));
 
         if (rows.isEmpty()) rows.add(inputRow(S.t("الإعدادات"), () -> launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون")));
@@ -3465,6 +3466,18 @@ public class MainActivity extends Activity {
         }
     }
 
+    /**
+     * «The TV»: the tuner. Where the TV's live TV app only resumes the last input used (TCL's: the last HDMI, GitHub #54) the TV's own source picker opens instead of the wrong
+     * input; elsewhere the live TV app opens as it always did (TvVendor.tvStep); with neither, the TV's settings. Behind the same locks as the inputs list.
+     */
+    private void openLiveTv() {
+        findTvApps();
+        String step = TvVendor.tvStep(TvVendor.pkg(liveTvPkg), inputPickerPkg != null, liveTvPkg != null);
+        if ("live".equals(step)) guarded(ParentalPolicy.INPUT_LIVE_TV, TvVendor.pkg(liveTvPkg), "البث التلفزيوني", () -> openPackage(liveTvPkg));
+        else if ("picker".equals(step)) guarded(ParentalPolicy.INPUT_PICKER, TvVendor.pkg(inputPickerPkg), "كل المصادر", () -> openPackage(inputPickerPkg));
+        else launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون");
+    }
+
     /** This TV's live TV app and source picker (TvVendor): the configured one if the TV has it, else the first known one it has; null for none. */
     private void findTvApps() {
         liveTvPkg = TvVendor.first(getString(R.string.live_tv_package), TvVendor.LIVE_TV, this::canOpen);
@@ -3759,6 +3772,9 @@ public class MainActivity extends Activity {
             }
             case RemoteKeys.OPEN_INPUTS:
                 if (!pills.isEmpty()) showInputs(pills.get(0), ParentalPolicy.MENU_KEY);
+                break;
+            case RemoteKeys.OPEN_LIVE_TV:   // the TV button (TCL's 4001): the tuner, as «البث التلفزيوني» opens it
+                openLiveTv();
                 break;
             default:
                 break;
