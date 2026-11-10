@@ -1823,3 +1823,50 @@ Restored: updatechannel latest; idle 45 s; leagues none; appearance dark; lang a
 
 ### Z
 Player data cleared (`pm clear`: both lists gone) and the Player uninstalled (0 packages). My local M3U copy, file server, APK, recordings and stream frames deleted; the Chrome tab closed; no stream kept. UrTV lang ar. TV muted.
+
+## step 47 — build 222 (channel next; TV muted throughout; part A only; the factory-interface step not opened)
+**Not ALL PASS: 1 problem (the hub's bottom row is cut by its hint line), 1 item not testable from the shell (Settings key long press), small notes.**
+
+### 1 ✓ Update cover (214 → 222, both apps, «تحديث تلفزيوني» on channel next)
+From the TV's event log (my 0.25 s sampler died with the shell, so the times are the system's own):
+- 18:54:29.625 the installer closes → **our «UpdateCover» in front**
+- 18:54:30.556 the old home is stopped for the install
+- 18:54:33.839 the new home (MainActivity) is in front; the cover finishes at 34.218
+- **Cover in front 4.2 s while the home was replaced; no Play Store, recents or other app in between** ✓
+- Small: «UpdateActivity» was created twice, 0.16 s apart (34.454 and 34.615), when the update card came back
+
+### 2 «تلفزيونك» hub (opened by its launcher activity `YourTvHubActivity`, listed as a TV app)
+- 2×2: الأسواق, المباريات, الألعاب, الإعدادات, each with a line ✓
+- Each opens the right place ✓: الأسواق → the markets page; المباريات → the matches page; الألعاب → the games page («الأسرع بالجوالات» + three «قريبًا»); الإعدادات → our settings. Back returns to the hub each time ✓
+- D-pad, all four directions, ar and en: focus never lost; it moves only inside the 2×2 ✓
+- المباريات line «التالية: السعودية ضد كوريا الجنوبية، الجمعة 5:30 م» = the matches page (Fri 13, 5:30 م) ✓
+- الأسواق line «السوق مغلق» at 18:5x ✓ (the Saudi market's hour). Small: the markets page it opens leads with «السوق الأمريكي مفتوح», so the two lines read differently
+- Light and English ✓ (en: «Your TV», «Markets / Market closed», «Matches / Next: Saudi Arabia vs South Korea, Friday 5:30 PM», «Games / Fastest», «Settings / Graphite»; the grid mirrors)
+- **✗ The bottom row is cut: the hint line («الأسهم بين الأقسام • اختيار لفتح القسم • رجوع للخروج», y 940–1026, full width) covers the lower part of الألعاب and الإعدادات, so their lines («الأسرع», «فحمي») are hidden.** Focusing a bottom tile does not scroll it up. Same in ar, en, dark, light
+- Small: a hub already open keeps its old language after UrTV's language changes (fresh start: English ✓)
+- Settings key: **short press** (176 and the TCL's 83, sent from the shell) on the home opens the control center, as the code says (`OPEN_SETTINGS`: the TV's quick panel, else our control center). From the hub 176/83 did nothing. **Long press (our settings): not testable** (`input keyevent --longpress` is too short to count as a hold). Needs the real remote
+- Control center «Your TV / تلفزيونك» row → our settings (`SettingsActivity`) ✓
+
+### 3 ✓ «المظهر والخلفيات» on first focus: bottom row and «رجوع» end at y 1026 (inside the 5 % safe area, was 1080)
+
+### 4 ✓ Home «صوري» (2 plain demo pictures, «DEMO 1/2» on a colour; put on over ADB: the phone page needs a code the owner types)
+- «الخلفية والصور» → under «الشاشة الرئيسية» one tile goes round: «صوري مع صورنا» → «صوري فقط» → «بدون صوري» → «صوري مع صورنا»; the setting follows (`homemine` mix/only/off) ✓
+- Home with «فقط»: the demo picture is the wallpaper ✓; with «بدون»: our photos, no demo ✓
+- The screensaver's own «صوري» tile sits just above it with the same name; I pressed it once by mistake (mode went to «فقط», put back to mix)
+- Demo pictures deleted (0 of 10), `homemine` back to as found
+
+### 5 ✓ «UrTV النظيف» part A (no family PIN on this TV: none was asked)
+- Row is in Settings → البطاقات → الشاشة الرئيسية. It opens the description first ✓ («يبقى… يختفي… ما يُحذف شيء…»), focus on «إلغاء» ✓
+- «فعّل» → on, back to settings. Small: the row's line stays «الأساسيات فقط…» and doesn't say it is on
+- Clean home (graphite dark, glass dark, glass light): clock, date, Wi-Fi mark, one card, apps bar and a settings button; greeting, weather/sunrise line and the two quick buttons gone ✓
+- «تخصيص»: 4 ticks (بطاقة واحدة ✓, علامة الواي فاي ✓, التحية ▢, زر الإعدادات ✓). Card off + greeting on → the home dropped the card and showed «مساء الخير» ✓. Put back
+- The «on» screen shows «رجّع الشاشة الكاملة», «تخصيص», «تم» and a row «تخلّص من واجهة المصنع» (**not opened**; no FactoryActivity in the log)
+- «رجّع الشاشة الكاملة» → full home as before ✓; settings lists before/after the same (show, photos, dock, family DNS, disabled packages, home)
+- Small: a clean-mode screen left open behind the home comes back to the front when Settings is opened again later
+- Small: after turning it off, the quick-buttons box is slightly narrower than before (x 96–240, was 104–264)
+
+### 6 Ram.low
+Not printed by the app. By its rule (low-RAM flag, or under 2560 MB): flag not set, MemTotal 2394 MB → **low = yes on this TV**. (The Player's QR in step 49 said «ram normal»: its own rule.)
+
+### Z
+Clean mode off, demo photos deleted, look graphite / dark, lang ar. updatechannel stays next for step 48 (put back after it).
