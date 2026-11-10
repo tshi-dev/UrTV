@@ -13,6 +13,7 @@ Newest first. `next` is where changes land first; a release is what was tested t
 - **دوريات جديدة:** دوري أبطال أوروبا، ودوري أبطال آسيا للنخبة، ودوري نجوم العراق.
 - **المباريات:** المباراة المؤجلة أو الملغاة ما تظهر «مباشر» ولا قادمة (في بطاقة فريقك تُكتب «تأجلت» أو «أُلغيت»)، ونتيجة فريقك تظهر أول ما يكون في ملف الدوري.
 - **كل الدوريات:** تحت قائمة «الدوريات كاملة» زر «كل الدوريات…»: الأشهر ثم كل بلد، وتتابع حتى ٨ دوريات.
+- **تحديث UrTV Player من داخله:** إذا نزلت نسخة أحدث، يحدّث المشغّل بضغطة بدون حذف (قوائمك تبقى)، وخانته في «تطبيقات مقترحة» تقول «تحديث متوفر».
 - **الإذاعات:** البث المباشر أثبت، وإذا علِق يرجع وحده بهدوء.
 - **ذاكرة USB:** عارض الملفات في التلفزيون يبقى شغّالًا دائمًا.
 - **تحديث تلفزيوني:** أمتن، وما يطلع تطبيق قديم قدّامك وقت تحديث الشاشة الرئيسية.
@@ -29,6 +30,7 @@ Newest first. `next` is where changes land first; a release is what was tested t
 - **New leagues:** the UEFA Champions League, the AFC Champions League Elite and the Iraq Stars League.
 - **Matches:** a postponed or cancelled game is no longer shown as live or upcoming (your team's card says «Postponed» or «Called off»), and your team's result shows as soon as its league's file has it.
 - **All leagues:** under «Whole leagues», «All leagues…»: the best known, then every country; follow up to 8.
+- **UrTV Player updates from inside it:** when a newer one is published, the Player updates in one press, never uninstalled (your lists stay); its tile in «Suggested apps» says «Update available».
 - **Radio:** live stations hold up better and restart quietly when they stall.
 - **USB sticks:** the TV's own file viewer is always kept on.
 - **«تحديث تلفزيوني»:** sturdier, and the app you used before no longer comes to the front while the home screen updates itself.

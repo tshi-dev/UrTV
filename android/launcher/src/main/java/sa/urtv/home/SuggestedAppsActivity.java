@@ -1,7 +1,6 @@
 package sa.urtv.home;
 
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -23,13 +22,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -93,7 +85,7 @@ public class SuggestedAppsActivity extends Activity {
         final java.util.List<SuggestedApps.App> shown = new java.util.ArrayList<>();
         for (SuggestedApps.App a : SuggestedApps.forTv(Build.VERSION.SDK_INT)) {
             // a MIRROR app (UrTV Player) gets a tile only once a release of it is really there: never a tile that cannot install
-            if (a.kind == SuggestedApps.Kind.MIRROR && !SuggestedApps.mirrorShown(mirrorAnswer(a), System.currentTimeMillis())) { checkMirror(a); continue; }
+            if (a.kind == SuggestedApps.Kind.MIRROR && !SuggestedApps.mirrorShown(mirrorAnswer(a), System.currentTimeMillis())) continue;
             shown.add(a);
         }
         for (int i = 0; i < shown.size(); i += 2) {
@@ -132,6 +124,7 @@ public class SuggestedAppsActivity extends Activity {
             col.addView(row, lp(0));
         }
         setContentView(scroll);
+        checkMirror();   // the Player's tile and its «تحديث متوفر»: the cached answer now, a fresh one for next time
         InternalReceivers.register(this, result, new IntentFilter(RESULT));
         refresh();
         if (first != null) { final View f = first; f.post(f::requestFocus); }
@@ -149,12 +142,14 @@ public class SuggestedAppsActivity extends Activity {
             TextView b = buttons.get(a.id);
             if (b == null) continue;
             boolean on = installed(a.pkg);
+            if (on && a == SuggestedApps.PLAYER_APP && MirrorInstall.known(this) != null) { b.setText(S.t("تحديث متوفر")); continue; }   // a newer Player is published
             b.setText(on ? "✓ " + S.t("مثبّت") : a.kind == SuggestedApps.Kind.STORE ? S.t("افتح المتجر") : S.t("ثبّت"));
         }
     }
 
     private void act(SuggestedApps.App a) {
-        if (installed(a.pkg)) { open(a.pkg); return; }
+        boolean update = a == SuggestedApps.PLAYER_APP && installed(a.pkg) && MirrorInstall.known(this) != null;   // installed over, its data kept
+        if (installed(a.pkg) && !update) { open(a.pkg); return; }
         if (a.kind == SuggestedApps.Kind.STORE) { store(a.pkg); return; }
         if (busy) return;
         busy = true;
@@ -170,15 +165,15 @@ public class SuggestedAppsActivity extends Activity {
     private String install(SuggestedApps.App a) {
         File f = new File(getCacheDir(), "suggested.apk");
         try {
-            if (a.kind == SuggestedApps.Kind.MIRROR) return mirror(a, f);
-            String json = fetch(a.address(), 2 * 1024 * 1024);
+            if (a.kind == SuggestedApps.Kind.MIRROR) return MirrorInstall.mirror(this, a, f, RESULT, 0);
+            String json = MirrorInstall.fetch(a.address(), 2 * 1024 * 1024);
             String url = json == null ? null : SuggestedApps.pickAsset(a.file, String.join(",", Build.SUPPORTED_ABIS), json);
             if (url == null || !SuggestedApps.githubOk(a, url)) return S.t("ما لقينا نسخة تناسب هذا التلفزيون");
-            String sha = download(url, f);
+            String sha = MirrorInstall.download(url, f);
             if (sha == null) return S.t("ما قدرنا ننزّله. جرّب مرة ثانية");
             PackageInfo info = getPackageManager().getPackageArchiveInfo(f.getAbsolutePath(), 0);
             if (info == null || !a.pkg.equals(info.packageName)) return S.t("الملف ليس هذا التطبيق، فما ثبّتناه");
-            commit(f, a.pkg);
+            MirrorInstall.commit(this, f, a.pkg, RESULT);
             return null;
         } catch (Exception e) {
             Log.w(TAG, "install: " + e.getClass().getSimpleName());
@@ -191,118 +186,12 @@ public class SuggestedAppsActivity extends Activity {
         return getSharedPreferences("suggested", MODE_PRIVATE).getString("mirror_" + a.id, "");
     }
 
-    /** Asks GitHub (in the background) whether a valid release is there, at most every SuggestedApps.MIRROR_CHECK_MS; shows the rows when it is. */
-    private void checkMirror(final SuggestedApps.App a) {
-        final long now = System.currentTimeMillis();
-        if (!SuggestedApps.mirrorAskAgain(mirrorAnswer(a), now)) return;
-        new Thread(() -> {
-            String json = null;
-            try { json = fetch(a.address(), 2 * 1024 * 1024); } catch (Exception e) { Log.w(TAG, "mirror: " + e.getClass().getSimpleName()); }
-            if (json == null) return;   // no answer: asked again next time, nothing kept
-            final boolean there = SuggestedApps.pickMirror(a, json) != null;
-            getSharedPreferences("suggested", MODE_PRIVATE).edit().putString("mirror_" + a.id, (there ? "1|" : "0|") + now).apply();
-            if (there) runOnUiThread(() -> { if (!isFinishing() && !isDestroyed()) recreate(); });   // the screen again, now with its tile
-        }, "suggested-mirror").start();
-    }
-
     /**
-     * A MIRROR app (UrTV Player): the newest «player-…» release of this repository, its published SHA-256, then the file; installed only when
-     * the file has that SHA-256, is that package and is signed by exactly the pinned certificate (SuggestedApps.mirrorFileOk). null when Android's
-     * install screen was asked for.
+     * Asks GitHub (in the background, MirrorInstall.refreshAsync) whether a valid Player release is there and which version it is, at most every
+     * 6 hours; the screen is drawn again when it answered (the tile appears, or says «تحديث متوفر»).
      */
-    private String mirror(SuggestedApps.App a, File f) throws Exception {
-        if (!SuggestedApps.mirrorReady(a)) return S.t("ما قدرنا نثبّته. جرّب مرة ثانية");
-        String json = fetch(a.address(), 2 * 1024 * 1024);
-        String[] urls = json == null ? null : SuggestedApps.pickMirror(a, json);
-        if (urls == null || !SuggestedApps.mirrorOk(a, urls[0]) || !SuggestedApps.mirrorOk(a, urls[1])) return S.t("ما لقينا نسخة تناسب هذا التلفزيون");
-        String published = SuggestedApps.parseSha(fetch(urls[1], 4096));
-        if (published == null) return S.t("ما قدرنا ننزّله. جرّب مرة ثانية");
-        String sha = download(urls[0], f);
-        if (sha == null) return S.t("ما قدرنا ننزّله. جرّب مرة ثانية");
-        int flags = Build.VERSION.SDK_INT >= 28 ? PackageManager.GET_SIGNING_CERTIFICATES | PackageManager.GET_SIGNATURES : PackageManager.GET_SIGNATURES;
-        PackageInfo info = getPackageManager().getPackageArchiveInfo(f.getAbsolutePath(), flags);
-        java.util.Set<String> signers = new java.util.HashSet<>();
-        if (info != null) {
-            android.content.pm.Signature[] sigs = null;
-            if (Build.VERSION.SDK_INT >= 28 && info.signingInfo != null) sigs = info.signingInfo.getApkContentsSigners();
-            if ((sigs == null || sigs.length == 0) && info.signatures != null) sigs = info.signatures;
-            if (sigs != null) for (android.content.pm.Signature s : sigs) signers.add(SuggestedApps.hex(MessageDigest.getInstance("SHA-256").digest(s.toByteArray())));
-        }
-        if (!SuggestedApps.mirrorFileOk(a, sha, published, info == null ? null : info.packageName, signers)) {
-            f.delete();
-            return S.t("الملف ليس هذا التطبيق، فما ثبّتناه");
-        }
-        commit(f, a.pkg);
-        return null;
-    }
-
-    private void commit(File f, String pkg) throws Exception {
-        PackageInstaller installer = getPackageManager().getPackageInstaller();
-        PackageInstaller.SessionParams params = new PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL);
-        params.setAppPackageName(pkg);
-        int id = installer.createSession(params);
-        try (PackageInstaller.Session session = installer.openSession(id)) {
-            try (OutputStream out = session.openWrite("base.apk", 0, f.length()); InputStream in = new FileInputStream(f)) {
-                byte[] buf = new byte[64 * 1024];
-                int n;
-                while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
-                session.fsync(out);
-            }
-            Intent back = new Intent(RESULT).setPackage(getPackageName());
-            int flags = PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= 31 ? PendingIntent.FLAG_MUTABLE : 0);
-            session.commit(PendingIntent.getBroadcast(this, 9300, back, flags).getIntentSender());
-        } catch (Exception e) {
-            try { installer.abandonSession(id); } catch (Exception ignored) { }
-            throw e;
-        } finally {
-            f.delete();
-        }
-    }
-
-    /** The file into f: https only, from an allowed place (SuggestedApps), at most UpdateRules.MAX_APK_BYTES. Its SHA-256, or null. */
-    private static String download(String url, File f) throws Exception {
-        HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
-        con.setConnectTimeout(10_000);
-        con.setReadTimeout(30_000);
-        try {
-            if (con.getResponseCode() != HttpURLConnection.HTTP_OK || !"https".equals(con.getURL().getProtocol())) return null;
-            if (con.getContentLength() > UpdateRules.MAX_APK_BYTES) return null;
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            long total = 0;
-            try (InputStream in = con.getInputStream(); OutputStream o = new FileOutputStream(f)) {
-                byte[] buf = new byte[64 * 1024];
-                int n;
-                while ((n = in.read(buf)) > 0) {
-                    total += n;
-                    if (total > UpdateRules.MAX_APK_BYTES) { f.delete(); return null; }
-                    md.update(buf, 0, n);
-                    o.write(buf, 0, n);
-                }
-            }
-            if (total == 0) { f.delete(); return null; }
-            return SuggestedApps.hex(md.digest());
-        } finally {
-            con.disconnect();
-        }
-    }
-
-    private static String fetch(String url, int max) throws Exception {
-        HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
-        con.setConnectTimeout(10_000);
-        con.setReadTimeout(20_000);
-        con.setRequestProperty("Accept", "application/vnd.github+json");
-        try {
-            if (con.getResponseCode() != HttpURLConnection.HTTP_OK) return null;
-            try (InputStream in = con.getInputStream()) {
-                java.io.ByteArrayOutputStream b = new java.io.ByteArrayOutputStream();
-                byte[] buf = new byte[16 * 1024];
-                int n;
-                while ((n = in.read(buf)) > 0) { if (b.size() + n > max) return null; b.write(buf, 0, n); }
-                return b.toString("UTF-8");
-            }
-        } finally {
-            con.disconnect();
-        }
+    private void checkMirror() {
+        MirrorInstall.refreshAsync(this, () -> runOnUiThread(() -> { if (!isFinishing() && !isDestroyed()) recreate(); }));
     }
 
     private boolean installed(String pkg) {

@@ -319,6 +319,18 @@
             android:taskAffinity="sa.urtv.home.message"
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+        <!-- 4.3 UrTV Player's «تحديث» from inside it: sa.urtv.home.action.INSTALL_PLAYER (extra version_code), started for a result by the Player
+             with its pinned certificate only (InstallPlayerActivity checks the caller); the same install path as «تطبيقات مقترحة» -->
+        <activity
+            android:name=".InstallPlayerActivity"
+            android:exported="true"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Material.NoActionBar">
+            <intent-filter>
+                <action android:name="sa.urtv.home.action.INSTALL_PLAYER" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <!-- 4.3 «تطبيقات مقترحة», opened from the screensaver's settings: each app from its own place, Android's install screen asks the owner -->
         <activity
             android:name=".SuggestedAppsActivity"
@@ -505,6 +517,14 @@
             android:authorities="sa.urtv.home.nowplaying"
             android:exported="true"
             android:readPermission="sa.urtv.home.READ_NOW_PLAYING" />
+
+        <!-- 4.3 UrTV Player's «تحديث»: content://sa.urtv.home.player/update, one row {version_code, version_name, notes} when a newer verified Player
+             is published, read only, answered to com.urtv.player with its pinned certificate only (PlayerUpdateProvider) -->
+        <provider
+            android:name=".PlayerUpdateProvider"
+            android:authorities="sa.urtv.home.player"
+            android:exported="true"
+            android:permission="sa.urtv.permission.READ_LANG" />
 
         <!-- 4.3 «اللغة» for UrTV Player (another key): content://sa.urtv.home.lang/lang, one row {lang: ar|en}, read only (LangProvider) -->
         <provider

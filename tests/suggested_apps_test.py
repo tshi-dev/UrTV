@@ -15,6 +15,7 @@ def check(name, ok, detail=""):
 
 cat = (HOME / "SuggestedApps.java").read_text(encoding="utf-8")
 act = (HOME / "SuggestedAppsActivity.java").read_text(encoding="utf-8")
+mi = (HOME / "MirrorInstall.java").read_text(encoding="utf-8")   # 4.3 the install path the screen and the Player's «تحديث» share
 mf = (ROOT / "android/launcher/src/main/AndroidManifest.xml").read_text(encoding="utf-8")
 st = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsActivity.java").read_text(encoding="utf-8")
 inst = (HOME / "setup/SetupInstall.java").read_text(encoding="utf-8")
@@ -26,22 +27,23 @@ check("Lumen is gone everywhere (the owner's decision): no entry, no pinned file
       (ROOT / "i18n/en/home.tsv").read_text(encoding="utf-8"), (ROOT / "CHANGELOG.md").read_text(encoding="utf-8"))) and "PINNED" not in cat + act + inst + apks)
 check("no playlist, stream or IPTV address anywhere in the catalog or the screen", not re.search(r"\.m3u8?\b|get\.php|xtream|/playlist", cat + act, re.I))
 check("the screen: the file from the app's own GitHub releases and the package checked before Android's install screen; https only; the size limit",
-      act.index("!a.pkg.equals(info.packageName)") < act.index("commit(f, a.pkg);")
-      and '"https".equals(con.getURL().getProtocol())' in act and "UpdateRules.MAX_APK_BYTES" in act and "SuggestedApps.githubOk(a, url)" in act)
+      act.index("!a.pkg.equals(info.packageName)") < act.index("MirrorInstall.commit(this, f, a.pkg, RESULT);")
+      and '"https".equals(con.getURL().getProtocol())' in mi and "UpdateRules.MAX_APK_BYTES" in mi and "SuggestedApps.githubOk(a, url)" in act
+      and "MirrorInstall.download(url, f)" in act)
 check("the screen asks Android's own install screen (PackageInstaller, the owner confirms), the file goes after", "STATUS_PENDING_USER_ACTION" in act
-      and "session.commit(" in act and "f.delete();" in act.split("private void commit(")[1])
+      and "session.commit(" in mi and "f.delete();" in mi.split("static void commit(")[1] and "MODE_FULL_INSTALL" in mi and "uninstall" not in mi.lower().replace("never uninstalled", "").replace("nothing is ever uninstalled", ""))
 check("a Play Store app opens its page (the store, else the web page); an installed app opens", 'market://details?id=' in act and "getLeanbackLaunchIntentForPackage" in act)
 check("the screen is declared, and the screensaver's settings open it under «التطبيقات والمفضلة»", 'android:name=".SuggestedAppsActivity"' in mf
       and 'row("تطبيقات مقترحة"' in st and '"sa.urtv.home.SuggestedAppsActivity"' in st
       and st.index('row("تطبيقات في الشريط"') < st.index('row("تطبيقات مقترحة"'))
 check("UrTV Player in the screen: the newest «player-» release, its published SHA-256, the package and the pinned certificate before the install; refused unless pinned",
-      "if (a.kind == SuggestedApps.Kind.MIRROR) return mirror(a, f);" in act and "if (!SuggestedApps.mirrorReady(a))" in act
-      and act.index("SuggestedApps.mirrorFileOk(a, sha, published") < act.split("private String mirror(")[1].index("commit(f, a.pkg);") + act.index("private String mirror(")
-      and "GET_SIGNING_CERTIFICATES" in act and 'PLAYER_CERT = "13ade7d009a07f5ba5bab0b7734bd449df10dd47b53868dfa28e44cd8069dfea";' in cat)
+      "if (a.kind == SuggestedApps.Kind.MIRROR) return MirrorInstall.mirror(this, a, f, RESULT, 0);" in act and "if (!SuggestedApps.mirrorReady(a))" in mi
+      and mi.index("SuggestedApps.mirrorFileOk(a, sha, published") < mi.index("commit(c, f, a.pkg, resultAction);")
+      and "GET_SIGNING_CERTIFICATES" in mi and 'PLAYER_CERT = "13ade7d009a07f5ba5bab0b7734bd449df10dd47b53868dfa28e44cd8069dfea";' in cat)
 check("the Player's rows stay hidden until a valid release is seen (checked in the background, kept for 6 hours): never a button that cannot install",
-      "if (a.kind == SuggestedApps.Kind.MIRROR && !SuggestedApps.mirrorShown(mirrorAnswer(a), System.currentTimeMillis())) { checkMirror(a); continue; }" in act
-      and "recreate();" in act and "SuggestedApps.mirrorAskAgain(mirrorAnswer(a), now)" in act
-      and "final boolean there = SuggestedApps.pickMirror(a, json) != null;" in act and "if (json == null) return;" in act)
+      "if (a.kind == SuggestedApps.Kind.MIRROR && !SuggestedApps.mirrorShown(mirrorAnswer(a), System.currentTimeMillis())) continue;" in act
+      and "recreate();" in act and "MirrorInstall.refreshAsync(this," in act and "PlayerUpdate.refreshDue(cache(c), now)" in mi
+      and "boolean there = SuggestedApps.pickMirror(a, json) != null;" in mi and "if (json == null) return false;" in mi)
 check("the setup installs from the same catalog: GitHub releases only, a Play Store app never", "SuggestedApps.githubOk(a, url)" in inst and "if (a == null || !a.inSetup()) continue;" in inst)
 act_setup = (HOME / "setup/SetupActivity.java").read_text(encoding="utf-8")
 check("the setup's rows (design/43): one per suggested app with a tick box in the accent, the look's focus fill on the row, OK ticks or unticks, one already on the TV left, the count of those chosen under them",

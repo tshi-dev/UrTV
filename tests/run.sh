@@ -197,6 +197,7 @@ python3 tests/phone_qr_test.py
 python3 tests/update_test.py
 python3 tests/update_cover_test.py   # step 41: the screensaver's cover over the home app's own replace (no last app in front)
 python3 tests/suggested_apps_test.py   # 4.3 «تطبيقات مقترحة»: the catalog, the pinned IPTV player, the settings screen, the setup boxes
+python3 tests/player_update_test.py   # 4.3 UrTV Player updates from inside it: the provider (the Player with its key only), INSTALL_PLAYER, urtv-player.version
 python3 tests/phone_draw_test.py   # 4.3 #53 «ارسم»: live strokes from the phone over the TV's screen
 python3 tests/lang_provider_test.py   # 4.3: «اللغة» read only for UrTV Player (content://sa.urtv.home.lang/lang)
 python3 tests/match_app_test.py   # 4.3 «شاهد المباراة»: the match app and the FIND_MATCH contract
