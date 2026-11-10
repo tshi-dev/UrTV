@@ -1048,48 +1048,79 @@ public class SettingsActivity extends Activity {
         return v;
     }
 
-    /** 4.3 «كل الدوريات»: the catalogue, fresh from the internet, else the copy of the last time; nothing is fetched until now. */
+    private boolean catalogueBusy;   // one picker at a time: a second press while the first is loading or open does nothing
+
+    /**
+     * 4.3 «كل الدوريات»: the catalogue. The copy of the last time opens AT ONCE (the file is fetched again quietly for next time); with no copy yet a loading
+     * dialog (with «إلغاء») shows while it downloads. The tester's TV waited 54 s for the first one: raw.githubusercontent.com has four addresses and a connection
+     * that goes nowhere is tried on each in turn with the whole connect timeout (4 x 12 s); now 5 s each, and nothing waits when a copy exists.
+     */
     private void openCatalogue() {
-        toast("جارٍ التنزيل…");
+        if (catalogueBusy) return;
+        catalogueBusy = true;
         final java.io.File cache = new java.io.File(getCacheDir(), "league-catalogue.json");
+        List<String[]> kept = cache.isFile() ? catalogueRows(readFile(cache)) : new ArrayList<>();
+        if (!kept.isEmpty()) {
+            new Thread(() -> fetchCatalogue(cache), "catalogue-refresh").start();   // for next time, nobody waits for it
+            catalogueGroups(kept);
+            return;
+        }
+        final boolean[] cancelled = {false};
+        final AlertDialog wait = new Dlg(this).setTitle("كل الدوريات").setMessage("جارٍ تنزيل قائمة الدوريات…")
+            .setNegativeButton("إلغاء", (d, w) -> { cancelled[0] = true; catalogueBusy = false; })
+            .setOnCancelListener(d -> { cancelled[0] = true; catalogueBusy = false; }).show();
         new Thread(() -> {
-            String body = null;
-            HttpURLConnection con = null;
-            try {
-                con = (HttpURLConnection) new URL(CatalogueLeagues.URL).openConnection();
-                con.setConnectTimeout(12000);
-                con.setReadTimeout(20000);
-                try (InputStream in = con.getInputStream()) {
-                    body = new String(Bounded.readAll(in, Bounded.JSON_MAX), "UTF-8");
-                }
-                new JSONObject(body).getJSONArray("leagues");   // a whole answer before it replaces the copy
-                try (java.io.FileOutputStream out = new java.io.FileOutputStream(cache)) { out.write(body.getBytes("UTF-8")); }
-            } catch (Exception e) {
-                body = null;
-                try (InputStream in = new java.io.FileInputStream(cache)) {
-                    body = new String(Bounded.readAll(in, Bounded.JSON_MAX), "UTF-8");
-                } catch (Exception ignored) { }
-            } finally {
-                if (con != null) con.disconnect();
-            }
-            final String got = body;
+            final String got = fetchCatalogue(cache);
             runOnUiThread(() -> {
-                if (isFinishing()) return;
-                List<String[]> rows = new ArrayList<>();
-                try {
-                    JSONArray a = new JSONObject(got).getJSONArray("leagues");
-                    for (int i = 0; i < a.length(); i++) {
-                        JSONObject o = a.getJSONObject(i);
-                        String id = o.optString("id", "");
-                        if (!id.matches("\\d{1,6}")) continue;
-                        rows.add(new String[] {id, o.optString("en", ""), o.optString("ar", ""), o.optString("country", ""),
-                            o.optString("country_ar", ""), o.optString("sport", ""), o.optBoolean("top", false) ? "1" : ""});
-                    }
-                } catch (Exception e) { rows.clear(); }
-                if (rows.isEmpty()) { toast("لا يوجد اتصال"); return; }
+                if (cancelled[0] || isFinishing()) return;
+                wait.dismiss();
+                List<String[]> rows = catalogueRows(got);
+                if (rows.isEmpty()) { catalogueBusy = false; toast("لا يوجد اتصال"); return; }
                 catalogueGroups(rows);
             });
-        }).start();
+        }, "catalogue").start();
+    }
+
+    /** the file from the internet (5 s to connect, 15 s to read), kept as the copy when it is a whole answer; else the copy; null when there is neither */
+    private String fetchCatalogue(java.io.File cache) {
+        String body = null;
+        HttpURLConnection con = null;
+        try {
+            con = (HttpURLConnection) new URL(CatalogueLeagues.URL).openConnection();
+            con.setConnectTimeout(5000);
+            con.setReadTimeout(15000);
+            try (InputStream in = con.getInputStream()) {
+                body = new String(Bounded.readAll(in, Bounded.JSON_MAX), "UTF-8");
+            }
+            new JSONObject(body).getJSONArray("leagues");   // a whole answer before it replaces the copy
+            try (java.io.FileOutputStream out = new java.io.FileOutputStream(cache)) { out.write(body.getBytes("UTF-8")); }
+        } catch (Exception e) {
+            body = cache.isFile() ? readFile(cache) : null;
+        } finally {
+            if (con != null) con.disconnect();
+        }
+        return body;
+    }
+
+    private static String readFile(java.io.File f) {
+        try (InputStream in = new java.io.FileInputStream(f)) { return new String(Bounded.readAll(in, Bounded.JSON_MAX), "UTF-8"); }
+        catch (Exception e) { return null; }
+    }
+
+    private static List<String[]> catalogueRows(String json) {
+        List<String[]> rows = new ArrayList<>();
+        if (json == null) return rows;
+        try {
+            JSONArray a = new JSONObject(json).getJSONArray("leagues");
+            for (int i = 0; i < a.length(); i++) {
+                JSONObject o = a.getJSONObject(i);
+                String id = o.optString("id", "");
+                if (!id.matches("\\d{1,6}")) continue;
+                rows.add(new String[] {id, o.optString("en", ""), o.optString("ar", ""), o.optString("country", ""),
+                    o.optString("country_ar", ""), o.optString("sport", ""), o.optBoolean("top", false) ? "1" : ""});
+            }
+        } catch (Exception e) { rows.clear(); }
+        return rows;
     }
 
     /** The first list: «الأشهر» (the hand-named ones), then each country. */
@@ -1099,13 +1130,17 @@ public class SettingsActivity extends Activity {
         groups.addAll(CatalogueLeagues.countries(rows, S.en()));
         String[] labels = new String[groups.size()];
         for (int i = 0; i < labels.length; i++) labels[i] = groups.get(i)[1];
+        final boolean[] nextList = {false};
         new Dlg(this).setTitle("كل الدوريات")
             .setItems(labels, (d, i) -> {
                 List<String[]> in = new ArrayList<>();
                 for (String[] r : rows) if (i == 0 ? !r[6].isEmpty() : r[3].equalsIgnoreCase(groups.get(i)[0])) in.add(r);
+                nextList[0] = true;
                 catalogueLeagues(labels[i], in);
             })
-            .setNegativeButton("إلغاء", null).show();
+            .setNegativeButton("إلغاء", null)
+            .setOnDismissListener(d -> catalogueBusy = nextList[0])   // true while the leagues of one group are open on top: still one picker
+            .show();
     }
 
     /** The leagues of one group, those picked checked; «حفظ» keeps the built-in ones and the other groups' as they were. */
@@ -1148,6 +1183,7 @@ public class SettingsActivity extends Activity {
                     toast("حتى " + arabicNum(Prefs.MAX_LEAGUES) + " دوريات");
                 }
             })
+            .setOnDismissListener(d -> catalogueBusy = false)
             .show();
     }
 
@@ -2222,7 +2258,10 @@ public class SettingsActivity extends Activity {
             if (b != null) b.setNextFocusUpId(lv.getId());   // UP from a button goes back to the list
         }
         lv.setOnKeyListener((v, code, ev) -> {
-            if (code != android.view.KeyEvent.KEYCODE_DPAD_DOWN || ev.getAction() != android.view.KeyEvent.ACTION_DOWN) return false;
+            if (ev.getAction() != android.view.KeyEvent.ACTION_DOWN) return false;
+            // LEFT or RIGHT (a list of ticks has no use for them) goes to «حفظ» from any row, so a long list (the catalogue's hundreds) never hides it; DOWN on the last row does too
+            if (code == android.view.KeyEvent.KEYCODE_DPAD_LEFT || code == android.view.KeyEvent.KEYCODE_DPAD_RIGHT) { save.requestFocus(); return true; }
+            if (code != android.view.KeyEvent.KEYCODE_DPAD_DOWN) return false;
             if (!DialogFit.downToSave(lv.getSelectedItemPosition(), lv.getCount())) return false;
             save.requestFocus();
             return true;

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261109220737">
+<meta name="urtv-build" content="20261110051428">
 <title>شاشة تلفزيونك</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -489,7 +489,7 @@
     from{transform:scale(1.055) translate3d(-.55%,-.4%,0)}
     to{transform:scale(1.03) translate3d(0,0,0)}
   }
-  @media (prefers-reduced-motion:no-preference){.photo.settle{animation:settle 60s ease-out both}}
+  @media (prefers-reduced-motion:no-preference){.photo.settle{animation:settle 60s steps(60,end) both}}
 
   
   .markets{text-align:left;flex-shrink:0}
@@ -4010,7 +4010,7 @@ function nowPlayingTick(){
 // files on data-leagues, the Saudi Pro League's when none is followed), the prayers are computed or Aladhan's, as everywhere on the page.
 // The launcher owns the focus (FootballFocus.java)
 const FB_W = {
-  weather:'الطقس', prayers:'أوقات الصلاة', today:'مباريات اليوم', upcoming:'المباريات القادمة', title:'المباريات', yours:'فرقك', none:'لا مباريات اليوم', back:'رجوع',
+  weather:'الطقس', prayers:'أوقات الصلاة', today:'مباريات اليوم', upcoming:'المباريات القادمة', title:'المباريات', yours:'فرقك', none:'لا مباريات اليوم', noneTomorrow:'لا مباريات غدًا', noneYesterday:'لا مباريات أمس', noneDay:'لا مباريات', back:'رجوع',
   feels:'المحسوسة', hum:'الرطوبة', wind:'الرياح', kmh:'%s كم/س', pct:'٪%s', live:'مباشر', ended:'انتهت', vs:'×',
   yesterday:'أمس', tday:'اليوم', tomorrow:'غدًا', g1:'مباراة واحدة', g2:'مباراتان', gFew:'%s مباريات', gMany:'%s مباراة',
   allOn:'كلها على %s', round:'الجولة %s', venue:'الملعب', channel:'القناة', withPrayer:'مع الصلاة', game:'المباراة',
@@ -4119,6 +4119,11 @@ const fbRound = ev => fbIso(leagueName(ev)) + (fbRoundNo(ev) ? ' ' + fbRoundNo(e
 /* the same as markup: the competition on the line, the round after a gap, smaller and in 70 % ink (no «·» between texts) */
 const fbRoundHtml = ev => esc(fbIso(leagueName(ev))) + (fbRoundNo(ev) ? ' <small class="rd">' + esc(fbRoundNo(ev)) + '</small>' : '');
 // the day a game is on, said the short way: «اليوم», «غدًا», «الخميس»
+// an empty day says which day it is empty: today, tomorrow, yesterday in their own words, any other day plainly «لا مباريات»
+function fbNone(day){
+  const t = cityToday();
+  return day === t ? FB_W.none : day === fbDayAdd(t, 1) ? FB_W.noneTomorrow : day === fbDayAdd(t, -1) ? FB_W.noneYesterday : FB_W.noneDay;
+}
 function fbDayWord(day){
   const t = cityToday();
   if(day === t) return FB_W.tday;
@@ -4338,7 +4343,7 @@ function mpRender(){
   let n = 0;
   setHTML(document.getElementById('mp-list'), groups.length ? groups.map(g => `<section data-g="${esc(g.key)}"><h2>${g.nameHtml || esc(g.name)}</h2><ul>`
     + g.games.map(ev => mpRow(ev, now, n++)).join('') + '</ul></section>').join('')
-    : `<div class="fnone">${MATCHES_LOADED ? FB_W.none : matchesEmptyText()}</div>`);
+    : `<div class="fnone">${MATCHES_LOADED ? fbNone(MP.day) : matchesEmptyText()}</div>`);
   fillCrests(document.getElementById('mp'));
   const f = MP.zone === 'leagues' ? document.querySelectorAll('#mp-list section')[MP.l] : document.querySelector('#mp-list li.f');
   if(f) f.scrollIntoView({block: MP.zone === 'leagues' ? 'start' : 'nearest'});

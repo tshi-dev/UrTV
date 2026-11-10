@@ -83,7 +83,9 @@ public class SuggestedAppsActivity extends Activity {
         col.setOrientation(LinearLayout.VERTICAL);
         col.setLayoutDirection(Dir.layout());
         col.setPadding(0, dp(48), 0, dp(48));
-        frame.addView(col, new FrameLayout.LayoutParams(dp(1000), -2, Gravity.CENTER_HORIZONTAL));
+        // 1000 dp at most, and always inside the 5 % safe area of the screen: a 960 dp wide TV is narrower than the column was (the tiles touched both edges)
+        int wide = Math.min(dp(1000), Math.round(getResources().getDisplayMetrics().widthPixels * 0.9f));
+        frame.addView(col, new FrameLayout.LayoutParams(wide, -2, Gravity.CENTER_HORIZONTAL));
         col.addView(text(S.t("تطبيقات مقترحة"), 30, "Medium", look.text), lp(dp(10)));
         col.addView(text(S.t("تطبيقات نرشّحها لتلفزيونك. كل تطبيق من مصدره هو، ويسألك أندرويد قبل التثبيت."), 16, "Regular", look.sub), lp(dp(24)));
         View first = null;

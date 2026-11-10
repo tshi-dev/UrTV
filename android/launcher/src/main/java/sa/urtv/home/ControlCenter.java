@@ -97,7 +97,9 @@ final class ControlCenter {
 
     boolean showing() { return pw != null && pw.isShowing(); }
 
-    void dismiss() { if (pw != null) pw.dismiss(); }
+    private boolean closeNow, backFromCustom;
+    private String customKey;   // the row just changed in «تخصيص»: where its list starts; null = the top of the list
+    void dismiss() { if (pw != null) { closeNow = true; try { pw.dismiss(); } finally { closeNow = false; } } }
 
     /** The home screen is in front again (from an app, or Home pressed): the next opening starts on the first item. */
     void forgetLast() {
@@ -211,7 +213,14 @@ final class ControlCenter {
         plp.topMargin = top;
         root.addView(panel, plp);
 
-        pw = new PopupWindow(root, W, H, true);
+        // The popup's own decor view takes Back before any view of ours does (it starts tracking on the press and dismisses on the release), so a key listener on a cell
+        // never sees it: «تخصيص» is left by overriding dismiss(): Back there goes back to the panel's list (focus on «تخصيص»), every other close is a real one (closeNow)
+        pw = new PopupWindow(root, W, H, true) {
+            @Override public void dismiss() {
+                if (customising && !closeNow && body != null) { backFromCustom = true; showMain(); return; }
+                super.dismiss();
+            }
+        };
         pw.setElevation(dp(24));
         pw.setOnDismissListener(() -> {
             if (speed != null) speed.cancel();   // nothing keeps running behind a closed panel
@@ -224,7 +233,7 @@ final class ControlCenter {
             pw = null;
             anchor.requestFocus();
         });
-        if ("custom".equals(start)) showCustom();
+        if ("custom".equals(start)) { customKey = null; showCustom(); }
         else {
             if (start != null) lastKey = start;
             showMain();
@@ -304,7 +313,7 @@ final class ControlCenter {
         head.addView(title, new LinearLayout.LayoutParams(0, -2, 1f));
         Cell custom = new Cell(Cell.PILL, null);
         custom.label(S.t("تخصيص"), ACCENT);
-        custom.setOnClickListener(v -> showCustom());
+        custom.setOnClickListener(v -> { customKey = null; showCustom(); });
         head.addView(custom, new LinearLayout.LayoutParams(-2, dp(32)));
         head.setMinimumHeight(dp(48));
         col.addView(head, new LinearLayout.LayoutParams(-1, -2));
@@ -368,7 +377,12 @@ final class ControlCenter {
             c.setNextFocusUpId(i == 0 ? (toggleCells.isEmpty() ? custom.getId() : toggleCells.get(0).getId()) : rowCells.get(i - 1).getId());
             c.setNextFocusDownId(i == rowCells.size() - 1 ? c.getId() : rowCells.get(i + 1).getId());
         }
-        focusStart(focusables);
+        if (backFromCustom) {   // Back from «تخصيص»: the focus is on the button that opened it
+            backFromCustom = false;
+            final View fc = custom;
+            fc.requestFocus();
+            body.post(() -> { if (showing() && !fc.hasFocus()) fc.requestFocus(); });
+        } else focusStart(focusables);
     }
 
     // ---------------------------------------------------------------- «تخصيص»
@@ -423,7 +437,7 @@ final class ControlCenter {
                     now.remove(it.key);
                 } else now.add(it.key);
                 save(rowsInOrder(), now);
-                lastKey = it.key;
+                customKey = it.key;
                 showCustom();
             });
             c.setOnKeyListener((v, code, e) -> {
@@ -437,7 +451,7 @@ final class ControlCenter {
                         now.remove(p);
                         now.add(q, it);
                         save(now, unticked());
-                        lastKey = it.key;
+                        customKey = it.key;
                         showCustom();
                     }
                 }
@@ -461,7 +475,7 @@ final class ControlCenter {
         done.setOnClickListener(v -> showMain());
         Cell reset = new Cell(Cell.PILL, null);
         reset.label(S.t("إعادة الضبط"), TEXT);
-        reset.setOnClickListener(v -> { reset(); lastKey = null; showCustom(); });
+        reset.setOnClickListener(v -> { reset(); lastKey = null; customKey = null; showCustom(); });
         // «تم» first (the start side), «إعادة الضبط» after it, 16 px apart
         foot.addView(done, new LinearLayout.LayoutParams(0, dp(48), 1f));
         LinearLayout.LayoutParams rlp = new LinearLayout.LayoutParams(-2, dp(48));
@@ -503,9 +517,10 @@ final class ControlCenter {
         });
         // the focus: the row just changed, else the first line of the list
         View start = null;
-        for (Cell c : cells) if (c.item != null && c.item.key.equals(lastKey)) start = c;
+        for (Cell c : cells) if (c.item != null && c.item.key.equals(customKey)) start = c;
         if (start == null) start = cells.isEmpty() ? back : cells.get(0);
         start.requestFocus();
+        if (start == (cells.isEmpty() ? back : cells.get(0))) scroller.post(() -> scroller.scrollTo(0, 0));   // opened at the top: the first row whole, not half hidden
         final View fs = start;
         body.post(() -> { if (showing() && !fs.hasFocus()) fs.requestFocus(); });
     }
@@ -607,11 +622,12 @@ final class ControlCenter {
             glyph = icon(item.icon, 24);
             addView(glyph, new LayoutParams(dp(24), dp(24)));
             name = text(item.name, 16, TEXT, "sans-serif-medium");
+            name.setAutoSizeTextTypeUniformWithConfiguration(11, 16, 1, TypedValue.COMPLEX_UNIT_SP);   // the title shrinks to fit before it is cut («إعدادات تلفزيونك» in a 280 dp panel)
             LayoutParams nlp = new LayoutParams(0, -2, 1f);
             nlp.setMarginStart(dp(12));
             addView(name, nlp);
             value = text(item.value, 13, SUB, "sans-serif");
-            value.setMaxWidth(Math.round(act.getResources().getDisplayMetrics().widthPixels * PANEL_W * 0.40f));
+            value.setMaxWidth(Math.round(act.getResources().getDisplayMetrics().widthPixels * PANEL_W * 0.30f));   // the line under a title never takes the title's room
             value.setGravity(Dir.end() | Gravity.CENTER_VERTICAL);
             item.valueView = value;
             LayoutParams vlp = new LayoutParams(-2, -2);
@@ -637,6 +653,7 @@ final class ControlCenter {
             glp.setMarginStart(dp(12));
             addView(glyph, glp);
             name = text(item.name, 16, TEXT, "sans-serif-medium");
+            name.setAutoSizeTextTypeUniformWithConfiguration(11, 16, 1, TypedValue.COMPLEX_UNIT_SP);
             LayoutParams nlp = new LayoutParams(0, -2, 1f);
             nlp.setMarginStart(dp(12));
             addView(name, nlp);

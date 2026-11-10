@@ -99,6 +99,8 @@ for name in ("src/template.html", "dist/tv.html", "dist/tv-en.html"):
           and t.count("(CONFIG.lowram ? 15 : 5)*60*1000") == 2 and "setInterval(adhanLiveTick, CONFIG.lowram ? 15000 : 3000);" in t
           and "setInterval(remDraw, CONFIG.lowram ? 5000 : 1000)" in t and "html.lowram *, html.lowram *::before, html.lowram *::after { transition: none !important; }" in t
           and t.count("if(CONFIG.lowram) document.documentElement.classList.add('lowram');") == 2)
+check("the photo's minute-long settle is drawn in 60 steps (one frame a second), not 60 frames a second: the page's idle cost on a TV that is not weak",
+      ".photo.settle{animation:settle 60s steps(60,end) both}" in open(ROOT / "src/template.html", encoding="utf-8").read())
 check("a weak TV's screensaver page: no animation at all (the photo's minute-long settle, the cards' fade-ins), kept photos 1280 on the long side (C05: CPU idle 16 %, two 1.5 GB sets)",
       "html.lowram .photo.settle, html.lowram .week ul.flip li, html.lowram .mrow.flip .mblock, html.lowram .week li.yr.fill .r { animation: none !important; }" in t
       and "LOW_PX = 1280" in (ROOT / "android/app/src/main/java/sa/urtv/screensaver/PhotoCache.java").read_text(encoding="utf-8"))

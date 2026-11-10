@@ -38,7 +38,10 @@ dream = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/ScreenDream.java"
 check("the screensaver page has the same rules: 24 h, 300 KB, half size WebP, private cache, keyed by the page address and the screen size",
       "MAX_AGE_MS = 24L * 60 * 60 * 1000" in sv and "MAX_BYTES = 300 * 1024" in sv and "SCALE = 0.5f" in sv and "getCacheDir()" in sv and "url.hashCode()" in sv and "now - madeAt <= MAX_AGE_MS" in sv)
 check("…drawn when the dream starts, held until the live page has painted (alpha 1, at most 3 s), then a 220 ms fade; captured only once painted, when the dream ends",
-      "SaverSnapshot.load(this, shownUrl" in dream and "page.getAlpha() >= 1f" in dream and "LIVE_WAIT_MS = 3000" in sv and "FADE_MS = 220" in sv and "page.getAlpha() < 1f) return;" in sv and "SaverSnapshot.capture(this, web, shownUrl)" in dream)
+      "SaverSnapshot.load(this, shownUrl" in dream and "page.getAlpha() >= 1f" in dream and "LIVE_WAIT_MS = 3000" in sv and "FADE_MS = 220" in sv and "page.getAlpha() < 1f" in sv and "SaverSnapshot.capture(ScreenDream.this, getWindow(), shownUrl, web)" in dream)
+check("…the picture is taken from the dream's window while the page shows (PixelCopy: 10 s after it is live, then every 3 minutes, a flat or failed copy kept out), never from the detached view at the end (a blank)",
+      "PixelCopy.request(win, null, b," in sv and "FIRST_MS = 10_000" in sv and "EVERY_MS = 3 * 60 * 1000" in sv and "static boolean flat(Bitmap b)" in sv and "page.draw(" not in sv
+      and "SaverSnapshot.capture(this, web" not in dream and "snapHandler.removeCallbacks(snapTick)" in dream)
 par = (HOME / "Parental.java").read_text(encoding="utf-8")
 check("«dock.sh pin reset» and the portfolio's wipe clear the home's picture (it may show what was wiped)", "HomeSnapshot.clear(c);" in par.split("Portfolio.wipe(c);")[1][:120] and "HomeSnapshot.clear(this);" in (HOME / "MarketsActivity.java").read_text(encoding="utf-8"))
 sys.exit(1 if failed else 0)

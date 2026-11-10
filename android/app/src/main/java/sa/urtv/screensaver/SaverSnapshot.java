@@ -3,7 +3,6 @@ package sa.urtv.screensaver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.view.View;
 
 import java.io.File;
@@ -19,6 +18,8 @@ final class SaverSnapshot {
 
     static final long MAX_AGE_MS = 24L * 60 * 60 * 1000;
     static final int MAX_BYTES = 300 * 1024, FADE_MS = 220, LIVE_WAIT_MS = 3000;
+    /** the first picture 10 s after the page is live, then one every 3 minutes while it shows */
+    static final long FIRST_MS = 10_000, EVERY_MS = 3 * 60 * 1000;
     static final float SCALE = 0.5f;
     private static final String DIR = "saver_snapshot", FILE = "saver.webp", META = "saver.key";
 
@@ -47,17 +48,31 @@ final class SaverSnapshot {
         }
     }
 
-    /** the live page drawn at half size (only once it has painted: the view is shown), kept for the next start; a failure keeps the old one */
-    static void capture(Context c, View page, String url) {
-        int w = page.getWidth(), h = page.getHeight();
-        if (w <= 0 || h <= 0 || page.getAlpha() < 1f) return;
+    /**
+     * The picture of the dream's window NOW, half size, while the page is showing (PixelCopy from the window, as the home's does), kept for the next start; a copy that
+     * fails or is one flat colour (nothing painted) keeps the old picture. It was taken at the end of the dream before (View.draw of the WebView in onDetachedFromWindow):
+     * by then the dream's window is gone, a detached Chromium view draws nothing into a software canvas, so what was kept was a blank, never the page: the tester's TV
+     * showed the dark ground for 1 to 3 s at every start. Called a few seconds after the page is live and every few minutes while it shows (ScreenDream).
+     */
+    static void capture(final Context c, android.view.Window win, final String url, View page) {
+        final int w = page.getWidth(), h = page.getHeight();
+        if (win == null || w <= 0 || h <= 0 || page.getAlpha() < 1f || !page.isShown()) return;
+        if (android.os.Build.VERSION.SDK_INT < 26) return;
+        final Context app = c.getApplicationContext();
         try {
-            Bitmap b = Bitmap.createBitmap(Math.round(w * SCALE), Math.round(h * SCALE), Bitmap.Config.ARGB_8888);
-            Canvas cv = new Canvas(b);
-            cv.scale(SCALE, SCALE);
-            page.draw(cv);
-            save(c, b, key(url, w, h));
+            final Bitmap b = Bitmap.createBitmap(Math.round(w * SCALE), Math.round(h * SCALE), Bitmap.Config.ARGB_8888);
+            android.view.PixelCopy.request(win, null, b, r -> {
+                if (r == android.view.PixelCopy.SUCCESS && !flat(b)) new Thread(() -> save(app, b, key(url, w, h)), "saver-snapshot").start();
+                else b.recycle();
+            }, new android.os.Handler(android.os.Looper.getMainLooper()));
         } catch (RuntimeException | OutOfMemoryError ignored) { }
+    }
+
+    /** one flat colour in a grid of 64 samples: nothing was painted (a failed copy of a window with no content) */
+    static boolean flat(Bitmap b) {
+        int first = b.getPixel(b.getWidth() / 16, b.getHeight() / 16);
+        for (int y = 1; y < 16; y += 2) for (int x = 1; x < 16; x += 2) if (b.getPixel(x * b.getWidth() / 16, y * b.getHeight() / 16) != first) return false;
+        return true;
     }
 
     @SuppressWarnings("deprecation")

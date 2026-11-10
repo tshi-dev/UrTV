@@ -81,6 +81,15 @@ public class ScreenDream extends DreamService {
         if (android.os.Build.VERSION.SDK_INT >= 29) wakeUp(); else finish();
     }
 
+    private final android.os.Handler snapHandler = new android.os.Handler(android.os.Looper.getMainLooper());
+    private final Runnable snapTick = new Runnable() {
+        @Override public void run() {
+            // not while a reminder's card is up (it would come back with the next start's first frame)
+            if (attached && web != null && !NowPlayingBridge.reminderCard()) SaverSnapshot.capture(ScreenDream.this, getWindow(), shownUrl, web);
+            if (attached) snapHandler.postDelayed(this, SaverSnapshot.EVERY_MS);
+        }
+    };
+
     /** start: the dream starting (counted for the first-run note), not a renderer's re-creation */
     private void show(boolean start) {
         web = ScreenView.create(this, this::gone, start);
@@ -107,6 +116,8 @@ public class ScreenDream extends DreamService {
             }, 100);
         }
         setContentView(box);
+        snapHandler.removeCallbacks(snapTick);
+        snapHandler.postDelayed(snapTick, SaverSnapshot.FIRST_MS);   // the picture for the next start, taken from the window while the page shows
     }
 
     /** The page's renderer died: the dead view is thrown away; a new one at most twice in ten minutes, else the dream ends (the system starts it again later). */
@@ -125,7 +136,7 @@ public class ScreenDream extends DreamService {
         if (attached) Showing.leave();
         attached = false;
         try { unregisterReceiver(changed); } catch (IllegalArgumentException ignored) { }
-        if (web != null) SaverSnapshot.capture(this, web, shownUrl);   // the picture the next start draws first
+        snapHandler.removeCallbacks(snapTick);   // (the picture the next start draws first was taken while the page showed: SaverSnapshot.capture)
         ScreenView.release(web);
         web = null;
         super.onDetachedFromWindow();

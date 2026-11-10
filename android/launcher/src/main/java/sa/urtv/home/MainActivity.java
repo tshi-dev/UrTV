@@ -978,6 +978,7 @@ public class MainActivity extends Activity {
     }
 
     private static final int NET_ICON = 22, NET_OFFLINE = 0xFFFF6B5E;   // dp; the offline colour
+    private int netShown = -1, netInk;   // what the Wi-Fi mark shows now
 
     /** C15: the Wi-Fi icon says whether the TV is online (a wired TV counts as online too), with the minute tick */
     private void updateNetIcon() {
@@ -988,8 +989,11 @@ public class MainActivity extends Activity {
             android.net.NetworkCapabilities nc = cm == null || cm.getActiveNetwork() == null ? null : cm.getNetworkCapabilities(cm.getActiveNetwork());
             online = nc != null && nc.hasCapability(android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET);
         } catch (RuntimeException ignored) { }
+        int ink = online ? palette().soft : NET_OFFLINE;   // the look's secondary ink; red when the TV is off the network
+        if (netShown == (online ? 1 : 0) && netInk == ink) return;   // unchanged: nothing is touched, nothing is redrawn (it runs with every tick)
+        netShown = online ? 1 : 0; netInk = ink;
         netIcon.setImageResource(online ? R.drawable.ic_wifi : R.drawable.ic_wifi_off);
-        netIcon.setColorFilter(online ? palette().soft : NET_OFFLINE);   // the look's secondary ink; red when the TV is off the network
+        netIcon.setColorFilter(ink);
         netIcon.setAlpha(online ? 1f : 0.85f);
     }
 
@@ -2620,11 +2624,14 @@ public class MainActivity extends Activity {
     private boolean trayLowered;
 
     /** The name (and the hint beside it) centred over the focused favourite, as it scrolls too; hidden when the focus is not in the bar. */
+    private boolean nameShown;   // what the name row is fading to (placeName)
     private void placeName() {
         if (nameRow == null || nameRow.getWidth() == 0) return;
         View f = getCurrentFocus();
         boolean inBar = f != null && dockCards.contains(f) && edit == null;
-        nameRow.animate().alpha(inBar ? 1f : 0f).setDuration(FavBar.MS).start();
+        // this runs on every step of the tray's scroll: a new animator each step (cancel and restart, an invalidation each) is exactly what makes a scroll janky;
+        // the name's fade starts only when it has to change
+        if (nameShown != inBar) { nameShown = inBar; nameRow.animate().alpha(inBar ? 1f : 0f).setDuration(FavBar.MS).start(); }
         if (!inBar || nameCard == null) return;
         nameRow.setTranslationX(0);   // the name has ONE place: above the tray at its start edge (right in Arabic, left in English), never following a tile (build 180)
     }

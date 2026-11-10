@@ -64,7 +64,7 @@ check("«شاشة التوقف» is unticked until asked for (its pill is on the
       'DEFAULT_OFF = {"saver"}' in center and "for (String k : TOGGLES) { Item it = find(k); if (it != null) out.add(it); }" in center)
 check("the Wi-Fi status is next to the greeting (a small icon on its line, no focus, no press), not in the quick-button bar",
       "greetRow.addView(netIcon, sideLlp(dp(NET_ICON), dp(NET_ICON), dp(8), 0, 0, 0));" in main and "NET_ICON = 22" in main and "right.member(netIcon)" not in main
-      and "right.addView(netIcon" not in main and "netIcon.setColorFilter(online ? palette().soft : NET_OFFLINE);" in main and "setFocusable" not in main.split("netIcon = new ImageView(this);")[1].split("left.addView(greetRow")[0])
+      and "right.addView(netIcon" not in main and "int ink = online ? palette().soft : NET_OFFLINE;" in main and "netIcon.setColorFilter(ink);" in main and "setFocusable" not in main.split("netIcon = new ImageView(this);")[1].split("left.addView(greetRow")[0])
 check("the panel opens on the tile used last while the home is in front (the first tile of the reading order otherwise), and it is forgotten when the home comes back",
       "lastKey = item.key" in center and "item.key.equals(lastKey)" in center and "private void focusStart(" in center and "void forgetLast()" in center
       and "control.forgetLast()" in main.split("protected void onResume()")[1].split("\n    }\n")[0]
@@ -169,4 +169,13 @@ with tempfile.TemporaryDirectory() as tmp:
     for l in r.stdout.splitlines():
         check("speed test: " + l.split(" ", 1)[1], l.startswith("ok "))
     check("speed test run ended well", r.returncode == 0, r.stderr[-300:])
+cc = (ROOT / "android/launcher/src/main/java/sa/urtv/home/ControlCenter.java").read_text(encoding="utf-8")
+check("Back inside «تخصيص» goes back to the panel's list, not out of it (the popup's own decor takes Back first, so dismiss() is overridden), «تخصيص» opens at the top with its own focus key, titles shrink before they are cut",
+      "pw = new PopupWindow(root, W, H, true) {" in cc and "if (customising && !closeNow && body != null) { backFromCustom = true; showMain(); return; }" in cc
+      and "void dismiss() { if (pw != null) { closeNow = true;" in cc and "custom.setOnClickListener(v -> { customKey = null; showCustom(); });" in cc and "c.item.key.equals(customKey)" in cc
+      and "scroller.scrollTo(0, 0)" in cc and cc.count("setAutoSizeTextTypeUniformWithConfiguration(11, 16, 1, TypedValue.COMPLEX_UNIT_SP)") == 2 and "PANEL_W * 0.30f" in cc)
+main_src = (ROOT / "android/launcher/src/main/java/sa/urtv/home/MainActivity.java").read_text(encoding="utf-8")
+check("the tray's scroll does no avoidable work per step: the name row's fade starts only when it changes, the Wi-Fi mark is touched only when it changes",
+      "if (nameShown != inBar) { nameShown = inBar;" in main_src and "if (netShown == (online ? 1 : 0) && netInk == ink) return;" in main_src)
+
 sys.exit(1 if failed else 0)
