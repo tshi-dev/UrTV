@@ -1989,3 +1989,25 @@ Every clean frame of the list or the player carries a third party's live picture
 
 ### Z
 `pm clear` (list and favourites gone) + uninstall (0 packages); APK and recordings deleted; no stream frame kept. UrTV lang ar, TV muted.
+
+## step 51 — TCL «TV» (GitHub #54), build 228 (TV muted)
+**PASS for the picker; no aerial/tuner set up on this TV (TCL's Live TV asks for its terms first: not agreed by me).**
+
+### 1 Each way opens TCL's own source picker ✓
+- Remote TV button on our home (`input keyevent 4001`): `UrTVKeys: key=4001 scan=0` (not «unmapped») → `START … pkg=com.tcl.suspension cmp=com.tcl.suspension/.ui.main.MainActivity`; the picker shows as a strip over our home (Inputs: «Google TV Home», «AirPlay», «TV»; then Apps, Recent) ✓. Not the last HDMI
+- «البث التلفزيوني» (the last row of our «المصادر» list, opened from the quick button) → the same picker ✓
+- «TV» in our Sources row: **there is no row named «TV» in our list on this TV.** Its rows are AV, HDMI 1–4 (each «· وضع الاستعداد») and «البث التلفزيوني». So only the two ways above were tried
+- Other keys: Home → our home ✓; Back closes the picker ✓; Settings (83) → control center, as in step 47 ✓; Sources (178) → the same TCL picker, the home logs `unmapped key=178` (the system takes it) ✓. Android's KEYCODE_TV (170): `unmapped key=170`, nothing opens. Volume keys not pressed (TV muted rule); number keys not tried
+- Note: the picker closes by itself after a few seconds. My first OK came late and landed on our apps row instead (it opened an app; I left it at once)
+
+### 2 The direct way
+From TCL's picker «TV» → OK:
+- `START u0 {flg=0x10000000 cmp=com.tcl.tv/.TVActivity (has extras)} … from uid 1000`
+- `topResumedActivity=ActivityRecord{… com.tcl.tv/.TVActivity}`; `mCurrentFocus=… com.tcl.tv/com.tcl.tv.TVActivity`
+- `dumpsys activity top`: `ACTIVITY com.tcl.tv/.TVActivity … uid=1000`, `Intent { flg=0x10000000 cmp=com.tcl.tv/.TVActivity (has extras) }` (the extras are not printed)
+- Tuner input id: **`com.tcl.tvinput/.TunerInputService/HW2`** (state 0). Hardware: id 1 and 2 type=2, id 3 type=3, ids 15–18 type=9 (HDMI ports 1–4)
+- Other inputs: `com.tcl.tvinput/.TvPassThroughService/HW3` (state 2), `…/HW15`–`HW18` (state 1), `com.mediatek.AirplayAPK/.AirPlayTvInputService`, `com.tcl.channelplus/com.tcl.iptv.service.InputService`, and two apps' preview inputs
+- The picker itself: `com.tcl.suspension/.ui.main.MainActivity`
+
+### 3 No tuner set up
+`TVActivity` opens on TCL's consent page («Enjoy free fast channels. By using Live TV, you agree to our terms and policy.» with «Exit» / «Agree»). **I did not press «Agree»** (my rule: no legal consent without the owner). A screenshot of it comes back empty (protected). So no tuner picture or scan screen was seen.
