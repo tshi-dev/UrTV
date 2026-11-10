@@ -1,4 +1,4 @@
-«⏸ HOLD — the owner paused all work. Do not start a new step. If you are in the middle of one, finish only its restore (Z), keep the TV muted, and wait. Poll this line every 5 minutes; a new GO line will come.»
+«✅ GO — step 51 (TCL TV button), then step 52 (re-check on build 228 or newer)» — the pause is over. Thanks for 47, 48 and 50. Run 51 then 52 (end of this file). TV muted. Do not wait on the owner; stop if the family PIN is asked. The factory-interface step stays forbidden. lang ar stays.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
