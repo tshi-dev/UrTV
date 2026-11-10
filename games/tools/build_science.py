@@ -33,6 +33,8 @@ def build(stats):
         a = (sym, sym)
         out["quiz"].append(item(f"el-sym-{z}", "quiz", "science", d, "all", f"ما الرمز الكيميائي لعنصر {ar}؟",
             f"What is the chemical symbol of {en}?", a, pick_wrong(f"s{z}", syms, a), src))
+        out["quiz"].append(item(f"el-bysym-{z}", "quiz", "science", min(3, d + 1), "all", f"ما العنصر الذي رمزه الكيميائي {sym}؟",
+            f"Which element has the chemical symbol {sym}?", (ar, en), pick_wrong(f"b{z}", names, (ar, en)), src))
         a2 = (ar, en)
         out["quiz"].append(item(f"el-name-{z}", "quiz", "science", min(3, d + 1), "all", f"أي عنصر رقمه الذري {z}؟",
             f"Which element has atomic number {z}?", a2, pick_wrong(f"n{z}", names, a2), src, numeric=True))

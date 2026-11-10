@@ -57,3 +57,19 @@ Honest limits of this batch:
 ## Rebalance (third batch)
 
 Maths and logic (124) and animal classes (16 new: Wikidata taxonomy puts the species under exactly one of mammals, birds, reptiles, amphibians, fish; unclear ones are dropped) were added to move the bank away from geography. Geography is still 63 percent of the bank. More science, animals, history and Arabic language need more reachable sources (a second encyclopaedia, a proverb list); the builders are ready, only sources are missing. Screens against the specs: `games/SCREENS.md`.
+
+## Second pass (lists widened; words are curated, facts stay verified)
+
+Rule from the supervisor: verification by source is for **facts**; a playable word is not a fact claim. Words are marked `source: "curated"` (hand-written everyday vocabulary, English glosses ours) or carry a Wikidata lexeme link. Facts keep the strict rule.
+
+| Game | Now | Target | Note |
+|---|---|---|---|
+| خمّن الكلمة | 560 answers (160 curated, 400 dictionary words), 25,718 accepted guesses | 500 / as wide as possible | dictionary answers are Wikidata Arabic noun and adjective lexemes whose word is also an ar.wikipedia article of 3000 bytes or more (a frequency proxy), minus a blocklist (politics, religion, war, vulgar, illness). Accepted guesses: all lexeme lemmas plus all inflected forms of lexemes starting with ا ت ج ح; the query service times out for the other letters, so inflected forms starting with them are not accepted yet. |
+| بدون كلام / وصّف | 714 words (level 1: 247, level 2: 244, level 3: 223; 238 for kids) | 600 | curated; sacred places and acts (Kaaba, prayer, Hajj) are left out on purpose |
+| واحد مو معنا | 32 topics, 692 words (20 to 24 each) | 30 topics x 20 | curated |
+| خانات | 843 sample answers over 8 boxes (animal, plant, object, country, name, food, job, city) | 15 per letter per box | 15 or more only for some letter and box pairs; the language and our lists do not give 15 for every letter. Hard letters are marked in the file. |
+| الكلمة المفقودة | 246 facts, 57 repo sayings, 48 curated sayings (351) | 200 sayings | the sayings are 105, not 200: I only added sayings I am sure of; the rest would be guessing |
+| خلية الحروف | 28 letters; 19 have 12 or more questions | all 28 at 12 | short letters: ظ 0, ض 2, ذ 2, خ 3, ح 7, ش 8, ص 9, و 10, ط 11 (see `letter-hive/SPEC.md`, "Short letters"). The index now uses the whole bank, including all surah-order questions, element-by-symbol, official-language and currency questions. |
+
+Quiz bank at this point: see the counts in the report; the new generators are `build_langcur.py` (official language and currency, one per country, from Wikidata), element-by-symbol (`build_science.py`) and next-surah for every surah (`build_quran.py`).
+Residual risk for this pass: curated words are not source-checked; a native reader must skim `odd-one`, `charades`, `khanat`, `missing-word` and `word5` once.

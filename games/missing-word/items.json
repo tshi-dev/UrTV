@@ -6001,5 +6001,965 @@
 "repo:assets/shared/wisdom.json"
 ],
 "verified": "repo"
+},
+{
+"id": "mw-cur-0",
+"deck": "saying",
+"text": {
+"ar": "الوقت كالسيف إن لم تقطعه ___",
+"en": ""
+},
+"answer": {
+"ar": "قطعك",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "الوقت كالسيف إن لم تقطعه قطعك"
+},
+{
+"id": "mw-cur-1",
+"deck": "saying",
+"text": {
+"ar": "خير ___ ما قل ودل",
+"en": ""
+},
+"answer": {
+"ar": "الكلام",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "خير الكلام ما قل ودل"
+},
+{
+"id": "mw-cur-2",
+"deck": "saying",
+"text": {
+"ar": "الوقاية خير من ___",
+"en": ""
+},
+"answer": {
+"ar": "العلاج",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "الوقاية خير من العلاج"
+},
+{
+"id": "mw-cur-3",
+"deck": "saying",
+"text": {
+"ar": "الحاجة أم ___",
+"en": ""
+},
+"answer": {
+"ar": "الاختراع",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "الحاجة أم الاختراع"
+},
+{
+"id": "mw-cur-4",
+"deck": "saying",
+"text": {
+"ar": "رب أخ لك لم ___ أمك",
+"en": ""
+},
+"answer": {
+"ar": "تلده",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "رب أخ لك لم تلده أمك"
+},
+{
+"id": "mw-cur-5",
+"deck": "saying",
+"text": {
+"ar": "على قدر أهل العزم تأتي ___",
+"en": ""
+},
+"answer": {
+"ar": "العزائم",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "على قدر أهل العزم تأتي العزائم"
+},
+{
+"id": "mw-cur-6",
+"deck": "saying",
+"text": {
+"ar": "القناعة كنز لا ___",
+"en": ""
+},
+"answer": {
+"ar": "يفنى",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "القناعة كنز لا يفنى"
+},
+{
+"id": "mw-cur-7",
+"deck": "saying",
+"text": {
+"ar": "الحديث ذو ___",
+"en": ""
+},
+"answer": {
+"ar": "شجون",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "الحديث ذو شجون"
+},
+{
+"id": "mw-cur-8",
+"deck": "saying",
+"text": {
+"ar": "الغريق يتعلق ___",
+"en": ""
+},
+"answer": {
+"ar": "بقشة",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "الغريق يتعلق بقشة"
+},
+{
+"id": "mw-cur-9",
+"deck": "saying",
+"text": {
+"ar": "حبل الكذب ___",
+"en": ""
+},
+"answer": {
+"ar": "قصير",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "حبل الكذب قصير"
+},
+{
+"id": "mw-cur-10",
+"deck": "saying",
+"text": {
+"ar": "لكل جواد ___",
+"en": ""
+},
+"answer": {
+"ar": "كبوة",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "لكل جواد كبوة"
+},
+{
+"id": "mw-cur-11",
+"deck": "saying",
+"text": {
+"ar": "___ من غير رام",
+"en": ""
+},
+"answer": {
+"ar": "رمية",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "رمية من غير رام"
+},
+{
+"id": "mw-cur-12",
+"deck": "saying",
+"text": {
+"ar": "كما تدين ___",
+"en": ""
+},
+"answer": {
+"ar": "تدان",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "كما تدين تدان"
+},
+{
+"id": "mw-cur-13",
+"deck": "saying",
+"text": {
+"ar": "اضرب الحديد وهو ___",
+"en": ""
+},
+"answer": {
+"ar": "ساخن",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "اضرب الحديد وهو ساخن"
+},
+{
+"id": "mw-cur-14",
+"deck": "saying",
+"text": {
+"ar": "خير الأمور ___",
+"en": ""
+},
+"answer": {
+"ar": "أوسطها",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "خير الأمور أوسطها"
+},
+{
+"id": "mw-cur-15",
+"deck": "saying",
+"text": {
+"ar": "الصحة تاج على رؤوس ___",
+"en": ""
+},
+"answer": {
+"ar": "الأصحاء",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "الصحة تاج على رؤوس الأصحاء"
+},
+{
+"id": "mw-cur-16",
+"deck": "saying",
+"text": {
+"ar": "الكتاب خير ___",
+"en": ""
+},
+"answer": {
+"ar": "جليس",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "الكتاب خير جليس"
+},
+{
+"id": "mw-cur-17",
+"deck": "saying",
+"text": {
+"ar": "مصائب قوم عند قوم ___",
+"en": ""
+},
+"answer": {
+"ar": "فوائد",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "مصائب قوم عند قوم فوائد"
+},
+{
+"id": "mw-cur-18",
+"deck": "saying",
+"text": {
+"ar": "رب ضارة ___",
+"en": ""
+},
+"answer": {
+"ar": "نافعة",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "رب ضارة نافعة"
+},
+{
+"id": "mw-cur-19",
+"deck": "saying",
+"text": {
+"ar": "رب صدفة خير من ألف ___",
+"en": ""
+},
+"answer": {
+"ar": "ميعاد",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "رب صدفة خير من ألف ميعاد"
+},
+{
+"id": "mw-cur-20",
+"deck": "saying",
+"text": {
+"ar": "___ دار ممر لا دار مقر",
+"en": ""
+},
+"answer": {
+"ar": "الدنيا",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "الدنيا دار ممر لا دار مقر"
+},
+{
+"id": "mw-cur-21",
+"deck": "saying",
+"text": {
+"ar": "عصفور في اليد خير من عشرة على ___",
+"en": ""
+},
+"answer": {
+"ar": "الشجرة",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "عصفور في اليد خير من عشرة على الشجرة"
+},
+{
+"id": "mw-cur-22",
+"deck": "saying",
+"text": {
+"ar": "لا ___ بلا نار",
+"en": ""
+},
+"answer": {
+"ar": "دخان",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "لا دخان بلا نار"
+},
+{
+"id": "mw-cur-23",
+"deck": "saying",
+"text": {
+"ar": "ما كل ما يلمع ___",
+"en": ""
+},
+"answer": {
+"ar": "ذهبا",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "ما كل ما يلمع ذهبا"
+},
+{
+"id": "mw-cur-24",
+"deck": "saying",
+"text": {
+"ar": "الشمس لا تغطى ___",
+"en": ""
+},
+"answer": {
+"ar": "بغربال",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "الشمس لا تغطى بغربال"
+},
+{
+"id": "mw-cur-25",
+"deck": "saying",
+"text": {
+"ar": "كل ممنوع ___",
+"en": ""
+},
+"answer": {
+"ar": "مرغوب",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "كل ممنوع مرغوب"
+},
+{
+"id": "mw-cur-26",
+"deck": "saying",
+"text": {
+"ar": "اسأل مجرب ولا تسأل ___",
+"en": ""
+},
+"answer": {
+"ar": "طبيبا",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "اسأل مجرب ولا تسأل طبيبا"
+},
+{
+"id": "mw-cur-27",
+"deck": "saying",
+"text": {
+"ar": "الأقربون أولى ___",
+"en": ""
+},
+"answer": {
+"ar": "بالمعروف",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "الأقربون أولى بالمعروف"
+},
+{
+"id": "mw-cur-28",
+"deck": "saying",
+"text": {
+"ar": "من سار على ___ وصل",
+"en": ""
+},
+"answer": {
+"ar": "الدرب",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "من سار على الدرب وصل"
+},
+{
+"id": "mw-cur-29",
+"deck": "saying",
+"text": {
+"ar": "إذا كان الكلام من فضة ___ من ذهب",
+"en": ""
+},
+"answer": {
+"ar": "فالسكوت",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "إذا كان الكلام من فضة فالسكوت من ذهب"
+},
+{
+"id": "mw-cur-30",
+"deck": "saying",
+"text": {
+"ar": "مد رجليك على قدر ___",
+"en": ""
+},
+"answer": {
+"ar": "لحافك",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "مد رجليك على قدر لحافك"
+},
+{
+"id": "mw-cur-31",
+"deck": "saying",
+"text": {
+"ar": "تجري الرياح بما لا تشتهي ___",
+"en": ""
+},
+"answer": {
+"ar": "السفن",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "تجري الرياح بما لا تشتهي السفن"
+},
+{
+"id": "mw-cur-32",
+"deck": "saying",
+"text": {
+"ar": "من أمن العقوبة أساء ___",
+"en": ""
+},
+"answer": {
+"ar": "الأدب",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "من أمن العقوبة أساء الأدب"
+},
+{
+"id": "mw-cur-33",
+"deck": "saying",
+"text": {
+"ar": "الحسود لا ___",
+"en": ""
+},
+"answer": {
+"ar": "يسود",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "الحسود لا يسود"
+},
+{
+"id": "mw-cur-34",
+"deck": "saying",
+"text": {
+"ar": "أول الغيث قطر ثم ___",
+"en": ""
+},
+"answer": {
+"ar": "ينهمر",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "أول الغيث قطر ثم ينهمر"
+},
+{
+"id": "mw-cur-35",
+"deck": "saying",
+"text": {
+"ar": "ضربني وبكى سبقني ___",
+"en": ""
+},
+"answer": {
+"ar": "واشتكى",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "ضربني وبكى سبقني واشتكى"
+},
+{
+"id": "mw-cur-36",
+"deck": "saying",
+"text": {
+"ar": "سبق السيف ___",
+"en": ""
+},
+"answer": {
+"ar": "العذل",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "سبق السيف العذل"
+},
+{
+"id": "mw-cur-37",
+"deck": "saying",
+"text": {
+"ar": "مكره ___ لا بطل",
+"en": ""
+},
+"answer": {
+"ar": "أخاك",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "مكره أخاك لا بطل"
+},
+{
+"id": "mw-cur-38",
+"deck": "saying",
+"text": {
+"ar": "لكل داء ___",
+"en": ""
+},
+"answer": {
+"ar": "دواء",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "لكل داء دواء"
+},
+{
+"id": "mw-cur-39",
+"deck": "saying",
+"text": {
+"ar": "وافق شن ___",
+"en": ""
+},
+"answer": {
+"ar": "طبقة",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "وافق شن طبقة"
+},
+{
+"id": "mw-cur-40",
+"deck": "saying",
+"text": {
+"ar": "أهل مكة أدرى ___",
+"en": ""
+},
+"answer": {
+"ar": "بشعابها",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "أهل مكة أدرى بشعابها"
+},
+{
+"id": "mw-cur-41",
+"deck": "saying",
+"text": {
+"ar": "من طلب العلا سهر ___",
+"en": ""
+},
+"answer": {
+"ar": "الليالي",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "من طلب العلا سهر الليالي"
+},
+{
+"id": "mw-cur-42",
+"deck": "saying",
+"text": {
+"ar": "من أحب شيئا أكثر من ___",
+"en": ""
+},
+"answer": {
+"ar": "ذكره",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "من أحب شيئا أكثر من ذكره"
+},
+{
+"id": "mw-cur-43",
+"deck": "saying",
+"text": {
+"ar": "التجربة خير ___",
+"en": ""
+},
+"answer": {
+"ar": "برهان",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "التجربة خير برهان"
+},
+{
+"id": "mw-cur-44",
+"deck": "saying",
+"text": {
+"ar": "لا تؤجل عمل اليوم إلى ___",
+"en": ""
+},
+"answer": {
+"ar": "الغد",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "لا تؤجل عمل اليوم إلى الغد"
+},
+{
+"id": "mw-cur-45",
+"deck": "saying",
+"text": {
+"ar": "من لا يعمل لا ___",
+"en": ""
+},
+"answer": {
+"ar": "يأكل",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "من لا يعمل لا يأكل"
+},
+{
+"id": "mw-cur-46",
+"deck": "saying",
+"text": {
+"ar": "من جد في ___ وجد",
+"en": ""
+},
+"answer": {
+"ar": "الطلب",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "من جد في الطلب وجد"
+},
+{
+"id": "mw-cur-47",
+"deck": "saying",
+"text": {
+"ar": "القلم أحد ___",
+"en": ""
+},
+"answer": {
+"ar": "اللسانين",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "القلم أحد اللسانين"
 }
 ]

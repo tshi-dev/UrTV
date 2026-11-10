@@ -1,6 +1,670 @@
 {
 "topics": [
 {
+"id": "farm",
+"ar": "حيوانات المزرعة",
+"en": "Farm animals",
+"age": "all",
+"words": [
+{
+"ar": "بقرة",
+"en": "cow",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "خروف",
+"en": "sheep",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "ماعز",
+"en": "goat",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "جمل",
+"en": "camel",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "حصان",
+"en": "horse",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "حمار",
+"en": "donkey",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "دجاجة",
+"en": "hen",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "ديك",
+"en": "rooster",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "بطة",
+"en": "duck",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "أرنب",
+"en": "rabbit",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "ثور",
+"en": "bull",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "عجل",
+"en": "calf",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "نعجة",
+"en": "ewe",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "ناقة",
+"en": "she-camel",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "فرس",
+"en": "mare",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "ديك رومي",
+"en": "turkey",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "إوزة",
+"en": "goose",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "حمامة",
+"en": "pigeon",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "قطة",
+"en": "cat",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "كلب",
+"en": "dog",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "بغل",
+"en": "mule",
+"difficulty": 3,
+"source": "curated"
+}
+]
+},
+{
+"id": "wild",
+"ar": "حيوانات برية",
+"en": "Wild animals",
+"age": "all",
+"words": [
+{
+"ar": "أسد",
+"en": "lion",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "فيل",
+"en": "elephant",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "زرافة",
+"en": "giraffe",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "نمر",
+"en": "leopard",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "قرد",
+"en": "monkey",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "ذئب",
+"en": "wolf",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "ثعلب",
+"en": "fox",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "دب",
+"en": "bear",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "غزال",
+"en": "gazelle",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "ضبع",
+"en": "hyena",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "فهد",
+"en": "cheetah",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "وحيد القرن",
+"en": "rhinoceros",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "فرس النهر",
+"en": "hippo",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "كنغر",
+"en": "kangaroo",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "باندا",
+"en": "panda",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "سنجاب",
+"en": "squirrel",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "قنفذ",
+"en": "hedgehog",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "أرنب بري",
+"en": "hare",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "وعل",
+"en": "ibex",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "ظبي",
+"en": "deer",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "وشق",
+"en": "lynx",
+"difficulty": 3,
+"source": "curated"
+}
+]
+},
+{
+"id": "birds",
+"ar": "طيور",
+"en": "Birds",
+"age": "all",
+"words": [
+{
+"ar": "صقر",
+"en": "falcon",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "نسر",
+"en": "eagle",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "بومة",
+"en": "owl",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "ببغاء",
+"en": "parrot",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "بطريق",
+"en": "penguin",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "نعامة",
+"en": "ostrich",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "حمامة",
+"en": "dove",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "طاووس",
+"en": "peacock",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "بجعة",
+"en": "swan",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "لقلق",
+"en": "stork",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "هدهد",
+"en": "hoopoe",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "غراب",
+"en": "crow",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "عصفور",
+"en": "sparrow",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "بط",
+"en": "duck",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "نورس",
+"en": "seagull",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "فلامنغو",
+"en": "flamingo",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "رخمة",
+"en": "vulture",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "شاهين",
+"en": "peregrine",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "حبارى",
+"en": "bustard",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "قطا",
+"en": "sandgrouse",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "بلبل",
+"en": "nightingale",
+"difficulty": 3,
+"source": "curated"
+}
+]
+},
+{
+"id": "sea",
+"ar": "حيوانات البحر",
+"en": "Sea animals",
+"age": "all",
+"words": [
+{
+"ar": "دلفين",
+"en": "dolphin",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "حوت",
+"en": "whale",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "سمكة",
+"en": "fish",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "قرش",
+"en": "shark",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "أخطبوط",
+"en": "octopus",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "سلحفاة",
+"en": "turtle",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "سرطان",
+"en": "crab",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "روبيان",
+"en": "shrimp",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "نجمة البحر",
+"en": "starfish",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "حصان البحر",
+"en": "seahorse",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "قنديل البحر",
+"en": "jellyfish",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "فقمة",
+"en": "seal",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "تمساح",
+"en": "crocodile",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "ضفدع",
+"en": "frog",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "حبار",
+"en": "squid",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "محار",
+"en": "oyster",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "سلمون",
+"en": "salmon",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "تونة",
+"en": "tuna",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "هامور",
+"en": "grouper",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "كنعد",
+"en": "kingfish",
+"difficulty": 3,
+"source": "curated"
+}
+]
+},
+{
+"id": "insects",
+"ar": "حشرات وحيوانات صغيرة",
+"en": "Small creatures",
+"age": "all",
+"words": [
+{
+"ar": "نملة",
+"en": "ant",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "نحلة",
+"en": "bee",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "فراشة",
+"en": "butterfly",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "ذبابة",
+"en": "fly",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "جرادة",
+"en": "locust",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "خنفساء",
+"en": "beetle",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "دودة",
+"en": "worm",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "عنكبوت",
+"en": "spider",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "بعوضة",
+"en": "mosquito",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "يعسوب",
+"en": "dragonfly",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "حلزون",
+"en": "snail",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "صرصور",
+"en": "cricket",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "دعسوقة",
+"en": "ladybird",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "يرقة",
+"en": "caterpillar",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "زنبور",
+"en": "wasp",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "جندب",
+"en": "grasshopper",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "حرباء",
+"en": "chameleon",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "سحلية",
+"en": "lizard",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "فأر",
+"en": "mouse",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "جراد",
+"en": "swarm locust",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "ضب",
+"en": "dhab lizard",
+"difficulty": 3,
+"source": "curated"
+}
+]
+},
+{
 "id": "fruits",
 "ar": "فواكه",
 "en": "Fruits",
@@ -10,103 +674,309 @@
 "ar": "تفاح",
 "en": "apple",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q89"
+"source": "curated"
 },
 {
 "ar": "موز",
 "en": "banana",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q503"
+"source": "curated"
 },
 {
 "ar": "برتقال",
 "en": "orange",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q13191"
+"source": "curated"
 },
 {
 "ar": "عنب",
-"en": "grape",
+"en": "grapes",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q10978"
+"source": "curated"
 },
 {
 "ar": "فراولة",
 "en": "strawberry",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q13158"
+"source": "curated"
+},
+{
+"ar": "بطيخ",
+"en": "watermelon",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "مانجو",
+"en": "mango",
+"difficulty": 1,
+"source": "curated"
 },
 {
 "ar": "أناناس",
 "en": "pineapple",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q10817602"
+"source": "curated"
 },
 {
 "ar": "رمان",
 "en": "pomegranate",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q13188"
+"source": "curated"
 },
 {
 "ar": "تين",
 "en": "fig",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q2746643"
+"source": "curated"
+},
+{
+"ar": "خوخ",
+"en": "peach",
+"difficulty": 2,
+"source": "curated"
 },
 {
 "ar": "كمثرى",
 "en": "pear",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q13099586"
+"source": "curated"
 },
 {
 "ar": "كرز",
 "en": "cherry",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q196"
+"source": "curated"
 },
 {
 "ar": "ليمون",
 "en": "lemon",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q1093742"
+"source": "curated"
+},
+{
+"ar": "شمام",
+"en": "melon",
+"difficulty": 2,
+"source": "curated"
 },
 {
 "ar": "جوافة",
 "en": "guava",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q3181909"
+"source": "curated"
 },
 {
-"ar": "بلح",
-"en": "date",
+"ar": "تمر",
+"en": "dates",
 "difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q1652093"
+"source": "curated"
 },
 {
 "ar": "مشمش",
 "en": "apricot",
 "difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q3733836"
+"source": "curated"
 },
 {
 "ar": "توت",
 "en": "berries",
 "difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q16128920"
+"source": "curated"
 },
 {
 "ar": "كيوي",
-"en": "kiwifruit",
+"en": "kiwi",
 "difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q13194"
+"source": "curated"
 },
 {
-"ar": "نارجيل",
-"en": "coconut",
+"ar": "أفوكادو",
+"en": "avocado",
 "difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q3342808"
+"source": "curated"
+},
+{
+"ar": "جريب فروت",
+"en": "grapefruit",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "نارنج",
+"en": "bitter orange",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "بلح",
+"en": "fresh dates",
+"difficulty": 3,
+"source": "curated"
+}
+]
+},
+{
+"id": "vegetables",
+"ar": "خضروات",
+"en": "Vegetables",
+"age": "all",
+"words": [
+{
+"ar": "طماطم",
+"en": "tomato",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "خيار",
+"en": "cucumber",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "جزر",
+"en": "carrot",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "بصل",
+"en": "onion",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "ثوم",
+"en": "garlic",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "بطاطس",
+"en": "potato",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "باذنجان",
+"en": "eggplant",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "كوسا",
+"en": "zucchini",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "فلفل",
+"en": "pepper",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "ملفوف",
+"en": "cabbage",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "خس",
+"en": "lettuce",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "سبانخ",
+"en": "spinach",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "قرنبيط",
+"en": "cauliflower",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "بروكلي",
+"en": "broccoli",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "ذرة",
+"en": "corn",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "فجل",
+"en": "radish",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "لفت",
+"en": "turnip",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "شمندر",
+"en": "beetroot",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "قرع",
+"en": "pumpkin",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "بازلاء",
+"en": "peas",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "فاصوليا",
+"en": "beans",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "بامية",
+"en": "okra",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "جرجير",
+"en": "arugula",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "كزبرة",
+"en": "coriander",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "بقدونس",
+"en": "parsley",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "نعناع",
+"en": "mint",
+"difficulty": 3,
+"source": "curated"
 }
 ]
 },
@@ -120,109 +990,571 @@
 "ar": "خبز",
 "en": "bread",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q7802"
+"source": "curated"
 },
 {
 "ar": "رز",
 "en": "rice",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q5090"
+"source": "curated"
 },
 {
 "ar": "جبن",
 "en": "cheese",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q10943"
+"source": "curated"
+},
+{
+"ar": "بيض",
+"en": "egg",
+"difficulty": 1,
+"source": "curated"
 },
 {
 "ar": "عسل",
 "en": "honey",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q10987"
-},
-{
-"ar": "حليب",
-"en": "milk",
-"difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q8495"
+"source": "curated"
 },
 {
 "ar": "زبدة",
 "en": "butter",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q34172"
+"source": "curated"
 },
 {
 "ar": "شوربة",
 "en": "soup",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q41415"
+"source": "curated"
 },
 {
 "ar": "معكرونة",
 "en": "pasta",
-"difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q178"
+"difficulty": 1,
+"source": "curated"
 },
 {
-"ar": "شوكولاتة",
-"en": "chocolate",
-"difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q195"
+"ar": "بيتزا",
+"en": "pizza",
+"difficulty": 1,
+"source": "curated"
 },
 {
-"ar": "بسكويت",
-"en": "biscuit",
+"ar": "برغر",
+"en": "burger",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q13270"
+"source": "curated"
 },
 {
 "ar": "سمك",
 "en": "fish",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q152"
+"source": "curated"
 },
 {
 "ar": "دجاج",
 "en": "chicken",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q780"
+"source": "curated"
 },
 {
 "ar": "لحم",
 "en": "meat",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q10990"
+"source": "curated"
 },
 {
 "ar": "حمص",
 "en": "hummus",
-"difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q241987"
+"difficulty": 2,
+"source": "curated"
 },
 {
 "ar": "فلافل",
 "en": "falafel",
-"difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q188788"
+"difficulty": 2,
+"source": "curated"
 },
 {
 "ar": "شاورما",
 "en": "shawarma",
-"difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q3412448"
+"difficulty": 2,
+"source": "curated"
 },
 {
 "ar": "سمبوسة",
 "en": "samosa",
-"difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q491517"
+"difficulty": 2,
+"source": "curated"
 },
 {
 "ar": "هريس",
 "en": "harees",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "فطيرة",
+"en": "pie",
 "difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q16841203"
+"source": "curated"
+},
+{
+"ar": "عدس",
+"en": "lentils",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "فول",
+"en": "fava beans",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "تونة",
+"en": "tuna",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "نقانق",
+"en": "hot dog",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "بطاطس مقلية",
+"en": "fries",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "ساندويتش",
+"en": "sandwich",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "سلطة",
+"en": "salad",
+"difficulty": 3,
+"source": "curated"
+}
+]
+},
+{
+"id": "sweets",
+"ar": "حلويات ومسليات",
+"en": "Sweets and snacks",
+"age": "all",
+"words": [
+{
+"ar": "كعكة",
+"en": "cake",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "شوكولاتة",
+"en": "chocolate",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "بسكويت",
+"en": "biscuit",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "آيس كريم",
+"en": "ice cream",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "كنافة",
+"en": "kunafa",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "بقلاوة",
+"en": "baklava",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "لقيمات",
+"en": "luqaimat",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "حلاوة",
+"en": "halwa",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "مهلبية",
+"en": "muhallabia",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "أم علي",
+"en": "om ali",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "جيلي",
+"en": "jelly",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "علكة",
+"en": "gum",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "كراميل",
+"en": "caramel",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "دونات",
+"en": "donut",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "بودينغ",
+"en": "pudding",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "فشار",
+"en": "popcorn",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "شيبس",
+"en": "chips",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "مكسرات",
+"en": "nuts",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "زبيب",
+"en": "raisins",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "تمر محشي",
+"en": "stuffed dates",
+"difficulty": 3,
+"source": "curated"
+}
+]
+},
+{
+"id": "drinks",
+"ar": "مشروبات",
+"en": "Drinks",
+"age": "all",
+"words": [
+{
+"ar": "ماء",
+"en": "water",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "عصير",
+"en": "juice",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "شاي",
+"en": "tea",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "قهوة",
+"en": "coffee",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "لبن",
+"en": "laban",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "حليب",
+"en": "milk",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "كاكاو",
+"en": "cocoa",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "عصير برتقال",
+"en": "orange juice",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "ليمون بالنعناع",
+"en": "lemonade",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "شاي أخضر",
+"en": "green tea",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "قهوة عربية",
+"en": "arabic coffee",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "زنجبيل",
+"en": "ginger",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "ينسون",
+"en": "anise",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "كركديه",
+"en": "hibiscus",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "سحلب",
+"en": "sahlab",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "عصير مانجو",
+"en": "mango juice",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "حليب بالشوكولاتة",
+"en": "chocolate milk",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "ماء بارد",
+"en": "cold water",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "قهوة تركية",
+"en": "turkish coffee",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "عصير تفاح",
+"en": "apple juice",
+"difficulty": 3,
+"source": "curated"
+}
+]
+},
+{
+"id": "dishes",
+"ar": "أكلات عربية",
+"en": "Arab dishes",
+"age": "all",
+"words": [
+{
+"ar": "كبسة",
+"en": "kabsa",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "مندي",
+"en": "mandi",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "مطبق",
+"en": "mutabbaq",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "جريش",
+"en": "jareesh",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "سليق",
+"en": "saleeg",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "مضغوطة",
+"en": "madghoot",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "حنيني",
+"en": "hanini",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "مطازيز",
+"en": "matazeez",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "كليجا",
+"en": "kleicha",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "شاورما",
+"en": "shawarma",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "فلافل",
+"en": "falafel",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "مقلوبة",
+"en": "maqluba",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "منسف",
+"en": "mansaf",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "كنافة",
+"en": "kunafa",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "بقلاوة",
+"en": "baklava",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "هريس",
+"en": "harees",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "مرقوق",
+"en": "margoog",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "قرصان",
+"en": "qursan",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "عصيدة",
+"en": "aseeda",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "ثريد",
+"en": "tharid",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "برياني",
+"en": "biryani",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "فتة",
+"en": "fatteh",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "كبة",
+"en": "kibbeh",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "تبولة",
+"en": "tabbouleh",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "متبل",
+"en": "mutabbal",
+"difficulty": 3,
+"source": "curated"
 }
 ]
 },
@@ -236,97 +1568,163 @@
 "ar": "طبيب",
 "en": "doctor",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q39631"
+"source": "curated"
 },
 {
 "ar": "معلم",
 "en": "teacher",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q37226"
+"source": "curated"
 },
 {
 "ar": "مهندس",
 "en": "engineer",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q81096"
+"source": "curated"
+},
+{
+"ar": "طيار",
+"en": "pilot",
+"difficulty": 1,
+"source": "curated"
 },
 {
 "ar": "ممرض",
 "en": "nurse",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q186360"
+"source": "curated"
 },
 {
 "ar": "نجار",
 "en": "carpenter",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q154549"
+"source": "curated"
 },
 {
 "ar": "خباز",
 "en": "baker",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q160131"
+"source": "curated"
 },
 {
 "ar": "طباخ",
 "en": "cook",
-"difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q156839"
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "حداد",
+"en": "blacksmith",
+"difficulty": 1,
+"source": "curated"
 },
 {
 "ar": "فلاح",
 "en": "farmer",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q131512"
+"source": "curated"
+},
+{
+"ar": "صياد",
+"en": "fisherman",
+"difficulty": 2,
+"source": "curated"
 },
 {
 "ar": "سائق",
 "en": "driver",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q352388"
+"source": "curated"
 },
 {
 "ar": "رسام",
 "en": "painter",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q1028181"
+"source": "curated"
 },
 {
 "ar": "شرطي",
 "en": "police officer",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q384593"
+"source": "curated"
 },
 {
 "ar": "قاض",
 "en": "judge",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q16533"
+"source": "curated"
+},
+{
+"ar": "محامي",
+"en": "lawyer",
+"difficulty": 2,
+"source": "curated"
 },
 {
 "ar": "صيدلي",
 "en": "pharmacist",
-"difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q105186"
-},
-{
-"ar": "مزارع",
-"en": "farmer",
-"difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q131512"
+"difficulty": 2,
+"source": "curated"
 },
 {
 "ar": "طبيب أسنان",
 "en": "dentist",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "كهربائي",
+"en": "electrician",
 "difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q27349"
+"source": "curated"
+},
+{
+"ar": "ميكانيكي",
+"en": "mechanic",
+"difficulty": 3,
+"source": "curated"
 },
 {
 "ar": "خياط",
 "en": "tailor",
 "difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q242468"
+"source": "curated"
+},
+{
+"ar": "حلاق",
+"en": "barber",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "بائع",
+"en": "seller",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "رجل إطفاء",
+"en": "firefighter",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "رائد فضاء",
+"en": "astronaut",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "مزارع",
+"en": "farmer",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "عالم",
+"en": "scientist",
+"difficulty": 3,
+"source": "curated"
 }
 ]
 },
@@ -340,73 +1738,821 @@
 "ar": "كرة القدم",
 "en": "football",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q2736"
+"source": "curated"
 },
 {
 "ar": "كرة السلة",
 "en": "basketball",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q5372"
+"source": "curated"
 },
 {
 "ar": "كرة الطائرة",
 "en": "volleyball",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q1734"
+"source": "curated"
+},
+{
+"ar": "السباحة",
+"en": "swimming",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "الجري",
+"en": "running",
+"difficulty": 1,
+"source": "curated"
 },
 {
 "ar": "التنس",
 "en": "tennis",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q847"
+"source": "curated"
+},
+{
+"ar": "الملاكمة",
+"en": "boxing",
+"difficulty": 1,
+"source": "curated"
 },
 {
 "ar": "الجودو",
 "en": "judo",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q11420"
+"source": "curated"
+},
+{
+"ar": "الكاراتيه",
+"en": "karate",
+"difficulty": 1,
+"source": "curated"
 },
 {
 "ar": "الفروسية",
 "en": "horse riding",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q179226"
+"source": "curated"
 },
 {
 "ar": "رمي الرمح",
 "en": "javelin",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q178108"
+"source": "curated"
 },
 {
 "ar": "ركوب الدراجات",
 "en": "cycling",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q53121"
+"source": "curated"
 },
 {
 "ar": "الغولف",
 "en": "golf",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q5377"
+"source": "curated"
+},
+{
+"ar": "الهوكي",
+"en": "hockey",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "الرماية",
+"en": "archery",
+"difficulty": 2,
+"source": "curated"
 },
 {
 "ar": "الجمباز",
 "en": "gymnastics",
-"difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q43450"
+"difficulty": 2,
+"source": "curated"
 },
 {
 "ar": "رفع الأثقال",
 "en": "weightlifting",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "التزلج",
+"en": "skiing",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "الغوص",
+"en": "diving",
 "difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q83462"
+"source": "curated"
 },
 {
 "ar": "التجديف",
 "en": "rowing",
 "difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q159354"
+"source": "curated"
+},
+{
+"ar": "كرة اليد",
+"en": "handball",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "تنس الطاولة",
+"en": "table tennis",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "المصارعة",
+"en": "wrestling",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "الكريكيت",
+"en": "cricket",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "البلياردو",
+"en": "billiards",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "الشطرنج",
+"en": "chess",
+"difficulty": 3,
+"source": "curated"
+}
+]
+},
+{
+"id": "clothes",
+"ar": "ملابس",
+"en": "Clothes",
+"age": "all",
+"words": [
+{
+"ar": "ثوب",
+"en": "thobe",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "قميص",
+"en": "shirt",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "بنطلون",
+"en": "trousers",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "حذاء",
+"en": "shoe",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "جورب",
+"en": "sock",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "قبعة",
+"en": "hat",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "معطف",
+"en": "coat",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "سترة",
+"en": "jacket",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "فستان",
+"en": "dress",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "عباءة",
+"en": "abaya",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "شماغ",
+"en": "shemagh",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "عقال",
+"en": "agal",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "طاقية",
+"en": "cap",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "حزام",
+"en": "belt",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "قفاز",
+"en": "gloves",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "وشاح",
+"en": "scarf",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "نظارة",
+"en": "glasses",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "ساعة",
+"en": "watch",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "نعل",
+"en": "sandal",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "بيجامة",
+"en": "pyjamas",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "تنورة",
+"en": "skirt",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "بدلة",
+"en": "suit",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "كم",
+"en": "sleeve",
+"difficulty": 3,
+"source": "curated"
+}
+]
+},
+{
+"id": "vehicles",
+"ar": "مركبات",
+"en": "Vehicles",
+"age": "all",
+"words": [
+{
+"ar": "سيارة",
+"en": "car",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "حافلة",
+"en": "bus",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "طائرة",
+"en": "airplane",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "قطار",
+"en": "train",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "دراجة",
+"en": "bicycle",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "سفينة",
+"en": "ship",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "قارب",
+"en": "boat",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "شاحنة",
+"en": "truck",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "هليكوبتر",
+"en": "helicopter",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "دراجة نارية",
+"en": "motorcycle",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "صاروخ",
+"en": "rocket",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "غواصة",
+"en": "submarine",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "جرار",
+"en": "tractor",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "سيارة إسعاف",
+"en": "ambulance",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "مترو",
+"en": "metro",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "عربة",
+"en": "cart",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "سيارة أجرة",
+"en": "taxi",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "منطاد",
+"en": "balloon",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "دراجة ثلاثية",
+"en": "tricycle",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "زورق",
+"en": "speedboat",
+"difficulty": 3,
+"source": "curated"
+}
+]
+},
+{
+"id": "home",
+"ar": "أثاث وبيت",
+"en": "Furniture and home",
+"age": "all",
+"words": [
+{
+"ar": "كرسي",
+"en": "chair",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "طاولة",
+"en": "table",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "سرير",
+"en": "bed",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "خزانة",
+"en": "wardrobe",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "أريكة",
+"en": "sofa",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "مكتب",
+"en": "desk",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "رف",
+"en": "shelf",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "مرآة",
+"en": "mirror",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "سجادة",
+"en": "carpet",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "وسادة",
+"en": "pillow",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "ستارة",
+"en": "curtain",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "مصباح",
+"en": "lamp",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "باب",
+"en": "door",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "نافذة",
+"en": "window",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "سقف",
+"en": "ceiling",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "جدار",
+"en": "wall",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "درج",
+"en": "stairs",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "مفتاح",
+"en": "key",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "ثلاجة",
+"en": "fridge",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "مروحة",
+"en": "fan",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "مكيف",
+"en": "air conditioner",
+"difficulty": 3,
+"source": "curated"
+}
+]
+},
+{
+"id": "kitchen",
+"ar": "أدوات المطبخ",
+"en": "Kitchen items",
+"age": "all",
+"words": [
+{
+"ar": "ملعقة",
+"en": "spoon",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "شوكة",
+"en": "fork",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "سكين",
+"en": "knife",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "طبق",
+"en": "plate",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "كوب",
+"en": "cup",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "مقلاة",
+"en": "frying pan",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "قدر",
+"en": "pot",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "إبريق",
+"en": "jug",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "غلاية",
+"en": "kettle",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "فرن",
+"en": "oven",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "ميكروويف",
+"en": "microwave",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "خلاط",
+"en": "blender",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "صينية",
+"en": "tray",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "ركوة",
+"en": "coffee pot",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "دلة",
+"en": "dallah",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "فنجان",
+"en": "small cup",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "برطمان",
+"en": "jar",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "ثلاجة",
+"en": "fridge",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "غسالة",
+"en": "washing machine",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "مصفاة",
+"en": "strainer",
+"difficulty": 3,
+"source": "curated"
+}
+]
+},
+{
+"id": "school",
+"ar": "أدوات المدرسة",
+"en": "School items",
+"age": "all",
+"words": [
+{
+"ar": "قلم",
+"en": "pen",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "كتاب",
+"en": "book",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "دفتر",
+"en": "notebook",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "مسطرة",
+"en": "ruler",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "ممحاة",
+"en": "eraser",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "حقيبة",
+"en": "bag",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "سبورة",
+"en": "board",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "مدرسة",
+"en": "school",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "مكتبة",
+"en": "library",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "خريطة",
+"en": "map",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "حاسوب",
+"en": "computer",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "مقلمة",
+"en": "pencil case",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "برجل",
+"en": "compass",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "قلم رصاص",
+"en": "pencil",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "مبراة",
+"en": "sharpener",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "ملف",
+"en": "folder",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "دباسة",
+"en": "stapler",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "غراء",
+"en": "glue",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "طباشير",
+"en": "chalk",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "جدول",
+"en": "timetable",
+"difficulty": 3,
+"source": "curated"
 }
 ]
 },
@@ -420,85 +2566,121 @@
 "ar": "مطرقة",
 "en": "hammer",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q25294"
+"source": "curated"
+},
+{
+"ar": "مفك",
+"en": "screwdriver",
+"difficulty": 1,
+"source": "curated"
 },
 {
 "ar": "منشار",
 "en": "saw",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q125356"
+"source": "curated"
 },
 {
 "ar": "مسمار",
 "en": "nail",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q37077"
+"source": "curated"
 },
 {
 "ar": "مقص",
 "en": "scissors",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q40847"
+"source": "curated"
 },
 {
 "ar": "إبرة",
 "en": "needle",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q13079101"
+"source": "curated"
 },
 {
 "ar": "فأس",
 "en": "axe",
-"difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q39397"
+"difficulty": 1,
+"source": "curated"
 },
 {
-"ar": "مفتاح",
-"en": "key",
+"ar": "مفتاح ربط",
+"en": "wrench",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q132041"
-},
-{
-"ar": "قفل",
-"en": "lock",
-"difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q228039"
+"source": "curated"
 },
 {
 "ar": "سلم",
 "en": "ladder",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q168639"
+"source": "curated"
 },
 {
 "ar": "فرشاة",
 "en": "brush",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q614467"
+"source": "curated"
 },
 {
-"ar": "مقلاة",
-"en": "frying pan",
-"difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q127666"
+"ar": "حبل",
+"en": "rope",
+"difficulty": 2,
+"source": "curated"
 },
 {
-"ar": "ملعقة",
-"en": "spoon",
-"difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q81895"
+"ar": "مقياس",
+"en": "tape measure",
+"difficulty": 2,
+"source": "curated"
 },
 {
-"ar": "شوكة",
-"en": "fork",
-"difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q81881"
+"ar": "مثقاب",
+"en": "drill",
+"difficulty": 2,
+"source": "curated"
 },
 {
-"ar": "ساعة",
-"en": "clock",
+"ar": "كماشة",
+"en": "pliers",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "ملقط",
+"en": "tweezers",
 "difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q376"
+"source": "curated"
+},
+{
+"ar": "معول",
+"en": "pickaxe",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "مجرفة",
+"en": "shovel",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "دلو",
+"en": "bucket",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "خرطوم",
+"en": "hose",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "سكين",
+"en": "knife",
+"difficulty": 3,
+"source": "curated"
 }
 ]
 },
@@ -512,103 +2694,773 @@
 "ar": "مسجد",
 "en": "mosque",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q32815"
+"source": "curated"
 },
 {
 "ar": "مستشفى",
 "en": "hospital",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q16917"
+"source": "curated"
 },
 {
 "ar": "مطار",
 "en": "airport",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q1248784"
+"source": "curated"
 },
 {
 "ar": "سوق",
 "en": "market",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q37654"
+"source": "curated"
+},
+{
+"ar": "حديقة",
+"en": "park",
+"difficulty": 1,
+"source": "curated"
 },
 {
 "ar": "شاطئ",
 "en": "beach",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q40080"
+"source": "curated"
 },
 {
 "ar": "جبل",
 "en": "mountain",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q8502"
+"source": "curated"
 },
 {
 "ar": "صحراء",
 "en": "desert",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q8514"
+"source": "curated"
 },
 {
 "ar": "نهر",
 "en": "river",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q4022"
+"source": "curated"
 },
 {
 "ar": "بحر",
 "en": "sea",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q165"
+"source": "curated"
 },
 {
 "ar": "جزيرة",
 "en": "island",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q23442"
+"source": "curated"
 },
 {
 "ar": "غابة",
 "en": "forest",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q4421"
+"source": "curated"
 },
 {
 "ar": "قلعة",
 "en": "castle",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q23413"
+"source": "curated"
 },
 {
 "ar": "متحف",
 "en": "museum",
-"difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q33506"
+"difficulty": 2,
+"source": "curated"
 },
 {
 "ar": "ملعب",
 "en": "stadium",
 "difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q483110"
+"source": "curated"
 },
 {
 "ar": "مزرعة",
 "en": "farm",
 "difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q131596"
+"source": "curated"
 },
 {
 "ar": "مطعم",
 "en": "restaurant",
 "difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q11707"
+"source": "curated"
 },
 {
 "ar": "بنك",
 "en": "bank",
 "difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q22687"
+"source": "curated"
+},
+{
+"ar": "مكتبة",
+"en": "library",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "جسر",
+"en": "bridge",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "محطة",
+"en": "station",
+"difficulty": 3,
+"source": "curated"
+}
+]
+},
+{
+"id": "nature",
+"ar": "طبيعة",
+"en": "Nature",
+"age": "all",
+"words": [
+{
+"ar": "شمس",
+"en": "sun",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "قمر",
+"en": "moon",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "نجمة",
+"en": "star",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "سحابة",
+"en": "cloud",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "مطر",
+"en": "rain",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "ثلج",
+"en": "snow",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "رعد",
+"en": "thunder",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "برق",
+"en": "lightning",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "قوس قزح",
+"en": "rainbow",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "ريح",
+"en": "wind",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "بحيرة",
+"en": "lake",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "واحة",
+"en": "oasis",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "وادي",
+"en": "valley",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "شلال",
+"en": "waterfall",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "بركان",
+"en": "volcano",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "كهف",
+"en": "cave",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "تل",
+"en": "hill",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "صخرة",
+"en": "rock",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "رمل",
+"en": "sand",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "ضباب",
+"en": "fog",
+"difficulty": 3,
+"source": "curated"
+}
+]
+},
+{
+"id": "body",
+"ar": "أعضاء الجسم",
+"en": "Body parts",
+"age": "all",
+"words": [
+{
+"ar": "رأس",
+"en": "head",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "يد",
+"en": "hand",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "رجل",
+"en": "leg",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "عين",
+"en": "eye",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "أذن",
+"en": "ear",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "أنف",
+"en": "nose",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "فم",
+"en": "mouth",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "سن",
+"en": "tooth",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "لسان",
+"en": "tongue",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "شعر",
+"en": "hair",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "وجه",
+"en": "face",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "قلب",
+"en": "heart",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "بطن",
+"en": "stomach",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "ظهر",
+"en": "back",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "كتف",
+"en": "shoulder",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "ركبة",
+"en": "knee",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "إصبع",
+"en": "finger",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "قدم",
+"en": "foot",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "رقبة",
+"en": "neck",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "ذراع",
+"en": "arm",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "حاجب",
+"en": "eyebrow",
+"difficulty": 3,
+"source": "curated"
+}
+]
+},
+{
+"id": "colors",
+"ar": "ألوان",
+"en": "Colors",
+"age": "all",
+"words": [
+{
+"ar": "أحمر",
+"en": "red",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "أزرق",
+"en": "blue",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "أخضر",
+"en": "green",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "أصفر",
+"en": "yellow",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "برتقالي",
+"en": "orange",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "بنفسجي",
+"en": "purple",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "وردي",
+"en": "pink",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "أبيض",
+"en": "white",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "أسود",
+"en": "black",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "بني",
+"en": "brown",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "رمادي",
+"en": "gray",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "ذهبي",
+"en": "golden",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "فضي",
+"en": "silver",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "سماوي",
+"en": "sky blue",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "زهري",
+"en": "rose",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "كحلي",
+"en": "navy",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "بيج",
+"en": "beige",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "تركوازي",
+"en": "turquoise",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "عنابي",
+"en": "maroon",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "خمري",
+"en": "burgundy",
+"difficulty": 3,
+"source": "curated"
+}
+]
+},
+{
+"id": "tech",
+"ar": "أجهزة",
+"en": "Devices",
+"age": "all",
+"words": [
+{
+"ar": "هاتف",
+"en": "phone",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "تلفاز",
+"en": "television",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "حاسوب",
+"en": "computer",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "كاميرا",
+"en": "camera",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "ساعة ذكية",
+"en": "smartwatch",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "سماعة",
+"en": "headphones",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "شاشة",
+"en": "screen",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "لوحة مفاتيح",
+"en": "keyboard",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "فأرة",
+"en": "mouse",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "طابعة",
+"en": "printer",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "شاحن",
+"en": "charger",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "بطارية",
+"en": "battery",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "ريموت",
+"en": "remote",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "راديو",
+"en": "radio",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "روبوت",
+"en": "robot",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "قمر صناعي",
+"en": "satellite",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "لوح",
+"en": "tablet",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "مكبر صوت",
+"en": "speaker",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "جهاز ألعاب",
+"en": "console",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "مسجل",
+"en": "recorder",
+"difficulty": 3,
+"source": "curated"
+}
+]
+},
+{
+"id": "toys",
+"ar": "ألعاب الأطفال",
+"en": "Toys and games",
+"age": "all",
+"words": [
+{
+"ar": "كرة",
+"en": "ball",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "دمية",
+"en": "doll",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "طائرة ورقية",
+"en": "kite",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "مكعبات",
+"en": "blocks",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "لغز",
+"en": "puzzle",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "بالون",
+"en": "balloon",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "دراجة",
+"en": "bicycle",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "أرجوحة",
+"en": "swing",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "زحليقة",
+"en": "slide",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "قفز الحبل",
+"en": "jump rope",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "الغميضة",
+"en": "hide and seek",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "مصاصة",
+"en": "lollipop",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "سيارة لعبة",
+"en": "toy car",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "قطار لعبة",
+"en": "toy train",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "مكعب روبيك",
+"en": "rubiks cube",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "ألوان",
+"en": "crayons",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "صلصال",
+"en": "clay",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "فقاعات",
+"en": "bubbles",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "خيمة",
+"en": "tent",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "دومينو",
+"en": "dominoes",
+"difficulty": 3,
+"source": "curated"
 }
 ]
 },
@@ -622,263 +3474,937 @@
 "ar": "الرياض",
 "en": "Riyadh",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q3692"
+"source": "curated"
 },
 {
 "ar": "جدة",
 "en": "Jeddah",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q374365"
+"source": "curated"
 },
 {
 "ar": "مكة المكرمة",
 "en": "Mecca",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q5806"
+"source": "curated"
 },
 {
 "ar": "المدينة المنورة",
 "en": "Medina",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q35484"
+"source": "curated"
 },
 {
 "ar": "الدمام",
 "en": "Dammam",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q160320"
+"source": "curated"
+},
+{
+"ar": "الطائف",
+"en": "Taif",
+"difficulty": 1,
+"source": "curated"
 },
 {
 "ar": "تبوك",
 "en": "Tabuk",
-"difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q244232"
+"difficulty": 1,
+"source": "curated"
 },
 {
 "ar": "أبها",
 "en": "Abha",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "بريدة",
+"en": "Buraydah",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q190948"
+"source": "curated"
+},
+{
+"ar": "حائل",
+"en": "Hail",
+"difficulty": 2,
+"source": "curated"
 },
 {
 "ar": "نجران",
 "en": "Najran",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q27174"
+"source": "curated"
 },
 {
 "ar": "جازان",
 "en": "Jazan",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q6168048"
+"source": "curated"
 },
 {
 "ar": "الخبر",
 "en": "Khobar",
-"difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q311266"
+"difficulty": 2,
+"source": "curated"
 },
 {
 "ar": "الجبيل",
 "en": "Jubail",
-"difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q27430"
+"difficulty": 2,
+"source": "curated"
 },
 {
 "ar": "ينبع",
 "en": "Yanbu",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "الأحساء",
+"en": "Al-Ahsa",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "العلا",
+"en": "AlUla",
 "difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q466027"
+"source": "curated"
+},
+{
+"ar": "الباحة",
+"en": "Al-Baha",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "عرعر",
+"en": "Arar",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "سكاكا",
+"en": "Sakaka",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "الظهران",
+"en": "Dhahran",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "خميس مشيط",
+"en": "Khamis Mushait",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "نيوم",
+"en": "NEOM",
+"difficulty": 3,
+"source": "curated"
 }
 ]
 },
 {
-"id": "nature",
-"ar": "طبيعة",
-"en": "Nature",
+"id": "arab_countries",
+"ar": "دول عربية",
+"en": "Arab countries",
+"age": "all",
+"words": [
+{
+"ar": "السعودية",
+"en": "Saudi Arabia",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "مصر",
+"en": "Egypt",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "الأردن",
+"en": "Jordan",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "العراق",
+"en": "Iraq",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "الكويت",
+"en": "Kuwait",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "قطر",
+"en": "Qatar",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "البحرين",
+"en": "Bahrain",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "عمان",
+"en": "Oman",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "الإمارات",
+"en": "UAE",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "اليمن",
+"en": "Yemen",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "لبنان",
+"en": "Lebanon",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "سوريا",
+"en": "Syria",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "المغرب",
+"en": "Morocco",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "الجزائر",
+"en": "Algeria",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "تونس",
+"en": "Tunisia",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "ليبيا",
+"en": "Libya",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "السودان",
+"en": "Sudan",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "موريتانيا",
+"en": "Mauritania",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "الصومال",
+"en": "Somalia",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "جيبوتي",
+"en": "Djibouti",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "جزر القمر",
+"en": "Comoros",
+"difficulty": 3,
+"source": "curated"
+}
+]
+},
+{
+"id": "landmarks",
+"ar": "معالم عالمية",
+"en": "Landmarks",
+"age": "all",
+"words": [
+{
+"ar": "الأهرامات",
+"en": "pyramids",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "برج إيفل",
+"en": "Eiffel Tower",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "سور الصين",
+"en": "Great Wall",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "برج خليفة",
+"en": "Burj Khalifa",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "برج المملكة",
+"en": "Kingdom Tower",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "ساعة مكة",
+"en": "Makkah Clock Tower",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "تمثال الحرية",
+"en": "Statue of Liberty",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "برج بيزا",
+"en": "Pisa Tower",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "الكولوسيوم",
+"en": "Colosseum",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "تاج محل",
+"en": "Taj Mahal",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "البوابة الذهبية",
+"en": "Golden Gate",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "قصر المصمك",
+"en": "Masmak Fort",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "حي الطريف",
+"en": "At-Turaif",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "الحِجر",
+"en": "Hegra",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "الكورنيش",
+"en": "Corniche",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "برج العرب",
+"en": "Burj Al Arab",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "نافورة الملك فهد",
+"en": "King Fahd Fountain",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "مبنى الكابيتول",
+"en": "Capitol Building",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "نهر النيل",
+"en": "Nile",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "قصر الحمراء",
+"en": "Alhambra",
+"difficulty": 3,
+"source": "curated"
+}
+]
+},
+{
+"id": "occasions",
+"ar": "مناسبات",
+"en": "Occasions",
+"age": "all",
+"words": [
+{
+"ar": "عيد الفطر",
+"en": "Eid al-Fitr",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "عيد الأضحى",
+"en": "Eid al-Adha",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "رمضان",
+"en": "Ramadan",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "اليوم الوطني",
+"en": "National Day",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "يوم التأسيس",
+"en": "Founding Day",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "عيد ميلاد",
+"en": "birthday",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "زواج",
+"en": "wedding",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "تخرج",
+"en": "graduation",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "قدوم ضيف",
+"en": "guest arrival",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "سفر",
+"en": "travel",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "مولود جديد",
+"en": "newborn",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "حفلة",
+"en": "party",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "نزهة",
+"en": "picnic",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "مخيم",
+"en": "camping",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "قرقيعان",
+"en": "garangao",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "عيد صديق",
+"en": "friends party",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "هدية",
+"en": "gift",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "عزيمة",
+"en": "invitation to a meal",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "سحور",
+"en": "suhoor",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "إفطار",
+"en": "iftar",
+"difficulty": 3,
+"source": "curated"
+}
+]
+},
+{
+"id": "family",
+"ar": "العائلة",
+"en": "Family",
+"age": "all",
+"words": [
+{
+"ar": "أب",
+"en": "father",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "أم",
+"en": "mother",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "أخ",
+"en": "brother",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "أخت",
+"en": "sister",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "جد",
+"en": "grandfather",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "جدة",
+"en": "grandmother",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "ابن",
+"en": "son",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "بنت",
+"en": "daughter",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "عم",
+"en": "uncle",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "عمة",
+"en": "aunt",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "خال",
+"en": "maternal uncle",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "خالة",
+"en": "maternal aunt",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "حفيد",
+"en": "grandson",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "طفل",
+"en": "child",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "عريس",
+"en": "groom",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "عروس",
+"en": "bride",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "جار",
+"en": "neighbor",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "صديق",
+"en": "friend",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "ضيف",
+"en": "guest",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "معلم",
+"en": "teacher",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "ابن العم",
+"en": "cousin",
+"difficulty": 3,
+"source": "curated"
+}
+]
+},
+{
+"id": "weather",
+"ar": "طقس وفصول",
+"en": "Weather and seasons",
+"age": "all",
+"words": [
+{
+"ar": "صيف",
+"en": "summer",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "شتاء",
+"en": "winter",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "ربيع",
+"en": "spring",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "خريف",
+"en": "autumn",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "غبار",
+"en": "dust",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "عاصفة",
+"en": "storm",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "حر",
+"en": "heat",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "برد",
+"en": "cold",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "غيم",
+"en": "clouds",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "شمس",
+"en": "sun",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "ضباب",
+"en": "fog",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "سيل",
+"en": "flood",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "صحو",
+"en": "clear sky",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "رطوبة",
+"en": "humidity",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "حرارة",
+"en": "temperature",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "مظلة",
+"en": "umbrella",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "معطف",
+"en": "coat",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "مكيف",
+"en": "air conditioner",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "رياح",
+"en": "winds",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "قطرة ندى",
+"en": "dew",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "جمر",
+"en": "embers",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "شروق",
+"en": "sunrise",
+"difficulty": 3,
+"source": "curated"
+},
+{
+"ar": "غروب",
+"en": "sunset",
+"difficulty": 3,
+"source": "curated"
+}
+]
+},
+{
+"id": "spaces",
+"ar": "الفضاء",
+"en": "Space",
 "age": "all",
 "words": [
 {
 "ar": "شمس",
-"en": "Sun",
+"en": "sun",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q525"
+"source": "curated"
 },
 {
 "ar": "قمر",
-"en": "Moon",
+"en": "moon",
 "difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q405"
+"source": "curated"
+},
+{
+"ar": "أرض",
+"en": "earth",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "مريخ",
+"en": "Mars",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "مشتري",
+"en": "Jupiter",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "زحل",
+"en": "Saturn",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "زهرة",
+"en": "Venus",
+"difficulty": 1,
+"source": "curated"
+},
+{
+"ar": "عطارد",
+"en": "Mercury",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "نبتون",
+"en": "Neptune",
+"difficulty": 2,
+"source": "curated"
+},
+{
+"ar": "أورانوس",
+"en": "Uranus",
+"difficulty": 2,
+"source": "curated"
 },
 {
 "ar": "نجم",
 "en": "star",
-"difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q523"
-},
-{
-"ar": "مطر",
-"en": "rain",
-"difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q7925"
-},
-{
-"ar": "ثلج",
-"en": "snow",
-"difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q7561"
-},
-{
-"ar": "رعد",
-"en": "thunder",
-"difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q83301"
-},
-{
-"ar": "برق",
-"en": "lightning",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q33741"
+"source": "curated"
 },
 {
-"ar": "قوس قزح",
-"en": "rainbow",
+"ar": "مجرة",
+"en": "galaxy",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q1052"
+"source": "curated"
 },
 {
-"ar": "ريح",
-"en": "wind",
+"ar": "مذنب",
+"en": "comet",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q8094"
+"source": "curated"
 },
 {
-"ar": "بحيرة",
-"en": "lake",
+"ar": "صاروخ",
+"en": "rocket",
 "difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q23397"
+"source": "curated"
 },
 {
-"ar": "واحة",
-"en": "oasis",
-"difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q43742"
-},
-{
-"ar": "وادي",
-"en": "valley",
+"ar": "رائد فضاء",
+"en": "astronaut",
 "difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q39816"
+"source": "curated"
 },
 {
-"ar": "شلال",
-"en": "waterfall",
+"ar": "تلسكوب",
+"en": "telescope",
 "difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q34038"
+"source": "curated"
 },
 {
-"ar": "بركان",
-"en": "volcano",
+"ar": "كوكب",
+"en": "planet",
 "difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q8072"
+"source": "curated"
 },
 {
-"ar": "كهف",
-"en": "cave",
+"ar": "مدار",
+"en": "orbit",
 "difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q35509"
-}
-]
+"source": "curated"
 },
 {
-"id": "wild_animals",
-"ar": "حيوانات برية",
-"en": "Wild animals",
-"age": "all",
-"words": [
-{
-"ar": "أسد",
-"en": "lion",
-"difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q140"
-},
-{
-"ar": "فيل",
-"en": "elephant",
-"difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q7378"
-},
-{
-"ar": "زرافة",
-"en": "giraffe",
-"difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q862089"
-},
-{
-"ar": "نمر",
-"en": "leopard",
-"difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q34706"
-},
-{
-"ar": "ذئب",
-"en": "wolf",
-"difficulty": 1,
-"source": "https://www.wikidata.org/wiki/Q3711329"
-},
-{
-"ar": "ثعلب",
-"en": "fox",
-"difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q8331"
-},
-{
-"ar": "دب",
-"en": "bear",
-"difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q1019010"
-},
-{
-"ar": "غزال",
-"en": "gazelle",
-"difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q29001815"
-},
-{
-"ar": "فهد",
-"en": "cheetah",
-"difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q23907"
-},
-{
-"ar": "وحيد القرن",
-"en": "rhinoceros",
-"difficulty": 2,
-"source": "https://www.wikidata.org/wiki/Q34718"
-},
-{
-"ar": "كنغر",
-"en": "kangaroo",
+"ar": "محطة فضائية",
+"en": "space station",
 "difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q5070208"
+"source": "curated"
 },
 {
-"ar": "سنجاب",
-"en": "squirrel",
+"ar": "كسوف",
+"en": "eclipse",
 "difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q9482"
-},
-{
-"ar": "قنفذ",
-"en": "hedgehog",
-"difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q6120"
-},
-{
-"ar": "أرنب",
-"en": "rabbit",
-"difficulty": 3,
-"source": "https://www.wikidata.org/wiki/Q9394"
+"source": "curated"
 }
 ]
 }

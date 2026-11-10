@@ -29,6 +29,6 @@ Feedback with repeated letters follows the standard rule: green first, then yell
 - RTL: letters fill each row right to left; the cursor wraps.
 
 ## Data
-- `games/word5/answers.json`: common words, with `display`, English meaning, `category`, `difficulty`, `age`, `source` (Wikidata item).
-- `games/word5/accepted.json`: normalized five-letter strings only (from Wikidata Arabic lexemes and the answers list), a plain sorted array.
+- `games/word5/answers.json`: 560 answers: 160 curated everyday words (our English glosses) and 400 dictionary words (a Wikidata Arabic lexeme that is also an ar.wikipedia article of 3000 bytes or more, a frequency proxy). `source` is `curated` or the lexeme link; dictionary words have no English gloss, so the end screen shows only the Arabic word then.
+- `games/word5/accepted.json`: about 25,700 normalized five-letter strings (Wikidata lexeme lemmas of all letters, plus every inflected form of lexemes whose word starts with ا ت ج ح, plus the answers), a plain sorted array. Words starting with other letters are covered by lemmas only, so a few valid inflected forms starting with ب ث خ ... are refused today; the Wikidata query service times out on the rest.
 Both are built by `games/tools/build_words.py` and checked by `games/check_words.py`.

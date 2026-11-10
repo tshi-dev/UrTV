@@ -28,7 +28,7 @@ def build(stats):
     famous = {1, 2, 3, 4, 12, 18, 19, 36, 55, 67, 112, 113, 114, 108, 110, 109, 111}
     out = {"quiz": [], "truefalse": []}
     for n in range(1, 114):
-        if n in famous or n + 1 in famous:
+        if True:
             a = (show[n + 1], en[n + 1])
             out["quiz"].append(item(f"qu-next-{n}", "quiz", "islamic", 2 if n in famous else 3, "all",
                 f"أي سورة تأتي بعد سورة {show[n]}؟", f"Which surah comes right after Surah {en[n]}?", a,
