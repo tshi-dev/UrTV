@@ -74,10 +74,18 @@ final class Net {
     private static Socket tls(Socket plain, String host, int port, int timeoutMs) throws IOException {
         plain.setSoTimeout(timeoutMs);
         javax.net.ssl.SSLSocket ssl = (javax.net.ssl.SSLSocket) ((javax.net.ssl.SSLSocketFactory) javax.net.ssl.SSLSocketFactory.getDefault()).createSocket(plain, host, port, true);
+        try {   // the certificate is checked against the host name by the TLS layer itself (Android 7 and newer, and every JVM)
+            javax.net.ssl.SSLParameters p = ssl.getSSLParameters();
+            p.setEndpointIdentificationAlgorithm("HTTPS");
+            ssl.setSSLParameters(p);
+        } catch (RuntimeException | LinkageError ignored) { /* older: the check below */ }
         ssl.startHandshake();
-        if (!javax.net.ssl.HttpsURLConnection.getDefaultHostnameVerifier().verify(host, ssl.getSession())) { ssl.close(); throw new javax.net.ssl.SSLPeerUnverifiedException("host"); }
+        // on Android the platform's own verifier too (what HttpsURLConnection does: older versions rely on it alone); a plain JVM's default verifier refuses everything, so it is not asked there
+        if (android() && !javax.net.ssl.HttpsURLConnection.getDefaultHostnameVerifier().verify(host, ssl.getSession())) { ssl.close(); throw new javax.net.ssl.SSLPeerUnverifiedException("host"); }
         return ssl;
     }
+
+    private static boolean android() { return String.valueOf(System.getProperty("java.vendor")).contains("Android") || String.valueOf(System.getProperty("java.vm.vendor")).contains("Android"); }
 
     private static Reply exchange(Socket io, String host, int port, boolean tls, String path, Map<String, String> headers, long end, int maxBytes) throws IOException {
         try (Socket c = io) {
