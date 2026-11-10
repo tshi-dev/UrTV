@@ -128,6 +128,11 @@ reset							-
 key	4001	365	0	0		LIVE_TV	the TV button of a TCL remote (unmapped key=4001 scan=365, GitHub #54) opens the tuner
 key	4001	365	0	2		EAT	its repeats are consumed
 key	4001	365	1	0		EAT	its release is consumed
+reset						-
+key	170	0	0	0		LIVE_TV	Android's KEYCODE_TV opens the tuner too (tester step 51: it was unmapped and opened nothing)
+key	170	0	0	3		EAT	its repeats are consumed
+key	170	0	1	0		EAT	its release is consumed
+reset						-
 reset							-
 key	4001	365	0	0	YouTube,Netflix	LIVE_TV	whatever is installed
 key	0	365	0	0		PASS	the same scan code with no key code is not guessed at (only the TCL vendor code is mapped)

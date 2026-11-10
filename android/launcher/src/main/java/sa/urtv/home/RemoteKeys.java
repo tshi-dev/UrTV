@@ -35,6 +35,8 @@ final class RemoteKeys {
     private static final int TCL_GUARD = 4140;
     /** the TV button of a TCL remote (UrTVKeys logged «unmapped key=4001 scan=365», GitHub #54; scan 365 is Linux's KEY_EPG, which TCL's key map turns into this vendor code) */
     private static final int TCL_TV = 4001;
+    /** Android's own KEYCODE_TV (170): the TV key of other remotes (it reached our home as unmapped and opened nothing; tester step 51) */
+    private static final int KEYCODE_TV = 170;
     /** the Settings key of a TCL G05 remote (UrTVKeys logged key=4077) */
     private static final int TCL_SETTINGS = 4077;
     /** Linux KEY_JOURNAL (0x242): the star key of a TCL G08 remote. Android's generic key map has no name for it, so the keycode may be 0. */
@@ -145,6 +147,7 @@ final class RemoteKeys {
             case KEYCODE_BUTTON_4:
             case TCL_NETFLIX: return app(NETFLIX, installed);
             case TCL_PRIME: return app(PRIME, installed);
+            case KEYCODE_TV:
             case TCL_TV: return new Decision(OPEN_LIVE_TV, null);   // once we are the home the system no longer hands this key to TCL's receiver: it opens the tuner here
             case TCL_GUARD: return EAT_IT;   // TCL's cleaner would kill our adhan: nothing opens
             default: break;   // the Settings key is decided in decide(): short or long
