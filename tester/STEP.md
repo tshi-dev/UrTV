@@ -1,4 +1,4 @@
-«✅ GO — step 52 (re-check on build 228 or newer)» — the pause is over. Thanks for 47, 48, 50 and 51. Run step 52 (end of this file). TV muted. Do not wait on the owner; stop if the family PIN is asked. The factory-interface step stays forbidden. lang ar stays.
+«✅ GO — step 52 (re-check on build 228 or newer), then step 53 (Player v0.9.7)» — the pause is over. Thanks for 47, 48, 50 and 51. Run step 52 then step 53 (end of this file). TV muted. Do not wait on the owner; stop if the family PIN is asked. The factory-interface step stays forbidden. lang ar stays.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -838,3 +838,17 @@ C. Clean home: the settings row says «مفعّل…» when on; after turning it
 D. Memory tier: `optimize/saver.sh show` → `ramtier:` (expect mid on this TV). Then compare `ramtier low` vs `mid` (restart the apps after each; `saver.sh ramtier …` and `dock.sh ramtier …`): transitions and the photo cross-fade back in mid, seconds on the clock; screensaver idle CPU (60 s) and PSS, tray jank (as step 46 item 11) in each. Put back `auto`.
 E. Step 46 leftovers on this build: screensaver start shows its LAST picture (no blank 1–3 s); screensaver idle CPU (was 27 %); tray jank (was 8.4 %); «تطبيقات مقترحة» inside the screen; catalogue «كل الدوريات…» first load time (was 54 s) and Arabic country names; control center notes.
 Z. Restore as step 44 Z. Report «step 52».
+
+## step 53 — UrTV Player v0.9.7 re-measure (release «latest»; after step 52; TV muted; uninstall at the end)
+Same public list as step 50, loaded by link. Numbers for each:
+1. List jank from the NEW meter in the stats overlay («Live ui N frames: janky x % p50/p90/p99») and from gfxinfo, 50 DOWN + 50 UP at 0.1 s per key and back to back. Target ≤5 %.
+2. Preview: after resting on a row, when does the pane change and when is the first picture there (was 2.0 s / 3.5 s)?
+3. Zap UP ×3 and DOWN ×3 with the trace lines: is dns ≈0 and manifest small for the neighbours now (UP was ≈3.1 s)?
+4. «من الجوال» (Arabic UI): let the page's 10 minutes pass, then OK on «إعادة المحاولة»: a new address + code, focus stays on «من الجوال» (was: jumped to Xtream).
+5. Search: reach the «ع/EN» chip with LEFT/RIGHT from the box; it flips the keyboard.
+6. Stats: fps now a real number on 720p and 1080p channels.
+7. From UrTV's match sheet: «شاهد المباراة» → not found → «ابحث في القنوات» opens the Live tab with the search prefilled.
+8. Small: after typing, one Back closes the keyboard AND leaves edit mode; focus returns to the same row after the channel menu; «Family» group in Arabic; the dim over the old picture is fully black; first start after install (ms) and three cold starts.
+9. «ليش يقطّع؟» in the player's OK panel: «البث سليم» on a good channel; what it says on the slow channel.
+10. Long OK on a row with the real remote if the owner is there; otherwise skip.
+Z as step 50. Report «step 53».
