@@ -1,0 +1,61 @@
+name: Quiz bank
+
+# «الأسرع» (docs/QUIZ.md): the verified quiz questions (games/data/quiz.json) in the compact form the TV reads, published as quiz/quiz.json on the branch
+# data-games, which QuizBank fetches from raw.githubusercontent.com when the quiz screen opens. FAILS CLOSED: games/check.py runs first (any problem stops the run and
+# the branch keeps its last good file), then the compact file is built and verified again with the app's own rules (make_quiz_bank.py --verify: size, item count, every
+# item's form, unique ids), and only then published. The branch holds ONE commit (an orphan, force-pushed by this workflow alone), like the other data branches.
+# GAMES_REF is the branch the games data lives on today; when it moves (next or master), change it here. A push trigger runs the copy of this file that is on the pushed
+# branch, so run it by hand (Run workflow) once it is on next.
+on:
+  workflow_dispatch:
+  push:
+    branches: [work/games-data, next]
+    paths:
+      - 'games/**'
+      - '.github/tools/make_quiz_bank.py'
+      - '.github/workflows/quiz-bank.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: quiz-bank
+  cancel-in-progress: true
+
+env:
+  GAMES_REF: work/games-data
+
+jobs:
+  bank:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: The games data
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.GAMES_REF }}
+          path: gd
+      - name: The tool (from next)
+        uses: actions/checkout@v4
+        with:
+          ref: next
+          path: tool
+      - name: Check the data (fails closed)
+        run: python3 gd/games/check.py gd/games/data
+      - name: Build and verify the compact bank
+        run: |
+          mkdir -p out/quiz
+          python3 tool/.github/tools/make_quiz_bank.py gd/games/data/quiz.json out/quiz/quiz.json
+          python3 tool/.github/tools/make_quiz_bank.py --verify out/quiz/quiz.json
+          echo "GAMES_SHA=$(git -C gd rev-parse --short HEAD)" >> "$GITHUB_ENV"
+      - name: Publish to data-games (one commit)
+        run: |
+          cd out
+          git init -q
+          git config user.name "tshi-dev"
+          git config user.email "272740088+tshi-dev@users.noreply.github.com"
+          git checkout -q --orphan data-games
+          git add quiz
+          git commit -qm "Quiz bank from games/data/quiz.json @ ${GAMES_SHA}"
+          git remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          git push -f origin data-games

@@ -15,15 +15,37 @@ def check(what, ok, extra=""):
 if not shutil.which("javac"):
     print("SKIP quiz: no javac"); sys.exit(1)
 with tempfile.TemporaryDirectory() as tmp:
-    c = subprocess.run(["javac", "-nowarn", "-d", tmp, *(str(APP / f"Quiz{n}.java") for n in ("Room", "Pick", "Server")), str(ROOT / "tests/QuizTest.java")], capture_output=True, text=True)
+    c = subprocess.run(["javac", "-nowarn", "-d", tmp, *(str(APP / f"Quiz{n}.java") for n in ("Room", "Pick", "Server", "BankCheck")), str(APP / "MiniJson.java"), str(APP / "DigitsText.java"), str(ROOT / "tests/QuizTest.java")], capture_output=True, text=True)
     check("the quiz compiles on a plain JVM (no Android in the rules, the picking or the server)", c.returncode == 0, c.stderr[-600:])
     if c.returncode == 0:
-        r = subprocess.run(["java", "-cp", tmp, "sa.urtv.screensaver.QuizTest"], capture_output=True, text=True, timeout=120)
+        r = subprocess.run(["java", "-cp", tmp, "sa.urtv.screensaver.QuizTest", str(ROOT / "assets/quiz/starter.json")], capture_output=True, text=True, timeout=240)
         for line in r.stdout.splitlines():
             if line.startswith(("PASS", "FAIL")):
                 print(line)
                 if line.startswith("FAIL"): failed += 1
         check("the JVM test ran to the end", r.returncode == 0 or "FAIL" in r.stdout, r.stderr[-600:])
+# ---- the bank's tools: the workflow, and the Python check agrees with the app's
+wf = "\n".join(l for l in (ROOT / ".github/workflows/quiz-bank.yml").read_text(encoding="utf-8").splitlines() if not l.lstrip().startswith("#")) if (ROOT / ".github/workflows/quiz-bank.yml").exists() else ""
+check("quiz-bank.yml: runs games/check.py first, then builds and verifies, then publishes to data-games as one commit by tshi-dev, and only the push of games/** and by hand",
+      wf.index("games/check.py") < wf.index("make_quiz_bank.py gd/") < wf.index("--verify") < wf.index("git push -f origin data-games") and "workflow_dispatch" in wf
+      and 'user.name "tshi-dev"' in wf and "272740088+tshi-dev@users.noreply.github.com" in wf and "Co-Authored" not in wf and "Claude" not in wf and "--orphan data-games" in wf)
+sys.path.insert(0, str(ROOT / ".github/tools"))
+import make_quiz_bank as mqb, json as _json
+check("the Python verify (CI) accepts the starter and the full compact bank form, as the app's check does", mqb.verify(str(ROOT / "assets/quiz/starter.json"), 40) == [])
+with tempfile.TemporaryDirectory() as t2:
+    good = _json.load(open(ROOT / "assets/quiz/starter.json", encoding="utf-8"))
+    def bad(mut, name):
+        d = _json.loads(_json.dumps(good)); mut(d); f = Path(t2) / name; f.write_text(_json.dumps(d, ensure_ascii=False), encoding="utf-8"); return mqb.verify(str(f), 40)
+    (Path(t2) / "h.json").write_text("<html>404</html>", encoding="utf-8")
+    check("the Python verify refuses an HTML page, a duplicate option, a duplicate id, difficulty 4, an extra key, too few items",
+          mqb.verify(str(Path(t2) / "h.json"), 40) and bad(lambda d: d[0]["w"][0].__setitem__(0, d[0]["a"][0]), "a.json") and bad(lambda d: d[1].__setitem__("i", d[0]["i"]), "b.json")
+          and bad(lambda d: d[0].__setitem__("d", 4), "c.json") and bad(lambda d: d[0].__setitem__("x", 1), "d.json") and bad(lambda d: d.__delitem__(slice(10, None)), "e.json"))
+bank_src = (APP / "QuizBank.java").read_text(encoding="utf-8")
+check("the app checks what it downloads before it keeps it: size cap, no redirects, the whole-file check, a temporary file renamed, the last good copy kept; no org.json in the quiz",
+      "QuizBankCheck.parse(b)" in bank_src and "setInstanceFollowRedirects(false)" in bank_src and "getContentLengthLong() > QuizBankCheck.BYTES_MAX" in bank_src and "tmp.renameTo(f)" in bank_src
+      and "org.json" not in bank_src + (APP / "QuizBankCheck.java").read_text(encoding="utf-8"))
+check("the room code and the tokens come from a SecureRandom", "new java.security.SecureRandom()" in (APP / "QuizActivity.java").read_text(encoding="utf-8"))
+
 # ---- the pins: what the TV side must keep
 act = (APP / "QuizActivity.java").read_text(encoding="utf-8")
 srv = (APP / "QuizServer.java").read_text(encoding="utf-8")

@@ -115,7 +115,7 @@ final class QuizRoom {
         return cand;
     }
     private boolean nameTaken(String n) { for (Player p : players) if (p.name.equals(n)) return true; return false; }
-    static String arabicDigits(int v) { StringBuilder b = new StringBuilder(); for (char c : String.valueOf(v).toCharArray()) b.append((char) ('٠' + (c - '0'))); return b.toString(); }
+    static String arabicDigits(int v) { return DigitsText.convert(String.valueOf(v), false); }
     private String newToken() { StringBuilder b = new StringBuilder(); for (int i = 0; i < 16; i++) b.append("0123456789abcdefghijklmnopqrstuvwxyz".charAt(rnd.nextInt(36))); return b.toString(); }
 
     synchronized Player byToken(String t) { if (t == null || t.isEmpty()) return null; for (Player p : players) if (p.token.equals(t)) return p; return null; }

@@ -3,6 +3,7 @@ package sa.urtv.screensaver;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
 import java.util.*;
 
 /** For tests/quiz_test.py: the quiz's rules, room, picking and server on a plain JVM (fake clock; the server on the loopback). Prints PASS/FAIL lines. */
@@ -134,19 +135,52 @@ public final class QuizTest {
         QuizRoom.Q cq = QuizPick.toQ(bank.get(0), false, new Random(4));
         check("pick: the options are shuffled with the right one marked, in the screen's language", cq.opts.length == 4 && cq.opts[cq.correct].equals("ج0") && cq.text.equals("ق0") && QuizPick.toQ(bank.get(0), true, new Random(4)).opts[0 + QuizPick.toQ(bank.get(0), true, new Random(4)).correct].equals("a0"));
 
+        bankCheck(a.length > 0 ? a[0] : null);
         server();
         System.exit(failed == 0 ? 0 : 1);
     }
 
+    static String item(String id, String extra) { return "{\"i\":\"" + id + "\",\"c\":\"geography\",\"d\":2,\"k\":0,\"q\":[\"س\",\"Q\"],\"a\":[\"أ\",\"A\"],\"w\":[[\"ب\",\"B\"],[\"ج\",\"C\"],[\"د\",\"D\"]]" + extra + "}"; }
+    static void bankCheck(String starter) throws Exception {
+        if (starter != null) {
+            List<QuizPick.Item> v = QuizBankCheck.parse(Files.readAllBytes(Paths.get(starter)));
+            check("bank: the bundled starter set passes the same check as a download (210 items)", v != null && v.size() == 210);
+        }
+        byte[] good = ("[" + item("a1", "") + "," + item("a2", "") + "]").getBytes(StandardCharsets.UTF_8);
+        check("bank: a well-formed file is accepted", QuizBankCheck.parse(good) != null && QuizBankCheck.parse(good).size() == 2);
+        check("bank: an HTML page, an error message, an object, an empty body or null is refused",
+            QuizBankCheck.parse("<!doctype html><html><body>404</body></html>".getBytes()) == null && QuizBankCheck.parse("{\"error\":1}".getBytes()) == null && QuizBankCheck.parse(new byte[0]) == null
+            && QuizBankCheck.parse(null) == null && QuizBankCheck.parse("  <html>[{}]".getBytes()) == null);
+        check("bank: over 1.5 MB is refused, so is anything followed by more text or cut short",
+            QuizBankCheck.parse(new byte[QuizBankCheck.BYTES_MAX + 1]) == null && QuizBankCheck.parse(("[" + item("a1", "") + "] x").getBytes(StandardCharsets.UTF_8)) == null && QuizBankCheck.parse(("[" + item("a1", "")).getBytes(StandardCharsets.UTF_8)) == null);
+        StringBuilder many = new StringBuilder("[");
+        for (int i = 0; i < QuizBankCheck.ITEMS_MAX + 1; i++) many.append(i > 0 ? "," : "").append(item("id" + i, ""));
+        check("bank: more than 5,000 items is refused", QuizBankCheck.parse((many + "]").getBytes(StandardCharsets.UTF_8)) == null);
+        check("bank: one bad item rejects the file (an extra key, a missing key, difficulty 4, a duplicate option, a duplicate id, an id with odd characters, a text of 201 characters, a control character)",
+            QuizBankCheck.parse(("[" + item("a1", ",\"x\":1") + "]").getBytes(StandardCharsets.UTF_8)) == null
+            && QuizBankCheck.parse("[{\"i\":\"a\"}]".getBytes()) == null
+            && QuizBankCheck.parse(("[" + item("a1", "").replace("\"d\":2", "\"d\":4") + "]").getBytes(StandardCharsets.UTF_8)) == null
+            && QuizBankCheck.parse(("[" + item("a1", "").replace("[\"ب\",\"B\"]", "[\"أ\",\"A\"]") + "]").getBytes(StandardCharsets.UTF_8)) == null
+            && QuizBankCheck.parse(("[" + item("a1", "") + "," + item("a1", "") + "]").getBytes(StandardCharsets.UTF_8)) == null
+            && QuizBankCheck.parse(("[" + item("a/../1", "") + "]").getBytes(StandardCharsets.UTF_8)) == null
+            && QuizBankCheck.parse(("[" + item("a1", "").replace("\"Q\"", "\"" + "x".repeat(201) + "\"") + "]").getBytes(StandardCharsets.UTF_8)) == null
+            && QuizBankCheck.parse(("[" + item("a1", "").replace("\"Q\"", "\"a\\u0007b\"") + "]").getBytes(StandardCharsets.UTF_8)) == null);
+        check("bank: nesting deeper than 8 levels is refused without an error", QuizBankCheck.parse(("[".repeat(50) + "]".repeat(50)).getBytes()) == null);
+    }
+
+    static InetAddress ip(int a, int b, int c, int d) throws UnknownHostException { return InetAddress.getByAddress(new byte[]{(byte) a, (byte) b, (byte) c, (byte) d}); }
+
     static boolean fire(QuizRoom r) { r.tick(); return true; }
 
     // ---------------------------------------------------------------- the server on the loopback
-    static String http(int port, String method, String path, String body) throws IOException {
+    static String http(int port, String method, String path, String body) throws IOException { return httpH(port, method, path, body, "Host: 127.0.0.1:" + port); }
+    static String httpH(int port, String method, String path, String body, String... headers) throws IOException {
         try (Socket s = new Socket(InetAddress.getLoopbackAddress(), port)) {
-            s.setSoTimeout(4000);
+            s.setSoTimeout(6000);
             byte[] b = body == null ? new byte[0] : body.getBytes(StandardCharsets.UTF_8);
             OutputStream o = s.getOutputStream();
-            o.write((method + " " + path + " HTTP/1.1\r\nHost: x\r\n" + (body != null ? "Content-Type: application/x-www-form-urlencoded\r\nContent-Length: " + b.length + "\r\n" : "") + "\r\n").getBytes());
+            StringBuilder hs = new StringBuilder(); for (String h : headers) hs.append(h).append("\r\n");
+            o.write((method + " " + path + " HTTP/1.1\r\n" + hs + (body != null ? "Content-Type: application/x-www-form-urlencoded\r\nContent-Length: " + b.length + "\r\n" : "") + "\r\n").getBytes());
             o.write(b); o.flush();
             ByteArrayOutputStream all = new ByteArrayOutputStream(); byte[] buf = new byte[4096]; int n;
             while ((n = s.getInputStream().read(buf)) > 0) all.write(buf, 0, n);
@@ -162,8 +196,9 @@ public final class QuizTest {
         }, true);
         int port = srv.start(InetAddress.getLoopbackAddress());
         try {
+            String oldCode = http(port, "GET", "/1111", null);   // one wrong request only: five from one address lock it (tested at the end)
             check("server: the page is served only at the room's code; an old or wrong code gets the short message and nothing else",
-                http(port, "GET", "/4321", null).contains("PAGE") && http(port, "GET", "/1111", null).contains("404") && http(port, "GET", "/1111", null).contains("Wrong code") && !http(port, "GET", "/1111", null).contains("PAGE"));
+                http(port, "GET", "/4321", null).contains("PAGE") && oldCode.contains("404") && oldCode.contains("Wrong code") && !oldCode.contains("PAGE"));
             check("server: fonts only by a plain name that exists; nothing else is served (no file paths, no other routes)",
                 http(port, "GET", "/f/Thmanyah-Regular.woff2", null).contains("200") && http(port, "GET", "/f/..%2Fx.woff2", null).contains("404") && http(port, "GET", "/etc/passwd", null).contains("404") && http(port, "GET", "/remote", null).contains("404"));
             String j = http(port, "POST", "/api/join", "c=4321&n=%D8%B3%D8%A7%D8%B1%D8%A9&k=3&t=");
@@ -183,9 +218,53 @@ public final class QuizTest {
             http(port, "POST", "/api/leave", "c=4321&t=" + tok);
             check("server: leave marks the player as gone", r.byToken(tok).left);
             check("server: only a local address is answered (private, link-local, loopback), never a public one",
-                QuizServer.local(InetAddress.getByName("192.168.1.20")) && QuizServer.local(InetAddress.getByName("10.0.0.4")) && QuizServer.local(InetAddress.getByName("169.254.3.3")) && QuizServer.local(InetAddress.getByName("127.0.0.1"))
-                && !QuizServer.local(InetAddress.getByName("8.8.8.8")) && !QuizServer.local(InetAddress.getByName("93.184.216.34")));
-            check("server: other methods are refused", http(port, "DELETE", "/api/state", null).contains("405"));
+                QuizServer.local(ip(192, 168, 1, 20)) && QuizServer.local(ip(10, 0, 0, 4)) && QuizServer.local(ip(169, 254, 3, 3)) && QuizServer.local(ip(127, 0, 0, 1))
+                && !QuizServer.local(ip(8, 8, 8, 8)) && !QuizServer.local(ip(93, 184, 216, 34)));
+            check("server: other methods are refused (so no cross-origin preflight is ever answered)", http(port, "DELETE", "/api/state", null).contains("405") && http(port, "OPTIONS", "/api/join", null).contains("405"));
+            // ---- a hostile device on the same Wi-Fi
+            check("security: DNS rebinding: a request whose Host is a name (not the TV's address) is refused, even for the page", httpH(port, "GET", "/4321", null, "Host: evil.example:" + port).contains("403")
+                && httpH(port, "GET", "/api/state?c=4321&t=" + tok, null, "Host: attacker.test").contains("403") && httpH(port, "GET", "/4321", null).contains("400") == false);
+            check("security: no Host at all is refused", httpH(port, "GET", "/4321", null).contains("403"));
+            check("security: CSRF: a POST from a web page of another origin is refused, the page's own origin and a plain client (no Origin) are not",
+                httpH(port, "POST", "/api/join", "c=4321&n=Evil&k=1&t=", "Host: 127.0.0.1:" + port, "Origin: http://evil.example").contains("403")
+                && httpH(port, "POST", "/api/join", "c=4321&n=Evil&k=1&t=", "Host: 127.0.0.1:" + port, "Sec-Fetch-Site: cross-site").contains("403")
+                && httpH(port, "POST", "/api/join", "c=4321&n=Zed&k=1&t=", "Host: 127.0.0.1:" + port, "Origin: http://127.0.0.1:" + port, "Sec-Fetch-Site: same-origin").contains("\"ok\":true"));
+            check("security: the page's own answers carry CSP, no framing, no referrer, no sniffing", http(port, "GET", "/4321", null).contains("Content-Security-Policy: default-src 'none'") && http(port, "GET", "/4321", null).contains("X-Frame-Options: DENY")
+                && http(port, "GET", "/4321", null).contains("Referrer-Policy: no-referrer") && http(port, "GET", "/4321", null).contains("nosniff") && !http(port, "GET", "/4321", null).toLowerCase().contains("access-control-allow"));
+            check("security: path traversal: no way out of /f/ (dots, slashes, encoded forms, other extensions, long names)",
+                http(port, "GET", "/f/../../etc/passwd.woff2", null).contains("404") && http(port, "GET", "/f/%2e%2e%2fsecret.woff2", null).contains("404") && http(port, "GET", "/f/..\\x.woff2", null).contains("404")
+                && http(port, "GET", "/f/Thmanyah-Regular.otf", null).contains("404") && http(port, "GET", "/f/" + "a".repeat(80) + ".woff2", null).contains("404") && http(port, "GET", "//f/Thmanyah-Regular.woff2", null).contains("404"));
+            check("security: names: direction overrides, zero-width and combining marks, emoji, NUL, a very long name all come out as plain letters and digits",
+                QuizRoom.cleanName("\u202Eevil\u200B\u0301name").equals("evilname") && QuizRoom.cleanName("a\u0000b").equals("ab") && QuizRoom.cleanName("\uD83D\uDE00\uD83D\uDE00").isEmpty()
+                && QuizRoom.cleanName("x".repeat(5000)).length() == 12 && QuizRoom.esc("a\"b\\c\n</script>").equals("\"a\\\"b\\\\c\\u000a</script>\""));
+            // slow-loris and connection floods
+            long t0 = System.nanoTime();
+            try (Socket idle = new Socket(InetAddress.getLoopbackAddress(), port)) {
+                idle.setSoTimeout(8000);
+                int rd = idle.getInputStream().read();
+                check("security: slow-loris: a connection that sends nothing is closed after 3 seconds", rd == -1 && (System.nanoTime() - t0) / 1_000_000 < 5000);
+            }
+            t0 = System.nanoTime();
+            try (Socket drip = new Socket(InetAddress.getLoopbackAddress(), port)) {
+                drip.setSoTimeout(8000);
+                OutputStream o = drip.getOutputStream();
+                boolean closed = false;
+                for (int i = 0; i < 12 && !closed; i++) { try { o.write('G'); o.flush(); Thread.sleep(500); } catch (IOException e) { closed = true; } }
+                int rd = 0; try { rd = drip.getInputStream().read(); } catch (IOException e) { rd = -1; }
+                check("security: slow-loris: a request that arrives a byte at a time is dropped at the 3-second limit", (closed || rd == -1) && (System.nanoTime() - t0) / 1_000_000 < 7000);
+            }
+            List<Socket> held = new ArrayList<>();
+            for (int i = 0; i < 4; i++) held.add(new Socket(InetAddress.getLoopbackAddress(), port));
+            Thread.sleep(200);
+            String fifth;
+            try (Socket extra = new Socket(InetAddress.getLoopbackAddress(), port)) { extra.setSoTimeout(2000); int rd = extra.getInputStream().read(); fifth = rd == -1 ? "closed" : "open"; } catch (SocketTimeoutException e) { fifth = "waited"; }
+            for (Socket h : held) h.close();
+            Thread.sleep(300);
+            check("security: connection flood: one device holds 4 connections at most, the fifth is closed at once, and normal requests work again after", "closed".equals(fifth) && http(port, "GET", "/4321", null).contains("PAGE"));
+            // guessing the code: the join lock of the room (5 wrong, 60 s) and the lock of the guessing address on every route
+            for (int i = 0; i < 6; i++) http(port, "GET", "/api/state?c=" + (1000 + i) + "&t=x", null);
+            check("security: guessing the code on any route (state, answer, page, join) locks that address for 60 seconds, even for the right code afterwards",
+                http(port, "GET", "/api/state?c=4321&t=" + tok, null).contains("\"e\":\"locked\"") && http(port, "POST", "/api/join", "c=4321&n=Q&k=1&t=").contains("\"e\":\"locked\""));
         } finally { srv.stop(); }
     }
 }

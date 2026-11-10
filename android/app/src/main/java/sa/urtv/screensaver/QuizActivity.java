@@ -325,7 +325,7 @@ public class QuizActivity extends Activity {
         if (room != null) { show(Screen.LOBBY); return; }
         InetAddress lan = lanAddress();
         if (lan == null) { Toast.makeText(this, S.t("لا توجد شبكة محلية. وصّل التلفزيون بالواي فاي"), Toast.LENGTH_LONG).show(); return; }
-        Random rnd = new Random();
+        Random rnd = new java.security.SecureRandom();   // the room code and the players' tokens are not guessable from a seed
         room = new QuizRoom(QuizRoom.freshCode(rnd, System.currentTimeMillis()), System::currentTimeMillis, rnd);
         server = new QuizServer(room, new QuizServer.Assets() {
             @Override public byte[] page() { return asset("quiz/play.html"); }

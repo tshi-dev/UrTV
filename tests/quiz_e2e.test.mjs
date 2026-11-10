@@ -12,7 +12,7 @@ const out = mkdtempSync(join(tmpdir(), 'quiz-e2e-'));
 let failed = 0;
 const check = (what, ok, extra = '') => { console.log((ok ? 'PASS ' : 'FAIL ') + what + (ok ? '' : '  -> ' + extra)); if (!ok) failed++; };
 const app = join(root, 'android/app/src/main/java/sa/urtv/screensaver');
-execFileSync('javac', ['-nowarn', '-d', out, ...['Room', 'Pick', 'Server'].map(n => join(app, `Quiz${n}.java`)), join(root, 'tests/QuizServe.java')], { stdio: 'pipe' });
+execFileSync('javac', ['-nowarn', '-d', out, ...['Room', 'Pick', 'Server'].map(n => join(app, `Quiz${n}.java`)), join(app, 'DigitsText.java'), join(root, 'tests/QuizServe.java')], { stdio: 'pipe' });
 const srv = spawn('java', ['-cp', out, 'sa.urtv.screensaver.QuizServe', join(root, 'assets/quiz/play.html')]);
 const lines = []; let waiters = [];
 let buf = '';

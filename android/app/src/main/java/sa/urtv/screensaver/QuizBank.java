@@ -3,9 +3,6 @@ package sa.urtv.screensaver;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -32,50 +29,26 @@ final class QuizBank {
     private static final String FILE = "quiz-bank.json", PREFS = "quiz";
     private static volatile boolean fetching;
 
+    /** the kept bank if it passes the check, else the starter set (which passes the same check); never throws */
     static List<QuizPick.Item> load(Context c) {
         List<QuizPick.Item> v = null;
         File f = new File(c.getFilesDir(), FILE);
-        if (f.isFile()) v = parse(read(f));
+        if (f.isFile()) v = QuizBankCheck.parse(read(f));
         if (v == null || v.size() < QuizPick.MIN_ITEMS) {   // nothing fetched yet, or a damaged file: the starter set
-            try (InputStream in = c.getAssets().open("quiz/starter.json")) { v = parse(new String(Bounded.readAll(in, Bounded.JSON_MAX), "UTF-8")); }
-            catch (Exception e) { v = new ArrayList<>(); }
+            try (InputStream in = c.getAssets().open("quiz/starter.json")) { v = QuizBankCheck.parse(Bounded.readAll(in, QuizBankCheck.BYTES_MAX)); }
+            catch (Exception e) { v = null; }
         }
-        return v;
+        return v == null ? new ArrayList<>() : v;
     }
 
-    private static String read(File f) {
-        try (java.io.FileInputStream in = new java.io.FileInputStream(f)) { return new String(Bounded.readAll(in, Bounded.JSON_MAX), "UTF-8"); }
+    private static byte[] read(File f) {
+        if (f.length() > QuizBankCheck.BYTES_MAX) return null;
+        try (java.io.FileInputStream in = new java.io.FileInputStream(f)) { return Bounded.readAll(in, QuizBankCheck.BYTES_MAX); }
         catch (Exception e) { return null; }
     }
 
-    static List<QuizPick.Item> parse(String json) {
-        if (json == null) return null;
-        List<QuizPick.Item> v = new ArrayList<>();
-        try {
-            JSONArray a = new JSONArray(json);
-            for (int i = 0; i < a.length(); i++) {
-                JSONObject o = a.optJSONObject(i);
-                if (o == null) continue;
-                JSONArray q = o.optJSONArray("q"), an = o.optJSONArray("a"), w = o.optJSONArray("w");
-                if (q == null || an == null || w == null || w.length() != 3 || q.length() < 2 || an.length() < 2) continue;
-                String[][] wrong = new String[3][];
-                boolean ok = true;
-                for (int k = 0; k < 3; k++) {
-                    JSONArray x = w.optJSONArray(k);
-                    if (x == null || x.length() < 2) { ok = false; break; }
-                    wrong[k] = new String[]{x.getString(0), x.getString(1)};
-                }
-                int d = o.optInt("d", 0);
-                if (!ok || d < 1 || d > 3 || o.optString("i").isEmpty()) continue;
-                v.add(new QuizPick.Item(o.getString("i"), o.optString("c"), d, o.optInt("k") == 1, new String[]{q.getString(0), q.getString(1)}, new String[]{an.getString(0), an.getString(1)}, wrong));
-            }
-        } catch (Exception e) {
-            return null;
-        }
-        return v;
-    }
-
-    /** a background fetch of the verified bank when the kept one is older than 3 days (or missing); used from the next game on */
+    /** a background fetch of the verified bank when the kept one is older than 3 days (or missing); used from the next game on. The download is read with a
+     *  size cap and checked whole (QuizBankCheck) before it replaces the kept file; anything wrong and the last good copy stays. */
     static void refresh(final Context c) {
         final Context app = c.getApplicationContext();
         final File f = new File(app.getFilesDir(), FILE);
@@ -87,17 +60,19 @@ final class QuizBank {
                 con = (HttpURLConnection) new URL(URL).openConnection();
                 con.setConnectTimeout(10000);
                 con.setReadTimeout(20000);
+                con.setInstanceFollowRedirects(false);
                 con.setRequestProperty("User-Agent", "urtv/2 (Android TV)");
                 if (con.getResponseCode() != 200) return;
+                if (con.getContentLengthLong() > QuizBankCheck.BYTES_MAX) return;
                 byte[] b;
-                try (InputStream in = con.getInputStream()) { b = Bounded.readAll(in, Bounded.JSON_MAX); }
-                List<QuizPick.Item> v = parse(new String(b, "UTF-8"));
+                try (InputStream in = con.getInputStream()) { b = Bounded.readAll(in, QuizBankCheck.BYTES_MAX); }
+                List<QuizPick.Item> v = QuizBankCheck.parse(b);
                 if (v == null || v.size() < QuizPick.MIN_ITEMS) return;   // never replace a good file with a bad one
                 File tmp = new File(app.getFilesDir(), FILE + ".tmp");
                 try (FileOutputStream o = new FileOutputStream(tmp)) { o.write(b); }
                 if (!tmp.renameTo(f)) tmp.delete();
             } catch (Exception ignored) {
-                // no network: the kept bank or the starter set is used
+                // no network, a file too big, a bad answer: the kept bank or the starter set is used
             } finally {
                 if (con != null) con.disconnect();
                 fetching = false;
