@@ -72,5 +72,27 @@ check("no «·» as a separator in what it shows", "·" not in re.sub(r"/\*.*?\*
 check("the sounds are made from tones in the code, no audio file (our own: no melody of any show)", "Math.sin(" in (APP / "QuizSound.java").read_text(encoding="utf-8") and not list((ROOT / "assets").glob("**/*.mp3")))
 check("the starter bank ships in assets/quiz and has at least 40 items of each level and 40 for kids (so the first game works offline, mix with any chips)",
       (lambda d: all(sum(1 for x in d if x["d"] == lv) >= 40 for lv in (1, 2, 3)) and sum(x["k"] for x in d) >= 40 and all(len(x["w"]) == 3 for x in d))(__import__("json").load(open(ROOT / "assets/quiz/starter.json", encoding="utf-8"))))
+# ---- step 48: what the real-TV test found
+page = (ROOT / "assets/quiz/play.html").read_text(encoding="utf-8")
+check("lobby: the address is the whole host:port/code, left-to-right isolated (U+2066 ... U+2069), big (46) and on one line; the hint says «ابدأ» once two are in",
+      '"\\u2066" + url.replace("http://", "") + "\\u2069", 46' in act and "TEXT_DIRECTION_LTR" in act.split("the whole address")[1][:500] and "at(700, 64, 96, 862)" in act
+      and 'can ? S.t("ابدأ") : S.t("ابدأ (لاعبان على الأقل)"), S.t("رجوع"), S.t("أغلق الغرفة")' in act)
+check("names are cut with «…» by measuring (lobby tiles, podium), not left to the view", "private String clip(" in act and 'cut + "…"' in act and act.count("clip(p.name") == 2)
+check("reveal: the four answers end at y 942 (546 + 2 x 190 + 16), above the hint line at 978; the colour squares are drawn at once at full size (no scale-in from 0); no «·»",
+      "at(846, 190, 96 + (i % 2) * (846 + 36), 546 + (i / 2) * (190 + 16))" in act and "setScaleX(0)" not in act and "px(48), px(48)" in act and 'at(-1, 48, 96, 978)' in act)
+check("reveal 4 s + the top five 4 s (REVEAL_MS 8000, REVEAL_VIEW_MS 4000)", "REVEAL_MS = 8000" in room and "REVEAL_VIEW_MS = 4000" in act)
+check("podium: the winner is the tallest and in the middle (heights 512 / 400 / 300 for 1st / 2nd / 3rd), the blocks stand on y 960 inside the safe area, above the hint",
+      "float[] hs = {512, 400, 300}; int[] place = {1, 0, 2};" in act and "cp.bottomMargin = px(120)" in act and 96 + 512 + 24 <= 960 - 352 + 96)
+check("digits: the duplicate-name number and the bank's question and four answers follow the person's setting (Latin: 0-9) on the TV and the phones",
+      "room.latinDigits = latin;" in act and "private QuizRoom.Q digits(" in act and "qs.add(digits(QuizPick.toQ(it, en, rnd)))" in act and "latinDigits" in room and "ar && !latinDigits" in room)
+check("board: the gain is «+591» left-to-right (isolated); the last question's hint says «النتيجة النهائية»; no ▲/▼ for a player on 0",
+      '"\\u2066" + signed(p.lastPoints) + "\\u2069"' in act and 'room.index + 1 >= room.total() ? S.t("النتيجة النهائية")' in act and 'p.score > 0 && p.lastDelta > 0 ? "▲"' in act)
+check("phone state: the rank is among the players still in (rank 3 of 3, never 4 of 3), in the state, the reveal and the end", room.count("activeRank(p)") == 3 and "int activeRank(Player p)" in room)
+check("setup: standing on the picked chip looks different from standing on another one (saffron words and frame, 12 px)", "focus && isSel ? SAFF : off" in act and "focus && isSel ? 12 : 6" in act)
+check("HOME in the middle of a game pauses it (the phones say «اللعبة متوقفة»); the screen stays on from every screen, the podium included, and after every return",
+      "room.pause();" in act.split("protected void onPause()")[1][:400] and act.count("FLAG_KEEP_SCREEN_ON") >= 3)
+check("the phone: the join page offers ع / EN (reloads with ?l=), answers carry the nonce x", "function langSwitch()" in page and "langSwitch()]);" in page and "x: q.x || ''" in page)
+check("server: a locked address gets a page or a 429 JSON, the body is read first, a busy or flooding connection is told 429, never cut silently",
+      "LOCKED_PAGE" in srv and "reply(c, 429," in srv and "private static void drain(" in srv and "busy(s)" in srv)
 check("docs/QUIZ.md exists and names the conflicts between the SPEC and the mockups", "conflicts" in doc.lower() and "SPEC" in doc)
 sys.exit(1 if failed else 0)

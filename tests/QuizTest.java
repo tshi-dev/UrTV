@@ -102,7 +102,7 @@ public final class QuizTest {
         check("reveal: the right answer scores 500 + 500 x left/20 s (2 s used: 950), the wrong one 0", p1.score == 950 && p2.score == 0 && p1.rank == 1 && p2.rank == 2);
         String rv = r.stateFor(p1.token);
         check("reveal: the phone gets right or wrong, the points, its rank and the votes", rv.contains("\"rv\":{\"c\":0,\"ok\":true,\"p\":950") && rv.contains("\"cnt\":[1,1,0,0]"));
-        check("reveal: ends by itself after 6 seconds and the next question opens", (now[0] += 6000) > 0 && fire(r) && r.index == 1 && r.phase == QuizRoom.Phase.QUESTION);
+        check("reveal: ends by itself after 8 seconds (4 + 4) and the next question opens", (now[0] += 8000) > 0 && fire(r) && r.index == 1 && r.phase == QuizRoom.Phase.QUESTION);
         now[0] += 20001; fire(r);
         check("timeout: a question closes at 20 seconds; no answer is 0 points and breaks the streak", r.phase == QuizRoom.Phase.REVEAL && p1.lastOk == null && p1.streak == 0 && p1.score == 950);
 
@@ -300,11 +300,19 @@ public final class QuizTest {
             try (Socket extra = new Socket(InetAddress.getLoopbackAddress(), port)) { extra.setSoTimeout(2000); int rd = extra.getInputStream().read(); fifth = rd == -1 ? "closed" : "open"; } catch (SocketTimeoutException e) { fifth = "waited"; }
             for (Socket h : held) h.close();
             Thread.sleep(300);
-            check("security: connection flood: one device holds 4 connections at most, the fifth is closed at once, and normal requests work again after", "closed".equals(fifth) && http(port, "GET", "/4321", null).contains("PAGE"));
+            check("security: connection flood: one device holds 4 connections at most, the fifth is told «busy» (429) and closed, never cut silently, and normal requests work again after", "open".equals(fifth) && http(port, "GET", "/4321", null).contains("PAGE"));
             // guessing the code: the join lock of the room (5 wrong, 60 s) and the lock of the guessing address on every route
             for (int i = 0; i < 6; i++) http(port, "GET", "/api/state?c=" + (1000 + i) + "&t=x", null);
             check("security: guessing the code on any route (state, answer, page, join) locks that address for 60 seconds, even for the right code afterwards",
                 http(port, "GET", "/api/state?c=4321&t=" + tok, null).contains("\"e\":\"locked\"") && http(port, "POST", "/api/join", "c=4321&n=Q&k=1&t=").contains("\"e\":\"locked\""));
+            String lockedPage = http(port, "GET", "/4321", null);
+            check("security: a locked address that opens the page itself gets a page (429, «محاولات كثيرة»), never raw JSON", lockedPage.contains("429") && lockedPage.contains("text/html") && lockedPage.contains("محاولات كثيرة") && !lockedPage.contains("\"ok\""));
+            int answered = 0;
+            for (int i = 0; i < 40; i++) {
+                String rsp = i % 2 == 0 ? http(port, "POST", "/api/answer", "c=4321&t=" + tok + "&q=0&a=1&x=zz") : http(port, "GET", "/api/state?c=4321&t=" + tok, null);
+                if (rsp.contains("\"e\":\"locked\"") && rsp.contains("429")) answered++;
+            }
+            check("security: while locked every request is answered (429 «locked»), none cut off without an answer (a body unread made the close a reset)", answered == 40);
         } finally { srv.stop(); }
     }
 }

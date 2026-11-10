@@ -14,7 +14,7 @@ import java.util.function.LongSupplier;
  */
 final class QuizRoom {
     static final int MAX_PLAYERS = 12, NAME_MAX = 12, COLORS = 8;
-    static final int QUESTION_MS = 20000, REVEAL_MS = 6000;
+    static final int QUESTION_MS = 20000, REVEAL_MS = 8000;   // the reveal 4 s and the top five 4 s (the tester found 3 + 3 short)
     static final int BASE = 500, BONUS = 500;
     static final long GONE_MS = 60000, CONNECTED_MS = 6000, DROP_LOBBY_MS = 120000, CODE_LIFE_AFTER_END_MS = 10 * 60 * 1000;
     static final int JOIN_PER_MIN = 20, WRONG_CODE_LOCK = 5; static final long LOCK_MS = 60000;
@@ -193,7 +193,7 @@ final class QuizRoom {
         return n > 0;
     }
 
-    /** called often by the TV (10 times a second is enough): closes a question at 20 s, ends the reveal at 6 s, drops phones silent for 2 minutes from the lobby */
+    /** called often by the TV (10 times a second is enough): closes a question at 20 s, ends the reveal at 8 s, drops phones silent for 2 minutes from the lobby */
     synchronized void tick() {
         long now = clock.getAsLong();
         if (phase == Phase.QUESTION && now - qStart >= QUESTION_MS) reveal();
@@ -233,6 +233,12 @@ final class QuizRoom {
         List<Player> v = new ArrayList<>(players);
         v.sort(Comparator.<Player>comparingInt(p -> -p.score).thenComparingLong(p -> p.answerMs < 0 ? Long.MAX_VALUE : p.answerMs).thenComparingLong(p -> p.order));
         int r = 1; for (Player p : v) p.rank = r++;
+    }
+    /** the place among the players still in (a player who left is grey in the list but does not count): never «rank 4 of 3» */
+    synchronized int activeRank(Player p) {
+        int r = 1;
+        for (Player o : players) if (o != p && !o.left && o.rank < p.rank) r++;
+        return r;
     }
     synchronized List<Player> ranked() { List<Player> v = new ArrayList<>(players); v.sort(Comparator.comparingInt(p -> p.rank)); return v; }
 
@@ -292,7 +298,7 @@ final class QuizRoom {
         p.lastSeen = clock.getAsLong();
         String ph = phase.name().toLowerCase(java.util.Locale.ROOT);
         StringBuilder b = new StringBuilder("{\"ok\":true,\"v\":").append(version).append(",\"ph\":\"").append(ph).append("\",\"me\":{\"n\":").append(esc(p.name))
-            .append(",\"k\":").append(p.color).append(",\"s\":").append(p.score).append(",\"r\":").append(p.rank).append(",\"of\":").append(activeCount())
+            .append(",\"k\":").append(p.color).append(",\"s\":").append(p.score).append(",\"r\":").append(activeRank(p)).append(",\"of\":").append(activeCount())
             .append(",\"left\":").append(p.left).append("},\"pl\":").append(activeCount());
         Q q = current();
         if ((phase == Phase.QUESTION || phase == Phase.REVEAL || phase == Phase.PAUSED) && q != null) {
@@ -303,11 +309,11 @@ final class QuizRoom {
                 .append(",\"pick\":").append(p.answer).append(",\"wait\":").append(p.waiting).append('}');
             if (phase == Phase.REVEAL) {
                 b.append(",\"rv\":{\"c\":").append(q.correct).append(",\"ok\":").append(p.lastOk == null ? "null" : p.lastOk.toString()).append(",\"p\":").append(p.lastPoints)
-                    .append(",\"st\":").append(p.streak).append(",\"r\":").append(p.rank).append(",\"d\":").append(p.lastDelta).append(",\"cnt\":[")
+                    .append(",\"st\":").append(p.streak).append(",\"r\":").append(activeRank(p)).append(",\"d\":").append(p.lastDelta).append(",\"cnt\":[")
                     .append(counts[0]).append(',').append(counts[1]).append(',').append(counts[2]).append(',').append(counts[3]).append("]}");
             }
         }
-        if (phase == Phase.END) b.append(",\"end\":{\"r\":").append(p.rank).append(",\"of\":").append(activeCount()).append(",\"s\":").append(p.score).append('}');
+        if (phase == Phase.END) b.append(",\"end\":{\"r\":").append(activeRank(p)).append(",\"of\":").append(activeCount()).append(",\"s\":").append(p.score).append('}');
         return b.append('}').toString();
     }
 }

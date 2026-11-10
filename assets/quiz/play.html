@@ -27,6 +27,7 @@ button{cursor:pointer;border:0;background:none;text-align:inherit}
 .lab{font-size:18px;color:var(--dim);margin-top:8px}
 .inp{width:100%;height:64px;border:4px solid var(--bd);background:var(--tile);padding:0 14px;font-size:24px;font-weight:700;border-radius:0;outline:none}
 .inp:focus{outline:4px solid var(--saff);outline-offset:2px}
+.lang{display:block;margin:12px auto 24px;min-height:48px;min-width:72px;padding:0 20px;font:700 22px/1 inherit;font-family:inherit;background:transparent;color:inherit;border:3px solid currentColor;border-radius:0;cursor:pointer}
 .sw{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .swb{height:56px;min-width:44px;border:3px solid var(--bd);border-radius:0;position:relative}
 .swb[aria-checked="true"]{outline:4px solid var(--saff);outline-offset:2px;border-width:5px}
@@ -175,6 +176,13 @@ function pickOf(q) { return q.pick >= 0 ? q.pick : (locked[q.i] != null ? locked
 
 /* ---------- screens ---------- */
 function head(sub) { return h('div', 'hd', [h('div', 'brand', NAME[L]), sub ? h('div', 'sub', sub) : null]); }
+/* the join page's own language switch: ع / EN (the page otherwise follows the phone's language) */
+function langSwitch() {
+  var other = L === 'en' ? 'ar' : 'en';
+  var b = h('button', 'lang', L === 'en' ? 'ع' : 'EN', { type: 'button', id: 'lang', 'aria-label': other === 'en' ? 'English' : 'العربية', lang: other });
+  b.addEventListener('click', function () { try { location.replace(location.pathname + '?l=' + other); } catch (e) { location.search = '?l=' + other; } });
+  return b;
+}
 function scr(name, kids) { var e = h('div', 'scr', kids); app.textContent = ''; app.appendChild(e); app.setAttribute('data-s', name); return e; }
 function msgScreen(name, title, sub) {
   scr(name, [head(code && name !== 'bad' ? fmt(S.room, code) : null), h('div', 'body', [h('div', 'msg', [h('div', 'big', title), sub ? h('div', 'dim', sub) : null])])]);
@@ -206,7 +214,7 @@ function joinScreen() {
     h('div', 'foot', [go])
   ], { novalidate: '' });
   form.addEventListener('submit', function (ev) { ev.preventDefault(); doJoin(); });
-  scr('join', [head(code ? fmt(S.room, code) : null), form]);
+  scr('join', [head(code ? fmt(S.room, code) : null), form, langSwitch()]);
 }
 
 function lobbyScreen() {

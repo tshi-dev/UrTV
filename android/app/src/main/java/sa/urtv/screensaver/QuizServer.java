@@ -57,9 +57,28 @@ final class QuizServer {
         while (running) {
             try {
                 Socket s = socket.accept();
-                try { pool.execute(() -> serve(s)); } catch (RejectedExecutionException e) { try { s.close(); } catch (IOException ignored) {} }
+                try { pool.execute(() -> serve(s)); } catch (RejectedExecutionException e) { busy(s); }
             } catch (IOException e) { if (!running) return; }
         }
+    }
+
+    /** a connection we cannot serve now (all threads busy): a short answer, never a silent close (a reset looks like a broken TV) */
+    private void busy(Socket s) {
+        try (Socket c = s) {
+            c.setSoTimeout(300);
+            reply(c, 429, "text/plain", "busy".getBytes());
+            drain(c);
+        } catch (IOException ignored) { }
+    }
+
+    /** what a client has already sent is read (a little, briefly) before the socket closes, so the close is not a reset that eats the answer */
+    private static void drain(Socket c) {
+        try {
+            c.shutdownOutput();
+            c.setSoTimeout(200);
+            byte[] junk = new byte[2048];
+            for (int i = 0; i < 4 && c.getInputStream().read(junk) > 0; i++) { }
+        } catch (IOException ignored) { }
     }
 
     /** private, link-local, loopback: the local network and nothing else */
@@ -86,7 +105,7 @@ final class QuizServer {
         boolean counted = false;
         try (Socket c = s) {
             if (lanOnly && !local(c.getInetAddress())) return;
-            if (!(counted = enter(ip))) return;   // too many connections from this one device
+            if (!(counted = enter(ip))) { reply(c, 429, "text/plain", "busy".getBytes()); drain(c); return; }   // too many connections from this one device: told so, not cut
             long deadline = System.nanoTime() + DEADLINE_MS * 1_000_000L;
             c.setSoTimeout((int) DEADLINE_MS);
             InputStream in = c.getInputStream();
@@ -115,12 +134,18 @@ final class QuizServer {
             if (origin != null && !origin.equalsIgnoreCase("http://" + host)) { reply(c, 403, "text/plain", "x".getBytes()); return; }
             if (site != null && (site.equals("cross-site") || site.equals("same-site"))) { reply(c, 403, "text/plain", "x".getBytes()); return; }
             if (len < 0 || len > BODY_MAX) { reply(c, 413, "text/plain", "x".getBytes()); return; }
-            if (banned(ip)) { json(c, "{\"ok\":false,\"e\":\"locked\"}"); return; }
             byte[] body = new byte[len];
-            for (int off = 0; off < len; ) {
+            for (int off = 0; off < len; ) {   // the body is read first even for a locked address: answering with a body unread makes the close a connection reset
                 int n = in.read(body, off, len - off);
                 if (n < 0 || System.nanoTime() > deadline) { return; }
                 off += n;
+            }
+            if (banned(ip)) {
+                boolean api = rl[1].startsWith("/api/");
+                if (api) reply(c, 429, "application/json; charset=utf-8", "{\"ok\":false,\"e\":\"locked\"}".getBytes(StandardCharsets.UTF_8));
+                else reply(c, 429, "text/html; charset=utf-8", LOCKED_PAGE.getBytes(StandardCharsets.UTF_8));   // a page, not the raw JSON
+                drain(c);
+                return;
             }
             route(c, rl[0], rl[1], new String(body, StandardCharsets.UTF_8), ip);
         } catch (IOException ignored) {
@@ -173,6 +198,9 @@ final class QuizServer {
         reply(c, 404, "text/plain", "x".getBytes());
     }
 
+    /** what a phone locked out after five wrong codes sees (a page, never JSON) */
+    static final String LOCKED_PAGE = "<!doctype html><meta charset=utf-8><meta name=viewport content=\"width=device-width,initial-scale=1\"><body style=\"font:24px sans-serif;margin:24px;background:#EFE8DA;color:#16140F\"><p dir=rtl>محاولات كثيرة، جرّب بعد دقيقة</p><p dir=ltr>Too many tries, try again in a minute</p>";
+
     /** what a phone with an old or wrong code sees: the message and nothing else */
     static final String WRONG_CODE = "<!doctype html><meta charset=utf-8><meta name=viewport content=\"width=device-width,initial-scale=1\"><body style=\"font:24px sans-serif;margin:24px;background:#EFE8DA;color:#16140F\"><p dir=rtl>الرمز غير صحيح</p><p dir=ltr>Wrong code</p>";
 
@@ -193,9 +221,9 @@ final class QuizServer {
     private void json(Socket c, String j) throws IOException { reply(c, 200, "application/json; charset=utf-8", j.getBytes(StandardCharsets.UTF_8)); }
 
     private void reply(Socket c, int code, String type, byte[] body) throws IOException {
-        String reason = code == 200 ? "OK" : code == 404 ? "Not Found" : code == 400 ? "Bad Request" : code == 405 ? "Method Not Allowed" : code == 413 ? "Payload Too Large" : code == 403 ? "Forbidden" : "Error";
+        String reason = code == 200 ? "OK" : code == 404 ? "Not Found" : code == 400 ? "Bad Request" : code == 405 ? "Method Not Allowed" : code == 413 ? "Payload Too Large" : code == 403 ? "Forbidden" : code == 429 ? "Too Many Requests" : "Error";
         String h = "HTTP/1.1 " + code + " " + reason + "\r\nContent-Type: " + type + "\r\nContent-Length: " + body.length
-            + "\r\nCache-Control: no-store\r\nConnection: close\r\nX-Content-Type-Options: nosniff\r\nX-Frame-Options: DENY\r\nReferrer-Policy: no-referrer\r\n"
+            + (code == 429 ? "\r\nRetry-After: 60" : "") + "\r\nCache-Control: no-store\r\nConnection: close\r\nX-Content-Type-Options: nosniff\r\nX-Frame-Options: DENY\r\nReferrer-Policy: no-referrer\r\n"
             + (type.startsWith("text/html") ? "Content-Security-Policy: default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; font-src 'self'; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'none'; form-action 'none'\r\n" : "")
             + "\r\n";
         OutputStream o = c.getOutputStream();

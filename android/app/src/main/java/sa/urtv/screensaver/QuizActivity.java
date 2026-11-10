@@ -44,7 +44,7 @@ public class QuizActivity extends Activity {
     /** one string: the game's working name (the owner has not confirmed it) */
     static final String NAME = S.n("الأسرع");
     static final String[] LETTERS_AR = {"أ", "ب", "ج", "د"}, LETTERS_EN = {"A", "B", "C", "D"};
-    static final int INTRO_MS = 1600, REVEAL_VIEW_MS = 3000, BOARD_ROWS = 5, LIST_ROWS = 6;
+    static final int INTRO_MS = 1600, REVEAL_VIEW_MS = 4000, BOARD_ROWS = 5, LIST_ROWS = 6;
 
     enum Screen { SETUP, LOBBY, INTRO, QUESTION, REVEAL, BOARD, END, LIST, PAUSE }
 
@@ -97,8 +97,17 @@ public class QuizActivity extends Activity {
         show(Screen.SETUP);
     }
 
-    @Override protected void onResume() { super.onResume(); h.post(loop); }
-    @Override protected void onPause() { super.onPause(); h.removeCallbacks(loop); }
+    @Override protected void onResume() {
+        super.onResume();
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);   // again after every return: the podium holds the screen on too
+        h.post(loop);
+    }
+    /** HOME (or any other app in front) in the middle of a game: the phones are told «اللعبة متوقفة» at once instead of staying on the last screen */
+    @Override protected void onPause() {
+        super.onPause();
+        h.removeCallbacks(loop);
+        if (room != null && (room.phase == QuizRoom.Phase.QUESTION || room.phase == QuizRoom.Phase.REVEAL)) room.pause();
+    }
     @Override protected void onDestroy() { closeRoom(); super.onDestroy(); }
 
     // ---------------------------------------------------------------- the clock
@@ -214,6 +223,14 @@ public class QuizActivity extends Activity {
         }
         root.addView(row, at(-1, 48, 96, 978));
     }
+    /** a name cut with «…» so that it fits `maxW` design pixels at `size` (measured with the game's own font; never a bare cut-off) */
+    private String clip(String name, float size, float maxW) {
+        android.graphics.Paint paint = new android.graphics.Paint(); paint.setTypeface(font("ThmanyahDisplay-Bold")); paint.setTextSize(size * scale);
+        if (paint.measureText(name) <= maxW * scale) return name;
+        String cut = name;
+        while (cut.length() > 1 && paint.measureText(cut + "…") > maxW * scale) cut = cut.substring(0, cut.length() - 1);
+        return cut.trim() + "…";
+    }
     private int chooseFont(String s, int big, int mid, int small, int a, int b) { return s.length() <= a ? big : s.length() <= b ? mid : small; }
     private TextView button(String label, boolean focused, int w) {
         TextView v = centered(label, 44, focused ? PAPER : INK, true);
@@ -225,6 +242,7 @@ public class QuizActivity extends Activity {
     // ---------------------------------------------------------------- screens
 
     private void show(Screen s) {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);   // every screen, the podium included
         if (s != screen) { sel = s == Screen.LOBBY ? -1 : 0; selRow = 0; armedKick = ""; }
         screen = s;
         clear();
@@ -288,8 +306,8 @@ public class QuizActivity extends Activity {
             boolean focus = selRow == row && sel == i;
             boolean isSel = i == picked;
             int fill = focus ? INK : isSel ? SAFF : off ? PAPER : TILE;
-            int txt = focus ? PAPER : off ? 0x88161410 : INK;
-            FrameLayout chip = stamp(fill, off ? 0x88161410 : INK, 6, off);
+            int txt = focus ? (isSel ? SAFF : PAPER) : off ? 0x88161410 : INK;   // standing on the picked one: saffron words and a saffron frame; on another: paper words
+            FrameLayout chip = stamp(fill, focus && isSel ? SAFF : off ? 0x88161410 : INK, focus && isSel ? 12 : 6, off);
             TextView tv = centered(opts[i], f, txt, true); tv.setSingleLine(true);
             chip.addView(tv, new FrameLayout.LayoutParams(-1, -1));
             root.addView(chip, at(w[i], 88, x, cy));
@@ -327,6 +345,7 @@ public class QuizActivity extends Activity {
         if (lan == null) { Toast.makeText(this, S.t("لا توجد شبكة محلية. وصّل التلفزيون بالواي فاي"), Toast.LENGTH_LONG).show(); return; }
         Random rnd = new java.security.SecureRandom();   // the room code and the players' tokens are not guessable from a seed
         room = new QuizRoom(QuizRoom.freshCode(rnd, System.currentTimeMillis()), System::currentTimeMillis, rnd);
+        room.latinDigits = latin;   // «سارة 2», not «سارة ٢», when the person's digits are Latin
         server = new QuizServer(room, new QuizServer.Assets() {
             @Override public byte[] page() { return asset("quiz/play.html"); }
             @Override public byte[] font(String n) { return asset("fonts/" + n + ".woff2"); }
@@ -389,11 +408,13 @@ public class QuizActivity extends Activity {
         TextView hint = text(S.t("امسح الرمز بكاميرا الجوال، أو افتح العنوان"), 34, 0xCC161410, false);
         hint.setMaxLines(3);
         root.addView(hint, at(310, 130, 410, 562));
-        TextView addr = text(url.replace("http://", ""), 30, 0xCC161410, false); addr.setTextDirection(View.TEXT_DIRECTION_LTR); addr.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
-        root.addView(addr, at(310, 40, 410, 700));
+        // the whole address, host:port/code, left to right and isolated (a right-to-left line drops the last part), big, under the QR
+        TextView addr = text("\u2066" + url.replace("http://", "") + "\u2069", 46, INK, true); addr.setTextDirection(View.TEXT_DIRECTION_LTR); addr.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
+        addr.setSingleLine(true); addr.setHorizontallyScrolling(false);
+        root.addView(addr, at(700, 64, 96, 862));
         if (room.activeCount() < 2 && System.currentTimeMillis() - roomOpened > 60000) {
-            TextView need = text(S.t("هذي اللعبة تحتاج جوالات، ادخلوا بالجوال"), 36, PINK, true); need.setMaxLines(2);
-            root.addView(need, at(620, 100, 96, 870));
+            TextView need = text(S.t("هذي اللعبة تحتاج جوالات، ادخلوا بالجوال"), 34, PINK, true); need.setMaxLines(2);
+            root.addView(need, at(700, 80, 96, 934));
         }
         // the players, two columns; the host's focus: the start button or a tile (OK twice removes it)
         List<QuizRoom.Player> ps = room.players();
@@ -407,7 +428,7 @@ public class QuizActivity extends Activity {
             View sq = box(PLAYER[p.color % 8], INK, 3, false);
             FrameLayout.LayoutParams sp = new FrameLayout.LayoutParams(px(compact ? 32 : 40), px(compact ? 32 : 40), Gravity.START | Gravity.CENTER_VERTICAL); sp.setMarginStart(px(20));
             st.addView(sq, sp);
-            String shown = armed ? S.t("أزل؟") : p.name;
+            String shown = armed ? S.t("أزل؟") : clip(p.name, compact ? 40 : 52, colW - (compact ? 72 : 84) - 12 - 8);
             TextView nm = text(shown, compact ? 40 : 52, armed ? PINK : INK, true); nm.setSingleLine(true); nm.setEllipsize(android.text.TextUtils.TruncateAt.END);
             FrameLayout.LayoutParams np = new FrameLayout.LayoutParams(-1, -2, Gravity.START | Gravity.CENTER_VERTICAL); np.setMarginStart(px(compact ? 72 : 84)); np.setMarginEnd(px(12));
             st.addView(nm, np);
@@ -424,7 +445,7 @@ public class QuizActivity extends Activity {
         if (!can) go.setAlpha(.55f);
         go.setTextSize(TypedValue.COMPLEX_UNIT_PX, (can ? 56 : 44) * scale);
         root.addView(go, atEnd(1000, Math.min(120, 960 - by + 0), 96, Math.min(by, 840)));
-        hints(S.t("اختيار"), S.t("ابدأ (لاعبان على الأقل)"), S.t("رجوع"), S.t("أغلق الغرفة"));
+        hints(S.t("اختيار"), can ? S.t("ابدأ") : S.t("ابدأ (لاعبان على الأقل)"), S.t("رجوع"), S.t("أغلق الغرفة"));
     }
     private GradientDrawable ring(int fill, int stroke, int outer) {
         GradientDrawable g = new GradientDrawable(); g.setColor(fill); g.setStroke(px(10), outer); return g;
@@ -464,11 +485,18 @@ public class QuizActivity extends Activity {
         FrameLayout.LayoutParams p = new FrameLayout.LayoutParams(-1, px(80), Gravity.BOTTOM); p.bottomMargin = px(200);
         root.addView(n, p);
     }
+    /** the bank's Arabic text stores Arabic-Indic digits: with Latin digits set, the question and the four answers (on the TV and on the phones) use 0-9 */
+    private QuizRoom.Q digits(QuizRoom.Q q) {
+        if (en || !latin) return q;
+        String[] o = new String[q.opts.length];
+        for (int i = 0; i < o.length; i++) o[i] = DigitsText.convert(q.opts[i], true);
+        return new QuizRoom.Q(DigitsText.convert(q.text, true), o, q.correct);
+    }
     private void startRound() {
         Random rnd = new Random();
         List<QuizPick.Item> picks = QuizPick.pick(bank, cat, levelValue(), kids, wanted(), QuizBank.recent(this), rnd);
         List<QuizRoom.Q> qs = new ArrayList<>();
-        for (QuizPick.Item it : picks) qs.add(QuizPick.toQ(it, en, rnd));
+        for (QuizPick.Item it : picks) qs.add(digits(QuizPick.toQ(it, en, rnd)));
         screen = Screen.LOBBY;
         if (qs.isEmpty() || !room.start(qs)) { Toast.makeText(this, S.t("ابدأ (لاعبان على الأقل)"), Toast.LENGTH_SHORT).show(); show(Screen.LOBBY); return; }
         asked = picks;
@@ -524,22 +552,21 @@ public class QuizActivity extends Activity {
             String a = q.opts[i];
             TextView at = text(a, chooseFont(a, 68, 56, 44, 16, 30) - (a.length() > 50 ? 6 : 0), right ? 0xFFFFFFFF : wrong ? 0x73161410 : INK, true);
             at.setMaxLines(3); at.setEllipsize(android.text.TextUtils.TruncateAt.END);
-            FrameLayout.LayoutParams tp = new FrameLayout.LayoutParams(-1, -2, Gravity.START | Gravity.CENTER_VERTICAL); tp.setMarginStart(px(136)); tp.setMarginEnd(px(reveal ? 28 + 52 * Math.max(1, countChose(ps, i)) : 28));
+            FrameLayout.LayoutParams tp = new FrameLayout.LayoutParams(-1, -2, Gravity.START | Gravity.CENTER_VERTICAL); tp.setMarginStart(px(136)); tp.setMarginEnd(px(reveal ? 28 + 56 * Math.max(1, countChose(ps, i)) : 28));
             st.addView(at, tp);
             if (reveal) {
                 LinearLayout sq = new LinearLayout(this); sq.setOrientation(LinearLayout.HORIZONTAL); sq.setLayoutDirection(Dir.layout());
                 int shown = 0;
                 for (QuizRoom.Player p : ps) if (p.answer == i && !p.waiting) {
                     View v = box(PLAYER[p.color % 8], INK, 3, false);
-                    LinearLayout.LayoutParams vp = new LinearLayout.LayoutParams(px(44), px(44)); vp.setMarginStart(px(8));
+                    LinearLayout.LayoutParams vp = new LinearLayout.LayoutParams(px(48), px(48)); vp.setMarginStart(px(8));   // drawn at once, full size: nothing to animate in
                     sq.addView(v, vp);
-                    if (animate) { v.setScaleX(0); v.setScaleY(0); v.animate().scaleX(1).scaleY(1).setStartDelay(120 + 50L * shown).setDuration(200).start(); }
                     shown++;
                 }
                 FrameLayout.LayoutParams sp = new FrameLayout.LayoutParams(-2, px(48), Gravity.END | Gravity.CENTER_VERTICAL); sp.setMarginEnd(px(24));
                 st.addView(sq, sp);
             }
-            root.addView(st, at(846, 216, 96 + (i % 2) * (846 + 36), 568 + (i / 2) * (216 + 24)));
+            root.addView(st, at(846, 190, 96 + (i % 2) * (846 + 36), 546 + (i / 2) * (190 + 16)));   // ends at y 942: the hint line (978) is below the answers
         }
         if (reveal) hints(S.t("اختيار"), S.t("الترتيب"), S.t("رجوع"), S.t("إيقاف مؤقت"));
     }
@@ -589,9 +616,9 @@ public class QuizActivity extends Activity {
         TextView nm = text(p.name, 64, INK, true); nm.setSingleLine(true); nm.setEllipsize(android.text.TextUtils.TruncateAt.END);
         row.addView(nm, new LinearLayout.LayoutParams(0, -2, 1f));
         if (withDelta) {
-            TextView ar = centered(p.lastDelta > 0 ? "▲" : p.lastDelta < 0 ? "▼" : "", 44, p.lastDelta > 0 ? OKB : PINK, false);
+            TextView ar = centered(p.score > 0 && p.lastDelta > 0 ? "▲" : p.score > 0 && p.lastDelta < 0 ? "▼" : "", 44, p.lastDelta > 0 ? OKB : PINK, false);
             row.addView(ar, new LinearLayout.LayoutParams(px(70), -2));
-            TextView d = centered(signed(p.lastPoints), 44, 0x99161410, false);
+            TextView d = centered(signed(p.lastPoints), 44, 0x99161410, false); d.setTextDirection(View.TEXT_DIRECTION_LTR); d.setText("\u2066" + signed(p.lastPoints) + "\u2069");   // «+591», the plus on the left in both languages
             row.addView(d, new LinearLayout.LayoutParams(px(150), -2));
         }
         TextView sc = text(num(p.score), 88, INK, true); sc.setTextDirection(View.TEXT_DIRECTION_LTR); sc.setGravity(Gravity.END | Gravity.CENTER_VERTICAL); sc.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
@@ -610,7 +637,7 @@ public class QuizActivity extends Activity {
             root.addView(row, at(1728, 128, 96, 236 + i * 142));
             if (animate && p.prevRank > 0 && p.prevRank != i + 1 && p.prevRank <= BOARD_ROWS) { row.setTranslationY((p.prevRank - (i + 1)) * 142f * scale); row.animate().translationY(0).setDuration(300).start(); }
         }
-        hints(S.t("اختيار"), S.t("السؤال التالي"), S.t("رجوع"), S.t("إيقاف مؤقت"));
+        hints(S.t("اختيار"), room.index + 1 >= room.total() ? S.t("النتيجة النهائية") : S.t("السؤال التالي"), S.t("رجوع"), S.t("إيقاف مؤقت"));
     }
 
     private void drawEnd() {
@@ -618,21 +645,21 @@ public class QuizActivity extends Activity {
         title(S.t("انتهت اللعبة"), r.isEmpty() ? null : S.t("الفائز: %s", r.get(0).name));
         String[] labels = {S.t("العب مرة أخرى"), S.t("تغيير الإعدادات"), S.t("خروج")};
         for (int i = 0; i < 3; i++) root.addView(button(labels[i], sel == i, 520), at(520, 96, 96 + i * (520 + 24), 232));
-        int[] cols = {OKB, SAFF, 0xFFF08A6E}; float[] hs = {340, 520, 240}; int[] place = {1, 0, 2};   // 2nd, 1st, 3rd from the left
+        int[] cols = {OKB, SAFF, 0xFFF08A6E}; float[] hs = {512, 400, 300}; int[] place = {1, 0, 2};   // heights of 1st, 2nd, 3rd (the winner tallest, in the middle); on the screen 2nd, 1st, 3rd from the left
         for (int k = 0; k < 3; k++) {
             int pi = place[k];
             if (pi >= r.size()) continue;
             QuizRoom.Player p = r.get(pi);
             LinearLayout col = new LinearLayout(this); col.setOrientation(LinearLayout.VERTICAL); col.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
             LinearLayout nameBar = new LinearLayout(this); nameBar.setOrientation(LinearLayout.HORIZONTAL); nameBar.setGravity(Gravity.CENTER_VERTICAL); nameBar.setBackgroundColor(INK); nameBar.setPadding(px(32), 0, px(32), 0); nameBar.setLayoutDirection(Dir.layout());
-            TextView nm = text(p.name, 56, PAPER, true); nm.setSingleLine(true); nm.setEllipsize(android.text.TextUtils.TruncateAt.END);
+            TextView nm = text(clip(p.name, 56, 380), 56, PAPER, true); nm.setSingleLine(true); nm.setEllipsize(android.text.TextUtils.TruncateAt.END);
             nameBar.addView(nm, new LinearLayout.LayoutParams(0, -2, 1f));
             TextView sc = text(num(p.score), 48, SAFF, false); sc.setTextDirection(View.TEXT_DIRECTION_LTR); nameBar.addView(sc);
             col.addView(nameBar, new LinearLayout.LayoutParams(-1, px(96)));
             FrameLayout blk = stamp(cols[pi], INK, 6, false);
             blk.addView(centered(num(pi + 1), Math.min(340, hs[pi] * .75f), INK, true), new FrameLayout.LayoutParams(-1, -1));
             col.addView(blk, new LinearLayout.LayoutParams(-1, px(hs[pi])));
-            FrameLayout.LayoutParams cp = new FrameLayout.LayoutParams(px(576), -2, Gravity.LEFT | Gravity.BOTTOM); cp.leftMargin = px(96 + k * 576);
+            FrameLayout.LayoutParams cp = new FrameLayout.LayoutParams(px(576), -2, Gravity.LEFT | Gravity.BOTTOM); cp.leftMargin = px(96 + k * 576); cp.bottomMargin = px(120);   // the blocks stand on y 960, above the hint line and inside the safe area
             root.addView(col, cp);
         }
         if (animate && !lowRam) root.addView(new ConfettiView(this), new FrameLayout.LayoutParams(-1, -1));
