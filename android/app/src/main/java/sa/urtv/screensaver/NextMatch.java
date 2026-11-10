@@ -5,9 +5,6 @@ import android.content.Context;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -136,16 +133,8 @@ final class NextMatch {
     }
 
     private static String get(String url) throws Exception {
-        HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
-        try {
-            con.setConnectTimeout(10000);
-            con.setReadTimeout(12000);
-            con.setRequestProperty("User-Agent", "urtv/2 (Android TV screensaver)");
-            try (InputStream in = con.getInputStream()) {
-                return new String(Bounded.readAll(in, Bounded.JSON_MAX), "UTF-8");
-            }
-        } finally {
-            con.disconnect();
-        }
+        Net.Reply r = Net.get(url, null, 12000, 12000, Bounded.JSON_MAX);   // IPv4 first, 4 s per address (Net)
+        if (r.status != 200) throw new java.io.IOException("status " + r.status);
+        return r.text();
     }
 }

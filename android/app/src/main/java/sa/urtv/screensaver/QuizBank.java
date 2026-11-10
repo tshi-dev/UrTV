@@ -6,8 +6,6 @@ import android.content.SharedPreferences;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -55,17 +53,10 @@ final class QuizBank {
         if (fetching || (f.isFile() && System.currentTimeMillis() - f.lastModified() < REFRESH_MS)) return;
         fetching = true;
         new Thread(() -> {
-            HttpURLConnection con = null;
             try {
-                con = (HttpURLConnection) new URL(URL).openConnection();
-                con.setConnectTimeout(10000);
-                con.setReadTimeout(20000);
-                con.setInstanceFollowRedirects(false);
-                con.setRequestProperty("User-Agent", "urtv/2 (Android TV)");
-                if (con.getResponseCode() != 200) return;
-                if (con.getContentLengthLong() > QuizBankCheck.BYTES_MAX) return;
-                byte[] b;
-                try (InputStream in = con.getInputStream()) { b = Bounded.readAll(in, QuizBankCheck.BYTES_MAX); }
+                Net.Reply r = Net.get(URL, null, 15000, 20000, QuizBankCheck.BYTES_MAX);   // no redirect, a size cap, IPv4 first (Net)
+                if (r.status != 200) return;
+                byte[] b = r.body;
                 List<QuizPick.Item> v = QuizBankCheck.parse(b);
                 if (v == null || v.size() < QuizPick.MIN_ITEMS) return;   // never replace a good file with a bad one
                 File tmp = new File(app.getFilesDir(), FILE + ".tmp");
@@ -74,7 +65,6 @@ final class QuizBank {
             } catch (Exception ignored) {
                 // no network, a file too big, a bad answer: the kept bank or the starter set is used
             } finally {
-                if (con != null) con.disconnect();
                 fetching = false;
             }
         }, "quiz-bank").start();

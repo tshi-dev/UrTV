@@ -34,5 +34,5 @@ un = (HOME / "UpdateNotice.java").read_text(encoding="utf-8")
 check("a pill «تحديث جديد» opens the update screen (behind its lock) and is in the row only while UpdateNotice says so, never in kids mode",
       'new Intent(this, UpdateActivity.class)' in main and "UpdateNotice.wanted(this)" in main and "!Parental.state(this).kids && UpdateNotice.wanted(this)" in main)
 check("the release is read off the main thread, at most every 12 hours, only its first 64 bytes; nothing is installed from the notice",
-      "new Thread(" in un and "byte[] buf = new byte[64];" in un and "UpdateNoticeRule.due(" in un and "PackageInstaller" not in un and "ACTION_VIEW" not in un)
+      "new Thread(" in un and "Net.get(UpdateRules.BASE + \"version.txt\", null, 10000, 12000, 64)" in un and "UpdateNoticeRule.due(" in un and "PackageInstaller" not in un and "ACTION_VIEW" not in un)
 sys.exit(1 if failed else 0)

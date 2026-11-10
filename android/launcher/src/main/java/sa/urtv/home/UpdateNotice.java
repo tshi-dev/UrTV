@@ -34,23 +34,15 @@ final class UpdateNotice {
         sp.edit().putLong("at", System.currentTimeMillis()).apply();   // asked: the next try is in 12 hours, a failure included
         new Thread(new Runnable() {
             @Override public void run() {
-                HttpURLConnection con = null;
                 try {
-                    con = (HttpURLConnection) new URL(UpdateRules.BASE + "version.txt").openConnection();
-                    con.setConnectTimeout(10000);
-                    con.setReadTimeout(10000);
-                    if (con.getResponseCode() != HttpURLConnection.HTTP_OK) return;
-                    byte[] buf = new byte[64];
-                    int n = 0, r;
-                    try (InputStream in = con.getInputStream()) { while (n < buf.length && (r = in.read(buf, n, buf.length - n)) > 0) n += r; }
-                    int build = UpdateRules.buildOf(new String(buf, 0, n, "UTF-8"));
+                    Net.Reply r = Net.get(UpdateRules.BASE + "version.txt", null, 10000, 12000, 64);   // IPv4 first, 4 s per address, 12 s in all (Net)
+                    if (r.status != 200) return;
+                    int build = UpdateRules.buildOf(r.text());
                     if (build > 0) {
                         sp.edit().putInt("newest", build).apply();
                         if (done != null) done.run();
                     }
                 } catch (java.io.IOException | RuntimeException ignored) {
-                } finally {
-                    if (con != null) con.disconnect();
                 }
             }
         }, "update-notice").start();

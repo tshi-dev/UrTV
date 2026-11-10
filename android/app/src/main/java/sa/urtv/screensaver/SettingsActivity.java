@@ -1084,20 +1084,14 @@ public class SettingsActivity extends Activity {
     /** the file from the internet (5 s to connect, 15 s to read), kept as the copy when it is a whole answer; else the copy; null when there is neither */
     private String fetchCatalogue(java.io.File cache) {
         String body = null;
-        HttpURLConnection con = null;
         try {
-            con = (HttpURLConnection) new URL(CatalogueLeagues.URL).openConnection();
-            con.setConnectTimeout(5000);
-            con.setReadTimeout(15000);
-            try (InputStream in = con.getInputStream()) {
-                body = new String(Bounded.readAll(in, Bounded.JSON_MAX), "UTF-8");
-            }
+            Net.Reply r = Net.get(CatalogueLeagues.URL, null, 15000, 12000, Bounded.JSON_MAX);   // IPv4 first, 4 s per address, 12 s in all (Net)
+            if (r.status != 200) throw new java.io.IOException("status " + r.status);
+            body = r.text();
             new JSONObject(body).getJSONArray("leagues");   // a whole answer before it replaces the copy
             try (java.io.FileOutputStream out = new java.io.FileOutputStream(cache)) { out.write(body.getBytes("UTF-8")); }
         } catch (Exception e) {
             body = cache.isFile() ? readFile(cache) : null;
-        } finally {
-            if (con != null) con.disconnect();
         }
         return body;
     }

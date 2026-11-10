@@ -179,18 +179,11 @@ final class MarketFile {
 
     /** the file's text, or null (offline, a timeout, not 200) */
     private static String download(String url) {
-        HttpURLConnection h = null;
         try {
-            h = (HttpURLConnection) new URL(url).openConnection();
-            h.setConnectTimeout(TIMEOUT_MS);
-            h.setReadTimeout(TIMEOUT_MS);
-            h.setUseCaches(false);
-            if (h.getResponseCode() != 200) return null;
-            try (InputStream in = h.getInputStream()) { return read(in); }
+            Net.Reply r = Net.get(url, null, TIMEOUT_MS, 2 * TIMEOUT_MS, 4 << 20);   // IPv4 first, 4 s per address, a deadline (Net)
+            return r.status == 200 ? r.text() : null;
         } catch (Exception e) {
             return null;
-        } finally {
-            if (h != null) h.disconnect();
         }
     }
 
