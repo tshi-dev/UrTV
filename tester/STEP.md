@@ -1,4 +1,4 @@
-«✅ GO — step 49 FIRST (Player v0.9.3 or newer: does a channel play?), then steps 47 and 48 on build 218» — thanks for 46 and 45. Run step 49, then 47, then 48 (all at the end of this file). TV muted. Do not wait on the owner; in step 47 item 5 stop if the family PIN is asked. The factory-interface step stays forbidden. lang ar stays.
+«✅ GO — step 49 FIRST (Player v0.9.3: does a channel play? use the owner's playlist link at the end of the file), then steps 47 and 48 on build 218 or newer» — run step 49, then 47, then 48 (all at the end of this file). TV muted. Do not wait on the owner; in step 47 item 5 stop if the family PIN is asked. The factory-interface step stays forbidden. lang ar stays.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -796,3 +796,7 @@ Signed pre-release **v0.9.3** (or newer; if you already ran this step on v0.9.2,
 7. PSS idle / playing; CPU while playing; any crash/ANR; 2 README photos if clean (live list + player OSD, no personal data).
 Z. Uninstall, remove the M3U and file server, restore as step 45 Z. Report «step 49»: first line says plainly whether a channel played.
 8. (v0.9.3) «عن التطبيق» → «تقرير أو اقتراح»: «أرسل تقرير» asks a topic, then shows a QR; «اطلب ميزة» shows a QR. Read the QR on the PC (screenshot → decode): it opens our share page with the lines filled in; check the lines hold NO playlist name, link, host, login or channel name (load the 3-row list first and give it an odd name to look for). Do NOT submit the form. Screenshot of the QR screen with the QR blurred.
+
+### step 49 — the owner's test playlist (he sent it himself; use it for this test only)
+Playlist for items 1 and 3: `https://iptv-org.github.io/iptv/regions/arab.m3u` (a public list the owner chose; sent as a LINK through «من الجوال», so the TV fetches it itself; no local file server needed). Report: how many channels and groups load and in how long; list scroll smooth with a big list (jank %, PSS); search; then play, muted: Al Quran Al Kareem TV, Al Sunnah Al Nabawiyah TV, Al Saudiya (or the nearest Saudi channels in the list) 5 minutes for the first and 1 minute each for the others, plus 5 more channels picked from different groups: for each say plays / does not play (dead links in a public list are expected: count them, they are not our bug unless the same link plays in VLC on the PC) with time to first frame; zap times. Keep to family-safe channels; do not record or keep any stream. If you already finished step 49 with the 3-row list, run only this part.
+Z: delete the playlist from the app before uninstalling; nothing of it stays on the TV or the PC.
