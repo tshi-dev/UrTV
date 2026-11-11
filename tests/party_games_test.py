@@ -6,7 +6,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 APP = ROOT / "android/app/src/main/java/sa/urtv/screensaver"
-ENGINES = [APP / "games/oddone/OddOneWords.java", APP / "games/oddone/OddOneGame.java", APP / "games/charades/CharadesWords.java", APP / "games/charades/CharadesGame.java"]
+ENGINES = [APP / "games/oddone/OddOneWords.java", APP / "games/oddone/OddOneGame.java", APP / "games/oddone/OddOneFlow.java",
+           APP / "games/charades/CharadesWords.java", APP / "games/charades/CharadesGame.java", APP / "games/charades/CharadesFlow.java"]
 failed = 0
 def check(what, ok, extra=""):
     global failed
