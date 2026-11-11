@@ -2067,3 +2067,57 @@ Both rows fully above the hint (the lines of «الألعاب» and «الإعد
 
 ### Z
 Room closed, scripted phones stopped, lang ar, updatechannel latest, ramtier auto, idle 45 s, TV muted and asleep. Settings lists as before step 47, **except two the owner seems to have changed while he used the TV (not by me, left as they are): `homeours` on → off, `walldim` 0 → 40.** No screenshots, tokens or addresses kept.
+
+## step 53 — UrTV Player v0.9.7 re-measure (TV muted; uninstalled at the end)
+**Not ALL PASS: 5 problems (list jank still 15–19 %, the new meter under-reads, «EN» chip does not change the keyboard, «ابحث في القنوات» opens the home tab, the OK panel's buttons are far away), 3 items not done.**
+
+Build: `urtv-player-0.9.7.apk` (release v0.9.7, latest), sha256 `0f22ec8d…5c52` = its .sha256 ✓, signer `13ade7d0…69dfea` (v2+v3) ✓, versionCode 96. List: the same public `languages/ara.m3u`, by link typed on the TV; loaded in under 5 s (359 channels today; «list 359 ch: fetch+parse 1195 ms, cache 705 ms»).
+
+### 1 ✗ List jank (50 DOWN + 50 UP)
+| run | gfxinfo | the app's own meter («Home/Live ui 300 frames») |
+|---|---|---|
+| 0.1 s per key, first | 19.4 %, p50 36 / p90 53 / p99 85 ms | (stats not on yet) |
+| 0.1 s per key, second | 14.6 %, 36 / 40 / 61 ms | janky 0.0 %, 16 / 16 / 16 ms |
+| back to back, first | 27.6 %, 38 / 61 / 77 ms | (stats not on yet) |
+| back to back, second | 16.4 %, 38 / 53 / 65 ms | janky 4.7 %, 16 / 16 / 33 ms |
+- Not at ≤5 % (0.9.6: 12.6 % / 39.9 %). **The new meter says 0–4.7 % where gfxinfo says 15–16 %**, and p50 16 ms where gfxinfo says 36–38 ms. Its line read 0.0 % both before and after the first scroll, as if the scroll's frames were not in its 300
+
+### 2 Preview
+After resting on a row the pane goes black at **+0.45 s** (3 runs: 0.44–0.45; was 2.0 s). First picture: **+2.1 s** on the one run where a picture came (was 3.5 s). On 5 other runs no picture came within 6–7 s: at least two of those rows are dead links (`Source error … Response code: 404` in the log). Small: on a dead channel the pane just stays black, no words.
+
+### 3 ✓ Zap (from the Quran channel)
+UP: 1879, 1370, 1232 ms. DOWN: 904, 1227, 840 ms (0.9.6 UP ≈3.1 s).
+`dns 0 connect 0 manifest 188 media 186 decode 321 = 1879 (6 req)`, `dns 0 connect 0 manifest 1 media 399 decode 390 = 1370`, `… manifest 0 media 264 decode 70 = 1232`, `… manifest 1 media 266 decode 66 = 904`, `… manifest 1 media 188 decode 37 = 1227`, `… manifest 0 media 173 decode 86 = 840 (5 req)`. dns 0 and manifest ≈0 for the neighbours ✓.
+
+### 4 ✓ «من الجوال» after its 10 minutes
+«أُغلقت الصفحة», focus on «إعادة المحاولة»; OK → a new address and a new code, focus on «من الجوال» ✓.
+
+### 5 Search chip
+- From the box LEFT reaches the chip, RIGHT goes back to the box ✓; OK flips it «ع» → «EN» ✓
+- **✗ With the chip on «EN», the keyboard still typed Arabic letters** (the keys q u r a n gave «ضعقشى»). The search found the Quran channels anyway
+- Getting to the box: from the tab DOWN now goes to the last focused row (row 49), so the box is 49 UPs away (small)
+
+### 6 ✓ fps: «1280x720 25 fps» (Quran, 720p), «1920x1080 25 fps» / «24 fps» (four 1080p channels)
+
+### 7 ✗ «ابحث في القنوات»
+UrTV match sheet → «شاهد المباراة» → «ما لقينا قناة لهذه المباراة في قوائمك» ✓ → «ابحث في القنوات» **opens the Player's home tab (المفضّلة / آخر القنوات), not the Live tab; no search text, no keyboard.**
+
+### 8 Small things
+- One Back closes the keyboard and leaves edit mode (the next DOWN moved on) ✓
+- Focus returns to the same row after the channel menu ✓
+- «Family» → «عائلية» ✓
+- Dim over the old picture: fully black ✓ (0.25 s after CH+: mean 0.1 of 255 outside the banner)
+- First start after install: **3521 ms** (the TV had just been woken). Cold starts: 877, 601, 563 ms
+- `input text` lost a letter of the link again (`htts://`) even sent as a 5-letter piece; letter by letter it was right
+
+### 9 «ليش يقطّع؟»
+In the player's OK panel: «ليش يقطّع؟: البث سليم» on the Quran channel ✓. A slow channel: not done.
+**✗ The panel is the whole channel list opened at the current channel, and its buttons (مفضّلة, إحصاءات, ليش يقطّع) are the list's first rows: from channel 49 they are 49 UPs away.** (In step 50 the list was a 9-row search result, so I did not see it.)
+
+### 10 Long OK with the real remote: skipped (owner asleep)
+
+### Mistakes of mine, for the record
+Looking for the search box I sent 49 UPs while a channel was still full screen: the player stepped through 49 channels (muted, about 5 s in all). And one OK played channel 50 for a few seconds.
+
+### Z
+`pm clear` + uninstall (0 packages), APK deleted, no stream frame or recording kept. UrTV lang ar, TV muted.
