@@ -342,7 +342,7 @@ await T('now', async () => {
   await S.ctx.close();
 
   const Q = await boot({ state: NEW({ player: { playing: true, source: 'surah', reciter: 'b', surah: 2, sleep_left: 5 } }) });
-  check('the bar shows surah and reciter', (await Q.p.textContent('#nowT')) === 'سورة البقرة · قارئ ثانٍ' && !(await Q.p.isVisible('#adhanStop1')), await Q.p.textContent('#nowT'));
+  check('the bar shows surah and reciter', (await Q.p.textContent('#nowT')) === 'سورة البقرة، قارئ ثانٍ' && !(await Q.p.isVisible('#adhanStop1')), await Q.p.textContent('#nowT'));
   await tab(Q, 'now');
   check('«يعمل الآن» shows playing and the pause button', (await Q.p.textContent('#playerNow')).includes('يعمل') && (await Q.p.textContent('#qToggle')) === 'إيقاف مؤقت');
   await Q.p.click('#qToggle'); await until(() => posts(Q, '/api/quran').length);
@@ -755,8 +755,8 @@ for (const scheme of ['dark', 'light']) for (const w of [320, 360]) await T(`on 
   const card = await p.evaluate(() => { const c = document.getElementById('msgCard'); return { head: c.querySelector('h2').textContent, kids: [...c.children].map(e => e.id || e.className), ph: document.getElementById('msgT').placeholder, in: c.closest('#t-remote') !== null }; });
   check(`${scheme} ${w}: one card «على الشاشة» on the remote tab: heading, the field, the button, then two rows`, card.in && card.head === 'على الشاشة' && card.kids.join() === 'ch,msgT,msgGo,rw,rw' && card.ph === 'اكتب رسالة للتلفزيون', JSON.stringify(card));
   const rows = await box('#msgCard a.rw');
-  check(`${scheme} ${w}: «ارسم» opens /d and «صوري» /u, each with its icon, label, short line and chevron`, rows.length === 2 && rows[0].href === '/d' && rows[1].href === '/u' && rows[0].text === 'ارسماكتب بإصبعك على شاشة التلفزيون' && rows[1].text === 'صوريخلفيات وصور التلفزيون' && rows.every(r => r.svg === 1 && r.chev === '8px' && r.deco === 'none'), JSON.stringify(rows));
-  check(`${scheme} ${w}: the rows are 56 px or more, as wide as the field, 16 px corners`, rows.every(r => r.h >= 56 && r.radius === '16px' && r.l >= 0 && r.r <= w) && Math.abs(rows[0].w - (await box('#msgT'))[0].w) < 1, JSON.stringify(rows));
+  check(`${scheme} ${w}: «ارسم» opens /d and «صوري» /u, each with its icon, label, short line and chevron`, rows.length === 2 && rows[0].href === '/d' && rows[1].href === '/u' && rows[0].text === 'ارسماكتب بإصبعك على الشاشة' && rows[1].text === 'صوريخلفيات وصور التلفزيون' && rows.every(r => r.svg === 1 && r.chev === '8px' && r.deco === 'none'), JSON.stringify(rows));
+  check(`${scheme} ${w}: the rows are 56 px, one line each, as wide as the field, 16 px corners`, rows.every(r => r.h >= 56 && r.h < 60 && r.radius === '16px' && r.l >= 0 && r.r <= w) && Math.abs(rows[0].w - (await box('#msgT'))[0].w) < 1, JSON.stringify(rows));
   await p.fill('#msgT', '  أهلًا  بكم '); await p.click('#msgGo');
   await until(() => posts(S, '/api/message').length === 1);
   check(`${scheme} ${w}: the message still goes as before (/api/message {text})`, posts(S, '/api/message')[0].body.text === 'أهلًا بكم');
@@ -770,6 +770,7 @@ for (const scheme of ['dark', 'light']) for (const w of [320, 360]) await T(`on 
   await S.ctx.close();
 });
 await T('on the screen: source', async () => {
+  check('no «·» or «•» anywhere on the page, no pill shape: every corner is 16 px or less (a circle is 50 %)', !/[·•]/.test(HTML) && [...HTML.matchAll(/border-radius:(\d+)px/g)].every(m => +m[1] <= 16), [...HTML.matchAll(/border-radius:(\d+)px/g)].map(m => m[1]).filter(n => n > 16).join());
   check('no «·» and no .lnk in the new markup; the theme button keeps its icon when its word changes', !/class="[^"]*\blnk\b/.test(HTML) && !HTML.includes('.lnk{') && !/<a class="rw"[^\n]*·/.test(HTML) && HTML.includes("b.lastChild.data = l ? 'الوضع الداكن' : 'الوضع الفاتح';") && !HTML.includes("$('theme').textContent"));
 });
 

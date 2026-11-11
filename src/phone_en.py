@@ -76,7 +76,9 @@ EN_CODE = [
     # one Arabic word, two English ones: the table has the settings' meaning (Off, Turn on, On), the player here has its own
     ('data-i="stop"><span class="sr">إيقاف</span>', 'data-i="stop"><span class="sr">Stop</span>', 1),
     ('<button id="qPlay" class="gold wide">تشغيل</button>', '<button id="qPlay" class="gold wide">Play</button>', 1),
-    ("pl ? (rn ? rn + ' · ' : '') + 'يعمل'", "pl ? (rn ? rn + ' · ' : '') + 'Playing'", 1),
+    ("pl ? (rn ? rn + '، ' : '') + 'يعمل'", "pl ? (rn ? rn + ', ' : '') + 'Playing'", 1),
+    # the Arabic comma between the surah and the reciter is an English one
+    ("(r ? '، ' + r : '')", "(r ? ', ' + r : '')", 1),
     # «Maghrib adhan now», as the bar and the page say a prayer's adhan
     ("var lab = live ? 'الأذان الآن' + (s.adhan_prayer ? ': ' + s.adhan_prayer : '') : playLabel(s);",
      "var lab = live ? (s.adhan_prayer ? s.adhan_prayer + ' adhan now' : 'Adhan now') : playLabel(s);", 1),

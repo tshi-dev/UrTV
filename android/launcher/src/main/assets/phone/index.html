@@ -53,7 +53,7 @@ input[type=checkbox]:disabled{opacity:.45;cursor:default}
 input[type=range]{padding:0;border:0;background:none;accent-color:var(--gold)}
 .row{display:flex;gap:10px;margin:10px 0}
 .row > *{flex:1 1 0;min-width:0}
-.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;margin:12px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:12px 0}
 .note{border:1px solid var(--line);border-radius:16px;padding:10px 12px;margin:10px 0;background:var(--card);font-size:14px}
 .warn{border-color:var(--red);color:var(--red)}
 .sw{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 0;min-height:52px}
@@ -62,7 +62,7 @@ input[type=range]{padding:0;border:0;background:none;accent-color:var(--gold)}
 .gl{color:var(--gt)}
 .big{display:block;font-size:24px;font-weight:800;line-height:1.3}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.ic{width:46px;height:46px;border-radius:15px;background:var(--tile);color:var(--gold);display:flex;align-items:center;justify-content:center;flex:none;padding:0;border:0}
+.ic{width:46px;height:46px;border-radius:16px;background:var(--tile);color:var(--gold);display:flex;align-items:center;justify-content:center;flex:none;padding:0;border:0}
 .ch{display:flex;align-items:center;gap:12px;margin-bottom:6px}
 .ch h2,.ch p{margin:0}
 .hd{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:0 10px;margin:20px 4px 0}
@@ -78,28 +78,28 @@ input[type=range]{padding:0;border:0;background:none;accent-color:var(--gold)}
 .q button{padding:8px}
 .rnd{width:56px;height:56px;padding:0;border-radius:50%}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
-.chips button{flex:1 1 0;min-height:48px;border-radius:24px;padding:6px 10px;white-space:nowrap;font-size:15px}
+.chips button{flex:1 1 0;min-height:48px;border-radius:16px;padding:6px 10px;white-space:nowrap;font-size:15px}
 details{margin:8px 4px;color:var(--dim);font-size:14px}
 summary{min-height:44px;display:flex;align-items:center;cursor:pointer}
-header.top{display:flex;align-items:center;gap:12px;margin:calc(12px + env(safe-area-inset-top)) 0 12px;padding:10px;border-radius:22px;background:var(--card);border:1px solid var(--line)}
+header.top{display:flex;align-items:center;gap:12px;margin:calc(12px + env(safe-area-inset-top)) 0 12px;padding:10px;border-radius:16px;background:var(--card);border:1px solid var(--line)}
 header.top .ttl{flex:1;min-width:0;font-weight:700}
 header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 .con{color:var(--on);font-weight:400;margin-inline-start:6px}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--on);margin-inline-end:5px}
 #hSet{background:var(--tile);color:var(--text);width:52px;height:52px}
 #bar{position:fixed;bottom:0;inset-inline:0;z-index:5;background:var(--bar);border-top:1px solid var(--line);display:flex;padding:6px 8px calc(8px + env(safe-area-inset-bottom));gap:4px;max-width:560px;margin:0 auto}
-#bar button{flex:1 1 0;flex-direction:column;gap:3px;min-height:58px;border:0;background:none;font-size:14px;padding:4px 2px;border-radius:14px;color:var(--dim);line-height:1.3}
+#bar button{flex:1 1 0;flex-direction:column;gap:3px;min-height:58px;border:0;background:none;font-size:14px;padding:4px 2px;border-radius:16px;color:var(--dim);line-height:1.3}
 #bar button svg { width:26px; height:26px; stroke-width:1.7; }
 #bar button.on { color:var(--gold); font-weight:700; }
-#modes{display:flex;flex:2 1 0;gap:3px;padding:3px;border-radius:19px;background:var(--card);border:1px solid var(--line)}
-#modes button{flex:1 1 0;border:0;background:none;min-height:48px;border-radius:16px}
+#modes{display:flex;flex:2 1 0;gap:3px;padding:3px;border-radius:16px;background:var(--card);border:1px solid var(--line)}
+#modes button{flex:1 1 0;border:0;background:none;min-height:48px;border-radius:12px}
 #modes button.on{background:var(--gold);color:var(--ink);border-color:var(--gold);font-weight:700}
 #now{display:flex;align-items:center;gap:12px;padding:12px 18px 12px 12px;position:relative;background:linear-gradient(var(--glow),var(--glow)),var(--card);box-shadow:inset 0 0 0 1px var(--glow)}
 #now::before{content:"";position:absolute;inset-inline-start:10px;top:16px;bottom:16px;width:4px;border-radius:4px;background:var(--gold)}
 #now .t{flex:1;min-width:0;overflow-wrap:anywhere;padding-inline-start:8px}
 #nowT{display:block;font-size:17px}
 #now button{flex:0 0 auto}
-#pad{position:relative;height:290px;margin:12px 0;border-radius:28px;border:1px solid var(--line);background:radial-gradient(closest-side,var(--glow),transparent),var(--card);touch-action:none;user-select:none;-webkit-user-select:none}
+#pad{position:relative;height:290px;margin:12px 0;border-radius:16px;border:1px solid var(--line);background:radial-gradient(closest-side,var(--glow),transparent),var(--card);touch-action:none;user-select:none;-webkit-user-select:none}
 #pad button{position:absolute;background:none;border:0;color:var(--dim)}
 #pad [data-k=up]{top:6px;left:calc(50% - 26px)}
 #pad [data-k=down]{bottom:34px;left:calc(50% - 26px);transform:rotate(180deg)}
@@ -108,25 +108,25 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 #pad #padOk{inset:0;margin:auto;width:124px;height:124px;border-radius:50%;background:var(--gold);color:var(--ink);font-size:26px;font-weight:800;box-shadow:0 0 0 8px var(--glow),0 6px 40px var(--glow)}
 #pad .hint{position:absolute;bottom:10px;inset-inline:14px;text-align:center;font-size:14px;color:var(--dim);pointer-events:none}
 .keys{display:flex;gap:10px;margin:12px 0}
-.keys button{flex:1 1 0;flex-direction:column;gap:2px;min-height:70px;border-radius:22px;background:var(--card);white-space:nowrap;padding:8px 4px}
-.vol{display:flex;margin:12px 0;padding:4px;border-radius:28px;background:var(--card);border:1px solid var(--line)}
-.vol button{flex:1 1 0;min-height:60px;border:0;background:none;border-radius:24px;white-space:nowrap;padding:6px}
+.keys button{flex:1 1 0;flex-direction:column;gap:2px;min-height:70px;border-radius:16px;background:var(--card);white-space:nowrap;padding:8px 4px}
+.vol{display:flex;margin:12px 0;padding:4px;border-radius:16px;background:var(--card);border:1px solid var(--line)}
+.vol button{flex:1 1 0;min-height:60px;border:0;background:none;border-radius:12px;white-space:nowrap;padding:6px}
 .vol button + button{border-inline-start:1px solid var(--line);border-radius:0}
-.tx{display:flex;align-items:center;gap:8px;margin:12px 0 0;padding:8px;border-radius:24px;background:var(--card);border:1px solid var(--line)}
+.tx{display:flex;align-items:center;gap:8px;margin:12px 0 0;padding:8px;border-radius:16px;background:var(--card);border:1px solid var(--line)}
 .tx input{flex:1;min-width:0;border:0;background:none}
 .tx > span{display:flex;color:var(--dim);padding-inline-start:6px}
 #txtGo{width:58px;border-radius:16px}
 .srch{position:relative;margin:4px 0 0}
 .srch svg{position:absolute;top:14px;inset-inline-start:16px;color:var(--dim)}
-.srch input{padding-inline-start:50px;border-radius:22px;background:var(--card)}
+.srch input{padding-inline-start:50px;border-radius:16px;background:var(--card)}
 .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 6px;padding:14px 8px}
 .grid p{grid-column:1/-1;text-align:center}
 .app{flex-direction:column;justify-content:flex-start;gap:6px;padding:2px 0;min-height:96px;min-width:0;position:relative;font-size:14px;line-height:1.3;overflow-wrap:anywhere;text-align:center;border:0;background:none}
-.tile{width:60px;height:60px;border-radius:17px;background:var(--tile);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;position:relative;overflow:hidden;color:var(--gold);flex:none}
+.tile{width:60px;height:60px;border-radius:16px;background:var(--tile);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;position:relative;overflow:hidden;color:var(--gold);flex:none}
 .tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .tools .tile{background:var(--gold);color:var(--ink)}
 .tools{grid-template-columns:repeat(5,minmax(0,1fr))}
-.tools .tile{width:50px;height:50px;border-radius:15px}
+.tools .tile{width:50px;height:50px;border-radius:16px}
 .lock{position:absolute;top:-4px;inset-inline-end:0;width:28px;height:28px;border-radius:50%;background:var(--bar);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:14px}
 .np{background:linear-gradient(var(--glow),transparent 55%),var(--card)}
 .np .lbl{display:flex;align-items:center;gap:8px;margin:0 0 4px}
@@ -143,12 +143,12 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 .ad{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .tg{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:14px;color:var(--dim);text-align:center}
 .lg{margin-top:calc(40px + env(safe-area-inset-top));text-align:center;padding:26px 18px}
-.lg .ic{margin:0 auto 8px;width:60px;height:60px;border-radius:18px}
+.lg .ic{margin:0 auto 8px;width:60px;height:60px;border-radius:16px}
 #code{text-align:center;font-size:24px;letter-spacing:4px;margin:14px 0 4px}
 #code::placeholder{letter-spacing:0}
-#msg{pointer-events:none;position:fixed;inset-inline:16px;bottom:calc(92px + env(safe-area-inset-bottom));background:var(--bar);color:var(--text);border:1px solid var(--gold);border-radius:18px;padding:12px 14px;text-align:center;z-index:9;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.3)}
+#msg{pointer-events:none;position:fixed;inset-inline:16px;bottom:calc(92px + env(safe-area-inset-bottom));background:var(--bar);color:var(--text);border:1px solid var(--gold);border-radius:16px;padding:12px 14px;text-align:center;z-index:9;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.3)}
 #dlg{position:fixed;inset:0;z-index:10;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center}
-#dlg > div{background:var(--bar);border:1px solid var(--line);border-radius:24px 24px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));width:100%;max-width:560px}
+#dlg > div{background:var(--bar);border:1px solid var(--line);border-radius:16px 24px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));width:100%;max-width:560px}
 @media (max-width:370px){.tile{width:54px;height:54px}.tools .tile{width:46px;height:46px}#pad{height:270px}}
 @media (prefers-reduced-motion: reduce){*,::before,::after{transition:none !important;animation:none !important;scroll-behavior:auto !important} }
 </style>
@@ -182,7 +182,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 <button id="padOk" data-k="ok" aria-label="اختيار">اختيار</button>
 <button data-k="right" data-rep="1" aria-label="يمين" data-i="chev"></button>
 <button data-k="down" data-rep="1" aria-label="أسفل" data-i="chev"></button>
-<span class="hint">اسحب للتحريك · المس للاختيار · أبقِ الإصبع للتكرار</span>
+<span class="hint">اسحب للتحريك، المس للاختيار، أبقِ الإصبع للتكرار</span>
 </div>
 <div id="foreNote" class="note hidden"></div>
 <div class="keys"><button data-k="back" data-i="back">رجوع</button><button data-k="home" data-i="home">الرئيسية</button><button data-k="play_pause" data-i="now">تشغيل/إيقاف</button></div>
@@ -196,7 +196,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 <div class="ch"><span class="ic" data-i="msg"></span><h2>على الشاشة</h2></div>
 <input id="msgT" dir="auto" maxlength="200" placeholder="اكتب رسالة للتلفزيون" aria-label="رسالة للتلفزيون">
 <button id="msgGo" class="gold wide" data-i="send">اعرضها على التلفزيون</button>
-<a class="rw" href="/d" data-i="pen"><b>ارسم<small>اكتب بإصبعك على شاشة التلفزيون</small></b></a>
+<a class="rw" href="/d" data-i="pen"><b>ارسم<small>اكتب بإصبعك على الشاشة</small></b></a>
 <a class="rw" href="/u" data-i="img"><b>صوري<small>خلفيات وصور التلفزيون</small></b></a>
 </div>
 </div>
@@ -573,7 +573,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 		if (p.source === 'radio') return 'إذاعة القرآن الكريم';
 		if (p.source === 'adhan') return 'الأذان يُرفع';
 		var n = p.surah && s.surahs ? s.surahs[p.surah - 1] : '', r = recName(s, p.reciter);
-		return (n ? 'سورة ' + n : 'تلاوة') + (r ? ' · ' + r : '');
+		return (n ? 'سورة ' + n : 'تلاوة') + (r ? '، ' + r : '');
 	}
 	// the polled parts, then the forms
 	function render(s, full) {
@@ -595,7 +595,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 		var pl = playLabel(s), sur = p.surah && s.surahs ? s.surahs[p.surah - 1] : '', rn = p.source === 'surah' ? recName(s, p.reciter) : '';
 		$('npL').textContent = live ? 'الأذان' : pl ? 'يُتلى الآن على التلفزيون' : 'التلاوة';
 		$('npT').textContent = live ? lab : p.source === 'radio' && pl ? pl : sur ? 'سورة ' + sur : 'لا شيء يُشغَّل';
-		$('playerNow').textContent = live ? 'على التلفزيون الآن' : pl ? (rn ? rn + ' · ' : '') + 'يعمل' : sur ? 'متوقف مؤقتًا' : 'اختر القارئ والسورة ثم «تشغيل».';
+		$('playerNow').textContent = live ? 'على التلفزيون الآن' : pl ? (rn ? rn + '، ' : '') + 'يعمل' : sur ? 'متوقف مؤقتًا' : 'اختر القارئ والسورة ثم «تشغيل».';
 		var hasP = typeof p.position_s === 'number' && p.duration_s > 0;
 		$('prog').classList.toggle('hidden', !hasP);
 		if (hasP) { $('progI').style.width = Math.min(100, 100 * p.position_s / p.duration_s) + '%'; $('posT').textContent = mmss(p.position_s); $('durT').textContent = mmss(p.duration_s); }
