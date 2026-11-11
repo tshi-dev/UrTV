@@ -70,6 +70,20 @@ final class CatalogueLeagues {
         return x != null && y != null ? x[0].equals(y[0]) : a.equalsIgnoreCase(b);
     }
 
+    /** a kept copy is shown at once (and refreshed for next time) only while it is younger than this; older, a fresh one is fetched first */
+    static final long FRESH_MS = 6 * 3600_000L;
+
+    /**
+     * Show the kept copy at once? Only when it was fetched less than FRESH_MS ago (a clock set back: no) and every country in it has its Arabic
+     * name (an older catalogue had English ones: build 228 showed «United Kingdom», Albania… from a copy kept before the fix). Otherwise the
+     * published one is fetched first, the kept copy only when that fails. rows: {id, en, ar, country, country_ar, sport, top}.
+     */
+    static boolean useKept(List<String[]> rows, long keptAt, long now) {
+        if (rows == null || rows.isEmpty() || keptAt <= 0 || now < keptAt || now - keptAt >= FRESH_MS) return false;
+        for (String[] r : rows) if (!r[3].isEmpty() && r[4].isEmpty()) return false;
+        return true;
+    }
+
     /** The countries of the catalogue, in its order of first appearance, for the first list of the picker: {country, its label}. */
     static List<String[]> countries(List<String[]> rows, boolean english) {
         List<String[]> out = new ArrayList<>();
