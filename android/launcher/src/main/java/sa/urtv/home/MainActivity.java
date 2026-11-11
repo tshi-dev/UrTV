@@ -2874,7 +2874,7 @@ public class MainActivity extends Activity {
         trayRingColor = m.ring; trayRingPx = m.ringWidth;
         if (wallDimView != null) wallDimView.setAlpha(GlassStyle.dimPercent() / 100f);
         for (View c : dockCards) { GradientDrawable r = ringByCard.get(c); if (r != null) r.setStroke(trayRingW(), trayRing()); }
-        if (homeCard != null) { homeCard.look(lookNow); homeCard.light(light); }   // the football home's widgets: the same light or dark glass
+        if (homeCard != null) { homeCard.look(lookNow); homeCard.light(light); if (resumed) homeCard.refresh(); }   // the cards' page takes the new material now (its address changed), not at the next return   // the football home's widgets: the same light or dark glass
         updateNetIcon();   // its colour is the look's secondary ink
     }
 
