@@ -1,6 +1,5 @@
 package sa.urtv.screensaver.games.word5;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,21 +9,19 @@ import java.util.Random;
 import java.util.Set;
 
 /**
- * «خمّن الكلمة»: the two word lists (no Android; made by .github/tools/make_word5.py from games/word5).
+ * «خمّن الكلمة»: the two word lists (no Android). GamesBoardData fills it from word5-answers.json and word5-guesses.json (docs/GAMES-DATA.md).
  *
- * The accepted guesses (about 25,700) are kept as one sorted int[] of word codes (Word5Text.code) and found by binary search: 4 bytes a word, about 0.1 MB of
- * heap for the whole list, no String and no HashSet, so it is the same on a low-RAM TV. The file is smaller still: «W5A1», the count (4 bytes), then each code
- * as the difference from the one before it, as a varint (about 2 bytes a word).
- *
- * The answers are lines of 5 tab-separated fields: the word (normalized), the spelling to show at the end, the English gloss (may be empty), level 1..3,
- * kids 0/1. Every answer must be an accepted guess. Anything wrong in either file: parse gives null.
+ * The accepted guesses arrive as one packed string, five characters a word (character k of a..z01 is the k-th keyboard letter), sorted. They are kept as one
+ * sorted int[] of word codes (Word5Text.code) and found by binary search: 4 bytes a word, so the whole published list (about 31,000 words) is about 0.12 MB of
+ * heap, with no String per word and no HashSet; the same on a low-RAM TV. Every answer must be an accepted guess and its spelling must normalize to its word.
+ * Anything wrong: of() gives null.
  */
 public final class Word5Words {
-    public static final int BYTES_MAX = 600_000, ACCEPTED_MAX = 120_000, ANSWERS_MAX = 5000, RECENT_MAX = 200;
+    public static final int ACCEPTED_MAX = 120_000, ANSWERS_MAX = 5000, RECENT_MAX = 200;
 
     public static final class Answer {
         public final String word, display, en; public final int level; public final boolean kids;
-        Answer(String word, String display, String en, int level, boolean kids) { this.word = word; this.display = display; this.en = en; this.level = level; this.kids = kids; }
+        public Answer(String word, String display, String en, int level, boolean kids) { this.word = word; this.display = display; this.en = en; this.level = level; this.kids = kids; }
     }
 
     private final int[] accepted;
@@ -39,42 +36,28 @@ public final class Word5Words {
     /** is this (normalized) word one we know? */
     public boolean accepts(String word) { int c = Word5Text.code(word); return c >= 0 && Arrays.binarySearch(accepted, c) >= 0; }
 
-    public static Word5Words parse(byte[] acceptedFile, byte[] answersFile) {
-        int[] codes = codes(acceptedFile);
-        if (codes == null || answersFile == null || answersFile.length == 0 || answersFile.length > BYTES_MAX) return null;
-        List<Answer> out = new ArrayList<>();
-        Set<String> seen = new HashSet<>();
-        for (String line : new String(answersFile, StandardCharsets.UTF_8).split("\n")) {
-            if (line.isEmpty()) continue;
-            String[] f = line.split("\t", -1);
-            if (f.length != 5 || !f[3].matches("[123]") || !f[4].matches("[01]") || f[1].isEmpty() || f[1].length() > 12 || f[2].length() > 40) return null;
-            int code = Word5Text.code(f[0]);
-            if (code < 0 || Arrays.binarySearch(codes, code) < 0 || !Word5Text.normalize(f[1]).equals(f[0]) || !seen.add(f[0]) || seen.size() > ANSWERS_MAX) return null;
-            for (int i = 0; i < f[2].length(); i++) if (f[2].charAt(i) < ' ' || f[2].charAt(i) > '~') return null;
-            out.add(new Answer(f[0], f[1], f[2], f[3].charAt(0) - '0', f[4].equals("1")));
-        }
-        return out.isEmpty() ? null : new Word5Words(codes, out);
-    }
-
-    private static int[] codes(byte[] b) {
-        if (b == null || b.length < 8 || b.length > BYTES_MAX || b[0] != 'W' || b[1] != '5' || b[2] != 'A' || b[3] != '1') return null;
-        int count = ((b[4] & 255) << 24) | ((b[5] & 255) << 16) | ((b[6] & 255) << 8) | (b[7] & 255);
-        if (count <= 0 || count > ACCEPTED_MAX) return null;
-        int[] out = new int[count];
-        int at = 8; long last = -1;
-        for (int n = 0; n < count; n++) {
-            long delta = 0; int shift = 0;
-            while (true) {
-                if (at >= b.length || shift > 28) return null;
-                int x = b[at++] & 255;
-                delta |= (long) (x & 127) << shift; shift += 7;
-                if ((x & 128) == 0) break;
+    public static Word5Words of(String alphabet, String packed, List<Answer> answers) {
+        if (!Word5Text.ALPHABET.equals(alphabet) || packed == null || packed.isEmpty() || packed.length() % Word5Text.LENGTH != 0 || packed.length() / Word5Text.LENGTH > ACCEPTED_MAX) return null;
+        int[] codes = new int[packed.length() / Word5Text.LENGTH];
+        for (int n = 0, at = 0; n < codes.length; n++) {
+            int code = 0;
+            for (int i = 0; i < Word5Text.LENGTH; i++) {
+                char c = packed.charAt(at++);
+                int k = c >= 'a' && c <= 'z' ? c - 'a' : c == '0' ? 26 : c == '1' ? 27 : -1;
+                if (k < 0) return null;
+                code = code * Word5Text.LETTERS + k;
             }
-            long code = last + delta;
-            if (delta <= 0 || code >= Word5Text.CODES) return null;   // strictly rising, every one a real word
-            out[n] = (int) (last = code);
+            if (n > 0 && code <= codes[n - 1]) return null;   // sorted, no word twice
+            codes[n] = code;
         }
-        return at == b.length ? out : null;
+        if (answers == null || answers.isEmpty() || answers.size() > ANSWERS_MAX) return null;
+        Set<String> seen = new HashSet<>();
+        for (Answer a : answers) {
+            if (a.word == null || a.display == null || a.en == null || a.level < 1 || a.level > 3 || a.display.isEmpty() || a.display.length() > 12 || a.en.length() > 40) return null;
+            int code = Word5Text.code(a.word);
+            if (code < 0 || Arrays.binarySearch(codes, code) < 0 || !Word5Text.normalize(a.display).equals(a.word) || !seen.add(a.word)) return null;
+        }
+        return new Word5Words(codes, new ArrayList<>(answers));
     }
 
     // ---- which word a game gets

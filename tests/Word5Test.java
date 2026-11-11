@@ -4,22 +4,22 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
 
-/** For tests/games_board_test.py: «خمّن الكلمة» on a plain JVM. Prints PASS/FAIL lines. args: accepted.bin answers.tsv */
+/** For tests/games_board_test.py: «خمّن الكلمة» on a plain JVM. Prints PASS/FAIL lines. args: word5-answers.json word5-guesses.json */
 public final class Word5Test {
     static int failed = 0;
     static void check(String what, boolean ok) { System.out.println((ok ? "PASS " : "FAIL ") + what); if (!ok) failed++; }
     static String colours(String guess, String answer) { StringBuilder b = new StringBuilder(); for (int c : Word5Game.score(guess, answer)) b.append(c == 3 ? 'G' : c == 2 ? 'Y' : '-'); return b.toString(); }
     static void type(Word5Game g, String w) { for (char c : w.toCharArray()) g.type(Word5Text.ALPHABET.indexOf(c)); }
 
-    static byte[] file(int... codes) {
-        java.io.ByteArrayOutputStream o = new java.io.ByteArrayOutputStream();
-        o.write('W'); o.write('5'); o.write('A'); o.write('1');
-        for (int s = 24; s >= 0; s -= 8) o.write(codes.length >>> s);
-        int last = -1;
-        for (int c : codes) { int d = c - last; last = c; while (d > 127) { o.write((d & 127) | 128); d >>>= 7; } o.write(d); }
-        return o.toByteArray();
+    static String pack(String... words) {
+        Arrays.sort(words, (x, y) -> Integer.compare(Word5Text.code(x), Word5Text.code(y)));
+        StringBuilder b = new StringBuilder();
+        for (String w : words) for (char c : w.toCharArray()) b.append("abcdefghijklmnopqrstuvwxyz01".charAt(Word5Text.ALPHABET.indexOf(c)));
+        return b.toString();
     }
+    static Word5Words.Answer ans(String word, String display, String en, int level, boolean kids) { return new Word5Words.Answer(word, display, en, level, kids); }
     static byte[] utf(String s) { return s.getBytes(StandardCharsets.UTF_8); }
+    static Word5Words of(String packed, Word5Words.Answer... answers) { return Word5Words.of(Word5Text.ALPHABET, packed, Arrays.asList(answers)); }
 
     public static void main(String[] a) throws Exception {
         // ---- spelling
@@ -50,23 +50,23 @@ public final class Word5Test {
         check("colours: 20,000 random pairs over four letters: green exactly where equal, and each letter lit min(in the guess, in the answer) times", sound);
 
         // ---- the lists
-        int c1 = Word5Text.code("دجاجه"), c2 = Word5Text.code("كتابه"), c3 = Word5Text.code("سلامه"), c4 = Word5Text.code("بابات");
-        int[] four = {c1, c2, c3, c4}; Arrays.sort(four);
-        String ans = "دجاجه\tدجاجة\then\t1\t1\nكتابه\tكتابة\t\t2\t0\nسلامه\tسلامة\tsafety\t3\t0\n";
-        Word5Words w = Word5Words.parse(file(four), utf(ans));
-        check("lists: parse; a guess is accepted by binary search over the codes; three answers with their spelling to show",
+        String four = pack("دجاجه", "كتابه", "سلامه", "بابات");
+        Word5Words.Answer hen = ans("دجاجه", "دجاجة", "hen", 1, true), writing = ans("كتابه", "كتابة", "", 2, false), safety = ans("سلامه", "سلامة", "safety", 3, false);
+        Word5Words w = of(four, hen, writing, safety);
+        check("lists: the packed guesses unpack (a..z01 for the 28 letters); a guess is accepted by binary search over the codes; three answers with their spelling to show",
             w != null && w.acceptedCount() == 4 && w.accepts("بابات") && !w.accepts("ببببب") && !w.accepts("باب") && !w.accepts(null) && w.answers.size() == 3 && w.answers.get(0).display.equals("دجاجة") && w.answers.get(1).en.isEmpty());
-        byte[] good = file(four), cut = Arrays.copyOf(good, good.length - 1), more = Arrays.copyOf(good, good.length + 1), magic = good.clone(); magic[3] = '2';
-        check("lists: refuses a cut file, trailing bytes, another magic, codes not rising, a code past 28^5, an answer that is not accepted, a spelling that is not its word, a repeated answer, a bad level",
-            Word5Words.parse(cut, utf(ans)) == null && Word5Words.parse(more, utf(ans)) == null && Word5Words.parse(magic, utf(ans)) == null && Word5Words.parse(file(5, 5), utf(ans)) == null
-            && Word5Words.parse(file(c1, Word5Text.CODES), utf("دجاجه\tدجاجة\t\t1\t1\n")) == null && Word5Words.parse(good, utf("ببببب\tببببب\t\t1\t0\n")) == null
-            && Word5Words.parse(good, utf("دجاجه\tحمامة\t\t1\t0\n")) == null && Word5Words.parse(good, utf(ans + ans)) == null && Word5Words.parse(good, utf("دجاجه\tدجاجة\t\t4\t0\n")) == null
-            && Word5Words.parse(good, utf("")) == null && Word5Words.parse(utf("<html>404</html>"), utf(ans)) == null);
-        Word5Words all = Word5Words.parse(Files.readAllBytes(Paths.get(a[0])), Files.readAllBytes(Paths.get(a[1])));
-        int kids = 0; boolean shown = all != null;
+        check("lists: refuses a cut string, a character outside a..z01, words not rising, another alphabet, an answer that is not accepted, a spelling that is not its word, a repeated answer, a bad level, no answers",
+            of(four.substring(1), hen) == null && of(four.replace('a', 'A'), hen) == null && of(four.substring(5, 10) + four.substring(0, 5), hen) == null && of(four.substring(0, 5) + four.substring(0, 5), hen) == null
+            && Word5Words.of(Word5Text.ALPHABET.substring(1) + "ا", four, Arrays.asList(hen)) == null && of(four, ans("ببببب", "ببببب", "", 1, false)) == null && of(four, ans("دجاجه", "حمامة", "", 1, false)) == null
+            && of(four, hen, hen) == null && of(four, ans("دجاجه", "دجاجة", "", 4, false)) == null && of(four) == null && of("", hen) == null);
+        Word5Words all = sa.urtv.screensaver.GamesBoardData.word5(Files.readAllBytes(Paths.get(a[0])), Files.readAllBytes(Paths.get(a[1])));
+        int kids = 0, total = all == null ? 0 : all.answers.size(); boolean shown = all != null;
         if (all != null) for (Word5Words.Answer x : all.answers) { if (x.kids) kids++; shown &= all.accepts(x.word) && Word5Text.normalize(x.display).equals(x.word); }
-        check("bundled: the real lists parse: 560 answers (40 or more for kids), over 25,000 accepted guesses in about 0.1 MB of heap (" + (all == null ? 0 : all.acceptedBytes()) + " bytes, a file of "
-            + Files.size(Paths.get(a[0])) + "), every answer accepted and shown in its own spelling", shown && all.answers.size() == 560 && kids >= 40 && all.acceptedCount() > 25000 && all.acceptedBytes() < 130_000 && Files.size(Paths.get(a[0])) < 60_000);
+        check("bundled: the starter files load: 500 answers or more (40 or more for kids), 2,000 guesses or more, every answer accepted and shown in its own spelling; 4 bytes of heap a guess ("
+            + (all == null ? 0 : all.acceptedBytes()) + " bytes here, about 0.12 MB for the 31,000 of the full list)", shown && total >= 500 && kids >= 40 && all.acceptedCount() >= 2000 && all.acceptedBytes() == 16 + 4 * all.acceptedCount());
+        check("bundled: another version, an HTML page or a broken list give null",
+            sa.urtv.screensaver.GamesBoardData.word5(utf("<html>404</html>"), Files.readAllBytes(Paths.get(a[1]))) == null && sa.urtv.screensaver.GamesBoardData.word5(Files.readAllBytes(Paths.get(a[0])), utf("{\"v\":2,\"A\":\"\",\"w\":\"\"}")) == null
+            && sa.urtv.screensaver.GamesBoardData.word5(utf("{\"v\":1,\"w\":[[1]]}"), Files.readAllBytes(Paths.get(a[1]))) == null);
 
         // ---- a game
         Word5Game g = new Word5Game(w, "سلامه", 6);
@@ -100,9 +100,9 @@ public final class Word5Test {
         for (int n = 0; n < 100; n++) { Word5Words.Answer x = all.free(true, recent, rnd); kidsOnly &= x.kids; Word5Words.remember(recent, x.word); }
         check("free play: 200 words in a row and none twice; the kids filter gives only kids words (again when all of them were played); the memory holds the last 200", fresh && kidsOnly && recent.size() == 200);
         Set<String> days = new HashSet<>();
-        for (long d = 20000; d < 20560; d++) days.add(all.daily(false, d).word);
-        check("word of the day: the same word for the same day, another the next day, and all 560 have their day before one comes again",
-            all.daily(false, 20403).word.equals(all.daily(false, 20403).word) && days.size() == 560 && all.daily(false, 20000).word.equals(all.daily(false, 20560).word) && all.daily(true, 20403).kids && all.daily(false, -3) != null);
+        for (long d = 20000; d < 20000 + total; d++) days.add(all.daily(false, d).word);
+        check("word of the day: the same word for the same day, another the next day, and every word has its day before one comes again",
+            all.daily(false, 20403).word.equals(all.daily(false, 20403).word) && days.size() == total && all.daily(false, 20000).word.equals(all.daily(false, 20000 + total).word) && all.daily(true, 20403).kids && all.daily(false, -3) != null);
 
         // ---- the keyboard's focus
         Word5Keys k = new Word5Keys();

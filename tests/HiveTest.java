@@ -4,7 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
 
-/** For tests/games_board_test.py: «خلية الحروف» on a plain JVM (a fake clock, a seeded Random). Prints PASS/FAIL lines. args: starter.tsv hints.tsv */
+/** For tests/games_board_test.py: «خلية الحروف» on a plain JVM (a fake clock, a seeded Random). Prints PASS/FAIL lines. args: the quiz starter, letter-hive.json, khanat.json */
 public final class HiveTest {
     static int failed = 0;
     static void check(String what, boolean ok) { System.out.println((ok ? "PASS " : "FAIL ") + what); if (!ok) failed++; }
@@ -13,7 +13,17 @@ public final class HiveTest {
     static String line(String id, String ar, String en, int level, int kids) {
         return id + "\t" + ar + "\t" + en + "\t" + level + "\t" + kids + "\tس " + id + "\tQ " + id + "\tج " + id + "\tA " + id + "\tx\tx\ty\ty\tz\tz\n";
     }
-    static HiveBank bank(String items, String hints) { return HiveBank.parse(items.getBytes(StandardCharsets.UTF_8), hints.getBytes(StandardCharsets.UTF_8)); }
+    /** a bank from test lines (id, ar, en, level, kids, 10 texts) and hint lines (letter, samples); null when a line is refused */
+    static HiveBank bank(String items, String hints) {
+        HiveBank b = new HiveBank();
+        for (String l : items.split("\n")) {
+            String[] f = l.split("\t", -1);
+            if (!b.add(f[0], f[1].isEmpty() ? 0 : f[1].charAt(0), f[2].isEmpty() ? 0 : f[2].charAt(0), Integer.parseInt(f[3]), f[4].equals("1"), new String[] {f[5], f[6]}, new String[] {f[7], f[8]},
+                new String[][] {{f[9], f[10]}, {f[11], f[12]}, {f[13], f[14]}})) return null;
+        }
+        for (String l : hints.split("\n")) { String[] f = l.split("\t"); for (int i = 1; i < f.length; i++) b.hint(f[0].charAt(0), f[i]); }
+        return b;
+    }
     static HiveGame game(HiveBank b, HiveGame.Settings s, long seed) { now[0] = 1_000_000L; return new HiveGame(b, s, HiveBoard.TEAM_SIDES, () -> now[0], new Random(seed)); }
     static int cellOf(HiveGame g, char letter) { for (int i = 0; i < HiveBoard.CELLS; i++) if (g.board.letter[i] == letter && g.board.owner[i] == 0) return i; return -1; }
     static boolean right(HiveGame g, int cell) { return g.pick(cell) && g.reveal() && g.judge(true); }
@@ -66,19 +76,24 @@ public final class HiveTest {
         check("bank: parses; a question is found under its Arabic letter and its English one; hints by letter",
             small != null && small.size() == 78 && small.of('ب').size() == 3 && small.of('A').size() == 26 && small.of('B').size() == 26 && small.of('C').isEmpty() && small.of('ظ').isEmpty()
             && small.hints('ظ').length == 2 && small.hints('ث').length == 0);
-        check("bank: refuses a line with 14 fields, a letter outside the alphabet, level 4, a repeated id, two equal options, an empty text, an HTML page, a second hints line for a letter",
-            bank(line("a", "ب", "", 1, 0).replace("\tz\tz", "\tz"), "") == null && bank(line("a", "ء", "", 1, 0), "") == null && bank(line("a", "ب", "b", 1, 0), "") == null
-            && bank(line("a", "ب", "", 4, 0), "") == null && bank(line("a", "ب", "", 1, 0) + line("a", "ت", "", 1, 0), "") == null && bank(line("a", "ب", "", 1, 0).replace("\ty\ty", "\tx\tx"), "") == null
-            && bank(line("a", "ب", "", 1, 0).replace("\tس a", "\t"), "") == null && bank("<html>404</html>", "") == null && bank(line("a", "ب", "", 1, 0), "ظ\tظبي\nظ\tظفار\n") == null
-            && bank(line("a", "ب", "", 1, 0), "") != null);
-        HiveBank starter = HiveBank.parse(Files.readAllBytes(Paths.get(a[0])), Files.readAllBytes(Paths.get(a[1])));
-        boolean hinted = starter != null;
-        if (starter != null) for (char l : (HiveBank.AR + HiveBank.EN).toCharArray()) hinted &= starter.of(l).size() >= 6 || starter.hints(l).length > 0;
-        check("starter: the bundled files parse, and every letter of both alphabets has 6 questions or more, or else sample answers for its category question (ظ has no question at all)",
-            hinted && starter.of('ظ').isEmpty() && starter.hints('ظ').length >= 3 && starter.size() >= 200);
+        check("bank: refuses a letter outside the alphabets, level 4, a repeated id, a question of no letter; keeps the first six hints of a letter, none of a stranger",
+            bank(line("a", "ء", "", 1, 0), "") == null && bank(line("a", "ب", "b", 1, 0), "") == null && bank(line("a", "ب", "", 4, 0), "") == null && bank(line("a", "ب", "", 1, 0) + line("a", "ت", "", 1, 0), "") == null
+            && bank(line("a", "", "", 1, 0), "") == null && bank(line("a", "", "Q", 1, 0), "") != null && bank(line("a", "ب", "", 1, 0), "ظ\t1\t2\t3\t4\t5\t6\t7\t1\n?\tx\n").hints('ظ').length == 6
+            && bank(line("a", "ب", "", 1, 0), "?\tx\n").hints('?').length == 0);
+        byte[] quiz = Files.readAllBytes(Paths.get(a[0])), index = Files.readAllBytes(Paths.get(a[1])), khanat = Files.readAllBytes(Paths.get(a[2]));
+        HiveBank starter = sa.urtv.screensaver.GamesBoardData.hive(quiz, index, khanat);
+        int withQuestions = 0, withHints = 0;
+        if (starter != null) for (char l : HiveBank.AR.toCharArray()) { if (!starter.of(l).isEmpty()) withQuestions++; if (starter.hints(l).length > 0) withHints++; }
+        check("starter: the bundled files load (the quiz starter joined with the letter index, hints from the samples): 150 questions or more, most Arabic letters have questions and nearly all have sample answers, English letters too",
+            starter != null && starter.size() >= 150 && withQuestions >= 24 && withHints >= 25 && starter.of('ظ').isEmpty() && starter.of('A').size() >= 20 && starter.hints('B').length == 6 && starter.hints('ب').length == 6);
+        check("starter: a bank without the samples file still loads (no hints); a broken index, another version, an HTML page or a broken quiz bank give null",
+            sa.urtv.screensaver.GamesBoardData.hive(quiz, index, null) != null && sa.urtv.screensaver.GamesBoardData.hive(quiz, index, null).hints('ب').length == 0
+            && sa.urtv.screensaver.GamesBoardData.hive(quiz, "{\"v\":1}".getBytes(StandardCharsets.UTF_8), khanat) == null
+            && sa.urtv.screensaver.GamesBoardData.hive(quiz, new String(index, StandardCharsets.UTF_8).replace("\"v\":1", "\"v\":2").getBytes(StandardCharsets.UTF_8), khanat) == null
+            && sa.urtv.screensaver.GamesBoardData.hive(quiz, "<html>404</html>".getBytes(StandardCharsets.UTF_8), khanat) == null && sa.urtv.screensaver.GamesBoardData.hive("[]".getBytes(StandardCharsets.UTF_8), index, khanat) == null);
         boolean banned = false;
-        for (String f : a) { String t = new String(Files.readAllBytes(Paths.get(f)), StandardCharsets.UTF_8).toLowerCase(); banned |= t.contains("israel") || t.contains("إسرائيل") || t.contains("western sahara") || t.contains("الصحراء الغربية"); }
-        check("starter: neither Israel nor Western Sahara appears in a question, an option or a hint", !banned);
+        for (char l : (HiveBank.AR + HiveBank.EN).toCharArray()) for (String h : starter.hints(l)) { String t = h.toLowerCase(); banned |= t.contains("israel") || t.contains("إسرائيل") || t.contains("western sahara") || t.contains("الصحراء الغربية"); }
+        check("starter: neither Israel nor Western Sahara is offered as a sample answer", !banned);
 
         // ---- a game
         HiveGame.Settings s = new HiveGame.Settings();

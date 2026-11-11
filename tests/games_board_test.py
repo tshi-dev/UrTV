@@ -5,6 +5,7 @@ import re, shutil, subprocess, sys, tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+APP = ROOT / "android/app/src/main/java/sa/urtv/screensaver"
 GAMES = ROOT / "android/app/src/main/java/sa/urtv/screensaver/games"
 DATA = ROOT / "assets/games"
 failed = 0
@@ -13,14 +14,15 @@ def check(what, ok, extra=""):
     print(("PASS " if ok else "FAIL ") + what + ("" if ok else "  -> " + str(extra)))
     if not ok: failed += 1
 
-RUNS = [("hive", "HiveTest", ["letter-hive/starter.tsv", "letter-hive/hints.tsv"], ("Board", "Bank", "Game")),
-        ("word5", "Word5Test", ["word5/accepted.bin", "word5/answers.tsv"], ("Text", "Words", "Game", "Keys"))]
+RUNS = [("hive", "HiveTest", ["../quiz/starter.json", "letter-hive.json", "khanat.json"], ("Board", "Bank", "Game")),
+        ("word5", "Word5Test", ["word5-answers.json", "word5-guesses.json"], ("Text", "Words", "Game", "Keys"))]
 if not shutil.which("javac"):
     print("SKIP games: no javac"); sys.exit(1)
 for pkg, test, data, parts in RUNS:
     engine = [GAMES / pkg / f"{pkg.capitalize()}{p}.java" for p in parts]
+    loader = [APP / f for f in ("GamesBoardData.java", "MiniJson.java", "QuizBankCheck.java", "QuizPick.java", "QuizRoom.java", "DigitsText.java")] + sorted(p for d in ("hive", "word5") for p in (GAMES / d).glob("*.java") if d != pkg)
     with tempfile.TemporaryDirectory() as tmp:
-        c = subprocess.run(["javac", "-nowarn", "-d", tmp, *map(str, engine), str(ROOT / f"tests/{test}.java")], capture_output=True, text=True)
+        c = subprocess.run(["javac", "-nowarn", "-d", tmp, *map(str, engine), *map(str, loader), str(ROOT / f"tests/{test}.java")], capture_output=True, text=True)
         check(f"{pkg}: the engine compiles on a plain JVM", c.returncode == 0, c.stderr[-800:])
         if c.returncode == 0:
             r = subprocess.run(["java", "-cp", tmp, f"sa.urtv.screensaver.games.{pkg}.{test}", *(str(DATA / d) for d in data)], capture_output=True, text=True, timeout=240)
@@ -33,14 +35,6 @@ for pkg, test, data, parts in RUNS:
     check(f"{pkg}: the engine imports nothing of Android, reads no file, keeps no preference and shows no text of its own (the screen does, through S.t)",
           not re.search(r"import (android|androidx)\.|getSharedPreferences|java\.io\.File|S\.t\(", src))
 
-hive = (DATA / "letter-hive/starter.tsv").read_text(encoding="utf-8").splitlines()
-check("hive: the starter is tab-separated lines of 15 fields, sorted by id, LF only, under 100 KB",
-      all(len(l.split("\t")) == 15 for l in hive) and [l.split("\t")[0] for l in hive] == sorted(l.split("\t")[0] for l in hive)
-      and b"\r" not in (DATA / "letter-hive/starter.tsv").read_bytes() and (DATA / "letter-hive/starter.tsv").stat().st_size < 100_000)
-shown = "\n".join(hive) + (DATA / "letter-hive/hints.tsv").read_text(encoding="utf-8")
-check("no «·» or «•» in what the hive shows", "·" not in shown and "•" not in shown)
-sys.path.insert(0, str(ROOT / ".github/tools"))
-import make_word5
-check("word5: the tool's spelling rule is the engine's (the same ranges and letters in both)",
-      make_word5.ALPHABET in (GAMES / "word5/Word5Text.java").read_text(encoding="utf-8") and make_word5.normalize("مَدْرَسَة إبريق مستشفى كـتاب آٱ") == "مدرسه ابريق مستشفي كتاب اا")
+check("the loader (GamesBoardData) is plain Java too and reads the documented files through the quiz's own checks (MiniJson, QuizBankCheck), no org.json",
+      (lambda t: not re.search(r"import (android|androidx)\.|org\.json", t) and "QuizBankCheck.parse(quiz)" in t and "MiniJson.parse(" in t)((APP / "GamesBoardData.java").read_text(encoding="utf-8")))
 sys.exit(1 if failed else 0)
