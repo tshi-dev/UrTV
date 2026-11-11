@@ -1,13 +1,13 @@
 package sa.urtv.screensaver;
 
 /**
- * The score table of a remote-only game (no Android, tests/GamesKitTest.java): 1 to 8 sides (teams or players), points, and the places. Sides on one score
+ * The score table of a remote-only game (no Android, tests/GamesKitTest.java): 1 to 10 sides (teams or players), points, and the places. Sides on one score
  * share the place (1, 1, 3), as in «الأسرع». Nothing here is ever stored: a game's names and scores live only while its screen does.
  */
 final class GameScore {
-    static final int MAX = 8;
+    static final int MAX = 10;
     /** the default team names (games/COMMON.md: the first four are the mockups'); a game shows them through S.tv */
-    static final String[] TEAMS = {"الصقور", "النجوم", "الأسود", "الواحة", "النخيل", "الفرسان", "الأمواج", "القمم"};
+    static final String[] TEAMS = {"الصقور", "النجوم", "الأسود", "الواحة", "النخيل", "الفرسان", "الأمواج", "القمم", "الشهب", "الروّاد"};
 
     final int n; final int[] points, last;
 

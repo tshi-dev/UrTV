@@ -65,6 +65,9 @@ check("low-RAM TVs and reduced motion: no animation; a mid TV keeps the small mo
       "tier = Prefs.ramTier(this);" in base and "ANIMATOR_DURATION_SCALE" in base and "animate = tier != Prefs.RAM_LOW && anim > 0f;" in base and "confetti = animate && tier == Prefs.RAM_NORMAL;" in base)
 check("language, direction and digits follow UrTV's settings (S, Dir, DigitsText); the arrows are turned for Arabic once, in the base", "latin = DigitsText.isLatin(prefs.digits()); en = S.en(); rtl = Dir.rtl();" in base and "if (rtl) dx = -dx;" in base and "root.setLayoutDirection(Dir.layout());" in base)
 check("the setup opens with the start button focused (a round starts with one OK), and a picked chip is remembered", "row = rows.size(); return this;" in src("GameChips.java") and "GamePrefs.saveChips(this, id(), c.save());" in base)
+check("«إنهاء الجولة» while a hand-over is up drops it (cancelHandOver, also for a game to call); ten sides fit: ten colours, ten names, rank rows of 64 from the ninth",
+      "pauseCard = false; cancelHandOver(); onPauseChanged(false" in base and "protected final void cancelHandOver() { hand = 0; handDone = null;" in base and "static final int MAX = 10;" in src("GameScore.java")
+      and len(re.findall(r"0xFF[0-9A-F]{6}", look.split("SIDES = {")[1].split("}")[0])) == 10 and "tiny ? 72 : small ? 90 : 142" in base and 236 + 9 * 72 + 64 <= 960 and 236 + 7 * 90 + 80 <= 960)
 check("the sounds are the existing tones (QuizSound), behind the one sound switch", "QuizSound.play(sound, which)" in base and "AudioTrack" not in base)
 check("one look, two sets (PAPER, NIGHT), decided in one place; a game writes no colour of its own",
       "static final GameLook PAPER" in look and "NIGHT = new GameLook(true" in look and "static GameLook of(Context c)" in look

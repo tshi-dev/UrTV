@@ -40,8 +40,8 @@ public class GamesKitTest {
         check("score: ranked keeps the order of equal sides, a tie for first is seen", Arrays.equals(s.ranked(), new int[]{1, 2, 0, 3}) && s.tie() && s.leaders() == 2);
         s.newRound(); s.add(0, 15);
         check("score: «last» is what a side won since the round began", s.last[0] == 15 && s.last[1] == 0 && s.points[0] == 25 && !s.tie() && s.after(3) == 0);
-        check("score: 1 to 8 sides; one side never ties; nobody on 0", new GameScore(0).n == 1 && new GameScore(99).n == 8 && !new GameScore(1).tie() && new GameScore(3).nobody() && new GameScore(3).tie());
-        check("score: eight default team names, all different", GameScore.TEAMS.length == 8 && new HashSet<>(Arrays.asList(GameScore.TEAMS)).size() == 8);
+        check("score: 1 to 10 sides; one side never ties; nobody on 0", new GameScore(0).n == 1 && new GameScore(99).n == 10 && !new GameScore(1).tie() && new GameScore(3).nobody() && new GameScore(3).tie());
+        check("score: ten default team names, all different", GameScore.TEAMS.length == GameScore.MAX && new HashSet<>(Arrays.asList(GameScore.TEAMS)).size() == 10);
     }
 
     static void chips() {
