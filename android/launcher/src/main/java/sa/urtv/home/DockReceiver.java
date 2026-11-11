@@ -25,7 +25,7 @@ import java.util.Map;
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.CLEAR_NAMES
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.INPUT_NAMES            id | shown | the TV's name | ours   («أسماء المصادر»)
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.SET_INPUT_NAME --es id com.x/.Svc/HDMI1 --es name 'PS5'   (empty: the TV's name)
- *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.DEBUG --es flag traynoglass|nopillpanel|nowifimark|nosnapshot|nocardglass|nokeyfilter|keytrace|all|show --es value on|off   (a tester's switch: one piece of the home's drawing off)
+ *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.DEBUG --es flag traynoglass|nopillpanel|nowifimark|nosnapshot|nocardglass|nokeyfilter|keytrace|nolift|noglow|noshine|noscale|notitle|plainfocus|all|show --es value on|off   (a tester's switch: one piece of the home's drawing off)
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.RAM_TIER --es tier low|mid|normal|auto   (a test switch: the memory tier, from the next start)
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.PIN_SET --es pin 1234   «الرقابة الأبوية»: the master PIN (never printed back)
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.PIN_LOCK --es target com.example.app   (PIN_UNLOCK to open it again; a pill: @wifi...)
@@ -195,7 +195,7 @@ public class DockReceiver extends BroadcastReceiver {
             case "sa.urtv.home.DEBUG": {
                 String f = i.getStringExtra("flag"), v = i.getStringExtra("value");
                 if ("show".equals(f)) { setResultData("debug: " + DebugFlags.describe(c)); return; }
-                if (f == null || !DebugFlags.valid(f) || (v != null && !v.equals("on") && !v.equals("off"))) { setResultData("error: add --es flag traynoglass|nopillpanel|nowifimark|nosnapshot|nocardglass|nokeyfilter|keytrace|all|show and --es value on|off"); return; }
+                if (f == null || !DebugFlags.valid(f) || (v != null && !v.equals("on") && !v.equals("off"))) { setResultData("error: add --es flag traynoglass|nopillpanel|nowifimark|nosnapshot|nocardglass|nokeyfilter|keytrace|nolift|noglow|noshine|noscale|notitle|plainfocus|all|show and --es value on|off"); return; }
                 if (!DebugFlags.set(c, f, !"off".equals(v))) { setResultData("error: all can only be turned off"); return; }
                 c.sendBroadcast(new Intent(DebugFlags.CHANGED).setPackage(c.getPackageName()));
                 setResultData("debug: " + DebugFlags.describe(c) + " (the home starts over)");

@@ -208,6 +208,8 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        if (DebugFlags.on(this, "keytrace")) KeyTrace.install();
+        dbgFocus = DebugFlags.focusMask(this);   // a tester's switches for the tile's focus animation (dock.sh debug plainfocus ...)
         FamilyDnsAndroid.status(this);   // first use in this process: undoes a Family DNS check that a crash cut short
         sa.urtv.home.setup.SetupHook.atHomeStart(this);   // a home switch that was cut off is put back (it never throws)
         Digits.init(this);   // the screensaver's «الأرقام» setting, for every number this screen writes
@@ -413,6 +415,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         unregisterReceiver(packages);
+        KeyTrace.release();
         unregisterReceiver(dockChanged);
         try { unregisterReceiver(debugChanged); } catch (IllegalArgumentException ignored) { }
         unregisterReceiver(cardsChanged);
@@ -1351,30 +1354,35 @@ public class MainActivity extends Activity {
                 .setComponent(app.component)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED))));
         card.setOnFocusChangeListener((v, has) -> {
+            final int dbg = dbgFocus;   // 0 normally: every switch below is off (dock.sh debug nolift|noglow|noshine|noscale|notitle|plainfocus)
             float s = has ? (inDock ? FavBar.FOCUS_SCALE : 1.1f) : 1f;
             // from the games of the football home: the tray goes back to its resting place (y 768) first, then the tile lifts (FavBar.DROP_MS)
             long wait = inDock && has && trayLowered ? FavBar.DROP_MS : 0;
             if (inDock && has) lowerTray(false);
-            if (wait > 0) v.postDelayed(() -> { if (v.hasFocus()) scaleTo(v, s); }, wait); else scaleTo(v, s);   // a spring: a held arrow keeps its speed from card to card
-            if (inDock) v.animate().translationY(has ? -lift() : 0).translationZ(has ? dp(GlowLook.LIFT_DP) : 0)
-                    .setInterpolator(new DecelerateInterpolator()).setStartDelay(wait).setDuration(FavBar.MS).start();
-            else v.animate().translationZ(has ? dp(GlowLook.LIFT_DP) : 0).setInterpolator(new DecelerateInterpolator()).setDuration(has ? 320 : 200).start();
-            shine.animate().alpha(has ? 1f : 0f).setDuration(160).start();
-            label.animate().alpha(has ? 1f : 0f).translationY(has ? dp(4) : 0).setDuration(200).start();
+            if ((dbg & DebugFlags.SCALE) == 0) { if (wait > 0) v.postDelayed(() -> { if (v.hasFocus()) scaleTo(v, s); }, wait); else scaleTo(v, s); }   // a spring: a held arrow keeps its speed from card to card
+            float z = (dbg & DebugFlags.LIFT) != 0 ? 0 : has ? dp(GlowLook.LIFT_DP) : 0;
+            if ((dbg & DebugFlags.PLAIN) == 0) {
+                if (inDock) v.animate().translationY(has ? -lift() : 0).translationZ(z)
+                        .setInterpolator(new DecelerateInterpolator()).setStartDelay(wait).setDuration(FavBar.MS).start();
+                else v.animate().translationZ(z).setInterpolator(new DecelerateInterpolator()).setDuration(has ? 320 : 200).start();
+                if ((dbg & DebugFlags.SHINE) == 0) shine.animate().alpha(has ? 1f : 0f).setDuration(160).start();
+                label.animate().alpha(has ? 1f : 0f).translationY(has ? dp(4) : 0).setDuration(200).start();
+            } else if ((dbg & DebugFlags.SHINE) == 0) shine.animate().alpha(has ? 1f : 0f).setDuration(160).start();
             if (!has) return;
             lastFocusedId = v.getId();
             optionsHint(inDock);
             if (inDock) {
                 nameCard = v;
-                title.setText(app.label);
-                placeName();
-                title.animate().alpha(1f).setDuration(200).start();
-                animateGlow(app.color);
-                fadeGlow(1f);
-                glideTo(0);
+                if ((dbg & DebugFlags.TITLE) == 0) {
+                    title.setText(app.label);
+                    placeName();
+                    title.animate().alpha(1f).setDuration(200).start();
+                }
+                if ((dbg & DebugFlags.GLOW) == 0) { animateGlow(app.color); fadeGlow(1f); }
+                if ((dbg & DebugFlags.PLAIN) == 0) glideTo(0);
             } else {
-                fadeGlow(0.35f);
-                title.animate().alpha(0f).setDuration(200).start();
+                if ((dbg & DebugFlags.GLOW) == 0) fadeGlow(0.35f);
+                if ((dbg & DebugFlags.TITLE) == 0) title.animate().alpha(0f).setDuration(200).start();
                 scrollToRow(box);
             }
         });
@@ -1388,6 +1396,7 @@ public class MainActivity extends Activity {
     }
 
     /** Explicit D-pad targets: one row per press, ends of rows and of the top bar don't wrap. */
+    private int dbgFocus;
     private int lastPillId = View.NO_ID;   // the pill that had the focus last: ▲ from a home card goes back to it
 
     private void wireFocus() {

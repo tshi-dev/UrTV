@@ -28,7 +28,7 @@
 #   optimize/dock.sh pin off               no PIN: nothing asks, kids mode ends; the apps chosen stay for the next PIN
 #   optimize/dock.sh pin reset             the PIN was forgotten: everything parental back to nothing (the PIN, the locks, kids mode, the wrong tries), and «محفظتي» is wiped
 #   optimize/dock.sh ramtier low|mid|normal|auto   a test switch: the memory tier the home uses (auto = the TV's real one); counts from the next start of the home
-#   optimize/dock.sh debug traynoglass|nopillpanel|nowifimark|nosnapshot|nocardglass|nokeyfilter|keytrace [on|off]   a tester's switch: one piece of the home's drawing off (on is the default word); `debug all off` puts every one back, `debug show` lists them; the home starts over at each change
+#   optimize/dock.sh debug traynoglass|nopillpanel|nowifimark|nosnapshot|nocardglass|nokeyfilter|keytrace|nolift|noglow|noshine|noscale|notitle|plainfocus [on|off]   a tester's switch: one piece of the home's drawing off (on is the default word); `debug all off` puts every one back, `debug show` lists them; the home starts over at each change
 # The home screen redraws at once; the sleep timer's pill too. Only ADB can do this (sa.urtv.home/.DockReceiver needs the shell's DUMP).
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -53,12 +53,12 @@ case "${1:-}:$#" in
   reset:*) send RESET_DOCK ;;
   ramtier:2) case "$2" in low|mid|normal|auto) send RAM_TIER "--es tier $2" ;; *) echo "usage: optimize/dock.sh ramtier low|mid|normal|auto"; exit 1 ;; esac ;;
   ramtier:*) echo "usage: optimize/dock.sh ramtier low|mid|normal|auto"; exit 1 ;;
-  debug:1) echo "usage: optimize/dock.sh debug traynoglass|nopillpanel|nowifimark|nosnapshot|nocardglass|nokeyfilter|keytrace [on|off] | all off | show"; exit 1 ;;
+  debug:1) echo "usage: optimize/dock.sh debug traynoglass|nopillpanel|nowifimark|nosnapshot|nocardglass|nokeyfilter|keytrace|nolift|noglow|noshine|noscale|notitle|plainfocus [on|off] | all off | show"; exit 1 ;;
   debug:*) case "$2" in
       show) send DEBUG "--es flag show" ;;
       all) [ "${3:-}" = off ] || { echo "usage: optimize/dock.sh debug all off"; exit 1; }; send DEBUG "--es flag all --es value off" ;;
-      traynoglass|nopillpanel|nowifimark|nosnapshot|nocardglass|nokeyfilter|keytrace) case "${3:-on}" in on|off) send DEBUG "--es flag $2 --es value ${3:-on}" ;; *) echo "usage: optimize/dock.sh debug $2 on|off"; exit 1 ;; esac ;;
-      *) echo "usage: optimize/dock.sh debug traynoglass|nopillpanel|nowifimark|nosnapshot|nocardglass|nokeyfilter|keytrace [on|off] | all off | show"; exit 1 ;;
+      traynoglass|nopillpanel|nowifimark|nosnapshot|nocardglass|nokeyfilter|keytrace|nolift|noglow|noshine|noscale|notitle|plainfocus) case "${3:-on}" in on|off) send DEBUG "--es flag $2 --es value ${3:-on}" ;; *) echo "usage: optimize/dock.sh debug $2 on|off"; exit 1 ;; esac ;;
+      *) echo "usage: optimize/dock.sh debug traynoglass|nopillpanel|nowifimark|nosnapshot|nocardglass|nokeyfilter|keytrace|nolift|noglow|noshine|noscale|notitle|plainfocus [on|off] | all off | show"; exit 1 ;;
     esac ;;
   hidden:*) send HIDDEN ;;
   hide:*|show:*)
