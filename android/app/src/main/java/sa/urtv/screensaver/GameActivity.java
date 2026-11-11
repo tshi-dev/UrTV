@@ -41,7 +41,7 @@ public abstract class GameActivity extends Activity {
     static final String[] LETTERS_AR = {"أ", "ب", "ج", "د"}, LETTERS_EN = {"A", "B", "C", "D"};
     /** the kit's own words that are picked from a list (marked for the English table) */
     static final String[] ON_OFF = {S.n("لا"), S.n("نعم")}, SOUND_OPTS = {S.n("يعمل"), S.n("صامت")};
-    private static final String[] TEAM_WORDS = {S.n("الصقور"), S.n("النجوم"), S.n("الأسود"), S.n("الواحة"), S.n("النخيل"), S.n("الفرسان"), S.n("الأمواج"), S.n("القمم")};
+    private static final String[] TEAM_WORDS = {S.n("الصقور"), S.n("النجوم"), S.n("الأسود"), S.n("الواحة"), S.n("النخيل"), S.n("الفرسان"), S.n("الأمواج"), S.n("القمم"), S.n("الشهب"), S.n("الروّاد")};
 
     private final Handler h = new Handler(Looper.getMainLooper());
     private final Map<String, Typeface> fonts = new HashMap<>();
@@ -176,7 +176,7 @@ public abstract class GameActivity extends Activity {
         if (dy != 0) { pauseSel = Math.max(0, Math.min(2, pauseSel + dy)); redraw(); return; }
         if (!ok) return;
         if (pauseSel == 0) closePause();
-        else if (pauseSel == 1) { pauseCard = false; onPauseChanged(false, System.currentTimeMillis()); onEndRound(); redraw(); }
+        else if (pauseSel == 1) { pauseCard = false; cancelHandOver(); onPauseChanged(false, System.currentTimeMillis()); onEndRound(); redraw(); }   // a hand-over that was up goes with the round
         else finish();
     }
 
@@ -192,6 +192,8 @@ public abstract class GameActivity extends Activity {
         redraw();
     }
     protected final boolean handingOver() { return hand > 0; }
+    /** drop a hand-over without showing its secret and without running its `done` (the round ended, the game moved on); the caller redraws */
+    protected final void cancelHandOver() { hand = 0; handDone = null; handCount = null; handSecret = ""; }
 
     private void drawHand() {
         if (hand == 3) {
@@ -402,7 +404,8 @@ public abstract class GameActivity extends Activity {
         return st;
     }
 
-    /** the sides' bar: one tile per side (colour square, name, points), the side whose turn it is filled with ink; 88 px high at `y` */
+    /** the sides' bar: one tile per side (colour square, name, points), the side whose turn it is filled with ink; 88 px high at `y`.
+     *  From seven sides on a tile is too narrow for a name at a readable size: the colour square and the points only. */
     protected final void sidesBar(GameScore s, String[] names, int turn, float y) {
         float gap = 16, w = Math.min(560, (1728 - (s.n - 1) * gap) / s.n);
         boolean small = s.n > 4;
@@ -411,9 +414,9 @@ public abstract class GameActivity extends Activity {
             LinearLayout t = new LinearLayout(this); t.setOrientation(LinearLayout.HORIZONTAL); t.setGravity(Gravity.CENTER_VERTICAL); t.setLayoutDirection(Dir.layout());
             t.setBackground(shape(on ? L.ink : L.tile, L.ink, 6, false)); t.setPadding(px(small ? 14 : 20), 0, px(small ? 14 : 20), 0);
             LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(px(small ? 24 : 36), px(small ? 24 : 36)); sp.setMarginEnd(px(small ? 10 : 16));
-            t.addView(box(GameLook.SIDES[i % 8], on ? L.onInk : L.ink, 3, false), sp);
+            t.addView(box(GameLook.SIDES[i % GameLook.SIDES.length], on ? L.onInk : L.ink, 3, false), sp);
             float f = small ? 30 : 40;
-            TextView nm = text(clip(names[i], f, w - (small ? 130 : 200)), f, on ? L.onInk : L.ink, true); nm.setSingleLine(true);
+            TextView nm = text(s.n > 6 ? "" : clip(names[i], f, w - (small ? 130 : 200)), f, on ? L.onInk : L.ink, true); nm.setSingleLine(true);
             t.addView(nm, new LinearLayout.LayoutParams(0, -2, 1f));
             TextView sc = text(num(s.points[i]), small ? 40 : 56, on ? L.saff : L.ink, true); sc.setTextDirection(View.TEXT_DIRECTION_LTR);
             t.addView(sc);
@@ -423,8 +426,8 @@ public abstract class GameActivity extends Activity {
 
     /** the rank rows from y 236: the place as a big numeral in an ink box (saffron for first), the side, what it just won («+10») and its total; shared places */
     protected final void board(GameScore s, String[] names, boolean withLast) {
-        boolean small = s.n > 5;
-        int hgt = small ? 80 : 128; float step = small ? 90 : 142, big = small ? 56 : 88, nameSize = small ? 44 : 64;
+        boolean small = s.n > 5, tiny = s.n > 8;   // 5 rows of 128, 8 of 80, 10 of 64: the last row always ends above y 960
+        int hgt = tiny ? 64 : small ? 80 : 128; float step = tiny ? 72 : small ? 90 : 142, big = tiny ? 44 : small ? 56 : 88, nameSize = tiny ? 36 : small ? 44 : 64;
         int[] order = s.ranked();
         for (int i = 0; i < order.length; i++) {
             int side = order[i], rank = s.rank(side);
@@ -433,8 +436,8 @@ public abstract class GameActivity extends Activity {
             row.setPadding(px(6), px(6), px(6), px(6));   // the children stand inside the 6 px line
             TextView rk = centered(num(rank), big, rank == 1 ? L.onSaff : L.onInk, true); rk.setBackgroundColor(rank == 1 ? L.saff : L.ink);
             row.addView(rk, new LinearLayout.LayoutParams(px(128 - 6), px(hgt - 12)));
-            LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(px(20), px(small ? 44 : 64)); sp.setMarginStart(px(32)); sp.setMarginEnd(px(24));
-            row.addView(box(GameLook.SIDES[side % 8], L.ink, 3, false), sp);
+            LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(px(20), px(tiny ? 36 : small ? 44 : 64)); sp.setMarginStart(px(32)); sp.setMarginEnd(px(24));
+            row.addView(box(GameLook.SIDES[side % GameLook.SIDES.length], L.ink, 3, false), sp);
             TextView nm = text(names[side], nameSize, L.ink, true); nm.setSingleLine(true); nm.setEllipsize(android.text.TextUtils.TruncateAt.END);
             row.addView(nm, new LinearLayout.LayoutParams(0, -2, 1f));
             if (withLast && s.last[side] > 0) {

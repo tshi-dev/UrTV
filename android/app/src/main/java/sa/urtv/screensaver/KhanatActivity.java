@@ -20,9 +20,9 @@ public class KhanatActivity extends GameActivity {
 
     static final int[] ROUNDS = {3, 5, 8}, SECONDS = {60, 90, 0}, TEAMS = {2, 3, 4};
     static final int SPIN_MS = 1500, LETTER_MS = 3000;
-    /** the boxes' names, marked for the English table: the five of every round, then the sixth («أكلة») */
-    static final String[] BOX_KEYS = {"animal", "plant", "object", "country", "name", "food"};
-    static final String[] BOX_NAMES = {S.n("حيوان"), S.n("نبات"), S.n("جماد"), S.n("بلاد"), S.n("اسم"), S.n("أكلة")};
+    /** the boxes' names, marked for the English table: the five of every round, then the two a sixth can be («أكلة», «مدينة سعودية») */
+    static final String[] BOX_KEYS = {"animal", "plant", "object", "country", "name", "food", "saudi_city"};
+    static final String[] BOX_NAMES = {S.n("حيوان"), S.n("نبات"), S.n("جماد"), S.n("بلاد"), S.n("اسم"), S.n("أكلة"), S.n("مدينة سعودية")};
 
     private KhanatData data; private GameChips chips; private KhanatEngine game; private String[] names = new String[0];
     private Screen screen = Screen.SETUP; private int sel; private boolean examples;
@@ -38,7 +38,7 @@ public class KhanatActivity extends GameActivity {
             .add("rounds", S.t("الجولات"), new String[]{num(3), num(5), num(8)}, 1)
             .add("time", S.t("الوقت"), new String[]{S.t("%s ثانية", num(60)), S.t("%s ثانية", num(90)), S.t("بدون وقت")}, 1)
             .add("teams", S.t("الفرق"), new String[]{num(2), num(3), num(4)}, 0)
-            .add("boxes", S.t("الخانات"), new String[]{num(5), S.t("%s مع أكلة", num(6))}, 0)
+            .add("boxes", S.t("الخانات"), new String[]{num(5), S.t("%s مع أكلة", num(6)), S.t("%s مع مدينة سعودية", num(6))}, 0)
             .add("hard", S.t("حروف صعبة"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
         remembered(soundChip(chips));
     }
@@ -52,9 +52,10 @@ public class KhanatActivity extends GameActivity {
 
     private void start() {
         if (data == null || data.letters(en, false).size() < 10) { toast(S.t("قريبًا")); return; }
-        int n = chips.picked("boxes") == 1 ? 6 : 5;
+        int sixth = chips.picked("boxes"), n = sixth == 0 ? 5 : 6;
         String[] boxes = new String[n];
-        System.arraycopy(BOX_KEYS, 0, boxes, 0, n);
+        System.arraycopy(BOX_KEYS, 0, boxes, 0, 5);
+        if (n == 6) boxes[5] = BOX_KEYS[4 + sixth];
         int teams = TEAMS[chips.picked("teams")];
         names = teamNames(teams);
         game = new KhanatEngine(teams, ROUNDS[chips.picked("rounds")], boxes, data.letters(en, chips.picked("hard") == 1), rnd);
@@ -160,7 +161,7 @@ public class KhanatActivity extends GameActivity {
         for (int i = 0; i < n; i++) {
             boolean on = i == current;
             FrameLayout t = stamp(on ? L.saff : L.tile, L.ink, 6, false);
-            t.addView(centered(boxName(game.boxes[i]), n > 5 ? 52 : 64, on ? L.onSaff : L.ink, true), new FrameLayout.LayoutParams(-1, -1));
+            t.addView(centered(boxName(game.boxes[i]), n > 5 ? 44 : 64, on ? L.onSaff : L.ink, true), new FrameLayout.LayoutParams(-1, -1));
             root.addView(t, at(w, hgt, 96 + i * (w + gap), y));
         }
     }
