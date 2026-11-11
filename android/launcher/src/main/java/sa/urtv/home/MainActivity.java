@@ -111,6 +111,7 @@ public class MainActivity extends Activity {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Runnable rotateWallpaper = this::nextWallpaper;
     static final long WALLPAPER_INTERVAL_MS = 10 * 60 * 1000;
+    private LinearLayout prayerCard;   // «UrTV النظيف»: today's five in one strip, built on first use
     private TextView greeting, weatherLine, clock, ampm, date, zoneLine, title, appsLabel, prayerLine;   // prayerLine: «UrTV النظيف»'s next-prayer line under the date
     private String langBuilt;   // S.lang() when this screen was built
     // «المظهر» (Look): the parts a light look recolours; built in the dark look's colours, so dark is exactly as it was
@@ -2923,7 +2924,7 @@ public class MainActivity extends Activity {
         }
         maskVis(tvRowsBox, on ? View.GONE : null);
         updatePrayerLine();   // its own view: shown only while the mask is on and the tick is kept, hidden otherwise
-        if (homeCard != null) homeCard.hide(on && !keep.contains(CleanMode.CARD));
+        if (homeCard != null) homeCard.hide(on);   // «UrTV النظيف»: the home's own card never shows (the prayer card below is the one card)
         if (was && !on) {   // back to the full home: what the mask hid is drawn again from the person's own settings
             restoreClean();
             updateClock();
@@ -3076,19 +3077,88 @@ public class MainActivity extends Activity {
         adhanBar.setFocusable(words != null && AdhanBar.playing(cfg));
     }
 
-    /** «UrTV النظيف»: the next prayer under the date, only while the mask is on and «الصلاة القادمة» is kept; read off the UI thread (it asks the screensaver for the place) */
+    /**
+     * «UrTV النظيف»: «بطاقة الصلاة»: the next prayer as one line under the date, or today's five as one strip placed by PrayerCardBox («مكان البطاقة»), or nothing; never both. Read off the UI thread
+     * (it asks the screensaver for the place), on the minute tick; the strip is one view that is filled again, nothing is drawn per frame.
+     */
     private void updatePrayerLine() {
         if (prayerLine == null) return;
-        if (!cleanShown || !CleanMode.keep(this).contains(CleanMode.PRAYER)) { prayerLine.setVisibility(View.GONE); return; }
+        final String mode = cleanShown ? CleanMode.prayer(this) : CleanKeep.NONE;
+        if (!CleanKeep.LINE.equals(mode)) prayerLine.setVisibility(View.GONE);
+        if (!CleanKeep.CARD.equals(mode)) { if (prayerCard != null) prayerCard.setVisibility(View.GONE); }
+        if (CleanKeep.NONE.equals(mode)) return;
         final android.content.Context app = getApplicationContext();
         new Thread(() -> {
-            final String line = sa.urtv.home.tilawah.NowPlaying.nextPrayerLine(app);
+            final String line = CleanKeep.LINE.equals(mode) ? sa.urtv.home.tilawah.NowPlaying.nextPrayerLine(app) : "";
+            final String[] five = CleanKeep.CARD.equals(mode) ? sa.urtv.home.tilawah.NowPlaying.todayCard(app) : null;
             runOnUiThread(() -> {
-                if (!cleanShown || isFinishing() || isDestroyed()) return;
-                prayerLine.setText(arabicDigits(line));
-                prayerLine.setVisibility(line.isEmpty() ? View.GONE : View.VISIBLE);
+                if (!cleanShown || isFinishing() || isDestroyed() || !mode.equals(CleanMode.prayer(this))) return;
+                if (CleanKeep.LINE.equals(mode)) {
+                    prayerLine.setText(arabicDigits(line));
+                    prayerLine.setVisibility(line.isEmpty() ? View.GONE : View.VISIBLE);
+                } else showPrayerCard(five);
             });
         }, "clean-prayer").start();
+    }
+
+    private final TextView[] cardNames = new TextView[5], cardTimes = new TextView[5];
+
+    private void showPrayerCard(String[] five) {
+        if (five == null) { if (prayerCard != null) prayerCard.setVisibility(View.GONE); return; }
+        if (prayerCard == null) {
+            prayerCard = new LinearLayout(this);
+            prayerCard.setOrientation(LinearLayout.HORIZONTAL);
+            prayerCard.setLayoutDirection(Dir.layout());
+            prayerCard.setGravity(Gravity.CENTER);
+            prayerCard.setPadding(dp(8), dp(8), dp(8), dp(8));
+            GradientDrawable bg = new GradientDrawable();
+            bg.setColor(0x66000000);
+            bg.setCornerRadius(dp(16));
+            prayerCard.setBackground(bg);
+            for (int k = 0; k < 5; k++) {
+                LinearLayout cell = new LinearLayout(this);
+                cell.setOrientation(LinearLayout.VERTICAL);
+                cell.setGravity(Gravity.CENTER);
+                cardNames[k] = text(12, "regular", 0xFFC6BBA4);
+                cardTimes[k] = text(15, "sans-serif-medium", 0xFFFFFFFF);
+                cardNames[k].setGravity(Gravity.CENTER);
+                cardTimes[k].setGravity(Gravity.CENTER);
+                cardNames[k].setSingleLine(true);
+                cardTimes[k].setSingleLine(true);
+                cell.addView(cardNames[k]);
+                cell.addView(cardTimes[k]);
+                prayerCard.addView(cell, new LinearLayout.LayoutParams(0, -2, 1f));
+            }
+            prayerCard.setFocusable(false);
+            hero.addView(prayerCard, new FrameLayout.LayoutParams(dp(PrayerCardBox.W), dp(PrayerCardBox.H), Gravity.TOP | (Dir.rtl() ? Gravity.RIGHT : Gravity.LEFT)));
+            hero.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> placePrayerCard());
+        }
+        int next = Integer.parseInt(five[10]);
+        for (int k = 0; k < 5; k++) {   // the next one in the gold, the others quiet
+            cardNames[k].setText(five[2 * k]);
+            cardTimes[k].setText(arabicDigits(five[2 * k + 1]));
+            cardNames[k].setTextColor(k == next ? GOLD : 0xFFC6BBA4);
+            cardTimes[k].setTextColor(k == next ? GOLD : 0xFFFFFFFF);
+        }
+        prayerCard.setVisibility(View.VISIBLE);
+        placePrayerCard();
+    }
+
+    /** the strip's place from the clock block's real box and the app title's top (PrayerCardBox); only when it moved */
+    private void placePrayerCard() {
+        if (prayerCard == null || prayerCard.getVisibility() != View.VISIBLE || clockBlock == null || bottomBlock == null || clockBlock.getWidth() == 0) return;
+        View header = (View) clockBlock.getParent();
+        int[] clockBox = {header.getLeft() + clockBlock.getLeft(), header.getTop() + clockBlock.getTop(), header.getLeft() + clockBlock.getRight(), header.getTop() + clockBlock.getBottom()};
+        android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+        int[] r = PrayerCardBox.place(CleanMode.place(this), Dir.rtl(), dm.widthPixels, dm.heightPixels, dm.density, clockBox, bottomBlock.getTop());
+        FrameLayout.LayoutParams p = (FrameLayout.LayoutParams) prayerCard.getLayoutParams();
+        int edge = Dir.rtl() ? dm.widthPixels - r[2] : r[0];   // the margin from the side the card is pinned to
+        if ((Dir.rtl() ? p.rightMargin : p.leftMargin) == edge && p.topMargin == r[1] && p.width == r[2] - r[0]) return;
+        if (Dir.rtl()) p.rightMargin = edge; else p.leftMargin = edge;
+        p.topMargin = r[1];
+        p.width = r[2] - r[0];
+        p.height = r[3] - r[1];
+        prayerCard.setLayoutParams(p);
     }
 
     private static String arabicDigits(String s) { return Digits.of(s); }   // the setting's digits (hindi or latin)

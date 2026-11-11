@@ -33,6 +33,24 @@ public final class NowPlaying {
 
     private NowPlaying() {}
 
+    /** «UrTV النظيف»'s prayer card: today's five as {name, time} x 5 then the index (0 to 4) of the next one, or null when it cannot be told. Off the UI thread (it asks the screensaver for the place). */
+    public static String[] todayCard(Context c) {
+        try {
+            PrayerTimes t = PrayerTimes.today(c);
+            PrayerTimes.Next n = PrayerTimes.next(c);
+            String[] out = new String[11];
+            int next = 0;
+            for (int k = 0; k < PrayerTimes.PRAYERS.length; k++) {
+                int p = PrayerTimes.PRAYERS[k];
+                out[2 * k] = sa.urtv.home.S.tv(PrayerTimes.NAMES[p]);
+                out[2 * k + 1] = PrayerTimes.clockText(t.clock[p]);
+                if (n != null && n.index == p) next = k;
+            }
+            out[10] = String.valueOf(next);
+            return out;
+        } catch (RuntimeException e) { return null; }
+    }
+
     /** «الصلاة القادمة: العصر ٣:٤١ م، بعد ساعة» for «UrTV النظيف»'s line under the date; "" when it cannot be told. Reads the place (a cross-process query): off the UI thread. */
     public static String nextPrayerLine(Context c) {
         try {

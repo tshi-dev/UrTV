@@ -67,7 +67,7 @@ public class CleanActivity extends Activity {
         final boolean on = CleanMode.on(this);
         col.addView(text(on ? S.t("\u2066UrTV\u2069 النظيف مفعّل") : S.t("تفعيل UrTV النظيف؟"), 30, "Medium", look.text), lp(dp(16)));
         for (String line : on ? new String[] {S.t("الشاشة الرئيسية وشاشة التوقف و«تلفزيونك» تعرض الأساسيات فقط الآن."), S.t("ضغطة وحدة على «رجّع الشاشة الكاملة» ترجّع كل شيء كما اخترته أنت.")}
-                : new String[] {S.t("يبقى: الساعة والتاريخ وشريط التطبيقات، وزر الإعدادات."), S.t("يختفي: الأزرار الإضافية ومركز التحكم والتنبيهات والصفوف الزائدة."),
+                : new String[] {S.t("يبقى: الساعة والتاريخ وشريط التطبيقات، وزر الإعدادات، وسطر الصلاة القادمة (أو بطاقة الصلاة) إن اخترته."), S.t("يختفي: الأزرار الإضافية ومركز التحكم والتنبيهات والصفوف الزائدة."),
                                 S.t("شاشة التوقف: الصورة والساعة فقط، وسطر الصلاة القادمة إن اخترته. بدون بطاقات ولا أسواق ولا مباريات ولا مهام ولا حديث."),
                                 S.t("«تلفزيونك»: يفتح على الإعدادات مباشرة، بدون الألعاب والأسواق والمباريات."),
                                 S.t("يبقى شغّالًا كما ضبطته: الأذان والتذكيرات والقفل العائلي والتحديثات."),
@@ -103,6 +103,19 @@ public class CleanActivity extends Activity {
         col.addView(text(S.t("اختر القليل اللي يبقى. الساعة والتاريخ وشريط التطبيقات دائمًا."), 20, "Regular", look.sub), lp(dp(16)));
         final Set<String> keep = new LinkedHashSet<>(CleanMode.keep(this));
         View firstRow = null;
+        // «بطاقة الصلاة» (none / the line / the card) and, with the card, «مكان البطاقة»: one press goes to the next choice
+        final TextView prayerRow = button("", null), placeRow = button("", null);
+        final Runnable fill = () -> {
+            prayerRow.setText(S.t("بطاقة الصلاة") + ": " + modeName(CleanMode.prayer(this)));
+            placeRow.setText(S.t("مكان البطاقة") + ": " + placeName(CleanMode.place(this)));
+            placeRow.setVisibility(CleanKeep.CARD.equals(CleanMode.prayer(this)) ? View.VISIBLE : View.GONE);
+        };
+        prayerRow.setOnClickListener(v -> { CleanMode.setPrayer(this, next(CleanKeep.PRAYER_MODES, CleanMode.prayer(this))); fill.run(); });
+        placeRow.setOnClickListener(v -> { CleanMode.setPlace(this, next(CleanKeep.PRAYER_PLACES, CleanMode.place(this))); fill.run(); });
+        fill.run();
+        col.addView(prayerRow, lp(dp(8)));
+        col.addView(placeRow, lp(dp(8)));
+        firstRow = prayerRow;
         for (final String o : CleanKeep.OPTIONS) {
             final TextView row = button(mark(keep.contains(o)) + name(o), null);
             row.setOnClickListener(v -> {
@@ -111,7 +124,6 @@ public class CleanActivity extends Activity {
                 row.setText(mark(keep.contains(o)) + name(o));
             });
             col.addView(row, lp(dp(8)));
-            if (firstRow == null) firstRow = row;
         }
         LinearLayout.LayoutParams dp = lp(0);
         dp.topMargin = dp(16);
@@ -120,14 +132,25 @@ public class CleanActivity extends Activity {
         f.post(f::requestFocus);
     }
 
+    private static String next(String[] all, String now) {
+        for (int i = 0; i < all.length; i++) if (all[i].equals(now)) return all[(i + 1) % all.length];
+        return all[0];
+    }
+
+    private String modeName(String m) {
+        return CleanKeep.CARD.equals(m) ? S.t("بطاقة") : CleanKeep.NONE.equals(m) ? S.t("بدون") : S.t("سطر تحت التاريخ");
+    }
+
+    private String placeName(String p) {
+        return PrayerCardBox.BELOW.equals(p) ? S.t("تحت الساعة") : PrayerCardBox.OPPOSITE.equals(p) ? S.t("الجهة المقابلة للساعة") : S.t("وسط الشاشة");
+    }
+
     private static String mark(boolean on) { return on ? "✓  " : "▢  "; }
 
     private String name(String o) {
         switch (o) {
-            case CleanMode.CARD: return S.t("بطاقة واحدة");
             case CleanMode.WIFI: return S.t("علامة الواي فاي");
             case CleanMode.GREETING: return S.t("التحية");
-            case CleanMode.PRAYER: return S.t("الصلاة القادمة");
             default: return S.t("زر الإعدادات");
         }
     }

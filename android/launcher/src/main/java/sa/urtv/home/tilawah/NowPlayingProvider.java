@@ -43,7 +43,7 @@ public class NowPlayingProvider extends ContentProvider {
             MatrixCursor a = new MatrixCursor(new String[]{"on", "factory", "prayer"});
             a.addRow(new Object[]{getContext().getSharedPreferences("clean_mode", android.content.Context.MODE_PRIVATE).getBoolean("on", false) ? 1 : 0   /* CleanMode.PREFS / ON, read only */,
                     sa.urtv.home.setup.SetupHook.factoryOff(getContext()) ? 1 : 0,
-                    getContext().getSharedPreferences("clean_mode", android.content.Context.MODE_PRIVATE).getString("keep", "card,wifi,prayer,settings").contains("prayer") ? 1 : 0   /* CleanKeep.PRAYER, read only: the saver's page keeps its next-prayer line */});
+                    "none".equals(getContext().getSharedPreferences("clean_mode", android.content.Context.MODE_PRIVATE).getString("prayer", "line")) ? 0 : 1   /* CleanMode.PRAYER, read only: the saver's page keeps its next-prayer line unless «بطاقة الصلاة» is «بدون» */});
             return a;
         }
         if (uri != null && "adhan".equals(uri.getLastPathSegment())) {

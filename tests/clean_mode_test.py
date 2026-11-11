@@ -27,14 +27,14 @@ check("it describes first: what stays, what is hidden, that nothing is deleted a
 check("the focus starts on «إلغاء» (the first thing pressed by mistake does nothing)", 'cancel = button(S.t("إلغاء"), v -> finish());' in act and "first.post(first::requestFocus);" in act)
 check("the family PIN is asked whenever one is set, for turning it on and for turning it off; a wrong or cancelled PIN changes nothing",
       "if (!Parental.state(this).pinSet) { go.run(); return; }" in act and "Parental.confirm(this, Parental.adhanFirst(this)," in act and act.count("pin(() ->") == 2 and "() -> { });" in act)
-check("«تخصيص»: one tick per thing (one card, the Wi-Fi mark, the greeting, the settings button); the clock, the date and the apps bar always stay; Back from the sheet goes back to the description",
+check("«تخصيص»: one tick per thing (the Wi-Fi mark, the greeting, the settings button); the clock, the date and the apps bar always stay; Back from the sheet goes back to the description",
       "for (final String o : CleanKeep.OPTIONS)" in act and "customising = false; render(); return;" in act and "الساعة والتاريخ وشريط التطبيقات دائمًا" in act)
 check("exported only behind a signature permission (same key), which the screensaver's settings hold: no other app opens it",
       re.search(r'android:name="\.CleanActivity"\s+android:exported="true"\s+android:permission="sa\.urtv\.home\.OPEN_CLEAN"', man) is not None
       and re.search(r'<permission\s+android:name="sa\.urtv\.home\.OPEN_CLEAN"\s+android:protectionLevel="signature"', man) is not None
       and '<uses-permission android:name="sa.urtv.home.OPEN_CLEAN" />' in sman)
 check("a mask, not a rewrite: the home hides by visibility and by not making the card's page; off, it draws everything again from the person's own settings",
-      "private void applyClean()" in main and "homeCard.hide(on && !keep.contains(CleanMode.CARD));" in main and "void hide(boolean on)" in card and "if (want == null || hidden)" in card
+      "private void applyClean()" in main and "homeCard.hide(on);" in main and "void hide(boolean on)" in card and "if (want == null || hidden)" in card
       and "if (was && !on) {" in main and "updateClock();" in main.split("if (was && !on) {")[1][:200] and "wireFocus();" in main.split("if (was && !on) {")[1][:300])
 check("the top row stays closed with one button (the settings, in the control center's place); the others, «يُتلى الآن», the extra rows and the notices are hidden and stay hidden when the home redraws",
       "pillBar.lock(on)" in main and "void lock(boolean on)" in bar and "if (locked) return;" in bar and "centerPill.setIcon(on ? R.drawable.ic_settings : R.drawable.ic_center);" in main
@@ -55,8 +55,8 @@ prefsj = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/Prefs.java").rea
 hub = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/YourTvHubActivity.java").read_text(encoding="utf-8")
 prov = (HOME / "tilawah/NowPlayingProvider.java").read_text(encoding="utf-8")
 check("home: «الصلاة القادمة» is a tick (on by default), one line under the date, shown only while the mask is on and the tick is kept; off hides it (its own view, nothing of the person's is touched)",
-      "PRAYER = \"prayer\"" in src("CleanKeep.java") and "DEFAULT_KEEP = \"card,wifi,prayer,settings\"" in src("CleanKeep.java") and "case CleanMode.PRAYER:" in act
-      and "if (!cleanShown || !CleanMode.keep(this).contains(CleanMode.PRAYER)) { prayerLine.setVisibility(View.GONE); return; }" in main and "nextPrayerLine" in main)
+      "DEFAULT_PRAYER = LINE" in src("CleanKeep.java") and "بطاقة الصلاة" in act
+      and "if (!CleanKeep.LINE.equals(mode)) prayerLine.setVisibility(View.GONE);" in main and "nextPrayerLine" in main)
 check("home: no way into the markets, matches or games pages while the mask is on (the pills are locked away, the stocks card and the games widget do nothing)",
       "if (!cleanShown) launch(new Intent(MainActivity.this, MarketsActivity.class));" in main and "if (cleanShown && FootballFocus.MT.equals(which)) return;" in main
       and "if (!cleanShown) guarded(ParentalPolicy.WIDGET_MATCHES" in main and "if (!cleanShown) launchGuarded(ParentalPolicy.WIDGET_MATCHES" in main)
@@ -76,8 +76,8 @@ check("adhan, reminders, the parental lock and updates are not masked: the saver
 if not shutil.which("javac"):
     print("SKIP clean keep rules: no javac"); sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
-    subprocess.run(["javac", "-d", tmp, str(HOME / "CleanKeep.java"), str(ROOT / "tests/CleanKeepRun.java")], check=True, capture_output=True)
+    subprocess.run(["javac", "-d", tmp, str(HOME / "CleanKeep.java"), str(HOME / "PrayerCardBox.java"), str(ROOT / "tests/CleanKeepRun.java")], check=True, capture_output=True)
     out = subprocess.run(["java", "-cp", tmp, "sa.urtv.home.CleanKeepRun"], check=True, capture_output=True, text=True).stdout.split("\n")
-check("the rules: never set = one card, the Wi-Fi mark, the next-prayer line and the settings button; set to nothing = nothing; unknown names go, the sheet's order, no repeats",
-      out[:4] == ["card,wifi,prayer,settings", "", "card,settings", "wifi,greeting"], out)
+check("the rules: never set = the Wi-Fi mark and the settings button (the prayer line or card is its own choice); set to nothing = nothing; unknown names go, the sheet's order, no repeats",
+      out[:4] == ["wifi,settings", "", "settings", "wifi,greeting"], out)
 sys.exit(1 if failed else 0)

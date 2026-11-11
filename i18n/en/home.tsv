@@ -622,14 +622,12 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 ⁦UrTV⁩ النظيف مفعّل	Clean UrTV is on
 تفعيل UrTV النظيف؟	Turn on Clean UrTV?
 ضغطة وحدة على «رجّع الشاشة الكاملة» ترجّع كل شيء كما اخترته أنت.	One press on «Bring back the full screen» puts everything back as you chose it.
-يبقى: الساعة والتاريخ وشريط التطبيقات، وزر الإعدادات.	Stays: the clock, the date, the apps bar and the settings button.
 يختفي: الأزرار الإضافية ومركز التحكم والتنبيهات والصفوف الزائدة.	Hidden: the extra buttons, the control center, the notices and the extra rows.
 ما يُحذف شيء، وما يتغيّر شيء من إعداداتك. كل ما أخفيناه يرجع بضغطة وحدة من نفس هالشاشة.	Nothing is deleted and none of your settings change. Everything we hid comes back with one press from this same screen.
 رجّع الشاشة الكاملة	Bring back the full screen
 فعّل	Turn on
 تخصيص UrTV النظيف	Customise Clean UrTV
 اختر القليل اللي يبقى. الساعة والتاريخ وشريط التطبيقات دائمًا.	Pick the few things that stay. The clock, the date and the apps bar always do.
-بطاقة واحدة	One card
 علامة الواي فاي	The Wi-Fi mark
 التحية	The greeting
 زر الإعدادات	The settings button
@@ -639,3 +637,11 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 يبقى شغّالًا كما ضبطته: الأذان والتذكيرات والقفل العائلي والتحديثات.	Keeps working as you set it: the adhan, reminders, the family lock and updates.
 الصلاة القادمة	Next prayer
 الصلاة القادمة: %s %s، %s	Next prayer: %s %s, %s
+يبقى: الساعة والتاريخ وشريط التطبيقات، وزر الإعدادات، وسطر الصلاة القادمة (أو بطاقة الصلاة) إن اخترته.	Stays: the clock, the date, the apps bar, the settings button, and the next-prayer line (or the prayer card) if you choose it.
+بطاقة الصلاة	Prayer card
+مكان البطاقة	Card place
+بطاقة	Card
+سطر تحت التاريخ	Line under the date
+تحت الساعة	Under the clock
+الجهة المقابلة للساعة	Opposite the clock
+وسط الشاشة	Middle of the screen
