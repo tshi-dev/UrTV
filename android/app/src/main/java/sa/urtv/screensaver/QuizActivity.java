@@ -485,12 +485,12 @@ public class QuizActivity extends Activity {
         FrameLayout.LayoutParams p = new FrameLayout.LayoutParams(-1, px(80), Gravity.BOTTOM); p.bottomMargin = px(200);
         root.addView(n, p);
     }
-    /** the bank's Arabic text stores Arabic-Indic digits: with Latin digits set, the question and the four answers (on the TV and on the phones) use 0-9 */
+    /** the bank's Arabic text stores Arabic-Indic digits: with Latin digits set, the question and the four answers (on the TV and on the phones) use 0-9; a sum inside the Arabic sentence is isolated left to right */
     private QuizRoom.Q digits(QuizRoom.Q q) {
-        if (en || !latin) return q;
+        if (en) return q;
         String[] o = new String[q.opts.length];
-        for (int i = 0; i < o.length; i++) o[i] = DigitsText.convert(q.opts[i], true);
-        return new QuizRoom.Q(DigitsText.convert(q.text, true), o, q.correct);
+        for (int i = 0; i < o.length; i++) o[i] = QuizRoom.isolateMath(latin ? DigitsText.convert(q.opts[i], true) : q.opts[i]);
+        return new QuizRoom.Q(QuizRoom.isolateMath(latin ? DigitsText.convert(q.text, true) : q.text), o, q.correct);
     }
     private void startRound() {
         Random rnd = new Random();
@@ -539,7 +539,7 @@ public class QuizActivity extends Activity {
                 sec = DigitsText.convert(sec, latin);
                 if (!latin) sec = sec.replace('.', '٫');
                 root.addView(text(S.t("الأسرع: %s، %s ثانية", fast.name, sec), 40, SAFF, true), at(1500, 56, 96, 396));
-            } else root.addView(text(S.t("انتهى الوقت"), 40, SAFF, true), at(1500, 56, 96, 396));
+            } else root.addView(text(room.endedEarly ? S.t("جاوب الجميع") : S.t("انتهى الوقت"), 40, SAFF, true), at(1500, 56, 96, 396));   // all answered early: not «time's up»
         }
         List<QuizRoom.Player> ps = room.players();
         for (int i = 0; i < 4; i++) {
@@ -633,7 +633,7 @@ public class QuizActivity extends Activity {
         List<QuizRoom.Player> r = room.ranked();
         for (int i = 0; i < Math.min(BOARD_ROWS, r.size()); i++) {
             QuizRoom.Player p = r.get(i);
-            LinearLayout row = playerRow(p, i + 1, true, 128);
+            LinearLayout row = playerRow(p, p.rank, true, 128);   // players on one score share the place
             root.addView(row, at(1728, 128, 96, 236 + i * 142));
             if (animate && p.prevRank > 0 && p.prevRank != i + 1 && p.prevRank <= BOARD_ROWS) { row.setTranslationY((p.prevRank - (i + 1)) * 142f * scale); row.animate().translationY(0).setDuration(300).start(); }
         }
@@ -642,7 +642,7 @@ public class QuizActivity extends Activity {
 
     private void drawEnd() {
         List<QuizRoom.Player> r = room.ranked();
-        title(S.t("انتهت اللعبة"), r.isEmpty() ? null : S.t("الفائز: %s", r.get(0).name));
+        title(S.t("انتهت اللعبة"), r.isEmpty() ? null : r.get(0).score <= 0 ? S.t("لا فائز هذه المرة") : r.size() > 1 && r.get(1).score == r.get(0).score ? S.t("تعادل في المركز الأول") : S.t("الفائز: %s", r.get(0).name));
         String[] labels = {S.t("العب مرة أخرى"), S.t("تغيير الإعدادات"), S.t("خروج")};
         for (int i = 0; i < 3; i++) root.addView(button(labels[i], sel == i, 520), at(520, 96, 96 + i * (520 + 24), 232));
         int[] cols = {OKB, SAFF, 0xFFF08A6E}; float[] hs = {512, 400, 300}; int[] place = {1, 0, 2};   // heights of 1st, 2nd, 3rd (the winner tallest, in the middle); on the screen 2nd, 1st, 3rd from the left
@@ -657,7 +657,7 @@ public class QuizActivity extends Activity {
             TextView sc = text(num(p.score), 48, SAFF, false); sc.setTextDirection(View.TEXT_DIRECTION_LTR); nameBar.addView(sc);
             col.addView(nameBar, new LinearLayout.LayoutParams(-1, px(96)));
             FrameLayout blk = stamp(cols[pi], INK, 6, false);
-            blk.addView(centered(num(pi + 1), Math.min(340, hs[pi] * .75f), INK, true), new FrameLayout.LayoutParams(-1, -1));
+            blk.addView(centered(num(p.rank), Math.min(340, hs[pi] * .75f), INK, true), new FrameLayout.LayoutParams(-1, -1));
             col.addView(blk, new LinearLayout.LayoutParams(-1, px(hs[pi])));
             FrameLayout.LayoutParams cp = new FrameLayout.LayoutParams(px(576), -2, Gravity.LEFT | Gravity.BOTTOM); cp.leftMargin = px(96 + k * 576); cp.bottomMargin = px(120);   // the blocks stand on y 960, above the hint line and inside the safe area
             root.addView(col, cp);
@@ -669,7 +669,7 @@ public class QuizActivity extends Activity {
     private void drawList() {
         title(S.t("الترتيب الكامل"), S.t("%s لاعبين", num(room.players().size())));
         List<QuizRoom.Player> r = room.ranked();
-        for (int i = 0; i < LIST_ROWS && sel + i < r.size(); i++) root.addView(playerRow(r.get(sel + i), sel + i + 1, false, 112), at(1728, 112, 96, 236 + i * 126));
+        for (int i = 0; i < LIST_ROWS && sel + i < r.size(); i++) root.addView(playerRow(r.get(sel + i), r.get(sel + i).rank, false, 112), at(1728, 112, 96, 236 + i * 126));
         hints("▲ ▼", S.t("الصفحة"), S.t("رجوع"), S.t("الترتيب"));
     }
 

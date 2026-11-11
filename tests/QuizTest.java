@@ -43,10 +43,32 @@ public final class QuizTest {
         r.answer(p1.token, 0, 0, x0); r.answer(p2.token, 0, 0, x0);
         now[0] += 5000; r.touch(p1.token); r.touch(p2.token);
         check("everyone answered: the third answering closes the question at once", r.answer(p3.token, 0, 1, x0) == null && r.phase == QuizRoom.Phase.REVEAL);
-        r = room(); p1 = join(r, "A"); p2 = join(r, "B"); p3 = join(r, "C"); now[0] += 50000; r.touch(p1.token); r.touch(p2.token); r.start(qs(4)); x0 = r.nonce();
-        now[0] += 15000; r.touch(p1.token); r.touch(p2.token);
+        // step 52: a question ends early ONLY when every player in the room has answered; a quiet one (polls once a minute) never shortens it
+        r = room(); p1 = join(r, "A"); p2 = join(r, "B"); p3 = join(r, "C"); now[0] += 50000; r.touch(p1.token); r.touch(p2.token); r.start(qs(5)); x0 = r.nonce();
+        now[0] += 5000; r.touch(p1.token); r.touch(p2.token);
         r.answer(p1.token, 0, 0, x0); r.answer(p2.token, 0, 0, x0);
-        check("everyone answered: a phone silent for over a minute (gone) is not waited for", r.phase == QuizRoom.Phase.REVEAL);
+        check("everyone answered: a player silent for over a minute (his tab polls once a minute) is still waited for: the question stays open", r.phase == QuizRoom.Phase.QUESTION && !r.endedEarly);
+        now[0] += 16000; r.tick();
+        check("everyone answered: ... it ends at the 20 s, not early (endedEarly false), and he scored nothing", r.phase == QuizRoom.Phase.REVEAL && !r.endedEarly && p3.score == 0 && p3.missed == 1 && !p3.left);
+        now[0] += 8000; r.tick(); x0 = r.nonce(); r.answer(p1.token, 1, 1, x0); r.answer(p2.token, 1, 1, x0); now[0] += 20000; r.tick();
+        now[0] += 8000; r.tick(); x0 = r.nonce(); r.answer(p1.token, 2, 2, x0); r.answer(p2.token, 2, 2, x0); now[0] += 20000; r.tick();
+        check("out of the room: three whole questions in a row with no answer, and only then: left, out, and his phone is told «gone»", p3.out && p3.left && r.stateFor(p3.token).contains("\"e\":\"gone\"") && !p1.out);
+        now[0] += 8000; r.tick(); x0 = r.nonce();
+        r.answer(p1.token, 3, 0, x0); now[0] += 100; r.answer(p2.token, 3, 0, x0);
+        check("out of the room: the others no longer wait for him; the question ends when they have answered (early)", r.phase == QuizRoom.Phase.REVEAL && r.endedEarly);
+        QuizRoom.Result back = r.join("1234", "C", 0, p3.token);
+        check("out of the room: joining again with his token brings the same player back (score kept, missed 0)", back.ok && back.player == p3 && !p3.left && !p3.out && p3.missed == 0);
+        r = room(); p1 = join(r, "A"); p2 = join(r, "B"); r.start(qs(3)); x0 = r.nonce();
+        r.answer(p1.token, 0, 0, x0); now[0] += 1; r.answer(p2.token, 0, 1, x0);
+        check("everyone answered: when all have, the question ends at once and says so (endedEarly)", r.phase == QuizRoom.Phase.REVEAL && r.endedEarly);
+        r = room(); p1 = join(r, "A"); p2 = join(r, "B"); String lobbyTok = p2.token; now[0] += QuizRoom.DROP_LOBBY_MS + 1000; r.touch(p1.token); r.tick();
+        check("lobby: a phone silent for 10 minutes is removed and told «gone» (not sent to the join form without a word)", r.byToken(lobbyTok) == null && r.stateFor(lobbyTok).contains("\"e\":\"gone\""));
+        r = room(); p1 = join(r, "A"); p2 = join(r, "B"); p3 = join(r, "C");
+        check("ties: players on one score share the place (all on 0: place 1 each)", p1.rank == 1 && p2.rank == 1 && p3.rank == 1);
+        r.start(qs(2)); x0 = r.nonce(); r.answer(p1.token, 0, 0, x0); r.answer(p2.token, 0, 0, x0); r.answer(p3.token, 0, 1, x0);
+        check("ties: two on the same score share place 1, the one behind is 3 (not 2)", p1.score == p2.score && p1.rank == 1 && p2.rank == 1 && p3.rank == 3);
+        check("math: a sum inside an Arabic sentence is isolated left to right, text without one is untouched",
+            QuizRoom.isolateMath("ما ناتج 250 - 175؟").equals("ما ناتج \u2066250 - 175\u2069؟") && QuizRoom.isolateMath("ما ناتج ٢٥٠ + ١٧٥؟").contains("\u2066٢٥٠ + ١٧٥\u2069") && QuizRoom.isolateMath("عاصمة السعودية؟").equals("عاصمة السعودية؟") && QuizRoom.isolateMath("سنة 1990").equals("سنة 1990"));
         r = room(); p1 = join(r, "A"); p2 = join(r, "B"); p3 = join(r, "C"); r.start(qs(4)); x0 = r.nonce();
         check("nonce: an answer without one, or with a wrong one, is refused and nobody is credited",
             "closed".equals(r.answer(p1.token, 0, 0, null)) && "closed".equals(r.answer(p1.token, 0, 0, "zzz")) && "closed".equals(r.answer(p1.token, 0, 0, "")) && r.answeredCount() == 0);
@@ -159,7 +181,7 @@ public final class QuizTest {
         // ties are broken by who tapped first
         r = room(); p1 = join(r, "A"); p2 = join(r, "B"); r.start(qs(1));
         now[0] += 1000; r.answer(p2.token, 0, 0); now[0] += 1; r.answer(p1.token, 0, 0);
-        check("ranking: players with the same score are ordered by who tapped first (B joined second but tapped 1 ms before A)", p1.score == p2.score && p2.rank == 1 && p1.rank == 2);
+        check("ranking: players with the same score are ordered by who tapped first (B joined second but tapped 1 ms before A)", p1.score == p2.score && r.ranked().get(0) == p2 && r.ranked().get(1) == p1 && p1.rank == 1 && p2.rank == 1);   // ordered by the first tap, one shared place
 
         // picking
         List<QuizPick.Item> bank = new ArrayList<>();

@@ -16,7 +16,8 @@ final class QuizRoom {
     static final int MAX_PLAYERS = 12, NAME_MAX = 12, COLORS = 8;
     static final int QUESTION_MS = 20000, REVEAL_MS = 8000;   // the reveal 4 s and the top five 4 s (the tester found 3 + 3 short)
     static final int BASE = 500, BONUS = 500;
-    static final long GONE_MS = 60000, CONNECTED_MS = 6000, DROP_LOBBY_MS = 120000, CODE_LIFE_AFTER_END_MS = 10 * 60 * 1000;
+    static final int MISSED_OUT = 3;
+    static final long CONNECTED_MS = 6000, DROP_LOBBY_MS = 10 * 60 * 1000, CODE_LIFE_AFTER_END_MS = 10 * 60 * 1000;
     static final int JOIN_PER_MIN = 20, WRONG_CODE_LOCK = 5; static final long LOCK_MS = 60000;
     static final int ANSWER_PER_SEC = 5;
 
@@ -30,7 +31,7 @@ final class QuizRoom {
 
     static final class Player {
         final String token; String name; int color; int score, streak, rank, prevRank, answer = -1, lastPoints, lastDelta;
-        long answerMs = -1, lastSeen, joinedAt; boolean left, waiting, lastKnown; Boolean lastOk; final long order;
+        int missed; long answerMs = -1, lastSeen, joinedAt; boolean left, waiting, lastKnown, out; Boolean lastOk; final long order;
         final ArrayDeque<Long> sent = new ArrayDeque<>();
         Player(String token, String name, int color, long order) { this.token = token; this.name = name; this.color = color; this.order = order; }
     }
@@ -78,7 +79,7 @@ final class QuizRoom {
         wrongCodes = 0;
         Player known = byToken(token);
         if (known != null) {            // the same phone coming back: its name, colour and score are as they were
-            known.left = false; known.lastSeen = now; bump();
+            known.left = false; known.out = false; known.missed = 0; known.lastSeen = now; bump();   // the same phone: back in, with its score
             return new Result(true, null, known);
         }
         if (phase == Phase.END) return new Result(false, "closed", null);
@@ -111,6 +112,16 @@ final class QuizRoom {
     volatile boolean latinDigits;
     synchronized String nonce() { return nonce; }
 
+    private static final java.util.regex.Pattern MATH = java.util.regex.Pattern.compile("[0-9\\u0660-\\u0669]+(?:\\s*[+\\-\\u2013\\u00D7\\u00F7*/=]\\s*[0-9\\u0660-\\u0669]+)+");
+    /** a sum («250 - 175») inside an Arabic sentence is isolated left to right (U+2066 ... U+2069), or it reads «؟175 - 250» */
+    static String isolateMath(String s) {
+        if (s == null || s.isEmpty()) return s;
+        java.util.regex.Matcher m = MATH.matcher(s);
+        StringBuffer b = new StringBuffer();
+        while (m.find()) m.appendReplacement(b, java.util.regex.Matcher.quoteReplacement("\u2066" + m.group() + "\u2069"));
+        return m.appendTail(b).toString();
+    }
+
     private String uniqueName(String n) {
         boolean ar = false;
         for (int i = 0; i < n.length(); i++) if (n.charAt(i) >= 0x0600 && n.charAt(i) <= 0x06FF) ar = true;
@@ -121,6 +132,10 @@ final class QuizRoom {
     private boolean nameTaken(String n) { for (Player p : players) if (p.name.equals(n)) return true; return false; }
     static String arabicDigits(int v) { return DigitsText.convert(String.valueOf(v), false); }
     private String newToken() { StringBuilder b = new StringBuilder(); for (int i = 0; i < 16; i++) b.append("0123456789abcdefghijklmnopqrstuvwxyz".charAt(rnd.nextInt(36))); return b.toString(); }
+
+    /** tokens of players removed from the room (the lobby clean-up, the host's «أزل»): their phone is told «gone», not sent to the join form without a word */
+    private final java.util.LinkedHashSet<String> goneTokens = new java.util.LinkedHashSet<>();
+    private void forget(Player p) { goneTokens.add(p.token); if (goneTokens.size() > 64) goneTokens.remove(goneTokens.iterator().next()); }
 
     synchronized Player byToken(String t) { if (t == null || t.isEmpty()) return null; for (Player p : players) if (p.token.equals(t)) return p; return null; }
     synchronized int activeCount() { int n = 0; for (Player p : players) if (!p.left) n++; return n; }
@@ -184,30 +199,37 @@ final class QuizRoom {
         return null;
     }
 
-    /** every player still in the game has answered. A phone that is quiet (a tab in the background polls no more, a locked screen) is still waited for: only one
-     *  that has left, or has been silent for GONE_MS, is not (step 48: a question closed under a real player whose tab was in the background). */
+    /** a question ends early ONLY when every player in the room has answered. A quiet phone (a tab in the background polls about once a minute, a locked screen) never
+     *  shortens it: the 20 s are the cost. A player leaves only by leaving, or by missing MISSED_OUT whole questions in a row (see reveal). */
     private boolean allAnswered() {
         int n = 0;
-        long now = clock.getAsLong();
-        for (Player p : players) if (!p.left && !p.waiting && now - p.lastSeen <= GONE_MS) { n++; if (p.answer < 0) return false; }
+        for (Player p : players) if (!p.left && !p.waiting) { n++; if (p.answer < 0) return false; }
         return n > 0;
     }
+    /** the last question closed because everyone had answered (not because the 20 s ran out) */
+    boolean endedEarly;
 
     /** called often by the TV (10 times a second is enough): closes a question at 20 s, ends the reveal at 8 s, drops phones silent for 2 minutes from the lobby */
     synchronized void tick() {
         long now = clock.getAsLong();
         if (phase == Phase.QUESTION && now - qStart >= QUESTION_MS) reveal();
         else if (phase == Phase.REVEAL && now - revealAt >= REVEAL_MS) next();
-        if (phase == Phase.LOBBY) { for (int i = players.size() - 1; i >= 0; i--) if (now - players.get(i).lastSeen > DROP_LOBBY_MS) { players.remove(i); bump(); } }
+        if (phase == Phase.LOBBY) { for (int i = players.size() - 1; i >= 0; i--) if (now - players.get(i).lastSeen > DROP_LOBBY_MS) { forget(players.get(i)); players.remove(i); bump(); } }
     }
 
     /** the question is over: points are worked out here, on the TV */
     synchronized void reveal() {
         if (phase != Phase.QUESTION) return;
+        endedEarly = allAnswered();
         Q q = questions.get(index);
         for (Player p : players) {
             if (p.waiting || p.left) { p.lastOk = null; continue; }
-            if (p.answer < 0) { p.lastOk = null; p.streak = 0; p.lastPoints = 0; continue; }
+            if (p.answer < 0) {
+                p.lastOk = null; p.streak = 0; p.lastPoints = 0;
+                if (++p.missed >= MISSED_OUT) { p.left = true; p.out = true; }   // three whole questions in a row with no answer: out of the room (his phone is told)
+                continue;
+            }
+            p.missed = 0;
             boolean ok = p.answer == q.correct;
             p.lastOk = ok;
             if (ok) {
@@ -232,7 +254,8 @@ final class QuizRoom {
     private void rerank() {
         List<Player> v = new ArrayList<>(players);
         v.sort(Comparator.<Player>comparingInt(p -> -p.score).thenComparingLong(p -> p.answerMs < 0 ? Long.MAX_VALUE : p.answerMs).thenComparingLong(p -> p.order));
-        int r = 1; for (Player p : v) p.rank = r++;
+        int r = 0, shown = 0, prev = Integer.MIN_VALUE;
+        for (Player p : v) { r++; if (p.score != prev) { shown = r; prev = p.score; } p.rank = shown; }   // players on the same score share the place
     }
     /** the place among the players still in (a player who left is grey in the list but does not count): never «rank 4 of 3» */
     synchronized int activeRank(Player p) {
@@ -240,7 +263,7 @@ final class QuizRoom {
         for (Player o : players) if (o != p && !o.left && o.rank < p.rank) r++;
         return r;
     }
-    synchronized List<Player> ranked() { List<Player> v = new ArrayList<>(players); v.sort(Comparator.comparingInt(p -> p.rank)); return v; }
+    synchronized List<Player> ranked() { List<Player> v = new ArrayList<>(players); v.sort(Comparator.<Player>comparingInt(p -> p.rank).thenComparingLong(p -> p.answerMs < 0 ? Long.MAX_VALUE : p.answerMs).thenComparingLong(p -> p.order)); return v; }
 
     synchronized void skipReveal() { if (phase == Phase.REVEAL) next(); }
     synchronized void pause() { if (phase == Phase.QUESTION || phase == Phase.REVEAL) { qLeftWhenPaused = leftMs(); pausedFrom = phase; if (phase == Phase.REVEAL) qLeftWhenPaused = revealLeftMs(); phase = Phase.PAUSED; bump(); } }
@@ -268,7 +291,7 @@ final class QuizRoom {
         if (phase == Phase.QUESTION && allAnswered()) reveal();
     }
     /** the host removes a player from the lobby with OK on its tile */
-    synchronized void kick(String token) { Player p = byToken(token); if (p != null) { players.remove(p); bump(); } }
+    synchronized void kick(String token) { Player p = byToken(token); if (p != null) { forget(p); players.remove(p); bump(); } }
 
     synchronized void touch(String token) { Player p = byToken(token); if (p != null) p.lastSeen = clock.getAsLong(); }
     synchronized boolean connected(Player p) { return !p.left && clock.getAsLong() - p.lastSeen <= CONNECTED_MS; }
@@ -294,7 +317,8 @@ final class QuizRoom {
     synchronized String stateFor(String token) {
         Player p = byToken(token);
         if (phase == Phase.CLOSED) return "{\"ok\":false,\"e\":\"closed\"}";
-        if (p == null) return "{\"ok\":false,\"e\":\"token\"}";
+        if (p == null) return goneTokens.contains(token) ? "{\"ok\":false,\"e\":\"gone\"}" : "{\"ok\":false,\"e\":\"token\"}";
+        if (p.out) return "{\"ok\":false,\"e\":\"gone\"}";   // missed three questions in a row: «خرجت من الغرفة، ادخل من جديد»
         p.lastSeen = clock.getAsLong();
         String ph = phase.name().toLowerCase(java.util.Locale.ROOT);
         StringBuilder b = new StringBuilder("{\"ok\":true,\"v\":").append(version).append(",\"ph\":\"").append(ph).append("\",\"me\":{\"n\":").append(esc(p.name))
