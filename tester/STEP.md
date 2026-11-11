@@ -1,4 +1,4 @@
-«✅ GO — step 52 (re-check on build 228 or newer), then step 53 (Player v0.9.7), then step 54 (build 233), then step 55 (Player v0.9.8)» — the pause is over. Thanks for 47, 48, 50 and 51. Step 52 is reported, thanks. Step 53 is reported, thanks. Run step 54 then step 55 (end of this file). TV muted. Do not wait on the owner; stop if the family PIN is asked. The factory-interface step stays forbidden. lang ar stays.
+«✅ GO — step 55 (Player v0.9.8: list jank bisect + re-checks)» — steps 52, 53 and 54 are reported, thanks. Run step 55 (end of this file). TV muted. Do not wait on the owner. The factory-interface step stays forbidden. lang ar stays.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
