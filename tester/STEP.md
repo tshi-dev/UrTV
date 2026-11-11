@@ -1,4 +1,4 @@
-«✅ GO — step 55 (Player v0.9.8: baseline + list jank bisect), then step 56 (home tray: name the stage, build 235)» — steps 52, 53 and 54 are reported, thanks. Run step 55 then step 56 (end of this file). TV muted. Do not wait on the owner. The factory-interface step stays forbidden. lang ar stays.
+«✅ GO — step 55 (Player v0.9.8: baseline + list jank bisect), then step 56 (home tray: name the stage, build 235), then step 57 (Player v0.9.9)» — steps 52, 53 and 54 are reported, thanks. Run step 55 then step 56 (end of this file). TV muted. Do not wait on the owner. The factory-interface step stays forbidden. lang ar stays.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -885,3 +885,11 @@ With the same method (reset gfxinfo, 2 × 10 LEFT + 10 RIGHT at 0.35 s, or 50 DO
 4. `dock.sh debug nokeyfilter off`, `keytrace off`, `debug show` (all off).
 5. Also on this build: the screensaver app opened as an APP (its own page from the apps list): last picture first, no dark flash (frames at 0.2 / 1 / 2 s, `UrTVSaver snapshot:` lines); quiz: «جاوب الجميع» in the reveal header on a real early end, «ما ناتج 91 − 38؟» with 91 left and 38 right like «6 × 7», Arabic phone counters in 0-9 when the TV uses English digits; returning from «UrTV النظيف» puts the focus back on its row.
 Z. Restore as step 44 Z. Report «step 56».
+
+## step 57 — UrTV Player v0.9.9 (release «latest»; after step 56; TV muted; uninstall at the end)
+1. Fresh install, FIRST start (UrTV ar, the TV's own language en-US): Arabic from the first frame? (screenshot at 0.3 / 1 / 2 s); ms for the first start and three cold starts.
+2. `adb shell cmd package compile -m speed-profile -f com.urtv.player` (the state a TV reaches by itself after an idle night); the stats meter must say «aot: compiled with profile». Same public list by link. 50 DOWN + 50 UP at 0.1 s and back to back: gfxinfo janky %, p50/p90/p99, and the meter's line (its janky % should now be close to gfxinfo's). Also once «as installed» before compiling, for the record.
+3. Key trace: `adb shell setprop debug.urtv.bisect keytrace`, press a tab, `adb logcat -c`, 10 DOWN at 0.1 s, `adb logcat -d -s UrTVKeyTrace`: for the LATE frame after a key give the typical line (which stage is big: input / anim+compose / layout / draw / sync / cmd / swap) and dispatchLag; 5 raw lines. `setprop debug.urtv.bisect ""` after.
+4. From UrTV's match sheet with the Player NOT running: «شاهد المباراة» → not found → «ابحث في القنوات» → Live tab, search box filled, «للمباراة: …» line (say what the box holds). Again with the Player already running.
+5. OK panel on channel ≈50: after going to the actions and back, focus is on the CURRENT channel's row. DOWN from the Live tab after browsing rows lands on the search box.
+Z as step 50. Report «step 57».
