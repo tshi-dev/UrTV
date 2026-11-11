@@ -2121,3 +2121,58 @@ Looking for the search box I sent 49 UPs while a channel was still full screen: 
 
 ### Z
 `pm clear` + uninstall (0 packages), APK deleted, no stream frame or recording kept. UrTV lang ar, TV muted.
+
+## step 54 — re-check on build 233 (TV muted throughout; owner asleep)
+**Nearly all fixed. Not ALL PASS: 1 problem (tray jank still 8 %, and no debug switch moves it), small notes.**
+
+### A ✓ Screensaver start (the real screensaver, started by the 45 s idle; second start)
+`UrTVSaver` lines of the second start:
+- `snapshot: found, age 53 s, 27280 bytes: used, decoded 960x540, ready at 27 ms`
+- `snapshot: first frame (the picture) at 54 ms; the page's view is created next`
+- `snapshot: the page's view created in 106 ms`
+- `snapshot: the page is live at 1630 ms from the start; the picture fades`
+- 10 s later: `snapshot: copy of the window ok, saving` / `saved 27648 bytes`
+Screen recording of that start: home → the last picture at once → one small change ≈1.8 s later (the live page); **no flat or blank frame** (was 1.3–1.9 s blank).
+Note: `cmd dreams start-dreaming` needs root here and Somnambulator did not start it; only the idle wait did. The app's own page (`.MainActivity`, not the screensaver service) still goes picture 0.2 s → flat dark 0.8–1.7 s → live; it logs no snapshot lines.
+
+### B ✗ Tray jank bisect (2 × 10 LEFT + 10 RIGHT, 0.35 s apart; home restarted before each)
+| setup | frames | janky | p50 / p90 / p99 |
+|---|---|---|---|
+| all off | 809 | 65 (8.03 %) | 40 / 53 / 69 ms |
+| traynoglass | 805 | 64 (7.95 %) | 38 / 48 / 65 |
+| nopillpanel | 808 | 64 (7.92 %) | 40 / 53 / 69 |
+| nowifimark | 808 | 65 (8.04 %) | 40 / 53 / 69 |
+| nosnapshot | 809 | 65 (8.03 %) | 40 / 53 / 69 |
+| nocardglass | 808 | 65 (8.04 %) | 40 / 53 / 69 |
+| all five on | 807 | 64 (7.93 %) | 38 / 48 / 65 |
+- **None of the five changes the janky share.** Only `traynoglass` moves the percentiles a little (p50 40 → 38, p90 53 → 48)
+- The count is the same every time: 64–65 janky frames for 40 key presses, about 1.6 per key. It looks tied to each key press (the focus move, or my `input keyevent` itself starting a process on the TV), not to what is drawn
+- `debug show` at the end: all five off ✓
+
+### C ✓ The box under the stocks card
+On 4 wallpapers with no dim (means 41–105 of 255, one light): the brightness step at the card's two side lines (x 96 and x 1018, y 515–600) is 0.3–2.7 grey levels, against 0.1–1.9 for an ordinary column of the same photo (step 52: ≈10 levels, ≈9 %). No box to see. (Dim put back to the owner's 40.)
+
+### D Quiz
+1. ✓ Background Chrome page + 2 scripted phones:
+   - all three answered → the question ended at 16 s, the reveal says «الأسرع: Noura، 16.2 ثانية»
+   - 2 of 3 answered, Omar (Chrome) silent → **full 20 s, twice**; the reveal says «انتهى الوقت»
+   - after his 3rd missed question his page: **«You left the room, join again»**; Join again put him back in the running question as the same player (score 0 before and after, so "keeps the score" is only shown for 0)
+   - nobody answers at all: after 3 questions everyone is out, the TV ends the game: **«Game over · No winner this time»**, the three on place 1
+   - ties share a place: Khalid 0 and Omar 0 both «2» on the podium, the phone says «You're 2nd»
+   - «جاوب الجميع»: not seen; the early-end reveal showed the «الأسرع» line instead
+2. ✓ Drawing: أ ب ج د centred in their tags (off by 0.0–0.5 px each way; was up to 19 px); place 1's rank box ends at x 1817 with a 6 px ink line on its right; the Arabic phone page says «الغرفة 0192»
+   - Small: «ما ناتج 91 - 38؟» is drawn with 91 on the right and 38 on the left, while «ما ناتج 6 × 7؟» has 6 on the left and 7 on the right. Each reads right for its own direction, but the two are not the same
+   - Small: the Arabic phone page still writes its own counters in Arabic-Indic digits («السؤال ١ / ٥», «أجاب ٠ من ٣», «في الغرفة: ١»); answers and the room code are 0-9
+3. ✓ Languages: TV English → «Question 1 of 5», «What is 76 + 87?», tags A B C D, left to right; the Arabic phone in the same room: «ما ناتج 76 + 87؟» with أ ب ج د, the same four numbers in the same places. TV Arabic + English phone: «What is the area of a square with side 9 cm (in square cm)?» A 77 B 79 C 81 D 91, the same order as the Arabic state. Two real pages in one room at once: not done (one real browser only; my scripted phones always get the TV's language)
+
+### E ✓ «كل الدوريات…»: shown after 3.6 s; 160 lines read while scrolling, none in Latin letters
+
+### F ✓ Settings
+- Clean row: «مفعّل الأساسيات فقط…» right after «فعّل», and back to «الأساسيات فقط…» right after «رجّع الشاشة الكاملة» ✓. Small: on return the focus sits on the row above («اجعل UrTV الشاشة الرئيسية»), not on the clean row
+- «التحديث التلقائي للصفحة» now starts 124 px below «تحديث تلفزيوني» (rows are 16 px apart otherwise) ✓
+
+### G ✓ Screensaver page idle CPU, 10 samples over 2 minutes
+6.4, 3.2, 6.4, 3.2, 0, 19.3, 0, 3.2, 0, 0 → **4.2 % average, 19 % at most** (was 42–47 % once a minute). PSS 57 MB.
+
+### Z
+Rooms closed (codes no longer answer), scripted phones stopped, Chrome tab closed, lang ar, updatechannel latest, ramtier auto, debug flags off, idle 45 s, the owner's `walldim 40` / `homeours off` kept, TV muted and asleep. Build stays 233. No screenshots, tokens or addresses kept.
