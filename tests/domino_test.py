@@ -6,7 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PKG = ROOT / "android/app/src/main/java/sa/urtv/screensaver/games/domino"
-ENGINE = ("Tile", "DominoGame", "DominoBot", "Snake")
+ENGINE = ("Tile", "DominoGame", "DominoBot", "Snake", "DominoTable")
 failed = 0
 def check(what, ok, extra=""):
     global failed

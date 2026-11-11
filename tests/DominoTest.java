@@ -329,6 +329,106 @@ public final class DominoTest {
         Snake one = Snake.lay(new DominoGame(2, 100, new Random(1)).chain(), 0, W, H, 72);
         check("the snake of an empty table is empty", one.slots.length == 0);
         }
+        // ---- one remote at the table: turns, the hand-over, the focus
+        {
+        DominoTable tb = new DominoTable(new int[]{0, 0}, 100, new Random(4), new Random(4));
+        DominoGame g = tb.game; int p = g.turn();
+        boolean ok = tb.state() == DominoTable.State.HANDOVER && tb.shown() == -1 && tb.move(1) == DominoTable.NOTHING && !tb.fits(0) && tb.button() == -1 && !tb.back();
+        int c = tb.ok();
+        ok &= tb.state() == DominoTable.State.TURN && tb.shown() == p && (c & DominoTable.STATE) != 0 && g.hand(p).get(tb.focus()).equals(g.opening());
+        int fit = 0; for (int i = 0; i < 7; i++) if (tb.fits(i)) fit++;
+        ok &= fit == 1 && tb.move(1) == DominoTable.NOTHING && tb.move(-1) == DominoTable.NOTHING && g.events().isEmpty();
+        c = tb.ok();
+        ok &= g.chain().size() == 1 && tb.state() == DominoTable.State.HANDOVER && tb.shown() == -1 && (c & DominoTable.CHAIN) != 0 && (c & DominoTable.HAND) != 0 && g.turn() == 1 - p;
+        check("two people: «دور ...» first with no hand on the screen; OK shows the hand with the focus on the only tile that may open; the arrows find no other; OK lays it and the hand hides for the next player", ok);
+        tb.ok();
+        check("leaving the screen while a hand shows hides it behind the hand-over again; nothing was played", tb.shown() == 1 - p && (tb.hide() & DominoTable.STATE) != 0 && tb.state() == DominoTable.State.HANDOVER && tb.shown() == -1 && g.chain().size() == 1 && tb.hide() == DominoTable.NOTHING);
+        }
+        {
+        // the choice of the end, and Back out of it
+        int seed = 11; while (!t(6, 6).equals(new DominoGame(2, 100, new Random(seed)).opening())) seed++;
+        DominoTable tb = new DominoTable(new int[]{0, 0}, 100, new Random(seed), new Random(1));
+        DominoGame g = tb.game; int p = g.turn(), o = 1 - p;
+        give(g, p, t(6, 6), t(6, 1)); give(g, o, t(6, 3), t(3, 1), t(2, 2), t(0, 0), t(0, 2), t(2, 4), t(0, 4));
+        tb.ok(); tb.ok();                 // p: 6|6
+        tb.ok();                          // o sees his hand: only 6|3 fits (both ends are six: no question)
+        boolean ok = g.hand(o).get(tb.focus()).equals(t(6, 3)) && tb.ok() != 0 && g.chain().size() == 2 && tb.state() == DominoTable.State.HANDOVER;
+        check("a tile that fits both ends when both show the same number is laid at once (on the shorter arm), no question", ok);
+        tb.ok(); ok = g.hand(p).get(tb.focus()).equals(t(6, 1)); tb.ok();   // p: 6|1 -> ends 3 and 1
+        tb.ok();                          // o: 3|1 fits both, the ends differ
+        ok &= g.hand(o).get(tb.focus()).equals(t(3, 1));
+        int c = tb.ok();
+        ok &= tb.state() == DominoTable.State.CHOOSE_END && c == DominoTable.STATE && g.chain().size() == 3 && tb.shown() == o;
+        int e0 = tb.end();
+        ok &= tb.move(e0 == DominoGame.LEFT ? -1 : 1) == DominoTable.NOTHING && tb.move(e0 == DominoGame.LEFT ? 1 : -1) == DominoTable.FOCUS && tb.end() != e0;
+        ok &= tb.back() && tb.state() == DominoTable.State.TURN && g.chain().size() == 3 && !tb.back();
+        tb.ok(); tb.move(-1);
+        ok &= tb.end() == DominoGame.LEFT && tb.ok() != 0 && g.chain().size() == 4 && g.chain().get(0).tile.equals(t(3, 1)) && g.left() == 1 && tb.state() == DominoTable.State.HANDOVER;
+        check("a tile that fits two different ends asks which: left and right choose, Back returns to the hand with nothing played, OK lays it on the end chosen", ok);
+        }
+        {
+        // one person and a computer: the hand always shows; draw and pass are a button; OK skips the computer
+        boolean ok = true, sawDraw = false, sawPass = false, sawBot = false; int games = 0;
+        for (int seed = 0; seed < 60; seed++) {
+            int n = 2 + seed % 3; int[] lv = new int[n]; for (int i = 1; i < n; i++) lv[i] = 1 + (seed + i) % 3;
+            DominoTable tb = new DominoTable(lv, 50, new Random(seed), new Random(seed));
+            int guard = 0;
+            while (tb.state() != DominoTable.State.GAME_END && ++guard < 5000) {
+                ok &= tb.shown() == 0 && tb.state() != DominoTable.State.HANDOVER;
+                if (tb.state() == DominoTable.State.TURN) {
+                    int b = tb.button();
+                    ok &= (b == -1) == (tb.focus() != DominoTable.BUTTON) && (b == -1 ? tb.fits(tb.focus()) : tb.move(1) == DominoTable.NOTHING);
+                    if (b == DominoGame.DRAW) { int had = tb.game.count(0); int c = tb.ok(); sawDraw = true; ok &= tb.game.count(0) == had + 1 && (c & DominoTable.HAND) != 0 && (tb.state() != DominoTable.State.TURN || tb.drawn() != null); continue; }
+                    if (b == DominoGame.PASS) { sawPass = true; ok &= (tb.ok() & DominoTable.STATE) != 0; continue; }
+                }
+                if (tb.state() == DominoTable.State.BOT) { sawBot = true; if (seed % 2 == 0) { tb.ok(); ok &= tb.state() != DominoTable.State.BOT; } else ok &= tb.botStep() != -1; continue; }
+                tb.ok();
+            }
+            ok &= guard < 5000; games++;
+        }
+        check("one person among computer players (" + games + " games to 50): his hand stays on the screen through every state, never a hand-over; with no tile that fits the focus is on the one button (draw, then pass) and the arrows do nothing; OK during a computer's move skips to his turn", ok && sawDraw && sawPass && sawBot);
+        }
+        {
+        // any keys in any order: the table never shows a hand it should not, the focus is always on something that can be pressed, and the game ends
+        boolean ok = true; long keys = 0, focusOnly = 0; int ended = 0;
+        for (int seed = 0; seed < 600 && ok; seed++) {
+            int n = 2 + seed % 3; int[] lv = new int[n]; for (int i = 0; i < n; i++) lv[i] = (seed / 3 + i) % 4 == 3 ? 0 : (seed + i) % 3 == 0 ? 0 : 1 + (seed + i) % 3;
+            DominoTable tb = new DominoTable(lv, 50, new Random(seed), new Random(seed + 1));
+            DominoGame g = tb.game; Random k = new Random(seed * 7L);
+            int guard = 0;
+            while (tb.state() != DominoTable.State.GAME_END && ++guard < 200000 && ok) {
+                int ev = g.events().size(), key = k.nextInt(10), c;
+                DominoTable.State was = tb.state(); int turn = g.turn();
+                if (key < 2) c = tb.move(-1); else if (key < 4) c = tb.move(1); else if (key == 4) { c = tb.back() ? DominoTable.STATE : 0; } else if (key == 5) c = tb.hide(); else if (key == 6) c = tb.botStep(); else c = tb.ok();
+                keys++;
+                if (key < 4) { ok &= (c == DominoTable.NOTHING || c == DominoTable.FOCUS) && g.events().size() == ev && tb.state() == was; if (c == DominoTable.FOCUS) focusOnly++; }
+                if (key == 6 && was != DominoTable.State.BOT) ok &= c == DominoTable.NOTHING && g.events().size() == ev;
+                if (g.events().size() > ev && was != DominoTable.State.ROUND_END) ok &= g.events().get(ev).player == turn && (lv[turn] == 0) == (was == DominoTable.State.TURN || was == DominoTable.State.CHOOSE_END);
+                int shown = tb.shown(); DominoTable.State st = tb.state();
+                if (tb.people() == 0) ok &= shown == -1;
+                else if (tb.people() == 1) ok &= shown >= 0 && lv[shown] == 0 && st != DominoTable.State.HANDOVER;
+                else ok &= (st == DominoTable.State.TURN || st == DominoTable.State.CHOOSE_END) ? shown == g.turn() && lv[shown] == 0 : shown == -1;
+                if (st == DominoTable.State.TURN || st == DominoTable.State.CHOOSE_END) ok &= lv[g.turn()] == 0 && (tb.focus() == DominoTable.BUTTON ? tb.button() != -1 && st == DominoTable.State.TURN : tb.fits(tb.focus()) && tb.button() == -1);
+                if (st == DominoTable.State.BOT) ok &= lv[g.turn()] > 0 && g.phase() == DominoGame.Phase.PLAY;
+                if (st == DominoTable.State.HANDOVER) ok &= lv[g.turn()] == 0 && tb.people() > 1;
+                ok &= conserved(g) && joined(g);
+            }
+            if (tb.state() == DominoTable.State.GAME_END) ended++;
+            ok &= tb.ok() == DominoTable.NOTHING && tb.move(1) == DominoTable.NOTHING && !tb.back();
+        }
+        check("600 tables under random keys (" + keys + " keys; people and computers in every mix): an arrow changes the focus or nothing, never the game; only the player whose turn it is moves; with two people or more a hand shows only in its owner's turn; the focus is always on a tile that fits or on the button; every game ends (" + ended + ")", ok && ended == 600 && focusOnly > 1000);
+        }
+        {
+        // the cost of a key: the arrows on a full hand
+        DominoTable tb = new DominoTable(new int[]{0, 1}, 100, new Random(3), new Random(3));
+        while (tb.state() != DominoTable.State.TURN || tb.game.chain().isEmpty()) tb.ok();
+        for (int i = 0; i < 20000; i++) { tb.move(1); tb.move(-1); }
+        long t0 = System.nanoTime(); int nk = 200000;
+        for (int i = 0; i < nk / 2; i++) { tb.move(1); tb.move(-1); }
+        long perKey = (System.nanoTime() - t0) / nk;
+        System.out.println("INFO an arrow key in the hand costs " + perKey + " ns in the rules on this JVM (the screen then moves the focus only)");
+        check("an arrow key is light: under 50 microseconds in the rules (" + perKey + " ns), and its answer is FOCUS or NOTHING, so the screen redraws the two tiles and nothing else", perKey < 50000);
+        }
         // ---- the computer players
         {
         StringBuilder a1 = new StringBuilder(), a2 = new StringBuilder(), a3 = new StringBuilder();

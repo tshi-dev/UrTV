@@ -55,6 +55,18 @@ level 2 wins about 470 against level 1. A decision takes well under a millisecon
   down, the left arm up, rows two units apart) and picks the largest unit that fits, from 72 px down. A double lies across the line, but in line at a
   turn (the corner tile and the one after it). A laid tile stays where it is; the table moves only when a row is added or the unit shrinks. On the
   1080p table (1728 x 600) the unit stays 72 px in every round played in the test, and never goes under 56 px with all 28 tiles on one arm.
+- `DominoTable`: one remote at the table. The screen sends `move`, `ok`, `back`, and draws only what the answer says changed (the focus, the hand,
+  the chain, the state, the scores). States: `HANDOVER` («دور <name>», no hand shown), `TURN` (the hand, focus only on tiles that fit; with none, on the
+  one button: draw, then pass), `CHOOSE_END`, `BOT`, `ROUND_END`, `GAME_END`.
+
+### The hand on the screen
+
+- One person at the table: his hand stays on the screen through everything, no hand-over.
+- Two people or more: a hand shows only in its owner's turn, after OK on the hand-over. It hides when he has played, and when the app leaves the
+  screen or the pause card opens (`hide()`), so coming back shows the hand-over again.
+- A tile that fits both ends asks which end only when the two ends differ. When both show the same number it is laid at once, on the shorter arm.
+- A person with no tile that fits still takes his turn: the button draws one tile for each OK, then passes. Nothing is done for him.
+- OK during a computer's move skips to the next person's turn.
 
 Tests: `python3 tests/domino_test.py` (needs javac). It checks the set, the shuffle, the deal for 2 to 4 players, who opens, the moves at both ends,
 drawing, passing, the blocked round, the scores and the target; then 1500 whole games by computer players with a wild illegal try before every
