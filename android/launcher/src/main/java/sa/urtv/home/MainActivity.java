@@ -189,6 +189,11 @@ public class MainActivity extends Activity {
     private boolean appsStale;
 
     // favourites changed in «ترتيب المفضلة» or from ADB while the home screen is up
+    /** a tester flipped a debug switch (dock.sh debug): the home starts over so it is read at once */
+    private final BroadcastReceiver debugChanged = new BroadcastReceiver() {
+        @Override public void onReceive(Context c, Intent i) { recreate(); }
+    };
+
     private final BroadcastReceiver dockChanged = new BroadcastReceiver() {
         @Override public void onReceive(Context c, Intent i) { PhoneApps.invalidate(); dockApps = loadDock(); if (!resumed) { appsStale = true; return; } buildApps(); }
     };
@@ -239,6 +244,7 @@ public class MainActivity extends Activity {
         pf.addDataScheme("package");
         registerReceiver(packages, pf);
         InternalReceivers.register(this, dockChanged, new IntentFilter(Dock.CHANGED));
+        InternalReceivers.register(this, debugChanged, new IntentFilter(DebugFlags.CHANGED));
         InternalReceivers.register(this, cardsChanged, new IntentFilter(HomeCard.CHANGED));
         InternalReceivers.register(this, sleepChanged, new IntentFilter(SleepTimer.CHANGED));
         InternalReceivers.register(this, nowPlayingChanged, new IntentFilter(NowPlaying.CHANGED));
@@ -408,6 +414,7 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         unregisterReceiver(packages);
         unregisterReceiver(dockChanged);
+        try { unregisterReceiver(debugChanged); } catch (IllegalArgumentException ignored) { }
         unregisterReceiver(cardsChanged);
         unregisterReceiver(sleepChanged);
         unregisterReceiver(nowPlayingChanged);
@@ -983,6 +990,7 @@ public class MainActivity extends Activity {
     /** C15: the Wi-Fi icon says whether the TV is online (a wired TV counts as online too), with the minute tick */
     private void updateNetIcon() {
         if (netIcon == null) return;
+        if (DebugFlags.on(this, "nowifimark")) { netIcon.setVisibility(View.GONE); return; }   // a tester's switch
         boolean online = false;
         try {
             android.net.ConnectivityManager cm = (android.net.ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
@@ -2858,8 +2866,9 @@ public class MainActivity extends Activity {
         for (TextView t : tvNames) { t.setTextColor(p.gold); t.setShadowLayer(dp(3), 0, dp(1), p.shadow); }
         scrim.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, p.scrim));
         gridShade.setBackgroundColor(p.shade);
-        dockBand.setColor(scaled(light ? FavBar.FILL_LIGHT : FavBar.FILL_DARK, GlassStyle.barPercent()));   // FavBar: the same tray on every look; «شفافية الشريط» thins it (100: as it was)
-        dockBand.setStroke(Math.max(1, bar(1)), scaled(light ? FavBar.LINE_LIGHT : FavBar.LINE_DARK, GlassStyle.barPercent()));
+        boolean noGlass = DebugFlags.on(this, "traynoglass");   // a tester's switch (dock.sh debug traynoglass): no fill and no line behind the tiles
+        dockBand.setColor(noGlass ? 0 : scaled(light ? FavBar.FILL_LIGHT : FavBar.FILL_DARK, GlassStyle.barPercent()));   // FavBar: the same tray on every look; «شفافية الشريط» thins it (100: as it was)
+        dockBand.setStroke(Math.max(1, bar(1)), noGlass ? 0 : scaled(light ? FavBar.LINE_LIGHT : FavBar.LINE_DARK, GlassStyle.barPercent()));
         if (wallDimView != null) wallDimView.setAlpha(GlassStyle.dimPercent() / 100f);
         for (View c : dockCards) { GradientDrawable r = ringByCard.get(c); if (r != null) r.setStroke(bar(FavBar.RING), FavBar.ring(light)); }
         if (homeCard != null) homeCard.light(light);   // the football home's widgets: the same light or dark glass

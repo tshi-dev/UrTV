@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261110093800">
+<meta name="urtv-build" content="20261111043813">
 <title>شاشة تلفزيونك</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -47,6 +47,7 @@
   html.widget .week{width:100%}
   
   html.hcard .week{background:var(--hpanel)!important;border-color:var(--hline)!important}
+  html.hcard .week:not(.lf){box-shadow:none!important}   
   html.hcard[class*="cs-"] .week{background:none!important}
   html.hcard[class*="cs-"] .week::before{background:var(--hpanel)!important}
   html.widget .week.boxes{padding:max(1.7vh,10px) max(1.4vw,14px)}   
@@ -3945,7 +3946,9 @@ function cardTimers(){
     }
     fitCards();
   }, 25*1000);
-  setInterval(() => renderPanel(false, 'adhkar', 'stocks', ...clocked), 60*1000);   // a window may have opened; a market opened or closed
+  // a window may have opened; a market opened or closed. Only those two kinds (the clocked ones are the 15 s timer's), and 7 s off the 15 s beat: at the minute both used to run in the
+  // same frame, with the clock's minute change, and that frame was the once-a-minute spike of the idle page (step 52)
+  setTimeout(() => setInterval(() => renderPanel(false, 'adhkar', 'stocks'), 60*1000), 7000);
   if(CONFIG.verseMin){   // #versemin=3: the verse card turns when its 3 minutes are up
     let turn = quoteTurn();
     setInterval(() => {

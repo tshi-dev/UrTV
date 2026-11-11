@@ -152,9 +152,12 @@ public class SettingsActivity extends Activity {
     protected void onResume() {   // back in front (from the TV's settings, or opened again over itself): show what is set now
         super.onResume();
         adhanAsked = false;
+        cleanAsked = false;   // asked again each time the settings come to the front (it was asked once per visit: the row said «مفعّل» only after reopening)
         look = GlassSource.page(this, root);   // the home's photo or «المظهر» may have changed meanwhile
         hint.setTextColor(look.sub);
         render();
+        // the home writes its state a moment after «UrTV النظيف» closes: one more question 1.5 s later, drawn only when the answer differs
+        root.postDelayed(() -> { if (!isFinishing() && !isDestroyed()) { cleanAsked = false; homeCleanSeen(); } }, 1500);
     }
 
     /** Back on a category's rows (or on «البطاقات», «المزيد») goes back to the screen its button is on, the focus on that button; on the first screen it leaves. */
@@ -468,8 +471,10 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { pickIdle(); } });
 
         header("التطبيق");
-        row("التحديث التلقائي للصفحة", prefs.autoUpdate() ? "يعمل · عند بدء الشاشة، كل ٦ ساعات" : "متوقف", R.drawable.ic_sync, new Runnable() { public void run() {
+        View autoRow = row("التحديث التلقائي للصفحة", prefs.autoUpdate() ? "يعمل · عند بدء الشاشة، كل ٦ ساعات" : "متوقف", R.drawable.ic_sync, new Runnable() { public void run() {
             prefs.setAutoUpdate(!prefs.autoUpdate()); render(); } });
+        // a switch that flips with one OK sat right under the «تحديث تلفزيوني» action (the tester flipped it by mistake): a clear gap of 32 above it
+        if (autoRow != null && autoRow.getLayoutParams() instanceof android.view.ViewGroup.MarginLayoutParams) ((android.view.ViewGroup.MarginLayoutParams) autoRow.getLayoutParams()).topMargin += dp(32);
         // the page only, never the apps: people took it for the app update (rows 421, 441), so its line points to «تحديث تلفزيوني»
         View last = row("تحديث صفحة شاشة التوقف", "ينزّل أحدث صفحة للشاشة فقط · لتحديث التطبيقين: «تحديث تلفزيوني» في نفس القسم", R.drawable.ic_sync, new Runnable() { public void run() { updateNow(); } });
         if (last.getParent() == list) note(last, Updater.versionLines(this));

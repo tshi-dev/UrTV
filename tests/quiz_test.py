@@ -94,5 +94,13 @@ check("HOME in the middle of a game pauses it (the phones say «اللعبة م�
 check("the phone: the join page offers ع / EN (reloads with ?l=), answers carry the nonce x", "function langSwitch()" in page and "langSwitch()]);" in page and "x: q.x || ''" in page)
 check("server: a locked address gets a page or a 429 JSON, the body is read first, a busy or flooding connection is told 429, never cut silently",
       "LOCKED_PAGE" in srv and "reply(c, 429," in srv and "private static void drain(" in srv and "busy(s)" in srv)
+# ---- step 52
+check("drawing: the answer letters are drawn on the glyph's ink bounds (InkLetter: getTextBounds, baseline = box/2 - (top+bottom)/2), not centred by the font's line box; the rank box stands inside the row's 6 px line",
+      "static final class InkLetter extends View" in act and "static float baseline(float boxH, int inkTop, int inkBottom) { return boxH / 2f - (inkTop + inkBottom) / 2f; }" in act
+      and "new InkLetter(this, letter(i), 64 * scale" in act and "row.setPadding(px(6), px(6), px(6), px(6));" in act and "px(128 - 6), px(height - 12)" in act)
+check("end: «لا فائز هذه المرة» when the best has 0, a tie for first is said; «جاوب الجميع» when the question ended early; places are the shared ones (p.rank)",
+      'r.get(0).score <= 0 ? S.t("لا فائز هذه المرة")' in act and 'S.t("تعادل في المركز الأول")' in act and 'room.endedEarly ? S.t("جاوب الجميع")' in act and "playerRow(p, p.rank, true, 128)" in act and "num(p.rank)" in act)
+check("phone: «gone» keeps the token and says «خرجت من الغرفة، ادخل من جديد»; the room code is 0-9 in the Arabic page; sums are isolated by the TV before they reach the phone",
+      "e === 'gone'" in page and "e_gone: 'خرجت من الغرفة، ادخل من جديد'" in page and "function roomLabel()" in page and "QuizRoom.isolateMath(" in act)
 check("docs/QUIZ.md exists and names the conflicts between the SPEC and the mockups", "conflicts" in doc.lower() and "SPEC" in doc)
 sys.exit(1 if failed else 0)

@@ -31,6 +31,7 @@ final class PillBar extends LinearLayout {
     private final Map<View, int[]> margins = new HashMap<>();   // a collapsed Pill's own start and end margins, put back as it opens
     private float open;   // 0 closed .. 1 open
     private ValueAnimator anim;
+    private float applied = -1f;   // the openness the children were last shaped for
     static final long OPEN_MS = 220, CLOSE_DELAY_MS = 160;
 
     PillBar(Context c) {
@@ -63,14 +64,15 @@ final class PillBar extends LinearLayout {
     void focusInside(boolean inside) {
         if (locked) return;
         removeCallbacks(closer);
-        if (inside) animateTo(1f); else postDelayed(closer, CLOSE_DELAY_MS);   // a short wait: moving from one button to the next is not leaving
+        if (inside) animateTo(1f);
+        else if (open > 0f || anim != null && anim.isRunning()) postDelayed(closer, CLOSE_DELAY_MS);   // a short wait: moving from one button to the next is not leaving. Closed already: nothing to do (every focus step of the tray used to schedule a layout of the whole home 160 ms later)
     }
 
     private final Runnable closer = new Runnable() { @Override public void run() { animateTo(0f); } };
 
     private void animateTo(float to) {
         if (anim != null) anim.cancel();
-        if (open == to) { apply(); return; }
+        if (open == to) { if (applied != to) apply(); return; }   // already there and shaped: no layout, no redraw
         anim = ValueAnimator.ofFloat(open, to);
         anim.setDuration(Math.max(40, Math.round(OPEN_MS * Math.abs(to - open))));
         anim.setInterpolator(new DecelerateInterpolator(2f));
@@ -78,7 +80,7 @@ final class PillBar extends LinearLayout {
         anim.start();
     }
 
-    private void apply() { for (int i = 0; i < getChildCount(); i++) shape(getChildAt(i)); requestLayout(); invalidate(); }
+    private void apply() { applied = open; for (int i = 0; i < getChildCount(); i++) shape(getChildAt(i)); requestLayout(); invalidate(); }
 
     /** one Pill at the openness of now: not a main one, not a member */
     private void shape(View v) {
@@ -109,8 +111,9 @@ final class PillBar extends LinearLayout {
     /** the glass of the home now; the strength is the owner's «شفافية الشريط» (100: the look as it is) */
     void look(GlassStyle.Look l) {
         int pct = GlassStyle.barPercent();
-        fill.setColor(scaled(l.panel, pct));
-        line.setColor(scaled(l.line, pct));
+        boolean none = DebugFlags.on(getContext(), "nopillpanel");   // a tester's switch (dock.sh debug nopillpanel): no panel behind the buttons
+        fill.setColor(none ? 0 : scaled(l.panel, pct));
+        line.setColor(none ? 0 : scaled(l.line, pct));
         invalidate();
     }
 

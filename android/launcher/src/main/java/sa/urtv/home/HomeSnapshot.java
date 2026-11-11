@@ -51,6 +51,7 @@ final class HomeSnapshot {
 
     /** the picture to draw, or null (none, stale, another key, unreadable) */
     static Bitmap load(Context c, int w, int h) {
+        if (DebugFlags.on(c, "nosnapshot")) return null;   // a tester's switch
         try {
             File img = new File(dir(c), FILE), meta = new File(dir(c), META);
             if (!img.isFile() || !meta.isFile()) return null;
@@ -65,7 +66,7 @@ final class HomeSnapshot {
     /** Takes the picture of the window now (API 26 PixelCopy, off the UI thread's drawing) and keeps it; any failure keeps the old one. */
     static void capture(Activity a, View root, Runnable done) {
         final int w = root.getWidth(), h = root.getHeight();
-        if (w <= 0 || h <= 0 || a.isFinishing()) return;
+        if (w <= 0 || h <= 0 || a.isFinishing() || DebugFlags.on(a, "nosnapshot")) return;
         try {
             final Bitmap full = Bitmap.createBitmap(Math.round(w * SCALE), Math.round(h * SCALE), Bitmap.Config.ARGB_8888);
             final String key = key(a, w, h);

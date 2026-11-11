@@ -547,7 +547,7 @@ public class QuizActivity extends Activity {
             FrameLayout st = stamp(right ? OKB : wrong ? PAPER : TILE, wrong ? 0x59161410 : INK, wrong ? 4 : 6, wrong);
             View tab = rect(wrong ? 0x99161410 : INK);
             st.addView(tab, new FrameLayout.LayoutParams(px(96), px(96), Gravity.START | Gravity.TOP));
-            TextView lt = centered(letter(i), 64, PAPER, true); lt.setAlpha(wrong ? .6f : 1f);
+            InkLetter lt = new InkLetter(this, letter(i), 64 * scale, PAPER, font("ThmanyahDisplay-Bold")); lt.setAlpha(wrong ? .6f : 1f);   // centred on the glyph's ink, not the font's line box
             st.addView(lt, new FrameLayout.LayoutParams(px(96), px(96), Gravity.START | Gravity.TOP));
             String a = q.opts[i];
             TextView at = text(a, chooseFont(a, 68, 56, 44, 16, 30) - (a.length() > 50 ? 6 : 0), right ? 0xFFFFFFFF : wrong ? 0x73161410 : INK, true);
@@ -607,8 +607,9 @@ public class QuizActivity extends Activity {
     private LinearLayout playerRow(QuizRoom.Player p, int rank, boolean withDelta, int height) {
         LinearLayout row = new LinearLayout(this); row.setOrientation(LinearLayout.HORIZONTAL); row.setGravity(Gravity.CENTER_VERTICAL); row.setLayoutDirection(Dir.layout());
         GradientDrawable g = new GradientDrawable(); g.setColor(TILE); g.setStroke(px(6), INK); row.setBackground(g);
+        row.setPadding(px(6), px(6), px(6), px(6));   // the children stand inside the 6 px line: the rank box no longer paints over the row's edge (place 1 had no ink on its end side)
         TextView rk = centered(num(rank), 88, rank == 1 ? INK : PAPER, true); rk.setBackgroundColor(rank == 1 ? SAFF : INK);
-        LinearLayout.LayoutParams rp = new LinearLayout.LayoutParams(px(128), px(height - 12)); rp.setMargins(px(0), 0, 0, 0);
+        LinearLayout.LayoutParams rp = new LinearLayout.LayoutParams(px(128 - 6), px(height - 12)); rp.setMargins(px(0), 0, 0, 0);
         row.addView(rk, rp);
         View sq = box(PLAYER[p.color % 8], INK, 3, false);
         LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(px(20), px(64)); sp.setMarginStart(px(32)); sp.setMarginEnd(px(24));
@@ -703,6 +704,17 @@ public class QuizActivity extends Activity {
         @Override protected void onDraw(Canvas cv) {
             int n = code.size; float m = (float) Math.min(getWidth(), getHeight()) / n;
             for (int y = 0; y < n; y++) for (int x = 0; x < n; x++) if (code.dark(x, y)) cv.drawRect(x * m, y * m, (x + 1) * m + .5f, (y + 1) * m + .5f, paint);
+        }
+    }
+
+    /** one letter centred in its box on the glyph's own ink bounds (the font's ascent and descent put أ 7 px high and ب, ج 18 px low in a TextView) */
+    static final class InkLetter extends View {
+        private final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG); private final String t; private final android.graphics.Rect b = new android.graphics.Rect();
+        InkLetter(Context c, String t, float size, int color, Typeface f) { super(c); this.t = t; p.setTextSize(size); p.setColor(color); p.setTypeface(f); p.setTextAlign(Paint.Align.LEFT); p.getTextBounds(t, 0, t.length(), b); }
+        /** the baseline that puts the ink's middle (top and bottom of the bounds) on the box's middle */
+        static float baseline(float boxH, int inkTop, int inkBottom) { return boxH / 2f - (inkTop + inkBottom) / 2f; }
+        @Override protected void onDraw(Canvas cv) {
+            cv.drawText(t, getWidth() / 2f - (b.left + b.right) / 2f, baseline(getHeight(), b.top, b.bottom), p);   // ink middle on the box middle, across and down
         }
     }
 

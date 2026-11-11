@@ -409,6 +409,7 @@
                 <action android:name="sa.urtv.home.PIN_OFF" />
                 <action android:name="sa.urtv.home.PIN_RESET" />
                 <action android:name="sa.urtv.home.RAM_TIER" />
+                <action android:name="sa.urtv.home.DEBUG" />
             </intent-filter>
         </receiver>
 

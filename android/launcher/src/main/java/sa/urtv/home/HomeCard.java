@@ -282,7 +282,7 @@ final class HomeCard {
      * they take a neutral dark glass instead, never a tint of their own.
      */
     private String withGlass(String u) {
-        if (u == null || !u.contains("#")) return u;
+        if (u == null || !u.contains("#") || DebugFlags.on(activity, "nocardglass")) return u;   // (a tester's switch: the cards keep their own look)
         int pct = GlassStyle.barPercent();
         int fill = lightNow ? 0xA014161A : FavBar.FILL_DARK, line = lightNow ? 0x33FFFFFF : FavBar.LINE_DARK;
         return u + "&hpanel=" + rgba(fill, pct) + "&hline=" + rgba(line, pct);

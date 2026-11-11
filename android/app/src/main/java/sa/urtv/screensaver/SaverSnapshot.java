@@ -36,6 +36,19 @@ final class SaverSnapshot {
         if (f != null) for (File x : f) x.delete();
     }
 
+    /** one line for the log: what is on disk and why it is or is not used */
+    static String why(Context c, String url, int w, int h) {
+        try {
+            File img = new File(dir(c), FILE), meta = new File(dir(c), META);
+            if (!img.isFile() || !meta.isFile()) return "none saved yet";
+            String madeKey = new String(java.nio.file.Files.readAllBytes(meta.toPath()), "UTF-8");
+            long age = System.currentTimeMillis() - img.lastModified();
+            if (!madeKey.equals(key(url, w, h))) return "found, but made for another page address or screen size (age " + age / 1000 + " s, " + img.length() + " bytes): not used";
+            if (!usable(madeKey, img.lastModified(), key(url, w, h), System.currentTimeMillis())) return "found, too old (" + age / 1000 + " s): not used";
+            return "found, age " + age / 1000 + " s, " + img.length() + " bytes: used";
+        } catch (Exception e) { return "unreadable (" + e.getClass().getSimpleName() + ")"; }
+    }
+
     static Bitmap load(Context c, String url, int w, int h) {
         try {
             File img = new File(dir(c), FILE), meta = new File(dir(c), META);
@@ -56,13 +69,15 @@ final class SaverSnapshot {
      */
     static void capture(final Context c, android.view.Window win, final String url, View page) {
         final int w = page.getWidth(), h = page.getHeight();
-        if (win == null || w <= 0 || h <= 0 || page.getAlpha() < 1f || !page.isShown()) return;
+        if (win == null || w <= 0 || h <= 0 || page.getAlpha() < 1f || !page.isShown()) { android.util.Log.i("UrTVSaver", "snapshot: not taken (window " + (win != null) + ", " + w + "x" + h + ", alpha " + page.getAlpha() + ", shown " + page.isShown() + ")"); return; }
         if (android.os.Build.VERSION.SDK_INT < 26) return;
         final Context app = c.getApplicationContext();
         try {
             final Bitmap b = Bitmap.createBitmap(Math.round(w * SCALE), Math.round(h * SCALE), Bitmap.Config.ARGB_8888);
             android.view.PixelCopy.request(win, null, b, r -> {
-                if (r == android.view.PixelCopy.SUCCESS && !flat(b)) new Thread(() -> save(app, b, key(url, w, h)), "saver-snapshot").start();
+                boolean ok = r == android.view.PixelCopy.SUCCESS, flat = ok && flat(b);
+                android.util.Log.i("UrTVSaver", "snapshot: copy of the window " + (ok ? (flat ? "is one flat colour (kept the old picture)" : "ok, saving") : "failed, code " + r));
+                if (ok && !flat) new Thread(() -> save(app, b, key(url, w, h)), "saver-snapshot").start();
                 else b.recycle();
             }, new android.os.Handler(android.os.Looper.getMainLooper()));
         } catch (RuntimeException | OutOfMemoryError ignored) { }
@@ -88,7 +103,7 @@ final class SaverSnapshot {
             if (best == null || best.length > MAX_BYTES) return;
             File tmp = new File(dir(c), FILE + ".tmp");
             try (FileOutputStream out = new FileOutputStream(tmp)) { out.write(best); }
-            if (tmp.renameTo(new File(dir(c), FILE))) try (FileOutputStream m = new FileOutputStream(new File(dir(c), META))) { m.write(key.getBytes("UTF-8")); }
+            if (tmp.renameTo(new File(dir(c), FILE))) try (FileOutputStream m = new FileOutputStream(new File(dir(c), META))) { m.write(key.getBytes("UTF-8")); android.util.Log.i("UrTVSaver", "snapshot: saved " + best.length + " bytes"); }
         } catch (Exception ignored) {
         } finally { b.recycle(); }
     }

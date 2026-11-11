@@ -49,6 +49,7 @@
   html.widget .week{width:100%}
   /* the home's cards take the apps tray's glass (#hpanel= and #hline= from the launcher: FavBar's fill and line, as thin as «شفافية الشريط» says): one family in every look, no per-card tint */
   html.hcard .week{background:var(--hpanel)!important;border-color:var(--hline)!important}
+  html.hcard .week:not(.lf){box-shadow:none!important}   /* the card styles' soft drop shadow (0 24px 60px) is cut at the card's box on the home: a straight-edged dark patch under the glass (step 52); the focus ring (.lf) stays */
   html.hcard[class*="cs-"] .week{background:none!important}
   html.hcard[class*="cs-"] .week::before{background:var(--hpanel)!important}
   html.widget .week.boxes{padding:max(1.7vh,10px) max(1.4vw,14px)}   /* the prayer boxes keep a clear, even distance from the card's edge */
@@ -3973,7 +3974,9 @@ function cardTimers(){
     }
     fitCards();
   }, 25*1000);
-  setInterval(() => renderPanel(false, 'adhkar', 'stocks', ...clocked), 60*1000);   // a window may have opened; a market opened or closed
+  // a window may have opened; a market opened or closed. Only those two kinds (the clocked ones are the 15 s timer's), and 7 s off the 15 s beat: at the minute both used to run in the
+  // same frame, with the clock's minute change, and that frame was the once-a-minute spike of the idle page (step 52)
+  setTimeout(() => setInterval(() => renderPanel(false, 'adhkar', 'stocks'), 60*1000), 7000);
   if(CONFIG.verseMin){   // #versemin=3: the verse card turns when its 3 minutes are up
     let turn = quoteTurn();
     setInterval(() => {
