@@ -99,10 +99,6 @@ public final class Word5Test {
         boolean kidsOnly = true;
         for (int n = 0; n < 100; n++) { Word5Words.Answer x = all.free(true, recent, rnd); kidsOnly &= x.kids; Word5Words.remember(recent, x.word); }
         check("free play: 200 words in a row and none twice; the kids filter gives only kids words (again when all of them were played); the memory holds the last 200", fresh && kidsOnly && recent.size() == 200);
-        Set<String> days = new HashSet<>();
-        for (long d = 20000; d < 20000 + total; d++) days.add(all.daily(false, d).word);
-        check("word of the day: the same word for the same day, another the next day, and every word has its day before one comes again",
-            all.daily(false, 20403).word.equals(all.daily(false, 20403).word) && days.size() == total && all.daily(false, 20000).word.equals(all.daily(false, 20000 + total).word) && all.daily(true, 20403).kids && all.daily(false, -3) != null);
 
         // ---- the keyboard's focus
         Word5Keys k = new Word5Keys();

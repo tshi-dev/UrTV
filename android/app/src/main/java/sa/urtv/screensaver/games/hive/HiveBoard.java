@@ -6,13 +6,13 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * «خلية الحروف»: the board (no Android, tested on a plain JVM: tests/HiveTest.java). 4 rows of 7 hexagons, the odd rows shifted half a cell towards the end of
+ * «خلية الحروف»: the board (no Android, tested on a plain JVM: tests/HiveTest.java). 5 rows of 5 hexagons (fair: both teams have five to cross), the odd rows shifted half a cell towards the end of
  * the row. Columns are LOGICAL: column 0 is where a row starts (the right side in Arabic, the left in English), so the rules never know the direction; only the
- * screen mirrors. Team 1 joins the two sides (column 0 with column 6), team 2 the top with the bottom (row 0 with row 3). A full board always has exactly one
+ * screen mirrors. Team 1 joins the two sides (column 0 with column 4), team 2 the top with the bottom (row 0 with row 4). A full board always has exactly one
  * winner (the hex rule), so there is no draw.
  */
 public final class HiveBoard {
-    public static final int ROWS = 4, COLS = 7, CELLS = ROWS * COLS;
+    public static final int ROWS = 5, COLS = 5, CELLS = ROWS * COLS;
     public static final int FREE = 0, TEAM_SIDES = 1, TEAM_TOP = 2;
     public static final int UP = 0, DOWN = 1, NEXT = 2, PREV = 3;
 

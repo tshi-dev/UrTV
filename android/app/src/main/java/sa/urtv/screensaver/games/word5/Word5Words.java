@@ -76,13 +76,6 @@ public final class Word5Words {
         return pool.get(rnd.nextInt(pool.size()));
     }
 
-    /** the word of the day: the same on every TV with the same list, and no word again until the whole list has had its day (a fixed shuffle, then day by day) */
-    public Answer daily(boolean kids, long epochDay) {
-        List<Answer> pool = pool(kids);
-        Collections.shuffle(pool, new Random(20261111L));
-        return pool.get((int) Math.floorMod(epochDay, (long) pool.size()));
-    }
-
     /** the list of the last words played, newest last, at most 200 */
     public static void remember(List<String> recent, String word) {
         recent.remove(word);

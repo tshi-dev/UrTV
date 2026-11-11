@@ -17,8 +17,11 @@ import java.util.function.LongSupplier;
  *   JUDGE  OK showed the answer: «صح» gives the hexagon to the team that answered, «خطأ» leaves it free. Either way the turn passes to the other team.
  *   WON    a team's two sides are joined; chain() is what to light up.
  *
+ * The board: 25 letters drawn for each game from the alphabet (three Arabic letters stay out, one English). A letter with no question for this game's filter
+ * stays out first, then the letters with few questions more often than the rest.
+ *
  * A question is never shown twice in a game. One that was asked but whose answer was NOT shown stays on its hexagon for whoever picks it next; once the answer
- * was shown a missed hexagon gets a new question. A letter with no question left (or none at all: ظ) is still playable: first any level, then the category
+ * was shown a missed hexagon gets a new question. A letter with no question left is still playable: first any level, then the category
  * question (the host judges, sample answers as a hint), and where we have no samples either, the free «اذكر اسمًا» question.
  */
 public final class HiveGame {
@@ -60,23 +63,34 @@ public final class HiveGame {
     public HiveGame(HiveBank bank, Settings settings, int firstTeam, LongSupplier clock, Random rnd) {
         this.bank = bank; this.settings = settings; this.clock = clock; this.rnd = rnd;
         this.turn = firstTeam == HiveBoard.TEAM_TOP ? HiveBoard.TEAM_TOP : HiveBoard.TEAM_SIDES;
-        char[] letters = letters(bank, settings.english);
-        List<Character> all = new ArrayList<>();
-        for (char c : letters) all.add(c);
-        Collections.shuffle(all, rnd);
-        for (int i = 0; i < HiveBoard.CELLS; i++) board.letter[i] = all.get(i);
+        char[] letters = draw(bank, settings, rnd);
+        for (int i = 0; i < HiveBoard.CELLS; i++) board.letter[i] = letters[i];
     }
 
-    /** the 28 letters of a board: the Arabic alphabet; in English the 26 letters and, to fill the 28 hexagons, the two with the most questions a second time */
-    public static char[] letters(HiveBank bank, boolean english) {
-        if (!english) return HiveBank.AR.toCharArray();
-        char first = 0, second = 0;
-        for (char c : HiveBank.EN.toCharArray()) {
-            int n = bank.of(c).size();
-            if (first == 0 || n > bank.of(first).size()) { second = first; first = c; }
-            else if (second == 0 || n > bank.of(second).size()) second = c;
+    private static int count(HiveBank bank, char letter, boolean kids) {
+        int n = 0;
+        for (HiveBank.Item it : bank.of(letter)) if (!kids || it.kids) n++;
+        return n;
+    }
+
+    /** the 25 letters of a game, shuffled: the letters with no question for this filter are left out first, then a letter is the likelier to stay out the fewer questions it has */
+    public static char[] draw(HiveBank bank, Settings settings, Random rnd) {
+        List<Character> in = new ArrayList<>(), none = new ArrayList<>();
+        for (char c : (settings.english ? HiveBank.EN : HiveBank.AR).toCharArray()) (count(bank, c, settings.kids) == 0 ? none : in).add(c);
+        Collections.shuffle(none, rnd);
+        while (in.size() < HiveBoard.CELLS) in.add(none.remove(none.size() - 1));   // more empty letters than may stay out: some play with the category question
+        while (in.size() > HiveBoard.CELLS) {
+            double total = 0;
+            for (char c : in) total += 1.0 / (1 + count(bank, c, settings.kids));
+            double at = rnd.nextDouble() * total;
+            int out = in.size() - 1;
+            for (int i = 0; i < in.size(); i++) { at -= 1.0 / (1 + count(bank, in.get(i), settings.kids)); if (at < 0) { out = i; break; } }
+            in.remove(out);
         }
-        return (HiveBank.EN + first + second).toCharArray();
+        Collections.shuffle(in, rnd);
+        char[] letters = new char[HiveBoard.CELLS];
+        for (int i = 0; i < letters.length; i++) letters[i] = in.get(i);
+        return letters;
     }
 
     public Phase phase() { return phase; }

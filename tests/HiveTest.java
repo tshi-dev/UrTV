@@ -24,7 +24,15 @@ public final class HiveTest {
         for (String l : hints.split("\n")) { String[] f = l.split("\t"); for (int i = 1; i < f.length; i++) b.hint(f[0].charAt(0), f[i]); }
         return b;
     }
-    static HiveGame game(HiveBank b, HiveGame.Settings s, long seed) { now[0] = 1_000_000L; return new HiveGame(b, s, HiveBoard.TEAM_SIDES, () -> now[0], new Random(seed)); }
+    /** a game from this seed on, the first whose board shows every one of these letters (three letters stay out of each game) */
+    static HiveGame game(HiveBank b, HiveGame.Settings s, long seed, String need) {
+        for (;; seed += 1000) {
+            now[0] = 1_000_000L;
+            HiveGame g = new HiveGame(b, s, HiveBoard.TEAM_SIDES, () -> now[0], new Random(seed));
+            if (new String(g.board.letter).chars().filter(c -> need.indexOf(c) >= 0).count() == need.length()) return g;
+        }
+    }
+    static HiveGame game(HiveBank b, HiveGame.Settings s, long seed) { return game(b, s, seed, ""); }
     static int cellOf(HiveGame g, char letter) { for (int i = 0; i < HiveBoard.CELLS; i++) if (g.board.letter[i] == letter && g.board.owner[i] == 0) return i; return -1; }
     static boolean right(HiveGame g, int cell) { return g.pick(cell) && g.reveal() && g.judge(true); }
 
@@ -37,28 +45,28 @@ public final class HiveTest {
             for (int m : HiveBoard.neighbours(n)) back |= m == i;
             symmetric &= back && n != i;
         }
-        check("board: 28 cells, every neighbour link goes both ways, 57 links in all (4 rows of 6, 3 row gaps of 13)", symmetric && links == 2 * (4 * 6 + 3 * 13));
+check("board: 25 cells, every neighbour link goes both ways, 56 links in all (5 rows of 4, 4 row gaps of 9)", symmetric && links == 2 * (5 * 4 + 4 * 9) && HiveBoard.CELLS == 25);
         check("board: a middle cell touches 6, the corners 2 or 3, an even row leans to the row start and an odd row to its end",
-            HiveBoard.neighbours(HiveBoard.cell(1, 3)).length == 6 && HiveBoard.neighbours(HiveBoard.cell(0, 0)).length == 2 && HiveBoard.neighbours(HiveBoard.cell(0, 6)).length == 3
-            && Arrays.equals(HiveBoard.neighbours(HiveBoard.cell(2, 3)), new int[] {16, 18, 9, 10, 23, 24}) && Arrays.equals(HiveBoard.neighbours(HiveBoard.cell(1, 3)), new int[] {9, 11, 3, 4, 17, 18}));
+            HiveBoard.neighbours(HiveBoard.cell(1, 2)).length == 6 && HiveBoard.neighbours(HiveBoard.cell(0, 0)).length == 2 && HiveBoard.neighbours(HiveBoard.cell(0, 4)).length == 3
+            && Arrays.equals(HiveBoard.neighbours(HiveBoard.cell(2, 2)), new int[] {11, 13, 6, 7, 16, 17}) && Arrays.equals(HiveBoard.neighbours(HiveBoard.cell(1, 2)), new int[] {6, 8, 2, 3, 12, 13}));
         check("board: the focus wraps along a row and stops at the top and the bottom; up and down always land on a touching cell",
-            HiveBoard.move(6, HiveBoard.NEXT) == 0 && HiveBoard.move(0, HiveBoard.PREV) == 6 && HiveBoard.move(3, HiveBoard.UP) == 3 && HiveBoard.move(24, HiveBoard.DOWN) == 24
-            && HiveBoard.move(10, HiveBoard.DOWN) == 17 && HiveBoard.move(17, HiveBoard.UP) == 10);
+            HiveBoard.move(4, HiveBoard.NEXT) == 0 && HiveBoard.move(0, HiveBoard.PREV) == 4 && HiveBoard.move(2, HiveBoard.UP) == 2 && HiveBoard.move(22, HiveBoard.DOWN) == 22
+            && HiveBoard.move(7, HiveBoard.DOWN) == 12 && HiveBoard.move(12, HiveBoard.UP) == 7);
         HiveBoard b = new HiveBoard();
-        for (int c = 0; c < 7; c++) b.owner[HiveBoard.cell(2, c)] = HiveBoard.TEAM_SIDES;
+        for (int c = 0; c < 5; c++) b.owner[HiveBoard.cell(2, c)] = HiveBoard.TEAM_SIDES;
         check("win: team 1 joins the two sides with a whole row, and the chain is that row in order from the row start", b.winner() == HiveBoard.TEAM_SIDES
-            && Arrays.equals(b.chain(HiveBoard.TEAM_SIDES), new int[] {14, 15, 16, 17, 18, 19, 20}) && b.chain(HiveBoard.TEAM_TOP) == null);
-        b.owner[HiveBoard.cell(2, 3)] = HiveBoard.FREE;
+            && Arrays.equals(b.chain(HiveBoard.TEAM_SIDES), new int[] {10, 11, 12, 13, 14}) && b.chain(HiveBoard.TEAM_TOP) == null);
+        b.owner[HiveBoard.cell(2, 2)] = HiveBoard.FREE;
         check("win: one gap in the row and nobody has won", b.winner() == HiveBoard.FREE);
-        b.owner[HiveBoard.cell(1, 3)] = HiveBoard.TEAM_SIDES;   // (1,3) touches (2,3) and (2,4), not (2,2): no bridge
+        b.owner[HiveBoard.cell(1, 2)] = HiveBoard.TEAM_SIDES;   // (1,2) touches (2,2) and (2,3), not (2,1): no bridge
         boolean noBridge = b.winner() == HiveBoard.FREE;
-        b.owner[HiveBoard.cell(1, 2)] = HiveBoard.TEAM_SIDES;   // (2,2) -> (1,2) -> (1,3) -> (2,4)
-        check("win: a detour over the next row joins only through cells that really touch", noBridge && b.winner() == HiveBoard.TEAM_SIDES && b.chain(HiveBoard.TEAM_SIDES).length == 8);
+        b.owner[HiveBoard.cell(1, 1)] = HiveBoard.TEAM_SIDES;   // (2,1) -> (1,1) -> (1,2) -> (2,3)
+        check("win: a detour over the next row joins only through cells that really touch", noBridge && b.winner() == HiveBoard.TEAM_SIDES && b.chain(HiveBoard.TEAM_SIDES).length == 6);
         b = new HiveBoard();
-        int[] down = {HiveBoard.cell(0, 3), HiveBoard.cell(1, 2), HiveBoard.cell(2, 3), HiveBoard.cell(3, 2)};
+        int[] down = {HiveBoard.cell(0, 2), HiveBoard.cell(1, 1), HiveBoard.cell(2, 2), HiveBoard.cell(3, 1), HiveBoard.cell(4, 1)};
         for (int c : down) b.owner[c] = HiveBoard.TEAM_TOP;
-        check("win: team 2 joins top and bottom with a zigzag of 4, and team 1 holding the same cells would not have won", b.winner() == HiveBoard.TEAM_TOP && Arrays.equals(b.chain(HiveBoard.TEAM_TOP), down));
-        b.owner[HiveBoard.cell(2, 3)] = HiveBoard.FREE; b.owner[HiveBoard.cell(2, 1)] = HiveBoard.TEAM_TOP;   // (1,2) touches (2,2) and (2,3) only
+        check("win: team 2 joins top and bottom with a zigzag of 5 (both teams have five to cross), and team 1 holding nothing has not won", b.winner() == HiveBoard.TEAM_TOP && Arrays.equals(b.chain(HiveBoard.TEAM_TOP), down));
+        b.owner[HiveBoard.cell(2, 2)] = HiveBoard.FREE; b.owner[HiveBoard.cell(2, 0)] = HiveBoard.TEAM_TOP;   // (1,1) touches (2,1) and (2,2) only
         check("win: a zigzag that leans the wrong way does not touch", b.winner() == HiveBoard.FREE);
         Random rnd = new Random(7); boolean oneWinner = true;
         for (int n = 0; n < 20000; n++) {
@@ -71,11 +79,11 @@ public final class HiveTest {
         // ---- the bank
         StringBuilder items = new StringBuilder();
         for (char l : HiveBank.AR.toCharArray()) if (l != 'ظ' && l != 'ث') for (int n = 0; n < 3; n++) items.append(line("q-" + (int) l + "-" + n, "" + l, n == 0 ? "A" : n == 1 ? "B" : "", n + 1, n == 0 ? 1 : 0));
-        String hints = "ظ\tظبي\tظفار\nA\tAnt\n";
+        String hints = "ت\tتمساح\tتونس\nA\tAnt\n";
         HiveBank small = bank(items.toString(), hints);
         check("bank: parses; a question is found under its Arabic letter and its English one; hints by letter",
             small != null && small.size() == 78 && small.of('ب').size() == 3 && small.of('A').size() == 26 && small.of('B').size() == 26 && small.of('C').isEmpty() && small.of('ظ').isEmpty()
-            && small.hints('ظ').length == 2 && small.hints('ث').length == 0);
+            && small.hints('ت').length == 2 && small.hints('ث').length == 0);
         check("bank: refuses a letter outside the alphabets, level 4, a repeated id, a question of no letter; keeps the first six hints of a letter, none of a stranger",
             bank(line("a", "ء", "", 1, 0), "") == null && bank(line("a", "ب", "b", 1, 0), "") == null && bank(line("a", "ب", "", 4, 0), "") == null && bank(line("a", "ب", "", 1, 0) + line("a", "ت", "", 1, 0), "") == null
             && bank(line("a", "", "", 1, 0), "") == null && bank(line("a", "", "Q", 1, 0), "") != null && bank(line("a", "ب", "", 1, 0), "ظ\t1\t2\t3\t4\t5\t6\t7\t1\n?\tx\n").hints('ظ').length == 6
@@ -97,11 +105,21 @@ public final class HiveTest {
 
         // ---- a game
         HiveGame.Settings s = new HiveGame.Settings();
-        HiveGame g = game(small, s, 1);
-        char[] sorted = g.board.letter.clone(); Arrays.sort(sorted); char[] alphabet = HiveBank.AR.toCharArray(); Arrays.sort(alphabet);
+        HiveGame g = game(small, s, 1, "بت");
         HiveGame g2 = game(small, s, 2);
-        check("start: the board holds each of the 28 letters once, shuffled differently from game to game; team 1 picks first", Arrays.equals(sorted, alphabet) && !Arrays.equals(g.board.letter, g2.board.letter)
-            && g.phase() == HiveGame.Phase.PICK && g.turn() == HiveBoard.TEAM_SIDES);
+        boolean drawn = true; Set<Character> third = new HashSet<>();
+        for (int seed = 0; seed < 300; seed++) {
+            String l = new String(game(small, s, seed).board.letter);
+            drawn &= l.chars().distinct().count() == 25 && l.indexOf('ظ') < 0 && l.indexOf('ث') < 0;
+            for (char x : HiveBank.AR.toCharArray()) if (x != 'ظ' && x != 'ث' && l.indexOf(x) < 0) third.add(x);
+        }
+        check("start: a board is 25 different letters of the 28, shuffled differently from game to game; the letters with no question (here ظ and ث) are never shown and the third one left out changes; team 1 picks first",
+            drawn && third.size() > 10 && !Arrays.equals(g.board.letter, g2.board.letter) && g.phase() == HiveGame.Phase.PICK && g.turn() == HiveBoard.TEAM_SIDES);
+        StringBuilder uneven = new StringBuilder();
+        for (char l : HiveBank.AR.toCharArray()) for (int n = 0; n < (l == 'ذ' ? 1 : 6); n++) uneven.append(line("u-" + (int) l + "-" + n, "" + l, "", 2, 0));
+        int outShort = 0, outLong = 0;
+        for (int seed = 0; seed < 1000; seed++) { String l = new String(game(bank(uneven.toString(), ""), s, seed).board.letter); if (l.indexOf('ذ') < 0) outShort++; if (l.indexOf('ب') < 0) outLong++; }
+        check("start: a letter with few questions stays out more often than the others, not always (ذ with one question: out of " + outShort + " games in 1000, ب with six: " + outLong + ")", outShort > 2 * outLong && outShort < 800 && outLong > 20);
         int c = cellOf(g, 'ب');
         check("turn: picking a free hexagon asks a question of its letter, options hidden, 15 seconds on the clock", g.pick(c) && g.phase() == HiveGame.Phase.ASK && g.question().kind == HiveGame.Kind.BANK
             && g.question().item.ar == 'ب' && !g.optionsShown() && g.leftMs() == 15000 && !g.pick(c) && !g.judge(true));
@@ -116,18 +134,15 @@ public final class HiveTest {
         check("turn: «خطأ» leaves the hexagon free and passes the turn", g.judge(false) && g.board.owner[c] == HiveBoard.FREE && g.turn() == HiveBoard.TEAM_SIDES);
         g.pick(c);
         check("no repeats: the other team picking that hexagon gets another question (the answer of the first was shown)", !g.question().item.id.equals(missed));
-        String second = g.question().item.id; g.reveal(); g.judge(false); g.pick(c); String third = g.question().item.id; g.reveal(); g.judge(false); g.pick(c);
-        check("no repeats: three questions of a letter are three different ones, and when the letter has run out with no samples it becomes the free «اذكر اسمًا» question, still playable",
-            new HashSet<>(Arrays.asList(missed, second, third)).size() == 3 && g.question().kind == HiveGame.Kind.NAME && g.question().letter == 'ت' && !g.canShowOptions() && g.reveal() && g.judge(true)
-            && g.board.owner[c] == HiveBoard.TEAM_SIDES);
-        c = cellOf(g, 'ظ'); g.pick(c);
-        check("short letter: ظ (no question at all) asks the category question with its sample answers; the host judges it like any other", g.question().kind == HiveGame.Kind.CATEGORY
-            && g.question().hints.length == 2 && g.question().item == null && g.reveal() && g.judge(false));
+        String second = g.question().item.id; g.reveal(); g.judge(false); g.pick(c); String third2 = g.question().item.id; g.reveal(); g.judge(false); g.pick(c);
+        check("no repeats: three questions of a letter are three different ones; when the letter has run out it asks the category question with its sample answers, which the host judges like any other",
+            new HashSet<>(Arrays.asList(missed, second, third2)).size() == 3 && g.question().kind == HiveGame.Kind.CATEGORY && g.question().letter == 'ت' && g.question().hints.length == 2 && g.question().item == null
+            && !g.canShowOptions() && g.reveal() && g.judge(false) && g.board.owner[c] == HiveBoard.FREE);
         g.pick(c);
-        check("short letter: ... and it can be asked again as often as it is missed", g.question().kind == HiveGame.Kind.CATEGORY && g.reveal() && g.judge(true) && g.board.owner[c] == HiveBoard.TEAM_SIDES);
+        check("no repeats: ... and that one can be asked again as often as it is missed", g.question().kind == HiveGame.Kind.CATEGORY && g.reveal() && g.judge(true) && g.board.owner[c] == HiveBoard.TEAM_TOP);
 
         // time, steal
-        g = game(small, s, 3); c = cellOf(g, 'ج'); g.pick(c); String kept = g.question().item.id;
+        g = game(small, s, 3, "جد"); c = cellOf(g, 'ج'); g.pick(c); String kept = g.question().item.id;
         now[0] += 14999; g.tick(); boolean before = !g.timeUp() && g.leftMs() == 1;
         now[0] += 1; g.tick();
         check("time: at 15 s the time is up, the question stays (no steal by default) and waits for OK; the host still judges", before && g.timeUp() && g.phase() == HiveGame.Phase.ASK && g.answering() == HiveBoard.TEAM_SIDES
@@ -136,7 +151,7 @@ public final class HiveTest {
         check("skip: leaving a question from the pause card passes the turn without showing the answer, and the hexagon keeps that same question for whoever picks it next",
             g.skip() && g.turn() == HiveBoard.TEAM_SIDES && g.board.owner[c] == 0 && g.pick(c) && g.question().item.id.equals(kept) && g.canShowOptions());
         s = new HiveGame.Settings(); s.steal = true; s.seconds = 20;
-        g = game(small, s, 4); c = cellOf(g, 'ر'); g.pick(c); kept = g.question().item.id; g.showOptions();
+        g = game(small, s, 4, "رز"); c = cellOf(g, 'ر'); g.pick(c); kept = g.question().item.id; g.showOptions();
         now[0] += 20000; g.tick();
         check("steal (a setting): when the time is up the other team may answer the same question with a new time, and no second «خيارات»", g.phase() == HiveGame.Phase.STEAL && g.answering() == HiveBoard.TEAM_TOP
             && g.turn() == HiveBoard.TEAM_SIDES && g.question().item.id.equals(kept) && g.leftMs() == 20000 && !g.canShowOptions());
@@ -147,27 +162,28 @@ public final class HiveTest {
 
         // levels, kids, challenge, English
         s = new HiveGame.Settings(); s.level = HiveGame.LEVEL_MEDIUM;
-        g = game(small, s, 5); c = cellOf(g, 'س'); g.pick(c); boolean medium = g.question().item.level == 2; g.reveal(); g.judge(false); g.pick(c);
+        g = game(small, s, 5, "س"); c = cellOf(g, 'س'); g.pick(c); boolean medium = g.question().item.level == 2; g.reveal(); g.judge(false); g.pick(c);
         check("level: «متوسط» asks the medium question first, then any level of that letter rather than nothing", medium && g.question().kind == HiveGame.Kind.BANK && g.question().item.level != 2);
         s = new HiveGame.Settings(); s.kids = true; s.challenge = true;
-        g = game(small, s, 6); c = cellOf(g, 'ش'); g.pick(c); boolean kid = g.question().item.kids; boolean noOptions = !g.canShowOptions() && !g.showOptions(); g.reveal(); g.judge(false); g.pick(c);
+        g = game(small, s, 6, "ش"); c = cellOf(g, 'ش'); g.pick(c); boolean kid = g.question().item.kids; boolean noOptions = !g.canShowOptions() && !g.showOptions(); g.reveal(); g.judge(false); g.pick(c);
         check("kids: only kids questions, and when they run out the free question, never a grown-ups' one; «تحدّي» has no «خيارات»", kid && noOptions && g.question().kind == HiveGame.Kind.NAME);
         s = new HiveGame.Settings(); s.english = true;
         g = game(small, s, 7);
-        int[] count = new int[128]; for (char l : g.board.letter) count[l]++;
-        boolean latin = true; for (char l : HiveBank.EN.toCharArray()) latin &= count[l] == (l == 'A' || l == 'B' ? 2 : 1);
-        c = cellOf(g, 'A'); g.pick(c); boolean enQ = g.question().kind == HiveGame.Kind.BANK && g.question().item.en == 'A'; g.reveal(); g.judge(true);
-        int cz = cellOf(g, 'Z'); g.pick(cz);
-        check("English: the board shows A to Z and, to fill 28, the two letters with the most questions twice; a hexagon asks a question whose English answer starts with its letter; a letter without one falls back",
+        String shownEn = new String(g.board.letter);
+        boolean latin = shownEn.chars().distinct().count() == 25 && shownEn.chars().allMatch(x -> x >= 'A' && x <= 'Z') && shownEn.indexOf('A') >= 0 && shownEn.indexOf('B') >= 0;
+        c = cellOf(g, 'A'); g.pick(c); boolean enQ = g.question().kind == HiveGame.Kind.BANK && g.question().item.en == 'A'; g.reveal(); g.judge(false);
+        int cz = cellOf(g, shownEn.replace("A", "").replace("B", "").charAt(0)); g.pick(cz);
+        check("English: the board shows 25 of A to Z, each once; a hexagon asks a question whose English answer starts with its letter; a letter without one falls back",
             latin && enQ && g.question().kind == HiveGame.Kind.NAME);
         g.reveal(); g.judge(false); int ca = cellOf(g, 'A'); g.pick(ca); g.reveal(); g.judge(false); g.pick(ca);
         check("English: the category question of A carries its English samples", g.board.letter[ca] == 'A' && (g.question().kind == HiveGame.Kind.BANK || g.question().hints[0].equals("Ant")));
 
         // a whole game on the starter, played by the rules until somebody wins
-        boolean allEnd = true; int longest = 0;
+        boolean allEnd = true, noneShown = true; int longest = 0, shownEmpty = 0;
         for (int seed = 0; seed < 300; seed++) {
             HiveGame.Settings st = new HiveGame.Settings(); st.english = seed % 2 == 1; st.kids = seed % 3 == 0; st.level = seed % 3;
-            HiveGame w = game(starter, st, seed); Random r = new Random(seed); Set<String> asked = new HashSet<>(); int turns = 0; boolean ok = true;
+            HiveGame w = game(starter, st, seed);
+            if (!st.kids && !st.english) for (char l : w.board.letter) noneShown &= !starter.of(l).isEmpty(); Random r = new Random(seed); Set<String> asked = new HashSet<>(); int turns = 0; boolean ok = true;
             while (w.phase() != HiveGame.Phase.WON && turns < 2000) {
                 List<Integer> free = new ArrayList<>();
                 for (int i = 0; i < HiveBoard.CELLS; i++) if (w.board.owner[i] == 0) free.add(i);
@@ -176,14 +192,16 @@ public final class HiveTest {
                 HiveGame.Question q = w.question();
                 if (q.kind == HiveGame.Kind.BANK) { ok &= asked.add(q.item.id) && (st.english ? q.item.en : q.item.ar) == q.letter && (!st.kids || q.item.kids); }
                 else ok &= q.kind == HiveGame.Kind.NAME || q.hints.length > 0;
+                shownEmpty += starter.of(q.letter).isEmpty() ? 1 : 0;
                 ok &= w.reveal() && w.judge(r.nextInt(3) > 0) && (w.phase() == HiveGame.Phase.WON || w.turn() != team);
                 turns++;
             }
-            ok &= w.phase() == HiveGame.Phase.WON && w.winner() == w.board.winner() && w.chain() != null && w.chain().length >= (w.winner() == HiveBoard.TEAM_TOP ? 4 : 7) && !w.pick(0);
+            ok &= w.phase() == HiveGame.Phase.WON && w.winner() == w.board.winner() && w.chain() != null && w.chain().length >= 5 && !w.pick(0);
             for (int i : w.chain()) ok &= w.board.owner[i] == w.winner();
             allEnd &= ok; longest = Math.max(longest, turns);
         }
         check("whole games: 300 random games on the starter (both languages, every level, kids) each end with a winner whose chain joins its sides; never an unplayable hexagon, never a question twice, right letter every time (longest " + longest + " turns)", allEnd);
+        check("whole games: in Arabic with all ages, a letter that has no question in the bank at all (ص ض ظ offline) was never on a board", noneShown);
         System.exit(failed == 0 ? 0 : 1);
     }
 }
