@@ -1,4 +1,4 @@
-«✅ GO — step 58 (the big 4.3 build: prayer times unchanged, radio, seven games, unified look, tray trace, phone page, Player v0.9.10)» — run step 58 (end of this file) on the newest apk-next build (252 or later). TV muted except item B. Do not wait on the owner. The factory-interface step is now ALLOWED as written in step 58 item I (no forced-crash test). lang ar stays.
+«✅ GO — step 58 (the big 4.3 build: prayer times unchanged, radio, seven games, unified look, tray trace, phone page, Player v0.9.10)» — run step 58 (end of this file) on the newest apk-next build (258 or later; read the changes at the very end of the file first). TV muted except item B. Do not wait on the owner. The factory-interface step is now ALLOWED as written in step 58 item I (no forced-crash test). lang ar stays.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -913,3 +913,7 @@ Before: `optimize/saver.sh show`, the disabled-packages list and the Home holder
 3. «رجّع واجهة المصنع»: the stock home and exactly the ledger come back (compare lists); press Home: which home answers?
 4. Switch it off again (step 2) so the TV ends as it started; compare all lists with "before": identical.
 Do NOT force a crash of our home to test the automatic restore. If anything leaves the TV without a home, restore from the PC at once and report.
+
+### step 58 — changes for build 258 or later (use this build; part H is reported, thanks)
+- Item I: «تخلّص من واجهة المصنع» MOVED: it is now its own row in the settings right under «اجعل UrTV الشاشة الرئيسية» (becomes «رجّع واجهة المصنع» while on); it is no longer inside «UrTV النظيف». Same round trip as written.
+- New item J, «UrTV النظيف» is now a really empty UrTV: ON → home shows clock, date, apps bar, settings button; the screensaver shows photo + clock only (+ prayer unless «بدون»); «تلفزيونك» opens straight on the settings; the home's ways into games/markets/matches do nothing. «تخصيص» → «بطاقة الصلاة»: بدون / سطر تحت التاريخ / بطاقة, and «مكان البطاقة»: وسط الشاشة / تحت الساعة / الجهة المقابلة للساعة: screenshot each (ar + one en), nothing overlapping the clock, date or apps bar. Adhan and reminders still fire. OFF → everything exactly as before (home, saver cards, hub with four windows).
