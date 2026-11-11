@@ -94,6 +94,17 @@
             android:exported="false"
             android:screenOrientation="landscape"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|uiMode" />
+        <!-- the family games played with one remote (docs/GAMES-KIT.md): each extends GameActivity; one entry a game, the same three lines -->
+        <activity
+            android:name=".KhanatActivity"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|uiMode" />
+        <activity
+            android:name=".MissingWordActivity"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|uiMode" />
         <activity
             android:name=".OddOneActivity"
             android:exported="false"

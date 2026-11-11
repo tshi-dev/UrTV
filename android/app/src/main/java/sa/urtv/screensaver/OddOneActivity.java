@@ -18,8 +18,8 @@ import sa.urtv.screensaver.games.oddone.OddOneWords;
 public class OddOneActivity extends GameActivity {
     static final int BYTES_MAX = 150_000;
     static final GameDataCheck.Parser<List<OddOneWords.Topic>> DATA = raw -> OddOneWords.parse(GameDataCheck.root(raw, '{'));
-    private static final int[] PLAYERS = {3, 4, 5, 6, 7, 8};
-    private static final int COLS = 4;
+    private static final int[] PLAYERS = {3, 4, 5, 6, 7, 8, 9, 10};
+    private static final int COLS = 5;
 
     private enum Screen { SETUP, TALK, HANDS, ACCUSED, ODD, GUESS_ASK, GUESS_JUDGE, SCORE, END }
     private Screen screen = Screen.SETUP;
@@ -111,7 +111,7 @@ public class OddOneActivity extends GameActivity {
             case HANDS: {
                 title(S.t("مين اللي مو معنا؟"), S.t("أشّروا كلكم على ثلاثة"));
                 int n = game.players, rows = (n + COLS - 1) / COLS;
-                for (int i = 0; i < n; i++) root.addView(button(names[i], sel == i), at(414, 136, 96 + (i % COLS) * 438, 260 + (i / COLS) * 160));
+                for (int i = 0; i < n; i++) root.addView(button(names[i], sel == i), at(326, 136, 96 + (i % COLS) * 350, 260 + (i / COLS) * 160));
                 root.addView(button(S.t("ما اتفقنا"), sel == n), at(640, 104, 96, 284 + rows * 160));
                 hints("◀ ▶ ▲ ▼", S.t("الاختيار"), S.t("اختيار"), S.t("اللي عليه أكثر الأصابع"), S.t("رجوع"), S.t("إيقاف"));
                 break;

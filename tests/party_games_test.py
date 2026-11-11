@@ -43,8 +43,8 @@ check("both games are ready in the registry and their screens are built on the k
       and "class OddOneActivity extends GameActivity" in odd and "class CharadesActivity extends GameActivity" in cha)
 check("every secret goes through the kit's hand-over, and Back in a round is the kit's pause card (the clocks stop with it)",
       "handOver(names[p]," in odd and "handOver(names[team], g.word.text(en)" in cha and all("if (back) { openPause(); return; }" in a and "if (paused) game.pause(); else game.resume();" in a for a in (odd, cha)))
-check("odd-one: the vote is by hands (the host enters the room's choice or «ما اتفقنا»); 3 to 8 players, as many as the kit's score table holds",
-      "false, null, recent, System::currentTimeMillis" in odd and "game.accuse(sel == n ? OddOneGame.NOBODY : sel)" in odd and "PLAYERS = {3, 4, 5, 6, 7, 8}" in odd)
+check("odd-one: the vote is by hands (the host enters the room's choice or «ما اتفقنا»); 3 to 10 players, as many as the kit's score table holds",
+      "false, null, recent, System::currentTimeMillis" in odd and "game.accuse(sel == n ? OddOneGame.NOBODY : sel)" in odd and "PLAYERS = {3, 4, 5, 6, 7, 8, 9, 10}" in odd)
 check("charades: «تخطّي» is the arrow that points left in both languages; the open word is hidden by the rules, never left to the view",
       "boolean left = dx == (rtl ? 1 : -1);" in cha and "if (game.wordVisible())" in cha and "game.tick()" in cha)
 check("nothing about the people is kept: only the chips and the ids of the last words", all("getSharedPreferences" not in a and "FileOutputStream" not in a and "GamePrefs.remember(this, id(), r)" in a for a in (odd, cha)))

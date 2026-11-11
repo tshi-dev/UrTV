@@ -11,7 +11,7 @@ Two family games played with **one remote and no phones** (pass-and-play). Specs
 | Tests | `tests/party_games_test.py`, `tests/PartyGamesTest.java` | All of the above on a plain JVM with a fake clock and the bundled starters. |
 
 ## «واحد مو معنا»: the rule choices
-- **Players 3 to 8** (the kit's score table holds 8; the rules allow 10), default 4, named by number. Rounds 3 or 5. One lap of talk, or two.
+- **Players 3 to 10**, default 4, named by number. Rounds 3 or 5. One lap of talk, or two.
 - **Deal:** the remote goes round in seat order. The kit's hand-over: pass screen → OK → a 2-second count → the secret until OK (it hides by itself after 20 seconds) → the next pass screen. Normal players see the topic and the word; the odd one sees the topic and «أنت برا السالفة».
 - **A secret never stays up:** Back on it only hides it (the same player again); the app leaving hides it. Before the first speaker, DOWN «نعيد توزيع الكلمات» sends the remote round again with the same word, for someone who missed his.
 - **Talk:** the seats in a circle from a random first speaker (the odd one may be first: starting anywhere else would clear a player). 30 seconds each as a guide only: one soft beep at 0, OK moves on.

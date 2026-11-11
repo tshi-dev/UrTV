@@ -722,3 +722,50 @@
 الكلمة كانت: %s	The word was: %s
 تعادل، كلمة وحدة لكل فريق	A tie: one word each
 خلصت الكلمات، نعيدها من جديد	Out of words, shuffling again
+حيوان	Animal
+نبات	Plant
+جماد	Object
+بلاد	Country
+اسم	Name
+أكلة	Food
+بدون وقت	No timer
+الخانات	Boxes
+%s مع أكلة	%s with Food
+حروف صعبة	Hard letters
+جولة فاصلة	Tie-break round
+حرف هذه الجولة	This round’s letter
+كلمة لكل خانة تبدأ بهذا الحرف	One word for each box, starting with this letter
+خلّصنا	We are done
+من خلّص أول؟	Who finished first?
+لا أحد	Nobody
+من خلّص أول وكل خاناته صحيحة له %s نقاط زيادة	The team that finished first with every box right gets %s extra points
+الخانة %s من %s	Box %s of %s
+%s بحرف	%s with
+صحيحة	Right
+مكررة	Same as another
+نتيجة الجولة	Round result
+الخانة التالية	Next box
+أمثلة	Examples
+لا أمثلة لهذا الحرف	No examples for this letter
+اتفقوا بصوت عالٍ، ثم علّموا كل فريق: صحيحة، مكررة مع فريق آخر، أو بدون	Agree out loud, then mark each team: right, same as another team, or none
+غيّر الحكم	Change the mark
+النتيجة	Score
+%s خلّصوا أول: %s نقاط زيادة	%s finished first: %s extra points
+الجولة التالية	Next round
+حكمة ومثل	Sayings
+معلومة	Facts
+النوع	Kind
+الخطف	Steal
+أول حرف ظاهر	First letter shown
+تلميح بنصف النقاط	Hint for half the points
+قولوا الكلمة بصوت عالٍ	Say the word out loud
+دور %s: قولوا الكلمة بصوت عالٍ	%s to play: say the word out loud
+تلميح	Hint
+خطف %s	Steal: %s
+هل قلتم الكلمة؟ صح بـ %s نقاط	Did you say the word? Right is worth %s points
+هل قالها %s؟ صح بـ %s نقاط	Did %s say it? Right is worth %s points
+
+الشهب	Meteors
+الروّاد	Pioneers
+%s مع مدينة سعودية	%s with Saudi city
+مدينة سعودية	Saudi city

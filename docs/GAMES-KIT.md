@@ -9,13 +9,13 @@ Every family game but «الأسرع» is played with **one remote and no phones
 | Class | Android | What it is |
 |---|---|---|
 | `GameRegistry` | no | the games in the list's order: id, Arabic name, one line, activity, `phones`, `ready`. **Adding a game is one line here.** |
-| `GameScore` | no | 1 to 8 sides (teams or players), points, `last` (won since `newRound()`), shared places (`rank`, `ranked`), `tie()`, `nobody()`, `after(side)`; the eight default team names |
+| `GameScore` | no | 1 to 10 sides (teams or players), points, `last` (won since `newRound()`), shared places (`rank`, `ranked`), `tie()`, `nobody()`, `after(side)`; the ten default team names |
 | `GameChips` | no | the quick setup: rows of chips and the start button, the focus (it starts on the button), `move`, `pick`, `setOff`, `save` / `load` |
 | `GameClock` | no | a countdown on a clock the caller gives (a test uses a fake one): `start`, `pause`, `resume`, `leftSeconds`, `over`; 0 = no time limit |
 | `GameDataCheck` | no | what every data file must pass first (size cap, really JSON of the expected kind) and the small checks (`text`, `whole`, `id`); `Parser<T>` is a game's own whole-file check |
 | `GameData` | yes | the loader: the kept copy if it passes, else the bundled starter; the background fetch from `data-games` (docs/GAMES-DATA.md) |
 | `GamePrefs` | yes | what is remembered: each game's chips, the game opened last, the sound switch, the last 100 item ids of a game. Never a name or a score |
-| `GameLook` | yes | the colours: `paper, ink, tile, deep, tickOff, saff, onSaff, onDeep, onInk, ok, pink`, `ink(alpha)`, `SIDES[8]`; two sets, `PAPER` and `NIGHT` |
+| `GameLook` | yes | the colours: `paper, ink, tile, deep, tickOff, saff, onSaff, onDeep, onInk, ok, pink`, `ink(alpha)`, `SIDES[10]`; two sets, `PAPER` and `NIGHT` |
 | `GameActivity` | yes | the base class a game extends: the screen, the keys, the pause card, the hand-over, and the drawing blocks |
 | `QuizGamesActivity` | yes | the games list (the hub's «الألعاب» window): the registry as tiles |
 
@@ -44,14 +44,15 @@ Everything is placed on the **1920 x 1080 design**, scaled to the screen; the sa
 | title block | `title(big, small)` (200 px), `band(h)` |
 | the question block | `question(meta, words, h)`: the green block, a saffron line («السؤال 3 من 10») and the big words (104 / 88 / 72 by length) |
 | the tick timer | `new TickTimer(seconds, ticksY)`, then `set(secondsLeft)` on every tick: the saffron box with the number, one tick a second, the last five coral with the tick sound |
+| a hidden word | `blanked(words, "___", word, hint, shown)`: the statement with a dashed box as wide as the word (the hint letter inside), or the word in saffron; give it to `question` |
 | an answer stamp | `answer(tab, words, STAMP \| STAMP_FOCUS \| STAMP_RIGHT \| STAMP_WRONG)`: the letter tab is drawn on the glyph's ink (the quiz's `InkLetter`); `letter(i)` gives أ ب ج د or A B C D |
-| the sides' bar | `sidesBar(score, names, turn, y)`: colour square, name, points; the side whose turn it is in ink |
-| rank rows | `board(score, names, withLast)`: the place as a big numeral (saffron for first), «+10», the total; shared places |
+| the sides' bar | `sidesBar(score, names, turn, y)`: colour square, name, points; the side whose turn it is in ink (from seven sides: no name, the tile is too narrow) |
+| rank rows | `board(score, names, withLast)`: the place as a big numeral (saffron for first), «+10», the total; shared places; rows of 128 up to 5 sides, 80 up to 8, 64 for 9 and 10 |
 | the end | `podium(score, names, sel)`: «انتهت اللعبة», the winner / a tie / nobody, the buttons `endLabels()` (العب مرة أخرى، تغيير الإعدادات، خروج), three blocks (512 / 400 / 300), confetti |
 | buttons | `button(label, focused)`, `buttons(labels, sel, w, y)`, `keyButtons(sel, n, ok, d)` (the new focus, or `-1 - index` when OK chose) |
 | the bottom line | `hints("▲ ▼", "السطر", …)`: pairs of key and what it does, so every screen says its next key in words |
-| quick setup | `setup(chips, startLabel)` draws up to six rows and the start button; `keySetup(chips, back, ok, dx, dy)` returns true when OK is pressed on the button; `soundChip(chips)` adds «الصوت»; `remembered(chips)` loads last time's |
-| the hand-over | `handOver(name, secret, note, done)`: «سلّموا الريموت لـ …» and «الباقين: غطّوا عيونكم», OK, a 2 s count, the secret alone, OK hides it and runs `done`. Back hides it first; it hides by itself after 20 s and when the app leaves the front |
+| quick setup | `setup(chips, startLabel)` draws up to seven rows and the start button; `keySetup(chips, back, ok, dx, dy)` returns true when OK is pressed on the button; `soundChip(chips)` adds «الصوت»; `remembered(chips)` loads last time's |
+| the hand-over | `handOver(name, secret, note, done)`: «سلّموا الريموت لـ …» and «الباقين: غطّوا عيونكم», OK, a 2 s count, the secret alone, OK hides it and runs `done`. Back hides it first; it hides by itself after 20 s and when the app leaves the front; `cancelHandOver()` drops it («إنهاء الجولة» on the pause card does) |
 | sounds | `play(QuizSound.TICK \| CHIME \| LOW \| FANFARE)`: the existing tones, behind the one sound switch |
 | names | `teamNames(n)`, `gameName()`, `toast(s)` |
 
@@ -75,7 +76,7 @@ Colours come only from `L` (`L.paper`, `L.ink`, `L.deep`, `L.saff`…): a game w
 - **Dark and light.** `GameLook` has the two sets and every block draws from it, but `GameLook.of` gives `PAPER` to every UrTV look for now: «الأسرع» has shipped on paper under the dark home, and the owner approved that look. Switching the dark looks to `NIGHT` is that one line (the quiz keeps its own constants and would stay on paper).
 - **«الأسرع» is not refactored onto the kit.** Its drawing code is pinned line by line in `tests/quiz_test.py` and `tests/step52_test.py`; the kit reuses its `InkLetter`, `CheckView`, `ConfettiView` and `QuizSound` instead of moving them. It is in the registry like the others.
 - **The games list** keeps the class name `QuizGamesActivity` (the hub and its tests point at it).
-- **Six rows of chips at most** fit the setup screen; a game with more settings groups them.
+- **Seven rows of chips at most** fit the setup screen (from the seventh the rows are 76 px instead of 88); a game with more settings groups them.
 
 ## What needs a real TV
 
