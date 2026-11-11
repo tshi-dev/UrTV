@@ -2303,3 +2303,16 @@ Fresh data, UrTV ar, TV en-US: frames at 0.3 s (our home still), 1.0 s (the gree
 
 ### Z
 `pm clear` + uninstall (0 packages), APK deleted, bisect prop empty, UrTV lang ar, updatechannel latest, idle 45 s, TV muted and asleep. Build stays 235.
+
+## step 57, addendum — item 4 (Player v0.9.9 put back for it, same sha256 and signer, list loaded by link, uninstalled again after)
+### 4 ✓ «ابحث في القنوات» from UrTV's match sheet (السعودية × كوريا الجنوبية)
+- **Player not running:** «شاهد المباراة» → «ما لقينا قناة لهذه المباراة في قوائمك» → «ابحث في القنوات» → **the Live tab**, with the line **«للمباراة: السعودية × كوريا الجنوبية»** and **the search box holding «السعودية»**; rows under it: Al Saudiya, Al Saudiya Alaan, Rotana Cinema KSA, Rotana FM KSA, Saudi Thaqafiya TV, Saudia Radio. No keyboard up; focus on the «القنوات» tab
+- **Player already running** (left on its «الدليل» tab): the same Live content, the same line, the box «السعودية», the same rows ✓. Small: the focus is still on the «الدليل» tab pill while the Live tab's content is shown
+- The Arabic word finds channels with Latin names (Al Saudiya…) ✓
+
+### A mistake of mine, put right
+On UrTV's match sheet two of my OK presses landed on the team button, not on «شاهد المباراة» (the focus had been moved by earlier LEFT keys): «كوريا الجنوبية» was added to the followed teams and «السعودية» removed and added again. I set the teams back with `saver.sh teams`: the list reads «الهلال, السعودية» again, the same as before step 47. No reminder was set.
+Small, from this: the sheet's team button changes its meaning with the state («أضف كوريا الجنوبية لفرقي» / «أزل السعودية من فرقي») and acts at once with no question; one stray OK changes the followed teams.
+
+### Z
+Player cleared and uninstalled (0 packages), APK deleted, lang ar, updatechannel latest, idle 45 s, TV muted and asleep.
