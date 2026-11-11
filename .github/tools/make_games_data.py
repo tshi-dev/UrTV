@@ -10,7 +10,8 @@ last good copy, or the bundled starter, stays). Formats:
   missing-word.json   {"v":1,"w":[{"i":id,"k":"f"|"s","d":1..3,"a":0|1,"t":[ar,en],"w":[ar,en]}]}   (k: f fact, s saying; the text holds one ___; en may be "" for a saying)
   odd-one.json        {"v":1,"t":[{"i":id,"n":[ar,en],"w":[[ar,en,d],...]}]}
   charades.json       {"v":1,"c":[category ids],"w":[[ar,en,category index,d,kids 0|1,modes bits: 1 act, 2 describe],...]}
-  letter-hive.json    {"v":1,"L":28 letters,"S":short letters,"a":{letter:[quiz ids]},"e":{"A":[quiz ids]}}   (ids of items in quiz/quiz.json)
+  letter-hive.json    {"v":1,"L":28 letters,"S":short letters,"a":{letter:[quiz ids]},"e":{"A":[quiz ids]}}   (ids of items in quiz/quiz.json; the bundled starter also has "T" (the
+                       threshold for S, 6) and "q": {id: compact quiz item} for the ids that are not in assets/quiz/starter.json, so it works offline on its own)
   word5-answers.json  {"v":1,"w":[[word,display,en,d,kids 0|1],...]}   (word: 5 normalized letters; en may be "" for dictionary words)
   word5-guesses.json  {"v":1,"A":alphabet,"n":count,"w":string}   (sorted five-letter words packed as one string, 5 characters each, character k = a..z,0,1 for the k-th letter of A:
                        look a word up by binary search on the string, no table in memory)"""
@@ -87,6 +88,34 @@ def build(g, out):
         print(f"{name}.json", os.path.getsize(f"{out}/games/{name}.json"), "bytes")
 
 # ---------------------------------------------------------------- starter (bundled, small)
+def hive_starter(g, quiz_ids, per_ar=6, per_en=4, n_ar=25):
+    """The letter hive's starter carries its own questions ("q": compact quiz items by id) so a first game offline has at least per_ar questions for each of the
+    n_ar best-covered Arabic letters and per_en for each English letter that has that many. Short, easy, kids-friendly items first, at most 2 of one kind
+    (id prefix) per letter so the questions differ. Ids already in the quiz starter are preferred (no duplicate bytes), the rest are embedded."""
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import make_quiz_bank as mqb
+    bank = {x["i"]: x for x in mqb.compact(load(f"{g}/data/quiz.json"))}
+    full = build_hive(g)
+    def pick(ids, n):
+        cand = sorted((i for i in ids if i in bank), key=lambda i: (i not in quiz_ids, bank[i]["d"] > 2, bank[i]["d"], -bank[i]["k"], len(bank[i]["q"][0]), i))
+        out, kinds = [], collections.Counter()
+        for i in cand:
+            kind = re.sub(r"[-_]?[0-9A-Za-z]+$", "", i)[:10]
+            if kinds[kind] >= 2: continue
+            kinds[kind] += 1; out.append(i)
+            if len(out) == n: break
+        for i in cand:   # fill up with the kinds that were capped if the letter is short
+            if len(out) >= n: break
+            if i not in out: out.append(i)
+        return out
+    ar_order = sorted(full["a"], key=lambda l: -len([i for i in full["a"][l] if i in bank]))
+    keep_ar = set(ar_order[:n_ar])
+    a = {l: sorted(pick(full["a"][l], per_ar)) for l in sorted(full["a"]) if l in keep_ar}
+    e = {l: sorted(pick(full["e"][l], per_en)) for l in sorted(full["e"]) if len([i for i in full["e"][l] if i in bank]) >= per_en}
+    used = sorted({i for v in list(a.values()) + list(e.values()) for i in v})
+    q = {i: bank[i] for i in used if i not in quiz_ids}
+    return {"v": 1, "L": full["L"], "T": per_ar, "S": "".join(l for l in full["L"] if len(a.get(l, [])) < per_ar), "a": a, "e": e, "q": q}
+
 def starter(g, out, quizpath):
     quiz_ids = {x["i"] for x in load(quizpath)}
     k = build_khanat(g)
@@ -95,9 +124,11 @@ def starter(g, out, quizpath):
     mw = build_missing(g)["w"]
     facts = [x for x in mw if x["k"] == "f"][:30]; sayings = [x for x in mw if x["k"] == "s"][:50]
     od = build_odd(g); od["t"] = od["t"][:10]
-    ch = build_charades(g); keep = [r for r in ch["w"] if r[3] == 1][:60] + [r for r in ch["w"] if r[3] == 2][:50] + [r for r in ch["w"] if r[3] == 3][:40]; ch["w"] = keep
-    hv = build_hive(g); hv["a"] = {l: [i for i in v if i in quiz_ids] for l, v in hv["a"].items()}; hv["e"] = {l: [i for i in v if i in quiz_ids] for l, v in hv["e"].items()}
-    hv["S"] = "".join(l for l in hv["L"] if len(hv["a"].get(l, [])) < 12)
+    ch = build_charades(g)
+    kids_act = [r for r in ch["w"] if r[4] == 1 and r[5] & 1][:120]   # the kids deck of «بدون كلام» (kids, easy, act) is the one that must work offline
+    rest = [r for r in ch["w"] if r not in kids_act]
+    keep = kids_act + [r for r in rest if r[3] == 1][:20] + [r for r in rest if r[3] == 2][:30] + [r for r in rest if r[3] == 3][:20]; ch["w"] = keep
+    hv = hive_starter(g, quiz_ids)
     ans, _ = build_word5(g)
     lem = sorted(set(load(f"{g}/word5/lemmas.json")) | {r[0] for r in ans["w"]})
     for name, obj in {"khanat": k, "missing-word": {"v": 1, "w": facts + sayings}, "odd-one": od, "charades": ch, "letter-hive": hv, "word5-answers": ans, "word5-guesses": pack(lem)}.items():
@@ -163,10 +194,17 @@ def verify_file(name, path, answers=None, quiz=None, minimum=True):
         a, e = d.get("a"), d.get("e")
         if not (isinstance(a, dict) and isinstance(e, dict) and isinstance(d.get("L"), str) and len(d["L"]) == 28 and set(a) <= set(d["L"])): return ["shape"]
         n = sum(len(v) for v in a.values()) + sum(len(v) for v in e.values()); count(n)
+        emb = d.get("q", {})
+        if not isinstance(emb, dict): return ["q is not an object"]
+        for i, it in emb.items():
+            if not (_id(i) and isinstance(it, dict) and it.get("i") == i and set(it) == {"i", "c", "d", "k", "q", "a", "w"} and _d(it["d"]) and it["k"] in (0, 1) and isinstance(it["c"], str)
+                    and all(isinstance(x, list) and len(x) == 2 and all(_t(y) for y in x) for x in [it["q"], it["a"]] + it["w"]) and len(it["w"]) == 3
+                    and all(len({it["a"][n], *(x[n] for x in it["w"])}) == 4 for n in (0, 1))): bad.append("embedded " + str(i))
         for v in list(a.values()) + list(e.values()):
             for i in v:
-                if not _id(i) or (quiz is not None and i not in quiz): bad.append(str(i))
-        if sorted(l for l in d["L"] if len(a.get(l, [])) < 12) != sorted(d.get("S", "")): bad.append("S does not match the index")
+                if not _id(i) or (quiz is not None and i not in quiz and i not in emb): bad.append(str(i))
+        t = d.get("T", 12)
+        if sorted(l for l in d["L"] if len(a.get(l, [])) < t) != sorted(d.get("S", "")): bad.append("S does not match the index")
     elif name == "word5-answers":
         w = d.get("w")
         if not isinstance(w, list): return ["no list"]
