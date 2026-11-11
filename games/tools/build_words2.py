@@ -48,18 +48,15 @@ def main(forms_path):
     samples = {l: {} for l in LETTERS}
     def add(box, a, e, src="curated"):
         l = first_letter(a)
-        if l in samples and len(a) <= 24:
+        if l in samples and len(a) <= 24 and re.fullmatch(r"[\u0621-\u064A ]{3,24}", strip(a)) and not re.search(r"[A-Za-z]", a):
             lst = samples[l].setdefault(box, [])
             if len(lst) < 15 and all(norm(x["ar"]) != norm(a) for x in lst): lst.append({"ar": a, "en": e, "source": src})
     for box, tids in BOX.items():
         for t in tids:
             for a, e in T[t][2]: add(box, a, e)
     for n in names_curated.NAMES: add("name", n, "")
-    old = bw.load_topics()  # cached Wikidata lists (verified pairs, wild animals)
-    for t in ("mammals", "birds"):
-        for r in old.get(t, []): add("animal", r["ar"], r["en"], bw.src(r["q"]))
     for v in geo_fetch.countries().values():
-        if v["en"] in build_geo.SKIP or len(v["caps"]) != 1: continue
+        if v["en"] in build_geo.SKIP or len(v["caps"]) != 1 or v["en"] not in build_geo.FAMOUS: continue   # well-known countries and their capitals only
         add("country", v["ar"], build_geo.NAMES.get(v["en"], v["en"]), bw.src(v["q"]))
         (cq, (cen, car)), = v["caps"].items(); add("city", car, cen, bw.src(cq))   # world capitals: a separate, additive box "city"
     dump("khanat/letters.json", {"letters": list(LETTERS), "rare_letters": list("ثضظ"), "hard_letters": list("خذشصطغزوي"),
