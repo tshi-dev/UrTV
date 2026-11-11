@@ -37,7 +37,7 @@ final class ReminderPlan {
         Row(long id, String text, boolean done, long due, int before, boolean sound, int where, long snooze, int repeat, TimeZone zone) {
             this.id = id; this.text = text; this.done = done; this.due = due; this.before = before; this.sound = sound; this.where = where; this.snooze = snooze;
             this.repeat = repeat == DAILY || repeat == WEEKLY ? repeat : NO;
-            this.zone = zone == null ? TimeZone.getDefault() : zone;
+            this.zone = zone == null ? ZoneFix.tvZone() : zone;
         }
 
         long fireAt() { return snooze > 0 ? snooze : due - before * MINUTE; }

@@ -21,7 +21,8 @@ with tempfile.TemporaryDirectory() as tmp:
                     [r['timings'][key] for key in ('Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha')])))
     (tmp / 'published.tsv').write_text('\n'.join(lines) + '\n', encoding='utf-8')
     src = ROOT / 'android/launcher/src/main/java/sa/urtv/home/tilawah/PrayerMath.java'
-    subprocess.run(['javac', '-encoding', 'UTF-8', '-d', str(tmp), str(src), str(ROOT / 'tests/PrayerWorldRun.java')], check=True)
+    subprocess.run(['javac', '-encoding', 'UTF-8', '-d', str(tmp), str(src), str(ROOT / 'tests/PrayerWorldRun.java'),
+                    str(ROOT / 'android/launcher/src/main/java/sa/urtv/home/ZoneFix.java'), str(ROOT / 'android/launcher/src/main/java/sa/urtv/home/ZoneTable.java')], check=True)
     cities = json.loads((ROOT / '.github/tools/cities-world/cities-merged.json').read_text(encoding='utf-8'))
     polar = next(r for r in cities if r['name_en'] == 'Longyearbyen')
     subprocess.run(['java', '-Dfile.encoding=UTF-8', '-cp', str(tmp), 'sa.urtv.home.tilawah.PrayerWorldRun', str(tmp / 'published.tsv'), str(polar['lat']), str(polar['lon']), polar['tz']], check=True)

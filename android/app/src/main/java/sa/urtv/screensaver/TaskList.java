@@ -75,7 +75,7 @@ final class TaskList {
      * Done at `now`: a repeating reminder is done for this time only (it moves to the next one and stays open), any other task is marked
      * done. null when there is no such task.
      */
-    static List<Task> markDone(List<Task> v, long id, long now) { return markDone(v, id, now, java.util.TimeZone.getDefault()); }
+    static List<Task> markDone(List<Task> v, long id, long now) { return markDone(v, id, now, ZoneFix.tvZone()); }
 
     /** markDone, a repeating one moved by calendar periods in `tz` (Reminders.step) */
     static List<Task> markDone(List<Task> v, long id, long now, java.util.TimeZone tz) {

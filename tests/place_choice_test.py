@@ -29,7 +29,7 @@ T = "android/launcher/src/main/java/sa/urtv/home/tilawah/"
 H = "android/launcher/src/main/java/sa/urtv/home/"
 if shutil.which("javac") and shutil.which("java"):
     tmp = tempfile.mkdtemp()
-    srcs = [str(ROOT / T / n) for n in ("PlaceChoice.java", "PlaceFragment.java", "PlaceMemory.java", "SchedIdentity.java", "PrayerMath.java", "PrayerAdjust.java")] + [str(ROOT / H / "LastGood.java"), str(ROOT / "tests/PlaceChoiceRun.java"), str(ROOT / "tests/PlaceMemoryRun.java")]
+    srcs = [str(ROOT / T / n) for n in ("PlaceChoice.java", "PlaceFragment.java", "PlaceMemory.java", "SchedIdentity.java", "PrayerMath.java", "PrayerAdjust.java")] + [str(ROOT / H / "LastGood.java"), str(ROOT / H / "ZoneFix.java"), str(ROOT / H / "ZoneTable.java"), str(ROOT / "tests/PlaceChoiceRun.java"), str(ROOT / "tests/PlaceMemoryRun.java")]
     subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp] + srcs, check=True, capture_output=True)
     for cls in ("PlaceChoiceRun", "PlaceMemoryRun"):
         out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-Dstdout.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.tilawah." + cls], capture_output=True, text=True).stdout

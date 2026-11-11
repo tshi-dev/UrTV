@@ -3021,10 +3021,10 @@ public class MainActivity extends Activity {
                 hijriDay = new android.icu.text.SimpleDateFormat("d MMMM y", new android.icu.util.ULocale("ar_SA@calendar=islamic-umalqura"));
             } catch (Exception ignored) { }
         }
-        if (!tz.equals(formatZone)) {
-            gregFormat.setTimeZone(java.util.TimeZone.getTimeZone(tz));
-            if (hijriFormat != null) hijriFormat.setTimeZone(android.icu.util.TimeZone.getTimeZone(tz));
-            if (hijriDay != null) hijriDay.setTimeZone(android.icu.util.TimeZone.getTimeZone(tz));
+        {   // every tick: ZoneFix's offset (issue #55: the TV's own tz data can be older than the page's) may move with the page's word
+            gregFormat.setTimeZone(ZoneFix.zone(tz));
+            if (hijriFormat != null) hijriFormat.setTimeZone(ZoneIcu.of(tz));
+            if (hijriDay != null) hijriDay.setTimeZone(ZoneIcu.of(tz));
             formatZone = tz;
         }
         String hijri = "";
@@ -3033,7 +3033,7 @@ public class MainActivity extends Activity {
             if (hijriFormat != null && shift == 0) hijri = hijriFormat.format(now.getTime()).replaceAll("\\s*هـ\\s*$", "") + " هـ";
             else if (hijriFormat != null) {   // the day, month and year move by the offset; the weekday is today's
                 if (hijriWeekday == null) hijriWeekday = new android.icu.text.SimpleDateFormat("EEEE", new android.icu.util.ULocale("ar_SA@calendar=islamic-umalqura"));
-                hijriWeekday.setTimeZone(android.icu.util.TimeZone.getTimeZone(tz));
+                hijriWeekday.setTimeZone(ZoneIcu.of(tz));
                 hijri = hijriWeekday.format(now.getTime()) + "، " + hijriDay.format(HijriShift.date(now, shift)).replaceAll("\\s*هـ\\s*$", "") + " هـ";
             }
         } catch (Exception ignored) { }
@@ -3076,13 +3076,13 @@ public class MainActivity extends Activity {
      * from the TV's Umm al-Qura calendar, moved by «فرق التاريخ الهجري» as the Arabic line; without that calendar, the Gregorian day alone.
      */
     private static String englishDate(Calendar now, String tz, int shift) {
-        java.util.TimeZone zone = java.util.TimeZone.getTimeZone(tz);
+        java.util.TimeZone zone = ZoneFix.zone(tz);
         SimpleDateFormat greg = new SimpleDateFormat("d MMMM", Locale.ENGLISH), day = new SimpleDateFormat("EEEE", Locale.ENGLISH);
         greg.setTimeZone(zone);
         day.setTimeZone(zone);
         String g = greg.format(now.getTime());
         try {
-            android.icu.util.Calendar h = android.icu.util.Calendar.getInstance(android.icu.util.TimeZone.getTimeZone(tz),
+            android.icu.util.Calendar h = android.icu.util.Calendar.getInstance(ZoneIcu.of(tz),
                     new android.icu.util.ULocale("en@calendar=islamic-umalqura"));
             if (!"islamic-umalqura".equals(h.getType())) return g;
             h.setTime(shift == 0 ? now.getTime() : HijriShift.date(now, shift));

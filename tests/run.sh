@@ -189,6 +189,7 @@ python3 tests/look_test.py
 python3 tests/tv_rows_test.py
 python3 tests/adhan_reply_test.py
 python3 tests/clock_zone_test.py
+python3 tests/zone_fix_test.py   # 4.3 issue #55: every native time from ZoneFix (a recent tz table, the TV's data, the page's word): Morocco +00, fake old data
 python3 tests/phone_test.py
 python3 tests/pairing_screen_test.py
 python3 tests/glass_test.py

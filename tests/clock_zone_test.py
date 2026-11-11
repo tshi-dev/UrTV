@@ -14,7 +14,7 @@ if not shutil.which("javac"):
     sys.exit(0)
 cases = [l.split("\t") for l in (ROOT / "tests/clock_zone_cases.tsv").read_text(encoding="utf-8").split("\n") if l and not l.startswith("#")]
 with tempfile.TemporaryDirectory() as tmp:
-    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "tests/i18n_home_stub/S.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/ClockZone.java"),
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "tests/i18n_home_stub/S.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/ClockZone.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/ZoneFix.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/ZoneTable.java"), 
                     str(ROOT / "tests/ClockZoneRun.java")], check=True)
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.ClockZoneRun", str(ROOT / "tests/clock_zone_cases.tsv")],
                          check=True, capture_output=True).stdout

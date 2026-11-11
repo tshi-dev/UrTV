@@ -4033,6 +4033,15 @@ function pruneStorage(){
   }catch(e){}
 }
 
+// 4.3 (issue #55): the screensaver is told the offset this page uses for the city's zone (its WebView's tz data, newer than the TV's own):
+// the apps' clock, dates, prayer and reminder times follow it near that moment (ZoneFix). Once at the start and every hour; the screen only.
+function reportZone(){
+  try{
+    if(CONFIG.widget || !(window.UrtvNative && window.UrtvNative.zoneOffset)) return;
+    const t = Date.now();
+    window.UrtvNative.zoneOffset(CONFIG.timezone, String(t), Math.round(tzOffsetMs(t) / 60000));
+  }catch(e){}
+}
 // «يُتلى الآن» (the screensaver only): the app answers window.UrtvNative.nowPlaying() with {"title":"سورة الكهف","who":"ماهر المعيقلي"} while the
 // Quran or a station plays in the launcher, and "" otherwise
 // answer is empty. The words go in as text. One line: a long one steps down in size (never «…»).
@@ -4604,6 +4613,8 @@ function boot(){
 
   nowPlayingTick();
   setInterval(nowPlayingTick, 60*1000);
+  reportZone();
+  setInterval(reportZone, 60*60*1000);
   setInterval(adhanLiveTick, CONFIG.lowram ? 15000 : 3000);
   if(REMS.length){ remDraw(); setInterval(remDraw, CONFIG.lowram ? 5000 : 1000); }
   if(CONFIG.seconds){   // the seconds turn on the second, not a drifting interval's moment

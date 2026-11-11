@@ -119,6 +119,8 @@ final class ConfigSnapshot {
                 if (tw >= 0 && cur.getString(tw) != null) tweaks = cur.getString(tw);
                 int ma = cur.getColumnIndex("match_app");   // an older screensaver does not say: auto
                 if (ma >= 0 && cur.getString(ma) != null) matchApp = cur.getString(ma);
+                int pz = cur.getColumnIndex("page_zone");   // 4.3 (issue #55): the page's offset for the city's zone; an older screensaver says nothing
+                if (pz >= 0 && cur.getString(pz) != null) ZoneFix.report(cur.getString(pz));
                 int fb = cur.getColumnIndex("fav_bar");   // an older screensaver does not say: 5
                 if (fb >= 0 && cur.getString(fb) != null) favBar = cur.getString(fb);
             }

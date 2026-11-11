@@ -109,7 +109,7 @@ public final class PrayerMathRun {
             countries++;
             // the row is written at f[6] minutes from UTC; this machine's time-zone data may give the zone another offset that day (Morocco
             // left UTC+1 in tzdata 2026c): the sun is the same, so the reference is re-based by the difference and counted, not failed
-            int shift = java.util.TimeZone.getTimeZone(f[4]).getOffset(PrayerMath.midnight(y, mo, d, f[4]) + 12 * 3600_000L) / 60000 - Integer.parseInt(f[6].trim());
+            int shift = (int) (sa.urtv.home.ZoneFix.offset(f[4], PrayerMath.midnight(y, mo, d, f[4]) + 12 * 3600_000L) / 60000) - Integer.parseInt(f[6].trim());   // the offset the app uses (issue #55)
             if (shift != 0) rebased++;
             String want = shifted(f[5], shift);
             check("reference " + f[0] + " " + f[1] + " (" + f[4] + "): every time within a minute of the independent calculation", within(row(g, f[4]), want, 1), row(g, f[4]) + " vs " + want);

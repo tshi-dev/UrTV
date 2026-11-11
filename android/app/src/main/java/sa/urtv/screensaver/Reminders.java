@@ -90,7 +90,7 @@ final class Reminders {
     }
 
     /** advance in the TV's default zone (the tests' old form) */
-    static long advance(long due, int repeat, long now) { return advance(due, repeat, now, TimeZone.getDefault()); }
+    static long advance(long due, int repeat, long now) { return advance(due, repeat, now, ZoneFix.tvZone()); }
 
     /** every open repeating task whose appointment and grace are over is moved to its next (calendar periods in `tz`); others are the same objects */
     static List<Task> roll(List<Task> v, long now, TimeZone tz) {
@@ -102,7 +102,7 @@ final class Reminders {
         return out;
     }
 
-    static List<Task> roll(List<Task> v, long now) { return roll(v, now, TimeZone.getDefault()); }
+    static List<Task> roll(List<Task> v, long now) { return roll(v, now, ZoneFix.tvZone()); }
 
     /** false when anything in the list needs rolling (so the saved list is only written when it changed) */
     static boolean needsRoll(List<Task> v, long now) {
@@ -112,9 +112,9 @@ final class Reminders {
 
     /** the zone of an id such as "Asia/Riyadh"; the TV's own when it is empty or unknown */
     static TimeZone zone(String id) {
-        if (id == null || id.isEmpty()) return TimeZone.getDefault();
+        if (id == null || id.isEmpty()) return ZoneFix.tvZone();
         TimeZone z = TimeZone.getTimeZone(id);
-        return "GMT".equals(z.getID()) && !"GMT".equals(id) ? TimeZone.getDefault() : z;
+        return "GMT".equals(z.getID()) && !"GMT".equals(id) ? ZoneFix.tvZone() : ZoneFix.zone(id);   // issue #55: the offset the page uses
     }
 
     /** "2026-11-05 17:00" (or with a T) in the zone, as epoch milliseconds; -1 when it is not a date and time */

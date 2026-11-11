@@ -122,7 +122,13 @@ final class Prefs {
     /** sent (to this app only) when a SET from ADB or the launcher saved something: a screensaver that is already showing starts over with it */
     static final String CHANGED = "sa.urtv.screensaver.SETTINGS_CHANGED";
 
-    Prefs(Context c) { ctx = c; sp = c.getSharedPreferences("settings", Context.MODE_PRIVATE); GlassStyle.setTweaks(tweaks()); }
+    Prefs(Context c) {
+        ctx = c;
+        sp = c.getSharedPreferences("settings", Context.MODE_PRIVATE);
+        GlassStyle.setTweaks(tweaks());
+        if (ZoneFix.logger == null) ZoneFix.logger = line -> android.util.Log.i("UrTVZone", line);
+        ZoneFix.report(pageZone());   // issue #55: the page's last word on the city's zone, after a restart too
+    }
 
     /** {name, latitude, longitude}; Riyadh until the user picks */
     String[] city() {
@@ -151,6 +157,10 @@ final class Prefs {
         if (!code.isEmpty()) sp.edit().putString("cityCountry", code).apply();   // a city saved before 4.1 has none: found once, kept (a user report on 4.1: lag)
         return code;
     }
+
+    /** 4.3 (issue #55): the page's offset for the city's zone «zone|ms|minutes» (NowPlayingBridge.zoneOffset); "" until the page tells it */
+    String pageZone() { return sp.getString("pageZone", ""); }
+    void setPageZone(String v) { sp.edit().putString("pageZone", v == null ? "" : v).apply(); ZoneFix.report(v); }
 
     /** The time zone the page shows: Asia/Riyadh for a built-in Saudi city, the country's own for a Gulf one; a place of your own gets the one given
      *  with it, else the TV's own. */

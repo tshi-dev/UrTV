@@ -49,9 +49,9 @@ public class TaskReminderActivity extends Activity {
         if (edit == null) { finish(); return; }
         try {
             String[] z = ConfigSnapshot.read(this).cityZone();
-            zone = z == null ? TimeZone.getDefault() : TimeZone.getTimeZone(ClockZone.valid(z[1]));
+            zone = z == null ? ZoneFix.tvZone() : ZoneFix.zone(ClockZone.valid(z[1]));
         } catch (RuntimeException e) {
-            zone = TimeZone.getDefault();
+            zone = ZoneFix.tvZone();
         }
         ScrollView scroll = new ScrollView(this);
         look = GlassSource.page(this, scroll);

@@ -204,7 +204,7 @@ public class MarketsActivity extends Activity {
         Long at = data == null || !liveOn || !MarketData.liveFresh(liveOkAt, System.currentTimeMillis()) ? null : data.liveAt.get(code);
         if (at == null) return "";
         if ("delayed".equals(MarketData.liveKind(code))) return S.t("متأخرة ~%s د", digits(15));
-        Calendar k = Calendar.getInstance(TimeZone.getTimeZone(zone()));
+        Calendar k = Calendar.getInstance(ZoneFix.zone(zone()));
         k.setTimeInMillis(at == 0 ? System.currentTimeMillis() : at);
         return clock(k.get(Calendar.HOUR_OF_DAY), k.get(Calendar.MINUTE));
     }
@@ -430,7 +430,7 @@ public class MarketsActivity extends Activity {
         if (data == null && loading) s.append(S.t("جارٍ التحميل…"));
         else if (data == null || data.updated == 0) s.append(S.t("لا أسعار بعد: يلزم اتصال بالإنترنت"));
         else {
-            Calendar k = Calendar.getInstance(TimeZone.getTimeZone(zone()));
+            Calendar k = Calendar.getInstance(ZoneFix.zone(zone()));
             k.setTimeInMillis(live ? liveOkAt : data.updated);
             String at = clock(k.get(Calendar.HOUR_OF_DAY), k.get(Calendar.MINUTE));
             s.append(live ? S.t("آخر تحديث %s", at) + " · " + S.t("مباشر") : liveOn ? S.t("آخر تحديث %s · أسعار متأخرة", at) : S.t("آخر تحديث %s", at) + " · " + S.t("غير مباشرة"));
@@ -899,7 +899,7 @@ public class MarketsActivity extends Activity {
         hd.setGravity(Gravity.BOTTOM);
         hd.addView(text(S.t("الأسعار مقابل الريال السعودي"), 18, "Medium", TEXT), new LinearLayout.LayoutParams(0, -2, 1f));
         long at = MarketData.fxUpdated(MarketFile.fxText());
-        Calendar k = Calendar.getInstance(TimeZone.getTimeZone(zone()));
+        Calendar k = Calendar.getInstance(ZoneFix.zone(zone()));
         k.setTimeInMillis(at);
         hd.addView(text(at == 0 ? S.t("لا أسعار بعد: يلزم اتصال بالإنترنت") : S.t("آخر تحديث %s", clock(k.get(Calendar.HOUR_OF_DAY), k.get(Calendar.MINUTE))), 13, "Regular", DIM), new LinearLayout.LayoutParams(-2, -2));
         list.addView(hd, wrap());

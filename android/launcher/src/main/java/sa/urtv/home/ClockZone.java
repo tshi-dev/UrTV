@@ -48,14 +48,14 @@ final class ClockZone {
 
     /** The calendar of the moment in the zone: its hour, minute and day are the city's. */
     static Calendar at(long millis, String tz) {
-        Calendar c = Calendar.getInstance(TimeZone.getTimeZone(tz), Locale.US);
+        Calendar c = Calendar.getInstance(ZoneFix.zone(tz), Locale.US);   // issue #55: the offset the page uses
         c.setTimeInMillis(millis);
         return c;
     }
 
     /** The city's clock shows a different time than the TV's at that moment (same offset: the same time, nothing to say). */
     static boolean differs(String tvTz, String cityTz, long millis) {
-        return TimeZone.getTimeZone(tvTz).getOffset(millis) != TimeZone.getTimeZone(cityTz).getOffset(millis);
+        return ZoneFix.offset(tvTz, millis) != ZoneFix.offset(cityTz, millis);
     }
 
     /** The small line under the clock, as the screensaver's: «بتوقيت دبي». */
