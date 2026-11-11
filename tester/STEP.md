@@ -1,4 +1,4 @@
-«✅ GO — step 58 (the big 4.3 build: prayer times unchanged, radio, seven games, unified look, tray trace, phone page, Player v0.9.10)» — run step 58 (end of this file) on the newest apk-next build (252 or later). TV muted except item B. Do not wait on the owner. The factory-interface step stays forbidden. lang ar stays.
+«✅ GO — step 58 (the big 4.3 build: prayer times unchanged, radio, seven games, unified look, tray trace, phone page, Player v0.9.10)» — run step 58 (end of this file) on the newest apk-next build (252 or later). TV muted except item B. Do not wait on the owner. The factory-interface step is now ALLOWED as written in step 58 item I (no forced-crash test). lang ar stays.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -905,3 +905,11 @@ F. PHONE PAGE (PC browser at 360 and 320 px; owner types the pairing code if nee
 G. Leftovers: returning from «UrTV النظيف» puts the focus on its row; the match sheet's team button (add/remove from my teams): does one OK change the followed teams at once? (known; just confirm).
 H. Player v0.9.10 (release «latest»), compiled with `cmd package compile -m speed-profile -f com.urtv.player`: list jank at 0.1 s keys (was 12–13 %) with the meter and gfxinfo; keytrace: draw stage on the first frame after a key (target ≤2 ms); OK panel on channel ≈50 returns to the same row; LEFT/RIGHT between tabs keeps focus on the tab. Uninstall after.
 Z. Restore as step 44 Z; all debug switches off; TV muted. Report «step 58».
+
+### step 58, item I — «تخلّص من واجهة المصنع» (the owner allowed it; this TV is already set up, so it is mostly a round trip)
+Before: `optimize/saver.sh show`, the disabled-packages list and the Home holder, saved to compare. Keep ADB from the PC ready the whole time (fallback: optimize/restore-home.sh).
+1. «UrTV النظيف» ON → «تخلّص من واجهة المصنع»: what does its screen say on this TV (the list of what will be switched off by readable name, «تعطيل لا حذف», what stays protected, how to undo)? Does it refuse, and why (debugging off, wizard owns Wi-Fi, safety switch)? If it asks for the family PIN: stop, report «needs the owner».
+2. If it offers to go ahead: «متابعة» → «متأكد؟» (focus on «إلغاء» both times) → confirm. Result, the ledger (what it disabled), Home still ours.
+3. «رجّع واجهة المصنع»: the stock home and exactly the ledger come back (compare lists); press Home: which home answers?
+4. Switch it off again (step 2) so the TV ends as it started; compare all lists with "before": identical.
+Do NOT force a crash of our home to test the automatic restore. If anything leaves the TV without a home, restore from the PC at once and report.
