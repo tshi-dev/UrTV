@@ -35,6 +35,8 @@ check("the catalogue is read in one place only: openCatalogue, from the picker's
 check("nothing else in the apps reads the catalogue", not any("data-catalogue" in read(p) for p in (ROOT / "android").rglob("*.java") if p.name != "CatalogueLeagues.java")
       and "data-catalogue" not in read(ROOT / "src/template.html"))
 check("a failed read falls back on the last copy, which only a whole answer replaces", 'new JSONObject(body).getJSONArray("leagues");' in st and "league-catalogue.json" in st)
+check("a kept copy is shown at once only when CatalogueLeagues.useKept says so (recent, every country in Arabic); else the published one first",
+      "if (CatalogueLeagues.useKept(kept, cache.lastModified(), System.currentTimeMillis())) {" in st)
 check("saver.sh can follow one by id (id4719)", 'matches("id\\\\d{1,6}")' in rc)
 
 t = read(ROOT / "src/template.html")
@@ -56,5 +58,5 @@ else:
             out = subprocess.run(["java", "-cp", tmp, "sa.urtv.screensaver.CatalogueLeaguesRun"], capture_output=True, text=True).stdout
             lines = [l.split("\t") for l in out.splitlines() if "\t" in l]
             bad = [n for n, v in lines if v != "ok"]
-            check(f"CatalogueLeagues: every case ({len(lines)})", len(lines) == 11 and not bad, bad or out)
+            check(f"CatalogueLeagues: every case ({len(lines)})", len(lines) == 12 and not bad, bad or out)
 sys.exit(1 if failed else 0)

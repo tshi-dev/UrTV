@@ -1093,7 +1093,8 @@ public class SettingsActivity extends Activity {
         catalogueBusy = true;
         final java.io.File cache = new java.io.File(getCacheDir(), "league-catalogue.json");
         List<String[]> kept = cache.isFile() ? catalogueRows(readFile(cache)) : new ArrayList<>();
-        if (!kept.isEmpty()) {
+        // a recent, whole copy at once (refreshed for next time); an older one, or one with a country not in Arabic: the published one first
+        if (CatalogueLeagues.useKept(kept, cache.lastModified(), System.currentTimeMillis())) {
             new Thread(() -> fetchCatalogue(cache), "catalogue-refresh").start();   // for next time, nobody waits for it
             catalogueGroups(kept);
             return;

@@ -30,6 +30,16 @@ public final class CatalogueLeaguesRun {
         rows.add(new String[] {"1", "A", "", "England", "إنجلترا", "Soccer", "1"});
         rows.add(new String[] {"2", "B", "", "Andorra", "", "Soccer", ""});
         rows.add(new String[] {"3", "C", "", "england", "إنجلترا", "Soccer", ""});
+        long now = 1_800_000_000_000L, h = 3600_000L;
+        List<String[]> ok = new ArrayList<>();
+        ok.add(new String[] {"1", "A", "", "England", "إنجلترا", "Soccer", "1"});
+        ok.add(new String[] {"9", "W", "", "", "", "Soccer", ""});
+        List<String[]> english = new ArrayList<>(ok);
+        english.add(new String[] {"4", "D", "", "United Kingdom", "", "Soccer", ""});
+        check("a kept copy shown at once only while recent (under 6 h) and whole in Arabic (a league with no country is fine)",
+            CatalogueLeagues.useKept(ok, now - 5 * h, now) && !CatalogueLeagues.useKept(ok, now - 6 * h, now) && !CatalogueLeagues.useKept(english, now - h, now)
+            && !CatalogueLeagues.useKept(ok, now + h, now) && !CatalogueLeagues.useKept(ok, 0, now) && !CatalogueLeagues.useKept(new ArrayList<String[]>(), now, now)
+            && !CatalogueLeagues.useKept(null, now, now));
         List<String[]> c = CatalogueLeagues.countries(rows, false);
         check("the countries once each, in the catalogue's order, Arabic where named", c.size() == 2 && "إنجلترا".equals(c.get(0)[1]) && "Andorra".equals(c.get(1)[1])
             && "England".equals(CatalogueLeagues.countries(rows, true).get(0)[1]));
