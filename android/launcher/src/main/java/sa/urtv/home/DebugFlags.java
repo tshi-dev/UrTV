@@ -13,13 +13,19 @@ import android.content.SharedPreferences;
  *   nosnapshot   the home's last picture is neither shown at the start nor taken
  *   nocardglass  the cards keep their own look (no #hpanel and #hline from the tray's glass)
  *   nokeyfilter  the accessibility service does not filter the remote's keys (every key reached the home through it, on the home's own main thread, when the TV's system takes the Settings key)
+ *   nolift       a tile's focus does not lift it (no translationZ, so no elevation shadow)
+ *   noglow       a tile's focus does not repaint the full-screen glow (animateGlow, fadeGlow)
+ *   noshine      no shine fade on the focused tile
+ *   noscale      no scale spring on the focused tile
+ *   notitle      no app title (setText, placeName, its fade) for the focused tile
+ *   plainfocus   all of the five off, and no label fade, no lift of the tile and no glide of the page: the highlight only
  *   keytrace     one log line per key on the home (tag UrTVKeyTrace): queue, dispatch, focus, layout, draw and the next six frames' intervals (KeyTrace)
  */
 final class DebugFlags {
     private DebugFlags() { }
 
     static final String CHANGED = "sa.urtv.home.DEBUG_CHANGED";
-    static final String[] NAMES = {"traynoglass", "nopillpanel", "nowifimark", "nosnapshot", "nocardglass", "nokeyfilter", "keytrace"};
+    static final String[] NAMES = {"traynoglass", "nopillpanel", "nowifimark", "nosnapshot", "nocardglass", "nokeyfilter", "keytrace", "nolift", "noglow", "noshine", "noscale", "notitle", "plainfocus"};
 
     private static SharedPreferences sp(Context c) { return c.getApplicationContext().getSharedPreferences("debug_flags", Context.MODE_PRIVATE); }
 
@@ -41,6 +47,19 @@ final class DebugFlags {
         else e.putBoolean(name, value);
         e.commit();
         return true;
+    }
+
+    static final int LIFT = 1, GLOW = 2, SHINE = 4, SCALE = 8, TITLE = 16, PLAIN = 32;
+    /** which parts of a tile's focus animation are off (read once when the home is built; the home starts over at each change) */
+    static int focusMask(Context c) {
+        int m = 0;
+        if (on(c, "nolift")) m |= LIFT;
+        if (on(c, "noglow")) m |= GLOW;
+        if (on(c, "noshine")) m |= SHINE;
+        if (on(c, "noscale")) m |= SCALE;
+        if (on(c, "notitle")) m |= TITLE;
+        if (on(c, "plainfocus")) m |= LIFT | GLOW | SHINE | SCALE | TITLE | PLAIN;
+        return m;
     }
 
     static String describe(Context c) {

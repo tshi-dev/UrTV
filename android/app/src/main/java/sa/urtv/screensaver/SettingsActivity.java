@@ -56,6 +56,7 @@ public class SettingsActivity extends Activity {
     private String groupCat, pendingHeader;   // while render runs: the category of the group being built, its header not drawn yet
     private TextView hint;
     private LinearLayout side;       // a category's screen: its title and its line on the right, the rows on the left (hidden on the first)
+    private String forceWant;   // the key the next render() puts the focus on (the row or button that opened another screen), whatever has the focus when the list is built
     private String launchedRow;   // the key of the row whose press opened another screen (the clean screen, the TV's settings): the focus returns to it
     private final java.util.Map<String, String> lastRow = new java.util.HashMap<>();   // each category's row last focused, for the way back in
 
@@ -158,8 +159,8 @@ public class SettingsActivity extends Activity {
         cleanAsked = false;   // asked again each time the settings come to the front (it was asked once per visit: the row said «مفعّل» only after reopening)
         look = GlassSource.page(this, root);   // the home's photo or «المظهر» may have changed meanwhile
         hint.setTextColor(look.sub);
+        forceWant = back;   // back from another screen: the focus goes to the row or button that opened it, in the SAME render that builds the list again (it landed on the one above)
         render();
-        if (back != null) restoreFocus(back, 0, scroll.getScrollY());   // back from another screen: on the row that opened it (it was the row above)
         // the home writes its state a moment after «UrTV النظيف» closes: one more question 1.5 s later, drawn only when the answer differs
         root.postDelayed(() -> { if (!isFinishing() && !isDestroyed()) { cleanAsked = false; homeCleanSeen(); } }, 1500);
     }
@@ -210,7 +211,8 @@ public class SettingsActivity extends Activity {
         List<View> before = rows();
         View had = entering ? null : focusedRow();
         final boolean tiles = SettingsHub.hasTiles(screen);   // the first screen, «البطاقات», «المزيد»: buttons, not rows
-        final String want = entering ? (tiles ? (hubAt != null ? "hub:" + hubAt : null) : lastRow.get(screen)) : had == null ? null : (String) had.getTag();
+        final String want = forceWant != null ? forceWant : entering ? (tiles ? (hubAt != null ? "hub:" + hubAt : null) : lastRow.get(screen)) : had == null ? null : (String) had.getTag();
+        forceWant = null;
         final int wasIndex = had == null ? 0 : before.indexOf(had), scrollY = entering ? 0 : scroll.getScrollY();
         entering = false;
         groupCat = null;
@@ -758,7 +760,7 @@ public class SettingsActivity extends Activity {
         card.setOnClickListener(x -> {
             String row = SettingsHub.direct(cat);
             Runnable act = row == null ? null : actions.get(row);
-            if (act != null) { act.run(); return; }
+            if (act != null) { launchedRow = "hub:" + cat; hubAt = cat; act.run(); return; }   // a button of the first screen that opens another screen (the clean screen): the focus comes back to IT
             hubAt = cat;
             open(cat);
         });

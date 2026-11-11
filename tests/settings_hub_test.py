@@ -147,7 +147,7 @@ check("«الأذان» shows the home's switch, read from the home (NowPlayingP
 tilefn = st[st.index("private View tile(final String cat, String name, int icon, String summary)"):].split("\n    }\n")[0]
 check("OK on a button: a DIRECT one runs its row's own action, any other opens its screen (and is the one focused on the way back)",
       "String row = SettingsHub.direct(cat);" in tilefn and "Runnable act = row == null ? null : actions.get(row);" in tilefn
-      and "if (act != null) { act.run(); return; }" in tilefn and "hubAt = cat;\n            open(cat);" in tilefn)
+      and "if (act != null) { launchedRow = \"hub:\" + cat; hubAt = cat; act.run(); return; }" in tilefn and "hubAt = cat;\n            open(cat);" in tilefn)
 check("the screens of buttons are built after the rows (so each row's action is known), and those rows are never added there",
       render.index("actions.clear();") < render.index('row("معاينة الشاشة"') < render.index("if (tiles) { hub(want, wasIndex); return; }")
       and "if (onClick != null) actions.put(FocusKey.key(label), onClick);" in st)

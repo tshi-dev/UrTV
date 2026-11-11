@@ -62,5 +62,15 @@ check("quiz: «جاوب الجميع» in the header of the reveal when it ended
       'S.t("جاوب الجميع")' in ca.split("meta.addView(mt);")[1][:300] and "u2212" in room_.split("MATH = ")[1][:300] and 'append(",\\"dg\\":")' in room_
       and "r.dg === 1" in page_ and "AR && !LATIN" in page_)
 sett = src(SAVER / "SettingsActivity.java")
-check("settings: the row that opened another screen gets the focus back on return (launchedRow)", "launchedRow = (String) card.getTag(); onClick.run();" in sett and "restoreFocus(back, 0, scroll.getScrollY())" in sett)
+resm = sett.split("protected void onResume()")[1].split("\n    }\n")[0]
+check("settings: the row (or the first screen's button) that opened another screen gets the focus back on return: remembered at the press (launchedRow, for a button \"hub:<cat>\"), handed to the SAME render that rebuilds the list (forceWant, read before the focus search), not restored before it",
+      "launchedRow = (String) card.getTag(); onClick.run();" in sett and 'launchedRow = "hub:" + cat; hubAt = cat; act.run(); return;' in sett
+      and resm.index("forceWant = back;") < resm.index("render();") and "final String want = forceWant != null ? forceWant :" in sett and "forceWant = null;" in sett)
+dbg2 = src(HOME / "DebugFlags.java"); mm = src(HOME / "MainActivity.java")
+check("focus-animation switches (dock.sh debug nolift|noglow|noshine|noscale|notitle|plainfocus): read once at build (focusMask), each turns exactly its part off in the tile's focus listener; plainfocus = all of them and the label, the lift and the glide",
+      all(f'"{n}"' in dbg2 for n in ("nolift", "noglow", "noshine", "noscale", "notitle", "plainfocus")) and "dbgFocus = DebugFlags.focusMask(this);" in mm
+      and all(k in mm.split("final int dbg = dbgFocus;")[1][:2600] for k in ("DebugFlags.SCALE", "DebugFlags.LIFT", "DebugFlags.SHINE", "DebugFlags.TITLE", "DebugFlags.GLOW", "DebugFlags.PLAIN"))
+      and "nolift|noglow|noshine|noscale|notitle|plainfocus" in src(ROOT / "optimize/dock.sh") and "nolift|noglow|noshine|noscale|notitle|plainfocus" in src(HOME / "DockReceiver.java"))
+check("keytrace: FrameMetrics of the six frames after a key (total, unknown delay, input, animation, measure, draw, sync, command issue, swap, gpu and deadline on 31+), the vsync gap, and what the main thread ran in the 80 ms before the dispatch",
+      all(k in kt for k in ("FrameMetrics.", "UNKNOWN_DELAY_DURATION", "SWAP_BUFFERS_DURATION", "GPU_DURATION", "DEADLINE", "vsyncGap=", "setMessageLogging", "main=[")) and "KeyTrace.install();" in mm)
 sys.exit(1 if failed else 0)
