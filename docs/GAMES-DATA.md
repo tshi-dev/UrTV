@@ -17,20 +17,20 @@ All text is 1 to 200 characters without control characters (`en` may be empty on
 | `word5-answers.json` | `{v,w:[[word,display,en,d,kids],...]}`; `word` is five letters of the 28-letter alphabet after normalization and `norm(display) == word`; `en` may be "" for dictionary words | 19 KB (5 KB) | 120 KB, 100 to 5,000 words |
 | `word5-guesses.json` | `{v,A,n,w}`: `w` is the sorted, unique five-letter words packed as one string, 5 characters each (character k of `a..z01` is the k-th letter of `A`); every answer must be in it | 157 KB (74 KB) | 700 KB, 2,000 to 120,000 words |
 
-**Memory on a 2 GB TV:** the guesses are looked up by **binary search on the packed string** (`w`), so there is no set of 31,000 strings in memory (about 160 KB of characters in all). The other files are small (total 190 KB of JSON for all games without the quiz); parse them with the same `MiniJson` the quiz bank uses.
+**Memory on a 2 GB TV:** the guesses are looked up by **binary search on the packed string** (`w`), so there is no set of 31,000 strings in memory (about 160 KB of characters in all). The other files are small (about 185 KB of JSON for all games without the quiz); parse them with the same `MiniJson` the quiz bank uses.
 
 ## The bundled starters (`assets/games/`, so the first round works offline)
 Same forms and same verification (`--verify assets/games assets/quiz/starter.json --starter`; the letter hive's ids are checked against the quiz starter).
 
 | Starter | Bytes | What it holds |
 |---|---|---|
-| `khanat.json` | 16,469 | 5 samples per letter and box |
+| `khanat.json` | 13,063 | 5 samples per letter and box |
 | `missing-word.json` | 10,218 | 30 facts, 50 sayings |
 | `odd-one.json` | 6,058 | 10 topics of 20 or more words |
-| `charades.json` | 4,915 | 150 words: 60 easy, 50 medium, 40 hard |
-| `letter-hive.json` | 5,596 | the index filtered to the quiz starter's 210 ids |
+| `charades.json` | 6,188 | 190 words: 120 for kids to act (kids, easy, act), then 70 others across the levels |
+| `letter-hive.json` | 27,606 | 6 questions for each of the 25 best-covered Arabic letters (ظ ذ ض left out) and 4 for each of 25 English letters (X left out); the ids are in the quiz starter or embedded in this file (`T` is the threshold 6 for `S`, `q` holds the 78 embedded compact quiz items), chosen short, easy and kids-friendly first, at most 2 of one kind per letter |
 | `word5-answers.json` | 18,863 | all answers |
 | `word5-guesses.json` | 12,286 | the dictionary lemmas and the answers (about 2,600 words); offline, a valid inflected form may be refused |
-| **Total** | **74,405** | with the quiz starter (57 KB) **132 KB**, under the 300 KB limit (`tests/games_data_test.py` pins it) |
+| **Total** | **94,282** | with the quiz starter (57 KB) **151 KB**, under the 300 KB limit (`tests/games_data_test.py` pins it) |
 
 Rebuild after a data change: `python3 .github/tools/make_games_data.py starter <games dir> assets/games assets/quiz/starter.json`.
