@@ -39,7 +39,8 @@ final class QuizBankCheck {
         return out;
     }
 
-    private static QuizPick.Item item(Object o) {
+    /** one compact item, or null (also read by GamesBoardData for the items a letter-hive starter embeds) */
+    static QuizPick.Item item(Object o) {
         if (!(o instanceof Map)) return null;
         Map<?, ?> m = (Map<?, ?>) o;
         if (m.size() != 7) return null;

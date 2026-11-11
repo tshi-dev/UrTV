@@ -31,7 +31,7 @@ public final class GamesBoardData {
 
     /**
      * The hive's questions: the quiz bank (quiz.json or its starter, checked by QuizBankCheck), letter-hive.json (which quiz ids start with which letter: «a» by
-     * the Arabic answer, «e» by the English one) and, when there, khanat.json for the category question's sample answers (animals, countries, cities).
+     * the Arabic answer, «e» by the English one; a starter may embed more items in «q») and, when there, khanat.json for the category question's sample answers (animals, countries, cities).
      */
     public static HiveBank hive(byte[] quiz, byte[] index, byte[] khanat) {
         List<QuizPick.Item> items = QuizBankCheck.parse(quiz);
@@ -40,6 +40,16 @@ public final class GamesBoardData {
         Map<String, Character> ar = letters((Map<?, ?>) ix.get("a"), HiveBank.AR), en = letters((Map<?, ?>) ix.get("e"), HiveBank.EN);
         if (ar == null || en == null) return null;
         HiveBank bank = new HiveBank();
+        if (ix.get("q") instanceof Map) {   // a starter embeds the items its index names that the quiz starter does not hold: the quiz bank first, then these
+            java.util.Set<String> have = new java.util.HashSet<>();
+            for (QuizPick.Item it : items) have.add(it.id);
+            items = new ArrayList<>(items);
+            for (Map.Entry<?, ?> e : ((Map<?, ?>) ix.get("q")).entrySet()) {
+                QuizPick.Item it = QuizBankCheck.item(e.getValue());
+                if (it == null || !it.id.equals(e.getKey())) return null;
+                if (have.add(it.id)) items.add(it);
+            }
+        }
         for (QuizPick.Item it : items) {
             Character a = ar.get(it.id), e = en.get(it.id);
             if (a == null && e == null) continue;

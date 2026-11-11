@@ -92,12 +92,15 @@ check("board: 25 cells, every neighbour link goes both ways, 56 links in all (5 
         HiveBank starter = sa.urtv.screensaver.GamesBoardData.hive(quiz, index, khanat);
         int withQuestions = 0, withHints = 0;
         if (starter != null) for (char l : HiveBank.AR.toCharArray()) { if (!starter.of(l).isEmpty()) withQuestions++; if (starter.hints(l).length > 0) withHints++; }
-        check("starter: the bundled files load (the quiz starter joined with the letter index, hints from the samples): 150 questions or more, most Arabic letters have questions and nearly all have sample answers, English letters too",
-            starter != null && starter.size() >= 150 && withQuestions >= 24 && withHints >= 25 && starter.of('ظ').isEmpty() && starter.of('A').size() >= 20 && starter.hints('B').length == 6 && starter.hints('ب').length == 6);
-        check("starter: a bank without the samples file still loads (no hints); a broken index, another version, an HTML page or a broken quiz bank give null",
+        boolean sixEach = starter != null;
+        if (starter != null) for (char l : HiveBank.AR.toCharArray()) sixEach &= "ظذض".indexOf(l) >= 0 ? starter.of(l).isEmpty() : starter.of(l).size() >= 6;
+        check("starter: the bundled files load (the quiz starter joined with the letter index, hints from the samples, the items the index embeds): 25 Arabic letters with 6 questions or more each (ظ ذ ض none), nearly all with sample answers, English letters too",
+            starter != null && starter.size() >= 150 && withQuestions == 25 && sixEach && withHints >= 25 && starter.of('ظ').isEmpty() && starter.of('A').size() >= 4 && starter.of('X').isEmpty() && starter.hints('B').length == 6 && starter.hints('ب').length == 6);
+        check("starter: a bank without the samples file still loads (no hints); a broken index, another version, a broken embedded item, an HTML page or a broken quiz bank give null",
             sa.urtv.screensaver.GamesBoardData.hive(quiz, index, null) != null && sa.urtv.screensaver.GamesBoardData.hive(quiz, index, null).hints('ب').length == 0
             && sa.urtv.screensaver.GamesBoardData.hive(quiz, "{\"v\":1}".getBytes(StandardCharsets.UTF_8), khanat) == null
             && sa.urtv.screensaver.GamesBoardData.hive(quiz, new String(index, StandardCharsets.UTF_8).replace("\"v\":1", "\"v\":2").getBytes(StandardCharsets.UTF_8), khanat) == null
+            && sa.urtv.screensaver.GamesBoardData.hive(quiz, new String(index, StandardCharsets.UTF_8).replace("\"d\":", "\"x\":").getBytes(StandardCharsets.UTF_8), khanat) == null
             && sa.urtv.screensaver.GamesBoardData.hive(quiz, "<html>404</html>".getBytes(StandardCharsets.UTF_8), khanat) == null && sa.urtv.screensaver.GamesBoardData.hive("[]".getBytes(StandardCharsets.UTF_8), index, khanat) == null);
         boolean banned = false;
         for (char l : (HiveBank.AR + HiveBank.EN).toCharArray()) for (String h : starter.hints(l)) { String t = h.toLowerCase(); banned |= t.contains("israel") || t.contains("إسرائيل") || t.contains("western sahara") || t.contains("الصحراء الغربية"); }
@@ -201,7 +204,7 @@ check("board: 25 cells, every neighbour link goes both ways, 56 links in all (5 
             allEnd &= ok; longest = Math.max(longest, turns);
         }
         check("whole games: 300 random games on the starter (both languages, every level, kids) each end with a winner whose chain joins its sides; never an unplayable hexagon, never a question twice, right letter every time (longest " + longest + " turns)", allEnd);
-        check("whole games: in Arabic with all ages, a letter that has no question in the bank at all (ص ض ظ offline) was never on a board", noneShown);
+        check("whole games: in Arabic with all ages, a letter that has no question in the bank at all (ظ ذ ض offline) was never on a board", noneShown);
         System.exit(failed == 0 ? 0 : 1);
     }
 }
