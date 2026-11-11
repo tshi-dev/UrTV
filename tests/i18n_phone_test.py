@@ -41,7 +41,7 @@ check("the generator writes the same page twice (the link is put in once, taken 
 for anchor, add in phone_en.LINK_AR:
     check(f"the link on: its piece is there once, by its anchor: {add.strip()[:50]}", link_ar.count(phone_en.piece(anchor, add)) == 1 and link_ar.count(add) == 1)
 check("the link on: «English» on the Arabic page, hidden until the TV says it knows «اللغة» (state.lang)",
-      '<button id="lang" class="lnk hidden" lang="en">English</button>' in link_ar and "$('lang').classList.toggle('hidden', !s.lang);" in link_ar)
+      '<button id="lang" class="hidden" data-i="globe" lang="en">English</button>' in link_ar and "$('lang').classList.toggle('hidden', !s.lang);" in link_ar)
 check("the link on: it sets the TV's language through /api/set (PIN and all), then loads the page again",
       "$('lang').onclick = function () { gated('/api/set', { lang: 'en' }).then(function (j) { if (j.ok) location.reload(); else say(j); }); };" in link_ar)
 check("the link on: «العربية» on the English page, setting lang ar", 'lang="ar">العربية</button>' in link_en and "gated('/api/set', { lang: 'ar' })" in link_en and "lang: 'en'" not in link_en)

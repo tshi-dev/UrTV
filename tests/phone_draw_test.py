@@ -36,8 +36,8 @@ check("the page: about every 50 ms, the same caps as the TV (30 points an entry,
 check("the page: only with the main page's session, its header on every POST, nothing from elsewhere",
       "sessionStorage.getItem('urtv')" in page and "'X-UrTV-Session': sess" in page and not re.search(r"https?://", page.split("<script")[1]))
 check("the page in English: every word of its own", all(k in page.split("var W = EN ? {")[1].split("} : {")[0] for k in ("t1:", "t2:", "t4:", "t5:", "clr:", "colours:", "draw_full:")))
-check("the main page links it beside the message, in both languages, both pages still under 64 KB",
-      '<a class="lnk" href="/d">ارسم</a>' in main and '<a class="lnk" href="/d">Draw</a>' in en
+check("the main page links it under the message as a row of the card «على الشاشة», in both languages, both pages still under 64 KB",
+      '<a class="rw" href="/d" data-i="pen"><b>ارسم<small>' in main and '<a class="rw" href="/d" data-i="pen"><b>Draw<small>' in en
       and len(main.encode()) < 64 * 1024 and len(en.encode()) < 64 * 1024 and len(page.encode()) < 64 * 1024, (len(main.encode()), len(en.encode())))
 
 if not shutil.which("javac"):
