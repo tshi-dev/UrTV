@@ -47,6 +47,39 @@ public final class DominoTest {
     static DominoGame sixes(int n, int seed) {
         for (;; seed++) { DominoGame g = new DominoGame(n, 100, new Random(seed)); if (t(6, 6).equals(g.opening())) return g; }
     }
+    /** What is wrong with a snake, or null: every half inside the table, no two halves on each other, neighbours joined on the same number (when the chain is a real one). */
+    static String snakeBad(List<DominoGame.Placed> chain, Snake s, float w, float h, boolean real) {
+        if (s == null || s.slots.length != chain.size()) return "no layout";
+        float u = s.unit, e = 0.01f;
+        int n = s.slots.length;
+        float[][] hx = new float[n][2], hy = new float[n][2];
+        for (int i = 0; i < n; i++) {
+            Snake.Slot x = s.slots[i];
+            hx[i][0] = x.x1; hx[i][1] = x.x2; hy[i][0] = x.y1; hy[i][1] = x.y2;
+            if (!x.tile.equals(chain.get(i).tile)) return "tile order";
+            if (Math.abs(Math.abs(x.x1 - x.x2) + Math.abs(x.y1 - x.y2) - u) > e || (x.x1 != x.x2 && x.y1 != x.y2)) return "a tile is not two halves side by side";
+            if (!((x.v1 == x.tile.low && x.v2 == x.tile.high) || (x.v1 == x.tile.high && x.v2 == x.tile.low))) return "numbers";
+            for (int k = 0; k < 2; k++) if (hx[i][k] - u / 2 < -e || hx[i][k] + u / 2 > w + e || hy[i][k] - u / 2 < -e || hy[i][k] + u / 2 > h + e) return "outside the table";
+        }
+        for (int i = 0; i < n; i++) for (int j = i + 1; j < n; j++) for (int a = 0; a < 2; a++) for (int b = 0; b < 2; b++)
+            if (Math.abs(hx[i][a] - hx[j][b]) < u - e && Math.abs(hy[i][a] - hy[j][b]) < u - e) return "tiles " + i + " and " + j + " overlap";
+        if (!real) return null;
+        for (int i = 0; i + 1 < n; i++) {
+            int want = chain.get(i).second; boolean ok = false;
+            Snake.Slot x = s.slots[i], y = s.slots[i + 1];
+            // a half of each with the number, edge to edge; or one is a double across, its middle one unit from the other's half
+            for (int a = 0; a < 2; a++) for (int b = 0; b < 2; b++) {
+                if ((a == 0 ? x.v1 : x.v2) != want || (b == 0 ? y.v1 : y.v2) != want) continue;
+                float dx = Math.abs(hx[i][a] - hx[i + 1][b]), dy = Math.abs(hy[i][a] - hy[i + 1][b]);
+                if ((Math.abs(dx - u) < e && dy < e) || (Math.abs(dy - u) < e && dx < e)) ok = true;
+                if (x.tile.isDouble() && Math.abs(Math.abs(x.cx() - hx[i + 1][b]) + Math.abs(x.cy() - hy[i + 1][b]) - u) < e && (Math.abs(x.cx() - hx[i + 1][b]) < e || Math.abs(x.cy() - hy[i + 1][b]) < e)) ok = true;
+                if (y.tile.isDouble() && Math.abs(Math.abs(y.cx() - hx[i][a]) + Math.abs(y.cy() - hy[i][a]) - u) < e && (Math.abs(y.cx() - hx[i][a]) < e || Math.abs(y.cy() - hy[i][a]) < e)) ok = true;
+            }
+            if (!ok) return "tiles " + i + " and " + (i + 1) + " do not join on " + want;
+        }
+        return null;
+    }
+
     /** One step by a computer player of the given level; false when its action was refused (never). */
     static boolean step(DominoGame g, int level, Random r) {
         int p = g.turn();
@@ -251,6 +284,51 @@ public final class DominoTest {
             ok && refused == tried && tried > 10000 && games == 1500);
         }
 
+        // ---- the snake: where the chain lies on the table
+        {
+        final float W = 1728, H = 600;   // the table on a 1080p screen: inside the 5 % safe area, between the score row and the hand
+        boolean ok = true; int looked = 0, moved = 0, rounds = 0, smallest = 999, tall = 0; String why = "";
+        for (int seed = 0; seed < 1500 && ok; seed++) {
+            int n = 2 + seed % 3;
+            DominoGame g = new DominoGame(n, 1000000, new Random(seed));
+            Random r = new Random(seed);
+            Snake before = null; int size = 0;
+            while (g.phase() == DominoGame.Phase.PLAY && ok) {
+                step(g, 1 + seed % 3, r);
+                if (g.chain().size() == size) continue;
+                size = g.chain().size();
+                DominoGame.Event e = g.events().get(g.events().size() - (g.phase() == DominoGame.Phase.PLAY || g.events().get(g.events().size() - 1).kind == DominoGame.PLAY ? 1 : 2));
+                Snake s = Snake.lay(g.chain(), g.anchor(), W, H, 72);
+                String bad = snakeBad(g.chain(), s, W, H, true);
+                if (bad != null) { ok = false; why = "seed " + seed + " at " + size + " tiles: " + bad; }
+                if (before != null && e.kind == DominoGame.PLAY) {   // the tiles that lay there before: did any move?
+                    int shift = e.end == DominoGame.LEFT ? 1 : 0; boolean same = true;
+                    for (int i = 0; i < before.slots.length; i++) { Snake.Slot x = before.slots[i], y = s.slots[i + shift]; same &= x.x1 == y.x1 && x.y1 == y.y1 && x.x2 == y.x2 && x.y2 == y.y2; }
+                    if (!same) { moved++; if (before.unit == s.unit && before.up == s.up && before.down == s.down) { ok = false; why = "seed " + seed + ": tiles moved with the same unit and rows"; } }
+                }
+                before = s; looked++; smallest = Math.min(smallest, (int) s.unit); tall = Math.max(tall, s.up + s.down + 1);
+            }
+            rounds++;
+        }
+        System.out.println("INFO the snake on a 1728 x 600 table: " + looked + " positions of " + rounds + " rounds, the unit never under " + smallest + " px, at most " + tall + " rows, the laid tiles moved " + moved + " times in all (a new row or a smaller unit)");
+        check("the snake: in 1500 rounds, after every tile, each tile is whole and inside the table, no two overlap, the halves that touch carry the same number, a double in a row lies across; the unit stays 72 px (" + smallest + ") " + why, ok && smallest == 72);
+        check("the snake: a tile that is laid stays where it is; the table moves only when a row is added or the unit shrinks (" + moved + " times in " + rounds + " rounds: never more than once for each new row)", ok && moved <= 3 * rounds);
+        // the worst chains: everything on one arm, and every table size down to a small one
+        boolean fits = true; int least = 999;
+        float[][] tables = {{1728, 600}, {1728, 400}, {1200, 400}, {864, 300}, {640, 240}};
+        for (float[] tb : tables) for (int arm = 0; arm < 3; arm++) for (int len = 1; len <= 28; len++) {
+            List<DominoGame.Placed> c = new ArrayList<>();
+            for (int i = 0; i < len; i++) { Tile x = Tile.set().get((i * 5 + arm) % 28); c.add(new DominoGame.Placed(x, x.low, x.high)); }
+            int anchor = arm == 0 ? 0 : arm == 1 ? len - 1 : len / 2;
+            Snake s = Snake.lay(c, anchor, tb[0], tb[1], 72);
+            String bad = snakeBad(c, s, tb[0], tb[1], false);
+            if (bad != null) { fits = false; System.out.println("INFO snake " + tb[0] + "x" + tb[1] + " len " + len + ": " + bad); }
+            if (tb[1] == 600) least = Math.min(least, (int) s.unit);
+        }
+        check("the snake always fits: 28 tiles all on the right arm, all on the left, or half and half, on tables from 1728 x 600 down to 640 x 240; on the real table the unit never goes under 56 px (" + least + ")", fits && least >= 56);
+        Snake one = Snake.lay(new DominoGame(2, 100, new Random(1)).chain(), 0, W, H, 72);
+        check("the snake of an empty table is empty", one.slots.length == 0);
+        }
         // ---- the computer players
         {
         StringBuilder a1 = new StringBuilder(), a2 = new StringBuilder(), a3 = new StringBuilder();

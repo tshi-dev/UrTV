@@ -62,7 +62,7 @@ public final class DominoGame {
     private final List<Event> events = new ArrayList<>();
     private final int[] scores;
     private Phase phase = Phase.ROUND_OVER;
-    private int turn, round, starter, gameWinner = -1;
+    private int turn, round, starter, anchor, gameWinner = -1;
     private Tile opening;          // the tile the first move of this round must be (null: any)
     private Tile aside;            // three players: the double blank, out of the round
     private RoundResult last;
@@ -94,7 +94,7 @@ public final class DominoGame {
         aside = null;
         if (players == 3) { aside = all.remove(0); }
         shuffle(all, rnd);
-        chain.clear(); events.clear(); boneyard.clear();
+        chain.clear(); events.clear(); boneyard.clear(); anchor = 0;
         int n = handSize(players), k = 0;
         for (List<Tile> h : hands) { h.clear(); for (int i = 0; i < n; i++) h.add(all.get(k++)); }
         while (k < all.size()) boneyard.add(all.get(k++));
@@ -125,6 +125,8 @@ public final class DominoGame {
     public Tile aside() { return aside; }
     public int left() { return chain.isEmpty() ? -1 : chain.get(0).first; }
     public int right() { return chain.isEmpty() ? -1 : chain.get(chain.size() - 1).second; }
+    /** Where the round's first tile now is in chain(): the snake on the screen grows both ways from it. */
+    public int anchor() { return anchor; }
     public List<Placed> chain() { return Collections.unmodifiableList(chain); }
     public List<Event> events() { return Collections.unmodifiableList(events); }
     public int boneyard() { return boneyard.size(); }
@@ -167,7 +169,7 @@ public final class DominoGame {
         int l = left(), r = right();
         hand.remove(t);
         if (chain.isEmpty()) chain.add(new Placed(t, t.low, t.high));
-        else if (end == LEFT) chain.add(0, new Placed(t, t.other(l), l));
+        else if (end == LEFT) { chain.add(0, new Placed(t, t.other(l), l)); anchor++; }
         else chain.add(new Placed(t, r, t.other(r)));
         events.add(new Event(p, PLAY, t, end, l, r));
         if (hand.isEmpty()) { finish(p, false); return true; }

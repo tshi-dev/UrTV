@@ -51,6 +51,10 @@ level 2 wins about 470 against level 1. A decision takes well under a millisecon
 - `DominoGame`: the deal, whose turn, `legal(p)`, `play`, `draw`, `pass`, the end of a round, the scores, the target. Nothing illegal is ever
   accepted: the call answers false (or null) and nothing changes. The only chance is the `Random` given to the constructor.
 - `DominoBot`: `choose(view, level, random)` gives the computer's play, draw or pass.
+- `Snake`: where each tile of the chain lies on the table. It grows both ways from the round's first tile, turns at the table's edges (the right arm
+  down, the left arm up, rows two units apart) and picks the largest unit that fits, from 72 px down. A double lies across the line, but in line at a
+  turn (the corner tile and the one after it). A laid tile stays where it is; the table moves only when a row is added or the unit shrinks. On the
+  1080p table (1728 x 600) the unit stays 72 px in every round played in the test, and never goes under 56 px with all 28 tiles on one arm.
 
 Tests: `python3 tests/domino_test.py` (needs javac). It checks the set, the shuffle, the deal for 2 to 4 players, who opens, the moves at both ends,
 drawing, passing, the blocked round, the scores and the target; then 1500 whole games by computer players with a wild illegal try before every
