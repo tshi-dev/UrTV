@@ -58,7 +58,7 @@ check("home: «الصلاة القادمة» is a tick (on by default), one line
       "PRAYER = \"prayer\"" in src("CleanKeep.java") and "DEFAULT_KEEP = \"card,wifi,prayer,settings\"" in src("CleanKeep.java") and "case CleanMode.PRAYER:" in act
       and "if (!cleanShown || !CleanMode.keep(this).contains(CleanMode.PRAYER)) { prayerLine.setVisibility(View.GONE); return; }" in main and "nextPrayerLine" in main)
 check("home: no way into the markets, matches or games pages while the mask is on (the pills are locked away, the stocks card and the games widget do nothing)",
-      "if (cleanShown) return;   // «UrTV النظيف»: no way into the markets page" in main and "if (cleanShown && FootballFocus.MT.equals(which)) return;" in main
+      "if (!cleanShown) launch(new Intent(MainActivity.this, MarketsActivity.class));" in main and "if (cleanShown && FootballFocus.MT.equals(which)) return;" in main
       and "if (!cleanShown) guarded(ParentalPolicy.WIDGET_MATCHES" in main and "if (!cleanShown) launchGuarded(ParentalPolicy.WIDGET_MATCHES" in main)
 check("the provider tells the saver: on, factory, prayer (read only); the saver only reads it (CleanMask) and keeps the last answer",
       '"on", "factory", "prayer"' in prov and "CleanMask" in prefsj and "clean_on" in mask and "getInt(\"clean_mask\"" in mask and "setOn" not in mask and "setKeep" not in mask)

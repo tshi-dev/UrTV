@@ -356,8 +356,9 @@ public class SettingsActivity extends Activity {
         // «تخلّص من واجهة المصنع»: who the TV's home screen is (the launcher's FactoryActivity: the checks, two confirmations, the PIN); «رجّع واجهة المصنع» while it is on
         homeCleanSeen();
         final boolean factoryOn = Boolean.TRUE.equals(factorySeen);
-        row(factoryOn ? "رجّع واجهة المصنع" : "تخلّص من واجهة المصنع", factoryOn ? "مفعّل واجهة المصنع معطّلة، وبضغطة ترجع" : "عطّل واجهة المصنع وخلّ UrTV هو الأساس، وبضغطة ترجع", R.drawable.ic_eye,
-            new Runnable() { public void run() { openFactory(); } });
+        final Runnable factoryGo = new Runnable() { public void run() { openFactory(); } };
+        if (factoryOn) row("رجّع واجهة المصنع", "مفعّل واجهة المصنع معطّلة، وبضغطة ترجع", R.drawable.ic_eye, factoryGo);
+        else row("تخلّص من واجهة المصنع", "عطّل واجهة المصنع وخلّ UrTV هو الأساس، وبضغطة ترجع", R.drawable.ic_eye, factoryGo);
         // «UrTV النظيف»: the essentials only; the launcher's CleanActivity says what it does first and asks for the confirmation (and the family PIN)
         // the line says «مفعّل» (the on/off rule: the value starts with the state word) while the mask is on; the home answers (read once per visit, the last answer kept)
         row("\u2066UrTV\u2069 النظيف", Boolean.TRUE.equals(homeCleanSeen()) ? "مفعّل الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة" : "الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة", R.drawable.ic_eye, new Runnable() { public void run() { openClean(); } });

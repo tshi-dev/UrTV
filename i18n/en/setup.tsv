@@ -90,7 +90,7 @@ TV Bro و SmartTube مثبّتان من قبل: نتركهما.	TV Bro and Smart
 تصحيح USB مطفأ في هذا التلفزيون، وهذه الخطوة تحتاجه (وتحتاجه الاستعادة). فعّله من إعدادات المطوّرين ثم جرّب.	USB debugging is off on this TV, and this step needs it (and so does the restore). Turn it on in the developer options, then try again.
 ما قدرنا نكلّم التلفزيون: تأكد من تفعيل تصحيح USB ومن «السماح» ثم جرّب.	We could not talk to the TV: make sure USB debugging is on and you pressed «Allow», then try again.
 ما نقدر نسوّيها هنا	We can't do this here
-تخلّص من واجهة المصنع	Get rid of the factory interface
+تخلّص من واجهة المصنع	Drop the factory home
 تعطيل لا حذف: ما يُحذف شيء، وكل ما نعطّله يرجع بضغطة وحدة.	Turned off, not deleted: nothing is removed, and everything we turn off comes back with one press.
 هذا اللي بنعطّله في هذا التلفزيون بالضبط:	This is exactly what we will turn off on this TV:
 يبقى محميًّا ولا نلمسه: الواي فاي والبلوتوث والصوت والبث (Chromecast وAirPlay) ومداخل HDMI ولوحات المفاتيح وكل ما في قائمة الخصائص المحمية.	Stays protected and untouched: Wi-Fi, Bluetooth, sound, casting (Chromecast and AirPlay), the HDMI inputs, the keyboards and everything on the protected list.
@@ -105,7 +105,7 @@ TV Bro و SmartTube مثبّتان من قبل: نتركهما.	TV Bro and Smart
 ما اكتمل	It did not finish
 واجهة المصنع معطّلة	The factory interface is off
 اللي عطّلناه (تعطيل لا حذف):	What we turned off (turned off, not deleted):
-رجّع واجهة المصنع	Bring back the factory interface
+رجّع واجهة المصنع	Restore factory home
 نرجّع واجهة المصنع…	Bringing back the factory interface…
 ما قدرنا نكلّم التلفزيون. تأكد من تصحيح USB وجرّب مرة ثانية.	We could not talk to the TV. Check USB debugging and try again.
 رجعت واجهة المصنع	The factory interface is back

@@ -11,6 +11,12 @@ public final class ZoneIcu {
         long now = System.currentTimeMillis();
         android.icu.util.TimeZone own = android.icu.util.TimeZone.getTimeZone(id);
         int want = (int) ZoneFix.offset(id, now);
-        return own.getOffset(now) == want ? own : new android.icu.util.SimpleTimeZone(want, id);
+        return own.getOffset(now) == want ? own : fixed(want);
+    }
+
+    /** a fixed zone at {@code ms} (android.icu has no SimpleTimeZone class): ICU reads the custom id «GMT+03:00» */
+    private static android.icu.util.TimeZone fixed(int ms) {
+        int m = Math.abs(ms) / 60_000;
+        return android.icu.util.TimeZone.getTimeZone(String.format(java.util.Locale.US, "GMT%s%02d:%02d", ms < 0 ? "-" : "+", m / 60, m % 60));
     }
 }

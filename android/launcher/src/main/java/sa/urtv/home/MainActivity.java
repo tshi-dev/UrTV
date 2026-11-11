@@ -548,8 +548,7 @@ public class MainActivity extends Activity {
                 launchGuarded(ParentalPolicy.CARD_TASKS, new Intent(MainActivity.this, TasksActivity.class).putExtra(TasksActivity.EXTRA_MIC, true), S.t("المهام"));
             }
             @Override public void markets() {   // OK on the stocks card: «الأسواق» («محفظتي» there has its own lock)
-                if (cleanShown) return;   // «UrTV النظيف»: no way into the markets page
-                launch(new Intent(MainActivity.this, MarketsActivity.class));
+                if (!cleanShown) launch(new Intent(MainActivity.this, MarketsActivity.class));   // «UrTV النظيف»: no way into the markets page
             }
         });
         homeCard.football(new FootballFocus.Host() {   // «المظهر ← الواجهة ← كرة القدم» (docs/PROPOSALS-NOV2.md §1)
