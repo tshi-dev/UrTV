@@ -1,4 +1,4 @@
-«✅ GO — step 55 (Player v0.9.8: list jank bisect + re-checks)» — steps 52, 53 and 54 are reported, thanks. Run step 55 (end of this file). TV muted. Do not wait on the owner. The factory-interface step stays forbidden. lang ar stays.
+«✅ GO — step 55 (Player v0.9.8: baseline + list jank bisect), then step 56 (home tray: name the stage, build 235)» — steps 52, 53 and 54 are reported, thanks. Run step 55 then step 56 (end of this file). TV muted. Do not wait on the owner. The factory-interface step stays forbidden. lang ar stays.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -877,3 +877,11 @@ Z as step 50. Report «step 55».
 
 ### step 55, item 0 — a BASELINE first (both our apps show p50 36–40 ms per frame while a list scrolls; is that this TV / the test method?)
 With the same method (reset gfxinfo, 2 × 10 LEFT + 10 RIGHT at 0.35 s, or 50 DOWN + 50 UP at 0.1 s where the list is vertical) measure: (a) the TV's own settings app list (com.android.tv.settings), (b) TiviMate or YouTube's first screen if installed (do not sign in or change anything), (c) our home's tray again, (d) our home's tray with the keys sent from ONE long-lived shell (`adb shell` kept open, `input keyevent` lines piped in, or `sendevent`) instead of one `adb shell input` process per key. Table: janky %, p50/p90/p99 for each. This tells us whether ≈8 % / 40 ms is the TV + method or ours.
+
+## step 56 — home tray jank: name the stage (build 235 or newer; after step 55; TV muted)
+1. Is the key filter on while our home is in front? `logcat -d | grep -c "settings key=watch"` after a few key presses on the home; say yes/no.
+2. `optimize/dock.sh debug keytrace on` → the same 40 keys as step 54 B → `logcat -d -s UrTVKeyTrace`: give the median and the worst of `queue`, `dispatch`, `layout@`, `draw@`, the `janky` total, and 5 typical lines. gfxinfo for the same run.
+3. `optimize/dock.sh debug nokeyfilter on` → same 40 keys → the same numbers. Does janky drop (target ≤5 %)? Does `queue` drop?
+4. `dock.sh debug nokeyfilter off`, `keytrace off`, `debug show` (all off).
+5. Also on this build: the screensaver app opened as an APP (its own page from the apps list): last picture first, no dark flash (frames at 0.2 / 1 / 2 s, `UrTVSaver snapshot:` lines); quiz: «جاوب الجميع» in the reveal header on a real early end, «ما ناتج 91 − 38؟» with 91 left and 38 right like «6 × 7», Arabic phone counters in 0-9 when the TV uses English digits; returning from «UrTV النظيف» puts the focus back on its row.
+Z. Restore as step 44 Z. Report «step 56».
