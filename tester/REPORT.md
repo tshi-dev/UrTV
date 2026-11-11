@@ -2176,3 +2176,59 @@ On 4 wallpapers with no dim (means 41–105 of 255, one light): the brightness s
 
 ### Z
 Rooms closed (codes no longer answer), scripted phones stopped, Chrome tab closed, lang ar, updatechannel latest, ramtier auto, debug flags off, idle 45 s, the owner's `walldim 40` / `homeours off` kept, TV muted and asleep. Build stays 233. No screenshots, tokens or addresses kept.
+
+## step 55 — UrTV Player v0.9.8: list jank bisect + re-checks (TV muted; uninstalled at the end; build 233 on the TV)
+**Not ALL PASS: 4 problems (list jank 14–15 % with spaced keys whatever is compiled or switched off; the meter's «janky» share; «ابحث في القنوات» still opens the home tab; the first start is in English), small notes.**
+
+### 0 Baseline: is ≈8 % / 40 ms the TV and the method, or ours?
+| what | keys | frames | janky | p50 / p90 / p99 |
+|---|---|---|---|---|
+| (a) the TV's own settings list (`com.android.tv.settings`) | 50 DOWN + 50 UP, 0.1 s | 187 | **1.07 %** | **11 / 18 / 32 ms** |
+| (b) YouTube's first screen | 2 × 10 LEFT + 10 RIGHT, 0.35 s | 0 | no data (gfxinfo sees no frames from it) | — |
+| (c) our tray, one `input` process per key | same as (b) | 807 | 8.18 % | 40 / 53 / 69 ms |
+| (d) our tray, 10 keys from one `input` process, back to back, 4 processes in all | 2 × (10 LEFT, 10 RIGHT) | 117 | 13.68 % | 40 / 53 / 69 ms |
+| (e) our tray, no keys for 15 s | — | 1 | — | — |
+- **The same TV with the same method draws its own settings list at 11 ms per frame and 1 % janky. So the 36–40 ms per frame is ours, not the TV or the method.** Our tray's percentiles are the same with 40 key processes or with 4
+- `sendevent` is refused for the shell on this TV (`Permission denied` on the remote's and the IR receiver's devices), so (d) is the closest I could get to "one long-lived sender": no gap between its keys
+- TiviMate is not installed; YouTube was opened and closed, nothing pressed
+
+### Build and start
+`urtv-player-0.9.8.apk` (release v0.9.8, latest): sha256 `3d63421a…1f8d` = its .sha256 ✓, signer `13ade7d0…69dfea` (v2+v3) ✓, versionCode 98.
+- First start after install: **1524 ms**; a fresh-data first start: 936 ms; cold starts: 548, 496, 533 ms
+- **✗ The first start is in English («Home, Channels, Guide, Settings», «No playlist yet», «Add playlist») and stays English for that whole run; from the second start it is Arabic.** UrTV is ar, the TV's own language is en-US. Not a flash: the wrong language until the app is restarted
+
+### 1–3 List jank (50 DOWN + 50 UP; `gfxinfo reset` before each; the same list by link)
+| state | 0.1 s per key: janky, p50/p90/p99 | back to back: janky, p50/p90/p99 | the app's meter (0.1 s / back to back) |
+|---|---|---|---|
+| as installed | 15.42 %, 34/48/77 | 17.80 %, 36/46/61 | (stats off) |
+| as installed, stats on | 14.81 %, 34/38/44 | 14.42 %, 36/44/57 | janky 100 %, 39/40/41 · janky 100 %, 40/44/56 |
+| `compile -m speed -f` | 14.43 %, 23/34/40 | **0.73 %**, 38/40/40 | janky 99.7 %, 23/31/40 · 99.7 %, 40/40/40 |
+| `compile --reset` | 15.54 %, 34/46/57 | 17.36 %, 36/44/53 | janky 100 %, 23/42/48 · 100 %, 38/45/52 |
+| `-m speed-profile -f` | 14.43 %, 23/34/40 | **1.18 %**, 38/40/40 | janky 100 %, 23/40/40 · 99.7 %, 40/40/43 |
+| + `nopreview` | 14.20 %, 22/25/34 | 0.50 %, 34/38/38 | 87.0 %, 22/24/39 · 100 %, 39/39/39 |
+| + `nobackdrop` | 14.10 %, 18/30/34 | 1.18 %, 30/34/36 | 90.0 %, 18/26/35 · 99.3 %, 35/35/35 |
+| + `nologos` | 14.51 %, 23/27/34 | 1.00 %, 24/38/40 | 98.0 %, 23/28/40 · 99.7 %, 27/40/40 |
+| + `nofocus` | 32.37 % (312 frames), 30/38/38 | 24.73 % (283), 31/38/42 | 99.0 %, 30/39/39 · 99.3 %, 31/39/40 |
+| + `nomarquee` | 14.33 %, 23/34/40 | 0.98 %, 36/40/40 | 99.3 %, 23/30/40 · 100 %, 40/40/40 |
+| + `springscroll` | **7.42 %** (997 frames), 23/34/38 | 0.91 %, 36/40/40 | 98.7 %, 23/23/32 · 100 %, 40/40/40 |
+| + the first five together | 31.09 % (267 frames), 17/19/22 | 20.85 % (259), 17/18/23 | (line cut) |
+(The bisect rows were run on the `speed-profile` state, the app restarted after each `setprop`; the meter line showed the active name, e.g. «Home/Live [nopreview]». Prop cleared at the end.)
+- **Compiling fixes the back-to-back scroll (17 % → about 1 %): that part was warm-up / not compiled.** The shipped profile alone (`speed-profile`) does as well as full `speed`
+- **With 0.1 s between keys it stays at 14–15 % in every state**, and the janky count is 100–110 frames each time for 100 keys: about one late frame per key press. No switch removes it; `springscroll` halves the share (more frames, the same kind of late ones); `nofocus` and "all five" draw far fewer frames, so their share is higher though the frames are faster (17 ms with all five off)
+- p50 by state: 34 ms as installed, 23 ms compiled, 18 ms with `nobackdrop`, 17 ms with all five. The backdrop is the costliest single piece
+- **✗ The meter:** its percentiles now agree with gfxinfo (p50 23 vs 23, 39 vs 34…), **but its «janky» is 87–100 % where gfxinfo says 0.5–15 %.** It seems to count every frame over 16 ms
+
+### 4 ✓ Player OK panel on channel 49
+One LEFT from the list reaches «إحصاءات التشغيل»; UP «إضافة إلى المفضّلة»; the panel also shows «ليش يقطّع؟ البث سليم». One RIGHT goes back to the list. Small: it comes back on row 46, not on 49.
+
+### 5 ✗ «ابحث في القنوات»
+UrTV match sheet → «شاهد المباراة» → «ما لقينا قناة لهذه المباراة في قوائمك» → «ابحث في القنوات»: **the Player opens on its home tab (المفضّلة, آخر القنوات), focus on a favourite; no Live tab, no keyboard, no «للمباراة: …» line; the search box is not on screen, so it holds nothing I can read.** (The Player was not running before the press.)
+
+### 6 Search
+- DOWN from the Live tab lands on the search box on a fresh list ✓; once a row has been focused, the tab remembers it and DOWN goes to that row instead (small)
+- Chip «ع/EN»: OK → «EN»; q u r a n on the TCL's Arabic keyboard → **«quran» in the box** ✓. Chip back to «ع»: not measured cleanly (a Back of mine left the list)
+
+### 7 ✓ A dead channel's preview says «القناة لا ترد» (2M Monde, about 9 s after resting on it)
+
+### Z
+`pm clear` + uninstall (0 packages), APK deleted, `debug.urtv.bisect` empty, no stream frame kept. UrTV lang ar, updatechannel latest, idle 45 s, TV muted and asleep.
