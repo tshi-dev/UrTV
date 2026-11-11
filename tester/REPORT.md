@@ -2332,3 +2332,22 @@ Build: `urtv-player-0.9.10.apk` (release v0.9.10, latest), sha256 `4db67e6e…22
 - Uninstalled after (`pm clear` + uninstall, 0 packages), APK deleted, bisect prop empty
 
 Also done for part A while waiting: today's five prayer times, the clock and both date lines were noted before any update (kept off the report).
+
+## step 58, parts A, B and the first of C — build 258 (TV muted; paused at the owner's word, the rest after 04:20)
+### A ✓ Prayer times unchanged
+Today's card (five prayers + sunrise), the clock, both date lines and the Hijri date were captured on build 235 and again on build 258, the same minute set: **identical** (Fajr, sunrise, Dhuhr, Asr, Maghrib, Isha the same to the minute; date lines pixel-identical). `logcat -s UrTVZone`: no line at all (no correction). The screensaver's card was set to prayers only for the two pictures and put back to the owner's «verse».
+
+### B ✓ Radio (muted throughout; checked from the player's state, not by ear)
+- Saudi Quran Radio, 5 minutes: `playing=1 source=radio station_name=إذاعة القرآن الكريم - السعودية` at every one of 5 samples, `error=` and `last_error=` empty; the log has **no** «صيغة البث غير مدعومة» / «تعذّر التشغيل»
+- Station «عبدالرحمن السديس» 2 minutes and «ماهر المعيقلي» 2 minutes: playing, position advancing, no error
+- A station playing, the screensaver started by the 45 s idle (DreamRecord after 47 s): 20 s into it still `playing=1`, position moving ✓
+- Surah 1 by Sudais: playing; the screensaver started (after 35 s); 15 s into it `playing=1`, and it had moved on to surah 2 by itself ✓
+- Stopped at the end
+
+### C Games (started)
+- «الألعاب»: **eight tiles** ✓ (الأسرع بالجوالات, خمس خانات, الكلمة المفقودة, واحد مو معنا, بدون كلام, خلية الحروف, خمّن الكلمة, دومينو); the header says «بدون جوالات: ريموت واحد يدور بينكم»
+- **خمس خانات** (3 rounds, 2 teams): setup → first question in under 3 s ✓; letter, 90 s counter, the five boxes, both teams' scores; «خلّصنا» → «من خلّص أول؟» → box-by-box marking (صحيحة / مكررة / بدون) ✓; Back → pause card «اللعبة متوقفة» (متابعة · إنهاء الجولة · الرئيسية) ✓; «إنهاء الجولة» → «انتهت اللعبة · لا فائز هذه المرة», both teams on place 1 ✓. **Small: the big letter in the header is cut by the time bar: «ي» shows without its dots, so it reads «ى».** Focus never lost
+- **الكلمة المفقودة** (steal on): question in under 3 s ✓, 15 s counter; «اكشف الكلمة» shows the word in the line («He»); then صح / خطف النجوم / خطأ; **«خطف النجوم» gave the other team 5 (half of 10) and the turn moved to them** ✓; pause and end the same as above
+- Not yet: واحد مو معنا, بدون كلام, خلية الحروف, خمّن الكلمة, دومينو, English mode, PSS/jank; and parts D, E, F, G
+
+The TV is left on our home, muted, idle 45 s, channel still next (put back in Z).
