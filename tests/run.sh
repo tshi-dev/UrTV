@@ -22,6 +22,7 @@ python3 tests/install_versions_test.py
 python3 tests/install_retry_test.py
 python3 tests/cast_test.py   # «البث من الجوال»: a Chromecast keeps its setup wizard (the cast credentials); dock.sh cast on|off|status
 python3 tests/step52_test.py   # the tester's step 52 findings in the source: the saver's first frame, the debug switches, the top row's layout, the dark patch, the clean row
+python3 tests/party_games_test.py   # «واحد مو معنا» and «بدون كلام / وصّف»: the rules on a plain JVM, the bundled word files
 python3 tests/ram_tier_test.py   # the three memory tiers (LOW under 2000 MB, MID under 2600, NORMAL), one rule per app, the test switch
 python3 tests/lowram_test.py   # a weak TV (Ram.low): no key filter, the clock off the UI thread, pictures let go behind apps, markets «عادي» and 60 s, #lowram=1
 python3 tests/deadman_test.py
