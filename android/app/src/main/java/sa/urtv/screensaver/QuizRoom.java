@@ -25,8 +25,13 @@ final class QuizRoom {
 
     /** one question as the room plays it: the options are already in their shown order, `correct` is an index into them */
     static final class Q {
-        final String text; final String[] opts; final int correct;
-        Q(String text, String[] opts, int correct) { this.text = text; this.opts = opts; this.correct = correct; }
+        /** the question and its four options in both languages (index 0 Arabic, 1 English), in ONE shown order: `correct` is the same place in both */
+        final String[] texts; final String[][] optsBy; final int correct;
+        final String text; final String[] opts;   // the Arabic ones (the one-language form the older code and the tests use)
+        Q(String text, String[] opts, int correct) { this(new String[] {text, text}, new String[][] {opts, opts}, correct); }
+        Q(String[] texts, String[][] optsBy, int correct) { this.texts = texts; this.optsBy = optsBy; this.correct = correct; this.text = texts[0]; this.opts = optsBy[0]; }
+        String text(boolean en) { return texts[en ? 1 : 0]; }
+        String opt(int i, boolean en) { return optsBy[en ? 1 : 0][i]; }
     }
 
     static final class Player {
@@ -314,7 +319,10 @@ final class QuizRoom {
     }
 
     /** the state a phone reads (GET /api/state): never the right answer before the reveal */
-    synchronized String stateFor(String token) {
+    synchronized String stateFor(String token) { return stateFor(token, false); }
+
+    /** the phone's own language (its page's, `?l=` of the state poll): the question and the four answers come in that language, the places are the same in both */
+    synchronized String stateFor(String token, boolean en) {
         Player p = byToken(token);
         if (phase == Phase.CLOSED) return "{\"ok\":false,\"e\":\"closed\"}";
         if (p == null) return goneTokens.contains(token) ? "{\"ok\":false,\"e\":\"gone\"}" : "{\"ok\":false,\"e\":\"token\"}";
@@ -327,8 +335,8 @@ final class QuizRoom {
         Q q = current();
         if ((phase == Phase.QUESTION || phase == Phase.REVEAL || phase == Phase.PAUSED) && q != null) {
             boolean open = phase == Phase.QUESTION || phase == Phase.PAUSED;
-            b.append(",\"q\":{\"x\":").append(esc(nonce)).append(",\"i\":").append(index).append(",\"n\":").append(total()).append(",\"t\":").append(esc(q.text)).append(",\"o\":[");
-            for (int i = 0; i < 4; i++) { if (i > 0) b.append(','); b.append(esc(q.opts[i])); }
+            b.append(",\"q\":{\"x\":").append(esc(nonce)).append(",\"i\":").append(index).append(",\"n\":").append(total()).append(",\"t\":").append(esc(q.text(en))).append(",\"o\":[");
+            for (int i = 0; i < 4; i++) { if (i > 0) b.append(','); b.append(esc(q.opt(i, en))); }
             b.append("],\"ms\":").append(open ? leftMs() : 0).append(",\"dur\":").append(QUESTION_MS).append(",\"ans\":").append(answeredCount()).append(",\"of\":").append(playingCount())
                 .append(",\"pick\":").append(p.answer).append(",\"wait\":").append(p.waiting).append('}');
             if (phase == Phase.REVEAL) {

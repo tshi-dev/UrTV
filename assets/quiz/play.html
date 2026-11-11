@@ -370,7 +370,7 @@ function poll() {
   clearTimeout(timer);
   if (!running || document.hidden || inflight) return;
   inflight = true;
-  api('/api/state?c=' + encodeURIComponent(code) + '&t=' + encodeURIComponent(token), null, 4000)
+  api('/api/state?c=' + encodeURIComponent(code) + '&t=' + encodeURIComponent(token) + '&l=' + L, null, 4000)
     .then(onState, onFail).catch(function () {})
     .then(function () { inflight = false; if (running && !document.hidden) timer = setTimeout(poll, 700); });
 }

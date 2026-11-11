@@ -54,14 +54,32 @@ final class QuizPick {
         return out;
     }
 
-    /** the room's question in the screen's language: the 4 options in a random order, `correct` the place of the answer */
-    static QuizRoom.Q toQ(Item it, boolean en, Random rnd) {
-        int l = en ? 1 : 0;
-        List<String> opts = new ArrayList<>();
-        opts.add(it.a[l]);
-        for (String[] w : it.w) opts.add(w[l]);
-        String right = it.a[l];
-        Collections.shuffle(opts, rnd);
-        return new QuizRoom.Q(it.q[l], opts.toArray(new String[0]), opts.indexOf(right));
+    /** the question in BOTH languages, the four options in one random order (the same place for the right one in each): the TV shows its own language, each phone its own */
+    static QuizRoom.Q toQ(Item it, Random rnd) {
+        List<Integer> order = new ArrayList<>(java.util.Arrays.asList(0, 1, 2, 3));   // 0 is the right answer, 1 to 3 the wrong ones
+        Collections.shuffle(order, rnd);
+        String[][] by = new String[2][4];
+        for (int l = 0; l < 2; l++) for (int p = 0; p < 4; p++) by[l][p] = order.get(p) == 0 ? it.a[l] : it.w[order.get(p) - 1][l];
+        return new QuizRoom.Q(new String[] {it.q[0], it.q[1]}, by, order.indexOf(0));
+    }
+
+    /** an item may be played in an English room only when its English text is really English: present, and with no Arabic letters in the question or any answer (never shown in Arabic instead) */
+    static boolean playable(Item it, boolean en) {
+        if (!en) return true;
+        if (!clean(it.q[1]) || !clean(it.a[1])) return false;
+        for (String[] w : it.w) if (!clean(w[1])) return false;
+        return true;
+    }
+    private static boolean clean(String s) {
+        if (s == null || s.trim().isEmpty() || s.length() > 200) return false;   // QuizBankCheck.TEXT_MAX
+        for (int i = 0; i < s.length(); i++) { char c = s.charAt(i); if (c >= 0x0600 && c <= 0x06FF) return false; }
+        return true;
+    }
+    /** the bank as this room can play it */
+    static List<Item> forLang(List<Item> bank, boolean en) {
+        if (!en) return bank;
+        List<Item> out = new ArrayList<>();
+        for (Item it : bank) if (playable(it, true)) out.add(it);
+        return out;
     }
 }

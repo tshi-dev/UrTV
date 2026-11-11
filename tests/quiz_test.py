@@ -84,7 +84,7 @@ check("reveal 4 s + the top five 4 s (REVEAL_MS 8000, REVEAL_VIEW_MS 4000)", "RE
 check("podium: the winner is the tallest and in the middle (heights 512 / 400 / 300 for 1st / 2nd / 3rd), the blocks stand on y 960 inside the safe area, above the hint",
       "float[] hs = {512, 400, 300}; int[] place = {1, 0, 2};" in act and "cp.bottomMargin = px(120)" in act and 96 + 512 + 24 <= 960 - 352 + 96)
 check("digits: the duplicate-name number and the bank's question and four answers follow the person's setting (Latin: 0-9) on the TV and the phones",
-      "room.latinDigits = latin;" in act and "private QuizRoom.Q digits(" in act and "qs.add(digits(QuizPick.toQ(it, en, rnd)))" in act and "latinDigits" in room and "ar && !latinDigits" in room)
+      "room.latinDigits = latin;" in act and "private QuizRoom.Q digits(" in act and "qs.add(digits(QuizPick.toQ(it, rnd)))" in act and "latinDigits" in room and "ar && !latinDigits" in room)
 check("board: the gain is «+591» left-to-right (isolated); the last question's hint says «النتيجة النهائية»; no ▲/▼ for a player on 0",
       '"\\u2066" + signed(p.lastPoints) + "\\u2069"' in act and 'room.index + 1 >= room.total() ? S.t("النتيجة النهائية")' in act and 'p.score > 0 && p.lastDelta > 0 ? "▲"' in act)
 check("phone state: the rank is among the players still in (rank 3 of 3, never 4 of 3), in the state, the reveal and the end", room.count("activeRank(p)") == 3 and "int activeRank(Player p)" in room)
@@ -102,5 +102,11 @@ check("end: «لا فائز هذه المرة» when the best has 0, a tie for f
       'r.get(0).score <= 0 ? S.t("لا فائز هذه المرة")' in act and 'S.t("تعادل في المركز الأول")' in act and 'room.endedEarly ? S.t("جاوب الجميع")' in act and "playerRow(p, p.rank, true, 128)" in act and "num(p.rank)" in act)
 check("phone: «gone» keeps the token and says «خرجت من الغرفة، ادخل من جديد»; the room code is 0-9 in the Arabic page; sums are isolated by the TV before they reach the phone",
       "e === 'gone'" in page and "e_gone: 'خرجت من الغرفة، ادخل من جديد'" in page and "function roomLabel()" in page and "QuizRoom.isolateMath(" in act)
+check("language: the TV shows the question and the four answers in UrTV's language (q.text(en), q.opt(i, en)); the letters are A B C D in English and أ ب ج د in Arabic on the TV; the setup page's chips follow it (S.tv)",
+      "String qText = q.text(en);" in act and "String a = q.opt(i, en);" in act and 'LETTERS_AR = {"أ", "ب", "ج", "د"}, LETTERS_EN = {"A", "B", "C", "D"}' in act and "private String letter(int i) { return en ? LETTERS_EN[i] : LETTERS_AR[i]; }" in act
+      and "S.tv(QuizPick.CATEGORIES[i][1])" in act and "S.tv(QuizPick.LEVELS[i])" in act and "QuizPick.forLang(QuizBank.load(this), S.en())" in act)
+check("language: each phone gets its own page's language (the state poll sends &l=, the room answers in it), the letters on the phone are أ ب ج د in Arabic and A B C D in English, the digits fixing touches the Arabic text only",
+      "'&l=' + L, null, 4000)" in page and 'room.stateFor(p.get("t"), "en".equals(p.get("l")))' in srv and "letters: ['أ', 'ب', 'ج', 'د']" in page and "letters: ['A', 'B', 'C', 'D']" in page
+      and "q.texts[1]};   // the English text is left as it is" in act)
 check("docs/QUIZ.md exists and names the conflicts between the SPEC and the mockups", "conflicts" in doc.lower() and "SPEC" in doc)
 sys.exit(1 if failed else 0)

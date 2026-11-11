@@ -194,8 +194,31 @@ public final class QuizTest {
         check("pick: the asked number, never one twice, the last 100 asked avoided when others remain (20 are left)", got.size() == 15 && ids.size() == 15 && ids.stream().noneMatch(recent::contains));
         got = QuizPick.pick(bank, "science", 1, false, 15, new HashSet<>(Arrays.asList("id0", "id3")), new Random(3));
         check("pick: only the chosen category, level and kids filter; the recent ones come back only when too few others remain", got.size() == 15 && got.stream().allMatch(it -> it.cat.equals("science") && it.diff == 1));
-        QuizRoom.Q cq = QuizPick.toQ(bank.get(0), false, new Random(4));
-        check("pick: the options are shuffled with the right one marked, in the screen's language", cq.opts.length == 4 && cq.opts[cq.correct].equals("ج0") && cq.text.equals("ق0") && QuizPick.toQ(bank.get(0), true, new Random(4)).opts[0 + QuizPick.toQ(bank.get(0), true, new Random(4)).correct].equals("a0"));
+        QuizRoom.Q cq = QuizPick.toQ(bank.get(0), new Random(4));
+        check("pick: the options are shuffled once with the right one marked, in both languages at the same place (the right Arabic answer and the right English one)",
+            cq.opts.length == 4 && cq.opts[cq.correct].equals("ج0") && cq.text.equals("ق0") && cq.text(true).equals("q0") && cq.opt(cq.correct, false).equals("ج0") && cq.opt(cq.correct, true).equals("a0"));
+        boolean same = true; for (int p = 0; p < 4; p++) { String ar = cq.opt(p, false); String en = cq.opt(p, true); same &= ar.substring(1).equals(en.substring(1)) || ar.equals("ج0") == en.equals("a0"); }
+        check("pick: each place holds the same option in both languages (no Arabic option under another English one)", same);
+        {   // step 52b: «when in English the questions need to be English»: a mixed room, the TV in English and one phone in Arabic
+            QuizRoom rr = room(); QuizRoom.Player en1 = join(rr, "A"), ar1 = join(rr, "B");
+            List<QuizRoom.Q> two = new ArrayList<>(); two.add(cq); two.add(QuizPick.toQ(bank.get(1), new Random(5)));
+            rr.start(two);
+            String sEn = rr.stateFor(en1.token, true), sAr = rr.stateFor(ar1.token, false), sDef = rr.stateFor(ar1.token);
+            check("English phone: the question and the four answers in English only; Arabic phone: in Arabic only; the default (no language) is Arabic",
+                sEn.contains("\"t\":\"q0\"") && !sEn.matches("(?s).*[\\u0600-\\u06FF].*") && sAr.contains("\"t\":\"ق0\"") && sAr.contains("\"o\":[") && sDef.equals(sAr));
+            now[0] += 1000; rr.answer(en1.token, 0, cq.correct, rr.nonce()); rr.answer(ar1.token, 0, (cq.correct + 1) % 4, rr.nonce());
+            String rvEn = rr.stateFor(en1.token, true), rvAr = rr.stateFor(ar1.token, false);
+            check("the same places in both: the right answer's index in the reveal is one number for the English and the Arabic phone", rvEn.contains("\"c\":" + cq.correct) && rvAr.contains("\"c\":" + cq.correct) && rvEn.contains("\"ok\":true") && rvAr.contains("\"ok\":false"));
+        }
+        {   // an English room plays only items whose English text is English
+            List<QuizPick.Item> mixed = new ArrayList<>(bank);
+            mixed.add(new QuizPick.Item("x1", "science", 1, false, new String[] {"س", "سؤال بالعربي"}, new String[] {"ج", "answer"}, new String[][] {{"أ", "a"}, {"ب", "b"}, {"ج", "c"}}));
+            mixed.add(new QuizPick.Item("x2", "science", 1, false, new String[] {"س", ""}, new String[] {"ج", "answer"}, new String[][] {{"أ", "a"}, {"ب", "b"}, {"ج", "c"}}));
+            mixed.add(new QuizPick.Item("x3", "science", 1, false, new String[] {"س", "Fine?"}, new String[] {"ج", "yes"}, new String[][] {{"أ", "no"}, {"ب", "maybe"}, {"ج", "never"}}));
+            List<QuizPick.Item> enBank = QuizPick.forLang(mixed, true);
+            check("an English room skips an item whose English is missing or in Arabic letters (never shown in Arabic), keeps a good one; an Arabic room keeps all",
+                enBank.size() == bank.size() + 1 && enBank.stream().anyMatch(it -> it.id.equals("x3")) && enBank.stream().noneMatch(it -> it.id.equals("x1") || it.id.equals("x2")) && QuizPick.forLang(mixed, false).size() == mixed.size());
+        }
 
         bankCheck(a.length > 0 ? a[0] : null);
         server();

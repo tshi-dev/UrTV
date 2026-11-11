@@ -86,7 +86,7 @@ public class QuizActivity extends Activity {
         try { anim = Settings.Global.getFloat(getContentResolver(), Settings.Global.ANIMATOR_DURATION_SCALE, 1f); } catch (RuntimeException ignored) { /* default */ }
         animate = !lowRam && anim > 0f;   // reduced motion (animations off in the TV's developer settings) and low-RAM TVs: none
         scale = getResources().getDisplayMetrics().widthPixels / 1920f;
-        bank = QuizBank.load(this);
+        bank = QuizPick.forLang(QuizBank.load(this), S.en());   // an English room plays only the items whose English text is really English
         QuizBank.refresh(this);
         cat = QuizBank.category(this); level = QuizBank.level(this); countIdx = QuizBank.count(this); kids = QuizBank.kids(this); sound = QuizBank.sound(this);
         root = new FrameLayout(this);
@@ -487,16 +487,18 @@ public class QuizActivity extends Activity {
     }
     /** the bank's Arabic text stores Arabic-Indic digits: with Latin digits set, the question and the four answers (on the TV and on the phones) use 0-9; a sum inside the Arabic sentence is isolated left to right */
     private QuizRoom.Q digits(QuizRoom.Q q) {
-        if (en) return q;
-        String[] o = new String[q.opts.length];
-        for (int i = 0; i < o.length; i++) o[i] = QuizRoom.isolateMath(latin ? DigitsText.convert(q.opts[i], true) : q.opts[i]);
-        return new QuizRoom.Q(QuizRoom.isolateMath(latin ? DigitsText.convert(q.text, true) : q.text), o, q.correct);
+        String[] tx = {fixAr(q.texts[0]), q.texts[1]};   // the English text is left as it is
+        String[][] ob = new String[2][4];
+        for (int p = 0; p < 4; p++) { ob[0][p] = fixAr(q.optsBy[0][p]); ob[1][p] = q.optsBy[1][p]; }
+        return new QuizRoom.Q(tx, ob, q.correct);
     }
+    /** an Arabic text: Latin digits when the person's setting is Latin, and a sum isolated left to right */
+    private String fixAr(String s) { return QuizRoom.isolateMath(latin ? DigitsText.convert(s, true) : s); }
     private void startRound() {
         Random rnd = new Random();
         List<QuizPick.Item> picks = QuizPick.pick(bank, cat, levelValue(), kids, wanted(), QuizBank.recent(this), rnd);
         List<QuizRoom.Q> qs = new ArrayList<>();
-        for (QuizPick.Item it : picks) qs.add(digits(QuizPick.toQ(it, en, rnd)));
+        for (QuizPick.Item it : picks) qs.add(digits(QuizPick.toQ(it, rnd)));
         screen = Screen.LOBBY;
         if (qs.isEmpty() || !room.start(qs)) { Toast.makeText(this, S.t("ابدأ (لاعبان على الأقل)"), Toast.LENGTH_SHORT).show(); show(Screen.LOBBY); return; }
         asked = picks;
@@ -523,8 +525,9 @@ public class QuizActivity extends Activity {
         if (!reveal) { timerNum = centered(num((int) Math.ceil(room.leftMs() / 1000.0)), 128, INK, true); tm.addView(timerNum, new FrameLayout.LayoutParams(-1, -1)); }
         else tm.addView(new CheckView(this), new FrameLayout.LayoutParams(-1, -1));
         root.addView(tm, atEnd(232, 200, 96, 54));
-        int len = q.text.length();
-        TextView qt = text(q.text, chooseFont(q.text, 104, 88, 72, 40, 70) - (len > 110 ? 12 : 0), 0xFFFFFFFF, true);
+        String qText = q.text(en);   // the TV's own language: English UrTV, English question
+        int len = qText.length();
+        TextView qt = text(qText, chooseFont(qText, 104, 88, 72, 40, 70) - (len > 110 ? 12 : 0), 0xFFFFFFFF, true);
         qt.setMaxLines(3); qt.setLineSpacing(0, .98f); qt.setEllipsize(android.text.TextUtils.TruncateAt.END);
         root.addView(qt, at(1330, 300, 96, 128));
         if (!reveal) {
@@ -549,7 +552,7 @@ public class QuizActivity extends Activity {
             st.addView(tab, new FrameLayout.LayoutParams(px(96), px(96), Gravity.START | Gravity.TOP));
             InkLetter lt = new InkLetter(this, letter(i), 64 * scale, PAPER, font("ThmanyahDisplay-Bold")); lt.setAlpha(wrong ? .6f : 1f);   // centred on the glyph's ink, not the font's line box
             st.addView(lt, new FrameLayout.LayoutParams(px(96), px(96), Gravity.START | Gravity.TOP));
-            String a = q.opts[i];
+            String a = q.opt(i, en);
             TextView at = text(a, chooseFont(a, 68, 56, 44, 16, 30) - (a.length() > 50 ? 6 : 0), right ? 0xFFFFFFFF : wrong ? 0x73161410 : INK, true);
             at.setMaxLines(3); at.setEllipsize(android.text.TextUtils.TruncateAt.END);
             FrameLayout.LayoutParams tp = new FrameLayout.LayoutParams(-1, -2, Gravity.START | Gravity.CENTER_VERTICAL); tp.setMarginStart(px(136)); tp.setMarginEnd(px(reveal ? 28 + 56 * Math.max(1, countChose(ps, i)) : 28));

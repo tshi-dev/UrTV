@@ -171,7 +171,7 @@ final class QuizServer {
         if (get && path.equals("/api/state")) {
             Map<String, String> p = form(query);
             if (!room.code.equals(p.get("c"))) { wrongCode(ip); json(c, "{\"ok\":false,\"e\":\"code\"}"); return; }
-            json(c, room.stateFor(p.get("t")));
+            json(c, room.stateFor(p.get("t"), "en".equals(p.get("l"))));
             return;
         }
         if (post && path.equals("/api/join")) {
