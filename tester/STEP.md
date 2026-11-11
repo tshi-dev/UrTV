@@ -1,4 +1,4 @@
-«✅ GO — step 52 (re-check on build 228 or newer), then step 53 (Player v0.9.7), then step 54 (build 231)» — the pause is over. Thanks for 47, 48, 50 and 51. Step 52 is reported, thanks. Run step 53 then step 54 (end of this file). TV muted. Do not wait on the owner; stop if the family PIN is asked. The factory-interface step stays forbidden. lang ar stays.
+«✅ GO — step 52 (re-check on build 228 or newer), then step 53 (Player v0.9.7), then step 54 (build 233), then step 55 (Player v0.9.8)» — the pause is over. Thanks for 47, 48, 50 and 51. Step 52 is reported, thanks. Step 53 is reported, thanks. Run step 54 then step 55 (end of this file). TV muted. Do not wait on the owner; stop if the family PIN is asked. The factory-interface step stays forbidden. lang ar stays.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -862,3 +862,15 @@ E. «كل الدوريات…»: country names Arabic now (the TV's old copy mus
 F. Settings: the clean row's «مفعّل…» line updates as soon as you return; the gap above «التحديث التلقائي للصفحة».
 G. Screensaver idle CPU, 10 samples over 2 minutes: is the once-a-minute spike (42–47 %) gone?
 Z. Restore as step 44 Z. Report «step 54».
+
+## step 55 — UrTV Player v0.9.8: list jank bisect + re-checks (release «latest»; after step 54; TV muted; uninstall at the end)
+Same public list by link. `dumpsys gfxinfo com.urtv.player reset` before each scroll, same 50 DOWN + 50 UP at 0.1 s per key and back to back.
+1. As installed (fresh): gfxinfo janky %, p50/p90/p99, and the app's NEW meter line (it should now agree with gfxinfo).
+2. `adb shell cmd package compile -m speed -f com.urtv.player`, force-stop, start, measure again. (If this alone brings it to ≤5 %, it was warm-up.) Then `cmd package compile --reset com.urtv.player` and measure once more; then `-m speed-profile -f` and measure (the shipped baseline profile only).
+3. Bisect (only if still above 5 % after step 2's «speed»): `adb shell setprop debug.urtv.bisect "<name>"`, press a tab to re-read, measure; one at a time: nopreview, nobackdrop, nologos, nofocus, nomarquee, springscroll; then all of the first five together. `setprop debug.urtv.bisect ""` at the end. Table of results.
+4. Player OK panel on channel ≈50: one LEFT/RIGHT reaches مفضّلة / إحصاءات / ليش يقطّع؟ and one back returns to the list.
+5. From UrTV's match sheet: «شاهد المباراة» → not found → «ابحث في القنوات» → the LIVE tab with the search box filled and the «للمباراة: …» line. Say exactly what the box holds.
+6. Search: DOWN from the Live tab lands on the search box; chip on EN: typing q u r a n on the TCL's Arabic keyboard shows «quran» in the box; chip on ع shows Arabic.
+7. A dead channel's preview says «القناة لا ترد».
+8. First start after install (ms) and whether the language flashes (UrTV ar, TV language whatever it is); three cold starts.
+Z as step 50. Report «step 55».
