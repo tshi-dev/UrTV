@@ -252,6 +252,7 @@ python3 tests/games_data_test.py   # the games' data: the forms, the limits, the
 python3 tests/games_kit_test.py   # the games' kit, the registry and the list, «خمس خانات» and «الكلمة المفقودة» (their rules on a plain JVM)
 #
 python3 tests/tvports_test.py   # BETA LG/Samsung packages: manifests, files, sizes (docs/LG-SAMSUNG.md)
+python3 tests/games_board_test.py   # «خلية الحروف» and «خمّن الكلمة»: both engines on a plain JVM against the bundled data
 node tests/prayer_crosscheck_page.mjs
 node tests/prayer_crosscheck_world_page.mjs
 node tests/hijri_crosscheck_page.mjs
