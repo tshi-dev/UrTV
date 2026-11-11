@@ -6,8 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 APP = ROOT / "android/app/src/main/java/sa/urtv/screensaver"
-ENGINES = [APP / "games/oddone/OddOneWords.java", APP / "games/oddone/OddOneGame.java", APP / "games/oddone/OddOneFlow.java",
-           APP / "games/charades/CharadesWords.java", APP / "games/charades/CharadesGame.java", APP / "games/charades/CharadesFlow.java"]
+ENGINES = [APP / "games/oddone/OddOneWords.java", APP / "games/oddone/OddOneGame.java", APP / "games/charades/CharadesWords.java", APP / "games/charades/CharadesGame.java"]
 failed = 0
 def check(what, ok, extra=""):
     global failed
@@ -37,5 +36,17 @@ import make_games_data as mgd
 check("the two starters are the shared ones (docs/GAMES-DATA.md) and pass the publisher's verify", all(mgd.verify_file(n, str(ROOT / "assets/games" / (n + ".json")), minimum=False) == [] for n in ("odd-one", "charades")))
 for n, cls in (("odd-one", "oddone/OddOneWords.java"), ("charades", "charades/CharadesWords.java")):
     lo, hi = mgd.LIMITS[n][1], mgd.LIMITS[n][2]; j = (APP / "games" / cls).read_text(encoding="utf-8")
-    check(f"{n}: the app's own check keeps the published limits ({lo} to {hi}; the charades starter is smaller, 100 is its floor)", (f"TOPICS_MIN = {lo}, TOPICS_MAX = {hi}" in j) if n == "odd-one" else (f"WORDS_MAX = {hi}" in j and "WORDS_MIN = 100" in j))
+    check(f"{n}: the app's own check keeps the published limits ({lo} to {hi}; the charades starter is smaller, 100 is its floor)", (f"TOPICS_MIN = {lo}, TOPICS_MAX = {hi}" in j) if n == "odd-one" else (f"WORDS_MIN = {lo}, STARTER_MIN = 100, WORDS_MAX = {hi}" in j))
+# ---- the screens (on the kit: docs/GAMES-KIT.md)
+odd = (APP / "OddOneActivity.java").read_text(encoding="utf-8"); cha = (APP / "CharadesActivity.java").read_text(encoding="utf-8"); reg = (APP / "GameRegistry.java").read_text(encoding="utf-8")
+check("both games are ready in the registry and their screens are built on the kit", '"OddOneActivity", false, true)' in reg and '"CharadesActivity", false, true)' in reg
+      and "class OddOneActivity extends GameActivity" in odd and "class CharadesActivity extends GameActivity" in cha)
+check("every secret goes through the kit's hand-over, and Back in a round is the kit's pause card (the clocks stop with it)",
+      "handOver(names[p]," in odd and "handOver(names[team], g.word.text(en)" in cha and all("if (back) { openPause(); return; }" in a and "if (paused) game.pause(); else game.resume();" in a for a in (odd, cha)))
+check("odd-one: the vote is by hands (the host enters the room's choice or «ما اتفقنا»); 3 to 8 players, as many as the kit's score table holds",
+      "false, null, recent, System::currentTimeMillis" in odd and "game.accuse(sel == n ? OddOneGame.NOBODY : sel)" in odd and "PLAYERS = {3, 4, 5, 6, 7, 8}" in odd)
+check("charades: «تخطّي» is the arrow that points left in both languages; the open word is hidden by the rules, never left to the view",
+      "boolean left = dx == (rtl ? 1 : -1);" in cha and "if (game.wordVisible())" in cha and "game.tick()" in cha)
+check("nothing about the people is kept: only the chips and the ids of the last words", all("getSharedPreferences" not in a and "FileOutputStream" not in a and "GamePrefs.remember(this, id(), r)" in a for a in (odd, cha)))
+check("the data is checked whole by the rules' own parsers, the published file with its floor", "CharadesWords.WORDS_MIN" in cha and "CharadesWords.STARTER_MIN" in cha and 'GameData.load(this, "odd-one", DATA, DATA)' in odd)
 sys.exit(1 if failed else 0)

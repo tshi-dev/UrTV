@@ -3,10 +3,8 @@ package sa.urtv.screensaver;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
-import sa.urtv.screensaver.games.charades.CharadesFlow;
 import sa.urtv.screensaver.games.charades.CharadesGame;
 import sa.urtv.screensaver.games.charades.CharadesWords;
-import sa.urtv.screensaver.games.oddone.OddOneFlow;
 import sa.urtv.screensaver.games.oddone.OddOneGame;
 import sa.urtv.screensaver.games.oddone.OddOneWords;
 
@@ -205,77 +203,11 @@ public final class PartyGamesTest {
         CharadesGame g = new CharadesGame(new CharadesWords.Deck(new ArrayList<CharadesWords.Word>(), false, false, null, new Random(1)), false, 2, 60, 1, false, () -> now[0]); g.ready();
         check("charades: no words at all → the game ends instead of showing an empty card; teams are kept to 2 to 4", g.phase == CharadesGame.Phase.END && cha(false, 9, 60, 1, false, 1).teams == 4 && cha(false, 1, 60, 1, false, 1).teams == 2);
         }
-        // ================= the screens: which follows which, what each key does
         {
-        OddOneGame g = odd(3, 2, false, 21); OddOneFlow f = new OddOneFlow(g, () -> now[0]);
-        OddOneFlow.Key OK = OddOneFlow.Key.OK, BACK = OddOneFlow.Key.BACK, UP = OddOneFlow.Key.UP, DOWN = OddOneFlow.Key.DOWN, LEFT = OddOneFlow.Key.LEFT, RIGHT = OddOneFlow.Key.RIGHT;
-        boolean pass = f.screen() == OddOneFlow.Screen.PASS; f.key(DOWN); boolean noBack = f.focus == 0;
-        f.key(OK); boolean count = f.screen() == OddOneFlow.Screen.COUNT && f.countLeftMs() == 2000; f.key(OK); now[0] += 1999; boolean wait = !f.tick() && f.screen() == OddOneFlow.Screen.COUNT; now[0] += 1;
-        check("odd-one screens: the pass screen → OK → a 2 s count (OK does nothing in it) → the secret", pass && noBack && count && wait && f.tick() && f.screen() == OddOneFlow.Screen.SECRET && g.dealPlayer() == 0);
-        f.key(BACK);
-        check("odd-one screens: Back on a secret only hides it: the same player's pass screen, no pause card", f.screen() == OddOneFlow.Screen.PASS && !f.pauseOpen && g.dealPlayer() == 0 && !g.paused());
-        f.key(OK); f.key(BACK); boolean countBack = f.screen() == OddOneFlow.Screen.PASS && !f.pauseOpen; now[0] += 5000; boolean dead = !f.tick() && !g.secretShown();
-        check("odd-one screens: Back during the count cancels it (no secret opens later)", countBack && dead);
-        f.key(OK); now[0] += 2000; f.tick(); f.key(OK);
-        check("odd-one screens: OK on the secret hides it and the next player's pass screen comes", f.screen() == OddOneFlow.Screen.PASS && g.dealPlayer() == 1);
-        f.key(DOWN); boolean onBack = f.focus == 1; f.key(OK);
-        check("odd-one screens: DOWN then OK on «رجّعها» gives the last player his pass screen again", onBack && g.dealPlayer() == 0 && f.focus == 0 && f.screen() == OddOneFlow.Screen.PASS);
-        f.key(OK); now[0] += 2000; f.tick(); now[0] += 5000; boolean auto = f.tick() && f.screen() == OddOneFlow.Screen.PASS && g.dealPlayer() == 1;
-        f.key(OK); now[0] += 2000; f.tick(); f.background();
-        check("odd-one screens: the secret closes by itself after 5 s; the app leaving hides an open secret and the pause card waits", auto && f.pauseOpen && !g.secretShown() && g.dealPlayer() == 1 && f.screen() == OddOneFlow.Screen.PASS);
-        f.key(DOWN); f.key(DOWN); f.key(DOWN); boolean bottom = f.pauseFocus == OddOneFlow.HOME; f.key(UP); f.key(UP); f.key(UP); boolean top = f.pauseFocus == OddOneFlow.CONTINUE; f.key(BACK);
-        check("odd-one screens: the pause card has three rows (متابعة، إنهاء الجولة، الرئيسية); Back on it continues", bottom && top && !f.pauseOpen && !g.paused() && !f.wantsExit);
-        for (int i = 1; i < 3; i++) { f.key(OK); now[0] += 2000; f.tick(); f.key(OK); }
-        boolean talk = f.screen() == OddOneFlow.Screen.TALK && !f.beepDue(); now[0] += 30000; boolean beep = f.beepDue() && !f.beepDue(); f.key(OK); boolean nextSp = g.talkDone() == 1 && !f.beepDue();
-        check("odd-one screens: after the last secret the talk; the soft beep once when a speaker's 30 s are over; OK is the next speaker", talk && beep && nextSp);
-        f.key(BACK); now[0] += 90000; boolean paused = f.pauseOpen && !f.beepDue(); f.key(OK); boolean cont = !f.pauseOpen && g.talkLeftMs() == 30000;
-        f.key(OK); f.key(OK);
-        check("odd-one screens: the pause card stops the speaker's timer; after the last speaker the suspects' grid (by hands)", paused && cont && f.screen() == OddOneFlow.Screen.HANDS);
-        f.key(OK); boolean okNothing = f.screen() == OddOneFlow.Screen.HANDS; int oddP = g.odd; f.select(oddP);
-        boolean acc = f.screen() == OddOneFlow.Screen.ACCUSED; f.key(OK); boolean oddS = f.screen() == OddOneFlow.Screen.ODD; f.key(OK); boolean ask = f.screen() == OddOneFlow.Screen.GUESS_ASK; f.key(OK);
-        boolean judge = f.screen() == OddOneFlow.Screen.GUESS_JUDGE && f.focus == 0; f.key(LEFT); boolean wrong = f.focus == 1; f.key(RIGHT); f.key(LEFT); f.key(OK);
-        check("odd-one screens: the grid answers select(), then who the room chose → who it was → his guess → the word opens → «صح» on the right, «خطأ» on the left → the points",
-            okNothing && acc && oddS && ask && judge && wrong && f.screen() == OddOneFlow.Screen.SCORE && g.outcome == OddOneGame.Outcome.CAUGHT && g.score[oddP] == 0);
-        f.key(OK); boolean r2 = f.screen() == OddOneFlow.Screen.PASS && g.round == 1 && g.dealPlayer() == 0;
-        f.key(BACK); f.key(DOWN); f.key(OK);
-        check("odd-one screens: OK on the points deals the next round; «إنهاء الجولة» on the last round ends the game", r2 && f.screen() == OddOneFlow.Screen.END && !f.pauseOpen && !f.wantsExit);
-        f.key(OK); boolean again = f.wantsAgain && !f.wantsExit; f.key(DOWN); f.key(OK); boolean leave = f.wantsExit;
-        OddOneFlow f2 = new OddOneFlow(odd(3, 1, false, 2), () -> now[0]); f2.key(BACK); f2.key(DOWN); f2.key(DOWN); f2.key(OK);
-        check("odd-one screens: the end offers «لعبة جديدة» (focused) and «الرئيسية»; «الرئيسية» on the pause card leaves", again && leave && f2.wantsExit);
-        // the secret vote
-        g = odd(4, 1, true, 5); f = new OddOneFlow(g, () -> now[0]); deal(g); talk(g);
-        boolean vp = f.screen() == OddOneFlow.Screen.VOTE_PASS; f.select(1); boolean notYet = g.voter() == 0; f.key(OK); boolean pick = f.screen() == OddOneFlow.Screen.VOTE_PICK; f.select(0); boolean self = g.voter() == 0 && f.screen() == OddOneFlow.Screen.VOTE_PICK;
-        f.select(1); boolean nextV = f.screen() == OddOneFlow.Screen.VOTE_PASS && g.voter() == 1;
-        check("odd-one screens, secret vote: a pass screen before every voter's grid; no pick before OK, never himself; a pick passes the remote on", vp && notYet && pick && self && nextV);
-        f.key(OK); f.select(0); f.key(OK); f.select(0); f.key(OK); f.select(1);
-        boolean note = f.screen() == OddOneFlow.Screen.REVOTE_NOTE; f.key(OK); boolean vp2 = f.screen() == OddOneFlow.Screen.VOTE_PASS && g.voter() == 0;
-        for (int v = 0; v < 4; v++) { f.key(OK); f.select(v == 0 ? 1 : 0); }
-        check("odd-one screens, secret vote: a tie says so once («تعادل»), then the remote goes round again for the tied players only, then the reveal", note && vp2 && f.screen() == OddOneFlow.Screen.ACCUSED && g.accused == 0);
-        f.key(BACK); f.background(); boolean one = f.pauseOpen; f.key(OK);
-        f = new OddOneFlow(odd(4, 1, true, 6), () -> now[0]); deal(f.game); talk(f.game); f.key(OK); f.background(); f.key(OK);
-        check("odd-one screens, secret vote: the app leaving in the middle of a pick returns to that voter's pass screen", one && f.screen() == OddOneFlow.Screen.VOTE_PASS && f.game.voter() == 0);
-        }
-        {
-        CharadesGame g = cha(true, 2, 60, 1, true, 8); CharadesFlow f = new CharadesFlow(g);
-        CharadesFlow.Key OK = CharadesFlow.Key.OK, BACK = CharadesFlow.Key.BACK, UP = CharadesFlow.Key.UP, DOWN = CharadesFlow.Key.DOWN, LEFT = CharadesFlow.Key.LEFT;
-        boolean pass = f.screen() == CharadesFlow.Screen.PASS; f.key(LEFT); f.key(UP); boolean still = f.screen() == CharadesFlow.Screen.PASS; f.key(OK); boolean word = f.screen() == CharadesFlow.Screen.WORD;
-        CharadesWords.Word w0 = g.word; f.key(LEFT); boolean noSkipYet = g.word == w0 && g.skips == 0; f.key(OK);
-        check("charades screens: the pass screen → OK → the word (no skip before the clock) → OK hides it and the clock screen comes", pass && still && word && noSkipYet && f.screen() == CharadesFlow.Screen.PLAY && g.clockRunning());
-        now[0] += 1000; f.key(OK); boolean right = g.score[0] == 1 && f.screen() == CharadesFlow.Screen.WORD; f.key(OK); now[0] += 1000;
-        f.key(UP); boolean peek = f.screen() == CharadesFlow.Screen.WORD; now[0] += 3000; boolean hid = f.tick() && f.screen() == CharadesFlow.Screen.PLAY;
-        CharadesWords.Word w1 = g.word; f.key(LEFT); boolean skipped = g.word != w1 && g.skips == 1 && f.screen() == CharadesFlow.Screen.WORD; now[0] += 1000; f.key(LEFT); boolean skipOnWord = g.skips == 2; f.key(OK);
-        f.key(DOWN); boolean foul = g.fouled == 1 && g.score[0] == 0;
-        check("charades screens: on the clock OK is «صح», UP shows the word for 3 s, LEFT is «تخطّي» (on the open word too), DOWN is «مخالفة»", right && peek && hid && skipped && skipOnWord && foul);
-        long left = g.leftMs(); f.key(UP); f.key(BACK); now[0] += 99000; boolean paused = f.pauseOpen && f.screen() == CharadesFlow.Screen.PLAY && !f.tick() && g.leftMs() == left; f.key(OK); int sc = g.score[0]; f.key(OK);
-        check("charades screens: Back hides the word and stops the clock under the pause card (keys go to the card only); «متابعة» goes on", paused && !f.pauseOpen && g.leftMs() == left && g.score[0] == sc + 1);
-        now[0] += 60000; boolean end = f.tick() && f.screen() == CharadesFlow.Screen.TURN_END && f.bellDue() && !f.bellDue(); f.key(OK);
-        check("charades screens: the clock at 0 → the turn's result with the bell once → OK → the next team's pass screen", end && f.screen() == CharadesFlow.Screen.PASS && g.team == 1);
-        f.key(OK); f.background(); boolean bg = f.pauseOpen && f.screen() == CharadesFlow.Screen.PASS; f.key(DOWN); f.key(OK);
-        boolean dropped = f.screen() == CharadesFlow.Screen.TURN_END && !f.bellDue(); f.key(OK);
-        check("charades screens: the app leaving opens the pause card with no word up; «إنهاء الجولة» ends the turn without the bell; after the last turn the end", bg && dropped && f.screen() == CharadesFlow.Screen.END && g.winners().size() == 1);
-        f.key(DOWN); f.key(UP); f.key(OK); boolean again = f.wantsAgain; f.key(BACK);
-        check("charades screens: the end offers «لعبة جديدة» (focused) and «الرئيسية»; Back on the end leaves", again && f.wantsExit);
-        check("charades screens: «مخالفة» does nothing in «بدون كلام»", ((java.util.function.BooleanSupplier) () -> { CharadesFlow x = new CharadesFlow(cha(false, 2, 60, 1, true, 1)); x.key(OK); x.key(OK); now[0] += 700; x.key(OK); x.key(OK); x.key(DOWN); return x.game.score[0] == 1 && x.game.fouled == 0; }).getAsBoolean());
+        OddOneGame g = odd(4, 3, false, 9); deal(g); String w = g.word.id; int o = g.odd; g.redeal();
+        boolean again = g.phase == OddOneGame.Phase.DEAL && g.dealPlayer() == 0 && g.word.id.equals(w) && g.odd == o; deal(g); g.nextSpeaker(); g.redeal();
+        check("odd-one: before the first speaker the words can be dealt again (the same word, the same odd one); not once the talk began", again && g.phase == OddOneGame.Phase.TALK);
+        check("charades: a published file needs 200 words, the bundled starter 100", CharadesWords.parse(MiniJson.parse(chaJson), 200) == null && CharadesWords.parse(MiniJson.parse(chaJson), 100) != null);
         }
         System.exit(failed == 0 ? 0 : 1);
     }

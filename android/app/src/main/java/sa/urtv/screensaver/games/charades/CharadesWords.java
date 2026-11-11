@@ -15,7 +15,7 @@ import java.util.Set;
 public final class CharadesWords {
     private CharadesWords() {}
 
-    public static final int RECENT_MAX = 200, WORDS_MIN = 100, WORDS_MAX = 10000, TEXT_MAX = 200;
+    public static final int RECENT_MAX = 200, WORDS_MIN = 200, STARTER_MIN = 100, WORDS_MAX = 10000, TEXT_MAX = 200;
 
     public static final class Word {
         public final String id, cat; public final String[] text; public final int diff; public final boolean kids, act, describe;
@@ -37,11 +37,13 @@ public final class CharadesWords {
     }
 
     /** the parsed JSON tree (what MiniJson gives) → the words; null when anything is not as the file must be (the whole file is refused) */
-    public static List<Word> parse(Object tree) {
+    public static List<Word> parse(Object tree) { return parse(tree, STARTER_MIN); }
+    /** `min`: WORDS_MIN for a published file, STARTER_MIN for the bundled one */
+    public static List<Word> parse(Object tree, int min) {
         if (!(tree instanceof java.util.Map)) return null;
         java.util.Map<?, ?> m = (java.util.Map<?, ?>) tree;
         Object ws = m.get("w"), cs = m.get("c"), v = m.get("v");
-        if (!(v instanceof Double) || (Double) v != 1 || !(cs instanceof List) || ((List<?>) cs).isEmpty() || !(ws instanceof List) || ((List<?>) ws).size() < WORDS_MIN || ((List<?>) ws).size() > WORDS_MAX) return null;
+        if (!(v instanceof Double) || (Double) v != 1 || !(cs instanceof List) || ((List<?>) cs).isEmpty() || !(ws instanceof List) || ((List<?>) ws).size() < min || ((List<?>) ws).size() > WORDS_MAX) return null;
         List<String> cats = new ArrayList<>();
         for (Object c : (List<?>) cs) { String s = str(c); if (s == null) return null; cats.add(s); }
         List<Word> out = new ArrayList<>(); Set<String> seen = new HashSet<>();

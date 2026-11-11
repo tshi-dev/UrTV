@@ -90,6 +90,9 @@ public final class OddOneGame {
         if (!canDealBack()) return;
         if (phase == Phase.TALK) { phase = Phase.DEAL; dealAt = players - 1; } else dealAt--;
     }
+    /** «نعيد التوزيع»: someone missed his word and nobody has spoken yet: the remote goes round again with the same word and the same odd one */
+    public boolean canRedeal() { return phase == Phase.TALK && talkAt == 0; }
+    public void redeal() { if (canRedeal()) { phase = Phase.DEAL; dealAt = 0; shown = false; } }
     public long secretLeftMs() { return secretShown() ? Math.max(0, SECRET_MS - (now() - shownAt)) : 0; }
 
     // ---- TALK

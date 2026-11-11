@@ -661,3 +661,64 @@
 كلمة من خمسة حروف في ست محاولات	A five-letter word in six tries
 دومينو	Dominoes
 الدومينو كما تعرفونه، بالريموت	Dominoes as you know it, with the remote
+# ---- «واحد مو معنا» and «بدون كلام / وصّف» (docs/GAMES-PARTY.md)
+اللاعبين	Players
+الجولات	Rounds
+الكلام	Talk
+لفّة وحدة	One lap
+لفّتين	Two laps
+لاعب %s	Player %s
+أنت برا السالفة	You are the odd one
+الموضوع: %s	Topic: %s
+الجولة %s من %s	Round %s of %s
+ابدأ	Start
+دور %s	%s's turn
+قل جملة وحدة عن الكلمة بدون ما تقولها	Say one sentence about the word without saying it
+التصويت	The vote
+اللي بعده	Next player
+اختيار	OK
+نعيد توزيع الكلمات	Deal the words again
+مين اللي مو معنا؟	Who is the odd one?
+أشّروا كلكم على ثلاثة	Everyone point on three
+ما اتفقنا	We can't agree
+اللي عليه أكثر الأصابع	The most pointed-at
+ما اتفقتوا على أحد	You did not agree on anyone
+اخترتوا %s	You chose %s
+مين كان اللي مو معنا؟	Who was the odd one?
+اكشف	Reveal
+كشفتوه	Caught
+ما انكشف	Got away
+اللي مو معنا: %s	The odd one: %s
+باقي له فرصة: يخمّن الكلمة	One chance left: guess the word
+له نقطتين	Two points to the odd one
+كمّل	Continue
+خمّن الكلمة بصوت عالي	Guess the word out loud
+اكشف الكلمة	Show the word
+الكلمة	The word
+هل خمّنها %s؟	Did %s guess it?
+صح	Right
+خطأ	Wrong
+تأكيد	Confirm
+انكشف وعرف الكلمة	Caught, but guessed the word
+الكلمة: %s	The word: %s
+الجولة الجاية	Next round
+الطريقة	Mode
+وصّف	Describe It
+الفرق	Teams
+الوقت	Time
+الكلمات	Words
+للجميع	Everyone
+المخالفات	Fouls
+الوقت يبدأ لما تخفي الكلمة	The clock starts when you hide the word
+الكلمة لك وحدك	For your eyes only
+تخطّي	Skip
+وصّفها بدون ما تقولها	Describe it without saying it
+مثّلها بدون كلام	Act it out, no talking
+جبتوا %s	You got %s
+تخطّي (باقي %s)	Skip (%s left)
+شوف الكلمة	See the word
+مخالفة	Foul
+انتهى الدور	Turn over
+الكلمة كانت: %s	The word was: %s
+تعادل، كلمة وحدة لكل فريق	A tie: one word each
+خلصت الكلمات، نعيدها من جديد	Out of words, shuffling again
