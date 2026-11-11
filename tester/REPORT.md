@@ -2232,3 +2232,38 @@ UrTV match sheet → «شاهد المباراة» → «ما لقينا قنا�
 
 ### Z
 `pm clear` + uninstall (0 packages), APK deleted, `debug.urtv.bisect` empty, no stream frame kept. UrTV lang ar, updatechannel latest, idle 45 s, TV muted and asleep.
+
+## step 56 — home tray jank: name the stage (build 235; TV muted)
+**The key filter is not the cause. Not ALL PASS: tray jank unchanged (8.1 %), focus after «UrTV النظيف» still on the row above, 1 item not seen.**
+
+### 1 Key filter while our home is in front: **no**
+`logcat -d | grep -c "settings key=watch"` after 4 key presses on the home: **0**. The only enabled accessibility service on this TV is another app's key mapper; ours is not in the list.
+
+### 2 `debug keytrace on` (home restarted; 2 × 10 LEFT + 10 RIGHT, 0.35 s apart; 40 `UrTVKeyTrace` lines)
+- gfxinfo, same run: 811 frames, **66 janky (8.14 %)**, p50 40 / p90 53 / p99 69 ms
+- `queue` median 13.5 ms, worst 34.0 · `dispatch` median 1.2, worst 4.4 · `focus@` median 0.8, worst 1.7 · `layout@` median 5.7, worst 18.9 · `draw@` median 5.8, worst 19.0
+- `janky` total in the trace: **40** (of the 240 frame times it lists: 40 are 33.3 ms, none longer, the rest 16.7 ms). About one doubled frame per key, most often the 3rd or the 5th frame after the key
+- Five lines as they came:
+  `11-11 12:05:04.768  UrTVKeyTrace: key=21 queue=34.0ms dispatch=1.3ms focus@=0.7ms layout@=3.0ms draw@=3.1ms frames=[16.7,16.7,33.3,16.7,33.3,16.7] janky=2`
+  `11-11 12:05:05.234  UrTVKeyTrace: key=21 queue=5.0ms dispatch=3.3ms focus@=1.3ms layout@=13.5ms draw@=13.6ms frames=[16.7,16.7,16.7,16.7,16.7,16.7] janky=0`
+  `11-11 12:05:05.726  UrTVKeyTrace: key=21 queue=3.0ms dispatch=4.4ms focus@=1.1ms layout@=6.8ms draw@=6.9ms frames=[16.7,16.7,16.7,16.7,16.7,16.7] janky=0`
+  `11-11 12:05:06.184  UrTVKeyTrace: key=21 queue=4.0ms dispatch=1.9ms focus@=0.9ms layout@=5.7ms draw@=5.8ms frames=[16.7,16.7,16.7,16.7,33.3,16.7] janky=1`
+  `11-11 12:05:06.651  UrTVKeyTrace: key=21 queue=23.0ms dispatch=1.1ms focus@=0.6ms layout@=2.6ms draw@=2.6ms frames=[16.7,16.7,33.3,16.7,33.3,16.7] janky=2`
+- Reading: dispatch, focus, layout and draw are all small (a few ms) and start early. The late part is one skipped vsync inside the 6-frame focus move, and the wait in the queue before the key is handled (up to 34 ms = two frames). gfxinfo's p50 of 40 ms does not show in the trace's own frame times (16.7 ms): the two count different things
+
+### 3 `debug nokeyfilter on` (home restarted, same 40 keys)
+- gfxinfo: 808 frames, **66 janky (8.17 %)**, 40 / 53 / 69 ms: **no change**
+- `queue` median 15.5, worst 34.0 · `dispatch` 1.2 / 1.9 · `focus@` 0.8 / 1.4 · `layout@` 3.6 / 14.2 · `draw@` 3.8 / 14.3 · `janky` total 43 (all 33.3 ms)
+- Janky does not drop, `queue` does not drop
+
+### 4 ✓ `nokeyfilter off`, `keytrace off`; `debug show`: all seven off
+
+### 5 Also on this build
+- ✓ The screensaver app opened as an app, second start: `snapshot: found, age 9 s, 29476 bytes: used, decoded 960x540, ready at 22 ms` · `first frame (the picture) at 56 ms` · `the page's view created in 90 ms` · `the page is live at 1814 ms`. Recording: the last picture from 0.06 s, the live page at 1.95 s; the frames at 0.2, 1 and 2 s all carry a picture; **no flat or dark frame** (step 54: dark 0.8–1.7 s)
+- ✓ Quiz, real early end (all three answered): the reveal header says **«السؤال 2 من 5 · جاوب الجميع»**, with «الأسرع: Omar، 14.7 ثانية» below
+- ✓ Arabic phone page with the TV on English digits: «في الغرفة: 1» (was «١»). The ranking's gain now reads «+776»
+- «ما ناتج 91 − 38؟»: **not seen** (no subtraction came in the 5 questions; the round also ends after 3 unanswered ones). «ما ناتج 25 × 4؟» is drawn 25 on the left, 4 on the right ✓
+- **✗ Returning from «UrTV النظيف»: the focus is still on the row above («اجعل UrTV الشاشة الرئيسية»), after «فعّل» and after «رجّع الشاشة الكاملة».** The row's line itself is right both times
+
+### Z
+Clean mode off (full home back), room closed (code no longer answers), scripted phones stopped, debug switches off, lang ar. updatechannel and idle are put back after step 57. TV muted.
