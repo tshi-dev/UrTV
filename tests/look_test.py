@@ -46,7 +46,7 @@ check("the look is applied only when it changes; the home is built in the dark l
       "if (light == lightNow && key.equals(paletteLook)) return;" in apply and "private boolean lightNow;" in main)
 for part in ("clock.setTextColor(p.text)", "title.setTextColor(p.ink)", "t.setTextColor(p.soft)", "t.setTextColor(p.gold)", "t.setShadowLayer(dp(3), 0, dp(1), p.shadow)",
              "for (TextView t : gridLabels) t.setTextColor(p.ink);", "scrim.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, p.scrim));",
-             "gridShade.setBackgroundColor(p.shade);", "dockBand.setColor(scaled(light ? FavBar.FILL_LIGHT : FavBar.FILL_DARK, GlassStyle.barPercent()));"):
+             "gridShade.setBackgroundColor(p.shade);", "dockBand.setColor(noGlass ? 0 : scaled(light ? FavBar.FILL_LIGHT : FavBar.FILL_DARK, GlassStyle.barPercent()));"):
     check(f"the light and dark looks recolour: {part}", part in apply)
 check("a grid name made while the light look is on is made in it, and the list is emptied when the grid is built again",
       "if (lightNow || \"sand\".equals(lookNow)) label.setTextColor(palette().ink);" in main and "gridCards.clear();\n        gridLabels.clear();" in main)

@@ -17,7 +17,7 @@ check("the tray is a HorizontalScrollView with the bar's own glass, 218 high, in
       "tray = new TraySnap(this);" in main and "new LinearLayout.LayoutParams(-1, bar(FavBar.TRAY_H))" in main
       and "bar(FavBar.SIDE), 0, bar(FavBar.SIDE), bar(FavBar.REST_BOTTOM)" in main and "tray.setClipToPadding(true);" in main)
 check("the same tray on every look: its colours are FavBar's, light or dark, never a look's own",
-      "dockBand.setColor(scaled(light ? FavBar.FILL_LIGHT : FavBar.FILL_DARK, GlassStyle.barPercent()));" in main and "dockBand.setColor(p.band);" not in main)
+      "dockBand.setColor(noGlass ? 0 : scaled(light ? FavBar.FILL_LIGHT : FavBar.FILL_DARK, GlassStyle.barPercent()));" in main and "dockBand.setColor(p.band);" not in main)
 check("the favourites and the row under them take FavBar's cell (304 wide, 24 apart), not a share of the width",
       main.count("dockCell(") >= 6 and "dockRow.addView(tile, dockCell(i, dock.size()));" in main)
 check("a focused favourite lifts 6 and grows 1.08 in 150 ms, its ring 3 px green (DGA on light, #8FE0B4 over a photo)",
