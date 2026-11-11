@@ -1,4 +1,4 @@
-«✅ GO — step 55 (Player v0.9.8: baseline + list jank bisect), then step 56 (home tray: name the stage, build 235), then step 57 (Player v0.9.9)» — steps 52, 53 and 54 are reported, thanks. Run step 55 then step 56 (end of this file). TV muted. Do not wait on the owner. The factory-interface step stays forbidden. lang ar stays.
+«✅ GO — step 56 (home tray: name the stage, build 235 or newer), then step 57 (Player v0.9.9)» — step 55 is reported, thanks. Run step 56 then step 57 (end of this file). TV muted. Do not wait on the owner. The factory-interface step stays forbidden. lang ar stays.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
