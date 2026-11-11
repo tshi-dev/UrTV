@@ -16,7 +16,7 @@ def check(name, ok, detail=""):
 
 main = (HOME / "MainActivity.java").read_text(encoding="utf-8")
 keys = (HOME / "RemoteKeys.java").read_text(encoding="utf-8")
-body = main.split("public boolean dispatchKeyEvent(KeyEvent e) {")[1].split("\n    }\n")[0] if "public boolean dispatchKeyEvent(KeyEvent e) {" in main else ""
+body = main.split("private boolean dispatchKey(KeyEvent e) {")[1].split("\n    }\n")[0] if "private boolean dispatchKey(KeyEvent e) {" in main else ""
 check("dispatchKeyEvent asks the adhan rule first, then RemoteKeys, then the Menu key",
       "adhanTakes(e)" in body and "remoteKeys.decide(" in body and "KEYCODE_MENU" in body
       and body.index("adhanTakes(e)") < body.index("remoteKeys.decide(") < body.index("KEYCODE_MENU"), body[:300])

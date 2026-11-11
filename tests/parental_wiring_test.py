@@ -83,7 +83,7 @@ check("the PIN keypad (a dialog) asks the adhan's rule before it reads any digit
       "before.take(event)" in keys and keys.index("before.take(event)") < keys.index("KEYCODE_0"))
 check("a key that stops the adhan is consumed whole there (never also a digit)", "if (before != null && before.take(event)) return true;" in keys)
 check("the home screen hands its own AdhanKeys to the keypad", "Parental.guard(this, this::adhanTakes," in "\n".join(main))
-dispatch = "\n".join(main).split("public boolean dispatchKeyEvent(KeyEvent e) {")[1]
+dispatch = "\n".join(main).split("private boolean dispatchKey(KeyEvent e) {")[1]
 check("the home screen still asks the adhan first of everything", dispatch.lstrip().startswith("// while the adhan plays") and "if (adhanTakes(e)) return true;" in dispatch[:400])
 check("adhanTakes is the adhan's old rule, unchanged: AdhanKeys.decide, then stopAdhan",
       "adhanKeys.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), adhan, adhanBar.getVisibility() == View.VISIBLE," in "\n".join(main)

@@ -87,7 +87,7 @@ check("note: Prefs asks Location.noteDue with the fresh-install test, and the se
       "Location.noteDue(FreshInstall.is(ctx), cityChosen()," in prefs_src and "i.firstInstallTime == i.lastUpdateTime" in (app / "FreshInstall.java").read_text(encoding="utf-8") and "if (prefs.cityNoteDue()) line(" in settings)
 check("note: a start is counted only from the dream attaching (not the preview, not a renderer's re-creation)",
       dream.count("show(true)") == 1 and "super.onAttachedToWindow();" in dream.split("show(true)")[0] and "show(false)" in dream
-      and "ScreenView.create(this, this::gone, false)" in preview and "if (start) sp.edit().putInt(\"cityNoteShown\"" in prefs_src)
+      and "ScreenView.create(MainActivity.this, MainActivity.this::gone, false)" in preview and "if (start) sp.edit().putInt(\"cityNoteShown\"" in prefs_src)
 
 if shutil.which("javac"):
     src = ROOT / "android/app/src/main/java/sa/urtv/screensaver"

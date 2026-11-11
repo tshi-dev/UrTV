@@ -25,7 +25,7 @@ check("a focused favourite lifts 6 and grows 1.08 in 150 ms, its ring 3 px green
       and "FavBar.ring(lightNow)" in main)
 check("the name is centred over the focused favourite, follows it as the tray scrolls, and hides when the focus leaves the bar",
       "placeName();" in main and "tray.setOnScrollChangeListener((v, x, y, ox, oy) -> placeName());" in main
-      and "addOnGlobalFocusChangeListener((was, now) -> placeName())" in main and "nameRow.animate().alpha(inBar ? 1f : 0f)" in main)
+      and "addOnGlobalFocusChangeListener((was, now) -> { KeyTrace.focusChanged(); placeName(); })" in main and "nameRow.animate().alpha(inBar ? 1f : 0f)" in main)
 bottom_adds = re.findall(r"bottom\.addView\((\w+)", main)
 check("the tray always rests at y 768 (1080p): the first screen's bottom block holds only the name and the tray, so «أكمل المشاهدة» (its own row below) never lifts it",
       bottom_adds == ["titleRow", "tray"] and "content.addView(tvRowsBox" in main and "bottom.addView(tvRowsBox" not in main
