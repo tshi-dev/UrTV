@@ -60,6 +60,7 @@ python3 tests/home_nudge_test.py   # «خلّ تلفزيونك يفتح على U
 python3 tests/look_tweaks_test.py   # «اللون والتحكم»: accents, tray strength, wallpaper dimming, focus style
 python3 tests/security_43_test.py   # 4.3 security and speed round
 python3 tests/appearance_test.py   # the look and backgrounds page
+python3 tests/sync_look_test.py   # 4.3 «توحيد المظهر»: one material for the home's upper buttons, cards and apps bar in every look; off, each on its own
 python3 tests/home_packs_test.py   # photo packs on the home, shuffled
 python3 tests/update_notice_test.py   # the home offers the update screen when the screensaver is older or a newer build is out
 python3 tests/shuffle_test.py   # the photo rotation is shuffled across «صورنا» and the packs
@@ -250,5 +251,6 @@ node tests/hijri_crosscheck_page.mjs
 node tests/page.test.mjs
 node tests/football_page.test.mjs   # the football home's widgets and «المباريات» in a browser, on fixed games
 node tests/phone_page.test.mjs
+node tests/sync_cards.test.mjs   # «توحيد المظهر» on the page: the cards in the material's fill, line and ink, readable on a light look
 node tests/reminder_page.test.mjs   # the screensaver's reminder card: its time, «الآن», «تم», the snooze, the keys, the adhan, English
 node tests/tvports_page.test.mjs   # the packaged page with simulated webOS and Tizen keys
