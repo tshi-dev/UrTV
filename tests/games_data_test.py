@@ -21,6 +21,11 @@ size = sum(p.stat().st_size for p in (ROOT / "assets/games").glob("*.json")) + q
 check("the starters of all games together, with the quiz starter, stay under 300 KB", size < 300_000, size)
 check("a starter per game exists", sorted(p.stem for p in (ROOT / "assets/games").glob("*.json")) == sorted(m.LIMITS), [p.name for p in (ROOT / "assets/games").glob("*.json")])
 
+hv = json.loads((ROOT / "assets/games/letter-hive.json").read_text(encoding="utf-8"))
+have = {i["i"] for i in json.loads(quiz.read_text(encoding="utf-8"))} | set(hv["q"])
+check("the letter hive starter alone gives 6 or more questions for 25 Arabic letters and 4 or more for 24 English letters, every id resolvable (quiz starter or embedded)",
+      sum(1 for v in hv["a"].values() if len(v) >= 6) >= 25 and sum(1 for v in hv["e"].values() if len(v) >= 4) >= 24 and all(i in have for v in list(hv["a"].values()) + list(hv["e"].values()) for i in v),
+      (sorted(l for l, v in hv["a"].items() if len(v) < 6), sorted(l for l, v in hv["e"].items() if len(v) < 4)))
 words = ["ابتثج", "بابها", "كتابا", "مدرسه"]
 words = sorted(set(w for w in words if len(w) == 5))
 check("the packed guesses round-trip and use one character per letter", m.unpack(m.pack(words)) == words and len(m.pack(words)["w"]) == 5 * len(words))
