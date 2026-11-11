@@ -35,13 +35,15 @@ public final class PartyGamesTest {
     public static void main(String[] a) throws Exception {
         String oddJson = new String(Files.readAllBytes(Paths.get(a[0], "odd-one.json")), StandardCharsets.UTF_8), chaJson = new String(Files.readAllBytes(Paths.get(a[0], "charades.json")), StandardCharsets.UTF_8);
         topics = OddOneWords.parse(MiniJson.parse(oddJson)); words = CharadesWords.parse(MiniJson.parse(chaJson));
-        check("the bundled files are read: at least 30 topics of 20 words or more, at least 600 charades words", topics != null && topics.size() >= 30 && words != null && words.size() >= 600
+        check("the bundled starters are read (the form of docs/GAMES-DATA.md): 10 topics or more of 20 words or more, 150 charades words or more", topics != null && topics.size() >= 10 && words != null && words.size() >= 150
             && topics.stream().allMatch(t -> t.words.size() >= 20));
         if (topics == null || words == null) { System.exit(1); }
-        check("a file with a broken part is refused whole: a difficulty of 4, a duplicate word in a topic, a «·» in a word, a duplicate charades id, an HTML page",
-            OddOneWords.parse(MiniJson.parse(oddJson.replaceFirst("\"cow\",1", "\"cow\",4"))) == null && OddOneWords.parse(MiniJson.parse(oddJson.replaceFirst("خروف", "بقرة"))) == null
-            && OddOneWords.parse(MiniJson.parse(oddJson.replaceFirst("خروف", "خ·ف"))) == null && CharadesWords.parse(MiniJson.parse(chaJson.replaceFirst("chc-1\"", "chc-0\""))) == null
-            && OddOneWords.parse(MiniJson.parse("<html>404</html>")) == null && CharadesWords.parse(MiniJson.parse("<html>404</html>")) == null && CharadesWords.parse(MiniJson.parse("{\"v\":1,\"words\":[]}")) == null);
+        String W0 = "\"" + topics.get(0).words.get(0).text[0] + "\"", W1 = "\"" + topics.get(0).words.get(1).text[0] + "\"", C0 = "\"" + words.get(0).text[0] + "\"", C1 = "\"" + words.get(1).text[0] + "\"";
+        check("a file with a broken part is refused whole: a difficulty of 4, a duplicate word in a topic, a «·» in a word, a duplicate charades word, a category that is not in the list, another version, an HTML page",
+            OddOneWords.parse(MiniJson.parse(oddJson.replaceFirst("\",1]", "\",4]"))) == null && OddOneWords.parse(MiniJson.parse(oddJson.replaceFirst(W1, W0))) == null
+            && OddOneWords.parse(MiniJson.parse(oddJson.replaceFirst(W1, "خ·ف"))) == null && CharadesWords.parse(MiniJson.parse(chaJson.replaceFirst(C1, C0))) == null && CharadesWords.parse(MiniJson.parse(chaJson.replaceFirst(",0,1,", ",99,1,"))) == null
+            && CharadesWords.parse(MiniJson.parse(chaJson.replaceFirst("\"v\":1", "\"v\":2"))) == null && OddOneWords.parse(MiniJson.parse(oddJson.replaceFirst("\"v\":1", "\"v\":2"))) == null
+            && OddOneWords.parse(MiniJson.parse("<html>404</html>")) == null && CharadesWords.parse(MiniJson.parse("<html>404</html>")) == null && CharadesWords.parse(MiniJson.parse("{\"v\":1,\"c\":[\"a\"],\"w\":[]}")) == null);
 
         // ================= «واحد مو معنا»
         {
@@ -189,15 +191,15 @@ public final class PartyGamesTest {
         int act = 0, desc = 0, kids = 0; for (CharadesWords.Word w : words) { if (CharadesWords.matches(w, false, false)) act++; if (CharadesWords.matches(w, true, false)) desc++; if (CharadesWords.matches(w, false, true)) kids++; }
         CharadesWords.Deck d = new CharadesWords.Deck(words, false, true, null, new Random(1)); Set<String> seen = new HashSet<>(); boolean ok = d.size() == kids;
         for (int i = 0; i < kids; i++) { CharadesWords.Word w = d.draw(); ok &= w.kids && w.diff == 1 && w.act && seen.add(w.id) && !d.reshuffled; }
-        check("charades deck: «أطفال» takes only kids words of difficulty 1 that can be acted; «وصّف» has more words than «بدون كلام»; no word twice", ok && kids >= 100 && desc > act && act >= 500);
+        check("charades deck: «أطفال» takes only kids words of difficulty 1 that can be acted; «وصّف» has more words than «بدون كلام»; no word twice", ok && kids >= 40 && desc > act && act >= 100);
         CharadesWords.Word lastW = null, again = d.draw();
         check("charades deck: used up → shuffled again, and it says so", d.reshuffled && again != null && d.left() == kids - 1);
         d = new CharadesWords.Deck(words.subList(0, 40), true, false, null, new Random(9)); boolean twice = false;
         for (int i = 0; i < 400; i++) { CharadesWords.Word w = d.draw(); twice |= w == lastW; lastW = w; }
         check("charades deck: never the same word twice in a row, even across a reshuffle", !twice);
         List<String> recent = new ArrayList<>(); boolean fresh = true;
-        for (int game = 0; game < 5; game++) { CharadesWords.Deck x = new CharadesWords.Deck(words, false, false, recent, new Random(game)); for (int i = 0; i < 40; i++) fresh &= !recent.contains(x.draw().id); recent = x.recent(); }
-        check("charades deck: across games the last 200 words played on this TV wait until the rest is used (5 games of 40 words, none twice)", fresh && recent.size() == 200);
+        for (int game = 0; game < 4; game++) { CharadesWords.Deck x = new CharadesWords.Deck(words, false, false, recent, new Random(game)); for (int i = 0; i < 30; i++) fresh &= !recent.contains(x.draw().id); recent = x.recent(); }
+        check("charades deck: across games the last 200 words played on this TV wait until the rest is used (4 games of 30 words, none twice)", fresh && recent.size() == 120);
         CharadesGame g = new CharadesGame(new CharadesWords.Deck(new ArrayList<CharadesWords.Word>(), false, false, null, new Random(1)), false, 2, 60, 1, false, () -> now[0]); g.ready();
         check("charades: no words at all → the game ends instead of showing an empty card; teams are kept to 2 to 4", g.phase == CharadesGame.Phase.END && cha(false, 9, 60, 1, false, 1).teams == 4 && cha(false, 1, 60, 1, false, 1).teams == 2);
         }

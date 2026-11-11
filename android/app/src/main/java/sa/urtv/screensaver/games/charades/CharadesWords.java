@@ -8,13 +8,14 @@ import java.util.Random;
 import java.util.Set;
 
 /** «بدون كلام / وصّف»: the word deck (no Android, tested on a plain JVM: tests/PartyGamesTest.java).
- *  The file (assets/games/charades.json, made by .github/tools/make_party_words.py from games/charades/words.json):
- *  {"v":1,"words":[["chc-0","بقرة","cow","farm",1,1,3], …]}: id, Arabic, English, category, difficulty 1 to 3, kids 0/1, modes (1 act, 2 describe, 3 both).
+ *  The file (docs/GAMES-DATA.md: charades.json, the bundled starter in assets/games and the full list from data-games have the same form):
+ *  {"v":1,"c":["farm", …],"w":[["بقرة","cow",0,1,1,3], …]}: Arabic, English, the category's index in c, difficulty 1 to 3, kids 0/1, modes (bit 1 act, bit 2
+ *  describe). No word twice, so the Arabic word is the id. The starter has 150 words, the published file 200 to 10,000.
  *  games/charades/SPEC.md: the kids filter takes only kids words of difficulty 1; when the deck is used up it is shuffled again and the screen says so. */
 public final class CharadesWords {
     private CharadesWords() {}
 
-    public static final int RECENT_MAX = 200, WORDS_MIN = 40, TEXT_MAX = 40;
+    public static final int RECENT_MAX = 200, WORDS_MIN = 100, WORDS_MAX = 10000, TEXT_MAX = 200;
 
     public static final class Word {
         public final String id, cat; public final String[] text; public final int diff; public final boolean kids, act, describe;
@@ -38,16 +39,19 @@ public final class CharadesWords {
     /** the parsed JSON tree (what MiniJson gives) → the words; null when anything is not as the file must be (the whole file is refused) */
     public static List<Word> parse(Object tree) {
         if (!(tree instanceof java.util.Map)) return null;
-        Object ws = ((java.util.Map<?, ?>) tree).get("words");
-        if (!(ws instanceof List) || ((List<?>) ws).size() < WORDS_MIN) return null;
-        List<Word> out = new ArrayList<>(); Set<String> ids = new HashSet<>(), seen = new HashSet<>();
+        java.util.Map<?, ?> m = (java.util.Map<?, ?>) tree;
+        Object ws = m.get("w"), cs = m.get("c"), v = m.get("v");
+        if (!(v instanceof Double) || (Double) v != 1 || !(cs instanceof List) || ((List<?>) cs).isEmpty() || !(ws instanceof List) || ((List<?>) ws).size() < WORDS_MIN || ((List<?>) ws).size() > WORDS_MAX) return null;
+        List<String> cats = new ArrayList<>();
+        for (Object c : (List<?>) cs) { String s = str(c); if (s == null) return null; cats.add(s); }
+        List<Word> out = new ArrayList<>(); Set<String> seen = new HashSet<>();
         for (Object o : (List<?>) ws) {
-            if (!(o instanceof List) || ((List<?>) o).size() != 7) return null;
+            if (!(o instanceof List) || ((List<?>) o).size() != 6) return null;
             List<?> l = (List<?>) o;
-            String id = str(l.get(0)), ar = str(l.get(1)), en = str(l.get(2)), cat = str(l.get(3));
-            int d = num(l.get(4), 1, 3), k = num(l.get(5), 0, 1), m = num(l.get(6), 1, 3);
-            if (id == null || ar == null || en == null || cat == null || d < 0 || k < 0 || m < 0 || !ids.add(id) || !seen.add(ar)) return null;
-            out.add(new Word(id, ar, en, cat, d, k == 1, m));
+            String ar = str(l.get(0)), en = str(l.get(1));
+            int ci = num(l.get(2), 0, cats.size() - 1), d = num(l.get(3), 1, 3), k = num(l.get(4), 0, 1), md = num(l.get(5), 1, 3);
+            if (ar == null || en == null || ci < 0 || d < 0 || k < 0 || md < 0 || !seen.add(ar)) return null;
+            out.add(new Word(ar, ar, en, cats.get(ci), d, k == 1, md));
         }
         return out;
     }

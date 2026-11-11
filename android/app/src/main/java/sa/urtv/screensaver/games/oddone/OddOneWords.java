@@ -8,14 +8,14 @@ import java.util.Random;
 import java.util.Set;
 
 /** «واحد مو معنا»: the topics and their words, and which word a round gets (no Android, tested on a plain JVM: tests/PartyGamesTest.java).
- *  The file (assets/games/odd-one.json, made by .github/tools/make_party_words.py from games/odd-one/topics.json):
- *  {"v":1,"topics":[{"i":"farm","n":["حيوانات المزرعة","Farm animals"],"w":[["بقرة","cow",1], …]}, …]}.
+ *  The file (docs/GAMES-DATA.md: odd-one.json, the bundled starter in assets/games and the full list from data-games have the same form):
+ *  {"v":1,"t":[{"i":"farm","n":["حيوانات المزرعة","Farm animals"],"w":[["بقرة","cow",1], …]}, …]}; 8 to 200 topics of 12 to 100 words, no word twice in a topic.
  *  games/odd-one/SPEC.md: a word is never repeated inside one game; a topic that runs out hands over to another; and (ours) not one of the
  *  last RECENT_MAX words this TV played unless nothing else is left. */
 public final class OddOneWords {
     private OddOneWords() {}
 
-    public static final int RECENT_MAX = 120, TOPICS_MIN = 3, WORDS_MIN = 5, TEXT_MAX = 40;
+    public static final int RECENT_MAX = 120, TOPICS_MIN = 8, TOPICS_MAX = 200, WORDS_MIN = 12, WORDS_MAX = 100, TEXT_MAX = 200;
 
     public static final class Word {
         public final String id, topic; public final String[] text; public final int diff;
@@ -37,15 +37,15 @@ public final class OddOneWords {
     /** the parsed JSON tree (Maps, Lists, Doubles, Strings: what MiniJson gives) → the topics; null when anything is not as the file must be (the whole file is refused) */
     public static List<Topic> parse(Object tree) {
         if (!(tree instanceof Map)) return null;
-        Object ts = ((Map<?, ?>) tree).get("topics");
-        if (!(ts instanceof List) || ((List<?>) ts).size() < TOPICS_MIN) return null;
+        Object ts = ((Map<?, ?>) tree).get("t"), v = ((Map<?, ?>) tree).get("v");
+        if (!(v instanceof Double) || (Double) v != 1 || !(ts instanceof List) || ((List<?>) ts).size() < TOPICS_MIN || ((List<?>) ts).size() > TOPICS_MAX) return null;
         List<Topic> out = new ArrayList<>(); Set<String> ids = new HashSet<>();
         for (Object o : (List<?>) ts) {
             if (!(o instanceof Map)) return null;
             Map<?, ?> m = (Map<?, ?>) o;
             String id = str(m.get("i"));
             Object n = m.get("n"), w = m.get("w");
-            if (id == null || !ids.add(id) || !(n instanceof List) || ((List<?>) n).size() != 2 || !(w instanceof List) || ((List<?>) w).size() < WORDS_MIN) return null;
+            if (id == null || !ids.add(id) || !(n instanceof List) || ((List<?>) n).size() != 2 || !(w instanceof List) || ((List<?>) w).size() < WORDS_MIN || ((List<?>) w).size() > WORDS_MAX) return null;
             String ar = str(((List<?>) n).get(0)), en = str(((List<?>) n).get(1));
             if (ar == null || en == null) return null;
             Topic t = new Topic(id, ar, en); Set<String> seen = new HashSet<>();
