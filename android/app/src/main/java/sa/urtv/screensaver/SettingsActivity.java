@@ -56,6 +56,7 @@ public class SettingsActivity extends Activity {
     private String groupCat, pendingHeader;   // while render runs: the category of the group being built, its header not drawn yet
     private TextView hint;
     private LinearLayout side;       // a category's screen: its title and its line on the right, the rows on the left (hidden on the first)
+    private String launchedRow;   // the key of the row whose press opened another screen (the clean screen, the TV's settings): the focus returns to it
     private final java.util.Map<String, String> lastRow = new java.util.HashMap<>();   // each category's row last focused, for the way back in
 
     /**
@@ -151,11 +152,14 @@ public class SettingsActivity extends Activity {
     @Override
     protected void onResume() {   // back in front (from the TV's settings, or opened again over itself): show what is set now
         super.onResume();
+        final String back = launchedRow;   // read before render() builds the rows again
+        launchedRow = null;
         adhanAsked = false;
         cleanAsked = false;   // asked again each time the settings come to the front (it was asked once per visit: the row said «مفعّل» only after reopening)
         look = GlassSource.page(this, root);   // the home's photo or «المظهر» may have changed meanwhile
         hint.setTextColor(look.sub);
         render();
+        if (back != null) restoreFocus(back, 0, scroll.getScrollY());   // back from another screen: on the row that opened it (it was the row above)
         // the home writes its state a moment after «UrTV النظيف» closes: one more question 1.5 s later, drawn only when the answer differs
         root.postDelayed(() -> { if (!isFinishing() && !isDestroyed()) { cleanAsked = false; homeCleanSeen(); } }, 1500);
     }
@@ -2507,7 +2511,7 @@ public class SettingsActivity extends Activity {
         chevron.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
         card.addView(chevron);
 
-        if (onClick != null) card.setOnClickListener(v -> onClick.run());
+        if (onClick != null) card.setOnClickListener(v -> { launchedRow = (String) card.getTag(); onClick.run(); });   // the row that was pressed: the focus comes back to it after another screen
         paintState(val, mark, shown, state, false);
         card.setOnFocusChangeListener((v, has) -> {
             // No scaling: a scaled rounded card overlapped its neighbours and blurred the text. The glass changes by itself (glassCard).

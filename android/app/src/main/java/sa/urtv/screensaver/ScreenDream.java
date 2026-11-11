@@ -90,55 +90,19 @@ public class ScreenDream extends DreamService {
         }
     };
 
-    /**
-     * start: the dream starting (counted for the first-run note), not a renderer's re-creation.
-     * The first frame is drawn BEFORE the WebView exists: creating Chromium's view takes 0.8 to 2.7 s on a cold start (the tester's TCL), and while it ran on the main
-     * thread nothing was drawn, so the saved picture never showed. Now the window shows the last picture (or the ground colour) at once, the WebView is created right after
-     * that first frame was drawn, goes under the picture, and the picture fades when the page has painted. One line of the log (tag UrTVSaver) says what happened.
-     */
-    private void show(boolean start) {
-        final long t0 = android.os.SystemClock.elapsedRealtime();
+    /** start: the dream starting (counted for the first-run note), not a renderer's re-creation: the picture first, the page after the first frame (SaverStart) */
+    private void show(final boolean start) {
         shownUrl = new Prefs(this).screenUrl(this, false);
         if (getWindow() != null) getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(0xFF040E09));   // the page's ground, under the view until it has painted
-        final FrameLayout box = new FrameLayout(this);
-        box.setBackgroundColor(0xFF040E09);
-        android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
-        android.graphics.Bitmap last = SaverSnapshot.load(this, shownUrl, dm.widthPixels, dm.heightPixels);
-        final ImageView cover = new ImageView(this);
-        cover.setScaleType(ImageView.ScaleType.FIT_XY);
-        if (last != null) { cover.setImageBitmap(last); box.addView(cover, new FrameLayout.LayoutParams(-1, -1)); }
-        android.util.Log.i("UrTVSaver", "snapshot: " + SaverSnapshot.why(this, shownUrl, dm.widthPixels, dm.heightPixels) + (last != null ? ", decoded " + last.getWidth() + "x" + last.getHeight() : "") + ", ready at " + (android.os.SystemClock.elapsedRealtime() - t0) + " ms");
-        setContentView(box);
-        final boolean coverOn = last != null;
-        box.getViewTreeObserver().addOnPreDrawListener(new android.view.ViewTreeObserver.OnPreDrawListener() {
-            @Override public boolean onPreDraw() {
-                box.getViewTreeObserver().removeOnPreDrawListener(this);
-                android.util.Log.i("UrTVSaver", "snapshot: first frame (" + (coverOn ? "the picture" : "the ground colour") + ") at " + (android.os.SystemClock.elapsedRealtime() - t0) + " ms; the page's view is created next");
-                box.post(() -> addPage(box, cover, coverOn, t0, start));   // after the frame, not before it
-                return true;
-            }
+        SaverStart.begin(new SaverStart.Host() {
+            @Override public Context context() { return ScreenDream.this; }
+            @Override public void setContent(android.view.View v) { setContentView(v); }
+            @Override public WebView createPage() { web = ScreenView.create(ScreenDream.this, ScreenDream.this::gone, start); return web; }
+            @Override public boolean alive() { return attached; }
+        }, shownUrl, () -> {
+            snapHandler.removeCallbacks(snapTick);
+            snapHandler.postDelayed(snapTick, SaverSnapshot.FIRST_MS);   // the picture for the next start, taken from the window while the page shows
         });
-        snapHandler.removeCallbacks(snapTick);
-        snapHandler.postDelayed(snapTick, SaverSnapshot.FIRST_MS);   // the picture for the next start, taken from the window while the page shows
-    }
-
-    private void addPage(final FrameLayout box, final ImageView cover, final boolean coverOn, final long t0, boolean start) {
-        if (!attached) return;
-        final long c0 = android.os.SystemClock.elapsedRealtime();
-        web = ScreenView.create(this, this::gone, start);
-        final WebView page = web;
-        box.addView(page, 0, new FrameLayout.LayoutParams(-1, -1));   // under the picture
-        android.util.Log.i("UrTVSaver", "snapshot: the page's view created in " + (android.os.SystemClock.elapsedRealtime() - c0) + " ms");
-        if (!coverOn) return;
-        final long since = android.os.SystemClock.elapsedRealtime();
-        cover.postDelayed(new Runnable() {
-            @Override public void run() {
-                boolean live = page.getAlpha() >= 1f || android.os.SystemClock.elapsedRealtime() - since >= SaverSnapshot.LIVE_WAIT_MS;
-                if (!live) { cover.postDelayed(this, 100); return; }
-                android.util.Log.i("UrTVSaver", "snapshot: the page is live at " + (android.os.SystemClock.elapsedRealtime() - t0) + " ms from the start; the picture fades");
-                cover.animate().alpha(0f).setDuration(SaverSnapshot.FADE_MS).withEndAction(() -> box.removeView(cover)).start();
-            }
-        }, 100);
     }
 
     /** The page's renderer died: the dead view is thrown away; a new one at most twice in ten minutes, else the dream ends (the system starts it again later). */

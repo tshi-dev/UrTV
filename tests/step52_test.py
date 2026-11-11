@@ -16,11 +16,13 @@ def check(what, ok, extra=""):
 def src(p): return Path(p).read_text(encoding="utf-8")
 
 dream, snap = src(SAVER / "ScreenDream.java"), src(SAVER / "SaverSnapshot.java")
-check("screensaver start: the window is given its content (the last picture or the ground colour) and the first frame is drawn BEFORE the WebView is created (onPreDraw, then post)",
-      dream.index("setContentView(box);") < dream.index("addOnPreDrawListener") < dream.index("box.post(() -> addPage(") and "web = ScreenView.create(this, this::gone, start);" in dream.split("private void addPage(")[1]
-      and "web = ScreenView.create" not in dream.split("private void addPage(")[0])
+ss = src(SAVER / "SaverStart.java"); mact = src(SAVER / "MainActivity.java")
+check("screensaver start (SaverStart, the dream's and the app's own page): the window gets its content (the last picture or the ground colour), the first frame is drawn, and only then is the WebView created (onPreDraw, then post)",
+      ss.index("host.setContent(box);") < ss.index("addOnPreDrawListener") < ss.index("box.post(() -> addPage(") and "host.createPage()" in ss.split("private static void addPage(")[1] and "host.createPage()" not in ss.split("private static void addPage(")[0].split("static void begin(")[1]
+      and "SaverStart.begin(" in dream and "SaverStart.begin(" in mact and "web = ScreenView.create(" in dream.split("createPage()")[1][:200] and "web = ScreenView.create(" in mact.split("createPage()")[1][:200]
+      and "SaverSnapshot.capture(MainActivity.this, getWindow(), shownUrl, web)" in mact)
 check("screensaver start: one log line each (tag UrTVSaver) for what is on disk and why it is or is not used, the first frame, the page view's creation time, the page live, and the copy's result",
-      all(k in dream for k in ('"snapshot: " + SaverSnapshot.why(', '"snapshot: first frame (', '"snapshot: the page\'s view created in ', '"snapshot: the page is live at ')) and "static String why(" in snap
+      all(k in ss for k in ('"snapshot: " + SaverSnapshot.why(', '"snapshot: first frame (', '"snapshot: the page\'s view created in ', '"snapshot: the page is live at ')) and "static String why(" in snap
       and all(k in snap for k in ('"snapshot: copy of the window ', '"snapshot: saved ', '"snapshot: not taken (')))
 
 dbg = src(HOME / "DebugFlags.java")
@@ -46,4 +48,19 @@ st = src(SAVER / "SettingsActivity.java")
 check("settings: the «UrTV النظيف» row is asked again at each return and 1.5 s later (it said «مفعّل» only after reopening); the auto-update switch has a 32 px gap above it",
       "cleanAsked = false;   // asked again each time" in st and "root.postDelayed(() -> { if (!isFinishing() && !isDestroyed()) { cleanAsked = false; homeCleanSeen(); } }, 1500);" in st
       and "topMargin += dp(32)" in st and 'View autoRow = row("التحديث التلقائي للصفحة"' in st)
+
+# ---- step 54
+kt = src(HOME / "KeyTrace.java"); typ = src(HOME / "TypeService.java")
+check("keytrace + nokeyfilter: `dock.sh debug keytrace on` logs per key (tag UrTVKeyTrace) queue, dispatch, focus, layout, draw and six frame intervals; `nokeyfilter` stops the accessibility key filter",
+      '"keytrace"' in dbg and '"nokeyfilter"' in dbg and 'android.util.Log.i("UrTVKeyTrace"' in kt and all(k in kt for k in ("queue=", "dispatch=", "focus@=", "layout@=", "draw@=", "frames=[", "janky="))
+      and 'DebugFlags.on(this, "keytrace")' in main and "KeyTrace.focusChanged();" in main and 'DebugFlags.on(this, "nokeyfilter")' in typ and "nokeyfilter|keytrace" in src(ROOT / "optimize/dock.sh"))
+mact = src(SAVER / "MainActivity.java")
+check("the saver app's own page starts like the dream: SaverStart (picture, first frame, then the WebView), the same log lines, and its own snapshot capture",
+      "SaverStart.begin(" in mact and "SaverSnapshot.capture(MainActivity.this" in mact)
+ca = src(SAVER / "QuizActivity.java"); room_ = src(SAVER / "QuizRoom.java"); page_ = src(ROOT / "assets/quiz/play.html")
+check("quiz: «جاوب الجميع» in the header of the reveal when it ended early (beside «الأسرع»); every sign of the bank (+ U+2212 × ÷, dashes) isolates the whole expression left to right; the phone follows the TV's digits (state dg)",
+      'S.t("جاوب الجميع")' in ca.split("meta.addView(mt);")[1][:300] and "u2212" in room_.split("MATH = ")[1][:300] and 'append(",\\"dg\\":")' in room_
+      and "r.dg === 1" in page_ and "AR && !LATIN" in page_)
+sett = src(SAVER / "SettingsActivity.java")
+check("settings: the row that opened another screen gets the focus back on return (launchedRow)", "launchedRow = (String) card.getTag(); onClick.run();" in sett and "restoreFocus(back, 0, scroll.getScrollY())" in sett)
 sys.exit(1 if failed else 0)

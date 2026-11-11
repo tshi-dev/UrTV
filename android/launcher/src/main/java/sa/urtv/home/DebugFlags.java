@@ -12,12 +12,14 @@ import android.content.SharedPreferences;
  *   nowifimark   the Wi-Fi mark is hidden
  *   nosnapshot   the home's last picture is neither shown at the start nor taken
  *   nocardglass  the cards keep their own look (no #hpanel and #hline from the tray's glass)
+ *   nokeyfilter  the accessibility service does not filter the remote's keys (every key reached the home through it, on the home's own main thread, when the TV's system takes the Settings key)
+ *   keytrace     one log line per key on the home (tag UrTVKeyTrace): queue, dispatch, focus, layout, draw and the next six frames' intervals (KeyTrace)
  */
 final class DebugFlags {
     private DebugFlags() { }
 
     static final String CHANGED = "sa.urtv.home.DEBUG_CHANGED";
-    static final String[] NAMES = {"traynoglass", "nopillpanel", "nowifimark", "nosnapshot", "nocardglass"};
+    static final String[] NAMES = {"traynoglass", "nopillpanel", "nowifimark", "nosnapshot", "nocardglass", "nokeyfilter", "keytrace"};
 
     private static SharedPreferences sp(Context c) { return c.getApplicationContext().getSharedPreferences("debug_flags", Context.MODE_PRIVATE); }
 

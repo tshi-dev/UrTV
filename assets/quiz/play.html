@@ -127,7 +127,8 @@ H.lang = L; H.dir = AR ? 'rtl' : 'ltr';
 var th = qs.get('theme'); if (th === 'dark' || th === 'light') H.setAttribute('data-theme', th);
 document.title = NAME[L];
 
-function D(x) { x = String(x); return AR ? x.replace(/\d/g, function (d) { return '٠١٢٣٤٥٦٧٨٩'.charAt(d); }) : x; }
+var LATIN = false;   // the TV's digits setting (state dg): 1 = 0-9 on the Arabic page too
+function D(x) { x = String(x); return AR && !LATIN ? x.replace(/\d/g, function (d) { return '٠١٢٣٤٥٦٧٨٩'.charAt(d); }) : x; }
 /* the room code is always 0-9 (the TV shows it so), whatever the page's digits */
 function roomLabel() { return S.room.replace('{0}', code); }
 function fmt(s) { var a = arguments; return s.replace(/\{(\d)\}/g, function (m, i) { return D(a[+i + 1]); }); }
@@ -355,6 +356,7 @@ function onState(r) {
     return onFail();
   }
   fails = 0;
+  if (r.dg != null && LATIN !== (r.dg === 1)) { LATIN = r.dg === 1; lastKey = ''; }   // the digits follow the TV's setting
   if (conn === 'lost') { conn = 'ok'; flashBack(); }
   if (r.me && r.me.left) return toJoin();
   st = r;

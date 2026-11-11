@@ -514,6 +514,11 @@ public class QuizActivity extends Activity {
         LinearLayout meta = new LinearLayout(this); meta.setOrientation(LinearLayout.HORIZONTAL); meta.setGravity(Gravity.CENTER_VERTICAL); meta.setLayoutDirection(Dir.layout());
         TextView mt = text(S.t("السؤال %s من %s", num(room.index + 1), num(room.total())), 40, SAFF, true);
         meta.addView(mt);
+        if (reveal && room.endedEarly) {   // everyone answered before the 20 s: said in the header, whoever was fastest is on the line below
+            TextView all = text(S.t("جاوب الجميع"), 40, 0xFFFFFFFF, true);
+            LinearLayout.LayoutParams alp = new LinearLayout.LayoutParams(-2, -2); alp.setMarginStart(px(32));
+            meta.addView(all, alp);
+        }
         if (!reveal) {
             answeredSquares = new LinearLayout(this); answeredSquares.setOrientation(LinearLayout.HORIZONTAL);
             LinearLayout.LayoutParams ap = new LinearLayout.LayoutParams(-2, px(28)); ap.setMarginStart(px(32));

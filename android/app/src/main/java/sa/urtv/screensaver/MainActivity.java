@@ -38,12 +38,33 @@ public class MainActivity extends Activity {
         InternalReceivers.register(this, changed, new IntentFilter(Prefs.CHANGED));
     }
 
+    private String shownUrl;
+    private final android.os.Handler snapHandler = new android.os.Handler(android.os.Looper.getMainLooper());
+    private final Runnable snapTick = new Runnable() {
+        @Override public void run() {
+            if (!alive) return;
+            if (web != null && !NowPlayingBridge.reminderCard()) SaverSnapshot.capture(MainActivity.this, getWindow(), shownUrl, web);   // the picture for the next start (the dream's too: one page)
+            snapHandler.postDelayed(this, SaverSnapshot.EVERY_MS);
+        }
+    };
+
+    /** the same start as the dream's: the last picture of the page (or the ground colour) at once, the page's view after the first frame (SaverStart) */
     private void show() {
-        web = ScreenView.create(this, this::gone, false);
+        shownUrl = new Prefs(this).screenUrl(this, false);
         getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(0xFF040E09));   // the page's ground, as the dream's window: not black until the page has painted
-        setContentView(web);
-        web.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+        SaverStart.begin(new SaverStart.Host() {
+            @Override public Context context() { return MainActivity.this; }
+            @Override public void setContent(View v) {
+                setContentView(v);
+                v.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            }
+            @Override public WebView createPage() { web = ScreenView.create(MainActivity.this, MainActivity.this::gone, false); return web; }
+            @Override public boolean alive() { return alive && !isFinishing(); }
+        }, shownUrl, () -> {
+            snapHandler.removeCallbacks(snapTick);
+            snapHandler.postDelayed(snapTick, SaverSnapshot.FIRST_MS);
+        });
     }
 
     /** The page's renderer died: the dead view is thrown away; a new one at most twice in ten minutes, else the preview closes. */
@@ -84,6 +105,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         alive = false;
+        snapHandler.removeCallbacksAndMessages(null);
         try { unregisterReceiver(changed); } catch (IllegalArgumentException ignored) { }
         ScreenView.release(web);
         web = null;

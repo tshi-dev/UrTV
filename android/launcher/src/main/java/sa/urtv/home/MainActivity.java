@@ -220,7 +220,7 @@ public class MainActivity extends Activity {
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         setContentView(buildUi());
         showSnapshot();   // the home's last picture (or its skeleton) at once; it fades out when the live views have painted
-        getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((was, now) -> placeName());   // FavBar: the name only in the bar
+        getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((was, now) -> { KeyTrace.focusChanged(); placeName(); });   // FavBar: the name only in the bar
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((was, now) -> {   // design/43: the top row opens while the focus is in it, and closes after
             if (pillBar == null || barHeld) return;
             View v = now;
@@ -3674,6 +3674,14 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
+        if (e.getAction() != KeyEvent.ACTION_DOWN || !DebugFlags.on(this, "keytrace")) return dispatchKey(e);
+        KeyTrace trace = KeyTrace.begin(this, e);   // debug only: where the time of this key goes (dock.sh debug keytrace on)
+        boolean r = dispatchKey(e);
+        trace.dispatched();
+        return r;
+    }
+
+    private boolean dispatchKey(KeyEvent e) {
         // while the adhan plays: OK on its bar stops it, and with «إيقاف الأذان بأي زر» any key does; that press is consumed whole
         if (adhanTakes(e)) return true;
         if (reminder != null && reminder.key(e)) return true;   // a reminder's card is up: the first press is the card's

@@ -65,7 +65,7 @@ public class TypeService extends AccessibilityService {
             boolean front = homeFront, lowRam = Ram.low(this);
             if (!front && !lowRam) stockHome = stockHomeOn(this);   // one package query, only when the home leaves (none on a weak TV: no filter there)
             if (homeKeyLost == null) homeKeyLost = homeKeyLost(this);   // once per service: it does not change while the TV runs
-            boolean want = SettingsKey.filterWanted(front, stockHome, lowRam, homeKeyLost);
+            boolean want = SettingsKey.filterWanted(front, stockHome, lowRam, homeKeyLost) && !DebugFlags.on(this, "nokeyfilter");   // (a tester's switch: no key filter at all)
             AccessibilityServiceInfo info = getServiceInfo();
             if (info == null) return;
             boolean has = (info.flags & AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS) != 0;

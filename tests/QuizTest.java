@@ -68,7 +68,7 @@ public final class QuizTest {
         r.start(qs(2)); x0 = r.nonce(); r.answer(p1.token, 0, 0, x0); r.answer(p2.token, 0, 0, x0); r.answer(p3.token, 0, 1, x0);
         check("ties: two on the same score share place 1, the one behind is 3 (not 2)", p1.score == p2.score && p1.rank == 1 && p2.rank == 1 && p3.rank == 3);
         check("math: a sum inside an Arabic sentence is isolated left to right, text without one is untouched",
-            QuizRoom.isolateMath("ما ناتج 250 - 175؟").equals("ما ناتج \u2066250 - 175\u2069؟") && QuizRoom.isolateMath("ما ناتج ٢٥٠ + ١٧٥؟").contains("\u2066٢٥٠ + ١٧٥\u2069") && QuizRoom.isolateMath("عاصمة السعودية؟").equals("عاصمة السعودية؟") && QuizRoom.isolateMath("سنة 1990").equals("سنة 1990"));
+            QuizRoom.isolateMath("ما ناتج 250 - 175؟").equals("ما ناتج \u2066250 - 175\u2069؟") && QuizRoom.isolateMath("ما ناتج ٢٥٠ + ١٧٥؟").contains("\u2066٢٥٠ + ١٧٥\u2069") && QuizRoom.isolateMath("ما ناتج ٩١ \u2212 ٣٨؟").equals("ما ناتج \u2066٩١ \u2212 ٣٨\u2069؟") && QuizRoom.isolateMath("ما ناتج 6 \u00D7 7؟").equals("ما ناتج \u20666 \u00D7 7\u2069؟") && QuizRoom.isolateMath("ما ناتج ٤٨ \u00F7 ٦؟").contains("\u2066٤٨ \u00F7 ٦\u2069") && QuizRoom.isolateMath("٣٫٥ + ٢").equals("\u2066٣٫٥ + ٢\u2069") && QuizRoom.isolateMath("عاصمة السعودية؟").equals("عاصمة السعودية؟") && QuizRoom.isolateMath("سنة 1990").equals("سنة 1990"));
         r = room(); p1 = join(r, "A"); p2 = join(r, "B"); p3 = join(r, "C"); r.start(qs(4)); x0 = r.nonce();
         check("nonce: an answer without one, or with a wrong one, is refused and nobody is credited",
             "closed".equals(r.answer(p1.token, 0, 0, null)) && "closed".equals(r.answer(p1.token, 0, 0, "zzz")) && "closed".equals(r.answer(p1.token, 0, 0, "")) && r.answeredCount() == 0);

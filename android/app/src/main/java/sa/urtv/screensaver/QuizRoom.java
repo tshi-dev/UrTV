@@ -117,8 +117,8 @@ final class QuizRoom {
     volatile boolean latinDigits;
     synchronized String nonce() { return nonce; }
 
-    private static final java.util.regex.Pattern MATH = java.util.regex.Pattern.compile("[0-9\\u0660-\\u0669]+(?:\\s*[+\\-\\u2013\\u00D7\\u00F7*/=]\\s*[0-9\\u0660-\\u0669]+)+");
-    /** a sum («250 - 175») inside an Arabic sentence is isolated left to right (U+2066 ... U+2069), or it reads «؟175 - 250» */
+    private static final java.util.regex.Pattern MATH = java.util.regex.Pattern.compile("[0-9\\u0660-\\u0669]+(?:[.,\\u066B][0-9\\u0660-\\u0669]+)?(?:\\s*[+\\-\\u2010-\\u2015\\u2212\\u00D7\\u00F7*/=]\\s*[0-9\\u0660-\\u0669]+(?:[.,\\u066B][0-9\\u0660-\\u0669]+)?)+");   // every sign the bank uses: + − (U+2212) × ÷, hyphens and dashes, * / =
+    /** one rule for every expression: the WHOLE expression («250 - 175», «٩١ − ٣٨», «٦ × ٧») inside an Arabic sentence is isolated left to right (U+2066 ... U+2069), operands in the order written */
     static String isolateMath(String s) {
         if (s == null || s.isEmpty()) return s;
         java.util.regex.Matcher m = MATH.matcher(s);
@@ -331,7 +331,7 @@ final class QuizRoom {
         String ph = phase.name().toLowerCase(java.util.Locale.ROOT);
         StringBuilder b = new StringBuilder("{\"ok\":true,\"v\":").append(version).append(",\"ph\":\"").append(ph).append("\",\"me\":{\"n\":").append(esc(p.name))
             .append(",\"k\":").append(p.color).append(",\"s\":").append(p.score).append(",\"r\":").append(activeRank(p)).append(",\"of\":").append(activeCount())
-            .append(",\"left\":").append(p.left).append("},\"pl\":").append(activeCount());
+            .append(",\"left\":").append(p.left).append("},\"pl\":").append(activeCount()).append(",\"dg\":").append(latinDigits ? 1 : 0);   // the TV's digits setting: the phone follows it
         Q q = current();
         if ((phase == Phase.QUESTION || phase == Phase.REVEAL || phase == Phase.PAUSED) && q != null) {
             boolean open = phase == Phase.QUESTION || phase == Phase.PAUSED;
