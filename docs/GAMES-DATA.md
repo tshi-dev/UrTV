@@ -28,9 +28,9 @@ Same forms and same verification (`--verify assets/games assets/quiz/starter.jso
 | `missing-word.json` | 10,218 | 30 facts, 50 sayings |
 | `odd-one.json` | 6,058 | 10 topics of 20 or more words |
 | `charades.json` | 6,188 | 190 words: 120 for kids to act (kids, easy, act), then 70 others across the levels |
-| `letter-hive.json` | 5,596 | the index filtered to the quiz starter's 210 ids |
+| `letter-hive.json` | 27,606 | 6 questions for each of the 25 best-covered Arabic letters (ظ ذ ض left out) and 4 for each of 25 English letters (X left out); the ids are in the quiz starter or embedded in this file (`T` is the threshold 6 for `S`, `q` holds the 78 embedded compact quiz items), chosen short, easy and kids-friendly first, at most 2 of one kind per letter |
 | `word5-answers.json` | 18,863 | all answers |
 | `word5-guesses.json` | 12,286 | the dictionary lemmas and the answers (about 2,600 words); offline, a valid inflected form may be refused |
-| **Total** | **72,272** | with the quiz starter (57 KB) **129 KB**, under the 300 KB limit (`tests/games_data_test.py` pins it) |
+| **Total** | **94,282** | with the quiz starter (57 KB) **151 KB**, under the 300 KB limit (`tests/games_data_test.py` pins it) |
 
 Rebuild after a data change: `python3 .github/tools/make_games_data.py starter <games dir> assets/games assets/quiz/starter.json`.
