@@ -1,4 +1,4 @@
-«✅ GO — step 56 (home tray: name the stage, build 235 or newer), then step 57 (Player v0.9.9)» — step 55 is reported, thanks. Run step 56 then step 57 (end of this file). TV muted. Do not wait on the owner. The factory-interface step stays forbidden. lang ar stays.
+«✅ GO — leftover of step 57: item 4 only (Player v0.9.9 or newer: «ابحث في القنوات» from a COLD start, then with the Player running)» — steps 56 and 57 are reported, thanks. After that wait for a new GO (new builds are coming). TV muted. lang ar stays.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
