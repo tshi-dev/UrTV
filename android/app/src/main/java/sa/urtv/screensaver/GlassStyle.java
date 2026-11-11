@@ -128,10 +128,103 @@ public final class GlassStyle {
     private static volatile int tweakBar = 100, tweakDim = 0;
     private static volatile String tweakFocus = "solid";
 
+    // ---------------------------------------------------------------- 4.3 «توحيد المظهر» (design/43 sync-*): ONE material for the home's three surfaces
+    // The upper quick buttons (PillBar), the cards (HomeCard, the page's #hpanel) and the apps bar (the tray's band) take their fill, line, corners, shadow, ink, accent and focus
+    // from material() and nowhere else. On (the default): the three are the look's own panel, as thin as «شفافية الشريط», in the dark and in the light. Off: each has its own
+    // strength and fill, and with nothing chosen each is what it was before the switch (FILL_BEFORE).
+
+    /** the three surfaces, in the order of their rows under «توحيد المظهر» */
+    public static final int QUICK = 0, CARDS = 1, BAR = 2;
+    public static final String[] SURFACES = {"quick", "cards", "tray"};
+    public static final String[] SURFACE_NAMES = {"الأزرار العلوية", "البطاقات", "شريط التطبيقات"};
+    /** a surface's fill while the switch is off: the look's own panel, the white glass, or charcoal */
+    public static final String[] FILLS = {"look", "glass", "graphite"};
+    public static final String[] FILL_NAMES = {"لون الشكل", "زجاجي", "فحمي"};
+    /** what each surface wore before the switch: the buttons the look's panel, the cards and the apps bar the white glass */
+    static final String[] FILL_BEFORE = {"look", "glass", "glass"};
+    /** the white glass: 14 % white with a 28 % line over a photo (a dark look), 72 % with an 85 % line on a light one; under the cards' own light words in the light, a neutral dark glass */
+    public static final int GLASS_FILL_DARK = 0x24FFFFFF, GLASS_LINE_DARK = 0x47FFFFFF, GLASS_FILL_LIGHT = 0xB8FFFFFF, GLASS_LINE_LIGHT = 0xD9FFFFFF;
+    static final int CARD_FILL_UNDER_LIGHT_WORDS = 0xA014161A, CARD_LINE_UNDER_LIGHT_WORDS = 0x33FFFFFF;
+    /** the corners, in px of the 1080p screen: 24 round a surface, 16 round what stands in it (a tile, a button, a row) */
+    public static final int RADIUS_OUTER = 24, RADIUS_INNER = 16;
+    /** the shadow: none, on all three. A drop shadow under translucent glass shows as a dark patch (step 52), and a shadow layer is work on every frame of the tray's scroll */
+    public static final int SHADOW = 0;
+
+    private static volatile boolean tweakSync = true;
+    private static volatile int[] surfPct = {100, 100, 100};
+    private static volatile String[] surfFill = FILL_BEFORE.clone();
+
+    /** One surface's material (ARGB): everything the three surfaces draw themselves with. */
+    public static final class Material {
+        public final boolean light;       // its ink is dark (a light fill)
+        public final boolean ownInk;      // the surface takes text, sub and accent from here (the switch on); off, the cards keep the page's own words
+        public final int fill, line;
+        public final int text, sub, accent;
+        public final int focus, onFocus;  // the focused piece: its fill and the ink on it
+        public final int ring;            // the line round the focused piece, in the focus style (0: none)
+        public final int ringWidth;       // px at 1080p
+        public final int radius = RADIUS_OUTER, inner = RADIUS_INNER, shadow = SHADOW;
+        public final String focusStyle;
+
+        Material(boolean light, boolean ownInk, int fill, int line, Look l, String focusStyle) {
+            this.light = light; this.ownInk = ownInk; this.fill = fill; this.line = line; this.text = l.text; this.sub = l.sub; this.accent = l.accent;
+            this.focus = l.focus; this.onFocus = l.onFocus; this.focusStyle = focusStyle;
+            // «شكل التركيز», as GlassPaint.focused and Pill draw it: frame a thick accent line, glow a soft wide one, solid the look's own ring
+            if ("frame".equals(focusStyle)) { ring = l.accent; ringWidth = 4; }
+            else if ("glow".equals(focusStyle)) { ring = (l.accent & 0x00FFFFFF) | 0x80000000; ringWidth = 6; }
+            else { ring = l.ring != 0 ? l.ring : 0xFF000000 | l.focus; ringWidth = 3; }
+        }
+    }
+
+    /** «توحيد المظهر» is on (the default; an older screensaver says nothing: on) */
+    public static boolean sync() { return tweakSync; }
+    /** a surface's own strength (30..100) and fill while the switch is off */
+    public static int surfacePercent(int surface) { return surfPct[surface]; }
+    public static String surfaceFill(int surface) { return surfFill[surface]; }
+
+    /** The material of one surface (QUICK, CARDS, BAR) in this look, with the owner's touches. */
+    public static Material material(String look, boolean light, int surface) { return material(of(look, light), look, surface); }
+
+    /** The same from the look's colours already in hand ({@code l} is of(look, light)). */
+    public static Material material(Look l, String look, int surface) { return material(l, look, surface, tweakSync); }
+
+    /** The same as the switch would make it ({@code sync}): «المظهر» shows both before one is chosen. */
+    public static Material material(Look l, String look, int surface, boolean sync) {
+        if (sync) return new Material(l.light, true, scaled(l.panel, tweakBar), l.line, l, tweakFocus);
+        int pct = surfPct[surface];
+        String kind = surfFill[surface];
+        boolean lightWords = surface == CARDS;   // off, the cards keep the page's own light words: their fill is always a dark one
+        boolean lightFill = l.light && !lightWords;
+        int fill, line;
+        if ("graphite".equals(kind)) { Look g = lightFill ? GRAPHITE_LIGHT : GRAPHITE_DARK; fill = g.panel; line = g.line; }
+        else if ("glass".equals(kind)) {
+            if (l.light && lightWords) { fill = CARD_FILL_UNDER_LIGHT_WORDS; line = CARD_LINE_UNDER_LIGHT_WORDS; }
+            else { fill = lightFill ? GLASS_FILL_LIGHT : GLASS_FILL_DARK; line = lightFill ? GLASS_LINE_LIGHT : GLASS_LINE_DARK; }
+        } else { Look own = lightWords && l.light ? of(look, false) : l; fill = own.panel; line = own.line; }
+        return new Material(lightFill, false, scaled(fill, pct), scaled(line, pct), l, tweakFocus);
+    }
+
+    /** everything material() reads, as one word: a change of it repaints the home */
+    public static String materialKey() {
+        return tweakSync ? "sync" : surfPct[0] + surfFill[0] + surfPct[1] + surfFill[1] + surfPct[2] + surfFill[2];
+    }
+
+    /** an ARGB colour with its alpha at this percent of what it was */
+    public static int scaled(int argb, int percent) { return (Math.round((argb >>> 24) * percent / 100f) << 24) | (argb & 0x00FFFFFF); }
+
+    /** a colour as the page reads it: rgba(r,g,b,a) with three decimals */
+    public static String rgba(int argb) {
+        int a = Math.round((argb >>> 24) * 1000 / 255f);
+        return "rgba(" + ((argb >> 16) & 255) + "," + ((argb >> 8) & 255) + "," + (argb & 255) + "," + (a >= 1000 ? "1" : a == 0 ? "0" : "0." + String.format(java.util.Locale.US, "%03d", a)) + ")";
+    }
+
     /** Set from the settings string; anything unknown is left out (the look as it is). */
     public static void setTweaks(String s) {
         String accent = "", focus = "solid";
         int bar = 100, dim = 0;
+        boolean sync = true;
+        int[] pct = {-1, -1, -1};
+        String[] fills = FILL_BEFORE.clone();
         if (s != null) for (String kv : s.split(";")) {
             int e = kv.indexOf('=');
             if (e < 1) continue;
@@ -141,9 +234,18 @@ public final class GlassStyle {
                 else if ("bar".equals(k)) bar = Math.max(30, Math.min(100, Integer.parseInt(v)));
                 else if ("dim".equals(k)) dim = Math.max(0, Math.min(90, Integer.parseInt(v)));
                 else if ("focus".equals(k)) { for (String f : FOCUS_STYLES) if (f.equals(v)) focus = v; }
+                else if ("sync".equals(k)) sync = !"off".equals(v);
+                else for (int i = 0; i < SURFACES.length; i++) if (SURFACES[i].equals(k)) {   // a surface's own: "quick=70:look" (the apps bar is "tray": "bar" is «شفافية الشريط» above)
+                    int c = v.indexOf(':');
+                    if (c < 0) continue;
+                    pct[i] = Math.max(30, Math.min(100, Integer.parseInt(v.substring(0, c))));
+                    for (String f : FILLS) if (f.equals(v.substring(c + 1))) fills[i] = f;
+                }
             } catch (NumberFormatException ignored) { }
         }
+        for (int i = 0; i < pct.length; i++) if (pct[i] < 0) pct[i] = bar;   // a surface never set on its own keeps «شفافية الشريط»
         tweakAccent = accent; tweakBar = bar; tweakDim = dim; tweakFocus = focus;
+        surfPct = pct; surfFill = fills; tweakSync = sync;
     }
 
     /** the tray's and the cards' fill strength, 30..100 percent (100: as the look has it) */

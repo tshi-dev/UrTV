@@ -9,11 +9,11 @@ final class FavBar {
     private FavBar() {}
 
     /**
-     * the tray: 128 from each side (x 128 to 1792), 218 high, radius 32. BOTTOM = the 5 % safe area: the tray's bottom is never lower than 54 above
+     * the tray: 128 from each side (x 128 to 1792), 218 high, radius 24 (the material's outer corner, GlassStyle.RADIUS_OUTER; it was 32 before «توحيد المظهر»). BOTTOM = the 5 % safe area: the tray's bottom is never lower than 54 above
      * the screen's, even while it is lowered for a widget. At rest it stands WIDGET_DROP (40) higher, REST_BOTTOM above the screen's bottom
      * (y 768 to 986), and lowering it puts it at y 808 to 1026 (build 179 review: it went to 1066, outside the safe area).
      */
-    static final int SIDE = 128, TRAY_H = 218, RADIUS = 32, BOTTOM = 54, REST_BOTTOM = BOTTOM + 40;
+    static final int SIDE = 128, TRAY_H = 218, RADIUS = 24, BOTTOM = 54, REST_BOTTOM = BOTTOM + 40;
     /** the tiles: 304×170 (a 16:9 banner), radius 16, 24 apart, and 24 from the tray's four sides: five tiles are exactly 24 + 5×304 + 4×24 + 24 = 1664 wide */
     static final int TILE_W = 304, TILE_H = 170, TILE_RADIUS = 16, GAP = 24, PAD_SIDE = 24, PAD_TOP = 24;
     /** five tiles show; more scroll inside the tray */
@@ -26,12 +26,11 @@ final class FavBar {
     /** the one move: 40 px down in 250 ms while a scrolling widget has the focus */
     static final int WIDGET_DROP = 40, DROP_MS = 250;
 
-    /** the tray's glass: white at 14 % with a 28 % line over a photo (a dark look), at 72 % with an 85 % line on a light look */
-    static final int FILL_DARK = 0x24FFFFFF, LINE_DARK = 0x47FFFFFF, FILL_LIGHT = 0xB8FFFFFF, LINE_LIGHT = 0xD9FFFFFF;
-    /** the focus ring: DGA green on a light look, a light green over a photo */
-    static final int RING_LIGHT = 0xFF1B8354, RING_DARK = 0xFFFFE9B8;   // C12: the dark looks' ring is the widgets' (the page's --gold-hi, 3 px, with a soft glow inside); the light looks keep the green
-
-    static int ring(boolean light) { return light ? RING_LIGHT : RING_DARK; }
+    /**
+     * the tray's own glass and ring, as they were before «توحيد المظهر»: now the tray wears GlassStyle.material(…, BAR), which is this white glass only while the switch is off and
+     * the apps bar's fill is «زجاجي» (its default there). The ring of the focused tile is the material's too (the look's focus colour or the chosen accent, in the focus style).
+     */
+    static final int FILL_DARK = 0x24FFFFFF, LINE_DARK = 0x47FFFFFF, FILL_LIGHT = 0xB8FFFFFF, LINE_LIGHT = 0xD9FFFFFF;   // the same numbers as GlassStyle.GLASS_* (tests/sync_look_test.py); no other class in here, so tests/FavBarRun.java runs it alone
 
     /** the most a tray ever shows whole at once, and the most favourites there are (Dock.MAX) */
     static final int MAX_SHOWN = 8;

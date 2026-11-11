@@ -957,12 +957,26 @@ final class Prefs {
     void setBarPercent(int v) { sp.edit().putInt("barPercent", Math.max(30, Math.min(100, v))).apply(); GlassStyle.setTweaks(tweaks()); }
     void setWallDim(int v) { sp.edit().putInt("wallDim", Math.max(0, Math.min(90, v))).apply(); GlassStyle.setTweaks(tweaks()); }
     void setFocusStyle(String v) { if (java.util.Arrays.asList(GlassStyle.FOCUS_STYLES).contains(v)) { sp.edit().putString("focusStyle", v).apply(); GlassStyle.setTweaks(tweaks()); } }
-    /** the one string both apps read (GlassStyle.setTweaks): empty while nothing was touched */
+    // 4.3 «توحيد المظهر» (GlassStyle.material): on (the default), the home's upper buttons, cards and apps bar are one material. Off, each has its own strength (30..100; until it
+    // is set, «شفافية الشريط») and fill (GlassStyle.FILLS; until it is set, what the surface wore before the switch)
+    boolean lookSync() { return sp.getBoolean("lookSync", true); }
+    void setLookSync(boolean v) { sp.edit().putBoolean("lookSync", v).apply(); GlassStyle.setTweaks(tweaks()); }
+    int surfacePercent(int surface) { return Math.max(30, Math.min(100, sp.getInt("surfacePercent" + surface, barPercent()))); }
+    String surfaceFill(int surface) { String v = sp.getString("surfaceFill" + surface, GlassStyle.FILL_BEFORE[surface]); return java.util.Arrays.asList(GlassStyle.FILLS).contains(v) ? v : GlassStyle.FILL_BEFORE[surface]; }
+    void setSurfacePercent(int surface, int v) { sp.edit().putInt("surfacePercent" + surface, Math.max(30, Math.min(100, v))).apply(); GlassStyle.setTweaks(tweaks()); }
+    void setSurfaceFill(int surface, String v) { if (java.util.Arrays.asList(GlassStyle.FILLS).contains(v)) { sp.edit().putString("surfaceFill" + surface, v).apply(); GlassStyle.setTweaks(tweaks()); } }
+    /** the one string both apps read (GlassStyle.setTweaks): empty while nothing was touched; the surfaces' own values are in it only while the switch is off */
     String tweaks() {
         String a = accent(), f = focusStyle();
         int b = barPercent(), d = wallDim();
-        if (a.isEmpty() && b == 100 && d == 0 && "solid".equals(f)) return "";
-        return "accent=" + a + ";bar=" + b + ";dim=" + d + ";focus=" + f;
+        boolean sync = lookSync();
+        if (a.isEmpty() && b == 100 && d == 0 && "solid".equals(f) && sync) return "";
+        StringBuilder s = new StringBuilder("accent=" + a + ";bar=" + b + ";dim=" + d + ";focus=" + f);
+        if (!sync) {
+            s.append(";sync=off");
+            for (int i = 0; i < GlassStyle.SURFACES.length; i++) s.append(';').append(GlassStyle.SURFACES[i]).append('=').append(surfacePercent(i)).append(':').append(surfaceFill(i));
+        }
+        return s.toString();
     }
     static String lookLabel(String v) { return GlassStyle.LOOK_NAMES[java.util.Arrays.asList(GlassStyle.LOOKS).indexOf(GlassStyle.look(v))]; }
 

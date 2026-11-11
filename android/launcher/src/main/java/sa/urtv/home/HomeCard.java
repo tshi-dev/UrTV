@@ -133,6 +133,9 @@ final class HomeCard {
 
     /** The home's look changed: the widgets' glass follows (the cards keep theirs). */
     void light(boolean on) { lightNow = on; if (footballFocus != null) footballFocus.light(on); }
+    /** the look of the home now (GlassStyle.LOOKS): the cards' material is this look's */
+    void look(String look) { lookNow = GlassStyle.look(look); }
+    private volatile String lookNow = GlassStyle.LOOKS[0];
 
     private volatile boolean lightNow;
 
@@ -277,20 +280,21 @@ final class HomeCard {
     }
 
     /**
-     * design/43: the cards wear the apps tray's glass: its fill and line (FavBar's, as thin as «شفافية الشريط» makes the tray), so the stocks, the prayers, the games and the tasks are one
-     * family with the tray in every look. The page reads them as #hpanel= and #hline= (CSS html.hcard); in the light look the tray is white and the cards' words are light, so there
-     * they take a neutral dark glass instead, never a tint of their own.
+     * design/43 «توحيد المظهر»: the cards wear the home's one material (GlassStyle.material, CARDS), the same as the upper buttons and the apps bar, so the stocks, the prayers, the
+     * games and the tasks are one family with them in every look. The page reads it as #hpanel= and #hline= (CSS html.hcard) and, with the switch on, its ink (html.hsync).
      */
     private String withGlass(String u) {
         if (u == null || !u.contains("#") || DebugFlags.on(activity, "nocardglass")) return u;   // (a tester's switch: the cards keep their own look)
-        int pct = GlassStyle.barPercent();
-        int fill = lightNow ? 0xA014161A : FavBar.FILL_DARK, line = lightNow ? 0x33FFFFFF : FavBar.LINE_DARK;
-        return u + "&hpanel=" + rgba(fill, pct) + "&hline=" + rgba(line, pct);
+        return u + glassQuery(GlassStyle.material(lookNow, lightNow, GlassStyle.CARDS));
     }
 
-    private static String rgba(int argb, int pct) {
-        float a = (argb >>> 24) / 255f * pct / 100f;
-        return String.format(java.util.Locale.US, "rgba(%d,%d,%d,%.3f)", (argb >> 16) & 255, (argb >> 8) & 255, argb & 255, a);
+    /**
+     * the cards' material as the page reads it: its fill and line always; with «توحيد المظهر» on its ink too (#hink=, #hsub=, #hacc=: the look's text, second text and accent, so on
+     * a light look the cards are the white bar with dark words). Off, the cards keep the page's own words.
+     */
+    static String glassQuery(GlassStyle.Material m) {
+        String q = "&hpanel=" + GlassStyle.rgba(m.fill) + "&hline=" + GlassStyle.rgba(m.line);
+        return m.ownInk ? q + "&hink=" + GlassStyle.rgba(m.text) + "&hsub=" + GlassStyle.rgba(m.sub) + "&hacc=" + GlassStyle.rgba(m.accent) : q;
     }
 
     @SuppressLint("SetJavaScriptEnabled")
