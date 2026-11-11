@@ -770,14 +770,12 @@
 %s مع مدينة سعودية	%s with Saudi city
 مدينة سعودية	Saudi city
 # ---- «خلية الحروف» and «خمّن الكلمة» (LetterHiveActivity, Word5Activity)
-للجميع	Everyone
 أطفال	Kids
 وقت السؤال	Time per question
 زر الخيارات	Options button
 فرصة للفريق الآخر	Other team may steal
 من اليمين إلى اليسار	Side to side
 من الأعلى إلى الأسفل	Top to bottom
-دور %s	%s's turn
 اختاروا حرفًا ثم اضغطوا OK	Pick a letter, then press OK
 الحرف	Letter
 السؤال	Question
@@ -799,3 +797,30 @@
 اكتب	Type
 أحسنتم!	Well done!
 الكلمة كانت	The word was
+# ---- «دومينو» (docs/DOMINO.md)
+اللاعبون	Players
+الكمبيوتر	Computer
+مستوى الكمبيوتر	Computer level
+وسط	Medium
+الهدف	Target
+الكمبيوتر %s	Computer %s
+أظهر أحجاري	Show my tiles
+سحب	Draw
+تمرير	Pass
+لا حجر يناسب، اسحب حجرًا	No tile fits, draw one
+لا حجر يناسب ولا سحب، مرّر الدور	No tile fits and nothing to draw, pass
+مرّر %s الدور	%s passed
+سحب %s من السحب	%s drew a tile
+الهدف: %s	Target: %s
+السحب: %s	Boneyard: %s
+يلعب %s	%s is playing
+الحجر	Tile
+الطرف	End
+ضع الحجر	Lay the tile
+غيّر الحجر	Another tile
+تخطَّ	Skip
+الإيقاف	Pause
+انتهت الجولة	Round over
+فاز %s بالجولة	%s won the round
+مقفلة: فاز %s بأقل مجموع	Blocked: %s won on the lowest count
+مقفلة بالتعادل: لا نقاط	Blocked and tied: no points

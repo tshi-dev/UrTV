@@ -250,6 +250,7 @@ node tests/quiz_phone.test.mjs   # «الأسرع»: the phone page at 360 px in
 node tests/quiz_e2e.test.mjs   # «الأسرع»: two phones against the real room and server on the loopback
 python3 tests/games_data_test.py   # the games' data: the forms, the limits, the bundled starters
 python3 tests/games_kit_test.py   # the games' kit, the registry and the list, «خمس خانات» and «الكلمة المفقودة» (their rules on a plain JVM)
+python3 tests/domino_test.py   # «دومينو»: the rules and the computer players on a plain JVM, whole games from seeds (docs/DOMINO.md)
 #
 python3 tests/tvports_test.py   # BETA LG/Samsung packages: manifests, files, sizes (docs/LG-SAMSUNG.md)
 python3 tests/games_board_test.py   # «خلية الحروف» and «خمّن الكلمة»: both engines on a plain JVM against the bundled data
