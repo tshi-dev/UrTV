@@ -2316,3 +2316,19 @@ Small, from this: the sheet's team button changes its meaning with the state («
 
 ### Z
 Player cleared and uninstalled (0 packages), APK deleted, lang ar, updatechannel latest, idle 45 s, TV muted and asleep.
+
+## step 58, part H only — UrTV Player v0.9.10 (the TV is still on build 235: apk-next holds 240, the step wants 252 or later, so parts A–G wait for it)
+**H: better, not at target. 1 problem (tabs after browsing).**
+
+Build: `urtv-player-0.9.10.apk` (release v0.9.10, latest), sha256 `4db67e6e…2241` = its .sha256 ✓, signer `13ade7d0…69dfea` (v2+v3) ✓, versionCode 102. First start after install 1223 ms. Same public list by link. Compiled with `cmd package compile -m speed-profile -f` (the meter says «aot: compiled with profile» ✓).
+
+- **List jank, 50 DOWN + 50 UP at 0.1 s per key:** gfxinfo **10.73 %** (466 frames, p50 11 / p90 17 / p99 26 ms), then **7.67 %** (378 frames, 11 / 16 / 30). The meter: janky 7.0 %, 11/16/20 and 6.3 %, 11/16/18. (0.9.9: 12–13 %, p50 20 ms.) Frames are about twice as fast; still above 5 %
+- Back to back: 31.72 % of 186 frames (59 late), p50 13 / p90 18 / p99 29 ms. Fewer frames are drawn now, so the same kind of late frame weighs more (0.9.9: 0.98 % of 409)
+- **Key trace** (10 DOWN at 0.1 s; 49 frames, 6 late; dispatchLag median 4 ms, worst 6): **draw on the first frame after a key: 4, 2, 2, 4, 2, 2, 3, 2, 3, 3 ms (median 2.5, max 4; was 7; target ≤2).** That first frame is late in 2 of 10 keys (total 18 ms with layout 3 + draw 4 + cmd 5)
+  - One other late frame stood out: `+107ms frame: unknown=0 input=0 anim+compose=14 layout=0 draw=12 sync=0 cmd=7 swap=1 total=41ms late=true`, followed by `+123ms frame: unknown=22 … total=34ms`
+  - Raw: `key KEYCODE_DPAD_DOWN repeat=0 dispatchLag=6ms` · `+7ms frame: unknown=0 input=0 anim+compose=0 layout=3 draw=4 sync=0 cmd=5 swap=2 total=18ms late=true` · `+57ms frame: unknown=0 input=0 anim+compose=0 layout=0 draw=2 sync=0 cmd=5 swap=1 total=14ms late=false`
+- ✓ OK panel on channel 49: LEFT → «إحصاءات التشغيل», RIGHT → back on row 49 (was 46)
+- Tabs: on a fresh list LEFT/RIGHT walks القنوات ↔ الدليل ↔ الإعدادات ↔ الرئيسية with the focus on the tab each time ✓, and DOWN from «القنوات» lands on the search box ✓. **✗ After a row has been focused once, LEFT from «الرئيسية» goes straight to that row in the list (Al Quran…), not to the «القنوات» tab** (seen twice)
+- Uninstalled after (`pm clear` + uninstall, 0 packages), APK deleted, bisect prop empty
+
+Also done for part A while waiting: today's five prayer times, the clock and both date lines were noted before any update (kept off the report).
