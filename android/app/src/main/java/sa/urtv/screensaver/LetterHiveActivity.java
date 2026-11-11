@@ -168,7 +168,7 @@ public class LetterHiveActivity extends GameActivity {
         } else {
             TextView turn = text(S.t("دور %s", names[game.turn() - 1]), 64, L.ink, true); turn.setMaxLines(2);
             root.addView(turn, at(PANEL_W, 160, x, 548));
-            TextView how = text(S.t("اختاروا حرفًا ثم اضغطوا OK"), 40, L.ink(0xCC), false); how.setMaxLines(3);
+            TextView how = text(S.t("اختاروا حرفًا ثم اضغطوا «اختيار»"), 40, L.ink(0xCC), false); how.setMaxLines(3);
             root.addView(how, at(PANEL_W, 160, x, 724));
             hints(S.t("الأسهم"), S.t("الحرف"), S.t("اختيار"), S.t("السؤال"), S.t("رجوع"), S.t("توقف"));
         }

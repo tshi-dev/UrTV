@@ -97,7 +97,7 @@ final class KeyTrace {
     private void metricsOn(Window w) {
         window = w;
         if (android.os.Build.VERSION.SDK_INT < 24) return;
-        fml = (win, fm, dropped) -> {
+        fml = new Window.OnFrameMetricsAvailableListener() { @Override public void onFrameMetricsAvailable(Window win, FrameMetrics fm, int dropped) {
             long intended = fm.getMetric(FrameMetrics.INTENDED_VSYNC_TIMESTAMP);
             if (intended < tNano - 20_000_000L || metrics.size() >= 6) return;   // a frame from before the key
             long vs = fm.getMetric(FrameMetrics.VSYNC_TIMESTAMP);
@@ -111,7 +111,7 @@ final class KeyTrace {
             b.append(String.format(java.util.Locale.US, " sinceKey=%.1f vsyncGap=%.1f firstDraw=%d", (vs - tNano) / 1e6, prevVsync == 0 ? 0 : (vs - prevVsync) / 1e6, fm.getMetric(FrameMetrics.FIRST_DRAW_FRAME)));
             prevVsync = vs;
             metrics.add(b.toString());
-        };
+        } };
         w.addOnFrameMetricsAvailableListener(fml, new Handler(Looper.getMainLooper()));
     }
 
