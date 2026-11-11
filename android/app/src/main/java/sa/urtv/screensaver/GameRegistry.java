@@ -21,8 +21,8 @@ final class GameRegistry {
         new Game("missing-word", "الكلمة المفقودة", "جملة ناقصة كلمة، من يكملها؟", "MissingWordActivity", false, false),
         new Game("odd-one", "واحد مو معنا", "الكل يعرف الكلمة إلا واحد، من هو؟", "OddOneActivity", false, false),
         new Game("charades", "بدون كلام", "مثّل الكلمة وفريقك يخمّنها", "CharadesActivity", false, false),
-        new Game("letter-hive", "خلية الحروف", "فريقان يتسابقان على وصل الخلية", "LetterHiveActivity", false, false),
-        new Game("word5", "خمّن الكلمة", "كلمة من خمسة حروف في ست محاولات", "Word5Activity", false, false),
+        new Game("letter-hive", "خلية الحروف", "فريقان يتسابقان على وصل الخلية", "LetterHiveActivity", false, true),
+        new Game("word5", "خمّن الكلمة", "كلمة من خمسة حروف في ست محاولات", "Word5Activity", false, true),
         new Game("domino", "دومينو", "الدومينو كما تعرفونه، بالريموت", "DominoActivity", false, false),
     };
 

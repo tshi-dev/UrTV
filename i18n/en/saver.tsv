@@ -661,3 +661,35 @@
 كلمة من خمسة حروف في ست محاولات	A five-letter word in six tries
 دومينو	Dominoes
 الدومينو كما تعرفونه، بالريموت	Dominoes as you know it, with the remote
+# ---- «خلية الحروف» and «خمّن الكلمة» (LetterHiveActivity, Word5Activity)
+للجميع	Everyone
+أطفال	Kids
+وقت السؤال	Time per question
+زر الخيارات	Options button
+فرصة للفريق الآخر	Other team may steal
+من اليمين إلى اليسار	Side to side
+من الأعلى إلى الأسفل	Top to bottom
+دور %s	%s's turn
+اختاروا حرفًا ثم اضغطوا OK	Pick a letter, then press OK
+الحرف	Letter
+السؤال	Question
+توقف	Pause
+حرف %s، فرصة %s	Letter %s, %s can steal
+حرف %s، دور %s	Letter %s, %s's turn
+اذكر دولة أو مدينة أو حيوانًا يبدأ بحرف %s	Name a country, a city or an animal that starts with %s
+اذكر اسمًا يبدأ بحرف %s	Say a name that starts with %s
+جاوبوا بصوت مسموع	Say your answer out loud
+الحكم لكم: أي جواب صحيح يُحسب	You are the judge: any correct answer counts
+أمثلة: %s	Examples: %s
+صح	Right
+خطأ	Wrong
+اكشف الجواب	Show the answer
+خيارات	Options
+المحاولات	Tries
+الكلمة خمسة حروف	The word has five letters
+ما نعرف هذي الكلمة	We don't know that word
+المحاولة %s من %s	Try %s of %s
+إدخال	Enter
+اكتب	Type
+أحسنتم!	Well done!
+الكلمة كانت	The word was

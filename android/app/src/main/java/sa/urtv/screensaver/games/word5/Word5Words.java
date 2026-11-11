@@ -13,7 +13,7 @@ import java.util.Set;
  *
  * The accepted guesses arrive as one packed string, five characters a word (character k of a..z01 is the k-th keyboard letter), sorted. They are kept as one
  * sorted int[] of word codes (Word5Text.code) and found by binary search: 4 bytes a word, so the whole published list (about 31,000 words) is about 0.12 MB of
- * heap, with no String per word and no HashSet; the same on a low-RAM TV. Every answer must be an accepted guess and its spelling must normalize to its word.
+ * heap, with no String per word and no HashSet; the same on a low-RAM TV. An answer's spelling must normalize to its word; an answer that is not among the guesses is left out (it could never be typed).
  * Anything wrong: of() gives null.
  */
 public final class Word5Words {
@@ -52,12 +52,15 @@ public final class Word5Words {
         }
         if (answers == null || answers.isEmpty() || answers.size() > ANSWERS_MAX) return null;
         Set<String> seen = new HashSet<>();
+        List<Answer> kept = new ArrayList<>();
         for (Answer a : answers) {
             if (a.word == null || a.display == null || a.en == null || a.level < 1 || a.level > 3 || a.display.isEmpty() || a.display.length() > 12 || a.en.length() > 40) return null;
             int code = Word5Text.code(a.word);
-            if (code < 0 || Arrays.binarySearch(codes, code) < 0 || !Word5Text.normalize(a.display).equals(a.word) || !seen.add(a.word)) return null;
+            if (code < 0 || !Word5Text.normalize(a.display).equals(a.word) || !seen.add(a.word)) return null;
+            if (Arrays.binarySearch(codes, code) >= 0) kept.add(a);   // the two files are fetched one by one: an answer the guesses do not hold yet is left out, never unguessable
         }
-        return new Word5Words(codes, new ArrayList<>(answers));
+        if (kept.isEmpty()) return null;
+        return new Word5Words(codes, kept);
     }
 
     // ---- which word a game gets

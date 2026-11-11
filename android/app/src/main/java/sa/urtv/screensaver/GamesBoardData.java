@@ -33,10 +33,22 @@ public final class GamesBoardData {
      * The hive's questions: the quiz bank (quiz.json or its starter, checked by QuizBankCheck), letter-hive.json (which quiz ids start with which letter: «a» by
      * the Arabic answer, «e» by the English one; a starter may embed more items in «q») and, when there, khanat.json for the category question's sample answers (animals, countries, cities).
      */
-    public static HiveBank hive(byte[] quiz, byte[] index, byte[] khanat) {
-        List<QuizPick.Item> items = QuizBankCheck.parse(quiz);
-        Map<?, ?> ix = object(index, 250_000);
-        if (items == null || ix == null || !HiveBank.AR.equals(ix.get("L")) || !(ix.get("a") instanceof Map) || !(ix.get("e") instanceof Map)) return null;
+    public static HiveBank hive(byte[] quiz, byte[] index, byte[] khanat) { return hive(QuizBankCheck.parse(quiz), hiveIndex(index), samples(khanat)); }
+
+    public static final int HIVE_BYTES = 250_000, KHANAT_BYTES = 200_000, ANSWERS_BYTES = 120_000, GUESSES_BYTES = 700_000;
+    /** GameData's whole-file checks: the parsed file, or null */
+    static Map<?, ?> hiveIndex(byte[] raw) {
+        Map<?, ?> ix = object(raw, HIVE_BYTES);
+        return ix != null && HiveBank.AR.equals(ix.get("L")) && ix.get("a") instanceof Map && ix.get("e") instanceof Map && letters((Map<?, ?>) ix.get("a"), HiveBank.AR) != null
+            && letters((Map<?, ?>) ix.get("e"), HiveBank.EN) != null ? ix : null;
+    }
+    static Map<?, ?> samples(byte[] raw) { Map<?, ?> m = object(raw, KHANAT_BYTES); return m != null && m.get("s") instanceof Map ? m : null; }
+    static Map<?, ?> answers(byte[] raw) { Map<?, ?> m = object(raw, ANSWERS_BYTES); return m != null && m.get("w") instanceof List ? m : null; }
+    static Map<?, ?> guesses(byte[] raw) { Map<?, ?> m = object(raw, GUESSES_BYTES); return m != null && m.get("A") instanceof String && m.get("w") instanceof String ? m : null; }
+
+    /** the same from what GameData and QuizBank loaded; `kh` may be null (no hints) */
+    static HiveBank hive(List<QuizPick.Item> items, Map<?, ?> ix, Map<?, ?> kh) {
+        if (items == null || ix == null) return null;
         Map<String, Character> ar = letters((Map<?, ?>) ix.get("a"), HiveBank.AR), en = letters((Map<?, ?>) ix.get("e"), HiveBank.EN);
         if (ar == null || en == null) return null;
         HiveBank bank = new HiveBank();
@@ -56,8 +68,7 @@ public final class GamesBoardData {
             if (!bank.add(it.id, a == null ? 0 : a, e == null || !QuizPick.playable(it, true) ? 0 : e, it.diff, it.kids, it.q, it.a, it.w)) return null;
         }
         if (bank.size() == 0) return null;
-        Map<?, ?> kh = object(khanat, 200_000);
-        if (kh != null && kh.get("s") instanceof Map) {
+        if (kh != null) {
             Map<?, ?> samples = (Map<?, ?>) kh.get("s");
             for (int n = 0; n < 6; n++) for (String box : HINT_BOXES) for (Map.Entry<?, ?> letter : samples.entrySet()) {   // in turn from each box, so a hint line mixes them
                 if (!(letter.getValue() instanceof Map) || !(((Map<?, ?>) letter.getValue()).get(box) instanceof List)) continue;
@@ -97,8 +108,10 @@ public final class GamesBoardData {
 
     /** word5-answers.json and word5-guesses.json */
     public static Word5Words word5(byte[] answers, byte[] guesses) {
-        Map<?, ?> a = object(answers, 120_000), g = object(guesses, 700_000);
-        if (a == null || g == null || !(a.get("w") instanceof List) || !(g.get("A") instanceof String) || !(g.get("w") instanceof String)) return null;
+        return word5(answers(answers), guesses(guesses));
+    }
+    static Word5Words word5(Map<?, ?> a, Map<?, ?> g) {
+        if (a == null || g == null) return null;
         List<Word5Words.Answer> list = new ArrayList<>();
         for (Object o : (List<?>) a.get("w")) {
             if (!(o instanceof List) || ((List<?>) o).size() != 5) return null;

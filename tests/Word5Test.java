@@ -55,9 +55,9 @@ public final class Word5Test {
         Word5Words w = of(four, hen, writing, safety);
         check("lists: the packed guesses unpack (a..z01 for the 28 letters); a guess is accepted by binary search over the codes; three answers with their spelling to show",
             w != null && w.acceptedCount() == 4 && w.accepts("بابات") && !w.accepts("ببببب") && !w.accepts("باب") && !w.accepts(null) && w.answers.size() == 3 && w.answers.get(0).display.equals("دجاجة") && w.answers.get(1).en.isEmpty());
-        check("lists: refuses a cut string, a character outside a..z01, words not rising, another alphabet, an answer that is not accepted, a spelling that is not its word, a repeated answer, a bad level, no answers",
+        check("lists: refuses a cut string, a character outside a..z01, words not rising, another alphabet, only answers that are not accepted (one such among good ones is just left out), a spelling that is not its word, a repeated answer, a bad level, no answers",
             of(four.substring(1), hen) == null && of(four.replace('a', 'A'), hen) == null && of(four.substring(5, 10) + four.substring(0, 5), hen) == null && of(four.substring(0, 5) + four.substring(0, 5), hen) == null
-            && Word5Words.of(Word5Text.ALPHABET.substring(1) + "ا", four, Arrays.asList(hen)) == null && of(four, ans("ببببب", "ببببب", "", 1, false)) == null && of(four, ans("دجاجه", "حمامة", "", 1, false)) == null
+            && Word5Words.of(Word5Text.ALPHABET.substring(1) + "ا", four, Arrays.asList(hen)) == null && of(four, ans("ببببب", "ببببب", "", 1, false)) == null && of(four, hen, ans("ببببب", "ببببب", "", 1, false)).answers.size() == 1 && of(four, ans("دجاجه", "حمامة", "", 1, false)) == null
             && of(four, hen, hen) == null && of(four, ans("دجاجه", "دجاجة", "", 4, false)) == null && of(four) == null && of("", hen) == null);
         Word5Words all = sa.urtv.screensaver.GamesBoardData.word5(Files.readAllBytes(Paths.get(a[0])), Files.readAllBytes(Paths.get(a[1])));
         int kids = 0, total = all == null ? 0 : all.answers.size(); boolean shown = all != null;

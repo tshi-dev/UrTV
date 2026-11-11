@@ -94,6 +94,16 @@
             android:exported="false"
             android:screenOrientation="landscape"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|uiMode" />
+        <activity
+            android:name=".LetterHiveActivity"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|uiMode" />
+        <activity
+            android:name=".Word5Activity"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|uiMode" />
 
         <!-- «صور شاشة التوقف»: the photo packs, opened from the settings only -->
         <activity android:name=".PhotoPacksActivity" android:exported="false" />

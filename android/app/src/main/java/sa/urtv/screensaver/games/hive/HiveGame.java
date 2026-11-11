@@ -51,6 +51,8 @@ public final class HiveGame {
     public final Settings settings;
     private final HiveBank bank; private final LongSupplier clock; private final Random rnd;
     private final Set<String> used = new HashSet<>();
+    private final Set<String> recent = new HashSet<>();
+    private final List<String> asked = new ArrayList<>();
     private final Question[] kept = new Question[HiveBoard.CELLS];
 
     private Phase phase = Phase.PICK;
@@ -93,6 +95,10 @@ public final class HiveGame {
         return letters;
     }
 
+    /** the ids asked in the last games on this TV: they come up again only when a letter has nothing else */
+    public void avoid(java.util.Collection<String> ids) { recent.clear(); if (ids != null) recent.addAll(ids); }
+    /** the ids of the bank questions this game has asked, in order */
+    public List<String> asked() { return asked; }
     public Phase phase() { return phase; }
     /** the team whose turn it is (it picks) */
     public int turn() { return turn; }
@@ -130,9 +136,12 @@ public final class HiveGame {
             if (settings.level == LEVEL_MIXED || it.level == settings.level) level.add(it);
         }
         List<HiveBank.Item> pool = level.isEmpty() ? any : level;
+        List<HiveBank.Item> fresh = new ArrayList<>();
+        for (HiveBank.Item it : pool) if (!recent.contains(it.id)) fresh.add(it);
+        if (!fresh.isEmpty()) pool = fresh;   // one asked in the last games on this TV only when nothing else is left
         if (!pool.isEmpty()) {
             HiveBank.Item it = pool.get(rnd.nextInt(pool.size()));
-            used.add(it.id);
+            used.add(it.id); asked.add(it.id);
             List<Integer> order = new ArrayList<>(java.util.Arrays.asList(0, 1, 2, 3));
             Collections.shuffle(order, rnd);
             return new Question(Kind.BANK, letter, it, new int[] {order.get(0), order.get(1), order.get(2), order.get(3)}, null);
