@@ -33,6 +33,12 @@ public final class SetupHook {
         }
     }
 
+    /** the stock interface is off by us («تخلّص من واجهة المصنع» is on): the settings' row says so through the provider (read only) */
+    public static boolean factoryOff(Context c) {
+        try { String f = new FileStore(c).get(SetupEngine.FACTORY); return f != null && f.startsWith("on"); }
+        catch (RuntimeException e) { return false; }
+    }
+
     /** Our home reached the screen (MainActivity.onResume): while the stock interface is off, this boot is fine and BootGuard's count starts again. One small read; a write only when it changes. */
     public static void homeUp(Context c) {
         try {

@@ -292,10 +292,11 @@
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Material.NoActionBar" />
 
-        <!-- «تخلّص من واجهة المصنع»: the second step of «UrTV النظيف»; opened only from CleanActivity -->
+        <!-- «تخلّص من واجهة المصنع»: its own row in the screensaver's settings, so exported only behind the same signature permission (same key) -->
         <activity
             android:name=".setup.FactoryActivity"
-            android:exported="false"
+            android:exported="true"
+            android:permission="sa.urtv.home.OPEN_CLEAN"
             android:excludeFromRecents="true"
             android:label="تخلّص من واجهة المصنع"
             android:screenOrientation="landscape"

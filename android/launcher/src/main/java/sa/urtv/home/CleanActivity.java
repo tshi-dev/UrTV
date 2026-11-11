@@ -82,10 +82,6 @@ public class CleanActivity extends Activity {
             buttons.addView(back, bw(false));
             buttons.addView(button(S.t("تخصيص"), v -> { customising = true; render(); }), bw(true));
             buttons.addView(button(S.t("تم"), v -> finish()), bw(true));
-            // the second step is offered only here, inside clean mode
-            LinearLayout.LayoutParams factory = lp(0);
-            factory.topMargin = dp(16);
-            col.addView(button(S.t("تخلّص من واجهة المصنع"), v -> startActivity(new android.content.Intent().setClassName(getPackageName(), "sa.urtv.home.setup.FactoryActivity"))), factory);
             cancel = back;   // the focus of an «on» screen starts on the way back
         } else {
             View turnOn = button(S.t("فعّل"), v -> pin(() -> { CleanMode.setOn(this, true); finish(); }));

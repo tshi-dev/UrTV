@@ -353,6 +353,11 @@ public class SettingsActivity extends Activity {
         final boolean isHome = isOurHome();
         row("اجعل UrTV الشاشة الرئيسية", isHome ? "✓ UrTV هو الشاشة الرئيسية" : "اضغط وكمّل إعداد تلفزيوني (دقيقتان)", R.drawable.ic_eye,
             new Runnable() { public void run() { if (!isHome) openSetup(); } });
+        // «تخلّص من واجهة المصنع»: who the TV's home screen is (the launcher's FactoryActivity: the checks, two confirmations, the PIN); «رجّع واجهة المصنع» while it is on
+        homeCleanSeen();
+        final boolean factoryOn = Boolean.TRUE.equals(factorySeen);
+        row(factoryOn ? "رجّع واجهة المصنع" : "تخلّص من واجهة المصنع", factoryOn ? "مفعّل واجهة المصنع معطّلة، وبضغطة ترجع" : "عطّل واجهة المصنع وخلّ UrTV هو الأساس، وبضغطة ترجع", R.drawable.ic_eye,
+            new Runnable() { public void run() { openFactory(); } });
         // «UrTV النظيف»: the essentials only; the launcher's CleanActivity says what it does first and asks for the confirmation (and the family PIN)
         // the line says «مفعّل» (the on/off rule: the value starts with the state word) while the mask is on; the home answers (read once per visit, the last answer kept)
         row("\u2066UrTV\u2069 النظيف", Boolean.TRUE.equals(homeCleanSeen()) ? "مفعّل الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة" : "الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة", R.drawable.ic_eye, new Runnable() { public void run() { openClean(); } });
@@ -662,7 +667,7 @@ public class SettingsActivity extends Activity {
         return adhanSeen;
     }
 
-    private Boolean cleanSeen;
+    private Boolean cleanSeen, factorySeen;   // «UrTV النظيف» and «واجهة المصنع» off, as the home last said
     private boolean cleanAsked;
 
     /** «UrTV النظيف» is on in the home: the last answer at once, one question on a thread each time the settings come to the front (as the adhan's) */
@@ -670,23 +675,27 @@ public class SettingsActivity extends Activity {
         if (cleanSeen == null) {
             int v = getSharedPreferences("hub_seen", MODE_PRIVATE).getInt("clean_on", -1);
             cleanSeen = v < 0 ? null : v == 1;
+            int f = getSharedPreferences("hub_seen", MODE_PRIVATE).getInt("factory_on", -1);
+            factorySeen = f < 0 ? null : f == 1;
         }
         if (!cleanAsked) {
             cleanAsked = true;
             new Thread(() -> {
-                Boolean now = null;
+                Boolean now = null, fact = null;
                 android.database.Cursor c = null;
                 try {
                     c = getContentResolver().query(Uri.parse("content://sa.urtv.home.nowplaying/clean_on"), null, null, null, null);
                     if (c != null && c.moveToFirst() && c.getColumnIndex("on") >= 0) now = c.getInt(c.getColumnIndex("on")) == 1;
+                    if (c != null && c.getColumnIndex("factory") >= 0) fact = c.getInt(c.getColumnIndex("factory")) == 1;
                 } catch (RuntimeException ignored) {
                 } finally { if (c != null) c.close(); }
-                final Boolean answer = now;
+                final Boolean answer = now, factAnswer = fact;
                 runOnUiThread(() -> {
                     if (isFinishing() || isDestroyed()) return;
-                    boolean changed = !java.util.Objects.equals(answer, cleanSeen);
+                    boolean changed = !java.util.Objects.equals(answer, cleanSeen) || !java.util.Objects.equals(factAnswer, factorySeen);
                     cleanSeen = answer;
-                    getSharedPreferences("hub_seen", MODE_PRIVATE).edit().putInt("clean_on", answer == null ? -1 : answer ? 1 : 0).apply();
+                    factorySeen = factAnswer;
+                    getSharedPreferences("hub_seen", MODE_PRIVATE).edit().putInt("clean_on", answer == null ? -1 : answer ? 1 : 0).putInt("factory_on", factAnswer == null ? -1 : factAnswer ? 1 : 0).apply();
                     if (changed) render();
                 });
             }, "hub-clean").start();
@@ -1442,6 +1451,14 @@ public class SettingsActivity extends Activity {
     }
 
     /** «UrTV النظيف» lives in the launcher (it holds the home it masks and the family PIN) */
+    private void openFactory() {
+        try {
+            startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.setup.FactoryActivity"));
+        } catch (RuntimeException e) {
+            toast("حدّث الواجهة الرئيسية «تلفزيونك» أو ثبّتها أولاً");
+        }
+    }
+
     private void openClean() {
         try {
             startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.CleanActivity"));
