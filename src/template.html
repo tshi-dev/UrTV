@@ -764,6 +764,9 @@
 html.lowram *, html.lowram *::before, html.lowram *::after { transition: none !important; }
 /* …and no animation either: the photo's minute-long settle redraws the whole screen every frame, the cards' fade-ins are the same (a weak TV's CPU stayed busy: reports on C05 and two 1.5 GB sets) */
 html.lowram .photo.settle, html.lowram .week ul.flip li, html.lowram .mrow.flip .mblock, html.lowram .week li.yr.fill .r { animation: none !important; }
+  /* «UrTV النظيف» (#clean=1 the photo and the clock; =2 and the next-prayer line): a mask, the rest of the page is as it was */
+  html.clean .top,html.clean .week,html.clean .p-mid,html.clean .p-match,html.clean .ystrip,html.clean .grain,html.clean .adbar,html.clean #fb,html.clean #mp,html.clean .mkup,html.clean #np{display:none!important}
+  html.clean:not(.cl2) .p-prayer{display:none!important}
 </style>
 </head>
 <body>
@@ -856,6 +859,7 @@ __BG_SET__
 ];
 // the app passes the chosen city in the URL fragment: #city=..&lat=..&lon=..&tz=..
 const _Q = new URLSearchParams((location.hash || '').replace(/^#/, ''));
+if(_Q.get('clean'))document.documentElement.classList.add('clean','cl'+_Q.get('clean'));
 const _list = k => (_Q.get(k) || '').split(',').map(x=>x.trim()).filter(Boolean);
 const _num = (k, d) => { const v = parseFloat(_Q.get(k)); return isNaN(v) ? d : v; };
 // the city's time zone, #tz=: the clock, prayers, matches and dates all go by it

@@ -47,11 +47,37 @@ check("«off» puts every masked view back exactly as it was (step 47: the quick
       and "pillBar.lock(false); pillBar.requestLayout();" in main and "phonePill.setVisibility(on ? View.GONE : View.VISIBLE)" not in main and "else apply();" in (HOME / "PillBar.java").read_text(encoding="utf-8"))
 check("the settings' row (UrTV النظيف, in «الشاشة الرئيسية») opens the launcher's screen; nothing is set from there",
       'row("\\u2066UrTV\\u2069 النظيف"' in saver and 'setClassName("sa.urtv.home", "sa.urtv.home.CleanActivity")' in saver and "CleanMode" not in saver)
+
+# ---- part B: a really empty UrTV (home line, screensaver page, hub), read through the provider; off restores exactly
+tmpl = (ROOT / "src/template.html").read_text(encoding="utf-8")
+mask = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/CleanMask.java").read_text(encoding="utf-8")
+prefsj = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/Prefs.java").read_text(encoding="utf-8")
+hub = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/YourTvHubActivity.java").read_text(encoding="utf-8")
+prov = (HOME / "tilawah/NowPlayingProvider.java").read_text(encoding="utf-8")
+check("home: «الصلاة القادمة» is a tick (on by default), one line under the date, shown only while the mask is on and the tick is kept; off hides it (its own view, nothing of the person's is touched)",
+      "PRAYER = \"prayer\"" in src("CleanKeep.java") and "DEFAULT_KEEP = \"card,wifi,prayer,settings\"" in src("CleanKeep.java") and "case CleanMode.PRAYER:" in act
+      and "if (!cleanShown || !CleanMode.keep(this).contains(CleanMode.PRAYER)) { prayerLine.setVisibility(View.GONE); return; }" in main and "nextPrayerLine" in main)
+check("home: no way into the markets, matches or games pages while the mask is on (the pills are locked away, the stocks card and the games widget do nothing)",
+      "if (cleanShown) return;   // «UrTV النظيف»: no way into the markets page" in main and "if (cleanShown && FootballFocus.MT.equals(which)) return;" in main
+      and "if (!cleanShown) guarded(ParentalPolicy.WIDGET_MATCHES" in main and "if (!cleanShown) launchGuarded(ParentalPolicy.WIDGET_MATCHES" in main)
+check("the provider tells the saver: on, factory, prayer (read only); the saver only reads it (CleanMask) and keeps the last answer",
+      '"on", "factory", "prayer"' in prov and "CleanMask" in prefsj and "clean_on" in mask and "getInt(\"clean_mask\"" in mask and "setOn" not in mask and "setKeep" not in mask)
+check("saver page: the link carries #clean=1 (photo and clock) or #clean=2 (and the next-prayer line) only while the mask is on; the page hides the header, the card, the markets, the matches, the np line and the layers by CSS and reads the flag once",
+      'return state == OFF ? "" : "&clean=" + state;' in mask and "dashboardUrl(c) + CleanMask.fragment(CleanMask.state(c))" in prefsj
+      and "html.clean .top,html.clean .week,html.clean .p-mid,html.clean .p-match" in tmpl and "html.clean:not(.cl2) .p-prayer{display:none!important}" in tmpl
+      and "classList.add('clean','cl'+_Q.get('clean'))" in tmpl)
+check("the page is part of the build: dist/tv.html and tv-en.html carry the flag and stay under the budget",
+      all("html.clean .top" in (ROOT / f"dist/{n}").read_text(encoding="utf-8") for n in ("tv.html", "tv-en.html")) and (ROOT / "dist/tv.html").stat().st_size < 740_000)
+check("hub: with the mask on «تلفزيونك» opens straight on our settings and finishes (no games, markets or matches windows); off, the four windows as before",
+      "if (CleanMask.state(this) != CleanMask.OFF) {" in hub and "startActivity(new Intent(this, SettingsActivity.class));" in hub.split("CleanMask.state(this)")[1][:300] and "finish();" in hub.split("CleanMask.state(this)")[1][:300]
+      and "static final String[][] WINDOWS = {" in hub)
+check("adhan, reminders, the parental lock and updates are not masked: the saver page keeps #rm and the adhan layer (only the listed blocks are hidden), the home keeps the adhan bar and the update path",
+      "#rm" not in tmpl.split("html.clean .top")[1].split("</style>")[0] and "adhanBar" not in main.split("private void applyClean()")[1].split("private final java.util.Map<View, Integer> cleanWas")[0] and "UpdateNotice" not in main.split("private void applyClean()")[1].split("private final java.util.Map<View, Integer> cleanWas")[0])
 if not shutil.which("javac"):
     print("SKIP clean keep rules: no javac"); sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
     subprocess.run(["javac", "-d", tmp, str(HOME / "CleanKeep.java"), str(ROOT / "tests/CleanKeepRun.java")], check=True, capture_output=True)
     out = subprocess.run(["java", "-cp", tmp, "sa.urtv.home.CleanKeepRun"], check=True, capture_output=True, text=True).stdout.split("\n")
-check("the rules: never set = one card, the Wi-Fi mark and the settings button; set to nothing = nothing; unknown names go, the sheet's order, no repeats",
-      out[:4] == ["card,wifi,settings", "", "card,settings", "wifi,greeting"], out)
+check("the rules: never set = one card, the Wi-Fi mark, the next-prayer line and the settings button; set to nothing = nothing; unknown names go, the sheet's order, no repeats",
+      out[:4] == ["card,wifi,prayer,settings", "", "card,settings", "wifi,greeting"], out)
 sys.exit(1 if failed else 0)

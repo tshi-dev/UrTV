@@ -33,6 +33,15 @@ public final class NowPlaying {
 
     private NowPlaying() {}
 
+    /** «الصلاة القادمة: العصر ٣:٤١ م، بعد ساعة» for «UrTV النظيف»'s line under the date; "" when it cannot be told. Reads the place (a cross-process query): off the UI thread. */
+    public static String nextPrayerLine(Context c) {
+        try {
+            PrayerTimes.Next n = PrayerTimes.next(c);
+            if (n == null) return "";
+            return sa.urtv.home.S.t("الصلاة القادمة: %s %s، %s", sa.urtv.home.S.tv(n.name()), PrayerTimes.clockText(n.clock), PrayerTimes.remaining(n.at - System.currentTimeMillis()));
+        } catch (RuntimeException e) { return ""; }
+    }
+
     public static State read(Context c) {
         int source = MusicService.currentSource();
         boolean radio = source == Prefs.SOURCE_RADIO;

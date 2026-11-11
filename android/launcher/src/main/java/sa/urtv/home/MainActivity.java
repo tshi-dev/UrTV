@@ -111,7 +111,7 @@ public class MainActivity extends Activity {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final Runnable rotateWallpaper = this::nextWallpaper;
     static final long WALLPAPER_INTERVAL_MS = 10 * 60 * 1000;
-    private TextView greeting, weatherLine, clock, ampm, date, zoneLine, title, appsLabel;
+    private TextView greeting, weatherLine, clock, ampm, date, zoneLine, title, appsLabel, prayerLine;   // prayerLine: «UrTV النظيف»'s next-prayer line under the date
     private String langBuilt;   // S.lang() when this screen was built
     // «المظهر» (Look): the parts a light look recolours; built in the dark look's colours, so dark is exactly as it was
     private View scrim;
@@ -548,6 +548,7 @@ public class MainActivity extends Activity {
                 launchGuarded(ParentalPolicy.CARD_TASKS, new Intent(MainActivity.this, TasksActivity.class).putExtra(TasksActivity.EXTRA_MIC, true), S.t("المهام"));
             }
             @Override public void markets() {   // OK on the stocks card: «الأسواق» («محفظتي» there has its own lock)
+                if (cleanShown) return;   // «UrTV النظيف»: no way into the markets page
                 launch(new Intent(MainActivity.this, MarketsActivity.class));
             }
         });
@@ -564,6 +565,7 @@ public class MainActivity extends Activity {
                 lowerTray(FootballFocus.MT.equals(which));   // the games open into a row: the tray makes room, the other widgets need none
             }
             @Override public void open(String which, String eventId) {
+                if (cleanShown && FootballFocus.MT.equals(which)) return;   // «UrTV النظيف»: no way into the games page
                 if (FootballFocus.MT.equals(which)) {
                     Intent games = new Intent(MainActivity.this, MatchesActivity.class).putExtra(MatchesActivity.EXTRA_EVENT, eventId);
                     guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t("المباريات"), () -> launch(games));   // our own page: no app of the lists
@@ -727,9 +729,13 @@ public class MainActivity extends Activity {
         zoneLine.setSingleLine(true);
         zoneLine.setVisibility(View.GONE);
         left.addView(zoneLine, sideLlp(-2, -2, dp(4), dp(1), 0, 0));
-        for (TextView t : new TextView[]{greeting, weatherLine, clock, ampm, date, zoneLine}) t.setShadowLayer(dp(3), 0, dp(1), 0x80000000);
+        prayerLine = text(14, "regular", 0xFFC6BBA4);   // «UrTV النظيف»: the next prayer, one line under the date (only while the mask is on and the tick is kept)
+        prayerLine.setSingleLine(true);
+        prayerLine.setVisibility(View.GONE);
+        left.addView(prayerLine, sideLlp(-2, -2, dp(4), dp(2), 0, 0));
+        for (TextView t : new TextView[]{greeting, weatherLine, clock, ampm, date, zoneLine, prayerLine}) t.setShadowLayer(dp(3), 0, dp(1), 0x80000000);
         left.setGravity(Dir.start());
-        for (TextView t : new TextView[]{greeting, weatherLine, date, zoneLine}) t.setGravity(Dir.start());
+        for (TextView t : new TextView[]{greeting, weatherLine, date, zoneLine, prayerLine}) t.setGravity(Dir.start());
         header.addView(left, new FrameLayout.LayoutParams(-2, -2, Dir.start() | Gravity.TOP));
         clockBlock = left;
 
@@ -756,10 +762,10 @@ public class MainActivity extends Activity {
         // «الأسواق» and «المباريات»: the markets page and the games page, two more round buttons (step 27, the owner's TV photos)
         Pill marketsBtn = pill(S.t("الأسواق"), R.drawable.ic_markets);
         marketsPill = marketsBtn;
-        marketsBtn.setOnClickListener(v -> guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t("الأسواق"), () -> launch(new Intent(this, MarketsActivity.class))));   // our own page: no app of the lists
+        marketsBtn.setOnClickListener(v -> { if (!cleanShown) guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t("الأسواق"), () -> launch(new Intent(this, MarketsActivity.class))); });   // our own page: no app of the lists
         Pill matchesBtn = pill(S.t("المباريات"), R.drawable.ic_matches);
         matchesPill = matchesBtn;
-        matchesBtn.setOnClickListener(v -> launchGuarded(ParentalPolicy.WIDGET_MATCHES, new Intent(this, MatchesActivity.class), "المباريات"));
+        matchesBtn.setOnClickListener(v -> { if (!cleanShown) launchGuarded(ParentalPolicy.WIDGET_MATCHES, new Intent(this, MatchesActivity.class), "المباريات"); });
         // «الجوال» (C14): a round button to the phone remote's page (the QR and the pairing), after «المباريات»
         phonePill = pill(S.t("الجوال"), R.drawable.ic_phone);
         phonePill.setOnClickListener(v -> launchGuarded(ParentalPolicy.OUR_SETTINGS, new Intent(this, PhoneActivity.class), "الجوال"));
@@ -2869,9 +2875,9 @@ public class MainActivity extends Activity {
         clock.setTextColor(p.text);
         title.setTextColor(p.ink);
         title.setShadowLayer(dp(18), 0, 0, p.titleShadow);
-        for (TextView t : new TextView[]{weatherLine, date}) t.setTextColor(p.soft);
+        for (TextView t : new TextView[]{weatherLine, date, prayerLine}) t.setTextColor(p.soft);
         for (TextView t : new TextView[]{greeting, ampm, zoneLine, appsLabel}) t.setTextColor(p.gold);
-        for (TextView t : new TextView[]{greeting, weatherLine, clock, ampm, date, zoneLine}) t.setShadowLayer(dp(3), 0, dp(1), p.shadow);
+        for (TextView t : new TextView[]{greeting, weatherLine, clock, ampm, date, zoneLine, prayerLine}) t.setShadowLayer(dp(3), 0, dp(1), p.shadow);
         for (TextView t : gridLabels) t.setTextColor(p.ink);
         for (TextView t : tvNames) { t.setTextColor(p.gold); t.setShadowLayer(dp(3), 0, dp(1), p.shadow); }
         scrim.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, p.scrim));
@@ -2917,6 +2923,7 @@ public class MainActivity extends Activity {
             footballHeader();
         }
         maskVis(tvRowsBox, on ? View.GONE : null);
+        updatePrayerLine();   // its own view: shown only while the mask is on and the tick is kept, hidden otherwise
         if (homeCard != null) homeCard.hide(on && !keep.contains(CleanMode.CARD));
         if (was && !on) {   // back to the full home: what the mask hid is drawn again from the person's own settings
             restoreClean();
@@ -3041,6 +3048,7 @@ public class MainActivity extends Activity {
         date.setText(arabicDigits(hijri.isEmpty() ? greg : hijri + "  –  " + greg));
         if (S.en()) date.setText(arabicDigits(englishDate(now, tz, HijriShift.fromFragment(cfg.fragment))));   // the same line in English (MonthNames.hijriEn)
         updateAdhanBar(cfg);
+        updatePrayerLine();
         applyListenPill(cfg.listenPillOn);
         applyTasksPill(cfg.tasksPillOn());
         Dock.followBackSaver(this, cfg.backSaver());   // «الرجوع يفتح شاشة التوقف» changed in the screensaver's settings: read at the next Back
@@ -3067,6 +3075,21 @@ public class MainActivity extends Activity {
         if (words != null) adhanBar.setText(words);
         // any key stops the adhan (AdhanKeys) and the focus stays where it was; with «إيقاف الأذان بأي زر» off the bar is focusable (UP reaches it) and OK on it stops it
         adhanBar.setFocusable(words != null && AdhanBar.playing(cfg));
+    }
+
+    /** «UrTV النظيف»: the next prayer under the date, only while the mask is on and «الصلاة القادمة» is kept; read off the UI thread (it asks the screensaver for the place) */
+    private void updatePrayerLine() {
+        if (prayerLine == null) return;
+        if (!cleanShown || !CleanMode.keep(this).contains(CleanMode.PRAYER)) { prayerLine.setVisibility(View.GONE); return; }
+        final android.content.Context app = getApplicationContext();
+        new Thread(() -> {
+            final String line = sa.urtv.home.tilawah.NowPlaying.nextPrayerLine(app);
+            runOnUiThread(() -> {
+                if (!cleanShown || isFinishing() || isDestroyed()) return;
+                prayerLine.setText(arabicDigits(line));
+                prayerLine.setVisibility(line.isEmpty() ? View.GONE : View.VISIBLE);
+            });
+        }, "clean-prayer").start();
     }
 
     private static String arabicDigits(String s) { return Digits.of(s); }   // the setting's digits (hindi or latin)

@@ -79,6 +79,11 @@ public class YourTvHubActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        if (CleanMask.state(this) != CleanMask.OFF) {   // «UrTV النظيف»: straight on our settings, no windows
+            startActivity(new Intent(this, SettingsActivity.class));
+            finish();
+            return;
+        }
         getWindow().setWindowAnimations(0);
         prefs = new Prefs(this);
         madeLang = prefs.lang();

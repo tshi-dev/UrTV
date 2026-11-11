@@ -66,8 +66,11 @@ public class CleanActivity extends Activity {
         if (customising) { sheet(); return; }
         final boolean on = CleanMode.on(this);
         col.addView(text(on ? S.t("\u2066UrTV\u2069 النظيف مفعّل") : S.t("تفعيل UrTV النظيف؟"), 30, "Medium", look.text), lp(dp(16)));
-        for (String line : on ? new String[] {S.t("الشاشة الرئيسية تعرض الأساسيات فقط الآن."), S.t("ضغطة وحدة على «رجّع الشاشة الكاملة» ترجّع كل شيء كما اخترته أنت.")}
+        for (String line : on ? new String[] {S.t("الشاشة الرئيسية وشاشة التوقف و«تلفزيونك» تعرض الأساسيات فقط الآن."), S.t("ضغطة وحدة على «رجّع الشاشة الكاملة» ترجّع كل شيء كما اخترته أنت.")}
                 : new String[] {S.t("يبقى: الساعة والتاريخ وشريط التطبيقات، وزر الإعدادات."), S.t("يختفي: الأزرار الإضافية ومركز التحكم والتنبيهات والصفوف الزائدة."),
+                                S.t("شاشة التوقف: الصورة والساعة فقط، وسطر الصلاة القادمة إن اخترته. بدون بطاقات ولا أسواق ولا مباريات ولا مهام ولا حديث."),
+                                S.t("«تلفزيونك»: يفتح على الإعدادات مباشرة، بدون الألعاب والأسواق والمباريات."),
+                                S.t("يبقى شغّالًا كما ضبطته: الأذان والتذكيرات والقفل العائلي والتحديثات."),
                                 S.t("ما يُحذف شيء، وما يتغيّر شيء من إعداداتك. كل ما أخفيناه يرجع بضغطة وحدة من نفس هالشاشة.")})
             col.addView(text(line, 20, "Regular", look.sub), lp(dp(12)));
         LinearLayout buttons = new LinearLayout(this);
@@ -124,6 +127,7 @@ public class CleanActivity extends Activity {
             case CleanMode.CARD: return S.t("بطاقة واحدة");
             case CleanMode.WIFI: return S.t("علامة الواي فاي");
             case CleanMode.GREETING: return S.t("التحية");
+            case CleanMode.PRAYER: return S.t("الصلاة القادمة");
             default: return S.t("زر الإعدادات");
         }
     }

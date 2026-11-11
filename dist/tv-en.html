@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261111170420">
+<meta name="urtv-build" content="20261111174305">
 <title>Your TV Screen</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -732,6 +732,9 @@
 html.lowram *, html.lowram *::before, html.lowram *::after { transition: none !important; }
 
 html.lowram .photo.settle, html.lowram .week ul.flip li, html.lowram .mrow.flip .mblock, html.lowram .week li.yr.fill .r { animation: none !important; }
+  
+  html.clean .top,html.clean .week,html.clean .p-mid,html.clean .p-match,html.clean .ystrip,html.clean .grain,html.clean .adbar,html.clean #fb,html.clean #mp,html.clean .mkup,html.clean #np{display:none!important}
+  html.clean:not(.cl2) .p-prayer{display:none!important}
   .clock .ampm{order:1;margin-inline-end:0;margin-inline-start:.25em}
   .week li.quote,.week li.src,.week li.tafsir,.week li.adf .s{direction:rtl}
 </style>
@@ -830,6 +833,7 @@ const BGS = [
 ];
 // the app passes the chosen city in the URL fragment: #city=..&lat=..&lon=..&tz=..
 const _Q = new URLSearchParams((location.hash || '').replace(/^#/, ''));
+if(_Q.get('clean'))document.documentElement.classList.add('clean','cl'+_Q.get('clean'));
 const _list = k => (_Q.get(k) || '').split(',').map(x=>x.trim()).filter(Boolean);
 const _num = (k, d) => { const v = parseFloat(_Q.get(k)); return isNaN(v) ? d : v; };
 // the city's time zone, #tz=: the clock, prayers, matches and dates all go by it

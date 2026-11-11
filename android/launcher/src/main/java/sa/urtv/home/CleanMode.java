@@ -15,7 +15,7 @@ final class CleanMode {
     private CleanMode() { }
 
     static final String PREFS = "clean_mode", ON = "on", KEEP = "keep";
-    static final String CARD = CleanKeep.CARD, WIFI = CleanKeep.WIFI, GREETING = CleanKeep.GREETING, SETTINGS = CleanKeep.SETTINGS;
+    static final String CARD = CleanKeep.CARD, WIFI = CleanKeep.WIFI, GREETING = CleanKeep.GREETING, PRAYER = CleanKeep.PRAYER, SETTINGS = CleanKeep.SETTINGS;
 
     static Set<String> parse(String csv) { return CleanKeep.parse(csv); }
 

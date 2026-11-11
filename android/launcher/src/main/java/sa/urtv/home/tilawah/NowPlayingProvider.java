@@ -40,9 +40,10 @@ public class NowPlayingProvider extends ContentProvider {
             return a;
         }
         if (uri != null && "clean_on".equals(uri.getLastPathSegment())) {   // the settings' «UrTV النظيف» row says when it is on (read only; CleanActivity changes it)
-            MatrixCursor a = new MatrixCursor(new String[]{"on", "factory"});
+            MatrixCursor a = new MatrixCursor(new String[]{"on", "factory", "prayer"});
             a.addRow(new Object[]{getContext().getSharedPreferences("clean_mode", android.content.Context.MODE_PRIVATE).getBoolean("on", false) ? 1 : 0   /* CleanMode.PREFS / ON, read only */,
-                    sa.urtv.home.setup.SetupHook.factoryOff(getContext()) ? 1 : 0});
+                    sa.urtv.home.setup.SetupHook.factoryOff(getContext()) ? 1 : 0,
+                    getContext().getSharedPreferences("clean_mode", android.content.Context.MODE_PRIVATE).getString("keep", "card,wifi,prayer,settings").contains("prayer") ? 1 : 0   /* CleanKeep.PRAYER, read only: the saver's page keeps its next-prayer line */});
             return a;
         }
         if (uri != null && "adhan".equals(uri.getLastPathSegment())) {

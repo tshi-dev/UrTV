@@ -832,3 +832,7 @@
 الشفافية	Strength
 مفعّل: الأزرار العلوية والبطاقات وشريط التطبيقات بمادة وحدة. غيّر شفافية الشريط أو اللون فيتغيّر الثلاثة معًا.	On: the upper buttons, the cards and the apps bar are one material. Change the tray strength or the colour and all three change together.
 متوقف: لكل سطح شفافيته وتعبئته. الشكل واللون وشكل التركيز يبقون للكل.	Off: each surface has its own strength and fill. The look, the colour and the focus style stay for all.
+رجّع واجهة المصنع	Bring back the factory interface
+تخلّص من واجهة المصنع	Get rid of the factory interface
+مفعّل واجهة المصنع معطّلة، وبضغطة ترجع	On, the factory interface is off; one press brings it back
+عطّل واجهة المصنع وخلّ UrTV هو الأساس، وبضغطة ترجع	Turn off the factory interface and make UrTV the base; one press brings it back
