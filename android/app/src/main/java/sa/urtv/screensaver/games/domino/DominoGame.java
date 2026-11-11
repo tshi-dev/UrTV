@@ -128,6 +128,15 @@ public final class DominoGame {
     /** Where the round's first tile now is in chain(): the snake on the screen grows both ways from it. */
     public int anchor() { return anchor; }
     public List<Placed> chain() { return Collections.unmodifiableList(chain); }
+    /** The chain as it would be with this tile on that end (a copy; nothing is played): for showing a choice before it is made. Null when the move is not legal. */
+    public List<Placed> chainWith(int p, Tile t, int end) {
+        if (!legal(hands.get(p)).contains(new Move(t, end))) return null;
+        List<Placed> v = new ArrayList<>(chain);
+        if (v.isEmpty()) v.add(new Placed(t, t.low, t.high));
+        else if (end == LEFT) v.add(0, new Placed(t, t.other(left()), left()));
+        else v.add(new Placed(t, right(), t.other(right())));
+        return v;
+    }
     public List<Event> events() { return Collections.unmodifiableList(events); }
     public int boneyard() { return boneyard.size(); }
     public int count(int p) { return hands.get(p).size(); }

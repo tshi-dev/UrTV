@@ -18,7 +18,7 @@ def src(name): return (APP / name).read_text(encoding="utf-8")
 def code(s): return re.sub(r"/\*.*?\*/|//[^\n]*", "", s, flags=re.S)
 
 KIT = ["GameRegistry", "GameScore", "GameChips", "GameClock", "GameDataCheck"]   # no Android in these
-ENGINES = ["KhanatData", "KhanatEngine", "MissingWord"]                           # each game's rules and data: no Android either
+ENGINES = ["KhanatData", "KhanatEngine", "MissingWord", "games/domino/Tile", "games/domino/DominoGame", "games/domino/DominoBot", "games/domino/Snake", "games/domino/DominoTable"]                           # each game's rules and data: no Android either
 if not shutil.which("javac"):
     print("SKIP games kit: no javac"); sys.exit(1)
 with tempfile.TemporaryDirectory() as tmp:

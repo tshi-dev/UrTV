@@ -44,4 +44,37 @@ doc = (ROOT / "docs/DOMINO.md").read_text(encoding="utf-8") if (ROOT / "docs/DOM
 check("docs/DOMINO.md states every rule choice: the draw game, 7/9/7 tiles and the double blank, who opens, draw until a tile fits, the blocked round, the targets, each for himself, the three levels",
       all(k in doc for k in ("double-six", "double blank", "highest double", "boneyard", "blocked", "50, 100", "each for himself", "Level 1", "Level 2", "Level 3", "[variant]")))
 check("no «·» or «•» in the engine or its doc", not re.search("[·•]", every + doc))
+
+# ---- the screen (DominoActivity on the games kit): read from the source
+APP = ROOT / "android/app/src/main/java/sa/urtv/screensaver"
+act = (APP / "DominoActivity.java").read_text(encoding="utf-8")
+ac = re.sub(r"/\*.*?\*/|//[^\n]*", "", act, flags=re.S)
+reg = (APP / "GameRegistry.java").read_text(encoding="utf-8")
+manifest = (ROOT / "android/app/src/main/AndroidManifest.xml").read_text(encoding="utf-8")
+check("the game is on the kit and in the list: DominoActivity extends GameActivity, ready in the registry, in the manifest (not exported, landscape)",
+      "public class DominoActivity extends GameActivity" in act and '"DominoActivity", false, true)' in reg
+      and re.search(r'android:name="\.DominoActivity"\s+android:exported="false"\s+android:screenOrientation="landscape"', manifest) is not None)
+key = ac[ac.index("protected void onKey("):ac.index("private void botMove()")]
+table_keys = key[key.index("DominoTable.State was"):]
+arrow = table_keys[table_keys.index("if (c == DominoTable.FOCUS) {"):table_keys.index("View from")]
+check("an arrow key is light: at the table it never calls redraw(), and when only the focus moved it restyles the two tiles (or lays the two ends again) and returns",
+      "redraw()" not in table_keys and "handTiles.get(focus).style(PLAIN); handTiles.get(tb.focus()).style(FOCUSED);" in arrow and arrow.rstrip().endswith("return;\n        }")
+      and not re.search(r"\b(bar|hand|row|keys|changed|group)\(", arrow) and "addView" not in arrow)
+check("a restyled tile redraws only when its style really changed", "void style(int s) { if (s != style) { style = s; invalidate(); } }" in ac)
+check("the table is built once; a move replaces only the groups that changed (the bar on a state or score change, the hand when the change says HAND)",
+      "if ((c & (DominoTable.STATE | DominoTable.SCORE)) != 0) bar(); else counts.invalidate();" in ac and "if ((c & DominoTable.HAND) != 0) hand();" in ac and "removeAllViews" not in ac)
+check("only the played tile moves: one view slides for 250 ms while the chain leaves that place empty; a computer waits 350 ms first (600 ms in all); OK skips",
+      "BOT_MS = 350, MOVE_MS = 250" in ac and "chain.hidden = index;" in ac and ".setDuration(MOVE_MS)" in ac and ac.count(".animate()") == 2 and "tb.ok()" in key)
+check("low-RAM TVs and animations off: no slide at all (the kit's `animate`)", "if (animate && chain.snake != null" in ac)
+check("tiles and pips are drawn (rectangles, lines, circles): no bitmap, no picture, no rounded shape, no colour of its own",
+      "drawCircle" in ac and "drawRect" in ac and not re.search(r"Bitmap|Drawable|ImageView|setCornerRadi|drawRoundRect|0xFF[0-9A-Fa-f]{6}|Color\.", ac))
+check("a hand never stays on the screen behind the pause card or when the app leaves the front: hide() in onPause and when the card opens; the hand-over shows no tile",
+      "protected void onPause() { if (tb != null && screen == Screen.PLAY) tb.hide(); super.onPause(); }" in ac and "if (tb != null && screen == Screen.PLAY) tb.hide(); }" in ac.split("onPauseChanged")[1][:300]
+      and "if (st == DominoTable.State.HANDOVER) {" in ac and "new TileView" not in ac.split("if (st == DominoTable.State.HANDOVER) {")[1].split("return;")[0])
+check("Back at the table opens the pause card (or leaves the choice of the end); the screen draws no rule of its own: every move goes through DominoTable",
+      "if (tb.back()) { chain.sync(); keys(); } else openPause();" in ac and not re.search(r"\.play\(\w+, |\.draw\(\w+\)|\.pass\(", ac.replace("play(QuizSound", "")))
+check("the table on the screen is the table the snake was tested on: 1728 x 480 at 72", "TABLE_H = 480" in ac and "UNIT = 72" in ac and "Snake.lay(list, anchor, px(1728), px(TABLE_H), px(UNIT))" in ac
+      and "H = 480" in (ROOT / "tests/DominoTest.java").read_text(encoding="utf-8"))
+check("every number through the person's digits (num), every word through S.t; nothing kept about the players", not re.search(r'String\.valueOf|Integer\.toString|"\s*\+\s*g\.count|getSharedPreferences|FileOutputStream', ac) and "num(g.count(i))" in ac)
+check("no «·» or «•» on the screen", not re.search("[·•]", ac))
 sys.exit(1 if failed else 0)

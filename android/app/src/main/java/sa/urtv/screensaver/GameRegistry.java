@@ -23,7 +23,7 @@ final class GameRegistry {
         new Game("charades", "بدون كلام", "مثّل الكلمة وفريقك يخمّنها", "CharadesActivity", false, false),
         new Game("letter-hive", "خلية الحروف", "فريقان يتسابقان على وصل الخلية", "LetterHiveActivity", false, false),
         new Game("word5", "خمّن الكلمة", "كلمة من خمسة حروف في ست محاولات", "Word5Activity", false, false),
-        new Game("domino", "دومينو", "الدومينو كما تعرفونه، بالريموت", "DominoActivity", false, false),
+        new Game("domino", "دومينو", "الدومينو كما تعرفونه، بالريموت", "DominoActivity", false, true),
     };
 
     static Game byId(String id) { for (Game g : ALL) if (g.id.equals(id)) return g; return null; }

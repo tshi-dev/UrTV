@@ -4,7 +4,8 @@ One TV, one remote, no phones. 2 to 4 players, people or the computer, so one pe
 This page is the rules as the app plays them, with every choice we made where the rules have variants, and how the code is laid out.
 The spec is `games/domino/SPEC.md` and `games/RULES.md` on the branch `work/games-data`.
 
-Status: the rules and the computer players are done and tested (`tests/domino_test.py`). The screen comes next, on the shared games kit.
+Status: built on the games kit (docs/GAMES-KIT.md) and listed in «الألعاب». The rules, the computer players, the chain's layout and the turns are
+tested on a plain JVM (`tests/domino_test.py`); the screen itself has not been seen on a real TV yet (see the end of this page).
 
 ## The rules
 
@@ -54,7 +55,7 @@ level 2 wins about 470 against level 1. A decision takes well under a millisecon
 - `Snake`: where each tile of the chain lies on the table. It grows both ways from the round's first tile, turns at the table's edges (the right arm
   down, the left arm up, rows two units apart) and picks the largest unit that fits, from 72 px down. A double lies across the line, but in line at a
   turn (the corner tile and the one after it). A laid tile stays where it is; the table moves only when a row is added or the unit shrinks. On the
-  1080p table (1728 x 600) the unit stays 72 px in every round played in the test, and never goes under 56 px with all 28 tiles on one arm.
+  1080p table (1728 x 480) the unit is 72 px and drops to 64 px only when a third row is needed; with all 28 tiles on one arm it never goes under 56 px.
 - `DominoTable`: one remote at the table. The screen sends `move`, `ok`, `back`, and draws only what the answer says changed (the focus, the hand,
   the chain, the state, the scores). States: `HANDOVER` («دور <name>», no hand shown), `TURN` (the hand, focus only on tiles that fit; with none, on the
   one button: draw, then pass), `CHOOSE_END`, `BOT`, `ROUND_END`, `GAME_END`.
@@ -72,3 +73,45 @@ Tests: `python3 tests/domino_test.py` (needs javac). It checks the set, the shuf
 drawing, passing, the blocked round, the scores and the target; then 1500 whole games by computer players with a wild illegal try before every
 step (all refused, the 28 tiles conserved, the chain joined, every game ends with one winner); that the computer's move never changes when the
 tiles it cannot see are dealt out again; and that the levels are levels.
+
+## The screen
+
+`DominoActivity` (package `sa.urtv.screensaver`, on `GameActivity`). Setup chips: «اللاعبون» 1 to 4 people, «الكمبيوتر» none to 3 (only what makes
+2 to 4 at the table is offered), «مستوى الكمبيوتر», «الهدف», «الصوت». The default is two people, no computer, to 100. People take the kit's names
+(الصقور، النجوم…), people first at the table, then the computer players.
+
+On the 1920 x 1080 design: the sides' bar (name and points, the side to play in ink), under it each side's tile count as a number and small backs,
+the table (1728 x 480), the hand along the bottom (a half tile is 64 px), then one row for the draw / pass button or what just happened («مرّر … الدور»),
+with the target and the boneyard's count at the end side, and the kit's line of keys.
+
+- The hand-over is the game's own, lighter than the kit's secret screen: a green block where the hand would be, «دور <name>» and «الباقين: غطّوا عيونكم»;
+  OK shows the hand. The kit's `handOver` shows a word after a two-second count, which does not fit a hand of tiles played every turn.
+- The two open ends have a saffron frame. A tile that can go on two different ends is shown on the table at the end it would take; left and right move
+  it to the other end (as the eye sees the table, in both languages), OK lays it, Back returns to the hand.
+- A computer player waits 350 ms, then its tile slides for 250 ms from its place in the bar. OK skips to the next person's turn. A low-RAM TV, or
+  animations off, gets no slide.
+- A round's end shows the table for a moment (OK skips), then the round's result and the board; the game's end is the kit's podium.
+- «إنهاء الجولة» on the pause card ends the game with the scores as they stand.
+
+### One key, how much work
+
+The table is built once. `DominoTable` answers each key with what changed, and the screen touches only that:
+
+| Key | What is redrawn |
+|---|---|
+| an arrow in the hand | the two tiles the focus left and reached (two small views), nothing else: no `redraw()`, no view added or removed |
+| an arrow while choosing the end | the table view, once |
+| OK that plays a tile | the table view once, the one sliding tile, the hand, the bar and the row under the hand |
+| a computer's move | the same without the hand (one person) |
+
+Measured: the rules' share of an arrow key is about 150 ns on a desktop JVM (`tests/domino_test.py` prints it), and the source pins above are checked by
+the same test. Not measured: frame times on a TV. That needs a real set.
+
+## What needs a real TV
+
+- The frame time of a key on a weak TV (the arrows in a full hand of 21 tiles, a move with a three-row chain).
+- The look at 3 m: tile and pip sizes at 72 / 64 px on the table and 64 px in the hand, the saffron frames on the open ends, the dimmed tiles.
+- The slide's start and end points in Arabic and in English, and at 720p and 4K.
+- The hand-over with real people: is «دور <name>» enough, and is hiding the hand after each move quick enough with two.
+- A hand that grew to 15 or more tiles after drawing (the tiles close up; they should still be easy to tell apart).
+- The tick on each tile and the fanfare through the TV's speakers.

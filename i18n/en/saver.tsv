@@ -661,3 +661,32 @@
 كلمة من خمسة حروف في ست محاولات	A five-letter word in six tries
 دومينو	Dominoes
 الدومينو كما تعرفونه، بالريموت	Dominoes as you know it, with the remote
+# ---- «دومينو» (docs/DOMINO.md)
+اللاعبون	Players
+الكمبيوتر	Computer
+مستوى الكمبيوتر	Computer level
+وسط	Medium
+الهدف	Target
+الكمبيوتر %s	Computer %s
+دور %s	%s to play
+أظهر أحجاري	Show my tiles
+سحب	Draw
+تمرير	Pass
+لا حجر يناسب، اسحب حجرًا	No tile fits, draw one
+لا حجر يناسب ولا سحب، مرّر الدور	No tile fits and nothing to draw, pass
+مرّر %s الدور	%s passed
+سحب %s من السحب	%s drew a tile
+الهدف: %s	Target: %s
+السحب: %s	Boneyard: %s
+يلعب %s	%s is playing
+الحجر	Tile
+الطرف	End
+ضع الحجر	Lay the tile
+غيّر الحجر	Another tile
+تخطَّ	Skip
+الإيقاف	Pause
+انتهت الجولة	Round over
+فاز %s بالجولة	%s won the round
+مقفلة: فاز %s بأقل مجموع	Blocked: %s won on the lowest count
+مقفلة بالتعادل: لا نقاط	Blocked and tied: no points
+الجولة التالية	Next round

@@ -286,7 +286,7 @@ public final class DominoTest {
 
         // ---- the snake: where the chain lies on the table
         {
-        final float W = 1728, H = 600;   // the table on a 1080p screen: inside the 5 % safe area, between the score row and the hand
+        final float W = 1728, H = 480;   // the table on a 1080p screen (DominoActivity.TABLE_H): inside the 5 % safe area, between the tile counts and the hand
         boolean ok = true; int looked = 0, moved = 0, rounds = 0, smallest = 999, tall = 0; String why = "";
         for (int seed = 0; seed < 1500 && ok; seed++) {
             int n = 2 + seed % 3;
@@ -310,12 +310,12 @@ public final class DominoTest {
             }
             rounds++;
         }
-        System.out.println("INFO the snake on a 1728 x 600 table: " + looked + " positions of " + rounds + " rounds, the unit never under " + smallest + " px, at most " + tall + " rows, the laid tiles moved " + moved + " times in all (a new row or a smaller unit)");
-        check("the snake: in 1500 rounds, after every tile, each tile is whole and inside the table, no two overlap, the halves that touch carry the same number, a double in a row lies across; the unit stays 72 px (" + smallest + ") " + why, ok && smallest == 72);
+        System.out.println("INFO the snake on a 1728 x 480 table: " + looked + " positions of " + rounds + " rounds, the unit never under " + smallest + " px, at most " + tall + " rows, the laid tiles moved " + moved + " times in all (a new row or a smaller unit)");
+        check("the snake: in 1500 rounds, after every tile, each tile is whole and inside the table, no two overlap, the halves that touch carry the same number, a double in a row lies across; the unit never goes under 64 px (" + smallest + ") " + why, ok && smallest >= 64);
         check("the snake: a tile that is laid stays where it is; the table moves only when a row is added or the unit shrinks (" + moved + " times in " + rounds + " rounds: never more than once for each new row)", ok && moved <= 3 * rounds);
         // the worst chains: everything on one arm, and every table size down to a small one
         boolean fits = true; int least = 999;
-        float[][] tables = {{1728, 600}, {1728, 400}, {1200, 400}, {864, 300}, {640, 240}};
+        float[][] tables = {{1728, 480}, {1728, 400}, {1200, 400}, {864, 300}, {640, 240}};
         for (float[] tb : tables) for (int arm = 0; arm < 3; arm++) for (int len = 1; len <= 28; len++) {
             List<DominoGame.Placed> c = new ArrayList<>();
             for (int i = 0; i < len; i++) { Tile x = Tile.set().get((i * 5 + arm) % 28); c.add(new DominoGame.Placed(x, x.low, x.high)); }
@@ -323,9 +323,9 @@ public final class DominoTest {
             Snake s = Snake.lay(c, anchor, tb[0], tb[1], 72);
             String bad = snakeBad(c, s, tb[0], tb[1], false);
             if (bad != null) { fits = false; System.out.println("INFO snake " + tb[0] + "x" + tb[1] + " len " + len + ": " + bad); }
-            if (tb[1] == 600) least = Math.min(least, (int) s.unit);
+            if (tb[1] == 480) least = Math.min(least, (int) s.unit);
         }
-        check("the snake always fits: 28 tiles all on the right arm, all on the left, or half and half, on tables from 1728 x 600 down to 640 x 240; on the real table the unit never goes under 56 px (" + least + ")", fits && least >= 56);
+        check("the snake always fits: 28 tiles all on the right arm, all on the left, or half and half, on tables from 1728 x 480 down to 640 x 240; on the real table the unit never goes under 56 px (" + least + ")", fits && least >= 56);
         Snake one = Snake.lay(new DominoGame(2, 100, new Random(1)).chain(), 0, W, H, 72);
         check("the snake of an empty table is empty", one.slots.length == 0);
         }
