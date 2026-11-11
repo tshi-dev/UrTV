@@ -8,8 +8,8 @@ import android.os.PowerManager;
 import java.io.IOException;
 
 /**
- * 4.3 A2: the one player MusicService drives, with MediaPlayer's own calls and callbacks. Everything plays through the TV's MediaPlayer as before,
- * except a live HLS station (an .m3u8 address), which plays through Media3 ExoPlayer when the build has it (ExoPlayback, in src/exo/java): a longer
+ * 4.3 A2: the one player MusicService drives, with MediaPlayer's own calls and callbacks. A surah and the adhan play through the TV's MediaPlayer
+ * as before; a live station (since 4.3 every one, A2 began with the .m3u8 ones) plays through Media3 ExoPlayer when the build has it (ExoPlayback, in src/exo/java): a longer
  * buffer behind the live edge, retries of a segment that failed, and no restart of the whole stream for one late segment. The Saudi Quran Radio is
  * SBA's HLS with a 12 s window of 4 s segments and a new connection per segment (.github/tools/hls_probe.py): MediaPlayer ran dry on it.
  */
@@ -21,9 +21,13 @@ abstract class Playback {
 
     static final String EXO = "sa.urtv.home.tilawah.ExoPlayback";
 
-    /** ExoPlayer for a live HLS station when the build carries it, else the TV's MediaPlayer. */
+    /**
+     * ExoPlayer for every live station when the build carries it (HLS as before, and since a user report on 4.2 the Icecast ones too: the TV's
+     * MediaPlayer stopped for good when such a stream dropped, and said «صيغة البث غير مدعومة» for a passing error), else the TV's MediaPlayer.
+     * A surah and the adhan stay on MediaPlayer.
+     */
     static Playback create(Context c, String url, boolean radio) {
-        if (radio && StallWatch.isHls(url)) {
+        if (radio) {
             try {
                 return (Playback) Class.forName(EXO).getConstructor(Context.class).newInstance(c);
             } catch (ReflectiveOperationException | LinkageError | RuntimeException e) {

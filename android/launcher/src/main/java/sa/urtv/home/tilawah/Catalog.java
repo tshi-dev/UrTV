@@ -31,6 +31,8 @@ final class Catalog {
         String key;
         final String name, url;
         final boolean live;
+        /** 4.3: a second address of the same station (stations.json «alt»), tried after the first failed every try; null when there is none */
+        String alt;
         Station(String name, String url, boolean live) { this.name = name; this.url = url; this.live = live; }
     }
 
@@ -63,6 +65,8 @@ final class Catalog {
                 JSONObject s = stations.getJSONObject(i);
                 Station st = new Station(en ? s.optString("en", s.getString("name")) : s.getString("name"), s.getString("url"), s.optBoolean("live", true));
                 st.key = s.getString("name");
+                String alt = s.optString("alt", "");
+                if (alt.startsWith("https://")) st.alt = alt;   // https only: StreamUrl follows its redirect (radiojar's to its own cleartext host)
                 catalog.stations.add(st);
             }
             JSONArray surahs = new JSONObject(read(c, "quran/surahs.json")).getJSONArray("surahs");

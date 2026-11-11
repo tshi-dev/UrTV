@@ -29,8 +29,8 @@ mf, md = text(HOME / "MarketFile.java"), text(HOME / "MarketData.java")
 check("3: with no fx file from CI (or an old one, step 182) the app asks Yahoo itself (two batches of the 35 codes), once a day, and keeps the result as CI's file",
       "private static String fxFromYahoo()" in mf and "if (MarketData.fxNeedsOwn(text, t) && t - fxOwnAskedAt >= FX_OWN_PAUSE_MS) {" in mf and "from += 18" in mf and "static String fxFile(" in md)
 ms = text(HOME / "tilawah/MusicService.java")
-check("4: a station that gives nothing in 20 s is retried once with its own address straight to the player, then says «تعذّر التشغيل»; the host (never the token) is logged",
-      "radioDirectTried" in ms and "trying \" + hostOf(radioAddress) + \" as given" in ms and 'S.t("تعذّر التشغيل")' in ms)
+check("4: a station that gives nothing in 20 s is retried once with its own address straight to the player, then goes to RadioPolicy (4.3: tried again, its second source, then «تعذّر الاتصال بالبث»); the host (never the token) is logged",
+      "radioDirectTried" in ms and "trying \" + hostOf(radioAddress) + \" as given" in ms and "onPlaybackError(MediaPlayer.MEDIA_ERROR_UNKNOWN, PlayerFault.TIMED_OUT);" in ms)
 check("5: a Tadawul row with no timestamp and no close is read from fulldayPrice, its time is now", 'meta.get("fulldayPrice")' in md and "System.currentTimeMillis() / 1000.0" in md)
 rc = text(HOME / "tilawah/AdhanReceiver.java")
 check("6 (the owner's choice B): a muted TV is unmuted for the adhan and muted again at its end; the mute is read FIRST (before the unmute) and logged as tv_muted_before; the re-mute result is logged; every end goes through adhanVolumeBack (over, stopped, left, the screen off, the service gone, a restart after a crash)",

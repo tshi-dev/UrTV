@@ -54,6 +54,7 @@ python3 tests/reminder_fixes_test.py   # reminders: the next repeat stays on the
 python3 tests/spacing_178_test.py   # build 178 alignment: footers inside y 1026, gaps on the 8 px scale, matches and markets by keys
 python3 tests/setup_i18n_test.py   # «إعداد تلفزيوني» in English: the start, plan and progress screens (build 178 GO)
 python3 tests/stream_url_test.py   # the live stations: radiojar's https -> http redirect, qurango's random 500 tried again
+python3 tests/radio_policy_test.py   # 4.3: every station through ExoPlayer, joined again quietly, a second source, «صيغة» only when it never played (scripted server)
 python3 tests/update_ui_test.py   # the update screen: card, steps, bar, one button
 python3 tests/album_card_test.py   # «ألبوم صوري»: the card of the own photos (page, saver, home)
 python3 tests/home_nudge_test.py   # «خلّ تلفزيونك يفتح على UrTV»: the card while we are not the Home

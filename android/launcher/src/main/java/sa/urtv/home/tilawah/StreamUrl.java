@@ -71,6 +71,9 @@ final class StreamUrl {
                     continue;
                 }
                 if (status >= 200 && status < 300) return now;
+                // a Shoutcast server answers «ICY 200 OK», not HTTP: HttpURLConnection reads no status (-1). It is a live stream answering: the
+                // player (ExoPlayer, which reads ICY) gets the address
+                if (status == -1) return now;
                 throw new IOException((passing(status) ? "server error " : "refused ") + status);
             } finally {
                 c.disconnect();
