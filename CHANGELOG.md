@@ -17,6 +17,7 @@ Newest first. `next` is where changes land first; a release is what was tested t
 - **كل الدوريات:** تحت قائمة «الدوريات كاملة» زر «كل الدوريات…»: الأشهر ثم كل بلد، وتتابع حتى ٨ دوريات.
 - **تحديث UrTV Player من داخله:** إذا نزلت نسخة أحدث، يحدّث المشغّل بضغطة بدون حذف (قوائمك تبقى)، وخانته في «تطبيقات مقترحة» تقول «تحديث متوفر».
 - **ساعة الشاشة الرئيسية في المغرب ومدن أخرى:** كانت متقدمة ساعة لأن بيانات المناطق الزمنية في التلفزيون قديمة؛ صارت الساعة والتاريخ ومواقيت الصلاة والتذكيرات تأخذ التوقيت الصحيح نفسه الذي تعرضه شاشة التوقف.
+- **إذاعة القرآن والتلاوات المباشرة:** كل محطة تشتغل الآن بمشغّل أمتن؛ إذا انقطع البث يرجع وحده بهدوء، وإذا ما اشتغلت محطة القرآن السعودية يُجرَّب مصدرها الثاني، وما تظهر «صيغة البث غير مدعومة» لانقطاع عابر.
 - **الإذاعات:** البث المباشر أثبت، وإذا علِق يرجع وحده بهدوء.
 - **ذاكرة USB:** عارض الملفات في التلفزيون يبقى شغّالًا دائمًا.
 - **تحديث تلفزيوني:** أمتن، وما يطلع تطبيق قديم قدّامك وقت تحديث الشاشة الرئيسية.
@@ -37,6 +38,7 @@ Newest first. `next` is where changes land first; a release is what was tested t
 - **All leagues:** under «Whole leagues», «All leagues…»: the best known, then every country; follow up to 8.
 - **UrTV Player updates from inside it:** when a newer one is published, the Player updates in one press, never uninstalled (your lists stay); its tile in «Suggested apps» says «Update available».
 - **The home's clock in Morocco and a few other places:** it was an hour ahead because the TV's own time-zone data was old; the clock, dates, prayer times and reminders now use the same offset the screensaver shows.
+- **Quran Radio and the live recitations:** every station now plays through the sturdier player; a dropped stream comes back by itself, the Saudi Quran Radio tries its second source, and a passing drop no longer says «Stream format not supported».
 - **Radio:** live stations hold up better and restart quietly when they stall.
 - **USB sticks:** the TV's own file viewer is always kept on.
 - **«تحديث تلفزيوني»:** sturdier, and the app you used before no longer comes to the front while the home screen updates itself.

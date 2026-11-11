@@ -11,11 +11,15 @@ import androidx.media3.common.Player;
 import androidx.media3.datasource.DefaultHttpDataSource;
 import androidx.media3.exoplayer.DefaultLoadControl;
 import androidx.media3.exoplayer.ExoPlayer;
-import androidx.media3.exoplayer.hls.HlsMediaSource;
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
 import androidx.media3.exoplayer.upstream.DefaultLoadErrorHandlingPolicy;
 
 /**
- * 4.3 A2: a live HLS station through Media3 ExoPlayer, behind Playback's MediaPlayer-shaped calls (MusicService does not know which plays). Kept
+ * 4.3: every live station through Media3 ExoPlayer (A2: the HLS ones; a user report on 4.2 for the rest: an Icecast stream with ICY headers
+ * that drops after a few seconds stopped for good on the TV's MediaPlayer). An .m3u8 address plays as HLS, any other as a progressive stream
+ * (MP3 or AAC, its ICY metadata read and skipped by ExoPlayer itself); the end of a live stream is handed to the service as an input/output
+ * error, so RadioPolicy joins it again. Errors reach MusicService as MediaPlayer's numbers (RadioPolicy.extraForExo).
+ * Live HLS through Media3 ExoPlayer, behind Playback's MediaPlayer-shaped calls (MusicService does not know which plays). Kept
  * in src/exo/java (the Gradle build adds it with the Media3 dependency); Playback.create loads it by name and falls back to MediaPlayer, so the
  * javac compile of src/main/java (tests/android_compile.sh) needs no Media3. What it changes for a station like SBA's (a 12 s live window of 4 s
  * segments, a new connection per segment): a segment that fails is retried (8 times) instead of the stream failing; a playlist that fell behind
@@ -42,7 +46,7 @@ public final class ExoPlayback extends Playback {
         exo = new ExoPlayer.Builder(c)
                 .setLooper(Looper.getMainLooper())
                 .setLoadControl(new DefaultLoadControl.Builder().setBufferDurationsMs(MIN_BUFFER_MS, MAX_BUFFER_MS, START_MS, RESTART_MS).build())
-                .setMediaSourceFactory(new HlsMediaSource.Factory(http).setLoadErrorHandlingPolicy(new DefaultLoadErrorHandlingPolicy(RETRIES)))
+                .setMediaSourceFactory(new DefaultMediaSourceFactory(c).setDataSourceFactory(http).setLoadErrorHandlingPolicy(new DefaultLoadErrorHandlingPolicy(RETRIES)))
                 .setHandleAudioBecomingNoisy(false)
                 .build();
         exo.setPlayWhenReady(false);
@@ -59,8 +63,9 @@ public final class ExoPlayback extends Playback {
                 } else if (state == Player.STATE_BUFFERING && prepared && !rebuffering) {
                     rebuffering = true;
                     if (onInfo != null) onInfo.onInfo(ExoPlayback.this, MediaPlayer.MEDIA_INFO_BUFFERING_START, 0);
-                } else if (state == Player.STATE_ENDED && onCompletion != null) {
-                    onCompletion.onCompletion(ExoPlayback.this);
+                } else if (state == Player.STATE_ENDED) {   // a live stream has no end: the server closed it, joined again (RadioPolicy)
+                    if (onError != null) onError.onError(ExoPlayback.this, MediaPlayer.MEDIA_ERROR_UNKNOWN, PlayerFault.IO);
+                    else if (onCompletion != null) onCompletion.onCompletion(ExoPlayback.this);
                 }
             }
 
@@ -70,7 +75,7 @@ public final class ExoPlayback extends Playback {
                     exo.prepare();
                     return;
                 }
-                if (onError != null) onError.onError(ExoPlayback.this, MediaPlayer.MEDIA_ERROR_UNKNOWN, e.errorCode);
+                if (onError != null) onError.onError(ExoPlayback.this, MediaPlayer.MEDIA_ERROR_UNKNOWN, RadioPolicy.extraForExo(e.errorCode));
             }
         });
     }
@@ -90,7 +95,12 @@ public final class ExoPlayback extends Playback {
     @Override void setOnCompletionListener(OnCompletion l) { onCompletion = l; }
     @Override void setOnErrorListener(OnError l) { onError = l; }
     @Override void setDataSource(String u) { url = u; }
-    @Override void prepareAsync() { exo.setMediaItem(MediaItem.fromUri(url)); exo.prepare(); }
+    @Override void prepareAsync() {
+        MediaItem.Builder item = new MediaItem.Builder().setUri(url);
+        if (StallWatch.isHls(url)) item.setMimeType(androidx.media3.common.MimeTypes.APPLICATION_M3U8);   // an .m3u8 behind a query string too
+        exo.setMediaItem(item.build());
+        exo.prepare();
+    }
     @Override void start() { exo.play(); }
     @Override void pause() { exo.pause(); }
     @Override void seekTo(int ms) { exo.seekTo(ms); }

@@ -107,6 +107,8 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     private boolean ticking;
     private String currentUrl;
     private String radioAddress;   // the station's own address (StreamUrl resolves it again for every try: a redirect's address may not last)
+    private String radioAlt;   // 4.3: its second address (stations.json «alt»), null when none or already in use
+    private final RadioPolicy.State radioState = new RadioPolicy.State();   // 4.3: what the pick has been through (RadioPolicy)
 
     // what was on when the adhan started, so it comes back afterwards
     private boolean resumeAfterAdhan;
@@ -391,6 +393,8 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         wish.ask();
         prefs.save(source, "", surah, station, 0);
         radioAddress = cat.stations.get(index).url;
+        radioAlt = cat.stations.get(index).alt;
+        resetRadioState();
         stall.reset();   // the person's pick: no quiet restart of an earlier one is held against it
         startRadio(radioAddress, 0);
     }
@@ -436,16 +440,10 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
                     }, StreamUrl.backoffMs(tries + 1));
                     return;
                 }
-                if (busy) {   // the server failed every try: said now, as a player error is
-                    errors++;
+                if (busy) {   // the server failed every try: this source is done (RadioPolicy: the second source, else said)
+                    if (!radioState.played) radioState.tries = StreamUrl.TRIES - 1;
+                    onPlaybackError(0, PlayerFault.IO);
                     lastError = "radio server_error (" + StreamUrl.TRIES + " tries)";
-                    lastErrorAt = System.currentTimeMillis() / 1000;
-                    playing = false;
-                    buffering = false;
-                    error = PlayerFault.message(true, 0, PlayerFault.IO);
-                    updateSession();
-                    updateNotification();
-                    save();
                     return;
                 }
                 startUrl(url);   // the address could not be checked (no answer to our request): the player tries it itself
@@ -644,6 +642,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
                 mp.start();
                 playing = true;
                 playbackStarted();
+                if (source == Prefs.SOURCE_RADIO) RadioPolicy.started(radioState);   // a later failure is a reconnect, said only after RadioPolicy's tries
                 if (source == Prefs.SOURCE_ADHAN && adhanCutMs > 0) {
                     shortStart = SystemClock.elapsedRealtime();
                     handler.removeCallbacks(shortTick);
@@ -679,6 +678,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             if (!wish.current(gen)) return;
             if (source == Prefs.SOURCE_SURAH) next();
             else if (source == Prefs.SOURCE_ADHAN) finishAdhan();
+            else if (source == Prefs.SOURCE_RADIO) onPlaybackError(MediaPlayer.MEDIA_ERROR_UNKNOWN, PlayerFault.IO);   // a live stream has no end: the server closed it, joined again
             else { playing = false; updateSession(); updateNotification(); }
         });
         player.setOnErrorListener((mp, what, extra) -> {
@@ -697,17 +697,10 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
                         startUrl(radioAddress);
                         return;
                     }
-                    errors++;
-                    lastError = "radio no_answer (" + RADIO_WAIT_MS / 1000 + " s, host " + hostOf(url) + ")";   // the host only: the address carries a token
-                    lastErrorAt = System.currentTimeMillis() / 1000;
                     Log.w(TAG, "station gave nothing in " + RADIO_WAIT_MS / 1000 + " s: " + hostOf(url));
                     releasePlayer();
-                    playing = false;
-                    buffering = false;
-                    error = sa.urtv.home.S.t("تعذّر التشغيل");
-                    updateSession();
-                    updateNotification();
-                    save();
+                    onPlaybackError(MediaPlayer.MEDIA_ERROR_UNKNOWN, PlayerFault.TIMED_OUT);   // RadioPolicy: tried again, then the second source, then said
+                    lastError = "radio no_answer (" + RADIO_WAIT_MS / 1000 + " s, host " + hostOf(url) + ")";   // the host only: the address carries a token
                 }, RADIO_WAIT_MS);
             }
         } catch (Exception e) {
@@ -752,6 +745,16 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         try { return new java.net.URL(url).getHost(); } catch (java.io.IOException e) { return "?"; }
     }
 
+    /** a new pick of a station: nothing held against it */
+    private void resetRadioState() {
+        radioState.played = false;
+        radioState.tries = 0;
+        radioState.onAlt = false;
+        radioState.reconnects = 0;
+        radioState.formatEveryTime = true;
+        radioState.spent = false;
+    }
+
     private void onPlaybackError(int what, int extra) {
         errors++;
         lastError = (source == Prefs.SOURCE_RADIO ? "radio" : source == Prefs.SOURCE_ADHAN ? "adhan" : "surah")
@@ -764,6 +767,31 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         playbackPaused();
         if (source == Prefs.SOURCE_SURAH && position > 0) pendingSeek = position;
         final String failed = currentUrl;
+        if (source == Prefs.SOURCE_RADIO && radioAddress != null) {   // 4.3 (a user report on 4.2): retried, joined again, the second source, and only then said
+            RadioPolicy.Step step = RadioPolicy.after(radioState, what, extra, radioAlt != null, SystemClock.elapsedRealtime());
+            if (step == RadioPolicy.Step.FAIL) {
+                error = RadioPolicy.message(radioState, what, extra);
+                updateSession();
+                updateNotification();
+                save();
+                return;
+            }
+            if (step == RadioPolicy.Step.ALT) {
+                Log.i(TAG, "station failed every try at " + hostOf(radioAddress) + ": its second source " + hostOf(radioAlt));
+                radioAddress = radioAlt;
+                radioAlt = null;
+            }
+            error = Ui.str(this, R.string.retrying);
+            updateSession();
+            updateNotification();
+            final int gen = wish.currentGeneration();
+            final String address = radioAddress;
+            handler.postDelayed(() -> {
+                if (!wish.retry(gen, playing) || source != Prefs.SOURCE_RADIO || !address.equals(radioAddress)) return;   // not after a stop or another pick
+                startRadio(address, 0);
+            }, RadioPolicy.waitMs(radioState));
+            return;
+        }
         if (source == Prefs.SOURCE_ADHAN && retries >= 2) {
             // the stream failed but the background download may have finished: play the saved copy
             File cached = Adhan.cached(this, adhanVoice);
@@ -789,7 +817,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
                 if (radio) startRadio(station, 0); else startUrl(failed);   // a station's address is resolved again (its redirect may not last)
             }, radio ? StreamUrl.backoffMs(retries) : 3000);
         } else {
-            error = PlayerFault.message(source == Prefs.SOURCE_RADIO, what, extra);
+            error = PlayerFault.message(false, what, extra);   // a surah or the adhan: a station took RadioPolicy's way above
             updateSession();
             updateNotification();
             save();

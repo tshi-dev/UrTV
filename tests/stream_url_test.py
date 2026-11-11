@@ -38,10 +38,11 @@ play = svc[svc.index("private void playRadio(int index)"):svc.index("// ---- the
 check("a station is resolved first (StreamUrl.resolve on a thread), then the player gets the final address", "startRadio(radioAddress, 0);" in play
       and "StreamUrl.resolve(url, 10_000)" in play and "if (go != null) { startUrl(go); return; }" in play and "new Thread(" in play)
 check("a 5xx is tried again after StreamUrl.backoffMs, and «تعذّر» only after the last try", "StreamUrl.again(tries + 1)" in play and "StreamUrl.backoffMs(tries + 1)" in play
-      and play.index("StreamUrl.again(tries + 1)") < play.index("PlayerFault.message(true, 0, PlayerFault.IO)"))
+      and play.index("StreamUrl.again(tries + 1)") < play.index("onPlaybackError(0, PlayerFault.IO);"))   # 4.3: the source done, RadioPolicy says what next
 check("a stop or another pick meanwhile wins (the generation and the address are checked)", "if (!wish.current(gen) || source != Prefs.SOURCE_RADIO || !url.equals(currentUrl)) return;" in play)
 err = svc[svc.index("private void onPlaybackError"):svc.index("private void playSurahAgain")]
-check("a player error on a station resolves the address again, with the growing wait", "if (radio) startRadio(station, 0); else startUrl(failed);" in err and "radio ? StreamUrl.backoffMs(retries) : 3000" in err)
+check("a player error on a station goes to RadioPolicy (4.3), which resolves the address again with the growing wait", "RadioPolicy.after(radioState, what, extra, radioAlt != null" in err
+      and "startRadio(address, 0);" in err and "RadioPolicy.waitMs(radioState)" in err)
 nsc = (ROOT / "android/launcher/src/main/res/xml/network_security_config.xml").read_text(encoding="utf-8")
 check("cleartext only for radiojar.com (and its subdomains), everything else https", '<base-config cleartextTrafficPermitted="false" />' in nsc
       and re.findall(r"<domain[^>]*>([^<]+)</domain>", nsc) == ["radiojar.com"] and 'includeSubdomains="true"' in nsc)
