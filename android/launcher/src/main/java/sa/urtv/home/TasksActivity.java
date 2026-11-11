@@ -184,10 +184,10 @@ public class TasksActivity extends Activity implements sa.urtv.home.phone.TextTa
 
     /** «٥:٠٠ م» of an appointment, with the day when it is not today (the city's clock) */
     private String reminderWhen(long due) {
-        java.util.TimeZone tz = java.util.TimeZone.getDefault();
+        java.util.TimeZone tz = ZoneFix.tvZone();
         try {
             String[] z = ConfigSnapshot.read(this).cityZone();
-            if (z != null) tz = java.util.TimeZone.getTimeZone(ClockZone.valid(z[1]));
+            if (z != null) tz = ZoneFix.zone(ClockZone.valid(z[1]));
         } catch (RuntimeException ignored) { }
         java.util.Calendar c = java.util.Calendar.getInstance(tz), n = java.util.Calendar.getInstance(tz);
         c.setTimeInMillis(due);

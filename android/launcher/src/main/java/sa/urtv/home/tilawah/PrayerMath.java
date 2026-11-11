@@ -1,5 +1,6 @@
 package sa.urtv.home.tilawah;
 
+import sa.urtv.home.ZoneFix;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -139,7 +140,7 @@ final class PrayerMath {
 
     /** Local midnight of that day in that zone. */
     static long midnight(int y, int mo, int d, String tz) {
-        Calendar c = Calendar.getInstance(TimeZone.getTimeZone(tz), Locale.US);
+        Calendar c = Calendar.getInstance(ZoneFix.zone(tz), Locale.US);
         c.clear();
         c.set(y, mo - 1, d, 0, 0, 0);
         return c.getTimeInMillis();
@@ -147,7 +148,7 @@ final class PrayerMath {
 
     /** The moment a wall clock of that day reads {@code minutes} after midnight in that zone: 24*60+10 is 00:10 of the next day. */
     static long wall(int y, int mo, int d, int minutes, String tz) {
-        Calendar c = Calendar.getInstance(TimeZone.getTimeZone(tz), Locale.US);
+        Calendar c = Calendar.getInstance(ZoneFix.zone(tz), Locale.US);
         c.clear();
         c.set(y, mo - 1, d, minutes / 60, minutes % 60, 0);   // lenient: past 24:00 rolls into the next day; a clock that does not exist (the hour skipped) reads an hour later
         return c.getTimeInMillis();
@@ -165,7 +166,7 @@ final class PrayerMath {
      */
     static long[] compute(int y, int mo, int d, double lat, double lng, String tz, boolean ramadan, int methodId) {
         Method m = method(methodId);
-        TimeZone zone = TimeZone.getTimeZone(tz);
+        TimeZone zone = ZoneFix.zone(tz);
         long day0 = midnight(y, mo, d, tz);
         Calendar utc = Calendar.getInstance(TimeZone.getTimeZone("UTC"), Locale.US);
         utc.clear();
@@ -268,7 +269,7 @@ final class PrayerMath {
 
     private static String format(String pattern, long millis, String tz) {
         SimpleDateFormat f = new SimpleDateFormat(pattern, Locale.US);
-        f.setTimeZone(TimeZone.getTimeZone(tz));
+        f.setTimeZone(ZoneFix.zone(tz));
         return f.format(millis);
     }
 

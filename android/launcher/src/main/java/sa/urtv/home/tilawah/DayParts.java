@@ -1,5 +1,6 @@
 package sa.urtv.home.tilawah;
 
+import sa.urtv.home.ZoneFix;
 import android.content.Context;
 
 import java.util.Calendar;
@@ -39,7 +40,7 @@ public final class DayParts {
         } else if (now < t.at[PrayerTimes.MAGHRIB]) {
             label = sa.urtv.home.S.n("الغروب"); clock = t.clock[PrayerTimes.MAGHRIB];
         } else {                                          // after sunset: tomorrow's sunrise
-            Calendar tomorrow = Calendar.getInstance(TimeZone.getTimeZone(place.tz), Locale.US);
+            Calendar tomorrow = Calendar.getInstance(ZoneFix.zone(place.tz), Locale.US);
             tomorrow.add(Calendar.DAY_OF_MONTH, 1);
             String key = PrayerTimes.dayKey(tomorrow, place);
             synchronized (DayParts.class) {
@@ -47,7 +48,7 @@ public final class DayParts {
                 label = "الشروق"; clock = sunriseClock;
             }
         }
-        boolean friday = Calendar.getInstance(TimeZone.getTimeZone(place.tz), Locale.US).get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY;
+        boolean friday = Calendar.getInstance(ZoneFix.zone(place.tz), Locale.US).get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY;
         return new DayParts(t.at[PrayerTimes.FAJR], t.at[PrayerTimes.DHUHR], t.at[PrayerTimes.ASR],
                 t.at[PrayerTimes.MAGHRIB], t.at[PrayerTimes.ISHA], label, clock, friday);
     }

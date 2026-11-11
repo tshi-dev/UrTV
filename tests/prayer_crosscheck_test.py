@@ -82,7 +82,8 @@ check("the dates include both Ramadans, the days the clocks change in Egypt, Leb
 if shutil.which("javac"):
     with tempfile.TemporaryDirectory() as tmp:
         subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "android/launcher/src/main/java/sa/urtv/home/tilawah/PrayerMath.java"),
-                        str(ROOT / "tests/PrayerCrosscheckRun.java"), str(ROOT / "tests/PrayerPublishedRun.java")], check=True)
+                        str(ROOT / "tests/PrayerCrosscheckRun.java"), str(ROOT / "tests/PrayerPublishedRun.java"),
+                        str(ROOT / "android/launcher/src/main/java/sa/urtv/home/ZoneFix.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/ZoneTable.java")], check=True)
         for cls, tsv in (("PrayerCrosscheckRun", "prayer_crosscheck.tsv"), ("PrayerPublishedRun", "prayer_published.tsv")):
             run = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.tilawah." + cls, str(ROOT / "tests" / tsv)], capture_output=True)
             out = run.stdout.decode("utf-8")

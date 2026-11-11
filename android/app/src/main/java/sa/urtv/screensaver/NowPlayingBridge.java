@@ -96,6 +96,21 @@ final class NowPlayingBridge {
     @JavascriptInterface
     public void reminderShown(boolean on) { card = on; }
 
+    /**
+     * 4.3 (issue #55): the page's offset for the city's zone at a moment (its WebView's tz data, newer than the TV's own): kept for this app
+     * (ZoneFix) and for the home (ConfigProvider's column page_zone). Only the city's own zone, a moment within a day of now, a sane offset.
+     */
+    @JavascriptInterface
+    public void zoneOffset(String zone, String at, int minutes) {
+        try {
+            long t = Long.parseLong(at), now = System.currentTimeMillis();
+            Prefs p = new Prefs(app);
+            if (zone == null || !zone.equals(p.cityTz()) || Math.abs(now - t) > 86_400_000L || minutes < -14 * 60 || minutes > 14 * 60) return;
+            ZoneFix.report(zone, t, minutes);
+            p.setPageZone(zone + "|" + t + "|" + minutes);
+        } catch (RuntimeException ignored) { }
+    }
+
     /** «تم» on the card: that task is done (a repeating reminder moves to its next time) */
     @JavascriptInterface
     public void reminderDone(long id) { new Prefs(app).doneTaskId(id); }

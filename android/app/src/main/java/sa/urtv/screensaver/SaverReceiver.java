@@ -499,7 +499,7 @@ public class SaverReceiver extends BroadcastReceiver {
                 String why;
                 if (at == null) why = p.addTask(i.getStringExtra("text"));
                 else {
-                    long due = Reminders.parse(at, java.util.TimeZone.getTimeZone(p.cityTz()));   // the date and time in the TV's own city
+                    long due = Reminders.parse(at, Reminders.zone(p.cityTz()));   // the date and time in the TV's own city
                     if (due < 0) return "error: --at is a date and time like 2026-11-05 17:00";
                     int before = i.getIntExtra("before", 0), where = "saver".equals(i.getStringExtra("where")) ? 1 : "home".equals(i.getStringExtra("where")) ? 2 : 0;
                     if (before != Reminders.beforeOf(before)) return "error: --before is 0, 10, 30 or 60 minutes";
@@ -590,7 +590,7 @@ public class SaverReceiver extends BroadcastReceiver {
     }
 
     private static String listing(Prefs p) {
-        java.util.TimeZone tz = java.util.TimeZone.getTimeZone(p.cityTz());
+        java.util.TimeZone tz = Reminders.zone(p.cityTz());
         List<Task> all = p.tasks();
         if (all.isEmpty()) return "no tasks";
         StringBuilder b = new StringBuilder();

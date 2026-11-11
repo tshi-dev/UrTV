@@ -15,7 +15,7 @@ if not shutil.which("javac"):
 with tempfile.TemporaryDirectory() as tmp:
     subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp,
                     str(ROOT / "android/launcher/src/main/java/sa/urtv/home/tilawah/PrayerMath.java"),
-                    str(ROOT / "tests/PrayerMathRun.java")], check=True)
+                    str(ROOT / "tests/PrayerMathRun.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/ZoneFix.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/ZoneTable.java")], check=True)
     run = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.tilawah.PrayerMathRun", str(ROOT / "tests/prayer_gold.tsv"), str(ROOT / "tests/prayer_gold_countries.tsv")], capture_output=True)
 out = run.stdout.decode("utf-8")
 print(out, end="")

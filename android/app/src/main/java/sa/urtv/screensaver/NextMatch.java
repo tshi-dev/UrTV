@@ -80,7 +80,7 @@ final class NextMatch {
 
     private static TimeZone zone(Prefs prefs) {
         String z = prefs.cityTz();
-        return z == null || z.isEmpty() ? TimeZone.getDefault() : TimeZone.getTimeZone(z);
+        return z == null || z.isEmpty() ? ZoneFix.tvZone() : ZoneFix.zone(z);
     }
 
     private static String name(Context c, Prefs prefs, String id, String fallback, boolean en) {

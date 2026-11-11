@@ -1,5 +1,6 @@
 package sa.urtv.home.tilawah;
 
+import sa.urtv.home.ZoneFix;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -50,7 +51,7 @@ final class PrayerTimes {
     // ---------------------------------------------------------------- the times
 
     static PrayerTimes of(Calendar when, Place place) {
-        TimeZone zone = TimeZone.getTimeZone(place.tz);
+        TimeZone zone = ZoneFix.zone(place.tz);
         Calendar local = Calendar.getInstance(zone, Locale.US);
         local.setTimeInMillis(when.getTimeInMillis());
         long day0 = PrayerMath.midnight(local.get(Calendar.YEAR), local.get(Calendar.MONTH) + 1,
@@ -95,7 +96,7 @@ final class PrayerTimes {
      * and the sun arithmetic and the preferences need not be gone through each time. New times from Aladhan drop the copy.
      */
     static synchronized PrayerTimes today(Context c, Place place) {
-        Calendar day = Calendar.getInstance(TimeZone.getTimeZone(place.tz), Locale.US);
+        Calendar day = Calendar.getInstance(ZoneFix.zone(place.tz), Locale.US);
         String key = key(day, place);
         String copyKey = key + "|" + PrayerAdjust.text(place.adj);   // a change of the adjustments is a different day's copy
         if (todayCopy != null && copyKey.equals(todayKey)) return todayCopy;
@@ -125,7 +126,7 @@ final class PrayerTimes {
 
     private static Next next(Context c, long aheadMs, Place place) {
         long now = System.currentTimeMillis();
-        Calendar day = Calendar.getInstance(TimeZone.getTimeZone(place.tz), Locale.US);
+        Calendar day = Calendar.getInstance(ZoneFix.zone(place.tz), Locale.US);
         int firstDay = Math.abs(place.lat) > 48 ? -1 : 0;
         day.add(Calendar.DAY_OF_MONTH, firstDay);
         for (int d = firstDay; d < 3; d++) {
@@ -191,7 +192,7 @@ final class PrayerTimes {
     static void refreshIfDue(Context c, Place place) {
         if (!PrayerMath.aladhanKnows(place.method)) return;   // Oman's ministry: Aladhan has no such method, the computed times are the times
         if (!sa.urtv.home.NetGate.backgroundOk(sa.urtv.home.NetGateAndroid.displayOn(c))) return;   // a try is not counted while nothing could be asked
-        Calendar day = Calendar.getInstance(TimeZone.getTimeZone(place.tz), Locale.US);
+        Calendar day = Calendar.getInstance(ZoneFix.zone(place.tz), Locale.US);
         String key = key(day, place);
         SharedPreferences sp = prefs(c);
         long now = System.currentTimeMillis();
@@ -203,7 +204,7 @@ final class PrayerTimes {
     /** The same, on the caller's thread (which must not be the main one). True when new times were kept. */
     static boolean refreshNow(Context c) {
         final Place place = Place.get(c);
-        final Calendar day = Calendar.getInstance(TimeZone.getTimeZone(place.tz), Locale.US);
+        final Calendar day = Calendar.getInstance(ZoneFix.zone(place.tz), Locale.US);
         final String key = key(day, place);
         if (!PrayerMath.aladhanKnows(place.method)) return false;   // Aladhan has no id for it: nothing to ask
         if (prefs(c).getBoolean("fetched_" + key, false)) return false;
@@ -281,7 +282,7 @@ final class PrayerTimes {
     private static int hijriMonth(long millis, String tz) {
         try {
             android.icu.util.Calendar cal = android.icu.util.Calendar.getInstance(
-                    android.icu.util.TimeZone.getTimeZone(tz), new android.icu.util.ULocale("en-u-ca-islamic-umalqura"));   // the city's day, not the device's
+                    sa.urtv.home.ZoneIcu.of(tz), new android.icu.util.ULocale("en-u-ca-islamic-umalqura"));   // the city's day, not the device's
             cal.setTimeInMillis(millis);
             return cal.get(android.icu.util.Calendar.MONTH) + 1;
         } catch (Throwable t) {

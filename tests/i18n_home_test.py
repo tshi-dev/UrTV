@@ -143,7 +143,7 @@ check("the surahs' English names are their usual transliterations (spot check)",
 if not shutil.which("javac"):
     print("SKIP the words on a JVM: no javac here")
     sys.exit(1 if failed else 0)
-PURE = ["ControlText", "PillText", "DigitsText", "GreetingText", "ClockText", "AdhanBarText", "ClockZone", "TvRowsPick", "InputDisplay",
+PURE = ["ControlText", "PillText", "DigitsText", "GreetingText", "ClockText", "AdhanBarText", "ClockZone", "ZoneFix", "ZoneTable", "TvRowsPick", "InputDisplay",
         "InputNames", "MonthNames", "FamilyDns", "Tr", "tilawah/NowPlayingText", "tilawah/AdhanNoticeText", "tilawah/PlayerFault",
         "tilawah/OwnAdhanText"]
 with tempfile.TemporaryDirectory() as tmp:

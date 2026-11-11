@@ -7,5 +7,6 @@ public final class HomeApp extends Application {
     @Override public void onCreate() {
         super.onCreate();
         MuteKeep.start(this);
+        ZoneFix.logger = line -> android.util.Log.i("UrTVZone", line);   // issue #55: one line when the page corrects the TV's zone data
     }
 }

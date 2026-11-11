@@ -33,8 +33,8 @@ def run(files, main):
         subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp] + [str(f) for f in files], check=True, capture_output=True)
         out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-Duser.timezone=UTC", "-cp", tmp, main], check=True, capture_output=True).stdout.decode("utf-8")
     return [l.split("\t", 1) for l in out.split("\n") if l]
-home = run([HOME / "ReminderPlan.java", ROOT / "tests/ReminderFixHomeRun.java"], "sa.urtv.home.ReminderFixHomeRun")
-saver = run([APP / "Task.java", APP / "TaskList.java", APP / "Reminders.java", ROOT / "tests/ReminderDstRun.java"], "sa.urtv.screensaver.ReminderDstRun")
+home = run([HOME / "ReminderPlan.java", HOME / "ZoneFix.java", HOME / "ZoneTable.java", ROOT / "tests/ReminderFixHomeRun.java"], "sa.urtv.home.ReminderFixHomeRun")
+saver = run([APP / "Task.java", APP / "TaskList.java", APP / "Reminders.java", APP / "ZoneFix.java", APP / "ZoneTable.java", ROOT / "tests/ReminderDstRun.java"], "sa.urtv.screensaver.ReminderDstRun")
 steps = {}
 for side, rows in (("home", home), ("screensaver", saver)):
     for n, r in rows:

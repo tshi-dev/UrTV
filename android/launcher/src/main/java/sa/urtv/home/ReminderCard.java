@@ -140,9 +140,9 @@ final class ReminderCard {
     private TimeZone zone() {
         try {
             String[] z = ConfigSnapshot.read(c).cityZone();
-            return z == null ? TimeZone.getDefault() : TimeZone.getTimeZone(ClockZone.valid(z[1]));
+            return z == null ? ZoneFix.tvZone() : ZoneFix.zone(ClockZone.valid(z[1]));
         } catch (RuntimeException e) {
-            return TimeZone.getDefault();
+            return ZoneFix.tvZone();
         }
     }
 
@@ -194,9 +194,9 @@ final class ReminderCard {
         TimeZone tz;
         try {
             String[] z = ConfigSnapshot.read(c).cityZone();
-            tz = z == null ? TimeZone.getDefault() : TimeZone.getTimeZone(ClockZone.valid(z[1]));
+            tz = z == null ? ZoneFix.tvZone() : ZoneFix.zone(ClockZone.valid(z[1]));
         } catch (RuntimeException e) {
-            tz = TimeZone.getDefault();
+            tz = ZoneFix.tvZone();
         }
         return ReminderText.line(r, now, tz, Digits.clock24(), Digits.latin());
     }

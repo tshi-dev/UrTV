@@ -37,7 +37,7 @@ final class ReminderStore {
     static java.util.TimeZone zone(String id) {
         if (id == null || id.isEmpty()) return null;
         java.util.TimeZone z = java.util.TimeZone.getTimeZone(id);
-        return "GMT".equals(z.getID()) && !"GMT".equals(id) ? null : z;
+        return "GMT".equals(z.getID()) && !"GMT".equals(id) ? null : ZoneFix.zone(id);   // issue #55: the offset the page uses
     }
 
     /** The cards already delivered (ReminderPlan.key), kept on the disk: a duplicate alarm or a restart delivers none twice. */

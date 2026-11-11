@@ -79,11 +79,11 @@ def run(tmp, files, main):
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-cp", tmp, main], check=True, capture_output=True).stdout.decode("utf-8")
     return [l.split("\t") for l in out.split("\n") if l]
 with tempfile.TemporaryDirectory() as tmp:
-    rows = run(tmp, [APP / "Task.java", APP / "TaskList.java", APP / "Reminders.java", APP / "ReminderKeys.java", ROOT / "tests/ReminderRun.java"], "sa.urtv.screensaver.ReminderRun")
+    rows = run(tmp, [APP / "Task.java", APP / "TaskList.java", APP / "Reminders.java", APP / "ReminderKeys.java", APP / "ZoneFix.java", APP / "ZoneTable.java", ROOT / "tests/ReminderRun.java"], "sa.urtv.screensaver.ReminderRun")
 for n, r in rows: check("reminders: " + n, r == "ok")
 check("every reminder check ran", len(rows) >= 40, len(rows))
 with tempfile.TemporaryDirectory() as tmp:
-    rows = run(tmp, [HOME / "ReminderPlan.java", HOME / "ReminderEdit.java", ROOT / "tests/ReminderHomeRun.java"], "sa.urtv.home.ReminderHomeRun")
+    rows = run(tmp, [HOME / "ReminderPlan.java", HOME / "ReminderEdit.java", HOME / "ZoneFix.java", HOME / "ZoneTable.java", ROOT / "tests/ReminderHomeRun.java"], "sa.urtv.home.ReminderHomeRun")
 for n, r in rows: check("home reminders: " + n, r == "ok")
 check("every home check ran", len(rows) >= 20, len(rows))
 sys.exit(1 if failed else 0)
