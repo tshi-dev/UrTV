@@ -27430,6 +27430,666 @@
 "verified": true
 },
 {
+"id": "qu-num-15",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما اسم السورة رقم ١٥ في المصحف؟",
+"en": "What is the name of surah number 15 in the Mushaf?"
+},
+"answer": {
+"ar": "الحجر",
+"en": "Al-Hijr"
+},
+"wrong": [
+{
+"ar": "الشمس",
+"en": "Ash-Shams"
+},
+{
+"ar": "العلق",
+"en": "Al-Alaq"
+},
+{
+"ar": "المؤمنون",
+"en": "Al-Muminoon"
+}
+],
+"source": [
+"https://api.alquran.cloud/v1/surah"
+],
+"verified": true
+},
+{
+"id": "qu-num-20",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما اسم السورة رقم ٢٠ في المصحف؟",
+"en": "What is the name of surah number 20 in the Mushaf?"
+},
+"answer": {
+"ar": "طه",
+"en": "Taa-Haa"
+},
+"wrong": [
+{
+"ar": "البينة",
+"en": "Al-Bayyina"
+},
+{
+"ar": "الأنفال",
+"en": "Al-Anfaal"
+},
+{
+"ar": "النصر",
+"en": "An-Nasr"
+}
+],
+"source": [
+"https://api.alquran.cloud/v1/surah"
+],
+"verified": true
+},
+{
+"id": "qu-num-22",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما اسم السورة رقم ٢٢ في المصحف؟",
+"en": "What is the name of surah number 22 in the Mushaf?"
+},
+"answer": {
+"ar": "الحج",
+"en": "Al-Hajj"
+},
+"wrong": [
+{
+"ar": "الحاقة",
+"en": "Al-Haaqqa"
+},
+{
+"ar": "الحديد",
+"en": "Al-Hadid"
+},
+{
+"ar": "الرحمن",
+"en": "Ar-Rahmaan"
+}
+],
+"source": [
+"https://api.alquran.cloud/v1/surah"
+],
+"verified": true
+},
+{
+"id": "qu-num-26",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما اسم السورة رقم ٢٦ في المصحف؟",
+"en": "What is the name of surah number 26 in the Mushaf?"
+},
+"answer": {
+"ar": "الشعراء",
+"en": "Ash-Shu'araa"
+},
+"wrong": [
+{
+"ar": "النبإ",
+"en": "An-Naba"
+},
+{
+"ar": "ق",
+"en": "Qaaf"
+},
+{
+"ar": "الأنبياء",
+"en": "Al-Anbiyaa"
+}
+],
+"source": [
+"https://api.alquran.cloud/v1/surah"
+],
+"verified": true
+},
+{
+"id": "qu-num-37",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما اسم السورة رقم ٣٧ في المصحف؟",
+"en": "What is the name of surah number 37 in the Mushaf?"
+},
+"answer": {
+"ar": "الصافات",
+"en": "As-Saaffaat"
+},
+"wrong": [
+{
+"ar": "طه",
+"en": "Taa-Haa"
+},
+{
+"ar": "الفيل",
+"en": "Al-Fil"
+},
+{
+"ar": "الإنسان",
+"en": "Al-Insaan"
+}
+],
+"source": [
+"https://api.alquran.cloud/v1/surah"
+],
+"verified": true
+},
+{
+"id": "qu-num-38",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما اسم السورة رقم ٣٨ في المصحف؟",
+"en": "What is the name of surah number 38 in the Mushaf?"
+},
+"answer": {
+"ar": "ص",
+"en": "Saad"
+},
+"wrong": [
+{
+"ar": "إبراهيم",
+"en": "Ibrahim"
+},
+{
+"ar": "الإخلاص",
+"en": "Al-Ikhlaas"
+},
+{
+"ar": "الشورى",
+"en": "Ash-Shura"
+}
+],
+"source": [
+"https://api.alquran.cloud/v1/surah"
+],
+"verified": true
+},
+{
+"id": "qu-num-42",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما اسم السورة رقم ٤٢ في المصحف؟",
+"en": "What is the name of surah number 42 in the Mushaf?"
+},
+"answer": {
+"ar": "الشورى",
+"en": "Ash-Shura"
+},
+"wrong": [
+{
+"ar": "البقرة",
+"en": "Al-Baqara"
+},
+{
+"ar": "غافر",
+"en": "Ghafir"
+},
+{
+"ar": "المزمل",
+"en": "Al-Muzzammil"
+}
+],
+"source": [
+"https://api.alquran.cloud/v1/surah"
+],
+"verified": true
+},
+{
+"id": "qu-num-49",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما اسم السورة رقم ٤٩ في المصحف؟",
+"en": "What is the name of surah number 49 in the Mushaf?"
+},
+"answer": {
+"ar": "الحجرات",
+"en": "Al-Hujuraat"
+},
+"wrong": [
+{
+"ar": "النصر",
+"en": "An-Nasr"
+},
+{
+"ar": "الزخرف",
+"en": "Az-Zukhruf"
+},
+{
+"ar": "النور",
+"en": "An-Noor"
+}
+],
+"source": [
+"https://api.alquran.cloud/v1/surah"
+],
+"verified": true
+},
+{
+"id": "qu-num-51",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما اسم السورة رقم ٥١ في المصحف؟",
+"en": "What is the name of surah number 51 in the Mushaf?"
+},
+"answer": {
+"ar": "الذاريات",
+"en": "Adh-Dhaariyat"
+},
+"wrong": [
+{
+"ar": "يوسف",
+"en": "Yusuf"
+},
+{
+"ar": "المنافقون",
+"en": "Al-Munaafiqoon"
+},
+{
+"ar": "المائدة",
+"en": "Al-Maaida"
+}
+],
+"source": [
+"https://api.alquran.cloud/v1/surah"
+],
+"verified": true
+},
+{
+"id": "qu-num-52",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما اسم السورة رقم ٥٢ في المصحف؟",
+"en": "What is the name of surah number 52 in the Mushaf?"
+},
+"answer": {
+"ar": "الطور",
+"en": "At-Tur"
+},
+"wrong": [
+{
+"ar": "الإنسان",
+"en": "Al-Insaan"
+},
+{
+"ar": "الحشر",
+"en": "Al-Hashr"
+},
+{
+"ar": "ص",
+"en": "Saad"
+}
+],
+"source": [
+"https://api.alquran.cloud/v1/surah"
+],
+"verified": true
+},
+{
+"id": "qu-num-56",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما اسم السورة رقم ٥٦ في المصحف؟",
+"en": "What is the name of surah number 56 in the Mushaf?"
+},
+"answer": {
+"ar": "الواقعة",
+"en": "Al-Waaqia"
+},
+"wrong": [
+{
+"ar": "ق",
+"en": "Qaaf"
+},
+{
+"ar": "الغاشية",
+"en": "Al-Ghaashiya"
+},
+{
+"ar": "النساء",
+"en": "An-Nisaa"
+}
+],
+"source": [
+"https://api.alquran.cloud/v1/surah"
+],
+"verified": true
+},
+{
+"id": "qu-num-57",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما اسم السورة رقم ٥٧ في المصحف؟",
+"en": "What is the name of surah number 57 in the Mushaf?"
+},
+"answer": {
+"ar": "الحديد",
+"en": "Al-Hadid"
+},
+"wrong": [
+{
+"ar": "الحجر",
+"en": "Al-Hijr"
+},
+{
+"ar": "المسد",
+"en": "Al-Masad"
+},
+{
+"ar": "الأنبياء",
+"en": "Al-Anbiyaa"
+}
+],
+"source": [
+"https://api.alquran.cloud/v1/surah"
+],
+"verified": true
+},
+{
+"id": "qu-num-59",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما اسم السورة رقم ٥٩ في المصحف؟",
+"en": "What is the name of surah number 59 in the Mushaf?"
+},
+"answer": {
+"ar": "الحشر",
+"en": "Al-Hashr"
+},
+"wrong": [
+{
+"ar": "ق",
+"en": "Qaaf"
+},
+{
+"ar": "الأعلى",
+"en": "Al-A'laa"
+},
+{
+"ar": "العصر",
+"en": "Al-Asr"
+}
+],
+"source": [
+"https://api.alquran.cloud/v1/surah"
+],
+"verified": true
+},
+{
+"id": "qu-num-61",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما اسم السورة رقم ٦١ في المصحف؟",
+"en": "What is the name of surah number 61 in the Mushaf?"
+},
+"answer": {
+"ar": "الصف",
+"en": "As-Saff"
+},
+"wrong": [
+{
+"ar": "النبإ",
+"en": "An-Naba"
+},
+{
+"ar": "الإسراء",
+"en": "Al-Israa"
+},
+{
+"ar": "المطففين",
+"en": "Al-Mutaffifin"
+}
+],
+"source": [
+"https://api.alquran.cloud/v1/surah"
+],
+"verified": true
+},
+{
+"id": "qu-num-65",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما اسم السورة رقم ٦٥ في المصحف؟",
+"en": "What is the name of surah number 65 in the Mushaf?"
+},
+"answer": {
+"ar": "الطلاق",
+"en": "At-Talaaq"
+},
+"wrong": [
+{
+"ar": "المائدة",
+"en": "Al-Maaida"
+},
+{
+"ar": "الرعد",
+"en": "Ar-Ra'd"
+},
+{
+"ar": "النساء",
+"en": "An-Nisaa"
+}
+],
+"source": [
+"https://api.alquran.cloud/v1/surah"
+],
+"verified": true
+},
+{
+"id": "qu-num-69",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما اسم السورة رقم ٦٩ في المصحف؟",
+"en": "What is the name of surah number 69 in the Mushaf?"
+},
+"answer": {
+"ar": "الحاقة",
+"en": "Al-Haaqqa"
+},
+"wrong": [
+{
+"ar": "الانشقاق",
+"en": "Al-Inshiqaaq"
+},
+{
+"ar": "الشعراء",
+"en": "Ash-Shu'araa"
+},
+{
+"ar": "التكاثر",
+"en": "At-Takaathur"
+}
+],
+"source": [
+"https://api.alquran.cloud/v1/surah"
+],
+"verified": true
+},
+{
+"id": "qu-num-86",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما اسم السورة رقم ٨٦ في المصحف؟",
+"en": "What is the name of surah number 86 in the Mushaf?"
+},
+"answer": {
+"ar": "الطارق",
+"en": "At-Taariq"
+},
+"wrong": [
+{
+"ar": "المطففين",
+"en": "Al-Mutaffifin"
+},
+{
+"ar": "البلد",
+"en": "Al-Balad"
+},
+{
+"ar": "الذاريات",
+"en": "Adh-Dhaariyat"
+}
+],
+"source": [
+"https://api.alquran.cloud/v1/surah"
+],
+"verified": true
+},
+{
+"id": "qu-num-91",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما اسم السورة رقم ٩١ في المصحف؟",
+"en": "What is the name of surah number 91 in the Mushaf?"
+},
+"answer": {
+"ar": "الشمس",
+"en": "Ash-Shams"
+},
+"wrong": [
+{
+"ar": "غافر",
+"en": "Ghafir"
+},
+{
+"ar": "البلد",
+"en": "Al-Balad"
+},
+{
+"ar": "النور",
+"en": "An-Noor"
+}
+],
+"source": [
+"https://api.alquran.cloud/v1/surah"
+],
+"verified": true
+},
+{
+"id": "qu-num-93",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما اسم السورة رقم ٩٣ في المصحف؟",
+"en": "What is the name of surah number 93 in the Mushaf?"
+},
+"answer": {
+"ar": "الضحى",
+"en": "Ad-Dhuhaa"
+},
+"wrong": [
+{
+"ar": "الإنسان",
+"en": "Al-Insaan"
+},
+{
+"ar": "الأنعام",
+"en": "Al-An'aam"
+},
+{
+"ar": "العنكبوت",
+"en": "Al-Ankaboot"
+}
+],
+"source": [
+"https://api.alquran.cloud/v1/surah"
+],
+"verified": true
+},
+{
+"id": "qu-num-94",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما اسم السورة رقم ٩٤ في المصحف؟",
+"en": "What is the name of surah number 94 in the Mushaf?"
+},
+"answer": {
+"ar": "الشرح",
+"en": "Ash-Sharh"
+},
+"wrong": [
+{
+"ar": "الجمعة",
+"en": "Al-Jumu'a"
+},
+{
+"ar": "الروم",
+"en": "Ar-Room"
+},
+{
+"ar": "النمل",
+"en": "An-Naml"
+}
+],
+"source": [
+"https://api.alquran.cloud/v1/surah"
+],
+"verified": true
+},
+{
 "id": "qu-cnt-2",
 "type": "quiz",
 "category": "islamic",
@@ -30370,6 +31030,587 @@
 ],
 "evidence": [
 "cooked, mashed chickpeas"
+],
+"verified": true
+},
+{
+"id": "hv-dhahran",
+"type": "quiz",
+"category": "saudi-gulf",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "في أي مدينة سعودية يقع المقر الرئيسي لأرامكو السعودية؟",
+"en": "In which Saudi city is the Saudi Aramco headquarters?"
+},
+"answer": {
+"ar": "الظهران",
+"en": "Dhahran"
+},
+"wrong": [
+{
+"ar": "الرياض",
+"en": "Riyadh"
+},
+{
+"ar": "جدة",
+"en": "Jeddah"
+},
+{
+"ar": "ينبع",
+"en": "Yanbu"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Saudi_Aramco"
+],
+"evidence": [
+"Dhahran"
+],
+"verified": true
+},
+{
+"id": "hv-dhofar",
+"type": "quiz",
+"category": "saudi-gulf",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "ما اسم أكبر محافظات سلطنة عمان مساحة؟",
+"en": "What is the largest governorate of Oman by area?"
+},
+"answer": {
+"ar": "ظفار",
+"en": "Dhofar"
+},
+"wrong": [
+{
+"ar": "مسقط",
+"en": "Muscat"
+},
+{
+"ar": "مسندم",
+"en": "Musandam"
+},
+{
+"ar": "الداخلية",
+"en": "Ad Dakhiliyah"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Dhofar_Governorate"
+],
+"evidence": [
+"largest of the 11 governorates in the Sultanate of Oman by area"
+],
+"verified": true
+},
+{
+"id": "hv-shadow",
+"type": "quiz",
+"category": "science",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ماذا نسمّي المنطقة المظلمة التي يحجب فيها جسمٌ الضوء عن سطح؟",
+"en": "What do we call the dark area where an object blocks light from a surface?"
+},
+"answer": {
+"ar": "الظل",
+"en": "Shadow"
+},
+"wrong": [
+{
+"ar": "السراب",
+"en": "Mirage"
+},
+{
+"ar": "الشفق",
+"en": "Twilight"
+},
+{
+"ar": "الندى",
+"en": "Dew"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Shadow"
+],
+"evidence": [
+"dark area on a surface where light from a light source is blocked"
+],
+"verified": true
+},
+{
+"id": "hv-dhuhr",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "ما الصلاة المفروضة التي تُؤدّى بعد الفجر وقبل العصر؟",
+"en": "Which obligatory prayer comes after Fajr and before Asr?"
+},
+"answer": {
+"ar": "الظهر",
+"en": "Dhuhr"
+},
+"wrong": [
+{
+"ar": "المغرب",
+"en": "Maghrib"
+},
+{
+"ar": "العشاء",
+"en": "Isha"
+},
+{
+"ar": "الجمعة",
+"en": "Jumuah"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Dhuhr"
+],
+"evidence": [
+"observed after Fajr and before Asr"
+],
+"verified": true
+},
+{
+"id": "hv-frog",
+"type": "quiz",
+"category": "animals",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما الحيوان البرمائي القصير الجسم عديم الذيل؟",
+"en": "Which short-bodied amphibian has no tail?"
+},
+"answer": {
+"ar": "الضفدع",
+"en": "Frog"
+},
+"wrong": [
+{
+"ar": "السلمندر",
+"en": "Salamander"
+},
+{
+"ar": "الحرباء",
+"en": "Chameleon"
+},
+{
+"ar": "السلحفاة",
+"en": "Turtle"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Frog"
+],
+"evidence": [
+"tailless amphibian"
+],
+"verified": true
+},
+{
+"id": "hv-fog",
+"type": "quiz",
+"category": "science",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "ما اسم السحابة المنخفضة من قطرات الماء الدقيقة قرب سطح الأرض؟",
+"en": "What is the low cloud of tiny water droplets near the ground called?"
+},
+"answer": {
+"ar": "الضباب",
+"en": "Fog"
+},
+"wrong": [
+{
+"ar": "الندى",
+"en": "Dew"
+},
+{
+"ar": "الصقيع",
+"en": "Frost"
+},
+{
+"ar": "الرعد",
+"en": "Thunder"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Fog"
+],
+"evidence": [
+"tiny water droplets or ice crystals held in the air\\s+near the Earth's surface"
+],
+"verified": true
+},
+{
+"id": "hv-hyena",
+"type": "quiz",
+"category": "animals",
+"difficulty": 2,
+"age": "kids",
+"question": {
+"ar": "أي حيوان مفترس إفريقي يُلقّب بـ«الضاحك» لصوته؟",
+"en": "Which African predator is nicknamed the laughing one for its call?"
+},
+"answer": {
+"ar": "الضبع",
+"en": "Hyena"
+},
+"wrong": [
+{
+"ar": "الفهد",
+"en": "Cheetah"
+},
+{
+"ar": "الأسد",
+"en": "Lion"
+},
+{
+"ar": "الذئب",
+"en": "Wolf"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Spotted_hyena"
+],
+"evidence": [
+"laughing hyena"
+],
+"verified": true
+},
+{
+"id": "hv-light",
+"type": "quiz",
+"category": "science",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما الذي إذا حجبه جسمٌ تكوّن الظل؟",
+"en": "What, when blocked by an object, makes a shadow?"
+},
+"answer": {
+"ar": "الضوء",
+"en": "Light"
+},
+"wrong": [
+{
+"ar": "الصوت",
+"en": "Sound"
+},
+{
+"ar": "الحرارة",
+"en": "Heat"
+},
+{
+"ar": "الهواء",
+"en": "Air"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Shadow"
+],
+"evidence": [
+"light from a light source is blocked"
+],
+"verified": true
+},
+{
+"id": "hv-corn",
+"type": "quiz",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "من أي نوع من الحبوب يُصنع الفشار (البوشار)؟",
+"en": "Which grain is popcorn made from?"
+},
+"answer": {
+"ar": "الذرة",
+"en": "Corn"
+},
+"wrong": [
+{
+"ar": "القمح",
+"en": "Wheat"
+},
+{
+"ar": "الشعير",
+"en": "Barley"
+},
+{
+"ar": "الأرز",
+"en": "Rice"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Popcorn"
+],
+"evidence": [
+"variety of corn kernel"
+],
+"verified": true
+},
+{
+"id": "hv-hijjah",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "ما الشهر الهجري الثاني عشر والأخير؟",
+"en": "Which is the twelfth and last month of the Hijri year?"
+},
+"answer": {
+"ar": "ذو الحجة",
+"en": "Dhu al-Hijjah"
+},
+"wrong": [
+{
+"ar": "محرم",
+"en": "Muharram"
+},
+{
+"ar": "رمضان",
+"en": "Ramadan"
+},
+{
+"ar": "شوال",
+"en": "Shawwal"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Eid_al-Adha",
+"https://en.wikipedia.org/wiki/Islamic_calendar"
+],
+"numeric": true,
+"evidence": [
+"twelfth and final month",
+"12 lunar months"
+],
+"verified": true
+},
+{
+"id": "hv-khwarizmi",
+"type": "quiz",
+"category": "history",
+"difficulty": 3,
+"age": "all",
+"question": {
+"ar": "أي عالم من العصر الذهبي كتب بالعربية في الرياضيات والفلك وسُمّيت الخوارزمية باسمه؟",
+"en": "Which Islamic Golden Age scholar wrote in mathematics, astronomy and geography, and gave his name to the algorithm?"
+},
+"answer": {
+"ar": "الخوارزمي",
+"en": "Al-Khwarizmi"
+},
+"wrong": [
+{
+"ar": "الرازي",
+"en": "Al-Razi"
+},
+{
+"ar": "ابن سينا",
+"en": "Ibn Sina"
+},
+{
+"ar": "ابن بطوطة",
+"en": "Ibn Battuta"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Muhammad_ibn_Musa_al-Khwarizmi",
+"https://en.wikipedia.org/wiki/Muhammad_ibn_Musa_al-Khwarizmi"
+],
+"evidence": [
+"mathematics, astronomy, and geography",
+"algorithm"
+],
+"verified": true
+},
+{
+"id": "hv-trench",
+"type": "quiz",
+"category": "islamic",
+"difficulty": 2,
+"age": "all",
+"question": {
+"ar": "ما اسم الغزوة التي حُفر فيها خندق حول المدينة المنورة؟",
+"en": "Which battle was fought around a trench dug near Medina?"
+},
+"answer": {
+"ar": "الخندق",
+"en": "The Trench"
+},
+"wrong": [
+{
+"ar": "بدر",
+"en": "Badr"
+},
+{
+"ar": "أحد",
+"en": "Uhud"
+},
+{
+"ar": "تبوك",
+"en": "Tabuk"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Battle_of_the_Trench"
+],
+"evidence": [
+"Ghazwat al-Khandaq"
+],
+"verified": true
+},
+{
+"id": "hv-bat",
+"type": "quiz",
+"category": "animals",
+"difficulty": 2,
+"age": "kids",
+"question": {
+"ar": "ما الثدييات الوحيدة القادرة على الطيران الحقيقي المستمر؟",
+"en": "Which mammals are the only ones capable of true sustained flight?"
+},
+"answer": {
+"ar": "الخفافيش",
+"en": "Bats"
+},
+"wrong": [
+{
+"ar": "السناجب الطائرة",
+"en": "Flying squirrels"
+},
+{
+"ar": "الدلافين",
+"en": "Dolphins"
+},
+{
+"ar": "الخلد",
+"en": "Moles"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Bat"
+],
+"evidence": [
+"the only mammals capable of true and sustained flight"
+],
+"verified": true
+},
+{
+"id": "hv-autumn",
+"type": "quiz",
+"category": "science",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما الفصل الذي ينتقل فيه الطقس من الصيف إلى الشتاء؟",
+"en": "Which season is the transition from summer to winter?"
+},
+"answer": {
+"ar": "الخريف",
+"en": "Autumn"
+},
+"wrong": [
+{
+"ar": "الربيع",
+"en": "Spring"
+},
+{
+"ar": "الصيف",
+"en": "Summer"
+},
+{
+"ar": "الشتاء",
+"en": "Winter"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Autumn"
+],
+"evidence": [
+"transition from summer to winter"
+],
+"verified": true
+},
+{
+"id": "hv-bread",
+"type": "quiz",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما الغذاء الأساسي المصنوع من الماء والدقيق وغالبًا الخميرة؟",
+"en": "Which staple food is made from water, flour and often yeast?"
+},
+"answer": {
+"ar": "الخبز",
+"en": "Bread"
+},
+"wrong": [
+{
+"ar": "الجبن",
+"en": "Cheese"
+},
+{
+"ar": "الزبدة",
+"en": "Butter"
+},
+{
+"ar": "العسل",
+"en": "Honey"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Bread"
+],
+"evidence": [
+"made from water, flour, and often yeast"
+],
+"verified": true
+},
+{
+"id": "hv-milk",
+"type": "quiz",
+"category": "food",
+"difficulty": 1,
+"age": "kids",
+"question": {
+"ar": "ما الغذاء الذي تنتجه الغدد الثديية للثدييات لتغذية صغارها؟",
+"en": "Which food do the mammary glands of mammals make to feed their young?"
+},
+"answer": {
+"ar": "الحليب",
+"en": "Milk"
+},
+"wrong": [
+{
+"ar": "العسل",
+"en": "Honey"
+},
+{
+"ar": "الزيت",
+"en": "Oil"
+},
+{
+"ar": "العصير",
+"en": "Juice"
+}
+],
+"source": [
+"https://en.wikipedia.org/wiki/Milk"
+],
+"evidence": [
+"mammary glands of lactating mammals"
 ],
 "verified": true
 },

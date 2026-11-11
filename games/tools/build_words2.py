@@ -48,7 +48,7 @@ def main(forms_path):
     samples = {l: {} for l in LETTERS}
     def add(box, a, e, src="curated"):
         l = first_letter(a)
-        if l in samples:
+        if l in samples and len(a) <= 24:
             lst = samples[l].setdefault(box, [])
             if len(lst) < 15 and all(norm(x["ar"]) != norm(a) for x in lst): lst.append({"ar": a, "en": e, "source": src})
     for box, tids in BOX.items():
@@ -61,10 +61,10 @@ def main(forms_path):
     for v in geo_fetch.countries().values():
         if v["en"] in build_geo.SKIP or len(v["caps"]) != 1: continue
         add("country", v["ar"], build_geo.NAMES.get(v["en"], v["en"]), bw.src(v["q"]))
-        (cq, (cen, car)), = v["caps"].items(); add("saudi_city", car, cen, bw.src(cq))   # world capitals also feed the city box
+        (cq, (cen, car)), = v["caps"].items(); add("city", car, cen, bw.src(cq))   # world capitals: a separate, additive box "city"
     dump("khanat/letters.json", {"letters": list(LETTERS), "rare_letters": list("ثضظ"), "hard_letters": list("خذشصطغزوي"),
-         "boxes": ["animal", "plant", "object", "country", "name"], "extra_boxes": ["food", "job", "saudi_city"], "samples": samples}, indent=0)
-    cov = {b: [sum(1 for l in LETTERS if len(samples[l].get(b, [])) >= 15), sum(1 for l in LETTERS if samples[l].get(b))] for b in ["animal", "plant", "object", "country", "name", "food", "job", "saudi_city"]}
+         "boxes": ["animal", "plant", "object", "country", "name"], "extra_boxes": ["food", "job", "saudi_city", "city"], "samples": samples}, indent=0)
+    cov = {b: [sum(1 for l in LETTERS if len(samples[l].get(b, [])) >= 15), sum(1 for l in LETTERS if samples[l].get(b))] for b in ["animal", "plant", "object", "country", "name", "food", "job", "saudi_city", "city"]}
     print("khanat letters with 15 samples / with any sample (of 25):", cov)
     # ---- missing-word: facts (bank) + repo sayings + curated sayings
     mw = [x for x in json.load(open(os.path.join(G, "missing-word/items.json"), encoding="utf-8")) if x["deck"] in ("fact", "saying") and not x["id"].startswith("mw-cur-")]
@@ -91,10 +91,18 @@ def main(forms_path):
         if it["type"] != "quiz" or not re.match(r"[ء-ي]", it["answer"]["ar"]) or it["id"].startswith("el-sym-"): continue
         l = first_letter(it["answer"]["ar"])
         if l in LET28: idx[l].append(it["id"])
+    # English side: the first Latin letter of the English answer (for English play), same rule, built from the same bank
+    en_idx = collections.defaultdict(list)
+    for it in q:
+        if it["type"] != "quiz" or it["id"].startswith("el-sym-"): continue
+        e = it["answer"]["en"].strip()
+        e = e[4:] if e.lower().startswith("the ") else e
+        if re.match(r"[A-Za-z]", e): en_idx[e[0].upper()].append(it["id"])
     short = [l for l in LET28 if len(idx[l]) < 12]
-    dump("letter-hive/index.json", {"letters": list(LET28), "short_letters": short, "index": {l: idx[l] for l in LET28}, "coverage": {l: len(idx[l]) for l in LET28}}, indent=0)
+    dump("letter-hive/index.json", {"letters": list(LET28), "short_letters": short, "index": {l: idx[l] for l in LET28}, "coverage": {l: len(idx[l]) for l in LET28},
+                                 "en_index": {l: en_idx[l] for l in sorted(en_idx)}, "en_coverage": {l: len(en_idx[l]) for l in sorted(en_idx)}}, indent=0)
     dump("letter-hive/letters.json", list(LET28))
-    print("letter-hive short letters:", {l: len(idx[l]) for l in short})
+    print("letter-hive short letters:", {l: len(idx[l]) for l in short}, "| English letters under 12:", {l: len(en_idx[l]) for l in sorted(en_idx) if len(en_idx[l]) < 12}, "missing:", [c for c in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" if c not in en_idx])
     # ---- word5
     lex = json.loads(net.get("https://query.wikidata.org/sparql?format=json&query=" + urllib.parse.quote(
         '''SELECT ?l ?lemma ?cat WHERE { ?l a ontolex:LexicalEntry ; dct:language wd:Q13955 ; wikibase:lemma ?lemma ; wikibase:lexicalCategory ?cat . FILTER(STRLEN(?lemma) >= 5 && STRLEN(?lemma) <= 9) } LIMIT 20000''')))["results"]["bindings"]
@@ -106,6 +114,7 @@ def main(forms_path):
         if ok28(n) and cat in ("Q24905", "Q1084", "Q34698", "Q380057"):
             accepted.add(n)
             if cat in ("Q1084", "Q34698") and n not in lem: lem[n] = (strip(b["lemma"]["value"]), b["l"]["value"].rsplit("/", 1)[1])
+    dump("word5/lemmas.json", sorted(accepted))   # lemma level only: the base of the bundled starter's guesses
     if forms_path and os.path.exists(forms_path): accepted |= set(json.load(open(forms_path, encoding="utf-8")))
     else: print("WARNING: no forms file, accepted guesses are lemmas only")
     # frequency proxy: the word is an ar.wikipedia article (not a redirect) of at least 3000 bytes
@@ -118,16 +127,16 @@ def main(forms_path):
         for pg in d["pages"].values():
             if "missing" in pg or "redirect" in pg or pg.get("length", 0) < 3000: continue
             exists[pg["title"]] = pg["length"]
-    BLOCK5 = {"سياسي", "حكومه", "وزاره", "دبابه", "ذخيره", "طاعون", "تاميم", "ثالوث", "تعزير", "تعزيه", "عداوه", "تهجير", "سفاره", "تاييد", "تجنيد", "تسليح", "مقلاع", "صاروخ", "ابليس", "شيطان", "افيون", "خنزير", "اعدام", "احليل", "غرمول", "زانيه", "فاحشه", "مومسه", "مخنوث", "منكوح", "جاسوس", "هرطقه", "زندقه", "عفريت", "كابوس", "مخمور", "مدمنه", "مجذوم", "اسهال", "بقشيش", "بخشيش", "شيطنه", "هلوسه", "سفسطه", "مجذور", "مجدور", "قرصنه", "ثفروق", "غرنوق", "مسخره", "ساخره", "داعره", "عاهره", "خمره", "سكران", "سكيره", "نحوسه", "ملحمه", "معركه", "مقتله", "مقتول", "مجزره", "مشنقه", "قذيفه", "مقصله", "صليبي", "يسوعي", "انجيل", "اقنوم", "كهنوت", "اصحاح", "تثليث", "تنصير", "تعميد", "اسلمه", "عنعنه"}
+    BLOCK5 = {"تكفير", "تشييع", "جنازه", "مذبحه", "مقبره", "عقوبه", "وسواس", "خازوق", "مسحور", "شعوذه", "جريمه", "تدخين", "عنوسه", "كنيسه", "تابين", "ناووس", "مناضل", "ترهيب", "مقاتل", "تشهير", "تجريف", "تغريب", "علمنه", "عقيده", "تاويل", "فلسفه", "شفاعه", "تعذيب", "تجريم", "سياسه", "ضريبه", "تخريف", "تضليل", "بوليس", "سينما", "مسكنه", "مجهول", "مدسوس", "تشييط", "سياسي", "حكومه", "وزاره", "دبابه", "ذخيره", "طاعون", "تاميم", "ثالوث", "تعزير", "تعزيه", "عداوه", "تهجير", "سفاره", "تاييد", "تجنيد", "تسليح", "مقلاع", "صاروخ", "ابليس", "شيطان", "افيون", "خنزير", "اعدام", "احليل", "غرمول", "زانيه", "فاحشه", "مومسه", "مخنوث", "منكوح", "جاسوس", "هرطقه", "زندقه", "عفريت", "كابوس", "مخمور", "مدمنه", "مجذوم", "اسهال", "بقشيش", "بخشيش", "شيطنه", "هلوسه", "سفسطه", "مجذور", "مجدور", "قرصنه", "ثفروق", "غرنوق", "مسخره", "ساخره", "داعره", "عاهره", "خمره", "سكران", "سكيره", "نحوسه", "ملحمه", "معركه", "مقتله", "مقتول", "مجزره", "مشنقه", "قذيفه", "مقصله", "صليبي", "يسوعي", "انجيل", "اقنوم", "كهنوت", "اصحاح", "تثليث", "تنصير", "تعميد", "اسلمه", "عنعنه"}
     ans, aseen = [], set()
     for t, (ar, en, rows) in T.items():
         for i, (a, e) in enumerate(rows):
             n = norm(a)
-            if " " in a or not ok28(n) or n in aseen or n in BLOCK5: continue
+            if " " in a or not ok28(n) or n in aseen or n in BLOCK5 or n.startswith("ال"): continue
             aseen.add(n); lv = level(i, len(rows))
             ans.append({"word": n, "display": strip(a), "en": e, "category": t, "difficulty": lv, "age": "kids" if lv == 1 else "all", "source": "curated", "verified": "curated"})
     for w, (disp, lid) in sorted(lem.items()):
-        if w in aseen or w in BLOCK5 or disp not in exists: continue
+        if w in aseen or w in BLOCK5 or w.startswith("ال") or disp not in exists: continue
         aseen.add(w)
         ans.append({"word": w, "display": disp, "en": "", "category": "dictionary", "difficulty": 2 if exists[disp] >= 15000 else 3, "age": "all",
                     "source": "https://www.wikidata.org/wiki/Lexeme:" + lid, "verified": True})

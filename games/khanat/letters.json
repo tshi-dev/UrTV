@@ -52,7 +52,8 @@
 "extra_boxes": [
 "food",
 "job",
-"saudi_city"
+"saudi_city",
+"city"
 ],
 "samples": {
 "ا": {
@@ -179,71 +180,6 @@
 "ar": "الأحساء",
 "en": "Al-Ahsa",
 "source": "curated"
-},
-{
-"ar": "أسمرة",
-"en": "Asmara",
-"source": "https://www.wikidata.org/wiki/Q3642"
-},
-{
-"ar": "أنتانانريفو",
-"en": "Antananarivo",
-"source": "https://www.wikidata.org/wiki/Q3915"
-},
-{
-"ar": "أبوجا",
-"en": "Abuja",
-"source": "https://www.wikidata.org/wiki/Q3787"
-},
-{
-"ar": "أديس أبابا",
-"en": "Addis Ababa",
-"source": "https://www.wikidata.org/wiki/Q3624"
-},
-{
-"ar": "أكرا",
-"en": "Accra",
-"source": "https://www.wikidata.org/wiki/Q3761"
-},
-{
-"ar": "انجمينا",
-"en": "N'Djamena",
-"source": "https://www.wikidata.org/wiki/Q3659"
-},
-{
-"ar": "أسونسيون",
-"en": "Asunción",
-"source": "https://www.wikidata.org/wiki/Q2933"
-},
-{
-"ar": "أولان باتور",
-"en": "Ulaanbaatar",
-"source": "https://www.wikidata.org/wiki/Q23430"
-},
-{
-"ar": "إسلام آباد",
-"en": "Islamabad",
-"source": "https://www.wikidata.org/wiki/Q1362"
-},
-{
-"ar": "أبو ظبي",
-"en": "Abu Dhabi",
-"source": "https://www.wikidata.org/wiki/Q1519"
-},
-{
-"ar": "أوسلو",
-"en": "Oslo",
-"source": "https://www.wikidata.org/wiki/Q585"
-},
-{
-"ar": "أنقرة",
-"en": "Ankara",
-"source": "https://www.wikidata.org/wiki/Q3640"
-},
-{
-"ar": "أثينا",
-"en": "Athens",
-"source": "https://www.wikidata.org/wiki/Q1524"
 }
 ],
 "country": [
@@ -358,6 +294,83 @@
 "ar": "إيمان",
 "en": "",
 "source": "curated"
+}
+],
+"city": [
+{
+"ar": "أسمرة",
+"en": "Asmara",
+"source": "https://www.wikidata.org/wiki/Q3642"
+},
+{
+"ar": "أنتانانريفو",
+"en": "Antananarivo",
+"source": "https://www.wikidata.org/wiki/Q3915"
+},
+{
+"ar": "أبوجا",
+"en": "Abuja",
+"source": "https://www.wikidata.org/wiki/Q3787"
+},
+{
+"ar": "أديس أبابا",
+"en": "Addis Ababa",
+"source": "https://www.wikidata.org/wiki/Q3624"
+},
+{
+"ar": "أكرا",
+"en": "Accra",
+"source": "https://www.wikidata.org/wiki/Q3761"
+},
+{
+"ar": "انجمينا",
+"en": "N'Djamena",
+"source": "https://www.wikidata.org/wiki/Q3659"
+},
+{
+"ar": "أسونسيون",
+"en": "Asunción",
+"source": "https://www.wikidata.org/wiki/Q2933"
+},
+{
+"ar": "أولان باتور",
+"en": "Ulaanbaatar",
+"source": "https://www.wikidata.org/wiki/Q23430"
+},
+{
+"ar": "إسلام آباد",
+"en": "Islamabad",
+"source": "https://www.wikidata.org/wiki/Q1362"
+},
+{
+"ar": "أبو ظبي",
+"en": "Abu Dhabi",
+"source": "https://www.wikidata.org/wiki/Q1519"
+},
+{
+"ar": "أوسلو",
+"en": "Oslo",
+"source": "https://www.wikidata.org/wiki/Q585"
+},
+{
+"ar": "أنقرة",
+"en": "Ankara",
+"source": "https://www.wikidata.org/wiki/Q3640"
+},
+{
+"ar": "أثينا",
+"en": "Athens",
+"source": "https://www.wikidata.org/wiki/Q1524"
+},
+{
+"ar": "إسكوبية",
+"en": "Skopje",
+"source": "https://www.wikidata.org/wiki/Q384"
+},
+{
+"ar": "أندورا لا فيلا",
+"en": "Andorra la Vella",
+"source": "https://www.wikidata.org/wiki/Q1863"
 }
 ]
 },
@@ -592,71 +605,6 @@
 "ar": "الباحة",
 "en": "Al-Baha",
 "source": "curated"
-},
-{
-"ar": "برازافيل",
-"en": "Brazzaville",
-"source": "https://www.wikidata.org/wiki/Q3844"
-},
-{
-"ar": "بيساو",
-"en": "Bissau",
-"source": "https://www.wikidata.org/wiki/Q3739"
-},
-{
-"ar": "بانجول",
-"en": "Banjul",
-"source": "https://www.wikidata.org/wiki/Q3726"
-},
-{
-"ar": "برايا",
-"en": "Praia",
-"source": "https://www.wikidata.org/wiki/Q3751"
-},
-{
-"ar": "بورت لويس",
-"en": "Port Louis",
-"source": "https://www.wikidata.org/wiki/Q3929"
-},
-{
-"ar": "باماكو",
-"en": "Bamako",
-"source": "https://www.wikidata.org/wiki/Q3703"
-},
-{
-"ar": "بنغي",
-"en": "Bangui",
-"source": "https://www.wikidata.org/wiki/Q3832"
-},
-{
-"ar": "بوينس آيرس",
-"en": "Buenos Aires",
-"source": "https://www.wikidata.org/wiki/Q1486"
-},
-{
-"ar": "باراماريبو",
-"en": "Paramaribo",
-"source": "https://www.wikidata.org/wiki/Q3001"
-},
-{
-"ar": "بوغوتا",
-"en": "Bogotá",
-"source": "https://www.wikidata.org/wiki/Q2841"
-},
-{
-"ar": "بلغراد",
-"en": "Belgrade",
-"source": "https://www.wikidata.org/wiki/Q3711"
-},
-{
-"ar": "بيونغيانغ",
-"en": "Pyongyang",
-"source": "https://www.wikidata.org/wiki/Q18808"
-},
-{
-"ar": "بنوم بنه",
-"en": "Phnom Penh",
-"source": "https://www.wikidata.org/wiki/Q1850"
 }
 ],
 "country": [
@@ -757,6 +705,83 @@
 "en": "",
 "source": "curated"
 }
+],
+"city": [
+{
+"ar": "برازافيل",
+"en": "Brazzaville",
+"source": "https://www.wikidata.org/wiki/Q3844"
+},
+{
+"ar": "بيساو",
+"en": "Bissau",
+"source": "https://www.wikidata.org/wiki/Q3739"
+},
+{
+"ar": "بانجول",
+"en": "Banjul",
+"source": "https://www.wikidata.org/wiki/Q3726"
+},
+{
+"ar": "برايا",
+"en": "Praia",
+"source": "https://www.wikidata.org/wiki/Q3751"
+},
+{
+"ar": "بورت لويس",
+"en": "Port Louis",
+"source": "https://www.wikidata.org/wiki/Q3929"
+},
+{
+"ar": "باماكو",
+"en": "Bamako",
+"source": "https://www.wikidata.org/wiki/Q3703"
+},
+{
+"ar": "بنغي",
+"en": "Bangui",
+"source": "https://www.wikidata.org/wiki/Q3832"
+},
+{
+"ar": "بوينس آيرس",
+"en": "Buenos Aires",
+"source": "https://www.wikidata.org/wiki/Q1486"
+},
+{
+"ar": "باراماريبو",
+"en": "Paramaribo",
+"source": "https://www.wikidata.org/wiki/Q3001"
+},
+{
+"ar": "بوغوتا",
+"en": "Bogotá",
+"source": "https://www.wikidata.org/wiki/Q2841"
+},
+{
+"ar": "بلغراد",
+"en": "Belgrade",
+"source": "https://www.wikidata.org/wiki/Q3711"
+},
+{
+"ar": "بيونغيانغ",
+"en": "Pyongyang",
+"source": "https://www.wikidata.org/wiki/Q18808"
+},
+{
+"ar": "بنوم بنه",
+"en": "Phnom Penh",
+"source": "https://www.wikidata.org/wiki/Q1850"
+},
+{
+"ar": "بغداد",
+"en": "Baghdad",
+"source": "https://www.wikidata.org/wiki/Q1530"
+},
+{
+"ar": "بيشكك",
+"en": "Bishkek",
+"source": "https://www.wikidata.org/wiki/Q9361"
+}
 ]
 },
 "ت": {
@@ -833,31 +858,6 @@
 "ar": "تبوك",
 "en": "Tabuk",
 "source": "curated"
-},
-{
-"ar": "تونس",
-"en": "Tunis",
-"source": "https://www.wikidata.org/wiki/Q3572"
-},
-{
-"ar": "تيمفو",
-"en": "Thimphu",
-"source": "https://www.wikidata.org/wiki/Q9270"
-},
-{
-"ar": "تالين",
-"en": "Tallinn",
-"source": "https://www.wikidata.org/wiki/Q1770"
-},
-{
-"ar": "تيرانا",
-"en": "Tirana",
-"source": "https://www.wikidata.org/wiki/Q19689"
-},
-{
-"ar": "تيغوسيغالبا",
-"en": "Tegucigalpa",
-"source": "https://www.wikidata.org/wiki/Q3238"
 }
 ],
 "country": [
@@ -927,6 +927,33 @@
 "ar": "تالا",
 "en": "",
 "source": "curated"
+}
+],
+"city": [
+{
+"ar": "تونس",
+"en": "Tunis",
+"source": "https://www.wikidata.org/wiki/Q3572"
+},
+{
+"ar": "تيمفو",
+"en": "Thimphu",
+"source": "https://www.wikidata.org/wiki/Q9270"
+},
+{
+"ar": "تالين",
+"en": "Tallinn",
+"source": "https://www.wikidata.org/wiki/Q1770"
+},
+{
+"ar": "تيرانا",
+"en": "Tirana",
+"source": "https://www.wikidata.org/wiki/Q19689"
+},
+{
+"ar": "تيغوسيغالبا",
+"en": "Tegucigalpa",
+"source": "https://www.wikidata.org/wiki/Q3238"
 }
 ]
 },
@@ -1034,36 +1061,6 @@
 "ar": "الجبيل",
 "en": "Jubail",
 "source": "curated"
-},
-{
-"ar": "جيبوتي",
-"en": "Djibouti",
-"source": "https://www.wikidata.org/wiki/Q3604"
-},
-{
-"ar": "الجزائر العاصمة",
-"en": "Algiers",
-"source": "https://www.wikidata.org/wiki/Q3561"
-},
-{
-"ar": "جوبا",
-"en": "Juba",
-"source": "https://www.wikidata.org/wiki/Q1947"
-},
-{
-"ar": "جورج تاون",
-"en": "Georgetown",
-"source": "https://www.wikidata.org/wiki/Q10717"
-},
-{
-"ar": "جنوب تاراوا",
-"en": "South Tarawa",
-"source": "https://www.wikidata.org/wiki/Q131233"
-},
-{
-"ar": "جاكرتا",
-"en": "Jakarta",
-"source": "https://www.wikidata.org/wiki/Q3630"
 }
 ],
 "country": [
@@ -1086,11 +1083,6 @@
 "ar": "جمهورية الكونغو",
 "en": "Republic of the Congo",
 "source": "https://www.wikidata.org/wiki/Q971"
-},
-{
-"ar": "جمهورية الكونغو الديمقراطية",
-"en": "DR Congo",
-"source": "https://www.wikidata.org/wiki/Q974"
 },
 {
 "ar": "جمهورية إفريقيا الوسطى",
@@ -1153,6 +1145,38 @@
 "ar": "جنى",
 "en": "",
 "source": "curated"
+}
+],
+"city": [
+{
+"ar": "جيبوتي",
+"en": "Djibouti",
+"source": "https://www.wikidata.org/wiki/Q3604"
+},
+{
+"ar": "الجزائر العاصمة",
+"en": "Algiers",
+"source": "https://www.wikidata.org/wiki/Q3561"
+},
+{
+"ar": "جوبا",
+"en": "Juba",
+"source": "https://www.wikidata.org/wiki/Q1947"
+},
+{
+"ar": "جورج تاون",
+"en": "Georgetown",
+"source": "https://www.wikidata.org/wiki/Q10717"
+},
+{
+"ar": "جنوب تاراوا",
+"en": "South Tarawa",
+"source": "https://www.wikidata.org/wiki/Q131233"
+},
+{
+"ar": "جاكرتا",
+"en": "Jakarta",
+"source": "https://www.wikidata.org/wiki/Q3630"
 }
 ]
 },
@@ -1401,11 +1425,6 @@
 "ar": "خميس مشيط",
 "en": "Khamis Mushait",
 "source": "curated"
-},
-{
-"ar": "الخرطوم",
-"en": "Khartoum",
-"source": "https://www.wikidata.org/wiki/Q1963"
 }
 ],
 "name": [
@@ -1418,6 +1437,13 @@
 "ar": "خديجة",
 "en": "",
 "source": "curated"
+}
+],
+"city": [
+{
+"ar": "الخرطوم",
+"en": "Khartoum",
+"source": "https://www.wikidata.org/wiki/Q1963"
 }
 ]
 },
@@ -1538,7 +1564,21 @@
 "ar": "الدمام",
 "en": "Dammam",
 "source": "curated"
+}
+],
+"name": [
+{
+"ar": "دانة",
+"en": "",
+"source": "curated"
 },
+{
+"ar": "ديما",
+"en": "",
+"source": "curated"
+}
+],
+"city": [
 {
 "ar": "دكار",
 "en": "Dakar",
@@ -1573,18 +1613,6 @@
 "ar": "دبلن",
 "en": "Dublin",
 "source": "https://www.wikidata.org/wiki/Q1761"
-}
-],
-"name": [
-{
-"ar": "دانة",
-"en": "",
-"source": "curated"
-},
-{
-"ar": "ديما",
-"en": "",
-"source": "curated"
 }
 ],
 "country": [
@@ -1692,31 +1720,6 @@
 "ar": "الرياض",
 "en": "Riyadh",
 "source": "curated"
-},
-{
-"ar": "الرباط",
-"en": "Rabat",
-"source": "https://www.wikidata.org/wiki/Q3551"
-},
-{
-"ar": "روما",
-"en": "Rome",
-"source": "https://www.wikidata.org/wiki/Q220"
-},
-{
-"ar": "ريكيافيك",
-"en": "Reykjavík",
-"source": "https://www.wikidata.org/wiki/Q1764"
-},
-{
-"ar": "ريغا",
-"en": "Riga",
-"source": "https://www.wikidata.org/wiki/Q1773"
-},
-{
-"ar": "روسو",
-"en": "Roseau",
-"source": "https://www.wikidata.org/wiki/Q36281"
 }
 ],
 "name": [
@@ -1781,6 +1784,38 @@
 "ar": "رومانيا",
 "en": "Romania",
 "source": "https://www.wikidata.org/wiki/Q218"
+}
+],
+"city": [
+{
+"ar": "الرباط",
+"en": "Rabat",
+"source": "https://www.wikidata.org/wiki/Q3551"
+},
+{
+"ar": "الرياض",
+"en": "Riyadh",
+"source": "https://www.wikidata.org/wiki/Q3692"
+},
+{
+"ar": "روما",
+"en": "Rome",
+"source": "https://www.wikidata.org/wiki/Q220"
+},
+{
+"ar": "ريكيافيك",
+"en": "Reykjavík",
+"source": "https://www.wikidata.org/wiki/Q1764"
+},
+{
+"ar": "ريغا",
+"en": "Riga",
+"source": "https://www.wikidata.org/wiki/Q1773"
+},
+{
+"ar": "روسو",
+"en": "Roseau",
+"source": "https://www.wikidata.org/wiki/Q36281"
 }
 ]
 },
@@ -1855,7 +1890,7 @@
 "source": "https://www.wikidata.org/wiki/Q953"
 }
 ],
-"saudi_city": [
+"city": [
 {
 "ar": "زغرب",
 "en": "Zagreb",
@@ -2054,66 +2089,6 @@
 "ar": "سكاكا",
 "en": "Sakaka",
 "source": "curated"
-},
-{
-"ar": "سيوداد دي لا باز",
-"en": "Ciudad de la Paz",
-"source": "https://www.wikidata.org/wiki/Q1140136"
-},
-{
-"ar": "ساو تومي",
-"en": "São Tomé",
-"source": "https://www.wikidata.org/wiki/Q3932"
-},
-{
-"ar": "سانتياغو",
-"en": "Santiago",
-"source": "https://www.wikidata.org/wiki/Q2887"
-},
-{
-"ar": "سنغافورة",
-"en": "Singapore",
-"source": "https://www.wikidata.org/wiki/Q334"
-},
-{
-"ar": "سول",
-"en": "Seoul",
-"source": "https://www.wikidata.org/wiki/Q8684"
-},
-{
-"ar": "ستوكهولم",
-"en": "Stockholm",
-"source": "https://www.wikidata.org/wiki/Q1754"
-},
-{
-"ar": "سراييفو",
-"en": "Sarajevo",
-"source": "https://www.wikidata.org/wiki/Q11194"
-},
-{
-"ar": "سانت جورجز",
-"en": "St. George's",
-"source": "https://www.wikidata.org/wiki/Q41547"
-},
-{
-"ar": "سانتو دومينغو",
-"en": "Santo Domingo",
-"source": "https://www.wikidata.org/wiki/Q34820"
-},
-{
-"ar": "سان سلفادور",
-"en": "San Salvador",
-"source": "https://www.wikidata.org/wiki/Q3110"
-},
-{
-"ar": "سان خوسيه",
-"en": "San José",
-"source": "https://www.wikidata.org/wiki/Q3070"
-},
-{
-"ar": "سوفا",
-"en": "Suva",
-"source": "https://www.wikidata.org/wiki/Q38807"
 }
 ],
 "country": [
@@ -2233,6 +2208,68 @@
 "ar": "سعاد",
 "en": "",
 "source": "curated"
+}
+],
+"city": [
+{
+"ar": "سيوداد دي لا باز",
+"en": "Ciudad de la Paz",
+"source": "https://www.wikidata.org/wiki/Q1140136"
+},
+{
+"ar": "ساو تومي",
+"en": "São Tomé",
+"source": "https://www.wikidata.org/wiki/Q3932"
+},
+{
+"ar": "سانتياغو",
+"en": "Santiago",
+"source": "https://www.wikidata.org/wiki/Q2887"
+},
+{
+"ar": "سنغافورة",
+"en": "Singapore",
+"source": "https://www.wikidata.org/wiki/Q334"
+},
+{
+"ar": "سول",
+"en": "Seoul",
+"source": "https://www.wikidata.org/wiki/Q8684"
+},
+{
+"ar": "ستوكهولم",
+"en": "Stockholm",
+"source": "https://www.wikidata.org/wiki/Q1754"
+},
+{
+"ar": "سراييفو",
+"en": "Sarajevo",
+"source": "https://www.wikidata.org/wiki/Q11194"
+},
+{
+"ar": "سانت جورجز",
+"en": "St. George's",
+"source": "https://www.wikidata.org/wiki/Q41547"
+},
+{
+"ar": "سانتو دومينغو",
+"en": "Santo Domingo",
+"source": "https://www.wikidata.org/wiki/Q34820"
+},
+{
+"ar": "سان سلفادور",
+"en": "San Salvador",
+"source": "https://www.wikidata.org/wiki/Q3110"
+},
+{
+"ar": "سان خوسيه",
+"en": "San José",
+"source": "https://www.wikidata.org/wiki/Q3070"
+},
+{
+"ar": "سوفا",
+"en": "Suva",
+"source": "https://www.wikidata.org/wiki/Q38807"
 }
 ]
 },
@@ -2416,7 +2453,7 @@
 "source": "curated"
 }
 ],
-"saudi_city": [
+"city": [
 {
 "ar": "صوفيا",
 "en": "Sofia",
@@ -2503,7 +2540,16 @@
 "ar": "الطائف",
 "en": "Taif",
 "source": "curated"
-},
+}
+],
+"name": [
+{
+"ar": "طارق",
+"en": "",
+"source": "curated"
+}
+],
+"city": [
 {
 "ar": "طرابلس",
 "en": "Tripoli",
@@ -2523,13 +2569,6 @@
 "ar": "طوكيو",
 "en": "Tokyo",
 "source": "https://www.wikidata.org/wiki/Q1490"
-}
-],
-"name": [
-{
-"ar": "طارق",
-"en": "",
-"source": "curated"
 }
 ],
 "country": [
@@ -2646,16 +2685,6 @@
 "ar": "عرعر",
 "en": "Arar",
 "source": "curated"
-},
-{
-"ar": "عَمَّان",
-"en": "Amman",
-"source": "https://www.wikidata.org/wiki/Q3805"
-},
-{
-"ar": "عشق آباد",
-"en": "Ashgabat",
-"source": "https://www.wikidata.org/wiki/Q23438"
 }
 ],
 "country": [
@@ -2705,6 +2734,18 @@
 "ar": "العنود",
 "en": "",
 "source": "curated"
+}
+],
+"city": [
+{
+"ar": "عَمَّان",
+"en": "Amman",
+"source": "https://www.wikidata.org/wiki/Q3805"
+},
+{
+"ar": "عشق آباد",
+"en": "Ashgabat",
+"source": "https://www.wikidata.org/wiki/Q23438"
 }
 ]
 },
@@ -2817,7 +2858,7 @@
 "source": "https://www.wikidata.org/wiki/Q774"
 }
 ],
-"saudi_city": [
+"city": [
 {
 "ar": "غيتيغا",
 "en": "Gitega",
@@ -3008,7 +3049,7 @@
 "source": "curated"
 }
 ],
-"saudi_city": [
+"city": [
 {
 "ar": "فكتوريا",
 "en": "Victoria",
@@ -3251,7 +3292,7 @@
 "source": "https://www.wikidata.org/wiki/Q229"
 }
 ],
-"saudi_city": [
+"city": [
 {
 "ar": "القاهرة",
 "en": "Cairo",
@@ -3469,7 +3510,7 @@
 "source": "curated"
 }
 ],
-"saudi_city": [
+"city": [
 {
 "ar": "كينشاسا",
 "en": "Kinshasa",
@@ -3670,7 +3711,7 @@
 "source": "curated"
 }
 ],
-"saudi_city": [
+"city": [
 {
 "ar": "ليبرفيل",
 "en": "Libreville",
@@ -3954,71 +3995,6 @@
 "ar": "المدينة المنورة",
 "en": "Medina",
 "source": "curated"
-},
-{
-"ar": "مونروفيا",
-"en": "Monrovia",
-"source": "https://www.wikidata.org/wiki/Q3748"
-},
-{
-"ar": "ماسيرو",
-"en": "Maseru",
-"source": "https://www.wikidata.org/wiki/Q3909"
-},
-{
-"ar": "مابوتو",
-"en": "Maputo",
-"source": "https://www.wikidata.org/wiki/Q3889"
-},
-{
-"ar": "مقديشو",
-"en": "Mogadishu",
-"source": "https://www.wikidata.org/wiki/Q2449"
-},
-{
-"ar": "موروني",
-"en": "Moroni",
-"source": "https://www.wikidata.org/wiki/Q3901"
-},
-{
-"ar": "المنامة",
-"en": "Manama",
-"source": "https://www.wikidata.org/wiki/Q3882"
-},
-{
-"ar": "مدينة الكويت",
-"en": "Kuwait City",
-"source": "https://www.wikidata.org/wiki/Q35178"
-},
-{
-"ar": "ماليه",
-"en": "Malé",
-"source": "https://www.wikidata.org/wiki/Q9347"
-},
-{
-"ar": "مسقط",
-"en": "Muscat",
-"source": "https://www.wikidata.org/wiki/Q3826"
-},
-{
-"ar": "مانيلا",
-"en": "Manila",
-"source": "https://www.wikidata.org/wiki/Q1461"
-},
-{
-"ar": "مدينة بروكسل",
-"en": "Brussels",
-"source": "https://www.wikidata.org/wiki/Q239"
-},
-{
-"ar": "مدريد",
-"en": "Madrid",
-"source": "https://www.wikidata.org/wiki/Q2807"
-},
-{
-"ar": "مدينة لوكسمبورغ",
-"en": "Luxembourg",
-"source": "https://www.wikidata.org/wiki/Q1842"
 }
 ],
 "country": [
@@ -4149,6 +4125,83 @@
 "en": "",
 "source": "curated"
 }
+],
+"city": [
+{
+"ar": "مونروفيا",
+"en": "Monrovia",
+"source": "https://www.wikidata.org/wiki/Q3748"
+},
+{
+"ar": "ماسيرو",
+"en": "Maseru",
+"source": "https://www.wikidata.org/wiki/Q3909"
+},
+{
+"ar": "مابوتو",
+"en": "Maputo",
+"source": "https://www.wikidata.org/wiki/Q3889"
+},
+{
+"ar": "مقديشو",
+"en": "Mogadishu",
+"source": "https://www.wikidata.org/wiki/Q2449"
+},
+{
+"ar": "موروني",
+"en": "Moroni",
+"source": "https://www.wikidata.org/wiki/Q3901"
+},
+{
+"ar": "المنامة",
+"en": "Manama",
+"source": "https://www.wikidata.org/wiki/Q3882"
+},
+{
+"ar": "مدينة الكويت",
+"en": "Kuwait City",
+"source": "https://www.wikidata.org/wiki/Q35178"
+},
+{
+"ar": "ماليه",
+"en": "Malé",
+"source": "https://www.wikidata.org/wiki/Q9347"
+},
+{
+"ar": "مسقط",
+"en": "Muscat",
+"source": "https://www.wikidata.org/wiki/Q3826"
+},
+{
+"ar": "مانيلا",
+"en": "Manila",
+"source": "https://www.wikidata.org/wiki/Q1461"
+},
+{
+"ar": "مدينة بروكسل",
+"en": "Brussels",
+"source": "https://www.wikidata.org/wiki/Q239"
+},
+{
+"ar": "مدريد",
+"en": "Madrid",
+"source": "https://www.wikidata.org/wiki/Q2807"
+},
+{
+"ar": "مدينة لوكسمبورغ",
+"en": "Luxembourg",
+"source": "https://www.wikidata.org/wiki/Q1842"
+},
+{
+"ar": "مونتفيدو",
+"en": "Montevideo",
+"source": "https://www.wikidata.org/wiki/Q1335"
+},
+{
+"ar": "موسكو",
+"en": "Moscow",
+"source": "https://www.wikidata.org/wiki/Q649"
+}
 ]
 },
 "ن": {
@@ -4252,7 +4305,36 @@
 "ar": "نيوم",
 "en": "NEOM",
 "source": "curated"
+}
+],
+"name": [
+{
+"ar": "نايف",
+"en": "",
+"source": "curated"
 },
+{
+"ar": "ناصر",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "نواف",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "نورة",
+"en": "",
+"source": "curated"
+},
+{
+"ar": "نادية",
+"en": "",
+"source": "curated"
+}
+],
+"city": [
 {
 "ar": "نواكشوط",
 "en": "Nouakchott",
@@ -4297,33 +4379,6 @@
 "ar": "نوكو ألوفا",
 "en": "Nukuʻalofa",
 "source": "https://www.wikidata.org/wiki/Q38834"
-}
-],
-"name": [
-{
-"ar": "نايف",
-"en": "",
-"source": "curated"
-},
-{
-"ar": "ناصر",
-"en": "",
-"source": "curated"
-},
-{
-"ar": "نواف",
-"en": "",
-"source": "curated"
-},
-{
-"ar": "نورة",
-"en": "",
-"source": "curated"
-},
-{
-"ar": "نادية",
-"en": "",
-"source": "curated"
 }
 ],
 "country": [
@@ -4438,7 +4493,7 @@
 "source": "curated"
 }
 ],
-"saudi_city": [
+"city": [
 {
 "ar": "هراري",
 "en": "Harare",
@@ -4530,7 +4585,7 @@
 "source": "curated"
 }
 ],
-"saudi_city": [
+"city": [
 {
 "ar": "ويندهوك",
 "en": "Windhoek",
@@ -4558,11 +4613,6 @@
 }
 ],
 "country": [
-{
-"ar": "ولايات ميكرونيسيا المتحدة",
-"en": "Federated States of Micronesia",
-"source": "https://www.wikidata.org/wiki/Q702"
-},
 {
 "ar": "الولايات المتحدة",
 "en": "United States",
@@ -4610,16 +4660,6 @@
 "ar": "ينبع",
 "en": "Yanbu",
 "source": "curated"
-},
-{
-"ar": "ياوندي",
-"en": "Yaoundé",
-"source": "https://www.wikidata.org/wiki/Q3808"
-},
-{
-"ar": "يريفان",
-"en": "Yerevan",
-"source": "https://www.wikidata.org/wiki/Q1953"
 }
 ],
 "country": [
@@ -4649,6 +4689,18 @@
 "ar": "ياسر",
 "en": "",
 "source": "curated"
+}
+],
+"city": [
+{
+"ar": "ياوندي",
+"en": "Yaoundé",
+"source": "https://www.wikidata.org/wiki/Q3808"
+},
+{
+"ar": "يريفان",
+"en": "Yerevan",
+"source": "https://www.wikidata.org/wiki/Q1953"
 }
 ]
 }

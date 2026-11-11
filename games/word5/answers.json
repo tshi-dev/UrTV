@@ -590,36 +590,6 @@
 "verified": "curated"
 },
 {
-"word": "الجري",
-"display": "الجري",
-"en": "running",
-"category": "sports",
-"difficulty": 1,
-"age": "kids",
-"source": "curated",
-"verified": "curated"
-},
-{
-"word": "التنس",
-"display": "التنس",
-"en": "tennis",
-"category": "sports",
-"difficulty": 1,
-"age": "kids",
-"source": "curated",
-"verified": "curated"
-},
-{
-"word": "الغوص",
-"display": "الغوص",
-"en": "diving",
-"category": "sports",
-"difficulty": 3,
-"age": "all",
-"source": "curated",
-"verified": "curated"
-},
-{
 "word": "فستان",
 "display": "فستان",
 "en": "dress",
@@ -1290,16 +1260,6 @@
 "verified": "curated"
 },
 {
-"word": "الوان",
-"display": "ألوان",
-"en": "crayons",
-"category": "toys",
-"difficulty": 3,
-"age": "all",
-"source": "curated",
-"verified": "curated"
-},
-{
 "word": "صلصال",
 "display": "صلصال",
 "en": "clay",
@@ -1340,41 +1300,11 @@
 "verified": "curated"
 },
 {
-"word": "الخبر",
-"display": "الخبر",
-"en": "Khobar",
-"category": "saudi_cities",
-"difficulty": 2,
-"age": "all",
-"source": "curated",
-"verified": "curated"
-},
-{
-"word": "العلا",
-"display": "العلا",
-"en": "AlUla",
-"category": "saudi_cities",
-"difficulty": 3,
-"age": "all",
-"source": "curated",
-"verified": "curated"
-},
-{
 "word": "سكاكا",
 "display": "سكاكا",
 "en": "Sakaka",
 "category": "saudi_cities",
 "difficulty": 3,
-"age": "all",
-"source": "curated",
-"verified": "curated"
-},
-{
-"word": "اليمن",
-"display": "اليمن",
-"en": "Yemen",
-"category": "arab_countries",
-"difficulty": 2,
 "age": "all",
 "source": "curated",
 "verified": "curated"
@@ -1405,16 +1335,6 @@
 "en": "Libya",
 "category": "arab_countries",
 "difficulty": 3,
-"age": "all",
-"source": "curated",
-"verified": "curated"
-},
-{
-"word": "الحجر",
-"display": "الحجر",
-"en": "Hegra",
-"category": "landmarks",
-"difficulty": 2,
 "age": "all",
 "source": "curated",
 "verified": "curated"
@@ -1810,36 +1730,6 @@
 "verified": true
 },
 {
-"word": "الاحد",
-"display": "الأحد",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L35823",
-"verified": true
-},
-{
-"word": "البوم",
-"display": "ألبوم",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1489108",
-"verified": true
-},
-{
-"word": "الكفل",
-"display": "الكفل",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1160599",
-"verified": true
-},
-{
 "word": "امركه",
 "display": "أمركة",
 "en": "",
@@ -2060,16 +1950,6 @@
 "verified": true
 },
 {
-"word": "بوليس",
-"display": "بوليس",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1489024",
-"verified": true
-},
-{
 "word": "بيانه",
 "display": "بيانة",
 "en": "",
@@ -2090,16 +1970,6 @@
 "verified": true
 },
 {
-"word": "تابين",
-"display": "تأبين",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1478370",
-"verified": true
-},
-{
 "word": "تاريخ",
 "display": "تاريخ",
 "en": "",
@@ -2117,16 +1987,6 @@
 "difficulty": 2,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1496970",
-"verified": true
-},
-{
-"word": "تاويل",
-"display": "تأويل",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1484179",
 "verified": true
 },
 {
@@ -2210,26 +2070,6 @@
 "verified": true
 },
 {
-"word": "تجريف",
-"display": "تجريف",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1485654",
-"verified": true
-},
-{
-"word": "تجريم",
-"display": "تجريم",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1487104",
-"verified": true
-},
-{
 "word": "تجسيد",
 "display": "تجسيد",
 "en": "",
@@ -2300,16 +2140,6 @@
 "verified": true
 },
 {
-"word": "تخريف",
-"display": "تخريف",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1485551",
-"verified": true
-},
-{
 "word": "تخسيس",
 "display": "تخسيس",
 "en": "",
@@ -2367,16 +2197,6 @@
 "difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1484401",
-"verified": true
-},
-{
-"word": "تدخين",
-"display": "تدخين",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1477512",
 "verified": true
 },
 {
@@ -2500,16 +2320,6 @@
 "verified": true
 },
 {
-"word": "ترهيب",
-"display": "ترهيب",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1486061",
-"verified": true
-},
-{
 "word": "تسبيح",
 "display": "تسبيح",
 "en": "",
@@ -2600,16 +2410,6 @@
 "verified": true
 },
 {
-"word": "تشهير",
-"display": "تشهير",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1478361",
-"verified": true
-},
-{
 "word": "تشويش",
 "display": "تشويش",
 "en": "",
@@ -2637,16 +2437,6 @@
 "difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1486199",
-"verified": true
-},
-{
-"word": "تشييط",
-"display": "تشييط",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1479096",
 "verified": true
 },
 {
@@ -2710,16 +2500,6 @@
 "verified": true
 },
 {
-"word": "تضليل",
-"display": "تضليل",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1487868",
-"verified": true
-},
-{
 "word": "تطريز",
 "display": "تطريز",
 "en": "",
@@ -2737,16 +2517,6 @@
 "difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1484131",
-"verified": true
-},
-{
-"word": "تعذيب",
-"display": "تعذيب",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1478461",
 "verified": true
 },
 {
@@ -2797,16 +2567,6 @@
 "difficulty": 2,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1477615",
-"verified": true
-},
-{
-"word": "تغريب",
-"display": "تغريب",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1477548",
 "verified": true
 },
 {
@@ -2957,16 +2717,6 @@
 "difficulty": 2,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1484731",
-"verified": true
-},
-{
-"word": "تكفير",
-"display": "تكفير",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1488450",
 "verified": true
 },
 {
@@ -3320,16 +3070,6 @@
 "verified": true
 },
 {
-"word": "جريمه",
-"display": "جريمة",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1478367",
-"verified": true
-},
-{
 "word": "جلباب",
 "display": "جلباب",
 "en": "",
@@ -3357,16 +3097,6 @@
 "difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1220752",
-"verified": true
-},
-{
-"word": "جنازه",
-"display": "جنازة",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1496089",
 "verified": true
 },
 {
@@ -3467,16 +3197,6 @@
 "difficulty": 2,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1498830",
-"verified": true
-},
-{
-"word": "خازوق",
-"display": "خازوق",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1501161",
 "verified": true
 },
 {
@@ -3850,26 +3570,6 @@
 "verified": true
 },
 {
-"word": "سياسه",
-"display": "سياسة",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1236045",
-"verified": true
-},
-{
-"word": "سينما",
-"display": "سينما",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1234726",
-"verified": true
-},
-{
 "word": "شربين",
 "display": "شربين",
 "en": "",
@@ -3897,26 +3597,6 @@
 "difficulty": 2,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1478516",
-"verified": true
-},
-{
-"word": "شعوذه",
-"display": "شعوذة",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1485737",
-"verified": true
-},
-{
-"word": "شفاعه",
-"display": "شفاعة",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1479046",
 "verified": true
 },
 {
@@ -3967,16 +3647,6 @@
 "difficulty": 2,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1495975",
-"verified": true
-},
-{
-"word": "ضريبه",
-"display": "ضريبة",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1478468",
 "verified": true
 },
 {
@@ -4080,26 +3750,6 @@
 "verified": true
 },
 {
-"word": "عقوبه",
-"display": "عقوبة",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1487863",
-"verified": true
-},
-{
-"word": "عقيده",
-"display": "عقيدة",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1479130",
-"verified": true
-},
-{
 "word": "علجوم",
 "display": "علجوم",
 "en": "",
@@ -4107,16 +3757,6 @@
 "difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1478436",
-"verified": true
-},
-{
-"word": "علمنه",
-"display": "علمنة",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1489266",
 "verified": true
 },
 {
@@ -4147,16 +3787,6 @@
 "difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1478955",
-"verified": true
-},
-{
-"word": "عنوسه",
-"display": "عنوسة",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1476454",
 "verified": true
 },
 {
@@ -4267,16 +3897,6 @@
 "difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1491146",
-"verified": true
-},
-{
-"word": "فلسفه",
-"display": "فلسفة",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1476445",
 "verified": true
 },
 {
@@ -4530,16 +4150,6 @@
 "verified": true
 },
 {
-"word": "كنيسه",
-"display": "كنيسة",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1501510",
-"verified": true
-},
-{
 "word": "كوكبه",
 "display": "كوكبة",
 "en": "",
@@ -4597,16 +4207,6 @@
 "difficulty": 2,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1372796",
-"verified": true
-},
-{
-"word": "مجهول",
-"display": "مجهول",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1479372",
 "verified": true
 },
 {
@@ -4710,16 +4310,6 @@
 "verified": true
 },
 {
-"word": "مدسوس",
-"display": "مدسوس",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1478834",
-"verified": true
-},
-{
 "word": "مدينه",
 "display": "مدينة",
 "en": "",
@@ -4727,16 +4317,6 @@
 "difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1372440",
-"verified": true
-},
-{
-"word": "مذبحه",
-"display": "مذبحة",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1491076",
 "verified": true
 },
 {
@@ -4850,16 +4430,6 @@
 "verified": true
 },
 {
-"word": "مسحور",
-"display": "مسحور",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1478229",
-"verified": true
-},
-{
 "word": "مسحوق",
 "display": "مسحوق",
 "en": "",
@@ -4877,16 +4447,6 @@
 "difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1502070",
-"verified": true
-},
-{
-"word": "مسكنه",
-"display": "مسكنة",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1477466",
 "verified": true
 },
 {
@@ -5090,16 +4650,6 @@
 "verified": true
 },
 {
-"word": "مقاتل",
-"display": "مقاتل",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1495697",
-"verified": true
-},
-{
 "word": "مقاله",
 "display": "مقالة",
 "en": "",
@@ -5117,16 +4667,6 @@
 "difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1481948",
-"verified": true
-},
-{
-"word": "مقبره",
-"display": "مقبرة",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1499328",
 "verified": true
 },
 {
@@ -5217,16 +4757,6 @@
 "difficulty": 3,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1496597",
-"verified": true
-},
-{
-"word": "مناضل",
-"display": "مناضل",
-"en": "",
-"category": "dictionary",
-"difficulty": 2,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1501966",
 "verified": true
 },
 {
@@ -5400,16 +4930,6 @@
 "verified": true
 },
 {
-"word": "ناووس",
-"display": "ناووس",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1502017",
-"verified": true
-},
-{
 "word": "نصيحه",
 "display": "نصيحة",
 "en": "",
@@ -5527,16 +5047,6 @@
 "difficulty": 2,
 "age": "all",
 "source": "https://www.wikidata.org/wiki/Lexeme:L1486607",
-"verified": true
-},
-{
-"word": "وسواس",
-"display": "وسواس",
-"en": "",
-"category": "dictionary",
-"difficulty": 3,
-"age": "all",
-"source": "https://www.wikidata.org/wiki/Lexeme:L1502603",
 "verified": true
 },
 {

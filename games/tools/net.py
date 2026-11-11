@@ -10,6 +10,7 @@ def get(url, accept="application/json"):
     key = os.path.join(CACHE, hashlib.sha256(url.encode()).hexdigest())
     if os.path.exists(key):
         return open(key, encoding="utf-8").read()
+    if os.environ.get("GAMES_CACHE_ONLY"): raise KeyError("not cached: " + url[:80])
     for attempt in range(12):
         req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": accept})
         try:

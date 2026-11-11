@@ -73,3 +73,12 @@ Rule from the supervisor: verification by source is for **facts**; a playable wo
 
 Quiz bank at this point: see the counts in the report; the new generators are `build_langcur.py` (official language and currency, one per country, from Wikidata), element-by-symbol (`build_science.py`) and next-surah for every surah (`build_quran.py`).
 Residual risk for this pass: curated words are not source-checked; a native reader must skim `odd-one`, `charades`, `khanat`, `missing-word` and `word5` once.
+
+## Third pass (gaps, publishing)
+
+- **Quiz bank:** 1486 verified items (1270 are 4-option quiz items). New: 17 short-letter facts with page evidence (`rows_hive.py`), surah-by-number for surahs whose name starts with a letter that was short.
+- **Letter hive, Arabic, final table (answers starting with the letter):** all 28 letters have 12 or more except خ 8, ذ 5, ض 7, ظ 4, و 11. Where the language has few (ظ, ذ) there is no more to add that has one clear answer. English side (`en_index` in `letter-hive/index.json`): all 26 letters have items; under 12: J 9, Q 6, W 11, X 2, Y 11, Z 10. The SPEC does not promise English play, so this is additive.
+- **word5:** 511 answers (152 curated, 359 dictionary words; blocklist widened, words starting with «ال» removed); accepted guesses 31,367 (lemmas of all letters, all forms of lexemes starting with ا ت ج ح, and the forms of the first 2,800 lexeme ids). The rest of the 73,000 lexemes' forms need about 12 hours of Wikidata queries at the service's pace, so they are not in; `lex_forms2.py` resumes from its cache.
+- **Sayings:** 117 (57 repo, 60 curated). 150 is not reached: the rest would be guesses.
+- **khanat:** the box `city` (world capitals) is new and additive; `saudi_city` now holds only Saudi cities.
+- **Reading by a native speaker:** `games/CONTENT-REVIEW.md`.

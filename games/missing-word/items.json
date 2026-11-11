@@ -6961,5 +6961,245 @@
 ],
 "verified": "curated",
 "full": "القلم أحد اللسانين"
+},
+{
+"id": "mw-cur-48",
+"deck": "saying",
+"text": {
+"ar": "عدو عاقل خير من صديق ___",
+"en": ""
+},
+"answer": {
+"ar": "جاهل",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "عدو عاقل خير من صديق جاهل"
+},
+{
+"id": "mw-cur-49",
+"deck": "saying",
+"text": {
+"ar": "فاقد الشيء لا ___",
+"en": ""
+},
+"answer": {
+"ar": "يعطيه",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "فاقد الشيء لا يعطيه"
+},
+{
+"id": "mw-cur-50",
+"deck": "saying",
+"text": {
+"ar": "شر البلية ما ___",
+"en": ""
+},
+"answer": {
+"ar": "يضحك",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "شر البلية ما يضحك"
+},
+{
+"id": "mw-cur-51",
+"deck": "saying",
+"text": {
+"ar": "ما لا يدرك كله لا ___ كله",
+"en": ""
+},
+"answer": {
+"ar": "يترك",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "ما لا يدرك كله لا يترك كله"
+},
+{
+"id": "mw-cur-52",
+"deck": "saying",
+"text": {
+"ar": "الإنسان ابن ___",
+"en": ""
+},
+"answer": {
+"ar": "بيئته",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "الإنسان ابن بيئته"
+},
+{
+"id": "mw-cur-53",
+"deck": "saying",
+"text": {
+"ar": "أطعم الفم تستحي ___",
+"en": ""
+},
+"answer": {
+"ar": "العين",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "أطعم الفم تستحي العين"
+},
+{
+"id": "mw-cur-54",
+"deck": "saying",
+"text": {
+"ar": "من جاور السعيد ___",
+"en": ""
+},
+"answer": {
+"ar": "يسعد",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "من جاور السعيد يسعد"
+},
+{
+"id": "mw-cur-55",
+"deck": "saying",
+"text": {
+"ar": "___ ضر ما نفع",
+"en": ""
+},
+"answer": {
+"ar": "الطمع",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "الطمع ضر ما نفع"
+},
+{
+"id": "mw-cur-56",
+"deck": "saying",
+"text": {
+"ar": "لا يصلح العطار ما أفسد ___",
+"en": ""
+},
+"answer": {
+"ar": "الدهر",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "لا يصلح العطار ما أفسد الدهر"
+},
+{
+"id": "mw-cur-57",
+"deck": "saying",
+"text": {
+"ar": "خذ الحكمة من أفواه ___",
+"en": ""
+},
+"answer": {
+"ar": "المجانين",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "خذ الحكمة من أفواه المجانين"
+},
+{
+"id": "mw-cur-58",
+"deck": "saying",
+"text": {
+"ar": "وراء كل عظيم ___",
+"en": ""
+},
+"answer": {
+"ar": "امرأة",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "وراء كل عظيم امرأة"
+},
+{
+"id": "mw-cur-59",
+"deck": "saying",
+"text": {
+"ar": "ما خاب من ___",
+"en": ""
+},
+"answer": {
+"ar": "استشار",
+"en": ""
+},
+"accept": [],
+"difficulty": 2,
+"age": "all",
+"source": [
+"curated"
+],
+"verified": "curated",
+"full": "ما خاب من استشار"
 }
 ]

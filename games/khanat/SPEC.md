@@ -6,7 +6,7 @@ Our own name and wording for the traditional game «اسم حيوان نبات �
 A random letter appears; every team writes or says one answer per box that starts with that letter; the fastest finisher shouts «خلّصت»; points for each answer that is right and not repeated.
 
 ## Boxes (default 5)
-حيوان، نبات، جماد، بلاد، اسم. Optional extras in the settings chips: أكلة، مهنة، مدينة سعودية (replace «اسم» or add a sixth). Each box has an icon and a color; 4 to 6 boxes fit the TV.
+حيوان، نبات، جماد، بلاد، اسم. Optional extras in the settings chips: أكلة، مهنة، مدينة سعودية، مدينة (any city: world capitals from Wikidata) (replace «اسم» or add a sixth). Each box has an icon and a color; 4 to 6 boxes fit the TV.
 
 ## Remote-only flow (default)
 1. Ready screen: chips for الجولات (3, 5, 8; default 5), الوقت (60 or 90 s or «بدون وقت»; default 90), الصناديق (5 or 6); button «ابدأ».

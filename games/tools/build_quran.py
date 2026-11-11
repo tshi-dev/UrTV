@@ -9,6 +9,11 @@ API = "https://api.alquran.cloud/v1/surah"
 
 def strip(s): return re.sub(r"[ً-ٰٟۖ-ۭـ]", "", s).replace("ٱ", "ا")
 
+def first_l(name):
+    t = re.sub("[\u064B-\u065F\u0670]", "", name).replace("ٱ", "ا")
+    t = t[2:] if t.startswith("ال") and len(t) > 3 else t
+    return t[:1]
+
 def build(stats):
     data = json.loads(net.get("https://api.alquran.cloud/v1/surah"))["data"]
     assert len(data) == 114 and sum(s["numberOfAyahs"] for s in data) == 6236
@@ -33,6 +38,11 @@ def build(stats):
             out["quiz"].append(item(f"qu-next-{n}", "quiz", "islamic", 2 if n in famous else 3, "all",
                 f"أي سورة تأتي بعد سورة {show[n]}؟", f"Which surah comes right after Surah {en[n]}?", a,
                 pick_wrong(f"qn{n}", pool, a), [API]))
+    for n in range(1, 115):   # by number, only for surahs whose name starts with a letter that is short in the letter hive
+        if first_l(show[n]) in "ذضظخحشصوط" and n not in (2,):
+            a = (show[n], en[n])
+            out["quiz"].append(item(f"qu-num-{n}", "quiz", "islamic", 3, "all", f"ما اسم السورة رقم {str(n).translate(str.maketrans('0123456789', '٠١٢٣٤٥٦٧٨٩'))} في المصحف؟",
+                f"What is the name of surah number {n} in the Mushaf?", a, pick_wrong(f"qb{n}", pool, a), [API]))
     for n in sorted(checked):
         if n in famous or ayahs[n] >= 100 or n >= 100:
             wrong = sorted({max(3, ayahs[n] + d) for d in (3, 5, -3, 8, -4, 12, 6, 10)} - {ayahs[n]})
