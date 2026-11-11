@@ -1,4 +1,4 @@
-«✅ GO — step 52 (re-check on build 228 or newer), then step 53 (Player v0.9.7)» — the pause is over. Thanks for 47, 48, 50 and 51. Run step 52 then step 53 (end of this file). TV muted. Do not wait on the owner; stop if the family PIN is asked. The factory-interface step stays forbidden. lang ar stays.
+«✅ GO — step 52 (re-check on build 228 or newer), then step 53 (Player v0.9.7), then step 54 (build 231)» — the pause is over. Thanks for 47, 48, 50 and 51. Step 52 is reported, thanks. Run step 53 then step 54 (end of this file). TV muted. Do not wait on the owner; stop if the family PIN is asked. The factory-interface step stays forbidden. lang ar stays.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -852,3 +852,13 @@ Same public list as step 50, loaded by link. Numbers for each:
 9. «ليش يقطّع؟» in the player's OK panel: «البث سليم» on a good channel; what it says on the slow channel.
 10. Long OK on a row with the real remote if the owner is there; otherwise skip.
 Z as step 50. Report «step 53».
+
+## step 54 — re-check on the newest build (231 or newer; after step 53; TV muted)
+A. Screensaver start: start the screensaver, let it show 15 s, stop, start again; `logcat -s UrTVSaver | grep snapshot:` for the SECOND start (found/used? first frame at N ms? view created in N ms? page live at N ms? copy ok/failed/flat?). Frames at 0.2 / 1 / 3 s: the last picture, no blank.
+B. Tray jank bisect (same gesture and dumpsys as step 46 item 11, each after a home restart): `optimize/dock.sh debug all off` → measure; then each alone ON: `traynoglass`, `nopillpanel`, `nowifimark`, `nosnapshot`, `nocardglass`; then all five ON. Table of janky % and p50/p90/p99. `dock.sh debug all off` at the end (`debug show` to confirm).
+C. Home: the darker box under the stocks card on a LIGHT wallpaper: gone? (measure the same strip y 508–650.)
+D. Quiz: 1) a real Chrome page left in the BACKGROUND + 2 scripted phones: every question waits the full 20 s unless all three answered; after 3 missed questions that player's page says «خرجت من الغرفة، ادخل من جديد» and rejoining keeps his score; «جاوب الجميع» only on a real early end; all on 0 → «لا فائز هذه المرة»; ties share a place. 2) Drawing with the real font: أ ب ج د centred in their tags (measure), place 1's rank box has its right ink line, «ما ناتج 250 - 175؟» reads in order, the Arabic phone page shows the room code in 0-9. 3) LANGUAGES: TV in English → questions and answers in English with A B C D; one phone page Arabic (ع) and one English in the same room: each sees its own language, the same answer position is right for both; TV Arabic + an English phone likewise.
+E. «كل الدوريات…»: country names Arabic now (the TV's old copy must be replaced on first open); load time.
+F. Settings: the clean row's «مفعّل…» line updates as soon as you return; the gap above «التحديث التلقائي للصفحة».
+G. Screensaver idle CPU, 10 samples over 2 minutes: is the once-a-minute spike (42–47 %) gone?
+Z. Restore as step 44 Z. Report «step 54».
