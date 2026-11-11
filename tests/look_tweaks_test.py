@@ -32,8 +32,8 @@ gs, prefs, rcv, prov, snap, main, paint = (read(HOME / "GlassStyle.java"), read(
                                            read(HOME / "ConfigSnapshot.java"), read(HOME / "MainActivity.java"), read(HOME / "GlassPaint.java"))
 check("eight accents and three focus styles; nothing set means the look as it is (tinted() returns the look itself)",
       len(re.findall(r'\{"[a-z]+", "[^"]+", "#[0-9A-F]{6}"\}', gs.split("ACCENTS = {", 1)[1].split("};", 1)[0])) == 8 and 'FOCUS_STYLES = {"solid", "frame", "glow"}' in gs and "if (a == 0) return l;" in gs)
-check("Prefs: each setting has its default (none, 100, 0, solid) and the string is empty while nothing was touched; both apps' GlassStyle is told",
-      'if (a.isEmpty() && b == 100 && d == 0 && "solid".equals(f)) return "";' in prefs and "GlassStyle.setTweaks(tweaks());" in prefs)
+check("Prefs: each setting has its default (none, 100, 0, solid, «توحيد المظهر» on) and the string is empty while nothing was touched; both apps' GlassStyle is told",
+      'if (a.isEmpty() && b == 100 && d == 0 && "solid".equals(f) && sync) return "";' in prefs and "GlassStyle.setTweaks(tweaks());" in prefs)
 check("an agent can set accent, baropacity, walldim and focusstyle, and `show` says them",
       all(w in rcv for w in ('getStringExtra("accent")', 'getStringExtra("baropacity")', 'getStringExtra("walldim")', 'getStringExtra("focusstyle")', '"\\naccent: "', '"\\nbaropacity: "', '"\\nwalldim: "', '"\\nfocusstyle: "')))
 check("the provider gives look_tweaks and the launcher reads it (an older screensaver says nothing: the look as it is)",

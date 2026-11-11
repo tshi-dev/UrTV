@@ -71,6 +71,13 @@ saver --es look glass --es lang ar --es appearance dark
 # the home's stand-in picture (HomeSnapshot): held in front (the skeleton on a fresh emulator), then the live home
 shoot "after-snapshot-held" sa.urtv.home/.DebugSnapShot sa.urtv.home/.MainActivity hold
 shoot "after-snapshot-live" sa.urtv.home/.DebugSnapShot sa.urtv.home/.MainActivity live
+# «توحيد المظهر» (design/43 sync-03…06): the home with the switch on in the glass, the graphite and the light look (the upper buttons, the cards and the apps bar one material), then off in the glass look
+for spec in "glass dark on" "graphite dark on" "glass light on" "glass dark off"; do
+  set -- $spec
+  saver --es look "$1" --es lang ar --es appearance "$2" --es looksync "$3"
+  shoot "after-home-sync-$1-$2-$3" sa.urtv.home/.DebugSnapShot sa.urtv.home/.MainActivity live
+done
+saver --es look glass --es lang ar --es appearance dark --es looksync on
 # «تلفزيونك»: the app's entry (YourTvHubActivity, exported: started as the launcher does): four windows; Arabic dark and light, English, and the sand look
 for spec in "glass ar dark" "glass ar light" "glass en dark" "sand ar light"; do
   set -- $spec

@@ -80,9 +80,9 @@ public class AppearanceActivity extends Activity {
 
     // ---- drawing ----
 
-    /** null: the page of six categories; else the one open (look, accent, light, cards, wall, density) */
+    /** null: the page of the categories; else the one open (look, accent, light, sync, cards, wall, density) */
     private String sub;
-    private static final String[][] CATS = {{"look", "الشكل"}, {"accent", "اللون"}, {"light", "الإضاءة"}, {"cards", "البطاقات"}, {"wall", "الخلفية والصور"}, {"density", "الحجم والكثافة"}};
+    private static final String[][] CATS = {{"look", "الشكل"}, {"accent", "اللون"}, {"light", "الإضاءة"}, {"sync", "توحيد المظهر"}, {"cards", "البطاقات"}, {"wall", "الخلفية والصور"}, {"density", "الحجم والكثافة"}};
 
     @Override public void onBackPressed() {
         if (sub != null) { String was = sub; sub = null; render(); View t = col.findViewWithTag("cat:" + was); if (t != null) t.requestFocus(); }
@@ -112,6 +112,7 @@ public class AppearanceActivity extends Activity {
                 case "look": m = new Mock(Mock.HOME, prefs.look(), GlassStyle.of(prefs.look(), light)); value = Prefs.lookLabel(prefs.look()); break;
                 case "accent": m = new Mock(Mock.DOTS, "all", look); value = prefs.accent().isEmpty() ? w("حسب الشكل") : accentName(prefs.accent()); break;
                 case "light": m = new Mock(Mock.HOME, prefs.look(), GlassStyle.of(prefs.look(), false), GlassStyle.of(prefs.look(), true)); value = Prefs.appearanceLabel(prefs.appearance()); break;
+                case "sync": m = new Mock(Mock.SYNC, prefs.lookSync() ? "on" : "off", GlassStyle.of(prefs.look(), light)); value = w(prefs.lookSync() ? OnOff.ON_WORD : OnOff.OFF_WORD); break;
                 case "cards": m = new Mock(Mock.CARD, prefs.cardStyle(), GlassStyle.of(prefs.look(), false)); value = w(cardStyleName()); break;
                 case "wall": m = new Mock(Mock.PHOTOS, "own", look); value = w("تعتيم الخلفية") + " " + prefs.wallDim() + "٪"; break;
                 default: m = new Mock(Mock.BARS, prefs.favBar(), look); value = Prefs.favBarLabel(prefs.favBar()); break;
@@ -158,6 +159,26 @@ public class AppearanceActivity extends Activity {
                     cells.add(tile("light:" + a, new Mock(Mock.HOME, prefs.look(), GlassStyle.of(prefs.look(), "light".equals(a)), "auto".equals(a) ? GlassStyle.of(prefs.look(), true) : null), w(shortLight(a)), a.equals(prefs.appearance()), v -> { prefs.setAppearance(a); render(); }));
                 }
                 grid(cells, 3);
+                break;
+            }
+            case "sync": {   // 4.3 «توحيد المظهر» (design/43 sync-*): the home's upper buttons, cards and apps bar as one material, or each on its own
+                final boolean on = prefs.lookSync();
+                GlassStyle.Look home = GlassStyle.of(prefs.look(), light);
+                cells.add(tile("sync:on", new Mock(Mock.SYNC, "on", home), w(OnOff.ON_WORD), on, v -> { prefs.setLookSync(true); render(); }));
+                cells.add(tile("sync:off", new Mock(Mock.SYNC, "off", home), w(OnOff.OFF_WORD), !on, v -> { prefs.setLookSync(false); render(); }));
+                grid(cells, 3);
+                col.addView(text(w(on ? "مفعّل: الأزرار العلوية والبطاقات وشريط التطبيقات بمادة وحدة. غيّر شفافية الشريط أو اللون فيتغيّر الثلاثة معًا."
+                        : "متوقف: لكل سطح شفافيته وتعبئته. الشكل واللون وشكل التركيز يبقون للكل."), 16, "Regular", look.sub), line(dp(16)));
+                if (!on) for (int i = 0; i < GlassStyle.SURFACES.length; i++) {
+                    final int s = i;
+                    col.addView(stepper("surface" + s, w(GlassStyle.SURFACE_NAMES[s]) + "، " + w("الشفافية"), prefs.surfacePercent(s), 30, 100, 10, v -> { prefs.setSurfacePercent(s, v); render(); }), line(dp(8)));
+                    List<View> fills = new ArrayList<>();
+                    for (int k = 0; k < GlassStyle.FILLS.length; k++) {
+                        final String fill = GlassStyle.FILLS[k];
+                        fills.add(tile("fill" + s + ":" + fill, new Mock(Mock.FILL, s + fill, home), w(GlassStyle.FILL_NAMES[k]), fill.equals(prefs.surfaceFill(s)), v -> { prefs.setSurfaceFill(s, fill); render(); }));
+                    }
+                    grid(fills, 3);
+                }
                 break;
             }
             case "cards": {
@@ -404,7 +425,7 @@ public class AppearanceActivity extends Activity {
      * screensaver's card in that style over a dark photo; PHOTOS is a stack of photo frames (a different tint for each source).
      */
     private final class Mock extends View {
-        static final int HOME = 0, CARD = 1, PHOTOS = 2, DOTS = 3, BARS = 4, FOCUS = 5;
+        static final int HOME = 0, CARD = 1, PHOTOS = 2, DOTS = 3, BARS = 4, FOCUS = 5, SYNC = 6, FILL = 7;
         private final int kind;
         private final String key;
         private final GlassStyle.Look l;
@@ -423,7 +444,10 @@ public class AppearanceActivity extends Activity {
         }
 
         /** the home in one look; a glass look's cards are nearly the ground's colour, so each one also gets a hairline, or it would be missing on a dark ground */
-        private void drawHome(Canvas c, GlassStyle.Look l, float w, float h, float r) {
+        private void drawHome(Canvas c, GlassStyle.Look l, float w, float h, float r) { drawHome(c, l, w, h, r, GlassStyle.sync()); }
+
+        /** the same with «توحيد المظهر» as given: the upper buttons, the card and the apps bar each in its material (GlassStyle.material), one material when it is on */
+        private void drawHome(Canvas c, GlassStyle.Look l, float w, float h, float r, boolean sync) {
             RectF all = new RectF(0, 0, w, h);
             paint.setColor(GlassStyle.over(l.base, 0xFF000000));
             c.drawRoundRect(all, r, r, paint);
@@ -435,12 +459,13 @@ public class AppearanceActivity extends Activity {
             for (int i = 0; i < 3; i++) cards[4 + i] = new RectF(w * 0.55f + i * (w * 0.15f), h - dp(34), w * 0.55f + i * (w * 0.15f) + w * 0.12f, h - dp(12));   // the favourites
             for (int i = 0; i < cards.length; i++) {
                 float cr = i < 3 ? dp(6) : i == 3 ? dp(8) : dp(4);
+                GlassStyle.Material m = GlassStyle.material(l, prefs.look(), i < 3 ? GlassStyle.QUICK : i == 3 ? GlassStyle.CARDS : GlassStyle.BAR, sync);
                 paint.setStyle(Paint.Style.FILL);
-                paint.setColor(GlassStyle.over(i < 4 ? l.panel : l.dialog, l.base));
+                paint.setColor(GlassStyle.over(m.fill, l.base));
                 c.drawRoundRect(cards[i], cr, cr, paint);
                 paint.setStyle(Paint.Style.STROKE);
                 paint.setStrokeWidth(Math.max(1, dp(1)));
-                paint.setColor(l.line);
+                paint.setColor(m.line);
                 c.drawRoundRect(cards[i], cr, cr, paint);
             }
             paint.setStyle(Paint.Style.FILL);
@@ -457,6 +482,23 @@ public class AppearanceActivity extends Activity {
                     c.save(); c.clipRect(0, 0, w / 2, h); drawHome(c, l, w, h, r); c.restore();
                     c.save(); c.clipRect(w / 2, 0, w, h); drawHome(c, l2, w, h, r); c.restore();
                 }
+            } else if (kind == SYNC) {   // the home as the switch would make it
+                drawHome(c, l, w, h, r, "on".equals(key));
+            } else if (kind == FILL) {   // one fill on one surface ("0look"): a panel of it over the look's ground
+                int surface = key.charAt(0) - '0';
+                String fill = key.substring(1);
+                paint.setColor(GlassStyle.over(l.base, 0xFF000000));
+                c.drawRoundRect(all, r, r, paint);
+                GlassStyle.Look g = "graphite".equals(fill) ? GlassStyle.of("graphite", l.light && surface != GlassStyle.CARDS) : l;
+                int f = "glass".equals(fill) ? (l.light && surface != GlassStyle.CARDS ? GlassStyle.GLASS_FILL_LIGHT : GlassStyle.GLASS_FILL_DARK) : g.panel;
+                RectF box = new RectF(w * 0.14f, h * 0.24f, w * 0.86f, h * 0.76f);
+                paint.setColor(GlassStyle.over(GlassStyle.scaled(f, prefs.surfacePercent(surface)), l.base));
+                c.drawRoundRect(box, dp(8), dp(8), paint);
+                paint.setStyle(Paint.Style.STROKE);
+                paint.setStrokeWidth(Math.max(1, dp(1)));
+                paint.setColor(l.line);
+                c.drawRoundRect(box, dp(8), dp(8), paint);
+                paint.setStyle(Paint.Style.FILL);
             } else if (kind == CARD) {
                 paint.setColor(0xFF1C2A24);
                 c.drawRoundRect(all, r, r, paint);   // the photo

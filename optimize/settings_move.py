@@ -46,7 +46,7 @@ MIGRATIONS = {}
 ALLOWED_TOP = ("schema", "city", "digits", "prayer", "hijri_offset", "clock24", "clock_size", "card_style", "cards",
                "greeting", "listen_pill", "update_bell", "markets", "teams", "adhan", "sunrise", "prayerbar", "wxmore", "months",
                "lang", "fav_bar", "reciter_favs", "pagesdark", "pills_hidden", "home_photos", "home_packs", "home_ours", "album_mode", "album_date",
-               "accent", "bar_opacity", "wall_dim", "focus_style")
+               "accent", "bar_opacity", "wall_dim", "focus_style", "look_sync")
 # NEVER here: the hidden update-channel switch (updatechannel) and the parental PIN. tests/settings_move_test.py checks both.
 
 # The same lists the apps validate (android/app/src/main/java/sa/urtv/screensaver/Prefs.java; tests/settings_move_test.py
@@ -200,6 +200,8 @@ def read_tv(keep_own=False):
         s["album_mode"] = g["albummode"]
     if g.get("albumdate") in ("on", "off"):
         s["album_date"] = g["albumdate"] == "on"
+    if g.get("looksync") in ("on", "off"):   # 4.3 «توحيد المظهر»; an older screensaver does not say it: left out of the file
+        s["look_sync"] = g["looksync"] == "on"
     if g.get("homeours") in ("on", "off"):
         s["home_ours"] = g["homeours"] == "on"
     if g.get("favbar") in FAV_BARS:   # «تطبيقات في الشريط»; an older screensaver does not say: left out of the file
@@ -307,7 +309,7 @@ def flat(s):
             out["city"] += (c["country"],)
     for k in ("digits", "clock24", "clock_size", "card_style", "greeting", "listen_pill", "update_bell", "hijri_offset", "sunrise", "prayerbar", "wxmore", "months",
               "lang", "fav_bar", "pagesdark", "home_photos", "home_ours", "album_mode", "album_date",
-              "accent", "bar_opacity", "wall_dim", "focus_style"):
+              "accent", "bar_opacity", "wall_dim", "focus_style", "look_sync"):
         if k in s:
             out[k] = s[k]
     for k in ("pills_hidden", "home_packs"):
@@ -517,7 +519,7 @@ def validate(d):
             errs.append(f"home_packs must be a list of up to {MAX_HOME_PACKS} different photo pack ids (empty: none)")
         else:
             out["home_packs"] = v
-    for key in ("clock24", "greeting", "listen_pill", "update_bell", "sunrise", "prayerbar", "wxmore", "pagesdark", "home_ours", "album_date"):
+    for key in ("clock24", "greeting", "listen_pill", "update_bell", "sunrise", "prayerbar", "wxmore", "pagesdark", "home_ours", "album_date", "look_sync"):
         if key in d:
             n = len(errs)
             boolean(d[key], key, errs)
@@ -760,6 +762,8 @@ def ops(values, names):
             es("albummode", v)
         elif p == "album_date":
             es("albumdate", flag(v))
+        elif p == "look_sync":
+            es("looksync", flag(v))
         elif p == "cards.panel2":
             es("panel2", v)
         elif p == "listen_pill":

@@ -618,8 +618,9 @@ public class MainActivity extends Activity {
         dockRow.setPadding(bar(FavBar.PAD_SIDE), bar(FavBar.PAD_TOP), bar(FavBar.PAD_SIDE), bar(FavBar.PAD_TOP));
         GradientDrawable band = dockBand = new GradientDrawable();
         band.setCornerRadius(bar(FavBar.RADIUS));
-        band.setColor(FavBar.FILL_DARK);
-        band.setStroke(Math.max(1, bar(1)), FavBar.LINE_DARK);
+        GlassStyle.Material bandNow = GlassStyle.material(lookNow, lightNow, GlassStyle.BAR);   // the home's one material (applyLook repaints it)
+        band.setColor(bandNow.fill);
+        band.setStroke(Math.max(1, bar(1)), bandNow.line);
         tray = new TraySnap(this);
         tray.setHorizontalScrollBarEnabled(false);
         tray.setFillViewport(true);
@@ -1327,9 +1328,9 @@ public class MainActivity extends Activity {
         // Focus ring and sheen, drawn above the art.
         GradientDrawable ring = new GradientDrawable();
         ring.setCornerRadius(inDock ? bar(FavBar.TILE_RADIUS) : dp(10));
-        ring.setStroke(inDock ? bar(FavBar.RING) : dp(2), inDock ? FavBar.ring(lightNow) : 0xE6FFFFFF);
+        ring.setStroke(inDock ? trayRingW() : dp(2), inDock ? trayRing() : 0xE6FFFFFF);
         ring.setOrientation(GradientDrawable.Orientation.TL_BR);
-        ring.setColors(inDock && !lightNow ? new int[]{0x38FFE9B8, 0x00FFE9B8, 0x00FFE9B8} : new int[]{0x26FFFFFF, 0x00FFFFFF, 0x00FFFFFF});   // the widgets' glow inside the ring (gold-hi) on the dark looks
+        ring.setColors(inDock && !lightNow ? new int[]{(trayRing() & 0x00FFFFFF) | 0x38000000, trayRing() & 0x00FFFFFF, trayRing() & 0x00FFFFFF} : new int[]{0x26FFFFFF, 0x00FFFFFF, 0x00FFFFFF});   // a soft glow of the ring's own colour inside it on the dark looks
         View shine = new View(this);
         shine.setBackground(ring);
         shine.setAlpha(0f);
@@ -2169,7 +2170,7 @@ public class MainActivity extends Activity {
         GradientDrawable ring = ringByCard.get(card);
         View shine = shineByCard.get(card);
         boolean fav = dockCards.contains(card);
-        if (ring != null) ring.setStroke(lifted ? dp(4) : fav ? bar(FavBar.RING) : dp(2), lifted ? GOLD : fav ? FavBar.ring(lightNow) : 0xE6FFFFFF);
+        if (ring != null) ring.setStroke(lifted ? dp(4) : fav ? trayRingW() : dp(2), lifted ? GOLD : fav ? trayRing() : 0xE6FFFFFF);
         if (shine != null && lifted) shine.setAlpha(1f);
         if (lifted) {
             scaleTo(card, fav ? FavBar.LIFTED_SCALE : 1.25f);   // a favourite stays inside its tray
@@ -2853,14 +2854,14 @@ public class MainActivity extends Activity {
     /** the look applyLook last painted (a change of look repaints even when the light stays) */
     private String paletteLook = "";
 
-    /** an ARGB colour with its alpha at this percent of what it was */
-    private static int scaled(int argb, int percent) {
-        return (Math.round((argb >>> 24) * percent / 100f) << 24) | (argb & 0x00FFFFFF);
-    }
+    /** the focused favourite's ring: the material's (the look's focus colour or the chosen accent, in the focus style), kept by applyLook so a focus step reads two fields */
+    private int trayRingColor = 0xFFFFFFFF, trayRingPx = FavBar.RING;
+    private int trayRing() { return trayRingColor; }
+    private int trayRingW() { return bar(trayRingPx); }
 
     private void applyLook(boolean light) {
         GlassSource.setHomeLight(this, light);   // «تلقائي» on the other screens follows the home (kept only when it changes)
-        String key = lookNow + "|" + GlassStyle.barPercent() + "|" + GlassStyle.dimPercent() + "|" + GlassStyle.focusStyle() + "|" + GlassStyle.of(lookNow, false).accent;   // a touch of «اللون والتحكم» repaints too
+        String key = lookNow + "|" + GlassStyle.barPercent() + "|" + GlassStyle.dimPercent() + "|" + GlassStyle.focusStyle() + "|" + GlassStyle.of(lookNow, false).accent + "|" + GlassStyle.materialKey();   // a touch of «اللون والتحكم» repaints too
         if (light == lightNow && key.equals(paletteLook)) return;
         lightNow = light;
         paletteLook = key;
@@ -2876,11 +2877,13 @@ public class MainActivity extends Activity {
         scrim.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, p.scrim));
         gridShade.setBackgroundColor(p.shade);
         boolean noGlass = DebugFlags.on(this, "traynoglass");   // a tester's switch (dock.sh debug traynoglass): no fill and no line behind the tiles
-        dockBand.setColor(noGlass ? 0 : scaled(light ? FavBar.FILL_LIGHT : FavBar.FILL_DARK, GlassStyle.barPercent()));   // FavBar: the same tray on every look; «شفافية الشريط» thins it (100: as it was)
-        dockBand.setStroke(Math.max(1, bar(1)), noGlass ? 0 : scaled(light ? FavBar.LINE_LIGHT : FavBar.LINE_DARK, GlassStyle.barPercent()));
+        GlassStyle.Material m = GlassStyle.material(lookNow, light, GlassStyle.BAR);   // «توحيد المظهر»: the apps bar wears the home's one material, as the upper buttons and the cards do
+        dockBand.setColor(noGlass ? 0 : m.fill);
+        dockBand.setStroke(Math.max(1, bar(1)), noGlass ? 0 : m.line);
+        trayRingColor = m.ring; trayRingPx = m.ringWidth;
         if (wallDimView != null) wallDimView.setAlpha(GlassStyle.dimPercent() / 100f);
-        for (View c : dockCards) { GradientDrawable r = ringByCard.get(c); if (r != null) r.setStroke(bar(FavBar.RING), FavBar.ring(light)); }
-        if (homeCard != null) homeCard.light(light);   // the football home's widgets: the same light or dark glass
+        for (View c : dockCards) { GradientDrawable r = ringByCard.get(c); if (r != null) r.setStroke(trayRingW(), trayRing()); }
+        if (homeCard != null) { homeCard.look(lookNow); homeCard.light(light); if (resumed) homeCard.refresh(); }   // the cards' page takes the new material now (its address changed), not at the next return   // the football home's widgets: the same light or dark glass
         updateNetIcon();   // its colour is the look's secondary ink
     }
 
@@ -3001,7 +3004,7 @@ public class MainActivity extends Activity {
         applyLook(Look.light(cfg.appearance(), dayBySun(cfg), h * 60 + now.get(Calendar.MINUTE)));
         GlassStyle.Look glassNow = homeGlass();
         for (Pill p : new Pill[] {inputsPill, tasksPill, tilawahPill, centerPill, marketsPill, matchesPill, phonePill, updatePill, bellPill}) if (p != null) p.look(glassNow);   // «رملي»: its own buttons
-        if (pillBar != null) pillBar.look(glassNow);
+        if (pillBar != null) pillBar.look(GlassStyle.material(glassNow, lookNow, GlassStyle.QUICK));
         for (View v : pills) if (v instanceof Pill) ((Pill) v).look(glassNow);   // and every pill of the row, whatever else is added to it: six buttons, one style (step 28: two stayed grey circles)
         boolean h24 = cfg.clock24();   // «ساعة ٢٤»: off (12-hour with the ص or م) unless the owner turned it on
         clock.setText(ClockText.face(h, now.get(Calendar.MINUTE), h24, Digits.latin()));

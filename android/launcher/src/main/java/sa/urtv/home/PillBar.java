@@ -39,6 +39,7 @@ final class PillBar extends LinearLayout {
         dp = c.getResources().getDisplayMetrics().density;
         line.setStyle(Paint.Style.STROKE);
         line.setStrokeWidth(Math.max(1f, dp));
+        radius = GlassStyle.RADIUS_OUTER / 2f * dp;
         setWillNotDraw(false);
         setClipChildren(false);
     }
@@ -108,16 +109,16 @@ final class PillBar extends LinearLayout {
         margins.remove(child);
     }
 
-    /** the glass of the home now; the strength is the owner's «شفافية الشريط» (100: the look as it is) */
-    void look(GlassStyle.Look l) {
-        int pct = GlassStyle.barPercent();
+    /** the home's material for the upper buttons now (GlassStyle.material, QUICK): with «توحيد المظهر» on, the very fill and line of the cards and the apps bar */
+    void look(GlassStyle.Material m) {
         boolean none = DebugFlags.on(getContext(), "nopillpanel");   // a tester's switch (dock.sh debug nopillpanel): no panel behind the buttons
-        fill.setColor(none ? 0 : scaled(l.panel, pct));
-        line.setColor(none ? 0 : scaled(l.line, pct));
+        fill.setColor(none ? 0 : m.fill);
+        line.setColor(none ? 0 : m.line);
+        radius = m.radius / 2f * dp;   // the material's px at 1080p, where 1 dp is 2 px
         invalidate();
     }
 
-    private static int scaled(int argb, int pct) { return (Math.round((argb >>> 24) * pct / 100f) << 24) | (argb & 0xFFFFFF); }
+    private float radius;
 
     @Override protected void dispatchDraw(Canvas c) {
         float l = Float.MAX_VALUE, t = Float.MAX_VALUE, rt = -Float.MAX_VALUE, b = -Float.MAX_VALUE;
@@ -128,8 +129,8 @@ final class PillBar extends LinearLayout {
         }
         if (l < rt) {
             r.set(l - 4 * dp, t - 4 * dp, rt + 4 * dp, b + 4 * dp);
-            c.drawRoundRect(r, 12 * dp, 12 * dp, fill);
-            c.drawRoundRect(r, 12 * dp, 12 * dp, line);
+            c.drawRoundRect(r, radius, radius, fill);
+            c.drawRoundRect(r, radius, radius, line);
         }
         super.dispatchDraw(c);
     }

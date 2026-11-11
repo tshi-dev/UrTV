@@ -16,13 +16,14 @@ main = (HOME / "MainActivity.java").read_text(encoding="utf-8")
 check("the tray is a HorizontalScrollView with the bar's own glass, 218 high, in the safe area (128 from the sides, 54 from the bottom)",
       "tray = new TraySnap(this);" in main and "new LinearLayout.LayoutParams(-1, bar(FavBar.TRAY_H))" in main
       and "bar(FavBar.SIDE), 0, bar(FavBar.SIDE), bar(FavBar.REST_BOTTOM)" in main and "tray.setClipToPadding(true);" in main)
-check("the same tray on every look: its colours are FavBar's, light or dark, never a look's own",
-      "dockBand.setColor(noGlass ? 0 : scaled(light ? FavBar.FILL_LIGHT : FavBar.FILL_DARK, GlassStyle.barPercent()));" in main and "dockBand.setColor(p.band);" not in main)
+check("the tray wears the home's one material (4.3 «توحيد المظهر»: the look's panel when on, FavBar's own white glass by default when off), never the palette's band",
+      "dockBand.setColor(noGlass ? 0 : m.fill);" in main and "dockBand.setStroke(Math.max(1, bar(1)), noGlass ? 0 : m.line);" in main and "dockBand.setColor(p.band);" not in main)
 check("the favourites and the row under them take FavBar's cell (304 wide, 24 apart), not a share of the width",
       main.count("dockCell(") >= 6 and "dockRow.addView(tile, dockCell(i, dock.size()));" in main)
-check("a focused favourite lifts 6 and grows 1.08 in 150 ms, its ring 3 px green (DGA on light, #8FE0B4 over a photo)",
+check("a focused favourite lifts 6 and grows 1.08 in 150 ms, its ring the material's (the look's focus colour or the accent, in the focus style), read from two fields on a focus step",
       "translationY(has ? -lift() : 0)" in main and "static int lift(int screenH, int n) { return n <= 6 ? px(LIFT, screenH) : 0; }" in (HOME / "FavBar.java").read_text(encoding="utf-8") and "FavBar.FOCUS_SCALE" in main and "setDuration(FavBar.MS)" in main
-      and "FavBar.ring(lightNow)" in main)
+      and "FavBar.ring(" not in main and "ring.setStroke(lifted ? dp(4) : fav ? trayRingW() : dp(2), lifted ? GOLD : fav ? trayRing() : 0xE6FFFFFF);" in main
+      and "private int trayRing() { return trayRingColor; }" in main and "trayRingColor = m.ring; trayRingPx = m.ringWidth;" in main)
 check("the name is centred over the focused favourite, follows it as the tray scrolls, and hides when the focus leaves the bar",
       "placeName();" in main and "tray.setOnScrollChangeListener((v, x, y, ox, oy) -> placeName());" in main
       and "addOnGlobalFocusChangeListener((was, now) -> { KeyTrace.focusChanged(); placeName(); })" in main and "nameRow.animate().alpha(inBar ? 1f : 0f)" in main)

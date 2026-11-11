@@ -46,17 +46,17 @@ check("the look is applied only when it changes; the home is built in the dark l
       "if (light == lightNow && key.equals(paletteLook)) return;" in apply and "private boolean lightNow;" in main)
 for part in ("clock.setTextColor(p.text)", "title.setTextColor(p.ink)", "t.setTextColor(p.soft)", "t.setTextColor(p.gold)", "t.setShadowLayer(dp(3), 0, dp(1), p.shadow)",
              "for (TextView t : gridLabels) t.setTextColor(p.ink);", "scrim.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, p.scrim));",
-             "gridShade.setBackgroundColor(p.shade);", "dockBand.setColor(noGlass ? 0 : scaled(light ? FavBar.FILL_LIGHT : FavBar.FILL_DARK, GlassStyle.barPercent()));"):
+             "gridShade.setBackgroundColor(p.shade);", "GlassStyle.Material m = GlassStyle.material(lookNow, light, GlassStyle.BAR);", "dockBand.setColor(noGlass ? 0 : m.fill);"):
     check(f"the light and dark looks recolour: {part}", part in apply)
 check("a grid name made while the light look is on is made in it, and the list is emptied when the grid is built again",
       "if (lightNow || \"sand\".equals(lookNow)) label.setTextColor(palette().ink);" in main and "gridCards.clear();\n        gridLabels.clear();" in main)
 ints = lambda s: [int(x, 16) for x in re.findall(r"0x([0-9A-F]{8})", s)]
 scrim_src = re.search(r"scrim\.setBackground\(new GradientDrawable\(GradientDrawable\.Orientation\.TOP_BOTTOM,\s*new int\[\]\{([^}]*)\}\)\);", main).group(1)
 dark = re.search(r"DARK_LOOK = new Palette\(([^;]*)\);", look, re.S).group(1)
-check("the dark look's colours are the home's own (the scrim, the clock, the date, the gold, the shadow, the shade); the tray is FavBar's, the same on every look",
+check("the dark look's colours are the home's own (the scrim, the clock, the date, the gold, the shadow, the shade); the tray is built in the home's one material (4.3 «توحيد المظهر», tests/sync_look_test.py)",
       ints(scrim_src) == ints(dark)[6:11] and ints(dark)[0] == 0xFFFFFDF6 and ints(dark)[2] == 0xFFC6BBA4 and "static final int GOLD = 0xFFD6AF6B;" in main
       and ints(dark)[3] == 0xFFD6AF6B and "0x80000000" in main and "gridShade.setBackgroundColor(0xB3000000);" in main
-      and "band.setColor(FavBar.FILL_DARK);" in main and "band.setStroke(Math.max(1, bar(1)), FavBar.LINE_DARK);" in main, (ints(scrim_src), ints(dark)))
+      and "band.setColor(bandNow.fill);" in main and "band.setStroke(Math.max(1, bar(1)), bandNow.line);" in main, (ints(scrim_src), ints(dark)))
 notices = read(ROOT / "THIRD_PARTY_NOTICES.md")
 check("talkies is credited (THIRD_PARTY_NOTICES.md and Look)", "Copyright (c) 2026 TechPP" in notices and "talkies" in look and "THIRD_PARTY_NOTICES.md" in look)
 check("documented: SETTINGS.md and FEATURES.md", "optimize/saver.sh appearance auto" in read(ROOT / "docs/SETTINGS.md") and "**المظهر:**" in read(ROOT / "docs/FEATURES.md"))

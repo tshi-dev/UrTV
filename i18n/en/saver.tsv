@@ -824,3 +824,11 @@
 فاز %s بالجولة	%s won the round
 مقفلة: فاز %s بأقل مجموع	Blocked: %s won on the lowest count
 مقفلة بالتعادل: لا نقاط	Blocked and tied: no points
+# 4.3 «توحيد المظهر» (AppearanceActivity, GlassStyle.material)
+توحيد المظهر	Match the design
+الأزرار العلوية	Upper buttons
+شريط التطبيقات	Apps bar
+لون الشكل	The look’s colour
+الشفافية	Strength
+مفعّل: الأزرار العلوية والبطاقات وشريط التطبيقات بمادة وحدة. غيّر شفافية الشريط أو اللون فيتغيّر الثلاثة معًا.	On: the upper buttons, the cards and the apps bar are one material. Change the tray strength or the colour and all three change together.
+متوقف: لكل سطح شفافيته وتعبئته. الشكل واللون وشكل التركيز يبقون للكل.	Off: each surface has its own strength and fill. The look, the colour and the focus style stay for all.

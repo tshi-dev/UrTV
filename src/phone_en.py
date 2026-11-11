@@ -2,7 +2,7 @@
 """«اللغة», phase 4 (docs/ENGLISH.md): the phone page in English, android/launcher/src/main/assets/phone/index.en.html.
 
 The Arabic android/launcher/src/main/assets/phone/index.html stays the source, byte for byte, but for the language link this generator
-puts in it (LINK_AR, when LINK is on): the link is never written by hand (the Arabic file has a few hundred bytes left of its 64 KB). The English copy is
+puts in it (LINK_AR, when LINK is on): the link is never written by hand (the Arabic file has under two hundred bytes left of its 64 KB; its script is indented with tabs for that). The English copy is
 that file with EN_CODE below (what a table cannot do: the English plurals, word order, the left-to-right style, the link the other way),
 then every Arabic literal through i18n/tr.py with i18n/en/phone.tsv. PhoneHost serves the one «اللغة» asks for (Tr.phonePageName).
 
@@ -29,13 +29,13 @@ PF_AR, PF_EN = PHONE / "portfolio.html", PHONE / "portfolio.en.html"
 # files are without it and index.html is exactly what it was. tests/i18n_phone_test.mjs tries the link on the pages with it either way.
 LINK = True
 LINK_AR = [   # (anchor, what goes right after it) or, when the anchor starts a line, right before it
-    ('<button id="theme" class="lnk">الوضع الفاتح</button>', '<button id="lang" class="lnk hidden" lang="en">English</button>'),
-    ("    cards(s);\n", "    $('lang').classList.toggle('hidden', !s.lang);\n"),
-    ("  // ---- the glass look", "  $('lang').onclick = function () { gated('/api/set', { lang: 'en' }).then(function (j) { if (j.ok) location.reload(); else say(j); }); };\n"),
+    ('<button id="theme" data-i="sun">الوضع الفاتح</button>', '<button id="lang" class="hidden" data-i="globe" lang="en">English</button>'),
+    ("\t\tcards(s);\n", "\t\t$('lang').classList.toggle('hidden', !s.lang);\n"),
+    ("\t// ---- the glass look", "\t$('lang').onclick = function () { gated('/api/set', { lang: 'en' }).then(function (j) { if (j.ok) location.reload(); else say(j); }); };\n"),
 ]
-piece = lambda anchor, add: add + anchor if anchor.startswith("  ") else anchor + add
+piece = lambda anchor, add: add + anchor if anchor.startswith("\t") else anchor + add
 LINK_EN = [
-    ('<button id="lang" class="lnk hidden" lang="en">English</button>', '<button id="lang" class="lnk hidden" lang="ar">العربية</button>', 1),
+    ('<button id="lang" class="hidden" data-i="globe" lang="en">English</button>', '<button id="lang" class="hidden" data-i="globe" lang="ar">العربية</button>', 1),
     ("gated('/api/set', { lang: 'en' })", "gated('/api/set', { lang: 'ar' })", 1),
 ]
 
@@ -61,7 +61,7 @@ EN_CODE = [
     ("padding-left:34px;background:var(--tile) linear-gradient(135deg,transparent 50%,var(--dim) 50%) 14px 50%/7px 7px no-repeat",
      "padding-right:34px;background:var(--tile) linear-gradient(135deg,transparent 50%,var(--dim) 50%) calc(100% - 14px) 50%/7px 7px no-repeat", 1),
     ("#now{display:flex;align-items:center;gap:12px;padding:12px 18px 12px 12px;", "#now{display:flex;align-items:center;gap:12px;padding:12px 12px 12px 18px;", 1),
-    ("</style>", "[data-k=back] svg,#txtGo svg{transform:scaleX(-1)}\n</style>", 1),
+    ("</style>", "[data-k=back] svg,#txtGo svg{transform:scaleX(-1)}.rw::after{transform:rotate(-135deg)}\n</style>", 1),
     # a text with parentheses is no text node the hook sees
     ('<p>المؤذن (لغير الفجر)</p>', '<p>Muezzin (other prayers)</p>', 1),
     # a literal with a quote in it is no literal the hook sees (it would only see the service's name inside)
@@ -76,7 +76,9 @@ EN_CODE = [
     # one Arabic word, two English ones: the table has the settings' meaning (Off, Turn on, On), the player here has its own
     ('data-i="stop"><span class="sr">إيقاف</span>', 'data-i="stop"><span class="sr">Stop</span>', 1),
     ('<button id="qPlay" class="gold wide">تشغيل</button>', '<button id="qPlay" class="gold wide">Play</button>', 1),
-    ("pl ? (rn ? rn + ' · ' : '') + 'يعمل'", "pl ? (rn ? rn + ' · ' : '') + 'Playing'", 1),
+    ("pl ? (rn ? rn + '، ' : '') + 'يعمل'", "pl ? (rn ? rn + ', ' : '') + 'Playing'", 1),
+    # the Arabic comma between the surah and the reciter is an English one
+    ("(r ? '، ' + r : '')", "(r ? ', ' + r : '')", 1),
     # «Maghrib adhan now», as the bar and the page say a prayer's adhan
     ("var lab = live ? 'الأذان الآن' + (s.adhan_prayer ? ': ' + s.adhan_prayer : '') : playLabel(s);",
      "var lab = live ? (s.adhan_prayer ? s.adhan_prayer + ' adhan now' : 'Adhan now') : playLabel(s);", 1),

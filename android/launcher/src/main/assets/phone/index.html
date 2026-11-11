@@ -53,7 +53,7 @@ input[type=checkbox]:disabled{opacity:.45;cursor:default}
 input[type=range]{padding:0;border:0;background:none;accent-color:var(--gold)}
 .row{display:flex;gap:10px;margin:10px 0}
 .row > *{flex:1 1 0;min-width:0}
-.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;margin:12px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:12px 0}
 .note{border:1px solid var(--line);border-radius:16px;padding:10px 12px;margin:10px 0;background:var(--card);font-size:14px}
 .warn{border-color:var(--red);color:var(--red)}
 .sw{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 0;min-height:52px}
@@ -62,37 +62,44 @@ input[type=range]{padding:0;border:0;background:none;accent-color:var(--gold)}
 .gl{color:var(--gt)}
 .big{display:block;font-size:24px;font-weight:800;line-height:1.3}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.ic{width:46px;height:46px;border-radius:15px;background:var(--tile);color:var(--gold);display:flex;align-items:center;justify-content:center;flex:none;padding:0;border:0}
+.ic{width:46px;height:46px;border-radius:16px;background:var(--tile);color:var(--gold);display:flex;align-items:center;justify-content:center;flex:none;padding:0;border:0}
 .ch{display:flex;align-items:center;gap:12px;margin-bottom:6px}
 .ch h2,.ch p{margin:0}
 .hd{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:0 10px;margin:20px 4px 0}
 .hd h2{margin:0}
 .h{font-size:24px}
-.lnk{background:none;border:0;color:var(--gt);font-size:15px;min-height:48px;min-width:48px;padding:0 6px}
+.rw{display:flex;align-items:center;gap:12px;min-height:56px;margin:8px 0 0;padding:8px 16px;box-sizing:border-box;border:1px solid var(--line);border-radius:16px;background:var(--tile);color:var(--text);text-decoration:none}
+.rw svg,.q svg{color:var(--gold)}
+.rw b{flex:1;min-width:0;font-weight:500;line-height:1.3}
+.rw small{display:block;font-size:14px;font-weight:400;color:var(--dim)}
+.rw::after{content:"";width:8px;height:8px;border:solid var(--dim);border-width:0 0 2px 2px;transform:rotate(45deg)}
+.rw:active{background:var(--gold);color:var(--ink)}
+.q{gap:8px;margin:8px 0}
+.q button{padding:8px}
 .rnd{width:56px;height:56px;padding:0;border-radius:50%}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
-.chips button{flex:1 1 0;min-height:48px;border-radius:24px;padding:6px 10px;white-space:nowrap;font-size:15px}
+.chips button{flex:1 1 0;min-height:48px;border-radius:16px;padding:6px 10px;white-space:nowrap;font-size:15px}
 details{margin:8px 4px;color:var(--dim);font-size:14px}
 summary{min-height:44px;display:flex;align-items:center;cursor:pointer}
-header.top{display:flex;align-items:center;gap:12px;margin:calc(12px + env(safe-area-inset-top)) 0 12px;padding:10px;border-radius:22px;background:var(--card);border:1px solid var(--line)}
+header.top{display:flex;align-items:center;gap:12px;margin:calc(12px + env(safe-area-inset-top)) 0 12px;padding:10px;border-radius:16px;background:var(--card);border:1px solid var(--line)}
 header.top .ttl{flex:1;min-width:0;font-weight:700}
 header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 .con{color:var(--on);font-weight:400;margin-inline-start:6px}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--on);margin-inline-end:5px}
 #hSet{background:var(--tile);color:var(--text);width:52px;height:52px}
 #bar{position:fixed;bottom:0;inset-inline:0;z-index:5;background:var(--bar);border-top:1px solid var(--line);display:flex;padding:6px 8px calc(8px + env(safe-area-inset-bottom));gap:4px;max-width:560px;margin:0 auto}
-#bar button{flex:1 1 0;flex-direction:column;gap:3px;min-height:58px;border:0;background:none;font-size:14px;padding:4px 2px;border-radius:14px;color:var(--dim);line-height:1.3}
+#bar button{flex:1 1 0;flex-direction:column;gap:3px;min-height:58px;border:0;background:none;font-size:14px;padding:4px 2px;border-radius:16px;color:var(--dim);line-height:1.3}
 #bar button svg { width:26px; height:26px; stroke-width:1.7; }
 #bar button.on { color:var(--gold); font-weight:700; }
-#modes{display:flex;flex:2 1 0;gap:3px;padding:3px;border-radius:19px;background:var(--card);border:1px solid var(--line)}
-#modes button{flex:1 1 0;border:0;background:none;min-height:48px;border-radius:16px}
+#modes{display:flex;flex:2 1 0;gap:3px;padding:3px;border-radius:16px;background:var(--card);border:1px solid var(--line)}
+#modes button{flex:1 1 0;border:0;background:none;min-height:48px;border-radius:12px}
 #modes button.on{background:var(--gold);color:var(--ink);border-color:var(--gold);font-weight:700}
 #now{display:flex;align-items:center;gap:12px;padding:12px 18px 12px 12px;position:relative;background:linear-gradient(var(--glow),var(--glow)),var(--card);box-shadow:inset 0 0 0 1px var(--glow)}
 #now::before{content:"";position:absolute;inset-inline-start:10px;top:16px;bottom:16px;width:4px;border-radius:4px;background:var(--gold)}
 #now .t{flex:1;min-width:0;overflow-wrap:anywhere;padding-inline-start:8px}
 #nowT{display:block;font-size:17px}
 #now button{flex:0 0 auto}
-#pad{position:relative;height:290px;margin:12px 0;border-radius:28px;border:1px solid var(--line);background:radial-gradient(closest-side,var(--glow),transparent),var(--card);touch-action:none;user-select:none;-webkit-user-select:none}
+#pad{position:relative;height:290px;margin:12px 0;border-radius:16px;border:1px solid var(--line);background:radial-gradient(closest-side,var(--glow),transparent),var(--card);touch-action:none;user-select:none;-webkit-user-select:none}
 #pad button{position:absolute;background:none;border:0;color:var(--dim)}
 #pad [data-k=up]{top:6px;left:calc(50% - 26px)}
 #pad [data-k=down]{bottom:34px;left:calc(50% - 26px);transform:rotate(180deg)}
@@ -101,25 +108,25 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 #pad #padOk{inset:0;margin:auto;width:124px;height:124px;border-radius:50%;background:var(--gold);color:var(--ink);font-size:26px;font-weight:800;box-shadow:0 0 0 8px var(--glow),0 6px 40px var(--glow)}
 #pad .hint{position:absolute;bottom:10px;inset-inline:14px;text-align:center;font-size:14px;color:var(--dim);pointer-events:none}
 .keys{display:flex;gap:10px;margin:12px 0}
-.keys button{flex:1 1 0;flex-direction:column;gap:2px;min-height:70px;border-radius:22px;background:var(--card);white-space:nowrap;padding:8px 4px}
-.vol{display:flex;margin:12px 0;padding:4px;border-radius:28px;background:var(--card);border:1px solid var(--line)}
-.vol button{flex:1 1 0;min-height:60px;border:0;background:none;border-radius:24px;white-space:nowrap;padding:6px}
+.keys button{flex:1 1 0;flex-direction:column;gap:2px;min-height:70px;border-radius:16px;background:var(--card);white-space:nowrap;padding:8px 4px}
+.vol{display:flex;margin:12px 0;padding:4px;border-radius:16px;background:var(--card);border:1px solid var(--line)}
+.vol button{flex:1 1 0;min-height:60px;border:0;background:none;border-radius:12px;white-space:nowrap;padding:6px}
 .vol button + button{border-inline-start:1px solid var(--line);border-radius:0}
-.tx{display:flex;align-items:center;gap:8px;margin:12px 0 0;padding:8px;border-radius:24px;background:var(--card);border:1px solid var(--line)}
+.tx{display:flex;align-items:center;gap:8px;margin:12px 0 0;padding:8px;border-radius:16px;background:var(--card);border:1px solid var(--line)}
 .tx input{flex:1;min-width:0;border:0;background:none}
 .tx > span{display:flex;color:var(--dim);padding-inline-start:6px}
 #txtGo{width:58px;border-radius:16px}
 .srch{position:relative;margin:4px 0 0}
 .srch svg{position:absolute;top:14px;inset-inline-start:16px;color:var(--dim)}
-.srch input{padding-inline-start:50px;border-radius:22px;background:var(--card)}
+.srch input{padding-inline-start:50px;border-radius:16px;background:var(--card)}
 .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 6px;padding:14px 8px}
 .grid p{grid-column:1/-1;text-align:center}
 .app{flex-direction:column;justify-content:flex-start;gap:6px;padding:2px 0;min-height:96px;min-width:0;position:relative;font-size:14px;line-height:1.3;overflow-wrap:anywhere;text-align:center;border:0;background:none}
-.tile{width:60px;height:60px;border-radius:17px;background:var(--tile);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;position:relative;overflow:hidden;color:var(--gold);flex:none}
+.tile{width:60px;height:60px;border-radius:16px;background:var(--tile);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;position:relative;overflow:hidden;color:var(--gold);flex:none}
 .tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .tools .tile{background:var(--gold);color:var(--ink)}
 .tools{grid-template-columns:repeat(5,minmax(0,1fr))}
-.tools .tile{width:50px;height:50px;border-radius:15px}
+.tools .tile{width:50px;height:50px;border-radius:16px}
 .lock{position:absolute;top:-4px;inset-inline-end:0;width:28px;height:28px;border-radius:50%;background:var(--bar);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:14px}
 .np{background:linear-gradient(var(--glow),transparent 55%),var(--card)}
 .np .lbl{display:flex;align-items:center;gap:8px;margin:0 0 4px}
@@ -136,12 +143,12 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 .ad{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .tg{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:14px;color:var(--dim);text-align:center}
 .lg{margin-top:calc(40px + env(safe-area-inset-top));text-align:center;padding:26px 18px}
-.lg .ic{margin:0 auto 8px;width:60px;height:60px;border-radius:18px}
+.lg .ic{margin:0 auto 8px;width:60px;height:60px;border-radius:16px}
 #code{text-align:center;font-size:24px;letter-spacing:4px;margin:14px 0 4px}
 #code::placeholder{letter-spacing:0}
-#msg{pointer-events:none;position:fixed;inset-inline:16px;bottom:calc(92px + env(safe-area-inset-bottom));background:var(--bar);color:var(--text);border:1px solid var(--gold);border-radius:18px;padding:12px 14px;text-align:center;z-index:9;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.3)}
+#msg{pointer-events:none;position:fixed;inset-inline:16px;bottom:calc(92px + env(safe-area-inset-bottom));background:var(--bar);color:var(--text);border:1px solid var(--gold);border-radius:16px;padding:12px 14px;text-align:center;z-index:9;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.3)}
 #dlg{position:fixed;inset:0;z-index:10;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center}
-#dlg > div{background:var(--bar);border:1px solid var(--line);border-radius:24px 24px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));width:100%;max-width:560px}
+#dlg > div{background:var(--bar);border:1px solid var(--line);border-radius:16px 24px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));width:100%;max-width:560px}
 @media (max-width:370px){.tile{width:54px;height:54px}.tools .tile{width:46px;height:46px}#pad{height:270px}}
 @media (prefers-reduced-motion: reduce){*,::before,::after{transition:none !important;animation:none !important;scroll-behavior:auto !important} }
 </style>
@@ -175,7 +182,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 <button id="padOk" data-k="ok" aria-label="اختيار">اختيار</button>
 <button data-k="right" data-rep="1" aria-label="يمين" data-i="chev"></button>
 <button data-k="down" data-rep="1" aria-label="أسفل" data-i="chev"></button>
-<span class="hint">اسحب للتحريك · المس للاختيار · أبقِ الإصبع للتكرار</span>
+<span class="hint">اسحب للتحريك، المس للاختيار، أبقِ الإصبع للتكرار</span>
 </div>
 <div id="foreNote" class="note hidden"></div>
 <div class="keys"><button data-k="back" data-i="back">رجوع</button><button data-k="home" data-i="home">الرئيسية</button><button data-k="play_pause" data-i="now">تشغيل/إيقاف</button></div>
@@ -186,9 +193,11 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 <div id="svcNote" class="note warn hidden"><div>فعّل خدمة "تلفزيونك: التحكم والكتابة من الجوال" في إعدادات التلفزيون لتكتب في التطبيقات الأخرى</div><div>الإعدادات ← إمكانية الوصول ← تلفزيونك: التحكم والكتابة من الجوال</div></div>
 <details><summary>أين يُكتب النص؟</summary><p>يُكتب النص في الحقل النصي المفتوح، ويُضاف مهمةً إذا كانت شاشة «المهام» مفتوحة، وفي التطبيقات الأخرى يُكتب في حقلها بعد تفعيل خدمة إمكانية الوصول. ومن دون الخدمة: أندرويد لا يسمح لتطبيق بالكتابة داخل تطبيق آخر، فيُنسخ النص إلى حافظة التلفزيون.</p></details>
 <div class="card" id="msgCard">
-<div class="hd"><h2>رسالة على الشاشة</h2><a class="lnk" href="/d">ارسم</a></div>
-<input id="msgT" dir="auto" maxlength="200" aria-label="رسالة للتلفزيون">
+<div class="ch"><span class="ic" data-i="msg"></span><h2>على الشاشة</h2></div>
+<input id="msgT" dir="auto" maxlength="200" placeholder="اكتب رسالة للتلفزيون" aria-label="رسالة للتلفزيون">
 <button id="msgGo" class="gold wide" data-i="send">اعرضها على التلفزيون</button>
+<a class="rw" href="/d" data-i="pen"><b>ارسم<small>اكتب بإصبعك على الشاشة</small></b></a>
+<a class="rw" href="/u" data-i="img"><b>صوري<small>خلفيات وصور التلفزيون</small></b></a>
 </div>
 </div>
 
@@ -231,7 +240,9 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 </div>
 
 <div id="t-settings" class="hidden">
-<div class="hd"><h2 class="h">إعدادات سريعة</h2><a class="lnk" href="/m">محفظتي</a><a class="lnk" href="/u">صوري</a><button id="theme" class="lnk">الوضع الفاتح</button><button id="lang" class="lnk hidden" lang="en">English</button></div>
+<div class="hd"><h2 class="h">إعدادات سريعة</h2></div>
+<div class="row q"><button id="theme" data-i="sun">الوضع الفاتح</button><button id="lang" class="hidden" data-i="globe" lang="en">English</button></div>
+<a class="rw" href="/m" data-i="wallet"><b>محفظتي</b></a>
 <div class="card">
 <div class="ch"><span class="ic" data-i="pin"></span><div><h2>المدينة</h2><p id="cityNow"></p></div></div>
 <div class="row"><input id="cityQ" placeholder="ابحث عن مدينة" maxlength="30" aria-label="مدينة"><button id="cityGo" style="flex:0 0 90px">بحث</button></div>
@@ -298,6 +309,12 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 <g id="ico-lock"><rect x="5" y="10.5" width="14" height="10" rx="2.5" fill="currentColor"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" stroke-width="2"/></g>
 <g id="ico-tasks"><path d="M10 7h10M10 12h10M10 17h10M4 7l1.3 1.3L7.5 6M4 12l1.3 1.3 2.2-2.3M4 17l1.3 1.3 2.2-2.3"/></g>
 <g id="ico-inputs"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 12h10M10 9l3 3-3 3"/></g>
+<g id="ico-msg"><path d="M4 5h16v11h-9l-4 4v-4H4z"/></g>
+<g id="ico-pen"><path d="M4 20l1-4L16 5l3 3L8 19zM14 7l3 3"/></g>
+<g id="ico-img"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="M4 18l5-5 4 4 3-3 4 4"/></g>
+<g id="ico-wallet"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M16 14.5h2"/></g>
+<g id="ico-sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></g>
+<g id="ico-globe"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></g>
 <g id="ico-listen"><path d="M12 6.5C10 5 7 4.5 3.5 5v13c3.5-.5 6.5 0 8.5 1.5 2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5zM12 6.5v13"/></g>
 </svg>
 </section>
@@ -311,558 +328,560 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 
 <script nonce="__NONCE__">
 (function () {
-  'use strict';
-  var sess = null, state = null, repTimer = null, poll = null, pollEnd = 0, tick = null, curTab = 'remote', svcOff = false, txtMode = 'replace', apps = null, pinVal = '';
-  function $(id) { return document.getElementById(id); }
-  function el(t, c, x) { var e = document.createElement(t); if (c) e.className = c; if (x !== undefined) e.textContent = x; return e; }
-  try { sess = sessionStorage.getItem('urtv'); } catch (e) { sess = null; }
+	'use strict';
+	var sess = null, state = null, repTimer = null, poll = null, pollEnd = 0, tick = null, curTab = 'remote', svcOff = false, txtMode = 'replace', apps = null, pinVal = '';
+	function $(id) { return document.getElementById(id); }
+	function el(t, c, x) { var e = document.createElement(t); if (c) e.className = c; if (x !== undefined) e.textContent = x; return e; }
+	try { sess = sessionStorage.getItem('urtv'); } catch (e) { sess = null; }
 
-  // ---- theme
-  function theme(t) {
-    if (t) document.documentElement.setAttribute('data-theme', t);
-    $('theme').textContent = document.documentElement.getAttribute('data-theme') === 'light' ? 'الوضع الداكن' : 'الوضع الفاتح';
-  }
-  try { theme(localStorage.getItem('urtvTheme')); } catch (e) { theme(); }
-  $('theme').onclick = function () {
-    var dark = document.documentElement.getAttribute('data-theme') !== 'light';
-    var n = dark ? 'light' : 'dark'; theme(n);
-    try { localStorage.setItem('urtvTheme', n); } catch (e) { }
-  };
+	// ---- theme
+	function theme(t) {
+		if (t) document.documentElement.setAttribute('data-theme', t);
+		var l = document.documentElement.getAttribute('data-theme') === 'light', b = $('theme'), i = l ? 'moon' : 'sun';
+		b.lastChild.data = l ? 'الوضع الداكن' : 'الوضع الفاتح';
+		if (b.firstChild === b.lastChild) b.setAttribute('data-i', i); else b.replaceChild(icon(i), b.firstChild);
+	}
+	try { theme(localStorage.getItem('urtvTheme')); } catch (e) { theme(); }
+	$('theme').onclick = function () {
+		var dark = document.documentElement.getAttribute('data-theme') !== 'light';
+		var n = dark ? 'light' : 'dark'; theme(n);
+		try { localStorage.setItem('urtvTheme', n); } catch (e) { }
+	};
 
-  $('lang').onclick = function () { gated('/api/set', { lang: 'en' }).then(function (j) { if (j.ok) location.reload(); else say(j); }); };
-  // ---- the glass look
-  var glassStamp = -1;
-  function glass(s) {
-    var st = document.documentElement.style;
-    if (typeof s.glass_look === 'string' && /^(glass|graphite|navy|clean)$/.test(s.glass_look)) document.documentElement.setAttribute('data-look', s.glass_look);
-    if (typeof s.glass_dark === 'number') st.setProperty('--vd', String(s.glass_dark / 1000));
-    if (typeof s.glass_light === 'number') st.setProperty('--vl', String(s.glass_light / 1000));
-    if (typeof s.glass_stamp !== 'number' || s.glass_stamp === glassStamp) return;
-    glassStamp = s.glass_stamp;
-    if (!s.glass_stamp) { $('glassbg').textContent = ''; return; }
-    var h = {}; if (sess) h['X-UrTV-Session'] = sess;
-    fetch('/api/backdrop', { credentials: 'same-origin', headers: h }).then(function (r) {
-      if (!r.ok) throw 0;
-      return r.blob();
-    }).then(function (b) {
-      var fr = new FileReader();
-      fr.onload = function () {
-        if (typeof fr.result !== 'string' || fr.result.indexOf('data:image/png') !== 0) return;
-        var im = document.createElement('img'); im.alt = '';
-        im.setAttribute('src', fr.result);
-        $('glassbg').textContent = '';
-        $('glassbg').appendChild(im);
-      };
-      fr.readAsDataURL(b);
-    }).catch(function () { glassStamp = -1; });
-  }
+	$('lang').onclick = function () { gated('/api/set', { lang: 'en' }).then(function (j) { if (j.ok) location.reload(); else say(j); }); };
+	// ---- the glass look
+	var glassStamp = -1;
+	function glass(s) {
+		var st = document.documentElement.style;
+		if (typeof s.glass_look === 'string' && /^(glass|graphite|navy|clean)$/.test(s.glass_look)) document.documentElement.setAttribute('data-look', s.glass_look);
+		if (typeof s.glass_dark === 'number') st.setProperty('--vd', String(s.glass_dark / 1000));
+		if (typeof s.glass_light === 'number') st.setProperty('--vl', String(s.glass_light / 1000));
+		if (typeof s.glass_stamp !== 'number' || s.glass_stamp === glassStamp) return;
+		glassStamp = s.glass_stamp;
+		if (!s.glass_stamp) { $('glassbg').textContent = ''; return; }
+		var h = {}; if (sess) h['X-UrTV-Session'] = sess;
+		fetch('/api/backdrop', { credentials: 'same-origin', headers: h }).then(function (r) {
+			if (!r.ok) throw 0;
+			return r.blob();
+		}).then(function (b) {
+			var fr = new FileReader();
+			fr.onload = function () {
+				if (typeof fr.result !== 'string' || fr.result.indexOf('data:image/png') !== 0) return;
+				var im = document.createElement('img'); im.alt = '';
+				im.setAttribute('src', fr.result);
+				$('glassbg').textContent = '';
+				$('glassbg').appendChild(im);
+			};
+			fr.readAsDataURL(b);
+		}).catch(function () { glassStamp = -1; });
+	}
 
-  var STK = 'التحكم في التطبيقات الثانية متوقف: خدمة «تلفزيونك» مفعّلة لكن التلفزيون أوقفها بعد التحديث. أعد تشغيل التلفزيون مرة.';
-  var MSG = {
-    a11y_stuck: STK,
-    other_app: 'تطبيق آخر أمام الشاشة: فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال» في إعدادات إمكانية الوصول بالتلفزيون لتصله الأزرار. الصوت وتشغيل/إيقاف تعمل دائمًا.',
-    other_app_limited: 'ما قدرنا نحرك التركيز أو نضغط في هذا التطبيق الآن. جرّب «رجوع» أو افتح ما تريد بريموت التلفزيون.',
-    message_shown: 'ظهرت على التلفزيون ✓',
-    message_off: 'رسائل الجوال موقوفة.',
-    message_busy_app: 'التلفزيون يعرض تطبيقاً الآن.',
-    private_screen: 'شاشة السماح لا تُحرَّك من الجوال، استعمل ريموت التلفزيون.',
-    failed: 'ما نجح الأمر.', refused: 'ما قبل التلفزيون هذه القيمة.', saver_missing: 'حدّث تطبيق «شاشة تلفزيونك» على التلفزيون.', not_saved: 'التلفزيون ما حفظ البطاقات. أعد المحاولة، وإن تكرر حدّث تطبيق «شاشة تلفزيونك».',
-    pin_required: 'اكتب الرقم السري أولًا.', pin_wrong: 'الرقم السري غير صحيح.', slow_down: 'مهلًا، طلبات كثيرة.', no_session: 'انتهت الجلسة.',
-    bad_request: 'طلب غير مقبول.', busy: 'هناك طلب آخر ينتظر موافقة التلفزيون.', wrong: 'الرمز غير صحيح أو منتهٍ.', locked: 'توقف التحكم لكثرة المحاولات الخاطئة.',
-    not_found: 'ما وجد التلفزيون هذا التطبيق.',
-    typed: 'كُتب النص في الحقل.', task: 'أُضيف النص مهمةً.', copied: 'نُسخ النص إلى حافظة التلفزيون (لا يوجد حقل نصي مفتوح في شاشاتنا).',
-    opened: 'فُتح على التلفزيون', pin_on_tv: 'اكتب الرقم السري على التلفزيون', nothing: 'لا يوجد أذان الآن.',
-    typed_other: 'تمت الكتابة في التطبيق', searched: 'فتحنا البحث في التطبيق بكلماتك', copied_other: 'التطبيق الذي أمامك ما فيه خانة كتابة نقدر نكتب فيها. نسخنا النص على التلفزيون، والصقه من داخل التطبيق إن أمكن.', typed_other_nosearch: 'تمت الكتابة، والبحث يحتاج أندرويد ١١ أو أحدث',
-    saved: 'تم الحفظ.', sent: 'أُرسل.', done: ''
-  };
-  var UP = {
-    idle: '', checking: 'جارٍ الفحص…', uptodate: 'تلفزيونك محدّث.', available: 'يوجد تحديث جديد.', found: 'يوجد تحديث جديد. اضغط «ثبّت» لينزّله التلفزيون ويتحقق منه.', downloading: 'جارٍ التنزيل والتحقق من التوقيع…',
-    waiting_owner: 'أكّد التثبيت على التلفزيون بالريموت.', done: 'اكتمل التحديث.', error: 'تعذّر التحديث.'
-  };
-  var UPWHY = {
-    offline: 'لا يوجد اتصال بالإنترنت أو الملف غير متاح.', other_key: 'رُفض: توقيع الملف يختلف عن التطبيق المثبّت.', other_app: 'رُفض: الملف ليس للتطبيق المطلوب.',
-    unsigned: 'رُفض: الملف أو التطبيق بلا توقيع يمكن مقارنته.', unreadable: 'رُفض: تعذّرت قراءة الملف.', need_permission: 'اسمح لتطبيق تلفزيونك بالتثبيت من إعدادات التلفزيون ثم أعد المحاولة.',
-    cannot: 'التحديث من التلفزيون ما يشتغل على هذا الجهاز. اطلب من مساعد الذكاء الاصطناعي على جهازك: حدّث تلفزيوني (github.com/tshi-dev/UrTV)', failed: 'ما اكتمل التحديث. اطلب من مساعد الذكاء الاصطناعي على جهازك: حدّث تلفزيوني (github.com/tshi-dev/UrTV)',
-    declined: 'ألغيت التثبيت على التلفزيون.', installer: 'رفض مثبّت أندرويد الملف.', storage: 'لا توجد مساحة كافية.', download: 'تعذّر تنزيل ملف التحديث.', exception: 'حدث خطأ غير متوقع أثناء التحديث.',
-    network: 'التلفزيون غير متصل بالواي فاي أو الإيثرنت.', space: 'لا توجد مساحة كافية.', blocked: 'نظام التلفزيون يمنع التثبيت.', invalid: 'رفض مثبّت أندرويد الملف.',
-    conflict: 'يتعارض مع نسخة مثبّتة.', incompatible: 'لا يناسب هذا الجهاز.', record: 'تعذّر حفظ سجل التحديث.'
-  };
-  var TXT = {
-    service_off: 'فعّل خدمة "تلفزيونك: التحكم والكتابة من الجوال" في إعدادات التلفزيون لتكتب في التطبيقات الأخرى', refused: 'ما أقدر أكتب في هذا التطبيق', locked: 'التطبيق الأمامي مقفول بالرقم السري، افتحه على التلفزيون أولاً',
-    password_field: 'ما أكتب في حقل كلمة المرور', failed: 'ما نجحت الكتابة.'
-  };
-  var TOOLS = [['tasks', 'المهام'], ['saver', 'شاشة التوقف'], ['inputs', 'المصادر'], ['settings', 'الإعدادات'], ['listen', 'تلاوة وأذان']];
+	var STK = 'التحكم في التطبيقات الثانية متوقف: خدمة «تلفزيونك» مفعّلة لكن التلفزيون أوقفها بعد التحديث. أعد تشغيل التلفزيون مرة.';
+	var MSG = {
+		a11y_stuck: STK,
+		other_app: 'تطبيق آخر أمام الشاشة: فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال» في إعدادات إمكانية الوصول بالتلفزيون لتصله الأزرار. الصوت وتشغيل/إيقاف تعمل دائمًا.',
+		other_app_limited: 'ما قدرنا نحرك التركيز أو نضغط في هذا التطبيق الآن. جرّب «رجوع» أو افتح ما تريد بريموت التلفزيون.',
+		message_shown: 'ظهرت على التلفزيون ✓',
+		message_off: 'رسائل الجوال موقوفة.',
+		message_busy_app: 'التلفزيون يعرض تطبيقاً الآن.',
+		private_screen: 'شاشة السماح لا تُحرَّك من الجوال، استعمل ريموت التلفزيون.',
+		failed: 'ما نجح الأمر.', refused: 'ما قبل التلفزيون هذه القيمة.', saver_missing: 'حدّث تطبيق «شاشة تلفزيونك» على التلفزيون.', not_saved: 'التلفزيون ما حفظ البطاقات. أعد المحاولة، وإن تكرر حدّث تطبيق «شاشة تلفزيونك».',
+		pin_required: 'اكتب الرقم السري أولًا.', pin_wrong: 'الرقم السري غير صحيح.', slow_down: 'مهلًا، طلبات كثيرة.', no_session: 'انتهت الجلسة.',
+		bad_request: 'طلب غير مقبول.', busy: 'هناك طلب آخر ينتظر موافقة التلفزيون.', wrong: 'الرمز غير صحيح أو منتهٍ.', locked: 'توقف التحكم لكثرة المحاولات الخاطئة.',
+		not_found: 'ما وجد التلفزيون هذا التطبيق.',
+		typed: 'كُتب النص في الحقل.', task: 'أُضيف النص مهمةً.', copied: 'نُسخ النص إلى حافظة التلفزيون (لا يوجد حقل نصي مفتوح في شاشاتنا).',
+		opened: 'فُتح على التلفزيون', pin_on_tv: 'اكتب الرقم السري على التلفزيون', nothing: 'لا يوجد أذان الآن.',
+		typed_other: 'تمت الكتابة في التطبيق', searched: 'فتحنا البحث في التطبيق بكلماتك', copied_other: 'التطبيق الذي أمامك ما فيه خانة كتابة نقدر نكتب فيها. نسخنا النص على التلفزيون، والصقه من داخل التطبيق إن أمكن.', typed_other_nosearch: 'تمت الكتابة، والبحث يحتاج أندرويد ١١ أو أحدث',
+		saved: 'تم الحفظ.', sent: 'أُرسل.', done: ''
+	};
+	var UP = {
+		idle: '', checking: 'جارٍ الفحص…', uptodate: 'تلفزيونك محدّث.', available: 'يوجد تحديث جديد.', found: 'يوجد تحديث جديد. اضغط «ثبّت» لينزّله التلفزيون ويتحقق منه.', downloading: 'جارٍ التنزيل والتحقق من التوقيع…',
+		waiting_owner: 'أكّد التثبيت على التلفزيون بالريموت.', done: 'اكتمل التحديث.', error: 'تعذّر التحديث.'
+	};
+	var UPWHY = {
+		offline: 'لا يوجد اتصال بالإنترنت أو الملف غير متاح.', other_key: 'رُفض: توقيع الملف يختلف عن التطبيق المثبّت.', other_app: 'رُفض: الملف ليس للتطبيق المطلوب.',
+		unsigned: 'رُفض: الملف أو التطبيق بلا توقيع يمكن مقارنته.', unreadable: 'رُفض: تعذّرت قراءة الملف.', need_permission: 'اسمح لتطبيق تلفزيونك بالتثبيت من إعدادات التلفزيون ثم أعد المحاولة.',
+		cannot: 'التحديث من التلفزيون ما يشتغل على هذا الجهاز. اطلب من مساعد الذكاء الاصطناعي على جهازك: حدّث تلفزيوني (github.com/tshi-dev/UrTV)', failed: 'ما اكتمل التحديث. اطلب من مساعد الذكاء الاصطناعي على جهازك: حدّث تلفزيوني (github.com/tshi-dev/UrTV)',
+		declined: 'ألغيت التثبيت على التلفزيون.', installer: 'رفض مثبّت أندرويد الملف.', storage: 'لا توجد مساحة كافية.', download: 'تعذّر تنزيل ملف التحديث.', exception: 'حدث خطأ غير متوقع أثناء التحديث.',
+		network: 'التلفزيون غير متصل بالواي فاي أو الإيثرنت.', space: 'لا توجد مساحة كافية.', blocked: 'نظام التلفزيون يمنع التثبيت.', invalid: 'رفض مثبّت أندرويد الملف.',
+		conflict: 'يتعارض مع نسخة مثبّتة.', incompatible: 'لا يناسب هذا الجهاز.', record: 'تعذّر حفظ سجل التحديث.'
+	};
+	var TXT = {
+		service_off: 'فعّل خدمة "تلفزيونك: التحكم والكتابة من الجوال" في إعدادات التلفزيون لتكتب في التطبيقات الأخرى', refused: 'ما أقدر أكتب في هذا التطبيق', locked: 'التطبيق الأمامي مقفول بالرقم السري، افتحه على التلفزيون أولاً',
+		password_field: 'ما أكتب في حقل كلمة المرور', failed: 'ما نجحت الكتابة.'
+	};
+	var TOOLS = [['tasks', 'المهام'], ['saver', 'شاشة التوقف'], ['inputs', 'المصادر'], ['settings', 'الإعدادات'], ['listen', 'تلاوة وأذان']];
 
-  function toast(t) {
-    if (!t) return;
-    var m = $('msg'); m.textContent = t; m.classList.remove('hidden');
-    clearTimeout(toast.t); toast.t = setTimeout(function () { m.classList.add('hidden'); }, 3500);
-  }
-  function digits(s) { return String(s).replace(/[٠-٩]/g, function (d) { return d.charCodeAt(0) - 0x660; }).replace(/[۰-۹]/g, function (d) { return d.charCodeAt(0) - 0x6f0; }); }
-  function mmss(x) { x = Math.max(0, Math.floor(x)); return Math.floor(x / 60) + ':' + ('0' + x % 60).slice(-2); }
-  // Arabic counting (hours, minutes, seconds, apps)
-  var HR = ['ساعة', 'ساعتين', 'ساعات'], MN = ['دقيقة', 'دقيقتين', 'دقائق'];
-  function nn(n, w) { var r = n % 100; return n === 1 ? w[0] : n === 2 ? w[1] : n + ' ' + (r > 2 && r < 11 ? w[2] : w[3] || w[0]); }
-  function dur(sec) {
-    sec = Math.max(0, Math.round(sec));
-    if (sec < 60) return 'أقل من دقيقة';
-    var h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60);
-    return (h ? nn(h, HR) + (m ? ' و ' : '') : '') + (m ? nn(m, MN) : '');
-  }
+	function toast(t) {
+		if (!t) return;
+		var m = $('msg'); m.textContent = t; m.classList.remove('hidden');
+		clearTimeout(toast.t); toast.t = setTimeout(function () { m.classList.add('hidden'); }, 3500);
+	}
+	function digits(s) { return String(s).replace(/[٠-٩]/g, function (d) { return d.charCodeAt(0) - 0x660; }).replace(/[۰-۹]/g, function (d) { return d.charCodeAt(0) - 0x6f0; }); }
+	function mmss(x) { x = Math.max(0, Math.floor(x)); return Math.floor(x / 60) + ':' + ('0' + x % 60).slice(-2); }
+	// Arabic counting (hours, minutes, seconds, apps)
+	var HR = ['ساعة', 'ساعتين', 'ساعات'], MN = ['دقيقة', 'دقيقتين', 'دقائق'];
+	function nn(n, w) { var r = n % 100; return n === 1 ? w[0] : n === 2 ? w[1] : n + ' ' + (r > 2 && r < 11 ? w[2] : w[3] || w[0]); }
+	function dur(sec) {
+		sec = Math.max(0, Math.round(sec));
+		if (sec < 60) return 'أقل من دقيقة';
+		var h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60);
+		return (h ? nn(h, HR) + (m ? ' و ' : '') : '') + (m ? nn(m, MN) : '');
+	}
 
-  function api(path, body) {
-    var h = {};
-    if (sess) h['X-UrTV-Session'] = sess;
-    var o = { method: body === undefined ? 'GET' : 'POST', credentials: 'same-origin', headers: h, cache: 'no-store' };
-    if (body !== undefined) { h['Content-Type'] = 'application/json'; o.body = JSON.stringify(body); }
-    return fetch(path, o).then(function (r) {
-      return r.json().catch(function () { return { ok: false, error: 'bad_request' }; }).then(function (j) {
-        if ((r.status === 401 || (j && j.error === 'no_session')) && sess) { leave(); }
-        return j;
-      });
-    }, function () { return { ok: false, error: 'failed' }; });
-  }
-  function say(j, quiet) {
-    if (j && j.ok) { var t = MSG[j.result]; if (t && !quiet) toast(t); return true; }
-    toast(MSG[j && j.error] || MSG.failed);
-    return false;
-  }
+	function api(path, body) {
+		var h = {};
+		if (sess) h['X-UrTV-Session'] = sess;
+		var o = { method: body === undefined ? 'GET' : 'POST', credentials: 'same-origin', headers: h, cache: 'no-store' };
+		if (body !== undefined) { h['Content-Type'] = 'application/json'; o.body = JSON.stringify(body); }
+		return fetch(path, o).then(function (r) {
+			return r.json().catch(function () { return { ok: false, error: 'bad_request' }; }).then(function (j) {
+				if ((r.status === 401 || (j && j.error === 'no_session')) && sess) { leave(); }
+				return j;
+			});
+		}, function () { return { ok: false, error: 'failed' }; });
+	}
+	function say(j, quiet) {
+		if (j && j.ok) { var t = MSG[j.result]; if (t && !quiet) toast(t); return true; }
+		toast(MSG[j && j.error] || MSG.failed);
+		return false;
+	}
 
-  // ---- the PIN, when the TV asks for it
-  var pinAsk = null;
-  function askPin(wrong) {
-    return new Promise(function (res) {
-      pinAsk = res;
-      $('dlgT').textContent = wrong ? MSG.pin_wrong : 'اكتب الرقم السري.';
-      $('pin').value = ''; $('dlg').classList.remove('hidden'); $('pin').focus();
-    });
-  }
-  function pinDone(v) { $('dlg').classList.add('hidden'); var r = pinAsk; pinAsk = null; if (r) r(v); }
-  $('pinOk').onclick = function () { var v = digits($('pin').value).replace(/\D/g, ''); if (v) pinDone(v); };
-  $('pinNo').onclick = function () { pinDone(null); };
-  $('pin').onkeydown = function (e) { if (e.key === 'Enter') $('pinOk').onclick(); };
-  function gated(path, body) {
-    var b = {}; for (var k in body) b[k] = body[k];
-    if (pinVal) b.pin = pinVal;
-    return api(path, b).then(function (j) {
-      if (j && !j.ok && (j.error === 'pin_required' || j.error === 'pin_wrong') && sess) {
-        var wrong = j.error === 'pin_wrong'; pinVal = '';
-        return askPin(wrong).then(function (p) { if (p === null) return j; pinVal = p; return gated(path, body); });
-      }
-      return j;
-    });
-  }
+	// ---- the PIN, when the TV asks for it
+	var pinAsk = null;
+	function askPin(wrong) {
+		return new Promise(function (res) {
+			pinAsk = res;
+			$('dlgT').textContent = wrong ? MSG.pin_wrong : 'اكتب الرقم السري.';
+			$('pin').value = ''; $('dlg').classList.remove('hidden'); $('pin').focus();
+		});
+	}
+	function pinDone(v) { $('dlg').classList.add('hidden'); var r = pinAsk; pinAsk = null; if (r) r(v); }
+	$('pinOk').onclick = function () { var v = digits($('pin').value).replace(/\D/g, ''); if (v) pinDone(v); };
+	$('pinNo').onclick = function () { pinDone(null); };
+	$('pin').onkeydown = function (e) { if (e.key === 'Enter') $('pinOk').onclick(); };
+	function gated(path, body) {
+		var b = {}; for (var k in body) b[k] = body[k];
+		if (pinVal) b.pin = pinVal;
+		return api(path, b).then(function (j) {
+			if (j && !j.ok && (j.error === 'pin_required' || j.error === 'pin_wrong') && sess) {
+				var wrong = j.error === 'pin_wrong'; pinVal = '';
+				return askPin(wrong).then(function (p) { if (p === null) return j; pinVal = p; return gated(path, body); });
+			}
+			return j;
+		});
+	}
 
-  // ---- pairing
-  function show(app) {
-    $('login').classList.toggle('hidden', app); $('app').classList.toggle('hidden', !app);
-    document.body.classList.toggle('login', !app);
-  }
-  function leave() {
-    glass({ glass_stamp: 0 }); glassStamp = -1;
-    sess = null; state = null; apps = null; cardsDirty = false; pinVal = ''; icons = {}; iconQ = []; iconWait = {}; svcOff = false; famSeen = false;
-    clearInterval(tick); tick = null; stopRep();
-    try { sessionStorage.removeItem('urtv'); } catch (e) { }
-    show(false);
-    $('loginState').textContent = 'انتهت الجلسة. امسح الرمز من جديد.';
-  }
-  function pair(body) {
-    $('loginState').textContent = 'جارٍ الاتصال…';
-    api('/api/pair', body).then(function (j) {
-      if (!j.ok) { $('loginState').textContent = MSG[j.error] || MSG.failed; return; }
-      $('loginState').textContent = 'بانتظار موافقة التلفزيون: اضغط «سماح» بالريموت.';
-      pollEnd = Date.now() + 70000;
-      clearInterval(poll);
-      poll = setInterval(function () { waitFor(j.id); }, 1200);
-    });
-  }
-  function waitFor(id) {
-    if (Date.now() > pollEnd) { clearInterval(poll); $('loginState').textContent = 'انتهت المهلة.'; return; }
-    api('/api/pair/status', { id: id }).then(function (j) {
-      if (!j.ok || j.status === 'waiting') return;
-      clearInterval(poll);
-      if (j.status === 'approved' && j.session) {
-        sess = j.session;
-        try { sessionStorage.setItem('urtv', sess); } catch (e) { }
-        enter();
-      } else {
-        $('loginState').textContent = j.status === 'denied' ? 'رفض التلفزيون الطلب.' : j.status === 'full' ? 'عدد الجوالات المتصلة وصل حدّه.' : 'انتهى الطلب.';
-      }
-    });
-  }
-  $('codeGo').onclick = function () {
-    var c = digits($('code').value).replace(/\D/g, '');
-    if (c.length !== 6) { $('loginState').textContent = 'الرمز ٦ أرقام.'; return; }
-    pair({ code: c });
-  };
+	// ---- pairing
+	function show(app) {
+		$('login').classList.toggle('hidden', app); $('app').classList.toggle('hidden', !app);
+		document.body.classList.toggle('login', !app);
+	}
+	function leave() {
+		glass({ glass_stamp: 0 }); glassStamp = -1;
+		sess = null; state = null; apps = null; cardsDirty = false; pinVal = ''; icons = {}; iconQ = []; iconWait = {}; svcOff = false; famSeen = false;
+		clearInterval(tick); tick = null; stopRep();
+		try { sessionStorage.removeItem('urtv'); } catch (e) { }
+		show(false);
+		$('loginState').textContent = 'انتهت الجلسة. امسح الرمز من جديد.';
+	}
+	function pair(body) {
+		$('loginState').textContent = 'جارٍ الاتصال…';
+		api('/api/pair', body).then(function (j) {
+			if (!j.ok) { $('loginState').textContent = MSG[j.error] || MSG.failed; return; }
+			$('loginState').textContent = 'بانتظار موافقة التلفزيون: اضغط «سماح» بالريموت.';
+			pollEnd = Date.now() + 70000;
+			clearInterval(poll);
+			poll = setInterval(function () { waitFor(j.id); }, 1200);
+		});
+	}
+	function waitFor(id) {
+		if (Date.now() > pollEnd) { clearInterval(poll); $('loginState').textContent = 'انتهت المهلة.'; return; }
+		api('/api/pair/status', { id: id }).then(function (j) {
+			if (!j.ok || j.status === 'waiting') return;
+			clearInterval(poll);
+			if (j.status === 'approved' && j.session) {
+				sess = j.session;
+				try { sessionStorage.setItem('urtv', sess); } catch (e) { }
+				enter();
+			} else {
+				$('loginState').textContent = j.status === 'denied' ? 'رفض التلفزيون الطلب.' : j.status === 'full' ? 'عدد الجوالات المتصلة وصل حدّه.' : 'انتهى الطلب.';
+			}
+		});
+	}
+	$('codeGo').onclick = function () {
+		var c = digits($('code').value).replace(/\D/g, '');
+		if (c.length !== 6) { $('loginState').textContent = 'الرمز ٦ أرقام.'; return; }
+		pair({ code: c });
+	};
 
-  // ---- the app: four tabs
-  // the icons (#ico)
-  function icon(name) {
-    var s = $('ico').cloneNode(false);
-    s.removeAttribute('id'); s.removeAttribute('class');
-    var g = $('ico-' + name).cloneNode(true);
-    g.removeAttribute('id');
-    s.appendChild(g);
-    return s;
-  }
-  document.querySelectorAll('[data-i]').forEach(function (e) { e.insertBefore(icon(e.getAttribute('data-i')), e.firstChild); });
-  $('hSet').onclick = function () { tab('settings'); };
-  var TABS = [['remote', 'الريموت'], ['apps', 'التطبيقات'], ['now', 'يعمل الآن'], ['settings', 'الإعدادات']];
-  function tab(name) {
-    curTab = name;
-    TABS.forEach(function (t) { $('t-' + t[0]).classList.toggle('hidden', t[0] !== name); });
-    var bs = $('bar').children;
-    for (var i = 0; i < bs.length; i++) bs[i].classList.toggle('on', bs[i].getAttribute('data-t') === name);
-    window.scrollTo(0, 0);
-    if (name === 'apps') loadApps();
-    if (name === 'settings') loadFamily();
-    if (name !== 'remote') refresh();
-  }
-  function enter() {
-    show(true);
-    if (!$('bar').children.length) {
-      TABS.forEach(function (t) {
-        var b = el('button'); b.setAttribute('data-t', t[0]);
-        b.appendChild(icon(t[0])); b.appendChild(document.createTextNode(t[1]));
-        b.onclick = function () { tab(t[0]); };
-        $('bar').appendChild(b);
-      });
-    }
-    tab('remote');
-    refresh();
-    clearInterval(tick);
-    tick = setInterval(function () { if (sess && !document.hidden && !pinAsk) api('/api/state').then(function (s) { if (s.ok) { state = s; render(s, false); } }); }, 5000);
-  }
-  function opt(sel, value, text, chosen) {
-    var o = el('option', '', text); o.value = value; if (chosen) o.selected = true; sel.appendChild(o);
-  }
-  function fill(sel, list, current) {
-    sel.textContent = '';
-    list.forEach(function (v) { opt(sel, String(v.id), v.name, String(v.id) === String(current)); });
-  }
-  function refresh() {
-    api('/api/state').then(function (s) { if (s.ok) { state = s; render(s, true); } });
-  }
-  function recName(s, id) {
-    var r = (s.reciters || []).filter(function (x) { return String(x.id) === String(id); })[0];
-    return r ? r.name : '';
-  }
-  function playLabel(s) {
-    var p = s.player || {};
-    if (!p.playing || p.source === 'none') return '';
-    if (p.source === 'radio') return 'إذاعة القرآن الكريم';
-    if (p.source === 'adhan') return 'الأذان يُرفع';
-    var n = p.surah && s.surahs ? s.surahs[p.surah - 1] : '', r = recName(s, p.reciter);
-    return (n ? 'سورة ' + n : 'تلاوة') + (r ? ' · ' + r : '');
-  }
-  // the polled parts, then the forms
-  function render(s, full) {
-    glass(s);
-    var live = !!s.adhan_live, p = s.player || {};
-    var secs = typeof s.seconds_left === 'number' ? s.seconds_left : 0;
-    $('left').textContent = 'بقي ' + nn(Math.max(1, Math.round(secs / 60)), MN);
-    var fn = $('foreNote'), fore = s.foreground === 'other';
-    fn.classList.toggle('hidden', !fore); fn.classList.toggle('warn', fore && (!s.keys_everywhere || !!s.a11y_stuck));
-    $('svcNote').classList.toggle('hidden', !!s.a11y_stuck || !(svcOff || (fore && s.typing_service === false)));
-    fn.textContent = s.a11y_stuck ? STK : s.dpad_everywhere ? 'الأسهم والاختيار والرجوع والرئيسية تعمل في التطبيق الذي أمامك'
-      : s.keys_everywhere ? 'الرجوع والرئيسية تعمل في كل التطبيقات؛ الأسهم والاختيار تحتاج أندرويد ١٣ أو خدمة «تلفزيونك: التحكم والكتابة من الجوال»'
-      : 'يوجد تطبيق آخر أمام الشاشة. فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال» (الإعدادات ← إمكانية الوصول) لتعمل الأسهم والاختيار والرجوع والرئيسية فيه. الصوت وتشغيل/إيقاف تعمل دائمًا.';
-    var lab = live ? 'الأذان الآن' + (s.adhan_prayer ? ': ' + s.adhan_prayer : '') : playLabel(s);
-    $('now').classList.toggle('hidden', !lab); $('nowT').textContent = lab;
-    $('nowS').textContent = live ? 'على التلفزيون الآن' : p.source === 'radio' ? 'بث مباشر' : 'يُتلى الآن على التلفزيون';
-    $('nowTog').classList.toggle('hidden', live || !lab);
-    $('adhanStop1').classList.toggle('hidden', !live); $('adhanStop2').classList.toggle('hidden', !live);
-    var pl = playLabel(s), sur = p.surah && s.surahs ? s.surahs[p.surah - 1] : '', rn = p.source === 'surah' ? recName(s, p.reciter) : '';
-    $('npL').textContent = live ? 'الأذان' : pl ? 'يُتلى الآن على التلفزيون' : 'التلاوة';
-    $('npT').textContent = live ? lab : p.source === 'radio' && pl ? pl : sur ? 'سورة ' + sur : 'لا شيء يُشغَّل';
-    $('playerNow').textContent = live ? 'على التلفزيون الآن' : pl ? (rn ? rn + ' · ' : '') + 'يعمل' : sur ? 'متوقف مؤقتًا' : 'اختر القارئ والسورة ثم «تشغيل».';
-    var hasP = typeof p.position_s === 'number' && p.duration_s > 0;
-    $('prog').classList.toggle('hidden', !hasP);
-    if (hasP) { $('progI').style.width = Math.min(100, 100 * p.position_s / p.duration_s) + '%'; $('posT').textContent = mmss(p.position_s); $('durT').textContent = mmss(p.duration_s); }
-    $('qTogT').textContent = p.playing ? 'إيقاف مؤقت' : 'استئناف';
-    $('qToggle').setAttribute('data-op', p.playing ? 'pause' : 'resume');
-    var na = s.next_adhan;
-    var nx = $('nextA'); nx.textContent = na && na.prayer ? '' : 'موعد الأذان القادم غير معروف الآن.';
-    if (na && na.prayer) {
-      var at = typeof na.in_seconds === 'number' ? new Date(Date.now() + na.in_seconds * 1000) : null;
-      nx.appendChild(el('span', 'big', na.prayer + (at ? ' ' + at.toLocaleTimeString('ar-u-nu-latn', { hour: 'numeric', minute: '2-digit' }) : '')));
-      if (at) nx.appendChild(el('span', 'gl', 'بعد ' + dur(na.in_seconds)));
-    }
-    var st = s.sleep_timer;
-    $('sleepCard').classList.toggle('hidden', !st);
-    if (st) {
-      var left = st.left_seconds || 0;
-      $('sleepNow').textContent = left > 0 ? 'ينتهي بعد ' + dur(left) : 'المؤقت متوقف.';
-      $('sleepCancel').classList.toggle('hidden', left <= 0);
-    }
-    $('saverCard').classList.toggle('hidden', !s.saver_idle_options);
-    if (s.family) famDraw(s.family); else if (!famSeen) $('famCard').classList.add('hidden');
-    $('ver').textContent = s.version ? 'إصدار تلفزيونك: ' + s.version : '';
-    $('phones').textContent = typeof s.phones === 'number' ? 'الجوالات المتصلة: ' + s.phones : '';
-    upText(s.update);
-    if (!full) return;
-    $('cityNow').textContent = s.settings ? 'المدينة الحالية: ' + s.city : 'إعدادات المدينة غير متاحة: حدّث تطبيق «شاشة تلفزيونك».';
-    $('lang').classList.toggle('hidden', !s.lang);
-    cards(s);
-    var a = s.adhan || {};
-    $('aOn').checked = !!a.on; $('aOn2').checked = !!a.on; $('aShort').checked = !!a.short; $('aStop').checked = !!a.stopkey;
-    $('aVol').value = a.volume || 50; $('aVolN').textContent = (a.volume || 50) + '٪';
-    var vs = s.voices || [];
-    fill($('aVoice'), vs.filter(function (v) { return !v.fajr; }), a.voice);
-    fill($('aFajr'), vs.filter(function (v) { return v.fajr; }).concat(vs.filter(function (v) { return !v.fajr; })), a.fajr_voice);
-    fill($('qRec'), s.reciters || [], p.reciter);
-    var sur = $('qSurah'); if (!sur.children.length) (s.surahs || []).forEach(function (n, i) { opt(sur, String(i + 1), (i + 1) + '. ' + n, false); });
-    if (p.surah) sur.value = String(p.surah);
-    var si = $('saverIdle'), io = (s.saver_idle_options || []).map(String), sec = s.saver_idle_s != null ? +s.saver_idle_s : s.saver_idle * 60; si.textContent = '';
-    if (sec >= 0 && io.indexOf(String(sec / 60)) < 0) opt(si, '', sec < 60 ? (sec ? nn(sec, ['ثانية', 'ثانيتين', 'ثوانٍ']) : 'أقل من دقيقة') : nn(Math.round(sec / 60), MN), true);
-    io.forEach(function (m) { opt(si, m, nn(+m, MN), +m * 60 === sec); });
-    var so = $('sleepOpts'); so.textContent = '';
-    ((st && st.options) || [15, 30, 60, 90]).forEach(function (m) {
-      var b = el('button', '', nn(m, MN)); b.onclick = function () { set({ sleep_minutes: m }); }; so.appendChild(b);
-    });
-  }
-  var famSeen = false;
-  function famDraw(fam) {
-    famSeen = true; $('famCard').classList.remove('hidden');
-    var a = 0, pills = 0; (fam.locked || []).forEach(function (x) { if (String(x).charAt(0) === '@') pills++; else a++; });
-    $('famPin').textContent = 'الرقابة الأبوية: ' + (fam.pin_set ? 'مفعّلة' : 'غير مفعّلة');
-    $('famKids').textContent = 'وضع الأطفال: ' + (fam.kids ? 'يعمل' : 'متوقف');
-    $('famLocked').textContent = 'المقفل: ' + nn(a, ['تطبيق', 'تطبيقين', 'تطبيقات', 'تطبيقًا']) + ' و ' + pills + ' من أزرار التلفزيون';
-  }
-  function loadFamily() {
-    api('/api/family').then(function (j) {
-      var f = j && j.ok ? (j.family || j) : null;
-      if (f && typeof f.pin_set !== 'undefined') famDraw(f);
-    });
-  }
-  // cards being chosen: not redrawn by a late answer
-  var cardsDirty = false;
-  function chosenCards() {
-    var out = [], sels = $('cards').children;
-    for (var i = 0; i < sels.length; i++) if (sels[i].value && out.indexOf(sels[i].value) < 0) out.push(sels[i].value);
-    return out;
-  }
-  function cards(s) {
-    var box = $('cards'), hc = s.home_cards || [], k = JSON.stringify(s.panels || []);
-    if (box.getAttribute('data-p') !== k) {
-      box.textContent = ''; box.setAttribute('data-p', k); cardsDirty = false;
-      for (var i = 0; i < 3; i++) {
-        var sel = document.createElement('select'); sel.setAttribute('data-card', i); sel.setAttribute('aria-label', 'بطاقة ' + (i + 1));
-        opt(sel, '', 'بدون', false);
-        (s.panels || []).forEach(function (p) { opt(sel, p.id, p.name, false); });
-        sel.style.marginBottom = '8px'; sel.onchange = function () { cardsDirty = true; }; box.appendChild(sel);
-      }
-    }
-    if (cardsDirty || box.contains(document.activeElement)) return;
-    for (var j = 0; j < 3; j++) { var c = box.children[j]; c.value = hc[j] || ''; if (c.selectedIndex < 0) c.value = ''; }
-  }
-  function set(b) { return gated('/api/set', b).then(function (j) { say(j); refresh(); return j; }); }
+	// ---- the app: four tabs
+	// the icons (#ico)
+	function icon(name) {
+		var s = $('ico').cloneNode(false);
+		s.removeAttribute('id'); s.removeAttribute('class');
+		var g = $('ico-' + name).cloneNode(true);
+		g.removeAttribute('id');
+		s.appendChild(g);
+		return s;
+	}
+	document.querySelectorAll('[data-i]').forEach(function (e) { e.insertBefore(icon(e.getAttribute('data-i')), e.firstChild); });
+	$('hSet').onclick = function () { tab('settings'); };
+	var TABS = [['remote', 'الريموت'], ['apps', 'التطبيقات'], ['now', 'يعمل الآن'], ['settings', 'الإعدادات']];
+	function tab(name) {
+		curTab = name;
+		TABS.forEach(function (t) { $('t-' + t[0]).classList.toggle('hidden', t[0] !== name); });
+		var bs = $('bar').children;
+		for (var i = 0; i < bs.length; i++) bs[i].classList.toggle('on', bs[i].getAttribute('data-t') === name);
+		window.scrollTo(0, 0);
+		if (name === 'apps') loadApps();
+		if (name === 'settings') loadFamily();
+		if (name !== 'remote') refresh();
+	}
+	function enter() {
+		show(true);
+		if (!$('bar').children.length) {
+			TABS.forEach(function (t) {
+				var b = el('button'); b.setAttribute('data-t', t[0]);
+				b.appendChild(icon(t[0])); b.appendChild(document.createTextNode(t[1]));
+				b.onclick = function () { tab(t[0]); };
+				$('bar').appendChild(b);
+			});
+		}
+		tab('remote');
+		refresh();
+		clearInterval(tick);
+		tick = setInterval(function () { if (sess && !document.hidden && !pinAsk) api('/api/state').then(function (s) { if (s.ok) { state = s; render(s, false); } }); }, 5000);
+	}
+	function opt(sel, value, text, chosen) {
+		var o = el('option', '', text); o.value = value; if (chosen) o.selected = true; sel.appendChild(o);
+	}
+	function fill(sel, list, current) {
+		sel.textContent = '';
+		list.forEach(function (v) { opt(sel, String(v.id), v.name, String(v.id) === String(current)); });
+	}
+	function refresh() {
+		api('/api/state').then(function (s) { if (s.ok) { state = s; render(s, true); } });
+	}
+	function recName(s, id) {
+		var r = (s.reciters || []).filter(function (x) { return String(x.id) === String(id); })[0];
+		return r ? r.name : '';
+	}
+	function playLabel(s) {
+		var p = s.player || {};
+		if (!p.playing || p.source === 'none') return '';
+		if (p.source === 'radio') return 'إذاعة القرآن الكريم';
+		if (p.source === 'adhan') return 'الأذان يُرفع';
+		var n = p.surah && s.surahs ? s.surahs[p.surah - 1] : '', r = recName(s, p.reciter);
+		return (n ? 'سورة ' + n : 'تلاوة') + (r ? '، ' + r : '');
+	}
+	// the polled parts, then the forms
+	function render(s, full) {
+		glass(s);
+		var live = !!s.adhan_live, p = s.player || {};
+		var secs = typeof s.seconds_left === 'number' ? s.seconds_left : 0;
+		$('left').textContent = 'بقي ' + nn(Math.max(1, Math.round(secs / 60)), MN);
+		var fn = $('foreNote'), fore = s.foreground === 'other';
+		fn.classList.toggle('hidden', !fore); fn.classList.toggle('warn', fore && (!s.keys_everywhere || !!s.a11y_stuck));
+		$('svcNote').classList.toggle('hidden', !!s.a11y_stuck || !(svcOff || (fore && s.typing_service === false)));
+		fn.textContent = s.a11y_stuck ? STK : s.dpad_everywhere ? 'الأسهم والاختيار والرجوع والرئيسية تعمل في التطبيق الذي أمامك'
+			: s.keys_everywhere ? 'الرجوع والرئيسية تعمل في كل التطبيقات؛ الأسهم والاختيار تحتاج أندرويد ١٣ أو خدمة «تلفزيونك: التحكم والكتابة من الجوال»'
+			: 'يوجد تطبيق آخر أمام الشاشة. فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال» (الإعدادات ← إمكانية الوصول) لتعمل الأسهم والاختيار والرجوع والرئيسية فيه. الصوت وتشغيل/إيقاف تعمل دائمًا.';
+		var lab = live ? 'الأذان الآن' + (s.adhan_prayer ? ': ' + s.adhan_prayer : '') : playLabel(s);
+		$('now').classList.toggle('hidden', !lab); $('nowT').textContent = lab;
+		$('nowS').textContent = live ? 'على التلفزيون الآن' : p.source === 'radio' ? 'بث مباشر' : 'يُتلى الآن على التلفزيون';
+		$('nowTog').classList.toggle('hidden', live || !lab);
+		$('adhanStop1').classList.toggle('hidden', !live); $('adhanStop2').classList.toggle('hidden', !live);
+		var pl = playLabel(s), sur = p.surah && s.surahs ? s.surahs[p.surah - 1] : '', rn = p.source === 'surah' ? recName(s, p.reciter) : '';
+		$('npL').textContent = live ? 'الأذان' : pl ? 'يُتلى الآن على التلفزيون' : 'التلاوة';
+		$('npT').textContent = live ? lab : p.source === 'radio' && pl ? pl : sur ? 'سورة ' + sur : 'لا شيء يُشغَّل';
+		$('playerNow').textContent = live ? 'على التلفزيون الآن' : pl ? (rn ? rn + '، ' : '') + 'يعمل' : sur ? 'متوقف مؤقتًا' : 'اختر القارئ والسورة ثم «تشغيل».';
+		var hasP = typeof p.position_s === 'number' && p.duration_s > 0;
+		$('prog').classList.toggle('hidden', !hasP);
+		if (hasP) { $('progI').style.width = Math.min(100, 100 * p.position_s / p.duration_s) + '%'; $('posT').textContent = mmss(p.position_s); $('durT').textContent = mmss(p.duration_s); }
+		$('qTogT').textContent = p.playing ? 'إيقاف مؤقت' : 'استئناف';
+		$('qToggle').setAttribute('data-op', p.playing ? 'pause' : 'resume');
+		var na = s.next_adhan;
+		var nx = $('nextA'); nx.textContent = na && na.prayer ? '' : 'موعد الأذان القادم غير معروف الآن.';
+		if (na && na.prayer) {
+			var at = typeof na.in_seconds === 'number' ? new Date(Date.now() + na.in_seconds * 1000) : null;
+			nx.appendChild(el('span', 'big', na.prayer + (at ? ' ' + at.toLocaleTimeString('ar-u-nu-latn', { hour: 'numeric', minute: '2-digit' }) : '')));
+			if (at) nx.appendChild(el('span', 'gl', 'بعد ' + dur(na.in_seconds)));
+		}
+		var st = s.sleep_timer;
+		$('sleepCard').classList.toggle('hidden', !st);
+		if (st) {
+			var left = st.left_seconds || 0;
+			$('sleepNow').textContent = left > 0 ? 'ينتهي بعد ' + dur(left) : 'المؤقت متوقف.';
+			$('sleepCancel').classList.toggle('hidden', left <= 0);
+		}
+		$('saverCard').classList.toggle('hidden', !s.saver_idle_options);
+		if (s.family) famDraw(s.family); else if (!famSeen) $('famCard').classList.add('hidden');
+		$('ver').textContent = s.version ? 'إصدار تلفزيونك: ' + s.version : '';
+		$('phones').textContent = typeof s.phones === 'number' ? 'الجوالات المتصلة: ' + s.phones : '';
+		upText(s.update);
+		if (!full) return;
+		$('cityNow').textContent = s.settings ? 'المدينة الحالية: ' + s.city : 'إعدادات المدينة غير متاحة: حدّث تطبيق «شاشة تلفزيونك».';
+		$('lang').classList.toggle('hidden', !s.lang);
+		cards(s);
+		var a = s.adhan || {};
+		$('aOn').checked = !!a.on; $('aOn2').checked = !!a.on; $('aShort').checked = !!a.short; $('aStop').checked = !!a.stopkey;
+		$('aVol').value = a.volume || 50; $('aVolN').textContent = (a.volume || 50) + '٪';
+		var vs = s.voices || [];
+		fill($('aVoice'), vs.filter(function (v) { return !v.fajr; }), a.voice);
+		fill($('aFajr'), vs.filter(function (v) { return v.fajr; }).concat(vs.filter(function (v) { return !v.fajr; })), a.fajr_voice);
+		fill($('qRec'), s.reciters || [], p.reciter);
+		var sur = $('qSurah'); if (!sur.children.length) (s.surahs || []).forEach(function (n, i) { opt(sur, String(i + 1), (i + 1) + '. ' + n, false); });
+		if (p.surah) sur.value = String(p.surah);
+		var si = $('saverIdle'), io = (s.saver_idle_options || []).map(String), sec = s.saver_idle_s != null ? +s.saver_idle_s : s.saver_idle * 60; si.textContent = '';
+		if (sec >= 0 && io.indexOf(String(sec / 60)) < 0) opt(si, '', sec < 60 ? (sec ? nn(sec, ['ثانية', 'ثانيتين', 'ثوانٍ']) : 'أقل من دقيقة') : nn(Math.round(sec / 60), MN), true);
+		io.forEach(function (m) { opt(si, m, nn(+m, MN), +m * 60 === sec); });
+		var so = $('sleepOpts'); so.textContent = '';
+		((st && st.options) || [15, 30, 60, 90]).forEach(function (m) {
+			var b = el('button', '', nn(m, MN)); b.onclick = function () { set({ sleep_minutes: m }); }; so.appendChild(b);
+		});
+	}
+	var famSeen = false;
+	function famDraw(fam) {
+		famSeen = true; $('famCard').classList.remove('hidden');
+		var a = 0, pills = 0; (fam.locked || []).forEach(function (x) { if (String(x).charAt(0) === '@') pills++; else a++; });
+		$('famPin').textContent = 'الرقابة الأبوية: ' + (fam.pin_set ? 'مفعّلة' : 'غير مفعّلة');
+		$('famKids').textContent = 'وضع الأطفال: ' + (fam.kids ? 'يعمل' : 'متوقف');
+		$('famLocked').textContent = 'المقفل: ' + nn(a, ['تطبيق', 'تطبيقين', 'تطبيقات', 'تطبيقًا']) + ' و ' + pills + ' من أزرار التلفزيون';
+	}
+	function loadFamily() {
+		api('/api/family').then(function (j) {
+			var f = j && j.ok ? (j.family || j) : null;
+			if (f && typeof f.pin_set !== 'undefined') famDraw(f);
+		});
+	}
+	// cards being chosen: not redrawn by a late answer
+	var cardsDirty = false;
+	function chosenCards() {
+		var out = [], sels = $('cards').children;
+		for (var i = 0; i < sels.length; i++) if (sels[i].value && out.indexOf(sels[i].value) < 0) out.push(sels[i].value);
+		return out;
+	}
+	function cards(s) {
+		var box = $('cards'), hc = s.home_cards || [], k = JSON.stringify(s.panels || []);
+		if (box.getAttribute('data-p') !== k) {
+			box.textContent = ''; box.setAttribute('data-p', k); cardsDirty = false;
+			for (var i = 0; i < 3; i++) {
+				var sel = document.createElement('select'); sel.setAttribute('data-card', i); sel.setAttribute('aria-label', 'بطاقة ' + (i + 1));
+				opt(sel, '', 'بدون', false);
+				(s.panels || []).forEach(function (p) { opt(sel, p.id, p.name, false); });
+				sel.style.marginBottom = '8px'; sel.onchange = function () { cardsDirty = true; }; box.appendChild(sel);
+			}
+		}
+		if (cardsDirty || box.contains(document.activeElement)) return;
+		for (var j = 0; j < 3; j++) { var c = box.children[j]; c.value = hc[j] || ''; if (c.selectedIndex < 0) c.value = ''; }
+	}
+	function set(b) { return gated('/api/set', b).then(function (j) { say(j); refresh(); return j; }); }
 
-  $('cityGo').onclick = function () {
-    var q = $('cityQ').value.trim(); if (!q) return;
-    api('/api/cities', { q: q }).then(function (j) {
-      var box = $('cityRes'); box.textContent = '';
-      if (!j.ok) { say(j); return; }
-      if (!j.cities.length) { box.textContent = 'لا توجد نتيجة.'; return; }
-      j.cities.forEach(function (name) {
-        var b = el('button', '', name);
-        b.onclick = function () { set({ city: name }).then(function () { box.textContent = ''; }); };
-        box.appendChild(b);
-      });
-    });
-  };
-  $('cardsGo').onclick = function () {
-    var out = chosenCards();
-    // saved: redraw unless changed
-    set({ home_cards: out }).then(function () { if (chosenCards().join() === out.join()) cardsDirty = false; refresh(); });
-  };
-  $('aOn').onchange = function () { set({ adhan_on: this.checked }); };
-  $('aOn2').onchange = function () { set({ adhan_on: this.checked }); };
-  $('aShort').onchange = function () { set({ adhan_short: this.checked }); };
-  $('aStop').onchange = function () { set({ adhan_stopkey: this.checked }); };
-  $('aVoice').onchange = function () { set({ adhan_voice: parseInt(this.value, 10) }); };
-  $('aFajr').onchange = function () { set({ adhan_fajr_voice: parseInt(this.value, 10) }); };
-  $('aVol').oninput = function () { $('aVolN').textContent = this.value + '٪'; };
-  $('aVol').onchange = function () { set({ adhan_volume: parseInt(this.value, 10) }); };
-  $('saverIdle').onchange = function () { if (this.value) set({ saver_idle: parseInt(this.value, 10) }); };
-  $('sleepCancel').onclick = function () { gated('/api/do', { op: 'sleep_cancel' }).then(function (j) { say(j); refresh(); }); };
-  $('saverGo').onclick = function () { api('/api/do', { op: 'screensaver' }).then(function (j) { say(j); }); };
-  function stopAdhan() { api('/api/adhan_stop', {}).then(function (j) { say(j); setTimeout(refresh, 800); }); }
-  $('adhanStop1').onclick = stopAdhan; $('adhanStop2').onclick = stopAdhan;
+	$('cityGo').onclick = function () {
+		var q = $('cityQ').value.trim(); if (!q) return;
+		api('/api/cities', { q: q }).then(function (j) {
+			var box = $('cityRes'); box.textContent = '';
+			if (!j.ok) { say(j); return; }
+			if (!j.cities.length) { box.textContent = 'لا توجد نتيجة.'; return; }
+			j.cities.forEach(function (name) {
+				var b = el('button', '', name);
+				b.onclick = function () { set({ city: name }).then(function () { box.textContent = ''; }); };
+				box.appendChild(b);
+			});
+		});
+	};
+	$('cardsGo').onclick = function () {
+		var out = chosenCards();
+		// saved: redraw unless changed
+		set({ home_cards: out }).then(function () { if (chosenCards().join() === out.join()) cardsDirty = false; refresh(); });
+	};
+	$('aOn').onchange = function () { set({ adhan_on: this.checked }); };
+	$('aOn2').onchange = function () { set({ adhan_on: this.checked }); };
+	$('aShort').onchange = function () { set({ adhan_short: this.checked }); };
+	$('aStop').onchange = function () { set({ adhan_stopkey: this.checked }); };
+	$('aVoice').onchange = function () { set({ adhan_voice: parseInt(this.value, 10) }); };
+	$('aFajr').onchange = function () { set({ adhan_fajr_voice: parseInt(this.value, 10) }); };
+	$('aVol').oninput = function () { $('aVolN').textContent = this.value + '٪'; };
+	$('aVol').onchange = function () { set({ adhan_volume: parseInt(this.value, 10) }); };
+	$('saverIdle').onchange = function () { if (this.value) set({ saver_idle: parseInt(this.value, 10) }); };
+	$('sleepCancel').onclick = function () { gated('/api/do', { op: 'sleep_cancel' }).then(function (j) { say(j); refresh(); }); };
+	$('saverGo').onclick = function () { api('/api/do', { op: 'screensaver' }).then(function (j) { say(j); }); };
+	function stopAdhan() { api('/api/adhan_stop', {}).then(function (j) { say(j); setTimeout(refresh, 800); }); }
+	$('adhanStop1').onclick = stopAdhan; $('adhanStop2').onclick = stopAdhan;
 
-  // ---- the Quran
-  $('qPlay').onclick = function () { api('/api/quran', { op: 'play', reciter: $('qRec').value, surah: parseInt($('qSurah').value, 10) }).then(function (j) { say(j); setTimeout(refresh, 1500); }); };
-  function q(op) { api('/api/quran', { op: op }).then(function (j) { say(j); setTimeout(refresh, 800); }); }
-  document.querySelectorAll('[data-q]').forEach(function (b) { b.onclick = function () { q(b.getAttribute('data-q')); }; });
-  $('qToggle').onclick = function () { q(this.getAttribute('data-op') || 'pause'); };
-  $('nowTog').onclick = function () { q('pause'); };
-  $('qSleep').onchange = function () { api('/api/quran', { op: 'sleep', minutes: parseInt(this.value, 10) }).then(function (j) { say(j); }); };
+	// ---- the Quran
+	$('qPlay').onclick = function () { api('/api/quran', { op: 'play', reciter: $('qRec').value, surah: parseInt($('qSurah').value, 10) }).then(function (j) { say(j); setTimeout(refresh, 1500); }); };
+	function q(op) { api('/api/quran', { op: op }).then(function (j) { say(j); setTimeout(refresh, 800); }); }
+	document.querySelectorAll('[data-q]').forEach(function (b) { b.onclick = function () { q(b.getAttribute('data-q')); }; });
+	$('qToggle').onclick = function () { q(this.getAttribute('data-op') || 'pause'); };
+	$('nowTog').onclick = function () { q('pause'); };
+	$('qSleep').onchange = function () { api('/api/quran', { op: 'sleep', minutes: parseInt(this.value, 10) }).then(function (j) { say(j); }); };
 
-  // ---- the text
-  try { if (localStorage.getItem('urtvTxtMode') === 'append') txtMode = 'append'; } catch (e) { }
-  function drawModes() { document.querySelectorAll('[data-mode]').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-mode') === txtMode); b.setAttribute('aria-pressed', b.getAttribute('data-mode') === txtMode); }); }
-  drawModes();
-  document.querySelectorAll('[data-mode]').forEach(function (b) {
-    b.onclick = function () { txtMode = b.getAttribute('data-mode'); drawModes(); try { localStorage.setItem('urtvTxtMode', txtMode); } catch (e) { } };
-  });
-  function sendText(search) {
-    var t = $('txt').value; if (!t.trim()) return;
-    var body = { text: t, mode: txtMode }; if (search === true) body.search = true;
-    var due = $('dd').value && $('tt').value ? new Date($('dd').value + 'T' + $('tt').value).getTime() : 0;
-    if (due > Date.now()) body = { text: t, due: due };
-    api('/api/text', body).then(function (j) {
-      if (j && j.ok) {
-        if (j.result === 'typed_other' || j.result === 'typed_other_nosearch' || j.result === 'searched' || j.result === 'copied_other') { svcOff = false; $('svcNote').classList.add('hidden'); }
-        say(j); $('txt').value = $('dd').value = $('tt').value = ''; return;
-      }
-      var e = j && j.error;
-      if (e === 'service_off') { svcOff = true; $('svcNote').classList.remove('hidden'); }
-      toast(TXT[e] || MSG[e] || MSG.failed);
-    });
-  }
-  $('txtGo').onclick = function () { sendText(false); };
-  // 4.3 #53: a message on the TV's screen
-  $('msgGo').onclick = function () {
-    var t = $('msgT').value.replace(/\s+/g, ' ').trim();
-    if (!t) { toast('اكتب الرسالة أولًا.'); $('msgT').focus(); return; }
-    api('/api/message', { text: t.slice(0, 200) }).then(function (j) { if (say(j)) $('msgT').value = ''; });
-  };
-  $('txtSearch').onclick = function () { sendText(true); };
-  $('txt').onkeydown = function (e) { if (e.key === 'Enter') { e.preventDefault(); sendText(false); } };
+	// ---- the text
+	try { if (localStorage.getItem('urtvTxtMode') === 'append') txtMode = 'append'; } catch (e) { }
+	function drawModes() { document.querySelectorAll('[data-mode]').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-mode') === txtMode); b.setAttribute('aria-pressed', b.getAttribute('data-mode') === txtMode); }); }
+	drawModes();
+	document.querySelectorAll('[data-mode]').forEach(function (b) {
+		b.onclick = function () { txtMode = b.getAttribute('data-mode'); drawModes(); try { localStorage.setItem('urtvTxtMode', txtMode); } catch (e) { } };
+	});
+	function sendText(search) {
+		var t = $('txt').value; if (!t.trim()) return;
+		var body = { text: t, mode: txtMode }; if (search === true) body.search = true;
+		var due = $('dd').value && $('tt').value ? new Date($('dd').value + 'T' + $('tt').value).getTime() : 0;
+		if (due > Date.now()) body = { text: t, due: due };
+		api('/api/text', body).then(function (j) {
+			if (j && j.ok) {
+				if (j.result === 'typed_other' || j.result === 'typed_other_nosearch' || j.result === 'searched' || j.result === 'copied_other') { svcOff = false; $('svcNote').classList.add('hidden'); }
+				say(j); $('txt').value = $('dd').value = $('tt').value = ''; return;
+			}
+			var e = j && j.error;
+			if (e === 'service_off') { svcOff = true; $('svcNote').classList.remove('hidden'); }
+			toast(TXT[e] || MSG[e] || MSG.failed);
+		});
+	}
+	$('txtGo').onclick = function () { sendText(false); };
+	// 4.3 #53: a message on the TV's screen
+	$('msgGo').onclick = function () {
+		var t = $('msgT').value.replace(/\s+/g, ' ').trim();
+		if (!t) { toast('اكتب الرسالة أولًا.'); $('msgT').focus(); return; }
+		api('/api/message', { text: t.slice(0, 200) }).then(function (j) { if (say(j)) $('msgT').value = ''; });
+	};
+	$('txtSearch').onclick = function () { sendText(true); };
+	$('txt').onkeydown = function (e) { if (e.key === 'Enter') { e.preventDefault(); sendText(false); } };
 
-  // ---- the apps
-  function iconUrl(pkg) { return '/api/icon/' + encodeURIComponent(pkg); }
-  // icons: fetched with the session header
-  var icons = {}, iconQ = [], iconRun = 0, iconWait = {};
-  function iconGet(pkg, done) {
-    if (pkg in icons) { done(icons[pkg]); return; }
-    if (iconWait[pkg]) { iconWait[pkg].push(done); return; }
-    iconWait[pkg] = [done]; iconQ.push(pkg); iconPump();
-  }
-  function iconPump() {
-    while (iconRun < 4 && iconQ.length) {
-      (function (job) {
-        iconRun++;
-        var h = {}; if (sess) h['X-UrTV-Session'] = sess;
-        var fin = function (d) { var w = iconWait[job] || []; delete iconWait[job]; icons[job] = d; iconRun--; w.forEach(function (cb) { cb(d); }); iconPump(); };
-        fetch(iconUrl(job), { credentials: 'same-origin', headers: h }).then(function (r) {
-          if (!r.ok) throw 0;
-          return r.blob();
-        }).then(function (b) {
-          var fr = new FileReader();
-          fr.onload = function () { fin(typeof fr.result === 'string' && fr.result.indexOf('data:image/') === 0 ? fr.result : null); };
-          fr.onerror = function () { fin(null); };
-          fr.readAsDataURL(b);
-        }).catch(function () { fin(null); });
-      })(iconQ.shift());
-    }
-  }
-  function loadApps() {
-    api('/api/apps').then(function (j) {
-      if (!j.ok) { apps = null; $('appsNote').textContent = 'حدّث تطبيق «تلفزيونك» على التلفزيون لتظهر التطبيقات هنا.'; drawApps(); drawTools([]); return; }
-      apps = j.apps || []; $('appsNote').textContent = ''; drawApps(); drawTools(j.tools);
-    });
-  }
-  function launch(target) {
-    api('/api/launch', { target: target }).then(function (j) { say(j); });
-  }
-  var drawGen = 0;
-  function drawApps() {
-    drawGen++;
-    var g = $('grid'); g.textContent = '';
-    var f = $('appQ').value.trim().toLowerCase();
-    (apps || []).forEach(function (a) {
-      if (f && String(a.name).toLowerCase().indexOf(f) < 0) return;
-      var b = el('button', 'app'); b.setAttribute('data-pkg', a.pkg);
-      var t = el('span', 'tile', String(a.name || '?').charAt(0));
-      var im = document.createElement('img'); im.alt = '';
-      im.onload = function () { t.firstChild.textContent = ''; };
-      im.onerror = function () { im.remove(); };
-      t.appendChild(im);
-      var want = a.pkg, gen = drawGen;
-      var go = function () { iconGet(want, function (d) { if (!d) im.remove(); else if (im.parentNode && gen === drawGen) im.setAttribute('src', d); }); };
-      if ('IntersectionObserver' in window) {
-        var io = new IntersectionObserver(function (es) { if (es.some(function (x) { return x.isIntersecting; })) { io.disconnect(); go(); } }, { rootMargin: '200px' });
-        io.observe(b);
-      } else go();
-      b.appendChild(t); b.appendChild(el('span', '', a.name));
-      if (a.locked) { var l = el('span', 'lock', '🔒'); l.setAttribute('aria-label', 'مقفل بالرقم السري'); b.appendChild(l); }
-      b.onclick = function () { launch(a.pkg); };
-      g.appendChild(b);
-    });
-    if (apps && !g.children.length) g.appendChild(el('p', '', 'لا توجد نتيجة.'));
-  }
-  function drawTools(list) {
-    var box = $('tools'); box.textContent = '';
-    var by = {}; (list || []).forEach(function (t) { by[t.id] = t; });
-    TOOLS.forEach(function (t) {
-      var x = by[t[0]] || {}, b = el('button', 'app'), tl = el('span', 'tile');
-      tl.appendChild(icon(t[0] === 'saver' ? 'moon' : t[0] === 'settings' ? 'settings' : t[0]));
-      b.appendChild(tl); b.appendChild(document.createTextNode((x.locked ? '🔒 ' : '') + (x.name || t[1])));
-      b.setAttribute('data-tool', t[0]); b.onclick = function () { launch('@' + t[0]); };
-      box.appendChild(b);
-    });
-  }
-  $('appQ').oninput = drawApps;
+	// ---- the apps
+	function iconUrl(pkg) { return '/api/icon/' + encodeURIComponent(pkg); }
+	// icons: fetched with the session header
+	var icons = {}, iconQ = [], iconRun = 0, iconWait = {};
+	function iconGet(pkg, done) {
+		if (pkg in icons) { done(icons[pkg]); return; }
+		if (iconWait[pkg]) { iconWait[pkg].push(done); return; }
+		iconWait[pkg] = [done]; iconQ.push(pkg); iconPump();
+	}
+	function iconPump() {
+		while (iconRun < 4 && iconQ.length) {
+			(function (job) {
+				iconRun++;
+				var h = {}; if (sess) h['X-UrTV-Session'] = sess;
+				var fin = function (d) { var w = iconWait[job] || []; delete iconWait[job]; icons[job] = d; iconRun--; w.forEach(function (cb) { cb(d); }); iconPump(); };
+				fetch(iconUrl(job), { credentials: 'same-origin', headers: h }).then(function (r) {
+					if (!r.ok) throw 0;
+					return r.blob();
+				}).then(function (b) {
+					var fr = new FileReader();
+					fr.onload = function () { fin(typeof fr.result === 'string' && fr.result.indexOf('data:image/') === 0 ? fr.result : null); };
+					fr.onerror = function () { fin(null); };
+					fr.readAsDataURL(b);
+				}).catch(function () { fin(null); });
+			})(iconQ.shift());
+		}
+	}
+	function loadApps() {
+		api('/api/apps').then(function (j) {
+			if (!j.ok) { apps = null; $('appsNote').textContent = 'حدّث تطبيق «تلفزيونك» على التلفزيون لتظهر التطبيقات هنا.'; drawApps(); drawTools([]); return; }
+			apps = j.apps || []; $('appsNote').textContent = ''; drawApps(); drawTools(j.tools);
+		});
+	}
+	function launch(target) {
+		api('/api/launch', { target: target }).then(function (j) { say(j); });
+	}
+	var drawGen = 0;
+	function drawApps() {
+		drawGen++;
+		var g = $('grid'); g.textContent = '';
+		var f = $('appQ').value.trim().toLowerCase();
+		(apps || []).forEach(function (a) {
+			if (f && String(a.name).toLowerCase().indexOf(f) < 0) return;
+			var b = el('button', 'app'); b.setAttribute('data-pkg', a.pkg);
+			var t = el('span', 'tile', String(a.name || '?').charAt(0));
+			var im = document.createElement('img'); im.alt = '';
+			im.onload = function () { t.firstChild.textContent = ''; };
+			im.onerror = function () { im.remove(); };
+			t.appendChild(im);
+			var want = a.pkg, gen = drawGen;
+			var go = function () { iconGet(want, function (d) { if (!d) im.remove(); else if (im.parentNode && gen === drawGen) im.setAttribute('src', d); }); };
+			if ('IntersectionObserver' in window) {
+				var io = new IntersectionObserver(function (es) { if (es.some(function (x) { return x.isIntersecting; })) { io.disconnect(); go(); } }, { rootMargin: '200px' });
+				io.observe(b);
+			} else go();
+			b.appendChild(t); b.appendChild(el('span', '', a.name));
+			if (a.locked) { var l = el('span', 'lock', '🔒'); l.setAttribute('aria-label', 'مقفل بالرقم السري'); b.appendChild(l); }
+			b.onclick = function () { launch(a.pkg); };
+			g.appendChild(b);
+		});
+		if (apps && !g.children.length) g.appendChild(el('p', '', 'لا توجد نتيجة.'));
+	}
+	function drawTools(list) {
+		var box = $('tools'); box.textContent = '';
+		var by = {}; (list || []).forEach(function (t) { by[t.id] = t; });
+		TOOLS.forEach(function (t) {
+			var x = by[t[0]] || {}, b = el('button', 'app'), tl = el('span', 'tile');
+			tl.appendChild(icon(t[0] === 'saver' ? 'moon' : t[0] === 'settings' ? 'settings' : t[0]));
+			b.appendChild(tl); b.appendChild(document.createTextNode((x.locked ? '🔒 ' : '') + (x.name || t[1])));
+			b.setAttribute('data-tool', t[0]); b.onclick = function () { launch('@' + t[0]); };
+			box.appendChild(b);
+		});
+	}
+	$('appQ').oninput = drawApps;
 
-  // ---- the update
-  function upText(u) {
-    if (!u) return;
-    var t = UP[u.status] || '';
-    if (u.status === 'error' && u.reason) t += ' ' + (UPWHY[u.reason] || '');
-    if (u.status === 'error') { var w = UPWHY[u.why] || UPWHY[u.detail]; if (w && w !== UPWHY[u.reason]) t += ' ' + w; }
-    if ((u.status === 'available' || u.status === 'found') && u.build) t += ' (' + (u.version || 'الإصدار ' + u.build) + ')';
-    $('upState').textContent = t;
-    $('upGo').classList.toggle('hidden', u.status !== 'available' && u.status !== 'found');
-  }
-  function upPoll() { setTimeout(function () { api('/api/state').then(function (s) { if (!s.ok) return; upText(s.update); if (s.update.status === 'checking' || s.update.status === 'downloading') upPoll(); }); }, 1500); }
-  $('upCheck').onclick = function () { api('/api/update', { op: 'check' }).then(function (j) { if (j.ok) { upText(j); upPoll(); } else say(j); }); };
-  $('upGo').onclick = function () { gated('/api/update', { op: 'install' }).then(function (j) { if (j.ok) { upText(j); upPoll(); } else say(j); }); };
+	// ---- the update
+	function upText(u) {
+		if (!u) return;
+		var t = UP[u.status] || '';
+		if (u.status === 'error' && u.reason) t += ' ' + (UPWHY[u.reason] || '');
+		if (u.status === 'error') { var w = UPWHY[u.why] || UPWHY[u.detail]; if (w && w !== UPWHY[u.reason]) t += ' ' + w; }
+		if ((u.status === 'available' || u.status === 'found') && u.build) t += ' (' + (u.version || 'الإصدار ' + u.build) + ')';
+		$('upState').textContent = t;
+		$('upGo').classList.toggle('hidden', u.status !== 'available' && u.status !== 'found');
+	}
+	function upPoll() { setTimeout(function () { api('/api/state').then(function (s) { if (!s.ok) return; upText(s.update); if (s.update.status === 'checking' || s.update.status === 'downloading') upPoll(); }); }, 1500); }
+	$('upCheck').onclick = function () { api('/api/update', { op: 'check' }).then(function (j) { if (j.ok) { upText(j); upPoll(); } else say(j); }); };
+	$('upGo').onclick = function () { gated('/api/update', { op: 'install' }).then(function (j) { if (j.ok) { upText(j); upPoll(); } else say(j); }); };
 
-  // ---- the remote
-  function press(k) {
-    try { if (navigator.vibrate && navigator.userActivation && navigator.userActivation.isActive) navigator.vibrate(k === 'ok' ? 30 : 12); } catch (e) { }
-    api('/api/key', { key: k }).then(function (j) { if (!j.ok) { toast(MSG[j.error] || MSG.failed); stopRep(); } });
-  }
-  function stopRep() { if (repTimer) { clearTimeout(repTimer); clearInterval(repTimer); repTimer = null; } }
-  function holdRep(k) { stopRep(); repTimer = setTimeout(function () { repTimer = setInterval(function () { press(k); }, 160); }, 450); }
-  document.querySelectorAll('[data-k]').forEach(function (b) {
-    var k = b.getAttribute('data-k'), rep = b.getAttribute('data-rep');
-    b.addEventListener('contextmenu', function (e) { e.preventDefault(); });
-    b.addEventListener('keydown', function (e) { if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) { e.preventDefault(); press(k); } });
-    if (b.id === 'padOk') return;
-    b.addEventListener('pointerdown', function (e) { e.preventDefault(); press(k); stopRep(); if (rep) holdRep(k); });
-    ['pointerup', 'pointerleave', 'pointercancel'].forEach(function (ev) { b.addEventListener(ev, stopRep); });
-  });
-  var pad = $('pad'), ps = null;
-  pad.addEventListener('pointerdown', function (e) {
-    var t = e.target.closest && e.target.closest('[data-k]');
-    if (t && t.id !== 'padOk') return;
-    e.preventDefault();
-    try { pad.setPointerCapture(e.pointerId); } catch (x) { }
-    ps = { x: e.clientX, y: e.clientY, t: Date.now(), moved: false };
-  });
-  pad.addEventListener('pointermove', function (e) {
-    if (!ps || ps.moved) return;
-    var dx = e.clientX - ps.x, dy = e.clientY - ps.y;
-    if (Math.max(Math.abs(dx), Math.abs(dy)) < 40) return;
-    var d = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
-    ps.moved = true;
-    press(d); holdRep(d);
-  });
-  function padEnd(e) { stopRep(); if (ps && !ps.moved && e.type === 'pointerup' && Date.now() - ps.t < 400) press('ok'); ps = null; }
-  pad.addEventListener('pointerup', padEnd); pad.addEventListener('pointercancel', padEnd);
-  pad.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+	// ---- the remote
+	function press(k) {
+		try { if (navigator.vibrate && navigator.userActivation && navigator.userActivation.isActive) navigator.vibrate(k === 'ok' ? 30 : 12); } catch (e) { }
+		api('/api/key', { key: k }).then(function (j) { if (!j.ok) { toast(MSG[j.error] || MSG.failed); stopRep(); } });
+	}
+	function stopRep() { if (repTimer) { clearTimeout(repTimer); clearInterval(repTimer); repTimer = null; } }
+	function holdRep(k) { stopRep(); repTimer = setTimeout(function () { repTimer = setInterval(function () { press(k); }, 160); }, 450); }
+	document.querySelectorAll('[data-k]').forEach(function (b) {
+		var k = b.getAttribute('data-k'), rep = b.getAttribute('data-rep');
+		b.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+		b.addEventListener('keydown', function (e) { if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) { e.preventDefault(); press(k); } });
+		if (b.id === 'padOk') return;
+		b.addEventListener('pointerdown', function (e) { e.preventDefault(); press(k); stopRep(); if (rep) holdRep(k); });
+		['pointerup', 'pointerleave', 'pointercancel'].forEach(function (ev) { b.addEventListener(ev, stopRep); });
+	});
+	var pad = $('pad'), ps = null;
+	pad.addEventListener('pointerdown', function (e) {
+		var t = e.target.closest && e.target.closest('[data-k]');
+		if (t && t.id !== 'padOk') return;
+		e.preventDefault();
+		try { pad.setPointerCapture(e.pointerId); } catch (x) { }
+		ps = { x: e.clientX, y: e.clientY, t: Date.now(), moved: false };
+	});
+	pad.addEventListener('pointermove', function (e) {
+		if (!ps || ps.moved) return;
+		var dx = e.clientX - ps.x, dy = e.clientY - ps.y;
+		if (Math.max(Math.abs(dx), Math.abs(dy)) < 40) return;
+		var d = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
+		ps.moved = true;
+		press(d); holdRep(d);
+	});
+	function padEnd(e) { stopRep(); if (ps && !ps.moved && e.type === 'pointerup' && Date.now() - ps.t < 400) press('ok'); ps = null; }
+	pad.addEventListener('pointerup', padEnd); pad.addEventListener('pointercancel', padEnd);
+	pad.addEventListener('contextmenu', function (e) { e.preventDefault(); });
 
-  $('out').onclick = function () { api('/api/logout', {}).then(function () { leave(); $('loginState').textContent = 'تم الخروج.'; }); };
+	$('out').onclick = function () { api('/api/logout', {}).then(function () { leave(); $('loginState').textContent = 'تم الخروج.'; }); };
 
-  // ---- start
-  var h = location.hash.replace(/^#/, '');
-  if (h) { try { history.replaceState(null, '', location.pathname); } catch (e) { } }
-  if (/^[0-9a-f]{32}$/.test(h)) { show(false); pair({ token: h }); }
-  else if (sess) { api('/api/state').then(function (s) { if (s.ok) enter(); else leave(); }); }
-  else show(false);
+	// ---- start
+	var h = location.hash.replace(/^#/, '');
+	if (h) { try { history.replaceState(null, '', location.pathname); } catch (e) { } }
+	if (/^[0-9a-f]{32}$/.test(h)) { show(false); pair({ token: h }); }
+	else if (sess) { api('/api/state').then(function (s) { if (s.ok) enter(); else leave(); }); }
+	else show(false);
 })();
 </script>
 </body>

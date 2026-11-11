@@ -32,6 +32,8 @@
 #   optimize/saver.sh baropacity 70                home: «شفافية الشريط», the tray's and cards' fill, 30 to 100 (100 = as it was, the default)
 #   optimize/saver.sh walldim 30                   «تعتيم الخلفية»: more black over the photo, 0 to 90 (0 = as it was, the default)
 #   optimize/saver.sh focusstyle frame             «شكل التركيز»: solid (the default), frame or glow
+#   optimize/saver.sh looksync off                 home: «توحيد المظهر», the upper buttons, the cards and the apps bar as one material: on (default) or off
+#   optimize/saver.sh surface tray 100 graphite    home, with looksync off: one surface (quick, cards or tray) on its own: its strength 30 to 100, its fill look, glass or graphite
 #   optimize/saver.sh albummode minute             «ألبوم صوري» (card album): a photo every 4 s (seconds, default) or one a minute (minute)
 #   optimize/saver.sh albumdate off                «ألبوم صوري»: the day each photo was added, under it: on (default) or off
 #   optimize/saver.sh homeours off                 home screen, with homephotos own: «صورنا» among its photos: on (default) or off
@@ -232,6 +234,8 @@ case "${1:-}" in
   baropacity) set1 baropacity "${2:?usage: optimize/saver.sh baropacity 30..100}" ;;
   walldim) set1 walldim "${2:?usage: optimize/saver.sh walldim 0..90}" ;;
   focusstyle) set1 focusstyle "${2:?usage: optimize/saver.sh focusstyle solid|frame|glow}" ;;
+  looksync) set1 looksync "${2:?usage: optimize/saver.sh looksync on|off}" ;;
+  surface) set1 surface "${2:?usage: optimize/saver.sh surface quick|cards|tray 30..100 look|glass|graphite}:${3:?usage: optimize/saver.sh surface quick|cards|tray 30..100 look|glass|graphite}:${4:?usage: optimize/saver.sh surface quick|cards|tray 30..100 look|glass|graphite}" ;;
   albummode) set1 albummode "${2:?usage: optimize/saver.sh albummode seconds|minute}" ;;
   albumdate) set1 albumdate "${2:?usage: optimize/saver.sh albumdate on|off}" ;;
   homeours) set1 homeours "${2:?usage: optimize/saver.sh homeours on|off}" ;;
