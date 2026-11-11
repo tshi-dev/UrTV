@@ -330,6 +330,40 @@ public abstract class GameActivity extends Activity {
         return q;
     }
 
+    /**
+     * A statement with one word hidden: `words` holds `mark` (three underscores) once. Hidden, the place is a dashed box as wide as the word (with `hint`
+     * inside when given, the first letter); shown, the word stands there in saffron. Give the result to `question`.
+     */
+    protected final CharSequence blanked(String words, String mark, String word, String hint, boolean shown) {
+        int at = words.indexOf(mark);
+        if (at < 0) return words;
+        if (shown) {
+            android.text.SpannableString sp = new android.text.SpannableString(words.substring(0, at) + word + words.substring(at + mark.length()));
+            sp.setSpan(new android.text.style.ForegroundColorSpan(L.saff), at, at + word.length(), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            return sp;
+        }
+        android.text.SpannableString sp = new android.text.SpannableString(words);
+        sp.setSpan(new BlankSpan(Math.max(3, Math.min(10, word.length())), hint == null ? "" : hint, L.onDeep, L.saff, px(5)), at, at + mark.length(), android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return sp;
+    }
+    /** the dashed box that stands for the hidden word */
+    static final class BlankSpan extends android.text.style.ReplacementSpan {
+        private final int letters, line, hintColor; private final String hint; private final float stroke;
+        BlankSpan(int letters, String hint, int line, int hintColor, float stroke) { this.letters = letters; this.hint = hint; this.line = line; this.hintColor = hintColor; this.stroke = stroke; }
+        @Override public int getSize(android.graphics.Paint p, CharSequence t, int s, int e, android.graphics.Paint.FontMetricsInt fm) { return Math.round(p.getTextSize() * (0.5f * letters + 0.6f)); }
+        @Override public void draw(android.graphics.Canvas cv, CharSequence t, int s, int e, float x, int top, int y, int bottom, android.graphics.Paint p) {
+            float size = p.getTextSize(), w = size * (0.5f * letters + 0.6f), pad = size * 0.12f;
+            android.graphics.Paint q = new android.graphics.Paint(p);
+            q.setStyle(android.graphics.Paint.Style.STROKE); q.setStrokeWidth(stroke); q.setColor(line);
+            q.setPathEffect(new android.graphics.DashPathEffect(new float[]{stroke * 3, stroke * 2}, 0));
+            cv.drawRect(x + pad, y - size * 0.82f, x + w - pad, y + size * 0.22f, q);
+            if (!hint.isEmpty()) {
+                android.graphics.Paint h2 = new android.graphics.Paint(p); h2.setColor(hintColor); h2.setTextAlign(android.graphics.Paint.Align.CENTER);
+                cv.drawText(hint, x + w / 2f, y, h2);
+            }
+        }
+    }
+
     /** the timer: a saffron box with the seconds at the end side of the block and one tick per second under the words; `set` each tick of the clock */
     protected final class TickTimer {
         private final TextView numView; private final List<View> ticks = new ArrayList<>(); private final int total; private int shown = -1;
@@ -451,21 +485,22 @@ public abstract class GameActivity extends Activity {
     /** the chips of last time for this game (call after every add) */
     protected final GameChips remembered(GameChips c) { c.load(GamePrefs.chips(this, id())); if (c.get("sound") != null) c.get("sound").picked = sound ? 0 : 1; c.row = c.rows.size(); return c; }
 
-    /** the ready screen: up to six rows of chips and the big start button, which has the focus when the screen opens (OK starts with last time's choices) */
+    /** the ready screen: up to seven rows of chips (tighter from the seventh) and the big start button, which has the focus when the screen opens (OK starts with last time's choices) */
     protected final void setup(GameChips c, String startLabel) {
         title(gameName(), S.t("جهّز اللعبة"));
-        float y = 232;
-        for (int r = 0; r < c.rows.size(); r++) y = chipRow(c, r, y);
+        boolean tight = c.rows.size() > 6;
+        float y = tight ? 224 : 232;
+        for (int r = 0; r < c.rows.size(); r++) y = chipRow(c, r, y, tight ? 76 : 88, tight ? 14 : 14);
         root.addView(button(startLabel, c.onButton()), at(640, 104, 96, 856));
         hints("▲ ▼", S.t("السطر"), "◀ ▶", S.t("الاختيار"), S.t("اختيار"), c.onButton() ? startLabel : S.t("تأكيد"), S.t("رجوع"), S.t("الألعاب"));
     }
     /** one row: the label at the start, then the chips, as wide as their words; picked = saffron, the focus = ink, not offered = dashed */
-    private float chipRow(GameChips c, int r, float y) {
+    private float chipRow(GameChips c, int r, float y, float hgt, float gap) {
         GameChips.Row row = c.rows.get(r);
         float cx = 420, avail = 1728 - (cx - 96);
-        root.addView(text(row.label, 44, L.ink, true), at(300, 88, 96, y + 8));
+        root.addView(text(row.label, hgt >= 88 ? 44 : 40, L.ink, true), at(300, hgt, 96, y + 8));
         android.graphics.Paint paint = new android.graphics.Paint(); paint.setTypeface(display());
-        float f = 40; float[] w = new float[row.opts.length]; float total;
+        float f = hgt >= 88 ? 40 : 36; float[] w = new float[row.opts.length]; float total;
         do {
             paint.setTextSize(f * scale); total = 14 * (row.opts.length - 1);
             for (int i = 0; i < row.opts.length; i++) { w[i] = Math.max(112, paint.measureText(row.opts[i]) / scale + 56); total += w[i]; }
@@ -479,10 +514,10 @@ public abstract class GameActivity extends Activity {
             FrameLayout chip = stamp(fill, focus && isSel ? L.saff : off ? L.ink(0x88) : L.ink, focus && isSel ? 12 : 6, off);
             TextView tv = centered(row.opts[i], f, words, true); tv.setSingleLine(true);
             chip.addView(tv, new FrameLayout.LayoutParams(-1, -1));
-            root.addView(chip, at(w[i], 88, x, y));
+            root.addView(chip, at(w[i], hgt, x, y));
             x += w[i] + 14;
         }
-        return y + 88 + 14;
+        return y + hgt + gap;
     }
     /** the keys of the ready screen: true when OK was pressed on the start button. Back leaves the game; a picked chip is remembered and `onChips` runs. */
     protected final boolean keySetup(GameChips c, boolean back, boolean ok, int dx, int dy) {

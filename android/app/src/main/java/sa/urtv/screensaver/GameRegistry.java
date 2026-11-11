@@ -17,8 +17,8 @@ final class GameRegistry {
 
     static final Game[] ALL = {
         new Game("quiz", "الأسرع", "الكل يجاوب من جواله، والأسرع يكسب", "QuizActivity", true, true),
-        new Game("khanat", "خمس خانات", "حرف واحد، وخانة لكل من حيوان ونبات وجماد وبلاد واسم", "KhanatActivity", false, false),
-        new Game("missing-word", "الكلمة المفقودة", "جملة ناقصة كلمة، من يكملها؟", "MissingWordActivity", false, false),
+        new Game("khanat", "خمس خانات", "حرف واحد، وخانة لكل من حيوان ونبات وجماد وبلاد واسم", "KhanatActivity", false, true),
+        new Game("missing-word", "الكلمة المفقودة", "جملة ناقصة كلمة، من يكملها؟", "MissingWordActivity", false, true),
         new Game("odd-one", "واحد مو معنا", "الكل يعرف الكلمة إلا واحد، من هو؟", "OddOneActivity", false, false),
         new Game("charades", "بدون كلام", "مثّل الكلمة وفريقك يخمّنها", "CharadesActivity", false, false),
         new Game("letter-hive", "خلية الحروف", "فريقان يتسابقان على وصل الخلية", "LetterHiveActivity", false, false),
