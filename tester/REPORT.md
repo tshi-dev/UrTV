@@ -2267,3 +2267,39 @@ UrTV match sheet → «شاهد المباراة» → «ما لقينا قنا�
 
 ### Z
 Clean mode off (full home back), room closed (code no longer answers), scripted phones stopped, debug switches off, lang ar. updatechannel and idle are put back after step 57. TV muted.
+
+## step 57 — UrTV Player v0.9.9 (TV muted; uninstalled at the end; cut short: item 4 not run)
+**Not ALL PASS: list jank 12–13 % with spaced keys (one late first frame per key), OK panel returns to the wrong row; item 4 not done.**
+
+Build: `urtv-player-0.9.9.apk` (release v0.9.9, latest), sha256 `30f48ce1…87b2` = its .sha256 ✓, signer `13ade7d0…69dfea` (v2+v3) ✓, versionCode 100.
+
+### 1 ✓ First start
+Fresh data, UrTV ar, TV en-US: frames at 0.3 s (our home still), 1.0 s (the green splash), 2.0 s (**the Player in Arabic**: الرئيسية, القنوات…, «ما عندك قائمة بعد»). No English frame. First start after install 1273 ms (fresh data again: 727 ms); cold starts 526, 526, 567 ms.
+
+### 2 List jank (50 DOWN + 50 UP; the same list by link)
+| state | 0.1 s per key | back to back | the app's meter |
+|---|---|---|---|
+| as installed | 15.80 %, p50 20 / p90 38 / p99 81 ms | 16.20 %, 28/40/57 | (stats off) |
+| `compile -m speed-profile -f` | 12.15 %, 20/21/26 | **0.98 %**, 14/28/32 | «aot: compiled with profile» ✓ · janky 0.7 %, 16/30/33 (back to back) |
+| same, 0.1 s again | 13.33 %, 20/21/24 | | **janky 13.3 %, 20/21/24**: the meter now equals gfxinfo ✓ |
+- Frames are faster than 0.9.8 (p50 20 ms, was 23–34), back to back is fine once compiled; **with 0.1 s between keys it is still 12–13 %: 100 late frames for 100 keys**
+
+### 3 Key trace (`debug.urtv.bisect keytrace`, 10 DOWN at 0.1 s; 10 keys, 75 frames, 11 late)
+- dispatchLag: median 3 ms, worst 4
+- **The late frame is the first frame after each key** (10 of the 11 late ones come 5–17 ms after the key; one at +108 ms). Typical: `anim+compose=2 layout=0 draw=7 sync=0 cmd=3 swap=1 total=18ms late=true`. On-time frames have `draw=0`. **The big stage is draw (7–8 ms, against 0)**, which takes the frame just past 16.7 ms
+- Raw lines:
+  `key KEYCODE_DPAD_DOWN repeat=0 dispatchLag=4ms`
+  `+8ms frame: unknown=0 input=0 anim+compose=2 layout=0 draw=7 sync=0 cmd=3 swap=1 total=20ms late=true`
+  `+41ms frame: unknown=0 input=0 anim+compose=1 layout=0 draw=0 sync=0 cmd=3 swap=0 total=11ms late=false`
+  `+108ms frame: unknown=0 input=0 anim+compose=4 layout=0 draw=3 sync=0 cmd=3 swap=1 total=18ms late=true`
+  `+17ms frame: unknown=0 input=0 anim+compose=2 layout=0 draw=6 sync=0 cmd=2 swap=1 total=18ms late=true`
+- Prop cleared after
+
+### 4 «ابحث في القنوات» from the match sheet: **not done** (my session's usage limit was reached)
+
+### 5
+- **✗ OK panel on channel 49: LEFT reaches «إحصاءات التشغيل», RIGHT goes back to the list on row 46, not on the current channel's row (49).**
+- DOWN from the Live tab after browsing rows lands on the search box ✓ (focus on the tab itself, then DOWN). Note: moving LEFT from the home tab to the Live tab puts the focus straight on the remembered row, not on the tab
+
+### Z
+`pm clear` + uninstall (0 packages), APK deleted, bisect prop empty, UrTV lang ar, updatechannel latest, idle 45 s, TV muted and asleep. Build stays 235.
