@@ -95,7 +95,10 @@ def starter(g, out, quizpath):
     mw = build_missing(g)["w"]
     facts = [x for x in mw if x["k"] == "f"][:30]; sayings = [x for x in mw if x["k"] == "s"][:50]
     od = build_odd(g); od["t"] = od["t"][:10]
-    ch = build_charades(g); keep = [r for r in ch["w"] if r[3] == 1][:60] + [r for r in ch["w"] if r[3] == 2][:50] + [r for r in ch["w"] if r[3] == 3][:40]; ch["w"] = keep
+    ch = build_charades(g)
+    kids_act = [r for r in ch["w"] if r[4] == 1 and r[5] & 1][:120]   # the kids deck of «بدون كلام» (kids, easy, act) is the one that must work offline
+    rest = [r for r in ch["w"] if r not in kids_act]
+    keep = kids_act + [r for r in rest if r[3] == 1][:20] + [r for r in rest if r[3] == 2][:30] + [r for r in rest if r[3] == 3][:20]; ch["w"] = keep
     hv = build_hive(g); hv["a"] = {l: [i for i in v if i in quiz_ids] for l, v in hv["a"].items()}; hv["e"] = {l: [i for i in v if i in quiz_ids] for l, v in hv["e"].items()}
     hv["S"] = "".join(l for l in hv["L"] if len(hv["a"].get(l, [])) < 12)
     ans, _ = build_word5(g)
