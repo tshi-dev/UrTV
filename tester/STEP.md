@@ -874,3 +874,6 @@ Same public list by link. `dumpsys gfxinfo com.urtv.player reset` before each sc
 7. A dead channel's preview says «القناة لا ترد».
 8. First start after install (ms) and whether the language flashes (UrTV ar, TV language whatever it is); three cold starts.
 Z as step 50. Report «step 55».
+
+### step 55, item 0 — a BASELINE first (both our apps show p50 36–40 ms per frame while a list scrolls; is that this TV / the test method?)
+With the same method (reset gfxinfo, 2 × 10 LEFT + 10 RIGHT at 0.35 s, or 50 DOWN + 50 UP at 0.1 s where the list is vertical) measure: (a) the TV's own settings app list (com.android.tv.settings), (b) TiviMate or YouTube's first screen if installed (do not sign in or change anything), (c) our home's tray again, (d) our home's tray with the keys sent from ONE long-lived shell (`adb shell` kept open, `input keyevent` lines piped in, or `sendevent`) instead of one `adb shell input` process per key. Table: janky %, p50/p90/p99 for each. This tells us whether ≈8 % / 40 ms is the TV + method or ours.
