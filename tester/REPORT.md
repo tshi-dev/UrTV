@@ -2480,3 +2480,11 @@ The owner answered «كمل موافق» in my chat after I asked for a yes, so 
 - **E1 ✓** OK on the row → a first page «تخلّص من واجهة المصنع»: «هذي الخطوة تعطّل (ما تحذف) تطبيقات واجهة المصنع في تلفزيونك، ويصير UrTV هو الأساس. أول شيء نفحص التلفزيون ونعرض لك بالضبط وش بيتعطّل، وما نغيّر شيء قبل ما تتأكد مرتين. قد يظهر على الشاشة سؤال «السماح بتصحيح USB؟»: اضغط «سماح». وتقدر ترجّع كل شيء بضغطة وحدة.» Two buttons: «رجوع» (focus starts here) and «ابدأ». Back leaves, «رجوع» leaves; the disabled-apps list is the same 21 before and after
 - **E2 not done** (the round trip: «ابدأ», the list of what would be switched off, «متأكد؟» twice, the result, «رجّع واجهة المصنع»)
 - After: same settings lists and 21 disabled apps as before; Home holder `sa.urtv.home`; ADB on as before; lang ar, updatechannel latest, idle 45 s; TV muted
+
+## step 60 E, round trip attempt — build 262 (the owner pressed «ابدأ» himself; TV muted)
+**The page refused to go ahead: nothing was switched off.**
+- I put the focus on «ابدأ» (no press from me; the permission check had refused my own press twice); the owner pressed it
+- Result: «نفحص هذا التلفزيون… اضغط «سماح» في سؤال تصحيح USB على الشاشة.» for about 40 s, **no USB prompt appeared on the screen** (the window list has none), then **«ما نقدر نسوّيها هنا — ما قدرنا نكلّم التلفزيون: تأكد من تفعيل تصحيح USB ومن «السماح» ثم جرّب.»** with one button «رجوع». So the page's own connection to the TV's ADB (debugging is on: `adb_enabled 1`, port 5555 listening) was not accepted, and no «السماح» question came up for it
+- No list of what would be switched off was shown, no «متأكد؟», so E2/E3/E4 (confirm, ledger, restore) could not be run
+- Check after: disabled-apps list the same 21 as before, Home holder `sa.urtv.home`, settings lists identical to the before snapshot, ADB on as before; lang ar, updatechannel latest, idle 45 s; TV muted
+- Possible cause to look at (not proven): the page asks ADB for a key of its own that this TV has not been told to allow; a first connection normally raises the «السماح بتصحيح USB؟» question, and it did not come up here
