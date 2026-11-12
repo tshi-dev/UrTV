@@ -1,4 +1,4 @@
-«✅ GO — step 64 (last 4.3 check: UrTV Player install from UrTV now that its repo is public; then the phone page with the owner)» — run step 64 (end of this file) on the newest apk-next build (268 or later). TV muted. Never type the owner's PIN.
+«✅ GO — step 64, then step 65 (pictures for the 4.3 and Player posts)» — run step 64, then step 65 (both at the end of this file) on the newest build (4.3 is now on master/apk-latest, build 268). TV muted. Never type the owner's PIN.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -1000,3 +1000,18 @@ UrTV Player's repo is now public, so other TVs can download it.
 4. The step 63 extra, if not yet done: radio + «شاشة التوقف · ابدأها الآن» keeps playing.
 **B (only with the owner at the TV)** the phone page (step 58 item F): pairing code, the «على الشاشة» card, every control a real button.
 **Z** Uninstall the Player; restore as step 58 Z.
+
+## step 65 — pictures for the two posts (after step 64; TV muted; restore in Z)
+Same way as marketing/4.2 (x1–x4): full-screen 1920×1080 PNG straight from the TV (`screencap`), demo-clean: no personal data, no notifications, no real names, the default city Makkah, a good daytime photo. No text on top. Push to work/marketing under marketing/4.3/ (UrTV) and marketing/player/ (Player), then report the file names.
+**UrTV 4.3 (4 pictures, x1–x4):**
+1. `x1-hub.png`: «تلفزيونك» with its four windows (الأسواق، المباريات، الألعاب، الإعدادات), nothing focused oddly.
+2. `x2-games.png`: the games page with all eight tiles.
+3. `x3-match.png`: a match's card with «شاهد المباراة» (a real fixture is fine; no personal teams list visible).
+4. `x4-clean.png`: «UrTV النظيف» on, «بطاقة الصلاة: بطاقة», «وسط الشاشة». Turn it back off after.
+Spare: `x5-quiz.png`: «الأسرع» question on the TV (no phone needed in the picture).
+**UrTV Player (4 pictures, p1–p4):** install it from «تطبيقات مقترحة» (step 64 A). Demo list ONLY: make a local M3U on the TV with 6–8 made-up channel names (e.g. «قناة الأخبار ١», «رياضة ٢», «وثائقي») pointing to free test videos (Big Buck Bunny, Sintel, Tears of Steel from their official hosts). No real IPTV channels, logos or providers. Delete the list and uninstall at the end.
+1. `p1-list.png`: the channel list with the preview pane (turn preview on for this one).
+2. `p2-playing.png`: a channel playing with the info bar.
+3. `p3-find-match.png`: «شاهد المباراة» from UrTV opening the Player's search for that match.
+4. `p4-settings.png`: the Player's settings with the update row and the report/suggestion QR.
+**Z** Restore as step 58 Z; Player uninstalled; demo list deleted.
