@@ -968,3 +968,4 @@ Why it failed in step 60 (likely): on this TV the «السماح بتصحيح US
 3. Reconnect (the owner may need to allow your PC again). Read `/data/local/tmp/factory.log`. Report: did the question appear, what the list showed, the result screen, the disabled-apps list after «ابدأ» (if he photographed it) and after restore — must equal the before list. Home holder `sa.urtv.home` at the end.
 4. If it failed again: the log lines and the exact text on screen. Nothing else.
 **Z** Remove /data/local/tmp/factory.log; restore as step 58 Z.
+**Step 61 extra (no owner needed, do it first): UrTV Player v0.9.13** — install from the release, note the TV's RAM (`MemTotal`) and whether «معاينة القناة» is on or off by default. Then 10 DOWN 1 s apart with preview on, and again off: frames, janky %, p50/p90/p99, stages of any frame over 30 ms. Uninstall after.
