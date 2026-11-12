@@ -2529,3 +2529,15 @@ sha256 `419ac1d9…5e39` = its .sha256 ✓, signer `13ade7d0…69dfea` ✓, vers
   - (0.9.12 on build 262: preview on 28.57 % with five frames over 30 ms, up to 93 ms; off 6.45 %)
 - Uninstalled after (`pm clear` + uninstall, 0 packages)
 - B (the factory row) not done: it needs the owner at the TV, seeing the screen, and his yes; he told me earlier he was controlling it remotely
+
+## step 62 B — factory row, owner pressing «ابدأ» and watching (build 266; TV muted)
+**Not done: the «Allow USB debugging?» question never appeared, on either path. Nothing was disabled. 1 problem.**
+
+- Before and after: the disabled-apps list is the same (21), Home holder `sa.urtv.home`.
+- The owner started it (I did not press «ابدأ»). TV-side log (`UrTVFactory`), repeated runs in about 4 minutes:
+  - Path 1 (the TV itself): `CNXN sent`, `signature sent`, `key offered: the TV should now show «Allow USB debugging?»`, then 45 s with no answer: «debugging permission was not accepted on the TV».
+  - Path 2 (the TV's network address): the same lines, the same result.
+  - The owner saw no question on the screen in any run, and the page ended with its «the screen did not send the question» message.
+- So the app reaches the TV's debug service, sends its key, and the service never raises the question (`ro.adb.secure=1`, adb on, port 5555). Third try, third time (build 264 twice).
+- My own ADB connected once for a moment (13:53:37) just after the page started, which may have overlapped one run. The later runs had no connection from me.
+- Z: logger stopped and log removed, idle back to 45 s, TV muted and asleep. No addresses or screenshots kept.
