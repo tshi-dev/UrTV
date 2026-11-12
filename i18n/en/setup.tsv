@@ -88,7 +88,6 @@ TV Bro و SmartTube مثبّتان من قبل: نتركهما.	TV Bro and Smart
 قد يظهر على الشاشة سؤال «السماح بتصحيح USB؟»: اضغط «سماح».	A question may appear on the screen: «Allow USB debugging?». Press «Allow».
 اضغط «سماح» في سؤال تصحيح USB على الشاشة.	Press «Allow» in the USB debugging question on the screen.
 تصحيح USB مطفأ في هذا التلفزيون، وهذه الخطوة تحتاجه (وتحتاجه الاستعادة). فعّله من إعدادات المطوّرين ثم جرّب.	USB debugging is off on this TV, and this step needs it (and so does the restore). Turn it on in the developer options, then try again.
-ما قدرنا نكلّم التلفزيون: تأكد من تفعيل تصحيح USB ومن «السماح» ثم جرّب.	We could not talk to the TV: make sure USB debugging is on and you pressed «Allow», then try again.
 ما نقدر نسوّيها هنا	We can't do this here
 تخلّص من واجهة المصنع	Drop the factory home
 تعطيل لا حذف: ما يُحذف شيء، وكل ما نعطّله يرجع بضغطة وحدة.	Turned off, not deleted: nothing is removed, and everything we turn off comes back with one press.
@@ -113,3 +112,7 @@ TV Bro و SmartTube مثبّتان من قبل: نتركهما.	TV Bro and Smart
 هذي الخطوة تعطّل (ما تحذف) تطبيقات واجهة المصنع في تلفزيونك، ويصير UrTV هو الأساس.	This step turns off (it does not delete) the factory interface's apps on your TV, and UrTV becomes the base.
 أول شيء نفحص التلفزيون ونعرض لك بالضبط وش بيتعطّل، وما نغيّر شيء قبل ما تتأكد مرتين.	First we check the TV and show you exactly what would be turned off. Nothing changes until you confirm twice.
 وتقدر ترجّع كل شيء بضغطة وحدة.	And you can bring everything back with one press.
+سؤال «السماح بتصحيح USB؟» ما انقبل خلال ٣ دقائق. إن كان كمبيوتر أو جهاز ثاني موصول بالتلفزيون عبر adb فافصله أولًا (adb disconnect) لأن التلفزيون يعطي الجواب للجهاز الأول، ثم جرّب. وإلا اضغط «سماح» فور ظهوره.	The «Allow USB debugging?» question was not accepted within 3 minutes. If a computer or another device is connected to the TV over adb, disconnect it first (adb disconnect), because the TV gives the answer to the first device; then try again. Otherwise press «Allow» as soon as it appears.
+التلفزيون ما ردّ على اتصال التصحيح. أطفئ «تصحيح USB» وشغّله من إعدادات المطوّرين ثم جرّب.	The TV did not answer the debugging connection. Turn «USB debugging» off and on again in the developer options, then try again.
+التلفزيون رفض مفتاح التطبيق. من إعدادات المطوّرين اختر «إلغاء تصريحات تصحيح USB» ثم جرّب من جديد.	The TV rejected the app's key. In the developer options choose «Revoke USB debugging authorizations», then try again.
+ما قدرنا نكلّم التلفزيون: تأكد من تفعيل تصحيح USB، وافصل أي كمبيوتر موصول بالتلفزيون عبر adb، ثم جرّب.	We could not talk to the TV: make sure USB debugging is on, disconnect any computer connected to the TV over adb, then try again.

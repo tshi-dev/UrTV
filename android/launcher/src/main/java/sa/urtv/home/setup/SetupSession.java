@@ -16,7 +16,19 @@ final class SetupSession implements Closeable {
 
     /** approvalMs: how long to wait for the person to accept the TV's prompt (0 for the receiver: the key is known by then). */
     static SetupSession open(Context c, int approvalMs, AdbClient.Approval approval, SetupEngine.Out out) throws IOException {
-        AdbClient adb = AdbClient.connect("127.0.0.1", 5555, AdbKeys.load(c), Build.VERSION.SDK_INT, approvalMs, approval, b -> Base64.encodeToString(b, Base64.NO_WRAP));
+        android.util.Log.i("UrTVFactory", "session: key exists=" + AdbKeys.exists(c) + " sdk=" + Build.VERSION.SDK_INT);
+        AdbClient.trace = step -> android.util.Log.i("UrTVFactory", step);   // each step of the connection, for whoever reads why it failed
+        long began = System.currentTimeMillis();
+        AdbClient adb;
+        try {
+            adb = AdbClient.connect("127.0.0.1", 5555, AdbKeys.load(c), Build.VERSION.SDK_INT, approvalMs, approval, b -> Base64.encodeToString(b, Base64.NO_WRAP));
+        } catch (IOException e) {
+            android.util.Log.w("UrTVFactory", "session failed after " + (System.currentTimeMillis() - began) + " ms: " + e.getMessage());
+            throw e;
+        } finally {
+            AdbClient.trace = null;
+        }
+        android.util.Log.i("UrTVFactory", "session open after " + (System.currentTimeMillis() - began) + " ms");
         try {
             adb.setReadTimeout(60_000);   // `pm` on a slow TV
         } catch (IOException e) {

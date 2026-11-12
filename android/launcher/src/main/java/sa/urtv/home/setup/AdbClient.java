@@ -47,6 +47,11 @@ final class AdbClient implements Closeable {
     /** A command that prints more than this is cut off with an error (a runaway `logcat` or `dumpsys` must not fill the TV's memory). */
     static final int MAX_OUTPUT = 2 * 1024 * 1024;
 
+    /** Where each step of connect() is told (the screen sets it to a log line under «UrTVFactory»); null: silent, as in the tests. */
+    interface Trace { void line(String step); }
+    static volatile Trace trace;
+    private static void note(String step) { Trace t = trace; if (t != null) t.line(step); }
+
     /** Notified when the TV is showing the permission prompt (so the screen can explain what to do). */
     interface Approval { void waiting(); }
 
@@ -84,10 +89,12 @@ final class AdbClient implements Closeable {
      */
     static AdbClient connect(String host, int port, KeyPair keys, int sdk, int approvalMs, Approval approval, Base64Coder b64) throws IOException {
         Socket s = new Socket();
+        note("connect " + host + ":" + port + " sdk=" + sdk + " approvalMs=" + approvalMs);
         try {
             s.connect(new InetSocketAddress(host, port), 3000);
         } catch (IOException e) {
             s.close();
+            note("port closed: " + e.getMessage());
             throw new IOException("debugging is off on the TV (port " + port + " closed)");
         }
         AdbClient adb;
@@ -100,17 +107,20 @@ final class AdbClient implements Closeable {
         }
         try {
             adb.send(CNXN, VERSION, MAX_DATA, "host::\0".getBytes(StandardCharsets.US_ASCII));
+            note("CNXN sent");
             boolean signed = false, offeredKey = false;
             while (true) {
                 Message m;
                 try {
                     m = adb.read();
                 } catch (EOFException | SocketTimeoutException e) {
+                    note((e instanceof EOFException ? "the TV closed the connection" : "no answer in time") + (offeredKey ? " after the key was offered (the prompt was not answered)" : " before the key was offered"));
                     throw new IOException(offeredKey ? "debugging permission was not accepted on the TV" : "the TV's ADB did not respond");
                 }
                 if (m.command == CNXN) {
                     s.setSoTimeout(20_000);
                     adb.payload(m.arg1);
+                    note("connected (" + (offeredKey ? "the prompt was accepted" : signed ? "the TV knew the key" : "no authentication asked") + ")");
                     return adb;
                 }
                 if (m.command == STLS) throw new IOException("the TV asked for TLS (wireless debugging); use USB debugging");
@@ -118,10 +128,12 @@ final class AdbClient implements Closeable {
                 if (!signed) {
                     adb.send(AUTH, AUTH_SIGNATURE, 0, sign(keys.getPrivate(), m.data));
                     signed = true;
+                    note("signature sent (the TV does not know the key yet if it asks again)");
                 } else if (!offeredKey) {
                     // Unknown key: send the public one; the TV shows "Allow USB debugging?".
                     adb.send(AUTH, AUTH_RSAPUBLICKEY, 0, publicKeyBlob(keys.getPublic(), b64));
                     offeredKey = true;
+                    note("key offered: the TV should now show «Allow USB debugging?» (waiting up to " + approvalMs + " ms" + (sdk < 30 ? "; Android 8 to 10 give the answer to the FIRST connection that offered a key, e.g. a computer's adb" : "") + ")");
                     if (approval != null) approval.waiting();
                     if (sdk >= 30) {
                         s.setSoTimeout(approvalMs);
@@ -145,6 +157,7 @@ final class AdbClient implements Closeable {
                         }
                     }
                 } else {
+                    note("the TV rejected the key after it was offered");
                     throw new IOException("the TV rejected the app's key");
                 }
             }
