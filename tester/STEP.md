@@ -1,4 +1,4 @@
-«✅ GO — step 61 (factory-interface round trip, with the owner)» — run step 61 (end of this file) on the newest apk-next build (264 or later). TV muted. Only with the owner's own yes in your chat; he presses the buttons that change things. Never type the owner's PIN.
+«✅ GO — step 62 (Player 0.9.13 measurement, then the factory row with the owner SEEING the screen)» — run step 62 (end of this file) on the newest apk-next build (266 or later). TV muted. Never type the owner's PIN.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -969,3 +969,12 @@ Why it failed in step 60 (likely): on this TV the «السماح بتصحيح US
 4. If it failed again: the log lines and the exact text on screen. Nothing else.
 **Z** Remove /data/local/tmp/factory.log; restore as step 58 Z.
 **Step 61 extra (no owner needed, do it first): UrTV Player v0.9.13** — install from the release, note the TV's RAM (`MemTotal`) and whether «معاينة القناة» is on or off by default. Then 10 DOWN 1 s apart with preview on, and again off: frames, janky %, p50/p90/p99, stages of any frame over 30 ms. Uninstall after.
+
+## step 62 (build 266 or later; TV muted; restore in Z)
+**A UrTV Player v0.9.13 (no owner needed; do this first)** — as «step 61 extra»: RAM (`MemTotal`), whether «معاينة القناة» starts on or off, then 10 DOWN 1 s apart with preview on and off: frames, janky %, p50/p90/p99, stages of any frame over 30 ms. Uninstall after.
+**B «تخلّص من واجهة المصنع» (only with the owner's own yes in your chat, and only when he is AT the TV and can SEE the screen)**
+The page now tries the TV itself (45 s), then the TV's own network address (45 s), and otherwise ends with a plain message. Logs under `UrTVFactory`.
+1. Before: disabled-apps list + Home holder. Start the TV-side log (the shell-redirect way that worked in step 61). Focus «ابدأ». `adb disconnect`.
+2. Tell him: «اضغط ابدأ وراقب الشاشة. إذا طلع سؤال «السماح بتصحيح USB؟» اختر «السماح دائمًا» ثم «سماح»، وكمّل: القائمة، متأكد مرتين، ثم «رجّع واجهة المصنع». قل «خلصت» لما تخلص كل شيء.» Do NOT reconnect before he says «خلصت» (not «done» for one press).
+3. Reconnect, read the log: which path raised the question (loopback / network), or the final text. If the round trip ran: disabled-apps list after restore must equal before; Home holder `sa.urtv.home`.
+**Z** Remove the log; restore as step 58 Z.
