@@ -2446,3 +2446,30 @@ Clean mode off (full home), games closed, lang ar, updatechannel latest, idle 45
 
 ### Z
 Settings lists identical to before step 59 (show, photos, dock, family DNS, disabled apps). lang ar, updatechannel latest, idle 45 s, debug switches off, clean mode off, the owner's cards, look and teams as found. Build stays 260. TV muted.
+
+## step 60 — last short re-check, build 262 (TV muted; E waits for the owner's own yes; F skipped)
+**A, B, C fixed. D: the Player's preview still makes the late frames.**
+
+**A ✓ «UrTV النظيف» prayer card** (clean mode on, «بطاقة الصلاة: بطاقة»):
+- «وسط الشاشة»: centred across the screen, in the free area between the date and the apps bar ✓
+- «تحت الساعة»: under the clock, right side, clear of date and apps bar ✓
+- «الجهة المقابلة للساعة»: top-left, **beside** the settings button now (no longer covering it), clear of Wi-Fi mark, clock and apps bar ✓
+- English («وسط الشاشة»): Fajr/Dhuhr/Asr/Maghrib/Isha in 0-9 with AM/PM, centred; the whole home mirrors (clock left, settings right) ✓
+- Put back to «سطر تحت التاريخ»; clean mode off; the focus returned to the «UrTV النظيف» row after on and after off ✓
+
+**B ✓ «توحيد المظهر»** on, graphite dark and glass dark: the quick-buttons box, the stocks card and the apps bar look like one material to the eye; the card has no extra rim or sheen any more; it reads well (white names and prices, green changes and lines).
+
+**C ✓ خمّن الكلمة**: after the guess «ممتاز», «ة ى ء» stay uncoloured; only the typed letters are coloured (ا ت orange, م ز grey).
+
+**D UrTV Player v0.9.12** (sha256 `da5db1ce…4507` = its .sha256 ✓, signer `13ade7d0…69dfea` ✓, versionCode 107; compiled with speed-profile):
+1. 10 DOWN, 1 s apart, in the Live list:
+   - **preview on: 56 frames, 16 janky (28.57 %), p50 14 / p90 27 / p99 93 ms.** Frames over 30 ms (five):
+     `49.7: draw 15.8, issue 22.3` · `82.7: start delay 57.1, issue 17.7` · `34.5: issue 25.6` · `55.0: draw 20.8, swap/gpu 25.1` · `93.6: start delay 69.9`
+   - **preview off: 31 frames, 2 janky (6.45 %), p50 12 / p90 14 / p99 17 ms; nothing over 30 ms**
+   - The same picture as 0.9.11 (27 % / 3 %): the preview pane is where the long frames come from (draw / issue when it changes, and ≈60–70 ms start delays)
+2. ✓ Live tab, focus on the tab bar, Back → «الرئيسية»; a second Back leaves the Player
+- Uninstalled after (0 packages)
+
+**E** «تخلّص من واجهة المصنع»: not done (no yes from the owner in my chat yet). **F** phone page: skipped (owner not at the TV).
+
+**Z** Settings lists identical to before step 60; lang ar, updatechannel latest, idle 45 s, debug off, clean mode off, prayer card back to the line, look graphite dark, looksync on, teams as found. Build stays 262. TV muted.
