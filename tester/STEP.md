@@ -1,4 +1,4 @@
-«✅ GO — step 60 (last short re-check)» — run step 60 (end of this file) on the newest apk-next build (261 or later). TV muted. Do not wait on the owner. Never type the owner's PIN.
+«✅ GO — step 61 (factory-interface round trip, with the owner)» — run step 61 (end of this file) on the newest apk-next build (264 or later). TV muted. Only with the owner's own yes in your chat; he presses the buttons that change things. Never type the owner's PIN.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -960,3 +960,11 @@ Short answers per item: ✓ / ✗ + one line. Pictures only where something look
 **D UrTV Player v0.9.12** — (1) 10 DOWN 1 s apart, preview on then off: frames, janky %, p50/p90/p99, and the stages of any frame over 30 ms. (2) Live tab, focus on the tab bar, Back: goes to «الرئيسية» first; a second Back leaves. Uninstall after.
 **E** (only with the owner's own yes in your chat) «تخلّص من واجهة المصنع» first page + round trip, as step 59 E. **F** phone page only if the owner is at the TV.
 **Z** Restore as step 58 Z.
+
+## step 61 — «تخلّص من واجهة المصنع» round trip (build 264 or later; TV muted; owner presses; restore in Z)
+Why it failed in step 60 (likely): on this TV the «السماح بتصحيح USB؟» question goes to the first adb client, and your PC adb was connected. The page now uses the first-run setup's own path (3-minute wait, screensaver held back) and logs every step under `UrTVFactory`.
+1. Before: save the disabled-apps list and the Home holder. Start a log on the TV side that survives your disconnect: `adb shell 'logcat -c; nohup logcat -s UrTVFactory -f /data/local/tmp/factory.log >/dev/null 2>&1 &'`.
+2. Open the row (Settings → البطاقات → الشاشة الرئيسية → «تخلّص من واجهة المصنع»), focus on «ابدأ». Then `adb disconnect` (all). Tell the owner in your chat: «اضغط ابدأ، ثم «سماح» في سؤال تصحيح USB، ثم اتبع الشاشة: القائمة، متأكد مرتين، ثم بعد النتيجة اضغط «رجّع واجهة المصنع»». Wait for him to say done (give him 10 minutes).
+3. Reconnect (the owner may need to allow your PC again). Read `/data/local/tmp/factory.log`. Report: did the question appear, what the list showed, the result screen, the disabled-apps list after «ابدأ» (if he photographed it) and after restore — must equal the before list. Home holder `sa.urtv.home` at the end.
+4. If it failed again: the log lines and the exact text on screen. Nothing else.
+**Z** Remove /data/local/tmp/factory.log; restore as step 58 Z.
