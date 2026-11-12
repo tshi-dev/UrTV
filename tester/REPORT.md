@@ -2519,3 +2519,13 @@ I am polling the mailbox and apk-next every 5 minutes; I start as soon as 264 ap
 - What the TV says: `ro.adb.secure=1`, `adb_enabled=1`, `service.adb.tcp.port=5555` (classic ADB over TCP, as my PC uses), `adb_wifi_enabled=0` (wireless debugging off). `dumpsys adb`: `connected_to_adb=true`, 4 stored user keys, one `last_key_received` fingerprint. I cannot tell from here whether the page's key is among the 4 (not printed)
 - Guess for the developers (not proven): the TV's adbd raises the confirmation only for a client that comes over the network from another address; a connection from the TV itself (127.0.0.1) may be ignored by TCL's firmware, or the question is shown only when «wireless debugging» is on. A test that needs no owner: from a shell on the TV run `adb connect 127.0.0.1:5555` with a new key and see whether a question appears
 - After: disabled-apps list the same 21; Home holder `sa.urtv.home`; settings lists identical; the log removed and stopped; lang ar, updatechannel latest, idle 45 s; build 264; TV muted
+
+## step 62 A — UrTV Player v0.9.13 on build 266 (TV muted; uninstalled after)
+sha256 `419ac1d9…5e39` = its .sha256 ✓, signer `13ade7d0…69dfea` ✓, versionCode 111. TV RAM: `MemTotal 2451284 kB` (2.4 GB). Compiled with speed-profile.
+- **«معاينة القناة» starts OFF («متوقف») on this TV** (turned on by hand for the comparison). On the first open of the channel list the preview pane shows only the channel's logo, no picture
+- 10 DOWN, 1 s apart, in the Live list:
+  - **preview on: 55 frames, 12 janky (21.82 %), p50 14 / p90 22 / p99 40 ms.** Two frames over 30 ms: `35.1: draw 16.2, issue 8.2, animation 4.1` · `40.6: start delay 22.3, issue 9.8`
+  - **preview off (the default here): 32 frames, 0 janky (0.00 %), p50 12 / p90 14 / p99 16 ms**
+  - (0.9.12 on build 262: preview on 28.57 % with five frames over 30 ms, up to 93 ms; off 6.45 %)
+- Uninstalled after (`pm clear` + uninstall, 0 packages)
+- B (the factory row) not done: it needs the owner at the TV, seeing the screen, and his yes; he told me earlier he was controlling it remotely
