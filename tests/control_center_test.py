@@ -144,7 +144,7 @@ check("the manifest asks for no QUERY_ALL_PACKAGES and adds no accessibility cap
 check("every number goes through Digits.of (no String.valueOf of a number into a label), every format has Locale.ROOT",
       "String.valueOf" not in center and all("Locale.ROOT" in l for l in (text + speed).split("\n") if "String.format" in l))
 check("no new receiver, service or alarm for it", not re.search(r"registerReceiver|startService|AlarmManager|JobScheduler", center))
-check("the phone remote and the accessibility service are untouched by it", "PhoneApi" not in center and "sleep_service" not in center)
+check("the phone remote and the accessibility service are untouched by it (the service's name is only read for the line that says which one to turn on)", "PhoneApi" not in center and "sleep_service" not in center.replace("R.string.sleep_service_label", ""))
 
 # ---- the logic
 if not shutil.which("javac"):
