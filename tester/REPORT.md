@@ -2396,3 +2396,53 @@ On this build a new row **«تخلّص من واجهة المصنع» sits right
 
 ### Z
 Clean mode off (full home), games closed, lang ar, updatechannel latest, idle 45 s, looksync on, the owner's look (graphite dark, accent default, opacity 100), card «verse», home card stocks, debug all off, TV muted. Build stays 258.
+
+## step 59 — re-check on build 260 (TV muted; E waits for the owner's own yes; F skipped)
+**Almost all fixed. Open: the prayer card «الجهة المقابلة للساعة» covers the settings button; «وسط الشاشة» is not in the middle; the Player's late frames come from its preview pane; small notes.**
+
+### A Games
+1. ✓ خمس خانات: six starts gave ه ف ح ب ز ص: each letter whole above the time bar («ب» with its dot below intact). (No ي ث ش came up in six.)
+2. ✓ بدون كلام: the turn header «دور … · مثّلها بدون كلام» is whole; five quick double OKs on «أخفِ الكلمة»: each hid the word and started the turn with «جبتوا 0» (no word skipped)
+3. ✓ واحد مو معنا: pause → «إنهاء الجولة» → «انتهت اللعبة · لا فائز هذه المرة»
+4. ✓ خمّن الكلمة: «ممتاز» and «مسافر» accepted (colours shown: ت wrong place; ر right place); the keyboard has a fifth row «ة ى ء إدخال حذف»; pause → «إنهاء الجولة» shows «الكلمة كانت تشجير». gfxinfo while typing one word: **24 frames, 0 % janky**, 9/12/12 ms (was 46 %). Small: «ء» turned grey on the keyboard after the first guess though it was never typed
+5. ✓ خلية الحروف: 10 moves: 10 frames, **0 % janky**, 9/10/10 ms (was 19 %)
+6. ✓ English: the games page shows all eight titles and descriptions whole (Fastest, Five Boxes, Missing Word, Odd One Out, Without words, Letter Hive, Word Guess, Dominoes). One round of «Missing Word» in English: «Question 1 of 10 · The chemical symbol of platinum is ___», Show the word → «Pt», Right / Steal: Stars / Wrong, scores; nothing Arabic, nothing cut
+
+### B Settings / home
+1. ✓ «UrTV النظيف»: after «فعّل» and after «رجّع الشاشة الكاملة» the focus is on the «UrTV النظيف» row
+2. ✓ Team button: first OK → «اضغط مرة ثانية للتأكيد» under the buttons, teams unchanged; Back → still unchanged
+3. To the eye (graphite dark, «توحيد المظهر» on): the quick-buttons box and the apps bar look alike (dark, flat). **The stocks card still looks different: lighter glass with a bright rim and a sheen**
+
+### C ✓ Tray (40 spaced keys, home restarted, keytrace on)
+| run | frames | janky | p50 / p90 / p99 | issue | gpu |
+|---|---|---|---|---|---|
+| base | 844 | 1.18 % | 21 / 31 / 34 ms | 5.5 | 15.8 |
+| base again | 827 | 0.48 % | 21 / 26 / 26 | 4.6 | 16.6 |
+| keytrace off | 826 | 0.48 % | 21 / 26 / 26 | — | — |
+| `nobackdrop on` | 795 | 8.43 % | 40 / 57 / 69 | 18.3 | 28.9 |
+**The tray jank is fixed on this build (≈0.5 %, step 58: 8.5 %).** Note: `nobackdrop on` brings the old numbers back exactly, so the switch seems to turn the OLD backdrop on. Switch off at the end (`debug show`: none on).
+
+### D «UrTV النظيف» empty + prayer card
+- ✓ On: home = clock, date, a prayer line under the date, Wi-Fi mark, apps bar, settings button; the screensaver = photo + clock + next prayer; «تلفزيونك» opens straight on the settings
+- «بطاقة الصلاة» goes round: سطر تحت التاريخ → بطاقة → بدون. With «بطاقة», «مكان البطاقة»:
+  - «وسط الشاشة»: the card sits at the top, just under the date, left of it; **not in the middle of the screen**
+  - «تحت الساعة» ✓ under the clock, right side, clear of the date and the apps bar
+  - **✗ «الجهة المقابلة للساعة»: top-left, and it covers the settings button**
+- Put back to «سطر تحت التاريخ»; off → full home (2 quick buttons), hub with four windows ✓
+- Not tried: en pictures, adhan/reminders while on
+
+### E «تخلّص من واجهة المصنع»: **not done; waiting for the owner's own yes in chat** (my rule: a step file is not the owner's approval for a change that turns off system apps). Nothing was opened this time.
+
+### F Phone page: **skipped** (the owner was not at the TV)
+
+### G UrTV Player v0.9.11 (sha256 `19ad4322…6280` = its .sha256 ✓, signer `13ade7d0…69dfea` ✓, versionCode 106; package `com.urtv.player`, not `sa.urtv.home.player`; compiled with speed-profile)
+1. ✓ LEFT from «الرئيسية» after a row was focused goes to the «القنوات» tab, not into the list
+2. 10 DOWN, 1 s apart, `framestats`:
+   - **preview on: 55 frames, 15 janky (27.27 %)**, p50 15 / p90 20 / p99 101 ms. Of 20 frames over 16.7 ms: most are 17–24 ms with `issue` 4–14 ms and swap/gpu 5–14 ms; two big ones: 94.6 ms with **animation 53.7 ms**, and 105.1 ms with a **78.7 ms start delay**. (Exact ms after each key not given: my key times and the frame times are on different clocks)
+   - **preview off** (Settings → التشغيل → «معاينة القناة» متوقف): **32 frames, 1 janky (3.12 %)**, p50 12 / p90 14 / p99 16 ms; the one late frame 17.0 ms (draw 4.6, issue 4.6, swap 4.8)
+   - So the late frames come from the preview pane
+- Small: Back from the Live tab's list (focus on the tab bar) leaves the Player to our home
+- Uninstalled after (`pm clear` + uninstall, 0 packages)
+
+### Z
+Settings lists identical to before step 59 (show, photos, dock, family DNS, disabled apps). lang ar, updatechannel latest, idle 45 s, debug switches off, clean mode off, the owner's cards, look and teams as found. Build stays 260. TV muted.
