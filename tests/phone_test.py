@@ -54,7 +54,11 @@ check("no receiver, service or boot hook for the phone control in the manifest (
       "PhoneInstallReceiver" in manifest and re.search(r'PhoneInstallReceiver"\s+android:exported="false"', manifest) is not None
       and not re.search(r"Phone(Control|Service|Boot|Server)", manifest), "")
 check("the screen is in the manifest, and nothing says it should start at boot", 'android:name=".PhoneActivity"' in manifest, "")
-check("nothing is advertised on the network (no mDNS / NSD / jmdns / UPnP)", not any(re.search(r"NsdManager|registerService|jmdns|MulticastSocket|SSDP", text(f)) for f in all_java if "/launcher/" in str(f)), "")
+# 4.3.1: the wireless-debugging pairing LOOKS for this TV's own adbd service (NsdManager.discoverServices, only in setup/pair/PairDiscovery.java); nothing is ever advertised or registered
+check("nothing is advertised on the network (no registerService / jmdns / UPnP / multicast), and service discovery (NsdManager) exists only in the pairing's PairDiscovery, to LOOK for this TV's own adbd",
+      not any(re.search(r"registerService|jmdns|MulticastSocket|SSDP", text(f)) for f in all_java if "/launcher/" in str(f))
+      and [str(f).split("/")[-1] for f in all_java if "/launcher/" in str(f) and re.search(r"NsdManager", text(f))] == ["PairDiscovery.java"]
+      and "registerService" not in text(JAVA / "setup/pair/PairDiscovery.java"), "")
 check("nothing in the phone code runs a command, a shell, SQL or deletes files",
       not any(re.search(r"Runtime\.getRuntime|ProcessBuilder|\.exec\(|rawQuery|execSQL|pm uninstall|\.uninstall|deletePackage|factory.?reset|\.delete\(\)", text(f).replace("f.delete()", "").replace("file.delete()", "")) for f in phone_java), "")
 check("only the update's own downloaded files are deleted (inside its own folder)", len(re.findall(r"\.delete\(\)", text(PHONE / "PhoneUpdater.java"))) == 1, "")
@@ -112,11 +116,13 @@ check("portfolio.html builds no HTML from data, has one script with the nonce, s
       and pf.count("<script") == 1 and '<script nonce="__NONCE__">' in pf and "'X-UrTV-Session'" in pf and "credentials: 'same-origin'" in pf, "")
 check("portfolio.html takes the token out of the address bar before pairing, and keeps no holding (no localStorage write, the form cleared after saving)",
       pf.index("history.replaceState") < pf.index("pairToken(m[1])") and "localStorage.setItem" not in pf and "$('buys').textContent = '';" in pf, "")
-used = set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", page)) | set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", pf))
+used = set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", page)) | set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", pf)) | set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", text(ROOT / "android/launcher/src/main/assets/phone/adb.html")))   # + the pairing code page
 check("every call of the page (and of portfolio.html) is an endpoint the server has, and the reverse", used == served, (used ^ served))
 check("the page says plainly what it cannot do: keys to other apps, and text outside our screens",
       "فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال»" in page and "تحتاج أندرويد ١٣" in page and "يُكتب في حقلها بعد تفعيل خدمة إمكانية الوصول" in page and "/api/text" in page, "")
-check("the page has no reset, uninstall, ADB or PIN-changing control", not re.search(r"reset|uninstall|adb|إعادة ضبط|حذف التطبيق", page, re.I), "")
+# 4.3.1: the one ADB-related thing on the page is the row that opens the pairing code page, shown only while the TV's own factory page armed the pairing (state.adb_pair); it changes nothing itself
+check("the page has no reset, uninstall, ADB or PIN-changing control (the row to the pairing code page, shown only while the TV armed it, is the one allowed mention)",
+      not re.search(r"reset|uninstall|adb|إعادة ضبط|حذف التطبيق", page.replace('id="adbRw" href="/a"', "").replace("$('adbRw').classList.toggle('hidden', !s.adb_pair);", ""), re.I), "")
 
 # ---- docs and registration
 runsh = text(ROOT / "tests/run.sh")
@@ -159,8 +165,10 @@ check("the home runs the request through the very guard of a tap, for the favour
       and "for (String[] a : PhoneApps.apps(this)) shown |= a[0].equals(t);" in main_src)
 check("kids mode shows the phone no pills and no app outside the allowed list", "if (st.kids) return out;" in apps_src and 'Parental.state(app).kids' in apps_src)
 check("the family summary is read only and never carries the PIN", "public static Map<String, Object> family(" in apps_src and "pin_set" in apps_src and "Parental.pin(" not in apps_src and "PinStore" not in apps_src)
-check("the phone has no way to change the family lock, reset, uninstall or reach ADB: no such call anywhere in the phone package",
-      not re.search(r"setLocked|setKids|setAllowed|adbSet|adbReset|adbLock|turnOff\(|\.uninstall\(|deletePackage|uninstallPackage|Runtime\.getRuntime|ProcessBuilder|\"adb\"|pm clear|factory", "".join(text(p) for p in PHONE.glob("*.java"))), "")
+# 4.3.1: the only way from the phone to ADB is to hand six digits to PairBridge.submit, which takes them only while the TV's own factory page armed the pairing (behind the family PIN)
+check("the phone has no way to change the family lock, reset, uninstall or reach ADB: no such call anywhere in the phone package (but PairBridge.submit's six digits, taken only while the TV armed the pairing)",
+      not re.search(r"setLocked|setKids|setAllowed|adbSet|adbReset|adbLock|turnOff\(|\.uninstall\(|deletePackage|uninstallPackage|Runtime\.getRuntime|ProcessBuilder|\"adb\"|pm clear|factory", "".join(text(p) for p in PHONE.glob("*.java")).replace("the TV's factory page armed it", "").replace("PairBridge.submit(app, code)", "").replace("(the TV's factory page armed it)", "").replace("(only while the TV's factory page armed it)", ""))
+      and "".join(text(p) for p in PHONE.glob("*.java")).count("PairBridge.") == 3 and "STATE.begin(" in text(JAVA / "setup/PairBridge.java"), "")
 check("Back, Home and the arrows reach every app through our accessibility services when one is on (RemoteNav says which call; our own screens keep dispatchKeyEvent): see tests/remote_nav_test.py",
       'PhoneApps.pressKey(key)' in actions_src and "performGlobalAction(st.code)" in text(JAVA / "SleepService.java") and "GLOBAL_BACK = 1" in text(JAVA / "RemoteNav.java") and "a.dispatchKeyEvent" in actions_src)
 check("the adhan stop and the sleep timer go through the app's own code", "MusicService.stopAdhan(c)" in text(til / "PhoneBridge.java") and "SleepTimer.start(" in apps_src and "SleepTimer.MINUTES" in apps_src)

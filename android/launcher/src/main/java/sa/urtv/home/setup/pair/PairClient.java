@@ -10,7 +10,7 @@ import io.github.muntashirakon.adb.AbsAdbConnectionManager;
 
 /**
  * Wireless-debugging PAIRING for TVs whose loopback adb never asks «السماح بتصحيح USB؟» (Android 11 and later): the person turns on «تصحيح الأخطاء اللاسلكي» and opens «إقران الجهاز
- * برمز الإقران»; this finds the pairing service (NsdManager), pairs with the six digits (SPAKE2 and TLS, libadb-android: Apache-2.0 side of its dual licence, with spake2-android under
+ * برمز الإقران»; this finds the pairing service (network service discovery), pairs with the six digits (SPAKE2 and TLS, libadb-android: Apache-2.0 side of its dual licence, with spake2-android under
  * LGPL-3.0: THIRD_PARTY_NOTICES.md) and then connects over {@code _adb-tls-connect._tcp}. This package is the whole feature: the one entry point is {@code PairClient}, called from
  * setup.PairRoute; take both away (and the gradle lines) and the app is as it was. Every stage is told to the log lines the caller gives; the code is never one of them.
  */
