@@ -481,10 +481,16 @@ public class MainActivity extends Activity {
         root.setLayoutDirection(Dir.layout());
 
         // Wallpaper: two stacked layers so a new photo can crossfade in over the old one.
+        // The backdrop (the photos, the dimming and the scrims) is one view that holds them, kept as ONE hardware layer unless the TV is low on RAM or a tester turned it off (dock.sh debug nobackdrop):
+        // every frame of the tray's focus move then blits one texture instead of drawing a photo and three translucent full-screen layers (the render thread's cost was 14-18 ms issue + 18-28 ms gpu per frame)
+        FrameLayout backdrop = new FrameLayout(this);
+        backdrop.setClipChildren(false);
+        if (!DebugFlags.on(this, "nobackdrop") && !((android.app.ActivityManager) getSystemService(ACTIVITY_SERVICE)).isLowRamDevice()) backdrop.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        root.addView(backdrop, new FrameLayout.LayoutParams(-1, -1));
         wallBack = wallpaperLayer();
         wallFront = wallpaperLayer();
-        root.addView(wallBack, new FrameLayout.LayoutParams(-1, -1));
-        root.addView(wallFront, new FrameLayout.LayoutParams(-1, -1));
+        backdrop.addView(wallBack, new FrameLayout.LayoutParams(-1, -1));
+        backdrop.addView(wallFront, new FrameLayout.LayoutParams(-1, -1));
         // Scrim: darker at the top (clock, pills) and bottom (dock) so text stays readable.
         scrim = new View(this);
         scrim.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
@@ -492,12 +498,12 @@ public class MainActivity extends Activity {
         wallDimView = new View(this);   // «تعتيم الخلفية»: extra black over the photo, 0 as it was
         wallDimView.setBackgroundColor(Color.BLACK);
         wallDimView.setAlpha(0f);
-        root.addView(wallDimView, new FrameLayout.LayoutParams(-1, -1));
-        root.addView(scrim, new FrameLayout.LayoutParams(-1, -1));
+        backdrop.addView(wallDimView, new FrameLayout.LayoutParams(-1, -1));
+        backdrop.addView(scrim, new FrameLayout.LayoutParams(-1, -1));
         gridShade = new View(this);
         gridShade.setBackgroundColor(0xB3000000);
         gridShade.setAlpha(0f);
-        root.addView(gridShade, new FrameLayout.LayoutParams(-1, -1));
+        backdrop.addView(gridShade, new FrameLayout.LayoutParams(-1, -1));
         try {
             wallpapers = getAssets().list("wallpapers");
         } catch (java.io.IOException ignored) { }

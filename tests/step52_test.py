@@ -73,4 +73,7 @@ check("focus-animation switches (dock.sh debug nolift|noglow|noshine|noscale|not
       and "nolift|noglow|noshine|noscale|notitle|plainfocus" in src(ROOT / "optimize/dock.sh") and "nolift|noglow|noshine|noscale|notitle|plainfocus" in src(HOME / "DockReceiver.java"))
 check("keytrace: FrameMetrics of the six frames after a key (total, unknown delay, input, animation, measure, draw, sync, command issue, swap, gpu and deadline on 31+), the vsync gap, and what the main thread ran in the 80 ms before the dispatch",
       all(k in kt for k in ("FrameMetrics.", "UNKNOWN_DELAY_DURATION", "SWAP_BUFFERS_DURATION", "GPU_DURATION", "DEADLINE", "vsyncGap=", "setMessageLogging", "main=[")) and "KeyTrace.install();" in mm)
+check("step 58: the photo, its dimming and the scrims are ONE hardware layer (a static backdrop is one texture blit per frame), off on a low-RAM TV or with `dock.sh debug nobackdrop`; the photo swap still happens inside it",
+      '"nobackdrop"' in dbg2 and 'DebugFlags.on(this, "nobackdrop")' in mm and "backdrop.setLayerType(View.LAYER_TYPE_HARDWARE, null)" in mm and "isLowRamDevice()" in mm and "backdrop.addView(scrim," in mm and "nobackdrop" in src(ROOT / "optimize/dock.sh") and "nobackdrop" in src(HOME / "DockReceiver.java"))
+
 sys.exit(1 if failed else 0)
