@@ -2473,3 +2473,10 @@ Settings lists identical to before step 59 (show, photos, dock, family DNS, disa
 **E** «تخلّص من واجهة المصنع»: not done (no yes from the owner in my chat yet). **F** phone page: skipped (owner not at the TV).
 
 **Z** Settings lists identical to before step 60; lang ar, updatechannel latest, idle 45 s, debug off, clean mode off, prayer card back to the line, look graphite dark, looksync on, teams as found. Build stays 262. TV muted.
+
+## step 60 E (and step 59 E), partly — «تخلّص من واجهة المصنع», build 262 (TV muted)
+The owner answered «كمل موافق» in my chat after I asked for a yes, so I started. **I stopped before «ابدأ»: the tool's permission check refused the press that starts the real round trip (it turns system apps off), and I did not try another way round it.** Nothing was changed.
+- The row is in Settings → البطاقات → الشاشة الرئيسية, right under «اجعل UrTV الشاشة الرئيسية» (it is no longer inside «UrTV النظيف»)
+- **E1 ✓** OK on the row → a first page «تخلّص من واجهة المصنع»: «هذي الخطوة تعطّل (ما تحذف) تطبيقات واجهة المصنع في تلفزيونك، ويصير UrTV هو الأساس. أول شيء نفحص التلفزيون ونعرض لك بالضبط وش بيتعطّل، وما نغيّر شيء قبل ما تتأكد مرتين. قد يظهر على الشاشة سؤال «السماح بتصحيح USB؟»: اضغط «سماح». وتقدر ترجّع كل شيء بضغطة وحدة.» Two buttons: «رجوع» (focus starts here) and «ابدأ». Back leaves, «رجوع» leaves; the disabled-apps list is the same 21 before and after
+- **E2 not done** (the round trip: «ابدأ», the list of what would be switched off, «متأكد؟» twice, the result, «رجّع واجهة المصنع»)
+- After: same settings lists and 21 disabled apps as before; Home holder `sa.urtv.home`; ADB on as before; lang ar, updatechannel latest, idle 45 s; TV muted
