@@ -350,10 +350,14 @@ def shots(out, report, failures):
         for setting, n in (("5", 5), ("7", 7), ("10", 8), ("all", 8)):
             tag = f"shot-{look}-{setting}"
             saver(f"--es look {look}", f"--es favbar {setting}", "--es appearance dark" if look == "glass" else "--es appearance auto")
-            shell("am force-stop sa.urtv.home")   # the home reads the bar size and the look when it starts (a running one only at a later tick: each picture showed the one before)
-            go_home()
-            xa, pa = walk(["DPAD_RIGHT"] * 12, out, tag)
-            fa, ma = analyse(xa, "ar", "first", n=n, favs=12)
+            for attempt in range(3):   # a shot taken while the home had scrolled up (the tray at the top edge: a slow emulator, a key that went on to the rows below) is taken again from a fresh start
+                shell("am force-stop sa.urtv.home")   # the home reads the bar size and the look when it starts (a running one only at a later tick: each picture showed the one before)
+                go_home()
+                xa, pa = walk(["DPAD_RIGHT"] * 12, out, tag)
+                fa, ma = analyse(xa, "ar", "first", n=n, favs=12)
+                if not ma.get("tray") or ma["tray"][1] > 300:
+                    break
+                print(f"{tag}: the tray is at the top edge {list(ma['tray'])} (try {attempt + 1}), taking this shot again")
             label = name_label(nodes(xa), tuple(ma["tray"])) if ma.get("tray") else None
             if label and "…" in label["text"]:
                 fa.append(f"the app's name above the tray is cut with «…»: {label['text']}")
