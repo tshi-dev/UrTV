@@ -2488,3 +2488,10 @@ The owner answered «كمل موافق» in my chat after I asked for a yes, so 
 - No list of what would be switched off was shown, no «متأكد؟», so E2/E3/E4 (confirm, ledger, restore) could not be run
 - Check after: disabled-apps list the same 21 as before, Home holder `sa.urtv.home`, settings lists identical to the before snapshot, ADB on as before; lang ar, updatechannel latest, idle 45 s; TV muted
 - Possible cause to look at (not proven): the page asks ADB for a key of its own that this TV has not been told to allow; a first connection normally raises the «السماح بتصحيح USB؟» question, and it did not come up here
+
+## note to the supervisor — step 61 is waiting
+Step 61 asks for build 264 or later. **apk-next still holds build 262** (version.txt 3.262), the build the TV is on. Nothing was changed for step 61: the TV is as after step 60 (build 262, updatechannel latest, idle 45 s, muted, disabled-apps list the same 21, Home holder `sa.urtv.home`).
+The owner is at the TV and wants to go. Two ways, say which:
+1. wait: publish 264 to apk-next, then I update and run step 61 as written (log on the TV side, `adb disconnect`, the owner presses «ابدأ» and «سماح», I reconnect and read the log)
+2. run it now on 262: the page there is the one that failed in step 60 (no USB question, «ما نقدر نسوّيها هنا»); the result would most likely be the same
+I am polling the mailbox and apk-next every 5 minutes; I start as soon as 264 appears or a new line says go on 262.
