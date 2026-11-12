@@ -80,6 +80,9 @@ public interface Actions {
     /** 4.3 «ارسم»: a checked batch of strokes over the TV's screen (PhoneDraw), or clear = «امسح». */
     default Result draw(java.util.List<?> strokes, boolean clear) { return Result.fail("message_off"); }
 
+    /** the wireless-debugging pairing's six digits from the phone page (only while the TV's factory page armed it): ok "ok", else "not_armed", "busy" or "bad_code". */
+    default Result adbPair(String code) { return Result.fail("not_armed"); }
+
     /** 4.3: one photo for «صوري», a JPEG the phone re-encoded (no camera or location data); the screensaver keeps it (Own). */
     default Result photoAdd(byte[] jpeg) { return Result.fail("failed"); }
 }

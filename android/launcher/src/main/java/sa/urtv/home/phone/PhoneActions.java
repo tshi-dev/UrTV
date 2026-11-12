@@ -190,6 +190,8 @@ final class PhoneActions implements Actions {
 
     @Override public Map<String, Object> state() {
         Map<String, Object> m = new LinkedHashMap<>();
+        String pair = sa.urtv.home.setup.PairBridge.status();   // the wireless-debugging pairing (the TV's factory page armed it): the phone page shows its code row only then
+        if (!"off".equals(pair)) { m.put("adb_pair", pair); m.put("adb_pair_why", sa.urtv.home.setup.PairBridge.why()); }
         Bundle b = saver("phone_state", null, null);
         m.put("settings", b != null);
         if (b != null) {
@@ -331,6 +333,11 @@ final class PhoneActions implements Actions {
     // ---- 4.3 #53 «اكتب وارسم»: a short message on the TV's screen (PhoneMessage decides, MessageActivity shows)
 
     private static final PhoneMessage MESSAGES = PhoneMessage.limiter();
+
+    @Override public Result adbPair(String code) {
+        String r = sa.urtv.home.setup.PairBridge.submit(app, code);
+        return "ok".equals(r) ? Result.ok("pairing") : Result.fail(r);
+    }
 
     @Override public Result message(String text) {
         boolean ours = Foreground.current() != null;   // our home, one of our screens, or a message already shown

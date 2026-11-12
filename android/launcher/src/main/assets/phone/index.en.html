@@ -269,6 +269,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 <div class="row"><button id="upCheck" class="gold">Check for updates</button><button id="upGo" class="hidden">Install</button></div>
 <p id="upState"></p>
 <p id="ver"></p>
+<a class="rw hidden" id="adbRw" href="/a" data-i="lock"><b>Pair the TV<small>Wireless debugging code</small></b></a>
 </div>
 <div class="card hidden" id="famCard">
 <div class="ch"><span class="ic" data-i="lock"></span><h2>Parental controls</h2></div>
@@ -335,7 +336,6 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 	function el(t, c, x) { var e = document.createElement(t); if (c) e.className = c; if (x !== undefined) e.textContent = x; return e; }
 	try { sess = sessionStorage.getItem('urtv'); } catch (e) { sess = null; }
 
-	// ---- theme
 	function theme(t) {
 		if (t) document.documentElement.setAttribute('data-theme', t);
 		var l = document.documentElement.getAttribute('data-theme') === 'light', b = $('theme'), i = l ? 'moon' : 'sun';
@@ -420,7 +420,6 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 	}
 	function digits(s) { return String(s).replace(/[٠-٩]/g, function (d) { return d.charCodeAt(0) - 0x660; }).replace(/[۰-۹]/g, function (d) { return d.charCodeAt(0) - 0x6f0; }); }
 	function mmss(x) { x = Math.max(0, Math.floor(x)); return Math.floor(x / 60) + ':' + ('0' + x % 60).slice(-2); }
-	// Arabic counting (hours, minutes, seconds, apps)
 	var HR = ['hour', '2 hours', 'hours'], MN = ['min', '2 min', 'min'];
 	function nn(n, w) { return n + ' ' + (n === 1 ? w[0] : w[2]); }
 	function dur(sec) {
@@ -448,7 +447,6 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 		return false;
 	}
 
-	// ---- the PIN, when the TV asks for it
 	var pinAsk = null;
 	function askPin(wrong) {
 		return new Promise(function (res) {
@@ -473,7 +471,6 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 		});
 	}
 
-	// ---- pairing
 	function show(app) {
 		$('login').classList.toggle('hidden', app); $('app').classList.toggle('hidden', !app);
 		document.body.classList.toggle('login', !app);
@@ -516,8 +513,6 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 		pair({ code: c });
 	};
 
-	// ---- the app: four tabs
-	// the icons (#ico)
 	function icon(name) {
 		var s = $('ico').cloneNode(false);
 		s.removeAttribute('id'); s.removeAttribute('class');
@@ -576,7 +571,6 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 		var n = p.surah && s.surahs ? s.surahs[p.surah - 1] : '', r = recName(s, p.reciter);
 		return (n ? 'Surah ' + n : 'Recitation') + (r ? ', ' + r : '');
 	}
-	// the polled parts, then the forms
 	function render(s, full) {
 		glass(s);
 		var live = !!s.adhan_live, p = s.player || {};
@@ -621,6 +615,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 		$('ver').textContent = s.version ? 'Your TV version: ' + s.version : '';
 		$('phones').textContent = typeof s.phones === 'number' ? 'Connected phones: ' + s.phones : '';
 		upText(s.update);
+		$('adbRw').classList.toggle('hidden', !s.adb_pair);
 		if (!full) return;
 		$('cityNow').textContent = s.settings ? 'Current city: ' + s.city : 'City settings aren’t available: update the Your TV Screen app.';
 		$('lang').classList.toggle('hidden', !s.lang);
@@ -656,7 +651,6 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 			if (f && typeof f.pin_set !== 'undefined') famDraw(f);
 		});
 	}
-	// cards being chosen: not redrawn by a late answer
 	var cardsDirty = false;
 	function chosenCards() {
 		var out = [], sels = $('cards').children;
@@ -694,7 +688,6 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 	};
 	$('cardsGo').onclick = function () {
 		var out = chosenCards();
-		// saved: redraw unless changed
 		set({ home_cards: out }).then(function () { if (chosenCards().join() === out.join()) cardsDirty = false; refresh(); });
 	};
 	$('aOn').onchange = function () { set({ adhan_on: this.checked }); };
@@ -711,7 +704,6 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 	function stopAdhan() { api('/api/adhan_stop', {}).then(function (j) { say(j); setTimeout(refresh, 800); }); }
 	$('adhanStop1').onclick = stopAdhan; $('adhanStop2').onclick = stopAdhan;
 
-	// ---- the Quran
 	$('qPlay').onclick = function () { api('/api/quran', { op: 'play', reciter: $('qRec').value, surah: parseInt($('qSurah').value, 10) }).then(function (j) { say(j); setTimeout(refresh, 1500); }); };
 	function q(op) { api('/api/quran', { op: op }).then(function (j) { say(j); setTimeout(refresh, 800); }); }
 	document.querySelectorAll('[data-q]').forEach(function (b) { b.onclick = function () { q(b.getAttribute('data-q')); }; });
@@ -719,7 +711,6 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 	$('nowTog').onclick = function () { q('pause'); };
 	$('qSleep').onchange = function () { api('/api/quran', { op: 'sleep', minutes: parseInt(this.value, 10) }).then(function (j) { say(j); }); };
 
-	// ---- the text
 	try { if (localStorage.getItem('urtvTxtMode') === 'append') txtMode = 'append'; } catch (e) { }
 	function drawModes() { document.querySelectorAll('[data-mode]').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-mode') === txtMode); b.setAttribute('aria-pressed', b.getAttribute('data-mode') === txtMode); }); }
 	drawModes();
@@ -742,7 +733,6 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 		});
 	}
 	$('txtGo').onclick = function () { sendText(false); };
-	// 4.3 #53: a message on the TV's screen
 	$('msgGo').onclick = function () {
 		var t = $('msgT').value.replace(/\s+/g, ' ').trim();
 		if (!t) { toast('Type your message first.'); $('msgT').focus(); return; }
@@ -751,9 +741,7 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 	$('txtSearch').onclick = function () { sendText(true); };
 	$('txt').onkeydown = function (e) { if (e.key === 'Enter') { e.preventDefault(); sendText(false); } };
 
-	// ---- the apps
 	function iconUrl(pkg) { return '/api/icon/' + encodeURIComponent(pkg); }
-	// icons: fetched with the session header
 	var icons = {}, iconQ = [], iconRun = 0, iconWait = {};
 	function iconGet(pkg, done) {
 		if (pkg in icons) { done(icons[pkg]); return; }
@@ -826,7 +814,6 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 	}
 	$('appQ').oninput = drawApps;
 
-	// ---- the update
 	function upText(u) {
 		if (!u) return;
 		var t = UP[u.status] || '';
@@ -840,7 +827,6 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 	$('upCheck').onclick = function () { api('/api/update', { op: 'check' }).then(function (j) { if (j.ok) { upText(j); upPoll(); } else say(j); }); };
 	$('upGo').onclick = function () { gated('/api/update', { op: 'install' }).then(function (j) { if (j.ok) { upText(j); upPoll(); } else say(j); }); };
 
-	// ---- the remote
 	function press(k) {
 		try { if (navigator.vibrate && navigator.userActivation && navigator.userActivation.isActive) navigator.vibrate(k === 'ok' ? 30 : 12); } catch (e) { }
 		api('/api/key', { key: k }).then(function (j) { if (!j.ok) { toast(MSG[j.error] || MSG.failed); stopRep(); } });
@@ -877,7 +863,6 @@ header.top .sub{display:block;font-weight:400;font-size:14px;color:var(--dim)}
 
 	$('out').onclick = function () { api('/api/logout', {}).then(function () { leave(); $('loginState').textContent = 'Signed out.'; }); };
 
-	// ---- start
 	var h = location.hash.replace(/^#/, '');
 	if (h) { try { history.replaceState(null, '', location.pathname); } catch (e) { } }
 	if (/^[0-9a-f]{32}$/.test(h)) { show(false); pair({ token: h }); }

@@ -40,8 +40,8 @@ final class PairDiscovery {
         final boolean[] resolving = {false};
         final Object lock = new Object();
         final NsdManager.ResolveListener resolver = new NsdManager.ResolveListener() {
-            @Override public void onResolveFailed(NsdServiceInfo info, int code) {
-                log.line("resolve failed (" + code + ")");
+            @Override public void onResolveFailed(NsdServiceInfo info, int err) {
+                log.line("resolve failed (" + err + ")");
                 next();
             }
             @Override public void onServiceResolved(NsdServiceInfo info) {
@@ -58,8 +58,8 @@ final class PairDiscovery {
             }
         };
         NsdManager.DiscoveryListener listener = new NsdManager.DiscoveryListener() {
-            @Override public void onStartDiscoveryFailed(String t, int code) { log.line("discovery failed to start (" + code + ")"); done.countDown(); }
-            @Override public void onStopDiscoveryFailed(String t, int code) { }
+            @Override public void onStartDiscoveryFailed(String t, int err) { log.line("discovery failed to start (" + err + ")"); done.countDown(); }
+            @Override public void onStopDiscoveryFailed(String t, int err) { }
             @Override public void onDiscoveryStarted(String t) { log.line("looking for " + t); }
             @Override public void onDiscoveryStopped(String t) { }
             @Override public void onServiceLost(NsdServiceInfo info) { }

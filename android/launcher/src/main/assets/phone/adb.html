@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="dark light">
+<title>إقران التلفزيون</title>
+<style>
+/* The wireless-debugging pairing's code row (4.3.1): its own small page, like «صوري» (the main phone page keeps its 64 KB). The TV's page «تخلّص من واجهة المصنع» arms it; this page only types the six digits
+   the TV shows in «إقران الجهاز برمز الإقران» (Settings stays open on the TV) and shows the result. The code goes to /api/adb_pair behind the session of the main page and is kept nowhere. «اللغة» English: the TV sends <html lang="en">. */
+:root { --bg:#17181b; --card:rgba(30,33,39,.92); --line:rgba(255,255,255,.1); --acc:#54c08a; --text:#fff; --dim:#dadce0; --ink:#14161a; --tile:rgba(255,255,255,.07) }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --bg:#f6f4ef; --card:#fff; --line:#e3dfd5; --acc:#166a45; --text:#1b1f1d; --dim:#545a57; --ink:#fff; --tile:#fff } }
+:root[data-theme="light"] { --bg:#f6f4ef; --card:#fff; --line:#e3dfd5; --acc:#166a45; --text:#1b1f1d; --dim:#545a57; --ink:#fff; --tile:#fff }
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+@font-face{font-family:'Thmanyah';font-weight:400;font-display:swap;src:url(/fonts/Thmanyah-Regular.woff2) format("woff2")}
+html,body{margin:0;color:var(--text);background:var(--bg);font:16px/1.45 'Thmanyah',system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif}
+body{max-width:560px;margin:0 auto;padding:24px 16px calc(32px + env(safe-area-inset-bottom))}
+h1{font-size:24px;margin:16px 0}
+p{margin:8px 0;color:var(--dim);font-size:14px}
+ol{margin:8px 0;padding-inline-start:22px;color:var(--dim);font-size:14px}
+li{margin:6px 0}
+.hidden{display:none !important}
+input{display:block;width:100%;min-height:64px;margin:16px 0 8px;border:1px solid var(--line);border-radius:16px;background:var(--tile);color:var(--text);font:700 32px/1 'Thmanyah',system-ui,sans-serif;letter-spacing:.4em;text-align:center;direction:ltr}
+button{display:block;width:100%;min-height:56px;border:0;border-radius:16px;background:var(--acc);color:var(--ink);font:700 16px 'Thmanyah',system-ui,sans-serif;cursor:pointer}
+button:disabled{opacity:.5}
+#state{font-weight:700;color:var(--text);min-height:1.5em}
+a{color:var(--acc)}
+</style>
+</head>
+<body>
+<h1 id="t1">إقران التلفزيون</h1>
+<ol>
+<li id="s1">على التلفزيون: إعدادات المطوّر ← شغّل «تصحيح الأخطاء اللاسلكي».</li>
+<li id="s2">اضغط «إقران الجهاز برمز الإقران»: يظهر رمز من ٦ أرقام. اترك النافذة مفتوحة.</li>
+<li id="s3">اكتب الرمز هنا واضغط «إقران».</li>
+</ol>
+<div id="go" class="hidden">
+<input id="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="······" aria-label="رمز الإقران">
+<button id="pair" type="button">إقران</button>
+</div>
+<p id="state" role="status"></p>
+<p id="none" class="hidden"><span id="t4">افتح صفحة الجوال وامسح الرمز من «أسهل من الجوال» على التلفزيون أولاً.</span> <a href="/" id="t5">صفحة الجوال</a></p>
+<script nonce="__NONCE__">
+(function () {
+  try { var th = localStorage.getItem('urtvTheme'); if (th === 'light' || th === 'dark') document.documentElement.setAttribute('data-theme', th); } catch (e) { }
+  var EN = document.documentElement.lang === 'en';
+  var W = EN ? {
+    t1: 'Pair the TV', s1: 'On the TV: Developer options → turn on «Wireless debugging».', s2: 'Press «Pair device with pairing code»: a 6-digit code appears. Leave that window open.',
+    s3: 'Type the code here and press «Pair».', pair: 'Pair', t4: 'Open the phone page and scan the code from «Easier from the phone» on the TV first.', t5: 'Phone page',
+    ph: 'Pairing code', off: 'Start on the TV: «Get rid of the factory interface» → «Start».', bad: 'The code is six digits.', pairing: 'Pairing…', paired: 'Paired ✓ Go back to the TV.',
+    no_dialog: 'The TV shows no pairing window. Open «Pair device with pairing code» there and try again.', wrong: 'The code was not accepted. Check it and try again.', failed: 'Could not pair. Check the Wi-Fi and try again.',
+    busy: 'Pairing is running…', no_session: 'The session ended. Open the phone page and scan the code again.'
+  } : {
+    off: 'ابدأ من التلفزيون: «تخلّص من واجهة المصنع» ← «ابدأ».', bad: 'الرمز ٦ أرقام.', pairing: 'نقرن…', paired: 'تم الإقران ✓ ارجع إلى التلفزيون.',
+    no_dialog: 'ما ظهرت نافذة الإقران على التلفزيون. افتح «إقران الجهاز برمز الإقران» هناك وجرّب.', wrong: 'ما انقبل الرمز. تأكد منه وجرّب.', failed: 'ما قدرنا نقرن. تأكد من الواي فاي وجرّب.',
+    busy: 'الإقران شغّال…', no_session: 'انتهت الجلسة. افتح صفحة الجوال وامسح الرمز من جديد.'
+  };
+  var $ = function (id) { return document.getElementById(id); };
+  if (EN) { ['t1', 's1', 's2', 's3', 't4', 't5'].forEach(function (k) { $(k).textContent = W[k]; }); $('pair').textContent = W.pair; $('code').setAttribute('aria-label', W.ph); }
+  var sess = null;
+  try { sess = sessionStorage.getItem('urtv'); } catch (e) { }
+  $(sess ? 'go' : 'none').classList.remove('hidden');
+  function say(t) { $('state').textContent = t || ''; }
+  function api(path, body) {
+    var h = { 'Content-Type': 'application/json' };
+    if (sess) h['X-UrTV-Session'] = sess;
+    return fetch(path, { method: body ? 'POST' : 'GET', credentials: 'same-origin', headers: h, body: body ? JSON.stringify(body) : undefined, cache: 'no-store' })
+      .then(function (r) { return r.json(); }, function () { return { ok: false, error: 'failed' }; }).catch(function () { return { ok: false, error: 'failed' }; });
+  }
+  function digits(t) { return String(t || '').replace(/[٠-٩]/g, function (d) { return d.charCodeAt(0) - 1632; }).replace(/\D/g, ''); }
+  var timer = 0;
+  function poll() {
+    clearTimeout(timer);
+    api('/api/state').then(function (s) {
+      if (!s || !s.ok) { say(W[s && s.error === 'no_session' ? 'no_session' : 'failed']); return; }
+      var st = s.adb_pair || 'off';
+      $('pair').disabled = st === 'pairing';
+      if (st === 'pairing') { say(W.pairing); timer = setTimeout(poll, 1200); }
+      else if (st === 'paired') say(W.paired);
+      else if (st === 'failed') say(W[s.adb_pair_why] || W.failed);
+      else if (st === 'off') say(W.off);
+      else say('');
+    });
+  }
+  $('pair').onclick = function () {
+    var d = digits($('code').value);
+    if (d.length !== 6) { say(W.bad); return; }
+    $('pair').disabled = true;
+    api('/api/adb_pair', { code: d }).then(function (j) {
+      $('code').value = '';   // the code is not kept on this page
+      if (j && j.ok) { say(W.pairing); timer = setTimeout(poll, 1200); return; }
+      $('pair').disabled = false;
+      var e = j && j.error;
+      say(e === 'not_armed' ? W.off : e === 'busy' ? W.busy : e === 'bad_code' ? W.bad : e === 'no_session' ? W.no_session : W.failed);
+    });
+  };
+  if (sess) poll();
+})();
+</script>
+</body>
+</html>
