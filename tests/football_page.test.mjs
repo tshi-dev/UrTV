@@ -208,6 +208,8 @@ for (const [why, rows] of [['the shipped table', null], ['medium confidence', [{
   check('matches page: «ذكّرني» hands the launcher the task and the kick-off itself (the app reminds 30 minutes ahead)', rem && /الأهلي × التعاون/.test(rem[0]) && rem[1] === Date.parse('2026-11-04T17:00:00Z'), JSON.stringify(rem));
   await p.keyboard.press('ArrowLeft');
   await p.keyboard.press('Enter');
+  check('matches page: one OK on «أضف … لفرقي» only asks (nothing followed, the note says to press again)', await p.evaluate(() => window.__fol === undefined && /مرة ثانية/.test(document.getElementById('mp-note').textContent)));
+  await p.keyboard.press('Enter');
   check('matches page: OK acts on exactly the ringed button: after ◀ again the ring is on «أضف … لفرقي» alone', await p.$$eval('.mdb button.f', b => b.length === 1 && b[0].dataset.k === 'follow'));
   check('matches page: «أضف … لفرقي» hands it the club\'s id and name', JSON.stringify(await p.evaluate(() => window.__fol)) === '["137721","Al-Ahli"]');
   check('matches page: after «أضف … لفرقي» the day on screen is kept (the new team\'s games arrive and must not move the list to another day: «فرقك» was lost, step 28b), and a Back on the open card draws nothing of it',
@@ -288,7 +290,7 @@ for (const [why, rows] of [['the shipped table', null], ['medium confidence', [{
   check('matches page: a competition with no verified row (the Premier League here) never shows «شاهد على …», installed or not', JSON.stringify(w3) === '["remind","follow"]', JSON.stringify(w3));
   const w4 = await p.evaluate(() => { CONFIG.teamIds.push(String(MP.detail.idHomeTeam), String(MP.detail.idAwayTeam)); window.UrtvMatches = { appOf: () => '', unfollow: id => (window.__unf = id, true), remind: () => true, follow: () => true, open: () => true }; mpOpen(MP.detail); return [...document.querySelectorAll('.mdb button')].map(b => [b.dataset.k, b.textContent.trim()]); });
   check('matches page: both teams already followed: «أزل … من فرقي» instead of the add button', w4.length === 2 && w4[1][0] === 'unfollow' && /^أزل .+ من فرقي$/.test(w4[1][1]), JSON.stringify(w4));
-  await p.keyboard.press('ArrowLeft'); await p.keyboard.press('ArrowLeft'); await p.keyboard.press('Enter');
+  await p.keyboard.press('ArrowLeft'); await p.keyboard.press('ArrowLeft'); await p.keyboard.press('Enter'); await p.keyboard.press('Enter');   // the first OK asks, the second removes
   check('matches page: OK on the ringed «أزل … من فرقي» removes exactly that team (nothing else)', await p.evaluate(() => window.__unf === String(MP.detail.idHomeTeam) && window.__fol === undefined), '');
   await p.evaluate(() => { CONFIG.teamIds = CONFIG.teamIds.filter(x => x !== String(MP.detail.idAwayTeam) && x !== String(MP.detail.idHomeTeam)); delete window.UrtvMatches; });
   check('matches page: Back closes the card first, then leaves', await p.evaluate(() => mpBack() === 'closed' && mpBack() === 'out'));
