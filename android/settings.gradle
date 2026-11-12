@@ -2,7 +2,11 @@ pluginManagement {
     repositories { google(); mavenCentral(); gradlePluginPortal() }
 }
 dependencyResolutionManagement {
-    repositories { google(); mavenCentral() }
+    repositories {
+        google(); mavenCentral()
+        // wireless-debugging pairing (4.3.1): libadb-android and its SPAKE2 library are published on JitPack only
+        maven { url 'https://jitpack.io'; content { includeGroupByRegex 'com\\.github\\.MuntashirAkon.*' } }
+    }
 }
 rootProject.name = 'urtv'
 include ':app', ':launcher'
