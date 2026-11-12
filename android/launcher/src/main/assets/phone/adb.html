@@ -31,8 +31,8 @@ a{color:var(--acc)}
 <body>
 <h1 id="t1">إقران التلفزيون</h1>
 <ol>
-<li id="s1">على التلفزيون: إعدادات المطوّر ← شغّل «تصحيح الأخطاء اللاسلكي».</li>
-<li id="s2">اضغط «إقران الجهاز برمز الإقران»: يظهر رمز من ٦ أرقام. اترك النافذة مفتوحة.</li>
+<li id="s1">على التلفزيون: إعدادات المطوّر ثم شغّل «تصحيح الأخطاء اللاسلكي».</li>
+<li id="s2">اضغط «إقران الجهاز برمز الإقران»: يظهر رمز من 6 أرقام. اترك النافذة مفتوحة.</li>
 <li id="s3">اكتب الرمز هنا واضغط «إقران».</li>
 </ol>
 <div id="go" class="hidden">
@@ -46,13 +46,13 @@ a{color:var(--acc)}
   try { var th = localStorage.getItem('urtvTheme'); if (th === 'light' || th === 'dark') document.documentElement.setAttribute('data-theme', th); } catch (e) { }
   var EN = document.documentElement.lang === 'en';
   var W = EN ? {
-    t1: 'Pair the TV', s1: 'On the TV: Developer options → turn on «Wireless debugging».', s2: 'Press «Pair device with pairing code»: a 6-digit code appears. Leave that window open.',
+    t1: 'Pair the TV', s1: 'On the TV: Developer options, then turn on «Wireless debugging».', s2: 'Press «Pair device with pairing code»: a 6-digit code appears. Leave that window open.',
     s3: 'Type the code here and press «Pair».', pair: 'Pair', t4: 'Open the phone page and scan the code from «Easier from the phone» on the TV first.', t5: 'Phone page',
-    ph: 'Pairing code', off: 'Start on the TV: «Get rid of the factory interface» → «Start».', bad: 'The code is six digits.', pairing: 'Pairing…', paired: 'Paired ✓ Go back to the TV.',
+    ph: 'Pairing code', off: 'Start on the TV: «Get rid of the factory interface», then «Start».', bad: 'The code is six digits.', pairing: 'Pairing…', paired: 'Paired ✓ Go back to the TV.',
     no_dialog: 'The TV shows no pairing window. Open «Pair device with pairing code» there and try again.', wrong: 'The code was not accepted. Check it and try again.', failed: 'Could not pair. Check the Wi-Fi and try again.',
     busy: 'Pairing is running…', no_session: 'The session ended. Open the phone page and scan the code again.'
   } : {
-    off: 'ابدأ من التلفزيون: «تخلّص من واجهة المصنع» ← «ابدأ».', bad: 'الرمز ٦ أرقام.', pairing: 'نقرن…', paired: 'تم الإقران ✓ ارجع إلى التلفزيون.',
+    off: 'ابدأ من التلفزيون: «تخلّص من واجهة المصنع» ثم «ابدأ».', bad: 'الرمز 6 أرقام.', pairing: 'نقرن…', paired: 'تم الإقران ✓ ارجع إلى التلفزيون.',
     no_dialog: 'ما ظهرت نافذة الإقران على التلفزيون. افتح «إقران الجهاز برمز الإقران» هناك وجرّب.', wrong: 'ما انقبل الرمز. تأكد منه وجرّب.', failed: 'ما قدرنا نقرن. تأكد من الواي فاي وجرّب.',
     busy: 'الإقران شغّال…', no_session: 'انتهت الجلسة. افتح صفحة الجوال وامسح الرمز من جديد.'
   };
