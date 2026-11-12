@@ -1,4 +1,4 @@
-«✅ GO — step 59 (re-check of the step 58 fixes + the parts not yet tested)» — run step 59 (end of this file) on the newest apk-next build (260 or later). TV muted. Do not wait on the owner; skip item F if he is not at the TV. The factory-interface row is ALLOWED as written in item E (round trip only, no forced crash). Never type the owner's PIN.
+«✅ GO — step 60 (last short re-check)» — run step 60 (end of this file) on the newest apk-next build (261 or later). TV muted. Do not wait on the owner. Never type the owner's PIN.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -952,3 +952,11 @@ Short answers per item: ✓ / ✗ + one line. Pictures only where something look
 2. One late frame per key: in the channel list press DOWN 10 times, 1 s apart, after `dumpsys gfxinfo sa.urtv.home.player reset`; then `dumpsys gfxinfo sa.urtv.home.player framestats`. For each janky frame give its row: which stage is long (input, animation, traversal, draw, sync, issue, swap, gpu) and how many ms after the key it came. Repeat once with the preview/info pane hidden if there is a way.
 
 **Z** Restore everything as in step 58 Z. Build stays as is.
+
+## step 60 — last short re-check (build 261 or later; TV muted; restore in Z)
+**A «UrTV النظيف» prayer card** — «بطاقة» with the three «مكان البطاقة» values, one picture each, in Arabic and once in English: «وسط الشاشة» is centred across the screen in the free area above the apps bar; «الجهة المقابلة للساعة» does not cover the settings button, Wi-Fi mark or anything else; «تحت الساعة» as before. Clean mode off at the end.
+**B «توحيد المظهر»** on, graphite dark and glass dark: one picture each. Do the quick box, the home card and the apps bar now look like one material to the eye (no extra rim or sheen on the card)? Does the card still read well?
+**C خمّن الكلمة** — after a guess, «ة ى ء» stay uncoloured unless typed.
+**D UrTV Player v0.9.12** — (1) 10 DOWN 1 s apart, preview on then off: frames, janky %, p50/p90/p99, and the stages of any frame over 30 ms. (2) Live tab, focus on the tab bar, Back: goes to «الرئيسية» first; a second Back leaves. Uninstall after.
+**E** (only with the owner's own yes in your chat) «تخلّص من واجهة المصنع» first page + round trip, as step 59 E. **F** phone page only if the owner is at the TV.
+**Z** Restore as step 58 Z.
