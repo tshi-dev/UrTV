@@ -2588,3 +2588,23 @@ Build 267 → 268 installed from apk-next (update page), channel back to latest.
 
 ### Z
 Phone control stopped (page tab closed), Player uninstalled (0 packages), screenshots and the APK copy deleted, idle 45 s, TV muted and asleep, updatechannel latest. No addresses, codes or Wi-Fi names kept.
+
+## step 65 — pictures for the two posts (build 268; the owner said yes to all of it; TV muted except once, see below)
+**Done: 8 pictures pushed to work/marketing (commit `70231cab`): `marketing/4.3/x1-hub.png`, `x2-games.png`, `x3-match.png`, `x4-clean.png` and `marketing/player/p1-list.png`, `p2-playing.png`, `p3-find-match.png`, `p4-settings.png`, each 1920×1080 PNG from `screencap`. The spare `x5-quiz` was not taken. 3 problems found on the way.**
+
+### The pictures
+- x1: the hub, 4 windows, first one focused, no personal data (next match line is the public fixture). x2: all 8 game tiles. x3: the match sheet with the green «شاهد المباراة» focused (Saudi Arabia × South Korea; the city set to Makkah for the prayer times on the sheet). x4: «UrTV النظيف» on, «بطاقة الصلاة: بطاقة», «مكان البطاقة: وسط الشاشة», Makkah prayer times, clock and apps bar. Turned off afterwards («رجّع الشاشة الكاملة»).
+- Player: demo list of 7 made-up channels (قناة الأخبار ١، رياضة ٢، وثائقي …) pointing to Blender's open films (Big Buck Bunny HLS from the mux test host, Sintel trailer and Tears of Steel from download.blender.org). p1: list with the preview pane on (Big Buck Bunny). p2: playing, the info bar at the bottom (the film's title card behind it). p3: «شاهد المباراة» opened the Player's «ما لقينا قناة لهذه المباراة في قوائمك» screen (a demo list has no match, so this is the honest result). p4: «تقرير أو اقتراح» with the suggestion QR (the «أرسل تقرير» button was not pressed; I opened «اطلب ميزة»).
+- The Player's settings had no «update available» row (no newer release), so p4 shows the QR page only.
+- The time was 00:1x–00:5x, so no daytime greeting; the home wallpaper is the product's own photos. A daytime re-shoot is possible when the owner wants it.
+
+### Problems
+1. **✗ The Player crashes when two channels in a list have the same stream URL** (`IllegalArgumentException: Key "<url>" was already used` from a LazyColumn, uncaught, app closes). My first demo list reused 3 films for 7 channels, so the Player closed on every key press in the Channels tab (which looked like «LEFT exits the app»). Real playlists often repeat a URL: the row key should include the channel index. Fixed on my side by making each demo URL unique.
+2. **✗ The TV was un-muted while a channel played** (STREAM_MUSIC `Muted: false` right after OK on a channel in the Player); I muted it again at once and it then stayed muted. Probably the Player takes the audio route when playback starts; worth a check on every start.
+3. **✗ The Player refuses a local file link** (`file:///…` → «تحقق من البيانات المدخلة»), so the demo list had to be served from the PC over the local network (stopped and deleted afterwards).
+- Small: «ابحث في القنوات» on the match screen now returns to the UrTV match sheet when a list exists (earlier, with no list, it opened the Channels tab). The same screen was English at first and Arabic after a list was loaded.
+- Small: after a restore of the focus the tab bar's UP lands on the last tab used, so LEFT/RIGHT from it differ between runs.
+- My slip: I toggled «التشغيل النفقي» in the Player's settings once by mistake and turned it back at once.
+
+### Z
+Player uninstalled (0 packages), demo list and the PC server removed, UrTV city back to Riyadh, clean mode off, phone control stopped, updatechannel latest, idle 45 s, disabled-apps list equal (21), Home holder `sa.urtv.home`, TV muted and asleep. Local copies of the pictures: the 8 pushed ones deleted; two spares kept only locally (a clean Big Buck Bunny frame and the Player's OK panel). Nothing but the 8 pictures was pushed; they hold no names, addresses, Wi-Fi or serials.
