@@ -1,4 +1,4 @@
-«✅ GO — step 62 (Player 0.9.13 measurement, then the factory row with the owner SEEING the screen)» — run step 62 (end of this file) on the newest apk-next build (266 or later). TV muted. Never type the owner's PIN.
+«✅ GO — step 63 (does the USB-debugging question appear at all on this TV? with the owner)» — run step 63 (end of this file) on the newest apk-next build (267 or later). TV muted. Only with the owner's own yes, owner at the TV watching. Never type the owner's PIN.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -981,3 +981,11 @@ The page now tries the TV itself (45 s), then the TV's own network address (45 s
 **Step 62 C and D (same visit, with the owner at the TV; after B)**
 **C Phone page** — as step 58 item F: he types the pairing code on his phone; check the «على الشاشة» card, every control is a real button (no plain text that looks tappable), photos and text-on-screen send and show. Pictures from the phone side if he sends them.
 **D Updating the Player from inside UrTV** — with UrTV Player not installed: open «شاهد المباراة» on a match (or the Player entry) → UrTV offers to install it → install → it opens. Then the update path: if a newer Player than the installed one exists, UrTV shows the update and installs it (sha256 and signer `13ade7d0…69dfea` checked). Report what the screens say. Uninstall at the end.
+
+## step 63 — does the TV raise «السماح بتصحيح USB؟» for UrTV at all? (build 267 or later; owner at the TV; restore in Z)
+Why: the first-run setup uses the SAME path as the factory page. If the question never appears, new users on Android 14 TVs can't finish setup either. This answers it. Build 267 keeps the screen on while waiting and logs adbd's replies (AUTH type 1/2/3, second TOKEN).
+1. Before: disabled-apps list, Home holder, settings lists. TV-side log for `UrTVFactory` and the setup's tag (read the setup source for it; if unsure, capture `logcat -s UrTVFactory UrTVSetup AdbClient`). `adb disconnect` before each run; reconnect only after the owner says «خلصت».
+2. Run 1, the factory page: owner presses «ابدأ», watches 90 s. If the question appears: «السماح دائمًا» → «سماح», then do the round trip and «رجّع واجهة المصنع» as step 62 B.
+3. Run 2, only if run 1 showed no question: the first-run setup's prompt. Open the setup screen the way a new user would (Settings → the setup entry; «جهّز كل شي»). **Stop as soon as you know whether the question appeared**: if a list of changes or a confirm screen comes after the question, press «رجوع» / Back. Do not let the setup change anything new on this already-set-up TV. If you can't tell how to stop it safely before it changes things, skip run 2 and say so.
+4. Report for each run: question yes/no; the AUTH lines from the log; screen text at the end. Before/after lists must be equal (or equal after restore).
+**Z** Remove the log; restore as step 58 Z.
