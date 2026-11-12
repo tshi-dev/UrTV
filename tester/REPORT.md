@@ -2561,3 +2561,30 @@ The factory page has now failed 3 times on this TV (build 264 twice, build 266 o
 - Meaning: adbd answers the key with AUTH TOKEN twice (it does not know the key) and then never asks the user. The key sent is not accepted as a new key to ask about. Likely cause to check in the code: the second message should be AUTH type 3 (RSAPUBLICKEY, our public key), not a repeat of the signature, if the log line "key offered" means type 3 was sent; please confirm what is sent after the second TOKEN, and its format (adb wants the public key as base64 with a trailing name and a NUL byte).
 - Run 2 skipped: it uses the same engine (same process, same log tag family), the owner was not at the screen, and the step says to stop if I can't be sure it is safe.
 - Z: logger stopped, log and helper removed, idle 45 s, TV muted and asleep, on Home. No addresses or screenshots kept.
+
+## step 64 — last 4.3 check (build 268; TV muted; restored in Z)
+**A: 2 problems + 1 item not done. B: ✓ with small notes. 3 owner requests (below).**
+
+Build 267 → 268 installed from apk-next (update page), channel back to latest. Before and after: disabled-apps list equal (21), Home holder `sa.urtv.home`, settings snapshots equal except the build line, accessibility list as found (only Key Mapper), TV muted, idle 45 s.
+
+### A
+1. **✓ «تطبيقات مقترحة» lists «UrTV Player»** (opened by its activity; the tile after TV Bro, SmartTube, VLC, TiviMate). OK on it → Android's «Do you want to install this app?» → Install → installed: `com.urtv.player` versionCode **111**, versionName 0.9.13, installer `sa.urtv.home`. The signer `13ade7d0…69dfea` I could not compute myself (v2/v3 only, keytool can't read it); the home app checks it itself before it offers the button (see 2).
+   - **✗ The tile has no logo, only the letter «U»** (the Player's own empty state shows its gold-on-green icon). Owner asked why.
+2. **✓ «شاهد المباراة» only appears when the Player is installed and its certificate matches the pinned one** (`MatchApp.chosen/playerOk`). With the Player uninstalled the match sheet (Saudi Arabia × South Korea, tomorrow) has NO watch button and nothing offers to install it. With it installed (reinstalled from the tile): the button is there, and it opens the Player's FindMatch («We couldn't find a channel for this match in your playlists», no list yet). Small: this screen is **English** while UrTV is in Arabic. «Search channels» → the Player's Channels tab (empty state «ما عندك قائمة بعد», Arabic): **the old bug (it opened Settings) is fixed.**
+3. **Control panel «أطفئ الآن», with the sleep service OFF** (UrTV's accessibility service not enabled): OK on the tile opened the TV's own accessibility settings (as the step expects); the screen did not turn off. **Not seen: the tile saying «يحتاج تفعيل، اضغط للتفعيل» before pressing** (it says only «أطفئ الآن»). Not tested: the screen turning off with the service ON (I did not turn it on; owner's accessibility choices left alone).
+4. **Not done:** radio + «شاشة التوقف · ابدأها الآن» (the TV is muted and the owner was away).
+
+### B (owner at the PC, TV with the remote; I never typed the code)
+- «تحكم من الجوال» → «تشغيل»: address + 6-digit code + QR on the TV, «ينتهي هذا الرمز بعد 1:55 ويتجدد وحده». The owner typed the code in Chrome; the TV asked «جوال جديد يطلب التحكم … اضغط «سماح» فقط إذا كان هذا جوالك» with **«رفض» focused first** (good); he chose «سماح» → «جوال 1» in the list, the page: «التلفزيون متصل، بقي 30 دقيقة».
+- **Every control is a real button** (read from the page): الإعدادات, أعلى / يسار / اختيار / يمين / أسفل, رجوع, الرئيسية, تشغيل/إيقاف, رفع الصوت, كتم, خفض الصوت, استبدال, إضافة, بحث, اعرضها على التلفزيون, and the bottom tabs الريموت / التطبيقات / يعمل الآن / الإعدادات. Small: one unnamed button beside the text box (the send arrow) and the two links «ارسم» / «صوري» have no accessible name.
+- **«على الشاشة» card ✓:** a message «اختبار 123» → the toast «ظهرت على التلفزيون» on the page and the same text in a rounded box on the TV. (I did not press the volume or mute buttons: the TV stays muted.)
+- Not tested: drawing, «صوري», «التطبيقات», «يعمل الآن», the settings tab, the date/time task boxes.
+
+### Owner requests (for the supervisor)
+1. Why does the «UrTV Player» tile have no logo? Give it the Player's icon.
+2. **Remove the other IPTV player (TiviMate) from «تطبيقات مقترحة»** (the owner asked to delete it from our list).
+3. Add more score games / matches so the matches page has something to show (it lists one match tomorrow and «فرقك» 1).
+4. Playlist links the owner asked me to find: the public `languages/ara.m3u` (and `countries/sa.m3u`) of iptv-org, used in steps 49/50.
+
+### Z
+Phone control stopped (page tab closed), Player uninstalled (0 packages), screenshots and the APK copy deleted, idle 45 s, TV muted and asleep, updatechannel latest. No addresses, codes or Wi-Fi names kept.
