@@ -21,8 +21,7 @@ st = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsActivity.jav
 inst = (HOME / "setup/SetupInstall.java").read_text(encoding="utf-8")
 apks = (HOME / "setup/SetupApks.java").read_text(encoding="utf-8")
 
-check("the catalog says the IPTV player is a player only, its store page: no channels, and we give none", "it comes with no channels, films or playlists, and we give no links" in cat
-      and "وما فيه ولا نعطي أي قنوات" in cat and 'new App("tivimate", TIVIMATE, "TiviMate"' in cat and "Kind.STORE, null, null, 21, false)," in cat.split('new App("tivimate"')[1][:200])
+check("TiviMate is gone from the catalog (the owner removed it); MAX_IPTV stays", "tivimate" not in cat.lower() and "ar.tvplayer" not in cat and "MAX_IPTV = 2" in cat)
 check("Lumen is gone everywhere (the owner's decision): no entry, no pinned file, no hash, no words", not any("lumen" in t.lower() for t in (cat, act, inst, apks,
       (ROOT / "i18n/en/home.tsv").read_text(encoding="utf-8"), (ROOT / "CHANGELOG.md").read_text(encoding="utf-8"))) and "PINNED" not in cat + act + inst + apks)
 check("no playlist, stream or IPTV address anywhere in the catalog or the screen", not re.search(r"\.m3u8?\b|get\.php|xtream|/playlist", cat + act, re.I))

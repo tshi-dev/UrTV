@@ -287,6 +287,9 @@ final class ControlCenter {
 
     // ---------------------------------------------------------------- the main view
 
+    /** «أطفئ الآن» while the sleep service is off: its round toggle says so under the name */
+    private static boolean needsOn(Item it) { return it != null && it.key.equals("off") && !SleepService.enabled(); }
+
     private Item tile(String key, String title, String value, int icon, Runnable action) {
         Item it = new Item(key, S.tv(title), S.tv(value), icon);   // a name or line given as our Arabic words (ControlText's) is said in «اللغة»; one already said stays
         it.action = action;
@@ -326,7 +329,7 @@ final class ControlCenter {
             strip.setOrientation(LinearLayout.HORIZONTAL);
             for (Item it : toggles) {
                 Cell c = new Cell(Cell.TOGGLE, it);
-                strip.addView(c, new LinearLayout.LayoutParams(0, dp(76), 1f));
+                strip.addView(c, new LinearLayout.LayoutParams(0, dp(needsOn(it) ? 92 : 76), 1f));
                 focusables.add(c);
                 toggleCells.add(c);
             }
@@ -576,7 +579,7 @@ final class ControlCenter {
             else if (kind == BACK) buildBack();
             if (kind != TOGGLE) setBackground(fill);
             if (item != null) {
-                setContentDescription(item.name);
+                setContentDescription(needsOn(item) ? item.name + ", " + item.value : item.name);
                 setOnClickListener(v -> { if (item.action != null) item.action.run(); });
                 if (item.hold != null) setOnLongClickListener(v -> { item.hold.run(); return true; });
             }
@@ -610,6 +613,12 @@ final class ControlCenter {
             LayoutParams nlp = new LayoutParams(-1, -2);
             nlp.topMargin = dp(4);
             addView(name, nlp);
+            if (needsOn(item)) {   // a round toggle shows its name only: the state «needs turning on» is its second line, so it is seen before OK is pressed
+                TextView note = text(S.t("يحتاج تفعيل"), 11, ACCENT, "sans-serif");
+                note.setGravity(Gravity.CENTER);
+                note.setPadding(dp(2), 0, dp(2), 0);
+                addView(note, new LayoutParams(-1, -2));
+            }
             circle.setShape(GradientDrawable.OVAL);
         }
 

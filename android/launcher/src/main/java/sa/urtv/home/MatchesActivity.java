@@ -145,6 +145,22 @@ public class MatchesActivity extends Activity {
         /** 4.3 «شاهد المباراة»: true when «تطبيق المباريات» names an app that is there now (UrTV Player only when it is ours) */
         @JavascriptInterface public boolean matchApp() { return MatchApp.chosen(c, ConfigSnapshot.read(c).matchApp) != null; }
 
+        /** 4.3.1 «ثبّت UrTV Player للمشاهدة»: true when «تطبيق المباريات» is the Player (or unset) and it is not there (or not ours) */
+        @JavascriptInterface public boolean playerOffer() {
+            String v = ConfigSnapshot.read(c).matchApp;
+            return (v == null || "auto".equals(v) || SuggestedApps.PLAYER.equals(v)) && MatchApp.chosen(c, v) == null && SuggestedApps.mirrorReady(SuggestedApps.PLAYER_APP);
+        }
+
+        /** …its button: «تطبيقات مقترحة», the screen that installs the Player (download, checks, Android's installer); no permission of ours */
+        @JavascriptInterface public boolean installPlayer() {
+            final android.app.Activity a = act.get();
+            if (a == null || a.isFinishing()) return false;
+            a.runOnUiThread(new Runnable() { public void run() {
+                try { if (!a.isFinishing()) a.startActivity(new android.content.Intent(a, SuggestedAppsActivity.class)); } catch (RuntimeException ignored) { }
+            } });
+            return true;
+        }
+
         /** «شاهد المباراة»: the game's facts (MatchFacts checks them) to the chosen app; false when refused or nothing opened */
         @JavascriptInterface public boolean findMatch(String json) {
             MatchFacts f;

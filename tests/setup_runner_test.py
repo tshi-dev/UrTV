@@ -139,7 +139,7 @@ check("R19: the undo after the full run removes exactly what the setup installed
       got.get("R19") == "R19 undo:DONE saver=false tvbro=false smarttube=false home=true record=[]", got.get("R19"))
 check("R20: «no extras» (the person unticked them): skipped, nothing downloaded for them", got.get("R20") == "R20 extras:SKIPPED downloads=1", got.get("R20"))
 check("R20b (4.3): only TV Bro ticked (and a Play Store app's id): TV Bro alone is fetched and installed, the store app never",
-      got.get("R20b") == "R20b extras:DONE github=[https://github.com/truefedex/tv-bro/releases/download/v2.0.1/tvbro-2.0.1-generic-geckoExcluded.apk] tvbro=true smarttube=false tivimate=false", got.get("R20b"))
+      got.get("R20b") == "R20b extras:DONE github=[https://github.com/truefedex/tv-bro/releases/download/v2.0.1/tvbro-2.0.1-generic-geckoExcluded.apk] tvbro=true smarttube=false vlc=false", got.get("R20b"))
 check("4.3: the ticks are saved with the run and read back at a resume (a run saved before 4.3 has none: the first ticks)",
       '(o.picks == null ? "" : "\\npicks=" + sa.urtv.home.SuggestedApps.join(o.picks))' in runner
       and 'if (saved.containsKey("picks")) o.picks = sa.urtv.home.SuggestedApps.parse(saved.get("picks"));' in runner)

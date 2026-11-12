@@ -4046,7 +4046,7 @@ const FB_W = {
   feels:'المحسوسة', hum:'الرطوبة', wind:'الرياح', kmh:'%s كم/س', pct:'٪%s', live:'مباشر', ended:'انتهت', vs:'×',
   yesterday:'أمس', tday:'اليوم', tomorrow:'غدًا', g1:'مباراة واحدة', g2:'مباراتان', gFew:'%s مباريات', gMany:'%s مباراة',
   allOn:'كلها على %s', round:'الجولة %s', venue:'الملعب', channel:'القناة', withPrayer:'مع الصلاة', game:'المباراة',
-  remind:'ذكّرني قبلها بنصف ساعة', reminded:'أُضيفت إلى المهام', follow:'أضف %s لفرقي', unfollow:'أزل %s من فرقي', followed:'أُضيف %s إلى فرقك', unfollowed:'أُزيل %s من فرقك', watch:'شاهد على %s', player:'شاهد المباراة', failed:'ما قدرنا، جرّب مرة ثانية', sure:'اضغط مرة ثانية للتأكيد',
+  remind:'ذكّرني قبلها بنصف ساعة', reminded:'أُضيفت إلى المهام', follow:'أضف %s لفرقي', unfollow:'أزل %s من فرقي', followed:'أُضيف %s إلى فرقك', unfollowed:'أُزيل %s من فرقك', watch:'شاهد على %s', player:'شاهد المباراة', install:'ثبّت UrTV Player للمشاهدة', failed:'ما قدرنا، جرّب مرة ثانية', sure:'اضغط مرة ثانية للتأكيد',
   startsAfter:'تبدأ بعد %s %s', startsBefore:'تبدأ قبل %s %s', adhanAt:'أذان %s في الدقيقة %s منها', ago:'قبل %s', nextIn:'%s بعد %s',
   h1:'بساعة', h2:'بساعتين', hFew:'ب%s ساعات', hMany:'ب%s ساعة', m1:'بدقيقة', m2:'بدقيقتين', mFew:'ب%s دقائق', mMany:'ب%s دقيقة',
   am1:'ودقيقة', am2:'ودقيقتين', amFew:'و%s دقائق', amMany:'و%s دقيقة', taskText:'مباراة %s، تبدأ %s',
@@ -4408,6 +4408,7 @@ function mpButtons(ev, now){   // «شاهد على …» (the broadcaster's app
   const out = [], m = markOf(ev, now), host = window.UrtvMatches;
   if(m && m.app && host && typeof host.appOf === 'function' && host.appOf(m.app)) out.push({k: 'watch', t: fw(FB_W.watch, m.mark), app: m.app});
   if(host && typeof host.matchApp === 'function' && host.matchApp()) out.push({k: 'player', t: FB_W.player});   // 4.3: «تطبيق المباريات» set and installed
+  else if(host && typeof host.playerOffer === 'function' && host.playerOffer()) out.push({k: 'install', t: FB_W.install});   // 4.3.1: it is the Player and it is not there: offer it
   if(fbKick(ev) - 30 * 60000 > now) out.push({k: 'remind', t: FB_W.remind, icon: true});
   const sides = ['Home', 'Away'], add = sides.find(s => !fbFollowed(ev['id' + s + 'Team'])), drop = sides.find(s => fbFollowed(ev['id' + s + 'Team']));
   if(add) out.push({k: 'follow', side: add, t: fw(FB_W.follow, teamAr(ev['str' + add + 'Team'], ev['id' + add + 'Team']))});
@@ -4437,7 +4438,7 @@ function mpFacts(ev){
   return {home_ar: arOnly(teamAr(ev.strHomeTeam, ev.idHomeTeam)), home_en: String(ev.strHomeTeam || ''), away_ar: arOnly(teamAr(ev.strAwayTeam, ev.idAwayTeam)),
     away_en: String(ev.strAwayTeam || ''), competition_ar: arOnly(leagueName(ev)), competition_en: String(ev.strLeague || ''), kickoff: String(fbKick(ev)), channels: m && m.mark ? [String(m.mark)] : []};
 }
-function mpOpen(ev){ MP.detail = ev; MP.btn = mpButtons(ev, Date.now())[0] && /^(watch|player)$/.test(mpButtons(ev, Date.now())[0].k) ? 0 : -1;   // «شاهد على …» is ringed when it is there
+function mpOpen(ev){ MP.detail = ev; MP.btn = mpButtons(ev, Date.now())[0] && /^(watch|player|install)$/.test(mpButtons(ev, Date.now())[0].k) ? 0 : -1;   // «شاهد على …» is ringed when it is there
    MP.note = ''; mpDetailRender(); }
 function mpBack(){   // the launcher's Back: closes the card first; 'out' when there is nothing to close
   if(!MP.detail) return 'out';
@@ -4456,6 +4457,7 @@ function mpAct(){
   let ok = false;
   try{
     if(b.k === 'watch'){ ok = !!(host && host.open(b.app)); MP.note = ok ? '' : FB_W.failed; if(ok) return; }
+    else if(b.k === 'install'){ ok = !!(host && host.installPlayer()); MP.note = ok ? '' : FB_W.failed; if(ok) return; }
     else if(b.k === 'player'){ ok = !!(host && host.findMatch(JSON.stringify(mpFacts(ev)))); MP.note = ok ? '' : FB_W.failed; if(ok) return; }
     else if(b.k === 'unfollow'){
       const id = String(ev['id' + b.side + 'Team']);

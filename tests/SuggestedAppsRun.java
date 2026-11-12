@@ -7,14 +7,13 @@ public final class SuggestedAppsRun {
     static void check(String name, boolean ok) { System.out.println(name + "\t" + (ok ? "ok" : "FAIL")); }
 
     public static void main(String[] x) {
-        SuggestedApps.App tivi = SuggestedApps.byId("tivimate"), tube = SuggestedApps.byId("smarttube"), vlc = SuggestedApps.byId("vlc");
+        SuggestedApps.App tube = SuggestedApps.byId("smarttube"), vlc = SuggestedApps.byId("vlc");
         check("no Lumen and no pinned third-party file: GitHub releases, Play Store pages, and our own mirrored Player only", SuggestedApps.byId("lumen") == null
             && SuggestedApps.Kind.values().length == 3 && SuggestedApps.Kind.valueOf("MIRROR") != null && java.util.Arrays.stream(SuggestedApps.ALL).noneMatch(e -> e.kind == SuggestedApps.Kind.MIRROR));
-        check("the IPTV player is TiviMate's Play Store page only: no file, unticked, not in the setup", tivi.kind == SuggestedApps.Kind.STORE && tivi.file == null && tivi.repo == null
-            && !tivi.inSetup() && !tivi.setupDefault && tivi.address().equals("https://play.google.com/store/apps/details?id=ar.tvplayer.tv"));
+        check("TiviMate is gone from the suggestions", SuggestedApps.byId("tivimate") == null);
         check("a GitHub app only from its own repository's releases, an .apk, no way out", SuggestedApps.githubOk(tube, "https://github.com/yuliskov/SmartTube/releases/download/29.1/SmartTube_stable_29.1_arm64-v8a.apk")
             && !SuggestedApps.githubOk(tube, "https://github.com/evil/SmartTube/releases/download/29.1/a.apk") && !SuggestedApps.githubOk(tube, "https://github.com/yuliskov/SmartTube/releases/download/../x.apk")
-            && !SuggestedApps.githubOk(tube, "http://github.com/yuliskov/SmartTube/releases/download/29.1/a.apk") && !SuggestedApps.githubOk(tivi, "https://github.com/x/y/releases/download/1/a.apk"));
+            && !SuggestedApps.githubOk(tube, "http://github.com/yuliskov/SmartTube/releases/download/29.1/a.apk") && !SuggestedApps.githubOk(vlc, "https://github.com/x/y/releases/download/1/a.apk"));
         check("a Play Store app has no file: its page only, and is not in the setup", vlc.kind == SuggestedApps.Kind.STORE && vlc.file == null && !vlc.inSetup()
             && vlc.address().equals("https://play.google.com/store/apps/details?id=org.videolan.vlc"));
         check("every suggestion runs on any TV we support (Android 5+)", SuggestedApps.forTv(21).size() == SuggestedApps.all().size());
@@ -24,7 +23,7 @@ public final class SuggestedAppsRun {
             && SuggestedApps.parse("").isEmpty() && SuggestedApps.parse(null).isEmpty());
         int iptv = 0;
         for (SuggestedApps.App a : SuggestedApps.ALL) if (a.why.contains("IPTV")) iptv++;
-        check("at most two IPTV players", iptv >= 1 && iptv <= SuggestedApps.MAX_IPTV && SuggestedApps.MAX_IPTV == 2);
+        check("at most two IPTV players", iptv <= SuggestedApps.MAX_IPTV && SuggestedApps.MAX_IPTV == 2);
         check("pickAsset: the TV's processor first", "https://github.com/yuliskov/SmartTube/releases/download/29.1/SmartTube_stable_29.1_arm64-v8a.apk".equals(SuggestedApps.pickAsset(tube.file, "arm64-v8a,armeabi-v7a",
             "{\"browser_download_url\": \"https://github.com/yuliskov/SmartTube/releases/download/29.1/SmartTube_stable_29.1_armeabi-v7a.apk\"}, {\"browser_download_url\": \"https://github.com/yuliskov/SmartTube/releases/download/29.1/SmartTube_stable_29.1_arm64-v8a.apk\"}")));
         check("hex", SuggestedApps.hex(new byte[] {0, 15, (byte) 255}).equals("000fff"));

@@ -42,7 +42,7 @@ public class SuggestedAppsActivity extends Activity {
     /** SuggestedApps' why lines, marked for «اللغة» here (the catalog is plain Java); S.tv says them */
     static final String[] WHY = {
         S.n("يوتيوب بلا إعلانات، مصمَّم للريموت"), S.n("متصفح إنترنت يشتغل بالريموت"), S.n("يشغّل الفيديو والصوت من ذاكرة USB ومن الشبكة"),
-        S.n("مشغّل IPTV فارغ من متجر Play: تضيف قائمتك أنت، وما فيه ولا نعطي أي قنوات"), S.n("مشغّل تلفزيونك للفيديو والقوائم، من إصدارات تلفزيونك نفسها"),
+        S.n("مشغّل تلفزيونك للفيديو والقوائم، من إصدارات تلفزيونك نفسها"),
     };
 
     private GlassStyle.Look look;
@@ -223,6 +223,11 @@ public class SuggestedAppsActivity extends Activity {
             v.setImageDrawable(getPackageManager().getApplicationIcon(a.pkg));
             return v;
         } catch (PackageManager.NameNotFoundException e) {
+            if (SuggestedApps.PLAYER.equals(a.pkg)) {   // not installed yet: the Player's own icon, bundled (copied from its public repository)
+                android.widget.ImageView v = new android.widget.ImageView(this);
+                v.setImageDrawable(new android.graphics.drawable.AdaptiveIconDrawable(getDrawable(R.drawable.player_icon_bg), getDrawable(R.drawable.player_icon_fg)));
+                return v;
+            }
             TextView t = text(a.name.substring(0, 1), 18, "Medium", 0xFFFFFFFF);
             t.setGravity(Gravity.CENTER);
             android.graphics.drawable.GradientDrawable g = new android.graphics.drawable.GradientDrawable();

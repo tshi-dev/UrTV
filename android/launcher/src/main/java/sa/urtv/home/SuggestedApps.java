@@ -17,8 +17,7 @@ import java.util.List;
  *   SHA-256, be that package, AND be signed by exactly the pinned certificate (its SHA-256). Until the certificate is pinned the entry is not
  *   offered at all and nothing is installed (mirrorReady). While that repository cannot be read (private), nothing is offered.
  *
- * The IPTV player is a player only, offered as its Play Store page: it comes with no channels, films or playlists, and we give no links (the owner
- * adds their own provider).
+ * No IPTV player is suggested any more (the owner removed TiviMate); MAX_IPTV still caps any that is added again.
  * Plain Java: tests/suggested_apps_test.py runs it on a JVM.
  */
 public final class SuggestedApps {
@@ -61,7 +60,7 @@ public final class SuggestedApps {
     public static final String PLAYER_CERT = "13ade7d009a07f5ba5bab0b7734bd449df10dd47b53868dfa28e44cd8069dfea";
     public static final String PLAYER = "com.urtv.player", PLAYER_REPO = "tshi-dev/UrTV-Player", PLAYER_FILE = "urtv-player.apk", PLAYER_TAG = "";
 
-    public static final String SMARTTUBE = "org.smarttube.stable", TVBRO = "com.phlox.tvwebbrowser", VLC = "org.videolan.vlc", TIVIMATE = "ar.tvplayer.tv";
+    public static final String SMARTTUBE = "org.smarttube.stable", TVBRO = "com.phlox.tvwebbrowser", VLC = "org.videolan.vlc";
 
     /** In the order shown. The why lines are Arabic; i18n/en/home.tsv has their English. */
     public static final App[] ALL = {
@@ -70,9 +69,6 @@ public final class SuggestedApps {
         new App("smarttube", SMARTTUBE, "SmartTube", "يوتيوب بلا إعلانات، مصمَّم للريموت", Kind.GITHUB,
             "yuliskov/SmartTube", "SmartTube_stable_[0-9.]+_{abi}\\.apk", 21, true),
         new App("vlc", VLC, "VLC", "يشغّل الفيديو والصوت من ذاكرة USB ومن الشبكة", Kind.STORE, null, null, 21, false),
-        // the IPTV player: its Play Store page only (never a file from us), unticked, not in the setup. A player only: no channels or playlists,
-        // and we give none (the owner adds their own provider). TiviMate (Armobsoft, ar.tvplayer.tv), made for the TV remote.
-        new App("tivimate", TIVIMATE, "TiviMate", "مشغّل IPTV فارغ من متجر Play: تضيف قائمتك أنت، وما فيه ولا نعطي أي قنوات", Kind.STORE, null, null, 21, false),
     };
 
     /** UrTV Player: a MIRROR entry, after the others; offered only once its certificate is pinned (mirrorReady) */

@@ -418,7 +418,7 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { pickFavBar(); } });
         row("ترتيب التطبيقات المفضلة", "قائمة ترتّب فيها المفضلة بالأسهم", R.drawable.ic_star,
             new Runnable() { public void run() { openDockSettings(); } });
-        // 4.3 «تطبيقات مقترحة»: SmartTube, TV Bro, VLC and an empty IPTV player, each with why and its install (the home app's screen)
+        // 4.3 «تطبيقات مقترحة»: SmartTube, TV Bro and VLC, each with why and its install (the home app's screen)
         row("تطبيقات مقترحة", "تطبيقات نرشّحها، وتثبّتها من هنا", R.drawable.ic_star,
             new Runnable() { public void run() { openSuggested(); } });
         // «أكمل المشاهدة»: on or off; turned on while the home app may not read the TV's list yet, it opens the home app's one question

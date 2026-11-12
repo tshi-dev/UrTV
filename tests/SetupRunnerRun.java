@@ -349,12 +349,12 @@ public class SetupRunnerRun {
         line("R20 " + st20.substring(st20.indexOf("extras:"), st20.indexOf(",", st20.indexOf("extras:"))) + " downloads=" + h20.downloads.size());
         // 20b. 4.3 «تطبيقات مقترحة»: only TV Bro ticked (and a store app's id, which the setup never installs): TV Bro alone is fetched and installed
         SetupEngineRun.FakeTv t20b = SetupEngineRun.tv(); SetupEngineRun.Mem m20b = new SetupEngineRun.Mem(); Host h20b = new Host(t20b, m20b);
-        SetupRunner.Options o20b = new SetupRunner.Options(); o20b.picks = new ArrayList<>(java.util.Arrays.asList("tvbro", "tivimate"));
+        SetupRunner.Options o20b = new SetupRunner.Options(); o20b.picks = new ArrayList<>(java.util.Arrays.asList("tvbro", "vlc"));
         SetupRunner r20b = new SetupRunner();
         go(r20b, h20b, SetupRunner.Kind.FULL, o20b);
         String st20b = states(r20b);
         line("R20b " + st20b.substring(st20b.indexOf("extras:"), st20b.indexOf(",", st20b.indexOf("extras:"))) + " github=" + h20b.downloads.stream().filter(u -> !u.contains("tshi-dev")).collect(java.util.stream.Collectors.toList())
-            + " tvbro=" + t20b.installed.contains("com.phlox.tvwebbrowser") + " smarttube=" + t20b.installed.contains("org.smarttube.stable") + " tivimate=" + t20b.installed.contains("ar.tvplayer.tv"));
+            + " tvbro=" + t20b.installed.contains("com.phlox.tvwebbrowser") + " smarttube=" + t20b.installed.contains("org.smarttube.stable") + " vlc=" + t20b.installed.contains("org.videolan.vlc"));
         // 20c. nothing ticked: no extras at all
         SetupEngineRun.FakeTv t20c = SetupEngineRun.tv(); SetupEngineRun.Mem m20c = new SetupEngineRun.Mem(); Host h20c = new Host(t20c, m20c);
         SetupRunner.Options o20c = new SetupRunner.Options(); o20c.picks = new ArrayList<>(); o20c.extras = false;
