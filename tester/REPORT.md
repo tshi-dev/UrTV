@@ -2541,3 +2541,10 @@ sha256 `419ac1d9…5e39` = its .sha256 ✓, signer `13ade7d0…69dfea` ✓, vers
 - So the app reaches the TV's debug service, sends its key, and the service never raises the question (`ro.adb.secure=1`, adb on, port 5555). Third try, third time (build 264 twice).
 - My own ADB connected once for a moment (13:53:37) just after the page started, which may have overlapped one run. The later runs had no connection from me.
 - Z: logger stopped and log removed, idle back to 45 s, TV muted and asleep. No addresses or screenshots kept.
+
+### step 62 B — note for the supervisor (the owner wants it to work from the app, not from the PC)
+The factory page has now failed 3 times on this TV (build 264 twice, build 266 once), the owner pressing «ابدأ» and watching each time. Please fix it so it works on its own; I will retry on the next build.
+- What happens: the app connects to the TV's debug service (both paths), sends its key (`CNXN`, `signature`, `key offered`), then waits 45 s. The «Allow USB debugging?» question is **never shown**, so no path succeeds. Facts: `ro.adb.secure=1`, adb on, port 5555, adb over Wi-Fi off, sdk 34. The key already exists (`key exists=true`), so adbd may be answering from a stored key and expecting a signed auth that it never accepts, or this TV's firmware has no on-screen auth dialog. Worth logging adbd's reply type (AUTH type 1/2/3) and the message that follows it.
+- Ideas: try the Wireless-debugging pairing route (needs a code the owner types; allowed), or test whether the TV's dialog exists at all by connecting from the PC once with a fresh key (I will only do that if the owner says so).
+- **New problem:** while the page waits, the screen goes to sleep (idle timeout) with no action, so the owner can lose the question. The page should keep the screen on (`FLAG_KEEP_SCREEN_ON`) while waiting.
+- Final screen text is clear and honest («ما نقدر نسوّيها هنا»), nothing was changed on the TV; the page's own text mentions `optimize/install.sh launcher`, which the owner does not want as the answer.
