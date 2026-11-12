@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261112213830">
+<meta name="urtv-build" content="20261112213951">
 <title>Your TV Screen</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -987,8 +987,7 @@ document.documentElement.style.setProperty('--walldim', (CONFIG.wallDim / 100).t
   }
 })();   // 0 by default: the photo's own dimming alone
 // the football home and «المباريات» show a league even when none is followed
-// 4.3 «مباريات اليوم وبكرة» on the matches page: with no league of their own the person also gets the top leagues' games (the Saudi league above, the
-// big five and the Champions League as catalogue leagues: the same loader and cache as any followed league); a league they picked is never added to
+// 4.3 «مباريات اليوم وبكرة»: with no league of their own, the matches page also loads the top leagues
 const MP_TOP = ['id4328', 'id4335', 'id4332', 'id4331', 'id4334', 'id4480'], MP_TOP_IDS = ['4668', '4328', '4335', '4332', '4331', '4334', '4480'];
 const MP_MORE = CONFIG.matchPage && !CONFIG.leagues.length;
 if((CONFIG.football || CONFIG.matchPage) && !CONFIG.leagues.length) CONFIG.leagues = ['Saudi-Arabian Pro League'];
@@ -4338,28 +4337,28 @@ function bootFootball(){
 // ---- «المباريات»: a page of its own on the light look
 const MP = {day: '', picked: false, zone: 'rows', d: 1, l: 0, r: 0, detail: null, btn: 0, rows: [], leagues: [], days: [], note: ''};
 function mpGroups(){   // [{key, name, games}] of the chosen day: «فرقك», then each league in Prefs.LEAGUES' order
-  const games = fbGames().filter(ev => fbDayOf(fbKick(ev)) === MP.day), mine = games.filter(fbMine);
+  const games = fbGames().filter(ev => fbDayOf(fbKick(ev)) === MP.day && !(MP_MORE && !fbMine(ev) && MP_TOP_IDS.indexOf(String(ev.idLeague || '')) > 0)), mine = games.filter(fbMine);
   const by = {};
   games.forEach(ev => { const k = String(ev.idLeague || ev.strLeague || ''); (by[k] = by[k] || []).push(ev); });
   const keys = Object.keys(by).sort((a, b) => (FB_LEAGUE_ORDER.indexOf(a) + 1 || 99) - (FB_LEAGUE_ORDER.indexOf(b) + 1 || 99));
   const out = mine.length ? [{key: 'mine', name: FB_W.yours, games: mine, count: mine.length}] : [];
-  const more = mpMore(), inMore = new Set(more.map(ev => ev.idEvent));
-  if(more.length) out.push({key: 'more', name: FB_W.more, games: more, count: more.length, more: true});
+  const shown = new Set();
   keys.forEach(k => {
-    const rest = by[k].filter(ev => !fbMine(ev) && !inMore.has(ev.idEvent)).sort((a, b) => fbKick(a) - fbKick(b));
-    if(rest.length) out.push({key: k, name: fbRound(rest[0]), nameHtml: fbRoundHtml(rest[0]), side: leagueName(rest[0]) || fbRound(rest[0]), games: rest, count: rest.length + by[k].filter(fbMine).length});
+    const rest = by[k].filter(ev => !fbMine(ev)).sort((a, b) => fbKick(a) - fbKick(b));
+    if(rest.length){ shown.add(k); out.push({key: k, name: fbRound(rest[0]), nameHtml: fbRoundHtml(rest[0]), side: leagueName(rest[0]) || fbRound(rest[0]), games: rest, count: by[k].length}); }
   });
+  const more = mpMore(shown);
+  if(more.length) out.push({key: 'more', name: FB_W.more, games: more, count: more.length, more: true});
   return out;
 }
-// «مباريات اليوم وبكرة»: today's and tomorrow's games of the top leagues (not the followed teams': «فرقك» has them), at most 12, only while the page shows
-// today or tomorrow; the Saudi league first, then the others in MP_TOP_IDS' order, each by kick-off. None (offline, nothing played) = no section.
+// «مباريات اليوم وبكرة»: the top leagues' games of today and tomorrow (Saudi first), at most 12, after the person's own rows
 const MP_MORE_MAX = 12;
-function mpMore(){
+function mpMore(shown){
   if(!MP_MORE) return [];
   const t = cityToday(Date.now()), days = [t, fbDayAdd(t, 1)];
   if(!days.includes(MP.day)) return [];
   const rank = ev => MP_TOP_IDS.indexOf(String(ev.idLeague || ''));
-  return fbGames().filter(ev => !fbMine(ev) && rank(ev) >= 0 && days.includes(fbDayOf(fbKick(ev)))).sort((a, b) => (rank(a) - rank(b)) || fbKick(a) - fbKick(b)).slice(0, MP_MORE_MAX);
+  return fbGames().filter(ev => !fbMine(ev) && rank(ev) >= 0 && !shown.has(String(ev.idLeague || ev.strLeague || '')) && days.includes(fbDayOf(fbKick(ev)))).sort((a, b) => (rank(a) - rank(b)) || fbKick(a) - fbKick(b)).slice(0, MP_MORE_MAX);
 }
 function mpRow(ev, now, i, withDay){
   const c = fbClash(ev);

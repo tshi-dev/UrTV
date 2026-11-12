@@ -26,11 +26,14 @@ const ROWS = [{ idLeague: '4668', competition: 'Saudi Pro League', ar: 'ثمان
   from: '2025-26', until: '2030-31', source: 'https://example.org/source', confidence: 'high', whole: true, verified: '2026-11-04', app: ['com.thmanyah.shasha.tv', 'com.thmanyah.shasha'] }];
 
 const browser = await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {});
-async function open(hash, { file = 'tv.html', rows = null, width = 1920, height = 832 } = {}) {
+async function open(hash, { file = 'tv.html', rows = null, width = 1920, height = 832, epl = false } = {}) {
   const ctx = await browser.newContext({ viewport: { width, height }, timezoneId: 'Asia/Riyadh' });
   await ctx.route(/^https?:/, r => {
     const u = r.request().url();
     if (u.includes('/data-leagues/leagues/saudi-arabian-pro-league.json')) return r.fulfill({ json: LEAGUE, headers: { 'Access-Control-Allow-Origin': '*' } });
+    if (epl && u.includes('eventsnextleague.php?id=4328')) return r.fulfill({ json: { events: [ev('901', 'Arsenal', '133604', 'Chelsea', '133610', '2026-11-04T19:00:00', { idLeague: '4328', strLeague: 'English Premier League' }),
+      ev('902', 'Everton', '133615', 'Fulham', '133600', '2026-11-05T17:00:00', { idLeague: '4328', strLeague: 'English Premier League' })] }, headers: { 'Access-Control-Allow-Origin': '*' } });
+    if (epl && u.includes('eventspastleague.php')) return r.fulfill({ json: { results: null }, headers: { 'Access-Control-Allow-Origin': '*' } });
     if (u.includes('eventsnext.php') || u.includes('eventslast.php')) return r.fulfill({ json: { events: null, results: null }, headers: { 'Access-Control-Allow-Origin': '*' } });
     if (u.includes('api.open-meteo.com')) return r.fulfill({ json: { current: { temperature_2m: 28, apparent_temperature: 30, relative_humidity_2m: 18, wind_speed_10m: 12, weather_code: 0, is_day: 1 } }, headers: { 'Access-Control-Allow-Origin': '*' } });
     if (u.includes('/badge/')) return r.fulfill({ path: path.join(ROOT, 'android/app/src/main/res/mipmap-xhdpi/ic_launcher.png') }).catch(() => r.abort());
@@ -155,6 +158,18 @@ for (const [why, rows] of [['the shipped table', null], ['medium confidence', [{
   await ctx.close();
 }
 
+// ---- «مباريات اليوم وبكرة»: appended after the person's own rows, only leagues not already shown
+{
+  const { p, ctx } = await open('city=الرياض&lat=24.7136&lon=46.6753&tz=Asia/Riyadh&teams=136013&matchpage=1', { rows: ROWS, height: 1080, epl: true });
+  await p.waitForSelector('#mp-list section[data-g="more"]', { timeout: 20000 }).catch(() => {});
+  const heads = await p.$$eval('#mp-list h2', h => h.map(x => x.textContent));
+  check('top leagues: «فرقك» and the Saudi league exactly as before, then «مباريات اليوم وبكرة» last', heads[0] === 'فرقك' && heads[1] === 'دوري روشن الجولة ١٣' && heads[2] === 'مباريات اليوم وبكرة' && heads.length === 3, heads.join(','));
+  const more = await p.$eval('#mp-list section[data-g="more"]', x => x.textContent);
+  check('top leagues: the section has the Premier League games of today and tomorrow (the day word on tomorrow\'s)', /آرسنال|Arsenal/.test(more) && /إيفرتون|Everton/.test(more) && /غدًا/.test(more), more);
+  check('top leagues: the Saudi league is not repeated in the section', !/الهلال|الأهلي|Al-/.test(more), more);
+  check('top leagues: the league\'s own rows keep their rows', await p.$$eval('#mp-list section:nth-child(2) .mpg', r => r.length === 3));
+  await ctx.close();
+}
 // ---- «المباريات»
 {
   const { p, ctx, errors } = await open('city=الرياض&lat=24.7136&lon=46.6753&tz=Asia/Riyadh&teams=136013&matchpage=1', { rows: ROWS, height: 1080 });
