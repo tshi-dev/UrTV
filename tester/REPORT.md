@@ -2548,3 +2548,16 @@ The factory page has now failed 3 times on this TV (build 264 twice, build 266 o
 - Ideas: try the Wireless-debugging pairing route (needs a code the owner types; allowed), or test whether the TV's dialog exists at all by connecting from the PC once with a fresh key (I will only do that if the owner says so).
 - **New problem:** while the page waits, the screen goes to sleep (idle timeout) with no action, so the owner can lose the question. The page should keep the screen on (`FLAG_KEEP_SCREEN_ON`) while waiting.
 - Final screen text is clear and honest («ما نقدر نسوّيها هنا»), nothing was changed on the TV; the page's own text mentions `optimize/install.sh launcher`, which the owner does not want as the answer.
+
+## step 63 — does the TV raise «السماح بتصحيح USB؟» for UrTV at all? (build 267; run 1 only)
+**No. The question did not appear, on either path, on a clean run with no ADB connection from me. 1 problem. Run 2 (first-run setup) not done.**
+
+- Build 267 installed from apk-next (266 → 267), channel back to latest. Before and after: disabled-apps list equal (21), Home holder `sa.urtv.home`, settings snapshots taken.
+- Run 1 (factory page, owner pressed «ابدأ» by remote, was not looking at the screen; my ADB was not connected during the run): TV-side log from 19:00:36 to 19:02:06:
+  - path 1 (the TV itself): `CNXN sent` → `adbd said AUTH type 1 (TOKEN)` → `signature sent` → `adbd said AUTH type 1 (TOKEN again: the signature was not known)` → `key offered: the TV should now show «Allow USB debugging?»` → 45 s, nothing: «debugging permission was not accepted on the TV».
+  - path 2 (the TV's network address): the same lines, the same result.
+  - `UrTVSetup` lines show the screensaver was held back while waiting and freed after (the keep-awake fix works).
+- End text on screen: «ما نقدر نسوّيها هنا … ما غيّرنا شيئًا وكل شيء كما كان».
+- Meaning: adbd answers the key with AUTH TOKEN twice (it does not know the key) and then never asks the user. The key sent is not accepted as a new key to ask about. Likely cause to check in the code: the second message should be AUTH type 3 (RSAPUBLICKEY, our public key), not a repeat of the signature, if the log line "key offered" means type 3 was sent; please confirm what is sent after the second TOKEN, and its format (adb wants the public key as base64 with a trailing name and a NUL byte).
+- Run 2 skipped: it uses the same engine (same process, same log tag family), the owner was not at the screen, and the step says to stop if I can't be sure it is safe.
+- Z: logger stopped, log and helper removed, idle 45 s, TV muted and asleep, on Home. No addresses or screenshots kept.
