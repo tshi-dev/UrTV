@@ -178,6 +178,8 @@ public final class OddOneGame {
     /** OK on the points: the next round, or the end */
     public void nextRound() { if (phase == Phase.SCORE) { if (lastRound()) phase = Phase.END; else deal(); } }
     /** «إنهاء الجولة» from the pause card: this round is dropped with no points */
+    /** «إنهاء الجولة» on the pause card ends the GAME, as in every other game: the result screen */
+    public void finish() { phase = Phase.END; }
     public void dropRound() { if (phase != Phase.END) { if (lastRound()) phase = Phase.END; else deal(); } }
 
     /** the players with the most points (several on a tie) */

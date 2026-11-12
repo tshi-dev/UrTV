@@ -83,4 +83,18 @@ doc = (ROOT / "docs/GAMES-KIT.md").read_text(encoding="utf-8") if (ROOT / "docs/
 check("docs/GAMES-KIT.md says how to add a game and names every kit class", all(n in doc for n in KIT + ["GameActivity", "GameLook", "GameData", "GamePrefs", "How to add a game"]))
 run = (ROOT / "tests/run.sh").read_text(encoding="utf-8")
 check("tests/run.sh runs the quiz's and the games' tests", all(f"tests/{n}" in run for n in ("quiz_test.py", "quiz_phone.test.mjs", "quiz_e2e.test.mjs", "games_kit_test.py", "games_data_test.py")))
+# ---- step 58: nothing a game draws is cut by its own box or by the time bar
+ga, qg, ch, kh, w5, lh, od = (code(src(n)) for n in ("GameActivity.java", "QuizGamesActivity.java", "CharadesActivity.java", "KhanatActivity.java", "Word5Activity.java", "LetterHiveActivity.java", "OddOneActivity.java"))
+check("the kit fits the question block's words to their box (fitSize: the size comes down until no line is taller than the box; a TextView clips what is taller, which cut the dots of a big letter and the line above the time bar)",
+      "protected final float fitSize(" in ga and "fitSize(words, sizeFor(s, 104, 88, 72, 40, 70)" in ga and "fitSize(game.letter, 300, 360, 336, 1)" in kh and 'question(turn, S.t("الكلمة لك وحدك"), 340)' in ch and "TickTimer((int) (game.turnMs() / 1000), 288)" in ch)
+check("the games list fits each tile's title (two lines at most) and its line (three) by lowering the size before cutting; the English names are short",
+      "fit(display, title, 56, inner, 120, 2, 1f)" in qg and "fit(medium, about, 30, inner, 96, 3, 1.1f)" in qg and "setSingleLine" not in qg.split("TextView name")[1].split("tile.addView(name")[0])
+tsv = {l.split("\t")[0]: l.split("\t")[1] for l in (ROOT / "i18n/en/saver.tsv").read_text(encoding="utf-8").splitlines() if "\t" in l}
+check("every game's English name is at most 14 characters and its English line at most 60 (a tile is 344 design pixels wide inside)",
+      all(len(tsv.get(g[1], g[1])) <= 14 and len(tsv.get(g[2], g[2])) <= 60 for g in re.findall(r'new Game\("([a-z0-9-]+)", "([^"]+)", "([^"]+)"', src("GameRegistry.java"))), [(g[1], tsv.get(g[1])) for g in re.findall(r'new Game\("([a-z0-9-]+)", "([^"]+)", "([^"]+)"', src("GameRegistry.java")) if len(tsv.get(g[1], g[1])) > 14])
+check("«إنهاء الجولة» ends the GAME in every game (the result screen), «خمّن الكلمة» shows the word first; a double OK on «أخفِ الكلمة» cannot count a word",
+      "game.finish(); next();" in od and "onEndRound() { screen = Screen.END; sel = 0; }" in w5 and "guardUntil = clock.now() + GUARD_MS;   // the second press" in (APP / "games/charades/CharadesGame.java").read_text(encoding="utf-8"))
+check("a key press redraws only what it changes: «خمّن الكلمة» repaints the keys and the typed row, «خلية الحروف» only the honeycomb (the whole screen was rebuilt per key: 46 % and 19 % janky frames)",
+      "drawKey(was); drawKey(keys.key());" in w5 and "private void typedChanged()" in w5 and "hexBoard.invalidate(); return;" in lh)
+
 sys.exit(1 if failed else 0)

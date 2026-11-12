@@ -326,10 +326,25 @@ public abstract class GameActivity extends Activity {
         band(hgt);
         if (meta != null) root.addView(text(meta, 40, L.saff, true), at(1400, 56, 96, 54));
         String s = words.toString();
-        TextView q = text(words, sizeFor(s, 104, 88, 72, 40, 70) - (s.length() > 110 ? 12 : 0), L.onDeep, true);
+        float boxH = hgt - 228;
+        TextView q = text(words, fitSize(words, sizeFor(s, 104, 88, 72, 40, 70) - (s.length() > 110 ? 12 : 0), 1330, boxH, 3), L.onDeep, true);
         q.setMaxLines(3); q.setLineSpacing(0, .98f); q.setEllipsize(android.text.TextUtils.TruncateAt.END);
-        root.addView(q, at(1330, hgt - 228, 96, 128));
+        root.addView(q, at(1330, boxH, 96, 128));
         return q;
+    }
+
+    /**
+     * The biggest size (design pixels, down from `size`, never under 40) at which `words` stands in a box `w` x `h` design pixels in the heavy face with no line cut: a TextView
+     * clips what is taller than its box, which cut the dots of a big letter and the line under a short block (the time bar's ticks sit right under it). The kit's one answer, so no game clips.
+     */
+    protected final float fitSize(CharSequence words, float size, float w, float h, int maxLines) {
+        android.text.TextPaint paint = new android.text.TextPaint(); paint.setTypeface(display());
+        for (float f = size; f > 40; f -= 4) {
+            paint.setTextSize(f * scale);
+            android.text.StaticLayout lay = new android.text.StaticLayout(words, paint, Math.max(1, px(w)), android.text.Layout.Alignment.ALIGN_NORMAL, .98f, 0, false);
+            if (lay.getLineCount() <= maxLines && lay.getHeight() <= px(h)) return f;
+        }
+        return 40;
     }
 
     /**

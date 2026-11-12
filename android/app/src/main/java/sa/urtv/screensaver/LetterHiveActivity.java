@@ -93,7 +93,10 @@ public class LetterHiveActivity extends GameActivity {
                 if (back) { openPause(); return; }
                 if (ok) {
                     if (game.pick(focus)) { screen = Screen.ASK; sel = 0; play(QuizSound.CHIME); } else play(QuizSound.LOW);   // a taken hexagon
-                } else focus = HiveBoard.move(focus, dx > 0 ? HiveBoard.NEXT : dx < 0 ? HiveBoard.PREV : dy < 0 ? HiveBoard.UP : HiveBoard.DOWN);
+                } else {   // the focus moved: only the honeycomb is painted again (the whole screen was rebuilt per key: 19 % janky frames)
+                    focus = HiveBoard.move(focus, dx > 0 ? HiveBoard.NEXT : dx < 0 ? HiveBoard.PREV : dy < 0 ? HiveBoard.UP : HiveBoard.DOWN);
+                    if (hexBoard != null) { hexBoard.invalidate(); return; }
+                }
                 redraw();
                 break;
             case ASK:
@@ -142,7 +145,8 @@ public class LetterHiveActivity extends GameActivity {
         if (screen == Screen.SETUP) { setup(chips, S.t("ابدأ")); return; }
         if (screen == Screen.ASK) { drawAsk(); return; }
         boolean won = screen == Screen.WON;
-        root.addView(new HexBoard(this), at(BOARD_W, BOARD_H, 96, 96));
+        hexBoard = new HexBoard(this);
+        root.addView(hexBoard, at(BOARD_W, BOARD_H, 96, 96));
         float x = 96 + BOARD_W + 48;
         root.addView(text(gameName(), 64, L.ink, true), at(PANEL_W, 88, x, 96));
         for (int t = 0; t < 2; t++) {
@@ -210,6 +214,8 @@ public class LetterHiveActivity extends GameActivity {
         buttons(labels, Math.min(sel, labels.length - 1), 520, 848);
         hints("◀ ▶", S.t("الاختيار"), S.t("اختيار"), S.t("تأكيد"), S.t("رجوع"), S.t("توقف"));
     }
+
+    private View hexBoard;
 
     /** the honeycomb: 5 rows of 5, the odd rows half a cell toward the end of the line; a row starts at the right in Arabic. Each team's two sides carry its colour. */
     private final class HexBoard extends View {

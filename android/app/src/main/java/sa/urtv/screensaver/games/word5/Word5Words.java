@@ -36,6 +36,12 @@ public final class Word5Words {
     /** is this (normalized) word one we know? */
     public boolean accepts(String word) { int c = Word5Text.code(word); return c >= 0 && Arrays.binarySearch(accepted, c) >= 0; }
 
+    /**
+     * may this (normalized) word be guessed? Any five letters of the keyboard: the published list is only a few thousand common words and refused ordinary ones («ممتاز», «مسافر»),
+     * and there is no complete dictionary to ship. The list still decides which words are ANSWERS (curated) and is what {@link #accepts} reports.
+     */
+    public boolean allows(String word) { return Word5Text.code(word) >= 0; }
+
     public static Word5Words of(String alphabet, String packed, List<Answer> answers) {
         if (!Word5Text.ALPHABET.equals(alphabet) || packed == null || packed.isEmpty() || packed.length() % Word5Text.LENGTH != 0 || packed.length() / Word5Text.LENGTH > ACCEPTED_MAX) return null;
         int[] codes = new int[packed.length() / Word5Text.LENGTH];

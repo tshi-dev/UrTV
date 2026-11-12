@@ -63,7 +63,7 @@ public class Word5Activity extends GameActivity {
         redraw();
     }
 
-    @Override protected void onEndRound() { screen = Screen.SETUP; }
+    @Override protected void onEndRound() { screen = Screen.END; sel = 0; }   // «إنهاء الجولة» shows the word before leaving (the result screen says «الكلمة كانت»)
 
     @Override protected void onKey(boolean back, boolean ok, int dx, int dy) {
         if (screen == Screen.SETUP) { if (keySetup(chips, back, ok, dx, dy)) start(); return; }
@@ -75,27 +75,38 @@ public class Word5Activity extends GameActivity {
             return;
         }
         shake = false;
-        if (back) { if (game.delete()) { message = ""; redraw(); } else openPause(); return; }
+        // only what a key changes is drawn again (a key press used to rebuild the whole board: 46 % janky frames while typing)
+        if (back) { if (game.delete()) { message = ""; typedChanged(); } else openPause(); return; }
         if (!ok) {
             // the keys are Arabic: «next» is to the left in both languages, and dx is already turned toward the end of the interface's line
+            int was = keys.key();
             keys.move(dy < 0 ? Word5Keys.UP : dy > 0 ? Word5Keys.DOWN : (dx > 0) == rtl ? Word5Keys.NEXT : Word5Keys.PREV);
-            redraw();
+            drawKey(was); drawKey(keys.key());
             return;
         }
         int k = keys.key();
-        if (k == Word5Keys.DELETE) { game.delete(); message = ""; }
+        if (k == Word5Keys.DELETE) { if (game.delete()) { message = ""; typedChanged(); } }
         else if (k != Word5Keys.ENTER) {
-            if (game.type(k)) { message = ""; if (game.typing().length() == Word5Text.LENGTH) keys.set(Word5Keys.ENTER); }   // a full row: the next OK enters it
-            else play(QuizSound.LOW);
+            if (game.type(letterOf(k))) {
+                message = "";
+                if (game.typing().length() == Word5Text.LENGTH) { int was = keys.key(); keys.set(Word5Keys.ENTER); drawKey(was); drawKey(Word5Keys.ENTER); }   // a full row: the next OK enters it
+                typedChanged();
+            } else play(QuizSound.LOW);
         } else {
             Word5Game.Entered e = game.enter();
-            if (e == Word5Game.Entered.SHORT) { message = S.t("الكلمة خمسة حروف"); play(QuizSound.LOW); }
+            if (e == Word5Game.Entered.SHORT) { message = S.t("الكلمة خمسة حروف"); play(QuizSound.LOW); refreshLine(); return; }
             else if (e == Word5Game.Entered.UNKNOWN) { message = S.t("ما نعرف هذي الكلمة"); shake = true; keys.set(Word5Keys.DELETE); play(QuizSound.LOW); }
             else if (e == Word5Game.Entered.NEXT) { message = ""; keys.set(0); play(QuizSound.CHIME); }
             else { screen = Screen.END; sel = 0; play(e == Word5Game.Entered.WON ? QuizSound.FANFARE : QuizSound.LOW); }
+            redraw();
         }
-        redraw();
     }
+
+    /** the keyboard key a letter key types: ة is ه, ى is ي and ء is ا (Word5Text folds them the same way) */
+    private int letterOf(int k) {
+        return k == Word5Keys.TAA ? Word5Text.ALPHABET.indexOf('ه') : k == Word5Keys.YAA ? Word5Text.ALPHABET.indexOf('ي') : k == Word5Keys.HAMZA ? Word5Text.ALPHABET.indexOf('ا') : k;
+    }
+    private static final String EXTRA = "ةىء";
 
     // ---------------------------------------------------------------- the screens
 
@@ -112,39 +123,87 @@ public class Word5Activity extends GameActivity {
         boolean end = screen == Screen.END;
         // the rows of tiles, at the start side, the whole height
         int rows = game.tries;
-        float tile = Math.min((864f - (rows - 1) * GAP) / rows, (GRID_W - 4f * GAP) / 5), gridW = 5 * tile + 4 * GAP;
-        for (int r = 0; r < rows; r++) {
-            String shown = r < game.row() ? game.guess(r) : r == game.row() && !end ? game.typing() : "";
-            int[] cs = r < game.row() ? game.colours(r) : null;
-            boolean current = r == game.row() && !end;
-            for (int i = 0; i < 5; i++) {
-                FrameLayout t = cs != null ? stamp(colour(cs[i]), L.ink, 6, false) : stamp(L.tile, current ? L.ink : L.ink(0x59), current && i == shown.length() ? 12 : 6, false);
-                if (i < shown.length()) t.addView(centered(String.valueOf(shown.charAt(i)), tile * .62f, cs == null ? L.ink : cs[i] == Word5Game.GREEN ? L.onDeep : cs[i] == Word5Game.YELLOW ? L.onSaff : L.onInk, true), new FrameLayout.LayoutParams(-1, -1));
-                root.addView(t, at(tile, tile, 96 + col(i, tile, gridW, 5), 96 + r * (tile + GAP)));
-                if (current && shake && animate) t.animate().translationX(px(16)).setDuration(60).withEndAction(() -> t.animate().translationX(-px(16)).setDuration(90).withEndAction(() -> t.animate().translationX(0).setDuration(60)));
-            }
-        }
+        tile = Math.min((864f - (rows - 1) * GAP) / rows, (GRID_W - 4f * GAP) / 5); gridW = 5 * tile + 4 * GAP;
+        rowViews = new java.util.ArrayList[rows];
+        for (int r = 0; r < rows; r++) drawRow(r);
         // the end side: a line of words, then the keyboard (or, at the end, the word and the buttons)
         float x = 96 + GRID_W + 64, w = 1728 - GRID_W - 64;
+        keyX = x; keyW = w;
         root.addView(text(gameName(), 64, L.ink, true), at(w, 88, x, 96));
         if (end) { drawEnd(x, w); return; }
-        String line = message.isEmpty() ? S.t("المحاولة %s من %s", num(Math.min(game.row() + 1, game.tries)), num(game.tries)) : message;
-        root.addView(text(line, 48, message.isEmpty() ? L.ink(0xCC) : L.pink, true), at(w, 72, x, 196));
-        float kw = (w - 6 * GAP) / 7;
-        for (int k = 0; k < Word5Keys.ENTER; k++) {
-            boolean focus = keys.key() == k; int c = game.key(k);
+        lineView = text("", 48, L.ink, true);
+        root.addView(lineView, at(w, 72, x, 196));
+        refreshLine();
+        keyView = new View[Word5Keys.KEYS];
+        for (int k = 0; k < Word5Keys.KEYS; k++) drawKey(k);
+        drawHints();
+    }
+
+    private float tile, gridW, keyX, keyW;
+    private java.util.List<View>[] rowViews;
+    private View[] keyView = new View[Word5Keys.KEYS];
+    private TextView lineView; private View hintsRow;
+
+    /** row r of the tiles (the typed one with its cursor), replacing what was there */
+    private void drawRow(int r) {
+        boolean end = screen == Screen.END;
+        if (rowViews[r] != null) for (View v : rowViews[r]) root.removeView(v);
+        rowViews[r] = new java.util.ArrayList<>();
+        String shown = r < game.row() ? game.guess(r) : r == game.row() && !end ? game.typing() : "";
+        int[] cs = r < game.row() ? game.colours(r) : null;
+        boolean current = r == game.row() && !end;
+        for (int i = 0; i < 5; i++) {
+            final FrameLayout t = cs != null ? stamp(colour(cs[i]), L.ink, 6, false) : stamp(L.tile, current ? L.ink : L.ink(0x59), current && i == shown.length() ? 12 : 6, false);
+            if (i < shown.length()) t.addView(centered(String.valueOf(shown.charAt(i)), tile * .62f, cs == null ? L.ink : cs[i] == Word5Game.GREEN ? L.onDeep : cs[i] == Word5Game.YELLOW ? L.onSaff : L.onInk, true), new FrameLayout.LayoutParams(-1, -1));
+            root.addView(t, at(tile, tile, 96 + col(i, tile, gridW, 5), 96 + r * (tile + GAP)));
+            rowViews[r].add(t);
+            if (current && shake && animate) t.animate().translationX(px(16)).setDuration(60).withEndAction(() -> t.animate().translationX(-px(16)).setDuration(90).withEndAction(() -> t.animate().translationX(0).setDuration(60)));
+        }
+    }
+
+    /** key k (a letter, one of ة ى ء, «إدخال» or «حذف») with or without the focus, replacing what was there */
+    private void drawKey(int k) {
+        if (screen != Screen.PLAY || keyView == null || k < 0 || k >= keyView.length) return;
+        if (keyView[k] != null) root.removeView(keyView[k]);
+        float kw = (keyW - 6 * GAP) / 7, y = KEYS_Y + (k < Word5Keys.LETTERS ? k / Word5Keys.COLS : 4) * (KEY + GAP);
+        boolean focus = keys.key() == k;
+        View v; float width = kw, at;
+        if (k == Word5Keys.ENTER || k == Word5Keys.DELETE) {   // columns 3 and 4, and 5 and 6
+            width = 2 * kw + GAP;
+            int first = k == Word5Keys.ENTER ? 3 : 5;
+            at = Math.min(col(first, kw, keyW, 7), col(first + 1, kw, keyW, 7));
+            v = button(k == Word5Keys.ENTER ? S.t("إدخال") : S.t("حذف"), focus);
+        } else {
+            int c = game.key(letterOf(k));
             FrameLayout key = stamp(focus ? L.ink : c == 0 ? L.tile : colour(c), L.ink, focus && c != 0 ? 12 : 6, false);
             int wordsColour = focus ? (c == Word5Game.GREEN ? L.ok : c == Word5Game.YELLOW ? L.saff : L.onInk) : c == 0 ? L.ink : c == Word5Game.GREEN ? L.onDeep : c == Word5Game.YELLOW ? L.onSaff : L.onInk;
-            TextView lt = centered(String.valueOf(Word5Text.ALPHABET.charAt(k)), 72, wordsColour, true);
+            TextView lt = centered(k < Word5Keys.LETTERS ? String.valueOf(Word5Text.ALPHABET.charAt(k)) : String.valueOf(EXTRA.charAt(k - Word5Keys.TAA)), 72, wordsColour, true);
             if (focus && c == Word5Game.GRAY) lt.setAlpha(.55f);
             key.addView(lt, new FrameLayout.LayoutParams(-1, -1));
-            root.addView(key, at(kw, KEY, x + col(k % Word5Keys.COLS, kw, w, 7), KEYS_Y + (k / Word5Keys.COLS) * (KEY + GAP)));
+            v = key;
+            at = col(k < Word5Keys.LETTERS ? k % Word5Keys.COLS : k - Word5Keys.TAA, kw, keyW, 7);
         }
-        float wideEnter = 4 * kw + 3 * GAP, wideDelete = 3 * kw + 2 * GAP, y = KEYS_Y + 4 * (KEY + GAP);
-        // «إدخال» under columns 0 to 3 (the right), «حذف» under 4 to 6
-        root.addView(button(S.t("إدخال"), keys.key() == Word5Keys.ENTER), at(wideEnter, KEY, x + (rtl ? 0 : w - wideEnter), y));
-        root.addView(button(S.t("حذف"), keys.key() == Word5Keys.DELETE), at(wideDelete, KEY, x + (rtl ? w - wideDelete : 0), y));
+        keyView[k] = v;
+        root.addView(v, at(width, KEY, keyX + at, y));
+    }
+
+    private void refreshLine() {
+        if (lineView == null) return;
+        lineView.setText(message.isEmpty() ? S.t("المحاولة %s من %s", num(Math.min(game.row() + 1, game.tries)), num(game.tries)) : message);
+        lineView.setTextColor(message.isEmpty() ? L.ink(0xCC) : L.pink);
+    }
+
+    private void drawHints() {
+        if (hintsRow != null) root.removeView(hintsRow);
         hints(S.t("الأسهم"), S.t("الحرف"), S.t("اختيار"), S.t("اكتب"), S.t("رجوع"), game.typing().isEmpty() ? S.t("توقف") : S.t("حذف"));
+        hintsRow = root.getChildAt(root.getChildCount() - 1);
+    }
+
+    /** a letter typed or deleted: the typed row, the line and the last hint, nothing else */
+    private void typedChanged() {
+        drawRow(game.row());
+        refreshLine();
+        drawHints();
     }
 
     private void drawEnd(float x, float w) {

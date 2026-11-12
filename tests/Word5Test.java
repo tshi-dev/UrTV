@@ -74,7 +74,8 @@ public final class Word5Test {
             g.enter() == Word5Game.Entered.SHORT && !g.delete() && g.type(0) && g.type(1) && g.enter() == Word5Game.Entered.SHORT && g.typing().equals("اب") && g.delete() && g.typing().equals("ا") && g.delete() && !g.delete()
             && !g.type(28) && !g.type(-1));
         type(g, "ببببب");
-        check("typing: a sixth letter is refused; a word we do not know costs no try and its letters stay for fixing", !g.type(3) && g.enter() == Word5Game.Entered.UNKNOWN && g.row() == 0 && g.typing().equals("ببببب"));
+        check("typing: a sixth letter is refused; any five keyboard letters may be guessed (the list is not a gate: «ممتاز» and «مسافر» were refused by it) while the list still says what it holds", !g.type(3) && w.allows("ببببب") && w.allows("ممتاز") && !w.accepts("ببببب") && !w.allows("باب") && !w.allows("abcde") && !w.allows(null) && g.row() == 0 && g.typing().equals("ببببب"));
+        check("spelling: أ إ آ fold to ا, ة to ه, ى and ئ to ي, ؤ to و, ء to ا (what a key types and what the lists hold are the same word)", Word5Text.normalize("أإآ").equals("ااا") && Word5Text.normalize("مدرسة").equals("مدرسه") && Word5Text.normalize("مبنى").equals("مبني") && Word5Text.normalize("مئؤء").equals("ميوا"));
         for (int i = 0; i < 5; i++) g.delete();
         type(g, "بابات");
         check("a guess: accepted, coloured, the row moves on, the keyboard takes the colours (ب gray, ا yellow, ت gray)", g.enter() == Word5Game.Entered.NEXT && g.row() == 1 && g.guess(0).equals("بابات")
@@ -102,17 +103,18 @@ public final class Word5Test {
 
         // ---- the keyboard's focus
         Word5Keys k = new Word5Keys();
-        boolean wraps = k.key() == 0 && k.move(Word5Keys.PREV) == 6 && k.move(Word5Keys.NEXT) == 0 && k.move(Word5Keys.UP) == Word5Keys.ENTER && k.move(Word5Keys.UP) == 21 && k.move(Word5Keys.DOWN) == Word5Keys.ENTER
+        boolean wraps = k.key() == 0 && k.move(Word5Keys.PREV) == 6 && k.move(Word5Keys.NEXT) == 0 && k.move(Word5Keys.UP) == Word5Keys.TAA && k.move(Word5Keys.UP) == 21 && k.move(Word5Keys.DOWN) == Word5Keys.TAA
             && k.move(Word5Keys.DOWN) == 0;
         k.set(12);   // row 1, column 5
         boolean column = k.move(Word5Keys.DOWN) == 19 && k.move(Word5Keys.DOWN) == 26 && k.move(Word5Keys.DOWN) == Word5Keys.DELETE && k.move(Word5Keys.UP) == 26 && k.move(Word5Keys.DOWN) == Word5Keys.DELETE
-            && k.move(Word5Keys.NEXT) == Word5Keys.ENTER && k.move(Word5Keys.PREV) == Word5Keys.DELETE && k.move(Word5Keys.NEXT) == Word5Keys.ENTER && k.move(Word5Keys.UP) == 22;
+            && k.move(Word5Keys.NEXT) == Word5Keys.TAA && k.move(Word5Keys.NEXT) == Word5Keys.YAA && k.move(Word5Keys.NEXT) == Word5Keys.HAMZA && k.move(Word5Keys.NEXT) == Word5Keys.ENTER && k.move(Word5Keys.PREV) == Word5Keys.HAMZA
+            && k.move(Word5Keys.PREV) == Word5Keys.YAA && k.move(Word5Keys.UP) == 22 && k.move(Word5Keys.DOWN) == Word5Keys.YAA;
         boolean inside = true; rnd = new Random(3);
         for (int n = 0; n < 5000; n++) { int at = k.move(rnd.nextInt(4)); inside &= at >= 0 && at < Word5Keys.KEYS; }
         Set<Integer> reached = new HashSet<>(); k.set(0);
-        for (int r = 0; r < 5; r++) { for (int c = 0; c < 7; c++) { reached.add(k.key()); k.move(Word5Keys.NEXT); } k.move(Word5Keys.DOWN); }
-        check("keyboard focus: every move wraps (row ends, top to «إدخال», bottom to the first row); a wide key returns to the column one came from, or its own middle; 5,000 random moves never leave the 30 keys and all 30 are reachable",
-            wraps && column && inside && reached.size() == 30);
+        for (int r = 0; r < 6; r++) { for (int c = 0; c < 7; c++) { reached.add(k.key()); k.move(Word5Keys.NEXT); } k.move(Word5Keys.DOWN); }
+        check("keyboard focus: every move wraps (row ends, top to «ة», bottom to the first row); the fifth row (ة ى ء إدخال حذف) returns to the column one came from; 5,000 random moves never leave the 33 keys and all 33 are reachable",
+            wraps && column && inside && reached.size() == 33);
         System.exit(failed == 0 ? 0 : 1);
     }
 }

@@ -56,7 +56,7 @@ public final class Word5Game {
         if (over()) return Entered.OVER;
         if (typing.length() < Word5Text.LENGTH) return Entered.SHORT;
         String guess = typing.toString();
-        if (!words.accepts(guess)) return Entered.UNKNOWN;   // the row shakes, the letters stay, no try is lost
+        if (!words.allows(guess)) return Entered.UNKNOWN;   // not five keyboard letters: the row shakes, the letters stay, no try is lost
         int[] c = score(guess, answer);
         guesses[row] = guess; colours[row] = c; row++;
         for (int i = 0; i < c.length; i++) { int k = Word5Text.ALPHABET.indexOf(guess.charAt(i)); keys[k] = Math.max(keys[k], c[i]); }

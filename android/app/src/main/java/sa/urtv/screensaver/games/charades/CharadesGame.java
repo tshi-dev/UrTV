@@ -64,6 +64,7 @@ public final class CharadesGame {
     public void hide() {
         if (!wordVisible() || paused()) return;
         visible = false;
+        guardUntil = clock.now() + GUARD_MS;   // the second press of a quick double OK on «أخفِ الكلمة» must not count a word
         if (!started) { started = true; deadline = clock.now() + turnMs(); }
     }
     /** «صح»: a point, and the next word is shown at once. Ignored for GUARD_MS after a new word came (a double press would throw it away). */

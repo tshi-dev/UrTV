@@ -65,6 +65,17 @@ public class QuizGamesActivity extends Activity {
         p.setMarginStart(px(x)); p.topMargin = px(y);
         return p;
     }
+    /** the biggest size from `size` down (never under 22, design pixels) at which `s` stands in `maxLines` lines of a `w` x `h` box with no line cut */
+    private float fit(Typeface face, String s, float size, float w, float h, int maxLines, float spacing) {
+        android.text.TextPaint paint = new android.text.TextPaint(); paint.setTypeface(face);
+        for (float f = size; f > 22; f -= 2) {
+            paint.setTextSize(f * scale);
+            android.text.StaticLayout lay = new android.text.StaticLayout(s, paint, Math.max(1, px(w)), android.text.Layout.Alignment.ALIGN_NORMAL, spacing, 0, false);
+            if (lay.getLineCount() <= maxLines && lay.getHeight() <= px(h)) return f;
+        }
+        return 22;
+    }
+
     private TextView text(String s, float size, int color, boolean bold) {
         TextView v = new TextView(this);
         v.setText(s); v.setTextColor(color); v.setTextSize(TypedValue.COMPLEX_UNIT_PX, size * scale); v.setTypeface(bold ? display : medium);
@@ -99,10 +110,13 @@ public class QuizGamesActivity extends Activity {
                 tile.addView(mark, kp);
             }
             tile.addView(new View(this), new LinearLayout.LayoutParams(1, 0, 1f));
-            TextView name = text(S.tv(g.name), 56, words, true); name.setSingleLine(true);
+            // the title and the line fit the tile whatever the language: the size comes down (the title may take two lines, the line three) before anything is cut
+            float inner = w - 64;
+            String title = S.tv(g.name), about = S.tv(g.line);
+            TextView name = text(title, fit(display, title, 56, inner, 120, 2, 1f), words, true); name.setMaxLines(2);
             tile.addView(name, new LinearLayout.LayoutParams(-1, -2));
-            TextView line = text(S.tv(g.line), 30, words, false); line.setMaxLines(2); line.setLineSpacing(0, 1.1f); line.setAlpha(focus ? .9f : .8f);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, px(84)); lp.topMargin = px(8);
+            TextView line = text(about, fit(medium, about, 30, inner, 96, 3, 1.1f), words, false); line.setMaxLines(3); line.setLineSpacing(0, 1.1f); line.setAlpha(focus ? .9f : .8f);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, px(96)); lp.topMargin = px(8);
             tile.addView(line, lp);
             root.addView(tile, at(w, hgt, 96 + (i % COLS) * (w + gap), 236 + (i / COLS) * (hgt + gap)));
         }

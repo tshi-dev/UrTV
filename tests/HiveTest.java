@@ -181,6 +181,20 @@ check("board: 25 cells, every neighbour link goes both ways, 56 links in all (5 
         g.reveal(); g.judge(false); int ca = cellOf(g, 'A'); g.pick(ca); g.reveal(); g.judge(false); g.pick(ca);
         check("English: the category question of A carries its English samples", g.board.letter[ca] == 'A' && (g.question().kind == HiveGame.Kind.BANK || g.question().hints[0].equals("Ant")));
 
+        // the winning chain and the lit chain of BOTH teams, through the game itself (every answer right, the other team taking harmless cells): the screen lights exactly chain()
+        for (int team = 1; team <= 2; team++) {
+            HiveGame w = game(starter, new HiveGame.Settings(), 7 + team);
+            int[] plan = team == 1 ? new int[] {10, 11, 12, 13, 14} : new int[] {2, 7, 12, 17, 22};
+            int[] filler = team == 1 ? new int[] {0, 1, 3, 4, 20, 21} : new int[] {0, 5, 10, 15, 20, 4};   // team 1 never gets column 4 with column 0 here, team 2 never top with bottom
+            int p = 0, f = 0; boolean ok = true;
+            while (w.phase() != HiveGame.Phase.WON && p + f < 40) {
+                int at = w.turn() == team ? plan[p++] : filler[f++];
+                ok &= w.pick(at) && w.reveal() && w.judge(true);
+            }
+            ok &= w.phase() == HiveGame.Phase.WON && w.winner() == team && Arrays.equals(w.chain(), team == 1 ? plan : plan) && w.chain() != null && w.chain().length == 5 && !w.pick(1);
+            for (int i : plan) ok &= w.board.owner[i] == team;
+            check("win through the game: team " + team + " joins its sides with five right answers; phase WON, winner " + team + ", chain() is the lit chain in order, and no cell can be picked after", ok);
+        }
         // a whole game on the starter, played by the rules until somebody wins
         boolean allEnd = true, noneShown = true; int longest = 0, shownEmpty = 0;
         for (int seed = 0; seed < 300; seed++) {

@@ -79,7 +79,7 @@ public class OddOneActivity extends GameActivity {
     }
 
     @Override protected void onPauseChanged(boolean paused, long now) { if (game != null) { if (paused) game.pause(); else game.resume(); } }
-    @Override protected void onEndRound() { if (game != null && inPlay()) { game.dropRound(); next(); } }
+    @Override protected void onEndRound() { if (game != null && inPlay()) { game.finish(); next(); } }
 
     @Override protected void onTick(long now) {
         if (screen != Screen.TALK || timer == null || game.phase != OddOneGame.Phase.TALK) return;

@@ -169,7 +169,7 @@ public class KhanatActivity extends GameActivity {
     private void drawWriting() {
         band(528);
         root.addView(text(roundLine(), 40, L.saff, true), at(1100, 56, 96, 54));
-        root.addView(centered(game.letter, 300, L.onDeep, true), at(360, 330, 96, 108));
+        root.addView(centered(game.letter, fitSize(game.letter, 300, 360, 336, 1), L.onDeep, true), at(360, 336, 96, 108));   // the whole letter, dots included, above the ticks (452)
         TextView say = text(S.t("كلمة لكل خانة تبدأ بهذا الحرف"), 72, L.onDeep, true); say.setMaxLines(2);
         root.addView(say, at(880, 220, 500, 190));
         int secs = SECONDS[chips.picked("time")];

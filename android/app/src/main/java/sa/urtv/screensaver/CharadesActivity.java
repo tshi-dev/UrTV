@@ -95,8 +95,8 @@ public class CharadesActivity extends GameActivity {
                 String turn = S.t("دور %s", names[game.team]);
                 if (game.wordVisible()) {
                     String w = game.word.text(en);
-                    question(turn, S.t("الكلمة لك وحدك"), 300);
-                    timer = new TickTimer((int) (game.turnMs() / 1000), 240);
+                    question(turn, S.t("الكلمة لك وحدك"), 340);   // 340 high so the line stands whole above the ticks
+                    timer = new TickTimer((int) (game.turnMs() / 1000), 288);
                     root.addView(centered(w, sizeFor(w, 200, 136, 96, 12, 24), L.ink, true), at(1728, 360, 96, 330));
                     root.addView(centered(S.t("الباقين: غطّوا عيونكم"), 56, L.ink(0xCC), true), at(1728, 84, 96, 730));
                     if (game.canSkip()) hints(S.t("اختيار"), S.t("أخفِ الكلمة"), "◀", S.t("تخطّي"));
