@@ -27,6 +27,14 @@ check("auto = UrTV Player, none = no button, another app is only opened (its lau
 check("the page: «شاهد المباراة» only when the app says one is there; the facts go through MatchFacts",
       "if(host && typeof host.matchApp === 'function' && host.matchApp()) out.push({k: 'player', t: FB_W.player});" in tpl
       and "host.findMatch(JSON.stringify(mpFacts(ev)))" in tpl and "MatchFacts.of(sa.urtv.home.phone.Json.parseObject(" in matches)
+check("4.3 step 64: with the Player missing the card offers «ثبّت UrTV Player للمشاهدة» (only when the setting is auto or the Player), opening «تطبيقات مقترحة»; no permission added",
+      "host.playerOffer()" in tpl and "host.installPlayer()" in tpl and "public boolean playerOffer()" in matches and "public boolean installPlayer()" in matches
+      and '(v == null || "auto".equals(v) || SuggestedApps.PLAYER.equals(v)) && MatchApp.chosen(c, v) == null' in matches
+      and "new android.content.Intent(a, SuggestedAppsActivity.class)" in matches and "REQUEST_INSTALL" not in matches)
+check("4.3 step 64: «مباريات اليوم وبكرة» below «فرقك»: top leagues (Saudi first, big five, Champions League), today and tomorrow only, at most 12, only for a person with no league of their own",
+      "const MP_MORE = CONFIG.matchPage && !CONFIG.leagues.length;" in tpl and "MP_TOP_IDS = ['4668', '4328', '4335', '4332', '4331', '4334', '4480']" in tpl
+      and "const MP_MORE_MAX = 12;" in tpl and "if(!days.includes(MP.day)) return [];" in tpl and "if(more.length) out.push({key: 'more'" in tpl
+      and tpl.index("const more = mpMore()") > tpl.index("const out = mine.length ?") and "FB_W.more" in tpl)
 check("the page sends the game only: names, competition, kick-off, channel names (no stream, no link)",
       re.search(r"return \{home_ar: .*?away_en: .*?competition_en: .*?kickoff: String\(fbKick\(ev\)\), channels: .*?\};", tpl, re.S) is not None
       and not re.search(r"mpFacts[^}]*(url|link|stream)", tpl.split("function mpFacts")[1][:900]))

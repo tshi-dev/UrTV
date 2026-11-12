@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261112045341">
+<meta name="urtv-build" content="20261112213830">
 <title>Your TV Screen</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -987,7 +987,12 @@ document.documentElement.style.setProperty('--walldim', (CONFIG.wallDim / 100).t
   }
 })();   // 0 by default: the photo's own dimming alone
 // the football home and «المباريات» show a league even when none is followed
+// 4.3 «مباريات اليوم وبكرة» on the matches page: with no league of their own the person also gets the top leagues' games (the Saudi league above, the
+// big five and the Champions League as catalogue leagues: the same loader and cache as any followed league); a league they picked is never added to
+const MP_TOP = ['id4328', 'id4335', 'id4332', 'id4331', 'id4334', 'id4480'], MP_TOP_IDS = ['4668', '4328', '4335', '4332', '4331', '4334', '4480'];
+const MP_MORE = CONFIG.matchPage && !CONFIG.leagues.length;
 if((CONFIG.football || CONFIG.matchPage) && !CONFIG.leagues.length) CONFIG.leagues = ['Saudi-Arabian Pro League'];
+if(MP_MORE) CONFIG.leagues = CONFIG.leagues.concat(MP_TOP);
 // The cards on this page: the screensaver's one
 // an older launcher sends the one card as #panel=). Each kind once, in order.
 // the prayer calculation (Aladhan's id; 100 = Oman's ministry, ours)
@@ -4053,7 +4058,7 @@ const FB_W = {
   feels:'Feels like', hum:'Humidity', wind:'Wind', kmh:'%s km/h', pct:'%s%%', live:'Live', ended:'Final', vs:'×',
   yesterday:'Yesterday', tday:'Today', tomorrow:'Tomorrow', g1:'1 match', g2:'2 matches', gFew:'%s matches', gMany:'%s matches',
   allOn:'all on %s', round:'Round %s', venue:'Venue', channel:'Channel', withPrayer:'With the prayers', game:'Match',
-  remind:'Remind me 30 min before', reminded:'Added to your tasks', follow:'Add %s to my teams', unfollow:'Remove %s from my teams', followed:'%s was added to your teams', unfollowed:'%s was removed from your teams', watch:'Watch on %s', player:'Watch the match', install:'Install UrTV Player to watch', failed:'That didn’t work, try again', sure:'Press again to confirm',
+  remind:'Remind me 30 min before', reminded:'Added to your tasks', follow:'Add %s to my teams', unfollow:'Remove %s from my teams', followed:'%s was added to your teams', unfollowed:'%s was removed from your teams', watch:'Watch on %s', player:'Watch the match', install:'Install UrTV Player to watch', more:'Today and tomorrow', failed:'That didn’t work, try again', sure:'Press again to confirm',
   startsAfter:'Starts %2$s after %1$s', startsBefore:'Starts %2$s before %1$s', adhanAt:'The %s adhan comes in its minute %s', ago:'%s ago', nextIn:'%s in %s',
   h1:'1 hour', h2:'2 hours', hFew:'%s hours', hMany:'%s hours', m1:'1 min', m2:'2 min', mFew:'%s min', mMany:'%s min',
   am1:'1 min', am2:'2 min', amFew:'%s min', amMany:'%s min', taskText:'Match %s, starts %s',
@@ -4338,15 +4343,27 @@ function mpGroups(){   // [{key, name, games}] of the chosen day: «فرقك», 
   games.forEach(ev => { const k = String(ev.idLeague || ev.strLeague || ''); (by[k] = by[k] || []).push(ev); });
   const keys = Object.keys(by).sort((a, b) => (FB_LEAGUE_ORDER.indexOf(a) + 1 || 99) - (FB_LEAGUE_ORDER.indexOf(b) + 1 || 99));
   const out = mine.length ? [{key: 'mine', name: FB_W.yours, games: mine, count: mine.length}] : [];
+  const more = mpMore(), inMore = new Set(more.map(ev => ev.idEvent));
+  if(more.length) out.push({key: 'more', name: FB_W.more, games: more, count: more.length, more: true});
   keys.forEach(k => {
-    const rest = by[k].filter(ev => !fbMine(ev)).sort((a, b) => fbKick(a) - fbKick(b));
-    if(rest.length) out.push({key: k, name: fbRound(rest[0]), nameHtml: fbRoundHtml(rest[0]), side: leagueName(rest[0]) || fbRound(rest[0]), games: rest, count: by[k].length});
+    const rest = by[k].filter(ev => !fbMine(ev) && !inMore.has(ev.idEvent)).sort((a, b) => fbKick(a) - fbKick(b));
+    if(rest.length) out.push({key: k, name: fbRound(rest[0]), nameHtml: fbRoundHtml(rest[0]), side: leagueName(rest[0]) || fbRound(rest[0]), games: rest, count: rest.length + by[k].filter(fbMine).length});
   });
   return out;
 }
-function mpRow(ev, now, i){
+// «مباريات اليوم وبكرة»: today's and tomorrow's games of the top leagues (not the followed teams': «فرقك» has them), at most 12, only while the page shows
+// today or tomorrow; the Saudi league first, then the others in MP_TOP_IDS' order, each by kick-off. None (offline, nothing played) = no section.
+const MP_MORE_MAX = 12;
+function mpMore(){
+  if(!MP_MORE) return [];
+  const t = cityToday(Date.now()), days = [t, fbDayAdd(t, 1)];
+  if(!days.includes(MP.day)) return [];
+  const rank = ev => MP_TOP_IDS.indexOf(String(ev.idLeague || ''));
+  return fbGames().filter(ev => !fbMine(ev) && rank(ev) >= 0 && days.includes(fbDayOf(fbKick(ev)))).sort((a, b) => (rank(a) - rank(b)) || fbKick(a) - fbKick(b)).slice(0, MP_MORE_MAX);
+}
+function mpRow(ev, now, i, withDay){
   const c = fbClash(ev);
-  return fbMatchLine(ev, now, 'mpg' + (i === MP.r && MP.zone === 'rows' && !MP.detail ? ' f' : ''), ` data-r="${i}"`, fbLive(ev, now) || fbDone(ev, now) ? fbWhen(ev, now) : fbClock(fbKick(ev)),
+  return fbMatchLine(ev, now, 'mpg' + (i === MP.r && MP.zone === 'rows' && !MP.detail ? ' f' : ''), ` data-r="${i}"`, fbLive(ev, now) || fbDone(ev, now) ? fbWhen(ev, now) : (withDay ? fbDayWord(fbDayOf(fbKick(ev))) + ' ' : '') + fbClock(fbKick(ev)),
     c ? `<span class="fnote">${esc(fbNote(c))}</span>` : '', fbMarkChip(ev));
 }
 function mpAge(){
@@ -4381,7 +4398,7 @@ function mpRender(){
     `<li class="${i === MP.l ? 'on' : ''}${MP.zone === 'leagues' && i === MP.l ? ' f' : ''}"><span>${esc(g.side || g.name)}</span><i>${ar(g.count)}</i></li>`).join('') : '');
   let n = 0;
   setHTML(document.getElementById('mp-list'), groups.length ? groups.map(g => `<section data-g="${esc(g.key)}"><h2>${g.nameHtml || esc(g.name)}</h2><ul>`
-    + g.games.map(ev => mpRow(ev, now, n++)).join('') + '</ul></section>').join('')
+    + g.games.map(ev => mpRow(ev, now, n++, g.more)).join('') + '</ul></section>').join('')
     : `<div class="fnone">${MATCHES_LOADED ? fbNone(MP.day) : matchesEmptyText()}</div>`);
   fillCrests(document.getElementById('mp'));
   const f = MP.zone === 'leagues' ? document.querySelectorAll('#mp-list section')[MP.l] : document.querySelector('#mp-list li.f');
