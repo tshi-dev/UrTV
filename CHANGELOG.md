@@ -5,8 +5,15 @@ Newest first. `next` is where changes land first; a release is what was tested t
 ## 4.3
 
 **بالعربي، باختصار:**
+- **«تلفزيونك»:** افتح التطبيق وتطلع لك أربع نوافذ بعلامات واضحة: الأسواق والمباريات والألعاب والإعدادات، وبضغطة وحدة تدخل أي منها.
+- **ثماني ألعاب عائلية:** «الأسرع» يجاوب فيها الكل من جواله، وسبع بريموت واحد يدور بينكم: خمس خانات، الكلمة المفقودة، واحد مو معنا، بدون كلام، خلية الحروف، خمّن الكلمة، ودومينو. الأسرار لها شاشة تسليم تقول «غطّوا عيونكم».
+- **شاهد المباراة:** من بطاقة المباراة في صفحة المباريات يفتح UrTV Player على المباراة مباشرة، مع دوريات أكثر.
+- **UrTV النظيف:** زر وحد يخلّي UrTV نظيفًا فعلًا: الشاشة الرئيسية بالساعة والتاريخ وشريط التطبيقات، وشاشة التوقف بالصورة والساعة فقط، و«تلفزيونك» يفتح على الإعدادات. وتختار «بطاقة الصلاة»: سطر تحت التاريخ أو بطاقة فيها صلوات اليوم الخمس، وتحدد مكانها. الأذان والتذكيرات والقفل العائلي والتحديثات تشتغل كما ضبطتها، وكل شي يرجع بضغطة.
+- **تخلّص من واجهة المصنع:** صف في الإعدادات تحت «اجعل UrTV الشاشة الرئيسية» يعطّل (ما يحذف) واجهة المصنع بتأكيدين وبضغطة ترجع. بعض التلفزيونات ما تعرض سؤال «السماح بتصحيح USB؟» لتطبيقنا، وهذي تحتاج الإعداد من الكمبيوتر؛ والشاشة تقول لك ذلك بوضوح وما تغيّر شي.
+- **شريط التطبيقات أسلس:** الحركة بين التطبيقات صارت أخف بكثير، خصوصًا على التلفزيونات الضعيفة.
+- **تثبيت UrTV Player من داخل UrTV:** من «تطبيقات مقترحة» تثبّته وتحدّثه بضغطة.
 - **توحيد المظهر:** الأزرار العلوية والبطاقات وشريط التطبيقات في الشاشة الرئيسية صارت بمادة وحدة في كل شكل، داكن أو فاتح (الإعدادات ← المظهر ← توحيد المظهر، مفعّل من الأصل؛ إذا وقّفته صار لكل واحد شفافيته وتعبئته).
-- **صفحة الجوال:** بطاقة وحدة «على الشاشة» للرسالة و«ارسم» و«صوري»، والوضع الفاتح واللغة و«محفظتي» أزرار واضحة.
+- **صفحة الجوال بتصميم جديد:** بطاقة وحدة «على الشاشة» للرسالة و«ارسم» و«صوري»، والوضع الفاتح واللغة و«محفظتي» أزرار واضحة.
 - **ألبوم صوري:** بطاقة لصورك من «صوري» تتبدل بتلاشٍ ناعم (كل ٤ ثوانٍ أو كل دقيقة) وتحتها تاريخ الصورة، على شاشة التوقف والشاشة الرئيسية. و«صوري» صارت تتسع لـ ٥٠ صورة، وتقدر ترسلها من جوالك (تُصغّر في الجوال وما يوصل معها مكان التصوير ولا وقته).
 - **رسالة من الجوال:** اكتب سطرًا قصيرًا في صفحة الجوال ويظهر على الشاشة ٢٠ ثانية.
 - **ارسم من الجوال:** من صفحة الجوال («ارسم» جنب الرسالة) ترسم بإصبعك ويظهر الرسم على شاشة التلفزيون وأنت ترسم، بستة ألوان، و«امسح» يمسحه من الجهتين، ويختفي وحده بعد ٨ ثوانٍ من آخر خط. نفس مفتاحي «رسائل الجوال» و«فوق التطبيقات»، وزر الرجوع يخفيه.
@@ -26,8 +33,15 @@ Newest first. `next` is where changes land first; a release is what was tested t
 - **أُزيل** الحساب الجعفري من طرق حساب الصلاة (من كان عليه يرجع لحساب بلده).
 
 **In English, in short:**
+- **«تلفزيونك» (Your TV):** open the app and four windows with clear marks appear: Markets, Matches, Games and Settings; one press goes into any of them.
+- **Eight family games:** «The Fastest» (everyone answers on their phone), and seven with one remote passed around: Five Boxes, Missing Word, Odd One Out, Without Words, Letter Hive, Word Guess and Dominoes. Secrets get a hand-over screen that says «cover your eyes».
+- **Watch the match:** from a match's card on the Matches page, UrTV Player opens straight on the game; more leagues are covered too.
+- **Clean UrTV:** one switch makes UrTV really clean: the home with the clock, the date and the apps bar; the screensaver with the photo and the clock only; «تلفزيونك» opens on the settings. Choose a «Prayer card»: a line under the date or one card with today's five prayers, and where it sits. The adhan, reminders, the family lock and updates keep working as you set them, and one press brings everything back.
+- **Get rid of the factory interface:** a row in the settings under «Make UrTV your home screen» turns the factory interface off (never deletes it), with two confirmations and one press to undo. Some TVs do not show the «Allow USB debugging?» question to our app; those need the setup from a computer, and the screen says so plainly and changes nothing.
+- **A smoother apps bar:** moving between apps is much lighter, especially on weak TVs.
+- **Install UrTV Player from inside UrTV:** from «Suggested apps» you install it and update it in one press.
 - **One material on the home («توحيد المظهر»):** the upper buttons, the cards and the apps bar share one fill, line, corner, accent and focus in every look, dark or light (Settings › Look › «توحيد المظهر», on by default; off, each has its own strength and fill; `optimize/saver.sh looksync on|off`, `surface quick|cards|tray 30..100 look|glass|graphite`). The apps bar's corners are 24 px (they were 32) and its focus ring follows the look and the accent.
-- **Phone page:** one card «على الشاشة» for the message, «ارسم» and «صوري»; light/dark, the language and «محفظتي» are real buttons; no pill shapes.
+- **A redesigned phone page:** one card «على الشاشة» for the message, «ارسم» and «صوري»; light/dark, the language and «محفظتي» are real buttons; no pill shapes.
 - **My photo album:** a card of the photos in «صوري», crossfading every 4 s or one a minute, with the day each was added, on the screensaver and the home screen. «صوري» holds up to 50 photos, and you can send them from your phone (made smaller there, without where or when they were taken).
 - **A message from the phone:** type a short line on the phone page; the TV shows it for 20 s.
 - **Draw from the phone:** on the phone page («Draw» beside the message) you draw with a finger and the drawing shows on the TV as you draw, in six colours; «Clear» clears both sides, and it fades by itself 8 s after the last line. The same «Phone messages» and «Over apps» switches; Back hides it.

@@ -63,10 +63,16 @@
 - **الشاشة الرئيسية «تلفزيونك»:** عربية ونظيفة، مفضلتك، المهام، تلاوة وأذان، والمباريات.
 - **شاشة التوقف:** الساعة والهجري ومواقيت الصلاة والإقامة، ومبارياتك، والطقس، والأسواق، وصور سعودية أو صورك.
 - **تلاوة وأذان:** ٤٢ قارئاً، والإذاعات، والأذان بتوقيت أم القرى (٢١ أذاناً).
-- **التحكم من الجوال:** ريموت، وكتابة عربية، ورسالة ورسم على الشاشة، وصورك.
+- **«تلفزيونك»:** افتح التطبيق وتدخل الأسواق أو المباريات أو الألعاب أو الإعدادات بضغطة.
+- **ثماني ألعاب عائلية:** «الأسرع» من الجوالات، وسبع بريموت واحد: خمس خانات، الكلمة المفقودة، واحد مو معنا، بدون كلام، خلية الحروف، خمّن الكلمة، ودومينو.
+- **المباريات:** من بطاقة المباراة «شاهد المباراة» يفتح UrTV Player عليها، ودوريات أكثر.
+- **UrTV النظيف:** الأساسيات فقط في الرئيسية وشاشة التوقف، مع سطر الصلاة القادمة أو بطاقة صلاة، وكل شي يرجع بضغطة.
+- **توحيد المظهر:** الأزرار والبطاقات وشريط التطبيقات بمادة وحدة في كل شكل.
+- **تخلّص من واجهة المصنع:** تعطيل (ما يحذف) واجهة المصنع بتأكيدين وبضغطة ترجع؛ بعض التلفزيونات تحتاج الإعداد من الكمبيوتر.
+- **التحكم من الجوال:** صفحة جوال جديدة: ريموت، وكتابة عربية، ورسالة ورسم على الشاشة، وصورك.
 - **تسريع آمن:** يوقف الإعلانات والتتبع بشكل يرجع، وما يلمس AirPlay ولا البث ولا الصوت.
 
-كل ميزة بالتفصيل: [`docs/FEATURES.md`](docs/FEATURES.md) · كل إعداد بأمره: [`docs/SETTINGS.md`](docs/SETTINGS.md)
+كل ميزة بالتفصيل: [`docs/FEATURES.md`](docs/FEATURES.md). كل إعداد بأمره: [`docs/SETTINGS.md`](docs/SETTINGS.md)
 
 ## مساعدة
 - **صار شي؟** «أرسل تقرير» في الإعدادات (رمز QR، بدون أي معلومة شخصية)، أو `optimize/share.sh --problem`.
@@ -130,10 +136,30 @@ The screens are shown above (start, the plan, done).
 - **Home screen:** a clean Arabic launcher: favourites, all apps, tasks, «تلاوة وأذان», the day's matches.
 - **Screensaver:** clock, Hijri date, prayer times and iqama, your teams' matches, weather, markets, over Saudi landscapes or your own photos.
 - **«تلاوة وأذان»:** 42 reciters, live Quran radio, the five adhans at Umm al-Qura times (21 recordings). More: [docs/TILAWAH.md](docs/TILAWAH.md).
-- **From the phone:** a remote, Arabic typing, a message or a drawing on the screen, your photos.
+- **«تلفزيونك» (Your TV):** open the app and go into Markets, Matches, Games or Settings in one press.
+- **Eight family games:** «The Fastest» from the phones, and seven with one remote: Five Boxes, Missing Word, Odd One Out, Without Words, Letter Hive, Word Guess and Dominoes.
+- **Matches:** «Watch the match» from a match's card opens UrTV Player on it, with more leagues.
+- **Clean UrTV:** the essentials only on the home and the screensaver, with the next-prayer line or a prayer card; one press brings everything back.
+- **One look:** the buttons, the cards and the apps bar share one material in every look.
+- **Get rid of the factory interface:** turn it off (never delete it) with two confirmations and one press to undo; some TVs need the setup from a computer.
+- **From the phone:** a redesigned phone page: a remote, Arabic typing, a message or a drawing on the screen, your photos.
 - **Safe speed-up:** ads and tracking off, reversibly; AirPlay, casting and voice are never touched.
 
-Every feature: [docs/FEATURES.md](docs/FEATURES.md) (Arabic) · every setting with its command: [docs/SETTINGS.md](docs/SETTINGS.md)
+Every feature: [docs/FEATURES.md](docs/FEATURES.md) (Arabic). Every setting with its command: [docs/SETTINGS.md](docs/SETTINGS.md)
+
+### New in 4.3
+
+| | | |
+|---|---|---|
+| <img src="docs/screenshots/43/home-football.jpg" alt="The home with the day's matches, the prayers and the weather" width="100%"> | <img src="docs/screenshots/43/match-sheet.jpg" alt="A match's card with «Watch the match» and the prayer timeline" width="100%"> | <img src="docs/screenshots/43/screensaver.jpg" alt="The screensaver: the clock, the verse of the day, the prayers and the matches" width="100%"> |
+| **The home with the day's matches** | **A match's card** | **The screensaver** |
+
+<!-- IMAGE SLOTS for real photos of 4.3 (a photo of the TV screen, nothing personal in it: no city, no names, no Wi-Fi):
+     docs/screenshots/43/hub.jpg      «تلفزيونك»: the four windows
+     docs/screenshots/43/games.jpg    the games list, or a round of one game
+     docs/screenshots/43/clean.jpg    «UrTV النظيف» with the prayer card
+     docs/screenshots/43/phone.jpg    the redesigned phone page
+     Add them as another row of the table above (the same width="100%" img style). -->
 
 ## Help
 - **Something went wrong?** «أرسل تقرير» in the settings (a QR code, nothing personal), or `optimize/share.sh --problem`.
