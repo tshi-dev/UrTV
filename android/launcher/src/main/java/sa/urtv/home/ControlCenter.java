@@ -83,7 +83,6 @@ final class ControlCenter {
     private SpeedTest speed;      // the one running now, or null
     private String lastKey;       // the item that had the focus last: the panel opens on it again while the home stays in front
     private TextView title;
-    private boolean offPending;   // «أطفئ الآن» showed its notice and is about to act
     private View anchorView;
     private final List<Item> items = new ArrayList<>();   // everything this TV can show, in the default order
     private FrameLayout body;     // what the panel shows now: the main view or «تخصيص»
@@ -167,7 +166,7 @@ final class ControlCenter {
         Item test = tile("speed", S.t("اختبار السرعة"), S.t("اضغط اختيار للبدء"), R.drawable.ic_speed, null);
         test.action = () -> speedTest(test);
         tile("sleep", S.t("مؤقت النوم"), sleepLine(), R.drawable.ic_sleep, () -> { dismiss(); host.openSleep(anchor); });
-        Item off = tile("off", S.t("أطفئ الآن"), SleepService.enabled() ? S.t("تُطفأ الشاشة فورًا") : S.t("الخدمة مطفأة: تظهر شاشة التوقف بدل الإطفاء"),
+        Item off = tile("off", S.t("أطفئ الآن"), SleepService.enabled() ? S.t("تُطفأ الشاشة فورًا") : S.t("يحتاج تفعيل، اضغط للتفعيل"),
                 R.drawable.ic_power, null);
         off.action = () -> turnOffNow();
         off.hold = () -> {   // a long OK: where the sleep service is turned on, behind the same lock as the sleep timer's own line
@@ -225,9 +224,8 @@ final class ControlCenter {
         pw.setOnDismissListener(() -> {
             if (speed != null) speed.cancel();   // nothing keeps running behind a closed panel
             speed = null;
-            ui.removeCallbacksAndMessages(null);   // a notice that was about to turn the screen off does not run behind a closed panel
+            ui.removeCallbacksAndMessages(null);
             title = null;
-            offPending = false;
             body = null;
             for (Item it : items) it.valueView = null;
             pw = null;
@@ -821,26 +819,14 @@ final class ControlCenter {
     // ---------------------------------------------------------------- «أطفئ الآن»
 
     /**
-     * With the sleep service on the screen turns off at once. Without it the TV only stops the sound and shows the screensaver: the panel
-     * says so first (and how to turn the service on), and does it after a moment, unless the panel was closed meanwhile.
+     * With the sleep service on the screen turns off at once. Without it the tile says «يحتاج تفعيل، اضغط للتفعيل» and OK opens the TV's accessibility settings (behind the same
+     * lock as the sleep timer's own line) with a line saying which service to turn on; there is no silent fallback here any more («شاشة التوقف» next to it starts the screensaver).
      */
     private void turnOffNow() {
         if (SleepService.enabled()) { dismiss(); SleepTimer.turnOff(act); return; }
-        if (title == null || offPending) return;
-        offPending = true;
-        title.setText(S.tv(ControlText.SLEEP_OFF_NOTICE));
-        title.setTextColor(ACCENT);
-        title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-        title.setLineSpacing(0, 1.1f);
-        title.setSingleLine(false);
-        title.setMaxLines(4);
-        title.setEllipsize(null);
-        ui.postDelayed(() -> {
-            offPending = false;
-            if (!showing()) return;
-            dismiss();
-            SleepTimer.turnOff(act);
-        }, ControlText.NOTICE_MS);
+        dismiss();
+        android.widget.Toast.makeText(act, S.t("فعّل «%s»", act.getString(R.string.sleep_service_label)), android.widget.Toast.LENGTH_LONG).show();
+        host.launchGuarded(ParentalPolicy.SLEEP_ACCESSIBILITY, new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS), "إعدادات التلفزيون");
     }
 
     // ---------------------------------------------------------------- «اختبار السرعة»

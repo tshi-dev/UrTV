@@ -38,11 +38,9 @@ check("the sound output opens an intent that resolves, falling back to the TV's 
 check("the sleep timer's tile and «أطفئ الآن» end the same way (SleepTimer.turnOff: the service, else sound off and the screensaver)",
       "SleepTimer.turnOff(act)" in center and "static String turnOff(Context c)" in src("SleepTimer.java") and "String done = turnOff(c);" in src("SleepTimer.java")
       and "SleepService.sleepNow()" in src("SleepTimer.java").split("static String turnOff")[1])
-check("«أطفئ الآن» with the service off shows the notice first, then does the fallback after a moment (not if the panel closed meanwhile); a long OK (a shortcut) opens the service's screen behind the sleep lock; the notice points to «مؤقت النوم», whose menu has the visible row",
-      "SleepService.enabled()" in center and "ParentalPolicy.SLEEP_ACCESSIBILITY" in center and "title.setText(S.tv(ControlText.SLEEP_OFF_NOTICE))" in center
-      and center.index("ControlText.SLEEP_OFF_NOTICE") < center.index("SleepTimer.turnOff(act);", center.index("ui.postDelayed")) and "ui.postDelayed(" in center
-      and "if (!showing()) return;" in center.split("ui.postDelayed(")[1].split("ControlText.NOTICE_MS")[0] and "ui.removeCallbacksAndMessages(null)" in center
-      and "مو شغّالة" in text and "«مؤقت النوم»" in text)
+check("«أطفئ الآن» with the service off: the tile says «يحتاج تفعيل، اضغط للتفعيل», OK opens the TV's accessibility settings behind the sleep lock (ParentalPolicy.SLEEP_ACCESSIBILITY) with a line «فعّل «تلفزيونك: إطفاء الشاشة»»; no silent fallback to sound off and the screensaver, no notice and no delay; a long OK does the same",
+      "SleepService.enabled()" in center and "ParentalPolicy.SLEEP_ACCESSIBILITY" in center and 'S.t("يحتاج تفعيل، اضغط للتفعيل")' in center and 'S.t("فعّل «%s»", act.getString(R.string.sleep_service_label))' in center
+      and "SLEEP_OFF_NOTICE" not in center and "SLEEP_OFF_NOTICE" not in text and "offPending" not in center and "ui.postDelayed(" not in center.split("private void turnOffNow()")[1].split("// ------")[0] and "مو شغّالة" not in text)
 check("«إعدادات تلفزيونك» opens our settings (the screensaver app's SettingsActivity) through «قفل الإعدادات» (@urtv), the tile only when that app is there",
       "host.openOurSettings()" in center and "ParentalPolicy.OUR_SETTINGS, null" in main and 'SAVER_PKG + ".SettingsActivity"' in main
       and "case OUR_SETTINGS:" in policy and "t.add(OWN_SETTINGS)" in policy.split("case OUR_SETTINGS:")[1][:200]
@@ -145,7 +143,7 @@ check("the manifest asks for no QUERY_ALL_PACKAGES and adds no accessibility cap
       "QUERY_ALL_PACKAGES" not in manifest and manifest.count("android.accessibilityservice.AccessibilityService") == 2)   # the sleep service and the phone remote's typing service; the Control Center adds none
 check("every number goes through Digits.of (no String.valueOf of a number into a label), every format has Locale.ROOT",
       "String.valueOf" not in center and all("Locale.ROOT" in l for l in (text + speed).split("\n") if "String.format" in l))
-check("no new receiver, service or alarm for it; the one delay is the notice before «أطفئ الآن» acts", not re.search(r"registerReceiver|startService|AlarmManager|JobScheduler", center) and center.count("postDelayed") == 1)
+check("no new receiver, service or alarm for it", not re.search(r"registerReceiver|startService|AlarmManager|JobScheduler", center))
 check("the phone remote and the accessibility service are untouched by it", "PhoneApi" not in center and "sleep_service" not in center)
 
 # ---- the logic

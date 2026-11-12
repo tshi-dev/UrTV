@@ -165,10 +165,4 @@ final class ControlText {
         for (int t : types) if (t == BUILTIN_SPEAKER) return true;
         return false;
     }
-
-    // ---- «أطفئ الآن»
-
-    /** What the panel says before it does the fallback, when the sleep service is off (shown for {@link #NOTICE_MS}). */
-    static final String SLEEP_OFF_NOTICE = S.n("خدمة الإطفاء مو شغّالة: نوقف الصوت ونشغّل شاشة التوقف. لإطفاء الشاشة فعّلها من «مؤقت النوم»");
-    static final long NOTICE_MS = 2200;
 }

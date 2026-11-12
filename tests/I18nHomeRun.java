@@ -21,7 +21,6 @@ public final class I18nHomeRun {
         p("control.out.two", ControlText.outputs(new int[] {ControlText.BLUETOOTH_A2DP, ControlText.HDMI_ARC, ControlText.WIRED_HEADSET},
                 new String[] {"JBL Flip", null, null}));
         p("control.out.none", ControlText.outputs(new int[0], null));
-        p("control.sleepoff", S.tv(ControlText.SLEEP_OFF_NOTICE));
         p("pill.saver", S.tv(PillText.SAVER));
         p("pill.sleep", PillText.sleep(0) + " / " + PillText.sleep(23));
         p("pill.net", PillText.network(true, false, null) + " / " + PillText.network(false, false, null) + " / " + PillText.network(false, true, null)

@@ -20,7 +20,6 @@
 HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 لا يُعرف	Unknown
 ، 	, 
-خدمة الإطفاء مو شغّالة: نوقف الصوت ونشغّل شاشة التوقف. لإطفاء الشاشة فعّلها من «مؤقت النوم»	The sleep service is off: muting and showing the screensaver instead. To turn the screen off, turn it on in “Sleep timer”
 شاشة التوقف · مطوّلًا: الإعدادات	Screensaver · hold OK: settings
 مؤقت النوم	Sleep timer
 مؤقت النوم %s د	Sleep timer %s min
@@ -121,7 +120,6 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 حذف	Delete
 أطفئ الآن	Turn off now
 تُطفأ الشاشة فورًا	The screen turns off at once
-الخدمة مطفأة: تظهر شاشة التوقف بدل الإطفاء	The service is off: the screensaver shows instead
 الشبكة	Network
 اختبار السرعة	Speed test
 اضغط اختيار للبدء	Press OK to start
@@ -645,3 +643,5 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 تحت الساعة	Under the clock
 الجهة المقابلة للساعة	Opposite the clock
 وسط الشاشة	Middle of the screen
+يحتاج تفعيل، اضغط للتفعيل	Needs turning on, press to set up
+فعّل «%s»	Turn on “%s”
