@@ -978,3 +978,6 @@ The page now tries the TV itself (45 s), then the TV's own network address (45 s
 2. Tell him: «اضغط ابدأ وراقب الشاشة. إذا طلع سؤال «السماح بتصحيح USB؟» اختر «السماح دائمًا» ثم «سماح»، وكمّل: القائمة، متأكد مرتين، ثم «رجّع واجهة المصنع». قل «خلصت» لما تخلص كل شيء.» Do NOT reconnect before he says «خلصت» (not «done» for one press).
 3. Reconnect, read the log: which path raised the question (loopback / network), or the final text. If the round trip ran: disabled-apps list after restore must equal before; Home holder `sa.urtv.home`.
 **Z** Remove the log; restore as step 58 Z.
+**Step 62 C and D (same visit, with the owner at the TV; after B)**
+**C Phone page** — as step 58 item F: he types the pairing code on his phone; check the «على الشاشة» card, every control is a real button (no plain text that looks tappable), photos and text-on-screen send and show. Pictures from the phone side if he sends them.
+**D Updating the Player from inside UrTV** — with UrTV Player not installed: open «شاهد المباراة» on a match (or the Player entry) → UrTV offers to install it → install → it opens. Then the update path: if a newer Player than the installed one exists, UrTV shows the update and installs it (sha256 and signer `13ade7d0…69dfea` checked). Report what the screens say. Uninstall at the end.
