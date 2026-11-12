@@ -17,7 +17,7 @@ import java.util.List;
  *   SHA-256, be that package, AND be signed by exactly the pinned certificate (its SHA-256). Until the certificate is pinned the entry is not
  *   offered at all and nothing is installed (mirrorReady). While that repository cannot be read (private), nothing is offered.
  *
- * No IPTV player is suggested any more (the owner removed TiviMate); MAX_IPTV still caps any that is added again.
+ * No IPTV player is suggested any more (the owner removed the one it had); MAX_IPTV still caps any that is added again.
  * Plain Java: tests/suggested_apps_test.py runs it on a JVM.
  */
 public final class SuggestedApps {
