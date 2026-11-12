@@ -2351,3 +2351,48 @@ Today's card (five prayers + sunrise), the clock, both date lines and the Hijri 
 - Not yet: واحد مو معنا, بدون كلام, خلية الحروف, خمّن الكلمة, دومينو, English mode, PSS/jank; and parts D, E, F, G
 
 The TV is left on our home, muted, idle 45 s, channel still next (put back in Z).
+
+## step 58, the rest — build 258 (TV muted; resumed after 04:20)
+**Not ALL PASS: tray jank not solved (the cost is render thread + GPU on every frame), English game tiles cut, two of the games can't be checked to the end, «UrTV النظيف» focus still wrong; a mistake of mine (below). F not done.**
+
+### C Games (continued; «خمس خانات» and «الكلمة المفقودة» are in the earlier part)
+- **واحد مو معنا** (4 players, 3 rounds): starts in under 3 s. Hand-over «سلّموا الريموت لـ لاعب 1 · الباقين: غطّوا عيونكم · أنا جاهز» ✓ → «لاعب 1 · لك وحدك», the word and its topic. The word stayed up at 6 s and was gone (next hand-over) by 12 s, so it does not hide at 5 s exactly. Each player in turn, the speaking turns, the vote, the reveal «اللي مو معنا: لاعب 3 · ما انكشف · له نقطتين» ✓. Pause card ✓. **Small: «إنهاء الجولة» on the pause card starts the next round instead of ending the game**, so «الرئيسية» is the only way out mid-game
+- **بدون كلام** (2 teams): hand-over ✓, the word with its topic and «الوقت يبدأ لما تخفي الكلمة»: **the word stays until «أخفِ الكلمة» is pressed, there is no 4 s window.** A quick double OK on «أخفِ الكلمة» did nothing the first time (the word stayed), the next double OK started the turn and moved to the next word. **Small: in the turn screen the header line («الكلمة اللي بعدك…») is cut by the time bar**
+- **خلية الحروف** (2 teams, 15 s): starts in under 3 s; the 5×5 board, the Falcons' sides blue (right and left), the Stars' red (top and bottom) ✓; pick a letter → a question for that letter («حرف ج: ما عملة مصر؟», answer «جنيه مصري») → «اكشف الجواب» → صح/خطأ; a right answer colours the cell and adds a point; the turn moves ✓. I tried to build a winning chain with a script and the board ended with cells I did not mean to take; **the win and the lit chain were not reached**. Each letter came with a question ✓. Weight: PSS 46 MB, gfxinfo 188 frames 19.15 % janky, 10 / 19 / 32 ms
+- **خمّن الكلمة** (6 tries): starts in under 3 s; the Arabic on-screen keyboard (ا…ي, 28 letters in 4 rows + «إدخال» «حذف»); my D-pad typing took 30–50 s for a 5-letter word (paths up to 9 moves; keys at 0.6 s). **«ممتاز» and «مسافر» were both refused: «ما نعرف هذي الكلمة»** (red line under the title; I can't see a shake in a still). **The keyboard has no «ة», «ى», «ء» or «أ»**, so many common words can't be typed. «إنهاء الجولة» goes back to setup **without showing the word**. Back deletes a letter, then opens the pause card ✓. Weight: PSS 52 MB, 188 frames 46.28 % janky, 12 / 31 / 40 ms
+- **دومينو** 1 human + 3 computers, target 50: starts in under 3 s; computers play by themselves; only my legal tiles are bright, the rest grey ✓; when nothing fits: «تمرير · لا حجر يناسب ولا سحب، مرّر الدور» ✓; the round ended at 56 → «انتهت اللعبة · الفائز: الكمبيوتر 3», podium with 1st in the middle ✓. Chain turning at the edges: not seen (the round was short). **2 humans:** «دور النجوم · الباقين: غطّوا عيونكم · أظهر أحجاري», the other hand hidden until then ✓, «السحب: 14». Weight: PSS 52 MB, 192 frames 16.67 %, 16 / 24 / 42 ms
+- **English (UrTV en):** all eight open, their setup pages are English with no Arabic left and nothing outside the screen ✓. **✗ The English games page cuts four titles** («The Missing», «One of us is …», «Without wor», «Guess the W») **and the two-line descriptions**. Rounds in English were not played
+
+### D ✓ «توحيد المظهر»
+- On by default ✓ («مفعّل: الأزرار العلوية والبطاقات وشريط التطبيقات بمادة وحدة…»)
+- With it on, «شفافية الشريط» 100 → 50 moved the quick buttons, the card and the apps bar together ✓; glass dark, glass light and graphite light: the three surfaces match ✓; the stocks card reads well in light (dark text, coloured changes) ✓
+- Small: in **graphite dark** the quick-buttons box is darker and more solid than the card and the bar (mean colour 34 vs 59 / 45)
+- Off: the page shows a row per surface (الأزرار العلوية، الشفافية + fills…) ✓; the apps bar at 50 % graphite changed alone ✓. Back on ✓
+- Tasks and hourly cards: not tried (the owner's home card is stocks)
+
+### E Tray jank, by stage (40 keys, home restarted each time)
+| run | frames | janky | p50 / p90 / p99 |
+|---|---|---|---|
+| keytrace on (base) | 802 | 8.48 % | 40 / 57 / 69 ms |
+| `plainfocus on` | **33** | 78.79 % | 26 / 28 / 40 |
+| home card none | 799 | 8.01 % | 40 / 53 / 69 |
+| «توحيد المظهر» off | 800 | 8.38 % | 40 / 57 / 69 |
+| «توحيد المظهر» on | 803 | 8.34 % | 40 / 53 / 69 |
+- **Per-frame lines (base): the app's own stages are tiny: anim 0.4, measure 0.1, draw 0.0–0.1, sync 0.5 ms. The big ones are `issue` ≈ 14–18 ms and `gpu` ≈ 18–28 ms, on every frame**, total ≈ 72 ms from the vsync. The doubled frames come after an `unknownDelay` of ≈ 21 ms (normal frames: ≈ 9). Example: `frame 1 of key 21: total=42.7 unknownDelay=0.7 input=0.0 anim=0.4 measure=1.4 draw=0.4 sync=0.5 issue=17.8 swap=1.3 gpu=21.3 deadline=16.7 sinceKey=9.7`
+- `main=[…]`: only `Choreographer$FrameDisplayEventReceiver` ≈ 16 ms per frame (160 of them); nothing else on the main thread
+- **`plainfocus`: the focus animation's frames are gone (33 frames instead of 800), but each frame still costs ≈ 27 ms (issue 4.7, gpu 20.4), so it is not "gone".** The single switches (nolift / noglow / noshine / noscale / notitle) were therefore not run
+- Without the home card: no change. «توحيد المظهر» on/off: no change
+- Reading: the cost is the render thread's command issue and the GPU drawing the whole home every frame (glass / blur over the wallpaper?), not our code on the main thread
+- All debug switches off at the end (`debug show`: none on)
+
+### F Phone page: **not done** (needs the pairing code the owner types; he was away)
+
+### G
+- **✗ Returning from «UrTV النظيف»: the focus is still on the row above («اجعل UrTV الشاشة الرئيسية»)** after «فعّل» and after «رجّع الشاشة الكاملة»
+- The match sheet's team button: one OK changes the followed teams at once, with no question. Known; seen in step 57 (I did not press it again)
+
+### A mistake of mine, for the record
+On this build a new row **«تخلّص من واجهة المصنع» sits right under «UrTV النظيف»** in the settings list. Going down from the row above to reach the clean row a second time, one DOWN too many put me on it and my OK opened it (`FactoryActivity`): «نفحص هذا التلفزيون… اضغط «سماح» في سؤال تصحيح USB على الشاشة». I pressed nothing in it; Back did not close it, HOME did. No USB prompt appeared, ADB stays as it was, the disabled-apps list is the same 21 as before step 47, the home is the same. Suggestion: the forbidden-by-default step is one DOWN and one OK away from the clean row.
+
+### Z
+Clean mode off (full home), games closed, lang ar, updatechannel latest, idle 45 s, looksync on, the owner's look (graphite dark, accent default, opacity 100), card «verse», home card stocks, debug all off, TV muted. Build stays 258.
