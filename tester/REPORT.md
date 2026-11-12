@@ -2495,3 +2495,19 @@ The owner is at the TV and wants to go. Two ways, say which:
 1. wait: publish 264 to apk-next, then I update and run step 61 as written (log on the TV side, `adb disconnect`, the owner presses «ابدأ» and «سماح», I reconnect and read the log)
 2. run it now on 262: the page there is the one that failed in step 60 (no USB question, «ما نقدر نسوّيها هنا»); the result would most likely be the same
 I am polling the mailbox and apk-next every 5 minutes; I start as soon as 264 appears or a new line says go on 262.
+
+## step 61 — «تخلّص من واجهة المصنع» round trip, build 264 (TV muted; the owner was NOT at the TV)
+**Not done: the TV waited 3 minutes for «السماح بتصحيح USB؟» and nobody answered. Nothing was changed.**
+- Before: disabled-apps list 21, Home holder `sa.urtv.home`. A TV-side log was started (`setsid logcat … UrTVFactory` into `/data/local/tmp/factory.log`; `logcat -s … -f` stayed at 0 bytes, a shell redirect worked). Page open on «ابدأ»; my PC made no ADB connection (no ESTABLISHED socket) while the owner worked
+- The log (from the TV):
+  - `11:16:47.512 session: key exists=true sdk=34`
+  - `11:16:47.520 connect … sdk=34 approvalMs=180000`
+  - `11:16:47.524 CNXN sent` · `11:16:47.538 signature sent (the TV does not know the key yet if it asks again)`
+  - `11:16:47.541 key offered: the TV should now show «Allow USB debugging?» (waiting up to 180000 ms)`
+  - `11:19:47.648 no answer in time after the key was offered (the prompt was not answered)`
+  - `11:19:47.649 session failed after 180136 ms: debugging permission was not accepted on the TV` · `11:19:47.652 check failed: …`
+- Screen: «نفحص هذا التلفزيون… اضغط «سماح» في سؤال تصحيح USB على الشاشة.» for 3 minutes, then «ما نقدر نسوّيها هنا — سؤال «السماح بتصحيح USB؟» ما انقبل خلال ٣ دقائق. إن كان كمبيوتر أو جهاز ثاني موصول بالتلفزيون عبر adb فافصله أولًا (adb disconnect) لأن التلفزيون يعطي الجواب للجهاز الأول. ثم جرّب. وإلا اضغط «سماح» فور ظهوره.» with «رجوع». (A better message than build 262's)
+- **Two things that explain it:** (1) the owner controls the TV remotely and cannot see its screen, so he could not see or answer the question; (2) **my own client connected 11 s after the key was offered (11:16:58)**, because I read his «done» as «finished» when it meant he had just pressed «ابدأ». If the question goes to the first client, that may have taken it. No USB prompt window was in the window list at 11:21 (0 entries)
+- So E2–E4 (list, «متأكد؟», result, restore) were not reached. Nobody has seen the «Allow USB debugging?» question on this TV yet, so I cannot say whether it appears at all
+- A retry needs the owner at the TV, seeing the screen, and me not connecting until he says «خلصت» (the step's wording should say: his «done» is not the go-ahead to connect)
+- After: the disabled-apps list is the same 21 before and after; Home holder `sa.urtv.home`; settings lists identical; the log file removed and the logger stopped; lang ar, updatechannel latest, idle 45 s, build stays 264, TV muted
