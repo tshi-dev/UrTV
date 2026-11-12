@@ -32,6 +32,34 @@ with tempfile.TemporaryDirectory() as tmp:
 rows = [l.split() for l in out if l.split()[0] in ("center", "below", "opposite")]
 check("the runner gave 3 places x 2 directions x 6 screens", len(rows) == 36, len(rows))
 bad = []
+for p, rtl, w, h, d, l, t, rr, b, cl, ct, cr, cb, tt, ql, qt, qr, qb, ab in rows:
+    rtl, w, h = int(rtl), int(w), int(h); d = float(d); l, t, rr, b, cl, ct, cr, cb, tt, ql, qt, qr, qb, ab = map(int, (l, t, rr, b, cl, ct, cr, cb, tt, ql, qt, qr, qb, ab))
+    side = max(round(w * .05), round(48 * d)); top = max(round(h * .05), round(24 * d))
+    tag = f"{p} {'rtl' if rtl else 'ltr'} {w}x{h} d{d}"
+    if l < side or rr > w - side or t < top: bad.append(tag + " outside the safe area")
+    if b > tt: bad.append(tag + " over the app title and the dock")
+    for name, (x0, y0, x1, y1) in (("the clock block", (cl, ct, cr, cb)), ("the quick buttons (settings button, Wi-Fi mark)", (ql, qt, qr, qb)), ("the adhan bar", (0, 0, w, ab))):
+        if not (rr <= x0 or l >= x1 or b <= y0 or t >= y1): bad.append(tag + " over " + name)
+    if rr - l < round(240 * d) or b - t < round(64 * d): bad.append(tag + " too small")
+    if p == "center" and abs((l + rr) / 2 - w / 2) > 2: bad.append(tag + " is not in the middle across")
+check("all 36: inside the safe area (5 %, 48 dp at the sides), above the app title, clear of the clock block, the quick buttons with the settings button and Wi-Fi mark, and the adhan bar, a usable size; «وسط الشاشة» is centred across", not bad, bad[:5])
+cen = [x for x in rows if x[0] == "center"]
+check("«وسط الشاشة»: in the free band between the clock/date block and the apps bar (below the lowest box of the top, above the title), not beside the clock",
+      all(int(x[6]) >= max(int(x[12]), int(x[17])) and int(x[8]) <= int(x[13]) for x in cen), [(x[1], x[2], x[4], x[6], x[12]) for x in cen if int(x[6]) < max(int(x[12]), int(x[17]))][:3])
+opp = [x for x in rows if x[0] == "opposite"]
+check("«الجهة المقابلة للساعة»: on the far side (left in Arabic, right in English), moved below the quick buttons that are there (the settings button is never covered)",
+      all(((int(x[1]) == 1 and int(x[5]) < int(x[9])) or (int(x[1]) == 0 and int(x[5]) > int(x[11]))) and int(x[6]) >= int(x[17]) for x in opp), [(x[1], x[2], x[4], x[6], x[17]) for x in opp if int(x[6]) < int(x[17])][:3])
+bel = [x for x in rows if x[0] == "below" and abs(int(x[6]) - (int(x[12]) + round(8 * float(x[4])))) <= 1]
+check("«تحت الساعة»: right under the clock block on its side where the room allows (the middle where it does not)", len(bel) >= 6, len(bel))
+sys.exit(1 if failed else 0)
+with tempfile.TemporaryDirectory() as tmp:
+    r = subprocess.run(["javac", "-d", tmp, str(HOME / "PrayerCardBox.java"), str(HOME / "CleanKeep.java"), str(ROOT / "tests/PrayerCardBoxRun.java")], capture_output=True, text=True)
+    check("the box rules compile", r.returncode == 0, r.stderr[-500:])
+    if r.returncode: sys.exit(1)
+    out = subprocess.run(["java", "-cp", tmp, "sa.urtv.home.PrayerCardBoxRun"], capture_output=True, text=True).stdout.splitlines()
+rows = [l.split() for l in out if l.split()[0] in ("center", "below", "opposite")]
+check("the runner gave 3 places x 2 directions x 6 screens", len(rows) == 36, len(rows))
+bad = []
 for p, rtl, w, h, d, l, t, rr, b, cl, ct, cr, cb, tt in rows:
     rtl, w, h = int(rtl), int(w), int(h); d = float(d); l, t, rr, b, cl, ct, cr, cb, tt = map(int, (l, t, rr, b, cl, ct, cr, cb, tt))
     side = max(round(w * .05), round(48 * d)); top = max(round(h * .05), round(24 * d))

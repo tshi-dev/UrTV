@@ -97,4 +97,5 @@ check("«إنهاء الجولة» ends the GAME in every game (the result scree
 check("a key press redraws only what it changes: «خمّن الكلمة» repaints the keys and the typed row, «خلية الحروف» only the honeycomb (the whole screen was rebuilt per key: 46 % and 19 % janky frames)",
       "drawKey(was); drawKey(keys.key());" in w5 and "private void typedChanged()" in w5 and "hexBoard.invalidate(); return;" in lh)
 
+check("«خمّن الكلمة»: ة ى ء take no colour of their own (only a typed letter's key does; ء is only a spelling of ا)", "int c = k < Word5Keys.LETTERS ? game.key(letterOf(k)) : 0;" in w5)
 sys.exit(1 if failed else 0)

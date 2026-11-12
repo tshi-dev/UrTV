@@ -174,7 +174,7 @@ public class Word5Activity extends GameActivity {
             at = Math.min(col(first, kw, keyW, 7), col(first + 1, kw, keyW, 7));
             v = button(k == Word5Keys.ENTER ? S.t("إدخال") : S.t("حذف"), focus);
         } else {
-            int c = game.key(letterOf(k));
+            int c = k < Word5Keys.LETTERS ? game.key(letterOf(k)) : 0;   // ة ى ء are only spellings of ه ي ا: they never take a colour of their own (only a typed letter's key does)
             FrameLayout key = stamp(focus ? L.ink : c == 0 ? L.tile : colour(c), L.ink, focus && c != 0 ? 12 : 6, false);
             int wordsColour = focus ? (c == Word5Game.GREEN ? L.ok : c == Word5Game.YELLOW ? L.saff : L.onInk) : c == 0 ? L.ink : c == Word5Game.GREEN ? L.onDeep : c == Word5Game.YELLOW ? L.onSaff : L.onInk;
             TextView lt = centered(k < Word5Keys.LETTERS ? String.valueOf(Word5Text.ALPHABET.charAt(k)) : String.valueOf(EXTRA.charAt(k - Word5Keys.TAA)), 72, wordsColour, true);

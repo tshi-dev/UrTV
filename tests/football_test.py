@@ -119,6 +119,10 @@ else:
 check("match sheet: «أضف … لفرقي» / «أزل … من فرقي» asks first (the note says to press again), the second OK does it, any other key withdraws it",
       "if((b.k === 'follow' || b.k === 'unfollow') && MP.ask !== b.k){ MP.ask = b.k; MP.note = FB_W.sure; return mpDetailRender(); }" in tpl and "    MP.ask = '';   // any other key withdraws the question" in tpl and "sure:'اضغط مرة ثانية للتأكيد'" in tpl)
 
+# step 59: with «توحيد المظهر» on the card is the same material as the quick buttons and the apps bar: no sheen and no bright rim of its style
+check("cards: with the sync on (html.hsync) the card styles' sheen (::after), frame and diamonds are off, so the card is the one fill and line in every style",
+      "html.hsync .week::after,html.hsync .week .frm,html.hsync .week .dia{display:none!important}" in tpl)
+
 print()
 print(f"{failed} failed" if failed else "all football tests passed")
 sys.exit(1 if failed else 0)

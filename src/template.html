@@ -52,6 +52,7 @@
   html.hcard .week:not(.lf){box-shadow:none!important}   /* the card styles' soft drop shadow (0 24px 60px) is cut at the card's box on the home: a straight-edged dark patch under the glass (step 52); the focus ring (.lf) stays */
   html.hcard[class*="cs-"] .week{background:none!important}
   html.hcard[class*="cs-"] .week::before{background:var(--hpanel)!important}
+  html.hsync .week::after,html.hsync .week .frm,html.hsync .week .dia{display:none!important}   /* «توحيد المظهر» on: the one material, no sheen and no bright rim of the card styles */
   /* «توحيد المظهر» on (#hink=, #hsub=, #hacc= beside the two above): the cards' words are the look's too, its text, second text and accent; on a light look (html.hlt) the muted and the up/down colours written for dark glass become ones that read on white */
   html.hsync .week{--sand:var(--hink);--dim:var(--hsub);--gold:var(--hacc);--gold-2:var(--hacc);--gold-3:var(--hacc);--gold-hi:var(--hacc);--gold-rgb:var(--haccrgb);color:var(--hink)}
   html.hlt .week .ep,html.hlt .week .mwhen,html.hlt .week .dt,html.hlt .week .hc b,html.hlt .week .pc i,html.hlt .week .lvm,html.hlt .week .k,html.hlt .week .v,html.hlt .week .nar,html.hlt .week .until,html.hlt .week .cl,html.hlt .week .c,html.hlt .week .ac,html.hlt .week .yt,html.hlt .week .empty,html.hlt .week .past,html.hlt .week .adw,html.hlt .week .none{color:var(--hsub)!important}

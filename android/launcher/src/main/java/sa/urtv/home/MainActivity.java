@@ -3150,13 +3150,32 @@ public class MainActivity extends Activity {
         placePrayerCard();
     }
 
+    /** a view's box in the hero's coordinates {left, top, right, bottom}, or null when it is not under the hero */
+    private int[] boxInHero(View v) {
+        int l = 0, t = 0;
+        View at = v;
+        while (at != hero) {
+            l += at.getLeft(); t += at.getTop();
+            if (!(at.getParent() instanceof View)) return null;
+            at = (View) at.getParent();
+        }
+        return new int[] {l, t, l + v.getWidth(), t + v.getHeight()};
+    }
+
     /** the strip's place from the clock block's real box and the app title's top (PrayerCardBox); only when it moved */
     private void placePrayerCard() {
         if (prayerCard == null || prayerCard.getVisibility() != View.VISIBLE || clockBlock == null || bottomBlock == null || clockBlock.getWidth() == 0) return;
         View header = (View) clockBlock.getParent();
         int[] clockBox = {header.getLeft() + clockBlock.getLeft(), header.getTop() + clockBlock.getTop(), header.getLeft() + clockBlock.getRight(), header.getTop() + clockBlock.getBottom()};
         android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
-        int[] r = PrayerCardBox.place(CleanMode.place(this), Dir.rtl(), dm.widthPixels, dm.heightPixels, dm.density, clockBox, bottomBlock.getTop());
+        // everything else on the top of the home that the strip must clear: the quick buttons (the settings button, the Wi-Fi mark), the Wi-Fi mark when it stands apart, the adhan bar
+        java.util.List<int[]> others = new java.util.ArrayList<>();
+        for (View v : new View[] {pillBar, pillRow, netIcon}) {
+            int[] b = v == null || v.getVisibility() != View.VISIBLE || v.getWidth() == 0 ? null : boxInHero(v);
+            if (b != null && b[3] > 0 && b[1] < bottomBlock.getTop()) others.add(b);
+        }
+        if (adhanBar.getVisibility() == View.VISIBLE) others.add(new int[] {0, 0, dm.widthPixels, dp(26)});   // the bar before the adhan, over the top edge
+        int[] r = PrayerCardBox.place(CleanMode.place(this), Dir.rtl(), dm.widthPixels, dm.heightPixels, dm.density, clockBox, others.toArray(new int[0][]), bottomBlock.getTop());
         FrameLayout.LayoutParams p = (FrameLayout.LayoutParams) prayerCard.getLayoutParams();
         int edge = Dir.rtl() ? dm.widthPixels - r[2] : r[0];   // the margin from the side the card is pinned to
         if ((Dir.rtl() ? p.rightMargin : p.leftMargin) == edge && p.topMargin == r[1] && p.width == r[2] - r[0]) return;
