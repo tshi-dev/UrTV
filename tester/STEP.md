@@ -1,4 +1,4 @@
-«✅ GO — step 63 (does the USB-debugging question appear at all on this TV? with the owner)» — run step 63 (end of this file) on the newest apk-next build (267 or later). TV muted. Only with the owner's own yes, owner at the TV watching. Never type the owner's PIN.
+«✅ GO — step 64 (last 4.3 check: UrTV Player install from UrTV now that its repo is public; then the phone page with the owner)» — run step 64 (end of this file) on the newest apk-next build (268 or later). TV muted. Never type the owner's PIN.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -990,3 +990,13 @@ Why: the first-run setup uses the SAME path as the factory page. If the question
 4. Report for each run: question yes/no; the AUTH lines from the log; screen text at the end. Before/after lists must be equal (or equal after restore).
 **Z** Remove the log; restore as step 58 Z.
 **Step 63 extra (no owner needed; do it first; TV muted, check from the player's state)** — Quran radio playing, then control panel → «شاشة التوقف · ابدأها الآن»: is it still `playing=1` with position moving 20 s into the screensaver? Same with a surah. Then Back: still playing.
+
+## step 64 — last 4.3 check (build 268 or later; TV muted; restore in Z)
+UrTV Player's repo is now public, so other TVs can download it.
+**A (no owner needed)** UrTV Player NOT installed first (uninstall if present).
+1. Settings → «تطبيقات مقترحة»: is «UrTV Player» listed? Install it from there. Report the screens, and the signer `13ade7d0…69dfea`, versionCode 111.
+2. Uninstall. Then the matches page → a match → «شاهد المباراة»: does it offer the Player and install it? After install, does «شاهد المباراة» open the Player's search for that match?
+3. Control panel → «أطفئ الآن» (build 268): with the sleep service on, the screen turns off; then turn the service off (note how, and restore it): the tile says «يحتاج تفعيل، اضغط للتفعيل» and OK opens the accessibility settings.
+4. The step 63 extra, if not yet done: radio + «شاشة التوقف · ابدأها الآن» keeps playing.
+**B (only with the owner at the TV)** the phone page (step 58 item F): pairing code, the «على الشاشة» card, every control a real button.
+**Z** Uninstall the Player; restore as step 58 Z.
