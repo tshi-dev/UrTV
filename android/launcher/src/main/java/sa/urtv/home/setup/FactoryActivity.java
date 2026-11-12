@@ -46,6 +46,7 @@ public class FactoryActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);   // a screen that sleeps mid-wait shows no «Allow USB debugging?» (the tester's build 266)
         ScrollView scroll = new ScrollView(this);
         look = GlassSource.page(this, scroll);
         scroll.setVerticalScrollBarEnabled(false);
@@ -125,7 +126,7 @@ public class FactoryActivity extends Activity {
     private String whyNot(String why) {
         if (why.contains("debugging is off")) return S.t("تصحيح USB مطفأ في هذا التلفزيون، وهذه الخطوة تحتاجه (وتحتاجه الاستعادة). فعّله من إعدادات المطوّرين ثم جرّب.");
         if (why.contains("not accepted") || why.isEmpty())
-            return S.t("هذا التلفزيون ما عرض سؤال «السماح بتصحيح USB؟» لتطبيقنا، لا من داخل التلفزيون ولا من عنوانه على الشبكة، فما نقدر نسوّي هذه الخطوة منه. ما غيّرنا شيئًا وكل شيء كما كان. UrTV يشتغل كواجهة رئيسية بدونها؛ وللتعطيل الكامل شغّل الإعداد من الكمبيوتر (optimize/install.sh launcher) أو اطلب ذلك ممن ركّب لك UrTV. وإن كان جهاز آخر موصول بالتلفزيون عبر adb فافصله وجرّب.");
+            return S.t("هذا التلفزيون ما عرض سؤال «السماح بتصحيح USB؟» لتطبيقنا، فما نقدر نسوّي هذه الخطوة منه. ما غيّرنا شيئًا، وUrTV يشتغل ممتاز بدونها. وإن كان جهاز آخر موصول بالتلفزيون عبر adb فافصله وجرّب.");
         if (why.contains("did not respond")) return S.t("التلفزيون ما ردّ على اتصال التصحيح. أطفئ «تصحيح USB» وشغّله من إعدادات المطوّرين ثم جرّب.");
         if (why.contains("rejected")) return S.t("التلفزيون رفض مفتاح التطبيق. من إعدادات المطوّرين اختر «إلغاء تصريحات تصحيح USB» ثم جرّب من جديد.");
         return S.t("ما قدرنا نكلّم التلفزيون: تأكد من تفعيل تصحيح USB، وافصل أي كمبيوتر موصول بالتلفزيون عبر adb، ثم جرّب.");

@@ -50,6 +50,9 @@ final class AdbClient implements Closeable {
     /** Where each step of connect() is told (the screen sets it to a log line under «UrTVFactory»); null: silent, as in the tests. */
     interface Trace { void line(String step); }
     static volatile Trace trace;
+    private static String name(int command) {
+        return command == CNXN ? "CNXN" : command == AUTH ? "AUTH" : command == STLS ? "STLS" : command == OKAY ? "OKAY" : command == CLSE ? "CLSE" : command == WRTE ? "WRTE" : command == OPEN ? "OPEN" : "0x" + Integer.toHexString(command);
+    }
     private static void note(String step) { Trace t = trace; if (t != null) t.line(step); }
 
     /** Notified when the TV is showing the permission prompt (so the screen can explain what to do). */
@@ -117,6 +120,7 @@ final class AdbClient implements Closeable {
                     note((e instanceof EOFException ? "the TV closed the connection" : "no answer in time") + (offeredKey ? " after the key was offered (the prompt was not answered)" : " before the key was offered"));
                     throw new IOException(offeredKey ? "debugging permission was not accepted on the TV" : "the TV's ADB did not respond");
                 }
+                note("adbd said " + name(m.command) + (m.command == AUTH ? " type " + m.arg0 + (m.arg0 == AUTH_TOKEN ? " (TOKEN" + (offeredKey ? ", a second one after our key: the TV did not take the key" : signed ? " again: the signature was not known" : "") + ")" : "") : "") + " (" + (m.data == null ? 0 : m.data.length) + " bytes)");
                 if (m.command == CNXN) {
                     s.setSoTimeout(20_000);
                     adb.payload(m.arg1);

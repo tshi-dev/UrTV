@@ -68,7 +68,7 @@
 - **المباريات:** من بطاقة المباراة «شاهد المباراة» يفتح UrTV Player عليها، ودوريات أكثر.
 - **UrTV النظيف:** الأساسيات فقط في الرئيسية وشاشة التوقف، مع سطر الصلاة القادمة أو بطاقة صلاة، وكل شي يرجع بضغطة.
 - **توحيد المظهر:** الأزرار والبطاقات وشريط التطبيقات بمادة وحدة في كل شكل.
-- **تخلّص من واجهة المصنع:** تعطيل (ما يحذف) واجهة المصنع بتأكيدين وبضغطة ترجع؛ بعض التلفزيونات تحتاج الإعداد من الكمبيوتر.
+- **تخلّص من واجهة المصنع:** تعطيل (ما يحذف) واجهة المصنع بتأكيدين وبضغطة ترجع؛ بعض التلفزيونات ما تعرض سؤال التصحيح لتطبيقنا، وUrTV يشتغل بدونها.
 - **التحكم من الجوال:** صفحة جوال جديدة: ريموت، وكتابة عربية، ورسالة ورسم على الشاشة، وصورك.
 - **تسريع آمن:** يوقف الإعلانات والتتبع بشكل يرجع، وما يلمس AirPlay ولا البث ولا الصوت.
 
@@ -141,7 +141,7 @@ The screens are shown above (start, the plan, done).
 - **Matches:** «Watch the match» from a match's card opens UrTV Player on it, with more leagues.
 - **Clean UrTV:** the essentials only on the home and the screensaver, with the next-prayer line or a prayer card; one press brings everything back.
 - **One look:** the buttons, the cards and the apps bar share one material in every look.
-- **Get rid of the factory interface:** turn it off (never delete it) with two confirmations and one press to undo; some TVs need the setup from a computer.
+- **Get rid of the factory interface:** turn it off (never delete it) with two confirmations and one press to undo; some TVs do not show the debugging question to our app, and UrTV works without it.
 - **From the phone:** a redesigned phone page: a remote, Arabic typing, a message or a drawing on the screen, your photos.
 - **Safe speed-up:** ads and tracking off, reversibly; AirPlay, casting and voice are never touched.
 
