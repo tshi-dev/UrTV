@@ -1,4 +1,4 @@
-«✅ GO — step 58 (the big 4.3 build: prayer times unchanged, radio, seven games, unified look, tray trace, phone page, Player v0.9.10)» — run step 58 (end of this file) on the newest apk-next build (258 or later; read the changes at the very end of the file first). TV muted except item B. Do not wait on the owner. The factory-interface step is now ALLOWED as written in step 58 item I (no forced-crash test). lang ar stays.
+«✅ GO — step 59 (re-check of the step 58 fixes + the parts not yet tested)» — run step 59 (end of this file) on the newest apk-next build (260 or later). TV muted. Do not wait on the owner; skip item F if he is not at the TV. The factory-interface row is ALLOWED as written in item E (round trip only, no forced crash). Never type the owner's PIN.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
@@ -917,3 +917,38 @@ Do NOT force a crash of our home to test the automatic restore. If anything leav
 ### step 58 — changes for build 258 or later (use this build; part H is reported, thanks)
 - Item I: «تخلّص من واجهة المصنع» MOVED: it is now its own row in the settings right under «اجعل UrTV الشاشة الرئيسية» (becomes «رجّع واجهة المصنع» while on); it is no longer inside «UrTV النظيف». Same round trip as written.
 - New item J, «UrTV النظيف» is now a really empty UrTV: ON → home shows clock, date, apps bar, settings button; the screensaver shows photo + clock only (+ prayer unless «بدون»); «تلفزيونك» opens straight on the settings; the home's ways into games/markets/matches do nothing. «تخصيص» → «بطاقة الصلاة»: بدون / سطر تحت التاريخ / بطاقة, and «مكان البطاقة»: وسط الشاشة / تحت الساعة / الجهة المقابلة للساعة: screenshot each (ar + one en), nothing overlapping the clock, date or apps bar. Adhan and reminders still fire. OFF → everything exactly as before (home, saver cards, hub with four windows).
+
+## step 59 — re-check of step 58 fixes + untested parts (build 260 or later; TV muted; restore in Z)
+Short answers per item: ✓ / ✗ + one line. Pictures only where something looks wrong.
+
+**A Games fixes**
+1. خمس خانات: run rounds until letters «ي», «ث», «ش» or similar show; the big letter is whole, not cut by the time bar.
+2. بدون كلام: the turn-screen header line is whole. One OK on «أخفِ الكلمة» always hides the word; a quick double OK does not skip a word. Try 5 times.
+3. واحد مو معنا: pause → «إنهاء الجولة» ends the game (result screen).
+4. خمّن الكلمة: «ممتاز» and «مسافر» are accepted; the keyboard has ة ى ء; pause → «إنهاء الجولة» shows the word. gfxinfo while typing one word (was 46 % janky).
+5. خلية الحروف: gfxinfo over 10 moves (was 19 %). No need to reach a win.
+6. English: the games page shows all eight titles and descriptions whole. Play ONE round of one game in English; nothing Arabic left, nothing cut.
+
+**B Settings / home fixes**
+1. «UrTV النظيف»: after «فعّل» and after «رجّع الشاشة الكاملة» the focus is on the «UrTV النظيف» row.
+2. Match sheet team button: first OK asks, second confirms; Back at the question changes nothing.
+3. «توحيد المظهر» on, graphite dark: one picture of the home. Does the quick-buttons box look like the card and the bar to the eye? (The fill is the same; we want your eye, not the mean colour.)
+
+**C Tray A/B (40 spaced keys each, home restarted each time, keytrace on)**
+- base, then `optimize/dock.sh debug nobackdrop on`. Table: frames, janky %, p50/p90/p99, and typical `issue` and `gpu` ms. Switch off at the end.
+
+**D Empty «UrTV النظيف» + prayer card (this is step 58 item J, not yet done)**
+- Turn it on: home shows only the essentials; the screensaver shows photo + clock; the hub goes straight to settings.
+- «بطاقة الصلاة»: بدون / سطر تحت التاريخ / بطاقة; with «بطاقة» try the three «مكان البطاقة» values (وسط, تحت الساعة, الجهة المقابلة للساعة). One picture each; the card stays inside the safe area, clear of the clock and the apps bar. Turn the clean mode off at the end.
+
+**E «تخلّص من واجهة المصنع» (step 58 item I; allowed)**
+1. OK on the row: a first page with a description, focus on «رجوع». Back leaves. «رجوع» leaves. Nothing has changed (disabled-apps list the same).
+2. Round trip exactly as step 58 item I describes: «ابدأ», follow it, confirm the home works, then put the factory interface back with the same screen. Disabled-apps list before / after / after restore. If any prompt asks for something the step does not describe, stop and report.
+
+**F Phone page (only if the owner is at the TV to type the pairing code; otherwise write «skipped»)** — as step 58 item F.
+
+**G UrTV Player v0.9.11**
+1. Install from the release; LEFT from «الرئيسية» after a row was focused does nothing.
+2. One late frame per key: in the channel list press DOWN 10 times, 1 s apart, after `dumpsys gfxinfo sa.urtv.home.player reset`; then `dumpsys gfxinfo sa.urtv.home.player framestats`. For each janky frame give its row: which stage is long (input, animation, traversal, draw, sync, issue, swap, gpu) and how many ms after the key it came. Repeat once with the preview/info pane hidden if there is a way.
+
+**Z** Restore everything as in step 58 Z. Build stays as is.
