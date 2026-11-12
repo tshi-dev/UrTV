@@ -89,7 +89,7 @@ final class AdbClient implements Closeable {
      */
     static AdbClient connect(String host, int port, KeyPair keys, int sdk, int approvalMs, Approval approval, Base64Coder b64) throws IOException {
         Socket s = new Socket();
-        note("connect " + host + ":" + port + " sdk=" + sdk + " approvalMs=" + approvalMs);
+        note("connect " + (host.startsWith("127.") ? host : "the TV's address on the network") + ":" + port + " sdk=" + sdk + " approvalMs=" + approvalMs);
         try {
             s.connect(new InetSocketAddress(host, port), 3000);
         } catch (IOException e) {

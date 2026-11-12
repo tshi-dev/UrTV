@@ -37,10 +37,11 @@ check("its own row in the settings next to «اجعل UrTV الشاشة الرئ
       and '"sa.urtv.home.setup.FactoryActivity"' in saver
       and re.search(r'android:name="\.setup\.FactoryActivity"\s+android:exported="true"\s+android:permission="sa\.urtv\.home\.OPEN_CLEAN"', man) is not None)
 adb = (SETUP / "AdbClient.java").read_text(encoding="utf-8"); ses = (SETUP / "SetupSession.java").read_text(encoding="utf-8")
-check("the check uses the very path the first-run setup uses (SetupHost.open: the screensaver held back while the TV asks, 3 minutes to answer, 127.0.0.1:5555, the one key file), not its own shorter one",
-      "new SetupHost(this).open(180_000," in act.split("private void check()")[1].split("private String whyNot")[0] and 'AdbClient.connect("127.0.0.1", 5555,' in ses and "SetupSession.open(this, 60_000, () ->" not in act)
-check("every step of the connection is logged under UrTVFactory (the key, the connect, the key offered, the answer, the time it took, the offer), and a failure says what to do next (disconnect any computer's adb, revoke authorizations, switch debugging off and on)",
-      "static volatile Trace trace;" in adb and adb.count("note(") >= 8 and '"UrTVFactory"' in ses and "UrTVFactory" in act and "adb disconnect" in act and "إلغاء تصريحات تصحيح USB" in act and 'S.t("ما قدرنا نكلّم التلفزيون: تأكد من تفعيل تصحيح USB، وافصل' in act)
+check("the check tries the TV's own loopback first, as the first-run setup does it (the screensaver held back while the TV asks: SaverHold), then the TV's own address on the network (LanAddress: adbd sees a network client), each for 45 s, never one dead three-minute wait; the address is never logged or shown",
+      'final String host = path == 0 ? "127.0.0.1" : LanAddress.find();' in act and "SaverHold.begin(" in act and "PROMPT_MS = 45_000" in act and 'AdbClient.connect(host, 5555,' in ses
+      and "isSiteLocalAddress()" in (SETUP / "LanAddress.java").read_text(encoding="utf-8") and "getHostAddress" not in act and "the TV's address on the network" in adb)
+check("every step of the connection is logged under UrTVFactory (the key, the path, the connect, the key offered, the answer, the time it took, the offer), and the failure says plainly what this TV needs (the computer's setup, or none) and that nothing changed",
+      "static volatile Trace trace;" in adb and adb.count("note(") >= 8 and '"UrTVFactory"' in ses and act.count("UrTVFactory") >= 5 and "optimize/install.sh launcher" in act and "ما غيّرنا شيئًا وكل شيء كما كان" in act and "adb disconnect" not in act and "إلغاء تصريحات تصحيح USB" in act)
 check("it refuses with the reason where debugging is off (the connect says so), and the engine refuses where the wizard owns the Wi-Fi or the safety switch cannot be set",
       "debugging is off" in act and "تصحيح USB مطفأ" in act and "wizardOwnsWifi()" in eng.split("FactoryOffer factoryOffer()")[1][:900] and "deadman.arm(30)" in eng.split("FactoryOffer factoryOffer()")[1][:1600])
 check("the ADB key is kept while the step is on (its automatic restore needs it), the restore at boot is tried again at the next boot when it did not finish",

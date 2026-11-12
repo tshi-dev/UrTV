@@ -15,13 +15,16 @@ final class SetupSession implements Closeable {
     private SetupSession(AdbClient adb, SetupEngine engine) { this.adb = adb; this.engine = engine; }
 
     /** approvalMs: how long to wait for the person to accept the TV's prompt (0 for the receiver: the key is known by then). */
-    static SetupSession open(Context c, int approvalMs, AdbClient.Approval approval, SetupEngine.Out out) throws IOException {
+    static SetupSession open(Context c, int approvalMs, AdbClient.Approval approval, SetupEngine.Out out) throws IOException { return open(c, "127.0.0.1", approvalMs, approval, out); }
+
+    /** the same to another address of this TV (its own address on the network: {@link LanAddress}), 5555 as always */
+    static SetupSession open(Context c, String host, int approvalMs, AdbClient.Approval approval, SetupEngine.Out out) throws IOException {
         android.util.Log.i("UrTVFactory", "session: key exists=" + AdbKeys.exists(c) + " sdk=" + Build.VERSION.SDK_INT);
         AdbClient.trace = step -> android.util.Log.i("UrTVFactory", step);   // each step of the connection, for whoever reads why it failed
         long began = System.currentTimeMillis();
         AdbClient adb;
         try {
-            adb = AdbClient.connect("127.0.0.1", 5555, AdbKeys.load(c), Build.VERSION.SDK_INT, approvalMs, approval, b -> Base64.encodeToString(b, Base64.NO_WRAP));
+            adb = AdbClient.connect(host, 5555, AdbKeys.load(c), Build.VERSION.SDK_INT, approvalMs, approval, b -> Base64.encodeToString(b, Base64.NO_WRAP));
         } catch (IOException e) {
             android.util.Log.w("UrTVFactory", "session failed after " + (System.currentTimeMillis() - began) + " ms: " + e.getMessage());
             throw e;

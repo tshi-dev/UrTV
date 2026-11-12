@@ -92,25 +92,40 @@ public class FactoryActivity extends Activity {
         message(S.t("نفحص هذا التلفزيون…"), S.t("قد يظهر على الشاشة سؤال «السماح بتصحيح USB؟»: اضغط «سماح»."), null);
         busy = true;
         new Thread(() -> {
-            SetupEngine.FactoryOffer o;
-            // the very path the first-run setup uses (SetupHost: the screensaver held back while the TV asks, the same 3 minutes to answer, the same 127.0.0.1:5555 and the same key file)
-            try (SetupRunner.Session s = new SetupHost(this).open(180_000, () -> ui.post(() -> { if (!isFinishing() && !isDestroyed()) message(S.t("نفحص هذا التلفزيون…"), S.t("اضغط «سماح» في سؤال تصحيح USB على الشاشة."), null); }), line -> { })) {
-                o = s.engine().factoryOffer();
-                android.util.Log.i("UrTVFactory", "offer: " + (o.refusal == null ? "ok, " + o.packages.size() + " packages" : "refused: " + o.refusal));
-            } catch (Exception e) {
-                android.util.Log.w("UrTVFactory", "check failed: " + e.getMessage());
-                o = new SetupEngine.FactoryOffer(whyNot(String.valueOf(e.getMessage())), "", new ArrayList<String>());
+            SetupEngine.FactoryOffer o = null;
+            String why = "";
+            // The paths, one after the other, each with a short wait (no dead three minutes): 1) the TV's own loopback, as the first-run setup does it (SetupHost: the screensaver held back
+            // while the TV asks); 2) the TV's own address on the network, where adbd sees a network client (some TVs raise the question only for one). The answer is logged under UrTVFactory.
+            for (int path = 0; path < 2 && o == null; path++) {
+                final String host = path == 0 ? "127.0.0.1" : LanAddress.find();
+                if (host == null) { android.util.Log.i("UrTVFactory", "path " + path + ": the TV has no address on the network"); continue; }
+                android.util.Log.i("UrTVFactory", "path " + (path == 0 ? "loopback" : "network address") + ": trying for " + PROMPT_MS / 1000 + " s");
+                SaverHold.begin(getApplicationContext());   // no screensaver over the question
+                try (SetupSession s = SetupSession.open(this, host, PROMPT_MS, () -> ui.post(() -> { if (!isFinishing() && !isDestroyed()) message(S.t("نفحص هذا التلفزيون…"), S.t("اضغط «سماح» في سؤال تصحيح USB على الشاشة."), null); }), line -> { })) {
+                    SaverHold.end();
+                    o = s.engine.factoryOffer();
+                    android.util.Log.i("UrTVFactory", "offer (" + (path == 0 ? "loopback" : "network address") + "): " + (o.refusal == null ? "ok, " + o.packages.size() + " packages" : "refused: " + o.refusal));
+                } catch (Exception e) {
+                    SaverHold.end();
+                    why = String.valueOf(e.getMessage());
+                    android.util.Log.w("UrTVFactory", "path " + (path == 0 ? "loopback" : "network address") + " failed: " + why);
+                    if (why.contains("debugging is off")) break;   // the port is closed: no other address opens it
+                }
             }
+            if (o == null) o = new SetupEngine.FactoryOffer(whyNot(why), "", new ArrayList<String>());
             final SetupEngine.FactoryOffer res = o;
             ui.post(() -> { if (isFinishing() || isDestroyed()) return; busy = false; offer = res; if (res.refusal != null) refused(res.refusal); else plan(); });
         }, "factory-check").start();
     }
 
+    /** how long each path waits for «السماح بتصحيح USB؟» (the first-run setup tells the person after 20 s that the question may be stuck) */
+    private static final int PROMPT_MS = 45_000;
+
     /** what went wrong with the connection, in words that say what to do next (the log tag UrTVFactory has each step) */
     private String whyNot(String why) {
         if (why.contains("debugging is off")) return S.t("تصحيح USB مطفأ في هذا التلفزيون، وهذه الخطوة تحتاجه (وتحتاجه الاستعادة). فعّله من إعدادات المطوّرين ثم جرّب.");
-        if (why.contains("not accepted"))
-            return S.t("سؤال «السماح بتصحيح USB؟» ما انقبل خلال ٣ دقائق. إن كان كمبيوتر أو جهاز ثاني موصول بالتلفزيون عبر adb فافصله أولًا (adb disconnect) لأن التلفزيون يعطي الجواب للجهاز الأول، ثم جرّب. وإلا اضغط «سماح» فور ظهوره.");
+        if (why.contains("not accepted") || why.isEmpty())
+            return S.t("هذا التلفزيون ما عرض سؤال «السماح بتصحيح USB؟» لتطبيقنا، لا من داخل التلفزيون ولا من عنوانه على الشبكة، فما نقدر نسوّي هذه الخطوة منه. ما غيّرنا شيئًا وكل شيء كما كان. UrTV يشتغل كواجهة رئيسية بدونها؛ وللتعطيل الكامل شغّل الإعداد من الكمبيوتر (optimize/install.sh launcher) أو اطلب ذلك ممن ركّب لك UrTV. وإن كان جهاز آخر موصول بالتلفزيون عبر adb فافصله وجرّب.");
         if (why.contains("did not respond")) return S.t("التلفزيون ما ردّ على اتصال التصحيح. أطفئ «تصحيح USB» وشغّله من إعدادات المطوّرين ثم جرّب.");
         if (why.contains("rejected")) return S.t("التلفزيون رفض مفتاح التطبيق. من إعدادات المطوّرين اختر «إلغاء تصريحات تصحيح USB» ثم جرّب من جديد.");
         return S.t("ما قدرنا نكلّم التلفزيون: تأكد من تفعيل تصحيح USB، وافصل أي كمبيوتر موصول بالتلفزيون عبر adb، ثم جرّب.");
