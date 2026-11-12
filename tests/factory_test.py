@@ -25,6 +25,9 @@ mainsrc = (HOME / "MainActivity.java").read_text(encoding="utf-8")
 check("the screen asks twice: a first screen and «متأكد؟», each with the focus on «إلغاء», and only «نعم، عطّل» runs the step (with the family PIN when one is set)",
       act.count('View cancel = button(S.t("إلغاء"), v -> finish());') == 2 and act.count("focus(cancel);") == 2 and 'button(S.t("نعم، عطّل"), v -> pin(this::run))' in act and 'S.t("متأكد؟")' in act
       and act.count("factoryOff()") == 1 and "PinGuard.confirm(this," in act)
+check("one OK on the settings' row lands on a first page, not on the check: a plain description and two buttons, the focus on «رجوع»; nothing starts until «ابدأ»; Back always leaves",
+      "else intro();" in act and "private void intro()" in act and 'View back = button(S.t("رجوع"), v -> finish());' in act.split("private void intro()")[1].split("// ----")[0] and 'button(S.t("ابدأ"), v -> check())' in act
+      and "focus(back);" in act.split("private void intro()")[1].split("// ----")[0] and "check();" not in act.split("private void intro()")[0].split("onCreate")[1] and "public void onBackPressed() { finish(); }" in act)
 check("it lists exactly what it will turn off, by readable name (the TV's label, else the package), says «تعطيل لا حذف», what stays protected and how to undo",
       "names(offer.packages)" in act and "getApplicationLabel" in act and "تعطيل لا حذف" in act and "يبقى محميًّا ولا نلمسه" in act and "للتراجع: «رجّع واجهة المصنع»" in act)
 saver = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsActivity.java").read_text(encoding="utf-8")

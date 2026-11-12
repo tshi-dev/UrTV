@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261111174305">
+<meta name="urtv-build" content="20261111210911">
 <title>Your TV Screen</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -4052,7 +4052,7 @@ const FB_W = {
   feels:'Feels like', hum:'Humidity', wind:'Wind', kmh:'%s km/h', pct:'%s%%', live:'Live', ended:'Final', vs:'×',
   yesterday:'Yesterday', tday:'Today', tomorrow:'Tomorrow', g1:'1 match', g2:'2 matches', gFew:'%s matches', gMany:'%s matches',
   allOn:'all on %s', round:'Round %s', venue:'Venue', channel:'Channel', withPrayer:'With the prayers', game:'Match',
-  remind:'Remind me 30 min before', reminded:'Added to your tasks', follow:'Add %s to my teams', unfollow:'Remove %s from my teams', followed:'%s was added to your teams', unfollowed:'%s was removed from your teams', watch:'Watch on %s', player:'Watch the match', failed:'That didn’t work, try again',
+  remind:'Remind me 30 min before', reminded:'Added to your tasks', follow:'Add %s to my teams', unfollow:'Remove %s from my teams', followed:'%s was added to your teams', unfollowed:'%s was removed from your teams', watch:'Watch on %s', player:'Watch the match', failed:'That didn’t work, try again', sure:'Press again to confirm',
   startsAfter:'Starts %2$s after %1$s', startsBefore:'Starts %2$s before %1$s', adhanAt:'The %s adhan comes in its minute %s', ago:'%s ago', nextIn:'%s in %s',
   h1:'1 hour', h2:'2 hours', hFew:'%s hours', hMany:'%s hours', m1:'1 min', m2:'2 min', mFew:'%s min', mMany:'%s min',
   am1:'1 min', am2:'2 min', amFew:'%s min', amMany:'%s min', taskText:'Match %s, starts %s',
@@ -4456,6 +4456,8 @@ function mpAct(){
   if(ringed && ringed.dataset.k === 'back'){ mpBack(); return; }   // «رجوع»: the card closes, the focus is on the game's row again
   const b = ringed && mpButtons(ev, Date.now()).find(x => x.k === ringed.dataset.k);
   if(!b) return;
+  if((b.k === 'follow' || b.k === 'unfollow') && MP.ask !== b.k){ MP.ask = b.k; MP.note = FB_W.sure; return mpDetailRender(); }   // one OK never follows or unfollows: the second confirms
+  MP.ask = '';
   const host = window.UrtvMatches;
   let ok = false;
   try{
@@ -4488,6 +4490,7 @@ function mpKey(e){
   if(MP.detail){
     const n = mpButtons(MP.detail, Date.now()).length;   // the actions are 0..n-1, «رجوع» is n, the card itself is -1
     if(ok) return mpAct(), e.preventDefault();
+    MP.ask = '';   // any other key withdraws the question
     if(k === 'Escape' || k === 'Backspace'){ mpBack(); return e.preventDefault(); }   // the card is closed: nothing of it to draw again
     if(MP.btn === n){ if(k === 'ArrowUp') MP.btn = n > 0 ? 0 : -1; }   // on «رجوع»: ▲ goes up to the actions (the first, else the card); ◀ ▶ stay
     else if(k === 'ArrowDown') MP.btn = n;

@@ -62,10 +62,28 @@ public class FactoryActivity extends Activity {
         frame.addView(col, new FrameLayout.LayoutParams(Math.min(dp(980), w - 2 * Math.round(w * 0.05f)), -2, Gravity.CENTER));
         setContentView(scroll);
         if (new FileStore(this).get(SetupEngine.FACTORY) != null && new FileStore(this).get(SetupEngine.FACTORY).startsWith("on")) showOn();
-        else check();
+        else intro();
     }
 
-    @Override public void onBackPressed() { if (!busy) super.onBackPressed(); }
+    /** Back always leaves (a check or a step in progress goes on by itself on its thread; the ledger and the safety switch do not depend on this screen) */
+    @Override public void onBackPressed() { finish(); }
+
+    // ---------------------------------------------------------------- the first page
+
+    /** one OK on the settings' row lands here, not on a check: a plain description and two buttons, the focus on «رجوع»; nothing starts until «ابدأ» */
+    private void intro() {
+        col.removeAllViews();
+        col.addView(text(S.t("تخلّص من واجهة المصنع"), 30, "Medium", look.text), lp(dp(12)));
+        col.addView(text(S.t("هذي الخطوة تعطّل (ما تحذف) تطبيقات واجهة المصنع في تلفزيونك، ويصير UrTV هو الأساس."), 20, "Regular", look.sub), lp(dp(8)));
+        col.addView(text(S.t("أول شيء نفحص التلفزيون ونعرض لك بالضبط وش بيتعطّل، وما نغيّر شيء قبل ما تتأكد مرتين."), 20, "Regular", look.sub), lp(dp(8)));
+        col.addView(text(S.t("قد يظهر على الشاشة سؤال «السماح بتصحيح USB؟»: اضغط «سماح»."), 20, "Regular", look.sub), lp(dp(8)));
+        col.addView(text(S.t("وتقدر ترجّع كل شيء بضغطة وحدة."), 20, "Regular", look.sub), lp(dp(16)));
+        LinearLayout row = row();
+        View back = button(S.t("رجوع"), v -> finish());
+        row.addView(back, bw(false));
+        row.addView(button(S.t("ابدأ"), v -> check()), bw(true));
+        focus(back);   // the safe press
+    }
 
     // ---------------------------------------------------------------- the check
 
@@ -75,7 +93,7 @@ public class FactoryActivity extends Activity {
         busy = true;
         new Thread(() -> {
             SetupEngine.FactoryOffer o;
-            try (SetupSession s = SetupSession.open(this, 60_000, () -> ui.post(() -> message(S.t("نفحص هذا التلفزيون…"), S.t("اضغط «سماح» في سؤال تصحيح USB على الشاشة."), null)), line -> { })) {
+            try (SetupSession s = SetupSession.open(this, 60_000, () -> ui.post(() -> { if (!isFinishing() && !isDestroyed()) message(S.t("نفحص هذا التلفزيون…"), S.t("اضغط «سماح» في سؤال تصحيح USB على الشاشة."), null); }), line -> { })) {
                 o = s.engine.factoryOffer();
             } catch (Exception e) {
                 String why = String.valueOf(e.getMessage());
@@ -83,7 +101,7 @@ public class FactoryActivity extends Activity {
                         : S.t("ما قدرنا نكلّم التلفزيون: تأكد من تفعيل تصحيح USB ومن «السماح» ثم جرّب."), "", new ArrayList<String>());
             }
             final SetupEngine.FactoryOffer res = o;
-            ui.post(() -> { busy = false; offer = res; if (res.refusal != null) refused(res.refusal); else plan(); });
+            ui.post(() -> { if (isFinishing() || isDestroyed()) return; busy = false; offer = res; if (res.refusal != null) refused(res.refusal); else plan(); });
         }, "factory-check").start();
     }
 
@@ -132,7 +150,7 @@ public class FactoryActivity extends Activity {
                 r = new SetupEngine.Result(SetupEngine.Status.FAILED, S.t("انقطع الاتصال بالتلفزيون أثناء التعطيل. «رجّع واجهة المصنع» يرجّع كل ما تغيّر."));
             }
             final SetupEngine.Result res = r;
-            ui.post(() -> { busy = false; if (res.status == SetupEngine.Status.DONE) showOn(); else message(S.t("ما اكتمل"), S.tv(res.message), new String[] {S.t("رجوع")}); });
+            ui.post(() -> { if (isFinishing() || isDestroyed()) return; busy = false; if (res.status == SetupEngine.Status.DONE) showOn(); else message(S.t("ما اكتمل"), S.tv(res.message), new String[] {S.t("رجوع")}); });
         }, "factory-off").start();
     }
 
@@ -163,7 +181,7 @@ public class FactoryActivity extends Activity {
                 r = new SetupEngine.Result(SetupEngine.Status.FAILED, S.t("ما قدرنا نكلّم التلفزيون. تأكد من تصحيح USB وجرّب مرة ثانية."));
             }
             final SetupEngine.Result res = r;
-            ui.post(() -> { busy = false; message(res.status == SetupEngine.Status.DONE ? S.t("رجعت واجهة المصنع") : S.t("ما اكتمل"), S.tv(res.message), new String[] {S.t("رجوع")}); });
+            ui.post(() -> { if (isFinishing() || isDestroyed()) return; busy = false; message(res.status == SetupEngine.Status.DONE ? S.t("رجعت واجهة المصنع") : S.t("ما اكتمل"), S.tv(res.message), new String[] {S.t("رجوع")}); });
         }, "factory-restore").start();
     }
 

@@ -57,6 +57,7 @@ public class SettingsActivity extends Activity {
     private TextView hint;
     private LinearLayout side;       // a category's screen: its title and its line on the right, the rows on the left (hidden on the first)
     private String forceWant;   // the key the next render() puts the focus on (the row or button that opened another screen), whatever has the focus when the list is built
+    private String returnWant; private long returnUntil;   // the row the focus came back to: kept for the next builds of the list until a key is pressed
     private String launchedRow;   // the key of the row whose press opened another screen (the clean screen, the TV's settings): the focus returns to it
     private final java.util.Map<String, String> lastRow = new java.util.HashMap<>();   // each category's row last focused, for the way back in
 
@@ -159,6 +160,7 @@ public class SettingsActivity extends Activity {
         cleanAsked = false;   // asked again each time the settings come to the front (it was asked once per visit: the row said «مفعّل» only after reopening)
         look = GlassSource.page(this, root);   // the home's photo or «المظهر» may have changed meanwhile
         hint.setTextColor(look.sub);
+        if (back != null) { returnWant = back; returnUntil = System.currentTimeMillis() + 4000; }   // the home answers a moment later and the list is built again: that build keeps the focus on this row too, until a key is pressed (it landed on the row above)
         forceWant = back;   // back from another screen: the focus goes to the row or button that opened it, in the SAME render that builds the list again (it landed on the one above)
         render();
         // the home writes its state a moment after «UrTV النظيف» closes: one more question 1.5 s later, drawn only when the answer differs
@@ -166,6 +168,11 @@ public class SettingsActivity extends Activity {
     }
 
     /** Back on a category's rows (or on «البطاقات», «المزيد») goes back to the screen its button is on, the focus on that button; on the first screen it leaves. */
+    @Override public boolean dispatchKeyEvent(android.view.KeyEvent e) {
+        if (e.getAction() == android.view.KeyEvent.ACTION_DOWN) returnWant = null;   // the person moves: the focus is theirs again
+        return super.dispatchKeyEvent(e);
+    }
+
     @Override
     public void onBackPressed() {
         if (screen == null) { super.onBackPressed(); return; }
@@ -211,7 +218,8 @@ public class SettingsActivity extends Activity {
         List<View> before = rows();
         View had = entering ? null : focusedRow();
         final boolean tiles = SettingsHub.hasTiles(screen);   // the first screen, «البطاقات», «المزيد»: buttons, not rows
-        final String want = forceWant != null ? forceWant : entering ? (tiles ? (hubAt != null ? "hub:" + hubAt : null) : lastRow.get(screen)) : had == null ? null : (String) had.getTag();
+        if (returnWant != null && System.currentTimeMillis() > returnUntil) returnWant = null;
+        final String want = forceWant != null ? forceWant : returnWant != null && !entering ? returnWant : entering ? (tiles ? (hubAt != null ? "hub:" + hubAt : null) : lastRow.get(screen)) : had == null ? null : (String) had.getTag();
         forceWant = null;
         final int wasIndex = had == null ? 0 : before.indexOf(had), scrollY = entering ? 0 : scroll.getScrollY();
         entering = false;

@@ -110,3 +110,6 @@ TV Bro و SmartTube مثبّتان من قبل: نتركهما.	TV Bro and Smart
 ما قدرنا نكلّم التلفزيون. تأكد من تصحيح USB وجرّب مرة ثانية.	We could not talk to the TV. Check USB debugging and try again.
 رجعت واجهة المصنع	The factory interface is back
 لا شيء يحتاج تعطيل	Nothing needs turning off
+هذي الخطوة تعطّل (ما تحذف) تطبيقات واجهة المصنع في تلفزيونك، ويصير UrTV هو الأساس.	This step turns off (it does not delete) the factory interface's apps on your TV, and UrTV becomes the base.
+أول شيء نفحص التلفزيون ونعرض لك بالضبط وش بيتعطّل، وما نغيّر شيء قبل ما تتأكد مرتين.	First we check the TV and show you exactly what would be turned off. Nothing changes until you confirm twice.
+وتقدر ترجّع كل شيء بضغطة وحدة.	And you can bring everything back with one press.

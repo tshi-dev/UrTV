@@ -73,6 +73,8 @@ check("hub: with the mask on «تلفزيونك» opens straight on our settings
       and "static final String[][] WINDOWS = {" in hub)
 check("adhan, reminders, the parental lock and updates are not masked: the saver page keeps #rm and the adhan layer (only the listed blocks are hidden), the home keeps the adhan bar and the update path",
       "#rm" not in tmpl.split("html.clean .top")[1].split("</style>")[0] and "adhanBar" not in main.split("private void applyClean()")[1].split("private final java.util.Map<View, Integer> cleanWas")[0] and "UpdateNotice" not in main.split("private void applyClean()")[1].split("private final java.util.Map<View, Integer> cleanWas")[0])
+check("back from «UrTV النظيف» the focus returns to ITS row, also in the build that the home's later answer causes (the row is kept as the wanted one for 4 s or until a key is pressed)",
+      "returnWant = back; returnUntil = System.currentTimeMillis() + 4000;" in saver and "returnWant != null && !entering ? returnWant" in saver and "returnWant = null;   // the person moves" in saver)
 if not shutil.which("javac"):
     print("SKIP clean keep rules: no javac"); sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261111174305">
+<meta name="urtv-build" content="20261111210911">
 <title>شاشة تلفزيونك</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -4045,7 +4045,7 @@ const FB_W = {
   feels:'المحسوسة', hum:'الرطوبة', wind:'الرياح', kmh:'%s كم/س', pct:'٪%s', live:'مباشر', ended:'انتهت', vs:'×',
   yesterday:'أمس', tday:'اليوم', tomorrow:'غدًا', g1:'مباراة واحدة', g2:'مباراتان', gFew:'%s مباريات', gMany:'%s مباراة',
   allOn:'كلها على %s', round:'الجولة %s', venue:'الملعب', channel:'القناة', withPrayer:'مع الصلاة', game:'المباراة',
-  remind:'ذكّرني قبلها بنصف ساعة', reminded:'أُضيفت إلى المهام', follow:'أضف %s لفرقي', unfollow:'أزل %s من فرقي', followed:'أُضيف %s إلى فرقك', unfollowed:'أُزيل %s من فرقك', watch:'شاهد على %s', player:'شاهد المباراة', failed:'ما قدرنا، جرّب مرة ثانية',
+  remind:'ذكّرني قبلها بنصف ساعة', reminded:'أُضيفت إلى المهام', follow:'أضف %s لفرقي', unfollow:'أزل %s من فرقي', followed:'أُضيف %s إلى فرقك', unfollowed:'أُزيل %s من فرقك', watch:'شاهد على %s', player:'شاهد المباراة', failed:'ما قدرنا، جرّب مرة ثانية', sure:'اضغط مرة ثانية للتأكيد',
   startsAfter:'تبدأ بعد %s %s', startsBefore:'تبدأ قبل %s %s', adhanAt:'أذان %s في الدقيقة %s منها', ago:'قبل %s', nextIn:'%s بعد %s',
   h1:'بساعة', h2:'بساعتين', hFew:'ب%s ساعات', hMany:'ب%s ساعة', m1:'بدقيقة', m2:'بدقيقتين', mFew:'ب%s دقائق', mMany:'ب%s دقيقة',
   am1:'ودقيقة', am2:'ودقيقتين', amFew:'و%s دقائق', amMany:'و%s دقيقة', taskText:'مباراة %s، تبدأ %s',
@@ -4449,6 +4449,8 @@ function mpAct(){
   if(ringed && ringed.dataset.k === 'back'){ mpBack(); return; }   // «رجوع»: the card closes, the focus is on the game's row again
   const b = ringed && mpButtons(ev, Date.now()).find(x => x.k === ringed.dataset.k);
   if(!b) return;
+  if((b.k === 'follow' || b.k === 'unfollow') && MP.ask !== b.k){ MP.ask = b.k; MP.note = FB_W.sure; return mpDetailRender(); }   // one OK never follows or unfollows: the second confirms
+  MP.ask = '';
   const host = window.UrtvMatches;
   let ok = false;
   try{
@@ -4481,6 +4483,7 @@ function mpKey(e){
   if(MP.detail){
     const n = mpButtons(MP.detail, Date.now()).length;   // the actions are 0..n-1, «رجوع» is n, the card itself is -1
     if(ok) return mpAct(), e.preventDefault();
+    MP.ask = '';   // any other key withdraws the question
     if(k === 'Escape' || k === 'Backspace'){ mpBack(); return e.preventDefault(); }   // the card is closed: nothing of it to draw again
     if(MP.btn === n){ if(k === 'ArrowUp') MP.btn = n > 0 ? 0 : -1; }   // on «رجوع»: ▲ goes up to the actions (the first, else the card); ◀ ▶ stay
     else if(k === 'ArrowDown') MP.btn = n;

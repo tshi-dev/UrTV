@@ -115,6 +115,10 @@ else:
     check("…a game id that is not a number is dropped", out["pageBad"] == B + "tv.html#city=Riyadh&matchpage=1", out["pageBad"])
     check("…with no settings at all, the page alone", out["pageNull"] == B + "tv.html#&matchpage=1", out["pageNull"])
 
+# step 58: one OK on the match sheet's team button never follows or unfollows by itself: the first asks, the second confirms, any other key withdraws the question
+check("match sheet: «أضف … لفرقي» / «أزل … من فرقي» asks first (the note says to press again), the second OK does it, any other key withdraws it",
+      "if((b.k === 'follow' || b.k === 'unfollow') && MP.ask !== b.k){ MP.ask = b.k; MP.note = FB_W.sure; return mpDetailRender(); }" in tpl and "    MP.ask = '';   // any other key withdraws the question" in tpl and "sure:'اضغط مرة ثانية للتأكيد'" in tpl)
+
 print()
 print(f"{failed} failed" if failed else "all football tests passed")
 sys.exit(1 if failed else 0)
