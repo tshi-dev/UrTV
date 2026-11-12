@@ -1,4 +1,6 @@
-«✅ GO — step 64, then step 65 (pictures for the 4.3 and Player posts)» — run step 64, then step 65 (both at the end of this file) on the newest build (4.3 is now on master/apk-latest, build 268). TV muted. Never type the owner's PIN.
+«✅ GO — step 64 then step 65, back to back, NO STOPPING (owner's standing rule below)» — run step 64 A, then step 65 (pictures), on the installed build (4.3, build 268, now on master). TV muted. Never type the owner's PIN.
+
+**OWNER'S STANDING RULE (2026-11-12, until he says otherwise): do not stop and do not wait.** The owner is waiting on these pictures. (1) Run every part that needs no owner, in order, without pausing between parts or steps. (2) A part that needs the owner at the TV (step 64 B, the phone page): write «skipped: needs the owner» and go on at once; do not ask and wait. (3) If one item fails or can't be done, write one line why and go on to the next; never end the whole step for it. (4) Push the report after EACH part (and the pictures as soon as they exist), so the supervisor sees progress. (5) When the step is done, keep polling this file every 5 minutes for the next GO. The only reasons to stop: a prompt that would change the TV in a way the step does not describe, or anything that needs the owner's PIN.
 
 «If the tester isn't polling: the owner starts it with the paste-in instruction the supervisor gave him.»
 
