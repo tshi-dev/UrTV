@@ -72,7 +72,7 @@ check("…and neither has its English", "Standard (January, February, March)" in
 # the matches and markets pages by keys (docs/SETTINGS.md has the path)
 hub = text(APP / "SettingsHub.java")
 cats = re.findall(r'^\s*\{([A-Z]+), "', hub[hub.index("CATEGORIES = {"):], re.M)
-check("hub order: ADHAN wide, then two to a row; «المزيد» is the 10th tile after it (the right one of the 5th row's second)", cats[:11] == ["ADHAN", "PLACE", "CLOCK", "LISTEN", "CARDS", "LOOK", "CONTROL", "PHONE", "UPDATE", "REPORT", "MORE"], cats[:11])
+check("hub order: CITY wide (4.3.1), then two to a row from ADHAN; «المزيد» is the 11th tile after it", cats[:12] == ["CITY", "ADHAN", "PLACE", "CLOCK", "LISTEN", "CARDS", "LOOK", "CONTROL", "PHONE", "UPDATE", "REPORT", "MORE"], cats[:11])
 check("«المباريات والأسواق» is the first button of «المزيد»", [c for c in cats if c in ("CONTENT", "APPS", "SHOWS", "PARENTAL", "FAMILY", "LANG")][0] == "CONTENT")
 rows = re.findall(r'^\s*row\("([^"]+)"', settings[settings.index("private void render()"):], re.M)
 content = ["مباريات اليوم", "الفرق المتابعة (", "الدوريات كاملة", "رياضات أخرى", "صفحة الأسواق"]

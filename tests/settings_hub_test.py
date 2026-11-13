@@ -41,7 +41,7 @@ check("the source has the settings' rows and headers (the test reads what it sho
 check("no row is made outside render, adjRow and the home cards' loop (so the scan above sees them all)",
       len(re.findall(r"(?<!View )\brow\((?!\))", st)) == len(re.findall(r'\brow\(("|HOME_CARD_NAMES\[k\]|PrayerAdj\.label\()', st)), "a row( call with another first argument")
 
-cat_names = dict(re.findall(r'\{(ADHAN|PLACE|CLOCK|LISTEN|CARDS|LOOK|CONTROL|PHONE|UPDATE|REPORT|MORE|SAVER|HOME|CONTENT|APPS|SHOWS|PARENTAL|FAMILY|LANG), "([^"]+)"', hub))
+cat_names = dict(re.findall(r'\{(CITY|ADHAN|PLACE|CLOCK|LISTEN|CARDS|LOOK|CONTROL|PHONE|UPDATE|REPORT|MORE|SAVER|HOME|CONTENT|APPS|SHOWS|PARENTAL|FAMILY|LANG), "([^"]+)"', hub))
 rows_block = hub[hub.index("static final String[][] ROWS"):hub.index("static final String[][] HEADERS")]
 mapped = [(unesc(a), b) for a, b in re.findall(r'\{"([^"]+)", (ADHAN|PLACE|CLOCK|LISTEN|CARDS|LOOK|CONTROL|PHONE|UPDATE|REPORT|MORE|SAVER|HOME|CONTENT|APPS|SHOWS|FAMILY|LANG)\}', rows_block)]
 
@@ -73,8 +73,8 @@ for r in row_out[:-1]: by.setdefault(r[1], []).append(r[0])
 cats = [l.split("\t") for l in rest if l.startswith("category ")]
 C = {c[0].split(" ")[1]: {"name": c[1], "index": int(c[2]), "parent": c[3], "direct": c[4], "tiles": c[5] == "true"} for c in cats}
 first = sorted([k for k, v in C.items() if v["parent"] == "-"], key=lambda k: C[k]["index"])
-check("the first screen: «الأذان» first (the wide one), then the buttons of the prototype in its order",
-      [C[k]["name"] for k in first] == ["الأذان", "الموقع والصلاة", "الساعة والأرقام", "تلاوة وأذان", "البطاقات", "المظهر والخلفيات", "مركز التحكم",
+check("the first screen: «المدينة» first (the wide one, 4.3.1), then «الأذان» and the buttons of the prototype in its order",
+      [C[k]["name"] for k in first] == ["المدينة", "الأذان", "الموقع والصلاة", "الساعة والأرقام", "تلاوة وأذان", "البطاقات", "المظهر والخلفيات", "مركز التحكم",
                                        "التحكم من الجوال", "تحديث تلفزيوني", "أرسل تقرير", "المزيد"], [C[k]["name"] for k in first])
 check("«البطاقات» holds «شاشة التوقف» and «الشاشة الرئيسية»; «المزيد» the matches and markets, the apps, the shows, «الرقابة الأبوية», «تصفية المواقع» (and «اللغة» once LANG_TILE is on)",
       sorted((C[k]["index"], C[k]["name"]) for k in C if C[k]["parent"] == "cards") == [(0, "شاشة التوقف"), (1, "الشاشة الرئيسية")]
@@ -85,7 +85,7 @@ check("only the first screen, «البطاقات» and «المزيد» are scre
       {k for k, v in C.items() if v["tiles"]} == {"cards", "more"} and all(C[v["parent"]]["parent"] == "-" for v in C.values() if v["parent"] != "-"))
 direct = {k: v["direct"] for k, v in C.items() if v["direct"] != "-"}
 check("the buttons that do one thing at once, each by its one row: «الأذان», «مركز التحكم», «التحكم من الجوال», «أرسل تقرير», «الرقابة الأبوية», «تصفية المواقع», «اللغة»",
-      direct == {"adhan": "الأذان", "control": "مركز التحكم", "phone": "تحكم من الجوال", "report": "أرسل تقرير", "parental": "الرقابة الأبوية", "family": "تصفية المواقع",
+      direct == {"city": "تغيير المدينة", "adhan": "الأذان", "control": "مركز التحكم", "phone": "تحكم من الجوال", "report": "أرسل تقرير", "parental": "الرقابة الأبوية", "family": "تصفية المواقع",
                  "lang": "اللغة"}
       and all(by.get(k) == [r] for k, r in direct.items()), {k: (r, by.get(k)) for k, r in direct.items()})
 check("every other category has rows of its own (no empty screen), a screen of buttons none",
@@ -164,7 +164,7 @@ check("a category's screen: its title and its line on the right (the side pane, 
       "side.setVisibility(tiles ? View.GONE : View.VISIBLE);" in side and "SettingsHub.name(screen)" in side and "SettingsHub.about(screen)" in side
       and st.index("panes.addView(side, sideLp);") < st.index("panes.addView(scroll,") and "panes.setLayoutDirection(Dir.layout());" in st
       and "if (tiles) list.addView(head);" in render)
-abouts = dict(re.findall(r'\{(ADHAN|PLACE|CLOCK|LISTEN|CARDS|LOOK|CONTROL|PHONE|UPDATE|REPORT|MORE|SAVER|HOME|CONTENT|APPS|SHOWS|PARENTAL|FAMILY|LANG), "[^"]+", "([^"]*)"', hub))
+abouts = dict(re.findall(r'\{(CITY|ADHAN|PLACE|CLOCK|LISTEN|CARDS|LOOK|CONTROL|PHONE|UPDATE|REPORT|MORE|SAVER|HOME|CONTENT|APPS|SHOWS|PARENTAL|FAMILY|LANG), "[^"]+", "([^"]*)"', hub))
 check("every category with a screen of its own has its line for it (a DIRECT one has none)",
       all(len(abouts[k.upper()]) > 20 for k in C if k not in direct) and all(abouts[k.upper()] == "" for k in direct), abouts)
 check("a button opens its category from the top", "entering = true;" in st[st.index("private void open(String category)"):].split("\n    }\n")[0])

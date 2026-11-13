@@ -87,6 +87,8 @@ public class SettingsActivity extends Activity {
         prefs = new Prefs(this);
         if (getIntent().hasExtra("hubAt")) { screen = getIntent().getStringExtra("screen"); hubAt = getIntent().getStringExtra("hubAt"); }   // pickLang: back on its button
         UpdateJob.schedule(this);
+        final boolean askCity = getIntent().getBooleanExtra("pickCity", false);   // 4.3.1: the home's «المدينة» (control center, the question bar) opens the chooser at once
+        getIntent().removeExtra("pickCity");
         // the glass look of all our screens: the home's photo, small and blurred once (GlassSource), under its veil; glass tiles and rows
         root = new FrameLayout(this);
         root.setLayoutDirection(Dir.layout());
@@ -134,6 +136,12 @@ public class SettingsActivity extends Activity {
         root.addView(column, new FrameLayout.LayoutParams(-1, -1));
         setContentView(root);
         render();
+        if (askCity) root.post(new Runnable() { public void run() { pickCity(); } });
+    }
+
+    @Override protected void onNewIntent(Intent in) {   // 4.3.1: «المدينة» of the home again while the settings are already open
+        super.onNewIntent(in);
+        if (in.getBooleanExtra("pickCity", false)) { in.removeExtra("pickCity"); pickCity(); }
     }
 
     /** A picker's live preview (a WebView running the page) is let go while another app is in front, and drawn again on return; null when no picker is open. */
@@ -258,6 +266,7 @@ public class SettingsActivity extends Activity {
 
         // the place, then how its times are worked out, then the minutes of one's own mosque; the line under them says which is which
         header("الموقع");
+        row("تغيير المدينة", Words.city(prefs.city()), R.drawable.ic_place, new Runnable() { public void run() { pickCity(); } });   // the first button of the first screen runs this one (SettingsHub.CITY)
         row("الدولة", Location.countryLabel(prefs.cityCountry(), prefs.cityTz()), R.drawable.ic_place, new Runnable() { public void run() { pickCountry(); } });
         row("المدينة", Words.city(prefs.city()), R.drawable.ic_place, new Runnable() { public void run() { pickCity(); } });
 
@@ -550,6 +559,7 @@ public class SettingsActivity extends Activity {
     /** Each button's icon. */
     private static int hubIcon(String cat) {
         switch (cat) {
+            case SettingsHub.CITY: return R.drawable.ic_place;
             case SettingsHub.ADHAN: return R.drawable.ic_bell;
             case SettingsHub.PLACE: return R.drawable.ic_place;
             case SettingsHub.CLOCK: return R.drawable.ic_clock;
@@ -620,6 +630,7 @@ public class SettingsActivity extends Activity {
                 Boolean on = homeAdhanSeen();   // the home's switch as last known; null when the home cannot say (not installed, or older)
                 return on == null ? "تشغيله وصوته ومؤذن الفجر" : on ? OnOff.ON_WORD : OnOff.OFF_WORD;
             }
+            case SettingsHub.CITY: return Words.city(prefs.city());
             case SettingsHub.PLACE: return Words.city(prefs.city()) + " · " + PrayerMethod.label(prefs.prayerMethod(), prefs.cityCountry(), prefs.cityTz());
             case SettingsHub.CLOCK: return ClockSetting.label(prefs.clock24()) + " · " + Prefs.digitsLabel(prefs.digits());
             case SettingsHub.LISTEN: return "زرها " + (prefs.listenPill() ? "ظاهر" : "مخفي");

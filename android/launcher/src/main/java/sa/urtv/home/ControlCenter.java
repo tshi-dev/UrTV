@@ -53,6 +53,7 @@ final class ControlCenter {
         void launchGuarded(int path, Intent i, String name);
         void openSaver();           // the screensaver pill's OK, locked by «@saver»
         void openSaverSettings();   // its long OK
+        void openCity();            // 4.3.1 «المدينة»: the screensaver app's city chooser
         void openOurSettings();     // «إعدادات تلفزيونك»: the screensaver app's settings screen, locked by «@urtv»
         void openSleep(View anchor);   // «مؤقت النوم» popup, locked by «@sleep»
         boolean saverInstalled();
@@ -68,7 +69,9 @@ final class ControlCenter {
     /** the round toggles, in this order; every other item is a row */
     static final String[] TOGGLES = {"bluetooth", "mirror", "sleep", "off"};
     /** the rows' order before the person moves any; «شاشة التوقف» is unticked until they ask for it (its own pill is on the home) */
-    static final String[] ROWS = {"net", "sound", "speed", "tv", "ours", "saver"};
+    static final String[] ROWS = {"net", "sound", "speed", "ours", "city", "tv", "saver"};   // 4.3.1: ours before the TV's, the city beside it
+    /** the order before 4.3.1 (ours after the TV's): saved by anyone who opened the editor, never a choice, so it follows the new default */
+    static final String OLD_DEFAULT = "net,sound,speed,tv,ours,saver";
     static final String[] DEFAULT_OFF = {"saver"};
 
     // the glass look the home shows (GlassSource.look, when the panel opens): the panel opaque over the look's solid colour (it sits over the
@@ -181,6 +184,7 @@ final class ControlCenter {
         if (host.saverInstalled()) {
             Item saver = tile("saver", S.t("شاشة التوقف"), S.t("ابدأها الآن"), R.drawable.ic_screensaver, () -> { dismiss(); host.openSaver(); });
             saver.hold = () -> { dismiss(); host.openSaverSettings(); };   // a shortcut: its settings are in «إعدادات تلفزيونك» ← البطاقات
+            tile("city", S.t("المدينة"), S.t("للطقس والصلاة"), R.drawable.ic_place, () -> { dismiss(); host.openCity(); });
             tile("ours", S.t("إعدادات تلفزيونك"), S.t("الأذان والمفضلة والمظهر"), R.drawable.ic_home, () -> { dismiss(); host.openOurSettings(); });
         }
         tile("tv", S.t("الإعدادات"), S.t("إعدادات التلفزيون"), R.drawable.ic_settings,
@@ -255,6 +259,7 @@ final class ControlCenter {
     private List<Item> rowsInOrder() {
         List<String> order = new ArrayList<>();
         String v = prefs().getString("rows", "");
+        if (v.equals(OLD_DEFAULT)) v = "";   // never reordered
         if (!v.isEmpty()) order.addAll(Arrays.asList(v.split(",")));
         for (String k : ROWS) if (!order.contains(k)) order.add(k);
         List<Item> out = new ArrayList<>();

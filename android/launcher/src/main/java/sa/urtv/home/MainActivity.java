@@ -1141,6 +1141,7 @@ public class MainActivity extends Activity {
             @Override public void openSaver() { guarded(ParentalPolicy.PILL_SAVER, SAVER_PKG, "شاشة التوقف", MainActivity.this::startSaver); }   // OK starts it, as optimize/start-saver.sh --preview does
             @Override public void openSaverSettings() { guarded(ParentalPolicy.PILL_SAVER_SETTINGS, SAVER_PKG, "شاشة التوقف", () -> openPackage(SAVER_PKG)); }   // a long OK: its settings
             @Override public void openOurSettings() { MainActivity.this.openOurSettings(false); }
+            @Override public void openCity() { MainActivity.this.openCity(); }
             @Override public void openSleep(View anchor) { guarded(ParentalPolicy.PILL_SLEEP, null, S.t("مؤقت النوم"), () -> showSleep(anchor)); }
             @Override public boolean saverInstalled() { return isInstalled(SAVER_PKG); }
             @Override public Typeface font(String family) { return MainActivity.this.font(family); }
@@ -1958,7 +1959,7 @@ public class MainActivity extends Activity {
 
     private static final String NUDGE_PREFS = "home_nudge";
     private LinearLayout nudge;
-    private TextView nudgeCard, nudgeLater;
+    private TextView nudgeCard, nudgeLater, nudgeAsk;   // nudgeAsk: «وين أنت؟…», the city question's words before its two buttons
 
     /**
      * the bar at the top while we are not the TV's Home (HomeNudgeRule): ONE short line, so it never covers a card (the first version was a two-line card with a button under it, over the
@@ -1980,6 +1981,7 @@ public class MainActivity extends Activity {
         nudgeCard.setClickable(true);
         nudgeCard.setId(View.generateViewId());
         nudgeCard.setOnClickListener(v -> {
+            if (nudgeIsCity) { openCity(); return; }   // 4.3.1: the same bar asks for the city while it is due
             try { guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t("إعداد تلفزيوني"), () -> launch(new Intent(this, sa.urtv.home.setup.SetupActivity.class))); } catch (RuntimeException ignored) { }
         });
         nudgeLater = text(14, "sans-serif-medium", 0xFFFFFFFF);
@@ -1990,6 +1992,13 @@ public class MainActivity extends Activity {
         nudgeLater.setClickable(true);
         nudgeLater.setId(View.generateViewId());
         nudgeLater.setOnClickListener(v -> snoozeNudge());
+        nudgeAsk = text(16, "sans-serif-medium", 0xFFFFFFFF);
+        nudgeAsk.setText(S.t("وين أنت؟ اختر مدينتك عشان الطقس والصلاة"));
+        nudgeAsk.setSingleLine(true);
+        nudgeAsk.setPadding(dp(24), dp(9), dp(24), dp(9));
+        nudgeAsk.setGravity(Gravity.CENTER);
+        nudgeAsk.setVisibility(View.GONE);
+        nudge.addView(nudgeAsk, new LinearLayout.LayoutParams(-2, -2));
         nudge.addView(nudgeCard, new LinearLayout.LayoutParams(-2, -2));
         LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(-2, -2);
         lp2.setMarginStart(dp(8));
@@ -2001,11 +2010,14 @@ public class MainActivity extends Activity {
     /** «لاحقاً» (or Back on the bar): hidden for 7 days, then 30 after a second press, then never; the number of presses is kept */
     private void snoozeNudge() {
         android.content.SharedPreferences sp = getSharedPreferences(NUDGE_PREFS, MODE_PRIVATE);
-        int presses = sp.getInt("later_count", 0);
-        sp.edit().putLong("later_until", HomeNudgeRule.laterUntil(System.currentTimeMillis(), presses)).putInt("later_count", presses + 1).apply();
+        String k = nudgeIsCity ? "city_" : "";   // the city question waits on its own count
+        int presses = sp.getInt(k + "later_count", 0);
+        sp.edit().putLong(k + "later_until", HomeNudgeRule.laterUntil(System.currentTimeMillis(), presses)).putInt(k + "later_count", presses + 1).apply();
         updateHomeNudge(false);
     }
 
+    private boolean nudgeIsCity;      // the bar is asking for the city (CityAskRule), not for «إعداد تلفزيوني»
+    private boolean cityChosenNow = true;   // from the screensaver's last answer: true when it said nothing, so nobody is asked
     private boolean nudgeFocused;   // the bar took the focus once in this run of the home
 
     /**
@@ -2032,10 +2044,19 @@ public class MainActivity extends Activity {
     private void updateHomeNudge(boolean takeFocus) {
         if (nudge == null) return;
         if (cleanShown) { nudge.setVisibility(View.GONE); wireNudge(); return; }   // «UrTV النظيف»: no notices
-        boolean show = HomeNudgeRule.show(isDefaultHome(), Parental.state(this).kids, getSharedPreferences(NUDGE_PREFS, MODE_PRIVATE).getLong("later_until", 0), System.currentTimeMillis());
+        android.content.SharedPreferences np = getSharedPreferences(NUDGE_PREFS, MODE_PRIVATE);
+        long nowMs = System.currentTimeMillis();
+        boolean kids = Parental.state(this).kids;
+        boolean askCity = CityAskRule.show(isInstalled(SAVER_PKG), cityChosenNow, java.util.TimeZone.getDefault().getID(), kids, np.getLong("city_later_until", 0), nowMs);
+        boolean show = askCity || HomeNudgeRule.show(isDefaultHome(), kids, np.getLong("later_until", 0), nowMs);   // never both: the city's question first
         boolean was = nudge.getVisibility() == View.VISIBLE;
+        nudgeIsCity = askCity;
+        nudgeCard.setText(askCity ? S.t("اختر المدينة") : S.t("خلّ تلفزيونك يفتح على UrTV"));
+        nudgeAsk.setVisibility(askCity ? View.VISIBLE : View.GONE);
         if (show && !was) {
             GlassStyle.Look l = homeGlass();
+            nudgeAsk.setBackground(opaqueTile(18));   // its words sit on the glass too, over any photo
+            nudgeAsk.setTextColor(l.text);
             nudgeCard.setBackground(opaqueTile(18));
             nudgeCard.setTextColor(GlassPaint.focusColors(l.text, l.onFocus));
             nudgeLater.setBackground(opaqueTile(20));
@@ -3122,6 +3143,7 @@ public class MainActivity extends Activity {
             return;
         }
         String[] zone = cfg.cityZone();
+        if (cfg.cityChosen != cityChosenNow) { cityChosenNow = cfg.cityChosen; updateHomeNudge(false); }   // 4.3.1: the question follows the screensaver's answer
         String tz = zone == null ? tvTz : zone[1];
         Calendar now = ClockZone.at(ms, tz);   // the city's time, like the prayer times beside it
         int h = now.get(Calendar.HOUR_OF_DAY);
@@ -3832,6 +3854,12 @@ public class MainActivity extends Activity {
      * Our settings: the screensaver app's settings screen, behind «قفل الإعدادات» (@urtv), as the control center's tile and the remote's
      * Settings key ask for it. Without that app (or an old one without the screen) the key falls back to the TV's own settings.
      */
+    /** 4.3.1 «المدينة»: the screensaver app's settings, which open its city chooser at once (the same chooser as its first row) */
+    private void openCity() {
+        Intent i = new Intent(Intent.ACTION_MAIN).setComponent(new ComponentName(SAVER_PKG, SAVER_PKG + ".SettingsActivity")).putExtra("pickCity", true);
+        if (getPackageManager().resolveActivity(i, 0) != null) guarded(ParentalPolicy.OUR_SETTINGS, null, S.t("المدينة"), () -> launch(i));
+    }
+
     private void openOurSettings(boolean orTvSettings) {
         Intent i = new Intent(Intent.ACTION_MAIN).setComponent(new ComponentName(SAVER_PKG, SAVER_PKG + ".SettingsActivity"));
         if (getPackageManager().resolveActivity(i, 0) != null) {

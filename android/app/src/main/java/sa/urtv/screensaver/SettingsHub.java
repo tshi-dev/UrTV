@@ -10,7 +10,7 @@ package sa.urtv.screensaver;
 final class SettingsHub {
     private SettingsHub() { }
 
-    static final String ADHAN = "adhan", PLACE = "place", CLOCK = "clock", LISTEN = "listen", CARDS = "cards", LOOK = "look", CONTROL = "control",
+    static final String CITY = "city", ADHAN = "adhan", PLACE = "place", CLOCK = "clock", LISTEN = "listen", CARDS = "cards", LOOK = "look", CONTROL = "control",
             PHONE = "phone", UPDATE = "update", REPORT = "report", MORE = "more",
             SAVER = "saver", HOME = "home",                                 // in «البطاقات»
             CONTENT = "content", APPS = "apps", SHOWS = "shows", FAMILY = "family", PARENTAL = "parental", LANG = "lang";   // in «المزيد»
@@ -20,6 +20,7 @@ final class SettingsHub {
      * ("" when it opens a screen). In this order on each screen; the first one of the first screen is the wide one.
      */
     static final String[][] CATEGORIES = {
+        {CITY, "المدينة", "", null, "تغيير المدينة"},   // 4.3.1: the first button, wide: the city is the first thing to find (it opens the same chooser as the row in «الموقع والصلاة»)
         {ADHAN, "الأذان", "", null, "الأذان"},
         {PLACE, "الموقع والصلاة", "مدينتك تحدد الوقت والطقس، وطريقة الحساب تحدد مواقيت الصلاة.", null, ""},
         {CLOCK, "الساعة والأرقام", "نظام الساعة ١٢ أو ٢٤، والأرقام عربية أو إنجليزية، وأسماء الأشهر الميلادية.", null, ""},
@@ -49,7 +50,7 @@ final class SettingsHub {
 
     /** each row of SettingsActivity by its FocusKey.key (the name without its numbers), and its category */
     static final String[][] ROWS = {
-        {"معاينة الشاشة", SAVER},
+        {"معاينة الشاشة", SAVER}, {"تغيير المدينة", CITY},   // the first button's own row: it has no screen, the city's row is in «الموقع والصلاة»
         {"الدولة", PLACE}, {"المدينة", PLACE}, {"طريقة الحساب", PLACE}, {"تعديل وقت الصلاة", PLACE},
         {"الفرق المتابعة", CONTENT}, {"تطبيق المباريات", CONTENT}, {"الدوريات كاملة", CONTENT}, {"رياضات أخرى", CONTENT},
         {"الأرقام", CLOCK}, {"تنبيه قبل الأذان", SAVER}, {"الشروق بعد الفجر", SAVER}, {"شريط الوقت بين الصلاتين", SAVER},
