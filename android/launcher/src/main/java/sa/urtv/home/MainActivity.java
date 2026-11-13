@@ -531,6 +531,7 @@ public class MainActivity extends Activity {
 
     @Override
     public void onBackPressed() {
+        if (nudge != null && nudge.getVisibility() == View.VISIBLE && (nudgeCard.hasFocus() || nudgeLater.hasFocus())) { snoozeNudge(); return; }   // Back on the bar hides it
         // Home has nowhere to go back to; Back from the grid returns to the dock.
         boolean scrolled = scroll.getScrollY() > 0 && !dockCards.isEmpty();
         if (scrolled) dockCards.get(0).requestFocus();
@@ -1524,6 +1525,7 @@ public class MainActivity extends Activity {
             p.setNextFocusUpId(p.getId());
             p.setNextFocusDownId(card != null ? card.getId() : dockId != View.NO_ID ? dockId : p.getId());
         }
+        wireNudge();   // the bar above the top row (when it shows): UP from the buttons reaches it
         int topId = card != null ? card.getId() : pills.get(0).getId();
         if (fMt != null && fPr != null && fWx != null) topId = fMt.getId();   // the football home: ▲ from the tray is the games
         if (nowCard != null) {   // the «يُتلى الآن» card: down to the cards or the dock, left and up to the pills (right: the end of the row)
@@ -1958,17 +1960,22 @@ public class MainActivity extends Activity {
     private LinearLayout nudge;
     private TextView nudgeCard, nudgeLater;
 
-    /** the card at the top while we are not the TV's Home (HomeNudgeRule): it opens «إعداد تلفزيوني» (behind its lock like every way in), «لاحقاً» hides it for 3 days */
+    /**
+     * the bar at the top while we are not the TV's Home (HomeNudgeRule): ONE short line, so it never covers a card (the first version was a two-line card with a button under it, over the
+     * prayer card); OK on it opens «إعداد تلفزيوني» (behind its lock like every way in), «لاحقاً» hides it for 7 days, then 30, then for good. It is reachable with the remote: it takes the
+     * focus the first time it shows, UP from the top row reaches it (wireNudge), and Back while it is focused hides it.
+     */
     private void buildHomeNudge(FrameLayout root) {
         nudge = new LinearLayout(this);
-        nudge.setOrientation(LinearLayout.VERTICAL);
-        nudge.setGravity(Gravity.CENTER_HORIZONTAL);
-        nudgeCard = text(18, "sans-serif-medium", 0xFFFFFFFF);
-        nudgeCard.setText(S.t("خلّ تلفزيونك يفتح على UrTV") + "\n" + S.t("اضغط هنا وكمّل إعداد تلفزيوني (دقيقتين)"));
+        nudge.setOrientation(LinearLayout.HORIZONTAL);
+        nudge.setLayoutDirection(Dir.layout());
+        nudge.setGravity(Gravity.CENTER_VERTICAL);
+        nudgeCard = text(16, "sans-serif-medium", 0xFFFFFFFF);
+        nudgeCard.setText(S.t("خلّ تلفزيونك يفتح على UrTV"));
         nudgeCard.setGravity(Gravity.CENTER);
-        nudgeCard.setLineSpacing(dp(4), 1f);
-        nudgeCard.setPadding(dp(24), dp(14), dp(24), dp(14));
-        nudgeCard.setMaxWidth(dp(520));
+        nudgeCard.setSingleLine(true);
+        nudgeCard.setPadding(dp(24), dp(9), dp(24), dp(9));
+        nudgeCard.setMaxWidth(dp(420));
         nudgeCard.setFocusable(true);
         nudgeCard.setClickable(true);
         nudgeCard.setId(View.generateViewId());
@@ -1978,28 +1985,53 @@ public class MainActivity extends Activity {
         nudgeLater = text(14, "sans-serif-medium", 0xFFFFFFFF);
         nudgeLater.setText(S.t("لاحقاً"));
         nudgeLater.setGravity(Gravity.CENTER);
-        nudgeLater.setPadding(dp(22), dp(8), dp(22), dp(8));
+        nudgeLater.setPadding(dp(22), dp(9), dp(22), dp(9));
         nudgeLater.setFocusable(true);
         nudgeLater.setClickable(true);
         nudgeLater.setId(View.generateViewId());
-        nudgeLater.setOnClickListener(v -> {
-            getSharedPreferences(NUDGE_PREFS, MODE_PRIVATE).edit().putLong("later_until", HomeNudgeRule.laterUntil(System.currentTimeMillis())).apply();
-            updateHomeNudge(false);
-        });
-        nudgeCard.setNextFocusDownId(nudgeLater.getId());
-        nudgeLater.setNextFocusUpId(nudgeCard.getId());
+        nudgeLater.setOnClickListener(v -> snoozeNudge());
         nudge.addView(nudgeCard, new LinearLayout.LayoutParams(-2, -2));
         LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(-2, -2);
-        lp2.topMargin = dp(8);
+        lp2.setMarginStart(dp(8));
         nudge.addView(nudgeLater, lp2);
         nudge.setVisibility(View.GONE);
         root.addView(nudge, lp(-2, -2, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, dp(30), 0, 0));
     }
 
-    /** as the home comes to the front: show or hide the card; {@code takeFocus} puts the focus on it the first time it appears, so OK is all it takes */
+    /** «لاحقاً» (or Back on the bar): hidden for 7 days, then 30 after a second press, then never; the number of presses is kept */
+    private void snoozeNudge() {
+        android.content.SharedPreferences sp = getSharedPreferences(NUDGE_PREFS, MODE_PRIVATE);
+        int presses = sp.getInt("later_count", 0);
+        sp.edit().putLong("later_until", HomeNudgeRule.laterUntil(System.currentTimeMillis(), presses)).putInt("later_count", presses + 1).apply();
+        updateHomeNudge(false);
+    }
+
+    private boolean nudgeFocused;   // the bar took the focus once in this run of the home
+
+    /**
+     * the remote's way to the bar: UP from every top-row button reaches «خلّ تلفزيونك…», DOWN from the bar goes back to the first button, and the bar's own two buttons are side by side (the order
+     * follows the screen's direction). Called whenever the bar shows or hides and after wireFocus sets the buttons' own ids.
+     */
+    private void wireNudge() {
+        if (nudge == null || pills == null || pills.isEmpty()) return;
+        boolean on = nudge.getVisibility() == View.VISIBLE;
+        for (View p : pills) p.setNextFocusUpId(on ? nudgeCard.getId() : p.getId());
+        int pill0 = pills.get(0).getId();
+        nudgeCard.setNextFocusUpId(nudgeCard.getId());
+        nudgeLater.setNextFocusUpId(nudgeLater.getId());
+        nudgeCard.setNextFocusDownId(pill0);
+        nudgeLater.setNextFocusDownId(pill0);
+        boolean rtl = Dir.rtl();   // the card is first in the row: at the start side (the right in Arabic)
+        nudgeCard.setNextFocusRightId(rtl ? nudgeCard.getId() : nudgeLater.getId());
+        nudgeCard.setNextFocusLeftId(rtl ? nudgeLater.getId() : nudgeCard.getId());
+        nudgeLater.setNextFocusRightId(rtl ? nudgeCard.getId() : nudgeLater.getId());
+        nudgeLater.setNextFocusLeftId(rtl ? nudgeLater.getId() : nudgeCard.getId());
+    }
+
+    /** as the home comes to the front: show or hide the bar; {@code takeFocus} puts the focus on it the first time it appears (after the home has laid out and put its own focus), so OK is all it takes */
     private void updateHomeNudge(boolean takeFocus) {
         if (nudge == null) return;
-        if (cleanShown) { nudge.setVisibility(View.GONE); return; }   // «UrTV النظيف»: no notices
+        if (cleanShown) { nudge.setVisibility(View.GONE); wireNudge(); return; }   // «UrTV النظيف»: no notices
         boolean show = HomeNudgeRule.show(isDefaultHome(), Parental.state(this).kids, getSharedPreferences(NUDGE_PREFS, MODE_PRIVATE).getLong("later_until", 0), System.currentTimeMillis());
         boolean was = nudge.getVisibility() == View.VISIBLE;
         if (show && !was) {
@@ -2010,7 +2042,8 @@ public class MainActivity extends Activity {
             nudgeLater.setTextColor(GlassPaint.focusColors(l.text, l.onFocus));
         }
         nudge.setVisibility(show ? View.VISIBLE : View.GONE);
-        if (show && !was && takeFocus) nudgeCard.requestFocus();
+        wireNudge();
+        if (show && takeFocus && !nudgeFocused) nudge.post(() -> { if (nudge.getVisibility() == View.VISIBLE && !nudgeFocused) { nudgeFocused = true; nudgeCard.requestFocus(); } });
         else if (!show && was && (nudgeCard.hasFocus() || nudgeLater.hasFocus()) && !dockCards.isEmpty()) dockCards.get(0).requestFocus();
     }
 
