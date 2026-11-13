@@ -20,6 +20,8 @@
 #   optimize/dock.sh message overapps on|off «فوق التطبيقات»: also over a film or a match (on by default); off = only on our home and the screensaver
 #   optimize/dock.sh familydns on|off|status|grant   «حماية العائلة (DNS)»: Private DNS to AdGuard Family, checked and undone by optimize/familydns.sh
 #   optimize/dock.sh cast on|off|status    «البث من الجوال» on a Chromecast with Google TV: casting and the Google Home remote kept (on, the default) or our home first (off); optimize/cast.sh
+#   optimize/dock.sh key                   «أزرار الريموت»: which app the remote's YouTube, Netflix and Prime Video keys open
+#   optimize/dock.sh key youtube PKG       give a key another app (netflix, prime too); `default` = its own app again. Over other apps only with type-setup
 #   optimize/dock.sh sleep-setup           turn on the sleep service (an accessibility service, once) so the end turns the screen off
 #   optimize/dock.sh type-setup            turn on the remote-and-typing service (a second accessibility service, once) so the phone remote can press keys and type in other apps
 #   optimize/dock.sh pin set 1234         «الرقابة الأبوية»: the master PIN (4 digits), set or changed from here without the old one; never printed back
@@ -72,6 +74,11 @@ case "${1:-}:$#" in
     [ $# -gt 0 ] || { echo "usage: optimize/dock.sh set PKG1 PKG2 ..."; exit 1; }
     for p in "$@"; do [[ "$p" =~ ^[A-Za-z0-9_.]+$ ]] || { echo "not a package name: $p"; exit 1; }; done
     send SET_DOCK "--es apps $(IFS=,; echo "$*")" ;;
+  key:1) send KEY_APP ;;
+  key:3)
+    case "$2" in youtube|netflix|prime) ;; *) echo "usage: optimize/dock.sh key [youtube|netflix|prime PKG|default]"; exit 1 ;; esac
+    [[ "$3" == default || "$3" =~ ^[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+$ ]] || { echo "usage: optimize/dock.sh key $2 PKG|default (PKG from optimize/dock.sh apps)"; exit 1; }
+    send KEY_APP "--es key $2 --es app $3" ;;
   backsaver:1) send BACK_SAVER "--es mode status" ;;
   backsaver:2)
     # the home's switch, then the same on the screensaver's row (its settings show it; the home follows that row only when it changes)

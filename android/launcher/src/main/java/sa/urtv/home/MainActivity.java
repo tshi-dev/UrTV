@@ -3988,6 +3988,7 @@ public class MainActivity extends Activity {
         // the remote's shortcut keys (YouTube, Netflix, Settings, the star): with the stock launcher off nothing else answers them
         if (e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0)
             android.util.Log.d("UrTVKeys", "key=" + e.getKeyCode() + " scan=" + e.getScanCode());   // for the TV test: does the shortcut key reach the home screen at all? (codes only)
+        if (RemoteKeys.opensApp(e.getKeyCode())) remoteKeys.choices(Dock.keyApps(this));   // «أزرار الريموت»: the owner's app for this key
         RemoteKeys.Decision key = remoteKeys.decide(e.getKeyCode(), e.getScanCode(), e.getAction(), e.getRepeatCount(), e.getEventTime() - e.getDownTime(),
                 RemoteKeys.opensApp(e.getKeyCode()) ? remoteInstalled() : Collections.<String>emptySet());
         if (key.kind == RemoteKeys.PASS && e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0 && RemoteKeys.unmapped(e.getKeyCode()))
@@ -4081,6 +4082,8 @@ public class MainActivity extends Activity {
         Set<String> out = new HashSet<>();
         ParentalPolicy.State family = Parental.state(this);
         for (String pkg : RemoteKeys.PACKAGES) if (isInstalled(pkg) && ParentalPolicy.visible(family, pkg)) out.add(pkg);
+        for (String pkg : Dock.keyApps(this).values())   // and the apps the owner gave a key (KeyApps), under the same rules
+            if (KeyApps.chosen(pkg) && isInstalled(pkg) && ParentalPolicy.visible(family, pkg)) out.add(pkg);
         return out;
     }
 

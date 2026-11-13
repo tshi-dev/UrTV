@@ -32,6 +32,27 @@ final class Dock {
     static boolean backSaver(Context c) { return prefs(c).getBoolean("back_saver", false); }
 
     static void setBackSaver(Context c, boolean on) { prefs(c).edit().putBoolean("back_saver", on).apply(); }
+
+    /** «أزرار الريموت»: the app the owner gave a remote key (KeyApps.KEYS), empty = the key's own app (`dock.sh key`). */
+    static String keyApp(Context c, String key) { return prefs(c).getString("key_app_" + key, ""); }
+
+    static void setKeyApp(Context c, String key, String pkg) { prefs(c).edit().putString("key_app_" + key, pkg == null ? "" : pkg).apply(); }
+
+    /** the package is on this TV and enabled */
+    static boolean installed(Context c, String pkg) {
+        try {
+            return c.getPackageManager().getApplicationInfo(pkg, 0).enabled;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
+
+    /** every key's choice, for RemoteKeys */
+    static Map<String, String> keyApps(Context c) {
+        Map<String, String> m = new LinkedHashMap<>();
+        for (String k : KeyApps.KEYS) m.put(k, keyApp(c, k));
+        return m;
+    }
     /**
      * The row in the screensaver's settings (ConfigSnapshot.backSaver; null = no real answer): when it changes, the switch above takes its
      * value. Only on a change, so `dock.sh backsaver` (which sends both) and an older screensaver that says nothing leave it as set.

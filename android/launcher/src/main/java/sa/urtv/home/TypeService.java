@@ -43,6 +43,48 @@ public class TypeService extends AccessibilityService {
     @Override protected void onServiceConnected() { running = this; filterKeys(); }
     @Override public boolean onUnbind(android.content.Intent i) { running = null; return super.onUnbind(i); }
 
+    // ---------------------------------------------------------------- «أزرار الريموت» outside our home (KeyApps)
+
+    private final KeyApps.Outside keyApps = new KeyApps.Outside();
+
+    /**
+     * The remote's YouTube, Netflix and Prime Video keys outside our home: true when the owner gave this key another app and the key is
+     * answered here (its press opens that app, after the key is answered; its repeats and release are consumed). False: as before.
+     */
+    private boolean appKey(KeyEvent e) {
+        String key = KeyApps.keyOf(e.getKeyCode());
+        if (key == null) return false;
+        int k = keyApps.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), homeFront, Dock.keyApp(this, key));
+        if (k == KeyApps.OPEN) {
+            final String pkg = keyApps.pkg;
+            main.post(() -> openKeyApp(pkg));
+        }
+        return k != KeyApps.PASS;
+    }
+
+    /**
+     * The app the owner gave a remote key, over the app in front. Kids mode's hidden apps stay closed; an app behind the family PIN is not
+     * opened from here: our home comes up instead, where the PIN is asked as for its tile.
+     */
+    private void openKeyApp(String pkg) {
+        try {
+            ParentalPolicy.State family = Parental.state(this);
+            if (!ParentalPolicy.visible(family, pkg)) { log("key app=hidden"); return; }
+            if (Parental.needsPin(this, ParentalPolicy.targets(ParentalPolicy.REMOTE_APP, pkg))) {
+                startActivity(new Intent(this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                log("key app=pin");
+                return;
+            }
+            Intent i = getPackageManager().getLeanbackLaunchIntentForPackage(pkg);
+            if (i == null) i = getPackageManager().getLaunchIntentForPackage(pkg);
+            if (i == null) { log("key app=missing"); return; }
+            startActivity(i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            log("key app=open");
+        } catch (RuntimeException e) {
+            log("key app=failed");
+        }
+    }
+
     // ---------------------------------------------------------------- the Settings key outside our home (SettingsKey)
 
     /** MainActivity is resumed (it answers the Settings key itself then) */
@@ -79,8 +121,9 @@ public class TypeService extends AccessibilityService {
         }
     }
 
-    /** Every key, while the filter is on. Anything but the Settings key goes back to Android untouched: nothing is read, kept or logged. */
+    /** Every key, while the filter is on. Anything but the Settings key and a remote key the owner gave another app (KeyApps) goes back to Android untouched: nothing is read, kept or logged. */
     @Override protected boolean onKeyEvent(KeyEvent e) {
+        if (appKey(e)) return true;   // «أزرار الريموت»: a key the owner gave another app (KeyApps); every other key goes on below
         Boolean lost = homeKeyLost;
         int d = settingsKey.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), homeFront, stockHome, lost != null && lost);
         if (d == SettingsKey.PASS) return false;

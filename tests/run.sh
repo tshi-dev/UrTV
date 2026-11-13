@@ -181,6 +181,7 @@ python3 tests/apps_edit_test.py
 python3 tests/app_actions_test.py
 python3 tests/menu_dots_test.py
 python3 tests/remote_keys_test.py
+python3 tests/key_apps_test.py
 python3 tests/settings_key_test.py
 python3 tests/remote_nav_test.py
 python3 tests/dpad_rtl_test.py
