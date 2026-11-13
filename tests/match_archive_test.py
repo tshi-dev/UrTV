@@ -101,9 +101,19 @@ check("h2h ids ordered by number, not text", (o8 / "h2h" / "10-30.json").is_file
 idx = json.loads((o8 / "index.json").read_text())
 check("index.json lists the teams and the league", "10" in idx["teams"] and "4328" in idx["leagues"], idx)
 
+res = json.loads((o8 / "results" / "4328.json").read_text())
+check("results/<league>.json: the finished games, newest first", [g["id"] for g in res["results"]] == ["1", "99"] and res["v"] == 1, res)
+check("results games carry names and scores", res["results"][0]["hn"] == "T10" and res["results"][0]["hs"] == "3")
+o8b = build(leagues_dir([]), o8)
+check("a file a run did not change keeps its stamp, byte for byte",
+      all((o8 / r).read_bytes() == (o8b / r).read_bytes() for r in ("teams/10.json", "h2h/10-20.json", "results/4328.json", "index.json")))
+check("every file says its format (v)", all(json.loads(f.read_text()).get("v") == 1 for f in o8b.rglob("*.json") if f.name != "health.json"))
+
 many = [ev(str(100 + i), "10", "40", f"2026-0{1 + i % 9}-{10 + i:02d}T15:00:00", "1", "0", "FT") for i in range(15)]
 o9 = build(leagues_dir(many), o8)
 check(f"teams/<id>.json keeps the last {ma.LAST}", len(json.loads((o9 / "teams" / "10.json").read_text())["last"]) == ma.LAST)
+check(f"results/<league>.json keeps the last {ma.RESULTS_MAX}", len(json.loads((o9 / "results" / "4328.json").read_text())["results"]) == min(17, ma.RESULTS_MAX))
+check("a changed file gets the new stamp", json.loads((o9 / "teams" / "10.json").read_text())["updated"] == json.loads((o9 / "health.json").read_text())["updated"])
 
 # 6. the guards: a broken previous archive is a red run, never a fresh empty store
 bad = Path(tempfile.mkdtemp())
@@ -170,6 +180,11 @@ src = (ROOT / ".github/tools/match_archive.py").read_text()
 check("build asks no network", "urlopen" not in src.split("def build(")[1].split("\ndef ")[0] and "fetch(" not in src.split("def build(")[1].split("\ndef ")[0])
 check(f"the live run asks at most {ma.LIVE_MAX}, {ma.LIVE_GAP} s apart (the free key's 30 a minute)", ma.LIVE_MAX <= 40 and 60 / ma.LIVE_GAP <= 30)
 check("no Israel, no Western Sahara in the archive's names", not re.search(r"israel|western sahara|إسرائيل|الصحراء الغربية", src + wf, re.I))
+
+doc = (ROOT / "docs/MATCH-ARCHIVE.md").read_text()
+check("docs/MATCH-ARCHIVE.md describes every file a client reads", all(x in doc for x in ("index.json", "teams/&lt;teamId&gt;.json",
+      "h2h/&lt;lowId&gt;-&lt;highId&gt;.json", "results/&lt;leagueId&gt;.json", "store/&lt;leagueId&gt;/&lt;season&gt;.json")))
+check("the doc's format number is the code's", f"now `{ma.V}`" in doc and f"at most {ma.LAST}" in doc and f"at most {ma.RESULTS_MAX}" in doc)
 
 print("\n%s" % ("ALL PASS" if not failed else f"{failed} FAILED"))
 sys.exit(1 if failed else 0)

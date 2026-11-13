@@ -37,7 +37,8 @@ TEAMS = ROOT / "assets/shared/teams.json"
 NAMES = HERE / "archive_names.json"   # openfootball name -> TheSportsDB id, by hand (the report lists the names not found)
 FINAL = {"FT", "AET", "PEN", "MATCH FINISHED", "AOT", "AP"}
 DUR_H = {"Soccer": 2.5, "Basketball": 3.0, "American Football": 3.75}
-LAST, NEXT, H2H_MAX = 10, 5, 100
+LAST, NEXT, H2H_MAX, RESULTS_MAX = 10, 5, 100, 30
+V = 1   # the files' format; new fields may appear without a change here, a field changing meaning or going away raises it
 LIVE_MAX, LIVE_GAP = 40, 2.5
 KEEP_SEASONS = 8         # a league keeps its last 8 seasons in the store
 SIZE_CAP = 150_000_000   # over this, health.json says so (a problem, not a red run)
@@ -129,8 +130,8 @@ class Store:
             return ""
         lg, season = e["lg"] or "0", season_of(e)
         bucket = self.leagues.setdefault((lg, season), {})
-        if league_name:
-            self.meta.setdefault(lg, {"en": league_name})
+        if league_name and not self.meta.get(lg, {}).get("en"):
+            self.meta[lg] = {"en": league_name}
         k = key_of(e)
         if e.get("id"):
             dk = date_key(e)
@@ -167,13 +168,28 @@ class Store:
         for v in self.leagues.values():
             yield from v.values()
 
-    def write(self, out, stamp):
+    def name(self, lg):
+        return self.meta.get(lg, {}).get("en") or LEAGUE_EN.get(lg, "")
+
+    def write(self, out, prev, stamp):
         for (lg, season), evs in self.leagues.items():
-            p = out / "store" / lg / f"{season}.json"
-            p.parent.mkdir(parents=True, exist_ok=True)
-            body = {"league": self.meta.get(lg, {}).get("en", ""), "id": lg, "season": season, "updated": stamp,
+            body = {"v": V, "league": self.name(lg), "id": lg, "season": season, "updated": stamp,
                     "events": dict(sorted(evs.items(), key=lambda kv: (kv[1]["t"], kv[0])))}
-            p.write_text(json.dumps(body, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
+            emit(out, prev, f"store/{lg}/{season}.json", body)
+
+
+def emit(out, prev, rel, body):
+    """Writes out/rel. "updated" is when its content last changed: the previous file's stamp is kept when nothing else in it differs, so a
+    file a run did not change is byte for byte the same (and a client's cached copy stays good)."""
+    try:
+        old = json.loads((prev / rel).read_text(encoding="utf-8"))
+        if {k: v for k, v in old.items() if k != "updated"} == {k: v for k, v in body.items() if k != "updated"}:
+            body = dict(body, updated=old.get("updated", body["updated"]))
+    except (OSError, ValueError):
+        pass
+    p = out / rel
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps(body, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
 
 
 def teams_table():
@@ -184,15 +200,21 @@ def teams_table():
     return {str(r["id"]): r for r in rows}
 
 
+def game(e):
+    """A finished game as h2h and results give it."""
+    return {"id": e["id"] or key_of(e), "lg": e["lg"], "s": e["s"], "t": e["t"], "r": e["r"], "h": e["h"], "a": e["a"], "hn": e["hn"],
+            "an": e["an"], "hs": e["hs"], "as": e["as"], "st": e["st"]}
+
+
 def brief(e, team):
     """An event as a team's page reads it: its side, the other team, the score from its side."""
     home = e["h"] == team
-    return {"id": e["id"] or key_of(e), "lg": e["lg"], "t": e["t"], "home": home, "vs": e["a"] if home else e["h"],
+    return {"id": e["id"] or key_of(e), "lg": e["lg"], "s": e["s"], "t": e["t"], "home": home, "vs": e["a"] if home else e["h"],
             "vsn": e["an"] if home else e["hn"], "gf": (e["hs"] if home else e["as"]), "ga": (e["as"] if home else e["hs"]),
             "st": e["st"], "r": e["r"]}
 
 
-def derive(store, out, now, stamp):
+def derive(store, out, prev, now, stamp):
     table = teams_table()
     per_team, pairs, names = {}, {}, {}
     for e in store.events():
@@ -205,7 +227,7 @@ def derive(store, out, now, stamp):
         if stage(e) == 3:
             lo, hi = sorted((e["h"], e["a"]), key=lambda x: (len(x), x))
             pairs.setdefault(f"{lo}-{hi}", []).append(e)
-    for d in ("teams", "h2h"):
+    for d in ("teams", "h2h", "results"):
         shutil.rmtree(out / d, ignore_errors=True)
         (out / d).mkdir(parents=True)
     for team, evs in per_team.items():
@@ -213,19 +235,27 @@ def derive(store, out, now, stamp):
         ahead = sorted((e for e in evs if stage(e) == 1 and not e.get("pp") and (kickoff_t(e) or now) >= now - dt.timedelta(hours=3)),
                        key=lambda e: e["t"])[:NEXT]
         row = table.get(team, {})
-        body = {"id": team, "en": row.get("en") or names.get(team, {}).get("en", ""), "ar": row.get("ar", ""), "updated": stamp,
+        body = {"v": V, "id": team, "en": row.get("en") or names.get(team, {}).get("en", ""), "ar": row.get("ar", ""), "updated": stamp,
                 "last": [brief(e, team) for e in done], "next": [brief(e, team) for e in ahead]}
-        (out / "teams" / f"{team}.json").write_text(json.dumps(body, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
+        emit(out, prev, f"teams/{team}.json", body)
     for pair, evs in pairs.items():
         evs = sorted(evs, key=lambda e: e["t"], reverse=True)[:H2H_MAX]
-        body = {"pair": pair, "updated": stamp, "meetings": [{"id": e["id"] or key_of(e), "lg": e["lg"], "t": e["t"], "h": e["h"], "a": e["a"],
-                                                               "hs": e["hs"], "as": e["as"]} for e in evs]}
-        (out / "h2h" / f"{pair}.json").write_text(json.dumps(body, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
-    index = {"updated": stamp,
+        body = {"v": V, "pair": pair, "updated": stamp, "meetings": [game(e) for e in evs]}
+        emit(out, prev, f"h2h/{pair}.json", body)
+    by_lg = {}
+    for e in store.events():
+        if stage(e) == 3:
+            by_lg.setdefault(e["lg"], []).append(e)
+    for lg, evs in by_lg.items():
+        evs = sorted(evs, key=lambda e: (e["t"], key_of(e)), reverse=True)[:RESULTS_MAX]
+        body = {"v": V, "id": lg, "en": store.name(lg), "ar": LEAGUE_AR.get(lg, ""), "updated": stamp,
+                "results": [game(e) for e in evs]}
+        emit(out, prev, f"results/{lg}.json", body)
+    index = {"v": V, "updated": stamp,
              "teams": {t: {"en": table.get(t, {}).get("en") or n["en"], "ar": table.get(t, {}).get("ar", ""), "leagues": sorted(n["leagues"])}
                        for t, n in sorted(names.items())},
-             "leagues": {lg: {"en": store.meta.get(lg, {}).get("en", ""), "ar": LEAGUE_AR.get(lg, "")} for lg in sorted(store.meta)}}
-    (out / "index.json").write_text(json.dumps(index, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
+             "leagues": {lg: {"en": store.name(lg), "ar": LEAGUE_AR.get(lg, "")} for lg in sorted(store.meta)}}
+    emit(out, prev, "index.json", index)
     return len(per_team), len(pairs)
 
 
@@ -248,6 +278,8 @@ def read_league_files(leagues):
             if not c["lg"] and d.get("id"):
                 c["lg"] = str(d["id"])
             out.append(c)
+            if c["lg"] and e.get("strLeague"):
+                names.setdefault(c["lg"], e["strLeague"])
         if d.get("id") and d.get("league"):
             names[str(d["id"])] = d["league"]
         if isinstance(d.get("names"), dict):
@@ -294,8 +326,8 @@ def build(args):
     if out.exists() and out != prev:
         shutil.rmtree(out)
     out.mkdir(parents=True, exist_ok=True)
-    store.write(out, stamp)
-    teams, pairs = derive(store, out, now, stamp)
+    store.write(out, prev, stamp)
+    teams, pairs = derive(store, out, prev, now, stamp)
     size = sum(f.stat().st_size for f in out.rglob("*.json"))
     health = {"updated": stamp, "events": after, "new": counts["new"], "updated_events": counts["updated"], "pruned": dropped,
               "leagues": len({lg for lg, _ in store.leagues}), "seasons": len(store.leagues), "teams": teams, "pairs": pairs,
