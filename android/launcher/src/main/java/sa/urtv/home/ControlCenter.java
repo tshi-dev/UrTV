@@ -93,6 +93,10 @@ final class ControlCenter {
     private final List<Item> items = new ArrayList<>();   // everything this TV can show, in the default order
     private FrameLayout body;     // what the panel shows now: the main view or «تخصيص»
     private boolean customising;
+    /** 4.3.1 «شكل لوحة التحكم» (ControlShape): «عريض» (the default) or «طولي»; set in «تخصيص», read when the panel opens */
+    static final String LAYOUT_WIDE = ControlShape.WIDE, LAYOUT_TALL = ControlShape.TALL;
+    private boolean wideNow = true;
+    static boolean isWide(String saved) { return ControlShape.isWide(saved); }
 
     ControlCenter(Activity act, Host host) {
         this.act = act;
@@ -199,7 +203,9 @@ final class ControlCenter {
         android.util.DisplayMetrics dm = act.getResources().getDisplayMetrics();
         final int W = dm.widthPixels, H = dm.heightPixels;
         final int margin = Math.round(W * SAFE), top = Math.round(H * SAFE);
-        final int panelW = Math.round(W * PANEL_W), panelH = H - 2 * top;
+        wideNow = isWide(prefs().getString("layout", LAYOUT_WIDE));
+        final int[] sz = ControlShape.size(W, H, wideNow);
+        final int panelW = sz[0], panelH = sz[1];
         final boolean rtl = Dir.rtl();
 
         // the popup is the whole screen, clear: the panel slides across it from its own edge, a press outside closes it
@@ -217,9 +223,8 @@ final class ControlCenter {
         panel.setBackground(bg);
         body = new FrameLayout(act);
         panel.addView(body, new LinearLayout.LayoutParams(-1, -1));
-        FrameLayout.LayoutParams plp = new FrameLayout.LayoutParams(panelW, panelH, Dir.start() | Gravity.TOP);
-        plp.setMarginStart(margin);
-        plp.topMargin = top;
+        FrameLayout.LayoutParams plp = wideNow ? new FrameLayout.LayoutParams(panelW, panelH, Gravity.CENTER) : new FrameLayout.LayoutParams(panelW, panelH, Dir.start() | Gravity.TOP);
+        if (!wideNow) { plp.setMarginStart(margin); plp.topMargin = top; }
         root.addView(panel, plp);
 
         // The popup's own decor view takes Back before any view of ours does (it starts tracking on the press and dismisses on the release), so a key listener on a cell
@@ -247,9 +252,10 @@ final class ControlCenter {
             showMain();
         }
         // the slide: from beyond its own edge to its place in 220 ms
-        panel.setTranslationX((rtl ? 1 : -1) * (panelW + margin));
+        if (wideNow) panel.setAlpha(0f); else panel.setTranslationX((rtl ? 1 : -1) * (panelW + margin));
         pw.showAtLocation(anchor.getRootView(), Gravity.NO_GRAVITY, 0, 0);   // the whole screen, from its corner
-        panel.post(() -> panel.animate().translationX(0).setDuration(SLIDE_MS).setInterpolator(new DecelerateInterpolator()).start());
+        panel.post(() -> { if (wideNow) panel.animate().alpha(1f).setDuration(SLIDE_MS).start();   // the wide page comes in where it stands
+            else panel.animate().translationX(0).setDuration(SLIDE_MS).setInterpolator(new DecelerateInterpolator()).start(); });
     }
 
     // ---------------------------------------------------------------- what is kept on this TV
@@ -338,9 +344,10 @@ final class ControlCenter {
         if (!toggles.isEmpty()) {
             LinearLayout strip = new LinearLayout(act);
             strip.setOrientation(LinearLayout.HORIZONTAL);
+            strip.setGravity(Gravity.CENTER_HORIZONTAL);
             for (Item it : toggles) {
                 Cell c = new Cell(Cell.TOGGLE, it);
-                strip.addView(c, new LinearLayout.LayoutParams(0, dp(needsOn(it) ? 92 : 76), 1f));
+                strip.addView(c, wideNow ? new LinearLayout.LayoutParams(dp(150), dp(needsOn(it) ? 92 : 76)) : new LinearLayout.LayoutParams(0, dp(needsOn(it) ? 92 : 76), 1f));
                 focusables.add(c);
                 toggleCells.add(c);
             }
@@ -363,9 +370,23 @@ final class ControlCenter {
             if (!it.key.equals("update") && (off.contains(it.key) || shown >= MAX_ROWS)) continue;
             if (!it.key.equals("update")) shown++;
             Cell c = new Cell(Cell.ROW, it);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, dp(48));
-            if (!rowCells.isEmpty()) lp.topMargin = dp(4);
-            list.addView(c, lp);
+            if (wideNow) {   // two to a line, the first at the start side
+                if (rowCells.size() % 2 == 0) {
+                    LinearLayout line = new LinearLayout(act);
+                    line.setOrientation(LinearLayout.HORIZONTAL);
+                    LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(-1, dp(48));
+                    if (!rowCells.isEmpty()) llp.topMargin = dp(4);
+                    list.addView(line, llp);
+                }
+                LinearLayout line = (LinearLayout) list.getChildAt(list.getChildCount() - 1);
+                LinearLayout.LayoutParams clp = new LinearLayout.LayoutParams(0, -1, 1f);
+                if (rowCells.size() % 2 == 1) clp.setMarginStart(dp(8));
+                line.addView(c, clp);
+            } else {
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, dp(48));
+                if (!rowCells.isEmpty()) lp.topMargin = dp(4);
+                list.addView(c, lp);
+            }
             focusables.add(c);
             rowCells.add(c);
         }
@@ -387,10 +408,11 @@ final class ControlCenter {
         custom.setNextFocusDownId(!toggleCells.isEmpty() ? toggleCells.get(0).getId() : rowCells.isEmpty() ? custom.getId() : rowCells.get(0).getId());
         for (int i = 0; i < rowCells.size(); i++) {
             Cell c = rowCells.get(i);
-            c.setNextFocusLeftId(c.getId());
-            c.setNextFocusRightId(c.getId());
-            c.setNextFocusUpId(i == 0 ? (toggleCells.isEmpty() ? custom.getId() : toggleCells.get(0).getId()) : rowCells.get(i - 1).getId());
-            c.setNextFocusDownId(i == rowCells.size() - 1 ? c.getId() : rowCells.get(i + 1).getId());
+            int[] g = ControlShape.go(i, rowCells.size(), wideNow, Dir.rtl());
+            c.setNextFocusRightId(g[0] < 0 ? c.getId() : rowCells.get(g[0]).getId());
+            c.setNextFocusLeftId(g[1] < 0 ? c.getId() : rowCells.get(g[1]).getId());
+            c.setNextFocusUpId(g[2] == ControlShape.ABOVE ? (toggleCells.isEmpty() ? custom.getId() : toggleCells.get(0).getId()) : g[2] < 0 ? c.getId() : rowCells.get(g[2]).getId());
+            c.setNextFocusDownId(g[3] < 0 ? c.getId() : rowCells.get(g[3]).getId());
         }
         if (backFromCustom) {   // Back from «تخصيص»: the focus is on the button that opened it
             backFromCustom = false;
@@ -433,6 +455,18 @@ final class ControlCenter {
         LinearLayout.LayoutParams hlp = new LinearLayout.LayoutParams(-1, -2);
         hlp.bottomMargin = dp(8);
         col.addView(hint, hlp);
+
+        final Cell shape = new Cell(Cell.PILL, null);   // «شكل لوحة التحكم»: wide or tall, from the next time the panel opens
+        shape.label(S.t("شكل لوحة التحكم") + ": " + (isWide(prefs().getString("layout", LAYOUT_WIDE)) ? S.t("عريض") : S.t("طولي")), TEXT);
+        shape.setOnClickListener(v -> {
+            prefs().edit().putString("layout", isWide(prefs().getString("layout", LAYOUT_WIDE)) ? LAYOUT_TALL : LAYOUT_WIDE).apply();
+            customKey = "shape";
+            showCustom();
+        });
+        LinearLayout.LayoutParams shp = new LinearLayout.LayoutParams(-1, dp(44));
+        shp.bottomMargin = dp(8);
+        col.addView(shape, shp);
+        focusables.add(shape);
 
         LinearLayout list = new LinearLayout(act);
         list.setOrientation(LinearLayout.VERTICAL);
@@ -505,6 +539,7 @@ final class ControlCenter {
         // up and down by the lines: back, the list, the footer; no wrapping; left and right stay where they are (the arrows move a row)
         List<View> walk = new ArrayList<>();
         walk.add(back);
+        walk.add(shape);
         walk.addAll(cells);
         walk.add(done);
         for (int i = 0; i < walk.size(); i++) {
@@ -512,6 +547,11 @@ final class ControlCenter {
             c.setNextFocusUpId(i == 0 ? c.getId() : walk.get(i - 1).getId());
             c.setNextFocusDownId(i == walk.size() - 1 ? c.getId() : walk.get(i + 1).getId());
             if (c != done) { c.setNextFocusLeftId(c.getId()); c.setNextFocusRightId(c.getId()); }
+            if (c == shape) c.setOnKeyListener((vv, code, e) -> {
+                if (code != KeyEvent.KEYCODE_BACK) return false;
+                if (e.getAction() == KeyEvent.ACTION_UP) showMain();
+                return true;
+            });
         }
         done.setNextFocusLeftId(Dir.rtl() ? reset.getId() : done.getId());
         done.setNextFocusRightId(Dir.rtl() ? done.getId() : reset.getId());
@@ -531,7 +571,7 @@ final class ControlCenter {
             return true;
         });
         // the focus: the row just changed, else the first line of the list
-        View start = null;
+        View start = "shape".equals(customKey) ? shape : null;
         for (Cell c : cells) if (c.item != null && c.item.key.equals(customKey)) start = c;
         if (start == null) start = cells.isEmpty() ? back : cells.get(0);
         start.requestFocus();
