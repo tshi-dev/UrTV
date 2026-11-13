@@ -1,4 +1,4 @@
-«✅ GO — step 64 then step 65, back to back, NO STOPPING (owner's standing rule below)» — run step 64 A, then step 65 (pictures), on the installed build (4.3, build 268, now on master). TV muted. Never type the owner's PIN.
+«✅ GO — step 66 (short check of the 4.3 fixes build + Player v0.9.15)» — run step 66 (end of this file) on the newest build from apk-latest (275 or later; update from the app). TV muted. The standing rule below still holds. Never type the owner's PIN.
 
 **OWNER'S STANDING RULE (2026-11-12, until he says otherwise): do not stop and do not wait.** The owner is waiting on these pictures. (1) Run every part that needs no owner, in order, without pausing between parts or steps. (2) A part that needs the owner at the TV (step 64 B, the phone page): write «skipped: needs the owner» and go on at once; do not ask and wait. (3) If one item fails or can't be done, write one line why and go on to the next; never end the whole step for it. (4) Push the report after EACH part (and the pictures as soon as they exist), so the supervisor sees progress. (5) When the step is done, keep polling this file every 5 minutes for the next GO. The only reasons to stop: a prompt that would change the TV in a way the step does not describe, or anything that needs the owner's PIN.
 
@@ -1017,3 +1017,13 @@ Spare: `x5-quiz.png`: «الأسرع» question on the TV (no phone needed in th
 3. `p3-find-match.png`: «شاهد المباراة» from UrTV opening the Player's search for that match.
 4. `p4-settings.png`: the Player's settings with the update row and the report/suggestion QR.
 **Z** Restore as step 58 Z; Player uninstalled; demo list deleted.
+
+## step 66 — the 4.3 fixes build + Player v0.9.15 (newest apk-latest; TV muted; restore in Z)
+Short answers, ✓ / ✗ + one line. One picture only where something looks wrong.
+1. «تطبيقات مقترحة»: the UrTV Player tile shows the Player's logo (not the letter U). TiviMate is gone from the list.
+2. Control panel, sleep service off (as the owner has it): the «أطفئ الآن» tile shows «يحتاج تفعيل» under its name; OK opens the accessibility settings. Leave his accessibility choices as found.
+3. Player uninstalled: a match's sheet shows «ثبّت UrTV Player للمشاهدة»; OK opens «تطبيقات مقترحة». Install the Player from there (it should be v0.9.15, versionCode 123).
+4. Matches page: the owner's own «فرقك» and league rows are as before; below them «مباريات اليوم وبكرة» (Saudi league first, up to 12 rows, none repeated from above); ◀ ▶ days still work; open one of its rows: the sheet opens.
+5. Player v0.9.15: (a) a demo list where 3 channels share ONE url: move up and down the Channels tab 20 times, no crash; (b) from a match's «شاهد المباراة» with a list loaded: «ابحث في القنوات» opens the Player's channel search (the Player comes to the front, not the UrTV sheet); (c) UP from a page lands on the current tab; (d) preview OFF: play a channel: does STREAM_MUSIC stay muted? Then preview ON: same question. Report both.
+6. One picture for the posts while you are there: `marketing/4.3/x6-suggested.png`: «تطبيقات مقترحة» with the Player's logo, demo-clean.
+**Z** Demo list deleted, Player uninstalled, restore as step 58 Z.
