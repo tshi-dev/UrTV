@@ -1,0 +1,478 @@
+{
+ "when": "2026-11-13T15:49:45+00:00",
+ "clubs": {
+  "Al-Hilal": {
+   "eventslast": {
+    "count": 1,
+    "keys": [
+     "results"
+    ],
+    "newest": {
+     "idEvent": "2579964",
+     "strEvent": "Al-Hilal vs Shabab Al-Ahli Dubai",
+     "dateEvent": "2026-11-03",
+     "strTime": "18:15:00",
+     "strTimestamp": "2026-11-03T18:15:00",
+     "strStatus": "FT",
+     "intHomeScore": "2",
+     "intAwayScore": "0",
+     "idLeague": "4719",
+     "strLeague": "AFC Champions League Elite",
+     "strSeason": "2026-2027",
+     "idHomeTeam": "136013",
+     "idAwayTeam": "137828"
+    },
+    "all": [
+     {
+      "idEvent": "2579964",
+      "strEvent": "Al-Hilal vs Shabab Al-Ahli Dubai",
+      "dateEvent": "2026-11-03",
+      "strTime": "18:15:00",
+      "strTimestamp": "2026-11-03T18:15:00",
+      "strStatus": "FT",
+      "intHomeScore": "2",
+      "intAwayScore": "0",
+      "idLeague": "4719",
+      "strLeague": "AFC Champions League Elite",
+      "strSeason": "2026-2027",
+      "idHomeTeam": "136013",
+      "idAwayTeam": "137828"
+     }
+    ],
+    "competitions": [
+     "AFC Champions League Elite"
+    ]
+   },
+   "eventsnext": {
+    "count": 1,
+    "all": [
+     {
+      "idEvent": "2579967",
+      "strEvent": "Neftchi Fergana vs Al-Hilal",
+      "dateEvent": "2026-11-23",
+      "strTime": "13:45:00",
+      "strTimestamp": "2026-11-23T13:45:00",
+      "strStatus": "NS",
+      "intHomeScore": null,
+      "intAwayScore": null,
+      "idLeague": "4719",
+      "strLeague": "AFC Champions League Elite",
+      "strSeason": "2026-2027",
+      "idHomeTeam": "145007",
+      "idAwayTeam": "136013"
+     }
+    ],
+    "competitions": [
+     "AFC Champions League Elite"
+    ]
+   },
+   "league_newest_finished": {
+    "idEvent": "2573401",
+    "strEvent": "Al-Hilal vs Al-Fateh",
+    "dateEvent": "2026-10-31",
+    "strTime": "18:00:00",
+    "strTimestamp": "2026-10-31T18:00:00",
+    "strStatus": "FT",
+    "intHomeScore": "2",
+    "intAwayScore": "0",
+    "idLeague": "4668",
+    "strLeague": "Saudi-Arabian Pro League",
+    "strSeason": "2026-2027",
+    "idHomeTeam": "136013",
+    "idAwayTeam": "136011"
+   },
+   "eventslast_behind_league": false,
+   "requests": 2
+  },
+  "Al-Nassr": {
+   "eventslast": {
+    "count": 1,
+    "keys": [
+     "results"
+    ],
+    "newest": {
+     "idEvent": "2573403",
+     "strEvent": "Al-Nassr vs Al-Kholood",
+     "dateEvent": "2026-10-29",
+     "strTime": "18:00:00",
+     "strTimestamp": "2026-10-29T18:00:00",
+     "strStatus": "FT",
+     "intHomeScore": "5",
+     "intAwayScore": "3",
+     "idLeague": "4668",
+     "strLeague": "Saudi-Arabian Pro League",
+     "strSeason": "2026-2027",
+     "idHomeTeam": "136022",
+     "idAwayTeam": "149112"
+    },
+    "all": [
+     {
+      "idEvent": "2573403",
+      "strEvent": "Al-Nassr vs Al-Kholood",
+      "dateEvent": "2026-10-29",
+      "strTime": "18:00:00",
+      "strTimestamp": "2026-10-29T18:00:00",
+      "strStatus": "FT",
+      "intHomeScore": "5",
+      "intAwayScore": "3",
+      "idLeague": "4668",
+      "strLeague": "Saudi-Arabian Pro League",
+      "strSeason": "2026-2027",
+      "idHomeTeam": "136022",
+      "idAwayTeam": "149112"
+     }
+    ],
+    "competitions": [
+     "Saudi-Arabian Pro League"
+    ]
+   },
+   "eventsnext": {
+    "count": 1,
+    "all": [
+     {
+      "idEvent": "2573374",
+      "strEvent": "Al-Ahli vs Al-Nassr",
+      "dateEvent": "2026-11-20",
+      "strTime": "17:30:00",
+      "strTimestamp": "2026-11-20T17:30:00",
+      "strStatus": "NS",
+      "intHomeScore": null,
+      "intAwayScore": null,
+      "idLeague": "4668",
+      "strLeague": "Saudi-Arabian Pro League",
+      "strSeason": "2026-2027",
+      "idHomeTeam": "137721",
+      "idAwayTeam": "136022"
+     }
+    ],
+    "competitions": [
+     "Saudi-Arabian Pro League"
+    ]
+   },
+   "league_newest_finished": {
+    "idEvent": "2573311",
+    "strEvent": "Al-Riyadh vs Al-Nassr",
+    "dateEvent": "2026-08-21",
+    "strTime": "16:00:00",
+    "strTimestamp": "2026-08-21T16:00:00",
+    "strStatus": "FT",
+    "intHomeScore": "0",
+    "intAwayScore": "4",
+    "idLeague": "4668",
+    "strLeague": "Saudi-Arabian Pro League",
+    "strSeason": "2026-2027",
+    "idHomeTeam": "147445",
+    "idAwayTeam": "136022"
+   },
+   "eventslast_behind_league": false,
+   "requests": 2
+  },
+  "Barcelona": {
+   "eventslast": {
+    "count": 1,
+    "keys": [
+     "results"
+    ],
+    "newest": {
+     "idEvent": "2594616",
+     "strEvent": "Barcelona vs Aston Villa",
+     "dateEvent": "2026-11-03",
+     "strTime": "20:00:00",
+     "strTimestamp": "2026-11-03T20:00:00",
+     "strStatus": "FT",
+     "intHomeScore": "3",
+     "intAwayScore": "0",
+     "idLeague": "4480",
+     "strLeague": "UEFA Champions League",
+     "strSeason": "2026-2027",
+     "idHomeTeam": "133739",
+     "idAwayTeam": "133601"
+    },
+    "all": [
+     {
+      "idEvent": "2594616",
+      "strEvent": "Barcelona vs Aston Villa",
+      "dateEvent": "2026-11-03",
+      "strTime": "20:00:00",
+      "strTimestamp": "2026-11-03T20:00:00",
+      "strStatus": "FT",
+      "intHomeScore": "3",
+      "intAwayScore": "0",
+      "idLeague": "4480",
+      "strLeague": "UEFA Champions League",
+      "strSeason": "2026-2027",
+      "idHomeTeam": "133739",
+      "idAwayTeam": "133601"
+     }
+    ],
+    "competitions": [
+     "UEFA Champions League"
+    ]
+   },
+   "eventsnext": {
+    "count": 1,
+    "all": [
+     {
+      "idEvent": "2506289",
+      "strEvent": "Barcelona vs Villarreal",
+      "dateEvent": "2026-11-22",
+      "strTime": "13:00:00",
+      "strTimestamp": "2026-11-22T13:00:00",
+      "strStatus": "NS",
+      "intHomeScore": null,
+      "intAwayScore": null,
+      "idLeague": "4335",
+      "strLeague": "Spanish La Liga",
+      "strSeason": "2026-2027",
+      "idHomeTeam": "133739",
+      "idAwayTeam": "133740"
+     }
+    ],
+    "competitions": [
+     "Spanish La Liga"
+    ]
+   },
+   "league_newest_finished": {
+    "idEvent": "2506279",
+    "strEvent": "Atlético Madrid vs Barcelona",
+    "dateEvent": "2026-11-08",
+    "strTime": "20:00:00",
+    "strTimestamp": "2026-11-08T20:00:00",
+    "strStatus": "FT",
+    "intHomeScore": "1",
+    "intAwayScore": "2",
+    "idLeague": "4335",
+    "strLeague": "Spanish La Liga",
+    "strSeason": "2026-2027",
+    "idHomeTeam": "133729",
+    "idAwayTeam": "133739"
+   },
+   "eventslast_behind_league": true,
+   "requests": 2
+  },
+  "Real Madrid": {
+   "eventslast": {
+    "count": 1,
+    "keys": [
+     "results"
+    ],
+    "newest": {
+     "idEvent": "2594627",
+     "strEvent": "Real Madrid vs RB Leipzig",
+     "dateEvent": "2026-10-21",
+     "strTime": "19:00:00",
+     "strTimestamp": "2026-10-21T19:00:00",
+     "strStatus": "FT",
+     "intHomeScore": "4",
+     "intAwayScore": "1",
+     "idLeague": "4480",
+     "strLeague": "UEFA Champions League",
+     "strSeason": "2026-2027",
+     "idHomeTeam": "133738",
+     "idAwayTeam": "134695"
+    },
+    "all": [
+     {
+      "idEvent": "2594627",
+      "strEvent": "Real Madrid vs RB Leipzig",
+      "dateEvent": "2026-10-21",
+      "strTime": "19:00:00",
+      "strTimestamp": "2026-10-21T19:00:00",
+      "strStatus": "FT",
+      "intHomeScore": "4",
+      "intAwayScore": "1",
+      "idLeague": "4480",
+      "strLeague": "UEFA Champions League",
+      "strSeason": "2026-2027",
+      "idHomeTeam": "133738",
+      "idAwayTeam": "134695"
+     }
+    ],
+    "competitions": [
+     "UEFA Champions League"
+    ]
+   },
+   "eventsnext": {
+    "count": 1,
+    "all": [
+     {
+      "idEvent": "2506293",
+      "strEvent": "Real Madrid vs Celta Vigo",
+      "dateEvent": "2026-11-21",
+      "strTime": "20:00:00",
+      "strTimestamp": "2026-11-21T20:00:00",
+      "strStatus": "NS",
+      "intHomeScore": null,
+      "intAwayScore": null,
+      "idLeague": "4335",
+      "strLeague": "Spanish La Liga",
+      "strSeason": "2026-2027",
+      "idHomeTeam": "133738",
+      "idAwayTeam": "133937"
+     }
+    ],
+    "competitions": [
+     "Spanish La Liga"
+    ]
+   },
+   "league_newest_finished": {
+    "idEvent": "2506183",
+    "strEvent": "Espanyol vs Real Madrid",
+    "dateEvent": "2026-08-22",
+    "strTime": "19:30:00",
+    "strTimestamp": "2026-08-22T19:30:00",
+    "strStatus": "FT",
+    "intHomeScore": "1",
+    "intAwayScore": "2",
+    "idLeague": "4335",
+    "strLeague": "Spanish La Liga",
+    "strSeason": "2026-2027",
+    "idHomeTeam": "133734",
+    "idAwayTeam": "133738"
+   },
+   "eventslast_behind_league": false,
+   "requests": 4
+  }
+ },
+ "pairs": {
+  "Al-Hilal v Al-Nassr": {
+   "Al-Hilal_vs_Al-Nassr": {
+    "count": 1,
+    "seasons": [
+     "2026-2027"
+    ],
+    "newest": {
+     "idEvent": "2573601",
+     "strEvent": "Al-Hilal vs Al-Nassr",
+     "dateEvent": "2027-05-29",
+     "strTime": "18:00:00",
+     "strTimestamp": "2027-05-29T18:00:00",
+     "strStatus": "NS",
+     "intHomeScore": null,
+     "intAwayScore": null,
+     "idLeague": "4668",
+     "strLeague": "Saudi-Arabian Pro League",
+     "strSeason": "2026-2027",
+     "idHomeTeam": "136013",
+     "idAwayTeam": "136022"
+    },
+    "finished": 0,
+    "requests": 1
+   },
+   "Al-Hilal_vs_Al-Nassr season 2026-2027": {
+    "count": 1,
+    "requests": 1
+   },
+   "Al-Nassr_vs_Al-Hilal": {
+    "count": 1,
+    "seasons": [
+     "2026-2027"
+    ],
+    "newest": {
+     "idEvent": "2573449",
+     "strEvent": "Al-Nassr vs Al-Hilal",
+     "dateEvent": "2027-01-01",
+     "strTime": "17:30:00",
+     "strTimestamp": "2027-01-01T17:30:00",
+     "strStatus": "NS",
+     "intHomeScore": null,
+     "intAwayScore": null,
+     "idLeague": "4668",
+     "strLeague": "Saudi-Arabian Pro League",
+     "strSeason": "2026-2027",
+     "idHomeTeam": "136022",
+     "idAwayTeam": "136013"
+    },
+    "finished": 0,
+    "requests": 1
+   },
+   "Al-Nassr_vs_Al-Hilal season 2026-2027": {
+    "count": 1,
+    "requests": 1
+   },
+   "league season filtered": {
+    "count": 0,
+    "events": []
+   }
+  },
+  "Barcelona v Real Madrid": {
+   "Barcelona_vs_Real_Madrid": {
+    "count": 1,
+    "seasons": [
+     "2026-2027"
+    ],
+    "newest": {
+     "idEvent": "2506259",
+     "strEvent": "Barcelona vs Real Madrid",
+     "dateEvent": "2026-10-25",
+     "strTime": "20:00:00",
+     "strTimestamp": "2026-10-25T20:00:00",
+     "strStatus": "FT",
+     "intHomeScore": "1",
+     "intAwayScore": "2",
+     "idLeague": "4335",
+     "strLeague": "Spanish La Liga",
+     "strSeason": "2026-2027",
+     "idHomeTeam": "133739",
+     "idAwayTeam": "133738"
+    },
+    "finished": 1,
+    "requests": 1
+   },
+   "Barcelona_vs_Real_Madrid season 2026-2027": {
+    "count": 1,
+    "requests": 1
+   },
+   "Real_Madrid_vs_Barcelona": {
+    "count": 1,
+    "seasons": [
+     "2026-2027"
+    ],
+    "newest": {
+     "idEvent": "2506512",
+     "strEvent": "Real Madrid vs Barcelona",
+     "dateEvent": "2027-05-09",
+     "strTime": "15:00:00",
+     "strTimestamp": "2027-05-09T15:00:00",
+     "strStatus": "NS",
+     "intHomeScore": null,
+     "intAwayScore": null,
+     "idLeague": "4335",
+     "strLeague": "Spanish La Liga",
+     "strSeason": "2026-2027",
+     "idHomeTeam": "133738",
+     "idAwayTeam": "133739"
+    },
+    "finished": 0,
+    "requests": 1
+   },
+   "Real_Madrid_vs_Barcelona season 2026-2027": {
+    "count": 1,
+    "requests": 1
+   },
+   "league season filtered": {
+    "count": 0,
+    "events": []
+   }
+  }
+ },
+ "requests": {
+  "thesportsdb": 23,
+  "wikidata and wikipedia": 0,
+  "rate limited (429)": 1,
+  "retried": 0,
+  "empty answers": 0
+ },
+ "seasons": {
+  "4668": {
+   "season": "2026-2027",
+   "events": 15,
+   "past_league_events": 1
+  },
+  "4335": {
+   "season": "2026-2027",
+   "events": 15,
+   "past_league_events": 1
+  }
+ }
+}
