@@ -2,6 +2,16 @@
 
 Newest first. `next` is where changes land first; a release is what was tested there.
 
+## 4.3.1
+
+**بالعربي، باختصار:**
+- **إقران التلفزيون برمز من صفحة الجوال (تجريبي):** من إعداد التلفزيون تبدأ الإقران (برقم العائلة السري)، وفي إعدادات التلفزيون تشغّل «تصحيح الأخطاء اللاسلكي» وتفتح «إقران الجهاز برمز»، وتكتب الرموز الستة في صفحة الجوال. بعدها التلفزيون يتصل وحده بدون كابل.
+- **تطبيقات مقترحة:** أيقونة UrTV Player الحقيقية على بطاقته، وأُزيل مشغّل IPTV منها.
+
+**In English, in short:**
+- **Pair the TV with a code from the phone page (experimental):** start the pairing in the TV's setup (behind the family PIN), turn on Wireless debugging and open "Pair device with pairing code" in the TV's settings, then type the six digits in the phone page. After that the TV connects by itself, without a cable.
+- **Suggested apps:** UrTV Player's real icon on its tile; the IPTV player is gone from the list.
+
 ## 4.3
 
 **بالعربي، باختصار:**
