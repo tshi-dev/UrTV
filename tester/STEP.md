@@ -1,4 +1,4 @@
-«✅ GO — step 66 (short check of the 4.3 fixes build + Player v0.9.15)» — run step 66 (end of this file) on the newest build from apk-latest (274 or later; update from the app). TV muted. The standing rule below still holds. Never type the owner's PIN.
+«✅ GO — step 66, then step 67 (pairing with a code, 4.3.1 test build on apk-next)» — run step 66 on the build from apk-latest (274), then switch the update channel to next and run step 67 (end of this file) on the newest apk-next build. TV muted. The standing rule below still holds. Never type the owner's PIN.
 
 **OWNER'S STANDING RULE (2026-11-12, until he says otherwise): do not stop and do not wait.** The owner is waiting on these pictures. (1) Run every part that needs no owner, in order, without pausing between parts or steps. (2) A part that needs the owner at the TV (step 64 B, the phone page): write «skipped: needs the owner» and go on at once; do not ask and wait. (3) If one item fails or can't be done, write one line why and go on to the next; never end the whole step for it. (4) Push the report after EACH part (and the pictures as soon as they exist), so the supervisor sees progress. (5) When the step is done, keep polling this file every 5 minutes for the next GO. The only reasons to stop: a prompt that would change the TV in a way the step does not describe, or anything that needs the owner's PIN.
 
@@ -1027,3 +1027,16 @@ Short answers, ✓ / ✗ + one line. One picture only where something looks wron
 5. Player v0.9.15: (a) a demo list where 3 channels share ONE url: move up and down the Channels tab 20 times, no crash; (b) from a match's «شاهد المباراة» with a list loaded: «ابحث في القنوات» opens the Player's channel search (the Player comes to the front, not the UrTV sheet); (c) UP from a page lands on the current tab; (d) preview OFF: play a channel: does STREAM_MUSIC stay muted? Then preview ON: same question. Report both.
 6. One picture for the posts while you are there: `marketing/4.3/x6-suggested.png`: «تطبيقات مقترحة» with the Player's logo, demo-clean.
 **Z** Demo list deleted, Player uninstalled, restore as step 58 Z.
+
+## step 67 — pairing the TV with a code (4.3.1 test build, newest apk-next; after step 66; TV muted; restore in Z)
+Why: this TV (Android 14) never shows «Allow USB debugging?» to our app. The new way: Wireless debugging + a 6-digit pairing code typed on the phone page. First real run of it anywhere.
+The owner does ONE thing: presses «ابدأ الإقران» and types his family PIN. You never type the PIN. Everything else is yours.
+1. Before: disabled-apps list, Home holder, settings lists, `settings get global adb_wifi_enabled`. Start the TV-side log for `UrTVFactory` (the shell-redirect way that worked in step 61).
+2. Open «تخلّص من واجهة المصنع» → «ابدأ». After the two old paths fail (about 90 s) the page shows the pairing steps and the buttons «ابدأ الإقران», «افتح خيارات المطوّر», «رجوع». Picture of that page.
+3. Ask the owner in your chat: «اضغط ابدأ الإقران واكتب رمزك». After that the TV shows the phone-control screen (address + code + QR). Open the phone page from the PC browser as in step 64 B (the owner or you press «سماح» on the TV).
+4. On the TV: Developer options → turn on «تصحيح الأخطاء اللاسلكي» → «إقران الجهاز برمز الإقران». Leave that window open. Read the 6 digits from the screen.
+5. On the phone page → الإعدادات → «إقران التلفزيون» (it appears only while pairing is armed) → type the 6 digits → «إقران». Report what both screens say.
+6. Back on the factory page: does it say paired and show the list of what would be switched off? If yes, and only if the list matches what step 59 E describes: go on (the owner confirms twice or tells you to), see the result, then «رجّع واجهة المصنع». Disabled-apps list after restore must equal the before list; Home holder `sa.urtv.home`.
+7. The log: every `UrTVFactory` line from «armed» to the end (it never holds the code). If it failed: which stage (no pairing service found / code refused / no connect service / TLS failed) and the exact screen text. Likely first failures to look for: the phone page not reachable while Settings is in front, or no connect service found after pairing.
+8. Also on this build: «أطفئ الآن» and the home still work as in step 66 (two lines).
+**Z** Turn «تصحيح الأخطاء اللاسلكي» OFF again (unless it was on before), phone control stopped, update channel back to latest and the apk-latest build reinstalled if the app allows going back (otherwise say which build stays), log removed, restore as step 58 Z.
