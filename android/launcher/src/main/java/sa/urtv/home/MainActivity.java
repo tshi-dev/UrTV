@@ -2800,7 +2800,8 @@ public class MainActivity extends Activity {
         List<TextView> rows = new ArrayList<>();
         for (int m : SleepTimer.MINUTES) rows.add(inputRow(S.t("%s دقيقة", arabicDigits(String.valueOf(m))), () -> SleepTimer.start(this, m)));
         if (SleepTimer.minutesLeft(this) > 0) rows.add(inputRow(S.t("إلغاء"), () -> SleepTimer.start(this, 0)));
-        if (!SleepService.enabled()) {   // without it the end only stops the sound and brings the screensaver: say so, and where to turn it on
+        if (PpTest.noA11y()) rows.add(inputRow(S.t("إطفاء الشاشة: %s", S.tv(PpTest.LINE)), () -> { }));   // a Play Protect test build: no sleep service
+        else if (!SleepService.enabled()) {   // without it the end only stops the sound and brings the screensaver: say so, and where to turn it on
             rows.add(inputRow(S.t("لإطفاء الشاشة: فعّل «%s»", getString(R.string.sleep_service_label)), () -> launchGuarded(ParentalPolicy.SLEEP_ACCESSIBILITY, new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS), "إعدادات التلفزيون")));
         }
         for (TextView r : rows) {

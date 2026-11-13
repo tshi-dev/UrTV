@@ -7,6 +7,11 @@ on:
     # a release whose last commit touches none of these builds nothing (4.1's first try): its merge then needs a change here or in VERSION
     # 4.2 too: a fix after the release merge that touches only .github/tools (the cities generator) builds nothing, and its own build is this line, and so is the veil test's CI tolerance after it
   workflow_dispatch:
+    inputs:
+      pp_test:
+        description: "work/pp-test only: build the Play Protect test variants A and B of the home app and publish them to the apk-test pre-release ('yes')"
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -98,6 +103,46 @@ jobs:
           path: |
             urtv-screensaver.apk
             urtv-home.apk
+
+      # Play Protect test builds (work/pp-test, never merged): the home app as A (no accessibility services) and B (A, and no install/uninstall
+      # permissions), the same applicationId and key, published ONLY to the apk-test pre-release; never apk-latest/apk-next, no version.txt
+      - name: Play Protect test builds
+        if: inputs.pp_test == 'yes' && github.ref_name == 'work/pp-test'
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          URTV_BRANCH: master   # the page the home's card reads: the live one
+          URTV_PIN_RECOVERY: ${{ secrets.PIN_RECOVERY_RECORD }}
+        run: |
+          apksigner=$(ls -d "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)
+          aapt2=$(ls -d "$ANDROID_HOME"/build-tools/*/aapt2 | sort -V | tail -1)
+          for v in A B; do
+            gradle -p android :launcher:assembleRelease -PppTest=$v --no-daemon
+            cp android/launcher/build/outputs/apk/release/launcher-release.apk urtv-home-test-$v.apk
+            "$aapt2" dump xmltree --file AndroidManifest.xml urtv-home-test-$v.apk > manifest-$v.txt
+            if grep -Eq 'SleepService|TypeService' manifest-$v.txt; then echo "::error::test $v still declares an accessibility service"; exit 1; fi
+            if [ $v = B ] && grep -Eq 'REQUEST_INSTALL_PACKAGES|REQUEST_DELETE_PACKAGES' manifest-$v.txt; then echo "::error::test B still asks to install or delete"; exit 1; fi
+            grep -Eq 'versionName.*-test-'$v manifest-$v.txt || { echo "::error::test $v has no -test-$v versionName"; exit 1; }
+            "$apksigner" verify --print-certs urtv-home-test-$v.apk | grep -m2 -E 'certificate (DN|SHA-256)'
+            sha256sum urtv-home-test-$v.apk | tee urtv-home-test-$v.apk.sha256
+            grep -E 'uses-permission|android:name\(.*(Service|Receiver)' manifest-$v.txt | sed 's/^ *//' | sort | uniq | head -80
+          done
+
+      - name: Publish the test builds to apk-test (a pre-release, nothing else)
+        if: inputs.pp_test == 'yes' && github.ref_name == 'work/pp-test'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-test
+          target_commitish: ${{ github.sha }}
+          name: Play Protect test builds (not for general use)
+          body: "Home app ${{ steps.ver.outputs.name }}-test-A and -test-B (build ${{ github.run_number }}), built from work/pp-test at ${{ github.sha }} with the release key. A: without the two accessibility services; B: also without installing or uninstalling other apps. For one test only; the normal update replaces them."
+          fail_on_unmatched_files: true
+          files: |
+            urtv-home-test-A.apk
+            urtv-home-test-A.apk.sha256
+            urtv-home-test-B.apk
+            urtv-home-test-B.apk.sha256
+          prerelease: true
+          make_latest: false
 
       # fixed download links: .../releases/download/apk-latest/urtv-screensaver.apk and urtv-home.apk
       - name: Publish to the apk-latest release

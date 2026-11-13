@@ -50,7 +50,7 @@ public final class A11yHeal extends BroadcastReceiver {
 
     /** The home's first show in this process: the same check, a moment later. */
     static void onStart(final Context c) {
-        if (checkedThisProcess) return;
+        if (checkedThisProcess || PpTest.noA11y()) return;   // a Play Protect test build has no service of ours to heal
         checkedThisProcess = true;
         final Context app = c.getApplicationContext();
         UpdateCarry.after(app, "start");   // the home's first show: the same step, within the lifetime
@@ -59,6 +59,7 @@ public final class A11yHeal extends BroadcastReceiver {
 
     /** One of our services is in the TV's list but Android does not run it (the phone page says so instead of doing nothing). */
     public static boolean stuck(Context c) {
+        if (PpTest.noA11y()) return false;   // a test build has none: the page says the service is off, not stuck
         String list = read(c, LIST);
         return (A11yList.has(list, TYPE) && !TypeService.enabled()) || (A11yList.has(list, SLEEP) && !SleepService.enabled());
     }

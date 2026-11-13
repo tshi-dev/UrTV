@@ -6,6 +6,7 @@ final class AppStore {
 
     /** «إلغاء التثبيت» is offered when the app is one the person installed (deletable), read from the package manager */
     static boolean canUninstall(android.content.Context c, String pkg) {
+        if (PpTest.noInstall()) return false;   // a Play Protect test build (B) has no REQUEST_DELETE_PACKAGES
         try {
             android.content.pm.ApplicationInfo a = c.getPackageManager().getApplicationInfo(pkg, 0);
             boolean system = (a.flags & (android.content.pm.ApplicationInfo.FLAG_SYSTEM | android.content.pm.ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0;

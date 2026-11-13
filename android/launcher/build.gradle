@@ -12,6 +12,13 @@ def pinRecoveryRecord() {
     return r
 }
 
+// -PppTest=A: the manifest without the two accessibility services; B: and without REQUEST_INSTALL_PACKAGES / REQUEST_DELETE_PACKAGES. Else ''.
+def ppTest() {
+    def v = (project.findProperty('ppTest') ?: '').toString()
+    if (v && !(v in ['A', 'B'])) throw new GradleException('ppTest is A or B')
+    return v
+}
+
 android {
     namespace 'sa.urtv.home'
     compileSdk 34
@@ -29,6 +36,13 @@ android {
         // the PIN recovery code's salted PBKDF2 record, never the code (AGENTS.md, «PIN recovery»): from URTV_PIN_RECOVERY (CI: the
         // PIN_RECOVERY_RECORD secret) or the untracked android/pin-recovery.local; neither = no recovery code in this build
         buildConfigField "String", "PIN_RECOVERY", "\"${pinRecoveryRecord()}\""
+        // a Play Protect test build (-PppTest=A or B; never merged, never on apk-latest/apk-next): PpTest.java and src/pptest{A,B}/AndroidManifest.xml
+        buildConfigField "String", "PP_TEST", "\"${ppTest()}\""
+        if (ppTest()) {
+            versionNameSuffix "-test-${ppTest()}"
+            // a test build says «4.3-test-A» wherever the version is shown (this later definition replaces MARKETING's above)
+            buildConfigField "String", "MARKETING", "\"${file('../../VERSION').text.trim()}-test-${ppTest()}\""
+        }
     }
 
     buildFeatures {
@@ -60,6 +74,8 @@ android {
         main { assets.srcDirs += ["$buildDir/generated/wallpapers", "$buildDir/generated/web", "$buildDir/generated/i18n"] }
         // 4.3 A2: the live HLS station's player (ExoPlayback, Media3 ExoPlayer); apart so tests/android_compile.sh compiles the rest without Media3
         main.java.srcDirs += ['src/exo/java']
+        // a Play Protect test build's manifest overlay (tools:node="remove" of the services and permissions), merged over main's
+        if (ppTest()) release.manifest.srcFile "src/pptest${ppTest()}/AndroidManifest.xml"
     }
 
     compileOptions {

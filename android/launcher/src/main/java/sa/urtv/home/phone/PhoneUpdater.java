@@ -354,6 +354,10 @@ public final class PhoneUpdater {
             if (busy()) return status();
             found = state.equals("found");   // the phone page only read version.txt: the files come now, with their checks
             if (!found && (!state.equals("available") || ready.isEmpty())) return status();   // the checks come first: nothing is installed that wasn't checked
+            if (sa.urtv.home.PpTest.noInstall()) {   // a Play Protect test build (B): no in-app update
+                set("error", "test_build", sa.urtv.home.S.tv(sa.urtv.home.PpTest.LINE));
+                return status();
+            }
             if (!canInstall(app)) {
                 set("error", "need_permission", "");
                 return status();

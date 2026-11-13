@@ -71,6 +71,7 @@ public final class UpdateCarry {
     static void after(final Context c, String why) { after(c, why, 0); }
 
     static void after(final Context c, String why, long gen) {
+        if (PpTest.noA11y()) return;   // a Play Protect test build has no accessibility service to carry
         synchronized (UpdateCarry.class) {
             try {
                 step(c, why, gen);

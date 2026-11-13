@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Play Protect test build B (-PppTest=B): A, and without installing or uninstalling other apps. Never merged into master or next. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" tools:node="remove" />
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" tools:node="remove" />
+    <application>
+        <service android:name="sa.urtv.home.SleepService" tools:node="remove" />
+        <service android:name="sa.urtv.home.TypeService" tools:node="remove" />
+    </application>
+</manifest>

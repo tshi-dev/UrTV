@@ -163,6 +163,7 @@ public class SuggestedAppsActivity extends Activity {
 
     /** null when Android's install screen was asked for; else the words for the button (it did not go) */
     private String install(SuggestedApps.App a) {
+        if (PpTest.noInstall()) return S.tv(PpTest.LINE);   // a Play Protect test build (B) has no REQUEST_INSTALL_PACKAGES
         File f = new File(getCacheDir(), "suggested.apk");
         try {
             if (a.kind == SuggestedApps.Kind.MIRROR) return MirrorInstall.mirror(this, a, f, RESULT, 0);
