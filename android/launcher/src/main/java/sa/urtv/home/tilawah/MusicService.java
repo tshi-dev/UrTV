@@ -79,6 +79,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     private static volatile int rebuffers, errors;
     private static volatile long rebufferMs, lastErrorAt;
     private static volatile String lastError = "";
+    private static volatile String radioFault = "";   // 4.3.1 the last station fault for the report: RadioFault.record (no address)
     /** which player plays now ("exo" for a live HLS station, else "mediaplayer") and how many quiet restarts the stall watchdog made */
     private static volatile String playerKind = "";
     private static volatile int stallRestarts;
@@ -224,6 +225,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     static int errorCount() { return errors; }
     static long rebufferMillis() { return rebufferMs; }
     static String lastErrorCode() { return lastError; }
+    static String radioFaultRecord() { return radioFault; }
     static long lastErrorAt() { return lastErrorAt; }
 
     // ---- starting it from an activity or the receiver ----
@@ -753,6 +755,19 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         radioState.reconnects = 0;
         radioState.formatEveryTime = true;
         radioState.spent = false;
+        radioState.failures = 0;
+    }
+
+    /** the TV has a network that reaches the internet now (a permission the app already holds); true when it cannot tell */
+    private boolean online() {
+        try {
+            android.net.ConnectivityManager cm = (android.net.ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            android.net.Network n = cm == null ? null : cm.getActiveNetwork();
+            android.net.NetworkCapabilities c = n == null ? null : cm.getNetworkCapabilities(n);
+            return cm == null || (c != null && c.hasCapability(android.net.NetworkCapabilities.NET_CAPABILITY_VALIDATED));
+        } catch (RuntimeException e) {
+            return true;
+        }
     }
 
     private void onPlaybackError(int what, int extra) {
@@ -769,8 +784,13 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         final String failed = currentUrl;
         if (source == Prefs.SOURCE_RADIO && radioAddress != null) {   // 4.3 (a user report on 4.2): retried, joined again, the second source, and only then said
             RadioPolicy.Step step = RadioPolicy.after(radioState, what, extra, radioAlt != null, SystemClock.elapsedRealtime());
+            final String faultCode = PlayerFault.code(what, extra);
+            final int httpCode = player == null ? 0 : player.httpCode;
+            radioFault = RadioFault.record("radio-" + station, faultCode, httpCode, Build.VERSION.SDK_INT, player == null ? "" : player.decoder);
             if (step == RadioPolicy.Step.FAIL) {
-                error = RadioPolicy.message(radioState, what, extra);
+                final int made = radioState.failures;   // every failure since the pick, both sources
+                error = what == PlayerFault.SERVER_DIED ? RadioPolicy.message(radioState, what, extra)
+                    : RadioFault.message(RadioFault.reason(online(), faultCode, httpCode, radioState.played, radioState.formatEveryTime, made), made);
                 updateSession();
                 updateNotification();
                 save();

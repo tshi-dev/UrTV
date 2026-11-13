@@ -232,6 +232,26 @@ def live_versions():
     return f"Versions: screensaver {found[0]}, home {found[1]}"
 
 
+def radio_line(out):
+    """«Radio, last error: station=… category=… http=… sdk=… decoder=…» from the home app's player status (its radio_fault= field: letters, digits
+    and . _ - only, no address); None when there is none (no station failed since the app started)."""
+    m = re.search(r"radio_fault=([A-Za-z0-9._=;-]+)", out or "")
+    if not m or not m.group(1).startswith("station="):
+        return None
+    return "Radio, last error: " + m.group(1).replace(";", " ")
+
+
+def live_radio():
+    """The radio's last error as the TV says it now; None when the TV does not answer or nothing failed."""
+    tv_py = Path(__file__).resolve().parent / "tv.py"
+    try:
+        out = subprocess.run([sys.executable, "-I", str(tv_py), "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.GET_PLAYER"],
+                             capture_output=True, text=True, timeout=60, env={**os.environ, "TV_TRIES": "1"})
+    except Exception:  # noqa: BLE001
+        return None
+    return radio_line(out.stdout) if out.returncode == 0 else None
+
+
 def steps():
     log = RUN / "steps.log"
     if not log.exists():
@@ -384,6 +404,8 @@ def main():
         parts += ["", "Steps, minutes:seconds:", *steps(), *trouble(), "", "Memory:", *memory(summary), "", "Checks:", *report_checks()]
     else:   # a problem from a computer that didn't set this TV up: the apps' versions, if the TV answers
         parts += ["", "Setup results: not on this computer", *([live] if (live := live_versions()) else [])]
+    if (radio := live_radio()):
+        parts += ["", radio]
     if notes:
         parts += ["", "Notes from the agent:", notes]
     if args.owner.strip():

@@ -645,3 +645,7 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 يحتاج تفعيل، اضغط للتفعيل	Needs turning on, press to set up
 فعّل «%s»	Turn on “%s”
 يحتاج تفعيل	Needs turning on
+لا يوجد اتصال بالإنترنت، تحقق من الشبكة	No internet connection, check the network
+المحطة لا تردّ الآن، جرّب بعد قليل	The station is not answering, try again soon
+صيغة هذا البث غير مدعومة على هذا التلفزيون	This stream format is not supported on this TV
+توقف البث بعد %s محاولات	The stream stopped after %s tries
