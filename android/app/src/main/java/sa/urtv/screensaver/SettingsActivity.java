@@ -311,10 +311,22 @@ public class SettingsActivity extends Activity {
         row("شريط السنة تحت الساعة", prefs.yearStrip() ? "يعمل · نقاط السنة تحت الساعة، واليوم يلمع" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setYearStrip(!prefs.yearStrip()); render(); } });
         // «ألبوم صوري» (the card): how fast the photos change, and the date under each
-        row("صورة كل دقيقة في ألبوم صوري", prefs.albumMinute() ? "مفعّل" : "متوقف · تتبدل كل ٤ ثوانٍ", R.drawable.ic_eye,
-            new Runnable() { public void run() { prefs.setAlbumMinute(!prefs.albumMinute()); render(); } });
-        row("تاريخ الصورة في ألبوم صوري", prefs.albumDate() ? "ظاهر · تحت الصورة" : "مخفي", R.drawable.ic_eye,
+        row("سرعة ألبوم صوري", "minute".equals(prefs.albumMode()) ? "كل دقيقة" : "ten".equals(prefs.albumMode()) ? "كل ١٠ ثوانٍ" : "كل ٤ ثوانٍ", R.drawable.ic_eye,
+            new Runnable() { public void run() { String m = prefs.albumMode(); prefs.setAlbumMode("seconds".equals(m) ? "ten" : "ten".equals(m) ? "minute" : "seconds"); render(); } });
+        row("تاريخ الصورة في ألبوم صوري", prefs.albumDate() ? "ظاهر تحت الصورة" : "مخفي", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setAlbumDate(!prefs.albumDate()); render(); } });
+        row("عنوان ألبوم صوري", prefs.albumTitle() ? "ظاهر فوق الصورة" : "مخفي", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setAlbumTitle(!prefs.albumTitle()); render(); } });
+        row("شكل صورة ألبوم صوري", "fill".equals(prefs.albumFit()) ? "تملأ البطاقة وأعلاها يبقى" : "كاملة بلا قص", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setAlbumFit("fill".equals(prefs.albumFit()) ? "fit" : "fill"); render(); } });
+        row("حجم ألبوم صوري", "tall".equals(prefs.albumSize()) ? "طويل بضعف الارتفاع" : "عادي", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setAlbumSize("tall".equals(prefs.albumSize()) ? "normal" : "tall"); render(); } });
+        // «توهّج لون التطبيق»: the wash behind the focused app on the home; off until the person turns it on
+        row("توهّج لون التطبيق", "on".equals(prefs.glowMode()) ? "مفعّل" : "light".equals(prefs.glowMode()) ? "خفيف" : "مطفأ", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setGlowMode("off".equals(prefs.glowMode()) ? "light" : "light".equals(prefs.glowMode()) ? "on" : "off"); render(); } });
+        // «نص أوضح»: the grey words and numbers of the home and the screensaver in the look's full text colour (white; the dark ink in a light look)
+        row("نص أوضح", prefs.clearText() ? "مفعّل الكلام الرمادي بلون النص الكامل" : "متوقف", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setClearText(!prefs.clearText()); render(); } });
         // shown by default as always; OK hides it (and shows it again)
         row("المناسبة القادمة", prefs.occasion() ? "ظاهرة · أسفل الشاشة في الوسط: كم باقي على رمضان والأعياد، والإفطار والإمساك في رمضان" : "مخفية", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setOccasion(!prefs.occasion()); render(); } });
@@ -1926,7 +1938,7 @@ public class SettingsActivity extends Activity {
 
     private String ownLabel() {
         if (Own.count(this) == 0) return "لا توجد صور · يضيفها مساعدك الذكي";
-        return Own.ONLY.equals(Own.mode(this)) ? "صوري فقط" : "تُضاف إلى صور التطبيق";
+        return Own.ONLY.equals(Own.mode(this)) ? "صوري فقط" : Own.ALBUM.equals(Own.mode(this)) ? "للألبوم فقط" : "تُضاف إلى صور التطبيق";
     }
 
     /** «صوري»: photos only arrive through the owner's assistant; here the owner picks how they show, or removes them all. */
@@ -1935,12 +1947,12 @@ public class SettingsActivity extends Activity {
             toast("اطلب من مساعدك الذكي إضافة صورك (حتى ١٠)");
             return;
         }
-        String[] items = {"تُضاف إلى صور التطبيق", "صوري فقط", "حذف كل صوري"};
+        String[] items = {"تُضاف إلى صور التطبيق", "صوري فقط", "للألبوم فقط، خارج دوران الصور", "حذف كل صوري"};
         new Dlg(this).setTitle("صوري")
-            .setSingleChoiceItems(items, Own.ONLY.equals(Own.mode(this)) ? 1 : 0, (d, i) -> {
+            .setSingleChoiceItems(items, Own.ONLY.equals(Own.mode(this)) ? 1 : Own.ALBUM.equals(Own.mode(this)) ? 2 : 0, (d, i) -> {
                 d.dismiss();
-                if (i == 2) { confirmClearOwn(); return; }
-                prefs.setOwnMode(i == 1 ? Own.ONLY : Own.MIX);
+                if (i == 3) { confirmClearOwn(); return; }
+                prefs.setOwnMode(i == 1 ? Own.ONLY : i == 2 ? Own.ALBUM : Own.MIX);
                 prefs.bumpOwnRev();
                 render();
             })

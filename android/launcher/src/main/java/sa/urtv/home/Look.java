@@ -63,8 +63,9 @@ final class Look {
 
     /** The palette of «المظهر ← الشكل» (a GlassStyle look key) in the dark or the light: «رملي» its own, every other look the home's two. */
     static Palette of(String look, boolean light) {
-        if ("sand".equals(look)) return light ? SAND_LIGHT : SAND_DARK;
-        return of(light);
+        Palette p = "sand".equals(look) ? (light ? SAND_LIGHT : SAND_DARK) : of(light);
+        // «نص أوضح»: the date, the weather and the other secondary lines in the look's full ink (white in a dark look, the dark ink in a light one)
+        return GlassStyle.clearText() ? new Palette(p.text, p.ink, p.ink, p.gold, p.shadow, p.titleShadow, p.scrim, p.shade, p.band, p.bandStroke) : p;
     }
 
     /** A colour laid over another (both ARGB; the result is opaque when the one under it is). */

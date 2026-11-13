@@ -86,7 +86,7 @@ camera or date), so the TV decodes a small picture. `mode mix` (default) lets th
 settings row «صوري» shows the count and the mode and can remove them all.
 *Where they live:* in the screensaver app's private folder `files/own/` (`1.jpg`…`N.jpg`, each checked on arrival: a JPEG,
 at most 3 MB and 3840×2160). The screensaver page asks for `https://own.urtv.invalid/N.jpg` and `PhotoCache` answers it from
-that folder (never the network); the page gets `#own=N&ownmode=mix|only` only when there are some. The home app reads them
+that folder (never the network); the page gets `#own=N&ownmode=mix|only|album` only when there are some. The home app reads them
 through the same `ConfigProvider` that serves `/tasks`: `/own` says how many, in which mode, and a revision; `/own/N` opens
 photo N read-only, behind the signature permission `READ_CONFIG` (no world-readable file). Photos arrive through
 `/own-in`, which only the shell may write (`content write`, behind `DUMP` like `SaverReceiver`), then `SaverReceiver PHOTOS`

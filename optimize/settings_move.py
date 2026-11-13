@@ -45,7 +45,7 @@ MIGRATIONS = {}
 # TODO(parental PIN, branch work/parental): the PIN must NEVER be added here, and must never be exported by any other way.
 ALLOWED_TOP = ("schema", "city", "digits", "prayer", "hijri_offset", "clock24", "clock_size", "card_style", "cards",
                "greeting", "listen_pill", "update_bell", "markets", "teams", "adhan", "sunrise", "prayerbar", "wxmore", "months",
-               "lang", "fav_bar", "reciter_favs", "pagesdark", "pills_hidden", "home_photos", "home_packs", "home_ours", "album_mode", "album_date",
+               "lang", "fav_bar", "reciter_favs", "pagesdark", "pills_hidden", "home_photos", "home_packs", "home_ours", "album_mode", "album_date", "album_title", "album_fit", "album_size", "clear_text", "glow",
                "accent", "bar_opacity", "wall_dim", "focus_style", "look_sync")
 # NEVER here: the hidden update-channel switch (updatechannel) and the parental PIN. tests/settings_move_test.py checks both.
 
@@ -65,7 +65,9 @@ ACCENTS = ("default", "amber", "gold", "green", "teal", "sky", "violet", "rose",
 FOCUS_STYLES = ("solid", "frame", "glow")   # «شكل التركيز» (GlassStyle.FOCUS_STYLES)
 BAR_OPACITY = (30, 100)   # «شفافية الشريط»: 100 = as it was
 WALL_DIM = (0, 90)   # «تعتيم الخلفية»: 0 = as it was
-ALBUM_MODES = ("seconds", "minute")   # «ألبوم صوري»: a photo every few seconds (the default) or one a minute
+ALBUM_MODES = ("seconds", "ten", "minute")   # «ألبوم صوري»: a photo every 4 s (the default), every 10 s or one a minute
+GLOWS = ("off", "light", "on")   # «توهّج لون التطبيق»
+ALBUM_FITS, ALBUM_SIZES = ("fit", "fill"), ("normal", "tall")   # the photo whole or filling the card; the card normal or tall
 HOME_PHOTOS = ("same", "own")   # the home's wallpaper: the screensaver's packs (same) or a set of its own (own)
 PACK_ID = re.compile(r"[a-z][a-z0-9-]{1,30}")   # a photo pack's id (PhotoPacks.validId)
 MAX_HOME_PACKS = 12   # docs/PHOTO-PACKS.md: at most 12 packs
@@ -200,6 +202,16 @@ def read_tv(keep_own=False):
         s["album_mode"] = g["albummode"]
     if g.get("albumdate") in ("on", "off"):
         s["album_date"] = g["albumdate"] == "on"
+    if g.get("glow") in GLOWS:   # 4.3.1 «توهّج لون التطبيق»
+        s["glow"] = g["glow"]
+    if g.get("cleartext") in ("on", "off"):   # 4.3.1 «نص أوضح»
+        s["clear_text"] = g["cleartext"] == "on"
+    if g.get("albumtitle") in ("on", "off"):
+        s["album_title"] = g["albumtitle"] == "on"
+    if g.get("albumfit") in ALBUM_FITS:
+        s["album_fit"] = g["albumfit"]
+    if g.get("albumsize") in ALBUM_SIZES:
+        s["album_size"] = g["albumsize"]
     if g.get("looksync") in ("on", "off"):   # 4.3 «توحيد المظهر»; an older screensaver does not say it: left out of the file
         s["look_sync"] = g["looksync"] == "on"
     if g.get("homeours") in ("on", "off"):
@@ -308,7 +320,7 @@ def flat(s):
         if "country" in c:
             out["city"] += (c["country"],)
     for k in ("digits", "clock24", "clock_size", "card_style", "greeting", "listen_pill", "update_bell", "hijri_offset", "sunrise", "prayerbar", "wxmore", "months",
-              "lang", "fav_bar", "pagesdark", "home_photos", "home_ours", "album_mode", "album_date",
+              "lang", "fav_bar", "pagesdark", "home_photos", "home_ours", "album_mode", "album_date", "album_title", "album_fit", "album_size", "clear_text", "glow",
               "accent", "bar_opacity", "wall_dim", "focus_style", "look_sync"):
         if k in s:
             out[k] = s[k]
@@ -504,6 +516,12 @@ def validate(d):
             out[key] = d[key]
     if "album_mode" in d and choice(d["album_mode"], ALBUM_MODES, "album_mode", errs):
         out["album_mode"] = d["album_mode"]
+    if "album_fit" in d and choice(d["album_fit"], ALBUM_FITS, "album_fit", errs):
+        out["album_fit"] = d["album_fit"]
+    if "glow" in d and choice(d["glow"], GLOWS, "glow", errs):
+        out["glow"] = d["glow"]
+    if "album_size" in d and choice(d["album_size"], ALBUM_SIZES, "album_size", errs):
+        out["album_size"] = d["album_size"]
     if "home_photos" in d and choice(d["home_photos"], HOME_PHOTOS, "home_photos", errs):
         out["home_photos"] = d["home_photos"]
     if "pills_hidden" in d:
@@ -519,7 +537,7 @@ def validate(d):
             errs.append(f"home_packs must be a list of up to {MAX_HOME_PACKS} different photo pack ids (empty: none)")
         else:
             out["home_packs"] = v
-    for key in ("clock24", "greeting", "listen_pill", "update_bell", "sunrise", "prayerbar", "wxmore", "pagesdark", "home_ours", "album_date", "look_sync"):
+    for key in ("clock24", "greeting", "listen_pill", "update_bell", "sunrise", "prayerbar", "wxmore", "pagesdark", "home_ours", "album_date", "album_title", "clear_text", "look_sync"):
         if key in d:
             n = len(errs)
             boolean(d[key], key, errs)
@@ -762,6 +780,16 @@ def ops(values, names):
             es("albummode", v)
         elif p == "album_date":
             es("albumdate", flag(v))
+        elif p == "glow":
+            es("glow", v)
+        elif p == "clear_text":
+            es("cleartext", flag(v))
+        elif p == "album_title":
+            es("albumtitle", flag(v))
+        elif p == "album_fit":
+            es("albumfit", v)
+        elif p == "album_size":
+            es("albumsize", v)
         elif p == "look_sync":
             es("looksync", flag(v))
         elif p == "cards.panel2":

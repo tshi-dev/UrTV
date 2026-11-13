@@ -171,6 +171,14 @@ bad = [l for l in lines if "worst=" in l and worst(l) < 4.5]
 check("every text of both looks reads at 4.5:1 or more over every pixel of every photo we ship (the veil it gets)", not [l for l in bad if l.startswith("photo")], bad[:8])
 check("…and over plain white, black, grey, red, blue and yellow: an owner's own photo reads too", not [l for l in bad if l.startswith("plain")], bad[:8])
 check("…and on the solid page, before there is a backdrop", not [l for l in bad if l.startswith("solid")] and len([l for l in lines if l.startswith("solid")]) == 2 * len(LOOKS), bad)
+# 4.3.1 «نص أوضح»: every look, dark and light, again with the setting on: the secondary text IS the main text colour (so it reads at least as well), on the solid page and over plain colours
+with tempfile.TemporaryDirectory() as tmp2:
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp2, str(HOME / "GlassStyle.java"), str(ROOT / "tests/GlassRun.java")], check=True)
+    out2 = subprocess.run(["java", "-Djava.awt.headless=true", "-cp", tmp2, "sa.urtv.home.GlassRun", "--clear"], check=True, capture_output=True).stdout.decode("utf-8")
+lines2 = [l for l in out2.split("\n") if l]
+check("«نص أوضح»: in every look, dark and light, the secondary text is the main text colour and the focused tile's too", len([l for l in lines2 if l.startswith("clear ")]) == 2 * len(LOOKS) and all(l.endswith("same=1") for l in lines2 if l.startswith("clear ")), [l for l in lines2 if l.startswith("clear ") and not l.endswith("same=1")])
+bad2 = [l for l in lines2 if "worst=" in l and worst(l) < 4.5]
+check("«نص أوضح»: every text of every look still reads at 4.5:1 or more with it on (plain colours and the solid page)", not bad2 and any(l.startswith("plain ") for l in lines2) and any(l.startswith("solid ") for l in lines2), bad2[:6])
 alphas = [float(re.search(r"alpha=([\d.]+)", l).group(1)) for l in photos]
 check("the veil is never past 0.95 (some of the photo always shows)", max(alphas) <= 0.95, max(alphas))
 for k in LOOKS:

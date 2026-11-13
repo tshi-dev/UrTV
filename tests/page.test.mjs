@@ -2336,6 +2336,9 @@ for (const [width, height] of [[1920, 1080], [1280, 720], [960, 540]]) {
   r = await rotate('own=2&ownmode=mix');
   check('own photos, mix: theirs join ours in the rotation', ownSeen(r).length === 2 && hosted(r).length > 0, r.seen.join(' '));
 
+  r = await rotate('own=3&ownmode=album');
+  check('own photos, album (4.3.1): they stay out of the background rotation (none of them is ever the photo), ours rotates as it did', ownSeen(r).length === 0 && hosted(r).length > 0, r.seen.join(' '));
+
   r = await rotate('own=2');
   check('own photos: mix is the default mode', ownSeen(r).length === 2 && hosted(r).length > 0, r.seen.join(' '));
 
@@ -2351,6 +2354,52 @@ for (const [width, height] of [[1920, 1080], [1280, 720], [960, 540]]) {
 
   r = await rotate('own=2&ownmode=only', { failOwn: true });
   check('own photos, only, unreadable: a bundled photo shows, never an empty screen', r.seen.every(u => u !== '' && u !== 'none') && bundled(r).length > 0, r.seen.join(' '));
+
+  // 4.3.1 «ألبوم صوري»: the card's options (#albumfit=fill, #albumsize=tall, #albumtitle=0, #albummode=ten|minute) and their defaults
+  {
+    const album = async hash => {
+      const net = r2 => { if (r2.request().url().startsWith(OWN)) { r2.fulfill({ contentType: 'image/jpeg', body: JPEG }); return true; } return false; };
+      const o = await open('tv.html', 'own=3&ownmode=mix&panel=album&photos=60' + hash, { net });
+      await o.p.waitForSelector('li.alb .af img.on', { timeout: 6000 }).catch(() => {});
+      const d = await o.p.evaluate(() => {
+        const li = document.querySelector('li.alb'), af = li && li.querySelector('.af'), img = li && li.querySelector('img'), card = li && li.closest('.week'), hd = card && card.querySelector('.hd');
+        return { fill: !!li && li.classList.contains('fill'), tall: !!li && li.classList.contains('tall'), fit: img ? getComputedStyle(img).objectFit : '', pos: img ? getComputedStyle(img).objectPosition : '',
+          h: af ? af.getBoundingClientRect().height : 0, notitle: !!card && card.classList.contains('notitle'), hd: hd ? getComputedStyle(hd).display : 'none?', ms: CONFIG.albumMs, title: hd ? hd.textContent : '' };
+      });
+      await o.ctx.close();
+      return { ...d, errors: o.errors };
+    };
+    const base = await album('');
+    check('album card: by default the whole photo is shown (contain), the title is there, 4 s', !base.fill && !base.tall && base.fit === 'contain' && !base.notitle && base.hd !== 'none' && base.ms === 4000 && /ألبوم صوري/.test(base.title), JSON.stringify(base));
+    const fill = await album('&albumfit=fill');
+    check('album card, fill: the card is filled (cover) and the top third is kept (50% 33%)', fill.fill && fill.fit === 'cover' && /^50% 33(\.\d+)?%$/.test(fill.pos), JSON.stringify(fill));
+    const tall = await album('&albumsize=tall');
+    check('album card, tall: the photo is clearly higher than the normal one (about twice, less where the card had to step down)', tall.tall && tall.h > base.h * 1.4, JSON.stringify([tall.h, base.h]));
+    const bare = await album('&albumtitle=0');
+    check('album card, title off: «ألبوم صوري» is not drawn above the photo', bare.notitle && bare.hd === 'none', JSON.stringify(bare));
+    const ten = await album('&albummode=ten'), minute = await album('&albummode=minute'), date = await album('&albumdate=0');
+    check('album card: every 10 s, every minute; the others as before', ten.ms === 10000 && minute.ms === 60000 && date.ms === 4000 && !date.fill, JSON.stringify([ten.ms, minute.ms, date.ms]));
+    check('album card: no page error with any option', [base, fill, tall, bare, ten, minute, date].every(x => x.errors.length === 0), JSON.stringify([base, fill, tall, bare].map(x => x.errors)));
+  }
+
+  // 4.3.1 «نص أوضح» (#clear=1): the sheet's greys turn to the full ink, the gold/green/red stay, nothing else moves
+  {
+    const probe = async hash => {
+      const o = await open('tv.html', 'city=الرياض&photos=60' + hash, {});
+      const d = await o.p.evaluate(() => {
+        const css = [...document.querySelectorAll('style')].map(x => x.textContent).join('\n'), rgb = c => c.replace(/\s/g, '');
+        const probe = (cls, prop = 'color') => { const e = document.createElement('div'); e.className = cls; e.style.cssText = 'position:absolute;left:0;top:0'; document.body.appendChild(e); const v = getComputedStyle(e)[prop]; e.remove(); return rgb(v); };
+        return { dim: getComputedStyle(document.documentElement).getPropertyValue('--dim').trim().toUpperCase(), greys: (css.match(/(?<![-\w])color:#(?:B9AE96|A79C85|9C9279|8F8670|CFC5AD|D8CDB6|E6DCC4|9FB8A8)\b/gi) || []).length,
+          gold: getComputedStyle(document.documentElement).getPropertyValue('--gold').trim().toUpperCase(), up: (css.match(/\.up\{color:#?[^;}]*/) || [''])[0], clear: CONFIG.clear, fsLight: (css.match(/--fs:#4B514D/g) || []).length, fsDark: (css.match(/--fs:rgba\(255,255,255,\.74\)/g) || []).length };
+      });
+      await o.ctx.close();
+      return { ...d, errors: o.errors };
+    };
+    const off = await probe(''), on = await probe('&clear=1');
+    check('clear text: off, the page is as it was (the greys and the dim token are in the sheet, clear false)', !off.clear && off.greys > 10 && off.dim === '#C3B8A2' && off.fsLight > 0 && off.fsDark > 0, JSON.stringify(off));
+    check('clear text: on, no grey text colour is left in the sheet, --dim and the football tokens are full ink, the gold stays', on.clear && on.greys === 0 && on.dim === '#FFFFFF' && on.fsLight === 0 && on.fsDark === 0 && on.gold === off.gold, JSON.stringify(on));
+    check('clear text: no page error either way', off.errors.length === 0 && on.errors.length === 0, JSON.stringify([off.errors, on.errors]));
+  }
 
   // no hosted index yet (first start, offline): theirs join the bundled photos
   {
