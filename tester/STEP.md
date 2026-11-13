@@ -1,4 +1,4 @@
-«✅ GO — step 66, then step 67 (pairing with a code, 4.3.1 test build on apk-next)» — run step 66, start step 68 (2-hour radio run) alongside, on the build from apk-latest (274), then switch the update channel to next and run step 67 (end of this file) on the newest apk-next build. TV muted. The standing rule below still holds. Never type the owner's PIN.
+«✅ GO — step 66, then step 67 (pairing with a code, 4.3.1 test build on apk-next)» — FIRST step 70 (pictures of the home-screen buttons, 5 minutes), then run step 66, start step 68 (2-hour radio run) alongside, on the build from apk-latest (274), then switch the update channel to next and run step 67 (end of this file) on the newest apk-next build. TV muted. The standing rule below still holds. Never type the owner's PIN.
 
 **OWNER'S STANDING RULE (2026-11-12, until he says otherwise): do not stop and do not wait.** The owner is waiting on these pictures. (1) Run every part that needs no owner, in order, without pausing between parts or steps. (2) A part that needs the owner at the TV (step 64 B, the phone page): write «skipped: needs the owner» and go on at once; do not ask and wait. (3) If one item fails or can't be done, write one line why and go on to the next; never end the whole step for it. (4) Push the report after EACH part (and the pictures as soon as they exist), so the supervisor sees progress. (5) When the step is done, keep polling this file every 5 minutes for the next GO. The only reasons to stop: a prompt that would change the TV in a way the step does not describe, or anything that needs the owner's PIN.
 
@@ -1058,3 +1058,11 @@ Install the beta APK with adb (check its .sha256 and the signer 13ade7d0…69dfe
 6. Failure: pick an audio channel whose URL is dead (add one to the demo list): the honest message, and the original sound restored.
 7. RAM note: this TV has 2.4 GB, so the under-2-GB warning («متوفر لتلفزيونات 2 قيقا وأكثر» + «جرّب») can't be seen here unless the build has a debug way to force it; say whether one exists.
 Not testable muted: whether the delay SOUNDS right; the owner will listen himself.
+
+## step 70 — pictures of the home-screen buttons for the owner (quick; do it FIRST, before step 66; TV muted; change nothing)
+The owner wants to SEE these in the settings, for the guide. Full-screen 1920×1080 `screencap`, demo-clean, push to work/marketing under marketing/guide-home/ and report the names. Press nothing that changes the TV: open, capture, Back.
+1. `g1-settings-row.png`: our settings, the «الشاشة الرئيسية (تلفزيونك)» section with the row «اجعل UrTV الشاشة الرئيسية» focused (and «تخلّص من واجهة المصنع» under it visible).
+2. `g2-row-state.png`: the same row's second line as it reads on this TV («✓ UrTV هو الشاشة الرئيسية» here). Say in the report what OK does on it when UrTV is already the home (nothing / opens something).
+3. `g3-setup-first.png`: the «إعداد تلفزيوني» app's first page (from the apps row), with «جهّز كل شي» and «تراجع» visible. Do NOT press «جهّز كل شي» or «تراجع».
+4. `g4-apps-row-setup.png`: where «إعداد تلفزيوني» sits in the apps row / all apps, focused.
+Also say how many presses it takes to reach row 1 from the home (the exact path).
