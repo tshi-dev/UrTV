@@ -67,6 +67,15 @@ public final class Ram {
     /** LOW: every cut (the key filter, the markets' live mode, the page's slower timers, no transitions, one photo layer) */
     public static boolean low(Context c) { return tier(c) == LOW; }
 
+    /** ComponentCallbacks2's levels: TRIM_MEMORY_UI_HIDDEN and TRIM_MEMORY_MODERATE (the home in the background, the system short of memory) */
+    static final int TRIM_UI_HIDDEN = 20, TRIM_MODERATE = 60;
+
+    /**
+     * Hotfix 4.3 (a user: the picture goes soft for a few seconds on the way back): the home lets its photos and its card page go only when the system really asks. LOW: as the app goes behind another
+     * (UI_HIDDEN); MID: only from MODERATE on; NORMAL: never. (tests/RamRun.java)
+     */
+    static boolean trimNow(int tier, int level) { return tier == LOW ? level >= TRIM_UI_HIDDEN : tier == MID && level >= TRIM_MODERATE; }
+
     /** LOW or MID: the cheap memory cuts (the pictures and the card page let go behind another app, the markets a little slower) */
     public static boolean tight(Context c) { return tier(c) != NORMAL; }
 }

@@ -45,6 +45,9 @@ check("the backdrop's hardware layer is off on a tight TV (LOW or MID) as well a
 snap = (H / "HomeSnapshot.java").read_text(encoding="utf-8")
 check("UrTVHome logs: snapshot capture ok or failed with the reason, the overlay shown or none and for how long, the trim level, resume to the first photo frame", 'snapshot capture ok' in snap and snap.count("snapshot capture failed") >= 3
       and 'snapshot overlay: picture shown' in main and 'snapshot overlay: gone after' in main and '"trim level "' in main and 'resume to first photo frame' in main)
+check("the photo comes back sharp quickly: decoding starts in onStart (off the main thread, at screen size), the stand-in is 480 px wide, and the time to the sharp photo is logged under UrTVHome",
+      "protected void onStart()" in main and "if (wallTrimmed) { wallTrimmed = false; nextWallpaper(); }" in main.split("protected void onStart()")[1][:300] and "WallFirstFrame.SMALL_W, Math.max(1, WallFirstFrame.SMALL_W * b.getHeight()" in main
+      and '"resume to sharp photo: "' in main and "inSampleSize = Bounded.sampleSize(o.outWidth, getResources().getDisplayMetrics().widthPixels)" in main)
 if shutil.which("javac") and shutil.which("java"):
     with tempfile.TemporaryDirectory() as tmp:
         r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(H / "WallFirstFrame.java"), str(ROOT / "tests/WallFirstFrameRun.java")], capture_output=True, text=True)

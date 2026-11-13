@@ -256,12 +256,20 @@ public class MainActivity extends Activity {
         InternalReceivers.register(this, reminderDue, new IntentFilter(ReminderReceiver.SHOW));
     }
 
+    /** the photos were let go: decoding the next one starts HERE, at the start of the return (off the main thread, at screen size), not after the first frame's provider queries */
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (wallTrimmed) { wallTrimmed = false; nextWallpaper(); }
+    }
+
     @Override
     protected void onRestart() {
         super.onRestart();
         // the Activity only stopped: its live views are all still there, so NO overlay (the picture is for a cold start only)
         resumeAt = SystemClock.elapsedRealtime();
         photoLogged = false;
+        sharpLogged = false;
         firstFrameWallpaper();
     }
 
@@ -350,7 +358,7 @@ public class MainActivity extends Activity {
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
         android.util.Log.i("UrTVHome", "trim level " + level + " (resumed=" + resumed + ", ram tier " + Ram.tier(this) + ")");
-        if (level < TRIM_MEMORY_UI_HIDDEN || resumed || !Ram.tight(this)) return;
+        if (resumed || !Ram.trimNow(Ram.tier(this), level)) return;   // only when the system really asks (LOW: behind another app; MID: MODERATE and worse; NORMAL: never)
         homeCard.destroy();
         thinWallpaper();   // the photos go, one tiny stand-in stays so the way back is not black until the next photo decodes
         wallTrimmed = true;
@@ -409,7 +417,7 @@ public class MainActivity extends Activity {
 
     /** 4.3.1 hotfix: the small (480 px) copy of the photo in front: in memory and on disk, drawn in the first frame of a start or a return when no photo is in a view (WallFirstFrame) */
     private volatile Bitmap smallPhoto;
-    private boolean fullPhotoShown, photoLogged;
+    private boolean fullPhotoShown, photoLogged, sharpLogged;
     private long resumeAt;
     private static final String WALL_SMALL = "wall-small.webp";
 
@@ -451,7 +459,7 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * both wallpaper bitmaps are let go but a stand-in always stays (never a bare view): the small copy when there is one, else a 160 px copy of whatever the view draws (a BitmapDrawable or any
+     * both wallpaper bitmaps are let go but a stand-in always stays (never a bare view): the small copy when there is one, else a 480 px copy of whatever the view draws (a BitmapDrawable or any
      * other drawable, rendered small); when no copy can be made (out of memory) the photos are left as they are, not nulled. CENTER_CROP stretches it soft until the next photo fades in over it.
      */
     private void thinWallpaper() {
@@ -461,9 +469,9 @@ public class MainActivity extends Activity {
             try {
                 if (d instanceof android.graphics.drawable.BitmapDrawable) {
                     Bitmap b = ((android.graphics.drawable.BitmapDrawable) d).getBitmap();
-                    if (b != null && b.getWidth() > 0 && b.getHeight() > 0) thumb = Bitmap.createScaledBitmap(b, 160, Math.max(1, 160 * b.getHeight() / b.getWidth()), true);
+                    if (b != null && b.getWidth() > 0 && b.getHeight() > 0) thumb = Bitmap.createScaledBitmap(b, WallFirstFrame.SMALL_W, Math.max(1, WallFirstFrame.SMALL_W * b.getHeight() / b.getWidth()), true);
                 } else if (d != null && d.getIntrinsicWidth() > 0 && d.getIntrinsicHeight() > 0) {
-                    thumb = Bitmap.createBitmap(160, Math.max(1, 160 * d.getIntrinsicHeight() / d.getIntrinsicWidth()), Bitmap.Config.ARGB_8888);
+                    thumb = Bitmap.createBitmap(WallFirstFrame.SMALL_W, Math.max(1, WallFirstFrame.SMALL_W * d.getIntrinsicHeight() / d.getIntrinsicWidth()), Bitmap.Config.ARGB_8888);
                     android.graphics.Canvas cv = new android.graphics.Canvas(thumb);
                     d.setBounds(0, 0, thumb.getWidth(), thumb.getHeight());
                     d.draw(cv);
@@ -3580,6 +3588,7 @@ public class MainActivity extends Activity {
         wallFront.setImageBitmap(bm);
         fullPhotoShown = true;
         logFirstPhoto("full photo");
+        if (!sharpLogged) { sharpLogged = true; android.util.Log.i("UrTVHome", "resume to sharp photo: " + (SystemClock.elapsedRealtime() - resumeAt) + " ms"); }
         final Bitmap forSmall = bm;
         new Thread(() -> saveSmallPhoto(forSmall), "wall-small").start();
         wallFront.setAlpha(0f);

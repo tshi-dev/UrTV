@@ -84,8 +84,8 @@ check("the clock's tick: the minute guard for Wi-Fi broadcasts, the settings rea
       and tick.index("clockReads.execute") < tick.index("ConfigSnapshot.read(app)") < tick.index("runOnUiThread") < tick.index("updateClock();")
       and "if (isDestroyed() || !resumed) return;" in tick and "clockDrawnAt = ms;" in ma and "clockReads.shutdownNow();" in ma)
 trim = ma[ma.index("public void onTrimMemory(int level)"):ma.index("private boolean wallTrimmed;")]
-check("onTrimMemory: only on a weak TV, only with another app in front (UI_HIDDEN or more): the card page and both photos let go; onResume shows a photo at once",
-      "if (level < TRIM_MEMORY_UI_HIDDEN || resumed || !Ram.tight(this)) return;" in trim and "homeCard.destroy();" in trim and "thinWallpaper();" in trim and "wallFront.setImageBitmap(thumb)" in ma and "v.setImageDrawable(null);   // both photos" in ma
+check("onTrimMemory (hotfix 4.3): only when the system really asks, with another app in front (Ram.trimNow: LOW from UI_HIDDEN, MID from MODERATE, NORMAL never): the card page and both photos let go, a stand-in always kept; onResume shows a photo at once",
+      "if (resumed || !Ram.trimNow(Ram.tier(this), level)) return;" in trim and "homeCard.destroy();" in trim and "thinWallpaper();" in trim and "wallFront.setImageBitmap(thumb)" in ma and "v.setImageDrawable(null);   // both photos" in ma
       and "if (wallTrimmed || wallIndex < 0" in ma)
 mk = text(HOME / "MarketsActivity.java")
 check("markets: «عادي» at first on a LOW TV, and the live pace from liveDelay(…, Ram.tier(this))", "if (Ram.low(this)) liveOn = false;" in mk
