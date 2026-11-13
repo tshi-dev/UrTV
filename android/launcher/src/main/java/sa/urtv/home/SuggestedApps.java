@@ -32,6 +32,8 @@ public final class SuggestedApps {
         public final int minSdk;
         /** ticked at first in the setup's list (the owner's choice: SmartTube and TV Bro, as before) */
         public final boolean setupDefault;
+        /** GITHUB: also a box in the in-app setup's list (false for the ones only the settings offer) */
+        public boolean setupBox = true;
 
         App(String id, String pkg, String name, String why, Kind kind, String repo, String file, int minSdk, boolean setupDefault) {
             this.id = id; this.pkg = pkg; this.name = name; this.why = why; this.kind = kind; this.repo = repo; this.file = file;
@@ -44,7 +46,7 @@ public final class SuggestedApps {
         public String tagPrefix = "";
 
         /** the setup installs it over the TV's own connection (a file it can check); a Play Store app is only offered in the settings */
-        public boolean inSetup() { return kind == Kind.GITHUB; }   // a Play Store app or a MIRROR one (UrTV Player): the settings only
+        public boolean inSetup() { return kind == Kind.GITHUB && setupBox; }   // a Play Store app or a MIRROR one (UrTV Player): the settings only
 
         /** GITHUB: the releases list it is picked from; STORE: the Play Store page */
         public String address() {
@@ -60,7 +62,7 @@ public final class SuggestedApps {
     public static final String PLAYER_CERT = "13ade7d009a07f5ba5bab0b7734bd449df10dd47b53868dfa28e44cd8069dfea";
     public static final String PLAYER = "com.urtv.player", PLAYER_REPO = "tshi-dev/UrTV-Player", PLAYER_FILE = "urtv-player.apk", PLAYER_TAG = "";
 
-    public static final String SMARTTUBE = "org.smarttube.stable", TVBRO = "com.phlox.tvwebbrowser", VLC = "org.videolan.vlc";
+    public static final String SMARTTUBE = "org.smarttube.stable", TVBRO = "com.phlox.tvwebbrowser", VLC = "org.videolan.vlc", OPENSHELF = "io.github.wingedpanther.openshelf";
 
     /** In the order shown. The why lines are Arabic; i18n/en/home.tsv has their English. */
     public static final App[] ALL = {
@@ -69,7 +71,13 @@ public final class SuggestedApps {
         new App("smarttube", SMARTTUBE, "SmartTube", "يوتيوب بلا إعلانات، مصمَّم للريموت", Kind.GITHUB,
             "yuliskov/SmartTube", "SmartTube_stable_[0-9.]+_{abi}\\.apk", 21, true),
         new App("vlc", VLC, "VLC", "يشغّل الفيديو والصوت من ذاكرة USB ومن الشبكة", Kind.STORE, null, null, 21, false),
+        // 4.3.1 Open Shelf (GPL-3.0, Android 9+): a store of open-source TV apps that installs from each project's GitHub releases. We only offer its own release file (one universal
+        // APK, OpenShelf-<version>.apk, checked to be that package); nothing of it is bundled. Unticked and not a box of the setup. A third-party app we have not vetted: the line says so.
+        settingsOnly(new App("openshelf", OPENSHELF, "Open Shelf", "متجر لتطبيقات التلفزيون المفتوحة المصدر، يثبّتها من صفحاتها على GitHub. تطبيق من طرف ثالث، ما جرّبناه بأنفسنا. التطبيقات اللي يثبّتها على مسؤوليتك.", Kind.GITHUB,
+            "wingedpanther/openshelf", "OpenShelf-[0-9.]+\\.apk", 28, false)),
     };
+
+    private static App settingsOnly(App a) { a.setupBox = false; return a; }
 
     /** UrTV Player: a MIRROR entry, after the others; offered only once its certificate is pinned (mirrorReady) */
     public static final App PLAYER_APP;

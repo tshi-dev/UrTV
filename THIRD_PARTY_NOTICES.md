@@ -151,3 +151,9 @@ after its commits bf505124 and f5c37c36. The TCL Guard key (4140), `com.tcl.xian
 follows its `tools/disable.sh` (commits b8fcbabe and 66e83196, issue #321); the code is ours. The lists in `optimize/lists/community/` are its
 per-model lists, packages only, re-taken at commit 3cd274f8 (2 Nov 2026). Clean Your TV (https://github.com/Gathin23/cleanyourtv) is MIT licensed; its license text is in
 `optimize/lists/community/LICENSE-CleanYourTV.txt`.
+
+## Open Shelf (suggested app, 4.3.1)
+
+«تطبيقات مقترحة» offers Open Shelf (https://github.com/wingedpanther/openshelf, GPL-3.0; its font under the SIL Open Font License 1.1) as one entry. We only link to it: the settings download its own release file
+(`OpenShelf-<version>.apk` from that repository's releases), check that it is that package, and hand it to Android's installer, which asks the person first. Nothing of Open Shelf is bundled in our apps, and we
+have not vetted the apps it installs (the line on its tile says so).
