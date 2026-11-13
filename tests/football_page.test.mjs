@@ -235,6 +235,36 @@ const TOUR = { updated: '2026-11-04T03:00:00Z', names: { '4490': 'دوري ال�
   check('tournaments: until the first load answers, the section says «جارٍ التحميل…»', /مباريات اليوم وبكرة/.test(line) && /جارٍ التحميل/.test(line), line);
   await ctx.close();
 }
+// ---- no duplicates, ever: one game in the team's copy, the league's file and the tournaments file (another id for the same day and clubs there), and a league added after a team of it was followed
+{
+  const { p, ctx } = await open('teams=136013&leagues=Saudi-Arabian Pro League&matchpage=1&tour=1', { rows: ROWS, height: 1080, tour: TOUR });
+  await p.waitForTimeout(1500);
+  const got = await p.evaluate(() => {
+    const g = (id, extra) => Object.assign({ idEvent: id, idLeague: '4668', idHomeTeam: '136013', idAwayTeam: '136020', strHomeTeam: 'Al-Hilal', strAwayTeam: 'Al-Ettifaq', strTimestamp: '2026-11-04T18:00:00', dateEvent: '2026-11-04', strTime: '18:00:00', strSport: 'Soccer', strStatus: 'NS' }, extra);
+    MATCHES['136013'] = g('7001'); NEXT_LIST['136013'] = [g('7001')]; RESULTS['136013'] = [];
+    LEAGUE_DATA['Saudi-Arabian Pro League'] = { updated: new Date().toISOString(), events: [g('7001')] };
+    LEAGUE_DATA.tournaments = { updated: new Date().toISOString(), names: {}, events: [g('9999', { idLeague: '5649' })] };   // the same game under another id
+    const all = matchEvents().filter(e => e.idHome === undefined && e.idHomeTeam === '136013' && e.idAwayTeam === '136020' && e.dateEvent === '2026-11-04');
+    return { n: all.length, id: all[0] && all[0].idEvent };
+  });
+  check('no duplicates: one game in the team\'s copy, the league\'s file and the tournaments\' under another id: once, the team\'s copy', got.n === 1 && got.id === '7001', JSON.stringify(got));
+  const cardRows = await p.evaluate(() => {
+    const g = { idEvent: '5555', idLeague: '4668', idHomeTeam: '136015', idAwayTeam: '136017', strHomeTeam: 'Al-Ittihad', strAwayTeam: 'Al-Shabab', strTimestamp: '2026-11-04T18:00:00', dateEvent: '2026-11-04', strTime: '18:00:00', strSport: 'Soccer', strStatus: 'NS' };
+    LEAGUE_DATA['Saudi-Arabian Pro League'].events.push(g);
+    const free = leagueShow(Date.now(), new Set()).filter(x => x.ev.idEvent === '5555').length;
+    const taken = leagueShow(Date.now(), new Set([evKey(Object.assign({}, g, { idEvent: '8888' }))])).filter(x => x.ev.idEvent === '5555').length;   // a team's game under another id, same day and clubs
+    return [free, taken];
+  });
+  check('no duplicates: on a card the league\'s copy is dropped when the team\'s game (another id, same day and clubs) is already shown', cardRows[0] === 1 && cardRows[1] === 0, JSON.stringify(cardRows));
+  const only = await p.evaluate(() => {
+    const g = (id, extra) => Object.assign({ idEvent: id, idLeague: '5649', idHomeTeam: '136015', idAwayTeam: '136017', strHomeTeam: 'Al-Ittihad', strAwayTeam: 'Al-Shabab', strTimestamp: '2026-11-04T18:00:00', dateEvent: '2026-11-04', strTime: '18:00:00', strSport: 'Soccer', strStatus: 'NS' }, extra);
+    LEAGUE_DATA['Saudi-Arabian Pro League'].events.push(g('7100', { idLeague: '4668' }));
+    LEAGUE_DATA.tournaments.events.push(g('7100', { idLeague: '5649' }), g('7101'));   // the same id in two files, and the same day and clubs under another id
+    return matchEvents().filter(e => e.idHomeTeam === '136015' && e.idAwayTeam === '136017').length;
+  });
+  check('no duplicates: a game in a league file and the tournaments file (same id, and another id for the same day and clubs) once', only === 1, only);
+  await ctx.close();
+}
 // ---- «مباريات اليوم وبكرة»: appended after the person's own rows, only leagues not already shown
 {
   const { p, ctx } = await open('city=الرياض&lat=24.7136&lon=46.6753&tz=Asia/Riyadh&teams=136013&matchpage=1', { rows: ROWS, height: 1080, epl: true });
