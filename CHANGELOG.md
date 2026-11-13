@@ -5,22 +5,28 @@ Newest first. `next` is where changes land first; a release is what was tested t
 ## 4.3.1
 
 **بالعربي، باختصار:**
-- **إقران التلفزيون برمز من صفحة الجوال (تجريبي):** من إعداد التلفزيون تبدأ الإقران (برقم العائلة السري)، وفي إعدادات التلفزيون تشغّل «تصحيح الأخطاء اللاسلكي» وتفتح «إقران الجهاز برمز»، وتكتب الرموز الستة في صفحة الجوال. بعدها التلفزيون يتصل وحده بدون كابل.
-- **تطبيقات مقترحة:** أيقونة UrTV Player الحقيقية على بطاقته، وأُزيل مشغّل IPTV منها.
+- **الأذان في وقته فقط:** إذا وصل منبّه الأذان متأخرًا (التلفزيون كان في السكون، أو الساعة قفزت عند التشغيل) ما يشتغل الأذان؛ بعض الناس كان يسمعه الساعة ١٢ الليل بلا سبب.
+- **الشاشة الرئيسية ما ترجع سوداء ولا ضبابية:** عند الرجوع من تطبيق تظهر الصورة فورًا (نسخة صغيرة محفوظة منها) بدل الشاشة السوداء، والصورة الكاملة تظهر بعدها بسرعة؛ وما تعاد تحميل الصور إلا لو احتاج النظام الذاكرة فعلًا.
+- **شريط «خلّ تلفزيونك يفتح على UrTV»:** صار سطرًا واحدًا ما يغطي أي بطاقة، وتوصله بالريموت (السهم لأعلى من الأزرار العلوية)، و«لاحقاً» يخفيه ٧ أيام ثم ٣٠ ثم نهائيًا.
+- **المفضلة بعد إطفاء التلفزيون:** كانت تظهر خمسة تطبيقات فقط بعد التشغيل؛ الآن الصف يُبنى من جديد بعد ثوانٍ لين تظهر كلها.
+- **نتيجة المباراة الصحيحة:** إذا كانت المباراة نفسها في أكثر من مصدر (فريقك، دوري، البطولات) تظهر مرة وحدة، بنسختها المنتهية ونتيجتها.
 - **الإذاعة ما تستسلم:** إذا انقطعت المحطة أو تقطّع البث، نحاول نرجّعها وحدنا (بعد ثانيتين، ثم ٥ و١٠ و٢٠ ثانية، وبعدها كل نصف دقيقة) ونكتب لك السبب بكلام واضح: ما في إنترنت، أو المحطة ما تردّ، أو صيغة البث ما يدعمها التلفزيون. وإذا للمحطة مصدر ثانٍ نبدّل بينهم.
-- **التطبيقات المعطّلة:** صف جديد في الإعدادات (الشاشة الرئيسية) يعرض التطبيقات المعطّلة في تلفزيونك، سواء عطّلتها أنت أو UrTV أو الشركة، وتختار منها اللي تبي تشغّله من جديد (بالرقم السري للعائلة)، وبعدها يعرض لك نتيجة كل تطبيق. ما يعطّل شيء أبدًا.
-- **البطولات الكبرى:** مباريات دوري الأبطال والدوري الأوروبي ودوري الأمم وكأس العالم وكأس آسيا وكأس العرب والكؤوس المحلية الكبرى تظهر في صفحة المباريات وبطاقات الشاشة الرئيسية وشاشة التوقف، من مفتاح واحد «البطولات الكبرى» (يشتغل وحده في التثبيت الجديد). فريقك ودورياتك أولًا وبعدها البطولات، وبحد أقصى ٣ مباريات في البطاقة. وصارت «الدوريات كاملة» شاشة وحدة: بحث في الأعلى وأقسام (البطولات الكبرى، السعودية، أوروبا، آسيا وأفريقيا، العالم) كل صف بعلامة اختيار.
 - **إذاعة القرآن الكريم من القاهرة:** محطة جديدة في تلاوة وأذان، بعد إذاعة القرآن الكريم السعودية مباشرة.
+- **البطولات الكبرى:** مباريات دوري الأبطال والدوري الأوروبي ودوري الأمم وكأس العالم وكأس آسيا وكأس العرب والكؤوس المحلية الكبرى تظهر في صفحة المباريات وبطاقات الشاشة الرئيسية وشاشة التوقف، من مفتاح واحد «البطولات الكبرى» (يشتغل وحده في التثبيت الجديد). فريقك ودورياتك أولًا وبعدها البطولات، وبحد أقصى ٣ مباريات في البطاقة، وفي صفحة المباريات قسم واحد «مباريات اليوم وبكرة». وصارت «الدوريات كاملة» شاشة وحدة: بحث في الأعلى وأقسام (البطولات الكبرى، السعودية، أوروبا، آسيا وأفريقيا، العالم) كل صف بعلامة اختيار.
 - **Open Shelf في تطبيقات مقترحة:** متجر لتطبيقات التلفزيون المفتوحة المصدر. تطبيق من طرف ثالث ما جرّبناه بأنفسنا، والتطبيقات اللي يثبّتها على مسؤوليتك.
+- **«إعداد تلفزيوني» في الإعدادات:** صف تحت «الشاشة الرئيسية» يفتح الإعداد دائمًا، حتى لو UrTV هو الشاشة الرئيسية، عشان تشغّله من جديد أو تتراجع عن تغييراته.
 
 **In English, in short:**
-- **Pair the TV with a code from the phone page (experimental):** start the pairing in the TV's setup (behind the family PIN), turn on Wireless debugging and open "Pair device with pairing code" in the TV's settings, then type the six digits in the phone page. After that the TV connects by itself, without a cable.
-- **Suggested apps:** UrTV Player's real icon on its tile; the IPTV player is gone from the list.
+- **The adhan only at its own time:** an adhan alarm that arrives late (the TV was in standby, or the clock jumped at start) no longer sounds; some people heard it at midnight for no reason.
+- **The home is no longer black or blurry on the way back:** coming back from an app shows the photo at once (a small copy of it is kept) instead of black, and the full photo follows quickly; the photos are let go only when the system really needs the memory.
+- **The «Make your TV open on UrTV» bar:** one short line that never covers a card, reachable with the remote (UP from the top buttons), and «Later» hides it for 7 days, then 30, then for good.
+- **Favourites after a power cycle:** the row showed only five apps after the TV was switched on; it is now built again a few seconds later until all appear.
+- **The right match score:** a match that is in more than one source (your team, a league, the tournaments) shows once, as the finished copy with its score.
 - **The radio keeps trying:** when a station drops or cuts, we bring it back by ourselves (after 2 seconds, then 5, 10 and 20, then every half minute) and say why in plain words: no internet, the station is not answering, or the TV does not support the stream's format. A station with a second source swaps between the two.
-- **Disabled apps:** a new row in the settings (Home screen) lists the apps turned off on your TV, by you, UrTV or the maker, and lets you pick the ones to turn back on (behind the family PIN); it then shows each app's result. It never turns anything off.
-- **Big tournaments:** the Champions League, Europa League, Nations League, World Cup, Asian Cup, Arab Cup and the big domestic cups show in the matches page and in the home and screensaver cards, from one switch, «Big tournaments» (on by itself in a new install). Your teams and your leagues come first, then the tournaments, at most 3 games on a card. «Whole leagues» is now one screen: a search on top and sections (Big tournaments, Saudi Arabia, Europe, Asia and Africa, World), each row a tick.
 - **Quran Radio from Cairo:** a new live station in «Quran and adhan», right after the Saudi Quran Radio.
+- **Big tournaments:** the Champions League, Europa League, Nations League, World Cup, Asian Cup, Arab Cup and the big domestic cups show in the matches page and in the home and screensaver cards, from one switch, «Big tournaments» (on by itself in a new install). Your teams and your leagues come first, then the tournaments, at most 3 games on a card, and the matches page has one section «Today and tomorrow». «Whole leagues» is now one screen: a search on top and sections (Big tournaments, Saudi Arabia, Europe, Asia and Africa, World), each row a tick.
 - **Open Shelf in suggested apps:** a store of open-source TV apps. A third-party app we have not vetted ourselves; the apps it installs are at your own risk.
+- **«Your TV setup» in the settings:** a row under «Home screen» that always opens the setup, even when UrTV is already the home, to run it again or to undo its changes.
 
 ## 4.3
 
