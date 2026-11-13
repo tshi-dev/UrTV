@@ -1,0 +1,237 @@
+{
+ "added": [
+  {
+   "id": "153177",
+   "en": "Al-Gharraf",
+   "ar": "الغراف",
+   "sport": "Soccer",
+   "leagues": [
+    "Iraqi Premier League"
+   ]
+  },
+  {
+   "id": "156678",
+   "en": "Al-Jolan",
+   "ar": "الجولان",
+   "sport": "Soccer",
+   "leagues": [
+    "Iraqi Premier League"
+   ]
+  },
+  {
+   "id": "141843",
+   "en": "Al-Kahrabaa",
+   "ar": "الكهرباء",
+   "sport": "Soccer",
+   "leagues": [
+    "Iraqi Premier League"
+   ]
+  },
+  {
+   "id": "141844",
+   "en": "Al-Karkh",
+   "ar": "الكارخ",
+   "sport": "Soccer",
+   "leagues": [
+    "Iraqi Premier League"
+   ]
+  },
+  {
+   "id": "149361",
+   "en": "Al-Karma",
+   "ar": "الكارما",
+   "sport": "Soccer",
+   "leagues": [
+    "Iraqi Premier League"
+   ]
+  },
+  {
+   "id": "141845",
+   "en": "Al-Minaa",
+   "ar": "المينا",
+   "sport": "Soccer",
+   "leagues": [
+    "Iraqi Premier League"
+   ]
+  },
+  {
+   "id": "153176",
+   "en": "Al-Mosul",
+   "ar": "الموصل",
+   "sport": "Soccer",
+   "leagues": [
+    "Iraqi Premier League"
+   ]
+  },
+  {
+   "id": "141846",
+   "en": "Al-Naft",
+   "ar": "النفط",
+   "sport": "Soccer",
+   "leagues": [
+    "Iraqi Premier League"
+   ]
+  },
+  {
+   "id": "141847",
+   "en": "Al-Najaf",
+   "ar": "الناجاف",
+   "sport": "Soccer",
+   "leagues": [
+    "Iraqi Premier League"
+   ]
+  },
+  {
+   "id": "141848",
+   "en": "Al-Qasim",
+   "ar": "القاسيم",
+   "sport": "Soccer",
+   "leagues": [
+    "Iraqi Premier League"
+   ]
+  },
+  {
+   "id": "141296",
+   "en": "Al-Quwa Al-Jawiya",
+   "ar": "القوة الجوية",
+   "sport": "Soccer",
+   "leagues": [
+    "Iraqi Premier League"
+   ]
+  },
+  {
+   "id": "139016",
+   "en": "Al-Shorta",
+   "ar": "الشرطة",
+   "sport": "Soccer",
+   "leagues": [
+    "Iraqi Premier League"
+   ]
+  },
+  {
+   "id": "141851",
+   "en": "Al-Talaba",
+   "ar": "التالابا",
+   "sport": "Soccer",
+   "leagues": [
+    "Iraqi Premier League"
+   ]
+  },
+  {
+   "id": "140375",
+   "en": "Al-Zawraa",
+   "ar": "الزوراء",
+   "sport": "Soccer",
+   "leagues": [
+    "Iraqi Premier League"
+   ]
+  },
+  {
+   "id": "141852",
+   "en": "Amanat Baghdad",
+   "ar": "أمانات باغداد",
+   "sport": "Soccer",
+   "leagues": [
+    "Iraqi Premier League"
+   ]
+  },
+  {
+   "id": "149362",
+   "en": "Diyala",
+   "ar": "دييالا",
+   "sport": "Soccer",
+   "leagues": [
+    "Iraqi Premier League"
+   ]
+  },
+  {
+   "id": "147067",
+   "en": "Duhok",
+   "ar": "دهوك",
+   "sport": "Soccer",
+   "leagues": [
+    "Iraqi Premier League"
+   ]
+  },
+  {
+   "id": "141853",
+   "en": "Erbil",
+   "ar": "إربيل",
+   "sport": "Soccer",
+   "leagues": [
+    "Iraqi Premier League"
+   ]
+  },
+  {
+   "id": "156679",
+   "en": "Ghaz Al-Shamal",
+   "ar": "غاز الشمال",
+   "sport": "Soccer",
+   "leagues": [
+    "Iraqi Premier League"
+   ]
+  },
+  {
+   "id": "147068",
+   "en": "Karbala",
+   "ar": "كربلاء",
+   "sport": "Soccer",
+   "leagues": [
+    "Iraqi Premier League"
+   ]
+  },
+  {
+   "id": "141856",
+   "en": "Naft Maysan",
+   "ar": "نافت مايسان",
+   "sport": "Soccer",
+   "leagues": [
+    "Iraqi Premier League"
+   ]
+  },
+  {
+   "id": "143884",
+   "en": "Newroz",
+   "ar": "نوروز",
+   "sport": "Soccer",
+   "leagues": [
+    "Iraqi Premier League"
+   ]
+  },
+  {
+   "id": "141857",
+   "en": "Zakho",
+   "ar": "زاخو",
+   "sport": "Soccer",
+   "leagues": [
+    "Iraqi Premier League"
+   ]
+  }
+ ],
+ "removed": [],
+ "renamed": [
+  {
+   "id": "133654",
+   "en": [
+    "FC Köln",
+    "Köln"
+   ],
+   "ar": [
+    "كولن",
+    "كولن"
+   ]
+  },
+  {
+   "id": "138004",
+   "en": [
+    "Telstar",
+    "SC Telstar"
+   ],
+   "ar": [
+    "تلستار",
+    "تلستار"
+   ]
+  }
+ ],
+ "leagues changed": []
+}
