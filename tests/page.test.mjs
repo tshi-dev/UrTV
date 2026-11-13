@@ -2352,6 +2352,33 @@ for (const [width, height] of [[1920, 1080], [1280, 720], [960, 540]]) {
   r = await rotate('own=2&ownmode=only', { failOwn: true });
   check('own photos, only, unreadable: a bundled photo shows, never an empty screen', r.seen.every(u => u !== '' && u !== 'none') && bundled(r).length > 0, r.seen.join(' '));
 
+  // 4.3.1 «ألبوم صوري»: the card's options (#albumfit=fill, #albumsize=tall, #albumtitle=0, #albummode=ten|minute) and their defaults
+  {
+    const album = async hash => {
+      const net = r2 => { if (r2.request().url().startsWith(OWN)) { r2.fulfill({ contentType: 'image/jpeg', body: JPEG }); return true; } return false; };
+      const o = await open('tv.html', 'own=3&ownmode=mix&panel=album&photos=60' + hash, { net });
+      await o.p.waitForSelector('li.alb .af img.on', { timeout: 6000 }).catch(() => {});
+      const d = await o.p.evaluate(() => {
+        const li = document.querySelector('li.alb'), af = li && li.querySelector('.af'), img = li && li.querySelector('img'), card = li && li.closest('.week'), hd = card && card.querySelector('.hd');
+        return { fill: !!li && li.classList.contains('fill'), tall: !!li && li.classList.contains('tall'), fit: img ? getComputedStyle(img).objectFit : '', pos: img ? getComputedStyle(img).objectPosition : '',
+          h: af ? af.getBoundingClientRect().height : 0, notitle: !!card && card.classList.contains('notitle'), hd: hd ? getComputedStyle(hd).display : 'none?', ms: CONFIG.albumMs, title: hd ? hd.textContent : '' };
+      });
+      await o.ctx.close();
+      return { ...d, errors: o.errors };
+    };
+    const base = await album('');
+    check('album card: by default the whole photo is shown (contain), the title is there, 4 s', !base.fill && !base.tall && base.fit === 'contain' && !base.notitle && base.hd !== 'none' && base.ms === 4000 && /ألبوم صوري/.test(base.title), JSON.stringify(base));
+    const fill = await album('&albumfit=fill');
+    check('album card, fill: the card is filled (cover) and the top third is kept (50% 33%)', fill.fill && fill.fit === 'cover' && /^50% 33(\.\d+)?%$/.test(fill.pos), JSON.stringify(fill));
+    const tall = await album('&albumsize=tall');
+    check('album card, tall: the photo is clearly higher than the normal one (about twice, less where the card had to step down)', tall.tall && tall.h > base.h * 1.4, JSON.stringify([tall.h, base.h]));
+    const bare = await album('&albumtitle=0');
+    check('album card, title off: «ألبوم صوري» is not drawn above the photo', bare.notitle && bare.hd === 'none', JSON.stringify(bare));
+    const ten = await album('&albummode=ten'), minute = await album('&albummode=minute'), date = await album('&albumdate=0');
+    check('album card: every 10 s, every minute; the others as before', ten.ms === 10000 && minute.ms === 60000 && date.ms === 4000 && !date.fill, JSON.stringify([ten.ms, minute.ms, date.ms]));
+    check('album card: no page error with any option', [base, fill, tall, bare, ten, minute, date].every(x => x.errors.length === 0), JSON.stringify([base, fill, tall, bare].map(x => x.errors)));
+  }
+
   // no hosted index yet (first start, offline): theirs join the bundled photos
   {
     const o = await open('tv.html', 'own=1&ownmode=mix&photos=60', { seed: false, net: r2 => { if (r2.request().url().startsWith(OWN)) { r2.fulfill({ contentType: 'image/jpeg', body: JPEG }); return true; } return false; } });

@@ -276,6 +276,9 @@
   .week li.alb .af{position:relative;width:100%;height:calc(24vh*var(--z,1));border-radius:1.4vh;overflow:hidden;background:rgba(0,0,0,.3)}
   .week li.alb img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;transition:opacity 1s ease}
   .week li.alb img.on{opacity:1}
+  .week li.alb.fill img{object-fit:cover;object-position:50% 33%}   /* «تعبئة»: the card is filled, the top third kept so the faces stay in */
+  .week li.alb.tall .af{height:calc(46vh*var(--z,1))}   /* «طويل»: about twice the height; fitCards() steps the card's zoom down where that does not fit */
+  .week.notitle .hd{display:none}
   .week li.alb .ac{font-size:.74em;color:#B9AE96;margin-top:.6vh;min-height:1.3em;line-height:1.3}
   .week li.alb.none{color:#B9AE96;line-height:1.7;padding:1vh 0}
   .week li.yr{display:block;white-space:normal;border-bottom:none;padding:.3vh 0 0;text-align:center}
@@ -915,7 +918,8 @@ const CONFIG = {
   photoMinutes: (m => [0.5,1,5,10,15,30,60].includes(m) ? m : 30)(_num('photos', 30)),
   // the owner's own photos («صوري»): #own=how many
   own: Math.max(0, Math.min(50, Math.floor(_num('own', 0)))),
-  albumMs: _Q.get('albummode') === 'minute' ? 60000 : 4000,   // «ألبوم الصور»: a photo each minute, or a crossfade every 4 s
+  albumMs: _Q.get('albummode') === 'minute' ? 60000 : _Q.get('albummode') === 'ten' ? 10000 : 4000,   // «ألبوم الصور»: a photo each minute, every 10 s, or a crossfade every 4 s
+  albumFill: _Q.get('albumfit') === 'fill', albumTall: _Q.get('albumsize') === 'tall', albumTitle: _Q.get('albumtitle') !== '0',   // fill (cover, the top third kept) or fit; a taller photo; the title above it
   albumDate: _Q.get('albumdate') !== '0',
   wallDim: Math.max(0, Math.min(90, parseInt(_Q.get('walldim'), 10) || 0)),   // «تعتيم الخلفية» (0..90 %), more black over the photo
   ownMode: _Q.get('ownmode') === 'only' ? 'only' : 'mix',
@@ -3144,7 +3148,8 @@ function albumCard(card){
   const a = card.alb || (card.alb = {i: Math.floor(Math.random() * CONFIG.own), t: 0});
   if(!a.t) a.t = setInterval(() => albumNext(card), CONFIG.albumMs);
   ALBUM_READY.then(() => setTimeout(() => albumNext(card, true), 0));   // the first photo once the dates are in and the markup is too
-  return '<li class="alb"><div class="af"><img alt=""><img alt=""></div><div class="ac"></div></li>';
+  card.el.classList.toggle('notitle', !CONFIG.albumTitle);   // «العنوان»: off hides «ألبوم صوري» above the photo
+  return `<li class="alb${CONFIG.albumFill ? ' fill' : ''}${CONFIG.albumTall ? ' tall' : ''}"><div class="af"><img alt=""><img alt=""></div><div class="ac"></div></li>`;
 }
 function albumNext(card, first){
   const box = card.ul.querySelector('.alb .af');

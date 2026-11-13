@@ -34,7 +34,10 @@
 #   optimize/saver.sh focusstyle frame             «شكل التركيز»: solid (the default), frame or glow
 #   optimize/saver.sh looksync off                 home: «توحيد المظهر», the upper buttons, the cards and the apps bar as one material: on (default) or off
 #   optimize/saver.sh surface tray 100 graphite    home, with looksync off: one surface (quick, cards or tray) on its own: its strength 30 to 100, its fill look, glass or graphite
-#   optimize/saver.sh albummode minute             «ألبوم صوري» (card album): a photo every 4 s (seconds, default) or one a minute (minute)
+#   optimize/saver.sh albummode ten                «ألبوم صوري» (card album): a photo every 4 s (seconds, default), every 10 s (ten) or one a minute (minute)
+#   optimize/saver.sh albumtitle off               «ألبوم صوري»: the title above the photo: on (default) or off
+#   optimize/saver.sh albumfit fill                «ألبوم صوري»: fit (the whole photo, default) or fill (the card is filled, the top third kept so faces stay in)
+#   optimize/saver.sh albumsize tall               «ألبوم صوري»: normal (default) or tall (about twice the height; the page steps it down where it does not fit)
 #   optimize/saver.sh albumdate off                «ألبوم صوري»: the day each photo was added, under it: on (default) or off
 #   optimize/saver.sh homeours off                 home screen, with homephotos own: «صورنا» among its photos: on (default) or off
 #   optimize/saver.sh homemine only                home screen: «صوري» with ours (mix), only them (only), none (off), or as the screensaver's (same, the default)
@@ -236,7 +239,10 @@ case "${1:-}" in
   focusstyle) set1 focusstyle "${2:?usage: optimize/saver.sh focusstyle solid|frame|glow}" ;;
   looksync) set1 looksync "${2:?usage: optimize/saver.sh looksync on|off}" ;;
   surface) set1 surface "${2:?usage: optimize/saver.sh surface quick|cards|tray 30..100 look|glass|graphite}:${3:?usage: optimize/saver.sh surface quick|cards|tray 30..100 look|glass|graphite}:${4:?usage: optimize/saver.sh surface quick|cards|tray 30..100 look|glass|graphite}" ;;
-  albummode) set1 albummode "${2:?usage: optimize/saver.sh albummode seconds|minute}" ;;
+  albummode) case "${2:-}" in seconds|ten|minute) set1 albummode "$2" ;; *) echo "usage: optimize/saver.sh albummode seconds|ten|minute"; exit 1 ;; esac ;;
+  albumtitle) case "${2:-}" in on|off) set1 albumtitle "$2" ;; *) echo "usage: optimize/saver.sh albumtitle on|off"; exit 1 ;; esac ;;
+  albumfit) case "${2:-}" in fit|fill) set1 albumfit "$2" ;; *) echo "usage: optimize/saver.sh albumfit fit|fill"; exit 1 ;; esac ;;
+  albumsize) case "${2:-}" in normal|tall) set1 albumsize "$2" ;; *) echo "usage: optimize/saver.sh albumsize normal|tall"; exit 1 ;; esac ;;
   albumdate) set1 albumdate "${2:?usage: optimize/saver.sh albumdate on|off}" ;;
   homeours) set1 homeours "${2:?usage: optimize/saver.sh homeours on|off}" ;;
   homemine) set1 homemine "${2:?usage: optimize/saver.sh homemine same|mix|only|off}" ;;

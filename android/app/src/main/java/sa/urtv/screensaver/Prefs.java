@@ -689,11 +689,31 @@ final class Prefs {
     }
 
     /** «ألبوم صوري» (card album): a photo every 4 s with a crossfade (the default) or one a minute; the photo's date under it (on by default). */
-    boolean albumMinute() { return sp.getBoolean("albumMinute", false); }
-    void setAlbumMinute(boolean v) { sp.edit().putBoolean("albumMinute", v).apply(); }
+    /** how often the album's photo changes: "seconds" (every 4 s, the default), "ten" (every 10 s) or "minute"; the older yes/no «a minute» setting is read as it was */
+    String albumMode() {
+        String m = sp.getString("albumMode", null);
+        if (m == null) return sp.getBoolean("albumMinute", false) ? "minute" : "seconds";
+        return "ten".equals(m) || "minute".equals(m) ? m : "seconds";
+    }
+    void setAlbumMode(String v) { sp.edit().putString("albumMode", v).apply(); }
+    boolean albumMinute() { return "minute".equals(albumMode()); }
+    void setAlbumMinute(boolean v) { setAlbumMode(v ? "minute" : "seconds"); }
+    /** the title «ألبوم صوري» above the photo: shown (the default) or hidden */
+    boolean albumTitle() { return sp.getBoolean("albumTitle", true); }
+    void setAlbumTitle(boolean v) { sp.edit().putBoolean("albumTitle", v).apply(); }
+    /** "fit" (the whole photo, never cropped: the default) or "fill" (the card is filled and the top third kept, so faces stay in) */
+    String albumFit() { return "fill".equals(sp.getString("albumFit", "fit")) ? "fill" : "fit"; }
+    void setAlbumFit(String v) { sp.edit().putString("albumFit", "fill".equals(v) ? "fill" : "fit").apply(); }
+    /** "normal" or "tall" (about twice the photo's height; the page steps the card down where it does not fit) */
+    String albumSize() { return "tall".equals(sp.getString("albumSize", "normal")) ? "tall" : "normal"; }
+    void setAlbumSize(String v) { sp.edit().putString("albumSize", "tall".equals(v) ? "tall" : "normal").apply(); }
     boolean albumDate() { return sp.getBoolean("albumDate", true); }
     void setAlbumDate(boolean v) { sp.edit().putBoolean("albumDate", v).apply(); }
-    private String albumParam() { return (albumMinute() ? "&albummode=minute" : "") + (albumDate() ? "" : "&albumdate=0"); }
+    private String albumParam() {
+        String m = albumMode();
+        return ("seconds".equals(m) ? "" : "&albummode=" + m) + (albumDate() ? "" : "&albumdate=0") + (albumTitle() ? "" : "&albumtitle=0")
+            + ("fill".equals(albumFit()) ? "&albumfit=fill" : "") + ("tall".equals(albumSize()) ? "&albumsize=tall" : "");   // only what is not the default, so the page's address is as before
+    }
 
     /** «صور شاشة التوقف»: the packs that are on (ids), and whether our own set («صورنا», on by default) is. Sent as #packs=id:count,... and #ours=0 only when set, so the fragment is as before. */
     java.util.Set<String> packsOn() { return PhotoPacks.parseOn(sp.getString("packsOn", "")); }

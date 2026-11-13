@@ -302,10 +302,16 @@ public class SettingsActivity extends Activity {
         row("شريط السنة تحت الساعة", prefs.yearStrip() ? "يعمل · نقاط السنة تحت الساعة، واليوم يلمع" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setYearStrip(!prefs.yearStrip()); render(); } });
         // «ألبوم صوري» (the card): how fast the photos change, and the date under each
-        row("صورة كل دقيقة في ألبوم صوري", prefs.albumMinute() ? "مفعّل" : "متوقف · تتبدل كل ٤ ثوانٍ", R.drawable.ic_eye,
-            new Runnable() { public void run() { prefs.setAlbumMinute(!prefs.albumMinute()); render(); } });
-        row("تاريخ الصورة في ألبوم صوري", prefs.albumDate() ? "ظاهر · تحت الصورة" : "مخفي", R.drawable.ic_eye,
+        row("سرعة ألبوم صوري", "minute".equals(prefs.albumMode()) ? "كل دقيقة" : "ten".equals(prefs.albumMode()) ? "كل ١٠ ثوانٍ" : "كل ٤ ثوانٍ", R.drawable.ic_eye,
+            new Runnable() { public void run() { String m = prefs.albumMode(); prefs.setAlbumMode("seconds".equals(m) ? "ten" : "ten".equals(m) ? "minute" : "seconds"); render(); } });
+        row("تاريخ الصورة في ألبوم صوري", prefs.albumDate() ? "ظاهر تحت الصورة" : "مخفي", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setAlbumDate(!prefs.albumDate()); render(); } });
+        row("عنوان ألبوم صوري", prefs.albumTitle() ? "ظاهر فوق الصورة" : "مخفي", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setAlbumTitle(!prefs.albumTitle()); render(); } });
+        row("شكل صورة ألبوم صوري", "fill".equals(prefs.albumFit()) ? "تملأ البطاقة وأعلاها يبقى" : "كاملة بلا قص", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setAlbumFit("fill".equals(prefs.albumFit()) ? "fit" : "fill"); render(); } });
+        row("حجم ألبوم صوري", "tall".equals(prefs.albumSize()) ? "طويل بضعف الارتفاع" : "عادي", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setAlbumSize("tall".equals(prefs.albumSize()) ? "normal" : "tall"); render(); } });
         // shown by default as always; OK hides it (and shows it again)
         row("المناسبة القادمة", prefs.occasion() ? "ظاهرة · أسفل الشاشة في الوسط: كم باقي على رمضان والأعياد، والإفطار والإمساك في رمضان" : "مخفية", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setOccasion(!prefs.occasion()); render(); } });

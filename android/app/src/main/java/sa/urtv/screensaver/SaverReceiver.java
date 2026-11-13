@@ -20,7 +20,7 @@ import java.util.Locale;
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.CITIES
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET
  *       [--es city 'الرس'] [--es lat 25.86 --es lon 43.49 --es tz Asia/Kuwait]   (tz is needed for a place that is not in the list) [--es teams '136013:Al-Hilal,150643:Al-Zulfi']
- *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es homephotos same|own] [--es homepacks id,id|none] [--es homeours on|off] [--es looksync on|off] [--es surface quick|cards|tray:30..100:look|glass|graphite] [--es accent amber|gold|green|teal|sky|violet|rose|coral|default] [--es baropacity 30..100] [--es walldim 0..90] [--es focusstyle solid|frame|glow] [--es albummode seconds|minute] [--es albumdate on|off] [--es pillshidden markets,matches,center|none] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es homelayout classic|football] [--es favbar 5|6|7|8|all] [--es pagesdark on|off] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
+ *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es homephotos same|own] [--es homepacks id,id|none] [--es homeours on|off] [--es albummode seconds|ten|minute] [--es albumtitle on|off] [--es albumfit fit|fill] [--es albumsize normal|tall] [--es looksync on|off] [--es surface quick|cards|tray:30..100:look|glass|graphite] [--es accent amber|gold|green|teal|sky|violet|rose|coral|default] [--es baropacity 30..100] [--es walldim 0..90] [--es focusstyle solid|frame|glow] [--es albummode seconds|minute] [--es albumdate on|off] [--es pillshidden markets,matches,center|none] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es homelayout classic|football] [--es favbar 5|6|7|8|all] [--es pagesdark on|off] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
  *       [--es sunrise on|off] [--es prayerbar on|off] [--es wxmore on|off] [--es months default|levant] [--es verse day|3] [--es versekind both|verse|hadith] [--es seconds on|off] [--es backexit press|hold|three] [--es occasion on|off] [--es nightdim on|off] [--es taskspill on|off] [--es backsaver on|off] [--es genres Drama,Comedy] [--es langs English]
  *       [--es photos 30] [--es idle 10] [--es digits hindi|latin] [--es hijrioffset -2..2] [--es clock24 on|off] [--es ramtier low|mid|normal|auto] [--es lang ar|en]
  *       [--es cardstyle current|dark1|glass1|dark3|glass3] [--es national auto|off]
@@ -276,7 +276,13 @@ public class SaverReceiver extends BroadcastReceiver {
         String homeMine = i.getStringExtra("homemine");   // «صوري» for the home alone: with ours (mix), only, none (off), or as the screensaver's (same, the default)
         if (homeMine != null && !"same".equals(homeMine) && !"mix".equals(homeMine) && !"only".equals(homeMine) && !"off".equals(homeMine)) return "error: homemine is one of same mix only off";
         String albumMode = i.getStringExtra("albummode");   // «ألبوم صوري»: a photo every few seconds (seconds, the default) or one a minute
-        if (albumMode != null && !"seconds".equals(albumMode) && !"minute".equals(albumMode)) return "error: albummode is one of seconds minute";
+        if (albumMode != null && !"seconds".equals(albumMode) && !"ten".equals(albumMode) && !"minute".equals(albumMode)) return "error: albummode is one of seconds ten minute";
+        String albumTitle = i.getStringExtra("albumtitle");
+        if (albumTitle != null && !"on".equals(albumTitle) && !"off".equals(albumTitle)) return "error: albumtitle is one of on off";
+        String albumFit = i.getStringExtra("albumfit");
+        if (albumFit != null && !"fit".equals(albumFit) && !"fill".equals(albumFit)) return "error: albumfit is one of fit fill";
+        String albumSize = i.getStringExtra("albumsize");
+        if (albumSize != null && !"normal".equals(albumSize) && !"tall".equals(albumSize)) return "error: albumsize is one of normal tall";
         String albumDate = i.getStringExtra("albumdate");
         if (albumDate != null && !"on".equals(albumDate) && !"off".equals(albumDate)) return "error: albumdate is one of on off";
         String listenPill = i.getStringExtra("listenpill");
@@ -430,7 +436,10 @@ public class SaverReceiver extends BroadcastReceiver {
         if (homePacks != null) p.setHomePacksOn("none".equals(homePacks) ? new java.util.LinkedHashSet<String>() : PhotoPacks.parseOn(homePacks));
         if (homeOurs != null) p.setHomeOursOn("on".equals(homeOurs));
         if (homeMine != null) p.setHomeMine("same".equals(homeMine) ? null : homeMine);
-        if (albumMode != null) p.setAlbumMinute("minute".equals(albumMode));
+        if (albumMode != null) p.setAlbumMode(albumMode);
+        if (albumTitle != null) p.setAlbumTitle("on".equals(albumTitle));
+        if (albumFit != null) p.setAlbumFit(albumFit);
+        if (albumSize != null) p.setAlbumSize(albumSize);
         if (albumDate != null) p.setAlbumDate("on".equals(albumDate));
         if (updateBell != null) p.setUpdateBell("on".equals(updateBell));
         if (watchNext != null) p.setWatchNext("on".equals(watchNext));
@@ -620,7 +629,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nhome_panel: " + p.homePanel()
             + "\ngreeting: " + (p.greeting() ? "on" : "off")
             + "\nlistenpill: " + (p.listenPill() ? "on" : "off")
-            + "\nhomephotos: " + (p.homePhotosSame() ? "same" : "own") + "\nhomepacks: " + (p.homePacksOn().isEmpty() ? "none" : PhotoPacks.joinOn(p.homePacksOn())) + "\nhomeours: " + (p.homeOursOn() ? "on" : "off") + "\nhomemine: " + (p.homeMine() == null ? "same" : p.homeMine()) + "\nalbummode: " + (p.albumMinute() ? "minute" : "seconds") + "\nalbumdate: " + (p.albumDate() ? "on" : "off")
+            + "\nhomephotos: " + (p.homePhotosSame() ? "same" : "own") + "\nhomepacks: " + (p.homePacksOn().isEmpty() ? "none" : PhotoPacks.joinOn(p.homePacksOn())) + "\nhomeours: " + (p.homeOursOn() ? "on" : "off") + "\nhomemine: " + (p.homeMine() == null ? "same" : p.homeMine()) + "\nalbummode: " + p.albumMode() + "\nalbumdate: " + (p.albumDate() ? "on" : "off") + "\nalbumtitle: " + (p.albumTitle() ? "on" : "off") + "\nalbumfit: " + p.albumFit() + "\nalbumsize: " + p.albumSize()
             + "\npillshidden: " + (p.pillsHidden().isEmpty() ? "none" : p.pillsHidden()) + "\nmatchapp: " + p.matchApp()
             + "\nupdatebell: " + (p.updateBell() ? "on" : "off")
             + "\nwatchnext: " + (p.watchNext() ? "on" : "off")
