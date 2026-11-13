@@ -12,9 +12,8 @@ public final class PairCode {
         StringBuilder b = new StringBuilder();
         for (int i = 0; i < typed.length(); i++) {
             char c = typed.charAt(i);
-            if (c >= '0' && c <= '9') b.append(c);
-            else if (c >= '٠' && c <= '٩') b.append((char) ('0' + (c - '٠')));
-            else if (c >= '۰' && c <= '۹') b.append((char) ('0' + (c - '۰')));
+            int d = Character.digit(c, 10);   // Latin, Arabic-Indic and Persian digits alike: no digit conversion by hand
+            if (d >= 0) b.append(Character.forDigit(d, 10));
             else if (c == ' ' || c == '-') continue;
             else return null;
         }
@@ -34,8 +33,8 @@ public final class PairCode {
         StringBuilder b = new StringBuilder();
         for (int i = 0; i < typed.length(); i++) {
             char c = typed.charAt(i);
-            if (c >= '0' && c <= '9') b.append(c);
-            else if (c >= '٠' && c <= '٩') b.append((char) ('0' + (c - '٠')));
+            int d = Character.digit(c, 10);
+            if (d >= 0) b.append(Character.forDigit(d, 10));
             else if (c == ' ') continue;
             else return null;
         }
