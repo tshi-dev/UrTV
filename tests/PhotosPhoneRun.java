@@ -15,6 +15,11 @@ public final class PhotosPhoneRun {
         check("a JPEG as the phone page makes it (JFIF, no Exif): no camera data", !JpegMeta.cameraData(plain));
         check("a camera's JPEG (an APP1 «Exif» segment first): camera data", JpegMeta.cameraData(exif));
         check("…also after another segment", JpegMeta.cameraData(exifLater));
+        byte[] cleaned = JpegMeta.strip(exifLater);
+        check("4.3.1 strip: the Exif segment is removed, the rest kept (iPhone Safari adds one to every canvas JPEG)",
+            !JpegMeta.cameraData(cleaned) && cleaned.length == exifLater.length - 12 && (cleaned[2] & 0xff) == 0xFF && (cleaned[3] & 0xff) == 0xE0 && (cleaned[8] & 0xff) == 0xFF && (cleaned[9] & 0xff) == 0xDA);
+        check("strip leaves a JPEG with no Exif as it was", java.util.Arrays.equals(JpegMeta.strip(plain), plain));
+        check("strip leaves broken or non-JPEG input alone", JpegMeta.strip(null) == null && JpegMeta.strip(b(1, 2, 3, 4)).length == 4);
         check("an APP1 that is not Exif (XMP) is not taken for it", !JpegMeta.cameraData(xmp));
         check("not a JPEG, empty, null, a broken length: no answer of camera data (other checks refuse them)",
             !JpegMeta.cameraData(b(1, 2, 3, 4)) && !JpegMeta.cameraData(new byte[0]) && !JpegMeta.cameraData(null) && !JpegMeta.cameraData(b(0xFF, 0xD8, 0xFF, 0xE1, 0, 0)));

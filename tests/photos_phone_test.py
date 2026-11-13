@@ -55,5 +55,5 @@ else:
             for line in out.splitlines():
                 n, res = line.rsplit("\t", 1)
                 check(n, res == "ok")
-            check("every case ran", len(out.splitlines()) == 5, out)
+            check("every case ran", len(out.splitlines()) == 8, out)
 sys.exit(1 if failed else 0)
