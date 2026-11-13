@@ -222,7 +222,9 @@ public class MainActivity extends Activity {
                 View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         setContentView(buildUi());
-        showSnapshot();   // the home's last picture (or its skeleton) at once; it fades out when the live views have painted
+        showSnapshot();   // a cold start: the home's last picture when there is a good one, at once; it fades out when the live views have painted. Never a skeleton, never black blocks
+        resumeAt = SystemClock.elapsedRealtime();
+        firstFrameWallpaper();   // the small copy of the last photo in the first frame
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((was, now) -> { KeyTrace.focusChanged(); placeName(); });   // FavBar: the name only in the bar
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((was, now) -> {   // design/43: the top row opens while the focus is in it, and closes after
             if (pillBar == null || barHeld) return;
@@ -257,13 +259,18 @@ public class MainActivity extends Activity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        showSnapshot();   // coming back from an app: the last picture covers the moment before the cards paint
+        // the Activity only stopped: its live views are all still there, so NO overlay (the picture is for a cold start only)
+        resumeAt = SystemClock.elapsedRealtime();
+        photoLogged = false;
+        firstFrameWallpaper();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         resumed = true;
+        if (resumeAt == 0) resumeAt = SystemClock.elapsedRealtime();
+        firstFrameWallpaper();   // (a return that did not restart: the photo may have been let go by onTrimMemory)
         handler.postDelayed(snapTick, HomeSnapshot.IDLE_MS);
         if (sa.urtv.home.setup.SetupReopen.take()) {   // «إعداد تلفزيوني» was left behind by the home switch: its progress and its done screen come back (once)
             try { guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t("إعداد تلفزيوني"), () -> launch(new Intent(this, sa.urtv.home.setup.SetupActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT))); } catch (RuntimeException ignored) { }   // the person opened this screen already (its own lock was passed then)
@@ -326,7 +333,7 @@ public class MainActivity extends Activity {
         if (appsEdit != null) leaveAppsEdit();   // the same for «تعديل التطبيقات»
         handler.removeCallbacks(rotateWallpaper);
         handler.removeCallbacks(snapTick);
-        if (snapOverlay == null) HomeSnapshot.capture(this, homeRoot, null);   // the picture the next start draws first
+        if (snapOverlay == null && WallFirstFrame.snapshotWorthKeeping(fullPhotoShown, appsShown, wallTrimmed)) HomeSnapshot.capture(this, homeRoot, null);   // the picture the next cold start draws first: never one without the photo or the apps bar
         unregisterReceiver(tick);
         if (inputsPopup != null) inputsPopup.dismiss();
         if (control != null) control.dismiss();   // its speed test stops with it
@@ -342,6 +349,7 @@ public class MainActivity extends Activity {
     @Override
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
+        android.util.Log.i("UrTVHome", "trim level " + level + " (resumed=" + resumed + ", ram tier " + Ram.tier(this) + ")");
         if (level < TRIM_MEMORY_UI_HIDDEN || resumed || !Ram.tight(this)) return;
         homeCard.destroy();
         thinWallpaper();   // the photos go, one tiny stand-in stays so the way back is not black until the next photo decodes
@@ -355,7 +363,7 @@ public class MainActivity extends Activity {
     private long snapShownAt;
     private final Runnable snapTick = new Runnable() {   // while the home is in front and idle: a fresh picture every ten minutes
         @Override public void run() {
-            if (resumed && snapOverlay == null) HomeSnapshot.capture(MainActivity.this, homeRoot, null);
+            if (resumed && snapOverlay == null && WallFirstFrame.snapshotWorthKeeping(fullPhotoShown, appsShown, wallTrimmed)) HomeSnapshot.capture(MainActivity.this, homeRoot, null);
             handler.postDelayed(this, HomeSnapshot.IDLE_MS);
         }
     };
@@ -375,17 +383,18 @@ public class MainActivity extends Activity {
         if (snapOverlay != null || homeRoot == null) return;
         android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
         Bitmap b = HomeSnapshot.load(this, dm.widthPixels, dm.heightPixels);
-        View v;
-        if (b != null) {
-            ImageView iv = new ImageView(this);
-            iv.setScaleType(ImageView.ScaleType.FIT_XY);
-            iv.setImageBitmap(b);
-            v = iv;
-        } else v = HomeSnapshot.skeleton(this, GlassSource.look(this));
+        if (b == null) {   // no good picture (none, stale, another look, `debug nosnapshot`): no overlay at all, the live views and the look's own colour show, never black blocks
+            android.util.Log.i("UrTVHome", "snapshot overlay: none (no usable picture)");
+            return;
+        }
+        ImageView v = new ImageView(this);
+        v.setScaleType(ImageView.ScaleType.FIT_XY);
+        v.setImageBitmap(b);
         v.setFocusable(false);
         homeRoot.addView(v, new FrameLayout.LayoutParams(-1, -1));
         snapOverlay = v;
         snapShownAt = android.os.SystemClock.elapsedRealtime();
+        android.util.Log.i("UrTVHome", "snapshot overlay: picture shown");
         handler.removeCallbacks(snapCheck);
         handler.postDelayed(snapCheck, 120);
     }
@@ -394,21 +403,80 @@ public class MainActivity extends Activity {
         final View v = snapOverlay;
         if (v == null) return;
         snapOverlay = null;
+        android.util.Log.i("UrTVHome", "snapshot overlay: gone after " + (android.os.SystemClock.elapsedRealtime() - snapShownAt) + " ms");
         v.animate().alpha(0f).setDuration(HomeSnapshot.FADE_MS).withEndAction(() -> { if (homeRoot != null) homeRoot.removeView(v); }).start();
     }
 
-    /** both wallpaper bitmaps are let go; the one in front leaves a 160 px copy (about 100 KB), which CENTER_CROP stretches soft until the next photo fades in over it */
-    private void thinWallpaper() {
-        android.graphics.drawable.Drawable d = wallFront == null ? null : wallFront.getDrawable();
-        Bitmap thumb = null;
-        try {
-            if (d instanceof android.graphics.drawable.BitmapDrawable) {
-                Bitmap b = ((android.graphics.drawable.BitmapDrawable) d).getBitmap();
-                if (b != null && b.getWidth() > 0 && b.getHeight() > 0) thumb = Bitmap.createScaledBitmap(b, 160, Math.max(1, 160 * b.getHeight() / b.getWidth()), true);
+    /** 4.3.1 hotfix: the small (480 px) copy of the photo in front: in memory and on disk, drawn in the first frame of a start or a return when no photo is in a view (WallFirstFrame) */
+    private volatile Bitmap smallPhoto;
+    private boolean fullPhotoShown, photoLogged;
+    private long resumeAt;
+    private static final String WALL_SMALL = "wall-small.webp";
+
+    private void firstFrameWallpaper() {
+        if (wallFront == null) return;
+        boolean has = wallFront.getDrawable() != null;
+        java.io.File f = new java.io.File(getFilesDir(), WALL_SMALL);
+        int how = WallFirstFrame.source(has, smallPhoto != null, f.isFile());
+        if (how == WallFirstFrame.MEMORY || how == WallFirstFrame.DISK) {
+            Bitmap b = how == WallFirstFrame.MEMORY ? smallPhoto : android.graphics.BitmapFactory.decodeFile(f.getPath());
+            if (b != null) {
+                smallPhoto = b;
+                wallFront.setImageBitmap(b);
+                wallFront.setAlpha(1f);
+                logFirstPhoto(how == WallFirstFrame.MEMORY ? "small copy, memory" : "small copy, disk");
+                return;
             }
-        } catch (RuntimeException | OutOfMemoryError ignored) { thumb = null; }
+        }
+        logFirstPhoto(has ? "photo kept" : "none, the look's colour");
+    }
+
+    /** one line per return for the tester: the time from the home coming back to the first photo frame (tag UrTVHome) */
+    private void logFirstPhoto(String how) {
+        if (photoLogged) return;
+        photoLogged = true;
+        android.util.Log.i("UrTVHome", "resume to first photo frame: " + (SystemClock.elapsedRealtime() - resumeAt) + " ms (" + how + "), ram tier " + Ram.tier(this));
+    }
+
+    /** the small copy of a photo just shown, made off the main thread */
+    private void saveSmallPhoto(Bitmap src) {
+        try {
+            int w = WallFirstFrame.SMALL_W, h = WallFirstFrame.smallHeight(src.getWidth(), src.getHeight());
+            Bitmap small = Bitmap.createScaledBitmap(src, w, h, true);
+            smallPhoto = small;
+            java.io.File tmp = new java.io.File(getFilesDir(), WALL_SMALL + ".tmp");
+            try (java.io.FileOutputStream out = new java.io.FileOutputStream(tmp)) { small.compress(Bitmap.CompressFormat.WEBP, 80, out); }
+            if (!tmp.renameTo(new java.io.File(getFilesDir(), WALL_SMALL))) tmp.delete();
+        } catch (Exception | OutOfMemoryError ignored) { }
+    }
+
+    /**
+     * both wallpaper bitmaps are let go but a stand-in always stays (never a bare view): the small copy when there is one, else a 160 px copy of whatever the view draws (a BitmapDrawable or any
+     * other drawable, rendered small); when no copy can be made (out of memory) the photos are left as they are, not nulled. CENTER_CROP stretches it soft until the next photo fades in over it.
+     */
+    private void thinWallpaper() {
+        Bitmap thumb = smallPhoto;
+        if (thumb == null) {
+            android.graphics.drawable.Drawable d = wallFront == null ? null : wallFront.getDrawable();
+            try {
+                if (d instanceof android.graphics.drawable.BitmapDrawable) {
+                    Bitmap b = ((android.graphics.drawable.BitmapDrawable) d).getBitmap();
+                    if (b != null && b.getWidth() > 0 && b.getHeight() > 0) thumb = Bitmap.createScaledBitmap(b, 160, Math.max(1, 160 * b.getHeight() / b.getWidth()), true);
+                } else if (d != null && d.getIntrinsicWidth() > 0 && d.getIntrinsicHeight() > 0) {
+                    thumb = Bitmap.createBitmap(160, Math.max(1, 160 * d.getIntrinsicHeight() / d.getIntrinsicWidth()), Bitmap.Config.ARGB_8888);
+                    android.graphics.Canvas cv = new android.graphics.Canvas(thumb);
+                    d.setBounds(0, 0, thumb.getWidth(), thumb.getHeight());
+                    d.draw(cv);
+                }
+            } catch (RuntimeException | OutOfMemoryError e) { thumb = null; }
+        }
+        if (thumb == null) {   // nothing to leave behind: keep what is there rather than a bare view
+            android.util.Log.i("UrTVHome", "trim: no stand-in could be made, the photos stay");
+            return;
+        }
+        fullPhotoShown = false;
         for (ImageView v : new ImageView[] {wallFront, wallBack}) if (v != null) v.setImageDrawable(null);   // both photos (not the fade's end: tilawah_test)
-        if (thumb != null) wallFront.setImageBitmap(thumb);
+        if (wallFront != null) wallFront.setImageBitmap(thumb);
     }
     /** the photos were let go (onTrimMemory): the next onResume shows one at once */
     private boolean wallTrimmed;
@@ -485,7 +553,7 @@ public class MainActivity extends Activity {
         // every frame of the tray's focus move then blits one texture instead of drawing a photo and three translucent full-screen layers (the render thread's cost was 14-18 ms issue + 18-28 ms gpu per frame)
         FrameLayout backdrop = new FrameLayout(this);
         backdrop.setClipChildren(false);
-        if (!DebugFlags.on(this, "nobackdrop") && !((android.app.ActivityManager) getSystemService(ACTIVITY_SERVICE)).isLowRamDevice()) backdrop.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        if (!DebugFlags.on(this, "nobackdrop") && !((android.app.ActivityManager) getSystemService(ACTIVITY_SERVICE)).isLowRamDevice() && !Ram.tight(this)) backdrop.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         root.addView(backdrop, new FrameLayout.LayoutParams(-1, -1));
         wallBack = wallpaperLayer();
         wallFront = wallpaperLayer();
@@ -1106,6 +1174,9 @@ public class MainActivity extends Activity {
     private boolean appsShown, entranceDue;
     static final int BATCH_ROWS = 2;   // grid rows added per pass of the UI thread
 
+    private int dockRetries;
+    private final Runnable dockRetry = () -> { if (!isDestroyed() && !isFinishing()) buildApps(); };
+
     private void buildApps() {
         if (edit != null) abandonEdit();
         if (appsEdit != null) abandonAppsEdit();   // the grid it edits is stale: nothing saved, as «تعديل المفضلة»
@@ -1166,6 +1237,8 @@ public class MainActivity extends Activity {
         for (App a : all) byPkg.put(a.pkg, a);
         List<App> dock = new ArrayList<>();
         for (String p : wanted) if (byPkg.containsKey(p)) dock.add(byPkg.remove(p));
+        long again = DockRetry.next(dockRetries, wanted.length, dock.size());   // some chosen favourites not in the system's list yet (a cold start): the row is built again soon
+        if (again >= 0) { dockRetries++; handler.postDelayed(dockRetry, again); android.util.Log.i("UrTVHome", "favourites: " + dock.size() + " of " + wanted.length + " found, building the row again in " + again + " ms"); }
         cardByPkg.clear();
         List<App> rest = new ArrayList<>(byPkg.values());   // by name, then in the owner's order (inSavedOrder)
         Collections.sort(rest, (x, y) -> x.label.compareToIgnoreCase(y.label));
@@ -3358,7 +3431,7 @@ public class MainActivity extends Activity {
 
     /** {how many, mode, rev}: none, mix and 0 when the screensaver app has none or does not answer */
     private Object[] ownInfo() {
-        try (Cursor c = getContentResolver().query(OWN, null, null, null, null)) {
+        try (Cursor c = getContentResolver().query(OWN, new String[] {"n", "mode", "rev", "home"}, null, null, null)) {   // no "dates": the screensaver app does not stat every photo for the home's wallpaper
             // an older screensaver app answers any path with its settings instead: no "n" column, no photos
             if (c != null && c.getColumnIndex("n") == 0 && c.moveToFirst()) {
                 int h = c.getColumnIndex("home");   // the home's own choice for «صوري» («مع صورنا», «فقط», «بدون»); an older screensaver says only the mode
@@ -3405,27 +3478,28 @@ public class MainActivity extends Activity {
     private void nextWallpaper() {
         handler.removeCallbacks(rotateWallpaper);
         if (wallpapers.length == 0) return;
-        final Object[] own = ownInfo();
-        final int ownCount = (Integer) own[0];
-        final boolean only = ownCount > 0 && "only".equals(own[1]);
-        final Object[] hp = homePackInfo();
-        @SuppressWarnings("unchecked") final java.util.Map<String, Integer> packs = only ? new java.util.LinkedHashMap<String, Integer>() : (java.util.Map<String, Integer>) hp[0];
-        if ((Long) own[2] != prefs().getLong("ownRev", 0) || !((String) hp[2]).equals(prefs().getString("homePacksRev", ""))) prefs().edit().putLong("ownRev", (Long) own[2]).putString("homePacksRev", (String) hp[2]).apply();
-        final String[] remote = only ? new String[0] : remotePhotos();
-        int packSum = 0;
-        for (int n : packs.values()) packSum += n;
-        // ours (bundled and hosted) come first, then the owner's, then the packs'; ours is out when the setting says so, but never when nothing else is there
-        final int base = only ? 0 : ((Boolean) hp[1] || ownCount + packSum == 0) ? wallpapers.length + remote.length : 0;
-        final int packBase = base + ownCount;
-        final int total = only ? ownCount : packBase + packSum;
-        if (wallIndex < 0) wallIndex = prefs().getInt("wallpaper", -1);
-        wallIndex = (wallIndex + 1) % (total * 4096);   // a counter: the position inside a round, and the round
-        prefs().edit().putInt("wallpaper", wallIndex).apply();
-        wallChangedAt = SystemClock.elapsedRealtime();
-        final int idx = only ? wallIndex % total : WallShuffle.of(total, wallIndex / total)[wallIndex % total];
-        final String fallback = "wallpapers/" + wallpapers[idx % wallpapers.length];
         final int gen = ++wallGen;   // a photo that arrives after a newer request is not shown
         new Thread(() -> {
+            // 4.3.1 hotfix: what is on the device (the screensaver app's provider, the disk) is read HERE, off the main thread: a dead screensaver process cold-starts for the first query and used to block the home's return
+            final Object[] own = ownInfo();
+            final int ownCount = (Integer) own[0];
+            final boolean only = ownCount > 0 && "only".equals(own[1]);
+            final Object[] hp = homePackInfo();
+            @SuppressWarnings("unchecked") final java.util.Map<String, Integer> packs = only ? new java.util.LinkedHashMap<String, Integer>() : (java.util.Map<String, Integer>) hp[0];
+            if ((Long) own[2] != prefs().getLong("ownRev", 0) || !((String) hp[2]).equals(prefs().getString("homePacksRev", ""))) prefs().edit().putLong("ownRev", (Long) own[2]).putString("homePacksRev", (String) hp[2]).apply();
+            final String[] remote = only ? new String[0] : remotePhotos();
+            int packSum = 0;
+            for (int n : packs.values()) packSum += n;
+            // ours (bundled and hosted) come first, then the owner's, then the packs'; ours is out when the setting says so, but never when nothing else is there
+            final int base = only ? 0 : ((Boolean) hp[1] || ownCount + packSum == 0) ? wallpapers.length + remote.length : 0;
+            final int packBase = base + ownCount;
+            final int total = only ? ownCount : packBase + packSum;
+            if (wallIndex < 0) wallIndex = prefs().getInt("wallpaper", -1);
+            wallIndex = (wallIndex + 1) % (total * 4096);   // a counter: the position inside a round, and the round
+            prefs().edit().putInt("wallpaper", wallIndex).apply();
+            wallChangedAt = SystemClock.elapsedRealtime();
+            final int idx = only ? wallIndex % total : WallShuffle.of(total, wallIndex / total)[wallIndex % total];
+            final String fallback = "wallpapers/" + wallpapers[idx % wallpapers.length];
             // 1. what is on the device now, at once: the owner's photo, the hosted one already kept, else the bundled one
             Bitmap bm = null;
             java.io.File f = null;
@@ -3504,6 +3578,10 @@ public class MainActivity extends Activity {
         root.removeView(wallFront);
         root.addView(wallFront, 1, new FrameLayout.LayoutParams(-1, -1));
         wallFront.setImageBitmap(bm);
+        fullPhotoShown = true;
+        logFirstPhoto("full photo");
+        final Bitmap forSmall = bm;
+        new Thread(() -> saveSmallPhoto(forSmall), "wall-small").start();
         wallFront.setAlpha(0f);
         final ImageView shown = wallFront;
         shown.animate().alpha(1f).setDuration(firstWallpaper ? 600 : 2000).withEndAction(() -> {

@@ -73,9 +73,9 @@ final class HomeSnapshot {
             final Context app = a.getApplicationContext();
             PixelCopy.request(a.getWindow(), null, full, r -> {
                 if (r == PixelCopy.SUCCESS) new Thread(() -> { save(app, full, key); if (done != null) new Handler(Looper.getMainLooper()).post(done); }, "home-snapshot").start();
-                else full.recycle();
+                else { android.util.Log.i("UrTVHome", "snapshot capture failed: PixelCopy result " + r); full.recycle(); }
             }, new Handler(Looper.getMainLooper()));
-        } catch (RuntimeException | OutOfMemoryError ignored) { }
+        } catch (RuntimeException | OutOfMemoryError e) { android.util.Log.i("UrTVHome", "snapshot capture failed: " + e.getClass().getSimpleName()); }
     }
 
     @SuppressWarnings("deprecation")
@@ -88,12 +88,12 @@ final class HomeSnapshot {
                 best = o.toByteArray();
                 if (best.length <= MAX_BYTES) break;
             }
-            if (best == null || best.length > MAX_BYTES) return;   // too heavy even at the lowest quality: nothing is kept
+            if (best == null || best.length > MAX_BYTES) { android.util.Log.i("UrTVHome", "snapshot capture failed: too heavy (" + (best == null ? 0 : best.length) + " bytes)"); return; }   // too heavy even at the lowest quality: nothing is kept
             File tmp = new File(dir(c), FILE + ".tmp");
             try (FileOutputStream out = new FileOutputStream(tmp)) { out.write(best); }
             File img = new File(dir(c), FILE);
-            if (tmp.renameTo(img)) try (FileOutputStream m = new FileOutputStream(new File(dir(c), META))) { m.write(key.getBytes("UTF-8")); }
-        } catch (Exception ignored) {
+            if (tmp.renameTo(img)) try (FileOutputStream m = new FileOutputStream(new File(dir(c), META))) { m.write(key.getBytes("UTF-8")); android.util.Log.i("UrTVHome", "snapshot capture ok (" + best.length + " bytes)"); }
+        } catch (Exception e) { android.util.Log.i("UrTVHome", "snapshot capture failed: " + e.getClass().getSimpleName());
         } finally { b.recycle(); }
     }
 
