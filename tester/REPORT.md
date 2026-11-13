@@ -2608,3 +2608,11 @@ Phone control stopped (page tab closed), Player uninstalled (0 packages), screen
 
 ### Z
 Player uninstalled (0 packages), demo list and the PC server removed, UrTV city back to Riyadh, clean mode off, phone control stopped, updatechannel latest, idle 45 s, disabled-apps list equal (21), Home holder `sa.urtv.home`, TV muted and asleep. Local copies of the pictures: the 8 pushed ones deleted; two spares kept only locally (a clean Big Buck Bunny frame and the Player's OK panel). Nothing but the 8 pictures was pushed; they hold no names, addresses, Wi-Fi or serials.
+
+## step 70 — home-screen button pictures (build 268 on the TV; nothing changed; TV muted)
+**3 of 4 pictures taken; the 4th can't be (row not there). Pictures NOT pushed yet: sent to the owner, waiting for his OK (public repo).**
+- g1 ✓ «الشاشة الرئيسية (تلفزيونك)» section, row «اجعل UrTV الشاشة الرئيسية» focused, «تخلّص من واجهة المصنع» under it
+- g2 ✓ the same row: second line «✓ UrTV هو الشاشة الرئيسية». OK on it when UrTV is already the home: **nothing** (the code only opens «إعداد تلفزيوني» when it is not the home)
+- g3 ✓ «إعداد تلفزيوني» first page (from its own activity: «جهّز كل شي» and «تراجع» visible); neither pressed
+- g4 ✗ **«إعداد تلفزيوني» is not in the apps row or in «كل التطبيقات» on this TV** (14 tiles, none is it; its manifest has LEANBACK_LAUNCHER). I could only open it by `am start`. Supervisor: where should the owner find it?
+- Path to row 1 from the home: Settings (our settings, e.g. the control center's settings tile) → ▼ ▼ to «البطاقات» → OK → ◀ to «الشاشة الرئيسية» → OK; the row is the first one and is focused.
