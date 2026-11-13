@@ -39,7 +39,7 @@ check("a mask, not a rewrite: the home hides by visibility and by not making the
 check("the top row stays closed with one button (the settings, in the control center's place); the others, «يُتلى الآن», the extra rows and the notices are hidden and stay hidden when the home redraws",
       "pillBar.lock(on)" in main and "void lock(boolean on)" in bar and "if (locked) return;" in bar and "centerPill.setIcon(on ? R.drawable.ic_settings : R.drawable.ic_center);" in main
       and "if (cleanShown) openOurSettings(false);" in main and "applyClean();   // «UrTV النظيف» (a mask over what the settings above just applied)" in main
-      and "if (tvRowsBox == null || cleanShown) return;" in main and "if (cleanShown) { nudge.setVisibility(View.GONE); return; }" in main and "if (cleanShown) { nowCard.setVisibility(View.GONE); return; }" in main)
+      and "if (tvRowsBox == null || cleanShown) return;" in main and "if (cleanShown) { nudge.setVisibility(View.GONE); wireNudge(); return; }" in main and "if (cleanShown) { nowCard.setVisibility(View.GONE); return; }" in main)
 check("the greeting only when kept, never its weather line; the Wi-Fi mark only when kept",
       "CleanMode.keep(this).contains(CleanMode.GREETING) ? View.VISIBLE : View.GONE" in main and "maskVis(netIcon, on && !keep.contains(CleanMode.WIFI) ? View.GONE : (on ? View.VISIBLE : null))" in main)
 check("«off» puts every masked view back exactly as it was (step 47: the quick-buttons box was narrower after: x 96-240, was 104-264): each view's visibility is remembered the first time the mask touches it and restored, never set to «visible» by default; the bar is unlocked, measured again and laid out",
