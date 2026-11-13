@@ -1001,18 +1001,23 @@ final class Prefs {
     boolean clearText() { return sp.getBoolean("clearText", false); }
     void setClearText(boolean v) { sp.edit().putBoolean("clearText", v).apply(); }
 
+    /** «توهّج لون التطبيق»: off (the default, for new installs and old ones alike), light or on */
+    String glowMode() { String v = sp.getString("glowMode", "off"); return "on".equals(v) || "light".equals(v) ? v : "off"; }
+    void setGlowMode(String v) { sp.edit().putString("glowMode", "on".equals(v) || "light".equals(v) ? v : "off").apply(); GlassStyle.setTweaks(tweaks()); }
+
     String tweaks() {
         String a = accent(), f = focusStyle();
         int b = barPercent(), d = wallDim();
         boolean sync = lookSync();
         boolean clear = clearText();
-        if (a.isEmpty() && b == 100 && d == 0 && "solid".equals(f) && sync && !clear) return "";
+        if (a.isEmpty() && b == 100 && d == 0 && "solid".equals(f) && sync && !clear && "off".equals(glowMode())) return "";
         StringBuilder s = new StringBuilder("accent=" + a + ";bar=" + b + ";dim=" + d + ";focus=" + f);
         if (!sync) {
             s.append(";sync=off");
             for (int i = 0; i < GlassStyle.SURFACES.length; i++) s.append(';').append(GlassStyle.SURFACES[i]).append('=').append(surfacePercent(i)).append(':').append(surfaceFill(i));
         }
         if (clear) s.append(";text=clear");
+        if (!"off".equals(glowMode())) s.append(";glow=").append(glowMode());
         return s.toString();
     }
     static String lookLabel(String v) { return GlassStyle.LOOK_NAMES[java.util.Arrays.asList(GlassStyle.LOOKS).indexOf(GlassStyle.look(v))]; }

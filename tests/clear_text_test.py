@@ -30,7 +30,7 @@ page, sh = text(ROOT / "src/template.html"), text(ROOT / "optimize/saver.sh")
 
 check("the setting is off by default, kept as clearText, and reaches both apps as «text=clear» in the tweaks string and the page as #clear=1 (only when on: the address is as before)",
       'boolean clearText() { return sp.getBoolean("clearText", false); }' in prefs and 'if (clear) s.append(";text=clear");' in prefs
-      and "&& sync && !clear) return \"\";" in prefs and '(clearText() ? "&clear=1" : "")' in prefs)
+      and "&& sync && !clear && \"off\".equals(glowMode())) return \"\";" in prefs and '(clearText() ? "&clear=1" : "")' in prefs)
 check("GlassStyle (both copies, identical but the package): «text=clear» is read, clearText() says it, every look comes out with its secondary text as the main text and the focused tile's too, and the repaint key knows it",
       all('else if ("text".equals(k)) clear = "clear".equals(v);' in g and "public static boolean clearText()" in g and "l.light, l.base, l.scrim, l.scrimMin, l.text, l.text, l.accent, l.warn, l.panel, l.line, l.dialog, l.focus, l.onFocus, l.onFocus, l.hint, l.ring" in g
           and "return clearer(tinted(plain(look, light)));" in g and "return clearer(light ? LIGHT : DARK);" in g and '(tweakClear ? "clear|" : "")' in g for g in (gs_a, gs_h))

@@ -279,6 +279,8 @@ public class SaverReceiver extends BroadcastReceiver {
         if (albumMode != null && !"seconds".equals(albumMode) && !"ten".equals(albumMode) && !"minute".equals(albumMode)) return "error: albummode is one of seconds ten minute";
         String clearText = i.getStringExtra("cleartext");   // «نص أوضح»
         if (clearText != null && !"on".equals(clearText) && !"off".equals(clearText)) return "error: cleartext is one of on off";
+        String glowMode = i.getStringExtra("glow");   // «توهّج لون التطبيق»
+        if (glowMode != null && !"off".equals(glowMode) && !"light".equals(glowMode) && !"on".equals(glowMode)) return "error: glow is one of off light on";
         String albumTitle = i.getStringExtra("albumtitle");
         if (albumTitle != null && !"on".equals(albumTitle) && !"off".equals(albumTitle)) return "error: albumtitle is one of on off";
         String albumFit = i.getStringExtra("albumfit");
@@ -441,6 +443,7 @@ public class SaverReceiver extends BroadcastReceiver {
         if (albumMode != null) p.setAlbumMode(albumMode);
         if (albumTitle != null) p.setAlbumTitle("on".equals(albumTitle));
         if (clearText != null) p.setClearText("on".equals(clearText));
+        if (glowMode != null) p.setGlowMode(glowMode);
         if (albumFit != null) p.setAlbumFit(albumFit);
         if (albumSize != null) p.setAlbumSize(albumSize);
         if (albumDate != null) p.setAlbumDate("on".equals(albumDate));
@@ -633,7 +636,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nhome_panel: " + p.homePanel()
             + "\ngreeting: " + (p.greeting() ? "on" : "off")
             + "\nlistenpill: " + (p.listenPill() ? "on" : "off")
-            + "\nhomephotos: " + (p.homePhotosSame() ? "same" : "own") + "\nhomepacks: " + (p.homePacksOn().isEmpty() ? "none" : PhotoPacks.joinOn(p.homePacksOn())) + "\nhomeours: " + (p.homeOursOn() ? "on" : "off") + "\nhomemine: " + (p.homeMine() == null ? "same" : p.homeMine()) + "\nalbummode: " + p.albumMode() + "\nalbumdate: " + (p.albumDate() ? "on" : "off") + "\nalbumtitle: " + (p.albumTitle() ? "on" : "off") + "\nalbumfit: " + p.albumFit() + "\nalbumsize: " + p.albumSize() + "\ncleartext: " + (p.clearText() ? "on" : "off")
+            + "\nhomephotos: " + (p.homePhotosSame() ? "same" : "own") + "\nhomepacks: " + (p.homePacksOn().isEmpty() ? "none" : PhotoPacks.joinOn(p.homePacksOn())) + "\nhomeours: " + (p.homeOursOn() ? "on" : "off") + "\nhomemine: " + (p.homeMine() == null ? "same" : p.homeMine()) + "\nalbummode: " + p.albumMode() + "\nalbumdate: " + (p.albumDate() ? "on" : "off") + "\nalbumtitle: " + (p.albumTitle() ? "on" : "off") + "\nalbumfit: " + p.albumFit() + "\nalbumsize: " + p.albumSize() + "\ncleartext: " + (p.clearText() ? "on" : "off") + "\nglow: " + p.glowMode()
             + "\npillshidden: " + (p.pillsHidden().isEmpty() ? "none" : p.pillsHidden()) + "\nmatchapp: " + p.matchApp()
             + "\nupdatebell: " + (p.updateBell() ? "on" : "off")
             + "\nwatchnext: " + (p.watchNext() ? "on" : "off")

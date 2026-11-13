@@ -100,7 +100,10 @@ public class MainActivity extends Activity {
     private LinearLayout content, dockRow;
     private FrameLayout hero;
     private LinearLayout grid;
-    private View glow;
+    private View glow;   // null while «توهّج لون التطبيق» is off (nothing allocated, nothing animated)
+    private int glowSlot;
+    private FrameLayout glowRoot;
+    private float glowShare = 0f;
     private GradientDrawable glowDrawable;   // the one gradient, its colours changed in place (no allocation per move)
     private float glowAlphaTo = -1f, shadeTo = 0f;
     private ImageView wallBack, wallFront;
@@ -474,6 +477,7 @@ public class MainActivity extends Activity {
 
     private View buildUi() {
         FrameLayout root = new FrameLayout(this);
+        glowRoot = root;
         root.setBackgroundColor(GlassSource.look(this).base);   // the look's own solid colour, never black while something loads
         homeRoot = root;
         // The home is built in code, so it inherits no direction from the window: set it here and
@@ -508,9 +512,8 @@ public class MainActivity extends Activity {
             wallpapers = getAssets().list("wallpapers");
         } catch (java.io.IOException ignored) { }
 
-        glow = new View(this);
-        root.addView(glow, new FrameLayout.LayoutParams(-1, -1));
-        setGlow(glowColor);
+        glowSlot = root.getChildCount();   // «توهّج لون التطبيق»: off by default, then no view is made at all; on, it takes this place
+        applyGlowMode();
 
         scroll = new HomeScrollView(this);
         scroll.setVerticalScrollBarEnabled(false);
@@ -2875,6 +2878,7 @@ public class MainActivity extends Activity {
         GlassSource.setHomeLight(this, light);   // «تلقائي» on the other screens follows the home (kept only when it changes)
         String key = lookNow + "|" + GlassStyle.barPercent() + "|" + GlassStyle.dimPercent() + "|" + GlassStyle.focusStyle() + "|" + GlassStyle.of(lookNow, false).accent + "|" + GlassStyle.materialKey();   // a touch of «اللون والتحكم» repaints too
         if (light == lightNow && key.equals(paletteLook)) return;
+        applyGlowMode();
         lightNow = light;
         paletteLook = key;
         Look.Palette p = palette();
@@ -3213,8 +3217,27 @@ public class MainActivity extends Activity {
 
     // ---------------------------------------------------------------- glow
 
+    /** «توهّج لون التطبيق»: off (default) makes no view and no gradient, light is a third of the strength, on is full. Applies at once, from the look's repaint. */
+    private void applyGlowMode() {
+        float share = GlowLook.share(GlassStyle.glowMode());
+        if (share == glowShare && (share == 0f) == (glow == null)) return;
+        glowShare = share;
+        if (share == 0f) {
+            if (glow != null) { glow.animate().cancel(); glowRoot.removeView(glow); glow = null; glowDrawable = null; glowAlphaTo = -1f; }
+            return;
+        }
+        if (glow == null) {
+            glow = new View(this);
+            glowRoot.addView(glow, Math.min(glowSlot, glowRoot.getChildCount()), new FrameLayout.LayoutParams(-1, -1));
+            glowAlphaTo = -1f;
+        }
+        setGlow(glowColor);
+        glow.setAlpha(glowAlphaTo < 0 ? 1f : glowAlphaTo);
+    }
+
     private void setGlow(int color) {
         glowColor = color;
+        if (glow == null) return;
         if (glowDrawable == null) {
             glowDrawable = new GradientDrawable();
             glowDrawable.setGradientType(GradientDrawable.RADIAL_GRADIENT);
@@ -3222,7 +3245,7 @@ public class MainActivity extends Activity {
             glowDrawable.setGradientRadius(getResources().getDisplayMetrics().widthPixels * GlowLook.RADIUS);
             glow.setBackground(glowDrawable);
         }
-        glowDrawable.setColors(new int[]{withAlpha(color, GlowLook.CENTRE_ALPHA), withAlpha(color, GlowLook.MID_ALPHA), Color.TRANSPARENT});
+        glowDrawable.setColors(new int[]{withAlpha(color, GlowLook.CENTRE_ALPHA * glowShare), withAlpha(color, GlowLook.MID_ALPHA * glowShare), Color.TRANSPARENT});
     }
 
     /**
@@ -3235,7 +3258,7 @@ public class MainActivity extends Activity {
 
     private void fadeGlow(float alpha) {
         // each move between tiles asks again for the same values: an animator is started only when the target changes (a held arrow started two every step)
-        if (glowAlphaTo != alpha) { glowAlphaTo = alpha; glow.animate().alpha(alpha).setDuration(300).start(); }
+        if (glow != null && glowAlphaTo != alpha) { glowAlphaTo = alpha; glow.animate().alpha(alpha).setDuration(300).start(); }
         // The grid sits over the photo's busiest middle part, so dim it while browsing apps.
         float shade = alpha < 1f ? 1f : 0f;
         if (shadeTo != shade) { shadeTo = shade; gridShade.animate().alpha(shade).setDuration(300).start(); }
