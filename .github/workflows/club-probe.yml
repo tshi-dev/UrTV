@@ -1,0 +1,34 @@
+name: Club probe
+
+# 4.3.1, report only: what a club page could show from TheSportsDB's free key (.github/tools/club_probe.py): a club's last results, its next
+# games, a head-to-head, and whether eventslast lags the league's own list. The report goes to the data-club-probe branch. Nothing in the apps
+# changes. By hand, or when its own files change on a work branch.
+on:
+  workflow_dispatch:
+  push:
+    branches: ['work/**']
+    paths:
+      - '.github/tools/club_probe.py'
+      - '.github/workflows/club-probe.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -u .github/tools/club_probe.py
+      - name: Push to data-club-probe
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan data-club-probe
+          git rm -rfq --cached .
+          [ -d probe-club ] || exit 0
+          git add -f probe-club
+          git commit -qm "Club probe"
+          git push -f origin data-club-probe
