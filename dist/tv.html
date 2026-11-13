@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261112230108">
+<meta name="urtv-build" content="20261113125548">
 <title>شاشة تلفزيونك</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -894,7 +894,7 @@ const CONFIG = {
   albumFill: _Q.get('albumfit') === 'fill', albumTall: _Q.get('albumsize') === 'tall', albumTitle: _Q.get('albumtitle') !== '0',   // fill (cover, the top third kept) or fit; a taller photo; the title above it
   albumDate: _Q.get('albumdate') !== '0',
   wallDim: Math.max(0, Math.min(90, parseInt(_Q.get('walldim'), 10) || 0)),   // «تعتيم الخلفية» (0..90 %), more black over the photo
-  ownMode: _Q.get('ownmode') === 'only' ? 'only' : 'mix',
+  ownMode: _Q.get('ownmode') === 'only' ? 'only' : _Q.get('ownmode') === 'album' ? 'album' : 'mix',   // album: the photos are the album card's alone, out of the rotation
   // the photo packs («صور شاشة التوقف»): #packs=id:count,id:count
   // and #ours=0 when our own set is off (the app sends that only while a pack gives the screen something else)
   packs: window.UrtvNative ? (_Q.get('packs') || '').split(',').map(x => x.split(':')).filter(x => /^[a-z][a-z0-9-]{1,30}$/.test(x[0]) && +x[1] >= 1).map(x => [x[0], Math.min(200, Math.floor(+x[1]))]).slice(0, 12) : [],
@@ -3907,7 +3907,7 @@ function applyBackground(force){
     const slot = riyadhDayNumber() * (86400 / slotSec) + Math.floor((p.h * 3600 + p.mi * 60 + (p.s || 0)) / slotSec);
     if(slot === BG_SLOT && !force) return;
     BG_SLOT = slot; BG_TURN++;   // a photo of theirs still on its way for an earlier turn is dropped
-    const only = OWN_ONLY(), own = ownPhotos(), packs = only ? [] : packPhotos(), mine = own.concat(packs);   // theirs: their own photos, then the packs'
+    const only = OWN_ONLY(), own = CONFIG.ownMode === 'album' ? [] : ownPhotos(), packs = only ? [] : packPhotos(), mine = own.concat(packs);   // theirs: their own photos, then the packs'
     const set = !only && REMOTE_BGS.length ? photoSet(REMOTE_BGS.length).map(k => REMOTE_BGS[k]) : [];
     const local = BGS[slot % BGS.length];
     // what rotates: ours (the hosted set, else the bundled photos once the owner has some), then the owner's

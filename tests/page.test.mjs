@@ -2336,6 +2336,9 @@ for (const [width, height] of [[1920, 1080], [1280, 720], [960, 540]]) {
   r = await rotate('own=2&ownmode=mix');
   check('own photos, mix: theirs join ours in the rotation', ownSeen(r).length === 2 && hosted(r).length > 0, r.seen.join(' '));
 
+  r = await rotate('own=3&ownmode=album');
+  check('own photos, album (4.3.1): they stay out of the background rotation (none of them is ever the photo), ours rotates as it did', ownSeen(r).length === 0 && hosted(r).length > 0, r.seen.join(' '));
+
   r = await rotate('own=2');
   check('own photos: mix is the default mode', ownSeen(r).length === 2 && hosted(r).length > 0, r.seen.join(' '));
 

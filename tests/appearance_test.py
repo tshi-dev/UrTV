@@ -25,7 +25,7 @@ act = text(SAVER / "AppearanceActivity.java")
 check("the page has the screensaver's card style, its photos (packs, «صورنا», «صوري»), the home's look and lighting and the home's photos, each a tile with its own picture (Mock)",
       all(w in act for w in ("Prefs.CARD_STYLES", "photosRow()", "GlassStyle.LOOKS", "Prefs.APPEARANCES", "homePhotosRow()", "private final class Mock extends View", 'startActivity(new Intent(this, PhotoPacksActivity.class))')))
 check("the home's photos are «مثل شاشة التوقف» or its own packs and «صورنا» (setHomePhotosSame, setHomePacksOn, setHomeOursOn)", all(w in act for w in ("setHomePhotosSame(true)", "setHomePhotosSame(false)", "setHomePacksOn(", "setHomeOursOn(")))
-check("«صورنا» cannot be turned off with no pack on (the same guard as the packs screen), «صوري» toggles mixed or alone", "mayTurnOursOff" in act and "setOwnMode(only ? Own.MIX : Own.ONLY)" in act)
+check("«صورنا» cannot be turned off with no pack on (the same guard as the packs screen), «صوري» toggles mixed or alone", "mayTurnOursOff" in act and "setOwnMode(only ? Own.ALBUM : albumOnly ? Own.MIX : Own.ONLY)" in act)
 check("every tile is focusable with the glass card look and the on mark; the look of all our screens (GlassSource.page)", "t.setFocusable(true);" in act and "GlassPaint.card(t, look, 14);" in act and "GlassSource.page(this, root)" in act)
 man = text(ROOT / "android/app/src/main/AndroidManifest.xml")
 check("the activity is declared, not exported; the settings' «المظهر» row opens it (the one page of the look)", '".AppearanceActivity" android:exported="false"' in man and "AppearanceActivity.class" in text(SAVER / "SettingsActivity.java"))

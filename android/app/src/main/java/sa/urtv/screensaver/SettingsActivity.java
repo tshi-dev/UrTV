@@ -1919,7 +1919,7 @@ public class SettingsActivity extends Activity {
 
     private String ownLabel() {
         if (Own.count(this) == 0) return "لا توجد صور · يضيفها مساعدك الذكي";
-        return Own.ONLY.equals(Own.mode(this)) ? "صوري فقط" : "تُضاف إلى صور التطبيق";
+        return Own.ONLY.equals(Own.mode(this)) ? "صوري فقط" : Own.ALBUM.equals(Own.mode(this)) ? "للألبوم فقط" : "تُضاف إلى صور التطبيق";
     }
 
     /** «صوري»: photos only arrive through the owner's assistant; here the owner picks how they show, or removes them all. */
@@ -1928,12 +1928,12 @@ public class SettingsActivity extends Activity {
             toast("اطلب من مساعدك الذكي إضافة صورك (حتى ١٠)");
             return;
         }
-        String[] items = {"تُضاف إلى صور التطبيق", "صوري فقط", "حذف كل صوري"};
+        String[] items = {"تُضاف إلى صور التطبيق", "صوري فقط", "للألبوم فقط، خارج دوران الصور", "حذف كل صوري"};
         new Dlg(this).setTitle("صوري")
-            .setSingleChoiceItems(items, Own.ONLY.equals(Own.mode(this)) ? 1 : 0, (d, i) -> {
+            .setSingleChoiceItems(items, Own.ONLY.equals(Own.mode(this)) ? 1 : Own.ALBUM.equals(Own.mode(this)) ? 2 : 0, (d, i) -> {
                 d.dismiss();
-                if (i == 2) { confirmClearOwn(); return; }
-                prefs.setOwnMode(i == 1 ? Own.ONLY : Own.MIX);
+                if (i == 3) { confirmClearOwn(); return; }
+                prefs.setOwnMode(i == 1 ? Own.ONLY : i == 2 ? Own.ALBUM : Own.MIX);
                 prefs.bumpOwnRev();
                 render();
             })

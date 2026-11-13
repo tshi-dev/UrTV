@@ -575,7 +575,7 @@ public class SaverReceiver extends BroadcastReceiver {
                 return "saved\n" + photoListing(c, p);
             case "mode": {
                 String m = i.getStringExtra("mode");
-                if (!Own.MIX.equals(m) && !Own.ONLY.equals(m)) return "error: mode is mix or only";
+                if (!Own.MIX.equals(m) && !Own.ONLY.equals(m) && !Own.ALBUM.equals(m)) return "error: mode is mix, only or album";
                 p.setOwnMode(m);
                 p.bumpOwnRev();
                 return "saved\n" + photoListing(c, p);
@@ -589,6 +589,7 @@ public class SaverReceiver extends BroadcastReceiver {
         int n = Own.count(c);
         StringBuilder b = new StringBuilder("photos: " + n + " of " + Own.max(c) + "\nmode: " + p.ownMode());
         if (n == 0) b.append(" (no photos: ours only)");
+        else if (Own.ALBUM.equals(Own.mode(c))) b.append(" (only the album card shows them)");
         else if (!Own.ONLY.equals(Own.mode(c))) b.append(" (they join ours)");
         else b.append(" (only theirs)");
         for (int k = 1; k <= n; k++) b.append('\n').append(k).append(". ").append(Own.describe(c, k));

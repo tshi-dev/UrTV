@@ -311,12 +311,12 @@ public class AppearanceActivity extends Activity {
             render();
         }), tileParams());
         int own = Own.count(this);
-        final boolean only = Own.ONLY.equals(Own.mode(this));
+        final boolean only = Own.ONLY.equals(Own.mode(this)), albumOnly = Own.ALBUM.equals(Own.mode(this));
         // named by where they show: the screensaver's and the home's tiles sit one above the other and were both «صوري» (step 47: the wrong one was pressed)
-        String ownName = own == 0 ? w("صوري في شاشة التوقف") : only ? w("صوري فقط في شاشة التوقف") : w("صوري مع صورنا في شاشة التوقف");
+        String ownName = own == 0 ? w("صوري في شاشة التوقف") : only ? w("صوري فقط في شاشة التوقف") : albumOnly ? w("صوري للألبوم فقط في شاشة التوقف") : w("صوري مع صورنا في شاشة التوقف");
         row.addView(tile("own", new Mock(Mock.PHOTOS, "own", look), ownName, own > 0, v -> {
             if (Own.count(this) == 0) { toast(w("لا صور لك بعد. تضاف من الجوال.")); return; }
-            prefs.setOwnMode(only ? Own.MIX : Own.ONLY);
+            prefs.setOwnMode(only ? Own.ALBUM : albumOnly ? Own.MIX : Own.ONLY);   // one tile that goes round: with ours, only, only the album card, with ours again
             render();
         }), tileParams());
         return row;

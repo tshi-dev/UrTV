@@ -441,7 +441,7 @@ optimize/saver.sh mkstyle <arrows or prices>      # ONLY if I asked to see the p
 optimize/saver.sh stocks <Tadawul codes and US tickers, e.g. 2222 1120 AAPL>   # ONLY with card stocks: my watchlist, up to 8 (default 2222 1120 7010 2010: leave it)
 optimize/saver.sh slot <matches, weather, fasting, countdown, markets or none>   # ONLY if I asked what the bottom-left slot shows (default matches: leave it; with no team it shows the weather by itself)
 optimize/saver.sh countdown <YYYY-MM-DD> '<name>'   # ONLY if I asked for a countdown (also: slot countdown); "countdown clear" removes it
-# own photos (only if I ask, or say yes to the offer in step 7): optimize/photos.sh add FILE... | list | del N | clear | mode mix|only | show
+# own photos (only if I ask, or say yes to the offer in step 7): optimize/photos.sh add FILE... | list | del N | clear | mode mix|only|album | show
 optimize/saver.sh update
 optimize/saver.sh show                            # read both back to me
 optimize/dock.sh show
@@ -533,7 +533,7 @@ If I say no or don't answer, say nothing more about it. If I say yes:
   and that nothing leaves this computer except to my TV. If I chose `only`: `optimize/photos.sh mode only`.
 - Show me the result: `optimize/photos.sh list`, then `optimize/photos.sh show` and look at the screenshot yourself.
   Never keep, copy or upload my photos anywhere else, and never put them in this folder.
-- Tell me I can change it any time: `optimize/photos.sh del N`, `clear` (the TV goes back to our photos only), `mode mix|only`,
+- Tell me I can change it any time: `optimize/photos.sh del N`, `clear` (the TV goes back to our photos only), `mode mix|only|album` (album: only the «ألبوم صوري» card shows them, they stay out of the wallpaper rotation),
   or in the screensaver app's settings, row «صوري» (mode, remove all). Adding photos is only through you.
 
 ### Offer: a second TV (only if I say I have another one)

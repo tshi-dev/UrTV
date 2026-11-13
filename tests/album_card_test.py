@@ -51,6 +51,11 @@ check("settings: a row for each (speed, date, title, shape, size) in the screens
       and all(f'{{"{n}", SAVER}}' in text(SAVER / "SettingsHub.java") for n in ("سرعة ألبوم صوري", "عنوان ألبوم صوري", "شكل صورة ألبوم صوري", "حجم ألبوم صوري"))
       and all(f"{n}\t" in text(ROOT / "i18n/en/saver.tsv") for n in ("سرعة ألبوم صوري", "عنوان ألبوم صوري", "شكل صورة ألبوم صوري", "حجم ألبوم صوري", "كل ١٠ ثوانٍ", "طويل بضعف الارتفاع")))
 check("settings: no «·» or «•» in the new rows' words", all(c not in s_ for s_ in ("ظاهر تحت الصورة", "ظاهر فوق الصورة", "تملأ البطاقة وأعلاها يبقى", "طويل بضعف الارتفاع", "كل ١٠ ثوانٍ") for c in "·•"))
+check("photos mode «album» (4.3.1): the photos are the album card's alone: Own.ALBUM, the page leaves them out of the rotation (#ownmode=album), the home's wallpaper follows as «off», photos.sh and the receiver accept it, the tile and the dialog offer it",
+      'ALBUM = "album"' in ownj and "(ONLY.equals(m) || ALBUM.equals(m)) && count(c) > 0 ? m : MIX" in ownj
+      and "_Q.get('ownmode') === 'album' ? 'album'" in page and "own = CONFIG.ownMode === 'album' ? [] : ownPhotos()" in page
+      and 'Own.ALBUM.equals(ownMode()) ? "off" : ownMode()' in prefs and "mode is mix, only or album" in rcv and "mix|only|album" in text(ROOT / "optimize/photos.sh")
+      and "Own.ALBUM" in text(SAVER / "AppearanceActivity.java") and "للألبوم فقط، خارج دوران الصور" in settings)
 check("saver: PhotoCache answers photos 1..50, a size, and dates.json; the page cap is not stale",
       "[1-4][0-9]|50" in cache and "dates.json" in cache and "PhotoShrink.toSize" in cache and "([1-9]|10)" not in cache)
 check("saver: the provider gives the dates and Own knows the day a photo was added", '"dates"' in prov and "static String date(" in ownj)
