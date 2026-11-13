@@ -167,3 +167,9 @@ the JitPack line in `android/settings.gradle`. Take those out together and the a
 - **Conscrypt** 2.5.3 (https://github.com/google/conscrypt), Copyright The Android Open Source Project and others: Apache-2.0. It gives TLS 1.3, which the pairing needs.
 - **BouncyCastle** 1.81 (bcprov, bcpkix; https://www.bouncycastle.org/), Copyright The Legion of the Bouncy Castle Inc.: the Bouncy Castle licence (MIT style). It makes the app's self-signed certificate.
 - The licence texts in `docs/licenses/` are the ones libadb-android and spake2-android ship (REUSE format: a short header, then the licence).
+
+## Open Shelf (suggested app, 4.3.1)
+
+«تطبيقات مقترحة» offers Open Shelf (https://github.com/wingedpanther/openshelf, GPL-3.0; its font under the SIL Open Font License 1.1) as one entry. We only link to it: the settings download its own release file
+(`OpenShelf-<version>.apk` from that repository's releases), check that it is that package, and hand it to Android's installer, which asks the person first. Nothing of Open Shelf is bundled in our apps, and we
+have not vetted the apps it installs (the line on its tile says so).

@@ -16,7 +16,16 @@ public final class SuggestedAppsRun {
             && !SuggestedApps.githubOk(tube, "http://github.com/yuliskov/SmartTube/releases/download/29.1/a.apk") && !SuggestedApps.githubOk(vlc, "https://github.com/x/y/releases/download/1/a.apk"));
         check("a Play Store app has no file: its page only, and is not in the setup", vlc.kind == SuggestedApps.Kind.STORE && vlc.file == null && !vlc.inSetup()
             && vlc.address().equals("https://play.google.com/store/apps/details?id=org.videolan.vlc"));
-        check("every suggestion runs on any TV we support (Android 5+)", SuggestedApps.forTv(21).size() == SuggestedApps.all().size());
+        SuggestedApps.App shelf = SuggestedApps.byId("openshelf");
+        check("every suggestion but Open Shelf runs on any TV we support (Android 5+); Open Shelf needs Android 9+", SuggestedApps.forTv(21).size() == SuggestedApps.all().size() - 1 && SuggestedApps.forTv(27).indexOf(shelf) < 0
+            && SuggestedApps.forTv(28).size() == SuggestedApps.all().size() && SuggestedApps.forTv(28).contains(shelf));
+        check("Open Shelf: a GitHub entry after VLC, from its own repository's release (OpenShelf-x.y.z.apk, one universal file), that package, unticked and not a box of the setup",
+            shelf.kind == SuggestedApps.Kind.GITHUB && shelf.repo.equals("wingedpanther/openshelf") && shelf.pkg.equals("io.github.wingedpanther.openshelf") && shelf.minSdk == 28 && !shelf.setupDefault
+            && !shelf.inSetup() && SuggestedApps.ALL[3] == shelf && SuggestedApps.ALL[2] == vlc
+            && "https://github.com/wingedpanther/openshelf/releases/download/v0.6.0/OpenShelf-0.6.0.apk".equals(SuggestedApps.pickAsset(shelf.file, "arm64-v8a,armeabi-v7a",
+                "{\"browser_download_url\": \"https://github.com/wingedpanther/openshelf/releases/download/v0.6.0/OpenShelf-0.6.0.apk\"}, {\"browser_download_url\": \"https://github.com/wingedpanther/openshelf/archive/refs/tags/v0.6.0.zip\"}"))
+            && SuggestedApps.githubOk(shelf, "https://github.com/wingedpanther/openshelf/releases/download/v0.6.0/OpenShelf-0.6.0.apk") && !SuggestedApps.githubOk(shelf, "https://github.com/evil/openshelf/releases/download/v0.6.0/OpenShelf-0.6.0.apk"));
+        check("Open Shelf's line carries the disclaimer: a third-party app we have not vetted, its apps at the person's risk", shelf.why.contains("تطبيق من طرف ثالث، ما جرّبناه بأنفسنا") && shelf.why.contains("على مسؤوليتك"));
         check("the setup's first ticks are TV Bro and SmartTube, as the one box was", SuggestedApps.defaults(34).equals(Arrays.asList("tvbro", "smarttube")));
         check("the setup's boxes: the two it can install, TV Bro then SmartTube (no store app)", SuggestedApps.forSetup(34).size() == 2 && SuggestedApps.forSetup(34).get(1) == tube);
         check("saved ticks read back: known setup ids, once, in order; a store app or a stranger dropped", SuggestedApps.parse("smarttube,vlc,x,tivimate,tvbro,smarttube").equals(Arrays.asList("tvbro", "smarttube"))

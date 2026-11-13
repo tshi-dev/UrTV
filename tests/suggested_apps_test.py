@@ -63,5 +63,5 @@ else:
             out = subprocess.run(["java", "-cp", tmp, "sa.urtv.home.SuggestedAppsRun"], capture_output=True, text=True).stdout
             lines = [l.split("\t") for l in out.splitlines() if "\t" in l]
             bad = [n for n, v in lines if v != "ok"]
-            check(f"SuggestedApps: every case ({len(lines)})", len(lines) == 19 and not bad, bad or out)
+            check(f"SuggestedApps: every case ({len(lines)})", len(lines) == 21 and not bad, bad or out)
 sys.exit(1 if failed else 0)

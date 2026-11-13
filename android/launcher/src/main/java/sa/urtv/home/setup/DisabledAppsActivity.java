@@ -41,6 +41,11 @@ public class DisabledAppsActivity extends Activity {
 
     @Override protected void attachBaseContext(android.content.Context b) { super.attachBaseContext(S.wrap(b)); }
 
+    /** SetupEngine.enableApps' reasons (plain Java words), marked here for «اللغة»; S.tv says them */
+    static final String[] WHY = {
+        S.n("التطبيق ما عاد موجود على التلفزيون"), S.n("التلفزيون ما سمح بتشغيله"), S.n("التلفزيون ما شغّله"), S.n("التلفزيون ما أكّد لنا النتيجة"),
+    };
+
     private GlassStyle.Look look;
     private LinearLayout col;
     private final android.os.Handler ui = new android.os.Handler(android.os.Looper.getMainLooper());

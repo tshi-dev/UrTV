@@ -42,6 +42,7 @@ public class SuggestedAppsActivity extends Activity {
     /** SuggestedApps' why lines, marked for «اللغة» here (the catalog is plain Java); S.tv says them */
     static final String[] WHY = {
         S.n("يوتيوب بلا إعلانات، مصمَّم للريموت"), S.n("متصفح إنترنت يشتغل بالريموت"), S.n("يشغّل الفيديو والصوت من ذاكرة USB ومن الشبكة"),
+        S.n("متجر لتطبيقات التلفزيون المفتوحة المصدر، يثبّتها من صفحاتها على GitHub. تطبيق من طرف ثالث، ما جرّبناه بأنفسنا. التطبيقات اللي يثبّتها على مسؤوليتك."),
         S.n("مشغّل تلفزيونك للفيديو والقوائم، من إصدارات تلفزيونك نفسها"),
     };
 
