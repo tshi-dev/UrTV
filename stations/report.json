@@ -1,0 +1,423 @@
+{
+ "checked": "2026-11-13T16:50:58Z",
+ "rows": [
+  {
+   "name": "0 Quran Radio, Saudi Arabia",
+   "url": "https://live.kwikmotion.com/sbrksaquranradiolive/ksaquranradio/playlist.m3u8",
+   "hops": [
+    {
+     "status": 200,
+     "url": "https://live.kwikmotion.com/sbrksaquranradiolive/ksaquranradio/playlist.m3u8",
+     "err": ""
+    }
+   ],
+   "cleartext_blocked": [],
+   "probe": {
+    "audio": true,
+    "codec": "aac",
+    "rate": "48000",
+    "err": ""
+   },
+   "play": {
+    "ok": true,
+    "wall_s": 53.0,
+    "err": ""
+   },
+   "ok": true
+  },
+  {
+   "name": "1 Quran Radio, Egypt",
+   "url": "https://stream.radiojar.com/8s5u5tpdtwzuv",
+   "hops": [
+    {
+     "status": 302,
+     "url": "https://stream.radiojar.com/8s5u5tpdtwzuv",
+     "err": ""
+    },
+    {
+     "status": 200,
+     "url": "http://n0b.radiojar.com/8s5u5tpdtwzuv?rj-ttl=5&rj-tok=AAABodXRncwAT-R4ZqldDSK4aw",
+     "err": ""
+    }
+   ],
+   "cleartext_blocked": [],
+   "probe": {
+    "audio": true,
+    "codec": "mp3",
+    "rate": "44100",
+    "err": ""
+   },
+   "play": {
+    "ok": true,
+    "wall_s": 55.5,
+    "err": ""
+   },
+   "ok": true
+  },
+  {
+   "name": "2 Sheikh Abu Bakr Al-Shatri",
+   "url": "https://backup.qurango.net/radio/shaik_abu_bakr_al_shatri",
+   "hops": [
+    {
+     "status": 200,
+     "url": "https://backup.qurango.net/radio/shaik_abu_bakr_al_shatri",
+     "err": ""
+    }
+   ],
+   "cleartext_blocked": [],
+   "probe": {
+    "audio": true,
+    "codec": "mp3",
+    "rate": "44100",
+    "err": ""
+   },
+   "play": {
+    "ok": true,
+    "wall_s": 44.7,
+    "err": ""
+   },
+   "ok": true
+  },
+  {
+   "name": "3 Abdulrahman Al-Sudais",
+   "url": "https://backup.qurango.net/radio/abdulrahman_alsudaes",
+   "hops": [
+    {
+     "status": 200,
+     "url": "https://backup.qurango.net/radio/abdulrahman_alsudaes",
+     "err": ""
+    }
+   ],
+   "cleartext_blocked": [],
+   "probe": {
+    "audio": true,
+    "codec": "mp3",
+    "rate": "44100",
+    "err": ""
+   },
+   "play": {
+    "ok": true,
+    "wall_s": 45.1,
+    "err": ""
+   },
+   "ok": true
+  },
+  {
+   "name": "4 Saud Al-Shuraim",
+   "url": "https://backup.qurango.net/radio/saud_alshuraim",
+   "hops": [
+    {
+     "status": 200,
+     "url": "https://backup.qurango.net/radio/saud_alshuraim",
+     "err": ""
+    }
+   ],
+   "cleartext_blocked": [],
+   "probe": {
+    "audio": true,
+    "codec": "mp3",
+    "rate": "44100",
+    "err": ""
+   },
+   "play": {
+    "ok": false,
+    "wall_s": 0.5,
+    "err": " Error opening input: Server returned 5XX Server Error reply\nError opening input file https://backup.qurango.net/radio/saud_alshuraim.\nError opening input files: Server returned 5XX Server Error reply"
+   },
+   "ok": false
+  },
+  {
+   "name": "5 Maher Al-Muaiqly",
+   "url": "https://backup.qurango.net/radio/maher",
+   "hops": [
+    {
+     "status": 200,
+     "url": "https://backup.qurango.net/radio/maher",
+     "err": ""
+    }
+   ],
+   "cleartext_blocked": [],
+   "probe": {
+    "audio": true,
+    "codec": "mp3",
+    "rate": "44100",
+    "err": ""
+   },
+   "play": {
+    "ok": true,
+    "wall_s": 45.0,
+    "err": ""
+   },
+   "ok": true
+  },
+  {
+   "name": "6 Mishary Alafasy",
+   "url": "https://backup.qurango.net/radio/mishary_alafasi",
+   "hops": [
+    {
+     "status": 200,
+     "url": "https://backup.qurango.net/radio/mishary_alafasi",
+     "err": ""
+    }
+   ],
+   "cleartext_blocked": [],
+   "probe": {
+    "audio": true,
+    "codec": "mp3",
+    "rate": "44100",
+    "err": ""
+   },
+   "play": {
+    "ok": true,
+    "wall_s": 45.0,
+    "err": ""
+   },
+   "ok": true
+  },
+  {
+   "name": "7 Saad Al-Ghamdi",
+   "url": "https://backup.qurango.net/radio/saad_alghamdi",
+   "hops": [
+    {
+     "status": 500,
+     "url": "https://backup.qurango.net/radio/saad_alghamdi",
+     "err": ""
+    }
+   ],
+   "cleartext_blocked": [],
+   "probe": {
+    "audio": true,
+    "codec": "mp3",
+    "rate": "44100",
+    "err": ""
+   },
+   "play": {
+    "ok": true,
+    "wall_s": 44.9,
+    "err": ""
+   },
+   "ok": true
+  },
+  {
+   "name": "8 Yasser Al-Dosari",
+   "url": "https://backup.qurango.net/radio/yasser_aldosari",
+   "hops": [
+    {
+     "status": 200,
+     "url": "https://backup.qurango.net/radio/yasser_aldosari",
+     "err": ""
+    }
+   ],
+   "cleartext_blocked": [],
+   "probe": {
+    "audio": false,
+    "codec": null,
+    "rate": null,
+    "err": "https://backup.qurango.net/radio/yasser_aldosari: Server returned 5XX Server Error reply"
+   },
+   "play": {
+    "ok": false,
+    "wall_s": 0,
+    "err": "no audio stream"
+   },
+   "ok": false
+  },
+  {
+   "name": "9 Abdul Basit Abdul Samad",
+   "url": "https://backup.qurango.net/radio/abdulbasit_abdulsamad",
+   "hops": [
+    {
+     "status": 200,
+     "url": "https://backup.qurango.net/radio/abdulbasit_abdulsamad",
+     "err": ""
+    }
+   ],
+   "cleartext_blocked": [],
+   "probe": {
+    "audio": true,
+    "codec": "mp3",
+    "rate": "44100",
+    "err": ""
+   },
+   "play": {
+    "ok": true,
+    "wall_s": 45.1,
+    "err": ""
+   },
+   "ok": true
+  },
+  {
+   "name": "10 Muhammad Siddiq Al-Minshawi",
+   "url": "https://backup.qurango.net/radio/mohammed_siddiq_alminshawi",
+   "hops": [
+    {
+     "status": 200,
+     "url": "https://backup.qurango.net/radio/mohammed_siddiq_alminshawi",
+     "err": ""
+    }
+   ],
+   "cleartext_blocked": [],
+   "probe": {
+    "audio": true,
+    "codec": "mp3",
+    "rate": "44100",
+    "err": ""
+   },
+   "play": {
+    "ok": true,
+    "wall_s": 45.0,
+    "err": ""
+   },
+   "ok": true
+  },
+  {
+   "name": "11 Ahmad Al-Ajmi",
+   "url": "https://backup.qurango.net/radio/ahmad_alajmy",
+   "hops": [
+    {
+     "status": 200,
+     "url": "https://backup.qurango.net/radio/ahmad_alajmy",
+     "err": ""
+    }
+   ],
+   "cleartext_blocked": [],
+   "probe": {
+    "audio": true,
+    "codec": "mp3",
+    "rate": "44100",
+    "err": ""
+   },
+   "play": {
+    "ok": true,
+    "wall_s": 45.2,
+    "err": ""
+   },
+   "ok": true
+  },
+  {
+   "name": "candidate",
+   "url": "https://stream.radiojar.com/0tpy1h0kxtzuv",
+   "hops": [
+    {
+     "status": 302,
+     "url": "https://stream.radiojar.com/0tpy1h0kxtzuv",
+     "err": ""
+    },
+    {
+     "status": 200,
+     "url": "http://n12.radiojar.com/0tpy1h0kxtzuv?rj-ttl=5&rj-tok=AAABodXZpR8AS1UuYzWJlZz7gw",
+     "err": ""
+    }
+   ],
+   "cleartext_blocked": [],
+   "probe": {
+    "audio": true,
+    "codec": "mp3",
+    "rate": "44100",
+    "err": ""
+   },
+   "play": {
+    "ok": true,
+    "wall_s": 55.1,
+    "err": ""
+   },
+   "ok": true
+  },
+  {
+   "name": "candidate",
+   "url": "https://cdn.mp3quran.net/audio/badr-turki/r1/001.mp3",
+   "hops": [
+    {
+     "status": 206,
+     "url": "https://cdn.mp3quran.net/audio/badr-turki/r1/001.mp3",
+     "err": ""
+    }
+   ],
+   "cleartext_blocked": [],
+   "probe": {
+    "audio": true,
+    "codec": "mp3",
+    "rate": "44100",
+    "err": ""
+   },
+   "play": {
+    "ok": false,
+    "wall_s": 0.3,
+    "err": ""
+   },
+   "ok": false
+  },
+  {
+   "name": "candidate",
+   "url": "https://cdn.mp3quran.net/audio/muhammad-ayyub/r1/001.mp3",
+   "hops": [
+    {
+     "status": 206,
+     "url": "https://cdn.mp3quran.net/audio/muhammad-ayyub/r1/001.mp3",
+     "err": ""
+    }
+   ],
+   "cleartext_blocked": [],
+   "probe": {
+    "audio": true,
+    "codec": "mp3",
+    "rate": "22050",
+    "err": ""
+   },
+   "play": {
+    "ok": false,
+    "wall_s": 0.4,
+    "err": ""
+   },
+   "ok": false
+  },
+  {
+   "name": "candidate",
+   "url": "https://radio.xecod.com/station/quran-cairo",
+   "hops": [
+    {
+     "status": 403,
+     "url": "https://radio.xecod.com/station/quran-cairo",
+     "err": ""
+    }
+   ],
+   "cleartext_blocked": [],
+   "probe": {
+    "audio": false,
+    "codec": null,
+    "rate": null,
+    "err": "[tls @ 0x55a2a62b5540] Error in the pull function.\n[tls @ 0x55a2a62b5540] IO error: Connection timed out\nhttps://radio.xecod.com/station/quran-cairo: Connection timed out"
+   },
+   "play": {
+    "ok": false,
+    "wall_s": 0,
+    "err": "no audio stream"
+   },
+   "ok": false
+  },
+  {
+   "name": "candidate",
+   "url": "https://radio.xecod.com/listen/quran-cairo",
+   "hops": [
+    {
+     "status": 403,
+     "url": "https://radio.xecod.com/listen/quran-cairo",
+     "err": ""
+    }
+   ],
+   "cleartext_blocked": [],
+   "probe": {
+    "audio": false,
+    "codec": null,
+    "rate": null,
+    "err": "https://radio.xecod.com/listen/quran-cairo: Invalid data found when processing input"
+   },
+   "play": {
+    "ok": false,
+    "wall_s": 0,
+    "err": "no audio stream"
+   },
+   "ok": false
+  }
+ ]
+}
