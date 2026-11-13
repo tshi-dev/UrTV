@@ -22,4 +22,24 @@ final class JpegMeta {
         return false;
     }
 
+    /** 4.3.1: the same JPEG without its APP1 «Exif» segments (an iPhone's Safari adds a small one to every canvas JPEG,
+     *  so the TV removes it instead of refusing the photo). Anything that is not a clean JPEG header comes back unchanged. */
+    static byte[] strip(byte[] jpeg) {
+        if (jpeg == null || jpeg.length < 4 || (jpeg[0] & 0xff) != 0xFF || (jpeg[1] & 0xff) != 0xD8) return jpeg;
+        java.io.ByteArrayOutputStream o = new java.io.ByteArrayOutputStream(jpeg.length);
+        o.write(0xFF); o.write(0xD8);
+        int i = 2;
+        while (i + 4 <= jpeg.length && (jpeg[i] & 0xff) == 0xFF) {
+            int marker = jpeg[i + 1] & 0xff;
+            if (marker == 0xDA || marker == 0xD9) break;
+            int len = ((jpeg[i + 2] & 0xff) << 8) | (jpeg[i + 3] & 0xff);
+            if (len < 2 || i + 2 + len > jpeg.length) return jpeg;
+            boolean exif = marker == 0xE1 && i + 10 <= jpeg.length && jpeg[i + 4] == 'E' && jpeg[i + 5] == 'x' && jpeg[i + 6] == 'i' && jpeg[i + 7] == 'f';
+            if (!exif) o.write(jpeg, i, 2 + len);
+            i += 2 + len;
+        }
+        o.write(jpeg, i, jpeg.length - i);
+        return o.toByteArray();
+    }
+
 }
