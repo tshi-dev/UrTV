@@ -53,6 +53,9 @@ final class ControlCenter {
         void launchGuarded(int path, Intent i, String name);
         void openSaver();           // the screensaver pill's OK, locked by «@saver»
         void openSaverSettings();   // its long OK
+        void openGames();           // 4.3.1 «الألعاب»: the games list of the screensaver app
+        String updateLine();        // 4.3.1: the one line when the two apps are not the same build (null: they are); its row opens «تحديث تلفزيوني»
+        void openUpdate();
         void openCity();            // 4.3.1 «المدينة»: the screensaver app's city chooser
         void openOurSettings();     // «إعدادات تلفزيونك»: the screensaver app's settings screen, locked by «@urtv»
         void openSleep(View anchor);   // «مؤقت النوم» popup, locked by «@sleep»
@@ -65,11 +68,11 @@ final class ControlCenter {
     /** the slide-in, and the focus fill coming in (ms) */
     static final int SLIDE_MS = 220, FOCUS_MS = 170;
     /** the most rows the panel shows; the four round toggles are not counted */
-    static final int MAX_ROWS = 6;
+    static final int MAX_ROWS = 8;   // 4.3.1: ours, the games and the city joined the six
     /** the round toggles, in this order; every other item is a row */
     static final String[] TOGGLES = {"bluetooth", "mirror", "sleep", "off"};
     /** the rows' order before the person moves any; «شاشة التوقف» is unticked until they ask for it (its own pill is on the home) */
-    static final String[] ROWS = {"net", "sound", "speed", "ours", "city", "tv", "saver"};   // 4.3.1: ours before the TV's, the city beside it
+    static final String[] ROWS = {"net", "sound", "speed", "ours", "games", "city", "tv", "saver"};   // 4.3.1: ours before the TV's, the city beside it
     /** the order before 4.3.1 (ours after the TV's): saved by anyone who opened the editor, never a choice, so it follows the new default */
     static final String OLD_DEFAULT = "net,sound,speed,tv,ours,saver";
     static final String[] DEFAULT_OFF = {"saver"};
@@ -185,8 +188,11 @@ final class ControlCenter {
             Item saver = tile("saver", S.t("شاشة التوقف"), S.t("ابدأها الآن"), R.drawable.ic_screensaver, () -> { dismiss(); host.openSaver(); });
             saver.hold = () -> { dismiss(); host.openSaverSettings(); };   // a shortcut: its settings are in «إعدادات تلفزيونك» ← البطاقات
             tile("city", S.t("المدينة"), S.t("للطقس والصلاة"), R.drawable.ic_place, () -> { dismiss(); host.openCity(); });
-            tile("ours", S.t("إعدادات تلفزيونك"), S.t("الأذان والمفضلة والمظهر"), R.drawable.ic_home, () -> { dismiss(); host.openOurSettings(); });
+            tile("games", S.t("الألعاب"), S.t("العب مع العائلة"), R.drawable.ic_play, () -> { dismiss(); host.openGames(); });
+            tile("ours", S.t("تلفزيونك"), S.t("الألعاب والمباريات والإعدادات"), R.drawable.ic_home, () -> { dismiss(); host.openOurSettings(); });
         }
+        String upd = host.updateLine();
+        if (upd != null) tile("update", upd, "", R.drawable.ic_update, () -> { dismiss(); host.openUpdate(); });
         tile("tv", S.t("الإعدادات"), S.t("إعدادات التلفزيون"), R.drawable.ic_settings,
                 () -> { dismiss(); host.launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون"); });
 
@@ -350,9 +356,12 @@ final class ControlCenter {
         list.setOrientation(LinearLayout.VERTICAL);
         List<Cell> rowCells = new ArrayList<>();
         int shown = 0;
-        for (Item it : rowsInOrder()) {
-            if (off.contains(it.key) || shown >= MAX_ROWS) continue;
-            shown++;
+        List<Item> shownRows = new ArrayList<>(rowsInOrder());
+        Item updRow = find("update");
+        if (updRow != null) shownRows.add(0, updRow);   // the build mismatch comes first and is not one of the person's rows
+        for (Item it : shownRows) {
+            if (!it.key.equals("update") && (off.contains(it.key) || shown >= MAX_ROWS)) continue;
+            if (!it.key.equals("update")) shown++;
             Cell c = new Cell(Cell.ROW, it);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, dp(48));
             if (!rowCells.isEmpty()) lp.topMargin = dp(4);
