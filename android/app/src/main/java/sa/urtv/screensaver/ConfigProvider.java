@@ -67,9 +67,10 @@ public class ConfigProvider extends ContentProvider {
         }
         if (isOwn(uri)) {
             MatrixCursor o = new MatrixCursor(new String[] {"n", "mode", "rev", "dates", "home"});
-            StringBuilder dates = new StringBuilder();   // «ألبوم صوري»: the day each photo was added, comma separated, in the list's order
-            for (int k = 1; k <= Own.count(getContext()); k++) dates.append(k > 1 ? "," : "").append(Own.date(getContext(), k));
-            o.addRow(new Object[] {Own.count(getContext()), Own.mode(getContext()), p.ownRev(), dates.toString(), p.homeMineEffective()});   // «home»: what the HOME does with «صوري» (its own choice, else the mode above)
+            StringBuilder dates = new StringBuilder();   // «ألبوم صوري»: the day each photo was added, comma separated, in the list's order; read (a stat of each file) only when the query asks for it
+            int count = Own.count(getContext());
+            if (projection == null || java.util.Arrays.asList(projection).contains("dates")) for (int k = 1; k <= count; k++) dates.append(k > 1 ? "," : "").append(Own.date(getContext(), k));
+            o.addRow(new Object[] {count, Own.mode(getContext()), p.ownRev(), dates.toString(), p.homeMineEffective()});   // «home»: what the HOME does with «صوري» (its own choice, else the mode above)
             return o;
         }
         if (isTasks(uri)) {

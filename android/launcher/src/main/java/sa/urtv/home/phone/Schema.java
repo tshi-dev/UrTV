@@ -105,12 +105,6 @@ public final class Schema {
                 return c;
             }
             case "logout": return only(body);
-            case "adbpair": {   // the six digits of the TV's «إقران الجهاز برمز الإقران» dialog (digits only; never logged)
-                Clean c = only(body, "code");
-                if (!c.ok()) return c;
-                if (!(body.get("code") instanceof String) || !((String) body.get("code")).matches("\\d{6}")) return no("bad code");
-                return c;
-            }
             case "message": {   // 4.3 #53: a short message for the TV's screen (up to 200 characters, a few lines)
                 Clean c = only(body, "text");
                 if (!c.ok()) return c;

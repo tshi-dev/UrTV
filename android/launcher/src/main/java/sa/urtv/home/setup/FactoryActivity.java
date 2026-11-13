@@ -21,7 +21,6 @@ import sa.urtv.home.GlassSource;
 import sa.urtv.home.GlassStyle;
 import sa.urtv.home.PinGuard;
 import sa.urtv.home.S;
-import sa.urtv.home.setup.pair.PairState;
 
 /**
  * «تخلّص من واجهة المصنع»: the second step of «UrTV النظيف», offered only from inside it. The screen first checks this TV (SetupEngine.factoryOffer: it refuses with the reason where the
@@ -33,11 +32,8 @@ public class FactoryActivity extends Activity {
     /** Home pressed: the screen is done, not left behind the home (step 47: a clean-mode screen came back to the front when Settings opened later) */
     @Override protected void onUserLeaveHint() {
         super.onUserLeaveHint();
-        if (going) return;   // this screen opened the phone page or the developer options itself (the pairing page): it stays behind them
         finish();
     }
-
-    private boolean going;
 
     @Override protected void attachBaseContext(android.content.Context b) { super.attachBaseContext(S.wrap(b)); }
 
@@ -71,7 +67,7 @@ public class FactoryActivity extends Activity {
     }
 
     /** Back always leaves (a check or a step in progress goes on by itself on its thread; the ledger and the safety switch do not depend on this screen) */
-    @Override public void onBackPressed() { PairBridge.disarm(); finish(); }
+    @Override public void onBackPressed() { finish(); }
 
     // ---------------------------------------------------------------- the first page
 
@@ -117,21 +113,6 @@ public class FactoryActivity extends Activity {
                     if (why.contains("debugging is off")) break;   // the port is closed: no other address opens it
                 }
             }
-            if (o == null && PairRoute.available() && !why.contains("debugging is off")) {
-                // the TV never raised the question: wireless-debugging pairing (4.3.1), typed from the phone page while Settings shows its dialog. Paired before: the connection over it first.
-                if (PairRoute.paired(this)) {
-                    try (SetupSession s = PairRoute.open(this, line -> { })) {
-                        o = s.engine.factoryOffer();
-                        android.util.Log.i("UrTVFactory", "offer (paired route): " + (o.refusal == null ? "ok, " + o.packages.size() + " packages" : "refused: " + o.refusal));
-                    } catch (Exception e) {
-                        android.util.Log.w("UrTVFactory", "paired route failed: " + e.getMessage());
-                    }
-                }
-                if (o == null) {
-                    ui.post(() -> { if (!isFinishing() && !isDestroyed()) { busy = false; pairPage(); } });
-                    return;
-                }
-            }
             if (o == null) o = new SetupEngine.FactoryOffer(whyNot(why), "", new ArrayList<String>());
             final SetupEngine.FactoryOffer res = o;
             ui.post(() -> { if (isFinishing() || isDestroyed()) return; busy = false; offer = res; if (res.refusal != null) refused(res.refusal); else plan(); });
@@ -149,92 +130,6 @@ public class FactoryActivity extends Activity {
         if (why.contains("did not respond")) return S.t("التلفزيون ما ردّ على اتصال التصحيح. أطفئ «تصحيح USB» وشغّله من إعدادات المطوّرين ثم جرّب.");
         if (why.contains("rejected")) return S.t("التلفزيون رفض مفتاح التطبيق. من إعدادات المطوّرين اختر «إلغاء تصريحات تصحيح USB» ثم جرّب من جديد.");
         return S.t("ما قدرنا نكلّم التلفزيون: تأكد من تفعيل تصحيح USB، وافصل أي كمبيوتر موصول بالتلفزيون عبر adb، ثم جرّب.");
-    }
-
-    // ---------------------------------------------------------------- pairing from the phone (4.3.1)
-
-    private boolean pairShown;
-    private TextView pairLine;
-    private final Runnable pairTick = new Runnable() {
-        @Override public void run() {
-            if (!pairShown || isFinishing() || isDestroyed()) return;
-            String st = PairBridge.status();
-            pairLine.setText(pairWords(st));
-            if (PairState.PAIRED.equals(st)) { pairShown = false; PairBridge.disarm(); checkPaired(); return; }
-            ui.postDelayed(this, 1000);
-        }
-    };
-
-    private String pairWords(String st) {
-        if (PairState.ARMED.equals(st)) return S.t("جاهز: اكتب الرمز من صفحة الجوال.");
-        if (PairState.PAIRING.equals(st)) return S.t("نقرن…");
-        if (PairState.FAILED.equals(st)) {
-            String why = PairBridge.why();
-            return "no_dialog".equals(why) ? S.t("ما ظهرت نافذة «إقران الجهاز برمز الإقران». افتحها وجرّب الرمز من جديد.") : "wrong".equals(why) ? S.t("ما انقبل الرمز. اكتب الرمز الجديد الظاهر على التلفزيون.") : S.t("ما قدرنا نقرن. جرّب من جديد.");
-        }
-        return S.t("اضغط «ابدأ الإقران».");
-    }
-
-    /** the TV never raised «السماح بتصحيح USB؟»: pair it by wireless debugging, with the six digits typed on the phone page while Settings keeps its dialog open */
-    private void pairPage() {
-        col.removeAllViews();
-        pairShown = true;
-        col.addView(text(S.t("إقران التلفزيون من الجوال"), 30, "Medium", look.text), lp(dp(8)));
-        col.addView(text(S.t("هذا التلفزيون ما عرض سؤال «السماح بتصحيح USB؟» لتطبيقنا. نقدر نقرنه بالتصحيح اللاسلكي، وتحتاج جوالك لأن رمز الإقران يظهر في نافذة لازم تبقى مفتوحة."), 20, "Regular", look.sub), lp(dp(12)));
-        for (String step : new String[] {S.t("١. اضغط «ابدأ الإقران»، وافتح صفحة الجوال وامسح رمزها (لو جوالك متصل ما تحتاج)."),
-                S.t("٢. من خيارات المطوّر شغّل «تصحيح الأخطاء اللاسلكي» ثم اضغط «إقران الجهاز برمز الإقران». يظهر رمز من ٦ أرقام: اترك النافذة مفتوحة."),
-                S.t("٣. في صفحة الجوال افتح «إقران التلفزيون» واكتب الرمز."),
-                S.t("٤. ارجع هنا بزر الرجوع: يكمل الفحص وحده.")})
-            col.addView(text(step, 18, "Regular", look.text), lp(dp(6)));
-        pairLine = text(pairWords(PairBridge.status()), 20, "Medium", look.accent);
-        col.addView(pairLine, lp(dp(12)));
-        LinearLayout row = row();
-        View start = button(S.t("ابدأ الإقران"), v -> pin(() -> {
-            PairBridge.arm();
-            going = true;
-            try { startActivity(new android.content.Intent().setClassName(getPackageName(), "sa.urtv.home.PhoneActivity")); } catch (RuntimeException e) { android.util.Log.w("UrTVFactory", "the phone page's screen did not open"); }
-        }));
-        row.addView(start, bw(false));
-        row.addView(button(S.t("افتح خيارات المطوّر"), v -> {
-            going = true;
-            try { startActivity(new android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)); }
-            catch (RuntimeException e) { try { startActivity(new android.content.Intent(android.provider.Settings.ACTION_SETTINGS)); } catch (RuntimeException ignored) { } }
-        }), bw(true));
-        LinearLayout row2 = row();
-        View back = button(S.t("رجوع"), v -> { PairBridge.disarm(); finish(); });
-        row2.addView(back, bw(false));
-        focus(start);
-        ui.removeCallbacks(pairTick);
-        ui.postDelayed(pairTick, 1000);
-    }
-
-    /** paired: the check goes on over the paired connection */
-    private void checkPaired() {
-        message(S.t("نفحص هذا التلفزيون…"), "", null);
-        busy = true;
-        new Thread(() -> {
-            SetupEngine.FactoryOffer o;
-            try (SetupSession s = PairRoute.open(this, line -> { })) {
-                o = s.engine.factoryOffer();
-                android.util.Log.i("UrTVFactory", "offer (paired route): " + (o.refusal == null ? "ok, " + o.packages.size() + " packages" : "refused: " + o.refusal));
-            } catch (Exception e) {
-                android.util.Log.w("UrTVFactory", "paired route failed: " + e.getMessage());
-                o = new SetupEngine.FactoryOffer(S.t("تم الإقران لكن ما قدرنا نتصل بالتلفزيون بعده. تأكد أن «تصحيح الأخطاء اللاسلكي» شغّال وجرّب من جديد."), "", new ArrayList<String>());
-            }
-            final SetupEngine.FactoryOffer res = o;
-            ui.post(() -> { if (isFinishing() || isDestroyed()) return; busy = false; offer = res; if (res.refusal != null) refused(res.refusal); else plan(); });
-        }, "factory-check-paired").start();
-    }
-
-    @Override protected void onResume() {
-        super.onResume();
-        going = false;
-        if (pairShown) { ui.removeCallbacks(pairTick); ui.postDelayed(pairTick, 300); }
-    }
-
-    @Override protected void onPause() {
-        super.onPause();
-        ui.removeCallbacks(pairTick);
     }
 
     private void refused(String reason) {
@@ -275,7 +170,7 @@ public class FactoryActivity extends Activity {
         busy = true;
         new Thread(() -> {
             SetupEngine.Result r;
-            try (SetupSession s = SetupSession.openAny(this, 60_000, null, line -> { })) {
+            try (SetupSession s = SetupSession.open(this, 60_000, null, line -> { })) {
                 r = s.engine.factoryOff();
                 if (r.status == SetupEngine.Status.DONE) new FileStore(this).put(BootGuard.FILE, BootGuard.fresh(System.currentTimeMillis()).text());
             } catch (Exception e) {
@@ -306,7 +201,7 @@ public class FactoryActivity extends Activity {
         busy = true;
         new Thread(() -> {
             SetupEngine.Result r;
-            try (SetupSession s = SetupSession.openAny(this, 60_000, null, line -> { })) {
+            try (SetupSession s = SetupSession.open(this, 60_000, null, line -> { })) {
                 r = s.engine.restoreFactory();
                 if (r.status == SetupEngine.Status.DONE) SetupSession.deleteKeyIfFinished(this);
             } catch (Exception e) {

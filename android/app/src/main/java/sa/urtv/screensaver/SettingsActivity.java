@@ -361,14 +361,14 @@ public class SettingsActivity extends Activity {
         final boolean isHome = isOurHome();
         row("اجعل UrTV الشاشة الرئيسية", isHome ? "✓ UrTV هو الشاشة الرئيسية" : "اضغط وكمّل إعداد تلفزيوني (دقيقتان)", R.drawable.ic_eye,
             new Runnable() { public void run() { if (!isHome) openSetup(); } });
+        // «إعداد تلفزيوني» (4.3.1): always there, even when UrTV is already the home, to run «جهّز كل شي» again (after a system update) or «تراجع»
+        row("إعداد تلفزيوني", "شغّل الإعداد من جديد، أو تراجع عن تغييراته", R.drawable.ic_eye, new Runnable() { public void run() { openSetup(); } });
         // «تخلّص من واجهة المصنع»: who the TV's home screen is (the launcher's FactoryActivity: the checks, two confirmations, the PIN); «رجّع واجهة المصنع» while it is on
         homeCleanSeen();
         final boolean factoryOn = Boolean.TRUE.equals(factorySeen);
         final Runnable factoryGo = new Runnable() { public void run() { openFactory(); } };
         if (factoryOn) row("رجّع واجهة المصنع", "مفعّل واجهة المصنع معطّلة، وبضغطة ترجع", R.drawable.ic_eye, factoryGo);
         else row("تخلّص من واجهة المصنع", "عطّل واجهة المصنع وخلّ UrTV هو الأساس، وبضغطة ترجع", R.drawable.ic_eye, factoryGo);
-        // «التطبيقات المعطّلة» (4.3.1): the apps turned off on the TV, and a way to turn the chosen ones back on (the launcher's DisabledAppsActivity, behind the family PIN)
-        row("التطبيقات المعطّلة", "شغّل من جديد تطبيقًا عطّلته أنت أو UrTV أو الشركة", R.drawable.ic_eye, new Runnable() { public void run() { openDisabledApps(); } });
         // «UrTV النظيف»: the essentials only; the launcher's CleanActivity says what it does first and asks for the confirmation (and the family PIN)
         // the line says «مفعّل» (the on/off rule: the value starts with the state word) while the mask is on; the home answers (read once per visit, the last answer kept)
         row("\u2066UrTV\u2069 النظيف", Boolean.TRUE.equals(homeCleanSeen()) ? "مفعّل الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة" : "الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة", R.drawable.ic_eye, new Runnable() { public void run() { openClean(); } });
@@ -1465,14 +1465,6 @@ public class SettingsActivity extends Activity {
     private void openFactory() {
         try {
             startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.setup.FactoryActivity"));
-        } catch (RuntimeException e) {
-            toast("حدّث الواجهة الرئيسية «تلفزيونك» أو ثبّتها أولاً");
-        }
-    }
-
-    private void openDisabledApps() {
-        try {
-            startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.setup.DisabledAppsActivity"));
         } catch (RuntimeException e) {
             toast("حدّث الواجهة الرئيسية «تلفزيونك» أو ثبّتها أولاً");
         }

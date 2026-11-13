@@ -38,7 +38,7 @@ final class SetupRecovery {
             try { store.put("home-retries.txt", (n + 1) + "\n"); } catch (java.io.IOException ignored) { }
             new SetupDeadman(c).arm(wait(n));    // the next try is set before this one starts
         }
-        try (SetupSession s = SetupSession.openAny(c, 5000, null, out)) {
+        try (SetupSession s = SetupSession.open(c, 5000, null, out)) {
             SetupEngine.Result r = s.engine.recoverIfCutOff();
             if (r != null && !pending(c)) {
                 try { store.put("home-retries.txt", ""); } catch (java.io.IOException ignored) { }

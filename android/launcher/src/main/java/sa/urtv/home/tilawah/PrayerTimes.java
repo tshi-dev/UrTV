@@ -113,6 +113,22 @@ final class PrayerTimes {
 
     private static synchronized void forgetToday() { todayCopy = null; todayKey = null; }
 
+    /** every prayer moment of yesterday, today and tomorrow (the saved Aladhan times applied, as next() reads them): what an adhan alarm must be near to sound (AdhanLate) */
+    static long[] aroundToday(Context c) {
+        Place place = Place.get(c);
+        Calendar day = Calendar.getInstance(ZoneFix.zone(place.tz), Locale.US);
+        long[] out = new long[18];
+        int n = 0;
+        day.add(Calendar.DAY_OF_MONTH, -1);
+        for (int d = -1; d <= 1; d++) {
+            PrayerTimes t = d == 0 ? today(c, place) : of(day, place);
+            if (d != 0) { String saved = prefs(c).getString(key(day, place), null); if (saved != null) t.apply(saved); }
+            for (int i = 0; i < PRAYERS.length && n < out.length; i++) out[n++] = t.at[PRAYERS[i]];
+            day.add(Calendar.DAY_OF_MONTH, 1);
+        }
+        return out;
+    }
+
     /** The next of the five prayers to show, looking at tomorrow when today's Isha has passed. One 20 seconds away is already «الآن». */
     static Next next(Context c) { return next(c, 30_000); }
 

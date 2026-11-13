@@ -32,7 +32,7 @@ async function open(hash, { file = 'tv.html', rows = null, width = 1920, height 
   await ctx.route(/^https?:/, r => {
     const u = r.request().url();
     if (u.includes('/data-leagues/leagues/saudi-arabian-pro-league.json')) return r.fulfill({ json: LEAGUE, headers: { 'Access-Control-Allow-Origin': '*' } });
-    if (u.includes('/data-leagues/leagues/tournaments.json')) { TOUR_ASKED++; return tour ? r.fulfill({ json: tour, headers: { 'Access-Control-Allow-Origin': '*' } }) : r.fulfill({ status: 404, body: '' }); }
+    if (u.includes('/data-leagues/leagues/tournaments.json')) { TOUR_ASKED++; return new Promise(res => setTimeout(res, (tour && tour.delay) || 0)).then(() => tour ? r.fulfill({ json: tour, headers: { 'Access-Control-Allow-Origin': '*' } }) : r.fulfill({ status: 404, body: '' })); }
     if (epl && u.includes('eventsnextleague.php?id=4328')) return r.fulfill({ json: { events: [ev('901', 'Arsenal', '133604', 'Chelsea', '133610', '2026-11-04T19:00:00', { idLeague: '4328', strLeague: 'English Premier League' }),
       ev('902', 'Everton', '133615', 'Fulham', '133600', '2026-11-05T17:00:00', { idLeague: '4328', strLeague: 'English Premier League' })] }, headers: { 'Access-Control-Allow-Origin': '*' } });
     if (epl && u.includes('eventspastleague.php')) return r.fulfill({ json: { results: null }, headers: { 'Access-Control-Allow-Origin': '*' } });
@@ -160,6 +160,21 @@ for (const [why, rows] of [['the shipped table', null], ['medium confidence', [{
   await ctx.close();
 }
 
+// ---- a wrong score (a user's report on 4.2): the same event in three sources: the team's eventsnext copy kept as «not played», eventslast answering an older game, the league's file with the final 1-2.
+// The finished copy with the score wins and the game is shown once (fresher()).
+{
+  const { p, ctx } = await open('teams=133739&leagues=Spanish La Liga&matchpage=1', { rows: ROWS, height: 1080 });
+  await p.waitForTimeout(800);
+  const got = await p.evaluate(() => {
+    const mk = extra => Object.assign({ idEvent: '2506279', idLeague: '4335', idHomeTeam: '133729', idAwayTeam: '133739', strHomeTeam: 'Atletico Madrid', strAwayTeam: 'Barcelona', strTimestamp: '2026-11-03T20:00:00', dateEvent: '2026-11-03', strTime: '20:00:00', strSport: 'Soccer' }, extra);
+    MATCHES['133739'] = mk({ strStatus: 'NS' });
+    RESULTS['133739'] = [mk({ idEvent: '999', strStatus: 'FT', intHomeScore: '0', intAwayScore: '0', strTimestamp: '2026-10-20T20:00:00', dateEvent: '2026-10-20' })];
+    LEAGUE_DATA['Spanish La Liga'] = { updated: new Date().toISOString(), events: [mk({ strStatus: 'FT', intHomeScore: '1', intAwayScore: '2' })] };
+    return matchEvents().filter(e => e.idEvent === '2506279').map(e => [e.strStatus, e.intHomeScore, e.intAwayScore]);
+  });
+  check('score: one event in three sources (stale «not played» copy, an older game from eventslast, the league\'s final 1-2): shown once, as the final with its score', JSON.stringify(got) === '[["FT","1","2"]]', JSON.stringify(got));
+  await ctx.close();
+}
 // ---- 4.3.1 «البطولات الكبرى»: leagues/tournaments.json, one request, after the person's own rows; the 36 h rule; off = no request; unticked ones left out; the card's cap
 const tev = (id, home, hid, away, aid, iso, lid, extra = {}) => ev(id, home, hid, away, aid, iso, { idLeague: lid, strLeague: 'UEFA Nations League', intRound: '', ...extra });
 const TOUR = { updated: '2026-11-04T03:00:00Z', names: { '4490': 'دوري الأمم الأوروبية', '4480': 'دوري أبطال أوروبا' }, events: [
@@ -170,13 +185,13 @@ const TOUR = { updated: '2026-11-04T03:00:00Z', names: { '4490': 'دوري ال�
 {
   const { p, ctx, errors } = await open('city=الرياض&lat=24.7136&lon=46.6753&tz=Asia/Riyadh&teams=136013&matchpage=1&tour=1', { rows: ROWS, height: 1080, tour: TOUR });
   await p.waitForSelector('#mp-list section h2', { timeout: 20000 }).catch(() => {});
-  await p.waitForFunction(() => /الأمم الأوروبية/.test(document.getElementById('mp-list').textContent), null, { timeout: 15000 }).catch(() => {});
+  await p.waitForFunction(() => document.querySelectorAll('#mp-list section[data-g="more"] .mpg').length >= 5, null, { timeout: 15000 }).catch(() => {});
   const heads = await p.$$eval('#mp-list h2', h => h.map(x => x.textContent));
   check('tournaments: no script error', !errors.length, errors.join(' | '));
-  check('tournaments: «فرقك» and the Saudi league exactly as before, then each tournament as a group of its own', heads[0] === 'فرقك' && heads[1] === 'دوري روشن الجولة ١٣' && /الأمم الأوروبية/.test(heads[2]) && heads[3] === 'مباريات اليوم وبكرة' && heads.length === 4, heads.join(','));
+  check('tournaments: «فرقك» and the Saudi league exactly as before, then ONE section «مباريات اليوم وبكرة» (no group per tournament)', heads[0] === 'فرقك' && heads[1] === 'دوري روشن الجولة ١٣' && heads[2] === 'مباريات اليوم وبكرة' && heads.length === 3, heads.join(','));
   const list = await p.textContent('#mp-list');
-  const nations = await p.$$eval('#mp-list section', s => s.filter(x => /الأمم الأوروبية/.test(x.querySelector('h2').textContent)).map(x => x.querySelectorAll('.mpg').length));
-  check('tournaments: the Nations League day has its 4 games, and the game the league file has is not shown twice', nations.length === 1 && nations[0] === 4 && (list.match(/الهلال/g) || []).length === 1, JSON.stringify(nations));
+  const more = await p.$$eval('#mp-list section[data-g="more"] .mpg', r => r.length);
+  check('tournaments: the section holds the Nations League games and the Champions League game (5), and the game the league file has is not shown twice', more === 5 && (list.match(/الهلال/g) || []).length === 1, more);
   check('tournaments: one request for the file', TOUR_ASKED >= 1 && TOUR_ASKED <= 2, TOUR_ASKED);
   await shot(p, 'football-matches-tournaments.png');
   await ctx.close();
@@ -186,21 +201,22 @@ const TOUR = { updated: '2026-11-04T03:00:00Z', names: { '4490': 'دوري ال�
   const { p, ctx } = await open('city=الرياض&lat=24.7136&lon=46.6753&tz=Asia/Riyadh&teams=136013&matchpage=1', { rows: ROWS, height: 1080, tour: TOUR });
   await p.waitForTimeout(1500);
   const heads = await p.$$eval('#mp-list h2', h => h.map(x => x.textContent));
-  check('tournaments: the switch off loads nothing extra (no request) and shows no tournament', TOUR_ASKED === before && !heads.some(h => /الأمم الأوروبية|أبطال أوروبا/.test(h)), heads.join(',') + ' ' + (TOUR_ASKED - before));
+  check('tournaments: the switch off loads nothing extra (no request) and shows no tournament', TOUR_ASKED === before && !heads.some(h => /الأمم الأوروبية|أبطال أوروبا/.test(h)) && (await p.$$eval('#mp-list section[data-g="more"] .mpg', r => r.length)) === 0, heads.join(',') + ' ' + (TOUR_ASKED - before));
   await ctx.close();
 }
 {
   const { p, ctx } = await open('city=الرياض&lat=24.7136&lon=46.6753&tz=Asia/Riyadh&teams=136013&matchpage=1&tour=1&tourx=4490', { rows: ROWS, height: 1080, tour: TOUR });
-  await p.waitForFunction(() => /أبطال أوروبا/.test(document.getElementById('mp-list').textContent) || false, null, { timeout: 5000 }).catch(() => {});
+  await p.waitForSelector('#mp-list section[data-g="more"] .mpg', { timeout: 15000 }).catch(() => {});
   const heads = await p.$$eval('#mp-list h2', h => h.map(x => x.textContent));
-  check('tournaments: one unticked one by one (tourx) is left out, the others stay', !heads.some(h => /الأمم الأوروبية/.test(h)), heads.join(','));
+  const left = await p.$$eval('#mp-list section[data-g="more"] .mpg', r => r.length);
+  check('tournaments: one unticked one by one (tourx) is left out, the others stay', left === 1, left);
   await ctx.close();
 }
 {
   const { p, ctx } = await open('city=الرياض&lat=24.7136&lon=46.6753&tz=Asia/Riyadh&teams=136013&matchpage=1&tour=1', { rows: ROWS, height: 1080, tour: { ...TOUR, updated: '2026-11-02T10:00:00Z' } });
   await p.waitForTimeout(1500);
   const heads = await p.$$eval('#mp-list h2', h => h.map(x => x.textContent));
-  check('tournaments: a file older than 36 h shows nothing', !heads.some(h => /الأمم الأوروبية|أبطال أوروبا/.test(h)), heads.join(','));
+  check('tournaments: a file older than 36 h shows nothing', (await p.$$eval('#mp-list section[data-g="more"] .mpg', r => r.length)) === 0, heads.join(','));
   await ctx.close();
 }
 {
@@ -210,6 +226,43 @@ const TOUR = { updated: '2026-11-04T03:00:00Z', names: { '4490': 'دوري ال�
   const html = await p.evaluate(() => matchRows({}).join(''));
   const tourRows = (html.match(/فرانس|سباين|بورتوجال|إنجلاند/g) || []).length;
   check('tournaments: on a card the teams\' and the leagues\' games come first and the tournaments\' come last, at most 3 rows', rows > 0 && /الهلال/.test(html) && /القادسية/.test(html) && html.indexOf('القادسية') < html.indexOf('فرانس') && tourRows === 3 && !/بلجيكا/.test(html), rows + ' ' + tourRows);
+  await ctx.close();
+}
+{
+  const { p, ctx } = await open('city=الرياض&lat=24.7136&lon=46.6753&tz=Asia/Riyadh&teams=136013&matchpage=1&tour=1', { rows: ROWS, height: 1080, tour: { ...TOUR, delay: 6000 } });
+  await p.waitForSelector('#mp-list section[data-g="more"]', { timeout: 4000 }).catch(() => {});
+  const line = await p.$eval('#mp-list section[data-g="more"]', x => x.textContent).catch(() => '');
+  check('tournaments: until the first load answers, the section says «جارٍ التحميل…»', /مباريات اليوم وبكرة/.test(line) && /جارٍ التحميل/.test(line), line);
+  await ctx.close();
+}
+// ---- no duplicates, ever: one game in the team's copy, the league's file and the tournaments file (another id for the same day and clubs there), and a league added after a team of it was followed
+{
+  const { p, ctx } = await open('teams=136013&leagues=Saudi-Arabian Pro League&matchpage=1&tour=1', { rows: ROWS, height: 1080, tour: TOUR });
+  await p.waitForTimeout(1500);
+  const got = await p.evaluate(() => {
+    const g = (id, extra) => Object.assign({ idEvent: id, idLeague: '4668', idHomeTeam: '136013', idAwayTeam: '136020', strHomeTeam: 'Al-Hilal', strAwayTeam: 'Al-Ettifaq', strTimestamp: '2026-11-04T18:00:00', dateEvent: '2026-11-04', strTime: '18:00:00', strSport: 'Soccer', strStatus: 'NS' }, extra);
+    MATCHES['136013'] = g('7001'); NEXT_LIST['136013'] = [g('7001')]; RESULTS['136013'] = [];
+    LEAGUE_DATA['Saudi-Arabian Pro League'] = { updated: new Date().toISOString(), events: [g('7001')] };
+    LEAGUE_DATA.tournaments = { updated: new Date().toISOString(), names: {}, events: [g('9999', { idLeague: '5649' })] };   // the same game under another id
+    const all = matchEvents().filter(e => e.idHome === undefined && e.idHomeTeam === '136013' && e.idAwayTeam === '136020' && e.dateEvent === '2026-11-04');
+    return { n: all.length, id: all[0] && all[0].idEvent };
+  });
+  check('no duplicates: one game in the team\'s copy, the league\'s file and the tournaments\' under another id: once, the team\'s copy', got.n === 1 && got.id === '7001', JSON.stringify(got));
+  const cardRows = await p.evaluate(() => {
+    const g = { idEvent: '5555', idLeague: '4668', idHomeTeam: '136015', idAwayTeam: '136017', strHomeTeam: 'Al-Ittihad', strAwayTeam: 'Al-Shabab', strTimestamp: '2026-11-04T18:00:00', dateEvent: '2026-11-04', strTime: '18:00:00', strSport: 'Soccer', strStatus: 'NS' };
+    LEAGUE_DATA['Saudi-Arabian Pro League'].events.push(g);
+    const free = leagueShow(Date.now(), new Set()).filter(x => x.ev.idEvent === '5555').length;
+    const taken = leagueShow(Date.now(), new Set([evKey(Object.assign({}, g, { idEvent: '8888' }))])).filter(x => x.ev.idEvent === '5555').length;   // a team's game under another id, same day and clubs
+    return [free, taken];
+  });
+  check('no duplicates: on a card the league\'s copy is dropped when the team\'s game (another id, same day and clubs) is already shown', cardRows[0] === 1 && cardRows[1] === 0, JSON.stringify(cardRows));
+  const only = await p.evaluate(() => {
+    const g = (id, extra) => Object.assign({ idEvent: id, idLeague: '5649', idHomeTeam: '136015', idAwayTeam: '136017', strHomeTeam: 'Al-Ittihad', strAwayTeam: 'Al-Shabab', strTimestamp: '2026-11-04T18:00:00', dateEvent: '2026-11-04', strTime: '18:00:00', strSport: 'Soccer', strStatus: 'NS' }, extra);
+    LEAGUE_DATA['Saudi-Arabian Pro League'].events.push(g('7100', { idLeague: '4668' }));
+    LEAGUE_DATA.tournaments.events.push(g('7100', { idLeague: '5649' }), g('7101'));   // the same id in two files, and the same day and clubs under another id
+    return matchEvents().filter(e => e.idHomeTeam === '136015' && e.idAwayTeam === '136017').length;
+  });
+  check('no duplicates: a game in a league file and the tournaments file (same id, and another id for the same day and clubs) once', only === 1, only);
   await ctx.close();
 }
 // ---- «مباريات اليوم وبكرة»: appended after the person's own rows, only leagues not already shown

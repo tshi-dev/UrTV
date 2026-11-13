@@ -16,12 +16,23 @@ final class Prefs {
     int source() { return sp.getInt("source", SOURCE_NONE); }
     String reciter() { return sp.getString("reciter", ""); }
     int surah() { return sp.getInt("surah", 1); }
-    int station() { return sp.getInt("station", 0); }
+    /** the station's number in stations.json; 4.3.1 put Egypt's Quran Radio in at 1: a number saved before that moves up by one, once */
+    int station() {
+        int s = sp.getInt("station", 0);
+        if (sp.getInt("station_order", 1) < STATION_ORDER) {
+            if (sp.contains("station") && s >= 1) s++;
+            sp.edit().putInt("station", s).putInt("station_order", STATION_ORDER).apply();
+        }
+        return s;
+    }
+
+    /** 2: the order of stations.json with Egypt's Quran Radio at 1 (4.3.1) */
+    static final int STATION_ORDER = 2;
     int position() { return sp.getInt("position", 0); }
 
     void save(int source, String reciter, int surah, int station, int position) {
         sp.edit().putInt("source", source).putString("reciter", reciter).putInt("surah", surah)
-                .putInt("station", station).putInt("position", position).apply();
+                .putInt("station", station).putInt("station_order", STATION_ORDER).putInt("position", position).apply();
     }
 
     // ---- the adhan ----

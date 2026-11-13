@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """4.3: «خلّ تلفزيونك يفتح على UrTV»: while the home app is not the TV's Home (a Downloader install that was only opened), one card at the top opens «إعداد تلفزيوني»;
-«لاحقاً» hides it for 3 days; never once we are the Home or in kids mode. The rules (HomeNudgeRule) run in Java; the wiring is pinned.
+«لاحقاً» hides it for 7 days, then 30, then for good; never once we are the Home or in kids mode. The rules (HomeNudgeRule) run in Java; the wiring is pinned.
 
     python3 tests/home_nudge_test.py
 """
@@ -33,9 +33,20 @@ main = (HOME / "MainActivity.java").read_text(encoding="utf-8")
 tsv = (ROOT / "i18n/en/home.tsv").read_text(encoding="utf-8")
 check("the card is built, shown from onResume by HomeNudgeRule (isDefaultHome, kids, «لاحقاً»), opens SetupActivity behind its lock, and «لاحقاً» stores 3 days",
       "buildHomeNudge(root);" in main and "updateHomeNudge(true);" in main and "HomeNudgeRule.show(isDefaultHome(), Parental.state(this).kids" in main
-      and "sa.urtv.home.setup.SetupActivity.class" in main.split("private void buildHomeNudge", 1)[1][:2500] and "HomeNudgeRule.laterUntil(System.currentTimeMillis())" in main)
-check("its words are in the English table, and the card sits inside the safe area (top 30 dp, centred)",
-      all(w in tsv for w in ("خلّ تلفزيونك يفتح على UrTV\t", "اضغط هنا وكمّل إعداد تلفزيوني (دقيقتين)\t", "لاحقاً\t")) and "lp(-2, -2, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, dp(30), 0, 0));\n    }\n\n    /** as the home comes" in main)
+      and "sa.urtv.home.setup.SetupActivity.class" in main.split("private void buildHomeNudge", 1)[1][:2500] and "HomeNudgeRule.laterUntil(System.currentTimeMillis(), presses)" in main)
+check("its words are in the English table, and the bar is ONE short line in the top-centre slot (it never covers a card: the first version was a two-line card with a button under it)",
+      all(w in tsv for w in ("خلّ تلفزيونك يفتح على UrTV\t", "لاحقاً\t")) and "lp(-2, -2, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, dp(30), 0, 0));" in main.split("private void buildHomeNudge", 1)[1][:3500]
+      and "nudgeCard.setSingleLine(true);" in main and "nudge.setOrientation(LinearLayout.HORIZONTAL);" in main and "dp(48)" not in main.split("private void buildHomeNudge", 1)[1][:2000])
+wire = main.split("private void wireNudge()", 1)[1].split("private void updateHomeNudge", 1)[0]
+check("reachable with the remote (hotfix 4.3): UP from every top-row button reaches the bar while it shows (the buttons' own UP was themselves), DOWN goes back, the two buttons are side by side in the screen's direction (RTL and LTR)",
+      "for (View p : pills) p.setNextFocusUpId(on ? nudgeCard.getId() : p.getId());" in wire and "nudgeCard.setNextFocusDownId(pill0);" in wire and "nudgeLater.setNextFocusDownId(pill0);" in wire
+      and "boolean rtl = Dir.rtl();" in wire and "nudgeCard.setNextFocusRightId(rtl ? nudgeCard.getId() : nudgeLater.getId());" in wire and "nudgeLater.setNextFocusLeftId(rtl ? nudgeLater.getId() : nudgeCard.getId());" in wire
+      and main.count("wireNudge();") >= 3 and main.index("wireNudge();   // the bar above the top row") < main.index("int topId = card != null"))
+check("it takes the focus the first time it shows, after the home has laid out (posted), once per run; OK opens «إعداد تلفزيوني», «لاحقاً» and Back on the bar snooze it",
+      "nudge.post(() -> { if (nudge.getVisibility() == View.VISIBLE && !nudgeFocused) { nudgeFocused = true; nudgeCard.requestFocus(); } });" in main and "nudgeLater.setOnClickListener(v -> snoozeNudge());" in main
+      and "if (nudge != null && nudge.getVisibility() == View.VISIBLE && (nudgeCard.hasFocus() || nudgeLater.hasFocus())) { snoozeNudge(); return; }" in main
+      and 'putInt("later_count", presses + 1)' in main)
+# the bar is new in 4.3 (4.2 had none): in 4.3 the top-row buttons' UP was themselves and nothing wired the bar; its one focus request came before the home's own
 check("a debug shot starts it without a setup (DebugNudgeShot, declared in the debug manifest only)",
       (ROOT / "android/launcher/src/debug/java/sa/urtv/home/DebugNudgeShot.java").is_file() and "DebugNudgeShot" in (ROOT / "android/launcher/src/debug/AndroidManifest.xml").read_text(encoding="utf-8")
       and "DebugNudgeShot" not in (ROOT / "android/launcher/src/main/AndroidManifest.xml").read_text(encoding="utf-8"))

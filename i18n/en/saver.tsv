@@ -836,8 +836,6 @@
 تخلّص من واجهة المصنع	Drop the factory home
 مفعّل واجهة المصنع معطّلة، وبضغطة ترجع	On, the factory interface is off; one press brings it back
 عطّل واجهة المصنع وخلّ UrTV هو الأساس، وبضغطة ترجع	Turn off the factory interface and make UrTV the base; one press brings it back
-التطبيقات المعطّلة	Disabled apps
-شغّل من جديد تطبيقًا عطّلته أنت أو UrTV أو الشركة	Turn back on an app you, UrTV or the maker turned off
 اختر دورياتك	Choose your leagues
 ابحث عن دوري أو بطولة	Search a league or tournament
 البطولات الكبرى	Big tournaments
@@ -846,3 +844,5 @@
 أوروبا	Europe
 آسيا وأفريقيا	Asia and Africa
 العالم	World
+إعداد تلفزيوني	Your TV setup
+شغّل الإعداد من جديد، أو تراجع عن تغييراته	Run the setup again, or undo its changes

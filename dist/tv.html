@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261112230108">
+<meta name="urtv-build" content="20261113120059">
 <title>شاشة تلفزيونك</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -853,8 +853,8 @@ const CONFIG = {
   // whole leagues: #leagues=Saudi-Arabian Pro League,NBA; 4.3 a league of the settings' catalogue by its id: id4719, its name in
   // #lgn=4719~name|… (the settings' language). At most 8: a catalogue league is asked of TheSportsDB itself (2 requests every 30 minutes)
   leagues: _list('leagues').filter(x => /^[A-Za-z0-9 \-]{2,40}$/.test(x) || /^id\d{1,6}$/.test(x)).slice(0, 8),
-  tourOff: _list('tourx').filter(x => /^\d{1,6}$/.test(x)),   // the tournaments the person unticked
-  tour: _Q.get('tour') === '1',   // 4.3.1 «البطولات الكبرى»: leagues/tournaments.json (CI) once every 30 minutes, nothing when off
+  tourOff: _list('tourx').filter(x => /^\d{1,6}$/.test(x)),
+  tour: _Q.get('tour') === '1',   // «البطولات الكبرى»: leagues/tournaments.json
   leagueNames: Object.fromEntries((_Q.get('lgn') || '').split('|').map(x => x.split('~')).filter(x => x.length === 2 && /^\d{1,6}$/.test(x[0]) && x[1].trim())
     .map(x => [x[0], x[1].trim().slice(0, 60)])),
   // other sports beside the teams' games: #events=f1,ufc,boxing (default none)
@@ -1951,13 +1951,15 @@ function gameBlock(ev, now, big){
        + `<div class="sub">${sub}</div>`
        + `</div>`;
 }
+// a game once: by id, or by day and clubs
+const evKey = ev => ev.dateEvent && ev.idHomeTeam && ev.idAwayTeam ? ev.dateEvent + '|' + ev.idHomeTeam + '|' + ev.idAwayTeam : String(ev.idEvent);
 // -> {t, html} or null. t (kick-off) puts a league's games and the teams' in one time order.
 function matchSlot(id, now, shown){
   const lg = leagueMap();
   const done = resultsFor(id, lg).filter(ev => finishedRecently(ev, now)).sort((a,b)=>toDate(b)-toDate(a))[0];
   if(done){
     if(shown.has(done.idEvent)) return null;          // both teams in the same game
-    shown.add(done.idEvent);
+    shown.add(done.idEvent); shown.add(evKey(done));
     return {t: toDate(done).getTime(), r: 0, html: resultBlock(done)};
   }
   const next = teamNext(id, lg).filter(e => e && e.idEvent && !finishedRecently(e, now));
@@ -1965,7 +1967,7 @@ function matchSlot(id, now, shown){
   if(!ev || shown.has(ev.idEvent)) return null;
   const html = gameBlock(ev, now);
   if(!html) return null;
-  shown.add(ev.idEvent);
+  shown.add(ev.idEvent); shown.add(evKey(ev));
   return {t: toDate(ev).getTime(), r: gameRank(ev, now), html};
 }
 
@@ -2023,9 +2025,9 @@ async function loadLeagues(step, ready){
 // every game of the followed leagues, once each
 function leagueGames(){
   const seen = new Set(), out = [];
-  CONFIG.leagues.concat(CONFIG.tour ? ['tournaments'] : []).forEach(name => {   // the big tournaments after the person's own leagues: a game both have is the league's copy
+  CONFIG.leagues.concat(CONFIG.tour ? ['tournaments'] : []).forEach(name => {
     const d = LEAGUE_DATA[name], tour = name === 'tournaments';
-    if(!d || (tour && Date.now() - Date.parse(d.updated) > 36 * 3600000)) return;   // a tournaments file older than 36 h shows nothing
+    if(!d || (tour && Date.now() - Date.parse(d.updated) > 36 * 3600000)) return;   // older than 36 h: nothing
     const at = Date.parse(d.updated) || 0;
     (d.events || []).forEach(ev => {
       if(!ev || !ev.idEvent || seen.has(ev.idEvent) || isNaN(toDate(ev)) || (tour && CONFIG.tourOff.includes(String(ev.idLeague)))) return;
@@ -2041,7 +2043,7 @@ function leagueGames(){
 // The league's games the screen shows: a result of the last day, a game under way, a game of the coming week.
 // -> [{t, ev, done}] in time order; shown holds the ids already taken by a followed team, so no game appears twice.
 function leagueShow(now, shown){
-  return leagueGames().filter(ev => !calledOff(ev) && !shown.has(ev.idEvent)).map(ev => {
+  return leagueGames().filter(ev => !calledOff(ev) && !shown.has(ev.idEvent) && !shown.has(evKey(ev))).map(ev => {
     const done = finishedRecently(ev, now);
     const html = done ? resultBlock(ev) : FINAL.includes((ev.strStatus || '').toUpperCase()) ? '' : gameBlock(ev, now);
     return html ? {t: toDate(ev).getTime(), r: gameRank(ev, now), ev, done, html} : null;
@@ -3380,13 +3382,14 @@ function hourlyRows(){
 // every followed team's games this week, plus results from the last day
 function matchEvents(){
   const seen = new Set(), evs = [], lg = leagueMap();
+  const take = ev => ev && ev.idEvent && !seen.has(ev.idEvent) && !seen.has(evKey(ev)) && seen.add(ev.idEvent) && seen.add(evKey(ev));
   CONFIG.teamIds.forEach(id => {
     const next = NEXT_LIST[id] || (MATCHES[id] ? [MATCHES[id]] : []);
-    next.forEach(ev => { if(ev && ev.idEvent && !seen.has(ev.idEvent)){ seen.add(ev.idEvent); const e = fresher(MATCHES[id] && MATCHES[id].idEvent === ev.idEvent ? MATCHES[id] : ev, lg); if(!calledOff(e)) evs.push(e); } });
-    resultsFor(id, lg).forEach(ev => { if(!seen.has(ev.idEvent)){ seen.add(ev.idEvent); if(!calledOff(ev)) evs.push(ev); } });
+    next.forEach(ev => { if(take(ev)){ const e = fresher(MATCHES[id] && MATCHES[id].idEvent === ev.idEvent ? MATCHES[id] : ev, lg); if(!calledOff(e)) evs.push(e); } });
+    resultsFor(id, lg).forEach(ev => { if(take(ev) && !calledOff(ev)) evs.push(ev); });
   });
   if(CONFIG.leagues.length) leagueGames().forEach(ev => {   // after the teams': a game both follow is the team's copy
-    if(!seen.has(ev.idEvent) && !calledOff(ev)){ seen.add(ev.idEvent); evs.push(ev); }
+    if(!calledOff(ev) && take(ev)) evs.push(ev);
   });
   return evs;
 }
@@ -3399,7 +3402,7 @@ function matchRows(card){
   const smart = card && card.kind === 'smart';
   if(smart){ const ids = new Set(focusGames(now).map(ev => ev.idEvent)); evs = evs.filter(ev => ids.has(ev.idEvent)); }   // only the game that brought the smart card here
   const others = smart ? [] : eventRows(now);
-  const shown = evs.map(ev => ({ev, t: toDate(ev).getTime(), r: gameRank(ev, now) + (ev.tour ? 100 : 0)}))   // the teams', then the leagues', then the big tournaments' (at most 3 rows)
+  const shown = evs.map(ev => ({ev, t: toDate(ev).getTime(), r: gameRank(ev, now) + (ev.tour ? 100 : 0)}))
     .filter(x => finishedRecently(x.ev, now) || pendingResult(x.ev, now)
       || (now < x.t + durMs(x.ev) && !FINAL.includes((x.ev.strStatus || '').toUpperCase())
           && x.t - now <= CONFIG.weekWindowDays * 86400000))
@@ -4338,7 +4341,7 @@ function bootFootball(){
 // ---- «المباريات»: a page of its own on the light look
 const MP = {day: '', picked: false, zone: 'rows', d: 1, l: 0, r: 0, detail: null, btn: 0, rows: [], leagues: [], days: [], note: ''};
 function mpGroups(){   // [{key, name, games}] of the chosen day: «فرقك», then each league in Prefs.LEAGUES' order
-  const games = fbGames().filter(ev => fbDayOf(fbKick(ev)) === MP.day && !(MP_MORE && !fbMine(ev) && MP_TOP_IDS.indexOf(String(ev.idLeague || '')) > 0)), mine = games.filter(fbMine);
+  const games = fbGames().filter(ev => fbDayOf(fbKick(ev)) === MP.day && !(!fbMine(ev) && (ev.tour || (MP_MORE && MP_TOP_IDS.indexOf(String(ev.idLeague || '')) > 0)))), mine = games.filter(fbMine);
   const by = {};
   games.forEach(ev => { const k = String(ev.idLeague || ev.strLeague || ''); (by[k] = by[k] || []).push(ev); });
   const keys = Object.keys(by).sort((a, b) => (FB_LEAGUE_ORDER.indexOf(a) + 1 || 99) - (FB_LEAGUE_ORDER.indexOf(b) + 1 || 99));
@@ -4348,17 +4351,22 @@ function mpGroups(){   // [{key, name, games}] of the chosen day: «فرقك», 
     const rest = by[k].filter(ev => !fbMine(ev)).sort((a, b) => fbKick(a) - fbKick(b));
     if(rest.length){ shown.add(k); out.push({key: k, name: fbRound(rest[0]), nameHtml: fbRoundHtml(rest[0]), side: leagueName(rest[0]) || fbRound(rest[0]), games: rest, count: by[k].length}); }
   });
-  const more = mpMore(shown);
+  const more = mpMore(shown);   // ONE section after the person's own rows: the tournaments and the top leagues not already shown
   if(more.length) out.push({key: 'more', name: FB_W.more, games: more, count: more.length, more: true});
+  else if(mpMoreDay() && !MATCHES_LOADED) out.push({key: 'more', name: FB_W.more, games: [], count: 0, more: true, loading: true});   // until a load answers, a line says so
   return out;
 }
-// «مباريات اليوم وبكرة»: the top leagues' games of today and tomorrow (Saudi first), at most 12, after the person's own rows
+// «مباريات اليوم وبكرة»: today's and tomorrow's games of the tournaments and the top leagues, at most 12; a «جارٍ التحميل…» line until the first load answers
 const MP_MORE_MAX = 12;
+function mpMoreDay(){
+  if(!MP_MORE && !CONFIG.tour) return false;
+  const t = cityToday(Date.now());
+  return MP.day === t || MP.day === fbDayAdd(t, 1);
+}
 function mpMore(shown){
-  if(!MP_MORE) return [];
+  if(!mpMoreDay()) return [];
   const t = cityToday(Date.now()), days = [t, fbDayAdd(t, 1)];
-  if(!days.includes(MP.day)) return [];
-  const rank = ev => MP_TOP_IDS.indexOf(String(ev.idLeague || ''));
+  const rank = ev => { const i = MP_TOP_IDS.indexOf(String(ev.idLeague || '')); return i >= 0 ? i : ev.tour ? 50 : -1; };
   return fbGames().filter(ev => !fbMine(ev) && rank(ev) >= 0 && !shown.has(String(ev.idLeague || ev.strLeague || '')) && days.includes(fbDayOf(fbKick(ev)))).sort((a, b) => (rank(a) - rank(b)) || fbKick(a) - fbKick(b)).slice(0, MP_MORE_MAX);
 }
 function mpRow(ev, now, i, withDay){
@@ -4398,7 +4406,7 @@ function mpRender(){
     `<li class="${i === MP.l ? 'on' : ''}${MP.zone === 'leagues' && i === MP.l ? ' f' : ''}"><span>${esc(g.side || g.name)}</span><i>${ar(g.count)}</i></li>`).join('') : '');
   let n = 0;
   setHTML(document.getElementById('mp-list'), groups.length ? groups.map(g => `<section data-g="${esc(g.key)}"><h2>${g.nameHtml || esc(g.name)}</h2><ul>`
-    + g.games.map(ev => mpRow(ev, now, n++, g.more)).join('') + '</ul></section>').join('')
+    + g.games.map(ev => mpRow(ev, now, n++, g.more)).join('') + '</ul>' + (g.loading ? `<div class="fnone">${esc(matchesEmptyText())}</div>` : '') + '</section>').join('')
     : `<div class="fnone">${MATCHES_LOADED ? fbNone(MP.day) : matchesEmptyText()}</div>`);
   fillCrests(document.getElementById('mp'));
   const f = MP.zone === 'leagues' ? document.querySelectorAll('#mp-list section')[MP.l] : document.querySelector('#mp-list li.f');

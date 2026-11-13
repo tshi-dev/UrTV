@@ -152,22 +152,6 @@ follows its `tools/disable.sh` (commits b8fcbabe and 66e83196, issue #321); the 
 per-model lists, packages only, re-taken at commit 3cd274f8 (2 Nov 2026). Clean Your TV (https://github.com/Gathin23/cleanyourtv) is MIT licensed; its license text is in
 `optimize/lists/community/LICENSE-CleanYourTV.txt`.
 
-## Wireless-debugging pairing (4.3.1): libadb-android, spake2-android, Conscrypt, BouncyCastle
-
-For TVs whose own adb never shows «السماح بتصحيح USB؟», «تخلّص من واجهة المصنع» can pair the TV by wireless debugging, with the six digits typed on the phone page. The whole feature is the package
-`android/launcher/src/main/java/sa/urtv/home/setup/pair/` with one entry class (`setup/PairRoute.java`); the libraries are the four `implementation` lines at the end of `android/launcher/build.gradle` and
-the JitPack line in `android/settings.gradle`. Take those out together and the app builds and works as before.
-
-- **libadb-android** 3.1.1 (https://github.com/MuntashirAkon/libadb-android), Copyright 2021 Muntashir Al-Islam: dual licensed GPL-3.0-or-later OR Apache-2.0; **we use it under the Apache-2.0 terms**
-  (`docs/licenses/Apache-2.0.txt`). It is used unmodified.
-- **spake2-android** 2.2.1 (https://github.com/MuntashirAkon/spake2-java), Copyright 2021 Muntashir Al-Islam, a dependency of libadb-android: **LGPL-3.0** (`docs/licenses/LGPL-3.0.txt`, which refers to
-  the GPL-3.0 text in `docs/licenses/GPL-3.0.txt`). It is used unmodified and stays a separate library: the app's own code never copies from it, it is linked as an ordinary dependency. **To replace it** with a
-  modified or another build: change the version (or the source) of `com.github.MuntashirAkon:libadb-android` and its `spake2-android` dependency in `android/launcher/build.gradle` and `android/settings.gradle`
-  and build the app as `docs/DEVELOPERS.md` says; the whole source of the app is in this repository, so any version can be relinked. Its source: the repository above.
-- **Conscrypt** 2.5.3 (https://github.com/google/conscrypt), Copyright The Android Open Source Project and others: Apache-2.0. It gives TLS 1.3, which the pairing needs.
-- **BouncyCastle** 1.81 (bcprov, bcpkix; https://www.bouncycastle.org/), Copyright The Legion of the Bouncy Castle Inc.: the Bouncy Castle licence (MIT style). It makes the app's self-signed certificate.
-- The licence texts in `docs/licenses/` are the ones libadb-android and spake2-android ship (REUSE format: a short header, then the licence).
-
 ## Open Shelf (suggested app, 4.3.1)
 
 «تطبيقات مقترحة» offers Open Shelf (https://github.com/wingedpanther/openshelf, GPL-3.0; its font under the SIL Open Font License 1.1) as one entry. We only link to it: the settings download its own release file

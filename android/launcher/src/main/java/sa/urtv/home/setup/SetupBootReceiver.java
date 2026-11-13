@@ -46,7 +46,7 @@ public class SetupBootReceiver extends BroadcastReceiver {
             final PendingResult pending = goAsync();
             new Thread(new Runnable() {
                 @Override public void run() {
-                    try (SetupSession s = SetupSession.openAny(app, 0, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
+                    try (SetupSession s = SetupSession.open(app, 0, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
                         SetupEngine.Result r = s.engine.restoreFactory();
                         if (r.status == SetupEngine.Status.DONE) store.put(BootGuard.FILE, BootGuard.fresh(System.currentTimeMillis()).text());
                     } catch (Exception e) {

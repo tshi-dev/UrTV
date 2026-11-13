@@ -50,7 +50,7 @@ check("what LOW keeps doing only for LOW: the key filter (TypeService), the mark
       "lowRam = Ram.low(this)" in text(HOME / "TypeService.java") and "if (Ram.low(this)) liveOn = false;" in text(HOME / "MarketsActivity.java")
       and '(lowRam(ctx) ? "&lowram=1" : midRam(ctx) ? "&midram=1" : "")' in pf)
 check("what MID keeps (the cheap memory cuts): drop-on-trim and the card page's idle drop (Ram.tight), photos at 1280, own photos at most 25, the markets a little slower (45 s live, 10 min page)",
-      "!Ram.tight(this)) return;" in text(HOME / "MainActivity.java") and "Ram.tight(activity)) idle.postDelayed" in text(HOME / "HomeCard.java")
+      "!Ram.trimNow(Ram.tier(this), level)) return;" in text(HOME / "MainActivity.java") and "Ram.tight(activity)) idle.postDelayed" in text(HOME / "HomeCard.java")
       and "Prefs.tightRam(c) ? PhotoShrink.toSize(data, LOW_PX)" in text(SAVER / "PhotoCache.java")
       and "MAX = 50, MAX_MID = 25, MAX_LOW = 10" in text(SAVER / "Own.java") and "Prefs.lowRam(c) ? MAX_LOW : Prefs.midRam(c) ? MAX_MID : MAX" in text(SAVER / "Own.java")
       and "Math.max(45_000, liveDelay(fails))" in text(HOME / "MarketData.java") and "(CONFIG.lowram ? 15 : CONFIG.midram ? 10 : 5)*60*1000" in text(ROOT / "src/template.html"))

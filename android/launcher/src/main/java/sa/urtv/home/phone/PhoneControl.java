@@ -31,7 +31,6 @@ public final class PhoneControl {
         default String photosHtml() { return null; }
         /** 4.3 «ارسم» from the phone (assets/phone/draw.html) */
         default String drawHtml() { return null; }
-        default String adbHtml() { return null; }
     }
 
     public enum Start { OK, NO_WIFI, FAILED, ALREADY_ON }

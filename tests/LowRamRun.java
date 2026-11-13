@@ -9,6 +9,7 @@ public class LowRamRun {
         check("Ram: Android's low-RAM flag is LOW whatever the memory", Ram.tier(true, 4096) == Ram.LOW, "");
         check("Ram: the 1.5–1.9 GB sets (1.68, 1.83) and 1999 MB are LOW", Ram.tier(false, 1680) == Ram.LOW && Ram.tier(false, 1830) == Ram.LOW && Ram.tier(false, 1450) == Ram.LOW && Ram.tier(false, 1999) == Ram.LOW, "");
         check("Ram: 2000 MB, the 2394 MB TCL and 2599 MB are MID", Ram.tier(false, 2000) == Ram.MID && Ram.tier(false, 2394) == Ram.MID && Ram.tier(false, 2599) == Ram.MID, "");
+        check("Ram.trimNow: LOW lets go as the app goes behind another (UI_HIDDEN 20); MID only from MODERATE 60; NORMAL never", Ram.trimNow(Ram.LOW, 20) && Ram.trimNow(Ram.LOW, 80) && !Ram.trimNow(Ram.LOW, 5) && !Ram.trimNow(Ram.MID, 20) && !Ram.trimNow(Ram.MID, 40) && Ram.trimNow(Ram.MID, 60) && Ram.trimNow(Ram.MID, 80) && !Ram.trimNow(Ram.NORMAL, 80), "");
         check("Ram: 2600 MB, a «3 GB» TV (2.8 GB) are NORMAL; an unknown total (0) is NORMAL (as before)", Ram.tier(false, 2600) == Ram.NORMAL && Ram.tier(false, 2800) == Ram.NORMAL && Ram.tier(false, 0) == Ram.NORMAL, "");
         check("Ram: a forced tier is read by name; anything else is not a tier", Ram.named("low") == Ram.LOW && Ram.named("mid") == Ram.MID && Ram.named("normal") == Ram.NORMAL && Ram.named("auto") == -1 && Ram.named("x") == -1 && Ram.named(null) == -1, "");
         check("key filter: never on a weak TV; elsewhere as before (off with our home in front or a stock home on)",

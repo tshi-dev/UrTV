@@ -171,9 +171,7 @@ for (const [label, st] of [['new state', NEW()], ['old state', OLD()]]) await T(
     check('connected phones count', (await p.textContent('#phones')).includes('2'));
   }
   const text = (await p.evaluate(() => document.body.innerText + document.body.innerHTML.replace(/<script[\s\S]*<\/script>/, ''))).toLowerCase();
-  // 4.3.1: the one ADB-related element is the row to the pairing code page, hidden unless the TV's own factory page armed the pairing (state.adb_pair)
-  check(`[${label}] the pairing row is hidden while the TV has not armed the pairing`, await p.evaluate(() => document.getElementById('adbRw').classList.contains('hidden')));
-  check(`[${label}] never offers reset, uninstall, ADB, PIN change, kids switch or unlock`, !/reset|uninstall|adb|إعادة ضبط|حذف التطبيق|فك القفل|تغيير الرقم|إلغاء القفل/.test(text.replace('id="adbrw" href="/a"', '')));
+  check(`[${label}] never offers reset, uninstall, ADB, PIN change, kids switch or unlock`, !/reset|uninstall|adb|إعادة ضبط|حذف التطبيق|فك القفل|تغيير الرقم|إلغاء القفل/.test(text));
   await S.ctx.close();
 });
 

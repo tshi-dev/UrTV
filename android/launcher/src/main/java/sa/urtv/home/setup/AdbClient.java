@@ -279,11 +279,7 @@ final class AdbClient implements Closeable {
      * A missing or garbled marker is code -1 (the TV did not say), never 0.
      */
     Result run(String command) throws IOException {
-        return withCode(shell(command + "\necho URTV_RC=$?"));
-    }
-
-    /** the output of a command that was followed by {@code echo URTV_RC=$?}, split into what it printed and its code (-1 when the marker is missing or garbled) */
-    static Result withCode(String text) {
+        String text = shell(command + "\necho URTV_RC=$?");
         String marker = "URTV_RC=";
         int i = text.lastIndexOf(marker);
         if (i < 0) return new Result(text, -1);

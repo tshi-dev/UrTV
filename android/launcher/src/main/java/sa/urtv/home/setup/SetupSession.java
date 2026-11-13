@@ -9,34 +9,10 @@ import java.io.IOException;
 
 /** One connection to the TV's own adb with a {@link SetupEngine} on it: what the screen and the safety-switch receiver both use. */
 final class SetupSession implements Closeable {
-    final AdbClient adb;   // null over the paired (wireless debugging) route: the engine's shell is all that route has
+    final AdbClient adb;
     final SetupEngine engine;
-    private final Closeable other;
 
-    private SetupSession(AdbClient adb, Closeable other, SetupEngine engine) { this.adb = adb; this.other = other; this.engine = engine; }
-
-    private static SetupEngine engineOn(Context c, SetupEngine.Shell shell, SetupEngine.Out out) {
-        return new SetupEngine(shell, new FileStore(c), out, new SetupDeadman(c), ms -> {
-            try { Thread.sleep(ms); } catch (InterruptedException e) { Thread.currentThread().interrupt(); throw new IOException("interrupted"); }
-        }, new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US).format(new java.util.Date()));
-    }
-
-    /** an engine over another kind of connection (PairRoute: wireless debugging over TLS); {@code closer} ends it */
-    static SetupSession wrap(Context c, SetupEngine.Shell shell, Closeable closer, SetupEngine.Out out) { return new SetupSession(null, closer, engineOn(c, shell, out)); }
-
-    /**
-     * The TV's own adb first, as always; where it never accepted our key and the person paired this TV by wireless debugging (PairRoute), the connection over that. The safety
-     * switch's restore (boot, recovery) and the factory screen use this, so a TV that only answers by pairing can still be put back.
-     */
-    static SetupSession openAny(Context c, int approvalMs, AdbClient.Approval approval, SetupEngine.Out out) throws IOException {
-        try {
-            return open(c, approvalMs, approval, out);
-        } catch (IOException first) {
-            if (!PairRoute.paired(c) || String.valueOf(first.getMessage()).contains("debugging is off")) throw first;
-            android.util.Log.i("UrTVFactory", "the loopback did not answer; trying the paired route");
-            return PairRoute.open(c, out);
-        }
-    }
+    private SetupSession(AdbClient adb, SetupEngine engine) { this.adb = adb; this.engine = engine; }
 
     /** approvalMs: how long to wait for the person to accept the TV's prompt (0 for the receiver: the key is known by then). */
     static SetupSession open(Context c, int approvalMs, AdbClient.Approval approval, SetupEngine.Out out) throws IOException { return open(c, "127.0.0.1", approvalMs, approval, out); }
@@ -62,13 +38,13 @@ final class SetupSession implements Closeable {
             adb.close();
             throw e;
         }
-        return new SetupSession(adb, null, engineOn(c, adb::run, out));
+        SetupEngine engine = new SetupEngine(adb::run, new FileStore(c), out, new SetupDeadman(c), ms -> {
+            try { Thread.sleep(ms); } catch (InterruptedException e) { Thread.currentThread().interrupt(); throw new IOException("interrupted"); }
+        }, new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US).format(new java.util.Date()));
+        return new SetupSession(adb, engine);
     }
 
-    @Override public void close() {
-        if (adb != null) adb.close();
-        if (other != null) { try { other.close(); } catch (IOException ignored) { } }
-    }
+    @Override public void close() { adb.close(); }
 
     /**
      * The ADB key is a standing credential once «السماح دائماً» was accepted: it is deleted when nothing is pending (no home switch waiting for its
@@ -78,7 +54,7 @@ final class SetupSession implements Closeable {
     static void deleteKeyIfFinished(Context c) {
         String factory = new FileStore(c).get(SetupEngine.FACTORY);
         boolean pending = SetupRecovery.pending(c) || (factory != null && factory.startsWith("on")), awaiting = SetupRunner.awaiting(new FileStore(c));   // the factory step keeps the key: its restore needs it
-        if (!pending && !awaiting) { AdbKeys.delete(c); PairRoute.forget(c); }
+        if (!pending && !awaiting) AdbKeys.delete(c);
         android.util.Log.i("UrTVSetup", "adb key: " + (!pending && !awaiting ? "deleted" : "kept (" + (pending ? "home switch or factory step pending" : "run waiting") + ")")
             + " exists=" + AdbKeys.exists(c));
     }
