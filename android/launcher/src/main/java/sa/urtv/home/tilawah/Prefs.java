@@ -16,17 +16,7 @@ final class Prefs {
     int source() { return sp.getInt("source", SOURCE_NONE); }
     String reciter() { return sp.getString("reciter", ""); }
     int surah() { return sp.getInt("surah", 1); }
-    /**
-     * The saved live station (an index). 4.3.1 put «إذاعة القرآن الكريم - القاهرة» second, so a station saved by an older version after the first moves one down: shifted once.
-     */
-    int station() {
-        int v = sp.getInt("station", 0);
-        if (!sp.getBoolean("stationsCairo", false)) {
-            v = v >= 1 ? v + 1 : v;
-            sp.edit().putBoolean("stationsCairo", true).putInt("station", v).apply();
-        }
-        return v;
-    }
+    int station() { return sp.getInt("station", 0); }
     int position() { return sp.getInt("position", 0); }
 
     void save(int source, String reciter, int surah, int station, int position) {

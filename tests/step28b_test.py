@@ -136,9 +136,9 @@ check("34-B: while a symbol's exchange is open a market file older than 20 minut
       "LATE_MS = 20*60000" in tp and "(!lax && sesOpen(sym) ? LATE_MS : MARKET_TRUST_MS)" in tp and "directQuote(j) || fileQuote(j.key, 1)" in tp and "' · ' + 'متأخر'" in tp and "? 'متأخر' : ''" in tp)
 
 # step 35 (release)
-check("35-1: LiveFeed and LiveProxy are gone (4.3.1 put Cairo's radio back as a plain station, second: no local proxy; a saved station after the first is shifted once), cleartext is for radiojar.com only",
+check("35-1: Cairo's radio, LiveFeed and LiveProxy are gone (the station was the last: saved numbers stay), cleartext is for radiojar.com only",
       not (ROOT / "android/launcher/src/main/java/sa/urtv/home/tilawah/LiveFeed.java").exists() and not (ROOT / "android/launcher/src/main/java/sa/urtv/home/tilawah/LiveProxy.java").exists()
-      and "127.0.0.1" not in text(ROOT / "android/launcher/src/main/res/xml/network_security_config.xml")
+      and "radiojar.com/8s5u5tpdtwzuv" not in text(ROOT / "android/launcher/src/main/assets/quran/stations.json") and "127.0.0.1" not in text(ROOT / "android/launcher/src/main/res/xml/network_security_config.xml")
       and "LiveFeed" not in text(HOME / "tilawah/MusicService.java"))
 check("35-2: the S&P 500 row has 16 and 8 dp between name, price and change and its price is TEXT-coloured (the focus turns it dark on the pill)",
       "pp.setMarginStart(dp(16));" in mka and "cp.setMarginStart(dp(8));" in mka and 'ltr(text(price(q.p), 16, "Regular", TEXT)), pp' in mka)

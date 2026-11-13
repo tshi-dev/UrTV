@@ -71,7 +71,6 @@ RECITERS = [
 # token) never played on the owner's TV (step 182); radiojar.com keeps its cleartext permission in case it is used again.
 STATIONS = [
     ("إذاعة القرآن الكريم - السعودية", "https://live.kwikmotion.com/sbrksaquranradiolive/ksaquranradio/playlist.m3u8"),
-    ("إذاعة القرآن الكريم - القاهرة", "https://stream.radiojar.com/8s5u5tpdtwzuv"),   # 4.3.1: Maspero's own (ERTU), right after the Saudi one; radiojar, an https -> http redirect: StreamUrl follows it (radiojar.com has its cleartext permission) and hands the player the final address untouched (its token may be single use). The Saudi radiojar address once never played on the owner's TV (step 182): CI (stations-check.yml) probes this one too
     ("الشيخ أبو بكر الشاطري", "radio/shaik_abu_bakr_al_shatri"),
     ("عبدالرحمن السديس", "radio/abdulrahman_alsudaes"),
     ("سعود الشريم", "radio/saud_alshuraim"),
@@ -82,6 +81,7 @@ STATIONS = [
     ("عبدالباسط عبدالصمد", "radio/abdulbasit_abdulsamad"),
     ("محمد صديق المنشاوي", "radio/mohammed_siddiq_alminshawi"),
     ("أحمد العجمي", "radio/ahmad_alajmy"),
+    ("إذاعة القرآن الكريم - القاهرة", "https://stream.radiojar.com/8s5u5tpdtwzuv"),   # 4.1 reports: Maspero's own (maspero.eg/stream/7), radiojar like the Saudi one used to be; last, so saved station indices stay
 ]
 
 
