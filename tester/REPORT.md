@@ -2677,3 +2677,16 @@ Test list: 50,000 entries made on the PC (40,000 live in 40 groups, 5,000 under 
 7. ✓ STREAM_MUSIC stayed muted at every check (preview off and on, merge on and off, zaps)
 **What is still slow / wrong:** the janky-frame share in lists (34–49 %), one 324 ms search, memory growth after the merge, the 20,000 cap with the wrong split into أفلام. **What is good:** cold start 0.75 s, tabs 16–79 ms, search 15–26 ms, 8 s to load a 6.6 MB list, zap about 0.6 s, playback 0 rebuffers / 0 dropped frames.
 **Z** Player cleared and uninstalled (0 packages), my PC server stopped and its folder removed, TV muted and asleep, build 292 channel next, disabled apps 20 (see step 66).
+
+## step 74 — how-to video: from the home to «تخلّص من واجهة المصنع» and «تراجع» (build 292; TV muted; nothing pressed that changes it)
+**Done. One clip, `undo-1.mp4` (77 s, 1920×1080, about 2.2 MB, no sound) pushed to work/marketing `marketing/howto/undo-1.mp4` (commit 11aa7be6). 0 problems.** Settings before/after the same (list compared), disabled apps 20, Home `sa.urtv.home`, TV muted and asleep. One thing I did to the picture: **the Wi-Fi name in the control panel is blurred** (it shows on the «الشبكة» row from about 13 s to 23 s); nothing else personal is in the video.
+**The exact path (each key, about 1.5 s apart, holds in brackets):**
+1. On the home (Home key): ▲ ▲ (focus lands on «مركز التحكم» in the top-left box) → OK. The control panel opens (this is what the remote's Settings key also opens).
+2. ▼ ×4 to the row «تلفزيونك» («الألعاب والمباريات والإعدادات») → OK. The «تلفزيونك» hub opens (four tiles: الأسواق، المباريات، الألعاب، الإعدادات).
+3. ▼ ◀ to «الإعدادات» («فحمي» under it) → OK: UrTV's settings.
+4. ▼ ▼ ▼ to the section «البطاقات» → OK → ◀ to «الشاشة الرئيسية» → OK. The page «الشاشة الرئيسية» opens under its header «الشاشة الرئيسية (تلفزيونك)».
+5. ▼ to «إعداد تلفزيوني» («شغّل الإعداد من جديد، أو تراجع عن تغييراته») [3.5 s], ▼ to «تخلّص من واجهة المصنع» («عطّل واجهة المصنع وخلّ UrTV هو الأساس، وبضغطة ترجع») [3.5 s]. On this TV the row says «تخلّص…», not «رجّع واجهة المصنع» (the factory home is not switched off here). The first row of the page is «اجعل UrTV الشاشة الرئيسية» («✓ UrTV هو الشاشة الرئيسية»).
+6. OK on «تخلّص من واجهة المصنع» → **its first confirmation page** [3.5 s]: title «تخلّص من واجهة المصنع»; «هذي الخطوة تعطّل (ما تحذف) تطبيقات واجهة المصنع في تلفزيونك، ويصير UrTV هو الأساس.» / «أول شيء نفحص التلفزيون ونعرض لك بالضبط وش بيتعطّل، وما نغيّر شيء قبل ما تتأكد مرتين.» / «قد يظهر على الشاشة سؤال «السماح بتصحيح USB؟»: اضغط «سماح».» / «وتقدر ترجّع كل شيء بضغطة وحدة.»; two buttons «ابدأ» and «رجوع», **focus on «رجوع»**. Pressed Back (not «ابدأ»).
+7. ▲ to «إعداد تلفزيوني» → OK: its page («إعداد تلفزيوني», العربية / English, «يجهّز التلفزيون نفسه، بدون كمبيوتر ولا جوال. اضغط «جهّز كل شي»…»), buttons «جهّز كل شي» (focused first) and «تراجع (يرجّع التلفزيون كما كان)». ▼ to «تراجع» [3.5 s]. Back (not pressed).
+8. Back ×3, Home. TV on the home.
+**Note for making a second clip:** the TV's recorder dies if its start command returns at once; I started it with a 4 s wait in the same command and sent the keys in 30 s pieces. A newer build (293) is on the next channel now; this clip is on 292.
