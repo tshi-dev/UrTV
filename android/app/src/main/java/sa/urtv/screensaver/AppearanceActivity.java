@@ -212,6 +212,14 @@ public class AppearanceActivity extends Activity {
                     fs.add(tile("focus:" + key, new Mock(Mock.FOCUS, key, look), w(names[i]), key.equals(prefs.focusStyle()), v -> { prefs.setFocusStyle(key); render(); }));
                 }
                 grid(fs, 3);
+                col.addView(text(w("توهّج لون التطبيق"), 16, "Regular", look.sub), line(dp(8)));
+                List<View> gs = new ArrayList<>();
+                String[] gk = {"off", "light", "on"}, gn = {"مطفأ", "خفيف", "مفعّل"};
+                for (int i = 0; i < gk.length; i++) {
+                    final String key = gk[i];
+                    gs.add(tile("glow:" + key, new Mock(Mock.GLOW, key, look), w(gn[i]), key.equals(prefs.glowMode()), v -> { prefs.setGlowMode(key); render(); }));
+                }
+                grid(gs, 3);
                 break;
             }
         }
@@ -311,12 +319,12 @@ public class AppearanceActivity extends Activity {
             render();
         }), tileParams());
         int own = Own.count(this);
-        final boolean only = Own.ONLY.equals(Own.mode(this));
+        final boolean only = Own.ONLY.equals(Own.mode(this)), albumOnly = Own.ALBUM.equals(Own.mode(this));
         // named by where they show: the screensaver's and the home's tiles sit one above the other and were both «صوري» (step 47: the wrong one was pressed)
-        String ownName = own == 0 ? w("صوري في شاشة التوقف") : only ? w("صوري فقط في شاشة التوقف") : w("صوري مع صورنا في شاشة التوقف");
+        String ownName = own == 0 ? w("صوري في شاشة التوقف") : only ? w("صوري فقط في شاشة التوقف") : albumOnly ? w("صوري للألبوم فقط في شاشة التوقف") : w("صوري مع صورنا في شاشة التوقف");
         row.addView(tile("own", new Mock(Mock.PHOTOS, "own", look), ownName, own > 0, v -> {
             if (Own.count(this) == 0) { toast(w("لا صور لك بعد. تضاف من الجوال.")); return; }
-            prefs.setOwnMode(only ? Own.MIX : Own.ONLY);
+            prefs.setOwnMode(only ? Own.ALBUM : albumOnly ? Own.MIX : Own.ONLY);   // one tile that goes round: with ours, only, only the album card, with ours again
             render();
         }), tileParams());
         return row;
@@ -425,7 +433,7 @@ public class AppearanceActivity extends Activity {
      * screensaver's card in that style over a dark photo; PHOTOS is a stack of photo frames (a different tint for each source).
      */
     private final class Mock extends View {
-        static final int HOME = 0, CARD = 1, PHOTOS = 2, DOTS = 3, BARS = 4, FOCUS = 5, SYNC = 6, FILL = 7;
+        static final int HOME = 0, CARD = 1, PHOTOS = 2, DOTS = 3, BARS = 4, FOCUS = 5, SYNC = 6, FILL = 7, GLOW = 8;
         private final int kind;
         private final String key;
         private final GlassStyle.Look l;
@@ -534,6 +542,16 @@ public class AppearanceActivity extends Activity {
                     paint.setColor(i == n / 2 ? l.focus : GlassStyle.over(l.dialog, l.base));
                     c.drawRoundRect(new RectF(dp(16) + i * tw + dp(1), h * 0.36f, dp(16) + (i + 1) * tw - dp(1), h * 0.74f), dp(3), dp(3), paint);
                 }
+            } else if (kind == GLOW) {   // «توهّج لون التطبيق»: the wash behind one tile at the strength of its state (nothing when off)
+                float share = "on".equals(key) ? 1f : "light".equals(key) ? 1f / 3f : 0f;
+                if (share > 0f) {
+                    paint.setShader(new android.graphics.RadialGradient(w * 0.5f, h * 0.62f, w * 0.45f,
+                        new int[]{(l.accent & 0x00FFFFFF) | (Math.round(0.6f * share * 255) << 24), Color.TRANSPARENT}, null, android.graphics.Shader.TileMode.CLAMP));
+                    c.drawRect(0, 0, w, h, paint);
+                    paint.setShader(null);
+                }
+                paint.setColor(l.focus);
+                c.drawRoundRect(new RectF(w * 0.3f, h * 0.25f, w * 0.7f, h * 0.75f), dp(10), dp(10), paint);
             } else if (kind == FOCUS) {   // one tile with the focus line in its style
                 paint.setColor(l.focus);
                 RectF tile = new RectF(w * 0.25f, h * 0.2f, w * 0.75f, h * 0.8f);

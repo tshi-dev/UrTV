@@ -32,7 +32,7 @@ final class Own {
     static int max(Context c) { return Prefs.lowRam(c) ? MAX_LOW : Prefs.midRam(c) ? MAX_MID : MAX; }
     static final long MAX_BYTES = 3L << 20;
     static final int MAX_SIDE = 3840, MAX_PIXELS = 3840 * 2160;
-    static final String MIX = "mix", ONLY = "only";
+    static final String MIX = "mix", ONLY = "only", ALBUM = "album";   // album: only the album card shows them, they stay out of the wallpaper rotation
 
     private Own() {}
 
@@ -53,7 +53,8 @@ final class Own {
 
     /** the mode that applies: only counts while there is a photo, else mix (nothing changes for anyone with none) */
     static String mode(Context c) {
-        return ONLY.equals(new Prefs(c).ownMode()) && count(c) > 0 ? ONLY : MIX;
+        String m = new Prefs(c).ownMode();
+        return (ONLY.equals(m) || ALBUM.equals(m)) && count(c) > 0 ? m : MIX;
     }
 
     /** "" when src is a photo we can keep, else why not */

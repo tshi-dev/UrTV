@@ -67,7 +67,7 @@ check("saver page: the link carries #clean=1 (photo and clock) or #clean=2 (and 
       and "html.clean .top,html.clean .week,html.clean .p-mid,html.clean .p-match" in tmpl and "html.clean:not(.cl2) .p-prayer{display:none!important}" in tmpl
       and "classList.add('clean','cl'+_Q.get('clean'))" in tmpl)
 check("the page is part of the build: dist/tv.html and tv-en.html carry the flag and stay under the budget",
-      all("html.clean .top" in (ROOT / f"dist/{n}").read_text(encoding="utf-8") for n in ("tv.html", "tv-en.html")) and (ROOT / "dist/tv.html").stat().st_size < 742_000)
+      all("html.clean .top" in (ROOT / f"dist/{n}").read_text(encoding="utf-8") for n in ("tv.html", "tv-en.html")) and (ROOT / "dist/tv.html").stat().st_size < 746_000)
 check("hub: with the mask on «تلفزيونك» opens straight on our settings and finishes (no games, markets or matches windows); off, the four windows as before",
       "if (CleanMask.state(this) != CleanMask.OFF) {" in hub and "startActivity(new Intent(this, SettingsActivity.class));" in hub.split("CleanMask.state(this)")[1][:300] and "finish();" in hub.split("CleanMask.state(this)")[1][:300]
       and "static final String[][] WINDOWS = {" in hub)

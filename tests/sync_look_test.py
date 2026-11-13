@@ -65,7 +65,7 @@ check("the control center is not part of the switch", "GlassStyle.material(" not
 check("Prefs: on by default; off, a surface never set keeps «شفافية الشريط» and what it wore before; the string both apps read carries the surfaces only while it is off",
       'boolean lookSync() { return sp.getBoolean("lookSync", true); }' in prefs and 'sp.getInt("surfacePercent" + surface, barPercent())' in prefs and 'sp.getString("surfaceFill" + surface, GlassStyle.FILL_BEFORE[surface])' in prefs
       and 's.append(";sync=off");' in prefs and prefs.count("GlassStyle.setTweaks(tweaks());") >= 8)
-check("an older screensaver says nothing: the switch is on; an older launcher skips what it does not know", 'else if ("sync".equals(k)) sync = !"off".equals(v);' in gs and "boolean sync = true;" in gs
+check("an older screensaver says nothing: the switch is on; an older launcher skips what it does not know", 'else if ("sync".equals(k)) sync = !"off".equals(v);' in gs and "boolean sync = true, clear = false;" in gs
       and "if (pct[i] < 0) pct[i] = bar;" in gs)
 check("an agent can set them, and `show` says them", all(w in rcv for w in ('getStringExtra("looksync")', 'getStringExtra("surface")', '"\\nlooksync: "', '"\\nsurface quick: "', '"\\nsurface cards: "', '"\\nsurface tray: "',
                                                                   "p.setLookSync(\"on\".equals(syncX));", '"error: looksync is one of on off"')))

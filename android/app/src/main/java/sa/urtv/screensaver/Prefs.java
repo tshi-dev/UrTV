@@ -657,6 +657,7 @@ final class Prefs {
             + QuoteEvery.fragment(quoteEvery())
             + VerseKind.fragment(verseKind())
             + (seconds() ? "&seconds=1" : "")
+            + (clearText() ? "&clear=1" : "")   // «نص أوضح»: the page rewrites its greys to full ink
             + (lowRam(ctx) ? "&lowram=1" : midRam(ctx) ? "&midram=1" : "")   // a weak TV (a user report on 4.1, lag): the page's slower timers, no seconds, no transitions
             + HomeExit.fragment(homeExit())
             + (occasion() ? "" : "&occasion=0") + (nightDim() ? "" : "&nightdim=0") + (tasksPill() ? "" : "&taskspill=0")
@@ -699,11 +700,31 @@ final class Prefs {
     }
 
     /** «ألبوم صوري» (card album): a photo every 4 s with a crossfade (the default) or one a minute; the photo's date under it (on by default). */
-    boolean albumMinute() { return sp.getBoolean("albumMinute", false); }
-    void setAlbumMinute(boolean v) { sp.edit().putBoolean("albumMinute", v).apply(); }
+    /** how often the album's photo changes: "seconds" (every 4 s, the default), "ten" (every 10 s) or "minute"; the older yes/no «a minute» setting is read as it was */
+    String albumMode() {
+        String m = sp.getString("albumMode", null);
+        if (m == null) return sp.getBoolean("albumMinute", false) ? "minute" : "seconds";
+        return "ten".equals(m) || "minute".equals(m) ? m : "seconds";
+    }
+    void setAlbumMode(String v) { sp.edit().putString("albumMode", v).apply(); }
+    boolean albumMinute() { return "minute".equals(albumMode()); }
+    void setAlbumMinute(boolean v) { setAlbumMode(v ? "minute" : "seconds"); }
+    /** the title «ألبوم صوري» above the photo: shown (the default) or hidden */
+    boolean albumTitle() { return sp.getBoolean("albumTitle", true); }
+    void setAlbumTitle(boolean v) { sp.edit().putBoolean("albumTitle", v).apply(); }
+    /** "fit" (the whole photo, never cropped: the default) or "fill" (the card is filled and the top third kept, so faces stay in) */
+    String albumFit() { return "fill".equals(sp.getString("albumFit", "fit")) ? "fill" : "fit"; }
+    void setAlbumFit(String v) { sp.edit().putString("albumFit", "fill".equals(v) ? "fill" : "fit").apply(); }
+    /** "normal" or "tall" (about twice the photo's height; the page steps the card down where it does not fit) */
+    String albumSize() { return "tall".equals(sp.getString("albumSize", "normal")) ? "tall" : "normal"; }
+    void setAlbumSize(String v) { sp.edit().putString("albumSize", "tall".equals(v) ? "tall" : "normal").apply(); }
     boolean albumDate() { return sp.getBoolean("albumDate", true); }
     void setAlbumDate(boolean v) { sp.edit().putBoolean("albumDate", v).apply(); }
-    private String albumParam() { return (albumMinute() ? "&albummode=minute" : "") + (albumDate() ? "" : "&albumdate=0"); }
+    private String albumParam() {
+        String m = albumMode();
+        return ("seconds".equals(m) ? "" : "&albummode=" + m) + (albumDate() ? "" : "&albumdate=0") + (albumTitle() ? "" : "&albumtitle=0")
+            + ("fill".equals(albumFit()) ? "&albumfit=fill" : "") + ("tall".equals(albumSize()) ? "&albumsize=tall" : "");   // only what is not the default, so the page's address is as before
+    }
 
     /** «صور شاشة التوقف»: the packs that are on (ids), and whether our own set («صورنا», on by default) is. Sent as #packs=id:count,... and #ours=0 only when set, so the fragment is as before. */
     java.util.Set<String> packsOn() { return PhotoPacks.parseOn(sp.getString("packsOn", "")); }
@@ -740,7 +761,7 @@ final class Prefs {
     String homeMine() { return sp.getString("homeMine", null); }
     void setHomeMine(String v) { if (v == null) sp.edit().remove("homeMine").apply(); else sp.edit().putString("homeMine", v).apply(); bumpOwnRev(); }   // the home chooses its photo again at once
     /** what the home uses now: its own choice, else the screensaver's mode */
-    String homeMineEffective() { String v = homeMine(); return v != null ? v : ownMode(); }
+    String homeMineEffective() { String v = homeMine(); return v != null ? v : Own.ALBUM.equals(ownMode()) ? "off" : ownMode(); }   // the screensaver's «للألبوم فقط» keeps them out of the home's wallpaper too
 
     String ownMode() { return sp.getString("ownMode", Own.MIX); }
     void setOwnMode(String v) { sp.edit().putString("ownMode", v).apply(); }
@@ -986,16 +1007,27 @@ final class Prefs {
     void setSurfacePercent(int surface, int v) { sp.edit().putInt("surfacePercent" + surface, Math.max(30, Math.min(100, v))).apply(); GlassStyle.setTweaks(tweaks()); }
     void setSurfaceFill(int surface, String v) { if (java.util.Arrays.asList(GlassStyle.FILLS).contains(v)) { sp.edit().putString("surfaceFill" + surface, v).apply(); GlassStyle.setTweaks(tweaks()); } }
     /** the one string both apps read (GlassStyle.setTweaks): empty while nothing was touched; the surfaces' own values are in it only while the switch is off */
+    /** «نص أوضح»: the grey words and numbers of the home and the screensaver in the look's full text colour (off by default) */
+    boolean clearText() { return sp.getBoolean("clearText", false); }
+    void setClearText(boolean v) { sp.edit().putBoolean("clearText", v).apply(); }
+
+    /** «توهّج لون التطبيق»: off (the default, for new installs and old ones alike), light or on */
+    String glowMode() { String v = sp.getString("glowMode", "off"); return "on".equals(v) || "light".equals(v) ? v : "off"; }
+    void setGlowMode(String v) { sp.edit().putString("glowMode", "on".equals(v) || "light".equals(v) ? v : "off").apply(); GlassStyle.setTweaks(tweaks()); }
+
     String tweaks() {
         String a = accent(), f = focusStyle();
         int b = barPercent(), d = wallDim();
         boolean sync = lookSync();
-        if (a.isEmpty() && b == 100 && d == 0 && "solid".equals(f) && sync) return "";
+        boolean clear = clearText();
+        if (a.isEmpty() && b == 100 && d == 0 && "solid".equals(f) && sync && !clear && "off".equals(glowMode())) return "";
         StringBuilder s = new StringBuilder("accent=" + a + ";bar=" + b + ";dim=" + d + ";focus=" + f);
         if (!sync) {
             s.append(";sync=off");
             for (int i = 0; i < GlassStyle.SURFACES.length; i++) s.append(';').append(GlassStyle.SURFACES[i]).append('=').append(surfacePercent(i)).append(':').append(surfaceFill(i));
         }
+        if (clear) s.append(";text=clear");
+        if (!"off".equals(glowMode())) s.append(";glow=").append(glowMode());
         return s.toString();
     }
     static String lookLabel(String v) { return GlassStyle.LOOK_NAMES[java.util.Arrays.asList(GlassStyle.LOOKS).indexOf(GlassStyle.look(v))]; }

@@ -5,7 +5,8 @@
 #   optimize/photos.sh list              how many, the mode, each one's size
 #   optimize/photos.sh del N             remove photo N (N from 'list'); the ones after it move up
 #   optimize/photos.sh clear             remove them all: the TV is as before
-#   optimize/photos.sh mode mix|only     mix = they join our Saudi photos (default); only = they are the only ones
+#   optimize/photos.sh mode mix|only|album  mix = they join our Saudi photos (default); only = they are the only ones; album = only the album card («ألبوم صوري») shows them,
+#                                        they stay out of the wallpaper rotation (screensaver and home)
 #   optimize/photos.sh show              screenshot the screensaver showing them (optimize/run/shots/own-photo.png);
 #                                        it waits 70 s for the page to settle on one of them, so it takes about 80 s
 # Both the screensaver and the home screen's wallpaper use them; the owner can change the mode or remove them all in the app's
@@ -53,7 +54,7 @@ case "${1:-}" in
     [[ "${2:-}" =~ ^[0-9]+$ ]] || { echo "usage: optimize/photos.sh del N   (N from 'list')"; exit 1; }
     send "--es op del --ei n $2" ;;
   mode)
-    case "${2:-}" in mix|only) ;; *) echo "usage: optimize/photos.sh mode mix|only"; exit 1 ;; esac
+    case "${2:-}" in mix|only|album) ;; *) echo "usage: optimize/photos.sh mode mix|only|album"; exit 1 ;; esac
     send "--es op mode --es mode $2" ;;
   add)
     shift

@@ -50,7 +50,7 @@ check("the side panel: 560 px of 1920 wide inside the 5 % safe area, a clear ful
       and "panel.animate().translationX(0).setDuration(SLIDE_MS).setInterpolator(new DecelerateInterpolator())" in center and "Dir.start() | Gravity.TOP" in center
       and "new ScrollView(act)" in center and "ControlLayout" not in center and not (HOME / "ControlLayout.java").exists())
 check("four round toggles on top (Bluetooth, mirroring, the sleep timer, «أطفئ الآن»), then rows with a short value each (network, sound, speed, the TV's settings, ours); ellipsized one-line values",
-      'TOGGLES = {"bluetooth", "mirror", "sleep", "off"}' in center and 'ROWS = {"net", "sound", "speed", "tv", "ours", "saver"}' in center and "GradientDrawable.OVAL" in center
+      'TOGGLES = {"bluetooth", "mirror", "sleep", "off"}' in center and 'ROWS = {"net", "sound", "speed", "ours", "city", "tv", "saver"}' in center and "GradientDrawable.OVAL" in center
       and "t.setSingleLine(true);" in center and "TruncateAt.END" in center and "ControlText.networkDetail" not in center)
 check("the focus: a solid fill in the look's colours with its ink, coming in over 170 ms (ease-out)",
       "FOCUS_MS = 170" in center and "ValueAnimator.ofArgb(shown, target)" in center and "anim.setDuration(FOCUS_MS)" in center and "int target = f ? FOCUSED : " in center and "ON_SUB" in center)
@@ -126,8 +126,8 @@ check("the tile is there only when one resolves, opens it behind the TV's settin
 check("Wi-Fi and Bluetooth side by side, first (docs/UX-REVIEW.md): the network tile, then Bluetooth, then the rest",
       center.index('tile("net"') < center.index('tile("bluetooth"') < center.index('tile("sound"') < center.index('tile("speed"')
       < center.index('tile("sleep"') < center.index('tile("off"') < center.index('tile("mirror"') < center.index('tile("saver"'))
-check("at most ten tiles: sleep, off, network, speed, sound, mirroring, Bluetooth, screensaver, ours, the TV's settings",
-      len(re.findall(r'tile\("[a-z]+"', center)) == 10, re.findall(r'tile\("[a-z]+"', center))
+check("at most eleven tiles: sleep, off, network, speed, sound, mirroring, Bluetooth, screensaver, the city, ours, the TV's settings",
+      len(re.findall(r'tile\("[a-z]+"', center)) == 11, re.findall(r'tile\("[a-z]+"', center))
 # ---- no traffic before OK
 check("the only network code is the speed test's, and it is started by the tile's OK on a worker thread",
       "new SpeedTest()" in center and "HttpURLConnection" not in center and "new Thread(" in center.split("private void speedTest")[1]
@@ -149,7 +149,11 @@ check("the phone remote and the accessibility service are untouched by it (the s
 # ---- the logic
 if not shutil.which("javac"):
     print("SKIP control center logic: no javac here")
-    sys.exit(1 if failed else 0)
+    # ---- 4.3.1: ours before the TV's, the city beside it; a saved old default order follows the new one
+check("«إعدادات تلفزيونك» comes before the TV's «الإعدادات» by default, «المدينة» right after it; the old default order saved by the editor counts as never reordered",
+      center.index('"ours", "city", "tv"') > 0 and 'OLD_DEFAULT = "net,sound,speed,tv,ours,saver"' in center and 'if (v.equals(OLD_DEFAULT)) v = "";' in center
+      and center.index('tile("city"') < center.index('tile("ours"') < center.index('tile("tv"') and "host.openCity()" in center)
+sys.exit(1 if failed else 0)
 cases = [l.split("\t") for l in (ROOT / "tests/control_center_cases.tsv").read_text(encoding="utf-8").split("\n") if l and not l.startswith("#")]
 with tempfile.TemporaryDirectory() as tmp:
     subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "tests/i18n_home_stub/S.java"), str(ROOT / "android/launcher/src/main/java/sa/urtv/home/Tr.java"), str(HOME / "ControlText.java"), str(HOME / "PillText.java"), str(HOME / "DigitsText.java"),
@@ -176,4 +180,8 @@ main_src = (ROOT / "android/launcher/src/main/java/sa/urtv/home/MainActivity.jav
 check("the tray's scroll does no avoidable work per step: the name row's fade starts only when it changes, the Wi-Fi mark is touched only when it changes",
       "if (nameShown != inBar) { nameShown = inBar;" in main_src and "if (netShown == (online ? 1 : 0) && netInk == ink) return;" in main_src)
 
+# ---- 4.3.1: ours before the TV's, the city beside it; a saved old default order follows the new one
+check("«إعدادات تلفزيونك» comes before the TV's «الإعدادات» by default, «المدينة» right after it; the old default order saved by the editor counts as never reordered",
+      center.index('"ours", "city", "tv"') > 0 and 'OLD_DEFAULT = "net,sound,speed,tv,ours,saver"' in center and 'if (v.equals(OLD_DEFAULT)) v = "";' in center
+      and center.index('tile("city"') < center.index('tile("ours"') < center.index('tile("tv"') and "host.openCity()" in center)
 sys.exit(1 if failed else 0)

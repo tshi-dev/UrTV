@@ -16,7 +16,9 @@ import javax.imageio.ImageIO;
 public final class GlassRun {
     public static void main(String[] args) throws Exception {
         List<File> files = new ArrayList<>();
-        for (String a : args) {
+        boolean clear = args.length > 0 && "--clear".equals(args[0]);   // «نص أوضح»: every look again with the secondary text as clear as the main one
+        if (clear) GlassStyle.setTweaks("text=clear");
+        for (String a : clear ? Arrays.copyOfRange(args, 1, args.length) : args) {
             File f = new File(a);
             if (f.isDirectory()) {
                 File[] in = f.listFiles((d, n) -> n.toLowerCase().matches(".*\\.(jpe?g|png|webp)$"));
@@ -38,6 +40,10 @@ public final class GlassRun {
         }
         for (String look : GlassStyle.LOOKS) for (boolean light : new boolean[] {false, true})
             out.append("solid ").append(look).append(light ? "-light" : "-dark").append(String.format(" worst=%.2f", GlassStyle.worstSolid(GlassStyle.of(look, light)))).append('\n');
+        if (clear) for (String look : GlassStyle.LOOKS) for (boolean light : new boolean[] {false, true}) {
+            GlassStyle.Look l = GlassStyle.of(look, light);
+            out.append("clear ").append(look).append(light ? "-light" : "-dark").append(l.sub == l.text && l.onFocusSub == l.onFocus ? " same=1" : " same=0").append('\n');
+        }
         System.out.print(out);
     }
 
