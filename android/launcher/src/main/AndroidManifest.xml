@@ -302,6 +302,16 @@
             android:screenOrientation="landscape"
             android:theme="@android:style/Theme.Material.NoActionBar" />
 
+        <!-- «التطبيقات المعطّلة» (4.3.1): the apps turned off on the TV, and turning the chosen ones back on (family PIN); its row is in the screensaver's settings, so the same signature permission -->
+        <activity
+            android:name=".setup.DisabledAppsActivity"
+            android:exported="true"
+            android:permission="sa.urtv.home.OPEN_CLEAN"
+            android:excludeFromRecents="true"
+            android:label="التطبيقات المعطّلة"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Material.NoActionBar" />
+
         <!-- «تحديث تلفزيوني»: the version, the check and the update. Exported only so the screensaver's settings can open it, behind a signature
              permission (same key): no other app can. -->
         <activity

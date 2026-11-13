@@ -249,6 +249,52 @@ final class SetupEngine {
         return out;
     }
 
+    /** 4.3.1 «التطبيقات المعطّلة»: one app's answer after it was asked to come back */
+    static final class AppResult {
+        final String pkg;
+        final boolean ok;
+        final String why;   // "" when it is on; else the reason in Arabic
+        AppResult(String pkg, boolean ok, String why) { this.pkg = pkg; this.ok = ok; this.why = why; }
+    }
+
+    /** the words for a refusal, from what `pm enable` printed (never the raw text) */
+    static String enableWhy(String printed) {
+        String t = printed == null ? "" : printed.toLowerCase(java.util.Locale.ROOT);
+        if (t.contains("unknown package") || t.contains("not installed") || t.contains("doesn't exist") || t.contains("not found")) return "التطبيق ما عاد موجود على التلفزيون";
+        if (t.contains("securityexception") || t.contains("permission") || t.contains("not allowed") || t.contains("cannot")) return "التلفزيون ما سمح بتشغيله";
+        return "التلفزيون ما شغّله";
+    }
+
+    /**
+     * 4.3.1 «التطبيقات المعطّلة»: turns the asked apps ON, only ever on (`pm enable`; nothing here disables, uninstalls or clears), and asks the TV what is off now to say
+     * for each one whether it worked and why not. An app that is on again leaves the ledger (disabled-by-us.txt) and the community list's record, so «رجّع واجهة المصنع»
+     * stays exact: it enables what is still in them. A TV that does not confirm the list gets no «worked» for anyone.
+     */
+    List<AppResult> enableApps(List<String> asked) throws IOException {
+        List<String> pkgs = ledgerNames(String.join("\n", asked));
+        java.util.Map<String, String> printed = new java.util.LinkedHashMap<>();
+        for (String p : pkgs) printed.put(p, sh.run("pm enable --user 0 " + p).output);
+        Set<String> off = packages("pm list packages -d");
+        List<AppResult> out = new ArrayList<>();
+        List<String> done = new ArrayList<>();
+        for (String p : pkgs) {
+            if (off == null) out.add(new AppResult(p, false, "التلفزيون ما أكّد لنا النتيجة"));
+            else if (off.contains(p)) out.add(new AppResult(p, false, enableWhy(printed.get(p))));
+            else { out.add(new AppResult(p, true, "")); done.add(p); }
+        }
+        if (!done.isEmpty()) {
+            dropFrom("disabled-by-us.txt", done);
+            if (store.get("community-applied.txt") != null) dropFrom("community-applied.txt", done);
+        }
+        return out;
+    }
+
+    private void dropFrom(String file, List<String> gone) throws IOException {
+        StringBuilder b = new StringBuilder();
+        for (String p : ledgerNames(store.get(file))) if (!gone.contains(p)) b.append(p).append('\n');
+        store.put(file, b.toString());
+    }
+
     private void remember(List<String> prev, List<String> add) throws IOException {
         List<String> all = new ArrayList<>(prev);
         for (String p : add) if (!all.contains(p)) all.add(p);

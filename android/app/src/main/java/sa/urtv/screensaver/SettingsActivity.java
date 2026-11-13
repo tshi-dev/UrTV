@@ -367,6 +367,8 @@ public class SettingsActivity extends Activity {
         final Runnable factoryGo = new Runnable() { public void run() { openFactory(); } };
         if (factoryOn) row("رجّع واجهة المصنع", "مفعّل واجهة المصنع معطّلة، وبضغطة ترجع", R.drawable.ic_eye, factoryGo);
         else row("تخلّص من واجهة المصنع", "عطّل واجهة المصنع وخلّ UrTV هو الأساس، وبضغطة ترجع", R.drawable.ic_eye, factoryGo);
+        // «التطبيقات المعطّلة» (4.3.1): the apps turned off on the TV, and a way to turn the chosen ones back on (the launcher's DisabledAppsActivity, behind the family PIN)
+        row("التطبيقات المعطّلة", "شغّل من جديد تطبيقًا عطّلته أنت أو UrTV أو الشركة", R.drawable.ic_eye, new Runnable() { public void run() { openDisabledApps(); } });
         // «UrTV النظيف»: the essentials only; the launcher's CleanActivity says what it does first and asks for the confirmation (and the family PIN)
         // the line says «مفعّل» (the on/off rule: the value starts with the state word) while the mask is on; the home answers (read once per visit, the last answer kept)
         row("\u2066UrTV\u2069 النظيف", Boolean.TRUE.equals(homeCleanSeen()) ? "مفعّل الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة" : "الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة", R.drawable.ic_eye, new Runnable() { public void run() { openClean(); } });
@@ -1463,6 +1465,14 @@ public class SettingsActivity extends Activity {
     private void openFactory() {
         try {
             startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.setup.FactoryActivity"));
+        } catch (RuntimeException e) {
+            toast("حدّث الواجهة الرئيسية «تلفزيونك» أو ثبّتها أولاً");
+        }
+    }
+
+    private void openDisabledApps() {
+        try {
+            startActivity(new Intent().setClassName("sa.urtv.home", "sa.urtv.home.setup.DisabledAppsActivity"));
         } catch (RuntimeException e) {
             toast("حدّث الواجهة الرئيسية «تلفزيونك» أو ثبّتها أولاً");
         }
