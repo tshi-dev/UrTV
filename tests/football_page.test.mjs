@@ -160,6 +160,21 @@ for (const [why, rows] of [['the shipped table', null], ['medium confidence', [{
   await ctx.close();
 }
 
+// ---- a wrong score (a user's report on 4.2): the same event in three sources: the team's eventsnext copy kept as «not played», eventslast answering an older game, the league's file with the final 1-2.
+// The finished copy with the score wins and the game is shown once (fresher()).
+{
+  const { p, ctx } = await open('teams=133739&leagues=Spanish La Liga&matchpage=1', { rows: ROWS, height: 1080 });
+  await p.waitForTimeout(800);
+  const got = await p.evaluate(() => {
+    const mk = extra => Object.assign({ idEvent: '2506279', idLeague: '4335', idHomeTeam: '133729', idAwayTeam: '133739', strHomeTeam: 'Atletico Madrid', strAwayTeam: 'Barcelona', strTimestamp: '2026-11-03T20:00:00', dateEvent: '2026-11-03', strTime: '20:00:00', strSport: 'Soccer' }, extra);
+    MATCHES['133739'] = mk({ strStatus: 'NS' });
+    RESULTS['133739'] = [mk({ idEvent: '999', strStatus: 'FT', intHomeScore: '0', intAwayScore: '0', strTimestamp: '2026-10-20T20:00:00', dateEvent: '2026-10-20' })];
+    LEAGUE_DATA['Spanish La Liga'] = { updated: new Date().toISOString(), events: [mk({ strStatus: 'FT', intHomeScore: '1', intAwayScore: '2' })] };
+    return matchEvents().filter(e => e.idEvent === '2506279').map(e => [e.strStatus, e.intHomeScore, e.intAwayScore]);
+  });
+  check('score: one event in three sources (stale «not played» copy, an older game from eventslast, the league\'s final 1-2): shown once, as the final with its score', JSON.stringify(got) === '[["FT","1","2"]]', JSON.stringify(got));
+  await ctx.close();
+}
 // ---- 4.3.1 «البطولات الكبرى»: leagues/tournaments.json, one request, after the person's own rows; the 36 h rule; off = no request; unticked ones left out; the card's cap
 const tev = (id, home, hid, away, aid, iso, lid, extra = {}) => ev(id, home, hid, away, aid, iso, { idLeague: lid, strLeague: 'UEFA Nations League', intRound: '', ...extra });
 const TOUR = { updated: '2026-11-04T03:00:00Z', names: { '4490': 'دوري الأمم الأوروبية', '4480': 'دوري أبطال أوروبا' }, events: [
