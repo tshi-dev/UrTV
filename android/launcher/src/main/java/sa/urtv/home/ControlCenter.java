@@ -93,7 +93,7 @@ final class ControlCenter {
     private final List<Item> items = new ArrayList<>();   // everything this TV can show, in the default order
     private FrameLayout body;     // what the panel shows now: the main view or «تخصيص»
     private boolean customising;
-    /** 4.3.1 «شكل لوحة التحكم» (ControlShape): «عريض» (the default) or «طولي»; set in «تخصيص», read when the panel opens */
+    /** 4.3.1 «شكل لوحة التحكم» (ControlShape): «طولي» (the default) or «عريض»; set in «تخصيص», read when the panel opens */
     static final String LAYOUT_WIDE = ControlShape.WIDE, LAYOUT_TALL = ControlShape.TALL;
     private boolean wideNow = true;
     static boolean isWide(String saved) { return ControlShape.isWide(saved); }
@@ -203,7 +203,7 @@ final class ControlCenter {
         android.util.DisplayMetrics dm = act.getResources().getDisplayMetrics();
         final int W = dm.widthPixels, H = dm.heightPixels;
         final int margin = Math.round(W * SAFE), top = Math.round(H * SAFE);
-        wideNow = isWide(prefs().getString("layout", LAYOUT_WIDE));
+        wideNow = isWide(prefs().getString("layout", LAYOUT_TALL));
         final int[] sz = ControlShape.size(W, H, wideNow);
         final int panelW = sz[0], panelH = sz[1];
         final boolean rtl = Dir.rtl();
@@ -457,9 +457,9 @@ final class ControlCenter {
         col.addView(hint, hlp);
 
         final Cell shape = new Cell(Cell.PILL, null);   // «شكل لوحة التحكم»: wide or tall, from the next time the panel opens
-        shape.label(S.t("شكل لوحة التحكم") + ": " + (isWide(prefs().getString("layout", LAYOUT_WIDE)) ? S.t("عريض") : S.t("طولي")), TEXT);
+        shape.label(S.t("شكل اللوحة") + ": " + (isWide(prefs().getString("layout", LAYOUT_TALL)) ? S.t("عريض") : S.t("طولي")), TEXT);
         shape.setOnClickListener(v -> {
-            prefs().edit().putString("layout", isWide(prefs().getString("layout", LAYOUT_WIDE)) ? LAYOUT_TALL : LAYOUT_WIDE).apply();
+            prefs().edit().putString("layout", isWide(prefs().getString("layout", LAYOUT_TALL)) ? LAYOUT_TALL : LAYOUT_WIDE).apply();
             customKey = "shape";
             showCustom();
         });

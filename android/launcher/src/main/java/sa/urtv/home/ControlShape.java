@@ -2,7 +2,7 @@ package sa.urtv.home;
 
 /**
  * 4.3.1 «شكل لوحة التحكم»: the two shapes of the control center and the arithmetic they share, with no Android in it (tests/ControlShapeRun.java runs it).
- * «عريض» (the default; the 4.2 look): a page in the middle of the screen, the rows two to a line. «طولي» (4.3's): the tall panel at the screen's edge, one row to a line.
+ * «عريض» (the 4.2 look; the owner's choice to switch to): a page in the middle of the screen, the rows two to a line. «طولي» (the default, 4.3's): the tall panel at the screen's edge, one row to a line.
  */
 final class ControlShape {
     private ControlShape() { }
@@ -10,8 +10,8 @@ final class ControlShape {
     static final String WIDE = "wide", TALL = "tall";
     static final float WIDE_W = 0.78f, WIDE_H = 0.82f, TALL_W = 560f / 1920f, SAFE = 0.05f;
 
-    /** the saved choice: anything but «طولي» is the wide page (a TV that never chose gets it) */
-    static boolean isWide(String saved) { return !TALL.equals(saved); }
+    /** the saved choice: only «عريض» is the wide page; a TV that never chose keeps the tall panel it has had since 4.3 (the owner) */
+    static boolean isWide(String saved) { return WIDE.equals(saved); }
 
     /** the panel's {width, height} in pixels: the wide page takes 78 % of the width and 82 % of the height, the tall panel 560 px of 1920 inside the 5 % safe area; never more than the screen */
     static int[] size(int screenW, int screenH, boolean wide) {

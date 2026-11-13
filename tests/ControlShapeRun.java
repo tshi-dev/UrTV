@@ -5,7 +5,7 @@ public final class ControlShapeRun {
     static void check(String name, boolean ok) { System.out.println((ok ? "PASS " : "FAIL ") + name); if (!ok) failed++; }
 
     public static void main(String[] a) {
-        check("no choice, or any word but «طولي»: the wide page; «طولي» the tall panel", ControlShape.isWide(null) && ControlShape.isWide("") && ControlShape.isWide("wide") && ControlShape.isWide("x") && !ControlShape.isWide("tall"));
+        check("no choice (a TV as it is today), or any word but «عريض»: the tall panel; «عريض» the wide page", !ControlShape.isWide(null) && !ControlShape.isWide("") && !ControlShape.isWide("tall") && !ControlShape.isWide("x") && ControlShape.isWide("wide"));
         int[][] screens = {{1920, 1080}, {1280, 720}, {3840, 2160}, {1366, 768}, {960, 540}};
         for (int[] s : screens) for (boolean wide : new boolean[] {true, false}) {
             int[] z = ControlShape.size(s[0], s[1], wide);

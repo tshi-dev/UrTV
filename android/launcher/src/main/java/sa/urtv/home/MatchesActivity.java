@@ -110,8 +110,8 @@ public class MatchesActivity extends Activity {
 
     @Override protected void onResume() {
         super.onResume();
-        if (teamsOpened) { teamsOpened = false; recreate(); return; }
         if (web != null) { web.onResume(); web.resumeTimers(); }
+        if (teamsOpened) { teamsOpened = false; recreate(); }   // back from «فرقي»: the page is made again with the new teams
     }
 
     @Override protected void onPause() {

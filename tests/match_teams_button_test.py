@@ -26,6 +26,6 @@ check("the header has «فرقي» only where the app can open it (the bridge ha
 check("in the page's zone 'head' the days do not also show the focus when a day has no games", "(!MP.rows.length && MP.zone !== 'head')" in page)
 check("its English word is in the table", "فرقي\tMy teams" in tsv)
 check("the app opens the screensaver's settings on the teams chooser, never in kids mode, and makes the page again on return (the new teams)",
-      'putExtra("manageTeams", true)' in act and "Parental.state(this).kids" in act and "if (teamsOpened) { teamsOpened = false; recreate(); return; }" in act)
+      'putExtra("manageTeams", true)' in act and "Parental.state(this).kids" in act and "if (teamsOpened) { teamsOpened = false; recreate(); }" in act)
 check("the settings open the chooser on the extra, at start and when already open", 'getBooleanExtra("manageTeams", false)' in saver and "manageTeams();" in saver.split("onNewIntent", 1)[1][:500])
 sys.exit(1 if failed else 0)
