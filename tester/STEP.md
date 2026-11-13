@@ -1,4 +1,4 @@
-«✅ GO — step 71 (4.3.1 smoke test, the release candidate)» — run step 71 (end of this file) on the newest apk-next build (switch the update channel to next). TV muted. Do it BEFORE the older queued steps (67 is cancelled: pairing is not in 4.3.1). The standing rule holds. Never type the owner's PIN.
+«✅ GO — step 73 NOW (the 30-minute release check of 4.3.1, apk-next build 288 or later), then step 71's remaining items, then 72 and 68» — the owner is waiting on step 73 to release 4.3.1 tonight. TV muted. Do it yourself, pairing codes included; never the family PIN. Push the report as soon as step 73 is done, before anything else.
 
 **OWNER'S WORD (2026-11-13, relayed by the supervisor from his chat): «أنا موافق يسوي كل شيء بنفسه، حتى يحط رموز».** So, until he says otherwise: (1) do every step yourself without waiting for him, including typing the on-screen PAIRING codes (the phone-control code, and later the wireless-debugging pairing code) and pressing «سماح» for your own PC browser; (2) push the pictures you took (step 70, x6-suggested, and any later ones) to work/marketing now: the repo being public is fine, they hold no personal data; (3) the phone page tests no longer need him. Still not yours: the family PIN (you don't have it; a step that needs it is written «skipped: needs the PIN»), and anything that would change the TV beyond what a step describes. Run in this order now: step 71 (4.3.1 smoke), step 72 (Player beta, use the NEWEST v0.9.16-betaN), step 68 (radio 2 h, can run while you write reports).
 
@@ -1094,3 +1094,15 @@ APK: https://github.com/tshi-dev/UrTV-Player/releases/download/v0.9.16-beta3/urt
 6. Commentary merge: the checks of step 69 (items 1–6) on this build, briefly.
 7. The TV's mute and volume never change.
 Verdict line for the owner: is it light and smooth enough to release as stable 0.9.16? What is still slow?
+
+## step 73 — the 30-minute release check of 4.3.1 (apk-next build 288 or later; TV muted; report at once)
+The release waits on this. ✓/✗ + one line each; one picture only where something is wrong. Switch the update channel to next and update from the app first (both apps; say the build number you end on).
+1. **Home on return** (the black / blurry background fix): open an app, press Home, 5 times. Never black, never a blurry photo, the apps bar there at once. Give the `logcat -s UrTVHome` lines for one return. Then `adb shell am send-trim-memory sa.urtv.home COMPLETE`, open an app, Home: a photo at once?
+2. **Cold start**: `am force-stop sa.urtv.home`, press Home: the home comes up whole, no black blocks.
+3. **Favourites row**: count the tiles; standby and back; then restart the TV; within 60 s the same tiles, nothing opened by you.
+4. **Matches page**: opens; no match listed twice; «مباريات اليوم وبكرة» shows (or a loading line); «الدوريات كاملة» opens the chooser and Back returns; a match sheet opens.
+5. **Radio**: the Saudi Quran radio plays 3 minutes; «إذاعة القرآن الكريم - مصر» is second and plays 2 minutes (state, not ear); the station the owner had saved is still the same one.
+6. **Nothing broke**: the hub's four windows open; one game starts («خلية الحروف»: after «اكشف الجواب» there are three buttons, the two teams and «ما أحد», if the build has it); our settings open; the control panel opens; the screensaver starts and shows its cards; adhan state unchanged (`optimize/music.sh adhan`), nothing sounds.
+7. **New defaults**: the colour wash behind the focused app is OFF now (the lower screen no longer takes the app's colour); «المظهر» has «توهّج لون التطبيق» with three states.
+8. Tray jank in 40 keys (still about 0.5 %?).
+**Verdict line: SAFE TO RELEASE / NOT SAFE, and why.** Leave the TV on this build and channel next.
