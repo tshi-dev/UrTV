@@ -33,7 +33,13 @@ final class Dock {
 
     static void setBackSaver(Context c, boolean on) { prefs(c).edit().putBoolean("back_saver", on).apply(); }
 
-    /** «أزرار الريموت»: the app the owner gave a remote key (KeyApps.KEYS), empty = the key's own app (`dock.sh key`). */
+    /** This TV's remote, as RemoteButtons knows it (by maker, brand, model and Android version; read once). */
+    static int remoteTv() {
+        return RemoteButtons.tv(android.os.Build.MANUFACTURER, android.os.Build.BRAND, android.os.Build.MODEL, android.os.Build.DEVICE,
+                android.os.Build.VERSION.SDK_INT);
+    }
+
+    /** «أزرار الريموت»: the app the owner gave one of this remote's buttons (RemoteButtons ids), empty = what it did before (`dock.sh key`). */
     static String keyApp(Context c, String key) { return prefs(c).getString("key_app_" + key, ""); }
 
     static void setKeyApp(Context c, String key, String pkg) { prefs(c).edit().putString("key_app_" + key, pkg == null ? "" : pkg).apply(); }
@@ -60,7 +66,7 @@ final class Dock {
             int eq = part.indexOf('=');
             if (eq < 0) continue;
             String k = part.substring(0, eq), v = part.substring(eq + 1);
-            if (KeyApps.isKey(k) && KeyApps.validChoice(v)) e.putString("key_app_" + k, v);
+            if (RemoteButtons.byId(remoteTv(), k) != null && KeyApps.validChoice(v)) e.putString("key_app_" + k, v);
         }
         e.apply();
     }
@@ -68,7 +74,7 @@ final class Dock {
     /** every key's choice, for RemoteKeys */
     static Map<String, String> keyApps(Context c) {
         Map<String, String> m = new LinkedHashMap<>();
-        for (String k : KeyApps.KEYS) m.put(k, keyApp(c, k));
+        for (RemoteButtons.Button b : RemoteButtons.buttons(remoteTv())) m.put(b.id, keyApp(c, b.id));
         return m;
     }
     /**

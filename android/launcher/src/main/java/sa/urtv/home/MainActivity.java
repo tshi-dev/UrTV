@@ -3992,6 +3992,16 @@ public class MainActivity extends Activity {
         if (RemoteKeys.opensApp(e.getKeyCode())) remoteKeys.choices(Dock.keyApps(this));   // «أزرار الريموت»: the owner's app for this key
         RemoteKeys.Decision key = remoteKeys.decide(e.getKeyCode(), e.getScanCode(), e.getAction(), e.getRepeatCount(), e.getEventTime() - e.getDownTime(),
                 RemoteKeys.opensApp(e.getKeyCode()) ? remoteInstalled() : Collections.<String>emptySet());
+        if (key.kind == RemoteKeys.PASS) {   // «أزرار الريموت»: another button of this remote the owner gave an app (Sony, Hisense, onn…)
+            String id = TypeService.buttonOf(e);
+            int k = homeButtons.decide(id, e.getKeyCode(), e.getAction(), e.getRepeatCount(), e.getEventTime(), false,
+                    id == null ? null : Dock.keyApp(this, id), Dock.remoteTv() == RemoteButtons.XIAOMI ? RemoteButtons.XIAOMI_BURST_MS : 0);
+            if (k == KeyApps.OPEN) {
+                final String pkg = homeButtons.pkg;
+                guarded(ParentalPolicy.REMOTE_APP, pkg, labelOf(pkg), () -> openPackage(pkg));
+            }
+            if (k != KeyApps.PASS) return true;
+        }
         if (key.kind == RemoteKeys.PASS && e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0 && RemoteKeys.unmapped(e.getKeyCode()))
             android.util.Log.i("UrTVKeys", "unmapped key=" + e.getKeyCode() + " scan=" + e.getScanCode());   // codes only: for the next report (RemoteKeys.unmapped)
         if (key.kind != RemoteKeys.PASS) {
@@ -4077,6 +4087,7 @@ public class MainActivity extends Activity {
     }
 
     private final RemoteKeys remoteKeys = new RemoteKeys();
+    private final KeyApps.Outside homeButtons = new KeyApps.Outside();
 
     /** The apps a shortcut key opens that are installed, and that kids mode shows (one it hides counts as not there: the key then does nothing). */
     private Set<String> remoteInstalled() {

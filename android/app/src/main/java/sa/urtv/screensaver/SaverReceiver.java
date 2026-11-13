@@ -263,6 +263,15 @@ public class SaverReceiver extends BroadcastReceiver {
             return "error: greeting is one of on off";
         String matchApp = i.getStringExtra("matchapp");   // 4.3 «تطبيق المباريات»: auto, none or an app's package
         if (matchApp != null && !Prefs.matchAppOk(matchApp)) return "error: matchapp is auto, none or an app's package name";
+        String keyApp = i.getStringExtra("keyapp");   // «أزرار الريموت»: BUTTON=PKG or BUTTON=default (this remote's buttons: RemoteButtons)
+        String keyAppKey = null, keyAppPkg = null;
+        if (keyApp != null) {
+            int eq = keyApp.indexOf('=');
+            keyAppKey = eq < 0 ? keyApp : keyApp.substring(0, eq);
+            keyAppPkg = eq < 0 ? "" : keyApp.substring(eq + 1);
+            if ("default".equals(keyAppPkg)) keyAppPkg = "";
+            if (!Prefs.remoteKeyOk(keyAppKey) || !Prefs.keyAppOk(keyAppPkg)) return "error: keyapp is BUTTON=PKG or BUTTON=default, BUTTON one of this remote's (optimize/dock.sh key)";
+        }
         String pillsHidden = i.getStringExtra("pillshidden");   // the home's quick buttons to hide: markets, matches, center (comma list), or none
         if (pillsHidden != null && !"none".equals(pillsHidden)) {
             for (String k : pillsHidden.split(",")) if (!java.util.Arrays.asList(Prefs.QUICK_BUTTONS).contains(k)) return "error: pillshidden is none or a list of " + android.text.TextUtils.join(" ", Prefs.QUICK_BUTTONS);
@@ -436,6 +445,7 @@ public class SaverReceiver extends BroadcastReceiver {
         if (listenPill != null) p.setListenPill("on".equals(listenPill));
         if (pillsHidden != null) p.setPillsHidden(pillsHidden);
         if (matchApp != null) p.setMatchApp(matchApp);
+        if (keyAppKey != null) p.setKeyApp(keyAppKey, keyAppPkg);
         if (homePhotos != null) p.setHomePhotosSame("same".equals(homePhotos));
         if (homePacks != null) p.setHomePacksOn("none".equals(homePacks) ? new java.util.LinkedHashSet<String>() : PhotoPacks.parseOn(homePacks));
         if (homeOurs != null) p.setHomeOursOn("on".equals(homeOurs));

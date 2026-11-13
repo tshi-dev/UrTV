@@ -21,7 +21,7 @@
 #   optimize/dock.sh familydns on|off|status|grant   «حماية العائلة (DNS)»: Private DNS to AdGuard Family, checked and undone by optimize/familydns.sh
 #   optimize/dock.sh cast on|off|status    «البث من الجوال» on a Chromecast with Google TV: casting and the Google Home remote kept (on, the default) or our home first (off); optimize/cast.sh
 #   optimize/dock.sh key                   «أزرار الريموت»: which app the remote's YouTube, Netflix and Prime Video keys open
-#   optimize/dock.sh key youtube PKG       give a key another app (netflix, prime too); `default` = its own app again. Over other apps only with type-setup
+#   optimize/dock.sh key BUTTON PKG        give one of this remote's buttons (the ids `key` lists: youtube, netflix…) another app; `default` = as before. Over other apps only with type-setup
 #   optimize/dock.sh sleep-setup           turn on the sleep service (an accessibility service, once) so the end turns the screen off
 #   optimize/dock.sh type-setup            turn on the remote-and-typing service (a second accessibility service, once) so the phone remote can press keys and type in other apps
 #   optimize/dock.sh pin set 1234         «الرقابة الأبوية»: the master PIN (4 digits), set or changed from here without the old one; never printed back
@@ -76,7 +76,7 @@ case "${1:-}:$#" in
     send SET_DOCK "--es apps $(IFS=,; echo "$*")" ;;
   key:1) send KEY_APP ;;
   key:3)
-    case "$2" in youtube|netflix|prime) ;; *) echo "usage: optimize/dock.sh key [youtube|netflix|prime PKG|default]"; exit 1 ;; esac
+    [[ "$2" =~ ^[a-z]+$ ]] || { echo "usage: optimize/dock.sh key [BUTTON PKG|default] (BUTTON from optimize/dock.sh key)"; exit 1; }
     [[ "$3" == default || "$3" =~ ^[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+$ ]] || { echo "usage: optimize/dock.sh key $2 PKG|default (PKG from optimize/dock.sh apps)"; exit 1; }
     send KEY_APP "--es key $2 --es app $3" || exit 1
     "$PY" -I optimize/tv.py "am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET --es keyapp $2=$3" > /dev/null 2>&1 || true ;;   # the TV's row says the same

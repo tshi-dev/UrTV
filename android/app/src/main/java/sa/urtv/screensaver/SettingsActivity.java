@@ -432,8 +432,11 @@ public class SettingsActivity extends Activity {
         row("الرجوع يفتح شاشة التوقف", prefs.backSaver() ? "مفعّل" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setBackSaver(!prefs.backSaver()); render(); } });
         // «أزرار الريموت»: which app the remote's YouTube, Netflix and Prime Video keys open (the home follows it: Dock.followKeyApps)
-        for (final String[] k : REMOTE_KEY_ROWS)
-            row(k[1], keyAppLabel(k[0], k[2]), R.drawable.ic_play, new Runnable() { public void run() { pickKeyApp(k[0], k[1], k[2]); } });
+        // only the buttons this TV's remote was read to send (RemoteButtons): a brand nobody has read gets no row
+        for (final RemoteButtons.Button k : RemoteButtons.buttons(Prefs.remoteTv())) {
+            final String title = k.title + " في الريموت";
+            row(title, keyAppLabel(k.id), R.drawable.ic_play, new Runnable() { public void run() { pickKeyApp(k.id, title); } });
+        }
         // «الخروج من تلفزيونك»: only where the TV keeps its own home (ours opened from its tile); one Back as always, a long Back or three
         row("الخروج من تلفزيونك", HomeExit.label(prefs.homeExit()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickHomeExit(); } });
@@ -2118,22 +2121,17 @@ public class SettingsActivity extends Activity {
         catch (Exception e) { return v; }
     }
 
-    /** key, row title, the key's own app's name */
-    private static final String[][] REMOTE_KEY_ROWS = {
-        {"youtube", "زر يوتيوب في الريموت", "يوتيوب"}, {"netflix", "زر نتفليكس في الريموت", "نتفليكس"}, {"prime", "زر Prime Video في الريموت", "Prime Video"},
-    };
-
-    private String keyAppLabel(String key, String own) {
+    private String keyAppLabel(String key) {
         String v = prefs.keyApp(key);
-        if (v.isEmpty()) return "الافتراضي (" + own + ")";
+        if (v.isEmpty()) return "الافتراضي";
         try { return getPackageManager().getApplicationLabel(getPackageManager().getApplicationInfo(v, 0)) + "  •  داخل التطبيقات يحتاج «التحكم والكتابة من الجوال»"; }
         catch (Exception e) { return v; }
     }
 
     /** «أزرار الريموت»: the key's own app, or one of the TV's apps (the same list as «تطبيق المباريات») */
-    private void pickKeyApp(final String key, String title, String own) {
+    private void pickKeyApp(final String key, String title) {
         final java.util.List<String> values = new java.util.ArrayList<>(java.util.Collections.singletonList(""));
-        final java.util.List<String> labels = new java.util.ArrayList<>(java.util.Collections.singletonList("الافتراضي (" + own + ")"));
+        final java.util.List<String> labels = new java.util.ArrayList<>(java.util.Collections.singletonList("الافتراضي"));
         android.content.pm.PackageManager pm = getPackageManager();
         java.util.TreeMap<String, String> apps = new java.util.TreeMap<>();
         for (String cat : new String[] {android.content.Intent.CATEGORY_LEANBACK_LAUNCHER, android.content.Intent.CATEGORY_LAUNCHER}) {

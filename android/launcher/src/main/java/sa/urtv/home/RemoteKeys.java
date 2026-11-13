@@ -82,10 +82,10 @@ final class RemoteKeys {
     private int heldCode, heldScan;
     /** the Settings key is held and has not acted yet: its release, or a repeat {@link #LONG_MS} late, decides */
     private boolean settingsPending;
-    /** «أزرار الريموت»: the owner's app for each app key (KeyApps.KEYS → package, empty = the key's own app); null = none chosen */
+    /** «أزرار الريموت»: the owner's app for each app key (RemoteButtons ids → package, empty = the key's own app); null = none chosen */
     private java.util.Map<String, String> choices;
 
-    /** The owner's choices, read by the caller before each app key (KeyApps.target). */
+    /** The owner's choices, read by the caller before each app key (Dock.keyApps). */
     void choices(java.util.Map<String, String> c) { choices = c; }
 
     /** heldMs: how long the key has been down (the event's time minus its down time); only the Settings key reads it */
@@ -161,7 +161,7 @@ final class RemoteKeys {
         return PASS_IT;
     }
 
-    /** the owner's app for this key (KeyApps.KEYS' names; checked by KeyApps.validChoice before it is saved), else the key's own */
+    /** the owner's app for this key (RemoteButtons ids; checked by KeyApps.validChoice before it is saved), else the key's own */
     private static String chosen(java.util.Map<String, String> choices, String key, String own) {
         String c = choices == null ? null : choices.get(key);
         return c != null && !c.isEmpty() ? c : own;

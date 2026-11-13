@@ -1,83 +1,52 @@
 package sa.urtv.home;
 
 /**
- * «أزرار الريموت»: which app the remote's YouTube, Netflix and Prime Video keys open, chosen by the owner (`optimize/dock.sh key`). An
- * empty choice is the default: the key's own app, as before. On our home RemoteKeys asks {@link #target}; outside it (another app, HDMI)
- * TypeService's key filter asks {@link Outside#decide}, and only for a key the owner has given another app: a key left on its default
- * passes untouched there, so the TV behaves as it did before anyone chose. The idea follows Free My TV's «Remote Buttons» (MIT).
+ * «أزرار الريموت»: the app the owner gave one of this TV's remote buttons (RemoteButtons: which buttons, and which button a key is). An
+ * empty choice is the default: the button does what it did before. On our home RemoteKeys still opens YouTube, Netflix and Prime Video
+ * by default and asks the choice first; any other button with a choice opens it there too. Outside our home TypeService's key filter
+ * asks {@link Outside#decide}, and only for a button the owner changed: a button left on default passes untouched, as before anyone
+ * chose. The idea and the brands' codes are Free My TV's «Remote Buttons» (MIT, see RemoteButtons).
  *
- * No Android in here (KeyEvent's numbers are written out): tests/KeyAppsRun.java runs it.
+ * No Android in here: tests/KeyAppsRun.java runs it.
  */
 final class KeyApps {
-    static final String YOUTUBE = "youtube", NETFLIX = "netflix", PRIME = "prime";
-    /** the keys an owner can give another app, in the order `dock.sh key` lists them */
-    static final String[] KEYS = {YOUTUBE, NETFLIX, PRIME};
-
-    // android.view.KeyEvent's values, and the vendor keys RemoteKeys knows (kept in step with it)
+    // android.view.KeyEvent's values
     static final int ACTION_DOWN = 0, ACTION_UP = 1;
-    private static final int KEYCODE_BUTTON_3 = 190, KEYCODE_BUTTON_4 = 191;
-    private static final int TCL_NETFLIX = 4062, TCL_YOUTUBE = 4065, TCL_PRIME = 4099;
 
     private KeyApps() {}
 
-    /** The key's name, or null for any other key (the filter passes those at once, before anything is read). */
-    static String keyOf(int keyCode) {
-        switch (keyCode) {
-            case KEYCODE_BUTTON_3:
-            case TCL_YOUTUBE: return YOUTUBE;
-            case KEYCODE_BUTTON_4:
-            case TCL_NETFLIX: return NETFLIX;
-            case TCL_PRIME: return PRIME;
-            default: return null;
-        }
-    }
-
-    static boolean isKey(String name) {
-        for (String k : KEYS) if (k.equals(name)) return true;
-        return false;
-    }
-
-    /** The app a key opens when nothing was chosen. */
-    static String defaultPackage(String key) {
-        if (YOUTUBE.equals(key)) return RemoteKeys.YOUTUBE;
-        if (NETFLIX.equals(key)) return RemoteKeys.NETFLIX;
-        if (PRIME.equals(key)) return RemoteKeys.PRIME;
-        return null;
-    }
-
     /** A package name as Android writes them (two or more parts), or empty (the default). Anything else is refused before it is saved. */
     static boolean validChoice(String s) {
-        return s != null && (s.isEmpty() || s.matches("[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z0-9_]+)+") && s.length() <= 200);
+        return s != null && (s.isEmpty() || s.length() <= 200 && s.matches("[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z0-9_]+)+"));
     }
 
-    /** The app the key opens: the owner's choice, else the key's own app. */
-    static String target(String key, String choice) {
-        return choice != null && !choice.isEmpty() && validChoice(choice) ? choice : defaultPackage(key);
-    }
-
-    /** The owner gave this key another app (only then does the filter outside our home act on it). */
+    /** The owner gave this button another app. */
     static boolean chosen(String choice) {
         return choice != null && !choice.isEmpty() && validChoice(choice);
     }
 
-    /** the key goes on as it would have */
+    /** the button goes on as it would have */
     static final int PASS = 0;
-    /** the repeats and the release of a press that acted */
+    /** the repeats and the release of a press that acted, and the rest of a Xiaomi burst */
     static final int EAT = 1;
     /** open {@link #pkg} */
     static final int OPEN = 2;
 
-    /** Outside our home: a press of a chosen key opens its app; its repeats and release are consumed, so the app in front never gets half a key. */
+    /** A chosen button's press opens its app; its repeats and release are consumed, so the app in front never gets half a key. */
     static final class Outside {
         private boolean holding;
         private int heldCode;
+        private String lastId;
+        private long lastDown = Long.MIN_VALUE / 2;
         /** the package the last OPEN asked for */
         String pkg;
 
-        /** choice: the owner's choice for this key (from keyOf), read by the caller only for one of these keys */
-        int decide(int keyCode, int action, int repeat, boolean homeFront, String choice) {
-            String key = keyOf(keyCode);
-            if (key == null) return PASS;
+        /**
+         * id: the button (RemoteButtons.idOf), null for any other key; choice: the owner's app for it; burstMs: Xiaomi's burst window
+         * (0 elsewhere), eventTime in ms.
+         */
+        int decide(String id, int keyCode, int action, int repeat, long eventTime, boolean homeFront, String choice, long burstMs) {
+            if (id == null) return PASS;
             if (holding && keyCode == heldCode) {
                 if (action == ACTION_DOWN && repeat == 0) holding = false;   // a new press: the release went to the app that opened
                 else {
@@ -85,10 +54,14 @@ final class KeyApps {
                     return EAT;
                 }
             }
-            if (homeFront || !chosen(choice)) return PASS;   // our home answers it itself (RemoteKeys); a default key is the TV's, as before
+            if (homeFront || !chosen(choice)) return PASS;   // our home answers it itself (RemoteKeys); a default button is the TV's, as before
             if (action != ACTION_DOWN || repeat > 0) return PASS;
             holding = true;
             heldCode = keyCode;
+            boolean burst = burstMs > 0 && id.equals(lastId) && eventTime - lastDown < burstMs;
+            lastId = id;
+            lastDown = eventTime;
+            if (burst) return EAT;
             pkg = choice;
             return OPEN;
         }

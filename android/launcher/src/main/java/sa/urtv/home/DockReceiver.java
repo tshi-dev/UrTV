@@ -127,16 +127,18 @@ public class DockReceiver extends BroadcastReceiver {
             case "sa.urtv.home.KEY_APP": {   // «أزرار الريموت»: --es key youtube|netflix|prime --es app PKG|default; none = how they stand
                 String k = i.getStringExtra("key"), a = i.getStringExtra("app");
                 if (k != null || a != null) {
-                    if (!KeyApps.isKey(k)) { setResultData("error: add --es key youtube|netflix|prime"); return; }
+                    if (RemoteButtons.byId(Dock.remoteTv(), k) == null) { setResultData("error: this TV's remote has no " + k + " button we know (optimize/dock.sh key lists them)"); return; }
                     String pkg = a == null || a.equals("default") ? "" : a;
                     if (!KeyApps.validChoice(pkg)) { setResultData("error: --es app is a package name or default"); return; }
                     if (!pkg.isEmpty() && !Dock.installed(c, pkg)) { setResultData("error: " + pkg + " is not installed"); return; }
                     Dock.setKeyApp(c, k, pkg);
                 }
-                StringBuilder b = new StringBuilder("key-apps: ");
-                for (String key : KeyApps.KEYS) {
-                    String v = Dock.keyApp(c, key);
-                    b.append(key).append('=').append(v.isEmpty() ? "default (" + KeyApps.defaultPackage(key) + ")" : v).append(key.equals(KeyApps.PRIME) ? "" : ", ");
+                StringBuilder b = new StringBuilder("key-apps:");
+                java.util.List<RemoteButtons.Button> all = RemoteButtons.buttons(Dock.remoteTv());
+                if (all.isEmpty()) b.append(" none (no app buttons are known for this TV's remote)");
+                for (RemoteButtons.Button x : all) {
+                    String v = Dock.keyApp(c, x.id);
+                    b.append(' ').append(x.id).append('=').append(v.isEmpty() ? "default" : v).append(x == all.get(all.size() - 1) ? "" : ",");
                 }
                 setResultData(b.toString());
                 return;

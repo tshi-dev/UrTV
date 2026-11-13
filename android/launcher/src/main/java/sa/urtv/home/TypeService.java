@@ -46,15 +46,30 @@ public class TypeService extends AccessibilityService {
     // ---------------------------------------------------------------- «أزرار الريموت» outside our home (KeyApps)
 
     private final KeyApps.Outside keyApps = new KeyApps.Outside();
+    private static final int REMOTE_TV = Dock.remoteTv();
+
+    /** Which of this remote's app buttons the key is (RemoteButtons.idOf), or null; the device is read only where the remote is checked. */
+    static String buttonOf(KeyEvent e) {
+        int src = e.getSource();
+        boolean pad = (src & android.view.InputDevice.SOURCE_GAMEPAD) == android.view.InputDevice.SOURCE_GAMEPAD
+                || (src & android.view.InputDevice.SOURCE_JOYSTICK) == android.view.InputDevice.SOURCE_JOYSTICK;
+        int vendor = -1, product = -1;
+        if (REMOTE_TV == RemoteButtons.ONN || REMOTE_TV == RemoteButtons.SABRINA) {
+            android.view.InputDevice d = android.view.InputDevice.getDevice(e.getDeviceId());
+            if (d != null) { vendor = d.getVendorId(); product = d.getProductId(); }
+        }
+        return RemoteButtons.idOf(REMOTE_TV, e.getKeyCode(), e.getScanCode(), pad, vendor, product);
+    }
 
     /**
      * The remote's YouTube, Netflix and Prime Video keys outside our home: true when the owner gave this key another app and the key is
      * answered here (its press opens that app, after the key is answered; its repeats and release are consumed). False: as before.
      */
     private boolean appKey(KeyEvent e) {
-        String key = KeyApps.keyOf(e.getKeyCode());
-        if (key == null) return false;
-        int k = keyApps.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), homeFront, Dock.keyApp(this, key));
+        String id = buttonOf(e);
+        if (id == null || !RemoteButtons.filterSafe(REMOTE_TV, Build.VERSION.SDK_INT)) return false;
+        int k = keyApps.decide(id, e.getKeyCode(), e.getAction(), e.getRepeatCount(), e.getEventTime(), homeFront, Dock.keyApp(this, id),
+                REMOTE_TV == RemoteButtons.XIAOMI ? RemoteButtons.XIAOMI_BURST_MS : 0);
         if (k == KeyApps.OPEN) {
             final String pkg = keyApps.pkg;
             main.post(() -> openKeyApp(pkg));
