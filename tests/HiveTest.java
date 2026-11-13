@@ -34,6 +34,8 @@ public final class HiveTest {
     }
     static HiveGame game(HiveBank b, HiveGame.Settings s, long seed) { return game(b, s, seed, ""); }
     static int cellOf(HiveGame g, char letter) { for (int i = 0; i < HiveBoard.CELLS; i++) if (g.board.letter[i] == letter && g.board.owner[i] == 0) return i; return -1; }
+    /** pick, reveal, the older judge(true): the hexagon goes to the team that was in turn */
+    static boolean yesNoOwner(HiveGame g, int cell) { int t = g.turn(); return right(g, cell) && g.board.owner[cell] == t && g.phase() == HiveGame.Phase.PICK; }
     static boolean right(HiveGame g, int cell) { return g.pick(cell) && g.reveal() && g.judge(true); }
 
     public static void main(String[] a) throws Exception {
@@ -162,6 +164,17 @@ check("board: 25 cells, every neighbour link goes both ways, 56 links in all (5 
         c = cellOf(g, 'ز'); g.pick(c); now[0] += 20000; g.tick(); now[0] += 20000; g.tick();
         check("steal: when the stealing team's time is up too it waits for OK, it does not bounce back", g.phase() == HiveGame.Phase.STEAL && g.timeUp() && g.answering() == HiveBoard.TEAM_SIDES && g.reveal() && g.judge(false)
             && g.board.owner[c] == 0 && g.turn() == HiveBoard.TEAM_SIDES);
+
+        // who answered (the host picks a team or nobody after the answer is shown)
+        s = new HiveGame.Settings();
+        g = game(small, s, 7, "جد"); c = cellOf(g, 'ج'); g.pick(c); now[0] += 15000; g.tick(); g.reveal();
+        check("who answered: after the time ran out, the other team's answer gives it the hexagon and the point, not the team that picked", g.phase() == HiveGame.Phase.JUDGE && g.answering() == HiveBoard.TEAM_SIDES
+            && !g.judge(3) && !g.judge(-1) && g.phase() == HiveGame.Phase.JUDGE && g.judge(HiveBoard.TEAM_TOP) && g.board.owner[c] == HiveBoard.TEAM_TOP);
+        c = cellOf(g, 'د'); g.pick(c); g.reveal();
+        check("who answered: «ما أحد» leaves the hexagon free for both teams", g.judge(0) && g.board.owner[c] == HiveBoard.FREE && g.phase() == HiveGame.Phase.PICK && g.turn() != 0);
+        g = game(small, s, 7, "جد"); c = cellOf(g, 'ج'); g.pick(c); g.reveal();
+        check("who answered: the team that picked can be chosen too, and the older yes or no still means the team that was answering", g.judge(HiveBoard.TEAM_SIDES) && g.board.owner[c] == HiveBoard.TEAM_SIDES
+            && yesNoOwner(g, cellOf(g, 'د')));
 
         // levels, kids, challenge, English
         s = new HiveGame.Settings(); s.level = HiveGame.LEVEL_MEDIUM;

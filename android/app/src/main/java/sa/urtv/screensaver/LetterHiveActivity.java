@@ -101,18 +101,19 @@ public class LetterHiveActivity extends GameActivity {
                 break;
             case ASK:
                 if (back) { openPause(); return; }
-                int n = game.phase() == HiveGame.Phase.JUDGE ? 2 : game.canShowOptions() ? 2 : 1;
+                int n = game.phase() == HiveGame.Phase.JUDGE ? 3 : game.canShowOptions() ? 2 : 1;
                 int v = keyButtons(Math.min(sel, n - 1), n, ok, dx);
                 if (v >= 0) { sel = v; redraw(); return; }
                 int chosen = -1 - v;
                 if (game.phase() == HiveGame.Phase.JUDGE) {
-                    game.judge(chosen == 0);
-                    play(chosen == 0 ? QuizSound.CHIME : QuizSound.LOW);
+                    int who = chosen == 2 ? 0 : chosen == 0 ? HiveBoard.TEAM_SIDES : HiveBoard.TEAM_TOP;   // the buttons: team 1, team 2, nobody
+                    game.judge(who);
+                    play(who != 0 ? QuizSound.CHIME : QuizSound.LOW);
                     if (game.phase() == HiveGame.Phase.WON) { leaveGame(); screen = Screen.WON; sel = 0; play(QuizSound.FANFARE); }
-                    else { screen = Screen.BOARD; if (chosen == 0) focus = nearestFree(focus); }
+                    else { screen = Screen.BOARD; if (who != 0) focus = nearestFree(focus); }
                 } else if (chosen == 1) game.showOptions();
                 else game.reveal();
-                sel = 0;
+                sel = game.phase() == HiveGame.Phase.JUDGE ? game.answering() - 1 : 0;   // «من جاوب؟» starts on the team that was answering
                 redraw();
                 break;
             default:
@@ -190,7 +191,7 @@ public class LetterHiveActivity extends GameActivity {
         drawn = ph; drawnUp = game.timeUp();
         boolean judge = ph == HiveGame.Phase.JUDGE;
         String who = names[game.answering() - 1], letter = String.valueOf(q.letter);
-        String meta = game.timeUp() && !judge ? S.t("انتهى الوقت") : ph == HiveGame.Phase.STEAL ? S.t("حرف %s، فرصة %s", letter, who) : S.t("حرف %s، دور %s", letter, who);
+        String meta = judge ? S.t("حرف %s، من جاوب؟", letter) : game.timeUp() ? S.t("انتهى الوقت") : ph == HiveGame.Phase.STEAL ? S.t("حرف %s، فرصة %s", letter, who) : S.t("حرف %s، دور %s", letter, who);
         String words = q.kind == HiveGame.Kind.BANK ? digits(q.item.q[en ? 1 : 0])
             : q.kind == HiveGame.Kind.CATEGORY ? S.t("اذكر دولة أو مدينة أو حيوانًا يبدأ بحرف %s", letter) : S.t("اذكر اسمًا يبدأ بحرف %s", letter);
         question(meta, words, 480);
@@ -210,7 +211,7 @@ public class LetterHiveActivity extends GameActivity {
                 root.addView(ex, at(1728, 140, 96, 656));
             }
         }
-        String[] labels = judge ? new String[] {S.t("صح"), S.t("خطأ")} : game.canShowOptions() ? new String[] {S.t("اكشف الجواب"), S.t("خيارات")} : new String[] {S.t("اكشف الجواب")};
+        String[] labels = judge ? new String[] {clip(names[0], 44, 440), clip(names[1], 44, 440), S.t("ما أحد")} : game.canShowOptions() ? new String[] {S.t("اكشف الجواب"), S.t("خيارات")} : new String[] {S.t("اكشف الجواب")};
         buttons(labels, Math.min(sel, labels.length - 1), 520, 848);
         hints("◀ ▶", S.t("الاختيار"), S.t("اختيار"), S.t("تأكيد"), S.t("رجوع"), S.t("توقف"));
     }

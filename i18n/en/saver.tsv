@@ -806,6 +806,8 @@
 الحكم لكم: أي جواب صحيح يُحسب	You are the judge: any correct answer counts
 أمثلة: %s	Examples: %s
 اكشف الجواب	Show the answer
+حرف %s، من جاوب؟	Letter %s, who answered?
+ما أحد	Nobody
 خيارات	Options
 المحاولات	Tries
 الكلمة خمسة حروف	The word has five letters
