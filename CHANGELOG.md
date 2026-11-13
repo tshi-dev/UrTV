@@ -7,10 +7,16 @@ Newest first. `next` is where changes land first; a release is what was tested t
 **بالعربي، باختصار:**
 - **إقران التلفزيون برمز من صفحة الجوال (تجريبي):** من إعداد التلفزيون تبدأ الإقران (برقم العائلة السري)، وفي إعدادات التلفزيون تشغّل «تصحيح الأخطاء اللاسلكي» وتفتح «إقران الجهاز برمز»، وتكتب الرموز الستة في صفحة الجوال. بعدها التلفزيون يتصل وحده بدون كابل.
 - **تطبيقات مقترحة:** أيقونة UrTV Player الحقيقية على بطاقته، وأُزيل مشغّل IPTV منها.
+- **الإذاعة ما تستسلم:** إذا انقطعت المحطة أو تقطّع البث، نحاول نرجّعها وحدنا (بعد ثانيتين، ثم ٥ و١٠ و٢٠ ثانية، وبعدها كل نصف دقيقة) ونكتب لك السبب بكلام واضح: ما في إنترنت، أو المحطة ما تردّ، أو صيغة البث ما يدعمها التلفزيون. وإذا للمحطة مصدر ثانٍ نبدّل بينهم.
+- **التطبيقات المعطّلة:** صف جديد في الإعدادات (الشاشة الرئيسية) يعرض التطبيقات المعطّلة في تلفزيونك، سواء عطّلتها أنت أو UrTV أو الشركة، وتختار منها اللي تبي تشغّله من جديد (بالرقم السري للعائلة)، وبعدها يعرض لك نتيجة كل تطبيق. ما يعطّل شيء أبدًا.
+- **Open Shelf في تطبيقات مقترحة:** متجر لتطبيقات التلفزيون المفتوحة المصدر. تطبيق من طرف ثالث ما جرّبناه بأنفسنا، والتطبيقات اللي يثبّتها على مسؤوليتك.
 
 **In English, in short:**
 - **Pair the TV with a code from the phone page (experimental):** start the pairing in the TV's setup (behind the family PIN), turn on Wireless debugging and open "Pair device with pairing code" in the TV's settings, then type the six digits in the phone page. After that the TV connects by itself, without a cable.
 - **Suggested apps:** UrTV Player's real icon on its tile; the IPTV player is gone from the list.
+- **The radio keeps trying:** when a station drops or cuts, we bring it back by ourselves (after 2 seconds, then 5, 10 and 20, then every half minute) and say why in plain words: no internet, the station is not answering, or the TV does not support the stream's format. A station with a second source swaps between the two.
+- **Disabled apps:** a new row in the settings (Home screen) lists the apps turned off on your TV, by you, UrTV or the maker, and lets you pick the ones to turn back on (behind the family PIN); it then shows each app's result. It never turns anything off.
+- **Open Shelf in suggested apps:** a store of open-source TV apps. A third-party app we have not vetted ourselves; the apps it installs are at your own risk.
 
 ## 4.3
 
