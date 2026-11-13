@@ -1,4 +1,13 @@
-«⏸ STOP — owner paused everything until Monday 2026-11-16. Finish nothing new; push any pending report, put the TV back (muted, asleep) and stay idle.»
+«✅ GO — ONLY step 74 now (owner's request; everything else stays paused until Monday). Push the video as soon as it is done.»
+
+## step 74 — a short how-to video: from the home to «رجّع واجهة المصنع» and «تراجع»
+For a user who wants his old TV home back. TV muted. Record with `adb shell screenrecord --size 1920x1080 --bit-rate 6000000 /sdcard/undo.mp4` (max 180 s; two clips is fine), slow and clear, about 1.5 s per key press so a viewer can follow:
+1. Start on UrTV's home. Press the remote's Settings key (or the home's settings button), the way a user would.
+2. Open UrTV's settings and scroll DOWN, slowly, to the header «الشاشة الرئيسية (تلفزيونك)». Stop 3 s on the rows «رجّع واجهة المصنع» (or «تخلّص من واجهة المصنع» if that is what shows) and «إعداد تلفزيوني».
+3. Open «رجّع واجهة المصنع» and show its first confirmation for 3 s, then press Back. DO NOT confirm: it must not change this TV.
+4. Open «إعداد تلفزيوني», move to «تراجع» and stay 3 s on it, then Back. DO NOT press it.
+5. Back to the home.
+Pull the file(s), name them undo-1.mp4 (and undo-2.mp4), push to work/marketing under marketing/howto/, and write in REPORT.md: the exact remote path you used (each key), the row names as they appear, and what each confirmation says. Then the TV muted and asleep, and stay paused.
 
 «✅ GO — step 73 NOW (the 30-minute release check of 4.3.1, the apk-next build made from next b289ec32 (the newest apk-next build; any build older than this push is wrong). Final candidate: everything incl. control-center layout switch, فرقي, favourites up to 10, the hub, the 3 game fixes), then step 71's remaining items, then 72 and 68» — the owner is waiting on step 73 to release 4.3.1 tonight. TV muted. Do it yourself, pairing codes included; never the family PIN. Push the report as soon as step 73 is done, before anything else.
 
