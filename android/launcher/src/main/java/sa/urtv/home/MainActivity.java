@@ -3197,7 +3197,8 @@ public class MainActivity extends Activity {
         updatePrayerLine();
         applyListenPill(cfg.listenPillOn);
         applyTasksPill(cfg.tasksPillOn());
-        Dock.followBackSaver(this, cfg.backSaver());   // «الرجوع يفتح شاشة التوقف» changed in the screensaver's settings: read at the next Back
+        Dock.followBackSaver(this, cfg.backSaver());
+        Dock.followKeyApps(this, cfg.keyApps);   // «أزرار الريموت» changed in the screensaver's settings: read at the next key   // «الرجوع يفتح شاشة التوقف» changed in the screensaver's settings: read at the next Back
         applyUpdateBell(cfg.updateBellOn);   // [updates bell]
         applyBarSize(cfg.favBar);   // «تطبيقات في الشريط»
         hiddenQuick.clear();

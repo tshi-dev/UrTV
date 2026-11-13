@@ -47,6 +47,24 @@ final class Dock {
         }
     }
 
+    /**
+     * The rows in the screensaver's settings (ConfigSnapshot.keyApps, "youtube=PKG,netflix=,prime="; null = no answer): when they change, the
+     * home's own choices take them. Only on a change, so `dock.sh key` (which sends both) and an older screensaver leave them as set.
+     */
+    static void followKeyApps(Context c, String tv) {
+        if (tv == null) return;
+        SharedPreferences p = prefs(c);
+        if (tv.equals(p.getString("key_apps_tv", null))) return;
+        SharedPreferences.Editor e = p.edit().putString("key_apps_tv", tv);
+        for (String part : tv.split(",")) {
+            int eq = part.indexOf('=');
+            if (eq < 0) continue;
+            String k = part.substring(0, eq), v = part.substring(eq + 1);
+            if (KeyApps.isKey(k) && KeyApps.validChoice(v)) e.putString("key_app_" + k, v);
+        }
+        e.apply();
+    }
+
     /** every key's choice, for RemoteKeys */
     static Map<String, String> keyApps(Context c) {
         Map<String, String> m = new LinkedHashMap<>();

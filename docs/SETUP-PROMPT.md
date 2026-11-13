@@ -441,6 +441,7 @@ optimize/saver.sh mkstyle <arrows or prices>      # ONLY if I asked to see the p
 optimize/saver.sh stocks <Tadawul codes and US tickers, e.g. 2222 1120 AAPL>   # ONLY with card stocks: my watchlist, up to 8 (default 2222 1120 7010 2010: leave it)
 optimize/saver.sh slot <matches, weather, fasting, countdown, markets or none>   # ONLY if I asked what the bottom-left slot shows (default matches: leave it; with no team it shows the weather by itself)
 optimize/saver.sh countdown <YYYY-MM-DD> '<name>'   # ONLY if I asked for a countdown (also: slot countdown); "countdown clear" removes it
+optimize/dock.sh key youtube <pkg>                # ONLY if I asked a remote key (youtube, netflix, prime) to open another app (default: its own app; leave it); over other apps it needs `optimize/dock.sh type-setup`
 # own photos (only if I ask, or say yes to the offer in step 7): optimize/photos.sh add FILE... | list | del N | clear | mode mix|only|album | show
 optimize/saver.sh update
 optimize/saver.sh show                            # read both back to me

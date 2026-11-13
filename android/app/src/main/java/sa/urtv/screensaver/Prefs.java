@@ -555,6 +555,22 @@ final class Prefs {
     boolean backSaver() { return sp.getBoolean("backSaver", false); }
     void setBackSaver(boolean v) { sp.edit().putBoolean("backSaver", v).apply(); }
 
+    /**
+     * «أزرار الريموت»: the app each of the remote's YouTube, Netflix and Prime Video keys opens ("" = the key's own app). The home keeps its own
+     * copy (Dock.key_app_*, the one `dock.sh key` sets) and takes this one when it changes (Dock.followKeyApps), through ConfigProvider's key_apps.
+     */
+    static final String[] REMOTE_KEYS = {"youtube", "netflix", "prime"};
+    static boolean remoteKeyOk(String key) { return java.util.Arrays.asList(REMOTE_KEYS).contains(key); }
+    static boolean keyAppOk(String pkg) { return pkg != null && (pkg.isEmpty() || pkg.length() <= 200 && pkg.matches("[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z0-9_]+)+")); }
+    String keyApp(String key) { String v = sp.getString("keyApp_" + key, ""); return keyAppOk(v) ? v : ""; }
+    void setKeyApp(String key, String pkg) { if (remoteKeyOk(key) && keyAppOk(pkg)) sp.edit().putString("keyApp_" + key, pkg).apply(); }
+    /** "youtube=PKG,netflix=,prime=": what ConfigProvider hands the home */
+    String keyApps() {
+        StringBuilder b = new StringBuilder();
+        for (String k : REMOTE_KEYS) b.append(b.length() > 0 ? "," : "").append(k).append('=').append(keyApp(k));
+        return b.toString();
+    }
+
     /** «تبديل الآية والحديث»: the verse-or-hadith card once a day (default, as always) or every 3 minutes (QuoteEvery); #versemin=3 only then. */
     String quoteEvery() { return QuoteEvery.read(sp.getString("quoteEvery", QuoteEvery.DAY)); }
     void setQuoteEvery(String v) { sp.edit().putString("quoteEvery", QuoteEvery.read(v)).apply(); }

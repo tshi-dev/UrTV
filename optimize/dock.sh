@@ -78,7 +78,8 @@ case "${1:-}:$#" in
   key:3)
     case "$2" in youtube|netflix|prime) ;; *) echo "usage: optimize/dock.sh key [youtube|netflix|prime PKG|default]"; exit 1 ;; esac
     [[ "$3" == default || "$3" =~ ^[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+$ ]] || { echo "usage: optimize/dock.sh key $2 PKG|default (PKG from optimize/dock.sh apps)"; exit 1; }
-    send KEY_APP "--es key $2 --es app $3" ;;
+    send KEY_APP "--es key $2 --es app $3" || exit 1
+    "$PY" -I optimize/tv.py "am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET --es keyapp $2=$3" > /dev/null 2>&1 || true ;;   # the TV's row says the same
   backsaver:1) send BACK_SAVER "--es mode status" ;;
   backsaver:2)
     # the home's switch, then the same on the screensaver's row (its settings show it; the home follows that row only when it changes)

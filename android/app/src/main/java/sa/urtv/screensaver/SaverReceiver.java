@@ -637,7 +637,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\ngreeting: " + (p.greeting() ? "on" : "off")
             + "\nlistenpill: " + (p.listenPill() ? "on" : "off")
             + "\nhomephotos: " + (p.homePhotosSame() ? "same" : "own") + "\nhomepacks: " + (p.homePacksOn().isEmpty() ? "none" : PhotoPacks.joinOn(p.homePacksOn())) + "\nhomeours: " + (p.homeOursOn() ? "on" : "off") + "\nhomemine: " + (p.homeMine() == null ? "same" : p.homeMine()) + "\nalbummode: " + p.albumMode() + "\nalbumdate: " + (p.albumDate() ? "on" : "off") + "\nalbumtitle: " + (p.albumTitle() ? "on" : "off") + "\nalbumfit: " + p.albumFit() + "\nalbumsize: " + p.albumSize() + "\ncleartext: " + (p.clearText() ? "on" : "off") + "\nglow: " + p.glowMode()
-            + "\npillshidden: " + (p.pillsHidden().isEmpty() ? "none" : p.pillsHidden()) + "\nmatchapp: " + p.matchApp()
+            + "\npillshidden: " + (p.pillsHidden().isEmpty() ? "none" : p.pillsHidden()) + "\nmatchapp: " + p.matchApp() + "\nkeyapps: " + p.keyApps()
             + "\nupdatebell: " + (p.updateBell() ? "on" : "off")
             + "\nwatchnext: " + (p.watchNext() ? "on" : "off")
             + "\nappearance: " + p.appearance()

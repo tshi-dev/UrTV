@@ -22,6 +22,12 @@ check("MainActivity hands RemoteKeys the choices, and counts a chosen app as ins
 check("TypeService looks only at the app keys, and opens through kids mode and the family PIN",
       "KeyApps.keyOf(e.getKeyCode())" in ts and "ParentalPolicy.visible(family, pkg)" in ts and "ParentalPolicy.targets(ParentalPolicy.REMOTE_APP, pkg)" in ts)
 check("the choice is checked and must be installed before it is saved", "KeyApps.validChoice(pkg)" in recv and "Dock.installed(c, pkg)" in recv)
+A = ROOT / "android/app/src/main/java/sa/urtv/screensaver"
+sa, sh, pv, pr = (A / "SettingsActivity.java").read_text(encoding="utf-8"), (A / "SettingsHub.java").read_text(encoding="utf-8"), (A / "ConfigProvider.java").read_text(encoding="utf-8"), (A / "Prefs.java").read_text(encoding="utf-8")
+check("on the TV: three rows in «الشاشة الرئيسية», each a list of the TV's apps with «الافتراضي» first", "pickKeyApp(k[0], k[1], k[2])" in sa and all(f'{{"{t}", HOME}}' in sh for t in ("زر يوتيوب في الريموت", "زر نتفليكس في الريموت", "زر Prime Video في الريموت")))
+check("the screensaver hands the choices to the home (key_apps), and the home takes them only when they change", '"key_apps"' in pv and "p.keyApps()" in pv and "Dock.followKeyApps(this, cfg.keyApps);" in main and 'cur.getColumnIndex("key_apps")' in (HOME / "ConfigSnapshot.java").read_text(encoding="utf-8"))
+check("the screensaver's copy is checked before it is saved, and dock.sh keeps the TV row in step", "keyAppOk(pkg)" in pr and "--es keyapp $2=$3" in (ROOT / "optimize/dock.sh").read_text(encoding="utf-8"))
+check("FEATURES.md, SETTINGS.md and the setup prompt name it", "**أزرار الريموت**" in (ROOT / "docs/FEATURES.md").read_text(encoding="utf-8") and "dock.sh key" in (ROOT / "docs/SETTINGS.md").read_text(encoding="utf-8") and "optimize/dock.sh key youtube" in (ROOT / "docs/SETUP-PROMPT.md").read_text(encoding="utf-8"))
 check("dock.sh has the key command", "send KEY_APP" in (ROOT / "optimize/dock.sh").read_text(encoding="utf-8"))
 if not shutil.which("javac"):
     print("SKIP key apps: no javac here")
