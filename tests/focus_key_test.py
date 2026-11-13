@@ -30,7 +30,7 @@ check("settings: every row is known by its FocusKey", "card.setTag(FocusKey.key(
 check("settings: a rebuild under an open dialog is finished when the window has the focus back",
       "public void onWindowFocusChanged(boolean has)" in st and "if (hasWindowFocus()) pendingFocus = null;" in st)
 check("settings: no other way to rebuild the list (recreate, a second setContentView, removeAllViews elsewhere)",
-      "recreate()" not in st and st.count("setContentView(") == 1 and st.count("list.removeAllViews()") == 1)
+      "recreate()" not in st and st.count("setContentView(") == 1 and st.count("list.removeAllViews()") == 2)   # render, and arrange (4.3.2: the same views put in their section's order)
 calls = len(re.findall(r"\brender\(\)", st))
 check(f"settings: every change goes through render ({calls} calls), so each keeps its row", calls > 30, calls)
 

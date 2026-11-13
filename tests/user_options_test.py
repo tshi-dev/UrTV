@@ -50,7 +50,7 @@ check("rows: «الآية والحديث» under «تبديل الآية وال�
       and render.index('row("الرجوع يفتح شاشة التوقف"') < render.index('row("الخروج من تلفزيونك"'))
 check("the pickers save like the agent's commands", "prefs.setVerseKind(VerseKind.fromChoice(i)); d.dismiss(); render();" in st
       and "prefs.setHomeExit(HomeExit.fromChoice(i)); d.dismiss(); render();" in st)
-check("the rows' categories", '{"الآية والحديث", SAVER}' in hub and '{"إظهار الثواني", CLOCK}' in hub and '{"الخروج من تلفزيونك", HOME}' in hub)
+check("the rows' categories", '{"الآية والحديث", SAVER}' in hub and '{"إظهار الثواني", LOOK}' in hub and '{"الخروج من تلفزيونك", HOME}' in hub)
 check("home: BackExit sees Back last, after the adhan, the shortcut keys and the edit modes, and only when it guards",
       main.index("if (adhanTakes(e)) return true;") < main.index("if (edit != null && editKey(e)) return true;")
       < main.index("if (e.getKeyCode() == KeyEvent.KEYCODE_BACK && backExitTakes(e)) return true;")

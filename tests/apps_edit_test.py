@@ -80,7 +80,7 @@ check("a step of the carried app builds again only the rows that differ", "if (s
 
 # ---- the settings
 check("Settings → «التطبيقات والمفضلة» has «ترتيب كل التطبيقات», with «تعديل التطبيقات» and «رجوع للترتيب الأصلي»",
-      'row("ترتيب كل التطبيقات"' in settings and '{"تعديل التطبيقات", "رجوع للترتيب الأصلي"}' in settings and '{"ترتيب كل التطبيقات", APPS}' in hub)
+      'row("ترتيب كل التطبيقات"' in settings and '{"تعديل التطبيقات", "رجوع للترتيب الأصلي"}' in settings and '{"ترتيب كل التطبيقات", HOME}' in hub)
 check("…which ask the home screen with the extras it reads", '.putExtra(reset ? "reset_apps_order" : "edit_apps", true)' in settings
       and 'EXTRA_EDIT_APPS = "edit_apps", EXTRA_RESET_APPS = "reset_apps_order"' in main)
 check("…and «رجوع للترتيب الأصلي» asks the settings' lock too, and nothing in kids mode",

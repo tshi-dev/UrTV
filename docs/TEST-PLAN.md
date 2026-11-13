@@ -29,7 +29,7 @@ Navigate with the remote, or `adb shell input keyevent DPAD_DOWN|DPAD_UP|DPAD_CE
 | A1 | Open the app from the TV launcher | Banner «شاشة تلفزيونك»; the settings open on «الأذان» wide on top (focused, «مفعّل» or «متوقف» under it, three green triangles when on), then the other buttons two to a row, the first of each pair on the right; each shows its current value under its name |
 | A1b | ◀▶▲▼ on the buttons, OK on «تحديث تلفزيوني», Back; OK on «البطاقات», OK on «شاشة التوقف», Back, Back; OK on «الأذان» | ▼ from «الأذان» goes to the right one under it, ▲ from the first pair back to it; ▶ goes to the right one of a pair, ◀ to the left one; nothing wraps. «تحديث تلفزيوني» opens its rows (first focused); Back returns with the focus on it. «البطاقات» opens two buttons; Back from «شاشة التوقف» lands on it, Back again on «البطاقات». «الأذان» opens the home's adhan page on its switch: OK flips it (behind the family lock if set), and back in the settings the button says so |
 | A2 | Open every tile and move through every row with D-pad | Every row focusable and highlighted; nothing unreachable; each row is in exactly one tile (the list in FEATURES.md) |
-| A2b | In «الموقع والصلاة», change «طريقة الحساب» | The focus stays on that row after the change, as before |
+| A2b | In «الصلاة والأذان والتلاوة», change «طريقة الحساب» | The focus stays on that row after the change, as before |
 | A3 | المدينة → open | First item «بحث عن مدينة أو قرية», then 13 regions with counts |
 | A4 | Region «منطقة الرياض» → pick «الخرج» | Dialog closes, row shows «المدينة: الخرج» |
 | A5 | المدينة → search → type `ابها` or `Abha` | Results list from the internet; pick one → row updates |

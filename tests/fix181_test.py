@@ -76,7 +76,7 @@ check("bar size: every favourite's cell is as wide as FavBar.tileW(h, shown) say
       and "applyBarSize(cfg.favBar);" in mn and "dockCell(i, n, dockCards.size())" in mn)
 check("bar size: ten favourites at most; the eleventh is refused with «١٠ كحد أقصى»", "static final int MAX = 10;" in text(HOME / "Dock.java") and 'S.t("%s كحد أقصى", arabicDigits(String.valueOf(MAX_DOCK)))' in mn and 'S.t("%s كحد أقصى", ar(Dock.MAX))' in text(HOME / "DockActivity.java"))
 check("bar size: a row «تطبيقات في الشريط» in «التطبيقات والمفضلة» (المزيد) with its seven choices, the command in saver.sh, the row in docs/SETTINGS.md", 'row("تطبيقات في الشريط"' in text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsActivity.java")
-      and '{"تطبيقات في الشريط", APPS}' in text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsHub.java") and "favbar)    set1 favbar" in text(ROOT / "optimize/saver.sh") and "optimize/saver.sh favbar 7" in text(ROOT / "docs/SETTINGS.md"))
+      and '{"تطبيقات في الشريط", HOME}' in text(ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsHub.java") and "favbar)    set1 favbar" in text(ROOT / "optimize/saver.sh") and "optimize/saver.sh favbar 7" in text(ROOT / "docs/SETTINGS.md"))
 check("bar size: the tray CI measures 7 (Arabic) and 10 (English) whole tiles and takes a picture of the markets page", 'for n, lang, favs in ((7, "ar", 7), (10, "en", 10)):' in text(ROOT / ".github/screens/tray_check.py") and "markets.png" in text(ROOT / ".github/screens/tray_check.py")
       and "make_stubs.sh stubs 12" in text(ROOT / ".github/workflows/tray.yml"))
 

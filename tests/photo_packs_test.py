@@ -50,7 +50,7 @@ check("«صورنا» is on by default, and off counts only while a pack that is
       'sp.getBoolean("oursOn", true)' in prefs and "PhotoPacks.mayTurnOursOff(packsOn(), have)" in prefs)
 check("the fragment carries #packs= and #ours=0 only when set", 'return PhotoPacks.fragment(packsOn(), have) + (ours ? "" : "&ours=0");' in prefs and "+ packsParam();" in prefs)
 check("the settings row opens the picker, and it is a row of the hub", 'row("صور شاشة التوقف", packsLabel()' in st and "PhotoPacksActivity.class" in st
-      and '{"صور شاشة التوقف", SAVER}' in src("SettingsHub.java"))
+      and '{"صور شاشة التوقف", LOOK}' in src("SettingsHub.java"))
 check("the picker: OK downloads a pack that is not on the TV, else turns it on or off, deletes it; the credits are one button",
       "download(p)" in act and "choose(p, active)" in act and "PackStore.delete(" in act and "showCredits()" in act and 'w("حقوق الصور")' in act)
 check("the activity is in the manifest and not exported", 'android:name=".PhotoPacksActivity" android:exported="false"' in (ROOT / "android/app/src/main/AndroidManifest.xml").read_text(encoding="utf-8"))

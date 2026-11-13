@@ -1,80 +1,169 @@
 package sa.urtv.screensaver;
 
 /**
- * The settings start small (the owner's ask, the 4.0 prototype in notes/settings-proto): a first screen of big buttons, «الأذان» wide on top
- * and the rest two to a row from the right. A button opens its rows, or a screen of more buttons («البطاقات», «المزيد»), or does one thing
- * at once (a DIRECT one: «الأذان» opens the adhan's page, whose first row is its switch). SettingsActivity.render builds every row as before;
- * this says where each one is, by its FocusKey. A row missing from {@link #ROWS} goes with the category of its group's header, so none is
- * ever lost; tests/settings_hub_test.py fails on such a row all the same (every row is named here). Plain Java: tests/SettingsHubRun.java runs it.
+ * The settings (4.3.2, the owner's ask: every option in the one section it belongs to). A first screen of ten big buttons and nothing deeper: the city
+ * (wide, on top) and the adhan are shortcuts that do one thing at once (a DIRECT button runs the row it names); the eight sections open their rows; the
+ * last button is the search. SettingsActivity.render builds every row as before; this says where each one is, by its FocusKey, and in what order
+ * ({@link #ORDER}: a header is an entry that starts with H). A row missing from {@link #ROWS} goes with the category of its group's header, so none is ever lost;
+ * tests/settings_hub_test.py fails on such a row all the same (every row is named here). The old categories (cards, more, clock, listen…) are
+ * {@link #canon}ised to their new section, so a link that still carries one keeps working. Plain Java: tests/SettingsHubRun.java runs it.
  */
 final class SettingsHub {
     private SettingsHub() { }
 
-    static final String CITY = "city", ADHAN = "adhan", PLACE = "place", CLOCK = "clock", LISTEN = "listen", CARDS = "cards", LOOK = "look", CONTROL = "control",
-            PHONE = "phone", UPDATE = "update", REPORT = "report", MORE = "more",
-            SAVER = "saver", HOME = "home",                                 // in «البطاقات»
-            CONTENT = "content", APPS = "apps", SHOWS = "shows", FAMILY = "family", PARENTAL = "parental", LANG = "lang";   // in «المزيد»
+    static final String CITY = "city", ADHAN = "adhan", SEARCH = "search",
+            LOOK = "look", HOME = "home", SAVER = "saver", PRAY = "pray", CONTENT = "content", CONTROL = "control", PLACE = "place", UPDATE = "update";
 
     /**
-     * key, name, the line under its title on its own screen, the screen its button is on (null: the first), and the row a DIRECT button runs
-     * ("" when it opens a screen). In this order on each screen; the first one of the first screen is the wide one.
+     * key, name, the line under its title on its own screen, the screen its button is on (null: the first; nothing is deeper), and the row a DIRECT
+     * button runs ("" when it opens a screen). In this order on the first screen; the first one is the wide one.
      */
     static final String[][] CATEGORIES = {
-        {CITY, "المدينة", "", null, "تغيير المدينة"},   // 4.3.1: the first button, wide: the city is the first thing to find (it opens the same chooser as the row in «الموقع والصلاة»)
-        {ADHAN, "الأذان", "", null, "الأذان"},
-        {PLACE, "الموقع والصلاة", "مدينتك تحدد الوقت والطقس، وطريقة الحساب تحدد مواقيت الصلاة.", null, ""},
-        {CLOCK, "الساعة والأرقام", "نظام الساعة ١٢ أو ٢٤، والأرقام عربية أو إنجليزية، وأسماء الأشهر الميلادية.", null, ""},
-        {LISTEN, "تلاوة وأذان", "شاشة التلاوة والأذان، وزرها في الشاشة الرئيسية.", null, ""},
-        {CARDS, "البطاقات", "ما يظهر على شاشة التوقف وعلى الشاشة الرئيسية.", null, ""},
-        {LOOK, "المظهر والخلفيات", "الشكل والصور لشاشة التوقف وللشاشة الرئيسية.", null, ""},
-        {CONTROL, "مركز التحكم", "", null, "مركز التحكم"},
-        {PHONE, "التحكم من الجوال", "", null, "تحكم من الجوال"},
-        {UPDATE, "تحديث تلفزيوني", "تحديث التطبيقين وإصدارهما، وتحديث صفحة شاشة التوقف.", null, ""},
-        {REPORT, "أرسل تقرير", "", null, "أرسل تقرير"},
-        {MORE, "المزيد", "المباريات والأسواق، والتطبيقات والمفضلة، وجديد المسلسلات، والرقابة الأبوية، وتصفية المواقع.", null, ""},
-        {SAVER, "شاشة التوقف", "ما يظهر على شاشة التوقف: الساعة والبطاقة بجانبها، والصور، ومتى تبدأ.", CARDS, ""},
-        {HOME, "الشاشة الرئيسية", "بطاقات الشاشة الرئيسية الثلاث، والتحية والطقس، والأزرار.", CARDS, ""},
-        {CONTENT, "المباريات والأسواق", "ما تعرضه البطاقات: فرقك ودورياتك، والأسواق، والأسهم.", MORE, ""},
-        {APPS, "التطبيقات والمفضلة", "ترتيب التطبيقات المفضلة وتعديلها، وترتيب كل التطبيقات، وأسماء مصادر التلفزيون مثل PS5.", MORE, ""},
-        {SHOWS, "جديد المسلسلات", "ما تعرضه بطاقة المسلسلات: التصنيفات واللغات والمسلسلات المختارة.", MORE, ""},
-        {PARENTAL, "الرقابة الأبوية", "", MORE, "الرقابة الأبوية"},
-        {FAMILY, "تصفية المواقع", "", MORE, "تصفية المواقع"},
-        {LANG, "اللغة", "", MORE, "اللغة"},
+        {CITY, "المدينة", "", null, "تغيير المدينة"},   // the wide shortcut: the city is the first thing to find (the same chooser as the row in «المدينة واللغة والوقت»)
+        {ADHAN, "الأذان", "", null, "الأذان"},          // a shortcut to the adhan's page; its row is in «الصلاة والأذان والتلاوة»
+        {LOOK, "المظهر", "الشكل والألوان والإضاءة، والخلفية والصور، وشكل الساعة والبطاقات، والنص الأوضح وتوهّج التطبيق.", null, ""},
+        {HOME, "الشاشة الرئيسية", "بطاقاتها وأزرارها، والتطبيقات المفضلة وترتيبها، وواجهة المصنع، وUrTV النظيف.", null, ""},
+        {SAVER, "شاشة التوقف", "ما يظهر على شاشة التوقف: الساعة والبطاقة بجانبها، ومتى تبدأ.", null, ""},
+        {PRAY, "الصلاة والأذان والتلاوة", "الأذان وتنبيهاته، وطريقة حساب المواقيت، وشاشة التلاوة.", null, ""},
+        {CONTENT, "المباريات والأسواق", "ما تعرضه البطاقات: فرقك ودورياتك، والأسواق والأسهم، وجديد المسلسلات.", null, ""},
+        {CONTROL, "التحكم والجوال", "مركز التحكم والتحكم من الجوال، والرقابة الأبوية وتصفية المواقع.", null, ""},
+        {PLACE, "المدينة واللغة والوقت", "المدينة والدولة، واللغة، ونظام الساعة ١٢ أو ٢٤.", null, ""},
+        {UPDATE, "التحديث وحول", "تحديث التطبيقين وإصدارهما، وتحديث صفحة شاشة التوقف، وإرسال تقرير.", null, ""},
+        {SEARCH, "بحث", "", null, "بحث في الإعدادات"},
     };
 
-    /**
-     * «اللغة»'s button in «المزيد»: off until the home app's screens are in English too (docs/ENGLISH.md, phase 3); turned on at integration.
-     * Off, the button is not shown and nothing else changes (its row is made but on no screen; `optimize/saver.sh lang` sets it all the same).
-     */
-    static final boolean LANG_TILE = true;
+    /** The old categories (3.x to 4.3.1) and the section each one went to: a stored or passed old key still lands somewhere right. */
+    static final String[][] OLD = {
+        {"clock", PLACE}, {"listen", PRAY}, {"cards", SAVER}, {"more", CONTENT}, {"apps", HOME}, {"shows", CONTENT},
+        {"parental", CONTROL}, {"family", CONTROL}, {"lang", PLACE}, {"phone", CONTROL}, {"report", UPDATE},
+    };
+
+    /** A category key as of today: a current one as it is, an old one as its section, anything else null. */
+    static String canon(String key) {
+        if (key == null) return null;
+        for (String[] c : CATEGORIES) if (c[0].equals(key)) return key;
+        for (String[] o : OLD) if (o[0].equals(key)) return o[1];
+        return null;
+    }
 
     /** each row of SettingsActivity by its FocusKey.key (the name without its numbers), and its category */
     static final String[][] ROWS = {
-        {"معاينة الشاشة", SAVER}, {"تغيير المدينة", CITY},   // the first button's own row: it has no screen, the city's row is in «الموقع والصلاة»
-        {"الدولة", PLACE}, {"المدينة", PLACE}, {"طريقة الحساب", PLACE}, {"تعديل وقت الصلاة", PLACE},
-        {"الفرق المتابعة", CONTENT}, {"تطبيق المباريات", CONTENT}, {"الدوريات كاملة", CONTENT}, {"رياضات أخرى", CONTENT},
-        {"الأرقام", CLOCK}, {"تنبيه قبل الأذان", SAVER}, {"الشروق بعد الفجر", SAVER}, {"شريط الوقت بين الصلاتين", SAVER},
-        {"الرطوبة والرياح", SAVER}, {"أسماء الأشهر الميلادية", CLOCK}, {"شريط السنة تحت الساعة", SAVER}, {"سرعة ألبوم صوري", SAVER}, {"تاريخ الصورة في ألبوم صوري", SAVER}, {"عنوان ألبوم صوري", SAVER}, {"شكل صورة ألبوم صوري", SAVER}, {"حجم ألبوم صوري", SAVER}, {"نص أوضح", SAVER}, {"توهّج لون التطبيق", SAVER}, {"المناسبات الوطنية", SAVER}, {"المناسبة القادمة", SAVER}, {"تعتيم الليل", SAVER},
-        {"حجم الساعة", SAVER}, {"نظام الساعة", CLOCK}, {"إظهار الثواني", CLOCK}, {"الخانة اليسرى", SAVER}, {"العدّ التنازلي", SAVER},
+        {"معاينة الشاشة", SAVER}, {"تغيير المدينة", CITY}, {"الدولة", PLACE}, {"المدينة", PLACE},
+        {"طريقة الحساب", PRAY}, {"تعديل وقت الصلاة", PRAY}, {"الفرق المتابعة", CONTENT}, {"تطبيق المباريات", CONTENT},
+        {"الدوريات كاملة", CONTENT}, {"رياضات أخرى", CONTENT}, {"الأرقام", LOOK}, {"تنبيه قبل الأذان", PRAY},
+        {"الشروق بعد الفجر", PRAY}, {"شريط الوقت بين الصلاتين", PRAY}, {"الرطوبة والرياح", SAVER}, {"أسماء الأشهر الميلادية", LOOK},
+        {"شريط السنة تحت الساعة", SAVER}, {"سرعة ألبوم صوري", LOOK}, {"تاريخ الصورة في ألبوم صوري", LOOK}, {"عنوان ألبوم صوري", LOOK},
+        {"شكل صورة ألبوم صوري", LOOK}, {"حجم ألبوم صوري", LOOK}, {"نص أوضح", LOOK}, {"توهّج لون التطبيق", LOOK},
+        {"المناسبات الوطنية", SAVER}, {"المناسبة القادمة", SAVER}, {"تعتيم الليل", LOOK}, {"حجم الساعة", LOOK},
+        {"نظام الساعة", PLACE}, {"فرق التاريخ الهجري", PLACE}, {"إظهار الثواني", LOOK}, {"الخانة اليسرى", SAVER}, {"العدّ التنازلي", SAVER},
         {"صفحة الأسواق", CONTENT}, {"شريط الأسواق", CONTENT}, {"الأسواق", CONTENT}, {"عرض الأسواق", CONTENT},
-        {"المحتوى", SAVER}, {"بطاقة ثانية", SAVER}, {"شكل البطاقة", SAVER}, {"تبديل الآية والحديث", SAVER}, {"الآية والحديث", SAVER},
-        {"إعداد تلفزيوني", HOME}, {"البطاقة الأولى", HOME}, {"البطاقة الثانية", HOME}, {"البطاقة الثالثة", HOME}, {"التحية والطقس", HOME}, {"\u2066UrTV\u2069 النظيف", HOME}, {"اجعل UrTV الشاشة الرئيسية", HOME}, {"تخلّص من واجهة المصنع", HOME}, {"رجّع واجهة المصنع", HOME}, {"المظهر", LOOK}, {"صفحات الأسهم والمباريات داكنة", HOME},
-        {"افتح تلاوة وأذان", LISTEN}, {"زر تلاوة وأذان", LISTEN}, {"زر المهام", HOME}, {"زر الأسواق", HOME}, {"زر المباريات", HOME}, {"زر الجوال", HOME}, {"زر مركز التحكم", HOME}, {"الرجوع يفتح شاشة التوقف", HOME}, {"الخروج من تلفزيونك", HOME},
-        {"أكمل المشاهدة", HOME}, {"جرس التحديثات", HOME},
-        {"الأذان", ADHAN},
-        {"تطبيقات في الشريط", APPS}, {"ترتيب التطبيقات المفضلة", APPS}, {"تطبيقات مقترحة", APPS}, {"أسماء المصادر", APPS}, {"تعديل المفضلة", APPS}, {"ترتيب كل التطبيقات", APPS}, {"قفل التطبيقات", APPS}, {"تفاصيل التطبيقات", APPS},
-        {"تحديث تلفزيوني", UPDATE}, {"تحكم من الجوال", PHONE}, {"مركز التحكم", CONTROL}, {"أرسل تقرير", REPORT},
-        {"الرقابة الأبوية", PARENTAL}, {"تصفية المواقع", FAMILY}, {"اللغة", LANG}, {"مباريات اليوم", CONTENT},
-        {"التصنيفات", SHOWS}, {"اللغات", SHOWS}, {"مسلسلات مختارة", SHOWS}, {"أقل تقييم", SHOWS}, {"قائمة الأسهم", CONTENT}, {"تغيّر الأسهم", CONTENT},
-        {"تبديل الصورة كل", SAVER}, {"صور شاشة التوقف", SAVER}, {"صوري", SAVER}, {"بدء شاشة التوقف بعد", SAVER},
-        {"التحديث التلقائي للصفحة", UPDATE}, {"تحديث صفحة شاشة التوقف", UPDATE},
+        {"المحتوى", SAVER}, {"بطاقة ثانية", SAVER}, {"شكل البطاقة", LOOK}, {"تبديل الآية والحديث", SAVER},
+        {"الآية والحديث", SAVER}, {"إعداد تلفزيوني", HOME}, {"البطاقة الأولى", HOME}, {"البطاقة الثانية", HOME},
+        {"البطاقة الثالثة", HOME}, {"التحية والطقس", HOME}, {"\u2066UrTV\u2069 النظيف", HOME}, {"اجعل UrTV الشاشة الرئيسية", HOME},
+        {"تخلّص من واجهة المصنع", HOME}, {"رجّع واجهة المصنع", HOME}, {"المظهر", LOOK}, {"صفحات الأسهم والمباريات داكنة", LOOK},
+        {"افتح تلاوة وأذان", PRAY}, {"زر تلاوة وأذان", HOME}, {"زر المهام", HOME}, {"زر الأسواق", HOME},
+        {"زر المباريات", HOME}, {"زر الجوال", HOME}, {"زر مركز التحكم", HOME}, {"الرجوع يفتح شاشة التوقف", HOME},
+        {"الخروج من تلفزيونك", HOME}, {"أكمل المشاهدة", HOME}, {"جرس التحديثات", HOME}, {"الأذان", PRAY},
+        {"تطبيقات في الشريط", HOME}, {"ترتيب التطبيقات المفضلة", HOME}, {"تطبيقات مقترحة", HOME}, {"أسماء المصادر", HOME},
+        {"تعديل المفضلة", HOME}, {"ترتيب كل التطبيقات", HOME}, {"قفل التطبيقات", HOME}, {"تفاصيل التطبيقات", HOME},
+        {"تحديث تلفزيوني", UPDATE}, {"تحكم من الجوال", CONTROL}, {"مركز التحكم", CONTROL}, {"أرسل تقرير", UPDATE},
+        {"الرقابة الأبوية", CONTROL}, {"تصفية المواقع", CONTROL}, {"اللغة", PLACE}, {"مباريات اليوم", CONTENT},
+        {"التصنيفات", CONTENT}, {"اللغات", CONTENT}, {"مسلسلات مختارة", CONTENT}, {"أقل تقييم", CONTENT},
+        {"قائمة الأسهم", CONTENT}, {"تغيّر الأسهم", CONTENT}, {"تبديل الصورة كل", LOOK}, {"صور شاشة التوقف", LOOK},
+        {"صوري", LOOK}, {"بدء شاشة التوقف بعد", SAVER}, {"التحديث التلقائي للصفحة", UPDATE}, {"تحديث صفحة شاشة التوقف", UPDATE},
+        {"بحث في الإعدادات", SEARCH},
     };
 
-    /** each group header and the category it belongs to: shown only there, above that category's rows of the group */
+    /** each group header and the category it belongs to (a row of no name goes with it); the headers that are DRAWN are the header entries of ORDER */
     static final String[][] HEADERS = {
-        {"الموقع", PLACE}, {"المباريات", CONTENT}, {"العرض", SAVER}, {"صفحة الأسواق", CONTENT}, {"الأسواق (أعلى اليسار)", CONTENT}, {"بجانب الساعة", SAVER},
-        {"الشاشة الرئيسية (تلفزيونك)", HOME}, {"جديد المسلسلات", SHOWS}, {"الأسهم", CONTENT}, {"التوقيت", SAVER}, {"التطبيق", UPDATE},
+        {"الموقع", PRAY}, {"المباريات", CONTENT}, {"العرض", SAVER}, {"صفحة الأسواق", CONTENT}, {"الأسواق (أعلى اليسار)", CONTENT}, {"بجانب الساعة", SAVER},
+        {"الشاشة الرئيسية (تلفزيونك)", HOME}, {"جديد المسلسلات", CONTENT}, {"الأسهم", CONTENT}, {"التوقيت", LOOK}, {"التطبيق", UPDATE},
     };
+
+    /**
+     * The rows of each section in the order the person meets them, by FocusKey; H + text is a header drawn above the rows after it. A row of no entry
+     * (the prayers' minute rows, made by adjRow) stays right after the entry before it in the code; a section with no entry here keeps the code's order.
+     */
+    static final String H = "\u0000";   // an ORDER entry that starts with it is a header
+    static final String[][] ORDER = {
+        {LOOK, "المظهر", "نص أوضح", "توهّج لون التطبيق", "تعتيم الليل", "صفحات الأسهم والمباريات داكنة", "شكل البطاقة", "حجم الساعة", "الأرقام", "أسماء الأشهر الميلادية",
+            "إظهار الثواني", H + "الخلفية والصور", "تبديل الصورة كل", "صور شاشة التوقف", "صوري", "سرعة ألبوم صوري", "شكل صورة ألبوم صوري", "حجم ألبوم صوري", "عنوان ألبوم صوري", "تاريخ الصورة في ألبوم صوري"},
+        {HOME, "إعداد تلفزيوني", "اجعل UrTV الشاشة الرئيسية", "تخلّص من واجهة المصنع", "رجّع واجهة المصنع", "⁦UrTV⁩ النظيف", "البطاقة الأولى", "البطاقة الثانية",
+            "البطاقة الثالثة", "التحية والطقس", "أكمل المشاهدة", "جرس التحديثات", "الرجوع يفتح شاشة التوقف", "الخروج من تلفزيونك", H + "الأزرار", "زر المهام", "زر الأسواق", "زر المباريات",
+            "زر الجوال", "زر مركز التحكم", "زر تلاوة وأذان", H + "التطبيقات والمفضلة", "تطبيقات في الشريط", "ترتيب التطبيقات المفضلة", "تعديل المفضلة", "تطبيقات مقترحة", "أسماء المصادر",
+            "ترتيب كل التطبيقات", "قفل التطبيقات", "تفاصيل التطبيقات"},
+        {SAVER, "معاينة الشاشة", "بدء شاشة التوقف بعد", H + "بجانب الساعة", "المحتوى", "بطاقة ثانية", "تبديل الآية والحديث", "الآية والحديث", "الخانة اليسرى", "العدّ التنازلي",
+            "شريط السنة تحت الساعة", "الرطوبة والرياح", "المناسبة القادمة", "المناسبات الوطنية"},
+        {PRAY, "الأذان", "تنبيه قبل الأذان", "الشروق بعد الفجر", "شريط الوقت بين الصلاتين", "طريقة الحساب", "تعديل وقت الصلاة", "افتح تلاوة وأذان"},
+        {CONTENT, H + "المباريات", "مباريات اليوم", "الفرق المتابعة", "تطبيق المباريات", "الدوريات كاملة", "رياضات أخرى", H + "صفحة الأسواق", "صفحة الأسواق", "شريط الأسواق", "الأسواق", "عرض الأسواق",
+            H + "الأسهم", "قائمة الأسهم", "تغيّر الأسهم", H + "جديد المسلسلات", "التصنيفات", "اللغات", "مسلسلات مختارة", "أقل تقييم"},
+        {CONTROL, "مركز التحكم", "تحكم من الجوال", "الرقابة الأبوية", "تصفية المواقع"},
+        {PLACE, "المدينة", "الدولة", "اللغة", "نظام الساعة", "فرق التاريخ الهجري"},
+        {UPDATE, "تحديث تلفزيوني", "التحديث التلقائي للصفحة", "تحديث صفحة شاشة التوقف", "أرسل تقرير"},
+    };
+
+    /** A row's place in its section's order: its index in {@link #ORDER}, -1 for none; a header is looked up as H + text. */
+    static int rank(String category, String key) {
+        for (String[] o : ORDER) if (o[0].equals(category)) for (int i = 1; i < o.length; i++) if (o[i].equals(key)) return i;
+        return -1;
+    }
+
+    /** The headers of a section, in its order. */
+    static java.util.List<String> headers(String category) {
+        java.util.List<String> out = new java.util.ArrayList<>();
+        for (String[] o : ORDER) if (o[0].equals(category)) for (int i = 1; i < o.length; i++) if (o[i].startsWith(H)) out.add(o[i].substring(1));
+        return out;
+    }
+
+    /**
+     * Words people type for a row that its name does not hold (the search finds a row by its name, its section's name and these): word, row.
+     * Written the way {@link #fold} leaves a word.
+     */
+    static final String[][] ALIASES = {
+        {"صوت", "الأذان"}, {"مؤذن", "الأذان"}, {"فجر", "الأذان"}, {"نوم", "مركز التحكم"}, {"واي فاي", "مركز التحكم"}, {"شبكه", "مركز التحكم"}, {"بلوتوث", "مركز التحكم"},
+        {"رمز", "الرقابة الأبوية"}, {"اطفال", "الرقابة الأبوية"}, {"pin", "الرقابة الأبوية"}, {"لون", "المظهر"}, {"داكن", "المظهر"}, {"فاتح", "المظهر"}, {"خلفيه", "صور شاشة التوقف"},
+        {"english", "اللغة"}, {"هجري", "فرق التاريخ الهجري"}, {"انجليزي", "اللغة"}, {"نسخه", "تحديث تلفزيوني"}, {"جوال", "تحكم من الجوال"}, {"ريموت", "تحكم من الجوال"}, {"ثواني", "إظهار الثواني"},
+        {"مباراه", "مباريات اليوم"}, {"اسهم", "قائمة الأسهم"}, {"ذهب", "صفحة الأسواق"},
+    };
+
+    /** Arabic letters in one form for matching: no tashkeel or tatweel, alef/ya/ta-marbuta folded, lower case. */
+    static String fold(String t) {
+        StringBuilder b = new StringBuilder();
+        for (char c : t.toLowerCase(java.util.Locale.ROOT).toCharArray()) {
+            if (c >= 0x064B && c <= 0x065F || c == 0x0640 || c == 0x0670 || c == 0x2066 || c == 0x2069) continue;
+            if (c == 'أ' || c == 'إ' || c == 'آ' || c == 'ٱ') c = 'ا';
+            else if (c == 'ى') c = 'ي';
+            else if (c == 'ة') c = 'ه';
+            b.append(c);
+        }
+        return b.toString().trim();
+    }
+
+    /**
+     * The rows that answer a typed word, best first: the name starts with it, the name holds it, an alias, the section's name holds it. Each result is
+     * {row key, category}; never the two shortcut rows that have no screen of their own.
+     */
+    static java.util.List<String[]> search(String query) {
+        String q = fold(query);
+        java.util.List<String[]> out = new java.util.ArrayList<>();
+        if (q.isEmpty()) return out;
+        java.util.List<String[]> starts = new java.util.ArrayList<>(), holds = new java.util.ArrayList<>(), sect = new java.util.ArrayList<>(), alias = new java.util.ArrayList<>();
+        for (String[] r : ROWS) {
+            if (CITY.equals(r[1]) || SEARCH.equals(r[1])) continue;
+            String name = fold(r[0]);
+            String[] hit = {r[0], r[1]};
+            if (name.startsWith(q)) starts.add(hit);
+            else if (name.contains(q)) holds.add(hit);
+            else {
+                boolean al = false;
+                for (String[] a : ALIASES) if (fold(a[0]).startsWith(q) && fold(a[1]).equals(name)) { al = true; break; }
+                if (al) alias.add(hit);
+                else if (fold(name(r[1])).contains(q)) sect.add(hit);
+            }
+        }
+        out.addAll(starts); out.addAll(holds); out.addAll(alias); out.addAll(sect);
+        return out;
+    }
 
     /** The category of a row (its FocusKey.key); one not named goes with its group's ({@code group}, a header's category), else «شاشة التوقف». */
     static String of(String key, String group) {
@@ -127,7 +216,7 @@ final class SettingsHub {
     /** The buttons of a screen (null: the first one), in order. */
     static String[] tiles(String screen) {
         java.util.List<String> out = new java.util.ArrayList<>();
-        for (String[] c : CATEGORIES) if ((screen == null ? c[3] == null : screen.equals(c[3])) && (LANG_TILE || !LANG.equals(c[0]))) out.add(c[0]);
+        for (String[] c : CATEGORIES) if ((screen == null ? c[3] == null : screen.equals(c[3]))) out.add(c[0]);
         return out.toArray(new String[0]);
     }
 
