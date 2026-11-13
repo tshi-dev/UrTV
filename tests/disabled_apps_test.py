@@ -23,7 +23,7 @@ def check(name, ok, detail=""):
 read = lambda p: Path(p).read_text(encoding="utf-8")
 act, eng, mf = read(SETUP / "DisabledAppsActivity.java"), read(SETUP / "SetupEngine.java"), read(ROOT / "android/launcher/src/main/AndroidManifest.xml")
 st, hub, words = read(ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsActivity.java"), read(ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsHub.java"), read(ROOT / "android/app/src/main/java/sa/urtv/screensaver/Words.java")
-check("behind the family PIN, a cancelled PIN leaves", "PinGuard.confirm(this" in act and "this::list, this::finish" in act)
+check("behind the family PIN, a cancelled PIN leaves", "PinGuard.confirm(this" in act and "() -> list(), () -> finish()" in act)
 check("it only ever turns apps on: no disable, uninstall or clear anywhere in the screen", "pm disable" not in act and "disable-user" not in act and "pm uninstall" not in act and "pm clear" not in act
       and "enableApps(" in act)
 check("the engine's method uses `pm enable --user 0` only and never a disable", "sh.run(\"pm enable --user 0 \" + p)" in eng.split("List<AppResult> enableApps")[1].split("private void dropFrom")[0]

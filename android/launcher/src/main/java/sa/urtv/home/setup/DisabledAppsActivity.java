@@ -72,7 +72,7 @@ public class DisabledAppsActivity extends Activity {
         col.setBackground(GlassPaint.fill(this, GlassStyle.over(look.dialog, look.base), 22, look.line));
         frame.addView(col, new FrameLayout.LayoutParams(Math.min(dp(1100), w - 2 * Math.round(w * 0.05f)), -2, Gravity.CENTER));
         setContentView(scroll);
-        PinGuard.confirm(this, S.t("التطبيقات المعطّلة"), this::list, this::finish);   // the family PIN first when one is set; a cancelled PIN leaves
+        PinGuard.confirm(this, S.t("التطبيقات المعطّلة"), () -> list(), () -> finish());   // the family PIN first when one is set; a cancelled PIN leaves
     }
 
     @Override public void onBackPressed() { if (!busy) finish(); }
