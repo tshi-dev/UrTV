@@ -1081,3 +1081,14 @@ This build has NO pairing (the factory row is as in 4.3). Log tags: UrTVHome, Ur
 8. The nudge «خلّ تلفزيونك يفتح على UrTV» can't show here (UrTV is the home): say whether the build has a way to preview it; if so, UP reaches it and Back hides it.
 9. Two pictures for the owner: the league chooser, and the matches page with the big tournaments section (push to work/marketing marketing/4.3.1/).
 **Z** Leave the TV on this build and channel next until the supervisor says 4.3.1 is released; restore the rest as step 58 Z.
+
+## step 72 — UrTV Player v0.9.16-beta3 (after step 71; replaces step 69; TV muted; uninstall at the end)
+APK: https://github.com/tshi-dev/UrTV-Player/releases/download/v0.9.16-beta3/urtv-player.apk (sha256 e38aa0302e93ccf99a90e9d9789aeaff52c540ea57d4804ab3d892100de4e08d, versionCode 135, signer 13ade7d0…69dfea). Numbers: `adb logcat -s UrTVPerf` (cold_start_first_frame, tab_open_*, list_build, search, first_frame, and a playback line every 10 s: rebuffers, dropped frames, decoder, codec, size, fps, kbps, buffered ms).
+1. Lightness with a BIG list: make a synthetic M3U of 50,000 entries on the PC (made-up names in Arabic and English, 40 groups, unique URLs pointing to the same 3–4 free test streams with a different query string; 10,000 of them under /movie/ and /series/ paths with «Name S01 E02» titles). Load it. Report the UrTVPerf lines for: cold start, opening القنوات, switching 5 groups, typing a 4-letter Arabic search, opening أفلام and مسلسلات. Then gfxinfo for 20 DOWN presses 1 s apart and 20 fast ones in the list. `dumpsys meminfo com.urtv.player` after loading.
+2. «أفلام» / «مسلسلات» tabs appear from that M3U; episodes are grouped by show; the one-time Xtream hint shows.
+3. Playback: play a test stream 5 minutes: the UrTVPerf playback lines (rebuffers, dropped frames); zap between 6 channels: first_frame ms each.
+4. ONE Back leaves a playing channel to the list; OK opens the panel; Back closes the panel first when it is open.
+5. Preview: the pane says the preview is off and how to turn it on; turn it on: it plays; a dead URL shows the reason, not a silent logo.
+6. Commentary merge: the checks of step 69 (items 1–6) on this build, briefly.
+7. The TV's mute and volume never change.
+Verdict line for the owner: is it light and smooth enough to release as stable 0.9.16? What is still slow?
