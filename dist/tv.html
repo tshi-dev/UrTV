@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261112213951">
+<meta name="urtv-build" content="20261112230108">
 <title>شاشة تلفزيونك</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -853,6 +853,8 @@ const CONFIG = {
   // whole leagues: #leagues=Saudi-Arabian Pro League,NBA; 4.3 a league of the settings' catalogue by its id: id4719, its name in
   // #lgn=4719~name|… (the settings' language). At most 8: a catalogue league is asked of TheSportsDB itself (2 requests every 30 minutes)
   leagues: _list('leagues').filter(x => /^[A-Za-z0-9 \-]{2,40}$/.test(x) || /^id\d{1,6}$/.test(x)).slice(0, 8),
+  tourOff: _list('tourx').filter(x => /^\d{1,6}$/.test(x)),   // the tournaments the person unticked
+  tour: _Q.get('tour') === '1',   // 4.3.1 «البطولات الكبرى»: leagues/tournaments.json (CI) once every 30 minutes, nothing when off
   leagueNames: Object.fromEntries((_Q.get('lgn') || '').split('|').map(x => x.split('~')).filter(x => x.length === 2 && /^\d{1,6}$/.test(x[0]) && x[1].trim())
     .map(x => [x[0], x[1].trim().slice(0, 60)])),
   // other sports beside the teams' games: #events=f1,ufc,boxing (default none)
@@ -2001,7 +2003,7 @@ async function loadCatalogueLeague(name, step){
 // the files at once; the catalogue's leagues once ready (the teams asked: one queue to the sports server)
 async function loadLeagues(step, ready){
   let got = 0;
-  Object.keys(LEAGUE_DATA).forEach(k => { if(!CONFIG.leagues.includes(k)) delete LEAGUE_DATA[k]; });   // a league no longer picked: its copy goes
+  Object.keys(LEAGUE_DATA).forEach(k => { if(!CONFIG.leagues.includes(k) && !(CONFIG.tour && k === 'tournaments')) delete LEAGUE_DATA[k]; });   // a league no longer picked: its copy goes
   const cat = (async () => { await ready; for(const name of CONFIG.leagues.filter(catId)) got += await loadCatalogueLeague(name, step); })();
   await Promise.all([cat, ...CONFIG.leagues.filter(n => !catId(n)).map(async name => {
     try{
@@ -2011,21 +2013,27 @@ async function loadLeagues(step, ready){
       if(j && Array.isArray(j.events)){ LEAGUE_DATA[name] = {updated: j.updated, events: j.events}; got++; }
     }catch(e){}
   })]);
+  if(CONFIG.tour) try{
+    const r = await fetchT(LEAGUE_BASE + 'tournaments.json', 12000), j = r.ok && await r.json();
+    if(j && Array.isArray(j.events)){ LEAGUE_DATA.tournaments = {updated: j.updated, events: j.events, names: j.names || {}}; got++; }
+  }catch(e){}
   try{ localStorage.setItem('leagueData', JSON.stringify(LEAGUE_DATA)); }catch(e){}
   return got;
 }
 // every game of the followed leagues, once each
 function leagueGames(){
   const seen = new Set(), out = [];
-  CONFIG.leagues.forEach(name => {
-    const d = LEAGUE_DATA[name];
-    if(!d) return;
+  CONFIG.leagues.concat(CONFIG.tour ? ['tournaments'] : []).forEach(name => {   // the big tournaments after the person's own leagues: a game both have is the league's copy
+    const d = LEAGUE_DATA[name], tour = name === 'tournaments';
+    if(!d || (tour && Date.now() - Date.parse(d.updated) > 36 * 3600000)) return;   // a tournaments file older than 36 h shows nothing
     const at = Date.parse(d.updated) || 0;
     (d.events || []).forEach(ev => {
-      if(!ev || !ev.idEvent || seen.has(ev.idEvent) || isNaN(toDate(ev))) return;
+      if(!ev || !ev.idEvent || seen.has(ev.idEvent) || isNaN(toDate(ev)) || (tour && CONFIG.tourOff.includes(String(ev.idLeague)))) return;
       seen.add(ev.idEvent);
+      if(tour && d.names && d.names[ev.idLeague] && !CONFIG.leagueNames[ev.idLeague]) CONFIG.leagueNames[ev.idLeague] = d.names[ev.idLeague];
       const p = LIVE_PATCH[ev.idEvent];
-      out.push(p && p.at > at ? Object.assign({}, ev, p.ev) : ev);
+      const e = p && p.at > at ? Object.assign({}, ev, p.ev) : ev;
+      out.push(tour ? Object.assign({}, e, {tour: 1}) : e);
     });
   });
   return out;
@@ -3391,11 +3399,11 @@ function matchRows(card){
   const smart = card && card.kind === 'smart';
   if(smart){ const ids = new Set(focusGames(now).map(ev => ev.idEvent)); evs = evs.filter(ev => ids.has(ev.idEvent)); }   // only the game that brought the smart card here
   const others = smart ? [] : eventRows(now);
-  const shown = evs.map(ev => ({ev, t: toDate(ev).getTime(), r: gameRank(ev, now)}))
+  const shown = evs.map(ev => ({ev, t: toDate(ev).getTime(), r: gameRank(ev, now) + (ev.tour ? 100 : 0)}))   // the teams', then the leagues', then the big tournaments' (at most 3 rows)
     .filter(x => finishedRecently(x.ev, now) || pendingResult(x.ev, now)
       || (now < x.t + durMs(x.ev) && !FINAL.includes((x.ev.strStatus || '').toUpperCase())
           && x.t - now <= CONFIG.weekWindowDays * 86400000))
-    .sort(byRank);
+    .sort(byRank).filter((x, i, a) => !x.ev.tour || a.slice(0, i).filter(y => y.ev.tour).length < 3);
   // a club with no crest keeps a crest-wide empty space, but only in a card where other rows have crests
   // a card with no crest at all is as it was
   const anyCrest = shown.some(x => crestImg(x.ev, 'Home') || crestImg(x.ev, 'Away'));

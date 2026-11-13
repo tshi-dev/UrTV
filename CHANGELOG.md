@@ -9,6 +9,7 @@ Newest first. `next` is where changes land first; a release is what was tested t
 - **تطبيقات مقترحة:** أيقونة UrTV Player الحقيقية على بطاقته، وأُزيل مشغّل IPTV منها.
 - **الإذاعة ما تستسلم:** إذا انقطعت المحطة أو تقطّع البث، نحاول نرجّعها وحدنا (بعد ثانيتين، ثم ٥ و١٠ و٢٠ ثانية، وبعدها كل نصف دقيقة) ونكتب لك السبب بكلام واضح: ما في إنترنت، أو المحطة ما تردّ، أو صيغة البث ما يدعمها التلفزيون. وإذا للمحطة مصدر ثانٍ نبدّل بينهم.
 - **التطبيقات المعطّلة:** صف جديد في الإعدادات (الشاشة الرئيسية) يعرض التطبيقات المعطّلة في تلفزيونك، سواء عطّلتها أنت أو UrTV أو الشركة، وتختار منها اللي تبي تشغّله من جديد (بالرقم السري للعائلة)، وبعدها يعرض لك نتيجة كل تطبيق. ما يعطّل شيء أبدًا.
+- **البطولات الكبرى:** مباريات دوري الأبطال والدوري الأوروبي ودوري الأمم وكأس العالم وكأس آسيا وكأس العرب والكؤوس المحلية الكبرى تظهر في صفحة المباريات وبطاقات الشاشة الرئيسية وشاشة التوقف، من مفتاح واحد «البطولات الكبرى» (يشتغل وحده في التثبيت الجديد). فريقك ودورياتك أولًا وبعدها البطولات، وبحد أقصى ٣ مباريات في البطاقة. وصارت «الدوريات كاملة» شاشة وحدة: بحث في الأعلى وأقسام (البطولات الكبرى، السعودية، أوروبا، آسيا وأفريقيا، العالم) كل صف بعلامة اختيار.
 - **Open Shelf في تطبيقات مقترحة:** متجر لتطبيقات التلفزيون المفتوحة المصدر. تطبيق من طرف ثالث ما جرّبناه بأنفسنا، والتطبيقات اللي يثبّتها على مسؤوليتك.
 
 **In English, in short:**
@@ -16,6 +17,7 @@ Newest first. `next` is where changes land first; a release is what was tested t
 - **Suggested apps:** UrTV Player's real icon on its tile; the IPTV player is gone from the list.
 - **The radio keeps trying:** when a station drops or cuts, we bring it back by ourselves (after 2 seconds, then 5, 10 and 20, then every half minute) and say why in plain words: no internet, the station is not answering, or the TV does not support the stream's format. A station with a second source swaps between the two.
 - **Disabled apps:** a new row in the settings (Home screen) lists the apps turned off on your TV, by you, UrTV or the maker, and lets you pick the ones to turn back on (behind the family PIN); it then shows each app's result. It never turns anything off.
+- **Big tournaments:** the Champions League, Europa League, Nations League, World Cup, Asian Cup, Arab Cup and the big domestic cups show in the matches page and in the home and screensaver cards, from one switch, «Big tournaments» (on by itself in a new install). Your teams and your leagues come first, then the tournaments, at most 3 games on a card. «Whole leagues» is now one screen: a search on top and sections (Big tournaments, Saudi Arabia, Europe, Asia and Africa, World), each row a tick.
 - **Open Shelf in suggested apps:** a store of open-source TV apps. A third-party app we have not vetted ourselves; the apps it installs are at your own risk.
 
 ## 4.3

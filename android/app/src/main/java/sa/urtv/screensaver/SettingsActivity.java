@@ -278,7 +278,7 @@ public class SettingsActivity extends Activity {
         row("تطبيق المباريات", matchAppLabel(), R.drawable.ic_play, new Runnable() { public void run() { pickMatchApp(); } });
 
         row("الدوريات كاملة", leaguesLabel(), R.drawable.ic_trophy,
-            new Runnable() { public void run() { pickLeagues(); } });
+            new Runnable() { public void run() { startActivity(new Intent(SettingsActivity.this, LeaguesActivity.class)); } });   // 4.3.1 «اختر دورياتك»: one screen (the older dialogs below stay for saver.sh's sake)
 
         row("رياضات أخرى", labels(Prefs.EVENTS, prefs.list("events"), "بدون"), R.drawable.ic_trophy,
             new Runnable() { public void run() { pickMany("events", "رياضات أخرى", Prefs.EVENTS, "بدون اختيار = بدون"); } });
@@ -1147,7 +1147,7 @@ public class SettingsActivity extends Activity {
     }
 
     /** the file from the internet (5 s to connect, 15 s to read), kept as the copy when it is a whole answer; else the copy; null when there is neither */
-    private String fetchCatalogue(java.io.File cache) {
+    static String fetchCatalogue(java.io.File cache) {
         String body = null;
         try {
             Net.Reply r = Net.get(CatalogueLeagues.URL, null, 15000, 12000, Bounded.JSON_MAX);   // IPv4 first, 4 s per address, 12 s in all (Net)
@@ -1161,12 +1161,12 @@ public class SettingsActivity extends Activity {
         return body;
     }
 
-    private static String readFile(java.io.File f) {
+    static String readFile(java.io.File f) {
         try (InputStream in = new java.io.FileInputStream(f)) { return new String(Bounded.readAll(in, Bounded.JSON_MAX), "UTF-8"); }
         catch (Exception e) { return null; }
     }
 
-    private static List<String[]> catalogueRows(String json) {
+    static List<String[]> catalogueRows(String json) {
         List<String[]> rows = new ArrayList<>();
         if (json == null) return rows;
         try {

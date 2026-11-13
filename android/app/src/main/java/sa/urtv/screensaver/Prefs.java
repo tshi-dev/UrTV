@@ -125,6 +125,7 @@ final class Prefs {
     Prefs(Context c) {
         ctx = c;
         sp = c.getSharedPreferences("settings", Context.MODE_PRIVATE);
+        if (!sp.contains("tournaments")) sp.edit().putBoolean("tournaments", sp.getAll().isEmpty()).apply();   // 4.3.1 «البطولات الكبرى»: on for a new install (nothing saved yet), off for one that already had settings
         GlassStyle.setTweaks(tweaks());
         if (ZoneFix.logger == null) ZoneFix.logger = line -> android.util.Log.i("UrTVZone", line);
         ZoneFix.report(pageZone());   // issue #55: the page's last word on the city's zone, after a restart too
@@ -209,12 +210,21 @@ final class Prefs {
         return v;
     }
 
+    /** 4.3.1 «البطولات الكبرى»: the big tournaments' games in the matches page and the cards (leagues/tournaments.json, one request every 30 minutes) */
+    boolean tournaments() { return sp.getBoolean("tournaments", false); }
+    void setTournaments(boolean v) { sp.edit().putBoolean("tournaments", v).apply(); }
+    /** the ids of the tournaments the person unticked one by one */
+    List<String> tournamentsOff() { List<String> v = new ArrayList<>(); for (String s : list("tournamentsOff")) if (s.matches("\\d{1,6}")) v.add(s); return v; }
+    void setTournamentsOff(List<String> v) { setList("tournamentsOff", v); }
+
     /** What #leagues= and #lgn= carry (CatalogueLeagues.pageToken, names). */
     String leaguesFragment() {
         List<String> all = leagues(), tokens = new ArrayList<>();
         for (String s : all) tokens.add(CatalogueLeagues.pageToken(s));
         String names = CatalogueLeagues.names(all, Tr.EN.equals(lang()));
-        return "&leagues=" + Uri.encode(join(tokens, ",")) + (names.isEmpty() ? "" : "&lgn=" + Uri.encode(names));
+        List<String> off = tournamentsOff();
+        return "&leagues=" + Uri.encode(join(tokens, ",")) + (names.isEmpty() ? "" : "&lgn=" + Uri.encode(names))
+            + (tournaments() ? "&tour=1" + (off.isEmpty() ? "" : "&tourx=" + Uri.encode(join(off, ","))) : "");
     }
 
     /** Followed teams in priority order, "id|name". Migrates the old two team fields once. */
