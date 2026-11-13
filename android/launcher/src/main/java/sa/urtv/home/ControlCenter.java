@@ -347,7 +347,7 @@ final class ControlCenter {
             strip.setGravity(Gravity.CENTER_HORIZONTAL);
             for (Item it : toggles) {
                 Cell c = new Cell(Cell.TOGGLE, it);
-                strip.addView(c, wideNow ? new LinearLayout.LayoutParams(dp(150), dp(needsOn(it) ? 92 : 76)) : new LinearLayout.LayoutParams(0, dp(needsOn(it) ? 92 : 76), 1f));
+                strip.addView(c, wideNow ? new LinearLayout.LayoutParams(dp(152), dp(needsOn(it) ? 92 : 76)) : new LinearLayout.LayoutParams(0, dp(needsOn(it) ? 92 : 76), 1f));
                 focusables.add(c);
                 toggleCells.add(c);
             }
