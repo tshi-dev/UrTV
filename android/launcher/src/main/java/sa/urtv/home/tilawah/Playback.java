@@ -19,6 +19,10 @@ abstract class Playback {
     interface OnCompletion { void onCompletion(Playback p); }
     interface OnError { boolean onError(Playback p, int what, int extra); }
 
+    /** 4.3.1 what the last error carried, for the report and the line shown: the server's HTTP status (0 = none) and the decoder's name ("" = none); ExoPlayback sets them */
+    int httpCode;
+    String decoder = "";
+
     static final String EXO = "sa.urtv.home.tilawah.ExoPlayback";
 
     /**

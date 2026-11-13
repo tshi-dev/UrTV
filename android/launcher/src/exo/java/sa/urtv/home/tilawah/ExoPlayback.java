@@ -70,6 +70,12 @@ public final class ExoPlayback extends Playback {
             }
 
             @Override public void onPlayerError(PlaybackException e) {
+                httpCode = 0;
+                decoder = "";
+                for (Throwable c = e.getCause(); c != null; c = c.getCause()) {
+                    if (c instanceof androidx.media3.datasource.HttpDataSource.InvalidResponseCodeException) { httpCode = ((androidx.media3.datasource.HttpDataSource.InvalidResponseCodeException) c).responseCode; break; }
+                }
+                if (e instanceof androidx.media3.exoplayer.ExoPlaybackException && ((androidx.media3.exoplayer.ExoPlaybackException) e).rendererName != null) decoder = ((androidx.media3.exoplayer.ExoPlaybackException) e).rendererName;
                 if (e.errorCode == PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW) {   // fell out of the 12 s window: back to the live edge, quietly
                     exo.seekToDefaultPosition();
                     exo.prepare();

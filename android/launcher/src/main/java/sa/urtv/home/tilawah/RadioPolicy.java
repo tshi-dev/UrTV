@@ -27,6 +27,7 @@ final class RadioPolicy {
         long[] reconnectsAt = new long[RECONNECTS];
         int reconnects;
         boolean formatEveryTime = true;   // every failure so far said malformed or unsupported
+        int failures;             // every failure since the pick, on both sources (the line «توقف البث بعد N محاولات»)
         boolean spent;            // the reconnects of the window are used up: a short sound no longer clears the tries
     }
 
@@ -38,6 +39,7 @@ final class RadioPolicy {
 
     /** What to do after a failure (what, extra: MediaPlayer's numbers, ExoPlayback maps its own to them); hasAlt: stations.json has «alt». */
     static Step after(State s, int what, int extra, boolean hasAlt, long now) {
+        s.failures++;
         String code = PlayerFault.code(what, extra);
         if (!code.equals("malformed") && !code.equals("unsupported")) s.formatEveryTime = false;
         if (s.played) {
