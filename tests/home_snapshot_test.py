@@ -27,7 +27,7 @@ check("there is always something: the picture, else the skeleton in the look's c
       "HomeSnapshot.skeleton(this, GlassSource.look(this))" in main and "root.setBackgroundColor(GlassSource.look(this).base)" in main and "root.setBackgroundColor(Color.BLACK)" not in main and "l.panel" in snap)
 check("drawn at once at the start and when coming back from another app, before the first frame", "showSnapshot();   // the home's last picture" in main and "protected void onRestart()" in main.split("protected void onRestart()")[0] + "protected void onRestart()")
 check("a new picture when the home goes to the background (not while the stand-in is in front) and every ten minutes while it is idle in front",
-      "if (snapOverlay == null) HomeSnapshot.capture(this, homeRoot, null);" in main and "IDLE_MS = 10 * 60 * 1000" in snap and "handler.postDelayed(snapTick, HomeSnapshot.IDLE_MS)" in main)
+      "if (snapOverlay == null && WallFirstFrame.snapshotWorthKeeping(fullPhotoShown, appsShown, wallTrimmed)) HomeSnapshot.capture(this, homeRoot, null);" in main and "IDLE_MS = 10 * 60 * 1000" in snap and "handler.postDelayed(snapTick, HomeSnapshot.IDLE_MS)" in main)
 check("it stays until the live views have painted (no page loading, at least 400 ms), at most 2.5 s, then a 220 ms fade; never a gap in between",
       "!(homeCard != null && homeCard.loading())" in main and "MIN_MS = 400" in snap and "LIVE_WAIT_MS = 2500" in snap and "FADE_MS = 220" in snap and "animate().alpha(0f).setDuration(HomeSnapshot.FADE_MS)" in main
       and "loading = true;" in card and "loading = false;" in card.split("public void onPageFinished")[1][:80])

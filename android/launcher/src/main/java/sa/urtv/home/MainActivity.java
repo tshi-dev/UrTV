@@ -223,6 +223,8 @@ public class MainActivity extends Activity {
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         setContentView(buildUi());
         showSnapshot();   // the home's last picture (or its skeleton) at once; it fades out when the live views have painted
+        resumeAt = SystemClock.elapsedRealtime();
+        firstFrameWallpaper();   // the small copy of the last photo in the first frame, never black
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((was, now) -> { KeyTrace.focusChanged(); placeName(); });   // FavBar: the name only in the bar
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalFocusChangeListener((was, now) -> {   // design/43: the top row opens while the focus is in it, and closes after
             if (pillBar == null || barHeld) return;
@@ -258,12 +260,17 @@ public class MainActivity extends Activity {
     protected void onRestart() {
         super.onRestart();
         showSnapshot();   // coming back from an app: the last picture covers the moment before the cards paint
+        resumeAt = SystemClock.elapsedRealtime();
+        photoLogged = false;
+        firstFrameWallpaper();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         resumed = true;
+        if (resumeAt == 0) resumeAt = SystemClock.elapsedRealtime();
+        firstFrameWallpaper();   // (a return that did not restart: the photo may have been let go by onTrimMemory)
         handler.postDelayed(snapTick, HomeSnapshot.IDLE_MS);
         if (sa.urtv.home.setup.SetupReopen.take()) {   // «إعداد تلفزيوني» was left behind by the home switch: its progress and its done screen come back (once)
             try { guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t("إعداد تلفزيوني"), () -> launch(new Intent(this, sa.urtv.home.setup.SetupActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT))); } catch (RuntimeException ignored) { }   // the person opened this screen already (its own lock was passed then)
@@ -326,7 +333,7 @@ public class MainActivity extends Activity {
         if (appsEdit != null) leaveAppsEdit();   // the same for «تعديل التطبيقات»
         handler.removeCallbacks(rotateWallpaper);
         handler.removeCallbacks(snapTick);
-        if (snapOverlay == null) HomeSnapshot.capture(this, homeRoot, null);   // the picture the next start draws first
+        if (snapOverlay == null && WallFirstFrame.snapshotWorthKeeping(fullPhotoShown, appsShown, wallTrimmed)) HomeSnapshot.capture(this, homeRoot, null);   // the picture the next start draws first: never one without the photo or the apps bar
         unregisterReceiver(tick);
         if (inputsPopup != null) inputsPopup.dismiss();
         if (control != null) control.dismiss();   // its speed test stops with it
@@ -355,7 +362,7 @@ public class MainActivity extends Activity {
     private long snapShownAt;
     private final Runnable snapTick = new Runnable() {   // while the home is in front and idle: a fresh picture every ten minutes
         @Override public void run() {
-            if (resumed && snapOverlay == null) HomeSnapshot.capture(MainActivity.this, homeRoot, null);
+            if (resumed && snapOverlay == null && WallFirstFrame.snapshotWorthKeeping(fullPhotoShown, appsShown, wallTrimmed)) HomeSnapshot.capture(MainActivity.this, homeRoot, null);
             handler.postDelayed(this, HomeSnapshot.IDLE_MS);
         }
     };
@@ -398,7 +405,56 @@ public class MainActivity extends Activity {
     }
 
     /** both wallpaper bitmaps are let go; the one in front leaves a 160 px copy (about 100 KB), which CENTER_CROP stretches soft until the next photo fades in over it */
+    /** 4.3.1 the small (480 px) copy of the photo in front: in memory and on disk, drawn in the first frame of a start or a return when no photo is in a view (WallFirstFrame) */
+    private volatile Bitmap smallPhoto;
+    private boolean fullPhotoShown, photoLogged;
+    private long resumeAt;
+    private static final String WALL_SMALL = "wall-small.webp";
+
+    private void firstFrameWallpaper() {
+        if (wallFront == null) return;
+        boolean has = wallFront.getDrawable() != null;
+        java.io.File f = new java.io.File(getFilesDir(), WALL_SMALL);
+        int how = WallFirstFrame.source(has, smallPhoto != null, f.isFile());
+        if (how == WallFirstFrame.MEMORY || how == WallFirstFrame.DISK) {
+            Bitmap b = how == WallFirstFrame.MEMORY ? smallPhoto : android.graphics.BitmapFactory.decodeFile(f.getPath());
+            if (b != null) {
+                smallPhoto = b;
+                wallFront.setImageBitmap(b);
+                wallFront.setAlpha(1f);
+                logFirstPhoto(how == WallFirstFrame.MEMORY ? "small copy, memory" : "small copy, disk");
+                return;
+            }
+        }
+        logFirstPhoto(has ? "photo kept" : "none, the look's colour");
+    }
+
+    /** one line per return for the tester: the time from the home coming back to the first photo frame (tag UrTVHome) */
+    private void logFirstPhoto(String how) {
+        if (photoLogged) return;
+        photoLogged = true;
+        android.util.Log.i("UrTVHome", "resume to first photo frame: " + (SystemClock.elapsedRealtime() - resumeAt) + " ms (" + how + "), ram tier " + Ram.tier(this));
+    }
+
+    /** the small copy of a photo just shown, made off the main thread */
+    private void saveSmallPhoto(Bitmap src) {
+        try {
+            int w = WallFirstFrame.SMALL_W, h = WallFirstFrame.smallHeight(src.getWidth(), src.getHeight());
+            Bitmap small = Bitmap.createScaledBitmap(src, w, h, true);
+            smallPhoto = small;
+            java.io.File tmp = new java.io.File(getFilesDir(), WALL_SMALL + ".tmp");
+            try (java.io.FileOutputStream out = new java.io.FileOutputStream(tmp)) { small.compress(Bitmap.CompressFormat.WEBP, 80, out); }
+            if (!tmp.renameTo(new java.io.File(getFilesDir(), WALL_SMALL))) tmp.delete();
+        } catch (Exception | OutOfMemoryError ignored) { }
+    }
+
     private void thinWallpaper() {
+        fullPhotoShown = false;
+        if (smallPhoto != null) {   // the small copy stays (a stand-in as sharp as the screen needs for the seconds until the full photo is back)
+            for (ImageView v : new ImageView[] {wallFront, wallBack}) if (v != null) v.setImageDrawable(null);
+            if (wallFront != null) wallFront.setImageBitmap(smallPhoto);
+            return;
+        }
         android.graphics.drawable.Drawable d = wallFront == null ? null : wallFront.getDrawable();
         Bitmap thumb = null;
         try {
@@ -3504,6 +3560,10 @@ public class MainActivity extends Activity {
         root.removeView(wallFront);
         root.addView(wallFront, 1, new FrameLayout.LayoutParams(-1, -1));
         wallFront.setImageBitmap(bm);
+        fullPhotoShown = true;
+        logFirstPhoto("full photo");
+        final Bitmap forSmall = bm;
+        new Thread(() -> saveSmallPhoto(forSmall), "wall-small").start();
         wallFront.setAlpha(0f);
         final ImageView shown = wallFront;
         shown.animate().alpha(1f).setDuration(firstWallpaper ? 600 : 2000).withEndAction(() -> {

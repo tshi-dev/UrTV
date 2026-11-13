@@ -36,6 +36,7 @@ check("the connection is the TV's own adb first, then the paired route (SetupSes
 check("the activity is exported only behind the signature permission; its row is in the settings (home page) and in the hub and the word lists",
       'android:name=".setup.DisabledAppsActivity"' in mf and mf.split('android:name=".setup.DisabledAppsActivity"')[1][:200].count('android:permission="sa.urtv.home.OPEN_CLEAN"') == 1
       and 'row("التطبيقات المعطّلة"' in st and "DisabledAppsActivity" in st and '{"التطبيقات المعطّلة", HOME}' in hub and 'S.n("التطبيقات المعطّلة")' in words)
+check("«إعداد تلفزيوني» is a row of the settings that always opens the setup, even when UrTV is already the home (4.3.1)", 'row("إعداد تلفزيوني"' in st and "openSetup()" in st.split('row("إعداد تلفزيوني"')[1][:200] and '{"إعداد تلفزيوني", HOME}' in hub and 'S.n("إعداد تلفزيوني")' in words)
 if not shutil.which("javac"):
     print("SKIP logic: no javac"); sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
