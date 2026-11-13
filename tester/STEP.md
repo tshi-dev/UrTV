@@ -1047,3 +1047,14 @@ Why: a user on a TCL with Android 14 and 4.3 reports the Saudi Quran radio «ي�
 2. 30 minutes of the same with the screensaver on.
 3. If you can do it safely from the PC side only (no change on the owner's router): 15 minutes with the TV's connection made poor (for example a traffic limit on your own PC if the TV goes through it; otherwise skip and say so). Report how it behaves.
 4. When the 4.3.1 test build with the new buffering is on apk-next (the supervisor will say in the GO line): repeat 1 for 1 hour and compare; then `optimize/dock.sh debug radioslow on` if the switch exists: does it show «نحاول نرجّع البث…» and come back by itself? Switch off after.
+
+## step 69 — UrTV Player beta: «دمج التعليق» (newest pre-release v0.9.16-betaN on github.com/tshi-dev/UrTV-Player/releases; TV muted; uninstall at the end)
+Install the beta APK with adb (check its .sha256 and the signer 13ade7d0…69dfea). State without sound: `adb logcat -s UrTVCommentary` (one line per change: audio=, ready=, delayMs=, held=, failure=, mainMuted=). Demo list only: 6 made-up channels on unique URLs of free test streams (as in step 65).
+1. Play channel 1 → OK panel → «دمج التعليق» → «اختر قناة للصوت» → pick channel 2. Log: audio=channel 2, ready=true, mainMuted=true. Picture of the panel.
+2. Delay: press +0.5 three times, then −1, then 0: the value on screen and `delayMs` / `held=` follow each press at once; no «تطبيق» button; the ends read «قدّم الصوت» / «أخّر الصوت».
+3. «صوت القناة»: back to the original (audio=original, mainMuted=false). Change channel while merged: the merge ends and the audio player is gone (log + `dumpsys meminfo com.urtv.player` before / during / after: the extra memory goes away).
+4. Back to the list, HOME, and the screensaver while merged: no sound keeps playing from the second channel (log shows it released).
+5. The system mute and volume never change (STREAM_MUSIC before/after).
+6. Failure: pick an audio channel whose URL is dead (add one to the demo list): the honest message, and the original sound restored.
+7. RAM note: this TV has 2.4 GB, so the under-2-GB warning («متوفر لتلفزيونات 2 قيقا وأكثر» + «جرّب») can't be seen here unless the build has a debug way to force it; say whether one exists.
+Not testable muted: whether the delay SOUNDS right; the owner will listen himself.
