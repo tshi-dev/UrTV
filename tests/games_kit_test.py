@@ -18,7 +18,7 @@ def src(name): return (APP / name).read_text(encoding="utf-8")
 def code(s): return re.sub(r"/\*.*?\*/|//[^\n]*", "", s, flags=re.S)
 
 KIT = ["GameRegistry", "GameScore", "GameChips", "GameClock", "GameDataCheck"]   # no Android in these
-ENGINES = ["KhanatData", "KhanatEngine", "MissingWord", "games/domino/Tile", "games/domino/DominoGame", "games/domino/DominoBot", "games/domino/Snake", "games/domino/DominoTable"]                           # each game's rules and data: no Android either
+ENGINES = ["KhanatData", "KhanatEngine", "KhanatLayout", "MissingWord", "games/domino/Tile", "games/domino/DominoGame", "games/domino/DominoBot", "games/domino/Snake", "games/domino/DominoTable"]                           # each game's rules and data: no Android either
 if not shutil.which("javac"):
     print("SKIP games kit: no javac"); sys.exit(1)
 with tempfile.TemporaryDirectory() as tmp:
@@ -85,6 +85,11 @@ run = (ROOT / "tests/run.sh").read_text(encoding="utf-8")
 check("tests/run.sh runs the quiz's and the games' tests", all(f"tests/{n}" in run for n in ("quiz_test.py", "quiz_phone.test.mjs", "quiz_e2e.test.mjs", "games_kit_test.py", "games_data_test.py")))
 # ---- step 58: nothing a game draws is cut by its own box or by the time bar
 ga, qg, ch, kh, w5, lh, od = (code(src(n)) for n in ("GameActivity.java", "QuizGamesActivity.java", "CharadesActivity.java", "KhanatActivity.java", "Word5Activity.java", "LetterHiveActivity.java", "OddOneActivity.java"))
+check("khanat: «أفراد» offers 2 to 10 players (GameScore.MAX) beside 2 to 4 teams; the two tile layouts come from KhanatLayout, not from the screen; the players are numbered and no name is asked of anyone",
+      "COUNTS = {2, 3, 4, 5, 6, 7, 8, 9, 10}" in kh and "MAX = 10" in code(src("GameScore.java")) and 'add("mode"' in kh and 'add("count"' in kh and "KhanatLayout.tile(" in kh and "KhanatLayout.who(" in kh
+      and "playerNames(" in kh and "KhanatLayout.moveMark(" in kh and "KhanatLayout.moveWho(" in kh)
+check("letter hive: after «اكشف الجواب» the host says who answered (the first team, the second, or «ما أحد»), and the setting «من يختار الحرف» defaults to the team that answered right",
+      "judge(who)" in lh and 'S.t("ما أحد")' in lh and 'add("next"' in lh and "s.alternate = chips.picked(\"next\") == 1" in lh and "S.t(\"صح\")" not in lh)
 check("the kit fits the question block's words to their box (fitSize: the size comes down until no line is taller than the box; a TextView clips what is taller, which cut the dots of a big letter and the line above the time bar)",
       "protected final float fitSize(" in ga and "fitSize(words, sizeFor(s, 104, 88, 72, 40, 70)" in ga and "fitSize(game.letter, 300, 360, 336, 1)" in kh and 'question(turn, S.t("الكلمة لك وحدك"), 340)' in ch and "TickTimer((int) (game.turnMs() / 1000), 288)" in ch)
 check("the games list fits each tile's title (two lines at most) and its line (three) by lowering the size before cutting; the English names are short",

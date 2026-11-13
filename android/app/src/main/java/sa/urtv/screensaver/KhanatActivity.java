@@ -18,7 +18,9 @@ import java.util.Random;
 public class KhanatActivity extends GameActivity {
     enum Screen { SETUP, LETTER, WRITING, WHO, REVEAL, SCORE, END }
 
-    static final int[] ROUNDS = {3, 5, 8}, SECONDS = {60, 90, 0}, TEAMS = {2, 3, 4};
+    static final int[] ROUNDS = {3, 5, 8}, SECONDS = {60, 90, 0}, COUNTS = {2, 3, 4, 5, 6, 7, 8, 9, 10};
+    /** teams: 2 to 4 (the first three counts); individual mode: 2 to 10 players (GameScore.MAX) */
+    static final int MAX_TEAMS = 4;
     static final int SPIN_MS = 1500, LETTER_MS = 3000;
     /** the boxes' names, marked for the English table: the five of every round, then the two a sixth can be («أكلة», «مدينة سعودية») */
     static final String[] BOX_KEYS = {"animal", "plant", "object", "country", "name", "food", "saudi_city"};
@@ -37,11 +39,18 @@ public class KhanatActivity extends GameActivity {
         chips = new GameChips()
             .add("rounds", S.t("الجولات"), new String[]{num(3), num(5), num(8)}, 1)
             .add("time", S.t("الوقت"), new String[]{S.t("%s ثانية", num(60)), S.t("%s ثانية", num(90)), S.t("بدون وقت")}, 1)
-            .add("teams", S.t("الفرق"), new String[]{num(2), num(3), num(4)}, 0)
+            .add("mode", S.t("نوع اللعب"), new String[]{S.t("فرق"), S.t("أفراد")}, 0)
+            .add("count", S.t("العدد"), new String[]{num(2), num(3), num(4), num(5), num(6), num(7), num(8), num(9), num(10)}, 0)
             .add("boxes", S.t("الخانات"), new String[]{num(5), S.t("%s مع أكلة", num(6)), S.t("%s مع مدينة سعودية", num(6))}, 0)
             .add("hard", S.t("حروف صعبة"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
         remembered(soundChip(chips));
+        onChips(chips);
     }
+
+    /** teams are 2 to 4; with «أفراد» every count to ten is offered */
+    @Override protected void onChips(GameChips c) { for (int i = MAX_TEAMS - 1; i < COUNTS.length; i++) c.setOff("count", i, c.picked("mode") == 0); }
+    private boolean solo() { return chips.picked("mode") == 1; }
+    private String[] playerNames(int n) { String[] v = new String[n]; for (int i = 0; i < n; i++) v[i] = S.t("لاعب %s", num(i + 1)); return v; }
 
     @Override protected boolean inPlay() { return screen != Screen.SETUP && screen != Screen.END; }
     @Override protected void onPauseChanged(boolean paused, long now) { if (paused) clock.pause(now); else clock.resume(now); }
@@ -56,8 +65,8 @@ public class KhanatActivity extends GameActivity {
         String[] boxes = new String[n];
         System.arraycopy(BOX_KEYS, 0, boxes, 0, 5);
         if (n == 6) boxes[5] = BOX_KEYS[4 + sixth];
-        int teams = TEAMS[chips.picked("teams")];
-        names = teamNames(teams);
+        int teams = COUNTS[chips.picked("count")];
+        names = solo() ? playerNames(teams) : teamNames(teams);
         game = new KhanatEngine(teams, ROUNDS[chips.picked("rounds")], boxes, data.letters(en, chips.picked("hard") == 1), rnd);
         beginLetter();
     }
@@ -91,10 +100,9 @@ public class KhanatActivity extends GameActivity {
             case WRITING: if (back) openPause(); else if (ok) { clock.stop(); game.stop(true); go(Screen.WHO); } return;
             case WHO: {
                 if (back) { openPause(); return; }
-                int v = keyButtons(sel, game.score.n + 1, ok, dx);
-                if (v >= 0) { if (v != sel) { sel = v; redraw(); } return; }
-                game.finishedFirst(-1 - v < game.score.n ? -1 - v : -1);
-                go(Screen.REVEAL);
+                if (ok) { game.finishedFirst(sel < game.score.n ? sel : -1); go(Screen.REVEAL); return; }
+                int to = KhanatLayout.moveWho(game.score.n + 1, sel, dx, dy);
+                if (to != sel) { sel = to; redraw(); }
                 return;
             }
             case REVEAL: keyReveal(back, ok, dx, dy); return;
@@ -113,13 +121,11 @@ public class KhanatActivity extends GameActivity {
         }
     }
 
-    /** the reveal's focus: 0..n-1 the teams' tiles, n «التالي», n + 1 «أمثلة» */
+    /** the reveal's focus: 0..n-1 the sides' tiles (one row up to five, two rows from six), n «التالي», n + 1 «أمثلة» */
     private void keyReveal(boolean back, boolean ok, int dx, int dy) {
         int n = game.score.n;
         if (back) { openPause(); return; }
-        if (dy > 0 && sel < n) { sel = n; redraw(); return; }
-        if (dy < 0 && sel >= n) { sel = 0; redraw(); return; }
-        if (dx != 0) { int lo = sel < n ? 0 : n, hi = sel < n ? n - 1 : n + 1, to = Math.max(lo, Math.min(hi, sel + dx)); if (to != sel) { sel = to; redraw(); } return; }
+        if (dx != 0 || dy != 0) { int to = KhanatLayout.moveMark(n, sel, dx, dy); if (to != sel) { sel = to; redraw(); } return; }
         if (!ok) return;
         if (sel < n) { game.cycle(sel); redraw(); }
         else if (sel == n + 1) { examples = !examples; redraw(); }
@@ -181,13 +187,14 @@ public class KhanatActivity extends GameActivity {
 
     private void drawWho() {
         title(S.t("من خلّص أول؟"), roundLine());
-        int n = game.score.n; float w = (1728 - n * 24) / (n + 1f);
-        String[] labels = new String[n + 1];
+        int n = game.score.n, total = n + 1;
+        String[] labels = new String[total];
         System.arraycopy(names, 0, labels, 0, n); labels[n] = S.t("لا أحد");
-        buttons(labels, sel, w, 320);
+        for (int i = 0; i < total; i++) { float[] r = KhanatLayout.who(total, i); root.addView(button(clip(labels[i], 44, r[2] - 40), sel == i), at(r[2], r[3], r[0], r[1])); }
+        float noteY = KhanatLayout.who(total, total - 1)[1] + 104 + 40;
         TextView note = text(S.t("من خلّص أول وكل خاناته صحيحة له %s نقاط زيادة", num(KhanatEngine.FIRST_BONUS)), 44, L.ink(0xCC), false); note.setMaxLines(2);
-        root.addView(note, at(1728, 130, 96, 480));
-        hints("◀ ▶", S.t("الاختيار"), S.t("اختيار"), S.t("تأكيد"));
+        root.addView(note, at(1728, 130, 96, noteY));
+        hints(KhanatLayout.rows(total) > 1 ? "◀ ▶ ▲ ▼" : "◀ ▶", S.t("الاختيار"), S.t("اختيار"), S.t("تأكيد"));
     }
 
     private void drawReveal() {
@@ -198,21 +205,31 @@ public class KhanatActivity extends GameActivity {
         FrameLayout lt = stamp(L.saff, 0, 0, false);
         lt.addView(centered(game.letter, 144, L.onSaff, true), new FrameLayout.LayoutParams(-1, -1));
         root.addView(lt, atEnd(232, 200, 96, 54));
-        float gap = 24, w = Math.min(560, (1728 - (n - 1) * gap) / n);
+        boolean compact = KhanatLayout.rows(n) > 1;
         for (int i = 0; i < n; i++) {
             int st = game.marks[game.box][i]; boolean focus = sel == i;
+            float[] r = KhanatLayout.tile(n, i), w = r;
             FrameLayout t = stamp(st == KhanatEngine.VALID ? L.ok : st == KhanatEngine.SAME ? L.saff : L.tile, L.ink, focus ? 14 : 6, false);
             int words = st == KhanatEngine.VALID ? L.onDeep : st == KhanatEngine.SAME ? L.onSaff : L.ink;
-            TextView nm = centered(clip(names[i], 56, w - 60), 56, words, true);
-            t.addView(nm, new FrameLayout.LayoutParams(-1, px(96), Gravity.TOP));
             String verdict = st == KhanatEngine.VALID ? S.t("صحيحة") : st == KhanatEngine.SAME ? S.t("مكررة") : S.t("بدون");
-            FrameLayout.LayoutParams vp = new FrameLayout.LayoutParams(-1, px(80), Gravity.TOP); vp.topMargin = px(96);
-            t.addView(centered(verdict, 48, words, false), vp);
-            TextView pts = centered("⁦+" + num(KhanatEngine.points(st)) + "⁩", 72, words, true); pts.setTextDirection(View.TEXT_DIRECTION_LTR);
-            FrameLayout.LayoutParams pp = new FrameLayout.LayoutParams(-1, px(96), Gravity.BOTTOM); pp.bottomMargin = px(16);
-            t.addView(pts, pp);
+            String plus = "⁦+" + num(KhanatEngine.points(st)) + "⁩";
+            if (compact) {   // two rows: the name on top, the verdict and the points below it
+                t.addView(centered(clip(names[i], 44, w[2] - 40), 44, words, true), new FrameLayout.LayoutParams(-1, px(64), Gravity.TOP));
+                FrameLayout.LayoutParams vp = new FrameLayout.LayoutParams(px(w[2] / 2f - 8), px(56), Gravity.BOTTOM | Gravity.START); vp.bottomMargin = px(14); vp.setMarginStart(px(12));
+                t.addView(centered(verdict, 36, words, false), vp);
+                TextView pts = centered(plus, 56, words, true); pts.setTextDirection(View.TEXT_DIRECTION_LTR);
+                FrameLayout.LayoutParams pp = new FrameLayout.LayoutParams(px(w[2] / 2f - 8), px(64), Gravity.BOTTOM | Gravity.END); pp.bottomMargin = px(10); pp.setMarginEnd(px(12));
+                t.addView(pts, pp);
+            } else {
+                t.addView(centered(clip(names[i], 56, w[2] - 60), 56, words, true), new FrameLayout.LayoutParams(-1, px(96), Gravity.TOP));
+                FrameLayout.LayoutParams vp = new FrameLayout.LayoutParams(-1, px(80), Gravity.TOP); vp.topMargin = px(96);
+                t.addView(centered(verdict, 48, words, false), vp);
+                TextView pts = centered(plus, 72, words, true); pts.setTextDirection(View.TEXT_DIRECTION_LTR);
+                FrameLayout.LayoutParams pp = new FrameLayout.LayoutParams(-1, px(96), Gravity.BOTTOM); pp.bottomMargin = px(16);
+                t.addView(pts, pp);
+            }
             if (focus) { FrameLayout.LayoutParams bp = new FrameLayout.LayoutParams(-1, px(14), Gravity.BOTTOM); t.addView(rect(L.ink), bp); }
-            root.addView(t, at(w, 300, 96 + i * (w + gap), 332));
+            root.addView(t, at(r[2], r[3], r[0], r[1]));
         }
         boolean last = game.box + 1 >= game.boxes.length;
         root.addView(button(last ? S.t("نتيجة الجولة") : S.t("الخانة التالية"), sel == n), at(560, 104, 96, 664));
@@ -223,7 +240,7 @@ public class KhanatActivity extends GameActivity {
             TextView tv = text(line, 52, L.ink, true); tv.setMaxLines(2);
             root.addView(tv, at(1728, 140, 96, 800));
         } else {
-            TextView tv = text(S.t("اتفقوا بصوت عالٍ، ثم علّموا كل فريق: صحيحة، مكررة مع فريق آخر، أو بدون"), 40, L.ink(0xCC), false); tv.setMaxLines(2);
+            TextView tv = text(solo() ? S.t("اتفقوا بصوت عالٍ، ثم علّموا كل لاعب: صحيحة، مكررة مع لاعب آخر، أو بدون") : S.t("اتفقوا بصوت عالٍ، ثم علّموا كل فريق: صحيحة، مكررة مع فريق آخر، أو بدون"), 40, L.ink(0xCC), false); tv.setMaxLines(2);
             root.addView(tv, at(1728, 120, 96, 800));
         }
         hints("◀ ▶ ▲ ▼", S.t("الاختيار"), S.t("اختيار"), sel < n ? S.t("غيّر الحكم") : S.t("تأكيد"), S.t("رجوع"), S.t("إيقاف مؤقت"));
@@ -232,7 +249,7 @@ public class KhanatActivity extends GameActivity {
     private void drawScore() {
         title(S.t("النتيجة"), roundLine());
         board(game.score, names, true);
-        if (game.bonusGiven && game.finisher >= 0) root.addView(text(S.t("%s خلّصوا أول: %s نقاط زيادة", names[game.finisher], num(KhanatEngine.FIRST_BONUS)), 44, L.ink, true), at(1728, 64, 96, 880));
+        if (game.bonusGiven && game.finisher >= 0) root.addView(text((solo() ? S.t("%s خلّص أول: %s نقاط زيادة", names[game.finisher], num(KhanatEngine.FIRST_BONUS)) : S.t("%s خلّصوا أول: %s نقاط زيادة", names[game.finisher], num(KhanatEngine.FIRST_BONUS))), 44, L.ink, true), at(1728, 64, 96, 880));
         boolean tieNext = !game.tiebreak && game.lastRound() && game.score.tie();
         hints(S.t("اختيار"), tieNext ? S.t("جولة فاصلة") : game.lastRound() ? S.t("النتيجة النهائية") : S.t("الجولة التالية"), S.t("رجوع"), S.t("إيقاف مؤقت"));
     }

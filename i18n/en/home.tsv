@@ -101,7 +101,6 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 كل المصادر	All inputs
 الإعدادات	Settings
 إلغاء	Cancel
-إعدادات تلفزيونك	Your TV settings
 لإطفاء الشاشة: فعّل «%s»	To turn the screen off, enable “%s”
 أدخل الرمز	Enter PIN
 هذا مقفل بالرمز الأبوي	This is locked with the parental PIN
@@ -127,7 +126,6 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 إعدادات الصوت	Sound settings
 شاشة التوقف	Screensaver
 ابدأها الآن	Start it now
-الأذان والمفضلة والمظهر	Adhan, favorites, look
 يعمل: باقي %s د	On: %s min left
 ١٥ إلى ٩٠ دقيقة	15 to 90 minutes
 أُلغي · اضغط اختيار للبدء	Cancelled · press OK to start
@@ -656,3 +654,13 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 للطقس والصلاة	For weather and prayer
 وين أنت؟ اختر مدينتك عشان الطقس والصلاة	Where are you? Pick your city for the weather and prayer times
 اختر المدينة	Choose city
+الألعاب	Games
+تلفزيونك	Your TV
+حدّث الآن	Update now
+العب مع العائلة	Play with the family
+الألعاب والمباريات والإعدادات	Games, matches and settings
+حدّث شاشة التوقف عشان تطلع الألعاب والمزايا الجديدة	Update the screensaver app to get the games and the new features
+حدّث الشاشة الرئيسية عشان تعمل مزايا شاشة التوقف الجديدة	Update the home app so the screensaver's new features work
+شكل اللوحة	Panel layout
+عريض	Wide
+طولي	Tall

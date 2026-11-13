@@ -157,6 +157,9 @@ public class YourTvHubActivity extends Activity {
         column.addView(hint, hintLp);
         root.addView(column, new FrameLayout.LayoutParams(-1, -1));
         setContentView(root);
+        String want = getIntent().getStringExtra("open");   // 4.3.1: the home's «الألعاب» opens its window at once
+        getIntent().removeExtra("open");
+        if ("games".equals(want) || "matches".equals(want) || "markets".equals(want)) { final String w = want; root.post(new Runnable() { public void run() { open(w); } }); }
         cards.get(0).requestFocus();
     }
 

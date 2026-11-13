@@ -787,11 +787,20 @@
 الروّاد	Pioneers
 %s مع مدينة سعودية	%s with Saudi city
 مدينة سعودية	Saudi city
+نوع اللعب	Play as
+فرق	Teams
+أفراد	Individuals
+العدد	How many
+%s خلّص أول: %s نقاط زيادة	%s finished first: %s extra points
+اتفقوا بصوت عالٍ، ثم علّموا كل لاعب: صحيحة، مكررة مع لاعب آخر، أو بدون	Agree aloud, then mark each player: right, the same as another player's, or none
 # ---- «خلية الحروف» and «خمّن الكلمة» (LetterHiveActivity, Word5Activity)
 أطفال	Kids
 وقت السؤال	Time per question
 زر الخيارات	Options button
 فرصة للفريق الآخر	Other team may steal
+من يختار الحرف	Who picks the letter
+من يجاوب صح يختار الحرف	The team that answers right picks
+بالتناوب	In turns
 من اليمين إلى اليسار	Side to side
 من الأعلى إلى الأسفل	Top to bottom
 اختاروا حرفًا ثم اضغطوا «اختيار»	Pick a letter, then press OK
@@ -806,6 +815,8 @@
 الحكم لكم: أي جواب صحيح يُحسب	You are the judge: any correct answer counts
 أمثلة: %s	Examples: %s
 اكشف الجواب	Show the answer
+حرف %s، من جاوب؟	Letter %s, who answered?
+ما أحد	Nobody
 خيارات	Options
 المحاولات	Tries
 الكلمة خمسة حروف	The word has five letters

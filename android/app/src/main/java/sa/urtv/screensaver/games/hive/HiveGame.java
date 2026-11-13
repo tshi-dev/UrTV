@@ -14,7 +14,9 @@ import java.util.function.LongSupplier;
  *   PICK   the team in turn chooses a free hexagon.
  *   ASK    its question is up, the options hidden; «خيارات» shows them once a turn (never in «تحدّي»). The team answers aloud while the time runs. When the time
  *          is up: with the steal on, the other team may answer the same question (STEAL, a new time); otherwise the screen says so and waits for OK.
- *   JUDGE  OK showed the answer: «صح» gives the hexagon to the team that answered, «خطأ» leaves it free. Either way the turn passes to the other team.
+ *   JUDGE  OK showed the answer: the host says WHO answered, a team or nobody (judge(who)). The hexagon and the point go to that team (a team whose time ran out and
+ *          whose rival answered gets nothing); nobody leaves it free. Then the turn: the team that answered right picks the next letter
+ *          (the default), or when nobody answered it passes to the other team; with Settings.alternate the turn passes to the other team every time.
  *   WON    a team's two sides are joined; chain() is what to light up.
  *
  * The board: 25 letters drawn for each game from the alphabet (three Arabic letters stay out, one English). A letter with no question for this game's filter
@@ -34,6 +36,8 @@ public final class HiveGame {
     public static final class Settings {
         public int level = LEVEL_MIXED, seconds = 15;
         public boolean kids, challenge, steal, english;
+        /** false (the default): the team that answered right picks the next letter, and when nobody did the turn passes to the other team. true: the turns alternate whoever answered. */
+        public boolean alternate;
     }
 
     public static final class Question {
@@ -174,27 +178,30 @@ public final class HiveGame {
         return true;
     }
 
-    /** «صح» or «خطأ» */
-    public boolean judge(boolean right) {
-        if (phase != Phase.JUDGE) return false;
-        if (right) {
-            board.owner[cell] = answering;
+    /** «من جاوب؟»: `who` is the team that answered right (TEAM_SIDES or TEAM_TOP), or 0 for nobody. The hexagon goes to that team. */
+    public boolean judge(int who) {
+        if (phase != Phase.JUDGE || (who != 0 && who != HiveBoard.TEAM_SIDES && who != HiveBoard.TEAM_TOP)) return false;
+        if (who != 0) {
+            board.owner[cell] = who;
             int w = board.winner();
             if (w != HiveBoard.FREE) { winner = w; chain = board.chain(w); phase = Phase.WON; return true; }
         }
-        endTurn();
+        endTurn(who != 0 && !settings.alternate ? who : other(turn));
         return true;
     }
+
+    /** the older yes or no: right means the team that was answering (the one in turn, or the one that stole), wrong means nobody */
+    public boolean judge(boolean right) { return judge(right ? answering : 0); }
 
     /** the pause card's way out of a question: nobody answers, the answer was not shown, the question stays on its hexagon, the turn passes */
     public boolean skip() {
         if (phase != Phase.ASK && phase != Phase.STEAL) return false;
-        endTurn();
+        endTurn(other(turn));
         return true;
     }
 
-    private void endTurn() {
-        turn = other(turn); answering = turn; cell = -1; question = null; optionsShown = false; timeUp = false;
+    private void endTurn(int next) {
+        turn = next; answering = turn; cell = -1; question = null; optionsShown = false; timeUp = false;
         phase = Phase.PICK;
     }
 }

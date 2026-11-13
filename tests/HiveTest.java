@@ -34,6 +34,8 @@ public final class HiveTest {
     }
     static HiveGame game(HiveBank b, HiveGame.Settings s, long seed) { return game(b, s, seed, ""); }
     static int cellOf(HiveGame g, char letter) { for (int i = 0; i < HiveBoard.CELLS; i++) if (g.board.letter[i] == letter && g.board.owner[i] == 0) return i; return -1; }
+    /** pick, reveal, the older judge(true): the hexagon goes to the team that was in turn */
+    static boolean yesNoOwner(HiveGame g, int cell) { int t = g.turn(); return right(g, cell) && g.board.owner[cell] == t && g.phase() == HiveGame.Phase.PICK; }
     static boolean right(HiveGame g, int cell) { return g.pick(cell) && g.reveal() && g.judge(true); }
 
     public static void main(String[] a) throws Exception {
@@ -107,7 +109,7 @@ check("board: 25 cells, every neighbour link goes both ways, 56 links in all (5 
         check("starter: neither Israel nor Western Sahara is offered as a sample answer", !banned);
 
         // ---- a game
-        HiveGame.Settings s = new HiveGame.Settings();
+        HiveGame.Settings s = new HiveGame.Settings(); s.alternate = true;   // the older checks below are about the turns alternating (the setting «بالتناوب»)
         HiveGame g = game(small, s, 1, "بت");
         HiveGame g2 = game(small, s, 2);
         boolean drawn = true; Set<Character> third = new HashSet<>();
@@ -153,7 +155,7 @@ check("board: 25 cells, every neighbour link goes both ways, 56 links in all (5 
         c = cellOf(g, 'د'); g.pick(c); kept = g.question().item.id;
         check("skip: leaving a question from the pause card passes the turn without showing the answer, and the hexagon keeps that same question for whoever picks it next",
             g.skip() && g.turn() == HiveBoard.TEAM_SIDES && g.board.owner[c] == 0 && g.pick(c) && g.question().item.id.equals(kept) && g.canShowOptions());
-        s = new HiveGame.Settings(); s.steal = true; s.seconds = 20;
+        s = new HiveGame.Settings(); s.steal = true; s.seconds = 20; s.alternate = true;
         g = game(small, s, 4, "رز"); c = cellOf(g, 'ر'); g.pick(c); kept = g.question().item.id; g.showOptions();
         now[0] += 20000; g.tick();
         check("steal (a setting): when the time is up the other team may answer the same question with a new time, and no second «خيارات»", g.phase() == HiveGame.Phase.STEAL && g.answering() == HiveBoard.TEAM_TOP
@@ -162,6 +164,30 @@ check("board: 25 cells, every neighbour link goes both ways, 56 links in all (5 
         c = cellOf(g, 'ز'); g.pick(c); now[0] += 20000; g.tick(); now[0] += 20000; g.tick();
         check("steal: when the stealing team's time is up too it waits for OK, it does not bounce back", g.phase() == HiveGame.Phase.STEAL && g.timeUp() && g.answering() == HiveBoard.TEAM_SIDES && g.reveal() && g.judge(false)
             && g.board.owner[c] == 0 && g.turn() == HiveBoard.TEAM_SIDES);
+
+        // who answered (the host picks a team or nobody after the answer is shown)
+        s = new HiveGame.Settings();
+        g = game(small, s, 7, "جد"); c = cellOf(g, 'ج'); g.pick(c); now[0] += 15000; g.tick(); g.reveal();
+        check("who answered: after the time ran out, the other team's answer gives it the hexagon and the point, not the team that picked", g.phase() == HiveGame.Phase.JUDGE && g.answering() == HiveBoard.TEAM_SIDES
+            && !g.judge(3) && !g.judge(-1) && g.phase() == HiveGame.Phase.JUDGE && g.judge(HiveBoard.TEAM_TOP) && g.board.owner[c] == HiveBoard.TEAM_TOP);
+        c = cellOf(g, 'د'); g.pick(c); g.reveal();
+        check("who answered: «ما أحد» leaves the hexagon free for both teams", g.judge(0) && g.board.owner[c] == HiveBoard.FREE && g.phase() == HiveGame.Phase.PICK && g.turn() != 0);
+        g = game(small, s, 7, "جد"); c = cellOf(g, 'ج'); g.pick(c); g.reveal();
+        check("who answered: the team that picked can be chosen too, and the older yes or no still means the team that was answering", g.judge(HiveBoard.TEAM_SIDES) && g.board.owner[c] == HiveBoard.TEAM_SIDES
+            && yesNoOwner(g, cellOf(g, 'د')));
+
+        // who picks the next letter (the default: the team that answered right)
+        s = new HiveGame.Settings();
+        g = game(small, s, 8, "جد"); c = cellOf(g, 'ج'); g.pick(c); g.reveal(); g.judge(HiveBoard.TEAM_SIDES);
+        check("next letter: the team that answered right picks the next one (it was in turn and answered, so it stays in turn)", g.turn() == HiveBoard.TEAM_SIDES && g.phase() == HiveGame.Phase.PICK && g.answering() == HiveBoard.TEAM_SIDES);
+        c = cellOf(g, 'د'); g.pick(c); now[0] += 15000; g.tick(); g.reveal(); g.judge(HiveBoard.TEAM_TOP);
+        check("next letter: when the other team answered right (the picker's time ran out) that other team picks next", g.turn() == HiveBoard.TEAM_TOP && g.board.owner[c] == HiveBoard.TEAM_TOP);
+        c = cellOf(g, 'ر') >= 0 ? cellOf(g, 'ر') : cellOf(g, 'ب'); g.pick(c); g.reveal(); g.judge(0);
+        check("next letter: when nobody answered the turn passes to the other team, and the hexagon stays free", g.turn() == HiveBoard.TEAM_SIDES && g.board.owner[c] == HiveBoard.FREE);
+        s = new HiveGame.Settings(); s.alternate = true;
+        g = game(small, s, 8, "جد"); c = cellOf(g, 'ج'); g.pick(c); g.reveal(); g.judge(HiveBoard.TEAM_SIDES);
+        check("next letter: with «بالتناوب» the turn passes to the other team even after a right answer", g.turn() == HiveBoard.TEAM_TOP);
+        check("next letter: the default is that the right answer picks", !new HiveGame.Settings().alternate);
 
         // levels, kids, challenge, English
         s = new HiveGame.Settings(); s.level = HiveGame.LEVEL_MEDIUM;
@@ -183,7 +209,8 @@ check("board: 25 cells, every neighbour link goes both ways, 56 links in all (5 
 
         // the winning chain and the lit chain of BOTH teams, through the game itself (every answer right, the other team taking harmless cells): the screen lights exactly chain()
         for (int team = 1; team <= 2; team++) {
-            HiveGame w = game(starter, new HiveGame.Settings(), 7 + team);
+            HiveGame.Settings alt = new HiveGame.Settings(); alt.alternate = true;   // this plan is two teams taking turns
+            HiveGame w = game(starter, alt, 7 + team);
             int[] plan = team == 1 ? new int[] {10, 11, 12, 13, 14} : new int[] {2, 7, 12, 17, 22};
             int[] filler = team == 1 ? new int[] {0, 1, 3, 4, 20, 21} : new int[] {0, 5, 10, 15, 20, 4};   // team 1 never gets column 4 with column 0 here, team 2 never top with bottom
             int p = 0, f = 0; boolean ok = true;
@@ -198,7 +225,7 @@ check("board: 25 cells, every neighbour link goes both ways, 56 links in all (5 
         // a whole game on the starter, played by the rules until somebody wins
         boolean allEnd = true, noneShown = true; int longest = 0, shownEmpty = 0;
         for (int seed = 0; seed < 300; seed++) {
-            HiveGame.Settings st = new HiveGame.Settings(); st.english = seed % 2 == 1; st.kids = seed % 3 == 0; st.level = seed % 3;
+            HiveGame.Settings st = new HiveGame.Settings(); st.english = seed % 2 == 1; st.kids = seed % 3 == 0; st.level = seed % 3; st.alternate = seed % 4 < 2;
             HiveGame w = game(starter, st, seed);
             if (!st.kids && !st.english) for (char l : w.board.letter) noneShown &= !starter.of(l).isEmpty(); Random r = new Random(seed); Set<String> asked = new HashSet<>(); int turns = 0; boolean ok = true;
             while (w.phase() != HiveGame.Phase.WON && turns < 2000) {
@@ -210,7 +237,8 @@ check("board: 25 cells, every neighbour link goes both ways, 56 links in all (5 
                 if (q.kind == HiveGame.Kind.BANK) { ok &= asked.add(q.item.id) && (st.english ? q.item.en : q.item.ar) == q.letter && (!st.kids || q.item.kids); }
                 else ok &= q.kind == HiveGame.Kind.NAME || q.hints.length > 0;
                 shownEmpty += starter.of(q.letter).isEmpty() ? 1 : 0;
-                ok &= w.reveal() && w.judge(r.nextInt(3) > 0) && (w.phase() == HiveGame.Phase.WON || w.turn() != team);
+                boolean yes = r.nextInt(3) > 0;
+                ok &= w.reveal() && w.judge(yes) && (w.phase() == HiveGame.Phase.WON || w.turn() == (yes && !st.alternate ? team : 3 - team));
                 turns++;
             }
             ok &= w.phase() == HiveGame.Phase.WON && w.winner() == w.board.winner() && w.chain() != null && w.chain().length >= 5 && !w.pick(0);

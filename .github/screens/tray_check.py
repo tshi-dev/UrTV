@@ -398,7 +398,7 @@ def run(out):
     # «تطبيقات في الشريط»: 7 whole tiles (Arabic) and 10 (English), the tray's box and the name's place unchanged
     shell("wm density 320")
     for n, lang, favs in ((7, "ar", 7), (10, "en", 10)):
-        shown_n = min(n, 8)   # ten across were too small: eight show whole, the rest scroll (FavBar.MAX_SHOWN)
+        shown_n = min(n, 10)   # 4.3.1: up to ten show whole, no scrolling (FavBar.MAX_SHOWN)
         seed_dock(favs)
         saver(f"--es favbar {n}")
         tag = f"bar{n}-{lang}"

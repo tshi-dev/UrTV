@@ -44,18 +44,18 @@ check("«أطفئ الآن» with the service off: the tile says «يحتاج ت
 check("«إعدادات تلفزيونك» opens our settings (the screensaver app's SettingsActivity) through «قفل الإعدادات» (@urtv), the tile only when that app is there",
       "host.openOurSettings()" in center and "ParentalPolicy.OUR_SETTINGS, null" in main and 'SAVER_PKG + ".SettingsActivity"' in main
       and "case OUR_SETTINGS:" in policy and "t.add(OWN_SETTINGS)" in policy.split("case OUR_SETTINGS:")[1][:200]
-      and center.index("if (host.saverInstalled())") < center.index('"إعدادات تلفزيونك"') < center.index('"tv", S.t("الإعدادات")'))
+      and center.index("if (host.saverInstalled())") < center.index('"تلفزيونك"') < center.index('"tv", S.t("الإعدادات")'))
 check("the side panel: 560 px of 1920 wide inside the 5 % safe area, a clear full-screen popup it slides across for 220 ms (ease-out), a press outside closes it, what does not fit scrolls",
       "PANEL_W = 560f / 1920f, SAFE = 0.05f" in center and "SLIDE_MS = 220" in center and "new PopupWindow(root, W, H, true)" in center and "root.setOnClickListener(v -> dismiss());" in center
       and "panel.animate().translationX(0).setDuration(SLIDE_MS).setInterpolator(new DecelerateInterpolator())" in center and "Dir.start() | Gravity.TOP" in center
       and "new ScrollView(act)" in center and "ControlLayout" not in center and not (HOME / "ControlLayout.java").exists())
 check("four round toggles on top (Bluetooth, mirroring, the sleep timer, «أطفئ الآن»), then rows with a short value each (network, sound, speed, the TV's settings, ours); ellipsized one-line values",
-      'TOGGLES = {"bluetooth", "mirror", "sleep", "off"}' in center and 'ROWS = {"net", "sound", "speed", "ours", "city", "tv", "saver"}' in center and "GradientDrawable.OVAL" in center
+      'TOGGLES = {"bluetooth", "mirror", "sleep", "off"}' in center and 'ROWS = {"net", "sound", "speed", "ours", "games", "city", "tv", "saver"}' in center and "GradientDrawable.OVAL" in center
       and "t.setSingleLine(true);" in center and "TruncateAt.END" in center and "ControlText.networkDetail" not in center)
 check("the focus: a solid fill in the look's colours with its ink, coming in over 170 ms (ease-out)",
       "FOCUS_MS = 170" in center and "ValueAnimator.ofArgb(shown, target)" in center and "anim.setDuration(FOCUS_MS)" in center and "int target = f ? FOCUSED : " in center and "ON_SUB" in center)
-check("«تخصيص»: a tick per item, the arrows move a row (Left/Right by the reading direction), at most six rows, «إعادة الضبط» (the defaults), «تم»; Back goes back to the panel's main view; kept on this TV",
-      "MAX_ROWS = 6" in center and "tickedRows(now) >= MAX_ROWS" in center and "KeyEvent.KEYCODE_DPAD_RIGHT : KeyEvent.KEYCODE_DPAD_LEFT" in center and "private void reset()" in center
+check("«تخصيص»: a tick per item, the arrows move a row (Left/Right by the reading direction), at most eight rows, «إعادة الضبط» (the defaults), «تم»; Back goes back to the panel's main view; kept on this TV",
+      "MAX_ROWS = 8" in center and "tickedRows(now) >= MAX_ROWS" in center and "KeyEvent.KEYCODE_DPAD_RIGHT : KeyEvent.KEYCODE_DPAD_LEFT" in center and "private void reset()" in center
       and 'getSharedPreferences("control"' in center and "if (code == KeyEvent.KEYCODE_BACK) { if (e.getAction() == KeyEvent.ACTION_UP) showMain(); return true; }" in center
       and all(f'"{w}"' in center for w in ("تخصيص", "تم", "إعادة الضبط", "اختر ما يظهر ورتّبه بالأسهم")))
 check("«شاشة التوقف» is unticked until asked for (its pill is on the home); a toggle or a row that does not exist on this TV is not in the list",
@@ -72,7 +72,7 @@ check("«حرّر الذاكرة» is gone: no tile, no kill call, no permission
       and "KILL_BACKGROUND_PROCESSES" not in manifest and not (ROOT / "android/launcher/src/main/res/drawable/ic_memory.xml").exists())
 check("the sound tile reads the real devices with their product names", "d[i].getProductName()" in center and "ControlText.outputs(types, products)" in center)
 check("the remote's Settings key opens our settings with a fallback to the TV's own", "OPEN_OUR_SETTINGS" in keys and "case RemoteKeys.OPEN_OUR_SETTINGS:" in main and "openOurSettings(true)" in main
-      and "orTvSettings" in main and "ParentalPolicy.REMOTE_SETTINGS" in main.split("private void openOurSettings")[1].split("\n    }\n")[0])
+      and "orTvSettings" in main and "ParentalPolicy.REMOTE_SETTINGS" in main.split("private void openOurSettings")[2].split("\n    }\n")[0])
 check("kids mode: no pill and no panel (the row's own check, and the panel closes when it goes)", "private boolean centerWanted() { return !Parental.state(this).kids && !hiddenQuick.contains(\"center\"); }" in main
       and "control.dismiss();" in main.split("private void applyCenterPill")[1].split("wireFocus();")[0])
 check("the pill follows the row's walk: it is in `pills` and in the row's children together, at the same place",
@@ -126,8 +126,8 @@ check("the tile is there only when one resolves, opens it behind the TV's settin
 check("Wi-Fi and Bluetooth side by side, first (docs/UX-REVIEW.md): the network tile, then Bluetooth, then the rest",
       center.index('tile("net"') < center.index('tile("bluetooth"') < center.index('tile("sound"') < center.index('tile("speed"')
       < center.index('tile("sleep"') < center.index('tile("off"') < center.index('tile("mirror"') < center.index('tile("saver"'))
-check("at most eleven tiles: sleep, off, network, speed, sound, mirroring, Bluetooth, screensaver, the city, ours, the TV's settings",
-      len(re.findall(r'tile\("[a-z]+"', center)) == 11, re.findall(r'tile\("[a-z]+"', center))
+check("at most thirteen tiles: sleep, off, network, speed, sound, mirroring, Bluetooth, screensaver, the city, the games, ours, the build line, the TV's settings",
+      len(re.findall(r'tile\("[a-z]+"', center)) == 13, re.findall(r'tile\("[a-z]+"', center))
 # ---- no traffic before OK
 check("the only network code is the speed test's, and it is started by the tile's OK on a worker thread",
       "new SpeedTest()" in center and "HttpURLConnection" not in center and "new Thread(" in center.split("private void speedTest")[1]
@@ -151,8 +151,13 @@ if not shutil.which("javac"):
     print("SKIP control center logic: no javac here")
     # ---- 4.3.1: ours before the TV's, the city beside it; a saved old default order follows the new one
 check("«إعدادات تلفزيونك» comes before the TV's «الإعدادات» by default, «المدينة» right after it; the old default order saved by the editor counts as never reordered",
-      center.index('"ours", "city", "tv"') > 0 and 'OLD_DEFAULT = "net,sound,speed,tv,ours,saver"' in center and 'if (v.equals(OLD_DEFAULT)) v = "";' in center
-      and center.index('tile("city"') < center.index('tile("ours"') < center.index('tile("tv"') and "host.openCity()" in center)
+      center.index('"ours", "games", "city", "tv"') > 0 and 'OLD_DEFAULT = "net,sound,speed,tv,ours,saver"' in center and 'if (v.equals(OLD_DEFAULT)) v = "";' in center
+      and center.index('tile("city"') < center.index('tile("games"') < center.index('tile("ours"') < center.index('tile("tv"') and "host.openCity()" in center)
+# ---- 4.3.1: «تلفزيونك» (the hub) and the build line
+check("«تلفزيونك» opens the screensaver app's hub (the games one press away), «الألعاب» opens its window, an old screensaver without the hub gets its settings, and the build line comes first",
+      'YourTvHubActivity"' in main and 'hub.putExtra("open", window)' in main and 'openOurSettings(false, "games")' in main and "host.openGames()" in center and "host.openUpdate()" in center
+      and "shownRows.add(0, updRow)" in center and "VersionMismatchRule.which(BuildConfig.VERSION_CODE, saverBuild())" in main)
+check("the hub opens a window on the extra", 'getStringExtra("open")' in (ROOT / "android/app/src/main/java/sa/urtv/screensaver/YourTvHubActivity.java").read_text(encoding="utf-8"))
 sys.exit(1 if failed else 0)
 cases = [l.split("\t") for l in (ROOT / "tests/control_center_cases.tsv").read_text(encoding="utf-8").split("\n") if l and not l.startswith("#")]
 with tempfile.TemporaryDirectory() as tmp:
@@ -182,6 +187,6 @@ check("the tray's scroll does no avoidable work per step: the name row's fade st
 
 # ---- 4.3.1: ours before the TV's, the city beside it; a saved old default order follows the new one
 check("«إعدادات تلفزيونك» comes before the TV's «الإعدادات» by default, «المدينة» right after it; the old default order saved by the editor counts as never reordered",
-      center.index('"ours", "city", "tv"') > 0 and 'OLD_DEFAULT = "net,sound,speed,tv,ours,saver"' in center and 'if (v.equals(OLD_DEFAULT)) v = "";' in center
-      and center.index('tile("city"') < center.index('tile("ours"') < center.index('tile("tv"') and "host.openCity()" in center)
+      center.index('"ours", "games", "city", "tv"') > 0 and 'OLD_DEFAULT = "net,sound,speed,tv,ours,saver"' in center and 'if (v.equals(OLD_DEFAULT)) v = "";' in center
+      and center.index('tile("city"') < center.index('tile("games"') < center.index('tile("ours"') < center.index('tile("tv"') and "host.openCity()" in center)
 sys.exit(1 if failed else 0)

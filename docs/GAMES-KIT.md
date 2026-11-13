@@ -67,6 +67,11 @@ Colours come only from `L` (`L.paper`, `L.ink`, `L.deep`, `L.saff`…): a game w
 5. **The registry**: set `ready` to true on the game's line in `GameRegistry` (the name and the line are already there and already marked for English in `QuizGamesActivity.WORDS`; change both places together).
 6. **The tests**: add the engine to `ENGINES` in `tests/games_kit_test.py` and its checks to `tests/GamesKitTest.java` (or a test of its own, listed in `tests/run.sh` under the games block). `KhanatActivity` and `MissingWordActivity` are the two examples: one with a clock and marking, one with items, turns and a verdict.
 
+## Two rules the games share since 4.3.2
+
+- **«خلية الحروف»**: after «اكشف الجواب» the host chooses WHO answered (team 1, team 2, or «ما أحد»); the hexagon and the point go to that team. «من يختار الحرف»: by default the team that answered right picks the next letter (nobody answered: the turn passes to the other team); «بالتناوب» keeps the old alternation.
+- **«خمس خانات»**: «نوع اللعب» is «فرق» (2 to 4) or «أفراد» (2 to 10 players, `GameScore.MAX`), players numbered «لاعب ١» (no names are typed on a TV). From six sides the marking screen puts the tiles in two rows of at most five and «من خلّص أول؟» in two rows of buttons (`KhanatLayout`, pure Java, tested for 2 to 10 sides: inside the 96 px safe area, no overlap, 300 px wide at least), so ten players read at 1080p and 720p alike.
+
 ## The test pattern
 
 `python3 tests/games_kit_test.py`: compiles the kit's pure classes and every engine with `javac` alone (so nothing of Android can slip in), runs `tests/GamesKitTest.java` (a fixed `Random`, a fake clock, the bundled starters as the data), then pins the Android side by reading the source: the registry against the list's marked words and the English table, a ready game's activity and manifest entry, Back and the pause card, the hand-over, low-RAM and reduced motion, the data loader's order, no «·» or «•», no rounded shape, no colour literal in a game.
