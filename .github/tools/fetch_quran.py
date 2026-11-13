@@ -71,6 +71,11 @@ RECITERS = [
 # token) never played on the owner's TV (step 182); radiojar.com keeps its cleartext permission in case it is used again.
 STATIONS = [
     ("إذاعة القرآن الكريم - السعودية", "https://live.kwikmotion.com/sbrksaquranradiolive/ksaquranradio/playlist.m3u8"),
+    # 4.3.1: Egypt's Quran Radio (Maspero's, the address its own player and surahquran.com use) right after the Saudi one; a saved station
+    # number from before moves with it (tilawah Prefs: «station_order» 2). radiojar answers https with a 302 to http nNN.radiojar.com and a
+    # one-use token: StreamUrl hands that address over unasked and ExoPlayer plays it (4.3; MediaPlayer gave nothing, step 32/182); cleartext is
+    # allowed for radiojar.com only (network_security_config.xml)
+    ("إذاعة القرآن الكريم - مصر", "https://stream.radiojar.com/8s5u5tpdtwzuv"),
     ("الشيخ أبو بكر الشاطري", "radio/shaik_abu_bakr_al_shatri"),
     ("عبدالرحمن السديس", "radio/abdulrahman_alsudaes"),
     ("سعود الشريم", "radio/saud_alshuraim"),
@@ -81,8 +86,11 @@ STATIONS = [
     ("عبدالباسط عبدالصمد", "radio/abdulbasit_abdulsamad"),
     ("محمد صديق المنشاوي", "radio/mohammed_siddiq_alminshawi"),
     ("أحمد العجمي", "radio/ahmad_alajmy"),
-    ("إذاعة القرآن الكريم - القاهرة", "https://stream.radiojar.com/8s5u5tpdtwzuv"),   # 4.1 reports: Maspero's own (maspero.eg/stream/7), radiojar like the Saudi one used to be; last, so saved station indices stay
 ]
+
+
+# English names of the stations the committed stations.json does not have yet
+EN_STATIONS = {"إذاعة القرآن الكريم - مصر": "Quran Radio, Egypt"}
 
 
 def get_json(url):
@@ -128,14 +136,18 @@ def build():
         reciters.append({"id": short, "name": name, "server": moshaf["server"], "surahs": 114})
 
     stations = []
+    kept = {s["name"]: s for s in json.loads((OUT / "stations.json").read_text("utf-8"))["stations"]} if (OUT / "stations.json").is_file() else {}
     for name, url in STATIONS:
-        if url.startswith("https://"):
-            stations.append({"name": name, "url": url, "live": True})
-            continue
-        found = next((r for r in radios_api if r["url"].rstrip("/").endswith("/" + url)), None)
-        if not found:
-            raise SystemExit(f"station not on mp3quran: {name} ({url})")
-        stations.append({"name": name, "url": found["url"], "live": True})
+        if not url.startswith("https://"):
+            found = next((r for r in radios_api if r["url"].rstrip("/").endswith("/" + url)), None)
+            if not found:
+                raise SystemExit(f"station not on mp3quran: {name} ({url})")
+            url = found["url"]
+        row = {"name": name, "en": kept.get(name, {}).get("en", EN_STATIONS.get(name, name)), "url": url, "live": True}
+        alt = kept.get(name, {}).get("alt")
+        if alt:
+            row["alt"] = alt   # the second source (4.3), written by hand in stations.json, kept
+        stations.append(row)
 
     surahs = [{"n": s["number"], "name": plain_name(s["name"])} for s in surahs_api]
     for s in surahs:

@@ -134,6 +134,7 @@ optimize/music.sh reciters                 # ids for the next command
 optimize/music.sh stations                 # indices for the next command
 optimize/music.sh surah sudais 1           # Al-Fatiha by Sudais
 optimize/music.sh radio 0                  # Saudi Quran Radio
+optimize/music.sh radio 1                  # Egypt's Quran Radio (4.3.1)
 optimize/music.sh pause | resume | toggle | next | prev | stop
 optimize/music.sh seek -10                 # 10 seconds back
 optimize/music.sh sleep 30                 # 0 cancels
