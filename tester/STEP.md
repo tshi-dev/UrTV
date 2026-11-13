@@ -1066,3 +1066,5 @@ The owner wants to SEE these in the settings, for the guide. Full-screen 1920×1
 3. `g3-setup-first.png`: the «إعداد تلفزيوني» app's first page (from the apps row), with «جهّز كل شي» and «تراجع» visible. Do NOT press «جهّز كل شي» or «تراجع».
 4. `g4-apps-row-setup.png`: where «إعداد تلفزيوني» sits in the apps row / all apps, focused.
 Also say how many presses it takes to reach row 1 from the home (the exact path).
+
+**Note for steps 67 and 68 (2026-11-13):** the apk-next build from commit 52891750 on has the new radio (keeps trying with «نحاول نرجّع البث…» and the reason; switch `optimize/dock.sh debug radioslow on|off`), «التطبيقات المعطّلة» (a new row beside «تخلّص من واجهة المصنع», behind the family PIN: open it only if the owner types his PIN; list only, turn nothing on unless he says so) and «Open Shelf» in «تطبيقات مقترحة» (check the tile and its disclaimer line; do not install it). Step 68 item 4 can run on it.
