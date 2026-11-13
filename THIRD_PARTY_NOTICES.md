@@ -114,6 +114,11 @@ starting point) is also adapted from Free My TV: how to pack an `.ipk` and a `.w
 Mode (LG's Key Server and SSH, Samsung's SDB), and which key codes and manifest entries a TV app needs. Each adapted file says so in
 its header.
 
+«أزرار الريموت» (`android/launcher/src/main/java/sa/urtv/home/RemoteButtons.java`, and its copy in the screensaver app) takes Free My TV's
+per-brand remote table from `RemoteKeys.java`, `Prefs.java` and `SabrinaRemote.java` (release 1.5.0): which TVs (by maker, brand,
+model and Android version), which key and scan codes each app button sends, the onn and Chromecast remote checks, Xiaomi's burst
+and TCL Android 11's filter rule. Only the app buttons are taken. The file says so in its header; the licence is the one below.
+
 talkies has `Spring.java` from Free My TV (https://github.com/simbasjungles/free-my-tv, `app/src/io/freemytv/Spring.java`), under
 this license:
 

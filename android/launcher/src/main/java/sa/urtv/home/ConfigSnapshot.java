@@ -21,6 +21,8 @@ final class ConfigSnapshot {
     /** «تطبيقات في الشريط»: "5" to "10" or "all"; an older screensaver does not say: 5, as the tray always was */
     String favBar = "5";
     String pillsHidden = "";   // the quick buttons hidden in the settings (#52): markets, matches, center
+    /** «أزرار الريموت»: "youtube=PKG,netflix=,prime=" from the screensaver's settings; null = an older screensaver said nothing */
+    String keyApps;
     boolean cityChosen = true;   // 4.3.1: a city was ever set (an older screensaver does not say: yes, so nobody is asked)
     String matchApp = "auto";   // 4.3 «تطبيق المباريات»: auto (UrTV Player when installed), none, or a package
     boolean pillHidden(String key) { return ("," + pillsHidden + ",").contains("," + key + ","); }
@@ -49,7 +51,7 @@ final class ConfigSnapshot {
     }
 
     /** The same values, marked as an old copy. */
-    ConfigSnapshot asStale() { ConfigSnapshot c = new ConfigSnapshot(fragment, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, true, placeTicket); c.favBar = favBar; c.tweaks = tweaks; c.pagesDark = pagesDark; c.pillsHidden = pillsHidden; c.matchApp = matchApp; c.cityChosen = cityChosen; return c; }
+    ConfigSnapshot asStale() { ConfigSnapshot c = new ConfigSnapshot(fragment, greetingOn, adhanBarOn, listenPillOn, updateBellOn, appearance, watchNextOn, look, true, placeTicket); c.favBar = favBar; c.tweaks = tweaks; c.pagesDark = pagesDark; c.pillsHidden = pillsHidden; c.matchApp = matchApp; c.cityChosen = cityChosen; c.keyApps = keyApps; return c; }
 
     /**
      * The settings fragment for the PRAYER PLACE (Place, the adhan alarm, the day parts): null when this is an old copy, so that only a real
@@ -94,7 +96,7 @@ final class ConfigSnapshot {
         boolean greeting = true, bar = true, listenPill = true, updateBell = true, watchNext = true;
         String appearance = null, look = null, favBar = "5", tweaks = "";
         boolean pagesDark = true;
-        String pillsHidden = "", matchApp = "auto";
+        String pillsHidden = "", matchApp = "auto", keyApps = null;
         boolean cityChosen = true;
         try (Cursor cur = c.getContentResolver().query(URI, null, null, null, null)) {
             if (cur != null && cur.moveToFirst()) {
@@ -121,6 +123,8 @@ final class ConfigSnapshot {
                 if (tw >= 0 && cur.getString(tw) != null) tweaks = cur.getString(tw);
                 int ma = cur.getColumnIndex("match_app");   // an older screensaver does not say: auto
                 if (ma >= 0 && cur.getString(ma) != null) matchApp = cur.getString(ma);
+                int kk = cur.getColumnIndex("key_apps");   // «أزرار الريموت»; an older screensaver says nothing (null: the home's own stays)
+                if (kk >= 0) keyApps = cur.getString(kk);
                 int pz = cur.getColumnIndex("page_zone");   // 4.3 (issue #55): the page's offset for the city's zone; an older screensaver says nothing
                 if (pz >= 0 && cur.getString(pz) != null) ZoneFix.report(cur.getString(pz));
                 int cc = cur.getColumnIndex("city_chosen");
@@ -139,6 +143,7 @@ final class ConfigSnapshot {
         made.pillsHidden = pillsHidden;
         made.matchApp = matchApp;
         made.cityChosen = cityChosen;
+        made.keyApps = keyApps;
         return made;
     }
 

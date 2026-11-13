@@ -32,6 +32,51 @@ final class Dock {
     static boolean backSaver(Context c) { return prefs(c).getBoolean("back_saver", false); }
 
     static void setBackSaver(Context c, boolean on) { prefs(c).edit().putBoolean("back_saver", on).apply(); }
+
+    /** This TV's remote, as RemoteButtons knows it (by maker, brand, model and Android version; read once). */
+    static int remoteTv() {
+        return RemoteButtons.tv(android.os.Build.MANUFACTURER, android.os.Build.BRAND, android.os.Build.MODEL, android.os.Build.DEVICE,
+                android.os.Build.VERSION.SDK_INT);
+    }
+
+    /** «أزرار الريموت»: the app the owner gave one of this remote's buttons (RemoteButtons ids), empty = what it did before (`dock.sh key`). */
+    static String keyApp(Context c, String key) { return prefs(c).getString("key_app_" + key, ""); }
+
+    static void setKeyApp(Context c, String key, String pkg) { prefs(c).edit().putString("key_app_" + key, pkg == null ? "" : pkg).apply(); }
+
+    /** the package is on this TV and enabled */
+    static boolean installed(Context c, String pkg) {
+        try {
+            return c.getPackageManager().getApplicationInfo(pkg, 0).enabled;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
+
+    /**
+     * The rows in the screensaver's settings (ConfigSnapshot.keyApps, "youtube=PKG,netflix=,prime="; null = no answer): when they change, the
+     * home's own choices take them. Only on a change, so `dock.sh key` (which sends both) and an older screensaver leave them as set.
+     */
+    static void followKeyApps(Context c, String tv) {
+        if (tv == null) return;
+        SharedPreferences p = prefs(c);
+        if (tv.equals(p.getString("key_apps_tv", null))) return;
+        SharedPreferences.Editor e = p.edit().putString("key_apps_tv", tv);
+        for (String part : tv.split(",")) {
+            int eq = part.indexOf('=');
+            if (eq < 0) continue;
+            String k = part.substring(0, eq), v = part.substring(eq + 1);
+            if (RemoteButtons.byId(remoteTv(), k) != null && KeyApps.validChoice(v)) e.putString("key_app_" + k, v);
+        }
+        e.apply();
+    }
+
+    /** every key's choice, for RemoteKeys */
+    static Map<String, String> keyApps(Context c) {
+        Map<String, String> m = new LinkedHashMap<>();
+        for (RemoteButtons.Button b : RemoteButtons.buttons(remoteTv())) m.put(b.id, keyApp(c, b.id));
+        return m;
+    }
     /**
      * The row in the screensaver's settings (ConfigSnapshot.backSaver; null = no real answer): when it changes, the switch above takes its
      * value. Only on a change, so `dock.sh backsaver` (which sends both) and an older screensaver that says nothing leave it as set.

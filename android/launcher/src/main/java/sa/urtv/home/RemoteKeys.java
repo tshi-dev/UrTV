@@ -82,6 +82,11 @@ final class RemoteKeys {
     private int heldCode, heldScan;
     /** the Settings key is held and has not acted yet: its release, or a repeat {@link #LONG_MS} late, decides */
     private boolean settingsPending;
+    /** «أزرار الريموت»: the owner's app for each app key (RemoteButtons ids → package, empty = the key's own app); null = none chosen */
+    private java.util.Map<String, String> choices;
+
+    /** The owner's choices, read by the caller before each app key (Dock.keyApps). */
+    void choices(java.util.Map<String, String> c) { choices = c; }
 
     /** heldMs: how long the key has been down (the event's time minus its down time); only the Settings key reads it */
     Decision decide(int keyCode, int scanCode, int action, int repeat, long heldMs, Set<String> installed) {
@@ -108,7 +113,7 @@ final class RemoteKeys {
             heldScan = scanCode;
             return EAT_IT;   // nothing yet: short or long is known at its release or once it is held long enough
         }
-        Decision d = map(keyCode, scanCode, installed);
+        Decision d = map(keyCode, scanCode, installed, choices);
         if (d.kind != PASS) {
             holding = true;
             heldCode = keyCode;
@@ -140,13 +145,13 @@ final class RemoteKeys {
                 || keyCode == TCL_NETFLIX || keyCode == TCL_YOUTUBE || keyCode == TCL_PRIME;
     }
 
-    private static Decision map(int keyCode, int scanCode, Set<String> installed) {
+    private static Decision map(int keyCode, int scanCode, Set<String> installed, java.util.Map<String, String> choices) {
         switch (keyCode) {
             case KEYCODE_BUTTON_3:
-            case TCL_YOUTUBE: return app(YOUTUBE, installed);
+            case TCL_YOUTUBE: return app(chosen(choices, "youtube", YOUTUBE), installed);
             case KEYCODE_BUTTON_4:
-            case TCL_NETFLIX: return app(NETFLIX, installed);
-            case TCL_PRIME: return app(PRIME, installed);
+            case TCL_NETFLIX: return app(chosen(choices, "netflix", NETFLIX), installed);
+            case TCL_PRIME: return app(chosen(choices, "prime", PRIME), installed);
             case KEYCODE_TV:
             case TCL_TV: return new Decision(OPEN_LIVE_TV, null);   // once we are the home the system no longer hands this key to TCL's receiver: it opens the tuner here
             case TCL_GUARD: return EAT_IT;   // TCL's cleaner would kill our adhan: nothing opens
@@ -154,6 +159,12 @@ final class RemoteKeys {
         }
         if (scanCode == SCAN_STAR) return new Decision(OPEN_INPUTS, null);
         return PASS_IT;
+    }
+
+    /** the owner's app for this key (RemoteButtons ids; checked by KeyApps.validChoice before it is saved), else the key's own */
+    private static String chosen(java.util.Map<String, String> choices, String key, String own) {
+        String c = choices == null ? null : choices.get(key);
+        return c != null && !c.isEmpty() ? c : own;
     }
 
     private static Decision app(String pkg, Set<String> installed) {
