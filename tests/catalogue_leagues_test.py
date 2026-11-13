@@ -43,7 +43,7 @@ t = read(ROOT / "src/template.html")
 check("the page: #leagues= takes id4719, 8 at most; #lgn= names them", "/^id\\d{1,6}$/.test(x)).slice(0, 8)" in t and "_Q.get('lgn')" in t)
 check("the page: a catalogue league is asked of TheSportsDB (next and past), after the teams, in their queue", "eventsnextleague', 'eventspastleague'" in t
       and "leagues = loadLeagues(step, teamsAsked)" in t and "teamsDone();" in t and "await ready;" in t)
-check("the page: the copy of a league no longer picked goes", "if(!CONFIG.leagues.includes(k)) delete LEAGUE_DATA[k];" in t)
+check("the page: the copy of a league no longer picked goes", "if(!CONFIG.leagues.includes(k) && !(CONFIG.tour && k === 'tournaments')) delete LEAGUE_DATA[k];" in t)
 check("the page: a catalogue league's games are named by #lgn", "CONFIG.leagueNames[String(ev.idLeague || '')]" in t)
 for f in ("dist/tv.html", "dist/tv-en.html"):
     check(f"{f} is built with it", "loadCatalogueLeague" in read(ROOT / f))
