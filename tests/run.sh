@@ -108,6 +108,7 @@ python3 tests/home_card_test.py
 python3 tests/home_page_test.py   # the home's cards on the screensaver's newer page (its stocks stayed stale on the APK's own)
 python3 tests/perf_idle_test.py
 python3 tests/league_fixtures_test.py
+python3 tests/match_archive_test.py   # 4.3.1 the match archive: append-only, a corrected score, the live window, the backfill names
 python3 tests/league_catalogue_test.py   # 4.3 «كل الدوريات»: the CI catalogue (the walk, the content rules, the Arabic names)
 python3 tests/catalogue_leagues_test.py   # 4.3 «كل الدوريات» on the TV: read only when the picker opens, picked ones only, 8 at most
 python3 tests/market_prices_test.py

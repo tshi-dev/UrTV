@@ -5,11 +5,27 @@ name: League fixtures
 # page reads from raw.githubusercontent.com. About 11 TheSportsDB requests a league; the free API answers about one in 15 s, so 45-50 minutes.
 # On a timer (GitHub runs timers from the default branch), by hand, or when its own files change on master or next
 # (like the clubs workflow), so a change shows its data at once. A push to a work branch never starts it.
+#
+# 4.3.1 the match archive (.github/tools/match_archive.py), on the branch data-archive: the job «archive» after every fixtures run (no API
+# call, seconds); every 15 minutes the live window (only the games in play or ended in the last 30 minutes are asked again, one request each,
+# at most 40; nothing live = done in seconds, no request); Mondays the clean-up (seasons past 8 dropped, every derived file made again).
+# By hand: mode «archive», «live» or «backfill» (openfootball's past seasons, public domain; seasons like 2021-22,2022-23).
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: 'fixtures (and then the archive), archive, live or backfill'
+        default: fixtures
+        type: choice
+        options: [fixtures, archive, live, backfill]
+      seasons:
+        description: 'backfill only: openfootball seasons, comma-separated (empty: 2021-22 to 2025-26)'
+        default: ''
   schedule:
     - cron: '23 */6 * * *'
     - cron: '41 2,5,8,11,14,17,20,23 * * *'   # 4.3.1 the big tournaments only (their own job below): every 3 hours
+    - cron: '*/15 * * * *'   # the archive's live window
+    - cron: '41 3 * * 1'     # the archive's weekly clean-up
   push:
     branches: [master, next]
     paths:
@@ -21,13 +37,13 @@ on:
 permissions:
   contents: write
 
-concurrency:
-  group: league-fixtures
+concurrency:   # the fixtures runs one at a time; the archive's own runs (live, clean-up, by hand) in a group of their own
+  group: ${{ (github.event.schedule == '*/15 * * * *' || github.event.schedule == '41 3 * * 1' || (inputs.mode != '' && inputs.mode != 'fixtures')) && 'match-archive' || 'league-fixtures' }}
   cancel-in-progress: false
 
 jobs:
   fixtures:
-    if: github.event.schedule != '41 2,5,8,11,14,17,20,23 * * *'   # the 3-hourly timer is for the tournaments job alone
+    if: github.event_name == 'push' || github.event.schedule == '23 */6 * * *' || (github.event_name == 'workflow_dispatch' && (inputs.mode == '' || inputs.mode == 'fixtures'))
     runs-on: ubuntu-latest
     timeout-minutes: 90   # the free API answers about one request in 15 s: 16 leagues took 48 minutes
     steps:
@@ -57,7 +73,7 @@ jobs:
   # 3-hourly timer) and keeps every other file of the branch.
   tournaments:
     needs: fixtures
-    if: always()
+    if: always() && needs.fixtures.result != 'cancelled' && (github.event_name == 'push' || github.event.schedule == '23 */6 * * *' || github.event.schedule == '41 2,5,8,11,14,17,20,23 * * *' || (github.event_name == 'workflow_dispatch' && (inputs.mode == '' || inputs.mode == 'fixtures')))
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -81,3 +97,59 @@ jobs:
           git add -f leagues
           git commit -qm "Tournaments"
           git push -f origin data-leagues
+
+  archive:   # after every fixtures run (red or green), or alone on its schedules; red only when the archive itself breaks
+    needs: [fixtures, tournaments]
+    if: always() && needs.fixtures.result != 'cancelled' && needs.tournaments.result != 'cancelled'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    concurrency:   # one writer of data-archive at a time
+      group: data-archive
+      cancel-in-progress: false
+    env:
+      LIVE: ${{ github.event.schedule == '*/15 * * * *' || inputs.mode == 'live' }}
+      BACKFILL: ${{ inputs.mode == 'backfill' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github/tools
+            assets/shared/teams.json
+          sparse-checkout-cone-mode: false
+      - name: The archive so far
+        run: |
+          mkdir -p prev dl out
+          git fetch --depth=1 origin data-archive 2>/dev/null && git archive FETCH_HEAD | tar -x -C prev || echo "no data-archive yet: a new one"
+      - name: The live window (exits at once when nothing is live)
+        id: live
+        if: env.LIVE == 'true'
+        run: |
+          python3 -u .github/tools/match_archive.py live --prev prev --out live.json --note live-note.json | tee live.txt
+          if grep -q '^nothing live' live.txt; then echo "skip=true" >> "$GITHUB_OUTPUT"; fi
+      - name: The leagues' files
+        if: steps.live.outputs.skip != 'true'
+        run: git fetch --depth=1 origin data-leagues 2>/dev/null && git archive FETCH_HEAD | tar -x -C dl || echo "no data-leagues"
+      - name: The past seasons (openfootball)
+        if: env.BACKFILL == 'true'
+        run: |
+          cp prev/names.json names.json 2>/dev/null || echo '{}' > names.json
+          python3 -u .github/tools/match_archive.py backfill --out backfill.json --report backfill-report.json --names names.json ${SEASONS:+--seasons "$SEASONS"}
+        env:
+          SEASONS: ${{ inputs.seasons }}
+      - name: Build
+        if: steps.live.outputs.skip != 'true'
+        run: |
+          python3 -u .github/tools/match_archive.py build --leagues dl/leagues --prev prev --out out \
+            ${{ env.LIVE == 'true' && '--live live.json --live-note live-note.json' || '' }} \
+            ${{ env.BACKFILL == 'true' && '--backfill backfill.json --names names.json --backfill-report backfill-report.json' || '' }}
+      - name: Push to data-archive
+        if: steps.live.outputs.skip != 'true'
+        run: |
+          test -f out/health.json
+          cd out
+          git init -q -b data-archive
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -qm "Match archive"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" data-archive
