@@ -30,7 +30,7 @@ final class Place {
 
     /** What an alarm set from this place is recorded as (AdhanScheduler.schedule): "" for the bundled place, else the place, adjustments and method. */
     String identity() {
-        return SchedIdentity.of(bundled, PrayerMath.identity(lat, lng, tz, PrayerAdjust.text(adj), method));
+        return SchedIdentity.of(bundled, PrayerMath.identity(lat, lng, tz, PrayerAdjust.text(adj), method) + "|z" + SchedIdentity.offsetMinutes(sa.urtv.home.ZoneFix.zone(tz).getOffset(System.currentTimeMillis())));   // the zone's offset now: a later zone report (ZoneFix) sets the alarm again
     }
 
     private static final PlaceMemory MEMORY = new PlaceMemory();

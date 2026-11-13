@@ -32,7 +32,13 @@ public class AdhanReceiver extends BroadcastReceiver {
 
         long now = System.currentTimeMillis();
         long due = intent.getLongExtra(AdhanScheduler.EXTRA_DUE, 0);
-        if (prefs.alarmWanted() && screenOn(context) && !alreadyPlayed(prefs, due, now)) {
+        // the prayer's own minute only: an alarm that came hours late (standby, a clock that jumped at boot) or early is skipped and logged, never played
+        String late = prefs.alarmWanted() ? AdhanLate.skipReason(due, now, PrayerTimes.aroundToday(context)) : null;
+        if (late != null) {
+            Log.i("UrTVAdhan", "adhan skipped: " + late);
+            prefs.setLastAlarmNote("skipped: " + late, now);
+        } else if (prefs.alarmWanted() && screenOn(context) && !alreadyPlayed(prefs, due, now)) {
+            Log.i("UrTVAdhan", "adhan start: prayer=" + intent.getIntExtra(AdhanScheduler.EXTRA_PRAYER, -1) + " due=" + due + " late=" + Math.max(0, (now - due) / 1000) + " s, reason=alarm");
             if (due > 0) prefs.setLastDue(due); else prefs.setLastAlarmAt(now);
             int prayer = intent.getIntExtra(AdhanScheduler.EXTRA_PRAYER, -1);   // an alarm of an older version has none: the usual voice
             int front = AdhanFront.now(context);

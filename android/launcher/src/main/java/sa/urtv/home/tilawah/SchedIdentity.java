@@ -9,6 +9,9 @@ package sa.urtv.home.tilawah;
 final class SchedIdentity {
     private SchedIdentity() { }
 
+    /** the zone's offset in minutes (the identity carries it: a zone that changed, by the rules or by ZoneFix, is another identity) */
+    static int offsetMinutes(long offsetMillis) { return (int) (offsetMillis / 60_000L); }
+
     static String of(boolean bundledPlace, String identity) { return bundledPlace ? "" : identity; }
 
     /** Must the alarm be set again for this (real) identity? */
