@@ -2616,3 +2616,19 @@ Player uninstalled (0 packages), demo list and the PC server removed, UrTV city 
 - g3 ✓ «إعداد تلفزيوني» first page (from its own activity: «جهّز كل شي» and «تراجع» visible); neither pressed
 - g4 ✗ **«إعداد تلفزيوني» is not in the apps row or in «كل التطبيقات» on this TV** (14 tiles, none is it; its manifest has LEANBACK_LAUNCHER). I could only open it by `am start`. Supervisor: where should the owner find it?
 - Path to row 1 from the home: Settings (our settings, e.g. the control center's settings tile) → ▼ ▼ to «البطاقات» → OK → ◀ to «الشاشة الرئيسية» → OK; the row is the first one and is focused.
+
+## step 66 — 4.3 fixes build 274 (apk-latest) + Player v0.9.15 (TV muted all the time; restored)
+**Update from the app 268 → 274 worked (update page, Install pressed twice as before). 1 problem (item 4 not seen), 1 thing I could not settle, small notes.**
+1. ✓ «تطبيقات مقترحة»: the UrTV Player tile shows its logo (not the letter U); TiviMate is gone (4 tiles: TV Bro, SmartTube, UrTV Player, VLC)
+2. ✓ Control panel (sleep service off, Key Mapper's service is the only one on): «أطفئ الآن» says «يحتاج تفعيل» under its name; OK opened the TV's Accessibility settings (TalkBack off, nothing changed). Back out, accessibility list as found
+3. ✓ Player uninstalled: a match's sheet shows «ثبّت UrTV Player للمشاهدة»; OK opened «تطبيقات مقترحة»; installing from there gave **v0.9.15, versionCode 123** (the Android prompt «Do you want to install this app?» pressed Install). After the install the same sheet shows «شاهد المباراة»
+4. **✗ Not seen: «مباريات اليوم وبكرة».** Matches page, today: only «فرقك» with the one Saudi friendly; no second section. Tomorrow: «لا مباريات غدًا». ◀ ▶ days move (tab focus changed day) ✓; the match sheet opens ✓. Could not settle whether the section is missing or the free feed simply has no other fixture today and tomorrow (international break). Needs a day with league games
+5. Player 0.9.15 (demo list: local M3U from the PC, 3 channels with ONE url, 2 more; unique channel names):
+   - (a) ✓ 40 key presses up and down in Channels (fast and slow), same process the whole time, no crash (the old fatal lines are all from last night, 00:36)
+   - (b) ✓ «شاهد المباراة» (list loaded) → «ما لقينا قناة لهذه المباراة في قوائمك» → «ابحث في القنوات» → the **Player's own channel search opened with the match filled in** («للمباراة: السعودية – كوريا الجنوبية», no results on my demo list). The Player came to the front, not the UrTV sheet
+   - (c) ✓ UP from Settings landed on the «الإعدادات» tab; UP from the channel list landed on «القنوات»
+   - (d) **STREAM_MUSIC stayed muted in both cases**: preview OFF (default after a clear): play a channel, 5 samples over 20 s, muted every time. Preview ON: resting on a row (preview playing) and then playing the channel, muted every time. (Step 65 saw it un-muted once on 0.9.13; I could not repeat it on 0.9.15, still not proof)
+   - Small: the free Google «gtv-videos-bucket» sample videos now answer HTTP 403; the Player's message for it is honest («القناة نفسها لا تستجيب (HTTP 403)…»). Mux's Big Buck Bunny HLS plays
+6. Picture `x6-suggested.png` taken (suggested apps with the Player's logo; it shows which apps this TV has installed, TV Bro / SmartTube / VLC with ✓). Kept local; waiting for the owner's OK to push it (public repo).
+**Z** demo list cleared (`pm clear`), Player uninstalled (0 packages), PC server stopped, the folder removed. Mute true, TV on Home `sa.urtv.home`, build 274.
+**One change I did NOT make: `com.tcl.messagebox` is no longer in the disabled list (21 → 20).** Its package time says it was updated at 14:04 today (the system's own update, not me; the list was already 20 in my snapshot before the 268 → 274 update). I left it as it is.
