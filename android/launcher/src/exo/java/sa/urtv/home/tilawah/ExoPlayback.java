@@ -36,6 +36,8 @@ public final class ExoPlayback extends Playback {
     private OnCompletion onCompletion;
     private OnError onError;
     private boolean prepared, rebuffering;
+    private long quietSince;
+    private int quiet;
 
     public ExoPlayback(Context c) {
         DefaultHttpDataSource.Factory http = new DefaultHttpDataSource.Factory()
@@ -76,7 +78,11 @@ public final class ExoPlayback extends Playback {
                     if (c instanceof androidx.media3.datasource.HttpDataSource.InvalidResponseCodeException) { httpCode = ((androidx.media3.datasource.HttpDataSource.InvalidResponseCodeException) c).responseCode; break; }
                 }
                 if (e instanceof androidx.media3.exoplayer.ExoPlaybackException && ((androidx.media3.exoplayer.ExoPlaybackException) e).rendererName != null) decoder = ((androidx.media3.exoplayer.ExoPlaybackException) e).rendererName;
-                if (e.errorCode == PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW) {   // fell out of the 12 s window: back to the live edge, quietly
+                boolean stuck = false;   // 4.3.1 a playlist that stopped moving or was reset is the same as falling behind: back to the live edge, quietly (a few times a minute)
+                for (Throwable c = e.getCause(); c != null; c = c.getCause()) if (c.getClass().getSimpleName().startsWith("Playlist")) stuck = true;
+                long nowMs = android.os.SystemClock.elapsedRealtime();
+                if (nowMs - quietSince > 60_000) { quietSince = nowMs; quiet = 0; }
+                if ((e.errorCode == PlaybackException.ERROR_CODE_BEHIND_LIVE_WINDOW || stuck) && ++quiet <= 6) {   // fell out of the 12 s window: back to the live edge, quietly
                     exo.seekToDefaultPosition();
                     exo.prepare();
                     return;
@@ -102,7 +108,8 @@ public final class ExoPlayback extends Playback {
     @Override void setOnErrorListener(OnError l) { onError = l; }
     @Override void setDataSource(String u) { url = u; }
     @Override void prepareAsync() {
-        MediaItem.Builder item = new MediaItem.Builder().setUri(url);
+        MediaItem.Builder item = new MediaItem.Builder().setUri(url)
+            .setLiveConfiguration(new MediaItem.LiveConfiguration.Builder().setMinPlaybackSpeed(1f).setMaxPlaybackSpeed(1f).build());   // 4.3.1 never speeds up to chase the live edge: a 12 s window leaves no room to starve
         if (StallWatch.isHls(url)) item.setMimeType(androidx.media3.common.MimeTypes.APPLICATION_M3U8);   // an .m3u8 behind a query string too
         exo.setMediaItem(item.build());
         exo.prepare();

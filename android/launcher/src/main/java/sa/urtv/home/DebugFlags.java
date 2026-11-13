@@ -20,13 +20,14 @@ import android.content.SharedPreferences;
  *   notitle      no app title (setText, placeName, its fade) for the focused tile
  *   plainfocus   all of the five off, and no label fade, no lift of the tile and no glide of the page: the highlight only
  *   nobackdrop   the photo, its dimming and the scrims are drawn each frame as before; by default they are ONE cached hardware layer (a static backdrop costs a single texture blit per frame instead of a photo and three translucent full-screen passes)
+ *   radioslow    a live radio station stalls and fails its first four tries after each pick, so the retry and the second source can be watched (MusicService)
  *   keytrace     one log line per key on the home (tag UrTVKeyTrace): queue, dispatch, focus, layout, draw and the next six frames' intervals (KeyTrace)
  */
 final class DebugFlags {
     private DebugFlags() { }
 
     static final String CHANGED = "sa.urtv.home.DEBUG_CHANGED";
-    static final String[] NAMES = {"traynoglass", "nopillpanel", "nowifimark", "nosnapshot", "nocardglass", "nokeyfilter", "keytrace", "nolift", "noglow", "noshine", "noscale", "notitle", "plainfocus", "nobackdrop"};
+    static final String[] NAMES = {"traynoglass", "nopillpanel", "nowifimark", "nosnapshot", "nocardglass", "nokeyfilter", "keytrace", "nolift", "noglow", "noshine", "noscale", "notitle", "plainfocus", "nobackdrop", "radioslow"};
 
     private static SharedPreferences sp(Context c) { return c.getApplicationContext().getSharedPreferences("debug_flags", Context.MODE_PRIVATE); }
 

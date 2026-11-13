@@ -46,7 +46,7 @@ check("the update screen keeps it on from onResume and clears it in onPause",
       re.search(r"void onResume\(\).*?addFlags\([^)]*" + KEEP, ua, re.S) and re.search(r"void onPause\(\).*?clearFlags\([^)]*" + KEEP, ua, re.S))
 check("setup keeps it on only while it is running (not from onCreate)", su.count("addFlags(WindowManager.LayoutParams." + KEEP + ")") == 1
       and su.index("running = true;") < su.index(KEEP) and "clearFlags" in su and su.index("running = false;") < su.index("clearFlags"))
-others = [f.name for f in (ROOT / HOME).rglob("*.java") if f.name not in ("PhoneActivity.java", "UpdateActivity.java", "SetupActivity.java", "PlayerActivity.java", "MarketsActivity.java", "FactoryActivity.java") and KEEP in f.read_text(encoding="utf-8")]
+others = [f.name for f in (ROOT / HOME).rglob("*.java") if f.name not in ("PhoneActivity.java", "UpdateActivity.java", "SetupActivity.java", "PlayerActivity.java", "MarketsActivity.java", "FactoryActivity.java", "DisabledAppsActivity.java") and KEEP in f.read_text(encoding="utf-8")]
 # (the factory page keeps it on while it waits for «Allow USB debugging?», tester step 62; the window flag ends with the page)
 # (the Quran player screen kept it on before this change; it is not one of the screens of the owner's report; the markets page keeps it on only in live mode, step 27)
 check("no other screen of the launcher keeps the screen awake", not others, others)

@@ -27,7 +27,8 @@ final class RadioPolicy {
         long[] reconnectsAt = new long[RECONNECTS];
         int reconnects;
         boolean formatEveryTime = true;   // every failure so far said malformed or unsupported
-        int failures;             // every failure since the pick, on both sources (the line «توقف البث بعد N محاولات»)
+        int failures;             // every failure since the pick, on both sources (the line «توقف البث بعد N محاولات» and the waits)
+        int patient;              // failures since the policy began to keep trying past the old limit (the second source is swapped every StreamUrl.TRIES of them)
         boolean spent;            // the reconnects of the window are used up: a short sound no longer clears the tries
     }
 
@@ -63,8 +64,23 @@ final class RadioPolicy {
         return Step.FAIL;
     }
 
-    /** The wait before the next try: StreamUrl's 2, 4, 8 s (a reconnect after its count in the window). */
-    static long waitMs(State s) { return StreamUrl.backoffMs(Math.max(1, s.played ? Math.min(3, s.reconnects) : s.tries)); }
+    /** 4.3.1 a station is never given up while the person wants it: the waits are 2, 5, 10, 20 s, then every 30 s (failures: counted since the pick) */
+    static long retryMs(int failures) {
+        long[] steps = {2_000, 5_000, 10_000, 20_000};
+        return failures <= 0 ? steps[0] : failures <= steps.length ? steps[failures - 1] : 30_000;
+    }
+
+    /** a fault is final only for a stream that never played and whose every answer said its format is not playable; every other failure is tried again */
+    static boolean finalFault(State s, int what) { return what == PlayerFault.SERVER_DIED || (!s.played && s.formatEveryTime); }
+
+    /** after RadioPolicy.after said FAIL for a fault that is not final: try again, and every StreamUrl.TRIES failures take the other source (back and forth) when there is one */
+    static Step patient(State s, boolean hasAlt) {
+        s.patient++;
+        return hasAlt && s.patient % StreamUrl.TRIES == 0 ? Step.ALT : Step.RETRY;
+    }
+
+    /** The wait before the next try (the schedule above). */
+    static long waitMs(State s) { return retryMs(s.failures); }
 
     /** The words of a station's fault, said only at Step.FAIL. */
     static String message(State s, int what, int extra) {

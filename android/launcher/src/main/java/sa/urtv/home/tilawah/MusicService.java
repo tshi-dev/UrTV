@@ -432,6 +432,11 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             final boolean busy = passing;
             handler.post(() -> {
                 if (!wish.current(gen) || source != Prefs.SOURCE_RADIO || !url.equals(currentUrl)) return;   // stopped, or another pick meanwhile
+                if (go != null && radioSlowLeft > 0) {   // radioslow: this try stalls and fails (the player is never given the address)
+                    radioSlowLeft--;
+                    handler.postDelayed(() -> { if (wish.current(gen) && source == Prefs.SOURCE_RADIO && url.equals(currentUrl)) onPlaybackError(MediaPlayer.MEDIA_ERROR_UNKNOWN, PlayerFault.TIMED_OUT); }, 4000);
+                    return;
+                }
                 if (go != null) { startUrl(go); return; }
                 if (busy && StreamUrl.again(tries + 1)) {
                     error = Ui.str(this, R.string.retrying);
@@ -748,6 +753,14 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     }
 
     /** a new pick of a station: nothing held against it */
+    /** 4.3.1 a tester's switch (dock.sh debug radioslow): the first RADIO_SLOW_FAILS tries of each pick stall for 4 s and fail, so the recovery can be watched */
+    private static final int RADIO_SLOW_FAILS = 4;
+    private int radioSlowLeft;
+
+    private boolean radioSlowOn() {
+        try { return getSharedPreferences("debug_flags", MODE_PRIVATE).getBoolean("radioslow", false); } catch (RuntimeException e) { return false; }
+    }
+
     private void resetRadioState() {
         radioState.played = false;
         radioState.tries = 0;
@@ -756,6 +769,8 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         radioState.formatEveryTime = true;
         radioState.spent = false;
         radioState.failures = 0;
+        radioState.patient = 0;
+        radioSlowLeft = radioSlowOn() ? RADIO_SLOW_FAILS : 0;
     }
 
     /** the TV has a network that reaches the internet now (a permission the app already holds); true when it cannot tell */
@@ -787,6 +802,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             final String faultCode = PlayerFault.code(what, extra);
             final int httpCode = player == null ? 0 : player.httpCode;
             radioFault = RadioFault.record("radio-" + station, faultCode, httpCode, Build.VERSION.SDK_INT, player == null ? "" : player.decoder);
+            if (step == RadioPolicy.Step.FAIL && !RadioPolicy.finalFault(radioState, what)) step = RadioPolicy.patient(radioState, radioAlt != null);   // 4.3.1 never given up while the person wants it
             if (step == RadioPolicy.Step.FAIL) {
                 final int made = radioState.failures;   // every failure since the pick, both sources
                 error = what == PlayerFault.SERVER_DIED ? RadioPolicy.message(radioState, what, extra)
@@ -798,10 +814,11 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             }
             if (step == RadioPolicy.Step.ALT) {
                 Log.i(TAG, "station failed every try at " + hostOf(radioAddress) + ": its second source " + hostOf(radioAlt));
-                radioAddress = radioAlt;
-                radioAlt = null;
+                String other = radioAlt;
+                radioAlt = radioAddress;   // both kept: the sources are taken in turn
+                radioAddress = other;
             }
-            error = Ui.str(this, R.string.retrying);
+            error = RadioFault.retryMessage(RadioFault.reason(online(), faultCode, httpCode, radioState.played, radioState.formatEveryTime, radioState.failures));
             updateSession();
             updateNotification();
             final int gen = wish.currentGeneration();

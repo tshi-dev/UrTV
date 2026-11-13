@@ -25,7 +25,7 @@ def check(name, ok, detail=""):
 read = lambda p: Path(p).read_text(encoding="utf-8")
 if shutil.which("javac") and shutil.which("java"):
     with tempfile.TemporaryDirectory() as tmp:
-        srcs = [ROOT / "tests/i18n_home_stub/S.java", H / "Tr.java", T / "RadioFault.java", ROOT / "tests/RadioFaultRun.java"]
+        srcs = [ROOT / "tests/i18n_home_stub/S.java", H / "Tr.java", T / "StreamUrl.java", T / "PlayerFault.java", T / "RadioPolicy.java", T / "RadioFault.java", ROOT / "tests/RadioFaultRun.java"]
         r = subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp] + [str(s) for s in srcs], capture_output=True, text=True)
         check("RadioFault compiles on a plain JVM", r.returncode == 0, r.stderr[-400:])
         if r.returncode == 0:
@@ -41,6 +41,11 @@ ms, pb, ex, rc = read(T / "MusicService.java"), read(T / "Playback.java"), read(
 tr = read(ROOT / "i18n/en/home.tsv")
 check("the station's fault is said with RadioFault (reason from the player's code, the HTTP status, the network and the tries), not the old one-size line",
       "RadioFault.reason(" in ms and "RadioFault.message(" in ms)
+check("the live window: ExoPlayer never speeds up to chase the live edge, a stuck or reset playlist is a quiet re-prepare (a few a minute), the buffers are the radio's own (Ram.tier is not used)",
+      "setMinPlaybackSpeed(1f).setMaxPlaybackSpeed(1f)" in ex and 'startsWith("Playlist")' in ex and "++quiet <= 6" in ex and "Ram." not in ex)
+check("a tester's switch `dock.sh debug radioslow` makes the first four tries of a pick stall and fail", '"radioslow"' in read(H / "DebugFlags.java") and "radioslow" in read(ROOT / "optimize/dock.sh") and "radioSlowLeft" in ms)
+check("the retry is never a final fault while the person wants the station: finalFault, patient, the swap of the sources, the line «نحاول نرجّع البث…» with the reason",
+      "RadioPolicy.finalFault(radioState, what)" in ms and "RadioPolicy.patient(radioState" in ms and "RadioFault.retryMessage(" in ms)
 check("the network check is the TV's own (ConnectivityManager, a permission the app already holds)", "ConnectivityManager" in ms and "NET_CAPABILITY_VALIDATED" in ms)
 check("ExoPlayback hands over the HTTP status and the decoder (public fields of Media3's exceptions), nothing else",
       "InvalidResponseCodeException" in ex and "httpCode = " in ex and "decoder = " in ex and "int httpCode" in pb and "String decoder" in pb)
