@@ -16,6 +16,8 @@ public final class CityAskRun {
             && CityAskRule.show(true, false, berlin, false, HomeNudgeRule.laterUntil(now, 0), now + 7 * d)
             && !CityAskRule.show(true, false, berlin, false, HomeNudgeRule.laterUntil(now, 1), now + 29 * d)
             && !CityAskRule.show(true, false, berlin, false, HomeNudgeRule.NEVER, now + 5000 * d));
+        check("builds: the same, an unknown one or no screensaver say nothing", VersionMismatchRule.which(300, 300) == VersionMismatchRule.SAME && VersionMismatchRule.which(300, 0) == VersionMismatchRule.SAME && VersionMismatchRule.which(0, 300) == VersionMismatchRule.SAME);
+        check("builds: a home newer than the screensaver (the Downloader path) and the reverse", VersionMismatchRule.which(300, 270) == VersionMismatchRule.SAVER_OLDER && VersionMismatchRule.which(270, 300) == VersionMismatchRule.HOME_OLDER);
         System.out.println(failed == 0 ? "ALL PASS" : "FAILED " + failed);
         if (failed != 0) System.exit(1);
     }

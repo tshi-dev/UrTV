@@ -80,8 +80,8 @@ check("step 28: the tiles of every N (5 to 10) at 1080p and 720p, with the round
 check("bar size: for every N from 5 to 10 at 1080p and 720p the tiles fill the tray's inner width to within N pixels (whole tiles, 24 apart), never past it", all(0 <= v["slack"] <= n for (h, n), v in bars.items()), bars)
 check("bar size: the tile keeps its 16:9 ratio, and the focused tile's ring stays inside the 24 px inset, for every N", all(v["ratio"] and v["ring"] for v in bars.values()), bars)
 shown = [l for l in out if l.startswith("shown ")][0].split()[1:]
-check("bar size: «5» is 5, «7» is 7 even with 3 favourites (the tray keeps its size), «10» is 8 (ten across were 140 px wide, too small: 8 show whole, the rest scroll), «all» is the favourites up to 8 but never fewer than 5, a number out of range or a word is clamped / 5",
-      shown == ["5", "7", "8", "8", "5", "8", "8", "5", "5", "5"], shown)
+check("bar size: «5» is 5, «7» is 7 even with 3 favourites (the tray keeps its size), «10» is 10 (4.3.1: all ten show whole, no scrolling), «all» is the favourites up to 10 but never fewer than 5, a number out of range or a word is clamped / 5",
+      shown == ["5", "7", "10", "8", "5", "10", "10", "5", "5", "5"], shown)
 th = [l for l in out if l.startswith("trayh ")][0].split()
 check("step 28: the tray is as high as its tiles with the same 24 above and below (218 for 5, 165 for 7, 149 for 8), and the focused tile lifts 6 only for 5 and 6 tiles (none at 7 and more: it stays on its own centre line)",
       th[1:4] == ["218", "165", "149"] and th[5:8] == ["6", "6", "0"], th)

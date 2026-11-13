@@ -36,8 +36,8 @@ check("«الألعاب» opens the games list (GAMES_READY on: «الأسرع»
 check("the markets and the matches open the home app's own pages (class names as the settings' rows use), the fourth window the settings",
       'setClassName("sa.urtv.home", "sa.urtv.home.MarketsActivity")' in hub and 'setClassName("sa.urtv.home", "sa.urtv.home.MatchesActivity")' in hub
       and "new Intent(this, SettingsActivity.class)" in hub)
-check("no second hub: the home's settings paths still open SettingsActivity itself (not the hub)",
-      'SAVER_PKG + ".SettingsActivity"' in home and "YourTvHub" not in home)
+check("4.3.1: the home's «تلفزيونك» paths (the control center's row, the Settings key, the clean home's button) open the hub, one window at once with an extra, and an older screensaver without the hub gets its settings",
+      'SAVER_PKG + ".YourTvHubActivity"' in home and 'SAVER_PKG + ".SettingsActivity"' in home and 'hub.putExtra("open", window)' in home)
 check("the same page as the settings: GlassSource.page, the 44 sp title «تلفزيونك», 8 dp inside, 5 % under the hint, 12 dp between the tiles, the glass tile's focus (GlassPaint.card 14)",
       "GlassSource.page(this, root)" in hub and "TypedValue.COMPLEX_UNIT_SP, 44" in hub and "page.setPadding(dp(8), dp(32), dp(8), dp(16))" in hub
       and "heightPixels * 0.05f" in hub and "GlassPaint.card(card, look, 14)" in hub and "setMarginEnd(dp(12))" in hub and "bottomMargin = dp(12)" in hub)

@@ -1145,6 +1145,9 @@ public class MainActivity extends Activity {
             @Override public void openSaverSettings() { guarded(ParentalPolicy.PILL_SAVER_SETTINGS, SAVER_PKG, "شاشة التوقف", () -> openPackage(SAVER_PKG)); }   // a long OK: its settings
             @Override public void openOurSettings() { MainActivity.this.openOurSettings(false); }
             @Override public void openCity() { MainActivity.this.openCity(); }
+            @Override public void openGames() { MainActivity.this.openOurSettings(false, "games"); }
+            @Override public String updateLine() { return MainActivity.this.buildMismatchLine(); }
+            @Override public void openUpdate() { launchGuarded(ParentalPolicy.PILL_UPDATES, new Intent(MainActivity.this, UpdateActivity.class), "تحديث تلفزيوني"); }
             @Override public void openSleep(View anchor) { guarded(ParentalPolicy.PILL_SLEEP, null, S.t("مؤقت النوم"), () -> showSleep(anchor)); }
             @Override public boolean saverInstalled() { return isInstalled(SAVER_PKG); }
             @Override public Typeface font(String family) { return MainActivity.this.font(family); }
@@ -1984,6 +1987,7 @@ public class MainActivity extends Activity {
         nudgeCard.setClickable(true);
         nudgeCard.setId(View.generateViewId());
         nudgeCard.setOnClickListener(v -> {
+            if (nudgeIsUpdate) { launchGuarded(ParentalPolicy.PILL_UPDATES, new Intent(this, UpdateActivity.class), "تحديث تلفزيوني"); return; }   // 4.3.1: the builds differ
             if (nudgeIsCity) { openCity(); return; }   // 4.3.1: the same bar asks for the city while it is due
             try { guarded(ParentalPolicy.WIDGET_MATCHES, null, S.t("إعداد تلفزيوني"), () -> launch(new Intent(this, sa.urtv.home.setup.SetupActivity.class))); } catch (RuntimeException ignored) { }
         });
@@ -2013,13 +2017,29 @@ public class MainActivity extends Activity {
     /** «لاحقاً» (or Back on the bar): hidden for 7 days, then 30 after a second press, then never; the number of presses is kept */
     private void snoozeNudge() {
         android.content.SharedPreferences sp = getSharedPreferences(NUDGE_PREFS, MODE_PRIVATE);
-        String k = nudgeIsCity ? "city_" : "";   // the city question waits on its own count
+        String k = nudgeIsUpdate ? "ver_" : nudgeIsCity ? "city_" : "";   // the city question waits on its own count
         int presses = sp.getInt(k + "later_count", 0);
         sp.edit().putLong(k + "later_until", HomeNudgeRule.laterUntil(System.currentTimeMillis(), presses)).putInt(k + "later_count", presses + 1).apply();
         updateHomeNudge(false);
     }
 
     private boolean nudgeIsCity;      // the bar is asking for the city (CityAskRule), not for «إعداد تلفزيوني»
+    private boolean nudgeIsUpdate;    // 4.3.1: the bar says the two apps are not the same build (VersionMismatchRule); OK opens «تحديث تلفزيوني»
+
+    /** the build (versionCode) of the screensaver app, 0 when it is not installed */
+    private long saverBuild() {
+        try {
+            android.content.pm.PackageInfo p = getPackageManager().getPackageInfo(SAVER_PKG, 0);
+            return android.os.Build.VERSION.SDK_INT >= 28 ? p.getLongVersionCode() : (long) p.versionCode;
+        } catch (Exception e) { return 0; }
+    }
+
+    /** 4.3.1: the one line when the home and the screensaver are not the same build (a Downloader update brings the home alone); null when they are, or no screensaver */
+    private String buildMismatchLine() {
+        int m = VersionMismatchRule.which(BuildConfig.VERSION_CODE, saverBuild());
+        return m == VersionMismatchRule.SAVER_OLDER ? S.t("حدّث شاشة التوقف عشان تطلع الألعاب والمزايا الجديدة")
+            : m == VersionMismatchRule.HOME_OLDER ? S.t("حدّث الشاشة الرئيسية عشان تعمل مزايا شاشة التوقف الجديدة") : null;
+    }
     private boolean cityChosenNow = true;   // from the screensaver's last answer: true when it said nothing, so nobody is asked
     private boolean nudgeFocused;   // the bar took the focus once in this run of the home
 
@@ -2050,12 +2070,16 @@ public class MainActivity extends Activity {
         android.content.SharedPreferences np = getSharedPreferences(NUDGE_PREFS, MODE_PRIVATE);
         long nowMs = System.currentTimeMillis();
         boolean kids = Parental.state(this).kids;
-        boolean askCity = CityAskRule.show(isInstalled(SAVER_PKG), cityChosenNow, java.util.TimeZone.getDefault().getID(), kids, np.getLong("city_later_until", 0), nowMs);
-        boolean show = askCity || HomeNudgeRule.show(isDefaultHome(), kids, np.getLong("later_until", 0), nowMs);   // never both: the city's question first
+        String mismatch = kids ? null : buildMismatchLine();
+        boolean askUpdate = mismatch != null && HomeNudgeRule.show(false, false, np.getLong("ver_later_until", 0), nowMs);   // the builds first: the city's chooser needs the new screensaver
+        boolean askCity = !askUpdate && mismatch == null && CityAskRule.show(isInstalled(SAVER_PKG), cityChosenNow, java.util.TimeZone.getDefault().getID(), kids, np.getLong("city_later_until", 0), nowMs);
+        boolean show = askUpdate || askCity || HomeNudgeRule.show(isDefaultHome(), kids, np.getLong("later_until", 0), nowMs);   // never two at once: the builds, then the city, then the nudge
         boolean was = nudge.getVisibility() == View.VISIBLE;
         nudgeIsCity = askCity;
-        nudgeCard.setText(askCity ? S.t("اختر المدينة") : S.t("خلّ تلفزيونك يفتح على UrTV"));
-        nudgeAsk.setVisibility(askCity ? View.VISIBLE : View.GONE);
+        nudgeIsUpdate = askUpdate;
+        nudgeCard.setText(askUpdate ? S.t("حدّث الآن") : askCity ? S.t("اختر المدينة") : S.t("خلّ تلفزيونك يفتح على UrTV"));
+        if (askUpdate) nudgeAsk.setText(mismatch); else if (askCity) nudgeAsk.setText(S.t("وين أنت؟ اختر مدينتك عشان الطقس والصلاة"));
+        nudgeAsk.setVisibility(askUpdate || askCity ? View.VISIBLE : View.GONE);
         if (show && !was) {
             GlassStyle.Look l = homeGlass();
             nudgeAsk.setBackground(opaqueTile(18));   // its words sit on the glass too, over any photo
@@ -3883,10 +3907,19 @@ public class MainActivity extends Activity {
         if (getPackageManager().resolveActivity(i, 0) != null) guarded(ParentalPolicy.OUR_SETTINGS, null, S.t("المدينة"), () -> launch(i));
     }
 
-    private void openOurSettings(boolean orTvSettings) {
-        Intent i = new Intent(Intent.ACTION_MAIN).setComponent(new ComponentName(SAVER_PKG, SAVER_PKG + ".SettingsActivity"));
+    private void openOurSettings(boolean orTvSettings) { openOurSettings(orTvSettings, null); }
+
+    /**
+     * 4.3.1 «تلفزيونك»: the screensaver app's hub (markets, matches, games, settings): what the control center's row, the remote's Settings key and the
+     * clean home's button open now, so the games are one press away. {@code window}: "games" opens that window at once. A screensaver of 4.2 has no hub: its settings, as before.
+     */
+    private void openOurSettings(boolean orTvSettings, String window) {
+        Intent hub = new Intent(Intent.ACTION_MAIN).setComponent(new ComponentName(SAVER_PKG, SAVER_PKG + ".YourTvHubActivity"));
+        if (window != null) hub.putExtra("open", window);
+        Intent i = getPackageManager().resolveActivity(hub, 0) != null ? hub
+                : new Intent(Intent.ACTION_MAIN).setComponent(new ComponentName(SAVER_PKG, SAVER_PKG + ".SettingsActivity"));
         if (getPackageManager().resolveActivity(i, 0) != null) {
-            guarded(ParentalPolicy.OUR_SETTINGS, null, S.t("إعدادات تلفزيونك"), () -> launch(i));
+            guarded(ParentalPolicy.OUR_SETTINGS, null, S.t("تلفزيونك"), () -> launch(i));
         } else if (orTvSettings) {
             launchGuarded(ParentalPolicy.REMOTE_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون");
         }

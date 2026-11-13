@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261113125517">
+<meta name="urtv-build" content="20261113151316">
 <title>Your TV Screen</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -665,6 +665,9 @@
   #mp header{display:flex;justify-content:space-between;align-items:baseline}
   #mp h1{font-size:calc(var(--u)*64);font-weight:700}
   #mp-age{color:var(--fs);font-size:calc(var(--u)*24)}
+  #mp-teams{font:inherit;font-size:calc(var(--u)*26);color:var(--fg);background:transparent;border:calc(var(--u)*2) solid var(--fgr);border-radius:calc(var(--u)*30);padding:calc(var(--u)*6) calc(var(--u)*30);margin-inline:calc(var(--u)*24);margin-inline-start:auto}
+  #mp-teams.f{background:var(--fg);color:var(--bg)}
+  #mp header #mp-age{margin-inline-end:auto}
   #mp-days{list-style:none;display:flex;gap:calc(var(--u)*8);border-bottom:1px solid var(--fln);margin-top:calc(var(--u)*24)}
   #mp-days li{padding:calc(var(--u)*16) calc(var(--u)*24);color:var(--fs);border-bottom:calc(var(--u)*4) solid transparent;border-radius:calc(var(--u)*12) calc(var(--u)*12) 0 0;white-space:nowrap}
   #mp-days li.on{color:var(--fgr);font-weight:700;border-bottom-color:var(--fgr)}
@@ -4078,7 +4081,7 @@ function nowPlayingTick(){
 // files on data-leagues, the Saudi Pro League's when none is followed), the prayers are computed or Aladhan's, as everywhere on the page.
 // The launcher owns the focus (FootballFocus.java)
 const FB_W = {
-  weather:'Weather', prayers:'Prayer times', today:'Today’s matches', upcoming:'Upcoming matches', title:'Matches', yours:'Your teams', none:'No matches today', noneTomorrow:'No matches tomorrow', noneYesterday:'No matches yesterday', noneDay:'No matches', back:'Back',
+  weather:'Weather', prayers:'Prayer times', today:'Today’s matches', upcoming:'Upcoming matches', title:'Matches', teams:'My teams', yours:'Your teams', none:'No matches today', noneTomorrow:'No matches tomorrow', noneYesterday:'No matches yesterday', noneDay:'No matches', back:'Back',
   feels:'Feels like', hum:'Humidity', wind:'Wind', kmh:'%s km/h', pct:'%s%%', live:'Live', ended:'Final', vs:'×',
   yesterday:'Yesterday', tday:'Today', tomorrow:'Tomorrow', g1:'1 match', g2:'2 matches', gFew:'%s matches', gMany:'%s matches',
   allOn:'all on %s', round:'Round %s', venue:'Venue', channel:'Channel', withPrayer:'With the prayers', game:'Match',
@@ -4419,9 +4422,10 @@ function mpRender(){
   MP.r = Math.max(0, Math.min(MP.r, MP.rows.length - 1));
   MP.l = Math.max(0, Math.min(MP.l, groups.length - 1));
   setText(document.getElementById('mp-age'), mpAge());
+  const tb = document.getElementById('mp-teams'); if(tb) tb.classList.toggle('f', MP.zone === 'head');   // «فرقي»: the header's button, above the days
   setHTML(document.getElementById('mp-days'), MP.days.map((d, i) => {
     const word = i < 3 ? fbDayWord(d) : FMT_WEEKDAY.format(new Date(d + 'T12:00:00Z')) + ' ' + ar(+d.slice(8));
-    return `<li class="${d === MP.day ? 'on' : ''}${(MP.zone === 'days' || !MP.rows.length) && i === MP.d ? ' f' : ''}">${word}</li>`;
+    return `<li class="${d === MP.day ? 'on' : ''}${(MP.zone === 'days' || (!MP.rows.length && MP.zone !== 'head')) && i === MP.d ? ' f' : ''}">${word}</li>`;
   }).join(''));
   setHTML(document.getElementById('mp-side'), groups.length ? groups.map((g, i) =>
     `<li class="${i === MP.l ? 'on' : ''}${MP.zone === 'leagues' && i === MP.l ? ' f' : ''}"><span>${esc(g.side || g.name)}</span><i>${ar(g.count)}</i></li>`).join('') : '');
@@ -4548,10 +4552,16 @@ function mpKey(e){
     else return;
     e.preventDefault(); return mpDetailRender();
   }
+  if(MP.zone === 'head'){   // 4.3.1 «فرقي»: OK opens the teams chooser of the settings (the page is made again when it comes back), ▼ goes to the days
+    if(ok){ try{ if(window.UrtvMatches) window.UrtvMatches.openTeams(); }catch(err){} return e.preventDefault(); }
+    if(k !== 'ArrowDown') return;
+    MP.zone = 'days'; e.preventDefault(); return mpRender();
+  }
   if(MP.zone !== 'days' && !MP.rows.length) MP.zone = 'days';   // a day with no game: the days are where the focus is
   if(MP.zone === 'days'){
     if(k === fwd) MP.d = Math.min(MP.days.length - 1, MP.d + 1); else if(k === back) MP.d = Math.max(0, MP.d - 1);
     else if(k === 'ArrowDown') MP.zone = MP.rows.length ? 'rows' : MP.leagues.length ? 'leagues' : 'days';
+    else if(k === 'ArrowUp' && document.getElementById('mp-teams')) MP.zone = 'head';
     else if(!ok) return;
     if(k === fwd || k === back || ok){ MP.day = MP.days[MP.d]; MP.picked = true; MP.r = 0; MP.l = 0; }
   } else if(MP.zone === 'leagues'){
@@ -4574,7 +4584,7 @@ function mpKey(e){
 function bootMatchPage(){
   document.documentElement.classList.add('mpage');
   document.documentElement.classList.toggle('mpdark', !!CONFIG.pageDark);
-  document.body.insertAdjacentHTML('beforeend', `<div id="mp"><header><h1>${FB_W.title}</h1><span id="mp-age"></span></header>`
+  document.body.insertAdjacentHTML('beforeend', `<div id="mp"><header><h1>${FB_W.title}</h1><span id="mp-age"></span>${window.UrtvMatches && window.UrtvMatches.openTeams ? `<button id="mp-teams" type="button" tabindex="-1">${FB_W.teams}</button>` : ''}</header>`
     + '<ul id="mp-days"></ul><div class="mpb"><ul id="mp-side"></ul><div id="mp-list"></div></div></div><div id="mp-detail" hidden></div>');
   document.documentElement.style.setProperty('--u', (innerWidth / 1920) + 'px');
   addEventListener('resize', () => document.documentElement.style.setProperty('--u', (innerWidth / 1920) + 'px'));

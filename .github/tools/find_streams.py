@@ -18,7 +18,7 @@ from pathlib import Path
 OUT = Path(os.environ.get("STATIONS_OUT", "stations"))
 UA = {"User-Agent": "urtv-listening"}
 RB = "https://de1.api.radio-browser.info/json/stations/search?"
-RECITERS = ["بدر التركي", "محمد أيوب"]
+RECITERS = ["بدر التركي", "محمد أيوب", "أحمد طالب", "طالب حميد"]   # 4.3.1: the Prophet's Mosque imam a user asked for
 
 
 def get(url):

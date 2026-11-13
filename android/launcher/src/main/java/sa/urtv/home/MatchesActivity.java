@@ -98,9 +98,20 @@ public class MatchesActivity extends Activity {
         web.requestFocus();
     }
 
+    private boolean teamsOpened;
+
+    /** «فرقي»: the screensaver's settings open the teams chooser at once; coming back, the page is made again with the new teams */
+    void openTeams() {
+        android.content.Intent i = new android.content.Intent(android.content.Intent.ACTION_MAIN).setClassName("sa.urtv.screensaver", "sa.urtv.screensaver.SettingsActivity").putExtra("manageTeams", true);
+        if (Parental.state(this).kids || getPackageManager().resolveActivity(i, 0) == null) return;   // kids mode: the settings are behind the PIN, not here
+        teamsOpened = true;
+        try { startActivity(i); } catch (RuntimeException e) { teamsOpened = false; }
+    }
+
     @Override protected void onResume() {
         super.onResume();
         if (web != null) { web.onResume(); web.resumeTimers(); }
+        if (teamsOpened) { teamsOpened = false; recreate(); }   // back from «فرقي»: the page is made again with the new teams
     }
 
     @Override protected void onPause() {
@@ -127,6 +138,15 @@ public class MatchesActivity extends Activity {
         /** «شاهد المباراة» starts the Player from this activity, for a result (MatchApp's contract); held weakly, the page may outlive it */
         private final java.lang.ref.WeakReference<android.app.Activity> act;
         Bridge(Context c, android.app.Activity a) { this.c = c; this.act = new java.lang.ref.WeakReference<>(a); }
+
+        /** 4.3.1 «فرقي»: the settings' teams chooser (the screensaver app, behind its lock like «إعدادات تلفزيونك»); the page is made again when it comes back */
+        @JavascriptInterface public boolean openTeams() {
+            final android.app.Activity a = act.get();
+            if (!(a instanceof MatchesActivity) || a.isFinishing()) return false;
+            final MatchesActivity m = (MatchesActivity) a;
+            a.runOnUiThread(new Runnable() { public void run() { m.openTeams(); } });
+            return true;
+        }
 
         @JavascriptInterface public boolean remind(String text, double at) { return MatchReminder.add(c, text, (long) at); }
 

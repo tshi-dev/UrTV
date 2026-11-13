@@ -89,6 +89,8 @@ public class SettingsActivity extends Activity {
         UpdateJob.schedule(this);
         final boolean askCity = getIntent().getBooleanExtra("pickCity", false);   // 4.3.1: the home's «المدينة» (control center, the question bar) opens the chooser at once
         getIntent().removeExtra("pickCity");
+        final boolean askTeams = getIntent().getBooleanExtra("manageTeams", false);   // 4.3.1: the matches page's «فرقي»
+        getIntent().removeExtra("manageTeams");
         // the glass look of all our screens: the home's photo, small and blurred once (GlassSource), under its veil; glass tiles and rows
         root = new FrameLayout(this);
         root.setLayoutDirection(Dir.layout());
@@ -137,11 +139,13 @@ public class SettingsActivity extends Activity {
         setContentView(root);
         render();
         if (askCity) root.post(new Runnable() { public void run() { pickCity(); } });
+        if (askTeams) root.post(new Runnable() { public void run() { manageTeams(); } });
     }
 
     @Override protected void onNewIntent(Intent in) {   // 4.3.1: «المدينة» of the home again while the settings are already open
         super.onNewIntent(in);
         if (in.getBooleanExtra("pickCity", false)) { in.removeExtra("pickCity"); pickCity(); }
+        if (in.getBooleanExtra("manageTeams", false)) { in.removeExtra("manageTeams"); manageTeams(); }
     }
 
     /** A picker's live preview (a WebView running the page) is let go while another app is in front, and drawn again on return; null when no picker is open. */
