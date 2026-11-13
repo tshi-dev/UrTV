@@ -56,6 +56,7 @@ public class LetterHiveActivity extends GameActivity {
         chips.add("time", S.t("وقت السؤال"), new String[] {S.t("%s ثانية", num(15)), S.t("%s ثانية", num(20)), S.t("%s ثانية", num(30))}, 0);
         chips.add("options", S.t("زر الخيارات"), new String[] {S.tv(ON_OFF[1]), S.tv(ON_OFF[0])}, 0);
         chips.add("steal", S.t("فرصة للفريق الآخر"), new String[] {S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
+        chips.add("next", S.t("من يختار الحرف"), new String[] {S.t("من يجاوب صح يختار الحرف"), S.t("بالتناوب")}, 0);
         remembered(soundChip(chips));
     }
 
@@ -68,7 +69,7 @@ public class LetterHiveActivity extends GameActivity {
         if (bank == null) { toast(S.t("قريبًا")); return; }
         HiveGame.Settings s = new HiveGame.Settings();
         s.level = chips.picked("level"); s.kids = chips.picked("kids") == 1; s.seconds = HiveGame.SECONDS[chips.picked("time")];
-        s.challenge = chips.picked("options") == 1; s.steal = chips.picked("steal") == 1; s.english = en;
+        s.challenge = chips.picked("options") == 1; s.steal = chips.picked("steal") == 1; s.alternate = chips.picked("next") == 1; s.english = en;
         Random rnd = new Random();
         game = new HiveGame(bank, s, rnd.nextBoolean() ? HiveBoard.TEAM_SIDES : HiveBoard.TEAM_TOP, this::clock, rnd);
         game.avoid(GamePrefs.recent(this, id()));

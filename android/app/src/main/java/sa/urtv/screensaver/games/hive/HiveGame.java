@@ -15,7 +15,8 @@ import java.util.function.LongSupplier;
  *   ASK    its question is up, the options hidden; «خيارات» shows them once a turn (never in «تحدّي»). The team answers aloud while the time runs. When the time
  *          is up: with the steal on, the other team may answer the same question (STEAL, a new time); otherwise the screen says so and waits for OK.
  *   JUDGE  OK showed the answer: the host says WHO answered, a team or nobody (judge(who)). The hexagon and the point go to that team (a team whose time ran out and
- *          whose rival answered gets nothing); nobody leaves it free. Then the turn passes (see nextTurn).
+ *          whose rival answered gets nothing); nobody leaves it free. Then the turn: the team that answered right picks the next letter
+ *          (the default), or when nobody answered it passes to the other team; with Settings.alternate the turn passes to the other team every time.
  *   WON    a team's two sides are joined; chain() is what to light up.
  *
  * The board: 25 letters drawn for each game from the alphabet (three Arabic letters stay out, one English). A letter with no question for this game's filter
@@ -35,6 +36,8 @@ public final class HiveGame {
     public static final class Settings {
         public int level = LEVEL_MIXED, seconds = 15;
         public boolean kids, challenge, steal, english;
+        /** false (the default): the team that answered right picks the next letter, and when nobody did the turn passes to the other team. true: the turns alternate whoever answered. */
+        public boolean alternate;
     }
 
     public static final class Question {
@@ -183,7 +186,7 @@ public final class HiveGame {
             int w = board.winner();
             if (w != HiveBoard.FREE) { winner = w; chain = board.chain(w); phase = Phase.WON; return true; }
         }
-        endTurn();
+        endTurn(who != 0 && !settings.alternate ? who : other(turn));
         return true;
     }
 
@@ -193,12 +196,12 @@ public final class HiveGame {
     /** the pause card's way out of a question: nobody answers, the answer was not shown, the question stays on its hexagon, the turn passes */
     public boolean skip() {
         if (phase != Phase.ASK && phase != Phase.STEAL) return false;
-        endTurn();
+        endTurn(other(turn));
         return true;
     }
 
-    private void endTurn() {
-        turn = other(turn); answering = turn; cell = -1; question = null; optionsShown = false; timeUp = false;
+    private void endTurn(int next) {
+        turn = next; answering = turn; cell = -1; question = null; optionsShown = false; timeUp = false;
         phase = Phase.PICK;
     }
 }
