@@ -2690,3 +2690,6 @@ Test list: 50,000 entries made on the PC (40,000 live in 40 groups, 5,000 under 
 7. ▲ to «إعداد تلفزيوني» → OK: its page («إعداد تلفزيوني», العربية / English, «يجهّز التلفزيون نفسه، بدون كمبيوتر ولا جوال. اضغط «جهّز كل شي»…»), buttons «جهّز كل شي» (focused first) and «تراجع (يرجّع التلفزيون كما كان)». ▼ to «تراجع» [3.5 s]. Back (not pressed).
 8. Back ×3, Home. TV on the home.
 **Note for making a second clip:** the TV's recorder dies if its start command returns at once; I started it with a 4 s wait in the same command and sent the keys in 30 s pieces. A newer build (293) is on the next channel now; this clip is on 292.
+
+### step 74 — update (owner asked for two clips; both re-recorded smoothly, 25 fps; replaces the 77 s clip above)
+`marketing/howto/undo-1.mp4` (63 s): the path from the home to «تخلّص من واجهة المصنع» and its first confirmation (focus on «رجوع», «ابدأ» not pressed), then Back. `marketing/howto/undo-2.mp4` (62 s): the same path to the page «الشاشة الرئيسية», then «إعداد تلفزيوني» → its page → focus on «تراجع (يرجّع التلفزيون كما كان)» (not pressed), then Back. Keys are the ones listed above (steps 1–5, then 6 for clip 1, 7 for clip 2). Wi-Fi name blurred in both (control panel, about 12–20 s). Nothing changed on the TV; muted and asleep.
