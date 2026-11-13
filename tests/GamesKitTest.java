@@ -13,6 +13,54 @@ import java.util.Set;
 /** The games kit and the two games built on it, on a plain JVM (tests/games_kit_test.py runs it): args = assets/games/khanat.json, assets/games/missing-word.json */
 public class GamesKitTest {
     static int failed;
+    /** «خمس خانات» in individual mode: up to ten players on the engine, the score table and the two layouts */
+    static void khanatTen() {
+        String abc = "ابتجحخدذرزسشصطعغفقكلمنهوي"; List<String> letters = new ArrayList<>();
+        for (char c : abc.toCharArray()) letters.add(String.valueOf(c));
+        String[] boxes = {"animal", "plant", "object", "country", "name"};
+        KhanatEngine e = new KhanatEngine(10, 1, boxes, letters, new Random(3));
+        boolean ok = e.score.n == 10 && new KhanatEngine(99, 1, boxes, letters, new Random(3)).score.n == GameScore.MAX && new KhanatEngine(1, 1, boxes, letters, new Random(3)).score.n == 2;
+        e.write(); e.stop(true); e.finishedFirst(9);
+        for (int b = 0; b < 5; b++) { for (int t = 0; t < 10; t++) e.set(t, t == 9 ? KhanatEngine.VALID : t % 3); e.nextBox(); }
+        int[] r = e.score.ranked();
+        check("khanat, 10 players: marking and scoring work with ten sides (a player is 0, 25 or 50, the one that finished first and had every box right gets 5 more)",
+            ok && e.phase == KhanatEngine.Phase.SCORE && e.score.points[9] == 55 && e.score.points[1] == 50 && e.score.points[2] == 25 && e.score.points[0] == 0 && e.bonusGiven);
+        check("khanat, 10 players: shared places (1, 2, 2, 2, 5, 5, 5, 8, 8, 8) and the table order", e.score.rank(9) == 1 && e.score.rank(1) == 2 && e.score.rank(7) == 2 && e.score.rank(5) == 5 && e.score.rank(6) == 8
+            && Arrays.equals(r, new int[] {9, 1, 4, 7, 2, 5, 8, 0, 3, 6}) && !e.score.tie());
+        e.next();
+        check("khanat, 10 players: with a clear winner the game ends after the last round", e.phase == KhanatEngine.Phase.END);
+        KhanatEngine t = new KhanatEngine(10, 1, boxes, letters, new Random(4));
+        t.write(); t.stop(false);
+        for (int b = 0; b < 5; b++) { for (int p = 0; p < 10; p++) t.set(p, KhanatEngine.VALID); t.nextBox(); }
+        boolean tied = t.score.tie() && t.score.leaders() == 10; t.next();
+        boolean tb = t.tiebreak && t.boxes.length == 1 && t.phase == KhanatEngine.Phase.LETTER;
+        t.write(); t.stop(false); for (int p = 0; p < 10; p++) t.set(p, KhanatEngine.VALID); t.nextBox(); t.next();
+        check("khanat, 10 players: a ten-way tie plays one tie-break round with one box, and a tie after that stands", tied && tb && t.phase == KhanatEngine.Phase.END);
+        // the layout: every tile inside the safe area, none over another, wide enough for «لاعب ١٠», above the buttons at 664; every focus reachable and every key lands on a tile
+        boolean fit = true, wide = true, reach = true, who = true;
+        for (int n = 2; n <= 10; n++) {
+            for (int i = 0; i < n; i++) {
+                float[] a = KhanatLayout.tile(n, i);
+                fit &= a[0] >= 96 - .01 && a[0] + a[2] <= 1824.01 && a[1] >= 332 && a[1] + a[3] <= 644.01;
+                wide &= a[2] >= (n > 4 ? 300 : 320);
+                for (int j = i + 1; j < n; j++) { float[] b = KhanatLayout.tile(n, j); fit &= a[0] + a[2] <= b[0] + .01 || b[0] + b[2] <= a[0] + .01 || a[1] + a[3] <= b[1] + .01 || b[1] + b[3] <= a[1] + .01; }
+            }
+            java.util.Set<Integer> seen = new java.util.HashSet<>(); java.util.ArrayDeque<Integer> q = new java.util.ArrayDeque<>(); q.add(0); seen.add(0);
+            while (!q.isEmpty()) { int f = q.poll(); for (int[] d : new int[][] {{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) { int to = KhanatLayout.moveMark(n, f, d[0], d[1]); reach &= to >= 0 && to <= n + 1; if (seen.add(to)) q.add(to); } }
+            reach &= seen.size() == n + 2;
+            for (int total = n + 1, i = 0; i < total; i++) {
+                float[] a = KhanatLayout.who(total, i);
+                who &= a[0] >= 96 - .01 && a[0] + a[2] <= 1824.01 && a[1] + a[3] <= 700 && a[2] >= 250;
+                int to = KhanatLayout.moveWho(total, i, 1, 0); who &= to >= 0 && to < total;
+            }
+            java.util.Set<Integer> w2 = new java.util.HashSet<>(); java.util.ArrayDeque<Integer> q2 = new java.util.ArrayDeque<>(); q2.add(0); w2.add(0);
+            while (!q2.isEmpty()) { int f = q2.poll(); for (int[] d : new int[][] {{1, 0}, {-1, 0}, {0, 1}, {0, -1}}) { int to = KhanatLayout.moveWho(n + 1, f, d[0], d[1]); if (w2.add(to)) q2.add(to); } }
+            who &= w2.size() == n + 1;
+        }
+        check("khanat layout, 2 to 10 sides: every tile is inside the 96 px safe area and above the buttons, none overlaps another, and none is narrower than 300 px", fit && wide);
+        check("khanat layout: with the arrows every tile and both buttons of the marking screen are reachable; «من خلّص أول؟» (to 11 buttons) reaches every button and stays 250 px wide", reach && who);
+    }
+
     static void check(String what, boolean ok) { System.out.println((ok ? "PASS " : "FAIL ") + what); if (!ok) failed++; }
     static byte[] b(String s) { return s.getBytes(StandardCharsets.UTF_8); }
 
@@ -20,6 +68,7 @@ public class GamesKitTest {
         byte[] khanatRaw = Files.readAllBytes(Paths.get(a[0])), mwRaw = Files.readAllBytes(Paths.get(a[1]));
         registry(); score(); chips(); clock(); dataCheck();
         khanat(khanatRaw); missingWord(mwRaw);
+        khanatTen();
         System.exit(failed == 0 ? 0 : 1);
     }
 
