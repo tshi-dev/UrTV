@@ -26,11 +26,13 @@ const ROWS = [{ idLeague: '4668', competition: 'Saudi Pro League', ar: 'ثمان
   from: '2025-26', until: '2030-31', source: 'https://example.org/source', confidence: 'high', whole: true, verified: '2026-11-04', app: ['com.thmanyah.shasha.tv', 'com.thmanyah.shasha'] }];
 
 const browser = await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {});
-async function open(hash, { file = 'tv.html', rows = null, width = 1920, height = 832, epl = false } = {}) {
+let TOUR_ASKED = 0;   // how many times a page asked for leagues/tournaments.json
+async function open(hash, { file = 'tv.html', rows = null, width = 1920, height = 832, epl = false, tour = null } = {}) {
   const ctx = await browser.newContext({ viewport: { width, height }, timezoneId: 'Asia/Riyadh' });
   await ctx.route(/^https?:/, r => {
     const u = r.request().url();
     if (u.includes('/data-leagues/leagues/saudi-arabian-pro-league.json')) return r.fulfill({ json: LEAGUE, headers: { 'Access-Control-Allow-Origin': '*' } });
+    if (u.includes('/data-leagues/leagues/tournaments.json')) { TOUR_ASKED++; return tour ? r.fulfill({ json: tour, headers: { 'Access-Control-Allow-Origin': '*' } }) : r.fulfill({ status: 404, body: '' }); }
     if (epl && u.includes('eventsnextleague.php?id=4328')) return r.fulfill({ json: { events: [ev('901', 'Arsenal', '133604', 'Chelsea', '133610', '2026-11-04T19:00:00', { idLeague: '4328', strLeague: 'English Premier League' }),
       ev('902', 'Everton', '133615', 'Fulham', '133600', '2026-11-05T17:00:00', { idLeague: '4328', strLeague: 'English Premier League' })] }, headers: { 'Access-Control-Allow-Origin': '*' } });
     if (epl && u.includes('eventspastleague.php')) return r.fulfill({ json: { results: null }, headers: { 'Access-Control-Allow-Origin': '*' } });
@@ -158,6 +160,58 @@ for (const [why, rows] of [['the shipped table', null], ['medium confidence', [{
   await ctx.close();
 }
 
+// ---- 4.3.1 «البطولات الكبرى»: leagues/tournaments.json, one request, after the person's own rows; the 36 h rule; off = no request; unticked ones left out; the card's cap
+const tev = (id, home, hid, away, aid, iso, lid, extra = {}) => ev(id, home, hid, away, aid, iso, { idLeague: lid, strLeague: 'UEFA Nations League', intRound: '', ...extra });
+const TOUR = { updated: '2026-11-04T03:00:00Z', names: { '4490': 'دوري الأمم الأوروبية', '4480': 'دوري أبطال أوروبا' }, events: [
+  tev('801', 'France', '134000', 'Italy', '134001', '2026-11-04T19:45:00', '4490'), tev('802', 'Spain', '134002', 'Germany', '134003', '2026-11-04T19:45:00', '4490'),
+  tev('803', 'Portugal', '134004', 'Croatia', '134005', '2026-11-04T19:45:00', '4490'), tev('804', 'England', '134006', 'Belgium', '134007', '2026-11-04T19:45:00', '4490'),
+  tev('805', 'Real Madrid', '134008', 'Inter', '134009', '2026-11-04T20:00:00', '4480', { strLeague: 'UEFA Champions League' }),
+  tev('1', 'Al-Hilal', '136013', 'Al-Ettifaq', '136020', '2026-11-04T03:30:00', '4490') ] };   // the last is a game the Saudi league file has too: never twice
+{
+  const { p, ctx, errors } = await open('city=الرياض&lat=24.7136&lon=46.6753&tz=Asia/Riyadh&teams=136013&matchpage=1&tour=1', { rows: ROWS, height: 1080, tour: TOUR });
+  await p.waitForSelector('#mp-list section h2', { timeout: 20000 }).catch(() => {});
+  await p.waitForFunction(() => /الأمم الأوروبية/.test(document.getElementById('mp-list').textContent), null, { timeout: 15000 }).catch(() => {});
+  const heads = await p.$$eval('#mp-list h2', h => h.map(x => x.textContent));
+  check('tournaments: no script error', !errors.length, errors.join(' | '));
+  check('tournaments: «فرقك» and the Saudi league exactly as before, then each tournament as a group of its own', heads[0] === 'فرقك' && heads[1] === 'دوري روشن الجولة ١٣' && /الأمم الأوروبية/.test(heads[2]) && heads[3] === 'مباريات اليوم وبكرة' && heads.length === 4, heads.join(','));
+  const list = await p.textContent('#mp-list');
+  const nations = await p.$$eval('#mp-list section', s => s.filter(x => /الأمم الأوروبية/.test(x.querySelector('h2').textContent)).map(x => x.querySelectorAll('.mpg').length));
+  check('tournaments: the Nations League day has its 4 games, and the game the league file has is not shown twice', nations.length === 1 && nations[0] === 4 && (list.match(/الهلال/g) || []).length === 1, JSON.stringify(nations));
+  check('tournaments: one request for the file', TOUR_ASKED >= 1 && TOUR_ASKED <= 2, TOUR_ASKED);
+  await shot(p, 'football-matches-tournaments.png');
+  await ctx.close();
+}
+{
+  const before = TOUR_ASKED;
+  const { p, ctx } = await open('city=الرياض&lat=24.7136&lon=46.6753&tz=Asia/Riyadh&teams=136013&matchpage=1', { rows: ROWS, height: 1080, tour: TOUR });
+  await p.waitForTimeout(1500);
+  const heads = await p.$$eval('#mp-list h2', h => h.map(x => x.textContent));
+  check('tournaments: the switch off loads nothing extra (no request) and shows no tournament', TOUR_ASKED === before && !heads.some(h => /الأمم الأوروبية|أبطال أوروبا/.test(h)), heads.join(',') + ' ' + (TOUR_ASKED - before));
+  await ctx.close();
+}
+{
+  const { p, ctx } = await open('city=الرياض&lat=24.7136&lon=46.6753&tz=Asia/Riyadh&teams=136013&matchpage=1&tour=1&tourx=4490', { rows: ROWS, height: 1080, tour: TOUR });
+  await p.waitForFunction(() => /أبطال أوروبا/.test(document.getElementById('mp-list').textContent) || false, null, { timeout: 5000 }).catch(() => {});
+  const heads = await p.$$eval('#mp-list h2', h => h.map(x => x.textContent));
+  check('tournaments: one unticked one by one (tourx) is left out, the others stay', !heads.some(h => /الأمم الأوروبية/.test(h)), heads.join(','));
+  await ctx.close();
+}
+{
+  const { p, ctx } = await open('city=الرياض&lat=24.7136&lon=46.6753&tz=Asia/Riyadh&teams=136013&matchpage=1&tour=1', { rows: ROWS, height: 1080, tour: { ...TOUR, updated: '2026-11-02T10:00:00Z' } });
+  await p.waitForTimeout(1500);
+  const heads = await p.$$eval('#mp-list h2', h => h.map(x => x.textContent));
+  check('tournaments: a file older than 36 h shows nothing', !heads.some(h => /الأمم الأوروبية|أبطال أوروبا/.test(h)), heads.join(','));
+  await ctx.close();
+}
+{
+  const { p, ctx } = await open('city=الرياض&lat=24.7136&lon=46.6753&tz=Asia/Riyadh&teams=136013&widget=1&football=1&tour=1', { rows: ROWS, height: 1080, tour: TOUR });
+  await p.waitForTimeout(2500);
+  const rows = await p.evaluate(() => { try { return matchRows({}).length; } catch (e) { return -1; } });
+  const html = await p.evaluate(() => matchRows({}).join(''));
+  const tourRows = (html.match(/فرانس|سباين|بورتوجال|إنجلاند/g) || []).length;
+  check('tournaments: on a card the teams\' and the leagues\' games come first and the tournaments\' come last, at most 3 rows', rows > 0 && /الهلال/.test(html) && /القادسية/.test(html) && html.indexOf('القادسية') < html.indexOf('فرانس') && tourRows === 3 && !/بلجيكا/.test(html), rows + ' ' + tourRows);
+  await ctx.close();
+}
 // ---- «مباريات اليوم وبكرة»: appended after the person's own rows, only leagues not already shown
 {
   const { p, ctx } = await open('city=الرياض&lat=24.7136&lon=46.6753&tz=Asia/Riyadh&teams=136013&matchpage=1', { rows: ROWS, height: 1080, epl: true });

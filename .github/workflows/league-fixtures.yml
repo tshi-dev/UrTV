@@ -9,10 +9,13 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '23 */6 * * *'
+    - cron: '41 2,5,8,11,14,17,20,23 * * *'   # 4.3.1 the big tournaments only (their own job below): every 3 hours
   push:
     branches: [master, next]
     paths:
       - '.github/tools/league_fixtures.py'
+      - '.github/tools/tournaments_fixtures.py'
+      - 'assets/shared/tournaments.json'
       - '.github/workflows/league-fixtures.yml'
 
 permissions:
@@ -24,6 +27,7 @@ concurrency:
 
 jobs:
   fixtures:
+    if: github.event.schedule != '41 2,5,8,11,14,17,20,23 * * *'   # the 3-hourly timer is for the tournaments job alone
     runs-on: ubuntu-latest
     timeout-minutes: 90   # the free API answers about one request in 15 s: 16 leagues took 48 minutes
     steps:
@@ -39,10 +43,41 @@ jobs:
         if: always()
         run: |
           test -f leagues/report.json
+          cp prev/leagues/tournaments.json prev/leagues/tournaments-report.json leagues/ 2>/dev/null || true   # the tournaments job's files are not wiped by this push
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout --orphan data-leagues
           git rm -rfq --cached .
           git add -f leagues
           git commit -qm "League fixtures"
+          git push -f origin data-leagues
+
+  # 4.3.1 «البطولات الكبرى»: the games of today and tomorrow of the tournaments in assets/shared/tournaments.json, one file (leagues/tournaments.json) the page downloads
+  # when the person's switch is on. Its own job and timeout (about 75 requests at the free API's pace, 20 to 30 minutes); it runs after the leagues job (or alone on the
+  # 3-hourly timer) and keeps every other file of the branch.
+  tournaments:
+    needs: fixtures
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: The files of the branch, kept
+        run: |
+          mkdir -p prev leagues
+          git fetch --depth=1 origin data-leagues 2>/dev/null && git archive FETCH_HEAD | tar -x -C prev || true
+          cp -r prev/leagues/. leagues/ 2>/dev/null || true
+      - run: python3 -u .github/tools/tournaments_fixtures.py
+        env:
+          TOURNAMENTS_PREV: prev/leagues
+      - name: Push to data-leagues
+        if: always()
+        run: |
+          test -f leagues/tournaments.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan data-leagues
+          git rm -rfq --cached .
+          git add -f leagues
+          git commit -qm "Tournaments"
           git push -f origin data-leagues

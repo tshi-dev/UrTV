@@ -1,0 +1,143 @@
+{
+ "_about": "The big tournaments (4.3.1 «البطولات الكبرى»): one data file for the app (the chooser's names) and for .github/tools/tournaments_fixtures.py (the games of today and tomorrow, published as data-leagues/leagues/tournaments.json). Change the list here; ids and names are from data-catalogue.",
+ "tournaments": [
+  {
+   "id": "4480",
+   "en": "UEFA Champions League",
+   "ar": "دوري أبطال أوروبا"
+  },
+  {
+   "id": "4481",
+   "en": "UEFA Europa League",
+   "ar": "الدوري الأوروبي"
+  },
+  {
+   "id": "5071",
+   "en": "UEFA Conference League",
+   "ar": "دوري المؤتمر الأوروبي"
+  },
+  {
+   "id": "4490",
+   "en": "UEFA Nations League",
+   "ar": "دوري الأمم الأوروبية"
+  },
+  {
+   "id": "4502",
+   "en": "UEFA European Championships",
+   "ar": "كأس الأمم الأوروبية"
+  },
+  {
+   "id": "4429",
+   "en": "FIFA World Cup",
+   "ar": "كأس العالم"
+  },
+  {
+   "id": "5518",
+   "en": "World Cup Qualifying UEFA",
+   "ar": "تصفيات كأس العالم (أوروبا)"
+  },
+  {
+   "id": "5513",
+   "en": "World Cup Qualifying AFC",
+   "ar": "تصفيات كأس العالم (آسيا)"
+  },
+  {
+   "id": "5514",
+   "en": "World Cup Qualifying CAF",
+   "ar": "تصفيات كأس العالم (أفريقيا)"
+  },
+  {
+   "id": "4866",
+   "en": "AFC Asian Cup",
+   "ar": "كأس آسيا"
+  },
+  {
+   "id": "5521",
+   "en": "AFC Asian Cup Qualifying",
+   "ar": "تصفيات كأس آسيا"
+  },
+  {
+   "id": "4719",
+   "en": "AFC Champions League Elite",
+   "ar": "دوري أبطال آسيا للنخبة"
+  },
+  {
+   "id": "5520",
+   "en": "African Cup of Nations Qualifying",
+   "ar": "تصفيات كأس الأمم الأفريقية"
+  },
+  {
+   "id": "4720",
+   "en": "CAF Champions League",
+   "ar": "دوري أبطال أفريقيا"
+  },
+  {
+   "id": "4483",
+   "en": "Copa del Rey",
+   "ar": "كأس ملك إسبانيا"
+  },
+  {
+   "id": "4482",
+   "en": "FA Cup",
+   "ar": "كأس الاتحاد الإنجليزي"
+  },
+  {
+   "id": "4506",
+   "en": "Coppa Italia",
+   "ar": "كأس إيطاليا"
+  },
+  {
+   "id": "4485",
+   "en": "DFB-Pokal",
+   "ar": "كأس ألمانيا"
+  },
+  {
+   "id": "4484",
+   "en": "Coupe de France",
+   "ar": "كأس فرنسا"
+  },
+  {
+   "id": "5649",
+   "en": "Saudi King Cup",
+   "ar": "كأس خادم الحرمين الشريفين"
+  },
+  {
+   "id": "5650",
+   "en": "Saudi Super Cup",
+   "ar": "كأس السوبر السعودي"
+  },
+  {
+   "id": "4503",
+   "en": "FIFA Club World Cup",
+   "ar": "كأس العالم للأندية"
+  },
+  {
+   "id": "4499",
+   "en": "Copa America",
+   "ar": "كوبا أمريكا"
+  },
+  {
+   "id": "5105",
+   "en": "FIFA Arab Cup",
+   "ar": "كأس العرب"
+  }
+ ],
+ "try": [
+  {
+   "id": "4496",
+   "en": "African Cup of Nations",
+   "ar": "كأس الأمم الأفريقية",
+   "why": "the finals are not in data-catalogue; the CI run looks this id up and, if it is that league, includes it"
+  }
+ ],
+ "wanted_not_found": [
+  {
+   "en": "UEFA European Championship Qualifying",
+   "ar": "تصفيات كأس الأمم الأوروبية"
+  },
+  {
+   "en": "Gulf Cup",
+   "ar": "كأس الخليج"
+  }
+ ]
+}

@@ -171,7 +171,7 @@ push = on.split("push:", 1)[1] if "push:" in on else ""
 check("workflow: a timer, by hand, or a push to master/next touching only its own files",
       "schedule:" in on and "workflow_dispatch:" in on and "pull_request" not in on
       and (not push or ("branches: [master, next]" in push
-                        and set(re.findall(r"- '([^']+)'", push)) == {".github/tools/league_fixtures.py", ".github/workflows/league-fixtures.yml"})),
+                        and set(re.findall(r"- '([^']+)'", push)) == {".github/tools/league_fixtures.py", ".github/tools/tournaments_fixtures.py", "assets/shared/tournaments.json", ".github/workflows/league-fixtures.yml"})),
       on[-400:])
 check("workflow: pushes only to data-leagues", "git push -f origin data-leagues" in wf and "origin work" not in wf)
 check("page reads the branch the workflow writes", "tshi-dev/UrTV/data-leagues/leagues/" in (ROOT / "src/template.html").read_text(encoding="utf-8"))

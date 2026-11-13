@@ -134,6 +134,8 @@
         <!-- «صور شاشة التوقف»: the photo packs, opened from the settings only -->
         <activity android:name=".PhotoPacksActivity" android:exported="false" />
         <activity android:name=".AppearanceActivity" android:exported="false" />
+        <!-- 4.3.1 «اختر دورياتك»: the leagues and the big tournaments on one screen -->
+        <activity android:name=".LeaguesActivity" android:exported="false" />
         <!-- step 41: over the home app's own replace, so the app used before does not come to the front; only the home app opens it (signature) -->
         <activity
             android:name=".UpdateCover"
