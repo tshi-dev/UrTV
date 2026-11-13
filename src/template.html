@@ -4366,7 +4366,7 @@ function bootFootball(){
 // ---- «المباريات»: a page of its own on the light look
 const MP = {day: '', picked: false, zone: 'rows', d: 1, l: 0, r: 0, detail: null, btn: 0, rows: [], leagues: [], days: [], note: ''};
 function mpGroups(){   // [{key, name, games}] of the chosen day: «فرقك», then each league in Prefs.LEAGUES' order
-  const games = fbGames().filter(ev => fbDayOf(fbKick(ev)) === MP.day && !(MP_MORE && !fbMine(ev) && MP_TOP_IDS.indexOf(String(ev.idLeague || '')) > 0)), mine = games.filter(fbMine);
+  const games = fbGames().filter(ev => fbDayOf(fbKick(ev)) === MP.day && !(!fbMine(ev) && (ev.tour || (MP_MORE && MP_TOP_IDS.indexOf(String(ev.idLeague || '')) > 0)))), mine = games.filter(fbMine);
   const by = {};
   games.forEach(ev => { const k = String(ev.idLeague || ev.strLeague || ''); (by[k] = by[k] || []).push(ev); });
   const keys = Object.keys(by).sort((a, b) => (FB_LEAGUE_ORDER.indexOf(a) + 1 || 99) - (FB_LEAGUE_ORDER.indexOf(b) + 1 || 99));
@@ -4376,17 +4376,23 @@ function mpGroups(){   // [{key, name, games}] of the chosen day: «فرقك», 
     const rest = by[k].filter(ev => !fbMine(ev)).sort((a, b) => fbKick(a) - fbKick(b));
     if(rest.length){ shown.add(k); out.push({key: k, name: fbRound(rest[0]), nameHtml: fbRoundHtml(rest[0]), side: leagueName(rest[0]) || fbRound(rest[0]), games: rest, count: by[k].length}); }
   });
-  const more = mpMore(shown);
+  const more = mpMore(shown);   // ONE section after the person's own rows: the tournaments and the top leagues not already shown
   if(more.length) out.push({key: 'more', name: FB_W.more, games: more, count: more.length, more: true});
+  else if(mpMoreDay() && !MATCHES_LOADED) out.push({key: 'more', name: FB_W.more, games: [], count: 0, more: true, loading: true});   // until a load answers, a line says so
   return out;
 }
-// «مباريات اليوم وبكرة»: the top leagues' games of today and tomorrow (Saudi first), at most 12, after the person's own rows
+// «مباريات اليوم وبكرة»: today's and tomorrow's games of the big tournaments (CI file) and the top leagues (Saudi, big five, Champions League), not the followed teams' («فرقك» has them), at most 12,
+// only while the page shows today or tomorrow. None (offline, nothing played) = no section; until the first load answers, a «جارٍ التحميل…» line.
 const MP_MORE_MAX = 12;
+function mpMoreDay(){
+  if(!MP_MORE && !CONFIG.tour) return false;
+  const t = cityToday(Date.now());
+  return MP.day === t || MP.day === fbDayAdd(t, 1);
+}
 function mpMore(shown){
-  if(!MP_MORE) return [];
+  if(!mpMoreDay()) return [];
   const t = cityToday(Date.now()), days = [t, fbDayAdd(t, 1)];
-  if(!days.includes(MP.day)) return [];
-  const rank = ev => MP_TOP_IDS.indexOf(String(ev.idLeague || ''));
+  const rank = ev => { const i = MP_TOP_IDS.indexOf(String(ev.idLeague || '')); return i >= 0 ? i : ev.tour ? 50 : -1; };
   return fbGames().filter(ev => !fbMine(ev) && rank(ev) >= 0 && !shown.has(String(ev.idLeague || ev.strLeague || '')) && days.includes(fbDayOf(fbKick(ev)))).sort((a, b) => (rank(a) - rank(b)) || fbKick(a) - fbKick(b)).slice(0, MP_MORE_MAX);
 }
 function mpRow(ev, now, i, withDay){
@@ -4426,7 +4432,7 @@ function mpRender(){
     `<li class="${i === MP.l ? 'on' : ''}${MP.zone === 'leagues' && i === MP.l ? ' f' : ''}"><span>${esc(g.side || g.name)}</span><i>${ar(g.count)}</i></li>`).join('') : '');
   let n = 0;
   setHTML(document.getElementById('mp-list'), groups.length ? groups.map(g => `<section data-g="${esc(g.key)}"><h2>${g.nameHtml || esc(g.name)}</h2><ul>`
-    + g.games.map(ev => mpRow(ev, now, n++, g.more)).join('') + '</ul></section>').join('')
+    + g.games.map(ev => mpRow(ev, now, n++, g.more)).join('') + '</ul>' + (g.loading ? `<div class="fnone">${esc(matchesEmptyText())}</div>` : '') + '</section>').join('')
     : `<div class="fnone">${MATCHES_LOADED ? fbNone(MP.day) : matchesEmptyText()}</div>`);
   fillCrests(document.getElementById('mp'));
   const f = MP.zone === 'leagues' ? document.querySelectorAll('#mp-list section')[MP.l] : document.querySelector('#mp-list li.f');

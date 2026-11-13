@@ -361,6 +361,8 @@ public class SettingsActivity extends Activity {
         final boolean isHome = isOurHome();
         row("اجعل UrTV الشاشة الرئيسية", isHome ? "✓ UrTV هو الشاشة الرئيسية" : "اضغط وكمّل إعداد تلفزيوني (دقيقتان)", R.drawable.ic_eye,
             new Runnable() { public void run() { if (!isHome) openSetup(); } });
+        // «إعداد تلفزيوني» (4.3.1): always there, even when UrTV is already the home, to run «جهّز كل شي» again (after a system update) or «تراجع»
+        row("إعداد تلفزيوني", "شغّل الإعداد من جديد، أو تراجع عن تغييراته", R.drawable.ic_eye, new Runnable() { public void run() { openSetup(); } });
         // «تخلّص من واجهة المصنع»: who the TV's home screen is (the launcher's FactoryActivity: the checks, two confirmations, the PIN); «رجّع واجهة المصنع» while it is on
         homeCleanSeen();
         final boolean factoryOn = Boolean.TRUE.equals(factorySeen);
