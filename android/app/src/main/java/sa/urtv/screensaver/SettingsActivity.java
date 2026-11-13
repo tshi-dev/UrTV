@@ -312,6 +312,9 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { prefs.setAlbumFit("fill".equals(prefs.albumFit()) ? "fit" : "fill"); render(); } });
         row("حجم ألبوم صوري", "tall".equals(prefs.albumSize()) ? "طويل بضعف الارتفاع" : "عادي", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setAlbumSize("tall".equals(prefs.albumSize()) ? "normal" : "tall"); render(); } });
+        // «نص أوضح»: the grey words and numbers of the home and the screensaver in the look's full text colour (white; the dark ink in a light look)
+        row("نص أوضح", prefs.clearText() ? "مفعّل الكلام الرمادي بلون النص الكامل" : "متوقف", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setClearText(!prefs.clearText()); render(); } });
         // shown by default as always; OK hides it (and shows it again)
         row("المناسبة القادمة", prefs.occasion() ? "ظاهرة · أسفل الشاشة في الوسط: كم باقي على رمضان والأعياد، والإفطار والإمساك في رمضان" : "مخفية", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setOccasion(!prefs.occasion()); render(); } });

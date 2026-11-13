@@ -35,6 +35,7 @@
 #   optimize/saver.sh looksync off                 home: «توحيد المظهر», the upper buttons, the cards and the apps bar as one material: on (default) or off
 #   optimize/saver.sh surface tray 100 graphite    home, with looksync off: one surface (quick, cards or tray) on its own: its strength 30 to 100, its fill look, glass or graphite
 #   optimize/saver.sh albummode ten                «ألبوم صوري» (card album): a photo every 4 s (seconds, default), every 10 s (ten) or one a minute (minute)
+#   optimize/saver.sh cleartext on                 «نص أوضح»: the grey words and numbers on the home and the screensaver in the look's full text colour (white, or the dark ink on a light look): on | off (default off)
 #   optimize/saver.sh albumtitle off               «ألبوم صوري»: the title above the photo: on (default) or off
 #   optimize/saver.sh albumfit fill                «ألبوم صوري»: fit (the whole photo, default) or fill (the card is filled, the top third kept so faces stay in)
 #   optimize/saver.sh albumsize tall               «ألبوم صوري»: normal (default) or tall (about twice the height; the page steps it down where it does not fit)
@@ -240,6 +241,7 @@ case "${1:-}" in
   looksync) set1 looksync "${2:?usage: optimize/saver.sh looksync on|off}" ;;
   surface) set1 surface "${2:?usage: optimize/saver.sh surface quick|cards|tray 30..100 look|glass|graphite}:${3:?usage: optimize/saver.sh surface quick|cards|tray 30..100 look|glass|graphite}:${4:?usage: optimize/saver.sh surface quick|cards|tray 30..100 look|glass|graphite}" ;;
   albummode) case "${2:-}" in seconds|ten|minute) set1 albummode "$2" ;; *) echo "usage: optimize/saver.sh albummode seconds|ten|minute"; exit 1 ;; esac ;;
+  cleartext) case "${2:-}" in on|off) set1 cleartext "$2" ;; *) echo "usage: optimize/saver.sh cleartext on|off"; exit 1 ;; esac ;;
   albumtitle) case "${2:-}" in on|off) set1 albumtitle "$2" ;; *) echo "usage: optimize/saver.sh albumtitle on|off"; exit 1 ;; esac ;;
   albumfit) case "${2:-}" in fit|fill) set1 albumfit "$2" ;; *) echo "usage: optimize/saver.sh albumfit fit|fill"; exit 1 ;; esac ;;
   albumsize) case "${2:-}" in normal|tall) set1 albumsize "$2" ;; *) echo "usage: optimize/saver.sh albumsize normal|tall"; exit 1 ;; esac ;;

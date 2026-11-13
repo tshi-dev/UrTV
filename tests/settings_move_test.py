@@ -54,7 +54,7 @@ ENUM = {"digits": ["hindi", "latin"], "clocksize": ["large", "medium", "small"],
         "cardstyle": ["current", "dark1", "glass1", "dark3", "glass3"], "prayermethod": ["auto", "gulf"],
         "sunrise": ["on", "off"], "prayerbar": ["on", "off"], "wxmore": ["on", "off"], "pagesdark": ["on", "off"], "months": ["default", "levant"],
         "greeting": ["on", "off"], "listenpill": ["on", "off"], "updatebell": ["on", "off"], "adhanbar": ["on", "off"], "clock24": ["on", "off"], "mkbar": ["on", "off"], "prayeradj": ["on", "off"],
-        "favbar": ["5", "6", "7", "8", "9", "10", "all"], "homephotos": ["same", "own"], "homeours": ["on", "off"], "albummode": ["seconds", "ten", "minute"], "albumdate": ["on", "off"], "albumtitle": ["on", "off"], "albumfit": ["fit", "fill"], "albumsize": ["normal", "tall"],
+        "favbar": ["5", "6", "7", "8", "9", "10", "all"], "homephotos": ["same", "own"], "homeours": ["on", "off"], "albummode": ["seconds", "ten", "minute"], "albumdate": ["on", "off"], "albumtitle": ["on", "off"], "cleartext": ["on", "off"], "albumfit": ["fit", "fill"], "albumsize": ["normal", "tall"],
         "accent": ["default", "amber", "gold", "green", "teal", "sky", "violet", "rose", "coral"], "focusstyle": ["solid", "frame", "glow"]}
 if "SaverReceiver" in cmd and cmd.endswith(".GET"):
     s = st["saver"]
@@ -69,7 +69,7 @@ if "SaverReceiver" in cmd and cmd.endswith(".GET"):
         f"mkstyle: {s['mkstyle']}", "stocks: 2222", "slot: matches", "countdown: none", "idle: 10", "genres: ", "langs: ", "events: ",
         "leagues: ", "autoupdate: on", "pin: 4321", "wifi: HomeNet", "tasks: buy milk", "updatechannel: " + s.get("updatechannel", "stable"), "favbar: " + s.get("favbar", "5")]
         + ([f"country: {s['country']}"] if "country" in s else [])
-        + [f"{k}: {s[k]}" for k in ("homephotos", "homepacks", "homeours", "pillshidden", "albummode", "albumdate", "albumtitle", "albumfit", "albumsize", "accent", "baropacity", "walldim", "focusstyle") if k in s]   # 4.3: only a screensaver that has them says them
+        + [f"{k}: {s[k]}" for k in ("homephotos", "homepacks", "homeours", "pillshidden", "albummode", "albumdate", "albumtitle", "albumfit", "albumsize", "cleartext", "accent", "baropacity", "walldim", "focusstyle") if k in s]   # 4.3: only a screensaver that has them says them
         + ([] if st.get("old_app") else [f"panel2: {s['panel2']}", f"sunrise: {s['sunrise']}", f"prayerbar: {s['prayerbar']}",
                                           f"wxmore: {s['wxmore']}", f"pagesdark: {s.get('pagesdark', 'on')}", f"months: {s['months']}"])))
 if "SaverReceiver" in cmd and re.search(r"screensaver\.SET( |$)", cmd):
@@ -139,7 +139,7 @@ BASE = {
               "adj": {"fajr": 0, "dhuhr": 0, "asr": 0, "maghrib": 0, "isha": 0}, "hijri": "0", "digits": "hindi", "clock24": "off",
               "cardstyle": "current", "markets": ["tasi", "spx", "btc"], "mkbar": "on", "clocksize": "large", "mkstyle": "arrows",
               "panel2": "none", "sunrise": "off", "prayerbar": "off", "wxmore": "off", "pagesdark": "on", "months": "default", "updatechannel": "stable", "favbar": "5",
-              "homephotos": "same", "homepacks": "none", "homeours": "on", "pillshidden": "none", "albummode": "seconds", "albumdate": "on", "albumtitle": "on", "albumfit": "fit", "albumsize": "normal",
+              "homephotos": "same", "homepacks": "none", "homeours": "on", "pillshidden": "none", "albummode": "seconds", "albumdate": "on", "albumtitle": "on", "albumfit": "fit", "albumsize": "normal", "cleartext": "off",
               "accent": "default", "baropacity": "100", "walldim": "0", "focusstyle": "solid"},
     "adhan": {"on": "on", "voice": 1, "fajr_voice": 10, "short": "off", "stopkey": "on", "volume": 70},
 }
@@ -149,7 +149,7 @@ CONFIGURED["saver"].update({"city": ["الدوحة", "25.2854", "51.531"], "tz":
                             "prayermethod": "gulf", "prayeradj": "on", "hijri": "-1", "digits": "latin", "clock24": "on",
                             "cardstyle": "glass1", "markets": ["gold", "btc"], "mkbar": "off", "clocksize": "medium", "mkstyle": "prices",
                             "panel2": "hourly", "sunrise": "on", "prayerbar": "on", "wxmore": "on", "pagesdark": "off", "months": "levant", "favbar": "7",
-                            "homephotos": "own", "homepacks": "nature,sea", "homeours": "off", "pillshidden": "markets,center", "albummode": "minute", "albumdate": "off", "albumtitle": "off", "albumfit": "fill", "albumsize": "tall",
+                            "homephotos": "own", "homepacks": "nature,sea", "homeours": "off", "pillshidden": "markets,center", "albummode": "minute", "albumdate": "off", "albumtitle": "off", "albumfit": "fill", "albumsize": "tall", "cleartext": "on",
                             "accent": "teal", "baropacity": "70", "walldim": "30", "focusstyle": "frame"})
 CONFIGURED["saver"]["adj"] = {"fajr": 2, "dhuhr": 0, "asr": -3, "maghrib": 1, "isha": 0}
 CONFIGURED["favs"] = ["afasy", "sudais"]
@@ -644,24 +644,25 @@ check("docs/SETTINGS.md: a row says each command", all(f"optimize/saver.sh {k} "
 # ---- C17 «ألبوم صوري»: the card kind album and its two settings
 exp = json.loads(Tv("al1", CONFIGURED).run("export")[1])
 check("export: album_mode, album_date and the three of 4.3.1 (album_title, album_fit, album_size) are in the file", exp.get("album_mode") == "minute" and exp.get("album_date") is False
-      and exp.get("album_title") is False and exp.get("album_fit") == "fill" and exp.get("album_size") == "tall", exp)
+      and exp.get("album_title") is False and exp.get("album_fit") == "fill" and exp.get("album_size") == "tall" and exp.get("clear_text") is True, exp)
 t = Tv("al2", BASE)
-rc, out, err = t.run("import", write("al2.json", {"schema": 1, "album_mode": "ten", "album_date": False, "album_title": False, "album_fit": "fill", "album_size": "tall", "cards": {"panel": "album", "home": ["album", "verse"]}}), "--yes")
+rc, out, err = t.run("import", write("al2.json", {"schema": 1, "album_mode": "ten", "album_date": False, "album_title": False, "album_fit": "fill", "album_size": "tall", "clear_text": True, "cards": {"panel": "album", "home": ["album", "verse"]}}), "--yes")
 d = t.data()["saver"]
 check("import: albummode (the 10 s one too), albumdate, albumtitle, albumfit, albumsize and the album card reach the TV", rc == 0 and d["albummode"] == "ten" and d["albumdate"] == "off" and d["albumtitle"] == "off"
-      and d["albumfit"] == "fill" and d["albumsize"] == "tall" and d["panel"] == "album" and d["home_panel"] == "album,verse", (rc, out, err, d))
+      and d["albumfit"] == "fill" and d["albumsize"] == "tall" and d["cleartext"] == "on" and d["panel"] == "album" and d["home_panel"] == "album,verse", (rc, out, err, d))
 refused("album_fit unknown", lambda d: d.update(album_fit="stretch"), "album_fit must be one of")
 refused("album_size unknown", lambda d: d.update(album_size="huge"), "album_size must be one of")
 refused("album_title text", lambda d: d.update(album_title="off"), "album_title must be true or false")
+refused("clear_text text", lambda d: d.update(clear_text="on"), "clear_text must be true or false")
 refused("album_mode unknown", lambda d: d.update(album_mode="hour"), "album_mode must be one of")
 refused("album_date text", lambda d: d.update(album_date="on"), "album_date must be true or false")
 old = copy.deepcopy(BASE)
-for k in ("albummode", "albumdate", "albumtitle", "albumfit", "albumsize"): old["saver"].pop(k)
+for k in ("albummode", "albumdate", "albumtitle", "albumfit", "albumsize", "cleartext"): old["saver"].pop(k)
 exp_old = json.loads(Tv("al3", old).run("export")[1])
 check("an older screensaver without the album: the two are left out of the file", "album_mode" not in exp_old and "album_date" not in exp_old and "album_fit" not in exp_old, exp_old)
 saver_now = (ROOT / "optimize/saver.sh").read_text(encoding="utf-8")
 check("saver.sh: albummode, albumdate, albumtitle, albumfit and albumsize are commands in the usage (each refuses a wrong word), and album is in the card list",
-      all(f"  {k}) " in saver_now and f"optimize/saver.sh {k} " in saver_now.split("set -euo")[0] for k in ("albummode", "albumdate", "albumtitle", "albumfit", "albumsize"))
+      all(f"  {k}) " in saver_now and f"optimize/saver.sh {k} " in saver_now.split("set -euo")[0] for k in ("albummode", "albumdate", "albumtitle", "albumfit", "albumsize", "cleartext"))
       and "albummode seconds|ten|minute" in saver_now and "albumfit fit|fill" in saver_now and "albumsize normal|tall" in saver_now and "albumtitle on|off" in saver_now and "smart today album none" in saver_now)
 # ---- 4.3 «اللون والتحكم»: accent, baropacity, walldim, focusstyle
 glass = (ROOT / "android/app/src/main/java/sa/urtv/screensaver/GlassStyle.java").read_text(encoding="utf-8")

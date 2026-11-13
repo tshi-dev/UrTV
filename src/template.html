@@ -919,6 +919,7 @@ const CONFIG = {
   // the owner's own photos («صوري»): #own=how many
   own: Math.max(0, Math.min(50, Math.floor(_num('own', 0)))),
   albumMs: _Q.get('albummode') === 'minute' ? 60000 : _Q.get('albummode') === 'ten' ? 10000 : 4000,   // «ألبوم الصور»: a photo each minute, every 10 s, or a crossfade every 4 s
+  clear: _Q.get('clear') === '1',   // «نص أوضح»: the greys turn to the full ink
   albumFill: _Q.get('albumfit') === 'fill', albumTall: _Q.get('albumsize') === 'tall', albumTitle: _Q.get('albumtitle') !== '0',   // fill (cover, the top third kept) or fit; a taller photo; the title above it
   albumDate: _Q.get('albumdate') !== '0',
   wallDim: Math.max(0, Math.min(90, parseInt(_Q.get('walldim'), 10) || 0)),   // «تعتيم الخلفية» (0..90 %), more black over the photo
@@ -1047,6 +1048,14 @@ const USES = k => ((CONFIG.football || CONFIG.matchPage) && (k === 'matches' || 
 // The panels' snapshot is keyed by the link without the settings that only change how things look
 // size, the strips, the photo timing): changing one of those offline must not lose the games already on screen. What changes the words or
 // the markup inside the saved panels (the teams, leagues, digits, slot, markets, their style and switch…) stays in the key.
+// «نص أوضح» (#clear=1): the grey words and numbers take the full ink (white; the dark ink on the light football and markets pages). The sheet's greys are rewritten once, here,
+// before anything shows: its text colours (not a border or a fill) and the secondary-text tokens (--dim, --fs); the gold, the green and the red stay as they are.
+if(CONFIG.clear){
+  const st = document.querySelector('style'), dark = '#FFFFFF', ink = '#1B1F1D';
+  if(st) st.textContent = st.textContent
+    .replace(/(--fs:)(?:#4B514D|#5E635F)/g, '$1' + ink).replace(/(--fs:)(?:rgba\(255,255,255,\.74\)|#DADCE0)/g, '$1' + dark)
+    .replace(/(--dim:)#C3B8A2/g, '$1' + dark).replace(/(?<![-\w])(color:)#(?:B9AE96|A79C85|9C9279|8F8670|CFC5AD|D8CDB6|E6DCC4|9FB8A8)\b/gi, '$1' + dark);
+}
 const SNAP_LOOK = ['citynote', 'cardstyle', 'panel', 'panel2', 'week', 'clocksize', 'adhanbar', 'yearstrip', 'national', 'photos', 'adj', 'own', 'ownmode', 'packs', 'ours', 'gap'];
 function snapLink(){
   return location.hash.replace(/^#/, '').split('&').filter(kv => kv && !SNAP_LOOK.includes(kv.split('=')[0])).join('&');

@@ -66,7 +66,7 @@ if not shutil.which("javac"):
     print("SKIP look: no javac here")
     sys.exit(1 if failed else 0)
 with tempfile.TemporaryDirectory() as tmp:
-    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "Look.java"), str(ROOT / "tests/LookRun.java")], check=True)
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(HOME / "Look.java"), str(HOME / "GlassStyle.java"), str(ROOT / "tests/LookRun.java")], check=True)
     out = subprocess.run(["java", "-cp", tmp, "sa.urtv.home.LookRun"], check=True, capture_output=True).stdout.decode().split("\n")
 modes = {l.split(" = ")[0][5:]: l.split(" = ")[1] for l in out if l.startswith("mode ")}
 check("a setting is auto, light or dark; anything else (an older screensaver, a typo) is dark",

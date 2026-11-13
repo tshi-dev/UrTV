@@ -647,6 +647,7 @@ final class Prefs {
             + QuoteEvery.fragment(quoteEvery())
             + VerseKind.fragment(verseKind())
             + (seconds() ? "&seconds=1" : "")
+            + (clearText() ? "&clear=1" : "")   // «نص أوضح»: the page rewrites its greys to full ink
             + (lowRam(ctx) ? "&lowram=1" : midRam(ctx) ? "&midram=1" : "")   // a weak TV (a user report on 4.1, lag): the page's slower timers, no seconds, no transitions
             + HomeExit.fragment(homeExit())
             + (occasion() ? "" : "&occasion=0") + (nightDim() ? "" : "&nightdim=0") + (tasksPill() ? "" : "&taskspill=0")
@@ -996,16 +997,22 @@ final class Prefs {
     void setSurfacePercent(int surface, int v) { sp.edit().putInt("surfacePercent" + surface, Math.max(30, Math.min(100, v))).apply(); GlassStyle.setTweaks(tweaks()); }
     void setSurfaceFill(int surface, String v) { if (java.util.Arrays.asList(GlassStyle.FILLS).contains(v)) { sp.edit().putString("surfaceFill" + surface, v).apply(); GlassStyle.setTweaks(tweaks()); } }
     /** the one string both apps read (GlassStyle.setTweaks): empty while nothing was touched; the surfaces' own values are in it only while the switch is off */
+    /** «نص أوضح»: the grey words and numbers of the home and the screensaver in the look's full text colour (off by default) */
+    boolean clearText() { return sp.getBoolean("clearText", false); }
+    void setClearText(boolean v) { sp.edit().putBoolean("clearText", v).apply(); }
+
     String tweaks() {
         String a = accent(), f = focusStyle();
         int b = barPercent(), d = wallDim();
         boolean sync = lookSync();
-        if (a.isEmpty() && b == 100 && d == 0 && "solid".equals(f) && sync) return "";
+        boolean clear = clearText();
+        if (a.isEmpty() && b == 100 && d == 0 && "solid".equals(f) && sync && !clear) return "";
         StringBuilder s = new StringBuilder("accent=" + a + ";bar=" + b + ";dim=" + d + ";focus=" + f);
         if (!sync) {
             s.append(";sync=off");
             for (int i = 0; i < GlassStyle.SURFACES.length; i++) s.append(';').append(GlassStyle.SURFACES[i]).append('=').append(surfacePercent(i)).append(':').append(surfaceFill(i));
         }
+        if (clear) s.append(";text=clear");
         return s.toString();
     }
     static String lookLabel(String v) { return GlassStyle.LOOK_NAMES[java.util.Arrays.asList(GlassStyle.LOOKS).indexOf(GlassStyle.look(v))]; }

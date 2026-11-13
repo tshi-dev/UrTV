@@ -2382,6 +2382,25 @@ for (const [width, height] of [[1920, 1080], [1280, 720], [960, 540]]) {
     check('album card: no page error with any option', [base, fill, tall, bare, ten, minute, date].every(x => x.errors.length === 0), JSON.stringify([base, fill, tall, bare].map(x => x.errors)));
   }
 
+  // 4.3.1 «نص أوضح» (#clear=1): the sheet's greys turn to the full ink, the gold/green/red stay, nothing else moves
+  {
+    const probe = async hash => {
+      const o = await open('tv.html', 'city=الرياض&photos=60' + hash, {});
+      const d = await o.p.evaluate(() => {
+        const css = [...document.querySelectorAll('style')].map(x => x.textContent).join('\n'), rgb = c => c.replace(/\s/g, '');
+        const probe = (cls, prop = 'color') => { const e = document.createElement('div'); e.className = cls; e.style.cssText = 'position:absolute;left:0;top:0'; document.body.appendChild(e); const v = getComputedStyle(e)[prop]; e.remove(); return rgb(v); };
+        return { dim: getComputedStyle(document.documentElement).getPropertyValue('--dim').trim().toUpperCase(), greys: (css.match(/(?<![-\w])color:#(?:B9AE96|A79C85|9C9279|8F8670|CFC5AD|D8CDB6|E6DCC4|9FB8A8)\b/gi) || []).length,
+          gold: getComputedStyle(document.documentElement).getPropertyValue('--gold').trim().toUpperCase(), up: (css.match(/\.up\{color:#?[^;}]*/) || [''])[0], clear: CONFIG.clear, fsLight: (css.match(/--fs:#4B514D/g) || []).length, fsDark: (css.match(/--fs:rgba\(255,255,255,\.74\)/g) || []).length };
+      });
+      await o.ctx.close();
+      return { ...d, errors: o.errors };
+    };
+    const off = await probe(''), on = await probe('&clear=1');
+    check('clear text: off, the page is as it was (the greys and the dim token are in the sheet, clear false)', !off.clear && off.greys > 10 && off.dim === '#C3B8A2' && off.fsLight > 0 && off.fsDark > 0, JSON.stringify(off));
+    check('clear text: on, no grey text colour is left in the sheet, --dim and the football tokens are full ink, the gold stays', on.clear && on.greys === 0 && on.dim === '#FFFFFF' && on.fsLight === 0 && on.fsDark === 0 && on.gold === off.gold, JSON.stringify(on));
+    check('clear text: no page error either way', off.errors.length === 0 && on.errors.length === 0, JSON.stringify([off.errors, on.errors]));
+  }
+
   // no hosted index yet (first start, offline): theirs join the bundled photos
   {
     const o = await open('tv.html', 'own=1&ownmode=mix&photos=60', { seed: false, net: r2 => { if (r2.request().url().startsWith(OWN)) { r2.fulfill({ contentType: 'image/jpeg', body: JPEG }); return true; } return false; } });

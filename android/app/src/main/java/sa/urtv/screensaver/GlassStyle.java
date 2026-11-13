@@ -59,7 +59,7 @@ public final class GlassStyle {
     public static final Look LIGHT = new Look(true, 0xFFECEDEF, 0xF5F6F8, 0.40f, 0xFF14161A, 0xFF3A3E46, 0xFF14161A, 0xFF8E2A10,
             0x9EFFFFFF, 0x1F14161A, 0xD9FFFFFF, 0xF214161A, 0xFFFFFFFF, 0xFFDADCE0, 0xE6FFFFFF);
 
-    public static Look of(boolean light) { return light ? LIGHT : DARK; }
+    public static Look of(boolean light) { return clearer(light ? LIGHT : DARK); }
 
     // ---------------------------------------------------------------- the other looks («المظهر ← الشكل»; the mockups in SPEC.md)
     // Each keeps the same backdrop under a strong veil of its own colour, so every look reads by the same rules over every photo.
@@ -127,6 +127,7 @@ public final class GlassStyle {
     private static volatile String tweakAccent = "";
     private static volatile int tweakBar = 100, tweakDim = 0;
     private static volatile String tweakFocus = "solid";
+    private static volatile boolean tweakClear;   // «نص أوضح»: the grey words and numbers take the look's full text colour
 
     // ---------------------------------------------------------------- 4.3 «توحيد المظهر» (design/43 sync-*): ONE material for the home's three surfaces
     // The upper quick buttons (PillBar), the cards (HomeCard, the page's #hpanel) and the apps bar (the tray's band) take their fill, line, corners, shadow, ink, accent and focus
@@ -206,7 +207,7 @@ public final class GlassStyle {
 
     /** everything material() reads, as one word: a change of it repaints the home */
     public static String materialKey() {
-        return tweakSync ? "sync" : surfPct[0] + surfFill[0] + surfPct[1] + surfFill[1] + surfPct[2] + surfFill[2];
+        return (tweakClear ? "clear|" : "") + (tweakSync ? "sync" : surfPct[0] + surfFill[0] + surfPct[1] + surfFill[1] + surfPct[2] + surfFill[2]);
     }
 
     /** an ARGB colour with its alpha at this percent of what it was */
@@ -222,7 +223,7 @@ public final class GlassStyle {
     public static void setTweaks(String s) {
         String accent = "", focus = "solid";
         int bar = 100, dim = 0;
-        boolean sync = true;
+        boolean sync = true, clear = false;
         int[] pct = {-1, -1, -1};
         String[] fills = FILL_BEFORE.clone();
         if (s != null) for (String kv : s.split(";")) {
@@ -235,6 +236,7 @@ public final class GlassStyle {
                 else if ("dim".equals(k)) dim = Math.max(0, Math.min(90, Integer.parseInt(v)));
                 else if ("focus".equals(k)) { for (String f : FOCUS_STYLES) if (f.equals(v)) focus = v; }
                 else if ("sync".equals(k)) sync = !"off".equals(v);
+                else if ("text".equals(k)) clear = "clear".equals(v);
                 else for (int i = 0; i < SURFACES.length; i++) if (SURFACES[i].equals(k)) {   // a surface's own: "quick=70:look" (the apps bar is "tray": "bar" is «شفافية الشريط» above)
                     int c = v.indexOf(':');
                     if (c < 0) continue;
@@ -245,7 +247,7 @@ public final class GlassStyle {
         }
         for (int i = 0; i < pct.length; i++) if (pct[i] < 0) pct[i] = bar;   // a surface never set on its own keeps «شفافية الشريط»
         tweakAccent = accent; tweakBar = bar; tweakDim = dim; tweakFocus = focus;
-        surfPct = pct; surfFill = fills; tweakSync = sync;
+        surfPct = pct; surfFill = fills; tweakSync = sync; tweakClear = clear;
     }
 
     /** the tray's and the cards' fill strength, 30..100 percent (100: as the look has it) */
@@ -253,6 +255,14 @@ public final class GlassStyle {
     /** extra dimming of the wallpaper, 0..90 percent (0: as it is) */
     public static int dimPercent() { return tweakDim; }
     public static String focusStyle() { return tweakFocus; }
+    /** «نص أوضح» is on: the secondary words (the date, the hints, the lines under a title) are drawn in the look's text colour, white in a dark look and the ink in a light one */
+    public static boolean clearText() { return tweakClear; }
+
+    /** the look with its secondary text as clear as its main text (and the secondary text on a focused tile as clear as the focused one's); nothing else changes */
+    private static Look clearer(Look l) {
+        if (!tweakClear) return l;
+        return new Look(l.light, l.base, l.scrim, l.scrimMin, l.text, l.text, l.accent, l.warn, l.panel, l.line, l.dialog, l.focus, l.onFocus, l.onFocus, l.hint, l.ring);
+    }
 
     private static int accentColor(String key) {
         for (String[] a : ACCENTS) if (a[0].equals(key)) return 0xFF000000 | Integer.parseInt(a[2].substring(1), 16);
@@ -278,7 +288,7 @@ public final class GlassStyle {
     }
 
     /** The colours of a look in the dark or the light. */
-    public static Look of(String look, boolean light) { return tinted(plain(look, light)); }
+    public static Look of(String look, boolean light) { return clearer(tinted(plain(look, light))); }
 
     private static Look plain(String look, boolean light) {
         switch (look(look)) {
