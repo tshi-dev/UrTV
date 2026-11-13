@@ -40,6 +40,16 @@ final class RadioFault {
         }
     }
 
+    /** 4.3.1 the line while the station is being brought back: «نحاول نرجّع البث…» and, when we know, why */
+    static String retryMessage(Reason r) {
+        switch (r) {
+            case NO_INTERNET: return sa.urtv.home.S.t("نحاول نرجّع البث… لا يوجد إنترنت");
+            case NO_ANSWER: return sa.urtv.home.S.t("نحاول نرجّع البث… المحطة لا تردّ");
+            case RETRIES: return sa.urtv.home.S.t("نحاول نرجّع البث… البث يتقطّع");
+            default: return sa.urtv.home.S.t("نحاول نرجّع البث…");
+        }
+    }
+
     /** the report's line: station=<id> category=<code> http=<n> sdk=<n> decoder=<name>, each value reduced to letters, digits and . _ - */
     static String record(String station, String code, int http, int sdk, String decoder) {
         return "station=" + clean(station) + " category=" + clean(code) + " http=" + Math.max(0, http) + " sdk=" + sdk + " decoder=" + clean(decoder);

@@ -24,6 +24,25 @@ public final class RadioFaultRun {
         check("the record: station, category, HTTP, SDK, decoder", rec.equals("station=saudi-quran category=io http=404 sdk=34 decoder=OMX.google.aac.decoder"), rec);
         String bad = RadioFault.record("https://x.example/a?token=abc", "io", -5, 28, null);
         check("the record never carries an address or a token (only letters, digits and . _ -), a missing value is -", !bad.contains("/") && !bad.contains("?") && !bad.contains(":") && bad.contains("http=0") && bad.contains("decoder=-"), bad);
+        check("the waits: 2, 5, 10, 20 s, then every 30 s, never shorter", RadioPolicy.retryMs(1) == 2000 && RadioPolicy.retryMs(2) == 5000 && RadioPolicy.retryMs(3) == 10000
+            && RadioPolicy.retryMs(4) == 20000 && RadioPolicy.retryMs(5) == 30000 && RadioPolicy.retryMs(99) == 30000 && RadioPolicy.retryMs(0) == 2000, "");
+        RadioPolicy.State never = new RadioPolicy.State();
+        check("a station that never played and whose every answer said «format» is final; any other failure is not", RadioPolicy.finalFault(never, 0)
+            && RadioPolicy.finalFault(new RadioPolicy.State(), PlayerFault.SERVER_DIED), "");
+        never.formatEveryTime = false;
+        check("a connection failure is never final, however many times", !RadioPolicy.finalFault(never, 0), "");
+        RadioPolicy.State pt = new RadioPolicy.State();
+        java.util.List<RadioPolicy.Step> steps = new java.util.ArrayList<>();
+        for (int i = 0; i < 9; i++) steps.add(RadioPolicy.patient(pt, true));
+        check("with a second source the sources swap every " + StreamUrl.TRIES + " failures, back and forth, and it keeps going",
+            steps.get(2) == RadioPolicy.Step.ALT && steps.get(5) == RadioPolicy.Step.ALT && steps.get(8) == RadioPolicy.Step.ALT && steps.get(0) == RadioPolicy.Step.RETRY && steps.get(4) == RadioPolicy.Step.RETRY, steps);
+        RadioPolicy.State single = new RadioPolicy.State();
+        boolean onlyRetry = true;
+        for (int i = 0; i < 20; i++) onlyRetry &= RadioPolicy.patient(single, false) == RadioPolicy.Step.RETRY;
+        check("with no second source it only retries", onlyRetry, "");
+        check("the retry line says «نحاول نرجّع البث…» and the reason when there is one",
+            RadioFault.retryMessage(RadioFault.Reason.NO_INTERNET).startsWith("نحاول نرجّع البث…") && RadioFault.retryMessage(RadioFault.Reason.NO_ANSWER).contains("لا تردّ")
+            && RadioFault.retryMessage(RadioFault.Reason.UNKNOWN).equals("نحاول نرجّع البث…"), "");
         System.exit(failed == 0 ? 0 : 1);
     }
 }
