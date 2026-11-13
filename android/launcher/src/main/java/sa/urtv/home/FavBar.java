@@ -33,8 +33,8 @@ final class FavBar {
     static final int FILL_DARK = 0x24FFFFFF, LINE_DARK = 0x47FFFFFF, FILL_LIGHT = 0xB8FFFFFF, LINE_LIGHT = 0xD9FFFFFF;   // the same numbers as GlassStyle.GLASS_* (tests/sync_look_test.py); no other class in here, so tests/FavBarRun.java runs it alone
 
     /** the most a tray ever shows whole at once, and the most favourites there are (Dock.MAX) */
-    static final int MAX_SHOWN = 8;
-    /** ten tiles across were 140×79: too small to read (step 28, the owner's renders). Eight is the most that shows whole at a legible size (181×102); 9, 10 and «all» keep eight in view and scroll the rest. */
+    static final int MAX_SHOWN = 10;
+    /** 4.3.1 (the owner): up to ten tiles show whole at once, with no scrolling: 9 and 10 are smaller (151 and 141 px wide at 1080p, 16:9), the default stays five at 304. Step 28 had cut it to eight as too small to read. */
 
     /**
      * How many tiles the tray shows whole at once: the setting ("5" to "10", or "all": every favourite, up to 10, so never a scroll), at least five (the tray never
