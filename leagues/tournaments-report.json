@@ -1,0 +1,127 @@
+{
+ "leagues": {
+  "UEFA Champions League": {
+   "asked": 3,
+   "games": 0,
+   "kept": 0
+  },
+  "UEFA Europa League": {
+   "asked": 3,
+   "games": 0,
+   "kept": 0
+  },
+  "UEFA Conference League": {
+   "asked": 3,
+   "games": 0,
+   "kept": 0
+  },
+  "UEFA Nations League": {
+   "asked": 3,
+   "games": 9
+  },
+  "UEFA European Championships": {
+   "asked": 3,
+   "games": 0,
+   "kept": 0
+  },
+  "FIFA World Cup": {
+   "asked": 3,
+   "games": 0,
+   "kept": 0
+  },
+  "World Cup Qualifying UEFA": {
+   "asked": 3,
+   "games": 0,
+   "kept": 0
+  },
+  "World Cup Qualifying AFC": {
+   "asked": 3,
+   "games": 0,
+   "kept": 0
+  },
+  "World Cup Qualifying CAF": {
+   "asked": 3,
+   "games": 0,
+   "kept": 0
+  },
+  "AFC Asian Cup": {
+   "asked": 3,
+   "games": 0,
+   "kept": 0
+  },
+  "AFC Asian Cup Qualifying": {
+   "asked": 3,
+   "games": 0,
+   "kept": 0
+  },
+  "AFC Champions League Elite": {
+   "asked": 3,
+   "games": 0,
+   "kept": 0
+  },
+  "African Cup of Nations Qualifying": {
+   "asked": 3,
+   "games": 6
+  },
+  "CAF Champions League": {
+   "asked": 3,
+   "games": 0,
+   "kept": 0
+  },
+  "Copa del Rey": {
+   "asked": 3,
+   "games": 1
+  },
+  "FA Cup": {
+   "asked": 3,
+   "games": 0,
+   "kept": 0
+  },
+  "Coppa Italia": {
+   "asked": 3,
+   "games": 0,
+   "kept": 0
+  },
+  "DFB-Pokal": {
+   "asked": 3,
+   "games": 0,
+   "kept": 0
+  },
+  "Coupe de France": {
+   "asked": 3,
+   "games": 9
+  },
+  "Saudi King Cup": {
+   "asked": 3,
+   "games": 0,
+   "kept": 0
+  },
+  "Saudi Super Cup": {
+   "asked": 3,
+   "games": 0,
+   "kept": 0
+  },
+  "FIFA Club World Cup": {
+   "asked": 3,
+   "games": 0,
+   "kept": 0
+  },
+  "Copa America": {
+   "asked": 3,
+   "games": 0,
+   "kept": 0
+  },
+  "FIFA Arab Cup": {
+   "asked": 3,
+   "games": 0,
+   "kept": 0
+  },
+  "African Cup of Nations": {
+   "asked": 3,
+   "games": 0,
+   "kept": 0
+  }
+ },
+ "requests": 81,
+ "problems": []
+}

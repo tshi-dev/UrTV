@@ -1,0 +1,481 @@
+{
+ "requests": 271,
+ "leagues": {
+  "Saudi-Arabian Pro League": {
+   "id": "4668",
+   "next": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-20",
+     "2026-11-20"
+    ]
+   },
+   "past": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-10-31",
+     "2026-10-31"
+    ]
+   },
+   "eventsday": {
+    "games by id": 0,
+    "games by name": 0,
+    "last form": "name"
+   },
+   "events": 1
+  },
+  "Saudi First Division League": {
+   "id": "5627",
+   "next": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-18",
+     "2026-11-18"
+    ]
+   },
+   "past": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-08",
+     "2026-11-08"
+    ]
+   },
+   "eventsday": {
+    "games by id": 0,
+    "games by name": 0,
+    "last form": "name"
+   },
+   "events": 1
+  },
+  "English Premier League": {
+   "id": "4328",
+   "next": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-21",
+     "2026-11-21"
+    ]
+   },
+   "past": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-08",
+     "2026-11-08"
+    ]
+   },
+   "eventsday": {
+    "games by id": 3,
+    "games by name": 0,
+    "last form": "id"
+   },
+   "events": 0
+  },
+  "Spanish La Liga": {
+   "id": "4335",
+   "next": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-20",
+     "2026-11-20"
+    ]
+   },
+   "past": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-08",
+     "2026-11-08"
+    ]
+   },
+   "eventsday": {
+    "games by id": 0,
+    "games by name": 0,
+    "last form": "name"
+   },
+   "events": 1
+  },
+  "Italian Serie A": {
+   "id": "4332",
+   "next": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-21",
+     "2026-11-21"
+    ]
+   },
+   "past": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-08",
+     "2026-11-08"
+    ]
+   },
+   "eventsday": {
+    "games by id": 3,
+    "games by name": 0,
+    "last form": "id"
+   },
+   "events": 0
+  },
+  "German Bundesliga": {
+   "id": "4331",
+   "next": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-20",
+     "2026-11-20"
+    ]
+   },
+   "past": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-08",
+     "2026-11-08"
+    ]
+   },
+   "eventsday": {
+    "games by id": 0,
+    "games by name": 0,
+    "last form": "name"
+   },
+   "events": 1
+  },
+  "French Ligue 1": {
+   "id": "4334",
+   "next": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-20",
+     "2026-11-20"
+    ]
+   },
+   "past": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-08",
+     "2026-11-08"
+    ]
+   },
+   "eventsday": {
+    "games by id": 0,
+    "games by name": 0,
+    "last form": "name"
+   },
+   "events": 1
+  },
+  "Portuguese Primeira Liga": {
+   "id": "4344",
+   "next": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-27",
+     "2026-11-27"
+    ]
+   },
+   "past": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-08",
+     "2026-11-08"
+    ]
+   },
+   "eventsday": {
+    "games by id": 0,
+    "games by name": 0,
+    "last form": "id"
+   },
+   "events": 0
+  },
+  "Dutch Eredivisie": {
+   "id": "4337",
+   "next": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-21",
+     "2026-11-21"
+    ]
+   },
+   "past": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-08",
+     "2026-11-08"
+    ]
+   },
+   "eventsday": {
+    "games by id": 3,
+    "games by name": 0,
+    "last form": "id"
+   },
+   "events": 0
+  },
+  "Turkish Super Lig": {
+   "id": "4339",
+   "next": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-21",
+     "2026-11-21"
+    ]
+   },
+   "past": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-08",
+     "2026-11-08"
+    ]
+   },
+   "eventsday": {
+    "games by id": 3,
+    "games by name": 0,
+    "last form": "id"
+   },
+   "events": 0
+  },
+  "Egyptian Premier League": {
+   "id": "4829",
+   "next": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-23",
+     "2026-11-23"
+    ]
+   },
+   "past": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-10-31",
+     "2026-10-31"
+    ]
+   },
+   "eventsday": {
+    "games by id": 0,
+    "games by name": 0,
+    "last form": "id"
+   },
+   "events": 0
+  },
+  "UAE Pro League": {
+   "id": "4678",
+   "next": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-19",
+     "2026-11-19"
+    ]
+   },
+   "past": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-08",
+     "2026-11-08"
+    ]
+   },
+   "eventsday": {
+    "games by id": 0,
+    "games by name": 0,
+    "last form": "name"
+   },
+   "events": 1
+  },
+  "Qatar Stars League": {
+   "id": "4663",
+   "next": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-27",
+     "2026-11-27"
+    ]
+   },
+   "past": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-08",
+     "2026-11-08"
+    ]
+   },
+   "eventsday": {
+    "games by id": 0,
+    "games by name": 0,
+    "last form": "id"
+   },
+   "events": 0
+  },
+  "Iraqi Premier League": {
+   "id": "5056",
+   "next": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-19",
+     "2026-11-19"
+    ]
+   },
+   "past": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-08",
+     "2026-11-08"
+    ]
+   },
+   "eventsday": {
+    "games by id": 0,
+    "games by name": 0,
+    "last form": "name"
+   },
+   "events": 1
+  },
+  "AFC Champions League Elite": {
+   "id": "4719",
+   "next": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-23",
+     "2026-11-23"
+    ]
+   },
+   "past": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-04",
+     "2026-11-04"
+    ]
+   },
+   "eventsday": {
+    "games by id": 0,
+    "games by name": 0,
+    "last form": "id"
+   },
+   "events": 0
+  },
+  "UEFA Champions League": {
+   "id": "4480",
+   "next": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-24",
+     "2026-11-24"
+    ]
+   },
+   "past": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-04",
+     "2026-11-04"
+    ]
+   },
+   "eventsday": {
+    "games by id": 0,
+    "games by name": 0,
+    "last form": "id"
+   },
+   "events": 0
+  },
+  "American Major League Soccer": {
+   "id": "4346",
+   "next": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-20",
+     "2026-11-20"
+    ]
+   },
+   "past": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-08",
+     "2026-11-08"
+    ]
+   },
+   "eventsday": {
+    "games by id": 0,
+    "games by name": 0,
+    "last form": "name"
+   },
+   "events": 1
+  },
+  "NBA": {
+   "id": "4387",
+   "next": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-15",
+     "2026-11-15"
+    ]
+   },
+   "past": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-14",
+     "2026-11-14"
+    ]
+   },
+   "eventsday": {
+    "games by id": 30,
+    "games by name": 0,
+    "last form": "id"
+   },
+   "events": 28
+  },
+  "NFL": {
+   "id": "4391",
+   "next": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-15",
+     "2026-11-15"
+    ]
+   },
+   "past": {
+    "count": 1,
+    "capped": false,
+    "range": [
+     "2026-11-13",
+     "2026-11-13"
+    ]
+   },
+   "eventsday": {
+    "games by id": 7,
+    "games by name": 0,
+    "last form": "id"
+   },
+   "events": 7
+  }
+ },
+ "problems": []
+}
