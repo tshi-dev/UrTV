@@ -4437,11 +4437,40 @@ function bootFootball(){
 
 // ---- «المباريات»: a page of its own on the light look
 const MP = {day: '', picked: false, zone: 'rows', d: 1, l: 0, r: 0, detail: null, btn: 0, rows: [], leagues: [], days: [], note: ''};
-function mpGroups(){   // [{key, name, games}] of the chosen day: «فرقك», then each league in Prefs.LEAGUES' order
-  const games = fbGames().filter(ev => fbDayOf(fbKick(ev)) === MP.day && !(!fbMine(ev) && (ev.tour || (MP_MORE && MP_TOP_IDS.indexOf(String(ev.idLeague || '')) > 0)))), mine = games.filter(fbMine);
-  const by = {};
+// 4.3.3 the followed leagues' ids (a built-in one by its file's games, else by the archive's index)
+const mpLeagueIds = () => [...new Set(CONFIG.leagues.map(n => catId(n) || lgIdOf(n)).filter(Boolean))];
+function lgIdOf(name){
+  const d = LEAGUE_DATA[name], e = d && (d.events || []).find(x => x && x.idLeague);
+  if(e) return String(e.idLeague);
+  const ix = archWant('index.json'), hit = ix && ix.leagues && Object.entries(ix.leagues).find(([, l]) => l && String(l.en).toLowerCase() === String(name).toLowerCase());
+  return hit ? hit[0] : '';
+}
+// …the page's own: the file asked when not answered for 15 minutes, the page drawn again when it answers
+function archWant(path){
+  const c = ARCH_C[archUrl(path)];
+  if(!c || (!c.p && Date.now() - c.at >= 15 * 60000)) archLoad(path).then(() => { if(document.getElementById('mp')) mpRender(); });
+  return ARCH_C[archUrl(path)].j;
+}
+// 4.3.3 a past day: its results alone, from the archive's league files (the followed leagues, then the top ones) beside what the page has
+function mpPast(day, seen){
+  const out = [];
+  MP.wait = false;
+  [...new Set(mpLeagueIds().concat(MP_TOP_IDS))].forEach(id => {
+    const j = archWant('results/' + id + '.json');
+    if(j === undefined) MP.wait = true;
+    ((j && j.results) || []).forEach(g => { const ev = archEv(g); if(ev && fbDayOf(fbKick(ev)) === day && !seen.has(ev.idEvent) && !seen.has(evKey(ev))){ seen.add(ev.idEvent); seen.add(evKey(ev)); out.push(ev); } });
+  });
+  return out;
+}
+function mpGroups(){   // [{key, name, games}] of the chosen day: «فرقك», then each league in Prefs.LEAGUES' order (a past day: the followed leagues first)
+  const now = Date.now(), past = MP.day < cityToday(now);
+  let all = fbGames();
+  if(past){ const seen = new Set(); all.forEach(ev => { seen.add(String(ev.idEvent)); seen.add(evKey(ev)); }); all = all.concat(mpPast(MP.day, seen)).filter(ev => fbDone(ev, now) && fbScored(ev)); }
+  const games = all.filter(ev => fbDayOf(fbKick(ev)) === MP.day && (past || !(!fbMine(ev) && (ev.tour || (MP_MORE && MP_TOP_IDS.indexOf(String(ev.idLeague || '')) > 0))))), mine = games.filter(fbMine);
+  const by = {}, fol = past ? mpLeagueIds() : [];
   games.forEach(ev => { const k = String(ev.idLeague || ev.strLeague || ''); (by[k] = by[k] || []).push(ev); });
-  const keys = Object.keys(by).sort((a, b) => (FB_LEAGUE_ORDER.indexOf(a) + 1 || 99) - (FB_LEAGUE_ORDER.indexOf(b) + 1 || 99));
+  const rank = k => (fol.indexOf(k) + 1) || 50 + (FB_LEAGUE_ORDER.indexOf(k) + 1 || 49);
+  const keys = Object.keys(by).sort((a, b) => rank(a) - rank(b));
   const out = mine.length ? [{key: 'mine', name: FB_W.yours, games: mine, count: mine.length}] : [];
   const shown = new Set();
   keys.forEach(k => {
@@ -4505,7 +4534,7 @@ function mpRender(){
   let n = 0;
   setHTML(document.getElementById('mp-list'), groups.length ? groups.map(g => `<section data-g="${esc(g.key)}"><h2>${g.nameHtml || esc(g.name)}</h2><ul>`
     + g.games.map(ev => mpRow(ev, now, n++, g.more)).join('') + '</ul>' + (g.loading ? `<div class="fnone">${esc(matchesEmptyText())}</div>` : '') + '</section>').join('')
-    : `<div class="fnone">${MATCHES_LOADED ? fbNone(MP.day) : matchesEmptyText()}</div>`);
+    : `<div class="fnone">${MATCHES_LOADED && !(MP.wait && MP.day < t) ? fbNone(MP.day) : matchesEmptyText()}</div>`);
   fillCrests(document.getElementById('mp'));
   const f = MP.zone === 'leagues' ? document.querySelectorAll('#mp-list section')[MP.l] : document.querySelector('#mp-list li.f');
   if(f) f.scrollIntoView({block: MP.zone === 'leagues' ? 'start' : 'nearest'});

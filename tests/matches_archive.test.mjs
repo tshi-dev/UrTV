@@ -12,6 +12,7 @@ const NOW = Date.parse('2026-11-04T04:13:00Z');   // 7:13 in Riyadh, a Wednesday
 const ev = (id, home, hid, away, aid, iso, extra = {}) => ({ idEvent: id, idLeague: '4668', idHomeTeam: hid, idAwayTeam: aid, strHomeTeam: home,
   strAwayTeam: away, strStatus: 'NS', strTimestamp: iso, dateEvent: iso.slice(0, 10), strTime: iso.slice(11), strSport: 'Soccer', strSeason: '2026-2027', intRound: '13', ...extra });
 const g = (id, t, home, vs, vsn, gf, ga, r = '13', lg = '4668') => ({ id, lg, s: '2026-2027', t, home, vs, vsn, gf, ga, st: gf == null ? 'NS' : 'FT', r });
+const m = (id, t, h, hn, a, an, hs, as, lg = '4668') => ({ id, lg, s: '2026-2027', t, r: '12', h, a, hn, an, hs, as, st: 'FT' });
 const team = (id, en, ar, next, last) => ({ v: 1, id, en, ar, updated: '2026-11-04T00:00:00Z', next, last });
 // the server's free answer: Al-Hilal's next home game only; nothing for the two others
 const SERVER_NEXT = { '136013': [ev('11', 'Al-Hilal', '136013', 'Al-Fateh', '136011', '2026-11-04T17:00:00')] };
@@ -22,6 +23,12 @@ const ARCHIVE = {
   'teams/136013.json': team('136013', 'Al-Hilal', 'الهلال', [g('11', '2026-11-04T17:00:00Z', true, '136011', 'Al-Fateh', null, null)], []),
   'teams/136014.json': team('136014', 'Al-Nassr', 'النصر', [g('12', '2026-11-04T18:00:00Z', false, '136016', 'Al-Qadsiah', null, null)], []),
   'teams/136015.json': team('136015', 'Al-Ittihad', 'الاتحاد', [g('13', '2026-11-05T18:00:00Z', false, '136017', 'Al-Shabab', null, null)], []),
+  'results/4668.json': { v: 1, id: '4668', en: 'Saudi-Arabian Pro League', ar: 'دوري روشن السعودي', updated: '2026-11-04T00:00:00Z', results: [
+    m('21', '2026-11-03T17:00:00Z', '136015', 'Al-Ittihad', '136017', 'Al-Shabab', '2', '0'), m('22', '2026-11-03T15:00:00Z', '136016', 'Al-Qadsiah', '136020', 'Al-Ettifaq', '1', '1'),
+    m('23', '2026-11-02T18:00:00Z', '136013', 'Al-Hilal', '136011', 'Al-Fateh', '3', '0')] },
+  'results/4328.json': { v: 1, id: '4328', en: 'English Premier League', ar: 'الدوري الإنجليزي', updated: '2026-11-04T00:00:00Z', results: [
+    m('31', '2026-11-03T20:00:00Z', '133604', 'Arsenal', '133610', 'Chelsea', '1', '2', '4328')] },
+  'results/4335.json': { v: 2, results: [m('41', '2026-11-03T20:00:00Z', '133739', 'Barcelona', '133738', 'Real Madrid', '9', '9', '4335')] },   // a format this page does not know: nothing from it
 };
 
 const browser = await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {});
@@ -69,6 +76,22 @@ const ids = (p, key) => p.evaluate(k => ((MP.leagues.find(x => x.key === k) || {
   const { p, ctx, errors } = await open('teams=136013,136014,136015&matchpage=1', { archive: {} });
   const mine = await ids(p, 'mine');
   check('A3: with no archive the server\'s game is there and nothing breaks', !errors.length && mine === '11', errors.join(' | ') + mine);
+  await ctx.close();
+}
+
+// ---- G2: yesterday's results by themselves: the followed teams' first, then the followed leagues', then the top leagues'
+{
+  const { p, ctx, errors, asked } = await open('teams=136015&leagues=English Premier League&matchpage=1');
+  await p.evaluate(() => { MP.day = fbDayAdd(cityToday(), -1); MP.picked = true; mpRender(); });
+  await p.waitForTimeout(500);
+  check('G2: no script error', !errors.length, errors.join(' | '));
+  check('G2: the followed league\'s and the top leagues\' results files are asked', ['results/4328.json', 'results/4668.json'].every(f => asked.includes(f)), asked.join());
+  const order = await p.evaluate(() => MP.leagues.map(g => g.key + ':' + g.games.map(e => e.idEvent).join('+')).join(' '));
+  check('G2: «فرقك» first (the followed team\'s result), then the followed league, then the top league; only that day, only results', order === 'mine:21 4328:31 4668:22', order);
+  check('G2: a result shows its score', /٢ - ٠/.test(await p.textContent('#mp-list section[data-g="mine"]')), await p.textContent('#mp-list section[data-g="mine"]'));
+  check('G2: a file of an unknown format gives nothing', !(await p.evaluate(() => MP.rows.some(e => e.idEvent === '41'))));
+  await p.evaluate(() => { MP.day = cityToday(); mpRender(); });
+  check('G2: today shows no result of yesterday', !(await p.evaluate(() => MP.rows.some(e => ['21', '22', '31'].includes(e.idEvent)))));
   await ctx.close();
 }
 

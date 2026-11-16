@@ -33,5 +33,5 @@ check("leagues picker: «حفظ» is reachable from any row of a long list (LEFT
 
 page = src("src/template.html")
 check("matches: an empty day says its own day (اليوم، غدًا، أمس, else plainly «لا مباريات»), not «لا مباريات اليوم» for all",
-      "function fbNone(day)" in page and "FB_W.noneTomorrow" in page and "MATCHES_LOADED ? fbNone(MP.day) : matchesEmptyText()" in page and "noneDay:'لا مباريات'" in page)
+      "function fbNone(day)" in page and "FB_W.noneTomorrow" in page and "MATCHES_LOADED && !(MP.wait && MP.day < t) ? fbNone(MP.day) : matchesEmptyText()" in page and "noneDay:'لا مباريات'" in page)
 sys.exit(1 if failed else 0)
