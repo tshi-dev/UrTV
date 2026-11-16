@@ -2081,7 +2081,7 @@ public class MainActivity extends Activity {
         android.content.SharedPreferences np = getSharedPreferences(NUDGE_PREFS, MODE_PRIVATE);
         java.util.Set<String> seen = np.getStringSet("notice_seen", java.util.Collections.<String>emptySet());
         String day = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.ROOT).format(new java.util.Date());
-        NoticeRule.Notice n = NoticeRule.pick(ContentFile.read(this, NoticeRule.NAME), day, BuildConfig.VERSION_NAME, seen, noticeOnScreen);
+        NoticeRule.Notice n = NoticeRule.pick(ContentFile.read(this, NoticeRule.NAME), day, BuildConfig.MARKETING, seen, noticeOnScreen);
         if (n != null && !n.id.equals(noticeOnScreen)) {
             noticeOnScreen = n.id;
             java.util.Set<String> s = new java.util.HashSet<>(seen);
