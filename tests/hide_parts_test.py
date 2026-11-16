@@ -36,7 +36,7 @@ for key, pref, extra, frag in (("occasion", "occasion", "occasion", "&occasion=0
 check("rows «المناسبة القادمة» and «تعتيم الليل» in «العرض» (شاشة التوقف), before «المناسبات الوطنية»; OK flips each",
       render.index('header("العرض")') < render.index('row("المناسبة القادمة"') < render.index('row("تعتيم الليل"') < render.index('row("المناسبات الوطنية"')
       and "prefs.setOccasion(!prefs.occasion()); render();" in render and "prefs.setNightDim(!prefs.nightDim()); render();" in render
-      and '{"المناسبة القادمة", SAVER}' in hub and '{"تعتيم الليل", SAVER}' in hub)
+      and '{"المناسبة القادمة", SAVER}' in hub and '{"تعتيم الليل", LOOK}' in hub)
 check("row «زر المهام» in «الشاشة الرئيسية», after «زر تلاوة وأذان», saying where the tasks are while it is hidden",
       render.index('row("زر تلاوة وأذان"') < render.index('row("زر المهام"') < render.index('row("جرس التحديثات"')
       and "prefs.setTasksPill(!prefs.tasksPill()); render();" in render and "بطاقة «المهام» ومن الجوال" in render and '{"زر المهام", HOME}' in hub)

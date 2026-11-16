@@ -104,6 +104,9 @@ SOURCES = ["SettingsActivity.java", "SettingsHub.java", "Prefs.java", "OnOff.jav
 # what is not a word of a screen: a club or a city (data, which has its own English), the bilingual title of «اللغة», a pattern of the code
 NOT_WORDS = {"الهلال", "المنتخب السعودي", "الرياض", "العربية · English", "اللغة · Language", "Language · اللغة", "[\\s,،]+", "العربية", "منطقة"}
 
+# the search's alias words (SettingsHub.ALIASES) are typed by people, never shown
+NOT_WORDS |= {w for w in re.findall(r'\{"([^"]+)", "[^"]+"\}', src("SettingsHub.java")[src("SettingsHub.java").index("ALIASES = {"):]) if AR.search(w)}
+
 
 def literals(name):
     out = []
@@ -206,23 +209,19 @@ else:
     check("…and no English place name has an Arabic letter", not arabic, arabic[:5])
 
 # ---- 5. «اللغة»
-check("«اللغة»'s button behind one constant (off until the home app is in English, on at integration), and tiles() leaves it out while it is off",
-      re.search(r"static final boolean LANG_TILE = (true|false);", hub) is not None and "&& (LANG_TILE || !LANG.equals(c[0]))) out.add(c[0]);" in hub)
-check("«اللغة»: a button of «المزيد» that opens its choices at once (DIRECT), named in ROWS",
-      '{LANG, "اللغة", "", MORE, "اللغة"},' in hub and '{"اللغة", LANG}' in hub and 'LANG = "lang"' in hub)
-check("«اللغة»: its row, icon and what it says on its button (English beside العربية, to be found)",
+check("«اللغة»: a row in «المدينة واللغة والوقت» (4.3.2: the old «المزيد» button is gone)",
+      '{"اللغة", PLACE}' in hub and 'LANG_TILE' not in hub and '{"lang", PLACE}' in hub)
+check("«اللغة»: its row and what it says (English beside العربية, to be found)",
       'row("اللغة", langLabel(), R.drawable.ic_language, new Runnable() { public void run() { pickLang(); } });' in st
-      and "case SettingsHub.LANG: return R.drawable.ic_language;" in st and "case SettingsHub.LANG: return langLabel();" in st
       and 'return Tr.EN.equals(prefs.lang()) ? "English" : "العربية · English";' in st)
 pick = fn(st, "private void pickLang()")
-check("«اللغة»: العربية and English in their own words (no translation, no digit change), saved, and the screen started again on that button",
+check("«اللغة»: العربية and English in their own words (no translation, no digit change), saved, and the screen started again on its section",
       "new Dlg(this).raw().own()" in pick and '{"العربية", "English"}' in pick and "prefs.setLang(values[i]);" in pick
-      and 'startActivity(new Intent(this, SettingsActivity.class).putExtra("screen", screen).putExtra("hubAt", SettingsHub.LANG));' in pick
+      and 'startActivity(new Intent(this, SettingsActivity.class).putExtra("screen", screen).putExtra("hubAt", screen));' in pick
       and "finish();" in pick)
-check("…and only that start comes back on its button; any other start is on the first screen, as it always was",
-      'if (getIntent().hasExtra("hubAt")) { screen = getIntent().getStringExtra("screen"); hubAt = getIntent().getStringExtra("hubAt"); }' in st
+check("…and only that start comes back on its section (an old key is mapped by SettingsHub.canon); any other start is on the first screen, as it always was",
+      'if (getIntent().hasExtra("hubAt")) { screen = SettingsHub.canon(getIntent().getStringExtra("screen")); hubAt = SettingsHub.canon(getIntent().getStringExtra("hubAt")); }' in st
       and st.count('putExtra("hubAt"') == 1)
-
 # ---- «اللغة» moves with the other settings (optimize/settings_move.py), checked like them
 import importlib.util  # noqa: E402
 spec = importlib.util.spec_from_file_location("settings_move", ROOT / "optimize/settings_move.py")
@@ -254,10 +253,10 @@ else:
     side = round(page * 0.36) - 36
     tile_text = (page - 12) / 2 - (16 + 26) - 10 - (36 + 8) - 18
     row_text = page - side - 36 - (24 + 20) - 9 - (28 + 6) - 18 - 14
-    cat = dict(re.findall(r'\{(?:ADHAN|PLACE|CLOCK|LISTEN|CARDS|LOOK|CONTROL|PHONE|UPDATE|REPORT|MORE|SAVER|HOME|CONTENT|APPS|SHOWS|FAMILY|LANG), "([^"]+)", "([^"]*)"', hub))
+    cat = dict(re.findall(r'\{(?:ADHAN|CITY|PLACE|PRAY|SEARCH|LOOK|CONTROL|UPDATE|SAVER|HOME|CONTENT), "([^"]+)", "([^"]*)"', hub))
     over = [f"{table[n]} {width(table[n], 24):.0f}>{tile_text:.0f}" for n in cat if width(table[n], 24) > tile_text]
     check(f"every button's name fits on its one line in English (24 sp, {tile_text:.0f} dp)", not over, over)
-    names = set(re.findall(r'\brow\("([^"]+)"', st)) | set(re.findall(r'\{"([^"]+)", (?:ADHAN|PLACE|CLOCK|LISTEN|CARDS|LOOK|CONTROL|PHONE|UPDATE|REPORT|MORE|SAVER|HOME|CONTENT|APPS|SHOWS|FAMILY|LANG)\}', hub))
+    names = set(re.findall(r'\brow\("([^"]+)"', st)) | set(re.findall(r'\{"([^"]+)", (?:ADHAN|CITY|PLACE|PRAY|SEARCH|LOOK|CONTROL|UPDATE|SAVER|HOME|CONTENT)\}', hub))
     over = [f"{table[n]} {width(table[n] + ' (20/20)', 21):.0f}>{row_text:.0f}" for n in names if n in table and width(table[n] + " (20/20)", 21) > row_text]
     check(f"every row's name fits on its one line in English, with a count after it (21 sp, {row_text:.0f} dp)", not over, over)
 

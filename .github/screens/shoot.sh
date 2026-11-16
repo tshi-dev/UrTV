@@ -90,33 +90,28 @@ sleep 25
 shot saver-now-playing 2
 music sa.urtv.home.STOP
 
-# ---- the screensaver's settings: the top, the pickers, the end
+# ---- the settings (4.3.2): the first screen, then a section's rows; the focus starts on the wide «المدينة»; ▼ goes to «الأذان» (the right one of the first pair),
+# ◀ to «المظهر»; each Back returns to the button it came from
 start sa.urtv.screensaver/.SettingsActivity
 shot settings-01-top 3
-key DPAD_DOWN DPAD_DOWN DPAD_DOWN DPAD_DOWN
-shot settings-02-scrolled 1
+key DPAD_DOWN DPAD_LEFT DPAD_CENTER
+shot settings-02-look 3
 for i in 1 2 3 4 5 6 7 8 9; do key DPAD_DOWN; done
-shot settings-03-further 1
-key DPAD_DOWN DPAD_DOWN DPAD_DOWN
-shot settings-04-card-rows 1
-key DPAD_CENTER
-shot settings-05-content-picker 4
-key DPAD_DOWN DPAD_DOWN
-shot settings-06-content-picker-down 3
-key DPAD_DOWN DPAD_DOWN DPAD_DOWN
-shot settings-07-content-picker-down2 3
-key BACK
-key DPAD_DOWN DPAD_CENTER
-shot settings-08-card-style-picker 4
-key DPAD_DOWN
-shot settings-09-card-style-picker-down 3
-key BACK
-key DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP DPAD_UP
-key DPAD_DOWN DPAD_CENTER
-shot settings-10-city-dialog 2
-key BACK
-key DPAD_UP DPAD_DOWN DPAD_DOWN DPAD_CENTER
-shot settings-11-teams-dialog 2
+shot settings-03-look-further 1
+key BACK DPAD_DOWN DPAD_CENTER
+shot settings-04-saver 3
+key BACK DPAD_RIGHT DPAD_CENTER
+shot settings-05-home 3
+for i in 1 2 3 4 5 6 7 8 9 10 11 12; do key DPAD_DOWN; done
+shot settings-06-home-further 1
+key BACK DPAD_DOWN DPAD_CENTER
+shot settings-07-prayer 3
+key BACK DPAD_LEFT DPAD_CENTER
+shot settings-08-matches-and-markets 3
+key BACK DPAD_DOWN DPAD_RIGHT DPAD_CENTER
+shot settings-09-control 3
+key BACK DPAD_DOWN DPAD_DOWN DPAD_LEFT DPAD_CENTER
+shot settings-10-search 2
 key BACK
 
 adb logcat -d -s AndroidRuntime:E > "$OUT/crashes.txt"

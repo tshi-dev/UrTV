@@ -42,7 +42,7 @@ check("saver.sh cleartext on|off, validated by the receiver, shown by `show`, mo
       "  cleartext) " in sh and "optimize/saver.sh cleartext on" in sh.split("set -euo")[0] and 'getStringExtra("cleartext")' in rcv and "setClearText" in rcv and '"\\ncleartext: "' in rcv
       and '"clear_text"' in text(ROOT / "optimize/settings_move.py") and 'es("cleartext", flag(v))' in text(ROOT / "optimize/settings_move.py"))
 check("the screensaver's settings have the row «نص أوضح» (on says «مفعّل…», off «متوقف»), in its category and in the English table, with no «·» or «•»",
-      'row("نص أوضح", prefs.clearText() ? "مفعّل الكلام الرمادي بلون النص الكامل" : "متوقف"' in st and '{"نص أوضح", SAVER}' in hub
+      'row("نص أوضح", prefs.clearText() ? "مفعّل الكلام الرمادي بلون النص الكامل" : "متوقف"' in st and '{"نص أوضح", LOOK}' in hub
       and "نص أوضح\tClearer text" in text(ROOT / "i18n/en/saver.tsv") and not any(c in "نص أوضح مفعّل الكلام الرمادي بلون النص الكامل" for c in "·•"))
 check("docs: SETTINGS.md and FEATURES.md say it", "optimize/saver.sh cleartext " in text(ROOT / "docs/SETTINGS.md") and "optimize/saver.sh cleartext " in text(ROOT / "docs/FEATURES.md"))
 sys.exit(1 if failed else 0)
