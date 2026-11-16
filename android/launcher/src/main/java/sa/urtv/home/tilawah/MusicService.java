@@ -395,8 +395,9 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         if (index < 0 || index >= cat.reciters.size()) return;
         leaveAdhan();
         Catalog.Reciter r = cat.reciters.get(index);
-        if (n < 1) n = 1;
-        if (n > r.surahs) n = r.surahs;
+        int asked = n;
+        n = SurahSet.atOrAfter(n, r.missing);   // 4.3.3: a surah the reciter has no recording of is stepped over (the next one it has)
+        if (n != asked) startAt = 0;   // (a remembered place belongs to the surah it was in)
         source = Prefs.SOURCE_SURAH;
         reciter = index;
         surah = n;
@@ -896,8 +897,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     void next() {
         if (source == Prefs.SOURCE_ADHAN) return;
         if (source == Prefs.SOURCE_SURAH && reciter >= 0) {
-            int total = cat.reciters.get(reciter).surahs;
-            playSurahAgain(reciter, surah >= total ? 1 : surah + 1);
+            playSurahAgain(reciter, SurahSet.next(surah, cat.reciters.get(reciter).missing));   // after 114 from 1; a missing surah stepped over
         } else if (source == Prefs.SOURCE_RADIO && station >= 0) {
             playRadio((station + 1) % cat.stations.size());
         } else {
@@ -909,8 +909,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         if (source == Prefs.SOURCE_ADHAN) return;
         if (source == Prefs.SOURCE_SURAH && reciter >= 0) {
             if (position > 5000) { seekTo(0); return; }
-            int total = cat.reciters.get(reciter).surahs;
-            playSurahAgain(reciter, surah <= 1 ? total : surah - 1);
+            playSurahAgain(reciter, SurahSet.prev(surah, cat.reciters.get(reciter).missing));
         } else if (source == Prefs.SOURCE_RADIO && station >= 0) {
             playRadio((station - 1 + cat.stations.size()) % cat.stations.size());
         }
