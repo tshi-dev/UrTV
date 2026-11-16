@@ -44,6 +44,12 @@ factory = [l for l in keep_off("com.tcl.smartalexa", "com.tcl.airplay2", before=
 alarm = not by_design and real == ["!! protected but off: com.tcl.airplay2"] \
     and factory == ["!! protected but off: com.tcl.airplay2"]
 print("share: " + ("off-by-design keep packages not flagged, others still are" if alarm else f"WRONG alarm {by_design} {real}"))
+# 4.3.2 (Nokia, TCL BeyondTV): an app already disabled in the backup taken before the setup is «already off before UrTV», never counted as turned off by the setup
+lst = share.packages(["- pkg off: com.a.one (tcl-safe)", "- pkg off: com.b.two (tcl-safe)", "- pkg off: com.c.three (tcl-safe)"], before={"com.b.two"})
+mine = [l for l in lst if l.startswith("  off:")]
+pre = [l for l in lst if "already off before" in l and l.startswith("  ")]
+print("share: " + ("an app off before the setup is not counted as turned off by it" if lst[0].startswith("tcl-safe: 2 off") and "1 were already off" in lst[0]
+      and mine == ["  off: com.a.one, com.c.three"] and pre == ["  already off before UrTV: com.b.two"] else f"WRONG ledger {lst}"))
 # Windows 11 says «10» in platform.release(): the build number decides
 wins = [(("Windows", "10.0.22631", "10"), "11"), (("Windows", "10.0.22000", "10"), "11"), (("Windows", "10.0.21996", "10"), "10"),
         (("Windows", "10.0.19045", "10"), "10"), (("MINGW64_NT-10.0-26100", "3.4.10", "3.4.10"), "11"),
