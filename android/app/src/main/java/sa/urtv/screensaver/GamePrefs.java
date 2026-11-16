@@ -30,6 +30,9 @@ final class GamePrefs {
     static final int NIGHT_OFF = 0, NIGHT_ON = 1, NIGHT_AUTO = 2, PALETTES = 3;
     static int night(Context c) { int v = sp(c).getInt("night", NIGHT_OFF); return v < 0 || v > NIGHT_AUTO ? NIGHT_OFF : v; }
     static void setNight(Context c, int v) { sp(c).edit().putInt("night", v).apply(); }
+    /** the filter of the games list: 0 all the games (the default), 1 only the ones that can be played with phones */
+    static int filter(Context c) { return sp(c).getInt("filter", 0) == 1 ? 1 : 0; }
+    static void setFilter(Context c, int v) { sp(c).edit().putInt("filter", v == 1 ? 1 : 0).apply(); }
     /** which night palette: 0 warm charcoal (the default), 1 blue-black, 2 dim sepia */
     static int palette(Context c) { int v = sp(c).getInt("palette", 0); return v < 0 || v >= PALETTES ? 0 : v; }
     static void setPalette(Context c, int v) { sp(c).edit().putInt("palette", v).apply(); }

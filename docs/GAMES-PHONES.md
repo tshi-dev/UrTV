@@ -4,8 +4,9 @@ One switch, «اللعب بالجوالات», in the setup of «واحد مو �
 «بالجوالات» page of the games list turns it on for the game it opens). Off, nothing changes: one remote, the hand-over screen, no socket.
 
 ## What the person sees
-- The games list has one tile, **«بالجوالات»** (it takes the place of the «الأسرع» tile). It opens a page with «الأسرع», «واحد مو معنا» and «بدون كلام».
-  Back returns to the list. The two party games are also in the main list, played with one remote.
+- The games list has a filter at the top, beside the night switch: **«عرض: الكل / بالجوالات»**. «الكل» (the default) shows every game; «بالجوالات» shows only the games
+  that can be played with phones (`GameRegistry.PHONE_GAMES`), and opens the party games with the phones switch already on. The choice is kept. In both views the
+  party games can be played with one remote (switch off).
 - With the switch on, «ابدأ» opens a lobby: the QR, the four-digit room code, the address, the phones that came in (as many as 12). Start needs 3 phones
   for «واحد مو معنا» (10 at most) and 2 for «بدون كلام». The phones are the players, in the order they came; their names are the players' names.
 - **واحد مو معنا**: every phone shows its own word at once (the one outside gets «أنت برا السالفة»), then «شفتها». The TV goes on when all have tapped, or when
@@ -14,6 +15,9 @@ One switch, «اللعب بالجوالات», in the setup of «واحد مو �
 - **بدون كلام**: the turns go round the phones. The actor's phone shows the word (a secret card, «شفتها» starts the clock), then the word with
   «صح», «تخطّي» and, in «وصّف» with fouls on, «مخالفة». The TV never shows the word in this mode, not even on «شوف الكلمة».
 - «الأسرع» is unchanged (its own room and page, docs/QUIZ.md).
+
+## Next phases
+The list in `PHONE_GAMES` grows as each game gets the switch («الكلمة المفقودة», «خلية الحروف», «خمّن الكلمة», «خمس خانات», «دومينو»).
 
 ## Security (the same model as docs/QUIZ.md)
 - `GamePhoneRoom` is a second `PhoneRoom` behind the same `QuizServer`: the local network only (a private address), a 4-digit random room code from a

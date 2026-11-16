@@ -47,8 +47,8 @@ for gid, name, line, act, phones, ready in games:
         check(f"{gid}: ready, so its activity {act} exists, is in the manifest, not exported, landscape", (APP / f"{act}.java").is_file() and re.search(r'android:name="\.%s"\s+android:exported="false"\s+android:screenOrientation="landscape"' % act, manifest) is not None)
         if phones == "false":
             check(f"{gid}: played with one remote: it extends GameActivity and opens no server and no socket", f"class {act} extends GameActivity" in src(f"{act}.java") and not re.search(r"ServerSocket|QuizServer|QuizRoom|java\.net\.", src(f"{act}.java")))
-check("the list reads the registry: tiles four to a line, «قريبًا» for a game that is not ready, «بالجوالات» only on the phones' own page, the default way said in the header",
-      "GameRegistry.ALL" in hub and "COLS = 4" in hub and '!live ? S.t("قريبًا") : phonePage ? S.t("بالجوالات") : ""' in hub and 'S.t("بدون جوالات: ريموت واحد يدور بينكم")' in hub and "GameRegistry.firstFocus(GamePrefs.last(this))" in hub)
+check("the list reads the registry: tiles four to a line, «قريبًا» for a game that is not ready, «بالجوالات» only for a game that needs phones, the default way said in the header",
+      "GameRegistry.ALL" in hub and "COLS = 4" in hub and '!live ? S.t("قريبًا") : g.phones ? S.t("بالجوالات") : ""' in hub and 'S.t("بدون جوالات: ريموت واحد يدور بينكم")' in hub and "GameRegistry.firstFocus(GamePrefs.last(this))" in hub)
 check("the list opens a ready game by its registry line, and a game whose screen is missing says «قريبًا» instead of stopping the app", 'setClassName(this, getClass().getPackage().getName() + "." + g.activity)' in hub and "catch (RuntimeException notThere)" in hub)
 shown = code(hub + base + "".join(src(f"{g[3]}.java") for g in games if g[5] == "true" and g[4] == "false"))
 check("no «·» or «•» separator in what the games show, no rounded (pill) shape", not re.search("[·•]", shown) and "setCornerRadius" not in shown and "setCornerRadii" not in shown)
@@ -75,7 +75,7 @@ check("one look: the paper by day and three night palettes, decided in one place
 check("data: the kept copy must pass the published check, the starter its own; a download goes through Net with a size cap, is checked whole, written beside and renamed, the last good copy stays",
       "published.parse(Bounded.readAll(in, GameDataCheck.BYTES_MAX))" in data and "starter.parse(Bounded.readAll(in, GameDataCheck.BYTES_MAX))" in data and "Net.get(BASE + name + \".json\", null, 15000, 20000, Math.min(maxBytes, GameDataCheck.BYTES_MAX))" in data
       and "r.status != 200" in data and "if (published.parse(b) == null) return;" in data and "tmp.renameTo(f)" in data and "data-games/games/" in data and "org.json" not in data)
-check("nothing about the people playing is stored: only chips, the last game, the sound switch, the night look and its palette, and item ids", set(re.findall(r'put\w+\("([\w.]+)"', prefs)) == {"chips.", "last", "sound", "recent.", "night", "palette"} and "FileOutputStream" not in base)
+check("nothing about the people playing is stored: only chips, the last game, the sound switch, the night look and its palette, the list's filter, and item ids", set(re.findall(r'put\w+\("([\w.]+)"', prefs)) == {"chips.", "last", "sound", "recent.", "night", "palette", "filter"} and "FileOutputStream" not in base)
 # the night look: contrast floors in every set, the switch and the sun
 def _lum(h):
     r, g, b = [int(h[i:i + 2], 16) / 255 for i in (0, 2, 4)]

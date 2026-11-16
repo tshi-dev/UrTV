@@ -36,10 +36,10 @@ public class QuizGamesActivity extends Activity {
     /** the night switch's words, marked for the English table: «وضع ليلي» with its three states, and the three night palettes */
     static final String[] NIGHT_WORDS = {S.n("وضع ليلي"), S.n("تلقائي بعد المغرب"), S.n("ألوان الليل"), S.n("فحم دافئ"), S.n("ليل أزرق"), S.n("بيج خافت")};
     static final String[] NIGHT_STATES = {S.n("إيقاف"), S.n("تشغيل"), NIGHT_WORDS[1]}, PALETTE_NAMES = {NIGHT_WORDS[3], NIGHT_WORDS[4], NIGHT_WORDS[5]};
-    /** the «بالجوالات» tile and its page: the tile's line, the page's header */
-    static final String[] PHONE_WORDS = {S.n("بالجوالات"), S.n("الأسرع، واحد مو معنا، بدون كلام: كل واحد بجواله"), S.n("كل واحد بجواله، والريموت للمضيف")};
+    /** the filter at the top: all the games, or only the ones that can be played with phones (the choice is kept) */
+    static final String[] FILTER_WORDS = {S.n("الكل"), S.n("بالجوالات"), S.n("عرض")};
     static final int COLS = 4;
-    private FrameLayout root; private float scale; private int sel, head; private boolean phonePage; private Typeface display, medium; private GameLook L;   // head: 0 the tiles have the focus, 1 the night switch, 2 the night colours
+    private FrameLayout root; private float scale; private int sel, head, filter; private Typeface display, medium; private GameLook L;   // head: 0 the tiles have the focus, 1 the night switch, 2 the night colours, 3 the filter
 
     @Override protected void attachBaseContext(Context base) {
         Context e = S.wrap(base);
@@ -60,7 +60,8 @@ public class QuizGamesActivity extends Activity {
         root.setLayoutDirection(Dir.layout());
         root.setBackgroundColor(L.paper);
         setContentView(root);
-        sel = GameRegistry.firstFocus(GamePrefs.last(this));
+        filter = GamePrefs.filter(this);
+        sel = filter == 0 ? GameRegistry.firstFocus(GamePrefs.last(this)) : 0;
         draw();
     }
 
@@ -88,10 +89,10 @@ public class QuizGamesActivity extends Activity {
         return v;
     }
 
-    /** the games on the page: all of them, or (after the «بالجوالات» tile) the ones that play with phones */
+    /** the games on the page: all of them, or only the ones that can be played with phones */
     private java.util.List<GameRegistry.Game> shown() {
         java.util.List<GameRegistry.Game> v = new java.util.ArrayList<>();
-        for (GameRegistry.Game g : GameRegistry.ALL) if (!phonePage || GameRegistry.inPhones(g.id)) v.add(g);
+        for (GameRegistry.Game g : GameRegistry.ALL) if (filter == 0 || GameRegistry.inPhones(g.id)) v.add(g);
         return v;
     }
     private void draw() {
@@ -100,14 +101,13 @@ public class QuizGamesActivity extends Activity {
         View band = new View(this); band.setBackgroundColor(L.deep);
         root.addView(band, at(-1, 200, 0, 0));
         root.addView(text(S.t("الألعاب"), 96, L.onDeep, true), at(900, 120, 96, 54));
-        TextView mode = text(phonePage ? S.t("كل واحد بجواله، والريموت للمضيف") : S.t("بدون جوالات: ريموت واحد يدور بينكم"), 40, L.saff, false); mode.setGravity(Gravity.END); mode.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
+        TextView mode = text(filter == 1 ? S.t("كل واحد بجواله، والريموت للمضيف") : S.t("بدون جوالات: ريموت واحد يدور بينكم"), 40, L.saff, false); mode.setGravity(Gravity.END); mode.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
         FrameLayout.LayoutParams mp = new FrameLayout.LayoutParams(px(820), px(56), Gravity.END | Gravity.TOP); mp.setMarginEnd(px(96)); mp.topMargin = px(84);
         root.addView(mode, mp);
         headerButtons();
         float w = 408, hgt = 336, gap = 32;
         for (int i = 0; i < gs.size(); i++) {
             GameRegistry.Game g = gs.get(i);
-            boolean door = !phonePage && g.id.equals("quiz");   // the one «بالجوالات» tile
             boolean focus = i == sel, live = g.ready;
             int words = focus ? L.onInk : live ? L.ink : L.ink(0x80);
             LinearLayout tile = new LinearLayout(this); tile.setOrientation(LinearLayout.VERTICAL); tile.setGravity(Gravity.BOTTOM); tile.setLayoutDirection(Dir.layout());
@@ -115,7 +115,7 @@ public class QuizGamesActivity extends Activity {
             GradientDrawable bg = new GradientDrawable(); bg.setColor(focus ? L.ink : live ? L.tile : L.paper);
             if (live || focus) bg.setStroke(px(6), L.ink); else bg.setStroke(px(4), L.ink(0x59), px(14), px(10));
             tile.setBackground(bg);
-            String markWord = !live ? S.t("قريبًا") : phonePage ? S.t("بالجوالات") : "";
+            String markWord = !live ? S.t("قريبًا") : g.phones ? S.t("بالجوالات") : "";
             if (!markWord.isEmpty()) {   // the mark: a small square-cornered label at the top of the tile
                 TextView mark = text(markWord, 30, live ? L.onSaff : words, true); mark.setSingleLine(true);
                 if (live) mark.setBackgroundColor(L.saff);
@@ -126,7 +126,7 @@ public class QuizGamesActivity extends Activity {
             tile.addView(new View(this), new LinearLayout.LayoutParams(1, 0, 1f));
             // the title and the line fit the tile whatever the language: the size comes down (the title may take two lines, the line three) before anything is cut
             float inner = w - 64;
-            String title = door ? S.tv(PHONE_WORDS[0]) : S.tv(g.name), about = door ? S.tv(PHONE_WORDS[1]) : S.tv(g.line);
+            String title = S.tv(g.name), about = S.tv(g.line);
             TextView name = text(title, fit(display, title, 56, inner, 120, 2, 1f), words, true); name.setMaxLines(2);
             tile.addView(name, new LinearLayout.LayoutParams(-1, -2));
             TextView line = text(about, fit(medium, about, 30, inner, 96, 3, 1.1f), words, false); line.setMaxLines(3); line.setLineSpacing(0, 1.1f); line.setAlpha(focus ? .9f : .8f);
@@ -147,39 +147,42 @@ public class QuizGamesActivity extends Activity {
         root.addView(hint, at(-1, 48, 96, 978));
     }
 
-    /** the switch at the top of the list: «وضع ليلي» (off, on, automatic after Maghrib) and, when it is not off, the night colours; both on the green band at the end of the line */
+    /** the buttons at the top of the list, on the green band at the end of the line: «وضع ليلي» (off, on, automatic after Maghrib), «ألوان الليل» when it is not off, and the filter «عرض: الكل / بالجوالات» */
     private void headerButtons() {
         int st = GamePrefs.night(this);
-        String[] label = {S.t("وضع ليلي") + ": " + S.tv(NIGHT_STATES[st]), S.t("ألوان الليل") + ": " + S.tv(PALETTE_NAMES[GamePrefs.palette(this)])};
-        float w1 = 380, w2 = 380, gap = 16;
-        float x1 = 96;                                    // from the end edge: the switch first, the colours beside it toward the start
-        for (int i = 0; i < (st == GamePrefs.NIGHT_OFF ? 1 : 2); i++) {
-            boolean focus = head == i + 1;
+        String[] label = {S.t("وضع ليلي") + ": " + S.tv(NIGHT_STATES[st]), S.t("ألوان الليل") + ": " + S.tv(PALETTE_NAMES[GamePrefs.palette(this)]), S.t("عرض") + ": " + S.tv(FILTER_WORDS[filter])};
+        float[] w = {380, 380, 340};
+        float x1 = 96, gap = 16;                          // from the end edge: the switch first, then the colours, then the filter toward the start
+        for (int h : heads()) {
+            int i = h - 1; boolean focus = head == h;
             TextView b = text(label[i], 34, focus ? L.paper : L.ink, true); b.setGravity(Gravity.CENTER); b.setTextAlignment(View.TEXT_ALIGNMENT_CENTER); b.setSingleLine(true);
             GradientDrawable bg = new GradientDrawable(); bg.setColor(focus ? L.ink : L.tile); bg.setStroke(px(focus ? 6 : 4), focus ? L.saff : L.ink);
             b.setBackground(bg);
-            FrameLayout.LayoutParams p = new FrameLayout.LayoutParams(px(i == 0 ? w1 : w2), px(56), Gravity.END | Gravity.TOP); p.setMarginEnd(px(x1)); p.topMargin = px(128);
+            FrameLayout.LayoutParams p = new FrameLayout.LayoutParams(px(w[i]), px(56), Gravity.END | Gravity.TOP); p.setMarginEnd(px(x1)); p.topMargin = px(128);
             root.addView(b, p);
-            x1 += (i == 0 ? w1 : w2) + gap;
+            x1 += w[i] + gap;
         }
     }
+    /** the buttons that are shown, from the end edge toward the start */
+    private int[] heads() { return GamePrefs.night(this) == GamePrefs.NIGHT_OFF ? new int[] {1, 3} : new int[] {1, 2, 3}; }
 
     private void applyNight() { L = GameLook.of(this); root.setBackgroundColor(L.paper); draw(); }
 
     @Override public boolean dispatchKeyEvent(KeyEvent e) {
         if (e.getAction() != KeyEvent.ACTION_DOWN) return super.dispatchKeyEvent(e);
         int k = e.getKeyCode(), n = shown().size();
-        if (k == KeyEvent.KEYCODE_BACK && phonePage) { phonePage = false; sel = 0; for (int i = 0; i < GameRegistry.ALL.length; i++) if (GameRegistry.ALL[i].id.equals("quiz")) sel = i; draw(); return true; }
         int dx = k == KeyEvent.KEYCODE_DPAD_LEFT ? -1 : k == KeyEvent.KEYCODE_DPAD_RIGHT ? 1 : 0;
         if (Dir.rtl()) dx = -dx;
         int dy = k == KeyEvent.KEYCODE_DPAD_UP ? -1 : k == KeyEvent.KEYCODE_DPAD_DOWN ? 1 : 0;
         boolean okKey = k == KeyEvent.KEYCODE_DPAD_CENTER || k == KeyEvent.KEYCODE_ENTER || k == KeyEvent.KEYCODE_NUMPAD_ENTER || k == KeyEvent.KEYCODE_BUTTON_A;
         if (head != 0) {   // the focus is on the night switch (1) or the night colours (2); the colours sit toward the start, so a step toward the end leads to the switch
-            boolean two = GamePrefs.night(this) != GamePrefs.NIGHT_OFF;
+            int[] hs = heads(), at = {0};
+            for (int i = 0; i < hs.length; i++) if (hs[i] == head) at[0] = i;
             if (dy > 0) { head = 0; draw(); return true; }
-            if (dx != 0) { int to = head == 2 && dx > 0 ? 1 : head == 1 && dx < 0 && two ? 2 : head; if (to != head) { head = to; draw(); } return true; }
+            if (dx != 0) { int to = Math.max(0, Math.min(hs.length - 1, at[0] + (dx < 0 ? 1 : -1))); if (hs[to] != head) { head = hs[to]; draw(); } return true; }
             if (okKey) {
-                if (head == 1) { int st = (GamePrefs.night(this) + 1) % 3; GamePrefs.setNight(this, st); if (st == GamePrefs.NIGHT_OFF) head = 1; }
+                if (head == 3) { filter = 1 - filter; GamePrefs.setFilter(this, filter); sel = 0; draw(); return true; }
+                if (head == 1) { int st = (GamePrefs.night(this) + 1) % 3; GamePrefs.setNight(this, st); }
                 else GamePrefs.setPalette(this, (GamePrefs.palette(this) + 1) % GamePrefs.PALETTES);
                 applyNight();
                 return true;
@@ -191,10 +194,9 @@ public class QuizGamesActivity extends Activity {
         if (dy != 0) { int to = sel + dy * COLS; if (to >= 0 && to < n) { sel = to; draw(); } return true; }
         if (k == KeyEvent.KEYCODE_DPAD_CENTER || k == KeyEvent.KEYCODE_ENTER || k == KeyEvent.KEYCODE_NUMPAD_ENTER || k == KeyEvent.KEYCODE_BUTTON_A) {
             GameRegistry.Game g = shown().get(sel);
-            if (!phonePage && g.id.equals("quiz")) { phonePage = true; sel = 0; draw(); return true; }   // the «بالجوالات» tile opens its page
             boolean opened = false;
             if (g.ready) {
-                try { Intent go = new Intent().setClassName(this, getClass().getPackage().getName() + "." + g.activity); if (phonePage && !g.id.equals("quiz")) go.putExtra("phones", true); startActivity(go); GamePrefs.setLast(this, g.id); opened = true; }
+                try { Intent go = new Intent().setClassName(this, getClass().getPackage().getName() + "." + g.activity); if (filter == 1 && !g.id.equals("quiz")) go.putExtra("phones", true);   // chosen from the «بالجوالات» view: the phones switch starts on startActivity(go); GamePrefs.setLast(this, g.id); opened = true; }
                 catch (RuntimeException notThere) { /* a game marked ready whose screen is not in this build: «قريبًا» */ }
             }
             if (!opened) Toast.makeText(this, S.t("قريبًا"), Toast.LENGTH_SHORT).show();
