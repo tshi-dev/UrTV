@@ -434,6 +434,9 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { prefs.setPillHidden("matches", !prefs.pillHidden("matches")); render(); } });
         row("زر الجوال", prefs.pillHidden("phone") ? "مخفي" : "ظاهر", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPillHidden("phone", !prefs.pillHidden("phone")); render(); } });
+        // 4.3.3 «زر البحث»: the TV's own search inside the apps, a round button before «الجوال»; off by default, and only on a TV that has that search
+        row("زر البحث", prefs.searchPill() ? "ظاهر" : "مخفي", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setSearchPill(!prefs.searchPill()); render(); } });
         row("زر مركز التحكم", prefs.pillHidden("center") ? "مخفي  •  يفتح من زر الإعدادات السريعة في الريموت" : "ظاهر", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPillHidden("center", !prefs.pillHidden("center")); render(); } });
         // hiding removes only the button: the list stays in the «المهام» card and on the phone

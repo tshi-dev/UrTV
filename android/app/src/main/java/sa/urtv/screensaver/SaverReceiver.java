@@ -21,7 +21,7 @@ import java.util.Locale;
  *   am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET
  *       [--es city 'الرس'] [--es lat 25.86 --es lon 43.49 --es tz Asia/Kuwait]   (tz is needed for a place that is not in the list) [--es teams '136013:Al-Hilal,150643:Al-Zulfi']
  *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es homephotos same|own] [--es homepacks id,id|none] [--es homeours on|off] [--es albummode seconds|ten|minute] [--es albumtitle on|off] [--es albumfit fit|fill] [--es albumsize normal|tall] [--es cleartext on|off] [--es looksync on|off] [--es surface quick|cards|tray:30..100:look|glass|graphite] [--es accent amber|gold|green|teal|sky|violet|rose|coral|default] [--es baropacity 30..100] [--es walldim 0..90] [--es focusstyle solid|frame|glow] [--es albummode seconds|minute] [--es albumdate on|off] [--es pillshidden markets,matches,center|none] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es homelayout classic|football] [--es favbar 5|6|7|8|all] [--es pagesdark on|off] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
- *       [--es sunrise on|off] [--es prayerbar on|off] [--es wxmore on|off] [--es months default|levant] [--es verse day|3|10] [--es versekind both|verse|hadith] [--es seconds on|off] [--es backexit press|hold|three] [--es occasion on|off] [--es nightdim on|off] [--es taskspill on|off] [--es backsaver on|off] [--es fbhide on|off] [--es datenum on|off] [--es genres Drama,Comedy] [--es langs English]
+ *       [--es sunrise on|off] [--es prayerbar on|off] [--es wxmore on|off] [--es months default|levant] [--es verse day|3|10] [--es versekind both|verse|hadith] [--es seconds on|off] [--es backexit press|hold|three] [--es occasion on|off] [--es nightdim on|off] [--es taskspill on|off] [--es backsaver on|off] [--es fbhide on|off] [--es datenum on|off] [--es searchpill on|off] [--es genres Drama,Comedy] [--es langs English]
  *       [--es photos 30] [--es idle 10] [--es digits hindi|latin] [--es hijrioffset -2..2] [--es clock24 on|off] [--es ramtier low|mid|normal|auto] [--es lang ar|en]
  *       [--es cardstyle current|dark1|glass1|dark3|glass3] [--es national auto|off]
  *       [--es markets tasi,gold,btc] [--es mkstyle arrows|prices] [--es mkbar on|off] [--es clocksize large|medium|small] [--es stocks 2222,1120,AAPL] [--es stkchg pct|amount]
@@ -247,8 +247,8 @@ public class SaverReceiver extends BroadcastReceiver {
         String months = i.getStringExtra("months");
         if (months != null && !"default".equals(months) && !"levant".equals(months)) return "error: months is one of default levant";
         String occasion = i.getStringExtra("occasion"), nightDim = i.getStringExtra("nightdim"), tasksPill = i.getStringExtra("taskspill");
-        String backSaver = i.getStringExtra("backsaver"), fbHide = i.getStringExtra("fbhide"), dateNum = i.getStringExtra("datenum");
-        for (String[] x : new String[][] {{"occasion", occasion}, {"nightdim", nightDim}, {"taskspill", tasksPill}, {"backsaver", backSaver}, {"fbhide", fbHide}, {"datenum", dateNum}})
+        String backSaver = i.getStringExtra("backsaver"), fbHide = i.getStringExtra("fbhide"), dateNum = i.getStringExtra("datenum"), searchPill = i.getStringExtra("searchpill");
+        for (String[] x : new String[][] {{"occasion", occasion}, {"nightdim", nightDim}, {"taskspill", tasksPill}, {"backsaver", backSaver}, {"fbhide", fbHide}, {"datenum", dateNum}, {"searchpill", searchPill}})
             if (x[1] != null && !"on".equals(x[1]) && !"off".equals(x[1])) return "error: " + x[0] + " is one of on off";
         String verse = i.getStringExtra("verse");
         if (verse != null && !QuoteEvery.valid(verse)) return "error: verse is one of day 3 10";
@@ -480,6 +480,7 @@ public class SaverReceiver extends BroadcastReceiver {
         if (backSaver != null) p.setBackSaver("on".equals(backSaver));
         if (fbHide != null) p.setFbHideDone("on".equals(fbHide));
         if (dateNum != null) p.setDateNum("on".equals(dateNum));
+        if (searchPill != null) p.setSearchPill("on".equals(searchPill));
         if (prayerMethod != null) p.setPrayerMethod(PrayerMethod.parse(prayerMethod));
         if (adj != null) p.setPrayerAdj(adj);
         if (hijriOffset != null) p.setHijriOffset(hijriOffset);
@@ -656,7 +657,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nwxmore: " + (p.wxMore() ? "on" : "off") + "\nmonths: " + p.months() + "\nverse: " + p.quoteEvery()
             + "\nversekind: " + p.verseKind() + "\nseconds: " + (p.seconds() ? "on" : "off") + "\nbackexit: " + p.homeExit()
             + "\noccasion: " + (p.occasion() ? "on" : "off") + "\nnightdim: " + (p.nightDim() ? "on" : "off") + "\ntaskspill: " + (p.tasksPill() ? "on" : "off")
-            + "\nbacksaver: " + (p.backSaver() ? "on" : "off") + "\nfbhide: " + (p.fbHideDone() ? "on" : "off") + "\ndatenum: " + (p.dateNum() ? "on" : "off")
+            + "\nbacksaver: " + (p.backSaver() ? "on" : "off") + "\nfbhide: " + (p.fbHideDone() ? "on" : "off") + "\ndatenum: " + (p.dateNum() ? "on" : "off") + "\nsearchpill: " + (p.searchPill() ? "on" : "off")
             + "\nprayermethod: " + p.prayerMethod()
             + "\nprayeradj: " + (p.prayerAdjOn() ? "on" : "off") + " " + PrayerAdj.describe(p.prayerAdj())
             + "\nhijrioffset: " + HijriOffset.describe(p.hijriOffset())

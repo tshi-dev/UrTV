@@ -145,6 +145,7 @@ public class MainActivity extends Activity {
     private PopupWindow inputsPopup;
     private HomeCard homeCard;
     private NowCard nowCard;   // «يُتلى الآن»: at the right end of the pills row while a surah or a station is on
+    private Pill searchPill;   // 4.3.3 «بحث»: the TV's own search inside the apps (GlobalSearch), off until the settings turn it on
     private Pill marketsPill, matchesPill, phonePill, updatePill;   // «تحديث»: an update is worth opening the update screen for (UpdateNotice)   // «الجوال» (C14): the phone remote's page
     private ImageView netIcon;   // C15: the connection in the top row (Wi-Fi, none)   // «الأسواق» and «المباريات»: they take the look like the others («رملي»: they stayed grey, step 28)
     private Pill centerPill;   // «مركز التحكم»: gold while the sleep timer runs; in the row except in kids mode (applyCenterPill)
@@ -857,6 +858,12 @@ public class MainActivity extends Activity {
         // «الجوال» (C14): a round button to the phone remote's page (the QR and the pairing), after «المباريات»
         phonePill = pill(S.t("الجوال"), R.drawable.ic_phone);
         phonePill.setOnClickListener(v -> launchGuarded(ParentalPolicy.OUR_SETTINGS, new Intent(this, PhoneActivity.class), "الجوال"));
+        // 4.3.3 «بحث»: in the row only while the settings' «زر البحث» is on and the TV has a search inside the apps (applyQuickPill)
+        searchPill = pill(S.t("بحث"), R.drawable.ic_search);
+        searchPill.setOnClickListener(v -> {
+            Intent s = GlobalSearch.intent(getPackageManager());
+            if (s != null && !Parental.state(this).kids) launchGuarded(ParentalPolicy.TILE, s, "بحث");   // locked as the search app's own tile
+        });
         // 4.3: the update screen's pill, in the row only while UpdateNotice says so (the screensaver is older than this home, or a newer build is out)
         updatePill = pill(S.t("تحديث جديد"), R.drawable.ic_update);
         updatePill.setAccent(true);
@@ -3212,7 +3219,7 @@ public class MainActivity extends Activity {
         lookNow = cfg.look();
         applyLook(Look.light(cfg.appearance(), dayBySun(cfg), h * 60 + now.get(Calendar.MINUTE)));
         GlassStyle.Look glassNow = homeGlass();
-        for (Pill p : new Pill[] {inputsPill, tasksPill, tilawahPill, centerPill, marketsPill, matchesPill, phonePill, updatePill, bellPill}) if (p != null) p.look(glassNow);   // «رملي»: its own buttons
+        for (Pill p : new Pill[] {inputsPill, tasksPill, tilawahPill, centerPill, marketsPill, matchesPill, searchPill, phonePill, updatePill, bellPill}) if (p != null) p.look(glassNow);   // «رملي»: its own buttons
         if (pillBar != null) pillBar.look(GlassStyle.material(glassNow, lookNow, GlassStyle.QUICK));
         for (View v : pills) if (v instanceof Pill) ((Pill) v).look(glassNow);   // and every pill of the row, whatever else is added to it: six buttons, one style (step 28: two stayed grey circles)
         boolean h24 = cfg.clock24();   // «ساعة ٢٤»: off (12-hour with the ص or م) unless the owner turned it on
@@ -3265,6 +3272,7 @@ public class MainActivity extends Activity {
         applyQuickPill(marketsPill, !hiddenQuick.contains("markets"), matchesPill, phonePill, updatePill, tilawahPill);
         applyQuickPill(matchesPill, !hiddenQuick.contains("matches"), phonePill, updatePill, tilawahPill);
         applyQuickPill(phonePill, !hiddenQuick.contains("phone"), updatePill, tilawahPill);
+        applyQuickPill(searchPill, GlobalSearch.wanted(cfg.fragment, Parental.state(this).kids, cleanShown) && GlobalSearch.intent(getPackageManager()) != null, phonePill, updatePill, tilawahPill);   // 4.3.3 «زر البحث»: before «الجوال»
         applyQuickPill(updatePill, !Parental.state(this).kids && UpdateNotice.wanted(this), tilawahPill);
         UpdateNotice.checkIfDue(getApplicationContext(), () -> runOnUiThread(() -> applyQuickPill(updatePill, !Parental.state(this).kids && UpdateNotice.wanted(this), tilawahPill)));
         updateNetIcon();

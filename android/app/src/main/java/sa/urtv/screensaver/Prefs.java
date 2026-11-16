@@ -557,6 +557,9 @@ final class Prefs {
     boolean fbHideDone() { return sp.getBoolean("fbHideDone", false); }
     /** 4.3.3 «التاريخ بالأرقام»: the dates in words (the default, as always) or as day/month/year, Hijri and Gregorian; #datenum=1 only while on. The digits stay «الأرقام»'s. */
     boolean dateNum() { return sp.getBoolean("dateNum", false); }
+    /** 4.3.3 «زر البحث»: the home's round button to the TV's own search inside the apps; off by default, #searchpill=1 only while on */
+    boolean searchPill() { return sp.getBoolean("searchPill", false); }
+    void setSearchPill(boolean v) { sp.edit().putBoolean("searchPill", v).apply(); }
     void setDateNum(boolean v) { sp.edit().putBoolean("dateNum", v).apply(); }
     void setFbHideDone(boolean v) { sp.edit().putBoolean("fbHideDone", v).apply(); }
     void setBackSaver(boolean v) { sp.edit().putBoolean("backSaver", v).apply(); }
@@ -668,7 +671,7 @@ final class Prefs {
             + HomeExit.fragment(homeExit())
             + (occasion() ? "" : "&occasion=0") + (nightDim() ? "" : "&nightdim=0") + (tasksPill() ? "" : "&taskspill=0")
             + (backSaver() ? "&backsaver=1" : "")
-            + (fbHideDone() ? "&fbhide=1" : "") + (dateNum() ? "&datenum=1" : "")   // the football home without the games that ended
+            + (fbHideDone() ? "&fbhide=1" : "") + (dateNum() ? "&datenum=1" : "") + (searchPill() ? "&searchpill=1" : "")   // the football home without the games that ended
             + "&cardstyle=" + cardStyle()
             + "&adhanbar=" + (adhanBar() ? "1" : "0")
             + "&yearstrip=" + (yearStrip() ? "1" : "0")

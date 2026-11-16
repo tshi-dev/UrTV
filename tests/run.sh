@@ -223,6 +223,7 @@ python3 tests/usb_test.py   # 4.3 B8: the USB viewers are never off and always i
 python3 tests/sideload_apps_test.py   # #57: a sideloaded app shows on the home next to a Google home (only the TV's own phone-only helpers stay out)
 python3 tests/kids_exit_test.py   # 4.3.3: kids mode always has a way out to «الرقابة الأبوية» (the long OK box, Menu, star, a long Settings key), behind the PIN
 python3 tests/date_num_test.py   # the home's date with its year; «التاريخ بالأرقام» on the home and the screensaver
+python3 tests/global_search_test.py   # «بحث» on the home: the TV's own search inside the apps, off by default
 python3 tests/report_words_test.py   # 4.3 B10: the report page asks what happened, required
 python3 tests/phone_message_test.py   # 4.3 #53: a short message from a paired phone on the TV's screen
 python3 tests/photos_phone_test.py   # 4.3 «صوري»: 50, and from a paired phone (no camera data)
