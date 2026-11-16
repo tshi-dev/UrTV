@@ -50,6 +50,11 @@ final class SceneClock extends View {
         invalidate();
     }
 
+    /** 4.4 the picture behind is zoomed by k about the screen's top centre (ScenePlan.zoom): the glass in the digits follows it */
+    private float zoom = 1f;
+
+    void setZoom(float k) { if (k == zoom) return; zoom = k; shaderFor(getWidth(), getHeight()); invalidate(); }
+
     void setScene(Bitmap glassCopy, int[] digits, boolean darkClock) {
         glass = glassCopy;
         box = digits;
@@ -65,6 +70,7 @@ final class SceneClock extends View {
         BitmapShader sh = new BitmapShader(glass, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
         Matrix m = new Matrix();
         m.setScale(w / (float) glass.getWidth(), h / (float) glass.getHeight());   // the glass copy is half size: stretched over the screen
+        m.postScale(zoom, zoom, w / 2f, 0);
         sh.setLocalMatrix(m);
         fill.setShader(sh);
         ColorMatrix cm = new ColorMatrix();

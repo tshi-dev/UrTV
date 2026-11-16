@@ -4,7 +4,6 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 python3 tests/check.py
-python3 tests/build_strip_test.py   # the build drops the script's whole-line // comments, never a line of a string, template or regex
 python3 tests/arabic_spacing_test.py   # Arabic letters stay joined: no letter-spacing on anything that can hold Arabic
 python3 tests/tilawah_test.py
 python3 tests/prayer_math_test.py
@@ -29,6 +28,10 @@ python3 tests/step52_test.py   # the tester's step 52 findings in the source: th
 python3 tests/party_games_test.py   # «واحد مو معنا» and «بدون كلام / وصّف»: the rules on a plain JVM, the bundled word files
 python3 tests/ram_tier_test.py   # the three memory tiers (LOW under 2000 MB, MID under 2600, NORMAL), one rule per app, the test switch
 python3 tests/scene_home_test.py   # 4.3.3 «المشاهد»: the scene rules per tier on a JVM, the Saudi pack's files and sizes, the Couch TV download checks, the wiring
+python3 tests/settings_tree_test.py   # docs/SETTINGS-TREE.md is what the code says now (.github/tools/settings_tree.py)
+python3 tests/scene_zoom_test.py   # 4.4 the owner: the clock where it is, the picture lower: more of the digits above the scenery (the visible share on a JVM over the scene's real cut-out)
+python3 tests/photo_glass_test.py   # 4.4 «الساعة: زجاجية» over our photos: which cut-out, where the digits go (on a JVM), made only while chosen, never «الحرمين»
+python3 tests/cache_sweep_test.py   # 4.3.3 «مسح الملفات المؤقتة»: the caches only, on a JVM over made-up folders
 python3 tests/lowram_test.py   # a weak TV (Ram.low): no key filter, the clock off the UI thread, pictures let go behind apps, markets «عادي» and 60 s, #lowram=1
 python3 tests/netlog_test.py   # G3: the request log (NetLog: requests by host, one UrTVNet line per 10 minutes with the bytes)
 python3 tests/page_cache_test.py   # G3: the page revalidates its data (ETag, 304) through the WebView cache, and skips periodic loads while offline
@@ -267,6 +270,7 @@ python3 tests/i18n_page_test.py   # dist/tv-en.html: built beside tv.html (byte 
 node tests/es2017_parse.test.mjs   # #19: the built pages parse as ES2017 (Android 9 TVs stuck on WebView 66)
 node tests/date_num.test.mjs   # «التاريخ بالأرقام» on the screensaver page: day/month/year in the digits chosen
 node tests/wx_icon.test.mjs   # the screensaver's weather line: the condition's icon beside the temperature
+node tests/js_strip_test.mjs   # the pages ship without the script's comments: the same program (acorn trees), 50 KB smaller
 node tests/i18n_page_test.mjs   # dist/tv-en.html in a browser: left to right, no Arabic in its own words on any card
 #
 # English phase 3 (the home app): its new tests go right under this line
@@ -294,5 +298,7 @@ node tests/football_page.test.mjs   # the football home's widgets and «المب
 node tests/matches_archive.test.mjs   # «المباريات» with the match archive (data-archive): every followed team, yesterday's results, a club, a league, the chooser
 node tests/phone_page.test.mjs
 node tests/sync_cards.test.mjs   # «توحيد المظهر» on the page: the cards in the material's fill, line and ink, readable on a light look
+node tests/couch_row.test.mjs   # 4.4 the page: «كنبة» (#row=1, the cards in one strip above the tray) and «مربعات» (today's prayers as boxes in a row, the next one lit with its countdown)
+node tests/photo_mask_page.test.mjs   # 4.4 the phone page «صوري»: a photo with its mask, checked on the phone, previewed, sent after the photo; the page's own CSP
 node tests/reminder_page.test.mjs   # the screensaver's reminder card: its time, «الآن», «تم», the snooze, the keys, the adhan, English
 node tests/tvports_page.test.mjs   # the packaged page with simulated webOS and Tizen keys

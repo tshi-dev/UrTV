@@ -24,6 +24,17 @@ label.main{display:block;text-align:center;min-height:56px;line-height:56px;back
 input[type=file]{position:absolute;opacity:0;width:1px;height:1px}
 #state{font-weight:700;color:var(--text);min-height:1.5em}
 a{color:var(--acc)}
+/* 4.4 a photo with its mask (docs/OWN-PHOTO-MASK.md): the clock behind the person's own photo */
+.box{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 16px;margin-top:18px}
+.box h2{font-size:18px;margin:0 0 4px}
+label.sec{display:block;text-align:center;min-height:50px;line-height:50px;border:1.5px solid var(--acc);color:var(--acc);font-weight:700;border-radius:16px;margin:12px 0 6px;cursor:pointer}
+button.sec,button.main{display:block;width:100%;font:inherit;font-weight:700;border-radius:16px;min-height:50px;margin:10px 0 4px;cursor:pointer}
+button.main{background:var(--acc);color:var(--ink);border:0}button.sec{background:none;color:var(--acc);border:1.5px solid var(--acc)}
+.note{font-size:13px;border-top:1px solid var(--line);margin-top:12px;padding-top:10px}
+.pair{display:flex;gap:10px;margin:12px 0}.pair div{flex:1;min-width:0}.pair canvas{width:100%;border-radius:10px;display:block;background:#000}
+.pair small{display:block;text-align:center;font-size:13px;color:var(--dim)}
+#mchecks p{margin:4px 0}.ok::before{content:'✓ ';color:var(--acc);font-weight:700}.bad{color:#e0645a}.bad::before{content:'✗ ';font-weight:700}
+#mprev{width:100%;border-radius:12px;display:block;margin-top:8px}
 </style>
 </head>
 <body>
@@ -32,6 +43,24 @@ a{color:var(--acc)}
 <div id="go" class="hidden">
 <label class="main" for="pick" id="t3">اختر الصور</label>
 <input id="pick" type="file" accept="image/*" multiple>
+</div>
+<div id="mx" class="box">
+<h2 id="m1">الساعة خلف صورتك (اختياري)</h2>
+<p id="m2">مع «الساعة: زجاجية خلف الصورة» تقدر المباني أو الجبال أو الناس في صورتك تكون قدّام الأرقام. يلزمها قناع: صورة بالأبيض والأسود بنفس مقاس الصورة، الأبيض اللي قدّام الساعة والأسود السماء.</p>
+<label class="sec" for="mph" id="m3">صورة مع قناعها</label>
+<input id="mph" type="file" accept="image/*">
+<div id="mstep" class="hidden">
+<div class="pair"><div><canvas id="mpi" width="320" height="180"></canvas><small id="m4">الصورة</small></div><div><canvas id="mmi" width="320" height="180" class="hidden"></canvas><small id="m5">القناع</small></div></div>
+<label class="sec" for="mmk" id="m6">اختر القناع</label>
+<input id="mmk" type="file" accept="image/png,image/*">
+<div id="mchecks"></div>
+<canvas id="mprev" class="hidden" width="640" height="360"></canvas>
+<button id="msend" class="main hidden" type="button">أرسلها مع القناع</button>
+<button id="mbare" class="sec hidden" type="button">أرسل الصورة بدون قناع</button>
+</div>
+<p><a id="m7" href="https://github.com/tshi-dev/UrTV/blob/master/docs/OWN-PHOTO-MASK.md" target="_blank" rel="noopener noreferrer">كيف أصنع القناع؟</a> <span id="m8">الدليل فيه جملة جاهزة تنسخها لأداة الذكاء الاصطناعي.</span></p>
+<p class="note" id="m9">القناع تصنعه أنت بأداة الذكاء الاصطناعي اللي تختارها، مثل <bdi>ChatGPT</bdi> أو <bdi>Gemini</bdi> أو <bdi>Claude</bdi>. صورتك تروح لهذه الأداة، مو لنا. هذه الصفحة ما ترسل شيئاً إلا لتلفزيونك.</p>
+<p class="note" id="m10">بدون قناع تظهر الصورة كالعادة والساعة قدّامها.</p>
 </div>
 <p id="state" role="status"></p>
 <p id="none" class="hidden"><span id="t4">افتح صفحة الجوال وامسح الرمز من «أسهل من الجوال» على التلفزيون أولاً.</span> <a href="/" id="t5">صفحة الجوال</a></p>
@@ -43,16 +72,29 @@ a{color:var(--acc)}
     t1: 'My photos on the TV', t2: 'Pick photos from your phone: they are made smaller here before they are sent, without where or when they were taken. The screensaver shows them with «My photos».',
     t3: 'Pick photos', t4: 'Open the phone page and scan the code from «Easier from the phone» on the TV first.', t5: 'Phone page',
     sending: 'Sending {n} of {all}…', done: '{n} photos are on the TV ✓', full: 'The TV holds as many photos as it can. Delete some on the TV first.',
-    camera: 'This photo still had its camera data and was not sent.', refused: 'The TV did not take a photo.', failed: 'Not sent: check the Wi-Fi and try again.', no_session: 'The session ended.'
+    camera: 'This photo still had its camera data and was not sent.', refused: 'The TV did not take a photo.', failed: 'Not sent: check the Wi-Fi and try again.', no_session: 'The session ended.',
+    m1: 'The clock behind your photo (optional)', m2: 'With «Glass, behind the photo» the buildings, mountains or people in your photo can stand in front of the digits. It needs a mask: a black-and-white image the size of the photo, white for what stands in front of the clock, black for the sky.',
+    m3: 'A photo with its mask', m4: 'Photo', m5: 'Mask', m6: 'Pick the mask', m7: 'How do I make the mask?', m8: 'The guide has a ready sentence to copy into an AI tool.',
+    m9: 'You make the mask with the AI tool you choose, such as ChatGPT, Gemini or Claude. Your photo goes to that tool, not to us. This page sends nothing anywhere but to your TV.',
+    m10: 'Without a mask the photo shows as always, the clock in front of it.', msend: 'Send it with the mask', mbare: 'Send the photo without a mask',
+    k_shape: 'Same shape as the photo', k_tones: 'Black and white', k_size: 'At most 1 MB',
+    x_shape: 'The mask is not the photo\'s shape: ask the tool for «exactly the same size».', x_tones: 'Too much grey or colour: ask for «black and white only, no grey».', x_size: 'The mask is over 1 MB: ask for a smaller PNG.',
+    x_bad: 'This file is not an image.', preview: 'How it will look on the TV:', m_done: 'The photo and its mask are on the TV ✓', m_late: 'The photo is on the TV, but its mask came too late: send them again together.',
+    m_refused: 'The photo is on the TV, but it did not take the mask: the photo shows with the clock in front.'
   } : {
     sending: 'يرسل {n} من {all}…', done: 'وصلت {n} صور للتلفزيون ✓', full: 'التلفزيون فيه أكثر عدد يقدر عليه من الصور. احذف بعضها من التلفزيون أولاً.',
-    camera: 'هذه الصورة فيها بيانات الكاميرا، فما أرسلناها.', refused: 'التلفزيون ما قبل صورة.', failed: 'ما انرسلت: تأكد من الواي فاي وجرّب مرة ثانية.', no_session: 'انتهت الجلسة.'
+    camera: 'هذه الصورة فيها بيانات الكاميرا، فما أرسلناها.', refused: 'التلفزيون ما قبل صورة.', failed: 'ما انرسلت: تأكد من الواي فاي وجرّب مرة ثانية.', no_session: 'انتهت الجلسة.',
+    k_shape: 'نفس شكل الصورة', k_tones: 'أبيض وأسود', k_size: '١ م.ب بالأكثر',
+    x_shape: 'القناع مو بنفس شكل الصورة: اطلب من الأداة «بنفس المقاس بالضبط».', x_tones: 'فيه رمادي أو ألوان كثير: اطلب «أبيض وأسود فقط، بدون رمادي».', x_size: 'القناع أكبر من ١ م.ب: اطلب PNG أصغر.',
+    x_bad: 'هذا الملف مو صورة.', preview: 'كذا بتطلع على التلفزيون:', m_done: 'وصلت الصورة وقناعها للتلفزيون ✓', m_late: 'وصلت الصورة، لكن القناع تأخر: أرسلهما مرة ثانية مع بعض.',
+    m_refused: 'وصلت الصورة، لكن التلفزيون ما قبل القناع: تظهر الصورة والساعة قدّامها.'
   };
   var $ = function (id) { return document.getElementById(id); };
-  if (EN) ['t1', 't2', 't3', 't4', 't5'].forEach(function (k) { $(k).textContent = W[k]; });
+  if (EN) ['t1', 't2', 't3', 't4', 't5', 'm1', 'm2', 'm3', 'm4', 'm5', 'm6', 'm7', 'm8', 'm9', 'm10', 'msend', 'mbare'].forEach(function (k) { $(k).textContent = W[k]; });
   var sess = null;
   try { sess = sessionStorage.getItem('urtv'); } catch (e) { }
   $(sess ? 'go' : 'none').classList.remove('hidden');
+  if (!sess) $('mx').classList.add('hidden');
   var MAX = 1920, LIMIT = 900000;
   function say(t, n, all) { $('state').textContent = t.replace('{n}', n).replace('{all}', all); }
   // drawn again at 1920 px at most: a new JPEG carries none of the camera's data
@@ -61,6 +103,7 @@ a{color:var(--acc)}
       var k = Math.min(1, MAX / Math.max(img.width, img.height)), c = document.createElement('canvas');
       c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
       c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      shrink.size = [c.width, c.height];   // the mask is drawn again at this size
       var q = [0.85, 0.75, 0.65];
       function enc(i) {
         return new Promise(function (res) { c.toBlob(res, 'image/jpeg', q[i]); }).then(function (b) {
@@ -77,6 +120,94 @@ a{color:var(--acc)}
       .then(function (r) { return r.json(); }, function () { return { ok: false, error: 'failed' }; })
       .catch(function () { return { ok: false, error: 'failed' }; });
   }
+  // ---- 4.4 a photo with its mask (docs/OWN-PHOTO-MASK.md): checked here (the photo's shape within 2 %, mostly black and white, 1 MB at most),
+  // a preview of the clock behind it, then the photo as above and the mask redrawn black and white at the photo's sent size (the TV checks again)
+  var mPhoto = null, mPhotoImg = null, mMask = null, mMaskImg = null;
+  function show(id, on) { $(id).classList.toggle('hidden', !on); }
+  function luma(d, i) { return (d[i] * 299 + d[i + 1] * 587 + d[i + 2] * 114) / 1000; }
+  function cover(ctx, img, w, h) {   // as the TV shows it: cropped to the screen's shape about its centre
+    var k = Math.max(w / img.width, h / img.height), dw = img.width * k, dh = img.height * k;
+    ctx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
+  }
+  function maskAlpha(img, w, h) {   // a canvas of the photo's size whose alpha is the mask's light
+    var c = document.createElement('canvas'); c.width = w; c.height = h;
+    var x = c.getContext('2d'); x.drawImage(img, 0, 0, w, h);
+    var px = x.getImageData(0, 0, w, h), d = px.data;
+    for (var i = 0; i < d.length; i += 4) { var a = luma(d, i) > 127 ? 255 : 0; d[i] = d[i + 1] = d[i + 2] = a; d[i + 3] = 255; }
+    x.putImageData(px, 0, 0);
+    return c;
+  }
+  function checks() {
+    var out = [], ok = true;
+    var shape = Math.abs(mMaskImg.width / mMaskImg.height - mPhotoImg.width / mPhotoImg.height) <= 0.02 * mPhotoImg.width / mPhotoImg.height;
+    var c = document.createElement('canvas'); c.width = 120; c.height = Math.max(1, Math.round(120 * mMaskImg.height / mMaskImg.width));
+    var x = c.getContext('2d'); x.drawImage(mMaskImg, 0, 0, c.width, c.height);
+    var d = x.getImageData(0, 0, c.width, c.height).data, dark = 0, light = 0, mid = 0, n = d.length / 4;
+    for (var i = 0; i < d.length; i += 4) { var y = luma(d, i); if (y < 60) dark++; else if (y > 195) light++; else mid++; }
+    var tones = mid <= n * 0.15 && dark >= n * 0.03 && light >= n * 0.03, size = mMask.size <= 1000000;
+    [['shape', shape], ['tones', tones], ['size', size]].forEach(function (k) { out.push('<p class="' + (k[1] ? 'ok' : 'bad') + '"></p>'); ok = ok && k[1]; });
+    $('mchecks').innerHTML = out.join('');
+    var ps = $('mchecks').querySelectorAll('p');
+    [['shape', shape], ['tones', tones], ['size', size]].forEach(function (k, i) { ps[i].textContent = k[1] ? W['k_' + k[0]] : W['x_' + k[0]]; });
+    return ok;
+  }
+  function preview() {   // the photo, the glass digits, then the scenery over them
+    var cv = $('mprev'), w = cv.width, h = cv.height, x = cv.getContext('2d');
+    x.clearRect(0, 0, w, h); cover(x, mPhotoImg, w, h);
+    x.font = '700 ' + Math.round(h * 0.34) + 'px system-ui,sans-serif'; x.textAlign = 'center'; x.textBaseline = 'alphabetic';
+    x.fillStyle = 'rgba(255,255,255,.55)'; x.strokeStyle = 'rgba(255,255,255,.9)'; x.lineWidth = 2;
+    x.fillText('9:41', w / 2, h * 0.5); x.strokeText('9:41', w / 2, h * 0.5);
+    var fg = document.createElement('canvas'); fg.width = w; fg.height = h;
+    var f = fg.getContext('2d'); cover(f, maskAlpha(mMaskImg, mPhotoImg.width, mPhotoImg.height), w, h);
+    var px = f.getImageData(0, 0, w, h), d = px.data;
+    for (var i = 0; i < d.length; i += 4) d[i + 3] = d[i];
+    f.putImageData(px, 0, 0); f.globalCompositeOperation = 'source-in'; cover(f, mPhotoImg, w, h);
+    x.drawImage(fg, 0, 0);
+  }
+  function load(file) { return createImageBitmap(file); }
+  function thumb(id, img) {   // the whole picture in its box (the page's rules allow no image from a file's address)
+    var c = $(id), x = c.getContext('2d'), k = Math.min(c.width / img.width, c.height / img.height);
+    x.clearRect(0, 0, c.width, c.height); x.drawImage(img, (c.width - img.width * k) / 2, (c.height - img.height * k) / 2, img.width * k, img.height * k);
+  }
+  $('mph').onchange = function () {
+    var f = (this.files || [])[0]; this.value = '';
+    if (!f) return;
+    load(f).then(function (img) {
+      mPhoto = f; mPhotoImg = img; mMask = mMaskImg = null;
+      thumb('mpi', img); show('mmi', false); show('mstep', true);
+      ['mprev', 'msend', 'mbare'].forEach(function (k) { show(k, false); }); $('mchecks').textContent = '';
+    }, function () { say(W.x_bad, 0, 0); });
+  };
+  $('mmk').onchange = function () {
+    var f = (this.files || [])[0]; this.value = '';
+    if (!f || !mPhotoImg) return;
+    load(f).then(function (img) {
+      mMask = f; mMaskImg = img; thumb('mmi', img); show('mmi', true);
+      var ok = checks();
+      if (ok) preview();
+      show('mprev', ok); show('msend', ok); show('mbare', !ok);
+    }, function () { $('mchecks').innerHTML = '<p class="bad"></p>'; $('mchecks').firstChild.textContent = W.x_bad; show('mbare', true); });
+  };
+  function sendMask() {   // black and white at the size the photo was sent, as a PNG
+    var wh = shrink.size, c = maskAlpha(mMaskImg, wh[0], wh[1]);
+    return new Promise(function (res) { c.toBlob(res, 'image/png'); }).then(function (b) {
+      var h = { 'Content-Type': 'image/png' };
+      if (sess) h['X-UrTV-Session'] = sess;
+      return fetch('/api/photo-mask', { method: 'POST', credentials: 'same-origin', headers: h, body: b, cache: 'no-store' })
+        .then(function (r) { return r.json(); }, function () { return { ok: false, error: 'failed' }; }).catch(function () { return { ok: false, error: 'failed' }; });
+    });
+  }
+  function sendOne(withMask) {
+    say(W.sending, 1, 1);
+    shrink(mPhoto).then(function (b) { return !b || b.size > LIMIT ? { ok: false, error: 'photo_refused' } : send(b); }, function () { return { ok: false, error: 'photo_refused' }; })
+      .then(function (j) {
+        if (!(j && j.ok)) { var e = j && j.error; say(e === 'photo_full' ? W.full : e === 'photo_camera' ? W.camera : e === 'no_session' ? W.no_session : e === 'photo_refused' ? W.refused : W.failed, 1, 1); return; }
+        if (!withMask) { say(W.done, 1, 1); return; }
+        return sendMask().then(function (m) { say(m && m.ok ? W.m_done : m && m.error === 'mask_late' ? W.m_late : W.m_refused, 1, 1); });
+      });
+  }
+  $('msend').onclick = function () { sendOne(true); };
+  $('mbare').onclick = function () { sendOne(false); };
   $('pick').onchange = function () {
     var files = Array.prototype.slice.call(this.files || []), sent = 0;
     this.value = '';

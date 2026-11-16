@@ -38,5 +38,18 @@ final class CardBox {
         return new int[]{Math.max(w, dp(300, density)), Math.max(h, dp(150, density))};
     }
 
+    /** 4.4 «التخطيط: كنبة»: the strip's height as a share of the screen's (216 px of 1080) */
+    static final float ROW_HEIGHT = 0.2f;
+
+    /**
+     * 4.4 «التخطيط: كنبة»: the cards in one strip above the apps tray, the screen's width less 48 dp each side, ending 8 dp above the block
+     * of the app's name and the tray (before the screen is laid out: 74 % of the height). {width, height, distance from the screen's bottom}.
+     */
+    static int[] row(int screenW, int screenH, float density, int titleTop) {
+        int h = Math.round(screenH * ROW_HEIGHT);
+        int end = titleTop > 0 ? titleTop - dp(8, density) : Math.round(screenH * 0.74f);
+        return new int[]{screenW - 2 * dp(LEFT, density), h, Math.max(0, screenH - end)};
+    }
+
     private static int dp(int v, float density) { return Math.round(v * density); }
 }

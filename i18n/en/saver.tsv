@@ -998,3 +998,34 @@
 المشاهد	Scenes
 بدون اختيار = مشاهد السعودية	nothing chosen = Saudi scenes
 الشكل والمشاهد: الواجهة	Look & scenes: home style
+مسح الملفات المؤقتة	Clear temporary files
+الصور والبيانات المؤقتة للتطبيقين؛ الإعدادات وصورك والحزم تبقى	Both apps' temporary pictures and data; the settings, your photos and the packs stay
+امسح	Clear
+تم	Done
+تُمسح %s ميغابايت من الصور والبيانات المؤقتة، وتنزل من جديد وقت الحاجة. الإعدادات وصورك وحزم الصور والمشاهد وصوت الأذان تبقى.	%s MB of temporary pictures and data will be cleared; they download again when needed. The settings, your photos, the photo and scene packs and the adhan sound stay.
+مُسح %s ميغابايت.	%s MB cleared.
+بقاء كل مشهد	Each scene stays
+المشهد يتبع الوقت	Scene follows the time
+المشهد يتبع الطقس	Scene follows the weather
+مفعّل (مشهد الليل من المغرب إلى الفجر)	On (night scenes from Maghrib to Fajr)
+مفعّل (مشهد الضباب وقت الضباب)	On (fog scenes in fog)
+١٠ ثوانٍ	10 seconds
+٢٠ ثانية	20 seconds
+خمس دقائق	5 minutes
+اختيار يفتح، ورجوع يرجّعك خطوة	OK opens, Back goes one step back
+الشكل الجاهز	Look preset
+التخطيط	Layout
+الخلفية	Background
+الساعة	Time
+صوري وحزم الصور	My photos and photo packs
+عادية	Plain
+زجاجية خلف الصورة	Glass, behind the photo
+شكل تلفزيونك	UrTV look
+شكل كنبة	Couch look
+مخصّص	Custom
+الألوان	Colours
+كنبة	Couch
+مربعات	Boxes
+مواقيت اليوم مربعات في صف، والصلاة القادمة مضيئة وتحتها كم باقي	Today's prayers as boxes in a row, the next one lit with the time left under it
+شكل التطبيقات	Apps look
+تكبير وظل	Larger, with a shadow

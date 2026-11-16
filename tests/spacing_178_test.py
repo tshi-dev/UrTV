@@ -72,8 +72,8 @@ check("…and neither has its English", "Standard (January, February, March)" in
 # the matches and markets pages by keys (docs/SETTINGS.md has the path)
 hub = text(APP / "SettingsHub.java")
 cats = re.findall(r'^\s*\{([A-Z]+), "', hub[hub.index("CATEGORIES = {"):], re.M)
-check("hub order (4.3.3): SEARCH wide, then two to a row the ten sections", cats[:11] == ["SEARCH", "LANG", "PLACE", "LOOK", "APPS", "BUTTONS", "PRAY", "CONTENT", "SAVER", "FAMILY", "UPDATE"], cats[:11])
-check("«المباريات والأسواق» is the eighth button, the right one of the fourth pair (▼ ×4 from the search)", cats.index("CONTENT") == 7)
+check("side list order (4.3.3): the search, then the ten sections", cats[:11] == ["SEARCH", "LANG", "PLACE", "LOOK", "APPS", "BUTTONS", "PRAY", "CONTENT", "SAVER", "FAMILY", "UPDATE"], cats[:11])
+check("«المباريات والأسواق» is the eighth item of the side list, six under «اللغة» where the settings open (▼ ×6)", cats.index("CONTENT") == 7 and cats.index("LANG") == 1)
 rows = re.findall(r'^\s*row\("([^"]+)"', settings[settings.index("private void render()"):], re.M)
 content = ["مباريات اليوم", "الفرق المتابعة (", "الدوريات كاملة", "رياضات أخرى", "صفحة الأسواق"]
 order = [r for r in rows if any(r.startswith(c) for c in content)]
@@ -84,5 +84,5 @@ check("both rows open the launcher's pages, and those are exported", 'setClassNa
 check("from the home: OK on the stocks card opens the markets page, OK on the games widget the matches page",
       "launch(new Intent(MainActivity.this, MarketsActivity.class));" in main and "new Intent(MainActivity.this, MatchesActivity.class)" in main)
 doc = text(ROOT / "docs/SETTINGS.md")
-check("docs/SETTINGS.md has the key path", "المباريات والأسواق" in doc and "▼ ×4" in doc and "▼ ×5" in doc)
+check("docs/SETTINGS.md has the key path", "المباريات والأسواق" in doc and "▼ ×6" in doc and "▼ ×5" in doc)
 sys.exit(1 if failed else 0)

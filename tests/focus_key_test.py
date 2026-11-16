@@ -21,10 +21,10 @@ render = render[:render.index("\n    }\n")]
 check("settings: render reads the focused row, its place and the scroll before it empties the list (unless a screen was just opened)",
       render.index("View had = entering ? null : focusedRow();") < render.index("list.removeAllViews();") and "scroll.getScrollY()" in render.split("list.removeAllViews();")[0])
 check("settings: only a screen just opened starts at its top (its first row; on a screen of buttons the one last opened), no other focus in render",
-      "final String want = forceWant != null ? forceWant : returnWant != null && !entering ? returnWant : entering ? (tiles ? (hubAt != null ? \"hub:\" + hubAt : null) : lastRow.get(screen))" in render and ").requestFocus();" not in render
+      "final String want = forceWant != null ? forceWant : returnWant != null && !entering ? returnWant : entering ? lastRow.get(screen)" in render and ").requestFocus();" not in render
       and "int at = want == null ? (now.isEmpty() ? -1 : 0) : FocusKey.pick(keys, want, wasIndex);" in st)
-check("settings: render ends by putting the focus back (restoreFocus), the scroll first, after the layout (post)",
-      render.rstrip().endswith("restoreFocus(want, wasIndex, scrollY);   // a screen just opened: its first row") and "scroll.post(() -> {" in st
+check("settings: render ends by putting the focus back (restoreFocus; 4.3.3: or on the side list's item, after the layout), the scroll first, after the layout (post)",
+      render.rstrip().endswith("} else restoreFocus(want, wasIndex, scrollY);   // a section just opened: its first row (or the row last focused in it)") and "item.post(item::requestFocus);" in render and "scroll.post(() -> {" in st
       and st.index("scroll.scrollTo(0, scrollY);") < st.index("now.get(at).requestFocus();"))
 check("settings: every row is known by its FocusKey", "card.setTag(FocusKey.key(label));" in st)
 check("settings: a rebuild under an open dialog is finished when the window has the focus back",

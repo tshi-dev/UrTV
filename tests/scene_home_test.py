@@ -37,8 +37,8 @@ if shutil.which("javac"):
                              check=True, capture_output=True).stdout.decode("utf-8").splitlines()
     rows = [l.split("\t") for l in out]
     scenes = [r for r in rows if r[0] == "scene"]
-    check("the Saudi pack: five scenes (Riyadh, AlUla, the dunes, the Red Sea, Hisma), every line read, each with its cut-out",
-          [s[1] for s in scenes] == ["riyadh", "alula", "dunes", "redsea", "hisma"] and all(s[5] != "-" for s in scenes), scenes)
+    check("4.4 the app carries one Saudi scene, Riyadh, with its cut-out (the four others are downloaded the first time: the owner keeps the APK light)",
+          [s[1] for s in scenes] == ["riyadh"] and all(s[5] != "-" for s in scenes), scenes)
     check("a bad line is left out, never half read (a bad id, a clock too small to read, a bad box); a good one is kept",
           [r for r in rows if r[0] == "bad"][0][1] == "1")
     packs = {r[1]: r[2] for r in rows if r[0] == "packs"}
@@ -57,6 +57,14 @@ if shutil.which("javac"):
     b720 = [int(x) for x in [r for r in rows if r[0] == "box720"][0][1].split(",")]
     check("a 720 screen: the same place, scaled", b720[3] == round(bottom * 720 / 1080) and b720[0] >= 640 and b720[2] <= 1280, b720)
     check("the scenes take turns in order, the first first; none: nothing", [r for r in rows if r[0] == "next"][0][1] == "0,0,-1")
+    ch = {r[1]: (r[2], r[3] if len(r) > 3 else "") for r in rows if r[0] == "choose"}
+    check("the scenes now (ScenePlan.choose): both rules off, all; «يتبع الوقت» at night the night scenes, by day the others; «يتبع الطقس» in fog the fog scenes (it wins); no fog: as the time says",
+          ch["falsefalsefalsefalse"][0] == "aabbcc" and ch["truetruefalsefalse"][0] == "aa" and ch["truefalsefalsefalse"][0] == "bbcc"
+          and ch["falsefalsetruetrue"][0] == "bb" and ch["truetruetruetrue"][0] == "bb" and ch["falsefalsetruefalse"][0] == "aabbcc", ch)
+    check("the app's scene: Riyadh is a night scene; by day, with no day scene yet, and in fog, with no fog scene, the rules let go (never an empty home)",
+          ch["truetruefalsefalse"][1] == "riyadh" and ch["truefalsefalsefalse"][1] == "riyadh" and ch["falsefalsetruetrue"][1] == "riyadh", ch)
+    check("«بقاء كل مشهد»: 10, 20, 60 or 300 s, anything else 20; fog is Open-Meteo's 45 and 48",
+          [r for r in rows if r[0] == "stay"][0][1] == "10,300,20,20" and [r for r in rows if r[0] == "fog"][0][1] == "true,true,false")
     check("ScenePlan's tiers are Ram's numbers", [r for r in rows if r[0] == "tiers"][0][1] == "0,1,2"
           and "public static final int LOW = 0, MID = 1, NORMAL = 2;" in ram)
 else:
@@ -95,9 +103,10 @@ check("every scene is credited (photographer, licence, source), the CC BY-SA one
 check("docs/PHOTO-CREDITS.md lists the scenes too", all(f"scenes/saudi/{i}.jpg" in read(ROOT / "docs/PHOTO-CREDITS.md") for i in ids))
 
 # ---- the Couch TV pack: downloaded once from urtv-data, checked before it is opened
-check("Couch TV: from urtv-data's scenes/ (its CDN copy when GitHub's raw host cannot be reached), nowhere else",
+check("the downloaded packs (couch, and the Saudi pack's four others): from urtv-data's scenes/ (its CDN copy when GitHub's raw host cannot be reached), nowhere else; one index per pack",
       'HOSTS = {"https://raw.githubusercontent.com/tshi-dev/urtv-data/data/scenes/", "https://cdn.jsdelivr.net/gh/tshi-dev/urtv-data@data/scenes/"}' in dl
-      and 'get("index.json", 16 * 1024)' in dl and 'get("couch.zip", MAX_BYTES)' in dl)
+      and 'get(pack + ".json", 16 * 1024)' in dl and 'get(pack + ".zip", MAX_BYTES)' in dl and "static boolean known(String pack) { return ScenePlan.SAUDI.equals(pack) || ScenePlan.COUCH.equals(pack); }" in dl
+      and "SceneDownload.fetchIfNeeded(app, p, () ->" in scene)
 check("…its size and sha256 from the index checked before the zip is opened; a name that is not a scene file, nothing kept; 12 MB at most; moved into place whole",
       "zip.length != Integer.parseInt(want[1])" in dl and 'hex(MessageDigest.getInstance("SHA-256").digest(zip)).equals(want[0])' in dl
       and dl.index("MessageDigest.getInstance") < dl.index("new ZipInputStream") and "if (e.isDirectory() || !allowed(e.getName())) { delete(work); return false; }" in dl
@@ -118,20 +127,66 @@ check("no timer while another screen is in front; a running timer is not reset b
 
 # ---- the home: an option, the home as it was by default
 tick = main[main.index("private void sceneTick(ConfigSnapshot cfg)"):].split("\n    }\n")[0]
-check("the home: «المشاهد» only when chosen; then the scene and its clock replace the photo and the header's clock (the rest stays)",
-      'boolean on = "scenes".equals(cfg.homeLayout);' in tick and "clock.setVisibility(show);" in tick and "wallFront.setVisibility(show);" in tick
+check("the home: the scenes only when chosen; then the scene replaces the photo, and with the glass clock the header's clock (the rest stays)",
+      'boolean on = "scenes".equals(cfg.homeBg);' in tick and "clock.setVisibility(bigClock ? View.INVISIBLE : View.VISIBLE);" in tick and "wallFront.setVisibility(show);" in tick
       and "sceneHome.setTime(clock.getText());" in tick and "sceneTick(cfg);" in main and "homeCard.shownCards() > 0" in tick)
-check("the scene sits over the photos and under the dimming and the scrims", main.index("backdrop.addView(sceneHome") < main.index("backdrop.addView(wallDimView"))
+check("the scene sits over the photos and under the dimming and the scrims (put just after the front photo when made)",
+      "sceneBackdrop.addView(sceneHome, sceneBackdrop.indexOfChild(wallFront) + 1," in main and main.index("sceneBackdrop = backdrop;") < main.index("backdrop.addView(wallDimView"))
 check("the home reads the layout and the packs from the screensaver (an older one says nothing: classic, saudi)",
-      'String homeLayout = "classic", scenePacks = "saudi";' in snap and 'cur.getColumnIndex("scene_packs")' in snap and "int shownCards() { return cards; }" in card)
+      'String homeLayout = "classic", scenePacks = "saudi", sceneStay = "20";' in snap and 'cur.getColumnIndex("scene_packs")' in snap and "int shownCards() { return cards; }" in card)
+
+# ---- 4.4 the owner: «العادية» is the default and costs nothing of the scenes; «المشاهد» costs no ordinary photo
+import glob
+body = tick.split("\n", 1)[1]
+first = [l.strip() for l in body.splitlines() if l.strip() and not l.strip().startswith("//")]
+check("off (the default): sceneTick's first step after reading the layout returns when the scenes are off and nothing of them exists",
+      first[0].startswith('boolean on = "scenes".equals(cfg.homeBg);') and first[1] == 'boolean glass = "glass".equals(cfg.homeClock);'
+      and first[2] == "photoGlassTick(cfg, !on && glass);" and first[3].startswith("if (!on && sceneHome == null && !scenesOn) return;"), first[:4])
+check("off: the scene layer is not made at the home's start, only in sceneTick when chosen; turned off, it is shut down and removed whole",
+      main.count("new SceneHome(") == 1 and "if (on && sceneHome == null) {" in tick and tick.index("if (on && sceneHome == null) {") < tick.index("new SceneHome(")
+      and "sceneHome.shutdown();" in tick and "sceneBackdrop.removeView(sceneHome);" in tick and "sceneHome = null;" in tick
+      and "new SceneHome(" not in main[main.index("private View buildUi()") if "private View buildUi()" in main else 0:main.index("private void sceneTick(")])
+check("off: every other use of the layer waits for it to exist (start, stop, trim)", main.count("if (sceneHome != null) sceneHome.") == 3)
+users = sorted(Path(f).name for f in glob.glob(str(HOME / "**/*.java"), recursive=True)
+               if re.search(r"\b(SceneHome|SceneDownload|SceneClock)\b", read(Path(f))) and Path(f).name not in ("SceneHome.java", "SceneDownload.java", "SceneClock.java", "ScenePlan.java", "PhotoGlass.java"))
+check("off: only the home's screen (and 4.4's glass clock over the photos, made only while chosen: tests/photo_glass_test.py) knows the scene classes (nothing else can start a read, a download or a timer)", users == ["MainActivity.java"], users)
+seth = scene[scene.index("    void set(boolean wanted"):].split("\n    }\n")[0]
+check("off: the scene files are read and the Couch TV pack is downloaded only after «on» is checked; shut down, the thread, the timer and the pictures go",
+      seth.index("if (!on) {") < seth.index("io.execute(") < seth.index("SceneDownload.fetchIfNeeded(app, p,") and "assets" not in main.split("private void sceneTick(")[0][-400:]
+      and "io.shutdownNow();" in scene and "for (Slot sl : slots) sl.release();" in scene)
+check("off: the scenes' memory tier, font and pictures are asked for only when the layer is made (none at the home's start)",
+      main.count("new SceneHome(this, Ram.tier(this), font(\"display\"))") == 1)
 
 # ---- the settings
-check("«الواجهة»: classic (the default), football, scenes", 'HOME_LAYOUTS = {"classic", "football", "scenes"};' in prefs and '"العادية", "كرة القدم", "المشاهد"' in prefs)
+check("4.4 three choices: «التخطيط» (تلفزيونك, the default, كنبة or كرة القدم), «الخلفية» (photos, the default, or scenes), «الساعة» (plain, the default, or glass)",
+      'HOME_LAYOUTS = {"classic", "couch", "football"};' in prefs and '{"تلفزيونك", "كنبة", "كرة القدم"}' in prefs and 'HOME_BGS = {"photos", "scenes"};' in prefs
+      and 'HOME_CLOCKS = {"plain", "glass"};' in prefs and 'sp.getString("homeBg", oldScenes() ? "scenes" : "photos")' in prefs and 'sp.getString("homeClock", oldScenes() ? "glass" : "plain")' in prefs)
+check("the presets set the three at once: «شكل تلفزيونك» (our layout, photos, plain clock; the default) and «شكل كنبة» (the couch layout, scenes, glass clock); any other mix reads «مخصّص»",
+      '{{"urtv", "شكل تلفزيونك", "classic", "photos", "plain", "frame"}, {"couch", "شكل كنبة", "couch", "scenes", "glass", "zoom"}}' in prefs and 'return "مخصّص";' in prefs
+      and 'row("الشكل الجاهز", Prefs.look3Label(prefs.look3())' in st and 'row("التخطيط"' in st and 'row("الخلفية"' in st and 'row("الساعة"' in st)
+check("the home: «الخلفية ← المشاهد» shows the scenes on any layout; the glass clock and the cut-out only with «الساعة ← زجاجية», else the header's clock stays",
+      'boolean on = "scenes".equals(cfg.homeBg);' in tick and 'boolean glass = "glass".equals(cfg.homeClock);' in tick and "boolean bigClock = glass;" in tick
+      and "final Bitmap glass = withClock ? decode(" in scene and "final Bitmap mask = withClock && sc.mask != null" in scene
+      and 'if ("scenes".equals(homeLayout)) { homeLayout = "classic"; homeBg = "scenes"; homeClock = "glass"; }' in snap)
 check("«حزم المشاهد»: the Saudi pack and the Couch TV pack, none chosen is the Saudi one; both rows in «الشكل والمشاهد», first",
       '{"saudi", "مشاهد السعودية"}, {"couch", "مشاهد Couch TV"}' in prefs and 'if (out.isEmpty()) out.add("saudi");' in prefs
-      and 'row("الواجهة", Prefs.homeLayoutLabel(prefs.homeLayout())' in st and 'row("حزم المشاهد"' in st
-      and '{LOOK, "الواجهة", "حزم المشاهد", "المظهر",' in hub and '{"الواجهة", LOOK}, {"حزم المشاهد", LOOK}' in hub)
-check("the provider gives scene_packs; saver.sh scenepacks and homelayout scenes; `show` says them",
-      '"scene_packs"' in prov and 'Prefs.join(p.scenePacks(), ",")' in prov and 'getStringExtra("scenepacks")' in recv and '"\\nscenepacks: "' in recv
-      and "scenepacks) set1 scenepacks" in read(ROOT / "optimize/saver.sh") and "homelayout classic|football|scenes" in read(ROOT / "optimize/saver.sh"))
+      and 'row("حزم المشاهد"' in st
+      and '{LOOK, "الشكل الجاهز", "التخطيط", "الخلفية", "الساعة", "شكل التطبيقات", H + "المشاهد", "حزم المشاهد",' in hub and '{"الساعة", LOOK}, {"شكل التطبيقات", LOOK}, {"حزم المشاهد", LOOK}' in hub)
+check("«بقاء كل مشهد», «المشهد يتبع الوقت», «المشهد يتبع الطقس»: rows in «الشكل والمشاهد», off by default (20 s), given to the home, which picks night by the prayer times and fog by the greeting's weather",
+      'row("بقاء كل مشهد"' in st and 'row("المشهد يتبع الوقت"' in st and 'row("المشهد يتبع الطقس"' in st and 'sp.getBoolean("sceneByTime", false)' in prefs
+      and 'sp.getBoolean("sceneByWeather", false)' in prefs and 'sp.getString("sceneStay", "20")' in prefs and '"scene_stay", "scene_time", "scene_weather"' in prov
+      and "night = t >= d.maghrib || t < d.fajr;" in main and 'ScenePlan.fog(g.getInt("code", -1))' in main and "sceneHome.mood(" in main and "ScenePlan.stay(cfg.sceneStay)" in main)
+check("the ordinary photos are not decoded while the scene home shows (memory): no rotation, a photo on its way not shown, the two layers emptied; back to classic, a photo again",
+      "if (scenesOn) return;" in main and main.index("if (scenesOn) return;") < main.index("final int gen = ++wallGen;")
+      and "for (ImageView w : new ImageView[] {wallBack, wallFront}) w.setImageDrawable(null);" in tick and "} else nextWallpaper();" in tick)
+check("the provider gives scene_packs, home_bg and home_clock; saver.sh scenepacks, look, background, clock (and 4.3.3's homelayout scenes = the couch preset); `show` says them",
+      '"scene_packs"' in prov and '"home_bg", "home_clock"' in prov and 'Prefs.join(p.scenePacks(), ",")' in prov and 'getStringExtra("scenepacks")' in recv and '"\\nscenepacks: "' in recv
+      and 'if ("scenes".equals(homeLayout)) { homeLayout = null; look3 = "couch"; }' in recv and '"\\nbackground: " + p.homeBg()' in recv
+      and all(f"{c}) " in read(ROOT / "optimize/saver.sh") for c in ("scenepacks", "look", "background", "clock")))
+main_tile = main[main.index("card.setOnFocusChangeListener((v, has) -> {"):main.index("card.setOnLongClickListener(")]
+check("4.4 «شكل التطبيقات»: إطار (the default: the ring, the name above the tray) or تكبير وظل (larger with a soft shadow, no ring, the name under the tile); «شكل كنبة» turns it on",
+      'HOME_APPS = {"frame", "zoom"};' in prefs and '{"إطار", "تكبير وظل"}' in prefs and 'sp.getString("appsStyle", "frame")' in prefs and 'row("شكل التطبيقات"' in st
+      and '"apps_style"' in prov and 'getStringExtra("appsstyle")' in recv and "appsstyle) " in read(ROOT / "optimize/saver.sh")
+      and "final boolean zoom = inDock && appsZoom;" in main_tile and "FavBar.ZOOM_SCALE" in main_tile and "alpha(has && !zoom ? 1f : 0f)" in main_tile
+      and "placeZoomName(appsZoom && inBar ? f : null);" in main and 'if (as >= 0 && "zoom".equals(cur.getString(as))) appsStyle = "zoom";' in snap)
 sys.exit(1 if failed else 0)

@@ -75,7 +75,8 @@ final class HomeCard {
     static final String CHANGED = "sa.urtv.home.CARDS_CHANGED";
 
     /** The box in pixels, {width, height}, for that many cards; asked again whenever the screen is laid out. */
-    interface Sizer { int[] box(int cards); }
+    /** {width, height} of the box for that many cards; with {@code row} (4.4 «التخطيط: كنبة») {width, height, its distance from the screen's bottom} of the strip above the tray */
+    interface Sizer { int[] box(int cards, boolean row); }
 
     /** What the home screen does with the «المهام» card (and the stocks card): it gained or lost the focus, OK was pressed on it. */
     interface Live { void focus(View target, boolean has); void open(); default void markets() { } }
@@ -104,6 +105,10 @@ final class HomeCard {
      * from the screen's top to above the favourites' tray, and FootballFocus puts a focus target over each. Nothing else changes.
      */
     private volatile boolean football;
+    /** 4.4 «التخطيط: كنبة»: the cards in one low strip above the apps tray, the screen's width (the page's #row=1); the big clock is then alone in the middle */
+    private volatile boolean row;
+    /** the cards are in the strip above the tray (not beside the clock) */
+    boolean inRow() { return row && cards > 0; }
     /** the layout the home showed last, for the report (a word, nothing else) */
     static volatile boolean footballShown;
     private FootballFocus.Host footballHost;
@@ -159,10 +164,9 @@ final class HomeCard {
     void fit() {
         if (web == null) return;
         if (footballFocus != null) { footballFocus.fit(); return; }   // the widgets' box is the screen's width, always: only where they start moves
-        int[] b = sizer.box(cards);
-        if (b[0] == params.width && b[1] == params.height) return;
-        params.width = b[0];
-        params.height = b[1];
+        int[] b = sizer.box(cards, row);
+        if (b[0] == params.width && b[1] == params.height && (!row || b[2] == params.bottomMargin)) return;
+        place(b);
         web.setLayoutParams(params);
         placeTarget();
         placeMarket();
@@ -273,12 +277,14 @@ final class HomeCard {
         String[] choice = HomeCardChoice.pick(frag, panel, sp.getString("frag", null), sp.getString("panel", null));
         football = "football".equals(layout) && footballHost != null && choice != null;
         footballShown = football;   // «أرسل تقرير» says which layout the home had
-        if (football) { cards = 0; tasks = false; stocks = false; stocksFirst = false; return withGlass(HomePage.fresh(activity, HomeCardChoice.footballUrl(choice))); }
+        if (football) { cards = 0; tasks = false; stocks = false; stocksFirst = false; row = false; return withGlass(HomePage.fresh(activity, HomeCardChoice.footballUrl(choice))); }
+        row = "couch".equals(layout);
         cards = HomeCardChoice.count(choice);
         tasks = HomeCardChoice.hasTasks(choice);
         stocks = HomeCardChoice.hasStocks(choice);
         stocksFirst = HomeCardChoice.stocksFirst(choice);
-        return withGlass(HomePage.fresh(activity, HomeCardChoice.liveUrl(choice)));   // the screensaver's newer page when it has one
+        String u = HomePage.fresh(activity, HomeCardChoice.liveUrl(choice));   // the screensaver's newer page when it has one
+        return withGlass(row && u != null && u.contains("#") ? u + "&row=1" : u);
     }
 
     /**
@@ -376,12 +382,7 @@ final class HomeCard {
             params.leftMargin = params.topMargin = params.rightMargin = 0;
             params.width = dm.widthPixels;
             params.height = Math.round(FootballFocus.HEIGHT_1080 * dm.heightPixels / 1080f);
-        } else {
-            params.gravity = gravity0; params.leftMargin = left0; params.topMargin = top0; params.rightMargin = right0;
-            int[] b = sizer.box(cards);
-            params.width = b[0];
-            params.height = b[1];
-        }
+        } else place(sizer.box(cards, row));
         parent.addView(web, params);
         if (football) footballFocus = new FootballFocus(activity, parent, web, params, footballHost);
         if (tasks) addTarget();
@@ -389,6 +390,20 @@ final class HomeCard {
         url = u;
         loading = true;   // HomeSnapshot's picture stays until the page has painted (onPageFinished)
         web.loadUrl(u);
+    }
+
+    /** the cards' own place beside the clock, or (row) the strip above the tray: the screen's width less its margins, its distance from the bottom b[2] */
+    private void place(int[] b) {
+        if (row) {
+            params.gravity = android.view.Gravity.BOTTOM | android.view.Gravity.CENTER_HORIZONTAL;
+            params.leftMargin = params.rightMargin = params.topMargin = 0;
+            params.bottomMargin = b[2];
+        } else {
+            params.gravity = gravity0; params.leftMargin = left0; params.topMargin = top0; params.rightMargin = right0;
+            params.bottomMargin = 0;
+        }
+        params.width = b[0];
+        params.height = b[1];
     }
 
     /** The transparent button over the «المهام» card: it takes the focus like a pill, and OK opens the list. */

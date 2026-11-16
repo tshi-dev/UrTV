@@ -11,6 +11,7 @@ tv-en.html          tv.html in English, for «اللغة» English (docs/ENGLISH
 """
 import base64
 import json
+import os
 import re
 import sys
 import unicodedata
@@ -480,80 +481,99 @@ def strip_css_comments(html):
     return re.sub(r"(<style[^>]*>)(.*?)(</style>)", lambda m: m.group(1) + re.sub(r"/\*.*?\*/", "", m.group(2), flags=re.S) + m.group(3), html, flags=re.S)
 
 
-_RX_BEFORE = set("(,=:[!&|?{};+-*%<>~^")
-_RX_WORDS = {"return", "typeof", "case", "in", "of", "delete", "void", "throw", "new", "else", "do", "yield", "await"}
+REGEX_AFTER = set("(,=:[!&|?{};+-*%<>~^")
+REGEX_WORDS = ("return", "typeof", "case", "in", "of", "delete", "void", "new", "throw", "else", "do", "yield", "await")
 
 
-def js_line_comments(js):
-    """The lines of a script that are a // comment and nothing else, outside every string, template and regex: [(start, end)].
-
-    A small lexer (strings, `templates` with ${} nested, regex literals, comments). It must end where it began (no open string,
-    template or brace): a script it cannot follow stops the build instead of losing a line of code."""
+def strip_js_comments(js):
+    """A script without its // and /* */ comments (about 50 KB of the page: the template keeps them for the people who read it). Strings,
+    template literals (and the code in their ${...}) and regex literals are read past, never cut. A comment alone on its line goes with its
+    line; one after code goes with the spaces before it, and its line break stays (so no two statements are joined). tests/js_strip_test.mjs
+    parses the script before and after with acorn and checks the two trees are the same, so nothing the page does changes."""
     out, i, n = [], 0, len(js)
-    stack = []   # '{' for a brace of code, '`' for an open template
-    prev = ""    # the last significant character of code (regex or division?)
-    word = ""
-    line_start = True
+    stack, depth, last, word = [], 0, "", ""   # stack: the brace depth of each open ${; last: the last code character; word: the last identifier
+    def template(i):   # js[i] is inside a template's text: up to its end (`) or a ${
+        start = i
+        while i < n:
+            if js[i] == "\\":
+                i += 2
+            elif js[i] == "`":
+                out.append(js[start:i + 1]); return i + 1, False
+            elif js.startswith("${", i):
+                out.append(js[start:i + 2]); return i + 2, True
+            else:
+                i += 1
+        out.append(js[start:]); return n, False
     while i < n:
         c = js[i]
-        in_tpl = stack and stack[-1] == "`"
-        if in_tpl:
-            if c == "\\": i += 2; continue
-            if c == "`": stack.pop(); prev = "`"; i += 1; continue
-            if c == "$" and js.startswith("${", i): stack.append("{"); prev = "{"; i += 2; continue
-            line_start = c == "\n"; i += 1; continue
-        if c == "\n": line_start = True; i += 1; continue
-        if c in " \t\r": i += 1; continue
-        if c == "/" and js.startswith("//", i):
-            e = js.find("\n", i)
-            e = n if e < 0 else e
-            if line_start:
-                s = js.rfind("\n", 0, i) + 1
-                out.append((s, e + 1 if e < n else e))
-            i = e; continue
-        at_start, line_start = line_start, False
-        if c == "/" and js.startswith("/*", i):
-            e = js.find("*/", i + 2)
-            if e < 0: raise ValueError("an open /* comment")
-            i = e + 2; line_start = at_start; continue
+        if js.startswith("//", i) or js.startswith("/*", i):
+            end = (js.find("\n", i) if js.startswith("//", i) else js.find("*/", i + 2) + 2)
+            if end < (0 if js.startswith("//", i) else 2): end = n
+            line_start = js.rfind("\n", 0, i) + 1
+            before = js[line_start:i]
+            if not before.strip() and js.startswith("//", i):   # alone on its line: the line goes
+                while out and out[-1] and out[-1][-1] in " \t":
+                    out[-1] = out[-1].rstrip(" \t")
+                    if out[-1]: break
+                    out.pop()
+                i = end + 1 if end < n else n
+                continue
+            while out and out[-1] and out[-1][-1] in " \t":
+                out[-1] = out[-1].rstrip(" \t")
+                if out[-1]: break
+                out.pop()
+            if js.startswith("/*", i) and "\n" not in js[i:end]: out.append(" ")   # a /* */ between tokens keeps them apart
+            elif js.startswith("/*", i): out.append("\n")
+            i = end
+            continue
         if c in "'\"":
             j = i + 1
-            while j < n and js[j] != c:
-                if js[j] == "\n": raise ValueError("a string open at the end of a line: " + js[i:i + 40])
+            while j < n and js[j] != c and js[j] != "\n":
                 j += 2 if js[j] == "\\" else 1
-            i = j + 1; prev = c; word = ""; continue
-        if c == "`": stack.append("`"); i += 1; continue
-        if c == "/" and (prev == "" or prev in _RX_BEFORE or word in _RX_WORDS):
+            out.append(js[i:j + 1]); i = j + 1; last = "a"; word = ""
+            continue
+        if c == "`":
+            out.append("`")
+            i, inside = template(i + 1)
+            if inside: stack.append(depth); depth = 0
+            last = "a"; word = ""
+            continue
+        if c == "/" and (last == "" or last in REGEX_AFTER or word in REGEX_WORDS):
             j, cls = i + 1, False
-            while j < n and (cls or js[j] != "/"):
-                if js[j] == "\n": raise ValueError("a regex open at the end of a line: " + js[i:i + 40])
+            while j < n and js[j] != "\n" and (cls or js[j] != "/"):
                 if js[j] == "\\": j += 1
                 elif js[j] == "[": cls = True
                 elif js[j] == "]": cls = False
                 j += 1
-            i = j + 1; prev = "/r"; word = ""; continue
-        if c == "{": stack.append("{")
+            j += 1
+            while j < n and (js[j].isalpha()): j += 1   # the flags
+            out.append(js[i:j]); i = j; last = "a"; word = ""
+            continue
+        if c == "{":
+            depth += 1
         elif c == "}":
-            if not stack: raise ValueError("a } with no {")
-            stack.pop()
+            if depth == 0 and stack:   # the end of a ${...}: back into the template's text
+                depth = stack.pop()
+                out.append("}")
+                i, inside = template(i + 1)
+                if inside: stack.append(depth); depth = 0
+                last = "a"; word = ""
+                continue
+            depth -= 1
         if c.isalnum() or c in "_$":
             j = i
             while j < n and (js[j].isalnum() or js[j] in "_$"): j += 1
-            word = js[i:j]; prev = "w"; i = j; continue
-        prev = c; word = ""; i += 1
-    if stack: raise ValueError("the script ends inside " + "".join(stack))
-    return out
+            word = js[i:j]; out.append(word); i = j; last = "a"
+            continue
+        if not c.isspace():
+            last = c; word = ""
+        out.append(c); i += 1
+    return "".join(out)
 
 
-def strip_js_comments(html):
-    """The page's <script> without the lines that are only a // comment (about 36 KB of the 746 KB budget; the template keeps them)"""
-    def one(m):
-        js, keep, at = m.group(2), [], 0
-        for s, e in js_line_comments(js):
-            keep.append(js[at:s]); at = e
-        keep.append(js[at:])
-        return m.group(1) + "".join(keep) + m.group(3)
-    return re.sub(r"(<script>)(.*?)(</script>)", one, html, flags=re.S)
+def strip_page_js(html):
+    """strip_js_comments on each inline <script> of a page"""
+    return re.sub(r"(<script>)(.*?)(</script>)", lambda m: m.group(1) + strip_js_comments(m.group(2)) + m.group(3), html, flags=re.S)
 
 
 def main():
@@ -576,10 +596,11 @@ def main():
         for bg in bgs:
             u = data_uri(bg_dir / bg["file"], "image/jpeg") if inline else REPO + "assets/backgrounds/" + bg["file"]
             entries.append(f'  {{u:"{u}", c:{js_json(bg["credit"])}, d:{bg["brightness"]}}}')
-        out = ROOT / "dist" / name
+        out = Path(os.environ.get("URTV_DIST") or ROOT / "dist") / name   # URTV_DIST, URTV_JS_COMMENTS=keep: tests/js_strip_test.mjs's copy with the comments
         out.parent.mkdir(exist_ok=True)
-        out.write_text(strip_js_comments(strip_css_comments(page.replace("__BG_SET__", ",\n".join(entries)))), encoding="utf-8")
-        print(f"wrote {out.relative_to(ROOT)} ({out.stat().st_size / 1e6:.1f} MB)")
+        keep = os.environ.get("URTV_JS_COMMENTS") == "keep"
+        out.write_text((lambda h: h if keep else strip_page_js(h))(strip_css_comments(page.replace("__BG_SET__", ",\n".join(entries)))), encoding="utf-8")
+        print(f"wrote {out.relative_to(ROOT) if out.is_relative_to(ROOT) else out} ({out.stat().st_size / 1e6:.1f} MB)")
 
 if __name__ == "__main__":
     main()

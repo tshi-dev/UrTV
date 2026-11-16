@@ -82,4 +82,7 @@ public interface Actions {
 
     /** 4.3: one photo for «صوري», a JPEG the phone re-encoded (no camera or location data); the screensaver keeps it (Own). */
     default Result photoAdd(byte[] jpeg) { return Result.fail("failed"); }
+
+    /** 4.4: the mask of the photo just added (white: in front of the glass clock, black: the sky); the screensaver checks and keeps it beside that photo. */
+    default Result photoMask(byte[] png) { return Result.fail("failed"); }
 }

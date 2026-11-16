@@ -44,9 +44,9 @@ check("home: downloads are capped (the photo list 2 MB, a photo 8 MB), nothing r
 check("home: a photo is checked to decode before it is kept", "validImage(" in home)
 wall = home.split("private void nextWallpaper", 1)[1].split("scheduleWallpaper(WALLPAPER_INTERVAL_MS);", 1)[0]
 check("home wallpaper: what is on the device is shown before the photo list is fetched",
-      "showWallpaperIfCurrent(bm, gen)" in wall and wall.index("showWallpaperIfCurrent(bm, gen)") < wall.index("refreshPhotoIndex()"))
+      "showWallpaperIfCurrent(bm, gen, key)" in wall and wall.index("showWallpaperIfCurrent(bm, gen, key)") < wall.index("refreshPhotoIndex()"))
 check("home wallpaper: a result older than the last request is dropped (a generation counter)",
-      "final int gen = ++wallGen" in wall and "if (gen == wallGen) showWallpaper(bm)" in home)
+      "final int gen = ++wallGen" in wall and "if (gen == wallGen) showWallpaper(bm, key)" in home)
 check("home apps: names, art and colours load on one background thread; the grid is added in batches, the dock first",
       "loader.execute(" in home and "private List<App> loadApps(" in home and "addGridRows(rest, to, gen)" in home
       and home.index("dockRow.addView(tile, dockCell(i, dock.size()));") < home.index("addGridRows(rest, 0, gen)") and "BATCH_ROWS" in home)

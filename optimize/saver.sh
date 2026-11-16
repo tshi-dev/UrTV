@@ -45,8 +45,15 @@
 #   optimize/saver.sh homemine only                home screen: «صوري» with ours (mix), only them (only), none (off), or as the screensaver's (same, the default)
 #   optimize/saver.sh appearance auto              home screen: «المظهر ← الإضاءة», dark (default), light, or auto (light from sunrise until Maghrib in the city)
 #   optimize/saver.sh look navy                    all our screens: «المظهر ← الشكل», glass (default), graphite, navy, clean, or sand
-#   optimize/saver.sh homelayout football         the home screen's layout («الشكل والمشاهد ← الواجهة»): classic (default), football (weather, prayers, today's games) or scenes (4.3.3: a scene with the glass clock behind it)
+#   optimize/saver.sh look couch                  4.4 the look's preset («الشكل والمشاهد ← الشكل الجاهز»): urtv («شكل تلفزيونك», the default) or couch («شكل كنبة»: the scenes, the glass clock)
+#   optimize/saver.sh homelayout football         the home's layout («التخطيط»): classic (our layout, the default), couch (the cards in a row above the apps, the big clock centred) or football (weather, prayers, today's games)
+#   optimize/saver.sh background scenes           the home's background («الخلفية»): photos (the photos and photo packs, the default) or scenes
+#   optimize/saver.sh clock glass                 the home's clock («الساعة»): plain (the default) or glass (behind the photo's scenery where the photo has a cut-out)
+#   optimize/saver.sh appsstyle zoom              «شكل التطبيقات»: frame (the default: a ring, the name above the tray) or zoom (the focused app larger with a soft shadow, its name under it)
 #   optimize/saver.sh scenepacks saudi,couch      the scene home's packs («الشكل والمشاهد ← حزم المشاهد»): saudi (default, in the app), couch (downloaded once), or both
+#   optimize/saver.sh scenestay 60                how long each scene stays («بقاء كل مشهد»): 10, 20 (default), 60 or 300 seconds
+#   optimize/saver.sh scenetime on                «المشهد يتبع الوقت»: the night scenes from Maghrib to Fajr, the others by day (off by default)
+#   optimize/saver.sh sceneweather on             «المشهد يتبع الطقس»: the fog scenes while the city is foggy (off by default)
 #   optimize/saver.sh adhanbar off                 the slim bar before the adhan (last 10 minutes, then until the iqama) on the screensaver and the home screen: on (default) or off
 #   optimize/saver.sh updatechannel next          TESTING ONLY (agents; no screen shows it): «تحديث تلفزيوني» reads the version and the APKs from the apk-next release instead
 #                                                  of apk-latest: next or latest (default). Same signature, newer-version and permission checks. Put it back to latest after
@@ -77,7 +84,7 @@
 #                                                  only on a TV with 2 GB of memory; a smaller one refuses it, 1 minute is its shortest)
 #   optimize/saver.sh idle 10                      the TV starts the screensaver after N idle minutes: 1 2 5 10 15 30
 #                                                  (the TV's own timer; left alone unless you run this)
-#   optimize/saver.sh cardstyle glass1             look of the card beside the clock: current dark1 glass1 dark3 glass3
+#   optimize/saver.sh cardstyle glass1             look of the card beside the clock: current dark1 glass1 dark3 glass3 boxes
 #   optimize/saver.sh national off                 the quiet green look on National Day (21-25 Sep) and Founding Day (20-24 Feb): auto (default) or off
 #   optimize/saver.sh digits latin                 numbers: hindi = ١٢٣ (default), latin = 123
 #   optimize/saver.sh hijrioffset -1               the Hijri date moved by whole days, -2..2 (default 0 = Umm al-Qura as it is): where the month
@@ -257,8 +264,15 @@ case "${1:-}" in
   homemine) set1 homemine "${2:?usage: optimize/saver.sh homemine same|mix|only|off}" ;;
   appearance) set1 appearance "${2:?usage: optimize/saver.sh appearance dark|light|auto}" ;;
   look) set1 look "${2:?usage: optimize/saver.sh look glass|graphite|navy|clean|sand}" ;;
-  homelayout) set1 homelayout "${2:?usage: optimize/saver.sh homelayout classic|football|scenes}" ;;
+  homelayout) set1 homelayout "${2:?usage: optimize/saver.sh homelayout classic|couch|football}" ;;
+  look)       set1 look "${2:?usage: optimize/saver.sh look urtv|couch}" ;;
+  background) set1 background "${2:?usage: optimize/saver.sh background photos|scenes}" ;;
+  clock)      set1 clock "${2:?usage: optimize/saver.sh clock plain|glass}" ;;
+  appsstyle)  set1 appsstyle "${2:?usage: optimize/saver.sh appsstyle frame|zoom}" ;;
   scenepacks) set1 scenepacks "${2:?usage: optimize/saver.sh scenepacks saudi|couch|saudi,couch}" ;;
+  scenestay)  set1 scenestay "${2:?usage: optimize/saver.sh scenestay 10|20|60|300}" ;;
+  scenetime)  set1 scenetime "${2:?usage: optimize/saver.sh scenetime on|off}" ;;
+  sceneweather) set1 sceneweather "${2:?usage: optimize/saver.sh sceneweather on|off}" ;;
   adhanbar) set1 adhanbar "${2:?usage: optimize/saver.sh adhanbar on|off}" ;;
   updatechannel) set1 updatechannel "${2:?usage: optimize/saver.sh updatechannel next|latest   (testing only)}" ;;
   reciter-fav)

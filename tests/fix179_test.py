@@ -35,7 +35,7 @@ check("PIN pad: no focus scale on a key (it ate 4 px of the gap beside it); the 
       "scaleX" not in pin and text(HOME / "PinPrompt.java").count("dp(a, 12)") >= 5)
 settings = text(APP / "SettingsActivity.java")
 check("settings pages: 64 px above the first line, a group's header 32 above and 16 under it (the first row was 124 px down)",
-      "list.setPadding(dp(8), dp(32), dp(8), dp(16));" in settings and "t.setPadding(dp(10), dp(16), dp(10), dp(8));" in settings and "head.setPadding(0, 0, 0, dp(16));" in settings)
+      "list.setPadding(dp(8), dp(32), dp(8), dp(16));" in settings and "t.setPadding(dp(10), dp(16), dp(10), dp(8));" in settings and "title.setPadding(dp(10), 0, dp(10), dp(4));" in settings)
 mk = text(HOME / "MarketsActivity.java")
 check("markets: the page ends at the safe area (5 % under it), so no list starts under y 1026 and the lists scroll in",
       "page.setPadding(Math.round(dm.widthPixels * 0.05f), Math.round(dm.heightPixels * 0.05f), Math.round(dm.widthPixels * 0.05f), Math.round(dm.heightPixels * 0.05f));" in mk

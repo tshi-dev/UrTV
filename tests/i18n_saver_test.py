@@ -64,11 +64,10 @@ check("attachBaseContext: English gets S.wrap's context; Arabic the very Arabic 
       and 'c.setLayoutDirection(new java.util.Locale("ar"));' in attach and "super.attachBaseContext(base.createConfigurationContext(c));" in attach)
 check("the settings' direction comes from Dir: no hard-coded right-to-left left", "LAYOUT_DIRECTION_RTL" not in st and "TEXT_DIRECTION_RTL" not in st
       and st.count("setLayoutDirection(Dir.layout());") >= 10 and st.count("setTextDirection(Dir.text())") >= 4)
-hubfn = fn(st, "    private void hub(String want, int wasIndex) {")
-check("the buttons' D-pad mirrors with the direction: the two sides of SettingsHub.next swap for English, Arabic as before (2 left, 3 right)",
-      "final int left = Dir.rtl() ? 2 : 3, right = Dir.rtl() ? 3 : 2;" in hubfn
-      and "t.setNextFocusLeftId(tiles.get(SettingsHub.next(i, tiles.size(), left, wide)).getId());" in hubfn
-      and "t.setNextFocusRightId(tiles.get(SettingsHub.next(i, tiles.size(), right, wide)).getId());" in hubfn)
+sidefn = fn(st, "    private View sideItem(final String cat) {")
+check("4.3.3 the side list mirrors with the direction: on the right in Arabic, on the left in English, and a row's key toward it is right or left with it",
+      "card.setLayoutDirection(Dir.layout());" in sidefn and "n.setTextDirection(Dir.text());" in sidefn
+      and "if (Dir.rtl()) card.setNextFocusRightId(item.getId()); else card.setNextFocusLeftId(item.getId());" in st)
 check("a prayer's minutes: the key forward in reading order adds one (left in Arabic, right in English)",
       "int d = code == Dir.forwardKey() ? 1 : code == Dir.backKey() ? -1 : 0;" in fn(st, "private void adjRow(final int k)"))
 check("Prefs: the digits default to latin only for English never chosen; hindi as always for Arabic",

@@ -126,42 +126,39 @@ for name, (n, wide) in scr.items():
             j = nxt.get((name, i, n, d), i)
             if j not in seen: seen.add(j); todo.append(j)
     check(f"every button of «{name}» is reachable from the first with the D-pad", seen == set(range(n)), sorted(set(range(n)) - seen))
-n0, w0 = scr["-"]
-check("the wide «بحث في الإعدادات»: DOWN goes to the right one under it, the other keys stay on it", w0 and nxt[("-", 0, n0, 1)] == 1
-      and all(nxt[("-", 0, n0, d)] == 0 for d in (0, 2, 3)))
-check("an odd last button, alone on its row: DOWN and LEFT stay on it", nxt[("-", 6, 7, 1)] == 6 and nxt[("-", 6, 7, 2)] == 6)
-hubfn = st[st.index("    private void hub(String want, int wasIndex) {"):].split("\n    }\n")[0]
-check("the buttons are wired with SettingsHub.next for all four keys (the wide one known), in rows laid out right to left (Dir: left to right in English, the sides swapped)",
-      all(f"t.setNextFocus{d}Id(tiles.get(SettingsHub.next(i, tiles.size(), {k}, wide)).getId());" in hubfn for d, k in (("Up", 0), ("Down", 1), ("Left", "left"), ("Right", "right")))
-      and "final int left = Dir.rtl() ? 2 : 3, right = Dir.rtl() ? 3 : 2;" in hubfn
-      and "line.setLayoutDirection(Dir.layout());" in hubfn and "final boolean wide = SettingsHub.wide(screen);" in hubfn
-      and "boolean alone = wide && i == 0;" in hubfn)
 icons = st[st.index("private static int hubIcon(String cat)"):].split("\n    }\n")[0]
 summ = st[st.index("private String hubSummary(String cat)"):].split("\n    }\n")[0]
 check("every button has its icon and says what is set in it now (a case for every category)",
       all(f"case SettingsHub.{k.upper()}:" in icons and f"case SettingsHub.{k.upper()}:" in summ for k in C), [k for k in C if f"case SettingsHub.{k.upper()}:" not in summ])
 check("«الأذان» shows the home's switch, read from the home (NowPlayingProvider .../adhan_on) off the UI thread (the last answer is kept), and says nothing of it when the home cannot say",
       "Boolean on = homeAdhanSeen();" in summ and "private Boolean homeAdhanSeen()" in st and "new Thread(() -> {" in st.split("private Boolean homeAdhanSeen()")[1].split("private Boolean homeAdhanOn()")[0] and 'content://sa.urtv.home.nowplaying/adhan_on' in st and "OnOff.ON_WORD : OnOff.OFF_WORD" in summ)
-tilefn = st[st.index("private View tile(final String cat, String name, int icon, String summary)"):].split("\n    }\n")[0]
-check("OK on a button: a DIRECT one runs its row's own action, any other opens its screen (and is the one focused on the way back)",
-      "String row = SettingsHub.direct(cat);" in tilefn and "Runnable act = row == null ? null : actions.get(row);" in tilefn
-      and "if (act != null) { launchedRow = \"hub:\" + cat; hubAt = cat; act.run(); return; }" in tilefn and "hubAt = cat;\n            open(cat);" in tilefn)
-check("the screens of buttons are built after the rows (so each row's action is known), and those rows are never added there",
-      render.index("actions.clear();") < render.index('row("معاينة الشاشة"') < render.index("if (tiles) { hub(want, wasIndex); return; }")
-      and "if (onClick != null) actions.put(FocusKey.key(label), onClick);" in st)
+sidefn = st[st.index("    private View sideItem(final String cat) {"):].split("\n    }\n")[0]
+sidepane = st[st.index("    private void sidePane() {"):].split("\n    }\n")[0]
+check("4.3.3 the side list (the mockup): «الإعدادات», then the search and the ten sections in SettingsHub's order, built once, the section shown marked",
+      "for (String cat : SettingsHub.tiles(null)) {" in sidepane and "if (sideItems.isEmpty()) {" in sidepane and 'findViewWithTag("bar")' in sidepane
+      and 't.setText(conv("الإعدادات"));' in sidepane)
+check("moving the focus along the list shows each section's rows at once and keeps the focus on the list; OK goes into the rows (the one last focused); the search item opens the search",
+      "if (has && !SettingsHub.SEARCH.equals(cat) && !cat.equals(screen)) {" in sidefn and "sideFocus = true;\n                open(cat);" in sidefn
+      and "if (SettingsHub.SEARCH.equals(cat)) { searchSettings(); return; }" in sidefn and "restoreFocus(lastRow.get(screen), 0, scroll.getScrollY());" in sidefn
+      and "if (sideFocus) {" in render and "item.post(item::requestFocus);" in render)
+check("a row's key toward the list goes to its own section's item, never to the one beside it",
+      "View item = sideItems.get(screen);" in st and "if (Dir.rtl()) card.setNextFocusRightId(item.getId()); else card.setNextFocusLeftId(item.getId());" in st)
+check("the settings open on the first section with the focus on its item (a link or the city's way in opens its own section and row)",
+      "if (screen == null) { screen = SettingsHub.LANG; sideFocus = true; }" in st and st.index("if (askCity) cityRow();") < st.index("if (screen == null) { screen = SettingsHub.LANG; sideFocus = true; }"))
+check("the pane's head: the section's name, its line, and what is set in it now; no «•» in the hint",
+      "title.setText(conv(SettingsHub.name(screen)));" in render and "line(SettingsHub.about(screen), look.sub, 0);" in render and "String now = hubSummary(screen);" in render
+      and 'hint.setText(Words.of("اختيار يفتح، ورجوع يرجّعك خطوة"));' in render)
 
 # ---- the screens: Back to the tile, the focus kept on a row, nothing drawn outside its category
 back = st[st.index("public void onBackPressed()"):].split("\n    }\n")[0]
-check("Back on a category goes back to the screen its button is on, the focus on that button; on the first screen it leaves the settings",
-      "if (screen == null) { super.onBackPressed(); return; }" in back and "hubAt = screen;" in back and "open(SettingsHub.parent(screen));" in back)
-check("each category's screen comes back on its row last focused (the first row the first time); the hub on the tile last opened",
-      "lastRow.put(screen, (String) f.getTag());" in back and back.index("lastRow.put(") < back.index("open(SettingsHub.parent(screen));")
-      and ": lastRow.get(screen))" in render)
+check("Back in the rows goes to their section's item in the side list (the row kept for the way back in); Back on the list leaves the settings",
+      "if (f == null || screen == null || sideItems.get(screen) == null) { super.onBackPressed(); return; }" in back
+      and "lastRow.put(screen, (String) f.getTag());" in back and back.index("lastRow.put(") < back.index("sideItems.get(screen).requestFocus();")
+      and ": entering ? lastRow.get(screen) :" in render)
 side = st[st.index("private void sidePane()"):].split("\n    }\n")[0]
-check("a category's screen: its title and its line on the right (the side pane, first in the RTL panes), the rows on the left; no side on the first screen",
-      "side.setVisibility(tiles ? View.GONE : View.VISIBLE);" in side and "SettingsHub.name(screen)" in side and "SettingsHub.about(screen)" in side
-      and st.index("panes.addView(side, sideLp);") < st.index("panes.addView(scroll,") and "panes.setLayoutDirection(Dir.layout());" in st
-      and "if (tiles) list.addView(head);" in render)
+check("the side list on the right (first in the RTL panes, in a scroll view for small screens), the rows on the left",
+      st.index("panes.addView(sideScroll, sideLp);") < st.index("panes.addView(scroll,") and "panes.setLayoutDirection(Dir.layout());" in st
+      and "sideScroll.addView(side, new FrameLayout.LayoutParams(-1, -2));" in st)
 abouts = dict(re.findall(r'\{(SEARCH|LANG|PLACE|LOOK|APPS|BUTTONS|PRAY|CONTENT|SAVER|FAMILY|UPDATE), "[^"]+", "([^"]*)"', hub[hub.index("static final String[][] CATEGORIES"):hub.index("static final String[][] OLD")]))
 check("every category with a screen of its own has its line for it (a DIRECT one has none)",
       all(len(abouts[k.upper()]) > 20 for k in C if k not in direct) and all(abouts[k.upper()] == "" for k in direct), abouts)
@@ -172,10 +169,9 @@ check("a row is added only on its own category's screen (made on every screen, s
       and rowfn.index("if (!on(cat)) return card;") < rowfn.index("list.addView(card, lp);"))
 check("a header is drawn by arrange, from SettingsHub.ORDER, and only above a row; a row made in the code is added at once and put in its place after the build",
       "if (!row) continue;" in st and "headerView(h)" in st and "SettingsHub.headers(screen)" in st and "pendingHeader" not in st and "arrange();" in render
-      and render.index("if (tiles) { hub(want, wasIndex); return; }") < render.index("arrange();") < render.index("restoreFocus(want, wasIndex, scrollY);"))
+      and render.index('row("معاينة الشاشة"') < render.index("arrange();") < render.index("restoreFocus(want, wasIndex, scrollY);"))
 check("the version lines show under «تحديث صفحة شاشة التوقف» only where that row is", "if (last.getParent() == list) note(last, Updater.versionLines(this));" in render)
-check("the tiles and the rows are found again by their tag after a rebuild (the focus stays on the tile, as on a row)",
-      'card.setTag("hub:" + cat);' in st and "if (all.contains(v)) return v;" in st)
+check("the rows are found again by their tag after a rebuild (the focus stays on the row)", "if (all.contains(v)) return v;" in st)
 for fn_ in ("openAdhanSettings()", "openDockSettings()", "openInputNames()", "openDockEdit()", "openUpdate()", "openPhoneControl()", "openFamilyDns()",
             "pickCity()", "updateNow()", 'openHome("center")', 'openHome("listen")', "openReport()", "AppearanceActivity.class"):
     check(f"the row's own action is kept: {fn_}", fn_ in render)
@@ -194,9 +190,8 @@ check("«أرسل تقرير» opens the home's ReportActivity (exported), and s
       and 'setClassName("sa.urtv.home", "sa.urtv.home.ReportActivity")' in st and "حدّث الواجهة الرئيسية" in st[st.index("private void openReport()"):].split("\n    }\n")[0])
 # ---- the TV test of 3.145: after going down and up again the header stayed hidden; once, two screens were drawn over each other
 top = st[st.index("private void topWhenFirst(View v)"):].split("\n    }\n")[0]
-check("the first row (on a screen of buttons, its first line) brings the page back to its very top, after the scroll view's own move",
-      "if (at == 0 || (pairs && at == 1)) scroll.post(() -> scroll.smoothScrollTo(0, 0));" in top and "boolean pairs = SettingsHub.hasTiles(screen) && !SettingsHub.wide(screen);" in top
-      and "if (has) topWhenFirst(v);" in rowfn and "card.setOnFocusChangeListener((x, has) -> { paintState(v, mark, shown, state, has); if (has) topWhenFirst(x); });" in st)
+check("the first row brings the page back to its very top (the section's name and line show again), after the scroll view's own move",
+      "if (rows().indexOf(v) == 0) scroll.post(() -> scroll.smoothScrollTo(0, 0));" in top and "if (has) topWhenFirst(v);" in rowfn)
 check("a screen just opened is at its top at once (never drawn at the old one's place first)",
       "scroll.scrollTo(0, 0);" in st[st.index("private void open(String category)"):].split("\n    }\n")[0])
 check("the settings have no window animation in or out, so no two screens are ever drawn over each other",
@@ -208,7 +203,7 @@ check("«ترتيب المفضلة»: the first app brings the list back to its 
 # the TV test of 3.147: in «الموقع والصلاة», after 5 down and 5 up, the list moved from the left half to the right half and back
 check("the settings' side pane and rows have fixed widths (no weights), worked out once; the rows' width changes only between the categories and a category",
       "new LinearLayout.LayoutParams(sideWidth, -1)" in st and "new LinearLayout.LayoutParams(width - sideWidth - dp(36), -1)" in st
-      and "0.36f);" not in st and "0.64f));" not in st and "int rowsWidth = tiles ? pageWidth : pageWidth - sideWidth - dp(36);" in st)
+      and "0.36f);" not in st and "0.64f));" not in st and "int rowsWidth = pageWidth - sideWidth - dp(36);" in st)
 check("…and the scroll goes up and down only: nothing can move the page sideways", "@Override public void scrollTo(int x, int y) { super.scrollTo(0, y); }" in st
       and "scroll = new UpDownScroll(this);" in st)
 sys.exit(1 if failed else 0)

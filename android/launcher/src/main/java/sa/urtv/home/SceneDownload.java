@@ -9,11 +9,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
- * 4.3.3 «مشاهد Couch TV»: the second scene pack is not in the app; it is downloaded once, the first time it is chosen, from the data repository
- * tshi-dev/urtv-data (branch data, scenes/; the same host as DataHost, the jsDelivr copy of it when GitHub's raw host cannot be reached).
- * scenes/index.json says the zip's version, sha256 and size; the zip is checked against them before anything is opened, unpacked into a work
- * folder and moved into place whole. A name in the zip that is not a scene file, a wrong digest or size, or a zip over 12 MB: nothing is kept.
- * A failure waits a day before the next try; the Saudi pack shows meanwhile (SceneHome.load).
+ * 4.4 the scene files not in the app: «مشاهد Couch TV» (couch) and the Saudi pack's other four scenes (saudi; the app has Riyadh only, the owner's
+ * choice to keep the APK light), downloaded once, the first time the scenes are shown, from the data repository tshi-dev/urtv-data (branch data,
+ * scenes/; the same host as DataHost, the jsDelivr copy of it when GitHub's raw host cannot be reached). scenes/<pack>.json says the zip's version,
+ * sha256 and size; scenes/<pack>.zip is checked against them before anything is opened, unpacked into a work folder and moved into place whole.
+ * A name in the zip that is not a scene file, a wrong digest or size, or a zip over 12 MB: nothing is kept. A failure waits a day before the next
+ * try; the scenes the app has show meanwhile (SceneHome.load).
  */
 final class SceneDownload {
     private SceneDownload() { }
@@ -22,11 +23,14 @@ final class SceneDownload {
     static final String[] HOSTS = {"https://raw.githubusercontent.com/tshi-dev/urtv-data/data/scenes/", "https://cdn.jsdelivr.net/gh/tshi-dev/urtv-data@data/scenes/"};
     static final int MAX_BYTES = 12 * 1024 * 1024;
     private static final long RETRY_MS = 24L * 60 * 60 * 1000;
-    private static volatile boolean busy;
+    private static final java.util.Set<String> busy = java.util.Collections.synchronizedSet(new java.util.HashSet<String>());
 
-    static File dir(Context c) { return new File(c.getFilesDir(), "scenes/couch"); }
+    /** the packs that can be downloaded: their names are the files' names (scenes/<pack>.json, scenes/<pack>.zip) and the folder's */
+    static boolean known(String pack) { return ScenePlan.SAUDI.equals(pack) || ScenePlan.COUCH.equals(pack); }
 
-    static boolean have(Context c) { return new File(dir(c), "scenes.tsv").isFile(); }
+    static File dir(Context c, String pack) { return new File(c.getFilesDir(), "scenes/" + pack); }
+
+    static boolean have(Context c, String pack) { return new File(dir(c, pack), "scenes.tsv").isFile(); }
 
     /** a file of the zip that may be kept: the list, the credits, and a scene's photo, glass copy and cut-out */
     static boolean allowed(String name) {
@@ -43,16 +47,17 @@ final class SceneDownload {
         return n > 0 && n <= MAX_BYTES ? new String[] {sha.group(1), len.group(1)} : null;
     }
 
-    static void fetchIfNeeded(final Context app) {
-        if (busy || have(app)) return;
+    /** the pack's files, once, in the background; {@code done} runs on that thread when they arrived (the home takes them at once) */
+    static void fetchIfNeeded(final Context app, final String pack, final Runnable done) {
+        if (!known(pack) || have(app, pack) || !busy.add(pack)) return;
         final android.content.SharedPreferences sp = app.getSharedPreferences("scenes", Context.MODE_PRIVATE);
-        if (System.currentTimeMillis() - sp.getLong("failedAt", 0) < RETRY_MS) return;
-        busy = true;
+        if (System.currentTimeMillis() - sp.getLong("failedAt:" + pack, 0) < RETRY_MS) { busy.remove(pack); return; }
         new Thread(() -> {
             boolean ok = false;
-            try { ok = fetch(app); } catch (Exception | OutOfMemoryError ignored) { }
-            if (!ok) sp.edit().putLong("failedAt", System.currentTimeMillis()).apply();
-            busy = false;
+            try { ok = fetch(app, pack); } catch (Exception | OutOfMemoryError ignored) { }
+            if (!ok) sp.edit().putLong("failedAt:" + pack, System.currentTimeMillis()).apply();
+            busy.remove(pack);
+            if (ok && done != null) done.run();
         }, "scene-pack").start();
     }
 
@@ -67,14 +72,14 @@ final class SceneDownload {
         return null;
     }
 
-    private static boolean fetch(Context app) throws Exception {
-        byte[] idx = get("index.json", 16 * 1024);
+    private static boolean fetch(Context app, String pack) throws Exception {
+        byte[] idx = get(pack + ".json", 16 * 1024);
         String[] want = index(idx == null ? null : new String(idx, "UTF-8"));
         if (want == null) return false;
-        byte[] zip = get("couch.zip", MAX_BYTES);
+        byte[] zip = get(pack + ".zip", MAX_BYTES);
         if (zip == null || zip.length != Integer.parseInt(want[1])) return false;
         if (!hex(MessageDigest.getInstance("SHA-256").digest(zip)).equals(want[0])) return false;
-        File work = new File(app.getFilesDir(), "scenes/couch.part");
+        File work = new File(app.getFilesDir(), "scenes/" + pack + ".part");
         delete(work);
         if (!work.mkdirs()) return false;
         try (ZipInputStream z = new ZipInputStream(new java.io.ByteArrayInputStream(zip))) {
@@ -87,7 +92,7 @@ final class SceneDownload {
             }
         }
         if (!new File(work, "scenes.tsv").isFile()) { delete(work); return false; }
-        File done = dir(app);
+        File done = dir(app, pack);
         delete(done);
         return work.renameTo(done);
     }
