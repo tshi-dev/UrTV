@@ -2829,3 +2829,7 @@ Why: the app is still waiting after the dialog was answered — either its conne
 
 ## step 86 B — owner's note on the setup page (his picture circled the whole «فحص» page): «The window is tooooo big.»
 On the owner's TV the «إعداد تلفزيوني» page is drawn too big: the card with the heading starts above the top edge of the screen (the page title and the first lines are cut off in all my screenshots, e.g. optimize/run/step86b/t1/02-setup.png, p6.png, t3/05-after-allow.png), the intro page is taller than the screen so «جهّز كل شي» sits at the very bottom edge (y≈1020 of 1080), and the real «Allow USB debugging?» dialog sits on top of it. It needs to fit 1920x1080 inside the safe area (96 px sides, ends at y 1026) without scrolling cut-offs; probably the card, text size and the QR block are too large for this TV's density. Picture: the owner's own (red circle), not in the repo.
+
+## step 86 B — owner's second note, on the intro page of «إعداد تلفزيوني» (he circled the QR block and the «جهّز كل شي» button)
+Owner (his words): «The window full is too big, scrollable in a small fit in center window. And the QR to the left.»
+So he wants: (1) the setup page as a SMALL window in the centre of the screen (not full-screen), whose content scrolls inside it, so everything fits; (2) the QR code on the LEFT (it is now at the right end, under «صوّر هذه الشاشة بجوالك الحين…», x≈1456–1744), not at the right edge. Related: the same page is cut off at the top today (see the previous note).
