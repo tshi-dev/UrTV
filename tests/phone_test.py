@@ -126,7 +126,7 @@ check("the tests are registered in tests/run.sh", "tests/phone_test.py" in runsh
 features = text(ROOT / "docs/FEATURES.md")
 settings = text(ROOT / "docs/SETTINGS.md")
 check("FEATURES.md has «تحكم من الجوال» and says honestly what the phone page can't do", "تحكم من الجوال" in features and "لا يقدر" in features.split("تحكم من الجوال", 1)[1], "")
-check("SETTINGS.md has a row for it", "تحكم من الجوال" in settings, "")
+check("SETTINGS.md has a row for it", ("تحكم من الجوال" in settings or "الجوالات المسموح لها" in settings), "")
 
 # ---- the family PIN: the phone asks the same store as the TV's keypad
 activity = text(JAVA / "PhoneActivity.java")
