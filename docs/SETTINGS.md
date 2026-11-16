@@ -29,14 +29,16 @@ something about the screensaver, the home screen or the TV, find it in the table
   Names and texts go in single quotes; no apostrophes inside them.
 
 The settings screen (for telling the person where a row is; 4.3.3 put every option in the one section it belongs to, ten sections,
-docs/mockups/SETTINGS-MAP.md) opens on big buttons: «بحث في الإعدادات» wide on top (type a word, on the TV's keyboard or from the phone page, which types
-into the field in front, and pick the row; it opens that row's section with the focus on it), then two to a row from the right the ten sections: «اللغة»
-(the language, the digits, the month names, 12/24 hours, the Hijri shift), «الموقع والطقس» (the city, the country, the greeting and weather, humidity and
-wind), «الشكل والمشاهد» (the look and light, the clock and text, the cards, the photos and the album card), «التطبيقات» (the favourite apps and their
-order and locks, the factory interface, clean UrTV), «الأزرار السريعة» (the control center and the home's buttons, the updates bell, Back to the
-screensaver), «الصلاة والأذان» (the adhan and its alerts, the calculation method, the recitation screen), «المباريات والأسواق» (teams, leagues,
-markets, stocks, new series), «شاشة التوقف» (the clock's card, when it starts), «العائلة والأمان» (parental controls, the site filter, phone control)
-and «حول» (the apps' update, the page's update and auto-update, the TV setup, the report). OK opens a section, Back returns to the button it came from.
+docs/mockups/SETTINGS-MAP.md) has a side list on the right, always there: «الإعدادات», «بحث في الإعدادات» (type a word, on the TV's keyboard or
+from the phone page, which types into the field in front, and pick the row; it opens that row's section with the focus on it), then the ten sections:
+«اللغة» (the language, the digits, the month names, 12/24 hours, the Hijri shift), «الموقع والطقس» (the city, the country, the greeting and weather,
+humidity and wind), «الشكل والمشاهد» (the home style and the scenes, the look and light, the clock and text, the cards, the photos and the album card),
+«التطبيقات» (the favourite apps and their order and locks, the factory interface, clean UrTV), «الأزرار السريعة» (the control center and the home's
+buttons, the updates bell, Back to the screensaver), «الصلاة والأذان» (the adhan and its alerts, the calculation method, the recitation screen),
+«المباريات والأسواق» (teams, leagues, markets, stocks, new series), «شاشة التوقف» (the clock's card, when it starts), «العائلة والأمان» (parental
+controls, the site filter, phone control) and «حول» (the apps' update, the page's update and auto-update, the TV setup, clearing the temporary files,
+the report). The rows of the section with the focus show on the left at once; OK (or the arrow toward the rows) goes into them, Back from a row
+returns to its section's item, Back on the list leaves. The settings open on «اللغة» with the focus on its item.
 **The city is chosen in one place only**, «الموقع والطقس» ← «المدينة», and that one choice drives the weather, the prayer times, the greeting, the
 screensaver and the matches' time zone; the home's «المدينة» (control center, the question bar, `pickCity`) opens that row with its chooser, and the
 phone page sets the same choice. With «اللغة» English the same screen is in English and laid out from the left.
@@ -45,7 +47,7 @@ sections (cards, more, clock, listen…) are mapped to their new one by `Setting
 switch: three green triangles at its start and its word in green while it is on. The commands below are unchanged.
 
 **By keys (D-pad), to the two football and markets pages** (tested path; Arabic screen, in English the sideways keys swap): *Settings → «المباريات والأسواق»:*
-from the first button «بحث في الإعدادات», **▼ ×4** (the fourth line of pairs, its right button) to «المباريات والأسواق», OK; the focus starts on **«مباريات اليوم»**: OK opens
+from «اللغة» (where the settings open) in the side list, **▼ ×6** to «المباريات والأسواق», OK; the focus starts on **«مباريات اليوم»**: OK opens
 the matches page. Back, then **▼ ×5** to **«صفحة الأسواق»**, OK opens the markets page (or search «أسواق»). From the home: OK on the stocks card (a home
 card set to «الأسهم») opens «الأسواق»; OK on the games widget (`optimize/saver.sh homelayout football`) opens «المباريات» on that game.
 

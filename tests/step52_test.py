@@ -63,8 +63,8 @@ check("quiz: «جاوب الجميع» in the header of the reveal when it ended
       and "r.dg === 1" in page_ and "AR && !LATIN" in page_)
 sett = src(SAVER / "SettingsActivity.java")
 resm = sett.split("protected void onResume()")[1].split("\n    }\n")[0]
-check("settings: the row (or the first screen's button) that opened another screen gets the focus back on return: remembered at the press (launchedRow, for a button \"hub:<cat>\"), handed to the SAME render that rebuilds the list (forceWant, read before the focus search), not restored before it",
-      "launchedRow = (String) card.getTag(); onClick.run();" in sett and 'launchedRow = "hub:" + cat; hubAt = cat; act.run(); return;' in sett
+check("settings: the row that opened another screen gets the focus back on return: remembered at the press (launchedRow), handed to the SAME render that rebuilds the list (forceWant, read before the focus search), not restored before it (4.3.3: no screen of buttons any more)",
+      "launchedRow = (String) card.getTag(); onClick.run();" in sett
       and resm.index("forceWant = back;") < resm.index("render();") and "final String want = forceWant != null ? forceWant :" in sett and "forceWant = null;" in sett)
 dbg2 = src(HOME / "DebugFlags.java"); mm = src(HOME / "MainActivity.java")
 check("focus-animation switches (dock.sh debug nolift|noglow|noshine|noscale|notitle|plainfocus): read once at build (focusMask), each turns exactly its part off in the tile's focus listener; plainfocus = all of them and the label, the lift and the glide",
