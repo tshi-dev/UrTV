@@ -308,6 +308,7 @@ public class MusicReceiver extends BroadcastReceiver {
                 + "|player=" + MusicService.playerKind()
                 + "|stall_restarts=" + MusicService.stallRestartCount()
                 + "|reconnects=" + MusicService.reconnectCount()   // 4.4: joins made because the network came back
+                + "|radio_week=" + RadioWeek.field(prefs.radioWeek(), MusicService.weekDay(context))   // 4.4: stalls.errors.reconnects.rebuffers, the last 7 days
                 + "|foreground=" + (MusicService.inForeground() ? 1 : 0)   // 4.3.3 G1: 1 while it plays = Android keeps it over the screensaver and the TV's settings
                 + "|focus_wait=" + (MusicService.waitingFocus() ? 1 : 0);   // 4.3.3 G1: paused by another sound, goes on when it ends
     }

@@ -778,6 +778,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
             if (!wish.current(gen)) return true;
             if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START && prepared && playing) {   // it ran dry while playing: a rebuffer
                 rebuffers++;
+                if (source == Prefs.SOURCE_RADIO) week(RadioWeek.REBUFFER);
                 rebufferStart = SystemClock.elapsedRealtime();
                 buffering = true;
                 updateSession();
@@ -852,6 +853,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         if (act == NetReconnect.Act.NOTHING) return;
         lastNetReconnect = now;
         reconnects++;
+        week(RadioWeek.RECONNECT);
         Log.i(TAG, "network back: " + act + " joins again");
         if (act == NetReconnect.Act.RADIO && radioAddress != null) {
             stall.reset();
@@ -887,6 +889,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         if (v == StallWatch.Verdict.OK) return false;
         if (v == StallWatch.Verdict.RESTART) {
             stallRestarts++;
+            week(RadioWeek.STALL);
             Log.w(TAG, "station stalled (" + (rebufferStart > 0 ? "dry " + (SystemClock.elapsedRealtime() - rebufferStart) / 1000 + " s" : "position still") + ", " + playerKind + ", host " + hostOf(currentUrl) + "): started again quietly");
             if (rebufferStart > 0) rebufferMs += SystemClock.elapsedRealtime() - rebufferStart;
             rebufferStart = 0;
@@ -941,8 +944,20 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         }
     }
 
+    /** 4.4: one more of `kind` in the stations' last seven days (RadioWeek), kept across restarts */
+    private void week(int kind) {
+        prefs.radioWeek(RadioWeek.add(prefs.radioWeek(), weekDay(this), kind));
+    }
+
+    /** today in days since 1970 in the TV's place (ZoneFix, as every clock of the app), for RadioWeek */
+    static long weekDay(android.content.Context c) {
+        long now = System.currentTimeMillis();
+        return Math.floorDiv(now + sa.urtv.home.ZoneFix.offset(Place.get(c).tz, now), 86_400_000L);
+    }
+
     private void onPlaybackError(int what, int extra) {
         errors++;
+        if (source == Prefs.SOURCE_RADIO) week(RadioWeek.ERROR);
         lastError = (source == Prefs.SOURCE_RADIO ? "radio" : source == Prefs.SOURCE_ADHAN ? "adhan" : "surah")
                 + " " + PlayerFault.code(what, extra) + " (what=" + what + ", extra=" + extra + ")";
         lastErrorAt = System.currentTimeMillis() / 1000;

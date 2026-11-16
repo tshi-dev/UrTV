@@ -241,15 +241,24 @@ def radio_line(out):
     return "Radio, last error: " + m.group(1).replace(";", " ")
 
 
+def radio_week_line(out):
+    """«Radio, last 7 days: stalls=… errors=… reconnects=… rebuffers=…» from the player status (its radio_week= field, four numbers, 4.4);
+    None when there is none or all are 0."""
+    m = re.search(r"radio_week=(\d{1,9})\.(\d{1,9})\.(\d{1,9})\.(\d{1,9})(?![\d.])", out or "")
+    if not m or not any(int(n) for n in m.groups()):
+        return None
+    return "Radio, last 7 days: stalls=%s errors=%s reconnects=%s rebuffers=%s" % m.groups()
+
+
 def live_radio():
-    """The radio's last error as the TV says it now; None when the TV does not answer or nothing failed."""
+    """The radio's last error and its last 7 days as the TV says them now; [] when the TV does not answer or nothing went wrong."""
     tv_py = Path(__file__).resolve().parent / "tv.py"
     try:
         out = subprocess.run([sys.executable, "-I", str(tv_py), "am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.GET_PLAYER"],
                              capture_output=True, text=True, timeout=60, env={**os.environ, "TV_TRIES": "1"})
     except Exception:  # noqa: BLE001
-        return None
-    return radio_line(out.stdout) if out.returncode == 0 else None
+        return []
+    return [x for x in (radio_line(out.stdout), radio_week_line(out.stdout)) if x] if out.returncode == 0 else []
 
 
 def screen_lines(resumed, windows, webview, brightness):
@@ -478,7 +487,7 @@ def main():
     else:   # a problem from a computer that didn't set this TV up: the apps' versions, if the TV answers
         parts += ["", "Setup results: not on this computer", *([live] if (live := live_versions()) else [])]
     if (radio := live_radio()):
-        parts += ["", radio]
+        parts += ["", *radio]
     if args.problem and (screen := live_screen()):   # a dark or black screen names its own cause
         parts += ["", *screen]
         if args.screencap and (pic := screen_picture()):

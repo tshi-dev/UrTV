@@ -130,6 +130,9 @@ final class Prefs {
 
     /** the reciters marked ★ (ids, comma separated, in the order they were marked): shown first on the reciters tab under «المفضلون» */
     String reciterFavs() { return sp.getString("reciter_favs", ""); }
+    /** 4.4: the stations' troubles of the last seven days (RadioWeek) */
+    String radioWeek() { return sp.getString("radio_week", ""); }
+    void radioWeek(String r) { sp.edit().putString("radio_week", r).apply(); }
     void setReciterFavs(String ids) { sp.edit().putString("reciter_favs", ids == null ? "" : ids).apply(); }
 
     /** «أذان مختصر»: the adhan stops after its first minute with a short fade (not the few seconds of a preview). Off until it is turned on. */
