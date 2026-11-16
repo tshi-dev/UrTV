@@ -1838,8 +1838,8 @@ for (const [width, height] of [[461, 250], [1920, 1080], [960, 540]]) {   // lon
           const toLatin = x => x.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
           const tag = `next prayer ${label} ${width}x${height}${hash.includes('widget') ? ' card' : ''} ${style} ${digits}`;
           check(`${tag}: one line «${want}» under «الصلاة القادمة», the name lit, inside the card, no script errors`,
-            !errors.length && r.n === 1 && r.hd === 'الصلاة القادمة' && r.text === (digits === 'latin' ? toLatin(want) : want) && r.lit !== r.plain && parseFloat(r.left[2]) > parseFloat(r.left[1]) && r.whole && r.inside   /* 4.4: the name and time big, the time left under them */
-            && r.h <= r.font * 3.2, JSON.stringify(r) + errors.join('; '));
+            !errors.length && r.n === 1 && r.hd === 'الصلاة القادمة' && r.text === (digits === 'latin' ? toLatin(want) : want) && r.lit !== r.plain && parseFloat(r.left[2]) > parseFloat(r.left[1]) && r.whole && r.inside   /* 4.4: the name and time big (2em), the time left and the iqama under them, the bar: about five lines of the body size */
+            && r.h <= r.font * 6, JSON.stringify(r) + errors.join('; '));
           await ctx.close();
         }
       }
