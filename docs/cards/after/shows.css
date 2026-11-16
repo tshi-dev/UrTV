@@ -1,0 +1,4 @@
+/* «هذا الأسبوع»: the rating says it is one (a star), the season and episode readable */
+.week li .rt::before{content:'★ ';font-size:.9em}
+.week li .rt{color:var(--gold-3)}
+.week li .ep{font-size:.8em}

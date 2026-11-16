@@ -1,0 +1,1 @@
+CARDS.forEach(c => { if (c.kind === 'tasks' && CONFIG.tasks.length) setHTML(c.hd, `<span>المهام</span><span class="until near">${qty(CONFIG.tasks.length, {one:'مهمة', two:'مهمتان', few:'مهام', many:'مهمة', mid:'مهمة'})}</span>`); });

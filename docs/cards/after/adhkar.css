@@ -1,0 +1,3 @@
+/* a long text (two lines or more: quoteSize's q2..q4) reads from the start of the line again; centring stays for the short verse and saying */
+.week li.quote.q2,.week li.quote.q3,.week li.quote.q4{text-align:start}
+.week li.adf .c{color:#E2DACA}

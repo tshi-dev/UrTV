@@ -1,0 +1,5 @@
+/* «يُتلى الآن»: the «،» attached to the word before it, the reciter readable, a little more room inside */
+.stage > .week.np{padding:1.2vh 1.6vw}
+.np .npl{gap:.45em}
+.np .nps{margin-inline-start:-.45em;color:var(--gold-3)}
+.np .npw{color:#E2DACA;font-weight:400}

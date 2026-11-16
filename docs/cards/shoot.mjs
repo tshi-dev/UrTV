@@ -58,6 +58,11 @@ function net(route) {
     if (u.pathname.endsWith('eventslast.php')) return ok({ results: null });
     return ok({ events: null, results: null });
   }
+  if (/tvmaze/.test(u.host)) {
+    const d = u.searchParams.get('date') || '2026-10-22', N = ['الوادي البعيد', 'بيت على البحر', 'ليالي المدينة', 'الطريق الطويل', 'المختبر'];
+    return ok(u.pathname.includes('/schedule') ? N.map((n, i) => ({ id: i + 1, number: i + 2, season: 1 + (i % 3), airdate: d, airtime: '21:00', airstamp: d + 'T18:00:00+00:00',
+      show: { id: 900 + i, name: n, type: 'Scripted', genres: ['Drama'], rating: { average: 8.1 }, language: 'Arabic', network: { name: 'قناة' } } })) : {});
+  }
   return route.abort();
 }
 
@@ -128,14 +133,14 @@ async function shoot(browser, card, state, look, scale) {
 
 export { shoot, PHOTO, NOW };
 
-const CARDS = (await import('./cards.mjs')).CARDS;
+const CARDS = (await import(process.env.CARDS_FILE || './cards.mjs')).CARDS;
 const want = process.argv.slice(2);
 const browser = await chromium.launch();
 mkdirSync(OUT, { recursive: true });
 for (const card of CARDS) {
   if (want.length && !want.includes(card.id)) continue;
   for (const state of ['before', 'after']) {
-    if (state === 'after' && !existsSync(path.join(HERE, 'after', card.id + '.css')) && !existsSync(path.join(HERE, 'after', card.id + '.js'))) continue;
+    if (state === 'after' && (process.env.NOAFTER || (!existsSync(path.join(HERE, 'after', card.id + '.css')) && !existsSync(path.join(HERE, 'after', card.id + '.js'))))) continue;
     // the main picture: the first look at 2x; the others at 1x for the sheet
     for (const [i, look] of card.looks.entries()) {
       const buf = await shoot(browser, card, state, look, 2);
