@@ -1,0 +1,17 @@
+/* «خط اليوم»: the day as one line from Fajr to Isha under the clock: where the day is now, what has passed, the next prayer and how long */
+html.sd-day .week,html.sd-day .bottom,html.sd-day .bottom-veil,html.sd-day .subline{display:none!important}
+html.sd-day .mid{grid-template-columns:1fr}
+html.sd-day .clockwrap{justify-self:center;align-self:center;text-align:center}
+.sd-dl{position:fixed;left:64px;right:64px;bottom:48px;height:92px;z-index:6;direction:rtl}
+.sd-dl::before{content:'';position:absolute;left:0;right:0;top:44px;height:4px;border-radius:2px;background:rgba(255,255,255,.22)}
+.sd-dl .done{position:absolute;right:0;top:44px;height:4px;border-radius:2px;background:linear-gradient(to left,rgba(224,186,116,.45),#E0BA74)}
+.sd-dl .now{position:absolute;top:38px;width:16px;height:16px;margin-right:-8px;border-radius:50%;background:#FFE9B8;box-shadow:0 0 0 4px rgba(255,233,184,.25),0 0 16px rgba(255,233,184,.6)}
+.sd-dl .p{position:absolute;top:0;transform:translateX(50%);text-align:center;white-space:nowrap;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.sd-dl .p b{display:block;font-size:16px;font-weight:500;margin-bottom:22px}
+.sd-dl .p i{display:block;font-style:normal;font-size:14px;color:#E2DACA}
+.sd-dl .p::after{content:'';position:absolute;left:50%;top:40px;width:2px;height:12px;margin-left:-1px;background:rgba(255,255,255,.55)}
+.sd-dl .p.past{opacity:.6}
+.sd-dl .p.next b{color:#FFE9B8}.sd-dl .p.next i{color:#FFE9B8}
+.sd-dl .p.next::after{background:#FFE9B8;width:3px}
+.sd-dl .left{position:absolute;top:70px;transform:translateX(50%);font-size:13px;color:#FFE9B8;white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+html.sd-day .bottom-veil{display:block!important;height:34vh}

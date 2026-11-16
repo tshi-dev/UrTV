@@ -1,0 +1,7 @@
+/* «ساعة كبيرة»: the time alone, very large and thin, the date small under it; a soft darkening so it reads on any photo */
+html.sd-big .top,html.sd-big .week,html.sd-big .bottom,html.sd-big .subline,html.sd-big .ystrip,html.sd-big #credit{display:none!important}
+html.sd-big .clockwrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:6;margin:0}
+html.sd-big .clock{font-family:'Thmanyah',sans-serif;font-weight:300;font-size:300px;line-height:1;direction:ltr;color:#fff;text-shadow:0 2px 30px rgba(0,0,0,.3)}
+html.sd-big .clock .ampm{display:none}
+html.sd-big .bottom-veil{display:block;height:100vh;background:radial-gradient(ellipse at 50% 50%,rgba(0,0,0,.30),rgba(0,0,0,.12) 70%)}
+.sd-big-d{position:fixed;left:0;right:0;bottom:64px;z-index:7;text-align:center;font-size:17px;color:rgba(255,255,255,.85);text-shadow:0 1px 3px rgba(0,0,0,.5)}

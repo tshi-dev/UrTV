@@ -1,0 +1,16 @@
+/* «نظيفة»: the photo or the horizon and its clock, nothing else: no top line, no card, no bottom bar */
+html.sd-clean .top,html.sd-clean .week,html.sd-clean .bottom,html.sd-clean .bottom-veil,html.sd-clean .subline,html.sd-clean .ystrip,html.sd-clean #credit,html.sd-clean .adbar{display:none!important}
+html.sd-clean .clockwrap{position:fixed;left:0;right:0;top:var(--sd-top);display:flex;justify-content:center;z-index:6;margin:0;padding:0}
+html.sd-clean .clock{font-family:'ThmanyahDisplay','Thmanyah',sans-serif;font-weight:700;font-size:var(--sd-size);line-height:.9;direction:ltr;letter-spacing:.01em;
+  color:#fff;text-shadow:0 2px 18px rgba(0,0,0,.28)}
+html.sd-clean .clock .ampm{display:none}
+html.sd-clean .clock .sep{opacity:1}
+/* the glass: the photo's own blurred copy through the digits (made once per photo, never a live blur), a light rim, the scenery over it */
+html.sd-clean.sd-glass .clock{background:var(--sd-glass) 0 0/100vw 100vh fixed;-webkit-background-clip:text;background-clip:text;text-shadow:none;
+  -webkit-text-stroke:1.5px rgba(255,255,255,.55);filter:drop-shadow(0 6px 20px rgba(0,0,0,.25))}
+html.sd-clean.sd-glass .clock *{color:transparent!important;text-shadow:none!important}
+.sd-fg{position:fixed;left:0;right:0;z-index:6;background:center top/100% 100% no-repeat;pointer-events:none}
+.sd-line{position:fixed;left:0;right:0;z-index:7;text-align:center;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.55),0 0 18px rgba(0,0,0,.35)}
+.sd-line .d{font-size:18px;font-weight:500;letter-spacing:0}
+.sd-line .n{margin-top:6px;font-size:15px;color:#F1E7D0}
+.sd-line .n b{font-weight:500;color:#FFE9B8}

@@ -1,0 +1,12 @@
+/* «لوحة»: the photo as a framed picture: a soft vignette, a thin inner frame, the verse of the day on one line, the time small in the corner */
+html.sd-frame .top,html.sd-frame .week,html.sd-frame .bottom,html.sd-frame .bottom-veil,html.sd-frame .subline,html.sd-frame .ystrip,html.sd-frame #credit{display:none!important}
+.sd-vig{position:fixed;inset:0;z-index:6;pointer-events:none;background:radial-gradient(ellipse 75% 70% at 50% 45%,rgba(0,0,0,0) 55%,rgba(0,0,0,.55) 100%)}
+.sd-vig::after{content:'';position:absolute;inset:20px;border:1px solid rgba(255,240,210,.35);border-radius:2px}
+html.sd-frame .clockwrap{position:fixed;right:44px;bottom:36px;z-index:7;margin:0}
+html.sd-frame .clock{font-size:44px;font-weight:500;line-height:1;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.5)}
+html.sd-frame .clock .ampm{font-size:.42em}
+.sd-fdate{position:fixed;right:44px;bottom:88px;z-index:7;font-size:14px;color:rgba(255,255,255,.85);text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.sd-verse{position:fixed;left:0;right:0;top:44px;z-index:7;text-align:center;color:#FFF7E6;text-shadow:0 1px 4px rgba(0,0,0,.6)}
+.sd-verse .q{font-family:'UthmanicHafs','Thmanyah',serif;font-size:26px;line-height:1.6}
+.sd-verse .o{font-family:'NotoMarks',serif;color:#E0BA74;font-size:1.3em;vertical-align:-.1em;padding:0 .15em}
+.sd-verse .s{margin-top:2px;font-size:13px;color:rgba(255,240,210,.8)}
