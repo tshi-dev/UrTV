@@ -726,6 +726,8 @@
   .mpi i{font-style:normal;color:var(--fs);font-size:calc(var(--u)*24);white-space:nowrap}
   #mp-side{max-height:100%;overflow-y:auto;scrollbar-width:none}
   #mp-side::-webkit-scrollbar{display:none}
+  #mp-side .fg svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linejoin:round}
+  #mp-side li.pin i{color:var(--fgr)}
   #mp-days{overflow:hidden}
   #mp-q{font:inherit;color:var(--fi);background:var(--fbg);border:1px solid var(--fln);border-radius:calc(var(--u)*12);padding:calc(var(--u)*4) calc(var(--u)*16);width:calc(var(--u)*560);outline:none}
   #mp .fnote{font-size:calc(var(--u)*22)}
@@ -1034,6 +1036,7 @@ document.documentElement.style.setProperty('--walldim', (CONFIG.wallDim / 100).t
 // 4.3 «مباريات اليوم وبكرة»: with no league of their own, the matches page also loads the top leagues
 const MP_TOP = ['id4328', 'id4335', 'id4332', 'id4331', 'id4334', 'id4480'], MP_TOP_IDS = ['4668', '4328', '4335', '4332', '4331', '4334', '4480'];
 const MP_MORE = CONFIG.matchPage && !CONFIG.leagues.length;
+CONFIG.ownLeagues = CONFIG.leagues.slice();   // 4.3.3 the person's own (the pins, «دورياتي»), before the defaults below join the list
 if((CONFIG.football || CONFIG.matchPage) && !CONFIG.leagues.length) CONFIG.leagues = ['Saudi-Arabian Pro League'];
 if(MP_MORE) CONFIG.leagues = CONFIG.leagues.concat(MP_TOP);
 // The cards on this page: the screensaver's one
@@ -4170,6 +4173,7 @@ const FB_W = {
   startsAfter:'تبدأ بعد %s %s', startsBefore:'تبدأ قبل %s %s', adhanAt:'أذان %s في الدقيقة %s منها', ago:'قبل %s', nextIn:'%s بعد %s',
   h1:'بساعة', h2:'بساعتين', hFew:'ب%s ساعات', hMany:'ب%s ساعة', m1:'بدقيقة', m2:'بدقيقتين', mFew:'ب%s دقائق', mMany:'ب%s دقيقة',
   am1:'ودقيقة', am2:'ودقيقتين', amFew:'و%s دقائق', amMany:'و%s دقيقة', taskText:'مباراة %s، تبدأ %s',
+  table:'جدول الترتيب', results:'النتائج', noTable:'الترتيب غير متاح الآن', pts:'%s نقطة',
   club:'صفحة الفريقين', last:'آخر النتائج', h2h:'المواجهات مع %s', see:'صفحة %s', loading:'جارٍ التحميل…', noData:'لا شيء هنا بعد', followT:'تابع %s', unfollowT:'ألغِ متابعة %s',
 };
 const fw = (s, ...a) => { let i = 0; return String(s).replace(/%(\d)\$s|%s|%%/g, (m, n) => m === '%%' ? '%' : String(n ? a[+n - 1] : a[i++])); };
@@ -4294,6 +4298,7 @@ const FB_GLYPH = {
   temp:'<svg viewBox="0 0 24 24"><path d="M10 13.5V5a2 2 0 0 1 4 0v8.5a4 4 0 1 1-4 0z"/></svg>',
   drop:'<svg viewBox="0 0 24 24"><path d="M12 3.5s-5.5 6.3-5.5 10.2a5.5 5.5 0 0 0 11 0C17.5 9.8 12 3.5 12 3.5z"/></svg>',
   wind:'<svg viewBox="0 0 24 24"><path d="M3 9h11a3 3 0 1 0-3-3M3 13h15a3 3 0 1 1-3 3M3 17h7"/></svg>',
+  star:'<svg viewBox="0 0 24 24"><path d="M12 3.6l2.5 5.2 5.7.8-4.1 4 1 5.6-5.1-2.7-5.1 2.7 1-5.6-4.1-4 5.7-.8z"/></svg>',
   bell:'<svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"/></svg>',
 };
 const fbGlyph = k => `<span class="fg">${FB_GLYPH[k]}</span>`;
@@ -4446,9 +4451,38 @@ function bootFootball(){
 
 // ---- «المباريات»: a page of its own on the light look
 const MP = {day: '', picked: false, zone: 'rows', d: 1, l: 0, r: 0, detail: null, btn: 0, rows: [], leagues: [], days: [], note: '', view: null, stack: [], saved: null};
-const mpPins = () => [];
+// 4.3.3 the followed leagues pinned on top of the side list: OK opens the league (its table, its results, its games)
+const mpPins = () => mpLeagueIds().map(id => ({key: 'pin' + id, side: lgName(id), games: [], pin: id}));
+function lgName(id){
+  const ix = ARCH_C[ARCH_BASE + 'index.json'], l = ix && ix.j && ix.j.leagues && ix.j.leagues[id];
+  return FB_LEAGUES[id] || CONFIG.leagueNames[id] || (l && (l.ar || l.en)) || '#' + id;
+}
+function mpLeagueView(v){
+  const id = String(v.id), tab = v.tab || 0, now = Date.now(), groups = [];
+  const tabs = [FB_W.table, FB_W.results, FB_W.title].map((t, i) => ({t, on: i === tab, act: () => { v.tab = i; MP.l = MP.r = 0; mpRender(); }}));
+  const res = tab < 2 ? archWant('results/' + id + '.json') : null;
+  if(tab === 1){
+    const by = new Map();
+    ((res && res.results) || []).map(g => archEv(g)).filter(Boolean).forEach(ev => { const d = fbDayOf(fbKick(ev)); if(!by.has(d)) by.set(d, []); by.get(d).push(ev); });
+    by.forEach((games, d) => groups.push({key: 'd' + d, name: mpDayName(d), games}));
+    if(!by.size) groups.push({key: 'r', name: FB_W.results, games: [], none: res === undefined ? FB_W.loading : FB_W.noData});
+  } else if(tab === 2){
+    const by = new Map();
+    fbGames().filter(ev => String(ev.idLeague) === id && !fbDone(ev, now)).forEach(ev => { const k = fbRound(ev); if(!by.has(k)) by.set(k, []); by.get(k).push(ev); });
+    by.forEach((games, k) => groups.push({key: 'n' + groups.length, name: k, games, dated: 1}));
+    if(!by.size) groups.push({key: 'n', name: FB_W.title, games: [], none: MATCHES_LOADED ? FB_W.noData : FB_W.loading});
+  } else {   // TheSportsDB's table of the season the league's games say (one request, when this tab is open)
+    const g = fbGames().find(ev => String(ev.idLeague) === id && ev.strSeason), r0 = res && res.results && res.results[0];
+    const season = String((g && g.strSeason) || (r0 && r0.s) || '');
+    const t = /^\d{4}(-\d{4})?$/.test(season) ? archWant(`https://www.thesportsdb.com/api/v1/json/${CONFIG.sportsKey}/lookuptable.php?l=${id}&s=${season}`) : res === undefined ? undefined : null;
+    const rows = ((t && Array.isArray(t.table) && t.table) || []).filter(x => x && /^\d+$/.test(String(x.idTeam)))
+      .map(x => mpItem(ar(+x.intRank || 0) + '. ' + teamAr(x.strTeam, String(x.idTeam)), fw(FB_W.pts, ar(+x.intPoints || 0)), () => mpGo({k: 'club', id: String(x.idTeam)})));
+    groups.push({key: 't', name: FB_W.table, games: rows, none: t === undefined ? FB_W.loading : FB_W.noTable});
+  }
+  return {title: lgName(id), tabs, groups};
+}
 // 4.3.3 the followed leagues' ids (a built-in one by its file's games, else by the archive's index)
-const mpLeagueIds = () => [...new Set(CONFIG.leagues.map(n => catId(n) || lgIdOf(n)).filter(Boolean))];
+const mpLeagueIds = () => [...new Set(CONFIG.ownLeagues.map(n => catId(n) || lgIdOf(n)).filter(Boolean))];
 function lgIdOf(name){
   const d = LEAGUE_DATA[name], e = d && (d.events || []).find(x => x && x.idLeague);
   if(e) return String(e.idLeague);
@@ -4535,6 +4569,7 @@ function mpRender(){
   }
   const groups = V ? V.groups : mpGroups(), pins = V ? [] : mpPins();
   MP.leagues = pins.concat(groups);
+  if(!V && MP.zone !== 'leagues' && groups.length){ let n = 0; MP.leagues.forEach((g, i) => { if(!g.pin && MP.r >= n) MP.l = i; n += g.games.length; }); }   // the side's lit row: the focused game's league, not a pin
   MP.l = Math.max(0, Math.min(MP.l, MP.leagues.length - 1));
   const shown = MP.only ? groups.slice(MP.l, MP.l + 1) : groups;   // a view of lists (the chooser): the side's chosen one alone
   MP.rows = []; shown.forEach(g => g.games.forEach(ev => MP.rows.push(ev)));

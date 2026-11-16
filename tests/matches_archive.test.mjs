@@ -34,6 +34,11 @@ const ARCHIVE = {
   'results/4335.json': { v: 2, results: [m('41', '2026-11-03T20:00:00Z', '133739', 'Barcelona', '133738', 'Real Madrid', '9', '9', '4335')] },   // a format this page does not know: nothing from it
 };
 
+const LEAGUES = { 'english-premier-league': { league: 'English Premier League', id: '4328', updated: '2026-11-04T04:00:00Z', events: [
+  ev('51', 'Arsenal', '133604', 'Chelsea', '133610', '2026-11-07T15:00:00', { idLeague: '4328', strLeague: 'English Premier League', intRound: '11' }),
+  ev('52', 'Everton', '133615', 'Fulham', '133600', '2026-11-08T15:00:00', { idLeague: '4328', strLeague: 'English Premier League', intRound: '11' })] } };
+const TABLE = { table: [{ idTeam: '133604', strTeam: 'Arsenal', intRank: '1', intPoints: '25' }, { idTeam: '133610', strTeam: 'Chelsea', intRank: '2', intPoints: '22' }] };
+
 const browser = await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {});
 const json = (r, j) => r.fulfill({ json: j, headers: { 'Access-Control-Allow-Origin': '*' } });
 async function open(hash, { archive = ARCHIVE } = {}) {
@@ -43,6 +48,9 @@ async function open(hash, { archive = ARCHIVE } = {}) {
     const u = r.request().url();
     const a = /\/data-archive\/(.+)$/.exec(u);
     if (a) { asked.push(a[1]); return archive[a[1]] ? json(r, archive[a[1]]) : r.fulfill({ status: 404, body: '' }); }
+    const l = /\/data-leagues\/leagues\/(.+)\.json$/.exec(u);
+    if (l) return LEAGUES[l[1]] ? json(r, LEAGUES[l[1]]) : r.fulfill({ status: 404, body: '' });
+    if (/lookuptable\.php\?l=4328&s=2026-2027$/.test(u)) { asked.push('table'); return json(r, TABLE); }
     const n = /eventsnext\.php\?id=(\d+)/.exec(u);
     if (n) return json(r, { events: SERVER_NEXT[n[1]] || null });
     if (u.includes('eventslast.php')) return json(r, { results: null });
@@ -89,7 +97,7 @@ const ids = (p, key) => p.evaluate(k => ((MP.leagues.find(x => x.key === k) || {
   await p.waitForTimeout(500);
   check('G2: no script error', !errors.length, errors.join(' | '));
   check('G2: the followed league\'s and the top leagues\' results files are asked', ['results/4328.json', 'results/4668.json'].every(f => asked.includes(f)), asked.join());
-  const order = await p.evaluate(() => MP.leagues.map(g => g.key + ':' + g.games.map(e => e.idEvent).join('+')).join(' '));
+  const order = await p.evaluate(() => MP.leagues.filter(g => !g.pin).map(g => g.key + ':' + g.games.map(e => e.idEvent).join('+')).join(' '));
   check('G2: «فرقك» first (the followed team\'s result), then the followed league, then the top league; only that day, only results', order === 'mine:21 4328:31 4668:22', order);
   check('G2: a result shows its score', /٢ - ٠/.test(await p.textContent('#mp-list section[data-g="mine"]')), await p.textContent('#mp-list section[data-g="mine"]'));
   check('G2: a file of an unknown format gives nothing', !(await p.evaluate(() => MP.rows.some(e => e.idEvent === '41'))));
@@ -131,6 +139,44 @@ const ids = (p, key) => p.evaluate(k => ((MP.leagues.find(x => x.key === k) || {
   await p.waitForTimeout(400);
   const none = await p.$$eval('#mp-list .fnone', ns => ns.map(n => n.textContent));
   check('A2: no file, no error: the empty lists say so', !errors.length && none.length === 2 && none.every(t => t === 'لا شيء هنا بعد'), errors.join(' | ') + none.join(' / '));
+  await ctx.close();
+}
+
+// ---- the followed leagues pinned on top of the side list: OK opens the league (its table, its results, its games)
+{
+  const { p, ctx, errors, asked } = await open('teams=136013&leagues=English Premier League&matchpage=1');
+  const side = await p.$$eval('#mp-side li', ls => ls.map(l => (l.classList.contains('pin') ? 'pin:' : '') + l.querySelector('span').textContent));
+  check('pins: the followed league is first in the side list, marked, before the day\'s sections', side[0] === 'pin:الدوري الإنجليزي' && side.slice(1).every(x => !x.startsWith('pin:')) && side.length > 1, side.join(' / '));
+  check('pins: the lit side row is the focused game\'s section, not the pin', await p.$$eval('#mp-side li.on', ls => ls.length === 1 && !ls[0].classList.contains('pin')));
+  await p.evaluate(() => { MP.zone = 'leagues'; MP.l = 0; mpRender(); });
+  await p.keyboard.press('Enter');
+  await p.waitForTimeout(400);
+  check('pins: no script error', !errors.length, errors.join(' | '));
+  check('pins: OK on the pin opens the league, its name on top, three tabs (table, results, games)', await p.evaluate(() => MP.view && MP.view.k === 'league' && MP.view.id === '4328')
+    && await p.textContent('#mp-h') === 'الدوري الإنجليزي' && (await p.$$eval('#mp-days li', ls => ls.map(l => l.textContent).join())) === 'جدول الترتيب,النتائج,المباريات');
+  check('pins: the table asks TheSportsDB once for the season the league\'s games say', asked.filter(a => a === 'table').length === 1, asked.join());
+  const table = await p.$$eval('#mp-list li', ls => ls.map(l => l.textContent));
+  check('pins: the table\'s rows: place, club, points', table.length === 2 && /^١\. .+٢٥ نقطة$/.test(table[0]), table.join(' / '));
+  await p.evaluate(() => { MP.zone = 'rows'; MP.r = 1; mpRender(); });
+  await p.keyboard.press('Enter');
+  check('pins: OK on a club of the table opens its page', await p.evaluate(() => MP.view.k === 'club' && MP.view.id === '133610'));
+  await p.evaluate(() => mpBack());
+  await p.evaluate(() => { MP.zone = 'days'; MP.d = 1; mpRender(); });
+  await p.keyboard.press('Enter');
+  const res = await p.evaluate(() => MP.leagues.map(g => g.games.map(e => e.idEvent).join('+')).join(' '));
+  check('pins: «النتائج» the league\'s last results (the archive), by day', res === '31', res);
+  await p.evaluate(() => { MP.zone = 'days'; MP.d = 2; mpRender(); });
+  await p.keyboard.press('Enter');
+  const fx = await p.evaluate(() => MP.leagues.map(g => g.name + ':' + g.games.map(e => e.idEvent).join('+')).join(' | '));
+  check('pins: «المباريات» its coming games by round', /الجولة ١١:51\+52$/.test(fx), fx);
+  check('pins: Back to the day', await p.evaluate(() => [mpBack(), MP.view].join()) === 'closed,');
+  await ctx.close();
+}
+{   // the table not answered (no season known, nothing asked): «الترتيب غير متاح الآن», no error
+  const { p, ctx, errors } = await open('matchpage=1', { archive: {} });
+  await p.evaluate(() => mpGo({k: 'league', id: '4339'}));
+  await p.waitForTimeout(300);
+  check('pins: a league with no table says so', !errors.length && await p.textContent('#mp-list .fnone') === 'الترتيب غير متاح الآن', errors.join(' | ') + await p.textContent('#mp-list'));
   await ctx.close();
 }
 
