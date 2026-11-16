@@ -486,6 +486,11 @@
 %s نقطة	%s points
 آخر النتائج	Last results
 المواجهات مع %s	Meetings with %s
+%s: %s %s فوز، %s تعادل، %s %s	%s: %s %s wins, %s draws, %s %s
+آخر مواجهة	Last meeting
+آخر مواجهتين	Last 2 meetings
+آخر %s مواجهات	Last %s meetings
+المواجهات	Meetings
 صفحة %s	%s page
 لا شيء هنا بعد	Nothing here yet
 تابع %s	Follow %s

@@ -257,6 +257,23 @@ const ids = (p, key) => p.evaluate(k => ((MP.leagues.find(x => x.key === k) || {
   await ctx.close();
 }
 
+// ---- 4.3.3 a coming game's card: the two clubs' last 5 meetings in one line (data-archive h2h)
+{
+  const six = [['3', '0'], ['1', '1'], ['0', '2'], ['2', '1'], ['1', '0'], ['0', '5']].map(([x, y], i) => m('h' + i, `2026-0${9 - i}-01T15:00:00Z`, i % 2 ? '136011' : '136013', '', i % 2 ? '136013' : '136011', '', i % 2 ? y : x, i % 2 ? x : y));
+  const { p, ctx, errors } = await open('teams=136013&matchpage=1', { archive: { ...ARCHIVE, 'h2h/136011-136013.json': { v: 1, pair: '136011-136013', meetings: six } } });
+  await p.evaluate(() => mpOpen(fbGames().find(e => e.idEvent === '11')));
+  await p.waitForTimeout(400);
+  const rows = await p.$$eval('#mp-detail .mdr li', ls => ls.map(l => l.textContent));
+  const line = rows.find(t => t.startsWith('المواجهات')) || '';
+  check('h2h: the card of a coming game says the last 5 meetings: the home club\'s wins, the draws, the other\'s wins (the 6th older one left out)', /^المواجهاتآخر ٥ مواجهات: الهلال ٣ فوز، ١ تعادل، .+ ١$/.test(line), rows.join(' / '));
+  await p.evaluate(() => mpOpen(Object.assign({}, fbGames().find(e => e.idEvent === '11'), { strStatus: 'FT', intHomeScore: '1', intAwayScore: '0', strTimestamp: '2026-11-03T17:00:00' })));
+  check('h2h: not on a finished game\'s card', !(await p.$$eval('#mp-detail .mdr li', ls => ls.some(l => l.textContent.startsWith('المواجهات')))));
+  await p.evaluate(() => mpOpen(Object.assign({}, fbGames().find(e => e.idEvent === '11'), { idAwayTeam: '136017' })));
+  await p.waitForTimeout(300);
+  check('h2h: two clubs with no meeting known: no line', !(await p.$$eval('#mp-detail .mdr li', ls => ls.some(l => l.textContent.startsWith('المواجهات')))) && !errors.length, errors.join(' | '));
+  await ctx.close();
+}
+
 await browser.close();
 if (failed) { console.log(failed + ' failed'); process.exit(1); }
 console.log('all match archive tests passed');

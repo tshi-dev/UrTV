@@ -1949,7 +1949,7 @@ function fresher(ev, lg){
 const leagueOf = (id, lg) => [...lg.values()].filter(e => String(e.idHomeTeam) === String(id) || String(e.idAwayTeam) === String(id));
 // 4.3.3 the match archive (docs/MATCH-ARCHIVE.md, branch data-archive): small files CI keeps. A 404, an unreadable answer or a `v` this page
 // does not know is «no data», never a wrong value. Each address is asked at most every 15 minutes (ARCH_C: j undefined until the first answer)
-const ARCH_BASE = 'https://raw.githubusercontent.com/tshi-dev/UrTV/data-archive/';
+const ARCH_BASE = 'https://raw.githubusercontent.com/tshi-dev/UrTV/data-archive/';   // the one place the archive's address is written (it may move to another data repository)
 const ARCH_C = {};
 const archUrl = path => /^https:/.test(path) ? path : ARCH_BASE + path;
 function archLoad(path){
@@ -4176,6 +4176,7 @@ const FB_W = {
   table:'جدول الترتيب', results:'النتائج', noTable:'الترتيب غير متاح الآن', pts:'%s نقطة',
   myLeagues:'دورياتي', add:'أضف دوريًا أو فريقًا', manage:'إعدادات فرقي', noTeams:'ما تتابع فريقًا بعد', noLeagues:'ما تتابع دوريًا بعد', allLands:'كل الدول',
   lgTeams:'فرق هذا الدوري', lgOpen:'الترتيب والنتائج', followedL:'أُضيف %s إلى دورياتك', unfollowedL:'أُزيل %s من دورياتك', on:'متابَع', find:'ابحث عن فريق', found:'نتائج البحث', typeName:'اكتب اسم الفريق', full:'وصلت للحد: ٨ دوريات', choose:'اختر دوريًا',
+  h2hSum:'%s: %s %s فوز، %s تعادل، %s %s', h2h1:'آخر مواجهة', h2h2:'آخر مواجهتين', h2hN:'آخر %s مواجهات', meet:'المواجهات',
   club:'صفحة الفريقين', last:'آخر النتائج', h2h:'المواجهات مع %s', see:'صفحة %s', loading:'جارٍ التحميل…', noData:'لا شيء هنا بعد', followT:'تابع %s', unfollowT:'ألغِ متابعة %s',
 };
 const fw = (s, ...a) => { let i = 0; return String(s).replace(/%(\d)\$s|%s|%%/g, (m, n) => m === '%%' ? '%' : String(n ? a[+n - 1] : a[i++])); };
@@ -4493,10 +4494,28 @@ function lgIdOf(name){
   const ix = archWant('index.json'), hit = ix && ix.leagues && Object.entries(ix.leagues).find(([, l]) => l && String(l.en).toLowerCase() === String(name).toLowerCase());
   return hit ? hit[0] : '';
 }
+// what shows the archive's data is drawn again when a file answers: «المباريات», else the home's card of the next game
+function archDrawn(){ if(document.getElementById('mp')) mpRender(); else if(CARDS.some(c => c.kind === 'nextmatch')) renderPanel(false, 'nextmatch'); }
+// 4.3.3 two clubs' last meetings (at most 5, the archive's h2h): {n, a, d, b}, a the first club's wins; null when none is known
+function h2hOf(a, b){
+  a = String(a); b = String(b);
+  if(!/^\d+$/.test(a) || !/^\d+$/.test(b) || a === b) return null;
+  const j = archWant('h2h/' + [a, b].sort((x, y) => x - y).join('-') + '.json');
+  const ms = ((j && j.meetings) || []).filter(m => m && m.hs != null && m.as != null && m.hs !== '' && m.as !== '').slice(0, 5);
+  if(!ms.length) return null;
+  const r = {n: ms.length, a: 0, d: 0, b: 0};
+  ms.forEach(m => { const hs = +m.hs, as = +m.as; if(hs === as) r.d++; else if((hs > as) === (String(m.h) === a)) r.a++; else r.b++; });
+  return r;
+}
+// «آخر ٥ مواجهات: الهلال ٣ فوز، ١ تعادل، النصر ١»
+function h2hLine(ev){
+  const h = String(ev.idHomeTeam), a = String(ev.idAwayTeam), r = h2hOf(h, a);
+  return r ? fw(FB_W.h2hSum, r.n === 1 ? FB_W.h2h1 : r.n === 2 ? FB_W.h2h2 : fw(FB_W.h2hN, ar(r.n)), teamAr(ev.strHomeTeam, h), ar(r.a), ar(r.d), teamAr(ev.strAwayTeam, a), ar(r.b)) : '';
+}
 // …the page's own: the file asked when not answered for 15 minutes, the page drawn again when it answers
 function archWant(path){
   const c = ARCH_C[archUrl(path)];
-  if(!c || (!c.p && Date.now() - c.at >= 15 * 60000)) archLoad(path).then(() => { if(document.getElementById('mp')) mpRender(); });
+  if(!c || (!c.p && Date.now() - c.at >= 15 * 60000)) archLoad(path).then(archDrawn);
   return ARCH_C[archUrl(path)].j;
 }
 // 4.3.3 a past day: its results alone, from the archive's league files (the followed leagues, then the top ones) beside what the page has
@@ -4642,7 +4661,9 @@ function mpDetailRender(){
   const big = side => { const c = crestOf(ev, side); return `<div class="mdt">${c ? `<img class="mdc" src="${esc(c.u)}" alt="">` : '<span class="mdc"></span>'}<b>${esc(nbName(teamAr(ev['str' + side + 'Team'], ev['id' + side + 'Team'])))}</b></div>`; };
   const mid = (fbLive(ev, now) || fbDone(ev, now)) && fbScored(ev) ? `<b>${ar(+ev.intHomeScore)} - ${ar(+ev.intAwayScore)}</b><i>${fbWhen(ev, now)}</i>`
     : `<b>${fbClock(k)}</b><i>${fbDayWord(fbDayOf(k))}</i>`;
+  const meet = !fbLive(ev, now) && !fbDone(ev, now) && h2hLine(ev);   // 4.3.3 a coming game: the two clubs' last meetings
   const rows = [ev.strVenue ? `<li><span>${FB_W.venue}</span><i>${esc(venueName(ev.strVenue))}</i></li>` : '', m ? `<li><span>${FB_W.channel}</span><i>${esc(m.detail)}</i></li>` : '',
+    meet ? `<li><span>${FB_W.meet}</span><i>${esc(meet)}</i></li>` : '',
     `<li class="mdp"><div><span>${FB_W.withPrayer}</span><i class="mds">${esc(fbLive(ev, now) ? fbStatus(ev, now) : fbDone(ev, now) ? FB_W.ended : fbSentence(ev))}</i></div>${mpLine(ev)}</li>`].join('');
   const btns = mpButtons(ev, now), club = mpHasClub(ev);
   MP.btn = Math.max(-1, Math.min(MP.btn, btns.length + club));   // btns.length is «رجوع», the row under the actions; 4.3.3 beside it «صفحة الفريقين»
