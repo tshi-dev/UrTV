@@ -70,11 +70,11 @@ def build(base, puts, idx_env):
     else:
         git("read-tree", "--empty", env=idx_env)
     for src, dest in puts:
-        git("rm", "-r", "-q", "--cached", "--ignore-unmatch", dest.rstrip("/"), env=idx_env)
+        git("rm", "-r", "-q", "--cached", "-f", "--ignore-unmatch", "--", dest.rstrip("/"), env=idx_env)   # -f: a worktree file at the same path (the generator's output) is not our business
         for p in files_under(src):
             blob = git("hash-object", "-w", str(p)).stdout.decode().strip()
             git("update-index", "--add", "--cacheinfo", f"100644,{blob},{dest.rstrip('/')}/{p.relative_to(src).as_posix()}", env=idx_env)
-    git("rm", "-q", "--cached", "--ignore-unmatch", INDEX, env=idx_env)
+    git("rm", "-q", "--cached", "-f", "--ignore-unmatch", "--", INDEX, env=idx_env)
     listing = git("ls-files", "-s", env=idx_env).stdout.decode().splitlines()
     blobs = {}
     for line in listing:

@@ -69,5 +69,24 @@ with tempfile.TemporaryDirectory() as t:
     r = sh(sys.executable, "tools/publish.py", "--put", "empty:markets", "-m", "m", cwd=t / "w1", ok=False)
     check("an empty folder publishes nothing (the last good copy stays)", r.returncode != 0 and json.loads(show("markets/markets.json")) == {"p": 1}, r.stderr)
 
+    # as in CI: a checkout of main (a HEAD commit), the generator's folder at the same path as its destination, with files that differ from
+    # the branch's, and an index.json of the Status job in the worktree (Stations run 43828097721, Status run 43828105367)
+    w = t / "w3"
+    w.mkdir()
+    sh("git", "init", "-q", "-b", "main", cwd=w)
+    sh("git", "remote", "add", "origin", str(t / "o.git"), cwd=w)
+    shutil.copytree(ROOT / "tools", w / "tools")
+    (w / "README.md").write_text("x")
+    sh("git", "add", "README.md", cwd=w)
+    sh("git", "commit", "-qm", "main", cwd=w)
+    (w / "stations").mkdir()
+    (w / "stations" / "report.json").write_text(json.dumps({"ok": "new"}))
+    (w / "index.json").write_text("{}")
+    r = sh(sys.executable, "tools/publish.py", "--put", "stations:stations", "-m", "Stations", cwd=w, ok=False)
+    check("CI's case: the folder at its own destination path, a stray index.json in the worktree", r.returncode == 0
+          and json.loads(show("stations/report.json")) == {"ok": "new"} and json.loads(show("index.json")).get("v") == 1, r.stderr[-400:])
+    st = sh("git", "status", "--porcelain", cwd=w).stdout
+    check("…and the worktree and the checkout's own index are untouched", "stations/" in st and "index.json" in st and " D " not in st, st)
+
 print(f"\n{len(fails)} failed" if fails else "\nall passed")
 sys.exit(1 if fails else 0)
