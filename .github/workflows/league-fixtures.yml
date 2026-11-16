@@ -142,6 +142,9 @@ jobs:
           python3 -u .github/tools/match_archive.py build --leagues dl/leagues --prev prev --out out \
             ${{ env.LIVE == 'true' && '--live live.json --live-note live-note.json' || '' }} \
             ${{ env.BACKFILL == 'true' && '--backfill backfill.json --names names.json --backfill-report backfill-report.json' || '' }}
+      - name: The next Formula 1 race (Jolpica-F1, at most once a day; a failure keeps the last file)
+        if: steps.live.outputs.skip != 'true'
+        run: python3 -u .github/tools/sports_files.py f1 --prev prev --out out || echo "f1: skipped"
       - name: Push to data-archive
         if: steps.live.outputs.skip != 'true'
         run: |

@@ -15,6 +15,8 @@ when a page needs them (a club's page, a head-to-head, a league's past results).
 | `h2h/<lowId>-<highId>.json` | every finished meeting of two teams, newest first, at most 100 | ~1–10 KB |
 | `results/<leagueId>.json` | a league's last 30 finished games, newest first («النتائج السابقة») | ~8 KB |
 | `store/<leagueId>/<season>.json` | the store itself: every game of a league's season | ~50–150 KB |
+| `sports/<leagueId>.json` | 4.4 the sports cards: the table computed from the season (each club's last 5), the last 2 days' results, the next 7 days' games, and a cup's knockout rounds (`cup.rounds`) | ~2–15 KB |
+| `f1/next.json` | 4.4 the next Formula 1 race and its sessions (UTC), from Jolpica-F1, asked at most once a day | ~1 KB |
 | `health.json` | the last run: counts, size, problems (for maintainers, not for screens) | 1 KB |
 
 Ids are TheSportsDB's (`idTeam`, `idLeague`), the same as `assets/shared/teams.json`, `data-leagues` and the screens use.
