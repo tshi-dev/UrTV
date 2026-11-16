@@ -2932,6 +2932,8 @@ public class MainActivity extends Activity {
         }
         if (liveTvPkg != null) rows.add(inputRow(S.t("البث التلفزيوني"), () -> openLiveTv()));
         if (inputs.isEmpty() && inputPickerPkg != null) rows.add(inputRow(S.t("كل المصادر"), () -> guarded(ParentalPolicy.INPUT_PICKER, TvVendor.pkg(inputPickerPkg), "كل المصادر", () -> openPackage(inputPickerPkg))));
+        Intent panel = inputPickerPkg == null ? systemInputs() : null;   // #54: no picker of the TV's own: the system's inputs panel, when it answers
+        if (panel != null) rows.add(inputRow(S.t("كل المصادر"), () -> launchGuarded(ParentalPolicy.INPUT_PICKER, panel, "كل المصادر")));
 
         if (rows.isEmpty()) rows.add(inputRow(S.t("الإعدادات"), () -> launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون")));
         for (TextView r : rows) {
@@ -3809,11 +3811,25 @@ public class MainActivity extends Activity {
                 if (launch(explicit)) return;
             }
         }
+        Intent panel = systemInputs();
+        String step = TvVendor.inputFallback(inputPickerPkg != null, panel != null, liveTvPkg != null);   // #54: Skyworth, MediaTek: no app took the link
         String fallback = inputPickerPkg != null ? inputPickerPkg : liveTvPkg;
-        if (fallback != null) {
+        if ("inputs".equals(step)) {
+            launchGuarded(ParentalPolicy.INPUT_PICKER, panel, "كل المصادر");
+        } else if (fallback != null) {
             guarded(ParentalPolicy.INPUT_PICKER, TvVendor.pkg(fallback), "كل المصادر", () -> openPackage(fallback));
         } else {
             launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون");
+        }
+    }
+
+    /** The TV system's own inputs panel (TvVendor.SYSTEM_INPUTS), or null when nothing on this TV answers it. */
+    private Intent systemInputs() {
+        Intent i = new Intent(TvVendor.SYSTEM_INPUTS);
+        try {
+            return getPackageManager().resolveActivity(i, PackageManager.MATCH_DEFAULT_ONLY) != null ? i : null;
+        } catch (RuntimeException e) {
+            return null;
         }
     }
 
@@ -3823,8 +3839,10 @@ public class MainActivity extends Activity {
      */
     private void openLiveTv() {
         findTvApps();
-        String step = TvVendor.tvStep(TvVendor.pkg(liveTvPkg), inputPickerPkg != null, liveTvPkg != null);
-        if ("live".equals(step)) guarded(ParentalPolicy.INPUT_LIVE_TV, TvVendor.pkg(liveTvPkg), "البث التلفزيوني", () -> openPackage(liveTvPkg));
+        Intent panel = systemInputs();
+        String step = TvVendor.tvStep(TvVendor.pkg(liveTvPkg), inputPickerPkg != null, liveTvPkg != null, panel != null);
+        if ("inputs".equals(step)) launchGuarded(ParentalPolicy.INPUT_PICKER, panel, "كل المصادر");
+        else if ("live".equals(step)) guarded(ParentalPolicy.INPUT_LIVE_TV, TvVendor.pkg(liveTvPkg), "البث التلفزيوني", () -> openPackage(liveTvPkg));
         else if ("picker".equals(step)) guarded(ParentalPolicy.INPUT_PICKER, TvVendor.pkg(inputPickerPkg), "كل المصادر", () -> openPackage(inputPickerPkg));
         else launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون");
     }

@@ -39,6 +39,23 @@ final class TvVendor {
      */
     static final String[] RESUMES_LAST_INPUT = {"com.tcl.tv"};
 
+    /**
+     * The TV system's own inputs panel (AOSP Live TV's input list, and the inputs panel of the Android TV system UI answer it). On a
+     * Skyworth or MediaTek set no app takes an input's passthrough link and there is no picker of ours to name (GitHub #54): this panel
+     * is the way to the input there, before the TV's settings.
+     */
+    static final String SYSTEM_INPUTS = "com.android.tv.action.VIEW_INPUTS";
+
+    /**
+     * Where an input goes when no app took its passthrough link: "picker" (the TV's own source picker), "inputs" (the system's inputs
+     * panel), "live" (the live TV app: it may show the last input, but it is the TV), else "settings".
+     */
+    static String inputFallback(boolean havePicker, boolean haveInputs, boolean haveLive) {
+        if (havePicker) return "picker";
+        if (haveInputs) return "inputs";
+        return haveLive ? "live" : "settings";
+    }
+
     interface Probe { boolean usable(String candidate); }
 
     /** The place of the tuner among the TV's inputs (their TvInputInfo types, in the list's order): the first one of type TUNER, -1 when there is none. Never «the last input used». */
@@ -48,6 +65,11 @@ final class TvVendor {
     }
 
     /** What opening «the TV» (the tuner) does: "live" (the live TV app), "picker" (the TV's own source picker) or "settings", the first of these the TV has, in this order. */
+    static String tvStep(String livePackage, boolean havePicker, boolean haveLive, boolean haveInputs) {
+        String step = tvStep(livePackage, havePicker, haveLive);
+        return "settings".equals(step) && haveInputs ? "inputs" : step;   // #54: no live TV app and no picker: the system's inputs panel before the settings
+    }
+
     static String tvStep(String livePackage, boolean havePicker, boolean haveLive) {
         boolean resumes = false;
         for (String r : RESUMES_LAST_INPUT) if (r.equals(livePackage)) resumes = true;

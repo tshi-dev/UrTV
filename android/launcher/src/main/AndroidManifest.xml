@@ -116,6 +116,10 @@
         <intent>
             <action android:name="android.settings.SETTINGS" />
         </intent>
+        <!-- «المصادر» (#54): the TV system's own inputs panel, the fallback where no app takes an input's passthrough link (TvVendor.SYSTEM_INPUTS) -->
+        <intent>
+            <action android:name="com.android.tv.action.VIEW_INPUTS" />
+        </intent>
         <!-- «شاهد على ثمانية» on a game's card: Thmanyah's apps (the TV build first), so the page can tell whether one is installed -->
         <package android:name="com.thmanyah.shasha.tv" />
         <package android:name="com.thmanyah.shasha" />
