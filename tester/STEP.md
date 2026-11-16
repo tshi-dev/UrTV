@@ -1,4 +1,11 @@
-«✅ GO — step 75 now (the owner's week plan started 2026-11-16; he allowed testing couch-tv and Clean your TV on his TV). Then step 76 (4.3.2 release check) right after 75.»
+«✅ GO — step 75 now (the owner's week plan started 2026-11-16; he allowed testing couch-tv and Clean your TV on his TV). Then step 76 (4.3.2 release check), then step 77 (the safe home switch).»
+
+## step 77 — the safe home switch (branch work/432-stockhome 9d4ff5f6; it decides if this joins 4.3.2)
+Do it AFTER step 76. TV muted. The APKs are the `apks` artifact of the Build APKs run 301 on github.com/tshi-dev/UrTV (branch builds are not published). The full steps are docs/TEST-PLAN.md §13 (S1–S7) on that branch: read them there and follow them exactly.
+Before you start: write down `pm list packages -d`, the HOME role holder (`cmd role get-role-holders android.app.role.HOME`), what Home opens, and the owner's home settings, so you can put everything back.
+Run S1, S2, S3 (one reboot), S5 and S6 on the owner's TV. S4 (cutting the connection mid-switch) and S7 only if they can be done and undone safely; otherwise write «skipped» with the reason.
+For each: the three checks (`pm list packages -d`, the role holder, `resolve-activity` for HOME), what the Home key opens from an app and from UrTV, pictures, and any toast text. After S3: did the TV start normally (no blank screen, no restart loop) and is the Wi-Fi as before.
+End: put the TV back to how it was before step 77 (UrTV as the home, the owner's apps and settings), then install the normal apk-next build again over the branch build. Muted and asleep. Report «step 77» with a clear verdict line: SAFE TO JOIN 4.3.2 / NEEDS THE 4.3.3 WATCHER / PROBLEM.
 
 ## step 76 — 4.3.2 release check (apk-next build from next 59188ee4, the newest; TV muted)
 Update both apps from the app on channel next (About must say 4.3.2). Report each line OK / problem with numbers and pictures.
