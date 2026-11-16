@@ -26,8 +26,8 @@ function net(route) {
 }
 const SCENES = {   // the photo, its frosted glass (SceneClock.frost), its cut-out cropped to its box (scenes.tsv / masks index.json) and the digits' place, in dp
   riyadh: { photo: 'riyadh.jpg', glass: 'riyadh-frost.jpg', fg: 'riyadh-fg.webp', fgTop: 67, fgH: 322, top: 110, size: 192 },   // the app's Riyadh (owner_ok): digits 266-542 centred, its clean cut-out (0,134,1920,644) over them
-  night: { photo: 'night.jpg', glass: 'night-frost.jpg', fg: 'night-fg.webp', fgTop: 77, fgH: 312, top: 45, size: 196, x: 1080 },   // scenes v4: digits 137-419, centre x 1080 (digits_x): every digit and the colon legible
-  nature7: { dark: 1, photo: 'ksa9.jpg', glass: 'ksa9-dark.jpg', fg: 'ksa9-fg.webp', fgTop: 168, fgH: 221, top: 48.5, size: 195 },   // ksa-cities 9 (palms; nature/16 is no longer published): digits 144-425 (PhotoGlassPlan, CROSS 0.22), luma 206 behind them: the dark glass
+  night: { photo: 'night.jpg', glass: 'night-frost.jpg', top: 110, size: 192 },   // scenes v5: the clock at the fixed box (266-542), no cut-out (it would cut the digits there)
+  nature7: { photo: 'anozjF6uqI0.jpg', glass: 'anozjF6uqI0-frost.jpg', fg: 'anozjF6uqI0-fg.webp', fgTop: 233, fgH: 156, top: 110, size: 192 },   // masks v5: photos/anozjF6uqI0 (depth clean,couch), the clock at the fixed box
 };
 const SHOTS = [
   ['01-clean-riyadh', 'clean', 'riyadh'], ['02-clean-night', 'clean', 'night'], ['03-clean-photo', 'clean', 'nature7'], ['04-clean-nonext-night', 'clean', 'night', 'nonext'],
