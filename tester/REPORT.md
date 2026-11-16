@@ -2778,3 +2778,18 @@ Run 301 of work/432-stockhome has versionCode **301**; the TV has apk-next **322
 - «سجل الأداء والأخطاء»: I did not find it in «عام» or «عن التطبيق» (that page shows the description, «الإصدار 0.9.16-beta9», «تقرير أو اقتراح», «نسخة رسمية ✓»); I did not walk every section. Please say where it is.
 - Cleaned up: `pm clear` + uninstall (the Player was not on the TV before).
 - Step 78A: skipped (branch build not installable, see above).
+
+## step 85 — «إضافات تلفزيونك» add-on (work/433-setup c65efb66, run 323, versionCode 323) — partial, 3 PROBLEMS
+Written down first: `enabled_accessibility_services` = only the owner's Key Mapper (`io.github.sds100.keymapper/.system.accessibility.MyAccessibilityService`), `accessibility_enabled` 0.
+- **X1 PASS**: home + screensaver 323 installed over 322 with no «بيانات حساسة» block; `dumpsys package sa.urtv.home` has no accessibility service.
+- **X2 PASS**: control centre → «أطفئ الآن» says «يحتاج تفعيل»; OK opens «إضافات تلفزيونك» (title, 3 numbered lines, Play Protect box, «ثبّت الإضافة» focused, «ليس الآن»); «ليس الآن» closes it back to the home. Pictures x2c.png.
+- X3 not run through the screen: I installed `urtv-extras.apk` (from the run artifact) with adb. After install the screen shows «الإضافة مثبّتة: بقي تشغيلها» and «شغّلها في «تسهيل الاستخدام»» (x4a.png).
+- **PROBLEM 1 (X4)**: `dock.sh extras-setup` appended the service to the list but it was NOT bound: `Bound services:{}`, and logcat says `[TclAppBoot]: forbid bind service sa.urtv.extras/sa.urtv.home.ExtrasA11yService` (the TCL's own start-up policy refused the first bind). Turning the list off and on again bound it (`Bound services: إضافات تلفزيونك`). So on this TCL the script's one write is not enough; the second write works.
+- X4/X5 PASS after the rebind: «أطفئ الآن» turned the screen off (`mWakefulness=Asleep`). (`music.sh sleep 1` is the music timer; it did not turn the screen off; I did not run the control centre sleep timer.)
+- **PROBLEM 2 (X10)**: `am force-stop sa.urtv.extras` → `Bound services:{}` and it stayed unbound after a Home start and after running `extras-setup` again (the list already had it, so nothing re-binds). Only off/on of the list binds it.
+- X7 INCONCLUSIVE: Settings key (176) in YouTube's browse screen (no video playing): nothing opened, focus stayed in YouTube; I did not play a video.
+- X8/X9 N/A: launcherx is disabled on this TV (old switch), there is no Google home to fight with.
+- X6 (phone typing), X11, X12: not run (time).
+- Also seen: TclAppBoot also forbids binding the owner's Key Mapper service (`forbid bind service io.github.sds100.keymapper…`) — so the owner's own accessibility service is probably not running either.
+- **PROBLEM 3 (my side, important)**: the branch build is versionCode **323**, newer than the apk-next **322**, so I could NOT put apk-next back («Then reinstall apk-next»: downgrade refused). The TV now has the 433-setup home + screensaver 323 (version name still 4.3.2; `saver.sh show` identical to before except `build 323`). The next apk-next build with a run number above 323 (any new next build) replaces it by the normal update; the app shows «newest 322» meanwhile.
+- Put back: accessibility services = Key Mapper only, `accessibility_enabled` 0, `sa.urtv.extras` uninstalled, all of the owner's settings as before.
