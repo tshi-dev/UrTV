@@ -27,7 +27,7 @@ def text(p):
 HOME = "android/launcher/src/main/java/sa/urtv/home/"
 if shutil.which("javac") and shutil.which("java"):
     tmp = tempfile.mkdtemp()
-    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / HOME / "A11yList.java"), str(ROOT / "tests/A11yListRun.java")], check=True, capture_output=True)
+    subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / HOME / "A11yList.java"), str(ROOT / HOME / "ExtrasWords.java"), str(ROOT / "tests/A11yListRun.java")], check=True, capture_output=True)
     out = subprocess.run(["java", "-Dfile.encoding=UTF-8", "-Dstdout.encoding=UTF-8", "-cp", tmp, "sa.urtv.home.A11yListRun"], capture_output=True, text=True).stdout
     for line in out.splitlines():
         if line.startswith(("PASS ", "FAIL ")):

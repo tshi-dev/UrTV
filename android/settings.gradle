@@ -5,4 +5,4 @@ dependencyResolutionManagement {
     repositories { google(); mavenCentral() }
 }
 rootProject.name = 'urtv'
-include ':app', ':launcher'
+include ':app', ':launcher', ':extras'

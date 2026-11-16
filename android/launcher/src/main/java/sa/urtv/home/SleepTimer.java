@@ -91,7 +91,7 @@ final class SleepTimer {
     static String turnOff(Context c) {
         String done;
         try { MusicService.stopIfPlaying(c); } catch (RuntimeException ignored) { }
-        if (SleepService.sleepNow()) {
+        if (Extras.sleepNow()) {
             done = "screen off";
         } else {
             try {
@@ -110,7 +110,7 @@ final class SleepTimer {
         int left = minutesLeft(c);
         String last = prefs(c).getString("last", "");
         return "sleep: " + (left == 0 ? "off" : left + " minutes left")
-            + " | at the end: " + (SleepService.enabled() ? "the screen turns off" : "the sound stops and the screensaver comes up (the sleep service is off: optimize/dock.sh sleep-setup)")
+            + " | at the end: " + (Extras.enabled() ? "the screen turns off" : "the sound stops and the screensaver comes up (UrTV Extras is not installed or its service is off: optimize/dock.sh extras-setup)")
             + (last.isEmpty() ? "" : " | last time: " + last);
     }
 }

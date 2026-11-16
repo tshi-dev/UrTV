@@ -25,7 +25,8 @@ import java.util.List;
  */
 public final class A11yHeal extends BroadcastReceiver {
     static final String TAG = "UrTVA11y";
-    static final String TYPE = "sa.urtv.home/sa.urtv.home.TypeService", SLEEP = "sa.urtv.home/sa.urtv.home.SleepService";
+    /** 4.3.3: the one service is the add-on's («إضافات تلفزيونك», ExtrasWords.SERVICE); the home has none. The check heals it after the add-on's own update too, at the home's next start or boot. */
+    static final String TYPE = ExtrasWords.SERVICE, SLEEP = ExtrasWords.SERVICE;
     private static final String LIST = Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, SWITCH = Settings.Secure.ACCESSIBILITY_ENABLED;
     /** time for Android to bind a service it is going to bind anyway, before we judge it is not running */
     private static final long SETTLE_MS = 8_000;
@@ -60,14 +61,13 @@ public final class A11yHeal extends BroadcastReceiver {
     /** One of our services is in the TV's list but Android does not run it (the phone page says so instead of doing nothing). */
     public static boolean stuck(Context c) {
         String list = read(c, LIST);
-        return (A11yList.has(list, TYPE) && !TypeService.enabled()) || (A11yList.has(list, SLEEP) && !SleepService.enabled());
+        return A11yList.has(list, TYPE) && !Extras.enabled();
     }
 
     /** Our service is in the list AND Android runs it (bound): the carry's accessibility stage is done only then. */
     static boolean listedAndBound(Context c) {
         String list = read(c, LIST);
-        boolean typeOk = A11yList.has(list, TYPE) && TypeService.enabled(), sleepOk = A11yList.has(list, SLEEP) && SleepService.enabled();
-        return (A11yList.has(list, TYPE) || A11yList.has(list, SLEEP)) && !stuck(c) && (typeOk || sleepOk);
+        return A11yList.has(list, TYPE) && Extras.enabled();
     }
 
     static void check(Context c, String why) {

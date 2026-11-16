@@ -101,7 +101,6 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 كل المصادر	All inputs
 الإعدادات	Settings
 إلغاء	Cancel
-لإطفاء الشاشة: فعّل «%s»	To turn the screen off, enable “%s”
 أدخل الرمز	Enter PIN
 هذا مقفل بالرمز الأبوي	This is locked with the parental PIN
 «%s» مقفل بالرمز الأبوي	“%s” is locked with the parental PIN
@@ -296,10 +295,6 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 تشغيل أو إيقاف	Play or pause
 السابق	Previous
 التالي	Next
-تلفزيونك: إطفاء الشاشة	Your TV: screen off
-يطفئ شاشة التلفزيون عند انتهاء «مؤقت النوم»، ويضغط «رجوع» و«الرئيسية» (وفي أندرويد ١٣ وما فوق الأسهم والاختيار) عندما ترسل جوالك ذلك. لا يقرأ شيئًا من الشاشة ولا يسجّل ما تكتب، وهذا كل ما يفعله.	Turns the TV’s screen off when the sleep timer ends, and presses Back and Home (and on Android 13 and up the arrows and OK) when your phone sends them. It reads nothing on the screen and records nothing you type; that is all it does.
-تلفزيونك: التحكم والكتابة من الجوال	Your TV: phone control and typing
-يضغط الأسهم والاختيار والرجوع والرئيسية التي ترسلها من جوالك داخل التطبيق الذي أمامك على التلفزيون، ويكتب النص الذي ترسله في حقل النص فيه. يطلب من أندرويد خبر تغيّر النافذة فقط ليعرف أي تطبيق أمامك ولا يقرأ منه شيئاً، ولا ينظر في الشاشة إلا لحظة وصول نص أو زر من جوالك (ليجد الحقل أو ليحرّك التركيز قبل أندرويد ١٣)، ولا يحفظ ولا يسجّل ولا يرسل لجوالك أي شيء مما يراه، ولا يكتب في حقل كلمة مرور ولا في تطبيق مقفول بالرقم السري. وحين تكون خارج الشاشة الرئيسية (رسيفر على HDMI مثلاً) يجعل زر الإعدادات في الريموت يفتح إعدادات التلفزيون، ويترك كل زر غيره كما هو دون أن يقرأه أو يسجّله.	Presses the arrows, OK, Back and Home you send from your phone inside the app in front of you on the TV, and types the text you send into its text field. It asks Android only to be told when the window changes, to know which app is in front, and reads nothing from it; it looks at the screen only the moment a text or a button arrives from your phone (to find the field, or to move the focus before Android 13), and keeps, records or sends your phone nothing it sees. It never types into a password field or into an app locked with the PIN. Outside the home screen (a receiver on HDMI, say) it makes the remote’s settings button open the TV’s settings, and leaves every other button as it is, without reading or recording it.
 التشغيل	Playback
 الأذان التلقائي	Automatic adhan
 مفعّل	On
@@ -640,7 +635,6 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 الجهة المقابلة للساعة	Opposite the clock
 وسط الشاشة	Middle of the screen
 يحتاج تفعيل، اضغط للتفعيل	Needs turning on, press to set up
-فعّل «%s»	Turn on “%s”
 يحتاج تفعيل	Needs turning on
 لا يوجد اتصال بالإنترنت، تحقق من الشبكة	No internet connection, check the network
 المحطة لا تردّ الآن، جرّب بعد قليل	The station is not answering, try again soon
@@ -682,3 +676,29 @@ HDMI ARC (مضخم أو ساوند بار)	HDMI ARC (amplifier or soundbar)
 بحث	Search
 غير متوفرة	Not available
 هذه السورة غير متوفرة بصوت هذا القارئ	This reciter has no recording of this surah
+%s تحتاج إضافة صغيرة منّا اسمها «إضافات تلفزيونك». فيها ثلاث ميزات:	%s needs a small add-on of ours called “UrTV Extras”. It has three features:
+«أزرار الجوال داخل التطبيقات»	“Phone buttons inside apps”
+«إضافات تلفزيونك» شغّالة	“UrTV Extras” is on
+«إطفاء الشاشة»	“Screen off”
+«الكتابة من الجوال»	“Typing from the phone”
+إضافات تلفزيونك	UrTV Extras
+إعدادات التلفزيون مقفولة بالرقم السري: افتحها من «مركز التحكم» واختر «إضافات تلفزيونك»	The TV’s settings are locked with the PIN: open them from “Control center” and choose “UrTV Extras”
+اختر «إضافات تلفزيونك» وشغّلها، ثم ارجع	Choose “UrTV Extras”, turn it on, then come back
+افتح إعدادات التلفزيون ← تسهيل الاستخدام، وشغّل «إضافات تلفزيونك»	Open the TV’s Settings → Accessibility and turn on “UrTV Extras”
+الإضافة مثبّتة: بقي تشغيلها	The add-on is installed: it only needs turning on
+الملف ليس «إضافات تلفزيونك»، فما ثبّتناه	The file is not “UrTV Extras”, so it was not installed
+بعد التثبيت نفتح لك «تسهيل الاستخدام» لتشغّل «إضافات تلفزيونك». تقدر تحذفها متى ما تبي، وتلفزيونك يشتغل بدونها.	After the install we open “Accessibility” for you to turn on “UrTV Extras”. You can remove it any time; UrTV works without it.
+ثبّت الإضافة	Install the add-on
+شغّلها في «تسهيل الاستخدام»	Turn it on in “Accessibility”
+عند التثبيت ممكن يقول Play Protect إن التطبيق «يطلب بيانات حساسة». هذا لأن الإضافة تستخدم «تسهيل الاستخدام» لتعرف أي تطبيق قدامك فقط: ما تقرأ اللي تكتبه ولا ترسل شيئاً. اضغط «تثبيت على أي حال».	While installing, Play Protect may say the app “requests sensitive data”. That is because the add-on uses “Accessibility” only to know which app is in front: it does not read what you type and sends nothing. Press “Install anyway”.
+فعّل «إضافات تلفزيونك»	Turn on “UrTV Extras”
+لإطفاء الشاشة: «إضافات تلفزيونك»	To turn the screen off: “UrTV Extras”
+ليس الآن	Not now
+ما قدرنا نثبّتها. جرّب مرة ثانية	We could not install it. Try again
+ما قدرنا ننزّلها. جرّب مرة ثانية	We could not download it. Try again
+هذه الميزة	This feature
+وافق على التثبيت في الشاشة التي ظهرت، ولو قال Play Protect شيئاً اضغط «تثبيت على أي حال»	Accept the install on the screen that came up; if Play Protect says something, press “Install anyway”
+١. زر الرئيسية يرجّعك لتلفزيونك لو فتح التلفزيون شاشته الأصلية (أجهزة Google TV).	1. The Home button brings you back to UrTV if the TV opens its own home (Google TV sets).
+٢. الكتابة من الجوال داخل التطبيقات الثانية، ومؤقت النوم يطفي الشاشة.	2. Typing from the phone inside other apps, and the sleep timer turns the screen off.
+٣. زر الإعدادات في الريموت يشتغل وأنت تشاهد فيديو HDR.	3. The remote’s Settings button works while you watch HDR video.
+تحديث إضافات تلفزيونك	Updating UrTV Extras

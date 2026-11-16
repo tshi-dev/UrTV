@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- «إضافات تلفزيونك»: ONE event type, typeWindowStateChanged: which window came to the front (its package and class only: the Home watch, and Android's own
+     bookkeeping so getRootInActiveWindow works). No content event is asked for. canRetrieveWindowContent: only at the moment a phone sends text or a key (the
+     field, the focus), nothing kept. canRequestFilterKeyEvents: the right to ask for keys; the flag itself is set at run time only while the Settings key could
+     be ours to answer (SettingsKey), and every other key goes back untouched. -->
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/service_desc"
+    android:accessibilityEventTypes="typeWindowStateChanged"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:notificationTimeout="100"
+    android:canRetrieveWindowContent="true"
+    android:canRequestFilterKeyEvents="true" />

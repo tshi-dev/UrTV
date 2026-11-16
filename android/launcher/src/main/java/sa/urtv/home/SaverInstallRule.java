@@ -24,8 +24,11 @@ final class SaverInstallRule {
      * Null when the downloaded file may be handed to Android's installer: it is the second app, and it is signed by exactly the key this app
      * is signed with (so only our own release can be installed from here); else "other_app", "unsigned" or "other_key".
      */
-    static String verify(String archivePackage, Set<String> selfSigners, Set<String> archiveSigners) {
-        if (!PACKAGE.equals(archivePackage)) return "other_app";
+    static String verify(String archivePackage, Set<String> selfSigners, Set<String> archiveSigners) { return verify(PACKAGE, archivePackage, selfSigners, archiveSigners); }
+
+    /** the same check for another of our apps (4.3.3: «إضافات تلفزيونك», sa.urtv.extras) */
+    static String verify(String want, String archivePackage, Set<String> selfSigners, Set<String> archiveSigners) {
+        if (want == null || !want.equals(archivePackage)) return "other_app";
         if (selfSigners == null || archiveSigners == null || selfSigners.isEmpty() || archiveSigners.isEmpty()) return "unsigned";
         for (String d : selfSigners) if (!d.matches("[0-9a-f]{64}")) return "unsigned";
         for (String d : archiveSigners) if (!d.matches("[0-9a-f]{64}")) return "unsigned";

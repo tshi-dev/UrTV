@@ -75,7 +75,7 @@ public class CitiesRun { public static void main(String[] a) {
 else:
     print("SKIP the JVM cases: no javac")
 
-ts = text(HOME / "TypeService.java")
+ts = text(ROOT / "android/extras/src/main/java/sa/urtv/home/ExtrasA11yService.java")   # 4.3.3: the service is the add-on's
 check("TypeService asks the rule with Ram.low, and skips its package query on a weak TV", "SettingsKey.filterWanted(front, stockHome, lowRam, homeKeyLost)" in ts and "if (!front && !lowRam) stockHome = stockHomeOn(this);" in ts)
 ma = text(HOME / "MainActivity.java")
 tick = ma[ma.index("private final BroadcastReceiver tick"):ma.index("private long clockDrawnAt;")]

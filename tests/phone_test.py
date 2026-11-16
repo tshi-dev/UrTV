@@ -115,7 +115,7 @@ check("portfolio.html takes the token out of the address bar before pairing, and
 used = set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", page)) | set(re.findall(r"['\"](/api/[a-z_/]+)['\"]", pf))
 check("every call of the page (and of portfolio.html) is an endpoint the server has, and the reverse", used == served, (used ^ served))
 check("the page says plainly what it cannot do: keys to other apps, and text outside our screens",
-      "فعّل خدمة «تلفزيونك: التحكم والكتابة من الجوال»" in page and "تحتاج أندرويد ١٣" in page and "يُكتب في حقلها بعد تفعيل خدمة إمكانية الوصول" in page and "/api/text" in page, "")
+      "فعّل خدمة «إضافات تلفزيونك»" in page and "تحتاج أندرويد ١٣" in page and "يُكتب في حقلها بعد تفعيل خدمة إمكانية الوصول" in page and "/api/text" in page, "")
 check("the page has no reset, uninstall, ADB or PIN-changing control", not re.search(r"reset|uninstall|adb|إعادة ضبط|حذف التطبيق", page, re.I), "")
 
 # ---- docs and registration
@@ -162,7 +162,7 @@ check("the family summary is read only and never carries the PIN", "public stati
 check("the phone has no way to change the family lock, reset, uninstall or reach ADB: no such call anywhere in the phone package",
       not re.search(r"setLocked|setKids|setAllowed|adbSet|adbReset|adbLock|turnOff\(|\.uninstall\(|deletePackage|uninstallPackage|Runtime\.getRuntime|ProcessBuilder|\"adb\"|pm clear|factory", "".join(text(p) for p in PHONE.glob("*.java"))), "")
 check("Back, Home and the arrows reach every app through our accessibility services when one is on (RemoteNav says which call; our own screens keep dispatchKeyEvent): see tests/remote_nav_test.py",
-      'PhoneApps.pressKey(key)' in actions_src and "performGlobalAction(st.code)" in text(JAVA / "SleepService.java") and "GLOBAL_BACK = 1" in text(JAVA / "RemoteNav.java") and "a.dispatchKeyEvent" in actions_src)
+      'PhoneApps.pressKey(key)' in actions_src and "performGlobalAction(st.code)" in text(ROOT / "android/extras/src/main/java/sa/urtv/home/ExtrasA11yService.java") and "GLOBAL_BACK = 1" in text(JAVA / "RemoteNav.java") and "a.dispatchKeyEvent" in actions_src)
 check("the adhan stop and the sleep timer go through the app's own code", "MusicService.stopAdhan(c)" in text(til / "PhoneBridge.java") and "SleepTimer.start(" in apps_src and "SleepTimer.MINUTES" in apps_src)
 check("the favourites are looked up at most every few seconds and cleared on a package or favourites change; an icon comes from the cache after that check and expires",
       "APPS_TTL_MS = 5_000" in apps_src and "public static synchronized void invalidate()" in apps_src and "PhoneApps.invalidate();" in main_src and main_src.count("PhoneApps.invalidate();") == 2

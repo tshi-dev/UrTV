@@ -21,6 +21,7 @@ case "$1" in
   "settings delete "*) set -- $1; echo "delete $3 $4" >> "$T/log"; rm -f "$S/$(key "$3 $4")" ;;
   --batch) while read -r l; do echo "batch $l" >> "$T/log"; done ;;
   --reboot) echo reboot >> "$T/log" ;;
+  "pm list packages sa.urtv.extras") echo package:sa.urtv.extras ;;   # 4.3.3: «إضافات تلفزيونك» is installed
 esac
 exit 0
 '''
@@ -63,7 +64,7 @@ check("measure: an empty answer for the timeout is NOT «not set»: nothing is s
       "!! screen_off_timeout: the TV did not say its value" in out and not any("screen_off_timeout" in l for l in log), f"{out} {log}")
 
 # dock.sh sleep-setup: the accessibility service
-svc = "sa.urtv.home/sa.urtv.home.SleepService"
+svc = "sa.urtv.extras/sa.urtv.home.ExtrasA11yService"   # 4.3.3: the add-on «إضافات تلفزيونك»
 t, tr = tree(["dock.sh"], secure_accessibility_enabled="0", secure_enabled_accessibility_services="other.app/.Svc")
 rc, out, log = sh(t, tr, "dock.sh", "sleep-setup")
 check("sleep-setup: what the TV had is recorded once, and the service is added to the list, not replacing it",

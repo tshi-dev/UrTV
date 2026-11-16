@@ -50,10 +50,10 @@ check("settings: the «UrTV النظيف» row is asked again at each return and
       and "topMargin += dp(32)" in st and 'View autoRow = row("التحديث التلقائي للصفحة"' in st)
 
 # ---- step 54
-kt = src(HOME / "KeyTrace.java"); typ = src(HOME / "TypeService.java")
+kt = src(HOME / "KeyTrace.java"); typ = src(ROOT / "android/extras/src/main/java/sa/urtv/home/ExtrasA11yService.java")
 check("keytrace + nokeyfilter: `dock.sh debug keytrace on` logs per key (tag UrTVKeyTrace) queue, dispatch, focus, layout, draw and six frame intervals; `nokeyfilter` stops the accessibility key filter",
       '"keytrace"' in dbg and '"nokeyfilter"' in dbg and 'android.util.Log.i("UrTVKeyTrace"' in kt and all(k in kt for k in ("queue=", "dispatch=", "focus@=", "layout@=", "draw@=", "frames=[", "janky="))
-      and 'DebugFlags.on(this, "keytrace")' in main and "KeyTrace.focusChanged();" in main and 'DebugFlags.on(this, "nokeyfilter")' in typ and "nokeyfilter|keytrace" in src(ROOT / "optimize/dock.sh"))
+      and 'DebugFlags.on(this, "keytrace")' in main and "KeyTrace.focusChanged();" in main and "nokeyfilter|keytrace" in src(ROOT / "optimize/dock.sh"))   # 4.3.3: the key filter is the add-on's (it cannot read the home's switches): nokeyfilter has no effect any more
 mact = src(SAVER / "MainActivity.java")
 check("the saver app's own page starts like the dream: SaverStart (picture, first frame, then the WebView), the same log lines, and its own snapshot capture",
       "SaverStart.begin(" in mact and "SaverSnapshot.capture(MainActivity.this" in mact)

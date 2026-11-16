@@ -300,7 +300,6 @@ public class MainActivity extends Activity {
         backExit.reset(); backGuarded = false;   // «الخروج من تلفزيونك»: a new visit, its count and its hint start again
         sa.urtv.home.tilawah.AdhanFront.home(true);   // «الأذان على شاشة التوقف فقط»: the adhan's alarm asks what is in front
         try { sa.urtv.home.tilawah.MusicService.keepForeground(this); } catch (RuntimeException ignored) { }   // 4.3.3 G1: a surah started from the background gets its foreground notice now
-        TypeService.homeFront(true);   // the Settings key is ours here (RemoteKeys): the service stops asking for keys
         A11yHeal.onStart(this);   // once per process: our accessibility service listed but not bound after an update (see A11yHeal)
         Parental.SESSION.clear();   // the home screen is in front again: an app opened with the PIN asks again next time
         if (control != null) control.forgetLast();   // «مركز التحكم» opens on its first tile again
@@ -347,7 +346,6 @@ public class MainActivity extends Activity {
         noticeOnScreen = null;   // 4.3.3: a notice was seen on this visit; it does not come back
         UpdateCarry.homeShown = false;   // a slow photo check that answers now must not start the 10-minute rotation again
         sa.urtv.home.tilawah.AdhanFront.home(false);
-        TypeService.homeFront(false);   // another app is coming to the front: the service answers the Settings key there (SettingsKey)
         remoteKeys.reset();   // a shortcut key opened an app: its release went there, not here
         PinPrompt.dismiss(this);
         if (edit != null) leaveEdit();   // another screen came up: what was arranged is saved
@@ -983,7 +981,7 @@ public class MainActivity extends Activity {
     private void settingsKeyRequested(Intent i) {
         if (i == null || !i.getBooleanExtra(EXTRA_SETTINGS_KEY, false)) return;
         i.removeExtra(EXTRA_SETTINGS_KEY);
-        final Intent tv = TypeService.tvSettingsIntent(this);
+        final Intent tv = Extras.tvSettingsIntent(this);
         handler.post(() -> launchGuarded(ParentalPolicy.REMOTE_SETTINGS, tv, "إعدادات التلفزيون"));
     }
 
@@ -3054,8 +3052,8 @@ public class MainActivity extends Activity {
         List<TextView> rows = new ArrayList<>();
         for (int m : SleepTimer.MINUTES) rows.add(inputRow(S.t("%s دقيقة", arabicDigits(String.valueOf(m))), () -> SleepTimer.start(this, m)));
         if (SleepTimer.minutesLeft(this) > 0) rows.add(inputRow(S.t("إلغاء"), () -> SleepTimer.start(this, 0)));
-        if (!SleepService.enabled()) {   // without it the end only stops the sound and brings the screensaver: say so, and where to turn it on
-            rows.add(inputRow(S.t("لإطفاء الشاشة: فعّل «%s»", getString(R.string.sleep_service_label)), () -> launchGuarded(ParentalPolicy.SLEEP_ACCESSIBILITY, new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS), "إعدادات التلفزيون")));
+        if (!Extras.enabled()) {   // without «إضافات تلفزيونك» the end only stops the sound and brings the screensaver: say so, and offer it (4.3.3)
+            rows.add(inputRow(S.t("لإطفاء الشاشة: «إضافات تلفزيونك»"), () -> launchGuarded(ParentalPolicy.SLEEP_ACCESSIBILITY, Extras.intent(this, "sleep"), "إعدادات التلفزيون")));
         }
         for (TextView r : rows) {
             r.setOnClickListener(v -> { pw.dismiss(); ((Runnable) v.getTag()).run(); });

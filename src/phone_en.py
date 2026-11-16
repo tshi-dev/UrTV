@@ -65,7 +65,7 @@ EN_CODE = [
     # a text with parentheses is no text node the hook sees
     ('<p>المؤذن (لغير الفجر)</p>', '<p>Muezzin (other prayers)</p>', 1),
     # a literal with a quote in it is no literal the hook sees (it would only see the service's name inside)
-    ("""service_off: 'فعّل خدمة "تلفزيونك: التحكم والكتابة من الجوال" في إعدادات التلفزيون لتكتب في التطبيقات الأخرى'""",
+    ("""service_off: 'فعّل خدمة "إضافات تلفزيونك" في إعدادات التلفزيون لتكتب في التطبيقات الأخرى'""",
      "service_off: 'To type in other apps, turn on the UrTV phone control service in the TV’s settings'", 1),
     # the English count: «1 hour», «2 hours», «11 min» (the Arabic one has a dual and two plurals; the table gives [one, two, few, many])
     ("function nn(n, w) { var r = n % 100; return n === 1 ? w[0] : n === 2 ? w[1] : n + ' ' + (r > 2 && r < 11 ? w[2] : w[3] || w[0]); }",
