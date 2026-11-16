@@ -445,5 +445,9 @@ public class SetupEngineRun {
         // the pure rules
         line("S6 " + StockMigration.due("done", "enabled", "enabled", null, null) + " " + StockMigration.due("done", "enabled", "enabled", "on x", null) + " " + StockMigration.due("done", "enabled", "enabled", null, "done x")
             + " " + StockMigration.due("switching", "enabled", "enabled", null, null) + " " + StockMigration.due("done", "disabled", "absent", null, null) + " " + StockMigration.due("done", "absent", "enabled", "off x", null));
+        // 4.3.3 (A17): the wizard owns the saved Wi-Fi: nothing says so on the start screen, and «تخلّص من واجهة المصنع» is offered (the wizard is never turned off)
+        FakeTv s7 = tv(); s7.wizardAnswersHome = true; s7.wizardOwnsWifi = true; SetupEngine se7 = engine(s7, new Mem(), new Dead(), new ArrayList<>());
+        SetupEngine.FactoryOffer fo7 = se7.factoryOffer();
+        line("S7 owns=" + se7.wizardOwnsWifi() + " refusal=" + (fo7.refusal == null ? "none" : "yes") + " wizardInPlan=" + fo7.packages.contains(WR) + " wizardOff=" + s7.off.contains(WR));
     }
 }
