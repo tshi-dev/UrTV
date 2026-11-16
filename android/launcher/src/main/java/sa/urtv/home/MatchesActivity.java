@@ -59,7 +59,7 @@ public class MatchesActivity extends Activity {
         s.setAllowFileAccess(true);
         s.setAllowFileAccessFromFileURLs(true);
         s.setAllowUniversalAccessFromFileURLs(true);
-        s.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        s.setCacheMode(WebSettings.LOAD_DEFAULT);   // G3: the HTTP cache (the page revalidates its data: fetchT, cache:'no-cache')
         s.setTextZoom(100);   // as HomeCard: the TV's font size must not push the page out of its boxes
         web.addJavascriptInterface(new Bridge(getApplicationContext(), this), "UrtvMatches");
         web.setWebViewClient(new WebViewClient() {
@@ -88,6 +88,7 @@ public class MatchesActivity extends Activity {
                         } catch (java.io.IOException ignored) { }
                     }
                 }
+                NetLog.count(u);   // G3: the request log
                 return super.shouldInterceptRequest(v, r);
             }
         });

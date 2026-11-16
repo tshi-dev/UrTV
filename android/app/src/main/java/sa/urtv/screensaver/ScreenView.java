@@ -54,7 +54,9 @@ final class ScreenView {
                     return new WebResourceResponse("text/plain", "UTF-8", 403, "Forbidden", new java.util.HashMap<String, String>(), new java.io.ByteArrayInputStream(new byte[0]));
                 }
                 WebResourceResponse res = PhotoCache.serve(app, r.getUrl().toString());
-                return res != null ? res : super.shouldInterceptRequest(v, r);
+                if (res != null) return res;   // from the disk (a photo PhotoCache downloads counts there)
+                NetLog.count(r.getUrl().toString());   // G3: what the page asks the network (the request log)
+                return super.shouldInterceptRequest(v, r);
             }
 
             /** The renderer died or was killed for memory. Without this the whole app goes down with it; with it the host decides (Gone). */
@@ -73,7 +75,7 @@ final class ScreenView {
         // lets the page call Yahoo and other APIs directly, without a CORS gateway
         s.setAllowFileAccessFromFileURLs(true);
         s.setAllowUniversalAccessFromFileURLs(true);
-        s.setCacheMode(WebSettings.LOAD_NO_CACHE);   // photos are cached by PhotoCache, data must be fresh
+        s.setCacheMode(WebSettings.LOAD_DEFAULT);   // G3: the HTTP cache: the page asks for its data with cache:'no-cache' (fetchT), so each fetch is sent again with the copy's ETag or date and an unchanged file is a 304 (fresh data, fewer bytes); photos are cached by PhotoCache
         // The page sizes its text to the screen; the TV's font size setting (Android scales WebView text by it) made
         // it larger than its boxes, so the left column spilled off screen and moved as the clock and the matches changed.
         s.setTextZoom(100);

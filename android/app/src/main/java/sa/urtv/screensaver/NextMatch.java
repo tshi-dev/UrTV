@@ -114,7 +114,7 @@ final class NextMatch {
                 long now = System.currentTimeMillis();
                 Ev best = null;
                 for (String id : key.split(",")) {
-                    Ev e = pick(get(URL + id), now);
+                    Ev e = pick(get(app, URL + id), now);
                     if (e != null && (best == null || e.at < best.at)) best = e;
                 }
                 android.content.SharedPreferences.Editor ed = app.getSharedPreferences("nextmatch", Context.MODE_PRIVATE).edit()
@@ -132,8 +132,8 @@ final class NextMatch {
         }, "next-match").start();
     }
 
-    private static String get(String url) throws Exception {
-        Net.Reply r = Net.get(url, null, 12000, 12000, Bounded.JSON_MAX);   // IPv4 first, 4 s per address (Net)
+    private static String get(Context c, String url) throws Exception {
+        Net.Reply r = Net.cached(new java.io.File(c.getCacheDir(), "net"), url, 12000, 12000, Bounded.JSON_MAX, 0, true);   // IPv4 first, 4 s per address (Net); G3: ETag, merged, the back-off
         if (r.status != 200) throw new java.io.IOException("status " + r.status);
         return r.text();
     }

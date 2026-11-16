@@ -31,6 +31,26 @@ public final class Ram {
         return totalMb > 0 && totalMb < MID_MB ? MID : NORMAL;
     }
 
+    /** A14 (4.3.3): this many cores or fewer is LOW whatever the memory (the saver's Prefs.LITE_CORES is the same) */
+    static final int LITE_CORES = 2;
+
+    /** the rule with the cores (0 = not known): few cores is LOW too */
+    static int tier(boolean lowRamFlag, long totalMb, int cores) { return cores > 0 && cores <= LITE_CORES ? LOW : tier(lowRamFlag, totalMb); }
+
+    /** A14 «الوضع الخفيف» (set in the screensaver's settings, read through ConfigSnapshot): "on" is LOW, "off" never LOW (MID's memory cuts stay), "auto" the tier found */
+    static int liteTier(int found, String lite) { return "on".equals(lite) ? LOW : "off".equals(lite) ? Math.max(found, MID) : found; }
+
+    /** the screensaver's «الوضع الخفيف» as the last read of its settings said; a change counts at once for what asks the tier from then on (the rest from the next start of the home) */
+    static void lite(Context c, String v) {
+        String lite = "on".equals(v) || "off".equals(v) ? v : "auto";
+        try {
+            android.content.SharedPreferences sp = c.getApplicationContext().getSharedPreferences("ram", Context.MODE_PRIVATE);
+            if (lite.equals(sp.getString("lite", "auto"))) return;
+            sp.edit().putString("lite", lite).apply();
+            tier = -1;
+        } catch (RuntimeException ignored) { }
+    }
+
     /** a forced tier by name (the debug switch, `dock.sh ramtier`); -1 = none */
     static int named(String n) { return "low".equals(n) ? LOW : "mid".equals(n) ? MID : "normal".equals(n) ? NORMAL : -1; }
 
@@ -47,10 +67,12 @@ public final class Ram {
                 am.getMemoryInfo(mi);
                 mb = mi.totalMem / (1024 * 1024);
             } catch (RuntimeException ignored) { }
-            t = tier(flag, mb);
+            t = tier(flag, mb, Runtime.getRuntime().availableProcessors());
             try {
-                int f = named(c.getApplicationContext().getSharedPreferences("ram", Context.MODE_PRIVATE).getString("force", ""));
-                if (f >= 0) t = f;
+                android.content.SharedPreferences sp = c.getApplicationContext().getSharedPreferences("ram", Context.MODE_PRIVATE);
+                t = liteTier(t, sp.getString("lite", "auto"));   // A14 «الوضع الخفيف»
+                int f = named(sp.getString("force", ""));
+                if (f >= 0) t = f;   // the tester's switch wins
             } catch (RuntimeException ignored) { }
             tier = t;
         }

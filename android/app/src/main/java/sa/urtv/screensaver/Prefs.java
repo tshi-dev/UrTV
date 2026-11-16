@@ -128,6 +128,7 @@ final class Prefs {
         if (!sp.contains("tournaments")) sp.edit().putBoolean("tournaments", sp.getAll().isEmpty()).apply();   // 4.3.1 «البطولات الكبرى»: on for a new install (nothing saved yet), off for one that already had settings
         GlassStyle.setTweaks(tweaks());
         if (ZoneFix.logger == null) ZoneFix.logger = line -> android.util.Log.i("UrTVZone", line);
+        if (NetLog.logger == null) NetLog.logger = new NetLogcat();   // G3: one line per 10 minutes of requests (tag UrTVNet)
         ZoneFix.report(pageZone());   // issue #55: the page's last word on the city's zone, after a restart too
     }
 
@@ -472,6 +473,24 @@ final class Prefs {
         return mb > 0 && mb < MID_MB ? RAM_MID : RAM_NORMAL;
     }
 
+    /** A14 (4.3.3): a TV with this many cores or fewer is LOW whatever its memory (the same number as the home's Ram.LITE_CORES) */
+    static final int LITE_CORES = 2;
+
+    /** The rule with the cores (0 = not known): few cores is LOW too. */
+    static int ramTier(boolean lowRamFlag, long mb, int cores) { return cores > 0 && cores <= LITE_CORES ? RAM_LOW : ramTier(lowRamFlag, mb); }
+
+    /**
+     * A14 «الوضع الخفيف»: the person's choice over what the TV found: "on" is LOW (every cut: fewer animations, slower refresh, smaller photos, no blur),
+     * "off" is never LOW (a TV found LOW keeps MID's cheap memory cuts, nothing the person sees), "auto" (the default) what was found. The same rule as the home's Ram.liteTier.
+     */
+    static int liteTier(int found, String lite) { return "on".equals(lite) ? RAM_LOW : "off".equals(lite) ? Math.max(found, RAM_MID) : found; }
+
+    static final String[] LITE = {"auto", "on", "off"};
+    String lite() { String v = sp.getString("lite", "auto"); return "on".equals(v) || "off".equals(v) ? v : "auto"; }
+    void setLite(String v) { sp.edit().putString("lite", "on".equals(v) || "off".equals(v) ? v : "auto").apply(); ramTier = -1; }
+    /** what the settings row says */
+    static String liteLabel(String v, boolean lowNow) { return "on".equals(v) ? "مفعّل" : "off".equals(v) ? "مطفأ" : lowNow ? "تلقائي، ومفعّل على هذا التلفزيون" : "تلقائي، ومطفأ على هذا التلفزيون"; }
+
     static int ramNamed(String n) { return "low".equals(n) ? RAM_LOW : "mid".equals(n) ? RAM_MID : "normal".equals(n) ? RAM_NORMAL : -1; }
 
     /** This TV's tier, read once (a forced tier from `saver.sh ramtier` wins, from the next start of the app). The one place that decides. */
@@ -479,10 +498,12 @@ final class Prefs {
         if (ramTier < 0) {
             boolean flag = false;
             try { flag = ((android.app.ActivityManager) c.getSystemService(Context.ACTIVITY_SERVICE)).isLowRamDevice(); } catch (RuntimeException ignored) { }
-            int t = ramTier(flag, ramMb(c));
+            int t = ramTier(flag, ramMb(c), Runtime.getRuntime().availableProcessors());
             try {
-                int f = ramNamed(c.getSharedPreferences("settings", Context.MODE_PRIVATE).getString("ramtier", ""));
-                if (f >= 0) t = f;
+                android.content.SharedPreferences s = c.getSharedPreferences("settings", Context.MODE_PRIVATE);
+                t = liteTier(t, s.getString("lite", "auto"));   // A14 «الوضع الخفيف»
+                int f = ramNamed(s.getString("ramtier", ""));
+                if (f >= 0) t = f;   // the tester's switch wins
             } catch (RuntimeException ignored) { }
             ramTier = t;
         }

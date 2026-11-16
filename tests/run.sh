@@ -27,6 +27,12 @@ python3 tests/step52_test.py   # the tester's step 52 findings in the source: th
 python3 tests/party_games_test.py   # «واحد مو معنا» and «بدون كلام / وصّف»: the rules on a plain JVM, the bundled word files
 python3 tests/ram_tier_test.py   # the three memory tiers (LOW under 2000 MB, MID under 2600, NORMAL), one rule per app, the test switch
 python3 tests/lowram_test.py   # a weak TV (Ram.low): no key filter, the clock off the UI thread, pictures let go behind apps, markets «عادي» and 60 s, #lowram=1
+python3 tests/netlog_test.py   # G3: the request log (NetLog: requests by host, one UrTVNet line per 10 minutes with the bytes)
+python3 tests/page_cache_test.py   # G3: the page revalidates its data (ETag, 304) through the WebView cache, and skips periodic loads while offline
+python3 tests/net_cache_test.py   # G3: Net.cached: ETag and date revalidation, calls merged, the offline back-off, the size cap; the markets, next match and leagues list use it
+python3 tests/photo_size_test.py   # G3: photos kept at the TV's own screen size (1280 on a 720p screen or a weak TV)
+python3 tests/lite_mode_test.py   # A14: «الوضع الخفيف» auto (low memory or 2 cores) / on / off in both apps, its row and command
+python3 tests/home_return_test.py   # G4: less before the home's first frame: no live TV lookup at a cold start; the provider, update record and changed packages off the return's path
 python3 tests/deadman_test.py
 python3 tests/run_lock_test.py
 python3 tests/run_identity_test.py

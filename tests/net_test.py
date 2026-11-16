@@ -17,14 +17,14 @@ def text(p): return p.read_text(encoding="utf-8")
 check("the launcher's Net.java is the app's, unchanged but for the package line", text(APP / "Net.java").split("\n", 1)[1] == text(LAUNCHER / "Net.java").split("\n", 1)[1])
 st, qb, nm = text(APP / "SettingsActivity.java"), text(APP / "QuizBank.java"), text(APP / "NextMatch.java")
 check("the leagues list, the quiz bank and the next match are fetched through Net (no HttpURLConnection of their own)",
-      "Net.get(CatalogueLeagues.URL" in st and "Net.get(URL, null" in qb and "Net.get(url, null" in nm and "HttpURLConnection" not in qb + nm and "con = (HttpURLConnection) new URL(CatalogueLeagues.URL)" not in st)
+      ("Net.get(CatalogueLeagues.URL" in st or "CatalogueLeagues.URL, 15000" in st and "Net.cached(" in st) and "Net.get(URL, null" in qb and ("Net.get(url, null" in nm or "Net.cached(new java.io.File(c.getCacheDir(), \"net\"), url" in nm) and "HttpURLConnection" not in qb + nm and "con = (HttpURLConnection) new URL(CatalogueLeagues.URL)" not in st)
 check("Net tries IPv4 first, 4 s per address, with a deadline for the whole call; follows no redirect",
       "static final int CONNECT_MS = 4000;" in text(APP / "Net.java") and "if (a instanceof Inet4Address)" in text(APP / "Net.java") and "Math.min(CONNECT_MS, left)" in text(APP / "Net.java") and "followRedirects" not in text(APP / "Net.java").lower())
 check("https: the platform's TLS over the connected socket, the certificate checked against the host name", "setEndpointIdentificationAlgorithm(\"HTTPS\")" in text(APP / "Net.java") and "getDefaultHostnameVerifier().verify(host, ssl.getSession())" in text(APP / "Net.java"))
 if not shutil.which("javac"):
     print("SKIP net: no javac"); sys.exit(1)
 with tempfile.TemporaryDirectory() as tmp:
-    c = subprocess.run(["javac", "-nowarn", "-d", tmp, str(APP / "Net.java"), str(ROOT / "tests/NetTest.java"), str(ROOT / "tests/NetOnline.java")], capture_output=True, text=True)
+    c = subprocess.run(["javac", "-nowarn", "-d", tmp, str(APP / "Net.java"), str(APP / "NetLog.java"), str(ROOT / "tests/NetTest.java"), str(ROOT / "tests/NetOnline.java")], capture_output=True, text=True)
     check("Net compiles on a plain JVM", c.returncode == 0, c.stderr[-500:])
     if c.returncode == 0:
         r = subprocess.run(["java", "-cp", tmp, "sa.urtv.screensaver.NetTest"], capture_output=True, text=True, timeout=120)

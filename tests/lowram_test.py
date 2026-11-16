@@ -31,7 +31,7 @@ STUBS = {
                                     " public static final int MODE_PRIVATE = 0; public abstract Context getApplicationContext(); public abstract Object getSystemService(String n);"
                                     " public abstract android.content.SharedPreferences getSharedPreferences(String n, int m); }\n",
     "android/content/SharedPreferences.java": "package android.content;\npublic interface SharedPreferences { String getString(String k, String d); Editor edit();"
-                                              " interface Editor { Editor putString(String k, String v); boolean commit(); } }\n",
+                                              " interface Editor { Editor putString(String k, String v); boolean commit(); void apply(); } }\n",
     "android/app/ActivityManager.java": "package android.app;\npublic class ActivityManager { public boolean isLowRamDevice() { return false; }"
                                         " public void getMemoryInfo(MemoryInfo m) { } public static class MemoryInfo { public long totalMem; } }\n",
 }

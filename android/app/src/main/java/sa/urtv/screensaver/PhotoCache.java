@@ -148,6 +148,7 @@ final class PhotoCache {
     private static File download(Context c, String url, String name, File dir, File f) throws java.io.IOException {
         if (!dir.isDirectory() && !dir.mkdirs()) return null;
         HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
+        NetLog.count(String.valueOf(con.getURL()));   // G3: the request log (NetLog)
         con.setConnectTimeout(15000);
         con.setReadTimeout(30000);
         File tmp = new File(dir, name + ".tmp");
@@ -157,7 +158,7 @@ final class PhotoCache {
             byte[] data;
             try (InputStream in = con.getInputStream()) { data = Bounded.readAll(in, Bounded.IMAGE_MAX); }
             if (!validImage(data)) return null;   // an error page or a cut download is not kept as a photo
-            data = Prefs.tightRam(c) ? PhotoShrink.toSize(data, LOW_PX) : PhotoShrink.toScreen(data);   // P8: kept at screen size (a weak TV: 1280 on the long side, a third fewer pixels to decode and draw)
+            data = Prefs.tightRam(c) ? PhotoShrink.toSize(data, LOW_PX) : PhotoShrink.toSize(data, PhotoShrink.screenMax(c));   // P8: kept at screen size (a weak TV: 1280 on the long side, a third fewer pixels to decode and draw); G3: the TV's own screen size, 1280 on a 720p one
             try (FileOutputStream out = new FileOutputStream(tmp)) { out.write(data); }
             if (!tmp.renameTo(f)) return null;
         } finally {

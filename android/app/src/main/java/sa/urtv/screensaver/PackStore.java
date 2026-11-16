@@ -132,6 +132,7 @@ final class PackStore {
         try {
             try {
                 HttpURLConnection con = (HttpURLConnection) new URL(p.url).openConnection();
+                NetLog.count(String.valueOf(con.getURL()));   // G3: the request log (NetLog)
                 con.setConnectTimeout(15000);
                 con.setReadTimeout(30000);
                 try {
@@ -242,6 +243,7 @@ final class PackStore {
 
     private static byte[] get(String url, int max) throws IOException {
         HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
+        NetLog.count(String.valueOf(con.getURL()));   // G3: the request log (NetLog)
         con.setConnectTimeout(15000);
         con.setReadTimeout(30000);
         try {
