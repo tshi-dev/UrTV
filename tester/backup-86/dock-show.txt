@@ -1,0 +1,1 @@
+dock: com.google.android.youtube.tv,com.crunchyroll.crunchyroid,com.netflix.ninja,net.mbc.shahidTV,com.apple.atve.androidtv.appletv,com.spotify.tv.android,com.movieboxpro.androidtv,org.smarttube.stable,org.jellyfin.androidtv

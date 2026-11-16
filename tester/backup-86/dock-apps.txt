@@ -1,0 +1,23 @@
+com.android.vending | متجر بلاي
+com.google.android.youtube.tv | يوتيوب
+com.google.android.youtube.tvmusic | يوتيوب ميوزك
+io.github.sds100.keymapper | Key Mapper
+org.smarttube.stable | سمارت تيوب
+com.amazon.amazonvideo.livingroom | برايم فيديو
+com.netflix.ninja | نتفليكس
+com.tcl.gallery | Gallery
+com.tcl.guard | Safety Guard
+com.tcl.magiconnectfree | MagiConnect
+com.tcl.ui_mediaCenter | Media Player
+com.tcl.waterfall.overseas | TCL Channel
+com.apple.atve.androidtv.appletv | ابل تي في
+com.crunchyroll.crunchyroid | Crunchyroll
+com.hkinnovate.downloader_for_tv | Downloader for TV
+com.movieboxpro.androidtv | MovieBoxPro
+com.osn.go | OSN+
+com.phlox.tvwebbrowser | المتصفح
+com.spotify.tv.android | سبوتيفاي
+net.mbc.shahidTV | شاهد
+org.jellyfin.androidtv | Jellyfin
+org.videolan.vlc | VLC
+sa.urtv.screensaver | شاشة تلفزيونك

@@ -1,0 +1,78 @@
+version: 4.3.2 (build 323) (newest: 4.3.2 (build 322), on the next channel)
+city: الرس (25.8694, 43.4973)
+timezone: Asia/Riyadh
+country: SA
+teams: 136013|الهلال, 136137|السعودية, 150643|الزلفي, 133738|ريال مدريد
+panel: verse
+panel2: none
+home_panel: stocks
+greeting: on
+listenpill: on
+homephotos: same
+homepacks: none
+homeours: off
+homemine: same
+albummode: seconds
+albumdate: on
+albumtitle: on
+albumfit: fit
+albumsize: normal
+cleartext: off
+glow: off
+pillshidden: none
+matchapp: auto
+updatebell: on
+watchnext: off
+appearance: dark
+look: graphite
+accent: default
+baropacity: 100
+walldim: 40
+focusstyle: solid
+looksync: on
+surface quick: 100 look
+surface cards: 100 glass
+surface tray: 100 glass
+homelayout: classic
+favbar: 5
+pagesdark: on
+adhanbar: on
+updatechannel: next
+yearstrip: on
+sunrise: off
+prayerbar: off
+wxmore: off
+months: default
+verse: day
+versekind: both
+seconds: off
+backexit: press
+occasion: on
+nightdim: on
+taskspill: on
+backsaver: off
+prayermethod: auto
+prayeradj: off fajr=0 dhuhr=0 asr=0 maghrib=0 isha=0
+hijrioffset: 0
+minrating: 7
+photos: 30
+digits: latin
+clock24: off
+ramtier: auto (in use: mid)
+lang: ar
+national: auto
+cardstyle: glass1
+markets: tasi,spx,btc,gold
+clocksize: large
+mkstyle: prices
+stocks: 2222,1120,7010,2010,2082
+stkchg: pct
+slot: matches
+countdown: none
+idle: 45s
+genres: 
+langs: 
+events: 
+leagues: 
+autoupdate: true
+screensaver now: ours (شاشة تلفزيونك)
