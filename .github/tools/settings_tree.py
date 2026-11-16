@@ -52,7 +52,7 @@ MORE_CMDS = {
     "سرعة ألبوم صوري": ["optimize/saver.sh albummode ten"], "شكل صورة ألبوم صوري": ["optimize/saver.sh albumfit fill"], "حجم ألبوم صوري": ["optimize/saver.sh albumsize tall"],
     "عنوان ألبوم صوري": ["optimize/saver.sh albumtitle off"], "تاريخ الصورة في ألبوم صوري": ["optimize/saver.sh albumdate off"],
     "الخروج من تلفزيونك": ["optimize/saver.sh backexit hold"], "تطبيقات في الشريط": ["optimize/saver.sh favbar 7"],
-    "زر مركز التحكم": ["optimize/saver.sh pillshidden center"], "زر الجوال": ["optimize/saver.sh pillshidden phone"], "زر الأسواق": ["optimize/saver.sh pillshidden markets"],
+    "زر مركز التحكم": ["optimize/saver.sh pillshidden center"], "زر الجوال": ["optimize/saver.sh pillshidden phone"], "زر المصادر": ["optimize/saver.sh pillshidden inputs"], "زر الأسواق": ["optimize/saver.sh pillshidden markets"],
     "زر المباريات": ["optimize/saver.sh pillshidden matches"], "تعديل وقت الصلاة": ["optimize/saver.sh prayeradj fajr +2 maghrib -1"],
     "الفرق المتابعة": ["optimize/saver.sh teams 136013:Al-Hilal"], "الدوريات كاملة": ["optimize/saver.sh leagues 'Saudi-Arabian Pro League'"],
     "قائمة الأسهم": ["optimize/saver.sh stocks 2222 1120 AAPL"], "تغيّر الأسهم": ["optimize/saver.sh stkchg amount"], "التصنيفات": ["optimize/saver.sh genres Drama,Comedy"],

@@ -496,6 +496,8 @@ public class SettingsActivity extends Activity {
         row("زر تلاوة وأذان", prefs.listenPill() ? "ظاهر" : "مخفي  •  الأذان والتلاوة تعمل، وتفتح الشاشة من «افتح تلاوة وأذان» هنا أو من بطاقة «يُتلى الآن»", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setListenPill(!prefs.listenPill()); render(); } });
         // #52: the other quick buttons of the home can be hidden too; a hidden one only leaves the row (its page opens from elsewhere: the markets and games by the phone, the Control Center by the Quick Settings key)
+        row("زر المصادر", prefs.pillHidden("inputs") ? "مخفي  •  المصادر تفتح من زر المصادر في الريموت ومن مركز التحكم" : "ظاهر", R.drawable.ic_eye,
+            new Runnable() { public void run() { prefs.setPillHidden("inputs", !prefs.pillHidden("inputs")); render(); } });
         row("زر الأسواق", prefs.pillHidden("markets") ? "مخفي" : "ظاهر", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPillHidden("markets", !prefs.pillHidden("markets")); render(); } });
         row("زر المباريات", prefs.pillHidden("matches") ? "مخفي" : "ظاهر", R.drawable.ic_eye,

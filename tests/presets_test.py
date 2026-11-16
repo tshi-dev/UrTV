@@ -32,6 +32,10 @@ check("«مباريات اليوم» is the football layout with the new sports 
 check("the two open questions are flags, both on: it replaces «شكل كنبة»; «صورة فقط» hides the round buttons",
       "static final boolean PRESETS_REPLACE_COUCH = true;" in prefs and "static final boolean CLEAN_HIDES_BUTTONS = true;" in prefs
       and 'CLEAN_HIDES_BUTTONS ? "hidden" : null' in rows[2] and 'if (!Prefs.PRESETS_REPLACE_COUCH) row("شكل كنبة"' in st)
+hid = re.search(r'BUTTONS_HIDDEN = "([^"]*)";', prefs).group(1)
+check("«صورة فقط» (the owner): the sources, the tasks, the recitation, the markets, the games, the phone and the search hidden; «مركز التحكم» and «تحديث جديد» stay",
+      sorted(hid.split("|")[0].split(",")) == ["inputs", "markets", "matches", "phone"] and hid.split("|")[1:] == ["false", "false", "false"]
+      and '"inputs"' in prefs[prefs.index("QUICK_BUTTONS = {"):].split("}")[0], hid)
 sp = prefs[prefs.index("    void setPreset(String key) {"):].split("\n    }\n")[0]
 check("the person's own values kept once (the first look chosen), put back before each look, and exactly by «شكلك المعتاد»",
       'if (before == null) { before = presetNow(); sp.edit().putString("presetBefore", before).apply(); }' in sp and "else presetPut(before);" in sp

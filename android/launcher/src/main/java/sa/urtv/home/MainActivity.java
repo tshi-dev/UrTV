@@ -991,7 +991,7 @@ public class MainActivity extends Activity {
             switch (t) {
                 case "@tasks": launchGuarded(ParentalPolicy.PILL_TASKS, new Intent(this, TasksActivity.class), "المهام"); break;
                 case "@saver": guarded(ParentalPolicy.PILL_SAVER, SAVER_PKG, "شاشة التوقف", this::startSaver); break;
-                case "@inputs": if (inputsPill != null) showInputs(inputsPill, ParentalPolicy.PILL_INPUTS); break;
+                case "@inputs": if (inputsPill != null) showInputs(inputsPill.getParent() == pillRow || pills.isEmpty() ? inputsPill : pills.get(0), ParentalPolicy.PILL_INPUTS); break;   // «زر المصادر» hidden: the list from the first button
                 case "@settings": launchGuarded(ParentalPolicy.PILL_TV_SETTINGS, new Intent(Settings.ACTION_SETTINGS), S.t("إعدادات التلفزيون")); break;
                 case "@listen":
                     if (getResources().getBoolean(R.bool.show_listening)) launchGuarded(ParentalPolicy.PILL_LISTEN, new Intent(this, sa.urtv.home.tilawah.MainActivity.class), "تلاوة وأذان");
@@ -1069,13 +1069,14 @@ public class MainActivity extends Activity {
         boolean want = setting && isInstalled(SAVER_PKG);
         if (want == has) return;
         if (want) {
-            pillRow.addView(tasksPill, pillRow.indexOfChild(inputsPill) + 1, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(Pill.GAP), 0));
-            pills.add(pills.indexOf(inputsPill) + 1, tasksPill);
+            boolean inputsIn = inputsPill.getParent() == pillRow;   // «زر المصادر» hidden: «المهام» first, after «يُتلى الآن» (child 0)
+            pillRow.addView(tasksPill, inputsIn ? pillRow.indexOfChild(inputsPill) + 1 : 1, sideLlp(-2, dp(Pill.HEIGHT), 0, 0, dp(Pill.GAP), 0));
+            pills.add(inputsIn ? pills.indexOf(inputsPill) + 1 : 0, tasksPill);
         } else {
             boolean hadFocus = tasksPill.hasFocus();
             pills.remove(tasksPill);
             pillRow.removeView(tasksPill);
-            if (hadFocus) inputsPill.requestFocus();
+            if (hadFocus) { if (inputsPill.getParent() == pillRow) inputsPill.requestFocus(); else if (!pills.isEmpty()) pills.get(0).requestFocus(); }
         }
         wireFocus();   // the row changed: up/down from the pills follow it
     }
@@ -3521,7 +3522,8 @@ public class MainActivity extends Activity {
         applyUpdateBell(cfg.updateBellOn);   // [updates bell]
         applyBarSize(cfg.favBar);   // «تطبيقات في الشريط»
         hiddenQuick.clear();
-        for (String k : new String[] {"markets", "matches", "center", "phone"}) if (cfg.pillHidden(k)) hiddenQuick.add(k);
+        for (String k : new String[] {"markets", "matches", "center", "phone", "inputs"}) if (cfg.pillHidden(k)) hiddenQuick.add(k);
+        applyQuickPill(inputsPill, !hiddenQuick.contains("inputs"), tasksPill, tilawahPill, centerPill, marketsPill, matchesPill, searchPill, phonePill, updatePill);   // «زر المصادر» (4.4)
         applyQuickPill(marketsPill, !hiddenQuick.contains("markets"), matchesPill, phonePill, updatePill, tilawahPill);
         applyQuickPill(matchesPill, !hiddenQuick.contains("matches"), phonePill, updatePill, tilawahPill);
         applyQuickPill(phonePill, !hiddenQuick.contains("phone"), updatePill, tilawahPill);

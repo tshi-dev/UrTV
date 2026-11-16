@@ -24,7 +24,7 @@
 #                                                  read the TV's Watch Next list (the owner allows it once from the settings row)
 #   optimize/saver.sh updatebell off               home screen: the «جرس التحديثات» bell: on (default) or off. It shows only while the Play Store has app updates waiting;
 #                                                  off removes only the bell
-#   optimize/saver.sh pillshidden markets,matches   home screen: hide quick buttons at the top (markets, matches, center, phone; a comma list), or none (default)
+#   optimize/saver.sh pillshidden markets,matches   home screen: hide quick buttons at the top (markets, matches, center, phone, inputs; a comma list), or none (default)
 #   optimize/saver.sh homephotos own               home screen: the wallpaper's photos: same (default, the screensaver's packs) or own (its own set, below)
 #   optimize/saver.sh homepacks nature,sea         home screen, with homephotos own: the photo packs it rotates (their ids, a comma list), or none
 #   optimize/saver.sh matchapp auto               «تطبيق المباريات»: «شاهد المباراة» opens it; auto (UrTV Player when installed, the default), none, or an app's package
@@ -249,7 +249,7 @@ case "${1:-}" in
   listenpill) set1 listenpill "${2:?usage: optimize/saver.sh listenpill on|off}" ;;
   updatebell) set1 updatebell "${2:?usage: optimize/saver.sh updatebell on|off}" ;;
   watchnext) set1 watchnext "${2:?usage: optimize/saver.sh watchnext on|off}" ;;
-  pillshidden) set1 pillshidden "${2:?usage: optimize/saver.sh pillshidden markets,matches,center,phone | none}" ;;
+  pillshidden) set1 pillshidden "${2:?usage: optimize/saver.sh pillshidden markets,matches,center,phone,inputs | none}" ;;
   homephotos) set1 homephotos "${2:?usage: optimize/saver.sh homephotos same|own}" ;;
   homepacks) set1 homepacks "${2:?usage: optimize/saver.sh homepacks nature,sea | none   (pack ids: docs/PHOTO-PACKS.md; a pack is downloaded on the TV)}" ;;
   matchapp) set1 matchapp "${2:?usage: optimize/saver.sh matchapp auto|none|<package>}" ;;

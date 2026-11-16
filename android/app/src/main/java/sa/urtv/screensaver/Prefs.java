@@ -1179,8 +1179,8 @@ final class Prefs {
      * any-key stop, the «يُتلى الآن» card and a Quran that was started elsewhere go on; the screen opens from the app menu (long OK on an
      * app) or from the «يُتلى الآن» card instead.
      */
-    /** the home's quick buttons the person hid (#52): any of markets, matches, center, phone (the others have their own switch: «زر المهام», «زر تلاوة وأذان»); "" = all shown */
-    static final String[] QUICK_BUTTONS = {"markets", "matches", "center", "phone"};
+    /** the home's quick buttons the person hid (#52): any of markets, matches, center, phone, inputs («المصادر») (the others have their own switch: «زر المهام», «زر تلاوة وأذان»); "" = all shown */
+    static final String[] QUICK_BUTTONS = {"markets", "matches", "center", "phone", "inputs"};
     String pillsHidden() {
         java.util.List<String> out = new java.util.ArrayList<>();
         for (String k : sp.getString("pillsHidden", "").split(",")) if (java.util.Arrays.asList(QUICK_BUTTONS).contains(k) && !out.contains(k)) out.add(k);
@@ -1273,7 +1273,9 @@ final class Prefs {
         {"classic", null, "glass", null, "prayerrow", null, null, null, null, "prayers", null, null},
         {"football", null, "plain", null, "livenow,nextmatches,minitable", null, null, "dark", null, "matchday", null, null},
         {"classic", null, "plain", null, "nextprayer", "false", null, "dark", "true", "none", "large", "40"}};
-    static final String BUTTONS_HIDDEN = "markets,matches,center,phone|false|false|false";   // pillsHidden|listenPill|tasksPill|searchPill
+    /** «صورة فقط» (the owner): the sources, the tasks, the recitation, the markets, the games, the phone and the search hidden; the control centre (the way
+     *  to the settings) and «تحديث جديد» (only while an update is out) stay, and the remote's own keys keep working. pillsHidden|listenPill|tasksPill|searchPill */
+    static final String BUTTONS_HIDDEN = "markets,matches,phone,inputs|false|false|false";
     String presetField(String f) {
         switch (f) {
             case "layout": return homeLayout();

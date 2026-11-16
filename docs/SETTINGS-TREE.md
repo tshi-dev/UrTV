@@ -227,22 +227,25 @@ the phone page's key, «مركز التحكم» the control centre's row that op
    إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
 —— زر مركز التحكم [الرئيسية]
    مثال للوكيل: optimize/saver.sh pillshidden center
-     القيم المقبولة: markets,matches,center,phone | none
+     القيم المقبولة: markets,matches,center,phone,inputs | none
 —— زر الجوال [الرئيسية]
    مثال للوكيل: optimize/saver.sh pillshidden phone
-     القيم المقبولة: markets,matches,center,phone | none
+     القيم المقبولة: markets,matches,center,phone,inputs | none
 —— زر البحث [الرئيسية]
    مثال للوكيل: optimize/saver.sh searchpill on  (`off`, the default)
      القيم المقبولة: on|off
 —— زر المهام [الرئيسية]
    مثال للوكيل: optimize/saver.sh taskspill off  (`on` brings it back; default on)
      القيم المقبولة: on|off
+—— زر المصادر [الرئيسية]
+   مثال للوكيل: optimize/saver.sh pillshidden inputs
+     القيم المقبولة: markets,matches,center,phone,inputs | none
 —— زر الأسواق [الرئيسية]
    مثال للوكيل: optimize/saver.sh pillshidden markets
-     القيم المقبولة: markets,matches,center,phone | none
+     القيم المقبولة: markets,matches,center,phone,inputs | none
 —— زر المباريات [الرئيسية]
    مثال للوكيل: optimize/saver.sh pillshidden matches
-     القيم المقبولة: markets,matches,center,phone | none
+     القيم المقبولة: markets,matches,center,phone,inputs | none
 —— زر تلاوة وأذان [الرئيسية]
    مثال للوكيل: optimize/saver.sh listenpill off  (`on` brings it back; default on, so nothing changes for anyone; `saver.sh show` says `listenpill:`)
      القيم المقبولة: on|off
@@ -659,21 +662,24 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 ———— التحية والطقس [الرئيسية]
      مثال للوكيل: optimize/saver.sh greeting off
        القيم المقبولة: on|off
+———— زر المصادر [الرئيسية]
+     مثال للوكيل: optimize/saver.sh pillshidden inputs
+       القيم المقبولة: markets,matches,center,phone,inputs | none
 ———— زر الأسواق [الرئيسية]
      مثال للوكيل: optimize/saver.sh pillshidden markets
-       القيم المقبولة: markets,matches,center,phone | none
+       القيم المقبولة: markets,matches,center,phone,inputs | none
 ———— زر المباريات [الرئيسية]
      مثال للوكيل: optimize/saver.sh pillshidden matches
-       القيم المقبولة: markets,matches,center,phone | none
+       القيم المقبولة: markets,matches,center,phone,inputs | none
 ———— زر الجوال [الرئيسية]
      مثال للوكيل: optimize/saver.sh pillshidden phone
-       القيم المقبولة: markets,matches,center,phone | none
+       القيم المقبولة: markets,matches,center,phone,inputs | none
 ———— زر البحث [الرئيسية]
      مثال للوكيل: optimize/saver.sh searchpill on  (`off`, the default)
        القيم المقبولة: on|off
 ———— زر مركز التحكم [الرئيسية]
      مثال للوكيل: optimize/saver.sh pillshidden center
-       القيم المقبولة: markets,matches,center,phone | none
+       القيم المقبولة: markets,matches,center,phone,inputs | none
 ———— زر المهام [الرئيسية]
      مثال للوكيل: optimize/saver.sh taskspill off  (`on` brings it back; default on)
        القيم المقبولة: on|off
