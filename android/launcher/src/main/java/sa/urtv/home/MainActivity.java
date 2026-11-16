@@ -912,6 +912,11 @@ public class MainActivity extends Activity {
         nowCard.setVisibility(View.GONE);
         nowCard.setOnClickListener(v -> NowPlaying.toggle(this));   // OK: pause or play
         nowCard.setOnLongClickListener(v -> { launchGuarded(ParentalPolicy.PILL_LISTEN, NowPlaying.player(this), "تلاوة وأذان"); return true; });   // a long OK: the player, behind the same lock as the «تلاوة وأذان» pill
+        nowCard.setOnKeyListener((v, code, ev) -> {   // 4.4 #62: the menu key on the card: «شاشة سوداء», behind the same lock
+            if (code != KeyEvent.KEYCODE_MENU) return false;
+            if (ev.getAction() == KeyEvent.ACTION_UP) launchGuarded(ParentalPolicy.PILL_LISTEN, sa.urtv.home.tilawah.BlackScreenActivity.open(this), "تلاوة وأذان");
+            return true;
+        });
         nowCard.setOnFocusChangeListener((v, has) -> {
             if (has) { lastFocusedId = v.getId(); glideTo(0); fadeGlow(1f); }
         });
