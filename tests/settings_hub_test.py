@@ -144,7 +144,7 @@ check("moving the focus along the list shows each section's rows at once and kee
 check("a row's key toward the list goes to its own section's item, never to the one beside it",
       "View item = sideItems.get(screen);" in st and "if (Dir.rtl()) card.setNextFocusRightId(item.getId()); else card.setNextFocusLeftId(item.getId());" in st)
 check("the settings open on the first section with the focus on its item (a link or the city's way in opens its own section and row)",
-      "if (screen == null) { screen = SettingsHub.LANG; sideFocus = true; }" in st and st.index("if (askCity) cityRow();") < st.index("if (screen == null) { screen = SettingsHub.LANG; sideFocus = true; }"))
+      "if (screen == null && !classic) { screen = SettingsHub.LANG; sideFocus = true; }" in st and st.index("if (askCity) cityRow();") < st.index("if (screen == null && !classic) { screen = SettingsHub.LANG; sideFocus = true; }"))
 check("the pane's head: the section's name, its line, and what is set in it now; no «•» in the hint",
       "title.setText(conv(SettingsHub.name(screen)));" in render and "line(SettingsHub.about(screen), look.sub, 0);" in render and "String now = hubSummary(screen);" in render
       and 'hint.setText(Words.of("اختيار يفتح، ورجوع يرجّعك خطوة"));' in render)
@@ -154,7 +154,7 @@ back = st[st.index("public void onBackPressed()"):].split("\n    }\n")[0]
 check("Back in the rows goes to their section's item in the side list (the row kept for the way back in); Back on the list leaves the settings",
       "if (f == null || screen == null || sideItems.get(screen) == null) { super.onBackPressed(); return; }" in back
       and "lastRow.put(screen, (String) f.getTag());" in back and back.index("lastRow.put(") < back.index("sideItems.get(screen).requestFocus();")
-      and ": entering ? lastRow.get(screen) :" in render)
+      and ": entering ? (tiles ? (hubAt != null ? \"hub:\" + hubAt : null) : lastRow.get(screen)) :" in render)
 side = st[st.index("private void sidePane()"):].split("\n    }\n")[0]
 check("the side list on the right (first in the RTL panes, in a scroll view for small screens), the rows on the left",
       st.index("panes.addView(sideScroll, sideLp);") < st.index("panes.addView(scroll,") and "panes.setLayoutDirection(Dir.layout());" in st
@@ -191,7 +191,7 @@ check("«أرسل تقرير» opens the home's ReportActivity (exported), and s
 # ---- the TV test of 3.145: after going down and up again the header stayed hidden; once, two screens were drawn over each other
 top = st[st.index("private void topWhenFirst(View v)"):].split("\n    }\n")[0]
 check("the first row brings the page back to its very top (the section's name and line show again), after the scroll view's own move",
-      "if (rows().indexOf(v) == 0) scroll.post(() -> scroll.smoothScrollTo(0, 0));" in top and "if (has) topWhenFirst(v);" in rowfn)
+      "if (at == 0 || (pairs && at == 1)) scroll.post(() -> scroll.smoothScrollTo(0, 0));" in top and "boolean pairs = classic && SettingsHub.hasTiles(screen)" in top and "if (has) topWhenFirst(v);" in rowfn)
 check("a screen just opened is at its top at once (never drawn at the old one's place first)",
       "scroll.scrollTo(0, 0);" in st[st.index("private void open(String category)"):].split("\n    }\n")[0])
 check("the settings have no window animation in or out, so no two screens are ever drawn over each other",
