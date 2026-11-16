@@ -34,6 +34,8 @@ import java.util.Map;
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.PIN_RESET             a forgotten PIN: everything parental back to nothing
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.HOME_WANTED --es mode on|off|status   4.4: «the person's home is ours» for the add-on's watch
  *      and the home's re-apply of the role (optimize/homedoctor.py); answers "home-wanted: yes|no"
+ *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.HOME_KEY --es mode on|off|status   4.4 R3, a test switch (off by default): the add-on catches
+ *      the remote's Home key itself and opens our home (docs/HOMEDOCTOR.md); answers "home-key: on|off"
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.BACK_SAVER --es mode on|off|status   «الرجوع يفتح شاشة التوقف» (off by default)
  *   am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.KEY_APP [--es key youtube|netflix|prime --es app PKG|default]   «أزرار الريموت»:
  *      the app a remote key opens (on our home and, with the typing service on, over other apps); answers "key-apps: youtube=…, netflix=…, prime=…"
@@ -149,6 +151,13 @@ public class DockReceiver extends BroadcastReceiver {
                 String m = String.valueOf(i.getStringExtra("mode"));
                 if (!m.equals("on") && !m.equals("off") && !m.equals("status")) { setResultData("error: add --es mode on|off|status"); return; }
                 setResultData("home-wanted: " + sa.urtv.home.setup.SetupHook.homeWanted(c, m));
+                return;
+            }
+            case "sa.urtv.home.HOME_KEY": {   // 4.4 R3 (step 88), a test switch, off by default: «إضافات تلفزيونك» catches the remote's Home key itself
+                String m = String.valueOf(i.getStringExtra("mode"));
+                if (!m.equals("on") && !m.equals("off") && !m.equals("status")) { setResultData("error: add --es mode on|off|status"); return; }
+                Boolean on = Extras.homeKey(c, m.equals("status") ? null : m);
+                setResultData(on == null ? "home-key: the add-on did not answer (install it and turn it on: optimize/dock.sh extras-setup)" : "home-key: " + (on ? "on" : "off"));
                 return;
             }
             case "sa.urtv.home.BACK_SAVER": {   // «الرجوع يفتح شاشة التوقف»: on | off | status; read at each Back, nothing to redraw

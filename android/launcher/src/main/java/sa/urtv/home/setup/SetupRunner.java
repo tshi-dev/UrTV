@@ -53,7 +53,7 @@ final class SetupRunner {
         /** 4.4: the run never got in (the prompt was cancelled, or got no answer): the screen offers «جهّز كل شي» again, first */
         final boolean retry;
         End(String text, boolean bad) { this(text, bad, false); }
-        End(String text, boolean bad, boolean wifi) { this.text = text; this.bad = bad; this.wifi = wifi; this.retry = CANCELLED_TEXT.equals(text) || NOT_ACCEPTED_TEXT.equals(text); }
+        End(String text, boolean bad, boolean wifi) { this.text = text; this.bad = bad; this.wifi = wifi; this.retry = CANCELLED_TEXT.equals(text) || NOT_ACCEPTED_TEXT.equals(text) || NO_DIALOG_TEXT.equals(text); }
     }
 
     /** What the full run would do on this TV, read (nothing changed) after the precheck: the start screen's plan and its real counts. */
@@ -92,6 +92,8 @@ final class SetupRunner {
          * nothing is pending any more, so a new run never gets in on an old «السماح دائماً» (tester step 18: the second run did not ask).
          */
         default void freshKey() { }
+        /** 4.4: «إضافات تلفزيونك» learns whether the person's chosen home is ours (its watch then works without the HOME role); quiet without it */
+        default void homeWanted(boolean wanted) { }
         void sleep(int ms) throws IOException;
         long now();
         /** A file of the app's assets (setup/community.txt), null when it is not there. */
@@ -183,6 +185,8 @@ final class SetupRunner {
     private Boolean confirmed;            // null: no answer yet
     private long promptSince;             // when the TV was asked (0: not waiting for the prompt)
     private long promptClosedAt;          // 4.4: when the screen saw the prompt close (it got its focus back) while no answer had come (0: not seen)
+    private boolean promptCovered;        // 4.4 (step 88): something came over the setup screen while it waited (the TV's dialog, or the person left it)
+    private String promptAbort;           // 4.4: why the wait was ended (CANCELLED_TEXT, NO_DIALOG_TEXT), null while it goes on
     private boolean promptLate;
 
     SetupRunner() { }
@@ -228,6 +232,9 @@ final class SetupRunner {
             if (c.engine.watchPending()) {   // 4.4: the stock home keeps the Home key (Google TV): «إضافات تلفزيونك» installed and turned on over this adb, then the key checked again
                 SetupEngine.Result add = install(c).addon();
                 SetupEngine.Result on = add.status == SetupEngine.Status.DONE ? c.engine.enableWatch() : add;
+                // 4.4 (step 88): the person chose our home by running the setup: the add-on is told «wanted» BEFORE the key is checked, so its watch brings
+                // ours even when the TV gives the HOME role back to Google TV (after a 15/15 setup it said «role stock wanted no → ours not chosen»)
+                if (on.status == SetupEngine.Status.DONE) c.host.homeWanted(true);
                 r = c.engine.finishWatch(on.status == SetupEngine.Status.DONE);
             }
             c.runner.wantScreen();   // the stock home and then ours come in front: our home opens this screen again
@@ -380,13 +387,27 @@ final class SetupRunner {
     static final int CANCEL_GRACE_MS = 6000;
 
     /** for the tests: the prompt is waiting since then */
-    synchronized void promptStartedForTest(long since) { promptSince = since; promptClosedAt = 0; }
+    synchronized void promptStartedForTest(long since) { promptSince = since; promptClosedAt = 0; promptCovered = false; promptAbort = null; }
+
+    /** 4.4 (step 88): the TV's dialog never came (adbd's «Invalid base64 key» on a first start): with nothing over the setup screen this long, the wait ends */
+    static final int NO_DIALOG_MS = 30_000;
+
+    /** The setup screen lost its focus (or was left) while the prompt waited: a dialog came over it, or the person went elsewhere. */
+    synchronized void promptCoveredNow() { if (promptSince > 0) promptCovered = true; }
+
+    /** why the wait ended, null while it goes on */
+    synchronized String promptAbort() { return promptAbort; }
 
     /** The setup screen got its focus back while the prompt was waiting: the prompt was answered. If no answer comes within CANCEL_GRACE_MS, it was «إلغاء». */
     synchronized void promptClosed(long now) { if (promptSince > 0 && promptClosedAt == 0) promptClosedAt = now; }
 
     /** for AdbClient: the prompt closed CANCEL_GRACE_MS ago and still no answer */
-    synchronized boolean promptCancelled(long now) { return promptSince > 0 && promptClosedAt > 0 && now - promptClosedAt >= CANCEL_GRACE_MS; }
+    synchronized boolean promptCancelled(long now) {
+        if (promptSince <= 0) return false;
+        if (promptClosedAt > 0 && now - promptClosedAt >= CANCEL_GRACE_MS) promptAbort = CANCELLED_TEXT;
+        else if (!promptCovered && promptClosedAt == 0 && now - promptSince >= NO_DIALOG_MS) promptAbort = NO_DIALOG_TEXT;   // the screen was never covered: no dialog
+        return promptAbort != null;
+    }
 
     private void promptCheck(Host host) {
         boolean say;
@@ -692,7 +713,9 @@ final class SetupRunner {
             e = new End(NOT_STARTED, false);
             complete = true;
         } catch (IOException ex) {
-            e = new End(cutText(ex.getMessage(), host.store()), true);
+            String why;
+            synchronized (this) { why = promptAbort; promptAbort = null; }
+            e = new End(why != null && AdbClient.CANCELLED.equals(ex.getMessage()) ? why : cutText(ex.getMessage(), host.store()), true);
         } catch (RuntimeException ex) {
             e = new End("حدث خطأ غير متوقع، ما غيّرنا شيئاً بعده. جرّب «تراجع» ثم أعد.", true);
         }
@@ -725,7 +748,7 @@ final class SetupRunner {
                 s = host.open(180_000, new AdbClient.Approval() {
                     @Override public void waiting() {
                         line(PROMPT_LINE);
-                        synchronized (SetupRunner.this) { promptSince = host.now(); promptLate = false; promptClosedAt = 0; }
+                        synchronized (SetupRunner.this) { promptSince = host.now(); promptLate = false; promptClosedAt = 0; promptCovered = false; promptAbort = null; }
                         changed();
                         host.later(PROMPT_LATE_MS, () -> promptCheck(host));
                     }
@@ -845,11 +868,11 @@ final class SetupRunner {
     static End endOf(Kind k, List<Step> steps) {
         if (k == Kind.ANSWERS) {
             boolean ok = !steps.isEmpty() && steps.get(0).state == State.DONE;
-            return new End(ok ? steps.get(0).reason : "ما تمّت الأجوبة (التفاصيل فوق).", !ok);
+            return new End(ok ? steps.get(0).reason : "ما تمّت الأجوبة" + because(steps), !ok);
         }
         if (k == Kind.UNDO) {
             boolean ok = !steps.isEmpty() && steps.get(0).state == State.DONE;
-            return new End(ok ? "تم الرجوع. أطفئ «تصحيح USB» من خيارات المطوّر، واختر «إلغاء تراخيص تصحيح USB» لتنظيف التلفزيون." : "انتهى الرجوع مع ملاحظات (فوق).", false);
+            return new End(ok ? "تم الرجوع. أطفئ «تصحيح USB» من خيارات المطوّر، واختر «إلغاء تراخيص تصحيح USB» لتنظيف التلفزيون." : "انتهى الرجوع مع ملاحظات" + because(steps), false);
         }
         int failed = 0, skipped = 0;
         for (Step s : steps) {
@@ -863,7 +886,25 @@ final class SetupRunner {
         if (failed == 0 && skipped == 0) {
             return new End("انتهى الإعداد. اضغط زر الرئيسية في الريموت. ثم أطفئ «تصحيح USB» من خيارات المطوّر واختر «إلغاء تراخيص تصحيح USB» إن لم تحتجهما (التراجع من هنا يحتاجهما).", false);
         }
-        return new End("انتهى الإعداد مع " + failed + " خطوة لم تتم و" + skipped + " تُركت (التفاصيل فوق). «تراجع» يرجّع كل شيء.", failed > 0);
+        return new End("انتهى الإعداد مع " + failed + " خطوة لم تتم و" + skipped + " تُركت" + because(steps) + " «تراجع» يرجّع كل شيء.", failed > 0);
+    }
+
+    /**
+     * 4.4 (step 88): the steps that did not finish, named with their reason, in the end sentence itself (the old «details above» pointed to details the page does
+     * not show). Two at most, each reason cut to 160 characters; ends with a full stop.
+     */
+    static String because(List<Step> steps) {
+        StringBuilder b = new StringBuilder();
+        int n = 0;
+        for (Step s : steps) {
+            if (s.state != State.FAILED && s.state != State.SKIPPED) continue;
+            if (n++ == 2) { b.append("، وغيرها"); break; }
+            String why = s.reason == null ? "" : s.reason.trim();
+            if (why.length() > 160) why = why.substring(0, 159) + "…";
+            while (why.endsWith(".")) why = why.substring(0, why.length() - 1);
+            b.append(n == 1 ? ": " : "؛ ").append(label(s.id)).append(why.isEmpty() ? "" : " (" + why + ")");
+        }
+        return b.append('.').toString();
     }
 
     /**
@@ -878,6 +919,8 @@ final class SetupRunner {
     }
 
     /** 4.4 (the owner's words): «إلغاء» on the prompt; nothing changed, and the screen offers «جهّز كل شي» again */
+    /** 4.4 (step 88, the owner's words): the TV's dialog never came; after a restart it comes at once */
+    static final String NO_DIALOG_TEXT = "ما ظهرت رسالة السماح؟ أعد تشغيل التلفزيون ثم اضغط «جهّز كل شي» مرة ثانية. ما تغيّر شيء في التلفزيون.";
     static final String CANCELLED_TEXT = "ضغطت «إلغاء». اضغط «جهّز كل شي» مرة ثانية واختر «السماح دائماً». ما تغيّر شيء في التلفزيون.";
     /** no answer to the prompt in time (it may never have shown) */
     static final String NOT_ACCEPTED_TEXT = "ما وصلنا ردّ على «السماح بتصحيح USB؟». اضغط «جهّز كل شي» مرة ثانية واختر «السماح دائماً». إذا ما ظهرت الرسالة أصلاً: أعد تشغيل التلفزيون ثم جرّب. ما تغيّر شيء في التلفزيون.";   // a prompt left unanswered (e.g. under the screensaver) blocks every later one until adbd restarts: TV test, 30 Oct
@@ -899,7 +942,7 @@ final class SetupRunner {
     /** For the tests: a fresh runner state (the process-wide one is never reset on the TV). */
     synchronized void resetForTest() {
         ring.clear(); seq = 0; steps = new ArrayList<>(); kind = null; running = false; end = null; listener = null; options = new Options();
-        live = null; preview = null; awaitingConfirm = false; confirmed = null; promptSince = 0; promptLate = false; promptClosedAt = 0;
+        live = null; preview = null; awaitingConfirm = false; confirmed = null; promptSince = 0; promptLate = false; promptClosedAt = 0; promptCovered = false; promptAbort = null;
     }
 
     static List<String> ids(List<Def> plan) {

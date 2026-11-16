@@ -139,6 +139,12 @@ public final class SetupHook {
 
     private static volatile Boolean toldWatch;
 
+    /** 4.4 (step 88): the add-on is told HOME_WANTED now, whatever it was told before (the end of a setup or an undo); quiet without it */
+    static void tellWatchNow(Context c) {
+        toldWatch = null;
+        tellWatch(c);
+    }
+
     /** The add-on learns whether the person's chosen home is ours (its watch then brings ours forward even without the role); once per change */
     static void tellWatch(Context c) {
         try {

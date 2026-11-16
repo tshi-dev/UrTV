@@ -15,7 +15,13 @@ final class HomeWatch {
     static final int MAX_BRINGS = 3;
 
     private final long[] brings = new long[MAX_BRINGS];
-    private long pausedUntil;
+    private long pausedUntil, lastCounted;
+    /**
+     * 4.4 (step 88, the tester's 7e5bbb12): one Home press on a Google TV gives TWO windows of the stock home; the second, within 1.5 s of a counted
+     * bring, is brought again but not counted (counted, every press tripped the loop guard: «paused», 2 of 20). Measured from the COUNTED bring only, so
+     * a stock home that keeps coming back still counts once every 1.5 s and trips the guard as before.
+     */
+    static final long SAME_PRESS_MS = 1_500;
 
     /**
      * A window came to the front: bring ours? {@code on}: the watch is on; {@code pkg}/{@code cls}: the window's package and class; {@code stockHomes}:
@@ -26,6 +32,7 @@ final class HomeWatch {
         if (!on || !oursChosen || pkg == null || cls == null || stockHomes == null) return false;
         if (!homeScreen(pkg, cls, stockHomes)) return false;
         if (now < pausedUntil) return false;
+        if (lastCounted > 0 && now - lastCounted < SAME_PRESS_MS) return true;   // the same press's second window
         int recent = 0, oldest = 0;
         for (int i = 0; i < brings.length; i++) {
             if (brings[i] > 0 && now - brings[i] < WINDOW_MS) recent++;
@@ -34,9 +41,11 @@ final class HomeWatch {
         if (recent >= MAX_BRINGS) {   // ours keeps losing to the stock home (a firmware that pins it): step aside, the TV's home stays
             pausedUntil = now + PAUSE_MS;
             java.util.Arrays.fill(brings, 0);
+            lastCounted = 0;
             return false;
         }
         brings[oldest] = now;
+        lastCounted = now;
         return true;
     }
 

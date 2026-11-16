@@ -36,3 +36,8 @@ script refuses to send such a command.
 RoleController, ActivityTaskManager's HOME starts, UrTVSetup, UrTVWatch and launcherx, and a screenshot. Then `report.md` and `report.json`:
 per angle applied, result and why (with the log lines that explain it), and the winner. No address, serial or name of the TV is written;
 send the report only with `optimize/share.sh` (AGENTS.md).
+
+**R3, a test switch (4.4, off by default):** «إضافات تلفزيونك» can catch the remote's Home key itself and open UrTV. adb's own key presses do not
+go through it, so only the real remote can test it: turn it on with
+`optimize/venv/bin/python -I optimize/tv.py "am broadcast -n sa.urtv.home/.DockReceiver -a sa.urtv.home.HOME_KEY --es mode on"`, press Home on
+the remote from a few apps (`logcat -s UrTVWatch`: «home key caught ours opened»), then the same with `--es mode off`.

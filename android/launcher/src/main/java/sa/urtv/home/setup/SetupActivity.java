@@ -56,7 +56,10 @@ public class SetupActivity extends Activity {
     static final int QR_DP = 224;   // a done screen the person closed with «تم»: the start screen again
 
     /** «اللغة» (docs/ENGLISH.md): the done screen's own words in English when it is set (i18n/en/setup.tsv) */
-    @Override protected void attachBaseContext(android.content.Context b) { super.attachBaseContext(S.wrap(b)); }
+    @Override protected void attachBaseContext(android.content.Context b) {
+        S.refresh(b);   // 4.4 (step 88): the screensaver's language now, before the configuration (the page came up in English while the home was Arabic)
+        super.attachBaseContext(S.wrap(b));
+    }
 
     @Override
     protected void onCreate(Bundle b) {
@@ -257,6 +260,7 @@ public class SetupActivity extends Activity {
         // 4.3: a box per suggested app the setup can install (OK ticks or unticks it); one already on the TV says so and is left
         add(text(S.t("تطبيقات مقترحة: علّم ما تبي نثبّته معها"), 15, "Medium", TEXT), dp(8));
         final TextView summary = text("", 14, "Regular", DIM);
+        final java.util.Set<String> haveIds = new java.util.HashSet<>(p.have);
         for (final sa.urtv.home.SuggestedApps.App a : sa.urtv.home.SuggestedApps.forSetup(android.os.Build.VERSION.SDK_INT)) {
             // design/43: a row per app (a button(): its guard against overlays, the look's focus fill), a tick box at its start in the accent when ticked, its name and its line; OK ticks or unticks
             final boolean have = p.have.contains(a.id);
@@ -268,7 +272,7 @@ public class SetupActivity extends Activity {
             final Runnable paint = new Runnable() { public void run() {
                 boolean on = !have && picks.contains(a.id);
                 row.setCompoundDrawablesRelativeWithIntrinsicBounds(new TickBox(on, look.accent, look.sub, look.light ? 0xFFFFFFFF : 0xFF14161A), null, null, null);
-                summary.setText(digits(S.t("%s تطبيقات مختارة", String.valueOf(picks.size()))));
+                summary.setText(digits(S.t("%s تطبيقات مختارة", String.valueOf(chosenCount(picks, haveIds)))));   // 4.4 (step 88): an app already on the TV is not «chosen» (it said 2 with both boxes empty)
             } };
             paint.run();
             row.setOnClickListener(new View.OnClickListener() {
@@ -289,6 +293,13 @@ public class SetupActivity extends Activity {
         add(no, dp(12));
         begin.post(new Runnable() { @Override public void run() { begin.requestFocus(); } });
         say("", GOLD);
+    }
+
+    /** the boxes that are ticked: picked AND not already on the TV (those show an empty box and are left) */
+    static int chosenCount(java.util.Collection<String> picks, java.util.Set<String> have) {
+        int n = 0;
+        for (String id : picks) if (!have.contains(id)) n++;
+        return n;
     }
 
     /** 4.4 «قبل ما نبدأ: لو صار شيء» (RescueInfo): three steps to «إنقاذ تلفزيونك», a QR to docs/RESCUE.md, and a photo of the screen asked for */
@@ -447,12 +458,14 @@ public class SetupActivity extends Activity {
         m.prompt = r.promptWaiting();
         m.promptLate = r.promptLate();
         m.promptTitle = S.tv(SetupRunner.PROMPT_LINE);
-        m.promptHint = S.t("اضغط «اختيار» بالريموت على «السماح دائماً»");
+        // 4.4 (step 88): the TV's focus starts on the box «السماح دائماً», and DOWN lands on «إلغاء»: the four keys in order (the drawing shows them)
+        m.promptHint = S.t("على الريموت: اختيار (يعلّم «السماح دائماً») ← تحت ← يسار ← اختيار (على «السماح»)");
         m.artOk = S.t("اختيار");
+        m.artAlways = S.t("السماح دائماً من هذا الكمبيوتر");
         m.promptLateText = S.tv(SetupRunner.PROMPT_LATE);
         m.artTitle = S.t("السماح بتصحيح USB؟");
         m.artCancel = S.t("إلغاء");
-        m.artAllow = S.t("السماح دائماً");
+        m.artAllow = S.t("السماح");
         m.finished = finished;
         SetupRunner.End e = r.end();
         m.bad = e != null && e.bad;
@@ -534,7 +547,7 @@ public class SetupActivity extends Activity {
     /** The ends SetupRunner.endOf says in fixed words, marked for the table (the done screen shows them with S.tv; tests/tester_fixes_test.py). */
     static final String[] ENDS = {
         S.n("تم الرجوع. أطفئ «تصحيح USB» من خيارات المطوّر، واختر «إلغاء تراخيص تصحيح USB» لتنظيف التلفزيون."),
-        S.n("انتهى الرجوع مع ملاحظات (فوق)."),
+        S.n("انتهى الرجوع مع ملاحظات"),
         S.n("توقّفنا قبل أي تغيير."),
         S.n("انتهى الإعداد. اضغط زر الرئيسية في الريموت. ثم أطفئ «تصحيح USB» من خيارات المطوّر واختر «إلغاء تراخيص تصحيح USB» إن لم تحتجهما (التراجع من هنا يحتاجهما)."),
     };
@@ -674,7 +687,7 @@ public class SetupActivity extends Activity {
     @Override public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         SetupRunner r = SetupRunner.get();
-        if (!hasFocus && r.promptWaiting()) promptCovered = true;
+        if (!hasFocus && r.promptWaiting()) { promptCovered = true; r.promptCoveredNow(); }
         else if (hasFocus && promptCovered) {
             promptCovered = false;
             if (r.promptWaiting()) r.promptClosed(System.currentTimeMillis());
@@ -685,6 +698,7 @@ public class SetupActivity extends Activity {
 
     @Override protected void onPause() {
         resumedNow = false;
+        if (SetupRunner.get().promptWaiting()) SetupRunner.get().promptCoveredNow();   // the dialog over this screen, or the person left it: not «no dialog»
         SetupRunner.get().setListener(null);
         super.onPause();
     }

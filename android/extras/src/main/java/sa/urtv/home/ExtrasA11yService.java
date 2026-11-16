@@ -152,6 +152,34 @@ public class ExtrasA11yService extends AccessibilityService {
         }
     }
 
+    // ---------------------------------------------------------------- 4.4 R3 (step 88, the tester's f25d95ff): the Home key caught here, a test switch
+
+    /**
+     * Off by default; the home's DockReceiver HOME_KEY turns it on over adb (docs/HOMEDOCTOR.md) so the owner can try it with the real remote (adb's own
+     * key presses do not come through the filter). While on, every Home key event is ours: its release opens our home; the TV's own Home never sees it.
+     */
+    static boolean homeKey(Context c) { return c.getSharedPreferences("extras", MODE_PRIVATE).getBoolean(ExtrasWords.HOME_KEY, false); }
+
+    static void setHomeKey(Context c, boolean on) {
+        c.getSharedPreferences("extras", MODE_PRIVATE).edit().putBoolean(ExtrasWords.HOME_KEY, on).apply();
+        if (on) Log.i("UrTVWatch", "home key catch on");
+        else Log.i("UrTVWatch", "home key catch off");
+        ExtrasA11yService s = running;
+        if (s != null) s.main.post(s::filterKeys);
+    }
+
+    private boolean homeKeyCaught(KeyEvent e) {
+        if (e.getAction() != KeyEvent.ACTION_UP) return true;
+        try {
+            startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setComponent(new ComponentName(HOME_PKG, HOME_PKG + ".MainActivity"))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED));
+            Log.i("UrTVWatch", "home key caught ours opened");
+        } catch (RuntimeException ex) {
+            Log.i("UrTVWatch", "home key caught failed");
+        }
+        return true;
+    }
+
     /** 4.4: the setup's word that the person's home is ours (WANTED from the home); off by «تراجع» (UNWANTED) */
     static boolean wanted(Context c) { return c.getSharedPreferences("extras", MODE_PRIVATE).getBoolean(ExtrasWords.WANTED, false); }
 
@@ -210,7 +238,8 @@ public class ExtrasA11yService extends AccessibilityService {
             if (!front && !lowRam) stockHome = stockHomeOn(this);   // one package query, only when the home leaves (none on a weak TV: no filter there)
             if (homeKeyLost == null) homeKeyLost = homeKeyLost(this);
             boolean want = SettingsKey.filterWanted(front, stockHome, lowRam, homeKeyLost)
-                || KeyApps.filterWanted(front, KeyApps.anyChosen(keyChoices), KeyButton.filterSafe());   // «أزرار الريموت»: only for a button given an app
+                || KeyApps.filterWanted(front, KeyApps.anyChosen(keyChoices), KeyButton.filterSafe())   // «أزرار الريموت»: only for a button given an app
+                || homeKey(this);   // 4.4 R3 (a test switch, off by default): the Home key caught here
             AccessibilityServiceInfo info = getServiceInfo();
             if (info == null) return;
             boolean has = (info.flags & AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS) != 0;
@@ -229,6 +258,7 @@ public class ExtrasA11yService extends AccessibilityService {
     }
 
     @Override protected boolean onKeyEvent(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.KEYCODE_HOME && homeKey(this)) return homeKeyCaught(e);   // 4.4 R3, only while the test switch is on
         if (appKey(e)) return true;   // «أزرار الريموت»: a button the owner gave an app; every other key goes on below, untouched
         Boolean lost = homeKeyLost;
         int d = settingsKey.decide(e.getKeyCode(), e.getAction(), e.getRepeatCount(), homeFront, stockHome, lost != null && lost);

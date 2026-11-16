@@ -45,7 +45,12 @@ final class SetupHost implements SetupRunner.Host {
 
     @Override public void spawn(Runnable job) { SetupService.run(app, job); }
 
-    @Override public void finished() { SetupSession.keepKey(app); }
+    @Override public void finished() {
+        SetupSession.keepKey(app);
+        SetupHook.tellWatchNow(app);   // 4.4 (step 88): after every end the add-on hears HOME_WANTED as it is now (set by a confirmed switch, cleared by «تراجع»)
+    }
+
+    @Override public void homeWanted(boolean wanted) { sa.urtv.home.Extras.homeWanted(app, wanted); }
 
     @Override public void freshKey() { SetupSession.keepKey(app); }
 
