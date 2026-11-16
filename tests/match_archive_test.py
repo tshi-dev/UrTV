@@ -249,6 +249,7 @@ check("history's games land in the store and its files are kept", len([e for e i
       and (oH / "history.json").is_file() and (oH / "history-report.json").is_file())
 check("history: results/4668.json, the Saudi league's last results", len(json.loads((oH / "results" / "4668.json").read_text())["results"]) == 30)
 table = {("Al-1", "Al-2"): ("1", "0"), ("Al-2", "Al-1"): ("2", "2")}
+ma.teams_table = lambda: {}
 ma.wiki_results = lambda title: (table, None)
 games = json.loads(first.read_text())["events"]
 chk = ma.wiki_check([e for e in games if e["strSeason"] == "2024-2025"])
@@ -274,10 +275,14 @@ def put_(i, days, scored_):
              "as": "0" if scored_ else None, "st": "FT" if scored_ else "NS", "r": "", "sp": "Soccer", "pp": False, "src": "tsdb"})
 put_("a", -20, True); put_("b", -5, False); put_("c", 5, False)
 summ, probs = ma.league_health(stH, nowH, {})
-check("a followed league whose last 10 days' games have no result is a problem", any("Saudi Pro League (4668)" in p and "none with a result" in p for p in probs), probs)
+check("a followed league's games played 2-10 days ago without a result are a problem", any("Saudi Pro League (4668)" in p and "have no result" in p for p in probs), probs)
 put_("b", -5, True)
 summ, probs = ma.league_health(stH, nowH, {"4668": {"2024-2025": {"expected": 306, "expected_sure": True, "finished": 300, "current": False}}})
-check("results in the last 10 days: no freshness problem", not any("none with a result" in p or "no game known" in p for p in probs if "4668" in p), probs)
+check("results in the last 10 days: no freshness problem", not any("have no result" in p for p in probs if "4668" in p), probs)
+stB = ma.Store()
+stB.put({"id": "z", "lg": "4668", "s": "2026-2027", "t": ma.iso(nowH - dt.timedelta(days=16)), "h": "1", "a": "2", "hn": "", "an": "", "hs": "1",
+         "as": "0", "st": "FT", "r": "", "sp": "Soccer", "pp": False, "src": "tsdb"})
+check("an international break (no game for 16 days) is no problem", not any("4668" in p for p in ma.league_health(stB, nowH, {})[1]))
 check("a past season short of its sure count is a problem", any("2024-2025: 300 results of 306" in p for p in probs), probs)
 check("health lists every followed league with its newest result", summ["4668"]["results_10d"] == 1 and summ["4668"]["last_result"] and len(summ) == len(ma.HISTORY))
 import io, contextlib

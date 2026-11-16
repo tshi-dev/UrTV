@@ -309,14 +309,12 @@ def league_health(store, now, state):
         done = [t for t, e in times if stage(e) == 3]
         recent = [e for t, e in times if lo <= t <= soon]
         recent_done = [e for e in recent if stage(e) == 3]
-        before = any(now - dt.timedelta(days=40) <= t < lo for t, _ in times)
-        after = any(now < t <= now + dt.timedelta(days=30) for t, _ in times)
         row = {"name": name, "last_result": iso(max(done)) if done else "", "games_10d": len(recent), "results_10d": len(recent_done)}
         summary[lg] = row
-        if recent and not recent_done:
-            problems.append(f"{name} ({lg}): {len(recent)} games in the last {STALE_DAYS} days, none with a result")
-        elif not recent and before and after:
-            problems.append(f"{name} ({lg}): in its season but no game known in the last {STALE_DAYS} days")
+        played = [e for t, e in times if lo <= t <= now - dt.timedelta(days=2) and stage(e) != 3 and not e.get("pp")]
+        row["without_result"] = len(played)
+        if played:   # games played 2 to 10 days ago that still have no result (a break between rounds is no problem)
+            problems.append(f"{name} ({lg}): {len(played)} games played 2 to {STALE_DAYS} days ago have no result")
         for season, x in sorted(state.get(lg, {}).items()):
             if not x.get("current") and x.get("expected_sure") and x.get("expected") and x.get("finished", 0) < x["expected"]:
                 problems.append(f"{name} ({lg}) {season}: {x.get('finished', 0)} results of {x['expected']} expected")
@@ -795,12 +793,14 @@ def wiki_results(title):
                                                                        "format": "json", "formatversion": "2", "redirects": "1"}))
             text += ((d2 or {}).get("parse") or {}).get("wikitext") or ""
     names = {}
-    for ab, val in re.findall(r"\|\s*name_([A-Z0-9]+)\s*=\s*([^|\n]+(?:\|[^\]\n]+\]\])?)", text):
-        v = re.sub(r"\[\[(?:[^|\]]*\|)?([^\]]*)\]\]", r"\1", val).strip()
-        names[ab] = v
+    for ab, val in re.findall(r"\|\s*name_([A-Z0-9]+)\s*=\s*([^\n]+)", text):
+        v = re.sub(r"\{\{\s*nobr\s*\|", "", val)                       # {{nobr|[[Al Taawoun FC|Al-Taawoun]]}}
+        v = re.sub(r"\[\[(?:[^|\]]*\|)?([^\]]*)\]\]", r"\1", v)
+        v = re.sub(r"<ref.*?(</ref>|/>)|\{\{.*?\}\}|<[^>]+>", "", v)
+        names[ab] = v.replace("}}", "").split("|")[0].strip()
     out = {}
     for h, a, val in re.findall(r"\|\s*match_([A-Z0-9]+)_([A-Z0-9]+)\s*=\s*([^|\n]*(?:\|[^\]\n]*\]\])?)", text):
-        m = re.search(r"(\d+)\s*[–-]\s*(\d+)", re.sub(r"\[\[(?:[^|\]]*\|)?([^\]]*)\]\]", r"\1", val))   # the score, not a link's season
+        m = re.search(r"(\d+)\s*[–—-]\s*(\d+)", re.sub(r"\[\[(?:[^|\]]*\|)?([^\]]*)\]\]", r"\1", val))   # the score, not a link's season
         if m and h in names and a in names:
             out[(names[h], names[a])] = (m.group(1), m.group(2))
     return out, (None if out else "no results table found")
@@ -824,12 +824,20 @@ def wiki_check(events, ask_ok=True):
         if not table:
             out[f"{lg} {season}"] = dict(row, problem=why)
             continue
-        clubs = {e[k] for e in evs for k in ("strHomeTeam", "strAwayTeam") if e.get(k)}
+        known = teams_table()
+        clubs = {}   # team id -> every name it goes by (TheSportsDB's spellings vary: "Al Feiha", "Dhamk"; teams.json's English names)
+        for e in evs:
+            for i, n in ((e.get("idHomeTeam"), e.get("strHomeTeam")), (e.get("idAwayTeam"), e.get("strAwayTeam"))):
+                if i:
+                    clubs.setdefault(str(i), set()).update({n or ""} | {known.get(str(i), {}).get("en", "")} | set(known.get(str(i), {}).get("alt") or []))
         wnames = {n for pair in table for n in pair}
 
         def ours(wname):
-            hits = [c for c in clubs if ti.team_key(c) == ti.team_key(wname)] or [c for c in clubs if ti.same_team(c, wname)]
-            return hits[0] if len(hits) == 1 else None
+            hits = {i for i, ns in clubs.items() if any(n and ti.team_key(n) == ti.team_key(wname) for n in ns)}
+            hits = hits or {i for i, ns in clubs.items() if any(n and ti.same_team(n, wname) for n in ns)}
+            stem = lambda x: {w[:5] for w in ti.latin(x).split() if len(w) >= 5}   # "Al-Najmah" / "Al Najma"
+            hits = hits or {i for i, ns in clubs.items() if any(n and stem(n) & stem(wname) for n in ns)}
+            return hits.pop() if len(hits) == 1 else None
         mapping = {w: ours(w) for w in wnames}
         wt = {(mapping[h], mapping[a]): sc for (h, a), sc in table.items() if mapping[h] and mapping[a]}
         same = differ = missing = 0
@@ -838,7 +846,7 @@ def wiki_check(events, ask_ok=True):
             c = compact(e)
             if stage(c) != 3:
                 continue
-            w = wt.get((e.get("strHomeTeam"), e.get("strAwayTeam")))
+            w = wt.get((str(e.get("idHomeTeam")), str(e.get("idAwayTeam"))))
             if not w:
                 missing += 1
             elif (str(c["hs"]), str(c["as"])) == w:
