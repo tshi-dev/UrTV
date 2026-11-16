@@ -56,6 +56,7 @@ jobs:
           mv meta_out/meta.json out/games/meta.json
           mv meta_out/quiz-v2.json out/quiz/quiz-v2.json
           python3 tool/.github/tools/make_games_data.py --verify out out/quiz/quiz.json
+          date -u +%Y%m%d%H > out/quiz/rev.txt   # the build of the bank: the app downloads only when this is newer than what it holds
           echo "GAMES_SHA=$(git -C gd rev-parse --short HEAD)" >> "$GITHUB_ENV"
       - name: Publish to data-games (one commit)
         run: |

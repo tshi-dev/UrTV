@@ -221,6 +221,19 @@ public final class QuizTest {
         }
 
         bankCheck(a.length > 0 ? a[0] : null);
+        if (a.length > 1) {   // the bank bundled in the app: the whole verified bank, loaded as the app loads it
+            byte[] bundled = Files.readAllBytes(Paths.get(a[1]));
+            long t0 = System.nanoTime();
+            List<QuizPick.Item> all = QuizBankCheck.parse(bundled);
+            long ms = (System.nanoTime() - t0) / 1_000_000;
+            check("bundled bank: parses whole (" + (all == null ? 0 : all.size()) + " items, " + bundled.length / 1024 + " KB, " + ms + " ms) and is at least 1000 items", all != null && all.size() >= 1000);
+            Set<String> cats = new HashSet<>(); for (QuizPick.Item it : all) cats.add(it.cat);
+            check("bundled bank: at least five categories, every level present", cats.size() >= 5 && all.stream().map(it -> it.diff).distinct().count() >= 3);
+            check("bundled bank: a 10-question game of every chip picks from it with no repeat", QuizPick.pick(all, QuizPick.MIX, 0, false, 10, new HashSet<>(), new Random(5)).size() == 10);
+        }
+        check("rev.txt: digits only, a line end allowed; HTML, empty, signs and a long file are refused",
+            QuizBankCheck.parseRev("2026111600\n".getBytes()) == 2026111600L && QuizBankCheck.parseRev("<html>".getBytes()) == -1 && QuizBankCheck.parseRev(new byte[0]) == -1
+            && QuizBankCheck.parseRev("-5".getBytes()) == -1 && QuizBankCheck.parseRev(new byte[100]) == -1 && QuizBankCheck.parseRev(null) == -1);
         server();
         System.exit(failed == 0 ? 0 : 1);
     }

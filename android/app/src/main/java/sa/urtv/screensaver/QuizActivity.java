@@ -404,6 +404,7 @@ public class QuizActivity extends Activity {
         } catch (java.net.SocketException e) { return null; }
     }
     private void closeRoom() {
+        QuizBank.playing = false;
         if (server != null) { server.stop(); server = null; }
         if (room != null) { room.close(); room = null; }
     }
@@ -524,6 +525,7 @@ public class QuizActivity extends Activity {
         if (qs.isEmpty() || !room.start(qs)) { Toast.makeText(this, S.t("ابدأ (لاعبان على الأقل)"), Toast.LENGTH_SHORT).show(); show(Screen.LOBBY); return; }
         asked = picks;
         QuizBank.remember(this, picks);
+        QuizBank.playing = true;   // a round is on: the background bank download waits
         shownPhase = null;   // step() draws the first question
     }
 

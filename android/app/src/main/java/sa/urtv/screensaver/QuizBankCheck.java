@@ -84,4 +84,11 @@ final class QuizBankCheck {
         for (int i = 0; i < s.length(); i++) if (Character.isISOControl(s.charAt(i))) return false;
         return true;
     }
+
+    /** the published build number (rev.txt): 1 to 12 digits and nothing else, a line end allowed; -1 for anything else (an HTML page, a longer file) */
+    static long parseRev(byte[] b) {
+        if (b == null || b.length > 64) return -1;
+        String s = new String(b, java.nio.charset.StandardCharsets.US_ASCII).trim();
+        return s.matches("[0-9]{1,12}") ? Long.parseLong(s) : -1;
+    }
 }

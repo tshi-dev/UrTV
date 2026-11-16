@@ -18,7 +18,7 @@ with tempfile.TemporaryDirectory() as tmp:
     c = subprocess.run(["javac", "-nowarn", "-d", tmp, *(str(APP / f"Quiz{n}.java") for n in ("Room", "Pick", "Server", "BankCheck")), str(APP / "MiniJson.java"), str(APP / "PhoneRoom.java"), str(APP / "DigitsText.java"), str(APP / "GamesMeta.java"), str(APP / "GameDataCheck.java"), str(ROOT / "tests/QuizTest.java")], capture_output=True, text=True)
     check("the quiz compiles on a plain JVM (no Android in the rules, the picking or the server)", c.returncode == 0, c.stderr[-600:])
     if c.returncode == 0:
-        r = subprocess.run(["java", "-cp", tmp, "sa.urtv.screensaver.QuizTest", str(ROOT / "assets/quiz/starter.json")], capture_output=True, text=True, timeout=240)
+        r = subprocess.run(["java", "-cp", tmp, "sa.urtv.screensaver.QuizTest", str(ROOT / "assets/quiz/starter.json"), str(ROOT / "assets/quiz/bank.json")], capture_output=True, text=True, timeout=240)
         for line in r.stdout.splitlines():
             if line.startswith(("PASS", "FAIL")):
                 print(line)
@@ -110,3 +110,16 @@ check("language: each phone gets its own page's language (the state poll sends &
       and "q.texts[1]};   // the English text is left as it is" in act)
 check("docs/QUIZ.md exists and names the conflicts between the SPEC and the mockups", "conflicts" in doc.lower() and "SPEC" in doc)
 sys.exit(1 if failed else 0)
+
+# ---- offline first (4.3.3): a bundled bank, a downloaded copy only when newer, every game reads local storage only
+bk = (APP / "QuizBank.java").read_text(encoding="utf-8")
+check("the bank: the downloaded copy is used only when it is at least as new as the bundled one, then the bundled bank, then the starter set, with no network in load()",
+      'sp(c).getLong("rev", 0) >= BUNDLED_REV' in bk and bk.index('asset(c, "quiz/bank.json")') < bk.index('asset(c, "quiz/starter.json")') and "Net." not in bk[bk.index("static List<QuizPick.Item> load"):bk.index("private static List<QuizPick.Item> asset")])
+check("the bank: the background check asks for rev.txt first, at most once a day, never while a round is on, at the lowest priority, and downloads only a newer build",
+      "CHECK_MS = 24L * 3600 * 1000" in bk and "long remote = fetchRev();" in bk and "if (remote > have)" in bk and "if (playing) return;" in bk and "Thread.MIN_PRIORITY" in bk)
+check("the quiz marks a round as on and the workflow publishes rev.txt after the verify",
+      "QuizBank.playing = true;" in act and "QuizBank.playing = false;" in act and wf.index("--verify out out/quiz/quiz.json") < wf.index("out/quiz/rev.txt"))
+import json as _j2
+_b = _j2.load(open(ROOT / "assets/quiz/bank.json", encoding="utf-8"))
+check("the bundled bank is the v2 file with the whole verified bank (at least 1000 items) and stays small (under 500 KB, it is compressed in the APK)",
+      _b["v"] == 2 and len(_b["items"]) >= 1000 and (ROOT / "assets/quiz/bank.json").stat().st_size < 500_000)
