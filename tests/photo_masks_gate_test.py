@@ -51,7 +51,7 @@ b, crossing = T.box([1080] * 48, cards=True)
 check("the digits as the home places them: no scenery, the start half (right in Arabic) at their usual height, not crossing",
       not crossing and b[0] >= 960 and b[1] == round(H * 0.16), b)
 b, crossing = T.box([500] * 48, cards=True)
-check("…a skyline at mid-height: the digits' bottom 30 % under it", crossing and b[3] == 500 + round(H * 0.26 * 0.3), b)
+check("…a skyline at mid-height: the digits' bottom 22 % under it", crossing and b[3] == 500 + round(H * 0.26 * 0.22), b)
 check("the zoom rule: a skyline covering half the digits zooms toward 75 % visible, at most 1.4",
       1.0 < T.zoom([440] * 48, [1000, 300, 1800, 580]) <= 1.4 and T.zoom([1080] * 48, [1000, 300, 1800, 580]) == 1.0)
 
@@ -62,6 +62,19 @@ check("…a skyline too low to reach the digits: FRONT-ONLY", v(*scene(900))[0] 
 tower = ((yy > 900) | ((xx > 1400) & (xx < 1440) & (yy > 420))).astype(np.float32)   # low ground and one thin tower through the digits
 check("…only a sliver of the digits crossed (one thin tower): FRONT-ONLY", v(rgb, tower)[0] == "FRONT-ONLY", v(rgb, tower))
 check("…no sky along the top: REJECT", v(rgb, np.ones((H, W), np.float32))[0] == "REJECT")
+T.people_cut = lambda rgb, alpha: True
+T.people_cut = lambda rgb, alpha: False
+tower = ((yy > 600) | ((xx > 1395) & (xx < 1415) & (yy > 300))).astype(np.float32)   # ground under the digits, a tower up through one of them
+r, _ = scene(560, 0.05)
+b = T.box(T.skyline(tower), cards=True)[0]
+check("the owner's rule: a tower through a digit (more than a quarter of it) or up to the colon: not behind the clock",
+      not T.legible(tower, b, 1.0)[0] and T.legible(scene(600, 0.0)[1], T.box(T.skyline(scene(600, 0.0)[1]), cards=True)[0], 1.0)[0])
+g = T.glyphs([1000, 300, 1720, 580])
+check("…the colon is looked at where «١٢:٣٠» and «٤:٥٨» put it", sum(1 for x in g if x[2]) == 2 and len(g) == 9)
+tex = rgb.copy(); tex[(alpha > 0.5) & ((xx.astype(int) // 7 + yy.astype(int) // 5) % 3 == 0)] = (200, 160, 120)   # a scenery with detail
+Ft = T.scenery_colour(tex, alpha)
+check("…a cut-out a few px off the photo (a doubled edge): refused", not T.aligned(tex, alpha, np.roll(Ft, 3, axis=1))[0] and T.aligned(tex, alpha, Ft)[0],
+      (T.aligned(tex, alpha, np.roll(Ft, 3, axis=1)), T.aligned(tex, alpha, Ft)))
 T.people_cut = lambda rgb, alpha: True
 check("…the edge through a face or a person: REJECT", v(*scene(560)) == ("REJECT", "the edge cuts through a face or a person"))
 

@@ -39,8 +39,8 @@ if shutil.which("javac"):
           box["none-nocards"][0] + box["none-nocards"][2] == 1920 and box["none-cards-rtl"][0] >= 960 and box["none-cards-ltr"][2] <= 960
           and all(0 <= b[0] < b[2] <= 1920 and 0 <= b[1] < b[3] <= 1080 for b in box.values()), box)
     m = box["mid"]
-    check("a skyline at mid-height: it crosses the digits' bottom (by 30 % of their height), so the scenery stands in front of them",
-          m[1] < 540 < m[3] and abs((m[3] - 540) - round((m[3] - m[1]) * 0.3)) <= 1, m)
+    check("a skyline at mid-height: it crosses the digits' bottom (by 22 % of their height: the owner, at most about a quarter), so the scenery stands in front of them",
+          m[1] < 540 < m[3] and abs((m[3] - 540) - round((m[3] - m[1]) * 0.22)) <= 1, m)
     check("a skyline too high or too low (or no skyline of 48): the digits at their usual place, never squeezed",
           box["high"] == box["low"] == box["short"] == box["none-nocards"], box)
     check("«كنبة» (the cards in a strip under the clock): the digits never reach the strip; a scenery that low leaves them at their usual place",
