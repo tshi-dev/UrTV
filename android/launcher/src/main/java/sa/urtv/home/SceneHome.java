@@ -163,7 +163,8 @@ final class SceneHome extends FrameLayout {
             final Bitmap glass = withClock ? decode(sc, "-glass.jpg", 960, true) : null;
             final Bitmap cut = withClock && sc.mask != null && ScenePlan.mask(tier) ? decode(sc, "-fg.webp", 1920, false) : null;
             final float depth = cut == null ? 1f : !alignedTo(photo, cut, sc.mask) ? 0f   // never a cut-out off its own pixels: the clock in front
-                    : sc.is(ScenePlan.OWNER_OK) ? 1f : zoomOf(cut, sc);   // the owner: more of the digits above the scenery, the clock where it is
+                    : sc.is(ScenePlan.OWNER_OK) && !cardsShown ? 1f   // the owner saw it at its own place (no cards beside the clock): kept as it is
+                    : zoomOf(cut, sc);   // the owner: more of the digits above the scenery, the clock where it is; elsewhere the rule
             if (depth == 0f && cut != null) cut.recycle();   // no zoom keeps every digit and the colon legible here: the clock in front
             final Bitmap mask = depth == 0f ? null : cut;
             final float zoom = depth == 0f ? 1f : depth;

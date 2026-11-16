@@ -111,8 +111,8 @@ if shutil.which("javac"):
     ok = [r for r in rows if r[0] == "ownerok"][0][1:]
     check("«owner_ok» (a tag in scenes.tsv: the owner saw the placement and reads it) is read beside the other tags; the bundled scene has none",
           ok == ["true", "true", "false"], ok)
-    check("an «owner_ok» scene keeps its cut-out where the owner saw it (no legibility drop, no zoom), but never one off its own pixels",
-          "!alignedTo(photo, cut, sc.mask) ? 0f" in scene and "sc.is(ScenePlan.OWNER_OK) ? 1f : zoomOf(cut, sc)" in scene
+    check("an «owner_ok» scene keeps its cut-out where the owner saw it, at its own place with no cards beside the clock (no legibility drop, no zoom); with the cards beside it the rule decides; never one off its own pixels",
+          "!alignedTo(photo, cut, sc.mask) ? 0f" in scene and "sc.is(ScenePlan.OWNER_OK) && !cardsShown ? 1f" in scene
           and scene.index("!alignedTo(photo, cut, sc.mask)") < scene.index("sc.is(ScenePlan.OWNER_OK)"))
     check("ScenePlan's tiers are Ram's numbers", [r for r in rows if r[0] == "tiers"][0][1] == "0,1,2"
           and "public static final int LOW = 0, MID = 1, NORMAL = 2;" in ram)

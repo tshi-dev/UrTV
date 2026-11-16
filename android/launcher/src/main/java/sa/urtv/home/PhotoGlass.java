@@ -79,7 +79,7 @@ final class PhotoGlass extends FrameLayout {
      */
     private void depth(int w, int h) {
         int[] digits = PhotoGlassPlan.box(line, w, h, cardsShown, rtl, row);
-        float z = ownerOk ? 1f : ScenePlan.depth(line, fine, digits, w, h);   // the owner saw this photo's place and reads it: kept as it is
+        float z = ownerOk && !cardsShown ? 1f : ScenePlan.depth(line, fine, digits, w, h);   // the owner saw this photo at its own place (no cards beside the clock): kept as it is; elsewhere the rule
         if (z == 0f) {
             mask.setVisibility(GONE);
             digits = PhotoGlassPlan.box(null, w, h, cardsShown, rtl, row);
