@@ -3193,8 +3193,7 @@ public class MainActivity extends Activity {
             if (on) {   // the ordinary photos let go: no rotation, a photo on its way is not shown, the two layers emptied
                 handler.removeCallbacks(rotateWallpaper);
                 wallGen++;
-                wallBack.setImageDrawable(null);
-                wallFront.setImageDrawable(null);
+                for (ImageView w : new ImageView[] {wallBack, wallFront}) w.setImageDrawable(null);
             } else nextWallpaper();   // back to the home as it was: its photo again
         }
         int show = on ? View.INVISIBLE : View.VISIBLE;   // INVISIBLE: the header keeps its size, nothing under it moves

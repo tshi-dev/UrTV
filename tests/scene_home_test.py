@@ -145,7 +145,7 @@ check("«بقاء كل مشهد», «المشهد يتبع الوقت», «ال�
       and "night = t >= d.maghrib || t < d.fajr;" in main and 'ScenePlan.fog(g.getInt("code", -1))' in main and "sceneHome.mood(" in main and "ScenePlan.stay(cfg.sceneStay)" in main)
 check("the ordinary photos are not decoded while the scene home shows (memory): no rotation, a photo on its way not shown, the two layers emptied; back to classic, a photo again",
       "if (scenesOn) return;" in main and main.index("if (scenesOn) return;") < main.index("final int gen = ++wallGen;")
-      and "wallFront.setImageDrawable(null);" in tick and "} else nextWallpaper();" in tick)
+      and "for (ImageView w : new ImageView[] {wallBack, wallFront}) w.setImageDrawable(null);" in tick and "} else nextWallpaper();" in tick)
 check("the provider gives scene_packs; saver.sh scenepacks and homelayout scenes; `show` says them",
       '"scene_packs"' in prov and 'Prefs.join(p.scenePacks(), ",")' in prov and 'getStringExtra("scenepacks")' in recv and '"\\nscenepacks: "' in recv
       and "scenepacks) set1 scenepacks" in read(ROOT / "optimize/saver.sh") and "homelayout classic|football|scenes" in read(ROOT / "optimize/saver.sh"))

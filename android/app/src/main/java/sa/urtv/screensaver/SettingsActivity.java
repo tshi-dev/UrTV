@@ -417,9 +417,9 @@ public class SettingsActivity extends Activity {
         row("حزم المشاهد", labels(Prefs.SCENE_PACKS, prefs.scenePacks(), "مشاهد السعودية"), R.drawable.ic_eye,
             new Runnable() { public void run() { pickMany("scenePacks", "حزم المشاهد", Prefs.SCENE_PACKS, "بدون اختيار = مشاهد السعودية"); } });
         row("بقاء كل مشهد", Prefs.sceneStayLabel(prefs.sceneStay()), R.drawable.ic_eye, new Runnable() { public void run() { pickSceneStay(); } });
-        row("المشهد يتبع الوقت", prefs.sceneByTime() ? "مفعّل، مشهد الليل من المغرب إلى الفجر" : "متوقف", R.drawable.ic_eye,
+        row("المشهد يتبع الوقت", prefs.sceneByTime() ? "مفعّل (مشهد الليل من المغرب إلى الفجر)" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setSceneByTime(!prefs.sceneByTime()); render(); } });
-        row("المشهد يتبع الطقس", prefs.sceneByWeather() ? "مفعّل، مشهد الضباب وقت الضباب" : "متوقف", R.drawable.ic_eye,
+        row("المشهد يتبع الطقس", prefs.sceneByWeather() ? "مفعّل (مشهد الضباب وقت الضباب)" : "متوقف", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setSceneByWeather(!prefs.sceneByWeather()); render(); } });
         row("المظهر", Prefs.lookLabel(prefs.look()) + " · " + Prefs.appearanceLabel(prefs.appearance()), R.drawable.ic_eye,
             new Runnable() { public void run() { startActivity(new Intent(SettingsActivity.this, AppearanceActivity.class)); } });
