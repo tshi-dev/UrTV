@@ -44,7 +44,7 @@ concurrency:   # the fixtures runs one at a time; the archive's own runs (live, 
 jobs:
   fixtures:
     if: github.event_name == 'push' || github.event.schedule == '23 */6 * * *' || (github.event_name == 'workflow_dispatch' && (inputs.mode == '' || inputs.mode == 'fixtures'))
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 90   # the free API answers about one request in 15 s: 16 leagues took 48 minutes
     steps:
       - uses: actions/checkout@v4
@@ -74,7 +74,7 @@ jobs:
   tournaments:
     needs: fixtures
     if: always() && needs.fixtures.result != 'cancelled' && (github.event_name == 'push' || github.event.schedule == '23 */6 * * *' || github.event.schedule == '41 2,5,8,11,14,17,20,23 * * *' || (github.event_name == 'workflow_dispatch' && (inputs.mode == '' || inputs.mode == 'fixtures')))
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
@@ -101,7 +101,7 @@ jobs:
   archive:   # after every fixtures run (red or green), or alone on its schedules; red only when the archive itself breaks
     needs: [fixtures, tournaments]
     if: always() && needs.fixtures.result != 'cancelled' && needs.tournaments.result != 'cancelled'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     concurrency:   # one writer of data-archive at a time
       group: data-archive
