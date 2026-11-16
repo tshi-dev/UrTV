@@ -246,10 +246,10 @@
   .week li.lv .sc{color:var(--gold-hi);font-size:1.25em;font-weight:700;font-variant-numeric:tabular-nums;padding:0 .1em}
   
   
-  .week li.fc{display:grid;grid-template-columns:4.2em 1.5em minmax(0,1fr) 2em 5.5em 2em;align-items:center;gap:0 .6em}
+  .week li.fc{display:grid;grid-template-columns:4.2em 1.5em minmax(0,1fr) 2em minmax(2.5em,5.5em) 2em;align-items:center;gap:0 .6em}
   .week li.fc > span{max-width:none;overflow:hidden;text-overflow:ellipsis;padding:0;margin:0}
   .week li.fc .wxi svg{width:1.35em;height:1.35em;display:block;fill:none;stroke:var(--gold-3);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-  .week li.fc .ep{font-size:.8em}
+  .week li.fc .ep{font-size:.8em;white-space:normal;overflow:visible;line-height:1.2}   
   .week li.fc .lo,.week li.fc .hi{text-align:center;font-variant-numeric:tabular-nums}
   .week li.fc .lo{color:#CFC6B2}.week li.fc .hi{color:#FFF;font-weight:500}
   .week li.fc .rg{position:relative;height:5px;border-radius:3px;background:rgba(255,255,255,.14)}
