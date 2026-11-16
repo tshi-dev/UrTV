@@ -65,7 +65,11 @@ public class LetterHiveActivity extends GameActivity {
         if (paused) pausedAt = now; else if (pausedAt != 0) { pausedFor += now - pausedAt; pausedAt = 0; }
     }
 
+    @Override protected String namesKind() { return "teams"; }
+    @Override protected int namesCount() { return 2; }
+
     private void start() {
+        names = teamNames(2);   // what the people wrote on the ready screen, else the suggestions
         if (bank == null) { toast(S.t("قريبًا")); return; }
         HiveGame.Settings s = new HiveGame.Settings();
         s.level = chips.picked("level"); s.kids = chips.picked("kids") == 1; s.seconds = HiveGame.SECONDS[chips.picked("time")];

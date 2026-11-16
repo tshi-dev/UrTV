@@ -29,6 +29,8 @@ public class CharadesActivity extends GameActivity {
 
     @Override protected String id() { return "charades"; }
     @Override protected boolean inPlay() { return screen != Screen.SETUP && screen != Screen.LOBBY && screen != Screen.END; }
+    @Override protected String namesKind() { return "teams"; }
+    @Override protected int namesCount() { return TEAMS[chips.picked("teams")]; }
 
     @Override protected void onCreate(Bundle b) {
         super.onCreate(b);

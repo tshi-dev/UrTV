@@ -49,6 +49,8 @@ public class MissingWordActivity extends GameActivity {
     }
 
     @Override protected boolean inPlay() { return screen == Screen.ASK || screen == Screen.SHOWN; }
+    @Override protected String namesKind() { return "teams"; }
+    @Override protected int namesCount() { return TEAMS[chips.picked("teams")]; }
     @Override protected void onPauseChanged(boolean paused, long now) { if (paused) clock.pause(now); else clock.resume(now); }
     @Override protected void onEndRound() { if (game != null) { game.finish(); clock.stop(); go(Screen.END); play(QuizSound.FANFARE); } }
 

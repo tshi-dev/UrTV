@@ -17,12 +17,12 @@ def check(what, ok, extra=""):
 def src(name): return (APP / name).read_text(encoding="utf-8")
 def code(s): return re.sub(r"/\*.*?\*/|//[^\n]*", "", s, flags=re.S)
 
-KIT = ["GameRegistry", "GameScore", "GameChips", "GameClock", "GameDataCheck", "SunPos"]   # no Android in these
+KIT = ["GameRegistry", "GameScore", "GameChips", "GameClock", "GameDataCheck", "SunPos", "GameNames"]   # no Android in these
 ENGINES = ["KhanatData", "KhanatEngine", "KhanatLayout", "MissingWord", "games/domino/Tile", "games/domino/DominoGame", "games/domino/DominoBot", "games/domino/Snake", "games/domino/DominoTable"]                           # each game's rules and data: no Android either
 if not shutil.which("javac"):
     print("SKIP games kit: no javac"); sys.exit(1)
 with tempfile.TemporaryDirectory() as tmp:
-    c = subprocess.run(["javac", "-nowarn", "-d", tmp, *(str(APP / f"{n}.java") for n in KIT + ENGINES), str(APP / "MiniJson.java"), str(ROOT / "tests/GamesKitTest.java")], capture_output=True, text=True)
+    c = subprocess.run(["javac", "-nowarn", "-d", tmp, *(str(APP / f"{n}.java") for n in KIT + ENGINES), str(APP / "MiniJson.java"), str(APP / "DigitsText.java"), str(ROOT / "tests/GamesKitTest.java")], capture_output=True, text=True)
     check("the kit's rules and every game's engine compile on a plain JVM (no Android in them)", c.returncode == 0, c.stderr[-800:])
     if c.returncode == 0:
         r = subprocess.run(["java", "-cp", tmp, "sa.urtv.screensaver.GamesKitTest", str(ROOT / "assets/games/khanat.json"), str(ROOT / "assets/games/missing-word.json")], capture_output=True, text=True, timeout=120)
@@ -75,7 +75,7 @@ check("one look: the paper by day and three night palettes, decided in one place
 check("data: the kept copy must pass the published check, the starter its own; a download goes through Net with a size cap, is checked whole, written beside and renamed, the last good copy stays",
       "published.parse(Bounded.readAll(in, GameDataCheck.BYTES_MAX))" in data and "starter.parse(Bounded.readAll(in, GameDataCheck.BYTES_MAX))" in data and "Net.get(BASE + name + \".json\", null, 15000, 20000, Math.min(maxBytes, GameDataCheck.BYTES_MAX))" in data
       and "r.status != 200" in data and "if (published.parse(b) == null) return;" in data and "tmp.renameTo(f)" in data and "data-games/games/" in data and "org.json" not in data)
-check("nothing about the people playing is stored: only chips, the last game, the sound switch, the night look and its palette, the list's filter, and item ids", set(re.findall(r'put\w+\("([\w.]+)"', prefs)) == {"chips.", "last", "sound", "recent.", "night", "palette", "filter"} and "FileOutputStream" not in base)
+check("nothing about the people playing is stored but the team and player names they chose to write (this TV only, «أسماء جديدة» forgets them): chips, the last game, the sound switch, the night look and its palette, the list's filter, and item ids", set(re.findall(r'put\w+\("([\w.]+)"', prefs)) == {"chips.", "last", "sound", "recent.", "night", "palette", "filter", "names."} and "FileOutputStream" not in base)
 # the night look: contrast floors in every set, the switch and the sun
 def _lum(h):
     r, g, b = [int(h[i:i + 2], 16) / 255 for i in (0, 2, 4)]
@@ -125,3 +125,13 @@ check("a key press redraws only what it changes: «خمّن الكلمة» repai
 
 check("«خمّن الكلمة»: ة ى ء take no colour of their own (only a typed letter's key does; ء is only a spelling of ا)", "int c = k < Word5Keys.LETTERS ? game.key(letterOf(k)) : 0;" in w5)
 sys.exit(1 if failed else 0)
+
+# ---- names written by the people playing (4.3.3)
+_ga = (APP / "GameActivity.java").read_text(encoding="utf-8")
+check("the base: team and player names come from what the people wrote (else the suggestions), the ready screen has a «الأسماء» button, the list has a reset, the keyboard is the TV's own",
+      'GameNames.resolve(GamePrefs.names(this, "teams")' in _ga and 'GameNames.resolve(GamePrefs.names(this, "players")' in _ga and 'S.t("الأسماء")' in _ga and 'S.t("أسماء جديدة")' in _ga and "GameNames.Pad" in _ga)
+for _g, _k in (("Khanat", "players\" : \"teams"), ("MissingWord", "teams"), ("Charades", "teams"), ("OddOne", "players"), ("DominoActivity", "teams"), ("LetterHive", "teams")):
+    _f = _g if _g.endswith("Activity") else _g + "Activity"
+    _t = (APP / f"{_f}.java").read_text(encoding="utf-8")
+    check(f"{_f}: names the kind of names it has and how many", "namesKind()" in _t and "namesCount()" in _t and _k.split('"')[0] in _t)
+check("no game builds its own default names any more: the only «لاعب %s» is the base's", sum((APP / f"{g}.java").read_text(encoding="utf-8").count('S.t("لاعب %s"') for g in ("KhanatActivity", "OddOneActivity", "MissingWordActivity", "CharadesActivity", "DominoActivity", "LetterHiveActivity")) == 0)

@@ -33,6 +33,12 @@ final class GamePrefs {
     /** the filter of the games list: 0 all the games (the default), 1 only the ones that can be played with phones */
     static int filter(Context c) { return sp(c).getInt("filter", 0) == 1 ? 1 : 0; }
     static void setFilter(Context c, int v) { sp(c).edit().putInt("filter", v == 1 ? 1 : 0).apply(); }
+    /** the names the people playing gave (kind "teams" or "players"): kept on this TV for next time, "" in a slot = the game's suggestion; setNames with nothing forgets them */
+    static String[] names(Context c, String kind) { return GameNames.split(sp(c).getString("names." + kind, "")); }
+    static void setNames(Context c, String kind, String[] v) {
+        String j = GameNames.join(v);
+        if (j.replace("\n", "").isEmpty()) sp(c).edit().remove("names." + kind).apply(); else sp(c).edit().putString("names." + kind, j).apply();
+    }
     /** which night palette: 0 warm charcoal (the default), 1 blue-black, 2 dim sepia */
     static int palette(Context c) { int v = sp(c).getInt("palette", 0); return v < 0 || v >= PALETTES ? 0 : v; }
     static void setPalette(Context c, int v) { sp(c).edit().putInt("palette", v).apply(); }

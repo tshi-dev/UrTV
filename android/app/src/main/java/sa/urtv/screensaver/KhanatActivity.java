@@ -50,7 +50,8 @@ public class KhanatActivity extends GameActivity {
     /** teams are 2 to 4; with «أفراد» every count to ten is offered */
     @Override protected void onChips(GameChips c) { for (int i = MAX_TEAMS - 1; i < COUNTS.length; i++) c.setOff("count", i, c.picked("mode") == 0); }
     private boolean solo() { return chips.picked("mode") == 1; }
-    private String[] playerNames(int n) { String[] v = new String[n]; for (int i = 0; i < n; i++) v[i] = S.t("لاعب %s", num(i + 1)); return v; }
+    @Override protected String namesKind() { return solo() ? "players" : "teams"; }
+    @Override protected int namesCount() { return COUNTS[chips.picked("count")]; }
 
     @Override protected boolean inPlay() { return screen != Screen.SETUP && screen != Screen.END; }
     @Override protected void onPauseChanged(boolean paused, long now) { if (paused) clock.pause(now); else clock.resume(now); }

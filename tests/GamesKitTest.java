@@ -62,6 +62,28 @@ public class GamesKitTest {
     }
 
     /** SunPos: Riyadh and Mecca around the day, a high latitude in summer and winter (the checks are the sun's own, to a few minutes) */
+    static void names() {
+        check("names: letters, digits and single spaces, 14 at most, no link", GameNames.clean("  سارة   أحمد ") .equals("سارة أحمد") && GameNames.clean("a@b#c").equals("abc") && GameNames.clean("12345678901234567890").length() == 14
+            && GameNames.clean("http://x.y").isEmpty() && GameNames.clean("www x").isEmpty() && GameNames.clean(null).isEmpty());
+        String[] d = {"الصقور", "النجوم", "الأسود"};
+        check("names: a saved name replaces the suggestion, an empty slot keeps it", java.util.Arrays.equals(GameNames.resolve(new String[]{"", "فريقنا", ""}, d, false), new String[]{"الصقور", "فريقنا", "الأسود"}));
+        check("names: two the same are told apart with a number in the person's digits", java.util.Arrays.equals(GameNames.resolve(new String[]{"أبطال", "أبطال", "أبطال"}, d, false), new String[]{"أبطال", "أبطال ٢", "أبطال ٣"})
+            && GameNames.resolve(new String[]{"Ace", "Ace"}, new String[]{"a", "b"}, true)[1].equals("Ace 2"));
+        check("names: the kept string round-trips the slots, a line end never survives", GameNames.split(GameNames.join(new String[]{"أ\nب", "", "جـ"}))[0].equals("أب") && GameNames.split(GameNames.join(new String[]{"x", "y"}))[1].equals("y") && GameNames.split("").length == GameNames.SLOTS);
+        GameNames.Pad p = new GameNames.Pad(true);
+        String t = p.press("");
+        check("keyboard: the first key types its letter, left of the row stays, down keeps the place", t.equals("ض") && moved(p, 0, 1, 1, 0) && p.row == 1);
+        p.row = 4; p.col = GameNames.BACK;
+        check("keyboard: backspace removes one, space is never doubled or first, 14 is the end",
+            p.press("اب").equals("ا") && GameNames.add("", ' ').isEmpty() && GameNames.add("ا ", ' ').equals("ا ") && GameNames.add("12345678901234", 'x').length() == 14 && p.action() == GameNames.BACK);
+        check("keyboard: every key of both languages is a letter, digit or one of . ' & -", allKeys(true) && allKeys(false));
+    }
+    static boolean moved(GameNames.Pad p, int dx, int dy, int row, int col) { p.move(dx, dy); return p.row == row; }
+    static boolean allKeys(boolean ar) {
+        GameNames.Pad p = new GameNames.Pad(ar);
+        for (int r = 0; r < p.rowCount() - 1; r++) for (int c = 0; c < p.cols(r); c++) { char ch = p.ch(r, c); if (!(Character.isLetterOrDigit(ch) || ".'&-".indexOf(ch) >= 0)) return false; }
+        return true;
+    }
     static void sun() {
         java.time.Instant d = java.time.Instant.parse("2026-11-16T00:00:00Z");
         long h = 3600_000L, t0 = d.toEpochMilli();
@@ -86,6 +108,7 @@ public class GamesKitTest {
         khanat(khanatRaw); missingWord(mwRaw);
         khanatTen();
         sun();
+        names();
         System.exit(failed == 0 ? 0 : 1);
     }
 

@@ -17,6 +17,8 @@ final class GameChips {
     final List<Row> rows = new ArrayList<>();
     /** the focus: row == rows.size() is the start button */
     int row, col;
+    /** the buttons of the last line: 0 the start button, 1 the names button (only when the game has names to write: `names`) */
+    int btn; boolean names;
 
     GameChips add(String key, String label, String[] opts, int def) { rows.add(new Row(key, label, opts, Math.max(0, Math.min(opts.length - 1, def)))); row = rows.size(); return this; }
 
@@ -29,10 +31,11 @@ final class GameChips {
         if (dy != 0) {
             int to = Math.max(0, Math.min(rows.size(), row + dy));
             if (to == row) return false;
-            row = to; col = onButton() ? 0 : rows.get(row).picked;
+            row = to; col = onButton() ? 0 : rows.get(row).picked; btn = 0;
             return true;
         }
-        if (dx == 0 || onButton()) return false;
+        if (onButton()) { int b = names ? Math.max(0, Math.min(1, btn + dx)) : 0; if (b == btn) return false; btn = b; return true; }
+        if (dx == 0) return false;
         int to = Math.max(0, Math.min(rows.get(row).opts.length - 1, col + dx));
         if (to == col) return false;
         col = to;

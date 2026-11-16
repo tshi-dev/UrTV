@@ -28,6 +28,8 @@ public class OddOneActivity extends GameActivity {
 
     @Override protected String id() { return "odd-one"; }
     @Override protected boolean inPlay() { return screen != Screen.SETUP && screen != Screen.LOBBY && screen != Screen.END; }
+    @Override protected String namesKind() { return "players"; }
+    @Override protected int namesCount() { return PLAYERS[chips.picked("players")]; }
 
     @Override protected void onCreate(Bundle b) {
         super.onCreate(b);
@@ -69,7 +71,8 @@ public class OddOneActivity extends GameActivity {
         game = new OddOneGame(topics, players, OddOneGame.ROUNDS[chips.picked("rounds")], chips.picked("laps") + 1, false, null, recent, System::currentTimeMillis, rnd);
         score = new GameScore(game.players);
         names = new String[game.players];
-        for (int i = 0; i < names.length; i++) names[i] = phoneNames != null ? phoneNames[i] : S.t("لاعب %s", num(i + 1));
+        String[] own = phoneNames != null ? phoneNames : playerNames(names.length);   // the phones' own names, else what the people wrote, else «لاعب 1»
+        System.arraycopy(own, 0, names, 0, names.length);
         deal();
     }
     /** the remote goes round: each player's own hand-over; under it waits the talk */

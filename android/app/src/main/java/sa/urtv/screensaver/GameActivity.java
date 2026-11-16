@@ -139,7 +139,7 @@ public abstract class GameActivity extends Activity {
         if (root == null) return;
         root.removeAllViews(); handCount = null;
         root.setBackgroundColor(L.paper);
-        if (pauseCard) drawPause(); else if (hand > 0) drawHand(); else draw();
+        if (namesMode > 0) drawNames(); else if (pauseCard) drawPause(); else if (hand > 0) drawHand(); else draw();
     }
 
     @Override public boolean dispatchKeyEvent(KeyEvent e) {
@@ -151,7 +151,8 @@ public abstract class GameActivity extends Activity {
         int dy = k == KeyEvent.KEYCODE_DPAD_UP ? -1 : k == KeyEvent.KEYCODE_DPAD_DOWN ? 1 : 0;
         if (!(back || ok || dx != 0 || dy != 0)) return super.dispatchKeyEvent(e);
         if (e.getAction() != KeyEvent.ACTION_DOWN) return true;   // the key is ours whole: its release never reaches another screen
-        if (pauseCard) keyPause(back, ok, dy);
+        if (namesMode > 0) keyNames(back, ok, dx, dy);
+        else if (pauseCard) keyPause(back, ok, dy);
         else if (hand > 0) keyHand(back, ok);
         else onKey(back, ok, dx, dy);
         return true;
@@ -243,7 +244,12 @@ public abstract class GameActivity extends Activity {
     protected final void play(int which) { QuizSound.play(sound, which); }
     protected final String letter(int i) { return en ? LETTERS_EN[i % 4] : LETTERS_AR[i % 4]; }
     /** the default names of `n` sides, in UrTV's language */
-    protected final String[] teamNames(int n) { String[] v = new String[n]; for (int i = 0; i < n; i++) v[i] = S.tv(GameScore.TEAMS[i % GameScore.MAX]); return v; }
+    protected final String[] teamNames(int n) { String[] v = new String[n]; for (int i = 0; i < n; i++) v[i] = S.tv(GameScore.TEAMS[i % GameScore.MAX]); return GameNames.resolve(GamePrefs.names(this, "teams"), v, latin); }
+    /** the players' names: what the people wrote on this TV, else «لاعب 1», «لاعب 2» */
+    protected final String[] playerNames(int n) { String[] v = new String[n]; for (int i = 0; i < n; i++) v[i] = S.t("لاعب %s", num(i + 1)); return GameNames.resolve(GamePrefs.names(this, "players"), v, latin); }
+    /** a game with names to write says which kind ("teams" or "players") and how many now; the ready screen then has a «الأسماء» button beside «ابدأ» */
+    protected String namesKind() { return null; }
+    protected int namesCount() { return 0; }
 
     /** a view placed on the 1920 x 1080 design: x from the start edge (the right in Arabic), y from the top; a negative width or height fills */
     protected final FrameLayout.LayoutParams at(float w, float hgt, float x, float y) {
@@ -513,8 +519,10 @@ public abstract class GameActivity extends Activity {
         boolean tight = c.rows.size() > 6;
         float y = tight ? 224 : 232;
         for (int r = 0; r < c.rows.size(); r++) y = chipRow(c, r, y, tight ? 76 : 88, tight ? 14 : 14);
-        root.addView(button(startLabel, c.onButton()), at(640, 104, 96, 856));
-        hints("▲ ▼", S.t("السطر"), "◀ ▶", S.t("الاختيار"), S.t("اختيار"), c.onButton() ? startLabel : S.t("تأكيد"), S.t("رجوع"), S.t("الألعاب"));
+        c.names = namesKind() != null;
+        root.addView(button(startLabel, c.onButton() && c.btn == 0), at(640, 104, 96, 856));
+        if (c.names) root.addView(button(S.t("الأسماء"), c.onButton() && c.btn == 1), at(480, 104, 96 + 640 + 24, 856));
+        hints("▲ ▼", S.t("السطر"), "◀ ▶", S.t("الاختيار"), S.t("اختيار"), c.onButton() ? (c.btn == 1 ? S.t("الأسماء") : startLabel) : S.t("تأكيد"), S.t("رجوع"), S.t("الألعاب"));
     }
     /** one row: the label at the start, then the chips, as wide as their words; picked = saffron, the focus = ink, not offered = dashed */
     private float chipRow(GameChips c, int r, float y, float hgt, float gap) {
@@ -546,7 +554,7 @@ public abstract class GameActivity extends Activity {
         if (back) { finish(); return false; }
         if (dx != 0 || dy != 0) { if (c.move(dx, dy)) redraw(); return false; }
         if (!ok) return false;
-        if (c.onButton()) return true;
+        if (c.onButton()) { if (c.btn == 1) { openNames(); return false; } return true; }
         if (!c.pick()) { toast(S.t("قريبًا")); return false; }
         if (c.get("sound") != null) { sound = c.picked("sound") == 0; GamePrefs.setSound(this, sound); }
         onChips(c);
@@ -561,6 +569,82 @@ public abstract class GameActivity extends Activity {
     protected final int keyButtons(int sel, int n, boolean ok, int d) {
         if (ok) return -1 - sel;
         return Math.max(0, Math.min(n - 1, sel + d));
+    }
+
+    // ---------------------------------------------------------------- the names (written by the people playing)
+
+    /** 0 closed, 1 the list of names, 2 the keyboard for one name */
+    private int namesMode, nameSel, padLang; private String nameKind = "teams"; private String[] nameCur = new String[0]; private String nameText = ""; private GameNames.Pad pad;
+    private int nameN;
+
+    private void openNames() {
+        nameKind = namesKind(); nameN = Math.max(1, Math.min(GameNames.SLOTS, namesCount()));
+        String[] saved = GamePrefs.names(this, nameKind);
+        nameCur = new String[nameN];
+        for (int i = 0; i < nameN; i++) nameCur[i] = saved[i];
+        namesMode = 1; nameSel = 0; redraw();
+    }
+    private void saveNames() {
+        String[] all = GamePrefs.names(this, nameKind);   // the slots beyond this game's count stay as they were
+        for (int i = 0; i < nameN; i++) all[i] = nameCur[i];
+        GamePrefs.setNames(this, nameKind, all);
+    }
+    private String[] suggestions() {
+        String[] v = new String[nameN];
+        for (int i = 0; i < nameN; i++) v[i] = nameKind.equals("players") ? S.t("لاعب %s", num(i + 1)) : S.tv(GameScore.TEAMS[i % GameScore.MAX]);
+        return v;
+    }
+    private void drawNames() {
+        title(nameKind.equals("players") ? S.t("أسماء اللاعبين") : S.t("أسماء الفرق"), S.t("اكتبوها أنتم"));
+        if (namesMode == 2) { drawKeyboard(); return; }
+        String[] sug = suggestions();
+        int cols = nameN > 6 ? 2 : 1, per = (nameN + cols - 1) / cols;
+        float w = cols == 2 ? 840 : 960;
+        for (int i = 0; i < nameN; i++) {
+            boolean empty = nameCur[i].isEmpty();
+            TextView f = button(clip(empty ? sug[i] : nameCur[i], 44, w - 60), nameSel == i);
+            if (empty) f.setAlpha(.6f);   // the suggestion, kept only if nobody writes
+            root.addView(f, at(w, 92, 96 + (i / per) * (w + 24), 232 + (i % per) * 104));
+        }
+        root.addView(button(S.t("أسماء جديدة"), nameSel == nameN), at(640, 104, 96, 856));
+        hints("▲ ▼", S.t("الاختيار"), S.t("اختيار"), nameSel == nameN ? S.t("أسماء جديدة") : S.t("اكتب الاسم"), S.t("رجوع"), S.t("تم"));
+    }
+    private void drawKeyboard() {
+        TextView box = centered(nameText.isEmpty() ? " " : nameText, 96, L.ink, true); box.setSingleLine(true);
+        box.setBackground(shapeFor(L.tile, L.ink, 6));
+        root.addView(box, at(1100, 128, 96, 232));
+        root.addView(text(S.t("%s من %s", num(nameText.length()), num(GameNames.MAX)), 40, L.ink(0xCC), false), at(500, 56, 1220, 268));
+        float kw = 132, kh = 100, gap = 12, y0 = 392;
+        for (int r = 0; r < pad.rowCount(); r++) {
+            if (pad.isAction(r)) {
+                String[] lab = {S.t("مسافة"), S.t("حذف"), S.t("تم"), padLang == 0 ? "EN" : "ع"};
+                for (int c = 0; c < GameNames.ACTIONS; c++) root.addView(button(lab[c], pad.row == r && pad.col == c), at(kw * 2 + gap, kh, 96 + c * (kw * 2 + gap + gap), y0 + r * (kh + gap)));
+            } else for (int c = 0; c < pad.cols(r); c++) {
+                TextView k = button(String.valueOf(pad.ch(r, c)), pad.row == r && pad.col == c);
+                root.addView(k, at(kw, kh, 96 + c * (kw + gap), y0 + r * (kh + gap)));
+            }
+        }
+        hints("◀ ▶ ▲ ▼", S.t("الحروف"), S.t("اختيار"), S.t("اكتب"), S.t("رجوع"), S.t("إلغاء"));
+    }
+    private GradientDrawable shapeFor(int fill, int stroke, float strokePx) { return shape(fill, stroke, strokePx, false); }
+    private void keyNames(boolean back, boolean ok, int dx, int dy) {
+        if (namesMode == 2) {
+            if (back) { namesMode = 1; redraw(); return; }
+            if (!ok) { pad.move(dx, dy); redraw(); return; }
+            int a = pad.action();
+            if (a == GameNames.DONE) { nameCur[nameSel] = GameNames.clean(nameText); saveNames(); namesMode = 1; }
+            else if (a == GameNames.LANG) { padLang = 1 - padLang; pad = new GameNames.Pad(padLang == 0); }
+            else nameText = pad.press(nameText);
+            redraw();
+            return;
+        }
+        if (back) { namesMode = 0; redraw(); return; }
+        if (dy != 0) { nameSel = Math.max(0, Math.min(nameN, nameSel + dy)); redraw(); return; }
+        int per = (nameN + (nameN > 6 ? 2 : 1) - 1) / (nameN > 6 ? 2 : 1);
+        if (dx != 0 && nameN > 6 && nameSel < nameN) { int to = nameSel + (dx > 0 ? per : -per); if (to >= 0 && to < nameN) { nameSel = to; redraw(); } return; }
+        if (!ok) return;
+        if (nameSel == nameN) { for (int i = 0; i < nameN; i++) nameCur[i] = ""; saveNames(); redraw(); return; }
+        padLang = en ? 1 : 0; pad = new GameNames.Pad(padLang == 0); nameText = nameCur[nameSel]; namesMode = 2; redraw();
     }
 
     // ---------------------------------------------------------------- «اللعب بالجوالات» (docs/GAMES-PHONES.md)

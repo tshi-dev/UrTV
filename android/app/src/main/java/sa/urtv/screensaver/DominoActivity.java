@@ -74,6 +74,9 @@ public class DominoActivity extends GameActivity {
 
     private void later(Runnable r, int ms) { ui.removeCallbacksAndMessages(null); pending = r; if (r != null && !paused()) ui.postDelayed(r, ms); }
 
+    @Override protected String namesKind() { return "teams"; }
+    @Override protected int namesCount() { return chips.picked("people") + 1; }
+
     private void start() {
         int people = chips.picked("people") + 1, bots = chips.picked("bots"), n = people + bots;
         int[] levels = new int[n];
