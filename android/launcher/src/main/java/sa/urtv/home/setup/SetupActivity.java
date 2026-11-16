@@ -288,16 +288,16 @@ public class SetupActivity extends Activity {
     /** 4.4 «قبل ما نبدأ: لو صار شيء» (RescueInfo): three steps to «إنقاذ تلفزيونك», a QR to docs/RESCUE.md, and a photo of the screen asked for */
     private void rescueFirst() {
         add(text(S.tv(RescueInfo.TITLE), 17, "Medium", GOLD), dp(4));
-        add(text(digits(S.tv(RescueInfo.STEP1)), 14, "Regular", TEXT), dp(2));
-        add(text(RescueInfo.hasCode() ? S.tv(RescueInfo.STEP2_CODE, RescueInfo.DOWNLOADER_CODE) : digits(S.tv(RescueInfo.STEP2_DOC)), 14, "Regular", TEXT), dp(2));   // the code in Latin digits, as Downloader asks it
-        add(text(digits(S.tv(RescueInfo.STEP3)), 14, "Regular", TEXT), dp(6));
-        add(text(S.tv(RescueInfo.PHOTO), 13, "Regular", GOLD), dp(6));
+        add(text(digits(S.tv(RescueInfo.STEP1)), 14, "Regular", TEXT), dp(4));
+        add(text(RescueInfo.hasCode() ? S.tv(RescueInfo.STEP2_CODE, RescueInfo.DOWNLOADER_CODE) : digits(S.tv(RescueInfo.STEP2_DOC)), 14, "Regular", TEXT), dp(4));   // the code in Latin digits, as Downloader asks it
+        add(text(digits(S.tv(RescueInfo.STEP3)), 14, "Regular", TEXT), dp(8));
+        add(text(S.tv(RescueInfo.PHOTO), 13, "Regular", GOLD), dp(8));
         try {
             QrView qr = new QrView(this);
             qr.setCode(QrCode.encodeLarge(RescueInfo.DOC_URL));
             LinearLayout card = new LinearLayout(this);
             card.setGravity(Gravity.CENTER);
-            card.setPadding(dp(10), dp(10), dp(10), dp(10));
+            card.setPadding(dp(12), dp(12), dp(12), dp(12));
             android.graphics.drawable.GradientDrawable white = new android.graphics.drawable.GradientDrawable();
             white.setColor(0xFFFFFFFF);
             white.setCornerRadius(dp(14));
