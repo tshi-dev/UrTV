@@ -27,7 +27,7 @@ final class QuizBank {
     static final String URL_REV = "https://raw.githubusercontent.com/tshi-dev/UrTV/data-games/quiz/rev.txt";
     static final long CHECK_MS = 24L * 3600 * 1000;
     /** the build of the bank bundled in the app (assets/quiz/bank.json): a downloaded copy older than this is not used */
-    static final long BUNDLED_REV = 2026111600L;
+    static final long BUNDLED_REV = 2026111609L;
     private static final String FILE = "quiz-bank.json", PREFS = "quiz";
     private static volatile boolean fetching;
     /** a round is being played: the background download waits (it is only ever started when a quiz screen opens, and it never writes anything a round reads) */
