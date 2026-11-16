@@ -27,7 +27,7 @@ A saying counts as found when its exact wording appears in three or more files o
 - «اسأل مجرب ولا تسأل طبيبًا»: attested as «اسأل مجرِّبًا ولا تسأل طبيبًا»; the endings are written.
 - «كثرة الطباخين تحرق الطبيخ»: the common wording is «تحرق الطبخة» (8 sources); the answer is «الطبخة» and «الطبيخ» is still accepted.
 - «جاء يكحّلها فأعماها» (found in the classical corpus) and «من جدّ في الطلب وجد» (found in a collection of wisdom sayings): kept, one source each, the wording is the classical one.
-The saying «القلم أحد اللسانين»، «الصاحب ساحب»، «وراء كل عظيم امرأة»، «من جاور السعيد يسعد»، «الطمع ضر ما نفع»، «لا يصلح العطار ما أفسد الدهر»، «خذ الحكمة من أفواه المجانين» (the less certain ones in the first list) are all attested in many places.
+The less certain ones of the first list that are in this game are attested 115 times («القلم أحد اللسانين»), 19 («خذ الحكمة من أفواه المجانين»), 15 («من جاور السعيد يسعد»), 13 («وراء كل عظيم امرأة»), 5 («الطمع ضر ما نفع») and 3 («لا يصلح العطار ما أفسد الدهر»).
 The 57 sayings of `assets/shared/wisdom.json` are shared with the home screen's wisdom card; if one wording there should change, it changes there (it is not touched here).
 
 ## D. Regional words
