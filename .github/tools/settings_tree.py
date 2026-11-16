@@ -22,10 +22,10 @@ CHOICES = {
     "الخلفية": ("HOME_BGS", "HOME_BG_NAMES", "homeBg"),
     "الساعة": ("HOME_CLOCKS", "HOME_CLOCK_NAMES", "homeClock"),
     "شكل التطبيقات": ("HOME_APPS", "HOME_APPS_NAMES", "appsStyle"),
-    "حزم المشاهد": ("SCENE_PACKS", None, None),
-    "بقاء كل مشهد": ("SCENE_STAYS", "SCENE_STAY_NAMES", "sceneStay"),
-    "المشهد يتبع الوقت": (None, None, "sceneByTime"),
-    "المشهد يتبع الطقس": (None, None, "sceneByWeather"),
+    "حزم الآفاق": ("SCENE_PACKS", None, None),
+    "بقاء كل أفق": ("SCENE_STAYS", "SCENE_STAY_NAMES", "sceneStay"),
+    "الأفق يتبع الوقت": (None, None, "sceneByTime"),
+    "الأفق يتبع الطقس": (None, None, "sceneByWeather"),
     "شكل البطاقة": ("CARD_STYLES", None, "cardStyle"),
     "حجم الساعة": ("CLOCK_SIZES", None, "clockSize"),
     "عرض الأسواق": ("MK_STYLES", None, "mkStyle"),
@@ -41,6 +41,29 @@ PHONE = {"city": "المدينة", "home_cards": "البطاقة الأولى", 
 # the control centre's rows (ControlCenter.ROWS) that open a setting's row; the others are actions or screens of their own
 CONTROL = {"net": None, "sound": None, "speed": None, "ours": None, "games": None, "city": "المدينة", "tv": None, "saver": None}
 YES, NO = "مفعّل", "متوقف"
+# a row's command where docs/SETTINGS.md names its place another way: an example each (the subcommand must be a case of optimize/saver.sh: checked)
+MORE_CMDS = {
+    "نظام الساعة": ["optimize/saver.sh clock24 on"], "الدولة": ["optimize/saver.sh city '<name>' <lat> <lon> <time zone> SA"],
+    "وضع الألوان": ["optimize/saver.sh look navy", "optimize/saver.sh appearance auto"], "إظهار الثواني": ["optimize/saver.sh seconds on"],
+    "البطاقة الأولى": ["optimize/saver.sh home-card prayers,hourly,verse"], "البطاقة الثانية": ["optimize/saver.sh home-card prayers,hourly,verse"],
+    "البطاقة الثالثة": ["optimize/saver.sh home-card prayers,hourly,verse"],
+    "سرعة ألبوم صوري": ["optimize/saver.sh albummode ten"], "شكل صورة ألبوم صوري": ["optimize/saver.sh albumfit fill"], "حجم ألبوم صوري": ["optimize/saver.sh albumsize tall"],
+    "عنوان ألبوم صوري": ["optimize/saver.sh albumtitle off"], "تاريخ الصورة في ألبوم صوري": ["optimize/saver.sh albumdate off"],
+    "الخروج من تلفزيونك": ["optimize/saver.sh backexit hold"], "تطبيقات في الشريط": ["optimize/saver.sh favbar 7"],
+    "زر مركز التحكم": ["optimize/saver.sh pillshidden center"], "زر الجوال": ["optimize/saver.sh pillshidden phone"], "زر الأسواق": ["optimize/saver.sh pillshidden markets"],
+    "زر المباريات": ["optimize/saver.sh pillshidden matches"], "تعديل وقت الصلاة": ["optimize/saver.sh prayeradj fajr +2 maghrib -1"],
+    "الفرق المتابعة": ["optimize/saver.sh teams 136013:Al-Hilal"], "الدوريات كاملة": ["optimize/saver.sh leagues 'Saudi-Arabian Pro League'"],
+    "قائمة الأسهم": ["optimize/saver.sh stocks 2222 1120 AAPL"], "تغيّر الأسهم": ["optimize/saver.sh stkchg amount"], "التصنيفات": ["optimize/saver.sh genres Drama,Comedy"],
+    "اللغات": ["optimize/saver.sh langs Arabic,English"], "تصفية المواقع": ["optimize/dock.sh familydns on"], "قفل التطبيقات": ["optimize/dock.sh pin lock com.netflix.ninja"], "أقل تقييم": ["optimize/saver.sh minrating 7"], "تحديث صفحة شاشة التوقف": ["optimize/saver.sh update"],
+}
+# rows that are an action or open a screen of their own, not a value to set (nothing for a command to set)
+ACTIONS = {"اجعل UrTV الشاشة الرئيسية", "تخلّص من واجهة المصنع", "رجّع واجهة المصنع", "قبل ما تحذف التطبيق…", "تفاصيل التطبيقات", "افتح تلاوة وأذان",
+           "مباريات اليوم", "افتح صفحة الأسواق", "معاينة الشاشة", "تحديث تلفزيوني", "إعداد تلفزيوني", "مسح الملفات المؤقتة", "أرسل تقرير", "مركز التحكم",
+           "تعديل المفضلة", "ترتيب التطبيقات المفضلة", "ترتيب كل التطبيقات", "أسماء المصادر"}
+# rows the code gives no command (no saver.sh case, no receiver extra): set from the TV only
+TV_ONLY = {"مسلسلات مختارة", "التحديث التلقائي للصفحة"}
+# what a row's choices cannot say by themselves
+NOTES = {"الشكل الجاهز": "يضبط مرة وحدة: التخطيط والخلفية والساعة وشكل التطبيقات؛ وتغيير أي واحد منها بعده يجعله «مخصّص»"}
 
 
 def read(p):
@@ -111,17 +134,46 @@ def choices(prefs, row):
 
 
 def commands():
-    """row name -> the agent's command, from docs/SETTINGS.md's tables (the «where» column names the row, the first command in the last column)"""
+    """row name -> ([the agent's commands, each once, in the order docs/SETTINGS.md gives them], how): how is "tv" when its line says the row has
+    no command on purpose (the TV only), else "" (the «where» column names the row; the commands are the last column's)"""
     out = {}
     for line in read(ROOT / "docs/SETTINGS.md").splitlines():
-        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        cells = [c.strip() for c in re.split(r"\s\|\s", line.strip().strip("|"))]   # a command's own «on|off» has no spaces round its bar
         if len(cells) < 3 or not line.startswith("|"):
             continue
-        where = cells[1].split("←")[-1].strip()
-        cmd = re.search(r"`(optimize/[a-z_.]+\.(?:sh|py) [^`]*)`", cells[-1])
-        if where and cmd and where not in out:
-            out[where] = cmd.group(1)
+        for where in (re.sub(r"\s*\([^)]*\)", "", w.split("←")[-1]).replace("\u2066", "").replace("\u2069", "").strip() for w in cells[1].split("،")):
+            if not where:
+                continue
+            cmds, how = out.setdefault(where, ([], ""))
+            for c, note in re.findall(r"`(optimize/[a-z_.]+\.(?:sh|py) [^`]*)`(?: \(([^()]{1,140})\))?", cells[-1]):
+                c = c + (f"  ({note})" if note else "")
+                if re.match(r"optimize/saver\.sh (show|export|import|cities|on|off)\b", c):   # not this row's own setting
+                    continue
+                if c not in cmds:
+                    cmds.append(c)
+            if re.search(r"no command|on the TV only|There is no command", cells[-1]):
+                out[where] = (cmds, "tv")
     return out
+
+
+def usages():
+    """saver.sh's subcommand -> the values its usage line accepts ("plain|glass"), read from optimize/saver.sh itself"""
+    out = {}
+    for m in re.finditer(r"^  ([a-z0-9-]+)\)\s.*?usage: optimize/saver\.sh \1 ([^}\"]+)", read(ROOT / "optimize/saver.sh"), re.M):
+        out[m.group(1)] = m.group(2).strip()
+    return out
+
+
+SCOPE_WORDS = {"home": "الرئيسية", "saver": "شاشة التوقف", "both": "الرئيسية وشاشة التوقف", "tv": "كل التلفزيون"}
+
+
+def scopes():
+    """row name -> where it shows (SettingsHub.SCOPES: home, saver, both, tv)"""
+    src = read(APP / "SettingsHub.java")
+    m = re.search(r"static final String\[\]\[\] SCOPES = \{(.*?)\n    \};", src, re.S)
+    if not m:
+        sys.exit("settings_tree: SettingsHub has no SCOPES")
+    return {strings('"' + r + '"')[0]: k for r, k in re.findall(r'\{"([^"]+)", "(home|saver|both|tv)"\}', m.group(1))}
 
 
 def hub():
@@ -148,7 +200,11 @@ def hub():
 
 def build():
     prefs = read(APP / "Prefs.java")
-    cmds = commands()
+    cmds, uses, scope = commands(), usages(), scopes()
+    cases = set(re.findall(r"^  ([a-z0-9-]+)\)", read(ROOT / "optimize/saver.sh"), re.M))
+    bad = [c for v in MORE_CMDS.values() for c in v if c.startswith("optimize/saver.sh ") and c.split()[1] not in cases]
+    if bad:
+        sys.exit("settings_tree: no such saver.sh command: " + ", ".join(bad))
     schema = read(ROOT / "android/launcher/src/main/java/sa/urtv/home/phone/Schema.java")
     phone_keys = re.findall(r'case "([a-z_]+)":', schema[schema.index("private static Clean set("):])
     control_rows = strings(re.search(r"static final String\[\] ROWS = (\{[^}]*\})", read(ROOT / "android/launcher/src/main/java/sa/urtv/home/ControlCenter.java")).group(1))
@@ -172,14 +228,25 @@ def build():
                 depth = 3
                 continue
             c = choices(prefs, text)
-            line = "—" * depth + " " + text
+            lines.append("—" * depth + " " + text + (f" [{SCOPE_WORDS[scope[text]]}]" if text in scope else ""))
+            pad = " " * (depth + 1)
             if c:
                 names, d = c
-                line += ": " + " / ".join(names) + (f" (الأصل: {d})" if d else "")
-            lines.append(line)
-            pad = " " * (depth + 1)
-            if text in cmds:
-                lines.append(pad + "الوكيل: " + cmds[text])
+                lines.append(pad + "الخيارات: " + " / ".join(names))
+                if d:
+                    lines.append(pad + "الأصل: " + d)
+            if text in NOTES:
+                lines.append(pad + NOTES[text])
+            cl, how = cmds.get(text.replace("\u2066", "").replace("\u2069", ""), ([], ""))
+            cl = cl + [c for c in MORE_CMDS.get(text, []) if c not in cl]
+            for cmd in cl:
+                lines.append(pad + "مثال للوكيل: " + cmd)
+                sub = cmd.split()[1] if cmd.startswith("optimize/saver.sh ") and len(cmd.split()) > 1 else None   # the values its usage line gives
+                if sub in uses and "<" not in cmd:
+                    lines.append(pad + "  القيم المقبولة: " + uses[sub])
+            if not cl:
+                lines.append(pad + ("إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)" if text in ACTIONS
+                                    else "من التلفزيون فقط (بلا أمر، عن قصد)" if how == "tv" or text in TV_ONLY else "لا أمر موثّق بعد"))
             if text in by_phone:
                 lines.append(pad + "صفحة الجوال: " + ", ".join(by_phone[text]))
             if text in by_control:
@@ -187,8 +254,10 @@ def build():
     head = ("# شجرة الإعدادات\n\n"
             "كل إعداد في التلفزيون بمكانه الكامل، مولّدة من الكود (`.github/tools/settings_tree.py`: SettingsHub وPrefs وdocs/SETTINGS.md وصفحة الجوال ومركز التحكم).\n"
             "لا تعدّلها باليد: شغّل الأداة بعد أي تغيير في الإعدادات، و`tests/settings_tree_test.py` يفشل إذا صارت قديمة.\n\n"
-            "Every setting of the TV with its full path, generated from the code; do not edit by hand. «الوكيل» is the agent's command, «صفحة الجوال» the phone\n"
-            "page's key, «مركز التحكم» the control centre's row that opens it; «الأصل» is the default.\n\n")
+            "بين القوسين أين يظهر الإعداد. «الأصل» القيمة قبل أي تغيير، و«مثال للوكيل» أمر واحد كمثال وتحته القيم اللي يقبلها.\n\n"
+            "Every setting of the TV with its full path, generated from the code; do not edit by hand. [ ] says where it shows (the home, the screensaver,\n"
+            "both, or the whole TV); «الأصل» is the default, «مثال للوكيل» one example of the agent's command with the values it accepts under it; «صفحة الجوال»\n"
+            "the phone page's key, «مركز التحكم» the control centre's row that opens it; «من التلفزيون فقط» a row with no command on purpose.\n\n")
     return head + "```text\n" + "\n".join(lines) + "\n```\n"
 
 
