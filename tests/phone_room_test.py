@@ -43,7 +43,7 @@ check("charades: the word is on the actor's phone alone (the TV never draws it, 
 check("the base opens a room only on the person's switch, closes it with the screen, and says so when there is no local network",
       "protected final boolean openPhones()" in ga and "protected void onDestroy() { closePhones(); super.onDestroy(); }" in ga and 'S.t("لا توجد شبكة محلية. وصّل التلفزيون بالواي فاي")' in ga)
 check("the games list: a filter beside the night switch («عرض»: الكل or بالجوالات), kept; «بالجوالات» shows only PHONE_GAMES and opens the party games with the phones switch on",
-      'PHONE_GAMES = {"quiz", "khanat", "missing-word", "letter-hive", "word5", "odd-one", "charades"}' in reg and "filter == 0 || GameRegistry.inPhones(g.id)" in gl and "GamePrefs.setFilter(this, filter)" in gl and 'go.putExtra("phones", true)' in gl
+      'PHONE_GAMES = {"quiz", "khanat", "missing-word", "letter-hive", "word5", "odd-one", "charades", "domino"}' in reg and "filter == 0 || GameRegistry.inPhones(g.id)" in gl and "GamePrefs.setFilter(this, filter)" in gl and 'go.putExtra("phones", true)' in gl
       and "static void setFilter" in src("GamePrefs.java"))
 check("the phone page: no outside address, no innerHTML or eval, text built with text nodes; it talks only to /api/",
       not __import__("re").search(r"https?://(?!www\.w3\.org)", page) and "innerHTML" not in page and "eval(" not in page and page.count("/api/") == 6 and "createTextNode" in page)
@@ -69,4 +69,10 @@ check("khanat: the switch is off unless the phones' view opened the game and is 
       'chips.get("phones").picked = getIntent().getBooleanExtra("phones", false) ? 1 : 0' in kh and "closePhones();   // the switch is off" in kh and kh.index("remembered(soundChip(chips))") < kh.index('getBooleanExtra("phones"'))
 check("khanat: every phone is a player with a form of the round's boxes; the first to send ends the writing after a short grace; the answers are shown on the tiles, a first guess is marked (none, same, valid) and the host can change any tile",
       "GamePhoneRoom.TEXT" in kh and "phones.room.firstReplied()" in kh and "graceAt = now + 8000" in kh and "private void autoMark()" in kh and "game.set(i, !ok ? KhanatEngine.NONE" in kh and "typedAns[i][game.box]" in kh and "game.cycle(sel)" in kh)
+dm = src("DominoActivity.java")
+check("domino: the switch is off unless the phones' view opened the game and is never kept; off, the room is closed and the game is the remote's",
+      'chips.get("phones").picked = getIntent().getBooleanExtra("phones", false) ? 1 : 0' in dm and "closePhones();   // the switch is off" in dm and dm.index("remembered(soundChip(chips))") < dm.index('getBooleanExtra("phones"'))
+check("domino: a hand is only ever sent to its owner's phone (the others wait), never drawn on the TV in this mode, and the choices go through the table's own rules (select, selectEnd, ok)",
+      "phones.room.card(p, GamePhoneRoom.PICK, names[p]" in dm and "phones.room.hold(i, S.t(\"دور %s\", names[p]))" in dm and "if (onPhones() && (st == DominoTable.State.HANDOVER" in dm
+      and "tb.selectEnd(" in dm and "tb.select(" in dm and "int c = tb.ok();" in dm)
 sys.exit(1 if failed else 0)

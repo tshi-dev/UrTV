@@ -65,6 +65,14 @@ try {
   await a.pg.click('button[data-a="1"]');
   await a.pg.waitForTimeout(400);
   check('act: صح then تخطّي arrive in order', (await ask('take 0')) === 'TAKE [0, 1]');
+  send('pick 0');
+  await a.pg.waitForSelector('[data-s="card-pick"]', { timeout: 5000 });
+  const pdis = await a.pg.$$eval('.vb', xs => xs.map(x => x.disabled));
+  check('pick: the choices are buttons, the ones the card does not offer are off', pdis.length === 3 && !pdis[0] && pdis[1] && !pdis[2], JSON.stringify(pdis));
+  await a.pg.waitForTimeout(1100);
+  await a.pg.click('.vb[data-i="2"]');
+  await a.pg.waitForSelector('.vb.pick', { timeout: 5000 });
+  check('pick: the tap is the TV\'s answer', (await ask('reply 0')) === 'REPLY 2');
   send('text 0 one,two');
   await a.pg.waitForSelector('[data-s="card-text"]', { timeout: 5000 });
   const ins = await a.pg.$$('input[data-f]');

@@ -26,7 +26,7 @@ import sa.urtv.screensaver.games.domino.Tile;
  * once and slides the one tile that was played. Tiles and pips are drawn with lines and circles (TileView, ChainView), no picture.
  */
 public class DominoActivity extends GameActivity {
-    enum Screen { SETUP, PLAY, ROUND, END }
+    enum Screen { SETUP, LOBBY, PLAY, ROUND, END }
     static final String[] LEVELS = {S.n("سهل"), S.n("وسط"), S.n("صعب")};
     /** a computer player waits this long before it moves, and its tile slides this long: 600 ms together */
     static final int BOT_MS = 350, MOVE_MS = 250, SETTLE_MS = 900;
@@ -54,7 +54,9 @@ public class DominoActivity extends GameActivity {
         chips.add("bots", S.t("الكمبيوتر"), new String[]{S.t("بدون"), num(1), num(2), num(3)}, 0);
         chips.add("level", S.t("مستوى الكمبيوتر"), new String[]{S.tv(LEVELS[0]), S.tv(LEVELS[1]), S.tv(LEVELS[2])}, 1);
         chips.add("target", S.t("الهدف"), new String[]{num(DominoGame.TARGETS[0]), num(DominoGame.TARGETS[1]), num(DominoGame.TARGETS[2])}, 1);
+        chips.add("phones", S.t("اللعب بالجوالات"), new String[]{S.tv(ON_OFF[0]), S.tv(ON_OFF[1])}, 0);
         remembered(soundChip(chips));
+        chips.get("phones").picked = getIntent().getBooleanExtra("phones", false) ? 1 : 0;   // off unless the «بالجوالات» view opened this game; never kept from last time
         onChips(chips);
     }
     /** two to four at the table: the computer chips that would make fewer or more are switched off */
@@ -77,11 +79,85 @@ public class DominoActivity extends GameActivity {
     @Override protected String namesKind() { return "teams"; }
     @Override protected int namesCount() { return chips.picked("people") + 1; }
 
+    // ---------------------------------------------------------------- with phones: every person's hand is on their own phone
+
+    private boolean onPhones() { return phones != null && phones.room.phase() == GamePhoneRoom.Phase.PLAY; }
+    private String sentKey = "";   // what the phone of the player to move shows now (turn, state, hand and ends), so a card is sent once per change
     private void start() {
-        int people = chips.picked("people") + 1, bots = chips.picked("bots"), n = people + bots;
+        if (chips.picked("phones") == 1) {
+            if (!onPhones()) { if (!openPhones()) return; screen = Screen.LOBBY; phoneLobby = true; redraw(); return; }
+            begin(phones.room.count(), phones.room.names().toArray(new String[0]));
+            return;
+        }
+        closePhones();   // the switch is off: the remote plays alone, as it always did
+        begin(chips.picked("people") + 1, null);
+    }
+    private void startWithPhones() {
+        int n = phones.room.count();
+        if (n < 2) return;
+        if (n > 4) { toast(S.t("اللعبة تتسع لأربعة لاعبين")); return; }
+        phones.room.start(); phoneLobby = false;
+        begin(n, phones.room.names().toArray(new String[0]));
+    }
+    /** the hand of the person to move goes to their phone (the tiles that fit are the ones that can be chosen, then the end when both fit); the other phones wait */
+    private void sendHand() {
+        if (!onPhones() || tb == null) return;
+        DominoTable.State st = tb.state();
+        int p = tb.game.turn();
+        if (st != DominoTable.State.TURN && st != DominoTable.State.CHOOSE_END) {
+            String key = "w" + st + p; if (key.equals(sentKey)) return; sentKey = key;
+            phones.room.waitAll(st == DominoTable.State.BOT ? S.t("يلعب %s", names[p]) : S.t("شوفوا التلفزيون"));
+            return;
+        }
+        if (p >= phones.room.count()) return;
+        DominoGame g = tb.game;
+        int mine = g.count(p);
+        String key = st + ":" + p + ":" + mine + ":" + g.left() + ":" + g.right() + ":" + g.events().size() + ":" + (st == DominoTable.State.CHOOSE_END ? tb.focus() : -2);
+        if (key.equals(sentKey)) return;
+        sentKey = key;
+        for (int i = 0; i < phones.room.count(); i++) if (i != p) phones.room.hold(i, S.t("دور %s", names[p]));
+        String note = g.left() < 0 ? S.t("ضع أي حجر") : S.t("الطرفان: %s و %s", num(g.left()), num(g.right()));
+        if (st == DominoTable.State.CHOOSE_END) {
+            phones.room.card(p, GamePhoneRoom.PICK, names[p], S.t("أي طرف؟"), note, new String[] {S.t("طرف %s", num(g.left())), S.t("طرف %s", num(g.right()))}, new int[] {0, 1}, -1);
+            return;
+        }
+        List<Tile> h = g.hand(p);
+        int b = tb.button();
+        String[] opts = new String[h.size() + (b != -1 ? 1 : 0)];
+        List<Integer> can = new ArrayList<>();
+        for (int i = 0; i < h.size(); i++) { opts[i] = num(h.get(i).low) + " | " + num(h.get(i).high); if (tb.fits(i)) can.add(i); }
+        if (b != -1) { opts[h.size()] = b == DominoGame.DRAW ? S.t("سحب") : S.t("تمرير"); can.add(h.size()); }
+        int[] acts = new int[can.size()]; for (int i = 0; i < acts.length; i++) acts[i] = can.get(i);
+        phones.room.card(p, GamePhoneRoom.PICK, names[p], S.t("دورك: اختر حجرًا"), note, opts, acts, -1);
+    }
+    /** what the player to move chose on their phone: the tile (or the draw / pass button), then the end */
+    private void fromPhone() {
+        if (screen != Screen.PLAY || paused()) return;
+        DominoTable.State st = tb.state();
+        if (st == DominoTable.State.HANDOVER) { tb.ok(); hand(); keys(); return; }   // no hand-over screen: the hand is on the phone
+        if (st != DominoTable.State.TURN && st != DominoTable.State.CHOOSE_END) return;
+        int p = tb.game.turn();
+        if (p >= phones.room.count()) return;
+        int a = phones.room.reply(p);
+        if (a < 0) return;
+        boolean ok = st == DominoTable.State.CHOOSE_END ? tb.selectEnd(a == 0 ? DominoGame.LEFT : DominoGame.RIGHT) : tb.select(a >= tb.game.count(p) ? DominoTable.BUTTON : a);
+        sentKey = "";
+        if (!ok) { sendHand(); return; }
+        int events = tb.game.events().size();
+        int c = tb.ok();
+        if (c == DominoTable.NOTHING) { sendHand(); return; }
+        changed(c, events, null);
+    }
+    @Override protected void onTick(long now) {
+        if (screen == Screen.PLAY && onPhones() && tb != null) { fromPhone(); sendHand(); }
+    }
+    private void begin(int people, String[] phoneNames) {
+        int bots = chips.picked("bots");
+        if (people + bots > 4 || people + bots < 2) bots = Math.max(0, 2 - people);   // the table is two to four
+        int n = people + bots;
         int[] levels = new int[n];
         names = new String[n];
-        String[] team = teamNames(people);
+        String[] team = phoneNames != null ? phoneNames : teamNames(people);
         for (int i = 0; i < n; i++) {
             if (i < people) { names[i] = team[i]; continue; }
             levels[i] = chips.picked("level") + 1;
@@ -98,6 +174,7 @@ public class DominoActivity extends GameActivity {
     @Override protected void draw() {
         switch (screen) {
             case SETUP: setup(chips, S.t("ابدأ")); break;
+            case LOBBY: drawPhoneLobby(2, 4); break;
             case PLAY: drawTable(); break;
             case ROUND: {
                 DominoGame.RoundResult r = tb.game.lastRound();
@@ -146,6 +223,12 @@ public class DominoActivity extends GameActivity {
             handTiles.clear();
             DominoTable.State st = tb.state();
             int turn = tb.game.turn(), shown = tb.shown();
+            if (onPhones() && (st == DominoTable.State.HANDOVER || st == DominoTable.State.TURN || st == DominoTable.State.CHOOSE_END)) {   // the hands are on the phones, never on the TV
+                root.addView(rect(L.deep), at(1728, 232, 96, HAND_Y));
+                root.addView(centered(S.t("دور %s", names[turn]), 88, L.onDeep, true), at(1728, 120, 96, HAND_Y + 12));
+                root.addView(centered(S.t("العب من جوالك"), 48, L.saff, true), at(1728, 72, 96, HAND_Y + 140));
+                return;
+            }
             if (st == DominoTable.State.HANDOVER) {   // no hand on the screen until its owner says so
                 root.addView(rect(L.deep), at(1728, 232, 96, HAND_Y));
                 root.addView(centered(S.t("دور %s", names[turn]), 88, L.onDeep, true), at(1728, 120, 96, HAND_Y + 12));
@@ -210,6 +293,7 @@ public class DominoActivity extends GameActivity {
     @Override protected void onKey(boolean back, boolean ok, int dx, int dy) {
         switch (screen) {
             case SETUP: if (keySetup(chips, back, ok, dx, dy)) start(); return;
+            case LOBBY: if (back) { closePhones(); screen = Screen.SETUP; redraw(); } else if (ok) startWithPhones(); return;
             case ROUND:
                 if (back) openPause();
                 else if (ok) { tb.ok(); screen = Screen.PLAY; redraw(); }

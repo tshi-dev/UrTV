@@ -32,6 +32,7 @@ public final class PhoneRoomTest {
                 case "vote": r.card(seat, GamePhoneRoom.VOTE, "", "who?", "", r.names().toArray(new String[0]), null, seat); break;
                 case "act": r.card(seat, GamePhoneRoom.ACT, "act", txt, "", null, new int[]{0, 1, 2}, -1); break;
                 case "wait": r.hold(seat, txt); break;
+                case "pick": r.card(seat, GamePhoneRoom.PICK, "", "tiles", "note", new String[]{"3|5", "1|1", "6|2"}, new int[]{0, 2}, -1); break;
                 case "text": r.card(seat, GamePhoneRoom.TEXT, "", "who?", "", txt.isEmpty() ? new String[]{"one"} : txt.split(","), null, -1); break;
                 case "typed": { String[] t = r.typed(seat); System.out.println("TYPED " + (t == null ? "none" : String.join("|", t))); break; }
                 case "reply": System.out.println("REPLY " + r.reply(seat)); break;
@@ -84,6 +85,9 @@ public final class PhoneRoomTest {
         for (int i = 0; i < 3; i++) r.card(i, GamePhoneRoom.ACT, "", "buzz", "", null, new int[]{GamePhoneRoom.ACT_BUZZ}, -1);
         check("buzzer: nobody is first until a phone presses; the earliest press is first, a later one does not take it over",
             r.firstReplied() == -1 && r.answer(p2.token, r.stateId(2), 3, null) == null && r.firstReplied() == 2 && advance(5) && r.answer(p0.token, r.stateId(0), 3, null) == null && r.firstReplied() == 2);
+        now[0] += 1500;
+        int pk = r.card(2, GamePhoneRoom.PICK, "", "tiles", "", new String[]{"3|5", "1|1", "6|2"}, new int[]{0, 2}, -1);
+        check("pick: only a number the card offers is taken, once; the TV reads it", "card".equals(r.answer(p2.token, pk, 1, null)) && "card".equals(r.answer(p2.token, pk, 5, null)) && r.answer(p2.token, pk, 2, null) == null && r.reply(2) == 2 && "card".equals(r.answer(p2.token, pk, 0, null)));
         now[0] += 1500;
         String[] names = {"A", "B", "C"};
         int[] ids = new int[3];

@@ -228,6 +228,15 @@ function cardScreen() {
     var names = [S.ok, S.skip, S.foul, S.buzz], row = h('div', 'row3');
     c.acts.forEach(function (a) { var b = h('button', 'btn' + (a === 0 ? '' : ' alt'), names[a], { type: 'button', 'data-a': a }); b.addEventListener('click', function () { api('/api/answer', { c: code, t: token, q: c.id, a: a }).then(function () {}, function () {}); }); row.appendChild(b); });
     kids.push(row);
+  } else if (c.kind === 'pick') {
+    kids = [h('div', 'big', c.text), c.note ? h('div', 'dim', c.note) : null];
+    c.opts.forEach(function (o, i) {
+      var on = c.acts.indexOf(i) >= 0;
+      var b = h('button', 'vb' + (got === i ? ' pick' : ''), [h('span', null, o)], { type: 'button', 'data-i': i });
+      if (!on || got != null) b.disabled = true;
+      b.addEventListener('click', tap(function () { send(i); }));
+      kids.push(b);
+    });
   } else if (c.kind === 'text') {
     kids = [h('div', 'big', c.text), c.note ? h('div', 'dim', c.note) : null];
     var inputs = (c.opts.length ? c.opts : ['']).map(function (lab, i) {
