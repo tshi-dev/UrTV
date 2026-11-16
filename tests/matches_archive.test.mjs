@@ -274,6 +274,21 @@ const ids = (p, key) => p.evaluate(k => ((MP.leagues.find(x => x.key === k) || {
   await ctx.close();
 }
 
+// ---- 4.3.3 each club's form: its last 5 results as ف ت خ, newest first, on a game's card and on the club's page
+{
+  const { p, ctx, errors } = await open('teams=136013&matchpage=1');
+  await p.evaluate(() => mpOpen(fbGames().find(e => e.idEvent === '11')));
+  await p.waitForTimeout(400);
+  const forms = await p.$$eval('#mp-detail .mdt', ts => ts.map(t => [...t.querySelectorAll('.fm i')].map(i => i.className + ':' + i.textContent).join(' ')));
+  check('form: on the card under each name (the home club: a win then a draw; the other: the loss it had in that game)', forms[0] === 'fm-w:ف fm-d:ت' && forms[1] === 'fm-l:خ', JSON.stringify(forms));
+  check('form: the marks are coloured text, no box round them', await p.$eval('#mp-detail .fm-l', i => getComputedStyle(i).backgroundColor === 'rgba(0, 0, 0, 0)' && getComputedStyle(i).borderStyle === 'none' && getComputedStyle(i).color !== getComputedStyle(document.querySelector('#mp-detail .fm-w')).color));
+  await p.evaluate(() => { mpBack(); mpGo({k: 'club', id: '136013'}); });
+  await p.waitForTimeout(300);
+  check('form: on the club\'s page, beside its name', await p.textContent('#mp-age') === 'آخر ٥فت', await p.textContent('#mp-age'));
+  check('form: no script error', !errors.length, errors.join(' | '));
+  await ctx.close();
+}
+
 await browser.close();
 if (failed) { console.log(failed + ' failed'); process.exit(1); }
 console.log('all match archive tests passed');

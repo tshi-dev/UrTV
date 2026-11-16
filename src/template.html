@@ -692,7 +692,7 @@
   /* ---- «المباريات» (#matchpage=1): the light look, sand paper and white cards, a green ring for the focus */
   html.mpage .stage,html.mpage .photo,html.mpage .veil,html.mpage .grain,html.mpage .top-veil,html.mpage .bottom-veil,html.mpage .dimmer,html.mpage #credit,html.mpage .adbar{display:none}
   html.mpage,html.mpage body{background:#F4F2EC}
-  #mp,#mp-detail{--fi:#1B1F1D;--fs:#5E635F;--fgr:#1B8354;--fam:#8A5600;--fring:#1B8354;--fln:#E4E1D8;--fbg:#fff;--chip:#fff;--rowf:#EEF6F1;--dlg:#F7F6F1;--btn:#fff;--pri:#21915F;--veil:rgba(244,242,236,.72);--shd:rgba(40,36,24,.18)}
+  #mp,#mp-detail{--fi:#1B1F1D;--fs:#5E635F;--fgr:#1B8354;--fam:#8A5600;--fring:#1B8354;--fln:#E4E1D8;--fbg:#fff;--chip:#fff;--rowf:#EEF6F1;--dlg:#F7F6F1;--btn:#fff;--pri:#21915F;--veil:rgba(244,242,236,.72);--shd:rgba(40,36,24,.18);--flo:#B3261E}
   #mp{position:fixed;inset:0;padding:calc(var(--u)*64) calc(var(--u)*120) calc(var(--u)*56);color:var(--fi);display:flex;flex-direction:column;font-size:calc(var(--u)*28)}
   #mp header{display:flex;justify-content:space-between;align-items:baseline;gap:calc(var(--u)*24);flex-wrap:wrap}   /* 4.3.2: the source line never touches the title */
   #mp h1{font-size:calc(var(--u)*64);font-weight:700}
@@ -729,6 +729,13 @@
   #mp-side .fg svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linejoin:round}
   #mp-side li.pin i{color:var(--fgr)}
   #mp-days{overflow:hidden}
+  /* 4.3.3 a club's form: ف ت خ in their colours */
+  .fm{display:inline-flex;gap:calc(var(--u)*10);font-size:calc(var(--u)*26);font-weight:700}
+  .fm i{font-style:normal}
+  .fm-w{color:var(--fgr)}
+  .fm-d{color:var(--fs)}
+  .fm-l{color:var(--flo)}
+  .fmh{margin-inline-end:calc(var(--u)*12)}
   #mp-q{font:inherit;color:var(--fi);background:var(--fbg);border:1px solid var(--fln);border-radius:calc(var(--u)*12);padding:calc(var(--u)*4) calc(var(--u)*16);width:calc(var(--u)*560);outline:none}
   #mp .fnote{font-size:calc(var(--u)*22)}
   #mp .fmk{opacity:1;color:var(--fs);border-color:var(--fln);background:var(--chip)}
@@ -776,7 +783,7 @@
   .mdn{min-height:calc(var(--u)*36);margin-top:calc(var(--u)*16);text-align:center;color:var(--fgr);font-size:calc(var(--u)*24)}
   /* the dark look (#pagedark=1): GlassStyle.DARK's colours, same sizes and rings */
   html.mpage.mpdark,html.mpage.mpdark body{background:#17181B}
-  html.mpdark #mp,html.mpdark #mp-detail{--fi:#FFFFFF;--fs:#DADCE0;--fgr:#8FE0B4;--fam:#F0B35A;--fring:#8FE0B4;--fln:rgba(255,255,255,.16);--fbg:#202227;--chip:rgba(255,255,255,.08);--rowf:rgba(143,224,180,.14);--dlg:#1D1F24;--btn:#2A2D33;--pri:#1B8354;--veil:rgba(0,0,0,.66);--shd:rgba(0,0,0,.5)}
+  html.mpdark #mp,html.mpdark #mp-detail{--fi:#FFFFFF;--fs:#DADCE0;--fgr:#8FE0B4;--fam:#F0B35A;--fring:#8FE0B4;--fln:rgba(255,255,255,.16);--fbg:#202227;--chip:rgba(255,255,255,.08);--rowf:rgba(143,224,180,.14);--dlg:#1D1F24;--btn:#2A2D33;--pri:#1B8354;--veil:rgba(0,0,0,.66);--shd:rgba(0,0,0,.5);--flo:#FF9A8F}
 /* #lowram=1 (a weak TV): no transitions, the moves happen at once */
 html.lowram *, html.lowram *::before, html.lowram *::after { transition: none !important; }
 /* …and no animation either: the photo's minute-long settle redraws the whole screen every frame, the cards' fade-ins are the same (a weak TV's CPU stayed busy: reports on C05 and two 1.5 GB sets) */
@@ -4177,6 +4184,7 @@ const FB_W = {
   myLeagues:'دورياتي', add:'أضف دوريًا أو فريقًا', manage:'إعدادات فرقي', noTeams:'ما تتابع فريقًا بعد', noLeagues:'ما تتابع دوريًا بعد', allLands:'كل الدول',
   lgTeams:'فرق هذا الدوري', lgOpen:'الترتيب والنتائج', followedL:'أُضيف %s إلى دورياتك', unfollowedL:'أُزيل %s من دورياتك', on:'متابَع', find:'ابحث عن فريق', found:'نتائج البحث', typeName:'اكتب اسم الفريق', full:'وصلت للحد: ٨ دوريات', choose:'اختر دوريًا',
   h2hSum:'%s: %s %s فوز، %s تعادل، %s %s', h2h1:'آخر مواجهة', h2h2:'آخر مواجهتين', h2hN:'آخر %s مواجهات', meet:'المواجهات',
+  marks:'فتخ', form:'آخر ٥',
   club:'صفحة الفريقين', last:'آخر النتائج', h2h:'المواجهات مع %s', see:'صفحة %s', loading:'جارٍ التحميل…', noData:'لا شيء هنا بعد', followT:'تابع %s', unfollowT:'ألغِ متابعة %s',
 };
 const fw = (s, ...a) => { let i = 0; return String(s).replace(/%(\d)\$s|%s|%%/g, (m, n) => m === '%%' ? '%' : String(n ? a[+n - 1] : a[i++])); };
@@ -4507,6 +4515,16 @@ function h2hOf(a, b){
   ms.forEach(m => { const hs = +m.hs, as = +m.as; if(hs === as) r.d++; else if((hs > as) === (String(m.h) === a)) r.a++; else r.b++; });
   return r;
 }
+// 4.3.3 a club's form: its last 5 results, newest first, 'w' 'd' 'l' (the page's own and its archive file's)
+function formOf(id){
+  id = String(id);
+  const j = archWant('teams/' + id + '.json'), now = Date.now();
+  const own = fbGames().filter(ev => (String(ev.idHomeTeam) === id || String(ev.idAwayTeam) === id) && fbDone(ev, now) && fbScored(ev));
+  return own.concat(archNew(own, ((j && j.last) || []).map(g => archEv(g, j)).filter(ev => ev && fbScored(ev)))).sort((a, b) => fbKick(b) - fbKick(a)).slice(0, 5)
+    .map(ev => { const h = +ev.intHomeScore, a = +ev.intAwayScore; return h === a ? 'd' : (h > a) === (String(ev.idHomeTeam) === id) ? 'w' : 'l'; });
+}
+// …as marks: ف (win) ت (draw) خ (loss), each in its colour, no box round them
+const formHtml = f => f.length ? `<span class="fm">${f.map(x => `<i class="fm-${x}">${FB_W.marks['wdl'.indexOf(x)]}</i>`).join('')}</span>` : '';
 // «آخر ٥ مواجهات: الهلال ٣ فوز، ١ تعادل، النصر ١»
 function h2hLine(ev){
   const h = String(ev.idHomeTeam), a = String(ev.idAwayTeam), r = h2hOf(h, a);
@@ -4598,7 +4616,7 @@ function mpRender(){
   MP.rows = []; shown.forEach(g => g.games.forEach(ev => MP.rows.push(ev)));
   MP.r = Math.max(0, Math.min(MP.r, MP.rows.length - 1));
   setText(document.getElementById('mp-h'), V ? V.title : FB_W.title);
-  setText(document.getElementById('mp-age'), V ? MP.note : mpAge());
+  if(V) setHTML(document.getElementById('mp-age'), MP.note ? esc(MP.note) : V.sub || '', true); else setText(document.getElementById('mp-age'), mpAge());
   const tb = document.getElementById('mp-teams'); if(tb){ tb.classList.toggle('f', MP.zone === 'head'); tb.hidden = !!V; }   // «فرقي»: the header's button, above the days
   const ring = i => (MP.zone === 'days' || (!MP.rows.length && MP.zone !== 'head')) && i === MP.d ? ' f' : '';
   setHTML(document.getElementById('mp-days'), V ? V.tabs.map((x, i) => `<li class="${x.on ? 'on' : ''}${ring(i)}">${x.input ? '<input id="mp-q" type="search" autocomplete="off" tabindex="-1">' : esc(x.t)}</li>`).join('')
@@ -4658,7 +4676,8 @@ function mpButtons(ev, now){   // «شاهد على …» (the broadcaster's app
 const mpHasClub = ev => /^\d+$/.test(String(ev.idHomeTeam)) && /^\d+$/.test(String(ev.idAwayTeam)) ? 1 : 0;   // 4.3.3 the two clubs' page: their games and their meetings
 function mpDetailRender(){
   const ev = MP.detail, now = Date.now(), m = markOf(ev), k = fbKick(ev);
-  const big = side => { const c = crestOf(ev, side); return `<div class="mdt">${c ? `<img class="mdc" src="${esc(c.u)}" alt="">` : '<span class="mdc"></span>'}<b>${esc(nbName(teamAr(ev['str' + side + 'Team'], ev['id' + side + 'Team'])))}</b></div>`; };
+  const big = side => { const c = crestOf(ev, side), id = ev['id' + side + 'Team']; return `<div class="mdt">${c ? `<img class="mdc" src="${esc(c.u)}" alt="">` : '<span class="mdc"></span>'}<b>${esc(nbName(teamAr(ev['str' + side + 'Team'], id)))}</b>`
+    + `${/^\d+$/.test(String(id)) ? formHtml(formOf(id)) : ''}</div>`; };   // 4.3.3 its form under the name
   const mid = (fbLive(ev, now) || fbDone(ev, now)) && fbScored(ev) ? `<b>${ar(+ev.intHomeScore)} - ${ar(+ev.intAwayScore)}</b><i>${fbWhen(ev, now)}</i>`
     : `<b>${fbClock(k)}</b><i>${fbDayWord(fbDayOf(k))}</i>`;
   const meet = !fbLive(ev, now) && !fbDone(ev, now) && h2hLine(ev);   // 4.3.3 a coming game: the two clubs' last meetings
@@ -4802,7 +4821,8 @@ function mpClubView(v){
   if(/^\d+$/.test(vs)) groups.push({key: 'h2h', name: fw(FB_W.h2h, teamNameOf(vs)), games: ((h && h.meetings) || []).slice(0, 10).map(g => archEv(g)).filter(Boolean), dated: 1, none: wait(h)});
   const tabs = [{t: fw(fbFollowed(id) ? FB_W.unfollowT : FB_W.followT, name), act: () => mpFollowTeam(id)}];
   if(v.vs) tabs.push({t: fw(FB_W.see, teamNameOf(vs)), act: () => { MP.view = {k: 'club', id: vs, vs: id}; MP.zone = 'rows'; MP.d = MP.l = MP.r = 0; MP.note = MP.ask = ''; mpRender(); }});
-  return {title: name, tabs, groups};
+  const f = formOf(id);
+  return {title: name, tabs, groups, sub: f.length ? `<span class="fmh">${FB_W.form}</span>${formHtml(f)}` : ''};
 }
 function mpAct(){
   // one focus: OK acts on the button that is RINGED on screen
