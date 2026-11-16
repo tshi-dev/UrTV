@@ -1,0 +1,34 @@
+name: Content
+
+# The hand-edited files of content/ (notices, per-model defaults, seasonal packs, prayer corrections), checked (tools/check_content.py, fails
+# closed: the data branch keeps its last good files) and published when they change on main, or by hand.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['content/**', 'tools/check_content.py', '.github/workflows/content.yml']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: content
+  cancel-in-progress: false
+
+jobs:
+  content:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/check_content.py content
+      - name: Publish
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p pub/notices pub/devices pub/seasonal pub/prayer
+          cp content/announcements.json pub/notices/
+          cp content/devices.json pub/devices/
+          cp content/seasonal.json pub/seasonal/
+          cp content/prayer-adjustments.json pub/prayer/adjustments.json
+          python3 tools/publish.py --put pub/notices:notices --put pub/devices:devices --put pub/seasonal:seasonal --put pub/prayer:prayer -m "Content"

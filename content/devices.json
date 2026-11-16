@@ -1,0 +1,11 @@
+{
+ "v": 1,
+ "devices": [
+  {
+   "id": "tcl-g07-sound-screen",
+   "match": {"brand": "TCL", "device": "G07", "sdk_min": 30, "sdk_max": 30},
+   "defaults": {"sound_opens_general_settings": true},
+   "why": "the TV's settings crash opening the sound screen (its SoundActivity is missing in that build): «مخرج الصوت» opens the general settings from the start, instead of after the first crash (ControlCenter.java)"
+  }
+ ]
+}

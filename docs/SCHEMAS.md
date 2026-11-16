@@ -45,3 +45,29 @@ Match row: `{id, lg, s (season), t (UTC time), r (round), h, a (team ids), hn, a
 
 ## photos/ (v 1)
 - `index.json`: `{version, packs: [{id, name, name_en, source, source_en, cover, url (UrTV release zip), sha256, count, bytes}]}`
+
+## Hand-edited content (`content/` on main, published by content.yml after tools/check_content.py)
+
+Rules the apps keep for all four: a file that cannot be read or has another `v` is ignored (the app works as without it); an entry whose
+dates are over is ignored; what the person chose on the TV always wins.
+
+### notices/announcements.json (v 1)
+`{v, notices: [{id, text: {ar, en} (≤ 140 characters, no links), from, to (YYYY-MM-DD, Riyadh's day), min_app?, max_app? ("4.3.3"),
+dismissible (true)}]}` — the home shows at most one notice at a time, never over playback, and each id once.
+
+### devices/devices.json (v 1)
+`{v, devices: [{id, match: {brand?, model?, device?, sdk_min?, sdk_max?} (Build.BRAND/MODEL/DEVICE, case-insensitive; at least one
+of brand, model, device), defaults: {<setting>: <value>}, why}]}` — read at start; a default is applied only to a setting the person has
+not set. Known settings: `sound_opens_general_settings` (bool), `lite` (bool: the weak-TV profile).
+
+### seasonal/seasonal.json (v 1)
+`{v, packs: [{id, name: {ar, en}, from, to, url (a tshi-dev/UrTV release zip), sha256, license: {name, credit?}}]}` — like the photo packs,
+offered between `from` and `to`; licensed pictures only (Unsplash, Pexels, CC0, CC BY with credit, or our own).
+
+### prayer/adjustments.json (v 1)
+`{v, adjustments: [{id, where: {country (ISO), city? (the app's city id)}, from, to, minutes: {fajr|sunrise|dhuhr|asr|maghrib|isha: -30..30},
+source}]}` — added on top of the method's times on those days (a city's entry wins over its country's); never over the person's own
+adjustment of that prayer, and the times screen says that a published correction is applied.
+
+## status/status.json (v 1)
+`{v, updated, late: [<dataset>], datasets: {<dataset>: {updated, v, count, bytes, writer, last_good_run, run, late_after_h, late}}}`

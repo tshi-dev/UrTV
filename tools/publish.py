@@ -35,6 +35,11 @@ DATASETS = {
     "markets/": {"v": 1, "cdn": False, "about": "market prices (every 5 minutes in open hours), daily closes, currencies"},
     "stations/": {"v": 1, "cdn": True, "about": "the live Quran stations' check"},
     "photos/": {"v": 1, "cdn": True, "about": "photo packs' metadata (the images stay as releases of tshi-dev/UrTV)"},
+    "notices/": {"v": 1, "cdn": False, "about": "short remote notices for the home screen (content/announcements.json)"},
+    "devices/": {"v": 1, "cdn": True, "about": "per-model defaults and fixes (content/devices.json)"},
+    "seasonal/": {"v": 1, "cdn": True, "about": "seasonal photo packs with their dates (content/seasonal.json)"},
+    "prayer/": {"v": 1, "cdn": True, "about": "per-country and per-city prayer time corrections by date (content/prayer-adjustments.json)"},
+    "status/": {"v": 1, "cdn": False, "about": "each dataset's last update and its writer's last good run (tools/status.py)"},
 }
 
 
