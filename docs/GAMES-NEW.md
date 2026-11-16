@@ -1,0 +1,6 @@
+# The new party games (4.4)
+
+All of them are played with phones as controllers (the TV is the board), sit in the games list marked «بالجوالات» and under the «بالجوالات» filter, use the night palette like every game, keep their banks in the app as encrypted bundles (`assets/games/*.gb`, docs/LICENSE-CONTENT.md) with the larger ones as packs (docs/GAMES-PACKS.md), and never repeat an item on the same TV (the last items are remembered per game). Names of teams and players are written by the people (docs/GAMES-KIT.md). The rules of each game are a plain-Java engine tested on a JVM (`tests/new_games_test.py`).
+
+## على جبيني (guess the word on your forehead)
+Two to four teams. A player holds the phone to the forehead (the phone says «جاهز» first, then a count of three); the team describes the word on the phone without saying it. Tilt the phone down (or the «صح» button) for a point and the next word; tilt up (or «تخطّي») for the next word with no point. 45, 60 or 90 seconds a turn; every team plays 2, 3 or 4 turns, the phones of a team take the turns in turn; most points wins. The TV never shows the word. The words are the «وصّف» words of «بدون كلام» (with the kids filter); nothing repeats on this TV. Phones: at least one a team, 12 at most. The tilt uses the phone's motion sensor (iPhones ask once, on a tap); the two buttons always work.

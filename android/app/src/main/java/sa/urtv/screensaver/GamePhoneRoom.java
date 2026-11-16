@@ -16,9 +16,9 @@ final class GamePhoneRoom implements PhoneRoom {
     static final int MAX_PLAYERS = 12, ANSWER_PER_SEC = 5, INBOX_MAX = 32, JOIN_PER_MIN = 20, WRONG_CODE_LOCK = 5;
     static final long CONNECTED_MS = 6000, LOCK_MS = 60000, LOBBY_LIFE_MS = 10 * 60 * 1000;
     /** what a card is: a secret to read, a vote for one name, a few action buttons, a plain line to wait on, or a list to pick one from («pick»: `opts` are the choices, `acts` the numbers that can be chosen now), or a form of one or more short answers to type («text»: `opts` are the field labels) */
-    static final String SECRET = "secret", VOTE = "vote", ACT = "act", WAIT = "wait", TEXT = "text", PICK = "pick";
+    static final String SECRET = "secret", VOTE = "vote", ACT = "act", WAIT = "wait", TEXT = "text", PICK = "pick", TILT = "tilt";
     /** the action buttons of an «act» card */
-    static final int ACT_OK = 0, ACT_SKIP = 1, ACT_FOUL = 2, ACT_BUZZ = 3;
+    static final int ACT_OK = 0, ACT_SKIP = 1, ACT_FOUL = 2, ACT_BUZZ = 3, ACT_READY = 4;
 
     enum Phase { LOBBY, PLAY, CLOSED }
 
@@ -91,7 +91,7 @@ final class GamePhoneRoom implements PhoneRoom {
         boolean ok;
         switch (s.kind) {
             case VOTE: ok = a >= 0 && a <= s.opts.length && a != s.self && s.inbox.isEmpty(); break;   // one vote per card; a == opts.length is «ما أدري / ما اتفقنا»
-            case ACT: ok = false; for (int t : s.acts) if (t == a) ok = true; break;
+            case ACT: case TILT: ok = false; for (int t : s.acts) if (t == a) ok = true; break;   // a tilt card is an action card the phone also answers by tilting
             case SECRET: ok = a == 0 && s.inbox.isEmpty(); break;
             case PICK: { boolean on = false; for (int t : s.acts) if (t == a) on = true; ok = on && a >= 0 && a < s.opts.length && s.inbox.isEmpty(); break; }
             case TEXT: {   // the answers, one line per field, each cleaned; one post per card

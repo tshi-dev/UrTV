@@ -32,6 +32,7 @@ public class QuizGamesActivity extends Activity {
         S.n("خلية الحروف"), S.n("فريقان يتسابقان على وصل الخلية"),
         S.n("خمّن الكلمة"), S.n("كلمة من خمسة حروف في ست محاولات"),
         S.n("دومينو"), S.n("الدومينو كما تعرفونه، بالريموت"),
+        S.n("على جبيني"), S.n("الجوال على جبينك، والفريق يوصف لك الكلمة"),
         S.n("حزم المحتوى"), S.n("حجم ما حمّلتموه من الألعاب، واحتفظوا به أو احذفوه"),
     };
     /** the night switch's words, marked for the English table: «وضع ليلي» with its three states, and the three night palettes */
