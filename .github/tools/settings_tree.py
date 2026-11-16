@@ -61,7 +61,7 @@ MORE_CMDS = {
 for _id, _title in re.findall(r'b\("([a-z]+)", "([^"]+)"', (ROOT / "android/app/src/main/java/sa/urtv/screensaver/RemoteButtons.java").read_text(encoding="utf-8")):
     MORE_CMDS[_title] = [f"optimize/dock.sh key {_id} org.smarttube.stable", f"optimize/dock.sh key {_id} default"]
 # rows that are an action or open a screen of their own, not a value to set (nothing for a command to set)
-ACTIONS = {"اجعل UrTV الشاشة الرئيسية", "تخلّص من واجهة المصنع", "رجّع واجهة المصنع", "قبل ما تحذف التطبيق…", "تفاصيل التطبيقات", "افتح تلاوة وأذان",
+ACTIONS = {"اجعل UrTV الشاشة الرئيسية", "جرّب التنبيه", "تخلّص من واجهة المصنع", "رجّع واجهة المصنع", "قبل ما تحذف التطبيق…", "تفاصيل التطبيقات", "افتح تلاوة وأذان",
            "مباريات اليوم", "افتح صفحة الأسواق", "معاينة الشاشة", "تحديث تلفزيوني", "إعداد تلفزيوني", "مسح الملفات المؤقتة", "أرسل تقرير", "مركز التحكم", "بحث في الإعدادات",
            "تعديل المفضلة", "ترتيب التطبيقات المفضلة", "ترتيب كل التطبيقات", "أسماء المصادر"}
 # rows the code gives no command (no saver.sh case, no receiver extra): set from the TV only

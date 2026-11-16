@@ -121,6 +121,7 @@ check(f"the S.t literals of both apps are read ({len(literals)} calls)", True)
 
 # the HTML files with their own English copy (docs/ENGLISH.md): the Arabic file, its area's table, the English file the area's generator writes
 HTML = [("page", ROOT / "src/template.html", "dist/tv-en.html"),
+        ("page", ROOT / "src/sports.js", "dist/sports-en.js"),   # 4.4 the sports cards' code beside the page
         ("phone", ROOT / "android/launcher/src/main/assets/phone/index.html", "android/launcher/src/main/assets/phone/index.en.html"),
         ("phone", ROOT / "android/launcher/src/main/assets/phone/portfolio.html", "android/launcher/src/main/assets/phone/portfolio.en.html")]
 page_words = set()

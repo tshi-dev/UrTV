@@ -574,13 +574,26 @@ def strip_js_comments(js):
     return "".join(out)
 
 
+def sports_js(stamp, english_page):
+    """4.4 dist/sports.js (and sports-en.js through the table): the sports cards' and the kick-off alert's code, read by the page only when
+    it needs them; it carries the page's build stamp, and the page runs only the one of its own build"""
+    import os
+    js = (ROOT / "src/sports.js").read_text(encoding="utf-8").replace("__BUILD__", stamp)
+    if english_page:
+        js, left = tr.translate(js, tr.load())
+        if left:
+            raise SystemExit("i18n/en/page.tsv has no entry for (src/sports.js): " + " | ".join(left[:10]))
+    return js if os.environ.get("URTV_JS_COMMENTS") == "keep" else strip_js_comments(js)
+
+
 def strip_page_js(html):
     """strip_js_comments on each inline <script> of a page"""
     return re.sub(r"(<script>)(.*?)(</script>)", lambda m: m.group(1) + strip_js_comments(m.group(2)) + m.group(3), html, flags=re.S)
 
 
 def main():
-    template = (ROOT / "src/template.html").read_text(encoding="utf-8").replace("__BUILD__", build_stamp())
+    stamp = build_stamp()
+    template = (ROOT / "src/template.html").read_text(encoding="utf-8").replace("__BUILD__", stamp)
     clubs = json.loads((ROOT / "assets/shared/teams.json").read_text(encoding="utf-8"))
     html = fill(template, clubs, False)
     html_en = fill(english(template), clubs, True)
@@ -604,6 +617,10 @@ def main():
         keep = os.environ.get("URTV_JS_COMMENTS") == "keep"
         out.write_text((lambda h: h if keep else strip_page_js(h))(strip_css_comments(page.replace("__BG_SET__", ",\n".join(entries)))), encoding="utf-8")
         print(f"wrote {out.relative_to(ROOT) if out.is_relative_to(ROOT) else out} ({out.stat().st_size / 1e6:.1f} MB)")
+    for name, js in (("sports.js", sports_js(stamp, False)), ("sports-en.js", sports_js(stamp, True))):
+        out = Path(os.environ.get("URTV_DIST") or ROOT / "dist") / name
+        out.write_text(js, encoding="utf-8")
+        print(f"wrote {out.relative_to(ROOT) if out.is_relative_to(ROOT) else out} ({out.stat().st_size / 1e3:.1f} KB)")
     tafsir = Path(os.environ.get("URTV_DIST") or ROOT / "dist") / "tafsir.json"
     tafsir.write_text(json.dumps(tafsir_file(), ensure_ascii=False, separators=(",", ":"), sort_keys=True) + "\n", encoding="utf-8")
     print(f"wrote {tafsir.relative_to(ROOT) if tafsir.is_relative_to(ROOT) else tafsir} ({tafsir.stat().st_size / 1e6:.2f} MB)")

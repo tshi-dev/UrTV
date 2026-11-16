@@ -12,7 +12,7 @@
 #   optimize/saver.sh find-team الهلال             a club's id (Arabic or English name): id:Name | league
 #   optimize/saver.sh teams 136013:Al-Hilal 150643:Al-Zulfi    followed teams in order (up to 20; more are left out and listed);
 #                                                  `teams none` (or `teams ""`) follows no team: the defaults (الهلال، المنتخب السعودي) go
-#   optimize/saver.sh card prayers                 beside the clock: shows prayers forecast hourly prayerrow matches nextmatch verse wisdom adhkar stocks tasks year smart today album none
+#   optimize/saver.sh card prayers                 beside the clock: shows prayers forecast hourly prayerrow matches nextmatch matchday livenow minitable nextmatches yesterday weekend cuppath formula national verse wisdom adhkar stocks tasks year smart today album none
 #   optimize/saver.sh card2 hourly                 a second card beside the clock, shown only while the clock is small (clocksize small):
 #                                                  the same choices but nextprayer and the first card; card2 none = one card (default)
 #   optimize/saver.sh home-card verse,hourly,year  on the home screen (launcher): up to 3 cards, same choices and nextprayer (home only), in this order
@@ -71,6 +71,9 @@
 #   optimize/saver.sh searchpill on               home screen: a «بحث» button for the TV's own search inside the apps (off = the default; only where the TV has that search)
 #   optimize/saver.sh datenum on                  the dates as day/month/year, Hijri and Gregorian, on the screensaver and the home (off = the default: in words); the digits stay `digits`
 #   optimize/saver.sh fbhide on                   the football home: hide the games that ended (off = the default: they show with their score)
+#   optimize/saver.sh kickoff off                 4.4 the kick-off alert of the followed clubs (on = the default; silent = no whistle, whistle = with it)
+#   optimize/saver.sh kickoffgoal on              …a goal's score in the corner too (off = the default); kickoffend on: the final score
+#   optimize/saver.sh kickoffover on              …over another app too (off = the default; needs «الظهور فوق التطبيقات»: optimize/dock.sh overlay on)
 #   optimize/saver.sh taskspill off                home screen: the «المهام» button: on (default) or off. Off removes only the button: the tasks stay, in the «المهام» card and on the phone
 #   optimize/saver.sh verse 3                      the verse-or-hadith card (card verse): day (default: a verse one day, a hadith the next), 3 or 10 (a new one every 3 or 10 minutes)
 #   optimize/saver.sh versekind verse              what that card shows: both (default: a verse, then a hadith), verse (verses only) or hadith (hadith only)
@@ -292,6 +295,10 @@ case "${1:-}" in
   nightdim) set1 nightdim "${2:?usage: optimize/saver.sh nightdim on|off}" ;;
   taskspill) set1 taskspill "${2:?usage: optimize/saver.sh taskspill on|off}" ;;
   fbhide)   set1 fbhide "${2:?usage: optimize/saver.sh fbhide on|off}" ;;
+  kickoff)  set1 kickoff "${2:?usage: optimize/saver.sh kickoff on|off|silent|whistle}" ;;
+  kickoffgoal) set1 kickoffgoal "${2:?usage: optimize/saver.sh kickoffgoal on|off}" ;;
+  kickoffend) set1 kickoffend "${2:?usage: optimize/saver.sh kickoffend on|off}" ;;
+  kickoffover) set1 kickoffover "${2:?usage: optimize/saver.sh kickoffover on|off}" ;;
   datenum)  set1 datenum "${2:?usage: optimize/saver.sh datenum on|off}" ;;
   searchpill) set1 searchpill "${2:?usage: optimize/saver.sh searchpill on|off}" ;;
   verse)    set1 verse "${2:?usage: optimize/saver.sh verse day|3|10}" ;;

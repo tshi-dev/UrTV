@@ -311,6 +311,13 @@
 الساعات القادمة	Coming hours
 مباريات فرقك	Your teams
 مباراة فريقك القادمة	Your team’s next match
+مباراة اليوم	Match day
+مباشر الآن	Live now
+نتائج أمس	Yesterday’s results
+نهاية الأسبوع	The weekend
+طريق الكأس	Cup path
+فورمولا ١	Formula 1
+المنتخب	National team
 المهام	Tasks
 السنة	Year
 المباراة	Match
@@ -563,3 +570,26 @@
 السعودي للاستثمار	SAIB
 أي زر يوقفه	any key stops it
 اختيار يوقفه	OK stops it
+لا مباراة لفرقك اليوم	No match for your teams today
+القادمة: %s	Next: %s
+تبدأ بعد	Starts in
+الانطلاقة	Kick-off
+الدقيقة %s	Minute %s
+أهداف %s	%s goals
+لا مباريات جارية الآن	No matches live now
+لا مباريات قادمة لفرقك	No coming matches for your teams
+على أرضه	At home
+خارج أرضه	Away
+لا نتائج أمس	No results yesterday
+لا مباريات نهاية هذا الأسبوع	No matches this weekend
+لا أدوار إقصائية بعد	No knockout rounds yet
+لا بيانات للسباق القادم	No data for the next race
+التجربة الأولى	Practice 1
+التجربة الثانية	Practice 2
+التجربة الثالثة	Practice 3
+تأهيل السبرنت	Sprint qualifying
+التأهيل	Qualifying
+لا مباراة قادمة للمنتخب	No coming match for the national team
+المركز %s، %s نقطة	Place %s, %s points
+%s الأول بـ%s نقطة	%s top with %s points
+بدأت المباراة	Kick-off

@@ -188,3 +188,9 @@ have not vetted the apps it installs (the line on its tile says so).
   country and population, places already in the built-in list left out, coordinates rounded to four decimals.
 - **Wikidata** (https://www.wikidata.org/): the Arabic names and other Arabic spellings of those GeoNames places (by their GeoNames id, P1566)
   and the seats of the Saudi governorates, under CC0 1.0 (public domain dedication). A snapshot is kept in `.github/tools/cities-more/sources/`.
+
+## The kick-off whistle (4.4, not third-party)
+
+`android/launcher/src/main/res/raw/kickoff_whistle.ogg` (1.2 s, about 10 KB) is not taken from anywhere: it is synthesised by
+`.github/tools/make_whistle.py` (a pea-whistle tone with its trill and a short release, numpy and ffmpeg) and dedicated to the
+public domain under CC0 1.0. Run the script again to make the same file.

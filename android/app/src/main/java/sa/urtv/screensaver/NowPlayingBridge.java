@@ -73,6 +73,26 @@ final class NowPlayingBridge {
         }
     }
 
+    /** 4.4 kids mode is on in the launcher: the page draws no kick-off notice on the screensaver then. False when the launcher does not say (an older one). */
+    static boolean kidsOn(Context c) {
+        Cursor cur = null;
+        try {
+            cur = c.getApplicationContext().getContentResolver().query(Uri.parse("content://sa.urtv.home.nowplaying/kids"), null, null, null, null);
+            return cur != null && cur.getColumnIndex("on") >= 0 && cur.moveToFirst() && cur.getInt(cur.getColumnIndex("on")) == 1;
+        } catch (Exception ignored) {
+            return false;
+        } finally {
+            if (cur != null) try { cur.close(); } catch (Exception ignored) { }
+        }
+    }
+
+    /** 4.4 «جرّب التنبيه»: the launcher plays its kick-off whistle once (it checks our signature; never over the adhan); false when it could not be asked */
+    static boolean kickoffWhistle(Context c) {
+        try {
+            return c.getApplicationContext().getContentResolver().call(Uri.parse("content://sa.urtv.home.nowplaying"), "kickoff_whistle", null, null) != null;
+        } catch (Exception ignored) { return false; }
+    }
+
     /** Ends the adhan that is playing in the launcher (it checks our signature, and stops only an adhan). */
     static void stopAdhan(Context c) {
         try {

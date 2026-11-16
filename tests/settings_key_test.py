@@ -44,7 +44,7 @@ check("the xml comment says why", "canRequestFilterKeyEvents:" in xml and "set a
 check("the service is declared once, in the add-on, with its xml, behind BIND_ACCESSIBILITY_SERVICE; the home has none",
       xman.count('android:name="sa.urtv.home.ExtrasA11yService"') == 1 and "@xml/extras_service" in xman and "BIND_ACCESSIBILITY_SERVICE" not in man
       and 'android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"' in xman.split('android:name="sa.urtv.home.ExtrasA11yService"')[1][:300])
-check("no new permission for this (the launcher declares the same ones, and our own EXTRAS one)", man.count("<uses-permission") == 24)   # 19 since REQUEST_DELETE_PACKAGES («حذف التطبيق» in the app menu); 21 since targetSdk 34: FOREGROUND_SERVICE_SPECIAL_USE (SetupService must name its type) and USE_EXACT_ALARM (the adhan stays exact on a new install)
+check("no new permission for this (the launcher declares the same ones, and our own EXTRAS one)", man.count("<uses-permission") == 25)   # 25 since 4.4 the kick-off alert (SYSTEM_ALERT_WINDOW, «فوق تطبيق آخر», off by default); 19 since REQUEST_DELETE_PACKAGES («حذف التطبيق» in the app menu); 21 since targetSdk 34: FOREGROUND_SERVICE_SPECIAL_USE (SetupService must name its type) and USE_EXACT_ALARM (the adhan stays exact on a new install)
 check("the TV's accessibility settings tell the person about the Settings key", "زر الإعدادات في الريموت يفتح إعدادات التلفزيون" in text("android/extras/src/main/res/values/strings.xml"))
 
 # the service

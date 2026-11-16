@@ -292,7 +292,7 @@ final class Prefs {
     // The card beside the clock: value sent to the page (#panel=), Arabic label
     static final String[][] PANELS = {
         {"shows", "جديد المسلسلات"}, {"prayers", "مواقيت الصلاة اليوم"}, {"forecast", "طقس الأيام القادمة"}, {"hourly", "طقس الساعات القادمة"}, {"prayerrow", "الصلوات في صف"}, {"nextprayer", "الصلاة القادمة"},
-        {"matches", "مباريات فرقك القادمة"}, {"nextmatch", "مباراة فريقك القادمة"}, {"verse", "آية أو حديث اليوم"}, {"wisdom", "حكمة اليوم"},
+        {"matches", "مباريات فرقك القادمة"}, {"nextmatch", "مباراة فريقك القادمة"}, {"matchday", "مباراة اليوم"}, {"livenow", "مباشر الآن"}, {"minitable", "جدول الترتيب"}, {"nextmatches", "مباراة كل فريق القادمة"}, {"yesterday", "نتائج أمس"}, {"weekend", "نهاية الأسبوع"}, {"cuppath", "طريق الكأس"}, {"formula", "فورمولا ١"}, {"national", "المنتخب السعودي"}, {"verse", "آية أو حديث اليوم"}, {"wisdom", "حكمة اليوم"},
         {"adhkar", "أذكار الصباح والمساء"}, {"stocks", "الأسهم"}, {"tasks", "المهام"}, {"year", "السنة"},
         {"smart", "البطاقة الذكية"}, {"today", "يومك"}, {"album", "ألبوم صوري"},
         {"none", "لا شيء"},
@@ -330,6 +330,15 @@ final class Prefs {
         {"nextprayer", "سطر واحد: الصلاة الجاية ووقتها وكم باقي لها"},
         {"matches", "مباريات الأسبوع ونتائج آخر يوم لفرقك، وكل مباراة بسطر واحد"},
         {"nextmatch", "مباراة فرقك الجاية بس، وتحتها آخر ٥ مواجهات بين الفريقين"},
+        {"matchday", "يوم مباراة فريقك: العد التنازلي ثم النتيجة والدقيقة ثم النتيجة النهائية، وتأخذ وسط شاشة التوقف"},
+        {"livenow", "مباريات فرقك ودورياتك الجارية الآن بنتيجتها ودقيقتها"},
+        {"minitable", "الأربعة الأوائل وفريقك وجاراه، ومستوى كل فريق في آخر ٥"},
+        {"nextmatches", "مربع لكل فريق تتابعه: الخصم واليوم والوقت والبطولة وعلى أرضه أو خارجها"},
+        {"yesterday", "نتائج أمس، فرقك أولًا ثم دورياتك"},
+        {"weekend", "مباريات الخميس والجمعة والسبت في دورياتك، ومباراة فريقك ذهبية"},
+        {"cuppath", "أدوار البطولة الإقصائية وطريق فريقك فيها"},
+        {"formula", "السباق القادم وجلساته بتوقيت مدينتك"},
+        {"national", "مباراة المنتخب السعودي القادمة: الخصم واليوم والوقت وآخر مواجهة"},
         {"verse", "آية يوم، وحديث صحيح من الكتب الستة اليوم اللي بعده، ومعه مصدره"},
         {"wisdom", "مثل أو قول عربي معروف مع مصدره"},
         {"adhkar", "من الفجر للظهر أذكار الصباح، ومن العصر للمغرب أذكار المساء"},
@@ -615,6 +624,20 @@ final class Prefs {
     void setSearchPill(boolean v) { sp.edit().putBoolean("searchPill", v).apply(); }
     void setDateNum(boolean v) { sp.edit().putBoolean("dateNum", v).apply(); }
     void setFbHideDone(boolean v) { sp.edit().putBoolean("fbHideDone", v).apply(); }
+    /** 4.4 «تنبيه بداية المباراة»: at a followed club's kick-off a short whistle and a small notice (on, the default); its sound (the whistle or
+     *  «بدون صوت»), a goal and the final whistle (off), and «فوق تطبيق آخر» (off: the home and the screensaver only) */
+    boolean kickoff() { return sp.getBoolean("kickoff", true); }
+    void setKickoff(boolean v) { sp.edit().putBoolean("kickoff", v).apply(); }
+    boolean kickoffWhistle() { return sp.getBoolean("kickoffWhistle", true); }
+    void setKickoffWhistle(boolean v) { sp.edit().putBoolean("kickoffWhistle", v).apply(); }
+    boolean kickoffGoal() { return sp.getBoolean("kickoffGoal", false); }
+    void setKickoffGoal(boolean v) { sp.edit().putBoolean("kickoffGoal", v).apply(); }
+    boolean kickoffEnd() { return sp.getBoolean("kickoffEnd", false); }
+    void setKickoffEnd(boolean v) { sp.edit().putBoolean("kickoffEnd", v).apply(); }
+    boolean kickoffOver() { return sp.getBoolean("kickoffOver", false); }
+    void setKickoffOver(boolean v) { sp.edit().putBoolean("kickoffOver", v).apply(); }
+    /** what the launcher reads (the provider's column "kickoff"): "on|whistle|over", e.g. "1|whistle|0" */
+    String kickoffColumn() { return (kickoff() ? "1" : "0") + "|" + (kickoffWhistle() ? "whistle" : "none") + "|" + (kickoffOver() ? "1" : "0"); }
     void setBackSaver(boolean v) { sp.edit().putBoolean("backSaver", v).apply(); }
 
     /**
@@ -707,7 +730,8 @@ final class Prefs {
      * cards never show it.
      */
     String screenUrl(Context c, boolean start) {
-        String url = dashboardUrl(c) + CleanMask.fragment(CleanMask.state(c));   // «UrTV النظيف»: the page shows the photo and the clock only
+        String url = dashboardUrl(c) + CleanMask.fragment(CleanMask.state(c))   // «UrTV النظيف»: the page shows the photo and the clock only
+            + (kickoff() && NowPlayingBridge.kidsOn(c) ? "&kids=1" : "");   // 4.4 kids mode: no kick-off notice over the screensaver
         if (!cityNoteDue()) return url;
         if (start) sp.edit().putInt("cityNoteShown", sp.getInt("cityNoteShown", 0) + 1).apply();
         return url + "&citynote=1";
@@ -768,7 +792,7 @@ final class Prefs {
             + HomeExit.fragment(homeExit())
             + (occasion() ? "" : "&occasion=0") + (nightDim() ? "" : "&nightdim=0") + (tasksPill() ? "" : "&taskspill=0")
             + (backSaver() ? "&backsaver=1" : "")
-            + (fbHideDone() ? "&fbhide=1" : "") + (dateNum() ? "&datenum=1" : "") + (searchPill() ? "&searchpill=1" : "")   // the football home without the games that ended
+            + (fbHideDone() ? "&fbhide=1" : "") + (kickoff() ? "" : "&ko=0") + (kickoffGoal() ? "&kogoal=1" : "") + (kickoffEnd() ? "&koend=1" : "") + (dateNum() ? "&datenum=1" : "") + (searchPill() ? "&searchpill=1" : "")   // the football home without the games that ended
             + "&cardstyle=" + cardStyle()
             + "&adhanbar=" + (adhanBar() ? "1" : "0")
             + "&yearstrip=" + (yearStrip() ? "1" : "0")
