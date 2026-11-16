@@ -9,8 +9,8 @@ black = the sky. Send the two from the phone page: «صوري» ← «صورة �
 It works only on a photo whose sky has a clean edge (a clear or evenly coloured sky above the scenery); for any other photo it says so
 and writes nothing: an AI image tool can still make one (the guide has the prompt), or the photo shows with the clock in front.
 Needs numpy, scipy, opencv-python-headless and Pillow (not in optimize/requirements.txt: a separate venv is fine):
-    python3 -m venv /tmp/mask-venv && /tmp/mask-venv/bin/pip install numpy scipy opencv-python-headless Pillow
-    /tmp/mask-venv/bin/python optimize/photo_mask.py PHOTO.jpg"""
+    python3 -m venv ~/mask-venv && ~/mask-venv/bin/pip install numpy scipy opencv-python-headless Pillow
+    ~/mask-venv/bin/python optimize/photo_mask.py PHOTO.jpg"""
 import importlib.util
 import sys
 from pathlib import Path
@@ -33,8 +33,8 @@ def main(argv):
         spec.loader.exec_module(tool)
         from PIL import Image
     except ImportError as e:
-        print(f"!! photo_mask.py needs {e.name}: python3 -m venv /tmp/mask-venv && /tmp/mask-venv/bin/pip install numpy scipy opencv-python-headless Pillow,"
-              " then run it with /tmp/mask-venv/bin/python")
+        print(f"!! photo_mask.py needs {e.name}: python3 -m venv ~/mask-venv && ~/mask-venv/bin/pip install numpy scipy opencv-python-headless Pillow,"
+              " then run it with ~/mask-venv/bin/python")
         return 1
     src = Image.open(photo)
     if abs(src.width * 9 - src.height * 16) > src.width * 0.02:
