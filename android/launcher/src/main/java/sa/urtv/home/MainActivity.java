@@ -108,7 +108,8 @@ public class MainActivity extends Activity {
     private float glowAlphaTo = -1f, shadeTo = 0f;
     private ImageView wallBack, wallFront;
     private boolean scenesOn;   // 4.3.3: the scene home is showing: the ordinary photos are not decoded (their memory is the scene's)
-    private SceneHome sceneHome;   // 4.3.3 «المشاهد»: the scene backdrop with the glass clock behind its scenery; null until built, hidden unless chosen
+    private SceneHome sceneHome;   // 4.4 «المشاهد»: the scene backdrop with the glass clock behind its scenery; made only while chosen (null otherwise: nothing of it exists)
+    private FrameLayout sceneBackdrop;   // where it goes when chosen: over the photos, under the dimming and the scrims
     private View gridShade;
     private String[] wallpapers = new String[0];
     private int wallIndex = -1;
@@ -577,8 +578,7 @@ public class MainActivity extends Activity {
         wallFront = wallpaperLayer();
         backdrop.addView(wallBack, new FrameLayout.LayoutParams(-1, -1));
         backdrop.addView(wallFront, new FrameLayout.LayoutParams(-1, -1));
-        sceneHome = new SceneHome(this, Ram.tier(this), font("display"));   // over the photos, under the dimming and the scrims; shown only with «الواجهة ← المشاهد»
-        backdrop.addView(sceneHome, new FrameLayout.LayoutParams(-1, -1));
+        sceneBackdrop = backdrop;   // 4.4: the scene layer is made in sceneTick only when «المشاهد» is chosen
         // Scrim: darker at the top (clock, pills) and bottom (dock) so text stays readable.
         scrim = new View(this);
         scrim.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
@@ -3172,10 +3172,14 @@ public class MainActivity extends Activity {
      * header's clock (the greeting, the date and the rest of the home stay as they are); any other layout: the home as it was.
      */
     private void sceneTick(ConfigSnapshot cfg) {
-        if (sceneHome == null) return;
         boolean on = "scenes".equals(cfg.homeLayout);
-        sceneHome.set(on, cfg.scenePacks, ScenePlan.stay(cfg.sceneStay), homeCard != null && homeCard.shownCards() > 0, Dir.rtl());
-        if (on && (cfg.sceneByTime || cfg.sceneByWeather)) {
+        if (!on && sceneHome == null && !scenesOn) return;   // the home as it was (the default): nothing of the scenes is made, read, timed or downloaded
+        if (on && sceneHome == null) {   // chosen: the layer is made now, over the photos and under the dimming and the scrims
+            sceneHome = new SceneHome(this, Ram.tier(this), font("display"));
+            sceneBackdrop.addView(sceneHome, sceneBackdrop.indexOfChild(wallFront) + 1, new FrameLayout.LayoutParams(-1, -1));
+        }
+        if (on) {
+            sceneHome.set(true, cfg.scenePacks, ScenePlan.stay(cfg.sceneStay), homeCard != null && homeCard.shownCards() > 0, Dir.rtl());
             boolean night = false, fog = false;
             if (cfg.sceneByTime) try {   // the city's Maghrib to its Fajr (the same prayer times as the adhan)
                 sa.urtv.home.tilawah.DayParts d = sa.urtv.home.tilawah.DayParts.now(this, cfg.placeFragment(), cfg.placeTicket());
@@ -3187,7 +3191,11 @@ public class MainActivity extends Activity {
                 fog = System.currentTimeMillis() - g.getLong("at", 0) < 2 * 60 * 60 * 1000L && ScenePlan.fog(g.getInt("code", -1));
             }
             sceneHome.mood(cfg.sceneByTime, night, cfg.sceneByWeather, fog);
-        } else sceneHome.mood(false, false, false, false);
+        } else if (sceneHome != null) {   // turned off: the layer goes whole (its views, its pictures, its timer and its thread)
+            sceneHome.shutdown();
+            sceneBackdrop.removeView(sceneHome);
+            sceneHome = null;
+        }
         if (on != scenesOn) {
             scenesOn = on;
             if (on) {   // the ordinary photos let go: no rotation, a photo on its way is not shown, the two layers emptied

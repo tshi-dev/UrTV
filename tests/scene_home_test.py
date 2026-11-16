@@ -129,9 +129,32 @@ tick = main[main.index("private void sceneTick(ConfigSnapshot cfg)"):].split("\n
 check("the home: «المشاهد» only when chosen; then the scene and its clock replace the photo and the header's clock (the rest stays)",
       'boolean on = "scenes".equals(cfg.homeLayout);' in tick and "clock.setVisibility(show);" in tick and "wallFront.setVisibility(show);" in tick
       and "sceneHome.setTime(clock.getText());" in tick and "sceneTick(cfg);" in main and "homeCard.shownCards() > 0" in tick)
-check("the scene sits over the photos and under the dimming and the scrims", main.index("backdrop.addView(sceneHome") < main.index("backdrop.addView(wallDimView"))
+check("the scene sits over the photos and under the dimming and the scrims (put just after the front photo when made)",
+      "sceneBackdrop.addView(sceneHome, sceneBackdrop.indexOfChild(wallFront) + 1," in main and main.index("sceneBackdrop = backdrop;") < main.index("backdrop.addView(wallDimView"))
 check("the home reads the layout and the packs from the screensaver (an older one says nothing: classic, saudi)",
       'String homeLayout = "classic", scenePacks = "saudi", sceneStay = "20";' in snap and 'cur.getColumnIndex("scene_packs")' in snap and "int shownCards() { return cards; }" in card)
+
+# ---- 4.4 the owner: «العادية» is the default and costs nothing of the scenes; «المشاهد» costs no ordinary photo
+import glob
+body = tick.split("\n", 1)[1]
+first = [l.strip() for l in body.splitlines() if l.strip() and not l.strip().startswith("//")]
+check("off (the default): sceneTick's first step after reading the layout returns when the scenes are off and nothing of them exists",
+      first[0] == 'boolean on = "scenes".equals(cfg.homeLayout);'
+      and first[1].startswith("if (!on && sceneHome == null && !scenesOn) return;"), first[:2])
+check("off: the scene layer is not made at the home's start, only in sceneTick when chosen; turned off, it is shut down and removed whole",
+      main.count("new SceneHome(") == 1 and "if (on && sceneHome == null) {" in tick and tick.index("if (on && sceneHome == null) {") < tick.index("new SceneHome(")
+      and "sceneHome.shutdown();" in tick and "sceneBackdrop.removeView(sceneHome);" in tick and "sceneHome = null;" in tick
+      and "new SceneHome(" not in main[main.index("private View buildUi()") if "private View buildUi()" in main else 0:main.index("private void sceneTick(")])
+check("off: every other use of the layer waits for it to exist (start, stop, trim)", main.count("if (sceneHome != null) sceneHome.") == 3)
+users = sorted(Path(f).name for f in glob.glob(str(HOME / "**/*.java"), recursive=True)
+               if re.search(r"\b(SceneHome|SceneDownload|SceneClock)\b", read(Path(f))) and Path(f).name not in ("SceneHome.java", "SceneDownload.java", "SceneClock.java", "ScenePlan.java"))
+check("off: only the home's screen knows the scene classes (nothing else can start a read, a download or a timer)", users == ["MainActivity.java"], users)
+seth = scene[scene.index("    void set(boolean wanted"):].split("\n    }\n")[0]
+check("off: the scene files are read and the Couch TV pack is downloaded only after «on» is checked; shut down, the thread, the timer and the pictures go",
+      seth.index("if (!on) {") < seth.index("io.execute(") < seth.index("SceneDownload.fetchIfNeeded(app);") and "assets" not in main.split("private void sceneTick(")[0][-400:]
+      and "io.shutdownNow();" in scene and "for (Slot sl : slots) sl.release();" in scene)
+check("off: the scenes' memory tier, font and pictures are asked for only when the layer is made (none at the home's start)",
+      main.count("new SceneHome(this, Ram.tier(this), font(\"display\"))") == 1)
 
 # ---- the settings
 check("«الواجهة»: classic (the default), football, scenes", 'HOME_LAYOUTS = {"classic", "football", "scenes"};' in prefs and '"العادية", "كرة القدم", "المشاهد"' in prefs)

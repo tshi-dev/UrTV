@@ -97,6 +97,17 @@ final class SceneHome extends FrameLayout {
 
     boolean on() { return on; }
 
+    /** The scene home turned off: the timer, the pictures and the decoding thread go (MainActivity then drops the whole layer). */
+    void shutdown() {
+        on = false;
+        gen++;
+        stop();
+        for (Slot sl : slots) sl.release();
+        all = new ArrayList<>();
+        scenes = all;
+        io.shutdownNow();
+    }
+
     /**
      * «المشهد يتبع الوقت» and «المشهد يتبع الطقس», with the time of day (night: Maghrib to Fajr) and the city's weather (fog): when the scenes to show
      * change (Maghrib came, the fog lifted), the new set starts at once; else the turns go on as they were.
