@@ -1,4 +1,10 @@
-«✅ GO — step 75 now (the owner's week plan started 2026-11-16; he allowed testing couch-tv and Clean your TV on his TV). Then step 76 (4.3.2 release check), then step 77 (the safe home switch), then step 78 (background recitation + Player beta9).»
+«✅ GO — step 75 now (the owner's week plan started 2026-11-16; he allowed testing couch-tv and Clean your TV on his TV). Then step 76 (4.3.2 release check), then step 77 (the safe home switch), then step 78 (background recitation + Player beta9), then 79 (speed) and 80 (setup scripts).»
+
+## step 79 — speed and network (branch work/433-perf e66d07af)
+Follow docs/PERF.md on that branch, A to F, OLD = the 4.3.2 apk-next build, NEW = the branch's Build APKs artifact, same TV, same conditions. Table per measure: old vs new (request log 30 min home + 30 min screensaver + 10 min offline; cold start median of 5; return to home median of 5; tray jank 3 runs; meminfo + top both apps; «الوضع الخفيف» on/off/auto and what changes). Put «الوضع الخفيف» back to تلقائي and reinstall apk-next at the end.
+
+## step 80 — setup scripts and TV-side resume (branch work/433-setup 74e31489)
+Follow docs/TEST-PLAN.md §14 on that branch, T1–T9 that are safe on the owner's TV (T10 needs a Chromecast: skip). T9 (pulling power at 25%) only with the owner's OK: skip and write «needs OK». Before: write down `pm list packages -d`, the HOME role holder, the owner's settings. After: everything back as it was, UrTV the home, apk-next installed.
 
 ## step 78 — background recitation (branch work/433-media 8d41bd7) and Player beta9
 A. Recitation: install the home + screensaver from the Build APKs run artifact of work/433-media (branch builds are not published; find the run for 8d41bd7 on github.com/tshi-dev/UrTV Actions). S = `adb shell am broadcast -n sa.urtv.home/.tilawah.MusicReceiver -a sa.urtv.home.GET_PLAYER` (read playing=, foreground=, focus_wait=). TV volume low but NOT muted for this part only if needed to hear; otherwise read S and logcat -s Listening.
