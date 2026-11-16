@@ -135,3 +135,6 @@ for _g, _k in (("Khanat", "players\" : \"teams"), ("MissingWord", "teams"), ("Ch
     _t = (APP / f"{_f}.java").read_text(encoding="utf-8")
     check(f"{_f}: names the kind of names it has and how many", "namesKind()" in _t and "namesCount()" in _t and _k.split('"')[0] in _t)
 check("no game builds its own default names any more: the only «لاعب %s» is the base's", sum((APP / f"{g}.java").read_text(encoding="utf-8").count('S.t("لاعب %s"') for g in ("KhanatActivity", "OddOneActivity", "MissingWordActivity", "CharadesActivity", "DominoActivity", "LetterHiveActivity")) == 0)
+
+check("the night colours start on the third palette (dim beige); a stored choice and an out-of-range value are handled in one place",
+      "PALETTE_DEFAULT = 2" in prefs and 'getInt("palette", PALETTE_DEFAULT)' in prefs and "? PALETTE_DEFAULT : v" in prefs)

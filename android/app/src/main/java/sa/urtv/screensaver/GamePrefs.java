@@ -39,8 +39,9 @@ final class GamePrefs {
         String j = GameNames.join(v);
         if (j.replace("\n", "").isEmpty()) sp(c).edit().remove("names." + kind).apply(); else sp(c).edit().putString("names." + kind, j).apply();
     }
-    /** which night palette: 0 warm charcoal (the default), 1 blue-black, 2 dim sepia */
-    static int palette(Context c) { int v = sp(c).getInt("palette", 0); return v < 0 || v >= PALETTES ? 0 : v; }
+    /** which night palette: 0 warm charcoal, 1 blue-black, 2 dim sepia (the default: the owner chose it) */
+    static final int PALETTE_DEFAULT = 2;
+    static int palette(Context c) { int v = sp(c).getInt("palette", PALETTE_DEFAULT); return v < 0 || v >= PALETTES ? PALETTE_DEFAULT : v; }
     static void setPalette(Context c, int v) { sp(c).edit().putInt("palette", v).apply(); }
     /** is the night look on right now: on, or automatic and the sun is down at the city the person set for the prayer times (Riyadh until set) */
     static boolean nightNow(Context c) {
