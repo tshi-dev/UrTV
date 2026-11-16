@@ -5,6 +5,7 @@ import sa.urtv.screensaver.games.forehead.ForeheadGame;
 import sa.urtv.screensaver.games.author.AuthorGame;
 import sa.urtv.screensaver.games.closest.ClosestGame;
 import sa.urtv.screensaver.games.liar.LiarGame;
+import sa.urtv.screensaver.games.night.NightGame;
 import sa.urtv.screensaver.games.emoji.EmojiGame;
 import sa.urtv.screensaver.games.link.LinkGame;
 
@@ -206,6 +207,39 @@ public final class NewGamesTest {
         check("link: the bundled list opens and parses (" + (real == null ? 0 : real.size()) + " words, at least 300), no word twice in either language", real != null && real.size() >= 300 && real.stream().map(w -> w[1]).distinct().count() == real.size());
     }
 
+    static boolean ender(NightGame g) { g.endVote(); return true; }
+    static int who(NightGame g, int r) { for (int i = 0; i < g.players; i++) if (g.role[i] == r && g.alive[i]) return i; return -1; }
+    static int notRole(NightGame g, int r) { for (int i = 0; i < g.players; i++) if (g.role[i] != r && g.alive[i]) return i; return -1; }
+
+    static void night() {
+        int[] wc = new int[11]; boolean shape = true;
+        for (int n = 6; n <= 10; n++) { NightGame g = new NightGame(n, new java.util.Random(n)); int[] c = new int[4]; for (int r : g.role) c[r]++; shape &= c[1] == NightGame.wolvesFor(n) && c[2] == 1 && c[3] == 1 && c[0] == n - c[1] - 2; }
+        check("night: 6 to 10 players get the wolves (1, 2 or 3), one guard, one seer, the rest villagers", shape && NightGame.wolvesFor(6) == 1 && NightGame.wolvesFor(7) == 2 && NightGame.wolvesFor(9) == 3);
+        boolean threw = false; try { new NightGame(5, new java.util.Random(1)); } catch (IllegalArgumentException e) { threw = true; }
+        try { new NightGame(11, new java.util.Random(1)); threw = false; } catch (IllegalArgumentException e) { }
+        check("night: five or eleven players are refused", threw);
+        NightGame g = new NightGame(6, new java.util.Random(3));
+        int w = who(g, NightGame.WOLF), gd = who(g, NightGame.GUARD), sr = who(g, NightGame.SEER), v = who(g, NightGame.VILLAGER);
+        check("night: a wolf cannot pick a wolf, a villager has no pick, nobody acts out of role", !g.wolf(w, w) && !g.wolf(v, gd) && !g.guard(w, gd) && !g.needsPick(v) && g.needsPick(w) && g.needsPick(gd) && g.needsPick(sr));
+        check("night: the seer hears wolf or not, and cannot ask about themselves", g.seer(sr, w) == Boolean.TRUE && g.seer(sr, v) == Boolean.FALSE && g.seer(sr, sr) == null);
+        check("night: the night is not done until all three have chosen", !g.nightDone() && g.wolf(w, v) && !g.nightDone() && g.guard(gd, gd) && g.nightDone());
+        g.endNight();
+        check("night: the wolf's pick leaves the village when the guard guarded someone else", g.outLast == v && !g.alive[v] && !g.savedLast && g.phase == NightGame.Phase.DAY);
+        g.startVote(); int voter = who(g, NightGame.GUARD), t = w;
+        check("night: a vote cannot be for yourself or for someone out, once each", !g.vote(voter, voter) && !g.vote(voter, v) && g.vote(voter, t) && !g.vote(voter, sr));
+        for (int i = 0; i < 6; i++) if (g.alive[i] && i != voter) g.vote(i, i == t ? voter : t);
+        check("night: all voted, the clear plurality leaves, and with the last wolf out the village wins", g.allVoted() && ender(g) && g.voteOut == t && g.phase == NightGame.Phase.END && g.winner == NightGame.VILLAGE_WINS);
+        NightGame h = new NightGame(6, new java.util.Random(5));
+        int hw = who(h, NightGame.WOLF), hg = who(h, NightGame.GUARD), hv = who(h, NightGame.VILLAGER);
+        h.wolf(hw, hv); h.guard(hg, hv); h.endNight();
+        check("night: when the guard guards the wolf's pick nobody leaves, and the same pick two nights in a row is refused", h.outLast == -1 && h.savedLast && h.alive[hv]);
+        h.startVote(); h.endVote(); h.nextNight();
+        check("night: a tied or empty vote sends nobody; the next night the guard may not repeat", h.voteOut == -1 && h.phase == NightGame.Phase.NIGHT && h.night == 2 && !h.guard(hg, hv) && h.guard(hg, hg));
+        NightGame k = new NightGame(6, new java.util.Random(9)); int kw = who(k, NightGame.WOLF);
+        for (int i = 0; i < 6 && k.phase != NightGame.Phase.END; i++) { int a = who(k, NightGame.GUARD); if (k.phase == NightGame.Phase.NIGHT) { k.wolf(kw, notRole(k, NightGame.WOLF)); if (a >= 0) k.guard(a, a == kw ? 0 : kw); k.endNight(); if (k.phase == NightGame.Phase.DAY) { k.startVote(); k.endVote(); if (k.phase == NightGame.Phase.VOTED) k.nextNight(); } } }
+        check("night: with nobody voted out the wolves take the village, and the game ends with a winner", k.phase == NightGame.Phase.END && (k.winner == NightGame.WOLVES_WIN || k.winner == NightGame.VILLAGE_WINS));
+    }
+
     public static void main(String[] a) throws Exception {
         forehead();
         author(a[0]);
@@ -213,6 +247,7 @@ public final class NewGamesTest {
         liar(a[2]);
         emoji(a[3]);
         link(a[4]);
+        night();
         System.exit(failed == 0 ? 0 : 1);
     }
 }

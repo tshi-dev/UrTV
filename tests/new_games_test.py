@@ -12,7 +12,7 @@ def check(what, ok, extra=""):
     print(("PASS " if ok else "FAIL ") + what + ("" if ok else "  -> " + str(extra)))
     if not ok: failed += 1
 if not shutil.which("javac"): print("SKIP: no javac"); sys.exit(1)
-ENGINES = [G / "forehead/ForeheadGame.java", G / "author/AuthorGame.java", G / "closest/ClosestGame.java", G / "liar/LiarGame.java", G / "emoji/EmojiGame.java", G / "link/LinkGame.java", APP / "GameBundle.java", APP / "MiniJson.java"]
+ENGINES = [G / "forehead/ForeheadGame.java", G / "author/AuthorGame.java", G / "closest/ClosestGame.java", G / "liar/LiarGame.java", G / "emoji/EmojiGame.java", G / "link/LinkGame.java", G / "night/NightGame.java", APP / "GameBundle.java", APP / "MiniJson.java"]
 with tempfile.TemporaryDirectory() as t:
     c = subprocess.run(["javac", "-nowarn", "-encoding", "UTF-8", "-d", t, *map(str, ENGINES), str(ROOT / "tests/NewGamesTest.java")], capture_output=True, text=True)
     check("the new games' rules compile on a plain JVM (no Android)", c.returncode == 0, c.stderr[-500:])
@@ -24,7 +24,7 @@ with tempfile.TemporaryDirectory() as t:
 def src(n): return (APP / n).read_text(encoding="utf-8")
 reg, gl, room, page = src("GameRegistry.java"), src("QuizGamesActivity.java"), src("GamePhoneRoom.java"), (ROOT / "assets/quiz/game.html").read_text(encoding="utf-8")
 manifest = (ROOT / "android/app/src/main/AndroidManifest.xml").read_text(encoding="utf-8")
-GAMES = {"forehead": "ForeheadActivity", "author": "AuthorActivity", "closest": "ClosestActivity", "liar": "LiarActivity", "emoji": "EmojiActivity", "link": "LinkActivity"}
+GAMES = {"forehead": "ForeheadActivity", "author": "AuthorActivity", "closest": "ClosestActivity", "liar": "LiarActivity", "emoji": "EmojiActivity", "link": "LinkActivity", "night": "NightActivity"}
 for gid, act in GAMES.items():
     a = src(act + ".java")
     check(f"{gid}: in the registry (needs phones), in the filter's list, in the manifest (not exported, landscape), and a GameActivity",
@@ -60,4 +60,7 @@ check("link: the key goes only to the two captains' phones (a key card), the res
 check("the phone page and room: a key card is a grid of the words coloured by the key, with number buttons only when the card offers them; it takes answers only for those numbers",
       "c.kind === 'key'" in page and ".kc{" in page and "case KEY:" in room)
 check("the bundled link words are a bundle", (ROOT / "assets/games/link.gb").read_bytes()[:3] == b"GB1" and "بحر".encode() not in (ROOT / "assets/games/link.gb").read_bytes())
+ni = src("NightActivity.java")
+check("night: roles go only to each phone as a secret card, the TV names a role only when its player leaves or at the end; the night, the vote and the seer's answer are cards; nothing is killed in the wording",
+      "GamePhoneRoom.SECRET, names[i]" in ni and "GamePhoneRoom.PICK" in ni and ni.count("roleName(game.role[") == 3 and "game.endNight()" in ni and "game.vote(p, a)" in ni and "game.seer(p, a)" in ni)
 sys.exit(1 if failed else 0)

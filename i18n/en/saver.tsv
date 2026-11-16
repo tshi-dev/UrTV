@@ -1178,3 +1178,49 @@
 فريقك يخمّن، باقي %s	Your team is guessing, %s left
 دور %s: باقي %s	%s's turn: %s left
 أنهِ الدور	End the turn
+أنت الحارس	You are the guard
+أنت الذئب الوحيد	You are the only wolf
+أنت العرّاف	You are the seer
+أنت ذئب	You are a wolf
+أنت قروي	You are a villager
+أُنهيت	Ended
+ابدأ الليل	Start the night
+اعدّ الأصوات	Count the votes
+اكتشفوا الذئاب بالكلام والتصويت	Find the wolves by talking and voting
+الحارس أنقذ أحدًا، ما أحد طلع	The guard saved someone, nobody left
+الذئاب والحارس والعرّاف يختارون في جوالاتهم	Wolves, guard and seer choose on their phones
+العب مرة ثانية	Play again
+القرية نائمة	The village sleeps
+القرية نائمة، نم أنت أيضًا	The village sleeps, sleep too
+الليل	Night
+تعادل، ما أحد طلع	A tie, nobody left
+تكلموا: مين الذئب؟	Talk: who is the wolf?
+حارس	guard
+خرجت من القرية، تابع التلفزيون	You left the village, watch the TV
+ذئب	wolf
+شوفوا أدواركم في جوالاتكم	See your roles on your phones
+طلع الصباح	Morning has come
+طلع الصباح، تكلموا	Morning, talk
+عرّاف	seer
+عن من تسأل الليلة؟	Who do you ask about tonight?
+فاز الذئاب	The wolves win
+فازت القرية	The village wins
+قروي	villager
+كل ليلة تحمي واحدًا	Each night you protect one
+كل ليلة تسأل عن واحد: ذئب أو لا	Each night you ask about one: wolf or not
+لا تقولها بصوت عالٍ	Do not say it aloud
+ليل القرية	Village Night
+ما أحد طلع الليلة	Nobody left tonight
+من تبعدون الليلة؟	Who do you send away tonight?
+من تحمي الليلة؟	Who do you protect tonight?
+مين يطلع من القرية؟	Who leaves the village?
+نتيجة التصويت	Vote result
+ذئاب بين القرويين، من يكشفهم؟	Wolves among villagers, who finds them?
+%s ذئب	%s is a wolf
+%s لاعبين، منهم %s ذئاب	%s players, %s of them wolves
+%s ليس ذئبًا	%s is not a wolf
+الليلة %s	Night %s
+باقي في القرية: %s	Left in the village: %s
+طلع من القرية: %s	Left the village: %s
+كان %s	Was %s
+معك: %s	With you: %s

@@ -138,6 +138,11 @@
             android:screenOrientation="landscape"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|uiMode" />
         <activity
+            android:name=".NightActivity"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|uiMode" />
+        <activity
             android:name=".GamePacksActivity"
             android:exported="false"
             android:screenOrientation="landscape" />

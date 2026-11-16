@@ -19,3 +19,11 @@ Two to ten phones. A line of emoji stands for a word (🍚🍗 is «كبسة»);
 
 ## اربط الكلمات (link the words)
 Four to ten phones, two teams (the phones take the teams in turn). 25 words on the TV. A secret key (9 words for the team that starts, 8 for the other, 7 neutral, 1 ending word) is on the two captains' phones (the first two phones) and nowhere else. The captain of the team whose turn it is says a one-word clue aloud and picks on the phone how many words it links (1 to 9); the team's other phones then touch words (the first tap counts, «أنهينا» ends the turn). Its own word goes on (up to the number plus one), a neutral word ends the turn, the other team's word counts for that team and ends the turn, the ending word loses the game. The first team to uncover all its words wins. The TV shows the key only at the end. The list is 348 common nouns (`assets/games/link.gb`); nothing repeats on this TV.
+
+## ليل القرية (Village Night)
+
+Six to ten phones. Each phone gets a secret role: villager, wolf (1 for 6 players, 2 for 7 to 8, 3 for 9 to 10), one guard, one seer. The wolves see each other's names. At night the wolves choose someone to send away, the guard protects one player (not the same one two nights in a row), the seer asks about one player and hears «wolf» or «not a wolf» on their own phone. In the morning the village learns who left (and their role), talks for 90 seconds, then votes on the phones. A tie sends nobody. The village wins when the last wolf is out; the wolves win when they are as many as the rest.
+
+- Rules: `games/night/NightGame.java` (no Android), tested in `tests/NewGamesTest.java`.
+- Screen: `NightActivity`. The TV shows a role only when its player leaves or at the end. The wording is family-safe: someone «leaves the village», nobody is killed.
+- No content bank, so nothing is bundled.
