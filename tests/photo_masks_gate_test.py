@@ -50,19 +50,29 @@ check("the skyline: the scenery's top in each of the 48 columns, px of 1080", le
 tool = (ROOT / ".github/tools/photo_masks.py").read_text(encoding="utf-8")
 B = T.CLOCK["clean"]
 check("the owner: the clock always has the same place; the clean one is his Riyadh place (digits 266 to 542, 718 wide, centred)",
-      B == [601, 266, 1319, 542] and 'r[3] = r[4] = r[9] = "-"' in tool, B)
-fr = T.search(T.tops((yy > 440).astype(np.float32)), B)
-check("the photo moves instead: a skyline over half the digits gets a frame (zoom 1 to 1.4) that puts it under them by the rule",
+      B == [601, 266, 1319, 542] and T.CLOCK["couch"] == B and 'r[3], r[4], r[9] = str(b[1]), str(b[3]), str((b[0] + b[2]) // 2)' in tool, B)
+fr = T.search(T.tops((yy > 440).astype(np.float32)), B, 1.4)
+check("the photo moves instead: a skyline over half the digits of a photo with pixels to spare gets a frame (zoom up to 1.4) under them by the rule",
       fr and 1372 <= fr[2] < W and fr[2] % 2 == 0 and fr[0] % 2 == 0 and fr[1] % 2 == 0 and T.place_ok(T.tops((yy > 440).astype(np.float32)), B, fr), fr)
+check("…never upscaled: a photo of 1920 px is only ever shown whole (the owner)", T.search(T.tops((yy > 440).astype(np.float32)), B) is False
+      and T.frames() == [None] and all(f is None or f[2] >= W / 1.2 - 2 for f in T.frames(1.2)))
 check("…one already under them keeps the whole photo; one the frame cannot lift to the digits finds none",
-      T.search(T.tops((yy > 510).astype(np.float32)), B) is None and T.search(T.tops((yy > 1000).astype(np.float32)), B) is False)
+      T.search(T.tops((yy > 510).astype(np.float32)), B, 1.4) is None and T.search(T.tops((yy > 1000).astype(np.float32)), B, 1.4) is False)
+ok_aspect = all(abs(T.frame_of(f)[2] / T.frame_of(f)[3] - W / H) < 2 / T.frame_of(f)[3] for f in T.frames(1.4) if f)
+im = np.zeros((H, W, 3), np.uint8); cv2.circle(im, (960, 540), 100, (255, 255, 255), -1)
+sq = T.framed(im, [200, 100, 1600])[..., 0] > 127; ys_, xs_ = np.nonzero(sq)
+try: T.framed(im, [400, 200, 1600]); outside = False
+except ValueError: outside = True
+check("…never stretched: the output's aspect is the frame's (16:9), a circle stays round", ok_aspect
+      and abs((xs_.max() - xs_.min()) - (ys_.max() - ys_.min())) <= 2 and outside, (xs_.max() - xs_.min(), ys_.max() - ys_.min(), outside))
+check("…a photo smaller than the screen or not 16:9 is not cut (never upscaled, never stretched)", "src.width < W: return None" in tool)
 x_, y_, w_, h_ = T.frame_of([100, 60, 1600])
 check("…a frame is the part of the photo shown full-screen: h = w 9/16, the photo and its cut-out the same", (w_, h_) == (1600, 900)
       and T.framed(np.zeros((H, W), np.float32), [100, 60, 1600]).shape == (H, W) and T.screen_tops(np.full(W, 600), [100, 60, 1600], 0, 1)[0] == 648)
 
 T.people_cut = lambda rgb, alpha: False   # the finders are OpenCV's own; a made-up picture has no person
 v = lambda r, a: T.judge(r, a, T.scenery_colour(r, a))[:2]
-check("a clean edge that crosses the digits' lower part: FIT", v(*scene(560, 0.05))[0] == "FIT", v(*scene(560, 0.05)))
+check("a clean edge that crosses the digits' lower part: FIT", v(*scene(510, 0.05))[0] == "FIT", v(*scene(510, 0.05)))
 check("…a skyline too low to reach the digits: FRONT-ONLY", v(*scene(900))[0] == "FRONT-ONLY", v(*scene(900)))
 tower = ((yy > 900) | ((xx > 1400) & (xx < 1440) & (yy > 420))).astype(np.float32)   # low ground and one thin tower through the digits
 check("…only a sliver of the digits crossed (one thin tower): FRONT-ONLY", v(rgb, tower)[0] == "FRONT-ONLY", v(rgb, tower))

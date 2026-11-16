@@ -14,7 +14,8 @@ The gate, for every photo (OUT/gate.json, one line each, and the verdict):
          same edge smoothed), islands (scenery floating in the sky) and holes (small sky holes in the scenery);
   fit:   the owner: «the clock always has the same position across our images». The clock is a fixed box (CLOCK: the clean one is the owner's
          Riyadh place, digits 266 to 542, centred); the photo moves instead: a frame [x, y, w] (the part of the photo shown full-screen,
-         h = w 9/16, zoom 1 to 1.4, the photo and its cut-out alike) is searched, the least zoom first, so that the scenery crosses the digits'
+         h = w 9/16, zoom 1 to 1.4 but never past the photo's own pixels: a 1920 px photo is only
+         ever shown whole; never stretched, the photo and its cut-out alike) is searched, the least zoom first, so that the scenery crosses the digits'
          lower part (not a sliver) and covers at most a quarter of any digit from its base, never the colon (the owner's rule);
   people: a face or a person the edge cuts through.
   FIT: clean and crossing well: published. FRONT-ONLY: clean, but the scenery does not cross the digits well (or never: «الحرمين»): the clock in
@@ -29,7 +30,7 @@ Only FIT cut-outs named in photo_masks_ok.txt (checked by eye) are written; --al
 Writes OUT/<set>/<name>-fg.webp (cropped to its box, at most 180 KB at 1080), OUT/<set>/index.json:
 {"v": 1, "set": ..., "files": {"<name>": {"sha256", "bytes", "box": [x, y, w, h], "skyline": [48 ints: the scenery's top in each 40 px column, px of 1080],
 "frame": [x, y, w] (absent: the whole photo), "depth": [the layouts whose fixed clock it is drawn behind]}}}; a horizons pack's scenes.tsv gets
-digits_top, digits_bottom and digits_x "-" (not read), and the columns "frame x,y,w" and "depth".
+digits_top, digits_bottom and digits_x set to the fixed clock (266, 542, 960; the new app does not read them), and the columns "frame x,y,w" and "depth".
 and OUT/gate.json: {"v": 1, "photos": {"<set>/<name>": {"verdict", "why", "scores"}}, "counts": {"<set>": {"FIT", "FRONT-ONLY", "REJECT"}}}.
 The packs' zips come from this repository's releases (photos/packs.json, their sha256 checked); "photos" is the hosted set in photos/.
 Needs numpy, scipy, opencv-python-headless<5, Pillow and onnxruntime; the model is downloaded once into --work."""
@@ -53,8 +54,9 @@ MODEL_SHA256 = "46c4e8eeda3a27f34701831b6a2ec7753d7b38779b215acb5633424703deed8f
 HALO_MAX, JAGGED_MAX, ISLANDS_MAX, HOLES_MAX = 3.0, 0.33, 2, 6
 CROSS_MIN, COLS_MIN, VISIBLE_MIN = 0.08, 0.25, 0.6
 # the owner: «the clock always has the same position across our images»: fixed boxes (1920x1080 screen px), the photo is framed instead
-CLOCK = {"clean": [601, 266, 1319, 542]}    # digits 266-542, 718 wide (2.6 x their height), centred: the owner's Riyadh place
-FRAME_MAX = 1.4                             # a frame zooms 1.0 to 1.4, never smaller than the screen
+CLOCK = {"clean": [601, 266, 1319, 542], "couch": [601, 266, 1319, 542]}   # digits 266-542, 718 wide (2.6 x their height), centred: the owner's
+#                                           Riyadh place; the Couch home's is the same (its apps row starts at 0.55 H, under it)
+FRAME_MAX = 1.4                             # a frame zooms at most 1.4, and never past the photo's own pixels (the owner: never upscaled, never stretched)
 _model = None
 
 
@@ -215,10 +217,16 @@ def scenery_colour(rgb, alpha):
 
 
 def photo(path):
-    """the photo at the TV's size, cropped to 16:9 as the TV does; None if it is far from 16:9 (the cut-out would not sit on it)"""
+    """the photo at the TV's size; None if it is far from 16:9 (the cut-out would not sit on it: it is never stretched) or smaller than the
+    screen (it is never upscaled)"""
     src = Image.open(path)
-    if abs(src.width * 9 - src.height * 16) > src.width * 0.02: return None
+    if abs(src.width * 9 - src.height * 16) > src.width * 0.02 or src.width < W: return None
     return np.asarray(src.convert("RGB").resize((W, H), Image.LANCZOS))
+
+
+def zoom_max(path):
+    """the most a frame may zoom this photo: its own pixels at most (1.0 for a photo of 1920 px: only the whole photo), FRAME_MAX"""
+    return min(FRAME_MAX, Image.open(path).width / W)
 
 
 # ---------------------------------------------------------------- the gate
@@ -240,9 +248,11 @@ def frame_of(fr):
 
 
 def framed(img, fr):
-    """the picture as the TV shows it through the frame (the photo and its cut-out the same way)"""
+    """the picture as the TV shows it through the frame (the photo and its cut-out the same way): the frame is 16:9, so the scale is the same
+    across and down (never stretched)"""
     x, y, w, h = frame_of(fr)
     if (x, y, w) == (0, 0, W): return img
+    if x < 0 or y < 0 or x + w > img.shape[1] or y + h > img.shape[0]: raise ValueError(f"the frame {fr} leaves the photo (it would be stretched)")
     return cv2.resize(img[y:y + h, x:x + w], (W, H), interpolation=cv2.INTER_AREA if img.ndim == 3 else cv2.INTER_LINEAR)
 
 
@@ -392,10 +402,10 @@ def place_ok(t, b, fr):
     return legible(t, b, fr)[0]
 
 
-def frames():
-    """every frame the gate may give a photo, the least zoom first, then the nearest the centre: zoom 1 to FRAME_MAX, x and y even"""
+def frames(zmax=1.0):
+    """every frame the gate may give a photo, the least zoom first, then the nearest the centre: zoom 1 to zmax (zoom_max), x and y even"""
     out = []
-    for k in np.arange(1.0, FRAME_MAX + 1e-6, 0.02):
+    for k in np.arange(1.0, min(zmax, FRAME_MAX) + 1e-6, 0.02):
         w = int(round(W / k / 2) * 2); h = round(w * 9 / 16)
         xs = sorted(range(0, W - w + 1, 16) if w < W else [0], key=lambda x: abs(x - (W - w) / 2))
         ys = sorted(range(0, H - h + 1, 8) if h < H else [0], key=lambda y: abs(y - (H - h) / 2))
@@ -403,12 +413,13 @@ def frames():
     return [None if f == [0, 0, W] else f for f in out]
 
 
-def search(t, b):
-    """the frame that puts the scenery under the fixed clock by the owner's rule (the clock never moves: the photo does), or None"""
-    return next((fr for fr in frames() if place_ok(t, b, fr)), False)
+def search(t, b, zmax=1.0):
+    """the frame that puts the scenery under the fixed clock by the owner's rule (the clock never moves: the photo does): None for the whole
+    photo, False if there is none"""
+    return next((fr for fr in frames(zmax) if place_ok(t, b, fr)), False)
 
 
-def judge(rgb, alpha, F, owner_ok=False, frame=None):
+def judge(rgb, alpha, F, owner_ok=False, frame=None, zmax=1.0):
     """(verdict, why, scores, frame, depth): the edge checks, then a frame for the fixed clean clock (CLOCK); depth = the layouts drawn behind"""
     sky = float((alpha < 0.5).mean())
     e = edge_scores(rgb, alpha, F)
@@ -428,15 +439,14 @@ def judge(rgb, alpha, F, owner_ok=False, frame=None):
         s["owner_ok"] = True
         if f["crossing"]: _, s["digit_cover"], s["colon_cover"] = legible(t, b, frame)
         return "FIT", "the owner's own place (owner_ok): only the edge, halo and alignment checked", s, frame, depth(frame, ["clean"])
-    fr = search(t, b)
+    fr = search(t, b, zmax)
     if fr is False:
-        if not f["crossing"] and not fit(t, b, [0, 0, int(round(W / FRAME_MAX / 2) * 2)])["crossing"]:
-            return "FRONT-ONLY", "the scenery is too low to reach the clock at any frame", s, None, []
+        if not f["crossing"]: return "FRONT-ONLY", "the scenery does not reach the clock", s, None, []
         return "FRONT-ONLY", "no frame puts the scenery under the clock by the owner's rule (a quarter of a digit, never the colon)", s, None, []
     f = fit(t, b, fr)
     s.update(f); _, s["digit_cover"], s["colon_cover"] = legible(t, b, fr)
     x, y, w, h = frame_of(fr); s["zoom"] = round(W / w, 3)
-    return "FIT", "clean, and framed so the scenery crosses the clock's lower part" + (f" (frame {x},{y},{w})" if fr else ""), s, fr, depth(fr, ["clean"])
+    return "FIT", "clean, and the scenery crosses the clock's lower part" + (f" (framed {x},{y},{w})" if fr else " (the whole photo)"), s, fr, depth(fr, ["clean"])
 
 
 # ---------------------------------------------------------------- the files
@@ -526,10 +536,11 @@ def scenes(o, work):
         owner = "owner_ok" in [t.strip() for t in (r[8] if len(r) > 8 else "").split(",")]   # scenes.tsv tags: the owner's own picture, kept
         given = r[10].strip() if len(r) > 10 else "-"
         fr0 = [int(v) for v in given.split(",")] if owner and given not in ("", "-") else None   # the owner's own frame, kept
-        verdict, why, s, fr, depth = judge(rgb, alpha, F, owner, fr0)
+        verdict, why, s, fr, depth = judge(rgb, alpha, F, owner, fr0, zoom_max(src / f"{r[0]}.jpg"))
         r += [""] * (9 - len(r))                     # the tags column may be empty
         while len(r) < 12: r.append("-")
-        r[3] = r[4] = r[9] = "-"                     # the clock never moves (the owner): the old per-scene place is not read any more
+        b = CLOCK["clean"]                           # the clock never moves (the owner): the new app does not read these; an older one gets the
+        r[3], r[4], r[9] = str(b[1]), str(b[3]), str((b[0] + b[2]) // 2)   # fixed place in them (it drops a line without numbers)
         r[10] = ",".join(map(str, fr)) if fr else "-"
         r[11] = ",".join(depth) if verdict == "FIT" and depth else "-"
         gate[r[0]] = {"verdict": verdict, "why": why, "scores": s}
@@ -574,10 +585,10 @@ def main():
             if only and f"{name}/{stem}" not in only: continue
             rgb = photo(path)
             if rgb is None:
-                gate[f"{name}/{stem}"] = {"verdict": "FRONT-ONLY", "why": "not 16:9: the TV crops it", "scores": {}}; n["FRONT-ONLY"] += 1; continue
+                gate[f"{name}/{stem}"] = {"verdict": "FRONT-ONLY", "why": "not 16:9 or smaller than the screen: never stretched or upscaled", "scores": {}}; n["FRONT-ONLY"] += 1; continue
             alpha = matte(rgb, work); F = scenery_colour(rgb, alpha)
             owner = f"{name}/{stem}" in owner_list
-            verdict, why, s, fr, depth = judge(rgb, alpha, F, owner)
+            verdict, why, s, fr, depth = judge(rgb, alpha, F, owner, None, zoom_max(path))
             gate[f"{name}/{stem}"] = {"verdict": verdict, "why": why, "scores": s}; n[verdict] += 1
             print(f"{name}/{stem}: {verdict} ({why})", flush=True)
             if o.all:
