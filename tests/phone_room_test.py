@@ -43,7 +43,7 @@ check("charades: the word is on the actor's phone alone (the TV never draws it, 
 check("the base opens a room only on the person's switch, closes it with the screen, and says so when there is no local network",
       "protected final boolean openPhones()" in ga and "protected void onDestroy() { closePhones(); super.onDestroy(); }" in ga and 'S.t("لا توجد شبكة محلية. وصّل التلفزيون بالواي فاي")' in ga)
 check("the games list: a filter beside the night switch («عرض»: الكل or بالجوالات), kept; «بالجوالات» shows only PHONE_GAMES and opens the party games with the phones switch on",
-      'PHONE_GAMES = {"quiz", "khanat", "missing-word", "letter-hive", "word5", "odd-one", "charades", "domino"}' in reg and "filter == 0 || GameRegistry.inPhones(g.id)" in gl and "GamePrefs.setFilter(this, filter)" in gl and 'go.putExtra("phones", true)' in gl
+      'PHONE_GAMES = {"quiz", "khanat", "missing-word", "letter-hive", "word5", "odd-one", "charades", "domino"' in reg and "filter == 0 || GameRegistry.inPhones(g.id)" in gl and "GamePrefs.setFilter(this, filter)" in gl and 'go.putExtra("phones", true)' in gl
       and "static void setFilter" in src("GamePrefs.java"))
 check("the phone page: no outside address, no innerHTML or eval, text built with text nodes; it talks only to /api/",
       not __import__("re").search(r"https?://(?!www\.w3\.org)", page) and "innerHTML" not in page and "eval(" not in page and page.count("/api/") == 7 and "createTextNode" in page)
