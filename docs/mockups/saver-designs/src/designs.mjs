@@ -26,8 +26,8 @@ function net(route) {
 }
 const SCENES = {   // the photo, its frosted glass (SceneClock.frost), its cut-out cropped to its box (scenes.tsv / masks index.json) and the digits' place, in dp
   riyadh: { photo: 'riyadh1.jpg', glass: 'riyadh1-frost.jpg', top: 60, size: 190 },   // ksa-cities 1 (KAFD at dusk): its cut-out is FRONT-ONLY, the clock in front
-  night: { photo: 'night.jpg', glass: 'night-frost.jpg', fg: 'night-fg.webp', fgTop: 77.5, fgH: 311.5, top: 45, size: 196 },   // digits 137-419 at 1080: the trees cover at most 24 % of a digit
-  nature7: { dark: 1, photo: 'nature16.jpg', glass: 'nature16-dark.jpg', fg: 'nature16-fg.webp', fgTop: 171, fgH: 218, top: 71, size: 200 },
+  night: { photo: 'night.jpg', glass: 'night-frost.jpg', fg: 'night-fg.webp', fgTop: 77, fgH: 312, top: 45, size: 196, x: 1080 },   // scenes v4: digits 137-419, centre x 1080 (digits_x): every digit and the colon legible
+  nature7: { dark: 1, photo: 'ksa9.jpg', glass: 'ksa9-dark.jpg', fg: 'ksa9-fg.webp', fgTop: 168, fgH: 221, top: 48.5, size: 195 },   // ksa-cities 9 (palms; nature/16 is no longer published): digits 144-425 (PhotoGlassPlan, CROSS 0.22), luma 206 behind them: the dark glass
 };
 const SHOTS = [
   ['01-clean-riyadh', 'clean', 'riyadh'], ['02-clean-night', 'clean', 'night'], ['03-clean-photo', 'clean', 'nature7'], ['04-clean-nonext-night', 'clean', 'night', 'nonext'],
@@ -61,7 +61,7 @@ for (const [name, design, scene, opt, ex = {}] of SHOTS) {
     const css = readFileSync(HERE + '/' + design + '.css', 'utf8') + readFileSync(HERE + '/bar.css', 'utf8');
     const js = readFileSync(HERE + '/_common.js', 'utf8') + '\n' + (existsSync(HERE + '/' + design + '.js') ? readFileSync(HERE + '/' + design + '.js', 'utf8') : '');
     await p.addStyleTag({ content: css });
-    await p.evaluate(([js, sc, opt, ex]) => { window.SD = { ...ex,  glass: sc.glass && 'https://bg.local/' + sc.glass, fg: sc.fg && 'https://bg.local/' + sc.fg, fgTop: sc.fgTop, fgH: sc.fgH, top: sc.top, size: sc.size, dark: sc.dark, opt }; (0, eval)('{' + js + '}'); }, [js + '\n' + BARJS, sc, opt || '', ex]);
+    await p.evaluate(([js, sc, opt, ex]) => { window.SD = { ...ex,  glass: sc.glass && 'https://bg.local/' + sc.glass, fg: sc.fg && 'https://bg.local/' + sc.fg, fgTop: sc.fgTop, fgH: sc.fgH, top: sc.top, size: sc.size, x: sc.x, dark: sc.dark, opt }; (0, eval)('{' + js + '}'); }, [js + '\n' + BARJS, sc, opt || '', ex]);
   }
   await p.waitForTimeout(900);
   writeFileSync(OUTD + '/' + name + '.png', await p.screenshot());

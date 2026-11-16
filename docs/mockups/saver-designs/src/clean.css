@@ -16,3 +16,6 @@ html.sd-clean.sd-glass .clock *{color:transparent!important;text-shadow:none!imp
 .sd-line .n b{font-weight:500;color:#FFE9B8}
 /* the photo holds still under the cut-out: no settle drift, no 1.03 scale (the scenery over the digits must stay on its own pixels) */
 html.sd-clean .photo{transform:none!important;animation:none!important}
+
+/* scenes.tsv digits_x: the clock (and its line) centred there, px of 1920 */
+html.sd-clean .clockwrap,html.sd-clean .sd-line{transform:translateX(var(--sd-x,0px))}
