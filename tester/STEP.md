@@ -1,4 +1,4 @@
-«✅ GO — RELEASE TODAY: finish step 76 NOW (only the items not done: 1 smoke, 3 markets, 4 Khayyat station, 6 the «قبل ما تحذف التطبيق…» row; skip 7 remaining pages and 11 baselines), push the report with a VERDICT line (SAFE TO RELEASE 4.3.2 / PROBLEM), then step 77, then step 78 part B only (Player beta9 quick check, verdict line), then the rest (78A, 79–84) in order.»
+«✅ GO — RELEASE TODAY: finish step 76 NOW (only the items not done: 1 smoke, 3 markets, 4 Khayyat station, 6 the «قبل ما تحذف التطبيق…» row; skip 7 remaining pages and 11 baselines; update to the newest apk-next first and check the favourites row shows at least 5), push the report with a VERDICT line (SAFE TO RELEASE 4.3.2 / PROBLEM), then step 77, then step 78 part B only (Player beta9 quick check, verdict line), then the rest (78A, 79–84) in order.»
 
 ## step 84 — cities (branch work/433-cities be4adc8; its Build APKs artifact)
 Write down the owner's city first. Settings → the city → «بحث عن مدينة أو قرية»: type «خميس» (خميس مشيط first), «ابها», «Riyadh», «برلين», «Dearborn», «ديرة»: picture of each result list. Pick «برلين»: the clock and prayer times follow Berlin's zone and Europe's method (picture), then put the owner's city back exactly. The last row «ابحث على الإنترنت…» still works. Turn Wi-Fi off for one search: the offline list still answers (time the first search). `optimize/saver.sh city Dearborn` then the owner's city again. Reinstall apk-next.
@@ -46,7 +46,7 @@ Run S1, S2, S3 (one reboot), S5 and S6 on the owner's TV. S4 (cutting the connec
 For each: the three checks (`pm list packages -d`, the role holder, `resolve-activity` for HOME), what the Home key opens from an app and from UrTV, pictures, and any toast text. After S3: did the TV start normally (no blank screen, no restart loop) and is the Wi-Fi as before.
 End: put the TV back to how it was before step 77 (UrTV as the home, the owner's apps and settings), then install the normal apk-next build again over the branch build. Muted and asleep. Report «step 77» with a clear verdict line: SAFE TO JOIN 4.3.2 / NEEDS THE 4.3.3 WATCHER / PROBLEM.
 
-## step 76 — 4.3.2 release check (apk-next build from next 59188ee4, the newest; TV muted)
+## step 76 — 4.3.2 release check (apk-next build from next 5636eae5 (the newest; it brings back the favourites row topped up to 5); TV muted)
 Update both apps from the app on channel next (About must say 4.3.2). Report each line OK / problem with numbers and pictures.
 1. Release smoke like step 73: Home on return 5× (never black/blurry), cold start, favourites after standby and a restart, matches page + «فرقي», radio 3 min, hub, games, control panel, screensaver starts by itself, adhan off.
 2. Teams: follow 3 different teams (settings, «الفرق المتابعة»), open the matches page and «فرقي»: all three teams and their games must show. Picture. Then put the owner's teams back exactly.
