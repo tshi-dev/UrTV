@@ -3905,6 +3905,12 @@ public class MainActivity extends Activity {
     private void openCity() {
         Intent i = new Intent(Intent.ACTION_MAIN).setComponent(new ComponentName(SAVER_PKG, SAVER_PKG + ".SettingsActivity")).putExtra("pickCity", true);
         if (getPackageManager().resolveActivity(i, 0) != null) guarded(ParentalPolicy.OUR_SETTINGS, null, S.t("المدينة"), () -> launch(i));
+        else openSaverInstall();   // 4.3.2: the second app is not here: «ثبّت الجزء الثاني», never nothing
+    }
+
+    /** 4.3.2 «ثبّت الجزء الثاني»: the screen that installs the screensaver app (the settings) when a TV has only the home (SaverInstallRule) */
+    void openSaverInstall() {
+        guarded(ParentalPolicy.OUR_SETTINGS, null, S.t("ثبّت الجزء الثاني"), () -> launch(new Intent(this, InstallSaverActivity.class)));
     }
 
     private void openOurSettings(boolean orTvSettings) { openOurSettings(orTvSettings, null); }
@@ -3922,6 +3928,8 @@ public class MainActivity extends Activity {
             guarded(ParentalPolicy.OUR_SETTINGS, null, S.t("تلفزيونك"), () -> launch(i));
         } else if (orTvSettings) {
             launchGuarded(ParentalPolicy.REMOTE_SETTINGS, new Intent(Settings.ACTION_SETTINGS), "إعدادات التلفزيون");
+        } else {
+            openSaverInstall();   // 4.3.2: «تلفزيونك», the clean home's button, the pill: the second app is missing, so it is offered, never nothing
         }
     }
 

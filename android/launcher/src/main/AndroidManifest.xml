@@ -335,6 +335,13 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <!-- 4.3.2 «ثبّت الجزء الثاني»: opened by the home itself when the screensaver app (the settings) is not installed (SaverInstallRule) -->
+        <activity
+            android:name=".InstallSaverActivity"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.Material.NoActionBar" />
         <!-- 4.3 «تطبيقات مقترحة», opened from the screensaver's settings: each app from its own place, Android's install screen asks the owner -->
         <activity
             android:name=".SuggestedAppsActivity"

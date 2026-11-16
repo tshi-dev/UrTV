@@ -7,6 +7,7 @@ Newest first. `next` is where changes land first; a release is what was tested t
 A light release of fixes only; nothing in it changes the design.
 
 - **The version is named 4.3.2:** the apps' own version shows `4.3.2` (4.3.1 showed «4.3»), and the release is titled «UrTV 4.3.2». The VERSION file may now have a patch number; the numbered release's tag keeps its two-part shape (`v4.3.<build>`), so the updater and the scripts read it as before.
+- **«ثبّت الجزء الثاني»:** إذا ما كان عند التلفزيون إلا الشاشة الرئيسية (Fire TV أو تثبيت Downloader)، كان «تلفزيونك» و«المدينة» و«فرقي» ما يسوون شيئًا. الحين تفتح شاشة تقول إن الجزء الثاني (الإعدادات وشاشة التوقف) غير مثبّت، وبزر واحد تنزّله من إصداراتنا وتثبّته؛ لا يُثبَّت إلا ملفنا الموقّع بمفتاحنا. وكود Downloader (2927902) مكتوب فيها لمن ما يقدر التلفزيون ينزّل.
 
 ## 4.3.1
 
