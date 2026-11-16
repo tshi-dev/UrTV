@@ -3,14 +3,9 @@
 # published; a new photo is added here only after its check render (--all writes OUT/edges/ and OUT/sheet.jpg) is looked at.
 # Left out by eye: nature/13 (white fog: the digits cannot be read), photos/NPDnHmYsl6Y (half underwater: the digits wash out),
 # nature/5 (the far mountains taken for sky: the digits stand on them).
-ksa-cities/3
 ksa-cities/9
-nature/10
 nature/15
-nature/16
 nature/2
-nature/3
-photos/-RlktmDy3Ec
 photos/01u4zLK54tE
 photos/2gVgVf5CNAE
 photos/7EkyXZYeYsw
@@ -21,11 +16,10 @@ photos/Iy59i0M7oP4
 photos/WpOMM4uE-F8
 photos/anozjF6uqI0
 photos/rkRYbmPuhOE
-photos/seX13AzLqls
 photos/uqAUg1zvMXQ
-photos/wSJmlKMecHU
 sea/1
 sea/12
 sea/15
 sea/16
 sea/6
+ksa-cities/1

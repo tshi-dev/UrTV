@@ -37,8 +37,10 @@ if shutil.which("javac"):
                              check=True, capture_output=True).stdout.decode("utf-8").splitlines()
     rows = [l.split("\t") for l in out]
     scenes = [r for r in rows if r[0] == "scene"]
-    check("4.4 the app carries one Saudi scene, Riyadh, with its cut-out (the four others are downloaded the first time: the owner keeps the APK light)",
-          [s[1] for s in scenes] == ["riyadh"] and all(s[5] != "-" for s in scenes), scenes)
+    check("4.4 the app carries one Saudi scene, Riyadh, with its cut-out (the four others are downloaded the first time: the owner keeps the APK "
+          "light); the clock where the owner put it, the towers in front (tag owner_ok: no legibility drop for it)",
+          [s[1] for s in scenes] == ["riyadh"] and all(s[5] != "-" for s in scenes)
+          and "owner_ok" in read(ROOT / "android/launcher/src/main/assets/scenes/saudi/scenes.tsv").split("riyadh\t")[1].splitlines()[0], scenes)
     check("a bad line is left out, never half read (a bad id, a clock too small to read, a bad box); a good one is kept",
           [r for r in rows if r[0] == "bad"][0][1] == "1")
     packs = {r[1]: r[2] for r in rows if r[0] == "packs"}
@@ -94,8 +96,8 @@ for l in lines:
 check("each photo at most 320 KB, its glass copy 80 KB, its cut-out 200 KB (PERFORMANCE.md); every file the list names is there", not over, over)
 check("photos 1920x1080, glass copies 960x540, each cut-out the size of its box with its transparency", not bad, bad)
 names = {p.name for p in PACK.iterdir()}
-want = {"scenes.tsv", "CREDITS.txt"} | {f"{i}{s}" for i in ids for s in (".jpg", "-glass.jpg", "-fg.webp")}
-check("nothing else in the pack's folder", names == want, sorted(names ^ want))
+want = {"scenes.tsv", "CREDITS.txt"} | {f"{i}{s}" for i in ids for s in (".jpg", "-glass.jpg")} | {f"{l[0]}-fg.webp" for l in lines if l[5] != "-"}
+check("nothing else in the pack's folder (a scene the gate leaves with the clock in front has no cut-out file)", names == want, sorted(names ^ want))
 credits = read(PACK / "CREDITS.txt")
 check("every scene is credited (photographer, licence, source), the CC BY-SA one says its glass and cut-out carry its licence",
       all(re.search(rf"^{i}\s", credits, re.M) for i in ids) and "B.alotaby" in credits and "Richard Mortel" in credits and "Unsplash License" in credits
