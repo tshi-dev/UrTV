@@ -19,9 +19,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * 4.3.3 «المشاهد»: the scene home's backdrop (the owner's choice in «الشكل والمشاهد» ← «الواجهة»; the home as it was stays the default). Two slots,
+ * 4.3.3 «الآفاق»: the scene home's backdrop (the owner's choice in «المظهر» ← «الواجهة»; the home as it was stays the default). Two slots,
  * each a photo, the big glass clock (SceneClock) and the scenery cut out of the photo over the clock, so the time sits behind the mountains, the
- * towers or the rocks. The scenes take turns (ScenePlan.stayMs) with a 1.6 s fade. The «مشاهد السعودية» pack is in the app's assets; «مشاهد Couch TV»
+ * towers or the rocks. The scenes take turns (ScenePlan.stayMs) with a 1.6 s fade. The «آفاق السعودية» pack is in the app's assets; «آفاق عالمية»
  * is downloaded once when chosen (SceneDownload) and read from the app's files. The rules for weak TVs are ScenePlan's (docs/mockups/PERFORMANCE.md):
  * LOW keeps one photo at 1280, no cut-out, no fade, a scene every 5 minutes. Pictures are decoded off the UI thread; only the scene showing and the
  * next one are in memory, and stop() (the home behind another app) lets the timer go.
@@ -111,7 +111,7 @@ final class SceneHome extends FrameLayout {
     }
 
     /**
-     * «المشهد يتبع الوقت» and «المشهد يتبع الطقس», with the time of day (night: Maghrib to Fajr) and the city's weather (fog): when the scenes to show
+     * «الأفق يتبع الوقت» and «الأفق يتبع الطقس», with the time of day (night: Maghrib to Fajr) and the city's weather (fog): when the scenes to show
      * change (Maghrib came, the fog lifted), the new set starts at once; else the turns go on as they were.
      */
     void mood(boolean followTime, boolean isNight, boolean followWeather, boolean isFog) {

@@ -1073,7 +1073,7 @@ final class Prefs {
     static final String[] HOME_LAYOUTS = {"classic", "couch", "football"};
     static final String[] HOME_LAYOUT_NAMES = {"تلفزيونك", "كنبة", "كرة القدم"};
     static final String[] HOME_BGS = {"photos", "scenes"};
-    static final String[] HOME_BG_NAMES = {"صوري وحزم الصور", "المشاهد"};
+    static final String[] HOME_BG_NAMES = {"صوري وحزم الصور", "الآفاق"};
     static final String[] HOME_CLOCKS = {"plain", "glass"};
     static final String[] HOME_CLOCK_NAMES = {"عادية", "زجاجية خلف الصورة"};
     /** 4.4 «شكل التطبيقات»: how the focused app of the tray shows: a ring in the look's colour and its name above the tray (as always), or larger with a soft shadow, its name under it */
@@ -1111,8 +1111,8 @@ final class Prefs {
         for (String[] l : LOOKS) if (l[0].equals(key)) return l[1];
         return "مخصّص";
     }
-    /** 4.3.3 «حزم المشاهد» (the scene home): «مشاهد السعودية» is in the app, «مشاهد Couch TV» is downloaded when chosen; none chosen is the Saudi pack */
-    static final String[][] SCENE_PACKS = {{"saudi", "مشاهد السعودية"}, {"couch", "مشاهد Couch TV"}};
+    /** 4.3.3 «حزم الآفاق» (the scene home): «آفاق السعودية» is in the app, «آفاق عالمية» is downloaded when chosen; none chosen is the Saudi pack */
+    static final String[][] SCENE_PACKS = {{"saudi", "آفاق السعودية"}, {"couch", "آفاق عالمية"}};
     List<String> scenePacks() {
         List<String> out = new ArrayList<>();
         for (String s : list("scenePacks")) for (String[] k : SCENE_PACKS) if (k[0].equals(s) && !out.contains(s)) out.add(s);
@@ -1120,7 +1120,7 @@ final class Prefs {
         return out;
     }
     void setScenePacks(List<String> v) { setList("scenePacks", v); }
-    /** «بقاء كل مشهد» in seconds (20 the default); «المشهد يتبع الوقت» (the night scenes from Maghrib to Fajr) and «المشهد يتبع الطقس» (the fog scenes in fog): off by default */
+    /** «بقاء كل أفق» in seconds (20 the default); «الأفق يتبع الوقت» (the night scenes from Maghrib to Fajr) and «الأفق يتبع الطقس» (the fog scenes in fog): off by default */
     static final String[] SCENE_STAYS = {"10", "20", "60", "300"};
     static final String[] SCENE_STAY_NAMES = {"١٠ ثوانٍ", "٢٠ ثانية", "دقيقة واحدة", "خمس دقائق"};
     String sceneStay() { String v = sp.getString("sceneStay", "20"); return java.util.Arrays.asList(SCENE_STAYS).contains(v) ? v : "20"; }

@@ -908,7 +908,6 @@
 لغة التلفزيون، والأرقام والتقويم ونظام الساعة.	The TV's language, the digits, the calendar and the 12 or 24 hour clock.
 الموقع والطقس	Location & weather
 المدينة هنا فقط: منها الطقس ومواقيت الصلاة والتحية وشاشة التوقف ومواعيد المباريات.	The city is set here only: it drives the weather, the prayer times, the greeting, the screensaver and the match times.
-الشكل والمشاهد	Look & scenes
 الواجهة والألوان، والساعة والنص، والبطاقات والصور.	The home style and the colours, the clock and the text, the cards and the photos.
 التطبيقات	Apps
 شريط التطبيقات وترتيبه وأقفاله، وواجهة المصنع.	The app row, its order and its locks, and the factory home.
@@ -927,23 +926,22 @@
 الأذان متوقف	Adhan off
 الساعة والنص	Clock & text
 الشاشة الرئيسية للتلفزيون	The TV's home screen
-حزم المشاهد	Scene packs
-مشاهد السعودية	Saudi scenes
-مشاهد Couch TV	Couch TV scenes
-المشاهد	Scenes
-بدون اختيار = مشاهد السعودية	nothing chosen = Saudi scenes
-الشكل والمشاهد: الواجهة	Look & scenes: home style
+حزم الآفاق	Horizon packs
+آفاق السعودية	Saudi horizons
+آفاق عالمية	World horizons
+الآفاق	Horizons
+بدون اختيار = آفاق السعودية	nothing chosen = Saudi horizons
 مسح الملفات المؤقتة	Clear temporary files
 الصور والبيانات المؤقتة للتطبيقين؛ الإعدادات وصورك والحزم تبقى	Both apps' temporary pictures and data; the settings, your photos and the packs stay
 امسح	Clear
 تم	Done
 تُمسح %s ميغابايت من الصور والبيانات المؤقتة، وتنزل من جديد وقت الحاجة. الإعدادات وصورك وحزم الصور والمشاهد وصوت الأذان تبقى.	%s MB of temporary pictures and data will be cleared; they download again when needed. The settings, your photos, the photo and scene packs and the adhan sound stay.
 مُسح %s ميغابايت.	%s MB cleared.
-بقاء كل مشهد	Each scene stays
-المشهد يتبع الوقت	Scene follows the time
-المشهد يتبع الطقس	Scene follows the weather
-مفعّل (مشهد الليل من المغرب إلى الفجر)	On (night scenes from Maghrib to Fajr)
-مفعّل (مشهد الضباب وقت الضباب)	On (fog scenes in fog)
+بقاء كل أفق	Each horizon stays
+الأفق يتبع الوقت	Horizon follows the time
+الأفق يتبع الطقس	Horizon follows the weather
+مفعّل (أفق الليل من المغرب إلى الفجر)	On (the night horizon from Maghrib to Fajr)
+مفعّل (أفق الضباب وقت الضباب)	On (the fog horizon in fog)
 ١٠ ثوانٍ	10 seconds
 ٢٠ ثانية	20 seconds
 خمس دقائق	5 minutes
@@ -964,3 +962,16 @@
 مواقيت اليوم مربعات في صف، والصلاة القادمة مضيئة وتحتها كم باقي	Today's prayers as boxes in a row, the next one lit with the time left under it
 شكل التطبيقات	Apps look
 تكبير وظل	Larger, with a shadow
+
+وضع الألوان	Colour mode
+الجوالات المسموح لها	Phones allowed
+افتح صفحة الأسواق	Open the markets page
+الشكل الجاهز والتخطيط	Preset and layout
+الخلفية والآفاق	Background and horizons
+الرئيسية	Home
+الرئيسية وشاشة التوقف	Home and screensaver
+كل التلفزيون	Whole TV
+الشكل الجاهز والتخطيط، والخلفية والآفاق، والساعة والنص، والتطبيقات، والبطاقات، والصور.	Preset and layout, background and horizons, clock and text, apps, cards, and photos.
+التحكم من الجوال: تشغيله وإيقافه وربط جوال، وفي الشاشة حالته الآن	Control from the phone: turn it on or off and pair a phone; the screen shows its state now
+الشكل: %s، والإضاءة: %s	Look: %s, lighting: %s
+%s، يضبط التخطيط والخلفية والساعة وشكل التطبيقات معًا، وأي تغيير بعده يجعله «مخصّص»	%s: sets the layout, background, clock and apps look together; changing any of them afterwards makes it «Custom»

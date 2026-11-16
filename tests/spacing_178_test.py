@@ -75,9 +75,9 @@ cats = re.findall(r'^\s*\{([A-Z]+), "', hub[hub.index("CATEGORIES = {"):], re.M)
 check("side list order (4.3.3): the search, then the ten sections", cats[:11] == ["SEARCH", "LANG", "PLACE", "LOOK", "APPS", "BUTTONS", "PRAY", "CONTENT", "SAVER", "FAMILY", "UPDATE"], cats[:11])
 check("«المباريات والأسواق» is the eighth item of the side list, six under «اللغة» where the settings open (▼ ×6)", cats.index("CONTENT") == 7 and cats.index("LANG") == 1)
 rows = re.findall(r'^\s*row\("([^"]+)"', settings[settings.index("private void render()"):], re.M)
-content = ["مباريات اليوم", "الفرق المتابعة (", "الدوريات كاملة", "رياضات أخرى", "صفحة الأسواق"]
+content = ["مباريات اليوم", "الفرق المتابعة (", "الدوريات كاملة", "رياضات أخرى", "افتح صفحة الأسواق"]
 order = [r for r in rows if any(r.startswith(c) for c in content)]
-check("«مباريات اليوم» is the first row of «المباريات والأسواق» and «صفحة الأسواق» the fifth (four ▼ from the first)", [r.split(" (")[0] for r in order][:5] == ["مباريات اليوم", "الفرق المتابعة", "الدوريات كاملة", "رياضات أخرى", "صفحة الأسواق"], order)
+check("«مباريات اليوم» is the first row of «المباريات والأسواق» and «افتح صفحة الأسواق» the fifth (four ▼ from the first)", [r.split(" (")[0] for r in order][:5] == ["مباريات اليوم", "الفرق المتابعة", "الدوريات كاملة", "رياضات أخرى", "افتح صفحة الأسواق"], order)
 check("both rows open the launcher's pages, and those are exported", 'setClassName("sa.urtv.home", "sa.urtv.home.MatchesActivity")' in settings and 'setClassName("sa.urtv.home", "sa.urtv.home.MarketsActivity")' in settings
       and re.search(r'android:name="\.MatchesActivity"\s+android:exported="true"', text(ROOT / "android/launcher/src/main/AndroidManifest.xml")) is not None
       and re.search(r'android:name="\.MarketsActivity"\s+android:exported="true"', text(ROOT / "android/launcher/src/main/AndroidManifest.xml")) is not None)

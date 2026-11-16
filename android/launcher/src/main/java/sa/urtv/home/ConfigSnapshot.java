@@ -21,11 +21,11 @@ final class ConfigSnapshot {
     /** «تطبيقات في الشريط»: "5" to "10" or "all"; an older screensaver does not say: 5, as the tray always was */
     String favBar = "5";
     String pillsHidden = "";   // the quick buttons hidden in the settings (#52): markets, matches, center
-    /** 4.3.3 «الواجهة» (classic, football, scenes) and «حزم المشاهد» ("saudi", "couch" or both); an older screensaver says nothing: classic, saudi */
+    /** 4.3.3 «الواجهة» (classic, football, scenes) and «حزم الآفاق» ("saudi", "couch" or both); an older screensaver says nothing: classic, saudi */
     String homeLayout = "classic", scenePacks = "saudi", sceneStay = "20";
     /** 4.4 «الخلفية» (photos, scenes) and «الساعة» (plain, glass): an older screensaver says nothing: photos and plain, the home as it was */
     String homeBg = "photos", homeClock = "plain", appsStyle = "frame";
-    boolean sceneByTime, sceneByWeather;   // «المشهد يتبع الوقت», «المشهد يتبع الطقس»: off unless the screensaver says on
+    boolean sceneByTime, sceneByWeather;   // «الأفق يتبع الوقت», «الأفق يتبع الطقس»: off unless the screensaver says on
     boolean cityChosen = true;   // 4.3.1: a city was ever set (an older screensaver does not say: yes, so nobody is asked)
     String matchApp = "auto";   // 4.3 «تطبيق المباريات»: auto (UrTV Player when installed), none, or a package
     boolean pillHidden(String key) { return ("," + pillsHidden + ",").contains("," + key + ","); }

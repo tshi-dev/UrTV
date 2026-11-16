@@ -47,7 +47,7 @@ pf, rv, cpv, st = text(SA / "Prefs.java"), text(SA / "SaverReceiver.java"), text
 check("8: the setting: Prefs (on by default), the command's word checked before anything is set, `show` says it, the provider gives the home pages_dark, and the settings row is next to «المظهر»",
       'boolean pagesDark() { return sp.getBoolean("pagesDark", true); }' in pf and 'error: pagesdark is one of on off' in rv and 'p.setPagesDark("on".equals(pagesDark))' in rv
       and '"\\npagesdark: " + (p.pagesDark() ? "on" : "off")' in rv and '"pages_dark"' in cpv and 'p.pagesDark() ? "1" : "0"' in cpv
-      and st.index('row("المظهر"') < st.index('row("صفحات الأسهم والمباريات داكنة"') < st.index('row("الخروج من تلفزيونك"'))
+      and st.index('row("وضع الألوان"') < st.index('row("صفحات الأسهم والمباريات داكنة"') < st.index('row("الخروج من تلفزيونك"'))
 cfg, gs = text(HOME / "ConfigSnapshot.java"), text(HOME / "GlassSource.java")
 check("8: the home reads it (on for an older screensaver); Markets uses the dark look (GlassStyle.DARK over the same backdrop) while on, else the home's look; the matches page gets #pagedark=1",
       "boolean pagesDark = true;" in cfg and 'cur.getColumnIndex("pages_dark")' in cfg and "GlassStyle.Look l = GlassStyle.DARK;" in gs and "if (!ConfigSnapshot.read(a).pagesDark) return page(a, root);" in gs

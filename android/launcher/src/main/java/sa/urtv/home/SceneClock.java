@@ -15,7 +15,7 @@ import android.graphics.Typeface;
 import android.view.View;
 
 /**
- * 4.3.3 «المشاهد»: the big glass clock of a scene (docs/mockups). The digits are filled with the scene's glass copy (blurred and brightened, the
+ * 4.3.3 «الآفاق»: the big glass clock of a scene (docs/mockups). The digits are filled with the scene's glass copy (blurred and brightened, the
  * same trick as couch-tv's CSS background-clip: text, here a BitmapShader), lifted brighter, with a light edge and a soft dark shadow so they read on
  * any scene; a pale scene has a dark fill instead. The view covers the whole screen, so the glass lines up with the photo under it. It draws only
  * when the time changes (once a minute); nothing animates.

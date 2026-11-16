@@ -9,7 +9,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
- * 4.4 the scene files not in the app: «مشاهد Couch TV» (couch) and the Saudi pack's other four scenes (saudi; the app has Riyadh only, the owner's
+ * 4.4 the scene files not in the app: «آفاق عالمية» (couch) and the Saudi pack's other four scenes (saudi; the app has Riyadh only, the owner's
  * choice to keep the APK light), downloaded once, the first time the scenes are shown, from the data repository tshi-dev/urtv-data (branch data,
  * scenes/; the same host as DataHost, the jsDelivr copy of it when GitHub's raw host cannot be reached). scenes/<pack>.json says the zip's version,
  * sha256 and size; scenes/<pack>.zip is checked against them before anything is opened, unpacked into a work folder and moved into place whole.
