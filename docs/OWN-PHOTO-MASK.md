@@ -42,8 +42,8 @@
 واحد فوق المشهد)؛ غير كذا تقول إنها ما قدرت، ولا تكتب شيئًا.
 
 ```
-python3 -m venv /tmp/mask-venv && /tmp/mask-venv/bin/pip install numpy scipy opencv-python-headless Pillow
-/tmp/mask-venv/bin/python optimize/photo_mask.py صورتي.jpg
+python3 -m venv mask-venv && mask-venv/bin/pip install numpy scipy opencv-python-headless Pillow
+mask-venv/bin/python optimize/photo_mask.py صورتي.jpg
 ```
 
 تكتب `صورتي-mask.png` بجانب الصورة. أرسل الاثنين من صفحة الجوال كما في الخطوة ٤ فوق. الصورة لازم تكون بشكل الشاشة (١٦:٩)؛ غير كذا تقول الأداة اقصّها أولًا.
@@ -88,8 +88,8 @@ The same offline tool we make our photos' masks with; nothing leaves the machine
 coloured sky above the scenery); otherwise it says so and writes nothing.
 
 ```
-python3 -m venv /tmp/mask-venv && /tmp/mask-venv/bin/pip install numpy scipy opencv-python-headless Pillow
-/tmp/mask-venv/bin/python optimize/photo_mask.py myphoto.jpg
+python3 -m venv mask-venv && mask-venv/bin/pip install numpy scipy opencv-python-headless Pillow
+mask-venv/bin/python optimize/photo_mask.py myphoto.jpg
 ```
 
 It writes `myphoto-mask.png` beside the photo; send both from the phone page as in step 4. The photo must be 16:9 like the screen; otherwise the tool asks you
