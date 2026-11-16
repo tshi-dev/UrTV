@@ -162,6 +162,7 @@ final class SceneHome extends FrameLayout {
             final boolean withClock = this.glass;   // «الساعة: عادية»: no glass copy, no cut-out (the header's clock shows)
             final Bitmap glass = withClock ? decode(sc, "-glass.jpg", 960, true) : null;
             final Bitmap mask = withClock && sc.mask != null && ScenePlan.mask(tier) ? decode(sc, "-fg.webp", 1920, false) : null;
+            final float zoom = mask == null ? 1f : zoomOf(mask, sc);   // the owner: more of the digits above the scenery, the clock where it is
             ui.post(() -> {
                 if (g != gen || !on) return;
                 if (photo == null || (withClock && glass == null)) { index = at; schedule(); return; }   // a missing file: the next one, never a blank home
@@ -177,7 +178,13 @@ final class SceneHome extends FrameLayout {
                     back.mask.setLayoutParams(lp);
                     back.mask.setImageBitmap(mask);
                     back.mask.setVisibility(VISIBLE);
+                    back.mask.setPivotX(w / 2f - lp.leftMargin);   // the same zoom as the photo's: about the screen's top centre
+                    back.mask.setPivotY(-lp.topMargin);
                 } else back.mask.setVisibility(GONE);
+                for (View v : new View[] {back.photo, back.mask}) { v.setScaleX(zoom); v.setScaleY(zoom); }
+                back.photo.setPivotX(w / 2f);
+                back.photo.setPivotY(0);
+                back.clock.setZoom(zoom);
                 final Slot was = slots[front];
                 boolean first = index < 0;
                 index = at;
@@ -193,6 +200,20 @@ final class SceneHome extends FrameLayout {
                 schedule();
             });
         });
+    }
+
+    /** the zoom for this scene: its cut-out's skyline (made small first) against where its clock is (ScenePlan.zoom); 1 when it cannot be read */
+    private float zoomOf(Bitmap mask, ScenePlan.Scene sc) {
+        try {
+            int sw = 96, sh = Math.max(1, Math.round(96f * mask.getHeight() / mask.getWidth()));
+            Bitmap small = Bitmap.createScaledBitmap(mask, sw, sh, false);
+            int[] px = new int[sw * sh];
+            small.getPixels(px, 0, sw, 0, 0, sw, sh);
+            if (small != mask) small.recycle();
+            return ScenePlan.zoom(ScenePlan.skyline(px, sw, sh, sc.mask), ScenePlan.clockBox(sc, 1920, 1080, cardsShown, rtl), 1920, 1080);
+        } catch (RuntimeException | OutOfMemoryError e) {
+            return 1f;
+        }
     }
 
     /**

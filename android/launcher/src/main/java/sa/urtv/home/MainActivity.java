@@ -3267,6 +3267,7 @@ public class MainActivity extends Activity {
         boolean row = homeCard != null && homeCard.inRow();
         if (photoGlass == null) {   // over the two photo layers (showWallpaper keeps them at 0 and 1), under the dimming and the scrims
             photoGlass = new PhotoGlass(this, Ram.tier(this), font("display"));
+            photoGlass.onZoom(this::zoomWall);
             sceneBackdrop.addView(photoGlass, sceneBackdrop.indexOfChild(wallFront) + 1, new FrameLayout.LayoutParams(-1, -1));
             photoGlass.place(cards, Dir.rtl(), row);
             Drawable d = wallFront.getDrawable();
@@ -3275,6 +3276,14 @@ public class MainActivity extends Activity {
         photoGlass.setTime(clock.getText());
         clock.setVisibility(View.INVISIBLE);
         ampm.setVisibility(View.INVISIBLE);
+    }
+
+    /** 4.4: the photo on the screen zoomed by k about the top centre, as its cut-out over the glass clock is (PhotoGlass); the one fading out keeps its own */
+    private void zoomWall(float k) {
+        wallFront.setPivotX(getResources().getDisplayMetrics().widthPixels / 2f);
+        wallFront.setPivotY(0);
+        wallFront.setScaleX(k);
+        wallFront.setScaleY(k);
     }
 
     private void updateClock(ConfigSnapshot cfg) {
@@ -3807,7 +3816,6 @@ public class MainActivity extends Activity {
     private void showWallpaper(Bitmap bm, String key) {
         if (bm == null || isDestroyed()) return;
         wallShownKey = key;
-        if (photoGlass != null) photoGlass.show(bm, key, NetGate.allowed(resumed, NetGateAndroid.displayOn(this)));
         // Swap roles: the old front becomes the back, the new photo fades in on top.
         final ImageView old = wallFront;
         wallFront = wallBack;
@@ -3816,6 +3824,9 @@ public class MainActivity extends Activity {
         root.removeView(wallFront);
         root.addView(wallFront, 1, new FrameLayout.LayoutParams(-1, -1));
         wallFront.setImageBitmap(bm);
+        wallFront.setScaleX(1f);   // a layer never comes back with the zoom of the photo it showed before (PhotoGlass zooms the new one when it has a cut-out)
+        wallFront.setScaleY(1f);
+        if (photoGlass != null) photoGlass.show(bm, key, NetGate.allowed(resumed, NetGateAndroid.displayOn(this)));   // after the swap: its zoom is the new photo's
         fullPhotoShown = true;
         logFirstPhoto("full photo");
         if (!sharpLogged) { sharpLogged = true; android.util.Log.i("UrTVHome", "resume to sharp photo: " + (SystemClock.elapsedRealtime() - resumeAt) + " ms"); }

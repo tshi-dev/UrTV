@@ -93,6 +93,53 @@ final class ScenePlan {
      * scenery to cross them); with the home's cards on the screen (they are on the left of an Arabic home) the clock takes the other half, at the start
      * side, else the middle. {@code rtl}: the start side is the right.
      */
+    /**
+     * 4.4 the owner: the clock stays where it is and the picture (with its cut-out and the glass in the digits) comes down a little, by a zoom from
+     * the screen's top centre (never an empty band), until the share of the digits above the scenery is MORE higher, up to CAP; a picture already
+     * showing CAP or more stays as it is (the scenery still crosses the digits). MAX_ZOOM at most.
+     */
+    static final float MORE = 0.2f, CAP = 0.9f, MAX_ZOOM = 1.4f;
+
+    /** the share of the digits' box (left, top, right, bottom on a w x h screen) above the scenery, the picture zoomed by k about the top centre; sky: 48 columns, px of 1080 */
+    static float visible(int[] sky, int[] box, int w, int h, float k) {
+        if (sky == null || sky.length != 48 || box == null || box[3] <= box[1]) return 1f;
+        float cover = 0;
+        int n = 0;
+        for (int x = box[0]; x < box[2]; x += Math.max(1, w / 192)) {
+            float src = w / 2f + (x - w / 2f) / k;   // the picture's column under this one
+            int c = Math.max(0, Math.min(47, (int) (src * 48 / w)));
+            float top = sky[c] * h / 1080f * k;
+            cover += Math.max(0f, Math.min(1f, (box[3] - top) / (box[3] - box[1])));
+            n++;
+        }
+        return n == 0 ? 1f : 1f - cover / n;
+    }
+
+    /** the zoom (1 or more) that shows the digits MORE more, up to CAP (see above) */
+    static float zoom(int[] sky, int[] box, int w, int h) {
+        float v0 = visible(sky, box, w, h, 1f), target = Math.min(v0 + MORE, Math.max(v0, CAP));
+        float k = 1f;
+        while (visible(sky, box, w, h, k) < target - 1e-4f && k < MAX_ZOOM) k = Math.round((k + 0.01f) * 100) / 100f;
+        return k;
+    }
+
+    /**
+     * the scenery's top in each of 48 columns (px of 1080) of a scene's cut-out: px, its pixels made small (sw x sh), placed at the scene's mask box
+     * (x, y, w, h in px of 1920 x 1080); a column with none of it: 1080
+     */
+    static int[] skyline(int[] px, int sw, int sh, int[] place) {
+        int[] line = new int[48];
+        java.util.Arrays.fill(line, 1080);
+        if (place == null || sw <= 0 || sh <= 0) return line;
+        for (int c = 0; c < 48; c++) {
+            float x = (c + 0.5f) * 40;
+            if (x < place[0] || x >= place[0] + place[2]) continue;
+            int mx = Math.min(sw - 1, (int) ((x - place[0]) * sw / place[2]));
+            for (int y = 0; y < sh; y++) if (((px[y * sw + mx] >>> 24) & 255) > 127) { line[c] = Math.round(place[1] + y * place[3] / (float) sh); break; }
+        }
+        return line;
+    }
+
     static int[] clockBox(Scene s, int w, int h, boolean cardsShown, boolean rtl) {
         float k = h / 1080f;
         int top = Math.round(s.digitsTop * k), bottom = Math.round(s.digitsBottom * k);

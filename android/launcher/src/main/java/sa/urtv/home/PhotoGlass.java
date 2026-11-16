@@ -35,6 +35,12 @@ final class PhotoGlass extends FrameLayout {
     private int gen;
     private volatile boolean alive = true;
 
+    /** 4.4 the home's photo layer zoomed by k about the screen's top centre (the cut-out and the glass here follow it); 1 puts it back */
+    interface Zoom { void zoom(float k); }
+    private Zoom zoomTo = k -> { };
+
+    void onZoom(Zoom z) { zoomTo = z; }
+
     PhotoGlass(Context c, int tier, Typeface digits) {
         super(c);
         app = c.getApplicationContext();
@@ -76,6 +82,8 @@ final class PhotoGlass extends FrameLayout {
         line = null;
         mask.setVisibility(GONE);
         mask.setImageDrawable(null);
+        clock.setZoom(1f);
+        zoomTo.zoom(1f);
         clock.setScene(glass, PhotoGlassPlan.box(null, w, h, cardsShown, rtl, row), false);
         final String[] key = PhotoGlassPlan.key(wallKey);
         final int own = PhotoGlassPlan.own(wallKey);
@@ -95,14 +103,22 @@ final class PhotoGlass extends FrameLayout {
                 lp.topMargin = Math.round(box[1] * k);
                 mask.setLayoutParams(lp);
                 mask.setImageBitmap((Bitmap) got[0]);
+                int[] digits = PhotoGlassPlan.box(line, w, h, cardsShown, rtl, row);
+                float z = ScenePlan.zoom(line, digits, w, h);   // the owner: the clock where it is, the photo a little lower: more of the digits above the scenery
+                mask.setPivotX(w / 2f - lp.leftMargin);
+                mask.setPivotY(-lp.topMargin);
+                mask.setScaleX(z);
+                mask.setScaleY(z);
                 mask.setVisibility(VISIBLE);
-                clock.setScene(shown, PhotoGlassPlan.box(line, w, h, cardsShown, rtl, row), false);
+                clock.setScene(shown, digits, false);
+                clock.setZoom(z);
+                zoomTo.zoom(z);
             });
         }, "photo-mask").start();
     }
 
     /** turned off: nothing more is read or drawn */
-    void shutdown() { alive = false; gen++; glass = null; line = null; mask.setImageDrawable(null); clock.setScene(null, null, false); }
+    void shutdown() { alive = false; gen++; glass = null; line = null; mask.setImageDrawable(null); clock.setScene(null, null, false); zoomTo.zoom(1f); }
 
     /** {bitmap, box, skyline} of a photo's cut-out, from the kept file or downloaded once; null when it has none or it cannot be had */
     private Object[] load(String set, String name, boolean net) {
