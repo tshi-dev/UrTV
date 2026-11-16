@@ -58,7 +58,7 @@ MORE_CMDS = {
     "اللغات": ["optimize/saver.sh langs Arabic,English"], "تصفية المواقع": ["optimize/dock.sh familydns on"], "قفل التطبيقات": ["optimize/dock.sh pin lock com.netflix.ninja"], "أقل تقييم": ["optimize/saver.sh minrating 7"], "تحديث صفحة شاشة التوقف": ["optimize/saver.sh update"],
 }
 # rows that are an action or open a screen of their own, not a value to set (nothing for a command to set)
-ACTIONS = {"اجعل UrTV الشاشة الرئيسية", "تخلّص من واجهة المصنع", "رجّع واجهة المصنع", "قبل ما تحذف التطبيق…", "تفاصيل التطبيقات", "افتح تلاوة وأذان",
+ACTIONS = {"اجعل UrTV الشاشة الرئيسية", "جرّب التنبيه", "تخلّص من واجهة المصنع", "رجّع واجهة المصنع", "قبل ما تحذف التطبيق…", "تفاصيل التطبيقات", "افتح تلاوة وأذان",
            "مباريات اليوم", "افتح صفحة الأسواق", "معاينة الشاشة", "تحديث تلفزيوني", "إعداد تلفزيوني", "مسح الملفات المؤقتة", "أرسل تقرير", "مركز التحكم", "بحث في الإعدادات",
            "تعديل المفضلة", "ترتيب التطبيقات المفضلة", "ترتيب كل التطبيقات", "أسماء المصادر"}
 # rows the code gives no command (no saver.sh case, no receiver extra): set from the TV only

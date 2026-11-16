@@ -310,6 +310,8 @@ the phone page's key, «مركز التحكم» the control centre's row that op
     مثال للوكيل: optimize/saver.sh kickoffover on  (`off`, the default)
       القيم المقبولة: on|off
     مثال للوكيل: optimize/dock.sh overlay on  (= `appops set sa.urtv.home SYSTEM_ALERT_WINDOW allow`; `overlay off`, `overlay status`)
+——— جرّب التنبيه [الرئيسية وشاشة التوقف]
+    إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
 —— صفحة الأسواق
 ——— افتح صفحة الأسواق [الرئيسية]
     إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
@@ -744,6 +746,8 @@ the phone page's key, «مركز التحكم» the control centre's row that op
      مثال للوكيل: optimize/saver.sh kickoffover on  (`off`, the default)
        القيم المقبولة: on|off
      مثال للوكيل: optimize/dock.sh overlay on  (= `appops set sa.urtv.home SYSTEM_ALERT_WINDOW allow`; `overlay off`, `overlay status`)
+———— جرّب التنبيه [الرئيسية وشاشة التوقف]
+     إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)
 ——— صفحة الأسواق
 ———— افتح صفحة الأسواق [الرئيسية]
      إجراء أو شاشة من التلفزيون (ما فيه قيمة يضبطها أمر)

@@ -702,7 +702,8 @@ final class Prefs {
      * cards never show it.
      */
     String screenUrl(Context c, boolean start) {
-        String url = dashboardUrl(c) + CleanMask.fragment(CleanMask.state(c));   // «UrTV النظيف»: the page shows the photo and the clock only
+        String url = dashboardUrl(c) + CleanMask.fragment(CleanMask.state(c))   // «UrTV النظيف»: the page shows the photo and the clock only
+            + (kickoff() && NowPlayingBridge.kidsOn(c) ? "&kids=1" : "");   // 4.4 kids mode: no kick-off notice over the screensaver
         if (!cityNoteDue()) return url;
         if (start) sp.edit().putInt("cityNoteShown", sp.getInt("cityNoteShown", 0) + 1).apply();
         return url + "&citynote=1";

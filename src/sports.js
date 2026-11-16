@@ -291,7 +291,7 @@ SPW.kickoff = 'بدأت المباراة';
 // one timer for the next kick-off within the hour, checked again at its time: not called off, the network up; else nothing
 let spSaverT = 0;
 function spSaverKick(){
-  if(CONFIG.widget || _Q.get('ko') === '0' || _Q.get('matchpage') === '1') return;
+  if(CONFIG.widget || _Q.get('ko') === '0' || _Q.get('kids') === '1' || _Q.get('matchpage') === '1') return;   // kids mode: the home's notice only
   clearTimeout(spSaverT);
   const now = Date.now();
   const ev = matchEvents().filter(e => fbMine(e) && !calledOff(e) && !timeTbd(e) && fbKick(e) > now - 30000 && fbKick(e) - now < 3600000).sort((a, b) => fbKick(a) - fbKick(b))[0];
@@ -307,7 +307,7 @@ function spSaverKick(){
 // a goal and the final whistle of a followed club (&kogoal=1, &koend=1): from the scores the page already reloads; never on the first look
 function spScoreWatch(now){
   const goal = _Q.get('kogoal') === '1', end = _Q.get('koend') === '1';
-  if(!goal && !end || _Q.get('ko') === '0') return;
+  if(!goal && !end || _Q.get('ko') === '0' || (!CONFIG.widget && _Q.get('kids') === '1')) return;
   matchEvents().filter(fbMine).forEach(ev => {
     const id = String(ev.idEvent), hs = +ev.intHomeScore || 0, as = +ev.intAwayScore || 0, live = fbLive(ev, now), done = fbDone(ev, now) && ev.intHomeScore != null && ev.intHomeScore !== '';
     const was = SP.score[id];

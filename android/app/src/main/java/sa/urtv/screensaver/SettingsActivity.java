@@ -336,6 +336,8 @@ public class SettingsActivity extends Activity {
             new Runnable() { public void run() { prefs.setKickoffEnd(!prefs.kickoffEnd()); render(); } });
         row("فوق تطبيق آخر", prefs.kickoffOver() ? "يعمل" : "متوقف", R.drawable.ic_trophy,
             new Runnable() { public void run() { prefs.setKickoffOver(!prefs.kickoffOver()); render(); if (prefs.kickoffOver()) askOverlay(); } });
+        row("جرّب التنبيه", "يظهر الآن بفريقين للتجربة", R.drawable.ic_trophy,
+            new Runnable() { public void run() { KickoffTry.show(SettingsActivity.this, prefs.kickoffWhistle()); } });
 
         header("العرض");
         noConv = true;

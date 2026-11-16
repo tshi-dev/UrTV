@@ -72,6 +72,14 @@ check("«فوق تطبيق آخر» opens the TV's own permission screen for the
 check("agents: saver.sh kickoff/kickoffgoal/kickoffend/kickoffover, and show says them", all(f"set1 {k} " in sh for k in ("kickoff", "kickoffgoal", "kickoffend", "kickoffover"))
       and all(f'"\\n{k}: "' in srcv for k in ("kickoff", "kickoffgoal", "kickoffend", "kickoffover")))
 check("dock.sh overlay on|off|status sets the appop; reset.sh puts it back", "appops set sa.urtv.home SYSTEM_ALERT_WINDOW allow" in dock and "appops set sa.urtv.home SYSTEM_ALERT_WINDOW default" in rst)
+npp, bridge, tryj = read(HOME / "tilawah/NowPlayingProvider.java"), read(APP / "NowPlayingBridge.java"), read(APP / "KickoffTry.java")
+check("kids mode reaches the screensaver's page: the launcher's read-only .../kids row, &kids=1 on the screensaver's address (only that, not the home's cards)",
+      '"kids".equals(uri.getLastPathSegment())' in npp and "KidsNow.on(getContext())" in npp and 'content://sa.urtv.home.nowplaying/kids' in bridge
+      and '(kickoff() && NowPlayingBridge.kidsOn(c) ? "&kids=1" : "")' in prefs and "&kids=1" not in prefs.split("String fragment() {", 1)[1].split("\n    }", 1)[0])
+check("«جرّب التنبيه»: a row that shows the notice now in the settings' own window (no permission, never focused) and asks the launcher for the whistle (same key only, never over the adhan)",
+      'row("جرّب التنبيه"' in act and "KickoffTry.show(SettingsActivity.this, prefs.kickoffWhistle())" in act and "getDecorView()" in tryj and "TYPE_APPLICATION_OVERLAY" not in tryj
+      and "setFocusable(false)" in tryj and '"kickoff_whistle".equals(method)' in npp and 'checkCallingPermission("sa.urtv.home.READ_NOW_PLAYING")' in npp.split('"kickoff_whistle".equals(method)', 1)[1][:200]
+      and "if (!MusicService.adhanLive()) Whistle.play(getContext());" in npp)
 docs = read(ROOT / "docs/SETTINGS.md")
 check("SETTINGS.md has the rows and the commands", all(w in docs for w in ("saver.sh kickoff off", "kickoffgoal on", "kickoffover on", "dock.sh overlay on")))
 js = read(ROOT / "src/sports.js")

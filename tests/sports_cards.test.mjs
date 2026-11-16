@@ -157,6 +157,11 @@ const SPY = `window.__kicks = []; new MutationObserver(m => m.forEach(r => r.add
   await o.p.clock.runFor(11 * 60000);
   check('screensaver with the alert off (&ko=0): no notice', !(await o.p.evaluate(() => window.__kicks.length)));
   await o.ctx.close();
+  const k = await open('panel=verse&teams=136013&kids=1&kogoal=1', { state: 'soon', size: [1920, 1080], init: SPY });
+  await k.p.clock.runFor(11 * 60000);
+  const kk = await k.p.evaluate(async () => { SP.score['2100001'] = { hs: 0, as: 0, live: true, done: false }; spScoreWatch(Date.now() + 3600000); await new Promise(r => setTimeout(r, 0)); return window.__kicks.length; });
+  check('screensaver in kids mode (&kids=1, from the launcher): no notice at all', kk === 0, kk);
+  await k.ctx.close();
 }
 {   // a goal (&kogoal=1): only when the score of a followed club's live game goes up since the last look; never at the first look
   for (const [flag, want] of [['&kogoal=1', 1], ['', 0]]) {
