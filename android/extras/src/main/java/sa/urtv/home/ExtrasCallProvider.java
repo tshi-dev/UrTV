@@ -38,6 +38,9 @@ public class ExtrasCallProvider extends ContentProvider {
                 if ("on".equals(arg) || "off".equals(arg)) ExtrasA11yService.setWatch(getContext(), "on".equals(arg));
                 out.putBoolean(ExtrasWords.WATCH, ExtrasA11yService.watchOn(getContext()));
                 break;
+            case ExtrasWords.KEY_APPS:   // «أزرار الريموت»: the home's choices changed
+                ExtrasA11yService.keyApps(getContext(), arg);
+                break;
             default:
                 break;
         }

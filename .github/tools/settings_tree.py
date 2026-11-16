@@ -57,6 +57,9 @@ MORE_CMDS = {
     "قائمة الأسهم": ["optimize/saver.sh stocks 2222 1120 AAPL"], "تغيّر الأسهم": ["optimize/saver.sh stkchg amount"], "التصنيفات": ["optimize/saver.sh genres Drama,Comedy"],
     "اللغات": ["optimize/saver.sh langs Arabic,English"], "تصفية المواقع": ["optimize/dock.sh familydns on"], "قفل التطبيقات": ["optimize/dock.sh pin lock com.netflix.ninja"], "أقل تقييم": ["optimize/saver.sh minrating 7"], "تحديث صفحة شاشة التوقف": ["optimize/saver.sh update"],
 }
+# «أزرار الريموت»: one row per app button a remote has (RemoteButtons), each set with `optimize/dock.sh key <button> <package>`
+for _id, _title in re.findall(r'b\("([a-z]+)", "([^"]+)"', (ROOT / "android/app/src/main/java/sa/urtv/screensaver/RemoteButtons.java").read_text(encoding="utf-8")):
+    MORE_CMDS[_title] = [f"optimize/dock.sh key {_id} org.smarttube.stable", f"optimize/dock.sh key {_id} default"]
 # rows that are an action or open a screen of their own, not a value to set (nothing for a command to set)
 ACTIONS = {"اجعل UrTV الشاشة الرئيسية", "تخلّص من واجهة المصنع", "رجّع واجهة المصنع", "قبل ما تحذف التطبيق…", "تفاصيل التطبيقات", "افتح تلاوة وأذان",
            "مباريات اليوم", "افتح صفحة الأسواق", "معاينة الشاشة", "تحديث تلفزيوني", "إعداد تلفزيوني", "مسح الملفات المؤقتة", "أرسل تقرير", "مركز التحكم", "بحث في الإعدادات",

@@ -41,6 +41,8 @@
     <!-- opens the launcher's «ترتيب المفضلة» from settings -->
     <queries>
         <package android:name="sa.urtv.home" />
+        <!-- «أزرار الريموت»: whether «إضافات تلفزيونك» is on this TV (it answers the buttons over other apps) -->
+        <package android:name="sa.urtv.extras" />
         <!-- 4.3 «تطبيق المباريات»: the TV's apps, to choose the one «شاهد المباراة» opens -->
         <intent>
             <action android:name="android.intent.action.MAIN" />

@@ -247,6 +247,63 @@ the phone page's key, «مركز التحكم» the control centre's row that op
      القيم المقبولة: on|off
 —— الرجوع يفتح شاشة التوقف [الرئيسية]
    مثال للوكيل: optimize/dock.sh backsaver on  (`off` = the default: Back does nothing at the top of the home, as always; no argument says `back-saver: on|off`)
+—— زر يوتيوب في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key youtube org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key youtube default
+—— زر نتفليكس في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key netflix org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key netflix default
+—— زر Prime Video في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key prime org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key prime default
+—— زر ديزني بلس في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key disney org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key disney default
+—— زر Paramount Plus في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key paramount org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key paramount default
+—— زر Free TV في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key freetv org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key freetv default
+—— الزر المخصص ★ في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key star org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key star default
+—— زر BRAVIA CORE في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key core org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key core default
+—— زر Crunchyroll في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key crunchyroll org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key crunchyroll default
+—— زر Google Play في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key play org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key play default
+—— زر SonyLIV في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key sonyliv org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key sonyliv default
+—— زر Tabii في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key tabii org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key tabii default
+—— زر TCL Channel في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key tclchannel org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key tclchannel default
+—— زر Okko في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key okko org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key okko default
+—— زر VK في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key vk org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key vk default
+—— زر Rutube في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key rutube org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key rutube default
+—— زر KION في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key kion org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key kion default
+—— زر Wink في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key wink org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key wink default
+—— زر IVI في الريموت [الرئيسية]
+   مثال للوكيل: optimize/dock.sh key ivi org.smarttube.stable
+   مثال للوكيل: optimize/dock.sh key ivi default
 — الصلاة والأذان
 —— الأذان [كل التلفزيون]
    مثال للوكيل: optimize/music.sh adhan
@@ -598,6 +655,63 @@ the phone page's key, «مركز التحكم» the control centre's row that op
        القيم المقبولة: on|off
 ———— الرجوع يفتح شاشة التوقف [الرئيسية]
      مثال للوكيل: optimize/dock.sh backsaver on  (`off` = the default: Back does nothing at the top of the home, as always; no argument says `back-saver: on|off`)
+———— زر يوتيوب في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key youtube org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key youtube default
+———— زر نتفليكس في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key netflix org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key netflix default
+———— زر Prime Video في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key prime org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key prime default
+———— زر ديزني بلس في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key disney org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key disney default
+———— زر Paramount Plus في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key paramount org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key paramount default
+———— زر Free TV في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key freetv org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key freetv default
+———— الزر المخصص ★ في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key star org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key star default
+———— زر BRAVIA CORE في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key core org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key core default
+———— زر Crunchyroll في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key crunchyroll org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key crunchyroll default
+———— زر Google Play في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key play org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key play default
+———— زر SonyLIV في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key sonyliv org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key sonyliv default
+———— زر Tabii في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key tabii org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key tabii default
+———— زر TCL Channel في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key tclchannel org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key tclchannel default
+———— زر Okko في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key okko org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key okko default
+———— زر VK في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key vk org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key vk default
+———— زر Rutube في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key rutube org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key rutube default
+———— زر KION في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key kion org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key kion default
+———— زر Wink في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key wink org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key wink default
+———— زر IVI في الريموت [الرئيسية]
+     مثال للوكيل: optimize/dock.sh key ivi org.smarttube.stable
+     مثال للوكيل: optimize/dock.sh key ivi default
 ———— الخروج من تلفزيونك [كل التلفزيون]
      مثال للوكيل: optimize/saver.sh backexit hold  (a long Back, about a second, leaves)
        القيم المقبولة: press|hold|three

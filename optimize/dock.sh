@@ -23,6 +23,8 @@
 #   optimize/dock.sh extras-setup          turn on «إضافات تلفزيونك» (UrTV Extras, optimize/install.sh addon first; once): the sleep timer's screen-off, the phone remote's
 #                                          keys and typing in other apps, the Settings key outside the home, the Home button on a Google TV
 #                                          (sleep-setup and type-setup: the old names, the same step)
+#   optimize/dock.sh key                   «أزرار الريموت»: this remote's app buttons (YouTube, Netflix…: the ones its brand has) and the app each opens
+#   optimize/dock.sh key BUTTON PKG        give one of this remote's buttons (the ids `key` lists: youtube, netflix…) another app; `default` = as before. Over other apps with «إضافات تلفزيونك» (extras-setup)
 #   optimize/dock.sh pin set 1234         «الرقابة الأبوية»: the master PIN (4 digits), set or changed from here without the old one; never printed back
 #   optimize/dock.sh pin lock PKG          lock one app (its package, e.g. com.netflix.ninja), a pill (@inputs @wifi @tvsettings @tasks @saver @listen @sleep @center) or @urtv (our settings); `pin unlock PKG` opens it again
 #   optimize/dock.sh pin status            what is set: PIN or not, what is locked, kids mode, wrong tries (never the PIN)
@@ -73,6 +75,12 @@ case "${1:-}:$#" in
     [ $# -gt 0 ] || { echo "usage: optimize/dock.sh set PKG1 PKG2 ..."; exit 1; }
     for p in "$@"; do [[ "$p" =~ ^[A-Za-z0-9_.]+$ ]] || { echo "not a package name: $p"; exit 1; }; done
     send SET_DOCK "--es apps $(IFS=,; echo "$*")" ;;
+  key:1) send KEY_APP ;;
+  key:3)
+    [[ "$2" =~ ^[a-z]+$ ]] || { echo "usage: optimize/dock.sh key [BUTTON PKG|default] (BUTTON from optimize/dock.sh key)"; exit 1; }
+    [[ "$3" == default || "$3" =~ ^[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+$ ]] || { echo "usage: optimize/dock.sh key $2 PKG|default (PKG from optimize/dock.sh apps)"; exit 1; }
+    send KEY_APP "--es key $2 --es app $3" || exit 1
+    "$PY" -I optimize/tv.py "am broadcast -n sa.urtv.screensaver/.SaverReceiver -a sa.urtv.screensaver.SET --es keyapp $2=$3" > /dev/null 2>&1 || true ;;   # the TV's row says the same
   backsaver:1) send BACK_SAVER "--es mode status" ;;
   backsaver:2)
     # the home's switch, then the same on the screensaver's row (its settings show it; the home follows that row only when it changes)

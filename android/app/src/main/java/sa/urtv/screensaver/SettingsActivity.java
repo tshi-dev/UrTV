@@ -501,6 +501,11 @@ public class SettingsActivity extends Activity {
         if ("football".equals(prefs.homeLayout()))
             row("إخفاء المباريات المنتهية", prefs.fbHideDone() ? "مفعّل" : "متوقف", R.drawable.ic_eye,
                 new Runnable() { public void run() { prefs.setFbHideDone(!prefs.fbHideDone()); render(); } });
+        // «أزرار الريموت»: which app the remote's YouTube, Netflix and Prime Video keys open (the home follows it: Dock.followKeyApps)
+        // only the buttons this TV's remote was read to send (RemoteButtons): a brand nobody has read gets no row
+        for (final RemoteButtons.Button k : RemoteButtons.buttons(Prefs.remoteTv())) {
+            row(k.title, keyAppLabel(k.id), R.drawable.ic_play, new Runnable() { public void run() { pickKeyApp(k.id, k.title); } });
+        }
         // «الخروج من تلفزيونك»: only where the TV keeps its own home (ours opened from its tile); one Back as always, a long Back or three
         row("الخروج من تلفزيونك", HomeExit.label(prefs.homeExit()), R.drawable.ic_eye,
             new Runnable() { public void run() { pickHomeExit(); } });
@@ -2476,6 +2481,52 @@ public class SettingsActivity extends Activity {
         if (Prefs.MATCH_AUTO.equals(v)) return "تلقائي (UrTV Player إن كان مثبّتاً)";
         try { return String.valueOf(getPackageManager().getApplicationLabel(getPackageManager().getApplicationInfo(v, 0))); }
         catch (Exception e) { return v; }
+    }
+
+    private String keyAppLabel(String key) {
+        String v = prefs.keyApp(key);
+        if (v.isEmpty()) return "الافتراضي";
+        String name;
+        try { name = String.valueOf(getPackageManager().getApplicationLabel(getPackageManager().getApplicationInfo(v, 0))); }
+        catch (Exception e) { name = v; }
+        if (!RemoteButtons.filterSafe(Prefs.remoteTv(), android.os.Build.VERSION.SDK_INT)) return name + "، على الشاشة الرئيسية فقط في هذا التلفزيون";
+        if (!extrasOn()) return name + "، على الشاشة الرئيسية فقط (وفوق التطبيقات مع «إضافات تلفزيونك»)";
+        return name;
+    }
+
+    /** «إضافات تلفزيونك» is installed and its service is turned on in the TV's accessibility list (it answers the buttons over other apps) */
+    private boolean extrasOn() {
+        try {
+            getPackageManager().getPackageInfo("sa.urtv.extras", 0);
+            String on = android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
+            return on != null && on.contains("sa.urtv.extras/");
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /** «أزرار الريموت»: the key's own app, or one of the TV's apps (the same list as «تطبيق المباريات») */
+    private void pickKeyApp(final String key, String title) {
+        final java.util.List<String> values = new java.util.ArrayList<>(java.util.Collections.singletonList(""));
+        final java.util.List<String> labels = new java.util.ArrayList<>(java.util.Collections.singletonList("الافتراضي"));
+        android.content.pm.PackageManager pm = getPackageManager();
+        java.util.TreeMap<String, String> apps = new java.util.TreeMap<>();
+        for (String cat : new String[] {android.content.Intent.CATEGORY_LEANBACK_LAUNCHER, android.content.Intent.CATEGORY_LAUNCHER}) {
+            for (android.content.pm.ResolveInfo r : pm.queryIntentActivities(new android.content.Intent(android.content.Intent.ACTION_MAIN).addCategory(cat), 0)) {
+                String pkg = r.activityInfo.packageName;
+                if (pkg.startsWith("sa.urtv.") || apps.containsValue(pkg)) continue;
+                apps.put(String.valueOf(r.loadLabel(pm)) + "\u0000" + pkg, pkg);
+            }
+        }
+        for (java.util.Map.Entry<String, String> e : apps.entrySet()) { values.add(e.getValue()); labels.add(e.getKey().substring(0, e.getKey().indexOf('\u0000'))); }
+        new Dlg(this).setTitle(title)
+            .setSingleChoiceItems(labels.toArray(new String[0]), Math.max(0, values.indexOf(prefs.keyApp(key))), (d, i) -> {
+                prefs.setKeyApp(key, values.get(i));
+                d.dismiss();
+                render();
+            })
+            .setNegativeButton("إلغاء", null)
+            .show();
     }
 
     private void pickMatchApp() {

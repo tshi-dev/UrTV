@@ -19,8 +19,14 @@ public final class ExtrasWords {
 
     // the add-on's calls (the home asks)
     public static final String STATUS = "status", TYPE = "type", PRESS = "press", SLEEP = "sleep", GO_HOME = "go_home", WATCH = "watch";
+    /** «أزرار الريموت»: both ways. The home tells the add-on the owner's choices when they change ("youtube=PKG,netflix=,…", KeyApps.line); the add-on asks the home for them when it starts */
+    public static final String KEY_APPS = "key_apps";
     // the home's calls (the add-on asks)
     public static final String TYPE_CHECK = "type_check", SETTINGS_PIN = "settings_pin", KEY = "key", LEDGER = "ledger";
+    /** «أزرار الريموت» over another app: the family lock's answer for the app a button opens (NEEDS_PIN, HIDDEN) */
+    public static final String KEY_APP_CHECK = "key_app_check";
+    /** the add-on opens the home with this extra (the package) when that app is behind the PIN: the home asks it, then opens the app */
+    public static final String EXTRA_KEY_APP = "sa.urtv.home.KEY_APP";
     /** 4.4 «إنقاذ تلفزيونك» (UrTV Rescue): its package and release file */
     public static final String RESCUE_PACKAGE = "sa.urtv.rescue", RESCUE_URL = "https://github.com/tshi-dev/UrTV/releases/download/apk-latest/urtv-rescue.apk";
     // the bundle's keys

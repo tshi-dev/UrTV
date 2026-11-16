@@ -73,6 +73,12 @@ public final class Extras {
         return r == null ? ExtrasWords.OFF : r;
     }
 
+    /** «أزرار الريموت»: the owner's choices to the add-on (it filters keys over other apps only for a button given an app); quiet without the add-on */
+    static void keyApps(Context c, String line) {
+        try { c.getContentResolver().call(Uri.parse("content://" + ExtrasWords.EXTRAS_AUTHORITY), ExtrasWords.KEY_APPS, line, null); }
+        catch (RuntimeException e) { /* no add-on, or another key: the home answers its own buttons */ }
+    }
+
     /** the Home-button watch: "on", "off", or null to only read it; null back when the add-on did not answer */
     static Boolean watch(String set) {
         Bundle b = call(ExtrasWords.WATCH, set, null);

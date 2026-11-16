@@ -252,6 +252,7 @@ public class MainActivity extends Activity {
             openRequested(getIntent());
             phoneRequested(getIntent());   // the phone remote's «افتح»
             settingsKeyRequested(getIntent());   // the Settings key outside the home, when the TV's settings need the PIN
+            keyAppRequested(getIntent());   // «أزرار الريموت» over another app, when the button's app needs the PIN
         }
         wantEdit = getIntent() != null && getIntent().getBooleanExtra(EXTRA_EDIT, false);   // the settings' «تعديل المفضلة»
         if (b == null) appsRequested(getIntent());   // the settings' «ترتيب كل التطبيقات» (not again after a restore)
@@ -542,6 +543,7 @@ public class MainActivity extends Activity {
         openRequested(intent);   // the screensaver's «الأذان» row (open=adhan)
         phoneRequested(intent);   // the phone remote opened an app that asks for the PIN, or one of the pills
         settingsKeyRequested(intent);   // the Settings key outside the home, when the TV's settings need the PIN
+        keyAppRequested(intent);   // «أزرار الريموت» over another app, when the button's app needs the PIN
         // Home pressed while already home: jump back to the first dock app.
         if (inputsPopup != null) inputsPopup.dismiss();
         if (control != null) { control.dismiss(); control.forgetLast(); }
@@ -987,6 +989,18 @@ public class MainActivity extends Activity {
 
     /** TypeService.openTvSettings: the remote's Settings key was pressed in another app and the TV's settings are behind the PIN: asked here. */
     static final String EXTRA_SETTINGS_KEY = "sa.urtv.home.SETTINGS_KEY";
+
+    /**
+     * «أزرار الريموت» over another app: the add-on found the button's app behind the family PIN and opened the home with it; asked here, as for its tile,
+     * then opened. Only an app the owner gave one of this remote's buttons (an intent with any other package does nothing).
+     */
+    private void keyAppRequested(Intent i) {
+        final String pkg = i == null ? null : i.getStringExtra(ExtrasWords.EXTRA_KEY_APP);
+        if (pkg == null) return;
+        i.removeExtra(ExtrasWords.EXTRA_KEY_APP);
+        if (!KeyApps.chosen(pkg) || !Dock.keyApps(this).containsValue(pkg) || !ParentalPolicy.visible(Parental.state(this), pkg)) return;
+        handler.post(() -> guarded(ParentalPolicy.REMOTE_APP, pkg, labelOf(pkg), () -> openPackage(pkg)));
+    }
 
     private void settingsKeyRequested(Intent i) {
         if (i == null || !i.getBooleanExtra(EXTRA_SETTINGS_KEY, false)) return;
@@ -3481,6 +3495,7 @@ public class MainActivity extends Activity {
         applyListenPill(cfg.listenPillOn);
         applyTasksPill(cfg.tasksPillOn());
         Dock.followBackSaver(this, cfg.backSaver());   // «الرجوع يفتح شاشة التوقف» changed in the screensaver's settings: read at the next Back
+        Dock.followKeyApps(this, cfg.keyApps);   // «أزرار الريموت» changed in the screensaver's settings: read at the next key (and told to the add-on)
         applyUpdateBell(cfg.updateBellOn);   // [updates bell]
         applyBarSize(cfg.favBar);   // «تطبيقات في الشريط»
         hiddenQuick.clear();
@@ -4344,6 +4359,18 @@ public class MainActivity extends Activity {
         // the remote's shortcut keys (YouTube, Netflix, Settings, the star): with the stock launcher off nothing else answers them
         if (e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0)
             android.util.Log.d("UrTVKeys", "key=" + e.getKeyCode() + " scan=" + e.getScanCode());   // for the TV test: does the shortcut key reach the home screen at all? (codes only)
+        // «أزرار الريموت»: a button of this remote the owner gave an app that is on the TV opens it here, first (Xiaomi's burst is one press; kids mode's
+        // hidden app opens nothing; the family PIN as for its tile). A button on its default goes to RemoteKeys below, exactly as before anyone chose.
+        String keyId = KeyButton.of(e);
+        String keyChoice = keyId == null ? null : Dock.keyApp(this, keyId);
+        if (KeyApps.chosen(keyChoice) && isInstalled(keyChoice) || homeButtons.holding(e.getKeyCode())) {
+            int k = homeButtons.decide(keyId, e.getKeyCode(), e.getAction(), e.getRepeatCount(), e.getEventTime(), false, keyChoice, KeyButton.burstMs());
+            if (k == KeyApps.OPEN) {
+                final String pkg = homeButtons.pkg;
+                if (ParentalPolicy.visible(Parental.state(this), pkg)) guarded(ParentalPolicy.REMOTE_APP, pkg, labelOf(pkg), () -> openPackage(pkg));
+            }
+            if (k != KeyApps.PASS) return true;
+        }
         RemoteKeys.Decision key = remoteKeys.decide(e.getKeyCode(), e.getScanCode(), e.getAction(), e.getRepeatCount(), e.getEventTime() - e.getDownTime(),
                 RemoteKeys.opensApp(e.getKeyCode()) ? remoteInstalled() : Collections.<String>emptySet());
         if (key.kind == RemoteKeys.PASS && e.getAction() == KeyEvent.ACTION_DOWN && e.getRepeatCount() == 0 && RemoteKeys.unmapped(e.getKeyCode()))
@@ -4435,6 +4462,7 @@ public class MainActivity extends Activity {
     }
 
     private final RemoteKeys remoteKeys = new RemoteKeys();
+    private final KeyApps.Outside homeButtons = new KeyApps.Outside();
 
     /** The apps a shortcut key opens that are installed, and that kids mode shows (one it hides counts as not there: the key then does nothing). */
     private Set<String> remoteInstalled() {
