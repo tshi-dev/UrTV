@@ -17,7 +17,7 @@ OUT = ROOT / "docs/SETTINGS-TREE.md"
 # a row's choices: (Prefs constant of [value, name] pairs) or (values constant, names constant), and the Prefs getter its default is read from
 CHOICES = {
     "الأرقام": ("DIGITS", None, "digits"),
-    "الشكل الجاهز": ("LOOKS", None, None),
+    "شكل كنبة": (None, None, "couchOn"),
     "التخطيط": ("HOME_LAYOUTS", "HOME_LAYOUT_NAMES", "homeLayout"),
     "الخلفية": ("HOME_BGS", "HOME_BG_NAMES", "homeBg"),
     "الساعة": ("HOME_CLOCKS", "HOME_CLOCK_NAMES", "homeClock"),
@@ -43,6 +43,7 @@ CONTROL = {"net": None, "sound": None, "speed": None, "ours": None, "games": Non
 YES, NO = "مفعّل", "متوقف"
 # a row's command where docs/SETTINGS.md names its place another way: an example each (the subcommand must be a case of optimize/saver.sh: checked)
 MORE_CMDS = {
+    "شكل كنبة": ["optimize/saver.sh couch on"],
     "نظام الساعة": ["optimize/saver.sh clock24 on"], "الدولة": ["optimize/saver.sh city '<name>' <lat> <lon> <time zone> SA"],
     "وضع الألوان": ["optimize/saver.sh look navy", "optimize/saver.sh appearance auto"], "إظهار الثواني": ["optimize/saver.sh seconds on"],
     "البطاقة الأولى": ["optimize/saver.sh home-card prayers,hourly,verse"], "البطاقة الثانية": ["optimize/saver.sh home-card prayers,hourly,verse"],
@@ -63,7 +64,7 @@ ACTIONS = {"اجعل UrTV الشاشة الرئيسية", "تخلّص من وا�
 # rows the code gives no command (no saver.sh case, no receiver extra): set from the TV only
 TV_ONLY = {"مسلسلات مختارة", "التحديث التلقائي للصفحة"}
 # what a row's choices cannot say by themselves
-NOTES = {"الشكل الجاهز": "يضبط مرة وحدة: التخطيط والخلفية والساعة وشكل التطبيقات؛ وتغيير أي واحد منها بعده يجعله «مخصّص»"}
+NOTES = {"شكل كنبة": "تشغيله يضبط مرة وحدة: التخطيط كنبة، الخلفية الآفاق، الساعة زجاجية، شكل التطبيقات تكبير وظل، ويحفظ اختياراتك؛ وإيقافه يرجّعها كما كانت. وتغيير أي واحد منها وهو مفعّل يبقيه مفعّلًا ويقول «مخصّص»"}
 
 
 def read(p):

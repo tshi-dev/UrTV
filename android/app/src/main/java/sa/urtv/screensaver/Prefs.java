@@ -1107,6 +1107,28 @@ final class Prefs {
     void setLook3(String key) {
         for (String[] l : LOOKS) if (l[0].equals(key)) { sp.edit().putString("homeLayout", l[2]).putString("homeBg", l[3]).putString("homeClock", l[4]).putString("appsStyle", l[5]).apply(); return; }
     }
+    /**
+     * 4.4 the owner: «شكل كنبة» is one switch (off by default). On: the Couch preset at once, and the person's own four values kept; off: those put
+     * back exactly. A row changed while on leaves it on, and its line says «مخصّص». A TV that has the couch values with no switch stored reads on.
+     */
+    boolean couchOn() { return sp.contains("couchOn") ? sp.getBoolean("couchOn", false) : "couch".equals(look3()); }
+    void setCouch(boolean on) {
+        if (on == couchOn() && sp.contains("couchOn")) return;
+        if (on) {
+            sp.edit().putString("couchBefore", homeLayout() + "," + homeBg() + "," + homeClock() + "," + appsStyle()).putBoolean("couchOn", true).apply();
+            setLook3("couch");
+            return;
+        }
+        String[] b = sp.getString("couchBefore", "").split(",");
+        if (b.length == 4) { setHomeLayout(b[0]); setHomeBg(b[1]); setHomeClock(b[2]); setAppsStyle(b[3]); } else setLook3("urtv");
+        sp.edit().putBoolean("couchOn", false).remove("couchBefore").apply();
+    }
+    /** the switch's line: off, on as the preset, or on with a row changed since («مخصّص») */
+    String couchLabel() {
+        if (!couchOn()) return "متوقف";
+        return "couch".equals(look3()) ? "مفعّل (التخطيط كنبة، الخلفية الآفاق، الساعة زجاجية، التطبيقات تكبير وظل؛ إيقافه يرجّع اختياراتك)"
+            : "مفعّل (مخصّص: غيّرت صفًا من الأربعة؛ إيقافه يرجّع اختياراتك قبل التشغيل)";
+    }
     static String look3Label(String key) {
         for (String[] l : LOOKS) if (l[0].equals(key)) return l[1];
         return "مخصّص";

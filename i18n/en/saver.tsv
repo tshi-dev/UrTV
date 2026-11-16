@@ -946,7 +946,6 @@
 ٢٠ ثانية	20 seconds
 خمس دقائق	5 minutes
 اختيار يفتح، ورجوع يرجّعك خطوة	OK opens, Back goes one step back
-الشكل الجاهز	Look preset
 التخطيط	Layout
 الخلفية	Background
 الساعة	Time
@@ -966,12 +965,13 @@
 وضع الألوان	Colour mode
 الجوالات المسموح لها	Phones allowed
 افتح صفحة الأسواق	Open the markets page
-الشكل الجاهز والتخطيط	Preset and layout
+شكل كنبة والتخطيط	Couch look and layout
 الخلفية والآفاق	Background and horizons
 الرئيسية	Home
 الرئيسية وشاشة التوقف	Home and screensaver
 كل التلفزيون	Whole TV
-الشكل الجاهز والتخطيط، والخلفية والآفاق، والساعة والنص، والتطبيقات، والبطاقات، والصور.	Preset and layout, background and horizons, clock and text, apps, cards, and photos.
+شكل كنبة والتخطيط، والخلفية والآفاق، والساعة والنص، والتطبيقات، والبطاقات، والصور.	Couch look and layout, background and horizons, clock and text, apps, cards, and photos.
 التحكم من الجوال: تشغيله وإيقافه وربط جوال، وفي الشاشة حالته الآن	Control from the phone: turn it on or off and pair a phone; the screen shows its state now
 الشكل: %s، والإضاءة: %s	Look: %s, lighting: %s
-%s، يضبط التخطيط والخلفية والساعة وشكل التطبيقات معًا، وأي تغيير بعده يجعله «مخصّص»	%s: sets the layout, background, clock and apps look together; changing any of them afterwards makes it «Custom»
+مفعّل (التخطيط كنبة، الخلفية الآفاق، الساعة زجاجية، التطبيقات تكبير وظل؛ إيقافه يرجّع اختياراتك)	On (layout Couch, background horizons, glass clock, apps larger with a shadow; turning it off brings your own choices back)
+مفعّل (مخصّص: غيّرت صفًا من الأربعة؛ إيقافه يرجّع اختياراتك قبل التشغيل)	On (custom: you changed one of the four rows; turning it off brings back your choices from before)

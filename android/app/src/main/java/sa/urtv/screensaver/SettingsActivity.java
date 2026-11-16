@@ -413,9 +413,8 @@ public class SettingsActivity extends Activity {
         row("\u2066UrTV\u2069 النظيف", Boolean.TRUE.equals(homeCleanSeen()) ? "مفعّل الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة" : "الأساسيات فقط، وبضغطة ترجع الشاشة الكاملة", R.drawable.ic_eye, new Runnable() { public void run() { openClean(); } });
         // «المظهر»: one page for everything about the look of both apps (AppearanceActivity), each choice with its picture
         // 4.3.3 «الواجهة»: the home as it was (the default), the football home, or «الآفاق» (a scene with the glass clock behind its scenery); and the scene packs
-        // 4.4 the look: a preset, or its three parts one by one (the owner: mix and match)
-        // the owner: the line says what a preset does, and why it reads «مخصّص» after one of the four is changed
-        row("الشكل الجاهز", Prefs.look3Label(prefs.look3()) + "، يضبط التخطيط والخلفية والساعة وشكل التطبيقات معًا، وأي تغيير بعده يجعله «مخصّص»", R.drawable.ic_eye, new Runnable() { public void run() { pickLook3(); } });
+        // 4.4 the owner: one switch; on applies the Couch preset and keeps the person's own values, off puts them back (Prefs.setCouch)
+        row("شكل كنبة", prefs.couchLabel(), R.drawable.ic_eye, new Runnable() { public void run() { prefs.setCouch(!prefs.couchOn()); render(); } });
         row("التخطيط", Prefs.homeLayoutLabel(prefs.homeLayout()), R.drawable.ic_eye, new Runnable() { public void run() { pickHomeLayout(); } });
         row("الخلفية", Prefs.homeBgLabel(prefs.homeBg()), R.drawable.ic_eye, new Runnable() { public void run() {
             pickOne("الخلفية", Prefs.HOME_BG_NAMES, java.util.Arrays.asList(Prefs.HOME_BGS).indexOf(prefs.homeBg()), i -> prefs.setHomeBg(Prefs.HOME_BGS[i])); } });
@@ -2209,13 +2208,6 @@ public class SettingsActivity extends Activity {
             .show();
     }
 
-    /** «الشكل الجاهز»: «شكل تلفزيونك» (the default) or «شكل كنبة», each setting the three parts at once */
-    private void pickLook3() {
-        String[] labels = new String[Prefs.LOOKS.length];
-        int at = -1;
-        for (int k = 0; k < labels.length; k++) { labels[k] = Prefs.LOOKS[k][1]; if (Prefs.LOOKS[k][0].equals(prefs.look3())) at = k; }
-        pickOne("الشكل الجاهز", labels, at, k -> prefs.setLook3(Prefs.LOOKS[k][0]));
-    }
 
     /** one of a few choices, saved at once, the list drawn again */
     private void pickOne(String title, String[] labels, int at, java.util.function.IntConsumer save) {
