@@ -332,6 +332,32 @@ final class PhoneActions implements Actions {
         return r == null ? Result.ok("done") : Result.fail("audio_" + r);
     }
 
+    // ---- 4.4 «صوري»: the photos on the TV, one deleted from the phone (the screensaver app's provider, PHONE_SETTINGS)
+
+    @Override public Map<String, Object> photos() {
+        Map<String, Object> m = new LinkedHashMap<>();
+        Bundle out = saver("phone_photo_list", null, null);
+        if (out == null) return m;
+        List<Object> ids = new ArrayList<>();
+        String[] got = out.getStringArray("ids");
+        if (got != null) for (String id : got) ids.add(id);
+        m.put("ids", ids);
+        m.put("count", (long) out.getInt("count", 0));
+        m.put("max", (long) out.getInt("max", 0));
+        return m;
+    }
+
+    @Override public byte[] photoThumb(String id) {
+        Bundle out = saver("phone_photo_thumb", id, null);
+        return out == null ? null : out.getByteArray("jpeg");
+    }
+
+    @Override public Result photoDelete(String id) {
+        Bundle out = saver("phone_photo_del", id, null);
+        if (out == null) return Result.fail("failed");
+        return "photo_deleted".equals(out.getString("result")) ? Result.ok("photo_deleted") : Result.fail("photo_moved");
+    }
+
     @Override public Result photoAdd(byte[] jpeg) {
         Bundle in = new Bundle();
         in.putByteArray("jpeg", jpeg);

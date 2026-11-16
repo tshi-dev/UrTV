@@ -2338,16 +2338,94 @@ public class SettingsActivity extends Activity {
             toast("اطلب من مساعدك الذكي إضافة صورك (حتى ١٠)");
             return;
         }
-        String[] items = {"تُضاف إلى صور التطبيق", "صوري فقط", "للألبوم فقط، خارج دوران الصور", "حذف كل صوري"};
+        String[] items = {"تُضاف إلى صور التطبيق", "صوري فقط", "للألبوم فقط، خارج دوران الصور", "اختر صورة لحذفها", "حذف كل صوري"};
         new Dlg(this).setTitle("صوري")
             .setSingleChoiceItems(items, Own.ONLY.equals(Own.mode(this)) ? 1 : Own.ALBUM.equals(Own.mode(this)) ? 2 : 0, (d, i) -> {
                 d.dismiss();
-                if (i == 3) { confirmClearOwn(); return; }
+                if (i == 3) { pickOwnToDelete(); return; }   // 4.4: one photo
+                if (i == 4) { confirmClearOwn(); return; }
                 prefs.setOwnMode(i == 1 ? Own.ONLY : i == 2 ? Own.ALBUM : Own.MIX);
                 prefs.bumpOwnRev();
                 render();
             })
             .show();
+    }
+
+    /**
+     * 4.4 «اختر صورة لحذفها»: the photos as a grid of small pictures (made off the screen's thread, at most OWN_THUMB px), OK on one asks
+     * «حذف هذه الصورة؟». The pick is the photo's number and file time (OwnPick), so a photo the phone deleted meanwhile is never mistaken.
+     */
+    private void pickOwnToDelete() {
+        final int n = Own.count(this);
+        if (n == 0) { render(); return; }
+        final float dp = getResources().getDisplayMetrics().density;
+        final android.widget.GridView grid = new android.widget.GridView(this);
+        grid.setNumColumns(5);
+        grid.setVerticalSpacing(Math.round(8 * dp));
+        grid.setHorizontalSpacing(Math.round(8 * dp));
+        grid.setPadding(Math.round(12 * dp), Math.round(8 * dp), Math.round(12 * dp), Math.round(8 * dp));
+        grid.setSelector(new android.graphics.drawable.ColorDrawable(0x00000000));
+        final String[] picks = new String[n];
+        final android.graphics.Bitmap[] thumbs = new android.graphics.Bitmap[n];
+        for (int i = 0; i < n; i++) picks[i] = OwnPick.id(i + 1, Own.stamp(this, i + 1));
+        final android.widget.BaseAdapter adapter = new android.widget.BaseAdapter() {
+            @Override public int getCount() { return n; }
+            @Override public Object getItem(int i) { return picks[i]; }
+            @Override public long getItemId(int i) { return i; }
+            @Override public View getView(int i, View convert, android.view.ViewGroup parent) {
+                android.widget.ImageView v = convert instanceof android.widget.ImageView ? (android.widget.ImageView) convert : new android.widget.ImageView(SettingsActivity.this);
+                v.setLayoutParams(new android.widget.AbsListView.LayoutParams(-1, Math.round(84 * dp)));
+                v.setScaleType(android.widget.ImageView.ScaleType.CENTER_CROP);
+                int pad = Math.round(3 * dp);
+                v.setPadding(pad, pad, pad, pad);
+                android.graphics.drawable.StateListDrawable ring = new android.graphics.drawable.StateListDrawable();
+                android.graphics.drawable.GradientDrawable on = new android.graphics.drawable.GradientDrawable();
+                on.setColor(0xFFFFFFFF);
+                on.setCornerRadius(8 * dp);
+                ring.addState(new int[]{android.R.attr.state_selected}, on);
+                ring.addState(new int[]{}, new android.graphics.drawable.ColorDrawable(0x00000000));
+                v.setBackground(ring);
+                v.setImageBitmap(thumbs[i]);
+                v.setContentDescription(Words.of("صورة") + " " + (i + 1));
+                return v;
+            }
+        };
+        grid.setAdapter(adapter);
+        new Thread(() -> {   // the small pictures, one by one; the grid shows each as it comes
+            for (int i = 0; i < n; i++) {
+                thumbs[i] = Own.thumb(this, i + 1, OWN_THUMB);
+                runOnUiThread(adapter::notifyDataSetChanged);
+            }
+        }, "own-thumbs").start();
+        final android.app.AlertDialog[] dlg = new android.app.AlertDialog[1];
+        grid.setOnItemClickListener((parent, view, i, id) -> {
+            if (dlg[0] != null) dlg[0].dismiss();
+            confirmDeleteOne(picks[i], thumbs[i]);
+        });
+        dlg[0] = new Dlg(this).setTitle("اختر صورة لحذفها").setView(grid).setNegativeButton("إلغاء", null).create();
+        dlg[0].setOnShowListener(x -> { dress(dlg[0]); grid.requestFocus(); grid.setSelection(0); });
+        dlg[0].show();
+    }
+
+    /** the small pictures of «اختر صورة لحذفها»: their long side, in pixels */
+    static final int OWN_THUMB = 240;
+
+    private void confirmDeleteOne(String pick, android.graphics.Bitmap thumb) {
+        Dlg d = new Dlg(this);
+        d.setTitle("حذف هذه الصورة؟");
+        if (thumb != null) {
+            android.widget.ImageView v = new android.widget.ImageView(this);
+            v.setImageBitmap(thumb);
+            v.setAdjustViewBounds(true);
+            v.setMaxHeight(Math.round(220 * getResources().getDisplayMetrics().density));
+            d.setView(v);
+        }
+        d.setPositiveButton("نعم", (x, w) -> {
+            if (!Own.deletePick(this, OwnPick.parse(pick))) toast("الصورة تغيّرت أو حُذفت من الجوال، افتح القائمة مرة ثانية");
+            render();
+        });
+        d.setNegativeButton("إلغاء", null);
+        d.show();
     }
 
     private void confirmClearOwn() {

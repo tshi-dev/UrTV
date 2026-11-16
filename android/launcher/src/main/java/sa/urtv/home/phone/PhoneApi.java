@@ -93,6 +93,7 @@ final class PhoneApi implements PhoneServer.Handler {
                 case "/api/apps": return ok(control.actions().apps());
                 case "/api/family": return ok(control.actions().family());
                 case "/api/backdrop": return backdrop();
+                case "/api/photos": return ok(control.actions().photos());   // 4.4 «صوري»: the photos on the TV, each by its pick (number and file time)
                 case "/api/audio": return ok(control.actions().audio());   // 4.4 «صوتياتي»: the list and the caps
                 case "/api/portfolio": {
                     Map<String, Object> p = control.actions().portfolio();
@@ -101,6 +102,7 @@ final class PhoneApi implements PhoneServer.Handler {
                 default: break;
             }
             if (r.path.startsWith("/api/icon/")) return icon(r.path.substring("/api/icon/".length()));
+            if (r.path.startsWith(THUMB_PATH)) return photoThumb(r.path.substring(THUMB_PATH.length()));
             return json(404, err("not_found"));
         }
 
@@ -118,6 +120,7 @@ final class PhoneApi implements PhoneServer.Handler {
             case "/api/logout": endpoint = "logout"; break;
             case "/api/portfolio": endpoint = "portfolio"; break;
             case "/api/message": endpoint = "message"; break;   // 4.3 #53: a short message shown on the TV
+            case "/api/photo_del": endpoint = "photodel"; break;   // 4.4 «صوري»: delete one photo (its pick)
             case "/api/audio": endpoint = "audio"; break;   // 4.4 «صوتياتي»: use a file, or delete it
             case DRAW_PATH: endpoint = "draw"; break;   // 4.3 #53 «ارسم»: live strokes over the TV's screen
             default: return json(404, err("not_found"));
@@ -157,6 +160,7 @@ final class PhoneApi implements PhoneServer.Handler {
             }
             case "quran": return result(a.quran(v));
             case "message": return result(a.message((String) v.get("text")));
+            case "photodel": return result(a.photoDelete((String) v.get("id")));
             case "audio": return result(a.audioOp((String) v.get("op"), (Long) v.get("id"), (String) v.get("as")));
             case "draw": return result(a.draw((List<?>) v.get("s"), Boolean.TRUE.equals(v.get("clear"))));
             case "cities": {
@@ -226,6 +230,19 @@ final class PhoneApi implements PhoneServer.Handler {
     }
 
     /** One favourite's icon, a PNG the browser keeps for a day; 404 for a package that is not one of them (nothing else is ever revealed). */
+    /** 4.4: a small JPEG of one photo of «صوري», by its pick («3:1763300000000»); 404 when the pick names no photo now */
+    static final String THUMB_PATH = "/api/photo_thumb/";
+
+    private PhoneServer.Response photoThumb(String id) {
+        if (!Schema.photoPick(id)) return json(404, err("not_found"));
+        byte[] jpeg = control.actions().photoThumb(id);
+        if (jpeg == null) return json(404, err("not_found"));
+        PhoneServer.Response resp = new PhoneServer.Response(200, "image/jpeg", jpeg);
+        headers(resp);
+        resp.headers.put("Cache-Control", "private, no-store");
+        return resp;
+    }
+
     private PhoneServer.Response icon(String pkg) {
         if (!Schema.packageName(pkg)) return json(404, err("not_found"));
         byte[] png = control.actions().icon(pkg);
@@ -377,7 +394,7 @@ final class PhoneApi implements PhoneServer.Handler {
     /** For tests: the endpoints that need a session. */
     static List<String> sessionPaths() {
         List<String> l = new ArrayList<>();
-        for (String p : new String[] {"/api/state", "/api/key", "/api/text", "/api/set", "/api/quran", "/api/cities", "/api/update", "/api/launch", "/api/adhan_stop", "/api/do", "/api/apps", "/api/family", "/api/icon/com.example.app", "/api/backdrop", "/api/logout", "/api/portfolio", "/api/audio", PhoneServer.AUDIO_PATH}) l.add(p);
+        for (String p : new String[] {"/api/state", "/api/key", "/api/text", "/api/set", "/api/quran", "/api/cities", "/api/update", "/api/launch", "/api/adhan_stop", "/api/do", "/api/apps", "/api/family", "/api/icon/com.example.app", "/api/backdrop", "/api/logout", "/api/portfolio", "/api/audio", PhoneServer.AUDIO_PATH, "/api/photos", "/api/photo_thumb/1:1", "/api/photo_del"}) l.add(p);
         return l;
     }
 }

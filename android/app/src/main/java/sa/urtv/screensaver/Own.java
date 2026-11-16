@@ -168,6 +168,40 @@ final class Own {
         return true;
     }
 
+    /** 4.4: photo n's file time, the second half of its pick (OwnPick) */
+    static long stamp(Context c, int n) { return file(c, n).lastModified(); }
+
+    /**
+     * 4.4: deletes the photo the pick names (its mask goes with it, the ones after move up, the album and the rotation see it at once: delete
+     * bumps the revision). false when the pick no longer names that photo (deleted or moved meanwhile): nothing is deleted then.
+     */
+    static synchronized boolean deletePick(Context c, OwnPick p) {
+        return p != null && p.same(count(c), stamp(c, p.n)) && delete(c, p.n);
+    }
+
+    /** 4.4: a small copy of photo n for a grid (its long side about `side` px), null when it cannot be read */
+    static android.graphics.Bitmap thumb(Context c, int n, int side) {
+        BitmapFactory.Options o = new BitmapFactory.Options();
+        o.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(file(c, n).getPath(), o);
+        if (o.outWidth <= 0 || o.outHeight <= 0) return null;
+        int sample = 1;
+        while (Math.max(o.outWidth, o.outHeight) / (sample * 2) >= side) sample *= 2;
+        BitmapFactory.Options d = new BitmapFactory.Options();
+        d.inSampleSize = sample;
+        return BitmapFactory.decodeFile(file(c, n).getPath(), d);
+    }
+
+    /** 4.4: the same as a JPEG for the phone page (about 320 px, quality 70: a few KB), null when it cannot be read */
+    static byte[] thumbJpeg(Context c, int n) {
+        android.graphics.Bitmap b = thumb(c, n, 320);
+        if (b == null) return null;
+        java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+        b.compress(android.graphics.Bitmap.CompressFormat.JPEG, 70, out);
+        b.recycle();
+        return out.toByteArray();
+    }
+
     static synchronized void clear(Context c) {
         File[] all = dir(c).listFiles();
         if (all != null) for (File f : all) f.delete();

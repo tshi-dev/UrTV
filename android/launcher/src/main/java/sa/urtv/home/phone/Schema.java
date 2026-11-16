@@ -116,6 +116,12 @@ public final class Schema {
                 if (body.containsKey("as") && !Arrays.asList(AUDIO_USES).contains(body.get("as"))) return no("bad as");
                 return c;
             }
+            case "photodel": {   // 4.4 «صوري»: {"id":"3:1763300000000"}, a pick of one photo (OwnPick in the screensaver app)
+                Clean c = only(body, "id");
+                if (!c.ok()) return c;
+                if (!photoPick(body.get("id"))) return no("bad id");
+                return c;
+            }
             case "message": {   // 4.3 #53: a short message for the TV's screen (up to 200 characters, a few lines)
                 Clean c = only(body, "text");
                 if (!c.ok()) return c;
@@ -191,6 +197,9 @@ public final class Schema {
         if (!"sleep".equals(op) && b.containsKey("minutes")) return no("minutes goes with sleep");
         return c;
     }
+
+    /** 4.4: a pick of one photo of «صوري»: «n:stamp», n 1..999, the stamp up to 14 digits (the screensaver app checks it names the same photo) */
+    static boolean photoPick(Object v) { return v instanceof String && ((String) v).matches("[1-9][0-9]{0,2}:[0-9]{1,14}"); }
 
     /** The body may only have these keys; the clean map is a copy of it. */
     private static Clean only(Map<String, Object> body, String... allowed) {

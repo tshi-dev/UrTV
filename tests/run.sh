@@ -194,6 +194,7 @@ python3 tests/kahf_template_test.py   # 4.4 touch: the Friday Kahf, ready
 python3 tests/fade_in_test.py   # 4.4 touch «يبدأ بهدوء»
 python3 tests/friday_dhuhr_test.py   # 4.4 touch «أذان الجمعة»
 python3 tests/black_screen_test.py   # 4.4 #62 «شاشة سوداء»: listening with the picture off
+python3 tests/photo_delete_test.py   # 4.4 «صوري»: delete one photo from the phone or the TV; search aliases
 python3 tests/loudness_test.py   # the recitation and the adhan lifted inside the player (LoudnessEnhancer), never the TV volume or mute
 python3 tests/seek_burst_test.py
 python3 tests/pill_text_test.py

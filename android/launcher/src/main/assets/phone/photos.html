@@ -35,6 +35,12 @@ button.main{background:var(--acc);color:var(--ink);border:0}button.sec{backgroun
 .pair small{display:block;text-align:center;font-size:13px;color:var(--dim)}
 #mchecks p{margin:4px 0}.ok::before{content:'✓ ';color:var(--acc);font-weight:700}.bad{color:#e0645a}.bad::before{content:'✗ ';font-weight:700}
 #mprev{width:100%;border-radius:12px;display:block;margin-top:8px}
+/* 4.4: the photos already on the TV, each with «حذف» */
+#onTv h2{font-size:18px;margin:24px 0 8px}
+#grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ph{background:var(--tile);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.ph img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:var(--line)}
+.ph button{min-height:40px;border:0;background:transparent;color:#d9534f;font:inherit;font-size:14px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -63,6 +69,7 @@ button.main{background:var(--acc);color:var(--ink);border:0}button.sec{backgroun
 <p class="note" id="m10">بدون قناع تظهر الصورة كالعادة والساعة قدّامها.</p>
 </div>
 <p id="state" role="status"></p>
+<div id="onTv" class="hidden"><h2 id="tvHead">على التلفزيون</h2><div id="grid"></div></div>
 <p id="none" class="hidden"><span id="t4">افتح صفحة الجوال وامسح الرمز من «أسهل من الجوال» على التلفزيون أولاً.</span> <a href="/" id="t5">صفحة الجوال</a></p>
 <script nonce="__NONCE__">
 (function () {
@@ -73,6 +80,7 @@ button.main{background:var(--acc);color:var(--ink);border:0}button.sec{backgroun
     t3: 'Pick photos', t4: 'Open the phone page and scan the code from «Easier from the phone» on the TV first.', t5: 'Phone page',
     sending: 'Sending {n} of {all}…', done: '{n} photos are on the TV ✓', full: 'The TV holds as many photos as it can. Delete some on the TV first.',
     camera: 'This photo still had its camera data and was not sent.', refused: 'The TV did not take a photo.', failed: 'Not sent: check the Wi-Fi and try again.', no_session: 'The session ended.',
+    onTv: 'On the TV: {n} of {max}', del: 'Delete', ask: 'Delete this photo from the TV?', deleted: 'Deleted from the TV ✓', moved: 'The photos changed on the TV: the list is fresh now, try again.',
     m1: 'The clock behind your photo (optional)', m2: 'With «Glass, behind the photo» the buildings, mountains or people in your photo can stand in front of the digits. It needs a mask: a black-and-white image the size of the photo, white for what stands in front of the clock, black for the sky.',
     m3: 'A photo with its mask', m4: 'Photo', m5: 'Mask', m6: 'Pick the mask', m7: 'How do I make the mask?', m8: 'The guide has a ready sentence to copy into an AI tool.',
     m9: 'You make the mask with the AI tool you choose, such as ChatGPT, Gemini or Claude. Your photo goes to that tool, not to us. This page sends nothing anywhere but to your TV.',
@@ -86,6 +94,7 @@ button.main{background:var(--acc);color:var(--ink);border:0}button.sec{backgroun
   } : {
     sending: 'يرسل {n} من {all}…', done: 'وصلت {n} صور للتلفزيون ✓', full: 'التلفزيون فيه أكثر عدد يقدر عليه من الصور. احذف بعضها من التلفزيون أولاً.',
     camera: 'هذه الصورة فيها بيانات الكاميرا، فما أرسلناها.', refused: 'التلفزيون ما قبل صورة.', failed: 'ما انرسلت: تأكد من الواي فاي وجرّب مرة ثانية.', no_session: 'انتهت الجلسة.',
+    onTv: 'على التلفزيون: {n} من {max}', del: 'حذف', ask: 'تحذف هذه الصورة من التلفزيون؟', deleted: 'انحذفت من التلفزيون ✓', moved: 'تغيّرت الصور على التلفزيون: حدّثنا القائمة، جرّب مرة ثانية.',
     k_shape: 'نفس شكل الصورة', k_tones: 'أبيض وأسود', k_size: '١ م.ب بالأكثر',
     x_shape: 'القناع مو بنفس شكل الصورة: اطلب من الأداة «بنفس المقاس بالضبط».', x_tones: 'فيه رمادي أو ألوان كثير: اطلب «أبيض وأسود فقط، بدون رمادي».', x_size: 'القناع أكبر من ١ م.ب: اطلب PNG أصغر.',
     x_bad: 'هذا الملف مو صورة.', preview: 'كذا بتطلع على التلفزيون:', m_done: 'وصلت الصورة وقناعها للتلفزيون ✓', m_late: 'وصلت الصورة، لكن القناع تأخر: أرسلهما مرة ثانية مع بعض.',
@@ -213,11 +222,43 @@ button.main{background:var(--acc);color:var(--ink);border:0}button.sec{backgroun
   }
   $('msend').onclick = function () { sendOne(true); };
   $('mbare').onclick = function () { sendOne(false); };
+  // 4.4: the photos on the TV, small, each with «حذف»; the same session as sending. A picture comes as a JPEG, shown as data: (the page's CSP)
+  function hdr(extra) { var h = extra || {}; if (sess) h['X-UrTV-Session'] = sess; return h; }
+  function thumb(id, img) {
+    fetch('/api/photo_thumb/' + id, { credentials: 'same-origin', headers: hdr(), cache: 'no-store' }).then(function (r) { return r.ok ? r.blob() : null; })
+      .then(function (b) { if (!b) return; var fr = new FileReader(); fr.onload = function () { img.src = fr.result; }; fr.readAsDataURL(b); }).catch(function () { });
+  }
+  function load() {
+    if (!sess) return;
+    fetch('/api/photos', { credentials: 'same-origin', headers: hdr(), cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
+      if (!j || !j.ok) return;
+      var ids = j.ids || [], grid = $('grid');
+      $('tvHead').textContent = W.onTv.replace('{n}', ids.length).replace('{max}', j.max || 0);
+      grid.textContent = '';
+      ids.forEach(function (id) {
+        var d = document.createElement('div'); d.className = 'ph';
+        var img = document.createElement('img'); img.alt = ''; d.appendChild(img);
+        var b = document.createElement('button'); b.type = 'button'; b.textContent = W.del;
+        b.onclick = function () { if (confirm(W.ask)) del(id); };
+        d.appendChild(b); grid.appendChild(d);
+        thumb(id, img);
+      });
+      $('onTv').classList.toggle('hidden', ids.length === 0);
+    }).catch(function () { });
+  }
+  function del(id) {
+    fetch('/api/photo_del', { method: 'POST', credentials: 'same-origin', headers: hdr({ 'Content-Type': 'application/json' }), body: JSON.stringify({ id: id }), cache: 'no-store' })
+      .then(function (r) { return r.json(); }, function () { return { ok: false, error: 'failed' }; }).catch(function () { return { ok: false, error: 'failed' }; })
+      .then(function (j) {
+        $('state').textContent = j && j.ok ? W.deleted : j && j.error === 'photo_moved' ? W.moved : j && j.error === 'no_session' ? W.no_session : W.failed;
+        load();
+      });
+  }
   $('pick').onchange = function () {
     var files = Array.prototype.slice.call(this.files || []), sent = 0;
     this.value = '';
     function next(i) {
-      if (i >= files.length) { if (sent) say(W.done, sent, files.length); return; }
+      if (i >= files.length) { if (sent) say(W.done, sent, files.length); load(); return; }
       say(W.sending, i + 1, files.length);
       shrink(files[i]).then(function (b) {
         if (!b || b.size > LIMIT) return { ok: false, error: 'photo_refused' };
@@ -230,6 +271,7 @@ button.main{background:var(--acc);color:var(--ink);border:0}button.sec{backgroun
     }
     next(0);
   };
+  load();
 })();
 </script>
 </body>
