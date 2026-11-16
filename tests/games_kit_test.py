@@ -39,7 +39,7 @@ for n in KIT + ENGINES:
 reg = src("GameRegistry.java"); hub = src("QuizGamesActivity.java"); base = src("GameActivity.java"); manifest = (ROOT / "android/app/src/main/AndroidManifest.xml").read_text(encoding="utf-8")
 games = re.findall(r'new Game\("([\w-]+)", "([^"]+)", "([^"]+)", "(\w+)", (true|false), (true|false)\)', reg)
 table = tr.load()
-check("the registry lists the eight games, one line each", [g[0] for g in games] == ["quiz", "khanat", "missing-word", "odd-one", "charades", "letter-hive", "word5", "domino"], [g[0] for g in games])
+check("the registry lists the games in this order, one line each (the new games are added at the end, «حزم المحتوى» last)", [g[0] for g in games][:8] == ["quiz", "khanat", "missing-word", "odd-one", "charades", "letter-hive", "word5", "domino"] and games[-1][0] == "packs" and len({g[0] for g in games}) == len(games), [g[0] for g in games])
 words = [ar for _, ar in tr.java_literals(hub.split("WORDS = {")[1].split("};")[0])]
 check("every name and line of the registry is marked for the English table in the games list (WORDS), in order, and has its English", words == [w for g in games for w in (g[1], g[2])] and all(w in table for w in words), [w for w in words if w not in table])
 for gid, name, line, act, phones, ready in games:

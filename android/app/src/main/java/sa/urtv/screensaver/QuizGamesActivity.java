@@ -32,6 +32,7 @@ public class QuizGamesActivity extends Activity {
         S.n("خلية الحروف"), S.n("فريقان يتسابقان على وصل الخلية"),
         S.n("خمّن الكلمة"), S.n("كلمة من خمسة حروف في ست محاولات"),
         S.n("دومينو"), S.n("الدومينو كما تعرفونه، بالريموت"),
+        S.n("حزم المحتوى"), S.n("حجم ما حمّلتموه من الألعاب، واحتفظوا به أو احذفوه"),
     };
     /** the night switch's words, marked for the English table: «وضع ليلي» with its three states, and the three night palettes */
     static final String[] NIGHT_WORDS = {S.n("وضع ليلي"), S.n("تلقائي بعد المغرب"), S.n("ألوان الليل"), S.n("فحم دافئ"), S.n("ليل أزرق"), S.n("بيج خافت")};
@@ -39,7 +40,7 @@ public class QuizGamesActivity extends Activity {
     /** the filter at the top: all the games, or only the ones that can be played with phones (the choice is kept) */
     static final String[] FILTER_WORDS = {S.n("الكل"), S.n("بالجوالات"), S.n("عرض")};
     static final int COLS = 4;
-    private FrameLayout root; private float scale; private int sel, head, filter; private Typeface display, medium; private GameLook L;   // head: 0 the tiles have the focus, 1 the night switch, 2 the night colours, 3 the filter
+    private FrameLayout root; private float scale; private int sel, head, filter, top;   // top: the first row of tiles on the screen (two rows show; the list scrolls by row) private Typeface display, medium; private GameLook L;   // head: 0 the tiles have the focus, 1 the night switch, 2 the night colours, 3 the filter
 
     @Override protected void attachBaseContext(Context base) {
         Context e = S.wrap(base);
@@ -61,6 +62,7 @@ public class QuizGamesActivity extends Activity {
         root.setBackgroundColor(L.paper);
         setContentView(root);
         filter = GamePrefs.filter(this);
+        PackStore.sweep(this);   // a «تلقائي» pack nobody opened for 14 days goes
         sel = filter == 0 ? GameRegistry.firstFocus(GamePrefs.last(this)) : 0;
         draw();
     }
@@ -106,8 +108,11 @@ public class QuizGamesActivity extends Activity {
         root.addView(mode, mp);
         headerButtons();
         float w = 408, hgt = 336, gap = 32;
+        int selRow = sel / COLS; if (selRow < top) top = selRow; if (selRow > top + 1) top = selRow - 1;
         for (int i = 0; i < gs.size(); i++) {
             GameRegistry.Game g = gs.get(i);
+            int vis = i / COLS - top;
+            if (vis < 0 || vis > 1) continue;   // the tiles of the other rows are off the screen
             boolean focus = i == sel, live = g.ready;
             int words = focus ? L.onInk : live ? L.ink : L.ink(0x80);
             LinearLayout tile = new LinearLayout(this); tile.setOrientation(LinearLayout.VERTICAL); tile.setGravity(Gravity.BOTTOM); tile.setLayoutDirection(Dir.layout());
@@ -132,10 +137,10 @@ public class QuizGamesActivity extends Activity {
             TextView line = text(about, fit(medium, about, 30, inner, 96, 3, 1.1f), words, false); line.setMaxLines(3); line.setLineSpacing(0, 1.1f); line.setAlpha(focus ? .9f : .8f);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, px(96)); lp.topMargin = px(8);
             tile.addView(line, lp);
-            root.addView(tile, at(w, hgt, 96 + (i % COLS) * (w + gap), 236 + (i / COLS) * (hgt + gap)));
+            root.addView(tile, at(w, hgt, 96 + (i % COLS) * (w + gap), 236 + vis * (hgt + gap)));
         }
         LinearLayout hint = new LinearLayout(this); hint.setOrientation(LinearLayout.HORIZONTAL); hint.setLayoutDirection(Dir.layout());
-        String[] kv = {"◀ ▶ ▲ ▼", S.t("الألعاب"), S.t("اختيار"), S.t("افتح اللعبة"), S.t("رجوع"), S.t("الأقسام")};
+        String[] kv = {"◀ ▶ ▲ ▼", gs.size() > 2 * COLS ? S.t("الألعاب، والباقي تحت") : S.t("الألعاب"), S.t("اختيار"), S.t("افتح اللعبة"), S.t("رجوع"), S.t("الأقسام")};
         for (int i = 0; i + 1 < kv.length; i += 2) {
             TextView key = text(kv[i], 30, L.ink, false); key.setGravity(Gravity.CENTER); key.setTextAlignment(View.TEXT_ALIGNMENT_CENTER); key.setBackgroundColor(L.ink(0x24)); key.setPadding(px(16), 0, px(16), 0); key.setMinWidth(px(64));
             LinearLayout.LayoutParams kp = new LinearLayout.LayoutParams(-2, px(48)); kp.setMarginEnd(px(12));

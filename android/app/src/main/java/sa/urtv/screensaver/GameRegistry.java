@@ -24,6 +24,7 @@ final class GameRegistry {
         new Game("letter-hive", "خلية الحروف", "فريقان يتسابقان على وصل الخلية", "LetterHiveActivity", false, true),
         new Game("word5", "خمّن الكلمة", "كلمة من خمسة حروف في ست محاولات", "Word5Activity", false, true),
         new Game("domino", "دومينو", "الدومينو كما تعرفونه، بالريموت", "DominoActivity", false, true),
+        new Game("packs", "حزم المحتوى", "حجم ما حمّلتموه من الألعاب، واحتفظوا به أو احذفوه", "GamePacksActivity", false, true),
     };
 
     /** the games that can be played with the phones: the list shows them under ONE «بالجوالات» tile (the first of them, «الأسرع», stands for it); the others also stay in the list, played with one remote */

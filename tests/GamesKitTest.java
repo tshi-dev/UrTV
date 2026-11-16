@@ -121,7 +121,7 @@ public class GamesKitTest {
     static void registry() {
         Set<String> ids = new HashSet<>(), acts = new HashSet<>(); int phones = 0;
         for (GameRegistry.Game g : GameRegistry.ALL) { ids.add(g.id); acts.add(g.activity); if (g.phones) phones++; }
-        check("registry: eight games, ids and activities unique, only «الأسرع» needs phones", GameRegistry.ALL.length == 8 && ids.size() == 8 && acts.size() == 8 && phones == 1 && GameRegistry.byId("quiz").phones && GameRegistry.byId("quiz").ready);
+        check("registry: ids and activities unique, «الأسرع» needs phones (so does every game added for phones only)", ids.size() == GameRegistry.ALL.length && acts.size() == GameRegistry.ALL.length && phones >= 1 && GameRegistry.byId("quiz").phones && GameRegistry.byId("quiz").ready);
         check("registry: every game has a name and one line, no «·» or «•» in them", Arrays.stream(GameRegistry.ALL).allMatch(g -> !g.name.isEmpty() && !g.line.isEmpty() && !(g.name + g.line).matches(".*[·•].*")));
         int f = GameRegistry.firstFocus("");
         check("registry: the list's focus starts on the game played last, else on the first ready game with no phones (else the first)",
