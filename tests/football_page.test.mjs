@@ -326,7 +326,7 @@ const TOUR = { updated: '2026-11-04T03:00:00Z', names: { '4490': 'دوري ال�
   check('matches page: the card opens with a visible focus: the card itself is ringed and no button is', await p.$$eval('#mp-detail .mdx.f', c => c.length === 1) && await p.$$eval('.mdb button.f', b => b.length === 0));
   check('matches page: the card\'s buttons cannot take the browser\'s own focus (tabindex -1), so there is one focus: the drawn ring', await p.$$eval('.mdb button', b => b.every(x => x.getAttribute('tabindex') === '-1')));
   // «رجوع» under the card's actions (the owner, step 28b): a button of its own, ▼ rings it alone, OK or Back closes the card and the game's row is ringed again
-  check('matches page: the card has «رجوع» as a row of its own under the actions, not ringed at first', await p.$$eval('.mdq button', b => b.length === 1 && b[0].textContent.trim() === 'رجوع' && !b[0].classList.contains('f')));
+  check('matches page: the card has «رجوع» as a row of its own under the actions (4.3.3: «صفحة الفريقين» beside it), not ringed at first', await p.$$eval('.mdq button', b => b.length === 2 && b[0].textContent.trim() === 'رجوع' && b[1].dataset.k === 'club' && ![...b].some(x => x.classList.contains('f'))));
   await p.keyboard.press('ArrowDown');
   check('matches page: ▼ rings «رجوع» alone (no action and not the card)', await p.$$eval('.mdq button.f', b => b.length === 1) && await p.$$eval('.mdb button.f', b => b.length === 0) && await p.$$eval('#mp-detail .mdx.f', c => c.length === 0));
   await p.keyboard.press('ArrowUp');
