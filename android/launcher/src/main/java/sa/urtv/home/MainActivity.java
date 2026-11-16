@@ -3355,7 +3355,7 @@ public class MainActivity extends Activity {
             sceneBackdrop.addView(sceneHome, sceneBackdrop.indexOfChild(wallFront) + 1, new FrameLayout.LayoutParams(-1, -1));
         }
         if (on) {
-            sceneHome.set(true, cfg.scenePacks, ScenePlan.stay(cfg.sceneStay), homeCard != null && homeCard.shownCards() > 0 && !homeCard.inRow(), Dir.rtl(), glass);   // «كنبة»: the cards are under it, the clock in the middle
+            sceneHome.set(true, cfg.scenePacks, ScenePlan.stay(cfg.sceneStay), homeCard != null && homeCard.shownCards() > 0 && !homeCard.inRow(), homeCard != null && homeCard.inRow(), Dir.rtl(), glass);   // «كنبة»: the cards are under it, the clock in the middle
             boolean night = false, fog = false;
             if (cfg.sceneByTime) try {   // the city's Maghrib to its Fajr (the same prayer times as the adhan)
                 sa.urtv.home.tilawah.DayParts d = sa.urtv.home.tilawah.DayParts.now(this, cfg.placeFragment(), cfg.placeTicket());
@@ -3417,12 +3417,16 @@ public class MainActivity extends Activity {
         ampm.setVisibility(View.INVISIBLE);
     }
 
-    /** 4.4: the photo on the screen zoomed by k about the top centre, as its cut-out over the glass clock is (PhotoGlass); the one fading out keeps its own */
-    private void zoomWall(float k) {
-        wallFront.setPivotX(getResources().getDisplayMetrics().widthPixels / 2f);
+    /** 4.4: the photo on the screen framed as its cut-out over the glass clock is (PhotoGlass: its crop, then the zoom k about the top centre); the one fading out keeps its own */
+    private void zoomWall(int[] crop, float k) {
+        android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+        float[] f = ScenePlan.frame(crop, dm.widthPixels, dm.heightPixels, k);
+        wallFront.setPivotX(0);
         wallFront.setPivotY(0);
-        wallFront.setScaleX(k);
-        wallFront.setScaleY(k);
+        wallFront.setScaleX(f[0]);
+        wallFront.setScaleY(f[0]);
+        wallFront.setTranslationX(f[1]);
+        wallFront.setTranslationY(f[2]);
     }
 
     private void updateClock(ConfigSnapshot cfg) {
@@ -4005,6 +4009,8 @@ public class MainActivity extends Activity {
         wallFront.setImageBitmap(bm);
         wallFront.setScaleX(1f);   // a layer never comes back with the zoom of the photo it showed before (PhotoGlass zooms the new one when it has a cut-out)
         wallFront.setScaleY(1f);
+        wallFront.setTranslationX(0);   // nor its crop (PhotoGlass frames the new one)
+        wallFront.setTranslationY(0);
         if (photoGlass != null) photoGlass.show(bm, key, NetGate.allowed(resumed, NetGateAndroid.displayOn(this)));   // after the swap: its zoom is the new photo's
         fullPhotoShown = true;
         logFirstPhoto("full photo");

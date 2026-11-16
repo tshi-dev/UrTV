@@ -35,9 +35,9 @@ final class PhotoGlass extends FrameLayout {
     private int gen;
     private volatile boolean alive = true;
 
-    /** 4.4 the home's photo layer zoomed by k about the screen's top centre (the cut-out and the glass here follow it); 1 puts it back */
-    interface Zoom { void zoom(float k); }
-    private Zoom zoomTo = k -> { };
+    /** 4.4 the home's photo layer framed (ScenePlan.frame: the photo's crop, then the zoom k about the top centre; the cut-out and the glass here follow it); null, 1 puts it back */
+    interface Zoom { void frame(int[] crop, float k); }
+    private Zoom zoomTo = (c, k) -> { };
 
     void onZoom(Zoom z) { zoomTo = z; }
 
@@ -65,31 +65,36 @@ final class PhotoGlass extends FrameLayout {
         row = cardsInRow;
         if (glass != null) {
             if (line != null && mask.getDrawable() != null) { depth(width(), height()); return; }
-            int[] b = PhotoGlassPlan.box(line, width(), height(), cardsShown, rtl, row);
+            int[] b = ScenePlan.fixedBox(width(), height(), cardsShown, rtl);   // the owner: the clock always in the same place
             clock.setScene(glass, b, pale(b));
         }
     }
 
     private int[] fine;   // the cut-out's skyline in 192 columns (ScenePlan.legible)
     private boolean ownerOk;   // its index says "owner_ok": the owner saw the placement and reads it (no legibility drop, no zoom)
+    private int[] crop = ScenePlan.WHOLE;   // its index's "frame": the part of the photo shown full screen (the photo, its cut-out and the glass)
+    private String depthIn;   // its index's "depth": the layouts its cut-out is drawn in (null: any, the rule decides)
 
     /**
-     * the digits where the cut-out's scenery crosses them, the picture zoomed so they and the colon stay legible (ScenePlan.depth); where no zoom
-     * does that (the cards or the apps row put the clock there), the cut-out is hidden and the clock stands in front at its usual place
+     * 4.4 the owner: the clock always in the same place (PhotoGlassPlan's usual place); only the photo's framing changes (its crop, from the
+     * cut-out's index), the same for the photo, its cut-out and the glass. The scenery as the crop shows it may cross the digits by the rule
+     * (ScenePlan.depth: a little more zoom about the top centre if needed); where it cannot (the cards beside the clock), the cut-out is hidden.
      */
     private void depth(int w, int h) {
-        int[] digits = PhotoGlassPlan.box(line, w, h, cardsShown, rtl, row);
-        float z = ownerOk && !cardsShown ? 1f : ScenePlan.depth(line, fine, digits, w, h);   // the owner saw this photo at its own place (no cards beside the clock): kept as it is; elsewhere the rule
-        if (z == 0f) {
-            mask.setVisibility(GONE);
-            digits = PhotoGlassPlan.box(null, w, h, cardsShown, rtl, row);
-            z = 1f;
-        } else mask.setVisibility(VISIBLE);
-        mask.setScaleX(z);
-        mask.setScaleY(z);
+        int[] digits = ScenePlan.fixedBox(w, h, cardsShown, rtl);
+        boolean draw = ScenePlan.draws(depthIn, ScenePlan.layout(cardsShown, row), ownerOk, ScenePlan.framed(line, crop), ScenePlan.framed(fine, crop), digits, w, h);
+        mask.setVisibility(draw ? VISIBLE : GONE);   // else the clock in front
+        float[] f = ScenePlan.frame(crop, w, h, 1f);   // the photo's frame is its zoom (the masks gate chose it)
+        LayoutParams at = (LayoutParams) mask.getLayoutParams();
+        mask.setPivotX(0);
+        mask.setPivotY(0);
+        mask.setScaleX(f[0]);
+        mask.setScaleY(f[0]);
+        mask.setTranslationX(f[1] + (at == null ? 0 : at.leftMargin) * (f[0] - 1));
+        mask.setTranslationY(f[2] + (at == null ? 0 : at.topMargin) * (f[0] - 1));
         clock.setScene(glass, digits, pale(digits));
-        clock.setZoom(z);
-        zoomTo.zoom(z);
+        clock.setFrame(crop, 1f);
+        zoomTo.frame(crop, 1f);
     }
 
     private int[] glassPx;
@@ -117,9 +122,11 @@ final class PhotoGlass extends FrameLayout {
         ownerOk = false;
         mask.setVisibility(GONE);
         mask.setImageDrawable(null);
-        clock.setZoom(1f);
-        zoomTo.zoom(1f);
-        int[] first = PhotoGlassPlan.box(null, w, h, cardsShown, rtl, row);
+        crop = ScenePlan.WHOLE;
+        depthIn = null;
+        clock.setFrame(null, 1f);
+        zoomTo.frame(null, 1f);
+        int[] first = ScenePlan.fixedBox(w, h, cardsShown, rtl);
         clock.setScene(glass, first, pale(first));
         final String[] key = PhotoGlassPlan.key(wallKey);
         final int own = PhotoGlassPlan.own(wallKey);
@@ -128,7 +135,7 @@ final class PhotoGlass extends FrameLayout {
         new Thread(() -> {
             final Object[] got = own > 0 ? loadOwn(own, photo, sw, sh) : load(key[0], key[1], net);
             if (got == null) return;
-            final Object[] got4 = {got[0], got[1], got[2], fineOf((Bitmap) got[0], (int[]) got[1]), got[3]};
+            final Object[] got4 = {got[0], got[1], got[2], fineOf((Bitmap) got[0], (int[]) got[1]), got[3], got[4], got[5]};
             ui.post(() -> {
                 if (g != gen || !alive) return;
                 int[] box = (int[]) got4[1];
@@ -141,15 +148,15 @@ final class PhotoGlass extends FrameLayout {
                 mask.setImageBitmap((Bitmap) got4[0]);
                 fine = (int[]) got4[3];
                 ownerOk = (Boolean) got4[4];
-                mask.setPivotX(w / 2f - lp.leftMargin);
-                mask.setPivotY(-lp.topMargin);
+                crop = (int[]) got4[5];
+                depthIn = (String) got4[6];
                 depth(w, h);   // the owner: the clock where it is, the photo a little lower: more of the digits above the scenery, never a digit cut unreadable
             });
         }, "photo-mask").start();
     }
 
     /** turned off: nothing more is read or drawn */
-    void shutdown() { alive = false; gen++; glass = null; line = null; mask.setImageDrawable(null); clock.setScene(null, null, false); zoomTo.zoom(1f); }
+    void shutdown() { alive = false; gen++; glass = null; line = null; mask.setImageDrawable(null); clock.setScene(null, null, false); zoomTo.frame(null, 1f); }
 
     /** the cut-out's 192-column skyline (smoothed: a spike a few px wide does not count); null when it cannot be read (then the 48 columns serve) */
     private static int[] fineOf(Bitmap bm, int[] box) {
@@ -187,7 +194,11 @@ final class PhotoGlass extends FrameLayout {
             int[] line = new int[s.length()];
             for (int i = 0; i < line.length; i++) line[i] = s.getInt(i);
             Bitmap bm = BitmapFactory.decodeByteArray(data, 0, data.length);
-            return bm == null ? null : new Object[] {bm, box, line, rec.optBoolean(ScenePlan.OWNER_OK, false)};
+            org.json.JSONArray fr = rec.optJSONArray("frame"), dp = rec.optJSONArray("depth");
+            int[] frame = fr != null && fr.length() == 3 ? ScenePlan.noUpscale(ScenePlan.frameOf(fr.getInt(0) + "," + fr.getInt(1) + "," + fr.getInt(2)), 1920) : ScenePlan.WHOLE;   // our photos are 1920 wide: never upscaled
+            String depth = null;
+            if (dp != null) { StringBuilder d = new StringBuilder(","); for (int i = 0; i < dp.length(); i++) d.append(dp.getString(i)).append(','); depth = d.toString(); }
+            return bm == null ? null : new Object[] {bm, box, line, rec.optBoolean(ScenePlan.OWNER_OK, false), frame, depth};
         } catch (Exception | OutOfMemoryError e) {
             return null;
         }
@@ -223,7 +234,7 @@ final class PhotoGlass extends FrameLayout {
             mm.recycle();
             for (int i = 0; i < a.length; i++) a[i] = (a[i] & 0x00FFFFFF) | (PhotoGlassPlan.luma(b[i]) << 24);
             fg.setPixels(a, 0, w, 0, 0, w, h);
-            return new Object[] {fg, new int[] {0, 0, Math.round(1080f * sw / sh), 1080}, PhotoGlassPlan.skyline(b, w, h), false};
+            return new Object[] {fg, new int[] {0, 0, Math.round(1080f * sw / sh), 1080}, PhotoGlassPlan.skyline(b, w, h), false, ScenePlan.WHOLE, null};
         } catch (Exception | OutOfMemoryError e) {
             return null;
         }

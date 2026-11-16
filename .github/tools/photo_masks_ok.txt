@@ -22,3 +22,4 @@ sea/12
 sea/15
 sea/16
 sea/6
+ksa-cities/1

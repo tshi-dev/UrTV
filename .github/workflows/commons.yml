@@ -24,11 +24,13 @@ jobs:
           python-version: '3.12'
       - run: pip install Pillow
       - name: Run
+        env:
+          UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
         run: |
           python3 -I - <<'PY'
           import json, subprocess
           r = json.load(open(".github/horizon-request.json"))
-          args = [r["words"], *r.get("cats", [])] if r["mode"] == "search" else [r["words"], r.get("id", "riyadh")]
+          args = [r["words"], *r.get("cats", [])] if r["mode"] == "search" else [r["words"]] if r["mode"].startswith("unsplash") else [r["words"], r.get("id", "riyadh")]
           open("mode.txt", "w").write(r["mode"])
           subprocess.run(["python3", "-I", ".github/tools/commons_pick.py", r["mode"], "out", *args], check=True)
           PY
