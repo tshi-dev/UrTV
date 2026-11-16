@@ -63,13 +63,10 @@ final class SceneHome extends FrameLayout {
         }
     }
 
-    private final Typeface face;   // the clock's typeface (its glyphs for the ink rule)
-
     SceneHome(Context c, int tier, Typeface digits) {
         super(c);
         app = c.getApplicationContext();
         this.tier = tier;
-        face = digits;
         for (int i = 0; i < 2; i++) {
             slots[i] = new Slot();
             slots[i].clock.setTypeface(digits);
@@ -216,8 +213,7 @@ final class SceneHome extends FrameLayout {
     private float zoomOf(Bitmap mask, ScenePlan.Scene sc) {
         try {
             int[] box = ScenePlan.clockBox(sc, 1920, 1080, cardsShown, rtl);
-            return ScenePlan.depthInk(skylineOf(mask, sc.mask, 96, false, 48), skylineOf(mask, sc.mask, 384, true, 192), SceneClock.glyphs(face), latin(time),
-                    cutOf(mask, sc.mask), box, 1920, 1080);
+            return ScenePlan.depth(skylineOf(mask, sc.mask, 96, false, 48), skylineOf(mask, sc.mask, 384, true, 192), box, 1920, 1080);
         } catch (RuntimeException | OutOfMemoryError e) {
             return 1f;
         }
@@ -238,27 +234,6 @@ final class SceneHome extends FrameLayout {
         } catch (RuntimeException | OutOfMemoryError e) {
             return false;
         }
-    }
-
-    /** the cut-out's alpha made 480 wide (smoothed), placed at place (px of 1080p), for the ink rule; null when it cannot be read */
-    static ScenePlan.Cut cutOf(Bitmap mask, int[] place) {
-        try {
-            int cw = 480, ch = Math.max(1, Math.round(480f * mask.getHeight() / mask.getWidth()));
-            Bitmap small = Bitmap.createScaledBitmap(mask, cw, ch, true);
-            int[] px = new int[cw * ch];
-            small.getPixels(px, 0, cw, 0, 0, cw, ch);
-            if (small != mask) small.recycle();
-            for (int i = 0; i < px.length; i++) px[i] = px[i] >>> 24;
-            return new ScenePlan.Cut(px, cw, ch, place);
-        } catch (RuntimeException | OutOfMemoryError e) {
-            return null;
-        }
-    }
-
-    /** the time shows Latin digits (the digits setting): the ink rule tries 0-9, else ٠-٩ */
-    static boolean latin(CharSequence t) {
-        if (t != null) for (int i = 0; i < t.length(); i++) if (t.charAt(i) >= '0' && t.charAt(i) <= '9') return true;
-        return false;
     }
 
     /** a cut-out's skyline in n columns, read from it made sw wide (smooth: averaged, so a spike a few px wide does not count) */

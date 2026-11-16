@@ -89,7 +89,7 @@ check("the scenes: the zoom from the cut-out, on the scene's thread; the photo a
 check("the clock stays where it is: its box is ScenePlan.clockBox / PhotoGlassPlan.box, the same with or without the zoom",
       "ScenePlan.clockBox(sc, w, h, cardsShown, rtl)" in home and "clock.setScene(glass, digits, pale(digits));" in glass)
 check("our photos: the same rule from the cut-out's skyline; the home's photo layer follows, the one fading out keeps its own, a layer never comes back zoomed",
-      "float z = ScenePlan.depthInk(line, fine, SceneClock.glyphs(face), SceneHome.latin(time), cutPx, digits, w, h);" in glass and "zoomTo.zoom(z);" in glass and "photoGlass.onZoom(this::zoomWall);" in main
+      "float z = ownerOk ? 1f : ScenePlan.depth(line, fine, digits, w, h);" in glass and "zoomTo.zoom(z);" in glass and "photoGlass.onZoom(this::zoomWall);" in main
       and main.index("wallFront.setScaleX(1f);") < main.index("if (photoGlass != null) photoGlass.show(bm, key,"))
 check("a zoom of 1 or more about the top: never an empty band", "while (visible(sky, box, w, h, k) < target - 1e-4f && k < MAX_ZOOM)" in plan and "float k = 1f;" in plan)
 sys.exit(1 if failed else 0)

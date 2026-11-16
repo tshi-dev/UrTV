@@ -41,15 +41,10 @@ final class PhotoGlass extends FrameLayout {
 
     void onZoom(Zoom z) { zoomTo = z; }
 
-    private final Typeface face;   // the clock's typeface (its glyphs for the ink rule)
-    private CharSequence time = "";
-    private ScenePlan.Cut cutPx;   // the cut-out's alpha for the ink rule
-
     PhotoGlass(Context c, int tier, Typeface digits) {
         super(c);
         app = c.getApplicationContext();
         this.tier = tier;
-        face = digits;
         clock = new SceneClock(c);
         clock.setTypeface(digits);
         mask = new ImageView(c);
@@ -60,7 +55,7 @@ final class PhotoGlass extends FrameLayout {
         setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
     }
 
-    void setTime(CharSequence t) { time = t == null ? "" : t; clock.setTime(t); }
+    void setTime(CharSequence t) { clock.setTime(t); }
 
     /** where the digits go follows the cards (beside the clock, or in «كنبة»'s strip under it) and the direction; a change moves them at once */
     void place(boolean cards, boolean rightToLeft, boolean cardsInRow) {
@@ -76,6 +71,7 @@ final class PhotoGlass extends FrameLayout {
     }
 
     private int[] fine;   // the cut-out's skyline in 192 columns (ScenePlan.legible)
+    private boolean ownerOk;   // its index says "owner_ok": the owner saw the placement and reads it (no legibility drop, no zoom)
 
     /**
      * the digits where the cut-out's scenery crosses them, the picture zoomed so they and the colon stay legible (ScenePlan.depth); where no zoom
@@ -83,7 +79,7 @@ final class PhotoGlass extends FrameLayout {
      */
     private void depth(int w, int h) {
         int[] digits = PhotoGlassPlan.box(line, w, h, cardsShown, rtl, row);
-        float z = ScenePlan.depthInk(line, fine, SceneClock.glyphs(face), SceneHome.latin(time), cutPx, digits, w, h);
+        float z = ownerOk ? 1f : ScenePlan.depth(line, fine, digits, w, h);   // the owner saw this photo's place and reads it: kept as it is
         if (z == 0f) {
             mask.setVisibility(GONE);
             digits = PhotoGlassPlan.box(null, w, h, cardsShown, rtl, row);
@@ -118,7 +114,7 @@ final class PhotoGlass extends FrameLayout {
         glass.getPixels(glassPx, 0, 160, 0, 0, 160, 90);
         line = null;
         fine = null;
-        cutPx = null;
+        ownerOk = false;
         mask.setVisibility(GONE);
         mask.setImageDrawable(null);
         clock.setZoom(1f);
@@ -132,7 +128,7 @@ final class PhotoGlass extends FrameLayout {
         new Thread(() -> {
             final Object[] got = own > 0 ? loadOwn(own, photo, sw, sh) : load(key[0], key[1], net);
             if (got == null) return;
-            final Object[] got4 = {got[0], got[1], got[2], fineOf((Bitmap) got[0], (int[]) got[1]), SceneHome.cutOf((Bitmap) got[0], (int[]) got[1])};
+            final Object[] got4 = {got[0], got[1], got[2], fineOf((Bitmap) got[0], (int[]) got[1]), got[3]};
             ui.post(() -> {
                 if (g != gen || !alive) return;
                 int[] box = (int[]) got4[1];
@@ -144,7 +140,7 @@ final class PhotoGlass extends FrameLayout {
                 mask.setLayoutParams(lp);
                 mask.setImageBitmap((Bitmap) got4[0]);
                 fine = (int[]) got4[3];
-                cutPx = (ScenePlan.Cut) got4[4];
+                ownerOk = (Boolean) got4[4];
                 mask.setPivotX(w / 2f - lp.leftMargin);
                 mask.setPivotY(-lp.topMargin);
                 depth(w, h);   // the owner: the clock where it is, the photo a little lower: more of the digits above the scenery, never a digit cut unreadable
@@ -191,7 +187,7 @@ final class PhotoGlass extends FrameLayout {
             int[] line = new int[s.length()];
             for (int i = 0; i < line.length; i++) line[i] = s.getInt(i);
             Bitmap bm = BitmapFactory.decodeByteArray(data, 0, data.length);
-            return bm == null ? null : new Object[] {bm, box, line};
+            return bm == null ? null : new Object[] {bm, box, line, rec.optBoolean(ScenePlan.OWNER_OK, false)};
         } catch (Exception | OutOfMemoryError e) {
             return null;
         }
@@ -227,7 +223,7 @@ final class PhotoGlass extends FrameLayout {
             mm.recycle();
             for (int i = 0; i < a.length; i++) a[i] = (a[i] & 0x00FFFFFF) | (PhotoGlassPlan.luma(b[i]) << 24);
             fg.setPixels(a, 0, w, 0, 0, w, h);
-            return new Object[] {fg, new int[] {0, 0, Math.round(1080f * sw / sh), 1080}, PhotoGlassPlan.skyline(b, w, h)};
+            return new Object[] {fg, new int[] {0, 0, Math.round(1080f * sw / sh), 1080}, PhotoGlassPlan.skyline(b, w, h), false};
         } catch (Exception | OutOfMemoryError e) {
             return null;
         }
