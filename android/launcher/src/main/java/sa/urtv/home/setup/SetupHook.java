@@ -150,6 +150,22 @@ public final class SetupHook {
         } catch (RuntimeException ignored) { }
     }
 
+    /** 4.4 the Home doctor (DockReceiver HOME_WANTED, adb only): «on» / «off» set HOME_WANTED and tell the add-on; «status» reads it. Answers yes or no. */
+    public static String homeWanted(Context c, String mode) {
+        try {
+            final Context app = c.getApplicationContext();
+            FileStore store = new FileStore(app);
+            if (!"status".equals(mode)) {
+                store.put(SetupEngine.HOME_WANTED, "on".equals(mode) ? "1" : "");
+                toldWatch = null;
+                tellWatch(app);
+            }
+            return "1".equals(trim(store.get(SetupEngine.HOME_WANTED))) ? "yes" : "no";
+        } catch (Exception e) {
+            return "no";
+        }
+    }
+
     private static String trim(String s) { return s == null ? "" : s.trim(); }
 
     public static boolean factoryOff(Context c) {
