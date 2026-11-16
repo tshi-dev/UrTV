@@ -95,6 +95,12 @@ push_install() {   # $1 apk name, $2 package
   "$PY" -I optimize/tv.py --push-b64 "optimize/$1" "/data/local/tmp/$1"
   local out
   out=$(pm_install "$1" "$2")
+  if grep -q "Unable to open file" <<< "$out"; then   # 4.3.2 (Nokia Streaming Box 8000, TCL BeyondTV4): the file did not reach /data/local/tmp whole, or the TV could not read it: sent again, installed once more
+    echo "$1 did not reach the TV whole (pm said: Unable to open file): sending it again and installing once more."
+    "$PY" -I optimize/tv.py "rm -f /data/local/tmp/$1" > /dev/null 2>&1 || true
+    "$PY" -I optimize/tv.py --push-b64 "optimize/$1" "/data/local/tmp/$1"
+    out=$(pm_install "$1" "$2")
+  fi
   if grep -q INSTALL_FAILED_VERIFICATION_FAILURE <<< "$out"; then
     verifier_old=$("$PY" -I optimize/tv.py "settings get global $VERIFIER" | tr -d '\r\n' || true)
     if [ -z "$verifier_old" ]; then   # only the word «null» means «not set»; an empty answer is «the TV did not say»
@@ -127,6 +133,9 @@ push_install() {   # $1 apk name, $2 package
       exit 1
     else
       echo "!! Install of $1 failed: $out"
+      if grep -q "Unable to open file" <<< "$out"; then
+        echo "   The TV could not read the file even after it was sent again: its storage may be full or this TV may block /data/local/tmp. Free some space on the TV (Settings, Storage), then run the same command again."
+      fi
       if grep -q INSTALL_FAILED_VERIFICATION_FAILURE <<< "$out"; then
         echo "   Play Protect still refuses it. Tell the person, in Arabic: «اضغط على التلفزيون «تثبيت على أي حال» لما تطلع رسالة Play Protect، وإذا ما طلعت: الإعدادات ← متجر Play ← Play Protect ← «فحص التطبيقات» وقف مؤقتاً، وبعدها نعيد المحاولة». Do not turn the verifier off yourself (settings put global package_verifier_enable 0): only this script changes verifier_verify_adb_installs, for the install, and puts it back."
       fi
