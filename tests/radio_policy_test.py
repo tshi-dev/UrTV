@@ -53,8 +53,8 @@ check("the end of a live stream is a failure to join again, not an end", "state 
 check("ExoPlayer's errors reach the service as MediaPlayer's numbers", "RadioPolicy.extraForExo(e.errorCode)" in exo)
 check("https stays https in the player (a cleartext step only through StreamUrl, for radiojar.com)", ".setAllowCrossProtocolRedirects(false)" in exo)
 err = ms[ms.index("private void onPlaybackError"):ms.index("private void playSurahAgain")]
-check("a station's failure goes to RadioPolicy first: joined again, retried, its second source, then said", err.index("RadioPolicy.after(radioState") < err.index("source == Prefs.SOURCE_ADHAN && retries >= 2")
-      and "RadioPolicy.message(radioState, what, extra)" in err and "RadioFault.message(RadioFault.reason(" in err and "radioAddress = other;" in err and "RadioPolicy.patient(radioState, radioAlt != null)" in err and "RadioPolicy.started(radioState)" in ms)
+check("a station's failure goes to RadioPolicy first: joined again, retried, the next of its sources (4.4: round and round), then said", err.index("RadioPolicy.after(radioState") < err.index("source == Prefs.SOURCE_ADHAN && retries >= 2")
+      and "RadioPolicy.message(radioState, what, extra)" in err and "RadioFault.message(RadioFault.reason(" in err and "radioAddress = radioSources.get(radioSource);" in err and "RadioPolicy.patient(radioState, radioAlt != null)" in err and "RadioPolicy.started(radioState)" in ms)
 check("no station says «صيغة البث غير مدعومة» but through RadioPolicy (never for a station that played)", "PlayerFault.message(true" not in ms and "PlayerFault.message(source == Prefs.SOURCE_RADIO" not in ms
       and 'S.t("تعذّر التشغيل")' not in ms)
 check("a new pick starts with nothing held against it", "resetRadioState();" in ms.split("private void playRadio(int index)")[1].split("startRadio(radioAddress, 0);")[0])

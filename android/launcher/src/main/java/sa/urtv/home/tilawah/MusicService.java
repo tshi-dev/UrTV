@@ -140,7 +140,10 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     private boolean ticking;
     private String currentUrl;
     private String radioAddress;   // the station's own address (StreamUrl resolves it again for every try: a redirect's address may not last)
-    private String radioAlt;   // 4.3: its second address (stations.json «alt»), null when none or already in use
+    private String radioAlt;   // the source tried after the one in use (4.4: the next of radioSources), null when there is only one
+    /** 4.4: all of the station's sources and the one in use (StationSources) */
+    private java.util.List<String> radioSources = new java.util.ArrayList<>();
+    private int radioSource;
     private final RadioPolicy.State radioState = new RadioPolicy.State();   // 4.3: what the pick has been through (RadioPolicy)
 
     // what was on when the adhan started, so it comes back afterwards
@@ -461,8 +464,11 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         pendingSeek = 0;
         wish.ask();
         prefs.save(source, "", surah, station, 0);
-        radioAddress = cat.stations.get(index).url;
-        radioAlt = cat.stations.get(index).alt;
+        Catalog.Station st = cat.stations.get(index);   // 4.4: every source of the station, in turn (StationSources)
+        radioSources = StationSources.of(st.url, st.alt, st.mirrors, null);
+        radioSource = 0;
+        radioAddress = radioSources.isEmpty() ? st.url : radioSources.get(0);
+        radioAlt = radioSources.size() > 1 ? radioSources.get(1) : null;
         resetRadioState();
         stall.reset();   // the person's pick: no quiet restart of an earlier one is held against it
         startRadio(radioAddress, 0);
@@ -963,10 +969,10 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
                 return;
             }
             if (step == RadioPolicy.Step.ALT) {
-                Log.i(TAG, "station failed every try at " + hostOf(radioAddress) + ": its second source " + hostOf(radioAlt));
-                String other = radioAlt;
-                radioAlt = radioAddress;   // both kept: the sources are taken in turn
-                radioAddress = other;
+                radioSource = StationSources.next(radioSource, radioSources.size());   // 4.4: the next source, round and round
+                Log.i(TAG, "station failed every try at " + hostOf(radioAddress) + ": source " + (radioSource + 1) + " of " + radioSources.size() + ", " + hostOf(radioSources.get(radioSource)));
+                radioAddress = radioSources.get(radioSource);
+                radioAlt = radioSources.get(StationSources.next(radioSource, radioSources.size()));
             }
             error = RadioFault.retryMessage(RadioFault.reason(online(), faultCode, httpCode, radioState.played, radioState.formatEveryTime, radioState.failures));
             updateSession();
