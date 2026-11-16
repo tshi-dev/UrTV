@@ -44,4 +44,26 @@ check("the home answers its ledger (what our setup turned off) to our key only",
 wf = text(ROOT / ".github/workflows/android.yml")
 check("CI builds it and publishes urtv-rescue.apk with the others", "cp android/rescue/build/outputs/apk/release/rescue-release.apk urtv-rescue.apk" in wf and wf.count("            urtv-rescue.apk") == 4)   # the artifact, apk-latest, the numbered release, apk-next
 check("tests/android_compile.sh compiles it", "the rescue module compiles" in text(ROOT / "tests/android_compile.sh"))
+# ---- the other ways back (4.4)
+sa = text(SETUP / "SetupActivity.java"); info = text(SETUP / "RescueInfo.java")
+start = sa[sa.index("private void buildStart("):sa.index('start = button(S.t("جهّز كل شي"));')]
+check("«قبل ما نبدأ: لو صار شيء» on the setup's start screen, before «جهّز كل شي»: three steps to «إنقاذ تلفزيونك», a QR to docs/RESCUE.md, a photo asked for",
+      "rescueFirst();" in start and "QrCode.encodeLarge(RescueInfo.DOC_URL)" in sa and 'DOC_URL = "https://github.com/tshi-dev/UrTV/blob/master/docs/RESCUE.md"' in info
+      and all(w in info for w in ("زر الإعدادات في الريموت ← التطبيقات ← Downloader ← فتح", "إنقاذ تلفزيونك", "رجّع التلفزيون كما كان", "صوّر هذه الشاشة بجوالك")))
+check("the Downloader code is shown in Latin digits once there is one (until then the guide's link)", "RescueInfo.hasCode() ? S.tv(RescueInfo.STEP2_CODE, RescueInfo.DOWNLOADER_CODE)" in sa and 'matches("[0-9]{4,10}")' in info)
+doc = text(ROOT / "docs/RESCUE.md")
+check("docs/RESCUE.md: Arabic first, the rescue app through Downloader, the phone route (Bugjaeger / Remote ADB Shell) with ONE line, the TV-settings way, English after",
+      doc.index("إنقاذ تلفزيونك") < doc.index("## English") and "Bugjaeger" in doc and "Remote ADB Shell" in doc and "urtv-rescue.apk" in doc
+      and re.search(r"```\npm enable com\.google\.android\.apps\.tv\.launcherx; [^\n]*pm enable com\.google\.android\.tungsten\.setupwraith; [^\n]*cmd role add-role-holder --user 0 android\.app\.role\.HOME com\.google\.android\.apps\.tv\.launcherx; [^\n]*input keyevent KEYCODE_HOME\n```", doc)
+      and "disable" not in doc.split("```")[1] and "uninstall" not in doc.split("```")[1])
+boot, hook, main = text(SETUP / "SetupBootReceiver.java"), text(SETUP / "SetupHook.java"), text(SETUP.parent / "MainActivity.java")
+check("the home's own check: two boots in a row where our home (the TV's Home) never came up and crashed: the next start offers «رجّع الواجهة الأصلية» first (nothing done by itself)",
+      "homeGuard(app);" in boot and "BootGuard.onBoot(prev, Math.max(0, crashesSince(app, prev.bootAt))" in boot and "store.put(SetupHook.STOCK_OFFER" in boot
+      and "boolean askStock = sa.urtv.home.setup.SetupHook.stockBackOffered(this);" in main and 'askStock ? S.t("رجّع الواجهة الأصلية")' in main
+      and "Settings.ACTION_HOME_SETTINGS" in main and "clearStockBackOffer" in main and "BootGuard.homeUp(g)" in hook)
+eng = text(SETUP / "SetupEngine.java")
+home = eng[eng.index("    private Result homeSwitch() throws IOException {"):eng.index("    // ---- 4.4: the Home key, checked the person's way")]
+check("the 5-minute safety switch is armed on every path of the switch before the role is touched, and the switch does not start without it",
+      home.index("deadman.arm(SAFETY_SECONDS)") < home.index('sh.run("cmd role add-role-holder --user 0 android.app.role.HOME " + SELF)') and "if (!deadman.arm(SAFETY_SECONDS))" in home
+      and "SAFETY_SECONDS = 300" in eng.replace(" ", " "))
 sys.exit(1 if failed else 0)

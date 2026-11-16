@@ -635,7 +635,7 @@ public class SetupRunnerRun {
         line("R35 " + st35.substring(st35.indexOf("home:"), st35.indexOf(",", st35.indexOf("home:"))) + " extras=" + t35.installed.contains("sa.urtv.extras")
             + " listed=" + t35.settings.getOrDefault("secure/enabled_accessibility_services", "").contains("ExtrasA11yService") + " switch=" + t35.settings.get("secure/accessibility_enabled")
             + " role=" + t35.roleHolder + " stockOff=" + t35.off.contains(t35.stockPkg) + " wizardOff=" + t35.off.contains("com.google.android.tungsten.setupwraith")
-            + " fails=" + (m35.get(HomeFails.FILE) == null ? "none" : m35.get(HomeFails.FILE).trim()) + " reportHome=" + homeLine(m35.get(SetupReport.FILE)));
+            + " fails=" + (m35.get(HomeFails.FILE) == null ? "none" : m35.get(HomeFails.FILE).trim()) + " reportHome=" + homeLine(m35.get(SetupReport.FILE)) + " safety=" + h35.dead.armed + "/" + h35.dead.disarmed);
         // 35b. the TV refuses the first bind (TclAppBoot): the list off and on again, then it binds
         SetupEngineRun.FakeTv t35b = SetupEngineRun.tv(); t35b.refuseSwitch = true; t35b.refuseBinds = 1; SetupEngineRun.Mem m35b = new SetupEngineRun.Mem(); Host h35b = new Host(t35b, m35b);
         SetupRunner r35b = new SetupRunner();
@@ -649,7 +649,7 @@ public class SetupRunnerRun {
         String st35c = states(r35c);
         StringBuilder said35c = new StringBuilder(); for (SetupRunner.Line l : r35c.linesSince(0)) said35c.append(l.text).append('\n');
         line("R35c " + st35c.substring(st35c.indexOf("home:"), st35c.indexOf(",", st35c.indexOf("home:"))) + " said=" + said35c.toString().contains("ما قدرنا نخلي زر الرئيسية يفتح تلفزيونك على هذا التلفزيون")
-            + " role=" + t35c.roleHolder + " stockOff=" + t35c.off.contains(t35c.stockPkg) + " fails=" + m35c.get(HomeFails.FILE).trim() + " after=" + st35c.contains("after:DONE") + " reportHome=" + homeLine(m35c.get(SetupReport.FILE)));
+            + " role=" + t35c.roleHolder + " stockOff=" + t35c.off.contains(t35c.stockPkg) + " fails=" + m35c.get(HomeFails.FILE).trim() + " after=" + st35c.contains("after:DONE") + " reportHome=" + homeLine(m35c.get(SetupReport.FILE)) + " safety=" + h35c.dead.armed + "/" + h35c.dead.disarmed);
         // 35d. «تراجع» after 35: the add-on's service leaves the list (the TV had none: the switch back as it was)
         SetupRunner r35d = new SetupRunner();
         go(r35d, h35, SetupRunner.Kind.UNDO, new SetupRunner.Options());
