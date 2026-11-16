@@ -15,7 +15,8 @@ final class HomeWatch {
     static final int MAX_BRINGS = 3;
 
     private final long[] brings = new long[MAX_BRINGS];
-    private long pausedUntil;
+    private long pausedUntil, lastBring;
+    static final long SAME_PRESS_MS = 1_500;
 
     /**
      * A window came to the front: bring ours? {@code on}: the watch is on; {@code pkg}/{@code cls}: the window's package and class; {@code stockHomes}:
@@ -26,6 +27,8 @@ final class HomeWatch {
         if (!on || !oursChosen || pkg == null || cls == null || stockHomes == null) return false;
         if (!homeScreen(pkg, cls, stockHomes)) return false;
         if (now < pausedUntil) return false;
+        // tester-exp (step 88): one Home press gives two stock-home windows; the second one within 1.5 s is brought again but not counted
+        if (lastBring > 0 && now - lastBring < SAME_PRESS_MS) { lastBring = now; return true; }
         int recent = 0, oldest = 0;
         for (int i = 0; i < brings.length; i++) {
             if (brings[i] > 0 && now - brings[i] < WINDOW_MS) recent++;
@@ -37,6 +40,7 @@ final class HomeWatch {
             return false;
         }
         brings[oldest] = now;
+        lastBring = now;
         return true;
     }
 
