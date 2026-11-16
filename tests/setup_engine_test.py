@@ -159,6 +159,13 @@ check("S1: «تراجع» gives the stock home its role and Home back", got.get(
 check("S2: a TV switched the old way: the stock home, the wizard and the helper are turned on again by the journal (what the TV had off itself, com.tcl.bi, stays off), ours stays Home, the notice is the one line, the mark is written",
       "status=DONE notice=true off=[com.tcl.bi] role=sa.urtv.home home=sa.urtv.home/.MainActivity mark=true" in (got.get("S2") or ""), got.get("S2"))
 check("S2: only once: a second start turns nothing on and says nothing", got.get("S2_twice") == "S2_twice true extra_enables=0", got.get("S2_twice"))
+check("HF (4.4): the home switch failed twice on this TV: the third try is not made (SKIPPED with «جرّب الإعداد بمساعد ذكي من الكمبيوتر», not one role asked)",
+      got.get("HF") == "HF FAILED FAILED SKIPPED count=2 third_line=true third_asked=0", got.get("HF"))
+check("HF2 (4.4): a switch that worked starts the count again; two is the limit; nothing tried writes nothing", got.get("HF2") == "HF2 DONE count=0 true false false true", got.get("HF2"))
+act = (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/SetupActivity.java").read_text(encoding="utf-8")
+check("4.4: the setup screen shows the computer's way with a QR to docs/SETUP-PROMPT.md once the switch failed twice (start and done screens)",
+      act.count("computerHelp();") == 2 and "QrCode.encodeLarge(HomeFails.GUIDE_URL)" in act and "if (!HomeFails.givenUp(new FileStore(this).get(HomeFails.FILE))) return;" in act
+      and 'GUIDE_URL = "https://github.com/tshi-dev/UrTV/blob/master/docs/SETUP-PROMPT.md"' in (ROOT / "android/launcher/src/main/java/sa/urtv/home/setup/HomeFails.java").read_text(encoding="utf-8"))
 check("S7 (4.3.3, A17): the wizard owns the saved Wi-Fi: the start screen does not ask about it, «تخلّص من واجهة المصنع» is offered and never names the wizard",
       got.get("S7") == "S7 owns=false refusal=none wizardInPlan=false wizardOff=false", got.get("S7"))
 check("S3: «تخلّص من واجهة المصنع» is on (the person's choice): the migration turns nothing on", got.get("S3_factory") == "S3_factory true enables=0 stockOff=true", got.get("S3_factory"))

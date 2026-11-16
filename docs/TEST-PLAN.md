@@ -305,6 +305,28 @@ Install the branch's home first (`adb install -r urtv-home.apk`). The add-on: `a
 | X11 | «تحديث تلفزيونك» on a TV with the add-on installed (a newer build in apk-next with `saver.sh updatechannel next`) | The steps show «تحديث إضافات تلفزيونك» between the screensaver and the home; all three update |
 | X12 | `optimize/reset.sh` | sa.urtv.extras is removed with the others, its entry leaves enabled_accessibility_services |
 
+
+## 15. 4.4 «update notice, the home switch not pushed, the add-on's bind» (branch work/44-update)
+
+Builds: `adb shell dumpsys package sa.urtv.home | grep versionCode` (and sa.urtv.screensaver, sa.urtv.extras). To force a fresh release check: `adb shell pm clear sa.urtv.home` is NOT allowed (it wipes the person's settings); instead wait 6 h, or install a build older than apk-latest.
+
+| ID | Do | Expect |
+|---|---|---|
+| U1 | Install this branch's home and an OLDER screensaver (e.g. apk-latest's, if older), open the home | The top bar: «في تحديث لـ شاشة التوقف» with «حدّث الآن» and «لاحقاً»; the «تحديث» pill in the top row. OK opens «تحديث تلفزيوني» |
+| U2 | Back to the home again (no update done) | The card does not come back (one-time); the pill stays |
+| U3 | All three apps the same build, apk-latest newer (or `optimize/saver.sh updatechannel next` with a newer apk-next) | Within 6 h of the last check (or at the next start of the home after it): «في تحديث لـ الشاشة الرئيسية وشاشة التوقف وإضافات تلفزيونك» (the add-on only if installed) |
+| U4 | Play a surah («تلاوة») and wait for U1/U3's condition, or start the adhan preview | No card while it plays; it appears on the next return to the home after |
+| U5 | Kids mode on | No card, no pill |
+| U6 | Wi-Fi off, open the home | Nothing said, no error |
+| U7 | Uninstall the screensaver app (test TV only) and open «تلفزيونك» | «ثبّت الجزء الثاني» as before; no «في تحديث» card for it |
+| H1 | On a TV where UrTV is NOT the home: open the home | No bar «خلّ تلفزيونك يفتح على UrTV» any more, ever. The settings' row «اجعل UrTV الشاشة الرئيسية» is still there |
+| H2 | A TV where the switch fails (Home keeps opening the stock home): «إعداد تلفزيوني» → «جهّز كل شي» twice | Each home step fails; after the second, the start screen (and the done screen) show «جرّب الإعداد بمساعد ذكي من الكمبيوتر», the guide line and a QR to docs/SETUP-PROMPT.md; a third run skips the home step with that line (the rest still runs) |
+| H3 | After H2 (test TV): `adb shell run-as sa.urtv.home cat files/setup/home-fails.txt` is not possible on a release build; instead make the switch succeed once (e.g. on another TV) | A successful switch starts the count again (no QR) |
+| E1 | TCL (TclAppBoot): install the add-on, `optimize/dock.sh extras-setup` | It says «Android runs it (Bound services).»; if the TV refused the first bind, one or two lines «… the list was turned off and on again (n)» before it. `adb shell dumpsys accessibility \| grep -i ExtrasA11yService` is in Bound services |
+| E2 | Then `adb shell am force-stop sa.urtv.extras`, wait 2 minutes, open the home | The bar says «إضافات تلفزيونك مفعّلة لكن التلفزيون ما شغّلها: أطفئها وشغّلها من جديد…» with «أصلحها». OK: where UrTV holds WRITE_SECURE_SETTINGS (Family DNS set up) it re-binds by itself (toast «شغّلنا…»), else the TV's accessibility settings open; turn it off and on there. Bound again afterwards |
+| E3 | E2's state, then «أطفئ الآن» in «مركز التحكم» | The offer screen says the same one fix (not «ثبّت») |
+| E4 | `optimize/dock.sh extras-setup` on E2's state | It turns the list off and on itself and confirms «Android runs it» |
+
 ## Report format
 
 ```

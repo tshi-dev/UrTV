@@ -445,6 +445,17 @@ public class SetupEngineRun {
         // the pure rules
         line("S6 " + StockMigration.due("done", "enabled", "enabled", null, null) + " " + StockMigration.due("done", "enabled", "enabled", "on x", null) + " " + StockMigration.due("done", "enabled", "enabled", null, "done x")
             + " " + StockMigration.due("switching", "enabled", "enabled", null, null) + " " + StockMigration.due("done", "disabled", "absent", null, null) + " " + StockMigration.due("done", "absent", "enabled", "off x", null));
+        // 4.4 (HomeFails): the switch fails twice on this TV: the third try is not made (SKIPPED with the computer's line, not one command), a success starts the count again
+        FakeTv thf = tv(); thf.refuseSwitch = true; Mem mhf = new Mem();
+        SetupEngine.Result f1 = engine(thf, mhf, new Dead(), new ArrayList<>()).home();
+        SetupEngine.Result f2 = engine(thf, mhf, new Dead(), new ArrayList<>()).home();
+        int roleAsks = thf.count("cmd role add-role-holder --user 0 android.app.role.HOME sa.urtv.home");
+        SetupEngine.Result f3 = engine(thf, mhf, new Dead(), new ArrayList<>()).home();
+        line("HF " + f1.status + " " + f2.status + " " + f3.status + " count=" + mhf.get(HomeFails.FILE).trim() + " third_line=" + f3.message.startsWith(HomeFails.LINE)
+            + " third_asked=" + (thf.count("cmd role add-role-holder --user 0 android.app.role.HOME sa.urtv.home") - roleAsks));
+        FakeTv thg = tv(); Mem mhg = new Mem(); mhg.put(HomeFails.FILE, "1\n");
+        SetupEngine.Result g1 = engine(thg, mhg, new Dead(), new ArrayList<>()).home();
+        line("HF2 " + g1.status + " count=" + mhg.get(HomeFails.FILE).trim() + " " + HomeFails.givenUp("2") + " " + HomeFails.givenUp("1") + " " + HomeFails.givenUp(null) + " " + HomeFails.after(null, false, false).isEmpty());
         // 4.3.3 (A17): the wizard owns the saved Wi-Fi: nothing says so on the start screen, and «تخلّص من واجهة المصنع» is offered (the wizard is never turned off)
         FakeTv s7 = tv(); s7.wizardAnswersHome = true; s7.wizardOwnsWifi = true; SetupEngine se7 = engine(s7, new Mem(), new Dead(), new ArrayList<>());
         SetupEngine.FactoryOffer fo7 = se7.factoryOffer();

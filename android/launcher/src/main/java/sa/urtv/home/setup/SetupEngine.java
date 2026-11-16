@@ -463,7 +463,24 @@ final class SetupEngine {
 
     private boolean ours(String top) { return top.contains(SELF + "/") && top.contains("MainActivity"); }
 
+    /** the switch really started on this try (the journal said «switching»): HomeFails counts only these */
+    private boolean homeAttempted;
+
+    /**
+     * 4.4: the home switch, counted (HomeFails): after two tries that did not make UrTV the home, the in-app switch is not offered any more on this TV; the step says
+     * the one line and the setup screen shows the computer's way. A try that worked starts the count again.
+     */
     Result home() throws IOException {
+        if (HomeFails.givenUp(store.get(HomeFails.FILE))) return skipped(HomeFails.LINE + ": " + HomeFails.GUIDE);
+        homeAttempted = false;
+        Result r = homeSwitch();
+        if (homeAttempted || r.status == Status.DONE) {   // nothing tried (the TV did not say, no stock home known): nothing written
+            try { store.put(HomeFails.FILE, HomeFails.after(store.get(HomeFails.FILE), homeAttempted, r.status == Status.DONE)); } catch (IOException ignored) { }
+        }
+        return r;
+    }
+
+    private Result homeSwitch() throws IOException {
         Set<String> pk = packages("pm list packages");
         if (pk == null) return failed("لم يقل التلفزيون قائمة تطبيقاته، فما بدّلنا الشاشة الرئيسية.");
         String stock = pk.contains(LAUNCHERX) ? LAUNCHERX_HOME : pk.contains(TVLAUNCHER) ? TVLAUNCHER_HOME : otherHome(pk);
@@ -513,6 +530,7 @@ final class SetupEngine {
         if (wiz.equals("disabled") && "enabled".equals(journal("wizard_before"))) wiz = "enabled";    // we turned it off in an earlier try
         if (stk.equals("disabled") && "enabled".equals(journal("stock_before"))) stk = "enabled";
         journalWrite("switching", stock, holder, wiz, stk, "armed");
+        homeAttempted = true;
         // the safety switch first, and the switch does not start without it: its deadline is on disk, so a restart or a force-stop does not lose it
         store.put("home-deadline.txt", (now() + SAFETY_SECONDS * 1000L) + "\n");
         if (!deadman.arm(SAFETY_SECONDS)) {

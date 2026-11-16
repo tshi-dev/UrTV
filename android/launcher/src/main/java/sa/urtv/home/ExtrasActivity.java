@@ -40,6 +40,9 @@ public class ExtrasActivity extends Activity {
     @Override protected void attachBaseContext(android.content.Context b) { super.attachBaseContext(S.wrap(b)); }
 
     private TextView state, button;
+    private boolean healTried;
+    /** 4.4: the one fix when the add-on is turned on in the TV's list but Android does not run it */
+    static final String STUCK_FIX = S.n("«إضافات تلفزيونك» مفعّلة لكن التلفزيون ما شغّلها: أطفئها وشغّلها من جديد في «تسهيل الاستخدام»");
     private boolean registered, working, askedSource, sentToSettings;
 
     private final BroadcastReceiver result = new BroadcastReceiver() {
@@ -159,6 +162,11 @@ public class ExtrasActivity extends Activity {
             return;
         }
         button.setText(S.t("شغّلها في «تسهيل الاستخدام»"));
+        if (A11yHeal.listed(this)) {   // 4.4: turned on, but Android does not run it (a TCL refused the first bind; a force-stop): the one fix, after our own try where we may
+            if (!healTried && A11yHeal.canHeal(this)) { healTried = true; A11yHeal.check(getApplicationContext(), "fix-offer"); state.postDelayed(this::refresh, 4000); }
+            state.setText(S.tv(STUCK_FIX));
+            return;
+        }
         state.setText(sentToSettings ? S.t("اختر «إضافات تلفزيونك» وشغّلها، ثم ارجع") : S.t("الإضافة مثبّتة: بقي تشغيلها"));
     }
 

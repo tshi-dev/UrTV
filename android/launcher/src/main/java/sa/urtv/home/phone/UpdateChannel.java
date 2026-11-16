@@ -9,10 +9,10 @@ import android.net.Uri;
  * word (`optimize/saver.sh updatechannel`, no screen shows it) and tells it through its ConfigProvider (same key); an older screensaver, or
  * any answer but "next", is the latest.
  */
-final class UpdateChannel {
+public final class UpdateChannel {
     private UpdateChannel() { }
 
-    static String read(Context c) {
+    public static String read(Context c) {
         try (Cursor cur = c.getContentResolver().query(Uri.parse("content://sa.urtv.screensaver.config"), null, null, null, null)) {
             if (cur != null && cur.moveToFirst()) {
                 int i = cur.getColumnIndex("update_channel");
