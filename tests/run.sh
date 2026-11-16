@@ -112,6 +112,7 @@ python3 tests/team_search_test.py
 python3 tests/team_ids_test.py
 python3 tests/city_match_test.py
 python3 tests/cities_world_test.py
+python3 tests/cities_more_test.py   # 4.3.3 the offline city search: the list (GeoNames + Wikidata), its generator, the ranking
 python3 tests/cities_md_test.py
 python3 tests/home_card_test.py
 python3 tests/home_page_test.py   # the home's cards on the screensaver's newer page (its stocks stayed stale on the APK's own)

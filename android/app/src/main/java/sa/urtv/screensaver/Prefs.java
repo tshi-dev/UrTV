@@ -129,6 +129,7 @@ final class Prefs {
         GlassStyle.setTweaks(tweaks());
         if (ZoneFix.logger == null) ZoneFix.logger = line -> android.util.Log.i("UrTVZone", line);
         if (NetLog.logger == null) NetLog.logger = new NetLogcat();   // G3: one line per 10 minutes of requests (tag UrTVNet)
+        if (CitiesMore.opener == null) { final Context app = c.getApplicationContext() != null ? c.getApplicationContext() : c; CitiesMore.opener = () -> app.getAssets().open(CitiesMore.FILE); }   // 4.3.3: read only on a search
         ZoneFix.report(pageZone());   // issue #55: the page's last word on the city's zone, after a restart too
     }
 

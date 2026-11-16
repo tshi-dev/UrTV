@@ -163,10 +163,15 @@ public class SaverReceiver extends BroadcastReceiver {
             } else {
                 if (city == null) {   // a short form of a built-in name: «مكة» for «مكة المكرمة»
                     List<String[]> hits = CityMatch.find(name);
-                    if (hits.size() == 1) city = hits.get(0);
-                    else if (hits.size() > 1) {
+                    if (hits.size() == 1) {
+                        city = hits.get(0);
+                        if (city.length > 5 && Cities.find(city[0], city[1], city[2]) == null) {   // 4.3.3: a place of the search list (CitiesMore): saved as a searched place, with its zone and country
+                            tz = city[3];
+                            cityCountry = city[5];
+                        }
+                    } else if (hits.size() > 1) {
                         List<String> names = new ArrayList<>();
-                        for (String[] h : hits) names.add(Cities.country(h) + "|" + (h.length > 4 ? h[4] : h[0]));
+                        for (String[] h : hits) names.add(Cities.country(h) + "|" + (h.length > 4 && h[4] != null && !h[4].isEmpty() ? h[4] : h[0]));
                         return "error: «" + name + "» fits several cities: " + Prefs.join(names, "، ") + " — give one of them in full";
                     }
                 }

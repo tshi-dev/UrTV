@@ -157,3 +157,14 @@ per-model lists, packages only, re-taken at commit 3cd274f8 (2 Nov 2026). Clean 
 «تطبيقات مقترحة» offers Open Shelf (https://github.com/wingedpanther/openshelf, GPL-3.0; its font under the SIL Open Font License 1.1) as one entry. We only link to it: the settings download its own release file
 (`OpenShelf-<version>.apk` from that repository's releases), check that it is that package, and hand it to Android's installer, which asks the person first. Nothing of Open Shelf is bundled in our apps, and we
 have not vetted the apps it installs (the line on its tile says so).
+
+## GeoNames and Wikidata (the offline city search)
+
+`android/app/src/main/assets/cities-more.txt` (the places the settings' city search and `saver.sh city` find without the internet, built by
+`.github/tools/cities-more/build.py`) and the world part of the built-in list (`Cities.java`) are made from:
+
+- **GeoNames** (https://www.geonames.org/), cities500, through the `geonamescache` package: names, coordinates, populations and time zones,
+  under the Creative Commons Attribution 4.0 License (CC BY 4.0, https://creativecommons.org/licenses/by/4.0/). Changes: places chosen by
+  country and population, places already in the built-in list left out, coordinates rounded to four decimals.
+- **Wikidata** (https://www.wikidata.org/): the Arabic names and other Arabic spellings of those GeoNames places (by their GeoNames id, P1566)
+  and the seats of the Saudi governorates, under CC0 1.0 (public domain dedication). A snapshot is kept in `.github/tools/cities-more/sources/`.
