@@ -963,8 +963,8 @@ const CONFIG = {
   // suhoor; the place stays, so nothing else moves) and #nightdim=0 keeps the night as bright as the day (no dimmer)
   occasion: _Q.get('occasion') !== '0',
   nightDim: _Q.get('nightdim') !== '0',
-  // «تبديل الآية والحديث»: #versemin=3 a new verse or hadith every 3 minutes
-  verseMin: _Q.get('versemin') === '3' ? 3 : 0,
+  // «تبديل الآية والحديث»: #versemin=3 (or 10) a new verse or hadith every 3 (10) minutes
+  verseMin: ({3:3, 10:10})[_Q.get('versemin')] || 0,
   // «الآية والحديث»: #versekind=verse only verses, #versekind=hadith only hadith
   verseKind: (v => v === 'verse' || v === 'hadith' ? v : 'both')(_Q.get('versekind')),
   // «إظهار الثواني»: #seconds=1 the seconds on the screensaver's clock, small beside the minutes

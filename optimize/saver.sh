@@ -61,7 +61,7 @@
 #                                                  suhoor in Ramadan): on (default) or off (the place stays empty)
 #   optimize/saver.sh nightdim off                 «تعتيم الليل», the screensaver darker at night (from 21:00, most 23:00-05:00, normal at 07:00): on (default) or off
 #   optimize/saver.sh taskspill off                home screen: the «المهام» button: on (default) or off. Off removes only the button: the tasks stay, in the «المهام» card and on the phone
-#   optimize/saver.sh verse 3                      the verse-or-hadith card (card verse): day (default: a verse one day, a hadith the next) or 3 (a new one every 3 minutes)
+#   optimize/saver.sh verse 3                      the verse-or-hadith card (card verse): day (default: a verse one day, a hadith the next), 3 or 10 (a new one every 3 or 10 minutes)
 #   optimize/saver.sh versekind verse              what that card shows: both (default: a verse, then a hadith), verse (verses only) or hadith (hadith only)
 #   optimize/saver.sh genres Drama,Comedy          episodes card: Drama Comedy Action Crime Thriller Mystery
 #                                                  Science-Fiction Fantasy Adventure Romance Family History Horror
@@ -271,7 +271,7 @@ case "${1:-}" in
   occasion) set1 occasion "${2:?usage: optimize/saver.sh occasion on|off}" ;;
   nightdim) set1 nightdim "${2:?usage: optimize/saver.sh nightdim on|off}" ;;
   taskspill) set1 taskspill "${2:?usage: optimize/saver.sh taskspill on|off}" ;;
-  verse)    set1 verse "${2:?usage: optimize/saver.sh verse day|3}" ;;
+  verse)    set1 verse "${2:?usage: optimize/saver.sh verse day|3|10}" ;;
   versekind) case "${2:-}" in both|verse|hadith) set1 versekind "$2" ;; *) echo "usage: optimize/saver.sh versekind both|verse|hadith"; exit 1 ;; esac ;;
   seconds)  case "${2:-}" in on|off) set1 seconds "$2" ;; *) echo "usage: optimize/saver.sh seconds on|off"; exit 1 ;; esac ;;
   backexit) case "${2:-}" in press|hold|three) set1 backexit "$2" ;; *) echo "usage: optimize/saver.sh backexit press|hold|three"; exit 1 ;; esac ;;

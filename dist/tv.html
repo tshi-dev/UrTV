@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261116034607">
+<meta name="urtv-build" content="20261116051004">
 <title>شاشة تلفزيونك</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -935,8 +935,8 @@ const CONFIG = {
   // suhoor; the place stays, so nothing else moves) and #nightdim=0 keeps the night as bright as the day (no dimmer)
   occasion: _Q.get('occasion') !== '0',
   nightDim: _Q.get('nightdim') !== '0',
-  // «تبديل الآية والحديث»: #versemin=3 a new verse or hadith every 3 minutes
-  verseMin: _Q.get('versemin') === '3' ? 3 : 0,
+  // «تبديل الآية والحديث»: #versemin=3 (or 10) a new verse or hadith every 3 (10) minutes
+  verseMin: ({3:3, 10:10})[_Q.get('versemin')] || 0,
   // «الآية والحديث»: #versekind=verse only verses, #versekind=hadith only hadith
   verseKind: (v => v === 'verse' || v === 'hadith' ? v : 'both')(_Q.get('versekind')),
   // «إظهار الثواني»: #seconds=1 the seconds on the screensaver's clock, small beside the minutes
