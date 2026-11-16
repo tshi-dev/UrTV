@@ -306,6 +306,25 @@ const ids = (p, key) => p.evaluate(k => ((MP.leagues.find(x => x.key === k) || {
   await ctx.close();
 }
 
+// ---- 4.3.3 the home card «مباراة فريقك القادمة»: the followed teams' next game alone, in the games' card look, the clubs' last meetings under it
+{
+  const { p, ctx, errors } = await open('widget=1&home_panel=nextmatch&teams=136013,136014');
+  await p.waitForTimeout(600);
+  const c = await p.evaluate(() => { const k = CARDS[0]; return { kind: k.kind, eff: k.eff, hd: k.hd.textContent, rows: [...k.ul.children].map(li => li.className + '|' + li.textContent) }; });
+  check('next match: the card is there with its title', c.kind === 'nextmatch' && c.hd === 'مباراة فريقك القادمة', JSON.stringify(c));
+  check('next match: one game, the soonest of the followed teams (not the later one), as a row of the games\' card', c.rows.length === 2 && c.rows[0].startsWith('mg|') && /الهلال/.test(c.rows[0]) && !/القادسية/.test(c.rows[0]), JSON.stringify(c.rows));
+  check('next match: under it the two clubs\' last meetings', /^h2l\|آخر مواجهتين: الهلال ٢ فوز، ٠ تعادل، .+ ٠$/.test(c.rows[1]), c.rows[1]);
+  check('next match: no script error', !errors.length, errors.join(' | '));
+  await ctx.close();
+}
+{   // no meeting known, no team followed: the game alone; then the games card's own empty line
+  const { p, ctx } = await open('widget=1&home_panel=nextmatch&teams=136014', { archive: { ...ARCHIVE, 'h2h/136011-136013.json': undefined } });
+  await p.waitForTimeout(600);
+  const rows = await p.evaluate(() => [...CARDS[0].ul.children].map(li => li.className));
+  check('next match: no meetings known: the game\'s row alone', rows.join() === 'mg', rows.join());
+  await ctx.close();
+}
+
 await browser.close();
 if (failed) { console.log(failed + ' failed'); process.exit(1); }
 console.log('all match archive tests passed');

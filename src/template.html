@@ -894,7 +894,7 @@ const _num = (k, d) => { const v = parseFloat(_Q.get(k)); return isNaN(v) ? d : 
 // the city's time zone, #tz=: the clock, prayers, matches and dates all go by it
 const _tzOk = z => { try{ new Intl.DateTimeFormat('en',{timeZone:z}); return true; }catch(e){ return false; } };
 // the cards a slot can show (Prefs.PANELS in the app is the same list); «none» is the absence of one
-const CARD_KINDS = ['shows','prayers','forecast','hourly','prayerrow','nextprayer','matches','verse','wisdom','adhkar','stocks','tasks','year','smart','today','album'];
+const CARD_KINDS = ['shows','prayers','forecast','hourly','prayerrow','nextprayer','matches','nextmatch','verse','wisdom','adhkar','stocks','tasks','year','smart','today','album'];
 const CONFIG = {
   city: _Q.get('city') || 'الرياض',
   latitude: _num('lat', 24.7136),
@@ -1070,7 +1070,7 @@ CONFIG.cards = (CONFIG.widget && _Q.has('home_panel') ? _list('home_panel') : PA
 CONFIG.panel = CONFIG.cards[0] || 'none';   // the first one, for what only needs to know "the card"
 // does a card on this page need that kind's data? The smart card reads what the matches, the adhkar, the prayers and the hours load;
 // «يومك» what the prayers, the matches and the tasks do
-const USES_OF = {smart:['matches','adhkar','prayers','prayerrow','hourly'], today:['prayers','matches','tasks'], nextprayer:['prayers']};
+const USES_OF = {smart:['matches','adhkar','prayers','prayerrow','hourly'], today:['prayers','matches','tasks'], nextprayer:['prayers'], nextmatch:['matches']};
 const USES = k => ((CONFIG.football || CONFIG.matchPage) && (k === 'matches' || k === 'prayers')) || CONFIG.cards.some(c => c === k || (USES_OF[c] || []).includes(k));
 
 // The panels' snapshot is keyed by the link without the settings that only change how things look
@@ -2964,7 +2964,7 @@ function liveRect(kind = 'tasks'){
 
 let FORECAST = [];
 try{ FORECAST = JSON.parse(localStorage.getItem(LS.forecast) || '[]') || []; }catch(e){}
-const PANEL_TITLE = {album:'ألبوم صوري', today:'يومك', shows:'هذا الأسبوع', prayers:'مواقيت اليوم', nextprayer:'الصلاة القادمة', forecast:'الأيام القادمة', hourly:'الساعات القادمة', matches:CONFIG.leagues.length ? 'المباريات' : 'مباريات فرقك', tasks:'المهام', year:'السنة'};
+const PANEL_TITLE = {album:'ألبوم صوري', today:'يومك', shows:'هذا الأسبوع', prayers:'مواقيت اليوم', nextprayer:'الصلاة القادمة', nextmatch:'مباراة فريقك القادمة', forecast:'الأيام القادمة', hourly:'الساعات القادمة', matches:CONFIG.leagues.length ? 'المباريات' : 'مباريات فرقك', tasks:'المهام', year:'السنة'};
 const LISTS = ['matches', 'stocks', 'tasks', 'shows'];   // the kinds that page through their rows
 
 // ---- «يومك» (today): the day in one card
@@ -3013,6 +3013,10 @@ function liveWhen(ev){   // «مباشر» and «الدقيقة ٦٧» / «اس�
   return `<span class="live">مباشر</span> · ${liveStatus(ev, ar(fmtTime(+p.hour % 24, +p.minute)))}`;
 }
 const liveScore = ev => ev.intHomeScore != null && ev.intAwayScore != null ? `<span class="sc">${ar(+ev.intHomeScore)} - ${ar(+ev.intAwayScore)}</span>` : '<span class="sc">×</span>';
+// 4.3.3 the followed teams' next game (or the one under way): the soonest that is not over nor called off
+function nextTeamGame(now){
+  return matchEvents().filter(ev => fbMine(ev) && !calledOff(ev) && !FINAL.includes(String(ev.strStatus || '').toUpperCase()) && fbKick(ev) + durMs(ev) > now).sort((a, b) => fbKick(a) - fbKick(b))[0] || null;
+}
 function liveRow(ev){   // a row of the card: «الهلال [شعار] ٢ - ١ [شعار] النصر», the crests next to the score
   return `<li class="lv"><div class="lvm">${liveWhen(ev)}</div><div class="lvt"><span class="tm"><span class="nm">${esc(teamAr(ev.strHomeTeam, ev.idHomeTeam))}</span>${crestImg(ev, 'Home')}</span>`
     + `${liveScore(ev)}<span class="tm">${crestImg(ev, 'Away')}<span class="nm">${esc(teamAr(ev.strAwayTeam, ev.idAwayTeam))}</span></span></div></li>`;
@@ -3070,7 +3074,7 @@ function paintHd(hd, title, html){
 // Draw the cards of these kinds (none given = all)
 function renderPanel(animate, ...kinds){
   for(const c of CARDS){
-    if(kinds.length && !kinds.includes(c.kind) && c.kind !== 'smart' && c.kind !== 'today') continue;
+    if(kinds.length && !kinds.includes(c.kind) && !kinds.includes(c.eff) && c.kind !== 'smart' && c.kind !== 'today') continue;
     renderCard(c, animate);
   }
   fitCards();
@@ -3081,7 +3085,7 @@ function renderPanel(animate, ...kinds){
 function renderCard(card, animate, keepSize){
   const ul = card.ul, hd = card.hd;
   const was = card.eff;
-  card.eff = card.kind === 'smart' ? smartKind() : card.kind;
+  card.eff = card.kind === 'smart' ? smartKind() : card.kind === 'nextmatch' ? 'matches' : card.kind;   // 4.3.3 «مباراة فريقك القادمة»: the games' card, one game
   const P = card.eff;
   ul.classList.toggle('pgrid', P === 'prayers');
   card.el.classList.toggle('boxes', P === 'prayers');
@@ -3102,7 +3106,11 @@ function renderCard(card, animate, keepSize){
   else if(P === 'hourly') rows = hourlyRows();
   else if(P === 'prayerrow'){ const q = prayerRowCard(); paintHd(hd, q.title); rows = q.rows; }
   else if(P === 'nextprayer') rows = nextPrayerRows();
-  else if(P === 'matches') rows = matchRows(card);
+  else if(P === 'matches'){
+    rows = matchRows(card);
+    const n = card.kind === 'nextmatch' && rows.length && nextTeamGame(Date.now()), meet = n && !fbLive(n, Date.now()) && h2hLine(n);
+    if(meet) rows = rows.concat(`<li class="h2l"><span>${esc(meet)}</span></li>`);   // under it the two clubs' last meetings
+  }
   else if(P === 'year') rows = [yearCard(card)];
   else if(P === 'album') rows = [albumCard(card)];
   else if(P === 'today'){ const q = todayCard(); paintHd(hd, q.title); rows = q.rows; }
@@ -3111,8 +3119,9 @@ function renderCard(card, animate, keepSize){
   else if(P === 'wisdom'){ const q = wisdomOfDay(); paintHd(hd, q.title); rows = q.rows; }
   else if(P === 'adhkar'){ const q = adhkarCard(card); paintHd(hd, q.title, q.hd); rows = q.rows; }
   else if(P === 'stocks'){ const q = stocksCard(); paintHd(hd, '', q.hd); rows = q.rows; }
-  if(P === 'matches' && matchesStaleNote()) paintHd(hd, '', `<span>${PANEL_TITLE.matches}</span><span class="until">${matchesStaleNote()}</span>`);
-  else if(PANEL_TITLE[P]) paintHd(hd, PANEL_TITLE[P]);
+  const title = PANEL_TITLE[card.kind === 'nextmatch' ? 'nextmatch' : P];
+  if(P === 'matches' && matchesStaleNote()) paintHd(hd, '', `<span>${title}</span><span class="until">${matchesStaleNote()}</span>`);
+  else if(title) paintHd(hd, title);
   if(!rows.length){
     if(P === 'matches' && !MATCHES_LOADED && ul.firstElementChild && !ul.firstElementChild.classList.contains('empty')) return;
     if(P === 'matches' && ul.firstElementChild && ul.firstElementChild.classList.contains('empty') && ul.firstElementChild.textContent === matchesEmptyText()) return;
@@ -3517,7 +3526,9 @@ function matchRows(card){
   let evs = matchEvents();
   const smart = card && card.kind === 'smart';
   if(smart){ const ids = new Set(focusGames(now).map(ev => ev.idEvent)); evs = evs.filter(ev => ids.has(ev.idEvent)); }   // only the game that brought the smart card here
-  const others = smart ? [] : eventRows(now);
+  const one = card && card.kind === 'nextmatch';
+  if(one){ const n = nextTeamGame(now); evs = n ? evs.filter(ev => ev.idEvent === n.idEvent) : []; }   // 4.3.3 the followed teams' next game alone
+  const others = smart || one ? [] : eventRows(now);
   const shown = evs.map(ev => ({ev, t: toDate(ev).getTime(), r: gameRank(ev, now) + (ev.tour ? 100 : 0)}))
     .filter(x => finishedRecently(x.ev, now) || pendingResult(x.ev, now)
       || (now < x.t + durMs(x.ev) && !FINAL.includes((x.ev.strStatus || '').toUpperCase())
