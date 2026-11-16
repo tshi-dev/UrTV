@@ -3,6 +3,7 @@ package sa.urtv.screensaver;
 import java.util.*;
 import sa.urtv.screensaver.games.forehead.ForeheadGame;
 import sa.urtv.screensaver.games.author.AuthorGame;
+import sa.urtv.screensaver.games.closest.ClosestGame;
 
 /** For tests/new_games_test.py: the rules of the new games (4.4) on a plain JVM, fake clocks. Prints PASS/FAIL lines. */
 public final class NewGamesTest {
@@ -72,9 +73,44 @@ public final class NewGamesTest {
             real != null && real.size() >= 120 && real.stream().allMatch(p -> !p.q[1].isEmpty()) && real.stream().map(p -> p.q[0]).distinct().count() == real.size());
     }
 
+    static List<ClosestGame.Item> items(int n) {
+        StringBuilder b = new StringBuilder("{\"v\":1,\"items\":[");
+        for (int i = 0; i < n; i++) b.append(i > 0 ? "," : "").append("{\"i\":\"c").append(i).append("\",\"q\":[\"سؤال\",\"Q\"],\"v\":").append(1000 + i).append(",\"u\":[\"م\",\"m\"],\"d\":1,\"k\":1}");
+        return ClosestGame.parse(MiniJson.parse(b.append("]}").toString()));
+    }
+    static void closest(String bundleFile) throws Exception {
+        List<ClosestGame.Item> all = items(50);
+        check("closest: the items parse; a fraction, a negative number, a text value and a repeated id are skipped; too few items or another version refuse the file",
+            all != null && all.size() == 50 && ClosestGame.parse(MiniJson.parse("{\"v\":1,\"items\":[{\"i\":\"a\",\"q\":[\"x\"],\"v\":1.5}]}")) == null && ClosestGame.parse(MiniJson.parse("{\"v\":3,\"items\":[]}")) == null);
+        check("closest: a typed number: Arabic-Indic and Latin digits, spaces and group marks; letters, a point, empty and 14 digits are not numbers",
+            ClosestGame.number("٨٦٤٠٠").equals(86400L) && ClosestGame.number(" 9 372 610 ").equals(9372610L) && ClosestGame.number("86,400").equals(86400L) && ClosestGame.number("12ab") == null && ClosestGame.number("1.5") == null && ClosestGame.number("") == null && ClosestGame.number("12345678901234") == null);
+        List<ClosestGame.Item> two = new ArrayList<>(all.subList(0, 2));
+        ClosestGame g = new ClosestGame(4, two);   // the first item's value is 1000
+        check("closest: the first question is open; a text that is not a number and a second guess are refused", g.phase == ClosestGame.Phase.ASK && !g.submit(0, "abc") && g.submit(0, "1010") && !g.submit(0, "1020"));
+        g.submit(1, "1000"); g.submit(2, "1010"); g.submit(3, "900");
+        check("closest: all answered", g.allIn() && g.answered() == 4);
+        g.reveal();
+        check("closest: the exact answer scores 5; the next distance 2; guesses at the same distance share the points (both +10 get 2); the farthest scores nothing",
+            g.gained[1] == 5 && g.gained[0] == 2 && g.gained[2] == 2 && g.gained[3] == 1 && g.ranking().get(0) == 1);
+        g.next(); g.submit(0, "1500"); g.submit(1, "1002"); g.reveal();
+        check("closest: without an exact answer the closest scores 3; one that did not answer scores nothing; the game ends after the last question",
+            g.gained[1] == 3 && g.gained[0] == 2 && g.gained[2] == 0 && g.gained[3] == 0);
+        g.next();
+        check("closest: the end", g.phase == ClosestGame.Phase.END && g.score[1] == 8);
+        boolean threw = false; try { new ClosestGame(1, two); } catch (IllegalArgumentException e) { threw = true; }
+        check("closest: one player is refused (two to ten)", threw);
+        Set<String> recent = new HashSet<>(); for (int i = 0; i < 40; i++) recent.add("c" + i);
+        List<ClosestGame.Item> pk = ClosestGame.pick(all, 8, false, recent, new Random(3));
+        check("closest: nothing repeats: the picks are the items this TV has not asked while there are enough", pk.size() == 8 && pk.stream().noneMatch(p -> recent.contains(p.id)));
+        byte[] json = GameBundle.open("closest", java.nio.file.Files.readAllBytes(java.nio.file.Paths.get(bundleFile)));
+        List<ClosestGame.Item> real = json == null ? null : ClosestGame.parse(MiniJson.parse(new String(json, java.nio.charset.StandardCharsets.UTF_8)));
+        check("closest: the bundled bank opens and parses (" + (real == null ? 0 : real.size()) + " items, at least 120), every item has a unit text or none, an English question, no Israel", real != null && real.size() >= 120 && real.stream().allMatch(p -> !p.q[1].isEmpty() && !p.q[1].contains("Israel") && !p.q[0].contains("إسرائيل")));
+    }
+
     public static void main(String[] a) throws Exception {
         forehead();
         author(a[0]);
+        closest(a[1]);
         System.exit(failed == 0 ? 0 : 1);
     }
 }

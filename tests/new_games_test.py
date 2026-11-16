@@ -12,19 +12,19 @@ def check(what, ok, extra=""):
     print(("PASS " if ok else "FAIL ") + what + ("" if ok else "  -> " + str(extra)))
     if not ok: failed += 1
 if not shutil.which("javac"): print("SKIP: no javac"); sys.exit(1)
-ENGINES = [G / "forehead/ForeheadGame.java", G / "author/AuthorGame.java", APP / "GameBundle.java", APP / "MiniJson.java"]
+ENGINES = [G / "forehead/ForeheadGame.java", G / "author/AuthorGame.java", G / "closest/ClosestGame.java", APP / "GameBundle.java", APP / "MiniJson.java"]
 with tempfile.TemporaryDirectory() as t:
     c = subprocess.run(["javac", "-nowarn", "-encoding", "UTF-8", "-d", t, *map(str, ENGINES), str(ROOT / "tests/NewGamesTest.java")], capture_output=True, text=True)
     check("the new games' rules compile on a plain JVM (no Android)", c.returncode == 0, c.stderr[-500:])
     if c.returncode == 0:
-        r = subprocess.run(["java", "-cp", t, "sa.urtv.screensaver.NewGamesTest", str(ROOT / "assets/games/author.gb")], capture_output=True, text=True, timeout=120)
+        r = subprocess.run(["java", "-cp", t, "sa.urtv.screensaver.NewGamesTest", str(ROOT / "assets/games/author.gb"), str(ROOT / "assets/games/closest.gb")], capture_output=True, text=True, timeout=120)
         for l in r.stdout.splitlines():
             if l.startswith(("PASS", "FAIL")): print(l); failed += l.startswith("FAIL")
         check("the JVM test ran to the end", r.returncode == 0 or "FAIL" in r.stdout, r.stderr[-400:])
 def src(n): return (APP / n).read_text(encoding="utf-8")
 reg, gl, room, page = src("GameRegistry.java"), src("QuizGamesActivity.java"), src("GamePhoneRoom.java"), (ROOT / "assets/quiz/game.html").read_text(encoding="utf-8")
 manifest = (ROOT / "android/app/src/main/AndroidManifest.xml").read_text(encoding="utf-8")
-GAMES = {"forehead": "ForeheadActivity", "author": "AuthorActivity"}
+GAMES = {"forehead": "ForeheadActivity", "author": "AuthorActivity", "closest": "ClosestActivity"}
 for gid, act in GAMES.items():
     a = src(act + ".java")
     check(f"{gid}: in the registry (needs phones), in the filter's list, in the manifest (not exported, landscape), and a GameActivity",
@@ -42,4 +42,8 @@ check("author: the prompts come from the bundled bank (GameBundles), nothing rep
       'GameBundles.load(this, "author")' in au and "GamePrefs.remember(this, id(), r)" in au and "GamePhoneRoom.TEXT" in au and "GamePhoneRoom.PICK" in au and "if (j != i) acts[k++] = j;" in au and 'S.t("هذي إجابتك، لا تصوّت")' in au)
 check("the bundled banks are bundles, not plain text: assets/games/author.gb has no readable Arabic and no JSON",
       all(("سمك".encode() not in (ROOT / "assets/games" / f).read_bytes()) and (ROOT / "assets/games" / f).read_bytes()[:3] == b"GB1" for f in ("author.gb",)))
+cl = src("ClosestActivity.java")
+check("closest: the items come from the bundled bank, nothing repeats on this TV; the guesses are typed on the phones in a number card (a number pad) and read by the rules' own number parser",
+      'GameBundles.load(this, "closest")' in cl and "GamePrefs.remember(this, id(), r)" in cl and "GamePhoneRoom.TEXT" in cl and "unit.isEmpty() ? S.t(\"رقم\") : unit}, null, 1)" in cl and "game.submit(p, t[0])" in cl and "inputmode', 'numeric'" in page)
+check("the bundled closest bank is a bundle (no readable Arabic, no JSON)", (ROOT / "assets/games/closest.gb").read_bytes()[:3] == b"GB1" and "مساحة".encode() not in (ROOT / "assets/games/closest.gb").read_bytes())
 sys.exit(1 if failed else 0)

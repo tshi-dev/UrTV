@@ -34,6 +34,7 @@ public class QuizGamesActivity extends Activity {
         S.n("دومينو"), S.n("الدومينو كما تعرفونه، بالريموت"),
         S.n("على جبيني"), S.n("الجوال على جبينك، والفريق يوصف لك الكلمة"),
         S.n("من كاتبها؟"), S.n("الكل يكتب إجابة، وتخمّنون من كتبها"),
+        S.n("أقرب رقم"), S.n("خمّنوا الرقم، والأقرب يكسب"),
         S.n("حزم المحتوى"), S.n("حجم ما حمّلتموه من الألعاب، واحتفظوا به أو احذفوه"),
     };
     /** the night switch's words, marked for the English table: «وضع ليلي» with its three states, and the three night palettes */

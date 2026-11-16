@@ -268,6 +268,7 @@ function cardScreen() {
     kids = [h('div', 'big', c.text), c.note ? h('div', 'dim', c.note) : null];
     var inputs = (c.opts.length ? c.opts : ['']).map(function (lab, i) {
       var inp = h('input', 'inp', null, { type: 'text', maxlength: '30', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', 'aria-label': lab || S.typeHere, placeholder: lab || S.typeHere, 'data-f': i, enterkeyhint: 'send' });
+      if (c.self === 1) { inp.setAttribute('inputmode', 'numeric'); inp.setAttribute('maxlength', '13'); inp.style.direction = 'ltr'; }   // a number card: the number pad
       if (got != null) inp.disabled = true;
       kids.push(inp); return inp;
     });
