@@ -13,7 +13,7 @@ final class PhotoGlassPlan {
     /** the digits are this share of the screen's height tall; with no scenery to cross they stand here */
     static final float DIGITS = 0.26f, TOP = 0.16f;
     /** the scenery crosses at most this share of the digits, and is used only between these heights (a skyline too high or too low: no overlap) */
-    static final float CROSS = 0.3f, LOWEST = 0.62f, HIGHEST = 0.25f;
+    static final float CROSS = 0.22f, LOWEST = 0.62f, HIGHEST = 0.25f;   // 4.4 the owner: at most about a quarter of a digit
     /** 4.4 «التخطيط: كنبة»: the cards' strip starts about here; the digits end above it */
     static final float ROW_TOP = 0.55f;
 

@@ -227,7 +227,7 @@ def box(line, cards, rtl=True, row=False):
     top = round(H * 0.16); bottom = top + digit_h
     sy = min(line[c] for c in range(max(0, left * 48 // W), min(47, right * 48 // W) + 1))
     if H * 0.25 <= sy <= H * 0.62:
-        bottom = sy + round(digit_h * 0.3); top = bottom - digit_h
+        bottom = sy + round(digit_h * 0.22); top = bottom - digit_h
         if top < round(H * 0.1): top = round(H * 0.1); bottom = top + digit_h
         if row and bottom > H * 0.55: top = round(H * 0.16); bottom = top + digit_h
         return [left, top, right, bottom], True
@@ -258,8 +258,9 @@ def fit(alpha, digits=None):
     """how the scenery meets the digits: for a photo the home's place (cards shown, Arabic), for a horizon its own digits (top, bottom)"""
     line = skyline(alpha)
     if digits:
-        top, bottom = digits; dh = bottom - top; width = min(round(dh * 2.6), round(W * 0.7))
-        b, crossing = [W // 2 - width // 2, top, W // 2 + width // 2, bottom], True
+        top, bottom = digits[:2]; dh = bottom - top; width = min(round(dh * 2.6), round(W * 0.7))
+        cx = min(max(min(max(digits[2] if len(digits) > 2 else W // 2, 480), 1440), width // 2), W - width // 2)   # scenes.tsv digits_x (480..1440), as ScenePlan.clockBox
+        b, crossing = [cx - width // 2, top, cx + width // 2, bottom], True
     else:
         b, crossing = box(line, cards=True)
     if not crossing: return {"crossing": False, "zoom": 1.0, "visible": 1.0, "cross": 0.0, "cols": 0.0}
@@ -336,6 +337,65 @@ def people_cut(rgb, alpha):
     return False
 
 
+COVER_MAX, COLON_MAX = 0.25, 0.25   # the owner: the scenery covers at most about a quarter of any digit, from its base, and never the colon
+# (its lower dot starts about 30 % up in the app's font: a quarter keeps it clear)
+
+
+def tops(alpha):
+    """the scenery's top in every pixel column (H: none)"""
+    s = alpha > 0.5
+    return np.where(s.any(axis=0), np.argmax(s, axis=0), H)
+
+
+def glyphs(b):
+    """where the digits and the colon stand in the box, for «١٢:٣٠» (4 digits) and «٤:٥٨» (3), the text centred, left to right: [(x0, x1, colon)]"""
+    h = b[3] - b[1]; dw, cw = 0.56 * h, 0.24 * h; cx = (b[0] + b[2]) / 2
+    out = []
+    for n_left in (2, 1):
+        width = (n_left + 2) * dw + cw
+        x = cx - width / 2
+        for kind in ["d"] * n_left + ["c"] + ["d", "d"]:
+            w_ = cw if kind == "c" else dw
+            out.append((int(x + w_ * 0.08), int(x + w_ * 0.92), kind == "c")); x += w_
+    return out
+
+
+def legible(alpha, b, k):
+    """the owner's rule at the clock's real digits, the picture zoomed by k about the top centre: the most any digit is covered from its base
+    (a spike narrower than 3 px aside) and the most the colon is; ok when within COVER_MAX and COLON_MAX"""
+    t = tops(alpha)
+    h = b[3] - b[1]
+    def cover(x0, x1):
+        xs = np.arange(max(0, x0), min(W, x1))
+        if not len(xs): return 0.0
+        src = np.clip((W / 2 + (xs - W / 2) / k).astype(int), 0, W - 1)
+        c = np.clip((b[3] - t[src] * k) / h, 0, 1)
+        return float(np.sort(c)[-3]) if len(c) >= 3 else float(c.max())
+    dig = max(cover(x0, x1) for x0, x1, colon in glyphs(b) if not colon)
+    col = max(cover(x0, x1) for x0, x1, colon in glyphs(b) if colon)
+    return dig <= COVER_MAX and col <= COLON_MAX, round(dig, 3), round(col, 3)
+
+
+def aligned(rgb, alpha, F):
+    """the cut-out sits on the photo: where it is solid its pixels are the photo's (no offset, no doubled edge): the best shift of its edges
+    against the photo's (phase correlation) and the mean difference"""
+    solid = cv2.erode((alpha > 0.97).astype(np.uint8), np.ones((5, 5), np.uint8)) > 0
+    if solid.sum() < 1000: return True, 0.0, 0.0
+    diff = float(np.abs(F.astype(np.float32) - rgb.astype(np.float32))[solid].mean())
+    g1 = cv2.Canny(cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY), 60, 160).astype(np.float32) * solid
+    g2 = cv2.Canny(cv2.cvtColor(F, cv2.COLOR_RGB2GRAY), 60, 160).astype(np.float32) * solid
+    (dx, dy), _ = cv2.phaseCorrelate(g1, g2) if g1.any() and g2.any() else ((0.0, 0.0), 0)
+    shift = float(np.hypot(dx, dy))
+    return shift < 0.5 and diff < 2.0, round(shift, 2), round(diff, 2)
+
+
+def place_ok(alpha, digits):
+    """the clock at this place: the scenery crosses its lower part well and the owner's legibility rule holds (no edge checks: those do not move)"""
+    f = fit(alpha, digits)
+    if not f["crossing"] or f["cross"] < CROSS_MIN or f["cols"] < COLS_MIN or f["visible"] < VISIBLE_MIN: return False
+    return legible(alpha, f["box"], f["zoom"])[0]
+
+
 def judge(rgb, alpha, F, digits=None):
     sky = float((alpha < 0.5).mean())
     e = edge_scores(rgb, alpha, F)
@@ -349,6 +409,10 @@ def judge(rgb, alpha, F, digits=None):
     if not f["crossing"]: return "FRONT-ONLY", "the scenery is too high or too low to cross the digits", s, f.get("box")
     if f["cross"] < CROSS_MIN or f["cols"] < COLS_MIN: return "FRONT-ONLY", f"only a sliver crosses the digits (cross {f['cross']}, columns {f['cols']})", s, f.get("box")
     if f["visible"] < VISIBLE_MIN: return "FRONT-ONLY", f"the scenery covers too much of the digits even zoomed ({f['visible']})", s, f.get("box")
+    ok, s["shift"], s["diff"] = aligned(rgb, alpha, F)
+    if not ok: return "REJECT", f"the cut-out does not sit on the photo (shift {s['shift']} px, difference {s['diff']})", s, f.get("box")
+    ok, s["digit_cover"], s["colon_cover"] = legible(alpha, f["box"], f["zoom"])
+    if not ok: return "FRONT-ONLY", f"the scenery hides too much of a digit or the colon (digit {s['digit_cover']}, colon {s['colon_cover']})", s, f.get("box")
     return "FIT", "clean, and the scenery crosses the digits' lower part", s, f.get("box")
 
 
@@ -366,6 +430,7 @@ def encode(F, alpha):
         ramp = np.linspace(1, 0, 24, dtype=np.float32)[:, None]
         a8[bb[3] - 24:bb[3]] = (a8[bb[3] - 24:bb[3]] * ramp + 0.5).astype(np.uint8)
         rgba = Image.fromarray(np.dstack([F, a8]), "RGBA")
+    bb = (bb[0] - bb[0] % 2, bb[1] - bb[1] % 2, bb[2] + bb[2] % 2, bb[3] + bb[3] % 2)   # even: a 2x screen never puts it half a pixel off
     if bb[3] <= bb[1]: return None, None
     crop = rgba.crop(bb)
     for aq in (100, 90):
@@ -431,7 +496,25 @@ def scenes(o, work):
         if r[0].startswith("#") or len(r) < 6: continue
         rgb = photo(src / f"{r[0]}.jpg")
         alpha = matte(rgb, work); F = scenery_colour(rgb, alpha)
-        verdict, why, s, b = judge(rgb, alpha, F, (int(r[3]), int(r[4])))
+        top, bottom = int(r[3]), int(r[4])
+        x0 = int(r[9]) if len(r) > 9 and r[9].strip().isdigit() else W // 2
+        verdict, why, s, b = judge(rgb, alpha, F, (top, bottom, x0))
+        if verdict == "FRONT-ONLY" and ("hides too much" in why or "sliver" in why):   # the clock's place moved (scenes.tsv digits_top, digits_bottom,
+            for dx in sorted(range(-480, 481, 40), key=abs):                            # digits_x): sideways, then up; never smaller (the owner)
+                hit = None
+                for up in sorted(range(-240, 321, 8), key=abs):      # up (positive) or down, nearest first
+                    if top - up < 40 or bottom - up > round(H * 0.7): continue
+                    if place_ok(alpha, (top - up, bottom - up, x0 + dx)):
+                        hit = up; break
+                if hit is None: continue
+                v2, w2, s2, b2 = judge(rgb, alpha, F, (top - hit, bottom - hit, x0 + dx))
+                if v2 == "FIT":
+                    how = ", ".join(x for x in (f"{'up' if hit > 0 else 'down'} {abs(hit)} px" if hit else "", f"{'right' if dx > 0 else 'left'} {abs(dx)} px" if dx else "") if x)
+                    verdict, why, s, b = v2, f"{w2} (the clock {how})", s2, b2
+                    r[3], r[4] = str(top - hit), str(bottom - hit)
+                    while len(r) < 10: r.append("")
+                    r[9] = str(x0 + dx) if x0 + dx != W // 2 else "-"
+                    break
         gate[r[0]] = {"verdict": verdict, "why": why, "scores": s}
         print(f"{r[0]}: {verdict} ({why})")
         base, crops = render(rgb, alpha, F, b, out / f"{r[0]}-check.jpg")
@@ -442,6 +525,8 @@ def scenes(o, work):
                 (out / f"{r[0]}-fg.webp").write_bytes(data); r[5] = ",".join(map(str, bb))
         else:
             r[5] = "-"
+    if any(len(r) > 9 for r in rows if not r[0].startswith("#")):
+        rows = [(r + [""] * (9 - len(r)))[:9] + ["digits_x"] if r[0].startswith("# id") and "digits_x" not in r else r for r in rows]
     (out / "scenes.tsv").write_text("\n".join("\t".join(r) for r in rows) + "\n", encoding="utf-8")
     (out / "gate.json").write_text(json.dumps({"v": 1, "photos": gate}, indent=1, sort_keys=True, ensure_ascii=False) + "\n", encoding="utf-8")
     review_sheet(sheet, out / "sheet.jpg")
