@@ -1033,7 +1033,7 @@ if(CONFIG.clear){
   const st = document.querySelector('style'), dark = '#FFFFFF', ink = '#1B1F1D';
   if(st) st.textContent = st.textContent
     .replace(/(--fs:)(?:#4B514D|#5E635F)/g, '$1' + ink).replace(/(--fs:)(?:rgba\(255,255,255,\.74\)|#DADCE0)/g, '$1' + dark)
-    .replace(/(--dim:)#C3B8A2/g, '$1' + dark).replace(/(?<![-\w])(color:)#(?:B9AE96|A79C85|9C9279|8F8670|CFC5AD|D8CDB6|E6DCC4|9FB8A8)\b/gi, '$1' + dark);
+    .replace(/(--dim:)#C3B8A2/g, '$1' + dark).replace(/(^|[^-\w])(color:)#(?:B9AE96|A79C85|9C9279|8F8670|CFC5AD|D8CDB6|E6DCC4|9FB8A8)\b/gi, '$1$2' + dark);
 }
 const SNAP_LOOK = ['citynote', 'cardstyle', 'panel', 'panel2', 'week', 'clocksize', 'adhanbar', 'yearstrip', 'national', 'photos', 'adj', 'own', 'ownmode', 'packs', 'ours', 'gap'];
 function snapLink(){
@@ -1153,7 +1153,7 @@ function nationalNow(){
   const p = riyadhParts();
   for(const e of NATIONAL){
     const diff = Math.round((Date.UTC(p.y, p.mo-1, p.d) - Date.UTC(p.y, e.mo-1, e.d)) / 86400000);
-    if(Math.abs(diff) <= 2) return {...e, today: diff === 0, n: p.y - e.since};
+    if(Math.abs(diff) <= 2) return Object.assign({}, e, {today: diff === 0, n: p.y - e.since});
   }
   return null;
 }
@@ -2309,13 +2309,12 @@ function renderMatches(turn){
 // the row steps down in size until every game fits
 // form (only then); still too long, renderMatches shows the two games one to a page
 // resort for a single game. Both games keep one size.
-const TEAM_SHORT = {
+const TEAM_SHORT = Object.assign({
   'Manchester City':'Man City', 'Manchester United':'Man United', 'Real Madrid':'Real', 'Atlético Madrid':'Atletico',
   'Paris SG':'PSG', 'Bayern Munich':'Bayern', 'Borussia Dortmund':'Dortmund', 'Borussia Mönchengladbach':'Gladbach',
   'Bayer Leverkusen':'Leverkusen', 'Eintracht Frankfurt':'Frankfurt', 'Nottingham Forest':'Forest', 'Crystal Palace':'Palace',
   'Wolverhampton Wanderers':'Wolves', 'Sporting CP':'Sporting', 'LA Galaxy':'Galaxy', 'National Bank of Egypt':'NBE',
-  ...{"Atlanta Hawks":"Hawks","Boston Celtics":"Celtics","Brooklyn Nets":"Nets","Charlotte Hornets":"Hornets","Chicago Bulls":"Bulls","Cleveland Cavaliers":"Cavaliers","Dallas Mavericks":"Mavericks","Denver Nuggets":"Nuggets","Detroit Pistons":"Pistons","Golden State Warriors":"Warriors","Houston Rockets":"Rockets","Indiana Pacers":"Pacers","Los Angeles Clippers":"Clippers","Los Angeles Lakers":"Lakers","Memphis Grizzlies":"Grizzlies","Miami Heat":"Heat","Milwaukee Bucks":"Bucks","Minnesota Timberwolves":"Timberwolves","New Orleans Pelicans":"Pelicans","New York Knicks":"Knicks","Oklahoma City Thunder":"Thunder","Orlando Magic":"Magic","Philadelphia 76ers":"76ers","Phoenix Suns":"Suns","Portland Trail Blazers":"Trail Blazers","Sacramento Kings":"Kings","San Antonio Spurs":"Spurs","Toronto Raptors":"Raptors","Utah Jazz":"Jazz","Washington Wizards":"Wizards","Arizona Cardinals":"Cardinals","Atlanta Falcons":"Falcons","Baltimore Ravens":"Ravens","Buffalo Bills":"Bills","Carolina Panthers":"Panthers","Chicago Bears":"Bears","Cincinnati Bengals":"Bengals","Cleveland Browns":"Browns","Dallas Cowboys":"Cowboys","Denver Broncos":"Broncos","Detroit Lions":"Lions","Green Bay Packers":"Packers","Houston Texans":"Texans","Indianapolis Colts":"Colts","Jacksonville Jaguars":"Jaguars","Kansas City Chiefs":"Chiefs","Las Vegas Raiders":"Raiders","Los Angeles Chargers":"Chargers","Los Angeles Rams":"Rams","Miami Dolphins":"Dolphins","Minnesota Vikings":"Vikings","New England Patriots":"Patriots","New Orleans Saints":"Saints","New York Giants":"Giants","New York Jets":"Jets","Philadelphia Eagles":"Eagles","Pittsburgh Steelers":"Steelers","San Francisco 49ers":"49ers","Seattle Seahawks":"Seahawks","Tampa Bay Buccaneers":"Buccaneers","Tennessee Titans":"Titans","Washington Commanders":"Commanders"},   // NBA and NFL: the nickname without the city («ليكرز»), made by src/build.py from teams.json
-};
+}, {"Atlanta Hawks":"Hawks","Boston Celtics":"Celtics","Brooklyn Nets":"Nets","Charlotte Hornets":"Hornets","Chicago Bulls":"Bulls","Cleveland Cavaliers":"Cavaliers","Dallas Mavericks":"Mavericks","Denver Nuggets":"Nuggets","Detroit Pistons":"Pistons","Golden State Warriors":"Warriors","Houston Rockets":"Rockets","Indiana Pacers":"Pacers","Los Angeles Clippers":"Clippers","Los Angeles Lakers":"Lakers","Memphis Grizzlies":"Grizzlies","Miami Heat":"Heat","Milwaukee Bucks":"Bucks","Minnesota Timberwolves":"Timberwolves","New Orleans Pelicans":"Pelicans","New York Knicks":"Knicks","Oklahoma City Thunder":"Thunder","Orlando Magic":"Magic","Philadelphia 76ers":"76ers","Phoenix Suns":"Suns","Portland Trail Blazers":"Trail Blazers","Sacramento Kings":"Kings","San Antonio Spurs":"Spurs","Toronto Raptors":"Raptors","Utah Jazz":"Jazz","Washington Wizards":"Wizards","Arizona Cardinals":"Cardinals","Atlanta Falcons":"Falcons","Baltimore Ravens":"Ravens","Buffalo Bills":"Bills","Carolina Panthers":"Panthers","Chicago Bears":"Bears","Cincinnati Bengals":"Bengals","Cleveland Browns":"Browns","Dallas Cowboys":"Cowboys","Denver Broncos":"Broncos","Detroit Lions":"Lions","Green Bay Packers":"Packers","Houston Texans":"Texans","Indianapolis Colts":"Colts","Jacksonville Jaguars":"Jaguars","Kansas City Chiefs":"Chiefs","Las Vegas Raiders":"Raiders","Los Angeles Chargers":"Chargers","Los Angeles Rams":"Rams","Miami Dolphins":"Dolphins","Minnesota Vikings":"Vikings","New England Patriots":"Patriots","New Orleans Saints":"Saints","New York Giants":"Giants","New York Jets":"Jets","Philadelphia Eagles":"Eagles","Pittsburgh Steelers":"Steelers","San Francisco 49ers":"49ers","Seattle Seahawks":"Seahawks","Tampa Bay Buccaneers":"Buccaneers","Tennessee Titans":"Titans","Washington Commanders":"Commanders"});   // NBA and NFL: the nickname without the city («ليكرز»), made by src/build.py from teams.json
 const FIT_STEPS = [1, .92, .85, .78, .72];
 const FIT_RANGE = document.createRange();
 function fits(sp){   // to the fraction of a pixel: scrollWidth rounds, and a name short by 0.4 px still got «…»
@@ -3449,7 +3448,7 @@ function matchRows(card){
       const dateEl = date ? `<i class="mwhen" data-s="${esc(matchWhenShort(d, now, done))}">${date}</i>` : '';
       const club = (id, name, home) => `<span class="tm">${home ? '' : crestOrGap(ev, 'Away')}<span class="nm">${esc(teamAr(name, id))}</span>${home ? crestOrGap(ev, 'Home') : ''}</span>`;
       return {t, r, html: `<li class="mg"><span class="mr">${club(ev.idHomeTeam, ev.strHomeTeam, true)} ${mid} ${club(ev.idAwayTeam, ev.strAwayTeam, false)} ${dateEl} <span class="dt">${when}</span></span></li>`};
-    }), ...others.map(o => ({...o, r: o.t <= now ? 1 : 2}))].sort(byRank).map(x => x.html);
+    }), ...others.map(o => (Object.assign({}, o, {r: o.t <= now ? 1 : 2})))].sort(byRank).map(x => x.html);
 }
 
 // ---- «الأسهم»: the watchlist card. A Tadawul code
