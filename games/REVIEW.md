@@ -3,17 +3,17 @@
 A first reader's pass over every list, by program (`games/tools/review_bank.py`, the builders) and by eye. What was wrong and is fixed, what is doubtful and left for the owner, how ids work. The skim of the doubtful part takes about 10 minutes.
 
 ## Numbers now
-Quiz bank 1,138 items (geography 707, Islamic 181, science 108, maths and logic 96, Saudi and Gulf 17, animals 19, history 5, food 5; levels 1/2/3 = 156/316/666). Was 1,270: 132 items went out in this pass (below). Word data: «الكلمة المفقودة» 246 facts and 117 sayings; «واحد مو معنا» 32 topics, 692 words; «بدون كلام / وصّف» 714 words; «خانات» 575 samples; «خمّن الكلمة» 447 answers (was 511) and 31,367 accepted guesses.
+Quiz bank 1,138 items (geography 707, Islamic 181, science 108, maths and logic 96, Saudi and Gulf 17, animals 19, history 5, food 5; levels 1/2/3 = 156/316/666). Was 1,270: about 130 items went out in this pass (below). Word data: «الكلمة المفقودة» 246 facts and 117 sayings; «واحد مو معنا» 32 topics, 692 words; «بدون كلام / وصّف» 714 words; «خانات» 575 samples; «خمّن الكلمة» 447 answers (was 511) and 31,367 accepted guesses.
 
 ## Fixed (clear errors)
 | What | How many | Fix |
 |---|---|---|
 | The answer gave itself away: the answer is in the question as whole words («ما عاصمة موناكو؟» answered «موناكو»; Singapore, Djibouti, Tunis, San Marino, Luxembourg, Panama, Guatemala, Najran, Al-Baha, Tabuk, «القمر الطبيعي ... القمر», «الحمص ... الحمّص», the Trench battle, and others) | 27 items | removed (`common.leaks`, applied by `build_all.py`); the capital-name-equals-country cases were not questions at all |
 | «في أي قارة تقع جمهورية إفريقيا الوسطى؟» answered «أفريقيا» | 1 | removed with the rest |
-| Long official names in options («جمهورية الكونغو الديمقراطية», «ولايات ميكرونيسيا المتحدة», «الإمارات العربية المتحدة», «جمهورية التشيك» ...); odd city labels («غواتيمالا العاصمة», «مدينة بنما») | 18 labels | shortened by a table in `build_geo.py`; currency names too (`build_langcur.py`) |
+| Long official names in options («جمهورية الكونغو الديمقراطية», «ولايات ميكرونيسيا المتحدة», «الإمارات العربية المتحدة», «جمهورية التشيك» ...); odd city labels («غواتيمالا العاصمة», «مدينة بنما») | about 20 labels | shortened by a table in `build_geo.py`; currency names too (`build_langcur.py`) |
 | Official-language questions for countries with no official language in law (USA, UK, Australia, Mexico, Japan) | 5 items | removed (arguable) |
-| Science was 207 of 216 element questions; names of elements by atomic number up to 86 (nobody knows Z = 70) | 148 items | symbols kept up to element 54 and five famous heavier ones, atomic numbers only up to 20 (the ones taught) |
-| Currency and language questions were all level 2, also for countries nobody knows | 152 items | level 2 for the 38 well-known countries, level 3 for the rest |
+| Science was 207 of 216 element questions; names of elements by atomic number up to 86 (nobody knows Z = 70) | 107 items | symbols kept up to element 54 and five famous heavier ones, atomic numbers only up to 20 (the ones taught) |
+| Currency and language questions were all level 2, also for countries nobody knows | 235 items | level 2 for the 38 well-known countries, level 3 for the rest |
 | Words nobody in a family knows (asafoetida, a fig shoot...) or does not want (arsenic, insult, tyrant, gossip, slimming...) among the five-letter answers | 64 words | out of the answers (`OBSCURE` in `build_words2.py`); they are still accepted as guesses. The answers fell from 511 to 447, below the 500 target on purpose |
 | The «ال» start of some five-letter answers | earlier | removed |
 | Item ids that were a position (charades `chc-<n>`, the repo's sayings `mw-wis-<n>`, curated sayings `mw-cur-<n>`) | 714 + 117 ids | now a hash of the word or the saying, so they survive a reorder (see ids) |
