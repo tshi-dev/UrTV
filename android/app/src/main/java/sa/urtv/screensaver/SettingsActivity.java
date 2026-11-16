@@ -279,6 +279,8 @@ public class SettingsActivity extends Activity {
         row("تعديل وقت الصلاة", prefs.prayerAdjOn() ? "يعمل · لكل صلاة دقائقها، من −٢٠ إلى +٢٠ (الشروق لا يتغيّر)" : "متوقف · الأوقات كما تُحسب", R.drawable.ic_eye,
             new Runnable() { public void run() { prefs.setPrayerAdjOn(!prefs.prayerAdjOn()); render(); } });
         if (prefs.prayerAdjOn()) for (int k = 0; k < PrayerAdj.COUNT; k++) adjRow(k);
+        String fixed = PrayerFix.applied(prefs.prayerAdjOn(), prefs.prayerAdj(), prefs.prayerFix());   // 4.3.3: never silent
+        if (!fixed.isEmpty()) { line("تصحيح منشور لأوقات اليوم، وتعديلك لأي صلاة يبقى هو المعتمد", look.sub, 0); line(fixed, look.sub, 0); }
         if (on(SettingsHub.PLACE)) line(Location.HELP, look.sub, 0);
 
         header("المباريات");
