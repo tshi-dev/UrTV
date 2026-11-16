@@ -54,7 +54,9 @@ final class ScreenView {
                     return new WebResourceResponse("text/plain", "UTF-8", 403, "Forbidden", new java.util.HashMap<String, String>(), new java.io.ByteArrayInputStream(new byte[0]));
                 }
                 WebResourceResponse res = PhotoCache.serve(app, r.getUrl().toString());
-                return res != null ? res : super.shouldInterceptRequest(v, r);
+                if (res != null) return res;   // from the disk (a photo PhotoCache downloads counts there)
+                NetLog.count(r.getUrl().toString());   // G3: what the page asks the network (the request log)
+                return super.shouldInterceptRequest(v, r);
             }
 
             /** The renderer died or was killed for memory. Without this the whole app goes down with it; with it the host decides (Gone). */

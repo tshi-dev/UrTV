@@ -152,6 +152,7 @@ final class Arabic {
 
     private static String get(String url) throws Exception {
         HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
+        NetLog.count(String.valueOf(con.getURL()));   // G3: the request log (NetLog)
         try {
             con.setConnectTimeout(10000);
             con.setReadTimeout(12000);

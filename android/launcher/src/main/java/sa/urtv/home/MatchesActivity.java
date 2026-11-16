@@ -88,6 +88,7 @@ public class MatchesActivity extends Activity {
                         } catch (java.io.IOException ignored) { }
                     }
                 }
+                NetLog.count(u);   // G3: the request log
                 return super.shouldInterceptRequest(v, r);
             }
         });

@@ -252,6 +252,7 @@ final class TvRows {
         String uri = it.artUri;
         if (uri.startsWith("https://") || uri.startsWith("http://")) {
             HttpURLConnection h = (HttpURLConnection) new URL(uri).openConnection();
+            NetLog.count(String.valueOf(h.getURL()));   // G3: the request log (NetLog)
             h.setConnectTimeout((int) PICTURE_MS);
             h.setReadTimeout((int) PICTURE_MS);
             return h.getInputStream();

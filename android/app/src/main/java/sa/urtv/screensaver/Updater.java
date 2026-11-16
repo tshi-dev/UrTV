@@ -133,6 +133,7 @@ final class Updater {
         HttpURLConnection con = null;
         try {
             con = (HttpURLConnection) new URL(pageUrl(lang)).openConnection();
+            NetLog.count(String.valueOf(con.getURL()));   // G3: the request log (NetLog)
             con.setConnectTimeout(15000);
             con.setReadTimeout(30000);
             String etag = sp.getString(etagKey(lang), null);
@@ -190,6 +191,7 @@ final class Updater {
         HttpURLConnection con = null;
         try {
             con = (HttpURLConnection) new URL(url).openConnection();   // GitHub redirects to its CDN: followed
+            NetLog.count(String.valueOf(con.getURL()));   // G3: the request log (NetLog)
             con.setConnectTimeout(10000);
             con.setReadTimeout(10000);
             if (con.getResponseCode() != HttpURLConnection.HTTP_OK) return null;
@@ -213,6 +215,7 @@ final class Updater {
         HttpURLConnection con = null;
         try {
             con = (HttpURLConnection) new URL(LATEST_URL).openConnection();
+            NetLog.count(String.valueOf(con.getURL()));   // G3: the request log (NetLog)
             con.setInstanceFollowRedirects(false);
             con.setConnectTimeout(10000);
             con.setReadTimeout(10000);

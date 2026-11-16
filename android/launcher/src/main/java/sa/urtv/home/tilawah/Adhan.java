@@ -228,6 +228,7 @@ final class Adhan {
         HttpURLConnection con = null;
         try {
             con = (HttpURLConnection) new URL(url(voice)).openConnection();
+            sa.urtv.home.NetLog.count(String.valueOf(con.getURL()));   // G3: the request log (NetLog)
             con.setConnectTimeout(8000);
             con.setReadTimeout(20000);
             con.setRequestProperty("User-Agent", "urtv-home");

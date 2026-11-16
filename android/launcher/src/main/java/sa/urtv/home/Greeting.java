@@ -87,6 +87,7 @@ final class Greeting {
                 String url = "https://api.open-meteo.com/v1/forecast?latitude=" + s.lat + "&longitude=" + s.lon
                         + "&timezone=" + URLEncoder.encode(s.tz, "UTF-8") + "&current=temperature_2m,weather_code,visibility";
                 HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
+                NetLog.count(String.valueOf(con.getURL()));   // G3: the request log (NetLog)
                 con.setConnectTimeout(6000);
                 con.setReadTimeout(8000);
                 con.setRequestProperty("User-Agent", "urtv-home");
@@ -127,6 +128,7 @@ final class Greeting {
             String url = "https://air-quality-api.open-meteo.com/v1/air-quality?latitude=" + s.lat + "&longitude=" + s.lon
                     + "&timezone=" + URLEncoder.encode(s.tz, "UTF-8") + "&current=pm10,dust";
             HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
+            NetLog.count(String.valueOf(con.getURL()));   // G3: the request log (NetLog)
             con.setConnectTimeout(6000);
             con.setReadTimeout(8000);
             con.setRequestProperty("User-Agent", "urtv-home");

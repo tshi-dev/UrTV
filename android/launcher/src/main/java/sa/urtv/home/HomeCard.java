@@ -353,6 +353,7 @@ final class HomeCard {
                     }
                 }
                 if (s.startsWith(OWN_BASE)) return ownPhoto(s.substring(OWN_BASE.length()));
+                NetLog.count(s);   // G3: what the card's page asks the network (the request log)
                 return super.shouldInterceptRequest(v, r);
             }
         });

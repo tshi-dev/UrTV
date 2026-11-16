@@ -229,6 +229,7 @@ final class PrayerTimes {
                     + "?latitude=" + place.lat + "&longitude=" + place.lng
                     + "&latitudeAdjustmentMethod=3&method=" + place.method + "&timezonestring=" + URLEncoder.encode(place.tz, "UTF-8");
             HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
+            sa.urtv.home.NetLog.count(String.valueOf(con.getURL()));   // G3: the request log (NetLog)
             con.setConnectTimeout(6000);
             con.setReadTimeout(8000);
             con.setRequestProperty("User-Agent", "urtv-home");

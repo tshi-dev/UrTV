@@ -148,6 +148,7 @@ final class PhotoCache {
     private static File download(Context c, String url, String name, File dir, File f) throws java.io.IOException {
         if (!dir.isDirectory() && !dir.mkdirs()) return null;
         HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
+        NetLog.count(String.valueOf(con.getURL()));   // G3: the request log (NetLog)
         con.setConnectTimeout(15000);
         con.setReadTimeout(30000);
         File tmp = new File(dir, name + ".tmp");

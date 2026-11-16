@@ -8,5 +8,6 @@ public final class HomeApp extends Application {
         super.onCreate();
         MuteKeep.start(this);
         ZoneFix.logger = line -> android.util.Log.i("UrTVZone", line);   // issue #55: one line when the page corrects the TV's zone data
+        NetLog.logger = new NetLogcat();   // G3: one line per 10 minutes of requests (tag UrTVNet)
     }
 }

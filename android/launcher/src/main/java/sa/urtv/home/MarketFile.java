@@ -44,6 +44,7 @@ final class MarketFile {
             StringBuilder s = new StringBuilder();
             for (String x : symbols) s.append(s.length() > 0 ? "," : "").append(java.net.URLEncoder.encode(x, "UTF-8"));
             h = (HttpURLConnection) new URL(String.format(LIVE_URL, s.toString().replace("%2C", ","))).openConnection();
+            NetLog.count(String.valueOf(h.getURL()));   // G3: the request log (NetLog)
             h.setConnectTimeout(TIMEOUT_MS);
             h.setReadTimeout(TIMEOUT_MS);
             h.setUseCaches(false);

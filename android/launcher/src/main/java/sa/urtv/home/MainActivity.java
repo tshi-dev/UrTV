@@ -3499,6 +3499,7 @@ public class MainActivity extends Activity {
     /** At most max bytes (Bounded): the photo list is JSON_MAX, a photo IMAGE_MAX; a longer answer is an IOException and nothing is kept. */
     private static byte[] download(String url, int max) throws java.io.IOException {
         java.net.HttpURLConnection c = (java.net.HttpURLConnection) new java.net.URL(url).openConnection();
+        NetLog.count(String.valueOf(c.getURL()));   // G3: the request log (NetLog)
         c.setConnectTimeout(10000);
         c.setReadTimeout(30000);
         try {

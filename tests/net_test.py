@@ -24,7 +24,7 @@ check("https: the platform's TLS over the connected socket, the certificate chec
 if not shutil.which("javac"):
     print("SKIP net: no javac"); sys.exit(1)
 with tempfile.TemporaryDirectory() as tmp:
-    c = subprocess.run(["javac", "-nowarn", "-d", tmp, str(APP / "Net.java"), str(ROOT / "tests/NetTest.java"), str(ROOT / "tests/NetOnline.java")], capture_output=True, text=True)
+    c = subprocess.run(["javac", "-nowarn", "-d", tmp, str(APP / "Net.java"), str(APP / "NetLog.java"), str(ROOT / "tests/NetTest.java"), str(ROOT / "tests/NetOnline.java")], capture_output=True, text=True)
     check("Net compiles on a plain JVM", c.returncode == 0, c.stderr[-500:])
     if c.returncode == 0:
         r = subprocess.run(["java", "-cp", tmp, "sa.urtv.screensaver.NetTest"], capture_output=True, text=True, timeout=120)

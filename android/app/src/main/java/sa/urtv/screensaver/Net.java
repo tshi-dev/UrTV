@@ -46,6 +46,7 @@ final class Net {
     /** GET `url` (http or https), `headers` extra request headers, at most `maxBytes` of body, the whole call within `deadlineMs`; an IOException when it cannot */
     static Reply get(String url, Map<String, String> headers, int readMs, int deadlineMs, int maxBytes) throws IOException {
         long end = System.nanoTime() + deadlineMs * 1_000_000L;
+        NetLog.count(url);   // G3: the request log
         URL u = new URL(url);
         boolean tls = "https".equals(u.getProtocol());
         if (!tls && !"http".equals(u.getProtocol())) throw new IOException("scheme");

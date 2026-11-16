@@ -2624,6 +2624,7 @@ public class SettingsActivity extends Activity {
             HttpURLConnection con = null;
             try {
                 con = (HttpURLConnection) new URL(url).openConnection();
+                NetLog.count(String.valueOf(con.getURL()));   // G3: the request log (NetLog)
                 con.setConnectTimeout(12000);
                 con.setReadTimeout(15000);
                 try (InputStream in = con.getInputStream()) {
