@@ -14,7 +14,7 @@ Nothing here is built yet. The numbers are budgets for the build, checked by tes
 | `scene-<id>-fg.webp` | the subject mask: everything in front of the sky, the sky transparent, drawn over the clock | ≤ 200 KB, lossy WebP with alpha | ≤ 700 KB |
 | `scenes.tsv` (one line a scene) | the digits' top and bottom, the mask's bounding box, dark or light clock, the credit | < 1 KB | |
 
-Each pack of five scenes at 1080 is about 2 to 2.5 MB. «مشاهد السعودية» ships in the launcher APK (2.4 MB); «مشاهد Couch TV» (1.9 MB) is downloaded once
+Each pack of five scenes at 1080 is about 2 to 2.5 MB. «مشاهد السعودية» ships one scene, Riyadh, in the launcher APK (0.52 MB; its four others, 1.9 MB, are downloaded the first time the scenes show, 4.4); «مشاهد Couch TV» (1.9 MB) is downloaded once
 when chosen, from urtv-data's scenes/ (index.json gives its sha256 and size, checked before the zip is opened); the 4K copies
 are fetched on first use by a 4K NORMAL TV only and cached, never bundled.
 

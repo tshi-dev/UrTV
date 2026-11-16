@@ -99,7 +99,7 @@ From [Unsplash](https://unsplash.com), under the [Unsplash License](https://unsp
 | `photos/_Fmibx42BVU.jpg` | YUNUS A KHALIFAH | [unsplash](https://unsplash.com/photos/panoramic-photography-of-desert-during-daytime-_Fmibx42BVU) |
 | `photos/rkRYbmPuhOE.jpg` | Stijn te Strake | [unsplash](https://unsplash.com/photos/birds-eye-photography-of-city-rkRYbmPuhOE) |
 
-## The scene home's Saudi pack (`android/launcher/src/main/assets/scenes/saudi/`, 4.3.3)
+## The scene home's Saudi pack (4.4: Riyadh in `android/launcher/src/main/assets/scenes/saudi/`, the four others in urtv-data `scenes/saudi.zip`)
 
 Each photo kept as it is (resized to 1920x1080 and compressed); its glass copy and its cut-out are made from it and carry its licence
 (`CREDITS.txt` in the folder says the same). The Couch TV pack is credited in `THIRD_PARTY_NOTICES.md`.

@@ -92,7 +92,8 @@ final class SceneHome extends FrameLayout {
             final List<ScenePlan.Scene> all = load(packs);
             ui.post(() -> { if (g != gen) return; this.all = all; scenes = ScenePlan.choose(all, byTime, night, byWeather, fog); index = -1; if (running) show(); });
         });
-        if (ScenePlan.packs(packs).contains(ScenePlan.COUCH)) SceneDownload.fetchIfNeeded(app);
+        for (String p : ScenePlan.packs(packs))   // the files not in the app, once; when they arrive the scenes are read again
+            SceneDownload.fetchIfNeeded(app, p, () -> ui.post(() -> { if (on) { String keep = packs; packs = ""; set(true, keep, staySeconds, cardsShown, rtl); } }));
     }
 
     boolean on() { return on; }
@@ -192,28 +193,40 @@ final class SceneHome extends FrameLayout {
         });
     }
 
-    /** The packs' scenes, in order: the Saudi pack from the assets, the Couch TV pack from the files when it was downloaded. */
+    /**
+     * The packs' scenes, in order: the Saudi pack's scene in the app (Riyadh) and its four others when they were downloaded; the Couch TV pack when it
+     * was. Nothing downloaded yet: the scene in the app.
+     */
     private List<ScenePlan.Scene> load(String setting) {
         List<ScenePlan.Scene> all = new ArrayList<>();
-        for (String p : ScenePlan.packs(setting)) all.addAll(ScenePlan.parse(p, read(p, "scenes.tsv")));
-        if (all.isEmpty()) all.addAll(ScenePlan.parse(ScenePlan.SAUDI, read(ScenePlan.SAUDI, "scenes.tsv")));   // Couch TV not downloaded yet: the Saudi pack
+        for (String p : ScenePlan.packs(setting)) {
+            if (ScenePlan.SAUDI.equals(p)) all.addAll(ScenePlan.parse(p, readAsset("scenes/saudi/scenes.tsv")));
+            if (SceneDownload.have(app, p)) all.addAll(ScenePlan.parse(p, readFile(new File(SceneDownload.dir(app, p), "scenes.tsv"))));
+        }
+        if (all.isEmpty()) all.addAll(ScenePlan.parse(ScenePlan.SAUDI, readAsset("scenes/saudi/scenes.tsv")));
         return all;
     }
 
+    /** a scene's file: in the app's assets (the Saudi pack's own scene) or in the downloaded pack's folder */
     private InputStream open(String pack, String name) throws java.io.IOException {
-        if (ScenePlan.SAUDI.equals(pack)) return app.getAssets().open("scenes/" + pack + "/" + name);
-        return new FileInputStream(new File(SceneDownload.dir(app), name));
+        File f = new File(SceneDownload.dir(app, pack), name);
+        if (f.isFile()) return new FileInputStream(f);
+        return app.getAssets().open("scenes/" + pack + "/" + name);
     }
 
-    private String read(String pack, String name) {
-        try (InputStream in = open(pack, name)) {
-            java.io.ByteArrayOutputStream b = new java.io.ByteArrayOutputStream();
-            byte[] buf = new byte[4096];
-            for (int n; (n = in.read(buf)) > 0; ) b.write(buf, 0, n);
-            return b.toString("UTF-8");
-        } catch (Exception e) {
-            return null;
-        }
+    private String readAsset(String path) {
+        try (InputStream in = app.getAssets().open(path)) { return text(in); } catch (Exception e) { return null; }
+    }
+
+    private String readFile(File f) {
+        try (InputStream in = new FileInputStream(f)) { return text(in); } catch (Exception e) { return null; }
+    }
+
+    private static String text(InputStream in) throws java.io.IOException {
+        java.io.ByteArrayOutputStream b = new java.io.ByteArrayOutputStream();
+        byte[] buf = new byte[4096];
+        for (int n; (n = in.read(buf)) > 0; ) b.write(buf, 0, n);
+        return b.toString("UTF-8");
     }
 
     /** a scene's file at no more than {@code width} px wide; RGB_565 for a picture with no transparency on a weak TV (half the memory) */

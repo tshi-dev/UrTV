@@ -37,8 +37,8 @@ if shutil.which("javac"):
                              check=True, capture_output=True).stdout.decode("utf-8").splitlines()
     rows = [l.split("\t") for l in out]
     scenes = [r for r in rows if r[0] == "scene"]
-    check("the Saudi pack: five scenes (Riyadh, AlUla, the dunes, the Red Sea, Hisma), every line read, each with its cut-out",
-          [s[1] for s in scenes] == ["riyadh", "alula", "dunes", "redsea", "hisma"] and all(s[5] != "-" for s in scenes), scenes)
+    check("4.4 the app carries one Saudi scene, Riyadh, with its cut-out (the four others are downloaded the first time: the owner keeps the APK light)",
+          [s[1] for s in scenes] == ["riyadh"] and all(s[5] != "-" for s in scenes), scenes)
     check("a bad line is left out, never half read (a bad id, a clock too small to read, a bad box); a good one is kept",
           [r for r in rows if r[0] == "bad"][0][1] == "1")
     packs = {r[1]: r[2] for r in rows if r[0] == "packs"}
@@ -61,8 +61,8 @@ if shutil.which("javac"):
     check("the scenes now (ScenePlan.choose): both rules off, all; «يتبع الوقت» at night the night scenes, by day the others; «يتبع الطقس» in fog the fog scenes (it wins); no fog: as the time says",
           ch["falsefalsefalsefalse"][0] == "aabbcc" and ch["truetruefalsefalse"][0] == "aa" and ch["truefalsefalsefalse"][0] == "bbcc"
           and ch["falsefalsetruetrue"][0] == "bb" and ch["truetruetruetrue"][0] == "bb" and ch["falsefalsetruefalse"][0] == "aabbcc", ch)
-    check("the Saudi pack: Riyadh is its night scene; with no fog scene the weather rule lets go (never an empty home)",
-          ch["truetruefalsefalse"][1] == "riyadh" and ch["truefalsefalsefalse"][1] == "alula dunes redsea hisma" and ch["falsefalsetruetrue"][1] == "riyadh alula dunes redsea hisma", ch)
+    check("the app's scene: Riyadh is a night scene; by day, with no day scene yet, and in fog, with no fog scene, the rules let go (never an empty home)",
+          ch["truetruefalsefalse"][1] == "riyadh" and ch["truefalsefalsefalse"][1] == "riyadh" and ch["falsefalsetruetrue"][1] == "riyadh", ch)
     check("«بقاء كل مشهد»: 10, 20, 60 or 300 s, anything else 20; fog is Open-Meteo's 45 and 48",
           [r for r in rows if r[0] == "stay"][0][1] == "10,300,20,20" and [r for r in rows if r[0] == "fog"][0][1] == "true,true,false")
     check("ScenePlan's tiers are Ram's numbers", [r for r in rows if r[0] == "tiers"][0][1] == "0,1,2"
@@ -103,9 +103,10 @@ check("every scene is credited (photographer, licence, source), the CC BY-SA one
 check("docs/PHOTO-CREDITS.md lists the scenes too", all(f"scenes/saudi/{i}.jpg" in read(ROOT / "docs/PHOTO-CREDITS.md") for i in ids))
 
 # ---- the Couch TV pack: downloaded once from urtv-data, checked before it is opened
-check("Couch TV: from urtv-data's scenes/ (its CDN copy when GitHub's raw host cannot be reached), nowhere else",
+check("the downloaded packs (couch, and the Saudi pack's four others): from urtv-data's scenes/ (its CDN copy when GitHub's raw host cannot be reached), nowhere else; one index per pack",
       'HOSTS = {"https://raw.githubusercontent.com/tshi-dev/urtv-data/data/scenes/", "https://cdn.jsdelivr.net/gh/tshi-dev/urtv-data@data/scenes/"}' in dl
-      and 'get("index.json", 16 * 1024)' in dl and 'get("couch.zip", MAX_BYTES)' in dl)
+      and 'get(pack + ".json", 16 * 1024)' in dl and 'get(pack + ".zip", MAX_BYTES)' in dl and "static boolean known(String pack) { return ScenePlan.SAUDI.equals(pack) || ScenePlan.COUCH.equals(pack); }" in dl
+      and "SceneDownload.fetchIfNeeded(app, p, () ->" in scene)
 check("…its size and sha256 from the index checked before the zip is opened; a name that is not a scene file, nothing kept; 12 MB at most; moved into place whole",
       "zip.length != Integer.parseInt(want[1])" in dl and 'hex(MessageDigest.getInstance("SHA-256").digest(zip)).equals(want[0])' in dl
       and dl.index("MessageDigest.getInstance") < dl.index("new ZipInputStream") and "if (e.isDirectory() || !allowed(e.getName())) { delete(work); return false; }" in dl
@@ -151,7 +152,7 @@ users = sorted(Path(f).name for f in glob.glob(str(HOME / "**/*.java"), recursiv
 check("off: only the home's screen knows the scene classes (nothing else can start a read, a download or a timer)", users == ["MainActivity.java"], users)
 seth = scene[scene.index("    void set(boolean wanted"):].split("\n    }\n")[0]
 check("off: the scene files are read and the Couch TV pack is downloaded only after «on» is checked; shut down, the thread, the timer and the pictures go",
-      seth.index("if (!on) {") < seth.index("io.execute(") < seth.index("SceneDownload.fetchIfNeeded(app);") and "assets" not in main.split("private void sceneTick(")[0][-400:]
+      seth.index("if (!on) {") < seth.index("io.execute(") < seth.index("SceneDownload.fetchIfNeeded(app, p,") and "assets" not in main.split("private void sceneTick(")[0][-400:]
       and "io.shutdownNow();" in scene and "for (Slot sl : slots) sl.release();" in scene)
 check("off: the scenes' memory tier, font and pictures are asked for only when the layer is made (none at the home's start)",
       main.count("new SceneHome(this, Ram.tier(this), font(\"display\"))") == 1)
