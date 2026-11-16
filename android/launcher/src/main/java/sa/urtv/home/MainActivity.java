@@ -296,6 +296,7 @@ public class MainActivity extends Activity {
         front = new java.lang.ref.WeakReference<>(this);   // TypeService's key hand-over (keyFromService)
         backExit.reset(); backGuarded = false;   // «الخروج من تلفزيونك»: a new visit, its count and its hint start again
         sa.urtv.home.tilawah.AdhanFront.home(true);   // «الأذان على شاشة التوقف فقط»: the adhan's alarm asks what is in front
+        try { sa.urtv.home.tilawah.MusicService.keepForeground(this); } catch (RuntimeException ignored) { }   // 4.3.3 G1: a surah started from the background gets its foreground notice now
         TypeService.homeFront(true);   // the Settings key is ours here (RemoteKeys): the service stops asking for keys
         A11yHeal.onStart(this);   // once per process: our accessibility service listed but not bound after an update (see A11yHeal)
         Parental.SESSION.clear();   // the home screen is in front again: an app opened with the PIN asks again next time
