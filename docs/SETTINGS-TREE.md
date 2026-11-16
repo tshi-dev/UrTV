@@ -54,8 +54,8 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 —— أشكال جاهزة والتخطيط
 ——— أشكال جاهزة [الرئيسية وشاشة التوقف]
     الخيارات: شكلك المعتاد / منظر وساعة / صورة فقط / مواقيت يومي / مباريات اليوم / ليل هادئ
-    مثال للوكيل: optimize/saver.sh preset family  (tv, couch, clean, family, sport, calm)
-      القيم المقبولة: tv|couch|clean|family|sport|calm
+    مثال للوكيل: optimize/saver.sh preset family  (tv, couch, clean, family, sport, calm, or a mix: couch-prayers, clean-icons, sport-night, tv-glass)
+      القيم المقبولة: tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
 ——— شكل كنبة [الرئيسية]
     الخيارات: مفعّل / متوقف
     الأصل: متوقف
@@ -756,8 +756,8 @@ the phone page's key, «مركز التحكم» the control centre's row that op
 — المظهر والخلفيات
 —— أشكال جاهزة [الرئيسية وشاشة التوقف]
    الخيارات: شكلك المعتاد / منظر وساعة / صورة فقط / مواقيت يومي / مباريات اليوم / ليل هادئ
-   مثال للوكيل: optimize/saver.sh preset family  (tv, couch, clean, family, sport, calm)
-     القيم المقبولة: tv|couch|clean|family|sport|calm
+   مثال للوكيل: optimize/saver.sh preset family  (tv, couch, clean, family, sport, calm, or a mix: couch-prayers, clean-icons, sport-night, tv-glass)
+     القيم المقبولة: tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass
 —— شكل كنبة [الرئيسية]
    الخيارات: مفعّل / متوقف
    الأصل: متوقف

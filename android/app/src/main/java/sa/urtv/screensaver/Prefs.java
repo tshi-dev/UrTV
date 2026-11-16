@@ -554,6 +554,8 @@ final class Prefs {
 
     /** LOW: every cut */
     static boolean lowRam(Context c) { return ramTier(c) == RAM_LOW; }
+    /** «الوضع الخفيف» in effect now: on, or auto on a weak TV (less motion: a fade where a stronger TV moves) */
+    boolean liteNow(Context c) { String v = lite(); return "on".equals(v) || ("auto".equals(v) && lowRam(c)); }
     /** MID: only the cheap memory cuts (photos at 1280, own photos 25, the markets a little slower) */
     static boolean midRam(Context c) { return ramTier(c) == RAM_MID; }
     /** LOW or MID */
@@ -1326,6 +1328,27 @@ final class Prefs {
             if (eq > 0) setPresetField(line.substring(0, eq), line.substring(eq + 1));
         }
     }
+    /**
+     * 4.4 the owner: «تركيبات مقترحة», one tile among the six: four mixes, each a look and one or two rows changed; choosing one applies it all, and
+     * it reads as itself (its name) until a row is changed after (then «مخصّص»). key, name, its line, the look, then field=value pairs.
+     */
+    static final String[][] COMBOS = {
+        {"couch-prayers", "منظر وساعة + مواقيت اليوم", "الآفاق، ومربعات المواقيت في الصف", "couch", "cards=prayerrow"},
+        {"clean-icons", "صورة فقط + أيقونات التطبيقات", "الصورة والساعة، والتطبيقات أيقونات", "clean", "apps=icons"},
+        {"sport-night", "مباريات اليوم + ليل هادئ", "المباريات في الليل، خافتة", "sport", "nightDim=true", "wallDim=40"},
+        {"tv-glass", "شكلك المعتاد + الساعة الزجاجية", "اختياراتك، والساعة خلف الصورة", "tv", "clock=glass"}};
+    static String[] combo(String key) { for (String[] c : COMBOS) if (c[0].equals(key)) return c; return null; }
+    /** the mix chosen, "" when a look alone (or none) is */
+    String presetCombo() { String v = sp.getString("presetCombo", ""); return combo(v) == null ? "" : v; }
+    void setCombo(String key) {
+        String[] c = combo(key);
+        if (c == null) return;
+        setPreset(c[3]);
+        if ("tv".equals(c[3])) sp.edit().putString("presetBefore", presetNow()).apply();   // the person's own, kept: «شكلك المعتاد» alone puts them back
+        for (int k = 4; k < c.length; k++) { int eq = c[k].indexOf('='); setPresetField(c[k].substring(0, eq), c[k].substring(eq + 1)); }
+        sp.edit().putString("preset", c[3]).putString("presetCombo", key).putString("presetApplied", presetNow()).apply();
+    }
+
     /** the look chosen ("tv" when none); a TV that had «شكل كنبة» on reads «منظر وساعة», its four values kept as the person's own */
     String preset() {
         if (!sp.contains("preset") && sp.getBoolean("couchOn", false)) {
@@ -1337,13 +1360,15 @@ final class Prefs {
         return java.util.Arrays.asList(PRESETS).contains(v) ? v : "tv";
     }
     void setPreset(String key) {
+        if (combo(key) != null) { setCombo(key); return; }   // saver.sh preset takes a mix's key too
         int i = java.util.Arrays.asList(PRESETS).indexOf(key);
         if (i < 0) return;
+        sp.edit().remove("presetCombo").apply();
         String before = sp.getString("presetBefore", null);
         if ("tv".equals(key)) {
             if (before != null) presetPut(before);
             else for (int k = 0; k < PRESET_FIELDS.length; k++) setPresetField(PRESET_FIELDS[k], PRESET_VALUES[0][k]);
-            sp.edit().remove("preset").remove("presetBefore").remove("presetApplied").putBoolean("couchOn", false).remove("couchBefore").apply();
+            sp.edit().remove("preset").remove("presetBefore").remove("presetApplied").remove("presetCombo").putBoolean("couchOn", false).remove("couchBefore").apply();
             return;
         }
         if (before == null) { before = presetNow(); sp.edit().putString("presetBefore", before).apply(); }   // the person's own, kept once
@@ -1354,7 +1379,7 @@ final class Prefs {
     /** the rows changed since the look was chosen (their Arabic names), none while it is as chosen */
     List<String> presetChanged() {
         List<String> out = new ArrayList<>();
-        if ("tv".equals(preset())) return out;
+        if ("tv".equals(preset()) && presetCombo().isEmpty()) return out;
         for (String line : sp.getString("presetApplied", "").split("\n")) {
             int eq = line.indexOf('=');
             if (eq <= 0) continue;
@@ -1366,13 +1391,14 @@ final class Prefs {
     static String presetName(String key) { int i = java.util.Arrays.asList(PRESETS).indexOf(key); return PRESET_NAMES[Math.max(0, i)]; }
     /** the row's line: the look, or «مخصّص (منظر وساعة، وتغيّر: الساعة)», or «…، وتغيّر أكثر من صف» */
     String presetLabel() {
-        String key = preset();
+        String key = preset(), mix = presetCombo();
+        String name = mix.isEmpty() ? presetName(key) : combo(mix)[1];
         List<String> ch = presetChanged();
-        if (ch.isEmpty()) return presetName(key);
-        return ch.size() == 1 ? String.format("مخصّص (%s، وتغيّر: %s)", presetName(key), ch.get(0)) : String.format("مخصّص (%s، وتغيّر أكثر من صف)", presetName(key));
+        if (ch.isEmpty()) return name;
+        return ch.size() == 1 ? String.format("مخصّص (%s، وتغيّر: %s)", name, ch.get(0)) : String.format("مخصّص (%s، وتغيّر أكثر من صف)", name);
     }
     /** saver.sh show: "family" or "family (custom)" */
-    String presetShow() { return preset() + (presetChanged().isEmpty() ? "" : " (custom)"); }
+    String presetShow() { return (presetCombo().isEmpty() ? preset() : presetCombo()) + (presetChanged().isEmpty() ? "" : " (custom)"); }
 
     /**
      * 4.4 the owner: «شكل كنبة» was one switch. With PRESETS_REPLACE_COUCH it is the look «منظر وساعة»: on chooses it, off chooses «شكلك المعتاد».

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """4.4 «أشكال جاهزة» (the owner's names, docs/mockups/presets): six looks that set the home and the screensaver at once, the person's own values kept
 once and put back by «شكلك المعتاد», «مخصّص» once a row is changed after; the two open questions behind flags (on).   python3 tests/presets_test.py"""
-import re, sys
+import re, shutil, subprocess, sys, tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -51,7 +51,42 @@ check("the row is first in «المظهر» in both layouts, the picture picker 
 pics = [ROOT / f"android/app/src/main/assets/presets/{k}.jpg" for k in keys]
 check("each look's picture is in the app, small (under 40 KB)", all(p.is_file() and p.stat().st_size < 40 * 1024 for p in pics), [p.name for p in pics if not p.is_file()])
 check("saver.sh preset tv|couch|clean|family|sport|calm; show says «preset: family» or «family (custom)»; given before any one row",
-      'preset)     set1 preset "${2:?usage: optimize/saver.sh preset tv|couch|clean|family|sport|calm}" ;;' in saver and '"\\npreset: " + p.presetShow()' in recv
+      'preset)     set1 preset "${2:?usage: optimize/saver.sh preset tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass}" ;;' in saver and '"\\npreset: " + p.presetShow()' in recv
       and recv.index("if (preset != null) p.setPreset(preset);") < recv.index("if (homeLayout != null) p.setHomeLayout(homeLayout);"))
 check("docs/SETTINGS.md has the row and its command", "`optimize/saver.sh preset family`" in (ROOT / "docs/SETTINGS.md").read_text(encoding="utf-8"))
+
+# ---- «تركيبات مقترحة» (the owner approved docs/mockups/presets/combos-*.jpg): one tile, four mixes, the circle from the tile, a fade on a weak TV
+combos = re.findall(r'\{"([a-z-]+)", "([^"]+)", "([^"]+)", "([a-z]+)"((?:, "[a-zA-Z]+=[^"]+")+)\}', prefs[prefs.index("static final String[][] COMBOS = {"):].split("};")[0])
+check("four mixes, each one of the six and a row or two, with the owner's names", [c[0] for c in combos] == ["couch-prayers", "clean-icons", "sport-night", "tv-glass"]
+      and [c[1] for c in combos] == ["منظر وساعة + مواقيت اليوم", "صورة فقط + أيقونات التطبيقات", "مباريات اليوم + ليل هادئ", "شكلك المعتاد + الساعة الزجاجية"]
+      and all(c[3] in keys for c in combos) and all(re.findall(r'"([a-zA-Z]+)=', c[4]) and set(re.findall(r'"([a-zA-Z]+)=', c[4])) <= set(fields) for c in combos), combos)
+sc = prefs[prefs.index("    void setCombo(String key) {"):].split("\n    }\n")[0]
+check("a mix: its look first (the person's own kept the same way), then its rows, and it reads as itself until a row is changed after",
+      "setPreset(c[3]);" in sc and '.putString("presetCombo", key).putString("presetApplied", presetNow())' in sc
+      and 'String name = mix.isEmpty() ? presetName(key) : combo(mix)[1];' in prefs and 'sp.edit().remove("presetCombo").apply();' in prefs
+      and 'if (combo(key) != null) { setCombo(key); return; }' in prefs)
+pick = st[st.index("    private void pickPreset() {"):st.index("    /** a mix chosen: applied as a look is")]
+check("the picker: the six, then the one tile «تركيبات مقترحة»; the focus on it opens the mixes, Back or up closes them into it",
+      'names[mixAt] = "تركيبات مقترحة";' in pick and "if (pos == mixAt) mixes.open(v);" in pick and "mixes.close()" in pick
+      and "KEYCODE_DPAD_UP" in pick and "close(); return true;" in pick)
+check("the motion: a circular reveal from the tile's centre, the mixes fanning out of it, 250 ms slowing at the end; closing the same way back",
+      "ViewAnimationUtils.createCircularReveal(panel, (int) c[0], (int) c[1], in ? 0f : r, in ? r : 0f)" in pick and "setDuration(PresetMotion.MS)" in pick
+      and "new android.view.animation.DecelerateInterpolator(PresetMotion.EASE)" in pick and "translationX(in ? 0 : dx)" in pick)
+check("a weak TV («الوضع الخفيف» on, or auto on a weak TV) only fades", "if (prefs.liteNow(SettingsActivity.this)) {" in pick
+      and 'return "on".equals(v) || ("auto".equals(v) && lowRam(c));' in prefs and ".alpha(in ? 1f : 0f).setDuration(PresetMotion.MS)" in pick)
+pics2 = [ROOT / f"android/app/src/main/assets/presets/{k}.jpg" for k in ["combos"] + ["combo-" + c[0] for c in combos]]
+check("the tile's and each mix's picture are in the app, small", all(p.is_file() and p.stat().st_size < 40 * 1024 for p in pics2), [p.name for p in pics2 if not p.is_file()])
+check("saver.sh preset takes a mix's key too", "preset tv|couch|clean|family|sport|calm|couch-prayers|clean-icons|sport-night|tv-glass}" in saver)
+if shutil.which("javac"):
+    with tempfile.TemporaryDirectory() as d:
+        run = (ROOT / "tests/PresetMotionRun.java")
+        c = subprocess.run(["javac", "-d", d, str(APP / "PresetMotion.java"), str(run)], capture_output=True)
+        check("PresetMotion compiles as plain Java", c.returncode == 0, c.stderr.decode()[-600:])
+        r = subprocess.run(["java", "-cp", d, "sa.urtv.screensaver.PresetMotionRun"], capture_output=True, text=True)
+        got = dict(l.split("=", 1) for l in r.stdout.split())
+        check("…250 ms; the mockup's curve (half the reveal at about 52 ms, 87 % at half the time); the circle reaches the panel's farthest corner",
+              r.returncode == 0 and got.get("ms") == "250" and abs(float(got["e50"]) - 0.875) < 1e-3 and abs(float(got["e21"]) - 0.5) < 0.01
+              and abs(float(got["r"]) - 1000.0) < 0.01 and got.get("e0") == "0.0" and got.get("e1") == "1.0", got)
+else:
+    print("NOTE javac not found: PresetMotion not run here (CI runs it)")
 sys.exit(1 if failed else 0)
