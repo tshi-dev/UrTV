@@ -25,8 +25,8 @@ function net(route) {
   return route.abort();
 }
 const SCENES = {   // the photo, its frosted glass (SceneClock.frost), its cut-out cropped to its box (scenes.tsv / masks index.json) and the digits' place, in dp
-  riyadh: { photo: 'riyadh.jpg', glass: 'riyadh-frost.jpg', fg: 'riyadh-fg.webp', fgTop: 67.5, fgH: 321.5, top: 110, size: 190 },
-  night: { photo: 'night.jpg', glass: 'night-frost.jpg', fg: 'night-fg.webp', fgTop: 77.5, fgH: 311.5, top: 113, size: 196 },
+  riyadh: { photo: 'riyadh1.jpg', glass: 'riyadh1-frost.jpg', top: 60, size: 190 },   // ksa-cities 1 (KAFD at dusk): its cut-out is FRONT-ONLY, the clock in front
+  night: { photo: 'night.jpg', glass: 'night-frost.jpg', fg: 'night-fg.webp', fgTop: 77.5, fgH: 311.5, top: 45, size: 196 },   // digits 137-419 at 1080: the trees cover at most 24 % of a digit
   nature7: { dark: 1, photo: 'nature16.jpg', glass: 'nature16-dark.jpg', fg: 'nature16-fg.webp', fgTop: 171, fgH: 218, top: 71, size: 200 },
 };
 const SHOTS = [
