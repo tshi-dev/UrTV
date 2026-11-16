@@ -335,7 +335,8 @@ final class PhoneActions implements Actions {
         if (out == null) return Result.fail("failed");
         if ("mask_added".equals(out.getString("result", ""))) return Result.ok("mask_added");
         String why = out.getString("why", "");
-        return Result.fail(why.equals("shape") ? "mask_shape" : why.equals("tones") ? "mask_tones" : why.equals("late") ? "mask_late" : "mask_refused");
+        return Result.fail(why.equals("shape") ? "mask_shape" : why.equals("tones") ? "mask_tones" : why.equals("cover") ? "mask_cover"
+                : why.equals("edge") ? "mask_edge" : why.equals("late") ? "mask_late" : "mask_refused");
     }
 
     // ---- 4.3 #53 «اكتب وارسم»: a short message on the TV's screen (PhoneMessage decides, MessageActivity shows)

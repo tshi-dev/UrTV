@@ -1,8 +1,9 @@
 name: Photo cut-outs for the glass clock
 
-# 4.4 «الساعة: زجاجية خلف الصورة»: the cut-out (the scenery, the sky transparent) of each of our photos checked by eye
-# (.github/tools/photo_masks_ok.txt), made here, never on a TV, and put on the data-masks branch to be copied into urtv-data masks/.
-# «الحرمين» is never cut. Run by hand with review: true to get every cut-out that passes and its review sheet as an artifact.
+# 4.4 «الساعة: زجاجية خلف الصورة»: the cut-out (the scenery, the sky transparent) of each of our photos, made here with a depth model and a
+# soft matte, never on a TV; every photo goes through the gate (FIT / FRONT-ONLY / REJECT, masks/gate.json) and only FIT ones checked by eye
+# (.github/tools/photo_masks_ok.txt) are put on the data-masks branch to be copied into urtv-data masks/. «الحرمين» is never cut.
+# Run by hand with review: true to get every FIT cut-out, the review sheet and the check renders as an artifact.
 on:
   workflow_dispatch:
     inputs:
@@ -23,7 +24,11 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
-      - run: pip install numpy scipy opencv-python-headless Pillow
+      - run: pip install numpy scipy "opencv-python-headless<5" Pillow onnxruntime
+      - uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/work/depth_anything_v2_vits_dynamic.onnx
+          key: depth-anything-v2-small-46c4e8ee
       - name: Review sheet
         if: ${{ inputs.review }}
         run: python3 -I .github/tools/photo_masks.py review --work "$RUNNER_TEMP/work" --all

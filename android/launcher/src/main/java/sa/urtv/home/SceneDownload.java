@@ -28,7 +28,13 @@ final class SceneDownload {
     /** the packs that can be downloaded: their names are the files' names (scenes/<pack>.json, scenes/<pack>.zip) and the folder's */
     static boolean known(String pack) { return ScenePlan.SAUDI.equals(pack) || ScenePlan.COUCH.equals(pack); }
 
-    static File dir(Context c, String pack) { return new File(c.getFilesDir(), "scenes/" + pack); }
+    /**
+     * the packs' files' version: a pack is kept in scenes/<pack>.<DATA>, so a TV that downloaded an older one (4.4: the cut-outs made again with the
+     * depth model and the gate) takes the new one once, and the old folder goes. Raise it with the zips in urtv-data, never alone.
+     */
+    static final int DATA = 2;
+
+    static File dir(Context c, String pack) { return new File(c.getFilesDir(), "scenes/" + pack + "." + DATA); }
 
     static boolean have(Context c, String pack) { return new File(dir(c, pack), "scenes.tsv").isFile(); }
 
@@ -50,6 +56,7 @@ final class SceneDownload {
     /** the pack's files, once, in the background; {@code done} runs on that thread when they arrived (the home takes them at once) */
     static void fetchIfNeeded(final Context app, final String pack, final Runnable done) {
         if (!known(pack) || have(app, pack) || !busy.add(pack)) return;
+        for (int v = 0; v < DATA; v++) delete(new File(app.getFilesDir(), v == 0 ? "scenes/" + pack : "scenes/" + pack + "." + v));   // an older pack's files
         final android.content.SharedPreferences sp = app.getSharedPreferences("scenes", Context.MODE_PRIVATE);
         if (System.currentTimeMillis() - sp.getLong("failedAt:" + pack, 0) < RETRY_MS) { busy.remove(pack); return; }
         new Thread(() -> {

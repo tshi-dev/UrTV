@@ -90,8 +90,16 @@ sleep 25
 shot saver-now-playing 2
 music sa.urtv.home.STOP
 
-# ---- the settings (4.3.3): the side list on the right, the rows on the left; they open on «اللغة», the focus on its item; ▼ shows the next section's
+# ---- 4.4 «شكل كنبة» off (the default): the 4.3.2 settings screen, its first screen of buttons, then «المظهر والخلفيات» with the switch first
+start sa.urtv.screensaver/.SettingsActivity
+shot settings-00-classic-hub 3
+for i in 1 2 3 4 5 6; do key DPAD_DOWN; done
+key DPAD_CENTER
+shot settings-00-classic-look 2
+key BACK BACK
+# ---- «شكل كنبة» on: the side list on the right, the rows on the left; they open on «اللغة», the focus on its item; ▼ shows the next section's
 # rows at once (the focus stays on the list), OK goes into the rows, Back comes back to the section's item
+saver --es couch on
 start sa.urtv.screensaver/.SettingsActivity
 shot settings-01-lang 3
 key DPAD_DOWN
@@ -119,6 +127,7 @@ for i in 1 2 3 4 5 6 7 8 9 10; do key DPAD_UP; done
 key DPAD_CENTER
 shot settings-12-search 2
 key BACK BACK
+saver --es couch off
 
 adb logcat -d -s AndroidRuntime:E > "$OUT/crashes.txt"
 ls "$OUT"
