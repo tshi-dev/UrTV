@@ -62,6 +62,11 @@ public class GamesKitTest {
     }
 
     /** SunPos: Riyadh and Mecca around the day, a high latitude in summer and winter (the checks are the sun's own, to a few minutes) */
+    static void missingPhone() {
+        check("missing word on phones: spelling variants meet (أ ا، ة ه، ى ي، marks, «ال», spaces, case), another word does not",
+            MissingWord.sameWord("الكَعْبَة", "كعبة") && MissingWord.sameWord("أحمد", "احمد") && MissingWord.sameWord("  Riyadh ", "riyadh") && MissingWord.sameWord("مستشفى", "مستشفي")
+            && !MissingWord.sameWord("قمر", "شمس") && !MissingWord.sameWord("", "شمس"));
+    }
     static void names() {
         check("names: letters, digits and single spaces, 14 at most, no link", GameNames.clean("  سارة   أحمد ") .equals("سارة أحمد") && GameNames.clean("a@b#c").equals("abc") && GameNames.clean("12345678901234567890").length() == 14
             && GameNames.clean("http://x.y").isEmpty() && GameNames.clean("www x").isEmpty() && GameNames.clean(null).isEmpty());
@@ -109,6 +114,7 @@ public class GamesKitTest {
         khanatTen();
         sun();
         names();
+        missingPhone();
         System.exit(failed == 0 ? 0 : 1);
     }
 

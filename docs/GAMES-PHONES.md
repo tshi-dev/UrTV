@@ -14,6 +14,7 @@ One switch, «اللعب بالجوالات», in the setup of «واحد مو �
   most votes wins; a tie, or no name, is «ما اتفقنا». The remote's own vote grid still works.
 - **بدون كلام**: the turns go round the phones. The actor's phone shows the word (a secret card, «شفتها» starts the clock), then the word with
   «صح», «تخطّي» and, in «وصّف» with fouls on, «مخالفة». The TV never shows the word in this mode, not even on «شوف الكلمة».
+- **الكلمة المفقودة**: each phone is a team (1 to 4), named by the phone's name. The statement with its blank goes to the phone of the team whose turn it is, which types the word (a «text» card; spelling variants meet: أ ا، ة ه، ى ي، «ال»، marks). A right word is marked right at once; any other word goes to the host's «صح / خطف / خطأ» buttons with what was typed beside it. Time up, the hint and the steal work as with one remote.
 - «الأسرع» is unchanged (its own room and page, docs/QUIZ.md).
 
 ## Next phases
