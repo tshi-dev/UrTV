@@ -124,6 +124,13 @@ public class ConfigProvider extends ContentProvider {
                 out.putInt("max", Own.max(c));
                 return out;
             }
+            case "phone_photo_mask": {   // 4.4: the mask of the photo the same phone just added (the launcher's /api/photo-mask), a PNG
+                byte[] png = extras == null ? null : extras.getByteArray("png");
+                String why = png == null || png.length == 0 || png.length > 1_000_000 ? "bad" : Own.addMask(c, png);
+                out.putString("result", why == null ? "mask_added" : "mask_refused");
+                out.putString("why", why == null ? "" : why);
+                return out;
+            }
             case "phone_state": {
                 ArrayList<String> codes = new ArrayList<>(), names = new ArrayList<>();
                 for (String[] x : Prefs.PANELS) { codes.add(x[0]); names.add(x[1]); }
@@ -186,6 +193,12 @@ public class ConfigProvider extends ContentProvider {
             try { n = Integer.parseInt(seg.get(1)); } catch (NumberFormatException e) { throw new FileNotFoundException(); }
             if (n < 1 || n > Own.count(c)) throw new FileNotFoundException();
             return ParcelFileDescriptor.open(Own.file(c, n), ParcelFileDescriptor.MODE_READ_ONLY);
+        }
+        if (seg.size() == 3 && "own".equals(seg.get(0)) && "mask".equals(seg.get(2)) && "r".equals(mode)) {   // 4.4 .../own/N/mask: photo N's mask, when it has one
+            int n;
+            try { n = Integer.parseInt(seg.get(1)); } catch (NumberFormatException e) { throw new FileNotFoundException(); }
+            if (n < 1 || n > Own.count(c) || !Own.mask(c, n).isFile()) throw new FileNotFoundException();
+            return ParcelFileDescriptor.open(Own.mask(c, n), ParcelFileDescriptor.MODE_READ_ONLY);
         }
         if (seg.size() == 3 && "homepack".equals(seg.get(0)) && "r".equals(mode)) {   // .../homepack/ID/N: photo N of a pack the home rotates, read only
             String id = seg.get(1);

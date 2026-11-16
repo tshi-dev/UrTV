@@ -40,6 +40,43 @@ final class Own {
 
     static File file(Context c, int n) { return new File(dir(c), n + ".jpg"); }
 
+    /** 4.4: photo n's mask for the glass clock (docs/OWN-PHOTO-MASK.md), a PNG beside it; it moves and goes with its photo */
+    static File mask(Context c, int n) { return new File(dir(c), n + ".mask.png"); }
+
+    /** a mask is taken only for the photo added last, and only this soon after it (the phone sends the two one after the other) */
+    static final long MASK_WINDOW_MS = 2 * 60 * 1000;
+
+    /**
+     * 4.4: keeps png as the mask of the last photo: null, or why not ("late": no photo was just added; "shape": not the photo's shape within 2 %;
+     * "tones": not mostly black and white, or all one of them; "bad": not a PNG). The shape is the photo's, the size any.
+     */
+    static synchronized String addMask(Context c, byte[] png) {
+        int n = count(c);
+        File photo = file(c, n);
+        if (n == 0 || System.currentTimeMillis() - photo.lastModified() > MASK_WINDOW_MS) return "late";
+        android.graphics.BitmapFactory.Options b = new android.graphics.BitmapFactory.Options();
+        b.inJustDecodeBounds = true;
+        android.graphics.BitmapFactory.decodeByteArray(png, 0, png.length, b);
+        android.graphics.BitmapFactory.Options p = new android.graphics.BitmapFactory.Options();
+        p.inJustDecodeBounds = true;
+        android.graphics.BitmapFactory.decodeFile(photo.getPath(), p);
+        if (b.outWidth <= 0 || b.outHeight <= 0 || !"image/png".equals(b.outMimeType) || p.outWidth <= 0) return "bad";
+        if (!MaskCheck.sameShape(b.outWidth, b.outHeight, p.outWidth, p.outHeight)) return "shape";
+        android.graphics.BitmapFactory.Options s = new android.graphics.BitmapFactory.Options();
+        s.inSampleSize = Math.max(1, Math.min(b.outWidth, b.outHeight) / 120);
+        android.graphics.Bitmap small = android.graphics.BitmapFactory.decodeByteArray(png, 0, png.length, s);
+        if (small == null) return "bad";
+        int[] px = new int[small.getWidth() * small.getHeight()];
+        small.getPixels(px, 0, small.getWidth(), 0, 0, small.getWidth(), small.getHeight());
+        small.recycle();
+        if (!MaskCheck.twoTone(px)) return "tones";
+        File tmp = new File(dir(c), "mask.tmp");
+        try (OutputStream o = new FileOutputStream(tmp)) { o.write(png); } catch (IOException e) { tmp.delete(); return "bad"; }
+        if (!tmp.renameTo(mask(c, n))) { tmp.delete(); return "bad"; }
+        new Prefs(c).bumpOwnRev();
+        return null;
+    }
+
     /** where ConfigProvider lets the shell write the next photo before SaverReceiver adds it */
     static File incoming(Context c) { return new File(dir(c), "in.tmp"); }
 
@@ -118,7 +155,11 @@ final class Own {
         int all = count(c);
         if (n < 1 || n > all) return false;
         file(c, n).delete();
-        for (int k = n + 1; k <= all; k++) file(c, k).renameTo(file(c, k - 1));
+        mask(c, n).delete();
+        for (int k = n + 1; k <= all; k++) {
+            file(c, k).renameTo(file(c, k - 1));
+            if (mask(c, k).isFile()) mask(c, k).renameTo(mask(c, k - 1));
+        }
         new Prefs(c).bumpOwnRev();
         return true;
     }

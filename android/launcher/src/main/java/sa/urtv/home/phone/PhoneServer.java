@@ -66,6 +66,8 @@ public final class PhoneServer {
     public static final int MAX_LINE = 4096, MAX_HEADERS = 40, MAX_HEADER_BYTES = 8192, MAX_BODY = 4096;
     /** 4.3: «صوري» from the phone, one JPEG the phone resized (1920 px): only on POST /api/photo, only as image/jpeg */
     public static final String PHOTO_PATH = "/api/photo";
+    /** 4.4: the mask of the photo just sent (docs/OWN-PHOTO-MASK.md): a black-and-white PNG the phone redrew at the photo's size; only as image/png */
+    public static final String MASK_PATH = "/api/photo-mask";
     public static final int MAX_PHOTO_BODY = 1_000_000;
     static final int READ_TIMEOUT_MS = 3000;
     static final long TOTAL_MS = 8000;
@@ -186,7 +188,8 @@ public final class PhoneServer {
         String body = "";
         if (p[0].equals("POST")) {
             String cl = h.get("content-length");
-            boolean photo = target.equals(PHOTO_PATH) && "image/jpeg".equals(String.valueOf(h.get("content-type")).toLowerCase(Locale.ROOT).trim());
+            String ct = String.valueOf(h.get("content-type")).toLowerCase(Locale.ROOT).trim();
+            boolean photo = target.equals(PHOTO_PATH) && "image/jpeg".equals(ct) || target.equals(MASK_PATH) && "image/png".equals(ct);
             if (cl == null || !cl.matches(photo ? "[0-9]{1,7}" : "[0-9]{1,5}")) fail(411);
             int n = Integer.parseInt(cl);
             if (n > (photo ? MAX_PHOTO_BODY : MAX_BODY)) fail(413);

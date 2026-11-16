@@ -57,6 +57,12 @@ final class PhoneApi implements PhoneServer.Handler {
                 if (secret == null) return json(401, err("no_session"));
                 return result(control.actions().photoAdd(r.raw));
             }
+            if (r.path.equals(PhoneServer.MASK_PATH)) {   // 4.4: the photo's mask, a PNG, read only as raw bytes; the screensaver checks it against the photo
+                if (r.raw == null || type == null || !type.toLowerCase().trim().equals("image/png")) return json(415, err("png_only"));
+                String secret = session(r);
+                if (secret == null) return json(401, err("no_session"));
+                return result(control.actions().photoMask(r.raw));
+            }
             if (type == null || !type.toLowerCase().replace(" ", "").matches("application/json(;charset=utf-8)?")) return json(415, err("json_only"));
         }
 
