@@ -69,6 +69,7 @@
 - **UrTV النظيف:** الأساسيات فقط في الرئيسية وشاشة التوقف، مع سطر الصلاة القادمة أو بطاقة صلاة، وكل شي يرجع بضغطة.
 - **توحيد المظهر:** الأزرار والبطاقات وشريط التطبيقات بمادة وحدة في كل شكل.
 - **تخلّص من واجهة المصنع:** تعطيل (ما يحذف) واجهة المصنع بتأكيدين وبضغطة ترجع؛ بعض التلفزيونات ما تعرض سؤال التصحيح لتطبيقنا، وUrTV يشتغل بدونها.
+- **قبل ما تحذف UrTV:** إذا كنت شغّلت «تخلّص من واجهة المصنع» فلا تحذف التطبيق قبل ما ترجّعها (الإعدادات ← الشاشة الرئيسية ← «رجّع واجهة المصنع»، أو «إعداد تلفزيوني» ثم «تراجع»)، وإلا يبقى التلفزيون بلا شاشة رئيسية وتطلع شاشة سوداء. في الإعدادات صف «قبل ما تحذف التطبيق…» يقول لك هذا، وفيه زر الرجوع.
 - **التحكم من الجوال:** صفحة جوال جديدة: ريموت، وكتابة عربية، ورسالة ورسم على الشاشة، وصورك.
 - **تسريع آمن:** يوقف الإعلانات والتتبع بشكل يرجع، وما يلمس AirPlay ولا البث ولا الصوت.
 
@@ -142,6 +143,7 @@ The screens are shown above (start, the plan, done).
 - **Clean UrTV:** the essentials only on the home and the screensaver, with the next-prayer line or a prayer card; one press brings everything back.
 - **One look:** the buttons, the cards and the apps bar share one material in every look.
 - **Get rid of the factory interface:** turn it off (never delete it) with two confirmations and one press to undo; some TVs do not show the debugging question to our app, and UrTV works without it.
+- **Before you delete UrTV:** if you turned on «Get rid of the factory interface», bring it back first (Settings → Home screen → «Bring back the factory interface», or «TV setup» then «Undo») or the TV is left with no home screen and shows a black screen. The settings row «قبل ما تحذف التطبيق…» (Before you delete the app…) says so and has the button.
 - **From the phone:** a redesigned phone page: a remote, Arabic typing, a message or a drawing on the screen, your photos.
 - **Safe speed-up:** ads and tracking off, reversibly; AirPlay, casting and voice are never touched.
 

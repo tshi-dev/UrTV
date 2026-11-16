@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- the build: UTC time (YYYYMMDDHHMMSS) of the newest commit of the page's sources, put in by src/build.py. The app loads the page with the newer stamp (its own
      copy or a downloaded one), never by file time, and does not keep a download whose stamp is older than its own (Updater, PageStamp). -->
-<meta name="urtv-build" content="20261113151316">
+<meta name="urtv-build" content="20261116032302">
 <title>Your TV Screen</title>
 <style>
   @font-face{font-family:'Thmanyah';font-weight:300;font-style:normal;font-display:block;src:url("https://raw.githubusercontent.com/tshi-dev/UrTV/master/assets/fonts/Thmanyah-Light.woff2") format("woff2")}
@@ -3453,12 +3453,13 @@ function matchRows(card){
 }
 
 // ---- «الأسهم»: the watchlist card. A Tadawul code
-const TADAWUL = {   // Arabic short names of the 30 largest companies; any other code shows as the number
+const TADAWUL = {   // Arabic short names of the 30 largest companies and some more people asked for; any other code shows as the number
   '2222':'Aramco', '1120':'Al Rajhi', '1180':'SNB', '2010':'SABIC', '7010':'stc', '1211':'Maaden', '2082':'ACWA',
   '5110':'SEC', '1150':'Alinma', '1060':'SAB', '1010':'Riyad Bank', '1050':'BSF', '1140':'Albilad',
   '1020':'AlJazira', '1080':'ANB', '2280':'Almarai', '2380':'Petro Rabigh', '2310':'Sipchem', '2020':'SAFCO', '2290':'Yansab',
   '2350':'Kayan', '4013':'Al Habib', '4190':'Jarir', '7020':'Mobily', '7030':'Zain', '7203':'Elm', '4030':'Bahri',
   '1810':'Seera', '8010':'Tawuniya', '4300':'Dar Al Arkan',
+  '4164':'Nahdi', '4002':'Mouwasat', '4349':'Alinma Hospitality REIT', '4161':'BinDawood', '4003':'Extra', '4004':'Dallah Health', '4005':'Care', '4001':'Othaim', '4007':'Al Hammadi', '4240':'Alhokair', '2060':'Tasnee', '2250':'SIIG', '2223':'Luberef', '1111':'Tadawul Group', '1030':'SAIB',   // 4.3.2 (GitHub #60): the 30 largest, then the codes people asked for: a code in this table is also in the price file CI keeps
 };
 const isSA = k => /^\d/.test(k);
 const stockName = k => isSA(k) ? (TADAWUL[k] || ar(k)) : k;
