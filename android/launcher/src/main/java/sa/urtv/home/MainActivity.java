@@ -2860,7 +2860,7 @@ public class MainActivity extends Activity {
             zoomName.setSingleLine(true);
             zoomName.setAlpha(0f);
             zoomName.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);   // the tile says its name itself
-            hero.addView(zoomName, new FrameLayout.LayoutParams(-2, -2, Gravity.TOP | Gravity.LEFT));
+            hero.addView(zoomName, new FrameLayout.LayoutParams(-2, -2, Gravity.TOP | Gravity.START));
         }
         Object tag = f.getTag();
         if (tag instanceof App) zoomName.setText(((App) tag).label);
@@ -2870,7 +2870,7 @@ public class MainActivity extends Activity {
         hero.getLocationInWindow(h);
         tray.getLocationInWindow(t);
         float centre = a[0] + f.getWidth() * f.getScaleX() / 2f;   // the tile grows about its centre
-        zoomName.setTranslationX(centre - h[0] - zoomName.getMeasuredWidth() / 2f);
+        zoomName.setX(centre - h[0] - zoomName.getMeasuredWidth() / 2f);   // its place on the screen, whichever side it starts from
         zoomName.setTranslationY(t[1] - h[1] + tray.getHeight() + bar(8));
         if (zoomName.getAlpha() < 1f) zoomName.animate().alpha(1f).setDuration(200).start();
     }
