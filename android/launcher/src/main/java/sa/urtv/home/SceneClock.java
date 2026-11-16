@@ -41,45 +41,6 @@ final class SceneClock extends View {
         setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);   // the header's clock still says the time to a screen reader
     }
 
-    private static Typeface glyphsOf;
-    private static ScenePlan.Glyphs glyphs;
-
-    /**
-     * 4.4 the clock's glyphs for the ink rule (ScenePlan.inkLost): each digit (Arabic and Latin) and the colon drawn with the clock's typeface, a
-     * digit ScenePlan.GLYPH_H px tall («٤٥٨»'s ink), its ink alpha 128 or more; made once per typeface; null when they cannot be drawn
-     */
-    static synchronized ScenePlan.Glyphs glyphs(Typeface t) {
-        if (glyphs != null && glyphsOf == t) return glyphs;
-        try {
-            Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
-            p.setTypeface(t);
-            p.setTextSize(100);
-            Rect r = new Rect();
-            p.getTextBounds("٤٥٨", 0, 3, r);
-            if (r.height() <= 0) return null;
-            p.setTextSize(100f * ScenePlan.GLYPH_H / r.height());
-            ScenePlan.Glyphs g = new ScenePlan.Glyphs();
-            for (char c : "٠١٢٣٤٥٦٧٨٩0123456789:".toCharArray()) {
-                String s = String.valueOf(c);
-                p.getTextBounds(s, 0, 1, r);
-                int gw = Math.max(1, r.width() + 2), gh = Math.max(1, r.height() + 2);
-                Bitmap b = Bitmap.createBitmap(gw, gh, Bitmap.Config.ARGB_8888);
-                new Canvas(b).drawText(s, 1 - r.left, 1 - r.top, p);
-                int[] px = new int[gw * gh];
-                b.getPixels(px, 0, gw, 0, 0, gw, gh);
-                b.recycle();
-                boolean[] in = new boolean[px.length];
-                for (int i = 0; i < px.length; i++) in[i] = (px[i] >>> 24) >= 128;
-                g.put(c, r.left - 1, r.top - 1, gw, gh, p.measureText(s), in);
-            }
-            glyphsOf = t;
-            glyphs = g;
-            return g;
-        } catch (RuntimeException | OutOfMemoryError e) {
-            return null;
-        }
-    }
-
     void setTypeface(Typeface t) { fill.setTypeface(t); edge.setTypeface(t); sheen.setTypeface(t); shadow.setTypeface(t); invalidate(); }
 
     void setTime(CharSequence t) {

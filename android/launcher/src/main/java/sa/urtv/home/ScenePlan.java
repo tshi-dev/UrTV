@@ -137,8 +137,8 @@ final class ScenePlan {
 
     /**
      * 4.4 the owner: depth never makes a digit unreadable (the night lake's trees made its ٤ a ٢, the golden tower made a ٤ an ع) or hides the colon.
-     * Each glyph of the clock as the digits' box holds it (digits 0.56 of its height wide, the colon 0.24, centred: «١٢:٣٠», and «٤:٥٨» either way
-     * round) may be covered by the scenery for at most COVER of its height, from its base, the picture zoomed by k about the top centre. The same rule
+     * Each digit of the clock as the digits' box holds it (digits 0.56 of its height wide, the colon 0.24, centred: «١٢:٣٠», and «٤:٥٨» either way
+     * round) may be covered by the scenery for at most COVER of its height, from its base, and under the colon as much (its dot never), the picture zoomed by k about the top centre. The same rule
      * as the masks gate (.github/tools/photo_masks.py), which places a pack's clocks by it; here it holds wherever the clock really is (the cards or
      * the apps row move it). sky: the scenery's top in columns (any number, px of 1080), as skyline() gives it, read with smoothing so a spike a few
      * px wide does not count.
@@ -146,8 +146,8 @@ final class ScenePlan {
     static final float COVER = 0.25f;
     static final float[][] GLYPHS = {{0.56f, 0.56f, -0.24f, 0.56f, 0.56f}, {0.56f, -0.24f, 0.56f, 0.56f}, {0.56f, 0.56f, -0.24f, 0.56f}};
 
-    /** the most of any glyph's height the scenery covers (0..1) */
-    static float cover(int[] sky, int[] box, int w, int h, float k) {
+    /** the most of any digit's height the scenery covers (0..1), or of the colon's ({@code colon}) */
+    static float cover(int[] sky, int[] box, int w, int h, float k, boolean colon) {
         if (sky == null || sky.length == 0 || box == null || box[3] <= box[1] || w <= 0) return 0f;
         float dh = box[3] - box[1], cx = (box[0] + box[2]) / 2f, most = 0f;
         for (float[] layout : GLYPHS) {
@@ -156,7 +156,7 @@ final class ScenePlan {
             float x0 = cx - total * dh / 2;
             for (float g : layout) {
                 float gw = Math.abs(g) * dh;
-                for (float x = x0; x <= x0 + gw; x += Math.max(1f, w / 960f)) {
+                if ((g < 0) == colon) for (float x = x0; x <= x0 + gw; x += Math.max(1f, w / 960f)) {
                     float src = w / 2f + (x - w / 2f) / k;
                     int c = (int) Math.floor(src * sky.length / w);
                     if (c < 0 || c >= sky.length) continue;
@@ -169,7 +169,15 @@ final class ScenePlan {
         return most;
     }
 
-    static boolean legible(int[] sky, int[] box, int w, int h, float k) { return cover(sky, box, w, h, k) <= COVER + 1e-4f; }
+    static float cover(int[] sky, int[] box, int w, int h, float k) { return cover(sky, box, w, h, k, false); }
+
+    /**
+     * every digit covered at most COVER of its height from its base, and the scenery under the colon too (its lower dot starts about 30 % up: the
+     * colon itself is never covered); the masks gate's numbers
+     */
+    static boolean legible(int[] sky, int[] box, int w, int h, float k) {
+        return cover(sky, box, w, h, k, false) <= COVER + 1e-4f && cover(sky, box, w, h, k, true) <= COVER + 1e-4f;
+    }
 
     /**
      * The zoom for a scene's picture with its cut-out: zoom() (the owner's bands), then more (MAX_ZOOM at most) until every glyph is legible; 0 when
@@ -181,120 +189,6 @@ final class ScenePlan {
         float k = zoom(sky48, box, w, h);
         while (!legible(f, box, w, h, k) && k < MAX_ZOOM) k = Math.round((k + 0.01f) * 100) / 100f;
         return legible(f, box, w, h, k) ? k : 0f;
-    }
-
-    /**
-     * 4.4 the owner: the clock may stand behind the towers, as long as every digit reads (rule v2, the same as the masks gate,
-     * .github/tools/photo_masks.py). Measured on the ink: the clock's own glyphs (its typeface, a digit GLYPH_H px tall, alpha 128 or more) placed
-     * as SceneClock draws them, under the cut-out's own pixels (alpha over 128), the picture zoomed by k about the top centre. Each digit may lose
-     * at most INK_LOST of its ink and CRITICAL_LOST of its critical ink (the upper TOP_PART of its ink for ١٢٣٤٦٧٨٩, where ٢ and ٣, ٤, ٧ and ٨ are
-     * told apart; the whole of ٥ and ٠, a loop and a dot); the colon at most COLON_LOST. Every digit that can stand in a place is tried there, centred
-     * in it (the time changes: the clock must read at any minute).
-     */
-    static final int GLYPH_H = 64;
-    static final float INK_LOST = 0.25f, CRITICAL_LOST = 0.05f, COLON_LOST = 0.01f, TOP_PART = 0.40f;
-
-    /** the clock's glyphs as its typeface draws them, a digit GLYPH_H px tall (SceneClock.glyphs on the TV; the test renders the same with the font) */
-    static final class Glyphs {
-        final java.util.Map<Character, int[]> box = new java.util.HashMap<>();       // x0, y0 (the ink's top left from the pen and the baseline), w, h
-        final java.util.Map<Character, boolean[]> ink = new java.util.HashMap<>();
-        final java.util.Map<Character, Float> advance = new java.util.HashMap<>();
-
-        void put(char c, int x0, int y0, int w, int h, float adv, boolean[] in) { box.put(c, new int[] {x0, y0, w, h}); ink.put(c, in); advance.put(c, adv); }
-
-        boolean has(String s) { for (int i = 0; i < s.length(); i++) if (!box.containsKey(s.charAt(i))) return false; return true; }
-    }
-
-    /** the cut-out as the home places it: its alpha (cw x ch, 0..255) over the box place (x, y, w, h in px of 1080p) */
-    static final class Cut {
-        final int[] alpha; final int cw, ch; final int[] place;
-        Cut(int[] alpha, int cw, int ch, int[] place) { this.alpha = alpha; this.cw = cw; this.ch = ch; this.place = place; }
-
-        /** covered at the screen's point (x, y) of a w x h screen, the picture zoomed by k about the top centre */
-        boolean at(float x, float y, int w, int h, float k) {
-            float s = 1080f / h, sx = (w / 2f + (x - w / 2f) / k) * s, sy = y / k * s;
-            int px = (int) Math.floor((sx - place[0]) * cw / place[2]), py = (int) Math.floor((sy - place[1]) * ch / place[3]);
-            return px >= 0 && py >= 0 && px < cw && py < ch && alpha[py * cw + px] > 128;
-        }
-    }
-
-    /** the two shapes of the time and the digits each of their places can hold: «١٢:٣٠» (10 to 12 o'clock) and «٤:٥٨» (1 to 9) */
-    static final String[] CLOCKS = {"١٢:٣٠", "٤:٥٨"}, CLOCKS_LATIN = {"12:30", "4:58"};
-    static final String[][] CAN = {{"١", "٠١٢", ":", "٠١٢٣٤٥", "٠١٢٣٤٥٦٧٨٩"}, {"١٢٣٤٥٦٧٨٩", ":", "٠١٢٣٤٥", "٠١٢٣٤٥٦٧٨٩"}},
-            CAN_LATIN = {{"1", "012", ":", "012345", "0123456789"}, {"123456789", ":", "012345", "0123456789"}};
-
-    /** a digit read by its whole ink (a loop, a dot), not its upper part */
-    static boolean whole(char c) { return c == '٥' || c == '٠' || c == '0'; }
-
-    /**
-     * the worst glyph of the clock in the digits' box: {ink lost, critical ink lost, colon ink lost} (0..1), every digit that can stand in each
-     * place tried there; null when the glyphs or the cut-out are missing (then legible() on the skyline decides)
-     */
-    static float[] inkLost(Glyphs g, boolean latin, Cut cut, int[] box, int w, int h, float k) {
-        if (g == null || cut == null || box == null || box[3] <= box[1]) return null;
-        float[] worst = new float[3];
-        String[] clocks = latin ? CLOCKS_LATIN : CLOCKS;
-        String[][] can = latin ? CAN_LATIN : CAN;
-        for (int n = 0; n < clocks.length; n++) {
-            String text = clocks[n];
-            for (String c : can[n]) if (!g.has(c)) return null;
-            // SceneClock.onDraw: the string's ink as tall as the box (narrower if too wide), centred, on the box's bottom line
-            float pen = 0, left = Float.MAX_VALUE, right = -Float.MAX_VALUE, top = Float.MAX_VALUE, bottom = -Float.MAX_VALUE;
-            float[] pens = new float[text.length()];
-            for (int i = 0; i < text.length(); i++) {
-                char c = text.charAt(i);
-                int[] b = g.box.get(c);
-                pens[i] = pen;
-                left = Math.min(left, pen + b[0]); right = Math.max(right, pen + b[0] + b[2]);
-                top = Math.min(top, b[1]); bottom = Math.max(bottom, b[1] + b[3]);
-                pen += g.advance.get(c);
-            }
-            float scale = (box[3] - box[1]) / (bottom - top);
-            if ((right - left) * scale > box[2] - box[0]) scale = (box[2] - box[0]) / (right - left);
-            float ox = box[0] + ((box[2] - box[0]) - (right - left) * scale) / 2f - left * scale, oy = box[3] - bottom * scale;
-            for (int i = 0; i < text.length(); i++) {
-                String tries = can[n][i];
-                float slot = g.advance.get(text.charAt(i));
-                for (int t = 0; t < tries.length(); t++) {
-                    char c = tries.charAt(t);
-                    int[] b = g.box.get(c);
-                    boolean[] in = g.ink.get(c);
-                    float at = pens[i] + (slot - g.advance.get(c)) / 2f;   // centred in its place
-                    int y0 = b[3], y1 = -1;   // the glyph's own ink height
-                    for (int y = 0; y < b[3]; y++) for (int x = 0; x < b[2]; x++) if (in[y * b[2] + x]) { y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
-                    int topEnd = y0 + Math.round((y1 - y0 + 1) * TOP_PART);
-                    boolean allCritical = whole(c);
-                    int all = 0, lost = 0, crit = 0, critLost = 0;
-                    for (int y = 0; y < b[3]; y++) for (int x = 0; x < b[2]; x++) {
-                        if (!in[y * b[2] + x]) continue;
-                        boolean gone = cut.at(ox + (at + b[0] + x + 0.5f) * scale, oy + (b[1] + y + 0.5f) * scale, w, h, k);
-                        all++; if (gone) lost++;
-                        if (allCritical || y < topEnd) { crit++; if (gone) critLost++; }
-                    }
-                    if (all == 0) continue;
-                    if (c == ':') worst[2] = Math.max(worst[2], lost / (float) all);
-                    else {
-                        worst[0] = Math.max(worst[0], lost / (float) all);
-                        if (crit > 0) worst[1] = Math.max(worst[1], critLost / (float) crit);
-                    }
-                }
-            }
-        }
-        return worst;
-    }
-
-    /** the ink rule: true when every digit and the colon read (inkLost within INK_LOST, CRITICAL_LOST and COLON_LOST) */
-    static boolean readable(float[] lost) { return lost != null && lost[0] <= INK_LOST + 1e-4f && lost[1] <= CRITICAL_LOST + 1e-4f && lost[2] <= COLON_LOST + 1e-4f; }
-
-    /**
-     * depth() on the ink: zoom() (the owner's bands), then more (MAX_ZOOM at most) until every glyph reads; 0 when none does (the cut-out is not
-     * drawn); with no glyphs or no cut-out pixels, depth() on the skyline
-     */
-    static float depthInk(int[] sky48, int[] fine, Glyphs g, boolean latin, Cut cut, int[] box, int w, int h) {
-        if (inkLost(g, latin, cut, box, w, h, 1f) == null) return depth(sky48, fine, box, w, h);
-        float k = zoom(sky48, box, w, h);
-        while (!readable(inkLost(g, latin, cut, box, w, h, k)) && k < MAX_ZOOM) k = Math.round((k + 0.01f) * 100) / 100f;
-        return readable(inkLost(g, latin, cut, box, w, h, k)) ? k : 0f;
     }
 
     /** 4.4 the owner saw this scene's placement and reads it (scenes.tsv tag "owner_ok"): its cut-out stays, with no legibility drop and no zoom */
