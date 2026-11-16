@@ -1,14 +1,24 @@
-# The cut-outs checked by eye on the review sheet (photo_masks.py --all writes OUT/sheet.jpg: the sky red, the scenery as kept).
-# Only these are published: a cut that bites into the scenery (a dune's shadow, a red cloth, a pale wall taken for sky) is left out,
-# and that photo keeps the glass clock in front. A new photo is added here only after its sheet is looked at.
-ksa-cities/1
-nature/7
+# The cut-outs checked by eye, after the gate (photo_masks.py: FIT). The gate measures the edge (fringe, stairs, broken pieces), the digits' fit
+# and people; the eye checks what it cannot: the digits must read on the photo, and what crosses them must look right. Only these are
+# published; a new photo is added here only after its check render (--all writes OUT/edges/ and OUT/sheet.jpg) is looked at.
+# Left out by eye: nature/13 (white fog: the digits cannot be read), photos/NPDnHmYsl6Y (half underwater: the digits wash out),
+# nature/5 (the far mountains taken for sky: the digits stand on them).
+ksa-cities/9
+nature/15
+nature/2
+photos/01u4zLK54tE
 photos/2gVgVf5CNAE
-photos/9f7oiGARGIg
+photos/7EkyXZYeYsw
+photos/7vOpzRF33Zo
 photos/9hWJs7iblh8
-photos/G8_JBLFMWTg
-photos/MV7iHCilMJc
-photos/_jfejQo2tZw
-photos/dfglhJbc4Uc
-photos/s6g6ZSxM3kQ
+photos/AC3T7tvwPrY
+photos/Iy59i0M7oP4
+photos/WpOMM4uE-F8
+photos/anozjF6uqI0
+photos/rkRYbmPuhOE
+photos/uqAUg1zvMXQ
+sea/1
+sea/12
+sea/15
 sea/16
+sea/6

@@ -32,6 +32,7 @@ python3 tests/scene_home_test.py   # 4.3.3 «المشاهد»: the scene rules p
 python3 tests/settings_classic_test.py   # 4.4 «شكل كنبة» switches the settings screen too: every row in both layouts (4.3.2 and the side list), search in both, the switch in both
 python3 tests/settings_tree_test.py   # docs/SETTINGS-TREE.md is what the code says now (.github/tools/settings_tree.py)
 python3 tests/scene_zoom_test.py   # 4.4 the owner: the clock where it is, the picture lower: more of the digits above the scenery (the visible share on a JVM over the scene's real cut-out)
+python3 tests/photo_masks_gate_test.py   # 4.4 the gate every cut-out passes before it is published: fringe, stairs, floating pieces, the digits' fit (FIT / FRONT-ONLY / REJECT)
 python3 tests/photo_glass_test.py   # 4.4 «الساعة: زجاجية» over our photos: which cut-out, where the digits go (on a JVM), made only while chosen, never «الحرمين»
 python3 tests/cache_sweep_test.py   # 4.3.3 «مسح الملفات المؤقتة»: the caches only, on a JVM over made-up folders
 python3 tests/lowram_test.py   # a weak TV (Ram.low): no key filter, the clock off the UI thread, pictures let go behind apps, markets «عادي» and 60 s, #lowram=1

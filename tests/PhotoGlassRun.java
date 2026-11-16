@@ -31,6 +31,12 @@ public final class PhotoGlassRun {
         print("lowish-row", PhotoGlassPlan.box(lowish, 1920, 1080, false, true, true));
         print("mid-row", PhotoGlassPlan.box(flat, 1920, 1080, false, true, true));
         print("short", PhotoGlassPlan.box(new int[5], 1920, 1080, false, true, false));
+        int[] snow = new int[160 * 90], dusk = new int[160 * 90], half = new int[160 * 90];
+        for (int i = 0; i < snow.length; i++) { snow[i] = 0xFFF2F4F8; dusk[i] = 0xFF6A5060; half[i] = i % 160 < 80 ? 0xFFF2F4F8 : 0xFF303030; }
+        int[] right = {1100, 170, 1800, 450};
+        System.out.println("pale\t" + PhotoGlassPlan.pale(snow, 160, 90, right, 1920, 1080) + "," + PhotoGlassPlan.pale(dusk, 160, 90, right, 1920, 1080) + ","
+                + PhotoGlassPlan.pale(half, 160, 90, right, 1920, 1080) + "," + PhotoGlassPlan.pale(half, 160, 90, new int[] {100, 170, 800, 450}, 1920, 1080) + ","
+                + PhotoGlassPlan.pale(null, 160, 90, right, 1920, 1080));
     }
 
     private static void print(String name, int[] b) { System.out.println("box\t" + name + "\t" + b[0] + "," + b[1] + "," + b[2] + "," + b[3]); }

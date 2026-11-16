@@ -13,7 +13,7 @@ final class PhotoGlassPlan {
     /** the digits are this share of the screen's height tall; with no scenery to cross they stand here */
     static final float DIGITS = 0.26f, TOP = 0.16f;
     /** the scenery crosses at most this share of the digits, and is used only between these heights (a skyline too high or too low: no overlap) */
-    static final float CROSS = 0.3f, LOWEST = 0.62f, HIGHEST = 0.25f;
+    static final float CROSS = 0.22f, LOWEST = 0.62f, HIGHEST = 0.25f;   // 4.4 the owner: at most about a quarter of a digit
     /** 4.4 «التخطيط: كنبة»: the cards' strip starts about here; the digits end above it */
     static final float ROW_TOP = 0.55f;
 
@@ -85,5 +85,18 @@ final class PhotoGlassPlan {
             }
         }
         return new int[] {left, top, right, bottom};
+    }
+
+    /**
+     * 4.4 a pale photo behind the digits (a white sky, snow): the clock's dark glass there, as a pale scene has (the light frost would show only its
+     * shadow). px: the photo made small (pw x ph ARGB); box: the digits on a w x h screen; pale when their area's mean luma is over 185.
+     */
+    static boolean pale(int[] px, int pw, int ph, int[] box, int w, int h) {
+        if (px == null || pw <= 0 || ph <= 0 || px.length != pw * ph || box == null || w <= 0 || h <= 0) return false;
+        int x0 = Math.max(0, box[0] * pw / w), x1 = Math.min(pw, Math.max(x0 + 1, box[2] * pw / w));
+        int y0 = Math.max(0, box[1] * ph / h), y1 = Math.min(ph, Math.max(y0 + 1, box[3] * ph / h));
+        long sum = 0, n = 0;
+        for (int y = y0; y < y1; y++) for (int x = x0; x < x1; x++) { sum += luma(px[y * pw + x]); n++; }
+        return n > 0 && sum > 185L * n;
     }
 }

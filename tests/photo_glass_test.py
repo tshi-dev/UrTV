@@ -39,8 +39,8 @@ if shutil.which("javac"):
           box["none-nocards"][0] + box["none-nocards"][2] == 1920 and box["none-cards-rtl"][0] >= 960 and box["none-cards-ltr"][2] <= 960
           and all(0 <= b[0] < b[2] <= 1920 and 0 <= b[1] < b[3] <= 1080 for b in box.values()), box)
     m = box["mid"]
-    check("a skyline at mid-height: it crosses the digits' bottom (by 30 % of their height), so the scenery stands in front of them",
-          m[1] < 540 < m[3] and abs((m[3] - 540) - round((m[3] - m[1]) * 0.3)) <= 1, m)
+    check("a skyline at mid-height: it crosses the digits' bottom (by 22 % of their height: the owner, at most about a quarter), so the scenery stands in front of them",
+          m[1] < 540 < m[3] and abs((m[3] - 540) - round((m[3] - m[1]) * 0.22)) <= 1, m)
     check("a skyline too high or too low (or no skyline of 48): the digits at their usual place, never squeezed",
           box["high"] == box["low"] == box["short"] == box["none-nocards"], box)
     check("«كنبة» (the cards in a strip under the clock): the digits never reach the strip; a scenery that low leaves them at their usual place",
@@ -52,6 +52,9 @@ if shutil.which("javac"):
     crop = [r for r in rows if r[0] == "crop"][0]
     check("an own photo and its mask are cropped to the screen's shape about the centre, as the home shows the photo",
           crop[1] == "[0, 375, 4000, 2625]" and crop[2] == "[0, 656, 1080, 1263]" and crop[3] == "[0, 0, 1920, 1080]", crop)
+    pl = [r for r in rows if r[0] == "pale"][0][1]
+    check("4.4 a pale photo behind the digits (white sky, snow) gets the dark glass; a dusk sky or the dark half under them the light one",
+          pl == "true,false,false,true,false", pl)
     sk = [r for r in rows if r[0] == "skyline"][0]
     check("the mask's skyline: the first light row of each of 48 columns, in px of 1080", sk[1] == "200,200,540,540" and sk[2] == "48", sk)
     with tempfile.TemporaryDirectory() as tmp:
@@ -59,6 +62,9 @@ if shutil.which("javac"):
         mc = dict(l.split("\t") for l in subprocess.run(["java", "-cp", tmp, "sa.urtv.screensaver.MaskCheckRun"], check=True, capture_output=True).stdout.decode().splitlines())
     check("the TV checks a mask again: the photo's shape within 2 % (any size)", mc["shape"] == "true,true,false,false", mc)
     check("…mostly black and white with some of each (a soft edge is fine; grey, all black or empty is not a mask)", mc["tones"] == "true,true,false,false,false", mc)
+    check("…the light form of our cut-outs' gate: the scenery a fair share with sky along the top (not all scenery, not upside down)",
+          mc["cover"] == "true,false,false,false", mc)
+    check("…and its top edge not ragged", mc["smooth"] == "true,false", mc)
 else:
     print("SKIP photo glass rules: no javac here")
 
@@ -66,8 +72,9 @@ else:
 own_j, prov, srv, api = read(ROOT / "android/app/src/main/java/sa/urtv/screensaver/Own.java"), read(ROOT / "android/app/src/main/java/sa/urtv/screensaver/ConfigProvider.java"), \
     read(HOME / "phone/PhoneServer.java"), read(HOME / "phone/PhoneApi.java")
 add = own_j[own_j.index("static synchronized String addMask("):].split("\n    }\n")[0]
-check("the mask goes only to the photo just added (2 minutes), checked (PNG, shape, tones), written whole, beside it as N.mask.png",
+check("the mask goes only to the photo just added (2 minutes), checked (PNG, shape, tones, cover, edge), written whole, beside it as N.mask.png",
       "MASK_WINDOW_MS = 2 * 60 * 1000" in own_j and 'return "late";' in add and "MaskCheck.sameShape(" in add and "MaskCheck.twoTone(" in add
+      and 'if (!MaskCheck.cover(px, sw, sh)) return "cover";' in add and 'if (!MaskCheck.smooth(px, sw, sh)) return "edge";' in add
       and "tmp.renameTo(mask(c, n))" in add and 'new File(dir(c), n + ".mask.png")' in own_j)
 check("a deleted photo takes its mask with it, and the masks after it move up with their photos",
       "mask(c, n).delete();" in own_j and "mask(c, k).renameTo(mask(c, k - 1));" in own_j)
@@ -116,4 +123,9 @@ ok = [l.strip() for l in read(ROOT / ".github/tools/photo_masks_ok.txt").splitli
 check("the reviewed list: set/name lines, no «الحرمين», no duplicates",
       all(re.fullmatch(r"(photos|nature|sea|space|ksa-cities)/[A-Za-z0-9_-]{1,40}", l) for l in ok) and len(set(ok)) == len(ok), ok)
 check("the workflow runs the tool and puts its output on a data branch for urtv-data", "photo_masks.py" in read(ROOT / ".github/workflows/masks.yml"))
+acts, page = read(HOME / "phone/PhoneActions.java"), read(HOME.parents[3] / "assets/phone/photos.html")
+check("a refused mask says why on the phone: too little or too much scenery, or a ragged edge (Arabic and English)",
+      '"mask_cover"' in acts and '"mask_edge"' in acts and page.count("m_cover:") == 2 and page.count("m_edge:") == 2 and "W.m_cover" in page and "W.m_edge" in page)
+check("…the home uses it on every place of the digits (the photo shown, its cut-out, the cards moved)",
+      glass.count(", pale(") == 3 and "glass.getPixels(glassPx, 0, 160, 0, 0, 160, 90);" in glass)
 sys.exit(1 if failed else 0)

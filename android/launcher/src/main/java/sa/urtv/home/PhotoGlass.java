@@ -41,10 +41,15 @@ final class PhotoGlass extends FrameLayout {
 
     void onZoom(Zoom z) { zoomTo = z; }
 
+    private final Typeface face;   // the clock's typeface (its glyphs for the ink rule)
+    private CharSequence time = "";
+    private ScenePlan.Cut cutPx;   // the cut-out's alpha for the ink rule
+
     PhotoGlass(Context c, int tier, Typeface digits) {
         super(c);
         app = c.getApplicationContext();
         this.tier = tier;
+        face = digits;
         clock = new SceneClock(c);
         clock.setTypeface(digits);
         mask = new ImageView(c);
@@ -55,7 +60,7 @@ final class PhotoGlass extends FrameLayout {
         setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
     }
 
-    void setTime(CharSequence t) { clock.setTime(t); }
+    void setTime(CharSequence t) { time = t == null ? "" : t; clock.setTime(t); }
 
     /** where the digits go follows the cards (beside the clock, or in «كنبة»'s strip under it) and the direction; a change moves them at once */
     void place(boolean cards, boolean rightToLeft, boolean cardsInRow) {
@@ -63,8 +68,38 @@ final class PhotoGlass extends FrameLayout {
         cardsShown = cards;
         rtl = rightToLeft;
         row = cardsInRow;
-        if (glass != null) clock.setScene(glass, PhotoGlassPlan.box(line, width(), height(), cardsShown, rtl, row), false);
+        if (glass != null) {
+            if (line != null && mask.getDrawable() != null) { depth(width(), height()); return; }
+            int[] b = PhotoGlassPlan.box(line, width(), height(), cardsShown, rtl, row);
+            clock.setScene(glass, b, pale(b));
+        }
     }
+
+    private int[] fine;   // the cut-out's skyline in 192 columns (ScenePlan.legible)
+
+    /**
+     * the digits where the cut-out's scenery crosses them, the picture zoomed so they and the colon stay legible (ScenePlan.depth); where no zoom
+     * does that (the cards or the apps row put the clock there), the cut-out is hidden and the clock stands in front at its usual place
+     */
+    private void depth(int w, int h) {
+        int[] digits = PhotoGlassPlan.box(line, w, h, cardsShown, rtl, row);
+        float z = ScenePlan.depthInk(line, fine, SceneClock.glyphs(face), SceneHome.latin(time), cutPx, digits, w, h);
+        if (z == 0f) {
+            mask.setVisibility(GONE);
+            digits = PhotoGlassPlan.box(null, w, h, cardsShown, rtl, row);
+            z = 1f;
+        } else mask.setVisibility(VISIBLE);
+        mask.setScaleX(z);
+        mask.setScaleY(z);
+        clock.setScene(glass, digits, pale(digits));
+        clock.setZoom(z);
+        zoomTo.zoom(z);
+    }
+
+    private int[] glassPx;
+
+    /** a pale photo behind the digits: the dark glass (PhotoGlassPlan.pale) */
+    private boolean pale(int[] digits) { return PhotoGlassPlan.pale(glassPx, 160, 90, digits, width(), height()); }
 
     private int width() { return getWidth() > 0 ? getWidth() : getResources().getDisplayMetrics().widthPixels; }
 
@@ -79,46 +114,51 @@ final class PhotoGlass extends FrameLayout {
         final int g = ++gen;
         final int w = width(), h = height();
         try { glass = Bitmap.createScaledBitmap(photo, 160, 90, true); } catch (RuntimeException | OutOfMemoryError e) { return; }
+        glassPx = new int[160 * 90];
+        glass.getPixels(glassPx, 0, 160, 0, 0, 160, 90);
         line = null;
+        fine = null;
+        cutPx = null;
         mask.setVisibility(GONE);
         mask.setImageDrawable(null);
         clock.setZoom(1f);
         zoomTo.zoom(1f);
-        clock.setScene(glass, PhotoGlassPlan.box(null, w, h, cardsShown, rtl, row), false);
+        int[] first = PhotoGlassPlan.box(null, w, h, cardsShown, rtl, row);
+        clock.setScene(glass, first, pale(first));
         final String[] key = PhotoGlassPlan.key(wallKey);
         final int own = PhotoGlassPlan.own(wallKey);
         if ((key == null && own == 0) || !ScenePlan.mask(tier)) return;   // «الحرمين», an own photo with no mask, or a weak TV: the clock in front
-        final Bitmap shown = glass;
         final int sw = w, sh = h;
         new Thread(() -> {
             final Object[] got = own > 0 ? loadOwn(own, photo, sw, sh) : load(key[0], key[1], net);
             if (got == null) return;
+            final Object[] got4 = {got[0], got[1], got[2], fineOf((Bitmap) got[0], (int[]) got[1]), SceneHome.cutOf((Bitmap) got[0], (int[]) got[1])};
             ui.post(() -> {
                 if (g != gen || !alive) return;
-                int[] box = (int[]) got[1];
-                line = (int[]) got[2];
+                int[] box = (int[]) got4[1];
+                line = (int[]) got4[2];
                 float k = h / 1080f;
                 LayoutParams lp = new LayoutParams(Math.round(box[2] * k), Math.round(box[3] * k));
                 lp.leftMargin = Math.round(box[0] * k);
                 lp.topMargin = Math.round(box[1] * k);
                 mask.setLayoutParams(lp);
-                mask.setImageBitmap((Bitmap) got[0]);
-                int[] digits = PhotoGlassPlan.box(line, w, h, cardsShown, rtl, row);
-                float z = ScenePlan.zoom(line, digits, w, h);   // the owner: the clock where it is, the photo a little lower: more of the digits above the scenery
+                mask.setImageBitmap((Bitmap) got4[0]);
+                fine = (int[]) got4[3];
+                cutPx = (ScenePlan.Cut) got4[4];
                 mask.setPivotX(w / 2f - lp.leftMargin);
                 mask.setPivotY(-lp.topMargin);
-                mask.setScaleX(z);
-                mask.setScaleY(z);
-                mask.setVisibility(VISIBLE);
-                clock.setScene(shown, digits, false);
-                clock.setZoom(z);
-                zoomTo.zoom(z);
+                depth(w, h);   // the owner: the clock where it is, the photo a little lower: more of the digits above the scenery, never a digit cut unreadable
             });
         }, "photo-mask").start();
     }
 
     /** turned off: nothing more is read or drawn */
     void shutdown() { alive = false; gen++; glass = null; line = null; mask.setImageDrawable(null); clock.setScene(null, null, false); zoomTo.zoom(1f); }
+
+    /** the cut-out's 192-column skyline (smoothed: a spike a few px wide does not count); null when it cannot be read (then the 48 columns serve) */
+    private static int[] fineOf(Bitmap bm, int[] box) {
+        try { return SceneHome.skylineOf(bm, box, 384, true, 192); } catch (RuntimeException | OutOfMemoryError e) { return null; }
+    }
 
     /** {bitmap, box, skyline} of a photo's cut-out, from the kept file or downloaded once; null when it has none or it cannot be had */
     private Object[] load(String set, String name, boolean net) {
