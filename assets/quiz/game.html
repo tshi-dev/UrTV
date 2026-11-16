@@ -103,13 +103,13 @@ var T = {
   ar: { room: 'الغرفة {0}', yourName: 'اسمك', yourColour: 'لونك', join: 'ادخل', joining: 'لحظة', loading: 'لحظة',
     inn: 'أنت داخل', ready: 'جاهزين؟', waitStart: 'ننتظر أن تبدأ اللعبة', inRoom: 'في الغرفة: {0}', leave: 'خروج', leaveSure: 'اضغط مرة ثانية للخروج',
     seen: 'شفتها', seenSub: 'اضغط بعد ما تحفظها', hidden: 'تمام، ننتظر الباقين', ok: 'صح', skip: 'تخطّي', foul: 'مخالفة', dunno: 'ما أدري',
-    voted: 'سجّلنا اختيارك', pick: 'اختر واحدًا', closed: 'أُغلقت الغرفة', closedSub: 'شكرًا للعب', bad: 'الرمز غير صحيح', lost: 'انقطع', back: 'رجعنا',
+    voted: 'سجّلنا اختيارك', send: 'أرسل', sent: 'وصلت إجابتك', typeHere: 'اكتب هنا', pick: 'اختر واحدًا', closed: 'أُغلقت الغرفة', closedSub: 'شكرًا للعب', bad: 'الرمز غير صحيح', lost: 'انقطع', back: 'رجعنا',
     e_name0: 'اكتب اسمك أولًا', e_full: 'الغرفة ممتلئة', e_locked: 'محاولات كثيرة، انتظر دقيقة', e_gone: 'خرجت من الغرفة، ادخل من جديد', e_name: 'اختر اسمًا ثانيًا',
     e_closed: 'اللعبة بدأت أو أُغلقت الغرفة', e_code: 'الرمز غير صحيح', e_rate: 'بسرعة شوي، حاول مرة ثانية', e_net: 'تعذّر الاتصال، حاول مرة ثانية' },
   en: { room: 'Room {0}', yourName: 'Your name', yourColour: 'Your colour', join: 'Join', joining: 'One moment', loading: 'One moment',
     inn: "You're in", ready: 'Ready?', waitStart: 'Waiting for the game to start', inRoom: 'In the room: {0}', leave: 'Leave', leaveSure: 'Tap again to leave',
     seen: 'Got it', seenSub: 'Tap once you have it', hidden: 'Good, waiting for the others', ok: 'Right', skip: 'Skip', foul: 'Foul', dunno: "Don't know",
-    voted: 'Your choice is in', pick: 'Pick one', closed: 'The room is closed', closedSub: 'Thanks for playing', bad: 'The code is not right', lost: 'Connection lost', back: 'Back',
+    voted: 'Your choice is in', send: 'Send', sent: 'Your answer is in', typeHere: 'Type here', pick: 'Pick one', closed: 'The room is closed', closedSub: 'Thanks for playing', bad: 'The code is not right', lost: 'Connection lost', back: 'Back',
     e_name0: 'Type your name first', e_full: 'The room is full', e_locked: 'Too many tries, wait a minute', e_gone: 'You left the room, join again', e_name: 'Pick another name',
     e_closed: 'The game has started or the room is closed', e_code: 'The code is not right', e_rate: 'Too fast, try again', e_net: 'Could not connect, try again' }
 };
@@ -197,6 +197,13 @@ function send(a) {
   api('/api/answer', { c: code, t: token, q: c.id, a: a }).then(function (r) { if (!r.ok && r.e !== 'card') delete sent[c.id]; render(true); }, function () { delete sent[c.id]; render(true); });
   render(true);
 }
+function sendText(vals) {
+  var c = st.card, x = vals.join('\n');
+  if (!x.replace(/\s/g, '')) return;
+  sent[c.id] = 0;
+  api('/api/answer', { c: code, t: token, q: c.id, a: 0, x: x }).then(function (r) { if (!r.ok && r.e !== 'card') delete sent[c.id]; render(true); }, function () { delete sent[c.id]; render(true); });
+  render(true);
+}
 function tap(fn) { return function () { fn(); }; }
 function cardScreen() {
   var c = st.card, me = st.me || {}, got = sent[c.id], kids = [];
@@ -221,6 +228,19 @@ function cardScreen() {
     var names = [S.ok, S.skip, S.foul], row = h('div', 'row3');
     c.acts.forEach(function (a) { var b = h('button', 'btn' + (a === 0 ? '' : ' alt'), names[a], { type: 'button', 'data-a': a }); b.addEventListener('click', function () { api('/api/answer', { c: code, t: token, q: c.id, a: a }).then(function () {}, function () {}); }); row.appendChild(b); });
     kids.push(row);
+  } else if (c.kind === 'text') {
+    kids = [h('div', 'big', c.text), c.note ? h('div', 'dim', c.note) : null];
+    var inputs = (c.opts.length ? c.opts : ['']).map(function (lab, i) {
+      var inp = h('input', 'inp', null, { type: 'text', maxlength: '30', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', 'aria-label': lab || S.typeHere, placeholder: lab || S.typeHere, 'data-f': i, enterkeyhint: 'send' });
+      if (got != null) inp.disabled = true;
+      kids.push(inp); return inp;
+    });
+    if (got == null) {
+      var go = h('button', 'btn', S.send, { type: 'button', id: 'sendtext' });
+      go.addEventListener('click', function () { sendText(inputs.map(function (x) { return x.value; })); });
+      inputs[inputs.length - 1].addEventListener('keydown', function (ev) { if (ev.key === 'Enter') sendText(inputs.map(function (x) { return x.value; })); });
+      kids.push(h('div', 'foot', [go]));
+    } else kids.push(h('div', 'msg', h('div', 'big', S.sent)));
   } else kids = [h('div', 'msg', [h('div', 'big', c.text || S.waitStart)])];
   kids.push(h('div', 'foot', [leaveBtn()]));
   scr('card-' + c.kind, [head(me.n), h('div', 'body', kids)]);

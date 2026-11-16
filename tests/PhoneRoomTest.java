@@ -20,6 +20,7 @@ public final class PhoneRoomTest {
         final byte[] page = Files.readAllBytes(Paths.get(pagePath));
         GamePhoneRoom r = new GamePhoneRoom("4321", System::currentTimeMillis, new Random(3));
         QuizServer s = new QuizServer(r, new QuizServer.Assets() { public byte[] page() { return page; } public byte[] font(String n) { return null; } }, true);
+        System.setOut(new PrintStream(new FileOutputStream(FileDescriptor.out), true, "UTF-8"));
         System.out.println("PORT " + s.start(InetAddress.getLoopbackAddress())); System.out.flush();
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
         for (String l; (l = in.readLine()) != null; ) {
@@ -31,6 +32,8 @@ public final class PhoneRoomTest {
                 case "vote": r.card(seat, GamePhoneRoom.VOTE, "", "who?", "", r.names().toArray(new String[0]), null, seat); break;
                 case "act": r.card(seat, GamePhoneRoom.ACT, "act", txt, "", null, new int[]{0, 1, 2}, -1); break;
                 case "wait": r.hold(seat, txt); break;
+                case "text": r.card(seat, GamePhoneRoom.TEXT, "", "who?", "", txt.isEmpty() ? new String[]{"one"} : txt.split(","), null, -1); break;
+                case "typed": { String[] t = r.typed(seat); System.out.println("TYPED " + (t == null ? "none" : String.join("|", t))); break; }
                 case "reply": System.out.println("REPLY " + r.reply(seat)); break;
                 case "take": System.out.println("TAKE " + r.take(seat)); break;
                 case "count": System.out.println("COUNT " + r.count()); break;
@@ -71,6 +74,13 @@ public final class PhoneRoomTest {
         r.hold(2, "انتظر");
         check("wait: a waiting card takes no answer", "card".equals(r.answer(p2.token, r.card(2, GamePhoneRoom.WAIT, "", "x", "", null, null, -1), 0, null)));
 
+        int tid = r.card(1, GamePhoneRoom.TEXT, "", "word?", "", new String[]{"a", "b"}, null, -1);
+        check("text: nothing typed is none; a post is cleaned (symbols out, spaces single), kept per field, taken once",
+            r.typed(1) == null && r.answer(p1.token, tid, 0, "كلمة!!  طويلة\n") == null && Arrays.equals(r.typed(1), new String[]{"كلمة طويلة", ""}) && "card".equals(r.answer(p1.token, tid, 0, "x")));
+        now[0] += 1500;
+        int tid2 = r.card(1, GamePhoneRoom.TEXT, "", "word?", "", new String[]{"a"}, null, -1);
+        check("text: an empty post, a link-long post and the wrong card are refused; a new card forgets the old post", "card".equals(r.answer(p1.token, tid2, 0, "  \n ")) && "card".equals(r.answer(p1.token, tid2, 0, "y".repeat(700))) && "stale".equals(r.answer(p1.token, tid, 0, "x")) && r.typed(1) == null);
+        now[0] += 1500;
         String[] names = {"A", "B", "C"};
         int[] ids = new int[3];
         for (int i = 0; i < 3; i++) ids[i] = r.card(i, GamePhoneRoom.VOTE, "", "مين؟", "", names, null, i);
@@ -89,6 +99,7 @@ public final class PhoneRoomTest {
         r.card(0, GamePhoneRoom.ACT, "", "قلم", "", null, new int[]{0}, -1);
         check("act: a new card drops what the old one had not sent, and the old card id is stale", r.take(0).isEmpty() && "stale".equals(r.answer(p0.token, act, 0, null)));
         check("json: a name with quotes and slashes stays valid JSON text", GamePhoneRoom.class != null && QuizRoom.esc("a\"b\\c").equals("\"a\\\"b\\\\c\""));
+        r.stateFor(p0.token, false);
         check("connected: a phone that polled lately is connected, one silent for 6 s is not", r.connected(0) && advance(7000) && !r.connected(0));
         r.leave(p1.token); r.close();
         check("close: a closed room answers closed to every poll", r.stateFor(p0.token, false).contains("closed") && "closed".equals(r.join("4321", "x", -1, null).error));

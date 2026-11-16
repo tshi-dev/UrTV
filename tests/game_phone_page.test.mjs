@@ -65,6 +65,15 @@ try {
   await a.pg.click('button[data-a="1"]');
   await a.pg.waitForTimeout(400);
   check('act: صح then تخطّي arrive in order', (await ask('take 0')) === 'TAKE [0, 1]');
+  send('text 0 one,two');
+  await a.pg.waitForSelector('[data-s="card-text"]', { timeout: 5000 });
+  const ins = await a.pg.$$('input[data-f]');
+  await ins[0].fill('وردة');
+  await ins[1].fill('نخلة');
+  await a.pg.waitForTimeout(1100);   // the room allows 5 answers a second per phone
+  await a.pg.click('#sendtext');
+  await a.pg.waitForSelector('.msg', { timeout: 5000 });
+  const got = await ask('typed 0'); check('text: two fields typed on the phone arrive as one post, cleaned', ins.length === 2 && got === 'TYPED وردة|نخلة', ins.length + ' ' + got);
   check('no script error on either phone', a.errs.length === 0 && b.errs.length === 0, a.errs.concat(b.errs).join('|'));
   const html = await a.pg.content();
   check('the page loads nothing from outside and builds text with text nodes only', !/https?:\/\/(?!127)/.test(html.replace(/http:\/\/www\.w3\.org\/2000\/svg/g, '')) && !/innerHTML|eval\(/.test(html));

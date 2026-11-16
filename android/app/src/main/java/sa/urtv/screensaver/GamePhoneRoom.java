@@ -15,8 +15,8 @@ import java.util.function.LongSupplier;
 final class GamePhoneRoom implements PhoneRoom {
     static final int MAX_PLAYERS = 12, ANSWER_PER_SEC = 5, INBOX_MAX = 32, JOIN_PER_MIN = 20, WRONG_CODE_LOCK = 5;
     static final long CONNECTED_MS = 6000, LOCK_MS = 60000, LOBBY_LIFE_MS = 10 * 60 * 1000;
-    /** what a card is: a secret to read, a vote for one name, a few action buttons, or a plain line to wait on */
-    static final String SECRET = "secret", VOTE = "vote", ACT = "act", WAIT = "wait";
+    /** what a card is: a secret to read, a vote for one name, a few action buttons, a plain line to wait on, or a form of one or more short answers to type («text»: `opts` are the field labels) */
+    static final String SECRET = "secret", VOTE = "vote", ACT = "act", WAIT = "wait", TEXT = "text";
     /** the action buttons of an «act» card */
     static final int ACT_OK = 0, ACT_SKIP = 1, ACT_FOUL = 2;
 
@@ -25,7 +25,7 @@ final class GamePhoneRoom implements PhoneRoom {
     private static final class Seat {
         final QuizRoom.Player who; long lastSeen; boolean left;
         int cardId; String kind = WAIT, title = "", text = "", note = ""; String[] opts = new String[0]; int[] acts = new int[0]; int self = -1;
-        final ArrayDeque<Integer> inbox = new ArrayDeque<>(); final ArrayDeque<Long> sent = new ArrayDeque<>();
+        final ArrayDeque<Integer> inbox = new ArrayDeque<>(); final ArrayDeque<String> posted = new ArrayDeque<>(); final ArrayDeque<Long> sent = new ArrayDeque<>();
         Seat(QuizRoom.Player who) { this.who = who; }
     }
 
@@ -93,6 +93,12 @@ final class GamePhoneRoom implements PhoneRoom {
             case VOTE: ok = a >= 0 && a <= s.opts.length && a != s.self && s.inbox.isEmpty(); break;   // one vote per card; a == opts.length is «ما أدري / ما اتفقنا»
             case ACT: ok = false; for (int t : s.acts) if (t == a) ok = true; break;
             case SECRET: ok = a == 0 && s.inbox.isEmpty(); break;
+            case TEXT: {   // the answers, one line per field, each cleaned; one post per card
+                String f = form(x, s.opts.length);
+                ok = a == 0 && f != null && s.posted.isEmpty();
+                if (ok) { s.posted.addLast(f); s.inbox.addLast(0); version++; return null; }
+                break;
+            }
             default: ok = false;
         }
         if (!ok) return "card";
@@ -126,7 +132,7 @@ final class GamePhoneRoom implements PhoneRoom {
         Seat s = seats.get(seat);
         s.cardId = ++serial; s.kind = kind; s.title = clip(title); s.text = clip(text); s.note = clip(note);
         s.opts = opts == null ? new String[0] : opts.clone(); s.acts = acts == null ? new int[0] : acts.clone(); s.self = self;
-        s.inbox.clear(); version++;
+        s.inbox.clear(); s.posted.clear(); version++;
         return s.cardId;
     }
     synchronized void hold(int seat, String text) { card(seat, WAIT, "", text, "", null, null, -1); }
@@ -140,9 +146,40 @@ final class GamePhoneRoom implements PhoneRoom {
     /** every answer sent for the current card since the last call, oldest first (an actor's buttons) */
     synchronized List<Integer> take(int seat) { Seat s = seats.get(seat); List<Integer> r = new ArrayList<>(s.inbox); s.inbox.clear(); return r; }
 
+    /** what the phone typed for its current «text» card: one string per field (empty where it left a field empty), or null while nothing has been sent */
+    synchronized String[] typed(int seat) {
+        Seat s = seats.get(seat);
+        if (s.posted.isEmpty()) return null;
+        String[] v = s.posted.peekFirst().split("\n", -1), r = new String[Math.max(1, s.opts.length)];
+        for (int i = 0; i < r.length; i++) r[i] = i < v.length ? v[i] : "";
+        return r;
+    }
+
     synchronized void close() { phase = Phase.CLOSED; version++; seats.clear(); }
 
     // ---------------------------------------------------------------- inside
+
+    /** the fields of a post: `n` lines (a missing one is empty), each letters, digits and single spaces up to 30 characters; null when every one is empty or the post is too long */
+    static String form(String x, int n) {
+        if (x == null || x.length() > 600 || n < 1) return null;
+        String[] v = x.split("\n", -1);
+        StringBuilder b = new StringBuilder(); boolean any = false;
+        for (int i = 0; i < n; i++) {
+            String f = i < v.length ? field(v[i]) : "";
+            if (!f.isEmpty()) any = true;
+            b.append(i > 0 ? "\n" : "").append(f);
+        }
+        return any ? b.toString() : null;
+    }
+    private static String field(String raw) {
+        StringBuilder b = new StringBuilder(); int n = 0;
+        for (int i = 0; i < raw.length() && n < 30; ) {
+            int cp = raw.codePointAt(i); i += Character.charCount(cp);
+            if (Character.isLetterOrDigit(cp)) { b.appendCodePoint(cp); n++; }
+            else if (cp == ' ' && b.length() > 0 && b.charAt(b.length() - 1) != ' ') { b.append(' '); n++; }
+        }
+        return b.toString().trim();
+    }
 
     private Seat byToken(String t) { if (t == null || t.isEmpty()) return null; for (Seat s : seats) if (s.who.token.equals(t)) return s; return null; }
     private static String clip(String s) { return s == null ? "" : s.length() > 200 ? s.substring(0, 200) : s; }
