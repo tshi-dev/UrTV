@@ -18,14 +18,14 @@ final class GamePhoneRoom implements PhoneRoom {
     /** what a card is: a secret to read, a vote for one name, a few action buttons, a plain line to wait on, or a form of one or more short answers to type («text»: `opts` are the field labels) */
     static final String SECRET = "secret", VOTE = "vote", ACT = "act", WAIT = "wait", TEXT = "text";
     /** the action buttons of an «act» card */
-    static final int ACT_OK = 0, ACT_SKIP = 1, ACT_FOUL = 2;
+    static final int ACT_OK = 0, ACT_SKIP = 1, ACT_FOUL = 2, ACT_BUZZ = 3;
 
     enum Phase { LOBBY, PLAY, CLOSED }
 
     private static final class Seat {
         final QuizRoom.Player who; long lastSeen; boolean left;
         int cardId; String kind = WAIT, title = "", text = "", note = ""; String[] opts = new String[0]; int[] acts = new int[0]; int self = -1;
-        final ArrayDeque<Integer> inbox = new ArrayDeque<>(); final ArrayDeque<String> posted = new ArrayDeque<>(); final ArrayDeque<Long> sent = new ArrayDeque<>();
+        long firstAt; final ArrayDeque<Integer> inbox = new ArrayDeque<>(); final ArrayDeque<String> posted = new ArrayDeque<>(); final ArrayDeque<Long> sent = new ArrayDeque<>();
         Seat(QuizRoom.Player who) { this.who = who; }
     }
 
@@ -102,6 +102,7 @@ final class GamePhoneRoom implements PhoneRoom {
             default: ok = false;
         }
         if (!ok) return "card";
+        if (s.inbox.isEmpty()) s.firstAt = now;
         if (s.inbox.size() >= INBOX_MAX) s.inbox.pollFirst();
         s.inbox.addLast(a); version++;
         return null;
@@ -141,6 +142,14 @@ final class GamePhoneRoom implements PhoneRoom {
 
     /** the first answer the phone sent for its current card, or -1 */
     synchronized int reply(int seat) { Integer a = seats.get(seat).inbox.peekFirst(); return a == null ? -1 : a; }
+    /** the seat whose phone answered its current card first (a buzzer), or -1 when none has; seats on the same millisecond: the lower seat */
+    synchronized int firstReplied() {
+        int best = -1;
+        for (int i = 0; i < seats.size(); i++) { Seat s = seats.get(i); if (!s.left && !s.inbox.isEmpty() && (best < 0 || s.firstAt < seats.get(best).firstAt)) best = i; }
+        return best;
+    }
+    /** the id of the card `seat` shows now (a test and the TV's own bookkeeping) */
+    synchronized int stateId(int seat) { return seats.get(seat).cardId; }
     synchronized boolean replied(int seat) { return !seats.get(seat).inbox.isEmpty(); }
     synchronized int repliedCount() { int n = 0; for (Seat s : seats) if (!s.left && !s.inbox.isEmpty()) n++; return n; }
     /** every answer sent for the current card since the last call, oldest first (an actor's buttons) */

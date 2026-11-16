@@ -81,6 +81,10 @@ public final class PhoneRoomTest {
         int tid2 = r.card(1, GamePhoneRoom.TEXT, "", "word?", "", new String[]{"a"}, null, -1);
         check("text: an empty post, a link-long post and the wrong card are refused; a new card forgets the old post", "card".equals(r.answer(p1.token, tid2, 0, "  \n ")) && "card".equals(r.answer(p1.token, tid2, 0, "y".repeat(700))) && "stale".equals(r.answer(p1.token, tid, 0, "x")) && r.typed(1) == null);
         now[0] += 1500;
+        for (int i = 0; i < 3; i++) r.card(i, GamePhoneRoom.ACT, "", "buzz", "", null, new int[]{GamePhoneRoom.ACT_BUZZ}, -1);
+        check("buzzer: nobody is first until a phone presses; the earliest press is first, a later one does not take it over",
+            r.firstReplied() == -1 && r.answer(p2.token, r.stateId(2), 3, null) == null && r.firstReplied() == 2 && advance(5) && r.answer(p0.token, r.stateId(0), 3, null) == null && r.firstReplied() == 2);
+        now[0] += 1500;
         String[] names = {"A", "B", "C"};
         int[] ids = new int[3];
         for (int i = 0; i < 3; i++) ids[i] = r.card(i, GamePhoneRoom.VOTE, "", "مين؟", "", names, null, i);

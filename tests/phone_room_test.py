@@ -43,7 +43,7 @@ check("charades: the word is on the actor's phone alone (the TV never draws it, 
 check("the base opens a room only on the person's switch, closes it with the screen, and says so when there is no local network",
       "protected final boolean openPhones()" in ga and "protected void onDestroy() { closePhones(); super.onDestroy(); }" in ga and 'S.t("لا توجد شبكة محلية. وصّل التلفزيون بالواي فاي")' in ga)
 check("the games list: a filter beside the night switch («عرض»: الكل or بالجوالات), kept; «بالجوالات» shows only PHONE_GAMES and opens the party games with the phones switch on",
-      'PHONE_GAMES = {"quiz", "missing-word", "odd-one", "charades"}' in reg and "filter == 0 || GameRegistry.inPhones(g.id)" in gl and "GamePrefs.setFilter(this, filter)" in gl and 'go.putExtra("phones", true)' in gl
+      'PHONE_GAMES = {"quiz", "missing-word", "letter-hive", "odd-one", "charades"}' in reg and "filter == 0 || GameRegistry.inPhones(g.id)" in gl and "GamePrefs.setFilter(this, filter)" in gl and 'go.putExtra("phones", true)' in gl
       and "static void setFilter" in src("GamePrefs.java"))
 check("the phone page: no outside address, no innerHTML or eval, text built with text nodes; it talks only to /api/",
       not __import__("re").search(r"https?://(?!www\.w3\.org)", page) and "innerHTML" not in page and "eval(" not in page and page.count("/api/") == 6 and "createTextNode" in page)
@@ -54,4 +54,9 @@ check("missing-word: the switch is off unless the phones' view opened the game a
       'chips.get("phones").picked = getIntent().getBooleanExtra("phones", false) ? 1 : 0' in mw and "closePhones();   // the switch is off" in mw and mw.index("remembered(soundChip(chips))") < mw.index('getBooleanExtra("phones"'))
 check("missing-word: every phone is a team (1 to 4) with its own name; the statement goes to the phone whose turn it is, the others wait; a right word is judged at once, any other goes to the host with what was typed",
       "begin(n, phones.room.names()" in mw and "i == game.turn" in mw and "MissingWord.sameWord(word, game.current().word(en))" in mw and "} else go(Screen.SHOWN);" in mw and 'S.t("كتب %s: %s", team, typed)' in mw)
+hv = src("LetterHiveActivity.java")
+check("letter-hive: the switch is off unless the phones' view opened the game and is never kept; off, the room is closed and the game is the remote's",
+      'chips.get("phones").picked = getIntent().getBooleanExtra("phones", false) ? 1 : 0' in hv and "} else closePhones();   // the switch is off" in hv and hv.index("remembered(soundChip(chips))") < hv.index('getBooleanExtra("phones"'))
+check("letter-hive: every phone has the buzzer while a question is open, the first press is who answers, the host still marks (the judge starts on that team)",
+      "GamePhoneRoom.ACT_BUZZ" in hv and "phones.room.firstReplied()" in hv and "teamOf(buzzed)" in hv and "game.judge(who)" in hv)
 sys.exit(1 if failed else 0)

@@ -102,13 +102,13 @@ var NAME = { ar: 'اللعب بالجوالات', en: 'Phone play' };
 var T = {
   ar: { room: 'الغرفة {0}', yourName: 'اسمك', yourColour: 'لونك', join: 'ادخل', joining: 'لحظة', loading: 'لحظة',
     inn: 'أنت داخل', ready: 'جاهزين؟', waitStart: 'ننتظر أن تبدأ اللعبة', inRoom: 'في الغرفة: {0}', leave: 'خروج', leaveSure: 'اضغط مرة ثانية للخروج',
-    seen: 'شفتها', seenSub: 'اضغط بعد ما تحفظها', hidden: 'تمام، ننتظر الباقين', ok: 'صح', skip: 'تخطّي', foul: 'مخالفة', dunno: 'ما أدري',
+    seen: 'شفتها', seenSub: 'اضغط بعد ما تحفظها', hidden: 'تمام، ننتظر الباقين', ok: 'صح', skip: 'تخطّي', foul: 'مخالفة', buzz: 'أنا!', dunno: 'ما أدري',
     voted: 'سجّلنا اختيارك', send: 'أرسل', sent: 'وصلت إجابتك', typeHere: 'اكتب هنا', pick: 'اختر واحدًا', closed: 'أُغلقت الغرفة', closedSub: 'شكرًا للعب', bad: 'الرمز غير صحيح', lost: 'انقطع', back: 'رجعنا',
     e_name0: 'اكتب اسمك أولًا', e_full: 'الغرفة ممتلئة', e_locked: 'محاولات كثيرة، انتظر دقيقة', e_gone: 'خرجت من الغرفة، ادخل من جديد', e_name: 'اختر اسمًا ثانيًا',
     e_closed: 'اللعبة بدأت أو أُغلقت الغرفة', e_code: 'الرمز غير صحيح', e_rate: 'بسرعة شوي، حاول مرة ثانية', e_net: 'تعذّر الاتصال، حاول مرة ثانية' },
   en: { room: 'Room {0}', yourName: 'Your name', yourColour: 'Your colour', join: 'Join', joining: 'One moment', loading: 'One moment',
     inn: "You're in", ready: 'Ready?', waitStart: 'Waiting for the game to start', inRoom: 'In the room: {0}', leave: 'Leave', leaveSure: 'Tap again to leave',
-    seen: 'Got it', seenSub: 'Tap once you have it', hidden: 'Good, waiting for the others', ok: 'Right', skip: 'Skip', foul: 'Foul', dunno: "Don't know",
+    seen: 'Got it', seenSub: 'Tap once you have it', hidden: 'Good, waiting for the others', ok: 'Right', skip: 'Skip', foul: 'Foul', buzz: 'Me!', dunno: "Don't know",
     voted: 'Your choice is in', send: 'Send', sent: 'Your answer is in', typeHere: 'Type here', pick: 'Pick one', closed: 'The room is closed', closedSub: 'Thanks for playing', bad: 'The code is not right', lost: 'Connection lost', back: 'Back',
     e_name0: 'Type your name first', e_full: 'The room is full', e_locked: 'Too many tries, wait a minute', e_gone: 'You left the room, join again', e_name: 'Pick another name',
     e_closed: 'The game has started or the room is closed', e_code: 'The code is not right', e_rate: 'Too fast, try again', e_net: 'Could not connect, try again' }
@@ -225,7 +225,7 @@ function cardScreen() {
     kids.push(d);
   } else if (c.kind === 'act') {
     kids = [h('div', 'dim', c.title), h('div', 'actw', c.text), c.note ? h('div', 'dim', c.note) : null];
-    var names = [S.ok, S.skip, S.foul], row = h('div', 'row3');
+    var names = [S.ok, S.skip, S.foul, S.buzz], row = h('div', 'row3');
     c.acts.forEach(function (a) { var b = h('button', 'btn' + (a === 0 ? '' : ' alt'), names[a], { type: 'button', 'data-a': a }); b.addEventListener('click', function () { api('/api/answer', { c: code, t: token, q: c.id, a: a }).then(function () {}, function () {}); }); row.appendChild(b); });
     kids.push(row);
   } else if (c.kind === 'text') {
