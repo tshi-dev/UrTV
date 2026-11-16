@@ -160,6 +160,17 @@ public class MainActivity extends Activity {
     private DuaCard duaCard;   // «أذان المغرب بعد ٨ دقائق», over the top edge; while the adhan plays «أذان المغرب · أي زر يوقف الأذان»
     private final AdhanKeys adhanKeys = new AdhanKeys();
     private ReminderCard reminder;   // the card of a task with a time, over the home; the alarm (ReminderReceiver) and a return to the home bring it
+    /** 4.4 a followed club's kick-off: the notice on the home's page; with no page (no card), a text notice */
+    private final BroadcastReceiver kickoffDue = new BroadcastReceiver() {
+        @Override public void onReceive(Context c, Intent i) {
+            if (!resumed) return;
+            String json = i.getStringExtra("json");
+            String line = i.getStringExtra("line");
+            if ((homeCard == null || !homeCard.kick(json)) && line != null) {
+                try { android.widget.Toast.makeText(c, line, android.widget.Toast.LENGTH_LONG).show(); } catch (RuntimeException ignored) { }
+            }
+        }
+    };
     private final BroadcastReceiver reminderDue = new BroadcastReceiver() {
         @Override public void onReceive(Context c, Intent i) { if (reminder != null && resumed) reminder.refresh(); }
     };
@@ -269,6 +280,7 @@ public class MainActivity extends Activity {
         InternalReceivers.register(this, sleepChanged, new IntentFilter(SleepTimer.CHANGED));
         InternalReceivers.register(this, nowPlayingChanged, new IntentFilter(NowPlaying.CHANGED));
         InternalReceivers.register(this, reminderDue, new IntentFilter(ReminderReceiver.SHOW));
+        InternalReceivers.register(this, kickoffDue, new IntentFilter(KickoffReceiver.SHOW));
     }
 
     /** the photos were let go: decoding the next one starts HERE, at the start of the return (off the main thread, at screen size), not after the first frame's provider queries */
@@ -518,6 +530,7 @@ public class MainActivity extends Activity {
         unregisterReceiver(sleepChanged);
         unregisterReceiver(nowPlayingChanged);
         unregisterReceiver(reminderDue);
+        unregisterReceiver(kickoffDue);
         loader.shutdownNow();
         tvLoader.shutdownNow();
         clockReads.shutdownNow();

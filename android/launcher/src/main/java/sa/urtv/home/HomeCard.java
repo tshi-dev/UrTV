@@ -180,6 +180,7 @@ final class HomeCard {
     void refresh() {
         resumed = true;
         idle.removeCallbacks(drop);
+        if (web != null && !loading) { idle.removeCallbacks(kickPull); idle.postDelayed(kickPull, 5_000); }
         if (web != null) resumeWeb();
         final int gen = ++refreshGen;
         new Thread(new Runnable() {
@@ -236,6 +237,7 @@ final class HomeCard {
      *  launcher's only WebView (tests/home_card_test.py checks it), so whoever adds a second WebView has to revisit both. */
     void pause() {
         resumed = false;
+        idle.removeCallbacks(kickPull);   // 4.4 the alarms already set cover the next 8 days
         guardNext = web != null;
         if (web != null) { web.onPause(); web.pauseTimers(); }
         if (web != null && Ram.tight(activity)) idle.postDelayed(drop, IDLE_DROP_MS);   // P9: a weak TV does not keep a page it is not showing for long
@@ -243,6 +245,7 @@ final class HomeCard {
 
     void destroy() {
         if (web == null) return;
+        idle.removeCallbacks(kickPull);
         if (target != null) { parent.removeView(target); target = null; targetParams = null; }
         if (footballFocus != null) { footballFocus.remove(); footballFocus = null; }
         if (market != null) { parent.removeView(market); market = null; marketParams = null; }
@@ -305,6 +308,31 @@ final class HomeCard {
         return m.ownInk ? q + "&hink=" + GlassStyle.rgba(m.text) + "&hsub=" + GlassStyle.rgba(m.sub) + "&hacc=" + GlassStyle.rgba(m.accent) : q;
     }
 
+    /** 4.4 the followed clubs' coming games: the app asks the page for them (spKickList, a JSON string) after it loads and every 15 minutes while the home is in
+     *  front; the page is given no JavaScript interface. KickoffScheduler keeps them and sets the alarm. */
+    static final long KICK_PULL_MS = 15 * 60 * 1000;
+    private final Runnable kickPull = new Runnable() { @Override public void run() {
+        if (web == null) return;
+        web.evaluateJavascript("typeof spKickList==='function'?spKickList():''", new ValueCallback<String>() {
+            @Override public void onReceiveValue(String v) {
+                try {
+                    Object o = v == null ? null : new org.json.JSONTokener(v).nextValue();
+                    if (o instanceof String && ((String) o).startsWith("[") && ((String) o).length() < 20_000)
+                        sa.urtv.home.sports.KickoffScheduler.handOver(activity.getApplicationContext(), (String) o);
+                } catch (org.json.JSONException ignored) { }
+            }
+        });
+        idle.removeCallbacks(this);
+        if (resumed) idle.postDelayed(this, KICK_PULL_MS);
+    } };
+
+    /** 4.4 the kick-off notice on the home's page (spKick); false when there is no page to draw it */
+    boolean kick(String json) {
+        if (web == null || json == null) return false;
+        web.evaluateJavascript("typeof spKick==='function'&&spKick(" + org.json.JSONObject.quote(json) + ")", null);
+        return true;
+    }
+
     @SuppressLint("SetJavaScriptEnabled")
     @SuppressWarnings("deprecation")
     private void create(String u) {
@@ -331,6 +359,8 @@ final class HomeCard {
             @Override
             public void onPageFinished(WebView v, String u) {
                 loading = false;
+                idle.removeCallbacks(kickPull);
+                idle.postDelayed(kickPull, 20_000);   // 4.4 the page has read its games by then
                 if (footballFocus != null) {   // the widgets are laid out once the page is: where they start, the look, the targets
                     footballFocus.fit();
                     v.postDelayed(() -> { if (footballFocus != null) footballFocus.fit(); }, 1500);
