@@ -1,0 +1,8 @@
+/* «الصلاة القادمة» on the home: the name and the adhan's time big, the time left under them with a bar from the last prayer, the iqama at its end */
+.week li.np{display:grid;grid-template-columns:auto 1fr auto;align-items:baseline;gap:.35em .6em;padding:.4em 0 .2em}
+.week li.np b{grid-column:1;font-size:2em;line-height:1.1;font-weight:500;color:var(--gold-hi)}
+.week li.np .t{grid-column:2;font-size:2em;line-height:1.1;color:#FFF}
+.week li.np .r{grid-column:1/3;font-size:1.05em;color:#F1E7D0}
+.week li.np .iq{grid-column:3;grid-row:2;font-size:.86em;color:#CFC6B2}
+.week li.np .pb{grid-column:1/-1;height:4px;border-radius:2px;background:rgba(255,255,255,.16);overflow:hidden;margin-top:.3em}
+.week li.np .pb i{display:block;height:100%;background:var(--gold-3);border-radius:2px}

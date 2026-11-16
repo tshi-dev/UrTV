@@ -1,0 +1,4 @@
+/* the verse as on a plaque: centred, the ornate brackets (NotoMarks: the Hafs font has none) as tall as the verse, the reference under it in words */
+.week li.quote,.week li.src{text-align:center}
+.week li.quote .orn{font-size:1.5em;line-height:1;vertical-align:-.12em;color:var(--gold-3);padding:0 .12em}
+.week li.src{padding-top:.9vh;color:#CFC6B2}

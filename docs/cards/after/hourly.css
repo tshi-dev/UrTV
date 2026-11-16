@@ -1,0 +1,6 @@
+/* «الساعات القادمة»: the hour readable from the sofa, the temperature the strongest line */
+.week li.hrs{gap:8px;padding:8px 0 4px}
+.week li.hrs .hc{gap:.35em}
+.week li.hrs .hc b{font-size:.84em;color:#E2DACA}
+.week li.hrs .hc i{font-size:1.2em;font-weight:500;color:#FFF}
+.week li.hrs .hc svg{width:1.7em;height:1.7em}

@@ -1,0 +1,11 @@
+/* «مواقيت اليوم»: the 3x2 boxes stay (a row of six, as in the 433-design mockup, made every word smaller on a 461 dp card: tried, dropped);
+   the time is the strong line, the next box solid gold with the time left in it, the past ones quiet but readable */
+.week ul.pgrid li{gap:.15em;border-color:rgba(255,255,255,.14);background:rgba(255,255,255,.04)}
+.week ul.pgrid li:last-child{border-bottom-color:rgba(255,255,255,.14)}
+.week ul.pgrid li span:first-child{font-weight:400;font-size:.9em;color:#E9E1CE}
+.week ul.pgrid li .dt{font-size:1.06em;color:#FFF;font-weight:500}
+.week ul.pgrid li.past{background:none;border-color:rgba(255,255,255,.08)}
+.week ul.pgrid li.past span:first-child,.week ul.pgrid li.past .dt{color:#B9B09C;font-weight:400}
+.week ul.pgrid li.next{background:#EBC67D;border-color:#EBC67D}
+.week ul.pgrid li.next span:first-child,.week ul.pgrid li.next .dt{color:#1A1409}
+.week ul.pgrid li .lf{font-size:.7em;color:#3A2C10;white-space:nowrap}

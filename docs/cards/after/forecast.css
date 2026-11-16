@@ -1,0 +1,9 @@
+/* «الأيام القادمة»: an icon for each day (the hourly strip's), the low and the high around a bar of the week's range */
+.week li.fc{display:grid;grid-template-columns:4.2em 1.5em minmax(0,1fr) 2em 5.5em 2em;align-items:center;gap:0 .6em}
+.week li.fc > span{max-width:none;overflow:hidden;text-overflow:ellipsis;padding:0;margin:0}
+.week li.fc .wxi svg{width:1.35em;height:1.35em;display:block}
+.week li.fc .ep{font-size:.8em}
+.week li.fc .lo{color:#CFC6B2;text-align:center;font-variant-numeric:tabular-nums}
+.week li.fc .hi{color:#FFF;font-weight:500;text-align:center;font-variant-numeric:tabular-nums}
+.week li.fc .rg{position:relative;height:5px;border-radius:3px;background:rgba(255,255,255,.14);overflow:visible}
+.week li.fc .rg i{position:absolute;top:0;bottom:0;border-radius:3px;background:linear-gradient(270deg,#8FC3C9,var(--gold-3) 60%,#F0975F)}

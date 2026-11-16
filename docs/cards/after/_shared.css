@@ -1,0 +1,6 @@
+/* shared by every card (counted once): the home's glass gets a dark floor under the words, so a bright photo never washes them out
+   (the launcher's 14% white glass alone lets a bright sky wash them out: 01/02 bright shots); the second texts no darker than 4.5:1 on that floor */
+html.hcard .week{background:linear-gradient(var(--hpanel),var(--hpanel)),rgba(10,12,16,.52)!important}
+html.hcard[class*="cs-"] .week::before{background:linear-gradient(var(--hpanel),var(--hpanel)),rgba(10,12,16,.52)!important}
+.week .hd{color:var(--gold-3)}
+.week li .ep,.week li .dt,.week li.hrs .hc b,.week li.prow .pc i{color:#CFC6B2}
