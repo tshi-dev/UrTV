@@ -33,8 +33,11 @@ public class QuizGamesActivity extends Activity {
         S.n("خمّن الكلمة"), S.n("كلمة من خمسة حروف في ست محاولات"),
         S.n("دومينو"), S.n("الدومينو كما تعرفونه، بالريموت"),
     };
+    /** the night switch's words, marked for the English table: «وضع ليلي» with its three states, and the three night palettes */
+    static final String[] NIGHT_WORDS = {S.n("وضع ليلي"), S.n("تلقائي بعد المغرب"), S.n("ألوان الليل"), S.n("فحم دافئ"), S.n("ليل أزرق"), S.n("بيج خافت")};
+    static final String[] NIGHT_STATES = {S.n("إيقاف"), S.n("تشغيل"), NIGHT_WORDS[1]}, PALETTE_NAMES = {NIGHT_WORDS[3], NIGHT_WORDS[4], NIGHT_WORDS[5]};
     static final int COLS = 4;
-    private FrameLayout root; private float scale; private int sel; private Typeface display, medium; private GameLook L;
+    private FrameLayout root; private float scale; private int sel, head; private Typeface display, medium; private GameLook L;   // head: 0 the tiles have the focus, 1 the night switch, 2 the night colours
 
     @Override protected void attachBaseContext(Context base) {
         Context e = S.wrap(base);
@@ -91,6 +94,7 @@ public class QuizGamesActivity extends Activity {
         TextView mode = text(S.t("بدون جوالات: ريموت واحد يدور بينكم"), 40, L.saff, false); mode.setGravity(Gravity.END); mode.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_END);
         FrameLayout.LayoutParams mp = new FrameLayout.LayoutParams(px(820), px(56), Gravity.END | Gravity.TOP); mp.setMarginEnd(px(96)); mp.topMargin = px(84);
         root.addView(mode, mp);
+        headerButtons();
         float w = 408, hgt = 336, gap = 32;
         for (int i = 0; i < GameRegistry.ALL.length; i++) {
             GameRegistry.Game g = GameRegistry.ALL[i];
@@ -133,12 +137,45 @@ public class QuizGamesActivity extends Activity {
         root.addView(hint, at(-1, 48, 96, 978));
     }
 
+    /** the switch at the top of the list: «وضع ليلي» (off, on, automatic after Maghrib) and, when it is not off, the night colours; both on the green band at the end of the line */
+    private void headerButtons() {
+        int st = GamePrefs.night(this);
+        String[] label = {S.t("وضع ليلي") + ": " + S.tv(NIGHT_STATES[st]), S.t("ألوان الليل") + ": " + S.tv(PALETTE_NAMES[GamePrefs.palette(this)])};
+        float w1 = 380, w2 = 380, gap = 16;
+        float x1 = 96;                                    // from the end edge: the switch first, the colours beside it toward the start
+        for (int i = 0; i < (st == GamePrefs.NIGHT_OFF ? 1 : 2); i++) {
+            boolean focus = head == i + 1;
+            TextView b = text(label[i], 34, focus ? L.paper : L.ink, true); b.setGravity(Gravity.CENTER); b.setTextAlignment(View.TEXT_ALIGNMENT_CENTER); b.setSingleLine(true);
+            GradientDrawable bg = new GradientDrawable(); bg.setColor(focus ? L.ink : L.tile); bg.setStroke(px(focus ? 6 : 4), focus ? L.saff : L.ink);
+            b.setBackground(bg);
+            FrameLayout.LayoutParams p = new FrameLayout.LayoutParams(px(i == 0 ? w1 : w2), px(56), Gravity.END | Gravity.TOP); p.setMarginEnd(px(x1)); p.topMargin = px(128);
+            root.addView(b, p);
+            x1 += (i == 0 ? w1 : w2) + gap;
+        }
+    }
+
+    private void applyNight() { L = GameLook.of(this); root.setBackgroundColor(L.paper); draw(); }
+
     @Override public boolean dispatchKeyEvent(KeyEvent e) {
         if (e.getAction() != KeyEvent.ACTION_DOWN) return super.dispatchKeyEvent(e);
         int k = e.getKeyCode(), n = GameRegistry.ALL.length;
         int dx = k == KeyEvent.KEYCODE_DPAD_LEFT ? -1 : k == KeyEvent.KEYCODE_DPAD_RIGHT ? 1 : 0;
         if (Dir.rtl()) dx = -dx;
         int dy = k == KeyEvent.KEYCODE_DPAD_UP ? -1 : k == KeyEvent.KEYCODE_DPAD_DOWN ? 1 : 0;
+        boolean okKey = k == KeyEvent.KEYCODE_DPAD_CENTER || k == KeyEvent.KEYCODE_ENTER || k == KeyEvent.KEYCODE_NUMPAD_ENTER || k == KeyEvent.KEYCODE_BUTTON_A;
+        if (head != 0) {   // the focus is on the night switch (1) or the night colours (2); the colours sit toward the start, so a step toward the end leads to the switch
+            boolean two = GamePrefs.night(this) != GamePrefs.NIGHT_OFF;
+            if (dy > 0) { head = 0; draw(); return true; }
+            if (dx != 0) { int to = head == 2 && dx > 0 ? 1 : head == 1 && dx < 0 && two ? 2 : head; if (to != head) { head = to; draw(); } return true; }
+            if (okKey) {
+                if (head == 1) { int st = (GamePrefs.night(this) + 1) % 3; GamePrefs.setNight(this, st); if (st == GamePrefs.NIGHT_OFF) head = 1; }
+                else GamePrefs.setPalette(this, (GamePrefs.palette(this) + 1) % GamePrefs.PALETTES);
+                applyNight();
+                return true;
+            }
+            return super.dispatchKeyEvent(e);
+        }
+        if (dy < 0 && sel < COLS) { head = 1; draw(); return true; }   // up from the first line of tiles reaches the night switch
         if (dx != 0) { if (sel % COLS + dx >= 0 && sel % COLS + dx < COLS && sel + dx < n) { sel += dx; draw(); } return true; }
         if (dy != 0) { int to = sel + dy * COLS; if (to >= 0 && to < n) { sel = to; draw(); } return true; }
         if (k == KeyEvent.KEYCODE_DPAD_CENTER || k == KeyEvent.KEYCODE_ENTER || k == KeyEvent.KEYCODE_NUMPAD_ENTER || k == KeyEvent.KEYCODE_BUTTON_A) {

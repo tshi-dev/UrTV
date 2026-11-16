@@ -154,7 +154,7 @@ public class LetterHiveActivity extends GameActivity {
         for (int t = 0; t < 2; t++) {
             boolean on = !won && game.turn() == t + 1 || won && game.winner() == t + 1;
             FrameLayout tile = stamp(on ? L.ink : L.tile, L.ink, 6, false);
-            tile.addView(box(GameLook.SIDES[t], on ? L.onInk : L.ink, 3, false), tileAt(48, 48, 24, 24));
+            tile.addView(box(L.sides[t], on ? L.onInk : L.ink, 3, false), tileAt(48, 48, 24, 24));
             tile.addView(text(clip(names[t], 44, 250), 44, on ? L.onInk : L.ink, true), tileAt(260, 60, 92, 16));
             tile.addView(text(t == 0 ? S.t("من اليمين إلى اليسار") : S.t("من الأعلى إلى الأسفل"), 30, on ? L.saff : L.ink(0xCC), false), tileAt(400, 44, 24, 84));
             int cells = 0;
@@ -231,8 +231,8 @@ public class LetterHiveActivity extends GameActivity {
         @Override protected void onDraw(Canvas cv) {
             float w = getWidth(), h = getHeight(), m = px(28), cw = (w - 2 * m) / (HiveBoard.COLS + .5f), hw = cw / 2, r = (h - 2 * m) / (1.5f * (HiveBoard.ROWS - 1) + 2);
             // the sides: team 1 right and left, team 2 top and bottom
-            fill.setColor(GameLook.SIDES[0]); cv.drawRect(0, m, px(16), h - m, fill); cv.drawRect(w - px(16), m, w, h - m, fill);
-            fill.setColor(GameLook.SIDES[1]); cv.drawRect(m, 0, w - m, px(16), fill); cv.drawRect(m, h - px(16), w - m, h, fill);
+            fill.setColor(L.sides[0]); cv.drawRect(0, m, px(16), h - m, fill); cv.drawRect(w - px(16), m, w, h - m, fill);
+            fill.setColor(L.sides[1]); cv.drawRect(m, 0, w - m, px(16), fill); cv.drawRect(m, h - px(16), w - m, h, fill);
             boolean won = game.phase() == HiveGame.Phase.WON;
             int[] chain = won ? game.chain() : null;
             for (int pass = 0; pass < 2; pass++) for (int i = 0; i < HiveBoard.CELLS; i++) {
@@ -244,7 +244,7 @@ public class LetterHiveActivity extends GameActivity {
                 if (rtl) x = w - x;
                 path.rewind();
                 path.moveTo(x, y - b); path.lineTo(x + a, y - b / 2); path.lineTo(x + a, y + b / 2); path.lineTo(x, y + b); path.lineTo(x - a, y + b / 2); path.lineTo(x - a, y - b / 2); path.close();
-                fill.setColor(owner != HiveBoard.FREE ? GameLook.SIDES[owner - 1] : focused ? L.saff : L.tile);
+                fill.setColor(owner != HiveBoard.FREE ? L.sides[owner - 1] : focused ? L.saff : L.tile);
                 fill.setAlpha(won && !lit ? 0x66 : 0xFF);
                 cv.drawPath(path, fill);
                 line.setColor(L.ink); line.setStrokeWidth(px(focused || lit ? 14 : 5)); line.setAlpha(won && !lit ? 0x66 : 0xFF);

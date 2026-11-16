@@ -26,6 +26,22 @@ final class GamePrefs {
     static boolean sound(Context c) { return sp(c).getBoolean("sound", true); }
     static void setSound(Context c, boolean on) { sp(c).edit().putBoolean("sound", on).apply(); }
 
+    /** the night look: 0 off (the default), 1 on, 2 automatic (after Maghrib until sunrise at the TV's city) */
+    static final int NIGHT_OFF = 0, NIGHT_ON = 1, NIGHT_AUTO = 2, PALETTES = 3;
+    static int night(Context c) { int v = sp(c).getInt("night", NIGHT_OFF); return v < 0 || v > NIGHT_AUTO ? NIGHT_OFF : v; }
+    static void setNight(Context c, int v) { sp(c).edit().putInt("night", v).apply(); }
+    /** which night palette: 0 warm charcoal (the default), 1 blue-black, 2 dim sepia */
+    static int palette(Context c) { int v = sp(c).getInt("palette", 0); return v < 0 || v >= PALETTES ? 0 : v; }
+    static void setPalette(Context c, int v) { sp(c).edit().putInt("palette", v).apply(); }
+    /** is the night look on right now: on, or automatic and the sun is down at the city the person set for the prayer times (Riyadh until set) */
+    static boolean nightNow(Context c) {
+        int st = night(c);
+        if (st != NIGHT_AUTO) return st == NIGHT_ON;
+        double lat = 24.7136, lon = 46.6753;
+        try { String[] city = new Prefs(c).city(); lat = Double.parseDouble(city[1]); lon = Double.parseDouble(city[2]); } catch (RuntimeException ignored) { /* Riyadh */ }
+        return SunPos.isNight(lat, lon, System.currentTimeMillis());
+    }
+
     static Set<String> recent(Context c, String id) {
         String s = sp(c).getString("recent." + id, "");
         Set<String> v = new LinkedHashSet<>();

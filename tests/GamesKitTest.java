@@ -61,6 +61,22 @@ public class GamesKitTest {
         check("khanat layout: with the arrows every tile and both buttons of the marking screen are reachable; «من خلّص أول؟» (to 11 buttons) reaches every button and stays 250 px wide", reach && who);
     }
 
+    /** SunPos: Riyadh and Mecca around the day, a high latitude in summer and winter (the checks are the sun's own, to a few minutes) */
+    static void sun() {
+        java.time.Instant d = java.time.Instant.parse("2026-11-16T00:00:00Z");
+        long h = 3600_000L, t0 = d.toEpochMilli();
+        boolean riyadh = !SunPos.isNight(24.7136, 46.6753, t0 + 9 * h) && !SunPos.isNight(24.7136, 46.6753, t0 + 13 * h + 30 * 60_000) && SunPos.isNight(24.7136, 46.6753, t0 + 14 * h + 30 * 60_000)
+            && SunPos.isNight(24.7136, 46.6753, t0 + 2 * h) && SunPos.isNight(24.7136, 46.6753, t0 + 23 * h) && !SunPos.isNight(24.7136, 46.6753, t0 + 4 * h);   // sunrise about 06:00 local (03:00 UTC), sunset about 17:00 local (14:00 UTC)
+        double noon = SunPos.elevationDeg(24.7136, 46.6753, t0 + 9 * h), mid = SunPos.elevationDeg(24.7136, 46.6753, t0 + 21 * h);
+        check("night: Riyadh on 16 November: day at noon (the sun " + Math.round(noon) + " degrees up) and at 16:30, night from just after 17:00 until sunrise", riyadh && noon > 40 && noon < 55 && mid < -30);
+        long sunsetMin = -1;
+        for (long m = 12 * 60; m < 16 * 60; m++) if (SunPos.isNight(21.4225, 39.8262, t0 + m * 60_000)) { sunsetMin = m; break; }
+        check("night: Mecca's sunset on 16 November is between 17:30 and 17:50 local time (14:30 to 14:50 UTC: the call to Maghrib), found at " + sunsetMin / 60 + ":" + sunsetMin % 60 + " UTC", sunsetMin >= 14 * 60 + 25 && sunsetMin <= 14 * 60 + 50);
+        java.time.Instant jun = java.time.Instant.parse("2026-06-21T00:00:00Z"), dec = java.time.Instant.parse("2026-12-21T00:00:00Z");
+        check("night: Oslo at midnight in June stays light-ish (the sun barely under) while in December it is dark at noon-adjacent hours; the formula is the same for any place",
+            SunPos.elevationDeg(59.9, 10.75, jun.toEpochMilli() + 22 * h) > -10 && SunPos.elevationDeg(59.9, 10.75, dec.toEpochMilli() + 12 * h) < 8 && !SunPos.isNight(0, 0, t0 + 12 * h) && SunPos.isNight(0, 0, t0));
+    }
+
     static void check(String what, boolean ok) { System.out.println((ok ? "PASS " : "FAIL ") + what); if (!ok) failed++; }
     static byte[] b(String s) { return s.getBytes(StandardCharsets.UTF_8); }
 
@@ -69,6 +85,7 @@ public class GamesKitTest {
         registry(); score(); chips(); clock(); dataCheck();
         khanat(khanatRaw); missingWord(mwRaw);
         khanatTen();
+        sun();
         System.exit(failed == 0 ? 0 : 1);
     }
 

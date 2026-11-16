@@ -88,6 +88,7 @@ public abstract class GameActivity extends Activity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);   // no screensaver and no sleep while a game is open
         prefs = new Prefs(this);
         L = GameLook.of(this);
+        QuizActivity.applyLook(L);   // the shared views (check mark, confetti, ink letters) read the same colours
         latin = DigitsText.isLatin(prefs.digits()); en = S.en(); rtl = Dir.rtl();
         tier = Prefs.ramTier(this);
         float anim = 1f;
@@ -429,7 +430,7 @@ public abstract class GameActivity extends Activity {
             LinearLayout t = new LinearLayout(this); t.setOrientation(LinearLayout.HORIZONTAL); t.setGravity(Gravity.CENTER_VERTICAL); t.setLayoutDirection(Dir.layout());
             t.setBackground(shape(on ? L.ink : L.tile, L.ink, 6, false)); t.setPadding(px(small ? 14 : 20), 0, px(small ? 14 : 20), 0);
             LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(px(small ? 24 : 36), px(small ? 24 : 36)); sp.setMarginEnd(px(small ? 10 : 16));
-            t.addView(box(GameLook.SIDES[i % GameLook.SIDES.length], on ? L.onInk : L.ink, 3, false), sp);
+            t.addView(box(L.sides[i % L.sides.length], on ? L.onInk : L.ink, 3, false), sp);
             float f = small ? 30 : 40;
             TextView nm = text(s.n > 6 ? "" : clip(names[i], f, w - (small ? 130 : 200)), f, on ? L.onInk : L.ink, true); nm.setSingleLine(true);
             t.addView(nm, new LinearLayout.LayoutParams(0, -2, 1f));
@@ -452,7 +453,7 @@ public abstract class GameActivity extends Activity {
             TextView rk = centered(num(rank), big, rank == 1 ? L.onSaff : L.onInk, true); rk.setBackgroundColor(rank == 1 ? L.saff : L.ink);
             row.addView(rk, new LinearLayout.LayoutParams(px(128 - 6), px(hgt - 12)));
             LinearLayout.LayoutParams sp = new LinearLayout.LayoutParams(px(20), px(tiny ? 36 : small ? 44 : 64)); sp.setMarginStart(px(32)); sp.setMarginEnd(px(24));
-            row.addView(box(GameLook.SIDES[side % GameLook.SIDES.length], L.ink, 3, false), sp);
+            row.addView(box(L.sides[side % L.sides.length], L.ink, 3, false), sp);
             TextView nm = text(names[side], nameSize, L.ink, true); nm.setSingleLine(true); nm.setEllipsize(android.text.TextUtils.TruncateAt.END);
             row.addView(nm, new LinearLayout.LayoutParams(0, -2, 1f));
             if (withLast && s.last[side] > 0) {
