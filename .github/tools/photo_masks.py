@@ -360,7 +360,12 @@ def encode(F, alpha):
     if bb is None: return None, None
     # the digits' bottom is at most 70 % down (PhotoGlassPlan: LOWEST 0.62 and 30 % of a digit under it), and the zoom is about the top, so below
     # 72 % the cut-out would only cover the same photo under it: it stops there (smaller, the same picture)
-    bb = (bb[0], bb[1], bb[2], min(bb[3], round(H * 0.72)))
+    if bb[3] > round(H * 0.72):
+        bb = (bb[0], bb[1], bb[2], round(H * 0.72))
+        a8 = a8.copy()                                   # the last 24 px fade out: no seam where it ends, whatever the TV scales
+        ramp = np.linspace(1, 0, 24, dtype=np.float32)[:, None]
+        a8[bb[3] - 24:bb[3]] = (a8[bb[3] - 24:bb[3]] * ramp + 0.5).astype(np.uint8)
+        rgba = Image.fromarray(np.dstack([F, a8]), "RGBA")
     if bb[3] <= bb[1]: return None, None
     crop = rgba.crop(bb)
     for aq in (100, 90):
