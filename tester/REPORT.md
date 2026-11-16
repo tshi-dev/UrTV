@@ -2870,3 +2870,14 @@ I had started `homedoctor.py --reboot` (needs `PY=…/venv/Scripts/python.exe` a
 - **C (launcherx's role and preferred activities cleared, then A): FAILED** — same, and the role went back to launcherx within two minutes.
 - D: stopped after press 1 (launcherx). E, F: not run.
 State after: role launcherx (as before), 18 packages off (as before), accessibility list as before (Key Mapper + extras). Raw output in optimize/run/homedoctor/20261116-234258/ (local). I will run step 87 in full when the GO line names the new build.
+
+## step 86 B rerun, try 1 on 4.4 build 376 (94bd7169) — **HOME DOES NOT WORK: the real «Allow USB debugging?» dialog never appears**
+All four APKs from apk-next 376 installed over 349 (home 4.4/376). Start state: role launcherx, 18 packages off (from the owner's run), extras on.
+- **UI: the owner's asks are in.** The setup page is now a centred box with its own scroll and the QR on the left (pictures step86c/t1/01-intro.png, 02.png). It shows a new block «Try the setup with an AI helper on a computer — On this TV switching the home screen from here failed twice…». Note: the setup page is in **English** although the home's language is Arabic.
+- t+13 «Set everything up» → step list «Install · Activate · Report», the drawn card «Allow USB debugging? [Always allow] [Cancel]» and «Press Select on the remote on “Always allow”».
+- **No real Android dialog ever came** (`mCurrentFocus` = SetupActivity the whole time, no UsbDebuggingActivity; checked every ~10 s for 3+ minutes). So there was nothing to press; I pressed nothing.
+- App log: `UrTVSetup: adb key: kept (one key for good) exists=false` → `UrTVFactory: connect 127.0.0.1:5555 … CNXN sent … AUTH TOKEN … signature sent … TOKEN again: the signature was not known … key offered: the TV should now show «Allow USB debugging?» (waiting up to 180000 ms)`.
+- **adbd at that same moment: `adbd_auth: loading keys from /data/misc/adb/adb_keys` → `E adbd: Invalid base64 key`** and then nothing (no prompt sent to the framework). So the TV's saved key file seems to hold a broken line, and after it adbd never asks the user. (My PC's adb keeps working: «adb client authorized».) Likely the earlier «Always allow» / the old regenerate-every-start keys left a bad entry in adb_keys.
+- After 180 s: the page still shows the same card; no timeout message, no «try again».
+- Role launcherx; Home not tested again (nothing changed).
+Next: try 2 after a reboot (does adbd then show the dialog?). If not, the fix is on the TV side (adb_keys) or the app must tell the person to «Revoke USB debugging authorizations» first.
