@@ -1,7 +1,7 @@
-«▶ OWNER: keep going until you find the MOST RELIABLE way to make UrTV the main launcher on this Google TV. Order: (1) step 86 B rerun on the 94bd7169 build, (2) step 87 Home doctor, (3) step 88 below, iterating, and do not stop at the first pass: measure reliability; (4) step 89: the full 4.4 audit. Report each round to work/tester-report. Never disable launcherx/setupwraith, never factory reset, never the family PIN. TV muted.»
+«▶ OWNER: keep going until you find the MOST RELIABLE way to make UrTV the main launcher on this Google TV. Order: (1) step 86 B rerun on the 94bd7169 build, (2) step 87 Home doctor, (3) step 88 below, iterating, and do not stop at the first pass: measure reliability. Step 89 (the full audit) is ON HOLD: do NOT start it until a GO line names it. Report each round to work/tester-report. Never disable launcherx/setupwraith, never factory reset, never the family PIN. TV muted.»
 
 
-## step 89 — full 4.4 audit on the owner's TV (owner: «optimize the full 4.4 system, find the difficult spots»)
+## step 89 — ON HOLD (owner: later) — full 4.4 audit on the owner's TV (owner: «optimize the full 4.4 system, find the difficult spots»)
 Walk every screen and setting of 4.4 like a user, with the remote only, and measure. For each spot found: what, where (screen › row), how to reproduce, a picture/screenrecord, the log lines, and a severity (blocker / annoying / polish).
 1. Speed: cold start of the home and the screensaver (am start -W, 3×), Back-to-home time, settings open time, tray/apps-row jank (dumpsys gfxinfo sa.urtv.home framestats: % janky), page load of tv.html, memory (dumpsys meminfo, PSS) idle and after 30 min, CPU idle with the screensaver.
 2. Stability: logcat -b crash and ANR (dumpsys activity anr / /data/anr), any restart loop, WebView errors (chromium console), StrictMode-like slow calls in the logs.
