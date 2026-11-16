@@ -1,5 +1,8 @@
 «✅ GO — RELEASE TODAY: finish step 76 NOW (only the items not done: 1 smoke, 3 markets, 4 Khayyat station, 6 the «قبل ما تحذف التطبيق…» row; skip 7 remaining pages and 11 baselines; update to the newest apk-next first and check the favourites row shows at least 5), push the report with a VERDICT line (SAFE TO RELEASE 4.3.2 / PROBLEM), then step 77, then step 78 part B only (Player beta9 quick check, verdict line), then the rest (78A, 79–84) in order.»
 
+## step 85 — «إضافات تلفزيونك» add-on (branch work/433-setup c65efb66; APKs from Build APKs run 43839174446 artifact «apks»)
+Follow docs/TEST-PLAN.md §14b X1–X12 on that branch (install home then urtv-extras.apk, enable its accessibility service with `optimize/dock.sh extras-setup`, check Bound services). Most important: X1 (the home has no accessibility service), X2–X5 (offer, install, enable, screen-off), X6 typing from the phone into YouTube, X7 Settings key over a video (record which handler answers), X8–X9 Home watch on this Google TV (no loop). Write down the owner's accessibility settings first and put them back after; reinstall apk-next at the end.
+
 ## step 84 — cities (branch work/433-cities be4adc8; its Build APKs artifact)
 Write down the owner's city first. Settings → the city → «بحث عن مدينة أو قرية»: type «خميس» (خميس مشيط first), «ابها», «Riyadh», «برلين», «Dearborn», «ديرة»: picture of each result list. Pick «برلين»: the clock and prayer times follow Berlin's zone and Europe's method (picture), then put the owner's city back exactly. The last row «ابحث على الإنترنت…» still works. Turn Wi-Fi off for one search: the offline list still answers (time the first search). `optimize/saver.sh city Dearborn` then the owner's city again. Reinstall apk-next.
 
