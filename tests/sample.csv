@@ -1,0 +1,116 @@
+row,timestamp,report
+"2","2026-11-01T18:00:00.000Z","UrTV setup report, 2026-11-01, UrTV 4.3.1
+
+TV: TCL Smart TV Pro (G07), Android 11 (SDK 30), firmware V8-T658T01-LF1V001
+
+Computer: Windows 11, agent: Codex (gpt-x)
+
+Steps, minutes:seconds:
+connect 0:40, backup 1:10, apps 3:05, launcher 0:50 STOPPED at home switch: wizard owns wifi, [2:10 until it was run again], launcher 1:02, debloat 2:30
+11 min in all
+ADB: 2 dropped connections (retried), 1 resumed uploads
+- !! Home switch paused (the wizard owns the saved Wi-Fi)
+
+Memory:
+- before: 812 MB free of 1945 MB, 0 MB swap, 210 processes, 40% CPU idle, 3 disabled
+
+Checks:
+Home: sa.urtv.home/.MainActivity
+
+Notes from the agent:
+Paused at the home switch; the owner rejoined the Wi-Fi and it went through.
+
+From the owner:
+تمام، اشتغل. رقمي {PHONE} وايميلي {EMAIL}"
+"3","2026-11-01T18:00:30.000Z","UrTV setup report, 2026-11-01, UrTV 4.3.1
+
+TV: TCL Smart TV Pro (G07), Android 11 (SDK 30), firmware V8-T658T01-LF1V001
+
+Computer: Windows 11, agent: Codex (gpt-x)
+
+Steps, minutes:seconds:
+connect 0:40, backup 1:10, apps 3:05, launcher 0:50 STOPPED at home switch: wizard owns wifi, [2:10 until it was run again], launcher 1:02, debloat 2:30
+11 min in all
+ADB: 2 dropped connections (retried), 1 resumed uploads
+- !! Home switch paused (the wizard owns the saved Wi-Fi)
+
+Memory:
+- before: 812 MB free of 1945 MB, 0 MB swap, 210 processes, 40% CPU idle, 3 disabled
+
+Checks:
+Home: sa.urtv.home/.MainActivity
+
+Notes from the agent:
+Paused at the home switch; the owner rejoined the Wi-Fi and it went through.
+
+From the owner:
+تمام، اشتغل. رقمي {PHONE} وايميلي {EMAIL}"
+"4","2026-11-02T09:15:00.000Z","test"
+"5","2026-11-02T10:00:00.000Z","UrTV setup report, 2026-11-02, UrTV 4.3.2 (build 309)
+
+TV: tcl  Smart TV Pro (g07), Android 11 (SDK 30), firmware V8-T658T01-LF1V002
+Computer: none (set up by the TV itself, over its own adb)
+
+Steps, minutes:seconds:
+connect 0:35, backup 1:00, apps 2:40, launcher 1:20 STOPPED at home switch: wizard owns wifi
+5 min in all
+Wi-Fi name: {WIFI}
+Owner's city: {CITY}
+
+Checks:
+Versions: screensaver 4.3.2 (build 309), home 4.3.2 (build 309)"
+"6","2026-11-03T20:45:00.000Z","UrTV problem report, 2026-11-03, UrTV 1a2b3c4 2026-10-30
+
+TV: Xiaomi MiTV-AXFR0 (machuca), Android 9 (SDK 28), firmware PWHMIXM
+Computer: macOS 14.6, agent: Claude
+
+Setup results: not on this computer
+Versions: screensaver 4.3.0 (build 290), home 4.3.0 (build 290)
+
+Notes from the agent:
+The adhan did not play; checked the alarm at {IP} under {PATH}.
+
+From the owner:
+الأذان ما اشتغل"
+"7","2026-11-04T07:00:00.000Z","UrTV setup report, 2026-11-04, UrTV 4.3.2
+
+TV: Sony BRAVIA 4K VH2 (BRAVIA_VH2_M_EU), Android 10 (SDK 29), firmware PTV1.191205.001
+
+Computer: Linux 6.5, agent: Codex
+
+Steps, minutes:seconds:
+connect 0:30, backup 0:55, apps 2:20, launcher 0:45, debloat 3:40 STOPPED at disable: user 0 protected
+9 min in all
+ADB: 0 dropped connections (retried), 0 resumed uploads
+- !! Could not disable com.example.vendor.thing (protected)"
+"8","2026-11-04T08:00:00.000Z","UrTV setup report, 2026-11-04, UrTV 4.3.2
+
+TV: Google sdk_google_atv_x86 (generic_x86), Android 11 (SDK 30), firmware sdk_google_atv-userdebug
+
+Computer: Linux 6.5, agent: Codex
+
+Steps, minutes:seconds:
+connect 0:05, backup 0:10
+1 min in all"
+"9","2026-11-05T12:00:00.000Z","UrTV setup report, 2026-11-05, UrTV 4.3.2
+
+TV: TCL 55P735 (G10), Android 11 (SDK 30), firmware V8-R51MT05-LF1V045
+
+Computer: Windows 10, agent: Codex
+
+Steps, minutes:seconds:
+connect 0:45, backup 1:15, apps 3:30, launcher 1:05, debloat 2:55
+10 min in all
+ADB: 0 dropped connections (retried), 0 resumed uploads
+
+From the owner:
+تجربة"
+"10","2026-11-05T13:00:00.000Z","UrTV setup report, 2026-11-05, UrTV 4.3.2
+
+TV: Hisense 43A4 (HiTV-M1), Android 9 (SDK 28), firmware V0000.01.00G
+
+Computer: Windows 11, agent: Codex
+
+Steps, minutes:seconds:
+connect 0:50, backup 1:40, apps 4:10, launcher 0:55, debloat 2:00
+10 min in all"

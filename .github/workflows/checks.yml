@@ -1,0 +1,19 @@
+name: Checks
+
+on:
+  push:
+    branches: [main]
+    paths: ['tools/**', 'tests/**', 'apps-script/**', '.github/workflows/checks.yml']
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tests/test_tools.py
+      - run: node tests/sync_gs.test.mjs
