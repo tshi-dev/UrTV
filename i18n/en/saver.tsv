@@ -920,3 +920,7 @@
 %s ضغط أولًا	%s buzzed first
 %s ضغط أولًا: %s	%s buzzed first: %s
 حرف %s	Letter %s
+خمسة حروف	Five letters
+%s: الكلمة خمسة حروف	%s: the word has five letters
+%s: ما نعرف هذي الكلمة	%s: we don't know that word
+خمّن الكلمة: %s من %s	Guess the word: %s of %s
