@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 4.3.3 «المشاهد» (the scene home, docs/mockups/PERFORMANCE.md): the rules, with no Android in them (tests/ScenePlanRun.java runs them).
+ * 4.3.3 «الآفاق» (the scene home, docs/mockups/PERFORMANCE.md): the rules, with no Android in them (tests/ScenePlanRun.java runs them).
  * A scene is a photo, a blurred and brightened copy of it (the clock's glass) and, for depth, the scenery cut out of it with the sky
  * transparent (the mask), drawn over the clock. A pack's scenes are listed in its scenes.tsv, one line each:
  * id, Arabic name, English name, the digits' top and bottom (px of a 1080 screen), the mask's box "x,y,w,h" (px of 1080p) or "-",
  * dark ("1": a dark clock, for a pale scene), the photo's credit, and (4.3.3, may be missing) its tags: "night" (shown from Maghrib to Fajr when
- * «المشهد يتبع الوقت» is on), "fog" (shown in fog when «المشهد يتبع الطقس» is on), comma between.
+ * «الأفق يتبع الوقت» is on), "fog" (shown in fog when «الأفق يتبع الطقس» is on), comma between.
  */
 final class ScenePlan {
     private ScenePlan() { }
@@ -17,7 +17,7 @@ final class ScenePlan {
     /** the memory tiers, Ram's numbers (Ram itself needs Android; tests/scene_home_test.py keeps the two the same) */
     static final int LOW = 0, MID = 1, NORMAL = 2;
 
-    /** the two packs: «مشاهد السعودية» is in the app; «مشاهد Couch TV» is downloaded when chosen (SceneDownload) */
+    /** the two packs: «آفاق السعودية» is in the app; «آفاق عالمية» is downloaded when chosen (SceneDownload) */
     static final String SAUDI = "saudi", COUCH = "couch";
 
     /** how long a scene stays (s), as the settings say; LOW changes at most every 5 minutes, with no fade */
@@ -93,6 +93,60 @@ final class ScenePlan {
      * scenery to cross them); with the home's cards on the screen (they are on the left of an Arabic home) the clock takes the other half, at the start
      * side, else the middle. {@code rtl}: the start side is the right.
      */
+    /**
+     * 4.4 the owner: the clock stays where it is and the picture (with its cut-out and the glass in the digits) comes down a little, by a zoom from
+     * the screen's top centre (never an empty band), until the share of the digits above the scenery reaches its band's target (target()): under 60 %
+     * to 75 %, 60 to 70 % to 80 %, 70 to 85 % to 85 %; 85 % or more stays as it is (Riyadh, 92 %). MAX_ZOOM at most.
+     */
+    static final float[][] BANDS = {{0.60f, 0.75f}, {0.70f, 0.80f}, {0.85f, 0.85f}};
+    static final float MAX_ZOOM = 1.4f;
+
+    /** the visible share a picture showing v of the digits is brought to (BANDS; v itself from 85 %) */
+    static float target(float v) {
+        for (float[] b : BANDS) if (v < b[0]) return b[1];
+        return v;
+    }
+
+    /** the share of the digits' box (left, top, right, bottom on a w x h screen) above the scenery, the picture zoomed by k about the top centre; sky: 48 columns, px of 1080 */
+    static float visible(int[] sky, int[] box, int w, int h, float k) {
+        if (sky == null || sky.length != 48 || box == null || box[3] <= box[1]) return 1f;
+        float cover = 0;
+        int n = 0;
+        for (int x = box[0]; x < box[2]; x += Math.max(1, w / 192)) {
+            float src = w / 2f + (x - w / 2f) / k;   // the picture's column under this one
+            int c = Math.max(0, Math.min(47, (int) (src * 48 / w)));
+            float top = sky[c] * h / 1080f * k;
+            cover += Math.max(0f, Math.min(1f, (box[3] - top) / (box[3] - box[1])));
+            n++;
+        }
+        return n == 0 ? 1f : 1f - cover / n;
+    }
+
+    /** the zoom (1 or more) that brings the digits' visible share to its band's target (see above) */
+    static float zoom(int[] sky, int[] box, int w, int h) {
+        float v0 = visible(sky, box, w, h, 1f), target = target(v0);
+        float k = 1f;
+        while (visible(sky, box, w, h, k) < target - 1e-4f && k < MAX_ZOOM) k = Math.round((k + 0.01f) * 100) / 100f;
+        return k;
+    }
+
+    /**
+     * the scenery's top in each of 48 columns (px of 1080) of a scene's cut-out: px, its pixels made small (sw x sh), placed at the scene's mask box
+     * (x, y, w, h in px of 1920 x 1080); a column with none of it: 1080
+     */
+    static int[] skyline(int[] px, int sw, int sh, int[] place) {
+        int[] line = new int[48];
+        java.util.Arrays.fill(line, 1080);
+        if (place == null || sw <= 0 || sh <= 0) return line;
+        for (int c = 0; c < 48; c++) {
+            float x = (c + 0.5f) * 40;
+            if (x < place[0] || x >= place[0] + place[2]) continue;
+            int mx = Math.min(sw - 1, (int) ((x - place[0]) * sw / place[2]));
+            for (int y = 0; y < sh; y++) if (((px[y * sw + mx] >>> 24) & 255) > 127) { line[c] = Math.round(place[1] + y * place[3] / (float) sh); break; }
+        }
+        return line;
+    }
+
     static int[] clockBox(Scene s, int w, int h, boolean cardsShown, boolean rtl) {
         float k = h / 1080f;
         int top = Math.round(s.digitsTop * k), bottom = Math.round(s.digitsBottom * k);
@@ -108,7 +162,7 @@ final class ScenePlan {
     }
 
     /**
-     * The scenes to take turns now: with «المشهد يتبع الطقس» and fog in the city, the fog scenes; with «المشهد يتبع الوقت», the night scenes from Maghrib
+     * The scenes to take turns now: with «الأفق يتبع الطقس» and fog in the city, the fog scenes; with «الأفق يتبع الوقت», the night scenes from Maghrib
      * to Fajr and the others by day. A rule that would leave none is let go (the packs on may have no night or no fog scene): never an empty home.
      */
     static List<Scene> choose(List<Scene> all, boolean byTime, boolean night, boolean byWeather, boolean fog) {
@@ -128,7 +182,7 @@ final class ScenePlan {
     /** Open-Meteo's weather codes for fog (45 fog, 48 rime fog) */
     static boolean fog(int wmo) { return wmo == 45 || wmo == 48; }
 
-    /** «بقاء كل مشهد» as the screensaver gives it (10, 20, 60 or 300 s); anything else: 20 */
+    /** «بقاء كل أفق» as the screensaver gives it (10, 20, 60 or 300 s); anything else: 20 */
     static int stay(String v) {
         try { int s = Integer.parseInt(v); return s == 10 || s == 20 || s == 60 || s == 300 ? s : STAY_S; } catch (RuntimeException e) { return STAY_S; }
     }

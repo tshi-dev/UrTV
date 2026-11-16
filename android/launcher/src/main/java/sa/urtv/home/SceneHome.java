@@ -19,9 +19,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * 4.3.3 «المشاهد»: the scene home's backdrop (the owner's choice in «الشكل والمشاهد» ← «الواجهة»; the home as it was stays the default). Two slots,
+ * 4.3.3 «الآفاق»: the scene home's backdrop (the owner's choice in «المظهر» ← «الواجهة»; the home as it was stays the default). Two slots,
  * each a photo, the big glass clock (SceneClock) and the scenery cut out of the photo over the clock, so the time sits behind the mountains, the
- * towers or the rocks. The scenes take turns (ScenePlan.stayMs) with a 1.6 s fade. The «مشاهد السعودية» pack is in the app's assets; «مشاهد Couch TV»
+ * towers or the rocks. The scenes take turns (ScenePlan.stayMs) with a 1.6 s fade. The «آفاق السعودية» pack is in the app's assets; «آفاق عالمية»
  * is downloaded once when chosen (SceneDownload) and read from the app's files. The rules for weak TVs are ScenePlan's (docs/mockups/PERFORMANCE.md):
  * LOW keeps one photo at 1280, no cut-out, no fade, a scene every 5 minutes. Pictures are decoded off the UI thread; only the scene showing and the
  * next one are in memory, and stop() (the home behind another app) lets the timer go.
@@ -111,7 +111,7 @@ final class SceneHome extends FrameLayout {
     }
 
     /**
-     * «المشهد يتبع الوقت» and «المشهد يتبع الطقس», with the time of day (night: Maghrib to Fajr) and the city's weather (fog): when the scenes to show
+     * «الأفق يتبع الوقت» and «الأفق يتبع الطقس», with the time of day (night: Maghrib to Fajr) and the city's weather (fog): when the scenes to show
      * change (Maghrib came, the fog lifted), the new set starts at once; else the turns go on as they were.
      */
     void mood(boolean followTime, boolean isNight, boolean followWeather, boolean isFog) {
@@ -162,6 +162,7 @@ final class SceneHome extends FrameLayout {
             final boolean withClock = this.glass;   // «الساعة: عادية»: no glass copy, no cut-out (the header's clock shows)
             final Bitmap glass = withClock ? decode(sc, "-glass.jpg", 960, true) : null;
             final Bitmap mask = withClock && sc.mask != null && ScenePlan.mask(tier) ? decode(sc, "-fg.webp", 1920, false) : null;
+            final float zoom = mask == null ? 1f : zoomOf(mask, sc);   // the owner: more of the digits above the scenery, the clock where it is
             ui.post(() -> {
                 if (g != gen || !on) return;
                 if (photo == null || (withClock && glass == null)) { index = at; schedule(); return; }   // a missing file: the next one, never a blank home
@@ -177,7 +178,13 @@ final class SceneHome extends FrameLayout {
                     back.mask.setLayoutParams(lp);
                     back.mask.setImageBitmap(mask);
                     back.mask.setVisibility(VISIBLE);
+                    back.mask.setPivotX(w / 2f - lp.leftMargin);   // the same zoom as the photo's: about the screen's top centre
+                    back.mask.setPivotY(-lp.topMargin);
                 } else back.mask.setVisibility(GONE);
+                for (View v : new View[] {back.photo, back.mask}) { v.setScaleX(zoom); v.setScaleY(zoom); }
+                back.photo.setPivotX(w / 2f);
+                back.photo.setPivotY(0);
+                back.clock.setZoom(zoom);
                 final Slot was = slots[front];
                 boolean first = index < 0;
                 index = at;
@@ -193,6 +200,20 @@ final class SceneHome extends FrameLayout {
                 schedule();
             });
         });
+    }
+
+    /** the zoom for this scene: its cut-out's skyline (made small first) against where its clock is (ScenePlan.zoom); 1 when it cannot be read */
+    private float zoomOf(Bitmap mask, ScenePlan.Scene sc) {
+        try {
+            int sw = 96, sh = Math.max(1, Math.round(96f * mask.getHeight() / mask.getWidth()));
+            Bitmap small = Bitmap.createScaledBitmap(mask, sw, sh, false);
+            int[] px = new int[sw * sh];
+            small.getPixels(px, 0, sw, 0, 0, sw, sh);
+            if (small != mask) small.recycle();
+            return ScenePlan.zoom(ScenePlan.skyline(px, sw, sh, sc.mask), ScenePlan.clockBox(sc, 1920, 1080, cardsShown, rtl), 1920, 1080);
+        } catch (RuntimeException | OutOfMemoryError e) {
+            return 1f;
+        }
     }
 
     /**

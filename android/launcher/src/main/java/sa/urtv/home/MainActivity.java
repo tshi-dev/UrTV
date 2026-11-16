@@ -108,7 +108,7 @@ public class MainActivity extends Activity {
     private float glowAlphaTo = -1f, shadeTo = 0f;
     private ImageView wallBack, wallFront;
     private boolean scenesOn;   // 4.3.3: the scene home is showing: the ordinary photos are not decoded (their memory is the scene's)
-    private SceneHome sceneHome;   // 4.4 «المشاهد»: the scene backdrop with the glass clock behind its scenery; made only while chosen (null otherwise: nothing of it exists)
+    private SceneHome sceneHome;   // 4.4 «الآفاق»: the scene backdrop with the glass clock behind its scenery; made only while chosen (null otherwise: nothing of it exists)
     private PhotoGlass photoGlass;   // 4.4 «الساعة: زجاجية» over the home's own photos: made only while chosen (null otherwise: no cut-out is read or downloaded)
     private String wallShownKey;   // the home's key of the photo on the screen (pack:, photo:, bundled:, own:), for its cut-out
     private FrameLayout sceneBackdrop;   // where it goes when chosen: over the photos, under the dimming and the scrims
@@ -581,7 +581,7 @@ public class MainActivity extends Activity {
         wallFront = wallpaperLayer();
         backdrop.addView(wallBack, new FrameLayout.LayoutParams(-1, -1));
         backdrop.addView(wallFront, new FrameLayout.LayoutParams(-1, -1));
-        sceneBackdrop = backdrop;   // 4.4: the scene layer is made in sceneTick only when «المشاهد» is chosen
+        sceneBackdrop = backdrop;   // 4.4: the scene layer is made in sceneTick only when «الآفاق» is chosen
         // Scrim: darker at the top (clock, pills) and bottom (dock) so text stays readable.
         scrim = new View(this);
         scrim.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
@@ -1469,17 +1469,18 @@ public class MainActivity extends Activity {
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED))));
         card.setOnFocusChangeListener((v, has) -> {
             final int dbg = dbgFocus;   // 0 normally: every switch below is off (dock.sh debug nolift|noglow|noshine|noscale|notitle|plainfocus)
-            float s = has ? (inDock ? FavBar.FOCUS_SCALE : 1.1f) : 1f;
+            final boolean zoom = inDock && appsZoom;   // 4.4 «شكل التطبيقات: تكبير وظل»: larger with a soft shadow, no ring, the name under it
+            float s = has ? (inDock ? (zoom ? FavBar.ZOOM_SCALE : FavBar.FOCUS_SCALE) : 1.1f) : 1f;
             // from the games of the football home: the tray goes back to its resting place (y 768) first, then the tile lifts (FavBar.DROP_MS)
             long wait = inDock && has && trayLowered ? FavBar.DROP_MS : 0;
             if (inDock && has) lowerTray(false);
             if ((dbg & DebugFlags.SCALE) == 0) { if (wait > 0) v.postDelayed(() -> { if (v.hasFocus()) scaleTo(v, s); }, wait); else scaleTo(v, s); }   // a spring: a held arrow keeps its speed from card to card
-            float z = (dbg & DebugFlags.LIFT) != 0 ? 0 : has ? dp(GlowLook.LIFT_DP) : 0;
+            float z = (dbg & DebugFlags.LIFT) != 0 ? 0 : has ? dp(zoom ? 2 * GlowLook.LIFT_DP : GlowLook.LIFT_DP) : 0;
             if ((dbg & DebugFlags.PLAIN) == 0) {
                 if (inDock) v.animate().translationY(has ? -lift() : 0).translationZ(z)
                         .setInterpolator(new DecelerateInterpolator()).setStartDelay(wait).setDuration(FavBar.MS).start();
                 else v.animate().translationZ(z).setInterpolator(new DecelerateInterpolator()).setDuration(has ? 320 : 200).start();
-                if ((dbg & DebugFlags.SHINE) == 0) shine.animate().alpha(has ? 1f : 0f).setDuration(160).start();
+                if ((dbg & DebugFlags.SHINE) == 0) shine.animate().alpha(has && !zoom ? 1f : 0f).setDuration(160).start();
                 label.animate().alpha(has ? 1f : 0f).translationY(has ? dp(4) : 0).setDuration(200).start();
             } else if ((dbg & DebugFlags.SHINE) == 0) shine.animate().alpha(has ? 1f : 0f).setDuration(160).start();
             if (!has) return;
@@ -2837,11 +2838,41 @@ public class MainActivity extends Activity {
         if (nameRow == null || nameRow.getWidth() == 0) return;
         View f = getCurrentFocus();
         boolean inBar = f != null && dockCards.contains(f) && edit == null;
+        placeZoomName(appsZoom && inBar ? f : null);
+        if (appsZoom) inBar = false;   // «تكبير وظل»: the name is under the tile, not above the tray
         // this runs on every step of the tray's scroll: a new animator each step (cancel and restart, an invalidation each) is exactly what makes a scroll janky;
         // the name's fade starts only when it has to change
         if (nameShown != inBar) { nameShown = inBar; nameRow.animate().alpha(inBar ? 1f : 0f).setDuration(FavBar.MS).start(); }
         if (!inBar || nameCard == null) return;
         nameRow.setTranslationX(0);   // the name has ONE place: above the tray at its start edge (right in Arabic, left in English), never following a tile (build 180)
+    }
+
+    /** 4.4 «شكل التطبيقات: تكبير وظل»: the focused app's name under the tray, centred on its tile (null: hidden); made the first time it is needed */
+    private TextView zoomName;
+    private volatile boolean appsZoom;
+
+    private void placeZoomName(View f) {
+        if (f == null) { if (zoomName != null && zoomName.getAlpha() > 0f) zoomName.animate().alpha(0f).setDuration(FavBar.MS).start(); return; }
+        if (zoomName == null) {
+            zoomName = text(24, "sans-serif-medium", Color.WHITE);
+            zoomName.setTextSize(TypedValue.COMPLEX_UNIT_PX, bar(FavBar.NAME_PX) * 0.8f);
+            zoomName.setShadowLayer(dp(12), 0, 0, 0x99000000);
+            zoomName.setSingleLine(true);
+            zoomName.setAlpha(0f);
+            zoomName.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);   // the tile says its name itself
+            hero.addView(zoomName, new FrameLayout.LayoutParams(-2, -2, Gravity.TOP | Gravity.START));
+        }
+        Object tag = f.getTag();
+        if (tag instanceof App) zoomName.setText(((App) tag).label);
+        zoomName.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        int[] a = new int[2], h = new int[2], t = new int[2];
+        f.getLocationInWindow(a);
+        hero.getLocationInWindow(h);
+        tray.getLocationInWindow(t);
+        float centre = a[0] + f.getWidth() * f.getScaleX() / 2f;   // the tile grows about its centre
+        zoomName.setX(centre - h[0] - zoomName.getMeasuredWidth() / 2f);   // its place on the screen, whichever side it starts from
+        zoomName.setTranslationY(t[1] - h[1] + tray.getHeight() + bar(8));
+        if (zoomName.getAlpha() < 1f) zoomName.animate().alpha(1f).setDuration(200).start();
     }
 
     /**
@@ -3172,11 +3203,11 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * 4.3.3 «المشاهد» (the owner's choice in «الشكل والمشاهد ← الواجهة»): the scene and its big glass clock take the place of the photo and of the
+     * 4.3.3 «الآفاق» (the owner's choice in «المظهر ← الواجهة»): the scene and its big glass clock take the place of the photo and of the
      * header's clock (the greeting, the date and the rest of the home stay as they are); any other layout: the home as it was.
      */
     private void sceneTick(ConfigSnapshot cfg) {
-        boolean on = "scenes".equals(cfg.homeBg);   // 4.4 «الخلفية ← المشاهد» (any layout); the glass clock is «الساعة»'s own choice
+        boolean on = "scenes".equals(cfg.homeBg);   // 4.4 «الخلفية ← الآفاق» (any layout); the glass clock is «الساعة»'s own choice
         boolean glass = "glass".equals(cfg.homeClock);
         photoGlassTick(cfg, !on && glass);
         if (!on && sceneHome == null && !scenesOn) return;   // the home as it was (the default): nothing of the scenes is made, read, timed or downloaded
@@ -3236,6 +3267,7 @@ public class MainActivity extends Activity {
         boolean row = homeCard != null && homeCard.inRow();
         if (photoGlass == null) {   // over the two photo layers (showWallpaper keeps them at 0 and 1), under the dimming and the scrims
             photoGlass = new PhotoGlass(this, Ram.tier(this), font("display"));
+            photoGlass.onZoom(this::zoomWall);
             sceneBackdrop.addView(photoGlass, sceneBackdrop.indexOfChild(wallFront) + 1, new FrameLayout.LayoutParams(-1, -1));
             photoGlass.place(cards, Dir.rtl(), row);
             Drawable d = wallFront.getDrawable();
@@ -3244,6 +3276,14 @@ public class MainActivity extends Activity {
         photoGlass.setTime(clock.getText());
         clock.setVisibility(View.INVISIBLE);
         ampm.setVisibility(View.INVISIBLE);
+    }
+
+    /** 4.4: the photo on the screen zoomed by k about the top centre, as its cut-out over the glass clock is (PhotoGlass); the one fading out keeps its own */
+    private void zoomWall(float k) {
+        wallFront.setPivotX(getResources().getDisplayMetrics().widthPixels / 2f);
+        wallFront.setPivotY(0);
+        wallFront.setScaleX(k);
+        wallFront.setScaleY(k);
     }
 
     private void updateClock(ConfigSnapshot cfg) {
@@ -3275,6 +3315,12 @@ public class MainActivity extends Activity {
         ampm.setText(ClockText.suffix(h, h24));
         ampm.setVisibility(h24 ? View.GONE : View.VISIBLE);
         sceneTick(cfg);
+        if (appsZoom != "zoom".equals(cfg.appsStyle)) {   // «شكل التطبيقات» changed: the focused tile takes the new look now
+            appsZoom = "zoom".equals(cfg.appsStyle);
+            View f = getCurrentFocus();
+            if (f != null && dockCards.contains(f) && f.getOnFocusChangeListener() != null) f.getOnFocusChangeListener().onFocusChange(f, true);
+            placeName();
+        }
         String cal = zone == null ? "" : ClockZone.calendar(zone[1], zone[2]);
         boolean other = zone != null && ClockZone.showLine(ClockZone.differs(tvTz, tz, ms), cal);
         zoneLine.setVisibility(other ? View.VISIBLE : View.GONE);
@@ -3675,7 +3721,7 @@ public class MainActivity extends Activity {
     /** Decode the next photo off the main thread, then crossfade it in over the current one. */
     private void nextWallpaper() {
         handler.removeCallbacks(rotateWallpaper);
-        if (scenesOn) return;   // 4.3.3 «المشاهد»: no ordinary photo is decoded while the scene home shows
+        if (scenesOn) return;   // 4.3.3 «الآفاق»: no ordinary photo is decoded while the scene home shows
         if (wallpapers.length == 0) return;
         final int gen = ++wallGen;   // a photo that arrives after a newer request is not shown
         new Thread(() -> {
@@ -3770,7 +3816,6 @@ public class MainActivity extends Activity {
     private void showWallpaper(Bitmap bm, String key) {
         if (bm == null || isDestroyed()) return;
         wallShownKey = key;
-        if (photoGlass != null) photoGlass.show(bm, key, NetGate.allowed(resumed, NetGateAndroid.displayOn(this)));
         // Swap roles: the old front becomes the back, the new photo fades in on top.
         final ImageView old = wallFront;
         wallFront = wallBack;
@@ -3779,6 +3824,9 @@ public class MainActivity extends Activity {
         root.removeView(wallFront);
         root.addView(wallFront, 1, new FrameLayout.LayoutParams(-1, -1));
         wallFront.setImageBitmap(bm);
+        wallFront.setScaleX(1f);   // a layer never comes back with the zoom of the photo it showed before (PhotoGlass zooms the new one when it has a cut-out)
+        wallFront.setScaleY(1f);
+        if (photoGlass != null) photoGlass.show(bm, key, NetGate.allowed(resumed, NetGateAndroid.displayOn(this)));   // after the swap: its zoom is the new photo's
         fullPhotoShown = true;
         logFirstPhoto("full photo");
         if (!sharpLogged) { sharpLogged = true; android.util.Log.i("UrTVHome", "resume to sharp photo: " + (SystemClock.elapsedRealtime() - resumeAt) + " ms"); }

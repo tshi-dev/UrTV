@@ -29,9 +29,9 @@ check("the receiver takes --es appearance dark|light|auto, refuses anything else
 check("saver.sh appearance, with its help line", 'appearance) set1 appearance "${2:?usage: optimize/saver.sh appearance dark|light|auto}" ;;' in saver
       and "#   optimize/saver.sh appearance auto" in saver)
 home_at = settings.index('header("الشاشة الرئيسية (تلفزيونك)");')
-check("«المظهر» is the first row of «الشاشة الرئيسية»: «الشكل» and «الإضاءة» (dark, light, auto), each chosen in its own list",
-      'row("المظهر", Prefs.lookLabel(prefs.look()) + " · " + Prefs.appearanceLabel(prefs.appearance())' in settings
-      and home_at < settings.index('row("المظهر"') < settings.index("row(HOME_CARD_NAMES[k]") and "prefs.setAppearance(values[pos])" in settings
+check("«وضع الألوان» (was «المظهر», the owner's 4.4 name) comes before the cards: «الشكل» and «الإضاءة» (dark, light, auto), each chosen in its own list",
+      'row("وضع الألوان", "الشكل: " + Prefs.lookLabel(prefs.look()) + "، والإضاءة: " + Prefs.appearanceLabel(prefs.appearance())' in settings
+      and home_at < settings.index('row("وضع الألوان"') < settings.index("row(HOME_CARD_NAMES[k]") and "prefs.setAppearance(values[pos])" in settings
       and "prefs.setLook(values[pos])" in settings)
 check("the launcher reads the column; an older screensaver says nothing: dark", 'cur.getColumnIndex("appearance")' in snap and "this.appearance = Look.mode(appearance);" in snap)
 tick = main[main.index("private void updateClock(ConfigSnapshot cfg)"):].split("\n    }\n")[0]

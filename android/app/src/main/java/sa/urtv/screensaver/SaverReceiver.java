@@ -23,7 +23,7 @@ import java.util.Locale;
  *       [--es panel prayers] [--es panel2 hourly|none] [--es home_panel prayers,hourly,verse|none] [--es greeting on|off] [--es homephotos same|own] [--es homepacks id,id|none] [--es homeours on|off] [--es albummode seconds|ten|minute] [--es albumtitle on|off] [--es albumfit fit|fill] [--es albumsize normal|tall] [--es cleartext on|off] [--es looksync on|off] [--es surface quick|cards|tray:30..100:look|glass|graphite] [--es accent amber|gold|green|teal|sky|violet|rose|coral|default] [--es baropacity 30..100] [--es walldim 0..90] [--es focusstyle solid|frame|glow] [--es albummode seconds|minute] [--es albumdate on|off] [--es pillshidden markets,matches,center|none] [--es listenpill on|off] [--es updatebell on|off] [--es watchnext on|off] [--es appearance dark|light|auto] [--es look glass|graphite|navy|clean] [--es homelayout classic|couch|football] [--es favbar 5|6|7|8|all] [--es pagesdark on|off] [--es adhanbar on|off] [--es yearstrip on|off] [--es minrating 7]
  *       [--es sunrise on|off] [--es prayerbar on|off] [--es wxmore on|off] [--es months default|levant] [--es verse day|3] [--es versekind both|verse|hadith] [--es seconds on|off] [--es backexit press|hold|three] [--es occasion on|off] [--es nightdim on|off] [--es taskspill on|off] [--es backsaver on|off] [--es genres Drama,Comedy] [--es langs English]
  *       [--es photos 30] [--es idle 10] [--es digits hindi|latin] [--es hijrioffset -2..2] [--es clock24 on|off] [--es ramtier low|mid|normal|auto] [--es lang ar|en]
- *       [--es cardstyle current|dark1|glass1|dark3|glass3|boxes] [--es national auto|off] [--es scenepacks saudi,couch] [--es scenestay 10|20|60|300] [--es scenetime on|off] [--es sceneweather on|off] [--es background photos|scenes] [--es clock plain|glass] [--es look urtv|couch]
+ *       [--es cardstyle current|dark1|glass1|dark3|glass3|boxes] [--es national auto|off] [--es scenepacks saudi,couch] [--es scenestay 10|20|60|300] [--es scenetime on|off] [--es sceneweather on|off] [--es background photos|scenes] [--es clock plain|glass] [--es appsstyle frame|zoom] [--es couch on|off]
  *       [--es markets tasi,gold,btc] [--es mkstyle arrows|prices] [--es mkbar on|off] [--es clocksize large|medium|small] [--es stocks 2222,1120,AAPL] [--es stkchg pct|amount]
  *       [--es leagues 'Saudi-Arabian Pro League,NBA']
  *       [--es prayermethod gulf|auto]   («طريقة الحساب»: auto = the country's own, gulf = the Gulf method for any place; an old «jafari» is taken as auto, 4.3 A4)
@@ -320,14 +320,15 @@ public class SaverReceiver extends BroadcastReceiver {
         if (surfaceP != null && !(surfaceP.length == 3 && Arrays.asList(GlassStyle.SURFACES).contains(surfaceP[0]) && surfaceP[1].matches("(100|[3-9][0-9])") && Arrays.asList(GlassStyle.FILLS).contains(surfaceP[2])))
             return "error: surface is quick|cards|tray, a number from 30 to 100, and one of look glass graphite";
         String homeLayout = i.getStringExtra("homelayout");
-        String look3 = i.getStringExtra("look"), homeBg = i.getStringExtra("background"), homeClock = i.getStringExtra("clock");
-        if ("scenes".equals(homeLayout)) { homeLayout = null; look3 = "couch"; }   // 4.3.3's word: the scenes with the glass clock, on our layout
-        if (look3 != null && !"urtv".equals(look3) && !"couch".equals(look3)) return "error: look is urtv or couch";
+        String couch = i.getStringExtra("couch"), homeBg = i.getStringExtra("background"), homeClock = i.getStringExtra("clock"), appsStyle = i.getStringExtra("appsstyle");
+        if ("scenes".equals(homeLayout)) { homeLayout = null; couch = "on"; }   // 4.3.3's word: the scenes with the glass clock
+        if (couch != null && !"on".equals(couch) && !"off".equals(couch)) return "error: couch is on or off";
         if (homeBg != null && !Arrays.asList(Prefs.HOME_BGS).contains(homeBg)) return "error: background is photos or scenes";
         if (homeClock != null && !Arrays.asList(Prefs.HOME_CLOCKS).contains(homeClock)) return "error: clock is plain or glass";
+        if (appsStyle != null && !Arrays.asList(Prefs.HOME_APPS).contains(appsStyle)) return "error: appsstyle is frame or zoom";
         if (homeLayout != null && !Arrays.asList(Prefs.HOME_LAYOUTS).contains(homeLayout))
             return "error: homelayout is one of " + Prefs.join(Arrays.asList(Prefs.HOME_LAYOUTS), " ");
-        String scenePacks = i.getStringExtra("scenepacks");   // 4.3.3 «حزم المشاهد»: saudi, couch, or both (comma between)
+        String scenePacks = i.getStringExtra("scenepacks");   // 4.3.3 «حزم الآفاق»: saudi, couch, or both (comma between)
         if (scenePacks != null && !scenePacks.matches("(saudi|couch)(,(saudi|couch))?"))
             return "error: scenepacks is saudi, couch, or saudi,couch";
         String sceneStay = i.getStringExtra("scenestay"), sceneTime = i.getStringExtra("scenetime"), sceneWeather = i.getStringExtra("sceneweather");
@@ -469,10 +470,11 @@ public class SaverReceiver extends BroadcastReceiver {
         if (focusX != null) p.setFocusStyle(focusX);
         if (syncX != null) p.setLookSync("on".equals(syncX));
         if (surfaceP != null) { int s = Arrays.asList(GlassStyle.SURFACES).indexOf(surfaceP[0]); p.setSurfacePercent(s, Integer.parseInt(surfaceP[1])); p.setSurfaceFill(s, surfaceP[2]); }
-        if (look3 != null) p.setLook3(look3);   // the preset first, then any one choice given beside it
+        if (couch != null) p.setCouch("on".equals(couch));   // «شكل كنبة» first (it keeps or puts back the four), then any one choice given beside it
         if (homeLayout != null) p.setHomeLayout(homeLayout);
         if (homeBg != null) p.setHomeBg(homeBg);
         if (homeClock != null) p.setHomeClock(homeClock);
+        if (appsStyle != null) p.setAppsStyle(appsStyle);
         if (scenePacks != null) p.setScenePacks(Arrays.asList(scenePacks.split(",")));
         if (sceneStay != null) p.setSceneStay(sceneStay);
         if (sceneTime != null) p.setSceneByTime("on".equals(sceneTime));
@@ -663,7 +665,7 @@ public class SaverReceiver extends BroadcastReceiver {
             + "\nlook: " + p.look()
             + "\naccent: " + (p.accent().isEmpty() ? "default" : p.accent()) + "\nbaropacity: " + p.barPercent() + "\nwalldim: " + p.wallDim() + "\nfocusstyle: " + p.focusStyle()
             + "\nlooksync: " + (p.lookSync() ? "on" : "off") + "\nsurface quick: " + p.surfacePercent(0) + " " + p.surfaceFill(0) + "\nsurface cards: " + p.surfacePercent(1) + " " + p.surfaceFill(1) + "\nsurface tray: " + p.surfacePercent(2) + " " + p.surfaceFill(2)
-            + "\nlook: " + (p.look3().isEmpty() ? "custom" : p.look3()) + "\nhomelayout: " + p.homeLayout() + "\nbackground: " + p.homeBg() + "\nclock: " + p.homeClock()
+            + "\ncouch: " + (!p.couchOn() ? "off" : "couch".equals(p.look3()) ? "on" : "on (custom)") + "\nhomelayout: " + p.homeLayout() + "\nbackground: " + p.homeBg() + "\nclock: " + p.homeClock() + "\nappsstyle: " + p.appsStyle()
             + "\nscenepacks: " + Prefs.join(p.scenePacks(), ",") + "\nscenestay: " + p.sceneStay()
             + "\nscenetime: " + (p.sceneByTime() ? "on" : "off") + "\nsceneweather: " + (p.sceneByWeather() ? "on" : "off")
             + "\nfavbar: " + p.favBar()

@@ -35,6 +35,12 @@ final class PhotoGlass extends FrameLayout {
     private int gen;
     private volatile boolean alive = true;
 
+    /** 4.4 the home's photo layer zoomed by k about the screen's top centre (the cut-out and the glass here follow it); 1 puts it back */
+    interface Zoom { void zoom(float k); }
+    private Zoom zoomTo = k -> { };
+
+    void onZoom(Zoom z) { zoomTo = z; }
+
     PhotoGlass(Context c, int tier, Typeface digits) {
         super(c);
         app = c.getApplicationContext();
@@ -76,12 +82,16 @@ final class PhotoGlass extends FrameLayout {
         line = null;
         mask.setVisibility(GONE);
         mask.setImageDrawable(null);
+        clock.setZoom(1f);
+        zoomTo.zoom(1f);
         clock.setScene(glass, PhotoGlassPlan.box(null, w, h, cardsShown, rtl, row), false);
         final String[] key = PhotoGlassPlan.key(wallKey);
-        if (key == null || !ScenePlan.mask(tier)) return;   // the person's own photo, «الحرمين», or a weak TV: the clock in front
+        final int own = PhotoGlassPlan.own(wallKey);
+        if ((key == null && own == 0) || !ScenePlan.mask(tier)) return;   // «الحرمين», an own photo with no mask, or a weak TV: the clock in front
         final Bitmap shown = glass;
+        final int sw = w, sh = h;
         new Thread(() -> {
-            final Object[] got = load(key[0], key[1], net);
+            final Object[] got = own > 0 ? loadOwn(own, photo, sw, sh) : load(key[0], key[1], net);
             if (got == null) return;
             ui.post(() -> {
                 if (g != gen || !alive) return;
@@ -93,14 +103,22 @@ final class PhotoGlass extends FrameLayout {
                 lp.topMargin = Math.round(box[1] * k);
                 mask.setLayoutParams(lp);
                 mask.setImageBitmap((Bitmap) got[0]);
+                int[] digits = PhotoGlassPlan.box(line, w, h, cardsShown, rtl, row);
+                float z = ScenePlan.zoom(line, digits, w, h);   // the owner: the clock where it is, the photo a little lower: more of the digits above the scenery
+                mask.setPivotX(w / 2f - lp.leftMargin);
+                mask.setPivotY(-lp.topMargin);
+                mask.setScaleX(z);
+                mask.setScaleY(z);
                 mask.setVisibility(VISIBLE);
-                clock.setScene(shown, PhotoGlassPlan.box(line, w, h, cardsShown, rtl, row), false);
+                clock.setScene(shown, digits, false);
+                clock.setZoom(z);
+                zoomTo.zoom(z);
             });
         }, "photo-mask").start();
     }
 
     /** turned off: nothing more is read or drawn */
-    void shutdown() { alive = false; gen++; glass = null; line = null; mask.setImageDrawable(null); clock.setScene(null, null, false); }
+    void shutdown() { alive = false; gen++; glass = null; line = null; mask.setImageDrawable(null); clock.setScene(null, null, false); zoomTo.zoom(1f); }
 
     /** {bitmap, box, skyline} of a photo's cut-out, from the kept file or downloaded once; null when it has none or it cannot be had */
     private Object[] load(String set, String name, boolean net) {
@@ -134,6 +152,42 @@ final class PhotoGlass extends FrameLayout {
             for (int i = 0; i < line.length; i++) line[i] = s.getInt(i);
             Bitmap bm = BitmapFactory.decodeByteArray(data, 0, data.length);
             return bm == null ? null : new Object[] {bm, box, line};
+        } catch (Exception | OutOfMemoryError e) {
+            return null;
+        }
+    }
+
+    /**
+     * 4.4 {bitmap, box, skyline} of the person's own photo N with the mask they sent with it (docs/OWN-PHOTO-MASK.md; the screensaver app keeps it
+     * beside the photo and serves it read only): the photo at half the screen, cropped as the home shows it, its alpha the mask's light; null with no mask.
+     */
+    private Object[] loadOwn(int n, Bitmap photo, int sw, int sh) {
+        try (java.io.InputStream in = app.getContentResolver().openInputStream(android.net.Uri.parse("content://sa.urtv.screensaver.config/own/" + n + "/mask"))) {
+            if (in == null) return null;
+            byte[] data = Bounded.readAll(in, 1_000_000);
+            BitmapFactory.Options o = new BitmapFactory.Options();
+            o.inJustDecodeBounds = true;
+            BitmapFactory.decodeByteArray(data, 0, data.length, o);
+            if (o.outWidth <= 0) return null;
+            o.inJustDecodeBounds = false;
+            o.inSampleSize = Math.max(1, Math.min(o.outWidth / 960, o.outHeight / 540));
+            Bitmap m = BitmapFactory.decodeByteArray(data, 0, data.length, o);
+            if (m == null || !alive) return null;
+            int w = 960, h = Math.max(1, Math.round(960f * sh / sw));
+            android.graphics.Paint paint = new android.graphics.Paint(android.graphics.Paint.FILTER_BITMAP_FLAG);
+            android.graphics.Rect to = new android.graphics.Rect(0, 0, w, h);
+            int[] cp = PhotoGlassPlan.crop(photo.getWidth(), photo.getHeight(), sw, sh), cm = PhotoGlassPlan.crop(m.getWidth(), m.getHeight(), sw, sh);
+            Bitmap fg = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888), mm = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+            new android.graphics.Canvas(fg).drawBitmap(photo, new android.graphics.Rect(cp[0], cp[1], cp[2], cp[3]), to, paint);
+            new android.graphics.Canvas(mm).drawBitmap(m, new android.graphics.Rect(cm[0], cm[1], cm[2], cm[3]), to, paint);
+            m.recycle();
+            int[] a = new int[w * h], b = new int[w * h];
+            fg.getPixels(a, 0, w, 0, 0, w, h);
+            mm.getPixels(b, 0, w, 0, 0, w, h);
+            mm.recycle();
+            for (int i = 0; i < a.length; i++) a[i] = (a[i] & 0x00FFFFFF) | (PhotoGlassPlan.luma(b[i]) << 24);
+            fg.setPixels(a, 0, w, 0, 0, w, h);
+            return new Object[] {fg, new int[] {0, 0, Math.round(1080f * sw / sh), 1080}, PhotoGlassPlan.skyline(b, w, h)};
         } catch (Exception | OutOfMemoryError e) {
             return null;
         }

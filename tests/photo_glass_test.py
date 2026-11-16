@@ -32,7 +32,7 @@ if shutil.which("javac"):
     key = {r[1]: r[2] for r in rows if r[0] == "key"}
     check("a pack's photo, our hosted photo and our bundled photo (the same names) have their cut-out's set and name",
           key["pack:nature:7"] == "nature/7" and key["pack:ksa-cities:1"] == "ksa-cities/1" and key["photo:9hWJs7iblh8.jpg"] == key["bundled:wallpapers/9hWJs7iblh8.jpg"] == "photos/9hWJs7iblh8", key)
-    check("«الحرمين» never (the owner: no clock behind the Kaaba or the Prophet's Mosque), the person's own photos never, nothing odd (a path, a bad name)",
+    check("«الحرمين» never (the owner: no clock behind the Kaaba or the Prophet's Mosque), the person's own photos never from urtv-data, nothing odd (a path, a bad name)",
           all(key[k] == "-" for k in ("pack:haramain:3", "own:3:12345", "pack:x:1", "pack:sea:abc", "photo:../x.jpg", "photo:a.png", "null")), key)
     box = {r[1]: [int(x) for x in r[2].split(",")] for r in rows if r[0] == "box"}
     check("no cut-out: the digits in the middle with no cards, on the start half with them (right in Arabic, left in English), inside the screen",
@@ -46,8 +46,43 @@ if shutil.which("javac"):
     check("«كنبة» (the cards in a strip under the clock): the digits never reach the strip; a scenery that low leaves them at their usual place",
           box["lowish"][3] > 1080 * 0.55 and box["lowish-row"] == box["mid-row"] == box["none-nocards"], box)
     check("a 720 screen: the same place, scaled", all(abs(a * 2 / 3 - b) <= 2 for a, b in zip(m, box["mid720"])), box["mid720"])
+    own = {r[1]: r[2] for r in rows if r[0] == "own"}
+    check("4.4 an own photo is found by its number for its own mask (own:N:rev, 1 to 50); nothing else is", own == {"own:3:12345": "3", "own:0:1": "0", "own:51:1": "0",
+          "own:x:1": "0", "photo:a.jpg": "0", "null": "0"}, own)
+    crop = [r for r in rows if r[0] == "crop"][0]
+    check("an own photo and its mask are cropped to the screen's shape about the centre, as the home shows the photo",
+          crop[1] == "[0, 375, 4000, 2625]" and crop[2] == "[0, 656, 1080, 1263]" and crop[3] == "[0, 0, 1920, 1080]", crop)
+    sk = [r for r in rows if r[0] == "skyline"][0]
+    check("the mask's skyline: the first light row of each of 48 columns, in px of 1080", sk[1] == "200,200,540,540" and sk[2] == "48", sk)
+    with tempfile.TemporaryDirectory() as tmp:
+        subprocess.run(["javac", "-encoding", "UTF-8", "-d", tmp, str(ROOT / "android/app/src/main/java/sa/urtv/screensaver/MaskCheck.java"), str(ROOT / "tests/MaskCheckRun.java")], check=True, capture_output=True)
+        mc = dict(l.split("\t") for l in subprocess.run(["java", "-cp", tmp, "sa.urtv.screensaver.MaskCheckRun"], check=True, capture_output=True).stdout.decode().splitlines())
+    check("the TV checks a mask again: the photo's shape within 2 % (any size)", mc["shape"] == "true,true,false,false", mc)
+    check("…mostly black and white with some of each (a soft edge is fine; grey, all black or empty is not a mask)", mc["tones"] == "true,true,false,false,false", mc)
 else:
     print("SKIP photo glass rules: no javac here")
+
+# ---- 4.4 own photos with the person's mask (docs/OWN-PHOTO-MASK.md)
+own_j, prov, srv, api = read(ROOT / "android/app/src/main/java/sa/urtv/screensaver/Own.java"), read(ROOT / "android/app/src/main/java/sa/urtv/screensaver/ConfigProvider.java"), \
+    read(HOME / "phone/PhoneServer.java"), read(HOME / "phone/PhoneApi.java")
+add = own_j[own_j.index("static synchronized String addMask("):].split("\n    }\n")[0]
+check("the mask goes only to the photo just added (2 minutes), checked (PNG, shape, tones), written whole, beside it as N.mask.png",
+      "MASK_WINDOW_MS = 2 * 60 * 1000" in own_j and 'return "late";' in add and "MaskCheck.sameShape(" in add and "MaskCheck.twoTone(" in add
+      and "tmp.renameTo(mask(c, n))" in add and 'new File(dir(c), n + ".mask.png")' in own_j)
+check("a deleted photo takes its mask with it, and the masks after it move up with their photos",
+      "mask(c, n).delete();" in own_j and "mask(c, k).renameTo(mask(c, k - 1));" in own_j)
+check("the provider: phone_photo_mask behind the phone permission, at most 1 MB; .../own/N/mask read only",
+      'case "phone_photo_mask":' in prov and "png.length > 1_000_000" in prov and '"mask".equals(seg.get(2)) && "r".equals(mode)' in prov
+      and prov.index("phone control only") < prov.index('case "phone_photo_mask":'))
+check("the phone server: /api/photo-mask only as image/png, behind the origin check and the session",
+      'MASK_PATH = "/api/photo-mask"' in srv and 'target.equals(MASK_PATH) && "image/png".equals(ct)' in srv
+      and api.index("Guard.originOk") < api.index("if (r.path.equals(PhoneServer.MASK_PATH))") and 'err("png_only")' in api)
+check("the home: an own photo with a mask is cut on the TV (not on LOW), off the UI thread; no mask: the clock in front",
+      "own > 0 ? loadOwn(own, photo, sw, sh)" in glass and "if ((key == null && own == 0) || !ScenePlan.mask(tier)) return;" in glass
+      and '"content://sa.urtv.screensaver.config/own/" + n + "/mask"' in glass)
+check("the guide: Arabic first, the ready prompt in both, the privacy line, the computer way", all(x in read(ROOT / "docs/OWN-PHOTO-MASK.md") for x in (
+      "اصنع قناعًا أبيض وأسود لهذه الصورة بنفس المقاس بالضبط", "Make a black-and-white mask of this photo at exactly the same size",
+      "صورتك تروح لهذه الأداة وتخضع لشروطها، مو لنا", "optimize/photo_mask.py")) and read(ROOT / "docs/OWN-PHOTO-MASK.md").index("# الساعة خلف صورتك") == 0)
 
 # ---- the home: made only while chosen
 tick = main[main.index("private void photoGlassTick(ConfigSnapshot cfg, boolean want)"):].split("\n    }\n")[0]
@@ -71,7 +106,7 @@ check("its sha256 from the set's index checked before it is decoded or kept; 200
       'SceneDownload.hex(MessageDigest.getInstance("SHA-256").digest(data)).equals(sha)' in glass and glass.index("equals(sha)") < glass.index("decodeByteArray")
       and "MAX_MASK = 200 * 1024, KEEP = 40" in glass and "tmp.renameTo(f)" in glass)
 check("no network while it may not be used (another app in front, standby): a kept cut-out only", "if (!net) return null;" in glass and "if (net && (" in glass)
-check("a weak TV (LOW): the clock in front, no cut-out read", "if (key == null || !ScenePlan.mask(tier)) return;" in glass)
+check("a weak TV (LOW): the clock in front, no cut-out read", "if ((key == null && own == 0) || !ScenePlan.mask(tier)) return;" in glass)
 check("a newer photo wins: a cut-out that arrives for an older one is not shown", "if (g != gen || !alive) return;" in glass)
 
 # ---- the CI tool

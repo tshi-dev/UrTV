@@ -328,6 +328,16 @@ final class PhoneActions implements Actions {
         return Result.fail(why.equals("full") ? "photo_full" : why.equals("camera data") ? "photo_camera" : "photo_refused");
     }
 
+    @Override public Result photoMask(byte[] png) {
+        Bundle in = new Bundle();
+        in.putByteArray("png", png);
+        Bundle out = saver("phone_photo_mask", null, in);
+        if (out == null) return Result.fail("failed");
+        if ("mask_added".equals(out.getString("result", ""))) return Result.ok("mask_added");
+        String why = out.getString("why", "");
+        return Result.fail(why.equals("shape") ? "mask_shape" : why.equals("tones") ? "mask_tones" : why.equals("late") ? "mask_late" : "mask_refused");
+    }
+
     // ---- 4.3 #53 «اكتب وارسم»: a short message on the TV's screen (PhoneMessage decides, MessageActivity shows)
 
     private static final PhoneMessage MESSAGES = PhoneMessage.limiter();

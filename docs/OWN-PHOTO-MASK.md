@@ -1,6 +1,6 @@
 # الساعة خلف صورتك: كيف تصنع القناع
 
-مع «الساعة: زجاجية خلف الصورة» (الإعدادات ← الشكل والمشاهد ← الساعة) تظهر ساعة كبيرة زجاجية على الصورة. في صورنا اللي سماؤها واضحة، المباني أو الجبال
+مع «الساعة: زجاجية خلف الصورة» (الإعدادات ← المظهر ← الساعة) تظهر ساعة كبيرة زجاجية على الصورة. في صورنا اللي سماؤها واضحة، المباني أو الجبال
 تكون قدّام الأرقام كأن الساعة ورا المشهد. صورك أنت تقدر تصير كذا بعد، إذا أرسلت معها **قناعًا**: صورة بالأبيض والأسود بنفس مقاسها.
 
 - **الأبيض:** اللي يكون قدّام الساعة (المباني، الجبال، الناس، الأشجار).
@@ -42,8 +42,8 @@
 واحد فوق المشهد)؛ غير كذا تقول إنها ما قدرت، ولا تكتب شيئًا.
 
 ```
-python3 -m venv /tmp/mask-venv && /tmp/mask-venv/bin/pip install numpy scipy opencv-python-headless Pillow
-/tmp/mask-venv/bin/python optimize/photo_mask.py صورتي.jpg
+python3 -m venv mask-venv && mask-venv/bin/pip install numpy scipy opencv-python-headless Pillow
+mask-venv/bin/python optimize/photo_mask.py صورتي.jpg
 ```
 
 تكتب `صورتي-mask.png` بجانب الصورة. أرسل الاثنين من صفحة الجوال كما في الخطوة ٤ فوق. الصورة لازم تكون بشكل الشاشة (١٦:٩)؛ غير كذا تقول الأداة اقصّها أولًا.
@@ -52,7 +52,7 @@ python3 -m venv /tmp/mask-venv && /tmp/mask-venv/bin/pip install numpy scipy ope
 
 # The clock behind your photo: making the mask
 
-With «الساعة: زجاجية خلف الصورة» (Settings ← الشكل والمشاهد ← الساعة) a big glass clock sits on the photo. On our photos with a clear sky, the buildings or
+With «الساعة: زجاجية خلف الصورة» (Settings ← المظهر ← الساعة) a big glass clock sits on the photo. On our photos with a clear sky, the buildings or
 mountains stand in front of the digits. Your own photo can do the same if you send a **mask** with it: a black-and-white image of the same size.
 
 - **White:** what stands in front of the clock (buildings, mountains, people, trees).
@@ -88,8 +88,8 @@ The same offline tool we make our photos' masks with; nothing leaves the machine
 coloured sky above the scenery); otherwise it says so and writes nothing.
 
 ```
-python3 -m venv /tmp/mask-venv && /tmp/mask-venv/bin/pip install numpy scipy opencv-python-headless Pillow
-/tmp/mask-venv/bin/python optimize/photo_mask.py myphoto.jpg
+python3 -m venv mask-venv && mask-venv/bin/pip install numpy scipy opencv-python-headless Pillow
+mask-venv/bin/python optimize/photo_mask.py myphoto.jpg
 ```
 
 It writes `myphoto-mask.png` beside the photo; send both from the phone page as in step 4. The photo must be 16:9 like the screen; otherwise the tool asks you

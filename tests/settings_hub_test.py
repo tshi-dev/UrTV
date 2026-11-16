@@ -75,7 +75,7 @@ cats = [l.split("\t") for l in rest if l.startswith("category ")]
 C = {c[0].split(" ")[1]: {"name": c[1], "index": int(c[2]), "parent": c[3], "direct": c[4], "tiles": c[5] == "true"} for c in cats}
 first = sorted([k for k, v in C.items() if v["parent"] == "-"], key=lambda k: C[k]["index"])
 check("the first screen: the search first (the wide one), then the ten sections in the owner's order (4.3.3)",
-      [C[k]["name"] for k in first] == ["بحث في الإعدادات", "اللغة", "الموقع والطقس", "الشكل والمشاهد", "التطبيقات", "الأزرار السريعة", "الصلاة والأذان",
+      [C[k]["name"] for k in first] == ["بحث في الإعدادات", "اللغة", "الموقع والطقس", "المظهر", "التطبيقات", "الأزرار السريعة", "الصلاة والأذان",
                                        "المباريات والأسواق", "شاشة التوقف", "العائلة والأمان", "حول"], [C[k]["name"] for k in first])
 check("nothing is deeper than the first screen: every category is a button of it and none is a screen of buttons",
       len(first) == len(C) and not any(v["tiles"] for v in C.values()))
@@ -87,12 +87,12 @@ check("every other category has rows of its own (no empty screen), a screen of b
       all(by.get(k) for k in C if k not in direct),
       {k: len(by.get(k, [])) for k in C})
 want = {"الأذان": "pray", "تنبيه قبل الأذان": "pray", "أسماء المصادر": "apps", "ترتيب التطبيقات المفضلة": "apps", "تعديل المفضلة": "apps",
-        "تحديث تلفزيوني": "update", "تحديث صفحة شاشة التوقف": "update", "التحديث التلقائي للصفحة": "update", "أرسل تقرير": "update", "تحكم من الجوال": "family",
+        "تحديث تلفزيوني": "update", "تحديث صفحة شاشة التوقف": "update", "التحديث التلقائي للصفحة": "update", "أرسل تقرير": "update", "الجوالات المسموح لها": "family",
         "مركز التحكم": "buttons", "الرقابة الأبوية": "family", "تصفية المواقع": "family", "الدولة": "place", "المدينة": "place", "اللغة": "lang", "نظام الساعة": "lang",
         "التحية والطقس": "place", "الرطوبة والرياح": "place",
         "طريقة الحساب": "pray", "تعديل وقت الصلاة": "pray", "زر تلاوة وأذان": "buttons", "افتح تلاوة وأذان": "pray", "البطاقة الأولى": "look", "معاينة الشاشة": "saver",
         "بطاقة ثانية": "saver", "بدء شاشة التوقف بعد": "saver", "الأرقام": "lang", "أسماء الأشهر الميلادية": "lang", "إظهار الثواني": "look", "حجم الساعة": "look",
-        "المظهر": "look", "نص أوضح": "look", "توهّج لون التطبيق": "look", "تعتيم الليل": "look", "صور شاشة التوقف": "look", "صوري": "look", "سرعة ألبوم صوري": "look",
+        "وضع الألوان": "look", "نص أوضح": "look", "توهّج لون التطبيق": "look", "تعتيم الليل": "look", "صور شاشة التوقف": "look", "صوري": "look", "سرعة ألبوم صوري": "look",
         "التصنيفات": "content", "قائمة الأسهم": "content", "مباريات اليوم": "content", "زر المباريات": "buttons"}
 got = {r[0]: r[1] for r in row_out[:-1]}
 check("each row in its one section (4.3.3): the language and the calendar in «اللغة», the city and the weather in «الموقع والطقس», the quick buttons on their own, the parental lock and the phones in «العائلة والأمان»…",
@@ -177,11 +177,11 @@ for fn_ in ("openAdhanSettings()", "openDockSettings()", "openInputNames()", "op
     check(f"the row's own action is kept: {fn_}", fn_ in render)
 
 # ---- TV6 row 21: «تحكم من الجوال» must be findable (a tester on 3.145 did not find it and phone control stayed on): a row of «التحكم والجوال», and the search finds it by «جوال»
-check("«تحكم من الجوال» is a row of «العائلة والأمان», and the search finds it by «جوال» and «ريموت»",
-      got.get("تحكم من الجوال") == "family" and 'row("تحكم من الجوال"' in st and '{"جوال", "تحكم من الجوال"}' in hub and '{"ريموت", "تحكم من الجوال"}' in hub
-      and '{FAMILY, "الرقابة الأبوية", "تصفية المواقع", "تحكم من الجوال"}' in hub)
+check("phone control (4.4 «الجوالات المسموح لها», the owner's name) is a row of «العائلة والأمان», and the search finds it by «جوال», «ريموت» and its old name",
+      got.get("الجوالات المسموح لها") == "family" and 'row("الجوالات المسموح لها"' in st and '{"جوال", "الجوالات المسموح لها"}' in hub and '{"ريموت", "الجوالات المسموح لها"}' in hub
+      and '{"تحكم من الجوال", "الجوالات المسموح لها"}' in hub and '{FAMILY, "الرقابة الأبوية", "تصفية المواقع", "الجوالات المسموح لها"}' in hub)
 check("its line does not claim it is off (this app cannot see the home's switch): the screen it opens shows the state",
-      'row("تحكم من الجوال", "متوقف' not in st and 'row("تحكم من الجوال", "تشغيله وإيقافه' in st)
+      'row("الجوالات المسموح لها", "متوقف' not in st and 'row("الجوالات المسموح لها", "التحكم من الجوال: تشغيله وإيقافه' in st)
 check("opening it never fails silently: no home installed says so, and the target is exported in the home's manifest",
       "ثبّت الواجهة الرئيسية" in st[st.index("private void openPhoneControl()"):].split("\n    }\n")[0]
       and re.search(r'<activity\s+android:name="\.PhoneActivity"\s+android:exported="true"', (ROOT / "android/launcher/src/main/AndroidManifest.xml").read_text(encoding="utf-8")) is not None)

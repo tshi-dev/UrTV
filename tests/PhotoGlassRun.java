@@ -9,6 +9,13 @@ public final class PhotoGlassRun {
             String[] r = PhotoGlassPlan.key(k);
             System.out.println("key\t" + k + "\t" + (r == null ? "-" : r[0] + "/" + r[1]));
         }
+        for (String k : new String[] {"own:3:12345", "own:0:1", "own:51:1", "own:x:1", "photo:a.jpg", null}) System.out.println("own\t" + k + "\t" + PhotoGlassPlan.own(k));
+        int[] c1 = PhotoGlassPlan.crop(4000, 3000, 1920, 1080), c2 = PhotoGlassPlan.crop(1080, 1920, 1920, 1080), c3 = PhotoGlassPlan.crop(1920, 1080, 1920, 1080);
+        System.out.println("crop\t" + java.util.Arrays.toString(c1) + "\t" + java.util.Arrays.toString(c2) + "\t" + java.util.Arrays.toString(c3));
+        int[] m = new int[96 * 54];   // a mask 96 x 54: black sky, white from row 27 down, and from row 10 in the first two columns' share
+        for (int y = 0; y < 54; y++) for (int x = 0; x < 96; x++) m[y * 96 + x] = (y >= 27 || (x < 4 && y >= 10)) ? 0xFFFFFFFF : 0xFF000000;
+        int[] sk = PhotoGlassPlan.skyline(m, 96, 54);
+        System.out.println("skyline\t" + sk[0] + "," + sk[1] + "," + sk[2] + "," + sk[47] + "\t" + sk.length);
         int[] flat = new int[48], high = new int[48], low = new int[48];
         for (int i = 0; i < 48; i++) { flat[i] = 540; high[i] = 100; low[i] = 900; }
         print("none-nocards", PhotoGlassPlan.box(null, 1920, 1080, false, true, false));

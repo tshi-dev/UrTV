@@ -34,6 +34,34 @@ final class PhotoGlassPlan {
         return stem.matches("[A-Za-z0-9_-]{4,40}") ? new String[] {"photos", stem} : null;
     }
 
+    /** 4.4: the person's own photo N for its own mask (docs/OWN-PHOTO-MASK.md), from the home's key "own:N:rev"; 0 for any other photo */
+    static int own(String wall) {
+        if (wall == null || !wall.matches("own:[0-9]{1,3}:[0-9-]{1,20}")) return 0;
+        int n = Integer.parseInt(wall.split(":")[1]);
+        return n >= 1 && n <= 50 ? n : 0;
+    }
+
+    /** {left, top, right, bottom} of a w x h picture cropped to the screen's shape sw x sh about its centre, as the home shows its photo (CENTER_CROP) */
+    static int[] crop(int w, int h, int sw, int sh) {
+        if ((long) w * sh > (long) h * sw) { int cw = (int) ((long) h * sw / sh); return new int[] {(w - cw) / 2, 0, (w - cw) / 2 + cw, h}; }
+        int ch = (int) ((long) w * sh / sw);
+        return new int[] {0, (h - ch) / 2, w, (h - ch) / 2 + ch};
+    }
+
+    /** the luma (0..255) of an ARGB pixel; in a mask, light is what stands in front of the clock */
+    static int luma(int c) { return (((c >> 16) & 255) * 299 + ((c >> 8) & 255) * 587 + (c & 255) * 114) / 1000; }
+
+    /** the scenery's top in each of 48 columns, px of a 1080 screen (1080: none in that column), of a mask of w x h ARGB pixels (light = scenery) */
+    static int[] skyline(int[] mask, int w, int h) {
+        int[] line = new int[48];
+        java.util.Arrays.fill(line, 1080);
+        for (int y = 0; y < h; y++) for (int x = 0; x < w; x++) {
+            int c = x * 48 / w;
+            if (line[c] == 1080 && luma(mask[y * w + x]) > 127) line[c] = y * 1080 / h;
+        }
+        return line;
+    }
+
     /**
      * {left, top, right, bottom} of the digits on a screen of w x h. With the cards on the screen (left in Arabic) the clock takes the start half,
      * else the middle. {@code skyline}: the scenery's top in each of 48 columns (px of a 1080 screen), null for a photo with no cut-out.

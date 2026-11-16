@@ -67,7 +67,7 @@ row = settings[settings.index('row("أكمل المشاهدة"'):settings.index(
 check("the settings row: OK turns it on or off; on and not allowed yet, OK asks the one question (the home app's WatchNextActivity)",
       "prefs.setWatchNext(!prefs.watchNext());" in row and "if (prefs.watchNext() && !homeMayReadWatchNext()) { openWatchNextPermission(); return; }" in row
       and '"sa.urtv.home.WatchNextActivity"' in settings and 'checkPermission("android.permission.READ_TV_LISTINGS", "sa.urtv.home")' in settings)
-check("in the settings menu, under «الشكل والمشاهد» (4.3.3, with the cards)", '{"أكمل المشاهدة", LOOK}' in read(ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsHub.java"))
+check("in the settings menu, under «المظهر» (4.3.3, with the cards)", '{"أكمل المشاهدة", LOOK}' in read(ROOT / "android/app/src/main/java/sa/urtv/screensaver/SettingsHub.java"))
 
 # ---- permission and privacy
 check("the launcher declares the TV listings permissions", '<uses-permission android:name="android.permission.READ_TV_LISTINGS" />' in manifest

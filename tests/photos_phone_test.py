@@ -33,9 +33,10 @@ check("the server: a body over 4 KB only for POST /api/photo as image/jpeg, at m
       and "if (n > (photo ? MAX_PHOTO_BODY : MAX_BODY)) fail(413);" in srv and "return new Request(p[0], target, h, \"\", s.getInetAddress().getHostAddress(), buf);" in srv)
 ph = api[api.index("if (r.path.equals(PhoneServer.PHOTO_PATH))"):]
 ph = ph[:ph.index("}\n            if (type == null")]
-check("the API: the origin checks first, then a session (401 without), then the photo; nothing else takes raw bytes",
+check("the API: the origin checks first, then a session (401 without), then the photo; nothing but the photo and (4.4) its mask takes raw bytes",
       api.index("Guard.originOk") < api.index("if (r.path.equals(PhoneServer.PHOTO_PATH))") and "if (secret == null) return json(401, err(\"no_session\"));" in ph
-      and "control.actions().photoAdd(r.raw)" in ph and api.count("r.raw") == 2)
+      and "control.actions().photoAdd(r.raw)" in ph and "control.actions().photoMask(r.raw)" in ph and api.count("r.raw") == 4
+      and api.index("Guard.originOk") < api.index("if (r.path.equals(PhoneServer.MASK_PATH))"))
 page = read(L / "assets/phone/photos.html")
 check("/u: re-drawn at 1920 px at most and sent as a new JPEG (no camera data), under 900 KB, with the session; English words when the TV says lang=en",
       "createImageBitmap(file)" in page and "MAX = 1920, LIMIT = 900000" in page and "c.toBlob(res, 'image/jpeg', q[i])" in page
