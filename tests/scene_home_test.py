@@ -55,9 +55,10 @@ if shutil.which("javac"):
                              check=True, capture_output=True).stdout.decode("utf-8").splitlines()
     rows = [l.split("\t") for l in out]
     scenes = [r for r in rows if r[0] == "scene"]
-    check("4.4 the app carries one Saudi scene, Riyadh (the four others are downloaded the first time: the owner keeps the APK light); its towers cross "
-          "the digits more than the owner's rule allows (a quarter, never the colon), so the gate left it with the clock in front: no cut-out",
-          [s[1] for s in scenes] == ["riyadh"] and all(s[5] == "-" for s in scenes), scenes)
+    check("4.4 the app carries one Saudi scene, Riyadh, with its cut-out (the four others are downloaded the first time: the owner keeps the APK "
+          "light); the clock where the owner put it, the towers in front (tag owner_ok: no legibility drop for it)",
+          [s[1] for s in scenes] == ["riyadh"] and all(s[5] != "-" for s in scenes)
+          and "owner_ok" in read(ROOT / "android/launcher/src/main/assets/scenes/saudi/scenes.tsv").split("riyadh\t")[1].splitlines()[0], scenes)
     check("a bad line is left out, never half read (a bad id, a clock too small to read, a bad box); a good one is kept",
           [r for r in rows if r[0] == "bad"][0][1] == "1")
     packs = {r[1]: r[2] for r in rows if r[0] == "packs"}
