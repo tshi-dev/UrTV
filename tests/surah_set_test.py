@@ -22,6 +22,10 @@ check("«missing», where given, is a sorted list of surah numbers 1 to 114 with
 bad = [r["id"] for r in reciters if r["surahs"] != 114 - len(r.get("missing", []))]
 check("«surahs» is 114 minus the missing ones", not bad, bad)
 
+hum = [r for r in reciters if r["id"] == "humaid"]
+check("Ahmed Talib bin Humaid: 107 surahs, the seven he has not recorded marked missing (mp3quran id 137)",
+      len(hum) == 1 and hum[0]["surahs"] == 107 and hum[0]["missing"] == [9, 14, 16, 17, 23, 24, 33]
+      and hum[0]["server"] == "https://cdn.mp3quran.net/audio/ahmad-humaid/r1/" and hum[0]["name"] == "أحمد طالب بن حميد", hum)
 cat = (T / "Catalog.java").read_text(encoding="utf-8")
 svc = (T / "MusicService.java").read_text(encoding="utf-8")
 grid = (T / "SurahActivity.java").read_text(encoding="utf-8")
