@@ -65,6 +65,21 @@ final class TaskVoice {
         return out;
     }
 
+    /**
+     * What «🎤 تكلّم» does with one recognizer answer (#48): a command as {@link #understand}; plain words with no command in front
+     * («شراء خبز», what Google's assistant writes when one just says the task) are a task to add, asked first like «أضف …». A bare
+     * command word («أضف», «احذف») stays NONE: half a command is not a task.
+     */
+    static Result spoken(String heard, List<String> tasks, List<Boolean> done, int max) {
+        Result r = understand(heard, tasks, done);
+        if (r.kind != Kind.NONE) return r;
+        String t = typed(heard, max);
+        if (t.isEmpty()) return r;
+        String verb = word(t.split(" ")[0]);
+        if (verb.equals("اضف") || verb.equals("خلصت") || verb.equals("تم") || verb.equals("احذف")) return r;
+        return new Result(Kind.ADD, t, -1);
+    }
+
     /** heard: what the recognizer returned; tasks/done: the list as stored (done tasks stay in it). */
     static Result understand(String heard, List<String> tasks, List<Boolean> done) {
         List<String> said = new ArrayList<>();
