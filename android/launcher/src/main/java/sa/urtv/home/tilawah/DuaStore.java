@@ -24,11 +24,13 @@ final class DuaStore {
         boolean overOthers;
         boolean on = true;
         long lastDue;
+        /** 4.4 touch «يبدأ بهدوء»: rises from silence in three seconds (on for a new one) */
+        boolean fade = true;
 
         Dua copy() {
             Dua d = new Dua();
             d.id = id; d.name = name; d.sound = sound; d.rule = rule.copy() != null ? rule.copy() : new DuaRule();
-            d.volume = volume; d.overOthers = overOthers; d.on = on; d.lastDue = lastDue;
+            d.volume = volume; d.overOthers = overOthers; d.on = on; d.lastDue = lastDue; d.fade = fade;
             return d;
         }
     }
@@ -57,6 +59,7 @@ final class DuaStore {
                 d.overOthers = o.optBoolean("over", false);
                 d.on = o.optBoolean("on", true);
                 d.lastDue = o.optLong("last", 0);
+                d.fade = o.optBoolean("fade", true);
                 out.add(d);
             }
         } catch (Exception ignored) { }
@@ -73,7 +76,7 @@ final class DuaStore {
         try {
             for (Dua d : items) {
                 a.put(new JSONObject().put("id", d.id).put("name", d.name).put("sound", d.sound).put("rule", d.rule.text())
-                        .put("volume", d.volume).put("over", d.overOthers).put("on", d.on).put("last", d.lastDue));
+                        .put("volume", d.volume).put("over", d.overOthers).put("on", d.on).put("last", d.lastDue).put("fade", d.fade));
             }
         } catch (Exception ignored) { }
         sp(c).edit().putString("items", a.toString()).commit();

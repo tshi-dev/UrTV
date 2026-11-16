@@ -118,7 +118,7 @@ public class DuaActivity extends RowScreen {
     private void listen(DuaStore.Dua d) {
         String src = DuaStore.source(this, d);
         if (src == null) { toast(S.t("الملف محذوف: اختر صوتًا آخر")); return; }
-        MusicService.dua(this, src, d.name, d.volume);
+        MusicService.dua(this, src, d.name, d.volume, d.fade);
     }
 
     // ---- one dua's page
@@ -141,6 +141,8 @@ public class DuaActivity extends RowScreen {
                 out.add(Row.of(S.t("يتكرر"), repeatWord(), () -> { edit.rule.repeat = !edit.rule.repeat; fixYear(); keep(); refresh(); }));
                 out.add(Row.of(S.t("مستوى الصوت"), Ui.arabic(edit.volume) + "٪", null)
                         .onStep(s -> { edit.volume = Math.max(10, Math.min(100, edit.volume + 10 * s)); keep(); }));
+                out.add(Row.of(S.t("يبدأ بهدوء"), edit.fade ? S.t("مفعّل: يرتفع الصوت في ثلاث ثوانٍ") : S.t("متوقف"),
+                        () -> { edit.fade = !edit.fade; keep(); refresh(); }));
                 out.add(Row.of(S.t("فوق تطبيق آخر يشغّل صوتًا"), edit.overOthers ? S.t("نعم: يوقفه ويشتغل") : S.t("لا: إذا كان تطبيق آخر يشغّل صوتًا يُترك"),
                         () -> { edit.overOthers = !edit.overOthers; keep(); refresh(); }));
                 out.add(Row.of(S.t("التشغيل"), edit.on ? S.t("مفعّل") : S.t("متوقف"), () -> { edit.on = !edit.on; keep(); refresh(); }));

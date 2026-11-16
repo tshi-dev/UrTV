@@ -82,6 +82,17 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     /** the dua asked for by playDua, taken by playAdhan; its volume */
     private String pendingDua;
     private int duaVolume = 30;
+    /** 4.4 touch «يبدأ بهدوء»: this dua rises from silence in FadeIn.MS; when its fade began */
+    private boolean duaFade, pendingFade;
+    private long fadeInStart;
+    private final Runnable fadeIn = new Runnable() {
+        @Override public void run() {
+            if (source != Prefs.SOURCE_ADHAN || duaNow == null || player == null) return;
+            float g = FadeIn.gain(SystemClock.elapsedRealtime() - fadeInStart);
+            try { player.setVolume(g, g); } catch (IllegalStateException ignored) { return; }
+            if (g < 1f) handler.postDelayed(this, FadeIn.STEP_MS);
+        }
+    };
     /** for `optimize/music.sh status`: what happened since this app started, so a report of «يقطّع» says what the player saw */
     private static volatile int rebuffers, errors;
     private static volatile long rebufferMs, lastErrorAt;
@@ -276,8 +287,11 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
     }
 
     /** 4.4: a dua or reminder: its file's path or its surah's address, its name, its own volume (percent) */
-    static void dua(Context c, String source, String name, int volume) {
-        start(c, intent(c, ACTION_PLAY_DUA).putExtra("source", source).putExtra("name", name).putExtra("volume", volume));
+    static void dua(Context c, String source, String name, int volume) { dua(c, source, name, volume, false); }
+
+    /** fade: «يبدأ بهدوء» (4.4 touch) */
+    static void dua(Context c, String source, String name, int volume, boolean fade) {
+        start(c, intent(c, ACTION_PLAY_DUA).putExtra("source", source).putExtra("name", name).putExtra("volume", volume).putExtra("fade", fade));
     }
 
     static void resumeLast(Context c) { start(c, intent(c, ACTION_RESUME)); }
@@ -336,6 +350,7 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
                         intent.getStringExtra("name"), intent.getIntExtra(EXTRA_SECONDS, 0), intent.getIntExtra("prayer", -1));
                 break;
             case ACTION_PLAY_DUA:
+                pendingFade = intent.getBooleanExtra("fade", false);
                 playDua(intent.getStringExtra("source"), intent.getStringExtra("name"), intent.getIntExtra("volume", 30));
                 break;
             case ACTION_PAUSE: pause(); break;
@@ -524,6 +539,9 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
         adhanLive = previewSeconds == 0;
         adhanPrayer = previewSeconds == 0 ? prayer : -1;
         duaNow = duaUrl != null ? (name != null ? name : "") : null;
+        duaFade = duaUrl != null && pendingFade;
+        pendingFade = false;
+        handler.removeCallbacks(fadeIn);
         retries = 0;
         pendingSeek = 0;
         wish.ask();
@@ -688,6 +706,8 @@ public class MusicService extends Service implements AudioManager.OnAudioFocusCh
                 playbackPaused();
                 save();
             } else if (requestFocus()) {
+                boolean rise = source == Prefs.SOURCE_ADHAN && duaNow != null && duaFade;   // 4.4 «يبدأ بهدوء»: from silence
+                if (rise) { try { mp.setVolume(0f, 0f); } catch (IllegalStateException ignored) { } fadeInStart = SystemClock.elapsedRealtime(); handler.post(fadeIn); }
                 mp.start();
                 playing = true;
                 playbackStarted();

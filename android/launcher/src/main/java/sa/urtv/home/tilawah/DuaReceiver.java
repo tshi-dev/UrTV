@@ -35,7 +35,7 @@ public class DuaReceiver extends BroadcastReceiver {
                     am != null && am.isMusicActive() && !MusicService.carryOurPlaying(), chosen.overOthers, source != null,
                     new Prefs(c).quietNow(c));   // 4.4 «ساعات الهدوء»
             Log.i("UrTVDua", "dua " + chosen.id + ": " + go);
-            if (go == DuaPlan.Go.PLAY) MusicService.dua(c, source, chosen.name, chosen.volume);
+            if (go == DuaPlan.Go.PLAY) MusicService.dua(c, source, chosen.name, chosen.volume, chosen.fade);
         }
         DuaScheduler.schedule(c);
     }
