@@ -59,11 +59,16 @@ public class ExtrasA11yService extends AccessibilityService {
     private final KeyApps.Outside keyApps = new KeyApps.Outside();
     /** «أزرار الريموت»: the owner's choices (the home tells us when they change, and we ask it when we start); kept so a restart needs no home */
     private volatile java.util.Map<String, String> keyChoices = new java.util.HashMap<>();
+    /** 4.4: the stock homes' packages (only their windows are looked at further) */
+    private Set<String> stockPackages = new HashSet<>();
 
     @Override protected void onServiceConnected() {
         running = this;
         stockHomes = stockHomeActivities(this);
         keyChoices = KeyApps.parse(getSharedPreferences("extras", MODE_PRIVATE).getString(ExtrasWords.KEY_APPS, ""));
+        stockPackages = HomeWatch.packages(stockHomes);
+        watchLog(watchOn(this) ? (wanted(this) ? 1 : 2) : 3);
+        watchLog(stockHomes.isEmpty() ? 4 : 5);
         filterKeys();
         new Thread(() -> {   // the home's choices now (it may have changed them while we were off); quiet when it does not answer
             Bundle b = askHome(this, ExtrasWords.KEY_APPS, null, null);
@@ -98,7 +103,17 @@ public class ExtrasA11yService extends AccessibilityService {
             if (!front) keyApps.leftHome(android.os.SystemClock.uptimeMillis(), KeyButton.burstMs());   // Xiaomi: the rest of the press our home answered
             filterKeys();
         }
-        if (watch.decide(watchOn(this), pkg, cls, stockHomes, oursChosen(), System.currentTimeMillis())) {
+        if (!stockPackages.contains(pkg)) return;   // any other app's window: nothing read further, nothing logged
+        // 4.4 (step 86 B): every decision on a stock home's window is logged (the stock home's own class only), so a tester sees why. The watch
+        // brings ours while the person's home is ours: Android's default (the role), or the setup's word (WANTED) when the TV took the role back
+        boolean on = watchOn(this), chosen = oursChosen(), wantedNow = wanted(this), homeScreen = HomeWatch.homeScreen(pkg, cls, stockHomes);
+        long now = System.currentTimeMillis();
+        boolean bring = homeScreen && watch.decide(on, pkg, cls, stockHomes, chosen || wantedNow, now);
+        // fixed words only (the log never names a package or a class): which rule matched, then the decision
+        watchLog(stockHomes.contains(pkg + "/" + cls) ? 6 : homeScreen ? 7 : 8);
+        watchLog(chosen ? (wantedNow ? 9 : 10) : (wantedNow ? 11 : 12));
+        watchLog(bring ? 13 : !homeScreen ? 14 : !on ? 15 : !(chosen || wantedNow) ? 16 : watch.paused(now) ? 17 : 18);
+        if (bring) {
             try {
                 startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setComponent(new ComponentName(HOME_PKG, HOME_PKG + ".MainActivity"))
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED));
@@ -107,6 +122,42 @@ public class ExtrasA11yService extends AccessibilityService {
                 Log.i("UrTVWatch", "home=failed");
             }
         }
+    }
+
+    /**
+     * 4.4 (step 86 B): the watch's decisions for the tester, in fixed words only (never a package or a class name of any window): `logcat -s UrTVWatch`.
+     */
+    private static void watchLog(int what) {
+        switch (what) {
+            case 1: Log.i("UrTVWatch", "service on watch on wanted yes"); break;
+            case 2: Log.i("UrTVWatch", "service on watch on wanted no"); break;
+            case 3: Log.i("UrTVWatch", "service on watch off"); break;
+            case 4: Log.i("UrTVWatch", "stock home none"); break;
+            case 5: Log.i("UrTVWatch", "stock home found"); break;
+            case 6: Log.i("UrTVWatch", "stock window its home activity"); break;
+            case 7: Log.i("UrTVWatch", "stock window a home activity by name"); break;
+            case 8: Log.i("UrTVWatch", "stock window another screen"); break;
+            case 9: Log.i("UrTVWatch", "role ours wanted yes"); break;
+            case 10: Log.i("UrTVWatch", "role ours wanted no"); break;
+            case 11: Log.i("UrTVWatch", "role stock wanted yes"); break;
+            case 12: Log.i("UrTVWatch", "role stock wanted no"); break;
+            case 13: Log.i("UrTVWatch", "decision bring ours"); break;
+            case 14: Log.i("UrTVWatch", "decision not its home screen"); break;
+            case 15: Log.i("UrTVWatch", "decision watch off"); break;
+            case 16: Log.i("UrTVWatch", "decision ours not chosen"); break;
+            case 17: Log.i("UrTVWatch", "decision paused"); break;
+            case 18: Log.i("UrTVWatch", "decision left"); break;
+            case 19: Log.i("UrTVWatch", "wanted=yes"); break;
+            default: Log.i("UrTVWatch", "wanted=no"); break;
+        }
+    }
+
+    /** 4.4: the setup's word that the person's home is ours (WANTED from the home); off by «تراجع» (UNWANTED) */
+    static boolean wanted(Context c) { return c.getSharedPreferences("extras", MODE_PRIVATE).getBoolean(ExtrasWords.WANTED, false); }
+
+    static void setWanted(Context c, boolean on) {
+        c.getSharedPreferences("extras", MODE_PRIVATE).edit().putBoolean(ExtrasWords.WANTED, on).apply();
+        watchLog(on ? 19 : 20);
     }
 
     /** the watch's switch (the home turns it with WATCH; on by default on a TV whose stock home is Google TV's) */
@@ -135,7 +186,11 @@ public class ExtrasA11yService extends AccessibilityService {
             for (ResolveInfo ri : c.getPackageManager().queryIntentActivities(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME), 0)) {
                 if (ri.activityInfo == null) continue;
                 pkgs.add(ri.activityInfo.packageName);
-                if (SettingsKey.stockHomeOn(java.util.Collections.singletonList(ri.activityInfo.packageName), HOME_PKG)) out.add(ri.activityInfo.packageName + "/" + ri.activityInfo.name);
+                if (SettingsKey.stockHomeOn(java.util.Collections.singletonList(ri.activityInfo.packageName), HOME_PKG)) {
+                    out.add(ri.activityInfo.packageName + "/" + ri.activityInfo.name);
+                    // 4.4: HOME often answers through an activity-alias; the window that comes to the front is named by the real activity
+                    if (ri.activityInfo.targetActivity != null) out.add(ri.activityInfo.packageName + "/" + ri.activityInfo.targetActivity);
+                }
             }
         } catch (RuntimeException ignored) { }
         return out;

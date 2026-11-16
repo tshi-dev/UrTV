@@ -74,6 +74,84 @@ public final class SetupHook {
         } catch (RuntimeException e) { return ""; }
     }
 
+    // ---- 4.4 (the owner's TV, step 86 B): the switch survives, and Google TV taking the role back is answered once
+
+    private static final String TAG = "UrTVSetup";
+
+    /** our home is what Android opens for HOME now */
+    static boolean oursIsDefault(Context c) {
+        try {
+            android.content.pm.ResolveInfo ri = c.getPackageManager().resolveActivity(new android.content.Intent(android.content.Intent.ACTION_MAIN).addCategory(android.content.Intent.CATEGORY_HOME),
+                android.content.pm.PackageManager.MATCH_DEFAULT_ONLY);
+            return ri != null && ri.activityInfo != null && c.getPackageName().equals(ri.activityInfo.packageName);
+        } catch (RuntimeException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Our home was drawn while it is the TV's default home and a switch is still «switching» (the person left the setup page, the run died): the switch
+     * works, so the safety switch is disarmed here (SetupEngine.confirmDrawn); while a run is going the run decides itself.
+     */
+    static void confirmIfDrawn(Context c) {
+        try {
+            Context app = c.getApplicationContext();
+            if (!SetupRecovery.pending(app) || SetupRunner.get().running() || !oursIsDefault(app)) return;
+            if (SetupEngine.confirmDrawn(new FileStore(app), new SetupDeadman(app))) android.util.Log.i(TAG, "home switch: confirmed (our home was drawn as the TV's home); safety switch off");
+        } catch (Exception ignored) {
+            // the home screen comes first
+        }
+    }
+
+    private static volatile long reapplyTried;
+
+    /**
+     * The person's chosen home is ours (HOME_WANTED) and the switch is done, but Android's default home is not ours any more: the TV took the role back
+     * by itself. Given back ONCE over this app's own adb (the key is kept), on a background thread; a second loss is logged and left (it may be the
+     * person's own choice in the TV's settings; «تراجع» or «إعداد تلفزيوني» from there). At most one try every ten minutes while adb does not answer.
+     */
+    public static void reapplyIfLost(Context c) {
+        try {
+            final Context app = c.getApplicationContext();
+            final FileStore store = new FileStore(app);
+            if (!"1".equals(trim(store.get(SetupEngine.HOME_WANTED))) || SetupRecovery.pending(app) || SetupRunner.get().running() || oursIsDefault(app)) return;
+            if (!trim(store.get(SetupEngine.HOME_REAPPLIED)).isEmpty()) {
+                if (reapplyTried == 0) { reapplyTried = 1; android.util.Log.i(TAG, "home role: lost again after one re-apply; left as it is"); }
+                return;
+            }
+            long now = System.currentTimeMillis();
+            if (now - reapplyTried < 10 * 60_000L) return;
+            reapplyTried = now;
+            new Thread(new Runnable() {
+                @Override public void run() {
+                    try (SetupSession s = SetupSession.open(app, 5000, null, new SetupEngine.Out() { @Override public void line(String text) { } })) {
+                        boolean ok = s.engine.reapplyHomeRole();
+                        android.util.Log.i(TAG, "home role: the TV took it back; re-applied once: " + (ok ? "ours again" : "not ours"));
+                    } catch (Exception e) {
+                        android.util.Log.i(TAG, "home role: the TV took it back; re-apply waits (adb did not answer)");
+                    }
+                }
+            }, "home-reapply").start();
+        } catch (RuntimeException ignored) {
+            // the home screen comes first
+        }
+    }
+
+    private static volatile Boolean toldWatch;
+
+    /** The add-on learns whether the person's chosen home is ours (its watch then brings ours forward even without the role); once per change */
+    static void tellWatch(Context c) {
+        try {
+            final Context app = c.getApplicationContext();
+            final boolean wanted = "1".equals(trim(new FileStore(app).get(SetupEngine.HOME_WANTED)));
+            if (toldWatch != null && toldWatch == wanted) return;
+            toldWatch = wanted;
+            new Thread(new Runnable() { @Override public void run() { if (!sa.urtv.home.Extras.homeWanted(app, wanted)) toldWatch = null; } }, "watch-wanted").start();
+        } catch (RuntimeException ignored) { }
+    }
+
+    private static String trim(String s) { return s == null ? "" : s.trim(); }
+
     public static boolean factoryOff(Context c) {
         try { String f = new FileStore(c).get(SetupEngine.FACTORY); return f != null && f.startsWith("on"); }
         catch (RuntimeException e) { return false; }
@@ -93,6 +171,9 @@ public final class SetupHook {
 
     /** Our home reached the screen (MainActivity.onResume): this boot is fine and BootGuard's count starts again (the factory step's, and 4.4 the home's own). One small read; a write only when it changes. */
     public static void homeUp(Context c) {
+        confirmIfDrawn(c);
+        reapplyIfLost(c);
+        tellWatch(c);
         try {
             FileStore store = new FileStore(c.getApplicationContext());
             BootGuard.State g = BootGuard.State.parse(store.get(HOME_GUARD));

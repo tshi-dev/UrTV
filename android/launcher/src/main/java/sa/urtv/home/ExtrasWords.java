@@ -21,6 +21,8 @@ public final class ExtrasWords {
     public static final String STATUS = "status", TYPE = "type", PRESS = "press", SLEEP = "sleep", GO_HOME = "go_home", WATCH = "watch";
     /** «أزرار الريموت»: both ways. The home tells the add-on the owner's choices when they change ("youtube=PKG,netflix=,…", KeyApps.line); the add-on asks the home for them when it starts */
     public static final String KEY_APPS = "key_apps";
+    /** 4.4: WATCH's other two arguments: the person's chosen home is ours (the setup confirmed it) or not any more («تراجع»); WANTED is also the bundle's key */
+    public static final String WANTED = "wanted", UNWANTED = "unwanted";
     // the home's calls (the add-on asks)
     public static final String TYPE_CHECK = "type_check", SETTINGS_PIN = "settings_pin", KEY = "key", LEDGER = "ledger";
     /** «أزرار الريموت» over another app: the family lock's answer for the app a button opens (NEEDS_PIN, HIDDEN) */

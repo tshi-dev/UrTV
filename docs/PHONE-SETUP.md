@@ -74,9 +74,9 @@ the screensaver showed stayed pending until the TV restarted (a tester's diagnos
 **With a family PIN set**, «جهّز كل شي», «كمّل» and «تراجع» ask for it first. The screen is also kept out of the home screen's own apps grid.
 
 **The ADB key.** While USB debugging is on, adbd listens on TCP 5555 on the whole Wi-Fi, not only on the TV: another device there can make the TV show the "Allow USB
-debugging?" prompt, but it cannot get in unless someone accepts it. «السماح دائماً» makes this app's key a standing credential, so the app **deletes its key** when the
-run has ended and nothing waits (no safety switch pending, no restart of the measurement, no «كمّل» for the Wi-Fi), and again before a fresh run or an
-undo starts (a key a run kept while something waited goes then); a later run asks again (log tag `UrTVSetup`: «adb key: deleted» or «kept (…)»). The
+debugging?" prompt, but it cannot get in unless someone accepts it. «السماح دائماً» makes this app's key a standing credential. **4.4: the app keeps ONE key for good** (the owner's TV, step 86 B: a new key at
+every run made the TV ask again each time and filled its saved list with urtv-home@tv keys; the safety switch, the home's re-apply of the HOME role and
+«تراجع» need it later). Nothing in the app deletes it (log tag `UrTVSetup`: «adb key: kept (one key for good)»). The
 TV's own record of the key (`/data/misc/adb/adb_keys`) belongs to the system and cannot be edited over adb's shell, so the authorization itself goes
 only with «إلغاء تراخيص تصحيح USB»; without the app's private half it opens nothing. adbd's log line «Invalid base64 key» before «sending prompt» is
 about a line of that file (an empty one at its end), not this app's key, which is AOSP's format byte for byte (`tests/adb_client_test.py`). The done screen says to turn
